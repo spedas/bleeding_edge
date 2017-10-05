@@ -1,0 +1,154 @@
+;+
+;PROCEDURE:	moment_3d,temp,KEYWORDS....
+;INPUT:	
+;	temp:	structure,	3d data structure.  (i.e. see "GET_EL")
+;	erange:	
+;       highrange: intarr(2)
+;	bins:	
+;PURPOSE:
+;       Returns all useful moments through keyword arguments.
+;KEYWORDS:
+;The following keywords should be a named variable in which values are returned:
+;       DENSITY
+;       FLUX
+;       VELOCITY
+;       MOMENTUMFLUXTENS
+;       MF3X3
+;       PRESSTENS
+;       PT3X3
+;       TEMPTENS
+;       T3X3
+;       DIAGTEMPERATURE
+;       SYMMDIR
+;
+;These optional keywords control calculations:
+;       ERANGE    intarr(2),   min,max energy bin numbers for integration.
+;       BINS      bytarr(nbins), Angle bins for integration, see "EDIT3DBINS"
+;
+;CREATED BY:    Davin Larson    
+;LAST MODIFICATION: %E%
+;-
+pro moment_3d ,data,sc_pot,magf=magf, $
+;   ERANGE=er,BINS=bins,   $ 
+   density=dens, flux=flux, velocity=vel, $
+   momentumfluxtens=mf, mf3x3= mf3x3,  $
+   presstens = presst, pt3x3=pt3x3, $
+   temptens = tempt,   t3x3=t3x3,  avgtemp=avgtemp, avgvth=avgvth, $
+   magtemp = magt3,  magt3x3=magt3x3, $
+   diagtemperature = diagtemp,  symmdir=symmdir, $
+;   highrange=highrange, $
+;   high_symm=high_symm, high_mflux=hmf, high_temp=ht3, hmf3x3=hmf3x3,
+   valid = valid
+
+valid = 0
+if data.valid eq 0 then return
+
+if n_elements(sc_pot) eq 0 then sc_pot = 0.
+
+
+data3d = conv_units(data,"eflux")		; Use Energy Flux
+
+e = data3d.energy
+de = data3d.denergy
+domega = replicate(1.,data3d.nenergy) # data3d.domega
+
+dvolume =  de / e * domega
+data_dv = data3d.data * dvolume
+
+e_inf = (e - sc_pot) > 0.
+
+mass = data3d.mass
+
+
+;Density calculation:
+
+dweight = sqrt(e_inf)/e
+pardens = data_dv * dweight
+dens = sqrt(mass/2.) * total(pardens) * 1e-5  ; 1/cm^3
+
+;FLUX calculation
+
+sin_phi = sin(data3d.phi/!radeg)
+cos_phi = cos(data3d.phi/!radeg)
+sin_th  = sin(data3d.theta/!radeg)
+cos_th  = cos(data3d.theta/!radeg)
+cos2_th = cos_th^2
+cthsth  = cos_th*sin_th
+
+fwx = cos_phi * cos_th * e_inf / e
+fwy = sin_phi * cos_th * e_inf / e
+fwz = sin_th * e_inf / e
+
+parfluxx = data_dv * fwx
+parfluxy = data_dv * fwy
+parfluxz = data_dv * fwz
+fx = total(parfluxx)
+fy = total(parfluxy)
+fz = total(parfluxz)
+
+flux = [fx,fy,fz]     ; Units: 1/s/cm^2
+
+;VELOCITY FLUX:
+
+vfww  = data_dv * e_inf^1.5 / e
+
+pvfwxx = cos_phi^2 * cos2_th          * vfww
+pvfwyy = sin_phi^2 * cos2_th          * vfww
+pvfwzz = sin_th^2                     * vfww
+pvfwxy = cos_phi * sin_phi * cos2_th  * vfww
+pvfwxz = cos_phi * cthsth             * vfww
+pvfwyz = sin_phi * cthsth             * vfww
+
+vfxx = total(pvfwxx) 
+vfyy = total(pvfwyy)
+vfzz = total(pvfwzz)
+vfxy = total(pvfwxy)
+vfxz = total(pvfwxz)
+vfyz = total(pvfwyz)
+
+vftens = [vfxx,vfyy,vfzz,vfxy,vfxz,vfyz] * (sqrt(2/mass) * 1e5)
+; units:   1/cm/s^2
+
+vel = flux/dens /1e5
+
+map3x3 = [[0,3,4],[3,1,5],[4,5,2]]
+mapt   = [0,4,8,1,2,5]
+
+mftens = vftens * mass / 1e10
+
+mf3x3 = mftens[map3x3] 
+
+pt3x3 = (vf3x3 - ((vel*1e5) # flux)) * mass /1e10
+
+presst = pt3x3[mapt]
+
+t3x3 = pt3x3/dens
+
+avgtemp = (t3x3(0) + t3x3(4) + t3x3(8) )/3.  ; trace/3
+
+avgvth = sqrt(2.*avgtemp/mass)
+
+tempt = t3x3[mapt]
+
+good = finite(dens)
+foo = tempt
+if good then mat_diag,foo,EIG_VAL = diagtemp, EIG_VEC = eig_vec $
+else begin diagtemp = replicate(!values.f_nan,3) & eig_vec = diagtemp & endelse
+symmdir = eig_vec(*,0)
+
+
+str_element,data,'magf',value=magf
+if n_elements(magf) ne 0 then begin
+   rot = rot_mat(magf,vel)
+   magt3x3 = invert(rot) # (t3x3 # rot)
+   magt3 = [magt3x3(0,0), magt3x3(1,1) , magt3x3(2,2)]
+endif else begin
+   magt3x3 = fltarr(3,3)
+   magt3   = fltarr(3)
+endelse
+
+
+valid = 1
+return
+end
+

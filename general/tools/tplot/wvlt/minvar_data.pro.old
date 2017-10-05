@@ -1,0 +1,61 @@
+pro minvar_data,tname1 ,waves=waves, $
+   trange=trange,time=t1,period=period,j=j 
+
+get_data,tname1,ptr=d
+t1=*d.x
+y1=*d.y
+name1=tname1
+dim = dimen(y1)
+
+if keyword_set(trange) then begin
+  w = where(t1 ge trange[0] and t1 le trange[1],nw) 
+  if nw eq 0 then message,'No data in time range'
+  t1 = t1[w]
+  y1 = y1[w,*]
+endif
+n1 = n_elements(t1)
+dt = (t1[n1-1]-t1[0])/(n1-1)
+
+w = where(finite(total(y1,2)),nw)
+if nw ne n1 then begin
+  message,/info,'deleting '+string(n1-nw)+ ' invalid points from data stream'
+  t1 = t1[w]
+  y1 = y1[w,*]
+  n1=nw
+endif
+
+
+
+
+wave0 = wavelet(y1[*,0],dt,/pad,period=period,coi=coi,signif=signif,/verb,j=j)
+wave1 = wavelet(y1[*,1],dt,/pad,period=period,coi=coi,signif=signif,/verb,j=j)
+wave2 = wavelet(y1[*,2],dt,/pad,period=period,coi=coi,signif=signif,/verb,j=j)
+
+dim = dimen(wave0)
+
+waves = [[wave0[*]],[wave1[*]],[wave2[*]]]
+wave0 = 0
+wave1 = 0
+wave2 = 0
+;waves = [[[wave0]],[[wave1]],[[wave2]]]
+kvec = crossp2(float(waves),imaginary(waves))
+kvec = reform(kvec,[dim,3],/over)
+kvec = total(kvec,2)
+
+smn1 = 101
+kvec = [[smooth(kvec[*,0],smn1)],[smooth(kvec[*,1],smn1)],[smooth(kvec[*,2],smn1)]]
+store_data,'minvar',data={x:t1,y:kvec}
+
+waves = reform(waves,[dim,3])
+rwaves = waves
+for i=0l,dim[0]-1 do begin
+   rotmat = rot_mat(reform(kvec[i,*]))
+   rwaves[i,*,*] = reform(waves[i,*,*]) # rotmat 
+endfor
+
+power = abs(rwaves[*,*,0])^2 + abs(rwaves[*,*,1])^2
+store_data,'pow('+name1+')',data={x:t1,y:power,v:period},dlim={spec:1,ylog:1,zlog:1}
+polar = imaginary(rwaves[*,*,0]*conj(rwaves[*,*,1]))
+store_data,'pol('+name1+')',data={x:t1,y:polar,v:period},dlim={spec:1,ylog:1}
+
+end

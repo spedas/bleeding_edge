@@ -1,0 +1,66 @@
+ADC->EDEP boundaries
+
+Patrick Cruce
+pcruce@igpp.ucla.edu
+Last Revision 2013-03-13
+
+SST energy boundaries as configured on spacecraft.
+Note that these numbers correspond to the energy deposition.
+Not the incident energy of those particles.  Incident energy 
+is modeled using GEANT4
+
+ADC to KeV Conversion is: keV = adc*1.6+5.0 
+
+////////////////////////////////////
+O-OT-T has 15 channels
+////////////////////////////////////
+O-channel: 0x040,0x050,0x060,0x070
+Boundaries(ADC): 12,19,26,34,44,69,103,150,215,306,506,906
+Integral Channel at 906(906-4095)
+Less than 12 is junk
+Boundaries(keV): 24.2000, 35.4000, 46.6000, 59.4000, 75.4000, 115.400, 169.800, 245.000, 349.000, 494.600, 814.600, 1454.60, 6557.00(max)
+/////////////////////////////////////
+OT-channel,0x0C0,0x0D0,0x0E0,0x0F0
+Boundaries: 2500, 4000
+Integral Channel at 4000(4000-4095)
+Less than 2500 is junk
+Boundaries(keV):
+4005.00, 6405.00, 6557.00(max)
+/////////////////////////////////////
+T-channel, 0x080,0x090,0x0A0,0x0B0
+Boundaries: 0
+Integral Channel at 0(0-4095)
+Boundaries(keV): 0,6557.00(max)
+/////////////////////////////////////
+F-FT-FTO has 16 channels
+/////////////////////////////////////
+F-channel, 0x100,0x110,0x120,0x130
+Boundaries: 12,19,26,34,44,69,103,150,215,306,506,906
+Integral Channel at 906(906-4095)
+Less than 12 is junk
+Boundaries(keV): 24.2000, 35.4000, 46.6000, 59.4000, 75.4000, 115.400, 169.800, 245.000, 349.000, 494.600, 814.600, 1454.60, 6557.00(max)
+/////////////////////////////////////
+FT-channel, 0x180,0x190,0x1A0,0x1B0
+Boundaries: 200, 300, 400
+Less than 200 is junk
+Above 499 is junk
+Boundaries(keV):325.000, 485.000, 645.000, 803.400(max)
+/////////////////////////////////////
+FTO-channel,0x1C0,0x1D0,0x1E0,0x1F0
+400-1199,2700-4096
+Boundaries(keV) FTO_LOW: 645.00, 1923.40(max)
+Boundaries(keV) FTO_HIGH: 4325.00, 6557(max)             
+/////////////////////////////////////
+
+How they are organized in data available on the ground:
+
+Ion Bins:
+0-11 = O
+12-13 = OT
+14 = T
+15 = FTO(high)
+
+Electron Bins:
+0-11 = F
+12-14 = FT
+15 = FTO(low)

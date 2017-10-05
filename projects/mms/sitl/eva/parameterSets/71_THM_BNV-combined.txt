@@ -1,0 +1,7 @@
+thw_fgs_gsm_x ; Bx
+thw_fgs_gsm_y ; By
+thw_fgs_gsm_z ; Bz
+thw_peir_density ; density
+thw_peir_velocity_gsm_x ; Vx
+thw_peir_velocity_gsm_y ; Vy
+thw_peir_velocity_gsm_z ; Vz

@@ -1,0 +1,52 @@
+How to update your CDF and/or GEOPACK versions 
+
+Important: Please contact your system administrator first.
+
+To update the CDF (or GEOPACK) dlm files, 
+you have to copy two files 
+and paste them into your IDL directory, 
+replacing any files with the same name. 
+To accomplish this, you need the appropriate 
+administrative permissions. 
+
+===========================================
+Follow these steps for CDF: 
+
+1. Download and unzip the following zip file:
+http://spedas.org/downloads/cdf_dlm.zip
+
+2. CDF version 3.6.2
+Locate and copy the two (or three for win64) files under: 
+<unzip directory>/cdf_dlm/<your OS>/
+
+3. Paste the above CDF dlm files into the appropriate 
+IDL directory for DLM files. 
+This directory is shown in the Help->About box.
+This directory varies, depending on which IDL version 
+you are using and how IDL was installed.
+For example, for Windows the appropriate directory could be:  
+C:\Program Files\Exelis\IDL85\bin\bin.x86_64
+
+For more information, see:
+http://cdf.gsfc.nasa.gov/html/sw_and_docs.html
+
+===========================================
+Follow these steps for GEOPACK: 
+
+1. Download and unzip the following zip file:
+http://spedas.org/downloads/geopack_dlm.zip
+
+2. GEOPACK version 9.3
+Locate and copy the two GEOPACK files under: 
+<unzip directory>/geopack_dlm/<your OS>/
+
+3. Paste the above GEOPACK dlm files into the appropriate 
+IDL directory for DLM files. 
+This directory is shown in the Help->About box.
+This directory varies, depending on which IDL version 
+you are using and how IDL was installed.
+For example, for Windows the appropriate directory could be:  
+C:\Program Files\Exelis\IDL85\bin\bin.x86_64 
+
+For more information, see:
+http://ampere.jhuapl.edu/code/idl_geopack.html

@@ -1,0 +1,4 @@
+project: POES
+load_data: poes_ui_load_data
+menu: poes_ui_gen_overplot, Overview Plots, POES Overview Plot...
+config: poes_fileconfig

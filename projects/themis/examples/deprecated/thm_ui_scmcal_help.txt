@@ -1,0 +1,92 @@
+			THEMIS SCM Calibration Descriptions
+
+
+nk:  	The number of points of the cal-convolution kernel. If set nk is set, this value will 
+	be used regardless of the sample rate.
+
+mk:  	If nk is not set, then nk will be set to (sample frequency)*mk, where sample frequency 
+	is determined by the data type. Default values are:
+		8 for scf 
+		4 for scp 
+		1 for scw
+
+despin:  	Classic despin algorithm. 0:off, 1:on  The default is on.
+
+nspins:  	Number spins to fit for misalignment, dc field calculation and optionally despin.
+
+cleanup: 	Choices for cleaning data. The default is 'none'
+		Spin - for only spin tones (power ripples) cleanup,
+		Full - for spin tones and 8/32 Hz tones
+		None - for no cleanup processes. 
+
+author: 	Author of cleanup routines. The default is 'ole':
+		'ccc' to use scm_cleanup_ccc 
+		'ole' to use spin_tones_cleaning_vector_v5 
+
+windur1s:	The window duration for 8/32 Hz cleanup. This value must be a multiple of 1 spin. 
+	The default is 1.
+
+windurst:	The cleanup window duration as a multiple of the spin period. Default is 1. 
+
+dfb_btr:	Correct for DFB Butterworth filter response. Default value is on.
+
+dfb_dig:	Correct for DFB Digital filter response. The default is value is on.
+
+ant_gain:	Correct for antenna gain. Default is on.
+
+coords:	The coordinate system to use for output.  Step 6 output can only be in DSL.
+
+freq_det:	Detrend is implemented by subtracting a boxcar average whose length is 
+	determined by fdet. Use fdet=0 for no detrending. The default is fdet=0. 
+	Units are in Hz.
+
+freq_cut:	The low frequency cut-off for calibration. Default is 0.1. Units are in Hz.
+
+freq_min:	The minimum frequency for filtering in DSL system.  Default is 0. Units are in Hz.
+
+freq_max:	The maximum frequency for filtering in DSL system.  Default is Nyquist.
+
+steps:	The highest number of processing step to complete.  Processing is 
+	done in 8 successive steps. Default is step 5. 
+		# 0: counts, NaN inserted into each gap for proper tplotting
+		# 1: Volts, spinning sensor system, with DC field
+		# 2: Volts, spinning sensor system, without DC field [xy, DC field in nT]
+		# 3: nTesla, spinning sensor system, without DC field
+		# 4: nTesla, spinning SSL    system, without DC field
+		# 5: nTesla, fixed DSL system, without DC field, filtered <fmin
+		# 6: nTesla, fixed DSL system, with xy DC field
+
+edge:	The method for handling edges in step 3, cal-deconvolution.  For usage and exact 
+	specification of these keywords, see documentation for the IDL convol function. 
+	The default setting is to zero data within nk/2 samples of data gap or edge. 
+	The edge handling options are:
+		edge_truncate
+		edge_wrap
+		edge_zero 
+
+verbose:	Set this parameter to zero to eliminate output. This currently only works with 
+	valid_names. Set the optional keyword valid_names to print out values for probe, 
+	datatype, coord and return those in named variables passed in to corresponding 
+	keywords.
+
+download: If the download calibration parameter is set to on, calibration files will be 
+	downloaded. If the download calibration parameter is set to off, the internet is not 
+	accessed to check for updated calibration files.
+
+insuffix:	The input data suffix is an optional suffix to add to name of input data quantity,
+	which is generated from probe and datatype keywords.
+
+outsuffix:	An optional suffix to add to the name of your output tplot quantity which is generated
+	from probe and datatype keywords.
+
+cal_dir:	If set, this parameter specifies the directory path of the calibration files. 
+	Use /dircal or dircal='' to use calibration files in the IDL source distribution.  
+
+
+HISTORY:
+13-mar-2007, jmm, jimm@ssl.berkeley.edu
+June-2007, krb, Based on Patrick Robert's cowave_THEscmwf.f
+25-sept-2007, krb, kenneth.r.bromund@nasa.gov merged in changes to version 893, 
+made on 16-jul-2007 by olivier.LeContel@cetp.ipsl.fr, including Olivier Le Contel 
+cleanup routine (spin_tones_cleaning_vector_v5) in thm_cal_scm 
+

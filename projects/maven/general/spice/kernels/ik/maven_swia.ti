@@ -1,0 +1,637 @@
+KPL/IK
+
+MAVEN SWIA Instrument Kernel
+===============================================================================
+
+   This Instrument Kernel (IK) file contains parameters for the MAVEN 
+   SWIA (Solar Wind Ion Analyzer) instrument.
+
+
+Version and Date
+-------------------------------------------------------------------------------
+
+   Version 1.0 -- January 14, 2014 -- Jasper Halekas, MAVEN P&F Team
+
+
+References
+-------------------------------------------------------------------------------
+
+   1. Kernel Pool Required Reading
+
+   2. GETFOV, getfoc_c, cspice_getfov headers
+
+   3. MAVEN FK file, latest version
+
+   4. "The Solar Wind Ion Analyzer for MAVEN", J.S. Halekas, et al., Space Science 
+      Reviews, DOI 10.1007/s11214-013-0029-z, in press, 2014. 
+
+
+Contact Information
+-------------------------------------------------------------------------------
+
+   Jasper Halekas, MAVEN P&F Team, 510-643-4310, jazzman@ssl.berkeley.edu
+
+Implementation Notes
+-------------------------------------------------------------------------------
+
+   This file is used by the SPICE system as follows: programs that make
+   use of this kernel must ``load'' the kernel, normally during program
+   initialization. The SPICE routine FURNSH loads a kernel file into
+   the pool as shown below.
+
+      CALL FURNSH ( 'frame_kernel_name; )    -- FORTRAN
+      furnsh_c ( "frame_kernel_name" );      -- C
+      cspice_furnsh, frame_kernel_name       -- IDL
+      cspice_furnsh( 'frame_kernel_name' )   -- MATLAB
+
+   Once the file has been loaded, the SPICE routine GETFOV (getfov_c in
+   C, cspice_getfov in IDL and MATLAB) can be used to retrieve FOV
+   parameters for a given instrument or structure.
+ 
+   This file was created and may be updated with a text editor or word
+   processor.
+
+
+Naming Conventions
+----------------------------------------------------------
+
+   All names referencing values in this IK file start with the
+   characters `INS' followed by the NAIF MAVEN ID number (-202)
+   followed by a NAIF three digit ID code for SWIA or one of 
+   its detectors or components. This is the full list of names 
+   and IDs described by this IK file:
+
+      MAVEN_SWIA_BASE                 -202140
+      MAVEN_SWIA                      -202141
+      MAVEN_SWIA_SWTSPOT              -202142
+      MAVEN_SWIA_FRONT                -202143
+      MAVEN_SWIA_BACK                 -202144
+
+   The remainder of the keyword name is an underscore character
+   followed by the unique name of the data item. For example, the -202142
+   boresight direction provided as a part of its FOV definition is 
+   specified by:
+
+      INS-202142_BORESIGHT
+
+   The upper bound on the length of the name of any data item is 32
+   characters.
+ 
+   If the same item is included in more than one file, or if the same
+   item appears more than once within a single file, the latest value
+   supersedes any earlier values.
+
+
+Mounting Alignment
+--------------------------------------------------------
+
+   Refer to the latest version of the MAVEN Frames Definition Kernel
+   (FK) [3] for the MAVEN structures reference frame definitions and
+   mounting alignment information. Briefly, the SWIA instrument 
+   is deck-mounted, with its X-axis aligned with the spacecraft 
+   Z-axis (nominally sunward), its Y-Axis aligned opposite the 
+   spacecraft X-axis (+X S/C is nominally nadir-ward), and its
+   Z-axis aligned opposite the spacecraft Y-axis (along the axis
+   of the solar panels). This diagram illustrates the s/c and SWIA frames:
+
+      +Z s/c side:
+      ------------                 ._____. APP
+                                   \_____|
+                                      | 
+                                      |
+                                      |  +Xsc
+                                      | ^ 
+             ._________._________..-----|-----.._________._________.
+             |         |         ||  .--|--.  ||         |         |>
+       MAG .-|         |     +Ysc   /   |     ||         |         |-. MAG
+          <  |         |        <-------o     ||         |         |  >
+           `-|         |         |  \         ||         |         |-'
+            <|_________|_________|HGA`-----'  ||_________|_________|
+                                  `----------'o------->
+                                  .-'   |   ` |       +Zswia
+                               .-'      |     | -.
+                            .-'         @     |   `-.
+                         .-'       SWEA       V      `-.
+                  LPW .-'                     +Yswia    `-. LPW
+
+                                   +Zsc and +Xswia are out of the page.
+
+
+Instrument and Data Product Description
+---------------------------------------------------------
+
+   The Solar Wind Ion Analyzer (SWIA) is an electrostatic analyzer that
+   measures energy per charge of incident solar wind ions with a nominal 
+   field of view of 360 degrees (covered by 24 anodes) by 90 degrees
+   (covered by electrostatic deflection).  The undeflected field of view
+   lies in the spacecraft X-Z plane, which is the SWIA X-Y plane.  The 
+   ~sunward direction (spacecraft Z, SWIA X) is covered by 10 4.5-degree 
+   anodes, and the rest of the field of view is covered by 14 22.5-degree 
+   anodes. 
+
+   This diagram illustrates the undeflected anode layout:
+
+                                   ^ +Zswia
+           Undeflected             | -Ysc
+           360 deg FOV             |
+
+
+        (-Xswia)   (-Yswia)     (+Xswia)   (+Yswia)    (-Xswia)         
+         (-Zsc)     (+Xsc)       (+Zsc)     (-Xsc)      (-Zsc)         
+
+   Phi = -180        -90           0         +90         +180
+           |           |           |           |           |
+           |           |           |           |           |
+
+           .--.-- --.--.--.--.--.-----.--.--.--.--.--.--.--.
+           '--'--'--'--'--'--'--'--o--'--'--'--'--'--'--'--'   
+           7 x 22.5 deg anodes           7 x 22.5 deg anodes
+                              /         \
+
+                            /             \
+
+    Undeflected 45 deg    /  10 x 4.5-deg   \
+      sweet-spot FOV     .-.-.-.-.-.-.-.-.-.-.
+                         '-'-'-'-'-o-'-'-'-'-'   
+
+                         |         |         |
+                         |         |         |
+                 Phi= -22.5        0      +22.5
+                               (+Xswia)
+                                (+Zsc)
+                              
+
+   The nominal energy range is ~5-25000 eV. For energies up to 
+   ~4.75 keV, deflection covers the full 90 degree angular range; however, 
+   for energies above this threshold, angular coverage is proportionally 
+   reduced. 
+
+   This diagram illustrates the full deflected FOV detector layout for 
+   energies up to ~4.75 keV:
+
+                                   ^ +Zswia
+          Full deflected           | -Ysc
+         360 x 90 deg FOV          |
+
+
+        (-Xswia)   (-Yswia)     (+Xswia)   (+Yswia)    (-Xswia)         
+         (-Zsc)     (+Xsc)       (+Zsc)     (-Xsc)      (-Zsc)         
+
+   Phi = -180        -90           0         +90         +180
+                                                           
+           |           |           |           |           |    Theta =
+                                                                
+           .--.--.--.--.--.--.--.-----.--.--.--.--.--.--.--. --- +45
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'        
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'        
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'        
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'        
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'           
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'           24 
+           '--'--'--'--'--'--'--'  o  '--'--'--'--'--'--'--' --- 0   3.75 deg
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'       deflection
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'          steps
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'        
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'        
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'        
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'
+           '--'--'--'--'--'--'--'     '--'--'--'--'--'--'--'
+           '--'--'--'--'--'--'--'-----'--'--'--'--'--'--'--' --- -45
+           7 x 22.5 deg anodes           7 x 22.5 deg anodes
+                              /         \
+
+                            /             \
+                                                 Theta =
+      Full deflected      /  10 x 4.5-deg   \
+        45 x 90 deg      .-.-.-.-.-.-.-.-.-.-. --- +45
+      sweet-spot FOV     '-'-'-'-'-'-'-'-'-'-'   
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'             24 
+                         '-'-'-'-'-'-'-'-'-'-'           3.75 deg
+                         '-'-'-'-'-o-'-'-'-'-' --- 0   deflection
+                         '-'-'-'-'-'-'-'-'-'-'           steps
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-' --- -45
+
+                         |         |         |
+                                              
+                 Phi= -22.5        0      +22.5
+                               (+Xswia)
+                                (+Zsc)
+
+   The Fine 3d product consists of counts from the 10 4.5-degree anodes, 
+   for 48 energies and 12 deflection steps surrounding the peak count rate. 
+   In other words, the Fine 3d product returns counts from the 4.5-degree
+   anodes, but only those counts for half of the energy steps and half of the 
+   deflection steps. The energy and deflection steps returned are framed around
+   the location of the peak count rate. In other words, this data product tracks
+   the peak count rate in phase space. This is particularly useful for the solar
+   wind, because most of the counts are localized in a narrow region of phase
+   space around the supersonic proton beam.  
+
+   The following diagram illustrates the coverage of this product in angle, for 
+   a nominal centered framing of the peak [if the peak is close to the edge
+   of the full theta range it may not be centered, and the framing of the peak
+   is configurable], and assuming energies < 4.75 keV. The coverage of the 
+   product moves in theta and energy as the peak moves in the field of view.  
+
+
+                         .-.-.-.-.-.-.-.-.-.-. --- [theta_peak + 22.5] < 45
+			  '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'             	    12 
+                         '-'-'-'-'-'-'-'-'-'-'            	    3.75 deg
+                         '-'-'-'-'-o-'-'-'-'-' --- theta_peak   deflection
+                         '-'-'-'-'-'-'-'-'-'-'           	    steps
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-'
+                         '-'-'-'-'-'-'-'-'-'-' --- [theta_peak - 22.5] > -45
+
+                         |         |         |
+                                              
+                 Phi= -22.5        0      +22.5
+                               (+Xswia)
+                                (+Zsc)
+
+   This results in a product with 10 phi x 12 theta x 48 energies. The level 2
+   data files contain 96x24 theta directions (in MAVEN_SWIA coordinates), and 
+   10 phi directions (in MAVEN_SWIA coordinates), along with the index of the 
+   starting energy step and deflection step for the actual 48 energies and 12 
+   thetas. At some times, only the 6 phi x 8 theta x 32 energies forming the 
+   center of this fine distribution are telemetered. In this case, the level 2
+   metadata files still contain 10x12x48 values, with the edges filled with zeros,
+   to simplify data analysis for the end user. Care should be taken to note 
+   the binning mode of the data, also specified in the level 2 data files.      
+
+   The Coarse 3d product consists of the counts for the 14 22.5-degree anodes,
+   plus the 10 4.5-degree anodes summed into two 22.5-degree groups, energy
+   steps summed in pairs, and deflection steps summed in groups of six, to
+   provide a data product with 16 phi x 4 theta x 48 energies. This product
+   therefore covers all of the phase space accessible to SWIA, but with
+   more coarse resolution than the Fine 3d product. Therefore, this product
+   is more useful for regions inside Mars' bow shock, where the distribution
+   tends to be hotter and more thermalized, as well as subsonic.  For this
+   product, the 48x4 theta directions (in MAVEN_SWIA coordinates), and the
+   16 phi directions (in MAVEN_SWIA coordinates), are provided in the level 2
+   metadata file. 
+
+   This diagram illustrates the full deflected coarse FOV detector layout for 
+   energies up to ~4.75 keV:
+
+                                   ^ +Zswia
+          Full deflected           | -Ysc
+         360 x 90 deg FOV          |
+
+
+        (-Xswia)   (-Yswia)     (+Xswia)   (+Yswia)    (-Xswia)         
+         (-Zsc)     (+Xsc)       (+Zsc)     (-Xsc)      (-Zsc)         
+
+   Phi = -180        -90           0         +90         +180
+                                                           
+           |           |           |           |           |    Theta =
+                                                                
+           .--.--.--.--.--.--.--.-----.--.--.--.--.--.--.--. --- +45
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+           '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'        
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |           4 
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |        22.5 deg
+           '--'--'--'--'--'--'--'--o--'--'--'--'--'--'--'--' --- 0  summed-up
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |       deflection
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |          steps
+           '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+           '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- -45
+           7 x 22.5 deg anodes /       \ 7 x 22.5 deg anodes
+                              /         \
+                          2 summed-up 22.5 deg
+                                sectors  
+                                                    +Xswia and +Zsc are 
+                                                       out of the page.
+
+   At some times, the 48 energies are summed into either 24 or 16 
+   energy bins. At these times, we resample the 24 or 16 bins into 48 elements,
+   to simplify data analysis for the end user. Care should be taken to note 
+   the binning mode of the data, also specified in the level 2 data files.
+
+   SWIA also computes moments onboard for the ion distribution, including 
+   density, temperature, and velocity. Finally, summed energy spectra (48
+   energy bins) are computed onboard and telemetered.  For these final two
+   products, the fields of view are not necessary.  
+
+   SWIA has a mechanical attenuator, actuated automatically in response to 
+   peak count rate, that provides a factor of ~15 attenuation in the ~sunward
+   portion of the field of view, with full attenuation in the Fine 3d field 
+   of view, a gradual reduction beyond that, reducing to no attenuation in 
+   the ~anti-sunward (-Z in spacecraft coordinates) hemisphere. The attenuator
+   status is provided in all level 2 data files.      
+
+
+Instrument Detector/Sensor Layout 
+----------------------------------------------------------
+
+   24 anodes cover look directions in the spacecraft X-Z plane (SWIA X-Y plane),
+   with 10 4.5 degree anodes covering angles symmetrically around the nominal sun 
+   direction (Spacecraft +Z, MAVEN_SWIA +X), and an additional 14 22.5 degree
+   anodes covering the rest of the 360 degrees. The field of view covered 
+   by the 10 small anodes is defined as the "Sweet Spot", and the counts from
+   these anodes are contained in the Fine 3d distributions, and also summed into
+   two groups in the Coarse 3d distributions.  The particle velocity 
+   directions corresponding to the center angles of these anodes are contained
+   in the level 2 metadata files for coarse and fine 3d data products, as defined 
+   in MAVEN_SWIA coordinates.  Electrostatic deflection allows us to
+   cover angles up to 45 degrees in either direction (+/-Z in MAVEN_SWIA 
+   coordinates) from this 2-d FOV. This electrostatic deflection depends on the
+   sweep table loaded in the instrument, and can change. The theta angles 
+   corresponding to each deflection bin are contained in the level 2 metadata files
+   for coarse and fine 3d data products, as a function of energy.     
+
+
+Instrument Pixel-to-3D Coordinate Mapping 
+----------------------------------------------------------
+
+   The pixel to 3d-coordinate mapping is defined in the level 2 metadata files, 
+   since it is energy-dependent, and thus depends on the sweep table loaded in the 
+   instrument. The phi angle mapping of the anodes (in MAVEN_SWIA coordinates) is
+   independent of the sweep, but the deflection (theta) angles depend on energy.    
+
+   This energy dependence implies that the look directions depend on sweep table, 
+   so we do not define individual look angles in this kernel, but instead define 
+   them in the level 2 metadata files. These look angles will be defined in terms of 
+   instrument phi and theta, in the MAVEN_SWIA coordinate frame, and are 
+   referenced in terms of particle velocity directions, rather than look angles. 
+   In other words, the phi and theta defined in the l2 files are the complement
+   of the look direction. This simplifies the calculation of the moments
+   of the ion distribution for the end user, if applied correctly. 
+
+   As an example, for a normal sun-pointing orientation, in the MAVEN-SWIA
+   coordinates, the sun is at (phi = 0, theta = 0).  As a result, the nominal
+   solar wind velocity (neglecting aberration) is at (phi = 180, theta = 0). 
+   The nominal solar wind lies in the sweet spot field of view, which is 
+   covered by Fine 3d distributions. The Fine 3d distributions thus have
+   look directions within 22.5 degrees in phi from 0, and within 45 degrees
+   in theta from 0; however, the velocity angles listed in the level 2 
+   data files will be within 22.5 degrees in phi from 180, and within 
+   45 degrees in theta from 0.       
+
+
+Instrument Detector/Sensor Parameters 
+----------------------------------------------------------
+
+   All relative sensitivities are defined in the relevant level 2 metadata files. 
+   Also, level 2 data files contain both raw counts and calibrated differential
+   energy fluxes, providing a consistency check on the data and geometric factors.     
+
+
+Instrument FOV Definition(s)
+----------------------------------------------------------
+
+   This section defines the following FOVs:
+
+      ID       SHAPE      FRAME                  SIZE1  SIZE2   BSIGHT
+      -------  --------   ---------------------  -----  -----   ------
+      -202142  POLYGON    MAVEN_SWIA               45.    90.     +X
+      -202143  POLYGON    MAVEN_SWIA             179.9    90.     +X
+      -202144  POLYGON    MAVEN_SWIA             179.9    90.     -X
+
+   The FOVs are defined in this data block. The "SWTSPOT" FOV is the
+   FOV telemetered in the Fine 3d product, and should contain the 
+   solar wind for nominal spacecraft orientations.  The "FRONT" and "BACK" 
+   FOVs cover the nominal maximum Coarse field of view envelope, valid for 
+   energies up to ~4.75 keV (reduced in theta coverage for higher energes), 
+   with "FRONT" covering the sunward-looking hemisphere, and "BACK" covering 
+   the anti-sunward-looking hemisphere.
+
+   This diagram illustrate SWIA FOVs relative to the s/c and SWIA frames:
+
+      -Y s/c side:
+      ------------
+
+                               +Xswia
+                                    
+                                  ^ Sweetspot FOV
+                                _ | _   (45x90)
+                  Front FOV  . \  |  /. 
+                  (180x90)  /   \ | /  \
+                            |    \|/    |                 .___.
+                 +Yswia  <--------o------   --.===========|  .' APP
+                            |           |     |           `-'
+                   Back FOV  \         /  +Zsc|
+                   (180x90)   ` _ _ _ ' ^     |      
+                                        |     |     
+                                  |     |     |
+                                .-.-----|-----'
+                             .-'.'   `- x-------> 
+                          .-' .'                 +Xsc
+                       .-'   @
+                LPW .-'    SWEA
+
+                                            +Ysc is into the page.
+                                           +Zswia is out of the page.
+
+
+   This diagram illustrate each of the SWIA FOVs relative SWIA frame:
+
+      Front FOV:
+      ----------
+                     Front FOV                       Front FOV
+                     boresight                       boresight
+
+                           +Xswia                         +Xswia
+                          ^                              ^ 
+                          |               Theta=         |
+                          |0                -45          |0        +45
+                     _..--+--.._               .-------------------.
+                  .'      |      '.            |,        |        .|
+                .'        |        '.          | `.      |      .' |
+               /          |          \         |   `.    |    .'   |
+        Phi=  .           |           .        |     `.  |  .'     |
+           +90|           |           |-90     |       `.|.'       |
+         <----+-----------o-----------+-    ---+---------o---------+--->
+    +Yswia                | +Zswia               +Yswia  |             +Zswia
+                          |                              |
+
+
+      Back FOV:
+      ---------
+                           +Xswia                         +Xswia
+                          ^                              ^ 
+                          |                              |
+        Phi=              .                              .
+           +90            |            -90               |
+         <----+-----------o-----------+-    ---+---------o---------+--->
+    +Yswia    |           | +Zswia    |        | +Yswia.'|`.       |    +Zswia
+              '           |           '        |     .'  |  `.     |
+               \          |          /         |   .'    |    `.   |
+                '.        |        .'          | .'      |      `. |
+                  '. _    |    _ .'            |'        |        `|
+                      ''--+--''                `-------------------'  
+                      180 |                  -45         |0        +45
+                          V               Theta=         V
+                          
+                     Back FOV                        Back FOV
+                     boresight                       boresight
+
+
+
+      Sweet spot FOV:
+      ---------------
+
+                   Sweet spot FOV                  Sweet spot FOV
+                     boresight                       boresight
+
+                           +Xswia                         +Xswia
+                          ^                              ^ 
+                          |              Theta=          |
+                          |0                -45          |0        +45
+             Phi=    _..--+--.._               .-------------------.
+                22.5 \    |    / -22.5         `-------------------'
+                      \   |   /                  `.      |      .'  
+                       \  |  /                     `.    |    .'    
+                        \ | /                        `.  |  .'      
+                         \|/                           `.|.'        
+         <----------------o-------------    -------------o------------->
+    +Yswia                | +Zswia               +Yswia  |             +Zswia
+                          |                              |
+
+
+   The sweet spot is defined as a polygon. 
+
+   The front-looking and rear-looking FOVs are also defined as polygons. There
+   is a very small phi portion (~0.2 deg) not contained in either of these FOV; 
+   however, that FOV is blocked by the solar panel and mounting foot of the 
+   instrument anyway. 
+ 
+
+      \begindata
+
+      INS-202142_FOV_SHAPE            = 'POLYGON'
+      INS-202142_FOV_FRAME            = 'MAVEN_SWIA'
+      INS-202142_BORESIGHT            = ( 1.0, 0.0, 0.0 )
+      INS-202142_FOV_BOUNDARY         = ( 
+     0.653281     0.270598     0.707107
+     0.679471     0.195752     0.707107
+     0.697116     0.118445     0.707107
+     0.705994    0.0396478     0.707107
+     0.705994   -0.0396478     0.707107
+     0.697116    -0.118445     0.707107
+     0.679471    -0.195752     0.707107
+     0.653281    -0.270598     0.707107
+     0.653281    -0.270598    -0.707107
+     0.679471    -0.195752    -0.707107
+     0.697116    -0.118445    -0.707107
+     0.705994   -0.0396478    -0.707107
+     0.705994    0.0396478    -0.707107
+     0.697116     0.118445    -0.707107
+     0.679471     0.195752    -0.707107
+     0.653281     0.270598    -0.707107
+                                        )
+
+      INS-202143_FOV_SHAPE            = 'POLYGON'
+      INS-202143_FOV_FRAME            = 'MAVEN_SWIA'
+      INS-202143_BORESIGHT            = ( 1.0, 0.0, 0.0 )
+      INS-202143_FOV_BOUNDARY         = ( 
+      0.00000     0.707107     0.707107
+     0.146935     0.691672     0.707107
+     0.287456     0.646041     0.707107
+     0.415427     0.572206     0.707107
+     0.525262     0.473391     0.707107
+     0.612167     0.353910     0.707107
+     0.672346     0.218977     0.707107
+     0.703173    0.0744855     0.707107
+     0.703302   -0.0732583     0.707107
+     0.672727    -0.217804     0.707107
+     0.612783    -0.352841     0.707107
+     0.526088    -0.472474     0.707107
+     0.416425    -0.571481     0.707107
+     0.288583    -0.645538     0.707107
+     0.148142    -0.691414     0.707107
+   0.00123403    -0.707106     0.707107
+   0.00123403    -0.707106    -0.707107
+     0.148142    -0.691414    -0.707107
+     0.288583    -0.645538    -0.707107
+     0.416425    -0.571481    -0.707107
+     0.526088    -0.472474    -0.707107
+     0.612783    -0.352841    -0.707107
+     0.672727    -0.217804    -0.707107
+     0.703302   -0.0732583    -0.707107
+     0.703173    0.0744855    -0.707107
+     0.672346     0.218977    -0.707107
+     0.612167     0.353910    -0.707107
+     0.525262     0.473391    -0.707107
+     0.415427     0.572206    -0.707107
+     0.287456     0.646041    -0.707107
+     0.146935     0.691672    -0.707107
+      0.00000     0.707107    -0.707107
+                                        )
+
+      INS-202144_FOV_SHAPE            = 'POLYGON'
+      INS-202144_FOV_FRAME            = 'MAVEN_SWIA'
+      INS-202144_BORESIGHT            = ( -1.0, 0.0, 0.0 )
+      INS-202144_FOV_BOUNDARY           = ( 
+  -0.00123439    -0.707106     0.707107
+    -0.148142    -0.691414     0.707107
+    -0.288583    -0.645538     0.707107
+    -0.416425    -0.571481     0.707107
+    -0.526088    -0.472474     0.707107
+    -0.612783    -0.352841     0.707107
+    -0.672727    -0.217804     0.707107
+    -0.703302   -0.0732583     0.707107
+    -0.703173    0.0744855     0.707107
+    -0.672346     0.218977     0.707107
+    -0.612167     0.353910     0.707107
+    -0.525263     0.473391     0.707107
+    -0.415427     0.572206     0.707107
+    -0.287456     0.646041     0.707107
+    -0.146935     0.691672     0.707107
+      0.00000     0.707107     0.707107
+      0.00000     0.707107    -0.707107
+    -0.146935     0.691672    -0.707107
+    -0.287456     0.646041    -0.707107
+    -0.415427     0.572206    -0.707107
+    -0.525263     0.473391    -0.707107
+    -0.612167     0.353910    -0.707107
+    -0.672346     0.218977    -0.707107
+    -0.703173    0.0744855    -0.707107
+    -0.703302   -0.0732583    -0.707107
+    -0.672727    -0.217804    -0.707107
+    -0.612783    -0.352841    -0.707107
+    -0.526088    -0.472474    -0.707107
+    -0.416425    -0.571481    -0.707107
+    -0.288583    -0.645538    -0.707107
+    -0.148142    -0.691414    -0.707107
+  -0.00123439    -0.707106    -0.707107
+                                        )
+      \begintext
+
+End of the IK file.
+ 

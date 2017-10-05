@@ -1,0 +1,22 @@
+Axis titles and labels in SPEDAS support standard IDL embedded format codes that facilitate subscripting,
+superscripting, as well as Greek and math characters.
+
+Here are some of the basic format options:
+
+!7 	Greek letters
+!9 	Math/special characters
+!M 	Math/special characters for single character only
+!E 	Shift to the exponent level and decrease the character size by a factor of 0.44
+!U 	Shift to the upper superscript level, decrease the character size by a factor of 0.62
+!D 	Shift down to the first subscript level, decrease the character size by a factor of 0.62
+!L	Shift to the 2nd level subscript, decrease font size by a factor of 0.62
+!N 	Shift back to the normal level and original character size
+!C 	Carriage return
+
+Examples:
+
+e^(beta)	e!E!9b	(e to the beta)
+R_e	R!De!N	(R subscript e)
+newline	New!CL	(carriage return after New)
+
+For more options and examples, see the 'Embedded Formatting Commands' section of the IDL help.

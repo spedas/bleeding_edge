@@ -1,0 +1,36 @@
+NOTE: When plotting power spectra (power vs. frequency), a slightly different
+	procedure is necessary in Plot/Layout Options. For the Y-Axis quantity,
+	select the variable ending in _pwrspc (e.g. tha_state_pos_x_pwrspc).
+	Click the "Show Data Components" box, select the X-Axis tab, and select
+	the quantity ending in _pwrspc_freq (e.g. tha_state_pos_x_pwrspc_freq).
+	For the X-Axis quantity, make sure you're selecting the child quantity,
+	as the GUI won't let you select the parent quantity.
+
+Dynamic:  If set, a dynamic power spectrum is created, otherwise, a normal power
+	spectrum is produced.
+
+Suffix:  Optional suffix to append to new variable names.
+
+Window Size:  The number of points to use for the Hanning window.  The default
+	is 256 points.
+
+Window Shift:  The number of points to shift the Hanning window.  The default is
+	128 points.
+
+Set Time Range:  Enable setting of sub-window within the active data timerange.
+	If not set, then all active data will be processed regardless of the
+	data timespan.  Applies only to dynamic spectra.
+
+Start Time:  Start time of sub-window.  The default is start of the active data
+	window.
+
+End Time:  End time of sub-window.  The default is end of the active data
+	window.
+
+Bins:  A bin size for binning of the data. The default is 3.
+
+No Line:  If set, no straight line is subtracted from the input.
+
+No Hanning:  If set, then no hanning window is applied to the input.
+
+Not Per Hz:  If set, the output units are simply the square of the input units.

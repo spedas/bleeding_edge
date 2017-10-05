@@ -1,0 +1,20 @@
+project: THEMIS
+load_data: thm_ui_load_data_file, THEMIS: Load Ground and Probe Data
+load_data: thm_ui_part_getspec_options, THEMIS Derived Products
+menu: thm_ui_gen_overplot,Overview Plots, THEMIS Overview Plot...
+menu: thm_ui_slice2d, ,THEMIS Particle Distribution Slices...
+config: themis_fileconfig
+data_processing: spd_ui_superpo_options, , Superposed...
+data_processing: thm_ui_cotrans_options, THEMIS Coordinate Transform, DSL
+data_processing: thm_ui_cotrans_options, THEMIS Coordinate Transform, SSL
+data_processing: thm_ui_cotrans_options, THEMIS Coordinate Transform, SPG
+data_processing: thm_ui_cotrans_options, THEMIS Coordinate Transform, SEL
+data_processing: thm_ui_cotrans_options, THEMIS Coordinate Transform, SSE
+data_processing: thm_ui_cotrans_options, THEMIS Coordinate Transform, GSE
+data_processing: thm_ui_cotrans_options, THEMIS Coordinate Transform, GSM
+data_processing: thm_ui_cotrans_options, THEMIS Coordinate Transform, AGSM
+data_processing: thm_ui_cotrans_options, THEMIS Coordinate Transform, GEI
+data_processing: thm_ui_cotrans_options, THEMIS Coordinate Transform, GEO
+data_processing: thm_ui_cotrans_options, THEMIS Coordinate Transform, SM
+data_processing: thm_ui_cotrans_options, THEMIS Coordinate Transform, MAG
+about: about_themis.txt

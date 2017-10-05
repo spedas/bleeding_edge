@@ -1,0 +1,4 @@
+Wed Nov 22 15:05:26 1995  Jonathan Loran (FAST)  <jloran@aeolus.ssl.berkeley.edu>
+
+	* wind.c: Fixed reference from get_next_eb3d to get_next_elb3d
+

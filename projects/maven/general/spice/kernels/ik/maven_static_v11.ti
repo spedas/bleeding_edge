@@ -1,0 +1,599 @@
+KPL/IK
+
+MAVEN STATIC Instrument Kernel
+===============================================================================
+
+   This Instrument Kernel (IK) file contains parameters for MAVEN
+   STATIC instrument.
+
+
+Version and Date
+-------------------------------------------------------------------------------
+
+   Version 1.1 -- March 29, 2016 -- Boris Semenov, NAIF
+
+      Reduced FRONT and BACK FOV azimuthal extents by ~2.2 microradians
+      leaving gaps centred at +Y and -Y axes to make these FOVs 
+      usable with the SPICE GF and in-FOV check routines.
+
+   Version 1.0 -- August 13, 2015 -- David Mitchell, UCB-SSL;
+                                     Boris Semenov, NAIF
+
+      Added a note that front and back FOV Phi boundaries happen to fall
+      in the middle of sectors 3 and 11.
+
+      Removed the language describing reduced deflection angles at high 
+      energies.  This text was a carry over from the SWEA IK and needs to
+      be updated for STATIC, which can achieve full deflection to much
+      higher energies.
+
+   Version 0.2 -- August 3, 2015 -- Boris Semenov, NAIF
+
+      Changed ID from -202521 to -202520 in keywords in the "Instrument
+      Detector/Sensor Layout" section.
+
+      Corrected SECTOR_DIRECTIONS (swapped signs of Y elements to match
+      the diagram).
+
+      Corrected SWTSPOT FOV boundary vectors (removed first element on
+      each line.)
+
+      Changed "STATIC science frame" to just MAVEN_STATIC in the
+      comments as STATIC has only one frame.
+
+      Changed Phi extent angles on FRONT and BACK FOV diagrams to make
+      them consistent with FOV summary table and vectors in FOV
+      definition keywords.
+
+      Replaced non-printing characters with printable ASCII characters.
+
+      Spell-checked.
+
+   Version 0.1 -- July 31, 2015 -- Roberto Livi, MAVEN/STATIC Postdoc
+
+      Filled in the "Instrument Detector/Sensor Layout" and Instrument FOV
+      Definition(s)" sections.
+
+   Version 0.0 -- April 28, 2015 -- Roberto Livi, MAVEN/STATIC Postdoc
+
+      Initial version.
+
+
+References
+-------------------------------------------------------------------------------
+
+   1. Kernel Pool Required Reading
+
+   2. GETFOV, getfoc_c, cspice_getfov headers
+
+   3. MAVEN FK file, latest version
+
+   4. MAVEN SupraThermal And Thermal Ion Composition (STATIC) Instrument
+
+   5. <additional references, if any>
+
+
+Contact Information
+-------------------------------------------------------------------------------
+
+   Roberto Livi, MAVEN/STATIC Postdoc, 510-642-5865, rlivi@ssl.berkeley.edu
+
+
+Implementation Notes
+-------------------------------------------------------------------------------
+
+   This file is used by the SPICE system as follows: programs that make
+   use of this kernel must ``load'' the kernel, normally during program
+   initialization. The SPICE routine FURNSH loads a kernel file into
+   the pool as shown below.
+
+      CALL FURNSH ( 'frame_kernel_name; )    -- FORTRAN
+      furnsh_c ( "frame_kernel_name" );      -- C
+      cspice_furnsh, frame_kernel_name       -- IDL
+      cspice_furnsh( 'frame_kernel_name' )   -- MATLAB
+
+   Once the file has been loaded, the SPICE routine GETFOV (getfov_c in
+   C, cspice_getfov in IDL and MATLAB) can be used to retrieve FOV
+   parameters for a given instrument or structure.
+
+   This file was created and may be updated with a text editor or word
+   processor.
+
+
+Naming Conventions
+----------------------------------------------------------
+
+   All names referencing values in this IK file start with the
+   characters `INS' followed by the NAIF MAVEN ID number (-202)
+   followed by a NAIF three digit ID code for STATIC or one of
+   its detectors or components. This is the full list of names
+   and IDs described by this IK file:
+
+      MAVEN_STATIC                    -202520
+      MAVEN_STATIC_SWTSPOT            -202521
+      MAVEN_STATIC_FRONT              -202522
+      MAVEN_STATIC_BACK               -202523
+
+   The remainder of the keyword name is an underscore character
+   followed by the unique name of the data item. For example, the
+   -202521 boresight direction provided as a part of its FOV definition
+   is specified by:
+
+      INS-202521_BORESIGHT
+
+   The upper bound on the length of the name of any data item is 32
+   characters.
+
+   If the same item is included in more than one file, or if the same
+   item appears more than once within a single file, the latest value
+   supersedes any earlier values.
+
+
+Mounting Alignment
+--------------------------------------------------------
+
+   This section illustrates s/c, APP, and STATIC frames defined in [3].
+
+   The diagram below shows the spacecraft frame, MAVEN_SPACECRAFT, and
+   the Articulated Payload Platform (APP) frame, MAVEN_APP:
+
+
+      +Z s/c side (0.0/-155.0 APP position):
+      --------------------------------------
+
+                                      ^ +Yapp
+                                      |
+                                      |
+                         +Zapp     .__|__. APP
+                              <-------o _|
+                                      ^ +Xbp
+                                      |
+                                      |  +Xsc
+                           +Ybp       | ^
+             ._________.____  <-------o-|-----.._________._________.
+             |         |             .--|--.  ||         |         |>
+       MAG .-|         |     +Ysc   /   |   \ ||         |         |-. MAG
+          <  |         |        <-------o    |||         |         |  >
+           `-|         |            \       / ||         |         |-'
+            <|_________|_________|HGA'-----'  ||_________|_________|
+                                  `-----------'
+                                  .-'   |   `-.
+                               .-'      |      `-.
+                            .-'         @         `-.
+                         .-'             SWEA        `-.
+                  LPW .-'                               `-. LPW
+
+                                                 +Zsc, +Zpb, and +Xapp
+                                                  are out of the page.
+
+
+   This diagram shows the STATIC frame, MAVEN_STATIC. This frame is
+   defined as a fixed offset frame with respect to and is nominally
+   co-aligned with the APP frame:
+
+
+      +X APP side (0.0/-155.0 APP position):
+      --------------------------------------
+
+                                   Nadir FOV
+               +Ystatic                ._____.     .
+                        ^              \     /  .-' `.  Limb FOV
+                        |       .-------\   /.-'      `.
+                STATIC  |    .-'  .-----'               `_.
+                       -|-----.   |           IUVS      | |
+                <-------o |   |   |                     | |
+            +Zstatic   -------'   |                     | |
+                             `-.  `----  +Yapp   -------' |
+                                `---.-- ^ ---.------------
+                                    |   |    |   |       |--.
+                                    `-- | .  |   |       |  |
+                            +Zapp     _ | _| '   `_______.--'
+                                <-------o   /                 NGIMS
+                                     |_____|
+                                       | |
+                                       | |
+                                      ~ ~ ~
+
+                                        ^ +Xsc
+                                        |
+                                        |
+                            +Ysc        |
+                                <-------o
+                                               +Zsc, +Xapp, and +X static
+                                                   are out of the page.
+
+
+Instrument Description and Data Products
+---------------------------------------------------------
+
+   The SupraThermal And Thermal Ion Composition (STATIC) consists of a
+   toroidal "top hat" electrostatic analyzer with a 360 x 6 degrees
+   (360 x 90 including deflectors) field-of-view. This disk-shaped FOV
+   is swept out of the STATIC X-Y plane by alternately varying the
+   potentials on the upper and lower deflectors. There are a total of
+   16 deflection steps separated by ~6 degrees each. The deflection
+   angle also depends on the ratio of the deflector potential to the
+   analyzer potential. These potentials are controlled by a
+   programmable sweep table. There are three primary sweep tables, each
+   with an energy range that is defined by STATIC's operating science
+   mode:
+
+         1. Ram    (0.1 eV - 50  eV)
+         2. Conic  (0.1 eV - 500 eV)
+         3. Pickup (8 eV   - 30 keV)
+
+   Details of the FOV depend on the instrument's sweep table, which in
+   principle can be changed during the mission.  The values given above
+   are for the nominal sweep table.
+
+   In addition, STATIC is mounted on the Articulated Payload Platform
+   (APP), a 2 m boom which directs STATIC's field-of-view into the
+   RAM direction at periapsis. At higher altitudes, the APP orientation
+   is time shared between STATIC and the Imaging UltraViolet
+   Spectrometer (IUVS). On orbits when STATIC has priority, the APP is
+   oriented to optimize STATIC's ability to detect Martian
+   "pickup" ions in the solar wind.
+
+   STATIC's basic measurement cadence is 4 s, however data
+   limitations prevent the bulk of its 4-dimensional measurement array
+   (64-energy x 16-azimuth x 16-elevation distribution x 1024 masses)
+   from being downlinked. Instead the Particle and Fields Data
+   Processing Unit (PFDPU) builds a set of telemetry packets that
+   maintain 4 second resolution in some measurement dimensions, while
+   averaging larger dimensional arrays in time or over the measurement
+   array. Below is a list of typical data products:
+
+      1. Energy spectra            - 64Ex 2M       - 4 sec
+      2. Energy-Mass spectra       - 32E x 64M     - 4 sec
+      3. Energy-Deflection spectra - 32E x 16D     - 4 sec
+      4. Energy-SolidAngle spectra - 16E x 64D     - 4 sec
+      5. Energy-Mass-Deflector     - 32Ex32Mx 8D   - 16 sec,  Ram Mode
+      6. Energy-Mass-SolidAngle    - 16Ex16Mx64D   - 32 sec,  Conic Mode
+      7. Energy-Mass-SolidAngle    - 32Ex 8Mx64D   - 128 sec, Pickup Mode
+      8. Mass Histogram Array      - 1024 TOF bins - 4 to 256 sec
+
+
+   The mapping of the 3D distributions into the instrument's FOV is
+   shown in the following diagram:
+
+                                   ^ +Zstatic
+          Full deflected           |
+         360 x 90 deg FOV          |
+
+
+        (-Xstatic) (-Ystatic)  (+Xstatic) (+Ystatic)  (-Xstatic)
+
+   Phi = -180        -90           0         +90         +180
+
+          \/          \/          \/          \/          \/    Theta =
+
+            .--.--.--.--.--.--.--.-----.--.--.--.--.--.--.--. --- +45.000
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- +39.375
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- +33.750
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            .--.--.--.--.--.--.--.-----.--.--.--.--.--.--.--. --- +28.125
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- +22.500
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- +16.875
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- +11.250
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- + 5.625
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            '--'--'--'--'--'--'--'-o---'--'--'--'--'--'--'--' --- 0
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- - 5.625
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            .--.--.--.--.--.--.--.-----.--.--.--.--.--.--.--. --- -11.250
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- -16.875
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            .--.--.--.--.--.--.--.-----.--.--.--.--.--.--.--. --- -22.500
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- -28.125
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            .--.--.--.--.--.--.--.-----.--.--.--.--.--.--.--. --- -33.750
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- -39.375
+            |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+            '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- -45.000
+                      16  22.5-deg azimuth bins
+
+
+Instrument Detector/Sensor Layout (if applicable)
+----------------------------------------------------------
+
+   The frame used above to describe the STATIC FOV is the MAVEN_STATIC
+   frame, which is defined in the MAVEN Frames kernel [3]. Since STATIC
+   is mounted on the APP the frame's X-Y-Z axes will continuously shift
+   relative to the spacecraft body throughout the mission. STATIC has
+   16 anodes (numbered 0 to 15), each spanning 22.5 degrees in the X-Y
+   plane. The +X axis of this frame is centered on anode 7, and the
+   anode numbers increase in a right-handed sense.
+
+   This diagram illustrates STATIC sector layout:
+
+                      Phi=+90
+
+                         ^ +Ystatic
+                         |                        S# indicate the sector "#"
+                        V11                         position in the sensor
+                V12  ....|....  V10                       assembly.
+                  .'S4  S3   S2`.
+             V13.'S5     |     S1`. V9             V# indicate the sector "#"
+               .         |         .                     view direction.
+           V14. S6       |        S0. V8
+              .          |           .                 For example, for
+   Phi=180 V15.S7        o--------S15-V7-> +Xstatic    Sector "2" the view
+              .         / +Z         .      Phi=0    direction is the vector
+           V0 .S8      /          S14.V6             emanating from the
+               .      /             .               aperture center through
+             V1 .S9  S10        S13. V5             the point designated
+        <-'      `. /   S11  S12 .'                         by "V2".
+                 V2/ ......... ' V4
+                  /      V3
+                 V
+    View direction
+     of sector "2"    Phi=-90
+
+
+   With full deflection, each sector has a FOV of +/-45 degrees out of
+   the X-Y plane.
+
+   These keywords contains STATIC sector parameters:
+
+      \begindata
+
+      INS-202520_NUMBER_OF_SECTORS = ( 16,   1    )
+
+      INS-202520_SECTOR_SIZE       = ( 22.5, 90.0 )
+
+      INS-202520_FRAME             = 'MAVEN_STATIC'
+
+      INS-202520_SECTOR_DIRECTIONS = (
+
+         -0.923880    -0.382683      0.000000
+         -0.707107    -0.707107      0.000000
+         -0.382683    -0.923880      0.000000
+          0.000000    -1.000000      0.000000
+          0.382683    -0.923880      0.000000
+          0.707107    -0.707107      0.000000
+          0.923880    -0.382683      0.000000
+          1.000000     0.000000      0.000000
+          0.923880     0.382683      0.000000
+          0.707107     0.707107      0.000000
+          0.382683     0.923880      0.000000
+          0.000000     1.000000      0.000000
+         -0.382683     0.923880      0.000000
+         -0.707107     0.707107      0.000000
+         -0.923880     0.382683      0.000000
+         -1.000000     0.000000      0.000000
+
+                                     )
+
+      \begintext
+
+
+Instrument Pixel-to-3D Coordinate Mapping (if applicable)
+----------------------------------------------------------
+
+   The pixel to 3D-coordinate mapping is defined in the level 2
+   metadata files (4), since it is energy-dependent, and thus depends
+   on the sweep table loaded in the instrument. The phi angle mapping
+   of the anodes (in MAVEN_STATIC coordinates) is independent of the
+   sweep, but the deflection (theta) angles depend on energy.
+
+   This energy dependence implies that the look direction depend on
+   sweep table, so we do not define individual look angles in this
+   kernel, but instead define them in the level 2 metadata files. These
+   look angles will be defined in terms of instrument phi and theta, in
+   the MAVEN_STATIC coordinate frame.
+
+
+Instrument Detector/Sensor Parameters (if applicable)
+----------------------------------------------------------
+
+   All relative sensitivities are defined in the relevant level 2
+   metadata files.  Also, level 2 data files contain both raw counts
+   and calibrated differential energy fluxes, providing a consistency
+   check on the data and geometric factors.
+
+
+Instrument FOV Definition(s)
+----------------------------------------------------------
+
+   This section defines the following FOVs:
+
+      ID       SHAPE      FRAME                  SIZE1  SIZE2   BSIGHT
+      -------  --------   ---------------------  -----  -----   ------
+      -202521  POLYGON    MAVEN_STATIC_SWTSPOT    22.5   90.0     +X
+      -202522  POLYGON    MAVEN_STATIC_FRONT     180.0   90.0     +X
+      -202523  POLYGON    MAVEN_STATIC_BACK      180.0   90.0     -X
+
+   The FOVs are defined in this data block. The "FRONT" and "BACK" FOVs
+   each cover half of the nominal maximum field of view envelope, valid
+   for energies up to ~2 keV (reduced theta coverage for higher
+   energies), with "FRONT" covering the +Xstatic hemisphere, and "BACK"
+   covering the -Xstatic hemisphere. The "SWTSPOT" FOV covers the ram
+   direction during periapses.
+
+   This diagram illustrates these FOVs in the MAVEN_STATIC frame:
+
+      Sweet Spot FOV:
+      ---------------
+
+                     Front FOV                       Front FOV
+                     boresight                       boresight
+
+                           +Xstatic                        +Xstatic
+                          ^                              ^
+                          |               Theta=         |
+                          |0                -45          |0        +45
+                     _..--+--.._               .-------------------.
+                     '   V7    '               |,        |        .|
+                      '   |   '                | `.      |      .' |
+                       '  |  '                 |   `.    |    .'   |
+        Phi=            ' | '                  |     `.  |  .'     |
+        +11.25           '|'        -11.25     |       `.|.'       |
+         <----+-V11-------o--------V3-+-    ---+---------o---------+--->
+    +Ystatic              | +Zstatic            +Ystatic |            +Zstatic
+                          |                              |
+
+
+
+
+      Front FOV:
+      ----------
+                     Front FOV                       Front FOV
+                     boresight                       boresight
+
+                           +Xstatic                        +Xstatic
+                          ^                              ^
+                          |               Theta=         |
+                          |0                -45          |0        +45
+                     _..--+--.._               .-------------------.
+                  .'     V7      '.            |,        |        .|
+                .'  V8    |    V6  '.          | `.      |      .' |
+               / V9       |       V5 \         |   `.    |    .'   |
+        Phi=  . V10       |        V4 .        |     `.  |  .'     |
+          +90 |           |           |-90     |       `.|.'       |
+         <----+-V11-------o--------V3-+-    ---+---------o---------+--->
+    +Ystatic              | +Zstatic            +Ystatic |            +Zstatic
+                          |                              |
+
+
+      Back FOV:
+      ---------
+                           +Xstatic                       +Xstatic
+                          ^                              ^
+                          |                              |
+        Phi=              .                              .
+           +90            |         -90                  |
+         <----+-V11-------o--------V3-+-    ---+---------o---------+--->
+    +Ystatic  |           | +Zstat.   |        | +Ystat.'|`.       |  +Zstatic
+              ' V12       |        V2 '        |     .'  |  `.     |
+               \ V13      |      V1  /         |   .'    |    `.   |
+                '. V14    |    V0  .'          | .'      |      `. |
+                  '.     V15   _ .'            |'        |        `|
+                      ''--+--''                `-------------------'
+                      180 |                  -45         |0        +45
+                          V               Theta=         V
+
+                     Back FOV                        Back FOV
+                     boresight                       boresight
+
+
+   Note that the Phi boundaries of the front and back FOVs are not 
+   lined up with sector boundaries but fall in the middle of sectors 
+   3 and 11.
+
+   Also note that to keep the front and back FOV extents less than
+   180 degrees to make these FOVs usable with the SPICE GF and in-FOV 
+   check routines, both FOVs are defined to not reach the +Y and -Y axes
+   leaving small, ~2.2 microradian gaps around centered at these axes.  
+
+   \begindata
+
+      INS-202521_FOV_SHAPE    = 'POLYGON'
+      INS-202521_FOV_FRAME    = 'MAVEN_STATIC'
+      INS-202521_BORESIGHT    = ( 1.0, 0.0, 0.0 )
+      INS-202521_FOV_BOUNDARY = (
+
+         0.693520      0.137950     0.707107
+         0.707107      0.000000     0.707107
+         0.693520     -0.137950     0.707107
+         0.693520     -0.137950    -0.707107
+         0.707107      0.000000    -0.707107
+         0.693520      0.137950    -0.707107
+
+                                )
+
+
+      INS-202522_FOV_SHAPE    = 'POLYGON'
+      INS-202522_FOV_FRAME    = 'MAVEN_STATIC'
+      INS-202522_BORESIGHT    = ( 1.0, 0.0, 0.0 )
+      INS-202522_FOV_BOUNDARY = (
+
+         0.0000011    0.707107     0.707107
+         0.147016     0.691655     0.707107
+         0.287606     0.645974     0.707107
+         0.415627     0.572061     0.707107
+         0.525483     0.473147     0.707107
+         0.612372     0.353553     0.707107
+         0.672499     0.218508     0.707107
+         0.703233     0.0739128    0.707107
+         0.703233    -0.0739128    0.707107
+         0.672499    -0.218508     0.707107
+         0.612372    -0.353553     0.707107
+         0.525483    -0.473147     0.707107
+         0.415627    -0.572061     0.707107
+         0.287606    -0.645974     0.707107
+         0.147016    -0.691655     0.707107
+         0.0000011   -0.707107     0.707107
+         0.0000011   -0.707107    -0.707107
+         0.147016    -0.691655    -0.707107
+         0.287606    -0.645974    -0.707107
+         0.415627    -0.572061    -0.707107
+         0.525483    -0.473147    -0.707107
+         0.612372    -0.353553    -0.707107
+         0.672499    -0.218508    -0.707107
+         0.703233    -0.0739128   -0.707107
+         0.703233     0.0739128   -0.707107
+         0.672499     0.218508    -0.707107
+         0.612372     0.353553    -0.707107
+         0.525483     0.473147    -0.707107
+         0.415627     0.572061    -0.707107
+         0.287606     0.645974    -0.707107
+         0.147016     0.691655    -0.707107
+         0.0000011    0.707107    -0.707107
+
+                     )
+
+
+      INS-202523_FOV_SHAPE    = 'POLYGON'
+      INS-202523_FOV_FRAME    = 'MAVEN_STATIC'
+      INS-202523_BORESIGHT    = ( -1.0, 0.0, 0.0 )
+      INS-202523_FOV_BOUNDARY = (
+
+        -0.0000011   -0.707107     0.707107
+        -0.147016    -0.691655     0.707107
+        -0.287606    -0.645974     0.707107
+        -0.415627    -0.572061     0.707107
+        -0.525483    -0.473147     0.707107
+        -0.612372    -0.353553     0.707107
+        -0.672499    -0.218508     0.707107
+        -0.703233    -0.0739128    0.707107
+        -0.703233     0.0739128    0.707107
+        -0.672499     0.218508     0.707107
+        -0.612372     0.353553     0.707107
+        -0.525483     0.473147     0.707107
+        -0.415627     0.572061     0.707107
+        -0.287606     0.645974     0.707107
+        -0.147016     0.691655     0.707107
+        -0.0000011    0.707107     0.707107
+        -0.0000011    0.707107    -0.707107
+        -0.147016     0.691655    -0.707107
+        -0.287606     0.645974    -0.707107
+        -0.415627     0.572061    -0.707107
+        -0.525483     0.473147    -0.707107
+        -0.612372     0.353553    -0.707107
+        -0.672499     0.218508    -0.707107
+        -0.703233     0.0739128   -0.707107
+        -0.703233    -0.0739128   -0.707107
+        -0.672499    -0.218508    -0.707107
+        -0.612372    -0.353553    -0.707107
+        -0.525483    -0.473147    -0.707107
+        -0.415627    -0.572061    -0.707107
+        -0.287606    -0.645974    -0.707107
+        -0.147016    -0.691655    -0.707107
+        -0.0000011   -0.707107    -0.707107
+
+                     )
+
+      \begintext
+
+End of the IK file.
+

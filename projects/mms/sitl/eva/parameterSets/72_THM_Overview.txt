@@ -1,0 +1,14 @@
+
+;th*_fgs_m
+th*_fgs_gsm
+th*_peir_velocity_gsm
+th*_peir_density
+th*_peir_avgtemp
+th*_peer_avgtemp
+th*_psif_en_eflux_et_omni
+th*_peir_en_eflux
+th*_psef_en_eflux_et_omni
+th*_peer_en_eflux
+th*_fb_edc12
+th*_fb_edc34
+th*_fb_scm1

@@ -1,0 +1,52 @@
+The WIND program was intended as a debugging tool for the wind_lib library of
+subroutines.  However, it can be used to create simple ascii files of 
+decomutated data.  It accepts only a few simple commands:
+
+
+>mastfile MASTFILENAME
+MASTFILENAME should be the name of the master file that gives the location
+of all 3dp data.  This file is created by the program "3dpfile".
+Default is "mastfile"
+
+>outputdir DIRNAME/  
+Defines "DIRNAME/" to be the string that is prepended to all output files
+created by the WIND program.
+Default is "" (empty; current directory).
+
+>begintime YY-MM-DD/HH:MM:SS
+Defines the starting time of interest.  trailing zeros are not neccesary.
+Default is the last (most recent) data file in 
+
+>endtime YY-MM-DD/HH:MM:SS
+Defines the endtime.
+
+>deltat  NUM_HOURS
+Alternative to endtime.  specifies NUM_HOURS hours of data to be loaded.
+
+>print
+Display list of print options.
+
+>print  XXXX
+Sets a printing flag so that data of format XXXX is dumped into the file
+with the name "DIRNAME/XXXX".  This command should be run prior to the load 
+command.
+
+>load
+Loads the specified time range of data into memory, printing the data selected
+with the print command as it loads.
+
+>get
+Display list of data types to get.
+
+>get XXXX
+Gets the data option XXXX.  This routine is intended only for debugging 
+the sdt interface routines.  This command should be run after the load command.
+
+>file COMMANDFILE
+COMMANDFILE is the name of a file that contains any of the previous commands.
+
+>exit
+Exit the program.
+
+
+

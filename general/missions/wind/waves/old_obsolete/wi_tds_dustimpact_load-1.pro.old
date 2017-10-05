@@ -1,0 +1,1035 @@
+;+
+;*****************************************************************************************
+;
+;  PROCEDURE:   wi_tds_dustimpact_load.pro
+;  PURPOSE  :   
+;
+;  CALLED BY:   
+;               
+;
+;  INCLUDES:
+;               
+;
+;  CALLS:
+;               
+;
+;  REQUIRES:    
+;               
+;
+;  INPUT:
+;               
+;
+;  EXAMPLES:    
+;               
+;
+;  KEYWORDS:    
+;               
+;
+;   CHANGED:  1)  Continued to write routine
+;                                                                   [08/24/2016   v1.0.0]
+;
+;   NOTES:      
+;               
+;
+;  REFERENCES:  
+;               
+;
+;   CREATED:  08/23/2016
+;   CREATED BY:  Lynn B. Wilson III
+;    LAST MODIFIED:  08/24/2016   v1.0.0
+;    MODIFIED BY: Lynn B. Wilson III
+;
+;*****************************************************************************************
+;-
+
+PRO wi_tds_dustimpact_load,FILES=files,TRANGE=trange,VERBOSE=verbose,              $
+                           DOWNLOADONLY=downloadonly,VARFORMAT=varformat,          $
+                           DATATYPE=datatype, $
+                           ADDMASTER=addmaster,TPLOTNAMES=tn,SOURCE_OPTIONS=source
+
+ex_start       = SYSTIME(1)
+;;----------------------------------------------------------------------------------------
+;;  Constants
+;;----------------------------------------------------------------------------------------
+f              = !VALUES.F_NAN
+d              = !VALUES.D_NAN
+slash          = get_os_slash()                              ;;  '/' for Unix, '\' for Windows
+R_Ea__m        = 6.3781366d06                                ;;  Earth's Mean Equatorial Radius [m, 2015 AA values]
+R_E            = R_Ea__m[0]*1d-3                             ;;  m --> km
+tdate0         = '1994-11-01'
+t_current      = time_string(ex_start[0],PREC=3)
+tdate1         = STRMID(t_current[0],0L,10L)                 ;;  Current date
+yr_st_en       = STRMID([tdate0[0],tdate1[0]],0L,4L)
+start_of_day   = '00:00:00.000'
+end___of_day   = '23:59:59.999'
+t              = [tdate0[0]+'/'+start_of_day[0],tdate1[0]+'/'+end___of_day[0]]
+trange         = time_double(t)
+;;  Define dummy angle bin arrays
+nang           = 13L                                         ;;  30 deg angle bins
+dang           = 36d1/(nang[0] - 1L)
+dumb_angs      = DINDGEN(nang[0])*dang[0]
+hist_parms     = [dang[0],0d0,36d1]
+;;  Define all dates from start to end
+all_tdates_gd  = fill_tdates_btwn_start_end(tdate0[0],tdate1[0])
+all_unix_gd    = time_double(all_tdates_gd+'/'+start_of_day[0])
+n_all_td       = N_ELEMENTS(all_unix_gd)
+;;  Define CDF file name formats
+fname_format   = 'wi_l3-dustimpact_waves_YYYYMMDD_v???.cdf'
+;;  Define SPDF base data directory
+http_slash     = '/'
+spdf_base_dir  = 'http://spdf.gsfc.nasa.gov/pub/data/'
+;;  Define SPDF path format to data [*** this will change in the future ***]
+pathformat     = spdf_base_dir[0]+'wind'+http_slash[0]+'waves'+http_slash[0]+$
+                 'wav_dust'+http_slash[0]+'YYYY'+http_slash[0]+fname_format[0]
+;;  Define SPDF Wind data directory
+spdf_wind_dir  = spdf_base_dir[0]+'wind'+http_slash[0]
+;;  Define SPDF Wind/WAVES data directory
+spdf_wave_dir  = spdf_wind_dir[0]+'waves'+http_slash[0]
+;;  Define SPDF dust impact data directory [*** this will change in the future ***]
+spdf_dust_dir  = spdf_wind_dir[0]+'wav_dust'+http_slash[0]
+;;----------------------------------------------------------------------------------------
+;;  Stuff for TPLOT
+;;----------------------------------------------------------------------------------------
+sc             = 'Wind'
+scpref         = sc[0]+'_'
+coord_gse      = 'gse'
+coord_gsm      = 'gsm'
+coord_mag      = 'mag'
+nwdth          = 10L
+all_types      = ['A','B','C','D','M']
+val_sm_labs    = ['vals','smth']
+loc_labs       = ['Clear','Magnetosph','Moon','Both']
+typ_labs       = 'Type '+all_types
+norm_suff      = '_normalized'
+typ_cols       = LINDGEN(N_ELEMENTS(all_types))*(250L - 30L)/(N_ELEMENTS(all_types) - 1L) + 30L
+loc_cols       = LINDGEN(N_ELEMENTS(loc_labs))*(250L - 30L)/(N_ELEMENTS(loc_labs) - 1L) + 30L
+def__lim       = {YSTYLE:1,PANEL_SIZE:2.,XMINOR:5,XTICKLEN:0.04,YTICKLEN:0.01}
+def_dlim       = {LOG:0,SPEC:0,COLORS:50L,LABELS:'1',LABFLAG:-1}
+;;  Define TPLOT handles
+ssn_tpn        = 'daily_sunspot_number'
+f107_tpn       = 'daily_solar_F107_flux'
+;;    Channel 1
+xcnts_tpn      = 'Type_All_Ex_dust_cnts_per_day'
+ABCDM_x_tpn    = 'Types_ABCDM_Ex_dust_cnts_per_day_'+val_sm_labs
+ClMSLWBT_x_tpn = 'Ex_dust_cnts_per_day_by_location_'+val_sm_labs
+cmllm_typ_xtpn = STRARR(5L,2L)
+FOR ii=0L, 1L DO cmllm_typ_xtpn[*,ii] = 'Ex_dust_cnts_per_day_by_location_Type_'+all_types+'_'+val_sm_labs[ii]
+Expk_Avg_tpn   = 'Ex_All_daily_avg_pk_values'
+Expk_ABCDM_tpn = 'Ex_daily_avg_pk_values_by_Type'
+x_iant_ang_tpn = 'Ex_closest_impact_antenna_angle'
+xian_ABCDM_tpn = x_iant_ang_tpn[0]+'_Type_'+all_types
+;;    Channel 2
+ycnts_tpn      = 'Type_All_Ey_dust_cnts_per_day'
+ABCDM_y_tpn    = 'Types_ABCDM_Ey_dust_cnts_per_day_'+val_sm_labs
+ClMSLWBT_y_tpn = 'Ey_dust_cnts_per_day_by_location_'+val_sm_labs
+cmllm_typ_ytpn = STRARR(5L,2L)
+FOR ii=0L, 1L DO cmllm_typ_ytpn[*,ii] = 'Ey_dust_cnts_per_day_by_location_Type_'+all_types+'_'+val_sm_labs[ii]
+Eypk_Avg_tpn   = 'Ey_All_daily_avg_pk_values'
+Eypk_ABCDM_tpn = 'Ey_daily_avg_pk_values_by_Type'
+y_iant_ang_tpn = 'Ey_closest_impact_antenna_angle'
+yian_ABCDM_tpn = y_iant_ang_tpn[0]+'_Type_'+all_types
+;;    All angles
+sun_ang_cw_tpn = 'PosEx_abs_cw_ang_from_sc2sun_line'
+thetaAx_cw_tpn = 'PosEx_abs_cw_ang_from_Xgse_line'
+thetaAy_cw_tpn = 'PosEy_abs_cw_ang_from_Xgse_line'
+;;  Define TPLOT YTITLEs
+ssn_yttl       = 'Daily SSN'
+f107_yttl      = 'Daily F10.7'
+xcnts_yttl     = 'Dust Ex [Cnts/day]'
+ycnts_yttl     = 'Dust Ey [Cnts/day]'
+xncnts_yttl    = 'Dust Ex [Norm. #/day]'
+yncnts_yttl    = 'Dust Ey [Norm. #/day]'
+ABCDM_x_yttl   = [xcnts_yttl[0],'Dust Ex [Sm. Cnts/day]']
+ABCDM_y_yttl   = [ycnts_yttl[0],'Dust Ey [Sm. Cnts/day]']
+ABCDMnx_yttl   = [xncnts_yttl[0],'Dust Ex [Sm. Norm. #/day]']
+ABCDMny_yttl   = [yncnts_yttl[0],'Dust Ey [Sm. Norm. #/day]']
+angsp_x_yttl   = '|Ex Imp. Ang| [deg]'
+angsp_y_yttl   = '|Ey Imp. Ang| [deg]'
+Expk_Avg_yttl  = 'Daily Avg. |Ex|_pk [mV]'
+Eypk_Avg_yttl  = 'Daily Avg. |Ex|_pk [mV]'
+;;  Define TPLOT YSUBTITLEs
+ssn_ysub       = '[# per day]'
+f107_ysub      = '[solar flux units]'
+xcnts_ysub     = '[All Types]'
+ycnts_ysub     = xcnts_ysub[0]
+ABCDM_x_ysub   = '[Sorted by Type]'
+ABCDM_y_ysub   = ABCDM_x_ysub[0]
+ClMSLWBT_ysub  = '[Sorted by Loc.]'
+;;  Define TPLOT LABELS and COLORS
+ssn_labs       = val_sm_labs
+ssn_cols       = [50,250]
+f107_labs      = ssn_labs
+f107_cols      = ssn_cols
+xcnts_labs     = ssn_labs
+xcnts_cols     = ssn_cols
+ycnts_labs     = ssn_labs
+ycnts_cols     = ssn_cols
+ABCDM_x_labs   = typ_labs
+ABCDM_x_cols   = typ_cols
+ABCDM_y_labs   = ABCDM_x_labs
+ABCDM_y_cols   = ABCDM_x_cols
+;;  Define TPLOT YRANGEs
+yran_ssn_all   = [0d0,36d1]
+yran_f107_all  = [0d0,40d1]
+yran_ang_all   = [0d0,36d1]
+yran_xy_all    = [1d0,6d1]
+yran_smABCDM   = [1d0,25d0]
+yran_a_ABCDM   = [1d0,4d1]
+yran_Epk_all   = [1d1,1d4]
+yran_xyn_all   = [0d0,1d0]
+;;  Define TPLOT ZRANGEs
+zran_ang_all   = [0d0,3d0]
+;;----------------------------------------------------------------------------------------
+;;  Initialize Wind formats
+;;----------------------------------------------------------------------------------------
+;;  Initialize Wind structure
+wind_init
+;;  Alter remote data directory
+old_remote_dir = !wind.REMOTE_DATA_DIR
+new_remote_dir = spdf_dust_dir[0]
+!wind.REMOTE_DATA_DIR = new_remote_dir[0]
+IF NOT KEYWORD_SET(source) THEN source = !wind
+
+;;  Check TDATE and TRANGE
+time_ra        = get_valid_trange(TDATE=tdate,TRANGE=trange)
+;;  Define dates and time ranges
+tran           = time_ra.UNIX_TRANGE
+tdates         = time_ra.DATE_TRANGE        ;;  'YYYY-MM-DD'  e.g., '2009-07-13'
+tdate          = tdates[0]                  ;;  Redefine TDATE on output
+
+
+;;  Define file paths/HTMLs
+relpathnames   = file_dailynames(FILE_FORMAT=pathformat,TRANGE=tran,ADDMASTER=addmaster)
+;;  Get files
+files          = file_retrieve(relpathnames,_EXTRA=source,/LAST_VERSION)
+;;  Check if user wants only to get the data files
+IF KEYWORD_SET(downloadonly) THEN RETURN
+;;----------------------------------------------------------------------------------------
+;;  Read in all CDF data and create arrays of output results
+;;----------------------------------------------------------------------------------------
+n_cdf          = N_ELEMENTS(files)
+FOR j=0L, n_cdf[0] - 1L DO BEGIN
+  IF (SIZE(cdfvars,/TYPE) EQ 8) THEN HEAP_FREE,cdfvars,/PTR    ;;  Clean up
+  fname   = files[j]
+  cdfvars = cdf_load_vars(fname[0],VARFORMAT='*',/CONVERT_INT1_TO_INT2)
+  IF (SIZE(cdfvars,/TYPE) NE 8) THEN CONTINUE
+  var_strucs = cdfvars.VARS
+  test    = (N_ELEMENTS(tds_epoch) LT 1) OR (N_ELEMENTS(tds_evnnm) LT 1)
+  IF (test[0]) THEN BEGIN
+    ;;  1st time through --> initialize variables
+    tds_epoch      =  (*var_strucs[0].DATAPTR)
+    tds_evnnm      =  (*var_strucs[1].DATAPTR)
+    tds_durat      =  (*var_strucs[2].DATAPTR)
+    Wind_spin_rate =  (*var_strucs[3].DATAPTR)
+    Wind_spin_peri =  (*var_strucs[4].DATAPTR)
+    Wind_loc__flag =  (*var_strucs[5].DATAPTR)
+    x_ant_cut_test =  (*var_strucs[6].DATAPTR)
+    Ex__pkamp      =  (*var_strucs[7].DATAPTR)
+    Ex_ccvals      =  (*var_strucs[8].DATAPTR)
+    Ex_ccthsh      =  (*var_strucs[9].DATAPTR)
+    Ex_mnthsh      = (*var_strucs[10].DATAPTR)
+    Ex_impant      = (*var_strucs[11].DATAPTR)
+    Ex_mortyp      = (*var_strucs[12].DATAPTR)
+    Ex_imp_ang_cw  = (*var_strucs[13].DATAPTR)
+    Ey__pkamp      = (*var_strucs[14].DATAPTR)
+    Ey_ccvals      = (*var_strucs[15].DATAPTR)
+    Ey_ccthsh      = (*var_strucs[16].DATAPTR)
+    Ey_mnthsh      = (*var_strucs[17].DATAPTR)
+    Ey_impant      = (*var_strucs[18].DATAPTR)
+    Ey_mortyp      = (*var_strucs[19].DATAPTR)
+    Ey_imp_ang_cw  = (*var_strucs[20].DATAPTR)
+    sun_angle_cw   = (*var_strucs[21].DATAPTR)
+    theta_Ax_cw    = (*var_strucs[22].DATAPTR)
+    theta_p_cw     = (*var_strucs[23].DATAPTR)
+    del_thetaAx_cw = (*var_strucs[24].DATAPTR)
+    del_imp_ang_cw = (*var_strucs[25].DATAPTR)
+    n_events       = N_ELEMENTS((*var_strucs[0].DATAPTR))
+    n_tds_tot      = REPLICATE(((*var_strucs[26].DATAPTR))[0],n_events[0])
+  ENDIF ELSE BEGIN
+    ;;  higher iterations --> add to variable arrays
+    tds_epoch      = [tds_epoch     , (*var_strucs[0].DATAPTR)]
+    tds_evnnm      = [tds_evnnm     , (*var_strucs[1].DATAPTR)]
+    tds_durat      = [tds_durat     , (*var_strucs[2].DATAPTR)]
+    Wind_spin_rate = [Wind_spin_rate, (*var_strucs[3].DATAPTR)]
+    Wind_spin_peri = [Wind_spin_peri, (*var_strucs[4].DATAPTR)]
+    Wind_loc__flag = [Wind_loc__flag, (*var_strucs[5].DATAPTR)]
+    x_ant_cut_test = [x_ant_cut_test, (*var_strucs[6].DATAPTR)]
+    Ex__pkamp      = [Ex__pkamp     , (*var_strucs[7].DATAPTR)]
+    Ex_ccvals      = [Ex_ccvals     , (*var_strucs[8].DATAPTR)]
+    Ex_ccthsh      = [Ex_ccthsh     , (*var_strucs[9].DATAPTR)]
+    Ex_mnthsh      = [Ex_mnthsh     ,(*var_strucs[10].DATAPTR)]
+    Ex_impant      = [Ex_impant     ,(*var_strucs[11].DATAPTR)]
+    Ex_mortyp      = [Ex_mortyp     ,(*var_strucs[12].DATAPTR)]
+    Ex_imp_ang_cw  = [Ex_imp_ang_cw ,(*var_strucs[13].DATAPTR)]
+    Ey__pkamp      = [Ey__pkamp     ,(*var_strucs[14].DATAPTR)]
+    Ey_ccvals      = [Ey_ccvals     ,(*var_strucs[15].DATAPTR)]
+    Ey_ccthsh      = [Ey_ccthsh     ,(*var_strucs[16].DATAPTR)]
+    Ey_mnthsh      = [Ey_mnthsh     ,(*var_strucs[17].DATAPTR)]
+    Ey_impant      = [Ey_impant     ,(*var_strucs[18].DATAPTR)]
+    Ey_mortyp      = [Ey_mortyp     ,(*var_strucs[19].DATAPTR)]
+    Ey_imp_ang_cw  = [Ey_imp_ang_cw ,(*var_strucs[20].DATAPTR)]
+    sun_angle_cw   = [sun_angle_cw  ,(*var_strucs[21].DATAPTR)]
+    theta_Ax_cw    = [theta_Ax_cw   ,(*var_strucs[22].DATAPTR)]
+    theta_p_cw     = [theta_p_cw    ,(*var_strucs[23].DATAPTR)]
+    del_thetaAx_cw = [del_thetaAx_cw,(*var_strucs[24].DATAPTR)]
+    del_imp_ang_cw = [del_imp_ang_cw,(*var_strucs[25].DATAPTR)]
+    n_events       = N_ELEMENTS((*var_strucs[0].DATAPTR))
+    temp           = REPLICATE(((*var_strucs[26].DATAPTR))[0],n_events[0])
+    n_tds_tot      = [n_tds_tot,                          temp]
+  ENDELSE
+ENDFOR
+;;  Clean up last copy of cdfvars
+HEAP_FREE,cdfvars,/PTR
+dumb           = TEMPORARY(cdfvars)
+;;----------------------------------------------------------------------------------------
+;;  Convert TT2000 Epoch times to YYYY-MM-DD/hh:mm:ss.xxxxxxxxx
+;;----------------------------------------------------------------------------------------
+CDF_TT2000,tds_epoch,year,mons,days,hour,mins,secs,mils,mics,nans,/BREAKDOWN_EPOCH
+
+year_str       = STRING(year,FORMAT='(I4.4)')
+mons_str       = STRING(mons,FORMAT='(I2.2)')
+days_str       = STRING(days,FORMAT='(I2.2)')
+hour_str       = STRING(hour,FORMAT='(I2.2)')
+mins_str       = STRING(mins,FORMAT='(I2.2)')
+secs_str       = STRING(secs,FORMAT='(I2.2)')
+mils_str       = STRING(mils,FORMAT='(I3.3)')
+ymdb_tds       = year_str+'-'+mons_str+'-'+days_str+'/'+hour_str+':'+mins_str+':'+secs_str+'.'+mils_str
+unix_tds       = time_double(ymdb_tds)
+;;----------------------------------------------------------------------------------------
+;;  Remove "bad"/empty values
+;;----------------------------------------------------------------------------------------
+testx          = (ABS(Ex__pkamp) LT 2d4) AND (ABS(Ex_imp_ang_cw) LE 36d1)
+testy          = (ABS(Ey__pkamp) LT 2d4) AND (ABS(Ey_imp_ang_cw) LE 36d1)
+testa          = (ABS(sun_angle_cw) LE 36d1) AND (ABS(theta_Ax_cw) LE 36d1) AND $
+                 (ABS(theta_p_cw) LE 36d1)
+testu          = (STRMID(ymdb_tds,0L,4L) NE '9999')
+goodx          = WHERE(testx,gdx,COMPLEMENT=badx,NCOMPLEMENT=bdx)
+goody          = WHERE(testy,gdy,COMPLEMENT=bady,NCOMPLEMENT=bdy)
+gooda          = WHERE(testa,gda,COMPLEMENT=bada,NCOMPLEMENT=bda)
+goodu          = WHERE(testu,gdu,COMPLEMENT=badu,NCOMPLEMENT=bdu)
+
+;;  Check time stamps
+IF (bdu[0] GT 0) THEN BEGIN
+  ymdb_tds[badu]       = ''
+  unix_tds[badu]       = !VALUES.D_NAN
+ENDIF
+
+;;  Check Channel 1
+IF (bdx[0] GT 0) THEN BEGIN
+  Ex__pkamp[badx]      = !VALUES.D_NAN
+  Ex_ccvals[badx]      = !VALUES.D_NAN
+  Ex_ccthsh[badx]      = !VALUES.D_NAN
+  Ex_mnthsh[badx]      = !VALUES.D_NAN
+  Ex_mortyp[badx]      = ''
+  Ex_imp_ang_cw[badx]  = !VALUES.D_NAN
+ENDIF
+
+;;  Check Channel 2
+IF (bdy[0] GT 0) THEN BEGIN
+  Ey__pkamp[bady]      = !VALUES.D_NAN
+  Ey_ccvals[bady]      = !VALUES.D_NAN
+  Ey_ccthsh[bady]      = !VALUES.D_NAN
+  Ey_mnthsh[bady]      = !VALUES.D_NAN
+  Ey_mortyp[bady]      = ''
+  Ey_imp_ang_cw[bady]  = !VALUES.D_NAN
+ENDIF
+
+;;  Check Channel independent variables
+IF (bda[0] GT 0) THEN BEGIN
+  sun_angle_cw[bada]   = !VALUES.D_NAN
+  theta_Ax_cw[bada]    = !VALUES.D_NAN
+  theta_p_cw[bada]     = !VALUES.D_NAN
+  del_thetaAx_cw[bada] = !VALUES.D_NAN
+  del_imp_ang_cw[bada] = !VALUES.D_NAN
+ENDIF
+;;----------------------------------------------------------------------------------------
+;;  Define output structure
+;;----------------------------------------------------------------------------------------
+pos_neg_s      = ['+','-']
+pos_neg_w      = ['pos','neg']
+vec_str        = ['x','y','z']
+channels       = 'E'+vec_str
+angs_midf      = ['SCS','E_S']
+angs_suff      = '_ANGLE'
+delt_suff      = '_DELTA'
+ipat_pref      = 'E'+vec_str[0:1]+'_IMPANT_'
+exey_pref      = 'EXEY_'+vec_str[0:1]
+exey_suffs     = '_'+['PEAK_AMPLITUDE','CC_VALUE','CC_THRESHOLD','MIN_THRESHOLD',$
+                      'IMPACTANTENNA','MORPHOLOGICALTYPE']
+exey_x_tags    = exey_pref[0]+exey_suffs
+exey_y_tags    = exey_pref[1]+exey_suffs
+ang_xy_tags    = ['POS_AX_'+angs_midf,'POS_AY_'+angs_midf[1],ipat_pref+angs_midf[1],$
+                  ['POS_AX_','IMPANT_']+angs_midf[1]+delt_suff[0]]+angs_suff[0]
+tags           = ['CDF_EPOCH','TDS_SCET','TDS_UNIX','TDS_EVENT_NUMBER',              $
+                  'TDS_EVENT_DURATION',exey_x_tags,                                  $
+                  exey_y_tags,ang_xy_tags,'FLAGS','WIND_SPIN_RATE','WIND_SPIN_PERI', $
+                  'TEST_CUT','N_TDS_PER_DAY']
+dust_struct    = CREATE_STRUCT(tags,tds_epoch,ymdb_tds,unix_tds,tds_evnnm,tds_durat,  $
+                               Ex__pkamp,Ex_ccvals,Ex_ccthsh,Ex_mnthsh,Ex_impant,     $
+                               Ex_mortyp,Ey__pkamp,Ey_ccvals,Ey_ccthsh,Ey_mnthsh,     $
+                               Ey_impant,Ey_mortyp,sun_angle_cw,theta_Ax_cw,          $
+                               theta_p_cw,Ex_imp_ang_cw,Ey_imp_ang_cw,del_thetaAx_cw, $
+                               del_imp_ang_cw,Wind_loc__flag,Wind_spin_rate,          $
+                               Wind_spin_peri,x_ant_cut_test,n_tds_tot)
+;;----------------------------------------------------------------------------------------
+;;  Send all data to TPLOT
+;;----------------------------------------------------------------------------------------
+testu          = FINITE(unix_tds) AND (unix_tds GE 0)
+goodu          = WHERE(testu,gdu,COMPLEMENT=badu,NCOMPLEMENT=bdu)
+IF (gdu GT 0) THEN BEGIN
+  t_offset  = MIN(ABS(unix_tds[goodu]),/NAN)
+  t_allimp  = ABS(unix_tds[goodu]) - t_offset[0]
+  sp        = SORT(t_allimp)
+  t_allimp  = TEMPORARY(t_allimp[sp])
+  gindu     = goodu[sp]
+  Ex_allimp = Ex__pkamp[gindu]
+  Ey_allimp = Ey__pkamp[gindu]
+  struc     = {X:t_allimp,Y:[[Ex_allimp],[Ey_allimp]],TSHIFT:t_offset[0]}
+  data_att  = {EVENT_NUMS:tds_evnnm[gindu],SCETS:ymdb_tds[gindu],                      $
+               EX_IMP_ANT_ANG:Ex_imp_ang_cw[gindu],EY_IMP_ANT_ANG:Ey_imp_ang_cw[gindu],$
+               EVENT_DUR:tds_durat[gindu],COORD:'waves',UNITS:'mV'}
+  dlim0     = def_dlim
+  str_element,dlim0,'DATA_ATT',data_att,/ADD_REPLACE
+  store_data,'All_Ex_Ey_pk_amps_hk_info',DATA=struc,DLIMIT=dlim0,LIMIT=def__lim
+  options,'All_Ex_Ey_pk_amps_hk_info',LABELS=['x','y'],COLORS=[250,50],/DEF
+  ;;  Clean up
+  dlim0 = 0 & data_att = 0 & struc = 0 & t_allimp = 0 & Ex_allimp = 0 & Ey_allimp = 0
+ENDIF
+;;  Do we want daily averages or all values???
+
+;;----------------------------------------------------------------------------------------
+;;  Create daily values/averages
+;;----------------------------------------------------------------------------------------
+tds_tra0       = minmax(unix_tds) + [0d0,1d0]*864d2
+sod_tra        = tds_tra0 MOD 864d2
+st_d_tra       = tds_tra0 - sod_tra
+all_tdates     = STRMID(ymdb_tds,0L,10L)
+;;  Define dummy arrays
+dumb_nd00      = REPLICATE(d,n_all_td[0])
+dumb_nd40      = REPLICATE(d,n_all_td[0],4L)
+dumb_nd50      = REPLICATE(d,n_all_td[0],5L)
+dumb_nd45      = REPLICATE(d,n_all_td[0],4L,5L)
+dumb_nda0      = REPLICATE(d,n_all_td[0],nang[0])
+dumb_nda5      = REPLICATE(d,n_all_td[0],nang[0],5L)
+angs_2dar      = REPLICATE(1d0,n_all_td[0]) # dumb_angs
+;;  Define dummy/fill variables for all counts
+xcount_per_day = dumb_nd00             ;;  Counts/day for channel 1 [All types]
+ycount_per_day = dumb_nd00             ;;  Counts/day for channel 2 [All types]
+xcnt_ABCDM_pd  = dumb_nd50             ;;  Counts/day for channel 1 [by type]
+ycnt_ABCDM_pd  = dumb_nd50             ;;  Counts/day for channel 2 [by type]
+;;  Define dummy/fill variables for counts by location
+xcnt_cmllm_pd  = dumb_nd40             ;;  Counts/day for channel 1 [All types, by location]
+ycnt_cmllm_pd  = dumb_nd40             ;;  Counts/day for channel 2 [All types, by location]
+xcpd_cmllm_typ = dumb_nd45             ;;  Counts/day for channel 1 [by type, by location]
+ycpd_cmllm_typ = dumb_nd45             ;;  Counts/day for channel 2 [by type, by location]
+;;  Define dummy/fill variables for normalized counts
+n_tds_per_day  = dumb_nd00             ;;  Total # of TDS events per date for dates with dust impacts
+xncnt_per_day  = dumb_nd00             ;;  Normalized Counts/day for channel 1 [All types]
+yncnt_per_day  = dumb_nd00             ;;  Normalized Counts/day for channel 2 [All types]
+xncnt_ABCDM_pd = dumb_nd50             ;;  Normalized Counts/day for channel 1 [by type]
+yncnt_ABCDM_pd = dumb_nd50             ;;  Normalized Counts/day for channel 2 [by type]
+xncnt_cmllm_pd = dumb_nd40             ;;  Normalized Counts/day for channel 1 [All types, by location]
+yncnt_cmllm_pd = dumb_nd40             ;;  Normalized Counts/day for channel 2 [All types, by location]
+xncpd_cmllm_ty = dumb_nd45             ;;  Normalized Counts/day for channel 1 [by type, by location]
+yncpd_cmllm_ty = dumb_nd45             ;;  Normalized Counts/day for channel 2 [by type, by location]
+;;  Define dummy/fill variables for peak amplitudes
+Expk_Avg_pd    = dumb_nd00             ;;  Avg. peak amplitude for channel 1 [All types]
+Eypk_Avg_pd    = dumb_nd00             ;;  Avg. peak amplitude for channel 2 [All types]
+Expk_ABCDM_pd  = dumb_nd50             ;;  Avg. peak amplitude for channel 1 [by type]
+Eypk_ABCDM_pd  = dumb_nd50             ;;  Avg. peak amplitude for channel 2 [by type]
+;;  Define dummy/fill variables for angles
+all_sun_ang_cw = dumb_nda0             ;;  # of events per day where |sun_angle_cw| fell within 20 deg bin ranges
+all_thetaAx_cw = dumb_nda0             ;;  " " |theta_Ax_cw| fell within 20 deg bin ranges
+all_thetaAy_cw = dumb_nda0             ;;  " " |theta_p_cw| fell within 20 deg bin ranges
+ximp_allang_cw = dumb_nda0             ;;  " " |Ex_imp_ang_cw| fell within 20 deg bin ranges [All types]
+yimp_allang_cw = dumb_nda0             ;;  " " |Ey_imp_ang_cw| fell within 20 deg bin ranges [All types]
+xiang_ABCDM_cw = dumb_nda5             ;;  " " |Ex_imp_ang_cw| fell within 20 deg bin ranges [by type]
+yiang_ABCDM_cw = dumb_nda5             ;;  " " |Ey_imp_ang_cw| fell within 20 deg bin ranges [by type]
+FOR j=0L, n_all_td[0] - 1L DO BEGIN
+  good_tdates = WHERE(all_tdates EQ all_tdates_gd[j],gd_tdates)
+  IF (gd_tdates EQ 0) THEN CONTINUE    ;;  No data for data --> jump to next iteration
+  t_ntdstot        = n_tds_tot[good_tdates[0]]
+  n_tds_per_day[j] = DOUBLE(t_ntdstot[0])
+  ;;--------------------------------------------------------------------------------------
+  ;;  Define tests
+  ;;--------------------------------------------------------------------------------------
+  ;;  Define tests for all events
+  test_ex     = FINITE(Ex__pkamp[good_tdates]) AND (ABS(Ex_imp_ang_cw[good_tdates]) LE 36d1)
+  test_ey     = FINITE(Ey__pkamp[good_tdates]) AND (ABS(Ey_imp_ang_cw[good_tdates]) LE 36d1)
+  test_an     = FINITE(sun_angle_cw[good_tdates]) AND (ABS(sun_angle_cw[good_tdates]) LE 36d1)
+  ;;  Define tests for events by type
+  test_xA     = test_ex AND (STRLOWCASE(Ex_mortyp[good_tdates]) EQ 'type a')
+  test_xB     = test_ex AND (STRLOWCASE(Ex_mortyp[good_tdates]) EQ 'type b')
+  test_xC     = test_ex AND (STRLOWCASE(Ex_mortyp[good_tdates]) EQ 'type c')
+  test_xD     = test_ex AND (STRLOWCASE(Ex_mortyp[good_tdates]) EQ 'type d')
+  test_xM     = test_ex AND (STRLOWCASE(Ex_mortyp[good_tdates]) EQ 'type m')
+  test_yA     = test_ey AND (STRLOWCASE(Ey_mortyp[good_tdates]) EQ 'type a')
+  test_yB     = test_ey AND (STRLOWCASE(Ey_mortyp[good_tdates]) EQ 'type b')
+  test_yC     = test_ey AND (STRLOWCASE(Ey_mortyp[good_tdates]) EQ 'type c')
+  test_yD     = test_ey AND (STRLOWCASE(Ey_mortyp[good_tdates]) EQ 'type d')
+  test_yM     = test_ey AND (STRLOWCASE(Ey_mortyp[good_tdates]) EQ 'type m')
+  ;;  Define tests for events by location [All types]
+  test_xCl    = test_ex AND (Wind_loc__flag[good_tdates] EQ 0)
+  test_xMS    = test_ex AND (Wind_loc__flag[good_tdates] EQ 1)
+  test_xLW    = test_ex AND (Wind_loc__flag[good_tdates] EQ 2)
+  test_xBT    = test_ex AND (Wind_loc__flag[good_tdates] EQ 3)
+  test_yCl    = test_ey AND (Wind_loc__flag[good_tdates] EQ 0)
+  test_yMS    = test_ey AND (Wind_loc__flag[good_tdates] EQ 1)
+  test_yLW    = test_ey AND (Wind_loc__flag[good_tdates] EQ 2)
+  test_yBT    = test_ey AND (Wind_loc__flag[good_tdates] EQ 3)
+  ;;  Define tests for events by location [by type]
+  test_xACl   = test_xA AND (Wind_loc__flag[good_tdates] EQ 0)
+  test_xAMS   = test_xA AND (Wind_loc__flag[good_tdates] EQ 1)
+  test_xALW   = test_xA AND (Wind_loc__flag[good_tdates] EQ 2)
+  test_xABT   = test_xA AND (Wind_loc__flag[good_tdates] EQ 3)
+  test_xBCl   = test_xB AND (Wind_loc__flag[good_tdates] EQ 0)
+  test_xBMS   = test_xB AND (Wind_loc__flag[good_tdates] EQ 1)
+  test_xBLW   = test_xB AND (Wind_loc__flag[good_tdates] EQ 2)
+  test_xBBT   = test_xB AND (Wind_loc__flag[good_tdates] EQ 3)
+  test_xCCl   = test_xC AND (Wind_loc__flag[good_tdates] EQ 0)
+  test_xCMS   = test_xC AND (Wind_loc__flag[good_tdates] EQ 1)
+  test_xCLW   = test_xC AND (Wind_loc__flag[good_tdates] EQ 2)
+  test_xCBT   = test_xC AND (Wind_loc__flag[good_tdates] EQ 3)
+  test_xDCl   = test_xD AND (Wind_loc__flag[good_tdates] EQ 0)
+  test_xDMS   = test_xD AND (Wind_loc__flag[good_tdates] EQ 1)
+  test_xDLW   = test_xD AND (Wind_loc__flag[good_tdates] EQ 2)
+  test_xDBT   = test_xD AND (Wind_loc__flag[good_tdates] EQ 3)
+  test_xMCl   = test_xM AND (Wind_loc__flag[good_tdates] EQ 0)
+  test_xMMS   = test_xM AND (Wind_loc__flag[good_tdates] EQ 1)
+  test_xMLW   = test_xM AND (Wind_loc__flag[good_tdates] EQ 2)
+  test_xMBT   = test_xM AND (Wind_loc__flag[good_tdates] EQ 3)
+  test_yACl   = test_yA AND (Wind_loc__flag[good_tdates] EQ 0)
+  test_yAMS   = test_yA AND (Wind_loc__flag[good_tdates] EQ 1)
+  test_yALW   = test_yA AND (Wind_loc__flag[good_tdates] EQ 2)
+  test_yABT   = test_yA AND (Wind_loc__flag[good_tdates] EQ 3)
+  test_yBCl   = test_yB AND (Wind_loc__flag[good_tdates] EQ 0)
+  test_yBMS   = test_yB AND (Wind_loc__flag[good_tdates] EQ 1)
+  test_yBLW   = test_yB AND (Wind_loc__flag[good_tdates] EQ 2)
+  test_yBBT   = test_yB AND (Wind_loc__flag[good_tdates] EQ 3)
+  test_yCCl   = test_yC AND (Wind_loc__flag[good_tdates] EQ 0)
+  test_yCMS   = test_yC AND (Wind_loc__flag[good_tdates] EQ 1)
+  test_yCLW   = test_yC AND (Wind_loc__flag[good_tdates] EQ 2)
+  test_yCBT   = test_yC AND (Wind_loc__flag[good_tdates] EQ 3)
+  test_yDCl   = test_yD AND (Wind_loc__flag[good_tdates] EQ 0)
+  test_yDMS   = test_yD AND (Wind_loc__flag[good_tdates] EQ 1)
+  test_yDLW   = test_yD AND (Wind_loc__flag[good_tdates] EQ 2)
+  test_yDBT   = test_yD AND (Wind_loc__flag[good_tdates] EQ 3)
+  test_yMCl   = test_yM AND (Wind_loc__flag[good_tdates] EQ 0)
+  test_yMMS   = test_yM AND (Wind_loc__flag[good_tdates] EQ 1)
+  test_yMLW   = test_yM AND (Wind_loc__flag[good_tdates] EQ 2)
+  test_yMBT   = test_yM AND (Wind_loc__flag[good_tdates] EQ 3)
+  ;;--------------------------------------------------------------------------------------
+  ;;  Define good arrays from tests
+  ;;--------------------------------------------------------------------------------------
+  ;;  Channl 1
+  good_ex     = WHERE(test_ex,gd_ex)
+  good_xA     = WHERE(test_xA,gd_xA)
+  good_xB     = WHERE(test_xB,gd_xB)
+  good_xC     = WHERE(test_xC,gd_xC)
+  good_xD     = WHERE(test_xD,gd_xD)
+  good_xM     = WHERE(test_xM,gd_xM)
+  good_xCl    = WHERE(test_xCl,gd_xCl)
+  good_xMS    = WHERE(test_xMS,gd_xMS)
+  good_xLW    = WHERE(test_xLW,gd_xLW)
+  good_xBT    = WHERE(test_xBT,gd_xBT)
+  good_xACl   = WHERE(test_xACl,gd_xACl)
+  good_xAMS   = WHERE(test_xAMS,gd_xAMS)
+  good_xALW   = WHERE(test_xALW,gd_xALW)
+  good_xABT   = WHERE(test_xABT,gd_xABT)
+  good_xBCl   = WHERE(test_xBCl,gd_xBCl)
+  good_xBMS   = WHERE(test_xBMS,gd_xBMS)
+  good_xBLW   = WHERE(test_xBLW,gd_xBLW)
+  good_xBBT   = WHERE(test_xBBT,gd_xBBT)
+  good_xCCl   = WHERE(test_xCCl,gd_xCCl)
+  good_xCMS   = WHERE(test_xCMS,gd_xCMS)
+  good_xCLW   = WHERE(test_xCLW,gd_xCLW)
+  good_xCBT   = WHERE(test_xCBT,gd_xCBT)
+  good_xDCl   = WHERE(test_xDCl,gd_xDCl)
+  good_xDMS   = WHERE(test_xDMS,gd_xDMS)
+  good_xDLW   = WHERE(test_xDLW,gd_xDLW)
+  good_xDBT   = WHERE(test_xDBT,gd_xDBT)
+  good_xMCl   = WHERE(test_xMCl,gd_xMCl)
+  good_xMMS   = WHERE(test_xMMS,gd_xMMS)
+  good_xMLW   = WHERE(test_xMLW,gd_xMLW)
+  good_xMBT   = WHERE(test_xMBT,gd_xMBT)
+  ;;  Channl 2
+  good_ey     = WHERE(test_ey,gd_ey)
+  good_yA     = WHERE(test_yA,gd_yA)
+  good_yB     = WHERE(test_yB,gd_yB)
+  good_yC     = WHERE(test_yC,gd_yC)
+  good_yD     = WHERE(test_yD,gd_yD)
+  good_yM     = WHERE(test_yM,gd_yM)
+  good_yCl    = WHERE(test_yCl,gd_yCl)
+  good_yMS    = WHERE(test_yMS,gd_yMS)
+  good_yLW    = WHERE(test_yLW,gd_yLW)
+  good_yBT    = WHERE(test_yBT,gd_yBT)
+  good_yACl   = WHERE(test_yACl,gd_yACl)
+  good_yAMS   = WHERE(test_yAMS,gd_yAMS)
+  good_yALW   = WHERE(test_yALW,gd_yALW)
+  good_yABT   = WHERE(test_yABT,gd_yABT)
+  good_yBCl   = WHERE(test_yBCl,gd_yBCl)
+  good_yBMS   = WHERE(test_yBMS,gd_yBMS)
+  good_yBLW   = WHERE(test_yBLW,gd_yBLW)
+  good_yBBT   = WHERE(test_yBBT,gd_yBBT)
+  good_yCCl   = WHERE(test_yCCl,gd_yCCl)
+  good_yCMS   = WHERE(test_yCMS,gd_yCMS)
+  good_yCLW   = WHERE(test_yCLW,gd_yCLW)
+  good_yCBT   = WHERE(test_yCBT,gd_yCBT)
+  good_yDCl   = WHERE(test_yDCl,gd_yDCl)
+  good_yDMS   = WHERE(test_yDMS,gd_yDMS)
+  good_yDLW   = WHERE(test_yDLW,gd_yDLW)
+  good_yDBT   = WHERE(test_yDBT,gd_yDBT)
+  good_yMCl   = WHERE(test_yMCl,gd_yMCl)
+  good_yMMS   = WHERE(test_yMMS,gd_yMMS)
+  good_yMLW   = WHERE(test_yMLW,gd_yMLW)
+  good_yMBT   = WHERE(test_yMBT,gd_yMBT)
+  ;;  All angles
+  good_an     = WHERE(test_an,gd_an)
+  ;;  Define arrays that span multiple types and/or locations
+  goodx_ABCDM = {TA:good_xA,TB:good_xB,TC:good_xC,TD:good_xD,TM:good_xM}
+  goody_ABCDM = {TA:good_yA,TB:good_yB,TC:good_yC,TD:good_yD,TM:good_yM}
+  ABCDM_x     = DOUBLE([gd_xA[0],gd_xB[0],gd_xC[0],gd_xD[0],gd_xM[0]])
+  ABCDM_y     = DOUBLE([gd_yA[0],gd_yB[0],gd_yC[0],gd_yD[0],gd_yM[0]])
+  ClMSLWBT_x  = DOUBLE([gd_xCl[0],gd_xMS[0],gd_xLW[0],gd_xBT[0]])
+  ClMSLWBT_y  = DOUBLE([gd_yCl[0],gd_yMS[0],gd_yLW[0],gd_yBT[0]])
+  Cl_ABCDM_x  = DOUBLE([gd_xACl[0],gd_xBCl[0],gd_xCCl[0],gd_xDCl[0],gd_xMCl[0]])
+  MS_ABCDM_x  = DOUBLE([gd_xAMS[0],gd_xBMS[0],gd_xCMS[0],gd_xDMS[0],gd_xMMS[0]])
+  LW_ABCDM_x  = DOUBLE([gd_xALW[0],gd_xBLW[0],gd_xCLW[0],gd_xDLW[0],gd_xMLW[0]])
+  BT_ABCDM_x  = DOUBLE([gd_xABT[0],gd_xBBT[0],gd_xCBT[0],gd_xDBT[0],gd_xMBT[0]])
+  Cl_ABCDM_y  = DOUBLE([gd_yACl[0],gd_yBCl[0],gd_yCCl[0],gd_yDCl[0],gd_yMCl[0]])
+  MS_ABCDM_y  = DOUBLE([gd_yAMS[0],gd_yBMS[0],gd_yCMS[0],gd_yDMS[0],gd_yMMS[0]])
+  LW_ABCDM_y  = DOUBLE([gd_yALW[0],gd_yBLW[0],gd_yCLW[0],gd_yDLW[0],gd_yMLW[0]])
+  BT_ABCDM_y  = DOUBLE([gd_yABT[0],gd_yBBT[0],gd_yCBT[0],gd_yDBT[0],gd_yMBT[0]])
+  ;;--------------------------------------------------------------------------------------
+  ;;  Fill channl 1 arrays
+  ;;--------------------------------------------------------------------------------------
+  IF (gd_ex[0] GT 0) THEN BEGIN
+    gind                 = good_tdates[good_ex]
+    xcount_per_day[j]    = TOTAL(test_ex)
+    temp                 = MEAN(ABS(Ex__pkamp[gind]),/NAN)
+    Expk_Avg_pd[j]       = temp[0]
+    temp                 = ABS(Ex_imp_ang_cw[gind])
+    ximp_allang_cw[j,*]  = HISTOGRAM(temp,BINSIZE=hist_parms[0],MIN=hist_parms[1],MAX=hist_parms[2],/NAN)
+    ;;  Fill normalized arrays
+    xncnt_per_day[j]     = DOUBLE(xcount_per_day[j]/t_ntdstot[0])
+  ENDIF
+  ;;  Channl 1 arrays by type
+  xcnt_ABCDM_pd[j,*]     = ABCDM_x
+  xncnt_ABCDM_pd[j,*]    = DOUBLE(ABCDM_x/t_ntdstot[0])
+  FOR kk=0L, N_ELEMENTS(ABCDM_x) - 1L DO BEGIN
+    CASE (ABCDM_x[kk] GT 0) OF
+      1     :  BEGIN
+        gind                   = good_tdates[goodx_ABCDM.(kk)]
+        temp                   = MEAN(ABS(Ex__pkamp[gind]),/NAN)
+        Expk_ABCDM_pd[j,kk]    = temp[0]
+        temp                   = ABS(Ex_imp_ang_cw[gind])
+        xiang_ABCDM_cw[j,*,kk] = HISTOGRAM(temp,BINSIZE=hist_parms[0],MIN=hist_parms[1],MAX=hist_parms[2],/NAN)
+      END
+      ELSE  :  ;;  DO NOTHING
+    ENDCASE
+  ENDFOR
+  ;;  Channl 1 arrays by location [All types]
+  xcnt_cmllm_pd[j,*]     = ClMSLWBT_x
+  xncnt_cmllm_pd[j,*]    = DOUBLE(ClMSLWBT_x/t_ntdstot[0])
+  ;;  Channl 1 arrays by location [by type]
+  xcpd_cmllm_typ[j,0L,*] = Cl_ABCDM_x
+  xcpd_cmllm_typ[j,1L,*] = MS_ABCDM_x
+  xcpd_cmllm_typ[j,2L,*] = LW_ABCDM_x
+  xcpd_cmllm_typ[j,3L,*] = BT_ABCDM_x
+  xncpd_cmllm_ty[j,0L,*] = DOUBLE(Cl_ABCDM_x/t_ntdstot[0])
+  xncpd_cmllm_ty[j,1L,*] = DOUBLE(MS_ABCDM_x/t_ntdstot[0])
+  xncpd_cmllm_ty[j,2L,*] = DOUBLE(LW_ABCDM_x/t_ntdstot[0])
+  xncpd_cmllm_ty[j,3L,*] = DOUBLE(BT_ABCDM_x/t_ntdstot[0])
+  ;;--------------------------------------------------------------------------------------
+  ;;  Fill channl 2 arrays
+  ;;--------------------------------------------------------------------------------------
+  IF (gd_ey[0] GT 0) THEN BEGIN
+    gind                 = good_tdates[good_ey]
+    ycount_per_day[j]    = TOTAL(test_ey)
+    temp                 = MEAN(ABS(Ey__pkamp[gind]),/NAN)
+    Eypk_Avg_pd[j]       = temp[0]
+    temp                 = ABS(Ey_imp_ang_cw[gind])
+    yimp_allang_cw[j,*]  = HISTOGRAM(temp,BINSIZE=hist_parms[0],MIN=hist_parms[1],MAX=hist_parms[2],/NAN)
+    ;;  Fill normalized arrays
+    yncnt_per_day[j]     = DOUBLE(ycount_per_day[j]/t_ntdstot[0])
+  ENDIF
+  ;;  Channl 2 arrays by type
+  ycnt_ABCDM_pd[j,*]     = ABCDM_y
+  yncnt_ABCDM_pd[j,*]    = DOUBLE(ABCDM_y/t_ntdstot[0])
+  FOR kk=0L, N_ELEMENTS(ABCDM_y) - 1L DO BEGIN
+    CASE (ABCDM_y[kk] GT 0) OF
+      1     :  BEGIN
+        gind                   = good_tdates[goody_ABCDM.(kk)]
+        temp                   = MEAN(ABS(Ey__pkamp[gind]),/NAN)
+        Eypk_ABCDM_pd[j,kk]    = temp[0]
+        temp                   = ABS(Ey_imp_ang_cw[gind])
+        yiang_ABCDM_cw[j,*,kk] = HISTOGRAM(temp,BINSIZE=hist_parms[0],MIN=hist_parms[1],MAX=hist_parms[2],/NAN)
+      END
+      ELSE  :  ;;  DO NOTHING
+    ENDCASE
+  ENDFOR
+  ;;  Channl 2 arrays by location [All types]
+  ycnt_cmllm_pd[j,*]     = ClMSLWBT_y
+  yncnt_cmllm_pd[j,*]    = DOUBLE(ClMSLWBT_y/t_ntdstot[0])
+  ;;  Channl 2 arrays by location [by type]
+  ycpd_cmllm_typ[j,0L,*] = Cl_ABCDM_y
+  ycpd_cmllm_typ[j,1L,*] = MS_ABCDM_y
+  ycpd_cmllm_typ[j,2L,*] = LW_ABCDM_y
+  ycpd_cmllm_typ[j,3L,*] = BT_ABCDM_y
+  yncpd_cmllm_ty[j,0L,*] = DOUBLE(Cl_ABCDM_y/t_ntdstot[0])
+  yncpd_cmllm_ty[j,1L,*] = DOUBLE(MS_ABCDM_y/t_ntdstot[0])
+  yncpd_cmllm_ty[j,2L,*] = DOUBLE(LW_ABCDM_y/t_ntdstot[0])
+  yncpd_cmllm_ty[j,3L,*] = DOUBLE(BT_ABCDM_y/t_ntdstot[0])
+  ;;--------------------------------------------------------------------------------------
+  ;;  Fill angle bin arrays
+  ;;--------------------------------------------------------------------------------------
+  IF (gd_an[0] GT 0) THEN BEGIN
+    temp                 = (ABS(sun_angle_cw[good_tdates]))[good_an]
+    all_sun_ang_cw[j,*]  = HISTOGRAM(temp,BINSIZE=hist_parms[0],MIN=hist_parms[1],MAX=hist_parms[2],/NAN)
+    temp                 = (ABS(theta_Ax_cw[good_tdates]))[good_an]
+    all_thetaAx_cw[j,*]  = HISTOGRAM(temp,BINSIZE=hist_parms[0],MIN=hist_parms[1],MAX=hist_parms[2],/NAN)
+    temp                 = (ABS(theta_p_cw[good_tdates]))[good_an]
+    all_thetaAy_cw[j,*]  = HISTOGRAM(temp,BINSIZE=hist_parms[0],MIN=hist_parms[1],MAX=hist_parms[2],/NAN)
+  ENDIF
+ENDFOR
+;;----------------------------------------------------------------------------------------
+;;  Smooth some of the daily stuff
+;;----------------------------------------------------------------------------------------
+;;  Regular arrays
+xcnt_pd_sm     = dumb_nd00
+xcnt_ABCDM_sm  = dumb_nd50
+xcnt_cmllm_sm  = dumb_nd40
+xcnt_lctyp_sm  = dumb_nd45
+ycnt_pd_sm     = dumb_nd00
+ycnt_ABCDM_sm  = dumb_nd50
+ycnt_cmllm_sm  = dumb_nd40
+ycnt_lctyp_sm  = dumb_nd45
+;;  Normalized arrays
+xncnt_pd_sm    = dumb_nd00
+xncnt_ABCDM_sm = dumb_nd50
+xncnt_cmllm_sm = dumb_nd40
+xncnt_lctyp_sm = dumb_nd45
+yncnt_pd_sm    = dumb_nd00
+yncnt_ABCDM_sm = dumb_nd50
+yncnt_cmllm_sm = dumb_nd40
+yncnt_lctyp_sm = dumb_nd45
+;;  Apply boxcar averages [currently 10 days]
+xcnt_pd_sm     = SMOOTH(xcount_per_day,nwdth[0],/NAN,/EDGE_TRUNCATE)
+ycnt_pd_sm     = SMOOTH(ycount_per_day,nwdth[0],/NAN,/EDGE_TRUNCATE)
+xncnt_pd_sm    = SMOOTH(xncnt_per_day,nwdth[0],/NAN,/EDGE_TRUNCATE)
+yncnt_pd_sm    = SMOOTH(yncnt_per_day,nwdth[0],/NAN,/EDGE_TRUNCATE)
+FOR kk=0L, 4L DO BEGIN
+  xcnt_ABCDM_sm[*,kk]  = SMOOTH(xcnt_ABCDM_pd[*,kk],nwdth[0],/NAN,/EDGE_TRUNCATE)
+  ycnt_ABCDM_sm[*,kk]  = SMOOTH(ycnt_ABCDM_pd[*,kk],nwdth[0],/NAN,/EDGE_TRUNCATE)
+  xncnt_ABCDM_sm[*,kk] = SMOOTH(xncnt_ABCDM_pd[*,kk],nwdth[0],/NAN,/EDGE_TRUNCATE)
+  yncnt_ABCDM_sm[*,kk] = SMOOTH(yncnt_ABCDM_pd[*,kk],nwdth[0],/NAN,/EDGE_TRUNCATE)
+  check               = (kk[0] EQ 0)
+  FOR aa=0L, 3L DO BEGIN
+    IF (check[0]) THEN BEGIN
+      ;;  Only do this once per kk cycle
+      xcnt_cmllm_sm[*,aa]  = SMOOTH(xcnt_cmllm_pd[*,aa],nwdth[0],/NAN,/EDGE_TRUNCATE)
+      ycnt_cmllm_sm[*,aa]  = SMOOTH(ycnt_cmllm_pd[*,aa],nwdth[0],/NAN,/EDGE_TRUNCATE)
+      xncnt_cmllm_sm[*,aa] = SMOOTH(xncnt_cmllm_pd[*,aa],nwdth[0],/NAN,/EDGE_TRUNCATE)
+      yncnt_cmllm_sm[*,aa] = SMOOTH(yncnt_cmllm_pd[*,aa],nwdth[0],/NAN,/EDGE_TRUNCATE)
+    ENDIF
+    ;;  Smooth arrays depending on both type and location
+    xcnt_lctyp_sm[*,aa,kk]  = SMOOTH(xcpd_cmllm_typ[*,aa,kk],nwdth[0],/NAN,/EDGE_TRUNCATE)
+    ycnt_lctyp_sm[*,aa,kk]  = SMOOTH(ycpd_cmllm_typ[*,aa,kk],nwdth[0],/NAN,/EDGE_TRUNCATE)
+    xncnt_lctyp_sm[*,aa,kk] = SMOOTH(xncpd_cmllm_ty[*,aa,kk],nwdth[0],/NAN,/EDGE_TRUNCATE)
+    yncnt_lctyp_sm[*,aa,kk] = SMOOTH(yncpd_cmllm_ty[*,aa,kk],nwdth[0],/NAN,/EDGE_TRUNCATE)
+  ENDFOR
+ENDFOR
+;;----------------------------------------------------------------------------------------
+;;----------------------------------------------------------------------------------------
+;;----------------------------------------------------------------------------------------
+;;  Send daily results to TPLOT
+;;----------------------------------------------------------------------------------------
+;;----------------------------------------------------------------------------------------
+;;----------------------------------------------------------------------------------------
+;;  Define Unix time stamps for daily values [use middle of day]
+t__offset      = MIN(all_unix_gd,/NAN)
+dt_offset      = (all_unix_gd - t__offset[0])
+cnts_pd_unix   = dt_offset + 864d2/2d0
+;;----------------------------------------------------------------------------------------
+;;  Define TPLOT structures
+;;----------------------------------------------------------------------------------------
+;;    Channel 1
+xcpd_all_tps   = {X:cnts_pd_unix,Y:[[xcount_per_day],[xcnt_pd_sm]],TSHIFT:t__offset[0]}                           ;;  TPLOT handle =        xcnts_tpn[0]
+xcpd_typ_tps   = {X:cnts_pd_unix,  Y:xcnt_ABCDM_pd,                TSHIFT:t__offset[0]}                           ;;  TPLOT handle =      ABCDM_x_tpn[0]
+xcpd_tsm_tps   = {X:cnts_pd_unix,  Y:xcnt_ABCDM_sm,                TSHIFT:t__offset[0]}                           ;;  TPLOT handle =      ABCDM_x_tpn[1]
+xcpd_loc_tps   = {X:cnts_pd_unix,  Y:xcnt_cmllm_pd,                TSHIFT:t__offset[0]}                           ;;  TPLOT handle =   ClMSLWBT_x_tpn[0]
+xcpd_lsm_tps   = {X:cnts_pd_unix,  Y:xcnt_cmllm_sm,                TSHIFT:t__offset[0]}                           ;;  TPLOT handle =   ClMSLWBT_x_tpn[1]
+xcpd_ltA_tps   = {X:cnts_pd_unix,  Y:xcpd_cmllm_typ[*,*,0],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[0,0]
+xcpd_ltB_tps   = {X:cnts_pd_unix,  Y:xcpd_cmllm_typ[*,*,1],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[1,0]
+xcpd_ltC_tps   = {X:cnts_pd_unix,  Y:xcpd_cmllm_typ[*,*,2],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[2,0]
+xcpd_ltD_tps   = {X:cnts_pd_unix,  Y:xcpd_cmllm_typ[*,*,3],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[3,0]
+xcpd_ltM_tps   = {X:cnts_pd_unix,  Y:xcpd_cmllm_typ[*,*,4],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[4,0]
+xcpd_ltAs_tp   = {X:cnts_pd_unix,  Y:xcnt_lctyp_sm[*,*,0],         TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[0,1]
+xcpd_ltBs_tp   = {X:cnts_pd_unix,  Y:xcnt_lctyp_sm[*,*,1],         TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[1,1]
+xcpd_ltCs_tp   = {X:cnts_pd_unix,  Y:xcnt_lctyp_sm[*,*,2],         TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[2,1]
+xcpd_ltDs_tp   = {X:cnts_pd_unix,  Y:xcnt_lctyp_sm[*,*,3],         TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[3,1]
+xcpd_ltMs_tp   = {X:cnts_pd_unix,  Y:xcnt_lctyp_sm[*,*,4],         TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[4,1]
+AvgEx_pd_tps   = {X:cnts_pd_unix, Y:Expk_Avg_pd,                   TSHIFT:t__offset[0]}                           ;;  TPLOT handle =     Expk_Avg_tpn[0]
+AvgEx_typ_tp   = {X:cnts_pd_unix, Y:Expk_ABCDM_pd,                 TSHIFT:t__offset[0]}                           ;;  TPLOT handle =   Expk_ABCDM_tpn[0]
+IAntx_pd_tps   = {X:cnts_pd_unix,  Y:ximp_allang_cw,               TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   x_iant_ang_tpn[0]
+IAntx_tA_tps   = {X:cnts_pd_unix,  Y:xiang_ABCDM_cw[*,*,0],        TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   xian_ABCDM_tpn[0]
+IAntx_tB_tps   = {X:cnts_pd_unix,  Y:xiang_ABCDM_cw[*,*,1],        TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   xian_ABCDM_tpn[1]
+IAntx_tC_tps   = {X:cnts_pd_unix,  Y:xiang_ABCDM_cw[*,*,2],        TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   xian_ABCDM_tpn[2]
+IAntx_tD_tps   = {X:cnts_pd_unix,  Y:xiang_ABCDM_cw[*,*,3],        TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   xian_ABCDM_tpn[3]
+IAntx_tM_tps   = {X:cnts_pd_unix,  Y:xiang_ABCDM_cw[*,*,4],        TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   xian_ABCDM_tpn[4]
+;;    Channel 2
+ycpd_all_tps   = {X:cnts_pd_unix,Y:[[ycount_per_day],[ycnt_pd_sm]],TSHIFT:t__offset[0]}                           ;;  TPLOT handle =        ycnts_tpn[0]
+ycpd_typ_tps   = {X:cnts_pd_unix,  Y:ycnt_ABCDM_pd,                TSHIFT:t__offset[0]}                           ;;  TPLOT handle =      ABCDM_y_tpn[0]
+ycpd_tsm_tps   = {X:cnts_pd_unix,  Y:ycnt_ABCDM_sm,                TSHIFT:t__offset[0]}                           ;;  TPLOT handle =      ABCDM_y_tpn[1]
+ycpd_loc_tps   = {X:cnts_pd_unix,  Y:ycnt_cmllm_pd,                TSHIFT:t__offset[0]}                           ;;  TPLOT handle =   ClMSLWBT_y_tpn[0]
+ycpd_lsm_tps   = {X:cnts_pd_unix,  Y:ycnt_cmllm_sm,                TSHIFT:t__offset[0]}                           ;;  TPLOT handle =   ClMSLWBT_y_tpn[1]
+ycpd_ltA_tps   = {X:cnts_pd_unix,  Y:ycpd_cmllm_typ[*,*,0],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_ytpn[0,0]
+ycpd_ltB_tps   = {X:cnts_pd_unix,  Y:ycpd_cmllm_typ[*,*,1],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_ytpn[1,0]
+ycpd_ltC_tps   = {X:cnts_pd_unix,  Y:ycpd_cmllm_typ[*,*,2],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_ytpn[2,0]
+ycpd_ltD_tps   = {X:cnts_pd_unix,  Y:ycpd_cmllm_typ[*,*,3],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_ytpn[3,0]
+ycpd_ltM_tps   = {X:cnts_pd_unix,  Y:ycpd_cmllm_typ[*,*,4],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_ytpn[4,0]
+ycpd_ltAs_tp   = {X:cnts_pd_unix,  Y:ycnt_lctyp_sm[*,*,0],         TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_ytpn[0,1]
+ycpd_ltBs_tp   = {X:cnts_pd_unix,  Y:ycnt_lctyp_sm[*,*,1],         TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_ytpn[1,1]
+ycpd_ltCs_tp   = {X:cnts_pd_unix,  Y:ycnt_lctyp_sm[*,*,2],         TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_ytpn[2,1]
+ycpd_ltDs_tp   = {X:cnts_pd_unix,  Y:ycnt_lctyp_sm[*,*,3],         TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_ytpn[3,1]
+ycpd_ltMs_tp   = {X:cnts_pd_unix,  Y:ycnt_lctyp_sm[*,*,4],         TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_ytpn[4,1]
+AvgEy_pd_tps   = {X:cnts_pd_unix, Y:Eypk_Avg_pd,                   TSHIFT:t__offset[0]}                           ;;  TPLOT handle =     Eypk_Avg_tpn[0]
+AvgEy_typ_tp   = {X:cnts_pd_unix, Y:Eypk_ABCDM_pd,                 TSHIFT:t__offset[0]}                           ;;  TPLOT handle =   Eypk_ABCDM_tpn[0]
+IAnty_pd_tps   = {X:cnts_pd_unix,  Y:yimp_allang_cw,               TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   y_iant_ang_tpn[0]
+IAnty_tA_tps   = {X:cnts_pd_unix,  Y:yiang_ABCDM_cw[*,*,0],        TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   yian_ABCDM_tpn[0]
+IAnty_tB_tps   = {X:cnts_pd_unix,  Y:yiang_ABCDM_cw[*,*,1],        TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   yian_ABCDM_tpn[1]
+IAnty_tC_tps   = {X:cnts_pd_unix,  Y:yiang_ABCDM_cw[*,*,2],        TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   yian_ABCDM_tpn[2]
+IAnty_tD_tps   = {X:cnts_pd_unix,  Y:yiang_ABCDM_cw[*,*,3],        TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   yian_ABCDM_tpn[3]
+IAnty_tM_tps   = {X:cnts_pd_unix,  Y:yiang_ABCDM_cw[*,*,4],        TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   yian_ABCDM_tpn[4]
+;;    All angles
+sunang_cw_tp   = {X:cnts_pd_unix,  Y:all_sun_ang_cw,               TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   sun_ang_cw_tpn[0]
+the_Ax_cw_tp   = {X:cnts_pd_unix,  Y:all_thetaAx_cw,               TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   thetaAx_cw_tpn[0]
+the_Ay_cw_tp   = {X:cnts_pd_unix,  Y:all_thetaAy_cw,               TSHIFT:t__offset[0], V:angs_2dar, SPEC:1}      ;;  TPLOT handle =   thetaAy_cw_tpn[0]
+;;    Normalized Channel 1 and 2
+nt_tds_pd_tps  = {X:cnts_pd_unix,  Y:n_tds_per_day,                TSHIFT:t__offset[0]}
+xncpd_all_tps  = {X:cnts_pd_unix,Y:[[xncnt_per_day],[xncnt_pd_sm]],TSHIFT:t__offset[0]}                           ;;  TPLOT handle =        xcnts_tpn[0]
+xncpd_typ_tps  = {X:cnts_pd_unix,  Y:xncnt_ABCDM_pd,               TSHIFT:t__offset[0]}                           ;;  TPLOT handle =      ABCDM_x_tpn[0]
+xncpd_tsm_tps  = {X:cnts_pd_unix,  Y:xncnt_ABCDM_sm,               TSHIFT:t__offset[0]}                           ;;  TPLOT handle =      ABCDM_x_tpn[1]
+xncpd_loc_tps  = {X:cnts_pd_unix,  Y:xncnt_cmllm_pd,               TSHIFT:t__offset[0]}                           ;;  TPLOT handle =   ClMSLWBT_x_tpn[0]
+xncpd_lsm_tps  = {X:cnts_pd_unix,  Y:xncnt_cmllm_sm,               TSHIFT:t__offset[0]}                           ;;  TPLOT handle =   ClMSLWBT_x_tpn[1]
+xncpd_ltA_tps  = {X:cnts_pd_unix,  Y:xncpd_cmllm_ty[*,*,0],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[0,0]
+xncpd_ltB_tps  = {X:cnts_pd_unix,  Y:xncpd_cmllm_ty[*,*,1],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[1,0]
+xncpd_ltC_tps  = {X:cnts_pd_unix,  Y:xncpd_cmllm_ty[*,*,2],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[2,0]
+xncpd_ltD_tps  = {X:cnts_pd_unix,  Y:xncpd_cmllm_ty[*,*,3],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[3,0]
+xncpd_ltM_tps  = {X:cnts_pd_unix,  Y:xncpd_cmllm_ty[*,*,4],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[4,0]
+xncpd_ltAs_tp  = {X:cnts_pd_unix,  Y:xncnt_lctyp_sm[*,*,0],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[0,1]
+xncpd_ltBs_tp  = {X:cnts_pd_unix,  Y:xncnt_lctyp_sm[*,*,1],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[1,1]
+xncpd_ltCs_tp  = {X:cnts_pd_unix,  Y:xncnt_lctyp_sm[*,*,2],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[2,1]
+xncpd_ltDs_tp  = {X:cnts_pd_unix,  Y:xncnt_lctyp_sm[*,*,3],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[3,1]
+xncpd_ltMs_tp  = {X:cnts_pd_unix,  Y:xncnt_lctyp_sm[*,*,4],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[4,1]
+yncpd_all_tps  = {X:cnts_pd_unix,Y:[[yncnt_per_day],[yncnt_pd_sm]],TSHIFT:t__offset[0]}                           ;;  TPLOT handle =        xcnts_tpn[0]
+yncpd_typ_tps  = {X:cnts_pd_unix,  Y:yncnt_ABCDM_pd,               TSHIFT:t__offset[0]}                           ;;  TPLOT handle =      ABCDM_x_tpn[0]
+yncpd_tsm_tps  = {X:cnts_pd_unix,  Y:yncnt_ABCDM_sm,               TSHIFT:t__offset[0]}                           ;;  TPLOT handle =      ABCDM_x_tpn[1]
+yncpd_loc_tps  = {X:cnts_pd_unix,  Y:yncnt_cmllm_pd,               TSHIFT:t__offset[0]}                           ;;  TPLOT handle =   ClMSLWBT_x_tpn[0]
+yncpd_lsm_tps  = {X:cnts_pd_unix,  Y:yncnt_cmllm_sm,               TSHIFT:t__offset[0]}                           ;;  TPLOT handle =   ClMSLWBT_x_tpn[1]
+yncpd_ltA_tps  = {X:cnts_pd_unix,  Y:yncpd_cmllm_ty[*,*,0],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[0,0]
+yncpd_ltB_tps  = {X:cnts_pd_unix,  Y:yncpd_cmllm_ty[*,*,1],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[1,0]
+yncpd_ltC_tps  = {X:cnts_pd_unix,  Y:yncpd_cmllm_ty[*,*,2],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[2,0]
+yncpd_ltD_tps  = {X:cnts_pd_unix,  Y:yncpd_cmllm_ty[*,*,3],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[3,0]
+yncpd_ltM_tps  = {X:cnts_pd_unix,  Y:yncpd_cmllm_ty[*,*,4],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[4,0]
+yncpd_ltAs_tp  = {X:cnts_pd_unix,  Y:yncnt_lctyp_sm[*,*,0],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[0,1]
+yncpd_ltBs_tp  = {X:cnts_pd_unix,  Y:yncnt_lctyp_sm[*,*,1],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[1,1]
+yncpd_ltCs_tp  = {X:cnts_pd_unix,  Y:yncnt_lctyp_sm[*,*,2],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[2,1]
+yncpd_ltDs_tp  = {X:cnts_pd_unix,  Y:yncnt_lctyp_sm[*,*,3],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[3,1]
+yncpd_ltMs_tp  = {X:cnts_pd_unix,  Y:yncnt_lctyp_sm[*,*,4],        TSHIFT:t__offset[0]}                           ;;  TPLOT handle = cmllm_typ_xtpn[4,1]
+;;----------------------------------------------------------------------------------------
+;;  Send to TPLOT
+;;----------------------------------------------------------------------------------------
+;;    Channel 1
+store_data,        xcnts_tpn[0],DATA=xcpd_all_tps
+store_data,      ABCDM_x_tpn[0],DATA=xcpd_typ_tps
+store_data,      ABCDM_x_tpn[1],DATA=xcpd_tsm_tps
+store_data,   ClMSLWBT_x_tpn[0],DATA=xcpd_loc_tps
+store_data,   ClMSLWBT_x_tpn[1],DATA=xcpd_lsm_tps
+store_data, cmllm_typ_xtpn[0,0],DATA=xcpd_ltA_tps
+store_data, cmllm_typ_xtpn[1,0],DATA=xcpd_ltB_tps
+store_data, cmllm_typ_xtpn[2,0],DATA=xcpd_ltC_tps
+store_data, cmllm_typ_xtpn[3,0],DATA=xcpd_ltD_tps
+store_data, cmllm_typ_xtpn[4,0],DATA=xcpd_ltM_tps
+store_data, cmllm_typ_xtpn[0,1],DATA=xcpd_ltAs_tp
+store_data, cmllm_typ_xtpn[1,1],DATA=xcpd_ltBs_tp
+store_data, cmllm_typ_xtpn[2,1],DATA=xcpd_ltCs_tp
+store_data, cmllm_typ_xtpn[3,1],DATA=xcpd_ltDs_tp
+store_data, cmllm_typ_xtpn[4,1],DATA=xcpd_ltMs_tp
+store_data,     Expk_Avg_tpn[0],DATA=AvgEx_pd_tps
+store_data,   Expk_ABCDM_tpn[0],DATA=AvgEx_typ_tp
+store_data,   x_iant_ang_tpn[0],DATA=IAntx_pd_tps
+store_data,   xian_ABCDM_tpn[0],DATA=IAntx_tA_tps
+store_data,   xian_ABCDM_tpn[1],DATA=IAntx_tB_tps
+store_data,   xian_ABCDM_tpn[2],DATA=IAntx_tC_tps
+store_data,   xian_ABCDM_tpn[3],DATA=IAntx_tD_tps
+store_data,   xian_ABCDM_tpn[4],DATA=IAntx_tM_tps
+;;    Channel 2
+store_data,        ycnts_tpn[0],DATA=ycpd_all_tps
+store_data,      ABCDM_y_tpn[0],DATA=ycpd_typ_tps
+store_data,      ABCDM_y_tpn[1],DATA=ycpd_tsm_tps
+store_data,   ClMSLWBT_y_tpn[0],DATA=ycpd_loc_tps
+store_data,   ClMSLWBT_y_tpn[1],DATA=ycpd_lsm_tps
+store_data, cmllm_typ_ytpn[0,0],DATA=ycpd_ltA_tps
+store_data, cmllm_typ_ytpn[1,0],DATA=ycpd_ltB_tps
+store_data, cmllm_typ_ytpn[2,0],DATA=ycpd_ltC_tps
+store_data, cmllm_typ_ytpn[3,0],DATA=ycpd_ltD_tps
+store_data, cmllm_typ_ytpn[4,0],DATA=ycpd_ltM_tps
+store_data, cmllm_typ_ytpn[0,1],DATA=ycpd_ltAs_tp
+store_data, cmllm_typ_ytpn[1,1],DATA=ycpd_ltBs_tp
+store_data, cmllm_typ_ytpn[2,1],DATA=ycpd_ltCs_tp
+store_data, cmllm_typ_ytpn[3,1],DATA=ycpd_ltDs_tp
+store_data, cmllm_typ_ytpn[4,1],DATA=ycpd_ltMs_tp
+store_data,     Eypk_Avg_tpn[0],DATA=AvgEy_pd_tps
+store_data,   Eypk_ABCDM_tpn[0],DATA=AvgEy_typ_tp
+store_data,   y_iant_ang_tpn[0],DATA=IAnty_pd_tps
+store_data,   yian_ABCDM_tpn[0],DATA=IAnty_tA_tps
+store_data,   yian_ABCDM_tpn[1],DATA=IAnty_tB_tps
+store_data,   yian_ABCDM_tpn[2],DATA=IAnty_tC_tps
+store_data,   yian_ABCDM_tpn[3],DATA=IAnty_tD_tps
+store_data,   yian_ABCDM_tpn[4],DATA=IAnty_tM_tps
+;;    All angles
+store_data,   sun_ang_cw_tpn[0],DATA=sunang_cw_tp
+store_data,   thetaAx_cw_tpn[0],DATA=the_Ax_cw_tp
+store_data,   thetaAy_cw_tpn[0],DATA=the_Ay_cw_tp
+;;    Normalized Channel 1 and 2
+store_data,         'Total_Num_TDS_per_Date',DATA=nt_tds_pd_tps
+store_data,        xcnts_tpn[0]+norm_suff[0],DATA=xncpd_all_tps
+store_data,      ABCDM_x_tpn[0]+norm_suff[0],DATA=xncpd_typ_tps
+store_data,      ABCDM_x_tpn[1]+norm_suff[0],DATA=xncpd_tsm_tps
+store_data,   ClMSLWBT_x_tpn[0]+norm_suff[0],DATA=xncpd_loc_tps
+store_data,   ClMSLWBT_x_tpn[1]+norm_suff[0],DATA=xncpd_lsm_tps
+store_data, cmllm_typ_xtpn[0,0]+norm_suff[0],DATA=xncpd_ltA_tps
+store_data, cmllm_typ_xtpn[1,0]+norm_suff[0],DATA=xncpd_ltB_tps
+store_data, cmllm_typ_xtpn[2,0]+norm_suff[0],DATA=xncpd_ltC_tps
+store_data, cmllm_typ_xtpn[3,0]+norm_suff[0],DATA=xncpd_ltD_tps
+store_data, cmllm_typ_xtpn[4,0]+norm_suff[0],DATA=xncpd_ltM_tps
+store_data, cmllm_typ_xtpn[0,1]+norm_suff[0],DATA=xncpd_ltAs_tp
+store_data, cmllm_typ_xtpn[1,1]+norm_suff[0],DATA=xncpd_ltBs_tp
+store_data, cmllm_typ_xtpn[2,1]+norm_suff[0],DATA=xncpd_ltCs_tp
+store_data, cmllm_typ_xtpn[3,1]+norm_suff[0],DATA=xncpd_ltDs_tp
+store_data, cmllm_typ_xtpn[4,1]+norm_suff[0],DATA=xncpd_ltMs_tp
+store_data,        ycnts_tpn[0]+norm_suff[0],DATA=yncpd_all_tps
+store_data,      ABCDM_y_tpn[0]+norm_suff[0],DATA=yncpd_typ_tps
+store_data,      ABCDM_y_tpn[1]+norm_suff[0],DATA=yncpd_tsm_tps
+store_data,   ClMSLWBT_y_tpn[0]+norm_suff[0],DATA=yncpd_loc_tps
+store_data,   ClMSLWBT_y_tpn[1]+norm_suff[0],DATA=yncpd_lsm_tps
+store_data, cmllm_typ_ytpn[0,0]+norm_suff[0],DATA=yncpd_ltA_tps
+store_data, cmllm_typ_ytpn[1,0]+norm_suff[0],DATA=yncpd_ltB_tps
+store_data, cmllm_typ_ytpn[2,0]+norm_suff[0],DATA=yncpd_ltC_tps
+store_data, cmllm_typ_ytpn[3,0]+norm_suff[0],DATA=yncpd_ltD_tps
+store_data, cmllm_typ_ytpn[4,0]+norm_suff[0],DATA=yncpd_ltM_tps
+store_data, cmllm_typ_ytpn[0,1]+norm_suff[0],DATA=yncpd_ltAs_tp
+store_data, cmllm_typ_ytpn[1,1]+norm_suff[0],DATA=yncpd_ltBs_tp
+store_data, cmllm_typ_ytpn[2,1]+norm_suff[0],DATA=yncpd_ltCs_tp
+store_data, cmllm_typ_ytpn[3,1]+norm_suff[0],DATA=yncpd_ltDs_tp
+store_data, cmllm_typ_ytpn[4,1]+norm_suff[0],DATA=yncpd_ltMs_tp
+;;----------------------------------------------------------------------------------------
+;;  Define TPLOT options
+;;----------------------------------------------------------------------------------------
+;;  Default options
+lbw_tplot_set_defaults
+tplot_options,  'XMARGIN',[15,20]
+;;  COLORS, LABELS, and YSUBTITLEs
+nna0           = [xcnts_tpn[0],ycnts_tpn[0]]
+nna            = [nna0,nna0+norm_suff[0]]
+options,                 nna,LABELS=val_sm_labs,COLORS=ssn_cols,YSUBTITLE=xcnts_ysub[0], /DEF
+nna0           = [ABCDM_x_tpn,Expk_ABCDM_tpn[0],ABCDM_y_tpn,Eypk_ABCDM_tpn[0]]
+nna            = [nna0,nna0+norm_suff[0]]
+options,                 nna,LABELS=ABCDM_x_labs,COLORS=typ_cols,YSUBTITLE=ABCDM_x_ysub[0], /DEF
+nna0           = [ClMSLWBT_x_tpn,cmllm_typ_xtpn[*,0],cmllm_typ_xtpn[*,1],$
+                  ClMSLWBT_y_tpn,cmllm_typ_ytpn[*,0],cmllm_typ_ytpn[*,1]]
+nna            = [nna0,nna0+norm_suff[0]]
+options,                 nna,LABELS=loc_labs,COLORS=loc_cols,YSUBTITLE=ClMSLWBT_ysub[0], /DEF
+nna            = [Expk_Avg_tpn[0],Eypk_Avg_tpn[0],sun_ang_cw_tpn[0],     $
+                  thetaAx_cw_tpn[0],thetaAy_cw_tpn[0],x_iant_ang_tpn[0], $
+                  y_iant_ang_tpn[0]]
+options,                 nna,YSUBTITLE=xcnts_ysub[0], /DEF
+nna            = [Expk_ABCDM_tpn[0],Eypk_ABCDM_tpn[0],xian_ABCDM_tpn,yian_ABCDM_tpn]
+options,                 nna,YSUBTITLE=ABCDM_x_ysub[0], /DEF
+FOR kk=0L, 4L DO BEGIN
+  nna            = [xian_ABCDM_tpn[kk],yian_ABCDM_tpn[kk],$
+                    REFORM(cmllm_typ_xtpn[kk,*]),REFORM(cmllm_typ_ytpn[kk,*])]
+  options,                 nna,YSUBTITLE='['+typ_labs[kk]+' only]', /DEF
+ENDFOR
+;;  YTITLEs
+nna            = [xcnts_tpn[0],cmllm_typ_xtpn[*,0],cmllm_typ_xtpn[*,1]]
+options,                 nna,YTITLE=xcnts_yttl[0],        /DEF
+nna            = [ycnts_tpn[0],cmllm_typ_ytpn[*,0],cmllm_typ_ytpn[*,1]]
+options,                 nna,YTITLE=ycnts_yttl[0],        /DEF
+nna            = [xcnts_tpn[0],cmllm_typ_xtpn[*,0],cmllm_typ_xtpn[*,1]]+norm_suff[0]
+options,                 nna,YTITLE=xncnts_yttl[0],        /DEF
+nna            = [ycnts_tpn[0],cmllm_typ_ytpn[*,0],cmllm_typ_ytpn[*,1]]+norm_suff[0]
+options,                 nna,YTITLE=yncnts_yttl[0],        /DEF
+options,'Total_Num_TDS_per_Date',YTITLE='Counts [# TDS/date]',/DEF
+FOR ii=0L, 1L DO BEGIN
+  ;;  Regular counts
+  options,      ABCDM_x_tpn[ii],YTITLE=ABCDM_x_yttl[ii], /DEF
+  options,   ClMSLWBT_x_tpn[ii],YTITLE=ABCDM_x_yttl[ii], /DEF
+  options,      ABCDM_y_tpn[ii],YTITLE=ABCDM_y_yttl[ii], /DEF
+  options,   ClMSLWBT_y_tpn[ii],YTITLE=ABCDM_y_yttl[ii], /DEF
+  ;;  Normalized counts
+  options,      ABCDM_x_tpn[ii]+norm_suff[0],YTITLE=ABCDMnx_yttl[ii], /DEF
+  options,   ClMSLWBT_x_tpn[ii]+norm_suff[0],YTITLE=ABCDMnx_yttl[ii], /DEF
+  options,      ABCDM_y_tpn[ii]+norm_suff[0],YTITLE=ABCDMny_yttl[ii], /DEF
+  options,   ClMSLWBT_y_tpn[ii]+norm_suff[0],YTITLE=ABCDMny_yttl[ii], /DEF
+ENDFOR
+options,     Expk_Avg_tpn[0],YTITLE=Expk_Avg_yttl[0],    /DEF
+options,   Expk_ABCDM_tpn[0],YTITLE=Expk_Avg_yttl[0],    /DEF
+options,     Eypk_Avg_tpn[0],YTITLE=Eypk_Avg_yttl[0],    /DEF
+options,   Eypk_ABCDM_tpn[0],YTITLE=Eypk_Avg_yttl[0],    /DEF
+nna            = [x_iant_ang_tpn[0],xian_ABCDM_tpn]
+options,                 nna,YTITLE=angsp_x_yttl[0],     /DEF
+nna            = [y_iant_ang_tpn[0],yian_ABCDM_tpn]
+options,                 nna,YTITLE=angsp_y_yttl[0],     /DEF
+;;  YRANGE
+nna            = [xcnts_tpn[0],ycnts_tpn[0]]
+options,                 nna,YRANGE=yran_xy_all,YLOG=1,  /DEF
+nna            = [ClMSLWBT_x_tpn[0],cmllm_typ_xtpn[*,0],$
+                  ClMSLWBT_y_tpn[0],cmllm_typ_ytpn[*,0]]
+options,                 nna,YRANGE=yran_a_ABCDM,YLOG=1,  /DEF
+nna            = [ClMSLWBT_x_tpn[1],cmllm_typ_xtpn[*,1],$
+                  ClMSLWBT_y_tpn[1],cmllm_typ_ytpn[*,1]]
+options,                 nna,YRANGE=yran_smABCDM,YLOG=1,  /DEF
+nna            = [Expk_Avg_tpn[0],Expk_ABCDM_tpn[0],Eypk_Avg_tpn[0],Eypk_ABCDM_tpn[0]]
+options,                 nna,YRANGE=yran_Epk_all,YLOG=1,  /DEF
+nna            = [x_iant_ang_tpn[0],y_iant_ang_tpn[0],$
+                  xian_ABCDM_tpn,yian_ABCDM_tpn,      $
+                  sun_ang_cw_tpn[0],thetaAx_cw_tpn[0],thetaAy_cw_tpn[0]]
+options,                 nna,YRANGE=yran_ang_all,YLOG=0,  /DEF
+nna0           = [xcnts_tpn[0],ycnts_tpn[0]]
+nna1           = [ClMSLWBT_x_tpn[0],cmllm_typ_xtpn[*,0],$
+                  ClMSLWBT_y_tpn[0],cmllm_typ_ytpn[*,0]]
+nna2           = [ClMSLWBT_x_tpn[1],cmllm_typ_xtpn[*,1],$
+                  ClMSLWBT_y_tpn[1],cmllm_typ_ytpn[*,1]]
+nna            = [nna0,nna1,nna2]+norm_suff[0]
+options,                 nna,YRANGE=yran_xyn_all,YLOG=0,  /DEF
+;;  ZRANGE
+nna            = [x_iant_ang_tpn[0],y_iant_ang_tpn[0],$
+                  xian_ABCDM_tpn,yian_ABCDM_tpn,      $
+                  sun_ang_cw_tpn[0],thetaAx_cw_tpn[0],thetaAy_cw_tpn[0]]
+options,                 nna,ZRANGE=zran_ang_all,ZLOG=0,ZTITLE='Daily Counts',$
+                             ZTICKS=3,X_NO_INTERP=0,Y_NO_INTERP=0,/DEF
+;;  remove any remnant options
+nna0           = [xcnts_tpn[0],ycnts_tpn[0],$
+                  ClMSLWBT_x_tpn,cmllm_typ_xtpn[*,0],cmllm_typ_xtpn[*,1],$
+                  ClMSLWBT_y_tpn,cmllm_typ_ytpn[*,0],cmllm_typ_ytpn[*,1]]
+nna            = [nna0,nna0+norm_suff[0]]
+options,                 nna,'YLOG'  ;;  remove any remnant options
+nna            = [x_iant_ang_tpn[0],y_iant_ang_tpn[0],$
+                  xian_ABCDM_tpn,yian_ABCDM_tpn,      $
+                  sun_ang_cw_tpn[0],thetaAx_cw_tpn[0],thetaAy_cw_tpn[0]]
+options,                 nna,'X_NO_INTERP'  ;;  remove any remnant options
+options,                 nna,'X_NO_INTERP'  ;;  remove any remnant options
+options,                 nna,'NO_INTERP'    ;;  remove any remnant options
+;;  Initialize TPLOT
+nna0           = [xcnts_tpn[0],ycnts_tpn[0]]
+nna            = [nna0,nna0+norm_suff[0]]
+tplot,nna
+;;  Clean up
+dust_struct = 0
+
+
+
+RETURN
+END

@@ -1,0 +1,53 @@
+; PARAMETER SET
+; 
+; This file contains a list of tplot variables to be plotted by EVA.
+; Try various load procedures (e.g. thm_load_fgm) to see what
+; tplot variables you would like to plot.
+; 
+; In this file, the tplot variable names have additional rules
+; regarding to specifying probe(s) and plotting options.
+; 
+; PROBE: The third (or fourth in case of MMS) character 
+;        should be replaced with * if you would like
+;        to use EVA's widget to specify probes. For example,
+;         
+;        th*_fgs_gsm
+;        
+;        will plot 'thb_fgs_gsm' and 'thc_fgs_gsm' if "THB" and "THC"
+;        radio buttons were checked in the EVA's main panel.
+; 
+; DATA COMPONENT: If a quantity is a vector (e.g. magnetic field), then
+;        the tplot variable contains the entire quantity (e.g. Bx, By, and Bz)
+;        and shows all these component in a panel. Here, you can add a suffix 
+;        to extract only one component of the vector.
+;        
+;        _m:   magnitude. e.g. |B|
+;        _x:   x-component. e.g. Bx
+;        _y:   y-component. e.g. By
+;        _z:   z-component. e.g. Bz
+;        _p:   phi-angle. e.g. Bphi
+;        _t:   theta-angle. e.g. Btheta
+;        
+;        For example, 
+;        
+;        th*_fgs_gsm_y
+;  
+;        will plot only By component in a panel.
+; 
+; COMBINED COMPONENTS: If you would like to plot x-components from multiple probes,
+;        all in the same panel, use 'w' instead of '*'. For example,
+;        
+;        thw_fgs_gsm_y
+;        
+;        will plot By components of all probes (selected by radio-buttons)
+;        in one panel.
+
+
+th*_fgs_gsm  ; [Bx,By,Bz]
+;th*_peim_density ; density
+;th*_peim_velocity_gsm; velocity
+th*_peir_density ; density
+th*_peir_velocity_gsm ; [Vx, Vy, Vz]
+
+
+

@@ -1,0 +1,149 @@
+KPL/IK
+
+MAVEN antenna Instrument Kernel
+===============================================================================
+
+   This Instrument Kernel (IK) file contains parameters for MAVEN 
+   antenna instrument.
+
+
+Version and Date
+-------------------------------------------------------------------------------
+
+   Version n.n -- Month DD, YYYY -- Firstname Lastname, Team
+
+
+References
+-------------------------------------------------------------------------------
+
+   1. Kernel Pool Required Reading
+
+   2. GETFOV, getfoc_c, cspice_getfov headers
+
+   3. MAVEN FK file, latest version
+
+   4. <additional references, if any>
+
+
+Contact Information
+-------------------------------------------------------------------------------
+
+   Firstname Lastname, Team, phone, e-mail
+
+
+Implementation Notes
+-------------------------------------------------------------------------------
+
+   This file is used by the SPICE system as follows: programs that make
+   use of this kernel must ``load'' the kernel, normally during program
+   initialization. The SPICE routine FURNSH loads a kernel file into
+   the pool as shown below.
+
+      CALL FURNSH ( 'frame_kernel_name; )    -- FORTRAN
+      furnsh_c ( "frame_kernel_name" );      -- C
+      cspice_furnsh, frame_kernel_name       -- IDL
+      cspice_furnsh( 'frame_kernel_name' )   -- MATLAB
+
+   Once the file has been loaded, the SPICE routine GETFOV (getfov_c in
+   C, cspice_getfov in IDL and MATLAB) can be used to retrieve FOV
+   parameters for a given instrument or structure.
+ 
+   This file was created and may be updated with a text editor or word
+   processor.
+
+
+Naming Conventions
+----------------------------------------------------------
+
+   All names referencing values in this IK file start with the
+   characters `INS' followed by the NAIF MAVEN ID number (-202)
+   followed by a NAIF three digit ID code for antenna or one of 
+   its detectors or components. This is the full list of names 
+   and IDs described by this IK file:
+
+      MAVEN_HGA                       -202010
+      MAVEN_LGA_AFT                   -202040
+      MAVEN_LGA_FWD                   -202030
+      MAVEN_UHF                       -202020
+
+   The remainder of the keyword name is an underscore character
+   followed by the unique name of the data item. For example, the -202010
+   boresight direction provided as a part of its FOV definition is 
+   specified by:
+
+      INS-202010_BORESIGHT
+
+   The upper bound on the length of the name of any data item is 32
+   characters.
+ 
+   If the same item is included in more than one file, or if the same
+   item appears more than once within a single file, the latest value
+   supersedes any earlier values.
+
+
+Mounting Alignment
+--------------------------------------------------------
+
+   Refer to the latest version of the MAVEN Frames Definition Kernel
+   (FK) [3] for the MAVEN structures reference frame definitions and
+   mounting alignment information.
+
+
+Instrument Description
+---------------------------------------------------------
+
+   <TBD>
+
+
+Instrument FOV Definition(s)
+----------------------------------------------------------
+
+   This section defines the following FOVs:
+
+      ID       SHAPE      FRAME                  SIZE1  SIZE2   BSIGHT
+      -------  --------   ---------------------  -----  -----   ------
+      -202010  CIRCLE     MAVEN_HGA              10.     10.        +Z
+      -202040  CIRCLE     MAVEN_LGA_AFT         178.    178.        +Z
+      -202030  CIRCLE     MAVEN_LGA_FWD         178.    178.        +Z
+      -202020  CIRCLE     MAVEN_UHF             120.    120.        +Z
+
+   The FOVs are defined in this data block.
+
+      \begindata
+
+      INS-202010_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202010_FOV_SHAPE            = 'CIRCLE'
+      INS-202010_FOV_FRAME            = 'MAVEN_HGA'
+      INS-202010_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202010_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202010_FOV_REF_ANGLE        = ( 5.0 )
+      INS-202010_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202020_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202020_FOV_SHAPE            = 'CIRCLE'
+      INS-202020_FOV_FRAME            = 'MAVEN_UHF'
+      INS-202020_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202020_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202020_FOV_REF_ANGLE        = ( 60.0 )
+      INS-202020_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202030_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202030_FOV_SHAPE            = 'CIRCLE'
+      INS-202030_FOV_FRAME            = 'MAVEN_LGA_FWD'
+      INS-202030_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202030_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202030_FOV_REF_ANGLE        = ( 89.0 )
+      INS-202030_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202040_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202040_FOV_SHAPE            = 'CIRCLE'
+      INS-202040_FOV_FRAME            = 'MAVEN_LGA_AFT'
+      INS-202040_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202040_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202040_FOV_REF_ANGLE        = ( 89.0 )
+      INS-202040_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      \begintext
+
+End of the IK file.
+ 

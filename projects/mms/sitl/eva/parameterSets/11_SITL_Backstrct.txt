@@ -1,0 +1,4 @@
+mms*_dfg_srvy_gsm_dmpa
+mms*_fpi_ions ;.............. FPI
+mms*_fpi_electrons;........... FPI
+mms_stlm_bakstr; BAK (current) (being modified by a super-SITL)

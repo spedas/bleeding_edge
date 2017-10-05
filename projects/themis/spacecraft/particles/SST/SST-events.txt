@@ -1,0 +1,92 @@
+Significant Events in the life of SST.
+
+Turn on
+
+BGS_11M      THEMIS_C        9.5   2007/068 02:00:00  2007/068 02:30:00   TR13   # SST commissioning outside of radiation belts and pre-maneuver table loads
+BGS_11M      THEMIS_B        9.5   2007/068 03:20:00  2007/068 03:50:00   TR23   # SST commissioning outside of radiation belts and pre-maneuver table loads
+BGS_11M      THEMIS_A        9.5   2007/068 04:00:00  2007/068 04:30:00   TR23   # SST commissioning outside of radiation belts and pre-maneuver table loads
+BGS_11M      THEMIS_E        9.5   2007/068 04:40:00  2007/068 05:10:00   TR33   # SST commissioning outside of radiation belts and pre-maneuver table loads
+BGS_11M      THEMIS_C        9.5   2007/071 03:14:00  2007/071 03:52:00   TR6    # SST turn-on outside of radiation belts
+BGS_11M      THEMIS_C        9.5   2007/073 05:00:00  2007/073 05:30:00   TR15   # ETC re-initialization and SST commissioning
+BGS_11M      THEMIS_D        9.5   2007/073 05:35:00  2007/073 06:05:00   TR25   # SST commissioning outside of radiation belts
+BGS_11M      THEMIS_A        9.5   2007/073 23:20:00  2007/073 23:55:00   TR14   # SST commissioning outside of radiation belts
+BGS_11M      THEMIS_B        9.5   2007/074 00:00:00  2007/074 00:45:00   TR24   # SST commissioning outside of radiation belts - changed data rate to 32K
+BGS_11M      THEMIS_E        9.5   2007/074 00:50:00  2007/074 01:35:00   TR34   # SST commissioning outside of radiation belts - changed data rate to 32K
+
+
+BGS_11M      THEMIS_D      9.500   2007/086 20:20:00  2007/086 20:30:00   TR15   # SOH check and track - dump SST HSK memory from ETC
+BGS_11M      THEMIS_B      9.500   2007/086 20:35:00  2007/086 21:05:00   TR25   # Pre-maneuver pass - upload maneuver tables, turn off SSTs and ESA HV supplies
+BGS_11M      THEMIS_C      9.500   2007/086 21:45:00  2007/086 22:15:00   TR25   # Pre-maneuver pass - upload maneuver tables, turn off SSTs and ESA HV supplies
+
+BGS_11M      THEMIS_A      9.500   2007/088 02:15:00  2007/088 02:35:00   TR15   # Pre-maneuver pass - upload maneuver tables, turn off SSTs and ESA HV supplies
+BGS_11M      THEMIS_D      9.500   2007/088 02:40:00  2007/088 03:00:00   TR25   # Pre-maneuver pass - upload maneuver tables, turn off SSTs and ESA HV supplies
+BGS_11M      THEMIS_E      9.500   2007/088 03:05:00  2007/088 03:25:00   TR35   # Pre-maneuver pass - upload maneuver tables, turn off SSTs and ESA HV supplies
+
+skip lots...
+
+BGS_11M      THEMIS_D      9.500   2007/129 15:50:00  2007/129 16:35:00   TR10   # Data dump - re-enable SST digital housekeeping
+BGS_11M      THEMIS_B      9.500   2007/166 22:15:00  2007/166 22:30:00   TR14   # SOH check and track - closed SST attenuators and loaded missing RTS49 - blind acquisition
+
+
+BGS_11M      THEMIS_A      9.500   2007/172 00:00:00  2007/172 00:30:00   TR4    # SOH check and track - SST sun blanking test outside of 8 RE - blind acquisition
+
+AGO_9M       THEMIS_C      9.500   2007/173 17:40:00  2007/173 18:00:00   TR4    # SOH check and track - SST sun blanking test outside of 8 RE - adjust EFI biases
+AGO_9M       THEMIS_D      9.500   2007/173 18:20:00  2007/173 18:40:00   TR4    # SOH check and track - SST sun blanking test outside of 8 RE - adjust EFI biases
+BGS_11M      THEMIS_B      9.500   2007/173 18:40:00  2007/173 19:00:00   TR4    # SOH check and track - SST sun blanking test outside of 8 RE - blind acquisition
+AGO_9M       THEMIS_E      9.500   2007/173 19:00:00  2007/173 19:20:00   TR4    # SOH check and track - SST sun blanking test outside of 8 RE - adjust EFI biases
+
+BGS_11M      THEMIS_C      9.500   2007/204 20:20:00  2007/204 20:50:00   TR5    # SOH check and track - test SST attenuator motions - blind acquisition
+
+2007/235   -  2007/8/22-23   SST attenuators not closed for 3 orbits - all spacecraft 
+
+
+BGS_11M      THEMIS_E      9.500   2007/244 19:40:00  2007/244 19:55:00   TR12   # SOH check and track - post-maneuver ESA operations - SST attenuators remain closed
+BGS_11M      THEMIS_B      9.500   2007/244 20:00:00  2007/244 20:14:00   TR32   # SOH check and track - post-maneuver ESA operations - SST attenuators remain closed
+BGS_11M      THEMIS_A      9.500   2007/244 22:00:00  2007/244 22:15:00   TR12   # SOH check and track - post-maneuver ESA operations - SST attenuators remain closed
+BGS_11M      THEMIS_C      9.500   2007/244 22:20:00  2007/244 22:35:00   TR22   # SOH check and track - post-maneuver ESA operations - SST attenuators remain closed
+BGS_11M      THEMIS_D      9.500   2007/244 22:40:00  2007/244 22:55:00   TR32   # SOH check and track - post-maneuver ESA operations - SST attenuators remain closed
+
+SST Bias tests
+
+BGS_11M      THEMIS_C        9.5   2007/305 19:15:00  2007/305 19:45:00   TR22   # SOH check and track [JM] - SST bias test - ICCR_MML27
+BGS_11M      THEMIS_B        9.5   2007/305 19:50:00  2007/305 20:10:00   TR22   # SOH check and track [JM] - SST bias test - ICCR_MML27 - blind acquisition
+BGS_11M      THEMIS_E        9.5   2007/306 17:00:00  2007/306 17:20:00   TR15   # SOH check and track [JW] - ESA MCP gain toggle test - ICCR_MML07 - SST bias test - ICCR_MML27
+BGS_11M      THEMIS_D        9.5   2007/306 17:25:00  2007/306 17:45:00   TR35   # SOH check and track [JW] - ESA MCP gain toggle test - ICCR_MML07 - SST bias test - ICCR_MML27
+BGS_11M      THEMIS_A        9.5   2007/306 18:20:00  2007/306 18:40:00   TR5    # SOH check and track [JW] - ESA MCP gain toggle test - ICCR_MML07 - SST bias test - ICCR_MML27 - blind acquisition
+
+
+BGS_11M      THEMIS_D      9.500   2007/333 17:10:00  2007/333 17:30:00   TR12   # SOH check and track [JM] - SST bias test - ICCR_MML36
+BGS_11M      THEMIS_E      9.500   2007/333 17:35:00  2007/333 17:55:00   TR32   # SOH check and track [JM] - SST bias test - ICCR_MML36 - upload IDPU FSW patch 0x49 - ICCR_MML37 - blind acquisition
+
+BGS_11M      THEMIS_C      9.500   2007/333 18:30:00  2007/333 18:50:00   TR12   # SOH check and track [JM] - SST bias test - ICCR_MML36 - blind acquisition
+BGS_11M      THEMIS_B      9.500   2007/333 18:55:00  2007/333 19:15:00   TR32   # SOH check and track [JM] - SST bias test - ICCR_MML36 - blind acquisition
+
+BGS_11M      THEMIS_A      9.500   2007/333 20:15:00  2007/333 20:36:00   TR8    # Data dump [JM] - expect decreasing bit errors for first 9 min - blind acquisition
+BGS_11M      THEMIS_A      9.500   2007/333 20:50:00  2007/333 21:13:00   TR9    # Data dump [JM] - upload IDPU FSW patch 0x49 - ICCR_MML37
+
+BGS_11M      THEMIS_D      9.500   2007/333 23:12:00  2007/333 23:33:00   TR10   # Data dump [JM]
+BGS_11M      THEMIS_E      9.500   2007/334 01:17:00  2007/334 01:32:00   TR10   # Data dump [JM] - finish SST bias test - ICCR_MML36
+HBK_10M      THEMIS_A      9.500   2007/334 23:30:00  2007/335 00:00:00   TR2    # SOH check and track [JM] - SST bias test - ICCR_MML36 - blind acquisition
+
+
+BGS_11M      THEMIS_D      9.500   2007/340 22:46:00  2007/340 23:08:00   TR10   # Data dump [ME] - change SST bias to 0xA0 - ICCR_MML40
+
+BGS_11M      THEMIS_E      9.500   2007/341 00:56:00  2007/341 01:06:00   TR10   # Data dump [ME] - change SST bias to 0xA0 - ICCR_MML40 - blind acquisition
+TDRS_5       THEMIS_A      9.500   2007/341 22:07:00  2007/341 22:27:00   TR2    # SOH check and track [JT] -
+                                                                                 # P5 AM1A reor-fire-reor sequence canceled due to post-power outage recovery problems on open SSL network -
+                                                                                 # change SST bias to 0xA0 - ICCR_MML40
+
+BGS_11M      THEMIS_B      9.500   2007/342 02:19:00  2007/342 02:50:00   TR10   # Data dump [JM] - change SST bias to 0xA0 - ICCR_MML40
+AGO_9M       THEMIS_C      9.500   2007/345 22:42:00  2007/345 23:09:00   TR10   # Data dump [JM] - VC3 only - change SST bias to 0xA0 - ICCR_MML40 - blind acquisition
+BGS_11M      THEMIS_C      9.500   2008/077 23:00:00  2008/077 23:20:00   TR2    # SOH check and track [JM] - first test of automated SST attenuator motions - outbound leg of orbit - test successful
+
+BGS_11M      THEMIS_A      2.510   2008/085 23:51:05  2008/086 00:11:05   TR2    # SOH check and track [JT] - disable SST sun pulse blanking - ICCR_DOP56
+
+AGO_9M       THEMIS_C      9.300   2008/087 14:44:00  2008/087 15:05:00   TR10   # Data dump [JM] - disable SST sun pulse blanking - ICCR_DOP56
+
+BGS_11M      THEMIS_E      9.500   2008/087 17:42:00  2008/087 18:02:25   TR10   # Data dump [JM] - disable SST sun pulse blanking - ICCR_DOP56
+
+BGS_11M      THEMIS_B      2.910   2008/087 23:58:05  2008/088 00:18:05   TR2    # SOH check and track [JM] - disable SST sun pulse blanking - ICCR_DOP56
+BGS_11M      THEMIS_D      2.710   2008/088 00:32:55  2008/088 00:52:55   TR2    # SOH check and track [JM] - disable SST sun pulse blanking - ICCR_DOP56
+
+2008-april-2 auto attenuator motions on all s/c

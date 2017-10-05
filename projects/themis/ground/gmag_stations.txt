@@ -1,0 +1,310 @@
+aari|AARI||
+asi|ASI||
+autu|AUTUMN||
+autx|AUTUMNX||
+carisma|CARISMA||
+cgsm|CGSM||
+dtu|DTU||
+gima|GIMA||
+falcon|FALCON||
+fmi|FMI||
+kyoto|KYOTO||
+leirv|Leirvogur||
+maccs|MACCS||
+mcmac|McMAC||
+nrcan|NRCan||
+pen|PENGUIn||
+sgu|SGU||
+step|STEP||
+tgo|TGO||
+ae|Themis AE||
+aeold|Themis AE (pre 2015)||
+epo|Themis EPO||
+gbo|Themis GBO||
+usgs|USGS||
+kyoto|KYOTO|abk|Abisko, Sweden
+sgu|SGU|abk|Abisko, Sweden
+autx|AUTUMNX|akul|Akulivik, QC
+ae|Themis AE|amd|Amderma, Russia
+aari|AARI|amd|Amderma, Russia
+mcmac|McMAC|amer|Americus, KS
+dtu|DTU|amk|Tasiilaq, Greenland
+ae|Themis AE|and|Andenes, Norway
+tgo|TGO|and|Andenes, Norway
+gima|GIMA|arct|Arctic Village, AK
+ae|Themis AE|atha|Athabasca, AB
+aeold|Themis AE (pre 2015)|atha|Athabasca, AB
+asi|ASI|atha|Athabasca, AB
+carisma|CARISMA|atha|Athabasca, AB
+dtu|DTU|atu|Attu, Greenland
+aari|AARI|bbg|Barentsburg, Russia
+mcmac|McMAC|benn|Bennington, NE
+gima|GIMA|bett|Bettles, AK
+dtu|DTU|bfe|Brorfelde, Denmark
+tgo|TGO|bjn|Bjœóõ½rnœóõ½ya, Norway
+nrcan|NRCan|blc|Baker Lake, NU
+epo|Themis EPO|bmls|Bay Mills, MI
+usgs|USGS|bou|Boulder, CO
+aari|AARI|brn|Baronov, Russia
+ae|Themis AE|brw|Point Barrow, AK
+kyoto|KYOTO|brw|Point Barrow, AK
+usgs|USGS|brw|Point Barrow, AK
+usgs|USGS|bsl|NASA Stennis Space Center, MS
+nrcan|NRCan|cbb|Cambridge Bay, NU
+epo|Themis EPO|ccnv|Carson City, NV
+maccs|MACCS|cdrt|Cape Dorset, NU
+aeold|Themis AE (pre 2015)|chbg|Chibougamau, QC
+gbo|Themis GBO|chbg|Chibougamau, QC
+asi|ASI|chbg|Chibougamau, QC
+ae|Themis AE|cigo|College Intl Geo. Observ, AK
+gima|GIMA|cigo|College Intl Geo. Observ, AK
+kyoto|KYOTO|cmo|Fairbanks, AK
+usgs|USGS|cmo|Fairbanks, AK
+maccs|MACCS|crvr|Clyde River, NU
+ae|Themis AE|ded|Dead Horse, AK
+usgs|USGS|ded|Dead Horse, AK
+ae|Themis AE|dik|Dikson, Russia
+aari|AARI|dik|Dikson, Russia
+kyoto|KYOTO|dik|Dikson, Russia
+ae|Themis AE|dmh|Danmarkshavn, Greenland
+dtu|DTU|dmh|Danmarkshavn, Greenland
+dtu|DTU|dnb|Daneborg, Greenland
+ae|Themis AE|dob|Dombas, Norway
+tgo|TGO|dob|Dombas, Norway
+tgo|TGO|don|Dœóõ½nna, Norway
+epo|Themis EPO|drby|Derby, VT
+gima|GIMA|eagl|Eagle, AK
+aeold|Themis AE (pre 2015)|ekat|Ekati, NT
+gbo|Themis GBO|ekat|Ekati, NT
+asi|ASI|ekat|Ekati, NT
+cgsm|CGSM|fcc|Fort Churchill, MB
+kyoto|KYOTO|fcc|Fort Churchill, MB
+nrcan|NRCan|fcc|Fort Churchill, MB
+dtu|DTU|fhb|Paamiut, Greenland
+usgs|USGS|frd|Corbin, VA
+usgs|USGS|frn|Fresno, CA
+ae|Themis AE|fsim|Fort Simpson, NT
+aeold|Themis AE (pre 2015)|fsim|Fort Simpson, NT
+asi|ASI|fsim|Fort Simpson, NT
+cgsm|CGSM|fsim|Fort Simpson, NT
+carisma|CARISMA|fsim|Fort Simpson, NT
+step|STEP|fsj|Fort Saint John, BC
+ae|Themis AE|fsmi|Fort Smith, NT
+aeold|Themis AE (pre 2015)|fsmi|Fort Smith, NT
+asi|ASI|fsmi|Fort Smith, NT
+cgsm|CGSM|fsmi|Fort Smith, NT
+carisma|CARISMA|fsmi|Fort Smith, NT
+step|STEP|ftn|Fort Nelson, BC
+ae|Themis AE|fykn|Fort Yukon, AK
+aeold|Themis AE (pre 2015)|fykn|Fort Yukon, AK
+asi|ASI|fykn|Fort Yukon, AK
+gima|GIMA|fykn|Fort Yukon, AK
+epo|Themis EPO|fyts|Fort Yates, ND
+aeold|Themis AE (pre 2015)|gako|Gakona, AK
+asi|ASI|gako|Gakona, AK
+gima|GIMA|gako|Gakona, AK
+aeold|Themis AE (pre 2015)|gbay|Goose Bay, NL
+gbo|Themis GBO|gbay|Goose Bay, NL
+asi|ASI|gbay|Goose Bay, NL
+dtu|DTU|gdh|Qeqertarsuaq, Greenland
+dtu|DTU|ghb|Nuuk, Greenland
+ae|Themis AE|gill|Gillam, MB
+aeold|Themis AE (pre 2015)|gill|Gillam, MB
+asi|ASI|gill|Gillam, MB
+cgsm|CGSM|gill|Gillam, MB
+carisma|CARISMA|gill|Gillam, MB
+maccs|MACCS|gjoa|Gjoa Haven, NU
+mcmac|McMAC|glyn|Glyndon, MN
+usgs|USGS|gua|Dededo, Guam
+fmi|FMI|han|Hankasalmi, Finland
+gima|GIMA|hlms|High Lat Monitoring Station, AK
+gima|GIMA|homr|Homer, AK
+usgs|USGS|hon|Honolulu, HI
+ae|Themis AE|hop|Hopen, Norway
+tgo|TGO|hop|Hopen, Norway
+epo|Themis EPO|hots|Hot Springs, MT
+step|STEP|hrp|Hornepayne, ON
+dtu|DTU|hov|Faroe Islands, Denmark
+falcon|FALCON|hris|Harris, MN
+maccs|MACCS|iglo|Igloolik, NU
+ae|Themis AE|inuk|Inukjuak, QC
+autx|AUTUMNX|inuk|Inukjuak, QC
+ae|Themis AE|inuv|Inuvik, NT
+aeold|Themis AE (pre 2015)|inuv|Inuvik, NT
+gbo|Themis GBO|inuv|Inuvik, NT
+asi|ASI|inuv|Inuvik, NT
+nrcan|NRCan|iqa|Iqaluit, NU
+fmi|FMI|iva|Ivalo, Finland
+tgo|TGO|jan|Jan Mayen, Norway
+ae|Themis AE|jck|Jackvik, Sweden
+tgo|TGO|jck|Jackvik, Sweden
+ae|Themis AE|kako|Kaktovik, AK
+gima|GIMA|kako|Kaktovik, AK
+aeold|Themis AE (pre 2015)|kapu|Kapuskasing, ON
+gbo|Themis GBO|kapu|Kapuskasing, ON
+asi|ASI|kapu|Kapuskasing, ON
+tgo|TGO|kar|Karmœóõ½y, Norway
+gima|GIMA|kena|Kenai College, AK
+fmi|FMI|kev|Kevo, Finland
+ae|Themis AE|kian|Kiana, AK
+aeold|Themis AE (pre 2015)|kian|Kiana, AK
+gbo|Themis GBO|kian|Kiana, AK
+asi|ASI|kian|Kiana, AK
+fmi|FMI|kil|Kilpisjarvi, Finland
+autx|AUTUMNX|kjpk|Kuujjuarapik, QC
+falcon|FALCON|kodk|Kodiak Island, AK
+aeold|Themis AE (pre 2015)|kuuj|Kuujjuaq, QC
+gbo|Themis GBO|kuuj|Kuujjuaq, QC
+asi|ASI|kuuj|Kuujjuaq, QC
+ae|Themis AE|kuv|Kullorsuaq, Greenland
+dtu|DTU|kuv|Kullorsuaq, Greenland
+autu|AUTUMN|larg|La Ronge, SK
+step|STEP|lcl|Lucky Lake, SK
+ae|Themis AE|leth|Lethbridge, AB
+autu|AUTUMN|leth|Lethbridge, AB
+epo|Themis EPO|loys|Loysburg, PA
+aari|AARI|loz|Lovozero, Russia
+falcon|FALCON|lrel|Laurel, MD
+mcmac|McMAC|lres|Linares, Mexico
+step|STEP|lrg|LaRonge, SK
+ae|Themis AE|lrv|Leirvogur, Iceland
+kyoto|KYOTO|lrv|Leirvogur, Iceland
+leirv|Leirvogur|lrv|Leirvogur, Iceland
+mcmac|McMAC|lyfd|Lyford, TX
+tgo|TGO|lyr|Longyarbyen, Norway
+fmi|FMI|mas|Masi, Finland
+aeold|Themis AE (pre 2015)|mcgr|Mcgrath, AK
+gbo|Themis GBO|mcgr|Mcgrath, AK
+asi|ASI|mcgr|Mcgrath, AK
+nrcan|NRCan|mea|Meanook, AB
+fmi|FMI|mek|Mekrijarvi, Finland
+fmi|FMI|muo|Muono, Finland
+ae|Themis AE|nain|Nain, NL
+maccs|MACCS|nain|Nain, NL
+ae|Themis AE|nal|Ny œóõ½lesund, Norway
+tgo|TGO|nal|Ny œóõ½lesund, Norway
+ae|Themis AE|naq|Narsarsuaq, Greenland
+asi|ASI|naq|Narsarsuaq, Greenland
+dtu|DTU|naq|Narsarsuaq, Greenland
+kyoto|KYOTO|naq|Narsarsuaq, Greenland
+usgs|USGS|new|Colville National Forest, WA
+ae|Themis AE|nor|Nordkapp, Norway
+tgo|TGO|nor|Nordkapp, Norway
+dtu|DTU|nrd|Nord, Greenland
+asi|ASI|nrsq|Narsarsuaq, Greenland
+dtu|DTU|nrsq|Narsarsuaq, Greenland
+fmi|FMI|nur|Nurmijarvi, Finland
+nrcan|NRCan|ott|Ottawa, ON
+fmi|FMI|ouj|Oulujarvi, Finland
+maccs|MACCS|pang|Pangnirtung, NU
+ae|Themis AE|pbk|Pevek, Russia
+aari|AARI|pbk|Pevek, Russia
+kyoto|KYOTO|pbk|Pevek, Russia
+falcon|FALCON|pblo|Pueblo, CO
+mcmac|McMAC|pcel|Purcell, OK
+fmi|FMI|pel|Pello, Finland
+pen|PENGUIn|pg0|Antarctica
+pen|PENGUIn|pg1|Antarctica
+pen|PENGUIn|pg2|Antarctica
+pen|PENGUIn|pg3|Antarctica
+pen|PENGUIn|pg4|Antarctica
+pen|PENGUIn|pg5|Antarctica
+aeold|Themis AE (pre 2015)|pgeo|Prince George, BC
+epo|Themis EPO|pgeo|Prince George, BC
+asi|ASI|pgeo|Prince George, BC
+aeold|Themis AE (pre 2015)|pina|Pinawa, MB
+asi|ASI|pina|Pinawa, MB
+cgsm|CGSM|pina|Pinawa, MB
+carisma|CARISMA|pina|Pinawa, MB
+epo|Themis EPO|pine|Pine Ridge, SD
+step|STEP|pks|Parkside, SK
+gima|GIMA|pokr|Poker Flat, AK
+epo|Themis EPO|ptrs|Petersburg, AK
+autx|AUTUMNX|puvr|Puvirnituq, QC
+autx|AUTUMNX|radi|Radisson, QC
+fmi|FMI|ran|Ranua, Finland
+ae|Themis AE|rank|Rankin Inlet, NU
+aeold|Themis AE (pre 2015)|rank|Rankin Inlet, NU
+asi|ASI|rank|Rankin Inlet, NU
+cgsm|CGSM|rank|Rankin Inlet, NU
+carisma|CARISMA|rank|Rankin Inlet, NU
+ae|Themis AE|rbay|Repulse Bay, NU
+maccs|MACCS|rbay|Repulse Bay, NU
+autu|AUTUMN|redr|Red Deer, AB
+mcmac|McMAC|rich|Richardson, TX
+epo|Themis EPO|rmus|Remus, MI
+ae|Themis AE|roe|Rœóõ½mœóõ½, Denmark
+dtu|DTU|roe|Rœóõ½mœóõ½, Denmark
+autu|AUTUMN|roth|Priddis, AB
+tgo|TGO|rvk|Rœóõ½rvik, Norway
+ae|Themis AE|salu|Salluit, QC
+autx|AUTUMNX|salu|Salluit, QC
+mcmac|McMAC|satx|San Antonio, TX
+autx|AUTUMNX|schf|Schefferville, QC
+dtu|DTU|sco|Ittoqqortoormiit, Greenland
+ae|Themis AE|sept|Sept Iles, QC
+autx|AUTUMNX|sept|Sept Iles, QC
+ae|Themis AE|shu|Sand Point, AK
+usgs|USGS|shu|Sand Point, AK
+ae|Themis AE|sit|Sitka, AK
+usgs|USGS|sit|Sitka, AK
+usgs|USGS|sjg|Cayey, Puerto Rico
+dtu|DTU|skt|Maniitsoq, Greenland
+aeold|Themis AE (pre 2015)|snap|Snap Lake, NT
+gbo|Themis GBO|snap|Snap Lake, NT
+asi|ASI|snap|Snap Lake, NT
+aeold|Themis AE (pre 2015)|snkq|Sanikiluaq, NU
+asi|ASI|snkq|Sanikiluaq, NU
+cgsm|CGSM|snkq|Sanikiluaq, NU
+kyoto|KYOTO|snkq|Sanikiluaq, NU
+carisma|CARISMA|snkq|Sanikiluaq, NU
+ae|Themis AE|sol|Solund, Norway
+tgo|TGO|sol|Solund, Norway
+tgo|TGO|sor|Sœóõ½rœóõ½ya, Norway
+ae|Themis AE|stf|Kangerlussuaq, Greenland
+dtu|DTU|stf|Kangerlussuaq, Greenland
+falcon|FALCON|stfd|Stanford, CA
+autx|AUTUMNX|stfl|Saint-Felicien, QC
+nrcan|NRCan|stj|St. John, NL
+dtu|DTU|sum|Summit Icecap, Greenland
+dtu|DTU|svs|Savissivik, Greenland
+epo|Themis EPO|swno|Shawano, WI
+dtu|DTU|tab|Thule Air Fore Base, Greenland
+asi|ASI|talo|Taloyoak, NT
+cgsm|CGSM|talo|Taloyoak, NT
+fmi|FMI|tar|Tartu, Estonia
+dtu|DTU|tdc|Tristan Da Cunha (South Atlantic)
+ae|Themis AE|thl|Qaanaaq, Greenland
+dtu|DTU|thl|Qaanaaq, Greenland
+ae|Themis AE|tik|Tiksi, Russia
+aari|AARI|tik|Tiksi, Russia
+kyoto|KYOTO|tik|Tiksi, Russia
+gima|GIMA|tool|Toolik Lake, AK
+aeold|Themis AE (pre 2015)|tpas|The Pas, MB
+gbo|Themis GBO|tpas|The Pas, MB
+asi|ASI|tpas|The Pas, MB
+ae|Themis AE|trap|Trapper Creek, AK
+gima|GIMA|trap|Trapper Creek, AK
+tgo|TGO|tro|Tromsœóõ½, Norway
+usgs|USGS|tuc|Tucson, AZ
+epo|Themis EPO|ukia|Ukiah, OR
+dtu|DTU|umq|Uummannaq, Greenland
+dtu|DTU|upn|Upernavik, Greenland
+nrcan|NRCan|vic|Victoria, BC
+aari|AARI|viz|Vize Island, Russia
+ae|Themis AE|vldr|Val-d'Or, QC
+autu|AUTUMN|vldr|Val-d'Or, QC
+autx|AUTUMNX|vldr|Val-d'Or, QC
+ae|Themis AE|whit|Whitehorse, YT
+aeold|Themis AE (pre 2015)|whit|Whitehorse, YT
+gbo|Themis GBO|whit|Whitehorse, YT
+asi|ASI|whit|Whitehorse, YT
+step|STEP|whs|Whitehorse, YT
+falcon|FALCON|wlps|Wallops Island, VA
+mcmac|McMAC|wrth|Worthington, MN
+cgsm|CGSM|ykc|Yellowknife, NT
+kyoto|KYOTO|ykc|Yellowknife, NT
+nrcan|NRCan|ykc|Yellowknife, NT
+aeold|Themis AE (pre 2015)|yknf|Yellowknife, NT
+gbo|Themis GBO|yknf|Yellowknife, NT
+asi|ASI|yknf|Yellowknife, NT

@@ -1,0 +1,4 @@
+project: OMNI
+load_data: omni_ui_load_data
+config: omni_fileconfig
+about: omni_about.txt

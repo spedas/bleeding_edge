@@ -1,0 +1,39 @@
+The Export to Image Menu allows you to generate an image file of your 
+currently active page.   The SPEDAS GUI supports the following file types:  
+Portable Network Graphics (.png), Encapsulated Postscript (.eps), Windows 
+Meta-File (.emf, Windows Only), Windows Bitmap (.bmp), Graphics Interchange 
+Format (.gif), Joint Photographic Experts Format/JPEG (.jpg), JPEG 2000 
+(.jp2), Apple PICT format (.pic).
+
+The directory to which you will output is listed at the top.  The 'Arrow' 
+button will allow you to move up one directory.  You can also edit the 
+directory by typing directly into the directory field, or selecting the 
+desired directory from the directory list below. The file name for output 
+is listed in the text box at the bottom.  Change the output format by 
+selecting a different type from the 'Save As' dropdown menu at the bottom.  
+The 'Options' button will show the graphics output options for the selected 
+file type.  These options will change depending on the file type.  They 
+involve things like the size and resolution of the output file.  
+When you are ready to actually save the file, select the 'Save' button, 
+and the requested file will be saved to the selected directory.  If you 
+change your mind select the 'Cancel' button or the 'X' in the corner. 
+
+NOTES:  
+1)  .EPS and .EMF both support vector output.  A file produced with vector 
+  output can be resized without pixelation, and can be edited in Illustrator 
+  (or similar programs) e.g. text (labels, titles) that appear in the 
+  document can be edited directly as text objects, fonts can be changed,
+  line color can be edited.
+  To turn on vector output for either of these format types, press the
+  'Options' button and select 'Vector'.  
+2)  If vector output is selected for .EPS or .EMF format, text that runs of the
+  edge of the page will not appear in the saved image file e.g. if part of a 
+  y-axis label is cut off the left hand side of the active page, the entire 
+  label will not appear in the saved file.
+  Page margins can be easily changed under Graph->Page Options, Layout tab,
+  to ensure all labels are visible on the page.
+   
+3)  Setting line plot resolution at or past 70% can make the file unreadable due 
+  to the size of the file. 
+ 
+

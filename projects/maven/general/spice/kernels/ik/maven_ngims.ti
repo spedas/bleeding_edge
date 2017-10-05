@@ -1,0 +1,177 @@
+KPL/IK
+
+MAVEN NGIMS Instrument Kernel
+===============================================================================
+
+   This Instrument Kernel (IK) file contains parameters for MAVEN 
+   NGIMS instrument.
+
+
+Version and Date
+-------------------------------------------------------------------------------
+
+   Version n.n -- Month DD, YYYY -- Firstname Lastname, Team
+
+
+References
+-------------------------------------------------------------------------------
+
+   1. Kernel Pool Required Reading
+
+   2. GETFOV, getfoc_c, cspice_getfov headers
+
+   3. MAVEN FK file, latest version
+
+   4. <additional references, if any>
+
+
+Contact Information
+-------------------------------------------------------------------------------
+
+   Firstname Lastname, Team, phone, e-mail
+
+
+Implementation Notes
+-------------------------------------------------------------------------------
+
+   This file is used by the SPICE system as follows: programs that make
+   use of this kernel must ``load'' the kernel, normally during program
+   initialization. The SPICE routine FURNSH loads a kernel file into
+   the pool as shown below.
+
+      CALL FURNSH ( 'frame_kernel_name; )    -- FORTRAN
+      furnsh_c ( "frame_kernel_name" );      -- C
+      cspice_furnsh, frame_kernel_name       -- IDL
+      cspice_furnsh( 'frame_kernel_name' )   -- MATLAB
+
+   Once the file has been loaded, the SPICE routine GETFOV (getfov_c in
+   C, cspice_getfov in IDL and MATLAB) can be used to retrieve FOV
+   parameters for a given instrument or structure.
+ 
+   This file was created and may be updated with a text editor or word
+   processor.
+
+
+Naming Conventions
+----------------------------------------------------------
+
+   All names referencing values in this IK file start with the
+   characters `INS' followed by the NAIF MAVEN ID number (-202)
+   followed by a NAIF three digit ID code for NGIMS or one of 
+   its detectors or components. This is the full list of names 
+   and IDs described by this IK file:
+
+      MAVEN_NGIMS                     -202530
+      MAVEN_NGIMS_OPEN                -202531
+      MAVEN_NGIMS_CLOSED              -202532
+      MAVEN_NGIMS_EXHAUST             -202533
+      MAVEN_NGIMS_BASE                -202535
+
+   The remainder of the keyword name is an underscore character
+   followed by the unique name of the data item. For example, the -202531
+   boresight direction provided as a part of its FOV definition is 
+   specified by:
+
+      INS-202531_BORESIGHT
+
+   The upper bound on the length of the name of any data item is 32
+   characters.
+ 
+   If the same item is included in more than one file, or if the same
+   item appears more than once within a single file, the latest value
+   supersedes any earlier values.
+
+
+Mounting Alignment
+--------------------------------------------------------
+
+   Refer to the latest version of the MAVEN Frames Definition Kernel
+   (FK) [3] for the MAVEN structures reference frame definitions and
+   mounting alignment information.
+
+
+Instrument Description
+---------------------------------------------------------
+
+   <TBD>
+
+
+Instrument Detector/Sensor Layout (if applicable)
+----------------------------------------------------------
+
+   <TBD>
+
+
+Instrument Pixel-to-3D Coordinate Mapping (if applicable)
+----------------------------------------------------------
+
+   <TBD>
+
+
+Instrument Detector/Sensor Parameters (if applicable)
+----------------------------------------------------------
+
+   <TBD>
+
+
+Instrument Optical Parameters (if applicable)
+----------------------------------------------------------
+
+   <TBD>
+
+
+Instrument Optical Distortion (if applicable)
+----------------------------------------------------------
+
+   <TBD>
+
+
+Instrument Filter Parameters (if applicable)
+----------------------------------------------------------
+
+   <TBD>
+
+
+Instrument FOV Definition(s)
+----------------------------------------------------------
+
+   This section defines the following FOVs:
+
+      ID       SHAPE      FRAME                  SIZE1  SIZE2   BSIGHT
+      -------  --------   ---------------------  -----  -----   ------
+      -202532  CIRCLE     MAVEN_NGIMS           178.    178.        +Z
+      -202533  CIRCLE     MAVEN_NGIMS           178.    178.    +X
+      -202531  CIRCLE     MAVEN_NGIMS            16.     16.        +Z
+
+   The FOVs are defined in this data block.
+
+      \begindata
+
+      INS-202531_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202531_FOV_SHAPE            = 'CIRCLE'
+      INS-202531_FOV_FRAME            = 'MAVEN_NGIMS'
+      INS-202531_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202531_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202531_FOV_REF_ANGLE        = ( 8.0 )
+      INS-202531_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202532_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202532_FOV_SHAPE            = 'CIRCLE'
+      INS-202532_FOV_FRAME            = 'MAVEN_NGIMS'
+      INS-202532_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202532_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202532_FOV_REF_ANGLE        = ( 89.0 )
+      INS-202532_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202533_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202533_FOV_SHAPE            = 'CIRCLE'
+      INS-202533_FOV_FRAME            = 'MAVEN_NGIMS'
+      INS-202533_BORESIGHT            = ( 1.0, 0.0, 0.0 )
+      INS-202533_FOV_REF_VECTOR       = ( 0.0, 0.0, 1.0 )
+      INS-202533_FOV_REF_ANGLE        = ( 89.0 )
+      INS-202533_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      \begintext
+
+End of the IK file.
+ 

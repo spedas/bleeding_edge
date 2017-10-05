@@ -1,0 +1,494 @@
+KPL/IK
+
+MAVEN SWEA Instrument Kernel
+===============================================================================
+
+   This Instrument Kernel (IK) file contains parameters for MAVEN 
+   SWEA instrument.
+
+
+Version and Date
+-------------------------------------------------------------------------------
+
+   Version 1.0 -- February 14, 2014 -- David L. Mitchell, SWEA Lead
+
+
+References
+-------------------------------------------------------------------------------
+
+   1. Kernel Pool Required Reading
+
+   2. GETFOV, getfoc_c, cspice_getfov headers
+
+   3. MAVEN FK file, latest version
+
+   4. <additional references, if any>
+
+
+Contact Information
+-------------------------------------------------------------------------------
+
+   David L. Mitchell, SWEA Lead, 510-643-1561, mitchell@ssl.berkeley.edu
+
+
+Implementation Notes
+-------------------------------------------------------------------------------
+
+   This file is used by the SPICE system as follows: programs that make
+   use of this kernel must ``load'' the kernel, normally during program
+   initialization. The SPICE routine FURNSH loads a kernel file into
+   the pool as shown below.
+
+      CALL FURNSH ( 'frame_kernel_name; )    -- FORTRAN
+      furnsh_c ( "frame_kernel_name" );      -- C
+      cspice_furnsh, frame_kernel_name       -- IDL
+      cspice_furnsh( 'frame_kernel_name' )   -- MATLAB
+
+   Once the file has been loaded, the SPICE routine GETFOV (getfov_c in
+   C, cspice_getfov in IDL and MATLAB) can be used to retrieve FOV
+   parameters for a given instrument or structure.
+ 
+   This file was created and may be updated with a text editor or word
+   processor.
+
+
+Naming Conventions
+----------------------------------------------------------
+
+   All names referencing values in this IK file start with the
+   characters `INS' followed by the NAIF MAVEN ID number (-202)
+   followed by a NAIF three digit ID code for SWEA or one of 
+   its detectors or components. This is the full list of names 
+   and IDs described by this IK file:
+
+      MAVEN_SWEA                      -202130
+      MAVEN_SWEA_FRONT                -202131
+      MAVEN_SWEA_BACK                 -202132
+
+   The remainder of the keyword name is an underscore character
+   followed by the unique name of the data item. For example, the 
+   -202131 boresight direction provided as a part of its FOV 
+   definition is specified by:
+
+      INS-202131_BORESIGHT
+
+   The upper bound on the length of the name of any data item is 32
+   characters.
+ 
+   If the same item is included in more than one file, or if the same
+   item appears more than once within a single file, the latest value
+   supersedes any earlier values.
+
+
+Mounting Alignment
+--------------------------------------------------------
+
+   The SWEA science frame -- MAVEN_SWEA, ID -202130 -- is defined as a
+   fixed offset frame with respect to the s/c frame (see Ref. [3]). 
+   Nominally, it is rotated from the s/c frame by +50 degrees about Z as 
+   shown on this diagram:
+   
+      +Z s/c side:
+      ------------                 ._____. APP
+                                   \_____|
+                                      | 
+                                      |
+                                      |  +Xsc
+                                      | ^ 
+             ._________._________..-----|-----.._________._________.
+             |         |         ||  .--|--.  ||         |         |>
+       MAG .-|         |     +Ysc   /   |   \ ||         |         |-. MAG
+          <  |         |        <-------o    |||         |         |  >
+           `-|         |            \       / ||         |         |-'
+            <|_________|_________|HGA'-----'  ||_________|_________|
+                                   -----------'
+                          +Xswea <.     |   `-.
+                                   `-.  |      `-.
+                            .-'       `-o         `-.
+                         .-'           /  SWEA       `-.
+                  LPW .-'             /                 `-. LPW
+                                     /
+                                    v +Yswea
+
+                                         +Zsc and +Zswea are out of the page.
+
+   The MAVEN_SWEA frame is defined with respect to the instrument's
+   anode layout. SWEA has 16 anodes (numbered 0 to 15) each spanning
+   22.5 degrees in the X-Y plane. In flight software and in ground data
+   analysis software, the +X axis of the frame is at the boundary
+   between anodes 0 and 15. To put +X in that direction, the MAVEN_SWEA
+   frame is rotated from the spacecraft frame by +50 degrees about the 
+   Z axis.  It is convenient to define two polar coordinates in the 
+   MAVEN_SWEA frame.  Phi is the azimuth angle in the X-Y plane.  
+   Phi = 0 corresponds to +Xswea, and Phi = 90 degrees corresponds to 
+   +Yswea.  Theta is the elevation angle out of the X-Y plane.  
+   Theta = 0 corresponds to the X-Y plane; Theta = +90 degrees 
+   corresponds to +Zswea (and +Zsc).
+
+
+Instrument Description and Data Products
+---------------------------------------------------------
+
+   The Solar Wind Electron Analyzer (SWEA) is a symmetric hemispherical
+   electrostatic analyzer with deflectors.  When the deflector potentials
+   are both at zero, the instrument has a 360 x 7 degree disk-shaped field
+   of view (FOV) that is orthogonal to the instrument's symmetry axis 
+   (Zswea). This disk-shaped FOV is swept out of the SWEA X-Y plane by
+   alternately varying the potentials on the upper and lower deflectors.
+   The deflection angle depends on the ratio of the deflector potential to
+   the analyzer potential.  These potentials are controlled by a programmable
+   sweep table.
+   
+   The sweep table is programmed to cover an energy range of 3-4600 eV with 
+   64 logarithmically spaced energy bins.  At each energy bin, the deflectors
+   sweep the FOV out of the X-Y plane to an extent that is limited by either
+   the instrument geometry or the maximum deflector potential.  Up to energies 
+   of 2 keV, the FOV is limited by instrument geometry, and the deflectors
+   sweep the FOV from -60 to +60 degrees in theta.  At higher energies, the 
+   elevation extent of the field of view is inversely proportional to energy.
+   At 4600 eV, the FOV is swept from -25 to +25 degrees in theta.
+   
+   Details of the FOV depend on the instrument's sweep table, which in 
+   principle can be changed during the mission.  The values given above are
+   for the nominal sweep table.
+   
+   During each 2-second measurement cycle, SWEA generates a 64-energy x 
+   16-azimuth x 6-elevation distribution.  In order to make best use 
+   of SWEA's total telemetry allocation, the PFDPU calculates three data 
+   products from this distribution: 3D spectra, pitch angle distributions 
+   (PADs), and energy spectra.
+   
+   At the highest resolution, a 3D spectrum consists of 64 energies for each 
+   of 80 solid angle bins (phi-theta pairs).  Adjacent azimuth sectors are 
+   averaged at the highest positive and negative elevations to provide a 
+   more uniform solid angle resolution.  (This decreases the number of solid 
+   angle bins from 96 to 80.)  This distribution can be further averaged in 
+   groups of 2 or 4 adjacent energy steps to produce 32x80 and 16x80 
+   distributions, respectively.  Finally, the distribution can be sampled 
+   every 2^N two-second measurement cycles, where N is an integer.  The
+   mapping of the 3D distributions into the instrument's FOV is shown in the
+   following diagram:
+
+
+                                   ^ +Zswea
+          Full deflected           | +Zsc
+         360 x 120 deg FOV         |
+
+
+        (-Xswea)   (-Yswea)     (+Xswea)   (+Yswea)    (-Xswea)         
+
+   Phi = -180        -90           0         +90         +180
+                                                           
+           |           |           |           |           |    Theta =
+                                                                
+           .--.--.--.--.--.--.--.-----.--.--.--.--.--.--.--. --- +60
+           |     |     |     |     |     |     |     |     |
+           |     |     |     |     |     |     |     |     |
+           '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- +40
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+           '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- +20
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |           6 
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |         20 deg
+           '--'--'--'--'--'--'--'--o--'--'--'--'--'--'--'--' --- 0  summed-up
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |       deflection
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |          steps
+           '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- -20
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+           |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+           '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- -40
+           |     |     |     |     |     |     |     |     |
+           |     |     |     |     |     |     |     |     |
+           '--'--'--'--'--'--'--'--'--'--'--'--'--'--'--'--' --- -60
+                      16  22.5-deg azimuth bins
+            (summed into 8 bins at the highest deflections)
+
+
+   The most scientifically relevant way to organize the electron angular 
+   distribution is with respect to the magnetic field.  The angle between 
+   an electron's velocity vector and the magnetic field vector is defined 
+   as the "pitch angle", which ranges from 0 degrees (parallel) to 180 
+   degrees (anti-parallel).  These pitch angle distributions (PADs) are 
+   generated onboard by flight software in the PFDPU.  The first step is 
+   to perform a basic calibration of the magnetic field vector and then 
+   rotate the vector into MAVEN_SWEA coordinates, so that the 96 phi-theta 
+   pairs can be mapped into pitch angle.  The pitch angle distribution 
+   that is placed in telemetry is composed of 16 values: one for each of 
+   the 16 azimuth sectors.  Flight software determines the optimal 
+   deflection bin for each azimuth sector that maximizes the total pitch 
+   angle coverage.  The solution is a great circle entirely within the FOV 
+   that contains the magnetic field vector, or comes as close a possible 
+   to doing so.  This guarantees that a complete pitch angle distribution 
+   is obtained whenever the magnetic field vector is within SWEA's FOV, 
+   and that any gaps are not larger that the instrument's intrinsic blind 
+   spots (|theta| > 60 degrees).
+   
+   Since the 16 PAD bins span 360 degrees in azimuth, there is two-fold 
+   redundancy.  That is, the pitch angle distribution is measured twice, 
+   once for each half of the detector.  No information is lost in 
+   producing a PAD onboard, since it is obtained without averaging in 
+   angle.  The pitch angle mapping can later be refined on the ground by 
+   using fully calibrated Magnetometer data.  The basic MAG calibration 
+   performed onboard is sufficient to optimize the pitch angle coverage 
+   provided by this data product.  PADs can be averaged in groups of 2 or 
+   4 energy steps to produce 32x16 and 16x16 distributions, respectively.
+   The distribution can also be sampled every 2^N two-second measurement
+   cycles.
+   
+   Energy spectra are obtained by taking a weighted average of all 96 
+   azimuth-elevation pairs.  The weighting takes into account the solid 
+   angle spanned by each pair and the relative instrument sensitivity 
+   over the FOV.  Energy spectra always contain all 64 energy steps to
+   provide the best possible energy resolution, and they can be either 
+   sampled or summed over every 2^N two-second measurement cycles.
+
+
+Instrument Detector/Sensor Layout
+----------------------------------------------------------
+
+   The frame used above to describe the SWEA FOV is the "SWEA science frame",
+   which is defined in the MAVEN Frames kernel [3].  When the SWEA boom is 
+   deployed, the +Z axis of this frame is aligned with the spacecraft +Z axis.
+   The orientation (clocking) of the X-Y plane is defined with respect to the
+   anode layout.  SWEA has 16 anodes (numbered 0 to 15), each spanning 22.5 
+   degrees in the X-Y plane.  The +X axis of this frame is at the boundary 
+   between anodes 0 and 15, and the anode numbers increase in a right-handed 
+   sense.
+
+   This diagram illustrates SWEA sector layout:
+ 
+                      Phi=+90 
+
+                         ^ +Yswea
+                         |                        S# indicate the sector "#" 
+                     V12 |  V11                       position in the sensor
+                V13  ....|....   V10        +Ysc           assembly.
+                  .' S4  | S3  `.         .->
+             V14.' S5    |    S2 `. V9             V# indicate the sector "#" 
+               . S6      |      S1 .                     view direction.
+           V15.          |          . V8          
+              .S7        |        S0.                 For example, for 
+   Phi=180    .          o--------------> +Xswea     Sector "2" the view 
+              .S8       / +Z     S15.      Phi=0    direction is the vector 
+           V0 .        /            . V7             emanating from the 
+               .S9    /         S14.               aperture center through
+             V1 .    /         S13.  V6             the point designated
+                 `. / S11   S12 .'                         by "V2".
+                 V2/ ......... ' V5 
+                  /   V3   V4 
+                 V              \
+    View direction               V +Xsc
+     of sector "2"    Phi=-90
+
+
+   With full deflection (from 3-2000 eV), each sector has a FOV of +/- 60 
+   degrees out of the X-Y plane.  At higher energies (2000-4600 eV), the 
+   elevation extent of the FOV is inversely proportional to energy.  This
+   kernel describes the full FOV, which applies to energies below 2 keV.
+
+   These keywords contains SWEA sector parameters:
+
+      \begindata
+
+      INS-202130_NUMBER_OF_SECTORS = ( 16,   1   )
+
+      INS-202130_SECTOR_SIZE       = ( 22.5, 120.0 )
+
+      INS-202130_FRAME             = 'MAVEN_SWEA'
+
+      INS-202130_SECTOR_DIRECTIONS = ( 
+
+         -0.98078531         -0.19509032          0.00000000
+         -0.83146960         -0.55557024          0.00000000
+         -0.55557024         -0.83146960          0.00000000
+         -0.19509035         -0.98078531          0.00000000
+          0.19509032         -0.98078531          0.00000000
+          0.55557019         -0.83146966          0.00000000
+          0.83146966         -0.55557019          0.00000000
+          0.98078531         -0.19509031          0.00000000
+          0.98078531          0.19509025          0.00000000
+          0.83146954          0.55557030          0.00000000
+          0.55557042          0.83146948          0.00000000
+          0.19509038          0.98078531          0.00000000
+         -0.19509041          0.98078525          0.00000000
+         -0.55557007          0.83146971          0.00000000
+         -0.83146954          0.55557030          0.00000000
+         -0.98078531          0.19509023          0.00000000
+
+                                     )
+
+      \begintext
+
+
+Instrument Pixel-to-3D Coordinate Mapping (if applicable)
+----------------------------------------------------------
+
+   The pixel to 3D-coordinate mapping is defined in the level 2 metadata
+   files, since it is energy-dependent, and thus depends on the sweep table
+   loaded in the instrument. The phi angle mapping of the anodes (in 
+   MAVEN_SWEA coordinates) is independent of the sweep, but the deflection 
+   (theta) angles depend on energy.    
+
+   This energy dependence implies that the look directions depend on sweep 
+   table, so we do not define individual look angles in this kernel, but 
+   instead define them in the level 2 metadata files. These look angles 
+   will be defined in terms of instrument phi and theta, in the MAVEN_SWEA 
+   coordinate frame. 
+
+
+Instrument Detector/Sensor Parameters (if applicable)
+----------------------------------------------------------
+
+   All relative sensitivities are defined in the relevant level 2 metadata
+   files.  Also, level 2 data files contain both raw counts and calibrated
+   differential energy fluxes, providing a consistency check on the data and 
+   geometric factors.     
+
+
+Instrument FOV Definition(s)
+----------------------------------------------------------
+
+   This section defines the following FOVs:
+
+      ID       SHAPE      FRAME                  SIZE1  SIZE2   BSIGHT
+      -------  --------   ---------------------  -----  -----   ------
+      -202131  POLYGON    MAVEN_SWEA             179.9   120.     +X
+      -202132  POLYGON    MAVEN_SWEA             179.9   120.     -X
+
+   The FOVs are defined in this data block.  The "FRONT" and "BACK" FOVs
+   each cover half of the nominal maximum field of view envelope, valid for 
+   energies up to ~2 keV (reduced theta coverage for higher energies), with
+   "FRONT" covering the +Xswea hemisphere, and "BACK" covering the -Xswea
+   hemisphere.
+
+   This diagram illustrates these two FOVs in the MAVEN_SWEA frame:
+
+      Front FOV:
+      ----------
+                     Front FOV                       Front FOV
+                     boresight                       boresight
+
+                           +Xswea                         +Xswea
+                          ^                              ^ 
+                          |               Theta=         |
+                          |0                -60          |0        +60
+                     _..--+--.._               .-------------------.
+                  .'   V8 | V7   '.            |,        |        .|
+                .'  V9    |    V6  '.          | `.      |      .' |
+               / V10      |       V5 \         |   `.    |    .'   |
+        Phi=  .           |           .        |     `.  |  .'     |
+           +90| V11       |        V4 |-90     |       `.|.'       |
+         <----+-----------o-----------+-    ---+---------o---------+--->
+    +Yswea                | +Zswea               +Yswea  |             +Zswea
+                          |                              |
+
+
+      Back FOV:
+      ---------
+                           +Xswea                         +Xswea
+                          ^                              ^ 
+                          |                              |
+        Phi=              .                              .
+           +90            |            -90               |
+         <----+-----------o-----------+-    ---+---------o---------+--->
+    +Yswea    | V12       | +Zswea V3 |        | +Yswea.'|`.       |    +Zswea
+              '           |           '        |     .'  |  `.     |
+               \ V13      |      V2  /         |   .'    |    `.   |
+                '. V14    |    V1  .'          | .'      |      `. |
+                  '. _V15 | V0 _ .'            |'        |        `|
+                      ''--+--''                `-------------------'  
+                      180 |                  -60         |0        +60
+                          V               Theta=         V
+                          
+                     Back FOV                        Back FOV
+                     boresight                       boresight
+
+
+   There is a small phi portion (0.2 deg) centered on the -Y axis not
+   contained in either of these FOVs.  This is necessary for
+   compatibility with the SPICE toolkit, and does not indicate any
+   intrinsic gap in the SWEA FOV.
+
+
+      \begindata
+
+      INS-202131_FOV_SHAPE            = 'POLYGON'
+      INS-202131_FOV_FRAME            = 'MAVEN_SWEA'
+      INS-202131_BORESIGHT            = ( 1.0, 0.0, 0.0 )
+      INS-202131_FOV_BOUNDARY         = ( 
+      0.000000      0.500000      0.866026
+      0.103899      0.489086      0.866026
+      0.203262      0.456820      0.866026
+      0.293751      0.404611      0.866025
+      0.371417      0.334738      0.866025
+      0.432867      0.250252      0.866026
+      0.475420      0.154840      0.866026
+      0.497218      0.052669      0.866026
+      0.497310     -0.051801      0.866026
+      0.475690     -0.154011      0.866026
+      0.433303     -0.249496      0.866025
+      0.372000     -0.334090      0.866026
+      0.294457     -0.404098      0.866026
+      0.204059     -0.456464      0.866025
+      0.104752     -0.488904      0.866025
+      0.000873     -0.499999      0.866026
+      0.000873     -0.499999     -0.866026
+      0.104752     -0.488904     -0.866025
+      0.204059     -0.456464     -0.866025
+      0.294457     -0.404098     -0.866026
+      0.372000     -0.334090     -0.866026
+      0.433303     -0.249496     -0.866025
+      0.475690     -0.154011     -0.866026
+      0.497310     -0.051801     -0.866026
+      0.497218      0.052669     -0.866026
+      0.475420      0.154840     -0.866026
+      0.432867      0.250252     -0.866026
+      0.371417      0.334738     -0.866025
+      0.293751      0.404611     -0.866025
+      0.203262      0.456820     -0.866026
+      0.103899      0.489086     -0.866026
+      0.000000      0.500000     -0.866026
+                                        )
+
+      INS-202132_FOV_SHAPE            = 'POLYGON'
+      INS-202132_FOV_FRAME            = 'MAVEN_SWEA'
+      INS-202132_BORESIGHT            = ( -1.0, 0.0, 0.0 )
+      INS-202132_FOV_BOUNDARY         = ( 
+     -0.000873     -0.499999      0.866026
+     -0.104752     -0.488904      0.866025
+     -0.204059     -0.456464      0.866025
+     -0.294457     -0.404098      0.866026
+     -0.372000     -0.334090      0.866026
+     -0.433303     -0.249496      0.866025
+     -0.475690     -0.154011      0.866026
+     -0.497310     -0.051801      0.866026
+     -0.497218      0.052669      0.866026
+     -0.475420      0.154840      0.866026
+     -0.432867      0.250252      0.866026
+     -0.371417      0.334738      0.866026
+     -0.293751      0.404611      0.866025
+     -0.203262      0.456820      0.866026
+     -0.103899      0.489086      0.866026
+      0.000000      0.500000      0.866026
+      0.000000      0.500000     -0.866026
+     -0.103899      0.489086     -0.866026
+     -0.203262      0.456820     -0.866026
+     -0.293751      0.404611     -0.866025
+     -0.371417      0.334738     -0.866026
+     -0.432867      0.250252     -0.866026
+     -0.475420      0.154840     -0.866026
+     -0.497218      0.052669     -0.866026
+     -0.497310     -0.051801     -0.866026
+     -0.475690     -0.154011     -0.866026
+     -0.433303     -0.249496     -0.866025
+     -0.372000     -0.334090     -0.866026
+     -0.294457     -0.404098     -0.866026
+     -0.204059     -0.456464     -0.866025
+     -0.104752     -0.488904     -0.866025
+     -0.000873     -0.499999     -0.866026
+                                        )
+
+      \begintext
+
+End of the IK file.
+

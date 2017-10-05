@@ -1,0 +1,48 @@
+Description of MAVEN PFP Overview Plots:
+
+Panel 1: SWEA Energy spectrogram 
+Left Axis: Energy in eV, Right Axis: counts
+The white line near the bottom of the panel shows the spacecraft potential (when positive)
+
+Panel 2: SWEA Pitch Angle Distribution, at 280 eV
+Left Axis: Pitch angle (degrees) Right Axis: counts
+
+Panel 3: SWIA Energy spectrogram 
+Left Axis: Energy in eV, Right Axis: counts
+The white line near the bottom of the panel shows the spacecraft potential (when negative)
+
+Panel 4: STATIC energy spectrogram
+Left Axis: Energy in eV, Right Axis: counts
+
+Panel 5: STATIC energy spectrogram
+Left Axis: Mass in amu, Right Axis: counts
+
+Panel 6: SEP electron and ion line plots, electrons are blue and red, ions are black, pink, and green. Left Axis: counts
+
+Panel 7: EUV diodes (red, green, blue, black) + temperature (pink)
+
+Panel 8: LPW wave power (LF+MF+HF)
+Left Axis: Frequency in Hz, Right Axis: Wave Power
+
+Panel 9: LPW I-V
+Left Axis: Volts, Right Axis: I-V value
+
+Panel 10: LPW HSBM
+
+Panel 11: MAG B1, in nT, spacecraft coordinates.
+
+Panel 12: NGIMS CSN (Closed Source Neutral) spectrogram
+Left Axis: mass in AMU, Right Axis: counts/second
+
+Panel 13: NGIMS OSNT (Open Source Neutral Thermal) spectrogram
+Left Axis: mass in AMU, Right Axis: counts/second
+
+Panel 14: NGIMS OSNB (Open Source Neutral Beam) spectrogram
+Left Axis: mass in AMU, Right Axis: counts/second
+
+Panel 15: NGIMS OSION (Open Source Ion) spectrogram
+Left Axis: mass in AMU, Right Axis: counts/second
+
+
+
+

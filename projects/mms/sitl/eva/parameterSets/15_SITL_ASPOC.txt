@@ -1,0 +1,15 @@
+mms*_dfg_srvy_gsm_dmpa
+
+mms*_asp1_ionc_sitl
+mms*_asp1_totc_sitl
+mms*_asp1_energy_sitl
+mms*_asp1_spot_sitl
+mms*_asp1_filc_sitl
+mms*_asp1_filv_sitl
+
+mms*_asp2_ionc_sitl
+mms*_asp2_totc_sitl
+mms*_asp2_energy_sitl
+mms*_asp2_spot_sitl
+mms*_asp2_filc_sitl
+mms*_asp2_filv_sitl

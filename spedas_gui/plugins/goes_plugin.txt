@@ -1,0 +1,5 @@
+project: GOES
+load_data: goes_ui_load_data
+menu: goes_ui_gen_overplot, Overview Plots, GOES Overview Plot...
+config: goes_fileconfig
+about: spedas_plugin/about_goes.txt

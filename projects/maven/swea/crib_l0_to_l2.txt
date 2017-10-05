@@ -1,0 +1,101 @@
+; crib for loading l0 data, creating L2 CDF files, and populating structures
+; only works for one day at a time -- that's how we make L2 CDFs
+
+@ mvn_swe_com
+
+; pick a day
+;time = '2014-03-26'
+;time = '2014-10-22'
+time = '2014-12-22'
+t_start = time_double(time)
+t_end = time_double(time) + 86400.D ; a full day
+trange = [t_start, t_end]
+trange_str = time_string(trange)
+
+;; get SPICE kernels - done in mvn_swe_load_l0
+;mvn_swe_spice_init, trange = trange
+
+; load L0 data
+mvn_swe_load_l0, trange_str
+
+; data variables that will populate CDF files
+ddd_svy = mvn_swe_get3d(trange_str, /all) ; trange_str changed by program
+trange_str = time_string(trange)
+ddd_arc = mvn_swe_get3d(trange_str, /all, /archive)
+
+trange_str = time_string(trange)
+pad_svy = mvn_swe_getpad(trange_str, /all)
+trange_str = time_string(trange)
+pad_arc = mvn_swe_getpad(trange_str, /all, /archive)
+
+trange_str = time_string(trange)
+spec_svy = mvn_swe_getspec(trange_str)
+trange_str = time_string(trange)
+spec_arc = mvn_swe_getspec(trange_str, /archive)
+
+; create CDFs -- 6 of them
+; someday include version number (comes direct from Dave Mitchell)
+; if so, inlcude version keyword below 
+; i.e,. mvn_swe_makecdf_xxx, data, version = version
+
+mvn_swe_makecdf_3d, ddd_svy
+mvn_swe_makecdf_3d, ddd_arc
+
+mvn_swe_makecdf_pad, pad_svy
+mvn_swe_makecdf_pad, pad_arc
+
+mvn_swe_makecdf_spec, spec_svy
+mvn_swe_makecdf_spec, spec_arc
+
+; stop here if you're only making L2 files
+stop
+
+; continue if you want to read the L2 files
+
+; read CDF data to populate data structures
+;time = time_string(time)
+yyyy = strmid(time, 0, 4)
+mm = strmid(time, 5, 2)
+dd = strmid(time, 8, 2)
+
+path = root_data_dir() + 'maven/data/sci/swe/l2/' + yyyy + '/' + mm + '/'
+
+; *** is this sufficient, or do we want a wrapper program that determines
+;     the correct filename and which mnv_swe_readcdf_XX to call?  ***
+
+; for 3d survey
+file = 'mvn_swe_l2_svy3d_' + yyyy + mm + dd 
+file_list = file_search(path + file + '*.cdf', count = nfiles)
+if (nfiles gt 0) then infile = file_list[nfiles-1] ; latest file last in list
+mvn_swe_readcdf_3d, infile, ddd_svy
+
+; for 3d archive
+file = 'mvn_swe_l2_arc3d_' + yyyy + mm + dd 
+file_list = file_search(path + file + '*.cdf', count = nfiles)
+if (nfiles gt 0) then infile = file_list[nfiles-1] ; latest file last in list
+mvn_swe_readcdf_3d, infile, ddd_arc
+
+; for pad survey
+file = 'mvn_swe_l2_svypad_' + yyyy + mm + dd 
+file_list = file_search(path + file + '*.cdf', count = nfiles)
+if (nfiles gt 0) then infile = file_list[nfiles-1] ; latest file last in list
+mvn_swe_readcdf_pad, infile, pad_svy
+
+; for pad archive
+file = 'mvn_swe_l2_arcpad_' + yyyy + mm + dd 
+file_list = file_search(path + file + '*.cdf', count = nfiles)
+if (nfiles gt 0) then infile = file_list[nfiles-1] ; latest file last in list
+mvn_swe_readcdf_pad, infile, pad_arc
+
+; for spec survey
+file = 'mvn_swe_l2_svyspec_' + yyyy + mm + dd 
+file_list = file_search(path + file + '*.cdf', count = nfiles)
+if (nfiles gt 0) then infile = file_list[nfiles-1] ; latest file last in list
+mvn_swe_readcdf_spec, infile, spec_svy
+
+; for spec archive
+file = 'mvn_swe_l2_arcspec_' + yyyy + mm + dd 
+file_list = file_search(path + file + '*.cdf', count = nfiles)
+if (nfiles gt 0) then infile = file_list[nfiles-1] ; latest file last in list
+mvn_swe_readcdf_spec, infile, spec_arc
+

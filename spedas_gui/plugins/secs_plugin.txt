@@ -1,0 +1,4 @@
+project: SECS
+load_data: secs_ui_load_data
+menu: secs_ui_overview_plots, Overview Plots, SECS Overview Plots... 
+config: secs_fileconfig

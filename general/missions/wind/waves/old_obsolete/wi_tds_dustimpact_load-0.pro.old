@@ -1,0 +1,235 @@
+;+
+;*****************************************************************************************
+;
+;  PROCEDURE:   wi_tds_dustimpact_load.pro
+;  PURPOSE  :   
+;
+;  CALLED BY:   
+;               
+;
+;  INCLUDES:
+;               
+;
+;  CALLS:
+;               
+;
+;  REQUIRES:    
+;               
+;
+;  INPUT:
+;               
+;
+;  EXAMPLES:    
+;               
+;
+;  KEYWORDS:    
+;               
+;
+;   CHANGED:  1)  NA
+;                                                                   [MM/DD/YYYY   v1.0.0]
+;
+;   NOTES:      
+;               
+;
+;  REFERENCES:  
+;               
+;
+;   CREATED:  MM/DD/YYYY
+;   CREATED BY:  Lynn B. Wilson III
+;    LAST MODIFIED:  MM/DD/YYYY   v1.0.0
+;    MODIFIED BY: Lynn B. Wilson III
+;
+;*****************************************************************************************
+;-
+
+PRO wi_tds_dustimpact_load,FILES=files,TRANGE=trange,VERBOSE=verbose,              $
+                           DOWNLOADONLY=downloadonly,VARFORMAT=varformat,          $
+                           DATATYPE=datatype, $
+                           ADDMASTER=addmaster,TPLOTNAMES=tn,SOURCE_OPTIONS=source
+
+
+;;  Define CDF file name formats
+fname_format   = 'wi_l3-dustimpact_waves_YYYYMMDD_v???.cdf'
+;;  Define SPDF base data directory
+http_slash     = '/'
+spdf_base_dir  = 'http://spdf.gsfc.nasa.gov/pub/data/'
+;;  Define SPDF path format to data [*** this will change in the future ***]
+pathformat     = spdf_base_dir[0]+'wind'+http_slash[0]+'waves'+http_slash[0]+$
+                 'wav_dust'+http_slash[0]+'YYYY'+http_slash[0]+fname_format[0]
+;;  Define SPDF Wind data directory
+spdf_wind_dir  = spdf_base_dir[0]+'wind'+http_slash[0]
+;;  Define SPDF Wind/WAVES data directory
+spdf_wave_dir  = spdf_wind_dir[0]+'waves'+http_slash[0]
+;;  Define SPDF dust impact data directory [*** this will change in the future ***]
+spdf_dust_dir  = spdf_wind_dir[0]+'wav_dust'+http_slash[0]
+;;  Define path format
+;    pathformat = 'wind/3dp/sopd/YYYY/wi_sopd_3dp_YYYYMMDD_v02.cdf'
+;if datatype eq 'h2'  then    pathformat = 'wind/mfi/mfi_h2/YYYY/wi_h2_mfi_YYYYMMDD_v??.cdf'
+; I would put the new directory in general/missions/wind
+
+
+;;  Initialize Wind structure
+wind_init
+;;  Alter remote data directory
+old_remote_dir = !wind.REMOTE_DATA_DIR
+new_remote_dir = spdf_dust_dir[0]
+!wind.REMOTE_DATA_DIR = new_remote_dir[0]
+IF NOT KEYWORD_SET(source) THEN source = !wind
+
+;;  Check TDATE and TRANGE
+time_ra        = get_valid_trange(TDATE=tdate,TRANGE=trange)
+;;  Define dates and time ranges
+tran           = time_ra.UNIX_TRANGE
+tdates         = time_ra.DATE_TRANGE        ;;  'YYYY-MM-DD'  e.g., '2009-07-13'
+tdate          = tdates[0]                  ;;  Redefine TDATE on output
+
+
+;;  Define file paths/HTMLs
+relpathnames   = file_dailynames(FILE_FORMAT=pathformat,TRANGE=tran,ADDMASTER=addmaster)
+;;  Get files
+files          = file_retrieve(relpathnames,_EXTRA=source,/LAST_VERSION)
+;;  Check if user wants only to get the data files
+IF KEYWORD_SET(downloadonly) THEN RETURN
+;;----------------------------------------------------------------------------------------
+;;  Read in all CDF data and create arrays of output results
+;;----------------------------------------------------------------------------------------
+n_cdf          = N_ELEMENTS(files)
+FOR j=0L, n_cdf[0] - 1L DO BEGIN
+  IF (SIZE(cdfvars,/TYPE) EQ 8) THEN HEAP_FREE,cdfvars,/PTR    ;;  Clean up
+  fname   = files[j]
+  cdfvars = cdf_load_vars(fname[0],VARFORMAT='*',/CONVERT_INT1_TO_INT2)
+  IF (SIZE(cdfvars,/TYPE) NE 8) THEN CONTINUE
+  var_strucs = cdfvars.VARS
+  test    = (N_ELEMENTS(tds_epoch) LT 1) OR (N_ELEMENTS(tds_evnnm) LT 1)
+  IF (test[0]) THEN BEGIN
+    ;;  1st time through --> initialize variables
+    tds_epoch      =  (*var_strucs[0].DATAPTR)
+    tds_evnnm      =  (*var_strucs[1].DATAPTR)
+    tds_durat      =  (*var_strucs[2].DATAPTR)
+    Wind_spin_rate =  (*var_strucs[3].DATAPTR)
+    Wind_spin_peri =  (*var_strucs[4].DATAPTR)
+    Wind_loc__flag =  (*var_strucs[5].DATAPTR)
+    x_ant_cut_test =  (*var_strucs[6].DATAPTR)
+    Ex__pkamp      =  (*var_strucs[7].DATAPTR)
+    Ex_ccvals      =  (*var_strucs[8].DATAPTR)
+    Ex_ccthsh      =  (*var_strucs[9].DATAPTR)
+    Ex_mnthsh      = (*var_strucs[10].DATAPTR)
+    Ex_impant      = (*var_strucs[11].DATAPTR)
+    Ex_mortyp      = (*var_strucs[12].DATAPTR)
+    Ex_imp_ang_cw  = (*var_strucs[13].DATAPTR)
+    Ey__pkamp      = (*var_strucs[14].DATAPTR)
+    Ey_ccvals      = (*var_strucs[15].DATAPTR)
+    Ey_ccthsh      = (*var_strucs[16].DATAPTR)
+    Ey_mnthsh      = (*var_strucs[17].DATAPTR)
+    Ey_impant      = (*var_strucs[18].DATAPTR)
+    Ey_mortyp      = (*var_strucs[19].DATAPTR)
+    Ey_imp_ang_cw  = (*var_strucs[20].DATAPTR)
+    sun_angle_cw   = (*var_strucs[21].DATAPTR)
+    theta_Ax_cw    = (*var_strucs[22].DATAPTR)
+    theta_p_cw     = (*var_strucs[23].DATAPTR)
+    del_thetaAx_cw = (*var_strucs[24].DATAPTR)
+    del_imp_ang_cw = (*var_strucs[25].DATAPTR)
+    n_events       = N_ELEMENTS((*var_strucs[0].DATAPTR))
+    n_tds_tot      = REPLICATE(((*var_strucs[26].DATAPTR))[0],n_events[0])
+  ENDIF ELSE BEGIN
+    ;;  higher iterations --> add to variable arrays
+    tds_epoch      = [tds_epoch     , (*var_strucs[0].DATAPTR)]
+    tds_evnnm      = [tds_evnnm     , (*var_strucs[1].DATAPTR)]
+    tds_durat      = [tds_durat     , (*var_strucs[2].DATAPTR)]
+    Wind_spin_rate = [Wind_spin_rate, (*var_strucs[3].DATAPTR)]
+    Wind_spin_peri = [Wind_spin_peri, (*var_strucs[4].DATAPTR)]
+    Wind_loc__flag = [Wind_loc__flag, (*var_strucs[5].DATAPTR)]
+    x_ant_cut_test = [x_ant_cut_test, (*var_strucs[6].DATAPTR)]
+    Ex__pkamp      = [Ex__pkamp     , (*var_strucs[7].DATAPTR)]
+    Ex_ccvals      = [Ex_ccvals     , (*var_strucs[8].DATAPTR)]
+    Ex_ccthsh      = [Ex_ccthsh     , (*var_strucs[9].DATAPTR)]
+    Ex_mnthsh      = [Ex_mnthsh     ,(*var_strucs[10].DATAPTR)]
+    Ex_impant      = [Ex_impant     ,(*var_strucs[11].DATAPTR)]
+    Ex_mortyp      = [Ex_mortyp     ,(*var_strucs[12].DATAPTR)]
+    Ex_imp_ang_cw  = [Ex_imp_ang_cw ,(*var_strucs[13].DATAPTR)]
+    Ey__pkamp      = [Ey__pkamp     ,(*var_strucs[14].DATAPTR)]
+    Ey_ccvals      = [Ey_ccvals     ,(*var_strucs[15].DATAPTR)]
+    Ey_ccthsh      = [Ey_ccthsh     ,(*var_strucs[16].DATAPTR)]
+    Ey_mnthsh      = [Ey_mnthsh     ,(*var_strucs[17].DATAPTR)]
+    Ey_impant      = [Ey_impant     ,(*var_strucs[18].DATAPTR)]
+    Ey_mortyp      = [Ey_mortyp     ,(*var_strucs[19].DATAPTR)]
+    Ey_imp_ang_cw  = [Ey_imp_ang_cw ,(*var_strucs[20].DATAPTR)]
+    sun_angle_cw   = [sun_angle_cw  ,(*var_strucs[21].DATAPTR)]
+    theta_Ax_cw    = [theta_Ax_cw   ,(*var_strucs[22].DATAPTR)]
+    theta_p_cw     = [theta_p_cw    ,(*var_strucs[23].DATAPTR)]
+    del_thetaAx_cw = [del_thetaAx_cw,(*var_strucs[24].DATAPTR)]
+    del_imp_ang_cw = [del_imp_ang_cw,(*var_strucs[25].DATAPTR)]
+    n_events       = N_ELEMENTS((*var_strucs[0].DATAPTR))
+    temp           = REPLICATE(((*var_strucs[26].DATAPTR))[0],n_events[0])
+    n_tds_tot      = [n_tds_tot,                          temp]
+  ENDELSE
+ENDFOR
+;;  Clean up last copy of cdfvars
+HEAP_FREE,cdfvars,/PTR
+dumb           = TEMPORARY(cdfvars)
+;;----------------------------------------------------------------------------------------
+;;  Convert TT2000 Epoch times to YYYY-MM-DD/hh:mm:ss.xxxxxxxxx
+;;----------------------------------------------------------------------------------------
+CDF_TT2000,tds_epoch,year,mons,days,hour,mins,secs,mils,mics,nans,/BREAKDOWN_EPOCH
+
+year_str       = STRING(year,FORMAT='(I4.4)')
+mons_str       = STRING(mons,FORMAT='(I2.2)')
+days_str       = STRING(days,FORMAT='(I2.2)')
+hour_str       = STRING(hour,FORMAT='(I2.2)')
+mins_str       = STRING(mins,FORMAT='(I2.2)')
+secs_str       = STRING(secs,FORMAT='(I2.2)')
+mils_str       = STRING(mils,FORMAT='(I3.3)')
+ymdb_tds       = year_str+'-'+mons_str+'-'+days_str+'/'+hour_str+':'+mins_str+':'+secs_str+'.'+mils_str
+unix_tds       = time_double(ymdb_tds)
+;;----------------------------------------------------------------------------------------
+;;  Remove "bad"/empty values
+;;----------------------------------------------------------------------------------------
+testx          = (ABS(Ex__pkamp) LT 2d4) AND (ABS(Ex_imp_ang_cw) LE 36d1)
+testy          = (ABS(Ey__pkamp) LT 2d4) AND (ABS(Ey_imp_ang_cw) LE 36d1)
+testa          = (ABS(sun_angle_cw) LE 36d1) AND (ABS(theta_Ax_cw) LE 36d1) AND $
+                 (ABS(theta_p_cw) LE 36d1)
+testu          = (STRMID(ymdb_tds,0L,4L) NE '9999')
+goodx          = WHERE(testx,gdx,COMPLEMENT=badx,NCOMPLEMENT=bdx)
+goody          = WHERE(testy,gdy,COMPLEMENT=bady,NCOMPLEMENT=bdy)
+gooda          = WHERE(testa,gda,COMPLEMENT=bada,NCOMPLEMENT=bda)
+goodu          = WHERE(testu,gdu,COMPLEMENT=badu,NCOMPLEMENT=bdu)
+
+;;  Check time stamps
+IF (bdu[0] GT 0) THEN BEGIN
+  ymdb_tds[badu]       = ''
+  unix_tds[badu]       = !VALUES.D_NAN
+ENDIF
+
+;;  Check Channel 1
+IF (bdx[0] GT 0) THEN BEGIN
+  Ex__pkamp[badx]      = !VALUES.D_NAN
+  Ex_ccvals[badx]      = !VALUES.D_NAN
+  Ex_ccthsh[badx]      = !VALUES.D_NAN
+  Ex_mnthsh[badx]      = !VALUES.D_NAN
+  Ex_mortyp[badx]      = ''
+  Ex_imp_ang_cw[badx]  = !VALUES.D_NAN
+ENDIF
+
+;;  Check Channel 2
+IF (bdy[0] GT 0) THEN BEGIN
+  Ey__pkamp[bady]      = !VALUES.D_NAN
+  Ey_ccvals[bady]      = !VALUES.D_NAN
+  Ey_ccthsh[bady]      = !VALUES.D_NAN
+  Ey_mnthsh[bady]      = !VALUES.D_NAN
+  Ey_mortyp[bady]      = ''
+  Ey_imp_ang_cw[bady]  = !VALUES.D_NAN
+ENDIF
+
+;;  Check Channel independent variables
+IF (bda[0] GT 0) THEN BEGIN
+  sun_angle_cw[bada]   = !VALUES.D_NAN
+  theta_Ax_cw[bada]    = !VALUES.D_NAN
+  theta_p_cw[bada]     = !VALUES.D_NAN
+  del_thetaAx_cw[bada] = !VALUES.D_NAN
+  del_imp_ang_cw[bada] = !VALUES.D_NAN
+ENDIF
+
+
+
+RETURN
+END

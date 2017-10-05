@@ -1,0 +1,162 @@
+KPL/IK
+
+MAVEN EUV Instrument Kernel
+===============================================================================
+
+   This Instrument Kernel (IK) file contains FOV parameters for the
+   MAVEN EUV instrument.
+
+
+Version and Date
+-------------------------------------------------------------------------------
+
+   Version 1.0 -- April 15, 2015 -- Boris Semenov, NAIF
+
+
+References
+-------------------------------------------------------------------------------
+
+   1. Kernel Pool Required Reading
+
+   2. GETFOV, getfoc_c, cspice_getfov headers
+
+   3. MAVEN FK file, latest version
+
+   4. MAVEN EUV MICD, MAVA0240699
+
+   5. MAVEN EUV PDS4 context product, version 1,
+      urn:nasa:pds:context:instrument:euv.maven::1.0
+
+
+Contact Information
+-------------------------------------------------------------------------------
+
+   Boris Semenov, NAIF, 818-354-8136, Boris.Semenov@jpl.nasa.gov
+
+
+Implementation Notes
+-------------------------------------------------------------------------------
+
+   This file is used by the SPICE system as follows: programs that make
+   use of this kernel must ``load'' the kernel, normally during program
+   initialization. The SPICE routine FURNSH loads a kernel file into
+   the pool as shown below.
+
+      CALL FURNSH ( 'frame_kernel_name; )    -- FORTRAN
+      furnsh_c ( "frame_kernel_name" );      -- C
+      cspice_furnsh, frame_kernel_name       -- IDL
+      cspice_furnsh( 'frame_kernel_name' )   -- MATLAB
+
+   Once the file has been loaded, the SPICE routine GETFOV (getfov_c in
+   C, cspice_getfov in IDL and MATLAB) can be used to retrieve FOV
+   parameters for a given instrument or structure.
+ 
+   This file was created and may be updated with a text editor or word
+   processor.
+
+
+Naming Conventions
+----------------------------------------------------------
+
+   All names referencing values in this IK file start with the
+   characters `INS' followed by the NAIF MAVEN ID number (-202)
+   followed by a NAIF three digit ID code for EUV or one of its
+   detectors or components. This is the full list of names and IDs
+   described by this IK file:
+
+      MAVEN_EUV                        -202110
+      MAVEN_EUV-A                      -202111
+      MAVEN_EUV-B                      -202112
+      MAVEN_EUV-C                      -202113
+
+   The remainder of the keyword name is an underscore character
+   followed by the unique name of the data item. For example, the
+   -202113 boresight direction provided as a part of its FOV definition
+   is specified by:
+
+      INS-202113_BORESIGHT
+
+   The upper bound on the length of the name of any data item is 32
+   characters.
+ 
+   If the same item is included in more than one file, or if the same
+   item appears more than once within a single file, the latest value
+   supersedes any earlier values.
+
+
+Mounting Alignment
+--------------------------------------------------------
+
+   Refer to the latest version of the MAVEN Frames Definition Kernel
+   (FK) [3] for the MAVEN structures reference frame definitions and
+   mounting alignment information.
+
+
+Instrument Description
+---------------------------------------------------------
+
+   From [5]:
+
+      The EUV monitor is designed to measure the solar irradiance in
+      three broad bands in the soft xray and extreme ultraviolet
+      wavelength range. It consists of three filter radiometers that
+      each have a limiting aperture, bandpass limiting filter, silicon
+      photodiode detector, and an electrometer to measure the current
+      in the detector. A fourth detector-electrometer combination that
+      is blocked from receiving any light input is used as a dark
+      detector to monitor changes in the thermal and radiation induced
+      background signals. A temperature diode is also included in the
+      EUV instrument. There is also a mechanism to place or remove
+      additional fused silica windows in front of the three science
+      apertures. These filters block the EUV and X-ray sunlight, but
+      still allow longer wavelength light (primarily visible) through
+      into the radiometers. This allows for a measurement of the
+      out-of-band contribution to the signals from the science
+      channels.
+
+
+Instrument FOV Definition(s)
+----------------------------------------------------------
+
+   This section defines the following FOVs:
+
+      ID       SHAPE      FRAME                  SIZE1  SIZE2   BSIGHT
+      -------  --------   ---------------------  -----  -----   ------
+      -202111  CIRCLE     MAVEN_EUV               4.      4.      +Z
+      -202112  CIRCLE     MAVEN_EUV               4.      4.      +Z
+      -202113  CIRCLE     MAVEN_EUV               4.      4.      +Z
+
+   The full extent FOV sizes in the table above are specified in degrees.
+
+   The FOVs are defined in this data block.
+
+      \begindata
+
+      INS-202111_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202111_FOV_SHAPE            = 'CIRCLE'
+      INS-202111_FOV_FRAME            = 'MAVEN_EUV'
+      INS-202111_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202111_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202111_FOV_REF_ANGLE        = ( 2.0 )
+      INS-202111_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202112_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202112_FOV_SHAPE            = 'CIRCLE'
+      INS-202112_FOV_FRAME            = 'MAVEN_EUV'
+      INS-202112_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202112_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202112_FOV_REF_ANGLE        = ( 2.0 )
+      INS-202112_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202113_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202113_FOV_SHAPE            = 'CIRCLE'
+      INS-202113_FOV_FRAME            = 'MAVEN_EUV'
+      INS-202113_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202113_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202113_FOV_REF_ANGLE        = ( 2.0 )
+      INS-202113_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      \begintext
+
+End of the IK file.
+ 

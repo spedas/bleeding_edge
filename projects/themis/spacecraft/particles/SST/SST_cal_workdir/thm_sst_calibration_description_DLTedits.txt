@@ -1,0 +1,319 @@
+SST calibration process description.
+Patrick Cruce(pcruce@igpp.ucla.edu)
+2013-03-12
+Modified by: Drew Turner (dturner@igpp.ucla.edu), 2013-05-15
+
+Overview: 
+  THEMIS SST is a suite of instruments used to measure energetic particle flux 
+around each THEMIS spacecraft. They're designed to discriminate between species
+(ion or electron),  energy, and angle for each incident particle. Measurements
+are binned at regular intervals to reduce data volume; providing a data product
+of angle,energy,time, and species. When combined with magnetic field data 
+measured by other THEMIS instruments, this allows us to produce pitch angle
+spectra for energetic particle fluxes near the THEMIS spacecraft.  When 
+intercalibrated with ESA data, we can create moment data for the full space 
+plasma distribution around each THEMIS spacecraft.
+
+Physical description:
+ There is one instrument suite on each of the five THEMIS spacecraft.  Each 
+instrument suite is composed of two separate units.  Each unit has two detector
+stacks.  Each stack can accept particles from two apertures in the unit chassis.
+The two apertures are at opposite ends of detector stack. One of
+the two apertures is obscured by a thin foil, which filters protons
+from passing the aperture and acts as a high-energy pass filter for electrons.
+However, protons above ~350 keV can penetrate the shield, resulting in cross-
+contamination. The other aperture on each stack is crossed
+by a permanent magnet.  This magnet is sized to deflect electrons away from
+the stack but not ions because electrons have a much smaller gyro-radius than ions. 
+Electrons above ~300 keV can pass through the magnet into the detector stack, also 
+resulting in cross-contamination. Each detector stack is composed of three silicon 
+detectors designated Foil(F) , Thick(T), and Open(O).  The foil detector is the detector 
+nearest the foil aperture. The open detector is the detector nearest the permanent 
+magnet.  The thick detector sits between the foil and open detector. It is called 
+the thick detector because the thick detector is roughly twice the thickness of the 
+other detectors.  
+  Each detector stack in a SST unit is oriented anti-parallel to the other SST unit 
+in each suite. This means that each ion aperture(O) is physically adjacent to an electron 
+aperture(F) from the adjacent detector stack in the same unit.  One of the two
+units on each spacecraft is oriented such that the vector pointing out of each
+aperture forms a 25 degree angle with the spacecraft spin plane in a plane
+that is perpendicular to the spacecraft spin plane. The second of the two units
+on each spacecraft is oriented such that the vector pointing out of each 
+aperture forms a 52 degree angle with the spacecraft spin plane in a plane that
+is perpendicular to the spacecraft spin plane. Since one aperture on each unit
+is pointing up and the other is pointing down, with respect to the spacecraft
+spin plane, this gives us four different look directions.(-52,-25,25,52) We
+will call this angle, in the plane perpendicular to the spin plane, "theta"
+for the purposes of SST calibrations. Theta is measured such that a vector
+in the spin plane has a zero theta angle. Thetas have a range from -90 to +90
+degrees. (Should have some pictures around here, 'cause geometry is hard to explain)
+  Each spacecraft spins with a ~3 second period.  With timing
+information, the SST can use the spacecraft spin to collect data about 3-dimensional
+particle distributions around the spacecraft.  For the purposes of SST calibrations, 
+we will call the spin phase angle around the spin plane the "phi" angle. Any vector 
+in the plane containing a vector pointing from the spacecraft to the sun will have a 
+zero phi angle. Phi angles have a range from 0 to 360 degrees.
+  Each combination of aperture & detector has a geometric factor of 0.1 cm2*sr.
+This factor is determined purely from the mechanical geometry of each unit.
+The geometric factor is defined as the detector surface area in cm2
+multiplied by the detector field of view in steradians.
+ Each SST aperture has a movable plate which may be placed in front of the 
+aperture.  This plate has a small hole which is calculated to reduce the
+geometric factor by a factor of 64.  During periods of high flux the attenuator
+is closed(put in front of the aperture) to prevent the SST from saturating.
+ The SST instruments saturate at count levels near ~15,000 counts/sec.  Note that the 
+attenuator on THEMIS D failed for one of the units (what was the date?) and has 
+subsequently been disabled.
+
+Logical description:
+
+  Energy discrimination: 
+  Particles traveling through each silicon detector stack deposit energy as 
+they travel; eventually stopping or leaving the stack.  The amount of energy
+deposited in the stack's silicon detectors from a particle collision is measured 
+by the SST. A histogram(binning) is constructed to store this distribution of 
+particles, with histogram bin boundaries configured during ground operations.
+  Particles may interact with one or more detectors during an interaction
+event.  Separate energy histograms and bin boundaries are used for each
+pattern of coincident interaction with detectors.  That is, there is one
+set of energy bins for particles that interact with the F detector but
+not the T or O detector.  One for the F & T detector but not the O detector. 
+This gives us seven possible coincidence patterns:
+F,FT,FTO,O,OT,O,FO
+The only pattern that is not telemetered to ground is the FO pattern, which
+is deemed to be improbable enough that it is not worth the bandwidth. Which
+energy bin is incremented is based off the total energy deposited in the stack
+during an event.  For example, if a particle deposits 300 keV on the F 
+detector and 100 keV on the T detector, it will be classified as an FT event
+and binned as a particle with 300+100=400 keV.
+32 energy bins are telemetered to the ground for each angle and time. These 32
+bins are configured during operations to a predefined set of coincidence bins.
+Notionally, these bins are split into 16 ion and 16 electron energy bins, but
+for the more complicated coincidence bins, this definition is somewhat blurred.
+The configuration used after early operations is as follows:
+(This should be a table, see document: 
+themis/spacecraft/particles/SST/SST_cal_workdir/thm_sst_edep_boundaries.txt)
+
+Angle discrimination:
+  Each energy histogram is collected separately for each detector stack. Since
+each stack has a different theta angle, four different theta angle bins 
+can be telemetered to the ground for each spacecraft. All four bins are
+downlinked.  As mentioned above, the center points of these bins have theta
+angles of -52,-25,25, & 52 degrees.  These samples are taken to represent 
+the ranges [-90,-45],[-45,0],[0,45],[45,90], but because the aperture is quite
+small (~30 degrees full angle !!! MAKE SURE THIS IS RIGHT), it does not actually collect particles from this whole range.
+  As the spacecraft spins, the phi angle of the vector pointing down the length
+of each stack changes due to the rotation of the spacecraft. Every 1/16th of
+a spin a new set of histograms is started.  The spin period is nominally
+3 seconds, thus each phi bin integrates for 3/16 seconds, and covers an angle
+range that is 22.5 degrees wide in phi.
+  Combining theta & phi together, the SST measures 64 different angles every
+spin. Most often, angle data are stored as a 64 element array and not a
+4x16 element array.  The angle ordering is as follows:
+THETA:
+ 52.0000      52.0000      52.0000      52.0000      52.0000      52.0000      52.0000      52.0000      52.0000      52.0000      52.0000      52.0000      52.0000      52.0000      52.0000      52.0000     -52.0000
+-52.0000     -52.0000     -52.0000     -52.0000     -52.0000     -52.0000     -52.0000     -52.0000     -52.0000     -52.0000     -52.0000     -52.0000     -52.0000     -52.0000     -52.0000      25.0000      25.0000
+ 25.0000      25.0000      25.0000      25.0000      25.0000      25.0000      25.0000      25.0000      25.0000      25.0000      25.0000      25.0000      25.0000      25.0000     -25.0000     -25.0000     -25.0000
+-25.0000     -25.0000     -25.0000     -25.0000     -25.0000     -25.0000     -25.0000     -25.0000     -25.0000     -25.0000     -25.0000     -25.0000     -25.0000
+
+PHI:
+ 11.2500      33.7500      56.2500      78.7500      101.250      123.750      146.250      168.750      191.250      213.750      236.250      258.750      281.250      303.750      326.250      348.750      191.250
+ 213.750      236.250      258.750      281.250      303.750      326.250      348.750      11.2500      33.7500      56.2500      78.7500      101.250      123.750      146.250      168.750      191.250      213.750
+ 236.250      258.750      281.250      303.750      326.250      348.750      11.2500      33.7500      56.2500      78.7500      101.250      123.750      146.250      168.750      11.2500      33.7500      56.2500
+ 78.7500      101.250      123.750      146.250      168.750      191.250      213.750      236.250      258.750      281.250      303.750      326.250      348.750
+
+Time discrimination:
+  Times are stored at every phi sampling.  Currently, the full set of 
+energy & angles are downlinked every spin. (Giving the data a 3 second cadence)
+  During some periods of the mission, the configuration varied so that a
+spin's worth of data was downlinked every 64 spins during lower priority
+intervals to save bandwidth.  This was called snapshot mode.  The instrument
+was configured in this mode when the spacecraft IDPU was in slow survey mode.
+If the spin was exactly 3 seconds, this would have given the data a 192
+second cadence during slow survey.  In practice, the spin was not exactly 3
+seconds, but the exact spacing between snapshots can be retrieved from the 
+data time tags.  [TIME TAGS CORRESPOND TO TIME CENTERS, RIGHT???  ALSO, WE SHOULD SPECIFY
+THE DIFFERENT MODES AND SURVEY RATES I THINK… DLT]
+
+  (not getting into reduced/burst modes here)
+
+ When imported into IDL the raw data are stored as a time series array 
+of 16 energy by 64 angle data, initially.  Later the data are stored as 
+time series arrays of structures which describe all the data & calibration
+for each spin of data.
+
+Calibration process:
+SST calibration has 3 high level goals.
+#1 Convert spacecraft digital count data into physical units.(flux & energy flux, eflux)
+#2 Decontaminate data. (Remove sun & electronic noise, cross-contamination, and shield penetrating particles)
+#3 Calculate derived products like energy eflux spectrograms, time series
+moments(density, temperature vector, pressure tensor, velocity), and angular
+spectra(phi,theta,pitch angle, gyrophase)
+
+Calibration is performed separately for ions & electrons, where ions & 
+electrons refer to the 16 energy bins which are notionally associated with
+the coincidence channels for that particle species.
+
+Physical Unit Conversion:
+When data are imported, energy boundaries & angles are assigned to each count
+bin.  Times are provided by the spacecraft. 
+
+Angles: Measurement angles are determined
+strictly from the instrument geometry and the binning logic described above.
+
+Energy:
+SST ion and electron response functions were modeled in GEANT4 by Drew Turner.  The
+resulting response functions were used to determine the energy boundaries for the ion
+and electron energy bins.  A CAD model of the instrument and the edep configuration was 
+used to determine the mean incident energy of particles that deposit energy on the 
+detectors in the configured range.  The ion energy boundaries were very similar to what 
+was initially estimated by Davin Larson, the SST instrument PI (USING THE BETHE-BLOCH 
+FORMULA???), but the electron energy bins were significantly different (WHICH MAKES 
+SENSE SINCE THE BETHE-BLOCH FORMULA IS INVALID FOR ELECTRONS). 
+
+Dead Layer:
+An offset in keV is added to the energy boundaries to account for the detector
+dead layer.  The detector dead layer is a layer of silicon on the surface of
+each detector from which charge cannot be collected, and thus energy deposition
+in this region is unmeasured.  The dead layers grow in time, and by increasing the energy boundary for a calculated channel, we can account for this unmeasured energy.  The dead 
+layer was determined by Drew Turner through intercalibration with the THEMIS ESA 
+instruments.  The dead layer on some spacecraft has grown rapidly on some of 
+the spacecraft since launch.  The current cause is unknown, but the growth
+has been greater on the spacecraft which have undergone more frequent 
+maneuvers (i.e., the ARTEMIS spacecraft). One hypothesis for the rapid dead layer 
+growth is thruster spray.  Since the dead layer is time varying, it is 
+measured at periodic intervals and the offset is stored in a calibration
+file.  A different offset is applied for each aperture of each SST unit.
+(since each corresponds to a different detector surface)
+
+Process:
+#1
+Data are first converted from counts to a rate, counts/second by
+dividing the counts by the integration time (3/16 seconds)
+
+#2 A dead time correction is applied.  Dead time represents a period of time
+where the instrument cannot measure counts after a count is measured because
+the instrument electronics are recovered.  The probability of a second count
+arriving during this dead time interval should follow Poisson statistics and be
+a function of the count rate and length of dead time for each count.The 
+correction factor should have units of seconds/count.  The current formula for
+the correction is:
+corrected_rate=count_rate/(1-dead_factor*count_rate)
+Since little is known about the dead time of the instrument due to limited 
+availability of pre-flight test data, the dead time correction is factor is 
+currently set to zero. Future work includes statistical analysis of the shape
+of the energy spectrum as count rates grow to determine the proper correction.
+
+#3 The corrected rate data are divided by the notional geometric factor 
+0.1 cm2*sr (or 1/64 times this if attenuators are closed), converting into units of counts/sec/cm2/sr
+
+#4 The geometric rate data are divided by the energy width of the channel
+in eV to create differential flux data in units of counts/sec/cm2/sr/eV.
+
+#5 The flux data are divided by the modeled efficiencies. Efficiencies
+are from the response functions produced from the GEANT4 results.
+They represent the fact that not every particle penetrates to the expected
+depth(some deflect out of the stack).  Thus the instrument does not collect
+100% of the incident particles in the expected energy range.  These efficiencies
+will be a dimensionless value on the interval (0,1] and will not change with 
+time.
+
+#6 The flux data are divided by practical(or geometric) efficiencies. These 
+represent the different charge collection performances of each physical
+detector because of manufacturing variance and handling. These efficiencies
+will be dimensionless value on the interval (0,1].
+These values were determined by Drew Turner by intercalibration of pitch angle distributions using the four different anodes per species per SST suite.  ESA data were used to determine intervals when the particle distribution
+was isotropic and factors were selected such that the made the SST distribution near
+isotropic and symmetric about 90 deg pitch angle. 
+
+#7 If conversion to energy eflux is desired, the corrected flux data are 
+multiplied by the mean energy for each channel.
+
+Decontamination:
+Primary data contamination is caused by sunlight.  During times when the sun
+shines on the detector (most effective on the ion side) count rates go off scale high.  
+Secondary contamination is generated due to cross talk within the instrument electronics when one 
+detector is seeing sun.  This is one explanation for sunlight-like contamination in the electron channels, which should be light tight because of the foil.  Contamination has also been noticed due to sunlight
+reflected off the earth.(Earth shine) during perigee and also from the moon (affecting the ARTEMIS spacecraft only).  Bin contamination
+patterns were determined by Jim McTiernan by doing a long time interval
+examination of count rates.  Contamination is seen in two patterns, which
+vary seasonally with a small amount of overlap during transitional times.
+More information can be seen here:
+http://sprg.ssl.berkeley.edu/~jimm/themis/SST/thm_soc_XXX_sst_cotaminated_bins.pdf
+
+While there are complex options available to select the particular method of
+contamination and to select the contaminated bins by hand, the simplest 
+method flags all energies and times for contaminated angles as contaminated.
+These data are removed and the data are linearly interpolated across phi to
+remove the missing data.  For sunlight decontamination options see: themis/examples/thm_crib_sst_contamination.pro in the TDAS library.
+
+DECONTAMINATION FOR X-CONTAMINATION AND SHIELD PENETRATING ELECTRONS!  WE NEED TO INCLUDE
+THIS EVENTUALLY.
+
+Derived Products:
+Before derived products can be calculated several corrections are required
+so that data may be processed using standardized data analysis routines.
+
+Coincidence channel merge:
+Ions:
+A physical ion distribution is constructed by discarding the highest 
+4 of the 16 SST ion energy bins.  This is because we expect that ions will 
+only penetrate to the O coincidence channel. (Due to the low penetration
+depth of ions in matter.)  Only protons above ~6 MeV can penetrate fully through the 
+open detector and into the thick detector, so this effectively sets the high energy 
+threshold for ions to < 6 MeV.
+
+Electrons:
+A physical electron distribution is constructed by merging the F & FT 
+coincidence channels.  This is done by replacing energy bins 8-10(counting
+from zero) with bins 12-14 of the 16 SST electron energy bins.  Then bins
+11-15 are discarded. While we expect that some high energy electrons
+are expected to create FTO events, the calibration parameters of this 
+channel are not well understood enough to include in our final product.  
+
+Additional considerations must be accounted for when working with FTO data.  First, 
+the geometric factor of the FTO channels is essentially double that of the F and FT 
+channels, since relativistic electrons coming through either side of the instrument 
+can satisfy the FTO logic.  The GEANT4 simulations revealed the FTO response function 
+to be essentially an integral response, responding with efficiency below ~40% for all 
+electrons above ~700 keV.  The efficiency rises above 10% around 0.8 MeV, peaks at 
+~38% around 1.2 MeV and falls below 10% at energies >4 MeV.  For this reason, Drew 
+Turner uses an effective energy range of ~0.8-4 MeV for the FTO channel, and the 
+channel can be treated as either integral or a very, very broad differential channel.
+Also, FTO fluxes should be decontaminated for at least attenuator-penetrating electrons, 
+which are significantly efficient at FTO channel contamination (efficiencies ~3% above 1.5 MeV).
+
+The other coincidence channels are available to researchers through options
+in the THEMIS Data Analysis Tools(TDAS).  We believe they're most useful
+for assessing noise and the rates for high energy shell penetrating background
+radiation.
+
+Energy Channel Alignment:
+Because the dead layer varies for each different detector & species, the energy
+bins for each theta are different. This makes generation of products which 
+require multiple look directions difficult.  The increased minimum energy
+of SST later in the mission has also significantly increased the energy gap 
+between the THEMIS ESA & SST instruments.  This gap makes the creation of
+combined moments for the whole particle distribution around the THEMIS
+spacecraft difficult.
+
+To align the energy channels between thetas within the SST and between the SST 
+& ESA a dynamic interpolation process is used.
+#1 ESA & SST data are loaded and converted into flux units.
+#2 ESA data are linearly interpolated in time to match the measurement times
+of the SST. (The collection rates are not always the same) This is done
+using the IDL routine "interpol"
+#3 ESA data are spherically interpolated to match the look directions of the
+SST.  (The ESA has 88 look directions, the SST has 64) This interpolation
+is done using the IDL routine griddata
+#4 The flux data for SST-matched-ESA data and SST data are interpolated for
+each angle and time to a set of notional energies that fill the gap and
+are the same for each look direction. The interpolation is done using the
+log of energy as the independent variable and the log of flux as the 
+dependent variable.  A linear interpolation is inappropriate given the power
+law distribution of particle data as a function of energy.
+
+Now we calculate products:
+Probably need descriptions of how we calculate moments, energy spectra, and
+angular spectra....moments and energy are straightforward.  I don't even
+want to think about writing the section for angular spectra.

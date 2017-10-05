@@ -1,0 +1,45 @@
+.MAKE_VERSION:	VERSION-1.0
+makemastfile.o:	/usr/include/stdio.h /usr/include/sys/feature_tests.h /usr/include/string.h /usr/include/sys/types.h /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h /usr/include/sys/siginfo.h /usr/include/sys/machsig.h ../../../include/cdf.h 
+	cc  -I../../..//include   -DSYSVR4 -c  makemastfile.c
+makemastfile.c:
+	sccs  get -s makemastfile.c -Gmakemastfile.c
+lint:	0@lint 
+.BUILT_LAST_MAKE_RUN:
+0@install:
+	DIRS="" ; \
+	for i in $DIRS ; do \
+	    if [ -d $i ] ; then \
+		echo --------------------------------------------- ; \
+		echo '###' Starting make install in $i ; \
+		(cd $i ; make install ; ); \
+		echo '###' Finished make install in $i ; \
+		echo --------------------------------------------- ; \
+	    fi \
+	done ;\
+	make localinstall
+print:	0@print 
+clean:	0@clean 
+debug:	0@debug 
+all:	0@all 
+localclean:
+	sccs clean
+	rm -f makemastfile   core *.o *.a *~ *% 
+makemastfile:	/usr/lib/libdl.so.1 /usr/lib/libc.so /opt/SUNWspro/bin/../SC3.0/bin/../lib/libsunmath.a /usr/lib/libm.so ../../../SunOS.5.5/lib/libcdf.so 
+	cc  -I../../..//include   -DSYSVR4 -L../../..//SunOS.5.5/lib  -o makemastfile makemastfile.o -lcdf -lm -lsunmath
+../../..//SunOS.5.5/bin/makemastfile:
+	/usr/ucb/install -d  -m 775 ../../..//SunOS.5.5/bin
+	/usr/ucb/install -m 775 makemastfile ../../..//SunOS.5.5/bin
+Makefile:
+	sccs  get -s Makefile -GMakefile
+0@clean:
+	DIRS="" ; \
+	for i in $DIRS ; do \
+	    if [ -d $i ] ; then \
+		echo --------------------------------------------- ; \
+		echo '###' Starting make clean in $i ; \
+		(cd $i ; make clean ; ); \
+		echo '###' Finished make clean in $i ; \
+		echo --------------------------------------------- ; \
+	    fi \
+	done ;\
+	make localclean

@@ -1,0 +1,7 @@
+To see the Rules of the Road for working with GOES data, see the page:
+
+http://spedas.org/wiki/index.php?title=GOES_Rules_of_the_Road
+
+The documentation of the GOES data can be found at:
+
+http://www.ngdc.noaa.gov/stp/satellite/goes/documentation.html

@@ -1,0 +1,19 @@
+
+; these are the high and low threshold, slope, and jump values for the Themis FGM
+; threshold is around 390 nT, jump is around 5 nT.
+; (scale factor is 25000 x 2^(-23)) 
+; Values are used for DAC offset correction in THEMIS FGM
+; Provided by: Dragos Constantinescu
+; On Date: 10/08/09
+
+threshold = [[132000, 132000, 132000, 132000, 132000],$  
+             [132675, 132575, 132650, 132400, 132500],$  
+	     [131450, 131100, 131450, 131950, 131625]]   
+
+jump      = [[1600, 1600, 1600, 1600, 1600],$     
+             [1745, 1420, 1568, 1602, 1727],$     
+	     [1756, 1280, 1512, 1535, 1700]]
+
+th_slope  = [[1.250, 1.250, 1.250, 1.250, 1.250],$     
+             [1.234, 1.247, 1.255, 1.242, 1.243],$     
+             [1.255, 1.305, 1.270, 1.252, 1.252]]      

@@ -1,0 +1,43 @@
+# ------------------------------------------------------------------------------
+# Source this file from your .cshrc file to 
+# configure IDL for the THEMIS software. 
+# You may configure the location of the THEMIS software in two ways:
+# 1) You may set IDL_BASE_DIR in the environment
+#     before sourcing this script.
+# 2) Edit (a copy of) this file and change the default value of IDL_BASE_DIR
+#
+# To configure data locations, see thm_config.pro, or set environment variables
+# as indicated in the comments at the end of this file.
+# ------------------------------------------------------------------------------		
+
+# Location where the IDL code (including THEMIS code) is installed 
+# (i.e. the directory which 
+# contains (ssl_general, external, themis)
+if !( $?IDL_BASE_DIR ) then
+   setenv IDL_BASE_DIR /disks/socware/idl
+endif
+
+# make sure IDL_PATH is intialized before we add THEMIS paths to it
+if !( $?IDL_PATH ) then
+   setenv IDL_PATH '<IDL_DEFAULT>'
+endif
+
+# Set path for all IDL source code:
+
+setenv IDL_PATH $IDL_PATH':'+$IDL_BASE_DIR
+
+##
+## These are optional environment variables which may be set to 
+## override default values in thm_config.pro
+##
+
+##
+## Location of themis data files (use trailing '/'):
+#
+#setenv THEMIS_DATA_DIR /disks/data/themis/
+
+##
+## URL of master copy of themis data
+#
+#export THEMIS_REMOTE_DATA_DIR
+#THEMIS_REMOTE_DATA_DIR=http://sprg.ssl.berkeley.edu/data/themis

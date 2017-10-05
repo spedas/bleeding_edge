@@ -1,0 +1,98 @@
+Regarding Spacecraft potential variables available from Moment files:
+
+The variable "thx_pxxm_pot" (where x = a, b, c, d, e) is loaded from
+Level 1 or Level 2 MOM on-board moment files. For this variable, the
+raw packet data is scaled by a factor of 0.00410937, i.e.,
+
+ pxxm_pot = pxxm_pot_raw*0.00410937
+
+This scaling is obtained from the version 1 cailbration file:
+
+/disks/data/themis/tha/l1/mom/0000/tha_l1_mom_cal_v01.sav
+
+
+The IDL program THM_CORRECTED_PXXM_POT takes each available
+"thx_pxxm_pot" variable and returns a variable
+"thx_pxxm_pot_corrected".
+
+Here is a summary changes are made to the "thx_pxxm_pot" data to get
+"thx_pxxm_pot_corrected":
+
+1) The original scaling is removed (If the data is not raw data,
+denoted by "_raw" in the variable name.)
+
+ pxxm_pot_corrected = pxxm_pot/0.00410937
+
+2) The variable is rescaled with a scale and offset. The scale and
+offset used here are the values used by the on-board process to
+estimate the spacecraft potential for moment calculations and have
+different values at different times for each probe:
+
+ pxxm_pot_corrected = ((pxxm_pot/0.00410937)-sp_offset)/sp_scale
+
+The different values for each probe for different times are given in
+the version 2 calibration files for each probe:
+
+e.g., 
+/disks/data/themis/tha/l1/mom/0000/tha_l1_mom_cal_v02.sav
+
+Here is an explanation of the scale and offset values:
+> In November 2007 both SP_SCALE and SP_OFFSET were upgraded.
+> Initially SP_OFFSET was incorrect for a few days.
+>
+> Default values:
+> SP_SCALE=200 (0xC8)
+> SP_OFFSET=0
+>
+> Incorrect SP_OFFSET value:
+> SP_OFFSET=14081 (0x3701 <--this was supposed to be 0x0137)
+>
+> Correct final values:
+> SP_SCALE=230 (0xE6)
+> SP_OFFSET=311 (0X0137)
+>
+> Key for times below:
+> T1: First implementation of SP_SCALE (correct) and SP_OFFSET (incorrect)
+> T2: SP_OFFSET Corrected
+> T3: SP_SCALE  Lost during IDPU reset (revert to default)
+> T4: SP_SCALE  Restored
+>
+> -----              -----              -----              -----              -----
+> TH-A               TH-B               TH-C               TH-D               TH-E
+
+> 2007-11-17 19:00   2007-11-18 02:58   2007-11-18 07:07   2007-11-17 23:58   2007-11-18 01:50
+> 2007-11-21 19:45   2007-11-21 16:45   2007-11-21 18:30   2007-11-20 23:46   2007-11-21 01:40 
+> 2008-09-10 16:24   2008-10-11 03:24   2008-02-05 06:44   2008-09-06 17:43   2008-04-04 01:39
+> 2009-06-04 20:17   2009-06-08 21:51   2009-06-09 22:48   2009-06-08 21:25   2009-06-08 22:57
+>
+
+
+3) The other change to the thm_pxxm_pot_corrected variable is in the
+time variable and is done as in the IDL program THM_LOAD_ESA_POT:
+
+The moment packet potential must be time shifted to reflect the delay
+in the recording of the measured s/c potential in the moment packet.
+The offset time between the s/c potential in the moments packet (and
+therefore the L1 moment variable "thx_pxxm_pot") is 1.6028 = 1 +
+217/360 times the spin_period before the times listed below, and 0.625
+times the spin period after these times.
+
+The changes to timing for s/c potential in moments packets occurred
+for each probe at the times shown below:
+
+ 	THEMIS A: 2007-11-29 20:51:26
+ 	THEMIS B: 2007-12-03 18:43:24
+ 	THEMIS C: 2007-12-03 18:23:03
+ 	THEMIS D: 2007-11-27 18:34:23
+ 	THEMIS E: 2007-11-29 17:49:10
+
+The offset value of 1.6028(or 0.625)*spin_period is subtracted from
+the time in the "thm_pxxm_pot" variable to get the corrected time.
+
+
+
+
+
+
+
+

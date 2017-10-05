@@ -1,0 +1,60 @@
+This document gives the units values used by the various data quantities that show up in the 3d data structures that are used in many SPEDAS functions and procedures. These values are gleaned from various comments in various SPEDAS conv_units routines. The units refer to the units of the data tag for the 3d data structures returned by various particle load routines, for THEMIS ESA and SST, FAST ESA, WIND 3DP, STEREO IMPACT, MAVEN SWEA, STATIC, SWIA.
+
+Here is a list of the conversion routines:
+
+ spedas_home/general/missions/stereo/st_swea_convert_units.pro
+ spedas_home/general/missions/fast/fa_esa/fa_convert_esa_units.pro
+ spedas_home/general/science/wind/convert_pad_units.pro
+ spedas_home/general/science/conv_units.pro
+ spedas_home/general/science/convert_esa_units.pro
+ spedas_home/general/science/convert_esa_units2.pro
+ spedas_home/general/science/convert_flux_units.pro
+ spedas_home/general/science/convert_ph_units.pro
+ spedas_home/projects/kaguya/map/pace/kgy_pace_convert_units.pro
+ spedas_home/projects/mms/particles/mms_convert_flux_units.pro
+ spedas_home/projects/wind/3dp/idl/convert_sf_units.pro
+ spedas_home/projects/wind/3dp/idl/convert_so_units.pro
+ spedas_home/projects/wind/3dp/idl/convert_sst_units.pro
+ spedas_home/projects/maven/swia/mvn_swia_convert_units.pro
+ spedas_home/projects/maven/swea/mvn_swe_convert_units.pro
+ spedas_home/projects/maven/sta/mvn_sta_functions/mvn_sta_convert_units.pro
+ spedas_home/projects/themis/spacecraft/particles/ESA/packet/thm_convert_esa_units.pro
+ spedas_home/projects/themis/spacecraft/particles/combined/thm_convert_cmb_units.pro
+ spedas_home/projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_sst_convert_units2.pro
+ spedas_home/projects/themis/spacecraft/particles/SST/thm_sst_convert_units.pro
+ spedas_home/projects/themis/spacecraft/particles/thm_part_conv_units.pro
+
+Units of data quantities are mostly undocumented in the code, but there are some comments in thm_convert_esa_units.pro, (and also in a FAST routine contour2d.pro). Here is an IDL case statement that summarizes.
+
+ case strupcase(units_name) of 
+  'COUNTS' :  units = '#/sample'                        ;counts in a sample
+  'RATE'   :  units = '#/s'                             ;count rate
+  'CRATE'  :  units = '#/sec, corrected for dead time'  ;dead-time corrected rate
+  'EFLUX'  :  units = 'eV/cm^2-sec-sr-eV'               ;energy flux in angular bin
+  'E2FLUX' :  units = 'eV^2/cm^2-sec-sr-eV'             ;energy^2 flux in angular bin
+  'E3FLUX' :  units = 'eV^3/cm^2-sec-sr-eV'             ;energy^3 flux in angular bin
+  'FLUX'   :  units = '#/cm^2-sec-sr-eV'                ;particle flux in angular bin
+  'DF'     :  units = '1/(cm^3-(km/s)^3)'               ;particle distribution function in 6 dimensional (3 spatial, 3 velocity) phase space; note that MMS uses 1/(km^6/cm^3)
+ else: begin
+         dprint, 'Unknown starting units: ', units_name
+      end
+ endcase
+
+Units of other quantities (Mostly from mvn_swe_convert_units.pro):
+ 
+  c = 2.99792458D5                ; velocity of light [km/s]
+  mass = (5.10998910D5)/(c*c)     ; electron rest mass [eV/(km/s)^2]
+  m_conv = 2D5/(mass*mass)        ; mass conversion factor (flux to distribution function. Note that this is non-relativistic)
+  energy  = data.energy           ; [eV]
+  denergy = data.denergy          ; [eV]
+  gf      = data.gf*data.eff      ; GF geometry factor, tpically [cm2-ster-eV/eV]
+  dt      = data[0].integ_t       ; integration time [sec] per energy/angle bin (unsummed)
+  dt_arr  = data.dt_arr           ; Different for different detectors: #energies * #anodes per bin for rate and dead time corrections for MAVEN SWEA, #dt*#anodes per bin for rate and dead time corrections for THEMIS ESA.
+  dtc     = data.dtc              ; dead time correction: 1. - (raw count rate)*dead
+
+
+A good reference as to how the different data quantities are related to each other can be found in:
+
+http://www.igpp.ucla.edu/public/vassilis/ESS261/Lecture07/Lecture07_low_energy_particles.pdf.
+
+

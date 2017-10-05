@@ -1,0 +1,44 @@
+delvar, p
+
+x=findgen(10)-4.5                          ; Initialize independent variables.
+y=[1.7,1.9,2.1,2.7,4.6,5.5,4.4,1.7,0.5,0.3]; Initialize dependent variables.
+plot,x,y,psym=4                            ; Plot data.
+xv = findgen(100)/10.-5.                   ; get better resolution abscissa.
+oplot,xv,gaussian(xv,par=p)                ; Plot initial guess.
+help,p,/structure                          ; Display initial guess.
+
+fit,x,y,func='gaussian',par=p    ; Fit to all parameters.
+
+f = gaussian(xv,par=p)
+
+
+oplot,xv,gaussian(xv,par=p)                ; Plot fitted function.
+help,p,/structure                          ; Display new parameter values.
+
+names = tag_names(p)                       ; Obtain parameter names.
+p.a2 = 0                                   ; set quadratic term to 0.
+names = 'h w x0 a0'                      ; Choose a subset of parameters.
+print,names                               ; Display subset of names
+
+fit,x,y,func='gaussian',par=p,nam=names   ; Fit to subset.
+print,names                               ; Display subset of names
+
+xy_edit,x,y
+
+n=100
+x = findgen(n)/n*10.
+p0 = {h:500.d,w:.25d,x0:6.5d,a0:22.d,a1:-.5d,a2:.1d}
+y0 = gaussian(x,par=p0)
+dy = sqrt(y0)
+
+y = y0+randomn(seed,n)*dy
+
+ploterr,x,y,sqrt(y)
+
+dy = sqrt(y)                    ; first guess of errors
+fit,x,y,dy=dy,par=p,func='gaussian'
+dy = sqrt( gaussian(x,par=p) )  ; second guess of errors
+help,p,/str
+help,p0,/str
+xv = dgen(/x)
+oplot,xv,gaussian(xv,par=p)

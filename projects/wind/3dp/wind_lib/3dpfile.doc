@@ -1,0 +1,23 @@
+PRODUCING A MASTFILE..
+
+  Each Co-I will store their data in a directory structure of their 
+own choosing.  All decomutation software must be be able to access the data.
+This is done using a file that keeps a time ordered list of ALL online
+data files.  We call this file "mastfile" but any name may be used.
+each line in mastfile should give the start time, end time and full pathname
+for each data file using the following format:
+
+ 94-11-18/00:00:36  94-11-18/23:59:38  /data/wi_lz_3dp_19941118_v01.dat
+
+Such a file can be easily produced using the program "3dpfile".  This program
+outputs a line similar to the above line for each data file listed as a 
+command line argument.  Error messages are output to stderr.
+The typical means of creating mastfile is to type the following at the UNIX prompt:
+
+3dpfile /data/* | sort > mastfile
+
+This will print a line for each data file in the /data directory, sort them
+in time order, and place the output in the file mastfile.
+
+Each investigator is responsible for maintaining their own copy of the
+mastfile.  

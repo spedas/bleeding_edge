@@ -1,0 +1,73 @@
+Calculate Window 
+
+
+Calc.pro is a simple scripting language for working with tplot variables which has been provided 
+in a  form that is usable at the command line and from within the SPEDAS GUI. This routine takes 
+a string as input and interprets the string as a mini-language. This language can manipulate normal 
+idl variables and tplot variables.  The idl variables that can be modified are non-system variables 
+in the scope in which the procedure is called.
+
+From within the GUI you can access this language by selecting Calculate from the Analysis pull down
+menu in the main GUI window. The GUI Calculate window provides a graphical user interface to the 
+scripting or 'mini language'.
+
+The 'Program Area' text box on the left side of the window is editable. This is where you can 
+enter statements. You can simply type the text directly into the box or you can use the Insert 
+list boxes on the right hand side of the window.  Insert lists include variables, functions, 
+and operators plus dedicated buttons for constants.  To insert a variable, function, or operator 
+into the program area select the item in the appropriate list and click the arrow button.
+The item will be inserted at the cursor's last position.
+
+Here is an example of a mini language call:
+"tha_state_pos_avg" = mean("tha_state_pos",2)
+
+The command takes the average of each x,y,z triplet and stores the output in a new tplot variable 
+that has dimensions time by 1 rather than time by 3(x,y,z).
+
+Examples of command line usage can be found in the file:
+spedas/examples/thm_crib_calc.pro
+
+Please note that the example crib contains command line examples only.  To run an example from the crib 
+in the GUI, simply remove the text, 'calc, ' which preceeds the statement. 
+           
+   
+Examples:
+    a = 5  
+    "pos_re" = "tha_state_pos"/6371.2  
+    a += 7
+    var = "tvar" * 0.1
+    "tvar" = "tvar" + var 
+    "tvar" = ln("tvar")
+    "tvar" = total("tvar"+3,2)
+    "tvar" = -a + 5.43e-7 ^ ("thb_fgs_dsl_x" / total("thb_fgs_dsl_x"))
+    "tvar" = sqrt( total("thb_fgs_dsl"^2,2) )
+
+
+Non-Mathematical Operators:
+   Non-mathematical operators are available in the mini language if needed.
+   An operator's behavior will be the same as its behavior when called on array arguments at the IDL command line.
+  
+     Mathematical operators:  ++  --  +  -  *  /  ^  #  ##  mod
+     Bitwise operators:  ~  &&  ||
+     Logical operators:  and  or  xor  eq  gt  ge  lt  le
+     Max/Min operators:  >  <
+         
+
+ Notes:
+    1. The language generally uses a fairly straightforward computational syntax.  The main
+       difference from IDL is that quoted strings are treated as tplot variables in this language
+    2. A full specification of language syntax in backus-naur form can be found
+       in the file bnf_formal.txt, the programmatic specification of this syntax
+       can be found in productions.pro
+    3. The language is parsed using an slr parser.  The tables required to do this parsing
+       are generated and stored ahead of time in the files grammar.sav and parse_tables.sav
+    4. The routines that describe the evaluation rules for the language can be found in the file
+       mini_routines.pro
+    5. If you want to modify the way the language works you'll probably need to modify productions.pro,
+       regenerate the slr parse tables using save_calc_tables and modify/add routines to mini_routines.pro
+    6. Arrays must have the same dimensions to be combined, and tplot variables must also have the same times.
+    7. Procedures: min,max,mean,median,count,total  all take a second argument that allow you to select the
+       dimension over which the operation is performed
+       
+ 
+

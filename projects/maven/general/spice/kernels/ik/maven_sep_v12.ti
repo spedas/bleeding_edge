@@ -1,0 +1,325 @@
+KPL/IK
+
+MAVEN SEP Instrument Kernel
+===============================================================================
+
+   This Instrument Kernel (IK) file contains parameters for MAVEN
+   SEP instrument.
+
+
+Version and Date
+-------------------------------------------------------------------------------
+
+   Version 1.2 -- October 9, 2015 -- Boris Semenov, NAIF
+
+      Added science FOVs (-202161..-202164, -202166..-202169).
+
+
+   Version 1.1 -- September 25, 2015 -- Boris Semenov, NAIF
+
+      Corrected error in the table included in the comments in the
+      "Instrument FOV Definition(s)" section: swapped MAVEN_SEP1 and
+      MAVEN_SEP2 in the frame column.
+
+
+   Version 1.0 -- August 10, 2015 -- Robert Lillis, MAVEN SEP Team;
+                                     Boris Semenov, NAIF
+
+      Updated SEP name/ID mapping; bumped version up to 1.0
+
+
+   Version 0.0 -- February 11, 2014 -- Davin Larson, MAVEN SEP Team
+
+
+References
+-------------------------------------------------------------------------------
+
+   1. Kernel Pool Required Reading
+
+   2. GETFOV, getfoc_c, cspice_getfov headers
+
+   3. MAVEN FK file, latest version
+
+
+Contact Information
+-------------------------------------------------------------------------------
+
+   Davin Larson, MAVEN SEP, 510-642-7558, davin@ssl.berkeley.edu
+
+
+Implementation Notes
+-------------------------------------------------------------------------------
+
+   This file is used by the SPICE system as follows: programs that make
+   use of this kernel must ``load'' the kernel, normally during program
+   initialization. The SPICE routine FURNSH loads a kernel file into
+   the pool as shown below.
+
+      CALL FURNSH ( 'frame_kernel_name; )    -- FORTRAN
+      furnsh_c ( "frame_kernel_name" );      -- C
+      cspice_furnsh, frame_kernel_name       -- IDL
+      cspice_furnsh( 'frame_kernel_name' )   -- MATLAB
+
+   Once the file has been loaded, the SPICE routine GETFOV (getfov_c in
+   C, cspice_getfov in IDL and MATLAB) can be used to retrieve FOV
+   parameters for a given instrument or structure.
+
+   This file was created and may be updated with a text editor or word
+   processor.
+
+
+Naming Conventions
+----------------------------------------------------------
+
+   All names referencing values in this IK file start with the
+   characters `INS' followed by the NAIF MAVEN ID number (-202)
+   followed by a NAIF three digit ID code for SEP or one of
+   its detectors or components. This is the full list of names
+   and IDs described by this IK file:
+
+            Name                 ID     Old name/Synonym
+      ---------------------    -------  ----------------------------------
+      MAVEN_SEP1               -202120  MAVEN_SEP_PY
+      MAVEN_SEP1_FWD_A_ELEC    -202121  MAVEN_SEP_PY_FWD1, MAVEN_SEP1_FWD1
+      MAVEN_SEP1_FWD_B_ION     -202122  MAVEN_SEP_PY_FWD2, MAVEN_SEP1_FWD2
+      MAVEN_SEP1_AFT_B_ELEC    -202123  MAVEN_SEP_PY_AFT1, MAVEN_SEP1_AFT1
+      MAVEN_SEP1_AFT_A_ION     -202124  MAVEN_SEP_PY_AFT2, MAVEN_SEP1_AFT2
+      MAVEN_SEP1_FWD_A_ELEC_S  -202161
+      MAVEN_SEP1_FWD_B_ION_S   -202162
+      MAVEN_SEP1_AFT_B_ELEC_S  -202163
+      MAVEN_SEP1_AFT_A_ION_S   -202164
+
+      MAVEN_SEP2               -202125  MAVEN_SEP_MY
+      MAVEN_SEP2_FWD_A_ELEC    -202126  MAVEN_SEP_MY_FWD1, MAVEN_SEP2_FWD1
+      MAVEN_SEP2_FWD_B_ION     -202127  MAVEN_SEP_MY_FWD2, MAVEN_SEP2_FWD2
+      MAVEN_SEP2_AFT_B_ELEC    -202128  MAVEN_SEP_MY_AFT1, MAVEN_SEP2_AFT1
+      MAVEN_SEP2_AFT_A_ION     -202129  MAVEN_SEP_MY_AFT2, MAVEN_SEP2_AFT2
+      MAVEN_SEP2_FWD_A_ELEC_S  -202166
+      MAVEN_SEP2_FWD_B_ION_S   -202167
+      MAVEN_SEP2_AFT_B_ELEC_S  -202168
+      MAVEN_SEP2_AFT_A_ION_S   -202169
+
+   The remainder of the keyword name is an underscore character
+   followed by the unique name of the data item. For example, the
+   -202129 boresight direction provided as a part of its FOV definition
+   is specified by:
+
+      INS-202129_BORESIGHT
+
+   The upper bound on the length of the name of any data item is 32
+   characters.
+
+   If the same item is included in more than one file, or if the same
+   item appears more than once within a single file, the latest value
+   supersedes any earlier values.
+
+
+Mounting Alignment
+--------------------------------------------------------
+
+   Refer to the latest version of the MAVEN Frames Definition Kernel
+   (FK) [3] for the MAVEN structures reference frame definitions and
+   mounting alignment information.
+
+
+Instrument Description
+---------------------------------------------------------
+
+   SEP consists of two separate sensors: SEP1 and SEP2. Each Sensor
+   detects energetic electrons and ions using Solid State planar
+   Silicon detectors. Each sensor is a dual, double ended telescope.
+   The two double ended telescopes in each sensor are designated A and B.
+   Each telescope has 2 FOVs: one primarily intended for
+   electrons and an oppositely directed FOV for ions. When combined
+   with the adjacent telescope, each sensor sees both ions and
+   electrons in the forward and aft direction.
+
+
+Instrument FOV Definition(s)
+----------------------------------------------------------
+
+   This section defines the following FOVs with the Sun keep-out angular 
+   extents (41 deg by 50 deg):
+
+      ID       SHAPE      FRAME                  SIZE1  SIZE2   BSIGHT
+      -------  --------   ---------------------  -----  -----   ------
+      -202121  RECTANGLE  MAVEN_SEP1             50.     41.    +X
+      -202122  RECTANGLE  MAVEN_SEP1             50.     41.    +X
+      -202123  RECTANGLE  MAVEN_SEP1             50.     41.      -X
+      -202124  RECTANGLE  MAVEN_SEP1             50.     41.      -X
+      -202126  RECTANGLE  MAVEN_SEP2             50.     41.    +X
+      -202127  RECTANGLE  MAVEN_SEP2             50.     41.    +X
+      -202128  RECTANGLE  MAVEN_SEP2             50.     41.      -X
+      -202129  RECTANGLE  MAVEN_SEP2             50.     41.      -X
+
+   and the following FOVs with the science sensitivity angular extents
+   (31 deg by 42 deg):
+
+      ID       SHAPE      FRAME                  SIZE1  SIZE2   BSIGHT
+      -------  --------   ---------------------  -----  -----   ------
+      -202161  RECTANGLE  MAVEN_SEP1             42.     31.    +X
+      -202162  RECTANGLE  MAVEN_SEP1             42.     31.    +X
+      -202163  RECTANGLE  MAVEN_SEP1             42.     31.      -X
+      -202164  RECTANGLE  MAVEN_SEP1             42.     31.      -X
+      -202166  RECTANGLE  MAVEN_SEP2             42.     31.    +X
+      -202167  RECTANGLE  MAVEN_SEP2             42.     31.    +X
+      -202168  RECTANGLE  MAVEN_SEP2             42.     31.      -X
+      -202169  RECTANGLE  MAVEN_SEP2             42.     31.      -X
+
+   SIZE1 is the full angular extent, in degrees, in the XY plane of the
+   corresponding instrument frame. SIZE2 is the full angular extent, in
+   degrees, in the XZ plane of the corresponding instrument frame.
+
+   The FOVs are defined in this data block.
+
+      \begindata
+
+      INS-202121_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202121_FOV_SHAPE            = 'RECTANGLE'
+      INS-202121_FOV_FRAME            = 'MAVEN_SEP1'
+      INS-202121_BORESIGHT            = ( 1.0, 0.0, 0.0 )
+      INS-202121_FOV_REF_VECTOR       = ( 0.0, 0.0, 1.0 )
+      INS-202121_FOV_REF_ANGLE        = ( 20.5 )
+      INS-202121_FOV_CROSS_ANGLE      = ( 25.0 )
+      INS-202121_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202122_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202122_FOV_SHAPE            = 'RECTANGLE'
+      INS-202122_FOV_FRAME            = 'MAVEN_SEP1'
+      INS-202122_BORESIGHT            = ( 1.0, 0.0, 0.0 )
+      INS-202122_FOV_REF_VECTOR       = ( 0.0, 0.0, 1.0 )
+      INS-202122_FOV_REF_ANGLE        = ( 20.5 )
+      INS-202122_FOV_CROSS_ANGLE      = ( 25.0 )
+      INS-202122_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202123_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202123_FOV_SHAPE            = 'RECTANGLE'
+      INS-202123_FOV_FRAME            = 'MAVEN_SEP1'
+      INS-202123_BORESIGHT            = ( -1.0, 0.0, 0.0 )
+      INS-202123_FOV_REF_VECTOR       = (  0.0, 0.0, 1.0 )
+      INS-202123_FOV_REF_ANGLE        = ( 20.5 )
+      INS-202123_FOV_CROSS_ANGLE      = ( 25.0 )
+      INS-202123_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202124_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202124_FOV_SHAPE            = 'RECTANGLE'
+      INS-202124_FOV_FRAME            = 'MAVEN_SEP1'
+      INS-202124_BORESIGHT            = ( -1.0, 0.0, 0.0 )
+      INS-202124_FOV_REF_VECTOR       = (  0.0, 0.0, 1.0 )
+      INS-202124_FOV_REF_ANGLE        = ( 20.5 )
+      INS-202124_FOV_CROSS_ANGLE      = ( 25.0 )
+      INS-202124_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202126_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202126_FOV_SHAPE            = 'RECTANGLE'
+      INS-202126_FOV_FRAME            = 'MAVEN_SEP2'
+      INS-202126_BORESIGHT            = ( 1.0, 0.0, 0.0 )
+      INS-202126_FOV_REF_VECTOR       = ( 0.0, 0.0, 1.0 )
+      INS-202126_FOV_REF_ANGLE        = ( 20.5 )
+      INS-202126_FOV_CROSS_ANGLE      = ( 25.0 )
+      INS-202126_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202127_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202127_FOV_SHAPE            = 'RECTANGLE'
+      INS-202127_FOV_FRAME            = 'MAVEN_SEP2'
+      INS-202127_BORESIGHT            = ( 1.0, 0.0, 0.0 )
+      INS-202127_FOV_REF_VECTOR       = ( 0.0, 0.0, 1.0 )
+      INS-202127_FOV_REF_ANGLE        = ( 20.5 )
+      INS-202127_FOV_CROSS_ANGLE      = ( 25.0 )
+      INS-202127_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202128_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202128_FOV_SHAPE            = 'RECTANGLE'
+      INS-202128_FOV_FRAME            = 'MAVEN_SEP2'
+      INS-202128_BORESIGHT            = ( -1.0, 0.0, 0.0 )
+      INS-202128_FOV_REF_VECTOR       = (  0.0, 0.0, 1.0 )
+      INS-202128_FOV_REF_ANGLE        = ( 20.5 )
+      INS-202128_FOV_CROSS_ANGLE      = ( 25.0 )
+      INS-202128_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202129_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202129_FOV_SHAPE            = 'RECTANGLE'
+      INS-202129_FOV_FRAME            = 'MAVEN_SEP2'
+      INS-202129_BORESIGHT            = ( -1.0, 0.0, 0.0 )
+      INS-202129_FOV_REF_VECTOR       = (  0.0, 0.0, 1.0 )
+      INS-202129_FOV_REF_ANGLE        = ( 20.5 )
+      INS-202129_FOV_CROSS_ANGLE      = ( 25.0 )
+      INS-202129_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+
+      INS-202161_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202161_FOV_SHAPE            = 'RECTANGLE'
+      INS-202161_FOV_FRAME            = 'MAVEN_SEP1'
+      INS-202161_BORESIGHT            = ( 1.0, 0.0, 0.0 )
+      INS-202161_FOV_REF_VECTOR       = ( 0.0, 0.0, 1.0 )
+      INS-202161_FOV_REF_ANGLE        = ( 15.5 )
+      INS-202161_FOV_CROSS_ANGLE      = ( 21.0 )
+      INS-202161_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202162_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202162_FOV_SHAPE            = 'RECTANGLE'
+      INS-202162_FOV_FRAME            = 'MAVEN_SEP1'
+      INS-202162_BORESIGHT            = ( 1.0, 0.0, 0.0 )
+      INS-202162_FOV_REF_VECTOR       = ( 0.0, 0.0, 1.0 )
+      INS-202162_FOV_REF_ANGLE        = ( 15.5 )
+      INS-202162_FOV_CROSS_ANGLE      = ( 21.0 )
+      INS-202162_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202163_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202163_FOV_SHAPE            = 'RECTANGLE'
+      INS-202163_FOV_FRAME            = 'MAVEN_SEP1'
+      INS-202163_BORESIGHT            = ( -1.0, 0.0, 0.0 )
+      INS-202163_FOV_REF_VECTOR       = (  0.0, 0.0, 1.0 )
+      INS-202163_FOV_REF_ANGLE        = ( 15.5 )
+      INS-202163_FOV_CROSS_ANGLE      = ( 21.0 )
+      INS-202163_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202164_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202164_FOV_SHAPE            = 'RECTANGLE'
+      INS-202164_FOV_FRAME            = 'MAVEN_SEP1'
+      INS-202164_BORESIGHT            = ( -1.0, 0.0, 0.0 )
+      INS-202164_FOV_REF_VECTOR       = (  0.0, 0.0, 1.0 )
+      INS-202164_FOV_REF_ANGLE        = ( 15.5 )
+      INS-202164_FOV_CROSS_ANGLE      = ( 21.0 )
+      INS-202164_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202166_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202166_FOV_SHAPE            = 'RECTANGLE'
+      INS-202166_FOV_FRAME            = 'MAVEN_SEP2'
+      INS-202166_BORESIGHT            = ( 1.0, 0.0, 0.0 )
+      INS-202166_FOV_REF_VECTOR       = ( 0.0, 0.0, 1.0 )
+      INS-202166_FOV_REF_ANGLE        = ( 15.5 )
+      INS-202166_FOV_CROSS_ANGLE      = ( 21.0 )
+      INS-202166_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202167_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202167_FOV_SHAPE            = 'RECTANGLE'
+      INS-202167_FOV_FRAME            = 'MAVEN_SEP2'
+      INS-202167_BORESIGHT            = ( 1.0, 0.0, 0.0 )
+      INS-202167_FOV_REF_VECTOR       = ( 0.0, 0.0, 1.0 )
+      INS-202167_FOV_REF_ANGLE        = ( 15.5 )
+      INS-202167_FOV_CROSS_ANGLE      = ( 21.0 )
+      INS-202167_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202168_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202168_FOV_SHAPE            = 'RECTANGLE'
+      INS-202168_FOV_FRAME            = 'MAVEN_SEP2'
+      INS-202168_BORESIGHT            = ( -1.0, 0.0, 0.0 )
+      INS-202168_FOV_REF_VECTOR       = (  0.0, 0.0, 1.0 )
+      INS-202168_FOV_REF_ANGLE        = ( 15.5 )
+      INS-202168_FOV_CROSS_ANGLE      = ( 21.0 )
+      INS-202168_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202169_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202169_FOV_SHAPE            = 'RECTANGLE'
+      INS-202169_FOV_FRAME            = 'MAVEN_SEP2'
+      INS-202169_BORESIGHT            = ( -1.0, 0.0, 0.0 )
+      INS-202169_FOV_REF_VECTOR       = (  0.0, 0.0, 1.0 )
+      INS-202169_FOV_REF_ANGLE        = ( 15.5 )
+      INS-202169_FOV_CROSS_ANGLE      = ( 21.0 )
+      INS-202169_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      \begintext
+
+End of the IK file.
+

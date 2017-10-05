@@ -1,0 +1,72 @@
+Notes to People who would like to edit the wind_lib source code:
+This applies ONLY to people with an account on aeolus and with permission
+to edit the source code.  Please don't muck with the source code if
+you don't know what you are doing.  Any changes you make will affect the 
+master copy of the source code!
+
+Please contact Davin Larson before attempting to check out files and edit
+them.
+
+Step 1:
+  Create a directory structure somewhere in your home directory called:
+"source/wind_lib".  cd into that directory.
+
+Step 2:
+from the wind_lib directory, create a symbolic link to the master source 
+directory.  Type:
+
+ln -s /disks/aeolus/home/wind/source/wind_lib/SCCS
+
+Step 3:
+Get the source code and compile it by typing:
+
+make
+
+
+
+
+
+To determine who has a file checked out type:
+sccs info
+
+
+To edit a source file you must first check it out by typing:
+sccs edit FILENAME
+Use any editor to edit it.  Then recompile by typing:
+make
+
+
+When the code compiles successfully, you may check the file in:
+sccs delta FILENAME
+Do this ONLY if it compiles successfully! 
+to check in multiple files type:
+sccs delta `sccs tell -u`
+
+
+To create a new file under the sccs system, type:
+sccs create FILENAME
+(Try to avoid doing this.)
+you will also need to edit the makefile to add the new source code file(s)
+
+for more info on "sccs" use the man pages.
+
+
+
+Notes:
+- Make changes only under your own user account. Do NOT use the wind 
+account to make changes.
+
+- Do not change the permissions of the files.  They are read only for
+a purpose.  checking a file out will change the permission for you.
+
+- Do not check out files for long periods of time.
+
+- Check a file out BEFORE editing.  Remember that someone else might be
+editing the same file.
+
+- Do not try to cd into the SCCS directory and absolutely do not muck with
+the files in it.
+
+
+
+

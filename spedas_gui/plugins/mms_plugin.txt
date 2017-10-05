@@ -1,0 +1,17 @@
+project: MMS
+load_data: mms_ui_load_data
+data_processing: mms_ui_qcotrans_options, MMS Coordinate Transform, BCS
+data_processing: mms_ui_qcotrans_options, MMS QCoordinate Transform, DBCS
+data_processing: mms_ui_qcotrans_options, MMS QCoordinate Transform, DMPA
+data_processing: mms_ui_qcotrans_options, MMS QCoordinate Transform, SMPA
+data_processing: mms_ui_qcotrans_options, MMS QCoordinate Transform, DSL
+data_processing: mms_ui_qcotrans_options, MMS QCoordinate Transform, SSL
+data_processing: mms_ui_qcotrans_options, MMS QCoordinate Transform, GSE
+data_processing: mms_ui_qcotrans_options, MMS QCoordinate Transform, GSE2000
+data_processing: mms_ui_qcotrans_options, MMS QCoordinate Transform, GSM
+data_processing: mms_ui_qcotrans_options, MMS QCoordinate Transform, SM
+data_processing: mms_ui_qcotrans_options, MMS QCoordinate Transform, GEO
+data_processing: mms_ui_qcotrans_options, MMS QCoordinate Transform, ECI
+data_processing: mms_ui_qcotrans_options, MMS QCoordinate Transform, J2000
+config: mms_ui_fileconfig
+menu: mms_ui_gen_overplot, Overview Plots, MMS Overview Plot...

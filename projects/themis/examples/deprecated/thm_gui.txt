@@ -1,0 +1,729 @@
+THM_GUI widget definitions:
+
+MAIN WINDOW:
+
+Starting from the left, the first column of buttons (under "Data
+Choices") on the left side are used to choose different kinds of data
+to load, to choose the time range for the data, and to load the
+data. There is a button for each instrument, a button for time range
+selection and a button which initiates the loading process. Each of
+these buttons (except for the load button) will pop up a selection
+widget.
+
+The buttons across the top in the middle are for coordinate
+transforms, data processing and plotting and overview plots. When
+clicked, each of these buttons pops up a widget for different data
+manipulation tasks. If the "Draw Plot" button is clicked, a plot of
+the data is created.
+
+In the middle of the window there are windows which show the data sets
+that have been selected and the history of events.
+
+On the bottom of the main window there is a one-line progress widget
+that informs the user about the status of the current data loading or
+processing. Also there are buttons: "Help","Error", "Config" and
+"Exit". The Help button pops up a text widget that shows this
+text. The Error button pops up a widget with the THEMIS help request
+form, that can be edited, saved and emailed. The Config button pops up
+a widget that allows the user to set different parameters in the
+!themis system variable that controls automatic downloading. The Exit
+button ends the program.
+
+WINDOWS, BUTTONS AND POPUPS:
+
+LOADED DATA WINDOW: 
+
+   When data is loaded, information appears in the window. For each
+   data set loaded, the appropriate variable name and time range are
+   listed. To choose a particular data set for plotting or other
+   processing, left-click on it.  Multiple data sets can be selected by
+   holding the "control" key, and clicking more than one.  Also, you
+   can click on an option, then hold "shift" and the left mouse
+   button, and drag the cursor over the other data sets. Each of the
+   data sets includes one "tplot variable", which can be processed and
+   plotted using the IDL program TPLOT. The data sets that you click
+   on in the Loaded Data window are called the "active" data sets.
+
+CHOOSING DATA USING STRINGS:
+
+   Just below the Loaded Data window is a window in which the user can
+   type in a string (or a set of strings separated by spaces) and set
+   the active data sets to the variables including those strings. For
+   example, typing in "tha_spin* tha_fg*" (don't include the quotes in
+   the actual window) will set the active data sets to all variables
+   that start with the string "tha_spin" and also all variables with
+   names starting with the string "tha_fg". The question mark can be
+   included as a wild card for single characters:, e.g., "th?_spin*",
+   will return all variables with "th" then one letter, then "_spin*.
+   Once the string is typed, click on the "Set Active Data to String"
+   button, and the appropriate data sets will become active. If you
+   type "*" in the window, and click the "Set Active Data to String"
+   button, all of the data available will be set to active.
+
+ACTIVE DATA WINDOW:
+
+   In this window, the "active" data sets are shown. The data sets that
+   you click on in the Loaded Data window are called the "active" data
+   sets. Any coordinate transform, data processing or plotting task
+   will refer to these data only. 
+
+   If you have loaded data, then the "active" data sets are those
+   which have just been loaded.  Usually a data processing task will
+   change the active data set to be the data that has been just been
+   created. When you are in doubt which is the active data set, click
+   on it and it will be set.
+
+   The coordinate system of the active data sets are shown in
+   parentheses after the variable name for informational
+   purposes. "(Unknown)" means that there is no coordinate system
+   associated with that data.
+
+   If you click the "Clear Active Data" button below the window, the
+   active data is cleared. The window is cleared and the active data sets
+   become inactive. No data is deleted. Just click on the data in the
+   loaded data window to activate it.
+
+HISTORY WINDOW: 
+
+   This is a list of the IDL commands which have been used, and error
+   messages. Just below the history window are buttons that allow the
+   user to save the history in a file, and clear the history. The
+   "Save History" button will save the history in an IDL source file.
+   When you click here, a file selection widget pops up, allowing you
+   to choose the filename and path for the file. The default value is
+   called "thm_gui_history_yyyymmddss.pro" in your local working
+   directory. The time stamp on the default file name is the local
+   system time. The "Clear History" button deletes the history. Since
+   this history includes error messages, it is hoped that users will
+   save and email this file when errors occur. This will be used as a 
+   debugging tool.
+
+PROGRESS WINDOW:
+
+   In this window, there is a line of text that tells the user what is
+   happening, with respect to data loading and processing tasks. It
+   will also display warnings, in particular, when an invalid input
+   value for some data processing task is input, there will be a
+   warning in the progress widget. If there is an error that causes
+   the code to crash, then this window will display the string "Error
+   - See History:" to alert the user to an error.
+
+
+DATA CHOICES SELECTION BUTTONS: 
+
+   Each data quantity selection button pops up a widget that show the
+   different types of data that can be loaded for that instrument. For
+   ground-based data the list on the left gives the different ground
+   stations that are available. For spacecraft data, the choice is of
+   the different probes. To choose data from that station/probe, click
+   on it.  Multiple stations/probes can be selectd by holding the
+   "control" key, and clicking more than one.  Also, you can click on
+   an option, then hold "shift", and the left mouse button, and drag
+   the cursor over the others. Clicking "*" will select all available
+   ground stations or probes.
+
+   The types of data that are available are listed in the middle, for
+   level 1 data, and on the right for level 2 data. Click on the type
+   of data to choose it, multiple selections and "*" are handled in
+   the same manner as the choice of ground station or probe.
+
+   Below these windows, there is a place to type in a string for the
+   data selection. If you type in here, the data types that match this
+   string are then displayed in the list windows. Wild card characters
+   are necessary. If for example, you are selecting state data, and
+   you wanted all data types that include "spin", then you type
+   "*spin*". If there are no matches, "None" is displayyed. Note that
+   you still need to click on something in the list window to choose
+   the data, even if there is only one variable available. Below this
+   window, there are windows that show what the current data that is
+   being selected and the probe or ground station selected. If no data
+   types are selected, then no data for that instrument will be
+   loaded.
+
+   There are 2 buttons, one that allows the user to clear the choice
+   of probe/station, one that allows the user to clear the chosen data
+   types, and one that exits the widget.  
+   
+   SCM Calibration: For SCM data only, the 'Data Choice' window also 
+   contains a section that allows the user to modify the calibration
+   parameters. There are two buttons at the bottom of the calibration
+   section, a 'Help' button which will display a new window with 
+   detailed descriptions of all the parameters, and a 'Reset' button 
+   which will restore the original (default) values.
+   
+   When you are done, click the "Accept and Close" button to exit the 
+   popup. The chosen data types will show up in the history window.
+
+   The GUI is set up to allow data from multiple instruments to be
+   input together. For example, the user can choose some EFI data
+   types, and some FGM data types, and some other types, and load it
+   all with one click on the "Load Data" button. Note that the
+   selection of "probe" is global, all of the selected data will be
+   loaded for the probe(s) chosen most recently. If, for example, you
+   want to load EFI data from probe "A" and FGM data from probe "B",
+   you will need to load these separately. 
+
+   You will notice that all of the other buttons on the widget are
+   inactive while this popup is active. you must click on "Accept and
+   Close" for anything to happen after you choose data types.
+
+   The data names are kind of cryptic, and are not necessarily clear
+   to the casual user. A list of datatypes, with some description, is
+   included at the end of this file.
+
+TIME RANGE SELECTION BUTTON:
+
+   Choose Start Time: Pops up a widget that allows you to choose a
+   start time for data to be loaded. You may also type a string value
+   of the form yyyy-mm-dd/hh:mm:ss in the window next to the button.
+   The selected time is displayed in the history window. This allows
+   the user to check that the time is correct, before loading data.
+
+   Choose End Time: Pops up a widget that allows you to choose an end
+   time for data to be loaded. You may also type a string value of the
+   form yyyy-mm-dd/hh:mm:ss in the window next to the button.
+
+   When you are done, click the "Accept and Close" button to exit the
+   popup.
+
+   Note that the initial times 1970-01-01/00:00:00. You are required
+   to choose a time range before you can load any data. Once an
+   initial time range is set, it is saved, and when the widget is
+   popped up later in the session, the most recent inputs are
+   displayed. You need not type or select a full time, all you have to
+   do is edit.
+
+LOAD DATA BUTTON: 
+
+   Click on this button to load the selected data. All selected
+   datatypes will be loaded. The list of loaded data types, or "Load
+   Queue" are saved. If you want to reload the same data for a
+   different time range, you can simply change the time range and hit
+   the load button. This only works if you haven't chosen any other
+   data types, though. The list of data types is re-initialized when
+   you click a data selection button after loading. As mentioned
+   above, the data sets loaded in the most recent button click are the
+   "active" data sets and will appear in the Active Data window.
+
+CLEAR LOAD QUEUE BUTTON:
+
+   Click this button to clear out the load queue. This is useful if a
+   load request failed. If the load routine crashes (heaven forbid),
+   then it is a good idea to clear out the queue before trying to load
+   other data.
+
+COORDINATE TRANSFORM BUTTON:
+
+   When the "Coordinate Transform" button is clicked, a popup appears
+   with different choices for coordinate transforms. Each possible
+   output coordinate system has a button.  The possibilities are:
+   "SPG" (Spacecraft Probe Coordinates), "SSL" (Spinning Spacecraft
+   Coordinates), "DSL" (Despun Spacecraft Coordinates), "GSE"
+   (Geocentric Solar Ecliptic), "GSM" (Geocentric Solar
+   Magnetospheric), and "GEI" (Geocentric Earth Inertial).  On the 
+   right hand side of the panel, a window displays the current output
+   coordinate system.
+
+   Only the active data sets are transformed.  The input coordinate
+   systems for the active data sets are automatically obtained.  Data
+   with "Unknown" coordinates will not be transformed.
+
+   Click on the "transform" button to perform the
+   transformation. Warnings and error messages will appear in the
+   window at the bottom, and also in the progress window on the main
+   widget.
+
+   Click on the "Close" button to dismiss the popup.
+
+DATA PROCESSING BUTTON: 
+
+   When the "Data Processing" button is clicked, a popup appears with
+   various options for data processing. Only one data processing popup
+   will appear; if you click the button multiple times, the same popup
+   will show up. The popup contains multiple buttons and a text widget
+   which displays error messages. When one button is clicked, the other
+   buttons are disabled.
+
+
+   As usual, only the variables shown in the Active Data window will
+   be operated on by these processes. Also, these processes change the
+   active data sets to the output variables of the processes. If you
+   want to do multiple processes on the same data sets, you need to
+   reset the active data sets each time.
+
+MESSAGE WINDOW:
+ 
+   In addition to alerting the user when a process
+   crashes, the error message window will alert the user when an
+   invalid input parameter is set for the processes. The text is the
+   same as in the progress window of the main GUI. For user input
+   errors, the THEMIS Error widget does not pop up.
+
+   It is important to note, however, that the user input error
+   checking in IDL does not catch everything with respect to values
+   typed into a widget.  If the necessary input is a numerical value,
+   then most strings that are not true numbers will not be
+   rejected. For example, if a user inputs "XDFB%%%", this is
+   interpreted as a value of zero; IDL does not stop processing when
+   there is a type conversion error, it simply returns zero. Unusual
+   things can happen. If the user inputs "1apppk", then this is
+   interpreted by IDL as one, but if the user inputs "a1pppk", then
+   this is interpreted as zero. If there seems to be a problem, and no
+   error message pops up, look at the history window in the main GUI.
+   The input values will be recorded there.
+
+SUBTRACT AVERAGE: 
+
+   For each active data set, the average value
+   is subtracted. new variables are created, the new names have the
+   syntax: new_var = old_var+"-d", and the new variables become the
+   active data sets`.
+
+SUBTRACT MEDIAN: 
+   
+   For each active data set, the median value is
+   subtracted. new variables are created, the new names have the
+   syntax: new_var = old_var+"-m", and the new variables become the
+   active data sets.
+
+SMOOTH DATA: 
+   
+   Boxcar smoothing of the data. A widget will pop up,
+   asking how many data points to smooth over. Choose a value, and
+   click on "accept and close". The default is 11 points. New
+   variables will be created, with "_sm_npts" appended to the old
+   variable names, where npts is the smoothing resolution. If you
+   click the "Cancel" button on the popup, nothing will happen.
+
+BLOCK AVERAGE: 
+   
+   Click this button to average that data over time, a
+   window will pop up, asking for the time resolution. The default
+   time resolution is 60 seconds. New variables will be created, with
+   "_av_tres" appended to the old variable names, where "tres" is the
+   time resolution. If you click the "Cancel" button on the popup,
+   nothing will happen.
+
+CLIP: 
+   
+   Clips data above and below a set maximum and minimum, a
+   widget pops up which allows these values to be set. Then data
+   outside the range is set to NaN.  New variables will be created,
+   with "_clip" appended to the old variable names. If you click the
+   "Cancel" button on the popup, nothing will happen.
+
+DEFLAG:  
+
+	 Interpolates or repeats the most recent valid data value
+   over gaps in the data (gaps are denoted by NaNs,and can be created
+   by the clipping process). A window pops up which is used to set the
+   method, there are two choices: "repeat" will repeat the last good
+   value over the gap. "linear" will interpolate over gaps. New
+   variables will be created, with "_deflag" appended to the old
+   variable names. If you click the "Cancel" button on the popup,
+   nothing will happen.
+
+DEGAP: 
+   
+   Locates gaps in data, and fills in with 'NaN' values. It
+   figures out where to add data points by checking which time
+   differences are greater than or equal to an input time interval,
+   plus a margin, and adds equally spaced 'NaN' data points at time
+   intervals with spacing determined by the size of the data gap
+   divided by the number of points that fit with minimum cumulative
+   error. The input parameters are the time resolution for the data to
+   be input, the margin and the maximum gap size. If you click the
+   "Cancel" button on the popup, nothing will happen.
+
+CLEAN SPIKES: 
+   
+   Removes spikes from messy data. New variables will be
+   created, with "_dspk" appended to the old variables.
+
+TIME DERIVATIVE: 
+   
+   Takes the time derivative of the active data
+   sets. New variables will be created, with "d_" prepended to the old
+   variable names.
+
+WAVELET TRANSFORM: 
+   
+   The data is split into components, and a basic
+   wavelet transform is performed on each component, with "_wv"
+   appended to the old variable names. Note that this is designed for
+   electric or magnetic field data. Applying this to other data (e.g.,
+   spectrograms) will cause non-intuitive results.
+
+DPWRSPEC: 
+   
+   The data is split into components, and a dynamic power
+   spectrum is obtained from each component, with "_dpwrspc" appended
+   to the old variable names. Note that this is designed for electric 
+   or magnetic field data. Applying this to other data (e.g.,
+   spectrograms) will cause non-intuitive results. For some time
+   ranges, the "dpwrspec" button crashes in the IDL POLY_FIT
+   routine. We have no clue why this happens. Try changing the input
+   time range.
+
+   SET TIME LIMITS: A popup will appear, allowing the user to set time
+   limits for the processing application, either by using the cursor
+   on the existing plot window, by using a time selection widget, or
+   by typing in the start and end times. The different buttons are:
+
+   "Choose Start Time": Pops up a widget that allows you to choose a
+   start time for data to be loaded. You may also type a string value
+   of the form yyyy-mm-dd/hh:mm:ss in the window next to the button.
+   The selected time is displayed in the history window. This allows
+   the user to check that the time is correct, before loading data.
+
+   "Choose End Time": Pops up a widget that allows you to choose an
+   end time for data to be loaded. You may also type a string value of
+   the form yyyy-mm-dd/hh:mm:ss in the window next to the button.
+
+   "Tlimits from cursor": Click here move the cursor over the plot
+   window, and click twice on the plot to choose a new time range.
+   You must select a time range by clicking twice on the plot; all
+   other operations on this widget are disabled while you do this
+
+   "Reset to init value": Click here and the time limits will be reset
+   to the initial values in the active data variables.
+
+   When you are done, click the "Accept and Close" button to exit the
+   popup. The plot will be reset to the new time limits.
+ 
+   If you click the "Cancel" button, the popup will close, with
+   nothing happening
+
+
+RENAME: 
+   
+   A popup prompts the user for the new variable name for each
+   of the "active" data sets, and each variable is renamed to the new
+   name. If you click "Cancel", nothing happens. Since this window is
+   activated for each "active" data set, all operations must be 
+   performed for each data set, including "Cancel".
+
+RESTORE: 
+   
+   Saved files can be restored using this button. A filename
+   selection window will pop up and the user can use this to select a
+   saved file. If you click "Cancel", nothing happens.
+
+SAVE: 
+   
+   An IDL save file is created with all of the active data
+   sets. A filename selection window is popped up, and the user can
+   change the default filename. If you click "Cancel", nothing happens.
+
+SAVE ASCII: 
+   
+   An ASCII save file is created for each active data.
+   A filename selection window is popped up, and the user can 
+   change the default root filename. The variable name is appended
+   to the end of the root filename. If you click "Cancel", nothing 
+   happens.
+
+DELETE: 
+   
+   The active data sets are deleted. 
+
+   CLOSE: Click here to close the widget.
+
+
+PLOT MENU BUTTON:
+
+   Note that, when this button is first clicked a plot of the active
+   data sets pops up, if there are active data. This is because
+   certain plot parameters have to be initialized for some of the
+   buttons to work properly. If there is no active data, then no plot
+   appears, and nothing will happen if the buttons on this widget are
+   clicked.
+
+   SET TIME LIMITS: A popup will appear, allowing the user to set time
+   limits for the processing application, either by using the cursor
+   on the existing plot window, by using a time selection widget, or
+   by typing in the start and end times. 
+
+   "Choose Start Time": Pops up a widget that allows you to choose a
+   start time for data to be loaded. You may also type a string value
+   of the form yyyy-mm-dd/hh:mm:ss in the window next to the button.
+   The selected time is displayed in the history window. This allows
+   the user to check that the time is correct, before loading data.
+
+   "Choose End Time": Pops up a widget that allows you to choose an end
+   time for data to be loaded. You may also type a string value of the
+   form yyyy-mm-dd/hh:mm:ss in the window next to the button.
+
+   "Tlimits from cursor": Click here move the cursor over the plot
+   window, and click twice on the plot to choose a new time range.
+   You must select a time range by clicking twice on the plot; all
+   other operations on this widget are disabled while you do this
+
+   "Reset to init value": Click here and the time limits will be reset
+   to the initial values in the active data variables.
+
+   When you are done, click the "Accept and Close" button to exit the
+   popup. The plot will be reset to the new tile limits.
+ 
+   If you click the "Cancel" button, the popup will close, with
+   nothing happening
+
+   YLIMIT: Set the y limits of the active data sets. For each active
+   data set, a text widget pops up, allowing the limits to be set, and
+   also log plotting can be set/unset: if ylog is set to 1, then the
+   plot for this variable will be a log plot. If you click the
+   "Cancel" button on the popup, nothing will happen.
+
+   ZLIMIT: Same as Ylimit, for the Zlimits for spectrogram data.
+   
+   SET POSTSCRIPT FILE SIZE: Pops up a widget for the postscript plot. 
+   The set postscript file size window can also be used to set the size 
+   for postscript files. Note that you must set xsize and ysize greater 
+   than zero for this to work. Otherwise an error message appears and 
+   the window size is not set. It is a good idea not to make windows 
+   larger than your screen size. There are also two radio buttons that 
+   allows the user to select size units or 'inches' or 'cm'. If you 
+   click the "Cancel" button on the popup, nothing will happen. 
+
+   SET PLOT WINDOW SIZE: Pops up a widget for the window size. For
+   screen plots you can just drag the window for resizing. The set
+   plot window size window can also be used to set the size for png
+   plots. Note that you must set xsize and ysize greater than zero for
+   this to work. Otherwise an error message appears and the window
+   siae is not set. It is a good idea not to make windows larger than
+   you screen size. If you click the "Cancel" button on the popup,
+   nothing will happen.
+
+   SET PLOT WINDOW NUMBER: Sets the window number for the screen plots. 
+   Only window numbers between 0 and 32 are accepted. If you click the
+   "Cancel" button on the popup, nothing will happen.
+
+   CREATE NEW WINDOW: pops up a plot window with whatever values are
+   currently saved in the widget. The default initial values are 0 for
+   the window number and [xsize,ysize] = [640,480]. If you click the
+   "Cancel" button on the popup, nothing will happen.
+
+   PLOT TYPE: click on "SCREEN" for screen plots. If you click on
+   "PNG" a png plot will be created when you click the "Draw Plot"
+   button, with filename = "thm_gui_plot_yyyymmddss.png" in your local
+   working directory.  The time stamp on the file is the local system
+   time. if you click on "PS" a postscript file will be created for 
+   each active data, with filename = 'thm_ascii_yyyymmddss.txt" in your local
+   working directory
+
+   SPECTROGRAM/LINE PLOT: These two buttons can be used to set the
+   way active data is to be plotted. They are mutually exclusive.
+   Note that not all data can be characterized as a
+   spectrogram. It is important to remember that not all data can
+   be plotted spectrographically
+
+   SPACECRAFT/COMPONENT: These two buttons are used to regroup active
+   tplot variables by either spacecraft or component. The new tplot 
+   variables will be made active. A new plot will be drawn. 
+   
+   DRAW PLOT: Click here to draw the plot. If "PNG" or "PS" plot types
+   are selected, the appropriate files will be created, however no 
+   plots will be displayed on the screen. It is helpful to remember to
+   set the plot type back to "SCREEN" when you have finished creating
+   "PNG" or "PS" files.
+
+   CLOSE: Click here to dismiss the widget.
+
+OVERVIEW PLOT:
+
+   Clicking on this button pops up a widget that will do an overview
+   plot of various THEMIS data. On the overview plot widget, there is
+   a widget that allows you to choose a probe. Only one probe is
+   allowed at a time. The pop up widget also allows you to choose  
+   various instruments,and other THEMIS ground data. The "Draw Overview 
+   plot" button pops up a plot that shows a broad view of THEMIS data. 
+   The data sets that are plotted are set to be the active data sets.
+
+DRAW PLOT: 
+
+   If you click on this button, a plot is created of the active
+   data. This is identical in effect as the DRAW PLOT button on the
+   Plot Menu Widget.
+
+HELP BUTTON:
+
+   Clicking on the "HELP" button displays this file. Click "Close" to
+   dismiss the help widget.
+
+
+ERROR BUTTON:
+
+   When this button is clicked, an editable text widget pops up which
+   display the THEMIS Science Help Request Form. This allows the user
+   to input information about the error which has occurred. There is a
+   save button, which saves the request in a file, which can be
+   emailed to THEMIS_Science_Support@ssl.berkeley.edu. A file
+   selection widget pops up, which allows you to choose the path and
+   filename. 
+
+   Click "Close" to dismiss the error widget.
+
+   IMPORTANT NOTE: This error widget also pops up automatically when
+   processing errors occur -- the Error button should only be needed
+   if everything else fails.
+
+CONFIG BUTTON:
+
+   This button pops up a widget that allows access to the !themis
+   system variable that controls the automatic downloading
+   process. You can type in values for the different options in the
+   windows. Note that you should not need to do this very often.
+   
+   The top window gives the local data directory. Any THEMIS data
+   downloaded is expected to be downloaded into this directory. The
+   default value for users who are logged on to an ssl.berkeley.edu
+   machine is "/disks/data/themis/". For windows users, the default
+   value is "C:/data/themis/". It can be set to any directory for which
+   the user has write permission.
+
+   The second window shows the remote data directory. The default is
+   "http://themis.ssl.berkeley.edu/data/themis/"
+
+   Next is the flag for automatic downloads; set this to 0 for
+   automatic downloads, 1 for no automatic downloads. (This should be
+   set to 1 for local SSL users).
+
+   Next is the flag for file updates, if set to zero this will update
+   files in local data directories if there is a file in the remote
+   data directory which has the same name, but is new. If set to 1,
+   then this is not done.
+
+   Next is the download only flag; Set this to 0 to download and load
+   data, set to 1 to only download data, and not load.
+
+   Last is the verbose flag, set this to a number from 0 to 10. The
+   higher the number, the more messages you get during processing.
+
+   RESET: If you press this button, the configuration is returned to
+   the state which existed before you popped up the widget.
+
+   RESET TO DEFAULT: If you press this button, the configuration is
+   returned to the default state in THM_CONFIG.pro, and any saved
+   configuration file is deleted. This means that if you want to go
+   back to a configuration that you have saved previously, you need to
+   reset the values and then save the configuration. Alternatively,
+   you can locate the previously saved file and copy it to the
+   appropriate location in the APP_USER_DIR shown below.
+
+   SAVE: If this button is pressed, then the current configuration is
+   saved in a file. This file ends up in a directory created by the
+   IDL APP_USER_DIR routine, on a windows system the path looks like
+   this:
+   "C:\usernme\.idl\themis\thm_config-4-win32\thm_config.txt".
+   On a linux machine, it looks like:
+   "$HOME/.idl/themis/thm_config-4-linux/thm_config.txt"
+
+   IMPORTANT: Once you have saved this file, it will always be read
+   when you run any THEMIS routines -- you should only need to do this
+   once for each operating system that you are using. 
+
+   Whenever you save a new file, the old file is copied to a file
+   tagged with the current date and time, for retrieval in case of
+   disaster.
+   
+   
+ EXIT BUTTON: 
+
+   Exits the program, and closes all of the popups, except
+   for the Help, Error and Config widgets, which are designed as
+   stand-alone widgets.
+
+
+LIST OF DATATYPES FOR EACH INSTRUMENT: 
+
+Note that not all of the data that will be listed in the load data
+button are included, but these will be filled in as the mission
+progresses. As of 2007-07-20 only ESA, FGM, FBK and SST have level 2 data available.
+
+ Instrument   level      Data_name               Description
+ asi          l1         asf                     All sky imager full resolution images of 256x256 pixels
+                         ast                     All sky imager thumbnail images of 32x32 pixels
+ ask          l1         ask                     All sky imager keogram images of 256 pixels
+
+ esa          l0         454 (peif)              ESA ion full distribution
+                         455 (peir)              ESA ion reduced distribution
+                         456 (peib)              ESA ion burst distribution
+                         457 (peef)              ESA electron full distribution
+                         458 (peer)              ESA electron reduced distribution
+                         459 (peeb)              ESA ion burst distribution
+
+ esa          l2         peif_density            ESA Ion Density
+                         peif_en_eflux           ESA Ion energy spectrogram
+                         peif_t3                 Diagonalized Ion Temperature
+                         peif_velocity_ds        ESA Ion Velocity DSL
+                         peif_velocity_gs        ESA Ion Velocity GSE
+                         peif_velocity_gs        ESA Ion Velocity GSM
+                         peef_density            ESA Electron Density
+                         peef_en_eflux           ESA Electron energy spectrogram
+                         peef_t3                 Diagonalized Electron Temperature
+                         peef_velocity_ds        ESA Electron Velocity DSL
+                         peef_velocity_gs        ESA Electron Velocity GSE
+                         peef_velocity_gs        ESA Electron Velocity GSM
+
+ efi          l1         vaf                     EFI, Voltages, processor A fast survey/full orbit
+                         vap                     EFI, Voltages, processor A particle burst
+                         vaw                     EFI, Voltages, processor A wave burst
+                         vbf                     EFI, Voltages, processor B fast survey/full orbit
+                         vbp                     EFI, Voltages, processor B particle burst
+                         vbw                     EFI, Voltages, processor B wave burst
+                         eff                     EFI, E field, fast survey/full orbit
+                         efp                     EFI, E field, particle burst
+                         efw                     EFI, E field, wave burst
+                         eff_0                   Electric Field E in 12, 34, 56 Sensor Coordinates
+                         efp_0                   Electric Field E in 12, 34, 56 Sensor Coordinates
+                         efw_0                   Electric Field E in 12, 34, 56 Sensor Coordinates
+
+ fbk          l1         fb1                     Filter Bank 1 (E and/or B)
+                         fb2                     Filter Bank 2 (E and/or B)
+                         fbh                     Filter Bank High Frequency (100-300kHz)
+ fbk          l2         fb_hff                   High-Frequency Filter peak and average values
+                         fb_edc12                Spectrogram FBK EDC12
+                         fb_edc34                Spectrogram FBK EDC34
+                         fb_edc56                Spectrogram FBK EDC56
+                         fb_scm1                 Spectrogram FBK SCM1
+                         fb_scm2                 Spectrogram FBK SCM2
+                         fb_scm3                 Spectrogram FBK SCM3
+
+ fft          l1         ffp_16                  FFT in particle burst x 16 frequencies
+                         ffp_32                  FFT in particle burst x 32 frequencies
+                         ffp_64                  FFT in particle burst x 64 frequencies
+                         ffw_16                  FFT in wave burst x 16 frequencies
+                         ffw_32                  FFT in wave burst x 32 frequencies
+                         ffw_64                  FFT in wave burst x 64 frequencies
+
+ fgm          l1         fgl                     FGM Low Telemetry (low data rate)
+                         fgh                     FGM High Telemetry (high data rate)
+                         fge                     FGM Engineering Data (Decimated from FGH)
+ fgm          l2         fgs                     FGS (spin-resolution) magnetic field B in XYZ Desp
+
+ fit          l1         fit                     spinFIT file E&B raw data
+                         fit_fgs                 FGM Spinfit calibrated data, dsl xyz
+                         fit_efs                 EFI Spinfit calibrated data, dsl xyz
+                         fit_bfit                FGM Spinfit calibrated data: A,B,C,sig,avg
+                         fit_efit                EFI Spinfit calibrated data: A,B,C,sig,avg
+
+ gmag         l2         mag                     Ground Magnetometer data in DHZ coordinates.
+
+ mom          l1         mom                     On-board ESA and SST Moments
+
+ scm          l1         scf                     SCM waveform Fast Survey
+                         scp                     SCM waveform Particle Burst
+                         scw                     SCM waveform Wave Burst
+
+ sst          l1         sst                     same as esa
+
+ state        l1         pos                     GEI position, xyz
+                         vel                     GEI velocity, xyz
+                         man                     Maneuver flag
+                         roi                     Regions of Interest
+                         spinras                 spin axis right ascension, deg
+                         spindec                 spin axis declination, deg
+                         spinalpha               Geom to spin axis, Euler alpha, deg
+                         spinbeta                Geom to spin axis, Euler beta, deg
+                         spinper                 spin period, sec
+                         spinphase               spin phase, deg

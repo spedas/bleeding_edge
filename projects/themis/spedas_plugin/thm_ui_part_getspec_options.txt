@@ -1,0 +1,113 @@
+General:
+----------------------------------------------------
+
+Derived data products are generated using THM_PART_PRODUCTS, a command line routine
+for creating moments and spectrograms from ESA and SST data.  A list of routines
+detailing command line usage is given at the bottom of this document. 
+
+
+Outputs:
+----------------------------------------------------
+
+Energy Spectrogram:
+  -The data are averaged across all look directions to create an omni-directional energy spectrogram.
+
+Phi Spectrogram (spin axis longitude):
+  -The data are averaged across all energies and latitudes (measured from spin plane to spin axis).
+
+Theta Spectrogram (spin axis latitude):
+  -The data are averaged across all energies and longitudes (measured along the spin plane).
+
+Gyrophase Spectrogram:
+  -The data are transformed into field aligned coordinates then averaged across all energies and latitudes.
+
+Pitch Angle Spectrogram:
+  -The data are transformed into field aligned coordinates then averaged across all energies and longitudes.
+
+Moments
+  -Moments of the distribution are calculated and used to derive a number of quantities.
+  -Magnetic field data (th?_fgs) will be loaded automitically for datatypes that require it (marked *).
+    density  -  Density
+    current  -  Current
+    flux  -  Number flux
+    eflux  -  Energy flux 
+    velocity  -  Velocity  
+    t3  -  Diagonalized temperature  
+    magt3  -  Magnetic field aligned temperature*
+    avgtemp  -  Average temperature
+    vthermal  -  Thermal velocity
+    mftens  -  Momentum flux tensor
+    ptens  -  Pressure tensor 
+    symm  -  Direction of pressure tensor symmetry
+    symm_phi  -  Phi (longitude) direction of symmetry vector
+    symm_theta  -  Theta (latitude) direction of symmetry vector 
+    symm_ang  -  Angle between symmetry vector and magnetic field*
+  
+
+Options:
+----------------------------------------------------
+
+Angular Range Limits:
+  -Limits are applied to the data before calculating data products.
+  -Phi, and theta limits will affect all spectrograms.
+  -Gyrophase and pitch angle limits will only affect field alligned spectrograms.
+
+Energy Range Limits:
+  -Limits are applied to the data before calculating data products.
+  -Energy limits will affect all spectrograms.
+  -No limits are applied unless the checkbox is selected
+
+FAC Resolution:
+  -After being transformed to field aligned coordinates the data are interpolated onto a 
+   regular grid in the new coordinates. These fields specify the resolution of the new 
+   grid along longitude (gyrophase) and latitude (pitch angle).
+  -Large values may significantly increase the time and memory required to process the data.
+
+FAC Variant:
+  -All field aligned coordinates use the magnetic field vector as their z axis.  
+   The full coordinate system is determined by selecting one of the following options:
+     xgse:  the x axis is the projection of the GSE x-axis
+     ygsm:  the y axis is the projection of the GSM y-axis
+     zdsl:  the y axis is the projection of the DSL z-axis
+     RGeo:  the x is the projection of radial spacecraft position vector (GEI)
+     mRGeo:  the x axis is the projection of the negative radial spacecraft position vector (GEI)
+     phiGeo:  the y axis is the projection of the azimuthal spacecraft position vector (GEI), positive eastward
+     mphiGeo:  the y axis is the projection of the azimuthal spacecraft position vector (GEI), positive westward
+     phiSM:  the y axis is the projection of the azimuthal spacecraft position vector in Solar Magnetic coordinates
+     mphiSM:  the y axis is the projection of the negative azimuthal spacecraft position vector in Solar Magnetic coordinates
+
+ESA Background:
+  -The average of the smallest N points is taken to be the background value.
+  -The background value multiplied by the scale is subtracted from the distribution prior to calculating products.
+  -Background subtraction is applied differently depending on the type:
+    angle:  A separate background is determined for each look direction (phi/theta).
+    omni:  The data is first averaged over all look directions (phi/theta).
+           A single background value is calculated from the averaged values.
+    anode:  Data in each of 16 theta bins is averaged over all look directions.
+            The resulting arrays of average values at each energy for each of the 16 theta
+            bins are then used to determined the background for their respective theta bin.
+
+SST Contamination:
+  -Select the checkbox to remove the default set of bins that are thought to be contaminated before processing.
+
+Start Angle:
+  -The Start Angle specifies the lower bound of the y axis for phi and gyrophase plots. 
+      e.g.: 180 -> y axis drawn from 180 to 540 degrees
+            -90 -> y axis drawn from -90 to 270 degrees
+
+
+Combined data:
+----------------------------------------------------
+Combined data is generated by interpolating over the gap in measured energies between ESA and SST data.
+The datatypes are in the format pt[ei]?? where the first character represents the ESA datatype and
+the second repesents the SST datatype (e.g. ptirf uses reduced ESA ion data and full SST ion data).
+To generate the combined distributions the data are first interpolated to match time samples and
+angular resolution; then the energy gap is interpolate over.
+
+
+Notes:
+----------------------------------------------------
+
+Related cribsheets:
+  thm_crib_part_products.pro
+  thm_crib_part_combine.pro

@@ -1,0 +1,2 @@
+project: SPEDAS
+config: spd_ui_spedas_fileconfig

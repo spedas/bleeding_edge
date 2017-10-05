@@ -1,0 +1,39 @@
+1. Data are free for scientific publications.
+
+2. Register your submitted and accepted paper in the on-line form:
+http://themis.ssl.berkeley.edu/publications
+
+3. We strongly recommend working directly or checking
+with the PI and instrument coIs regarding data
+interpretation, especially in the initial phase of
+the project, and well in advance to submitting
+a talk/publication, in order to be informed of the
+nuances (and accuracy) of the THEMIS dataset.
+
+4. If PI/coIs are not part of the publication
+list, then Credit/Acknowledge the THEMIS team and NASA as follows:
+
+"We acknowledge NASA contract NAS5-02099 and V. Angelopoulos for 
+use of data from the THEMIS Mission. Specifically:"
+
+and for specific instruments the following additions:
+
+for EFI: "J. W. Bonnell and F. S. Mozer for use of EFI data."
+for SST: "D. Larson and R. P. Lin for use of SST data."
+for ESA: "C. W. Carlson and J. P. McFadden for use of ESA data."
+for SCM: "A. Roux and O. LeContel for use of SCM data."
+for FGM: "K. H. Glassmeier, U. Auster and W. Baumjohann for the use of FGM data provided under the lead of the Technical University of Braunschweig and with financial support through the German Ministry for Economy and Technology and the German Center for Aviation and Space (DLR) under contract 50 OC 0302."
+for GBO/ASIs: "S. Mende and E. Donovan for use of the ASI data, the CSA for logistical support in fielding and data retrieval from the GBO stations, and NSF for support of GIMNAST through grant AGS-1004736."
+for GBO/GMAGs (UCLA magnetometers): "S. Mende and C. T. Russell for use of the GMAG data and NSF for support through grant AGS-1004814."
+for GBO/GMAGs (Alberta magnetometers): "I.R. Mann, D.K. Milling and the rest of the CARISMA team for use of GMAG data. CARISMA is operated by the University of Alberta, funded by the Canadian Space Agency." [see also CARISMA Data Use Requirements]
+for GBO/GMAGs (Athabasca magnetometers): "Martin Connors and C.T. Russell for use of the GMAG data."
+for GMAGS (MACCS magnetometers): "Erik Steinmetz, Augsburg College for the use of GMAG data."
+for GBO/GMAGs (McMAC magnetometers): "Peter Chi for use of the McMAC data and NSF for support through grant ATM-0245139."
+for GBO/GMAGs (Greenland magnetometers): "Tromsø Geophysical Observatory, University of Tromsø, Norway for use of the Greenland & Norway magnetometer data."
+for GMAGs (Alaska magnetometers):"Data provided by the Geophysical Institute Magnetometer Array operated by the Geophysical Institute, University of Alaska. More information about this dataset is available at http://magnet.asf.alaska.edu/"
+for GBO/GMAGs (Geological Survey of Sweden magnetometers (ABK)): "Geological Survey of Sweden, and INTERMAGNET for providing the data and promoting high standards of magnetic observatory practice."
+for GBO/GMAGs (US Geological Survey magnetometers): "Original data provided by the USGS Geomagnetism Program (http://geomag.usgs.gov)."
+for GBO/GMAGs (Geological Survey of Canada magnetometers): "The Canadian Magnetic Observatory Network (CANMON), maintained and operated by the Geological Survey of Canada, provided the data used in this study(http://www.geomag.nrcan.gc.ca)." 
+for GBO/GMAGS (Antarctic magnetometers): "Polar Experimental Network for Geospace Upper atmosphere Investigations (PENGUIn) Ground Based Observatory, PI, C. Robert Clauer, Virginia Tech. This effort is supported by the National Science Foundation through the following awards: ANT0839858, ATM922979 (Virginia Tech), and ANT0838861 (University of Michigan)."
+for GMAG (Leirvogur magnetometer): "Science Institute, University of Iceland, for the use of Leirvogur data."
+for GMAGs (AARI magnetometers): Arctic and Antarctic Research Institute (AARI), Department of Geophysics (http://geophys.aari.ru)

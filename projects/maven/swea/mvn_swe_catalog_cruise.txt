@@ -1,0 +1,123 @@
+;+
+;TEXT FILE:   mvn_swe_catalog_cruise
+;PURPOSE:
+;  Provides a list of useful times for loading SWEA data.  Cut and paste at the
+;  IDL command prompt to load data.
+;
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2014-08-08 12:58:43 -0700 (Fri, 08 Aug 2014) $
+; $LastChangedRevision: 15679 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_catalog_cruise.txt $
+;
+;CREATED BY:    David L. Mitchell
+;FILE: mvn_swe_catalog_cruise.txt
+;-
+;
+;-------------------------------------------------------------------------
+; 06 Dec 2013 (Fri) - SWEA HV ramp in space (early cruise, L + 18 days)
+;
+
+trange = ['2013-12-06/16','2013-12-07/02'] ; SWEA turn-on
+mvn_swe_load_l0, trange
+mvn_swe_sumplot, hsk=['MCPHV'], /sifctl
+
+;-------------------------------------------------------------------------
+; 19 Mar 2014 - PFP turn-on for EUV Cruciform
+; realtime data stream using apollo samba server
+; Start VPN
+; Finder -> Go -> Connect to server ... -> smb://apollo -> select "data"
+;
+; path = '/Volumes/data/maven/ITF/CruisePhase_SOCRealtime_SplitFiles/'
+; date = 'Split_At_20140319_140337/initial/'  ; part 1
+; date = 'Split_At_20140319_210055/initial/'  ; part 2
+; fname = 'common_block.dat'
+
+trange = ['2014-03-19','2014-03-20'] ; SWEA turn-on
+mvn_swe_load_l0, trange
+mvn_swe_sumplot, hsk=['MCPHV','ANALV'], /sifctl
+
+;-------------------------------------------------------------------------
+; 21 Mar 2014 - EUV Cruciform
+; burst time range: 2014-03-21/01:59:15 to 2014-03-21/05:28:59
+; This burst captured the wrong time range; it's one day too early.
+;
+; Survey sampling rate too low to capture motions of spacecraft.
+;
+
+trange = ['2014-03-22','2014-03-23'] ; EUV cruciform
+mvn_swe_load_l0, trange, /sumplot
+
+;-------------------------------------------------------------------------
+; 26 Mar 2014 - Interesting Day (Interplanetary Shock)
+;
+
+trange = ['2014-03-26','2014-03-27'] ; interplanetary shock
+mvn_swe_load_l0, trange, /sumplot
+
+;-------------------------------------------------------------------------
+; 02 Apr 2014 - Stowed rotation matrix upload
+; 03 Apr 2014 - IUVS Cal 1
+;
+
+trange = ['2014-04-02','2014-04-04']
+mvn_swe_load_l0, trange, /sumplot
+
+;-------------------------------------------------------------------------
+; V0 Calibration (4 Apr 2014 - Fri)
+;
+
+trange = ['2014-04-04','2014-04-05']
+mvn_swe_load_l0, trange
+mvn_swe_sumplot, /lut
+
+;-------------------------------------------------------------------------
+; MAG Roll 1 (16 Apr)
+;
+
+trange = ['2014-04-16/12','2014-04-17/12']
+mvn_swe_load_l0, trange, /sumplot
+
+;-------------------------------------------------------------------------
+; MAG telemetry rate increase (23 Apr)
+;
+
+trange = ['2014-04-23','2014-04-24']
+mvn_swe_load_l0, trange, /sumplot
+
+;-------------------------------------------------------------------------
+; IUVS Cal 2 (21 May)
+;
+
+trange = ['2014-05-21','2014-05-22']
+mvn_swe_load_l0, trange, /sumplot
+
+;-------------------------------------------------------------------------
+; Strong interplanetary shock (09 Jun)
+;
+
+trange = ['2014-06-08','2014-06-10']
+mvn_swe_load_l0, trange, /sumplot
+
+;-------------------------------------------------------------------------
+; MAG Roll 2 (02 Jul)
+;
+
+trange = ['2014-07-02/12','2014-07-03/12']
+mvn_swe_load_l0, trange, /sumplot
+
+;-------------------------------------------------------------------------
+; Y Roll (07 Jul)
+;
+
+trange = ['2014-07-07/12','2014-07-08/12']
+mvn_swe_load_l0, trange, /sumplot
+
+;-------------------------------------------------------------------------
+; PFDPU side swap, EEPROM load, and SWEA HV ramp.
+;   16 July 2014
+;
+
+trange = ['2014-07-16','2014-07-17']
+mvn_swe_load_l0, trange
+mvn_swe_sumplot, hsk=['MCPHV','ANALV'], /sifctl
+

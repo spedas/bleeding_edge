@@ -1,0 +1,34 @@
+S->Var Asm Exp
+
+Exp->Literal | VarExp | ~Exp | -Exp | +Exp |(Exp) 
+                      | FunExp | Exp Op Exp | VarExp +$ VarExp
+
+VarExp-> Var | ++Var | --Var | Var++ | Var--
+
+FunExp-> Func(Args)
+
+Args->Exp | Keyword | Exp , Args | Keyword , Args
+
+Keyword -> / Var
+
+Op->  ^ | 
+      * | # | ## | / | mod |
+      + | - | < | > | NOT | ~ |
+      EQ | NE | LE | LT | GE | GT |
+      AND | OR | XOR |
+      && | ||
+
+Asm->  = | ##= | #= | *= | 
+       += | -= | /= | <= | 
+       >= | AND= | EQ= | GE= |
+       GT= | LE= | LT= | MOD= |
+       NE= | OR= | XOR= | ^=
+       
+Func->  log | ln | exp | sqrt |
+        abs | sin |arcsin | sinh |
+        cos | arccos | cosh | tan |
+        arctan | tanh | csc | arccsc |
+        csch | sec | arcsec | sech |
+        cot | arccot | coth | min |
+        max | mean | median | count |
+        total

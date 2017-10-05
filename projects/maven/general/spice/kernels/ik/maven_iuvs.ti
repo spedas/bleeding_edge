@@ -1,0 +1,223 @@
+KPL/IK
+
+MAVEN IUVS Instrument Kernel
+===============================================================================
+
+   This Instrument Kernel (IK) file contains parameters for MAVEN 
+   IUVS instrument.
+
+
+Version and Date
+-------------------------------------------------------------------------------
+
+   Version n.n -- Month DD, YYYY -- Firstname Lastname, Team
+
+
+References
+-------------------------------------------------------------------------------
+
+   1. Kernel Pool Required Reading
+
+   2. GETFOV, getfoc_c, cspice_getfov headers
+
+   3. MAVEN FK file, latest version
+
+   4. <additional references, if any>
+
+
+Contact Information
+-------------------------------------------------------------------------------
+
+   Firstname Lastname, Team, phone, e-mail
+
+
+Implementation Notes
+-------------------------------------------------------------------------------
+
+   This file is used by the SPICE system as follows: programs that make
+   use of this kernel must ``load'' the kernel, normally during program
+   initialization. The SPICE routine FURNSH loads a kernel file into
+   the pool as shown below.
+
+      CALL FURNSH ( 'frame_kernel_name; )    -- FORTRAN
+      furnsh_c ( "frame_kernel_name" );      -- C
+      cspice_furnsh, frame_kernel_name       -- IDL
+      cspice_furnsh( 'frame_kernel_name' )   -- MATLAB
+
+   Once the file has been loaded, the SPICE routine GETFOV (getfov_c in
+   C, cspice_getfov in IDL and MATLAB) can be used to retrieve FOV
+   parameters for a given instrument or structure.
+ 
+   This file was created and may be updated with a text editor or word
+   processor.
+
+
+Naming Conventions
+----------------------------------------------------------
+
+   All names referencing values in this IK file start with the
+   characters `INS' followed by the NAIF MAVEN ID number (-202)
+   followed by a NAIF three digit ID code for IUVS or one of 
+   its detectors or components. This is the full list of names 
+   and IDs described by this IK file:
+
+      MAVEN_IUVS_BASE                 -202510
+      MAVEN_IUVS_LIMB                 -202511
+      MAVEN_IUVS_LIMB_BOS             -202512
+      MAVEN_IUVS_NADIR                -202513
+      MAVEN_IUVS_NADIR_BOS            -202514
+      MAVEN_IUVS_OCC_BIG              -202515
+      MAVEN_IUVS_OCC_SMALL            -202516
+      MAVEN_IUVS                      -202518
+
+   The remainder of the keyword name is an underscore character
+   followed by the unique name of the data item. For example, the -202518
+   boresight direction provided as a part of its FOV definition is 
+   specified by:
+
+      INS-202518_BORESIGHT
+
+   The upper bound on the length of the name of any data item is 32
+   characters.
+ 
+   If the same item is included in more than one file, or if the same
+   item appears more than once within a single file, the latest value
+   supersedes any earlier values.
+
+
+Mounting Alignment
+--------------------------------------------------------
+
+   Refer to the latest version of the MAVEN Frames Definition Kernel
+   (FK) [3] for the MAVEN structures reference frame definitions and
+   mounting alignment information.
+
+
+Instrument Description
+---------------------------------------------------------
+
+   <TBD>
+
+
+Instrument Detector/Sensor Layout (if applicable)
+----------------------------------------------------------
+
+   <TBD>
+
+
+Instrument Pixel-to-3D Coordinate Mapping (if applicable)
+----------------------------------------------------------
+
+   <TBD>
+
+
+Instrument Detector/Sensor Parameters (if applicable)
+----------------------------------------------------------
+
+   <TBD>
+
+
+Instrument Optical Parameters (if applicable)
+----------------------------------------------------------
+
+   <TBD>
+
+
+Instrument Optical Distortion (if applicable)
+----------------------------------------------------------
+
+   <TBD>
+
+
+Instrument Filter Parameters (if applicable)
+----------------------------------------------------------
+
+   <TBD>
+
+
+Instrument FOV Definition(s)
+----------------------------------------------------------
+
+   This section defines the following FOVs:
+
+      ID       SHAPE      FRAME                  SIZE1  SIZE2   BSIGHT
+      -------  --------   ---------------------  -----  -----   ------
+      -202518  RECTANGLE  MAVEN_IUVS              0.08   12.5       +Z
+      -202511  RECTANGLE  MAVEN_IUVS_LIMB        24.     12.5       +Z
+      -202512  RECTANGLE  MAVEN_IUVS_LIMB_BOS    73.     25.5       +Z
+      -202513  RECTANGLE  MAVEN_IUVS_NADIR       60.     12.5       +Z
+      -202514  RECTANGLE  MAVEN_IUVS_NADIR_BOS   73.     25.5       +Z
+      -202515  RECTANGLE  MAVEN_IUVS_OCC_BIG      0.86    0.69      +Z
+      -202516  RECTANGLE  MAVEN_IUVS_OCC_SMALL    0.45    0.28      +Z
+
+   The FOVs are defined in this data block.
+
+      \begindata
+
+      INS-202511_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202511_FOV_SHAPE            = 'RECTANGLE'
+      INS-202511_FOV_FRAME            = 'MAVEN_IUVS_LIMB'
+      INS-202511_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202511_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202511_FOV_REF_ANGLE        = ( 6.25 )
+      INS-202511_FOV_CROSS_ANGLE      = ( 12.0 )
+      INS-202511_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202512_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202512_FOV_SHAPE            = 'RECTANGLE'
+      INS-202512_FOV_FRAME            = 'MAVEN_IUVS_LIMB_BOS'
+      INS-202512_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202512_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202512_FOV_REF_ANGLE        = ( 12.75 )
+      INS-202512_FOV_CROSS_ANGLE      = ( 36.5 )
+      INS-202512_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202513_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202513_FOV_SHAPE            = 'RECTANGLE'
+      INS-202513_FOV_FRAME            = 'MAVEN_IUVS_NADIR'
+      INS-202513_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202513_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202513_FOV_REF_ANGLE        = ( 6.25 )
+      INS-202513_FOV_CROSS_ANGLE      = ( 30.0 )
+      INS-202513_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202514_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202514_FOV_SHAPE            = 'RECTANGLE'
+      INS-202514_FOV_FRAME            = 'MAVEN_IUVS_NADIR_BOS'
+      INS-202514_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202514_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202514_FOV_REF_ANGLE        = ( 12.75 )
+      INS-202514_FOV_CROSS_ANGLE      = ( 36.5 )
+      INS-202514_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202515_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202515_FOV_SHAPE            = 'RECTANGLE'
+      INS-202515_FOV_FRAME            = 'MAVEN_IUVS_OCC_BIG'
+      INS-202515_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202515_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202515_FOV_REF_ANGLE        = ( 0.43 )
+      INS-202515_FOV_CROSS_ANGLE      = ( 0.345 )
+      INS-202515_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202516_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202516_FOV_SHAPE            = 'RECTANGLE'
+      INS-202516_FOV_FRAME            = 'MAVEN_IUVS_OCC_SMALL'
+      INS-202516_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202516_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202516_FOV_REF_ANGLE        = ( 0.225 )
+      INS-202516_FOV_CROSS_ANGLE      = ( 0.14 )
+      INS-202516_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202518_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202518_FOV_SHAPE            = 'RECTANGLE'
+      INS-202518_FOV_FRAME            = 'MAVEN_IUVS'
+      INS-202518_BORESIGHT            = ( 0.0, 0.0, 1.0 )
+      INS-202518_FOV_REF_VECTOR       = ( 1.0, 0.0, 0.0 )
+      INS-202518_FOV_REF_ANGLE        = ( 0.04 )
+      INS-202518_FOV_CROSS_ANGLE      = ( 6.25 )
+      INS-202518_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      \begintext
+
+End of the IK file.
+ 

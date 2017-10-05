@@ -1,0 +1,404 @@
+KPL/IK
+
+IUVS Instrument Kernel
+==============================================================================
+
+   This instrument kernel (I-kernel) contains references to the mounting
+   alignment, internal and FOV geometry for the MAVEN Imaging Ultraviolet
+   Spectrometer (IUVS).
+
+
+Version and Date
+----------------------------------------------------------
+
+   Version 1.0 -- 2015 Apr 14 -- Chris Jeppesen, LASP; Boris Semenov, NAIF
+
+            --   removed the TEXT_KERNEL_ID keyword and related 
+                 comments; bumped up version to 1.0 for the first 
+                 official release.
+
+   Version 0.1draft241 -- 2015 Apr 14 -- Boris Semenov, NAIF
+
+            --   Draft Version. NOT YET APPROVED BY INSTRUMENT TEAM.
+            --   Cosmetic changes w/o altering the data: added/removed
+                 white space and blank lines, changed order of some
+                 keyword blocks, indented data blocks and equal signs,
+                 wrapped some paragraphs to 78 characters, expanded
+                 some comments, added instrument description
+
+   Version 0.1draft240 -- 2014 Mar 11 -- Chris Jeppesen
+
+            --   Draft Version. NOT YET APPROVED BY INSTRUMENT TEAM.
+            --   Adjusted slit image pixel positions to those given by
+                 Greg Holsclaw email 2014 Mar 11 1:22pm
+                 Both FUV and MUV are set to the values in this email
+
+   Version 0.1draft199 -- 2014 Feb 07 -- Chris Jeppesen
+
+            --   Draft Version. NOT YET APPROVED BY INSTRUMENT TEAM.
+            --   Fixed signs in slit polygon (all were positive, some
+                 should have been negative)
+
+   Version 0.1draft198 -- 2014 Feb 06 -- Chris Jeppesen
+
+            --   Draft Version. NOT YET APPROVED BY INSTRUMENT TEAM.
+            --   Changed FUV dispersion constants to match Ian Stewart's
+                 email 2014 Feb 03 6:39pm
+            --   Added other instrument constants, to be read by IUVS
+                 processing system
+
+   Version 0.1draft197 -- 2014 Feb 05 -- Chris Jeppesen
+
+            --   Draft Version. NOT YET APPROVED BY INSTRUMENT TEAM.
+            --   Flipped X (spatial) axis, to see if this corrects the
+                 star pointing
+
+   Version 0.1 -- November 8, 2013 -- Chris Jeppesen
+
+            --   Draft Version. NOT YET APPROVED BY INSTRUMENT TEAM.
+            --   Added instrument definitions for big and small keyholes,
+                 main slit, and bright object sensors
+
+   Version 0.0 -- June 11, 2013 -- Chris Jeppesen
+
+            --   Draft Version. NOT YET APPROVED BY INSTRUMENT TEAM.
+            --   Used LRO LAMP instrument as template
+
+
+Contact Information
+----------------------------------------------------------
+
+   Chris Jeppesen, CU/LASP, (303) 492-2469
+
+
+References
+-------------------------------------------------------------------------------
+
+   1. Kernel Pool Required Reading
+
+   2. GETFOV, getfoc_c, cspice_getfov headers
+
+   3. MAVEN FK file, latest version
+
+   4. MAVEN IUVS PDS4 context product, version 1,
+      urn:nasa:pds:context:instrument:iuvs.maven::1.0
+
+   5. MAVEN IUVS MICD, MAVA0240899
+
+
+Implementation Notes
+-------------------------------------------------------------------------------
+
+   This file is used by the SPICE system as follows: programs that make
+   use of this kernel must ``load'' the kernel, normally during program
+   initialization. The SPICE routine FURNSH loads a kernel file into
+   the pool as shown below.
+
+      CALL FURNSH ( 'frame_kernel_name; )    -- FORTRAN
+      furnsh_c ( "frame_kernel_name" );      -- C
+      cspice_furnsh, frame_kernel_name       -- IDL
+      cspice_furnsh( 'frame_kernel_name' )   -- MATLAB
+
+   Once the file has been loaded, the SPICE routine GETFOV (getfov_c in
+   C, cspice_getfov in IDL and MATLAB) can be used to retrieve FOV
+   parameters for a given instrument or structure.
+
+   This file was created and may be updated with a text editor or word
+   processor.
+
+
+Naming Conventions
+----------------------------------------------------------
+
+   All names referencing values in this IK file start with the
+   characters `INS' followed by the NAIF MAVEN ID number (-202)
+   followed by a NAIF three digit ID code for IUVS or one of
+   its detectors or components. This is the full list of names
+   and IDs described by this IK file:
+
+      MAVEN_IUVS                      -202518
+      MAVEN_IUVS_MAIN_SLIT            -202519
+      MAVEN_IUVS_OCC_BIG              -202515
+      MAVEN_IUVS_OCC_SMALL            -202516
+
+      MAVEN_IUVS_LIMB                 -202511
+      MAVEN_IUVS_NADIR                -202513
+
+      MAVEN_IUVS_LIMB_BOS             -202512
+      MAVEN_IUVS_NADIR_BOS            -202514
+
+   The remainder of the keyword name is an underscore character
+   followed by the unique name of the data item. For example, the -202518
+   boresight direction provided as a part of its FOV definition is
+   specified by:
+
+      INS-202518_BORESIGHT
+
+   The upper bound on the length of the name of any data item is 32
+   characters.
+
+   If the same item is included in more than one file, or if the same
+   item appears more than once within a single file, the latest value
+   supersedes any earlier values.
+
+
+Mounting Alignment
+--------------------------------------------------------
+
+   Refer to the latest version of the MAVEN Frames Definition Kernel
+   (FK) [3] for the MAVEN structures reference frame definitions and
+   mounting alignment information.
+
+
+Instrument Description
+---------------------------------------------------------
+
+   From [4]:
+
+      IUVS is an imaging ultraviolet spectrograph which simultaneously
+      images far ultraviolet (FUV) and middle ultraviolet (MUV) spectra
+      onto paired Hamatsu V5180M image intensifiers with Cypress
+      CYIH1SM1000AA-HHCS CMOS array detectors. Second order (110-190nm)
+      light from the beamsplitter is measured by the FUV detector (with
+      a CsI photocathode and MgF2 window) while first-order (180-340
+      nm) light is transmitted to the MUV detector (with a CsTe
+      photocathode and synthetic silica window). A spectral resolution
+      of 0.6 nm and 1.2 nm is achieved for the FUV and MUV,
+      respectively.
+
+
+Instrument Detector/Sensor Layout
+----------------------------------------------------------
+
+   The diagram below illustrates the IUVS field of view. The IUVS entrance
+   slit design shows the 220 mrad x 12 mrad science FOV. Corners are numbered
+   as they appear in the FOV polygon corner list.
+
+                              MAVEN IUVS SLIT DESIGN
+
+                                        ^ +Y (cross-spatial)
+                                        |              7    6
+                  11 10                 |              +----+
+                   +--+                 |              |    |
+    +X       /____ | 9+--------------------------------+8   |
+    (spatial)\     | 2+--------------------------------+3   |
+                   +--+                                |    |
+                   0  1                                +----+
+                                                       4    5
+       Rectangular FOVs:
+
+       -----------     --------------  ------------------  --------------
+        Slit feature     Spatial (x)    cross-spatial (y)  corner indices
+       -----------     --------------  ------------------  --------------
+
+         Small keyhole       8 mrad       5 mrad             0,1,10,11
+         Main slit         197 mrad       1 mrad             2,3, 8, 9
+         Big keyhole        15 mrad      12 mrad             4,5, 6, 7
+
+   To get the field of view of a single slit feature, the corners marked
+   in the corner indices column are used in that order.
+
+   Corner vectors are all normalized to unit length.
+
+
+Instrument Detector/Sensor Parameters
+----------------------------------------------------------
+
+    IUVS has the following detector parameters:
+
+       -----------------------------------------------------------------
+       parameter                        value
+       -----------------------------------------------------------------
+       Detector size in pixels          1024 x 1024
+       Detector center                 (511.5, 511.5)
+       -----------------------------------------------------------------
+
+    The IUVS slit, with its big and small keyholes, form an image on each
+    detector. The location of the image is constant in the spatial direction,
+    and the data below captures the locations of each corner of the image in
+    the spatial direction.
+
+    Row section boundaries are where the bottom and top of the small keyhole,
+    bottom and top of the main slit, and bottom and top of the large keyhole,
+    in that order, in rows on the detector. These correspond to vectors 0-5
+    of the MAVEN_IUVS/-202518 field-of-view boundaries. FUV and MUV are
+    nominally the same, but there are separate variables in case they
+    turn out to be different.
+
+    Dispersion constants for each channel are wavelength of pixel 0 in the
+    spectral direction, then change in wavelength per pixel, in that order,
+    in nanometers. FUV and MUV are different by design. A more complicated
+    wavelength model may become necessary in the future. If so, it will be
+    implemented by adding more coefficients to this array. The first two
+    coefficients will retain the same meaning, or as close to it as possible,
+    in any future model.
+
+       \begindata
+
+       INS-202518_PIXEL_SAMPLES       = ( 1024 )
+       INS-202518_PIXEL_LINES         = ( 1024 )
+
+       INS-202518_DETECTOR_CENTER     = ( 511.5, 511.5 )
+
+       INS-202518_FUV_ROW_BOUNDARIES  = ( 42 79 80 928 929 995 )
+       INS-202518_MUV_ROW_BOUNDARIES  = ( 42 79 80 928 929 995 )
+
+       INS-202518_FUV_DISPERSION      = ( 107.499 0.08134 )
+       INS-202518_MUV_DISPERSION      = ( 173.630 0.16535 )
+
+       \begintext
+
+
+Instrument Optical Parameters
+----------------------------------------------------------
+
+    IUVS has the following optics parameters:
+
+       -----------------------------------------------------------------
+       parameter                        value
+       -----------------------------------------------------------------
+       Focal length (mm)                100
+       effective pixel width and height
+         at intensifier (mm)            0.023438
+        (1024 pixels across 24 mm)
+       -----------------------------------------------------------------
+
+    These parameters are captured in the following keywords in the same
+    units as in the table:
+
+       \begindata
+
+       INS-202518_FOCAL_LENGTH        = ( 100 )
+       INS-202518_W_PIX               = ( 0.023438 )
+       INS-202518_H_PIX               = ( 0.023438 )
+
+       \begintext
+
+
+Instrument FOV Definitions
+----------------------------------------------------------
+
+   This section defines the following FOVs:
+
+     ID      SHAPE     FRAME                SIZE1 SIZE2 BSIT NOTE
+     ------- --------- -------------------- ----- ----- ---- ---------------
+     -202518 POLYGON   MAVEN_IUVS           as in data   +Z  slit & keyholes
+
+     -202519 POLYGON   MAVEN_IUVS           as in data   +Z  main slit only
+     -202515 POLYGON   MAVEN_IUVS           as in data       big keyhole
+     -202516 POLYGON   MAVEN_IUVS           as in data       small keyhole
+
+     -202511 RECTANGLE MAVEN_IUVS_LIMB      24.    12.5  +Z
+     -202513 RECTANGLE MAVEN_IUVS_NADIR     60.    12.5  +Z
+
+     -202512 RECTANGLE MAVEN_IUVS_LIMB_BOS  73.    25.5  +Z
+     -202514 RECTANGLE MAVEN_IUVS_NADIR_BOS 73.    25.5  +Z
+
+   The -202518, -202519, -202515, and -202516 FOVs define the actual
+   FOV shapes of the slit and its parts (main slit, big keyhole, and
+   small keyhole). The -202511 and -202513 FOVs define the nominal FOV
+   shapes of the nadir and limb openings (from [5]). The -202512 and
+   -202514 FOVs defined the nominal FOV shapes of the bright object
+   sensors (from [5]).
+
+   Boresights of the big and small keyhole FOVs (-202515 and -202516)
+   are the centers of the keyholes, the arithmetic mean of the corner
+   vectors, normalized back to unit length. The boresights of the main
+   slit and slit including keyholes is the Z axis, which is not the
+   exact center of the features.
+
+   The FOVs are defined in this data block.
+
+      \begindata
+
+      INS-202518_FOV_FRAME            = 'MAVEN_IUVS'
+      INS-202518_FOV_SHAPE            = 'POLYGON'
+      INS-202518_BORESIGHT            = ( 0.0          0.0         1.0        )
+      INS-202518_FOV_CLASS_SPEC       = 'CORNERS'
+      INS-202518_FOV_BOUNDARY_CORNERS = (
+                                          0.109777962 -0.002484888 0.993953029
+                                          0.102081681 -0.002486937 0.994772912
+                                          0.101848665 -0.000497400 0.994799780
+                                         -0.094613057 -0.000497757 0.995513999
+                                         -0.094844864 -0.005972917 0.995474146
+                                         -0.109543226 -0.005963856 0.993964141
+                                         -0.109543226  0.005963856 0.993964141
+                                         -0.094844864  0.005972917 0.995474146
+                                         -0.094613057  0.000497757 0.995513999
+                                          0.101848665  0.000497400 0.994799780
+                                          0.102081681  0.002486937 0.994772912
+                                          0.109777962  0.002484888 0.993953029
+                                       )
+
+      INS-202519_FOV_FRAME            = 'MAVEN_IUVS'
+      INS-202519_FOV_SHAPE            = 'POLYGON'
+      INS-202519_BORESIGHT            = ( 0.0          0.0         1.0        )
+      INS-202519_FOV_CLASS_SPEC       = 'CORNERS'
+      INS-202519_FOV_BOUNDARY_CORNERS = (
+                                          0.101848665 -0.000497400 0.994799780
+                                         -0.094613057 -0.000497757 0.995513999
+                                         -0.094613057  0.000497757 0.995513999
+                                          0.101848665  0.000497400 0.994799780
+                                        )
+
+      INS-202515_FOV_FRAME            = 'MAVEN_IUVS'
+      INS-202515_FOV_SHAPE            = 'POLYGON'
+      INS-202515_BORESIGHT            = ( 0.102198654  0           0.99476401 )
+      INS-202515_FOV_CLASS_SPEC       = 'CORNERS'
+      INS-202515_FOV_BOUNDARY_CORNERS = (
+                                         -0.094844864 -0.005972917 0.995474146
+                                         -0.109543226 -0.005963856 0.993964141
+                                         -0.109543226  0.005963856 0.993964141
+                                         -0.094844864  0.005972917 0.995474146
+                                        )
+
+      INS-202516_FOV_FRAME            = 'MAVEN_IUVS'
+      INS-202516_FOV_SHAPE            = 'POLYGON'
+      INS-202516_BORESIGHT            = ( -0.105930942 0           0.994373489)
+      INS-202516_FOV_CLASS_SPEC       = 'CORNERS'
+      INS-202516_FOV_BOUNDARY_CORNERS = (
+                                          0.109777962 -0.002484888 0.993953029
+                                          0.102081681 -0.002486937 0.994772912
+                                          0.102081681  0.002486937 0.994772912
+                                          0.109777962  0.002484888 0.993953029
+                                        )
+
+      INS-202511_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202511_FOV_SHAPE            = 'RECTANGLE'
+      INS-202511_FOV_FRAME            = 'MAVEN_IUVS_LIMB'
+      INS-202511_BORESIGHT            = ( 0.0,         0.0,        1.0        )
+      INS-202511_FOV_REF_VECTOR       = ( 1.0,         0.0,        0.0        )
+      INS-202511_FOV_REF_ANGLE        = ( 6.25 )
+      INS-202511_FOV_CROSS_ANGLE      = ( 12.0 )
+      INS-202511_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202512_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202512_FOV_SHAPE            = 'RECTANGLE'
+      INS-202512_FOV_FRAME            = 'MAVEN_IUVS_LIMB_BOS'
+      INS-202512_BORESIGHT            = ( 0.0,         0.0,        1.0        )
+      INS-202512_FOV_REF_VECTOR       = ( 1.0,         0.0,        0.0        )
+      INS-202512_FOV_REF_ANGLE        = ( 12.75 )
+      INS-202512_FOV_CROSS_ANGLE      = ( 36.5 )
+      INS-202512_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202513_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202513_FOV_SHAPE            = 'RECTANGLE'
+      INS-202513_FOV_FRAME            = 'MAVEN_IUVS_NADIR'
+      INS-202513_BORESIGHT            = ( 0.0,         0.0,        1.0        )
+      INS-202513_FOV_REF_VECTOR       = ( 1.0,         0.0,        0.0        )
+      INS-202513_FOV_REF_ANGLE        = ( 6.25 )
+      INS-202513_FOV_CROSS_ANGLE      = ( 30.0 )
+      INS-202513_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      INS-202514_FOV_CLASS_SPEC       = 'ANGLES'
+      INS-202514_FOV_SHAPE            = 'RECTANGLE'
+      INS-202514_FOV_FRAME            = 'MAVEN_IUVS_NADIR_BOS'
+      INS-202514_BORESIGHT            = ( 0.0,         0.0,        1.0        )
+      INS-202514_FOV_REF_VECTOR       = ( 1.0,         0.0,        0.0        )
+      INS-202514_FOV_REF_ANGLE        = ( 12.75 )
+      INS-202514_FOV_CROSS_ANGLE      = ( 36.5 )
+      INS-202514_FOV_ANGLE_UNITS      = ( 'DEGREES' )
+
+      \begintext
+
+End of the IK file.

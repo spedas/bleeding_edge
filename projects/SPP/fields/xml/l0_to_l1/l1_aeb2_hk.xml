@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<items>
+
+  <tmlib
+  	tmlib_event = 'aeb1_hk'
+  	>
+  </tmlib>
+
+  <cdf_global
+      Title = "SPP FIELDS AEB 2 Housekeeping"
+      Descriptor = "AEB1>FIELDS 2 Antenna Electronics Board"
+      Data_type = "Analog housekeeping data"
+      Data_version = "0"
+      TEXT = "SPP FIELDS AEB2 Analog Housekeeping Data"
+      Mods = "Revision 0"
+      Logical_source = "SPP_FLD_AEB2_HK"
+      Logical_source_description = "SPP FIELDS AEB2 Analog Housekeeping"
+      Dependencies = "None"
+      >
+  </cdf_global>
+
+  <idl_att
+      convert_routine = 'spp_fld_aeb2_hk_convert'>
+  </idl_att>
+
+  <cdf_var
+      name           = "CONFIG0"
+      type           = "Integer">
+  </cdf_var>
+
+  <cdf_var
+      name           = "SPARE"
+      type           = "Integer">
+  </cdf_var>
+
+  <cdf_var
+      name           = "AEB_STAT"
+      type           = "Integer">
+  </cdf_var>
+
+  <cdf_var
+      name           = "PA3_TMON"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_pa_temp_convert">
+    <cdf_att
+        FIELDNAM = "PA3_TMON"
+        FORMAT = "F15.3"
+        LABLAXIS = "PA3_TMON"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "C"
+        CATDESC = "AEB2 PA3_TMON Temperature, in C"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "PA4_TMON"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_pa_temp_convert">
+    <cdf_att
+        FIELDNAM = "PA4_TMON"
+        FORMAT = "F15.3"
+        LABLAXIS = "PA4_TMON"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "C"
+        CATDESC = "AEB2 PA4_TMON Temperature, in C"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "XFL_TMON"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_temp_convert">
+    <cdf_att
+        FIELDNAM = "XFL_TMON"
+        FORMAT = "F15.3"
+        LABLAXIS = "XFL_TMON"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "C"
+        CATDESC = "AEB2 XFL_TMON Temperature, in C"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "AEB2_TMON"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_temp_convert">
+    <cdf_att
+        FIELDNAM = "AEB2_TMON"
+        FORMAT = "F15.3"
+        LABLAXIS = "AEB2_TMON"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "C"
+        CATDESC = "AEB2 AEB2_TMON Temperature, in C"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "XFL_IMON"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb1_i_convert">
+    <cdf_att
+        FIELDNAM = "XFL_IMON"
+        FORMAT = "F15.3"
+        LABLAXIS = "XFL_IMON"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-1000"
+        VALIDMAX = "1000"
+        SCALEMIN = "-1000"
+        SCALEMAX = "1000"
+        UNITS = "mA"
+        CATDESC = "AEB2 XFL_IMON Current, in mA"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "BIAS3_DAC"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_hk_dac_convert">
+    <cdf_att
+        FIELDNAM = "BIAS3_DAC"
+        FORMAT = "F15.3"
+        LABLAXIS = "BIAS3_DAC"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "V"
+        CATDESC = "AEB2 BIAS3_DAC Voltage, in V"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "BIAS4_DAC"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_hk_dac_convert">
+    <cdf_att
+        FIELDNAM = "BIAS4_DAC"
+        FORMAT = "F15.3"
+        LABLAXIS = "BIAS4_DAC"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "V"
+        CATDESC = "AEB2 BIAS4_DAC Voltage, in V"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "STUB3_DAC"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_hk_dac_convert">
+    <cdf_att
+        FIELDNAM = "STUB3_DAC"
+        FORMAT = "F15.3"
+        LABLAXIS = "STUB3_DAC"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "V"
+        CATDESC = "AEB2 STUB3_DAC Voltage, in V"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "STUB4_DAC"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_hk_dac_convert">
+    <cdf_att
+        FIELDNAM = "STUB4_DAC"
+        FORMAT = "F15.3"
+        LABLAXIS = "STUB4_DAC"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "V"
+        CATDESC = "AEB2 STUB4_DAC Voltage, in V"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "SHLD3_DAC"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_hk_dac_convert">
+    <cdf_att
+        FIELDNAM = "SHLD3_DAC"
+        FORMAT = "F15.3"
+        LABLAXIS = "SHLD3_DAC"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "V"
+        CATDESC = "AEB2 SHLD3_DAC Voltage, in V"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "SHLD4_DAC"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_hk_dac_convert">
+    <cdf_att
+        FIELDNAM = "SHLD4_DAC"
+        FORMAT = "F15.3"
+        LABLAXIS = "SHLD4_DAC"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "V"
+        CATDESC = "AEB2 SHLD4_DAC Voltage, in V"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "BIAS3V"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_hk_voltage_readback_convert">
+    <cdf_att
+        FIELDNAM = "BIAS3V"
+        FORMAT = "F15.3"
+        LABLAXIS = "BIAS3V"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "V"
+        CATDESC = "AEB2 BIAS3V Voltage, in V"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "BIAS4V"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_hk_voltage_readback_convert">
+    <cdf_att
+        FIELDNAM = "BIAS4V"
+        FORMAT = "F15.3"
+        LABLAXIS = "BIAS4V"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "V"
+        CATDESC = "AEB2 BIAS4V Voltage, in V"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "STUB3V"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_hk_voltage_readback_convert">
+    <cdf_att
+        FIELDNAM = "STUB3V"
+        FORMAT = "F15.3"
+        LABLAXIS = "STUB3V"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "V"
+        CATDESC = "AEB2 STUB3 Voltage, in V"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "STUB4V"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_hk_voltage_readback_convert">
+    <cdf_att
+        FIELDNAM = "STUB4V"
+        FORMAT = "F15.3"
+        LABLAXIS = "STUB4V"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "V"
+        CATDESC = "AEB2 STUB4 Voltage, in V"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "SHIELD3V"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_hk_voltage_readback_convert">
+    <cdf_att
+        FIELDNAM = "SHIELD3V"
+        FORMAT = "F15.3"
+        LABLAXIS = "SHIELD3V"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "V"
+        CATDESC = "AEB2 SHIELD3 Voltage, in V"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name           = "SHIELD4V"
+      type           = "Integer"
+      convert_routine = "spp_fld_aeb2_hk_voltage_readback_convert">
+    <cdf_att
+        FIELDNAM = "SHIELD4V"
+        FORMAT = "F15.3"
+        LABLAXIS = "SHIELD4V"
+        VAR_TYPE = "data"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-100"
+        VALIDMAX = "100"
+        SCALEMIN = "-100"
+        SCALEMAX = "100"
+        UNITS = "V"
+        CATDESC = "AEB2 SHIELD4 Voltage, in V"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+</items>

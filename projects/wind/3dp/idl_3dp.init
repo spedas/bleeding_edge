@@ -1,0 +1,59 @@
+# ------------------------------------------------------------------------------
+# Source this file from your .cshrc file to 
+# configure IDL for the WIND 3DP software. 
+# You may configure the location of the THEMIS software in two ways:
+# 1) You may set IDL_BASE_DIR in the environment
+#     before sourcing this script.   (prefered method)
+# 2) Edit (a copy of) this file and change the default value of IDL_BASE_DIR
+#
+# ------------------------------------------------------------------------------		
+
+# Location where the IDL code (including THEMIS code) is installed 
+# (i.e. the directory which 
+# contains (ssl_general, external, themis)
+if !( $?IDL_BASE_DIR ) then
+   setenv IDL_BASE_DIR /disks/socware/idl
+endif
+
+# make sure IDL_PATH is intialized before we add New paths to it
+if !( $?IDL_PATH ) then
+#   setenv IDL_PATH '<IDL_DEFAULT>'
+   source /usr/local/setup/setup_idl.newest
+endif
+
+
+if !( $?IDL_STARTUP )  then 
+    setenv IDL_STARTUP idl_startup
+endif
+
+# Set path for all IDL source code:
+
+setenv IDL_PATH $IDL_PATH':'+$IDL_BASE_DIR
+
+setenv WIND_HOME /home/wind
+
+# Location of master data directory:
+setenv BASE_DATA_DIR $WIND_HOME/dat
+
+# Location of 3dp master data files:
+setenv WIND_DATA_DIR $WIND_HOME/index
+
+# Location of cdf master index files:   (used for key parameter data)
+setenv CDF_INDEX_DIR $WIND_HOME/index
+
+# Location of IDL source code:  
+#setenv IDL_3DP_DIR  $WIND_HOME/source/idl
+#setenv IDL_3DP_DIR  ~/wind/source2/trunk/idl
+
+# Location of shared object library code (decomutator): No longer needed!
+# setenv IDL_3DP_LIB  $IDL_3DP_DIR/wind/wind_lib.so
+
+# Location of shared object library code (decomutator):
+# setenv IDL_3DP_LIB_DIR  $IDL_3DP_DIR/wind
+
+# alias help routine
+#alias help_3dp "netscape -remote 'openURL(http://sprg.ssl.berkeley.edu/~wind/idl/help_3dp.html)'"
+
+
+# Set path for all IDL source code:
+#setenv IDL_PATH $IDL_PATH':'+$IDL_3DP_DIR

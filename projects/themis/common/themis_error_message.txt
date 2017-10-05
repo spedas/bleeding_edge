@@ -1,0 +1,39 @@
+ 
+                THEMIS Science Help Request Form
+
+thm_sci_help_request_xxxx (xxxx number will be sent back to you)        
+
+Date Submitted: _________    
+
+Request Type: __ (C-Comment, O-Observation, P-Problem, Q-Question)
+
+Category: ___________ (Data, Document, Download, Gui, Instrument, 
+                       Plot, Software, Web Content, Other, Not Sure)
+
+Title: ___________________________________________________
+         
+Requestor Info:
+Name: ________________________  Office Phone: _____________
+Email: ________________________
+
+Help Request Details (fill in as much as you can):
+
+If a Problem or Observation:
+Date Occurred: _________  
+Operating System _______ (e.g. Linux, Unix, Windows)
+CDF Version ____   Version of Software _____  Version of IDL____
+
+Detail Description of Comment, Observation, Problem or Question:
+(if applicable, please include IDL error messages, crib sheet or 
+ lines of code used to run and if using the GUI the History File)
+________________________________________________________
+________________________________________________________
+________________________________________________________
+________________________________________________________
+
+Please email any supportive materials that would help in researching 
+your request to:THEMIS_Science_Support@ssl.berkeley.edu  
+with the Help Request Title above in the subject line.   
+
+Thanks so much, 
+THEMIS Science Support Team 
