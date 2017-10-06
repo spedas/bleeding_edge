@@ -21,8 +21,8 @@
 ;   17. DSP BPSD
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-04 09:18:24 -0700 (Wed, 04 Oct 2017) $
-; $LastChangedRevision: 24105 $
+; $LastChangedDate: 2017-10-05 08:47:39 -0700 (Thu, 05 Oct 2017) $
+; $LastChangedRevision: 24115 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_basic_tail.pro $
 ;-
 
@@ -113,7 +113,9 @@ position_vars = 'mms'+probe+'_mec_r_gsm_re_'+['z', 'y', 'x']
 
 window, ysize=950
 
-tplot, ['mms'+probe+'_fgm_b_gsm_srvy_l2_bvec', $
+
+tplot, [ae_type eq 'thm' ? 'thmAE' : 'kyoto_ae', $
+        'mms'+probe+'_fgm_b_gsm_srvy_l2_bvec', $
         'mms'+probe+'_fgm_b_gsm_srvy_l2_bvec_z', $
         'mms'+probe+'_fgm_b_gsm_srvy_l2_btot', $
         'mms'+probe+'_edp_fast_scpot_ln', $
@@ -129,8 +131,6 @@ tplot, ['mms'+probe+'_fgm_b_gsm_srvy_l2_bvec', $
         'mms'+probe+'_edp_dce_gse_fast_l2', $
         'mms'+probe+'_edp_hfesp_srvy_l2', $
         'mms'+probe+'_dsp_bpsd_omni_fast_l2'], var_label=position_vars
-
-if ae_type eq 'thm' then tplot, /add, 'thmAE' else tplot, /add, 'kyoto_ae'
 
 if postscript then tprint, plot_directory + 'mms'+probe + '_basic_tail'
 if send_plots_to eq 'png' then begin

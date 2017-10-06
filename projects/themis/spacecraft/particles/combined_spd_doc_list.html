@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Oct  4 18:15:57 2017.<P>
+<STRONG>Last modified: </STRONG>Thu Oct  5 18:16:17 2017.<P>
  
 <HR>
  
@@ -229,7 +229,7 @@ Inputs:
   remove_one_count: removes all bins that are less than one count, suggestion from heli hietala(heli@igpp.ucla.edu)
   sst_data_mask:  The name of a tplot variable containing a 1-dimensional, 0-1 array indicating SST samples to exclude(0=exclude,1=include),
                   If values don't match the times of particle data, they'll be nearest neighbor interpolated to match.
-  
+  get_error:  if set, interpolates scaling factor needed for error propagation  
   
 Outputs:
   combined_dist: Pointer array to combined distribution data.  This is analagous
@@ -261,6 +261,10 @@ General Notes:
         removal crib for options.
 
 
+ Note that the GET_ERROR keyword must be set if the user wants to
+ propagate errors through to the thm_part_moments routine. This is
+ not done automatically, because it doubles the interpolation time
+
 Developer Notes:
   In general this code makes the following assumptions about the particle data:
   
@@ -275,9 +279,9 @@ Developer Notes:
   uniformity is assumed as the data is replaced with interpolated versions.
      
 
-$LastChangedBy: jimm $
-$LastChangedDate: 2017-10-02 11:19:09 -0700 (Mon, 02 Oct 2017) $
-$LastChangedRevision: 24078 $
+$LastChangedBy: jimmpc1 $
+$LastChangedDate: 2017-10-05 10:26:24 -0700 (Thu, 05 Oct 2017) $
+$LastChangedRevision: 24117 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/combined/thm_part_combine.pro $
 
 </PRE><P>
@@ -307,6 +311,7 @@ OUTPUTS:
 
 KEYWORDS: 
   error: Set to 1 on error, zero otherwise
+  get_error:  if set, interpolates scaling factor needed for error propagation
   
 NOTES:
    #1 The number of time samples and the times of those samples must 
@@ -389,12 +394,13 @@ OUTPUTS:
 
 KEYWORDS: 
   error: Set to 1 on error, zero otherwise
+  get_error: if set, interpolates scaling factor needed for error propagation
   
  NOTES:
    #1 Interpolation done using IDL library routine &quot;griddata&quot;
    
-   #2 This code assumes that source &amp; target have been time interpolated to match each other 
-   
+   #2 This code assumes that source &amp; target have been time interpolated to match each other
+
    This has a ton of TBDs, we need to come back and fix them when time is available.  With TBDs this code will not have general purpose utility...
  SEE ALSO:
    thm_part_dist_array, thm_part_smooth, thm_part_subtract,thm_part_omni_convert,thm_part_time_interpolate.pro

@@ -14,12 +14,13 @@
 ;
 ;KEYWORDS: 
 ;  error: Set to 1 on error, zero otherwise
+;  get_error: if set, interpolates scaling factor needed for error propagation
 ;  
 ; NOTES:
 ;   #1 Interpolation done using IDL library routine "griddata"
 ;   
-;   #2 This code assumes that source & target have been time interpolated to match each other 
-;   
+;   #2 This code assumes that source & target have been time interpolated to match each other
+;
 ;   This has a ton of TBDs, we need to come back and fix them when time is available.  With TBDs this code will not have general purpose utility...
 ; SEE ALSO:
 ;   thm_part_dist_array, thm_part_smooth, thm_part_subtract,thm_part_omni_convert,thm_part_time_interpolate.pro

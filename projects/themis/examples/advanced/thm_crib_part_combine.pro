@@ -30,9 +30,9 @@
 ;          ESA and SST energy ranges is filled in with a logarithmic 
 ;          linear interpolation (log(flux) vs log(energy))
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2016-07-22 16:56:13 -0700 (Fri, 22 Jul 2016) $
-;$LastChangedRevision: 21515 $
+;$LastChangedBy: jimmpc1 $
+;$LastChangedDate: 2017-10-05 10:40:29 -0700 (Thu, 05 Oct 2017) $
+;$LastChangedRevision: 24118 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/examples/advanced/thm_crib_part_combine.pro $
 ;-
 
@@ -333,6 +333,37 @@ thm_part_products, dist_array=combined, outputs='energy'
 tplot,'thd_ptirf_eflux_energy'
 
 print,'Mask SST data for particular time intervals'
+
+stop
+
+;--------------------------------------------------------------------------------------
+;Propogate Error calculation through to thm_part_products, using
+;GET_ERROR. The example is for manual data load, but the /get_error
+;option will work in any case. The /get_error option must be used in
+;thm_part_combine if it is used subsequently.
+;--------------------------------------------------------------------------------------
+
+;set probe and time range
+probe = 'd'
+trange = '2011-07-29/' + ['13:00','14:00']
+
+;load data manually
+;IMPORTANT: always use the same time range and probe!
+esa_dist = thm_part_dist_array(probe=probe, trange=trange, datatype = 'peif')
+sst_dist = thm_part_dist_array(probe=probe, trange=trange, datatype = 'psif')
+
+;Pass the pre-loaded data through the ESA_DIST and SST_DIST keywords,
+;set /get_error
+combined = thm_part_combine(probe=probe, trange=trange, $
+  esa_dist=esa_dist, sst_dist=sst_dist, /get_error)
+
+
+thm_part_products, dist_array=combined, outputs=['energy','moments'], /get_error
+
+tplot,'thd_pt??f_*sigma'
+
+
+print, ' ','Load original data manually, set /get_error and plot', ' '
 
 stop
 

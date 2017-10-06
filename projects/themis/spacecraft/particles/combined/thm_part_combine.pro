@@ -59,7 +59,7 @@
 ;  remove_one_count: removes all bins that are less than one count, suggestion from heli hietala(heli@igpp.ucla.edu)
 ;  sst_data_mask:  The name of a tplot variable containing a 1-dimensional, 0-1 array indicating SST samples to exclude(0=exclude,1=include),
 ;                  If values don't match the times of particle data, they'll be nearest neighbor interpolated to match.
-;  
+;  get_error:  if set, interpolates scaling factor needed for error propagation  
 ;  
 ;Outputs:
 ;  combined_dist: Pointer array to combined distribution data.  This is analagous
@@ -91,6 +91,10 @@
 ;        removal crib for options.
 ;
 ;
+; Note that the GET_ERROR keyword must be set if the user wants to
+; propagate errors through to the thm_part_moments routine. This is
+; not done automatically, because it doubles the interpolation time
+;
 ;Developer Notes:
 ;  In general this code makes the following assumptions about the particle data:
 ;  
@@ -105,9 +109,9 @@
 ;  uniformity is assumed as the data is replaced with interpolated versions.
 ;     
 ;
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2017-10-02 11:19:09 -0700 (Mon, 02 Oct 2017) $
-;$LastChangedRevision: 24078 $
+;$LastChangedBy: jimmpc1 $
+;$LastChangedDate: 2017-10-05 10:26:24 -0700 (Thu, 05 Oct 2017) $
+;$LastChangedRevision: 24117 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/combined/thm_part_combine.pro $
 ;
 ;-

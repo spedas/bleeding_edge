@@ -16,6 +16,7 @@
 ;
 ;KEYWORDS: 
 ;  error: Set to 1 on error, zero otherwise
+;  get_error:  if set, interpolates scaling factor needed for error propagation
 ;  
 ;NOTES:
 ;   #1 The number of time samples and the times of those samples must 

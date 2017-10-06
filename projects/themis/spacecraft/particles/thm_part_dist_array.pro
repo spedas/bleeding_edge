@@ -75,10 +75,10 @@
 ;Created by Bryan Kerr
 ;Modified by A. Flores
 ;
-; $LastChangedBy: aaflores $
-; $LastChangedDate: 2016-03-04 17:47:13 -0800 (Fri, 04 Mar 2016) $
-; $LastChangedRevision: 20329 $
-; $URL $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2017-10-05 08:57:54 -0700 (Thu, 05 Oct 2017) $
+; $LastChangedRevision: 24116 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/thm_part_dist_array.pro $
 ;-
 
 function thm_part_dist_array, format=format, trange=trange, type=type, datatype=datatype, $
