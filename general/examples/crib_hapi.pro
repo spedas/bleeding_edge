@@ -5,11 +5,11 @@
 ;       Demonstrates how to query Heliophysics API (HAPI) servers and download, load and plot data from them
 ;
 ; NOTES:
-;       hapi_load_data requires IDL 8.2 or later due to usage of IDL's JSON parser
+;       hapi_load_data requires IDL 8.3 or later due to usage of IDL's json_parse + orderedhash
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-06-07 11:50:27 -0700 (Wed, 07 Jun 2017) $
-; $LastChangedRevision: 23438 $
+; $LastChangedDate: 2017-10-06 11:10:54 -0700 (Fri, 06 Oct 2017) $
+; $LastChangedRevision: 24123 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_hapi.pro $
 ;-
 

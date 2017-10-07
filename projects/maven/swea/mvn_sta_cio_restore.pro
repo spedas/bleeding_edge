@@ -14,6 +14,8 @@
 ;KEYWORDS:
 ;       LOADONLY:      Download but do not restore any cio data.
 ;
+;       UPDATE:        Add new structure elements and update save file.
+;
 ;       RESULT_H:      CIO result structure for H+.
 ;
 ;       RESULT_O1:     CIO result structure for O+.
@@ -25,8 +27,8 @@
 ;       PANS:          Tplot panel names created when DOPLOT is set.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-09-13 18:18:57 -0700 (Wed, 13 Sep 2017) $
-; $LastChangedRevision: 23969 $
+; $LastChangedDate: 2017-10-06 09:37:13 -0700 (Fri, 06 Oct 2017) $
+; $LastChangedRevision: 24121 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_restore.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -267,8 +269,24 @@ pro mvn_sta_cio_restore, trange, loadonly=loadonly, result_h=result_h, $
     options,'Shape_PAD2','colors',[2,6]
     options,'Shape_PAD2','labels',['away','toward']
     options,'Shape_PAD2','labflag',1
-
     pans = [pans, 'Shape_PAD2']
+
+    str_element, result_h, 'flux40', success=ok
+    if (ok) then begin
+      store_data,'flux40',data={x:result_h.time, y:result_h.flux40}
+      ylim,'flux40',0.1,1000,1
+      options,'flux40','ytitle','Eflux/1e5!c40 eV'
+      options,'flux40','constant',1
+      options,'flux40','colors',4
+
+      store_data,'ratio',data={x:result_h.time, y:result_h.ratio}
+      ylim,'ratio',0,2.5,0
+      options,'ratio','ytitle','Flux Ratio!caway/twd!cPA 0-30'
+      options,'ratio','constant',[0.75,1]
+      options,'ratio','colors',4
+
+      pans = [pans, 'flux40', 'ratio']
+    endif
 
 ; Escape Flux
 

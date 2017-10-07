@@ -71,8 +71,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-09-08 14:07:27 -0700 (Fri, 08 Sep 2017) $
-; $LastChangedRevision: 23937 $
+; $LastChangedDate: 2017-10-06 09:37:13 -0700 (Fri, 06 Oct 2017) $
+; $LastChangedRevision: 24121 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -565,20 +565,71 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, $
     result_o2.den_e = result_h.den_e
   endif
 
+; Spacecraft potential (fill in missing values)
+
+  indx = where(~finite(result_h.sc_pot), count)
+  if (count gt 0L) then result_h[indx].sc_pot = mvn_get_scpot(time[indx])
+  indx = where(~finite(result_o1.sc_pot), count)
+  if (count gt 0L) then result_o1[indx].sc_pot = mvn_get_scpot(time[indx])
+  indx = where(~finite(result_o2.sc_pot), count)
+  if (count gt 0L) then result_o2[indx].sc_pot = mvn_get_scpot(time[indx])
+
+; Magnetic field (fill in missing values)
+
+  get_data, 'mvn_B_1sec_maven_mso', index=i
+  if (i gt 0) then begin
+    tsmooth_in_time, 'mvn_B_1sec_maven_mso', dt
+    get_data, 'mvn_B_1sec_maven_mso_smoothed', data=mag, alim=alim
+
+    indx = where(~finite(result_h.magf[0]), count)
+    if (count gt 0L) then begin
+      result_h.magf[0] = interpol(mag.y[*,0], mag.x, time[indx])
+      result_h.magf[1] = interpol(mag.y[*,1], mag.x, time[indx])
+      result_h.magf[2] = interpol(mag.y[*,2], mag.x, time[indx])
+    endif
+
+    indx = where(~finite(result_o1.magf[0]), count)
+    if (count gt 0L) then begin
+      result_o1.magf[0] = interpol(mag.y[*,0], mag.x, time[indx])
+      result_o1.magf[1] = interpol(mag.y[*,1], mag.x, time[indx])
+      result_o1.magf[2] = interpol(mag.y[*,2], mag.x, time[indx])
+    endif
+
+    indx = where(~finite(result_o2.magf[0]), count)
+    if (count gt 0L) then begin
+      result_o2.magf[0] = interpol(mag.y[*,0], mag.x, time[indx])
+      result_o2.magf[1] = interpol(mag.y[*,1], mag.x, time[indx])
+      result_o2.magf[2] = interpol(mag.y[*,2], mag.x, time[indx])
+    endif
+
+  endif
+
+; Reference frame
+
+  result_h.frame = 'MAVEN_MSO'
+  result_o1.frame = 'MAVEN_MSO'
+  result_o2.frame = 'MAVEN_MSO'
+
 ; Shape parameter
 
-  mvn_swe_shape_restore, /tplot, parng=1, result=eshp30
-  get_data, 'Shape_PAD', index=i
-  if (i gt 0) then begin
-    tsmooth_in_time, 'Shape_PAD', dt
-    get_data,'Shape_PAD_smoothed',data=shape
-    result_h.shape[0] = interpol(shape.y[*,0], shape.x, time)
-    result_h.shape[1] = interpol(shape.y[*,1], shape.x, time)
-    result_o1.shape[0] = interpol(shape.y[*,0], shape.x, time)
-    result_o1.shape[1] = interpol(shape.y[*,1], shape.x, time)
-    result_o2.shape[0] = interpol(shape.y[*,0], shape.x, time)
-    result_o2.shape[1] = interpol(shape.y[*,1], shape.x, time)
-  endif
+  mvn_swe_shape_restore, /tplot, parng=1, result=shape
+  if (size(shape,/type) eq 8) then begin
+    shp = smooth_in_time(transpose(shape.shape[0:1,parng]), shape.t, dt)
+    result_h.shape[0] = interpol(shp[*,0], shape.t, result_h.time)
+    result_h.shape[1] = interpol(shp[*,1], shape.t, result_h.time)
+    result_o1.shape = result_h.shape
+    result_o2.shape = result_h.shape
+
+    f40 = smooth_in_time(shape.f40, shape.t, dt)
+    result_h.flux40 = interpol(f40, shape.t, result_h.time)/1.e5
+    result_o1.flux40 = result_h.flux40
+    result_o2.flux40 = result_h.flux40
+
+    frat40 = smooth_in_time(shape.fratio_a2t[0,parng], shape.t, dt)
+    result_h.ratio = 1./interpol(frat40, shape.t, result_h.time)
+    result_o1.ratio = result_h.ratio
+    result_o2.ratio = result_h.ratio
+  endif else print,'Could not restore shape parameter.'
 
 ; MSO and GEO ephemerides
 
@@ -607,15 +658,10 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, $
 
 ; Escape velocity
 
-  M = 6.4171d26  ; mass (g)
-                 ; source: https://nssdc.gsfc.nasa.gov/planetary/factsheet/index.html
-  R = 3389.5D    ; volumetric mean radius (km), +/- 0.2 
-  GM = (6.673889d-8)*M
-;           |
-; Anderson, J.D., et al., EPL 110 (2015) 10002, doi:10.1209/0295-5075/110/10002
+  M = 6.4171d26    ; https://nssdc.gsfc.nasa.gov/planetary/factsheet/index.html
+  G = 6.673889d-8  ; Anderson, J.D., et al., EPL 110 (2015) 10002, doi:10.1209/0295-5075/110/10002
 
-  dist = sqrt(total(eph.mso_x^2.,2))
-  Vesc = sqrt(2D*GM/(1.d15*dist))
+  Vesc = sqrt(2D*G*M/(1.d15*sqrt(total(eph.mso_x^2.,2))))
   store_data,'Vesc',data={x:alt.x, y:Vesc}
   options,'Vesc','linestyle',2
 
@@ -750,7 +796,19 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, $
     options,'Shape_PAD2','labels',['away','toward']
     options,'Shape_PAD2','labflag',1
 
-    pans = [pans, 'Shape_PAD2']
+    store_data,'flux40',data={x:result_h.time, y:result_h.flux40}
+    ylim,'flux40',0.1,1000,1
+    options,'flux40','ytitle','Eflux/1e5!c40 eV'
+    options,'flux40','constant',1
+    options,'flux40','colors',4
+
+    store_data,'ratio',data={x:result_h.time, y:result_h.ratio}
+    ylim,'ratio',0,2.5,0
+    options,'ratio','ytitle','Flux Ratio!caway/twd!cPA 0-30'
+    options,'ratio','constant',[0.75,1]
+    options,'ratio','colors',4
+
+    pans = [pans, 'Shape_PAD2', 'flux40', 'ratio']
 
 ; Escape Flux
 

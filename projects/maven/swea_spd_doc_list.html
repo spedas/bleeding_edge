@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Oct  5 18:16:17 2017.<P>
+<STRONG>Last modified: </STRONG>Fri Oct  6 18:16:07 2017.<P>
  
 <HR>
  
@@ -39,6 +39,8 @@ This page was created by the IDL library routine
 <br>Restores STATIC cold ion outflow results.
 <LI><A HREF="#MVN_STA_CIO_SAVE">MVN_STA_CIO_SAVE</A>
 <br>Saves STATIC cold ion outflow results in save/restore files.
+<LI><A HREF="#MVN_STA_CIO_UPDATE">MVN_STA_CIO_UPDATE</A>
+<br>Updates STATIC cold ion outflow results in save/restore files.
 <LI><A HREF="#MVN_STA_COLDION">MVN_STA_COLDION</A>
 <br>Loads STATIC data and calculates density, temperature, and velocity of
 <LI><A HREF="#MVN_SWE_3DSUM">MVN_SWE_3DSUM</A>
@@ -572,6 +574,8 @@ INPUTS:
 KEYWORDS:
        LOADONLY:      Download but do not restore any cio data.
 
+       UPDATE:        Add new structure elements and update save file.
+
        RESULT_H:      CIO result structure for H+.
 
        RESULT_O1:     CIO result structure for O+.
@@ -583,8 +587,8 @@ KEYWORDS:
        PANS:          Tplot panel names created when DOPLOT is set.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-09-13 18:18:57 -0700 (Wed, 13 Sep 2017) $
- $LastChangedRevision: 23969 $
+ $LastChangedDate: 2017-10-06 09:37:13 -0700 (Fri, 06 Oct 2017) $
+ $LastChangedRevision: 24121 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_restore.pro $
 
 CREATED BY:    David L. Mitchell
@@ -596,7 +600,7 @@ FILE: mvn_sta_cio_restore.pro
 <A NAME="MVN_STA_CIO_SAVE">
 <H2>MVN_STA_CIO_SAVE</H2></A>
 <A HREF="#MVN_STA_CIO_RESTORE">[Previous Routine]</A>
-<A HREF="#MVN_STA_COLDION">[Next Routine]</A>
+<A HREF="#MVN_STA_CIO_UPDATE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mvn_sta_cio_save
@@ -621,8 +625,8 @@ INPUTS:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-09-08 14:43:48 -0700 (Fri, 08 Sep 2017) $
- $LastChangedRevision: 23938 $
+ $LastChangedDate: 2017-10-06 09:37:13 -0700 (Fri, 06 Oct 2017) $
+ $LastChangedRevision: 24121 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 
 CREATED BY:    David L. Mitchell
@@ -631,9 +635,51 @@ FILE: mvn_sta_cio_save.pro
 <STRONG>(See <A href="swea/mvn_sta_cio_save.pro">projects/maven/swea/mvn_sta_cio_save.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_CIO_UPDATE">
+<H2>MVN_STA_CIO_UPDATE</H2></A>
+<A HREF="#MVN_STA_CIO_SAVE">[Previous Routine]</A>
+<A HREF="#MVN_STA_COLDION">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_sta_cio_update
+PURPOSE:
+  Updates STATIC cold ion outflow results in save/restore files.
+
+USAGE:
+  mvn_sta_cio_update, trange [, ndays]
+
+INPUTS:
+       trange:        Start time or time range for making save files, in any 
+                      format accepted by time_double().  If only one time is 
+                      specified, it is taken as the start time and NDAYS is 
+                      used to get the end time.  If two or more times are 
+                      specified, then the earliest and latest times are used.
+                      Fractional days (hh:mm:ss) are ignored.
+
+       ndays:         Number of dates to process.  Only used if TRANGE has
+                      only one element.  Default = 1.
+
+       noguff:        Force update of the shape parameter elements.
+
+       parng:         Pitch angle range for shape parameter elements.
+                        1 = 0-30 deg (default); 2 = 0-45 deg ; 3 = 0-60 deg
+
+KEYWORDS:
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2017-10-06 09:36:43 -0700 (Fri, 06 Oct 2017) $
+ $LastChangedRevision: 24120 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_update.pro $
+
+CREATED BY:    David L. Mitchell
+FILE: mvn_sta_cio_update.pro
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_sta_cio_update.pro">projects/maven/swea/mvn_sta_cio_update.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_COLDION">
 <H2>MVN_STA_COLDION</H2></A>
-<A HREF="#MVN_STA_CIO_SAVE">[Previous Routine]</A>
+<A HREF="#MVN_STA_CIO_UPDATE">[Previous Routine]</A>
 <A HREF="#MVN_SWE_3DSUM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -709,8 +755,8 @@ KEYWORDS:
     SUCCESS:       Processing success flag.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-09-08 14:07:27 -0700 (Fri, 08 Sep 2017) $
- $LastChangedRevision: 23937 $
+ $LastChangedDate: 2017-10-06 09:37:13 -0700 (Fri, 06 Oct 2017) $
+ $LastChangedRevision: 24121 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 
 CREATED BY:    David L. Mitchell

@@ -21,8 +21,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-09-08 14:43:48 -0700 (Fri, 08 Sep 2017) $
-; $LastChangedRevision: 23938 $
+; $LastChangedDate: 2017-10-06 09:37:13 -0700 (Fri, 06 Oct 2017) $
+; $LastChangedRevision: 24121 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -67,25 +67,33 @@ pro mvn_sta_cio_save, trange, ndays
     file_mkdir2, opath, mode='0774'o  ; create directory structure, if needed
     ofile = opath + froot + yyyy + mm + dd + '.sav'
 
-    mvn_swe_load_l0, /spiceinit
-    mvn_swe_stat, npkt=npkt, /silent
-    if (npkt[2] gt 0L) then begin
-      maven_orbit_tplot, /shadow, /loadonly
-      mvn_swe_sciplot, padsmo=16, /loadonly
-      mvn_scpot
-      mvn_sundir, frame='swe', /polar
+; If the file already exists, then just update it
 
-      mvn_sta_coldion, density=1, temperature=1, velocity=[1,1,1], $
-            result_h=cio_h, result_o1=cio_o1, result_o2=cio_o2, /reset, tavg=16, $
-            success=ok
+    finfo = file_info(ofile)
+    if (finfo.exists) then begin
+      print,'CIO save file already exists.  Updating.'
+      mvn_sta_cio_update, time
+    endif else begin
+      mvn_swe_load_l0, /spiceinit
+      mvn_swe_stat, npkt=npkt, /silent
+      if (npkt[2] gt 0L) then begin
+        maven_orbit_tplot, /shadow, /loadonly
+        mvn_swe_sciplot, padsmo=16, /loadonly
+        mvn_scpot
+        mvn_sundir, frame='swe', /polar
 
-      if (ok) then save, cio_h, cio_o1, cio_o2, file=ofile $
-              else print,'CIO pipeline failed: ',tstring
+        mvn_sta_coldion, density=1, temperature=1, velocity=[1,1,1], $
+              result_h=cio_h, result_o1=cio_o1, result_o2=cio_o2, /reset, tavg=16, $
+              success=ok
 
-      elapsed_min = (systime(/sec) - timer_start)/60D
-      print,elapsed_min,format='("Time to process (min): ",f6.2)'
+        if (ok) then save, cio_h, cio_o1, cio_o2, file=ofile $
+                else print,'CIO pipeline failed: ',tstring
 
-    endif else print,'No SWEA data: ',tstring
+        elapsed_min = (systime(/sec) - timer_start)/60D
+        print,elapsed_min,format='("Time to process (min): ",f6.2)'
+
+      endif else print,'No SWEA data: ',tstring
+    endelse
   endfor
 
   return

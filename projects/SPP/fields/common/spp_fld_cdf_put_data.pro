@@ -33,9 +33,9 @@
 ; CREATED BY:
 ;   pulupa
 ;
-; $LastChangedBy: spfuser $
-; $LastChangedDate: 2017-09-29 16:06:46 -0700 (Fri, 29 Sep 2017) $
-; $LastChangedRevision: 24069 $
+; $LastChangedBy: sppfields2 $
+; $LastChangedDate: 2017-10-06 09:53:19 -0700 (Fri, 06 Oct 2017) $
+; $LastChangedRevision: 24122 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_put_data.pro $
 ;-
 pro spp_fld_cdf_put_data, fileid, data, close = close
@@ -219,13 +219,13 @@ pro spp_fld_cdf_put_data, fileid, data, close = close
         if n_elements(data_array_raw) GT 0 then begin
 
           case cdf_attname of
-            'FORMAT': cdf_attput, fileid, cdf_attname, varid_str, "I16", /zvariable
-            'FILLVAL': cdf_attput, fileid, cdf_attname, varid_str, "-2147483647", /zvariable
-            'SCALEMIN': cdf_attput, fileid, cdf_attname, varid_str, "-2147483647", /zvariable
-            'SCALEMAX': cdf_attput, fileid, cdf_attname, varid_str, "2147483647", /zvariable
-            'VALIDMIN': cdf_attput, fileid, cdf_attname, varid_str, "-2147483647", /zvariable
-            'VALIDMAX': cdf_attput, fileid, cdf_attname, varid_str, "2147483647", /zvariable
-            'DATA_TYPE': cdf_attput, fileid, cdf_attname, varid_str, "CDF_INT4", /zvariable
+            'FORMAT': cdf_attput, fileid, cdf_attname, varid_str, 'I16', /zvariable
+            'FILLVAL': cdf_attput, fileid, cdf_attname, varid_str, '-2147483647', /zvariable
+            'SCALEMIN': cdf_attput, fileid, cdf_attname, varid_str, '-2147483647', /zvariable
+            'SCALEMAX': cdf_attput, fileid, cdf_attname, varid_str, '2147483647', /zvariable
+            'VALIDMIN': cdf_attput, fileid, cdf_attname, varid_str, '-2147483647', /zvariable
+            'VALIDMAX': cdf_attput, fileid, cdf_attname, varid_str, '2147483647', /zvariable
+            'DATA_TYPE': cdf_attput, fileid, cdf_attname, varid_str, 'CDF_INT4', /zvariable
             'UNITS':cdf_attput, fileid, cdf_attname, varid_str, "Counts", /zvar
             ELSE: cdf_attput, fileid, cdf_attname, varid_str, $
               cdf_att, /zvar
