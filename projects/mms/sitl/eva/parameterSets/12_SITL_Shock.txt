@@ -4,6 +4,7 @@
 mms*_dfg_srvy_dmpa_m; |B|
 mms*_dfg_srvy_dmpa_p; Bphi
 mms*_dfg_srvy_dmpa_t; Btheta
+mms*_dfg_srvy_dmpa; Bx, By, Bz
 ;mms*_fpi_bentPipeB_DBCS;.... FPI Emergency parameters for when DFG/AFG not available.
 ;mms*_fpi_bentPipeB_Norm;... FPI Emergency parameters for when DFG/AFG not available.
 
