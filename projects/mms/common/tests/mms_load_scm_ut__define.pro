@@ -2,13 +2,13 @@
 ;
 ; Unit tests for mms_load_scm
 ;
-; Requires both the SPEDAS QA folder (not distributed with SPEDAS) and mgunit
-; in the local path
+; To run:
+;     IDL> mgunit, 'mms_load_scm_ut'
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-03-01 13:01:58 -0800 (Wed, 01 Mar 2017) $
-; $LastChangedRevision: 22881 $
+; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
+; $LastChangedRevision: 24128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_scm_ut__define.pro $
 ;-
 

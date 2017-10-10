@@ -2,8 +2,8 @@
 ;
 ; Unit tests for mms_load_brst_segments
 ;
-; Requires both the SPEDAS QA folder (not distributed with SPEDAS) and mgunit
-; in the local path
+; To run:
+;     IDL> mgunit, 'mms_load_brst_segments_ut'
 ;
 ;
 ; brst segments used in these tests:
@@ -12,8 +12,8 @@
 ;   2015-10-16: 13:03:34.000 - 13:04:54.000
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-04-24 08:15:35 -0700 (Mon, 24 Apr 2017) $
-; $LastChangedRevision: 23219 $
+; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
+; $LastChangedRevision: 24128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_brst_segments_ut__define.pro $
 ;-
 

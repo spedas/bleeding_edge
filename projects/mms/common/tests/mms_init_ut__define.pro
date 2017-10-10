@@ -6,13 +6,13 @@
 ;  stereo_init, goes_init, fa_init, barrel_init, poes_init
 ;  elf_init, sd_init, geom_indices_init, iug_init, juno_init, mvn_spd_init
 ;
-; Requires both the SPEDAS QA folder (not distributed with SPEDAS) and mgunit
-; in the local path
+; To run:
+;     IDL> mgunit, 'mms_init_ut'
 ; 
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-03-01 12:38:40 -0800 (Wed, 01 Mar 2017) $
-; $LastChangedRevision: 22877 $
+; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
+; $LastChangedRevision: 24128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_init_ut__define.pro $
 ;-
 

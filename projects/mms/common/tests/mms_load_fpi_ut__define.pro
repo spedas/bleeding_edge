@@ -2,16 +2,16 @@
 ;
 ; Unit tests for mms_load_fpi
 ;
-; Requires both the SPEDAS QA folder (not distributed with SPEDAS) and mgunit
-; in the local path
+; To run:
+;     IDL> mgunit, 'mms_load_fpi_ut'
 ;
 ; warning: ACR tests in test_integration_time_get_dist require special, non-public CDFs
 ; to work / expect this test to fail if you don't have those files
 ; 
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-04 12:49:58 -0700 (Wed, 04 Oct 2017) $
-; $LastChangedRevision: 24111 $
+; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
+; $LastChangedRevision: 24128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_fpi_ut__define.pro $
 ;-
 

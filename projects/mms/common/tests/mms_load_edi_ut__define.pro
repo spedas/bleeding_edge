@@ -2,12 +2,12 @@
 ;
 ; Unit tests for mms_load_edi
 ;
-; Requires both the SPEDAS QA folder (not distributed with SPEDAS) and mgunit
-; in the local path
+; To run:
+;     IDL> mgunit, 'mms_load_edi_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-02-22 12:00:57 -0800 (Wed, 22 Feb 2017) $
-; $LastChangedRevision: 22849 $
+; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
+; $LastChangedRevision: 24128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_edi_ut__define.pro $
 ;-
 

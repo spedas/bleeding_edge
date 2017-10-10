@@ -2,16 +2,16 @@
 ;
 ; Unit tests for mms_load_fgm
 ;
-; Requires both the SPEDAS QA folder (not distributed with SPEDAS) and mgunit
-; in the local path
+; To run:
+;     IDL> mgunit, 'mms_load_fpi_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-07-05 10:47:01 -0700 (Wed, 05 Jul 2017) $
-; $LastChangedRevision: 23549 $
+; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
+; $LastChangedRevision: 24128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_fgm_ut__define.pro $
 ;-
 
-function mms_load_fgm_ut::test_varformat_array_still_flagged
+function mms_load_fpi_ut::test_varformat_array_still_flagged
   mms_load_fgm, level='l2', data_rate='srvy', varformat=['*fgm_b_gsm_srvy_l2*', '*fgm_b_gse_srvy_l2*']
   get_data, 'mms1_fgm_flag_srvy_l2', data=flags
   get_data, 'mms1_fgm_b_gsm_srvy_l2_bvec', data=flagged

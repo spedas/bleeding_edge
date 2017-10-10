@@ -5,13 +5,13 @@
 ; using different tranges throughout the mission; primarily to 
 ; check for regressions due to file changes/incompatible versions
 ;
-; Requires both the SPEDAS QA folder (not distributed with SPEDAS) and mgunit
-; in the local path
+; To run:
+;     IDL> mgunit, 'mms_load_coverage_ut'
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-11-03 09:02:08 -0700 (Thu, 03 Nov 2016) $
-; $LastChangedRevision: 22264 $
+; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
+; $LastChangedRevision: 24128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_coverage_ut__define.pro $
 ;-
 

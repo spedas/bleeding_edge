@@ -2,14 +2,16 @@
 ;
 ; Unit tests for mms_cdf2tplot
 ;
+; To run:
+;     IDL> mgunit, 'mms_cdf2tplot_ut'
 ;
 ; NOTES: 
 ;     valid times for unit tests involving /center keyword 
 ;     taken from v2.1.0 of the FPI CDFs, 3/10/2016
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-10-11 09:12:17 -0700 (Tue, 11 Oct 2016) $
-; $LastChangedRevision: 22084 $
+; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
+; $LastChangedRevision: 24128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_cdf2tplot_ut__define.pro $
 ;-
 

@@ -2,15 +2,13 @@
 ;
 ; Unit tests for mms_part_getspec
 ;
-;
-;
-; Requires both the SPEDAS QA folder (not distributed with SPEDAS)
-; and mgunit in the local path.
+; To run:
+;     IDL> mgunit, 'mms_part_getspec_ut'
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-09-05 10:07:46 -0700 (Tue, 05 Sep 2017) $
-; $LastChangedRevision: 23884 $
+; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
+; $LastChangedRevision: 24128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
 

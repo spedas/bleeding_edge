@@ -2,11 +2,12 @@
 ;
 ; Unit tests for unh_mms_file_filter
 ;
-; Requires mgunit in the local path
+; To run:
+;     IDL> mgunit, 'mms_file_filter_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-01-25 08:09:15 -0800 (Wed, 25 Jan 2017) $
-; $LastChangedRevision: 22665 $
+; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
+; $LastChangedRevision: 24128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_file_filter_ut__define.pro $
 ;-
 

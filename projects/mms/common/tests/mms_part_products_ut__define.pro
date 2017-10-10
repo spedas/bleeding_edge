@@ -1,16 +1,17 @@
 ;+
 ;
 ; Unit tests for mms_part_products
+;   Note: deprecated, now testing wrapper routine: mms_part_getspec
 ; 
 ; **Most tests produce plots that should be checked manually!**
 ;
-; Requires both the SPEDAS QA folder (not distributed with SPEDAS) 
-; and mgunit in the local path.
+; To run:
+;     IDL> mgunit, 'mms_part_products_ut'
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-06-29 12:44:38 -0700 (Thu, 29 Jun 2017) $
-; $LastChangedRevision: 23527 $
+; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
+; $LastChangedRevision: 24128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_products_ut__define.pro $
 ;-
 
@@ -30,14 +31,14 @@ function mms_part_products_ut::test_all_outputs
 
     self->load_data, species[i], /support
     
-    mms_part_products, self.data, trange=self.trange, /silent, $
+    mms_part_products_new, self.data, trange=self.trange, /silent, $
                        outputs='energy phi theta pa gyro moments', $
                        mag_name=self.mag, pos_name=self.pos
     
     basic_spectra = self.data+'_'+['energy','phi','theta']
     fac_spectra = self.data+'_'+['pa','gyro']
     moments = self.data+'_'+['density','velocity','ptens']
-  
+
     success[i] = spd_data_exists([basic_spectra,fac_spectra,moments],self.trange[0],self.trange[1])
     
     tplot, basic_spectra, title=species[i]+' basic spectra'
@@ -70,8 +71,8 @@ function mms_part_products_ut::test_energy_limits
 
     self->load_data, species[i]
 
-    mms_part_products, self.data, trange=self.trange, outputs='energy phi moments', /silent
-    mms_part_products, self.data, trange=self.trange, outputs='energy phi moments', energy=[500,12000], suffix='_elim', /silent
+    mms_part_products_new, self.data, trange=self.trange, outputs='energy phi moments', /silent
+    mms_part_products_new, self.data, trange=self.trange, outputs='energy phi moments', energy=[500,12000], suffix='_elim', /silent
   
     energy = self.data+'_energy'+['','_elim']
     phi = self.data+'_phi'+['','_elim']
@@ -100,8 +101,8 @@ function mms_part_products_ut::test_phi_limits
 
     self->load_data, species[i]
 
-    mms_part_products, self.data, trange=self.trange, outputs='energy phi moments', /silent
-    mms_part_products, self.data, trange=self.trange, outputs='energy phi moments', phi=[90,270], suffix='_plim', /silent
+    mms_part_products_new, self.data, trange=self.trange, outputs='energy phi moments', /silent
+    mms_part_products_new, self.data, trange=self.trange, outputs='energy phi moments', phi=[90,270], suffix='_plim', /silent
   
     energy = self.data+'_energy'+['','_plim']
     phi = self.data+'_phi'+['','_plim']
@@ -130,8 +131,8 @@ function mms_part_products_ut::test_theta_limits
 
     self->load_data, species[i]
 
-    mms_part_products, self.data, trange=self.trange, outputs='energy theta moments', /silent
-    mms_part_products, self.data, trange=self.trange, outputs='energy theta moments', theta=[-45,45], suffix='_tlim', /silent
+    mms_part_products_new, self.data, trange=self.trange, outputs='energy theta moments', /silent
+    mms_part_products_new, self.data, trange=self.trange, outputs='energy theta moments', theta=[-45,45], suffix='_tlim', /silent
   
     energy = self.data+'_energy'+['','_tlim']
     theta = self.data+'_theta'+['','_tlim']
@@ -164,9 +165,9 @@ function mms_part_products_ut::test_unit_transform
 
   for i=0, n_elements(units)-1 do begin
   
-    mms_part_products, df_data, outputs='energy', units=units[i], $
+    mms_part_products_new, df_data, outputs='energy', units=units[i], $
                        trange=self.trange, suffix='_'+units[i]
-    mms_part_products, flux_data, outputs='energy', units=units[i], $
+    mms_part_products_new, flux_data, outputs='energy', units=units[i], $
                        trange=self.trange, suffix='_'+units[i]
 
     names = [df_data,flux_data] + '_energy_'+units[i]
@@ -198,7 +199,7 @@ function mms_part_products_ut::test_fac_types
   
     for i=0, n_elements(fac_types)-1 do begin
     
-      mms_part_products, self.data, outputs='gyro', fac_type=fac_types[i], $
+      mms_part_products_new, self.data, outputs='gyro', fac_type=fac_types[i], $
                          trange=self.trange, suffix='_'+fac_types[i], $
                          pos_name=self.pos, mag_name=self.mag
   
@@ -224,10 +225,10 @@ function mms_part_products_ut::test_implicit_fac
 
   self.load_data, 'e', 'fast', /support
 
-  mms_part_products, self.data, outputs='energy moments', trange=self.trange, /silent
-  mms_part_products, self.data, outputs='energy moments', trange=self.trange, /silent, $
+  mms_part_products_new, self.data, outputs='energy moments', trange=self.trange, /silent
+  mms_part_products_new, self.data, outputs='energy moments', trange=self.trange, /silent, $
                      pitch=[90,180], suffix='_pitch', mag_name=self.mag, pos_name=self.pos
-  mms_part_products, self.data, outputs='energy moments', trange=self.trange, /silent, $
+  mms_part_products_new, self.data, outputs='energy moments', trange=self.trange, /silent, $
                      gyro=[270,90], suffix='_gyro', mag_name=self.mag, pos_name=self.pos
 
   dens = self.data+'_density'+['','_mag_pitch','_mag_gyro']
@@ -266,8 +267,8 @@ function mms_part_products_ut::test_hpca_vs_fpi
   
   mms_load_hpca, probe=probe, trange=trange, data_rate='srvy', level='l2', datatype='ion'
   
-  mms_part_products, fpi,  trange=trange, outputs=['phi','theta','energy','moments'], /silent
-  mms_part_products, hpca, trange=trange, outputs=['phi','theta','energy','moments'], /silent
+  mms_part_products_new, fpi,  trange=trange, outputs=['phi','theta','energy','moments'], /silent
+  mms_part_products_new, hpca, trange=trange, outputs=['phi','theta','energy','moments'], /silent
   
   options, '*_velocity', yrange=[-200,200]
 
@@ -297,7 +298,7 @@ function mms_part_products_ut::test_hpca_vs_cdf
   
   self->load_data, 'hplus', /moments
 
-  mms_part_products, self.data, outputs='moments', trange=self.trange, /silent
+  mms_part_products_new, self.data, outputs='moments', trange=self.trange, /silent
 
   names = ['mms1_hpca_hplus_number_density', self.data+'_density', $
            'mms1_hpca_hplus_ion_bulk_velocity', self.data+'_velocity']
@@ -325,7 +326,7 @@ function mms_part_products_ut::test_fpi_vs_cdf
   
     self->load_data, species[i], /moments
   
-    mms_part_products, self.data, outputs='moments', trange=self.trange, /silent
+    mms_part_products_new, self.data, outputs='moments', trange=self.trange, /silent
 
     vel_name = 'mms1_d'+species[i]+'s_bulkv_dbcs_brst'
    ; join_vec, vel_name + ['x','y','z'] +'_dbcs_brst', vel_name
@@ -356,7 +357,7 @@ function mms_part_products_ut::test_info_keywords
 
   store_data, self.data, newname='test_var'
 
-  mms_part_products, 'test_var', trange=self.trange, probe='1', species='i', instrument='fpi'
+  mms_part_products_new, 'test_var', trange=self.trange, probe='1', species='i', instrument='fpi'
 
   fpi_success = spd_data_exists('test_var_energy',self.trange[0],self.trange[1])   
 
@@ -364,7 +365,7 @@ function mms_part_products_ut::test_info_keywords
 
   store_data, self.data, newname='test_var'
 
-  mms_part_products, 'test_var', trange=self.trange, probe='1', species='hplus', instrument='hpca', input_units='df_cm'
+  mms_part_products_new, 'test_var', trange=self.trange, probe='1', species='hplus', instrument='hpca', input_units='df_cm'
 
   hpca_success = spd_data_exists('test_var_energy',self.trange[0],self.trange[1])   
 
@@ -384,12 +385,12 @@ function mms_part_products_ut::test_invalid_data
   store_data, 'test_var', data={x:dindgen(1e3),y:dindgen(1e3)}
 
   ;should fail gracefully
-  mms_part_products
-  mms_part_products, 'foo'
-  mms_part_products, 0
-  mms_part_products, ptr_new()
-  mms_part_products, 'test_var'
-  mms_part_products, self.data, trange = self.trange + 2 * 24. * 3600, tplotnames=tn
+  mms_part_products_new
+  mms_part_products_new, 'foo'
+  mms_part_products_new, 0
+  mms_part_products_new, ptr_new()
+  mms_part_products_new, 'test_var'
+  mms_part_products_new, self.data, trange = self.trange + 2 * 24. * 3600, tplotnames=tn
 
   assert, undefined(tn), 'Unexpected output detected'
 
@@ -413,10 +414,10 @@ function mms_part_products_ut::test_invalid_support
   d.x += 2 * 24. * 3600
   store_data, self.mag, data=d
 
-  mms_part_products, self.data, trange=self.trange, outputs='pa fac_moments', tplotnames=tn0, /silent
-  mms_part_products, self.data, trange=self.trange, outputs='pa fac_moments', tplotnames=tn1, /silent, $
+  mms_part_products_new, self.data, trange=self.trange, outputs='pa fac_moments', tplotnames=tn0, /silent
+  mms_part_products_new, self.data, trange=self.trange, outputs='pa fac_moments', tplotnames=tn1, /silent, $
                      mag_name='dummy', pos_name='dummy'
-  mms_part_products, self.data, trange=self.trange, outputs='pa fac_moments', tplotnames=tn2, /silent, $
+  mms_part_products_new, self.data, trange=self.trange, outputs='pa fac_moments', tplotnames=tn2, /silent, $
                      mag_name=self.mag, pos_name=self.pos
 
   assert, undefined(tn0) and undefined(tn1) and ~spd_data_exists(tn2,self.trange[0],self.trange[1]), 'Unexpected output detected'
@@ -442,7 +443,7 @@ function mms_part_products_ut::test_hpca_bad_azimuth
   mms_load_fgm, probes=probe, trange=trange, level='l2'
 
   name = 'mms1_hpca_hplus_phase_space_density'
-  mms_part_products, name, trange=trange, $
+  mms_part_products_new, name, trange=trange, $
                      mag_name='mms1_fgm_b_dmpa_srvy_l2_bvec', $
                      pos_name='mms1_mec_r_eci',outputs='pa'
 
@@ -528,7 +529,7 @@ function mms_part_products_ut::test_no_regrid
 
     self->load_data, species[i], /support
 
-    mms_part_products, self.data, trange=self.trange, /silent, $
+    mms_part_products_new, self.data, trange=self.trange, /silent, $
       outputs='energy phi theta pa gyro moments', $
       mag_name=self.mag, pos_name=self.pos,/no_regrid
 
@@ -569,7 +570,7 @@ end
 
 function mms_part_products_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
-  self.prefix = 'mms_part_products_'
+  self.prefix = 'mms_part_products_updates/mms_part_products_'
   self.suffix = '_new'
   self->addTestingRoutine, ['mms_part_products', $
                             'spd_pgs_moments', $

@@ -5,10 +5,13 @@
 ; REQUIRED (in working directory): 
 ;     test_auth_info_team.sav - sav file containing username and password
 ;     test_auth_info_pub.sav - sav file containing an empty username and password
+;     
+; To run:
+;     IDL> mgunit, 'mms_load_data_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-03-16 09:04:44 -0700 (Thu, 16 Mar 2017) $
-; $LastChangedRevision: 22974 $
+; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
+; $LastChangedRevision: 24128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_data_ut__define.pro $
 ;-
 

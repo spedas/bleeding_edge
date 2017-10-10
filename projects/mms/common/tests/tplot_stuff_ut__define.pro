@@ -2,12 +2,12 @@
 ;
 ; Unit tests for various tplot utilities
 ;
-; Requires both the SPEDAS QA folder (not distributed with SPEDAS) and mgunit
-; in the local path
+; To run:
+;     IDL> mgunit, 'tplot_stuff_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-08-10 10:18:22 -0700 (Thu, 10 Aug 2017) $
-; $LastChangedRevision: 23773 $
+; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
+; $LastChangedRevision: 24128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/tplot_stuff_ut__define.pro $
 ;-
 

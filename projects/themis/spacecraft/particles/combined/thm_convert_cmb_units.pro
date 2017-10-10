@@ -25,9 +25,9 @@
 ;  
 ;
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2016-03-04 18:12:33 -0800 (Fri, 04 Mar 2016) $
-;$LastChangedRevision: 20333 $
+;$LastChangedBy: jimmpc1 $
+;$LastChangedDate: 2017-10-09 11:19:52 -0700 (Mon, 09 Oct 2017) $
+;$LastChangedRevision: 24129 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/combined/thm_convert_cmb_units.pro $
 ;
 ;-
@@ -71,7 +71,7 @@ pro thm_convert_cmb_units, data, units, scale=scale
   
   ;convert
   data.data = in_scale * out_scale * data.data
-  
+  data.scaling = in_scale*out_scale*data.scaling
   data.units_name = strlowcase(units)
   
   return  

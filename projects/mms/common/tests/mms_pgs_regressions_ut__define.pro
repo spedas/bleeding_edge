@@ -2,12 +2,12 @@
 ;
 ; These are regression tests for bugs in mms_part_products
 ;
-; Requires both the SPEDAS QA folder (not distributed with SPEDAS) and mgunit
-; in the local path
+; To run:
+;     IDL> mgunit, 'mms_pgs_regressions_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-03-15 12:57:53 -0700 (Wed, 15 Mar 2017) $
-; $LastChangedRevision: 22970 $
+; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
+; $LastChangedRevision: 24128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_pgs_regressions_ut__define.pro $
 ;-
 
