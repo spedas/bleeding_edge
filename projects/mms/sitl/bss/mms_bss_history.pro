@@ -48,7 +48,8 @@ FUNCTION mms_bss_history_threshold, wt
   m=21 & change_date[m] = '2017-04-03/00:00' & change_val[m] = 16000L
   m=22 & change_date[m] = '2017-04-10/00:00' & change_val[m] = 18000L
   m=23 & change_date[m] = '2017-04-19/00:00' & change_val[m] = 19150L
-  
+  m=24 & change_date[m] = '2017-09-11/00:00' & change_val[m] = 17350L
+
 
 
   idx=where(change_val gt 0,ct)
@@ -67,12 +68,12 @@ FUNCTION mms_bss_history_threshold, wt
   return, wthres
 END
 
-PRO mms_bss_history, tplot=tplot, csv=csv, dir=dir, trange=trange
+PRO mms_bss_history, tplot=tplot, csv=csv, dir=dir, trange=trange, interval=interval
   compile_opt idl2
   mms_init
   clock=tic('mms_bss_history')
   if undefined(dir) then dir = '' else dir = spd_addslash(dir)
-
+  if undefined(interval) then interval=60.0d
   print,'--------'
   print,'mms_bss_history3'
   print,'--------'
@@ -97,14 +98,15 @@ PRO mms_bss_history, tplot=tplot, csv=csv, dir=dir, trange=trange
   tr = [t3m,tnow]
   if not undefined(trange) then begin
     if trange[0] lt tlaunch then trange[0] = tlaunch
-    tr = trange
+     tr = trange
   endif
   trange = time_string(tr)
   
 
   ; time grid to be used for Pending buffer history
   ;mmax = 4320L ; extra data point for displaying grey-shaded region
-  dt = 60.d0
+  ;dt = 60.d0
+  dt = interval
   nmax = floor((tr[1]-tr[0])/dt)
   wt = tr[0]+ dindgen(nmax)*dt
 
@@ -115,7 +117,6 @@ PRO mms_bss_history, tplot=tplot, csv=csv, dir=dir, trange=trange
   wtday = day_start+dindgen(rmax+1)*dt
 
   fomrng = mms_bss_fomrng(wt)
-
   ;----------------
   ; LOAD DATA
   ;----------------

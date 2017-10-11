@@ -70,9 +70,9 @@
 ;
 ;OUTPUTS:
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-09-07 17:07:02 -0700 (Thu, 07 Sep 2017) $
-; $LastChangedRevision: 23920 $
+; $LastChangedBy: xussui_lap $
+; $LastChangedDate: 2017-10-10 09:35:44 -0700 (Tue, 10 Oct 2017) $
+; $LastChangedRevision: 24138 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sciplot.pro $
 ;
 ;-
@@ -181,8 +181,9 @@ pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lp
 
   shape_pan = ''
   if keyword_set(shape) then begin
-    mvn_swe_shape_par_pad_restore
-    get_data,'Shape_PAD',index=i
+    ;mvn_swe_shape_par_pad_restore
+     mvn_swe_shape_restore,/tplot
+     get_data,'Shape_PAD',index=i
     if (i eq 0) then begin
       mvn_swe_shape_par_pad_l2, spec=45, /pot, tsmo=16
       get_data,'Shape_PAD',index=i

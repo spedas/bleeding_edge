@@ -20,8 +20,8 @@
 ;     max_sta_alt  : maximum altitude for limiting range of STA potentials
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-02 17:55:59 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24097 $
+; $LastChangedDate: 2017-10-10 15:38:44 -0700 (Tue, 10 Oct 2017) $
+; $LastChangedRevision: 24141 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot_com.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -30,4 +30,4 @@
 
 common mvn_scpot_com, mvn_sc_pot, mvn_pot_struct, Espan, thresh, dEmax, minflux, $
                       obins, badval, ee, dfs, d2fs, maxalt, min_lpw_pot, maxdt, $
-                      min_sta_pot, sta_max_alt
+                      min_sta_pot, max_sta_alt

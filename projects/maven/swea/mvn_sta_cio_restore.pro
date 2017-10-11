@@ -14,8 +14,6 @@
 ;KEYWORDS:
 ;       LOADONLY:      Download but do not restore any cio data.
 ;
-;       UPDATE:        Add new structure elements and update save file.
-;
 ;       RESULT_H:      CIO result structure for H+.
 ;
 ;       RESULT_O1:     CIO result structure for O+.
@@ -27,8 +25,8 @@
 ;       PANS:          Tplot panel names created when DOPLOT is set.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-06 09:37:13 -0700 (Fri, 06 Oct 2017) $
-; $LastChangedRevision: 24121 $
+; $LastChangedDate: 2017-10-10 15:37:18 -0700 (Tue, 10 Oct 2017) $
+; $LastChangedRevision: 24140 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_restore.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -167,6 +165,24 @@ pro mvn_sta_cio_restore, trange, loadonly=loadonly, result_h=result_h, $
     options,'temp_i+','labels',species
     options,'temp_i+','labflag',1
     pans = [pans, 'temp_i+']
+
+; Vector Velocity
+
+    store_data,'velocity_h',data={x:result_h.time, y:transpose(result_h.vel), v:[0,1,2]}
+    options,'velocity_h','ytitle','H Vel!ckm/s'
+    options,'velocity_h','colors',[2,4,6]
+    options,'velocity_h','labels',['Vx','Vy','Vz']
+    options,'velocity_h','labflag',1
+    store_data,'velocity_o1',data={x:result_o1.time, y:transpose(result_o1.vel), v:[0,1,2]}
+    options,'velocity_o1','ytitle','O Vel!ckm/s'
+    options,'velocity_o1','colors',[2,4,6]
+    options,'velocity_o1','labels',['Vx','Vy','Vz']
+    options,'velocity_o1','labflag',1
+    store_data,'velocity_o2',data={x:result_o2.time, y:transpose(result_o2.vel), v:[0,1,2]}
+    options,'velocity_o2','ytitle','O2 Vel!ckm/s'
+    options,'velocity_o2','colors',[2,4,6]
+    options,'velocity_o2','labels',['Vx','Vy','Vz']
+    options,'velocity_o2','labflag',1
 
 ; Bulk Velocity
 

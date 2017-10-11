@@ -15,8 +15,8 @@
 ;         
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-01-17 08:20:31 -0800 (Tue, 17 Jan 2017) $
-; $LastChangedRevision: 22606 $
+; $LastChangedDate: 2017-10-10 12:05:17 -0700 (Tue, 10 Oct 2017) $
+; $LastChangedRevision: 24139 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goesstruct_to_cdfstruct.pro $
 ;-
 function GOESstruct_to_cdfstruct, netCDFi
@@ -97,6 +97,9 @@ function GOESstruct_to_cdfstruct, netCDFi
         
         ; loop through the variables to find the time, location data
         for i = 0, netCDFi.nv-1 do begin
+            ; make sure this variable has a valid data ptr before trying to use it below
+            if ~ptr_valid(netCDFi.vars.(i).dataptr) then continue
+            
             ; need to check if the time units are in milliseconds
             ; if so, convert to seconds and update the units attribute
             if stregex(netCDFi.vars.(i).units, 'milliseconds') ne -1 then begin
