@@ -38,14 +38,14 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-09-26 09:57:27 -0700 (Tue, 26 Sep 2017) $
-;$LastChangedRevision: 24029 $
+;$LastChangedDate: 2017-10-12 09:09:00 -0700 (Thu, 12 Oct 2017) $
+;$LastChangedRevision: 24145 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_get_dist.pro $
 ;-
 
 function mms_get_dist, tname, index, trange=trange, times=times, structure=structure, $
                        probe=probe, species=species, instrument=instrument, units=units, $
-                       data_rate=data_rate, single_time = time_in, level = level
+                       data_rate=data_rate, single_time = time_in, level = level, _extra=_extra
     compile_opt idl2, hidden
 
     if ~undefined(instrument) then instrument = strcompress(instrument, /rem)
@@ -70,8 +70,8 @@ function mms_get_dist, tname, index, trange=trange, times=times, structure=struc
     endif
     
     case strlowcase(instrument) of
-      'hpca': return, mms_get_hpca_dist(tname, index, trange=trange, times=times, structure=structure, probe=probe, species=species, units=units, single_time=time_in)
-      'fpi': return, mms_get_fpi_dist(tname, index, trange=trange, times=times, structure=structure, probe=probe, species=species, single_time=time_in, data_rate=data_rate, level=level)
+      'hpca': return, mms_get_hpca_dist(tname, index, trange=trange, times=times, structure=structure, probe=probe, species=species, units=units, single_time=time_in, _extra=_extra)
+      'fpi': return, mms_get_fpi_dist(tname, index, trange=trange, times=times, structure=structure, probe=probe, species=species, single_time=time_in, data_rate=data_rate, level=level, _extra=_extra)
       'null': dprint, dlevel=1, 'Cannot determine instrument from variable name; please specify with INSTRUMENT keyword'
       else: dprint, dlevel=1, 'Unknown instrument: "'+instrument+'"'
     endcase

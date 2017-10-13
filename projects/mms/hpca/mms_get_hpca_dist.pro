@@ -28,12 +28,15 @@
 ;                or 0 in case of error
 ;
 ;Notes:
-;  This is a work in progress
+;     The HPCA data is required to be at the center of the measurement interval for this routine
+;     to work properly; be sure to use the keyword: /center_measurement when calling mms_load_hpca
+;     
+;     Still a work in progress; report bugs to egrimes@igpp.ucla.edu
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-08-22 09:32:41 -0700 (Tue, 22 Aug 2017) $
-;$LastChangedRevision: 23825 $
+;$LastChangedDate: 2017-10-12 09:07:23 -0700 (Thu, 12 Oct 2017) $
+;$LastChangedRevision: 24143 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_get_hpca_dist.pro $
 ;-
 
@@ -50,7 +53,8 @@ if name eq '' then begin
 endif
 
 ;pull data and metadata
-get_data, name, ptr=p
+get_data, name, ptr=p, dlimits=dl
+
 
 if ~is_struct(p) then begin
   dprint, dlevel=0, 'Variable: "'+tname+'" contains invalid data'
@@ -60,6 +64,19 @@ endif
 if size(*p.y,/n_dim) ne 3 then begin
   dprint, dlevel=0, 'Variable: "'+tname+'" has wrong number of elements'
   return, 0
+endif
+
+if ~is_struct(dl) then begin
+  dprint, dlevel=0, 'Variable: "'+tname+'" contains invalid metadata'
+  return, 0
+endif
+
+if ~tag_exist(dl, 'centered_on_load') then begin
+  dprint, dlevel=0, '########################### WARNING #############################'
+  dprint, dlevel=0, '#################################################################'
+  dprint, dlevel=0, 'Variable: "'+tname+'" does not appear to be at the center of the accumulation interval; /center_measurement is keyword required for HPCA distributions prior to calling this routine. You can ignore this warning if you have manually centered the data to the accumulation interval using a method other than the /center_measurement keyword in the call to mms_load_hpca'
+  dprint, dlevel=0, '#################################################################'
+  dprint, dlevel=0, '########################### WARNING #############################'
 endif
 
 ;get some basic info from name

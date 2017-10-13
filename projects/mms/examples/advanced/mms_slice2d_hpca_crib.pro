@@ -22,12 +22,10 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-05-25 13:37:25 -0700 (Wed, 25 May 2016) $
-;$LastChangedRevision: 21200 $
+;$LastChangedDate: 2017-10-12 11:41:08 -0700 (Thu, 12 Oct 2017) $
+;$LastChangedRevision: 24148 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_slice2d_hpca_crib.pro $
 ;-
-
-
 
 ;===========================================================================
 ; Basic
@@ -45,8 +43,9 @@ timespan, '2015-10-16/13:06:00', 1, /min  ;time range to load
 trange = timerange()
 time = trange[0]  ;slice time 
 
-;load data into tplot
-mms_load_hpca, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='ion'
+; load data; note that the /center_measurement keyword is required 
+; due to assumptions made in mms_get_dist (or the routines it calls)
+mms_load_hpca, /center_measurement, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='ion'
 
 ;reformat data from tplot variables into compatible 3D structures
 dist = mms_get_dist(name)
@@ -71,9 +70,7 @@ slice = spd_slice2d(dist, time=time) ;3D interpolation
 ;plot
 spd_slice2d_plot, slice
 
-
 stop
-
 
 ;======================================================================
 ; Field-aligned slices
@@ -92,7 +89,9 @@ timespan, '2015-10-16/13:06:00', 1, /min  ;time range to load
 trange = timerange()
 time = trange[0]  ;slice time 
 
-mms_load_hpca, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='ion'
+; again, note that the /center_measurement keyword is required
+; due to assumptions made in mms_get_dist (or the routines it calls)
+mms_load_hpca, /center_measurement, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='ion'
 
 dist = mms_get_dist(name)
 
@@ -113,9 +112,7 @@ slice = spd_slice2d(dist, time=time, window=window, $
 ;plot
 spd_slice2d_plot, slice
 
-
 stop
-
 
 ;===========================================================================
 ;  Export time series
@@ -131,7 +128,7 @@ name = 'mms'+probe+'_hpca_'+species+'_phase_space_density'
 timespan, '2015-10-16/13:06:00', 1, /min  ;time range to load
 trange = timerange()
 
-mms_load_hpca, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='ion'
+mms_load_hpca, /center_measurement, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='ion'
 
 dist = mms_get_dist(name)
 

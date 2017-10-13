@@ -1,3 +1,10 @@
+  ; $LastChangedBy: phyllisw2 $
+  ; $LastChangedDate: 2017-10-12 16:31:39 -0700 (Thu, 12 Oct 2017) $
+  ; $LastChangedRevision: 24150 $
+  ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_ptp_file_read.pro $
+  ; adding code
+
+
 
 pro spp_ptp_file_read,files,dwait=dwait,no_products=no_products
   
@@ -24,42 +31,40 @@ pro spp_ptp_file_read,files,dwait=dwait,no_products=no_products
     fi = file_info(info.filename)
     dprint,dlevel=1,'Reading file: '+info.filename+' LUN:'+strtrim(lun,2)+'   Size: '+strtrim(fi.size,2)
     if lun eq 0 then continue
-if 1 then begin
-    spp_ptp_lun_read,lun,info=info
-  
-endif else begin
-    while ~eof(lun) do begin
-      info.time_received = systime(1)
-      point_lun,-lun,fp
-      if ~keyword_set( *info.buffer_ptr) then begin
-        readu,lun,sizebuf
-        sz = sizebuf[0]*256 + sizebuf[1]
-        if sz gt 17 then  begin   
-          remainder = sizebuf  
-          sz -= 2
-        endif else begin
-          remainder = !null
-          sz = 100L         
-        endelse
+      if 1 then begin
+        spp_ptp_lun_read,lun,info=info
       endif else begin
-        remainder = !null
-        szr =  swap_endian( uint(*info.buffer_ptr,0) ,  /swap_if_little_endian)
-        sz = szr - n_elements(*info.buffer_ptr)
-        dprint,'Resync:',dlevel=3,sz
-      endelse
-      buffer = bytarr(sz)
-      readu,lun,buffer,transfer_count=nb
-      if nb ne sz then begin
-        dprint,'File read error. Aborting @ ',fp,' bytes'
-        break
-      endif
-      spp_ptp_stream_read,[remainder,buffer],info=info  
-      if debug(2) then begin
-        dprint,dwait=dwait,dlevel=2,'File percentage: ' ,(fp*100.)/fi.size
-      endif
-    endwhile
-endelse    
-
+        while ~eof(lun) do begin
+          info.time_received = systime(1)
+          point_lun,-lun,fp
+          if ~keyword_set( *info.buffer_ptr) then begin
+            readu,lun,sizebuf
+            sz = sizebuf[0]*256 + sizebuf[1]
+            if sz gt 17 then  begin
+              remainder = sizebuf  
+              sz -= 2
+            endif else begin
+              remainder = !null
+              sz = 100L         
+            endelse
+          endif else begin
+            remainder = !null
+            szr =  swap_endian( uint(*info.buffer_ptr,0) ,  /swap_if_little_endian)
+            sz = szr - n_elements(*info.buffer_ptr)
+            dprint,'Resync:',dlevel=3,sz
+          endelse
+          buffer = bytarr(sz)
+          readu,lun,buffer,transfer_count=nb
+          if nb ne sz then begin
+            dprint,'File read error. Aborting @ ',fp,' bytes'
+            break
+          endif
+          spp_ptp_stream_read,[remainder,buffer],info=info  
+          if debug(2) then begin
+            dprint,dwait=dwait,dlevel=2,'File percentage: ' ,(fp*100.)/fi.size
+          endif
+        endwhile
+      endelse    
     fst = fstat(lun)
     dprint,dlevel=2,'Compression: ',float(fst.cur_ptr)/fst.size
     free_lun,lun

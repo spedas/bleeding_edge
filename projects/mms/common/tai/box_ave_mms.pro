@@ -14,7 +14,7 @@ size_info=size(d2.y)
 
 ; find most typical time cadence in var1
 time_diff_array=d.x(1:n_elements(d.x)-1)-d.x(0:n_elements(d.x)-2)
-median, time_diff_array, n_elements(var), med
+tai_median, time_diff_array, n_elements(var), med
 
 if not keyword_set (inval) then inval=med
 print,'inval= ',inval

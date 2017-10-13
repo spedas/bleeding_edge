@@ -8,8 +8,8 @@
 ; Forked for MMS, 10/22/2015, egrimes@igpp
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-03-01 13:05:18 -0800 (Wed, 01 Mar 2017) $
-; $LastChangedRevision: 22882 $
+; $LastChangedDate: 2017-10-12 09:08:14 -0700 (Thu, 12 Oct 2017) $
+; $LastChangedRevision: 24144 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/cdf/mms_cdf_info_to_tplot.pro $
 ;-
 pro mms_cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames, non_record_varying=non_record_varying, $
@@ -26,7 +26,7 @@ pro mms_cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames, non_record_varying=
         load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
                                       ;resolve labels implemented as keyword to preserve backwards compatibility
 
-dprint,verbose=verbose,dlevel=4,'$Id: mms_cdf_info_to_tplot.pro 22882 2017-03-01 21:05:18Z egrimes $'
+dprint,verbose=verbose,dlevel=4,'$Id: mms_cdf_info_to_tplot.pro 24144 2017-10-12 16:08:14Z egrimes $'
 tplotnames=''
 vbs = keyword_set(verbose) ? verbose : 0
 
@@ -34,6 +34,7 @@ dplus_var = ''
 dminus_var = ''
 time_plus_offset = 0d
 time_minus_offset = 0d
+centered_on_load = 0b
 
 if size(cdfi,/type) ne 8 then begin
     dprint,dlevel=1,verbose=verbose,'Must provide a CDF structure'
@@ -83,6 +84,7 @@ for i=0,nv-1 do begin
      
      ; adjust the epoch to the center of the accumulation interval
      if keyword_set(center_measurement) then begin
+         centered_on_load = 1b
          dplus_var = struct_value(*v.attrptr, 'DELTA_PLUS_VAR', def='')
          dminus_var = struct_value(*v.attrptr, 'DELTA_MINUS_VAR', def='')
          ; check for DELTA_PLUS_VAR and DELTA_MINUS_VAR
@@ -198,7 +200,10 @@ for i=0,nv-1 do begin
      coord_sys =  struct_value(attr,'coordinate_system',default='')
      if ~undefined(coord_sys) then coord_sys = strlowcase((strsplit(coord_sys, '>', /extract))[0])
 
-     dlimit = {cdf:cdfstuff,spec:spec,log:log,data_att:{coord_sys:coord_sys}}
+     if centered_on_load eq 1b then begin
+       dlimit = {cdf:cdfstuff,spec:spec,log:log,data_att:{coord_sys:coord_sys}, centered_on_load: centered_on_load}
+     endif else dlimit = {cdf:cdfstuff,spec:spec,log:log,data_att:{coord_sys:coord_sys}}
+     
      if keyword_set(units) then str_element,/add,dlimit,'ysubtitle','['+units+']'
      
      if keyword_set(load_labels) then begin

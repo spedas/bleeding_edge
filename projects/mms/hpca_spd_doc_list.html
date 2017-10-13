@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Oct 10 18:16:04 2017.<P>
+<STRONG>Last modified: </STRONG>Thu Oct 12 18:16:08 2017.<P>
  
 <HR>
  
@@ -73,12 +73,15 @@ Output:
                 or 0 in case of error
 
 Notes:
-  This is a work in progress
+     The HPCA data is required to be at the center of the measurement interval for this routine
+     to work properly; be sure to use the keyword: /center_measurement when calling mms_load_hpca
+     
+     Still a work in progress; report bugs to egrimes@igpp.ucla.edu
 
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2017-08-22 09:32:41 -0700 (Tue, 22 Aug 2017) $
-$LastChangedRevision: 23825 $
+$LastChangedDate: 2017-10-12 09:07:23 -0700 (Thu, 12 Oct 2017) $
+$LastChangedRevision: 24143 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_get_hpca_dist.pro $
 </PRE><P>
 <STRONG>(See <A href="hpca/mms_get_hpca_dist.pro">projects/mms/hpca/mms_get_hpca_dist.pro</A>)</STRONG><P>
