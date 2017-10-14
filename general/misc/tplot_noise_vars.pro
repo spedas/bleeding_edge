@@ -15,7 +15,7 @@
 ; you want to recreate variables
 ;KEYWORDS:
 ; nvars = number of variables, the default is 100, max is 999999L
-; time = a time array, the default is systime()+indgen(3600), one hour
+; time = a time array, the default is systime()+indgen(60), one minute
 ;        starting now. 
 ; nchan = number of channels in data, the default is 16
 ; ncounts = number of counts per channel, the output data is poisson
@@ -24,9 +24,9 @@
 ; nostore =  if set, don't create the variables, for testing
 ;HISTORY:
 ; 2017-08-24, jmm, jimm@ssl.berkeley.edu
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2017-08-25 10:52:03 -0700 (Fri, 25 Aug 2017) $
-;$LastChangedRevision: 23830 $
+;$LastChangedBy: jimmpc1 $
+;$LastChangedDate: 2017-10-13 10:50:56 -0700 (Fri, 13 Oct 2017) $
+;$LastChangedRevision: 24155 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tplot_noise_vars.pro $
 ;-
 Function tplot_noise_vars, nvars = nvars, time = time, $
@@ -34,7 +34,7 @@ Function tplot_noise_vars, nvars = nvars, time = time, $
                            nostore = nostore, _extra = _extra
 
   If(~keyword_set(nvars)) Then nvars = 1000L
-  If(~keyword_set(time)) Then time = systime(/sec)+dindgen(3600.0)
+  If(~keyword_set(time)) Then time = systime(/sec)+dindgen(60.0)
   If(~keyword_set(nchan)) Then nchan = 16
   If(keyword_set(ncounts)) Then Begin
      If(n_elements(ncounts) Eq nchan) Then spec0 = ncounts $
@@ -48,11 +48,12 @@ Function tplot_noise_vars, nvars = nvars, time = time, $
      j0 = long(tmp[2])+1
   Endif Else j0 = 0L
   v = findgen(nchan)
-  varnames = 'test_var_'+string(j0+indgen(nvars), format = '(i6.6)')
+  varnames = 'test_var_'+string(j0+lindgen(nvars), format = '(i6.6)')
   ntimes = n_elements(time)
   y = fltarr(ntimes, nchan) 
   t0 = systime(/sec)
-  For j = 0, nvars-1 Do Begin
+  For j = 0l, nvars-1l Do Begin
+;     if j Ge 2l^16 then stop
      For i = 0, nchan-1 Do y[*, i] = randomu(seed, ntimes, poisson = spec0[i])
      If(~keyword_set(nostore)) Then store_data, varnames[j], data = {x:time, y:y, v:v}
   Endfor

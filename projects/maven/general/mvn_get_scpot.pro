@@ -17,25 +17,21 @@
 ;              any format accepted by time_double().
 ;
 ;KEYWORDS:
-;   MAXDT:     Maximum gap to interpolate across.  Default = 32 sec.
-;
-;   BADVAL:    Fill value for invalid potentials.  Default = NaN.
 ;
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-10 15:39:02 -0700 (Tue, 10 Oct 2017) $
-; $LastChangedRevision: 24142 $
+; $LastChangedDate: 2017-10-13 10:46:39 -0700 (Fri, 13 Oct 2017) $
+; $LastChangedRevision: 24153 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_get_scpot.pro $
 ;
 ;-
 
-function mvn_get_scpot, time, maxdt=maxdt
+function mvn_get_scpot, time
 
   @mvn_scpot_com
 
-  if not keyword_set(maxdt) then maxdt = 32D
-  if (size(badval,/type) eq 0) then badval = !values.f_nan
+  if (size(Espan,/type) eq 0) then mvn_scpot_defaults
 
   npot = n_elements(mvn_sc_pot)
   ntime = n_elements(time)

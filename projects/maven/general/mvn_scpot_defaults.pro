@@ -67,8 +67,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-02 17:55:41 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24096 $
+; $LastChangedDate: 2017-10-13 10:45:32 -0700 (Fri, 13 Oct 2017) $
+; $LastChangedRevision: 24152 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot_defaults.pro $
 ;
 ;-
@@ -133,7 +133,7 @@ pro mvn_scpot_defaults, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
   min_lpw_pot = -14.      ; minimum valid LPW potential
   min_sta_pot = -6.       ; minimum STA potential near periapsis
   max_sta_alt = 200.      ; maximum altitude for limiting STA potential range
-  maxdt = 64D             ; maximum time gap to interpolate over
+  maxdt = 32D             ; maximum time gap to interpolate across
 
 ; Override defaults by keyword.  Affects all routines that use mvn_scpot_com.
 

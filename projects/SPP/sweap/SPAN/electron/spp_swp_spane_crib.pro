@@ -1,130 +1,104 @@
 ;--------------------------------------------------------------------
 ; PSP SPAN-E Crib
-; foo
 ; 
-; $Author: phyllisw2 $
+; Currently this holds all the scrap pieces from calibration / instrument development, which will get moved
+; Also includes a log of the calibration files and instructions for processing them
+; 
+; In the future this will include instructions for looking at flight data
+; 
 ; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2017-09-28 11:55:33 -0700 (Thu, 28 Sep 2017) $
-; $LastChangedRevision: 24055 $
+; $LastChangedDate: 2017-10-13 15:14:53 -0700 (Fri, 13 Oct 2017) $
+; $LastChangedRevision: 24156 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/electron/spp_swp_spane_crib.pro $
 ;--------------------------------------------------------------------
 
+; BASIC STEPS TO LOOKING AT CALIBRATION DATA
+; 
+; 1: Choose & set a time range. 
+;     Foramt: trange = ['YYYY MM DD/HH','YYYY MM DD/HH']
+;                                 OR
+;              trange = 'YYYY MM' + ['DD/HH', 'DD/HH']    ; use if the month is the same for start/end days
+;              
+;           ;;; insert sample code here uncommented ;;;
+;
+; 2: Set which files to download.
+;     Format: files = spp_file_retrieve(/instrument, /chamber, trange)
+;     Options: Instrument : /spanea, /spaneb, /spani, /spc, /swem
+;              Chamber :    /snout2, /tv, /cal, /crypt, /rm133
+; 
+; 3: Decommutate files
+;     spp_ptp_file_read, files
+;
+;
+;
 
 
-pro misc2
-  hkp= spp_apdat('36E'x)
-  s=hkp.data.array
-  
-  naan = !values.f_nan
- ; sgn= fix(s.mram_wr_addr_hi eq 1) - fix(s.mram_wr_addr_hi eq 2)
-sgns = [!values.f_nan,1.,-1., !values.f_nan]
-  sgn = sgns[0 > s.mram_wr_addr_hi < 3]
-  def = s.mram_wr_addr * sgn
-;  def = s.mram_wr_addr *  sign(s.adc_vmon_def1 - s.adc_vmon_def2)
-  store_data,'DEF1-DEF2',s.time,float(def)
+;;----SPAN-Ae FINAL CALIBRATION FILES----;;
 
-end
-
-
-
-pro spane_center_energy,tranges=tt,emid=emid,ntot=ntot
-
-  channels = [3,2,1,0,8,9,10,11,12,13,14,15,7,6,5,4]
-  rotation = [-108.,-84,-60,-36,-21,-15,-9,-3,3.,9,15,21,36,60,84,108]
-  emid = replicate(0.,16)
-  ntot = replicate(0.,16)
-  xlim,lim,4500,5500
-  
-  for i=0,15 do begin
-    trange=tt[*,i]
-    scat_plot,'spp_spane_hkp_ACC_DAC','spp_spane_spec_CNTS2',trange=trange,lim=lim,xvalue=x,yvalue=y,ydimen= channels[i]
-    ntot[i] = total(y)
-    emid[i] = total(x*y)/total(y)
-  endfor
-
-;  Emid = [5070, 5107, 5112,
-
-end
+trange = '2017 03 ' + ['28/01','28/05'] ; ramp up MCPs
+;trange = ['2017 03 28/02','2017 03 29/00']
+trange = '2017 03 ' + ['28/04','28/06'] ; CPT at HV, begins with threshold tests
+trange = '2017 03 ' + ['28/22','29/01'] ; Gun scan @ 900eV
+trange = '2017 03 ' + ['29/01','29/03'] ; rotations @ 900eV
+trange = '2017 03 ' + ['29/08','29/10'] ; spoiler test
+trange = '2017 03 ' + ['29/05','29/08'] ; EA scan @ what energy?
+trange = '2017 03 ' + ['29/15','29/17'] ; EA scan @ what energy?
+trange = '2017 03 ' + ['29/18','29/20'] ; rotation both ways
+trange = '2017 03 ' + ['29/19','29/23'] ; spoiler + rotation test (mode 2)
+trange = '2017 03 ' + ['30/01','31/01'] ; spoiler tests.
+;trange = '2017 03 ' + ['xx/xx','31/06'] ; lots of re-writing tables. After this the table type characteristically changes
+;trange = '2017 03 ' + ['31/06','31/13'] ; deflector test @900eV, but linear & deflector values jacked up.
+trange = '2017 03 ' + ['31/18','31/22'] ; deflector test anodes 0,8,15, @ 900eV electrons.
+;trange = '2017 03 ' + ['31/21','31/23'] ; rotation through anodes with all sweeping
+;trange = '2017 03 ' + ['31/22','31/24'] ; rotation through anodes with only hem sweeping. Bad manipulator data
+trange = '2017 03 ' + ['31/18','31/24']
+;trange = '2017 04 ' + ['01/01','01/03'] ; deflector test for anode 0, all deflections coarse @ 3600eV
+trange = '2017 04 ' + ['01/03','01/08'] ; deflector test anodes 0,8,15 @ 3600eV electrons 
+;trange = '2017 04 ' + ['01/10','01/17'] ; Not much happening.
+trange = '2017 04 ' + ['01/19','01/23'] ; Energy/yaw scan @ ~1keV (roughly, table center)
+trange = '2017 04 ' + ['02/04','02/06'] ; spoiler scan @ 900eV. Everything sweeping (save spoiler)
+trange = '2017 04 ' + ['02/08','02/10'] ; rotation scan @ 3500eV, not sweeping deflector.
+trange = '2017 04 ' + ['02/09','02/11'] ; energy/angle scan @ 3500eV
+;trange = '2017 04 ' + ['02/10','02/13'] ; another energy/angle scan @ 3500eV, but with different maxima than previous. Can't figure why, might be change in configuration of UV lamp
+;trange = '2017 04 ' + ['02/13','02/16'] ; Miscellaneous testing of unknown type
+;trange = '2017 04 ' + ['02/15','02/17'] ; Spoiler testing misc.
 
 
-pro spane_deflector_scan,tranges = trange
-    scat_plot,/swap_interp,'DEF1-DEF2','spp_spane_spec_CNTS2',trange=trange,lim=lim,xvalue=x,yvalue=y,ydimen= 4
-end
+;;----SPAN-B FINAL CALIBRATION FILES----;;
 
+trange = '2017 02 ' + ['26/03','26/08'] ; first EA scan at 1keV. Anode 4 is missed. data is missing on MAJA before this, waiting Mercer's completion
+;trange = '2017 02 ' + ['26/08','26/16'] ; just sitting on anode 0
+trange = '2017 02 ' + ['26/19','27/01'] ; threshold & mcp test @ 1keV
+trange = '2017 02 ' + ['27/05','27/06'] ; rotation @ 1keV for all anodes
+;trange = '2017 02 ' + ['27/06','27/17'] ; yaw gone awry, not very useful deflection test @ 1keV
+trange = '2017 02 ' + ['27/18','27/20'] ;  deflector test anode 0 only @ 1keV electrons 
+;trange = '2017 02 ' + ['27/20','28/04'] ; failed remainder of deflector test & not much happening.
+trange = '2017 02 ' + ['28/04','28/07'] ; spoiler scan @ 1keV
+;trange = '2017 02 ' + ['28/07','28/10'] ; nothing going on.
+trange = '2017 02 ' + ['28/10','28/15'] ; rotation and energy/angle scan w/ atten in @ 1keV
+;trange = ['2017 02 28/15','2017 03 01/16']; missing data. Chamber break? Either way ramp up is missing, as well as attenuator Out command.
+trange = '2017 03 ' + ['01/17','01/18'] ; rotation @ 1keV, attenuator out.
+trange = '2017 03 ' + ['01/18','02/02'] ; deflector test anodes 0,4,8,12,15 @ 1keV. one manipulator error in center, restarted test @ 8.
+;trange = '2017 03 ' + ['02/02','02/06'] ; nothing going on. turned off sweeping hemisphere
+trange = '2017 03 ' + ['02/06','02/07'] ; manual hemisphere sweep @ anode 12, 1keV
+;trange = '2017 03 ' + ['02/07','02/11'] ; nothing going on.
+trange = '2017 03 ' + ['02/11','02/15'] ; energy/yaw scan @ 1keV, anode 12.
+;trange = '2017 03 ' + ['02/15','02/17'] ; nothing going on.
+trange = '2017 03 ' + ['02/17','02/20'] ; rotations @ 1keV with and without attenuator @ two different yaw positions.
+trange = '2017 03 ' + ['02/19','02/22'] ; energy/angle scan @ 1keV. small rotation errors occasionally. Otherwise identicaly to 26/03
+trange = '2017 03 ' + ['02/23','03/00']; miscellaneous tests with mini e gun.
+;trange = '2017 03 ' + ['03/00','03/04'] ; all modes sweeping & yawing - tables are wrong because weird ailiasing is seen.
+;trange = '2017 03 ' + ['03/04','03/08'] ; nothing going on.
+trange = '2017 03 ' + ['03/08','03/11'] ; energy/angle scan @5keV, anode 6 missing.
+;trange = '2017 03 ' + ['03/11','03/18'] ; nothing going on
+trange = '2017 03 ' + ['03/18','03/24'] ; MCP threshold test @ 5keV
+;trange = '2017 03 ' + ['03/24','04/01'] ; nothing going on
+;trange = '2017 03 ' + ['04/01','04/06'] ; some odd linear scans going on here at 4800eV. Hemisphere Sweeping.
+;trange = '2017 03 ' + ['04/09','04/13'] ; more odd linear scans going on, but at 1keV.Hemisphere sweeping.
+;trange = '2017 03 ' + ['04/13','05/24'] ; nothing going on.
+;trange = '2017 03 ' + ['06/00','06/03'] ; more odd linear scans.
+;trange = '2017 03 ' + ['06/03','06/19'] ; nothing going on. ramp down/turn off.
 
-pro spane_threshold_scan,tranges=trange,lim=lim   ;now obsolete
-  swap_interp=0
-  xlim,lim,0,512
-  ylim,lim,10,10000,1
-  options,lim,psym=4  
-  scat_plot,swap_interp=swap_interp,'spp_spane_hkp_ACC_DAC','spp_spane_spec_CNTS2',trange=trange[*,1],lim=lim,xvalue=x,yvalue=y,ydimen= 4;,color=4
-  scat_plot,swap_interp=swap_interp,'spp_spane_hkp_ACC_DAC','spp_spane_spec_CNTS2',trange=trange[*,0],lim=lim,xvalue=x,yvalue=y,ydimen= 4,color=6,/overplot
-  scat_plot,swap_interp=swap_interp,'spp_spane_hkp_ACC_DAC','spp_spane_spec_CNTS2',trange=trange[*,2],lim=lim,xvalue=x,yvalue=y,ydimen= 4,color=2,/overplot
-end
-
-
-pro spane_threshold_scan_phd,tranges=trange,lim=lim
-  
-  if ~keyword_set(trange) then ctime,trange,npo=2
-  swap_interp=0
-  xlim,lim,0,550
-  ylim,lim,10,5000,1
-  options,lim,psym=4
-  scat_plot,swap_interp=swap_interp,'spp_spane_hkp_ACC_DAC','spp_spane_p1_CNTS',trange=trange,lim=lim,xvalue=dac,yvalue=cnts,ydimen= 4;,color=4
-  range = [80,500]
-  xp = dgen(8,range=range)
-  yp = xp*0+500
-  xv = dgen()
-  !p.multi = [0,1,2]
-  yv = spline_fit3(xv,xp,yp,param=p,/ylog)
-  fit,dac,cnts,param=p
-  pf,p,/over
- ; wi,2
-  plot,dac,cnts,psym=4,xtitle='Threshold DAC level',ytitle='Counts'
-  ;pf,p,/over
-  plt1 = get_plot_state()
-  xv = dgen(range=range)
-;  wi,3
-  plot,xv,-deriv(xv,func(xv,param=p)),xtitle='Threshold DAC level',ytitle='PHD'
-  plt2= get_plot_state()
-  
-end
-
-
-
-
-f= spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/z320/20160331_125002_/PTP_data.dat' )
-f= spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/mgsehires1/20160801_092658_flightToFlight_contd/PTP_data.dat' )
-
-
-;files = spp_swp_spane_functiontest1_files()
-
-files = f
-
-spp_swp_startup
-
-
-
-spp_ptp_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/mgsehires1/20160729_150358_FLTAE_digital/PTP_data.dat' )
-
-spp_ptp_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/mgsehires1/20160801_092658_flightToFlight_contd/PTP_data.dat' )
-spp_msg_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/mgsehires1/20160801_092658_flightToFlight_contd/GSE_all_msg.dat' )
-spp_ptp_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/mgsehires1/20160802_081922_flightToFlight_contd2/PTP_data.dat' )
-spp_msg_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/mgsehires1/20160802_081922_flightToFlight_contd2/GSE_all_msg.dat' )
-
-
-spp_ptp_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/SWEAP-2/20160727_115654_large_packet_test/PTP_data.dat')
-spp_msg_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/SWEAP-2/20160727_115654_large_packet_test/GSE_all_msg.dat')
-
-spp_msg_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/SWEAP-2/20160805_125639_ramp_up/GSE_all_msg.dat')  ; Ion ramp in which SWEMULATOR reset?
-spp_ptp_file_read, spp_file_retrieve('spp/data/sci/sweap/prelaunch/gsedata/EM/SWEAP-3/20160920_084426_BfltBigCalChamberEAscan/PTP_data.dat.gz')
-spp_ptp_file_read, spp_file_retrieve('spp/data/sci/sweap/prelaunch/gsedata/EM/SWEAP-3/20160923_165136_BfltContinuedPHDscan/PTP_data.dat')
-
-
-
-
-;   spane B flight CO pre conformal coat
-files = spp_file_retrieve(/elec,/cal,trange=['2016 9 28 12','2016 9 29 8']) 
 
 
 
@@ -210,7 +184,6 @@ files = spp_file_retrieve(/elec,/cal,trange=['2016 9 28 12','2016 9 29 8'])
  
  
  ;; SPAN-B Cal:
- ; At some point before Feb 25th @ noon local time, maja quit recording.
  
  ;; SPAN-Ae TVAC
   ;20170221_155456_TVAC-SPAI/PTP_data.dat' name of file that contains missing SPANAe data from MAJA
@@ -228,6 +201,8 @@ files = spp_file_retrieve(/elec,/cal,trange=['2016 9 28 12','2016 9 29 8'])
  
  
  ;; SPAN-B postEnvCal
+ ; At some point before Feb 25th @ noon local time, maja quit recording.
+
  trange = '2017 02 ' + ['26/03','26/08'] ; first EA scan at 1keV. Anode 4 is missed. data is missing on MAJA before this.
  trange = '2017 02 ' + ['26/16','27/01'] ; MCP test
  ;trange = '2017 02 ' + ['27/05', ; not an actual deflector scan - limit on yaw not set right..
@@ -242,21 +217,7 @@ files = spp_file_retrieve(/elec,/cal,trange=['2016 9 28 12','2016 9 29 8'])
  trange = '2017 03 ' + ['03/08','03/11'] ; EA scan with attenuator out at 5keV.
  trange = '2017 03 ' + ['03/18','03/24'] ; MCP + Threshold test at 5keV.DIM
 
- ;; SPAN-Ae postEnvCal
- trange = ; ramp up MCPs
- ;trange = ['2017 03 28/02','2017 03 29/00']
- trange = '2017 03 ' + ['28/04','28/06'] ; CPT at HV, begins with threshold tests
- trange = '2017 03 ' + ['28/22','29/01'] ; Gun scan @ 900eV
- trange = '2017 03 ' + ['29/01','29/03'] ; rotations @ 900eV
- trange = '2017 03 ' + ['29/08','29/10'] ; spoiler test
- trange = '2017 03 ' + ['29/05','29/08'] ; EA scan
- trange = '2017 03 ' + ['29/15','29/17'] ; EA scan
- trange = '2017 03 ' + ['29/18','29/20'] ; rotation both ways
- trange = '2017 03 ' + ['29/19','29/23'] ; spoiler + rotation test (mode 2)
- trange = '2017 03 ' + ['30/01','31/01'] ; spoiler tests.
- trange = '2017 03 ' + ['31/17','31/
- trange = ['2017 03 31/01','2017 04 01/01'] ;includes rotation & yaw test
- ;trange = ['2017 03 28/02','2017 03 29/00'] ; loaded currently
+
 
 
 ;  Get recent data files:
@@ -362,6 +323,118 @@ if 0 then begin
 ;  tplot/
   
 endif
+
+
+pro misc2
+  hkp= spp_apdat('36E'x)
+  s=hkp.data.array
+
+  naan = !values.f_nan
+  ; sgn= fix(s.mram_wr_addr_hi eq 1) - fix(s.mram_wr_addr_hi eq 2)
+  sgns = [!values.f_nan,1.,-1., !values.f_nan]
+  sgn = sgns[0 > s.mram_wr_addr_hi < 3]
+  def = s.mram_wr_addr * sgn
+  ;  def = s.mram_wr_addr *  sign(s.adc_vmon_def1 - s.adc_vmon_def2)
+  store_data,'DEF1-DEF2',s.time,float(def)
+
+end
+
+
+
+pro spane_center_energy,tranges=tt,emid=emid,ntot=ntot
+
+  channels = [3,2,1,0,8,9,10,11,12,13,14,15,7,6,5,4]
+  rotation = [-108.,-84,-60,-36,-21,-15,-9,-3,3.,9,15,21,36,60,84,108]
+  emid = replicate(0.,16)
+  ntot = replicate(0.,16)
+  xlim,lim,4500,5500
+
+  for i=0,15 do begin
+    trange=tt[*,i]
+    scat_plot,'spp_spane_hkp_ACC_DAC','spp_spane_spec_CNTS2',trange=trange,lim=lim,xvalue=x,yvalue=y,ydimen= channels[i]
+    ntot[i] = total(y)
+    emid[i] = total(x*y)/total(y)
+  endfor
+
+  ;  Emid = [5070, 5107, 5112,
+
+end
+
+
+pro spane_deflector_scan,tranges = trange
+  scat_plot,/swap_interp,'DEF1-DEF2','spp_spane_spec_CNTS2',trange=trange,lim=lim,xvalue=x,yvalue=y,ydimen= 4
+end
+
+
+pro spane_threshold_scan,tranges=trange,lim=lim   ;now obsolete
+  swap_interp=0
+  xlim,lim,0,512
+  ylim,lim,10,10000,1
+  options,lim,psym=4
+  scat_plot,swap_interp=swap_interp,'spp_spane_hkp_ACC_DAC','spp_spane_spec_CNTS2',trange=trange[*,1],lim=lim,xvalue=x,yvalue=y,ydimen= 4;,color=4
+  scat_plot,swap_interp=swap_interp,'spp_spane_hkp_ACC_DAC','spp_spane_spec_CNTS2',trange=trange[*,0],lim=lim,xvalue=x,yvalue=y,ydimen= 4,color=6,/overplot
+  scat_plot,swap_interp=swap_interp,'spp_spane_hkp_ACC_DAC','spp_spane_spec_CNTS2',trange=trange[*,2],lim=lim,xvalue=x,yvalue=y,ydimen= 4,color=2,/overplot
+end
+
+
+pro spane_threshold_scan_phd,tranges=trange,lim=lim
+
+  if ~keyword_set(trange) then ctime,trange,npo=2
+  swap_interp=0
+  xlim,lim,0,550
+  ylim,lim,10,5000,1
+  options,lim,psym=4
+  scat_plot,swap_interp=swap_interp,'spp_spane_hkp_ACC_DAC','spp_spane_p1_CNTS',trange=trange,lim=lim,xvalue=dac,yvalue=cnts,ydimen= 4;,color=4
+  range = [80,500]
+  xp = dgen(8,range=range)
+  yp = xp*0+500
+  xv = dgen()
+  !p.multi = [0,1,2]
+  yv = spline_fit3(xv,xp,yp,param=p,/ylog)
+  fit,dac,cnts,param=p
+  pf,p,/over
+  ; wi,2
+  plot,dac,cnts,psym=4,xtitle='Threshold DAC level',ytitle='Counts'
+  ;pf,p,/over
+  plt1 = get_plot_state()
+  xv = dgen(range=range)
+  ;  wi,3
+  plot,xv,-deriv(xv,func(xv,param=p)),xtitle='Threshold DAC level',ytitle='PHD'
+  plt2= get_plot_state()
+
+end
+
+
+
+
+f= spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/z320/20160331_125002_/PTP_data.dat' )
+f= spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/mgsehires1/20160801_092658_flightToFlight_contd/PTP_data.dat' )
+
+
+;files = spp_swp_spane_functiontest1_files()
+
+files = f
+
+spp_swp_startup
+
+
+
+spp_ptp_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/mgsehires1/20160729_150358_FLTAE_digital/PTP_data.dat' )
+
+spp_ptp_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/mgsehires1/20160801_092658_flightToFlight_contd/PTP_data.dat' )
+spp_msg_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/mgsehires1/20160801_092658_flightToFlight_contd/GSE_all_msg.dat' )
+spp_ptp_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/mgsehires1/20160802_081922_flightToFlight_contd2/PTP_data.dat' )
+spp_msg_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/mgsehires1/20160802_081922_flightToFlight_contd2/GSE_all_msg.dat' )
+
+
+spp_ptp_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/SWEAP-2/20160727_115654_large_packet_test/PTP_data.dat')
+spp_msg_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/SWEAP-2/20160727_115654_large_packet_test/GSE_all_msg.dat')
+
+spp_msg_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/SWEAP-2/20160805_125639_ramp_up/GSE_all_msg.dat')  ; Ion ramp in which SWEMULATOR reset?
+spp_ptp_file_read, spp_file_retrieve('spp/data/sci/sweap/prelaunch/gsedata/EM/SWEAP-3/20160920_084426_BfltBigCalChamberEAscan/PTP_data.dat.gz')
+spp_ptp_file_read, spp_file_retrieve('spp/data/sci/sweap/prelaunch/gsedata/EM/SWEAP-3/20160923_165136_BfltContinuedPHDscan/PTP_data.dat')
+
+
 
 
 
