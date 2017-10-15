@@ -56,6 +56,11 @@
 ;
 ;    RESULT_O2:     Result structure for O2+.
 ;
+;    PARNG:         Pitch angle range for 2-stream shape parameter.
+;                      1 : 0-30 deg  (default)
+;                      2 : 0-45 deg
+;                      3 : 0-60 deg
+;
 ;    TAVG:          Time averaging window size.  Improves statistics and
 ;                   reduces run time.
 ;
@@ -71,13 +76,13 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-06 09:37:13 -0700 (Fri, 06 Oct 2017) $
-; $LastChangedRevision: 24121 $
+; $LastChangedDate: 2017-10-14 14:45:14 -0700 (Sat, 14 Oct 2017) $
+; $LastChangedRevision: 24158 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, $
+pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
                      density=density, velocity=velocity, tavg=tavg, pans=pans, $
                      result_h=cio_h, result_o1=cio_o1, result_o2=cio_o2, $
                      noload=noload, temperature=temperature, reset=reset, $
@@ -121,6 +126,8 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, $
   m_arr[*,1] = [14,16,20]  ; O+
   m_arr[*,2] = [25,32,40]  ; O2+
   icols = [2,4,6]          ; color for each species
+
+  if (size(parng,/type) eq 0) then parng = 1
 
 ; Load STATIC data
 
@@ -583,23 +590,23 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, $
 
     indx = where(~finite(result_h.magf[0]), count)
     if (count gt 0L) then begin
-      result_h.magf[0] = interpol(mag.y[*,0], mag.x, time[indx])
-      result_h.magf[1] = interpol(mag.y[*,1], mag.x, time[indx])
-      result_h.magf[2] = interpol(mag.y[*,2], mag.x, time[indx])
+      result_h[indx].magf[0] = interpol(mag.y[*,0], mag.x, time[indx])
+      result_h[indx].magf[1] = interpol(mag.y[*,1], mag.x, time[indx])
+      result_h[indx].magf[2] = interpol(mag.y[*,2], mag.x, time[indx])
     endif
 
     indx = where(~finite(result_o1.magf[0]), count)
     if (count gt 0L) then begin
-      result_o1.magf[0] = interpol(mag.y[*,0], mag.x, time[indx])
-      result_o1.magf[1] = interpol(mag.y[*,1], mag.x, time[indx])
-      result_o1.magf[2] = interpol(mag.y[*,2], mag.x, time[indx])
+      result_o1[indx].magf[0] = interpol(mag.y[*,0], mag.x, time[indx])
+      result_o1[indx].magf[1] = interpol(mag.y[*,1], mag.x, time[indx])
+      result_o1[indx].magf[2] = interpol(mag.y[*,2], mag.x, time[indx])
     endif
 
     indx = where(~finite(result_o2.magf[0]), count)
     if (count gt 0L) then begin
-      result_o2.magf[0] = interpol(mag.y[*,0], mag.x, time[indx])
-      result_o2.magf[1] = interpol(mag.y[*,1], mag.x, time[indx])
-      result_o2.magf[2] = interpol(mag.y[*,2], mag.x, time[indx])
+      result_o2[indx].magf[0] = interpol(mag.y[*,0], mag.x, time[indx])
+      result_o2[indx].magf[1] = interpol(mag.y[*,1], mag.x, time[indx])
+      result_o2[indx].magf[2] = interpol(mag.y[*,2], mag.x, time[indx])
     endif
 
   endif
@@ -612,7 +619,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, $
 
 ; Shape parameter
 
-  mvn_swe_shape_restore, /tplot, parng=1, result=shape
+  mvn_swe_shape_restore, /tplot, parng=parng, result=shape
   if (size(shape,/type) eq 8) then begin
     shp = smooth_in_time(transpose(shape.shape[0:1,parng]), shape.t, dt)
     result_h.shape[0] = interpol(shp[*,0], shape.t, result_h.time)
