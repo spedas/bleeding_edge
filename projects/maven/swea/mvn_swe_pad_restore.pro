@@ -35,22 +35,21 @@
 ;
 ;       L2ONLY:        Insist that MAG L2 data were used for resampling.
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2016-06-28 15:16:00 -0700 (Tue, 28 Jun 2016) $
-; $LastChangedRevision: 21386 $
+; $LastChangedBy: rlillis3 $
+; $LastChangedDate: 2017-10-16 10:55:01 -0700 (Mon, 16 Oct 2017) $
+; $LastChangedRevision: 24160 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_restore.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
 ;FILE: mvn_swe_pad_restore.pro
 ;-
-pro mvn_swe_pad_restore, trange, orbit=orbit, loadonly=loadonly, unnorm=unnorm, full=full, pad=epad, $
+pro mvn_swe_pad_restore, trange, orbit=orbit, loadonly=loadonly, unnorm=unnorm, full=full, pad=pad, $
                          l2only=l2only
 
 ; Process keywords
-
   if keyword_set(full) then begin
     rootdir = 'maven/data/sci/swe/l3/pad_resample/YYYY/MM/'
-    fname = 'swea_electron_energy_PAD_spectra_YYYYMMDD.sav'
+    fname = 'mvn_swe_l3_padfull_YYYYMMDD_v??_r??.sav'
     tname = 'mvn_swe_epad_resample'
   endif else begin
     rootdir = 'maven/data/sci/swe/l1/pad_resample/YYYY/MM/'
@@ -118,7 +117,8 @@ pro mvn_swe_pad_restore, trange, orbit=orbit, loadonly=loadonly, unnorm=unnorm, 
         endif else print,"No data were restored."
       endelse
     endfor
-    
+    pad = epad
+
     npts = n_elements(epad.time)
 
 ; Trim to the requested time range

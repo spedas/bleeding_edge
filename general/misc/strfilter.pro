@@ -61,7 +61,7 @@ if !version.release ge '5.3' then begin
    missed = replicate(1b, n_elements(matcharray))
    
    ;loop over substrings to find matches within the array
-   for k=0,n_elements(matcharray)-1 do begin
+   for k=0L,n_elements(matcharray)-1L do begin
      new = strmatch(str,matcharray[k],fold_case=fold_case)
      ret = new or ret
      if total(new) gt 0 then missed[k] = 0b
@@ -83,7 +83,7 @@ ret = ns eq -1   ; set to 0
 
 if not keyword_set(wildcard) then wildcard='*'
 
-for k=0,n_elements(matchs)-1 do begin
+for k=0L,n_elements(matchs)-1 do begin
 match = matchs[k]
 
 ;mss=str_sep(match,wildcard)
@@ -105,10 +105,10 @@ endif
 
 lms = strlen(mss)
 
-for i=0,n_elements(str)-1 do begin    ; Unfortunately strmid and strpos don't allow pos to be vectors
+for i=0L,n_elements(str)-1 do begin    ; Unfortunately strmid and strpos don't allow pos to be vectors
   temp = str[i]                     ; so an extra loop is required here
   p = 0
-  for j=0,nmss-1 do begin
+  for j=0L,nmss-1 do begin
     p2 = (j lt nmss-1) ? strpos(temp,mss[j],p) : rstrpos(temp,mss[j])
     if j eq 0 then r = (p2 eq 0) else r = (p2 ge p)
     p = p2 + lms[j]

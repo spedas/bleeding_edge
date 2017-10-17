@@ -36,7 +36,7 @@ mms*_sw_Va; Alfven speed
 ;mms*_sw_Ma; Mach number
 mms*_sw_Man; Mach number projected to shock normal
 mms*_sw_tBn; shock angle, thetaBn
-
+mms*_sw_Pdyn; dynamic pressure
 
 ;--------------------
 ; Waves

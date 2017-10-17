@@ -58,7 +58,7 @@ endif
   format1='($,i4," ",a,T' +column2_offset+'," ")'
   format2='($,"  ",a," ",a)'
 
-  for k=0,nd-1 do begin
+  for k=0L,nd-1 do begin
      i=ind[k]
      dq = data_quants[i]
      tr = time_string(dq.trange)
@@ -69,7 +69,7 @@ endif
      print,i,n ,format=format1
      if keyword_set(times) then  print,tr[0],tr[1],format=format2
      if keyword_set(create_time) then print,systime(0,dq.create_time),format='($," ",a)'
-     if dc eq 3 then for j=0,ndp-1 do print,(*dp)[j],format='($," ",a)'
+     if dc eq 3 then for j=0L,ndp-1 do print,(*dp)[j],format='($," ",a)'
      print
      if keyword_set(verbose) then begin
         printdat,dq,level='     '  ;,'DQ'

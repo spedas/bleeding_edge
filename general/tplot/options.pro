@@ -66,7 +66,7 @@ if (dt eq 8) or not keyword_set(struct) then begin
     else  extract_tags,struct,ex
 endif else begin
     names = tnames(struct,n)                              ;  (tplot variable)
-    for i=0,n-1 do begin
+    for i=0L,n-1 do begin
         name = names[i]
         if keyword_set(default) then $
            get_data,name,dlimit = limit     $        ;  get stored limit

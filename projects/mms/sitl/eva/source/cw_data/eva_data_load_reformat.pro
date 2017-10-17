@@ -101,11 +101,11 @@ FUNCTION eva_data_load_reformat, paramlist, probelist, FOURTH=fourth
           store_data, tname+sfx, data={x:DD.x,y:Dnew},lim=lim,dl=dl
           if (strpos(paramlist[i],'_p') ge 0) then begin
             ylim, tname+sfx, -180, 180, 0
-            options, tname+sfx, ystyle=1, constant=[-90,0,90]
+            options, tname+sfx, ystyle=1, constant=[-90,0,90], ytickinterval=90
           endif
           if (strpos(paramlist[i],'_t') ge 0) then begin
             ylim, tname+sfx, -90, 90, 0
-            options, tname+sfx, ystyle=1, constant=[-45,0,45]
+            options, tname+sfx, ystyle=1, constant=[-45,0,45], ytickinterval=45
           endif
         endif; if size(DD.y
       endfor; for each probe

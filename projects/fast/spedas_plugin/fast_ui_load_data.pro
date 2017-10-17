@@ -7,9 +7,9 @@
 ;
 ;
 ;HISTORY:
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2016-10-24 12:13:12 -0700 (Mon, 24 Oct 2016) $
-;$LastChangedRevision: 22190 $
+;$LastChangedBy: jimmpc1 $
+;$LastChangedDate: 2017-10-16 13:14:00 -0700 (Mon, 16 Oct 2017) $
+;$LastChangedRevision: 24170 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/fast/spedas_plugin/fast_ui_load_data.pro $
 ;
 ;--------------------------------------------------------------------------------
@@ -265,7 +265,7 @@ pro fast_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRang
   
 ;data availability labels
   timeLabel = widget_label(selectionBase,value='FAST HR DCB data available from 1996-09-28 to 1998-10-09')
-  timeLabel1 = widget_label(selectionBase,value='FAST ESA L2 data available from 1996-08-30 to 1998-01-01')
+  timeLabel1 = widget_label(selectionBase,value='FAST ESA L2 data available from 1996-08-30 to 2009-09-30')
   
   timeWidget = spd_ui_time_widget(selectionBase,$
                                   statusBar,$
