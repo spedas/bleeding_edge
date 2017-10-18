@@ -103,18 +103,17 @@ pro secs_load_data, trange = trange, datatype = datatype, suffix = suffix, prefi
        filename = 'Stat'+yr_start+mo_start+day_start+'.dat'
        local_file = local_path + filename
        found_file = file_search(local_file, count=ncnt)
-;      Can be uncommented when data becomes available at remote URL
-;       if keyword_set(nodownload) then begin
-;         ; let user know if there are no local files
-;         if ncnt LT 1 then begin
-;           dprint, dlevel = 0, ' No local files were found in: ' + local_path
-;           return
-;         endif
-;       endif else begin
-;         if (keyword_set(noupdate) && ncnt EQ 0) OR (~keyword_set(noupdate)) then $
-;           file = spd_download(remote_file=filename, remote_path=remote_path, $
-;                               local_path = local_path)
-;       endelse
+       if keyword_set(nodownload) then begin
+         ; let user know if there are no local files
+         if ncnt LT 1 then begin
+           dprint, dlevel = 0, ' No local files were found in: ' + local_path
+           return
+         endif
+       endif else begin
+         if (keyword_set(noupdate) && ncnt EQ 0) OR (~keyword_set(noupdate)) then $
+           file = spd_download(remote_file=filename, remote_path=remote_path, $
+                               local_path = local_path)
+       endelse
        if ~keyword_set(downloadonly) then begin
           ; double check that files were downloaded and exist
           file = file_search(local_file, count=ncnt)
