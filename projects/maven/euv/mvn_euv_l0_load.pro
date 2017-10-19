@@ -15,8 +15,8 @@
 ; HISTORY:
 ; VERSION:
 ;  $LastChangedBy: ali $
-;  $LastChangedDate: 2017-09-22 14:00:42 -0700 (Fri, 22 Sep 2017) $
-;  $LastChangedRevision: 24017 $
+;  $LastChangedDate: 2017-10-18 15:11:32 -0700 (Wed, 18 Oct 2017) $
+;  $LastChangedRevision: 24183 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/euv/mvn_euv_l0_load.pro $
 ;CREATED BY:  ali 20160830
 ;FILE: mvn_euv_l0_load.pro
@@ -27,7 +27,7 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
   tplotpath='maven/data/sci/euv/l0/tplot/YYYY/MM/mvn_euv_l0_YYYYMMDD.tplot'
 
   if keyword_set(generate) then begin
-    if keyword_set(init) then tstart=time_double(init) else tstart=time_double('2017-1-1')
+    if keyword_set(init) then tstart=time_double(init) else tstart=time_double('2014-10-15')
     trange0=[tstart,systime(1)]
     res=86400L
     daynum=round(trange0/res)
@@ -76,7 +76,6 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
     store_data,'mvn_lpw_euv',/delete,verbose=0
     if l0s then begin
       mvn_lpw_load_file,files[i],tplot_var='SCI',filetype=filetype,packet='EUV',board=board,use_compression=use_compression,/nospice ;l0 loader
-      options,'mvn_lpw_euv','colors','bgrk'
     endif else tplot_restore,filename=files[i],verbose=0
     get_data,'mvn_lpw_euv',data=mvn_lpw_euv_1day,limits=limits,dlimits=dlimits ;get tplot variables
     if keyword_set(mvn_lpw_euv_1day) then begin
@@ -87,6 +86,7 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
       dlim2=dlimits
     endif else dprint,'No EUV data in file: '+files[i]
   endfor
+  store_data,'mvn_lpw_euv',/delete,verbose=0
 
   if keyword_set(mvn_lpw_euv_y) then begin
     mvn_lpw_euv_y+=4.6e5 ;adding the offset (4.5e5) plus 1e4 (for better scaling) back to the signals
@@ -94,7 +94,7 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
     dlim2.ysubtitle+='+4.6e5'
     store_data,'mvn_euv_l0',mvn_lpw_euv_x,mvn_lpw_euv_y,limits=lim2,dlimits=dlim2
     ylim,'mvn_euv_l0',1e4,1.4e6,1
-    options,'mvn_euv_l0','labflag',-1
+    options,'mvn_euv_l0',labflag=-1,colors='gbrk'
     if keyword_set(tplot) then tplot,'mvn_euv_l0'
   endif
 

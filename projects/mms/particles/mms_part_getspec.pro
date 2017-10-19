@@ -25,10 +25,12 @@
 ;         add_bfield_dir: add B-field direction (+, -) to the angular spectrograms (phi, theta)
 ;         add_ram_dir: add S/C ram direction (X) to the angular spectrograms (phi, theta)
 ;         dir_interval: number of seconds between B-field and S/C ram direction symbols on angular spectrogram plots
+; Notes:
+;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-09-05 10:06:52 -0700 (Tue, 05 Sep 2017) $
-;$LastChangedRevision: 23883 $
+;$LastChangedDate: 2017-10-18 11:31:26 -0700 (Wed, 18 Oct 2017) $
+;$LastChangedRevision: 24180 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -109,6 +111,9 @@ pro mms_part_getspec, probes=probes, $
     
     if ~keyword_set(mag_suffix) then mag_suffix = ''
     if ~keyword_set(dir_interval) then dir_interval = 60d 
+    
+    ; HPCA is required to be at the center of the accumulation interval
+    if instrument eq 'hpca' and ~keyword_set(center_measurement) then center_measurement = 1
     
     support_trange = trange + [-60,60]
     

@@ -21,44 +21,38 @@
 ;   
 ; HISTORY:      
 ; VERSION: 
-;  $LastChangedBy: rlillis3 $
-;  $LastChangedDate: 2017-03-09 15:44:14 -0800 (Thu, 09 Mar 2017) $
-;  $LastChangedRevision: 22933 $
+;  $LastChangedBy: ali $
+;  $LastChangedDate: 2017-10-18 15:11:32 -0700 (Wed, 18 Oct 2017) $
+;  $LastChangedRevision: 24183 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/euv/mvn_euv_l3_load.pro $
-;CREATED BY:  ali 20150401
+;CREATED BY:  ali 20160401
 ;FILE: mvn_euv_l3_load.pro
 ;-
 
-pro mvn_euv_l3_load,trange=trange,daily=daily,minute=minute,tplot=tplot, $
-                    ionization_frequency = ionization_frequency
-                    
-                    
+pro mvn_euv_l3_load,trange=trange,daily=daily,minute=minute,tplot=tplot,ionization_frequency=ionization_frequency
   
   if keyword_set(daily) then begin
     L3_fileformat='maven/data/sci/euv/l3/YYYY/MM/mvn_euv_l3_daily_YYYYMMDD_v??_r??.cdf'
   endif else L3_fileformat='maven/data/sci/euv/l3/YYYY/MM/mvn_euv_l3_minute_YYYYMMDD_v??_r??.cdf'
 
-  files = mvn_pfp_file_retrieve(L3_fileformat,trange=trange,/daily_names,/valid_only)
+  files=mvn_pfp_file_retrieve(L3_fileformat,trange=trange,/daily_names,/valid_only)
   
   if files[0] eq '' then begin
     dprint,dlevel=2,'No EUVM L3 (FISM) files were found for the selected time range.'
-    store_data,'mvn_euv_l3',/delete
     return
   endif
   
-  cdf2tplot,files,prefix='mvn_euv_l3_'
+  cdf2tplot,files,prefix='mvn_euv_l3_',verbose=0
   
   get_data,'mvn_euv_l3_y',data=fismdata; FISM Irradiances
-  store_data,'mvn_euv_l3_y',/delete
+  store_data,'mvn_euv_l3_y',/delete,verbose=0
 
   store_data,'mvn_euv_l3',data={x:fismdata.x,y:fismdata.y,v:reform(fismdata.v[0,*])}, $
     dlimits={ylog:0,zlog:1,spec:1,ytitle:'Wavelength (nm)',ztitle:'FISM Irradiance (W/m2/nm)'}
   
   if keyword_set(tplot) then tplot,'mvn_euv_l3'
+  if keyword_set (ionization_frequency) then ionization_frequency=mvn_euv_ionization(fismdata)
 
-  if keyword_set (ionization_frequency) then begin
-     ionization_frequency = mvn_euv_ionization(fismdata)
-  endif
 end
 
 

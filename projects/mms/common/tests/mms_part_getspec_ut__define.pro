@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
-; $LastChangedRevision: 24128 $
+; $LastChangedDate: 2017-10-18 12:22:53 -0700 (Wed, 18 Oct 2017) $
+; $LastChangedRevision: 24182 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
 
@@ -75,8 +75,8 @@ function mms_part_getspec_ut::test_theta_limits_fpi_brst
 end
 
 function mms_part_getspec_ut::test_theta_limits_hpca
-  mms_part_getspec, probe=4, trange=['2015-12-15/10:00', '2015-12-15/11:00'], instrument='hpca', theta=[0, 90]
-  get_data, 'mms4_hpca_hplus_phase_space_density_theta', data=d
+  mms_part_getspec, probe=2, trange=['2015-12-15/10:00', '2015-12-15/11:00'], instrument='hpca', theta=[0, 90]
+  get_data, 'mms2_hpca_hplus_phase_space_density_theta', data=d
   assert, total(finite(d.Y[0, 8:*])) eq 0, 'Problem with theta limits for HPCA!'
   return, 1
 end
