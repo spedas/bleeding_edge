@@ -62,6 +62,8 @@
 ;   MMS> mms_load_state, probe='*', /ephemeris_only, level='pred', trange=tr
 ;   
 ; NOTES:
+;     The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
+;    
 ;     1) See the following regarding rules for the use of MMS data:
 ;         https://lasp.colorado.edu/galaxy/display/mms/MMS+Data+Rights+and+Rules+for+Data+Use
 ;
@@ -84,8 +86,8 @@
 ;        
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-08-29 15:25:58 -0700 (Tue, 29 Aug 2017) $
-;$LastChangedRevision: 23843 $
+;$LastChangedDate: 2017-10-19 12:54:21 -0700 (Thu, 19 Oct 2017) $
+;$LastChangedRevision: 24188 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec_ascii/mms_load_state.pro $
 ;-
 

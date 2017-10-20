@@ -57,6 +57,8 @@
 ;     MMS> mms_load_aspoc, trange=['2015-07-15', '2015-07-16'], level='l2', probe=1
 ; 
 ; NOTES:
+;    The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
+;     
 ;    For more information, including the ASPOC Data Products Guide, see:
 ;      https://lasp.colorado.edu/mms/sdc/public/datasets/aspoc/
 ;   
@@ -67,8 +69,8 @@
 ;     Please see the notes in mms_load_data for more information 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-01-12 14:22:41 -0800 (Thu, 12 Jan 2017) $
-;$LastChangedRevision: 22583 $
+;$LastChangedDate: 2017-10-19 12:54:21 -0700 (Thu, 19 Oct 2017) $
+;$LastChangedRevision: 24188 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/aspoc/mms_load_aspoc.pro $
 ;-
 

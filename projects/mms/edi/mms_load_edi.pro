@@ -57,13 +57,15 @@
 ;     MMS>  mms_load_edi, data_rate='srvy', probes=probe, datatype='efield', trange=['2015-09-03', '2015-09-04']
 ;                
 ; NOTES:               
+;    The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
+;    
 ;    Have questions regarding this load routine, or its usage?
 ;          https://groups.google.com/forum/#!forum/spedas
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-07-20 07:56:21 -0700 (Thu, 20 Jul 2017) $
-;$LastChangedRevision: 23675 $
+;$LastChangedDate: 2017-10-19 12:54:21 -0700 (Thu, 19 Oct 2017) $
+;$LastChangedRevision: 24188 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/edi/mms_load_edi.pro $
 ;-
 

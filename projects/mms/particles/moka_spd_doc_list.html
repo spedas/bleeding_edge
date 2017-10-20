@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Oct 18 18:16:13 2017.<P>
+<STRONG>Last modified: </STRONG>Thu Oct 19 18:16:05 2017.<P>
  
 <HR>
  
@@ -20,8 +20,9 @@ This page was created by the IDL library routine
 <UL>
 <H1>projects/mms/particles/moka</H1>
 <LI><A HREF="#MOKA_MMS_CLEAN_DATA">MOKA_MMS_CLEAN_DATA</A>
-<LI><A HREF="#MOKA_MMS_PAD">MOKA_MMS_PAD</A>
-<LI><A HREF="#MOKA_MMS_PAD_CRIB">MOKA_MMS_PAD_CRIB</A>
+<LI><A HREF="#MOKA_MMS_PAD_FPI">MOKA_MMS_PAD_FPI</A>
+<LI><A HREF="#MOKA_MMS_PAD_FPI_CRIB">MOKA_MMS_PAD_FPI_CRIB</A>
+<LI><A HREF="#MOKA_MMS_PAD_PLOT">MOKA_MMS_PAD_PLOT</A>
 <LI><A HREF="#MOKA_MMS_PART_PRODUCTS">MOKA_MMS_PART_PRODUCTS</A>
 <LI><A HREF="#MOKA_MMS_PART_PRODUCTS_CRIB">MOKA_MMS_PART_PRODUCTS_CRIB</A>
 <LI><A HREF="#MOKA_MMS_PART_PRODUCTS_PT">MOKA_MMS_PART_PRODUCTS_PT</A>
@@ -33,7 +34,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="MOKA_MMS_CLEAN_DATA">
 <H2>MOKA_MMS_CLEAN_DATA</H2></A>
-<A HREF="#MOKA_MMS_PAD">[Next Routine]</A>
+<A HREF="#MOKA_MMS_PAD_FPI">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -51,93 +52,121 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="moka/moka_mms_clean_data.pro">projects/mms/particles/moka/moka_mms_clean_data.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="MOKA_MMS_PAD">
-<H2>MOKA_MMS_PAD</H2></A>
+<A NAME="MOKA_MMS_PAD_FPI">
+<H2>MOKA_MMS_PAD_FPI</H2></A>
 <A HREF="#MOKA_MMS_CLEAN_DATA">[Previous Routine]</A>
-<A HREF="#MOKA_MMS_PAD_CRIB">[Next Routine]</A>
+<A HREF="#MOKA_MMS_PAD_FPI_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
-  moka_mms_pad
+  moka_mms_pad_fpi
 
 Purpose:
-  Returns a pitch-angle-distribution from MMS FPI data (angle vs energy plot)
-  as well as energy spectrum in the omni, para, perp and anti-para directions.
-  One-count-level is also returned.
+  To process MMS FPI data and return
+  (1) pitch-angle-distribution (angle vs energy plot)
+  (2) energy spectrum in the omni, para, perp and anti-para directions.
+  (3) One-count-level is also returned.
 
-Calling Sequence:
-  structure = moka_mms_pad(bname, tname [,index] [,trange=trange] [,units=units],[,/norm],
-                                        [,nbin=nbin], [,vname=vname] [,/structure])
+Calling Sequence: 
+  
+  (Similar to spd_slice2d. See also moka_mms_pad_fpi_crib.pro)
+    
+  structure = moka_mms_pad_fpi(dist [,disterr] $
+                       [,time=time [,window=window | samples=samples]]
+                       [trange=trange] ... )
 
  INPUT:
-   bname: magnetic field, tplot-variable name, use burst data
-   tname: FPI data, tplot-variable such as &quot;mms?_des_dist_brst&quot;
-   index: (NOW DEPRECATED! after a struggle with apj2016_egyspec.pro)
-   trange:  Two element time range to constrain the requested data (See also mms_get_fpi_dist)
+   DIST   : A pointer to 3D data structure.
+   DISTERR: A pointer to 3D data error structure
+   TRANGE : Two-element time range over which data will be averaged. (string or double)
+   TIME   : Time at which the pad will be computed. (string or double)
+    SAMPLES: Number of nearest samples to TIME to average. (int/double)
+             If neither SAMPLES nor WINDOW are specified then default=1.
+    WINDOW: Length in seconds from TIME over which data will be averaged. (int/double)
+      CENTER_TIME: Flag denoting that TIME should be midpoint for window instead of beginning.
+
+   MAG_DATA: Name of tplot variable containing magnetic field data or 3-vector.
+            This will be used for pitch-angle calculation and must be in the
+            same coordinates as the particle data.
+   VEL_DATA: Name of tplot variable containing the bulk velocity data or 3-vector.
+            This will be used for pitch-angle calculation and must be in the
+            same coordinates as the particle data.
+
    nbin: number of bins in the pitch-angle direction
-   vname: bulk flow velocity for frame transformation, tplot-variable name,
-          vname &amp; tname should have the same data_rate
+   
    norm: Set this keyword for normalizing the data at each energy bin
    units: units for both the pitch-angle-distribution (pad) and energy spectrum.
           Options are 'eflux' [eV/(cm!U2!N s sr eV)] or
-                      'df'    [s!U3!N / km!U6!N'] 
+                      'df'    [s!U3!N / km!U6!N']
           The default is 'eflux'. The return structure contains a tag &quot;UNITS&quot;.
    pr___0: pitch angle range for the &quot;para&quot; spectrum, default = [0,45]
    pr__90: pitch angle range for the &quot;perp&quot; spectrum, default = [45,135]
    pr_180: pitch angle range for the &quot;anti-para&quot; spectrum, default = [135,180]
 
 Output:
-   a structure containing the result
-
-Example:
-  MMS&gt; trange = '2015-11-04/'+['04:57:49','04:57:50']
-  MMS&gt; tname = 'mms3_des_dist_brst'
-  MMS&gt; bname = 'mms3_fgm_b_dmpa_brst_l2_bvec'
-  MMS&gt; vname = 'mms3_des_bulk_dbcs_brst'
-  MMS&gt; pad = moka_mms_pad(bname, tname, trange, vname=vname)
-  MMS&gt; plotxyz,pad.PA, pad.EGY, pad.DATA,/noisotropic,/ylog,zlog=1,$
-               xrange=[0,180],zrange=[1e+5,1e+9],xtitle='pitch angle',ytitle='energy'
+   a structure containing the results
 
 History:
-  Created by Mitsuo Oka on 2016-05-15
-  Fixed energy bin mistake 2017-01-28 
-  Fixed para and anti-para mistake (thanks to R. Mistry) 2017-03-14
-  Fixed eflux calculation 2017-05-12
-  
+  2016-05-15 Created by Mitsuo Oka
+  2017-01-28 Fixed energy bin mistake 
+  2017-03-14 Fixed para and anti-para mistake (thanks to R. Mistry) 
+  2017-05-12 Fixed eflux calculation 
+  2017-10-17 Added SUBTRACT_ERROR keyword 
+  2017-10-17 Changed the interface so that it works like spd_slice2d  
+
 $LastChangedBy: moka $
 $LastChangedDate: 2017-09-30 11:03:14 -0700 (Sat, 30 Sep 2017) $
 $LastChangedRevision: 24073 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/moka/moka_mms_pad.pro $
+$URL: svn+ssh://ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/moka/moka_mms_pad.pro $
 </PRE><P>
-<STRONG>(See <A href="moka/moka_mms_pad.pro">projects/mms/particles/moka/moka_mms_pad.pro</A>)</STRONG><P>
+<STRONG>(See <A href="moka/moka_mms_pad_fpi.pro">projects/mms/particles/moka/moka_mms_pad_fpi.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="MOKA_MMS_PAD_CRIB">
-<H2>MOKA_MMS_PAD_CRIB</H2></A>
-<A HREF="#MOKA_MMS_PAD">[Previous Routine]</A>
+<A NAME="MOKA_MMS_PAD_FPI_CRIB">
+<H2>MOKA_MMS_PAD_FPI_CRIB</H2></A>
+<A HREF="#MOKA_MMS_PAD_FPI">[Previous Routine]</A>
+<A HREF="#MOKA_MMS_PAD_PLOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ A crib for moka_mms_pad_fpi
+ 
+$LastChangedBy: moka $
+$LastChangedDate: 2017-09-30 11:03:14 -0700 (Sat, 30 Sep 2017) $
+$LastChangedRevision: 24073 $
+$URL: svn+ssh://ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/moka/moka_mms_pad.pro $
+</PRE><P>
+<STRONG>(See <A href="moka/moka_mms_pad_fpi_crib.pro">projects/mms/particles/moka/moka_mms_pad_fpi_crib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MOKA_MMS_PAD_PLOT">
+<H2>MOKA_MMS_PAD_PLOT</H2></A>
+<A HREF="#MOKA_MMS_PAD_FPI_CRIB">[Previous Routine]</A>
 <A HREF="#MOKA_MMS_PART_PRODUCTS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
-  moka_mms_pad_crib
+  moka_mms_pad_plot
 
 Purpose:
-  Demonstrates usage of 'moka_mms_pad' (a program for Pitch Angle Distribution (PAD)).
+  To plot data generated by moka_mms_pad_fpi
+
+USAGE:
+  See 'moka_mms_pad_fpi_crib'
   
 History:
-  Created by Mitsuo Oka on 2017-01-05
+  2017-10-17 Created by Mitsuo Oka
 
 $LastChangedBy: moka $
-$LastChangedDate: 2017-05-18 15:27:16 -0700 (Thu, 18 May 2017) $
-$LastChangedRevision: 23332 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/moka/moka_mms_pad_crib.pro $
+$LastChangedDate: 2017-09-30 11:03:14 -0700 (Sat, 30 Sep 2017) $
+$LastChangedRevision: 24073 $
+$URL: svn+ssh://ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/moka/moka_mms_pad.pro $
 </PRE><P>
-<STRONG>(See <A href="moka/moka_mms_pad_crib.pro">projects/mms/particles/moka/moka_mms_pad_crib.pro</A>)</STRONG><P>
+<STRONG>(See <A href="moka/moka_mms_pad_plot.pro">projects/mms/particles/moka/moka_mms_pad_plot.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="MOKA_MMS_PART_PRODUCTS">
 <H2>MOKA_MMS_PART_PRODUCTS</H2></A>
-<A HREF="#MOKA_MMS_PAD_CRIB">[Previous Routine]</A>
+<A HREF="#MOKA_MMS_PAD_PLOT">[Previous Routine]</A>
 <A HREF="#MOKA_MMS_PART_PRODUCTS_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

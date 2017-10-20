@@ -54,14 +54,15 @@
 ;         MMS> tplot, 'mms3_mec_r_gsm'
 ;
 ; NOTES:
+;    The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
 ; 
 ;    Have questions regarding this load routine, or its usage?
 ;          https://groups.google.com/forum/#!forum/spedas
 ;          
 ;          
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-01-12 14:22:41 -0800 (Thu, 12 Jan 2017) $
-;$LastChangedRevision: 22583 $
+;$LastChangedDate: 2017-10-19 12:54:21 -0700 (Thu, 19 Oct 2017) $
+;$LastChangedRevision: 24188 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_load_mec.pro $
 ;-
 

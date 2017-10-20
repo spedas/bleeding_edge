@@ -49,7 +49,6 @@
 ;         always_prompt: set this keyword to always prompt for the user's username and password;
 ;                       useful if you accidently save an incorrect password, or if your SDC password has changed
 ;
-; OUTPUT:
 ;
 ; EXAMPLE:
 ;    Have questions regarding this load routine, or its usage?
@@ -62,10 +61,12 @@
 ;     MMS>  timespan, '2015-12-22', 1, /day
 ;     MMS>  mms_load_dsp, data_rate='fast', probes=[1, 2, 3, 4], datatype='epsd', level='l2'
 ; 
-;
+; NOTES:
+;    The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
+;    
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-01-12 14:22:41 -0800 (Thu, 12 Jan 2017) $
-;$LastChangedRevision: 22583 $
+;$LastChangedDate: 2017-10-19 12:54:21 -0700 (Thu, 19 Oct 2017) $
+;$LastChangedRevision: 24188 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/dsp/mms_load_dsp.pro $
 ;-
 

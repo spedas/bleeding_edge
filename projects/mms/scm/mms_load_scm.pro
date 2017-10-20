@@ -48,7 +48,6 @@
 ;         always_prompt: set this keyword to always prompt for the user's username and password;
 ;                       useful if you accidently save an incorrect password, or if your SDC password has changed
 ; 
-; OUTPUT:
 ; 
 ; EXAMPLE:
 ;     load scm burst data
@@ -65,15 +64,17 @@
 ;     See crib sheet mms_load_scm_crib.pro for more detailed usage examples
 ;     
 ; NOTES:
+;    The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
+;    
 ;    Have questions regarding this load routine, or its usage?
 ;          https://groups.google.com/forum/#!forum/spedas
 ;          
 ;          
-;     Please see the notes in mms_load_data for more information 
+;    Please see the notes in mms_load_data for more information 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-01-12 14:22:41 -0800 (Thu, 12 Jan 2017) $
-;$LastChangedRevision: 22583 $
+;$LastChangedDate: 2017-10-19 12:54:21 -0700 (Thu, 19 Oct 2017) $
+;$LastChangedRevision: 24188 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/scm/mms_load_scm.pro $
 ;-
 

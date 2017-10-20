@@ -61,10 +61,12 @@
 ;     load MMS FGM data for MMS 1 and MMS 2
 ;     MMS>  mms_load_fgm, probes=[1, 2], trange=['2015-06-22', '2015-06-23']
 ;
+; NOTES:
+;     The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
 ;     
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-10-05 14:59:56 -0700 (Thu, 05 Oct 2017) $
-;$LastChangedRevision: 24119 $
+;$LastChangedDate: 2017-10-19 12:54:21 -0700 (Thu, 19 Oct 2017) $
+;$LastChangedRevision: 24188 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fgm/mms_load_fgm.pro $
 ;-
 

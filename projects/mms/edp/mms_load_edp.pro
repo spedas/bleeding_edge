@@ -48,6 +48,8 @@
 ;                       useful if you accidently save an incorrect password, or if your SDC password has changed
 ;
 ; NOTES:
+;     The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
+;    
 ;     Please always use error bars on E-field data 
 ;     loaded with this routine; see the crib sheet
 ;     mms_load_edp_crib.pro for an example of using 
@@ -69,8 +71,8 @@
 ;   - Minor updates to defaults by egrimes@igpp
 ;    
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-02-15 15:09:45 -0800 (Wed, 15 Feb 2017) $
-;$LastChangedRevision: 22791 $
+;$LastChangedDate: 2017-10-19 12:54:21 -0700 (Thu, 19 Oct 2017) $
+;$LastChangedRevision: 24188 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/edp/mms_load_edp.pro $
 ;-
 pro mms_load_edp, trange = trange, probes = probes, datatype = datatype, $

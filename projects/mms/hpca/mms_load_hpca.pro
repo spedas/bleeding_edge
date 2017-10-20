@@ -63,6 +63,8 @@
 ;
 ; 
 ; NOTES:
+;     The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
+;    
 ;     The HPCA Data Products Guide can be found at:
 ;     
 ;     https://lasp.colorado.edu/galaxy/display/mms/HPCA+Data+Products+Guide
@@ -77,8 +79,8 @@
 ; 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-02-14 12:04:47 -0800 (Tue, 14 Feb 2017) $
-;$LastChangedRevision: 22779 $
+;$LastChangedDate: 2017-10-19 12:54:21 -0700 (Thu, 19 Oct 2017) $
+;$LastChangedRevision: 24188 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_load_hpca.pro $
 ;-
 

@@ -63,6 +63,8 @@
 ;     for usage examples
 ;
 ; NOTES:
+;     The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
+;    
 ;     Please see the notes at:
 ;        https://lasp.colorado.edu/galaxy/display/mms/FPI+Release+Notes
 ;        
@@ -70,8 +72,8 @@
 ;          https://groups.google.com/forum/#!forum/spedas
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-10-02 13:08:09 -0700 (Mon, 02 Oct 2017) $
-;$LastChangedRevision: 24082 $
+;$LastChangedDate: 2017-10-19 12:54:21 -0700 (Thu, 19 Oct 2017) $
+;$LastChangedRevision: 24188 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_load_fpi.pro $
 ;-
 
