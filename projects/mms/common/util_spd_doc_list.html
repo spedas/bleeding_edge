@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Oct 19 18:16:05 2017.<P>
+<STRONG>Last modified: </STRONG>Fri Oct 20 18:16:14 2017.<P>
  
 <HR>
  
@@ -19,6 +19,8 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/mms/common/util</H1>
+<LI><A HREF="#FLATTEN_SPECTRA">FLATTEN_SPECTRA</A>
+<br>Create quick plots of spectra at a certain time (i.e., energy vs. eflux, PA vs. eflux, etc)
 <LI><A HREF="#MMS_DRAW_CIRCLE">MMS_DRAW_CIRCLE</A>
 <br>Draws (and fills in) a circle
 <br>
@@ -26,8 +28,41 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="FLATTEN_SPECTRA">
+<H2>FLATTEN_SPECTRA</H2></A>
+<A HREF="#MMS_DRAW_CIRCLE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         flatten_spectra
+
+ PURPOSE:
+         Create quick plots of spectra at a certain time (i.e., energy vs. eflux, PA vs. eflux, etc)
+         
+
+ EXAMPLE:
+     To create line plots of FPI electron energy spectra for all MMS spacecraft:
+     
+       MMS&gt; mms_load_fpi, datatype='des-moms', trange=['2015-12-15', '2015-12-16'], probes=[1, 2, 3, 4]
+       MMS&gt; tplot, 'mms?_des_energyspectr_omni_fast'
+       MMS&gt; flatten_spectra, /xlog, /ylog
+       
+       --&gt; then click the tplot window at the time you want to create the line plots at
+
+ NOTES:
+     work in progress; suggestions, comments, complaints, etc: egrimes@igpp.ucla.edu
+     
+$LastChangedBy: egrimes $
+$LastChangedDate: 2017-10-20 13:02:00 -0700 (Fri, 20 Oct 2017) $
+$LastChangedRevision: 24201 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra.pro $
+</PRE><P>
+<STRONG>(See <A href="util/flatten_spectra.pro">projects/mms/common/util/flatten_spectra.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_DRAW_CIRCLE">
 <H2>MMS_DRAW_CIRCLE</H2></A>
+<A HREF="#FLATTEN_SPECTRA">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:

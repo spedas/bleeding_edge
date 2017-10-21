@@ -13,9 +13,9 @@
 ;         loaded from the netCDF file
 ;         
 ; 
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2015-05-22 12:04:59 -0700 (Fri, 22 May 2015) $
-; $LastChangedRevision: 17674 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2017-10-20 11:55:06 -0700 (Fri, 20 Oct 2017) $
+; $LastChangedRevision: 24198 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/netCDF/netcdf_load_vars.pro $
 ;-
 
@@ -74,7 +74,10 @@ function netcdf_load_vars, ncfile
     
             data = {name: varinq.name, datatype: varinq.datatype, ndims: varinq.ndims, natts: varinq.natts, dimids: varinq.dim}
             ; loop through the variable attributes
-            undefine, var_str ;This needs to be reinitialized for each variable so that attributes are not retained, 2015-05-22, jmm
+            ;undefine, var_str ;This needs to be reinitialized for each variable so that attributes are not retained, 2015-05-22, jmm
+            ;  meant to do the same thing as above, except without the seemingly arbitrary crashes on GOES data with some machines
+            var_str = create_struct('kludge', 1) 
+
             for k = 0, varinq.natts-1 do begin
                 var_attr_name = ncdf_attname(file, i, k)
                 var_attr_inq = ncdf_attinq(file, i, var_attr_name)

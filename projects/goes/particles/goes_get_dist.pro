@@ -31,8 +31,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-04-11 09:42:10 -0700 (Tue, 11 Apr 2017) $
-;$LastChangedRevision: 23134 $
+;$LastChangedDate: 2017-10-20 12:38:20 -0700 (Fri, 20 Oct 2017) $
+;$LastChangedRevision: 24199 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/particles/goes_get_dist.pro $
 ;-
 
@@ -60,7 +60,7 @@ endif else begin
 endelse
 
 if keyword_set(uncorrected) && uncorrected eq 1 then begin
-  cor = 'uncori'
+  cor = 'uncor'
 endif else cor = 'cor'
 
 ;cor = keyword_set(uncorrected) ? 'uncor':'cor'

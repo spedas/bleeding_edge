@@ -40,8 +40,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-10-19 14:48:52 -0700 (Thu, 19 Oct 2017) $
-;$LastChangedRevision: 24193 $
+;$LastChangedDate: 2017-10-20 15:47:16 -0700 (Fri, 20 Oct 2017) $
+;$LastChangedRevision: 24202 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_fpi_ang_ang.pro $
 ;-
 
@@ -185,8 +185,7 @@ pro mms_fpi_ang_ang, time, probe=probe, energy_range=energy_range, data_rate=dat
     else $
       pad = moka_mms_pad_fpi(*distptr, *disterrptr, time=closest_time, subtract_bulk=0, units=pa_en_units, mag_data=b_field)
 
-    
-    plotxyz, pad.PA, pad.EGY, pad.DATA, /noisotropic, /ylog, /zlog, title=time_string(closest_time, tformat='YYYY-MM-DD/hh:mm:ss.fff'), $
+    plotxyz, pad.PA, pad.EGY, transpose(pad.DATA), /noisotropic, /ylog, /zlog, title=time_string(closest_time, tformat='YYYY-MM-DD/hh:mm:ss.fff'), $
       xrange=[0,180], zrange=zrange, xtitle='Pitch angle (deg)', ytitle='Energy (eV)', ztitle=pa_en_units_str, window=4, xsize=xsize, ysize=ysize
 
     if ~undefined(png) then makepng, 'pad_vs_energy'+filename_suffix
