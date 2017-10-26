@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Oct 24 18:15:53 2017.<P>
+<STRONG>Last modified: </STRONG>Wed Oct 25 18:16:03 2017.<P>
  
 <HR>
  
@@ -2417,10 +2417,10 @@ FILE: mvn_swe_load_l2.pro
        !!! This routine could take a very long time to generate the data !!!
        !!! To load pre-generated data quickly, use 'mvn_swe_lpw_scpot_restore' !!!
 
-       Empirically derives spacecraft potentials using SWEA and LPW.
+       Empirically derives spacecraft potentials using SWEA/STA and LPW.
        Inflection points in LPW I-V curves are tuned to positive and negative
-       spacecraft potentials estimated from SWEA energy spectra
-       (mvn_swe_sc_pot &amp; mvn_swe_sc_negpot).
+       spacecraft potentials estimated from SWEA/STA energy spectra
+       (mvn_swe_sc_pot, mvn_swe_sc_negpot, mvn_sta_scpot_load).
 
        Does not work in shadow.
 
@@ -2450,8 +2450,6 @@ FILE: mvn_swe_load_l2.pro
        vrinfl: voltage range for searching the inflection point
                (Def. [-15,18])
        ntsmo: time smooth width (Def. 3)
-       noangcorr: if set, do not conduct angular distribution correction
-                  in mvn_swe_sc_pot
  NOTES:
        1) The data quality are not good before 2015-01-24.
        2) The peak fitting algorithm sometimes breaks down
@@ -2470,8 +2468,8 @@ FILE: mvn_swe_load_l2.pro
        Major update on 2017-07-24 - incl. negative pot
 
  $LastChangedBy: haraday $
- $LastChangedDate: 2017-08-21 05:30:56 -0700 (Mon, 21 Aug 2017) $
- $LastChangedRevision: 23817 $
+ $LastChangedDate: 2017-10-25 15:37:45 -0700 (Wed, 25 Oct 2017) $
+ $LastChangedRevision: 24216 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_lpw_scpot.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_lpw_scpot.pro">projects/maven/swea/mvn_swe_lpw_scpot.pro</A>)</STRONG><P>

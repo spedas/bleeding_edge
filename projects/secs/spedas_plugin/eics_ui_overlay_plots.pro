@@ -1,3 +1,10 @@
+;+
+; VERSION:
+;   $LastChangedBy: adrozdov $
+;   $LastChangedDate: 2017-10-25 12:57:57 -0700 (Wed, 25 Oct 2017) $
+;   $LastChangedRevision: 24214 $
+;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/secs/spedas_plugin/eics_ui_overlay_plots.pro $
+;-
 pro eics_ui_overlay_plots, trange=trange, createpng=createpng, showgeo=showgeo, showmag=showmag
 
   ; initialize variables
@@ -102,7 +109,7 @@ pro eics_ui_overlay_plots, trange=trange, createpng=createpng, showgeo=showgeo, 
       u_lat[i,j]=mlats[j]   
       u_lon[i,j]=geographic_lons[i]  
     endfor
-    if showgeo then oplot,u_lon[i,*],u_lat[i,*],color=0,thick=contour_thick,linestyle=1
+    if keyword_set(showgeo) then oplot,u_lon[i,*],u_lat[i,*],color=0,thick=contour_thick,linestyle=1
   endfor
   ; construct and plot magnetic lons (need /geo keyword for plot)
   if keyword_set(showmag) then begin
@@ -175,10 +182,11 @@ pro eics_ui_overlay_plots, trange=trange, createpng=createpng, showgeo=showgeo, 
   
   ; kluge: append unit vector to end of array for displaying legend
   ; todo: this should be working in plotxyvec but it isn't right now. need to debug
-  lon=[lon,296.5]
-  lat=[lat,26]
-  jy=[jy,0.]
-  jx=[jx,200.]
+  ; Solution for this todo is below in 'Display annotations' section:
+  ; lon=[lon,296.5]
+  ; lat=[lat,26]
+  ; jy=[jy,0.]
+  ; jx=[jx,200.]
 
   ; ------------------
   ; Plot EICS data
@@ -191,29 +199,70 @@ pro eics_ui_overlay_plots, trange=trange, createpng=createpng, showgeo=showgeo, 
   ; --------------------
   ; Display annotations
   ;---------------------
-  xyouts, 215.5, 20, 'SECS - EICS', color=0, charsize=1.45  
-  xyouts, 297.9, 25, '200 mA/m',charsize=1.45, charthick=1.25,color=5
+  
+  ; legend position for 4 entries
+  ; in /normal coordinates  
+  legx = FLTARR(4) + 0.8  
+  legy = FINDGEN(4, INCREMENT=0.05) + 0.01  
+  legidx = 0
 
-  if keyword_set(showgeo) && keyword_set(showmag) then begin
-     xyouts, 297.7, 29.25, 'Geo Black dot line', color=0, charthick=1.25, charsize=1.13
-     xyouts, 299.2, 31, 'Mag Red dot line', color=250, charthick=1.2, charsize=1.125
-     if is_struct(stations) then xyouts, 300.85, 32.65, 'GMAG green star', color=150, $
-       charthick=1.2, charsize=1.125
-  endif 
-  if keyword_set(showgeo) && ~keyword_set(showmag) then begin
-     xyouts, 297.7, 29.25, 'Geo Black dot line', color=0, charthick=1.25, charsize=1.13
-     if is_struct(stations) then xyouts, 299.2, 31, 'GMAG green star', color=150, $
-       charthick=1.2, charsize=1.125
+  ; Text on the left side
+  ; The location is consstent with thm_asi_create_mosaic  
+  xyouts, 0.005,0.102, 'SECS - EICS', /NORMAL, color=0, charsize=1.5
+  
+  ; First legend record, 
+  xyouts, legx(legidx), legy(legidx), /NORMAL, '100 mA/m',charsize=1.125, charthick=1.25,color=5
+  ; and the arrow
+  ; move the point to the left
+  xyz_norm = [legx(legidx)-0.01, legy(legidx)]
+  xyz_arr  = convert_coord(xyz_norm[0], xyz_norm[1], /NORMAL, /TO_DATA) ; where the point in /data coords
+  xyv_dxy = [0., 100., 0.]*scale ; vector original size. scale applied to limit the vector size
+  xyv_arr = xyz_arr + xyv_dxy ; vector end point
+  xyv_norm = convert_coord(xyv_arr(0), xyv_arr(1), /DATA, /TO_NORMAL) ; vector end point in /normal coords
+  xyv_norm_len = sqrt((xyv_norm(0) - xyz_norm(0))^2 + (xyv_norm(1) - xyz_norm(1))^2) ; vector lenght
+  xyv_arr  = convert_coord(xyz_norm(0), xyz_norm(1)+xyv_norm_len, /NORMAL, /TO_DATA) ; add lenght of the vector in trasform in /data coord.
+  xyv_dxy = xyv_arr - xyz_arr ; plotxyvec asks for dx and dy for the vector.
+  ; manually draw a point and an arrow
+  ; scale was already applied. we don't scale again
+  plotxyvec,[[xyz_arr(0)],[xyz_arr(1)]],[[xyv_dxy(0)],[xyv_dxy(1)]],/overplot,color='y', thick=1.475,hsize=0.5, arrowscale=1.0,/noisotropic
+  oplot,[xyz_arr(0)],[xyz_arr(1)],color=5,psym=2,symsize=0.25,thick=3
+  
+  ; Draw other legenr entries
+  legidx += 1
+  if keyword_set(showmag) then begin
+    xyouts, legx(legidx), legy(legidx), /NORMAL, 'Mag Red dot line', color=250, charthick=1.2, charsize=1.125
+    legidx += 1
   endif
-  if ~keyword_set(showgeo) && keyword_set(showmag) then begin
-     xyouts, 297.7, 29.25, 'Mag Red dot line', color=250, charthick=1.2, charsize=1.125   
-     if is_struct(stations) then xyouts, 299.2, 31, 'GMAG green star', color=150, $
-       charthick=1.2, charsize=1.125
+  if keyword_set(showgeo) then begin
+    xyouts, legx(legidx), legy(legidx), /NORMAL, 'Geo Black dot line', color=0, charthick=1.25, charsize=1.125
+    legidx += 1
   endif
-  if ~keyword_set(showgeo) && ~keyword_set(showmag) then begin
-    if is_struct(stations) then xyouts, 297.7, 29.25, 'GMAG green star', color=150, $
-      charthick=1.2, charsize=1.125
-  endif
+  if is_struct(stations) then begin
+    xyouts, legx(legidx), legy(legidx), /NORMAL, 'GMAG green star', color=150, charthick=1.2, charsize=1.125
+    legidx += 1 ; this is done so we can move the blocks around
+  endif     
+  
+  ; OLD VERSION OF LEGEND
+  ;if keyword_set(showgeo) && keyword_set(showmag) then begin
+  ;   xyouts, 297.7, 29.25, 'Geo Black dot line', color=0, charthick=1.25, charsize=1.13
+  ;   xyouts, 299.2, 31, 'Mag Red dot line', color=250, charthick=1.2, charsize=1.125
+  ;   if is_struct(stations) then xyouts, 300.85, 32.65, 'GMAG green star', color=150, $
+  ;     charthick=1.2, charsize=1.125
+  ;endif 
+  ;if keyword_set(showgeo) && ~keyword_set(showmag) then begin
+  ;   xyouts, 297.7, 29.25, 'Geo Black dot line', color=0, charthick=1.25, charsize=1.13
+  ;   if is_struct(stations) then xyouts, 299.2, 31, 'GMAG green star', color=150, $
+  ;     charthick=1.2, charsize=1.125
+  ;endif
+  ;if ~keyword_set(showgeo) && keyword_set(showmag) then begin
+  ;   xyouts, 297.7, 29.25, 'Mag Red dot line', color=250, charthick=1.2, charsize=1.125   
+  ;   if is_struct(stations) then xyouts, 299.2, 31, 'GMAG green star', color=150, $
+  ;     charthick=1.2, charsize=1.125
+  ;endif
+  ;if ~keyword_set(showgeo) && ~keyword_set(showmag) then begin
+  ;  if is_struct(stations) then xyouts, 297.7, 29.25, 'GMAG green star', color=150, $
+  ;    charthick=1.2, charsize=1.125
+  ;endif
  
   ; ------------------
   ; Create PNG file

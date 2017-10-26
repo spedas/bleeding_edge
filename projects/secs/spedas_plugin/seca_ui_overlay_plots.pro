@@ -105,7 +105,7 @@ pro seca_ui_overlay_plots, trange=trange, createpng=createpng, showgeo=showgeo, 
       u_lat[i,j]=mlats[j]
       u_lon[i,j]=geographic_lons[i]
     endfor
-    if showgeo then oplot,u_lon[i,*],u_lat[i,*],color=0,thick=contour_thick,linestyle=1
+    if keyword_set(showgeo) then oplot,u_lon[i,*],u_lat[i,*],color=0,thick=contour_thick,linestyle=1
   endfor
   ; construct and plot magnetic lons (need /geo keyword for plot)
   if keyword_set(showmag) then begin
