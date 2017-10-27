@@ -57,8 +57,8 @@
 ;       Major update on 2017-07-24 - incl. negative pot
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2017-10-25 15:37:45 -0700 (Wed, 25 Oct 2017) $
-; $LastChangedRevision: 24216 $
+; $LastChangedDate: 2017-10-26 08:53:13 -0700 (Thu, 26 Oct 2017) $
+; $LastChangedRevision: 24217 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_lpw_scpot.pro $
 ;-
 
@@ -258,7 +258,7 @@ if keyword_set(plot) then begin
                  dlim={spec:1,panel_size:.1,no_color_scale:1,zrange:[0,15], $
                        ytitle:'',yticks:1,yminor:1, $
                        ytickname:[' ',' ']}
-   options,'neg_pot',colors=6,psym=3
+   options,'neg_pot',colors=6,psym=1,symsize=.1
 endif                           ;- plot
 
 

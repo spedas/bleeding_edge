@@ -14,7 +14,7 @@ pro spp_fld_make_cdf_l1, apid_name, $
 
   data = spp_fld_load_tmlib_data(apid_name, $
     varformat = varformat, success = dat_success, $
-    cdf_att = cdf_att, times = times, idl_att = idl_att)
+    cdf_att = cdf_att, times = times, packets = packets, idl_att = idl_att)
 
   if dat_success NE 1 then begin
 
@@ -42,6 +42,14 @@ pro spp_fld_make_cdf_l1, apid_name, $
   spp_fld_cdf_put_data, fileid, data, /close
 
   ;
+  ; Write the packets file
+  ;
+
+  packet_filename = strmid(filename,0,strlen(filename)-3) + 'dat'
+
+  spp_fld_write_packet_file, packet_filename, packets
+
+  ;
   ; If load keyword set, load file into tplot variables
   ;
 
@@ -54,6 +62,12 @@ pro spp_fld_make_cdf_l1, apid_name, $
       file_mkdir, !spp_fld_tmlib.test_cdf_dir
 
       file_copy, filename, !spp_fld_tmlib.test_cdf_dir, /over
+
+    end
+
+    if file_test(packet_filename) then begin
+
+      file_copy, packet_filename, !spp_fld_tmlib.test_cdf_dir, /over
 
     end
 

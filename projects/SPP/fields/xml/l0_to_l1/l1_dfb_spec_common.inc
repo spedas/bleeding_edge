@@ -180,7 +180,8 @@
   <cdf_var
       name   = "dfb_spec"
       type   = "integer"
-      nelem  = "dfb_spec_nelem">
+      nelem  = "dfb_spec_nelem"
+      convert_routine = "none">
   <cdf_att
         FIELDNAM = "spec"
         FORMAT = "I08"

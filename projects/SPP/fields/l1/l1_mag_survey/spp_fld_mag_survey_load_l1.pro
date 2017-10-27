@@ -1,7 +1,7 @@
 ;
-;  $LastChangedBy: pulupa $
-;  $LastChangedDate: 2017-07-12 15:38:14 -0700 (Wed, 12 Jul 2017) $
-;  $LastChangedRevision: 23594 $
+;  $LastChangedBy: spfuser $
+;  $LastChangedDate: 2017-10-26 11:26:39 -0700 (Thu, 26 Oct 2017) $
+;  $LastChangedRevision: 24218 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
@@ -31,18 +31,6 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
   get_data, prefix + 'avg_period_raw', data = d_ppp
   get_data, prefix + 'range_bits', data = d_range_bits
 
-  options, prefix + 'compressed', 'ytitle', short_prefix + ' comp'
-  options, prefix + 'compressed', 'ysubtitle'
-  options, prefix + 'compressed', 'yrange', [-0.1,1.1]
-  options, prefix + 'compressed', 'ystyle', 1
-  options, prefix + 'compressed', 'psym', 4
-  options, prefix + 'compressed', 'panel_size', 0.5
-
-  options, prefix + 'avg_period_raw', 'ytitle', short_prefix + ' AvPR'
-  options, prefix + 'avg_period_raw', 'ysubtitle'
-  options, prefix + 'avg_period_raw', 'yrange', [-0.5,7.5]
-  options, prefix + 'avg_period_raw', 'ystyle', 1
-  options, prefix + 'avg_period_raw', 'psym', 4
 
   if tnames(prefix + 'avg_period_raw') EQ '' then return
 
@@ -140,6 +128,7 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
       options, prefix + mag_comp, 'ysubtitle', '[Counts]'
 
       options, prefix + mag_comp, 'ynozero', 1
+      options, prefix + mag_comp, 'panel_size', 1.5
 
     end
 
@@ -148,19 +137,57 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
   store_data, prefix + 'packet_index', $
     data = {x:times_1d.ToArray(), y:packet_index.ToArray()}
 
-  options, prefix + 'packet_index', 'ytitle', $
-    short_prefix + ' pkt_ind'
-
-  options, prefix + 'packet_index', 'psym', 3
-
   store_data, prefix + 'range', $
     data = {x:times_1d.ToArray(), y:range_bits_1d.ToArray()}
 
   options, prefix + 'range', 'yrange', [-0.5,3.5]
-  options, prefix + 'range', 'ytitle', $
-    short_prefix + ' range'
+  options, prefix + 'range', 'ytitle', short_prefix + '!Crange'
   options, prefix + 'range', 'yminor', 1
+  options, prefix + 'range', 'ystyle', 1
+  options, prefix + 'range', 'yticks', 3
+  options, prefix + 'range', 'ytickv', [0,1,2,3]  
   options, prefix + 'range', 'psym', 3
+  options, prefix + 'range', 'ysubtitle', ''
+
+
+  options, prefix + 'avg_period_raw', 'ytitle', short_prefix + '!CAvPR'
+  options, prefix + 'avg_period_raw', 'ysubtitle'
+  options, prefix + 'avg_period_raw', 'yrange', [-1.0,8.0]
+  options, prefix + 'avg_period_raw', 'ystyle', 1
+  options, prefix + 'avg_period_raw', 'yminor', 1
+  options, prefix + 'avg_period_raw', 'yticks', 7
+  options, prefix + 'avg_period_raw', 'ytickv', [0,1,2,3,4,5,6,7]
+  options, prefix + 'avg_period_raw', 'psym', 4
+  options, prefix + 'avg_period_raw', 'ysubtitle', ''
+  options, prefix + 'avg_period_raw', 'panel_size', 0.75
+
+
+  options, prefix + 'packet_index', 'ytitle', $
+    short_prefix + '!Cpkt_ind'
+  options, prefix + 'packet_index', 'psym', 3
+  options, prefix + 'packet_index', 'yrange', [0,512]
+  options, prefix + 'packet_index', 'ystyle', 1
+  options, prefix + 'packet_index', 'yminor', 4
+  options, prefix + 'packet_index', 'yticks', 4
+  options, prefix + 'packet_index', 'ytickv', [0,128,256,384,512]
+  options, prefix + 'packet_index', 'ysubtitle', ''
+
+
+
+
+  options, prefix + 'compressed', 'yrange', [-0.25,1.25]
+  options, prefix + 'compressed', 'ystyle', 1
+  options, prefix + 'compressed', 'yticks', 1
+  options, prefix + 'compressed', 'ytickv', [0,1]
+  options, prefix + 'compressed', 'yminor', 1
+  options, prefix + 'compressed', 'psym', 4
+  options, prefix + 'compressed', 'symsize', 0.5
+  options, prefix + 'compressed', 'panel_size', 0.5
+  options, prefix + 'compressed', 'ytitle', $
+    short_prefix + '!Ccomp'
+  options, prefix + 'compressed', 'ysubtitle', ''
+
+
 
 
 end

@@ -1,13 +1,13 @@
 ;
 ;  $LastChangedBy: spfuser $
-;  $LastChangedDate: 2017-09-29 16:06:46 -0700 (Fri, 29 Sep 2017) $
-;  $LastChangedRevision: 24069 $
+;  $LastChangedDate: 2017-10-26 11:27:42 -0700 (Thu, 26 Oct 2017) $
+;  $LastChangedRevision: 24219 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_load_tmlib_data.pro $
 ;
 
 function spp_fld_load_tmlib_data, l1_data_type,  $
-  varformat = varformat, cdf_att = cdf_att, times = times, idl_att = idl_att, $
-  success = success
+  varformat = varformat, cdf_att = cdf_att, times = times, packets = packets, $
+  idl_att = idl_att, success = success
 
   success = 0
 
@@ -233,6 +233,8 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
 
   times = LIST()
 
+  packets = LIST()
+
   tprint = 0.
 
   while (serr GE 0) do begin
@@ -248,11 +250,20 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
 
     endelse
 
-    err = tm_get_position(sid, ur8)
-    err = tm_get_item_r8(sid, "ccsds_scet_ur8", ur8_ccsds, 1, size)
+    packet = []
 
-    err = tm_get_item_i4(sid, "ccsds_total_packet_length", $
-      ccsds_pkt_len, 1, size)
+    err_pos = tm_get_position(sid, ur8)
+
+    err_scet = tm_get_item_r8(sid, "ccsds_scet_ur8", ur8_ccsds, 1, scet_size)
+
+    err_pkt_len = tm_get_item_i4(sid, "ccsds_total_packet_length", $
+      ccsds_pkt_len, 1, pkt_len_size)
+      
+    err = tm_get_item_i4(sid, "ccsds_entire_packet", $
+      packet, ccsds_pkt_len, pkt_size)
+
+    err = tm_get_item_i4(sid, "ccsds_meat_length", $
+      ccsds_meat_len, 1, meat_size)
 
     ;print, 'CCSDS Packet length: ', ccsds_pkt_len
 
@@ -279,6 +290,7 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
     if serr EQ 0 then begin
 
       times.Add, time
+      packets.Add, packet
 
       ; For certain APIDs, some data items only exist in some packets
       ; but not others.  Requesting the items when they do not exist can cause

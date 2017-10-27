@@ -17,7 +17,8 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'compression', 'psym', 4
   options, prefix + 'compression', 'symsize', 0.5
   options, prefix + 'compression', 'panel_size', 0.35
-  options, prefix + 'compression', 'ytitle', receiver_str + ' Auto!CCmprs'
+  options, prefix + 'compression', 'ytitle', receiver_str + '!CAUTO!CCmprs'
+  options, prefix + 'compression', 'ysubtitle', ''
 
   options, prefix + 'peaks', 'yrange', [0, 1]
   options, prefix + 'peaks', 'ystyle', 1
@@ -26,7 +27,8 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'peaks', 'psym', 4
   options, prefix + 'peaks', 'symsize', 0.5
   options, prefix + 'peaks', 'panel_size', 0.35
-  options, prefix + 'peaks', 'ytitle', receiver_str + ' Auto!CPks En'
+  options, prefix + 'peaks', 'ytitle', receiver_str + '!CAUTO!CPks En'
+  options, prefix + 'peaks', 'ysubtitle', ''
 
   options, prefix + 'averages', 'yrange', [0, 1]
   options, prefix + 'averages', 'ystyle', 1
@@ -35,17 +37,21 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'averages', 'psym', 4
   options, prefix + 'averages', 'symsize', 0.5
   options, prefix + 'averages', 'panel_size', 0.35
-  options, prefix + 'averages', 'ytitle', receiver_str + ' Auto!CAvg En'
+  options, prefix + 'averages', 'ytitle', receiver_str + '!CAUTO!CAvg En'
+  options, prefix + 'averages', 'ysubtitle', ''
 
-  options, prefix + 'gain', 'yrange', [0, 1]
+  options, prefix + 'gain', 'yrange', [-0.25, 1.25]
   options, prefix + 'gain', 'yticks', 1
+  options, prefix + 'gain', 'ytickv', [0,1]
+  options, prefix + 'gain', 'ytickname', ['Lo','Hi']
   options, prefix + 'gain', 'ystyle', 1
   options, prefix + 'gain', 'colors', color
   options, prefix + 'gain', 'yminor', 1
   options, prefix + 'gain', 'psym', 4
   options, prefix + 'gain', 'symsize', 0.5
   options, prefix + 'gain', 'panel_size', 0.35
-  options, prefix + 'gain', 'ytitle', receiver_str + ' Auto!CGain'
+  options, prefix + 'gain', 'ytitle', receiver_str + '!CAUTO!CGain'
+  options, prefix + 'gain', 'ysubtitle', ''
 
   options, prefix + 'hl', 'yrange', [0, 3]
   options, prefix + 'hl', 'yticks', 3
@@ -55,15 +61,17 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'hl', 'psym', 4
   options, prefix + 'hl', 'symsize', 0.5
   options, prefix + 'hl', 'panel_size', 0.5
-  options, prefix + 'hl', 'ytitle', receiver_str + ' Auto!CHL'
+  options, prefix + 'hl', 'ytitle', receiver_str + '!CAUTO!CHL'
+  options, prefix + 'hl', 'ysubtitle', ''
 
-  options, prefix + 'nsum', 'yrange', [0, 128]
+  options, prefix + 'nsum', 'yrange', [0, 80]
   options, prefix + 'nsum', 'ystyle', 1
   options, prefix + 'nsum', 'yminor', 1
   options, prefix + 'nsum', 'colors', color
   options, prefix + 'nsum', 'psym', 4
   options, prefix + 'nsum', 'symsize', 0.5
-  options, prefix + 'nsum', 'ytitle', receiver_str + ' Auto!CNSUM'
+  options, prefix + 'nsum', 'ytitle', receiver_str + '!CAUTO!CNSUM'
+  options, prefix + 'nsum', 'ysubtitle', ''
 
   options, prefix + 'ch?', 'yrange', [0, 7]
   options, prefix + 'ch?', 'ystyle', 1
@@ -71,8 +79,9 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'ch?', 'colors', color
   options, prefix + 'ch?', 'psym', 4
   options, prefix + 'ch?', 'symsize', 0.5
-  options, prefix + 'ch0', 'ytitle', receiver_str + ' Auto!CCH0 Source'
-  options, prefix + 'ch1', 'ytitle', receiver_str + ' Auto!CCH1 Source'
+  options, prefix + 'ch0', 'ytitle', receiver_str + '!CAUTO!CCH0 SRC'
+  options, prefix + 'ch1', 'ytitle', receiver_str + '!CAUTO!CCH1 SRC'
+  options, prefix + 'ch?', 'ysubtitle', ''
 
   options, prefix + 'spec?_ch?', 'spec', 1
   options, prefix + 'spec?_ch?', 'no_interp', 1
@@ -92,17 +101,17 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'averages_ch?', 'ystyle', 1
   options, prefix + 'averages_ch?', 'datagap', 60
 
-  options, prefix + 'spec0_ch0', 'ytitle', receiver_str + ' Auto!CSpec0 Ch0 Raw'
-  options, prefix + 'spec0_ch1', 'ytitle', receiver_str + ' Auto!CSpec0 Ch1 Raw'
+  options, prefix + 'spec0_ch0', 'ytitle', receiver_str + '!CAUTO!CSPEC0 CH0 RAW'
+  options, prefix + 'spec0_ch1', 'ytitle', receiver_str + '!CAUTO!CSPEC0 CH1 RAW'
 
-  options, prefix + 'spec1_ch0', 'ytitle', receiver_str + ' Auto!CSpec1 Ch0 Raw'
-  options, prefix + 'spec1_ch1', 'ytitle', receiver_str + ' Auto!CSpec1 Ch1 Raw'
+  options, prefix + 'spec1_ch0', 'ytitle', receiver_str + '!CAUTO!CSPEC1 CH0 RAW'
+  options, prefix + 'spec1_ch1', 'ytitle', receiver_str + '!CAUTO!CSPEC1 CH1 RAW'
 
-  options, prefix + 'peaks_ch0', 'ytitle', receiver_str + ' Auto!CPeaks Ch0 Raw'
-  options, prefix + 'peaks_ch1', 'ytitle', receiver_str + ' Auto!CPeaks Ch1 Raw'
+  options, prefix + 'peaks_ch0', 'ytitle', receiver_str + '!CAUTO!CPEAKS CH0 RAW'
+  options, prefix + 'peaks_ch1', 'ytitle', receiver_str + '!CAUTO!CPEAKS CH1 RAW'
 
-  options, prefix + 'averages_ch0', 'ytitle', receiver_str + ' Auto!CAverages Ch0 Raw'
-  options, prefix + 'averages_ch1', 'ytitle', receiver_str + ' Auto!CAverages Ch1 Raw'
+  options, prefix + 'averages_ch0', 'ytitle', receiver_str + '!CAUTO!CAVERAGES CH0 RAW'
+  options, prefix + 'averages_ch1', 'ytitle', receiver_str + '!CAUTO!CAVERAGES CH1 RAW'
 
 
   get_data, prefix + 'gain', data = rfs_gain_dat
@@ -184,50 +193,5 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
       'Freq [Hz]'
 
   endfor
-
-  ;  get_data, prefix + 'spec0_ch0', data = rfs_dat_spec0_ch0
-  ;
-  ;  converted_data_spec0_ch0 = rfs_float(rfs_dat_spec0_ch0.y)
-  ;
-  ;  ; TODO replace hard coded gain value w/calibrated
-  ;
-  ;  if n_lo_gain GT 0 then converted_data_spec0_ch0[lo_gain, *] *= 2500.d
-  ;
-  ;  store_data, prefix + 'spec0_ch0_converted', $
-  ;    data = {x:rfs_dat_spec0_ch0.x, y:converted_data_spec0_ch0, $
-  ;    v:rfs_freqs.reduced_freq}
-  ;
-  ;  get_data, prefix + 'spec0_ch1', data = rfs_dat_spec0_ch1
-  ;
-  ;  converted_data_spec0_ch1 = rfs_float(rfs_dat_spec0_ch1.y)
-  ;
-  ;  if n_lo_gain GT 0 then converted_data_spec0_ch1[lo_gain, *] *= 2500.d
-  ;
-  ;  store_data, prefix + 'spec0_ch1_converted', $
-  ;    data = {x:rfs_dat_spec0_ch1.x, y:converted_data_spec0_ch1, $
-  ;    v:rfs_freqs.reduced_freq}
-  ;
-  ;  options, prefix + 'spec0_ch?_converted', 'spec', 1
-  ;  options, prefix + 'spec0_ch?_converted', 'no_interp', 1
-  ;  options, prefix + 'spec0_ch?_converted', 'ylog', 1
-  ;  options, prefix + 'spec0_ch?_converted', 'zlog', 1
-  ;  options, prefix + 'spec0_ch?_converted', 'yrange', [min(rfs_freqs.reduced_freq), max(rfs_freqs.reduced_freq)]
-  ;  options, prefix + 'spec0_ch?_converted', 'ystyle', 1
-  ;  options, prefix + 'spec0_ch?_converted', 'datagap', 60
-  ;  options, prefix + 'spec0_ch?_converted', 'panel_size', 2.
-  ;
-  ;  options, prefix + 'spec0_ch0_converted', 'ytitle', receiver_str + ' Auto!CSpec0 Ch0'
-  ;  options, prefix + 'spec0_ch1_converted', 'ytitle', receiver_str + ' Auto!CSpec0 Ch1'
-  ;
-  ;  get_data, prefix + 'ch0', dat = ch0_src_dat
-  ;  if n_elements(uniq(ch0_src_dat.y) EQ 1) then $
-  ;    options, prefix + 'spec0_ch0_converted', 'ysubtitle', $
-  ;    'SRC:' + strcompress(string(ch0_src_dat.y[0]))
-  ;
-  ;  get_data, prefix + 'ch1', dat = ch1_src_dat
-  ;  if n_elements(uniq(ch1_src_dat.y) EQ 1) then $
-  ;    options, prefix + 'spec0_ch1_converted', 'ysubtitle', $
-  ;    'SRC:' + strcompress(string(ch1_src_dat.y[0]))
-
 
 end

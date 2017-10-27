@@ -33,12 +33,17 @@
 ; CREATED BY:
 ;   pulupa
 ;
-; $LastChangedBy: sppfields2 $
-; $LastChangedDate: 2017-10-06 09:53:19 -0700 (Fri, 06 Oct 2017) $
-; $LastChangedRevision: 24122 $
+; $LastChangedBy: spfuser $
+; $LastChangedDate: 2017-10-26 11:27:42 -0700 (Thu, 26 Oct 2017) $
+; $LastChangedRevision: 24219 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_put_data.pro $
 ;-
 pro spp_fld_cdf_put_data, fileid, data, close = close
+
+  if not keyword_set(fileid) then begin
+    print, 'file must be specified'
+    return
+  endif
 
   foreach data_item, data, item_name do begin
 

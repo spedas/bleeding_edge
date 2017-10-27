@@ -146,7 +146,7 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
   if n_elements(uniq(ch0_src_dat.y) EQ 1) and $
     n_elements(uniq(ch1_src_dat.y) EQ 1)then $
     options, prefix + 'xspec_??_converted', 'ysubtitle', $
-    'SRC:' + $
+    'SRC ' + $
     strcompress(string(ch0_src_dat.y[0]), /rem) + '-' + $
     strcompress(string(ch1_src_dat.y[0]), /rem)
 

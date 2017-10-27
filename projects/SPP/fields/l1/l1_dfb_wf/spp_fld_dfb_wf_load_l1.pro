@@ -30,7 +30,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
   options, prefix + 'wav_tap', 'ytitle', $
     'DFB WF ' + strmid(prefix,15,2) + compressed_str + '!CTap'
 
-  options, prefix + 'compression', 'yrange', [-0.5,1.5]
+  options, prefix + 'compression', 'yrange', [-0.25,1.25]
   options, prefix + 'compression', 'ystyle', 1
   options, prefix + 'compression', 'psym', 4
   options, prefix + 'compression', 'symsize', 0.5
@@ -38,7 +38,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
   options, prefix + 'compression', 'ytitle', $
     'DFB WF ' + strmid(prefix,15,2) + compressed_str + '!CCompression'
 
-  options, prefix + 'wav_enable', 'yrange', [-0.5,1.5]
+  options, prefix + 'wav_enable', 'yrange', [-0.25,1.25]
   options, prefix + 'wav_enable', 'ystyle', 1
   options, prefix + 'wav_enable', 'psym', 4
   options, prefix + 'wav_enable', 'symsize', 0.5
@@ -86,6 +86,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
       dlim = {panel_size:2}
 
     options, prefix + 'wav_data', 'ynozero', 1
+    options, prefix + 'wav_data', 'ysubtitle', '[Counts]'
 
     get_data, prefix + 'wav_sel', data = wav_sel_dat
 
