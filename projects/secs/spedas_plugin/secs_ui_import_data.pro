@@ -7,9 +7,9 @@
 ;
 ;
 ;HISTORY:
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2015-04-15 15:14:31 -0700 (Wed, 15 Apr 2015) $
-;$LastChangedRevision: 17332 $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2017-10-26 21:47:26 -0700 (Thu, 26 Oct 2017) $
+;$LastChangedRevision: 24225 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/secs/spedas_plugin/secs_ui_import_data.pro $
 ;
 ;--------------------------------------------------------------------------------

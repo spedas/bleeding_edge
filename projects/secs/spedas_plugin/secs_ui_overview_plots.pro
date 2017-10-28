@@ -23,11 +23,39 @@
 ; OUTPUT:
 ;  none
 ;  
-;$LastChangedBy: pcruce $
-;$LastChangedDate: 2015-01-23 19:30:24 -0800 (Fri, 23 Jan 2015) $
-;$LastChangedRevision: 16723 $
-;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/secs/spedas_plugin/secs_ui_gen_overplot.pro $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2017-10-26 21:47:26 -0700 (Thu, 26 Oct 2017) $
+;$LastChangedRevision: 24225 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/secs/spedas_plugin/secs_ui_overview_plots.pro $
 ;-
+function secs_ui_time_string, tr_obj, event
+  ; function takes time widget object round the time to one minute
+  ; pit the value back to the object 
+  ; and return structure of the strings of the start date
+  
+  tr_obj->getproperty, starttime=starttime 
+  starttime->getproperty, tdouble=t0, sec=sec
+  ;round times to 1 minute
+  if sec ne 0 then begin
+    if sec lt 30 then t10=t0-sec else t10=t0+(60-sec) 
+    starttime->setproperty, tdouble=t10    
+    tr_obj->setproperty, starttime=starttime
+  endif
+  starttime->getproperty, tstring=ts, year=year, month=month, date=date, hour=hour, min=mins, sec=sec
+  timeid = widget_info(event.top, find_by_uname='time')
+  widget_control, timeid, set_value=ts, func_get_value='spd_ui_time_widget_set_value'
+  
+  str = [string(year, format='(I04)'), string([month,date,hour,mins,sec],format='(I02)')]
+  dstr = {y:str[0],m:str[1],d:str[2],hh:str[3],mm:str[4],ss:str[5],tstr:ts}
+  return, dstr
+end
+
+function secs_ui_time_isvalud, event
+  ; Check if the time is valud  
+  timeid = widget_info(event.top, find_by_uname='time')
+  widget_control, timeid, get_value=valid, func_get_value='spd_ui_time_widget_is_valid'
+  return, valid
+end
 
 pro secs_ui_overview_plots_event, event
 
@@ -63,137 +91,80 @@ pro secs_ui_overview_plots_event, event
   
   state.historywin->update,'SECS_UI_overview_PLOTS: User value: '+uval  ,/dontshow
   
+  ; check system variable !secs
+  defsysv,'!secs',exists=exists
+  if not(exists) then secs_init
+   
   CASE uval OF
-    'VIEWPLOT': BEGIN
-      timeid = widget_info(event.top, find_by_uname='time')
-      widget_control, timeid, get_value=valid, func_get_value='spd_ui_time_widget_is_valid'
-      if valid then begin
-        state.tr_obj->getproperty, starttime=starttime, endtime=endtime
-        starttime->getproperty, year=year, month=month, date=date, hour=hour, min=min, sec=sec
-        ;round times to 1 minute
-        starttime->getproperty, tdouble=t0
-        if sec lt 30 then t10=t0-sec else t10=t0+(60-sec) 
-        sec=0       
-        starttime->setproperty, tdouble=t10
-        state.tr_obj->setproperty, starttime=starttime
-        starttime->getproperty, tstring=ts
-        starttime->getproperty, year=year, month=month, date=date, hour=hour, min=min, sec=sec
-        widget_control, timeid, set_value=ts, func_get_value='spd_ui_time_widget_set_value'        
-        ; Check which plot
-        if state.plot_type[0] EQ 1 then begin
-          ; For some reason, the & cannot be sent as part of the URL. So we are going to use a single string variable that will be split by PHP.
-          datepath = string(year, format='(I04)') + "/" + string(month, format='(I02)') + "/" + string(date, format='(I02)') + "/"
-          filename = 'ThemisSEC'+ string(year, format='(I04)') + string(month, format='(I02)') + string(date, format='(I02)') + "_" + $
-            string(hour, format='(I02)') + string(min, format='(I02)') + string(sec, format='(I02)') + '.jpeg'
-          url = !secs.remote_data_dir + "Quicklook/" + datepath + "/"+filename
+    'CHECK_DATA_AVAIL': BEGIN
+        ; Todo: Check the folder availability  before open the website      
+        ; For some reason, the & cannot be sent as part of the URL. So we are going to use a single string variable that will be split by PHP.        
+        if secs_ui_time_isvalud(event) then begin        
+          state.statusBar->update,'JPEG files can be downloaded from the web site.'
+          state.historyWin->update,'JPEG files can be downloaded from the web site.'
+          stime = secs_ui_time_string(state.tr_obj, event)
+          datepath = stime.y  + "/" + stime.m + "/" + stime.d  + "/"        
+          url = !secs.remote_data_dir + "Quicklook/" + datepath          
           spd_ui_open_url, url
-        endif else begin
-          plottime=string(year, format='(I04)') + "-" + string(month, format='(I02)') + "-" + string(date, format='(I02)') + "/" + $
-            string(hour, format='(I02)') + ":" + string(min, format='(I02)') + ":" + string(sec, format='(I02)')
-          trange=[plottime, plottime]
-          if state.plot_type[1] EQ 1 then begin
-            state.statusBar->update,'Creating EIC Mosaic Plot'
-            state.historyWin->update,'Creating EIC Mosaic Plot'
-            eics_ui_overlay_plots, trange=trange, showgeo=state.geolatlon, showmag=state.maglatlon
-          endif
-          if state.plot_type[2] EQ 1 then begin
-            ;state.statusBar->update,'SEC Mosaic Plot not yet available'
-            ;state.shistoryWin->update,'SEC Mosaic Plot not yet available'
-            seca_ui_overlay_plots, trange=trange, showgeo=state.geolatlon, showmag=state.maglatlon
-          endif
-        endelse
-      endif else begin
-        ok = dialog_message('Invalid start/end time, please use: YYYY-MM-DD/hh:mm:ss', $
-          /center)   
-      endelse
+        endif
      END
+     
+     'WEBPLOT': BEGIN      
+      ; Todo: Check the jpeg folder availability before open the website
+       if secs_ui_time_isvalud(event) then begin   
+         stime = secs_ui_time_string(state.tr_obj, event)
+         datepath = stime.y  + "/" + stime.m + "/" + stime.d  + "/"
+         filename = 'ThemisSEC'+ stime.y  + stime.m + stime.d + "_" + stime.hh + stime.mm + stime.ss + '.jpeg'
+         url = !secs.remote_data_dir + "Quicklook/" + datepath + "/" + filename 
+         spd_ui_open_url, url
+       endif
+      END
 
-     'MAKEPNG': BEGIN
-       timeid = widget_info(event.top, find_by_uname='time')
-       widget_control, timeid, get_value=valid, func_get_value='spd_ui_time_widget_is_valid'
-       if valid then begin
-         state.tr_obj->getproperty, starttime=starttime, endtime=endtime
-         starttime->getproperty, year=year, month=month, date=date, hour=hour, min=min, sec=sec
-        ;round times to 1 minute
-        starttime->getproperty, tdouble=t0
-        if sec lt 30 then t10=t0-sec else t10=t0+(60-sec) 
-        sec=0       
-        starttime->setproperty, tdouble=t10
-        state.tr_obj->setproperty, starttime=starttime
-        starttime->getproperty, tstring=ts
-        starttime->getproperty, year=year, month=month, date=date, hour=hour, min=min, sec=sec
-        widget_control, timeid, set_value=ts, func_get_value='spd_ui_time_widget_set_value'        
-         ; Check which plot
-         if state.plot_type[0] EQ 1 then begin
-           state.statusBar->update,'PNG files can be downloaded from the web site.'
-           state.statusBar->update,'PNG files can be downloaded from the web site.'
-           ; For some reason, the & cannot be sent as part of the URL. So we are going to use a single string variable that will be split by PHP.
-           datepath = string(year, format='(I04)') + "/" + string(month, format='(I02)') + "/" + string(date, format='(I02)') + "/"
-           filename = 'ThemisSEC'+ string(year, format='(I04)') + string(month, format='(I02)') + string(date, format='(I02)') + "_" + $
-             string(hour, format='(I02)') + string(min, format='(I02)') + string(sec, format='(I02)') + '.jpeg'
-           url = !secs.remote_data_dir + "Quicklook/" + datepath + "/"+filename
-           spd_ui_open_url, url
-         endif
-         plottime=string(year, format='(I04)') + "-" + string(month, format='(I02)') + "-" + string(date, format='(I02)') + "/" + $
-           string(hour, format='(I02)') + ":" + string(min, format='(I02)') + ":" + string(sec, format='(I02)')
-         trange=[plottime, plottime]
-         if state.plot_type[1] EQ 1 then begin
-             state.statusBar->update,'Creating EIC Mosaic Plot and png file'
-             state.historyWin->update,'Creating EIC Mosaic Plot and png file'
-             eics_ui_overlay_plots, trange=trange, /createpng, showgeo=state.geolatlon, showmag=state.maglatlon
-         endif
-         if state.plot_type[2] EQ 1 then begin
-           ;state.statusBar->update,'SEC Mosaic Plot not yet available'
-           ;state.shistoryWin->update,'SEC Mosaic Plot not yet available'
-           seca_ui_overlay_plots, trange=trange, /createpng, showgeo=state.geolatlon, showmag=state.maglatlon
-         endif
-       endif else begin
-         ok = dialog_message('Invalid start/end time, please use: YYYY-MM-DD/hh:mm:ss', $
-           /center)
-       endelse
+     'VIEWPLOT': BEGIN       
+       if secs_ui_time_isvalud(event) then begin
+         stime = secs_ui_time_string(state.tr_obj, event)
+         plottime=stime.y  + "-" + stime.m  + "-" + stime.d  + "/" + stime.hh  + ":" + stime.mm  + ":" + stime.ss 
+         trange=[plottime, plottime]                 
+         IF state.pngbutton THEN png_str = ' and png file' ELSE png_str = ''
+         widget_control,widget_info(event.top, FIND_BY_UNAME='plottype'),GET_VALUE=plot_type
+         CASE plot_type OF
+           0: begin
+               state.statusBar->update,'Creating EIC Mosaic Plot' + png_str
+               state.historyWin->update,'Creating EIC Mosaic Plot' + png_str
+               eics_ui_overlay_plots, trange=trange, createpng=state.pngbutton, showgeo=state.geolatlon, showmag=state.maglatlon
+           end
+           1: begin
+             state.statusBar->update,'Creating SEC Mosaic Plot' + png_str
+             state.historyWin->update,'Creating SEC Mosaic Plot' + png_str
+             seca_ui_overlay_plots, trange=trange, createpng=state.pngbutton, showgeo=state.geolatlon, showmag=state.maglatlon
+           end
+         endcase
+       endif
      END
-
-     'QUICKLOOK': BEGIN
-       state.plot_type[0]=1
-       state.plot_type[1]=0
-       state.plot_type[2]=0
-     END     
-    
-     'EICMOSAIC': BEGIN
-       state.plot_type[0]=0
-       state.plot_type[1]=1
-       state.plot_type[2]=0
+     
+    'GEOLATLON': BEGIN
+       state.geolatlon = event.select
      END
-
-     'SECMOSAIC': BEGIN
-       state.plot_type[0]=0
-       state.plot_type[1]=0
-       state.plot_type[2]=1
-     END
-
-     'GEOLATLON': BEGIN
-       if state.geolatlon EQ 1 then state.geolatlon=0 else state.geolatlon=1
-     END
-
      'MAGLATLON': BEGIN
-       if state.maglatlon EQ 1 then state.maglatlon=0 else state.maglatlon=1
+       state.maglatlon = event.select
      END
-
-    'DONE': BEGIN
+     'DYNSCLE': BEGIN
+       state.dynscale = event.select
+     END
+     'MAKEPNG': BEGIN
+       state.pngbutton = event.select
+     END
+     
+    'CLOSE': BEGIN
       state.historyWin->update,'Generate secs overview plot canceled',/dontshow
       state.statusBar->Update,'Generate secs overview plot canceled.'
       Widget_Control, event.TOP, Set_UValue=state, /No_Copy
       Widget_Control, event.top, /Destroy
       RETURN
     END
-
-    'CHECK_DATA_AVAIL': begin
-      spd_ui_open_url, !secs.remote_data_dir+'Quicklook'
-    end
-
-    'KEY': begin
-      idx=where(state.plot_type EQ 1) 
-      spd_ui_overplot_key, state.gui_id, state.historyWin, /modal, secs=idx+1      
+    
+    'KEY': begin     
+      spd_ui_overplot_key, state.gui_id, state.historyWin, /modal, /secs      
     end
     
     ELSE: 
@@ -215,7 +186,6 @@ pro secs_ui_overview_plots, gui_id = gui_id, $
                           _extra = _extra
 
   compile_opt idl2
-
 
   err_xxx = 0
   Catch, err_xxx
@@ -241,34 +211,38 @@ pro secs_ui_overview_plots, gui_id = gui_id, $
     txtBase = widget_base(mainbase, /Col, /align_center)
     quickBase = widget_base(mainBase, Frame=1, /Col)
     midBase = widget_base(quickBase, /Row)
-      trvalsBase = Widget_Base(midBase, /Col, xpad=8)
-      keyButtonBase = widget_button(midBase, Value='Plot Keys', UValue='KEY', XSize=80, $
-                                    tooltip = 'Displays detailed descriptions of secs overview plot panels.')
+      trvalsBase = Widget_Base(midBase, /Col, xpad=0) ; time selector      
+      midBaseButtons = Widget_Base(midBase, /Col) ; Button column      
+      keyButtonBase = widget_button(midBaseButtons, Value='Plot Keys', UValue='KEY', YSize=60, $
+                                    tooltip = 'Displays detailed descriptions of secs overview plot panels.')                                                                        
+      davailabilitybutton = widget_button(midBaseButtons, val = ' Data Availability ', $
+                                            uval = 'CHECK_DATA_AVAIL', $
+                                            ToolTip = 'Browse the website to check data availability')
+                                            
     plotLabel = Widget_Label(quickBase, Value='Select Plot Type: ', /align_left)
-    plotBase = Widget_Base(quickBase, /Col, xpad=8, /align_left, /exclusive)   
-    quicklookButton = Widget_Button(plotBase, Value=' View Quicklook Web Plot ', UValue='QUICKLOOK', $
-      uname='quicklook',/align_left)
-    eicmosaicButton = Widget_Button(plotBase, Value=' Overplot EICS/THEMIS ASI Mosaics ', $
-      UValue='EICMOSAIC', uname='eicmosaic', /align_left)
-    secmosaicButton = Widget_Button(plotBase, Value=' Overplot SECA/THEMIS ASI Mosaics ', $
-      UValue='SECMOSAIC', uname='secmosaic', /align_left)
-    ;displayLabel=Widget_Label(plotBase, Value=' Display Options: ', /align_left)
-    labelbase=widget_base(quickBase, /row, xpad=8, /align_left)
-    displayLabel=Widget_Label(labelbase, Value=' Display Options: ', /align_left)
-    latlonbase=Widget_Base(quickBase, /row, xpad=8, /align_left, /nonexclusive)   
-    geoButton=Widget_Button(latlonbase, value=' Show Geographic Lat/Lon ', UValue='GEOLATLON', $
-      uname='geolatlon')
-    magButton=Widget_Button(latlonbase, value=' Show Magnetic Lat/Lon ', UValue='MAGLATLON', $
-      uname='maglatlon')
-    goWebBase = Widget_Base(mainBase, /Row, xpad=8, /align_center)
-    buttonBase = Widget_Base(mainBase, /row, /align_center)
-    davailabilitybutton = widget_button(goWebBase, val = ' Check Data Availability ', $
-      uval = 'CHECK_DATA_AVAIL', /align_center, $
-      ToolTip = 'Check data availability on the web')
-    viewbutton = widget_button(goWebBase, val = ' View Plot ', $
-      uval = 'VIEWPLOT', /align_center)
-    viewbutton = widget_button(goWebBase, val = ' Make PNG ', $
-      uval = 'MAKEPNG', /align_center)
+    
+    
+    plotBaseValues = [' Overplot EICS/THEMIS ASI Mosaics ', ' Overplot SECA/THEMIS ASI Mosaics ']
+    plotBaseGroup = CW_BGROUP(quickBase, plotBaseValues, /exclusive, /Col, xpad=8, set_value=0, UNAME='plottype',UVAL='PLOTTYPE')
+
+    labelbase=widget_base(quickBase, row=2, /align_left)    
+    displayLabel=Widget_Label(labelbase, Value=' Plot Options: ', /align_left)        
+    latlonbase=Widget_Base(labelbase, row=2, xpad=8,/align_left, /nonexclusive)    
+    geoButton=Widget_Button(latlonbase, value=' Show Geographic Lat/Lon ', UValue='GEOLATLON',uname='geolatlon')
+    magButton=Widget_Button(latlonbase, value=' Show Magnetic Lat/Lon ', UValue='MAGLATLON', uname='maglatlon')      
+    ;dynscaleButton=Widget_Button(latlonbase, value=' Use dynamic scaling ', UValue='DYNSCLE', uname='dynscale')
+    pngButton=Widget_Button(latlonbase, value=' Make PNG ', UValue='MAKEPNG', uname='makepng')
+    
+    ; TODO: strech the width of the field
+    webplotbase=widget_base(quickBase, /row, /align_left,/frame)
+    webplottext=widget_label(webplotbase, value=' Alternatively, you can view the plot on the web. ')
+    webplotbutton=widget_button(webplotbase, value='Web Plot', UValue='WEBPLOT', uname='webplot')    
+    
+    
+    ;goWebBase = Widget_Base(mainBase, /Row,  /align_center)    
+    buttonBase = Widget_Base(mainBase, /row, xpad=8, /align_center)
+    viewbutton = widget_button(buttonBase, val = ' View Plot ', uval = 'VIEWPLOT', /align_center)
+    applyButton = Widget_Button(buttonBase, Value='Close', UValue='CLOSE', XSize=80)
     
 ; Time range-related widgets
   getresourcepath,rpath
@@ -276,18 +250,17 @@ pro secs_ui_overview_plots, gui_id = gui_id, $
   spd_ui_match_background, tlb, cal  
 
   if ~obj_valid(tr_obj) then begin
-    st_text = '2007-03-23/00:00:00.0'
-    et_text = '2007-03-24/00:00:00.0'
+    st_text = '2015-03-17/14:00:00'
+    et_text = '2015-03-18/00:00:00'
     tr_obj=obj_new('spd_ui_time_range',starttime=st_text,endtime=et_text)
   endif
 
-
   timeWidget = spd_ui_time_widget(trvalsBase,statusBar,historyWin,timeRangeObj=tr_obj, $
-                                  uvalue='TIME',uname='time', startyear = 1995);, oneday=1 
+                                  uvalue='TIME',uname='time', startyear = 2007, oneday=1) 
+    
+  ; todo:  set the default date, the setting time abowe does not work
   
 
-; Main window buttons
-  applyButton = Widget_Button(buttonBase, Value='Done', UValue='DONE', XSize=80)
 
   ;flag denoting successful run
   success = 0
@@ -298,17 +271,21 @@ pro secs_ui_overview_plots, gui_id = gui_id, $
   endif
 
   data_ptr = ptr_new(data_structure)
-  plot_type = make_array(3, /integer)
-  plot_type[0] = 1
+   
+  ; to trick the time widget we will hide unused fields
+  widget_control,widget_info(tlb,  FIND_BY_UNAME='oneday'),MAP=0
+  widget_control,widget_info(tlb,  FIND_BY_UNAME='stopbase'),MAP=0
    
   widget_control, geoButton, set_button=1
   widget_control, magButton, set_button=1
-  widget_control, quicklookButton, set_button=1
+  widget_control, pngButton, set_button=0
+  ;widget_control, dynscaleButton, set_button=0
+
   
   state = {tlb:tlb, gui_id:gui_id, historyWin:historyWin,statusBar:statusBar, $
-           tr_obj:tr_obj, plot_type:plot_type, success:ptr_new(success), data:data_ptr, $
-           callSequence:callSequence,windowStorage:windowStorage, geolatlon:1, maglatlon:1, $
-           loadedData:loadedData}
+           tr_obj:tr_obj,  success:ptr_new(success), data:data_ptr, $ ; plot_type:plot_type - excluded
+           callSequence:callSequence,windowStorage:windowStorage, $
+           geolatlon:1, maglatlon:1, pngbutton:0, dynscale:0, loadedData:loadedData}
 
   Centertlb, tlb         
   Widget_Control, tlb, Set_UValue=state, /No_Copy
@@ -329,3 +306,4 @@ pro secs_ui_overview_plots, gui_id = gui_id, $
 
   RETURN
 end
+
