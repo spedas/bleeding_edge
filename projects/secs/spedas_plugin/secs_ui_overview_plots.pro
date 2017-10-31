@@ -24,8 +24,8 @@
 ;  none
 ;  
 ;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2017-10-26 21:47:26 -0700 (Thu, 26 Oct 2017) $
-;$LastChangedRevision: 24225 $
+;$LastChangedDate: 2017-10-30 16:18:36 -0700 (Mon, 30 Oct 2017) $
+;$LastChangedRevision: 24238 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/secs/spedas_plugin/secs_ui_overview_plots.pro $
 ;-
 function secs_ui_time_string, tr_obj, event
@@ -131,12 +131,12 @@ pro secs_ui_overview_plots_event, event
            0: begin
                state.statusBar->update,'Creating EIC Mosaic Plot' + png_str
                state.historyWin->update,'Creating EIC Mosaic Plot' + png_str
-               eics_ui_overlay_plots, trange=trange, createpng=state.pngbutton, showgeo=state.geolatlon, showmag=state.maglatlon
+               eics_overlay_plots, trange=trange, createpng=state.pngbutton, showgeo=state.geolatlon, showmag=state.maglatlon, dynscale=state.dynscale
            end
            1: begin
              state.statusBar->update,'Creating SEC Mosaic Plot' + png_str
              state.historyWin->update,'Creating SEC Mosaic Plot' + png_str
-             seca_ui_overlay_plots, trange=trange, createpng=state.pngbutton, showgeo=state.geolatlon, showmag=state.maglatlon
+             seca_overlay_plots, trange=trange, createpng=state.pngbutton, showgeo=state.geolatlon, showmag=state.maglatlon, dynscale=state.dynscale
            end
          endcase
        endif
@@ -230,7 +230,7 @@ pro secs_ui_overview_plots, gui_id = gui_id, $
     latlonbase=Widget_Base(labelbase, row=2, xpad=8,/align_left, /nonexclusive)    
     geoButton=Widget_Button(latlonbase, value=' Show Geographic Lat/Lon ', UValue='GEOLATLON',uname='geolatlon')
     magButton=Widget_Button(latlonbase, value=' Show Magnetic Lat/Lon ', UValue='MAGLATLON', uname='maglatlon')      
-    ;dynscaleButton=Widget_Button(latlonbase, value=' Use dynamic scaling ', UValue='DYNSCLE', uname='dynscale')
+    dynscaleButton=Widget_Button(latlonbase, value=' Use dynamic scaling ', UValue='DYNSCLE', uname='dynscale')
     pngButton=Widget_Button(latlonbase, value=' Make PNG ', UValue='MAKEPNG', uname='makepng')
     
     ; TODO: strech the width of the field
@@ -249,18 +249,17 @@ pro secs_ui_overview_plots, gui_id = gui_id, $
   cal = read_bmp(rpath + 'cal.bmp', /rgb)
   spd_ui_match_background, tlb, cal  
 
-  if ~obj_valid(tr_obj) then begin
-    st_text = '2015-03-17/14:00:00'
-    et_text = '2015-03-18/00:00:00'
+  st_text = '2015-03-17/13:00:00'
+  et_text = '2015-03-18/00:00:00'
+  if ~obj_valid(tr_obj) then begin    
     tr_obj=obj_new('spd_ui_time_range',starttime=st_text,endtime=et_text)
   endif
+  ; set the default date, the setting time above does not work because tr_obj is defined
+  stat = tr_obj->SetStartTime(st_text)
+  stat = tr_obj->SetEndTime(et_text)
 
   timeWidget = spd_ui_time_widget(trvalsBase,statusBar,historyWin,timeRangeObj=tr_obj, $
                                   uvalue='TIME',uname='time', startyear = 2007, oneday=1) 
-    
-  ; todo:  set the default date, the setting time abowe does not work
-  
-
 
   ;flag denoting successful run
   success = 0
@@ -279,7 +278,7 @@ pro secs_ui_overview_plots, gui_id = gui_id, $
   widget_control, geoButton, set_button=1
   widget_control, magButton, set_button=1
   widget_control, pngButton, set_button=0
-  ;widget_control, dynscaleButton, set_button=0
+  widget_control, dynscaleButton, set_button=0
 
   
   state = {tlb:tlb, gui_id:gui_id, historyWin:historyWin,statusBar:statusBar, $

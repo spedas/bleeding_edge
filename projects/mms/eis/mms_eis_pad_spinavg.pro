@@ -22,8 +22,8 @@
 ; OUTPUT:
 ; 
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-05-15 13:08:19 -0700 (Mon, 15 May 2017) $
-;$LastChangedRevision: 23320 $
+;$LastChangedDate: 2017-10-30 08:20:09 -0700 (Mon, 30 Oct 2017) $
+;$LastChangedRevision: 24233 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad_spinavg.pro $
 ;
 ; REVISION HISTORY:
@@ -35,7 +35,7 @@
 ;-
 
 pro mms_eis_pad_spinavg, probe=probe, species = species, data_units = data_units, $
-  datatype = datatype, energy = energy, bin_size = bin_size, data_rate = data_rate, $
+  datatype = datatype, energy = energy, size_pabin = size_pabin, data_rate = data_rate, $
   suffix = suffix, scopes = scopes
   
   if undefined(probe) then probe='1' else probe = strcompress(string(probe), /rem)
@@ -44,7 +44,7 @@ pro mms_eis_pad_spinavg, probe=probe, species = species, data_units = data_units
   if undefined(species) then species = 'proton'
   if undefined(suffix) then suffix_in = '' else suffix_in = suffix
   if undefined(energy) then energy = [0, 1000]
-  if undefined(bin_size) then bin_size = 15
+  if undefined(size_pabin) then size_pabin = 15
   if undefined(data_rate) then data_rate = 'srvy'
   if undefined(scopes) then scopes = ['0','1','2','3','4','5']
 
@@ -87,12 +87,12 @@ pro mms_eis_pad_spinavg, probe=probe, species = species, data_units = data_units
   if is_array(newname) then newname = newname[0] 
 
   ; rebin the data before storing it
-  ; the idea here is, for bin_size = 15 deg, rebin the data from center points to:
+  ; the idea here is, for size_pabin = 15 deg, rebin the data from center points to:
   ;    new_bins = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135 , 150, 165]
 
-  n_pabins = 180./bin_size
+  n_pabins = 180./size_pabin
   new_bins = 180.*indgen(n_pabins+1)/n_pabins
-  new_pa_label = 180.*indgen(n_pabins)/n_pabins+bin_size/2.
+  new_pa_label = 180.*indgen(n_pabins)/n_pabins+size_pabin/2.
   
   store_data, newname, data={x: spin_times, y: spin_sum_flux, v: new_pa_label}, dlimits=flux_dl
   

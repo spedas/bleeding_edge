@@ -6,8 +6,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-09-14 12:45:51 -0700 (Thu, 14 Sep 2017) $
-; $LastChangedRevision: 23978 $
+; $LastChangedDate: 2017-10-30 07:36:07 -0700 (Mon, 30 Oct 2017) $
+; $LastChangedRevision: 24231 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/quicklook/mms_load_feeps_crib_qlplots.pro $
 ;-
 
@@ -49,10 +49,10 @@ tdeflag, tnames('*_intensity_*'), 'repeat', /overwrite
 tdeflag, tnames('*_count_rate_*'), 'repeat', /overwrite
 tdeflag, tnames('*_counts_*'), 'repeat', /overwrite
 
-mms_feeps_pad, probe = probe, datatype = 'electron', suffix='_electrons', energy=[84, 85], data_units = type, level='l1b'
-mms_feeps_pad, probe = probe, datatype = 'electron', suffix='_electrons', energy=[200, 250], data_units = type, level='l1b'
-mms_feeps_pad, probe = probe, datatype = 'ion', suffix='_ions', energy=[76, 77], data_units = type, level='l1b'
-mms_feeps_pad, probe = probe, datatype = 'ion', suffix='_ions', energy=[205, 206], data_units = type, level='l1b'
+mms_feeps_pad, probe = probe, datatype = 'electron', suffix='_electrons', energy=[50, 100], data_units = type, level='l1b'
+mms_feeps_pad, probe = probe, datatype = 'electron', suffix='_electrons', energy=[100, 200], data_units = type, level='l1b'
+mms_feeps_pad, probe = probe, datatype = 'ion', suffix='_ions', energy=[70, 100], data_units = type, level='l1b'
+mms_feeps_pad, probe = probe, datatype = 'ion', suffix='_ions', energy=[100, 200], data_units = type, level='l1b'
 
 ; we use the B-field data at the top of the plot, and the position data in GSM coordinates
 ; loaded from the QL DFG files
@@ -95,11 +95,11 @@ spd_mms_load_bss, datatype=['fast', 'burst'], /include_labels
 
 panels = 'mms'+probe+['_dfg_srvy_dmpa_clipped', $
   '_epd_feeps_srvy_l1b_electron_'+type+'_omni_spin_electrons', $
-  '_epd_feeps_srvy_l1b_electron_'+type+'_84-85keV_pad_spin_electrons', $
-  '_epd_feeps_srvy_l1b_electron_'+type+'_200-250keV_pad_spin_electrons', $
+  '_epd_feeps_srvy_l1b_electron_'+type+'_50-100keV_pad_spin_electrons', $
+  '_epd_feeps_srvy_l1b_electron_'+type+'_100-200keV_pad_spin_electrons', $
   '_epd_feeps_srvy_l1b_ion_'+type+'_omni_spin_ions', $
-  '_epd_feeps_srvy_l1b_ion_'+type+'_76-77keV_pad_spin_ions', $
-  '_epd_feeps_srvy_l1b_ion_'+type+'_205-206keV_pad_spin_ions']
+  '_epd_feeps_srvy_l1b_ion_'+type+'_70-100keV_pad_spin_ions', $
+  '_epd_feeps_srvy_l1b_ion_'+type+'_100-200keV_pad_spin_ions']
 
 mms_tplot_quicklook, panels, var_label=position_vars, title='MMS'+probe+' FEEPS Summary', $
     burst_bar = 'mms_bss_burst', fast_bar = 'mms_bss_fast'

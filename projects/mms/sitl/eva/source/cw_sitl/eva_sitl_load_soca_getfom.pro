@@ -41,8 +41,8 @@ Function eva_sitl_load_soca_getfom, pref, parent
     msg = [msg,'performed on a ROI where no fast survey or']
     msg = [msg,'burst data was collected.']
     msg = [msg,' ']
-    msg = [msg,'EVA will search and load the latest and valid']
-    msg = [msg,'FOMstr.']
+    msg = [msg,'EVA will search and load some valid']
+    msg = [msg,'FOMstr from the past.']
     result=dialog_message(msg,/center)
     
     sdur = 90.d0; Search from the last 90 days.

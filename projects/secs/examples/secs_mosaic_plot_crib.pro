@@ -24,27 +24,27 @@ timespan, '2015-03-23'
 tr=timerange()
 
 ; plot the EICs data on top of the ASI mosaic plot
-eics_ui_overlay_plots, trange=tr
+eics_overlay_plots, trange=tr
 stop
 
 ; plot the SECa data on top of the ASI mosaic plot (note if timespan is used
 ; to set the timerange you do not need to use the trange keyword)
-seca_ui_overlay_plots, trange=tr
+seca_overlay_plots, trange=tr
 stop
 
 ; create png file (the /createpng keyword is available for both eics and seca plots)
 ; PNG file format: C:\data\secs\Mosaic/yyyy/mm/dd/ThemisMosaicEICSyyyymmdd_hhmmss
-eics_ui_overlay_plots, trange=tr, /createpng
+eics_overlay_plots, trange=tr, /createpng
 stop
 
 ; you can turn off either geo or the mag grid lines by using showgeo and showmag keywords
-seca_ui_overlay_plots, trange=tr, /showgeo, /showmag
+seca_overlay_plots, trange=tr, /showgeo, /showmag
 stop
 
 ; for days that have ground based station information the stations will automatically be 
 ; plotted as well. Station locations are displayed as green stars.
 timespan, '2008-03-09'
-eics_ui_overlay_plots, /showgeo
+eics_overlay_plots, /showgeo
 
 print, 'done'
 
