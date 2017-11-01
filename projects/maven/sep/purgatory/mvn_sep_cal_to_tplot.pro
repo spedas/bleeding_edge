@@ -1,9 +1,10 @@
-pro mvn_sep_cal_to_tplot,newdat,sepnum=sepnum,qfilter=qfilter,smoothcounts=smoothcounts,lowres=lowres
+pro mvn_sep_cal_to_tplot,newdat,sepnum=sepnum,qfilter=qfilter,smoothcounts=smoothcounts,lowres=lowres,arc=arc
 
 @mvn_sep_handler_commonblock.pro
 
 if ~keyword_set(newdat) and keyword_set(sep1_svy) then begin
   rawdat = sepnum eq 1 ? *sep1_svy.x : *sep2_svy.x
+  if keyword_set(arc) and keyword_set(sep1_arc) then rawdat = sepnum eq 1 ? *sep1_arc.x : *sep2_arc.x
   if keyword_set(smoothcounts) then begin
     raw_data=transpose(rawdat.data)
     raw_data=smooth_counts(raw_data)
@@ -29,7 +30,9 @@ endif
 prefix='mvn_SEP'+strtrim(sepnum,2)
 if keyword_set(smoothcounts) then prefix='<mvn>_SEP'+strtrim(sepnum,2)
 if keyword_set(lowres) then prefix='mvn_5min_SEP'+strtrim(sepnum,2)
+if keyword_set(arc) then prefix='mvn_arc_SEP'+strtrim(sepnum,2)
 if keyword_set(smoothcounts) and keyword_set(lowres) then prefix='<mvn>_5min_SEP'+strtrim(sepnum,2)
+if keyword_set(smoothcounts) and keyword_set(arc) then prefix='<mvn>_arc_SEP'+strtrim(sepnum,2)
 
   ;
   data = newdat.f_ion_flux

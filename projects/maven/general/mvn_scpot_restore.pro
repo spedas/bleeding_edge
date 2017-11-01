@@ -25,8 +25,8 @@
 ;       SUCCESS:       Set to 1 if valid potentials are found.
 ;       
 ; $LastChangedBy: xussui $
-; $LastChangedDate: 2017-08-01 14:35:08 -0700 (Tue, 01 Aug 2017) $
-; $LastChangedRevision: 23748 $
+; $LastChangedDate: 2017-10-31 14:40:03 -0700 (Tue, 31 Oct 2017) $
+; $LastChangedRevision: 24246 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot_restore.pro $
 ;
 ;CREATED BY:    Shaosui Xu  06-23-17
@@ -69,7 +69,7 @@ Pro mvn_scpot_restore, trange, results=results, tplot=tplot, orbit=orbit, full=f
     file = file[indx]
 
     for j=0,nfiles-1 do begin
-       restore,filename=file[indx[j]]
+       restore,filename=file[j]
 
        pot_comp=[temporary(pot_comp),mvn_scpot.pot_comp]
        

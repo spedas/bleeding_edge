@@ -35,8 +35,9 @@ pro mvn_sep_pfdpu_tplot_options,tplot=tplot,lowres=lowres
    store_data,prefix+'DPU_TEMP',data=prefix+'sep1_hkp_AMON_TEMP_DAP '+prefix+'sep2_hkp_AMON_TEMP_DAP '+prefix+'pfdpu*_TEMP'
    store_data,prefix+'SEPS_TEMP',data=prefix+'sep?_hkp_AMON_TEMP_S?'
    store_data,prefix+'pfp_TEMPS',data = prefix+'sep?_hkp_AMON_TEMP_* '+prefix+'pfdpu*_TEMP',dlim={yrange:[-45.,50],ystyle:1,panel_size:2.}
-   options,prefix+'sep1_hkp_* '+prefix+'sep1_svy_ATT '+prefix+'sep1_svy_COUNTS_TOTAL',colors='b',ystyle=2
-   options,prefix+'sep2_hkp_* '+prefix+'sep2_svy_ATT '+prefix+'sep2_svy_COUNTS_TOTAL',colors='r',ystyle=2
+   options,prefix+'sep1_hkp_* '+prefix+'sep1_???_ATT '+prefix+'sep1_???_COUNTS_TOTAL '+prefix+'sep1_???_DURATION',colors='b',ystyle=2,labels='SEP1'
+   options,prefix+'sep2_hkp_* '+prefix+'sep2_???_ATT '+prefix+'sep2_???_COUNTS_TOTAL '+prefix+'sep2_???_DURATION',colors='r',ystyle=2,labels='SEP2'
+   options,prefix+'sep?_???_DURATION',ylog=1,panel_size=.5
    options,prefix+'sep?_???_ATT',yrange=[0,3],panel_size=.3
   ; options,prefix+'sep?_???_ATT',yrange=[0,1],zrange=[0,2],/ystyle,spec=1,panel_size=.2
    
@@ -45,7 +46,10 @@ pro mvn_sep_pfdpu_tplot_options,tplot=tplot,lowres=lowres
 ;   tnames = 'sep1_hkp_AMON_*'
    store_data,prefix+'SEPS_hkp_VCMD_CNTR',data=prefix+'sep?_hkp_VCMD_CNTR'
    store_data,prefix+'SEPS_hkp_MEM_CHECKSUM',data=prefix+'sep?_hkp_MEM_CHECKSUM'
-   store_data,prefix+'SEPS_svy_ATT',data=prefix+'sep?_svy_ATT',dlim={panel_size:.4,yrange:[0,3]}
+   store_data,prefix+'SEPS_svy_ATT',data=prefix+'sep?_svy_ATT',dlim={panel_size:.4,yrange:[0,3],labflag:-1}
+   store_data,prefix+'SEPS_arc_ATT',data=prefix+'sep?_arc_ATT',dlim={panel_size:.4,yrange:[0,3],labflag:-1}
+   store_data,prefix+'SEPS_svy_DURATION',data=prefix+'sep?_svy_DURATION',dlim={panel_size:.5,labflag:-1}
+   store_data,prefix+'SEPS_arc_DURATION',data=prefix+'sep?_arc_DURATION',dlim={panel_size:.5,labflag:-1}
    store_data,prefix+'SEPS_svy_COUNTS_TOTAL',data=prefix+'sep?_svy_COUNTS_TOTAL',dlim={yrange:[.8,1e5],ylog:1,panel_size:1.5}
    store_data,prefix+'SEPS_svy_ALLTID',data=prefix+'sep?_?'
    store_data,prefix+'SEPS_QL' , data=prefix+'sep?_?_????_tot '+prefix+'sep?_svy_ATT',dlim={yrange:[.8,1e5],ylog:1,panel_size:2.}

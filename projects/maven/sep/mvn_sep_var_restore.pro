@@ -1,6 +1,6 @@
 pro mvn_sep_var_restore,pathname,trange=trange,verbose=verbose,download_only=download_only,prereq_info=prereq_temp,filename=files,no_finish=no_finish, $
                         lowres=lowres,units_name=units_name,svy_tags=svy_tags,hkp_tags=hkp_tags,noise_tags=noise_tags,pfdpu_hkp_tags=pfdpu_hkp_tags,   $
-                        shkp_tags=shkp_tags,oper_tags=oper_tags,basic_tags=basic_tags,full_tags=full_tags
+                        shkp_tags=shkp_tags,oper_tags=oper_tags,basic_tags=basic_tags,full_tags=full_tags,arc=arc
 
 @mvn_sep_handler_commonblock.pro
 @mvn_pfdpu_handler_commonblock.pro
@@ -77,7 +77,7 @@ if keyword_set(full_tags) then begin
 endif
 
 mvn_pfdpu_handler,finish= ~keyword_set(no_finish),hkp_tags=pfdpu_hkp_tags,shkp_tags=shkp_tags,oper_tags=oper_tags,lowres=lowres
-mvn_sep_handler,finish= ~keyword_set(no_finish),units_name=units_name,svy_tags=svy_tags,hkp_tags=hkp_tags,noise_tags=noise_tags,lowres=lowres
+mvn_sep_handler,finish= ~keyword_set(no_finish),units_name=units_name,svy_tags=svy_tags,hkp_tags=hkp_tags,noise_tags=noise_tags,lowres=lowres,arc=arc
 end
 
 

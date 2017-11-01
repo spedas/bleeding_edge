@@ -549,7 +549,7 @@ end
 
 
 pro mvn_sep_handler,ccsds,decom=decom,reset=reset,debug=debug,finish=finish,set_realtime=set_realtime,record_filenames=record_filenames ,clear=clear,set_manage=set_manage $
- ,trange=trange,svy_tags=svy_tags,hkp_tags=hkp_tags,noise_tags=noise_tags,sepnum=sepnum,mag_tags=mag_tags,units_name=units_name,lowres=lowres
+ ,trange=trange,svy_tags=svy_tags,hkp_tags=hkp_tags,noise_tags=noise_tags,sepnum=sepnum,mag_tags=mag_tags,units_name=units_name,lowres=lowres,arc=arc
 
     common mav_apid_sep_handler_misc_com,manage,realtime,sep1_avg,sep2_avg,lastmem1,lastmem2,sep1_last_hkp,sep2_last_hkp ,sep1_spec,sep2_spec,sep1arc_spec,sep2arc_spec
 
@@ -619,11 +619,17 @@ pro mvn_sep_handler,ccsds,decom=decom,reset=reset,debug=debug,finish=finish,set_
 ;           if (sepn and 1) ne 0 then if keyword_set(sep1_svy)   then mvn_sep_create_subarrays,*sep1_svy.x,tname=prefix+'sep1' ;,mapname=mapname
 ;           if (sepn and 2) ne 0 then if keyword_set(sep2_svy)   then mvn_sep_create_subarrays,*sep2_svy.x,tname=prefix+'sep2' ;,mapname=mapname
         if keyword_set(finish) && (keyword_set(sep1_svy) || keyword_set(sep2_svy)) then begin
-            if (sepn and 1) ne 0 then mvn_sep_create_subarrays,'mvn_sep1_svy',units_name=units_name,lowres=lowres
-            if (sepn and 2) ne 0 then mvn_sep_create_subarrays,'mvn_sep2_svy',units_name=units_name,lowres=lowres
-            if (sepn and 1) ne 0 && keyword_set(sep1_noise) then mvn_sep_create_noise_arrays,*sep1_noise.x,tname=prefix+'sep1'
-            if (sepn and 2) ne 0 && keyword_set(sep2_noise) then mvn_sep_create_noise_arrays,*sep2_noise.x,tname=prefix+'sep2'
-            mvn_sep_pfdpu_tplot_options,lowres=lowres
+          data_str1='mvn_sep1_svy'
+          data_str2='mvn_sep2_svy'
+          if keyword_set(arc) then begin
+            data_str1='mvn_sep1_arc'
+            data_str2='mvn_sep2_arc'
+          endif
+          if (sepn and 1) ne 0 then mvn_sep_create_subarrays,data_str1,units_name=units_name,lowres=lowres,arc=arc
+          if (sepn and 2) ne 0 then mvn_sep_create_subarrays,data_str2,units_name=units_name,lowres=lowres,arc=arc
+          if (sepn and 1) ne 0 && keyword_set(sep1_noise) then mvn_sep_create_noise_arrays,*sep1_noise.x,tname=prefix+'sep1'
+          if (sepn and 2) ne 0 && keyword_set(sep2_noise) then mvn_sep_create_noise_arrays,*sep2_noise.x,tname=prefix+'sep2'
+          mvn_sep_pfdpu_tplot_options,lowres=lowres
         endif
         return
     endif

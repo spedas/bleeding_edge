@@ -8,7 +8,7 @@
 
 
 pro mvn_sep_create_subarrays,data_str,trange=trange,tname=tname,bmaps=bmaps,mapids=mapids $
-   ,yval=yval,zval=zval,smooth=smooth,smpar=smpar,units_name=units_name,lowres=lowres
+   ,yval=yval,zval=zval,smooth=smooth,smpar=smpar,units_name=units_name,lowres=lowres,arc=arc
 
    if keyword_set(units_name) then zval = units_name
    if not keyword_set(yval) then yval = 'Energy'
@@ -47,6 +47,7 @@ pro mvn_sep_create_subarrays,data_str,trange=trange,tname=tname,bmaps=bmaps,mapi
      if mapnum eq 0 then continue
      tname = 'mvn_sep'+strtrim(sepn,2)
      if keyword_set(lowres) then tname = 'mvn_5min_sep'+strtrim(sepn,2)
+     if keyword_set(arc) then tname = 'mvn_arc_sep'+strtrim(sepn,2)
  ;    tname=data_str+string(mapnum,format='(i03)')
 ;     mapname = mvn_sep_mapnum_to_mapname(mapnum)
      wt = where(rawdat.mapid eq mapnum or finite(rawdat.time) eq 0,nt)   ; include gaps

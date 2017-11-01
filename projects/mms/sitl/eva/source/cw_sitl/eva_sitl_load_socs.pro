@@ -18,8 +18,13 @@ PRO eva_sitl_load_socs, state, str_tspan, mdq=mdq
   ;-----------------
   ; TARGET TIME
   ;-----------------
-  tplot_names,'mms_soca_fomstr',names=names
-  if n_elements(names) ne 1 then stop; return
+  
+  tn = tnames('mms_soca_fomstr',ct)
+  if ct ne 1 then begin
+    rslt = dialog_message('mms_soca_fomstr not found.',/center)
+  endif
+  ;tplot_names,'mms_soca_fomstr',names=names
+  ;if n_elements(names) ne 1 then stop; return
   get_data,'mms_soca_fomstr',data=D,dl=dl,lim=lim
   tfom = eva_sitl_tfom(lim.unix_FOMstr_org)
   
