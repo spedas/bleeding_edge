@@ -9,8 +9,8 @@
 ;
 ;
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2017-07-11 11:57:09 -0700 (Tue, 11 Jul 2017) $
-; $LastChangedRevision: 23577 $
+; $LastChangedDate: 2017-10-31 19:35:36 -0700 (Tue, 31 Oct 2017) $
+; $LastChangedRevision: 24248 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/eva.pro $
 PRO eva_event, event
   @tplot_com
@@ -122,16 +122,18 @@ PRO eva
   str_element,/add,wid,'mnHelp_about',widget_button(mnHelp,VALUE='About EVA')
 
   ;----------------------
-  ; Control Panel Width
+  ; GENERAL SETTING (FOR LAYOUT)
   ;----------------------
   ;###############################################
   str_element,/add,wid,'CPWIDTH_DEFAULT',350
+  str_element,/add,wid,'BASEPOS_DEFAULT',0
   ;###############################################
   cfg = mms_config_read()
   idx=where(strmatch(tag_names(cfg),'EVA_CPWIDTH'),ct)
   if ct gt 0 then cpwidth = cfg.EVA_CPWIDTH else cpwidth = wid.CPWIDTH_DEFAULT
-
-
+  idx=where(strmatch(tag_names(cfg),'EVA_BASEPOS'),ct)
+  if ct gt 0 then basepos = cfg.EVA_BASEPOS else basepos = wid.BASEPOS_DEFAULT 
+  
   ;---------------------------------
   ;  DATA
   ;---------------------------------

@@ -46,6 +46,14 @@ FUNCTION eva_pref_gen_event, ev
       str_element,/add,state,'PREF.EVA_CPWIDTH',state.cpwidth_default
       widget_control, state.fldCPWIDTH, SET_VALUE=state.cpwidth_default; update GUI field
       end
+    state.fldBasePos:begin
+      widget_control, ev.id, GET_VALUE=strNewBasePos
+      str_element,/add,state,'PREF.EVA_BASEPOS',long(strNewBasePos[0])
+      end
+    state.btnBasePos_Default:begin
+      str_element,/add,state,'PREF.EVA_BASEPOS',state.basepos_default
+      widget_control, state.fldBasePos, SET_VALUE=state.basepos_default
+      end
     else:
   endcase
   ;-----
@@ -73,10 +81,14 @@ FUNCTION eva_pref_gen, parent, GROUP_LEADER=group_leader, $
   cfg = mms_config_read()
   idx=where(strmatch(tag_names(cfg),'EVA_CPWIDTH'),ct)
   if ct gt 0 then cpwidth = cfg.EVA_CPWIDTH else cpwidth=eva_wid.CPWIDTH_DEFAULT
-  pref = {EVA_CPWIDTH: cpwidth}
+  idx=where(strmatch(tag_names(cfg),'EVA_BASEPOS'),ct)
+  if ct gt 0 then basepos = cfg.EVA_BASEPOS else basepos=eva_wid.BASEPOS_DEFAULT
+
+  pref = {EVA_CPWIDTH: cpwidth, EVA_BASEPOS: basepos}
   
   ; ---- STATE ----
-  state = {cpwidth_default:eva_wid.cpwidth_default, pref:pref}
+  state = {cpwidth_default:eva_wid.cpwidth_default, group_leader:group_leader,$
+           basepos_default:eva_wid.basepos_default, pref:pref}
 
   ; ----- WIDGET LAYOUT -----
   geo = widget_info(parent,/geometry)
@@ -90,7 +102,9 @@ FUNCTION eva_pref_gen, parent, GROUP_LEADER=group_leader, $
   lblSpace1 = widget_label(mainbase,VALUE="  ")
   str_element,/add,state,'fldCPWIDTH',cw_field(mainbase,VALUE=pref.EVA_CPWIDTH,TITLE='Control Panel Width',/ALL_EVENTS,XSIZE=10)
   str_element,/add,state,'btnDefault',widget_button(mainbase,VALUE=' Default')
-
+  str_element,/add,state,'fldBasePos',cw_field(mainbase,VALUE=pref.EVA_BASEPOS,TITLE='Screen Base Position',/ALL_EVENTS,XSIZE=10)
+  str_element,/add,state,'btnBasePos_default',widget_button(mainbase,VALUE=' Default')
+  
   WIDGET_CONTROL, WIDGET_INFO(mainbase, /CHILD), SET_UVALUE=state, /NO_COPY
   RETURN, mainbase
 END

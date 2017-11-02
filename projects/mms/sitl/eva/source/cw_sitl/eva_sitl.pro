@@ -760,7 +760,8 @@ FUNCTION eva_sitl, parent, $
     EVA_TESTMODE_SUBMIT: 1,$
     EVA_SPLIT_SIZE:0, $; val.NOMINAL_SEG_RANGE[1]}
     EVA_STLM_INPUT:'soca',$;
-    EVA_STLM_UPDATE:1 }
+    EVA_STLM_UPDATE:1,$
+    EVA_BASEPOS: 0}
     
   socs  = {$; SOC Auto Simulated
     pmdq: ['a','b','c','d'], $ ; probes to be used for calculating MDQs

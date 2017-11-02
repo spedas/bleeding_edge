@@ -7,8 +7,8 @@
 ;   When "Save" is chosen, the "segSelect" structure will be used to update FOM/BAK structures.
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2016-09-28 14:26:40 -0700 (Wed, 28 Sep 2016) $
-; $LastChangedRevision: 21971 $
+; $LastChangedDate: 2017-10-31 19:35:36 -0700 (Tue, 31 Oct 2017) $
+; $LastChangedRevision: 24248 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_fomedit.pro $
 ;
 PRO eva_sitl_FOMedit_event, ev
@@ -189,13 +189,25 @@ PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid
   str_element,/add,wid,'lblDiscussion',widget_label(base,VALUE=comment)
   str_element,/add,wid,'txtDiscussion',txtDiscuss
   
-    
+  
+  
   baseDeci = widget_base(base,/ROW)
   str_element,/add,wid,'btnSave',widget_button(baseDeci,VALUE='Save',ACCELERATOR = "Return",SENSITIVE=~disable)
   str_element,/add,wid,'btnCancel',widget_button(baseDeci,VALUE='Cancel')
   widget_control, base, /REALIZE
+  
+  ;-----------------
+  ; WIDGET POSITION
+  ;-----------------
   scr = get_screen_size()
   geo = widget_info(base,/geometry)
-  widget_control, base, SET_UVALUE=wid, XOFFSET=scr[0]*0.5-geo.xsize*0.5, YOFFSET=scr[1]*0.5-geo.ysize*0.5
+  basepos = state.pref.EVA_BASEPOS
+  if basepos le 0 then begin
+    xoffset = scr[0]*0.5-geo.xsize*0.5
+  endif else begin
+    xoffset = basepos
+  endelse
+  yoffset = scr[1]*0.5-geo.ysize*0.5
+  widget_control, base, SET_UVALUE=wid, XOFFSET=xoffset, YOFFSET=yoffset
   xmanager, 'eva_sitl_FOMedit', base,GROUP_LEADER=state.GROUP_LEADER
 END

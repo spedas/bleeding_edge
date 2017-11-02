@@ -10,19 +10,26 @@ PRO eva_pref_event, event
   case event.id of
     wid.btnSave:  begin
       
+      widget_control, wid.pfGen,                          GET_VALUE=pfState
+      mms_config_write, pfState.pref
+      cpwidth = pfState.pref.EVA_CPWIDTH 
+      basepos = pfState.pref.EVA_BASEPOS
+      ; There is no corresponding module for the Gen pref. But the values
+      ; are passed on to eva_sitl and eva_data
+      
       widget_control, wid.pfSitl,                          GET_VALUE=pfState
+      str_element,/add,pfState,'PREF.EVA_CPWIDTH',cpwidth
+      str_element,/add,pfState,'PREF.EVA_BASEPOS',basepos
       widget_control, widget_info(wid.gl,find='eva_sitl'), SET_VALUE=pfState.pref
       mms_config_write, pfState.pref
       
       widget_control, wid.pfData,                          GET_VALUE=pfState
+      str_element,/add,pfState,'PREF.EVA_CPWIDTH',cpwidth
+      str_element,/add,pfState,'PREF.EVA_BASEPOS',basepos
       widget_control, widget_info(wid.gl,find='eva_data'), SET_VALUE=pfState.pref
       mms_config_write, pfState.pref
 
-      widget_control, wid.pfGen,                          GET_VALUE=pfState
-      ; There is no corresponding module for the Gen pref. 
-      ;widget_control, widget_info(wid.gl,find='eva_pref_gen'), SET_VALUE=pfState.pref
-      mms_config_write, pfState.pref
-
+      
       exitcode=1
       end
     wid.btnCancel:begin
