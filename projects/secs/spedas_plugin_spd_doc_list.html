@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Nov  1 03:16:12 2017.<P>
+<STRONG>Last modified: </STRONG>Thu Nov  2 18:16:06 2017.<P>
  
 <HR>
  
@@ -41,11 +41,27 @@ NAME:
 PURPOSE:
   Modularized SPEDAS/GUI secs data loader
 
+INPUT:
+  loadStruc: structure passed in from secs_ui_overview_plots (contains information regarding
+             the type of data to be loaded as well as the time range
+  loaded_data: data object that contains all the data that has been imported into the GUI
+             session for this session. Passed in from secs_ui_overview_plots
+  statusBar: the widget object for the status text box displayed at the bottom of the panel. 
+             the object is used to report informational, warning, and error messages.
+  historyWin: the history window that is maintained by spd_gui during it's current session. 
+             all actions that occur during this session should be reported to the history window.
+             this object allows the user to view what they have done/requested.
+  parent_widget_id : the id of the parent for this widget base
+ 
+KEYWORDS:
+  replay: optional keyword used to track and store all activities that occur during this routine.
+          replay contents are used to recreate (or replay) the session
+  overwrite_selections: flag that is set allowing data to be overwritten
 
 HISTORY:
-$LastChangedBy: adrozdov $
-$LastChangedDate: 2017-10-26 21:47:26 -0700 (Thu, 26 Oct 2017) $
-$LastChangedRevision: 24225 $
+$LastChangedBy: crussell $
+$LastChangedDate: 2017-11-02 08:14:23 -0700 (Thu, 02 Nov 2017) $
+$LastChangedRevision: 24249 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/secs/spedas_plugin/secs_ui_import_data.pro $
 
 </PRE><P>
