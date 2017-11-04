@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov  2 18:16:06 2017.<P>
+<STRONG>Last modified: </STRONG>Fri Nov  3 18:16:13 2017.<P>
  
 <HR>
  
@@ -125,6 +125,8 @@ This page was created by the IDL library routine
 <br>Determines density from 1D energy spectra.
 <LI><A HREF="#MVN_SWE_N3D">MVN_SWE_N3D</A>
 <br>Determines density from a 3D distribution.  Adapted from McFadden's n_3d.pro.
+<LI><A HREF="#MVN_SWE_PAD_LC_RESTORE">MVN_SWE_PAD_LC_RESTORE</A>
+<br>Reads in save files mvn_swe_padscore
 <LI><A HREF="#MVN_SWE_PAD_RESAMPLE">MVN_SWE_PAD_RESAMPLE</A>
 <br>Resamples the pitch angle distribution from SWEA PAD or 3D data,
 <LI><A HREF="#MVN_SWE_PAD_RESTORE">MVN_SWE_PAD_RESTORE</A>
@@ -247,6 +249,7 @@ This page was created by the IDL library routine
 <br>Creates SWEA Test Pulser Model and generates test pulser signatures
 <LI><A HREF="#TIMEFIT">TIMEFIT</A>
 <br>Given an input time array or tplot variable name, sets the tplot time window to span
+<LI><A HREF="#TOPOMTRX">TOPOMTRX</A>
 <br>
 </UL><P>
 <HR>
@@ -3034,7 +3037,7 @@ CREATED BY:      D.L. Mitchell on 2014-09-24.
 <A NAME="MVN_SWE_PADSUM">
 <H2>MVN_SWE_PADSUM</H2></A>
 <A HREF="#MVN_SWE_PADMAP_3D">[Previous Routine]</A>
-<A HREF="#MVN_SWE_PAD_RESAMPLE">[Next Routine]</A>
+<A HREF="#MVN_SWE_PAD_LC_RESTORE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 FUNCTION:   mvn_swe_padsum
@@ -3064,9 +3067,46 @@ FILE: mvn_swe_padsum.pro
 <STRONG>(See <A href="swea/mvn_swe_padsum.pro">projects/maven/swea/mvn_swe_padsum.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SWE_PAD_LC_RESTORE">
+<H2>MVN_SWE_PAD_LC_RESTORE</H2></A>
+<A HREF="#MVN_SWE_PADSUM">[Previous Routine]</A>
+<A HREF="#MVN_SWE_PAD_RESAMPLE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_swe_pad_lc_restore
+PURPOSE:
+  Reads in save files mvn_swe_padscore
+                                      
+USAGE: 
+  mvn_swe_pad_lc_restore, trange
+
+INPUTS: 
+       trange:        Restore data over this time range.  If not
+                      specified, then uses the current tplot range 
+                      or timerange() will be called                         
+ 
+KEYWORDS: 
+       ORBIT:         Restore mvn_swe_padscore data by orbit number.
+
+       RESULTS:       Hold the full structure of PAD score and
+                      other parameters
+
+       storeTPLOT:         Create tplot varibles
+                                                                                                         
+ $LastChangedBy: xussui $  
+ $LastChangedDate: 2017-11-03 13:49:26 -0700 (Fri, 03 Nov 2017) $  
+ $LastChangedRevision: 24260 $ 
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_lc_restore.pro $     
+ 
+CREATED BY:    Tristan Weber
+FILE: mvn_swe_pad_lc_restore
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_swe_pad_lc_restore.pro">projects/maven/swea/mvn_swe_pad_lc_restore.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SWE_PAD_RESAMPLE">
 <H2>MVN_SWE_PAD_RESAMPLE</H2></A>
-<A HREF="#MVN_SWE_PADSUM">[Previous Routine]</A>
+<A HREF="#MVN_SWE_PAD_LC_RESTORE">[Previous Routine]</A>
 <A HREF="#MVN_SWE_PAD_RESTORE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -6093,6 +6133,7 @@ VERSION:   1.0
 <A NAME="TIMEFIT">
 <H2>TIMEFIT</H2></A>
 <A HREF="#SWE_TESTPULSER_MODEL">[Previous Routine]</A>
+<A HREF="#TOPOMTRX">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   timefit
@@ -6131,5 +6172,51 @@ KEYWORDS:
 CREATED BY:	David L. Mitchell  07-06-14
 </PRE><P>
 <STRONG>(See <A href="swea/timefit.pro">projects/maven/swea/timefit.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="TOPOMTRX">
+<H2>TOPOMTRX</H2></A>
+<A HREF="#TIMEFIT">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   topomtrx
+
+PURPOSE: This routine provides topology matrix or a table of topology 
+         for 6 given dimensions, defined by shape parameters, voids,
+         and PAD info, which are:
+                  0 - upward shape: 0: phe, 1: swe, 2:nan
+                  1 - downward shape: 0: phe, 1: swe, 2:nan
+                  2 - void: 0: yes, 1: no, 2:nan 
+                  3 - upward PAD: 0: not loss cone, 1: loss cone, 2:nan 
+                  4 - downward PAD: 0: not loss cone, 1: loss cone, 2:nan 
+                  5 - day/night: currently not used
+         8 topology results are provided:
+                  0 Unknown
+                  1 Dayside Closed
+                  2 Day-Night Closed
+                  3 Night Closed -- Trapped/two-sided loss cone
+                  4 Night CLosed -- Void
+                  5 Day Open
+                  6 Night Open
+                  7 Draped
+
+USAGE:
+  result = topomtrx()
+
+INPUTS:
+       None
+
+KEYWORDS:
+       None
+                      
+ $LastChangedBy: xussui $
+ $LastChangedDate: 2017-11-03 13:10:50 -0700 (Fri, 03 Nov 2017) $
+ $LastChangedRevision: 24256 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/topomtrx.pro $
+
+CREATED BY:    Shaosui Xu, 11/03/2017
+FILE: topomtrx.pro
+</PRE><P>
+<STRONG>(See <A href="swea/topomtrx.pro">projects/maven/swea/topomtrx.pro</A>)</STRONG><P>
 <HR>
  

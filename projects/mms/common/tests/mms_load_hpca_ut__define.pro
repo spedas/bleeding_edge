@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_hpca_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
-; $LastChangedRevision: 24128 $
+; $LastChangedDate: 2017-11-03 13:20:30 -0700 (Fri, 03 Nov 2017) $
+; $LastChangedRevision: 24259 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_hpca_ut__define.pro $
 ;-
 
@@ -79,8 +79,8 @@ function mms_load_hpca_ut::test_load_spdf_srvy
   return, 1
 end
 function mms_load_hpca_ut::test_multi_probe
-  mms_load_hpca, probes=[1, '2', 3, 4], trange=['2015-12-15', '2015-12-16'], datatype='moments'
-  assert, spd_data_exists('mms4_hpca_hplus_number_density mms3_hpca_hplus_number_density mms2_hpca_hplus_number_density mms1_hpca_hplus_number_density', '2015-12-15', '2015-12-16'), $
+  mms_load_hpca, probes=[1, '2', 3, 4], trange=['2016-12-15', '2016-12-16'], datatype='moments'
+  assert, spd_data_exists('mms4_hpca_hplus_number_density mms3_hpca_hplus_number_density mms2_hpca_hplus_number_density mms1_hpca_hplus_number_density', '2016-12-15', '2016-12-16'), $
     'Problem loading HPCA data with multiple probes requested'
   return, 1
 end

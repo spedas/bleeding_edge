@@ -24,23 +24,30 @@
 ;  none
 ;  
 ;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2017-10-30 16:18:36 -0700 (Mon, 30 Oct 2017) $
-;$LastChangedRevision: 24238 $
+;$LastChangedDate: 2017-11-03 16:47:48 -0700 (Fri, 03 Nov 2017) $
+;$LastChangedRevision: 24262 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/secs/spedas_plugin/secs_ui_overview_plots.pro $
 ;-
-function secs_ui_time_string, tr_obj, event
-  ; function takes time widget object round the time to one minute
+function secs_ui_time_string, tr_obj, event, tenseconds=tenseconds
+  ; function takes time widget object round the time to one minute or to ten seconds
   ; pit the value back to the object 
   ; and return structure of the strings of the start date
   
   tr_obj->getproperty, starttime=starttime 
   starttime->getproperty, tdouble=t0, sec=sec
-  ;round times to 1 minute
-  if sec ne 0 then begin
-    if sec lt 30 then t10=t0-sec else t10=t0+(60-sec) 
-    starttime->setproperty, tdouble=t10    
-    tr_obj->setproperty, starttime=starttime
-  endif
+  
+  if keyword_set(tenseconds) then begin
+    t0 -= sec
+    sec -= sec mod 10
+    t0 += sec    
+  endif else begin  
+  ;round times to 1 minute   
+    if sec lt 30 then t0 -= sec else t0 += 60-sec
+  endelse
+  
+  starttime->setproperty, tdouble=t0
+  tr_obj->setproperty, starttime=starttime
+  
   starttime->getproperty, tstring=ts, year=year, month=month, date=date, hour=hour, min=mins, sec=sec
   timeid = widget_info(event.top, find_by_uname='time')
   widget_control, timeid, set_value=ts, func_get_value='spd_ui_time_widget_set_value'
@@ -122,7 +129,7 @@ pro secs_ui_overview_plots_event, event
 
      'VIEWPLOT': BEGIN       
        if secs_ui_time_isvalud(event) then begin
-         stime = secs_ui_time_string(state.tr_obj, event)
+         stime = secs_ui_time_string(state.tr_obj, event, /tenseconds)
          plottime=stime.y  + "-" + stime.m  + "-" + stime.d  + "/" + stime.hh  + ":" + stime.mm  + ":" + stime.ss 
          trange=[plottime, plottime]                 
          IF state.pngbutton THEN png_str = ' and png file' ELSE png_str = ''
