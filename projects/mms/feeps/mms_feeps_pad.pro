@@ -33,27 +33,28 @@
 ;                       
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-09-08 16:20:52 -0700 (Fri, 08 Sep 2017) $
-;$LastChangedRevision: 23943 $
+;$LastChangedDate: 2017-11-07 15:41:47 -0800 (Tue, 07 Nov 2017) $
+;$LastChangedRevision: 24274 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_feeps_pad.pro $
 ;-
 
 pro mms_feeps_pad, bin_size = bin_size, probe = probe, energy = energy, level = level, $
   suffix = suffix_in, datatype = datatype, data_units = data_units, data_rate = data_rate, $
   num_smooth = num_smooth
-
+  
   if undefined(datatype) then datatype='electron' else datatype=strlowcase(datatype)
   if undefined(data_rate) then data_rate = 'srvy' else data_rate=strlowcase(data_rate)
   if undefined(probe) then probe = '1' else probe = strcompress(string(probe), /rem)
   if undefined(suffix_in) then suffix_in = ''
   prefix = 'mms'+strcompress(string(probe), /rem)
-  if undefined(bin_size) then bin_size = 15 ;deg
-  if undefined(energy) then energy = [70,1000]
+  if undefined(bin_size) then bin_size = 16.3636 ;deg
+  if undefined(energy) then energy = [70,600]
   if undefined(data_units) then data_units = 'intensity'
   if undefined(level) then level = 'l2' else level = strlowcase(level)
-  if data_units eq 'intensity' then out_units = '(cm!E2!N s sr KeV)!E-1!N'
-  if data_units eq 'cps' || data_units eq 'count_rate' then out_units = 'Counts/s'
-  if data_units eq 'counts' then out_units = 'Counts'
+  if undefined(num_smooth) then num_smooth = 1
+  if data_units eq 'intensity' then out_units = '[#/cm!E2!N-s-sr-keV]'
+  if data_units eq 'cps' || data_units eq 'count_rate' then out_units = '[counts/s]'
+  if data_units eq 'counts' then out_units = '[counts]'
   
   ; Added by DLT on 26 Jun 2017:
   ; Account for angular response (finite field of view) of instruments

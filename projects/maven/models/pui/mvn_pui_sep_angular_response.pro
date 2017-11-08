@@ -23,9 +23,7 @@ if keyword_set(plot_response) then begin
   return,'plot created!'
 endif
 
-eda=1.083 ;effective detector area (cm2) from GEANT4 and CAD model
-shoa=30.0 ;sep half opening angle (assuming conic)
-cosfovsep  =cos(!dtor*shoa)
+cosfovsep  =cos(!dtor*pui0.shcoa)
 cosfovsepxy=cos(!dtor*pui0.scrsa) ;sep cross angle (half angular extent) in sep xy plane (s/c xz)
 cosfovsepxz=cos(!dtor*pui0.srefa) ;sep ref   angle (half angular extent) in sep xz plane (s/c yz)
 
@@ -34,7 +32,7 @@ cosvsepxy=cosvsep1/sqrt(cosvsep1^2+cosvswiy^2) ;cosine of angle b/w projected -v
 cosvsepxz=cosvsep1/sqrt(cosvsep1^2+cosvsep2^2) ;cosine of angle b/w projected -v on sep xz plane and sep fov
 sdeaxy=(cosvsepxy-cosfovsepxy)/(1-cosfovsepxy) ;sep projected detector effective area on sep xy plane
 sdeaxz=(cosvsepxz-cosfovsepxz)/(1-cosfovsepxz) ;sep projected detector effective area on sep xz plane
-sdea=eda*sdeaxy*sdeaxz ;sep detector effective area factor (cm2)
+sdea=pui0.stdea*sdeaxy*sdeaxz ;sep detector effective area factor (cm2)
 
 ;very small sep detector area within cosfovsep (cm2)
 sdea[where((cosvsepxy lt cosfovsepxy) or (cosvsepxz lt cosfovsepxz),/null)]=1e-2 ;similar to a closed attenuator
@@ -42,8 +40,8 @@ sdea[where(cosvsep1 lt cosfovsep,/null)]=0. ;zero everywhere else!
 
 if keyword_set(trajplot) then begin
   phi=!dtor*findgen(360) ;azimuth angle
-  x=shoa*cos(phi)
-  y=shoa*sin(phi)
+  x=pui0.shcoa*cos(phi)
+  y=pui0.shcoa*sin(phi)
   
   edges=[[-pui0.srefa,-pui0.scrsa],[-pui0.srefa,pui0.scrsa],[pui0.srefa,pui0.scrsa],[pui0.srefa,-pui0.scrsa],[-pui0.srefa,-pui0.scrsa]]
 
@@ -57,12 +55,12 @@ if keyword_set(trajplot) then begin
   if keyword_set(p) then p.setcurrent else p=window(name='septraj')
   p.erase
   ;SEP1F
-  p=plot(edges,layout=[2,1,1],title='SEP1F FOV',xtitle='xz (ref) angle',ytitle='xy (cross) angle',xrange=[-shoa,shoa],yrange=[-shoa,shoa],/aspect_ratio,/current)
+  p=plot(edges,layout=[2,1,1],title='SEP1F FOV',xtitle='xz (ref) angle',ytitle='xy (cross) angle',xrange=[-pui0.shcoa,pui0.shcoa],yrange=[-pui0.shcoa,pui0.shcoa],/aspect_ratio,/current)
   p=colorbar(target=p,rgb=33,range=[0,100],title='Pickup O+ Energy (keV)',/orient)
   p=plot(x,y,/o)
   p=scatterplot(/o,sep1phi,septhet,rgb=33,magnitude=kescaled)
   ;SEP2F
-  p=plot(edges,layout=[2,1,2],title='SEP2F FOV',xtitle='xz (ref) angle',ytitle='xy (cross) angle',xrange=[-shoa,shoa],yrange=[-shoa,shoa],/aspect_ratio,/current)
+  p=plot(edges,layout=[2,1,2],title='SEP2F FOV',xtitle='xz (ref) angle',ytitle='xy (cross) angle',xrange=[-pui0.shcoa,pui0.shcoa],yrange=[-pui0.shcoa,pui0.shcoa],/aspect_ratio,/current)
   p=plot(x,y,/o)
   p=scatterplot(/o,sep2phi,septhet,rgb=33,magnitude=kescaled)
 

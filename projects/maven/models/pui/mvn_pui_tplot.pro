@@ -3,17 +3,18 @@
 ;keywords:
 ;   store: stores model-data comparisons in tplot variables (use with one of the following keywords)
 ;   tplot: plots the main results (model-data comparison) or saved 3d tplots
+;   tohban: plots Tohban-related data
+;   savetplot: saves the tplots as png files
 ;   swia3d: plots SWIA pickup hydrogen and oxygen 3d spectra
 ;   stah3d: plots STATIC 3d spectra, pickup hydrogen, D1 data product, mass channel=0 or sum of 0,1,2
-;   stao3d: plots STATIC 3d spectra  pickup oxygen,   D1 data product, mass channel=4 or sum of 3,4,5
+;   stao3d: plots STATIC 3d spectra,  pickup oxygen,  D1 data product, mass channel=4 or sum of 3,4,5
 ;   datimage: plots 3d data images instead of tplots (use instead of 'store' or 'tplot' with one of the above 3d keywords)
 ;   modimage: plots 3d model images instead of tplots
 ;   d2mimage: plots 3d images of data to model ratios
-;   tohban: plots Tohban-related data
-;   savetplot: saves the tplots as png files
+;   trange: plots the above spectra for the specified trange
+; explain these: denprof=denprof,d2mqf=d2mqf,denmap=denmap
 
-pro mvn_pui_tplot,store=store,tplot=tplot,trange=trange,swia3d=swia3d,stah3d=stah3d,stao3d=stao3d,$
-  datimage=datimage,modimage=modimage,d2mimage=d2mimage,tohban=tohban,savetplot=savetplot,denprof=denprof,d2mqf=d2mqf,denmap=denmap
+pro mvn_pui_tplot,store=store,tplot=tplot,tohban=tohban,savetplot=savetplot,_extra=_extra
 
   @mvn_pui_commonblock.pro ;common mvn_pui_common
 
@@ -27,16 +28,13 @@ pro mvn_pui_tplot,store=store,tplot=tplot,trange=trange,swia3d=swia3d,stah3d=sta
 
   if keyword_set(store) then begin
     onesnt=replicate(1.,pui0.nt)
-    store_data,'mvn_sta_D01_dE/E',data={x:centertime,y:pui1.d1dee},limits={ylog:1,panel_size:.5,colors:'r',psym:3}
     store_data,'mvn_pui_line_1',data={x:centertime,y:onesnt},limits={colors:'g'} ;straight line equal to 1
     store_data,'mvn_pos_(km)',data={x:centertime,y:transpose(pui.data.scp)/1e3},limits={colors:'bgr',labels:['x','y','z'],labflag:1}
     store_data,'mvn_sep1_fov',centertime,transpose(pui.data.sep[0].fov)
     store_data,'mvn_sep2_fov',centertime,transpose(pui.data.sep[1].fov)
     store_data,'mvn_stax_fov',centertime,transpose(pui.data.sta.fov.x)
     store_data,'mvn_staz_fov',centertime,transpose(pui.data.sta.fov.z)
-    options,'mvn_*_fov','colors','bgr'
-    ylim,'mvn_*_fov',-1,1
-    options,'mvn_*_fov','panel_size',.5
+    options,'mvn_*_fov',colors='bgr',panel_size=.5,yrange=[-1,1]
 
     mag=transpose(pui.data.mag.mso)
     emot=pui.model.params.kemax/pui.model.params.rg/2. ;motional electric field magnitude (V/m)
@@ -45,7 +43,7 @@ pro mvn_pui_tplot,store=store,tplot=tplot,trange=trange,swia3d=swia3d,stah3d=sta
     esw=1e-3*pui.data.swi.swim2.esw ;solar wind proton energy (keV)
     mfsw=pui.data.swi.swim2.mfsw ;solar wind proton momentum flux (g cm-1 s-2)
     efsw=pui.data.swi.swim2.efsw ;solar wind proton energy flux (eV cm-2 s-1)
-    sintub=sqrt(pui.model[0:1].params.kemax/(4*1e3*[1,16]#esw))
+    sintub=sqrt(pui.model[0:1].params.kemax/(4.*1e3*[1.,16.]#esw))
     eden=pui.data.swe.eden ;swea electron density (cm-3)
     edenpot=pui.data.swe.edenpot ;swea electron density (cm-3)
 
@@ -68,7 +66,6 @@ pro mvn_pui_tplot,store=store,tplot=tplot,trange=trange,swia3d=swia3d,stah3d=sta
     store_data,'mvn_model_puo_tot',data={x:centertime,y:transpose(pui.model[1].fluxes.toteflux),v:pui1.totet},limits={ylog:1,zlog:1,spec:1,yrange:[100.,300e3],zrange:[1e2,1e6],ztitle:'Eflux'}
     ;store_data,'mvn_model_pux_tot',data={x:centertime,y:transpose(pui.model[2].fluxes.toteflux),v:pui1.totet},limits={ylog:1,zlog:1,spec:1,yrange:[10.,300e3],zrange:[1e2,1e6],ztitle:'Eflux'}
 
-    rmars=3400e3 ;mars radius (m)
     for i=0,1 do begin ;loop over 2 seps
       sepm=pui.model[1].fluxes.sep[i].model_rate
       sepd=pui.data.sep[i].rate_bo
@@ -87,7 +84,7 @@ pro mvn_pui_tplot,store=store,tplot=tplot,trange=trange,swia3d=swia3d,stah3d=sta
       store_data,'mvn_d2m_puo_sep'+strtrim(i+1,2),data={x:centertime,y:[[sepd2m],[onesnt]]},limits={yrange:[1e-2,1e2],ylog:1,colors:'rg',ytickunits:'scientific'}
       store_data,'mvn_tot_puo_sep'+strtrim(i+1,2),data={x:centertime,y:[[sepmtot],[sepdtot],[sepdcme],[100.*onesnt]]},limits={ylog:1,yrange:[1,1e4],colors:'brgm',labels:['model','data','cme','100'],labflag:1,ytickunits:'scientific'}
       store_data,'mvn_model_puo_sep'+strtrim(i+1,2)+'_Quality_Flag',data={x:centertime,y:pui.model[1].fluxes.sep[i].qf},limits={yrange:[-.1,1.2],ystyle:1}
-      store_data,'mvn_model_puo_sep'+strtrim(i+1,2)+'_source_MSO_(Rm)',data={x:centertime,y:[[transpose(sepr)],[sqrt(total(sepr^2,1))]]/rmars},limits={labels:['x','y','z','r'],colors:'bgrk',labflag:1}
+      store_data,'mvn_model_puo_sep'+strtrim(i+1,2)+'_source_MSO_(Rm)',data={x:centertime,y:[[transpose(sepr)],[sqrt(total(sepr^2,1))]]/pui0.rmars/1e3},limits={labels:['x','y','z','r'],colors:'bgrk',labflag:1}
       store_data,'mvn_model_puo_sep'+strtrim(i+1,2)+'_MSO_(km/s)',data={x:centertime,y:[[transpose(sepv)],[sqrt(total(sepv^2,1))]]/1e3},limits={labels:['x','y','z','v'],colors:'bgrk',labflag:1}
       store_data,'mvn_model_puh_incident_sep'+strtrim(i+1,2),data={x:centertime,y:transpose(pui.model[0].fluxes.sep[i].incident_rate)},limits={spec:1,zlog:1,yrange:[0,20],zrange:[1,1e4]}
       store_data,'mvn_model_puo_incident_sep'+strtrim(i+1,2),data={x:centertime,y:transpose(pui.model[1].fluxes.sep[i].incident_rate)},limits={spec:1,zlog:1,yrange:[0,200],zrange:[1,1e4]}
@@ -99,9 +96,7 @@ pro mvn_pui_tplot,store=store,tplot=tplot,trange=trange,swia3d=swia3d,stah3d=sta
     store_data,'mvn_model_swia',centertime,kefswih+kefswio,pui1.swiet
     store_data,'mvn_model_swia_O',centertime,kefswio,pui1.swiet
     store_data,'mvn_model_swia_H',centertime,kefswih,pui1.swiet
-    options,'mvn_model_swia*','spec',1
-    options,'mvn_model_swia*','ztitle','Eflux'
-    options,'mvn_model_swia*','ytickunits','scientific'
+    options,'mvn_model_swia*',spec=1,ztitle='Eflux',ytickunits='scientific'
     ylim,'mvn_model_swia*',25,25e3,1
     zlim,'mvn_model_swia*',1e3,1e8,1
 
@@ -110,20 +105,18 @@ pro mvn_pui_tplot,store=store,tplot=tplot,trange=trange,swia3d=swia3d,stah3d=sta
     store_data,'mvn_model_O_sta_c0',centertime,kefstao,pui1.staet
     store_data,'mvn_model_H_sta_c0',centertime,kefstah,pui1.staet
 
-    options,'mvn_*_sta_c0','spec',1
-    options,'mvn_*_sta_c0','ztitle','Eflux'
-    options,'mvn_*_sta_c0','ytickunits','scientific'
+    options,'mvn_*_sta_c0',spec=1,ztitle='Eflux',ytickunits='scientific'
     ylim,'mvn_*_sta_c0',1,35e3,1
     zlim,'mvn_*_sta_c0',1e3,1e8,1
 
   endif
 
-  if pui0.do3d then mvn_pui_tplot_3d,store=store,tplot=tplot,trange=trange,swia3d=swia3d,stah3d=stah3d,stao3d=stao3d,datimage=datimage,modimage=modimage,d2mimage=d2mimage,denprof=denprof,d2mqf=d2mqf,denmap=denmap
+  if pui0.do3d then mvn_pui_tplot_3d,store=store,tplot=tplot,_extra=_extra
 
   if keyword_set(tplot) then begin
     datestr=strmid(time_string(pui0.trange[0]),0,10)
     wi,10 ;tplot raw data
-    tplot,window=10,'mvn_pos_(km) swe_a4_pot mvn_swim_density mvn_swim_velocity_mso mvn_swim_atten_state mvn_swim_swi_mode mvn_swis_en_eflux mvn_swics_dt_(s) mvn_swica_dt_(s) mvn_B_1sec mvn_sep?_svy_DURATION mvn_sep?_fov mvn_sep?_B-O_Rate_Energy mvn_euv_l3 mvn_euv_data mvn_staz_fov mvn_sta_att mvn_sta_mode mvn_sta_sweep_index mvn_sta_d0_mass_(amu) mvn_sta_d01_dt_(s) mvn_sta_D01_dE/E'
+    tplot,window=10,'mvn_pos_(km) swe_a4_pot scpot_comp mvn_swim_density mvn_swim_velocity_mso mvn_swim_atten_state mvn_swim_swi_mode mvn_swis_en_eflux mvn_swicsa_dt_(s) mvn_swi_dt_(s) mvn_B_1sec mvn_SEPS_svy_DURATION mvn_sep?_fov mvn_sep?_B-O_Rate_Energy mvn_euv_l3* mvn_euv_data mvn_staz_fov mvn_sta_att mvn_sta_mode mvn_sta_sweep_index mvn_sta_d0_mass_(amu) mvn_sta_d01_dt_(s) mvn_sta_D01_dE/E'
     if keyword_set(savetplot) then makepng,datestr+'_raw_data'
     wi,20 ;tplot useful pickup ion parameters. for diagnostic purposes, best shown on a vertical screen
     tplot,window=20,'mvn_mag_Btot_(nT) Sin(thetaUB) E_Motional_(V/km) Pickup_* Ionization_Frequencies_(s-1)'

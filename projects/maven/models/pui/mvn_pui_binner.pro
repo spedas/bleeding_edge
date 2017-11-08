@@ -79,9 +79,9 @@ rfovstat[where(abs(cosvstaz) gt sinfovswi,/null)]=0.
 sdea1=mvn_pui_sep_angular_response(cosvsep1,cosvsep2,cosvswiy)
 sdea2=mvn_pui_sep_angular_response(cosvsep2,cosvsep1,cosvswiy)
 
-secof=(ke-40.)/60. ;sep energy response for oxygen, 0 below 40 keV, linearly reaching 1 at 100 keV
+secof=(ke-40.)/40. ;sep energy response for oxygen, 0 below 40 keV, linearly reaching 1 at 80 keV
 secof[where(ke lt 40.,/null)]=0.
-secof[where(ke gt 100.,/null)]=1.
+secof[where(ke gt 80.,/null)]=1.
 sepqf=[[[sdea1*secof]],[[sdea2*secof]]] ;sep quality flag per particle, dim=[np,nt,2]
 sqf=max(sepqf,dimension=1,/nan) ;sep quality flag, dim=[nt,2]
 pui.model[msub].fluxes.sep.qf=transpose(sqf)
@@ -121,12 +121,11 @@ if pui0.do3d then begin
   sta3d=replicate({ef:0.,nn:0.,qf:0.,rv:replicate(0.,6)},pui0.sd1eb,pui0.swina,pui0.swine,nt) ;stat 3d eflux binning
 
   d1energy=pui.data.sta.d1.energy ;static d1 energy table
-  pui1.d1dee=mean(-1.+(d1energy[0:-2,*]/d1energy[1:-1,*]),dim=1,/nan) ;static d1 dE/E
   d1enedge=sqrt(d1energy[0:-2,*]*d1energy[1:-1,*]) ;static d1 energy bin edges (missing the ending points)
   ebinedge=replicate(0.,pui0.sd1eb+1,nt) ;add the ending points
   ebinedge[1:-2,*]=d1enedge
-  ebinedge[0,*]=ebinedge[1,*]*(1+pui1.d1dee) ;highest energy edge
-  ebinedge[-1,*]=ebinedge[-2,*]/(1+pui1.d1dee) ;lowest energy edge
+  ebinedge[0,*]=ebinedge[1,*]*(1+pui.data.sta.d1.dee) ;highest energy edge
+  ebinedge[-1,*]=ebinedge[-2,*]/(1+pui.data.sta.d1.dee) ;lowest energy edge
 
   binstake=replicate(pui0.sd1eb-1,np,nt) ;initialize static bins at lowest energy
   for ie=0,pui0.sd1eb-1 do begin ;bin according to energy
@@ -158,7 +157,7 @@ if pui0.do3d then begin
   swi3d[where(swi3d.nn gt 0. and swi3d.nn lt 3.*pui0.ngps[msub],/null)].ef=!values.f_nan ;less than 3 counts in each gyro-period means bad statistics!
   sta3d[where(sta3d.nn gt 0. and sta3d.nn lt 3.*pui0.ngps[msub],/null)].ef=!values.f_nan
   pui.model[msub].fluxes.swi3d.eflux=swi3d.ef/pui0.swiatsa*pui0.swina*pui0.swine/pui0.swidee; differential energy flux (eV/[cm2 s sr eV])
-  pui.model[msub].fluxes.sta3d.eflux=sta3d.ef/pui0.swiatsa*pui0.swina*pui0.swine/transpose(rebin(pui1.d1dee,[nt,pui0.sd1eb,pui0.swina,pui0.swine]),[1,2,3,0])
+  pui.model[msub].fluxes.sta3d.eflux=sta3d.ef/pui0.swiatsa*pui0.swina*pui0.swine/transpose(rebin(pui.data.sta.d1.dee,[nt,pui0.sd1eb,pui0.swina,pui0.swine]),[1,2,3,0])
   pui.model[msub].fluxes.swi3d.qf=swi3d.qf/swi3d.nn ;average quality flag
   pui.model[msub].fluxes.sta3d.qf=sta3d.qf/sta3d.nn
 ;  pui.model[msub].fluxes.swi3d.rv=swi3d.rv/transpose(rebin(swi3d.nn,[pui0.swieb,pui0.swina,pui0.swine,nt,6]),[4,0,1,2,3])

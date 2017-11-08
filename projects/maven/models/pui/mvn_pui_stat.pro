@@ -33,15 +33,6 @@ if ~keyword_set(nospice) then begin
 ;  maven_orbit_tplot,colors=[4,6,2],/loadonly ;loads the color-coded orbit info
 endif
 
-fnan=!values.f_nan
-xyz=replicate(fnan,3) ;xyz or [mean,stdev,nsample]
-swi={vsw:xyz,nsw:fnan,mode:fnan,att:fnan,qf:fnan}
-ifreq=replicate({pi:fnan,cx:fnan,ei:fnan},2) ;2 for [H,O]
-sep=replicate({tot:xyz,xyz:xyz,qf:fnan,att:0b},2) ;2 for sep1 and sep2
-d2m=replicate({swi:xyz,sta:xyz},2) ;2 for [H,O]
-stat=replicate({centertime:0d,ifreq:ifreq,mag:xyz,swi:swi,sep:sep,d2m:d2m},[nt,ndays])
-mvn_pui_aos ;initialize pui3
-
 swdays=replicate(1,ndays)
 for j=0,ndays-1 do begin ;loop over days
   tr=trange[0]+[j,j+1]*secinday
@@ -49,7 +40,16 @@ for j=0,ndays-1 do begin ;loop over days
   if where(finite(alt_sw),/null) eq !null then swdays[j]=0 ;no solar wind coverage
 endfor
 
+fnan=!values.f_nan
+xyz=replicate(fnan,3) ;xyz or [mean,stdev,nsample]
+swi={vsw:xyz,nsw:fnan,mode:fnan,att:fnan,qf:fnan,dt:fnan}
+ifreq=replicate({pi:fnan,cx:fnan,ei:fnan},2) ;2 for [H,O]
+sep=replicate({tot:xyz,xyz:xyz,att:0b,qf:fnan,dt:fnan},2) ;2 for sep1 and sep2
+d2m=replicate({swi:xyz,sta:xyz},2) ;2 for [H,O]
+sta={dt:fnan,dee:fnan,mass:[fnan,fnan]}
 jsw=where(swdays,nswdays,/null)
+mvn_pui_aos ;initialize pui and pui3
+stat=replicate({centertime:0d,ifreq:ifreq,mag:xyz,swi:swi,sep:sep,sta:sta,d2m:d2m,params:pui[0].model.params,scpot:fnan},[nt,nswdays])
 stat2d=replicate({d2m:pui3},nswdays)
 
 for j=0,nswdays-1 do begin ;loop over days
@@ -67,10 +67,17 @@ for j=0,nswdays-1 do begin ;loop over days
   stat[*,j].swi.mode=pui.data.swi.swim.swi_mode
   stat[*,j].swi.att=pui.data.swi.swim.atten_state
   stat[*,j].swi.qf=pui.data.swi.swim.quality_flag
+  stat[*,j].swi.dt=pui.data.swi.dt
   stat[*,j].sep.tot=pui.d2m.sep
   stat[*,j].sep.xyz=pui.model[1].fluxes.sep.rv[0:2]
   stat[*,j].sep.att=pui.data.sep.att
+  stat[*,j].sep.dt=pui.data.sep.dt
   stat[*,j].sep.qf=pui.model[1].fluxes.sep.qf
+  stat[*,j].sta.dt=pui.data.sta.d1.dt
+  stat[*,j].sta.dee=pui.data.sta.d1.dee
+  stat[*,j].sta.mass=pui.data.sta.d1.mass[[0,4]]
+  stat[*,j].params=pui.model.params
+  stat[*,j].scpot=pui.data.swe.scpot
   stat[*,j].d2m.swi=pui.d2m.swi
   stat[*,j].d2m.sta=pui.d2m.sta
   stat2d[j].d2m=pui3
@@ -79,7 +86,7 @@ for j=0,nswdays-1 do begin ;loop over days
   if keyword_set(img) then mvn_pui_tplot_3d_save,graphics=g,datestr=datestr
 
 endfor
-save,stat,stat2d,binsize,np
+save,stat,stat2d,pui0
 
 stop
 end

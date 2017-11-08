@@ -17,24 +17,27 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-01-31 17:46:13 -0800 (Tue, 31 Jan 2017) $
-;$LastChangedRevision: 22700 $
+;$LastChangedDate: 2017-11-07 15:42:24 -0800 (Tue, 07 Nov 2017) $
+;$LastChangedRevision: 24275 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_feeps_pad_spinavg.pro $
 ;-
 pro mms_feeps_pad_spinavg, probe=probe, species = species, data_units = data_units, $
   datatype = datatype, energy = energy, bin_size = bin_size, suffix = suffix_in, $
   data_rate = data_rate, level = level
   
-  if undefined(probe) then probe='1' else probe = strcompress(string(probe), /rem)
-  if undefined(datatype) then datatype = 'electron'
-  if undefined(data_units) then data_units = 'cps'
-  if undefined(data_rate) then data_rate = 'srvy'
+  if undefined(datatype) then datatype='electron' else datatype=strlowcase(datatype)
+  if undefined(data_rate) then data_rate = 'srvy' else data_rate=strlowcase(data_rate)
+  if undefined(probe) then probe = '1' else probe = strcompress(string(probe), /rem)
   if undefined(suffix_in) then suffix_in = ''
-  if undefined(energy) then energy = [0, 1000]
-  if undefined(bin_size) then bin_size = 15
-  if (data_units eq 'flux') then data_units = 'intensity'
-  if (data_units eq 'cps') then data_units = 'count_rate'
-  units_label = data_units eq 'intensity' ? '1/(cm!U2!N-sr-s-keV)' : 'Counts/s'
+  if undefined(bin_size) then bin_size = 16.3636 ;deg
+  if undefined(energy) then energy = [70,600]
+  if undefined(data_units) then data_units = 'intensity'
+  if undefined(level) then level = 'l2' else level = strlowcase(level)
+  if undefined(num_smooth) then num_smooth = 1
+  if data_units eq 'intensity' then out_units = '[#/cm!E2!N-s-sr-keV]'
+  if data_units eq 'cps' || data_units eq 'count_rate' then out_units = '[counts/s]'
+  if data_units eq 'counts' then out_units = '[counts]'
+  units_label = data_units eq 'intensity' ? '1/(cm!U2!N-sr-s-keV)' : '[counts/s]'
 
   en_range_string = strcompress(string(fix(energy[0])), /rem) + '-' + strcompress(string(fix(energy[1])), /rem) + 'keV'
  ; units_label = data_units eq 'Counts' ? 'Counts': '[(cm!E2!N s sr KeV)!E-1!N]'

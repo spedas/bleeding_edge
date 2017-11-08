@@ -32,7 +32,7 @@ Btot=sqrt(bx^2+by^2+bz^2); magnetic field magnitude (T)
 ;dbtot=btot-pui.data.mag.tot ;error in Btot from rotation (should be negligible, otherwise something's wrong!)
 tub=acos(-bx/Btot); theta Usw,B (radians) angle between Usw and B (cone angle)
 phiub=atan(by,bz); phi Usw,B (radians) solar wind magnetic field clock angle
-tez=atan(-bz,by); theta E,z (radians) solar wind electric filed clock angle
+tez=atan(-bz,by); theta E,z  (radians) solar wind electric field clock angle
 
 sintub=sin(tub)
 costub=cos(tub)
