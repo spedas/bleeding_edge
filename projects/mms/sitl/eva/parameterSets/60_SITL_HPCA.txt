@@ -1,4 +1,6 @@
 mms*_dfg_srvy_gsm_dmpa
+;mms*_fpi_bentPipeB_DBCS;.... FPI Emergency parameters for when DFG/AFG not available.
+;mms*_fpi_bentPipeB_Norm;... FPI Emergency parameters for when DFG/AFG not available.
 
 mms*_hpca_hplus_RF_corrected
 mms*_hpca_heplusplus_RF_corrected

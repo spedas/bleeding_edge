@@ -1,4 +1,6 @@
 mms*_dfg_srvy_gsm_dmpa
+;mms*_fpi_bentPipeB_DBCS;.... FPI Emergency parameters for when DFG/AFG not available.
+;mms*_fpi_bentPipeB_Norm;... FPI Emergency parameters for when DFG/AFG not available.
 mms*_fpi_ions ;.............. FPI
 mms*_fpi_electrons;........... FPI
 mms_stlm_bakstr; BAK (current) (being modified by a super-SITL)
