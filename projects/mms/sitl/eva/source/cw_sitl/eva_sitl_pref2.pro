@@ -50,7 +50,7 @@ FUNCTION eva_sitl_pref2_event, ev
       eva_sitl_restore_txt
       end
     state.btnFOM2BAK:begin
-      
+      eva_sitl_fom2bak
       end
     else:
   endcase
@@ -92,7 +92,7 @@ FUNCTION eva_sitl_pref2, parent, GROUP_LEADER=group_leader, $
   lblFOM2BAK2 = widget_label(mainbase,VALUE="  ")  
   str_element,/add,state,'btnIDs',widget_button(mainbase,VALUE=' Replace source-IDs in the selections')
   str_element,/add,state,'btnTXT2FOM',widget_button(mainbase,VALUE=' Import selections from TEXT to FOM-struct ')
-  str_element,/add,state,'btnFOM2BAK',widget_button(mainbase,VALUE=' Import selections from SAV to BAK-struct ',sensitive=0)
+  str_element,/add,state,'btnFOM2BAK',widget_button(mainbase,VALUE=' Import selections from SAV to BAK-struct ')
   
 
 
