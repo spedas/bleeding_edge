@@ -10,8 +10,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-09-27 14:04:49 -0700 (Wed, 27 Sep 2017) $
-; $LastChangedRevision: 24041 $
+; $LastChangedDate: 2017-11-13 12:44:28 -0800 (Mon, 13 Nov 2017) $
+; $LastChangedRevision: 24286 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_flipbook_crib.pro $
 ;-
 ;
@@ -42,9 +42,9 @@ stop
 ;------------------------------------------------------
 ; Basic HPCA example
 ;------------------------------------------------------
-trange=['2015-10-16/13:02:00', '2015-10-16/13:07:00']
+trange=['2015-10-16/12', '2015-10-16/14']
 probe=1
-data_rate = 'brst'
+data_rate = 'srvy'
 species = 'hplus'
 
 mms_load_fgm, trange=trange, probe=probe, /time_clip
@@ -54,7 +54,8 @@ window, xsize=1200, ysize=650
 
 tplot, ['mms1_hpca_'+species+'_number_density', 'mms1_hpca_'+species+'_ion_bulk_velocity', 'mms1_hpca_'+species+'_scalar_temperature', 'mms1_hpca_'+species+'_ion_pressure', 'mms1_fgm_b_gse_srvy_l2_bvec']
 
-mms_flipbookify, probe=1, species=species, instrument='hpca', right_margin=80
+;mms_flipbookify, probe=1, species=species, instrument='hpca', right_margin=80, data_rate=data_rate
+mms_flipbookify, probe=1, species=species, instrument='hpca',  data_rate=data_rate
 stop
 
 ;------------------------------------------------------

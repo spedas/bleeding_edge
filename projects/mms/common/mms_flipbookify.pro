@@ -96,8 +96,8 @@
 ;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-04 13:17:55 -0700 (Wed, 04 Oct 2017) $
-; $LastChangedRevision: 24112 $
+; $LastChangedDate: 2017-11-13 10:05:42 -0800 (Mon, 13 Nov 2017) $
+; $LastChangedRevision: 24281 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_flipbookify.pro $
 ;-
 
@@ -149,7 +149,10 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
     ; in case the top panel contains a pseudovariable
     if ~is_struct(top_panel) && is_array(top_panel) then get_data, top_panel[0], data=top_panel
     if is_struct(top_panel) then times = top_panel.x
-  endif
+  endif else begin
+    dprint, dlevel=0, 'Error, no tplot window found'
+    return
+  endelse
   if undefined(trange) then trange = time_double(minmax(times)) else begin
     ; the user specified a trange, so we need to limit the slices to that trange
     ; and draw a box indicating the trange
