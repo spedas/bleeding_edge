@@ -159,8 +159,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;        
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-08-04 12:15:25 -0700 (Fri, 04 Aug 2017) $
-; $LastChangedRevision: 23757 $
+; $LastChangedDate: 2017-11-15 15:07:55 -0800 (Wed, 15 Nov 2017) $
+; $LastChangedRevision: 24288 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -176,7 +176,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                   shiftpot=shiftpot,popen=popen, indspec=indspec, twopot=twopot, $
                   xrange=xrange, error_bars=error_bars, yrange=yrange, trange=tspan, $
                   note=note, mincounts=mincounts, maxrerr=maxrerr, tsmo=tsmo, $
-                  sundir=sundir, wscale=wscale, cscale=cscale
+                  sundir=sundir, wscale=wscale, cscale=cscale, fscale=fscale, $
+                  result=result
 
   @mvn_swe_com
   @swe_snap_common
@@ -199,6 +200,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   if keyword_set(resample) then rflg = 1 else rflg = 0
   if not keyword_set(wscale) then wscale = 1.
   if not keyword_set(cscale) then cscale = wscale
+  if not keyword_set(fscale) then fscale = 1.
   if (n_elements(xrange) ge 2) then begin
     xrange = minmax(xrange)
     xflg = 1
@@ -489,6 +491,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   nplot = 0
   
   while (ok) do begin
+    result = {null:0}
 
     if (dosmo) then begin
       tmin = min(trange, max=tmax)
@@ -563,7 +566,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
       y = pad.pa*!radeg
       ylo = pad.pa_min*!radeg
       yhi = pad.pa_max*!radeg
-      z = smooth(pad.data*pmask,[smo,1],/nan)
+      z = smooth(pad.data*pmask,[smo,1],/nan)/fscale
 
       if (sflg) then begin
         de = min(abs(energy - x),i)
@@ -611,7 +614,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 ;     str_element,limits,'zrange',success=ok
       ok = 0
       if (not ok) then begin
-        zmin = min(z, max=zmax, /nan) > zlo
+        zmin = min(z, /nan) > zlo
+        zmax = max(z, /nan) > (10.*zmin)
         if (nflg) then begin
           zmin = 0.3
           zmax = 3.0
@@ -627,6 +631,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
         wset, Pwin
         !p.multi = [0,1,2]
         specplot,x,y1,z1,limits=limits
+        str_element, result, 'pad_1', {x:x, y:y1, z:z1}, /add
         if (dopot) then begin
           if (spflg) then oplot,[-pot,-pot],[0,180],line=2,color=6 $
                      else oplot,[pot,pot],[0,180],line=2
@@ -639,6 +644,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
         limits.title = ''
         specplot,x,y2,z2,limits=limits
+        str_element, result, 'pad_2', {x:x, y:y2, z:z2}, /add
         if (dopot) then begin
           if (spflg) then oplot,[-pot,-pot],[0,180],line=2,color=6 $
                      else oplot,[pot,pot],[0,180],line=2
@@ -680,6 +686,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
             str_element, rlim, 'title', strtrim(time_string(mean(rpad.time)) + ' (Resampled)' + $
                                                 '   ' + note), /add_replace
             specplot, average(pad.energy, 2), rpad[0].xax, arpad, lim=rlim
+            str_element, result, 'pad_resample', {x:average(pad.energy, 2), y:rpad[0].xax, z:arpad}, /add
 
             if (dopot) then begin
               if (spflg) then oplot,[-pot,-pot],[0,180],line=2,color=6 $
@@ -697,6 +704,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                str_element, rlim, 'zrange', [1.d-2, 1.], /add_replace
                str_element, rlim, 'title', 'Resampled PAD Relative Uncertainty', /add_replace
                specplot, average(pad.energy, 2), rpad[0].xax, rerr, lim=rlim
+               str_element, result, 'pad_resample_rerr', {x:average(pad.energy, 2), y:rpad[0].xax, z:rerr}, /add
                if (dopot) then begin
                  if (spflg) then oplot,[-pot,-pot],[0,180],line=2,color=6 $
                             else oplot,[pot,pot],[0,180],line=2
@@ -750,8 +758,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
       if (sflg) then begin
         x = pad.energy[*,0]
         y = pad.pa*!radeg
-        z = pad.data
-        dz = sqrt(pad.var)
+        z = pad.data/fscale
+        dz = sqrt(pad.var)/fscale
         pcol = !p.color
 
         if (~psflg) then wset, Nwin
@@ -885,13 +893,13 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                    Fp_err = Fp
                  end
              1 : begin
-                   Fp = pad.data[*,pndx]
-                   Fp_err = sqrt(pad.var[*,pndx])
+                   Fp = pad.data[*,pndx]/fscale
+                   Fp_err = sqrt(pad.var[*,pndx])/fscale
                  end
           else : begin
                    ngud = total(finite(pad.data[*,pndx]),2)
-                   Fp = average(pad.data[*,pndx],2,/nan)
-                   Fp_err = sqrt(total(pad.var[*,pndx],2,/nan))/(ngud > 1.)
+                   Fp = average(pad.data[*,pndx],2,/nan)/fscale
+                   Fp_err = sqrt(total(pad.var[*,pndx],2,/nan))/(ngud > 1.)/fscale
                  end
         endcase
 
@@ -902,13 +910,13 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                    Fm_err = Fm
                  end
              1 : begin
-                   Fm = pad.data[*,mndx]
-                   Fm_err = sqrt(pad.var[*,mndx])
+                   Fm = pad.data[*,mndx]/fscale
+                   Fm_err = sqrt(pad.var[*,mndx])/fscale
                  end
           else : begin
                    ngud = total(finite(pad.data[*,mndx]),2)
-                   Fm = average(pad.data[*,mndx],2,/nan)
-                   Fm_err = sqrt(total(pad.var[*,mndx],2,/nan))/(ngud > 1.)
+                   Fm = average(pad.data[*,mndx],2,/nan)/fscale
+                   Fm_err = sqrt(total(pad.var[*,mndx],2,/nan))/(ngud > 1.)/fscale
                  end
         endcase
 
@@ -920,13 +928,13 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                    Fz_err = Fz
                  end
              1 : begin
-                   Fz = pad.data[*,zndx]
-                   Fz_err = sqrt(pad.var[*,zndx])
+                   Fz = pad.data[*,zndx]/fscale
+                   Fz_err = sqrt(pad.var[*,zndx])/fscale
                  end
           else : begin
                    ngud = total(finite(pad.data[*,zndx]),2)
-                   Fz = average(pad.data[*,zndx],2,/nan)
-                   Fz_err = sqrt(total(pad.var[*,zndx],2,/nan))/(ngud > 1.)
+                   Fz = average(pad.data[*,zndx],2,/nan)/fscale
+                   Fz_err = sqrt(total(pad.var[*,zndx],2,/nan))/(ngud > 1.)/fscale
                  end
         endcase
         
@@ -962,6 +970,10 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
           errplot, x2*1.001, (Fm-Fm_err)>tiny, Fm+Fm_err, color=2, width=0
           if (domid) then errplot, x, (Fz-Fz_err)>tiny, Fz+Fz_err, color=4, width=0
         endif
+
+        str_element, result, 'spec_plus', {x:x1, y:Fp, dy:Fp_err}, /add
+        str_element, result, 'spec_minus', {x:x2, y:Fm, dy:Fm_err}, /add
+        str_element, result, 'spec_mid', {x:x, y:Fz, dy:Fz_err}, /add
 
         if (dopot) then begin
           if (spflg) then oplot,[-pot,-pot],drange,line=2,color=6 $
@@ -1040,7 +1052,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
             maap = pad.pa_max[63,ipa]*!radeg
             if (pad.pa[63,ipa]*!radeg ge 90) then lst = 2 else lst = 0
             clr = 244./(npa/2-1)*ip + 10
-            oplot,x,pad.data[*,ipa], color=clr, linestyle=lst
+            oplot,x,pad.data[*,ipa]/fscale, color=clr, linestyle=lst
             xyouts,xs,ys,string(mip, maap, format='(i3," - ",i3)'),charsize=1.2*cscale,/norm,color=clr
             ys -= dys
         endfor
@@ -1092,7 +1104,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
             maap=pad.pa_max[63,ipa]*!radeg
             if pad.pa[63,ipa]*!radeg ge 90 then lst=2 else lst=0
             clr=254.-244./(npa/2-1)*ip
-            oplot,x,pad.data[*,ipa], color=clr, linestyle=lst
+            oplot,x,pad.data[*,ipa]/fscale, color=clr, linestyle=lst
             xyouts,xs,ys,string(mip, maap, format='(i3," - ",i3)'),charsize=1.2*cscale,/norm,color=clr
             ys -= dys
         endfor
@@ -1144,6 +1156,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
     endif else ok = 0
     
   endwhile
+
+  str_element, result, 'null', /del
 
   if (kflg) then begin
     if (~rflg) then wdelete, Pwin

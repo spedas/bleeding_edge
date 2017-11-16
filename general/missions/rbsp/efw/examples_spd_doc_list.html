@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Nov 13 18:16:11 2017.<P>
+<STRONG>Last modified: </STRONG>Wed Nov 15 18:16:12 2017.<P>
  
 <HR>
  
@@ -80,10 +80,10 @@ This page was created by the IDL library routine
   FUNCTION :   rbsp_efw_DCfield_removal_crib
   PURPOSE  :   Subtract off DC magnetic field from Bw values. Saves as new tplot files
 
-               
-  REQUIRES:   Need: SSL THEMIS software and IDL Geopack DLM both found at 
+
+  REQUIRES:   Need: SSL THEMIS software and IDL Geopack DLM both found at
 			   http://themis.ssl.berkeley.edu/software.shtml
-  
+
 
   INPUT:
 		probe   -&gt; 'a' or 'b'
@@ -91,10 +91,10 @@ This page was created by the IDL library routine
 		ql -&gt; set to load quicklook EMFISIS data
                cadence -&gt; cadence of EMFISIS data. 'hires', '4sec', '1sec'
                nodelete -&gt; don't delete various tplot
-               variables upon exit            
+               variables upon exit
 
-  EXAMPLES:   
-           
+  EXAMPLES:
+
 				Produces the following variables (ex for magname = 'rbspa_mag_gsm', model='t96')
 					rbspa_mag_gsm_t96
 					rbspa_mag_gsm_t96_dif
@@ -109,10 +109,10 @@ This page was created by the IDL library routine
 
 
 
-   NOTES:    ruthlessly pilfered from THEMIS crib sheets 
+   NOTES:    ruthlessly pilfered from THEMIS crib sheets
              Subtracts off Tsyganenko values using input from ACE, Wind and OMNI, as
-			  well as user defined input. 
-  
+			  well as user defined input.
+
 
 
    CREATED:  2012/12/12
