@@ -79,8 +79,8 @@
 ; 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-10-19 12:54:21 -0700 (Thu, 19 Oct 2017) $
-;$LastChangedRevision: 24188 $
+;$LastChangedDate: 2017-11-16 14:27:59 -0800 (Thu, 16 Nov 2017) $
+;$LastChangedRevision: 24291 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_load_hpca.pro $
 ;-
 
@@ -124,7 +124,7 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
     endif else begin
         ; required to center the measurements
         if undefined(get_support_data) then get_support_data = 1
-        if ~undefined(datatype) && (datatype ne 'ion' && datatype ne 'moments') then begin
+        if ~undefined(datatype) && n_elements(datatype) eq 1 && (datatype ne 'ion' && datatype ne 'moments') then begin
             dprint, dlevel = 0, "Unknown datatype: " + datatype + " for L2 HPCA data; expected 'ion' or 'moments', loading 'ion'"
             datatype='ion'
         endif
@@ -156,7 +156,7 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
     
     ; check if the energy table for the flux/psd variables are all 0s
     ; if they are, use the hard coded table instead
-    if datatype eq 'ion' && level eq 'l2' then begin
+    if array_contains(datatype, 'ion') && level eq 'l2' then begin
         vars_to_check = tnames('mms?_hpca_*plus_phase_space_density'+suffix)
 
         flux_vars_to_check = tnames('mms?_hpca_*plus_flux'+suffix)

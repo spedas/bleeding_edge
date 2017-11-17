@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_hpca_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-11-03 13:20:30 -0700 (Fri, 03 Nov 2017) $
-; $LastChangedRevision: 24259 $
+; $LastChangedDate: 2017-11-16 14:46:06 -0800 (Thu, 16 Nov 2017) $
+; $LastChangedRevision: 24292 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_hpca_ut__define.pro $
 ;-
 
@@ -227,6 +227,12 @@ function mms_load_hpca_ut::test_load_with_timeclip
     'Problem with time clip in mms_load_hpca'
   assert, ~spd_data_exists('mms4_hpca_hplus_number_density mms4_hpca_hplus_scalar_temperature mms4_hpca_oplus_ion_bulk_velocity', '2015-10-22/06:04', '2015-10-22/06:06'), $
     'Problem with time clip in mms_load_hpca'
+  return, 1
+end
+
+function mms_load_hpca_ut::test_multiple_datatypes
+  mms_load_hpca, trange=['2016-12-15', '2016-12-15/4'], datatype=['ion', 'moments'], probe=1
+  assert, spd_data_exists('mms1_hpca_hplus_number_density mms1_hpca_hplus_flux mms1_hpca_oplus_flux', '2016-12-15', '2016-12-15/4'), 'regression with datatypes keyword!!1!one'
   return, 1
 end
 
