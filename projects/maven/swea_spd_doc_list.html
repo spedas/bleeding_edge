@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov 16 18:16:11 2017.<P>
+<STRONG>Last modified: </STRONG>Fri Nov 17 18:16:16 2017.<P>
  
 <HR>
  
@@ -154,6 +154,8 @@ This page was created by the IDL library routine
 <br>Routine to read CDF file from mvn_swe_makecdf_pad.pro
 <LI><A HREF="#MVN_SWE_READCDF_SPEC">MVN_SWE_READCDF_SPEC</A>
 <br>Routine to read CDF file from mvn_swe_makecdf_spec.pro
+<LI><A HREF="#MVN_SWE_REGID_RESTORE">MVN_SWE_REGID_RESTORE</A>
+<br>Reads in save files mvn_swia_regid
 <LI><A HREF="#MVN_SWE_SC_NEGPOT">MVN_SWE_SC_NEGPOT</A>
 <br>Estimates the negative spacecraft potential within the ionosphere
 <LI><A HREF="#MVN_SWE_SC_NEGPOT_TWODIR_BURST">MVN_SWE_SC_NEGPOT_TWODIR_BURST</A>
@@ -3519,7 +3521,7 @@ VERSION:   1.0
 <A NAME="MVN_SWE_READ_L0">
 <H2>MVN_SWE_READ_L0</H2></A>
 <A HREF="#MVN_SWE_READCDF_SPEC">[Previous Routine]</A>
-<A HREF="#MVN_SWE_SCIPLOT">[Next Routine]</A>
+<A HREF="#MVN_SWE_REGID_RESTORE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mvn_swe_read_l0
@@ -3591,9 +3593,45 @@ FILE: mvn_swe_read_l0.pro
 <STRONG>(See <A href="swea/mvn_swe_read_l0.pro">projects/maven/swea/mvn_swe_read_l0.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SWE_REGID_RESTORE">
+<H2>MVN_SWE_REGID_RESTORE</H2></A>
+<A HREF="#MVN_SWE_READ_L0">[Previous Routine]</A>
+<A HREF="#MVN_SWE_SCIPLOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_swe_regid_restore
+PURPOSE:
+  Reads in save files mvn_swia_regid
+
+USAGE:
+  mvn_swe_regid_restore, trange
+
+INPUTS:
+       trange:        Restore data over this time range.  If not
+                      specified, then uses the current tplot range
+                      or timerange() will be called
+
+KEYWORDS:
+       ORBIT:         Restore mvn_swia_regid data by orbit number.
+
+       RESULTS:       Hold the full structure of region id
+
+       TPLOT:         Create tplot varible for region id &quot;reg_id&quot;
+       
+ $LastChangedBy: xussui $
+ $LastChangedDate: 2017-11-17 15:17:53 -0800 (Fri, 17 Nov 2017) $
+ $LastChangedRevision: 24307 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_regid_restore.pro $
+
+CREATED BY:    Shaosui Xu  11-17-17
+FILE: mvn_swe_regid_restore
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_swe_regid_restore.pro">projects/maven/swea/mvn_swe_regid_restore.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SWE_SCIPLOT">
 <H2>MVN_SWE_SCIPLOT</H2></A>
-<A HREF="#MVN_SWE_READ_L0">[Previous Routine]</A>
+<A HREF="#MVN_SWE_REGID_RESTORE">[Previous Routine]</A>
 <A HREF="#MVN_SWE_SC_NEGPOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -5888,9 +5926,9 @@ KEYWORDS:
 
         NOTE:         Insert a text label.  Keep it short.
         
- $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-11-15 15:07:55 -0800 (Wed, 15 Nov 2017) $
- $LastChangedRevision: 24288 $
+ $LastChangedBy: xussui $
+ $LastChangedDate: 2017-11-17 12:09:16 -0800 (Fri, 17 Nov 2017) $
+ $LastChangedRevision: 24303 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12

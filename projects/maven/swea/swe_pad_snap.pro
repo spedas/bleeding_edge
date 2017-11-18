@@ -158,9 +158,9 @@
 ;
 ;        NOTE:         Insert a text label.  Keep it short.
 ;        
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-11-15 15:07:55 -0800 (Wed, 15 Nov 2017) $
-; $LastChangedRevision: 24288 $
+; $LastChangedBy: xussui $
+; $LastChangedDate: 2017-11-17 12:09:16 -0800 (Fri, 17 Nov 2017) $
+; $LastChangedRevision: 24303 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -1034,111 +1034,78 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
         npa = 16;n_elements(pad.energy[0,*])
         pas = reform(pad.pa[63,*])
         inm = where(pas eq min(pas))
-        inm = inm[0]
-        !p.multi=[0,2,1,0,0]
+        inm = inm[0]        
+        !p.multi=[0,4,2,0,0]
         
         ;first half of the PAD
-        plot_oo, [0.1,0.1], drange, xrange=xrange, yrange=drange, /ysty, $
-            xtitle='Energy (eV)', ytitle=ytitle, title=time_string(pad.time), $
-            charsize=1.4*cscale, xmargin=[10,3]
-                    
-        xs = 0.36
-        ys = 0.90
-        dys = 0.03
       
         for ip=0,npa/2-1 do begin
-            ipa = (ip + inm) < (ipa - npa)
-            mip = pad.pa_min[63,ipa]*!radeg
-            maap = pad.pa_max[63,ipa]*!radeg
-            if (pad.pa[63,ipa]*!radeg ge 90) then lst = 2 else lst = 0
-            clr = 244./(npa/2-1)*ip + 10
-            oplot,x,pad.data[*,ipa]/fscale, color=clr, linestyle=lst
-            xyouts,xs,ys,string(mip, maap, format='(i3," - ",i3)'),charsize=1.2*cscale,/norm,color=clr
-            ys -= dys
-        endfor
-        if (dopot) then begin
-            if (finite(scp)) then pot = scp $
-            else if (finite(pad.sc_pot)) then pot = pad.sc_pot else pot = 0.
-            oplot,[pot,pot],drange,line=2
-        endif
-        if (pflg) then begin
-            oplot,[23.,23.],drange,line=2,color=1
-            oplot,[27.,27.],drange,line=2,color=1
-            oplot,[60.,60.],drange,line=2,color=1
-        endif
-
-        if (doalt) then begin
-            dt = min(abs(alt.x - pad.time), aref)
-            xyouts,xs,ys,string(round(alt.y[aref]), format='("ALT = ",i5)'),charsize=1.2*cscale,/norm
-            ys -= dys
-            xyouts,xs,ys,string(round(sza.y[aref]), format='("SZA = ",i5)'),charsize=1.2*cscale,/norm
-            ys -= dys
-        endif
-
-        if keyword_set(dir) then begin
-            if (B_azim lt 0.) then B_azim = (B_azim + 360.) mod 360.
-            xyouts,xs,ys,string(round(B_azim), format='("B_az = ",i4)'),charsize=1.2*cscale,/norm
-            ys -= dys
-            xyouts,xs,ys,string(round(B_elev), format='("B_el = ",i4)'),charsize=1.2*cscale,/norm
-            ys -= dys
-        endif
-        
-        if (strlen(note) gt 0) then begin
-          xyouts,xs,ys,note,charsize=1.2*cscale,/norm
-          ys -= dys
-        endif
-            
-        ;second half of the PAD
-        plot_oo, [0.1,0.1], drange, xrange=xrange, yrange=drange, /ysty, $
+           xs = xrange[1]/100.
+           ys = drange[1]/5.
+           dys = 10^(0.05*(alog10(drange[1])-alog10(drange[0])))
+            plot_oo, [0.1,0.1], drange, xrange=xrange, yrange=drange, /ysty, $
             xtitle='Energy (eV)', ytitle=ytitle, title=time_string(pad.time), $
             charsize=1.4*cscale, xmargin=[10,3]
 
-        xs = 0.68
-        ys = 0.90
-        dys = 0.03
+            ipa = (ip + inm); < (ipa - npa)
+            if ipa ge npa then ipa=ipa-npa
+            mip = pad.pa_min[63,ipa]*!radeg
+            maap = pad.pa_max[63,ipa]*!radeg
+            ;if (pad.pa[63,ipa]*!radeg ge 90) then lst = 2 else lst = 0
+            ;clr = 244./(npa/2-1)*ip + 10
+            oplot,x,pad.data[*,ipa],psym=10,color=4
+            xyouts,xs,ys,string(mip, maap, format='(i3," - ",i3)'),$
+                   charsize=1.2*cscale,color=4
+            ys /=dys
 
-        for ip=0,npa/2-1 do begin
+            ;second half
             ipa=ip+npa/2+inm
+            ipa=npa-ip-1
             if ipa ge npa then ipa=ipa-npa
             mip=pad.pa_min[63,ipa]*!radeg
             maap=pad.pa_max[63,ipa]*!radeg
-            if pad.pa[63,ipa]*!radeg ge 90 then lst=2 else lst=0
-            clr=254.-244./(npa/2-1)*ip
-            oplot,x,pad.data[*,ipa]/fscale, color=clr, linestyle=lst
-            xyouts,xs,ys,string(mip, maap, format='(i3," - ",i3)'),charsize=1.2*cscale,/norm,color=clr
-            ys -= dys
-        endfor
-        if (dopot) then begin
-            if (finite(scp)) then pot = scp $
-            else if (finite(pad.sc_pot)) then pot = pad.sc_pot else pot = 0.
-            oplot,[pot,pot],drange,line=2
-        endif
-        if (pflg) then begin
-            oplot,[23.,23.],drange,line=2,color=1
-            oplot,[27.,27.],drange,line=2,color=1
-            oplot,[60.,60.],drange,line=2,color=1
-        endif
-
-        if (doalt) then begin
-            dt = min(abs(alt.x - pad.time), aref)
-            xyouts,xs,ys,string(round(alt.y[aref]), format='("ALT = ",i5)'),charsize=1.2*cscale,/norm
-            ys -= dys
-            xyouts,xs,ys,string(round(sza.y[aref]), format='("SZA = ",i5)'),charsize=1.2*cscale,/norm
-            ys -= dys
-        endif
-
-        if keyword_set(dir) then begin
-            if (B_azim lt 0.) then B_azim = (B_azim + 360.) mod 360.
-            xyouts,xs,ys,string(round(B_azim), format='("B_az = ",i4)'),charsize=1.2*cscale,/norm
-            ys -= dys
-            xyouts,xs,ys,string(round(B_elev), format='("B_el = ",i4)'),charsize=1.2*cscale,/norm
-            ys -= dys
-        endif
+            ;if pad.pa[63,ipa]*!radeg ge 90 then lst=2 else lst=0
+            ;clr=254.-244./(npa/2-1)*ip
+            oplot,x,pad.data[*,ipa],psym=10,color=6
+            xyouts,xs,ys,string(mip, maap, format='(i3," - ",i3)'),$
+                   charsize=1.2*cscale,color=6
+            ys /= dys
         
-        if (strlen(note) gt 0) then begin
-          xyouts,xs,ys,note,charsize=1.2*cscale,/norm
-          ys -= dys
-        endif
+            if (dopot) then begin
+               if (finite(scp)) then pot = scp $
+               else if (finite(pad.sc_pot)) then pot = pad.sc_pot else pot = 0.
+               oplot,[pot,pot],drange,line=2
+            endif
+            if (pflg) then begin
+               oplot,[23.,23.],drange,line=2,color=1
+               oplot,[27.,27.],drange,line=2,color=1
+               oplot,[60.,60.],drange,line=2,color=1
+            endif
+
+            if (doalt) then begin
+               dt = min(abs(alt.x - pad.time), aref)
+               xyouts,xs,ys,string(round(alt.y[aref]), format='("ALT = ",i5)'),$
+                      charsize=1.2*cscale
+               ys /= dys
+               xyouts,xs,ys,string(round(sza.y[aref]), format='("SZA = ",i5)'),charsize=1.2*cscale
+               ys /= dys
+            endif
+            
+            if keyword_set(dir) then begin
+               if (B_azim lt 0.) then B_azim = (B_azim + 360.) mod 360.
+               xyouts,xs,ys,string(round(B_azim), format='("B_az = ",i4)'),charsize=1.2*cscale
+               ys /= dys
+               xyouts,xs,ys,string(round(B_elev), format='("B_el = ",i4)'),charsize=1.2*cscale
+               ys /= dys
+            endif
+        
+            if (strlen(note) gt 0) then begin
+               xyouts,xs,ys,note,charsize=1.2*cscale
+               ys /= dys
+            endif
+            
+
+         endfor
 
         !p.multi=0
     endif

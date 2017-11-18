@@ -59,15 +59,23 @@ pro spp_fld_make_cdf_l1, apid_name, $
 
       spp_fld_load_l1, filename
 
-      file_mkdir, !spp_fld_tmlib.test_cdf_dir
+      if !spp_fld_tmlib.test_cdf_dir NE '' then begin
 
-      file_copy, filename, !spp_fld_tmlib.test_cdf_dir, /over
+        file_mkdir, !spp_fld_tmlib.test_cdf_dir
+
+        file_copy, filename, !spp_fld_tmlib.test_cdf_dir, /over
+
+      end
 
     end
 
     if file_test(packet_filename) then begin
 
-      file_copy, packet_filename, !spp_fld_tmlib.test_cdf_dir, /over
+      if !spp_fld_tmlib.test_cdf_dir NE '' then begin
+
+        file_copy, packet_filename, !spp_fld_tmlib.test_cdf_dir, /over
+
+      end
 
     end
 

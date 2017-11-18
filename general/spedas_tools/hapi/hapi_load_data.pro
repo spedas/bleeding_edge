@@ -16,6 +16,8 @@
 ;         
 ;         server:       HAPI server to connect to (optional, defaults to: datashop.elasticbeanstalk.com)
 ;         path:         HAPI path (URI to /hapi, optional, defaults to: /hapi)
+;         port:         HAPI server port (defaults to 80)
+;         scheme:       URL scheme (defaults to http)
 ;
 ; EXAMPLES:
 ;  List server capabilities:
@@ -48,8 +50,8 @@
 ;         
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-06-08 15:57:13 -0700 (Thu, 08 Jun 2017) $
-;$LastChangedRevision: 23447 $
+;$LastChangedDate: 2017-11-17 10:01:35 -0800 (Fri, 17 Nov 2017) $
+;$LastChangedRevision: 24296 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 

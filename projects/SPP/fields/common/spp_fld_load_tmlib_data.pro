@@ -1,7 +1,7 @@
 ;
 ;  $LastChangedBy: spfuser $
-;  $LastChangedDate: 2017-10-26 11:27:42 -0700 (Thu, 26 Oct 2017) $
-;  $LastChangedRevision: 24219 $
+;  $LastChangedDate: 2017-11-17 16:49:18 -0800 (Fri, 17 Nov 2017) $
+;  $LastChangedRevision: 24309 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_load_tmlib_data.pro $
 ;
 
@@ -323,7 +323,9 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
         endif else begin
           has_raw = 0
         endelse
-
+        
+        cdf_var_att = (data_hash[var_name])["cdf_att"]
+        
         ; Check whether the request should be suppressed
 
         !NULL = null_items.Where(var_name, count = data_null_count)
@@ -336,7 +338,13 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
 
           returned_item = !NULL
 
-          var_type = strlowcase((data_hash[var_name])['type'])
+          data_var_type = strlowcase((data_hash[var_name])['type'])
+
+          case data_var_type of
+            'double': fill_val = double(cdf_var_att['FILLVAL'])
+            'integer': fill_val = long(cdf_var_att['FILLVAL'])
+            ELSE: fill_val = cdf_var_att['FILLVAL']
+          endcase
 
           if has_string then begin
 
@@ -363,11 +371,15 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
 
           endif
 
-          case var_type of
+          case data_var_type of
             'double': err = tm_get_item_r8(sid, var_name, returned_item, nelem, n_returned)
             'integer': err = tm_get_item_i4(sid, var_name, returned_item, nelem, n_returned)
             ELSE: err = tm_get_item_i4(sid, var_name, returned_item, nelem, n_returned)
           endcase
+          
+          ; Fill val if invalid item
+          
+          if err EQ -7 then returned_item = fill_val
 
         endif else begin
 

@@ -103,7 +103,7 @@ pro thm_part_sphere_interp,source,target,regrid=regrid,error=error,get_error=get
     target_time_range = [min((*target[t]).time),max((*target[t]).end_time)]
     
     output_time_range = [source_time_range[0] > target_time_range[0],source_time_range[1] < target_time_range[1]]
-    
+    output_time_range = output_time_range+[-0.0001, 0.0001] ;test for bad interpolation    
     
     ;find the indexes for current modes
     source_idx = where((*source[s]).time ge output_time_range[0] and (*source[s]).end_time le output_time_range[1],source_c)
@@ -187,12 +187,12 @@ pro thm_part_sphere_interp,source,target,regrid=regrid,error=error,get_error=get
      
    
     ;increment mode variables based on pattern of the mode overlap
-    if (target_time_range[1] eq source_time_range[1]) then begin
+    if (abs(target_time_range[1]-source_time_range[1]) Lt 1.0e-3) then begin ;jmm, 2017-11-09
       s++
       t++
     endif else if (source_time_range[1] lt target_time_range[1]) then begin
       s++
-    ;endif else if (target_time_range lt source_time_range[1]) then begin ;last case is implied, this commented line just illustrates the invariant which holds in the else case
+    ;endif else if (target_time_range[1] lt source_time_range[1]) then begin ;last case is implied, this commented line just illustrates the invariant which holds in the else case
     endif else begin 
       t++
     endelse
