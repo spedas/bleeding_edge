@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Nov 17 18:16:16 2017.<P>
+<STRONG>Last modified: </STRONG>Sat Nov 18 03:16:19 2017.<P>
  
 <HR>
  
@@ -38,7 +38,12 @@ This page was created by the IDL library routine
 
  PURPOSE:
          Create quick plots of spectra at a certain time (i.e., energy vs. eflux, PA vs. eflux, etc)
-         
+ KEYWORDS:
+       [XY]LOG:   [XY] axis in log format
+       [XY]RANGE: 2 element vector that sets [XY] axis range
+       NOLEGEND:  Disable legend display
+       COLORS:    n element vector that sets the colors of the line in order that they are in tplot_vars.options.varnames
+                  n is number of tplot variables in tplot_vars.options.varnames
 
  EXAMPLE:
      To create line plots of FPI electron energy spectra for all MMS spacecraft:
@@ -53,8 +58,8 @@ This page was created by the IDL library routine
      work in progress; suggestions, comments, complaints, etc: egrimes@igpp.ucla.edu
      
 $LastChangedBy: adrozdov $
-$LastChangedDate: 2017-11-16 20:45:18 -0800 (Thu, 16 Nov 2017) $
-$LastChangedRevision: 24294 $
+$LastChangedDate: 2017-11-17 18:57:54 -0800 (Fri, 17 Nov 2017) $
+$LastChangedRevision: 24312 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra.pro $
 </PRE><P>
 <STRONG>(See <A href="util/flatten_spectra.pro">projects/mms/common/util/flatten_spectra.pro</A>)</STRONG><P>
