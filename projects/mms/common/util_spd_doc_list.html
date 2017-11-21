@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Nov 18 03:16:19 2017.<P>
+<STRONG>Last modified: </STRONG>Mon Nov 20 18:16:09 2017.<P>
  
 <HR>
  
@@ -44,6 +44,11 @@ This page was created by the IDL library routine
        NOLEGEND:  Disable legend display
        COLORS:    n element vector that sets the colors of the line in order that they are in tplot_vars.options.varnames
                   n is number of tplot variables in tplot_vars.options.varnames
+             
+       PNG:         save png from the displayed windows (cannot be used with /POSTRSCRIPT keyword)
+       POSTRSCRIPT: create postscript files instead of displaying the plot
+       PREFIX:      filename prefix
+       FILENAME:    custorm filename, including folder. By default the folder is !mms.local_data_dir      
 
  EXAMPLE:
      To create line plots of FPI electron energy spectra for all MMS spacecraft:
@@ -58,8 +63,8 @@ This page was created by the IDL library routine
      work in progress; suggestions, comments, complaints, etc: egrimes@igpp.ucla.edu
      
 $LastChangedBy: adrozdov $
-$LastChangedDate: 2017-11-17 18:57:54 -0800 (Fri, 17 Nov 2017) $
-$LastChangedRevision: 24312 $
+$LastChangedDate: 2017-11-20 15:59:20 -0800 (Mon, 20 Nov 2017) $
+$LastChangedRevision: 24325 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra.pro $
 </PRE><P>
 <STRONG>(See <A href="util/flatten_spectra.pro">projects/mms/common/util/flatten_spectra.pro</A>)</STRONG><P>

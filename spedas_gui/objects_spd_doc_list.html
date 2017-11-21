@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Nov 18 03:16:19 2017.<P>
+<STRONG>Last modified: </STRONG>Mon Nov 20 18:16:09 2017.<P>
  
 <HR>
  
@@ -52,6 +52,9 @@ SPD_UI_HIGHLIGHT_SETTINGS__DEFINE</A>
 <br>line properties is an object that holds all of the settings necessary for
 <LI><A HREF="#SPD_UI_LINE_STYLE__DEFINE">SPD_UI_LINE_STYLE__DEFINE</A>
 <br>generic object for IDL line styles
+<LI><A HREF="#SPD_UI_LINEFILL_SETTINGS__DEFINE">SPD_UI_LINEFILL_SETTINGS__DEFINE
+</A>
+<br>spd_ui_linefill_settings is an object that holds the settings needed
 <LI><A HREF="#SPD_UI_LOADED_DATA__DEFINE">SPD_UI_LOADED_DATA__DEFINE</A>
 <br>This is an array of data objects and represents all the data that has been loaded
 <LI><A HREF="#SPD_UI_LOADED_DATA::DPROC">SPD_UI_LOADED_DATA::DPROC</A>
@@ -1118,7 +1121,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/
 <A NAME="SPD_UI_LEGEND__DEFINE">
 <H2>SPD_UI_LEGEND__DEFINE</H2></A>
 <A HREF="#SPD_UI_HISTORY__DEFINE">[Previous Routine]</A>
-<A HREF="#SPD_UI_LINE_SETTINGS__DEFINE">[Next Routine]</A>
+<A HREF="#SPD_UI_LINEFILL_SETTINGS__DEFINE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -1178,9 +1181,60 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/
 <STRONG>(See <A href="objects/spd_ui_legend__define.pro">spedas_gui/objects/spd_ui_legend__define.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPD_UI_LINEFILL_SETTINGS__DEFINE">
+<H2>SPD_UI_LINEFILL_SETTINGS__DEFINE</H2></A>
+<A HREF="#SPD_UI_LEGEND__DEFINE">[Previous Routine]</A>
+<A HREF="#SPD_UI_LINE_SETTINGS__DEFINE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME: 
+ spd_ui_linefill_settings__define
+
+PURPOSE:  
+ spd_ui_linefill_settings is an object that holds the settings needed 
+ to describe a shaded area between 2 traces. The spd_ui_panel object field 
+ 'traceFillSettings' is a container holding objects of this type.
+
+CALLING SEQUENCE:
+ lineFillSettings = Obj_New(&quot;SPD_UI_LINEFILL_SETTINGS&quot;)
+
+ REQUIRED INPUT:
+ none
+
+KEYWORDS:
+ dataX1             string naming X component of line 1
+ dataY1             string naming Y component of line 1
+ dataX2             string naming X component of line 2
+ dataY2             string naming Y component of line 2
+ FillColor          int array describing color of shading
+ Opacity            float between 0 and 1 describing opacity of shaded area.
+ nosave             will not save a copy on startup
+
+OUTPUT:
+ spd_ui_linefill_settings object reference
+
+METHODS:
+ Copy
+ Save
+ Reset
+
+NOTES:
+  Methods: GetProperty,SetProperty,GetAll,SetAll are managed automatically using the parent class
+  spd_ui_getset.  You can still call these methods when using objects of type spd_ui_linefill_settings.
+
+CREATED BY: Ayris Narock (ADNET/GSFC) 2017
+
+ $LastChangedBy: nikos $
+ $LastChangedDate: 2017-11-20 12:50:10 -0800 (Mon, 20 Nov 2017) $
+ $LastChangedRevision: 24322 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/objects/spd_ui_linefill_settings__define.pro $
+</PRE><P>
+<STRONG>(See <A href="objects/spd_ui_linefill_settings__define.pro">spedas_gui/objects/spd_ui_linefill_settings__define.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPD_UI_LINE_SETTINGS__DEFINE">
 <H2>SPD_UI_LINE_SETTINGS__DEFINE</H2></A>
-<A HREF="#SPD_UI_LEGEND__DEFINE">[Previous Routine]</A>
+<A HREF="#SPD_UI_LINEFILL_SETTINGS__DEFINE">[Previous Routine]</A>
 <A HREF="#SPD_UI_LINE_STYLE__DEFINE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1832,6 +1886,7 @@ INPUT:
 ATTRIBUTES:
 
 traceSettings IDL_Container object storing trace settings for each set of data quantities to be plotted
+traceFillSettings IDL_Container object storing settings for each pair of lines to fill between
 windowID    ID for parent window (defaults to -1)
 name        name for this panel
 id          unique identifier for this panel
@@ -1861,9 +1916,9 @@ NOTES:
   spd_ui_getset.  You can still call these methods when using objects of type spd_ui_panel, and
   call them in the same way as before
 
-$LastChangedBy: egrimes $
-$LastChangedDate: 2015-07-10 16:24:08 -0700 (Fri, 10 Jul 2015) $
-$LastChangedRevision: 18086 $
+$LastChangedBy: nikos $
+$LastChangedDate: 2017-11-20 10:43:28 -0800 (Mon, 20 Nov 2017) $
+$LastChangedRevision: 24317 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/objects/spd_ui_panel__define.pro $
 </PRE><P>
 <STRONG>(See <A href="objects/spd_ui_panel__define.pro">spedas_gui/objects/spd_ui_panel__define.pro</A>)</STRONG><P>

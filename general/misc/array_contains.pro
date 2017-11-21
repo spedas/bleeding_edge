@@ -10,6 +10,9 @@
 ;         array_input: the array to be searched
 ;         str_to_check: value to search for
 ;
+; KEYWORDS:
+;         allow_wildcards: allow wild cards ([], *, ?) to be used in the input string
+;         
 ; EXAMPLE:
 ;     IDL> print, array_contains(['hello', 'world'], 'hello')
 ;         1
@@ -24,11 +27,17 @@
 ;   created by egrimes@igpp
 ;   
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2015-12-03 13:21:25 -0800 (Thu, 03 Dec 2015) $
-;$LastChangedRevision: 19521 $
+;$LastChangedDate: 2017-11-20 16:04:09 -0800 (Mon, 20 Nov 2017) $
+;$LastChangedRevision: 24327 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/array_contains.pro $
 ;-
 
-function array_contains, array_input, str_to_check
+function array_contains, array_input, str_to_check, allow_wildcards=allow_wildcards
+    if undefined(allow_wildcards) then begin
+      str_replace, str_to_check, '*', '\*'
+      str_replace, str_to_check, '[', '\['
+      str_replace, str_to_check, ']', '\]'
+      str_replace, str_to_check, '?', '\?'
+    endif
     return, total(strmatch(array_input, str_to_check)) ge 1.0
 end

@@ -31,9 +31,9 @@
 ;If you change the ordering be sure to check that this change hasn't oscured some
 ;important feature.
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2014-06-11 15:56:35 -0700 (Wed, 11 Jun 2014) $
-;$LastChangedRevision: 15353 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2017-11-20 10:43:28 -0800 (Mon, 20 Nov 2017) $
+;$LastChangedRevision: 24317 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/display/draw_object/spd_ui_draw_object__updatepanels.pro $
 ;-
 
@@ -364,7 +364,7 @@ function spd_ui_draw_object::updatePanels,layoutDims,margins,panelObjs,loadedDat
     
     ;get data quantities
     
-    currentPanel->getProperty,traceSettings=traceSettings,xAxis=xAxis,yAxis=yAxis,zAxis=zAxis
+    currentPanel->getProperty,traceSettings=traceSettings,traceFillSettings=traceFillSettings,xAxis=xAxis,yAxis=yAxis,zAxis=zAxis
     
     ;reverse the order of trace processing so that spectrograms layer correctly
     traces = reverse(traceSettings->get(/all))
@@ -728,6 +728,21 @@ function spd_ui_draw_object::updatePanels,layoutDims,margins,panelObjs,loadedDat
       ;They will be stored in this container
       if self.postscript then begin
         spec_list = obj_new('IDL_Container')
+      endif
+      
+      ;Create shaded fill areas between lines as needed 
+      if traceFillSettings.count() gt 0 then begin
+        fills = traceFillSettings.get(/all)
+        for j=0,n_elements(fills)-1 do begin
+          if obj_isa(fills[j],'spd_ui_linefill_settings') then begin
+            fillinfo = fills[j].getall()
+            tridx = where((traceInfoArray.dataname eq fillinfo.datay1) or (traceInfoArray.dataname eq fillinfo.datay2))
+            if n_elements(tridx) eq 2 then begin
+              polymodel = self->getLineFill(traces[tridx],currentRange,yrange,dataXptr[tridx],dataYptr[tridx],color=fillinfo.fillcolor,alpha=fillinfo.opacity)
+              view->add,polymodel
+            endif
+          endif
+        endfor
       endif
       
       ;Loop over traces in the panel

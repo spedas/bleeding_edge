@@ -98,8 +98,8 @@ while 1 do begin
   plots,[0,!d.x_size-1],[py,py], color=color, /dev, thick=1, lines=0
   plots,[px,px],[0,!d.y_size-1], color=color, /dev, thick=1, lines=0
   if leg then begin
-    xyouts,legend(0),legend(1),                  s1, color=color, /dev, size=1.4
-    xyouts,legend(0),legend(1) - 3*!d.y_ch_size, s2, color=color, /dev, size=1.4
+    xyouts,legend[0],legend[1],                  s1, color=color, /dev, size=1.4
+    xyouts,legend[0],legend[1] - 3*!d.y_ch_size, s2, color=color, /dev, size=1.4
   end
   empty
   if !MOUSE.BUTTON eq 2 then begin ;move legend
@@ -119,8 +119,8 @@ middle:
   s1 = string('x:',data(0))
   s2 = string('y:',data(1))
   if leg then begin
-    xyouts,legend(0),legend(1),                  s1, color=color, /dev, size=1.4
-    xyouts,legend(0),legend(1) - 3*!d.y_ch_size, s2, color=color, /dev, size=1.4
+    xyouts,legend[0],legend[1],                  s1, color=color, /dev, size=1.4
+    xyouts,legend[0],legend[1] - 3*!d.y_ch_size, s2, color=color, /dev, size=1.4
   end
   empty
   wait, .01                      ;be nice!

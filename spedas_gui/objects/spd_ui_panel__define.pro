@@ -14,6 +14,7 @@
 ;ATTRIBUTES:
 
 ;traceSettings IDL_Container object storing trace settings for each set of data quantities to be plotted
+;traceFillSettings IDL_Container object storing settings for each pair of lines to fill between
 ;windowID    ID for parent window (defaults to -1)
 ;name        name for this panel
 ;id          unique identifier for this panel
@@ -43,9 +44,9 @@
 ;  spd_ui_getset.  You can still call these methods when using objects of type spd_ui_panel, and
 ;  call them in the same way as before
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2015-07-10 16:24:08 -0700 (Fri, 10 Jul 2015) $
-;$LastChangedRevision: 18086 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2017-11-20 10:43:28 -0800 (Mon, 20 Nov 2017) $
+;$LastChangedRevision: 24317 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/objects/spd_ui_panel__define.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -538,6 +539,7 @@ END ;---------------------------------------------------------------------------
 FUNCTION SPD_UI_PANEL::Init,    $ ; The INIT method of the line style object
         id,                     $ ; numerical identifier for this panel     
         traceSettings=traceSettings, $ ; IDL_Container object storing trace settings for each set of data quantities to be plotted
+        traceFillSettings=traceFillSettings, $ ; IDL_Container object storing settings for each pair of lines to fill between
         windowID=windowID,      $ ; ID for parent window (now optional, defaults to -1)
         Name=name,              $ ; name for this panel
         Settings=settings,      $ ; property object for this panel
@@ -574,6 +576,7 @@ FUNCTION SPD_UI_PANEL::Init,    $ ; The INIT method of the line style object
    if ~obj_valid(yaxis) then yaxis = Obj_New()
    if ~obj_valid(zaxis) then zaxis = obj_new()
    if ~obj_valid(traceSettings) then traceSettings = obj_new('IDL_Container')
+   if ~obj_valid(traceFillSettings) then traceFillSettings = obj_new('IDL_Container')
    IF N_Elements(tracking) EQ 0 THEN tracking = 1
    IF N_Elements(isactive) EQ 0 THEN isactive = 1
    IF N_Elements(syncflag) EQ 0 THEN syncflag = 1
@@ -584,6 +587,7 @@ FUNCTION SPD_UI_PANEL::Init,    $ ; The INIT method of the line style object
   ; Set all parameters
 
    self.traceSettings = traceSettings
+   self.traceFillSettings = traceFillSettings
    self.windowID = windowid
    self.name = name
    self.id = id
@@ -618,6 +622,7 @@ PRO SPD_UI_PANEL__DEFINE
               windowID: 0,            $ ; ID for window this panel is displayed on
               settings: Obj_New(),    $ ; setting object for this panel           
               traceSettings:Obj_New(),$ ; IDL_Container object storing trace settings for each set of data quantities to be plotted
+              traceFillSettings:Obj_New(),$ ; IDL_Container object storing settings for each pair of lines to fill between
               xAxis: Obj_New(),       $ ; x axis properties object
               yAxis: Obj_New(),       $ ; y axis properties object
               zAxis: Obj_new(),       $ ; z axis properties object

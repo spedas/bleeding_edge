@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Nov 18 03:16:19 2017.<P>
+<STRONG>Last modified: </STRONG>Mon Nov 20 18:16:09 2017.<P>
  
 <HR>
  
@@ -43,6 +43,8 @@ SPD_UI_DRAW_OBJECT__CREATEINSTANCE</A>
 <LI><A HREF="#SPD_UI_DRAW_OBJECT__DRAWMARKER">SPD_UI_DRAW_OBJECT__DRAWMARKER</A>
 <LI><A HREF="#SPD_UI_DRAW_OBJECT__GETCLICK">SPD_UI_DRAW_OBJECT__GETCLICK</A>
 <LI><A HREF="#SPD_UI_DRAW_OBJECT__GETDIM">SPD_UI_DRAW_OBJECT__GETDIM</A>
+<LI><A HREF="#SPD_UI_DRAW_OBJECT__GETLINEFILL">SPD_UI_DRAW_OBJECT__GETLINEFILL
+</A>
 <LI><A HREF="#SPD_UI_DRAW_OBJECT__GETLINEPLOT">SPD_UI_DRAW_OBJECT__GETLINEPLOT
 </A>
 <LI><A HREF="#SPD_UI_DRAW_OBJECT__GETMARKERS">SPD_UI_DRAW_OBJECT__GETMARKERS</A>
@@ -541,7 +543,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/
 <A NAME="SPD_UI_DRAW_OBJECT__GETDIM">
 <H2>SPD_UI_DRAW_OBJECT__GETDIM</H2></A>
 <A HREF="#SPD_UI_DRAW_OBJECT__GETCLICK">[Previous Routine]</A>
-<A HREF="#SPD_UI_DRAW_OBJECT__GETLINEPLOT">[Next Routine]</A>
+<A HREF="#SPD_UI_DRAW_OBJECT__GETLINEFILL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -558,9 +560,52 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/
 <STRONG>(See <A href="draw_object/spd_ui_draw_object__getdim.pro">spedas_gui/display/draw_object/spd_ui_draw_object__getdim.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPD_UI_DRAW_OBJECT__GETLINEFILL">
+<H2>SPD_UI_DRAW_OBJECT__GETLINEFILL</H2></A>
+<A HREF="#SPD_UI_DRAW_OBJECT__GETDIM">[Previous Routine]</A>
+<A HREF="#SPD_UI_DRAW_OBJECT__GETLINEPLOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ spd_ui_draw_object method: getLineFill
+ 
+ This method generates a shaded area between 2 lines and returns an IDLgrModel
+ containing the associated ILDgrPolygon objects.  It is called during a panel
+ update if the panel has valid spd_ui_linefill_settings objects in its 
+ lineFillSettings container.
+ 
+ At this time it only returns a non-empty IDLgrModel if the requested lines
+ match in number of data points and location of data gaps.  This is only tested
+ to function properly when both data are functional (as in a time series) and 
+ do not cross (for example: data+error and data-error for a measurment.) Once this is
+ extended to generalize between any traces within a panel it could be elevated
+ to the panel options widget.
+
+Inputs:
+  traces(2-element array of object reference): The spd_ui_line_settings of the 2 traces bounding the area
+  xrange(2-element double array):              The xrange of the panel being draw on
+  yrange(2-element double array):              The yrange of the panel being draw on
+  dataX(2-element array of ptrs):              The x axis data of the boundary lines for area being shaded
+  dataY(ptr to array):                         The y axis data of the boundary lines for area being shaded
+  color(3 element bytarr):                     The shading color
+  alpha(float):                                Opacity of shaded area.  Between 0(fully transparent) and 1(opaque)
+  
+Returns:
+  IDLgrModel containing IDLgrPolygon(s). May have multiple polygon objects in the case of data
+  with gaps.
+
+CREATED BY: Ayris Narock (ADNET/GSFC) 2017
+
+ $LastChangedBy: nikos $
+ $LastChangedDate: 2017-11-20 12:50:10 -0800 (Mon, 20 Nov 2017) $
+ $LastChangedRevision: 24322 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/display/draw_object/spd_ui_draw_object__getlinefill.pro $
+</PRE><P>
+<STRONG>(See <A href="draw_object/spd_ui_draw_object__getlinefill.pro">spedas_gui/display/draw_object/spd_ui_draw_object__getlinefill.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPD_UI_DRAW_OBJECT__GETLINEPLOT">
 <H2>SPD_UI_DRAW_OBJECT__GETLINEPLOT</H2></A>
-<A HREF="#SPD_UI_DRAW_OBJECT__GETDIM">[Previous Routine]</A>
+<A HREF="#SPD_UI_DRAW_OBJECT__GETLINEFILL">[Previous Routine]</A>
 <A HREF="#SPD_UI_DRAW_OBJECT__GETMARKERS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -2304,9 +2349,9 @@ NOTE:  The order in which various elements of the panel are added to the display
 If you change the ordering be sure to check that this change hasn't oscured some
 important feature.
 
-$LastChangedBy: aaflores $
-$LastChangedDate: 2014-06-11 15:56:35 -0700 (Wed, 11 Jun 2014) $
-$LastChangedRevision: 15353 $
+$LastChangedBy: nikos $
+$LastChangedDate: 2017-11-20 10:43:28 -0800 (Mon, 20 Nov 2017) $
+$LastChangedRevision: 24317 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/display/draw_object/spd_ui_draw_object__updatepanels.pro $
 </PRE><P>
 <STRONG>(See <A href="draw_object/spd_ui_draw_object__updatepanels.pro">spedas_gui/display/draw_object/spd_ui_draw_object__updatepanels.pro</A>)</STRONG><P>
