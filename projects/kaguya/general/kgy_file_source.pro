@@ -18,8 +18,8 @@
 ;       Modified from mvn_file_source
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2016-09-09 11:33:47 -0700 (Fri, 09 Sep 2016) $
-; $LastChangedRevision: 21810 $
+; $LastChangedDate: 2017-11-21 12:02:46 -0800 (Tue, 21 Nov 2017) $
+; $LastChangedRevision: 24333 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/general/kgy_file_source.pro $
 ;-
 
@@ -44,7 +44,8 @@ endif
 if size(/type,default_source) eq 8 then  source= default_source  else source = psource
 
 if keyword_set(public) then begin ;- public setting
-   source.remote_data_dir = 'http://l2db.selene.darts.isas.jaxa.jp/dl/load_datafile.cgi?f=' ;MAG_TS20071221
+;   source.remote_data_dir = 'http://l2db.selene.darts.isas.jaxa.jp/dl/load_datafile.cgi?f=' ;MAG_TS20071221 obsolete
+   source.remote_data_dir = 'http://darts.isas.jaxa.jp/pub/pds3/'
    source.local_data_dir  += 'public/'
    source.no_server = 0
 endif

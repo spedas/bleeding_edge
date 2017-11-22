@@ -16,8 +16,8 @@
 ;       Yuki Harada on 2016-09-02
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2016-09-09 11:33:47 -0700 (Fri, 09 Sep 2016) $
-; $LastChangedRevision: 21810 $
+; $LastChangedDate: 2017-11-21 12:02:46 -0800 (Tue, 21 Nov 2017) $
+; $LastChangedRevision: 24333 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/lrs/kgy_lrs_load.pro $
 ;-
 
@@ -25,9 +25,9 @@ pro kgy_lrs_load, files=files, version=version, trange=trange, append=append, ty
 
 
 if ~keyword_set(version) then version = '010' ;- incapable of automatic version search
+version2 = strmid(version,1,1)+'.'+strmid(version,2,1)
 if ~keyword_set(append) then store_data,'kgy_lrs_*',/delete
 if ~keyword_set(types) then types = ['NPW','WFC'] else types = strupcase(types)
-
 
 ;;; retrieve files
 if ~keyword_set(files) then begin
@@ -35,14 +35,16 @@ if ~keyword_set(files) then begin
 
    ;;; NPW
    if total(strmatch(types,'NPW')) then begin
-      pf = 'LRS_NPW_V'+version+'_YYYYMMDD'
+      pf = 'sln-l-lrs-5-npw-spectrum-v'+version2+'/YYYYMMDD/data/LRS_NPW_V'+version+'_YYYYMMDD.cdf'
+;      pf = 'LRS_NPW_V'+version+'_YYYYMMDD' ;- obsolete
       f = kgy_file_retrieve(pf,trange=trange,/public,/valid)
       if total(strlen(f)) gt 0 then files = [files,f]
    endif
 
    ;;; WFC, skip odd hours
    if total(strmatch(types,'WFC')) then begin
-      pf = 'LRS_WFC_V'+version+'_YYYYMMDDhhmmss'
+      pf = 'sln-l-lrs-4-wfc-spectrum-v'+version2+'/YYYYMMDD/data/LRS_WFC_V'+version+'_YYYYMMDDhhmmss.cdf'
+;      pf = 'LRS_WFC_V'+version+'_YYYYMMDDhhmmss' ;- obsolete
       f = kgy_file_retrieve(pf,trange=trange,/public,/hourly,/valid,/skipodd)
       if total(strlen(f)) gt 0 then files = [files,f]
    endif

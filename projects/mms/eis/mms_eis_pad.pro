@@ -29,8 +29,8 @@
 ;     This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-11-20 12:00:22 -0800 (Mon, 20 Nov 2017) $
-;$LastChangedRevision: 24319 $
+;$LastChangedDate: 2017-11-21 14:31:32 -0800 (Tue, 21 Nov 2017) $
+;$LastChangedRevision: 24335 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 ;-
 ; REVISION HISTORY:
@@ -215,7 +215,7 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
     endfor
     ;
     if (flag_combine eq 1) then begin
-      mms_eis_combine_proton_pad, probes=probes[pp], data_rate = data_rate, data_units = data_units, size_pabin = size_pabin, energy = energy
+      mms_eis_combine_proton_pad, probes=probes[pp], data_rate = data_rate, data_units = data_units, size_pabin = size_pabin, energy = energy, suffix=suffix
       ;
       combined_var_name = tnames(prefix+'combined*proton*pad')
       ; now do the spin average
@@ -226,6 +226,6 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
     ;
   endfor
   ;
-  if (n_elements(probes) gt 1) then mms_eis_pad_combine_sc, suffix=suffix, probes = probes, trange = trange, species = species, data_rate = data_rate, energy = energy
+  if (n_elements(probes) gt 1) then mms_eis_pad_combine_sc, suffix=suffix, probes = probes, trange = trange, species = species, data_rate = data_rate, energy = energy, data_units = data_units
   ;
 end

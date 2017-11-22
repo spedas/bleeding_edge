@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Nov 20 18:16:09 2017.<P>
+<STRONG>Last modified: </STRONG>Tue Nov 21 18:16:10 2017.<P>
  
 <HR>
  
@@ -48,7 +48,17 @@ This page was created by the IDL library routine
        PNG:         save png from the displayed windows (cannot be used with /POSTRSCRIPT keyword)
        POSTRSCRIPT: create postscript files instead of displaying the plot
        PREFIX:      filename prefix
-       FILENAME:    custorm filename, including folder. By default the folder is !mms.local_data_dir      
+       FILENAME:    custorm filename, including folder. 
+                    By default the folder is !mms.local_data_dir and filename includes tplot names and selected time (or center time)      
+       
+       TIME_IN:     if the keyword is specified the time is determined from the variable, not from the cursor pick.
+       TRANGE:      Two-element time range over which data will be averaged. 
+       SAMPLES:     Number of nearest samples to time to average. Override trange.      
+       WINDOW:      Length in seconds over which data will be averaged. Override trange.
+       CENTER_TIME: Flag denoting that time should be midpoint for window instead of beginning.
+                    If TRANGE is specify, the the time center point is computed.
+       RANGETITLE:  If keyword is set, display range of the averagind time instead of the center time
+                    Does not affect deafult name of the png or postscript file 
 
  EXAMPLE:
      To create line plots of FPI electron energy spectra for all MMS spacecraft:
@@ -63,8 +73,8 @@ This page was created by the IDL library routine
      work in progress; suggestions, comments, complaints, etc: egrimes@igpp.ucla.edu
      
 $LastChangedBy: adrozdov $
-$LastChangedDate: 2017-11-20 15:59:20 -0800 (Mon, 20 Nov 2017) $
-$LastChangedRevision: 24325 $
+$LastChangedDate: 2017-11-20 19:31:47 -0800 (Mon, 20 Nov 2017) $
+$LastChangedRevision: 24329 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra.pro $
 </PRE><P>
 <STRONG>(See <A href="util/flatten_spectra.pro">projects/mms/common/util/flatten_spectra.pro</A>)</STRONG><P>

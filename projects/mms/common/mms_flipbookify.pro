@@ -96,8 +96,8 @@
 ;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-11-13 10:05:42 -0800 (Mon, 13 Nov 2017) $
-; $LastChangedRevision: 24281 $
+; $LastChangedDate: 2017-11-21 12:17:39 -0800 (Tue, 21 Nov 2017) $
+; $LastChangedRevision: 24334 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_flipbookify.pro $
 ;-
 
@@ -134,6 +134,7 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   if undefined(vid_fps) then vid_fps = 6 ; video frames per second
   if undefined(vid_bit_rate) then vid_bit_rate = 3000
   if ~undefined(charsize) then !p.charsize = charsize
+  window_num = 0b
   
   if ~is_struct(tplot_vars) then begin
     dprint, dlevel=0, 'Error, no tplot window found'
@@ -192,6 +193,10 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
     video = idlffvideowrite(output_dir+'mms'+probe+'_'+instrument+'_'+species+'_flipbook'+filename_suffix+'.'+vid_format)
     stream = video.addvideostream(tplot_vars.settings.d.x_size, tplot_vars.settings.d.y_size, vid_fps, bit_rate=vid_bit_rate, codec=vid_codec)
   endif
+  
+  ; avoid the problem with multiple windows open
+  window_num = tplot_vars.settings.window
+  wset, window_num
 
   for time_idx=0, n_elements(times)-1, time_step do begin
     if keyword_set(postscript) then popen, output_dir+'mms'+probe+'_'+instrument+'_'+species+'_'+time_string(times[time_idx], tformat='YYYY-MM-DD-hh-mm-ss.fff')+filename_suffix, /land
@@ -200,9 +205,9 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
     slice3 = spd_slice2d(dist, time=times[time_idx], energy=energy, subtract_bulk=subtract_bulk, geometric=geometric, two_d_interp=two_d_interp, three_d_interp=three_d_interp, custom_rotation=custom_rotation, rotation=slices[2], mag_data=bfield, vel_data=vel_data, samples=samples, window=window, center_time=center_time, resolution=resolution, smooth=smooth, log=log, determ_tolerance=determ_tolerance)
     tplot, title=time_string(times[time_idx], tformat=title)
     
-    spd_slice2d_plot, slice, /custom, window=1, /noerase, position=[0.75, 0.1, 0.90, 1], title='', nocolorbar=undefined(all_colorbars), xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
-    spd_slice2d_plot, slice2, /custom, window=1, /noerase, position=[0.75, 0.4, 0.90, 1], title='', xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
-    spd_slice2d_plot, slice3, /custom, window=1, /noerase, position=[0.75, 0.7, 0.90, 1], title='', nocolorbar=undefined(all_colorbars), xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
+    spd_slice2d_plot, slice, window=window_num, /custom, /noerase, position=[0.75, 0.1, 0.90, 1], title='', nocolorbar=undefined(all_colorbars), xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
+    spd_slice2d_plot, slice2, window=window_num, /custom, /noerase, position=[0.75, 0.4, 0.90, 1], title='', xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
+    spd_slice2d_plot, slice3, window=window_num, /custom, /noerase, position=[0.75, 0.7, 0.90, 1], title='', nocolorbar=undefined(all_colorbars), xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
 
     timebar, times[time_idx], linestyle=linestyle, thick=thickness
     if ~undefined(draw_box) then timebar, (minmax(trange))[0], color=box_color, linestyle=box_style, thick=box_thickness

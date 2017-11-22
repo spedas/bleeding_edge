@@ -23,18 +23,20 @@
 ;     Yuki Harada on 2014-07-02
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2016-09-18 17:19:45 -0700 (Sun, 18 Sep 2016) $
-; $LastChangedRevision: 21853 $
+; $LastChangedDate: 2017-11-21 12:02:46 -0800 (Tue, 21 Nov 2017) $
+; $LastChangedRevision: 24333 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/kgy_map_load.pro $
 ;-
 
-pro kgy_map_load, sensor=sensor, append=append, files=files, infofiles=infofiles, fovfiles=fovfiles, trange=trange, bkgd=bkgd, pbfpubversion=pbfpubversion, _extra=_extra, public=public, nospice=nospice
+pro kgy_map_load, sensor=sensor, append=append, files=files, infofiles=infofiles, fovfiles=fovfiles, trange=trange, bkgd=bkgd, pbfpubversion=pbfpubversion, lmagpubversion=lmagpubversion, _extra=_extra, public=public, nospice=nospice
 
 
 if size(public,/type) eq 0 then public = 1 ;- set public by default
 if size(sensor,/type) eq 0 then sensor = [0,1,2,3,4] else sensor = long(sensor)
 if ~keyword_set(append) then kgy_clear_com,/onlydata ;- overwrite old data by default
 if ~keyword_set(pbfpubversion) then pbfpubversion='003' ;- incapable of version search
+pbfpubversion2 = strmid(pbfpubversion,2,1)+'.0'
+if ~keyword_set(lmagpubversion) then lmagpubversion='1.0' ;- incapable of version search
 
 rL = 1737.4
 
@@ -51,7 +53,8 @@ if keyword_set(public) then begin
    ;;; ESA1
    w = where(sensor eq 0, nw)
    if nw gt 0 then begin
-      pf = 'IPACE_PBF1_yyMMDD_ESA1_V'+pbfpubversion
+      pf = 'sln-l-pace-3-pbf1-v'+pbfpubversion2+'/YYYYMMDD/data/IPACE_PBF1_yyMMDD_ESA1_V'+pbfpubversion+'.dat.gz'
+;      pf = 'IPACE_PBF1_yyMMDD_ESA1_V'+pbfpubversion ;- obsolete
       f = kgy_file_retrieve(pf,trange=trange,/public)
       if total(strlen(f)) gt 0 then kgy_read_pbf, f
       kgy_map_make_tplot, sensor=[0], trange=trange, bkgd=bkgd
@@ -60,7 +63,8 @@ if keyword_set(public) then begin
    ;;; ESA2
    w = where(sensor eq 1, nw)
    if nw gt 0 then begin
-      pf = 'IPACE_PBF1_yyMMDD_ESA2_V'+pbfpubversion
+      pf = 'sln-l-pace-3-pbf1-v'+pbfpubversion2+'/YYYYMMDD/data/IPACE_PBF1_yyMMDD_ESA2_V'+pbfpubversion+'.dat.gz'
+;      pf = 'IPACE_PBF1_yyMMDD_ESA2_V'+pbfpubversion ;- obsolete
       f = kgy_file_retrieve(pf,trange=trange,/public)
       if total(strlen(f)) gt 0 then kgy_read_pbf, f
       kgy_map_make_tplot, sensor=[1], trange=trange, bkgd=bkgd
@@ -69,7 +73,8 @@ if keyword_set(public) then begin
    ;;; IMA
    w = where(sensor eq 2, nw)
    if nw gt 0 then begin
-      pf = 'IPACE_PBF1_yyMMDD_IMA_V'+pbfpubversion
+      pf = 'sln-l-pace-3-pbf1-v'+pbfpubversion2+'/YYYYMMDD/data/IPACE_PBF1_yyMMDD_IMA_V'+pbfpubversion+'.dat.gz'
+;      pf = 'IPACE_PBF1_yyMMDD_IMA_V'+pbfpubversion ;- obsolete
       f = kgy_file_retrieve(pf,trange=trange,/public)
       if total(strlen(f)) gt 0 then kgy_read_pbf, f
       kgy_map_make_tplot, sensor=[2], trange=trange, bkgd=bkgd
@@ -78,7 +83,8 @@ if keyword_set(public) then begin
    ;;; IEA
    w = where(sensor eq 3, nw)
    if nw gt 0 then begin
-      pf = 'IPACE_PBF1_yyMMDD_IEA_V'+pbfpubversion
+      pf = 'sln-l-pace-3-pbf1-v'+pbfpubversion2+'/YYYYMMDD/data/IPACE_PBF1_yyMMDD_IEA_V'+pbfpubversion+'.dat.gz'
+;      pf = 'IPACE_PBF1_yyMMDD_IEA_V'+pbfpubversion ;- obsolete
       f = kgy_file_retrieve(pf,trange=trange,/public)
       if total(strlen(f)) gt 0 then kgy_read_pbf, f
       kgy_map_make_tplot, sensor=[3], trange=trange, bkgd=bkgd
@@ -87,10 +93,13 @@ if keyword_set(public) then begin
    ;;; LMAG
    w = where(sensor eq 4, nw)
    if nw gt 0 then begin
-      pf = 'MAG_TSYYYYMMDD'     ;- 2008
+      pf = 'sln-l-lmag-3-mag-ts-v'+lmagpubversion+'/nominal/YYYYMMDD/data/MAG_TSYYYYMMDD.dat' ;- -2008-10-31
+;      pf = 'MAG_TSYYYYMMDD'     ;- 2008 obsolete
       f = kgy_file_retrieve(pf,trange=trange,/public)
       if total(strlen(f)) gt 0 then kgy_read_lmag, f
-      pf = 'MAG_TSOPYYYYMMDD'   ;- 2009
+
+      pf = 'sln-l-lmag-3-mag-ts-v'+lmagpubversion+'/optional/YYYYMMDD/data/MAG_TSOPYYYYMMDD.dat' ;- 2008-11-01-
+;      pf = 'MAG_TSOPYYYYMMDD'   ;- 2009 obsolete
       f = kgy_file_retrieve(pf,trange=trange,/public)
       if total(strlen(f)) gt 0 then kgy_read_lmag, f
       kgy_map_make_tplot, sensor=[4], trange=trange

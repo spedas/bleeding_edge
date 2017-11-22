@@ -1,5 +1,6 @@
 pro crosshairs,x,y,color=color,legend=legend,dot_cursor=dot,fix=fix,$
-     silent=silent,nolegend=nolegend,nselected=ndp,to_device=to_device
+     silent=silent,nolegend=nolegend,nselected=ndp,to_device=to_device,$
+     oneclick=oneclick,lastbutton=lastbutton,lastpoint=lastpoint
 ;+
 ;NAME:                  crosshairs
 ;PURPOSE:
@@ -41,6 +42,10 @@ pro crosshairs,x,y,color=color,legend=legend,dot_cursor=dot,fix=fix,$
 ;NOTES:			Inspired by IDL's box_cursor.pro
 ;-
 
+common crosscom, x0, y0
+
+ok = 1
+oneclick = keyword_set(oneclick)
 to_data= ~keyword_set(to_device)
 if keyword_set(fix) then begin
   device,set_graphics=3,/cursor_cross
@@ -65,8 +70,10 @@ else legend = convert_coord(legend(0),legend(1),/data,/to_dev)
 
 flag  = 0
 
-x0 = !d.x_size/2                ;crosshairs initially in middle of window
-y0 = !d.y_size/2
+if ~keyword_set(lastpoint) then begin
+  x0 = !d.x_size/2                ;crosshairs initially in middle of window
+  y0 = !d.y_size/2
+endif
 
 data = convert_coord(x0,y0,/dev,to_data=to_data,to_device=to_device)
 button = 0
@@ -74,11 +81,12 @@ goto, middle
 wshow
 ;nselected = 0
 
-while 1 do begin
+while ok do begin
   old_button = button
   cursor, xd, yd, 2, /dev         ;Wait for a button
   data = convert_coord(xd,yd,/dev,to_data=to_data,to_device=to_device)
   button = !MOUSE.BUTTON
+  lastbutton = button
   x0 = xd
   y0 = yd
   if (!MOUSE.BUTTON eq 1) and (old_button eq 0) then begin
@@ -94,6 +102,8 @@ while 1 do begin
     numstr = strcompress(string('(',ndp,')'),/re)
     if prin then $
       print,numstr,x(ndp-1),y(ndp-1),format='(a8,3x,"x: ",g,"      y: ",g)'
+
+    if (oneclick) then ok = 0
   endif
   plots,[0,!d.x_size-1],[py,py], color=color, /dev, thick=1, lines=0
   plots,[px,px],[0,!d.y_size-1], color=color, /dev, thick=1, lines=0
@@ -106,10 +116,11 @@ while 1 do begin
     legend = [xd,yd]
   endif
 
-  if !MOUSE.BUTTON eq 4 then begin       ;Quitting
+  if ((!MOUSE.BUTTON eq 4) or (not ok)) then begin       ;Quitting
     device,set_graphics = old, cursor_cross = dot
     return
   endif
+
 middle:
 
   px = x0

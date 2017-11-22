@@ -31,8 +31,8 @@
 ;       Mostly copied from 'mvn_pfp_file_retrieve'
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2016-10-07 11:58:34 -0700 (Fri, 07 Oct 2016) $
-; $LastChangedRevision: 22067 $
+; $LastChangedDate: 2017-11-21 12:02:46 -0800 (Tue, 21 Nov 2017) $
+; $LastChangedRevision: 24333 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/general/kgy_file_retrieve.pro $
 ;-
 
@@ -40,7 +40,7 @@ function kgy_file_retrieve,pathname,trange=trange,verbose=verbose,source=src,fil
 
 tstart = systime(1)
 
-if keyword_set(public) then daily_names = 1
+if keyword_set(public) and size(daily_names,/type) eq 0 then daily_names = 1
 
 if not keyword_set(shiftres) then shiftres =0
 if keyword_set(daily_names) then begin 
@@ -73,55 +73,57 @@ if ~keyword_set(files) then begin
          if nw gt 0 then pathnames = pathnames[w]
       endif
 
+      ;;; obsolete
       ;;; get public data from the Kaguya data archive
-      if keyword_set(public) then begin
-         if ~keyword_set(datasuf) then datasuf = ['.dat','.gz','','.cdf']
-         suf = '.dat'
-         dirs = source.local_data_dir+time_string(times,tf='YYYY/MM/')
-         file_mkdir2,dirs,_extra=source
-         for i=0,n_elements(pathnames)-1 do begin
-            f = ''
-            for isuf=0,n_elements(datasuf)-1 do f = [f,file_search(dirs[i]+pathnames[i]+datasuf[isuf])] ;- search existing data files
-            if total(strlen(f)) eq 0 then begin ;- don't check updates, TBD
-               outtar = dirs[i]+'out.tar'
-               if file_test(outtar) then file_delete,outtar ;- delete old temp file, if exists
+;;       if keyword_set(public) then begin
+;;          if ~keyword_set(datasuf) then datasuf = ['.dat','.gz','','.cdf']
+;;          suf = '.dat'
+;;          dirs = source.local_data_dir+time_string(times,tf='YYYY/MM/')
+;;          file_mkdir2,dirs,_extra=source
 
-               ;;; download files using IDLnetURL (IDL 6.4+)
-               ourl = OBJ_NEW('IDLnetUrl')
-               proxy = getenv('http_proxy')
-               if proxy ne '' then begin
-                  pp = parse_url(proxy)
-                  ourl->setproperty,proxy_hostname=pp.host,proxy_prot=pp.port
-               endif
-               s = execute('out = ourl->get(filename=outtar,url=source.remote_data_dir+pathnames[i])')
-               if s then dprint,'downloaded '+out+' for '+pathnames[i]
-               obj_destroy,ourl
+;;          for i=0,n_elements(pathnames)-1 do begin
+;;             f = ''
+;;             for isuf=0,n_elements(datasuf)-1 do f = [f,file_search(dirs[i]+pathnames[i]+datasuf[isuf])] ;- search existing data files
+;;             if total(strlen(f)) eq 0 then begin ;- don't check updates, TBD
+;;                outtar = dirs[i]+'out.tar'
+;;                if file_test(outtar) then file_delete,outtar ;- delete old temp file, if exists
 
-               ;;; untar files
-               if file_test(outtar) then begin
-                  if tag_exist(source,'file_mode') then file_chmod,outtar,source.file_mode
-                  if float(!version.release) ge 8.3 then begin
-                     dprint,'file_untar '+outtar
-                     s = execute('file_untar,outtar,dirs[i]')
-                  endif else begin
-                     untarcmd = 'tar xvf '+outtar+' -C '+dirs[i] ;- doesn't work in Windows?
-                     dprint,'untar cmd: '+untarcmd
-                     s = execute('spawn,untarcmd')
-                  endelse
-                  outfiles = file_search(dirs[i]+pathnames[i]+'*')
-                  if ~s then dprint,'untar failed: '+outtar
-                  if s then if tag_exist(source,'file_mode') and total(file_test(outfiles)) then file_chmod,outfiles,source.file_mode
-                  file_delete,outtar
-               endif
-            endif
-            for isuf=0,n_elements(datasuf)-1 do begin
-               f = file_search(dirs[i]+pathnames[i]+datasuf[isuf])
-               if total(strlen(f)) gt 0 then suf = datasuf[isuf]
-            endfor
-         endfor
-         pathnames = time_string(times,tf='YYYY/MM/') + pathnames + suf
-         source.no_server = 1
-      endif
+;;                ;;; download files using IDLnetURL (IDL 6.4+)
+;;                ourl = OBJ_NEW('IDLnetUrl')
+;;                proxy = getenv('http_proxy')
+;;                if proxy ne '' then begin
+;;                   pp = parse_url(proxy)
+;;                   ourl->setproperty,proxy_hostname=pp.host,proxy_prot=pp.port
+;;                endif
+;;                s = execute('out = ourl->get(filename=outtar,url=source.remote_data_dir+pathnames[i])')
+;;                if s then dprint,'downloaded '+out+' for '+pathnames[i]
+;;                obj_destroy,ourl
+
+;;                ;;; untar files
+;;                if file_test(outtar) then begin
+;;                   if tag_exist(source,'file_mode') then file_chmod,outtar,source.file_mode
+;;                   if float(!version.release) ge 8.3 then begin
+;;                      dprint,'file_untar '+outtar
+;;                      s = execute('file_untar,outtar,dirs[i]')
+;;                   endif else begin
+;;                      untarcmd = 'tar xvf '+outtar+' -C '+dirs[i] ;- doesn't work in Windows?
+;;                      dprint,'untar cmd: '+untarcmd
+;;                      s = execute('spawn,untarcmd')
+;;                   endelse
+;;                   outfiles = file_search(dirs[i]+pathnames[i]+'*')
+;;                   if ~s then dprint,'untar failed: '+outtar
+;;                   if s then if tag_exist(source,'file_mode') and total(file_test(outfiles)) then file_chmod,outfiles,source.file_mode
+;;                   file_delete,outtar
+;;                endif
+;;             endif
+;;             for isuf=0,n_elements(datasuf)-1 do begin
+;;                f = file_search(dirs[i]+pathnames[i]+datasuf[isuf])
+;;                if total(strlen(f)) gt 0 then suf = datasuf[isuf]
+;;             endfor
+;;          endfor
+;;          pathnames = time_string(times,tf='YYYY/MM/') + pathnames + suf
+;;          source.no_server = 1
+;;       endif
 
    endif else  pathnames = pathname
 
@@ -131,7 +133,8 @@ if ~keyword_set(files) then begin
       return,files
    endif
 
-   files = file_retrieve(pathnames,_extra=source)
+;   files = file_retrieve(pathnames,_extra=source) ;- obsolete
+   files = spd_download( remote_file=pathnames,_extra=source )
    dprint,dlevel=4,verbose=verbose,systime(1)-tstart,' seconds to retrieve ',n_elements(files),' files'
 
 endif
