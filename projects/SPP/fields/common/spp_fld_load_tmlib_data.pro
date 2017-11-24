@@ -1,7 +1,7 @@
 ;
-;  $LastChangedBy: spfuser $
-;  $LastChangedDate: 2017-11-17 16:49:18 -0800 (Fri, 17 Nov 2017) $
-;  $LastChangedRevision: 24309 $
+;  $LastChangedBy: pulupalap $
+;  $LastChangedDate: 2017-11-22 20:43:40 -0800 (Wed, 22 Nov 2017) $
+;  $LastChangedRevision: 24338 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_load_tmlib_data.pro $
 ;
 
@@ -258,7 +258,7 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
 
     err_pkt_len = tm_get_item_i4(sid, "ccsds_total_packet_length", $
       ccsds_pkt_len, 1, pkt_len_size)
-      
+
     err = tm_get_item_i4(sid, "ccsds_entire_packet", $
       packet, ccsds_pkt_len, pkt_size)
 
@@ -323,9 +323,10 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
         endif else begin
           has_raw = 0
         endelse
-        
-        cdf_var_att = (data_hash[var_name])["cdf_att"]
-        
+
+        if data_hash[var_name].HasKey('cdf_att') then $
+          cdf_var_att = (data_hash[var_name])["cdf_att"]
+
         ; Check whether the request should be suppressed
 
         !NULL = null_items.Where(var_name, count = data_null_count)
@@ -340,11 +341,19 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
 
           data_var_type = strlowcase((data_hash[var_name])['type'])
 
-          case data_var_type of
-            'double': fill_val = double(cdf_var_att['FILLVAL'])
-            'integer': fill_val = long(cdf_var_att['FILLVAL'])
-            ELSE: fill_val = cdf_var_att['FILLVAL']
-          endcase
+          if n_elements(cdf_var_att) GT 0 then begin
+            case data_var_type of
+              'double': fill_val = double(cdf_var_att['FILLVAL'])
+              'integer': fill_val = long(cdf_var_att['FILLVAL'])
+              ELSE: fill_val = cdf_var_att['FILLVAL']
+            endcase
+          endif else begin
+            case data_var_type of
+              'double': fill_val = !values.d_nan
+              'integer': fill_val = -32768
+              ELSE: fill_val = -32768
+            endcase
+          endelse
 
           if has_string then begin
 
@@ -376,9 +385,9 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
             'integer': err = tm_get_item_i4(sid, var_name, returned_item, nelem, n_returned)
             ELSE: err = tm_get_item_i4(sid, var_name, returned_item, nelem, n_returned)
           endcase
-          
+
           ; Fill val if invalid item
-          
+
           if err EQ -7 then returned_item = fill_val
 
         endif else begin

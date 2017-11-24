@@ -365,6 +365,8 @@ pro thm_ui_slice2d_gen, tlb, state
   endif
   
   ; Get x slice vector
+  idxe = widget_info(tlb, find_by_uname='xenable')
+  if widget_info(idxe,/button_set) then begin
   slice_x = [-1d,-1d,-1d]
   unames = ['xsrx','xsry','xsrz']
   for i=0, n_elements(slice_x)-1 do begin
@@ -381,6 +383,7 @@ pro thm_ui_slice2d_gen, tlb, state
     thm_ui_slice2d_error, state.statusbar, err_title, $
       'Invalid x slice vector, length must be > 0.'
     return
+  endif
   endif
   
 ;  ; Get displacement from origin
@@ -1657,6 +1660,12 @@ pro thm_ui_slice2d_event, event
       'ROT': thm_ui_slice2d_supportsens, state
       
       'COORD': thm_ui_slice2d_supportsens, state
+      
+      'XENABLE': begin        
+        widget_control, widget_info(event.top, find_by_uname='xsrx'), sens=event.select
+        widget_control, widget_info(event.top, find_by_uname='xsry'), sens=event.select
+        widget_control, widget_info(event.top, find_by_uname='xsrz'), sens=event.select
+      end
 
       'CTBUTTON': begin
         id = widget_info(event.top, find_by_uname='ctoptionsbase')
@@ -1746,8 +1755,8 @@ end ;----------------------------------------------------
 ;
 ;
 ;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2017-11-22 13:22:01 -0800 (Wed, 22 Nov 2017) $
-;$LastChangedRevision: 24336 $
+;$LastChangedDate: 2017-11-22 19:47:42 -0800 (Wed, 22 Nov 2017) $
+;$LastChangedRevision: 24337 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/slices/thm_ui_slice2d.pro $
 ;
 ;-
@@ -1977,9 +1986,12 @@ spd_graphics_config
     
   xslicebase = widget_base(moptbase1, /row, xpad=0, ypad=0) ; 'Specify the slice plane''s x axis within the coordinates specified by Coordinates and Rotation.'
     xslicelabel = widget_label(xslicebase, value='X Axis Direction (x,y,z): ')
-    xsrx = widget_text(xslicebase, value=xsrn[0], xsize=4, uname='xsrx', /edit)
-    xsry = widget_text(xslicebase, value=xsrn[1], xsize=4, uname='xsry', /edit)
-    xsrz = widget_text(xslicebase, value=xsrn[2], xsize=4, uname='xsrz', /edit)
+    xsrx = widget_text(xslicebase, value=xsrn[0], xsize=4, uname='xsrx', sens=0, /edit)
+    xsry = widget_text(xslicebase, value=xsrn[1], xsize=4, uname='xsry', sens=0, /edit)
+    xsrz = widget_text(xslicebase, value=xsrn[2], xsize=4, uname='xsrz', sens=0, /edit)
+    xenablebase = widget_base(xslicebase, /row, xpad=0, ypad=0, /NonExclusive)
+    xenable = widget_button(xenablebase, value='Enable', uname='xenable', uvalue='XENABLE', $
+      tooltip='If slice x-axis is not set, the projection of ortogonal to the norm vector is used.')
 
 ;  displacementbase = widget_base(moptbase1, /row, xpad=0, ypad=0)
 ;    displacement = spd_ui_spinner(displacementbase, text_box_size=6, incr=50, $
@@ -2352,6 +2364,8 @@ spd_graphics_config
   widget_control, rotation, set_combobox_select=2
 
   widget_control, orz, set_value='1' ;default orientation (0,0,1)
+  
+  widget_control, xenable, set_button=0
   
   widget_control, exportcurrent, set_button=1
 
