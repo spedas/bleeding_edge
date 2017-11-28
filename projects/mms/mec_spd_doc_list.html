@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov 23 03:16:30 2017.<P>
+<STRONG>Last modified: </STRONG>Mon Nov 27 15:34:48 2017.<P>
  
 <HR>
  
@@ -25,6 +25,8 @@ This page was created by the IDL library routine
 <br>Helper routine for setting metadata of MEC variables
 <LI><A HREF="#MMS_MEC_FORMATION_PLOT">MMS_MEC_FORMATION_PLOT</A>
 <br>Creates a plot showing the spacecraft formation
+<LI><A HREF="#MMS_ORBIT_PLOT">MMS_ORBIT_PLOT</A>
+<br>Creates a plot showing the spacecraft location
 <br>
 </UL><P>
 <HR>
@@ -129,6 +131,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_MEC_FORMATION_PLOT">
 <H2>MMS_MEC_FORMATION_PLOT</H2></A>
 <A HREF="#MMS_MEC_FIX_METADATA">[Previous Routine]</A>
+<A HREF="#MMS_ORBIT_PLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -190,5 +193,43 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_mec_formation_plot.pro $
 </PRE><P>
 <STRONG>(See <A href="mec/mms_mec_formation_plot.pro">projects/mms/mec/mms_mec_formation_plot.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MMS_ORBIT_PLOT">
+<H2>MMS_ORBIT_PLOT</H2></A>
+<A HREF="#MMS_MEC_FORMATION_PLOT">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+       mms_orbit_plot
+
+ PURPOSE:
+       Creates a plot showing the spacecraft location
+
+
+ KEYWORDS:
+       trange: time range of interest 
+       probes: probes to include in the orbits plot
+       plane: orbital plane to plot (default: 'xy', other options include: 'yz', 'xz')
+       xrange: min and max of the horizontal axis
+       yrange: min and max of the vertical axis
+       coord: coordinate system of the plot (default: gse)
+             other options include: 'eci', 'gsm', 'geo', 'sm', 'gse2000'
+       title: title of the plot; defaults to the time range of the orbit
+
+ EXAMPLES:
+       IDL&gt; mms_orbit_plot, probe=[1, 2, 3, 4], trange=['2015-12-15', '2015-12-16']
+       
+ HISTORY:
+       Based on SDC routine that produces historical orbit plots for MMS originally 
+       by Kris Larsen, Kim Kokkonen, Chris Lindholm; egrimes heisted the important parts
+       and turned this into a SPEDAS routine on November 27, 2017
+       
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2017-11-27 14:48:57 -0800 (Mon, 27 Nov 2017) $
+ $LastChangedRevision: 24350 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_orbit_plot.pro $
+</PRE><P>
+<STRONG>(See <A href="mec/mms_orbit_plot.pro">projects/mms/mec/mms_orbit_plot.pro</A>)</STRONG><P>
 <HR>
  
