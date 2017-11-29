@@ -63,8 +63,8 @@
 ;     June 2016: minor updates by egrimes
 ;     
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-10-04 15:06:23 -0700 (Tue, 04 Oct 2016) $
-; $LastChangedRevision: 22023 $
+; $LastChangedDate: 2017-11-28 13:11:06 -0800 (Tue, 28 Nov 2017) $
+; $LastChangedRevision: 24354 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_fpi_make_errorflagbars.pro $
 ;-
 
@@ -81,13 +81,13 @@ PRO mms_fpi_make_errorflagbars, tname, level = level
   if ~is_struct(dl) then return
   
   if strmid(dl.cdf.gatt.data_type,3,4,/rev) eq 'moms' or level eq 'ql' then begin
-    flags=string(d.y,format='(b012)')
-    flagline=fltarr(n_elements(d.x),12)
+    flags=string(d.y,format='(b014)')
+    flagline=fltarr(n_elements(d.x),14)
     flagline_others=fltarr(n_elements(d.x))
     flagline_all=fltarr(n_elements(d.x))
     for j=0l,n_elements(flags)-1l do begin
-      for i=0,11 do begin
-        if fix(strmid(flags[j],11-i,1)) eq 0 then begin
+      for i=0,13 do begin
+        if fix(strmid(flags[j],13-i,1)) eq 0 then begin
           flagline[j,i]=!values.f_nan
           if flagline_all[j] ne 1.0 then flagline_all[j]=!values.f_nan else flagline_all[j]=1.0
           if i ne 1 and i ne 4 and i ne 5 then if flagline_others[j] ne 1.0 then flagline_others[j]=!values.f_nan else flagline_others[j]=1.0
@@ -98,9 +98,9 @@ PRO mms_fpi_make_errorflagbars, tname, level = level
         endelse
       endfor
     endfor
-    store_data,tname+'_flagbars_full',data={x:d.x,y:[[flagline[*,0]],[flagline[*,1]-0.1],[flagline[*,2]-0.2],[flagline[*,3]-0.3],[flagline[*,4]-0.4],[flagline[*,5]-0.5],[flagline[*,6]-0.6],[flagline[*,7]-0.7],[flagline[*,8]-0.8],[flagline[*,9]-0.9],[flagline[*,10]-1.0],[flagline[*,11]-1.1]]}
+    store_data,tname+'_flagbars_full',data={x:d.x,y:[[flagline[*,0]],[flagline[*,1]-0.1],[flagline[*,2]-0.2],[flagline[*,3]-0.3],[flagline[*,4]-0.4],[flagline[*,5]-0.5],[flagline[*,6]-0.6],[flagline[*,7]-0.7],[flagline[*,8]-0.8],[flagline[*,9]-0.9],[flagline[*,10]-1.0],[flagline[*,11]-1.1],[flagline[*,12]-1.2]]}
     ylim,tname+'_flagbars_full',-0.15,1.05,0
-    options,tname+'_flagbars_full',colors=[0,6,4,3,2,1,3,0,2,4,6,0],labels=['bit 0','bit 1','bit 2','bit 3','bit 4','bit 5','bit 6','bit 7','bit 8','bit 9','bit 10','bit 11'],ytitle=inst+'!C'+rate,thick=3,xstyle=4,ystyle=4,ticklen=0,labflag=-1,psym=-6,symsize=0.1,datagap=gap
+    options,tname+'_flagbars_full',colors=[0,6,4,3,2,1,3,0,2,4,6,0,6],labels=['bit 0','bit 1','bit 2','bit 3','bit 4','bit 5','bit 6','bit 7','bit 8','bit 9','bit 10','bit 11', 'bit 12'],ytitle=inst+'!C'+rate,thick=3,xstyle=4,ystyle=4,ticklen=0,labflag=-1,psym=-6,symsize=0.1,datagap=gap
     store_data,tname+'_flagbars_main',data={x:d.x,y:[[flagline[*,1]-0.2],[flagline[*,4]-0.4],[flagline[*,5]-0.6],[flagline_others-0.8]]}
     ylim,tname+'_flagbars_main',0.1,0.9,0
     options,tname+'_flagbars_main',colors=[6,2,1,0],labels=['Saturation','Cold (>25%)','Hot (>25%)','Others'],ytitle=inst+'!C'+rate,xstyle=4,ystyle=4,ticklen=0,thick=4,panel_size=0.5,labflag=-1,psym=-6,symsize=0.2,datagap=gap
@@ -119,11 +119,11 @@ PRO mms_fpi_make_errorflagbars, tname, level = level
     options, tname+'_flagbars_mini', axis={yaxis: 0, ytitle: inst, yticks: 1, yminor: 1, ystyle: 0, yticklayout: 1, ytickv: [-1, 2]}
   endif else begin
     if strmid(dl.cdf.gatt.data_type,3,4,/rev) eq 'dist' then begin
-      flags=string(d.y,format='(b012)')
+      flags=string(d.y,format='(b014)')
       flagline=fltarr(n_elements(d.x),2)
       for i=0,1 do begin
         for j=0l,n_elements(flags)-1l do begin
-          if fix(strmid(flags[j],11-i,1)) eq 0 then flagline[j,i]=!values.f_nan else flagline[j,i]=1.0
+          if fix(strmid(flags[j],13-i,1)) eq 0 then flagline[j,i]=!values.f_nan else flagline[j,i]=1.0
         endfor
       endfor
       store_data,tname+'_flagbars_dist',data={x:d.x,y:[[flagline[*,0]-0.25],[flagline[*,1]-0.75]]}

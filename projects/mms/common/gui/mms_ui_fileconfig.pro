@@ -9,9 +9,9 @@
 ; 
 ;HISTORY:
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-04-13 13:08:34 -0700 (Thu, 13 Apr 2017) $
-;$LastChangedRevision: 23150 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2017-11-28 10:09:57 -0800 (Tue, 28 Nov 2017) $
+;$LastChangedRevision: 24353 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/gui/mms_ui_fileconfig.pro $
 ;--------------------------------------------------------------------------------
 
@@ -65,11 +65,14 @@ PRO mms_ui_fileconfig_event, event
 
       ; get the local data dir text box value
       widget_control, state.localDir, get_value=currentDir
+
       if currentDir ne '' then path = file_dirname(currentDir)
+
       ; call the file chooser window and set the default value
       ; to the current value in the local data dir text box
       dirName = Dialog_Pickfile(Title='Choose a Local Data Directory:', $
-      Dialog_Parent=state.master,path=currentDir, /directory, /must_exist)
+         path=path, /directory, /must_exist)
+
       ; check to make sure the selection is valid
       IF is_string(dirName) THEN BEGIN
           !mms.local_data_dir = dirName

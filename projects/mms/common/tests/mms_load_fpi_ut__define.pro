@@ -10,8 +10,8 @@
 ; 
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-11-03 12:27:22 -0700 (Fri, 03 Nov 2017) $
-; $LastChangedRevision: 24252 $
+; $LastChangedDate: 2017-11-28 14:50:45 -0800 (Tue, 28 Nov 2017) $
+; $LastChangedRevision: 24355 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_fpi_ut__define.pro $
 ;-
 
@@ -389,6 +389,17 @@ end
 ; mms_get_fpi_dist on a burst interval with gaps
 function mms_load_fpi_ut::test_dist_burst_with_gaps
   mms_load_fpi, trange=['2015-12-15/11:18', '2015-12-15/11:36'], data_rate='brst', /time_clip, datatype='des-dist'
+  return, 1
+end
+
+; load data from v3.3 and v3.2 CDF files
+function mms_load_fpi_ut::test_moms_errorflags_updates
+  mms_load_fpi, level='l1b', trange=['2015-10-16', '2015-10-17'], data_rate='brst', cdf_version='3.3', datatype='dis-moms', suffix='_new'
+  mms_load_fpi, level='l1b', trange=['2015-10-16', '2015-10-17'], data_rate='brst', cdf_version='3.2', datatype='dis-moms', suffix='_old'
+  get_data, 'mms3_dis_errorflags_brst_new_moms_flagbars_full', data=newdata
+  get_data, 'mms3_dis_errorflags_brst_old_moms_flagbars_full', data=olddata
+  assert, round(total(olddata.Y[0, *]*10, /nan)) eq 15, 'Problem with v3.2 -> v3.3 regression'
+  assert, round(total(newdata.Y[0, *]*10, /nan)) eq 13, 'Problem with v3.2 -> v3.3 regression'
   return, 1
 end
 

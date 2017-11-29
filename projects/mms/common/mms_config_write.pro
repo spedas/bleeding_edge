@@ -14,9 +14,9 @@
 ; 
 ; The structure 'cfg' contains your variables in addition to the default variables.
 ; 
-; $LastChangedBy: moka $
-; $LastChangedDate: 2015-04-22 12:11:28 -0700 (Wed, 22 Apr 2015) $
-; $LastChangedRevision: 17391 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2017-11-28 10:09:38 -0800 (Tue, 28 Nov 2017) $
+; $LastChangedRevision: 24352 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_config_write.pro $
 ; 
 PRO mms_config_write, pref
@@ -24,7 +24,7 @@ PRO mms_config_write, pref
   ; Configuration
   cfg = mms_config_read()                 ; read current config
   cfg = mms_config_push(pref,cfg,/force)  ; update 'cfg' with 'pref'
-
+  
   ; Filename
   dir = mms_config_filedir(/app_query)
   ll = strmid(dir, strlen(dir)-1, 1)
@@ -45,6 +45,7 @@ PRO mms_config_write, pref
     if(is_string(x1)) then begin 
       x1 = strtrim(x1, 2)
     endif else begin; Odd thing can happen with byte arrays
+      if size(x1, /type) eq 11 && x1 eq !null then continue
       if(size(x1, /type) eq 1) Then x1 = fix(x1)
       x1 = strcompress(/remove_all, string(x1))
     endelse
