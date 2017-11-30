@@ -3,15 +3,15 @@
 ; Unit tests for mms_load_fgm
 ;
 ; To run:
-;     IDL> mgunit, 'mms_load_fpi_ut'
+;     IDL> mgunit, 'mms_load_fgm_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
-; $LastChangedRevision: 24128 $
+; $LastChangedDate: 2017-11-29 10:22:15 -0800 (Wed, 29 Nov 2017) $
+; $LastChangedRevision: 24356 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_fgm_ut__define.pro $
 ;-
 
-function mms_load_fpi_ut::test_varformat_array_still_flagged
+function mms_load_fgm_ut::test_varformat_array_still_flagged
   mms_load_fgm, level='l2', data_rate='srvy', varformat=['*fgm_b_gsm_srvy_l2*', '*fgm_b_gse_srvy_l2*']
   get_data, 'mms1_fgm_flag_srvy_l2', data=flags
   get_data, 'mms1_fgm_b_gsm_srvy_l2_bvec', data=flagged
@@ -193,6 +193,7 @@ function mms_load_fgm_ut::test_load_l2pre_afg
     'Problem loading L2pre AFG data'
   return, 1
 end
+
 pro mms_load_fgm_ut::setup
     del_data, '*'
     timespan, '2015-12-15', 1, /day

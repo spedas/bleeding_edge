@@ -18,7 +18,9 @@
 
   <cdf_var
       name   = "dfb_compression"
-      type   = "integer">
+      type   = "integer"
+      string = "true"
+      string_len = "20">
   <cdf_att
         FIELDNAM = "compression"
         FORMAT = "I08"
@@ -39,7 +41,9 @@
 
   <cdf_var
       name   = "dfb_wav_tap"
-      type   = "integer">
+      type   = "integer"
+      string = "true"
+      string_len = "20">
   <cdf_att
         FIELDNAM = "wav_tap"
         FORMAT = "I08"
@@ -60,7 +64,9 @@
 
   <cdf_var
       name   = "dfb_wav_en"
-      type   = "integer">
+      type   = "integer"
+      string = "true"
+      string_len = "30">
   <cdf_att
         FIELDNAM = "wav_enable"
         FORMAT = "I08"
@@ -81,7 +87,9 @@
 
   <cdf_var
       name   = "dfb_wav_sel"
-      type   = "integer">
+      type   = "integer"
+      string = "true"
+      string_len = "20">
   	<cdf_att
         FIELDNAM = "wav_sel"
         FORMAT = "I08"
@@ -119,6 +127,29 @@
         SCALEMAX = "2147483647"
         UNITS = "None"
         CATDESC = "wf_pkt_data"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+	<cdf_var
+      name   = "wf_pkt_data_v"
+      type   = "double"
+      convert_routine = "none"
+      nelem  = "wf_pkt_data_elements">
+  	<cdf_att
+        FIELDNAM = "wf_pkt_data_v"
+        FORMAT = "F15.3"
+        LABLAXIS = "wf_pkt_data_v"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_DOUBLE"
+        FILLVAL = "-1.0E31"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-1.0E31"
+        VALIDMAX = "1.0E31"
+        SCALEMIN = "-1.0E31"
+        SCALEMAX = "1.0E31"
+        UNITS = "V"
+        CATDESC = "wf_pkt_data_v"
         DEPEND_0 = "epoch">
     </cdf_att>
   </cdf_var>
