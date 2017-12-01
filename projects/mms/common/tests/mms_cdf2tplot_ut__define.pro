@@ -10,8 +10,8 @@
 ;     taken from v2.1.0 of the FPI CDFs, 3/10/2016
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
-; $LastChangedRevision: 24128 $
+; $LastChangedDate: 2017-11-30 12:30:48 -0800 (Thu, 30 Nov 2017) $
+; $LastChangedRevision: 24359 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_cdf2tplot_ut__define.pro $
 ;-
 
@@ -85,9 +85,9 @@ end
 
 ; DELTA_PLUS_VAR/DELTA_MINUS_VAR for L2 HPCA 'srvy' (unshifted)
 function mms_cdf2tplot_ut::test_hpca_srvy_unshifted
-  mms_load_hpca, level='l2', trange=['2015-09-15', '2015-09-16'], probe=1
+  mms_load_hpca, level='l2', trange=['2017-09-15', '2017-09-16'], probe=1
   get_data, 'mms1_hpca_hplus_number_density', data=d
-  valid_times_noshift = ['20150915/00:00:13.233', '20150915/00:01:23.231', '20150915/00:02:33.230', '20150915/00:03:43.229']
+  valid_times_noshift = ['20170915/00:00:05.823', '20170915/00:00:15.823', '20170915/00:00:25.823', '20170915/00:00:35.823']
   for vi = 0, n_elements(valid_times_noshift)-1 do begin
     assert, time_string(d.X[vi], tformat='YYYYMMDD/hh:mm:ss.fff') eq valid_times_noshift[vi], 'Problem with HPCA L2 srvy unshifted data' 
   endfor
@@ -96,9 +96,9 @@ end
 
 ; DELTA_PLUS_VAR/DELTA_MINUS_VAR for L2 HPCA 'srvy' (shifted)
 function mms_cdf2tplot_ut::test_hpca_srvy_shifted
-  mms_load_hpca, level='l2', trange=['2015-09-15', '2015-09-16'], probe=1, /center, suffix='_shifted'
+  mms_load_hpca, level='l2', trange=['2017-09-15', '2017-09-16'], probe=1, /center, suffix='_shifted'
   get_data, 'mms1_hpca_hplus_number_density_shifted', data=d
-  valid_times_shifted = ['20150915/00:00:18.232', '20150915/00:01:28.231', '20150915/00:02:38.229', '20150915/00:03:48.228']
+  valid_times_shifted = ['20170915/00:00:10.823', '20170915/00:00:20.823', '20170915/00:00:30.823', '20170915/00:00:40.822']
   for vi = 0, n_elements(valid_times_shifted)-1 do begin
     assert, time_string(d.X[vi], tformat='YYYYMMDD/hh:mm:ss.fff') eq valid_times_shifted[vi], 'Problem with HPCA L2 srvy shifted data'
   endfor

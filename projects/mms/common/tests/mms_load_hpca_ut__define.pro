@@ -6,23 +6,23 @@
 ;     IDL> mgunit, 'mms_load_hpca_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-11-16 14:46:06 -0800 (Thu, 16 Nov 2017) $
-; $LastChangedRevision: 24292 $
+; $LastChangedDate: 2017-11-30 15:55:05 -0800 (Thu, 30 Nov 2017) $
+; $LastChangedRevision: 24363 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_hpca_ut__define.pro $
 ;-
 
 function mms_load_hpca_ut::test_varformat_string
-  mms_load_hpca, varformat='*velocity* *tparallel', trange=['2015-12-15', '2015-12-16']
+  mms_load_hpca, varformat='*velocity* *tparallel', trange=['2017-10-15', '2017-10-16']
   assert, (tnames('mms1_hpca_ion_energy'))[0] ne '', 'Varformat string regression'
-  assert, spd_data_exists('mms1_hpca_heplusplus_tparallel mms1_hpca_hplus_ion_bulk_velocity mms1_hpca_oplus_ion_bulk_velocity', '2015-12-15', '2015-12-16'), $
+  assert, spd_data_exists('mms1_hpca_heplusplus_tparallel mms1_hpca_hplus_ion_bulk_velocity mms1_hpca_oplus_ion_bulk_velocity', '2017-10-15', '2017-10-16'), $
     'Varformat string regression'
    return, 1
 end
 
 function mms_load_hpca_ut::test_varformat_array
-  mms_load_hpca, varformat=['*velocity*', '*tparallel'],  trange=['2015-12-15', '2015-12-16']
+  mms_load_hpca, varformat=['*velocity*', '*tparallel'],  trange=['2017-10-15', '2017-10-16']
   assert, (tnames('mms1_hpca_ion_energy'))[0] ne '', 'Varformat array regression'
-  assert, spd_data_exists('mms1_hpca_heplusplus_tparallel mms1_hpca_hplus_ion_bulk_velocity mms1_hpca_oplus_ion_bulk_velocity', '2015-12-15', '2015-12-16'), $
+  assert, spd_data_exists('mms1_hpca_heplusplus_tparallel mms1_hpca_hplus_ion_bulk_velocity mms1_hpca_oplus_ion_bulk_velocity', '2017-10-15', '2017-10-16'), $
     'Varformat array regression'
   return, 1
 end
@@ -73,8 +73,8 @@ function mms_load_hpca_ut::test_load_spdf_burst
 end
 
 function mms_load_hpca_ut::test_load_spdf_srvy
-  mms_load_hpca, /spdf, trange=['2015-12-15', '2015-12-16'], level='l2', datatype='moments', data_rate='srvy'
-  assert, spd_data_exists('mms1_hpca_hplus_number_density mms1_hpca_heplus_scalar_temperature mms1_hpca_hplus_vperp', '2015-12-15', '2015-12-16'), $
+  mms_load_hpca, /spdf, trange=['2017-10-15', '2017-10-16'], level='l2', datatype='moments', data_rate='srvy'
+  assert, spd_data_exists('mms1_hpca_hplus_number_density mms1_hpca_heplus_scalar_temperature mms1_hpca_hplus_vperp', '2017-10-15', '2017-10-16'), $
     'Problem loading srvy mode data from SPDF'
   return, 1
 end
@@ -100,8 +100,8 @@ function mms_load_hpca_ut::test_burst_caps
 end
 
 function mms_load_hpca_ut::test_center_keyword
-  mms_load_hpca, probe=1, level='l2', datatype='moments', trange=['2015-12-15', '2015-12-16'], /center_measurement, suffix='_centered'
-  mms_load_hpca, probe=1, level='l2', datatype='moments', trange=['2015-12-15', '2015-12-16']
+  mms_load_hpca, probe=1, level='l2', datatype='moments', trange=['2017-10-15', '2017-10-16'], /center_measurement, suffix='_centered'
+  mms_load_hpca, probe=1, level='l2', datatype='moments', trange=['2017-10-15', '2017-10-16']
   get_data, 'mms1_hpca_hplus_ion_bulk_velocity', data=not_centered ; not centered
   get_data, 'mms1_hpca_hplus_ion_bulk_velocity_centered', data=centered ; centered
   ; centering adjusts by ~5 seconds
@@ -129,7 +129,7 @@ end
 function mms_load_hpca_ut::test_flux_anodes
   mms_load_hpca, probe=3, level='l2', datatype='ion'
   mms_hpca_calc_anodes, anodes=[5, 7, 10]
-  assert, spd_data_exists('mms3_hpca_hplus_flux_anodes_5_7_10 mms3_hpca_heplus_flux_anodes_5_7_10 mms3_hpca_heplusplus_flux_anodes_5_7_10 mms3_hpca_oplus_flux_anodes_5_7_10', '2015-10-22/06:00', '2015-10-22/06:10'), $
+  assert, spd_data_exists('mms3_hpca_hplus_flux_anodes_5_7_10 mms3_hpca_heplus_flux_anodes_5_7_10 mms3_hpca_heplusplus_flux_anodes_5_7_10 mms3_hpca_oplus_flux_anodes_5_7_10', '2017-9-22/11:08', '2017-9-22/11:13'), $
     'Problem with HPCA flux anodes calculation'
   return, 1
 end
@@ -137,14 +137,14 @@ end
 function mms_load_hpca_ut::test_flux_anodes_suffix
   mms_load_hpca, probe=3, level='l2', datatype='ion', suffix='_anodessuffix'
   mms_hpca_calc_anodes, anodes=[5, 7, 10], suffix='_anodessuffix'
-  assert, spd_data_exists('mms3_hpca_hplus_flux_anodessuffix_anodes_5_7_10 mms3_hpca_heplus_flux_anodessuffix_anodes_5_7_10 mms3_hpca_heplusplus_flux_anodessuffix_anodes_5_7_10 mms3_hpca_oplus_flux_anodessuffix_anodes_5_7_10', '2015-10-22/06:00', '2015-10-22/06:10'), $
+  assert, spd_data_exists('mms3_hpca_hplus_flux_anodessuffix_anodes_5_7_10 mms3_hpca_heplus_flux_anodessuffix_anodes_5_7_10 mms3_hpca_heplusplus_flux_anodessuffix_anodes_5_7_10 mms3_hpca_oplus_flux_anodessuffix_anodes_5_7_10', '2017-9-22/11:08', '2017-9-22/11:13'), $
     'Problem with HPCA flux anodes calculation'
   return, 1
 end
 
 function mms_load_hpca_ut::test_load_burst_moms
   mms_load_hpca, probe=1, level='l2', data_rate='brst'
-  assert, spd_data_exists('mms1_hpca_hplus_scalar_temperature mms1_hpca_oplus_scalar_temperature mms1_hpca_heplus_ion_bulk_velocity_GSM', '2015-10-22/06:00', '2015-10-22/06:10'), $
+  assert, spd_data_exists('mms1_hpca_hplus_scalar_temperature mms1_hpca_oplus_scalar_temperature mms1_hpca_heplus_ion_bulk_velocity_GSM', '2017-9-22/11:08', '2017-9-22/11:13'), $
     'Problem loading L2 burst mode HPCA data'
   return, 1
 end
@@ -171,7 +171,7 @@ function mms_load_hpca_ut::test_load_startaz
     mms_load_hpca, probes=probes, datatype='flux', level='l1b', data_rate='srvy',/get_support_data
     mms_hpca_calc_anodes, fov=[0, 360], probe=probes
     mms_hpca_spin_sum, probe=probes, species='hplus',fov=[0,360],datatype='flux'
-    assert, spd_data_exists('mms1_hpca_start_azimuth mms1_hpca_hplus_flux_elev_0-360 mms1_hpca_hplus_flux_elev_0-360_spin', '2015-10-22/06:00', '2015-10-22/06:10'), 'Problem loading HPCA data (startaz regression?)'
+    assert, spd_data_exists('mms1_hpca_start_azimuth mms1_hpca_hplus_flux_elev_0-360 mms1_hpca_hplus_flux_elev_0-360_spin', '2017-9-22/11:08', '2017-9-22/11:13'), 'Problem loading HPCA data (startaz regression?)'
     return, 1
 end
 
@@ -180,7 +180,7 @@ function mms_load_hpca_ut::test_load_startaz_nosupp
   mms_load_hpca, probes=probes, datatype='flux', level='l1b', data_rate='srvy'
   mms_hpca_calc_anodes, fov=[0, 360], probe=probes
   mms_hpca_spin_sum, probe=probes, species='hplus',fov=[0,360],datatype='flux'
-  assert, spd_data_exists('mms1_hpca_start_azimuth mms1_hpca_hplus_flux_elev_0-360 mms1_hpca_hplus_flux_elev_0-360_spin', '2015-10-22/06:00', '2015-10-22/06:10'), 'Problem loading HPCA data (startaz regression?)'
+  assert, spd_data_exists('mms1_hpca_start_azimuth mms1_hpca_hplus_flux_elev_0-360 mms1_hpca_hplus_flux_elev_0-360_spin', '2017-9-22/11:08', '2017-9-22/11:13'), 'Problem loading HPCA data (startaz regression?)'
   return, 1
 end
 
@@ -189,43 +189,43 @@ function mms_load_hpca_ut::test_load_startaz_nosupp_l2
   mms_load_hpca, probes=probes, datatype='flux', level='l2', data_rate='srvy'
   mms_hpca_calc_anodes, fov=[0, 360], probe=probes
   mms_hpca_spin_sum, probe=probes, species='hplus',fov=[0,360],datatype='flux'
-  assert, spd_data_exists('mms1_hpca_start_azimuth mms1_hpca_hplus_flux_elev_0-360 mms1_hpca_hplus_flux_elev_0-360_spin', '2015-10-22/06:00', '2015-10-22/06:10'), 'Problem loading HPCA data (startaz regression?)'
+  assert, spd_data_exists('mms1_hpca_start_azimuth mms1_hpca_hplus_flux_elev_0-360 mms1_hpca_hplus_flux_elev_0-360_spin', '2017-9-22/11:08', '2017-9-22/11:13'), 'Problem loading HPCA data (startaz regression?)'
   return, 1
 end
 
 function mms_load_hpca_ut::test_load_caps_datatype
   mms_load_hpca, probes=1, datatype='ION', level='l2', data_rate='srvy'
   mms_hpca_calc_anodes, fov=[0, 360], probe=1
-  assert, spd_data_exists('mms1_hpca_oplus_flux_elev_0-360 mms1_hpca_hplus_flux_elev_0-360', '2015-10-22/06:00', '2015-10-22/06:10'), 'Problem loading HPCA data (startaz regression?)'
+  assert, spd_data_exists('mms1_hpca_oplus_flux_elev_0-360 mms1_hpca_hplus_flux_elev_0-360', '2017-9-22/11:08', '2017-9-22/11:13'), 'Problem loading HPCA data (startaz regression?)'
   return, 1
 end
 
 function mms_load_hpca_ut::test_loading_tplotnames_ion
   mms_load_hpca, probes=2, datatype='ion', level='l2', data_rate='srvy', tplotnames=tpnames
-  assert, n_elements(tpnames) eq 27, '(potential) Problem with number of tplotnames returned by mms_load_hpca (ion)'
+  assert, n_elements(tpnames) eq 29, '(potential) Problem with number of tplotnames returned by mms_load_hpca (ion)'
   return, 1
 end
 
 function mms_load_hpca_ut::test_loading_tplotames_moments
   mms_load_hpca, probe=3, datatype='moments', level='l2', data_rate='srvy', tplotnames=tpnames
-  assert, n_elements(tpnames) eq 54, '(potential) Problem with number of tplotnames returned by mms_load_hpca (moments)'
+  assert, n_elements(tpnames) eq 56, '(potential) Problem with number of tplotnames returned by mms_load_hpca (moments)'
   return, 1
 end
 
 function mms_load_hpca_ut::test_loading_invalid_datarate
   mms_load_hpca, probe=3, datatype='moments', data_rate='notvalid'
-  assert, ~spd_data_exists('mms3_hpca_hplus_number_density', '2015-10-22/06:00', '2015-10-22/06:10'), $
+  assert, ~spd_data_exists('mms3_hpca_hplus_number_density', '2017-9-22/11:08', '2017-9-22/11:13'), $
     'Was able to load data without a valid data rate in mms_load_hpca??'
   return, 1
 end
 
 function mms_load_hpca_ut::test_load_with_timeclip
-  mms_load_hpca, probe=4, datatype='moments', /time_clip, trange=['2015-10-22/06:02', '2015-10-22/06:04']
-  assert, spd_data_exists('mms4_hpca_hplus_number_density mms4_hpca_hplus_scalar_temperature mms4_hpca_oplus_ion_bulk_velocity', '2015-10-22/06:02', '2015-10-22/06:04'), $
+  mms_load_hpca, probe=4, datatype='moments', /time_clip, trange=['2017-10-22/06:02', '2017-10-22/06:04']
+  assert, spd_data_exists('mms4_hpca_hplus_number_density mms4_hpca_hplus_scalar_temperature mms4_hpca_oplus_ion_bulk_velocity', '2017-10-22/06:02', '2017-10-22/06:04'), $
     'Problem with time clip in mms_load_hpca'
-  assert, ~spd_data_exists('mms4_hpca_hplus_number_density mms4_hpca_hplus_scalar_temperature mms4_hpca_oplus_ion_bulk_velocity', '2015-10-22/06:00', '2015-10-22/06:02'), $
+  assert, ~spd_data_exists('mms4_hpca_hplus_number_density mms4_hpca_hplus_scalar_temperature mms4_hpca_oplus_ion_bulk_velocity', '2017-10-22/06:00', '2017-10-22/06:02'), $
     'Problem with time clip in mms_load_hpca'
-  assert, ~spd_data_exists('mms4_hpca_hplus_number_density mms4_hpca_hplus_scalar_temperature mms4_hpca_oplus_ion_bulk_velocity', '2015-10-22/06:04', '2015-10-22/06:06'), $
+  assert, ~spd_data_exists('mms4_hpca_hplus_number_density mms4_hpca_hplus_scalar_temperature mms4_hpca_oplus_ion_bulk_velocity', '2017-10-22/06:04', '2017-10-22/06:06'), $
     'Problem with time clip in mms_load_hpca'
   return, 1
 end
@@ -238,7 +238,7 @@ end
 
 pro mms_load_hpca_ut::setup
     del_data, '*'
-    timespan, '2015-10-22/06:00', 10., /minutes 
+    timespan, '2017-9-22/11:08', 5., /minutes 
 end
 
 function mms_load_hpca_ut::init, _extra=e
@@ -250,6 +250,5 @@ function mms_load_hpca_ut::init, _extra=e
 end
 
 pro mms_load_hpca_ut__define
-
     define = { mms_load_hpca_ut, inherits MGutTestCase }
 end

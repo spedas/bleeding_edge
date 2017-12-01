@@ -27,8 +27,8 @@
 ;       is due to the different directory structures mentioned above.
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-06-12 14:21:37 -0700 (Mon, 12 Jun 2017) $
-;$LastChangedRevision: 23454 $
+;$LastChangedDate: 2017-11-30 15:09:28 -0800 (Thu, 30 Nov 2017) $
+;$LastChangedRevision: 24361 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data_spdf.pro $
 ;-
 
@@ -140,7 +140,9 @@ pro mms_load_data_spdf, probes = probes, datatype = datatype, instrument = instr
              'hpca': begin
                 ; HPCA
                 ; mms1/hpca/srvy/l2/ion/2016/01/ 
-                if data_rate eq 'brst' then time_format = 'YYYYMMDDhhmm00' else time_format = 'YYYYMMDD??????'
+                ;if data_rate eq 'brst' then time_format = 'YYYYMMDDhhmm00' else time_format = 'YYYYMMDD??????'
+                ; HPCA is no longer using 00 seconds as of 11/30/17 at SPDF
+                time_format = 'YYYYMMDD??????'
                 for datatype_idx = 0, n_elements(datatype)-1 do begin
                     pathformat[path_count] = 'PROBE' + strcompress(string(probes[probe_idx]), /rem) + '/' + $
                         instrument + '/'+data_rate+'/'+level+'/'+datatype[datatype_idx]+'/YYYY/MM/PROBE' + strcompress(string(probes[probe_idx]), /rem) + $
