@@ -88,6 +88,16 @@
 ;       SCALE:    To change the scale/length of field lines, the default value is
 ;                 set to 0.05
 ;
+;       VDIR:     Set keyword to a tplot variable containing MSO vectors for a whisker
+;                 plot (like BDIR).
+;
+;       VCLIP:    Maximum amplitude for plotting V whisker.
+;
+;       VRANGE:   Time range for plotting vectors.
+;
+;       VSCALE:   To change the scale/length of vector lines, the default value is
+;                 set to 0.05.
+;
 ;       THICK:    Line thickness.
 ;
 ;       MAGNIFY:  Change size of plot windows.
@@ -95,8 +105,8 @@
 ;       PSNAME:   Name of a postscript plot.  Works only for orbit plots.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-02 17:58:29 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24100 $
+; $LastChangedDate: 2017-11-30 21:16:21 -0800 (Thu, 30 Nov 2017) $
+; $LastChangedRevision: 24370 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -104,7 +114,8 @@
 pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, mars=mars, $
     npole=npole, noerase=noerase, keep=keep, color=color, reset=reset, cyl=cyl, times=times, $
     nodot=nodot, terminator=terminator, thick=thick, Bdir=Bdir, scale=scale, scsym=scsym, $
-    magnify=magnify, Bclip=Bclip, alt=doalt, psname=psname
+    magnify=magnify, Bclip=Bclip, Vdir=Vdir, Vclip=Vclip, Vscale=Vscale, Vrange=Vrange, $
+    alt=doalt, psname=psname
 
   @maven_orbit_common
   @swe_snap_common
@@ -136,8 +147,11 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   if not keyword_set(magnify) then mag = 1. else mag = float(magnify)
   csize = 2.0*mag
   if (size(Bclip,/type) eq 0) then Bclip = 1.e9
+  if (size(Vclip,/type) eq 0) then Vclip = 1.e3
 
   if keyword_set(Bdir) then dob = 1 else dob = 0
+  if keyword_set(Vdir) then dov = 1 else dov = 0
+
   doalt = keyword_set(doalt)
 
   if keyword_set(times) then begin
@@ -364,7 +378,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       yrange = xrange
     endif
     
-    if (dob eq 1) then begin
+    if (dob) then begin
         get_data,'mvn_B_1sec_maven_mso',data=bmso
         bb0=bmso.y
         bt=bmso.x
@@ -381,6 +395,37 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
         bb[*,2]=interpol(bb0[*,2],bt,time[rndx])
         if ~(keyword_set(scale)) then scale=0.05
         nskp=5
+    endif
+    
+    if (dov) then begin
+        vv=fltarr(n_elements(rndx),3)
+        get_data,Vdir,data=vmso,index=iv
+        if (iv gt 0) then begin
+          if (n_elements(Vrange) ne 2) then Vrange = minmax(vmso.x)
+          vndx = where((vmso.x ge min(Vrange)) and (vmso.x le max(Vrange)), count)
+          if (count gt 0L) then begin
+            vv0=vmso.y[vndx,*]
+            vt=vmso.x[vndx]
+            vdt=60 ;smooth over seconds
+            for i=0,2 do vv0[*,i]=smooth(vv0[*,i],vdt)
+
+            vmag = sqrt(total(vv0*vv0,2,/nan))
+            indx = where(vmag gt Vclip, count)
+            if (count gt 0L) then vv0[indx,*] = !values.f_nan
+
+            vndx = where((time[rndx] ge min(Vrange)) and (time[rndx] le max(Vrange)), count)
+            if (count gt 0L) then begin
+              vv[vndx,0]=interpol(vv0[*,0],vt,time[rndx[vndx]])
+              vv[vndx,1]=interpol(vv0[*,1],vt,time[rndx[vndx]])
+              vv[vndx,2]=interpol(vv0[*,2],vt,time[rndx[vndx]])
+              if ~(keyword_set(Vscale)) then Vscale=0.05
+              nskp=5
+            endif
+          endif
+        endif else begin
+          print,'Velocity variable not found: ',Vdir
+          dov = 0
+        endelse
     endif
 
 ; X-Y Projection
@@ -420,6 +465,19 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
               x2=scale*bb[i,0]+x1
               y2=scale*bb[i,1]+y1
               if bb[i,2] le 0 then clr=64 $
+              else clr=254
+              oplot,[x1,x2],[y1,y2],color=clr
+          endfor
+      endif
+
+      if (dov) then begin
+        cts = n_elements(rndx)
+          for i=0,cts-1,nskp do begin
+              x1=x[i]
+              y1=y[i]
+              x2=Vscale*vv[i,0]+x1
+              y2=Vscale*vv[i,1]+y1
+              if vv[i,2] le 0 then clr=64 $
               else clr=254
               oplot,[x1,x2],[y1,y2],color=clr
           endfor
@@ -542,6 +600,19 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
         endfor
     endif
 
+    if (dov) then begin
+      cts = n_elements(rndx)
+      for i=0,cts-1,nskp do begin
+        x1=x[i]
+        y1=z[i]
+        x2=Vscale*vv[i,0]+x1
+        y2=Vscale*vv[i,2]+y1
+        if vv[i,1] le 0 then clr=64 $
+        else clr=254
+        oplot,[x1,x2],[y1,y2],color=clr
+      endfor
+    endif
+
     x = xs
     y = ys
     z = zs
@@ -650,6 +721,19 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
               x2=scale*bb[i,1]+x1
               y2=scale*bb[i,2]+y1
               if bb[i,0] le 0 then clr=64 $
+              else clr=254
+              oplot,[x1,x2],[y1,y2],color=clr
+          endfor
+      endif
+
+      if (dov) then begin
+          cts = n_elements(rndx)
+          for i=0,cts-1,nskp do begin
+              x1=y[i]
+              y1=z[i]
+              x2=Vscale*vv[i,1]+x1
+              y2=Vscale*vv[i,2]+y1
+              if vv[i,0] le 0 then clr=64 $
               else clr=254
               oplot,[x1,x2],[y1,y2],color=clr
           endfor

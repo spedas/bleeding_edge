@@ -66,8 +66,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-09-07 17:06:46 -0700 (Thu, 07 Sep 2017) $
-; $LastChangedRevision: 23919 $
+; $LastChangedDate: 2017-11-30 21:19:03 -0800 (Thu, 30 Nov 2017) $
+; $LastChangedRevision: 24372 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -120,6 +120,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
   pdC = ['']
   TClab = replicate('',8)
   TCcol = round(findgen(8)*((254.-32.)/7.)) + 32  ; optimized for color table 43
+  TCcol[0] = 1
   Vlab = TClab
   Tlab = TClab[0:2]
   store_data,'TV_frame',data={x:[0D], y:replicate(-100.,1,7), v:findgen(7)}
@@ -219,17 +220,17 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     store_data,'DEF2V' ,data={x:swe_hsk.time, y:swe_hsk.DEF2V}
     store_data,'V0V'   ,data={x:swe_hsk.time, y:swe_hsk.V0V}
     store_data,'ANALT' ,data={x:swe_hsk.time, y:swe_hsk.ANALT}
-    store_data,'P12V'  ,data={x:swe_hsk.time, y:(swe_hsk.P12V-vnorm[1])}
-    store_data,'N12V'  ,data={x:swe_hsk.time, y:(swe_hsk.N12V+vnorm[1])}
-    store_data,'MCP28V',data={x:swe_hsk.time, y:(swe_hsk.MCP28V-vnorm[0])}
-    store_data,'NR28V' ,data={x:swe_hsk.time, y:(swe_hsk.NR28V-vnorm[0])}
+    store_data,'P12V'  ,data={x:swe_hsk.time, y:((swe_hsk.P12V-vnorm[1])/vnorm[1])}
+    store_data,'N12V'  ,data={x:swe_hsk.time, y:((swe_hsk.N12V+vnorm[1])/vnorm[1])}
+    store_data,'MCP28V',data={x:swe_hsk.time, y:((swe_hsk.MCP28V-vnorm[0])/vnorm[0])}
+    store_data,'NR28V' ,data={x:swe_hsk.time, y:((swe_hsk.NR28V-vnorm[0])/vnorm[0])}
     store_data,'DIGT'  ,data={x:swe_hsk.time, y:swe_hsk.DIGT}
-    store_data,'P2P5DV',data={x:swe_hsk.time, y:(swe_hsk.P2P5DV-vnorm[4])}
-    store_data,'P5DV'  ,data={x:swe_hsk.time, y:(swe_hsk.P5DV-vnorm[2])}
-    store_data,'P3P3DV',data={x:swe_hsk.time, y:(swe_hsk.P3P3DV-vnorm[3])}
-    store_data,'P5AV'  ,data={x:swe_hsk.time, y:(swe_hsk.P5AV-vnorm[2])}
-    store_data,'N5AV'  ,data={x:swe_hsk.time, y:(swe_hsk.N5AV+vnorm[2])}
-    store_data,'P28V'  ,data={x:swe_hsk.time, y:(swe_hsk.P28V-vnorm[0])}
+    store_data,'P2P5DV',data={x:swe_hsk.time, y:((swe_hsk.P2P5DV-vnorm[4])/vnorm[4])}
+    store_data,'P5DV'  ,data={x:swe_hsk.time, y:((swe_hsk.P5DV-vnorm[2])/vnorm[2])}
+    store_data,'P3P3DV',data={x:swe_hsk.time, y:((swe_hsk.P3P3DV-vnorm[3])/vnorm[3])}
+    store_data,'P5AV'  ,data={x:swe_hsk.time, y:((swe_hsk.P5AV-vnorm[2])/vnorm[2])}
+    store_data,'N5AV'  ,data={x:swe_hsk.time, y:((swe_hsk.N5AV+vnorm[2])/vnorm[2])}
+    store_data,'P28V'  ,data={x:swe_hsk.time, y:((swe_hsk.P28V-vnorm[0])/vnorm[0])}
     if (vflg) then begin
       options,'P28V',  'color',TCcol[0]   ; magenta
       options,'P12V',  'color',TCcol[1]   ; blue
@@ -242,8 +243,8 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       store_data,'VoltsC',data=['TV_frame','P28V','P12V','N12V', $
                                 'P5AV','N5AV','P5DV','P3P3DV']  ; skipping P2P5DV
       
-      ylim,'VoltsC',-5,5,0
-      options,'VoltsC','ytitle','Volts'
+      ylim,'VoltsC',-0.1,0.1,0
+      options,'VoltsC','ytitle','Volts (dV/V)'
       options,'VoltsC','yticks',2
       options,'VoltsC','yminor',5
       options,'VoltsC','labflag',1
@@ -267,10 +268,12 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       store_data,'VoltsB',data=['TV_frame','P2P5DV','P3P3DV','P5DV','P5AV','N5AV','NRV']
 
       ylim,'VoltsA',-15,35,0
+      options,'VoltsA','ytitle','Volts'
       options,'VoltsA','yminor',5
       options,'VoltsA','labflag',1
       options,'VoltsA','labels',['+12 V','-12 V','MCP 28V','NR 28V','+28 V','','']
       ylim,'VoltsB',-6,6,0
+      options,'VoltsB','ytitle','Volts'
       options,'VoltsB','yticks',2
       options,'VoltsB','yminor',6
       options,'VoltsB','labflag',1
@@ -279,6 +282,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     endelse
 
     store_data,'Temps',data=['TV_frame','LVPST','ANALT','DIGT']
+    options,'Temps','ytitle','Temp (C)'
     options,'ANALT','color',TCcol[0]  ; magenta
     options,'DIGT', 'color',TCcol[1]  ; blue
     options,'LVPST','color',TCcol[2]  ; cyan

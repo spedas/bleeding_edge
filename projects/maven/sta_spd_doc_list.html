@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov 30 18:16:13 2017.<P>
+<STRONG>Last modified: </STRONG>Fri Dec  1 18:16:14 2017.<P>
  
 <HR>
  
@@ -221,7 +221,8 @@ NAME:
 PURPOSE:
  Loads MVN L2 data for a given file(s), or time_range
 CALLING SEQUENCE:
- mvn_sta_l2_load, files = files, trange=trange, sta_apid=sta_apid
+ mvn_sta_l2_load, files = files, trange=trange, sta_apid=sta_apid, $
+                  create_tplot_vars = create_tplot_vars
 INPUT:
  All via keyword, if none are set, then the output of timerange() is
  used, which may prompt for a time interval
@@ -239,13 +240,16 @@ KEYWORDS:
              authentication. Digest authentication is not supported.
  no_time_clip = if set do not clip the data to the time range. The
                 trange is only used for file selection.
+ tplot_vars_create = if set, call mvn_sta_l2_tplot to get tplot
+                     variables
+
 OUTPUT:
  No variables, data are loaded into common blocks
 HISTORY:
  16-may-2014, jmm, jimm@ssl.berkeley.edu
  $LastChangedBy: jimm $
- $LastChangedDate: 2016-08-30 11:38:10 -0700 (Tue, 30 Aug 2016) $
- $LastChangedRevision: 21770 $
+ $LastChangedDate: 2017-12-01 15:09:27 -0800 (Fri, 01 Dec 2017) $
+ $LastChangedRevision: 24389 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_l2_load.pro $
 </PRE><P>
 <STRONG>(See <A href="sta/mvn_sta_l2_load.pro">projects/maven/sta/mvn_sta_l2_load.pro</A>)</STRONG><P>

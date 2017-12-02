@@ -2,11 +2,12 @@
 ;PROCEDURE:   maven_orbit_tplot
 ;PURPOSE:
 ;  Loads MAVEN ephemeris information, currently in the form of IDL save files produced
-;  with maven_spice_eph.pro using spk predict kernels, and plots the spacecraft 
-;  trajectory as a function of time (using tplot).  The plots are color-coded 
-;  according to the nominal plasma regime, based on conic fits to the bow shock and 
-;  MPB from Trotignon et al. (PSS 54, 357-369, 2006).  The wake region is simply the 
-;  optical shadow in MSO coordinates (sqrt(y*y + z*z) < Rm ; x < 0).
+;  with maven_spice_eph.pro, and plots the spacecraft trajectory as a function of time
+;  (using tplot).  The plots are color-coded according to the nominal plasma regime, 
+;  based on conic fits to the bow shock and MPB from Trotignon et al. (PSS 54, 357-369, 
+;  2006).  The wake region is either the EUV or optical shadow in MSO coordinates:
+;  (sqrt(y*y + z*z) < Rm ; x < 0), where Rm is the Mars radius appropriate for optical
+;  or EUV wavelengths.
 ;
 ;  The available coordinate frames are:
 ;
@@ -33,7 +34,7 @@
 ;KEYWORDS:
 ;       STAT:     Named variable to hold the plasma regime statistics.
 ;
-;       DOMEX:    Use a MEX predict ephemeris, instead of one for MAVEN.
+;       DOMEX:    Use a MEX ephemeris, instead of one for MAVEN.
 ;
 ;       SWIA:     Calculate viewing geometry for SWIA, based on nominal s/c
 ;                 pointing.
@@ -103,11 +104,12 @@
 ;                 The solar wind is always plotted in the default foreground color,
 ;                 typically white or black.  For other regimes, the defaults are:
 ;
-;                   regime       index       color (table 34)
+;                   regime       index       color (table 43)
 ;                   -----------------------------------------
 ;                   sheath         4         green
 ;                   pileup         5         yellow
-;                   wake           2         blue
+;                   opt wake       2         blue
+;                   euv wake       1         violet
 ;                   -----------------------------------------
 ;
 ;       VARS:     Array of TPLOT variables created.
@@ -116,11 +118,12 @@
 ;
 ;       PDS:      Plot vertical dashed lines separating the PDS release dates.
 ;
-;       VERBOSE:  Verbosity level passed to mvn_pfp_file_retrieve.  Default = 0.
+;       VERBOSE:  Verbosity level passed to mvn_pfp_file_retrieve.  Default = 0
+;                 (suppress most messages).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-04 08:12:02 -0700 (Wed, 04 Oct 2017) $
-; $LastChangedRevision: 24104 $
+; $LastChangedDate: 2017-11-30 21:15:14 -0800 (Thu, 30 Nov 2017) $
+; $LastChangedRevision: 24369 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11

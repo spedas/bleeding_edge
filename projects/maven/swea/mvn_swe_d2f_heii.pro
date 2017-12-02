@@ -17,9 +17,9 @@
 ;OUTPUTS:
 ;   d2f_away,d2f_twd
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2017-01-03 22:08:52 -0800 (Tue, 03 Jan 2017) $
-; $LastChangedRevision: 22489 $
+; $LastChangedBy: xussui_lap $
+; $LastChangedDate: 2017-12-01 11:52:37 -0800 (Fri, 01 Dec 2017) $
+; $LastChangedRevision: 24384 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_d2f_heii.pro $
 ;
 ;CREATED BY:    Shaosui Xu  01-03-17
@@ -30,7 +30,7 @@ Pro mvn_swe_d2f_heii,faway,ftwd,energy,d2f_away,d2f_twd,ee,erange=erange
     @mvn_swe_com
     
     if (n_elements(erange) lt 2) then begin
-        emi = 10.
+        emi = 3.5;10.
         ema = 30.
     endif else emi = min(float(erange), max=ema)
 

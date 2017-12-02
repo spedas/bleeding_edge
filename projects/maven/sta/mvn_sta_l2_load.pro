@@ -4,7 +4,8 @@
 ;PURPOSE:
 ; Loads MVN L2 data for a given file(s), or time_range
 ;CALLING SEQUENCE:
-; mvn_sta_l2_load, files = files, trange=trange, sta_apid=sta_apid
+; mvn_sta_l2_load, files = files, trange=trange, sta_apid=sta_apid, $
+;                  create_tplot_vars = create_tplot_vars
 ;INPUT:
 ; All via keyword, if none are set, then the output of timerange() is
 ; used, which may prompt for a time interval
@@ -22,17 +23,21 @@
 ;             authentication. Digest authentication is not supported.
 ; no_time_clip = if set do not clip the data to the time range. The
 ;                trange is only used for file selection.
+; tplot_vars_create = if set, call mvn_sta_l2_tplot to get tplot
+;                     variables
+
 ;OUTPUT:
 ; No variables, data are loaded into common blocks
 ;HISTORY:
 ; 16-may-2014, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2016-08-30 11:38:10 -0700 (Tue, 30 Aug 2016) $
-; $LastChangedRevision: 21770 $
+; $LastChangedDate: 2017-12-01 15:09:27 -0800 (Fri, 01 Dec 2017) $
+; $LastChangedRevision: 24389 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_l2_load.pro $
 ;-
 Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
-                     user_pass = user_pass, no_time_clip = no_time_clip, _extra = _extra
+                     user_pass = user_pass, no_time_clip = no_time_clip, $
+                     tplot_vars_create = tplot_vars_create, _extra = _extra
 
 ;Keep track of software versioning here
   sw_vsn = mvn_sta_current_sw_version()
@@ -122,13 +127,30 @@ Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
         Continue                ;to next app_id
      Endif Else Begin
         ck = 0
-        For k = 0, nssj-1 Do Begin
-           datk = mvn_sta_cmn_l2read(filex[ssj[k]], trange = trange)
-           If(is_struct(datk)) Then Begin
-              If(~is_struct(datj)) Then datj = temporary(datk) $
-              Else datj = mvn_sta_cmn_concat(temporary(datj), temporary(datk))
-           Endif
-        Endfor
+        If(keyword_set(trange) && n_elements(trange[0, *]) Gt 1) Then Begin
+           ntr = n_elements(trange[0, *])
+           For i = 0, ntr-1 Do For k = 0, nssj-1 Do Begin
+;extract file time range from the filename, to check time ranges so
+;that we don't need to load files if not necessary
+              f1 = strsplit(file_basename(filex[ssj[k]]), '_', /extract)
+              ti0 = time_double(f1[n_elements(f1)-2])+[0.0, 86400.0d0]
+              If(time_double(trange[0, i]) Le ti0[1] and time_double(trange[1, i]) Ge ti0[0]) Then Begin
+                 datk = mvn_sta_cmn_l2read(filex[ssj[k]], trange = trange[*, i])
+                 If(is_struct(datk)) Then Begin
+                    If(~is_struct(datj)) Then datj = temporary(datk) $
+                    Else datj = mvn_sta_cmn_concat(temporary(datj), temporary(datk))
+                 Endif
+              Endif
+           Endfor
+        Endif Else Begin
+           For k = 0, nssj-1 Do Begin
+              datk = mvn_sta_cmn_l2read(filex[ssj[k]], trange = trange)
+              If(is_struct(datk)) Then Begin
+                 If(~is_struct(datj)) Then datj = temporary(datk) $
+                 Else datj = mvn_sta_cmn_concat(temporary(datj), temporary(datk))
+              Endif
+           Endfor
+        Endelse
 ;Check time range
         If(~keyword_set(files) and ~keyword_set(no_time_clip)) Then Begin
            If(is_struct(datj)) Then datj = mvn_sta_cmn_tclip(datj, tr0) $
@@ -242,5 +264,7 @@ Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
         End
      Endcase
   Endfor
+  If(keyword_set(tplot_vars_create)) Then mvn_sta_l2_tplot
+
   Return
 End

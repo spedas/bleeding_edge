@@ -52,8 +52,8 @@
 ;                 default frame, this would be 'V_sc_MAVEN_SPACECRAFT'.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-09-13 18:17:22 -0700 (Wed, 13 Sep 2017) $
-; $LastChangedRevision: 23968 $
+; $LastChangedDate: 2017-11-30 21:13:34 -0800 (Thu, 30 Nov 2017) $
+; $LastChangedRevision: 24367 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -84,6 +84,7 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar
 ; First store the spacecraft velocity in the IAU_MARS (or MSO) frame
 
   if keyword_set(mso) then begin
+    vframe = 'MSO'
     if keyword_set(dt) then begin
       npts = ceil((tmax - tmin)/dt)
       Tsc = tmin + dt*dindgen(npts)
@@ -95,9 +96,10 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar
       Tsc = state.time
       Vsc = state.mso_v
     endelse
-    store_data,'V_sc',data={x:Tsc, y:Vsc, v:[0,1,2]}
+    store_data,'V_sc',data={x:Tsc, y:Vsc, v:[0,1,2], vframe:vframe}
     options,'V_sc',spice_frame='MAVEN_SSO',spice_master_frame='MAVEN_SPACECRAFT'
   endif else begin
+    vframe = 'GEO'
     if keyword_set(dt) then begin
       npts = ceil((tmax - tmin)/dt)
       Tsc = tmin + dt*dindgen(npts)
@@ -109,7 +111,7 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar
       Tsc = state.time
       Vsc = state.geo_v
     endelse
-    store_data,'V_sc',data={x:Tsc, y:Vsc, v:[0,1,2]}
+    store_data,'V_sc',data={x:Tsc, y:Vsc, v:[0,1,2], vframe:vframe}
     options,'V_sc',spice_frame='IAU_MARS',spice_master_frame='MAVEN_SPACECRAFT'
   endelse
 
@@ -132,7 +134,11 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar
     endcase
 
     vname = 'V_sc_' + to_frame
-    options,vname,'ytitle','RAM (' + fname + ')!ckm/s'
+    get_data, vname, data=Vsc
+    str_element, Vsc, 'vframe', vframe, /add
+    str_element, Vsc, 'units', 'km/s', /add
+    store_data, vname, data=Vsc
+    options,vname,'ytitle',vframe + ' RAM (' + fname + ')!ckm/s'
     options,vname,'colors',[2,4,6]
     options,vname,'labels',labels
     options,vname,'labflag',1
@@ -140,19 +146,22 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar
     pans = [pans, vname]
 
     if (dopol) then begin
-      get_data, vname, data=Vsc
       xyz_to_polar, Vsc, theta=the, phi=phi, /ph_0_360
+      str_element, the, 'vframe', vframe, /add
+      str_element, the, 'units', 'km/s', /add
+      str_element, phi, 'vframe', vframe, /add
+      str_element, phi, 'units', 'km/s', /add
 
       the_name = 'V_sc_' + fname + '_The'
       store_data,the_name,data=the
-      options,the_name,'ytitle','RAM The!c'+fname
+      options,the_name,'ytitle',vframe + ' RAM The!c'+fname
       options,the_name,'ynozero',1
       options,the_name,'psym',3
 
       phi_name = 'V_sc_' + fname + '_Phi'
       store_data,phi_name,data=phi
       ylim,phi_name,0,360,0
-      options,phi_name,'ytitle','RAM Phi!c'+fname
+      options,phi_name,'ytitle',vframe + ' RAM Phi!c'+fname
       options,phi_name,'yticks',4
       options,phi_name,'yminor',3
       options,phi_name,'ynozero',1

@@ -21,8 +21,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-13 10:46:39 -0700 (Fri, 13 Oct 2017) $
-; $LastChangedRevision: 24153 $
+; $LastChangedDate: 2017-11-30 21:14:10 -0800 (Thu, 30 Nov 2017) $
+; $LastChangedRevision: 24368 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_get_scpot.pro $
 ;
 ;-
@@ -67,14 +67,10 @@ function mvn_get_scpot, time
   endif
 
   if (ngud gt 0L) then begin
-    pot[indx] = interp(mvn_sc_pot.potential, mvn_sc_pot.time, t[indx])
-
-    nndx = nn(mvn_sc_pot.time, t[indx])
-    gap = where(abs(t[indx] - mvn_sc_pot[nndx].time) gt maxdt, count)
-    if (count gt 0L) then begin
-      pot[indx[gap]] = badval
-      print,'MVN_GET_SCPOT: Some gaps exist.'
-    endif
+    pot[indx] = interp(mvn_sc_pot.potential, mvn_sc_pot.time, t[indx], $
+                       interp_thresh=maxdt, /no_extrap)
+    jndx = where(~finite(pot[indx]), count)
+    if (count gt 0L) then pot[indx[jndx]] = badval
   endif
 
   return, pot

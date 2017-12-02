@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov 30 18:16:13 2017.<P>
+<STRONG>Last modified: </STRONG>Fri Dec  1 18:16:14 2017.<P>
  
 <HR>
  
@@ -327,8 +327,8 @@ KEYWORDS:
 OUTPUTS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-10-13 10:46:39 -0700 (Fri, 13 Oct 2017) $
- $LastChangedRevision: 24153 $
+ $LastChangedDate: 2017-11-30 21:14:10 -0800 (Thu, 30 Nov 2017) $
+ $LastChangedRevision: 24368 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_get_scpot.pro $
 
 </PRE><P>
@@ -573,8 +573,8 @@ KEYWORDS:
                  default frame, this would be 'V_sc_MAVEN_SPACECRAFT'.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-09-13 18:17:22 -0700 (Wed, 13 Sep 2017) $
- $LastChangedRevision: 23968 $
+ $LastChangedDate: 2017-11-30 21:13:34 -0800 (Thu, 30 Nov 2017) $
+ $LastChangedRevision: 24367 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 
 CREATED BY:    David L. Mitchell
@@ -633,7 +633,7 @@ AUTHOR:
 	David L. Mitchell
 
 CALLING SEQUENCE: 
-	mvn_scpot, potential=dat
+	mvn_scpot
 
 INPUTS: 
    none - energy spectra are obtained from SWEA common block.
@@ -648,70 +648,23 @@ KEYWORDS:
               The methods are: -1 (invalid), 0 (manually set), 
               1 (SWE/LPW), 2 (SWE+), 3 (SWE-), 4 (STA-), 5 (SWEPAD).
 
-   ERANGE:    Energy range over which to search for the potential
-              with the SWE+ method.  Default = [3.,30.]
-
-   THRESH:    Minimum value of d(logF)/d(logE) for identifying a 
-              discontinuity in the electron energy spectrum for the
-              SWE+ method.  Default = 0.05.
-
               The optimal value depends on the plasma environment.
-
-   MINFLUX:   Minimum peak energy flux for the SWE+ method.
-              Default = 1e6.
-
-   DEMAX:     The largest allowable energy width of the spacecraft 
-              potential feature.  This excludes features not related
-              to the spacecraft potential at higher energies (often 
-              observed downstream of the shock).  Default = 6 eV.
-
-   DDD:       Use 3D data to calculate potential.  Allows bin masking,
-              but lower cadence and typically lower energy resolution.
-
-   ABINS:     When using 3D spectra, specify which anode bins to 
-              include in the analysis: 0 = no, 1 = yes.
-              Default = replicate(1,16)
-
-   DBINS:     When using 3D spectra, specify which deflection bins to
-              include in the analysis: 0 = no, 1 = yes.
-              Default = replicate(1,6)
-
-   OBINS:     When using 3D spectra, specify which solid angle bins to
-              include in the analysis: 0 = no, 1 = yes.
-              Default = reform(ABINS#DBINS,96).  Takes precedence over
-              ABINS and OBINS.
-
-   MASK_SC:   Mask the spacecraft blockage.  This is in addition to any
-              masking specified by the above three keywords.
-              Default = 1 (yes).
-
-   PANS:      Named varible to hold the tplot panels created.
 
    SETVAL:    Make no attempt to estimate the potential, just set it to
               this value.  Units = volts.  No default.
-
-   BADVAL:    If the algorithm cannot estimate the potential, then set it
-              to this value.  Units = volts.  Default = NaN.
-
-   ANGCORR:   Angular distribution correction based on interpolated 3d data
-              to emphasize the returning photoelectrons and improve 
-              the edge detection (added by Yuki Harada).
 
    COMPOSITE: The composite potential (SWE/LPW, SWE+, SWE-, STA-) has  
               been pre-calculated with this routine and stored in save 
               files.  Set this keyword to simply restore this file and
               save lots of time.  (Works for multiple days and can span
-              UT day boundaries.)  Soon to be the default.
+              UT day boundaries.)  This is the default.  Set this keyword
+              to zero to force a recalculation.
 
    LPWPOT:    Use pre-calculated LPW/SWE derived potentials.  There is
               a ~2-week delay in the production of this dataset.  You can
               set this keyword to the full path and filename of a tplot 
               save/restore file, if one exists.  Otherwise, this routine 
               will determine the potential from SWEA alone.
-
-   LPW_L2:    Load the LPW L2 potentials for comparison.
-
-   MIN_LPW_POT : Minumum valid LPW potential.
 
    POSPOT:    Calculate positive potentials with mvn_swe_sc_pot.
               Default = 1 (yes).
@@ -723,28 +676,33 @@ KEYWORDS:
               especially useful in the high-altitude shadow region.
               Assumes that you have calculated STATIC potentials.
               (See mvn_sta_scpot_load.pro)
-
-   MAXALT:    Maximum altitude for replacing SWE/LPW and SWE+ potentials
-              with SWE- or STA- potentials.
-
-   MAXDT:     Maximum time gap to interpolate across.  Default = 64 sec.
               
    SHAPOT:    Calculate negative potentials with 'mvn_swe_sc_negpot_
               twodir_burst'.  Two estimates are obtained, one each for
               the parallel and anti-parallel electron populations.  If
               both directions yield a potential, then the one closer to 
               zero is chosen for merging with other methods.
-              Requires keyword NEGPOT to be set. 
+              Requires keyword NEGPOT to be set.
+
+   PANS:      Named varible to hold the tplot panels created.
+
+   FORCE:     If the composite potential is not available, then automatically
+              try to calculate the composite potential from SWEA, STATIC, and
+              LPW data.  Automatically set when COMPOSITE = 0.
+
+   SUCCESS:   Returns exit status.
+
+   UPDATE:    Updates SWEA and STATIC potentials with the composite potential.
 
 OUTPUTS:
-   None - Result is stored in the SPEC data structure, returned via the 
-          POTENTIAL keyword, and stored as TPLOT variables.  Two TPLOT
-          variables are created: one with a single merged potential and
-          one showing the five unmerged methods in one panel.
+   None - Result is stored in a common block, returned via the POTENTIAL
+          keyword, and stored as TPLOT variables.  Two TPLOT variables
+          are created: one with a single merged potential and one showing
+          the five unmerged methods in one panel.
 
- $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-10-02 17:57:06 -0700 (Mon, 02 Oct 2017) $
- $LastChangedRevision: 24098 $
+ $LastChangedBy: xussui $
+ $LastChangedDate: 2017-12-01 14:42:24 -0800 (Fri, 01 Dec 2017) $
+ $LastChangedRevision: 24388 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot.pro $
 
 </PRE><P>
@@ -762,24 +720,25 @@ PURPOSE:
   Stores the spacecraft potential information.  Place this near the top
   of any routine that needs access to the common block.
 
-     Espan        : energy search range for swe+ method
-     thresh       : minimum value of d(logF)/d(logE) for swe+ method
-     dEmax        : maximum width of d(logF)/d(logE) for swe+ method
-     minflux      : minimum 40-eV energy flux for swe+ method
-     badval       : fill value for potential when no method works
-     ee           : 4x oversampled energy array
-     dfs          : 4x oversampled d(logF)/d(logE)
-     d2fs         : 4x oversampled d2(logF)/d(logE)2
-     maxalt       : maximum altitude for replacing SWE/LPW and SWE+ potentials
-                    with SWE- or STA- potentials.
-     min_lpw_pot  : minimum valid LPW potential
-     maxdt        : maximum time gap to interpolate over
-     min_sta_pot  : minimum valid STA potential for altitudes below sta_peri_alt
-     max_sta_alt  : maximum altitude for limiting range of STA potentials
+     mvn_sc_pot      : spacecraft potential structure
+     mvn_pot_struct  : potential structure template
+
+     Espan           : energy search range for swe+ method
+     thresh          : minimum value of d(logF)/d(logE) for swe+ method
+     dEmax           : maximum width of d(logF)/d(logE) for swe+ method
+     minflux         : minimum 40-eV energy flux for swe+ method
+     badval          : fill value for potential when no method works
+     ee              : 4x oversampled energy array
+     dfs             : 4x oversampled d(logF)/d(logE)
+     d2fs            : 4x oversampled d2(logF)/d(logE)2
+     min_lpw_pot     : minimum valid LPW potential
+     maxdt           : maximum time gap to interpolate over
+     min_sta_pot     : minimum valid STA potential for altitudes below sta_peri_alt
+     max_sta_alt     : maximum altitude for limiting range of STA potentials
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-10-10 15:38:44 -0700 (Tue, 10 Oct 2017) $
- $LastChangedRevision: 24141 $
+ $LastChangedDate: 2017-11-30 21:10:58 -0800 (Thu, 30 Nov 2017) $
+ $LastChangedRevision: 24365 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot_com.pro $
 
 CREATED BY:	David L. Mitchell
@@ -814,9 +773,9 @@ KEYWORDS:
                       end_day and ndays are not specified, ndays=7
 
 
- $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-09-14 11:32:26 -0700 (Thu, 14 Sep 2017) $
- $LastChangedRevision: 23977 $
+ $LastChangedBy: xussui $
+ $LastChangedDate: 2017-12-01 11:40:54 -0800 (Fri, 01 Dec 2017) $
+ $LastChangedRevision: 24383 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot_comp_dailysave.pro $
 
 CREATED BY:    Shaosui Xu, 08/01/2017
@@ -889,8 +848,7 @@ KEYWORDS:
 
    MIN_STA_POT : Minumum valid STA potential.
 
-   MAXALT:    Maximum altitude for replacing SWE/LPW and SWE+ potentials
-              with SWE- or STA- potentials.
+   MAX_STA_ALT : Maximum altitude for limiting range of STA potentials.
 
    MAXDT:     Maximum time gap to interpolate across.  Default = 64 sec.
 
@@ -899,8 +857,8 @@ KEYWORDS:
 OUTPUTS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-10-13 10:45:32 -0700 (Fri, 13 Oct 2017) $
- $LastChangedRevision: 24152 $
+ $LastChangedDate: 2017-11-30 21:10:28 -0800 (Thu, 30 Nov 2017) $
+ $LastChangedRevision: 24364 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot_defaults.pro $
 
 </PRE><P>

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov 30 18:16:13 2017.<P>
+<STRONG>Last modified: </STRONG>Fri Dec  1 18:16:14 2017.<P>
  
 <HR>
  
@@ -51,6 +51,7 @@ This page was created by the IDL library routine
 <br>Loads LPW data and creates tplot variables using LPW code.
 <LI><A HREF="#MVN_SWE_ADDMAG">MVN_SWE_ADDMAG</A>
 <br>Loads MAG data from L2 or L1 save/restore files, rotates the MAG vectors to
+<LI><A HREF="#MVN_SWE_ADDPOT">MVN_SWE_ADDPOT</A>
 <LI><A HREF="#MVN_SWE_ADDSEP">MVN_SWE_ADDSEP</A>
 <br>Loads SEP data, sums over the look directions, and stores electron and ion
 <LI><A HREF="#MVN_SWE_ADDSTA">MVN_SWE_ADDSTA</A>
@@ -886,7 +887,7 @@ CREATED BY:    David L. Mitchell  03/18/14
 <A NAME="MVN_SWE_ADDMAG">
 <H2>MVN_SWE_ADDMAG</H2></A>
 <A HREF="#MVN_SWE_ADDLPW">[Previous Routine]</A>
-<A HREF="#MVN_SWE_ADDSEP">[Next Routine]</A>
+<A HREF="#MVN_SWE_ADDPOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mvn_swe_addmag
@@ -924,9 +925,38 @@ CREATED BY:    David L. Mitchell  03/18/14
 <STRONG>(See <A href="swea/mvn_swe_addmag.pro">projects/maven/swea/mvn_swe_addmag.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SWE_ADDPOT">
+<H2>MVN_SWE_ADDPOT</H2></A>
+<A HREF="#MVN_SWE_ADDMAG">[Previous Routine]</A>
+<A HREF="#MVN_SWE_ADDSEP">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:       mvn_swe_addpot
+
+PURPOSE:         Overwrites SWEA spacecraft potentials with the
+                 composite potential from mvn_scpot.
+
+INPUTS:
+      none:      All information obtained from and written to common
+                 blocks and tplot variables.
+
+KEYWORDS:
+
+CREATED BY:      D. L. Mitchell
+
+LAST MODIFICATION:
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2017-11-30 21:23:29 -0800 (Thu, 30 Nov 2017) $
+ $LastChangedRevision: 24376 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_addpot.pro $
+
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_swe_addpot.pro">projects/maven/swea/mvn_swe_addpot.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SWE_ADDSEP">
 <H2>MVN_SWE_ADDSEP</H2></A>
-<A HREF="#MVN_SWE_ADDMAG">[Previous Routine]</A>
+<A HREF="#MVN_SWE_ADDPOT">[Previous Routine]</A>
 <A HREF="#MVN_SWE_ADDSTA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1452,9 +1482,9 @@ KEYWORDS:
 OUTPUTS:
    d2f_away,d2f_twd
 
- $LastChangedBy: jwl $
- $LastChangedDate: 2017-01-03 22:08:52 -0800 (Tue, 03 Jan 2017) $
- $LastChangedRevision: 22489 $
+ $LastChangedBy: xussui_lap $
+ $LastChangedDate: 2017-12-01 11:52:37 -0800 (Fri, 01 Dec 2017) $
+ $LastChangedRevision: 24384 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_d2f_heii.pro $
 
 CREATED BY:    Shaosui Xu  01-03-17
@@ -3706,9 +3736,9 @@ KEYWORDS:
 
 OUTPUTS:
 
- $LastChangedBy: xussui_lap $
- $LastChangedDate: 2017-10-10 09:35:44 -0700 (Tue, 10 Oct 2017) $
- $LastChangedRevision: 24138 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2017-11-30 21:21:50 -0800 (Thu, 30 Nov 2017) $
+ $LastChangedRevision: 24374 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sciplot.pro $
 
 </PRE><P>
@@ -3800,9 +3830,9 @@ OUTPUTS:
    None - Potential results are stored as a TPLOT variable 'negpot_pad'. 
           Four additional TPLOT variables are created for diagnostics. 
 
- $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-10-02 16:46:52 -0700 (Mon, 02 Oct 2017) $
- $LastChangedRevision: 24090 $
+ $LastChangedBy: xussui $
+ $LastChangedDate: 2017-12-01 12:33:58 -0800 (Fri, 01 Dec 2017) $
+ $LastChangedRevision: 24385 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sc_negpot_twodir_burst.pro $
 
 CREATED BY:    Shaosui Xu  01-03-2017
@@ -3934,8 +3964,8 @@ OUTPUTS:
           keyword, and stored as a TPLOT variable.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-10-02 16:47:03 -0700 (Mon, 02 Oct 2017) $
- $LastChangedRevision: 24091 $
+ $LastChangedDate: 2017-11-30 21:22:26 -0800 (Thu, 30 Nov 2017) $
+ $LastChangedRevision: 24375 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sc_pot.pro $
 
 </PRE><P>
@@ -4146,9 +4176,9 @@ OUTPUTS:
 
    Tplot variable &quot;EFlux_ratio&quot;: store the flux ratio for two directions
 
- $LastChangedBy: xussui $
- $LastChangedDate: 2017-09-12 10:39:13 -0700 (Tue, 12 Sep 2017) $
- $LastChangedRevision: 23951 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2017-11-30 21:19:45 -0800 (Thu, 30 Nov 2017) $
+ $LastChangedRevision: 24373 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_shape_par_pad_l2.pro $
 
 CREATED BY:    Shaosui Xu  12-08-16
@@ -4566,8 +4596,8 @@ KEYWORDS:
        BURST:        Plot a color bar showing PAD burst coverage.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-09-07 17:06:46 -0700 (Thu, 07 Sep 2017) $
- $LastChangedRevision: 23919 $
+ $LastChangedDate: 2017-11-30 21:19:03 -0800 (Thu, 30 Nov 2017) $
+ $LastChangedRevision: 24372 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12

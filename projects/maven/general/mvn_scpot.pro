@@ -44,7 +44,7 @@
 ;	David L. Mitchell
 ;
 ;CALLING SEQUENCE: 
-;	mvn_scpot, potential=dat
+;	mvn_scpot
 ;
 ;INPUTS: 
 ;   none - energy spectra are obtained from SWEA common block.
@@ -59,70 +59,23 @@
 ;              The methods are: -1 (invalid), 0 (manually set), 
 ;              1 (SWE/LPW), 2 (SWE+), 3 (SWE-), 4 (STA-), 5 (SWEPAD).
 ;
-;   ERANGE:    Energy range over which to search for the potential
-;              with the SWE+ method.  Default = [3.,30.]
-;
-;   THRESH:    Minimum value of d(logF)/d(logE) for identifying a 
-;              discontinuity in the electron energy spectrum for the
-;              SWE+ method.  Default = 0.05.
-;
 ;              The optimal value depends on the plasma environment.
-;
-;   MINFLUX:   Minimum peak energy flux for the SWE+ method.
-;              Default = 1e6.
-;
-;   DEMAX:     The largest allowable energy width of the spacecraft 
-;              potential feature.  This excludes features not related
-;              to the spacecraft potential at higher energies (often 
-;              observed downstream of the shock).  Default = 6 eV.
-;
-;   DDD:       Use 3D data to calculate potential.  Allows bin masking,
-;              but lower cadence and typically lower energy resolution.
-;
-;   ABINS:     When using 3D spectra, specify which anode bins to 
-;              include in the analysis: 0 = no, 1 = yes.
-;              Default = replicate(1,16)
-;
-;   DBINS:     When using 3D spectra, specify which deflection bins to
-;              include in the analysis: 0 = no, 1 = yes.
-;              Default = replicate(1,6)
-;
-;   OBINS:     When using 3D spectra, specify which solid angle bins to
-;              include in the analysis: 0 = no, 1 = yes.
-;              Default = reform(ABINS#DBINS,96).  Takes precedence over
-;              ABINS and OBINS.
-;
-;   MASK_SC:   Mask the spacecraft blockage.  This is in addition to any
-;              masking specified by the above three keywords.
-;              Default = 1 (yes).
-;
-;   PANS:      Named varible to hold the tplot panels created.
 ;
 ;   SETVAL:    Make no attempt to estimate the potential, just set it to
 ;              this value.  Units = volts.  No default.
-;
-;   BADVAL:    If the algorithm cannot estimate the potential, then set it
-;              to this value.  Units = volts.  Default = NaN.
-;
-;   ANGCORR:   Angular distribution correction based on interpolated 3d data
-;              to emphasize the returning photoelectrons and improve 
-;              the edge detection (added by Yuki Harada).
 ;
 ;   COMPOSITE: The composite potential (SWE/LPW, SWE+, SWE-, STA-) has  
 ;              been pre-calculated with this routine and stored in save 
 ;              files.  Set this keyword to simply restore this file and
 ;              save lots of time.  (Works for multiple days and can span
-;              UT day boundaries.)  Soon to be the default.
+;              UT day boundaries.)  This is the default.  Set this keyword
+;              to zero to force a recalculation.
 ;
 ;   LPWPOT:    Use pre-calculated LPW/SWE derived potentials.  There is
 ;              a ~2-week delay in the production of this dataset.  You can
 ;              set this keyword to the full path and filename of a tplot 
 ;              save/restore file, if one exists.  Otherwise, this routine 
 ;              will determine the potential from SWEA alone.
-;
-;   LPW_L2:    Load the LPW L2 potentials for comparison.
-;
-;   MIN_LPW_POT : Minumum valid LPW potential.
 ;
 ;   POSPOT:    Calculate positive potentials with mvn_swe_sc_pot.
 ;              Default = 1 (yes).
@@ -134,161 +87,142 @@
 ;              especially useful in the high-altitude shadow region.
 ;              Assumes that you have calculated STATIC potentials.
 ;              (See mvn_sta_scpot_load.pro)
-;
-;   MAXALT:    Maximum altitude for replacing SWE/LPW and SWE+ potentials
-;              with SWE- or STA- potentials.
-;
-;   MAXDT:     Maximum time gap to interpolate across.  Default = 64 sec.
 ;              
 ;   SHAPOT:    Calculate negative potentials with 'mvn_swe_sc_negpot_
 ;              twodir_burst'.  Two estimates are obtained, one each for
 ;              the parallel and anti-parallel electron populations.  If
 ;              both directions yield a potential, then the one closer to 
 ;              zero is chosen for merging with other methods.
-;              Requires keyword NEGPOT to be set. 
+;              Requires keyword NEGPOT to be set.
+;
+;   PANS:      Named varible to hold the tplot panels created.
+;
+;   FORCE:     If the composite potential is not available, then automatically
+;              try to calculate the composite potential from SWEA, STATIC, and
+;              LPW data.  Automatically set when COMPOSITE = 0.
+;
+;   SUCCESS:   Returns exit status.
+;
+;   UPDATE:    Updates SWEA and STATIC potentials with the composite potential.
 ;
 ;OUTPUTS:
-;   None - Result is stored in the SPEC data structure, returned via the 
-;          POTENTIAL keyword, and stored as TPLOT variables.  Two TPLOT
-;          variables are created: one with a single merged potential and
-;          one showing the five unmerged methods in one panel.
+;   None - Result is stored in a common block, returned via the POTENTIAL
+;          keyword, and stored as TPLOT variables.  Two TPLOT variables
+;          are created: one with a single merged potential and one showing
+;          the five unmerged methods in one panel.
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-02 17:57:06 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24098 $
+; $LastChangedBy: xussui $
+; $LastChangedDate: 2017-12-01 14:42:24 -0800 (Fri, 01 Dec 2017) $
+; $LastChangedRevision: 24388 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot.pro $
 ;
 ;-
 
-pro mvn_scpot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
-               pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins2, $
-               mask_sc=mask_sc, setval=setval, badval=badval2, $
-               angcorr=angcorr, minflux=minflux2, pospot=pospot, $
-               negpot=negpot, stapot=stapot, lpwpot=lpwpot, $
-               shapot=shapot, composite=composite, maxdt=maxdt2, $
-               maxalt=maxalt2, min_lpw_pot=min_lpw_pot2
+pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
+               stapot=stapot, lpwpot=lpwpot, shapot=shapot, composite=composite, $
+               pans=pans, force=force, success=success, update=update
 
   compile_opt idl2
-  
+
   @mvn_swe_com
   @mvn_scpot_com
 
+  pot = 0
+  success = 0
+  NaN = !values.f_nan
+
   if (size(Espan,/type) eq 0) then mvn_scpot_defaults
-
-; Override defaults by keyword.  Affects all routines that use mvn_scpot_com.
-
-  if (n_elements(erange2)  gt 1) then Espan = float(minmax(erange2))
-  if (size(thresh2,/type)  gt 0) then thresh = float(thresh2)
-  if (size(dEmax2,/type)   gt 0) then dEmax = float(dEmax2)
-  if (size(minflux2,/type) gt 0) then minflux = float(minflux2)
-  if (size(badval2,/type)  gt 0) then badval = float(badval2)
-  if (size(maxalt2,/type)  gt 0) then maxalt = float(maxalt2)
-  if (size(min_lpw_pot2,/type) gt 0) then min_lpw_pot = float(min_lpw_pot2)
+  tmin = min(timerange(), max=tmax)
 
 ; Set processing flags
 
-  if (size(lpwpot,/type) eq 0) then lpwpot = 1
-  if (size(pospot,/type) eq 0) then pospot = 1
-  if (size(negpot,/type) eq 0) then negpot = 1
-  if (size(stapot,/type) eq 0) then stapot = 1
-  shapot = keyword_set(shapot)
+  if (size(composite,/type) eq 0) then composite = 1 else composite = keyword_set(composite)
+  if (size(lpwpot,/type) eq 0) then lpwpot = 1 else lpwpot = keyword_set(lpwpot)
+  if (size(pospot,/type) eq 0) then pospot = 1 else pospot = keyword_set(pospot)
+  if (size(negpot,/type) eq 0) then negpot = 1 else negpot = keyword_set(negpot)
+  if (size(stapot,/type) eq 0) then stapot = 1 else stapot = keyword_set(stapot)
+  if (size(shapot,/type) eq 0) then shapot = 1 else shapot = keyword_set(shapot)
   if (shapot) then negpot = 1  ; required for pot_in_shadow to work
-
-; Configure the 3D FOV mask
-
-  do3d = keyword_set(ddd)
-
-  if ((size(obins,/type) eq 0) or keyword_set(abins) or keyword_set(dbins) or $
-      keyword_set(obins2) or (size(mask_sc,/type) ne 0)) then begin
-    if (n_elements(abins)  ne 16) then abins = replicate(1B, 16)
-    if (n_elements(dbins)  ne  6) then dbins = replicate(1B, 6)
-    if (n_elements(obins2) ne 96) then begin
-      obins = replicate(1B, 96, 2)
-      obins[*,0] = reform(abins # dbins, 96)
-      obins[*,1] = obins[*,0]
-    endif else obins = byte(obins2 # [1B,1B])
-    if (size(mask_sc,/type) eq 0) then mask_sc = 1
-    if keyword_set(mask_sc) then obins = swe_sc_mask * obins
-  endif
-
-; Make sure electron energy spectra are available
-
-  maxdt = 64  ; Define data gap as dt > maxdt seconds
-
-  if (size(mvn_swe_engy,/type) ne 8) then begin
-    print,"No energy data loaded.  Use mvn_swe_load_l0 first."
-    phi = 0
-    return
-  endif
-  
-  npts = n_elements(mvn_swe_engy)
+  noguff = keyword_set(force) or ~keyword_set(composite)
 
 ; Set the potential manually
 
   if (size(setval,/type) ne 0) then begin
+    if (size(mvn_sc_pot,/type) ne 8) then begin
+      mvn_scpot_restore, result=comp, success=ok
+      if (ok) then begin
+        mvn_sc_pot = replicate(mvn_pot_struct, n_elements(comp.time))
+        mvn_sc_pot.time = comp.time
+      endif else begin
+        dt = 2D
+        npts = floor((tmax - tmin)/dt) + 1L
+        mvn_sc_pot = replicate(mvn_pot_struct, npts)
+        mvn_sc_pot.time = tmin + dt*dindgen(npts)
+      endelse
+    endif
     print,"Setting the s/c potential to: ",setval
-    mvn_sc_pot = replicate(mvn_pot_struct, npts)
-    mvn_sc_pot.time = mvn_swe_engy.time
     mvn_sc_pot.potential = setval
     mvn_sc_pot.method = 0  ; potential set manually
-
-    pot = mvn_sc_pot              ; set return keyword value
-    mvn_swe_engy.sc_pot = setval  ; fill in SWEA SPEC potentials
-    swe_sc_pot = mvn_sc_pot       ; fill in SWEA potential common block
 
     phi = {x:mvn_sc_pot.time, y:mvn_sc_pot.potential}
     store_data,'mvn_sc_pot',data=phi
 
-    str_element,phi,'thick',2,/add
-    str_element,phi,'color',0,/add
-    str_element,phi,'psym',3,/add
-    store_data,'swe_pot_overlay',data=phi
-    store_data,'swe_a4_pot',data=['swe_a4','swe_pot_overlay']
-    ylim,'swe_a4_pot',3,5000,1
+    pot = mvn_sc_pot
+    success = 1
     return
   endif
-  
-; Clear any previous potential calculations
 
-  tmin = min(timerange(), max=tmax)
-  badphi = !values.f_nan  ; bad value that's guaranteed to be a NaN
+; Get pre-calculated composite potentials (this is the default)
 
-  mvn_sc_pot = replicate(mvn_pot_struct, npts)
-  mvn_sc_pot.time = mvn_swe_engy.time
-  mvn_sc_pot.potential = badphi
-  mvn_sc_pot.method = -1
-
-  mvn_swe_engy.sc_pot = badphi
-
-; Get pre-calculated, pre-prioritized composite potentials
-
-  if keyword_set(composite) then begin
+  if (composite) then begin
     mvn_scpot_restore, result=comp, /tplot, success=ok
     if (ok) then begin
       print,"Using SWE/LPW/STA composite potential."
       indx = where(comp.method eq -1, count)
-      if (count gt 0L) then comp[indx].potential = badphi
+      if (count gt 0L) then comp[indx].potential = NaN
 
-      phi = interpol(comp.potential, comp.time, mvn_sc_pot.time)
-      indx = nn(comp.time, mvn_sc_pot.time)
-      method = comp[indx].method
-      gap = where(abs(comp[indx].time - mvn_sc_pot.time) gt maxdt, count)
-      if (count gt 0L) then begin
-        phi[gap] = badphi
-        method[gap] = -1
-      endif
+      mvn_sc_pot = replicate(mvn_pot_struct, n_elements(comp.time))
+      mvn_sc_pot.time = comp.time
+      mvn_sc_pot.potential = comp.potential
+      mvn_sc_pot.method = comp.method
 
-      mvn_sc_pot.potential = phi
-      mvn_sc_pot.method = method  ; various methods
-
-      lpwpot = 0
-      pospot = 0
-      negpot = 0
-      stapot = 0
-      shapot = 0
-
+      pot = mvn_sc_pot
+      success = 1
+      return
     endif else print,"SWE/LPW/STA composite potential not available."
   endif
+
+  if (not noguff) then begin
+    print,''
+    yn = 'N'
+    read, yn, prompt='Calculate potential now (y|n)? '
+    if (strupcase(yn) ne 'Y') then return
+  endif
+
+; If the routine has not returned by this point, then it has to calculate the
+; potential from the original data sources (SWEA, STATIC, LPW).  Thus, we need
+; to check that the necessary data have been loaded.
+
+; Make sure SWEA SPEC data are available
+
+  if (size(mvn_swe_engy,/type) ne 8) then begin
+    mvn_swe_load_l2, /spec
+    if (size(mvn_swe_engy,/type) ne 8) then begin
+      print,"Cannot find SWEA data."
+      pot = 0
+      success = 0
+      return
+    endif
+  endif
+
+; Initialize the potential structure
+
+  time = mvn_swe_engy.time
+  npts = n_elements(time)
+  mvn_sc_pot = replicate(mvn_pot_struct, npts)
+  mvn_sc_pot.time = mvn_swe_engy.time
+  mvn_sc_pot.potential = NaN
+  mvn_sc_pot.method = -1
 
 ; Get the EUV shadow location
 
@@ -299,6 +233,8 @@ pro mvn_scpot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
   endif
   if (i eq 0) then begin
     print,"Cannot get orbit information!  Problem with maven_orbit_tplot."
+    pot = 0
+    success = 0
     return
   endif
   str_element, wake, 'shadow', value=shadow, success=ok
@@ -309,17 +245,19 @@ pro mvn_scpot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
   endif
   if (i eq 0) then begin
     print,"Cannot get orbit information!  Problem with maven_orbit_tplot."
+    pot = 0
+    success = 0
     return
   endif
-  wake = interpol(wake.y, wake.x, mvn_sc_pot.time)
+  wake = interp(wake.y, wake.x, time, /no_extrap)
   indx = where(finite(wake), count)
-  wake = replicate(0B, n_elements(mvn_sc_pot.time))
+  wake = replicate(0B, npts)
   if (count gt 0L) then wake[indx] = 1B
 
 ; Get the altitude
 
   get_data, 'alt', data=alt
-  alt = spline(alt.x, alt.y, mvn_sc_pot.time)
+  alt = spline(alt.x, alt.y, time)
 
 ; First priority: Get pre-calculated potentials from SWEA-LPW analysis.
 
@@ -337,16 +275,10 @@ pro mvn_scpot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
 ;       Don't use potentials more negative than min_lpw_pot
 
         igud = where(lpwphi.y gt min_lpw_pot, ngud, complement=ibad, ncomplement=nbad)
-        if (nbad gt 0L) then lpwphi.y[ibad] = badphi
+        if (nbad gt 0L) then lpwphi.y[ibad] = NaN
 
         if (ngud gt 0L) then begin
-          xgud = lpwphi.x[igud]
-
-          phi = interpol(lpwphi.y, lpwphi.x, mvn_sc_pot.time)  ; interpolate with NaNs
-
-          indx = nn(xgud, mvn_sc_pot.time)
-          gap = where(abs(xgud[indx] - mvn_sc_pot.time) gt maxdt, count)
-          if (count gt 0L) then phi[gap] = badphi   ; valid estimates too far away
+          phi = interp(lpwphi.y, lpwphi.x, time, interp_thresh=maxdt, /no_extrap)
 
           indx = where(finite(phi) and (mvn_sc_pot.method lt 1), count)
           if (count gt 0L) then begin
@@ -363,6 +295,15 @@ pro mvn_scpot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
   
   if (pospot) then begin
     mvn_swe_sc_pot, potential=phi
+
+;   Don't trust SWE+ potentials in the EUV shadow
+
+    indx = where(wake, count)
+    if (count gt 0L) then begin
+      phi[indx].potential = NaN
+      phi[indx].method = -1
+    endif
+
     indx = where((mvn_sc_pot.method lt 1) and (phi.method eq 2), count)
     if (count gt 0) then mvn_sc_pot[indx] = phi[indx]
   endif
@@ -374,8 +315,6 @@ pro mvn_scpot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
     mvn_swe_sc_negpot, potential=phi
     indx = where((mvn_sc_pot.method lt 1) and (phi.method eq 3), count)
     if (count gt 0) then mvn_sc_pot[indx] = phi[indx]
-;   indx = where((alt le maxalt) and (phi.method eq 3) and (mvn_sc_pot.potential gt 0.), count)
-;   if (count gt 0) then mvn_sc_pot[indx] = phi[indx]
 
     options,'neg_pot','color',6
   endif        
@@ -401,37 +340,33 @@ pro mvn_scpot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
     if (i gt 0) then begin
       options,'mvn_sta_c6_scpot','color',4
 
-;     Only use STA potentials between min_sta_pot and zero.
+;     Get all "good" potential estimates.  Replace values >= 0 with NaNs.
 
-      igud = where((stapot.y lt 0.) and (stapot.y gt min_sta_pot), ngud, comp=ibad, ncomp=nbad)
-      if (nbad gt 0L) then stapot.y[ibad] = badphi
+      igud = where(stapot.y lt 0., ngud, comp=ibad, ncomp=nbad)
+      if (nbad gt 0L) then stapot.y[ibad] = NaN
       msg = string("STA- : ",ngud," valid potentials from ",ngud+nbad," spectra",format='(a,i8,a,i8,a)')
       print, strcompress(strtrim(msg,2))
 
       if (ngud gt 0L) then begin
-        xgud = stapot.x[igud]
 
-        phi = interpol(stapot.y, stapot.x, mvn_sc_pot.time)  ; interpolate with NaNs
-        indx = nn(xgud, mvn_sc_pot.time)
-        gap = where(abs(xgud[indx] - mvn_sc_pot.time) gt maxdt, count)
-        if (count gt 0L) then phi[gap] = badphi   ; valid estimates too far away
+        phi = interp(stapot.y, stapot.x, time, interp_thresh=maxdt, /no_extrap)
 
 ;       Trust all negative values within the EUV shadow and above max_sta_alt
 
         indx = where(finite(phi) and wake and (alt gt max_sta_alt), count)
         if (count gt 0L) then begin
           mvn_sc_pot[indx].potential = phi[indx]
-          mvn_sc_pot[indx].method = 4  ; sta_pot method
+          mvn_sc_pot[indx].method = 4
         endif
 
 ;       Fill in missing values.  If more than one method [LPW, SWE, STA] provides a
-;       value, choose one that closer to zero or positive.
+;       value, choose one that is greater (less negative or more positive).
 
         indx = where((phi gt min_sta_pot) and $
                      ((phi gt mvn_sc_pot.potential) or (mvn_sc_pot.method lt 1)), count)
         if (count gt 0L) then begin
           mvn_sc_pot[indx].potential = phi[indx]
-          mvn_sc_pot[indx].method = 4  ; sta_pot method
+          mvn_sc_pot[indx].method = 4
         endif
 
       endif else print, "No valid STATIC potentials."
@@ -445,11 +380,13 @@ pro mvn_scpot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
 
     mvn_swe_sc_negpot_twodir_burst, potential=phi, /shadow
 
-    indx = where((phi.method eq 5) and (mvn_sc_pot.method lt 1), count)
-    if (count gt 0L) then begin
-      mvn_sc_pot[indx] = phi[indx]
-      mvn_swe_engy[indx].sc_pot = phi[indx].potential
-    endif             
+    if (size(phi,/type) eq 8) then begin
+       indx = where((phi.method eq 5) and (mvn_sc_pot.method lt 1), count)
+       if (count gt 0L) then begin
+          mvn_sc_pot[indx] = phi[indx]
+          mvn_swe_engy[indx].sc_pot = phi[indx].potential
+       endif             
+    endif
 
     options,'pot_inshdw','constant',!values.f_nan
     options,'pot_inshdw','color',1
@@ -466,33 +403,19 @@ pro mvn_scpot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
   endif
 
   pot = mvn_sc_pot
-  mvn_swe_engy.sc_pot = mvn_sc_pot.potential
-  swe_sc_pot = mvn_sc_pot
+  success = 1
 
-; Create the electron energy spectra overlay
+; Update the SWEA and STATIC potentials.
 
-  phi = {x:mvn_sc_pot.time, y:mvn_sc_pot.potential}
-  str_element,phi,'thick',2,/add
-  str_element,phi,'color',0,/add
-  str_element,phi,'psym',3,/add
-  store_data,'swe_pot_overlay',data=phi
-  store_data,'swe_a4_pot',data=['swe_a4','swe_pot_overlay']
-  ylim,'swe_a4_pot',3,5000,1
-
-  tplot_options, get=opt
-  str_element, opt, 'varnames', varnames, success=ok
-  if (ok) then begin
-    i = (where(varnames eq 'swe_a4'))[0]
-    if (i ne -1) then begin
-      varnames[i] = 'swe_a4_pot'
-      tplot, varnames
-    endif
+  if keyword_set(update) then begin
+    mvn_swe_addpot
+    mvn_sta_scpot_update
   endif
 
 ; Create a tplot variable for all potential methods (with overlap)
 
   potpans = ['mvn_swe_lpw_scpot_pol','swe_pos','neg_pot','mvn_sta_c6_scpot','pot_inshdw']
-  potlabs = ['swe/lpw', 'swe+', 'swe-', 'sta', 'swe-(sh)']
+  potlabs = ['lpw', 'swe+', 'swe-', 'sta', 'swe-(sh)']
   potcols = [!p.color, 2, 6, 4, 1]
 
   store_data,'swe_pot_lab',data={x:minmax(mvn_sc_pot.time), y:replicate(!values.f_nan,2,5)}
@@ -500,7 +423,7 @@ pro mvn_scpot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
   options,'swe_pot_lab','colors',reverse(potcols)
   options,'swe_pot_lab','labflag',1
 
-  potall = 'mvn_swe_pot_all'
+  potall = 'scpot_all'
   potpans = ['swe_pot_lab',potpans]
 
   store_data,potall,data=potpans

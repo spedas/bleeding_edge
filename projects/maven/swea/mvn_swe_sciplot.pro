@@ -70,9 +70,9 @@
 ;
 ;OUTPUTS:
 ;
-; $LastChangedBy: xussui_lap $
-; $LastChangedDate: 2017-10-10 09:35:44 -0700 (Tue, 10 Oct 2017) $
-; $LastChangedRevision: 24138 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2017-11-30 21:21:50 -0800 (Thu, 30 Nov 2017) $
+; $LastChangedRevision: 24374 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sciplot.pro $
 ;
 ;-
@@ -224,7 +224,7 @@ pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lp
   engy_pan = 'swe_a4'
   pot_pan = ''
   if keyword_set(sc_pot) then begin
-    mvn_scpot, sta=0
+    mvn_swe_addpot
     engy_pan = 'swe_a4_pot'
     options,engy_pan,'ytitle','SWEA elec!ceV'
     pot_pan = 'scpot_comp'

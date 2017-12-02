@@ -78,8 +78,8 @@
 ;          keyword, and stored as a TPLOT variable.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-02 16:47:03 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24091 $
+; $LastChangedDate: 2017-11-30 21:22:26 -0800 (Thu, 30 Nov 2017) $
+; $LastChangedRevision: 24375 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sc_pot.pro $
 ;
 ;-
@@ -285,27 +285,6 @@ pro mvn_swe_sc_pot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2,
   msg = string("SWE+ : ",ngud," valid potentials from ",npts," spectra",format='(a,i8,a,i8,a)')
   print, strcompress(strtrim(msg,2))
 
-; Update the common block
-
-  if (reset) then begin
-    swe_sc_pot = replicate(mvn_pot_struct, npts)
-    swe_sc_pot.potential = badphi
-    swe_sc_pot.method = -1
-    mvn_swe_engy.sc_pot = badphi
-  endif
-
-  if (dofill) then begin
-    swe_sc_pot[igud] = pot[igud]     ; replace only with valid SWE+ estimates
-    if (finite(badval)) then begin
-      indx = where(swe_sc_pot.method lt 1, count)
-      if (count gt 0L) then begin
-        swe_sc_pot[indx].potential = badval
-        swe_sc_pot[indx].method = 0  ; manually set to a finite value
-      endif
-    endif
-    mvn_swe_engy.sc_pot = swe_sc_pot.potential
-  endif
-
 ; Make tplot variables for the swe+ method
 
   phi = {x:pot.time, y:pot.potential}
@@ -313,28 +292,11 @@ pro mvn_swe_sc_pot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2,
   store_data,'swe_pos',data=phi
   options,'swe_pos','color',2
 
-  str_element,phi,'thick',2,/add
-  str_element,phi,'color',0,/add
-  str_element,phi,'psym',3,/add
-  store_data,'swe_pot_overlay',data=phi
-  store_data,'swe_a4_pot',data=['swe_a4','swe_pot_overlay']
-  ylim,'swe_a4_pot',3,5000,1
-
-  tplot_options, get=opt
-  str_element, opt, 'varnames', varnames, success=ok
-  if (ok) then begin
-    i = (where(varnames eq 'swe_a4'))[0]
-    if (i ne -1) then begin
-      varnames[i] = 'swe_a4_pot'
-      tplot, varnames
-    endif
-  endif
-
   store_data,'df',data={x:pot.time, y:transpose(dfs), v:transpose(ee)}
   options,'df','spec',1
   ylim,'df',min(Espan),max(Espan),0
   zlim,'df',0,0,0
-  
+
   store_data,'d2f',data={x:pot.time, y:transpose(d2fs), v:transpose(ee)}
   options,'d2f','spec',1
   ylim,'d2f',min(Espan),max(Espan),0

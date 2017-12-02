@@ -53,6 +53,9 @@
 ;
 ;       VSC:      Corrects for the spacecraft velocity.
 ;
+;      VOFF:      Offset velocity for slice.  Centers the slice in the dimension
+;                 orthogonal to the slice.
+;
 ;  SHOWDATA:      Plos all the data points over the contour (symsize = showdata).
 ;                 Pluses = Free sky bins, Crosses = Blocked bins.
 ;
@@ -95,8 +98,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-09-14 10:47:13 -0700 (Thu, 14 Sep 2017) $
-; $LastChangedRevision: 23976 $
+; $LastChangedDate: 2017-11-30 21:18:06 -0800 (Thu, 30 Nov 2017) $
+; $LastChangedRevision: 24371 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_slice2d_snap.pro $
 ;
 ;-
@@ -104,7 +107,7 @@ PRO mvn_sta_slice2d_snap, var1, var2, archive=archive, window=window, mso=mso, _
                           bline=bline, mass=mass, m_int=mq, mmin=mmin, mmax=mmax, apid=id, units=units, $
                           verbose=verbose, keepwin=keepwin, charsize=chsz, sum=sum, burst=burst, $
                           dopot=dopot, sc_pot=sc_pot, vsc=vsc, showdata=showdata, erange=erange, $
-                          v_esc=v_esc, datplot=datplot, diag=diag
+                          v_esc=v_esc, datplot=datplot, diag=diag, subtract=subtract
 
   IF STRUPCASE(STRMID(!version.os, 0, 3)) EQ 'WIN' THEN lbreak = STRING([13B, 10B]) ELSE lbreak = STRING(10B)
   tplot_options, get_option=topt
@@ -117,6 +120,7 @@ PRO mvn_sta_slice2d_snap, var1, var2, archive=archive, window=window, mso=mso, _
   IF SIZE(var2, /type) NE 0 THEN trange = time_double(var2)
   IF keyword_set(dopot) THEN dopot = 1 else dopot = 0
   IF SIZE(sc_pot, /type) NE 0 THEN forcepot = 1 else forcepot = 0
+  voff = subtract
 
   IF keyword_set(window) THEN wnum = window ELSE BEGIN
      IF !d.name NE 'PS' THEN BEGIN
@@ -272,11 +276,11 @@ PRO mvn_sta_slice2d_snap, var1, var2, archive=archive, window=window, mso=mso, _
            dummy = d
            dummy = conv_units(dummy, 'df')
            dummy.data = FLOAT(dummy.bins_sc)
-           status = EXECUTE("slice2d, dummy, _extra=_extra, vel=vel, /noplot, datplot=block, /verbose")
+           status = EXECUTE("slice2d, dummy, _extra=_extra, vel=vel, subtract=subtract, /noplot, datplot=block, /verbose")
            undefine, dummy
         ENDIF
 
-        status = EXECUTE("slice2d, d, _extra=_extra, sundir=bdir, vel=vel, datplot=datplot, units=units")
+        status = EXECUTE("slice2d, d, _extra=_extra, sundir=bdir, vel=vel, subtract=subtract, datplot=datplot, units=units")
         IF status EQ 1 THEN BEGIN
            if keyword_set(v_esc) then oplot, Vesc_x, Vesc_y, linestyle=2, thick=2
 
@@ -285,8 +289,24 @@ PRO mvn_sta_slice2d_snap, var1, var2, archive=archive, window=window, mso=mso, _
            dy = 0.04
            XYOUTS, x0, y0, mtit, charsize=!p.charsize, /normal
            y0 -= dy
-           vmsg = strtrim(string(vel,'(f11.2)'),2)
-           msg = 'V_bulk = [' + vmsg[0] + ', ' + vmsg[1] + ', ' + vmsg[2] + '] km/s'
+           vmsg = strtrim(string(sqrt(total(vel*vel)),vel,'(f11.2)'),2)
+           msg = 'V_bulk = ' + vmsg[0] + ' = [' + vmsg[1] + ', ' + vmsg[2] + ', ' + vmsg[3] + '] km/s'
+           XYOUTS, x0, y0, msg, charsize=!p.charsize, /normal
+           case voff of
+             2 : begin
+                   y0 -= dy
+                   xyouts, x0, y0, 'Slice through V_x = ' + vmsg[1], charsize=!p.charsize, /normal
+                 end
+             3 : begin
+                   y0 -= dy
+                   xyouts, x0, y0, 'Slice through V_y = ' + vmsg[2], charsize=!p.charsize, /normal
+                 end
+             4 : begin
+                   y0 -= dy
+                   xyouts, x0, y0, 'Slice through V_z = ' + vmsg[3], charsize=!p.charsize, /normal
+                 end
+             else : ; do nothing
+           endcase
            if keyword_set(diag) then begin
              y0 -= dy
              msg = string(-d.sc_pot,'("s/c pot = ",f5.1," V")')
@@ -295,7 +315,6 @@ PRO mvn_sta_slice2d_snap, var1, var2, archive=archive, window=window, mso=mso, _
              msg = string(sqrt(total(v_sc*v_sc)),'("s/c vel = ",f5.2," km/s")')
              XYOUTS, x0, y0, msg, charsize=!p.charsize, /normal
            endif
-           XYOUTS, x0, y0, msg, charsize=!p.charsize, /normal
            IF keyword_set(showdata) THEN BEGIN
               wb = WHERE(block.v LE 0., nwb, complement=wf, ncomplement=nwf)
               IF nwb GT 0 THEN OPLOT, block.x[wb], block.y[wb], psym=7, color=1, symsize=showdata ; blocked bins

@@ -13,8 +13,8 @@
 ;	TRANGE: time range to use
 ;
 ; $LastChangedBy: jhalekas $
-; $LastChangedDate: 2015-11-30 11:23:33 -0800 (Mon, 30 Nov 2015) $
-; $LastChangedRevision: 19496 $
+; $LastChangedDate: 2017-12-01 09:01:48 -0800 (Fri, 01 Dec 2017) $
+; $LastChangedRevision: 24379 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swia/mvn_swia_stacomp.pro $
 ;
 ;-
@@ -71,13 +71,16 @@ nts = n_elements(ts)
 ospec = sta.y
 o2spec = sta.y
 pspec = sta.y
+aspec = sta.y
 
 for i = 0,nts-1 do begin 
 	dat = mvn_sta_get_c6(ts(i))
 	dat = conv_units(dat,'eflux')
 	for j = 0,31 do begin 
-		w = where(dat.mass_arr(j,*) le 4)
+		w = where(dat.mass_arr(j,*) le 1.8)
 		pspec(i,j) = total(dat.data(j,w))
+		w = where(dat.mass_arr(j,*) gt 1.8 and dat.mass_arr(j,*) le 2.5)
+		aspec(i,j) = total(dat.data(j,w))
 		w = where(dat.mass_arr(j,*) gt 8 and dat.mass_arr(j,*) lt 24)
 		ospec(i,j) = total(dat.data(j,w))
 		w = where(dat.mass_arr(j,*) gt 24 and dat.mass_arr(j,*) lt 40)
@@ -86,6 +89,7 @@ for i = 0,nts-1 do begin
 endfor
 
 store_data,'pspec',data = {x:ts,y:pspec,v:en,ylog:1,spec:1,zlog:1,no_interp:1,yrange:[1,1e4]}
+store_data,'aspec',data = {x:ts,y:aspec,v:en,ylog:1,spec:1,zlog:1,no_interp:1,yrange:[1,1e4]}
 store_data,'ospec',data = {x:ts,y:ospec,v:en,ylog:1,spec:1,zlog:1,no_interp:1,yrange:[1,1e4]}
 store_data,'o2spec',data = {x:ts,y:o2spec,v:en,ylog:1,spec:1,zlog:1,no_interp:1,yrange:[1,1e4]}
 
