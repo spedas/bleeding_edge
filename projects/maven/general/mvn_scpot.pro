@@ -111,9 +111,9 @@
 ;          are created: one with a single merged potential and one showing
 ;          the five unmerged methods in one panel.
 ;
-; $LastChangedBy: xussui $
-; $LastChangedDate: 2017-12-01 14:42:24 -0800 (Fri, 01 Dec 2017) $
-; $LastChangedRevision: 24388 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2017-12-04 16:15:19 -0800 (Mon, 04 Dec 2017) $
+; $LastChangedRevision: 24395 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot.pro $
 ;
 ;-
@@ -167,6 +167,11 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
     phi = {x:mvn_sc_pot.time, y:mvn_sc_pot.potential}
     store_data,'mvn_sc_pot',data=phi
 
+    if keyword_set(update) then begin
+      mvn_swe_addpot
+      mvn_sta_scpot_update
+    endif
+
     pot = mvn_sc_pot
     success = 1
     return
@@ -185,6 +190,11 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
       mvn_sc_pot.time = comp.time
       mvn_sc_pot.potential = comp.potential
       mvn_sc_pot.method = comp.method
+
+      if keyword_set(update) then begin
+        mvn_swe_addpot
+        mvn_sta_scpot_update
+      endif
 
       pot = mvn_sc_pot
       success = 1

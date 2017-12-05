@@ -38,8 +38,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-10-04 12:23:26 -0700 (Wed, 04 Oct 2017) $
-;$LastChangedRevision: 24110 $
+;$LastChangedDate: 2017-12-04 12:37:24 -0800 (Mon, 04 Dec 2017) $
+;$LastChangedRevision: 24392 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_get_fpi_dist.pro $
 ;-
 
@@ -194,6 +194,7 @@ dtheta = replicate(11.25, dim)
 ; Create standard 3D distribution
 ;-----------------------------------------------------------------
 
+
 ;basic template structure that is compatible with spd_slice2d
 template = {  $
   project_name: 'MMS', $
@@ -201,7 +202,7 @@ template = {  $
   data_name: data_name, $
   ;units_name: 'f (s!U3!N/cm!U6!N)', $
   units_name: 'df_cm', $
-  units_procedure: '', $ ;placeholder
+  units_procedure: 'mms_part_conv_units', $ ;placeholder
   species:species,$
   valid: 1b, $
 
@@ -215,6 +216,8 @@ template = {  $
 
   energy: base_arr, $
   denergy: base_arr, $ ;placeholder
+  nenergy: dim[0], $ ; # of energies
+  nbins: dim[1]*dim[2], $ ; # thetas * # phis
   phi: base_arr, $
   dphi: dphi, $
   theta: theta, $
