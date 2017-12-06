@@ -8,8 +8,8 @@
 ; HISTORY: Created by Aaron W Breneman, Univ. Minnesota  4/10/2014
 ; VERSION:
 ;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2016-08-16 06:35:57 -0700 (Tue, 16 Aug 2016) $
-;   $LastChangedRevision: 21652 $
+;   $LastChangedDate: 2017-12-05 13:28:50 -0800 (Tue, 05 Dec 2017) $
+;   $LastChangedRevision: 24397 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_burst_fa_rotate_crib.pro $
 ;-
 
@@ -43,7 +43,7 @@ fileroot = '~/Desktop/code/Aaron/datafiles/'
 
 
 ;********************
-start_after_step = 4.
+start_after_step = 0.
 
 ;choose where down the line to load data. Every step builds on
 ;previous steps.
@@ -80,7 +80,11 @@ start_after_step = 4.
 ;fn = 'burst_crib_chorus_microburst_jan20_2016a'
 ;fn = 'burst_crib_chorus_aug16_2013a'
 ;fn = 'burst_crib_chorus_aug16_2013a_5-100Hz'
-fn = 'burst_crib_chorus_nov14_2012'
+;fn = 'burst_crib_chorus_nov14_2012'
+;fn = 'burst_crib_chorus_nov14_2012_farot_test'
+;fn = 'RBSPB_B2_20130214_'
+fn = 'RBSPB_B2_20121121_'
+;Nov 21, 2012 B2 both on rbspb
 
 mag_ql = 0                      ;load quicklook mag data? Usually only set for very recent dates
 ;where there's not yet any EMFISIS L3 data. Otherwise loads hires L3.
@@ -103,7 +107,7 @@ df = 50.                       ;Hz. The delta-freq size for Poynting flux spectr
 ;chunks). Value must be greater than 1 sec
 maxchunktime = 5.               ;min. N/A for B2
 bandpass_data = 'y'
-fmin = 5.                      ;Hz
+fmin = 2.                      ;Hz
 fmax = 6000.
 
 ;Variables for the Chaston crib sheet twavpol
@@ -129,7 +133,7 @@ endif
 
 if start_after_step eq 0 then begin
 
-  e56_zero = 0                 ;Set the UVW 56 component to zero (spin axis)?
+  e56_zero = 1                 ;Set the UVW 56 component to zero (spin axis)?
   ;Not used for Pflux calculation
 
   bt = '2'                     ;burst 1 or 2
@@ -138,15 +142,15 @@ if start_after_step eq 0 then begin
   ;   date = '2014-01-23'
   ;   date = '2012-11-01'
 
-  date = '2012-11-14'
+  date = '2012-11-21'
 
   timespan,date
   tr = timerange()
   ;Define timerange for loading of burst waveform
   ;(CURRENTLY NEED AT LEAST 1 SEC OF BURST FOR MGSE TRANSFORMATION TO WORK!!!)
 
-  t0 = date + '/04:12:00'
-  t1 = date + '/04:15:00'
+  t0 = date + '/08:00:00'
+  t1 = date + '/08:30:00'
 
 
   probe='b'
@@ -209,6 +213,7 @@ if start_after_step eq 0 then begin
 
     rbsp_gse2mgse,rbspx+'_emfisis_l3_hires_gse_Mag',reform(wsc_GSE_tmp),newname=rbspx+'_Mag_mgse'
   endif
+
 
   if KEYWORD_SET(mag_ql) then begin
     rbsp_load_emfisis,probe=probe,/quicklook
@@ -579,6 +584,7 @@ if start_after_step lt 3 then begin
       tplot,[varE_s2+'_tmp',varM_s2+'_tmp',rbspx+'_Mag_mgse_tmp'],trange=[t0z,t1z]
 
 
+
       ;Efield: Rotate each chunk to FA/minvar coord
       fa = rbsp_rotate_field_2_vec(varE_s2+'_tmp',rbspx+'_Mag_mgse_tmp')
       get_data,varE_s2+'_tmp_FA_minvar',data=dtmp
@@ -745,7 +751,7 @@ if start_after_step lt 3 then begin
     ;Efield: Rotate each chunk to RAF coord
     fa = rbsp_rotate_field_2_vec(varE_s2+'_tmp',$
     rbspx+'_Mag_mgse_tmp',$
-    vec2='rbsp'+sc+'_radial_vector_mgse_tmp')
+    vec2=rbspx+'_radial_vector_mgse_tmp')
 
     copy_data,rbspx+'_efw_eb'+bt+'_mgse_bp_tmp_twovec',rbspx+'_efw_eb'+bt+'_raf_bp_tmp'
     store_data,rbspx+'_efw_eb'+bt+'_mgse_bp_tmp_twovec',/delete
@@ -760,7 +766,7 @@ if start_after_step lt 3 then begin
     ;Bfield: Rotate each chunk to RAF coord
     fa = rbsp_rotate_field_2_vec(varM_s2+'_tmp',$
     rbspx+'_Mag_mgse_tmp',$
-    vec2='rbsp'+sc+'_radial_vector_mgse_tmp')
+    vec2=rbspx+'_radial_vector_mgse_tmp')
 
     copy_data,rbspx+'_efw_mscb'+bt+'_mgse_bp_tmp_twovec',rbspx+'_efw_mscb'+bt+'_raf_bp_tmp'
     store_data,rbspx+'_efw_mscb'+bt+'_mgse_bp_tmp_twovec',/delete
@@ -893,10 +899,28 @@ if start_after_step lt 4 then begin
       undefine,dtmp
 
 
+      ;-------------------------------------------
+      ;Make sure times are smoothly varying. If not, this can cause errors
+      ;in wavpol.pro (via twavpol.pro)
+      get_data,varM_s4+'_tmp',data=ddtmp
+      ttmp0 = ddtmp.x[0]
+      ttmp1 = ddtmp.x[n_elements(ddtmp.x)-1]
+
+      ;find average sample rate.
+      srtmp = rbsp_sample_rate(ddtmp.x,OUT_MED_AVG=medavg)
+      srtmp = medavg[0]
+      stepsztmp = 1./srtmp
+
+      smoothtimes = stepsztmp*dindgen(n_elements(ddtmp.x)) + ttmp0
+      ddtmp.x = smoothtimes
+      store_data,varM_s4+'_tmp_interp',data=ddtmp
+      ;-------------------------------------------
+
 
       ;Bfield: Run Chaston crib on each chunk
-      twavpol,varM_s4+'_tmp',prefix='tmp',nopfft=nopfft,steplength=steplength
+      twavpol_modified,varM_s4+'_tmp_interp',prefix='tmp',nopfft=nopfft,steplength=steplength
       ;; twavpol,varM_s4+'_tmp',prefix='tmp',nopfft=32896,steplength=8192
+
 
 
       ;Find the size of returned data
@@ -920,16 +944,16 @@ if start_after_step lt 4 then begin
       undefine,dtmp
 
       get_data,'tmp'+'_degpol',data=dtmp
-      degpolB = [degpolB,dtmp.y]
+      if is_struct(dtmp) then degpolB = [degpolB,dtmp.y]
       undefine,dtmp
       get_data,'tmp'+'_elliptict',data=dtmp
-      elliptictB = [elliptictB,dtmp.y]
+      if is_struct(dtmp) then elliptictB = [elliptictB,dtmp.y]
       undefine,dtmp
       get_data,'tmp'+'_helict',data=dtmp
-      helicitB = [helicitB,dtmp.y]
+      if is_struct(dtmp) then helicitB = [helicitB,dtmp.y]
       undefine,dtmp
       get_data,'tmp'+'_pspec3',data=dtmp
-      pspec3B = [pspec3B,dtmp.y]
+      if is_struct(dtmp) then pspec3B = [pspec3B,dtmp.y]
       if i eq 0 then freqvalsB = dtmp.v
       undefine,dtmp
 
@@ -938,7 +962,27 @@ if start_after_step lt 4 then begin
 
       ;Efield: Run Chaston crib on each chunk
       ;; twavpol,varE_s4+'_tmp',prefix='tmp',nopfft=32896,steplength=8192
-      twavpol,varE_s4+'_tmp',prefix='tmp',nopfft=16448,steplength=4096
+
+      ;-------------------------------------------
+      ;Make sure times are smoothly varying. If not, this can cause errors
+      ;in wavpol.pro (via twavpol.pro)
+      get_data,varE_s4+'_tmp',data=ddtmp
+      ttmp0 = ddtmp.x[0]
+      ttmp1 = ddtmp.x[n_elements(ddtmp.x)-1]
+
+      ;find average sample rate.
+      srtmp = rbsp_sample_rate(ddtmp.x,OUT_MED_AVG=medavg)
+      srtmp = medavg[0]
+      stepsztmp = 1./srtmp
+
+      smoothtimes = stepsztmp*dindgen(n_elements(ddtmp.x)) + ttmp0
+      ddtmp.x = smoothtimes
+      store_data,varE_s4+'_tmp_interp',data=ddtmp
+      ;-------------------------------------------
+
+
+
+      twavpol_modified,varE_s4+'_tmp_interp',prefix='tmp',nopfft=nopfft,steplength=steplength
 
 
 
@@ -960,16 +1004,16 @@ if start_after_step lt 4 then begin
 
 
       get_data,'tmp'+'_degpol',data=dtmp
-      degpolE = [degpolE,dtmp.y]
+      if is_struct(dtmp) then degpolE = [degpolE,dtmp.y]
       undefine,dtmp
       get_data,'tmp'+'_elliptict',data=dtmp
-      elliptictE = [elliptictE,dtmp.y]
+      if is_struct(dtmp) then elliptictE = [elliptictE,dtmp.y]
       undefine,dtmp
       get_data,'tmp'+'_helict',data=dtmp
-      helicitE = [helicitE,dtmp.y]
+      if is_struct(dtmp) then helicitE = [helicitE,dtmp.y]
       undefine,dtmp
       get_data,'tmp'+'_pspec3',data=dtmp
-      pspec3E = [pspec3E,dtmp.y]
+      if is_struct(dtmp) then pspec3E = [pspec3E,dtmp.y]
       if i eq 0 then freqvalsE = dtmp.v
       undefine,dtmp
 
@@ -986,21 +1030,22 @@ if start_after_step lt 4 then begin
     store_data,varE_s4,data={x:Bursttimes[1:nn],y:BurstE[1:nn,*]}
 
 
+
     ;Store the Chaston crib variables
     nn = n_elements(chastontimesB)-1
-    store_data,varM_s4+'_theta_kb_chaston',data={x:chastontimesB[1:nn],y:waveangleB[1:nn,*],v:freqvalsB}
-    store_data,varM_s4+'_degpol_chaston',data={x:chastontimesB[1:nn],y:degpolB[1:nn,*],v:freqvalsB}
-    store_data,varM_s4+'_elliptict_chaston',data={x:chastontimesB[1:nn],y:elliptictB[1:nn,*],v:freqvalsB}
-    store_data,varM_s4+'_helict_chaston',data={x:chastontimesB[1:nn],y:helicitB[1:nn,*],v:freqvalsB}
-    store_data,varM_s4+'_pspec3_chaston',data={x:chastontimesB[1:nn],y:pspec3B[1:nn,*,*],v:freqvalsB}
+    if nn+1 eq n_elements(waveangleB[*,0]) then store_data,varM_s4+'_theta_kb_chaston',data={x:chastontimesB[1:nn],y:waveangleB[1:nn,*],v:freqvalsB}
+    if nn+1 eq n_elements(degpolB[*,0]) then store_data,varM_s4+'_degpol_chaston',data={x:chastontimesB[1:nn],y:degpolB[1:nn,*],v:freqvalsB}
+    if nn+1 eq n_elements(elliptictB[*,0]) then store_data,varM_s4+'_elliptict_chaston',data={x:chastontimesB[1:nn],y:elliptictB[1:nn,*],v:freqvalsB}
+    if nn+1 eq n_elements(helicitB[*,0]) then store_data,varM_s4+'_helict_chaston',data={x:chastontimesB[1:nn],y:helicitB[1:nn,*],v:freqvalsB}
+    if nn+1 eq n_elements(pspec3B[*,0]) then store_data,varM_s4+'_pspec3_chaston',data={x:chastontimesB[1:nn],y:pspec3B[1:nn,*,*],v:freqvalsB}
 
 
     nn = n_elements(chastontimesE)-1
-    store_data,varE_s4+'_theta_kb_chaston',data={x:chastontimesE[1:nn],y:waveangleE[1:nn,*],v:freqvalsE}
-    store_data,varE_s4+'_degpol_chaston',data={x:chastontimesE[1:nn],y:degpolE[1:nn,*],v:freqvalsE}
-    store_data,varE_s4+'_elliptict_chaston',data={x:chastontimesE[1:nn],y:elliptictE[1:nn,*],v:freqvalsE}
-    store_data,varE_s4+'_helict_chaston',data={x:chastontimesE[1:nn],y:helicitE[1:nn,*],v:freqvalsE}
-    store_data,varE_s4+'_pspec3_chaston',data={x:chastontimesE[1:nn],y:pspec3E[1:nn,*,*],v:freqvalsE}
+    if nn+1 eq n_elements(waveangleE[*,0]) then store_data,varE_s4+'_theta_kb_chaston',data={x:chastontimesE[1:nn],y:waveangleE[1:nn,*],v:freqvalsE}
+    if nn+1 eq n_elements(degpolE[*,0]) then store_data,varE_s4+'_degpol_chaston',data={x:chastontimesE[1:nn],y:degpolE[1:nn,*],v:freqvalsE}
+    if nn+1 eq n_elements(elliptictE[*,0]) then store_data,varE_s4+'_elliptict_chaston',data={x:chastontimesE[1:nn],y:elliptictE[1:nn,*],v:freqvalsE}
+    if nn+1 eq n_elements(helicitE[*,0]) then store_data,varE_s4+'_helict_chaston',data={x:chastontimesE[1:nn],y:helicitE[1:nn,*],v:freqvalsE}
+    if nn+1 eq n_elements(pspec3E[*,0]) then store_data,varE_s4+'_pspec3_chaston',data={x:chastontimesE[1:nn],y:pspec3E[1:nn,*,*],v:freqvalsE}
 
 
     if nchunks gt 1 then begin
@@ -1045,42 +1090,56 @@ if start_after_step lt 4 then begin
     minpol = 0.7
 
     get_data,varM_s4+'_degpol_chaston',data=degp
-    goo = where(degp.y le minpol)
-    if goo[0] ne -1 then degp.y[goo] = !values.f_nan
-    store_data,varM_s4+'_degpol_chaston',data=degp
-    undefine,degp
+    if is_struct(degp) then begin
+      goo = where(degp.y le minpol)
+      if goo[0] ne -1 then degp.y[goo] = !values.f_nan
+      store_data,varM_s4+'_degpol_chaston',data=degp
+      undefine,degp
+    endif
     get_data,varM_s4+'_theta_kb_chaston',data=tmp
-    if goo[0] ne -1 then tmp.y[goo] = !values.f_nan
-    store_data,varM_s4+'_theta_kb_chaston',data=tmp
-    undefine,tmp
-    get_data,varM_s4+'_elliptict_chaston',data=tmp
-    if goo[0] ne -1 then tmp.y[goo] = !values.f_nan
-    store_data,varM_s4+'_elliptict_chaston',data=tmp
-    undefine,tmp
+    if is_struct(tmp) then begin
+      if goo[0] ne -1 then tmp.y[goo] = !values.f_nan
+      store_data,varM_s4+'_theta_kb_chaston',data=tmp
+      undefine,tmp
+    endif
+    if is_struct(tmp) then begin
+      get_data,varM_s4+'_elliptict_chaston',data=tmp
+      if goo[0] ne -1 then tmp.y[goo] = !values.f_nan
+      store_data,varM_s4+'_elliptict_chaston',data=tmp
+      undefine,tmp
+    endif
     get_data,varM_s4+'_helict_chaston',data=tmp
-    if goo[0] ne -1 then tmp.y[goo] = !values.f_nan
-    store_data,varM_s4+'_helict_chaston',data=tmp
-    undefine,tmp
-
+    if is_struct(tmp) then begin
+      if goo[0] ne -1 then tmp.y[goo] = !values.f_nan
+      store_data,varM_s4+'_helict_chaston',data=tmp
+      undefine,tmp
+    endif
 
     get_data,varE_s4+'_degpol_chaston',data=degp
-    goo = where(degp.y le minpol)
-    if goo[0] ne -1 then degp.y[goo] = !values.f_nan
-    store_data,varE_s4+'_degpol_chaston',data=degp
-    undefine,degp
+    if is_struct(degp) then begin
+      goo = where(degp.y le minpol)
+      if goo[0] ne -1 then degp.y[goo] = !values.f_nan
+      store_data,varE_s4+'_degpol_chaston',data=degp
+      undefine,degp
+    endif
     get_data,varE_s4+'_theta_kb_chaston',data=tmp
-    if goo[0] ne -1 then tmp.y[goo] = !values.f_nan
-    store_data,varE_s4+'_theta_kb_chaston',data=tmp
-    undefine,tmp
+    if is_struct(tmp) then begin
+      if goo[0] ne -1 then tmp.y[goo] = !values.f_nan
+      store_data,varE_s4+'_theta_kb_chaston',data=tmp
+      undefine,tmp
+    endif
     get_data,varE_s4+'_elliptict_chaston',data=tmp
-    if goo[0] ne -1 then tmp.y[goo] = !values.f_nan
-    store_data,varE_s4+'_elliptict_chaston',data=tmp
-    undefine,tmp
+    if is_struct(tmp) then begin
+      if goo[0] ne -1 then tmp.y[goo] = !values.f_nan
+      store_data,varE_s4+'_elliptict_chaston',data=tmp
+      undefine,tmp
+    endif
     get_data,varE_s4+'_helict_chaston',data=tmp
-    if goo[0] ne -1 then tmp.y[goo] = !values.f_nan
-    store_data,varE_s4+'_helict_chaston',data=tmp
-    undefine,tmp
-
+    if is_struct(tmp) then begin
+      if goo[0] ne -1 then tmp.y[goo] = !values.f_nan
+      store_data,varE_s4+'_helict_chaston',data=tmp
+      undefine,tmp
+    endif
 
 
 

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Dec  4 18:16:18 2017.<P>
+<STRONG>Last modified: </STRONG>Tue Dec  5 18:16:12 2017.<P>
  
 <HR>
  
@@ -25,6 +25,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#RBSP_EFW_DCFIELD_REMOVAL_CRIB">RBSP_EFW_DCFIELD_REMOVAL_CRIB</A>
 <LI><A HREF="#RBSP_LOAD_COLLECTION">RBSP_LOAD_COLLECTION</A>
 <LI><A HREF="#RBSP_LOAD_CONTACT">RBSP_LOAD_CONTACT</A>
+<LI><A HREF="#TWAVPOL_MODIFIED">TWAVPOL_MODIFIED</A>
 <br>
 </UL><P>
 <HR>
@@ -44,8 +45,8 @@ This page was created by the IDL library routine
  HISTORY: Created by Aaron W Breneman, Univ. Minnesota  4/10/2014
  VERSION:
    $LastChangedBy: aaronbreneman $
-   $LastChangedDate: 2016-08-16 06:35:57 -0700 (Tue, 16 Aug 2016) $
-   $LastChangedRevision: 21652 $
+   $LastChangedDate: 2017-12-05 13:28:50 -0800 (Tue, 05 Dec 2017) $
+   $LastChangedRevision: 24397 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_burst_fa_rotate_crib.pro $
 </PRE><P>
 <STRONG>(See <A href="examples/rbsp_efw_burst_fa_rotate_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_burst_fa_rotate_crib.pro</A>)</STRONG><P>
@@ -152,6 +153,7 @@ This page was created by the IDL library routine
 <A NAME="RBSP_LOAD_CONTACT">
 <H2>RBSP_LOAD_CONTACT</H2></A>
 <A HREF="#RBSP_LOAD_COLLECTION">[Previous Routine]</A>
+<A HREF="#TWAVPOL_MODIFIED">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Type: procedure.
@@ -166,5 +168,121 @@ This page was created by the IDL library routine
    2014-04-09, Sheng Tian, create.
 </PRE><P>
 <STRONG>(See <A href="examples/rbsp_load_contact.pro">general/missions/rbsp/efw/examples/rbsp_load_contact.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="TWAVPOL_MODIFIED">
+<H2>TWAVPOL_MODIFIED</H2></A>
+<A HREF="#RBSP_LOAD_CONTACT">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ NAME:twavpol
+
+PURPOSE:To perform polarisation analysis of three orthogonal component time
+         series data, using tplot variables.
+
+EXAMPLE: twavpol,'in_data',prefix='in_data',freqline=fl
+
+INPUTS: tvarname: the name of the tplot variable upon which it will
+operate
+
+prefix(optional): the prefix to be assigned to the tplot variables that will be
+output, defaults to tvarname
+
+
+       Subroutine assumes data are in righthanded fieldaligned
+	coordinate system with Z pointing the direction
+       of the ambient magnetic field.
+
+Keywords:
+  nopfft(optional) = Number of points in FFT
+
+  steplength(optional) = The amount of overlap between successive FFT intervals
+
+  bin_freq (optional): No. of bins in frequency domain
+
+OUTPUTS:
+          error(optional): named variable in which to return the
+          error state of this procedure call. 1 = success, 0 = failure
+
+          freqline(optional): assign a named variable to this keyword
+          to store the frequencies of each y-index
+
+         timeline(optional): assign a named variable to this keyword
+         to store the times of each x-index
+
+The program outputs five spectral results derived from the
+         fourier transform of the covariance matrix (spectral matrix)
+This version stores these outputs as tplot variables with the
+specified prefix
+         These are follows:
+
+         Wave power: On a linear scale, at this stage no units
+
+         Degree of Polarisation:
+		This is similar to a measure of coherency between the input
+		signals, however unlike coherency it is invariant under
+		coordinate transformation and can detect pure state waves
+		which may exist in one channel only.100% indicates a pure
+		state wave. Less than 70% indicates noise. For more
+		information see J. C. Samson and J. V. Olson 'Some comments
+		on the description of the polarization states
+		of waves' Geophys. J. R. Astr. Soc. (1980) v61 115-130
+
+   Wavenormal Angle:
+     The angle between the direction of minimum variance
+     calculated from the complex off diagonal elements of the
+     spectral matrix and the Z direction of the input ac field data.
+     for magnetic field data in field aligned coordinates this is the
+     wavenormal angle assuming a plane wave. See:
+     Means, J. D. (1972), Use of the three-dimensional covariance
+     matrix in analyzing the polarization properties of plane waves,
+     J. Geophys. Res., 77(28), 5551-5559,
+     doi:10.1029/JA077i028p05551.
+
+   Ellipticity:
+     The ratio (minor axis)/(major axis) of the ellipse transcribed
+     by the field variations of the components transverse to the
+     Z direction (Samson and Olson, 1980). The sign indicates
+     the direction of rotation of the field vector in the plane (cf.
+     Means, (1972)).
+     Negative signs refer to left-handed rotation about the Z
+     direction. In the field aligned coordinate system these signs
+     refer to plasma waves of left and right handed polarization.
+
+         Helicity:Similar to Ellipticity except defined in terms of the
+	direction of minimum variance instead of Z. Stricltly the Helicity
+	is defined in terms of the wavenormal direction or k.
+	However since from single point observations the
+	sense of k cannot be determined,  helicity here is
+	simply the ratio of the minor to major axis transverse to the
+       minimum variance direction without sign.
+
+NOTES:
+1. Although the input is in the form of a tplot variable, the
+output is currently in the form of arrays
+
+2. -If one component is an order of magnitude or more  greater than
+	the other two then the polarisation results saturate and erroneously
+	indicate high degrees of polarisation at all times and
+	frequencies.
+
+3. Time series should be eyeballed before running the program.
+	 For time series containing very rapid changes or spikes
+	 the usual problems with Fourier analysis arise.
+	 Care should be taken in evaluating degree of polarisation results.
+
+4. For meaningful results there should be significant wave power at the
+	 frequency where the polarisation approaches
+	 100%. Remembercomparing two straight lines yields 100% polarisation.
+
+
+
+ $LastChangedBy: aaronbreneman $
+ $LastChangedDate: 2017-12-05 13:38:09 -0800 (Tue, 05 Dec 2017) $
+ $LastChangedRevision: 24398 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/twavpol_modified.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/twavpol_modified.pro">general/missions/rbsp/efw/examples/twavpol_modified.pro</A>)</STRONG><P>
 <HR>
  
