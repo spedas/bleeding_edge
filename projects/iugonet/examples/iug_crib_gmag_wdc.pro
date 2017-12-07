@@ -8,6 +8,7 @@
 ;
 ;Written by: Y. KOYAMA, Aug 9,2011
 ;Last Updated: Y. KOYAMA, Oct 6,2011
+;Last Updated: M. NOSE, Apr 27, 2017
 ;-
 
 ;Initialize
@@ -16,8 +17,14 @@ thm_init
 ;Set the date and time for loading data
 timespan, '2007-01-22',1
 
-;Load ae index 
+;Load AE index 
 iug_load_gmag_wdc, site='ae', resolution='min'
+
+;Load Dst index 
+iug_load_gmag_wdc, site='dst'
+
+;Load Wp index 
+iug_load_gmag_wdc, site='wp'
 
 ;List the loaded data names
 tplot_names
@@ -26,6 +33,6 @@ tplot_names
 ;tplot_options, 'title', 'Sample plot of iug_crib_gmag_wdc'
 
 ;Plot data
-tplot,'wdc_mag_ae_prov_1min'
+tplot,['wdc_mag_ae_prov_1min','wdc_mag_dst','wdc_mag_Wp_index']
 
 end

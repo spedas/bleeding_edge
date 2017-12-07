@@ -26,8 +26,8 @@
 ;   2011/10/04: created and got through the initial bug fixes
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-05-12 16:57:48 -0700 (Thu, 12 May 2016) $
-; $LastChangedRevision: 21070 $
+; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/sdaacgmlib/aacgmmlt.pro $
 ;-
 

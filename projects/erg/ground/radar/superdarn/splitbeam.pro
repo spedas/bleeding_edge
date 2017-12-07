@@ -10,9 +10,9 @@
 ; :HISTORY:
 ;    2010/03/02: Created
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-12-13 10:48:28 -0800 (Tue, 13 Dec 2016) $
-; $LastChangedRevision: 22455 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/splitbeam.pro $
 ;-
 PRO splitbeam, tvars
@@ -59,12 +59,12 @@ PRO splitbeam, tvars
         get_data, vn_gscat, data=ddg, dl=dlg, lim=limg
         store_data, vn_iono+azim_suf, data={x:dd.x[idx], y:dd.y[idx,*], v:dd.v}, dl=dl,lim=lim
         store_data, vn_gscat+azim_suf,data={x:ddg.x[idx],y:ddg.y[idx,*],v:ddg.v},dl=dlg,lim=limg
-        options, vn_iono+azim_suf, 'ytitle', STRUPCASE(stn)+' bm'+STRING(d.y[bmidx[i]], '(I2.2)')
+        options, vn_iono+azim_suf, 'ytitle', STRUPCASE(stn)+'!Cbm'+STRING(d.y[bmidx[i]], '(I2.2)')
         options, vn_iono+azim_suf, 'ysubtitle', '[range gate]'
         store_data, vn, data=[ vn_iono+azim_suf,vn_gscat+azim_suf ]
       endelse
       
-      options, vn, 'ytitle', STRUPCASE(stn)+' bm'+STRING(d.y[bmidx[i]], '(I2.2)')
+      options, vn, 'ytitle', STRUPCASE(stn)+'!Cbm'+STRING(d.y[bmidx[i]], '(I2.2)')
       options, vn, 'ysubtitle', '[range gate]'
       maxrg = max(dd.v,/nan)+1
       ylim, vn, [0,maxrg]

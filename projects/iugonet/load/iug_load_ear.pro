@@ -44,11 +44,12 @@
 ;A. Shinbori, 15/06/2011.
 ;A. Shinbori, 25/07/2011.
 ;A. Shinbori, 10/01/2014.
+;A. Shinbori, 14/05/2017.
 ;
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-05-23 10:40:20 -0700 (Mon, 23 May 2016) $
-; $LastChangedRevision: 21174 $
+; $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24404 $
 ; $URL $
 ;-
   
@@ -75,6 +76,7 @@ if (not keyword_set(datatype)) then datatype='all'
 datatypes = ssl_check_valid_name(datatype, datatype_all, /ignore_case, /include_all)
 
 print, datatypes
+
 
 ;===============================
 ;======Load data of EAR=========
@@ -114,7 +116,8 @@ for i=0, n_elements(datatypes)-1 do begin
                                              downloadonly = downloadonly, verbose = verbose
       endcase
    endelse
-endfor  
+endfor 
+
 end
 
 

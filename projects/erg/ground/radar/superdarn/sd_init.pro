@@ -10,14 +10,14 @@
 ;    
 ;
 ; :AUTHOR: 
-;   Tomo Hori (E-mail: horit@stelab.nagoya-u.ac.jp)
+;   Tomo Hori (E-mail: horit@isee.nagoya-u.ac.jp)
 ; :HISTORY: 
 ;   2010/03/10: Created
 ;   2014/08/12: Major changes to move on to the new "map2d" environment 
 ;   
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-12-13 10:48:28 -0800 (Tue, 13 Dec 2016) $
-; $LastChangedRevision: 22455 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/sd_init.pro $
 ;-
 pro sd_init, reset=reset

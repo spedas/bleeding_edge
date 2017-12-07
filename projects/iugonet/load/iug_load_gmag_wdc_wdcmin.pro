@@ -26,7 +26,7 @@
 ;Updated by:  Daiki Yoshida,  Jan 11, 2011
 ;Updated by:  Daiki Yoshida,  Mar 1, 2011
 ;Updated by:  Yukinobu KOYAMA, Jan 21, 2011
-;
+;Last Updated by:  Shun Imajo, Apr 26, 2017
 ;-
 
 pro iug_load_gmag_wdc_wdcmin, $
@@ -37,10 +37,10 @@ pro iug_load_gmag_wdc_wdcmin, $
     addmaster=addmaster, $
     downloadonly=downloadonly, $
     no_download=no_download
-    
+
   if ~keyword_set(verbose) then verbose=2
   if(~keyword_set(level)) then level = 'final'
-  
+
   if ~keyword_set(datatype) then datatype='gmag'
   vns=['gmag']
   if size(datatype,/type) eq 7 then begin
@@ -51,49 +51,59 @@ pro iug_load_gmag_wdc_wdcmin, $
     message,'DATATYPE kw must be of string type.',/info
     return
   endelse
-  
+
   ; list of sites
-  vsnames = 'kak asy sym ae'
+  vsnames = 'kak asy sym ae wp'
   vsnames_sample = strsplit(vsnames, ' ', /extract)
   vsnames_all = iug_load_gmag_wdc_vsnames()
-  
+
   ; validate sites
   if(keyword_set(site)) then site_in = site else site_in = vsnames_sample
   wdc_sites = ssl_check_valid_name(site_in, vsnames_all, $
     /ignore_case, /include_all, /no_warning)
   if wdc_sites[0] eq '' then return
-  
+
   ; number of valid sites
   nsites = n_elements(wdc_sites)
-  
-  
+
+
   ; bad data
   missing_value = 99999
-  
-  
+
+
   for i=0L, nsites-1 do begin
-  
+
+      ; other procedure are used for Wp index (SI 2017/04/26)
+      if wdc_sites[i] eq 'wp' then begin
+      iug_load_gmag_wdc_wp_index,trange = trange, $
+                            downloadonly = downloadonly, no_download = no_download, $
+                            no_server = no_server
+      continue
+      end
+      ;-------------------------------------
+
+
     relpathnames = $
       iug_load_gmag_wdc_relpath(sname=wdc_sites[i], $
       trange=trange, $
       res='min', level=level, $
       addmaster=addmaster, /unique)
     ;print,relpathnames
-      
-      
+
+
     ; define remote and local path information
     source = file_retrieve(/struct)
     source.verbose = verbose
     source.local_data_dir = root_data_dir() + 'iugonet/wdc_kyoto/geomag/'
     source.remote_data_dir = 'http://wdc-data.iugonet.org/data/'
     if(keyword_set(no_download)) then source.no_server = 1
-    
+
     ; download data
     local_files = spd_download(remote_file=relpathnames, remote_path=source.remote_data_dir, local_path=source.local_data_dir, _extra=source, /last_version)
     print,(local_files)
     if keyword_set(downloadonly) then continue
-    
-    
+
+
     ; clear data and time buffer
     elemlist = ''
     elemnum = -1
@@ -103,11 +113,11 @@ pro iug_load_gmag_wdc_wdcmin, $
     basetime_end = !values.d_nan
     basetime_resolution = 3600d
     data_resolution = 60d
-    
+
     ; scan data length
     for j = 0l, n_elements(local_files) - 1 do begin
       file = local_files[j]
-      
+
       if file_test(/regular,file) then begin
         dprint,'Loading data file: ', file
         fexist = 1
@@ -115,15 +125,15 @@ pro iug_load_gmag_wdc_wdcmin, $
         dprint,'Data file ',file,' not found. Skipping'
         continue
       endelse
-      
+
       openr,lun,file,/get_lun
       while(not eof(lun)) do begin
         line = ''
         readf, lun, line
-        
+
         if ~ keyword_set(line) then continue
         dprint,line,dlevel=5
-        
+
         name = strmid(line, 21, 3)
         if 'ae' eq strlowcase(wdc_sites[i]) then begin
           if 'AEALAOAU' ne strmid(line,0,8) then continue
@@ -142,14 +152,14 @@ pro iug_load_gmag_wdc_wdcmin, $
         endif
         basetime = time_double(year+'-'+month+'-'+day) + $
                    hour * basetime_resolution + data_resolution / 2
-        
+
         if (finite(basetime_start, /nan)) then basetime_start = basetime $
         else if (basetime lt basetime_start) then basetime_start = basetime
         if (finite(basetime_end, /nan)) then basetime_end = basetime $
         else if (basetime_end lt basetime) then basetime_end = basetime
 
         element = strmid(line,18,1)
-        
+
         ; cache elements and count up
         for x=0l, n_elements(elemlist) - 1 do begin
           if elemlist[x] eq element then begin
@@ -167,11 +177,11 @@ pro iug_load_gmag_wdc_wdcmin, $
           elemnum = n_elements(elemlist) - 1
         endif
         elemlength[elemnum] += 1
-        
+
       endwhile
       free_lun,lun
     endfor
-    
+
     ; if nodata
     dprint, size(elemlist,/n_dimensions), dlevel=5
     dprint, time_string([basetime_start, basetime_end]), dlevel=5
@@ -196,17 +206,17 @@ pro iug_load_gmag_wdc_wdcmin, $
       dprint, 'max of data length: ', $
               max(elemlength) * long(basetime_resolution / data_resolution)
     endif
-    
+
 
     ; setup databuf
     dprint, 'Data elements: ', elemlist
     databuf = replicate(!values.f_nan, buf_size, size(elemlist, /n_elements))
     elemnum = -1
 
-    
+
     for j = 0l, n_elements(local_files) - 1 do begin
       file = local_files[j]
-      
+
       if file_test(/regular, file) then begin
         ;dprint,'Loading data file: ', file
         fexist = 1
@@ -214,15 +224,15 @@ pro iug_load_gmag_wdc_wdcmin, $
         dprint,'Data file ',file,' not found. Skipping'
         continue
       endelse
-      
+
       openr,lun,file,/get_lun
       while (not eof(lun)) do begin
         line = ''
         readf, lun, line
-        
+
         if ~ keyword_set(line) then continue
         dprint, line, dlevel=5
-        
+
         name = strmid(line, 21, 3)
         if 'ae' eq strlowcase(wdc_sites[i]) then begin
           if 'AEALAOAU' ne strmid(line, 0, 8) then continue
@@ -239,10 +249,10 @@ pro iug_load_gmag_wdc_wdcmin, $
         day = strmid(line, 16, 2)
         hour = strmid(line, 19, 2)
         basetime = time_double(year+'-'+month+'-'+day) + hour * 3600d + 30d
-        
+
         element = strmid(line,18,1)
         ;version = strmid(line,13,1) ; 0:realtime, 1:prov., 2+:final
-        
+
         for x = 0l, n_elements(elemlist) - 1 do begin
           if elemlist[x] eq element then begin
             elemnum = x
@@ -252,10 +262,10 @@ pro iug_load_gmag_wdc_wdcmin, $
           endelse
         endfor
         if elemnum eq -1 then continue
-        
+
         basevalue = 0l ;for wdc 1-min format data
         variations = long(strmid(line, indgen(60)*6 + 34 , 6))
-        
+
         if strlowcase(wdc_sites[i]) eq 'sym' or $
           strlowcase(wdc_sites[i]) eq 'asy' then begin
           value = float(variations)
@@ -266,19 +276,19 @@ pro iug_load_gmag_wdc_wdcmin, $
         endelse
         wbad = where(variations eq missing_value, nbad)
         if nbad gt 0 then value[wbad] = !values.f_nan
-        
+
         idx = long((time_double(basetime) - basetime_start) / data_resolution)
         if (idx lt 0 or idx gt buf_size) then begin
           dprint, 'error: out of timerange?'
           continue
         endif
         databuf[idx, elemnum] = value
-        
+
       endwhile
       free_lun,lun
     endfor
-    
-    
+
+
     ; store data to tplot variables
       iug_load_gmag_wdc_create_tplot_vars, $
         sname = wdc_sites[i], $
@@ -286,7 +296,7 @@ pro iug_load_gmag_wdc_wdcmin, $
         res = 'min', level = level, $
         tplot_name, tplot_ytitle, tplot_ysubtitle, tplot_labels, $
         tplot_colors, dlimit
-        
+
       store_data, $
         tplot_name, $
          data = {x:timebuf, y:databuf}, $
@@ -295,14 +305,14 @@ pro iug_load_gmag_wdc_wdcmin, $
         tplot_name, $
         ytitle = tplot_ytitle, ysubtitle = tplot_ysubtitle, $
         labels = tplot_labels, colors = tplot_colors
-        
-    
+
+
     print, '**************************************************'
     print_str_maxlet, dlimit.data_att.acknowledgment
     print, '**************************************************'
-    
+
     databuf = 0
     timebuf = 0
   endfor
-  
+
 end

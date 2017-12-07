@@ -19,7 +19,7 @@
 ;            e.g., ['2008-10-01/00:00:00','2008-10-02/00:00:00']
 ;
 ; :AUTHOR:
-;     Tomo Hori (E-mail: horit at stelab.nagoya-u.ac.jp)
+;     Tomo Hori (E-mail: horit at isee.nagoya-u.ac.jp)
 ; :HISTORY:
 ;   2010/03/09: Created as a draft version
 ;   2010/07/01: now work for hok and ksr
@@ -37,14 +37,14 @@
 ;his/her scientific researches.
 ;
 ;As for questions and request for the data, please feel free to contact
-;the ERG-SC office (E-mail:  erg-sc-core at st4a.stelab.nagoya-u.ac.jp,
+;the ERG-SC office (E-mail:  erg-sc-core at st4a.isee.nagoya-u.ac.jp,
 ;please replace "at" by "@").
 ;------------------------------------------------------------------------------
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-05-19 10:27:24 -0700 (Fri, 19 May 2017) $
-; $LastChangedRevision: 23335 $
+; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/erg_load_sdfit.pro $
 ;-
 ;---------------------------------------------------
@@ -80,7 +80,7 @@ PRO erg_load_sdfit, sites=sites, cdffn=cdffn, $
   valid_sites = [ 'ade', 'adw', 'bks', 'bpk', 'cly', 'cve', 'cvw', 'dce', 'fhe', $
     'fhw', 'fir', 'gbr', 'hal', 'han', 'hok', 'hkw', 'inv', 'kap', 'ker', 'kod', $
     'ksr', 'mcm', 'pgr', 'pyk', 'rkn', 'san', 'sas', 'sps', 'sto', 'sye', $
-    'sys', 'tig', 'unw', 'wal', 'zho' ]
+    'sys', 'tig', 'unw', 'wal', 'zho', 'lyr' ]
 
   ;If a CDF file path is not given explicitly
   IF ~KEYWORD_SET(cdffn) THEN BEGIN
@@ -128,8 +128,14 @@ PRO erg_load_sdfit, sites=sites, cdffn=cdffn, $
     ;to be implemented in future for loading data of multiple stations
     datfileformat = 'YYYY/sd_fitacf_l2_'+stn+'_YYYYMMDD*cdf'
     relfnames = file_dailynames(file_format=datfileformat, trange=trange, times=times)
-      
-    datfiles = spd_download(remote_file=relfnames, remote_path=source.remote_data_dir, local_path=source.local_data_dir, _extra=source, /last_version)
+
+;    datfiles = file_retrieve(relfnames, $
+;      local_data_dir=source.local_data_dir,remote_data_dir=source.remote_data_dir, _extra=source)
+    datfiles = $
+      spd_download( remote_file = relfnames, remote_path = source.remote_data_dir $
+      , local_path = source.local_data_dir $
+      , /last_version, no_download=no_download $
+      )
     IF total(file_test(datfiles)) eq 0 THEN BEGIN
       print, 'Cannot download/find data file: '+datfiles
       PRINT, 'No data was loaded!'
@@ -173,25 +179,25 @@ PRO erg_load_sdfit, sites=sites, cdffn=cdffn, $
 
     ;Set labels for some tplot variables
     options,prefix+'pwr_'+suf[i], ysubtitle='[range gate]',ztitle='Backscatter power [dB]'
-    options,prefix+'pwr_'+suf[i], 'ytitle',strupcase(stn)+' all beams'
-    options,prefix+'pwr_err_'+suf[i], ytitle=strupcase(stn)+' all beams',ysubtitle='[range gate]',ztitle='power err [dB]'
-    options,prefix+'pwr_err_'+suf[i], 'ytitle',strupcase(stn)+' all beams'
-    options,prefix+'spec_width_'+suf[i], ytitle=strupcase(stn)+' all beams',ysubtitle='[range gate]',ztitle='Spec. width [m/s]'
-    options,prefix+'spec_width_'+suf[i], 'ytitle',strupcase(stn)+' all beams'
-    options,prefix+'spec_width_err_'+suf[i], ytitle=strupcase(stn)+' all beams',ysubtitle='[range gate]',ztitle='Spec. width err [m/s]'
-    options,prefix+'spec_width_err_'+suf[i], 'ytitle',strupcase(stn)+' all beams'
-    options,prefix+'vlos_'+suf[i], ytitle=strupcase(stn)+' all beams',ysubtitle='[range gate]',ztitle='Doppler velocity [m/s]'
-    options,prefix+'vlos_'+suf[i], 'ytitle',strupcase(stn)+' all beams'
-    options,prefix+'vlos_err_'+suf[i], ytitle=strupcase(stn)+' all beams',ysubtitle='[range gate]',ztitle='Vlos err [m/s]'
-    options,prefix+'vlos_err_'+suf[i], 'ytitle',strupcase(stn)+' all beams'
-    options,prefix+'elev_angle_'+suf[i], ytitle=strupcase(stn)+' all beams',ysubtitle='[range gate]',ztitle='Elev. angle [deg]'
-    options,prefix+'elev_angle_'+suf[i], 'ytitle',strupcase(stn)+' all beams'
-    options,prefix+'echo_flag_'+suf[i], ytitle=strupcase(stn)+' all beams',ysubtitle='[range gate]',ztitle='1: iono. echo'
-    options,prefix+'echo_flag_'+suf[i], 'ytitle',strupcase(stn)+' all beams'
-    options,prefix+'quality_'+suf[i], ytitle=strupcase(stn)+' all beams',ysubtitle='[range gate]',ztitle='quality'
-    options,prefix+'quality_'+suf[i], 'ytitle',strupcase(stn)+' all beams'
-    options,prefix+'quality_flag_'+suf[i], ytitle=strupcase(stn)+' all beams',ysubtitle='[range gate]',ztitle='quality flg'
-    options,prefix+'quality_flag_'+suf[i], 'ytitle',strupcase(stn)+' all beams'
+    options,prefix+'pwr_'+suf[i], 'ytitle',strupcase(stn)+'!Call beams'
+    options,prefix+'pwr_err_'+suf[i], ytitle=strupcase(stn)+'!Call beams',ysubtitle='[range gate]',ztitle='power err [dB]'
+    options,prefix+'pwr_err_'+suf[i], 'ytitle',strupcase(stn)+'!Call beams'
+    options,prefix+'spec_width_'+suf[i], ytitle=strupcase(stn)+'!Call beams',ysubtitle='[range gate]',ztitle='Spec. width [m/s]'
+    options,prefix+'spec_width_'+suf[i], 'ytitle',strupcase(stn)+'!Call beams'
+    options,prefix+'spec_width_err_'+suf[i], ytitle=strupcase(stn)+'!Call beams',ysubtitle='[range gate]',ztitle='Spec. width err [m/s]'
+    options,prefix+'spec_width_err_'+suf[i], 'ytitle',strupcase(stn)+'!Call beams'
+    options,prefix+'vlos_'+suf[i], ytitle=strupcase(stn)+'!Call beams',ysubtitle='[range gate]',ztitle='Doppler velocity [m/s]'
+    options,prefix+'vlos_'+suf[i], 'ytitle',strupcase(stn)+'!Call beams'
+    options,prefix+'vlos_err_'+suf[i], ytitle=strupcase(stn)+'!Call beams',ysubtitle='[range gate]',ztitle='Vlos err [m/s]'
+    options,prefix+'vlos_err_'+suf[i], 'ytitle',strupcase(stn)+'!Call beams'
+    options,prefix+'elev_angle_'+suf[i], ytitle=strupcase(stn)+'!Call beams',ysubtitle='[range gate]',ztitle='Elev. angle [deg]'
+    options,prefix+'elev_angle_'+suf[i], 'ytitle',strupcase(stn)+'!Call beams'
+    options,prefix+'echo_flag_'+suf[i], ytitle=strupcase(stn)+'!Call beams',ysubtitle='[range gate]',ztitle='1: iono. echo'
+    options,prefix+'echo_flag_'+suf[i], 'ytitle',strupcase(stn)+'!Call beams'
+    options,prefix+'quality_'+suf[i], ytitle=strupcase(stn)+'!Call beams',ysubtitle='[range gate]',ztitle='quality'
+    options,prefix+'quality_'+suf[i], 'ytitle',strupcase(stn)+'!Call beams'
+    options,prefix+'quality_flag_'+suf[i], ytitle=strupcase(stn)+'!Call beams',ysubtitle='[range gate]',ztitle='quality flg'
+    options,prefix+'quality_flag_'+suf[i], 'ytitle',strupcase(stn)+'!Call beams'
 
     ;Split vlos_? tplot variable into 3 components
     get_data, prefix+'vlos_'+suf[i], data=d, dl=dl, lim=lim

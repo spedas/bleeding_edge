@@ -28,11 +28,13 @@
 ;MODIFICATIONS:
 ;  A. Shinbori, 08/04/2013.
 ;  A. Shinbori, 24/01/2014.
-;    
+;  A. Shinbori, 08/08/2017.
+;  A. Shinbori, 29/11/2017.
+;      
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-05-19 11:44:55 -0700 (Fri, 19 May 2017) $
-; $LastChangedRevision: 23337 $
+; $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24404 $
 ; $URL $
 ;-
 
@@ -44,6 +46,15 @@ pro iug_load_aws_id, site=site, $
 ;Verbose keyword check:
 ;**********************
 if (not keyword_set(verbose)) then verbose=2
+
+;***********************
+;Keyword check (trange):
+;***********************
+if not keyword_set(trange) then begin
+  get_timespan, time_org
+endif else begin
+  time_org =time_double(trange)
+endelse
 
 ;****************
 ;Site code check:
@@ -69,12 +80,9 @@ print, site_code
 ;***************
 site_data_dir = strsplit('bik/aws/ ktb/aws/ mnd/aws/ pon/aws/',' ', /extract)
 
-;******************************************************************
-;Loop on downloading files
-;******************************************************************
-;Get timespan, define FILE_NAMES, and load data:
-;===============================================
-;
+;**************************
+;Loop on downloading files:
+;**************************
 ;===================================================================
 ;Download files, read data, and create tplot vars at each component:
 ;===================================================================
@@ -83,16 +91,23 @@ h=0L
 jj=0L
 k=0L
 n_site=intarr(n_elements(site_data_dir))
+time_shift =dblarr(n_elements(site_data_dir))
 
 ;---In the case that the parameters are except for all.'
 if n_elements(site_code) le n_elements(site_data_dir) then begin
    h_max=n_elements(site_code)
    for i=0L,n_elements(site_code)-1 do begin
       case site_code[i] of
-         'bik':n_site[i]=0 
-         'ktb':n_site[i]=1 
-         'mnd':n_site[i]=2 
-         'pon':n_site[i]=3 
+         'bik':n_site[i] = 0 
+         'ktb':n_site[i] = 1 
+         'mnd':n_site[i] = 2 
+         'pon':n_site[i] = 3 
+      endcase
+      case site_code[i] of
+        'bik':time_shift[i] = 9.0d
+        'ktb':time_shift[i] = 7.0d
+        'mnd':time_shift[i] = 8.0d
+        'pon':time_shift[i] = 7.0d
       endcase
    endfor
 endif
@@ -107,7 +122,14 @@ for ii=0L,h_max-1 do begin
          'mnd':site_code2='manado'
          'pon':site_code2='pontianak'
       endcase
-  
+     ;==============================================================
+     ;Change time window associated with a time shift from UT to LT:
+     ;==============================================================
+      day_org = (time_org[1] - time_org[0])/86400.d
+      day_mod = day_org + 1
+      timespan, time_org[0] - 3600.0d * time_shift[ii], day_mod
+      if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) + time_shift[ii] * 3600.d0); for GUI
+      
      ;****************************
      ;Get files for ith component:
      ;****************************
@@ -141,16 +163,6 @@ for ii=0L,h_max-1 do begin
       
      ;---Definition of string variable:
       s=''
-
-     ;---Initialize data and time buffer
-      aws_time = 0
-      aws_press = 0
-      aws_precipi = 0
-      aws_rh = 0
-      aws_sr = 0
-      aws_temp = 0
-      aws_wnddir = 0
-      aws_wndspd = 0
     
      ;==============      
      ;Loop on files: 
@@ -173,10 +185,10 @@ for ii=0L,h_max-1 do begin
              
        ;---Definition of time zone at each station:
         case site_code2 of
-           'pontianak':time_zone = 7.0
-           'kototabang':time_zone = 7.0
-           'manado':time_zone = 8.0
-           'biak':time_zone = 9.0   
+           'pontianak':time_zone = 7.0d
+           'kototabang':time_zone = 7.0d
+           'manado':time_zone = 8.0d
+           'biak':time_zone = 9.0d
         endcase
          
        ;---Read the data:
@@ -189,52 +201,85 @@ for ii=0L,h_max-1 do begin
               data_arr = strsplit(s,',',/extract)
        
              ;---Convert time from LT to UT
-              time = time_double(string(data_arr[0])+'/'+string(data_arr[1])) $
-                     -time_double(string(1970)+'-'+string(1)+'-'+string(1)+'/'+string(time_zone)+':'+string(0)+':'+string(0))
+              aws_time_data = time_double(string(data_arr[0])+'/'+string(data_arr[1])) - double(time_zone) * 3600.0d
 
-             ;---Substitute each parameter:            
-              press = data_arr[3]
-              precipi = data_arr[5]
-              rh = data_arr[7]
-              sr = data_arr[9]
-              temp = data_arr[11]
-              wnddir = data_arr[13]
-              wndspd = data_arr[15]
+             ;---Substitute each parameter: 
+              if n_elements(data_arr) le 15 then begin 
+                 press = !values.f_nan
+                 precipi = data_arr[3]
+                 rh = data_arr[5]
+                 sr = data_arr[7]
+                 temp = data_arr[9]
+                 wnddir = data_arr[11]
+                 wndspd = data_arr[13]
+                ;---Enter the missing value:
+                 b = float(precipi)
+                 wbad = where(data_arr[2] ne 'VALID',nbad)
+                 if nbad gt 0 then b[wbad] = !values.f_nan
+                 precipi=b
+                 c = float(rh)
+                 wbad = where(data_arr[4] ne 'VALID',nbad)
+                 if nbad gt 0 then c[wbad] = !values.f_nan
+                 rh = c
+                 d = float(sr)
+                 wbad = where(data_arr[6] ne 'VALID',nbad)
+                 if nbad gt 0 then d[wbad] = !values.f_nan
+                 sr = d
+                 e = float(temp)
+                 wbad = where(data_arr[8] ne 'VALID',nbad)
+                 if nbad gt 0 then e[wbad] = !values.f_nan
+                 temp = e
+                 f = float(wnddir)
+                 wbad = where(data_arr[10] ne 'VALID',nbad)
+                 if nbad gt 0 then f[wbad] = !values.f_nan
+                 wnddir=f
+                 g = float(wndspd)
+                 wbad = where(data_arr[12] ne 'VALID',nbad)
+                 if nbad gt 0 then g[wbad] = !values.f_nan
+                 wndspd=g                
+              endif else begin
+                press = data_arr[3]
+                precipi = data_arr[5]
+                rh = data_arr[7]
+                sr = data_arr[9]
+                temp = data_arr[11]
+                wnddir = data_arr[13]
+                wndspd = data_arr[15]
 
-             ;---Enter the missing value:
-              a = float(press)
-              wbad = where(data_arr[2] ne 'VALID',nbad)
-              if nbad gt 0 then a[wbad] = !values.f_nan
-              press=a
-              b = float(precipi)
-              wbad = where(data_arr[4] ne 'VALID',nbad)
-              if nbad gt 0 then b[wbad] = !values.f_nan
-              precipi=b
-              c = float(rh)
-              wbad = where(data_arr[6] ne 'VALID',nbad)
-              if nbad gt 0 then c[wbad] = !values.f_nan
-              rh = c
-              d = float(sr)
-              wbad = where(data_arr[8] ne 'VALID',nbad)
-              if nbad gt 0 then d[wbad] = !values.f_nan
-              sr = d
-              e = float(temp)
-              wbad = where(data_arr[10] ne 'VALID',nbad)
-              if nbad gt 0 then e[wbad] = !values.f_nan
-              temp = e
-              f = float(wnddir)
-              wbad = where(data_arr[12] ne 'VALID',nbad)
-              if nbad gt 0 then f[wbad] = !values.f_nan
-              wnddir=f
-              g = float(wndspd)
-              wbad = where(data_arr[14] ne 'VALID',nbad)
-              if nbad gt 0 then g[wbad] = !values.f_nan
-              wndspd=g            
-
+               ;---Enter the missing value:
+                a = float(press)
+                wbad = where(data_arr[2] ne 'VALID',nbad)
+                if nbad gt 0 then a[wbad] = !values.f_nan
+                 press=a
+                 b = float(precipi)
+                 wbad = where(data_arr[4] ne 'VALID',nbad)
+                 if nbad gt 0 then b[wbad] = !values.f_nan
+                 precipi=b
+                 c = float(rh)
+                 wbad = where(data_arr[6] ne 'VALID',nbad)
+                 if nbad gt 0 then c[wbad] = !values.f_nan
+                 rh = c
+                 d = float(sr)
+                 wbad = where(data_arr[8] ne 'VALID',nbad)
+                 if nbad gt 0 then d[wbad] = !values.f_nan
+                 sr = d
+                 e = float(temp)
+                 wbad = where(data_arr[10] ne 'VALID',nbad)
+                 if nbad gt 0 then e[wbad] = !values.f_nan
+                 temp = e
+                 f = float(wnddir)
+                 wbad = where(data_arr[12] ne 'VALID',nbad)
+                 if nbad gt 0 then f[wbad] = !values.f_nan
+                 wnddir=f
+                 g = float(wndspd)
+                 wbad = where(data_arr[14] ne 'VALID',nbad)
+                 if nbad gt 0 then g[wbad] = !values.f_nan
+                 wndspd=g            
+              endelse
              ;=====================================
              ;Append data of time and observations:
              ;=====================================
-              append_array, aws_time, time
+              append_array, aws_time_data_app, aws_time_data
               append_array, aws_press,press
               append_array, aws_precipi,precipi
               append_array, aws_rh,   rh
@@ -246,7 +291,13 @@ for ii=0L,h_max-1 do begin
            endwhile 
            free_lun,lun  
         endfor
-         
+
+       ;==============================================================
+       ;Change time window associated with a time shift from UT to LT:
+       ;==============================================================
+         timespan, time_org
+         get_timespan, init_time2
+         if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) - time_shift[ii] * 3600.d0); for GUI
        ;==============================
        ;Store data in TPLOT variables:
        ;==============================
@@ -262,13 +313,22 @@ for ii=0L,h_max-1 do begin
        if size(aws_press,/type) eq 4 then begin 
          ;---Create tplot variables
           dlimit=create_struct('data_att',create_struct('acknowledgment',acknowledgstring,'PI_NAME', 'H. Hashiguchi'))            
-          store_data,'iug_aws_'+site_code[ii]+'_press',data={x:aws_time, y:aws_press},dlimit=dlimit
-          store_data,'iug_aws_'+site_code[ii]+'_precipi',data={x:aws_time, y:aws_precipi},dlimit=dlimit
-          store_data,'iug_aws_'+site_code[ii]+'_rh',data={x:aws_time, y:aws_rh},dlimit=dlimit
-          store_data,'iug_aws_'+site_code[ii]+'_sr',data={x:aws_time, y:aws_sr},dlimit=dlimit
-          store_data,'iug_aws_'+site_code[ii]+'_temp',data={x:aws_time, y:aws_temp},dlimit=dlimit
-          store_data,'iug_aws_'+site_code[ii]+'_wnddir',data={x:aws_time, y:aws_wnddir},dlimit=dlimit
-          store_data,'iug_aws_'+site_code[ii]+'_wndspd',data={x:aws_time, y:aws_wndspd},dlimit=dlimit
+          store_data,'iug_aws_'+site_code[ii]+'_press',data={x:aws_time_data_app, y:aws_press},dlimit=dlimit
+          store_data,'iug_aws_'+site_code[ii]+'_precipi',data={x:aws_time_data_app, y:aws_precipi},dlimit=dlimit
+          store_data,'iug_aws_'+site_code[ii]+'_rh',data={x:aws_time_data_app, y:aws_rh},dlimit=dlimit
+          store_data,'iug_aws_'+site_code[ii]+'_sr',data={x:aws_time_data_app, y:aws_sr},dlimit=dlimit
+          store_data,'iug_aws_'+site_code[ii]+'_temp',data={x:aws_time_data_app, y:aws_temp},dlimit=dlimit
+          store_data,'iug_aws_'+site_code[ii]+'_wnddir',data={x:aws_time_data_app, y:aws_wnddir},dlimit=dlimit
+          store_data,'iug_aws_'+site_code[ii]+'_wndspd',data={x:aws_time_data_app, y:aws_wndspd},dlimit=dlimit
+         
+         ;----Edge data cut: 
+          time_clip, 'iug_aws_'+site_code[ii]+'_press', init_time2[0], init_time2[1], newname = 'iug_aws_'+site_code[ii]+'_press' 
+          time_clip, 'iug_aws_'+site_code[ii]+'_precipi', init_time2[0], init_time2[1], newname = 'iug_aws_'+site_code[ii]+'_precipi'
+          time_clip, 'iug_aws_'+site_code[ii]+'_rh', init_time2[0], init_time2[1], newname = 'iug_aws_'+site_code[ii]+'_rh'
+          time_clip, 'iug_aws_'+site_code[ii]+'_sr', init_time2[0], init_time2[1], newname = 'iug_aws_'+site_code[ii]+'_sr'
+          time_clip, 'iug_aws_'+site_code[ii]+'_temp', init_time2[0], init_time2[1], newname = 'iug_aws_'+site_code[ii]+'_temp'
+          time_clip, 'iug_aws_'+site_code[ii]+'_wnddir', init_time2[0], init_time2[1], newname = 'iug_aws_'+site_code[ii]+'_wnddir'
+          time_clip, 'iug_aws_'+site_code[ii]+'_wndspd', init_time2[0], init_time2[1], newname = 'iug_aws_'+site_code[ii]+'_wndspd'
     
          ;---Options of each tplot variable
           new_vars=tnames('iug_aws_'+site_code[ii]+'_press')
@@ -284,7 +344,7 @@ for ii=0L,h_max-1 do begin
        endif
      
       ;---Clear time and data buffer:
-       aws_time = 0
+       aws_time_data_app = 0
        aws_press = 0
        aws_sr = 0
        aws_rh = 0
@@ -305,6 +365,8 @@ for ii=0L,h_max-1 do begin
        endif
     endif
    jj=n_elements(local_paths)
+  ;---Initialization of timespan for sites:
+   timespan, time_org
 endfor 
 
 new_vars=tnames('iug_aws_*')

@@ -7,7 +7,7 @@
 ;
 ;HISTORY:
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2016-05-23 10:40:20 -0700 (Mon, 23 May 2016) $
+;$LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
 ;
 ;Modifications:
 ;A. Shinbori, 02/05/2011
@@ -337,9 +337,9 @@ pro iug_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRange
   typeArray[2] = ptr_new(['troposphere'])
   typeArray[3] = ptr_new(['altitude_prof','latitude_prof','longitude_prof','Vi_E_vectors'])
   typeArray[4] = ptr_new(['troposphere','e_region','ef_region','v_region','f_region'])
-  typeArray[5] = ptr_new(['magdas#','210mm#','STEL#','WDC_kyoto','NIPR#'])
-  typeArray[6] = ptr_new(['NIPR#','STEL#'])
-  typeArray[7] = ptr_new(['Dst_index','AE_index','ASY_index'])
+  typeArray[5] = ptr_new(['magdas#','210mm#','ISEE#','WDC_kyoto','NIPR#'])
+  typeArray[6] = ptr_new(['NIPR#','ISEE#'])
+  typeArray[7] = ptr_new(['Dst_index','AE_index','ASY_index','Wp_index'])
   typeArray[8] = ptr_new(['troposphere'])
   typeArray[9] = ptr_new(['Sun_or_Jupiter'])
   typeArray[10] = ptr_new(['Sun'])
@@ -382,7 +382,7 @@ pro iug_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRange
   paramArray[4] = ptr_new(ptrarr(5))
   paramArray[5] = ptr_new(ptrarr(5))
   paramArray[6] = ptr_new(ptrarr(2))
-  paramArray[7] = ptr_new(ptrarr(3))
+  paramArray[7] = ptr_new(ptrarr(4))
   paramArray[8] = ptr_new(ptrarr(1))
   paramArray[9] = ptr_new(ptrarr(1))
   paramArray[10] = ptr_new(ptrarr(1))
@@ -449,10 +449,11 @@ pro iug_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRange
                                  'vsk','vss','wat','whn','whs','wik','wil','wit','wmq','wng','yak','ycb','ykc','yss'])
   (*paramArray[5])[4] = ptr_new(['*(all)','aed','amb','hus','h57','h68','ihd','isa','skl','srm','syo','tjo'])
   (*paramArray[6])[0] = ptr_new(['*(all)','aed','hus','isa','syo','tjo'])
-  (*paramArray[6])[1] = ptr_new(['*(all)','ath','mgd','ptk','msr','sta'])
+  (*paramArray[6])[1] = ptr_new(['*(all)','ath','mgd','ptk','msr','sta','gak','kap','zgn','hus'])
   (*paramArray[7])[0] = ptr_new(['*(all)','WDC_kyoto'])
   (*paramArray[7])[1] = ptr_new(['*(all)','WDC_kyoto'])
   (*paramArray[7])[2] = ptr_new(['*(all)','WDC_kyoto'])
+  (*paramArray[7])[3] = ptr_new(['*(all)','WDC_kyoto'])
   (*paramArray[8])[0] = ptr_new(['*(all)','champ','cosmic'])
   (*paramArray[9])[0] = ptr_new(['*(all)','iit']) 
   (*paramArray[10])[0] = ptr_new(['*(all)','iit']) 
@@ -523,7 +524,7 @@ pro iug_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRange
   param2Array[4] = ptr_new(ptrarr(5))
   param2Array[5] = ptr_new(ptrarr(5))
   param2Array[6] = ptr_new(ptrarr(2))
-  param2Array[7] = ptr_new(ptrarr(3))
+  param2Array[7] = ptr_new(ptrarr(4))
   param2Array[8] = ptr_new(ptrarr(1))
   param2Array[9] = ptr_new(ptrarr(1))
   param2Array[10] = ptr_new(ptrarr(1))
@@ -567,6 +568,7 @@ pro iug_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRange
   (*param2Array[7])[0] = ptr_new(['*','final','prov'])
   (*param2Array[7])[1] = ptr_new(['*','min','hour','prov_min','prov_hour'])
   (*param2Array[7])[2] = ptr_new(['*','asy','sym'])
+  (*param2Array[7])[3] = ptr_new(['*'])
   (*param2Array[8])[0] = ptr_new(['*','event','gpsid','leoid','lat','lon','ref','pres','temp','tan_lat','tan_lon'])
   (*param2Array[9])[0] = ptr_new(['*','L','R'])
   (*param2Array[10])[0] = ptr_new(['*','L','R']) 

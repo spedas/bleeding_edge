@@ -40,8 +40,8 @@
 ;  Please check the data catalog at http://wdc-data.iugonet.org/.
 ;
 ;Written by:  Daiki Yoshida,  Aug 2010
-;Last Updated:  Yukinobu KOYAMA,  Oct 21, 2011
-; 
+;Updated:  Yukinobu KOYAMA,  Oct 21, 2011
+;Last Updated Shun Imajo, Apr, 26, 2017
 ;-
 
 pro iug_load_gmag_wdc, site=site, $
@@ -55,7 +55,7 @@ pro iug_load_gmag_wdc, site=site, $
 
 
   ; validate site settings
-  vsnames = 'kak asy sym ae dst'
+  vsnames = 'kak asy sym ae dst wp'
   vsnames_sample = strsplit(vsnames, ' ', /extract)
   vsnames_all = iug_load_gmag_wdc_vsnames()
   if(keyword_set(site)) then site_in = site else site_in = vsnames_sample
@@ -63,7 +63,6 @@ pro iug_load_gmag_wdc, site=site, $
     /ignore_case, /include_all)
   if wdc_sites[0] eq '' then return
   nsites = n_elements(wdc_sites)
-
 
   for i=0, nsites-1 do begin
 
@@ -81,7 +80,7 @@ pro iug_load_gmag_wdc, site=site, $
      else resolution_in = resolution
 
      if strlowcase(wdc_sites[i]) eq 'sym' or $
-        strlowcase(wdc_sites[i]) eq 'asy' then begin
+        strlowcase(wdc_sites[i]) eq 'asy' or strlowcase(wdc_sites[i]) eq 'wp' then begin
         resolution_in = 'min'
      endif else if strlowcase(wdc_sites[i]) eq 'dst' then begin
         resolution_in = 'hour'

@@ -51,7 +51,7 @@ function show_acknowledgement, instrument=instrument, datatype=datatype, $
                 'Affiliations:', str.cdf.gatt.pi_affiliation, '', $
                 'Rules of the Road: ',str.cdf.gatt.rules_of_use, '', $
                 str.cdf.gatt.LINK_TEXT, str.cdf.gatt.HTTP_LINK]
-  endif else if (datatype eq '210mm#') or (datatype eq 'STEL#') or $
+  endif else if (datatype eq '210mm#') or (datatype eq 'ISEE#') or $
      (datatype eq 'magdas#') then begin
      theMessage = [ $
                 str.cdf.gatt.LOGICAL_SOURCE_DESCRIPTION, '', $

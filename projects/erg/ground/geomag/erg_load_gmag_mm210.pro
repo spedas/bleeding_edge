@@ -2,14 +2,14 @@
 ; PROCEDURE: erg_load_gmag_mm210
 ;
 ; PURPOSE:
-;   To load the 210 MM geomagnetic data from the STEL ERG-SC site 
+;   To load the 210 MM geomagnetic data from the STEL ERG-SC site
 ;
 ; KEYWORDS:
 ;   site  = Observatory name, example, erg_load_gmag_mm210, site='rik',
 ;           the default is 'all', i.e., load all available stations.
 ;           This can be an array of strings, e.g., ['rik', 'onw']
 ;           or a single string delimited by spaces, e.g., 'rik onw'.
-;           Sites for 1 sec data:  
+;           Sites for 1 sec data:
 ;              msr rik kag ktb can
 ;           Sites for 1 min/h data:
 ;              tik zgn yak irt ppi bji lnp mut ptn wtk
@@ -36,8 +36,8 @@
 ;             erg-sc-core at isee.nagoya-u.ac.jp
 ;
 ;   $LastChangedBy: nikos $
-;   $LastChangedDate: 2017-05-19 10:27:24 -0700 (Fri, 19 May 2017) $
-;   $LastChangedRevision: 23335 $
+;   $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+;   $LastChangedRevision: 24403 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/geomag/erg_load_gmag_mm210.pro $
 ;-
 
@@ -122,22 +122,17 @@ if(~keyword_set(no_server)) then no_server=0
 if(~keyword_set(no_download)) then no_download=0
 
 ;*** load CDF ***
-;--- Create (and initialize) a data file structure 
+;--- Create (and initialize) a data file structure
 source = file_retrieve(/struct)
 
-;--- Set parameters for the data file class 
+;--- Set parameters for the data file class
 source.local_data_dir  = root_data_dir() + 'ergsc/'
-source.remote_data_dir = 'http://ergsc.isee.nagoya-u.ac.jp/data/ergsc/'
+source.remote_data_dir = 'https://ergsc.isee.nagoya-u.ac.jp/data/ergsc/'
 
 ;--- Download parameters
 if(keyword_set(downloadonly)) then source.downloadonly=1
 if(keyword_set(no_server))    then source.no_server=1
 if(keyword_set(no_download))  then source.no_download=1
-
-;--- Generate the file paths by expanding wilecards of date/time 
-;    (e.g., YYYY, YYYYMMDD) for the time interval set by "timespan"
-relpathnames1 = file_dailynames(file_format='YYYY', trange=trange)
-relpathnames2 = file_dailynames(file_format='YYYYMMDD', trange=trange) 
 
 for i=0, n_elements(site_code)-1 do begin
   for j=nfloads, nfloade do begin
@@ -149,17 +144,19 @@ for i=0, n_elements(site_code)-1 do begin
     ;--- Set the file path which is added to source.local_data_dir/remote_data_dir.
     ;pathformat = 'ground/geomag/mm210/'+fres+'/SSS/YYYY/mm210_'+fres+'_SSS_YYYYMMDD_v??.cdf'
 
-    ;--- Generate the file paths by expanding wilecards of date/time 
+    ;--- Generate the file paths by expanding wilecards of date/time
     ;    (e.g., YYYY, YYYYMMDD) for the time interval set by "timespan"
-    ;relpathnames = file_dailynames(file_format=pathformat) 
+    ;relpathnames = file_dailynames(file_format=pathformat)
 
-    relpathnames  = 'ground/geomag/mm210/'+fres+'/'+site_code[i]+'/'+relpathnames1 $
-                  + '/mm210_'+fres+'_'+site_code[i]+'_'+relpathnames2+'_v??.cdf'
-    ;print,relpathnames
+    year=file_dailynames(file_format='YYYY',trange=trange)
+    yyyymmdd=file_dailynames(file_format='YYYYMMDD',trange=trange)
 
-    ;--- Download the designated data files from the remote data server
-    ;    if the local data files are older or do not exist. 
-    files = spd_download(remote_file=relpathnames, remote_path=source.remote_data_dir, local_path=source.local_data_dir, _extra=source, /last_version)
+    relpathnames = 'ground/geomag/mm210/'+fres+'/'+site_code[i]+'/'+year $
+                  + '/mm210_'+fres+'_'+site_code[i]+'_'+yyyymmdd+'_v??.cdf'
+
+    files = spd_download(remote_file=relpathnames, remote_path=source.remote_data_dir,$
+                        local_path=source.local_data_dir, _extra=source, /last_version)
+
     filestest=file_test(files)
 
     if(total(filestest) ge 1) then begin

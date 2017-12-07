@@ -1,16 +1,16 @@
 ;+
 ; PROCEDURE: iug_load_gmag_stel_fluxgate
-;   To load the STEL fluxgate geomagnetic data from the STEL ERG-SC site 
+;   To load the ISEE fluxgate geomagnetic data from the ISEE ERG-SC site 
 ;
-; NOTE: This procedure is a simple alias to "erg_load_gmag_stel_fluxgate" 
+; NOTE: This procedure is a simple alias to "erg_load_gmag_isee_fluxgate" 
 ;   and calls the original one by just providing the same 
 ;   arguments/keywords given.
 ;   Some load procedures for the ground-based observational data 
 ;   in the  ERG mission, named "erg_load_???", can be also called  
 ;   by "iug_load_???", because these data are related to the both 
 ;   ERG and IUGONET projects.
-;   For more information, see http://www.iugonet.org/en/ 
-;                         and http://gemsissc.stelab.nagoya-u.ac.jp/erg/
+;   For more information, see http://www.iugonet.org/
+;                         and https://ergsc.isee.nagoya-u.ac.jp/index.shtml.en
 ;   See the rules of the road.
 ;   For more information, see http://stdb2.stelab.nagoya-u.ac.jp/magne/
 ;   and http://www1.osakac.ac.jp/crux/ (for mdm and tew).
@@ -44,7 +44,7 @@ pro iug_load_gmag_stel_fluxgate, site=site, datatype=datatype, $
         downloadonly=downloadonly, no_server=no_server, no_download=no_download, $
         trange=trange, timeclip=timeclip
 
-erg_load_gmag_stel_fluxgate, site=site, datatype=datatype, $
+erg_load_gmag_isee_fluxgate, site=site, datatype=datatype, $
         downloadonly=downloadonly, no_server=no_server, no_download=no_download, $
         trange=trange, timeclip=timeclip
 

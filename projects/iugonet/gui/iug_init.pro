@@ -48,6 +48,7 @@ if (not keyword_set(exists)) or (keyword_set(reset)) then begin
                   ear:                   0b, $
                   gmag_wdc_dst:          0b, $
                   gmag_wdc_ae_asy:       0b, $
+                  gmag_wdc_wp:           0b, $
                   gmag_wdc:              0b, $
                   gmag_mm210_adl:        0b, $
                   gmag_mm210_bik:        0b, $
@@ -82,12 +83,12 @@ if (not keyword_set(exists)) or (keyword_set(reset)) then begin
                   gmag_mm210_yap:        0b, $
                   gmag_mm210_ymk:        0b, $
                   gmag_mm210_zyk:        0b, $
-                  gmag_stel_msr:         0b, $
-                  gmag_stel_rik:         0b, $
-                  gmag_stel_kag:         0b, $
-                  gmag_stel_ktb:         0b, $
-                  gmag_stel_mdm:         0b, $
-                  gmag_stel_tew:         0b, $
+                  gmag_isee_msr:         0b, $
+                  gmag_isee_rik:         0b, $
+                  gmag_isee_kag:         0b, $
+                  gmag_isee_ktb:         0b, $
+                  gmag_isee_mdm:         0b, $
+                  gmag_isee_tew:         0b, $
                   gmag_nipr_syo:         0b, $ ;Syowa
                   gmag_nipr_ice:         0b, $ ;Iceland
                   gmag_magdas_ama:       0b, $
@@ -109,7 +110,7 @@ if (not keyword_set(exists)) or (keyword_set(reset)) then begin
                   gps_ro_rish:           0b, $
                   imag_nipr_syo:         0b, $
                   imag_nipr_ice:         0b, $
-                  imag_stel:             0b, $
+                  imag_isee:             0b, $
                   hf_tohokuu:            0b, $
                   iprt:                  0b, $
                   irio_nipr_syo:         0b, $

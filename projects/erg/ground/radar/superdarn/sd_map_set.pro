@@ -30,14 +30,14 @@
 ;    sd_map_set, /clip, center_glat=70., center_glon=180., /mltlabel, lonlab=74.
 ;
 ; :AUTHOR:
-; 	Tomo Hori (E-mail: horit@stelab.nagoya-u.ac.jp)
+; 	Tomo Hori (E-mail: horit@isee.nagoya-u.ac.jp)
 ;
 ; :HISTORY:
 ; 	2011/01/11: Created
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-05-12 16:57:48 -0700 (Thu, 12 May 2016) $
-; $LastChangedRevision: 21070 $
+; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/sd_map_set.pro $
 ;-
 PRO sd_map_set, time, erase=erase, clip=clip, position=position, $

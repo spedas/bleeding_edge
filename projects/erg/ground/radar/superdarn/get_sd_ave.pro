@@ -12,6 +12,7 @@
 ; latrng: the geographical latitude range for which the given values are averaged
 ; lonrng: the geographical longitude range for averaging
 ; maglat: Set this keyword if you give the latrng in magnetic latitude
+; maglon: Set this if you give the lonrng in magnetic longitude 
 ; new_vn: Set a string to create a new tplot variable containing the averaged values
 ;
 ; :EXAMPLES:
@@ -19,17 +20,40 @@
 ;   dat = get_sd_ave( 'sd_hok_vlos_1', latrng=[60,70], lonrng=[140,170] 
 ;
 ; :Author:
-; 	Tomo Hori (E-mail: horit@stelab.nagoya-u.ac.jp)
+; 	Tomo Hori (E-mail: horit@isee.nagoya-u.ac.jp)
 ;
 ; :HISTORY:
 ; 	2011/07/03: Created
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2014-02-10 16:54:11 -0800 (Mon, 10 Feb 2014) $
-; $LastChangedRevision: 14265 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/get_sd_ave.pro $
 ;-
-FUNCTION get_sd_ave, vn, latrng=latrng, lonrng=lonrng, maglat=maglat, new_vn=new_vn
+; A helper function to check if the argument x (scalar or array) falls in the angular range given by 
+; the argument range (a 2-element 1-D array). Both x and range should be given in degree. 
+FUNCTION in_phirng, x, range, west=west
+
+  IF dimen(range) NE 2 THEN RETURN, -1
+
+  range= ( range + 360. ) MOD 360.
+  IF range[0] LT 0. OR range[1] LT 0. THEN RETURN, -1
+
+  IF range[0] LT range[1] THEN BEGIN
+
+    RETURN, ( x GE range[0] AND x LT range[1])
+
+  ENDIF ELSE BEGIN
+
+    RETURN, ( x GE range[0] OR x LT range[1]  )
+
+  ENDELSE
+
+
+  RETURN, -1
+END
+
+FUNCTION get_sd_ave, vn, latrng=latrng, lonrng=lonrng, maglat=maglat, maglon=maglon, new_vn=new_vn
   
   
   ;Check the arguments and keywords
@@ -40,6 +64,7 @@ FUNCTION get_sd_ave, vn, latrng=latrng, lonrng=lonrng, maglat=maglat, new_vn=new
   if n_elements(latrng) ne 2 or n_elements(lonrng) ne 2 then return, !values.f_nan
   
   is_maglat = keyword_set(maglat)
+  is_maglon = keyword_set(maglon) 
   
   ;Initialize the AACGM environment
   if is_maglat then begin
@@ -69,15 +94,16 @@ FUNCTION get_sd_ave, vn, latrng=latrng, lonrng=lonrng, maglat=maglat, new_vn=new
   scan = scan_str.y
   
   ;If maglat is set, use the AACGM lat table
-  if is_maglat then begin
+  if is_maglat or is_maglon then begin
     glat = lattbl & glon = lontbl
     alt = glat & alt[*] = 400. ;[km]
     aacgmconvcoord, glat,glon,alt, mlat,mlon,err, /TO_AACGM
-    lattbl = mlat 
+    if is_maglat then lattbl = mlat 
+    if is_maglon then lontbl = (mlon+360.) mod 360 
   endif
   
   idx = where(      lattbl ge latrng[0] and lattbl le latrng[1] $
-                and lontbl ge lonrng[0] and lontbl le lonrng[1] )
+                and in_phirng( lontbl, lonrng ) )
   ;if idx[0] eq -1 then return, !values.f_nan
   
   val = fltarr(n_elements(scant))

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Dec  5 18:16:12 2017.<P>
+<STRONG>Last modified: </STRONG>Wed Dec  6 18:16:09 2017.<P>
  
 <HR>
  
@@ -19,6 +19,10 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/erg/ground/geomag</H1>
+<LI><A HREF="#ERG_LOAD_GMAG_ISEE_FLUXGATE">ERG_LOAD_GMAG_ISEE_FLUXGATE</A>
+<br>To load the STEL fluxgate geomagnetic data from the STEL ERG-SC site
+<LI><A HREF="#ERG_LOAD_GMAG_ISEE_INDUCTION">ERG_LOAD_GMAG_ISEE_INDUCTION</A>
+<br>To load ISEE induction magnetometer data from the ERG-SC site
 <LI><A HREF="#ERG_LOAD_GMAG_MAGDAS_1SEC">ERG_LOAD_GMAG_MAGDAS_1SEC</A>
 <br>To load the MAGDAS geomagnetic data from the STEL ERG-SC site
 <LI><A HREF="#ERG_LOAD_GMAG_MM210">ERG_LOAD_GMAG_MM210</A>
@@ -34,22 +38,126 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="ERG_LOAD_GMAG_ISEE_FLUXGATE">
+<H2>ERG_LOAD_GMAG_ISEE_FLUXGATE</H2></A>
+<A HREF="#ERG_LOAD_GMAG_ISEE_INDUCTION">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE: erg_load_gmag_stel_fluxgate
+
+ PURPOSE:
+   To load the STEL fluxgate geomagnetic data from the STEL ERG-SC site
+
+ KEYWORDS:
+   site  = Observatory name, example, erg_load_gmag_stel_fluxgate, site='msr',
+           the default is 'all', i.e., load all available stations.
+           This can be an array of strings, e.g., ['msr', 'kag']
+           or a single string delimited by spaces, e.g., 'msr kag'.
+           Sites for 1 sec data:
+              msr rik kag ktb
+           Sites for 1 min/h data:
+              msr rik kag ktb mdm tew
+   datatype = Time resolution. '1sec' for 1 sec', '1min' for 1 min, and '1h' for 1 h.
+              The default is 'all'.  If you need two of them, set to 'all'.
+   /downloadonly, if set, then only download the data, do not load it into variables.
+   /no_server, use only files which are online locally.
+   /no_download, use only files which are online locally. (Identical to no_server keyword.)
+   trange = (Optional) Time range of interest  (2 element array).
+   /timeclip, if set, then data are clipped to the time range set by timespan
+
+ EXAMPLE:
+   erg_load_gmag_stel_fluxgate, site='msr kag', datatype='1min', $
+       trange=['2003-11-20/00:00:00','2003-11-21/00:00:00']
+
+ NOTE: See the rules of the road.
+       For more information, see http://stdb2.isee.nagoya-u.ac.jp/magne/
+       and http://www1.osakac.ac.jp/crux/ (for mdm and tew).
+
+ HISTORY:
+       2013-07-19: Originally written by Y. Miyashita
+                   ERG-Science Center, ISEE, Nagoya Univ.
+                   erg-sc-core at isee.nagoya-u.ac.jp
+
+       2017-07-07: Satoshi Kurita, ISEE, Nagoya U.
+                   1. Use spd_download instead of file_retrieve
+                   2. renamed STEL to ISEE
+
+   $LastChangedBy: nikos $
+   $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+   $LastChangedRevision: 24403 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/geomag/erg_load_gmag_isee_fluxgate.pro $
+</PRE><P>
+<STRONG>(See <A href="geomag/erg_load_gmag_isee_fluxgate.pro">projects/erg/ground/geomag/erg_load_gmag_isee_fluxgate.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ERG_LOAD_GMAG_ISEE_INDUCTION">
+<H2>ERG_LOAD_GMAG_ISEE_INDUCTION</H2></A>
+<A HREF="#ERG_LOAD_GMAG_ISEE_FLUXGATE">[Previous Routine]</A>
+<A HREF="#ERG_LOAD_GMAG_MAGDAS_1SEC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE: erg_load_gmag_isee_induction
+
+ PURPOSE:
+   To load ISEE induction magnetometer data from the ERG-SC site
+
+ KEYWORDS:
+   site  = Observatory name, example, erg_load_gmag_stel_induction, site='msr',
+           the default is 'all', i.e., load all available stations.
+           This can be an array of strings, e.g., ['msr', 'sta']
+           or a single string delimited by spaces, e.g., 'msr sta'.
+           Sites: ath mgd ptk msr sta gak kap zgn
+   /downloadonly, if set, then only download the data, do not load it into variables.
+   /no_server, use only files which are online locally.
+   /no_download, use only files which are online locally. (Identical to no_server keyword.)
+   trange = (Optional) Time range of interest  (2 element array).
+   /timeclip, if set, then data are clipped to the time range set by timespan
+   frequency_dependent = get frequecy-dependent sensitivity and phase difference
+            (frequency [Hz], sensitivity (H,D,Z) [V/nT], and phase_difference (H,D,Z) [deg])
+   /time_pulse, get time pulse
+
+ EXAMPLE:
+   erg_load_gmag_isee_induction, site='msr sta', $
+         trange=['2008-02-28/00:00:00','2008-02-28/02:00:00']
+
+ NOTE: See the rules of the road.
+       For more information, see http://stdb2.isee.nagoya-u.ac.jp/magne/
+
+ HISTORY:
+       2011-01-23: Originally written by Y. Miyashita
+                   ERG-Science Center, ISEE, Nagoya Univ.
+                   erg-sc-core at isee.nagoya-u.ac.jp
+
+       2017-07-07: Satoshi Kurita, ISEE, Nagoya U.
+                   1. New stations (GAK, KAP, ZGN) are included
+                   2. Use spd_download instead of file_retrieve
+
+ $LastChangedBy: nikos $
+ $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+ $LastChangedRevision: 24403 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/geomag/erg_load_gmag_isee_induction.pro $
+
+</PRE><P>
+<STRONG>(See <A href="geomag/erg_load_gmag_isee_induction.pro">projects/erg/ground/geomag/erg_load_gmag_isee_induction.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ERG_LOAD_GMAG_MAGDAS_1SEC">
 <H2>ERG_LOAD_GMAG_MAGDAS_1SEC</H2></A>
+<A HREF="#ERG_LOAD_GMAG_ISEE_INDUCTION">[Previous Routine]</A>
 <A HREF="#ERG_LOAD_GMAG_MM210">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE: erg_load_gmag_magdas_1sec
 
  PURPOSE:
-   To load the MAGDAS geomagnetic data from the STEL ERG-SC site 
+   To load the MAGDAS geomagnetic data from the STEL ERG-SC site
 
  KEYWORDS:
    site  = Observatory name, example, erg_load_magdas_1sec, site='asb',
            the default is 'all', i.e., load all available stations.
            This can be an array of strings, e.g., ['asb', 'onw']
            or a single string delimited by spaces, e.g., 'asb onw'.
-           Sites for 1 sec data:  
+           Sites for 1 sec data:
               asb ...
            Sites for 1 min/h data:
               ...
@@ -58,6 +166,7 @@ This page was created by the IDL library routine
    /downloadonly, if set, then only download the data, do not load it into variables.
    /no_server, use only files which are online locally.
    /no_download, use only files which are online locally. (Identical to no_server keyword.)
+   /verbose
    trange = (Optional) Time range of interest  (2 element array).
 
  EXAMPLE:
@@ -73,8 +182,8 @@ This page was created by the IDL library routine
              erg-sc-core at st4a.stelab.nagoya-u.ac.jp
 
    $LastChangedBy: nikos $
-   $LastChangedDate: 2017-05-19 10:27:24 -0700 (Fri, 19 May 2017) $
-   $LastChangedRevision: 23335 $
+   $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+   $LastChangedRevision: 24403 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/geomag/erg_load_gmag_magdas_1sec.pro $
 </PRE><P>
 <STRONG>(See <A href="geomag/erg_load_gmag_magdas_1sec.pro">projects/erg/ground/geomag/erg_load_gmag_magdas_1sec.pro</A>)</STRONG><P>
@@ -89,14 +198,14 @@ This page was created by the IDL library routine
  PROCEDURE: erg_load_gmag_mm210
 
  PURPOSE:
-   To load the 210 MM geomagnetic data from the STEL ERG-SC site 
+   To load the 210 MM geomagnetic data from the STEL ERG-SC site
 
  KEYWORDS:
    site  = Observatory name, example, erg_load_gmag_mm210, site='rik',
            the default is 'all', i.e., load all available stations.
            This can be an array of strings, e.g., ['rik', 'onw']
            or a single string delimited by spaces, e.g., 'rik onw'.
-           Sites for 1 sec data:  
+           Sites for 1 sec data:
               msr rik kag ktb can
            Sites for 1 min/h data:
               tik zgn yak irt ppi bji lnp mut ptn wtk
@@ -123,8 +232,8 @@ This page was created by the IDL library routine
              erg-sc-core at isee.nagoya-u.ac.jp
 
    $LastChangedBy: nikos $
-   $LastChangedDate: 2017-05-19 10:27:24 -0700 (Fri, 19 May 2017) $
-   $LastChangedRevision: 23335 $
+   $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+   $LastChangedRevision: 24403 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/geomag/erg_load_gmag_mm210.pro $
 </PRE><P>
 <STRONG>(See <A href="geomag/erg_load_gmag_mm210.pro">projects/erg/ground/geomag/erg_load_gmag_mm210.pro</A>)</STRONG><P>
@@ -197,14 +306,14 @@ This page was created by the IDL library routine
  PROCEDURE: erg_load_gmag_stel_fluxgate
 
  PURPOSE:
-   To load the STEL fluxgate geomagnetic data from the STEL ERG-SC site 
+   To load the STEL fluxgate geomagnetic data from the STEL ERG-SC site
 
  KEYWORDS:
    site  = Observatory name, example, erg_load_gmag_stel_fluxgate, site='msr',
            the default is 'all', i.e., load all available stations.
            This can be an array of strings, e.g., ['msr', 'kag']
            or a single string delimited by spaces, e.g., 'msr kag'.
-           Sites for 1 sec data:  
+           Sites for 1 sec data:
               msr rik kag ktb
            Sites for 1 min/h data:
               msr rik kag ktb mdm tew
@@ -228,9 +337,12 @@ This page was created by the IDL library routine
              ERG-Science Center, ISEE, Nagoya Univ.
              erg-sc-core at isee.nagoya-u.ac.jp
 
+ Changed from original load procedure to the alias, by S. Kurita,
+        Nov. 20, 2017.
+
    $LastChangedBy: nikos $
-   $LastChangedDate: 2017-05-19 10:27:24 -0700 (Fri, 19 May 2017) $
-   $LastChangedRevision: 23335 $
+   $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+   $LastChangedRevision: 24403 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/geomag/erg_load_gmag_stel_fluxgate.pro $
 </PRE><P>
 <STRONG>(See <A href="geomag/erg_load_gmag_stel_fluxgate.pro">projects/erg/ground/geomag/erg_load_gmag_stel_fluxgate.pro</A>)</STRONG><P>
@@ -244,7 +356,7 @@ This page was created by the IDL library routine
  PROCEDURE: erg_load_gmag_stel_induction
 
  PURPOSE:
-   To load STEL induction magnetometer data from the STEL ERG-SC site 
+   To load STEL induction magnetometer data from the STEL ERG-SC site
 
  KEYWORDS:
    site  = Observatory name, example, erg_load_gmag_stel_induction, site='msr',
@@ -272,9 +384,12 @@ This page was created by the IDL library routine
              ERG-Science Center, ISEE, Nagoya Univ.
              erg-sc-core at isee.nagoya-u.ac.jp
 
+ Changed from original load procedure to the alias, by S. Kurita,
+        Nov. 20, 2017.
+
    $LastChangedBy: nikos $
-   $LastChangedDate: 2017-05-19 10:27:24 -0700 (Fri, 19 May 2017) $
-   $LastChangedRevision: 23335 $
+   $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+   $LastChangedRevision: 24403 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/geomag/erg_load_gmag_stel_induction.pro $
 </PRE><P>
 <STRONG>(See <A href="geomag/erg_load_gmag_stel_induction.pro">projects/erg/ground/geomag/erg_load_gmag_stel_induction.pro</A>)</STRONG><P>

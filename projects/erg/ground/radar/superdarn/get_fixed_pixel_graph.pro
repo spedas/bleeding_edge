@@ -17,14 +17,14 @@
 ;   get_fixed_pixel_graph, 'sd_hok_vlos_1', beam=3, range_gate=65
 ;
 ; :AUTHOR:
-; 	Tomo Hori (E-mail: horit@stelab.nagoya-u.ac.jp)
+; 	Tomo Hori (E-mail: horit@isee.nagoya-u.ac.jp)
 ;
 ; :HISTORY:
 ; 	2011/06/22: Created
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2012-03-16 14:46:35 -0700 (Fri, 16 Mar 2012) $
-; $LastChangedRevision: 10146 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/get_fixed_pixel_graph.pro $
 ;-
 PRO get_fixed_pixel_graph, vn, beam=beam, range_gate=rgate, newvn=newvn

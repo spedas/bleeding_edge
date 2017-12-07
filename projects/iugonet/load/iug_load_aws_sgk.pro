@@ -27,11 +27,13 @@
 ;  
 ;MODIFICATIONS:
 ;  A. Shinbori, 24/01/2014.
-;   
+;  A. Shinbori, 08/08/2017. 
+;  A. Shinbori, 30/11/2017.
+;  
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-05-19 11:44:55 -0700 (Fri, 19 May 2017) $
-; $LastChangedRevision: 23337 $
+; $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24404 $
 ; $URL $
 ;-
 
@@ -43,6 +45,15 @@ pro iug_load_aws_sgk, site=site, $
 ;Verbose keyword check:
 ;**********************
 if (not keyword_set(verbose)) then verbose=2
+
+;***********************
+;Keyword check (trange):
+;***********************
+if not keyword_set(trange) then begin
+  get_timespan, time_org
+endif else begin
+  time_org =time_double(trange)
+endelse
 
 ;****************
 ;Site code check:
@@ -63,12 +74,17 @@ endif
 
 print, site_code
 
-;******************************************************************
-;Loop on downloading files
-;******************************************************************
-;Get timespan, define FILE_NAMES, and load data:
-;===============================================
-;
+;**************************
+;Loop on downloading files:
+;**************************
+;==============================================================
+;Change time window associated with a time shift from UT to LT:
+;==============================================================
+day_org = (time_org[1] - time_org[0])/86400.d
+day_mod = day_org + 1
+timespan, time_org[0] - 3600.0d * 9.0d, day_mod
+if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) +9.0d * 3600.0d); for GUI
+
 ;===================================================================
 ;Download files, read data, and create tplot vars at each component:
 ;===================================================================
@@ -107,14 +123,6 @@ if (downloadonly eq 0) then begin
       
    ;---Definition of string variable:
     s=''
-
-   ;---Initialize data and time buffer
-    aws_time = 0
-    aws_press = 0
-    aws_temp = 0
-    aws_rh = 0
-    aws_uwnd = 0
-    aws_vwnd = 0
     
    ;==============      
    ;Loop on files: 
@@ -150,8 +158,7 @@ if (downloadonly eq 0) then begin
         
       ;---Convert time from LT to UT
        yymmdd = strsplit(date,'/',/extract)     
-       time = time_double(string(yymmdd[0])+'-'+string(yymmdd[1])+'-'+string(yymmdd[2])+'/'+string(data_arr[*,0])) $
-                   -time_double(string(1970)+'-'+string(1)+'-'+string(1)+'/'+string(time_zone)+':'+string(0)+':'+string(0))
+       aws_data_time = time_double(string(yymmdd[0])+'-'+string(yymmdd[1])+'-'+string(yymmdd[2])+'/'+string(data_arr[*,0])) - double(time_zone) * 3600.0d
 
       ;---Substitute each parameter:            
        press = data_arr[*,2]
@@ -185,15 +192,22 @@ if (downloadonly eq 0) then begin
       ;=====================================
       ;Append data of time and observations:
       ;=====================================
-       append_array, aws_time, time
-       append_array, aws_press,press
-       append_array, aws_temp, temp
-       append_array, aws_rh,   rh
-       append_array, aws_uwnd, uwnd
-       append_array, aws_vwnd, vwnd  
+       append_array, aws_data_time_app, aws_data_time
+       append_array, aws_press_app,press
+       append_array, aws_temp_app, temp
+       append_array, aws_rh_app,   rh
+       append_array, aws_uwnd_app, uwnd
+       append_array, aws_vwnd_app, vwnd  
        free_lun,lun  
     endfor
-         
+    
+   ;==============================================================
+   ;Change time window associated with a time shift from UT to LT:
+   ;==============================================================
+    timespan, time_org
+    get_timespan, init_time2         
+    if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) - 9.0d * 3600.0d); for GUI
+    
    ;==============================
    ;Store data in TPLOT variables:
    ;==============================
@@ -207,14 +221,21 @@ if (downloadonly eq 0) then begin
                        'atmosphere Global Observation NETwork) project (http://www.iugonet.org/) funded '+ $
                        'by the Ministry of Education, Culture, Sports, Science and Technology (MEXT), Japan.' 
  
-   if size(aws_press,/type) eq 4 then begin 
+   if size(aws_press_app,/type) eq 4 then begin 
      ;---Create tplot variables
       dlimit=create_struct('data_att',create_struct('acknowledgment',acknowledgstring,'PI_NAME', 'H. Hashiguchi'))            
-      store_data,'iug_aws_sgk_press',data={x:aws_time, y:aws_press},dlimit=dlimit
-      store_data,'iug_aws_sgk_temp',data={x:aws_time, y:aws_temp},dlimit=dlimit
-      store_data,'iug_aws_sgk_rh',data={x:aws_time, y:aws_rh},dlimit=dlimit
-      store_data,'iug_aws_sgk_uwnd',data={x:aws_time, y:aws_uwnd},dlimit=dlimit
-      store_data,'iug_aws_sgk_vwnd',data={x:aws_time, y:aws_vwnd},dlimit=dlimit
+      store_data,'iug_aws_sgk_press',data={x:aws_data_time_app, y:aws_press_app},dlimit=dlimit
+      store_data,'iug_aws_sgk_temp',data={x:aws_data_time_app, y:aws_temp_app},dlimit=dlimit
+      store_data,'iug_aws_sgk_rh',data={x:aws_data_time_app, y:aws_rh_app},dlimit=dlimit
+      store_data,'iug_aws_sgk_uwnd',data={x:aws_data_time_app, y:aws_uwnd_app},dlimit=dlimit
+      store_data,'iug_aws_sgk_vwnd',data={x:aws_data_time_app, y:aws_vwnd_app},dlimit=dlimit
+
+     ;----Edge data cut:
+      time_clip, 'iug_aws_sgk_press', init_time2[0], init_time2[1], newname = 'iug_aws_sgk_press'
+      time_clip, 'iug_aws_sgk_rh', init_time2[0], init_time2[1], newname = 'iug_aws_sgk_rh'
+      time_clip, 'iug_aws_sgk_temp', init_time2[0], init_time2[1], newname = 'iug_aws_sgk_temp'
+      time_clip, 'iug_aws_sgk_uwnd', init_time2[0], init_time2[1], newname = 'iug_aws_sgk_uwnd'
+      time_clip, 'iug_aws_sgk_vwnd', init_time2[0], init_time2[1], newname = 'iug_aws_sgk_vwnd'
       
      ;---Options of each tplot variable 
       new_vars=tnames('iug_aws_sgk_press')
@@ -244,6 +265,10 @@ if (downloadonly eq 0) then begin
       tdegap, 'iug_aws_sgk_uwnd',/overwrite
       tdegap, 'iug_aws_sgk_vwnd',/overwrite
    endif
+   
+   ;---Initialization of timespan for sites:
+   timespan, time_org
+
 endif
  
 new_vars=tnames('iug_aws_*')

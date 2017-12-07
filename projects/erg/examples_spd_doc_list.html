@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Dec  5 18:16:12 2017.<P>
+<STRONG>Last modified: </STRONG>Wed Dec  6 18:16:09 2017.<P>
  
 <HR>
  
@@ -20,11 +20,13 @@ This page was created by the IDL library routine
 <UL>
 <H1>projects/erg/examples</H1>
 <LI><A HREF="#ERG_CRIB_CAMERA_OMTI_ASI">ERG_CRIB_CAMERA_OMTI_ASI</A>
+<LI><A HREF="#ERG_CRIB_GMAG_ISEE_FLUXGATE">ERG_CRIB_GMAG_ISEE_FLUXGATE</A>
+<LI><A HREF="#ERG_CRIB_GMAG_ISEE_INDUCTION">ERG_CRIB_GMAG_ISEE_INDUCTION</A>
 <LI><A HREF="#ERG_CRIB_GMAG_MAGDAS">ERG_CRIB_GMAG_MAGDAS</A>
 <LI><A HREF="#ERG_CRIB_GMAG_MM210">ERG_CRIB_GMAG_MM210</A>
 <LI><A HREF="#ERG_CRIB_GMAG_NIPR">ERG_CRIB_GMAG_NIPR</A>
-<LI><A HREF="#ERG_CRIB_GMAG_STEL_FLUXGATE">ERG_CRIB_GMAG_STEL_FLUXGATE</A>
-<LI><A HREF="#ERG_CRIB_GMAG_STEL_INDUCTION">ERG_CRIB_GMAG_STEL_INDUCTION</A>
+<LI><A HREF="#ERG_CRIB_ISEE_RIOMETER">ERG_CRIB_ISEE_RIOMETER</A>
+<LI><A HREF="#ERG_CRIB_ISEE_VLF">ERG_CRIB_ISEE_VLF</A>
 <LI><A HREF="#ERG_CRIB_SUPERDARN">ERG_CRIB_SUPERDARN</A>
 <br>
 </UL><P>
@@ -33,7 +35,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="ERG_CRIB_CAMERA_OMTI_ASI">
 <H2>ERG_CRIB_CAMERA_OMTI_ASI</H2></A>
-<A HREF="#ERG_CRIB_GMAG_MAGDAS">[Next Routine]</A>
+<A HREF="#ERG_CRIB_GMAG_ISEE_FLUXGATE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROGRAM: erg_crib_camera_omti_asi
@@ -42,23 +44,85 @@ This page was created by the IDL library routine
      .run erg_crib_camera_omti_asi
 
  NOTE: See the rules of the road.
-       For more information, see http://stdb2.stelab.nagoya-u.ac.jp/omti/
+       For more information, see http://stdb2.isee.nagoya-u.ac.jp/omti/
 
  Written by: Y. Miyashita, Mar 28, 2013
-             ERG-Science Center, STEL, Nagoya Univ.
-             erg-sc-core at st4a.stelab.nagoya-u.ac.jp
+             ERG-Science Center, ISEE, Nagoya Univ.
+             erg-sc-core at isee.nagoya-u.ac.jp
 
    $LastChangedBy: nikos $
-   $LastChangedDate: 2016-05-12 16:57:48 -0700 (Thu, 12 May 2016) $
-   $LastChangedRevision: 21070 $
+   $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+   $LastChangedRevision: 24403 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/examples/erg_crib_camera_omti_asi.pro $
 </PRE><P>
 <STRONG>(See <A href="examples/erg_crib_camera_omti_asi.pro">projects/erg/examples/erg_crib_camera_omti_asi.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ERG_CRIB_GMAG_ISEE_FLUXGATE">
+<H2>ERG_CRIB_GMAG_ISEE_FLUXGATE</H2></A>
+<A HREF="#ERG_CRIB_CAMERA_OMTI_ASI">[Previous Routine]</A>
+<A HREF="#ERG_CRIB_GMAG_ISEE_INDUCTION">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROGRAM: erg_crib_gmag_isee_fluxgate
+   This is an example crib sheet that will load ISEE fluxgate magnetometer data.
+   Open this file in a text editor and then use copy and paste to copy
+   selected lines into an idl window.
+   Or alternatively compile and run using the command:
+     .run erg_crib_gmag_stel_fluxgate
+
+ NOTE: See the rules of the road.
+       For more information, see http://stdb2.isee.nagoya-u.ac.jp/magne/
+       and http://www1.osakac.ac.jp/crux/ (for mdm and tew).
+
+ Written by: Y. Miyashita, Jun 19, 2013
+             ERG-Science Center, ISEE, Nagoya Univ.
+             erg-sc-core at isee.nagoya-u.ac.jp
+
+ Renamed from erg_crib_gmag_stel_fluxgate by S. Kurita Nov. 24, 2017.
+
+   $LastChangedBy: nikos $
+   $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+   $LastChangedRevision: 24403 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/examples/erg_crib_gmag_isee_fluxgate.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/erg_crib_gmag_isee_fluxgate.pro">projects/erg/examples/erg_crib_gmag_isee_fluxgate.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ERG_CRIB_GMAG_ISEE_INDUCTION">
+<H2>ERG_CRIB_GMAG_ISEE_INDUCTION</H2></A>
+<A HREF="#ERG_CRIB_GMAG_ISEE_FLUXGATE">[Previous Routine]</A>
+<A HREF="#ERG_CRIB_GMAG_MAGDAS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROGRAM: erg_crib_gmag_isee_induction
+   This is an example crib sheet that will load ISEE induction magnetometer data.
+   Open this file in a text editor and then use copy and paste to copy
+   selected lines into an idl window.
+   Or alternatively compile and run using the command:
+     .run erg_crib_gmag_stel_induction
+     .c
+
+ NOTE: See the rules of the road.
+       For more information, see http://stdb2.isee.nagoya-u.ac.jp/magne/
+
+ Written by: Y. Miyashita, Jan 24, 2011
+             ERG-Science Center, ISEE, Nagoya Univ.
+             erg-sc-core at isee.nagoya-u.ac.jp
+
+ Renamed from erg_crib_gmag_stel_induction by S. Kurita Nov. 24, 2017.
+
+   $LastChangedBy: nikos $
+   $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+   $LastChangedRevision: 24403 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/examples/erg_crib_gmag_isee_induction.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/erg_crib_gmag_isee_induction.pro">projects/erg/examples/erg_crib_gmag_isee_induction.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ERG_CRIB_GMAG_MAGDAS">
 <H2>ERG_CRIB_GMAG_MAGDAS</H2></A>
-<A HREF="#ERG_CRIB_CAMERA_OMTI_ASI">[Previous Routine]</A>
+<A HREF="#ERG_CRIB_GMAG_ISEE_INDUCTION">[Previous Routine]</A>
 <A HREF="#ERG_CRIB_GMAG_MM210">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -76,9 +140,9 @@ This page was created by the IDL library routine
              ERG-Science Center, STEL, Nagoya Univ.
              erg-sc-core at st4a.stelab.nagoya-u.ac.jp
 
-   $LastChangedBy: jwl $
-   $LastChangedDate: 2014-02-10 16:54:11 -0800 (Mon, 10 Feb 2014) $
-   $LastChangedRevision: 14265 $
+   $LastChangedBy: nikos $
+   $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+   $LastChangedRevision: 24403 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/examples/erg_crib_gmag_magdas.pro $
 </PRE><P>
 <STRONG>(See <A href="examples/erg_crib_gmag_magdas.pro">projects/erg/examples/erg_crib_gmag_magdas.pro</A>)</STRONG><P>
@@ -98,15 +162,15 @@ This page was created by the IDL library routine
      .run erg_crib_gmag_mm210
 
  NOTE: See the rules of the road.
-       For more information, see http://stdb2.stelab.nagoya-u.ac.jp/mm210/
+       For more information, see http://stdb2.isee.nagoya-u.ac.jp/mm210/
 
  Written by: Y. Miyashita, Jun 16, 2010
-             ERG-Science Center, STEL, Nagoya Univ.
-             erg-sc-core at st4a.stelab.nagoya-u.ac.jp
+             ERG-Science Center, ISEE, Nagoya Univ.
+             erg-sc-core at isee.nagoya-u.ac.jp
 
-   $LastChangedBy: jwl $
-   $LastChangedDate: 2014-02-10 16:54:11 -0800 (Mon, 10 Feb 2014) $
-   $LastChangedRevision: 14265 $
+   $LastChangedBy: nikos $
+   $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+   $LastChangedRevision: 24403 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/examples/erg_crib_gmag_mm210.pro $
 </PRE><P>
 <STRONG>(See <A href="examples/erg_crib_gmag_mm210.pro">projects/erg/examples/erg_crib_gmag_mm210.pro</A>)</STRONG><P>
@@ -115,7 +179,7 @@ This page was created by the IDL library routine
 <A NAME="ERG_CRIB_GMAG_NIPR">
 <H2>ERG_CRIB_GMAG_NIPR</H2></A>
 <A HREF="#ERG_CRIB_GMAG_MM210">[Previous Routine]</A>
-<A HREF="#ERG_CRIB_GMAG_STEL_FLUXGATE">[Next Routine]</A>
+<A HREF="#ERG_CRIB_ISEE_RIOMETER">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE: ERG_CRIB_GMAG_NIPR
@@ -139,67 +203,65 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="examples/erg_crib_gmag_nipr.pro">projects/erg/examples/erg_crib_gmag_nipr.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="ERG_CRIB_GMAG_STEL_FLUXGATE">
-<H2>ERG_CRIB_GMAG_STEL_FLUXGATE</H2></A>
+<A NAME="ERG_CRIB_ISEE_RIOMETER">
+<H2>ERG_CRIB_ISEE_RIOMETER</H2></A>
 <A HREF="#ERG_CRIB_GMAG_NIPR">[Previous Routine]</A>
-<A HREF="#ERG_CRIB_GMAG_STEL_INDUCTION">[Next Routine]</A>
+<A HREF="#ERG_CRIB_ISEE_VLF">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- PROGRAM: erg_crib_gmag_stel_fluxgate
-   This is an example crib sheet that will load STEL fluxgate magnetometer data.
+ PROGRAM: erg_crib_isee_riometer
+   This is an example crib sheet that will load ISEE riometer data.
    Open this file in a text editor and then use copy and paste to copy
    selected lines into an idl window.
    Or alternatively compile and run using the command:
-     .run erg_crib_gmag_stel_fluxgate
+     .run erg_crib_isee_riometer
 
  NOTE: See the rules of the road.
-       For more information, see http://stdb2.stelab.nagoya-u.ac.jp/magne/
-       and http://www1.osakac.ac.jp/crux/ (for mdm and tew).
+       For more information, see http://stdb2.isee.nagoya-u.ac.jp/riometer/
 
- Written by: Y. Miyashita, Jun 19, 2013
-             ERG-Science Center, STEL, Nagoya Univ.
-             erg-sc-core at st4a.stelab.nagoya-u.ac.jp
-
-   $LastChangedBy: jwl $
-   $LastChangedDate: 2014-02-10 16:54:11 -0800 (Mon, 10 Feb 2014) $
-   $LastChangedRevision: 14265 $
-   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/examples/erg_crib_gmag_stel_fluxgate.pro $
+ Written by: S. Kurita, Nov 24, 2017
+             Center for Integrated Data Science, ISEE, Nagoya Univ.
+             erg-sc-core at isee.nagoya-u.ac.jp
+;
+   $LastChangedBy: nikos $
+   $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+   $LastChangedRevision: 24403 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/examples/erg_crib_isee_riometer.pro $
 </PRE><P>
-<STRONG>(See <A href="examples/erg_crib_gmag_stel_fluxgate.pro">projects/erg/examples/erg_crib_gmag_stel_fluxgate.pro</A>)</STRONG><P>
+<STRONG>(See <A href="examples/erg_crib_isee_riometer.pro">projects/erg/examples/erg_crib_isee_riometer.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="ERG_CRIB_GMAG_STEL_INDUCTION">
-<H2>ERG_CRIB_GMAG_STEL_INDUCTION</H2></A>
-<A HREF="#ERG_CRIB_GMAG_STEL_FLUXGATE">[Previous Routine]</A>
+<A NAME="ERG_CRIB_ISEE_VLF">
+<H2>ERG_CRIB_ISEE_VLF</H2></A>
+<A HREF="#ERG_CRIB_ISEE_RIOMETER">[Previous Routine]</A>
 <A HREF="#ERG_CRIB_SUPERDARN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- PROGRAM: erg_crib_gmag_stel_induction
-   This is an example crib sheet that will load STEL induction magnetometer data.
+ PROGRAM: erg_crib_isee_vlf
+   This is an example crib sheet that will load ISEE ELF/VLF data.
    Open this file in a text editor and then use copy and paste to copy
    selected lines into an idl window.
    Or alternatively compile and run using the command:
-     .run erg_crib_gmag_stel_induction
-     .c
+     .run erg_crib_isee_vlf
 
  NOTE: See the rules of the road.
-       For more information, see http://stdb2.stelab.nagoya-u.ac.jp/magne/
+       For more information, see http://stdb2.isee.nagoya-u.ac.jp/vlf/
 
- Written by: Y. Miyashita, Jan 24, 2011
-             ERG-Science Center, STEL, Nagoya Univ.
-             erg-sc-core at st4a.stelab.nagoya-u.ac.jp
-
-   $LastChangedBy: egrimes $
-   $LastChangedDate: 2016-12-13 10:48:28 -0800 (Tue, 13 Dec 2016) $
-   $LastChangedRevision: 22455 $
-   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/examples/erg_crib_gmag_stel_induction.pro $
+ Written by: S. Kurita, Nov 24, 2017
+             Center for Integrated Data Science, ISEE, Nagoya Univ.
+             erg-sc-core at isee.nagoya-u.ac.jp
+;
+   $LastChangedBy: nikos $
+   $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+   $LastChangedRevision: 24403 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/examples/erg_crib_isee_vlf.pro $
 </PRE><P>
-<STRONG>(See <A href="examples/erg_crib_gmag_stel_induction.pro">projects/erg/examples/erg_crib_gmag_stel_induction.pro</A>)</STRONG><P>
+<STRONG>(See <A href="examples/erg_crib_isee_vlf.pro">projects/erg/examples/erg_crib_isee_vlf.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="ERG_CRIB_SUPERDARN">
 <H2>ERG_CRIB_SUPERDARN</H2></A>
-<A HREF="#ERG_CRIB_GMAG_STEL_INDUCTION">[Previous Routine]</A>
+<A HREF="#ERG_CRIB_ISEE_VLF">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE: erg_crib_superdarn
@@ -219,8 +281,8 @@ PROCEDURE: erg_crib_superdarn
     2010/06/24: Created
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2016-05-12 16:57:48 -0700 (Thu, 12 May 2016) $
- $LastChangedRevision: 21070 $
+ $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+ $LastChangedRevision: 24403 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/examples/erg_crib_superdarn.pro $
 </PRE><P>
 <STRONG>(See <A href="examples/erg_crib_superdarn.pro">projects/erg/examples/erg_crib_superdarn.pro</A>)</STRONG><P>

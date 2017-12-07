@@ -5,15 +5,15 @@
 ;     .run erg_crib_camera_omti_asi
 ;
 ; NOTE: See the rules of the road.
-;       For more information, see http://stdb2.stelab.nagoya-u.ac.jp/omti/
+;       For more information, see http://stdb2.isee.nagoya-u.ac.jp/omti/
 ;
 ; Written by: Y. Miyashita, Mar 28, 2013
-;             ERG-Science Center, STEL, Nagoya Univ.
-;             erg-sc-core at st4a.stelab.nagoya-u.ac.jp
+;             ERG-Science Center, ISEE, Nagoya Univ.
+;             erg-sc-core at isee.nagoya-u.ac.jp
 ;
 ;   $LastChangedBy: nikos $
-;   $LastChangedDate: 2016-05-12 16:57:48 -0700 (Thu, 12 May 2016) $
-;   $LastChangedRevision: 21070 $
+;   $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+;   $LastChangedRevision: 24403 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/examples/erg_crib_camera_omti_asi.pro $
 ;-
 

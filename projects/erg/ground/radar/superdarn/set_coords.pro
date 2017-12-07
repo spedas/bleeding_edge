@@ -16,15 +16,15 @@
 ;   set_coords, 'sd_hok_vlos_1', 'mlat'
 ;
 ; :AUTHOR:
-; 	Tomo Hori (E-mail: horit@stelab.nagoya-u.ac.jp)
+; 	Tomo Hori (E-mail: horit@isee.nagoya-u.ac.jp)
 ;
 ; :HISTORY:
 ; 	2010/11/18: Created
 ;   2011/01/07: added glat to coordinate option
 ; 
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-05-12 16:57:48 -0700 (Thu, 12 May 2016) $
-; $LastChangedRevision: 21070 $
+; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/set_coords.pro $
 ;-
 pro set_coords, tplot_vars, coord, quiet=quiet

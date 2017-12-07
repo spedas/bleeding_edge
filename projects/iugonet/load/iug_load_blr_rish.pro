@@ -38,11 +38,13 @@
 ;  A. Shinbori, 17/12/2012.
 ;  A. Shinbori, 27/02/2013.
 ;  A. Shinbori, 24/01/2014.
+;  A. Shinbori, 08/08/2017.
+;  A. Shinbori, 30/11/2017.
 ;   
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-05-19 11:44:55 -0700 (Fri, 19 May 2017) $
-; $LastChangedRevision: 23337 $
+; $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24404 $
 ; $URL $
 ;-
 
@@ -56,6 +58,15 @@ pro iug_load_blr_rish, site=site, $
 ;keyword check:
 ;**************
 if (not keyword_set(verbose)) then verbose=2
+
+;**************
+;keyword check:
+;**************
+if not keyword_set(trange) then begin
+  get_timespan, time_org
+endif else begin
+  time_org = time_double(trange)
+endelse
 
 ;***********
 ;site codes:
@@ -98,12 +109,10 @@ site_data_dir = strsplit('ktb/blr/ sgk/blr/ srp/blr/ ',' ', /extract)
 ;--- all units (default)
 unit_all = strsplit('m/s dB',' ', /extract)
 
-;******************************************************************
-;Loop on downloading files
-;******************************************************************
-;Get timespan, define FILE_NAMES, and load data:
-;===============================================
-;
+;**************************
+;Loop on downloading files:
+;**************************
+
 ;===================================================================
 ;Download files, read data, and create tplot vars at each component:
 ;===================================================================
@@ -112,8 +121,11 @@ h=0L
 jj=0L
 k=0L
 n_site=intarr(n_elements(site_data_dir))
-start_time=time_double('1992-4-13')
-end_time=time_double('1992-8-29')
+time_shift =dblarr(n_elements(site_data_dir))
+
+start_time=time_double('1992-04-13')
+end_time=time_double('1992-08-29')
+
 
 ;---In the case that the parameters are except for all.'
 if n_elements(site_code) le n_elements(site_data_dir) then begin
@@ -124,12 +136,27 @@ if n_elements(site_code) le n_elements(site_data_dir) then begin
          'sgk':n_site[i]=1 
          'srp':n_site[i]=2 
       endcase
+      case site_code[i] of
+        'ktb':time_shift[i] = 7.0d
+        'sgk':time_shift[i] = 9.0d
+        'srp':time_shift[i] = 7.0d
+      endcase
    endfor
 endif
 
 for ii=0L,h_max-1 do begin
+   
    k=n_site[ii]
    for iii=0L,n_elements(parameters)-1 do begin
+  
+     ;==============================================================
+     ;Change time window associated with a time shift from UT to LT:
+     ;==============================================================
+      day_org = (time_org[1] - time_org[0])/86400.d
+      day_mod = day_org + 1.0
+      timespan, time_org[0] - time_shift[ii] * 3600.0d, day_mod
+      if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) + time_shift[ii] * 3600.d0); for GUI
+
       if ~size(fns,/type) then begin
         ;---Definition of blr site names:
          case site_code[ii] of
@@ -137,7 +164,7 @@ for ii=0L,h_max-1 do begin
             'sgk':site_code2='shigaraki'
             'srp':site_code2='serpong' 
          endcase
-         
+                          
         ;****************************  
         ;Get files for ith component:
         ;****************************
@@ -159,7 +186,7 @@ for ii=0L,h_max-1 do begin
          source.verbose=verbose
          source.local_data_dir = root_data_dir() + 'iugonet/rish/misc/'+site_data_dir[k]+'csv/'
          source.remote_data_dir = 'http://www.rish.kyoto-u.ac.jp/radar-group/blr/'+site_code2+'/data/data/ver02.0212/'
-    
+
         ;=======================================================
         ;Get files and local paths, and concatenate local paths:
         ;=======================================================
@@ -179,10 +206,6 @@ for ii=0L,h_max-1 do begin
       
         ;---Definition of string parameter:
          s=''
-
-        ;---Initialize data and time buffer:
-         blr_data = 0
-         blr_time = 0
          
         ;==============
         ;Loop on files: 
@@ -234,7 +257,7 @@ for ii=0L,h_max-1 do begin
                if ok && keyword_set(s) then begin
                   dprint,s ,dlevel=5
                   data = strsplit(s,',',/extract)
-               
+                    
                  ;---Definition of parameters for time convert from LT to UT:
                   year = strmid(data(0),0,4)
                   month = strmid(data(0),5,2)
@@ -242,16 +265,10 @@ for ii=0L,h_max-1 do begin
                   hour = strmid(data(0),11,2)
                   minute = strmid(data(0),14,2) 
                    
-                 ;---Convert time from LT to UT 
-                  if site_code[ii] ne 'sgk' then begin    
-                     time = time_double(string(year)+'-'+string(month)+'-'+string(day)+'/'+hour+':'+minute) $
-                               -time_double(string(1970)+'-'+string(1)+'-'+string(1)+'/'+string(7)+':'+string(0)+':'+string(0))
-                  endif else if site_code[ii] eq 'sgk' then begin
-                     time = time_double(string(year)+'-'+string(month)+'-'+string(day)+'/'+hour+':'+minute) $
-                               -time_double(string(1970)+'-'+string(1)+'-'+string(1)+'/'+string(9)+':'+string(0)+':'+string(0))
-                     if time gt time_double(string(1992)+'-'+string(9)+'-'+string(1)+'/'+string(0)+':'+string(0)+':'+string(0)) then break
-                  endif
-                 
+                 ;---Convert time from LT to UT    
+                  blr_data_time = time_double(string(year)+'-'+string(month)+'-'+string(day)+'/'+string(hour)+':'+string(minute)) - time_shift[ii] * 3600.0d
+                  if (site_code[ii] eq 'sgk') and (blr_data_time gt time_double(string(1992)+'-'+string(9)+'-'+string(1)+'/'+string(0)+':'+string(0)+':'+string(0))) then break
+                            
                  ;---Enter the missing value:
                   for j=0,n_elements(height)-2 do begin
                      a = float(data[j+1])
@@ -263,13 +280,21 @@ for ii=0L,h_max-1 do begin
                  ;=============================
                  ;Append data of time and data:
                  ;=============================
-                  append_array, blr_time, time
-                  append_array, blr_data, data2  
+                  append_array, blr_data_time_app, blr_data_time
+                  append_array, blr_data_app, data2 
+
                endif
             endwhile 
             free_lun,lun  
          endfor
-   
+
+        ;==============================================================
+        ;Change time window associated with a time shift from UT to LT:
+        ;==============================================================
+         timespan, time_org
+         get_timespan, init_time2
+         if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) - 9.0d * 3600.0d); for GUI
+         
         ;==============================
         ;Store data in TPLOT variables:
         ;==============================
@@ -283,7 +308,7 @@ for ii=0L,h_max-1 do begin
                           + 'atmosphere Global Observation NETwork) project (http://www.iugonet.org/) funded '$
                           + 'by the Ministry of Education, Culture, Sports, Science and Technology (MEXT), Japan.'
           
-         if size(blr_data,/type) eq 4 then begin 
+         if size(blr_data_app,/type) eq 4 then begin 
             o=0 
             if parameters[iii] eq 'pwr1' then o=1  
             if parameters[iii] eq 'pwr2' then o=1
@@ -293,7 +318,10 @@ for ii=0L,h_max-1 do begin
            
            ;---Create the tplot variables:
             dlimit=create_struct('data_att',create_struct('acknowledgment',acknowledgstring,'PI_NAME', 'H. Hashiguchi'))            
-            store_data,'iug_blr_'+site_code[ii]+'_'+parameters[iii],data={x:blr_time, y:blr_data, v:altitude},dlimit=dlimit
+            store_data,'iug_blr_'+site_code[ii]+'_'+parameters[iii],data={x:blr_data_time_app, y:blr_data_app, v:altitude},dlimit=dlimit
+
+           ;----Edge data cut:
+            time_clip, 'iug_blr_'+site_code[ii]+'_'+parameters[iii], init_time2[0], init_time2[1], newname = 'iug_blr_'+site_code[ii]+'_'+parameters[iii]
            
            ;---Options of each tplot variable
             new_vars=tnames('iug_blr_'+site_code[ii]+'_'+parameters[iii])
@@ -305,8 +333,8 @@ for ii=0L,h_max-1 do begin
          endif
 
         ;---Clear time and data buffer:
-         blr_data = 0
-         blr_time = 0
+         blr_data_time_app = 0
+         blr_data_app = 0
 
         ;---Add tdegap
          new_vars=tnames('iug_blr_'+site_code[ii]+'_'+parameters[iii])
@@ -315,8 +343,12 @@ for ii=0L,h_max-1 do begin
          endif
       endif
       jj=n_elements(local_paths)
+     ;---Initialization of timespan for parameters 
+      timespan, time_org
    endfor
    jj=n_elements(local_paths)
+  ;---Initialization of timespan for sites
+   timespan, time_org
 endfor 
 
 new_vars=tnames('iug_blr_*')

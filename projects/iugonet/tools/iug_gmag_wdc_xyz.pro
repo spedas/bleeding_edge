@@ -20,13 +20,14 @@
 ;
 ;CODE:
 ;A. Shinbori, 28/11/2012.
+;A. Shinbori, 30/11/2017.
 ;
 ;MODIFICATIONS:
 ;
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-05-12 16:56:35 -0700 (Thu, 12 May 2016) $
-; $LastChangedRevision: 21069 $
+; $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24404 $
 ; $URL $
 ;-
 
@@ -73,9 +74,10 @@ if result[0] ne '' then begin
 
      ;Reform the data array of geomagnetic field corresponding to the data labels (HDZF coordinates) 
      ;and replace the HDZF components by the XYZF ones.
-      if size(d_comp,/N_ELEMENTS) ne 0 then begin
+      if size(h_comp,/N_ELEMENTS) ne 0 and size(d_comp,/N_ELEMENTS) ne 0 and size(z_comp,/N_ELEMENTS) ne 0 then begin
          y[*,0]=h_comp*cos(d_comp*!pi/180.0)
          y[*,1]=h_comp*sin(d_comp*!pi/180.0)
+         if size(z_comp,/N_ELEMENTS) eq 0 then z_comp = h_comp + !values.f_nan
          y[*,2]=z_comp
         ;Store the tplot variables:
          store_data,result[j]+'_xyz',data ={x:d.x,y:y}
@@ -84,7 +86,7 @@ if result[0] ne '' then begin
       endif
 
      ;Reform the data array of geomagnetic field corresponding to the data labels (XYZF coordinates)
-      if size(d_comp,/N_ELEMENTS) eq 0 then begin
+      if size(h_comp,/N_ELEMENTS) eq 0 and size(d_comp,/N_ELEMENTS) eq 0 and size(x_comp,/N_ELEMENTS) ne 0 and size(y_comp,/N_ELEMENTS) ne 0 and size(z_comp,/N_ELEMENTS) ne 0 then begin
          y[*,0]=x_comp
          y[*,1]=y_comp
          y[*,2]=z_comp

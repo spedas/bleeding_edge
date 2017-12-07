@@ -20,15 +20,15 @@
 ;    charscale: Set a value of font size to write the time label and letters for the color scale
 ;
 ; :AUTHOR:
-; 	Tomo Hori (E-mail: horit@stelab.nagoya-u.ac.jp)
+; 	Tomo Hori (E-mail: horit@isee.nagoya-u.ac.jp)
 ;
 ; :HISTORY:
 ; 	2011/01/11: Created
 ; 	2011/06/15: renamed to overlay_map_sdfit
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-05-12 16:57:48 -0700 (Thu, 12 May 2016) $
-; $LastChangedRevision: 21070 $
+; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/overlay_map_sdfit.pro $;
 ;-
 PRO get_resized_pixel, lons, lats, ratio, rlons, rlats
@@ -298,6 +298,8 @@ PRO overlay_map_sdfit, datvn, time=time, position=position, $
     if s eq 0 then ztitle = ''
     str_element, lim, 'zrange', val=zrange, success=s
     if s eq 0 then zrange = [-1000,1000]
+    str_element, lim, 'zticklen', val=yticklen, success=s 
+    if s then exstr = { yticklen: yticklen } else exstr = { zticklen: 0.3 } 
     if keyword_set(colorscalepos) then begin
       cp = colorscalepos
       x0 = !x.window[0] & xs = !x.window[1]-!x.window[0]
@@ -314,7 +316,7 @@ PRO overlay_map_sdfit, datvn, time=time, position=position, $
     !y.ticklen = 0.25
     draw_color_scale, range=zrange,$
       pos=cspos,$
-      title=ztitle, charsize=charsz*0.7
+      title=ztitle, charsize=charsz*0.7, _extra=exstr 
     !y.ticklen = pre_yticklen
     
   endif

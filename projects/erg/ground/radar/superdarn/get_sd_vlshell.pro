@@ -27,11 +27,11 @@
 ; 2013/11/01: implemented vmag keyword
 ;
 ; :Author:
-;   Tomo Hori (E-mail: horit at stelab.nagoya-u.ac.jp)
+;   Tomo Hori (E-mail: horit at isee.nagoya-u.ac.jp)
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2014-02-10 16:54:11 -0800 (Mon, 10 Feb 2014) $
-; $LastChangedRevision: 14265 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/get_sd_vlshell.pro $
 ;-
 PRO get_sd_vlshell, vlos_vn, angle_var=angle_var, exclude_angle=exclude_angle, glatp=glatp,glonp=glonp,glatm=glatm,glonm=glonm, $

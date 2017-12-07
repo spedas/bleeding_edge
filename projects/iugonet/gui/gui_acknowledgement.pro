@@ -54,6 +54,7 @@ case instrument of
           'ASY_index': iug_var = !iugonet.data_policy.gmag_wdc_ae_asy
           'AE_index' : iug_var = !iugonet.data_policy.gmag_wdc_ae_asy
           'Dst_index': iug_var = !iugonet.data_policy.gmag_wdc_dst
+          'Wp_index': iug_var = !iugonet.data_policy.gmag_wdc_wp
         endcase
     end
     'geomagnetic_field_fluxgate': begin
@@ -115,14 +116,14 @@ case instrument of
                     'zyk': iug_var = !iugonet.data_policy.gmag_mm210_zyk
                 endcase
             end
-            'STEL#': begin
+            'ISEE#': begin
                 case site_or_param of
-                    'msr': iug_var = !iugonet.data_policy.gmag_stel_msr
-                    'rik': iug_var = !iugonet.data_policy.gmag_stel_rik
-                    'kag': iug_var = !iugonet.data_policy.gmag_stel_kag
-                    'ktb': iug_var = !iugonet.data_policy.gmag_stel_ktb
-                    'mdm': iug_var = !iugonet.data_policy.gmag_stel_mdm
-                    'tew': iug_var = !iugonet.data_policy.gmag_stel_tew
+                    'msr': iug_var = !iugonet.data_policy.gmag_isee_msr
+                    'rik': iug_var = !iugonet.data_policy.gmag_isee_rik
+                    'kag': iug_var = !iugonet.data_policy.gmag_isee_kag
+                    'ktb': iug_var = !iugonet.data_policy.gmag_isee_ktb
+                    'mdm': iug_var = !iugonet.data_policy.gmag_isee_mdm
+                    'tew': iug_var = !iugonet.data_policy.gmag_isee_tew
                 endcase
             end
             'WDC_kyoto': iug_var = !iugonet.data_policy.gmag_wdc
@@ -154,8 +155,8 @@ case instrument of
                     'tjo': iug_var = !iugonet.data_policy.imag_nipr_ice
                 endcase
             end
-            'STEL#': begin
-                iug_var = !iugonet.data_policy.imag_stel
+            'ISEE#': begin
+                iug_var = !iugonet.data_policy.imag_isee
             end
         endcase
     end
@@ -256,6 +257,7 @@ endif else begin
                     'ASY_index': !iugonet.data_policy.gmag_wdc_ae_asy = iug_var
                     'AE_index' : !iugonet.data_policy.gmag_wdc_ae_asy = iug_var
                     'Dst_index': !iugonet.data_policy.gmag_wdc_dst = iug_var
+                    'Wp_index': !iugonet.data_policy.gmag_wdc_wp = iug_var
                 endcase
             end
             'geomagnetic_field_fluxgate': begin
@@ -317,14 +319,14 @@ endif else begin
                             'zyk': !iugonet.data_policy.gmag_mm210_zyk = iug_var
                         endcase
                     end
-                    'STEL#': begin
+                    'ISEE#': begin
                         case site_or_param of
-                            'msr': !iugonet.data_policy.gmag_stel_msr = iug_var
-                            'rik': !iugonet.data_policy.gmag_stel_rik = iug_var
-                            'kag': !iugonet.data_policy.gmag_stel_kag = iug_var
-                            'ktb': !iugonet.data_policy.gmag_stel_ktb = iug_var
-                            'mdm': !iugonet.data_policy.gmag_stel_mdm = iug_var
-                            'tew': !iugonet.data_policy.gmag_stel_tew = iug_var
+                            'msr': !iugonet.data_policy.gmag_isee_msr = iug_var
+                            'rik': !iugonet.data_policy.gmag_isee_rik = iug_var
+                            'kag': !iugonet.data_policy.gmag_isee_kag = iug_var
+                            'ktb': !iugonet.data_policy.gmag_isee_ktb = iug_var
+                            'mdm': !iugonet.data_policy.gmag_isee_mdm = iug_var
+                            'tew': !iugonet.data_policy.gmag_isee_tew = iug_var
                         endcase
                     end
                     'WDC_kyoto': !iugonet.data_policy.gmag_wdc = iug_var
@@ -356,8 +358,8 @@ endif else begin
                             'tjo': !iugonet.data_policy.imag_nipr_ice = iug_var
                         endcase
                     end
-                    'STEL#': begin
-                        !iugonet.data_policy.imag_stel = iug_var
+                    'ISEE#': begin
+                        !iugonet.data_policy.imag_isee = iug_var
                     end
                 endcase
             end

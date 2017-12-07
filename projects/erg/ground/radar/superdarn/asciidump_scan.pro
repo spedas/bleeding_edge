@@ -17,11 +17,11 @@
 ; 2014/01/06: Initial release
 ;
 ; :Author:
-;   Tomo Hori (E-mail: horit at stelab.nagoya-u.ac.jp)
+;   Tomo Hori (E-mail: horit at isee.nagoya-u.ac.jp)
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2014-02-10 16:54:11 -0800 (Mon, 10 Feb 2014) $
-; $LastChangedRevision: 14265 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/asciidump_scan.pro $
 ;-
 pro asciidump_scan, tvars, dir=dir
@@ -33,8 +33,9 @@ pro asciidump_scan, tvars, dir=dir
   ;Set the directory in which the dump files are generated.
   if ~keyword_set(dir) then dir = 'asciidump'
   if ~file_test(dir, /dir) then file_mkdir, dir
-  cd, current=cwdir
-  dirpath = filepath( dir, sub='', root_dir=cwdir )
+  ;cd, current=cwdir
+  ;dirpath = filepath( dir, sub='', root_dir=cwdir )
+  dirpath = dir 
   
   ;Get a scan structure of LOSV data
   tvar = tvars[0]
@@ -57,6 +58,8 @@ pro asciidump_scan, tvars, dir=dir
   ;Calculate the angle between the MLT direction and the beam direction.
   get_sd_vlshell, tvar, /angle_var
   angle_struc = get_scan_struc_arr( prefix+'mltdir-bmdir_angle_'+suf )
+  get_sd_glondir, tvar 
+  gangle_struc = get_scan_struc_arr( prefix+'glondir-bmdir_angle_'+suf ) 
   
   ;Get the ionsopheric echo flag data
   iscat_flag_struc = get_scan_struc_arr( prefix+'echo_flag_'+suf )
@@ -93,6 +96,7 @@ pro asciidump_scan, tvars, dir=dir
     time = scanarr.x[n]
     scan = reform( scanarr.y[n,*,*] )
     angle = reform( angle_struc.y[n,*,*] )
+    gangle = reform( gangle_struc.y[n,*,*] ) 
     glat = reform( glatarr[n,*,*] )
     glon = reform( glonarr[n,*,*] )
     mlat = reform( mlatarr[n,*,*] )
@@ -107,10 +111,10 @@ pro asciidump_scan, tvars, dir=dir
       time_string(time, tfor='YYYYMMDD hhmmss')
     printf, fp, '# iscat_flag  1:ionospheric echo,  0:ground scatter,  -1:no data'
     printf, fp, '###'
-    printf, fp, '# beam  range_gate  LOSV[m/s]  iscat_flag  MLTdir-bmdir_angle[deg]  Glat[deg]  Glon[deg]  Mlat[deg]  MLT[hr]'
+    printf, fp, '# beam  range_gate  LOSV[m/s]  iscat_flag glondir-bmdir_angle[deg]  Glat[deg]  Glon[deg]  Mlat[deg]  MLT[hr]'
     for bm=0, n_elements(scan[0,*])-1 do begin
       for rg=0, n_elements(scan[*,0])-1 do begin
-        printf, fp, bm, rg, scan[rg,bm], iscatflag[rg,bm], angle[rg,bm], glat[rg,bm], glon[rg,bm], $
+        printf, fp, bm, rg, scan[rg,bm], iscatflag[rg,bm], gangle[rg,bm], glat[rg,bm], glon[rg,bm], $
           mlat[rg,bm], mlt[rg,bm], $
           format='(I2,1X,I3,1X,F7.1,1X,I2,1X,F7.2,1X,F5.1,1X,F6.1,1X,F5.1,1X,F5.2)'
       endfor

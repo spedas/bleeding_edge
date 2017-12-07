@@ -28,7 +28,7 @@
 ;   plot_map_sdfit, 'sd_hok_vlos_bothscat', center_glat=70., center_glon=180. 
 ;   
 ; :Author:
-; 	Tomo Hori (E-mail: horit at stelab.nagoya-u.ac.jp)
+; 	Tomo Hori (E-mail: horit at isee.nagoya-u.ac.jp)
 ;
 ; :HISTORY:
 ; 	2011/03/11: Created

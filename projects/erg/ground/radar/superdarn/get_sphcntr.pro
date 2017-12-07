@@ -20,14 +20,14 @@
 ;   pos = get_sphcntr( [lat1,lat2,lat3], [lon1,lon2,lon3] )
 ;
 ; :AUTHOR:
-; 	Tomo Hori (E-mail: horit@stelab.nagoya-u.ac.jp)
+; 	Tomo Hori (E-mail: horit@isee.nagoya-u.ac.jp)
 ;
 ; :HISTORY:
 ; 	2011/01/07: Created
 ;
-; $LastChangedBy: lphilpott $
-; $LastChangedDate: 2011-10-14 09:20:31 -0700 (Fri, 14 Oct 2011) $
-; $LastChangedRevision: 9113 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
+; $LastChangedRevision: 24403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/get_sphcntr.pro $
 ;-
 FUNCTION get_sphcntr, latarr, lonarr
