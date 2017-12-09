@@ -127,8 +127,8 @@
 ;CREATED BY:      Takuya Hara on 2014-09-24.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-04-05 10:43:47 -0700 (Wed, 05 Apr 2017) $
-; $LastChangedRevision: 23114 $
+; $LastChangedDate: 2017-12-08 10:08:14 -0800 (Fri, 08 Dec 2017) $
+; $LastChangedRevision: 24412 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_resample.pro $
 ;
 ;-
@@ -373,15 +373,18 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
   IF keyword_set(vb) THEN verbose = vb ELSE verbose = 0
   verbose -= silent
 
-  IF SIZE(mvn_swe_engy, /type) NE 8 THEN BEGIN
-     print, ptrace()
-     print, '  No SWEA data loaded.'
-     RETURN
-  ENDIF 
+;  IF SIZE(mvn_swe_engy, /type) NE 8 THEN BEGIN
+;     print, ptrace()
+;     print, '  No SWEA data loaded.'
+;     RETURN
+;  ENDIF 
   IF SIZE(swe_mag1, /type) NE 8 THEN BEGIN
-     print, ptrace()
-     print, '  No MAG1 data loaded.  Use mvn_swe_addmag first.'
-     RETURN
+     mvn_swe_addmag
+     if (size(swe_mag1,/type) ne 8) then begin
+       print, ptrace()
+       print, '  No MAG data loaded.  Use mvn_swe_addmag first.'
+       RETURN
+     endif
   ENDIF
   
 ; Determine which data to process (pad or 3d, survey or burst)

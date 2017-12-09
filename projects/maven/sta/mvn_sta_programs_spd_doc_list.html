@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Dec  7 18:16:10 2017.<P>
+<STRONG>Last modified: </STRONG>Fri Dec  8 18:16:09 2017.<P>
  
 <HR>
  
@@ -20,7 +20,7 @@ This page was created by the IDL library routine
 <UL>
 <H1>projects/maven/sta/mvn_sta_programs</H1>
 <LI><A HREF="#MVN_STA_DEAD_LOAD">MVN_STA_DEAD_LOAD</A>
-<br>Loads dead-time arrays into apid common blocks for science data products
+<br>Loads dead-time arrays into apid common blocks for science data products, modified 20170919 for high background SEP events
 <LI><A HREF="#MVN_STA_MAG_LOAD">MVN_STA_MAG_LOAD</A>
 <br>Load Magnetometer data and insert values into STATIC
 <LI><A HREF="#MVN_STA_MAG_LOAD_V2">MVN_STA_MAG_LOAD_V2</A>
@@ -45,7 +45,7 @@ This page was created by the IDL library routine
 <PRE>
 PROCEDURE:	mvn_sta_dead_load
 PURPOSE:	
-	Loads dead-time arrays into apid common blocks for science data products
+	Loads dead-time arrays into apid common blocks for science data products, modified 20170919 for high background SEP events
 
 KEYWORDS:
 	check:		0,1		if set, prints diagnostic data
@@ -64,6 +64,7 @@ MOD HISTORY:
 						where &quot;averaged&quot; accounts for averaging over energy or deflection
 			15/01/17	added mcp droop correction
 			15/02/25	major modifications to mcp droop correction
+			17/10/02	major modifications to correctly account for background from SEP events
 NOTES:	  
 	Program assumes that &quot;mvn_sta_l0_load&quot; or &quot;mvn_sta_l2_load,/test&quot; has been run 
 	Program requires c0,c8,d8,da packets are available at 4 sec cadence
@@ -72,10 +73,12 @@ NOTES:
 		then code used for apid cc can be adapted to the above apids.
 
 TBDs
+	ef3 should be made anode dependent to account for anode variations in anode rejection early in mission
 	change code so that at attenuator transitions where count rates go below efficiency threshold, 
 		that the code will use the nearest attenuated values, not the higher attenuated efficiency. 
 		may have to break up the for-loop into 2 for-loops
 	change code to default to anode efficiency based on anode rejection determination
+	change code so that when background is high (as during deep dips from neutral density), the droop eff is properly calculated
 
 </PRE><P>
 <STRONG>(See <A href="mvn_sta_programs/mvn_sta_dead_load.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_dead_load.pro</A>)</STRONG><P>

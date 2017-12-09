@@ -1,7 +1,7 @@
 ;+
 ;PROCEDURE:	mvn_sta_dead_load
 ;PURPOSE:	
-;	Loads dead-time arrays into apid common blocks for science data products
+;	Loads dead-time arrays into apid common blocks for science data products, modified 20170919 for high background SEP events
 ;
 ;KEYWORDS:
 ;	check:		0,1		if set, prints diagnostic data
@@ -20,6 +20,7 @@
 ;						where "averaged" accounts for averaging over energy or deflection
 ;			15/01/17	added mcp droop correction
 ;			15/02/25	major modifications to mcp droop correction
+;			17/10/02	major modifications to correctly account for background from SEP events
 ;NOTES:	  
 ;	Program assumes that "mvn_sta_l0_load" or "mvn_sta_l2_load,/test" has been run 
 ;	Program requires c0,c8,d8,da packets are available at 4 sec cadence
@@ -28,13 +29,15 @@
 ;		then code used for apid cc can be adapted to the above apids.
 ;
 ;TBDs
+;	ef3 should be made anode dependent to account for anode variations in anode rejection early in mission
 ;	change code so that at attenuator transitions where count rates go below efficiency threshold, 
 ;		that the code will use the nearest attenuated values, not the higher attenuated efficiency. 
 ;		may have to break up the for-loop into 2 for-loops
 ;	change code to default to anode efficiency based on anode rejection determination
+;	change code so that when background is high (as during deep dips from neutral density), the droop eff is properly calculated
 ;
 ;-
-pro mvn_sta_dead_load,check=check,test=test,dead_droop=dead_droop,dead_rate=dead_rate,make_common=make_common
+pro mvn_sta_dead_load,check=check,test=test,dead_droop=dead_droop,dead_rate=dead_rate,make_common=make_common,deepdip=deepdip
 
 	common mvn_c0,mvn_c0_ind,mvn_c0_dat 
 	common mvn_c8,mvn_c8_ind,mvn_c8_dat 
@@ -82,7 +85,25 @@ if size(mvn_c0_dat,/type) ne 8 or size(mvn_c8_dat,/type) ne 8 or size(mvn_ca_dat
 	return
 endif
 
-time = mvn_da_dat.time
+; this was added to handle increased background during deepdips, keyword can be set to handle other days
+	
+if not keyword_set(deepdip) then begin
+	time0 = mvn_da_dat.time[0]+10.
+	if ((time0 ge time_double('2015-02-11')) and (time0 lt time_double('2015-02-19'))) then deepdip=1	; deep dip 1 orbit 713-749
+	if ((time0 ge time_double('2015-04-17')) and (time0 lt time_double('2015-04-23'))) then deepdip=1	; deep dip 2 orbit 1059-1086
+	if ((time0 ge time_double('2015-07-08')) and (time0 lt time_double('2015-07-15'))) then deepdip=1	; deep dip 3 orbit 1501-1538
+	if ((time0 ge time_double('2015-09-02')) and (time0 lt time_double('2015-09-10'))) then deepdip=1	; deep dip 4 orbit 1802-1838
+	if ((time0 ge time_double('2016-06-07')) and (time0 lt time_double('2016-06-14'))) then deepdip=1	; deep dip 5 orbit 3285-3327
+	if ((time0 ge time_double('2016-07-26')) and (time0 lt time_double('2016-08-02'))) then deepdip=1	; deep dip 6 orbit 3551-3589
+	if ((time0 ge time_double('2017-08-15')) and (time0 lt time_double('2017-08-24'))) then deepdip=1	; deep dip 7 orbit 5574-5622
+;	if ((time0 ge time_double('2017-02-10')) and (time0 lt time_double('2017-02-19'))) then deepdip=1	; deep dip 8
+;	if ((time0 ge time_double('2017-02-10')) and (time0 lt time_double('2017-02-19'))) then deepdip=1	; deep dip 9
+
+endif
+
+if keyword_set(deepdip) then print,'Background algorithm using da data rather than d9 data'
+
+time = (mvn_da_dat.time+mvn_da_dat.end_time)/2.
 npts = n_elements(mvn_da_dat.time)
 rate = dblarr(npts,64,16)					; energy-deflector event rate 
 dead = dblarr(npts,64,16)					; energy-deflector dead time 
@@ -98,6 +119,15 @@ eff_expected = fltarr(npts)
 pk1_droop = fltarr(npts)
 pk2_droop = fltarr(npts)
 pk3_droop = fltarr(npts)
+bkg_ab = fltarr(npts)
+bkg_cd = fltarr(npts)
+bkg_fq = fltarr(npts)
+eff_st_def = fltarr(npts)
+eff_sp_def = fltarr(npts)
+d9_fq_mp = fltarr(npts)
+d9_fq_pk = fltarr(npts)
+d9_ab_mp = fltarr(npts)
+d9_cd_mp = fltarr(npts)
 d1 = mvn_c8_dat.dead1						; 420 ns, fully qualified events
 d2 = mvn_c8_dat.dead2						; 660 ns, unqualified events
 d3 = mvn_c8_dat.dead3						; 460 ns, stop no start events (and stop then start events)
@@ -112,19 +142,20 @@ if not keyword_set(dead_droop) then dead_droop=800.		; this was empirically dete
 if not keyword_set(dead_rate) then dead_rate=1.e5		; this was empirically determined from data on 20150107-1520UT, seems good to ~10% 
 st_def = .70							; default start efficiency at low rates
 sp_def = .47							; default stop efficiency at low rates
-ef3_def = .75							; ef3 accounts for variations in qualified event efficiency including anode losses
+ef3_def = .80							; ef3 accounts for variations in qualified event efficiency including anode losses, was 0.75 prior to 20171002, this should vary - TBD determined from d9
 ef_def = st_def*sp_def
 att=mvn_c0_dat.att_ind[0]
+ind_d9 = 0
 
 for i=0l,npts-1 do begin
 
 	att_last=att						; this is used for corrections when count rate is low
-
-	min_c0 = min(abs(mvn_c0_dat.time-time[i]),ind_c0)
-	min_c8 = min(abs(mvn_c8_dat.time-time[i]),ind_c8)
-	min_ca = min(abs(mvn_ca_dat.time-time[i]),ind_ca)
-	min_d8 = min(abs(mvn_d8_dat.time-time[i]),ind_d8)
-	min_d9 = min(abs(mvn_d9_dat.time-time[i]),ind_d9)
+	ind_d9_old = ind_d9
+	min_c0 = min(abs((mvn_c0_dat.time+mvn_c0_dat.end_time)/2.-time[i]),ind_c0)
+	min_c8 = min(abs((mvn_c8_dat.time+mvn_c8_dat.end_time)/2.-time[i]),ind_c8)
+	min_ca = min(abs((mvn_ca_dat.time+mvn_ca_dat.end_time)/2.-time[i]),ind_ca)
+	min_d8 = min(abs((mvn_d8_dat.time+mvn_d8_dat.end_time)/2.-time[i]),ind_d8)
+	min_d9 = min(abs((mvn_d9_dat.time+mvn_d9_dat.end_time)/2.-time[i]),ind_d9)
 	att = mvn_c0_dat.att_ind[ind_c0]
 
 	if (min_c0 gt 2. or min_c8 gt 2. or min_ca gt 2. or min_d8 gt 2.) then begin
@@ -137,20 +168,31 @@ for i=0l,npts-1 do begin
 		if min_c0 gt 10. then c0 = round(0.28d*reform(0.004*mvn_da_dat.rates[i,*]))#replicate(1.,16)	; kluge if c0 data is missing
 
 	da = 1.d*reform(mvn_da_dat.rates[i,*])*16.#replicate(1.,16)						; apid da is a rate (Hz), *16. keeps it a rate when normalized below by c8/ct
-	c8 = 1.d*reform(replicate(1.,2)#reform(mvn_c8_dat.data[ind_c8,*,*],512),64,16)
+	c8 = 1.d*reform(replicate(1.,2)#reform(mvn_c8_dat.data[ind_c8,*,*],512),64,16)				; c8/ct will generate the deflection angular distribution
 
-	ca = total(reform(mvn_ca_dat.data[ind_ca,*,*],16,4,16),2)						; assume dist of cnts on anode independent of deflectors
-	ca0 = ca/(total(ca,2)#replicate(1.,16)+.001)
-	anode[i,*,*]=reform(replicate(1.,4)#reform(ca0,256),64,16)						; normalized anode distribution
+	ca = total(reform(mvn_ca_dat.data[ind_ca,*,*],16,4,16),2)					; 16E x 16A assume dist of cnts on anode independent of deflectors, not true for internally backscattered ions
+	ca0 = ca/(total(ca,2)#replicate(1.,16)+.001)							; 16E x 16A normalized anode dist
+	anode[i,*,*]=reform(replicate(1.,4)#reform(ca0,256),64,16)					; 64E x 16A normalized anode dist, not used in eff
 	ca1 = fltarr(16) 
 	ef1 = fltarr(16) 
-	for j=0,15 do ca1[j] = max(ca[j,*]/(total(ca[j,*])+1.))>(1./16.)			; ca1 is the normalized maximum (1.>ca1>1.16)
+	for j=0,15 do ca1[j] = max(ca[j,*]/(total(ca[j,*])+1.))>(1./16.)			; 16E ca1 is the normalized maximum anode distribution (1.> ca1 > 1./16), 1= all particles in one anode
 
-	ca2 = reform(replicate(1.,4)#ca1,64)#replicate(1.,16)					; correction for mcp droop to account for dist of cnts over anodes
-	ef1 = total(ca*(replicate(1.,16)#reform(eff_cal[*,4])),2)/total(ca,2)
-	ef2 = reform(replicate(1.,4)#ef1,64)#replicate(1.,16)					; correction for nominal efficiency to account for dist of cnts over anodes
+; the following are only used for testing 
+	ca2 = reform(replicate(1.,4)#ca1,64)#replicate(1.,16)					; 64E x 16D correction for estimating mcp droop to account for dist of cnts over anodes
+	ef1 = (total(ca*(replicate(1.,16)#reform(eff_cal[*,4])),2)/(total(ca,2)+.0001))>.28		; 16E,       predicted eff, energy dependent
+	ef2 = reform(replicate(1.,4)#ef1,64)#replicate(1.,16)					; 64E x 16D, predicted eff, this is used to to compare ground calib to inflight
 
-	ef3 = total(c0)/16./(4.*mvn_d8_dat.rates[ind_d8,7])					; x4 converts rates to counts in 4 sec, why is this 7 and not 4?????
+if i mod 100 eq 0 then print,minmax(ef1)
+
+; the below line failed at high background which produces significant qualified, but few valids.
+;	ef3 = total(c0)/16./(4.*mvn_d8_dat.rates[ind_d8,7])					; x4 converts rates to counts in 4 sec, this is ratio of valid/qualified
+;	need to subtract off background qualified rates
+	indbk9 = sort(mvn_d9_dat.rates[ind_d9,7,*])
+	bk7 = total(mvn_d9_dat.rates[ind_d9,7,indbk9[0:9]])/10.
+	ef3 = total(c0)/16./((4.*(mvn_d8_dat.rates[ind_d8,7]-bk7))>(1.1*total(c0)/16.))		; x4 converts rates to counts in 4 sec, this is ratio of valid/qualified
+
+;	0  1  2  3  4   5       6      7    8     9     10  11 
+;	TA,TB,TC,TD,RST,NoStart,Unqual,Qual,AnRej,MaRej,A&B,C&D
 
 	ct = 1.*total(c8,2)#replicate(1.,16) > 0.0001
 	r1 = mvn_d8_dat.rates[ind_d8,7]/mvn_d8_dat.rates[ind_d8,4]				; fully qualified processed events 
@@ -163,14 +205,92 @@ for i=0l,npts-1 do begin
 	fq = mvn_d8_dat.rates[ind_d8,7]
 	ab = mvn_d8_dat.rates[ind_d8,10]
 	cd = mvn_d8_dat.rates[ind_d8,11]
-	ab_bk = min(mvn_d9_dat.rates[ind_d9,10,*]) > 25.
-	cd_bk = min(mvn_d9_dat.rates[ind_d9,11,*]) > 90.
-	ef_sp = 0.2 > (fq/((ab-ab_bk)>(fq+0.00001))) < .6							; efficiency - may need mod
-	ef_st = 0.2 > (fq/((cd-cd_bk)>(fq+0.00001))) < .8							; efficiency - may need mod
 
-; smooth out statistical fluctuations at low count rates
-	ef_sp = (ef_sp*fq + sp_def*50.)/(fq+50.)	
-	ef_st = (ef_st*fq + st_def*50.)/(fq+50.)
+; determine background rates needed for efficiency estimates
+
+; changed 20160621
+; problem!! - 	d9 background rate time resolution is not adequate during deep dips where background changes rapidly
+; 		d9 only adequate if background changes slowly on 128 s time scales
+;		use apid da for high background rates
+
+		indbk = sort(mvn_da_dat.rates[i,*])
+		da_bk=total(mvn_da_dat.rates[i,indbk[0:9]])/10.
+
+		indbk9 = sort(mvn_d9_dat.rates[ind_d9,11,*])
+
+	if mvn_da_dat.mode[i] eq 1 and da_bk gt 500. and keyword_set(deepdip) then begin	; changed 20170919 to add keyword
+;	if da_bk gt 500. then begin	
+;		ab_bk = (0.4*da_bk) 								; may need to fine tune this
+;		cd_bk = (0.6*da_bk) 								; may need to fine tune this 
+		ab_bk = (0.24*da_bk) 								; determined from 20170913 SEP event - code changed 20170919
+		cd_bk = (0.78*da_bk) 								; determined from 20170913 SEP event - code changed 20170919
+; this is the method used prior to 20160621
+	endif else begin
+;		ab_bk = min(mvn_d9_dat.rates[ind_d9,10,*]) > 25.
+;		cd_bk = min(mvn_d9_dat.rates[ind_d9,11,*]) > 90.
+; more accurate method introduced 20170919
+		ab_bk = total(mvn_d9_dat.rates[ind_d9,10,indbk9[0:9]])/10. > 25.
+		cd_bk = total(mvn_d9_dat.rates[ind_d9,11,indbk9[0:9]])/10. > 90.
+	endelse
+		fq_bk = total(mvn_d9_dat.rates[ind_d9,7,indbk9[0:9]])/10. > 0.
+
+; determine d9 default eff optimal energies determined by max(rst/ab) 
+
+		fq_pk = max(mvn_d9_dat.rates[ind_d9,7,*],indpk9)
+
+; old method
+;		if (fq_pk-fq_bk) lt 3.e3 then begin
+;			fq_mp = fq_pk & indmp9=indpk9
+;		endif else begin
+;			fq_mp_tmp = (fq_bk*fq_pk)^.5 > 3.e3						; mid-point
+;			fq_mp = min(abs(mvn_d9_dat.rates[ind_d9,7,*]-fq_mp_tmp),indmp9)
+;			fq_mp = mvn_d9_dat.rates[ind_d9,7,indmp9]
+;		endelse
+;		ef_sp_def = (fq_mp-fq_bk)/(mvn_d9_dat.rates[ind_d9,10,indmp9]-ab_bk) < sp_def
+;		ef_st_def = (fq_mp-fq_bk)/(mvn_d9_dat.rates[ind_d9,11,indmp9]-cd_bk) < st_def	
+;		ef_sp_def = (fq_mp-fq_bk)/(mvn_d9_dat.rates[ind_d9,10,indmp9]-ab_bk) 
+;		ef_st_def = (fq_mp-fq_bk)/(mvn_d9_dat.rates[ind_d9,11,indmp9]-cd_bk) 	
+
+;		if (fq_mp lt 2.*fq_bk) and (ind_d9 ne ind_d9_old) then print,'fq ',time_string(time[i]),fq_pk,fq_mp_tmp,fq_mp,fq_bk,indpk9,indmp9
+;		if (mvn_d9_dat.rates[ind_d9,10,indmp9] lt 2.*ab_bk) and (ind_d9 ne ind_d9_old) then print,'ab ',time_string(time[i]),fq_pk,fq_mp_tmp,mvn_d9_dat.rates[ind_d9,10,indmp9],ab_bk,indpk9,indmp9
+;		if (mvn_d9_dat.rates[ind_d9,11,indmp9] lt 2.*cd_bk) and (ind_d9 ne ind_d9_old) then print,'cd ',time_string(time[i]),fq_pk,fq_mp_tmp,mvn_d9_dat.rates[ind_d9,11,indmp9],cd_bk,indpk9,indmp9
+
+; new method 20171002
+		indmp9 = sort(mvn_d9_dat.rates[ind_d9,4,*]/mvn_d9_dat.rates[ind_d9,10,*])
+		fq_mp = total(mvn_d9_dat.rates[ind_d9,7,indmp9[0:3]])/4.
+		ab_mp = total(mvn_d9_dat.rates[ind_d9,10,indmp9[0:3]])/4.
+		cd_mp = total(mvn_d9_dat.rates[ind_d9,11,indmp9[0:3]])/4.
+		ef_sp_def = (fq_mp-fq_bk)/((ab_mp-ab_bk)>.001)
+		ef_st_def = (fq_mp-fq_bk)/((cd_mp-cd_bk)>.001) 	
+		
+; changed 20170919
+;	ef_sp = 0.2 > (fq/((ab-ab_bk)>(fq+0.00001))) < .6					; efficiency - may need mod, problem??? should lower limit be lower???
+;	ef_st = 0.2 > (fq/((cd-cd_bk)>(fq+0.00001))) < .8					; efficiency - may need mod, problem??? should lower limit be lower???
+	if ((fq lt 2.*fq_bk) or (ab lt 2.*ab_bk)) then ef_sp=ef_sp_def else $
+		ef_sp = 0.1 > ((fq-fq_bk)/((ab-ab_bk)>(fq-fq_bk)>0.00001)) < ef_sp_def*1.1	; efficiency - changed 20170919 should lower limit be lower???
+	if ((fq lt 2.*fq_bk) or (cd lt 2.*cd_bk)) then ef_st=ef_st_def else $
+		ef_st = 0.1 > ((fq-fq_bk)/((cd-cd_bk)>(fq-fq_bk)>0.00001)) < ef_st_def*1.1	; efficiency - changed 20170919 should lower limit be lower???
+
+	bkg_ab[i] = ab_bk
+	bkg_cd[i] = cd_bk
+	bkg_fq[i] = fq_bk
+	eff_st_def[i] = ef_st_def
+	eff_sp_def[i] = ef_sp_def
+	d9_fq_pk[i] = fq_pk
+	d9_fq_mp[i] = fq_mp
+	d9_ab_mp[i] = ab_mp
+	d9_cd_mp[i] = cd_mp
+
+; assume stop efficiency doesn't change
+;	ef_sp = sp_def
+
+
+if 1 then begin
+; smooth out statistical fluctuations at low count rates - the default should be changed to make it anode dependent, 50Hz=200cnts
+;	ef_sp = (ef_sp*fq + sp_def*50.)/(fq+50.)	
+;	ef_st = (ef_st*fq + st_def*50.)/(fq+50.)
+	ef_sp = (ef_sp*fq + ef_sp_def*50.)/(fq+50.)	
+	ef_st = (ef_st*fq + ef_st_def*50.)/(fq+50.)
 
 ; old code used default efficiencies at very low count rates - this underestimates efficiencies and was replaced below
 ;	if (fq lt 100. and i gt 8) then begin								
@@ -204,6 +324,7 @@ for i=0l,npts-1 do begin
 			endelse
 		endelse
 	endif
+endif
 	
 ; calculate total efficiency 
 ;	ef_tl = (1. + (1.-ef_st)*(1.-ef_sp))*ef_st*ef_sp						
@@ -212,7 +333,7 @@ for i=0l,npts-1 do begin
 ; store efficiencies for tplot variables (only used if test keyword is set)
 	eff_start[i] = ef_st	
 	eff_stop[i]  = ef_sp
-	eff_qual[i]  = ef3	
+	eff_qual[i]  = ef3									; ef3 includes anode rejection and droop
 	eff_total[i] = ef_tl
 		
 ; fill the rate and valid event arrays 
@@ -336,34 +457,67 @@ if keyword_set(test) then begin
 	loadct2,43
 	cols=get_colors()
 
-	store_data,'mvn_sta_flag_dead',data={x:time+2.,y:flag_dead}
-	store_data,'mvn_sta_max_dead',data={x:time+2.,y:max_dead}
-	store_data,'mvn_sta_max_droop',data={x:time+2.,y:max_droop}
+	store_data,'mvn_sta_flag_dead',data={x:time,y:flag_dead}
+	store_data,'mvn_sta_max_dead',data={x:time,y:max_dead}
+	store_data,'mvn_sta_max_droop',data={x:time,y:max_droop}
 		options,'mvn_sta_max_droop',colors=cols.red
-	store_data,'mvn_sta_min_droop',data={x:time+2.,y:min_droop}
+	store_data,'mvn_sta_min_droop',data={x:time,y:min_droop}
 		options,'mvn_sta_min_droop',colors=cols.green
 	store_data,'mvn_sta_max_dead_droop',data=['mvn_sta_max_dead','mvn_sta_max_droop','mvn_sta_min_droop']
 		ylim,'mvn_sta_max_dead_droop',.5,20.,1
 
-	store_data,'mvn_sta_dl_eff_start',data={x:time+2.,y:eff_start}
+	store_data,'mvn_sta_dl_eff_start',data={x:time,y:eff_start}
 		options,'mvn_sta_dl_eff_start',colors=cols.green
-	store_data,'mvn_sta_dl_eff_stop',data={x:time+2.,y:eff_stop}
+	store_data,'mvn_sta_dl_eff_stop',data={x:time,y:eff_stop}
 		options,'mvn_sta_dl_eff_stop',colors=cols.red
-	store_data,'mvn_sta_dl_eff_qual',data={x:time+2.,y:eff_qual}
+	store_data,'mvn_sta_dl_eff_qual',data={x:time,y:eff_qual}
 		options,'mvn_sta_dl_eff_qual',colors=cols.cyan
-	store_data,'mvn_sta_dl_eff_total',data={x:time+2.,y:eff_total}
-	store_data,'mvn_sta_dl_eff_expected',data={x:time+2.,y:eff_expected}
+	store_data,'mvn_sta_dl_eff_total',data={x:time,y:eff_total}
+	store_data,'mvn_sta_dl_eff_expected',data={x:time,y:eff_expected}
 		options,'mvn_sta_dl_eff_expected',colors=cols.magenta
 	store_data,'mvn_sta_dl_eff',data=['mvn_sta_dl_eff_total','mvn_sta_dl_eff_start','mvn_sta_dl_eff_qual','mvn_sta_dl_eff_stop','mvn_sta_dl_eff_expected']
 		ylim,'mvn_sta_dl_eff',.1,1,1
 
-	store_data,'mvn_sta_pk1_droop',data={x:time+2.,y:pk1_droop}
+	store_data,'mvn_sta_dl_eff_st_def',data={x:time,y:eff_st_def}
+		options,'mvn_sta_dl_eff_st_def',colors=cols.cyan
+	store_data,'mvn_sta_dl_eff_sp_def',data={x:time,y:eff_sp_def}
+		options,'mvn_sta_dl_eff_sp_def',colors=200				; 200 is orange
+	store_data,'mvn_sta_dl_eff_def',data=['mvn_sta_dl_eff_start','mvn_sta_dl_eff_stop','mvn_sta_dl_eff_st_def','mvn_sta_dl_eff_sp_def']
+		options,'mvn_sta_dl_eff_def',yrange=[.1,1],ylog=1,panel_size=2,ytitle='sta!Cdead!Cload!C!Cd8 eff!Cd9 eff'
+
+	store_data,'mvn_sta_dl_bkg_ab',data={x:time,y:bkg_ab}
+		options,'mvn_sta_dl_bkg_ab',colors=cols.green
+	store_data,'mvn_sta_dl_bkg_cd',data={x:time,y:bkg_cd}
+		options,'mvn_sta_dl_bkg_cd',colors=cols.red
+	store_data,'mvn_sta_dl_bkg_fq',data={x:time,y:bkg_fq}
+		options,'mvn_sta_dl_bkg_fq',colors=cols.cyan
+	store_data,'mvn_sta_dl_bkg',data=['mvn_sta_dl_bkg_ab','mvn_sta_dl_bkg_cd','mvn_sta_dl_bkg_fq']
+		ylim,'mvn_sta_dl_bkg',100,3.e4,1
+	store_data,'mvn_sta_dl_comp_start',data=['mvn_sta_dl_bkg_ab','mvn_sta_d8_R1_Qual','mvn_sta_d8_R1_A&B','mvn_sta_dl_bkg_fq']
+		ylim,'mvn_sta_dl_comp_start',100,3.e4,1
+	store_data,'mvn_sta_dl_comp_stop' ,data=['mvn_sta_dl_bkg_cd','mvn_sta_d8_R1_Qual','mvn_sta_d8_R1_C&D','mvn_sta_dl_bkg_fq']
+		ylim,'mvn_sta_dl_comp_stop',100,3.e4,1
+;		ylim,'mvn_sta_dl_comp_start',1,3.e4,1 & ylim,'mvn_sta_dl_comp_stop',1,3.e4,1
+
+	store_data,'mvn_sta_d9_fq_mp',data={x:time,y:d9_fq_mp}
+		options,'mvn_sta_d9_fq_mp',color=cols.cyan
+	store_data,'mvn_sta_d9_fq_pk',data={x:time,y:d9_fq_pk}
+		options,'mvn_sta_d9_fq_pk',color=200
+	store_data,'mvn_sta_d9_ab_mp',data={x:time,y:d9_ab_mp}
+		options,'mvn_sta_d9_ab_mp',color=cols.green
+	store_data,'mvn_sta_d9_cd_mp',data={x:time,y:d9_cd_mp}
+		options,'mvn_sta_d9_cd_mp',color=cols.red
+	store_data,'mvn_sta_d9_fq_ab_cd_mp_fq_pk',data=['mvn_sta_d9_ab_mp','mvn_sta_d9_cd_mp','mvn_sta_d9_fq_pk','mvn_sta_d9_fq_mp']
+
+
+
+	store_data,'mvn_sta_pk1_droop',data={x:time,y:pk1_droop}
 		ylim,'mvn_sta_pk1_droop',-.1,1.1,0
-	store_data,'mvn_sta_pk2_droop',data={x:time+2.,y:pk2_droop*1.01}
+	store_data,'mvn_sta_pk2_droop',data={x:time,y:pk2_droop*1.01}
 		ylim,'mvn_sta_pk2_droop',-.1,1.1,0 & options,'mvn_sta_pk2_droop',colors=cols.red
-	store_data,'mvn_sta_pk3_droop',data={x:time+2.,y:pk3_droop}
+	store_data,'mvn_sta_pk3_droop',data={x:time,y:pk3_droop}
 		ylim,'mvn_sta_pk3_droop',-.1,1.1,0 & options,'mvn_sta_pk3_droop',colors=cols.magenta
-	store_data,'mvn_sta_pk12_droop',data={x:time+2.,y:pk1_droop*pk2_droop}
+	store_data,'mvn_sta_pk12_droop',data={x:time,y:pk1_droop*pk2_droop}
 		ylim,'mvn_sta_pk12_droop',-.1,1.1,0 & options,'mvn_sta_pk12_droop',colors=cols.green
 	store_data,'mvn_sta_pk_droop',data=['mvn_sta_pk1_droop','mvn_sta_pk2_droop','mvn_sta_pk3_droop','mvn_sta_pk12_droop']
 		ylim,'mvn_sta_pk_droop',-.1,1.1,0
@@ -391,7 +545,7 @@ if size(mvn_c0_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da = min(abs(time-dat.time[i]),ind_da)
+		min_da = min(abs(time-(dat.time[i]+dat.end_time[i])/2.),ind_da)
 
 ;		rt_dt = reform(rate[ind_da,*,*]*dead7[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
 ;		rt = reform(rate[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
@@ -433,7 +587,7 @@ if size(mvn_c2_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da = min(abs(time-dat.time[i]),ind_da)
+		min_da = min(abs(time-(dat.time[i]+dat.end_time[i])/2.),ind_da)
 
 ;		rt_dt = reform(rate[ind_da,*,*]*dead7[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
 ;		rt = reform(rate[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
@@ -475,7 +629,7 @@ if size(mvn_c4_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da = min(abs(time-dat.time[i]),ind_da)
+		min_da = min(abs(time-(dat.time[i]+dat.end_time[i])/2.),ind_da)
 
 ;		rt_dt = reform(rate[ind_da,*,*]*dead7[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
 ;		rt = reform(rate[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
@@ -517,7 +671,7 @@ if size(mvn_c6_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da = min(abs(time-dat.time[i]),ind_da)
+		min_da = min(abs(time-(dat.time[i]+dat.end_time[i])/2.),ind_da)
 
 ;		rt_dt = reform(rate[ind_da,*,*]*dead7[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
 ;		rt = reform(rate[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
@@ -559,7 +713,7 @@ if size(mvn_c8_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da = min(abs(time-dat.time[i]),ind_da)
+		min_da = min(abs(time-(dat.time[i]+dat.end_time[i])/2.),ind_da)
 
 ;		rt_dt = reform(rate[ind_da,*,*]*dead7[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
 ;		rt = reform(rate[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
@@ -601,7 +755,7 @@ if size(mvn_ca_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da = min(abs(time-dat.time[i]),ind_da)
+		min_da = min(abs(time-(dat.time[i]+dat.end_time[i])/2.),ind_da)
 
 ;		rt_dt = reform(rate[ind_da,*,*]*dead7[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
 ;		rt = reform(rate[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
@@ -643,8 +797,8 @@ if size(mvn_cc_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da1 = min(abs(time-dat.time[i]),ind_da1)
-		min_da2 = min(abs(time-dat.end_time[i]+4.),ind_da2)
+		min_da1 = min(abs(time-2.-dat.time[i]),ind_da1)
+		min_da2 = min(abs(time+2.-dat.end_time[i]),ind_da2)
 		avg_da = ind_da2-ind_da1+1
 
 ;		rt_dt = reform(rate[ind_da1:ind_da2,*,*]*dead7[ind_da1:ind_da2,*,*],avg_da,avg_nrg,nenergy,avg_def,ndef)
@@ -687,7 +841,7 @@ if size(mvn_cd_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da = min(abs(time-dat.time[i]),ind_da)
+		min_da = min(abs(time-(dat.time[i]+dat.end_time[i])/2.),ind_da)
 
 ;		rt_dt = reform(rate[ind_da,*,*]*dead7[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
 ;		rt = reform(rate[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
@@ -729,8 +883,8 @@ if size(mvn_ce_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da1 = min(abs(time-dat.time[i]),ind_da1)
-		min_da2 = min(abs(time-dat.end_time[i]+4.),ind_da2)
+		min_da1 = min(abs(time-2.-dat.time[i]),ind_da1)
+		min_da2 = min(abs(time+2.-dat.end_time[i]),ind_da2)
 		avg_da = ind_da2-ind_da1+1
 
 ;		rt_dt = reform(rate[ind_da1:ind_da2,*,*]*dead7[ind_da1:ind_da2,*,*],avg_da,avg_nrg,nenergy,avg_def,ndef)
@@ -773,7 +927,7 @@ if size(mvn_cf_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da = min(abs(time-dat.time[i]),ind_da)
+		min_da = min(abs(time-(dat.time[i]+dat.end_time[i])/2.),ind_da)
 
 ;		rt_dt = reform(rate[ind_da,*,*]*dead7[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
 ;		rt = reform(rate[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
@@ -815,8 +969,8 @@ if size(mvn_d0_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da1 = min(abs(time-dat.time[i]),ind_da1)
-		min_da2 = min(abs(time-dat.end_time[i]+4.),ind_da2)
+		min_da1 = min(abs(time-2.-dat.time[i]),ind_da1)
+		min_da2 = min(abs(time+2.-dat.end_time[i]),ind_da2)
 		avg_da = ind_da2-ind_da1+1
 
 ;		rt_dt = reform(rate[ind_da1:ind_da2,*,*]*dead7[ind_da1:ind_da2,*,*],avg_da,avg_nrg,nenergy,avg_def,ndef)
@@ -859,8 +1013,8 @@ if size(mvn_d1_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da1 = min(abs(time-dat.time[i]),ind_da1)
-		min_da2 = min(abs(time-dat.end_time[i]+4.),ind_da2)
+		min_da1 = min(abs(time-2.-dat.time[i]),ind_da1)
+		min_da2 = min(abs(time+2.-dat.end_time[i]),ind_da2)
 		avg_da = ind_da2-ind_da1+1
 
 ;		rt_dt = reform(rate[ind_da1:ind_da2,*,*]*dead7[ind_da1:ind_da2,*,*],avg_da,avg_nrg,nenergy,avg_def,ndef)
@@ -903,8 +1057,8 @@ if size(mvn_d2_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da1 = min(abs(time-dat.time[i]),ind_da1)
-		min_da2 = min(abs(time-dat.end_time[i]+4.),ind_da2)
+		min_da1 = min(abs(time-2.-dat.time[i]),ind_da1)
+		min_da2 = min(abs(time+2.-dat.end_time[i]),ind_da2)
 		avg_da = ind_da2-ind_da1+1
 
 ;		rt_dt = reform(rate[ind_da1:ind_da2,*,*]*dead7[ind_da1:ind_da2,*,*],avg_da,avg_nrg,nenergy,avg_def,ndef)
@@ -947,7 +1101,7 @@ if size(mvn_d3_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da = min(abs(time-dat.time[i]),ind_da)
+		min_da = min(abs(time-(dat.time[i]+dat.end_time[i])/2.),ind_da)
 
 ;		rt_dt = reform(rate[ind_da,*,*]*dead7[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
 ;		rt = reform(rate[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
@@ -989,7 +1143,7 @@ if size(mvn_d4_dat,/type) eq 8 then begin
 	dead_tmp = dblarr(npts,nenergy*nbins*nmass)
 
 	for i=0l,npts-1 do begin
-		min_da = min(abs(time-dat.time[i]),ind_da)
+		min_da = min(abs(time-(dat.time[i]+dat.end_time[i])/2.),ind_da)
 
 ;		rt_dt = reform(rate[ind_da,*,*]*dead7[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
 ;		rt = reform(rate[ind_da,*,*],avg_nrg,nenergy,avg_def,ndef)
@@ -1012,5 +1166,6 @@ if size(mvn_d4_dat,/type) eq 8 then begin
 
 endif
 
+if keyword_set(deepdip) then print,'Background algorithm used da data rather than d9 data'
 
 end
