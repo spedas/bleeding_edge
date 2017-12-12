@@ -5,7 +5,7 @@
 ; Loads MVN L2 data for a given file(s), or time_range
 ;CALLING SEQUENCE:
 ; mvn_sta_l2_load, files = files, trange=trange, sta_apid=sta_apid, $
-;                  create_tplot_vars = create_tplot_vars
+;                  tplot_vars_create = tplot_vars_create
 ;INPUT:
 ; All via keyword, if none are set, then the output of timerange() is
 ; used, which may prompt for a time interval
@@ -25,19 +25,20 @@
 ;                trange is only used for file selection.
 ; tplot_vars_create = if set, call mvn_sta_l2_tplot to get tplot
 ;                     variables
-
+; tvar_names = list of the STA tplot variable names loaded
 ;OUTPUT:
 ; No variables, data are loaded into common blocks
 ;HISTORY:
 ; 16-may-2014, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-12-01 15:09:27 -0800 (Fri, 01 Dec 2017) $
-; $LastChangedRevision: 24389 $
+; $LastChangedDate: 2017-12-11 14:39:21 -0800 (Mon, 11 Dec 2017) $
+; $LastChangedRevision: 24416 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_l2_load.pro $
 ;-
 Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
                      user_pass = user_pass, no_time_clip = no_time_clip, $
-                     tplot_vars_create = tplot_vars_create, _extra = _extra
+                     tplot_vars_create = tplot_vars_create, $
+                     tvar_names = tvar_names, _extra = _extra
 
 ;Keep track of software versioning here
   sw_vsn = mvn_sta_current_sw_version()
@@ -264,7 +265,10 @@ Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
         End
      Endcase
   Endfor
-  If(keyword_set(tplot_vars_create)) Then mvn_sta_l2_tplot
+  If(keyword_set(tplot_vars_create)) Then Begin
+     mvn_sta_l2_tplot, /replace
+     tvar_names = tnames('mvn_sta_'+app_id+'*')
+  Endif Else tvar_names = ''
 
   Return
 End
