@@ -18,7 +18,6 @@
 ;    None
 ;
 ; KEYWORD PARAMETERS:
-;
 ;    cal_files		calibration files if they do not need to be read
 ;    pgm_file   	do not read CDF, but pgm-files
 ;    verbose    	print some diagnostics
@@ -49,9 +48,11 @@
 ;    ysize              ysize of window
 ;    position=position  position of plot on window (normal coordinates)
 ;    noerase=noerase    do not erase current window (no effect if {x,y}size set
+;    keep_z		keep z-buffer open for further plotting
 ;
 ;    no_grid=no_grid	do not plot geomagnetic grid
 ;    no_midnight=no_midnight	do not plot midnight meridian
+;    no_label		do not label mosaic with date and time
 ;    add_plot           stop because we want to add something
 ;    force_map		plot map even if there are no images
 ;
@@ -112,8 +113,10 @@ PRO THM_ASI_MERGE_MOSAIC,time,$
     gif_out=gif_out,$                  ; output in gif file
     verbose=verbose,$                  ; print debug messages
     pgm_file=pgm_file,$                ; read raw pgm files
+
     exclude=exclude,$                  ; exclude certain stations
     top=top,$                          ; set top value for image
+    
     show=show,$                        ; limit stations shown
     scale=scale,$                      ; scale for map set
     central_lat=central_lat,$          ; geographic latitude of center of plot
@@ -131,7 +134,9 @@ PRO THM_ASI_MERGE_MOSAIC,time,$
     minval=minval,$                    ; brightness scaling of images
     window=window,$      	       ; set window number
     rotation=rotation,$                ; rotate map away from North up
+    
     minimum_elevation=minimum_elevation,$ ; set minimum elevation
+    
     gif_dir=gif_dir,$                  ; An output directory for the gif output, default is the local working dir.
     force_map=force_map,$              ; force display of empty map
     no_grid=no_grid,$                  ; do not plot grid
@@ -146,9 +151,14 @@ PRO THM_ASI_MERGE_MOSAIC,time,$
     track2=track2,$			; mark geographic location=[long,lat] or [[lo,la],[lo,la],[lo,la]]
     ssize=ssize,$			; size of symbol for location
     sym_color=sym_color,$		; color of location
+    keep_z=keep_z,$			; keep z-buffer open
     stoptime=stoptime,$			; create multiple mosaics
     timestep=timestep,$			; time step in seconds for multiple mosaics
+    
     insert=insert			; insert stop before end of program
+
+
+
 
 	; input check
 if keyword_set(verbose) then verbose=systime(1)
@@ -209,6 +219,11 @@ if keyword_set(zbuffer) then chars=1.15 else chars=1.5
 	; some setup
 if keyword_set(minimum_elevation) then minimum_elevation_to_plot=minimum_elevation else minimum_elevation_to_plot=8. ;degrees
 n1=256l*256l
+
+
+
+
+
 
      	; clean up before start
 names=tnames('thg_as*')
@@ -474,8 +489,8 @@ if keyword_set(gif_out) then begin
    tv,img
    endif
 
-if keyword_set(zbuffer) then begin
-   zbuffer=tvrd()
+if keyword_set(zbuffer) then zbuffer=tvrd()
+if not keyword_set(keep_z) and keyword_set(zbuffer) then begin
    device,/close
    set_plot,'x'
    endif

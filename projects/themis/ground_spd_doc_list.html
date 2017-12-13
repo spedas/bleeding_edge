@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Dec 11 18:16:09 2017.<P>
+<STRONG>Last modified: </STRONG>Tue Dec 12 18:16:13 2017.<P>
  
 <HR>
  
@@ -257,7 +257,6 @@ This page was created by the IDL library routine
     None
 
  KEYWORD PARAMETERS:
-
     cal_files		calibration files if they do not need to be read
     pgm_file   	do not read CDF, but pgm-files
     verbose    	print some diagnostics
@@ -288,9 +287,11 @@ This page was created by the IDL library routine
     ysize              ysize of window
     position=position  position of plot on window (normal coordinates)
     noerase=noerase    do not erase current window (no effect if {x,y}size set
+    keep_z		keep z-buffer open for further plotting
 
     no_grid=no_grid	do not plot geomagnetic grid
     no_midnight=no_midnight	do not plot midnight meridian
+    no_label		do not label mosaic with date and time
     add_plot           stop because we want to add something
     force_map		plot map even if there are no images
 
