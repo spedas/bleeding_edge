@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Dec 12 18:16:13 2017.<P>
+<STRONG>Last modified: </STRONG>Wed Dec 13 18:16:09 2017.<P>
  
 <HR>
  
@@ -19,6 +19,8 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/barrel/barrel_sp_v3.7</H1>
+<LI><A HREF="#GEO2MAG()">GEO2MAG()</A>
+<br>Convert from geographic to geomagnetic coordinates
 <LI><A HREF="#BARREL_MAKE_MODEL_BKG">BARREL_MAKE_MODEL_BKG</A>
 <LI><A HREF="#BARREL_SELECTTIMES">BARREL_SELECTTIMES</A>
 <LI><A HREF="#BARREL_SP_FITGRID1">BARREL_SP_FITGRID1</A>
@@ -35,8 +37,6 @@ This page was created by the IDL library routine
 <LI><A HREF="#BARREL_SP_READMODELSPEC">BARREL_SP_READMODELSPEC</A>
 <LI><A HREF="#BRL_REBIN">BRL_REBIN</A>
 <LI><A HREF="#EDGE_PRODUCTS">EDGE_PRODUCTS</A>
-<LI><A HREF="#GEO2MAG()">GEO2MAG()</A>
-<br>Convert from geographic to geomagnetic coordinates
 <LI><A HREF="#GET_UNIQ">GET_UNIQ</A>
 <br>
 </UL><P>
@@ -993,9 +993,10 @@ Version 3.4 DMS 4/17/14:  The interpolation kills a single-bin
  MODIFICATION HISTORY:
        Written by Pascal Saint-Hilaire (Saint-Hilaire@astro.phys.ethz.ch), 
             May 2002
-               
+       Changed the name to avoid conflicts, jmm, 2017-12-13, no other
+       changes from the SSW version               
 </PRE><P>
-<STRONG>(See <A href="barrel_sp_v3.7/geo2mag.pro">projects/barrel/barrel_sp_v3.7/geo2mag.pro</A>)</STRONG><P>
+<STRONG>(See <A href="barrel_sp_v3.7/barrel_geo2mag.pro">projects/barrel/barrel_sp_v3.7/barrel_geo2mag.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="GET_UNIQ">

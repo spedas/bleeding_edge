@@ -178,7 +178,7 @@ FUNCTION eva_sitl_validate, tai_FOMstr_mod, tai_FOMstr_org, header=header, $
     endfor
     msg = newmsg[1:n_elements(newmsg)-1]
     ;----------------
-    xdisplayfile,'dummy',done='Close',group=tlb,text=msg, title='VALIDATION',/grow_to_screen
+    xdisplayfile,'dummy',done='Close',group=tlb,text=msg, title='VALIDATION',height=50, width=120;/grow_to_screen
     ;----------------
     mmax = n_elements(msg)
     openw,nf,'eva_validate.txt',/get_lun ; open as a new file

@@ -96,7 +96,7 @@ if (not keyword_set(maglat)) and (bkgmethod eq 2) then begin
    end
    geolon = lonsum/lonnorm
 
-   maglat = abs((geo2mag([geolat,geolon]))[0])
+   maglat = abs((barrel_geo2mag([geolat,geolon]))[0])
 
 endif
 
