@@ -61,6 +61,18 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
   all_wf_decompressed = []
   all_wf_decompressed_v = []
 
+  ; TODO: Correct delays below for SCM data as well as V/E data
+
+  Ideal_delay = !null
+  delay_loc = 0d
+  print, 'Sample Rate      ', 'Ideal Cumulative delay (s) - V or E DC only'
+  for index = 0, 15, 1 do begin &$
+    if index EQ 0 then delay_loc += (4d / 18750d) &$
+    if index GT 0 then delay_loc += (3d / (18750d/ 2d^(index)) + 1d / (18750d/ 2d^(index - 1d)) ) &$
+    Ideal_delay = [Ideal_delay, delay_loc] &$
+    print, 18750d/ 2d^(index), delay_loc &$
+  endfor
+
   ; TODO: Make this faster by having TMlib get the time
 
   if size(d, /type) EQ 8 then begin
@@ -84,9 +96,13 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
       all_wf_decompressed = [all_wf_decompressed, wf_i]
       all_wf_decompressed_v = [all_wf_decompressed_v, wf_i_v]
 
+      ideal_delay_i = ideal_delay[d_tap.y[i]]
+
+      delay_i = ideal_delay_i + 0.5/(18750d / (2d^d_tap.y[i]))
+
       wf_time = d_tap.x[i] + $
         (dindgen(n_elements(wf_i))) / $
-        (18750d / (2d^d_tap.y[i]))
+        (18750d / (2d^d_tap.y[i])) - delay_i
 
       all_wf_time = [all_wf_time, wf_time]
 
