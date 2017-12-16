@@ -35,8 +35,8 @@
 ;       
 ;       
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-10-27 09:13:33 -0700 (Thu, 27 Oct 2016) $
-; $LastChangedRevision: 22216 $
+; $LastChangedDate: 2017-12-15 12:56:16 -0800 (Fri, 15 Dec 2017) $
+; $LastChangedRevision: 24423 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/cdf/mms_add_cdf_versions.pro $
 ;-
 
@@ -50,7 +50,7 @@ pro mms_add_cdf_versions, instrument, versions, data_rate = data_rate, right_ali
         return
     endif
     if undefined(versions) then begin
-      dprint, dlevel = 0, 'Array of version #s required'
+      dprint, dlevel = 0, instrument + ': Array of version #s required'
       return
     endif
     
