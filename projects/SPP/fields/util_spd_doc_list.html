@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Dec 15 18:16:14 2017.<P>
+<STRONG>Last modified: </STRONG>Mon Dec 18 18:16:20 2017.<P>
  
 <HR>
  
@@ -21,6 +21,8 @@ This page was created by the IDL library routine
 <H1>projects/SPP/fields/util</H1>
 <LI><A HREF="#READ_XML8">READ_XML8</A>
 <br>READ an XML document file into IDL (Interactive Data Language, ITT).
+<LI><A HREF="#SPP_FLD_STATUSPLOT">SPP_FLD_STATUSPLOT</A>
+<br>Procedure used to display status bars on a TPLOT.
 <LI><A HREF="#STR_CLEAN">STR_CLEAN</A>
 <br>To remove all unprintable characters from the given string
 <LI><A HREF="#XML2IDL8">XML2IDL8</A>
@@ -32,7 +34,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="READ_XML8">
 <H2>READ_XML8</H2></A>
-<A HREF="#STR_CLEAN">[Next Routine]</A>
+<A HREF="#SPP_FLD_STATUSPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -95,9 +97,55 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="util/read_xml8.pro">projects/SPP/fields/util/read_xml8.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPP_FLD_STATUSPLOT">
+<H2>SPP_FLD_STATUSPLOT</H2></A>
+<A HREF="#READ_XML8">[Previous Routine]</A>
+<A HREF="#STR_CLEAN">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+ 	spp_fld_statusplot
+
+ PROCEDURE:
+ 	spp_fld_statusplot, x, y, overplot = overplot, limits = lim, data = data
+
+ INPUT:
+ 	x: array of x values.
+	  y: array of y strings.
+
+ PURPOSE:
+ 	Procedure used to display status bars on a TPLOT.
+   SPP_FLD_STATUSPLOT uses the SPECPLOT routine to plot a TPLOT variable
+   that can take on one of several discrete STRING values.
+
+ KEYWORDS:
+	DATA:		A structure containing the elements 'x' and 'y'.
+	LIMITS:		The limits structure for the TPLOT variable.
+	OVERPLOT:	If set, data is plotted over current plot.
+	STAT_VALS:	An array of strings containing possible
+			values for the 'y' variable.  If STAT_VALS is unset,
+			STATUSPLOT plots status bars for each unique
+			string contained in the 'y' variable.
+
+ EXAMPLE:	
+	If 'Channel' is a TPLOT variable with possible values of
+	'Ch1', 'Ch2', and 'Off', then the following commands
+	will set up statusplot.
+	
+	options, 'Channel', 'tplot_routine', 'statusplot'
+	options, 'Channel', 'stat_vals', ['Off', 'Ch1', 'Ch2']
+	tplot, 'Channel'
+		
+ MOD HISTORY:
+ 	Original version, based on the STRPLOT procedure,
+	created 27 May 2009 by Marc Pulupa.  
+</PRE><P>
+<STRONG>(See <A href="util/spp_fld_statusplot.pro">projects/SPP/fields/util/spp_fld_statusplot.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="STR_CLEAN">
 <H2>STR_CLEAN</H2></A>
-<A HREF="#READ_XML8">[Previous Routine]</A>
+<A HREF="#SPP_FLD_STATUSPLOT">[Previous Routine]</A>
 <A HREF="#XML2IDL8">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

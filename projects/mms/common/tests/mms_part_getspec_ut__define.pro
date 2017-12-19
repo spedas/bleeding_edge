@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-12-01 13:06:59 -0800 (Fri, 01 Dec 2017) $
-; $LastChangedRevision: 24387 $
+; $LastChangedDate: 2017-12-18 13:21:08 -0800 (Mon, 18 Dec 2017) $
+; $LastChangedRevision: 24437 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
 
@@ -182,6 +182,13 @@ function mms_part_getspec_ut::test_dir_interval
   mms_part_getspec, dir_interval=4, trange=['2015-12-15', '2015-12-15/00:20'], /add_bfield, /add_ram, probe=1, instrument='fpi'
   get_data, 'mms1_des_dist_fast_phi_bdata', data=d
   assert, d.X[1]-d.X[0] eq 4.0, 'Problem with dir_interval keyword in mms_part_getspec'
+  return, 1
+end
+
+function mms_part_getspec_ut::test_hpca_regression
+  timespan, '2016-10-16/17:39:00', 5, /min
+  mms_part_getspec, instrument='hpca', probe='1', species='hplus', data_rate='brst', level='l2', outputs=['phi', 'theta', 'energy', 'pa', 'gyro', 'moments']
+  assert, spd_data_exists('mms1_hpca_hplus_phase_space_density_energy mms1_hpca_hplus_phase_space_density_theta mms1_hpca_hplus_phase_space_density_phi mms1_hpca_hplus_phase_space_density_pa mms1_hpca_hplus_phase_space_density_gyro', '2016-10-16/17:39:00', '2016-10-16/17:44:00'), 'Problem with HPCA regression test'
   return, 1
 end
 

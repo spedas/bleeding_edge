@@ -66,8 +66,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-11-30 21:19:03 -0800 (Thu, 30 Nov 2017) $
-; $LastChangedRevision: 24372 $
+; $LastChangedDate: 2017-12-18 12:26:02 -0800 (Mon, 18 Dec 2017) $
+; $LastChangedRevision: 24433 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -244,7 +244,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
                                 'P5AV','N5AV','P5DV','P3P3DV']  ; skipping P2P5DV
       
       ylim,'VoltsC',-0.1,0.1,0
-      options,'VoltsC','ytitle','Volts (dV/V)'
+      options,'VoltsC','ytitle','Volts (!4D!1HV/V)'  ; DeltaV/V
       options,'VoltsC','yticks',2
       options,'VoltsC','yminor',5
       options,'VoltsC','labflag',1

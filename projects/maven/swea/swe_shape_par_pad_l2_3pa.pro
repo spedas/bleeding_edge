@@ -53,10 +53,10 @@
 ;
 ;   Tplot variable "EFlux_ratio": store the flux ratio for two directions
 ;
-; $LastChangedBy:  $
-; $LastChangedDate:  $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: xussui $
+; $LastChangedDate: 2017-12-18 16:17:55 -0800 (Mon, 18 Dec 2017) $
+; $LastChangedRevision: 24443 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_shape_par_pad_l2_3pa.pro $
 ;
 ;CREATED BY:    Shaosui Xu  12-09-17
 ;-
@@ -202,14 +202,17 @@ Pro swe_shape_par_pad_l2_3pa, burst=burst, spec=spec, $
         Fzc = Fz
         Fmc = Fm
         if dopot then begin
-            ipot = swe_sc_pot[nn(swe_sc_pot.time, pad.time)].potential
+            ipot = mvn_sc_pot[nn(mvn_sc_pot.time, pad.time)].potential
             pots[n] = ipot
             if ipot eq ipot and abs(ipot) le 20 then begin;and ipot le -2
                for ijk=0,2 do begin
 
-                  mvn_swe_pot_conve, pad.energy[*,0], reform(Fp[*,ijk]), outEn, tFpc, ipot
-                  mvn_swe_pot_conve, pad.energy[*,0], reform(Fz[*,ijk]), outEn, tFzc, ipot
-                  mvn_swe_pot_conve, pad.energy[*,0], reform(Fm[*,ijk]), outEn, tFmc, ipot
+                  mvn_swe_pot_conve, reform(pad.energy[*,0]), reform(Fp[*,ijk]), $
+                                     outEn, tFpc, ipot
+                  mvn_swe_pot_conve, reform(pad.energy[*,0]), reform(Fz[*,ijk]), $
+                                     outEn, tFzc, ipot
+                  mvn_swe_pot_conve, reform(pad.energy[*,0]), reform(Fm[*,ijk]), $
+                                     outEn, tFmc, ipot
                   Fpc[*,ijk] = tFpc
                   Fzc[*,ijk] = tFzc
                   Fmc[*,ijk] = tFmc

@@ -63,6 +63,8 @@
 ;
 ;       LABSIZE:       Character size for the labels.  Default = 1.
 ;
+;       WSCALE:        Window size scale factor.
+;
 ;       KEEPWINS:      If set, then don't close the snapshot window(s) on exit.
 ;
 ;       ARCHIVE:       If set, show snapshots of archive data.
@@ -82,8 +84,8 @@
 ;                      interactive time range selection.)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2016-11-27 13:58:06 -0800 (Sun, 27 Nov 2016) $
-; $LastChangedRevision: 22403 $
+; $LastChangedDate: 2017-12-18 12:27:03 -0800 (Mon, 18 Dec 2017) $
+; $LastChangedRevision: 24435 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -94,7 +96,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
                  symenergy=symenergy, symdiag=symdiag, power=pow, map=map, $
                  abins=abins, dbins=dbins, obins=obins, mask_sc=mask_sc, burst=burst, $
                  plot_sc=plot_sc, padmap=padmap, pot=pot, plot_fov=plot_fov, $
-                 labsize=labsize, trange=tspan, tsmo=tsmo
+                 labsize=labsize, trange=tspan, tsmo=tsmo, wscale=wscale
 
   @mvn_swe_com
   @swe_snap_common
@@ -120,6 +122,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
   if keyword_set(plot_sc) then plot_sc = 1 else plot_sc = 0
   if keyword_set(plot_fov) then fov = 1 else fov = 0
   if not keyword_set(labsize) then labsize = 1.
+  if (size(wscale,/type) eq 0) then wscale = 1.
 
   omask = replicate(1.,96,2)
   indx = where(obins eq 0B, count)
@@ -226,21 +229,21 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
   Twin = !d.window
 
-  window, /free, xsize=Dopt.xsize, ysize=Dopt.ysize, xpos=Dopt.xpos, ypos=Dopt.ypos
+  window, /free, xsize=Dopt.xsize*wscale, ysize=Dopt.ysize*wscale, xpos=Dopt.xpos, ypos=Dopt.ypos
   Dwin = !d.window
 
   if (sflg) then begin
-    window, /free, xsize=Sopt.xsize, ysize=Sopt.ysize, xpos=Sopt.xpos, ypos=Sopt.ypos
+    window, /free, xsize=Sopt.xsize*wscale, ysize=Sopt.ysize*wscale, xpos=Sopt.xpos, ypos=Sopt.ypos
     Swin = !d.window
   endif
   
   if (dflg) then begin
-    window, /free, xsize=Sopt.xsize, ysize=Sopt.ysize, xpos=Sopt.xpos, ypos=Sopt.ypos
+    window, /free, xsize=Sopt.xsize*wscale, ysize=Sopt.ysize*wscale, xpos=Sopt.xpos, ypos=Sopt.ypos
     Fwin = !d.window
   endif
   
   if (dopam) then begin
-    window, /free, xsize=Nopt.xsize, ysize=Nopt.ysize, xpos=Nopt.xpos, ypos=Nopt.ypos
+    window, /free, xsize=Nopt.xsize*wscale, ysize=Nopt.ysize*wscale, xpos=Nopt.xpos, ypos=Nopt.ypos
     Pwin = !d.window
   endif
 

@@ -15,8 +15,8 @@
 ;   please send them to egrimes@igpp.ucla.edu
 ;   
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-07-19 08:35:14 -0700 (Tue, 19 Jul 2016) $
-; $LastChangedRevision: 21487 $
+; $LastChangedDate: 2017-12-18 09:23:47 -0800 (Mon, 18 Dec 2017) $
+; $LastChangedRevision: 24427 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_hpca_crib.pro $
 ;-
 
@@ -24,7 +24,7 @@
 tplot_options, 'xmargin', [20, 15]
 
 ; load the moments data
-mms_load_hpca, probes='1', trange=['2015-10-16', '2015-10-17'], datatype='moments', data_rate='srvy', level='l2'
+mms_load_hpca, probes='1', trange=['2016-10-16', '2016-10-17'], datatype='moments', data_rate='srvy', level='l2'
 
 ; show H+, O+ and He+ density
 tplot, ['mms1_hpca_hplus_number_density', $
@@ -45,7 +45,7 @@ tplot, ['mms1_hpca_hplus_ion_bulk_velocity', $
 stop
 
 ; load the ion data
-mms_load_hpca, probes='1', trange=['2015-10-16', '2015-10-17'], datatype='ion', level='l2', data_rate='srvy'
+mms_load_hpca, probes='1', trange=['2016-10-16', '2016-10-17'], datatype='ion', level='l2', data_rate='srvy'
 
 ; average the flux over the full field of view (0-360)
 mms_hpca_calc_anodes, fov=[0, 360], probe='1'

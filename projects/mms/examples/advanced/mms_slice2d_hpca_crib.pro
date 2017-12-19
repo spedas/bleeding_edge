@@ -22,8 +22,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-10-12 11:41:08 -0700 (Thu, 12 Oct 2017) $
-;$LastChangedRevision: 24148 $
+;$LastChangedDate: 2017-12-18 10:48:55 -0800 (Mon, 18 Dec 2017) $
+;$LastChangedRevision: 24430 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_slice2d_hpca_crib.pro $
 ;-
 
@@ -35,11 +35,11 @@
 probe = '1'
 level = 'l2'
 species = 'hplus'
-data_rate = 'srvy'
+data_rate = 'brst'
 
 name = 'mms'+probe+'_hpca_'+species+'_phase_space_density'
 
-timespan, '2015-10-16/13:06:00', 1, /min  ;time range to load
+timespan, '2016-10-16/17:40:00', 3, /min  ;time range to load
 trange = timerange()
 time = trange[0]  ;slice time 
 
@@ -79,13 +79,13 @@ stop
 probe = '1'
 level = 'l2'
 species = 'hplus'
-data_rate = 'srvy'
+data_rate = 'brst'
 
 name = 'mms'+probe+'_hpca_'+species+'_phase_space_density'
 bname = 'mms'+probe+'_fgm_b_gse_srvy_l2_bvec'             ;name of bfield vector
 vname = 'mms'+probe+'_hpca_'+species+'_ion_bulk_velocity' ;name of bulk velocity vector
 
-timespan, '2015-10-16/13:06:00', 1, /min  ;time range to load
+timespan, '2016-10-16/17:40:00', 1, /min  ;time range to load
 trange = timerange()
 time = trange[0]  ;slice time 
 
@@ -121,11 +121,11 @@ stop
 probe = '1'
 level = 'l2'
 species = 'hplus'
-data_rate = 'srvy'
+data_rate = 'brst'
 
 name = 'mms'+probe+'_hpca_'+species+'_phase_space_density'
 
-timespan, '2015-10-16/13:06:00', 1, /min  ;time range to load
+timespan, '2016-10-16/17:40:00', 1, /min  ;time range to load
 trange = timerange()
 
 mms_load_hpca, /center_measurement, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='ion'

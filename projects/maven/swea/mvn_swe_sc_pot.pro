@@ -78,8 +78,8 @@
 ;          keyword, and stored as a TPLOT variable.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-11-30 21:22:26 -0800 (Thu, 30 Nov 2017) $
-; $LastChangedRevision: 24375 $
+; $LastChangedDate: 2017-12-18 12:25:46 -0800 (Mon, 18 Dec 2017) $
+; $LastChangedRevision: 24432 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sc_pot.pro $
 ;
 ;-
@@ -251,7 +251,7 @@ pro mvn_swe_sc_pot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2,
 
   get_data, 'wake', data=wake, index=i
   if (i eq 0) then begin
-    maven_orbit_tplot, /current, /loadonly
+    maven_orbit_tplot, /shadow, /loadonly
     get_data, 'wake', data=wake, index=i
   endif
   if (i gt 0) then begin

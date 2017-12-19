@@ -35,8 +35,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-10-12 09:07:23 -0700 (Thu, 12 Oct 2017) $
-;$LastChangedRevision: 24143 $
+;$LastChangedDate: 2017-12-18 13:15:56 -0800 (Mon, 18 Dec 2017) $
+;$LastChangedRevision: 24436 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_get_hpca_dist.pro $
 ;-
 
@@ -156,7 +156,6 @@ if keyword_set(times) then begin
   return, (*azimuth.x)[full]
 endif
 
-
 ; Allow calling code to request a time range or specify index to specific sample.
 ;-----------------------------------------------------------------
 if ~undefined(single_time) then begin
@@ -181,6 +180,8 @@ endif else begin
     full = full[index]
   endif
 endelse
+
+if n_elements(data_idx) gt 1 && data_idx[0] eq -1 then data_idx = data_idx[1:*]
 data_idx = data_idx[full]
 
 
@@ -291,10 +292,8 @@ dist.dphi = transpose( dphi, [1,3,2,0] ) ;shuffle dimensions
 
 ;copy particle data
 for i=0,  n_elements(dist)-1 do begin
-
   ;shift from azimuth-energy-elevation to energy-azimuth-elevation
   dist[i].data = transpose( (*p.y)[data_idx[i]:data_idx[i]+(n_times-1),*,*], [1,0,2] )
-
 endfor
 
 ;ensure phi values are in [0,360]

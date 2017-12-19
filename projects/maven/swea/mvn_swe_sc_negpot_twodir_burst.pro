@@ -28,9 +28,9 @@
 ;   None - Potential results are stored as a TPLOT variable 'negpot_pad'. 
 ;          Four additional TPLOT variables are created for diagnostics. 
 ;
-; $LastChangedBy: xussui $
-; $LastChangedDate: 2017-12-01 12:33:58 -0800 (Fri, 01 Dec 2017) $
-; $LastChangedRevision: 24385 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2017-12-18 12:25:16 -0800 (Mon, 18 Dec 2017) $
+; $LastChangedRevision: 24431 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sc_negpot_twodir_burst.pro $
 ;
 ;CREATED BY:    Shaosui Xu  01-03-2017
@@ -76,7 +76,7 @@ pro mvn_swe_sc_negpot_twodir_burst, potential=phi, shadow=shadow, swidth=swidth,
 
 ; Calculate potentials
 
-    print,'This program is experimental - use with caution.'
+    print,'MVN_SWE_SC_NEGPOT_TWODIR_BURST:  This program is experimental - use with caution.'
 
     tmin = min(pad3.time, max=tmax)
     tsp = [tmin, tmax]                     ; time coverage for PAD burst data

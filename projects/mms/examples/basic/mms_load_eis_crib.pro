@@ -12,8 +12,8 @@
 ;   please send them to egrimes@igpp.ucla.edu
 ;   
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-05-19 10:51:27 -0700 (Thu, 19 May 2016) $
-; $LastChangedRevision: 21138 $
+; $LastChangedDate: 2017-12-18 09:39:08 -0800 (Mon, 18 Dec 2017) $
+; $LastChangedRevision: 24428 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_eis_crib.pro $
 ;-
 probe = '1'
@@ -30,10 +30,10 @@ tplot, '*_extof_proton_flux_omni_spin'
 stop
 
 ; calculate the PAD for 48-106keV protons
-mms_eis_pad, probe=probe, species='ion', datatype='extof', ion_type='proton', data_units='flux', energy=[48, 106], level = level
+mms_eis_pad, probe=probe, datatype='extof', species='proton', data_units='flux', energy=[48, 106], level = level
 
 ; calculate the PAD for 105-250 keV protons
-mms_eis_pad, probe=probe, species='ion', datatype='extof', ion_type='proton', data_units='flux', energy=[105, 250], level = level
+mms_eis_pad, probe=probe, datatype='extof', species='proton', data_units='flux', energy=[105, 250], level = level
 
 ; plot the PAD for 48-106keV (top), 105-250 keV (bottom) protons
 tplot, '*_epd_eis_extof_*keV_proton_flux_omni_pad_spin'
@@ -57,7 +57,7 @@ tplot, '*_phxtof_proton_flux_omni_spin'
 stop
 
 ; calculate the PHxTOF PAD for protons
-mms_eis_pad, probe=probe, species='ion', datatype='phxtof', ion_type='proton', data_units='flux', energy=[0, 30], level = level
+mms_eis_pad, probe=probe, datatype='phxtof', species='proton', data_units='flux', energy=[0, 30], level = level
 
 tplot, ['*_epd_eis_phxtof_proton_flux_omni_spin', $
         '*_epd_eis_phxtof_0-30keV_proton_flux_omni_pad_spin']
