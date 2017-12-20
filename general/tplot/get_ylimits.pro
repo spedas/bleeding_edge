@@ -41,8 +41,8 @@ for i=0,n_elements(datastr)-1 do begin
 			if yrange[0] lt miny then miny = yrange[0]
 			if yrange[1] gt maxy then maxy = yrange[1]
 		endif else begin
-			miny = yrange[0]
-			maxy = yrange[1]
+			miny = min([miny, yrange[0]])
+			maxy = max([maxy, yrange[1]])
 		endelse
 	endif
 endfor

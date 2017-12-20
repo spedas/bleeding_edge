@@ -20,9 +20,9 @@
 ;    NUMBITS: the number of bits that will be plot
 ;    SYMSIZE: set the size of the symbol
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2016-02-03 17:03:41 -0800 (Wed, 03 Feb 2016) $
-; $LastChangedRevision: 19898 $
+; $LastChangedBy: spfuser $
+; $LastChangedDate: 2017-12-19 11:16:22 -0800 (Tue, 19 Dec 2017) $
+; $LastChangedRevision: 24446 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/bitplot.pro $
 ;-
 pro bitplot,x,y,psyms=psyms,overplot=overplot,di=di,limits=lim,data=data,numbits=nb,symsize=symsize
@@ -38,6 +38,7 @@ str_element,lim,'numbits',nb
 str_element,stuff,'labels',val=labels
 str_element,lim,'psyms',psyms
 str_element,lim,'symsize',symsize
+str_element,lim,'thick',thick
 labsize = 1.
 str_element,stuff,'labsize',val=labsize
 str_element,stuff,'colors',colors
@@ -79,6 +80,10 @@ if not keyword_set(symsize) then begin
    symsize = 1.0
 endif
 
+if not keyword_set(thick) then begin
+  thick = 1.0
+endif
+
 if n_elements(colors) ne 0 then col = get_colors(colors)  $
 else col = !p.color
 ncol = n_elements(col)
@@ -87,7 +92,7 @@ bit = 1l
 for i=0,nb-1 do begin
   ind = where(y and bit,c)
   if c ne 0 then $
-     oplot,x[ind],replicate(i+di,n_elements(ind)),psym=psyms[i mod npsyms],col=col[i mod ncol],symsize=symsize
+     oplot,x[ind],replicate(i+di,n_elements(ind)),psym=psyms[i mod npsyms],col=col[i mod ncol],symsize=symsize,thick=thick
   bit = bit * 2
 endfor
 

@@ -112,8 +112,8 @@
 ;          the five unmerged methods in one panel.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-12-04 16:15:19 -0800 (Mon, 04 Dec 2017) $
-; $LastChangedRevision: 24395 $
+; $LastChangedDate: 2017-12-19 13:45:29 -0800 (Tue, 19 Dec 2017) $
+; $LastChangedRevision: 24447 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot.pro $
 ;
 ;-
@@ -269,7 +269,7 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
   get_data, 'alt', data=alt
   alt = spline(alt.x, alt.y, time)
 
-; First priority: Get pre-calculated potentials from SWEA-LPW analysis.
+; Step 1: Get pre-calculated potentials from SWEA-LPW analysis.
 
   if (lpwpot) then begin
      get_data, 'mvn_swe_lpw_scpot_pol', index=i
@@ -301,7 +301,7 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
      endif else print, "SWE/LPW potential not available."
   endif
 
-; Second priority: Estimate positive potential from SWEA alone
+; Step 2: Estimate positive potential from SWEA alone
   
   if (pospot) then begin
     mvn_swe_sc_pot, potential=phi
@@ -318,7 +318,7 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
     if (count gt 0) then mvn_sc_pot[indx] = phi[indx]
   endif
 
-; Third priority: Estimate negative potentials from SWEA (He-II feature)
+; Step 3: Estimate negative potentials from SWEA (He-II feature)
 ;   This fills in missing negative LPW-derived potentials.
 
   if (negpot) then begin    
@@ -329,7 +329,7 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
     options,'neg_pot','color',6
   endif        
 
-; Fourth priority: Use STATIC-derived negative potentials.
+; Step 4: Use STATIC-derived negative potentials.
 
   if (stapot) then begin
     print,"Getting negative potentials from STATIC."
@@ -369,10 +369,10 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
           mvn_sc_pot[indx].method = 4
         endif
 
-;       Fill in missing values.  If more than one method [LPW, SWE, STA] provides a
-;       value, choose one that is greater (less negative or more positive).
+;       Fill in missing values.  If more than one of LPW, SWE and STA provide values,
+;       choose one that is greater (less negative or more positive).
 
-        indx = where((phi gt min_sta_pot) and $
+        indx = where((phi gt min_sta_pot) and $ ; (mvn_sc_pot.method ne 1) and $
                      ((phi gt mvn_sc_pot.potential) or (mvn_sc_pot.method lt 1)), count)
         if (count gt 0L) then begin
           mvn_sc_pot[indx].potential = phi[indx]
@@ -383,7 +383,7 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
     endif else print, "STATIC potential not available."
   endif
 
-; Last priority: Estimate negative potential from SWEA PAD data
+; Step 5: Estimate negative potential from SWEA PAD data
 
   if (shapot) then begin
     print,"Estimating negative potentials from SWEA PAD data."
