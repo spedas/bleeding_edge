@@ -204,12 +204,17 @@ minute=res.min
 second=res.sec
 
 	; setup
+del_data,'clg_rgf*'
 thm_init
 timespan,time,1,/hour
 thm_asi_stations,site,loc
 	; add RESU site to list
 site=[site,'RESU']
 loc=[[loc],[74.7330   ,   265.100]]
+site=[site,'KAKT']
+loc=[[loc],[70.1300   ,   216.380]]
+site=[site,'LUCK']
+loc=[[loc],[51.1500   ,   252.740]]
 
 	; some more setup
 if keyword_set(zbuffer) then map_scale=2.6e7 else map_scale=4.e7
@@ -237,7 +242,7 @@ if (names[0] ne '') then store_data,delete=names
 	; load cal_files once for the whole loop
 if keyword_set(stoptime) then begin
   if keyword_set(show) then thm_load_asi_cal,show,cal_files,/rego else $
-  thm_load_asi_cal,'atha fsmi fsim gill rank resu talo',cal_files,/rego
+  thm_load_asi_cal,'atha fsmi fsim gill kakt luck rank resu talo',cal_files,/rego
   endif
 
 	; automatic center plot

@@ -202,6 +202,8 @@ minute=res.min
 second=res.sec
 
 	; setup
+del_data,'thg_asf_*'
+del_data,'thg_ast_*'
 thm_init
 timespan,time,1,/hour
 thm_asi_stations,site,loc

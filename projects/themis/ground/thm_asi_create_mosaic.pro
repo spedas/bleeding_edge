@@ -107,9 +107,9 @@
 ; NOTES:
 ;
 ; VERSION:
-;   $LastChangedBy: jimmpc1 $
-;   $LastChangedDate: 2017-01-26 12:47:28 -0800 (Thu, 26 Jan 2017) $
-;   $LastChangedRevision: 22672 $
+;   $LastChangedBy: hfrey $
+;   $LastChangedDate: 2017-12-20 11:41:21 -0800 (Wed, 20 Dec 2017) $
+;   $LastChangedRevision: 24450 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_asi_create_mosaic.pro $
 ;
 ;-
@@ -212,6 +212,8 @@ minute=res.min
 second=res.sec
 
 	; setup
+del_data,'thg_asf_*'
+del_data,'thg_ast_*'
 thm_init
 timespan,time,1,/hour
 thm_asi_stations,site,loc

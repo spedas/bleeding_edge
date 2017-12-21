@@ -141,6 +141,25 @@ if w(0) ne -1 then begin
          thm_load_rego,site=station_string,time=time,datatype='ast'
          get_data,'clg_ast_'+station_string,data=dat
          endif else begin
+         if (station_string eq 'kian' or $
+             station_string eq 'mcgr' or $
+             station_string eq 'fykn' or $
+             station_string eq 'gako' or $
+             station_string eq 'inuv' or $
+             station_string eq 'whit' or $
+             station_string eq 'pgeo' or $
+             station_string eq 'ekat' or $
+             station_string eq 'pina' or $
+             station_string eq 'kapu' or $
+             station_string eq 'snkq' or $
+             station_string eq 'chbg' or $
+             station_string eq 'kuuj' or $
+             station_string eq 'gbay' or $
+             station_string eq 'yknf' or $
+             station_string eq 'snap' or $
+             station_string eq 'tpas' or $
+             station_string eq 'nrsq') then continue
+   
          thm_load_rego,site=station_string,time=time,datatype='rgf'
          get_data,'clg_rgf_'+station_string,data=dat
          endelse

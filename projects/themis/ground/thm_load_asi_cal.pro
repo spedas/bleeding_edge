@@ -35,8 +35,8 @@
 ;
 ;Written by: Harald Frey,   Jan 26 2007
 ;   $LastChangedBy: hfrey $
-;   $LastChangedDate: 2015-11-24 15:42:00 -0800 (Tue, 24 Nov 2015) $
-;   $LastChangedRevision: 19470 $
+;   $LastChangedDate: 2017-12-20 11:42:29 -0800 (Wed, 20 Dec 2017) $
+;   $LastChangedRevision: 24451 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_asi_cal.pro $
 ;-
 ;
@@ -47,7 +47,7 @@ pro thm_load_asi_cal,site,cal_struc,trange=trange,verbose=verbose,all=all $
 thm_init
 
 	; Valid station names   (see note above):
-if keyword_set(rego) then vstats='atha fsim fsmi gill rank resu talo' else $
+if keyword_set(rego) then vstats='atha fsim fsmi gill kakt luck rank resu talo' else $
 vstats='atha chbg ekat fsmi fsim fykn gako gbay gill inuv kapu '+ $
    'kian kuuj mcgr pgeo pina rank snkq tpas whit yknf nrsq snap talo'
 vstats=strsplit(vstats,' ',/extract)
