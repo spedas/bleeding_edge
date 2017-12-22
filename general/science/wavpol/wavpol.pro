@@ -47,7 +47,7 @@
 ;         fourier transform of the covariance matrix (spectral matrix)
 ;         These are follows:
 ;
-;         Wave power: On a linear scale, at this stage no units
+;         Wave power: On a linear scale (units of nT^2/Hz if input Bx, By, Bz are in nT)
 ;
 ;         Degree of Polarisation:
 ;		This is similar to a measure of coherency between the input
@@ -101,8 +101,8 @@
 ;	 100%. Remembercomparing two straight lines yields 100% polarisation.
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-11-29 14:56:05 -0800 (Tue, 29 Nov 2016) $
-; $LastChangedRevision: 22418 $
+; $LastChangedDate: 2017-12-21 09:37:46 -0800 (Thu, 21 Dec 2017) $
+; $LastChangedRevision: 24453 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/wavpol/wavpol.pro $
 ;-
 pro wavpol,ct,Bx,By,Bz,timeline,freqline,powspec,degpol,waveangle,elliptict,helict,pspec3,$

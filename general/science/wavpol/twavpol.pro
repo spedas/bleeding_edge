@@ -41,7 +41,7 @@
 ;specified prefix
 ;         These are follows:
 ;
-;         Wave power: On a linear scale, at this stage no units
+;         Wave power: On a linear scale (units of nT^2/Hz if input Bx, By, Bz are in nT)
 ;
 ;         Degree of Polarisation:
 ;		This is similar to a measure of coherency between the input
@@ -103,8 +103,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-08-09 11:17:05 -0700 (Tue, 09 Aug 2016) $
-; $LastChangedRevision: 21621 $
+; $LastChangedDate: 2017-12-21 09:37:46 -0800 (Thu, 21 Dec 2017) $
+; $LastChangedRevision: 24453 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/wavpol/twavpol.pro $
 ;-
 pro twavpol,tvarname,prefix = prefix, error=error, freqline = freqline, timeline = timeline,$

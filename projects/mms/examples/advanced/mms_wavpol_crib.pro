@@ -10,7 +10,7 @@
 ;specified prefix
 ;         These are follows:
 ;
-;         Wave power: On a linear scale, at this stage no units
+;         Wave power: On a linear scale (units of nT^2/Hz if input Bx, By, Bz are in nT)
 ;
 ;         Degree of Polarisation:
 ;   This is similar to a measure of coherency between the input
@@ -58,8 +58,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-11-07 11:58:16 -0800 (Mon, 07 Nov 2016) $
-; $LastChangedRevision: 22332 $
+; $LastChangedDate: 2017-12-21 09:37:46 -0800 (Thu, 21 Dec 2017) $
+; $LastChangedRevision: 24453 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_wavpol_crib.pro $
 ;-
 
@@ -181,7 +181,7 @@ ylim, mms_scm_name+'_fac_waveangle',freq_min,freq_max,nlog_f
 ylim, mms_scm_name+'_fac_elliptict',freq_min,freq_max,nlog_f
 ylim, mms_scm_name+'_fac_helict',freq_min,freq_max,nlog_f
 
-options, mms_scm_name+'_fac_powspec',ztitle='Arbitrary units'
+options, mms_scm_name+'_fac_powspec',ztitle='nT!U2!N/Hz'
 options, mms_scm_name+'_fac_powspec',ytitle='f', ysubtitle='[Hz]'
 options, mms_scm_name+'_fac_degpol',ztitle='Deg. Pol.'
 options, mms_scm_name+'_fac_waveangle',ztitle='Wave !C!CAngle'

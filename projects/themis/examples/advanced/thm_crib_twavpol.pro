@@ -8,7 +8,7 @@
 ;  specified prefix
 ;         These are follows:
 ;
-;         Wave power: On a linear scale, at this stage no units
+;         Wave power: On a linear scale (units of nT^2/Hz if input Bx, By, Bz are in nT)
 ;
 ;         Degree of Polarisation:
 ;		This is similar to a measure of coherency between the input
