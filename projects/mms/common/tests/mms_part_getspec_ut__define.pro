@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-12-18 13:21:08 -0800 (Mon, 18 Dec 2017) $
-; $LastChangedRevision: 24437 $
+; $LastChangedDate: 2017-12-22 10:16:31 -0800 (Fri, 22 Dec 2017) $
+; $LastChangedRevision: 24461 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
 
@@ -104,7 +104,7 @@ function mms_part_getspec_ut::test_phi_limits_fpi_brst
 end
 
 function mms_part_getspec_ut::test_phi_limits_hpca
-  mms_part_getspec, probe=1, trange=['2015-12-15/10:00', '2015-12-15/11:00'], phi=[0, 175], instrument='hpca'
+  mms_part_getspec, probe=1, trange=['2016-12-15/10:00', '2016-12-15/11:00'], phi=[0, 175], instrument='hpca'
   get_data, 'mms1_hpca_hplus_phase_space_density_phi', data=d
   assert, total(finite(d.Y[0, 8:-2])) eq 0, 'Problem with phi limits for HPCA'
   return, 1
@@ -187,7 +187,7 @@ end
 
 function mms_part_getspec_ut::test_hpca_regression
   timespan, '2016-10-16/17:39:00', 5, /min
-  mms_part_getspec, instrument='hpca', probe='1', species='hplus', data_rate='brst', level='l2', outputs=['phi', 'theta', 'energy', 'pa', 'gyro', 'moments']
+  mms_part_getspec, /silent, instrument='hpca', probe='1', species='hplus', data_rate='brst', level='l2', outputs=['phi', 'theta', 'energy', 'pa', 'gyro', 'moments']
   assert, spd_data_exists('mms1_hpca_hplus_phase_space_density_energy mms1_hpca_hplus_phase_space_density_theta mms1_hpca_hplus_phase_space_density_phi mms1_hpca_hplus_phase_space_density_pa mms1_hpca_hplus_phase_space_density_gyro', '2016-10-16/17:39:00', '2016-10-16/17:44:00'), 'Problem with HPCA regression test'
   return, 1
 end

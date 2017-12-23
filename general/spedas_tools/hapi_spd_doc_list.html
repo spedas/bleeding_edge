@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Dec 21 18:16:08 2017.<P>
+<STRONG>Last modified: </STRONG>Fri Dec 22 18:19:09 2017.<P>
  
 <HR>
  
@@ -45,26 +45,23 @@ This page was created by the IDL library routine
          info:         provides information on a given dataset (optional)
          dataset:      dataset to load (optional)
          
-         server:       HAPI server to connect to (optional, defaults to: datashop.elasticbeanstalk.com)
-         path:         HAPI path (URI to /hapi, optional, defaults to: /hapi)
-         port:         HAPI server port (defaults to 80)
-         scheme:       URL scheme (defaults to http)
+         server:       HAPI server to connect to (e.g, 'http://datashop.elasticbeanstalk.com/hapi')
 
  EXAMPLES:
   List server capabilities:
-    IDL&gt; hapi_load_data, /capabilities
+    IDL&gt; hapi_load_data, /capabilities, server='http://datashop.elasticbeanstalk.com/hapi'
     HAPI v1.1
     Output formats: csv, binary, json
   
   List the datasets available on this server:
-    IDL&gt; hapi_load_data, /catalog
+    IDL&gt; hapi_load_data, /catalog, server='http://datashop.elasticbeanstalk.com/hapi'
     HAPI v1.1
     1: CASSINI_LEMMS_PHA_CHANNEL_1_SEC
     2: CASSINI_LEMMS_REG_CHANNEL_PITCH_ANGLE_10_MIN_AVG
     ....
   
   Get info on a dataset:
-    IDL&gt; hapi_load_data, /info, dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H'
+    IDL&gt; hapi_load_data, /info, dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H', server='http://datashop.elasticbeanstalk.com/hapi'
     HAPI v1.1
     Dataset: spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H
     Start: 1977-09-07T00:00:00.000
@@ -72,7 +69,7 @@ This page was created by the IDL library routine
     Parameters: Epoch, year, doy, hr, dec_year, dec_doy, flux, flux_uncert
   
   Load and plot the Voyager flux data:
-    IDL&gt; hapi_load_data, trange=['77-09-27', '78-01-20'], dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H'
+    IDL&gt; hapi_load_data, trange=['77-09-27', '78-01-20'], dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H', server='http://datashop.elasticbeanstalk.com/hapi'
     IDL&gt; tplot, 'flux'
   
  NOTES:
@@ -81,8 +78,8 @@ This page was created by the IDL library routine
          
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2017-11-17 10:01:35 -0800 (Fri, 17 Nov 2017) $
-$LastChangedRevision: 24296 $
+$LastChangedDate: 2017-12-22 10:10:00 -0800 (Fri, 22 Dec 2017) $
+$LastChangedRevision: 24460 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 </PRE><P>
 <STRONG>(See <A href="hapi/hapi_load_data.pro">general/spedas_tools/hapi/hapi_load_data.pro</A>)</STRONG><P>

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Dec 21 18:16:08 2017.<P>
+<STRONG>Last modified: </STRONG>Fri Dec 22 18:19:09 2017.<P>
  
 <HR>
  
@@ -22,6 +22,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#CDF2IDLTYPE">CDF2IDLTYPE</A>
 <br>Return an IDL type number given a CDF data type
 <LI><A HREF="#CDF2TPLOT">CDF2TPLOT</A>
+<LI><A HREF="#CDF_DEFAULT_STRUCTURE">CDF_DEFAULT_STRUCTURE</A>
 <LI><A HREF="#CDF_INFO">CDF_INFO</A>
 <br>Returns a structure with useful information about a CDF file.
 <LI><A HREF="#CDF_INFO_TO_TPLOT">CDF_INFO_TO_TPLOT</A>
@@ -38,6 +39,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#MAKE_CDF_INDEX">MAKE_CDF_INDEX</A>
 <br>Creates an index file for CDF files.
 <LI><A HREF="#PRINT_CDF_INFO">PRINT_CDF_INFO</A>
+<LI><A HREF="#TPLOT2CDF2">TPLOT2CDF2</A>
+<LI><A HREF="#TPLOT_ADD_CDF_ATTRIBUTES">TPLOT_ADD_CDF_ATTRIBUTES</A>
 <br>
 </UL><P>
 <HR>
@@ -91,7 +94,7 @@ HISTORY:
 <A NAME="CDF2TPLOT">
 <H2>CDF2TPLOT</H2></A>
 <A HREF="#CDF2IDLTYPE">[Previous Routine]</A>
-<A HREF="#CDF_INFO">[Next Routine]</A>
+<A HREF="#CDF_DEFAULT_STRUCTURE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 CDF2TPLOT ,files,varformat=varformat
@@ -119,9 +122,28 @@ Author: Davin Larson -  20th century
 <STRONG>(See <A href="CDF/cdf2tplot.pro">general/CDF/cdf2tplot.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="CDF_DEFAULT_STRUCTURE">
+<H2>CDF_DEFAULT_STRUCTURE</H2></A>
+<A HREF="#CDF2TPLOT">[Previous Routine]</A>
+<A HREF="#CDF_INFO">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ Warning: this file is under development!
+
+ Number of functions that generate default structured for CDF files 
+
+ $LastChangedBy: adrozdov $
+ $LastChangedDate: 2017-12-22 00:21:43 -0800 (Fri, 22 Dec 2017) $
+ $LastChangedRevision: 24456 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_default_structure.pro $
+</PRE><P>
+<STRONG>(See <A href="CDF/cdf_default_structure.pro">general/CDF/cdf_default_structure.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="CDF_INFO">
 <H2>CDF_INFO</H2></A>
-<A HREF="#CDF2TPLOT">[Previous Routine]</A>
+<A HREF="#CDF_DEFAULT_STRUCTURE">[Previous Routine]</A>
 <A HREF="#CDF_INFO_TO_TPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -557,6 +579,7 @@ VERSION:
 <A NAME="PRINT_CDF_INFO">
 <H2>PRINT_CDF_INFO</H2></A>
 <A HREF="#MAKE_CDF_INDEX">[Previous Routine]</A>
+<A HREF="#TPLOT2CDF2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:     print_cdf_info
@@ -570,5 +593,50 @@ CREATED BY:    D. Larson
 LAST MODIFICATION:     @(#)print_cdf_info.pro 1.13 02/11/01
 </PRE><P>
 <STRONG>(See <A href="CDF/print_cdf_info.pro">general/CDF/print_cdf_info.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="TPLOT2CDF2">
+<H2>TPLOT2CDF2</H2></A>
+<A HREF="#PRINT_CDF_INFO">[Previous Routine]</A>
+<A HREF="#TPLOT_ADD_CDF_ATTRIBUTES">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ Warning: this file is under development!
+
+ Save tplot variables into cdf file
+ The CDF global attributes can be specifyed by keywords inq and g_attributes
+ The keyword default_cdf_attributes adds default variable attibutes to the tplot vatiables
+ ;
+ $LastChangedBy: adrozdov $
+ $LastChangedDate: 2017-12-22 00:21:43 -0800 (Fri, 22 Dec 2017) $
+ $LastChangedRevision: 24456 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot2cdf2.pro $
+</PRE><P>
+<STRONG>(See <A href="CDF/tplot2cdf2.pro">general/CDF/tplot2cdf2.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="TPLOT_ADD_CDF_ATTRIBUTES">
+<H2>TPLOT_ADD_CDF_ATTRIBUTES</H2></A>
+<A HREF="#TPLOT2CDF2">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ Warning: this file is under development!
+
+ Create default CDF attibutes in the tplot variable
+ tplot2cdf2 function requires additional CDF attribute structure
+ The attibutes are stored in CDF structure in the tplot limits
+ The possible fields are:
+ CDF.VARS - default field that describe the data (tplot y variable)
+ CDF.DEPEND_0 - this field correspond to time (tplot x variable)   
+ CDF.DEPEND_1 - supporting data (tplot v variable)
+
+ $LastChangedBy: adrozdov $
+ $LastChangedDate: 2017-12-22 00:21:43 -0800 (Fri, 22 Dec 2017) $
+ $LastChangedRevision: 24456 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot_add_cdf_attributes.pro $
+</PRE><P>
+<STRONG>(See <A href="CDF/tplot_add_cdf_attributes.pro">general/CDF/tplot_add_cdf_attributes.pro</A>)</STRONG><P>
 <HR>
  

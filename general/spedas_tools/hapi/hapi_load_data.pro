@@ -14,26 +14,23 @@
 ;         info:         provides information on a given dataset (optional)
 ;         dataset:      dataset to load (optional)
 ;         
-;         server:       HAPI server to connect to (optional, defaults to: datashop.elasticbeanstalk.com)
-;         path:         HAPI path (URI to /hapi, optional, defaults to: /hapi)
-;         port:         HAPI server port (defaults to 80)
-;         scheme:       URL scheme (defaults to http)
+;         server:       HAPI server to connect to (e.g, 'http://datashop.elasticbeanstalk.com/hapi')
 ;
 ; EXAMPLES:
 ;  List server capabilities:
-;    IDL> hapi_load_data, /capabilities
+;    IDL> hapi_load_data, /capabilities, server='http://datashop.elasticbeanstalk.com/hapi'
 ;    HAPI v1.1
 ;    Output formats: csv, binary, json
 ;  
 ;  List the datasets available on this server:
-;    IDL> hapi_load_data, /catalog
+;    IDL> hapi_load_data, /catalog, server='http://datashop.elasticbeanstalk.com/hapi'
 ;    HAPI v1.1
 ;    1: CASSINI_LEMMS_PHA_CHANNEL_1_SEC
 ;    2: CASSINI_LEMMS_REG_CHANNEL_PITCH_ANGLE_10_MIN_AVG
 ;    ....
 ;  
 ;  Get info on a dataset:
-;    IDL> hapi_load_data, /info, dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H'
+;    IDL> hapi_load_data, /info, dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H', server='http://datashop.elasticbeanstalk.com/hapi'
 ;    HAPI v1.1
 ;    Dataset: spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H
 ;    Start: 1977-09-07T00:00:00.000
@@ -41,7 +38,7 @@
 ;    Parameters: Epoch, year, doy, hr, dec_year, dec_doy, flux, flux_uncert
 ;  
 ;  Load and plot the Voyager flux data:
-;    IDL> hapi_load_data, trange=['77-09-27', '78-01-20'], dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H'
+;    IDL> hapi_load_data, trange=['77-09-27', '78-01-20'], dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H', server='http://datashop.elasticbeanstalk.com/hapi'
 ;    IDL> tplot, 'flux'
 ;  
 ; NOTES:
@@ -50,13 +47,37 @@
 ;         
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-11-17 10:01:35 -0800 (Fri, 17 Nov 2017) $
-;$LastChangedRevision: 24296 $
+;$LastChangedDate: 2017-12-22 10:10:00 -0800 (Fri, 22 Dec 2017) $
+;$LastChangedRevision: 24460 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
-pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, info=info, server=server, $
-                    port=port, scheme=scheme, path=path, dataset=dataset
+pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, info=info, server=server, dataset=dataset, path=path, port=port, scheme=scheme
+
+  catch, error_status
+  if error_status ne 0 then begin
+    catch, /cancel
+    dprint, dlevel=0, 'Error: ' + !error_state.msg
+    return
+  endif
+  if undefined(server) then begin
+    dprint, dlevel = 0, 'Error, no server specified; example servers include:'
+    dprint, dlevel = 0, '1) http://datashop.elasticbeanstalk.com/hapi'
+    dprint, dlevel = 0, '2) http://tsds.org/get/SSCWeb/hapi'
+    dprint, dlevel = 0, '3) http://mag.gmu.edu/TestData/hapi'
+    dprint, dlevel = 0, '4) https://voyager.gsfc.nasa.gov/hapiproto'
+    dprint, dlevel = 0, '5) http://jfaden.net/HapiServerDemo/hapi'
+    return
+  endif else begin
+    url_parts = parse_url(server)
+    ; just in case the user specified a server without the scheme
+    if url_parts.scheme eq '' then url_parts = parse_url('http://'+server)
+    url_host = url_parts.host
+    url_port = url_parts.port
+    url_path = url_parts.path
+    url_scheme = url_parts.scheme
+  endelse
+  
   if undefined(capabilities) and undefined(catalog) and undefined(info) and undefined(trange) then begin
     trange = timerange()
   endif
@@ -66,18 +87,17 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     return
   endif
   
-  if undefined(server) then server = 'datashop.elasticbeanstalk.com' 
-  if undefined(path) then path = '/hapi'
-  if undefined(port) then port = 80
-  if undefined(scheme) then scheme = 'http'
-  
+  if undefined(path) then path = url_path
+  if undefined(port) then port = url_port
+  if undefined(scheme) then scheme = url_scheme
+
   dataset_table = hash()
   if keyword_set(dataset) then info_dataset = dataset else info_dataset = ''
   neturl = obj_new('IDLnetURL')
   param_names = []
   spd_graphics_config
 
-  neturl->SetProperty, URL_HOST = server
+  neturl->SetProperty, URL_HOST = url_host
   neturl->SetProperty, URL_PORT = port
   neturl->SetProperty, URL_SCHEME = scheme
   

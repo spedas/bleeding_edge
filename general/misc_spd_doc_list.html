@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Dec 21 18:16:08 2017.<P>
+<STRONG>Last modified: </STRONG>Fri Dec 22 18:19:09 2017.<P>
  
 <HR>
  
@@ -68,6 +68,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#FILE_TOUCH">FILE_TOUCH</A>
 <LI><A HREF="#FIND_CONST_INTERVALS">FIND_CONST_INTERVALS</A>
 <LI><A HREF="#FIND_NEAREST_NEIGHBOR">FIND_NEAREST_NEIGHBOR</A>
+<LI><A HREF="#FIND_NEAREST_NEIGHBOR2">FIND_NEAREST_NEIGHBOR2</A>
 <LI><A HREF="#FIND_STR_ELEMENT">FIND_STR_ELEMENT</A>
 <LI><A HREF="#FNAME_TO_TIME">FNAME_TO_TIME</A>
 <br>To translate the name of a standard WIND data file into the starting
@@ -1673,7 +1674,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="FIND_NEAREST_NEIGHBOR">
 <H2>FIND_NEAREST_NEIGHBOR</H2></A>
 <A HREF="#FIND_CONST_INTERVALS">[Previous Routine]</A>
-<A HREF="#FIND_STR_ELEMENT">[Next Routine]</A>
+<A HREF="#FIND_NEAREST_NEIGHBOR2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Name:
@@ -1712,9 +1713,51 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <STRONG>(See <A href="misc/find_nearest_neighbor.pro">general/misc/find_nearest_neighbor.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="FIND_NEAREST_NEIGHBOR2">
+<H2>FIND_NEAREST_NEIGHBOR2</H2></A>
+<A HREF="#FIND_NEAREST_NEIGHBOR">[Previous Routine]</A>
+<A HREF="#FIND_STR_ELEMENT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Name:
+     find_nearest_neighbor2
+     
+ Purpose:
+     Faster versin of find_nearest_neighbor. Use minimum to search in a time series to find the array element closest to the target time
+     
+ Input:
+     time_series: monotonically increasing time series array (stored as doubles)
+     target_time: time to search for in the time series (double)
+     
+ Keywords:
+     quiet: suppress output of errors
+     sort: sort the input array prior to searching
+     allow_outside: if target_time is outside of target_series, this keyword 
+         causes this routine to return the last/first element in the array
+         (whichever is closer)
+     
+ Output:
+     Returns the value in time_series nearest to the target_time (as a double) 
+     Returns -1 if there's an error
+ 
+ Examples:
+     &gt;&gt; print, find_nearest_neighbor2([1,2,3,4,5,6,7,8,9], 4.6)
+           5
+           
+     &gt;&gt; print, find_nearest_neighbor2([5,4,3,7,8,2,4,6,7], 7.6, /sort)
+           8
+
+ $LastChangedBy: adrozdov $
+ $LastChangedDate: 2017-12-22 00:15:34 -0800 (Fri, 22 Dec 2017) $
+ $LastChangedRevision: 24454 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/find_nearest_neighbor2.pro $
+</PRE><P>
+<STRONG>(See <A href="misc/find_nearest_neighbor2.pro">general/misc/find_nearest_neighbor2.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="FIND_STR_ELEMENT">
 <H2>FIND_STR_ELEMENT</H2></A>
-<A HREF="#FIND_NEAREST_NEIGHBOR">[Previous Routine]</A>
+<A HREF="#FIND_NEAREST_NEIGHBOR2">[Previous Routine]</A>
 <A HREF="#FNAME_TO_TIME">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
