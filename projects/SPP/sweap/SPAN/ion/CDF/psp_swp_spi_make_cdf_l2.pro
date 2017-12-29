@@ -107,7 +107,7 @@ pro psp_swp_spi_make_cdf_l2, file = file, data_version = data_version
    cdf_attput,fileid,'Logical_file_id',0,'psp_cal_spi_'+ strmid( time_string(data[0].time_unix, FORMAT=6),0,8)+'_v'+data_version
    cdf_attput,fileid,'Logical_source',0,'SPI.calibrated.onboard_'+tail+'_mom'
    cdf_attput,fileid,'Logical_source_description',0,'DERIVED FROM: PSP SPAN-Ai (Solar Probe ANalyzer - Ions), Onboard Moments'
-   cdf_attput,fileid,'PI_name',0,'R. Livi'
+   cdf_attput,fileid,'PI_name',0,'D. Larson'
    cdf_attput,fileid,'PI_affiliation',0,'U.C. Berkeley'
    cdf_attput,fileid,'Instrument_type',0,'Plasma and Solar Wind'
    cdf_attput,fileid,'Mission_group',0,'PSP'
