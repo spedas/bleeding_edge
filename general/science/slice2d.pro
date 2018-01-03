@@ -53,9 +53,17 @@
 ;       SUNDIR: specifies the sun direction in the instrument coordinates
 ;               if set, sun direction line is plotted
 ;       NOVELLINE: suppresses the red velocity line
-;       SUBTRACT: subtracts the bulk velocity before plot
+;       SUBTRACT: Can take on a value from 0 to 4:
+;           0 : do nothing
+;           1 : subtract the bulk velocity before plotting
 ;                 if there are few data points around (0,0), use
 ;                 ThirdDirLim keyword to select data points
+;           2 : subtract the X component of the bulk velocity before plotting
+;                 (useful for cuts in the Y-Z plane)
+;           3 : subtract the Y component of the bulk velocity before plotting
+;                 (useful for cuts in the X-Z plane)
+;           4 : subtract the Z component of the bulk velocity before plotting
+;                 (useful for cuts in the X-Y plane)
 ;       RESOLUTION: resolution of the mesh (DEFAULT 51)
 ;       ISOTROPIC: forces the scaling of the X and Y axes to be equal
 ;       XTITLE, YTITLE, ZTITLE, TITLE: set titles
@@ -66,9 +74,9 @@
 ;       Yuki Harada on 2014-05-26
 ;       Modified from 'thm_esa_slice2d' written by Arjun Raj & Xuzhi Zhou
 ;
-; $LastChangedBy: hara $
-; $LastChangedDate: 2017-02-20 17:11:57 -0800 (Mon, 20 Feb 2017) $
-; $LastChangedRevision: 22825 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2018-01-02 15:04:01 -0800 (Tue, 02 Jan 2018) $
+; $LastChangedRevision: 24474 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/slice2d.pro $
 ;-
 
@@ -251,9 +259,32 @@ endelse
 if not keyword_set(subtract) then begin 
    dprint, 'No velocity subtraction', dlevel=2, verbose=verbose
 endif else begin
-   newdata.v[*,0] = newdata.v[*,0] - vvec[0]
-   newdata.v[*,1] = newdata.v[*,1] - vvec[1]
-   newdata.v[*,2] = newdata.v[*,2] - vvec[2]
+   case subtract of
+     2 : begin
+           dprint, 'Subtracting V_x', dlevel=2, verbose=verbose
+           newdata.v[*,0] = newdata.v[*,0] - vvec[0]
+           vvec[0] = 0.
+           subtract = 0
+         end
+     3 : begin
+           dprint, 'Subtracting V_y', dlevel=2, verbose=verbose
+           newdata.v[*,1] = newdata.v[*,1] - vvec[1]
+           vvec[1] = 0.
+           subtract = 0
+         end
+     4 : begin
+           dprint, 'Subtracting V_z', dlevel=2, verbose=verbose
+           newdata.v[*,2] = newdata.v[*,2] - vvec[2]
+           vvec[2] = 0.
+           subtract = 0
+         end
+     else : begin
+              dprint, 'Subtracting velocity vector', dlevel=2, verbose=verbose
+              newdata.v[*,0] = newdata.v[*,0] - vvec[0]
+              newdata.v[*,1] = newdata.v[*,1] - vvec[1]
+              newdata.v[*,2] = newdata.v[*,2] - vvec[2]
+            end
+   endcase
 endelse
 
 

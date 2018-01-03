@@ -20,8 +20,8 @@
 ;
 ;
 ; $LastChangedBy: xussui $
-; $LastChangedDate: 2017-12-01 11:40:54 -0800 (Fri, 01 Dec 2017) $
-; $LastChangedRevision: 24383 $
+; $LastChangedDate: 2018-01-02 13:25:51 -0800 (Tue, 02 Jan 2018) $
+; $LastChangedRevision: 24472 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot_comp_dailysave.pro $
 ;
 ;CREATED BY:    Shaosui Xu, 08/01/2017
@@ -71,6 +71,7 @@ Pro mvn_scpot_comp_dailysave,start_day=start_day,end_day=end_day,ndays=ndays
         mvn_swe_load_l2, /spec
         mvn_swe_stat, /silent, npkt=npkt
         if max(npkt) gt 0 then begin
+            maven_orbit_tplot,/load,/shadow
             mvn_scpot, comp=0, shapot=1
             ; don't restore composite -> force a new calculation
             ; calculating potentials in the shadow
@@ -79,6 +80,7 @@ Pro mvn_scpot_comp_dailysave,start_day=start_day,end_day=end_day,ndays=ndays
                       '4: pot_sta','5: pot_sweshdw']
             str1={time:0.d,potential:0.,method:-1,$
                   units_name:'V',pot_name:pot_name}
+            
             pot_comp=replicate(str1,n_elements(mvn_sc_pot.time))
             pot_comp.time=mvn_sc_pot.time
             pot_comp.potential=mvn_sc_pot.potential

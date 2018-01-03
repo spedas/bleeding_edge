@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Dec 28 18:16:18 2017.<P>
+<STRONG>Last modified: </STRONG>Tue Jan  2 18:16:14 2018.<P>
  
 <HR>
  
@@ -1133,9 +1133,17 @@ LAST MODIFICATION:
        SUNDIR: specifies the sun direction in the instrument coordinates
                if set, sun direction line is plotted
        NOVELLINE: suppresses the red velocity line
-       SUBTRACT: subtracts the bulk velocity before plot
+       SUBTRACT: Can take on a value from 0 to 4:
+           0 : do nothing
+           1 : subtract the bulk velocity before plotting
                  if there are few data points around (0,0), use
                  ThirdDirLim keyword to select data points
+           2 : subtract the X component of the bulk velocity before plotting
+                 (useful for cuts in the Y-Z plane)
+           3 : subtract the Y component of the bulk velocity before plotting
+                 (useful for cuts in the X-Z plane)
+           4 : subtract the Z component of the bulk velocity before plotting
+                 (useful for cuts in the X-Y plane)
        RESOLUTION: resolution of the mesh (DEFAULT 51)
        ISOTROPIC: forces the scaling of the X and Y axes to be equal
        XTITLE, YTITLE, ZTITLE, TITLE: set titles
@@ -1146,9 +1154,9 @@ LAST MODIFICATION:
        Yuki Harada on 2014-05-26
        Modified from 'thm_esa_slice2d' written by Arjun Raj &amp; Xuzhi Zhou
 
- $LastChangedBy: hara $
- $LastChangedDate: 2017-02-20 17:11:57 -0800 (Mon, 20 Feb 2017) $
- $LastChangedRevision: 22825 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2018-01-02 15:04:01 -0800 (Tue, 02 Jan 2018) $
+ $LastChangedRevision: 24474 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/slice2d.pro $
 </PRE><P>
 <STRONG>(See <A href="science/slice2d.pro">general/science/slice2d.pro</A>)</STRONG><P>

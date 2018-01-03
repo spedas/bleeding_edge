@@ -36,9 +36,7 @@
 ;
 ;      ERANGE:    Specifies the energy range to use.
 ;
-;    TEMPLATE:    Just return the result structure template.
-;
-;        INIT:    Initialize the result structure.
+;      TEMPLATE:  Just return the result structure template.
 ;
 ;NOTE:            This routine is based on 'mvn_sta_slice2d_snap' created by
 ;                 Yuki Harada and modified by Takuya Hara.
@@ -47,58 +45,38 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-09-14 10:43:04 -0700 (Thu, 14 Sep 2017) $
-; $LastChangedRevision: 23975 $
+; $LastChangedDate: 2018-01-02 15:09:09 -0800 (Tue, 02 Jan 2018) $
+; $LastChangedRevision: 24475 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_functions/mvn_sta_v4d.pro $
 ;
 ;-
 PRO mvn_sta_v4d, trange, frame=frame, _extra=_extra, mass=mass, m_int=mq, $
                  mmin=mmin, mmax=mmax, apid=apid, sum=sum, dopot=dopot, $
                  sc_pot=sc_pot, vsc=vsc, erange=erange, result=result, $
-                 template=template, init=init
+                 template=template
 
-  common v4dcom, v4d_rstr
+  NaN = !values.f_nan
+  NaN3 = replicate(NaN,3)
+  dNaN = !values.d_nan
+  dNaN3 = replicate(dNaN,3)
 
-  if ((size(v4d_rstr,/type) ne 8) or keyword_set(init)) then begin
-    NaN = !values.f_nan
-    NaN3 = replicate(NaN,3)
-    dNaN = !values.d_nan
-    dNaN3 = replicate(dNaN,3)
+  result = {time     : dNaN          , $   ; time
+            v_sc     : dNaN3         , $   ; spacecraft velocity (km/s)
+            v_tot    : dNaN          , $   ; spacecraft speed (km/s)
+            vel      : dNaN3         , $   ; ion bulk velocity (km/s)
+            vbulk    : dNaN          , $   ; ion bulk speed (km/s)
+            magf     : NaN3          , $   ; magnetic field (nT)
+            energy   : dNaN          , $   ; ion kinetic energy (eV)
+            VB_phi   : dNaN          , $   ; angle between V and B (deg)
+            sc_pot   : NaN           , $   ; spacecraft potential (V)
+            mass     : NaN           , $   ; assumed ion mass (amu)
+            mrange   : [NaN,NaN]     , $   ; mass range for integration (amu)
+            erange   : [Nan,NaN]     , $   ; energy range for integration (eV)
+            frame    : ''            , $   ; reference frame (for all vectors)
+            apid     : ''            , $   ; STATIC APID used for calculation
+            valid    : 0                }
 
-    v4d_rstr = {time   : dNaN          , $   ; time
-                den_i  : NaN           , $   ; ion number density (1/cc)
-                den_e  : NaN           , $   ; electron number density (1/cc)
-                temp   : NaN           , $   ; ion temperature (eV)
-                v_sc   : dNaN3         , $   ; spacecraft velocity (km/s)
-                v_tot  : dNaN          , $   ; spacecraft speed (km/s)
-                vel    : dNaN3         , $   ; ion bulk velocity (km/s)
-                vbulk  : dNaN          , $   ; ion bulk speed (km/s)
-                v_esc  : dNaN          , $   ; escape velocity (km/s)
-                magf   : NaN3          , $   ; magnetic field (nT)
-                energy : dNaN          , $   ; ion kinetic energy (eV)
-                VB_phi : dNaN          , $   ; angle between V and B (deg)
-                sc_pot : NaN           , $   ; spacecraft potential (V)
-                mass   : NaN           , $   ; assumed ion mass (amu)
-                mrange : [NaN,NaN]     , $   ; mass range for integration (amu)
-                frame  : ''            , $   ; reference frame (for all vectors)
-                shape  : [NaN,NaN]     , $   ; e- shape parameter [away, toward]
-                ratio  : NaN           , $   ; e- flux ratio (away/toward)
-                flux40 : NaN           , $   ; e- energy flux at 40 eV
-                mso    : NaN3          , $   ; MSO coordinates of spacecraft
-                geo    : NaN3          , $   ; GEO coordinates of spacecraft
-                alt    : NaN           , $   ; spacecraft altitude (ellipsoid)
-                slon   : NaN           , $   ; GEO longitude of sub-solar point
-                slat   : NaN           , $   ; GEO latitude of sub-solar point
-                sthe   : NaN           , $   ; elevation of Sun in s/c frame
-                apid   : ''            , $   ; STATIC APID used for calculation
-                valid  : 0                }
-  endif
-
-  result = v4d_rstr
   if keyword_set(template) then return
-
-  if (size(frame,/type) ne 7) then frame = 'MAVEN_MSO'
-  frame = (mvn_frame_name(frame))[0]
 
 ; Process inputs
 
@@ -109,13 +87,20 @@ PRO mvn_sta_v4d, trange, frame=frame, _extra=_extra, mass=mass, m_int=mq, $
   trange = time_double(trange)
   sum = n_elements(trange) gt 1
 
+  if (size(frame,/type) ne 7) then frame = 'MAVEN_MSO'
+  frame = (mvn_frame_name(frame))[0]
+
   dopot = keyword_set(dopot)
   dovel = keyword_set(vsc)
   forcepot = size(sc_pot,/type) ne 0
 
   if keyword_set(mass) then mmin = min(mass, max=mmax)
-  if ~keyword_set(mmin) then mmin = 0
+  if ~keyword_set(mmin) then mmin = 0.
   if ~keyword_set(mmax) then mmax = 100.
+
+  if keyword_set(erange) then emin = min(erange, max=emax)
+  if ~keyword_set(emin) then emin = 0.
+  if ~keyword_set(emax) then emax = 30000.
 
 ; Get data
 
@@ -133,11 +118,9 @@ PRO mvn_sta_v4d, trange, frame=frame, _extra=_extra, mass=mass, m_int=mq, $
     undefine, nidx, idx
     if keyword_set(mq) then d.mass *= float(mq)
 
-    if keyword_set(erange) then begin
-      idx = where((d.energy lt min(erange)) or (d.energy gt max(erange)), nidx)
-      if (nidx gt 0) then d.cnts[idx] = 0.
-      undefine, nidx, idx           
-    endif 
+    idx = where((d.energy lt emin) or (d.energy gt emax), nidx)
+    if (nidx gt 0) then d.cnts[idx] = 0.
+    undefine, nidx, idx           
 
     if (frame ne 'MAVEN_STATIC') then begin
       mvn_pfp_cotrans, d, from='MAVEN_STATIC', to=frame, /overwrite
@@ -196,6 +179,7 @@ PRO mvn_sta_v4d, trange, frame=frame, _extra=_extra, mass=mass, m_int=mq, $
     result.sc_pot = float(d.sc_pot)
     result.mass   = float(mq)
     result.mrange = float([mmin,mmax])
+    result.erange = float([emin,emax])
     result.frame  = string(frame)
     result.apid   = string(apid)
     result.valid  = 1
