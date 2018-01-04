@@ -24,24 +24,43 @@ FUNCTION nn,data,time,x=x,y=y,v=v   ;nearest neighbor function
 ;-
   nd = n_elements(data)         ;1 if a str, more if an array
 
-  case data_type(data) of 
+; There is a possible ambiguity if nd = 1.  Data could refer to a tplot variable index,
+; or it could refer to a single time.  So, use the data type again.  Assume a single
+; integer is a tplot variable index.  Anything else is a time.  (Note: The code assumes
+; that tplot variable indices are never double-longs [data type 14].)  Of course, it's
+; pointless to search for the nearest neighbor to a single time, but this limiting case 
+; could occur when processing large data sets.
+
+  dtype = size(data,/type)
+
+  case dtype of 
     0: begin 
-      dprint, 'Must supply input data'
-      return,-2
-    end 
+        dprint, 'Must supply input data'
+        return,-2
+       end 
     8: begin 
-      if data_type(data.x) eq 10 then begin ;struct of pointers
-        tn = tag_names(data)                ;remake the struct w/o pointers
-	for i=0,n_tags(data)-1 do str_element,/add,dat,tn(i),*data.(i)
-      endif else dat = data           ;input is a standard tplot structure
-    endcase 
-    7: get_data,data,data=dat       ;
+         if data_type(data.x) eq 10 then begin ;struct of pointers
+           tn = tag_names(data)                ;remake the struct w/o pointers
+	       for i=0,n_tags(data)-1 do str_element,/add,dat,tn[i],*data.(i)
+         endif else dat = data                 ;input is a standard tplot structure
+       end
+    7: get_data,data,data=dat                  ;input is a tplot variable name
     6: begin 
-      dprint, 'Can''t handle complex inputs'
-      help,data
-      return,-2
-    endcase
-    else: if nd gt 1 then dat = {x:data} else get_data,data(0),data=dat
+         dprint, 'Can''t handle complex inputs'
+         help,data
+         return,-2
+       end
+    else: begin
+            if nd eq 1 then begin
+              if (dtype lt 4) then begin
+                get_data,data[0],data=dat,index=k
+                if (k eq 0) then begin
+                  dprint, 'Input does not refer to a tplot variable.'
+                  return,-2
+                endif
+              endif else dat = {x:time_double(data[0])}
+            endif else dat = {x:time_double(data)}
+          end
   endcase 
 
   t = time_double(time)
@@ -49,16 +68,16 @@ FUNCTION nn,data,time,x=x,y=y,v=v   ;nearest neighbor function
   if n eq 1 then inds = 0l else inds = lonarr(n)
 
   for i=0l,n-1l do begin 
-    a = abs(dat.x-t(i))
+    a = abs(dat.x-t[i])
     b = min(a,c)                ;c contains the index to b
-    inds(i) = c
+    inds[i] = c
   endfor 
 
   tn = tag_names(dat)
-  if arg_present(x) then x = dat.x(inds)
-  if arg_present(y) then if (where(tn eq 'Y'))(0) ne -1 then y = dat.y(inds,*,*)
-  if arg_present(v) then if (where(tn eq 'V'))(0) ne -1 then begin 
-    if ndimen(dat.v) eq 2 then v = dat.v(inds,*) else v = dat.v
+  if arg_present(x) then x = dat.x[inds]
+  if arg_present(y) then if (where(tn eq 'Y'))[0] ne -1 then y = dat.y[inds,*,*]
+  if arg_present(v) then if (where(tn eq 'V'))[0] ne -1 then begin 
+    if ndimen(dat.v) eq 2 then v = dat.v[inds,*] else v = dat.v
   endif
   return,inds
 end
