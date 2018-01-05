@@ -15,8 +15,8 @@
 ; HISTORY:
 ; VERSION:
 ;  $LastChangedBy: ali $
-;  $LastChangedDate: 2017-10-18 15:11:32 -0700 (Wed, 18 Oct 2017) $
-;  $LastChangedRevision: 24183 $
+;  $LastChangedDate: 2018-01-04 13:03:57 -0800 (Thu, 04 Jan 2018) $
+;  $LastChangedRevision: 24478 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/euv/mvn_euv_l0_load.pro $
 ;CREATED BY:  ali 20160830
 ;FILE: mvn_euv_l0_load.pro
@@ -27,7 +27,7 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
   tplotpath='maven/data/sci/euv/l0/tplot/YYYY/MM/mvn_euv_l0_YYYYMMDD.tplot'
 
   if keyword_set(generate) then begin
-    if keyword_set(init) then tstart=time_double(init) else tstart=time_double('2014-10-15')
+    if keyword_set(init) then tstart=time_double(init) else tstart=time_double('2014-11-27')
     trange0=[tstart,systime(1)]
     res=86400L
     daynum=round(trange0/res)

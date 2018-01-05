@@ -96,24 +96,24 @@ for i=0L,nd-1 do begin
   s1_arc=0
   s2_arc=0
 
-  if keyword_set(s1_svy) then s1_svy=mvn_sep_att_correction(s1_svy,res,tr,/fltatt)
-  if keyword_set(s2_svy) then s2_svy=mvn_sep_att_correction(s2_svy,res,tr,/fltatt)
+  if n_elements(s1_svy) gt 1 then s1_svy=mvn_sep_att_correction(s1_svy,res,tr,/fltatt)
+  if n_elements(s2_svy) gt 1 then s2_svy=mvn_sep_att_correction(s2_svy,res,tr,/fltatt)
 
-  if keyword_set(s1_hkp) then s1_hkp=average_hist(s1_hkp,s1_hkp.time,binsize=res,range=tr,/nan)
-  if keyword_set(s2_hkp) then s2_hkp=average_hist(s2_hkp,s2_hkp.time,binsize=res,range=tr,/nan)
+  if n_elements(s1_hkp) gt 1 then s1_hkp=average_hist(s1_hkp,s1_hkp.time,binsize=res,range=tr,/nan)
+  if n_elements(s2_hkp) gt 1 then s2_hkp=average_hist(s2_hkp,s2_hkp.time,binsize=res,range=tr,/nan)
 
-  if keyword_set(s1_nse) then s1_nse=average_hist(s1_nse,s1_nse.time,binsize=res,range=tr,/nan)
-  if keyword_set(s2_nse) then s2_nse=average_hist(s2_nse,s2_nse.time,binsize=res,range=tr,/nan)
+  if n_elements(s1_nse) gt 1 then s1_nse=average_hist(s1_nse,s1_nse.time,binsize=res,range=tr,/nan)
+  if n_elements(s2_nse) gt 1 then s2_nse=average_hist(s2_nse,s2_nse.time,binsize=res,range=tr,/nan)
 
-  if keyword_set(m1_hkp) then m1_hkp=average_hist(m1_hkp,m1_hkp.time,binsize=res,range=tr,/nan)
-  if keyword_set(m2_hkp) then m2_hkp=average_hist(m2_hkp,m2_hkp.time,binsize=res,range=tr,/nan)
+  if n_elements(m1_hkp) gt 1 then m1_hkp=average_hist(m1_hkp,m1_hkp.time,binsize=res,range=tr,/nan)
+  if n_elements(m2_hkp) gt 1 then m2_hkp=average_hist(m2_hkp,m2_hkp.time,binsize=res,range=tr,/nan)
 
-  if keyword_set(ap20) then ap20=average_hist(ap20,ap20.time,binsize=res,range=tr,/nan)
-  if keyword_set(ap21) then ap21=average_hist(ap21,ap21.time,binsize=res,range=tr,/nan)
-  if keyword_set(ap22) then ap22=average_hist(ap22,ap22.time,binsize=res,range=tr,/nan)
-  if keyword_set(ap23) then ap23=average_hist(ap23,ap23.time,binsize=res,range=tr,/nan)
-;  if keyword_set(ap24) then ap24=average_hist(ap24,ap24.time,binsize=res,range=tr,stdev=sigma,xbins=centertime) ;lower cadence than 5min
-;  if keyword_set(ap25) then ap25=average_hist(ap25,ap25.time,binsize=res,range=tr,/nan) ;apid not available
+  if n_elements(ap20) gt 1 then ap20=average_hist(ap20,ap20.time,binsize=res,range=tr,/nan)
+  if n_elements(ap21) gt 1 then ap21=average_hist(ap21,ap21.time,binsize=res,range=tr,/nan)
+  if n_elements(ap22) gt 1 then ap22=average_hist(ap22,ap22.time,binsize=res,range=tr,/nan)
+  if n_elements(ap23) gt 1 then ap23=average_hist(ap23,ap23.time,binsize=res,range=tr,/nan)
+;  if n_elements(ap24) gt 1 ;lower cadence than 5min
+;  if n_elements(ap25) gt 1 ;apid not available
   
   save,filename=redures_file,verbose=verbose,s1_hkp,s1_svy,s1_arc,s1_nse,s2_hkp,s2_svy,s2_arc,s2_nse,m1_hkp,m2_hkp,$
     ap20,ap21,ap22,ap23,ap24,source_filename,sw_version,prereq_info,spice_info,description=description

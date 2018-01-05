@@ -20,13 +20,14 @@ pro mvn_sep_make_raw_cdf_wrap,sepnum=sepnum,source_files = source_files,   trang
   source_fi = file_info([source_files,prereq_files])
   if lri.mtime lt max([source_fi.mtime,source_fi.ctime]) then begin
     mvn_sep_load,/use_cache,files=source_files,trange=trange,/L1
+    nextrev_fname = mvn_pfp_file_next_revision(lastrev_fname)
+    dprint,dlevel=1,'Generating L2 file: '+nextrev_fname
     sepdata = sepnum eq 1 ? *sep1_svy.x : *sep2_svy.x
     if size(/type,sepdata) ne 8 then begin
       dprint,'sepdata is not a structure.  No Data?'
       printdat,sepdata
       return
     endif
-    nextrev_fname = mvn_pfp_file_next_revision(lastrev_fname)
     global={ filename:file_basename(nextrev_fname),  data_type:data_type+'>Survey Raw Particle Counts',   logical_source:'SEP'+sn+'.raw.spec_svy',  sensor: sepname}   
     mapid = round(median(sepdata.mapid))
     bmaps = mvn_sep_get_bmap(mapid,sepnum)
@@ -56,6 +57,8 @@ pro mvn_sep_make_cal_cdf_wrap,sepnum=sepnum,source_files=source_files,   trange=
   source_fi = file_info([source_files,prereq_files])
   if lri.mtime lt max([source_fi.mtime,source_fi.ctime]) then begin
     mvn_sep_load,/use_cache,files=source_files,trange=trange,/L1
+    nextrev_fname = mvn_pfp_file_next_revision(lastrev_fname)
+    dprint,dlevel=1,'Generating L2 file: '+nextrev_fname
     sepdata = sepnum eq 1 ? *sep1_svy.x : *sep2_svy.x
     bkgfile=mvn_pfp_file_retrieve('maven/data/sci/sep/l1/sav/sep2_bkg.sav')
     if keyword_set(bkgfile) and file_test(/regular,bkgfile) then restore,file=bkgfile,/verb
@@ -66,7 +69,6 @@ pro mvn_sep_make_cal_cdf_wrap,sepnum=sepnum,source_files=source_files,   trange=
       printdat,sepcaldata
       return
     endif
-    nextrev_fname = mvn_pfp_file_next_revision(lastrev_fname)
     global={ filename:file_basename(nextrev_fname),  data_type:data_type+'>Survey Calibrated Particle Flux',   logical_source:'SEP.cal.spec_svy',  sensor: sepname}   
     mapid = round(median(sepdata.mapid))
     bmaps = mvn_sep_get_bmap(mapid,sepnum)
