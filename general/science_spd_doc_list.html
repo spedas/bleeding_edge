@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jan  5 18:16:18 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Jan  8 18:16:19 2018.<P>
  
 <HR>
  
@@ -67,6 +67,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#PLOT3D_OPTIONS">PLOT3D_OPTIONS</A>
 <LI><A HREF="#PLOT_MAP">PLOT_MAP</A>
 <LI><A HREF="#PRESTENS">PRESTENS</A>
+<LI><A HREF="#REFORM_3D_STRUCT">REFORM_3D_STRUCT</A>
+<br>If a 3-d data structure has fromat (nenergy, nphi, ntheta) reform into (nenergy, nbins)
 <LI><A HREF="#SLICE2D">SLICE2D</A>
 <br>creates a 2-D slice of the 3-D distribution function
 <LI><A HREF="#ENLARGE_PERIODIC">ENLARGE_PERIODIC</A>
@@ -1038,7 +1040,7 @@ NOTE:	 It is NOT yet corrected to give physical results
 <A NAME="P_3D">
 <H2>P_3D</H2></A>
 <A HREF="#PRESTENS">[Previous Routine]</A>
-<A HREF="#SLICE2D">[Next Routine]</A>
+<A HREF="#REFORM_3D_STRUCT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 FUNCTION:	p_3d(dat,ENERGY=en,ERANGE=er,EBINS=ebins,ANGLE=an,ARANGE=ar,BINS=bins)
@@ -1073,9 +1075,43 @@ LAST MODIFICATION:
 <STRONG>(See <A href="science/p_3d.pro">general/science/p_3d.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="REFORM_3D_STRUCT">
+<H2>REFORM_3D_STRUCT</H2></A>
+<A HREF="#P_3D">[Previous Routine]</A>
+<A HREF="#SLICE2D">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+reform_3d_struct
+CALLING SEQUENCE:
+dat1 = reform_3d_struct(dat, reverse=reverse, nphi=nphi, ntheta=ntheta)
+PURPOSE:
+If a 3-d data structure has fromat (nenergy, nphi, ntheta) reform into (nenergy, nbins)
+For testing with older plot3d_new, edit3dbins code.
+Note that the input structure data, theta, phi have to be dimensioned nenergy,
+nphi, ntheta (as for MMS FPI data distributions), nenergy, ntheta, nphi give unpredictable
+results.
+INPUT:
+dat = a 3d structure, with data, etc, dimensions (nenrgy, nphi, ntheta)
+OUTPUT:
+dat1 = a new 3d structure, with data, etc, reformed to dimensions (nenrgy, nbins = nphi*ntheta), 
+       provided that ntheta*nphi = nbins.
+KEYWORDS: 
+reverse=if set, reverse the process, this allows you to call edit3dbins to get bin flags,
+        and then recover the original structure, But ntheta and nphi keywords must be set.
+        Do not call this on structures for which ntheta is not the same for all phi (e.g., 
+        THEMIS ESA data).
+nphi = the number of phi angles
+ntheta = the number of theta angles
+HISTORY:
+2018-01-08, jmm, jimm@ssl.berkeley.edu
+</PRE><P>
+<STRONG>(See <A href="science/reform_3d_struct.pro">general/science/reform_3d_struct.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SLICE2D">
 <H2>SLICE2D</H2></A>
-<A HREF="#P_3D">[Previous Routine]</A>
+<A HREF="#REFORM_3D_STRUCT">[Previous Routine]</A>
 <A HREF="#SMOOTH_PERIODIC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

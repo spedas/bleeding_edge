@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jan  5 18:16:18 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Jan  8 18:16:19 2018.<P>
  
 <HR>
  
@@ -30,6 +30,9 @@ This page was created by the IDL library routine
 <LI><A HREF="#THM_ASI_STATIONS.PRO">THM_ASI_STATIONS.PRO</A>
 <br>define quantities for GBO stations
 <LI><A HREF="#THM_GMAG_STACKPLOT.PRO">THM_GMAG_STACKPLOT.PRO</A>
+<br>To create 3 PNG files displaying the H,D and Z components of the magnetic field
+<LI><A HREF="#THM_GMAG_STACKPLOT_INTERVALS.PRO">THM_GMAG_STACKPLOT_INTERVALS.PRO
+</A>
 <br>To create 3 PNG files displaying the H,D and Z components of the magnetic field
 <LI><A HREF="#THM_LOAD_ASI">THM_LOAD_ASI</A>
 <LI><A HREF="#THM_LOAD_ASI_CAL">THM_LOAD_ASI_CAL</A>
@@ -479,7 +482,7 @@ This page was created by the IDL library routine
 <A NAME="THM_GMAG_STACKPLOT.PRO">
 <H2>THM_GMAG_STACKPLOT.PRO</H2></A>
 <A HREF="#THM_ASI_STATIONS.PRO">[Previous Routine]</A>
-<A HREF="#THM_LOAD_ASI">[Next Routine]</A>
+<A HREF="#THM_GMAG_STACKPLOT_INTERVALS.PRO">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -527,9 +530,60 @@ NOTE: This program is still in development.  Features to be added:
 <STRONG>(See <A href="ground/thm_gmag_stackplot.pro">projects/themis/ground/thm_gmag_stackplot.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_GMAG_STACKPLOT_INTERVALS.PRO">
+<H2>THM_GMAG_STACKPLOT_INTERVALS.PRO</H2></A>
+<A HREF="#THM_GMAG_STACKPLOT.PRO">[Previous Routine]</A>
+<A HREF="#THM_LOAD_ASI">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+       thm_gmag_stackplot_intervals.pro
+
+ PURPOSE:
+       To create 3 PNG files displaying the H,D and Z components of the magnetic field
+	from multiple GBO stations out of GMAG data that is stored in CDF file.
+
+ CALLING SEQUENCE:
+       thm_gmag_stackplot, date, duration, stack_shift=stack_shift, no_expose=no_expose, make_png=make_png
+
+ INPUTS:
+       date: The start of the time interval to be plotted. (Format: 'YYYY-MM-DD/hh:mm:ss')
+	duration: The length of the interval being plotted. (Floating point number of days -&gt; 12hr=0.5), default=1
+	stack_shift: Space between stations on the y-axis (units are nanotesla), default=50
+	no_expose: Set this keyword to prevent the plot from being printed to the screen.
+	make_png: Set this keyword to make the 3 PNG files.
+	max_deviation:  Large spikes in the data (probably gliches) can screw up the y-axis scales.  This keyword allows
+		you to set the maximum deviation the data can go from the median; points that exceed this value are omitted.
+		The default value is plus or minus 1500 nT
+	no_data_load:  This keyword prevents new data from being loaded; the routine will try to plot existing data if it exists.
+	hi_lat:  Set this keyword to plot high latitude stations (above 49 degrees)
+	lo_lat:  Set this keyword to plot low latitude stations (below 49 below)
+
+ OUTPUTS:
+       None, but it creates 3 PNG files in the directory that IDL is being run.
+
+ PROCEDURE:
+       Read in data from CDF files; plot the data using tplot.pro routines;
+       make PNG files with makegif.pro routine
+
+ EXAMPLE:
+       thm_gmag_stackplot, '2006-11-11',1,/make_png, max_deviation=1500, stack_shift=200.
+
+ MODIFICATION HISTORY:
+       Written by:       Matt Davis
+       October 23, 2006     Initial version
+       Added dydt_spike_test, 7-apr-2008, jmm, jimm@ssl.berkeley.edu
+
+NOTE: This program is still in development.  Features to be added:
+	-generalizing the routine
+
+</PRE><P>
+<STRONG>(See <A href="ground/thm_gmag_stackplot_intervals.pro">projects/themis/ground/thm_gmag_stackplot_intervals.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_LOAD_ASI">
 <H2>THM_LOAD_ASI</H2></A>
-<A HREF="#THM_GMAG_STACKPLOT.PRO">[Previous Routine]</A>
+<A HREF="#THM_GMAG_STACKPLOT_INTERVALS.PRO">[Previous Routine]</A>
 <A HREF="#THM_LOAD_ASI_CAL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
