@@ -21,8 +21,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-06 09:37:13 -0700 (Fri, 06 Oct 2017) $
-; $LastChangedRevision: 24121 $
+; $LastChangedDate: 2018-01-09 17:06:46 -0800 (Tue, 09 Jan 2018) $
+; $LastChangedRevision: 24496 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -32,6 +32,7 @@ pro mvn_sta_cio_save, trange, ndays
 
   dpath = root_data_dir() + 'maven/data/sci/sta/l3/cio/'
   froot = 'mvn_sta_cio_'
+  version = '_v02'
   dt = 86400D  ; process one day at a time
 
   case n_elements(trange) of
@@ -65,7 +66,7 @@ pro mvn_sta_cio_save, trange, ndays
     dd = strmid(tstring,8,2)
     opath = dpath + yyyy + '/' + mm + '/'
     file_mkdir2, opath, mode='0774'o  ; create directory structure, if needed
-    ofile = opath + froot + yyyy + mm + dd + '.sav'
+    ofile = opath + froot + yyyy + mm + dd + version + '.sav'
 
 ; If the file already exists, then just update it
 
@@ -79,7 +80,7 @@ pro mvn_sta_cio_save, trange, ndays
       if (npkt[2] gt 0L) then begin
         maven_orbit_tplot, /shadow, /loadonly
         mvn_swe_sciplot, padsmo=16, /loadonly
-        mvn_scpot
+        mvn_scpot, /force
         mvn_sundir, frame='swe', /polar
 
         mvn_sta_coldion, density=1, temperature=1, velocity=[1,1,1], $

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Jan  8 18:16:19 2018.<P>
+<STRONG>Last modified: </STRONG>Tue Jan  9 18:16:22 2018.<P>
  
 <HR>
  
@@ -39,6 +39,8 @@ This page was created by the IDL library routine
 <br>Restores STATIC cold ion outflow results.
 <LI><A HREF="#MVN_STA_CIO_SAVE">MVN_STA_CIO_SAVE</A>
 <br>Saves STATIC cold ion outflow results in save/restore files.
+<LI><A HREF="#MVN_STA_CIO_STRUCT">MVN_STA_CIO_STRUCT</A>
+<br>Creates a Cold Ion Outflow data structure.
 <LI><A HREF="#MVN_STA_CIO_UPDATE">MVN_STA_CIO_UPDATE</A>
 <br>Updates STATIC cold ion outflow results in save/restore files.
 <LI><A HREF="#MVN_STA_COLDION">MVN_STA_COLDION</A>
@@ -604,7 +606,7 @@ FILE: mvn_sta_cio_restore.pro
 <A NAME="MVN_STA_CIO_SAVE">
 <H2>MVN_STA_CIO_SAVE</H2></A>
 <A HREF="#MVN_STA_CIO_RESTORE">[Previous Routine]</A>
-<A HREF="#MVN_STA_CIO_UPDATE">[Next Routine]</A>
+<A HREF="#MVN_STA_CIO_STRUCT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mvn_sta_cio_save
@@ -629,8 +631,8 @@ INPUTS:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-10-06 09:37:13 -0700 (Fri, 06 Oct 2017) $
- $LastChangedRevision: 24121 $
+ $LastChangedDate: 2018-01-09 17:06:46 -0800 (Tue, 09 Jan 2018) $
+ $LastChangedRevision: 24496 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 
 CREATED BY:    David L. Mitchell
@@ -639,9 +641,37 @@ FILE: mvn_sta_cio_save.pro
 <STRONG>(See <A href="swea/mvn_sta_cio_save.pro">projects/maven/swea/mvn_sta_cio_save.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_CIO_STRUCT">
+<H2>MVN_STA_CIO_STRUCT</H2></A>
+<A HREF="#MVN_STA_CIO_SAVE">[Previous Routine]</A>
+<A HREF="#MVN_STA_CIO_UPDATE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION:   mvn_sta_cio_struct
+
+PURPOSE:
+  Creates a Cold Ion Outflow data structure.
+
+INPUTS:
+       NPTS:     Number of elements.  Default = 1.
+
+KEYWORDS: 
+
+CREATED BY:      D. L. Mitchell.
+
+LAST MODIFICATION:
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2018-01-09 15:51:28 -0800 (Tue, 09 Jan 2018) $
+ $LastChangedRevision: 24494 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_struct.pro $
+
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_sta_cio_struct.pro">projects/maven/swea/mvn_sta_cio_struct.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_CIO_UPDATE">
 <H2>MVN_STA_CIO_UPDATE</H2></A>
-<A HREF="#MVN_STA_CIO_SAVE">[Previous Routine]</A>
+<A HREF="#MVN_STA_CIO_STRUCT">[Previous Routine]</A>
 <A HREF="#MVN_STA_COLDION">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -694,8 +724,8 @@ PURPOSE:
   spacecraft motion when transforming to the MSO frame.  Thermal electron
   density from LPW is included as a check on the total ion density
   measured by STATIC.  Topology information based on the two-stream shape
-  parameter and variety of ephemeris and geometry information are also
-  included.
+  parameter (Xu) and PAD score (Weber) is attached to each measurement.
+  A variety of ephemeris and geometry information are also included.
 
   This routine uses STATIC code developed by J. McFadden.
 
@@ -738,6 +768,9 @@ KEYWORDS:
                       cf -&gt; 16E x 16M x 4D x 16A, burst time resolution
                       ce -&gt; 16E x 16M x 4D x 16A, survey time resolution
 
+    FRAME:         Reference frame for velocities.  Default = 'mso'.  Try 'app'
+                   to get apparent flow direction in APP frame.
+
     RESULT_H:      Result structure for H+.
 
     RESULT_O1:     Result structure for O+.
@@ -764,8 +797,8 @@ KEYWORDS:
     SUCCESS:       Processing success flag.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-10-14 14:45:14 -0700 (Sat, 14 Oct 2017) $
- $LastChangedRevision: 24158 $
+ $LastChangedDate: 2018-01-09 15:52:02 -0800 (Tue, 09 Jan 2018) $
+ $LastChangedRevision: 24495 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 
 CREATED BY:    David L. Mitchell
@@ -4596,8 +4629,8 @@ KEYWORDS:
        BURST:        Plot a color bar showing PAD burst coverage.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-12-18 12:26:02 -0800 (Mon, 18 Dec 2017) $
- $LastChangedRevision: 24433 $
+ $LastChangedDate: 2018-01-09 15:49:58 -0800 (Tue, 09 Jan 2018) $
+ $LastChangedRevision: 24493 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12

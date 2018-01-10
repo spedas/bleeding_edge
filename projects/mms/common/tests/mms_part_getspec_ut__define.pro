@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-12-22 10:16:31 -0800 (Fri, 22 Dec 2017) $
-; $LastChangedRevision: 24461 $
+; $LastChangedDate: 2018-01-09 14:08:49 -0800 (Tue, 09 Jan 2018) $
+; $LastChangedRevision: 24491 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
 
@@ -34,7 +34,7 @@ function mms_part_getspec_ut::test_pa_limits_fpi_brst
   return, 1
 end
 
-function mms_part_getspec::test_pa_limits_hpca
+function mms_part_getspec_ut::test_pa_limits_hpca
   mms_part_getspec, probe=4, trange=['2015-12-15/10:50', '2015-12-15/11:00'], pitch=[45, 135], instrument='hpca'
   get_data, 'mms4_hpca_hplus_phase_space_density_pa', data=d
   assert, total(finite(d.Y[0, 0:4])) eq 0 and total(finite(d.Y[0, 13:*])) eq 0, 'Problem with PA limits for HPCA!'
