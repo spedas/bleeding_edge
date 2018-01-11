@@ -10,9 +10,9 @@
 ;
 ;Written by: Davin Larson
 ;
-; $LastChangedBy: davin-win $
-; $LastChangedDate: 2011-02-15 15:58:20 -0800 (Tue, 15 Feb 2011) $
-; $LastChangedRevision: 8223 $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+; $LastChangedRevision: 24506 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/euler_ang_rot_matrix.pro $
 ;-
 function euler_ang_rot_matrix,eulerang,parameters=par

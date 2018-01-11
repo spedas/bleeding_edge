@@ -5,6 +5,9 @@
 ; Purpose:
 ;     Uses binary search on a time series to find the array element closest to the target time
 ;     
+;     Please consider using find_nearest neighbors 2 function as the faster version.
+;     Also, please consider nn function which provides the nearest index of the time.
+;     
 ; Input:
 ;     time_series: monotonically increasing time series array (stored as doubles)
 ;     target_time: time to search for in the time series (double)
@@ -27,9 +30,12 @@
 ;     >> print, find_nearest_neighbor([5,4,3,7,8,2,4,6,7], 7.6, /sort)
 ;           8
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-08-15 13:38:33 -0700 (Tue, 15 Aug 2017) $
-; $LastChangedRevision: 23789 $
+; See also:
+;     find_nearest_neighbor2, nn
+;
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+; $LastChangedRevision: 24506 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/find_nearest_neighbor.pro $
 ;-
 function find_nearest_neighbor, time_series, target_time, quiet = quiet, sort = sort, allow_outside = allow_outside

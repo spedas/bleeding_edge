@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jan  9 18:16:22 2018.<P>
+<STRONG>Last modified: </STRONG>Wed Jan 10 18:16:25 2018.<P>
  
 <HR>
  
@@ -36,6 +36,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#DIAG_P">DIAG_P</A>
 <br>Returns the temperature: [Tpara,Tperp,Tperp], T_total and
 <LI><A HREF="#EDIT3DBINS">EDIT3DBINS</A>
+<LI><A HREF="#EDIT3DBINS_REFORM">EDIT3DBINS_REFORM</A>
 <LI><A HREF="#GET_3DT">GET_3DT</A>
 <br>To generate time series data for &quot;tplot&quot;
 <LI><A HREF="#GET_BSN2">GET_BSN2</A>
@@ -402,7 +403,7 @@ LAST MODIFICATION:
 <A NAME="EDIT3DBINS">
 <H2>EDIT3DBINS</H2></A>
 <A HREF="#DIAG_P">[Previous Routine]</A>
-<A HREF="#ENLARGE_PERIODIC">[Next Routine]</A>
+<A HREF="#EDIT3DBINS_REFORM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:  edit3dbins,dat,bins
@@ -430,9 +431,47 @@ LAST MODIFICATION: 98/01/16
 <STRONG>(See <A href="science/edit3dbins.pro">general/science/edit3dbins.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="EDIT3DBINS_REFORM">
+<H2>EDIT3DBINS_REFORM</H2></A>
+<A HREF="#EDIT3DBINS">[Previous Routine]</A>
+<A HREF="#ENLARGE_PERIODIC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:  edit3dbins_reform,dat,bins
+PURPOSE:   wrapper for edit3dbins, Interactive procedure to produce a
+bin array for selectively turning angle bins on and off.  Works on a
+3d structure with phi, theta dimensioned separately, so that the data
+array in the structure is (nenergy, nphi, ntheta), rather than
+(nenergy, nbins) as in the typical 3d data structure.
+INPUT:
+   dat:  3d data structure.  (will not be altered, bin flags are not set)
+   bins:  a named variable in which to return the results, dimensions
+          (nphi, ntheta), not (nbins)
+KEYWORDS:
+   NTHETA: number of theta bins, if not set, obtain from
+           the data structure
+   NPHI: number of phi bins, if not set, obtain from
+           the data structure
+   Note that if ntheta*nphi is not equal to data.nbins, then
+   edit3dbins is called directly. This may resuly in unpredictable results.
+   EBINS:     Specifies energy bins to plot.
+   SUM_EBINS: Specifies how many bins to sum, starting with EBINS.  If
+              SUM_EBINS is a scalar, that number of bins is summed for
+              each bin in EBINS.  If SUM_EBINS is an array, then each
+              array element will hold the number of bins to sum starting
+              at each bin in EBINS.  In the array case, EBINS and SUM_EBINS
+              must have the same number of elements.
+ $LastChangedBy: $
+ $LastChangedDate: $
+ $LastChangedRevision: $
+ $URL: $
+</PRE><P>
+<STRONG>(See <A href="science/edit3dbins_reform.pro">general/science/edit3dbins_reform.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ENLARGE_PERIODIC">
 <H2>ENLARGE_PERIODIC</H2></A>
-<A HREF="#EDIT3DBINS">[Previous Routine]</A>
+<A HREF="#EDIT3DBINS_REFORM">[Previous Routine]</A>
 <A HREF="#GET_3DT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

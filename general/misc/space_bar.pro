@@ -14,10 +14,10 @@
 ;      
 ;
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2008-01-17 14:37:52 -0800 (Thu, 17 Jan 2008) $
-; $LastChangedRevision: 2286 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/ssl_general/trunk/tplot/tplotxy.pro $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+; $LastChangedRevision: 24506 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/space_bar.pro $
 ;-
 
 pro space_bar,n,newname = newname

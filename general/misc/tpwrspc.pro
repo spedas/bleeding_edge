@@ -47,10 +47,10 @@
 ; 
 ;HISTORY:
 ;
-;$LastChangedBy:  $
-;$LastChangedDate:  $
-;$LastChangedRevision:  $
-;$URL: $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+;$LastChangedRevision: 24506 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tpwrspc.pro $
 ;-
 Pro tpwrspc, varname, newname = newname, $
              trange = trange,$

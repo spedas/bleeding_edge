@@ -27,8 +27,8 @@
 ;   and less for electrons.
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-07-11 08:59:21 -0700 (Tue, 11 Jul 2017) $
-;$LastChangedRevision: 23572 $
+;$LastChangedDate: 2018-01-10 10:03:46 -0800 (Wed, 10 Jan 2018) $
+;$LastChangedRevision: 24500 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_slice2d_fpi_crib.pro $
 ;-
 
@@ -157,8 +157,33 @@ for i=0, n_elements(times)-1 do begin
 
 endfor
 
+;======================================================================
+; Subtract error and subtract bulk velocity from the data prior to plotting
+;======================================================================
+
+probe='1'
+level='l2'
+species='i'
+data_rate='brst'
+
+name =  'mms'+probe+'_d'+species+'s_dist_'+data_rate
+error_name = 'mms'+probe+'_d'+species+'s_disterr_'+data_rate
+vel_name = 'mms'+probe+'_d'+species+'s_bulkv_gse_'+data_rate
+
+trange=['2015-10-16/13:06', '2015-10-16/13:07']
+time = '2015-10-16/13:06:00'
+
+mms_load_fpi, data_rate=data_rate, level=level, datatype=['d'+species+'s-dist', 'd'+species+'s-moms'], probe=probe, trange=trange
+
+; note: both error and /subtract_error keywords required; 'error' keyword specifies the disterr variable name
+dist = mms_get_dist(name, trange=trange, error=error_name, /subtract_error)
+
+; vel_data and /subtract_bulk keywords are required to subtract the bulk velocity
+slice = spd_slice2d(dist, time=time, vel_data=vel_name, /subtract_bulk)
+
+; plot the slice with error and bulk velocity subtracted
+spd_slice2d_plot, slice
 
 stop
-
 
 end

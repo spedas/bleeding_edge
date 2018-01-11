@@ -133,11 +133,11 @@
  ;       continue the download based on remote file modification time and file size. If the local version was current
  ;       then the connection would be closed
  ;
- ; $LastChangedBy: nikos $
- ; $LastChangedDate: 2017-02-27 13:47:56 -0800 (Mon, 27 Feb 2017) $
- ; $LastChangedRevision: 22872 $
+ ; $LastChangedBy: adrozdov $
+ ; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+ ; $LastChangedRevision: 24506 $
  ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_http_copy.pro $
- ; $Id: file_http_copy.pro 22872 2017-02-27 21:47:56Z nikos $
+ ; $Id: file_http_copy.pro 24506 2018-01-11 01:03:26Z adrozdov $
  ;-
  
  
@@ -541,7 +541,7 @@ end
    ;; sockets supported in unix & windows since V5.4, Macintosh since V5.6
    tstart = systime(1)
    
-   dprint,dlevel=5,verbose=verbose,'Start; $Id: file_http_copy.pro 22872 2017-02-27 21:47:56Z nikos $
+   dprint,dlevel=5,verbose=verbose,'Start; $Id: file_http_copy.pro 24506 2018-01-11 01:03:26Z adrozdov $
 
    if n_elements(strict_html) eq 0 then begin
       strict_html = 1      ;  set to 1 to be robust,  set to 0 to be much faster
@@ -549,7 +549,7 @@ end
    endif
 
    if keyword_set(user_agent) eq 0 then begin
-     swver = strsplit('$Id: file_http_copy.pro 22872 2017-02-27 21:47:56Z nikos $',/extract)
+     swver = strsplit('$Id: file_http_copy.pro 24506 2018-01-11 01:03:26Z adrozdov $',/extract)
      user = getenv('USER')
      if ~user then user=getenv('USERNAME')
      if ~user then user=getenv('LOGNAME')

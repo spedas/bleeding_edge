@@ -119,7 +119,7 @@
         LABLAXIS = "wf_pkt_data"
         VAR_TYPE = "data"
         DATA_TYPE = "CDF_INT4"
-        FILLVAL = "-2147483647"
+        FILLVAL = "-2147483648"
         DISPLAY_TYPE = "time_series"
         VALIDMIN = "-2147483647"
         VALIDMAX = "2147483647"

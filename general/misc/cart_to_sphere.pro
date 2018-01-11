@@ -43,9 +43,9 @@
 ;    LAST MODIFIED:  06/21/2009   v1.1.0
 ;    MODIFIED BY: Lynn B. Wilson III
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2012-06-27 16:55:47 -0700 (Wed, 27 Jun 2012) $
-; $LastChangedRevision: 10653 $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+; $LastChangedRevision: 24506 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/cart_to_sphere.pro $
 ; 
 ;*****************************************************************************************

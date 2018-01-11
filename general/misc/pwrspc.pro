@@ -32,10 +32,10 @@
 ;            input units 
 ; err_msg = named variable that contains any error message that might occur
 ;
-;$LastChangedBy$
-;$LastChangedDate$
-;$LastChangedRevision$
-;$URL$
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+;$LastChangedRevision: 24506 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/pwrspc.pro $
 ;
 ;-
 pro pwrspc, time, quantity, freq, power, noline = noline, $

@@ -27,10 +27,10 @@
 ;HISTORY:
 ; 2-feb-2007, jmm, jimm.ssl.berkeley.edu
 ;
-;$LastChangedBy: $
-;$LastChangedDate: $
-;$LastChangedRevision: $
-;$URL$
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+;$LastChangedRevision: 24506 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tclip.pro $
 ;-
 Pro tclip, varnames_in, amin, amax, newname = newname, display_object=display_object, $
            overwrite = overwrite, _extra = _extra

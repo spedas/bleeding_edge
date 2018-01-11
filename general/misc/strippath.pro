@@ -23,9 +23,9 @@
 ;
 ; REVISION HISTORY:
 ;
-;   $LastChangedBy: kenb-mac $
-;   $LastChangedDate: 2006-12-15 08:13:48 -0800 (Fri, 15 Dec 2006) $
-;   $LastChangedRevision: 97 $
+;   $LastChangedBy: adrozdov $
+;   $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+;   $LastChangedRevision: 24506 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/strippath.pro $
 ;       Originally written by Jonathan M. Loran,  University of 
 ;       California at Berkeley, Space Sciences Lab.   Oct. '92

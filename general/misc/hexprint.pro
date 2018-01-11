@@ -17,10 +17,10 @@
 ;
 ; :Author: davin  Jan 19, 2015
 ;
-; $LastChangedBy: $
-; $LastChangedDate: $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+; $LastChangedRevision: 24506 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/hexprint.pro $
 ;
 ;-
 pro hexprint,buffer,unit=unit,filename=filename,decimal=decimal,start=start,nbytes=nbytes,dlevel=dlevel,ncolumns=ncolumns

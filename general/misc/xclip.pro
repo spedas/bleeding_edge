@@ -22,10 +22,10 @@
 ; 9-oct-2007, added option to clip the points adjacent to the bad
 ;             ones, as in tdespike_ae.pro 
 ; 20-Oct-2007, Jmm, Added this comment to test commit comand
-;$LastChangedBy$
-;$LastChangedDate$
-;$LastChangedRevision$
-;$URL$
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+;$LastChangedRevision: 24506 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/xclip.pro $
 ;-
 Pro xclip, amin, amax, y, flag = flag, clip_adjacent = clip_adjacent, $
            _extra = _extra

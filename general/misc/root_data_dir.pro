@@ -42,9 +42,9 @@
 ;    thm_config (through thm_init)
 ;
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-03-07 12:50:33 -0800 (Tue, 07 Mar 2017) $
-;$LastChangedRevision: 22920 $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+;$LastChangedRevision: 24506 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/root_data_dir.pro $
 ;-
 

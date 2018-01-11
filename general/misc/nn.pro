@@ -2,6 +2,7 @@ FUNCTION nn,data,time,x=x,y=y,v=v   ;nearest neighbor function
 ;+
 ;NAME:                  nn
 ;PURPOSE:               Find the index of the data point(s) nearest to the specified time(s)
+;                       You can use find_nearest_neighbor2 function to find the nearest time
 ;                       
 ;CALLING SEQUENCE:      ind=nn(data,time)
 ;INPUTS:                data:  a data structure, a tplot variable name/index,
@@ -21,6 +22,14 @@ FUNCTION nn,data,time,x=x,y=y,v=v   ;nearest neighbor function
 ;                       plot,dens.y(inds(0):inds(1)),temp(inds(0):inds(1))
 ;LAST MODIFICATION:     @(#)nn.pro	1.8 02/04/17
 ;CREATED BY:            Frank Marcoline
+; 
+; See also:
+;   find_nearest_neighbor2, find_nearest_neighbor
+; 
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+; $LastChangedRevision: 24506 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/nn.pro $
 ;-
   nd = n_elements(data)         ;1 if a str, more if an array
 

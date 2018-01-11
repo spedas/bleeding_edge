@@ -7,9 +7,9 @@
 ;
 ; Written by Patrick Cruce
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2009-03-11 11:10:36 -0700 (Wed, 11 Mar 2009) $
-; $LastChangedRevision: 5255 $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+; $LastChangedRevision: 24506 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/array_cross.pro $
 ;-
 function array_cross, l1, l2

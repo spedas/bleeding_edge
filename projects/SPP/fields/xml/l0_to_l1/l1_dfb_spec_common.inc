@@ -2,7 +2,7 @@
       name   = "dfb_spec_src"
       type   = "integer"      
       string = "true"
-      string_len = "8">
+      string_len = "16">
   <cdf_att
         FIELDNAM = "src_sel"
         FORMAT = "I08"

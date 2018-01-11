@@ -33,10 +33,10 @@
 ; bin1D,Ygse,[[Ni],[Ti],[Vx],[fx],[Qx],[Eylep]],-15.,15.,1.,kinbin,Ycntrs,avrg,std,med
 ; Niavg=avrg(*,0)&Tiavg=avrg(*,1)&Vxavg=avrg(*,2)&fxavg=avrg(*,3)&Qxavg=avrg(*,4)&Eylepavg=avrg(*,5)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2007-10-03 14:49:09 -0700 (Wed, 03 Oct 2007) $
-; $LastChangedRevision: 1661 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/idl_socware/trunk/external/IDL_GEOPACK/t01/t01.pro $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+; $LastChangedRevision: 24506 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/bin1d.pro $
 ;-
 pro bin1D,binarr,arrs2bin,minval,maxval,binwidth,kinbin,bincenters,averages,stdevs,medians,revarr=iinbin,maxvarvec=maxvarvec,minvarvec=minvarvec,flag4nodata=flag4nodata
 if (keyword_set(flag4nodata) eq 0) then flag4nodata=0

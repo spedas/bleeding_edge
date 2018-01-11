@@ -59,10 +59,10 @@
 ;                         errors then try a value of 1.0e8. 
 ; fail = if set to a named variable, returns 1 if an error occurs, 0 otherwise
 ;
-;$LastChangedBy: $
-;$LastChangedDate: $
-;$LastChangedRevision: $
-;$URL: $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+;$LastChangedRevision: 24506 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/dpwrspc.pro $
 ;
 ;-
 pro dpwrspc, time, quantity, tdps, fdps, dps, nboxpoints = nboxpoints, $

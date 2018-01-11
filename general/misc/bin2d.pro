@@ -83,10 +83,10 @@
 ;
 ;  SEE ALSO: bin1d.pro,plotxyz.pro,thm_crib_plotxyz.pro
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2008-02-06 13:43:58 -0800 (Wed, 06 Feb 2008) $
-; $LastChangedRevision: 2352 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/ssl_general/trunk/tplot/tplotxy.pro $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+; $LastChangedRevision: 24506 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/bin2d.pro $
 ;-
 
 ;main function.

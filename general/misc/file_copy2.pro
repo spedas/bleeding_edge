@@ -3,7 +3,7 @@
 ;-
 pro file_copy2,serverdir=serverdir,localdir=localdir,pathname=pathname,verbose=verbose,no_clobber=no_clobber
 
-dprint,dlevel=4,'Start; $Id: file_copy2.pro 14135 2014-02-03 01:09:32Z davin-mac $'
+dprint,dlevel=4,'Start; $Id: file_copy2.pro 24506 2018-01-11 01:03:26Z adrozdov $'
 
 rmt = file_info(serverdir+pathname)
 lcl = file_info(localdir +pathname)

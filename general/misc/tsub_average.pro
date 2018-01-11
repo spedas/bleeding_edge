@@ -133,10 +133,10 @@ END
 ; 02-nov-2007, jmm, Fixed bug for variables with no data.
 ; 06-may-2008, jmm, Fixed problem, by changing non-float and
 ;                   non-double datatypes to floats
-;$LastChangedBy: $
-;$LastChangedDate: $
-;$LastChangedRevision: $
-;$URL: $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+;$LastChangedRevision: 24506 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tsub_average.pro $
 ;-
 Pro tsub_average, varname0, nn, new_name = new_name, median = median, $
                      display_object=display_object, _extra = _extra

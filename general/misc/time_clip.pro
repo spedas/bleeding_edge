@@ -37,10 +37,10 @@
 ;                 time_clip,'thb_peem_velocity','thb_fgs_gsm',thb_fgs_gsm',/tvar
 ;
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2008-01-03 13:53:59 -0800 (Thu, 03 Jan 2008) $
-; $LastChangedRevision: 2224 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/idl_socware/trunk/external/IDL_GEOPACK/trace/ttrace_crib.pro $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+; $LastChangedRevision: 24506 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time_clip.pro $
 ;-
 
 pro time_clip,tplot_var_name,start_time,end_time,newname=newname,tvar=tvar,replace=replace,error=error,interior_clip=interior_clip,nan_replace=nan_replace

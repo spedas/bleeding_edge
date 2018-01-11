@@ -14,9 +14,9 @@
 ;   MAX_ARCS = n  ; max number of archives to produce
 ; Author:
 ;   Davin Larson  June 2013   
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2015-10-19 16:17:21 -0700 (Mon, 19 Oct 2015) $
-; $LastChangedRevision: 19109 $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+; $LastChangedRevision: 24506 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_archive.pro $
 ;-
  

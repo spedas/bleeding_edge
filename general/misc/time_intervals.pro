@@ -35,10 +35,10 @@
 ;  tr =['2014-12-1','2015-1-31']
 ;  filenames = time_intervals(trange=tr,daily=7,phase_shift=4/7.,times=t,tformat='file_yyMMDD')+time_intervals(tformat='_yyMMDD_v??.dat',times=t+3600d*24*7)
 ;
-;$LastChangedBy: davin-mac $
-;$LastChangedDate: $
-;$LastChangedRevision: $
-;$URL: $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+;$LastChangedRevision: 24506 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time_intervals.pro $
 ;-
 
 function time_intervals,trange=trange,tformat=tformat, $

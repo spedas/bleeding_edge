@@ -84,9 +84,9 @@
 ;    2012-6-25:  local_data_dir and remote_data_dir accept array inputs 
 ;                with the same # of elements as pathnames/newpathnames   -DO NOT USE this option!
 ;
-;$LastChangedBy: jwl $
-;$LastChangedDate: 2017-09-15 14:55:17 -0700 (Fri, 15 Sep 2017) $
-;$LastChangedRevision: 23986 $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
+;$LastChangedRevision: 24506 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_retrieve.pro $
 ;-
 
@@ -149,11 +149,11 @@ if ~keyword_set(wait_time) then wait_time = 180
 if ~keyword_set(no_internet_until) then no_internet_until = systime(1)-1.
 
 
-dprint,dlevel=4,verbose=verbose,'Start; $Id: file_retrieve.pro 23986 2017-09-15 21:55:17Z jwl $'
+dprint,dlevel=4,verbose=verbose,'Start; $Id: file_retrieve.pro 24506 2018-01-11 01:03:26Z adrozdov $'
 if size(/type, local_data_dir)  ne 7 then local_data_dir = root_data_dir()
 
 if keyword_set(structure_format)  && structure_format eq 1 then begin    ; Old version maintained for legacy code   - don't use this any more.
-;   swver = strsplit('$Id: file_retrieve.pro 23986 2017-09-15 21:55:17Z jwl $',/extract)
+;   swver = strsplit('$Id: file_retrieve.pro 24506 2018-01-11 01:03:26Z adrozdov $',/extract)
 ;   user_agent =  strjoin(swver[1:3],' ')+' IDL'+!version.release + ' ' + !VERSION.OS + '/' + !VERSION.ARCH+ ' (' + (getenv('USER') ? getenv('USER') : getenv('USERNAME'))+')'
    if n_elements(user_agent) eq 0 then user_agent=''
    str= {   $
