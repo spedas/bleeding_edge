@@ -122,8 +122,8 @@
 ;                 (suppress most messages).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-11-30 21:15:14 -0800 (Thu, 30 Nov 2017) $
-; $LastChangedRevision: 24369 $
+; $LastChangedDate: 2018-01-16 11:34:10 -0800 (Tue, 16 Jan 2018) $
+; $LastChangedRevision: 24522 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -600,7 +600,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   options,'alt_lab','labflag',1
 
   store_data,'alt2',data=['alt_lab','alt','sheath','pileup','wake','wind','iono']
-  ylim, 'alt2', 0, 0, 0
+  ylim, 'alt2', 0, 1000*ceil(max(hgt)/1000.), 0
   options,'alt2','ytitle','Altitude (km)!c' + strlowcase(datum)
 
   if keyword_set(segments) then options,'alt2','constant',[500,1200,4970,5270] $

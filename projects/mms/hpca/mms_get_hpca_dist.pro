@@ -35,8 +35,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-12-18 13:15:56 -0800 (Mon, 18 Dec 2017) $
-;$LastChangedRevision: 24436 $
+;$LastChangedDate: 2018-01-16 09:14:28 -0800 (Tue, 16 Jan 2018) $
+;$LastChangedRevision: 24520 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_get_hpca_dist.pro $
 ;-
 
@@ -242,7 +242,7 @@ template = {  $
   spacecraft: probe, $
   data_name: 'HPCA '+species, $
   units_name: units_name, $
-  units_procedure: '', $ ;placeholder
+  units_procedure: 'mms_part_conv_units', $ ;placeholder
   species:species, $
   valid: 1b, $
 
@@ -256,6 +256,8 @@ template = {  $
 
   energy: energy, $
   denergy: base_arr, $
+  nenergy: dim[0], $ ; # of energies
+  nbins: dim[1]*dim[2], $ ; # thetas * # phis
   phi: base_arr, $
   dphi: base_arr, $
   theta: theta, $

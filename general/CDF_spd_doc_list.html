@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jan 13 18:16:41 2018.<P>
+<STRONG>Last modified: </STRONG>Tue Jan 16 18:16:16 2018.<P>
  
 <HR>
  
@@ -40,6 +40,7 @@ This page was created by the IDL library routine
 <br>Creates an index file for CDF files.
 <LI><A HREF="#PRINT_CDF_INFO">PRINT_CDF_INFO</A>
 <LI><A HREF="#TPLOT2CDF2">TPLOT2CDF2</A>
+<LI><A HREF="#TPLOT2CDF_SAVE_VARS">TPLOT2CDF_SAVE_VARS</A>
 <LI><A HREF="#TPLOT_ADD_CDF_ATTRIBUTES">TPLOT_ADD_CDF_ATTRIBUTES</A>
 <br>
 </UL><P>
@@ -598,27 +599,58 @@ LAST MODIFICATION:     @(#)print_cdf_info.pro 1.13 02/11/01
 <A NAME="TPLOT2CDF2">
 <H2>TPLOT2CDF2</H2></A>
 <A HREF="#PRINT_CDF_INFO">[Previous Routine]</A>
-<A HREF="#TPLOT_ADD_CDF_ATTRIBUTES">[Next Routine]</A>
+<A HREF="#TPLOT2CDF_SAVE_VARS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
  Warning: this file is under development!
 
  Save tplot variables into cdf file
- The CDF global attributes can be specifyed by keywords inq and g_attributes
- The keyword default_cdf_attributes adds default variable attibutes to the tplot vatiables
- ;
+ The CDF global attributes can be specified by keywords inq and g_attributes
+ The keyword default_cdf_attributes adds default variable attributes to the tplot variables
+ 
  $LastChangedBy: adrozdov $
- $LastChangedDate: 2018-01-12 19:07:58 -0800 (Fri, 12 Jan 2018) $
- $LastChangedRevision: 24516 $
+ $LastChangedDate: 2018-01-16 16:31:13 -0800 (Tue, 16 Jan 2018) $
+ $LastChangedRevision: 24527 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot2cdf2.pro $
 </PRE><P>
 <STRONG>(See <A href="CDF/tplot2cdf2.pro">general/CDF/tplot2cdf2.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="TPLOT2CDF_SAVE_VARS">
+<H2>TPLOT2CDF_SAVE_VARS</H2></A>
+<A HREF="#TPLOT2CDF2">[Previous Routine]</A>
+<A HREF="#TPLOT_ADD_CDF_ATTRIBUTES">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE: tplot2cdf_save_vars(cdf_structure,new_cdf_name)
+ PURPOSE:  To dump data and metadata from an IDL structure into a CDF file.
+		 This is a fork of the cdf_load_vars.pro.
+					
+ INPUTS:   cdf_structure : IDL structure defined by cdf_load_vars.pro
+	    new_cdf_name  : a string to name the new CDF file with
+	    
+	    compress_cdf: if this is set, the produced cdf is compressed
+	    cdfconvert: (optional) location of cdfconvert utility (eg. /usr/local/pkg/cdf-3.6.1_CentOS-6.6/bin/cdfconvert)
+	    cdfparams: (optional) cdf compression parameters
+	    cdf_compress_error: (optional) return string for compression errors 
+	    cdf_tmp_dir: (optional) compression uses this directory for temporary files
+ EXAMPLE:  cdf_save_vars(cdfi,'newcdf.cdf')
+
+Note: To use this routine you must have the CDF_EPOCH/CDF_EPOCH16 bug patch on your IDL6.3
+and if you are using Solaris you need to be in 32-bit mode NOT 64-bit (ie, idl -32)
+
+ $LastChangedBy: adrozdov $
+ $LastChangedDate: 2018-01-16 16:33:41 -0800 (Tue, 16 Jan 2018) $
+ $LastChangedRevision: 24528 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot2cdf_save_vars.pro $
+</PRE><P>
+<STRONG>(See <A href="CDF/tplot2cdf_save_vars.pro">general/CDF/tplot2cdf_save_vars.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TPLOT_ADD_CDF_ATTRIBUTES">
 <H2>TPLOT_ADD_CDF_ATTRIBUTES</H2></A>
-<A HREF="#TPLOT2CDF2">[Previous Routine]</A>
+<A HREF="#TPLOT2CDF_SAVE_VARS">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 

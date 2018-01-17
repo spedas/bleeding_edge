@@ -54,8 +54,8 @@
 ;   Tplot variable "EFlux_ratio": store the flux ratio for two directions
 ;
 ; $LastChangedBy: xussui $
-; $LastChangedDate: 2017-12-18 16:17:55 -0800 (Mon, 18 Dec 2017) $
-; $LastChangedRevision: 24443 $
+; $LastChangedDate: 2018-01-16 10:28:50 -0800 (Tue, 16 Jan 2018) $
+; $LastChangedRevision: 24521 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_shape_par_pad_l2_3pa.pro $
 ;
 ;CREATED BY:    Shaosui Xu  12-09-17
@@ -67,6 +67,7 @@ Pro swe_shape_par_pad_l2_3pa, burst=burst, spec=spec, $
     tsmo=tsmo, min_pad_eflux=min_pad_eflux
 
     @mvn_swe_com
+    @mvn_scpot_com
 
    if (size(min_pad_eflux,/type) eq 0) then min_pad_eflux = 6.e4
     

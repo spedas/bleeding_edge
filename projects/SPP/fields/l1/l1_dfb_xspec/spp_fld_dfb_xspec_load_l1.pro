@@ -2,9 +2,14 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
 
   ; TODO: More X-spectra testing and formatting
 
+  if n_elements(file) LT 1 then begin
+    print, 'Must provide a CDF file to load"
+    return
+  endif
+
   cdf2tplot, file, prefix = prefix, varnames = varnames
 
-  status_items = ['enable', 'concat', 'src1', 'src2', 'gain', 'navg']
+  status_items = ['enable', 'concat', 'src1', 'src2', 'gain', 'navg', 'bin']
 
   spec_number = fix(strmid(prefix,1,1,/rev))
 
@@ -35,19 +40,21 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
   options, prefix + 'src?', 'panel_size', 0.5
   options, prefix + 'src?', 'labels', [string(spec_number,format='(I1)')]
 
-  options, prefix + ['enable','gain'], 'yrange', [-0.25,1.25]
-  options, prefix + ['enable','gain'], 'ystyle', 1
-  options, prefix + ['enable','gain'], 'yticks', 1
-  options, prefix + ['enable','gain'], 'ytickv', [0,1]
-  options, prefix + ['enable','gain'], 'yminor', 1
-  options, prefix + ['enable','gain'], 'ysubtitle', ''
-  options, prefix + ['enable','gain'], 'panel_size', 0.35
+  options, prefix + ['enable','gain','bin'], 'yrange', [-0.25,1.25]
+  options, prefix + ['enable','gain','bin'], 'ystyle', 1
+  options, prefix + ['enable','gain','bin'], 'yticks', 1
+  options, prefix + ['enable','gain','bin'], 'ytickv', [0,1]
+  options, prefix + ['enable','gain','bin'], 'yminor', 1
+  options, prefix + ['enable','gain','bin'], 'ysubtitle', ''
+  options, prefix + ['enable','gain','bin'], 'panel_size', 0.35
 
   options, prefix + 'navg', 'yrange', [-0.5,10.5]
   options, prefix + 'navg', 'ystyle', 1
   options, prefix + 'navg', 'yminor', 1
   options, prefix + 'navg', 'panel_size', 0.5
 
+  options, prefix + 'xspec_??_s?', 'spec', 1
+  options, prefix + 'xspec_??_s?', 'no_interp', 1
 
   ac_dc_string = strupcase(strmid(prefix,12,2))
   xspec_ind = strmid(prefix, strlen(prefix)-2, 1)

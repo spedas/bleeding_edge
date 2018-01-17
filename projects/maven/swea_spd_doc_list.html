@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jan 13 18:16:41 2018.<P>
+<STRONG>Last modified: </STRONG>Tue Jan 16 18:16:16 2018.<P>
  
 <HR>
  
@@ -244,7 +244,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#SWE_PAD_TIMING">SWE_PAD_TIMING</A>
 <br>Disassembles A2 packets and sorts data in time sequence.
 <LI><A HREF="#SWE_PLOT_FHSK">SWE_PLOT_FHSK</A>
-<br>Plots SWEA fast housekeeping data (A6).
+<br>Makes tplot variables for SWEA fast housekeeping data (A6).
 <LI><A HREF="#SWE_SHAPE_PAR_PAD_L2_3PA">SWE_SHAPE_PAR_PAD_L2_3PA</A>
 <LI><A HREF="#SWE_SNAP_COMMON">SWE_SNAP_COMMON</A>
 <br>Common block for swe_snap_layout.
@@ -6039,19 +6039,45 @@ FILE: swe_pad_timing.pro
 <PRE>
 PROCEDURE:   swe_plot_fhsk
 PURPOSE:
-  Plots SWEA fast housekeeping data (A6).
+  Makes tplot variables for SWEA fast housekeeping data (A6).
 
 USAGE:
   swe_plot_fhsk
 
 INPUTS:
+       None:  All information is obtained from the common block.
 
 KEYWORDS:
+       PANS:          Returns the tplot variables created.
 
-CREATED BY:    David L. Mitchell  07-24-12
-FILE: swe_plot_fhsk.pro
-VERSION:   1.0
-LAST MODIFICATION:   03/23/13
+       TRANGE:        Returns a 2xN array of time ranges for the N 
+                      tplot variables created.  This makes it easy to
+                      zoom in to view each channel.  For example:
+
+                        tplot, pans[i], trange=trange[*,i]
+
+       TSHIFT:        If set, then for each housekeeping channel, shift
+                      data from multiple sweeps to start at the time
+                      of the first sweep.  This makes it easy to compare
+                      multiple channels synchronized to the sweep.  In
+                      this case, TRANGE will have just two elements.
+
+       VNORM:         If set, normalize voltage housekeeping data to the
+                      nominal value for each channel.  Temperatures and
+                      voltages that do not have a nominal value are left
+                      unchanged.
+
+       AVG:           If set, average multiple sweeps for each channel.
+                      Automatically sets TSHIFT.
+
+       RESULT:        Named variable to hold structure of results.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2018-01-16 15:37:29 -0800 (Tue, 16 Jan 2018) $
+ $LastChangedRevision: 24525 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_plot_fhsk.pro $
+
+CREATED BY:    David L. Mitchell  2017-01-15
 </PRE><P>
 <STRONG>(See <A href="swea/swe_plot_fhsk.pro">projects/maven/swea/swe_plot_fhsk.pro</A>)</STRONG><P>
 <HR>
@@ -6117,8 +6143,8 @@ OUTPUTS:
    Tplot variable &quot;EFlux_ratio&quot;: store the flux ratio for two directions
 
  $LastChangedBy: xussui $
- $LastChangedDate: 2017-12-18 16:17:55 -0800 (Mon, 18 Dec 2017) $
- $LastChangedRevision: 24443 $
+ $LastChangedDate: 2018-01-16 10:28:50 -0800 (Tue, 16 Jan 2018) $
+ $LastChangedRevision: 24521 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_shape_par_pad_l2_3pa.pro $
 
 CREATED BY:    Shaosui Xu  12-09-17

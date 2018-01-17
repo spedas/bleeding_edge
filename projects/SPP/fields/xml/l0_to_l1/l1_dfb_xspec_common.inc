@@ -89,6 +89,30 @@
   </cdf_var>
 
   <cdf_var
+      name   = "dfb_xspec_bin"
+      type   = "integer"
+    	string = "true"
+      string_len = "8">
+  <cdf_att
+        FIELDNAM = "bin"
+        FORMAT = "I08"
+        LABLAXIS = "bin"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_INT2"
+        FILLVAL = "-32767"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "1"
+        SCALEMIN = "0"
+        SCALEMAX = "1"
+        UNITS = "None"
+        CATDESC = "DFB number of bins"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+
+  <cdf_var
       name   = "dfb_xspec_gain"
       type   = "integer"
     	string = "true"
@@ -153,3 +177,289 @@
         DEPEND_0 = "epoch">
     </cdf_att>
   </cdf_var>
+
+
+	<!-- X Spec 1 -->
+
+  <cdf_var
+      name   = "dfb_xspec_p1_s1"
+      type   = "integer"
+      nelem  = "dfb_xspec_nelem"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "xspec_p1_s1"
+        FORMAT = "I08"
+        LABLAXIS = "xspec_p1_s1"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_INT2"
+        FILLVAL = "-32767"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "255"
+        SCALEMIN = "0"
+        SCALEMAX = "255"
+        UNITS = "None"
+        CATDESC = "DFB cross spec, power spectrum (source 1, spectrum 1)"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+  
+  <cdf_var
+      name   = "dfb_xspec_p2_s1"
+      type   = "integer"
+      nelem  = "dfb_xspec_nelem"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "xspec_p2_s1"
+        FORMAT = "I08"
+        LABLAXIS = "xspec_p2_s1"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_INT2"
+        FILLVAL = "-32767"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "255"
+        SCALEMIN = "0"
+        SCALEMAX = "255"
+        UNITS = "None"
+        CATDESC = "DFB cross spec, power spectrum (source 2, spectrum 1)"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+  
+  <cdf_var
+      name   = "dfb_xspec_rc_s1"
+      type   = "integer"
+      nelem  = "dfb_xspec_nelem"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "xspec_rc_s1"
+        FORMAT = "I08"
+        LABLAXIS = "xspec_rc_s1"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_INT4"
+        FILLVAL = "-2147483647"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "65535"
+        SCALEMIN = "0"
+        SCALEMAX = "65535"
+        UNITS = "None"
+        CATDESC = "DFB cross spec, real cross spectrum (spectrum 1)"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name   = "dfb_xspec_ic_s1"
+      type   = "integer"
+      nelem  = "dfb_xspec_nelem"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "xspec_ic_s1"
+        FORMAT = "I08"
+        LABLAXIS = "xspec_ic_s1"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_INT4"
+        FILLVAL = "-2147483647"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "65535"
+        SCALEMIN = "0"
+        SCALEMAX = "65535"
+        UNITS = "None"
+        CATDESC = "DFB cross spec, imag cross spectrum (spectrum 1)"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+  
+
+	<!-- X Spec 2 -->
+
+  <cdf_var
+      name   = "dfb_xspec_p1_s2"
+      type   = "integer"
+      nelem  = "dfb_xspec_nelem"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "xspec_p1_s2"
+        FORMAT = "I08"
+        LABLAXIS = "xspec_p1_s2"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_INT2"
+        FILLVAL = "-32767"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "255"
+        SCALEMIN = "0"
+        SCALEMAX = "255"
+        UNITS = "None"
+        CATDESC = "DFB cross spec, power spectrum (source 1, spectrum 2)"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+  
+  <cdf_var
+      name   = "dfb_xspec_p2_s2"
+      type   = "integer"
+      nelem  = "dfb_xspec_nelem"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "xspec_p2_s2"
+        FORMAT = "I08"
+        LABLAXIS = "xspec_p2_s2"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_INT2"
+        FILLVAL = "-32767"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "255"
+        SCALEMIN = "0"
+        SCALEMAX = "255"
+        UNITS = "None"
+        CATDESC = "DFB cross spec, power spectrum (source 2, spectrum 2)"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+  
+  <cdf_var
+      name   = "dfb_xspec_rc_s2"
+      type   = "integer"
+      nelem  = "dfb_xspec_nelem"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "xspec_rc_s2"
+        FORMAT = "I08"
+        LABLAXIS = "xspec_rc_s2"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_INT4"
+        FILLVAL = "-2147483647"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "65535"
+        SCALEMIN = "0"
+        SCALEMAX = "65535"
+        UNITS = "None"
+        CATDESC = "DFB cross spec, real cross spectrum (spectrum 2)"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name   = "dfb_xspec_ic_s2"
+      type   = "integer"
+      nelem  = "dfb_xspec_nelem"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "xspec_ic_s2"
+        FORMAT = "I08"
+        LABLAXIS = "xspec_ic_s2"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_INT4"
+        FILLVAL = "-2147483647"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "65535"
+        SCALEMIN = "0"
+        SCALEMAX = "65535"
+        UNITS = "None"
+        CATDESC = "DFB cross spec, imag cross spectrum (spectrum 2)"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+  
+
+	<!-- X Spec 2 -->
+
+  <cdf_var
+      name   = "dfb_xspec_p1_s3"
+      type   = "integer"
+      nelem  = "dfb_xspec_nelem"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "xspec_p1_s3"
+        FORMAT = "I08"
+        LABLAXIS = "xspec_p1_s3"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_INT2"
+        FILLVAL = "-32767"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "255"
+        SCALEMIN = "0"
+        SCALEMAX = "255"
+        UNITS = "None"
+        CATDESC = "DFB cross spec, power spectrum (source 1, spectrum 3)"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+  
+  <cdf_var
+      name   = "dfb_xspec_p2_s3"
+      type   = "integer"
+      nelem  = "dfb_xspec_nelem"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "xspec_p2_s3"
+        FORMAT = "I08"
+        LABLAXIS = "xspec_p2_s3"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_INT2"
+        FILLVAL = "-32767"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "255"
+        SCALEMIN = "0"
+        SCALEMAX = "255"
+        UNITS = "None"
+        CATDESC = "DFB cross spec, power spectrum (source 2, spectrum 3)"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+  
+  <cdf_var
+      name   = "dfb_xspec_rc_s3"
+      type   = "integer"
+      nelem  = "dfb_xspec_nelem"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "xspec_rc_s3"
+        FORMAT = "I08"
+        LABLAXIS = "xspec_rc_s3"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_INT4"
+        FILLVAL = "-2147483647"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "65535"
+        SCALEMIN = "0"
+        SCALEMAX = "65535"
+        UNITS = "None"
+        CATDESC = "DFB cross spec, real cross spectrum (spectrum 3)"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name   = "dfb_xspec_ic_s3"
+      type   = "integer"
+      nelem  = "dfb_xspec_nelem"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "xspec_ic_s3"
+        FORMAT = "I08"
+        LABLAXIS = "xspec_ic_s3"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_INT4"
+        FILLVAL = "-2147483647"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "65535"
+        SCALEMIN = "0"
+        SCALEMAX = "65535"
+        UNITS = "None"
+        CATDESC = "DFB cross spec, imag cross spectrum (spectrum 3)"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+  
