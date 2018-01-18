@@ -54,16 +54,15 @@
 ;   Tplot variable "EFlux_ratio": store the flux ratio for two directions
 ;
 ; $LastChangedBy: xussui $
-; $LastChangedDate: 2018-01-16 10:28:50 -0800 (Tue, 16 Jan 2018) $
-; $LastChangedRevision: 24521 $
+; $LastChangedDate: 2018-01-17 10:24:48 -0800 (Wed, 17 Jan 2018) $
+; $LastChangedRevision: 24532 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_shape_par_pad_l2_3pa.pro $
 ;
 ;CREATED BY:    Shaosui Xu  12-09-17
 ;-
 
 Pro swe_shape_par_pad_l2_3pa, burst=burst, spec=spec, $
-    nsmo=nsmo, erange=erange, obins=obins, mask_sc=mask_sc, $
-    abins=abins, dbins=dbins, mag_geo=mag_geo, pot=pot, $
+    nsmo=nsmo, erange=erange, mag_geo=mag_geo, pot=pot, $
     tsmo=tsmo, min_pad_eflux=min_pad_eflux
 
     @mvn_swe_com

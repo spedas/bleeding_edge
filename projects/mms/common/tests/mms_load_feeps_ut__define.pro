@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_feeps_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-11-07 15:47:55 -0800 (Tue, 07 Nov 2017) $
-; $LastChangedRevision: 24276 $
+; $LastChangedDate: 2018-01-17 15:50:57 -0800 (Wed, 17 Jan 2018) $
+; $LastChangedRevision: 24537 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_feeps_ut__define.pro $
 ;-
 
@@ -211,7 +211,7 @@ function mms_load_feeps_ut::test_flatfield_corrections_l2_bottom
   mms_load_feeps, data_rate='brst', probe=4, datatype='ion', /no_flatfield_corrections
   get_data, 'mms4_epd_feeps_brst_l2_ion_bottom_intensity_sensorid_7_clean_sun_removed_with_flatfield_correction', data=corr
   get_data, 'mms4_epd_feeps_brst_l2_ion_bottom_intensity_sensorid_7_clean_sun_removed', data=d
-  factor = corr.Y[4000, 2]/d.Y[4000, 2]
+  factor = corr.Y[3305, 2]/d.Y[3305, 2]
   assert, factor eq 0.6, 'Problem applying flat field corrections to ions (L2) - bottom sensor head'
   return, 1
 end

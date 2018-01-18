@@ -66,8 +66,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-01-09 15:49:58 -0800 (Tue, 09 Jan 2018) $
-; $LastChangedRevision: 24493 $
+; $LastChangedDate: 2018-01-17 13:01:32 -0800 (Wed, 17 Jan 2018) $
+; $LastChangedRevision: 24536 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -286,10 +286,12 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     options,'ANALT','color',TCcol[0]  ; magenta
     options,'DIGT', 'color',TCcol[1]  ; blue
     options,'LVPST','color',TCcol[2]  ; cyan
-;    ylim,'Temps',20,35,0
-    ylim,'Temps',0,0,0
-;    options,'Temps','yticks',3
-;    options,'Temps','yminor',5
+    tlow = 5*floor((min(swe_hsk.lvpst) < min(swe_hsk.digt) < min(swe_hsk.analt))/5.)
+    thigh = 5*ceil((max(swe_hsk.lvpst) > max(swe_hsk.digt) > max(swe_hsk.analt))/5.)
+    ylim,'Temps',tlow,thigh,0
+    options,'Temps','constant',[0]
+    options,'Temps','yticks',(thigh - tlow)/5
+    options,'Temps','yminor',5
     options,'Temps','labflag',1
     options,'Temps','labels',['ANALT','DIGT','LVPST','','','','']
   

@@ -35,8 +35,8 @@
 ;       RESULT:        Named variable to hold structure of results.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-01-16 15:37:29 -0800 (Tue, 16 Jan 2018) $
-; $LastChangedRevision: 24525 $
+; $LastChangedDate: 2018-01-17 08:57:03 -0800 (Wed, 17 Jan 2018) $
+; $LastChangedRevision: 24531 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_plot_fhsk.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2017-01-15
@@ -168,22 +168,24 @@ pro swe_plot_fhsk, pans=pans, trange=trange, tshift=tshift, vnorm=vnorm, avg=avg
         y /= v_nrm[chan]
       endif
 
+      dat = {x:x, y:y, chan:chan, trange:(minmax(x) + [-0.05,0.05]), tabnum:tabnum[i]}
+
       name = a6[i[0]].name[j[0]]  ; one channel -> one name
       tname = 'a6_' + name
-      str_element, result, name, {x:x, y:y, chan:chan}, /add
-      store_data, tname, data={x:x, y:y, chan:chan}
+      str_element, result, name, dat, /add
+      store_data, tname, data=dat
       options, tname, 'ytitle', name
       options, tname, 'psym', 0
       options, tname, 'ynozero', 1
       pans = [pans, tname]
-      trange = [trange, (minmax(x) + [-0.05,0.05])]
+      trange = [trange, dat.trange]
     endif
   endfor
 
   pans = pans[1:*]
-  trange = reform(trange[2:*], 2, n_elements(pans))
-  if (tshift) then trange = [(t0 - 0.05),(t0 + 2D)]
-  
+  if (tshift) then trange = [(t0 - 0.05),(t0 + 2D)] $
+              else trange = reform(trange[2:*], 2, n_elements(pans))
+
   return
 
 end

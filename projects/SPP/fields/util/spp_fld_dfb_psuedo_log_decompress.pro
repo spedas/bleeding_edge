@@ -6,18 +6,60 @@ function spp_fld_dfb_psuedo_log_decompress, compressed, type = type
 
   ; scalar case
 
-  if dim_compressed[0] EQ 0 and n_elements(compressed) EQ 1 then dim_compressed = 1
+  if dim_compressed[0] EQ 0 and n_elements(compressed) EQ 1 then $
+    dim_compressed = 1
 
   compressed = long64(compressed)
 
+  ; DFB compression scheme:
+
+  ; BP    EEEE MMMM
+  ; SP    EEEE EMMM
+  ; XSP   SEEE EEMM MMMM MMMM
+
+  ; Some examples:
+
+  ; bp_comp = [0x00,0x07,0x0F,0x20,0x57,0xFF]
+  ; bp = spp_fld_dfb_psuedo_log_decompress(bp_comp, type = 'bandpass')
+  ; print, long64(bp)
+  ; 0           7          15          32         368      507904
+
+  ; sp_comp = [0x00,0x07,0x0F,0x20,0x57,0xFF]
+  ; sp = spp_fld_dfb_psuedo_log_decompress(bp_comp, type = 'spectra')
+  ; print, long64(sp)
+  ;  0                     7                    15
+  ; 64                  7680           16106127360
+  
+  ; Positive
+  ; xs_comp = [0x0000, 0x000F, 0x00FF, 0x03FF, 0x07FF, 0x5555, 0x7FFF]
+  ; xs = spp_fld_dfb_psuedo_log_decompress(xs_comp, type = 'xspectra')
+  ; print, long64(xs)
+  ;              0                    15                   255
+  ;           1023                  2047            1431306240
+  ;  2197949513728
+
+  ;
+  ; Negative
+  ; xs_comp = [0x8000, 0x800F, 0x80FF, 0x83FF, 0x87FF, 0xD555, 0xFFFF]
+  ; xs = spp_fld_dfb_psuedo_log_decompress(xs_comp, type = 'xspectra')
+  ; print, long64(xs)
+  ;              0                   -15                  -255
+  ;          -1023                 -2047           -1431306240
+  ; -2197949513728
+  
   case strlowcase(type) of
     'bandpass': begin
-      exp_div = 2ll^4
+      signed = 0
       man_mod = 2ll^4
     end
     'spectra': begin
-      exp_div = 2ll^3
+      signed = 0
       man_mod = 2ll^3
+    end
+    'xspectra': begin
+      signed = 1
+      sign_div = 2ll^15
+      man_mod = 2ll^10
     end
     else: begin
       print, 'no type specified'
@@ -25,7 +67,21 @@ function spp_fld_dfb_psuedo_log_decompress, compressed, type = type
     end
   endcase
 
-  exponent = compressed / exp_div
+  if signed EQ 1 then begin
+    
+    sign_bit = compressed / sign_div
+    
+    compressed = compressed MOD sign_div
+    
+    neg_ind = where(sign_bit NE 0, neg_count)
+    
+  endif else begin
+    
+    neg_count = 0
+    
+  endelse
+
+  exponent = compressed / man_mod
 
   mantissa = compressed MOD man_mod
 
@@ -43,8 +99,15 @@ function spp_fld_dfb_psuedo_log_decompress, compressed, type = type
   if exp_nonzero_count GT 0 then begin
 
     decompressed[exp_nonzero_ind] = $
-      (mantissa[exp_nonzero_ind] + 2ll^4l) * 2.^(exponent[exp_nonzero_ind] - 1ll)
+      (mantissa[exp_nonzero_ind] + man_mod) * $
+      2.^(exponent[exp_nonzero_ind] - 1ll)
 
+  endif
+  
+  if neg_count GT 0 then begin
+    
+    decompressed[neg_ind] = -1.d * decompressed
+    
   endif
 
   return, decompressed
