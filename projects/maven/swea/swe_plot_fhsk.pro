@@ -35,8 +35,8 @@
 ;       RESULT:        Named variable to hold structure of results.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-01-17 08:57:03 -0800 (Wed, 17 Jan 2018) $
-; $LastChangedRevision: 24531 $
+; $LastChangedDate: 2018-01-18 11:54:21 -0800 (Thu, 18 Jan 2018) $
+; $LastChangedRevision: 24540 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_plot_fhsk.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2017-01-15
@@ -56,10 +56,11 @@ pro swe_plot_fhsk, pans=pans, trange=trange, tshift=tshift, vnorm=vnorm, avg=avg
   avg = keyword_set(avg)
   if (avg) then tshift = 1
 
-  result = {name   : 'SWEA Fast Housekeeping' , $
-            tshift : tshift                   , $
-            vnorm  : vnorm                    , $
-            avg    : avg                         }
+  result = {name   : 'SWEA Fast Housekeeping'           , $
+            date   : time_string(mean(a6.time),prec=-3) , $
+            tshift : tshift                             , $
+            vnorm  : vnorm                              , $
+            avg    : avg                                   }
 
 ; Add sweep table information
 
@@ -144,7 +145,9 @@ pro swe_plot_fhsk, pans=pans, trange=trange, tshift=tshift, vnorm=vnorm, avg=avg
       for k=0L,(count-1L) do begin
         if (tshift) then begin
           if (avg) then begin
-            x[0:223] = t0 + sweep
+            if (tabnum[i[k]] ne tabnum[i[0]]) then begin
+              print,"WARNING: Sweep changed during average!"
+            endif
             y[0:223] += a6[i[k]].value[*,j[k]]
           endif else begin
             x[(k*224L):(k*224L + 223L)] = t0 + sweep
@@ -158,7 +161,7 @@ pro swe_plot_fhsk, pans=pans, trange=trange, tshift=tshift, vnorm=vnorm, avg=avg
       endfor
 
       if (avg) then begin
-        x = x[0:223]
+        x = t0 + sweep
         y = y[0:223]/float(count)
       endif
 

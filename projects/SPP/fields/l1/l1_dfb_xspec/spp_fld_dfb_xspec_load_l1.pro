@@ -59,6 +59,103 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
   ac_dc_string = strupcase(strmid(prefix,12,2))
   xspec_ind = strmid(prefix, strlen(prefix)-2, 1)
 
+  get_data, prefix + 'navg', data = navg_data
+
+  get_data, prefix + 'bin', data = bin_data
+
+  get_data, prefix + 'concat', data = concat_data
+
+  ; TODO: Make this work with all configurations of cross spectra
+
+  if n_elements(uniq(bin_data.y)) EQ 1 and $
+    n_elements(uniq(navg_data.y)) EQ 1 and $
+    n_elements(uniq(concat_data.y)) EQ 1 then begin
+
+    xspec_types = ['p1', 'p2', 'rc', 'ic']
+
+    if strpos(prefix, 'ac_spec') NE -1 then is_ac = 1 else is_ac = 0
+
+    n_spec = concat_data.y[0] + 1
+    n_bins = bin_data.y[0] ? 96 : 56
+    n_avg = 2l^(navg_data.y[0])
+
+    if is_ac then begin
+      freq_bins = spp_get_fft_bins_04_ac(n_bins)
+    endif else begin
+      freq_bins = spp_get_fft_bins_04_dc(n_bins)
+    endelse
+
+    for j = 0, n_elements(xspec_types) - 1 do begin
+
+      xspec_type = xspec_types[j]
+
+      xspec_names = tnames(prefix + 'xspec_' + xspec_type + '_s?', n_xspec)
+
+      xspec_dat_y = []
+      
+      for i = 0, n_xspec - 1 do begin
+        
+        get_data, xspec_names[i], dat = xspec_dat_i
+        
+        xspec_dat_y_i = reform( $
+          transpose($
+          [[[xspec_dat_i.y[*,1:*:2]]], $
+          [[xspec_dat_i.y[*,0:*:2]]]],[0,2,1]), $
+          size(/dim,xspec_dat_i.y))          
+        
+        xspec_dat_y = [xspec_dat_y, xspec_dat_y_i]
+        
+      endfor
+      
+      n_total = n_elements(xspec_dat_y)
+      
+      xspec_dat_y = transpose(reform(reform(transpose(xspec_dat_y), n_total), $
+        n_bins, n_total/n_bins))
+
+      xspec_dat_x = []
+
+      if is_ac then begin
+
+        if n_avg LE 16 then delta_x = 2d^17 / 150d3 ;; TODO: verify this
+        if n_avg GE 32 then delta_x = 2d^17 / 150d3 * double(floor(n_avg / 16d)) ;; TODO: verify
+
+      endif else begin
+
+        delta_x = double(n_avg) * (1024d / 150d3 * 16d)
+
+      endelse
+      
+      for i = 0, n_elements(xspec_dat_i.x) - 1 do begin
+        
+        xspec_dat_x = [xspec_dat_x, xspec_dat_i.x[i] + delta_x * dindgen(n_spec)]
+        
+      endfor
+
+      data_v = transpose(rebin(freq_bins.freq_avg,$
+        n_elements(freq_bins.freq_avg),$
+        n_elements(xspec_dat_x)))
+
+      ; TODO: fix for negative numbers (no log)
+
+      store_data, prefix + 'xspec_' + xspec_type + '_converted', $
+        data = {x:xspec_dat_x, $
+        y:alog10(spp_fld_dfb_psuedo_log_decompress(xspec_dat_y, $
+        type = 'xspectra')), $
+        v:data_v}
+
+      options, prefix + 'xspec_' + xspec_type + '_converted', 'panel_size', 2
+      options, prefix + 'xspec_' + xspec_type + '_converted', 'spec', 1
+      options, prefix + 'xspec_' + xspec_type + '_converted', 'no_interp', 1
+      options, prefix + 'xspec_' + xspec_type + '_converted', 'zlog', 0
+      options, prefix + 'xspec_' + xspec_type + '_converted', 'ylog', 1
+      options, prefix + 'xspec_' + xspec_type + '_converted', 'ztitle', 'Log Auto [arb.]'
+      options, prefix + 'xspec_' + xspec_type + '_converted', 'ystyle', 1
+      options, prefix + 'xspec_' + xspec_type + '_converted', 'yrange', minmax(freq_bins.freq_avg)
+
+    endfor
+
+  end
+
   dfb_xspec_names = tnames(prefix + '*')
 
   if dfb_xspec_names[0] NE '' then begin

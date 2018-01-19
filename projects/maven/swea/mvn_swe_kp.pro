@@ -46,8 +46,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-02 18:15:20 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24101 $
+; $LastChangedDate: 2018-01-18 11:52:41 -0800 (Thu, 18 Jan 2018) $
+; $LastChangedRevision: 24539 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_kp.pro $
 ;
 ;-
@@ -126,7 +126,8 @@ pro mvn_swe_kp, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, $
 ; occur mainly in the EUV shadow and the ionosphere -- in both
 ; cases SWEA is not measuring the bulk of the distribution.
 
-  mvn_scpot, lpwpot=1, pospot=1, negpot=0, stapot=0
+  mvn_scpot, composite=0, lpwpot=1, pospot=1, negpot=0, stapot=0, /force
+  mvn_swe_addpot
 
   indx = where(swe_sc_pot.potential lt 0., count)
   if (count gt 0L) then begin

@@ -51,6 +51,7 @@
 ;     See the instrument specific crib sheets in the examples/ folder for usage examples
 ; 
 ; NOTES:
+;     The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
 ;
 ;     1) See the following regarding rules for the use of MMS data:
 ;         https://lasp.colorado.edu/galaxy/display/mms/MMS+Data+Rights+and+Rules+for+Data+Use
@@ -91,8 +92,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-04-19 11:48:17 -0700 (Wed, 19 Apr 2017) $
-;$LastChangedRevision: 23194 $
+;$LastChangedDate: 2018-01-18 09:28:13 -0800 (Thu, 18 Jan 2018) $
+;$LastChangedRevision: 24538 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 
@@ -135,6 +136,7 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
     if undefined(local_data_dir) then local_data_dir = source.local_data_dir
     ; handle shortcut characters in the user's local data directory
     spawn, 'echo ' + local_data_dir, local_data_dir
+    
     if is_array(local_data_dir) then local_data_dir = local_data_dir[0]
 
     ; varformat and get_support_data are conflicting; warn the user 
@@ -176,6 +178,8 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
     undefine, tplotnames
     ; clear CDF filenames, so we're not appending to an existing array
     undefine, cdf_filenames
+
+
 
     if keyword_set(spdf) then begin
         mms_load_data_spdf, probes = probes, datatype = datatypes, instrument = instrument, $
@@ -358,7 +362,7 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
     if ~undefined(tplotnames) then tplotnames = spd_uniq(tplotnames)
 
     if n_elements(tplotnames) eq 1 && tplotnames[0] eq '' then return ; no data loaded
-    
+
     ; time clip the data
     if ~undefined(tr) && ~undefined(tplotnames) then begin
         dt_timeclip = 0.0

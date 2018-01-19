@@ -106,7 +106,7 @@ function spp_fld_dfb_psuedo_log_decompress, compressed, type = type
   
   if neg_count GT 0 then begin
     
-    decompressed[neg_ind] = -1.d * decompressed
+    decompressed[neg_ind] *= -1.d
     
   endif
 

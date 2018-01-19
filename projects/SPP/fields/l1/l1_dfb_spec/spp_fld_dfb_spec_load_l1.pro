@@ -105,12 +105,20 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
 
         n_total = n_elements(spec_data.y)
 
+        ; The spectral data as returned by TMlib are not in order, instead 
+        ; the order goes like (fs represent increasing frequencies)
+        ; [f1, f0, f3, f2, f5, f4, ...]
+        ; This reorders the spectra:
+        
         spec_data_y = reform( $
           transpose($
           [[[spec_data.y[*,1:*:2]]], $
           [[spec_data.y[*,0:*:2]]]],[0,2,1]), $
           size(/dim,spec_data.y))
 
+        ; This takes the concatenated spectra array and makes a new array with
+        ; one spectra per column
+        
         new_data_y = transpose(reform(reform(transpose(spec_data_y), n_total), $
           n_bins, n_total/n_bins))
 
