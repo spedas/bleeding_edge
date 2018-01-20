@@ -46,13 +46,13 @@
 ;         - Requires IDL 8.3 or later due to json_parse + orderedhash usage
 ;         
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-12-22 10:10:00 -0800 (Fri, 22 Dec 2017) $
-;$LastChangedRevision: 24460 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2018-01-19 12:00:52 -0800 (Fri, 19 Jan 2018) $
+;$LastChangedRevision: 24543 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
-pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, info=info, server=server, dataset=dataset, path=path, port=port, scheme=scheme
+pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, info=info, server=server, dataset=dataset, path=path, port=port, scheme=scheme, prefix=prefix, tplotvars=tplotvars
 
   catch, error_status
   if error_status ne 0 then begin
@@ -185,9 +185,13 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     endfor
     
     ; turn the variable tables into proper tplot variables
+    tplotvars = []
     for var_idx = 0, n_elements(variables)-1 do begin
       if variables[var_idx].hasKey('name') and variables[var_idx].hasKey('epoch') and (variables[var_idx])['data'] ne !null then begin
-        store_data, strlowcase((variables[var_idx])['name']), data={x: (variables[var_idx])['epoch'], y: (variables[var_idx])['data']}
+        if undefined(prefix) then prefix=''
+        tname = prefix + strlowcase((variables[var_idx])['name'])        
+        store_data, tname, data={x: (variables[var_idx])['epoch'], y: (variables[var_idx])['data']}
+        append_array, tplotvars, tname
       endif
     endfor
   endif

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jan 18 18:16:22 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Jan 19 18:16:19 2018.<P>
  
 <HR>
  
@@ -30,11 +30,13 @@ MMS_FPI_DIST_SLICE_COMPARISON_CRIB</A>
 <LI><A HREF="#MMS_MULTI_AXIS_FIGURE">MMS_MULTI_AXIS_FIGURE</A>
 <LI><A HREF="#MMS_MVA_CRIB">MMS_MVA_CRIB</A>
 <LI><A HREF="#MMS_NEUTRAL_SHEET_CRIB">MMS_NEUTRAL_SHEET_CRIB</A>
-<LI><A HREF="#MMS_PART_PRODUCTS_CRIB">MMS_PART_PRODUCTS_CRIB</A>
+<LI><A HREF="#MMS_PART_GETSPEC_CRIB">MMS_PART_GETSPEC_CRIB</A>
 <LI><A HREF="#MMS_PLOT3D_FPI_CRIB">MMS_PLOT3D_FPI_CRIB</A>
 <LI><A HREF="#MMS_POYNTING_FLUX_CRIB">MMS_POYNTING_FLUX_CRIB</A>
 <LI><A HREF="#MMS_SLICE2D_FPI_CRIB">MMS_SLICE2D_FPI_CRIB</A>
 <LI><A HREF="#MMS_SLICE2D_HPCA_CRIB">MMS_SLICE2D_HPCA_CRIB</A>
+<LI><A HREF="#MMS_TPLOT2AUTOPLOT">MMS_TPLOT2AUTOPLOT</A>
+<br>Crib sheet showing how to send MMS data to Autoplot
 <LI><A HREF="#MMS_WAVPOL_CRIB">MMS_WAVPOL_CRIB</A>
 <br>
 </UL><P>
@@ -294,7 +296,7 @@ Notes:
 <A NAME="MMS_NEUTRAL_SHEET_CRIB">
 <H2>MMS_NEUTRAL_SHEET_CRIB</H2></A>
 <A HREF="#MMS_MVA_CRIB">[Previous Routine]</A>
-<A HREF="#MMS_PART_PRODUCTS_CRIB">[Next Routine]</A>
+<A HREF="#MMS_PART_GETSPEC_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -312,14 +314,14 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="advanced/mms_neutral_sheet_crib.pro">projects/mms/examples/advanced/mms_neutral_sheet_crib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="MMS_PART_PRODUCTS_CRIB">
-<H2>MMS_PART_PRODUCTS_CRIB</H2></A>
+<A NAME="MMS_PART_GETSPEC_CRIB">
+<H2>MMS_PART_GETSPEC_CRIB</H2></A>
 <A HREF="#MMS_NEUTRAL_SHEET_CRIB">[Previous Routine]</A>
 <A HREF="#MMS_PLOT3D_FPI_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
-  mms_part_products_crib
+  mms_part_getspec_crib
 
 
 Purpose:
@@ -327,16 +329,16 @@ Purpose:
   spectrograms and moments from level 2 MMS HPCA and FPI distributions.
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2017-05-03 15:55:00 -0700 (Wed, 03 May 2017) $
-$LastChangedRevision: 23266 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_part_products_crib.pro $
+$LastChangedDate: 2018-01-19 15:28:11 -0800 (Fri, 19 Jan 2018) $
+$LastChangedRevision: 24556 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_part_getspec_crib.pro $
 </PRE><P>
-<STRONG>(See <A href="advanced/mms_part_products_crib.pro">projects/mms/examples/advanced/mms_part_products_crib.pro</A>)</STRONG><P>
+<STRONG>(See <A href="advanced/mms_part_getspec_crib.pro">projects/mms/examples/advanced/mms_part_getspec_crib.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="MMS_PLOT3D_FPI_CRIB">
 <H2>MMS_PLOT3D_FPI_CRIB</H2></A>
-<A HREF="#MMS_PART_PRODUCTS_CRIB">[Previous Routine]</A>
+<A HREF="#MMS_PART_GETSPEC_CRIB">[Previous Routine]</A>
 <A HREF="#MMS_POYNTING_FLUX_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -428,7 +430,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_SLICE2D_HPCA_CRIB">
 <H2>MMS_SLICE2D_HPCA_CRIB</H2></A>
 <A HREF="#MMS_SLICE2D_FPI_CRIB">[Previous Routine]</A>
-<A HREF="#MMS_WAVPOL_CRIB">[Next Routine]</A>
+<A HREF="#MMS_TPLOT2AUTOPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Purpose:
@@ -461,9 +463,33 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="advanced/mms_slice2d_hpca_crib.pro">projects/mms/examples/advanced/mms_slice2d_hpca_crib.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_TPLOT2AUTOPLOT">
+<H2>MMS_TPLOT2AUTOPLOT</H2></A>
+<A HREF="#MMS_SLICE2D_HPCA_CRIB">[Previous Routine]</A>
+<A HREF="#MMS_WAVPOL_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         mms_tplot2autoplot
+
+ PURPOSE:
+         Crib sheet showing how to send MMS data to Autoplot
+
+ NOTES:
+         For this to work, you'll need to open Autoplot and enable the 'Server' feature via
+         the 'Options' menu with the default port (12345)
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2018-01-19 15:24:57 -0800 (Fri, 19 Jan 2018) $
+ $LastChangedRevision: 24554 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_tplot2autoplot.pro $
+</PRE><P>
+<STRONG>(See <A href="advanced/mms_tplot2autoplot.pro">projects/mms/examples/advanced/mms_tplot2autoplot.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_WAVPOL_CRIB">
 <H2>MMS_WAVPOL_CRIB</H2></A>
-<A HREF="#MMS_SLICE2D_HPCA_CRIB">[Previous Routine]</A>
+<A HREF="#MMS_TPLOT2AUTOPLOT">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 

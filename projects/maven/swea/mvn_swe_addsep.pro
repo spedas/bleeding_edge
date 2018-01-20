@@ -12,12 +12,12 @@
 ;
 ;KEYWORDS:
 ;
-;    PANS:          Named variable to hold a space delimited string containing
+;    PANS:          Named variable to hold an array of
 ;                   the tplot variable(s) created.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2015-11-23 11:11:45 -0800 (Mon, 23 Nov 2015) $
-; $LastChangedRevision: 19452 $
+; $LastChangedDate: 2018-01-19 14:47:21 -0800 (Fri, 19 Jan 2018) $
+; $LastChangedRevision: 24551 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_addsep.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03/18/14
@@ -86,7 +86,7 @@ pro mvn_swe_addsep, pans=pans
     sepi = 0
   endif
 
-  pans = strtrim(strcompress(sepi_pan + ' ' + sepe_pan),2)
+  pans = [sepi_pan, sepe_pan]
 
   return
   

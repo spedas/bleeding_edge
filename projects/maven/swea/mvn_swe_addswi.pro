@@ -12,35 +12,40 @@
 ;
 ;KEYWORDS:
 ;
-;    PANS:          Named variable to hold a space delimited string containing
+;    PANS:          Named variable to hold an array of
 ;                   the tplot variable(s) created.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2015-11-23 11:11:45 -0800 (Mon, 23 Nov 2015) $
-; $LastChangedRevision: 19452 $
+; $LastChangedDate: 2018-01-19 14:47:21 -0800 (Fri, 19 Jan 2018) $
+; $LastChangedRevision: 24551 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_addswi.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03/18/14
 ;-
 pro mvn_swe_addswi, pans=pans
 
-    mvn_swia_load_l2_data, /loadall, /tplot
-    mvn_swia_part_moments, type=['cs']
+  mvn_swia_load_l2_data, /loadall, /tplot
+  mvn_swia_part_moments, type=['cs']
 
-    swi_pan = 'mvn_swics_density'
-    get_data,swi_pan,index=i
-    if (i eq 0) then swi_pan = '' else options,swi_pan,'ynozero',1
+  pans = ['']
 
-    get_data,'mvn_swics_velocity',data=swi_v,index=i
-    if (i gt 0) then begin
-      vsw = sqrt(total(swi_v.y^2.,2))
-      swi_pan2 = 'mvn_swi_vsw'
-      store_data,swi_pan2,data={x:swi_v.x, y:vsw}
-      options,swi_pan2,'ytitle','SWIA Vsw!c(km/s)'
-      swi_pan = swi_pan + ' ' + swi_pan2
-    endif
+  swi_pan = 'mvn_swics_density'
+  get_data,swi_pan,index=i
+  if (i gt 0) then begin
+    options,swi_pan,'ynozero',1
+    pans = [pans, swi_pan]
+  endif
 
-    pans = strtrim(strcompress(swi_pan),2)
+  get_data,'mvn_swics_velocity',data=swi_v,index=i
+  if (i gt 0) then begin
+    vsw = sqrt(total(swi_v.y^2.,2))
+    swi_pan = 'mvn_swi_vsw'
+    store_data,swi_pan,data={x:swi_v.x, y:vsw}
+    options,swi_pan,'ytitle','SWIA Vsw!c(km/s)'
+    pans = [pans, swi_pan]
+  endif
+
+  if (n_elements(pans) gt 1) then pans = pans[1:*]
 
   return
   

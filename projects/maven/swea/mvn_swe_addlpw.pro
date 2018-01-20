@@ -18,8 +18,8 @@
 ;                   altitude LPW densities suggested by Chris Fowler.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-09-06 18:04:42 -0700 (Wed, 06 Sep 2017) $
-; $LastChangedRevision: 23899 $
+; $LastChangedDate: 2018-01-19 14:47:21 -0800 (Fri, 19 Jan 2018) $
+; $LastChangedRevision: 24551 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_addlpw.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03/18/14
@@ -28,11 +28,10 @@ pro mvn_swe_addlpw, pans=pans, mincur=mincur
 
   if not keyword_set(mincur) then mincur = 1.e-7
 
-  pans = ['']
   mvn_lpw_load_l2, ['lpiv','lpnt'], tplotvars=lpw_pan, /notplot
   
-  for i=0,(n_elements(lpw_pan)-1) do if (lpw_pan[i] ne '') then pans = [pans, lpw_pan[i]]
-  if (n_elements(pans) gt 1) then pans = pans[1:*]
+  indx = where(lpw_pan ne '', count)
+  if (count gt 0) then pans = lpw_pan[indx] else pans = ''
 
   get_data,'mvn_lpw_lp_iv_l2',data=iv,index=i
   if (i gt 0) then imax = max(iv.y, dim=2, /nan)

@@ -20,12 +20,12 @@
 ;
 ;    POTENTIAL:     Estimate the spacecraft potential from STATIC data.
 ;
-;    PANS:          Named variable to hold a space delimited string containing
-;                   the tplot variable(s) created.
+;    PANS:          Named variable to hold an array of the tplot
+;                   variable(s) created.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-07-06 15:11:43 -0700 (Thu, 06 Jul 2017) $
-; $LastChangedRevision: 23561 $
+; $LastChangedDate: 2018-01-19 14:47:21 -0800 (Fri, 19 Jan 2018) $
+; $LastChangedRevision: 24551 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_addsta.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03/18/14
@@ -43,18 +43,18 @@ pro mvn_swe_addsta, apid=apid, potential=potential, pans=pans
   mvn_sta_l2_load, sta_apid=sta_apid
   mvn_sta_l2_tplot,/replace
   
-  pans = ''
+  pans = ['']
   
   get_data, 'mvn_sta_c0_E', index=i
   if (i gt 0) then begin
-    pans = pans + ' ' + 'mvn_sta_c0_E'
+    pans = [pans, 'mvn_sta_c0_E']
     ylim,'mvn_sta_c0_E',4e-1,4e4
     options,'mvn_sta_c0_E','ytitle','sta c6!CEnergy!CeV'
   endif
 
   get_data, 'mvn_sta_c6_M', index=i
   if (i gt 0) then begin
-    pans = pans + ' ' + 'mvn_sta_c6_M'
+    pans = [pans, 'mvn_sta_c6_M']
     options,'mvn_sta_c6_M','ytitle','sta c6!CMass!Camu'
   endif
 
@@ -63,7 +63,7 @@ pro mvn_swe_addsta, apid=apid, potential=potential, pans=pans
     if (i eq 0) then mvn_sta_l2scpot
   endif
 
-  pans = strtrim(strcompress(pans),2)
+  if (n_elements(pans) gt 1) then pans = pans[1:*]
 
   return
   

@@ -22,26 +22,26 @@
 ;
 ;KEYWORDS:
 ;
-;    PANS:          Named variable to hold a space delimited string containing
-;                   the tplot variable(s) created.
+;    PANS:          Named variable to hold an array of the tplot
+;                   variable(s) created.
 ;
 ;    NOFLAG:        If set, do not flag bad data.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2016-11-03 11:49:48 -0700 (Thu, 03 Nov 2016) $
-; $LastChangedRevision: 22270 $
+; $LastChangedDate: 2018-01-19 14:47:21 -0800 (Fri, 19 Jan 2018) $
+; $LastChangedRevision: 24551 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_addeuv.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03/18/14
 ;-
 pro mvn_swe_addeuv, pans=pans
 
-  pans = ''
+  pans = ['']
   mvn_lpw_load_l2, ['euv'], tplotvars=euv_pan, /notplot
   
-  if (euv_pan[0] ne '') then begin
-    for i=0,(n_elements(euv_pan)-1) do pans += euv_pan[i] + ' '
-    pans = strtrim(strcompress(pans),2)
+  indx = where(euv_pan ne '', npans)
+  if (npans gt 0) then begin
+    pans = [pans, euv_pan[indx]]
 
 ; Fix plotting options and change units (W/m2 --> mW/m2)
 
@@ -89,6 +89,8 @@ pro mvn_swe_addeuv, pans=pans
     endif
 
   endif
+
+  if (n_elements(pans) gt 1) then pans = pans[1:*]
   
   return
   

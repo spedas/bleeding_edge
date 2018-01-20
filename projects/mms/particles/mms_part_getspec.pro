@@ -29,8 +29,8 @@
 ;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-10-18 11:31:26 -0700 (Wed, 18 Oct 2017) $
-;$LastChangedRevision: 24180 $
+;$LastChangedDate: 2018-01-19 14:12:41 -0800 (Fri, 19 Jan 2018) $
+;$LastChangedRevision: 24549 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -139,10 +139,10 @@ pro mms_part_getspec, probes=probes, $
             datatype='d'+species+'s-moms'
     endif else if instrument eq 'hpca' then begin
         mms_load_hpca, probes=probes, trange=trange, data_rate=data_rate, level=level, $
-            datatype='ion', /time_clip, center_measurement=center_measurement, $
+            datatype='ion', center_measurement=center_measurement,  $
             cdf_version=cdf_version, latest_version=latest_version, major_version=major_version, $
             min_version=min_version
-            
+        
         ; load the bulk velocity if the user requested to subtract it
         if keyword_set(subtract_bulk) then mms_load_hpca, probes=probes, trange=trange, $
             data_rate=data_rate, level=level, datatype='moments'
@@ -159,12 +159,12 @@ pro mms_part_getspec, probes=probes, $
             vel_name = 'mms'+probes[probe_idx]+'_hpca_'+species+'_ion_bulk_velocity'
         endif
 
-        mms_part_products, name, trange=trange, units=units_lc, $
+        mms_part_products_new, name, trange=trange, units=units_lc, $
             mag_name=bname, pos_name=pos_name, vel_name=vel_name, energy=energy, $
             pitch=pitch, gyro=gyro_in, phi=phi_in, theta=theta, regrid=regrid, $
             outputs=outputs, suffix=suffix, datagap=datagap, subtract_bulk=subtract_bulk, $
             tplotnames=tplotnames_thisprobe, _extra=ex
-        
+            
         if undefined(tplotnames_thisprobe) then continue ; nothing created by mms_part_products
         append_array, tplotnames, tplotnames_thisprobe
         

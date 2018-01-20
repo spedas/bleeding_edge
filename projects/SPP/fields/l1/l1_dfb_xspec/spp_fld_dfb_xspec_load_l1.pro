@@ -73,7 +73,7 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
 
     xspec_types = ['p1', 'p2', 'rc', 'ic']
 
-    if strpos(prefix, 'ac_spec') NE -1 then is_ac = 1 else is_ac = 0
+    if strpos(prefix, 'ac_xspec') NE -1 then is_ac = 1 else is_ac = 0
 
     n_spec = concat_data.y[0] + 1
     n_bins = bin_data.y[0] ? 96 : 56
@@ -92,25 +92,27 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
       xspec_names = tnames(prefix + 'xspec_' + xspec_type + '_s?', n_xspec)
 
       xspec_dat_y = []
-      
+
       for i = 0, n_xspec - 1 do begin
-        
+
         get_data, xspec_names[i], dat = xspec_dat_i
-        
+
         xspec_dat_y_i = reform( $
           transpose($
           [[[xspec_dat_i.y[*,1:*:2]]], $
           [[xspec_dat_i.y[*,0:*:2]]]],[0,2,1]), $
-          size(/dim,xspec_dat_i.y))          
-        
-        xspec_dat_y = [xspec_dat_y, xspec_dat_y_i]
-        
+          size(/dim,xspec_dat_i.y))
+
+        xspec_dat_y = [[[xspec_dat_y]], [[xspec_dat_y_i]]]
+
       endfor
-      
+
       n_total = n_elements(xspec_dat_y)
-      
-      xspec_dat_y = transpose(reform(reform(transpose(xspec_dat_y), n_total), $
-        n_bins, n_total/n_bins))
+
+      ;      xspec_dat_y = transpose(reform(reform(transpose(xspec_dat_y), n_total), $
+      ;        n_bins, n_total/n_bins))
+
+      xspec_dat_y = transpose(reform(transpose(xspec_dat_y,[1,2,0]), n_bins, n_total/n_bins))
 
       xspec_dat_x = []
 
@@ -124,11 +126,11 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
         delta_x = double(n_avg) * (1024d / 150d3 * 16d)
 
       endelse
-      
+
       for i = 0, n_elements(xspec_dat_i.x) - 1 do begin
-        
+
         xspec_dat_x = [xspec_dat_x, xspec_dat_i.x[i] + delta_x * dindgen(n_spec)]
-        
+
       endfor
 
       data_v = transpose(rebin(freq_bins.freq_avg,$
@@ -137,24 +139,85 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
 
       ; TODO: fix for negative numbers (no log)
 
-      store_data, prefix + 'xspec_' + xspec_type + '_converted', $
-        data = {x:xspec_dat_x, $
-        y:alog10(spp_fld_dfb_psuedo_log_decompress(xspec_dat_y, $
-        type = 'xspectra')), $
-        v:data_v}
+      if xspec_type EQ 'p1' or xspec_type EQ 'p2' then begin
+
+        store_data, prefix + 'xspec_' + xspec_type + '_converted', $
+          data = {x:xspec_dat_x, $
+          y:(spp_fld_dfb_psuedo_log_decompress(xspec_dat_y, $
+          type = 'spectra')), $
+          v:data_v}
+
+        options, prefix + 'xspec_' + xspec_type + '_converted', 'ztitle', 'Log Auto [arb.]'
+
+      endif else begin
+
+        store_data, prefix + 'xspec_' + xspec_type + '_converted', $
+          data = {x:xspec_dat_x, $
+          y:(spp_fld_dfb_psuedo_log_decompress(xspec_dat_y, $
+          type = 'xspectra')), $
+          v:data_v}
+
+      endelse
 
       options, prefix + 'xspec_' + xspec_type + '_converted', 'panel_size', 2
       options, prefix + 'xspec_' + xspec_type + '_converted', 'spec', 1
       options, prefix + 'xspec_' + xspec_type + '_converted', 'no_interp', 1
       options, prefix + 'xspec_' + xspec_type + '_converted', 'zlog', 0
       options, prefix + 'xspec_' + xspec_type + '_converted', 'ylog', 1
-      options, prefix + 'xspec_' + xspec_type + '_converted', 'ztitle', 'Log Auto [arb.]'
       options, prefix + 'xspec_' + xspec_type + '_converted', 'ystyle', 1
       options, prefix + 'xspec_' + xspec_type + '_converted', 'yrange', minmax(freq_bins.freq_avg)
 
     endfor
 
   end
+
+  get_data, prefix + 'xspec_p1_converted', dat = p1_dat
+  get_data, prefix + 'xspec_p2_converted', dat = p2_dat
+  get_data, prefix + 'xspec_rc_converted', dat = rc_dat
+  get_data, prefix + 'xspec_ic_converted', dat = ic_dat
+
+  if size(/type, p1_dat) EQ 8 OR $
+    size(/type, p2_dat) EQ 8 OR $
+    size(/type, rc_dat) EQ 8 OR $
+    size(/type, ic_dat) EQ 8 then begin
+
+    coh = (rc_dat.y^2 + ic_dat.y^2) / (p1_dat.y * p2_dat.y)
+
+    ;    plot, p1_dat.y, /ylog, yrange = [1.e4, 1.e24]
+    ;    oplot, p2_dat.y, col=6
+    ;    oplot, (rc_dat.y^2 + ic_dat.y^2), col = 2
+    ;    oplot, p2_dat.y * p1_dat.y, col=3
+
+    phase  = atan(Ic_dat.y / Rc_dat.y) * 180d / !PI
+    phase[where( finite(coh) EQ 0 )] = !VALUES.F_NAN
+    phase[where( coh LT 0.05 )] = !VALUES.F_NAN
+
+;    stop
+
+    store_data, prefix + 'coherence', data = {x:p1_dat.x, $
+      y:coh, v:data_v}
+      
+    options, prefix + 'coherence', 'panel_size', 2
+    options, prefix + 'coherence', 'spec', 1
+    options, prefix + 'coherence', 'no_interp', 1
+    options, prefix + 'coherence', 'zlog', 1
+    options, prefix + 'coherence', 'ylog', 1
+    options, prefix + 'coherence', 'ystyle', 1
+    options, prefix + 'coherence', 'yrange', minmax(freq_bins.freq_avg)
+
+    store_data, prefix + 'phase', data = {x:p1_dat.x, $
+      y:phase, v:data_v}
+
+    options, prefix + 'phase', 'panel_size', 2
+    options, prefix + 'phase', 'spec', 1
+    options, prefix + 'phase', 'no_interp', 1
+    options, prefix + 'phase', 'ylog', 1
+    options, prefix + 'phase', 'ystyle', 1
+    options, prefix + 'phase', 'yrange', minmax(freq_bins.freq_avg)
+
+
+  endif
+
 
   dfb_xspec_names = tnames(prefix + '*')
 

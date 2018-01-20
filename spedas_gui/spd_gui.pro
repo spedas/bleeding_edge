@@ -24,8 +24,8 @@
 ;HISTORY:
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-10-03 14:12:59 -0700 (Tue, 03 Oct 2017) $
-;$LastChangedRevision: 24103 $
+;$LastChangedDate: 2018-01-19 12:03:41 -0800 (Fri, 19 Jan 2018) $
+;$LastChangedRevision: 24546 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/spd_gui.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -285,6 +285,10 @@ PRO spd_gui_event, event
        info.drawObject->Update,info.windowStorage,info.loadedData 
        info.drawObject->Draw
        info.scrollbar->update
+    END
+     
+    'LOADHAPI': BEGIN
+      spd_ui_load_hapi, info.master, info.historyWin, info.statusBar, timeRangeObj=timeRangeObj
     END
   
     'LOADCDAWEB': BEGIN
@@ -1445,6 +1449,7 @@ PRO spd_gui,reset=reset,template_filename=template_filename
   ;resetVariableTemplate = Widget_Button(templateMenu, Value='Reset Variable Template', UValue='RESET_VARIABLE_TEMPLATE')
     
   loadMenu = Widget_Button(fileMenu, Value='Load Data ', UValue='LOAD', /Separator)
+  loadHAPIMenu = Widget_Button(fileMenu, Value='Load Data using HAPI', UValue='LOADHAPI')
   loadCDAWebMenu = Widget_Button(fileMenu, Value='Load Data using CDAWeb', UValue='LOADCDAWEB')
   loadCDFMenu = Widget_Button(fileMenu, Value='Load CDF', UValue='LOADCDF')
 

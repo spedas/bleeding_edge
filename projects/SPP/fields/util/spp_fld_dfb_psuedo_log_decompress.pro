@@ -100,7 +100,7 @@ function spp_fld_dfb_psuedo_log_decompress, compressed, type = type
 
     decompressed[exp_nonzero_ind] = $
       (mantissa[exp_nonzero_ind] + man_mod) * $
-      2.^(exponent[exp_nonzero_ind] - 1ll)
+      2d^(exponent[exp_nonzero_ind] - 1ll)
 
   endif
   

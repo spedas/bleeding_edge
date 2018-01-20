@@ -71,8 +71,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-11-30 21:21:50 -0800 (Thu, 30 Nov 2017) $
-; $LastChangedRevision: 24374 $
+; $LastChangedDate: 2018-01-19 14:53:18 -0800 (Fri, 19 Jan 2018) $
+; $LastChangedRevision: 24553 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sciplot.pro $
 ;
 ;-
@@ -85,7 +85,7 @@ pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lp
 
   @mvn_swe_com
   @maven_orbit_common
-  
+
   if not keyword_set(APID) then apid = 0
   
   if (size(min_pad_eflux,/type) eq 0) then min_pad_eflux = 6.e4
@@ -175,13 +175,12 @@ pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lp
   mvn_mag_geom
   mvn_mag_tplot, /model
   
-  mag_pan = 'mvn_mag_bamp mvn_mag_bang'
+  mag_pan = ['mvn_mag_bamp','mvn_mag_bang']
 
 ; Shape Parameter
 
   shape_pan = ''
   if keyword_set(shape) then begin
-    ;mvn_swe_shape_par_pad_restore
      mvn_swe_shape_restore,/tplot
      get_data,'Shape_PAD',index=i
     if (i eq 0) then begin
@@ -249,14 +248,16 @@ pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lp
 
 ; Assemble the panels and plot
 
-  pans = ram_pan + ' ' + ndr_pan + ' ' + sun_pan + ' ' + alt_pan + ' ' + $
-         euv_pan + ' ' + swi_pan + ' ' + sta_pan + ' ' + mag_pan + ' ' + $
-         sep_pan + ' ' + lpw_pan + ' ' + pad_pan + ' ' + pot_pan + ' ' + $
-         bst_pan + ' ' + shape_pan + ' ' + engy_pan
+  pans = [ram_pan, ndr_pan, sun_pan, alt_pan, $
+          euv_pan, swi_pan, sta_pan, mag_pan, $
+          sep_pan, lpw_pan, pad_pan, pot_pan, $
+          bst_pan, shape_pan, engy_pan]
 
-  pans = str_sep(pans,' ')
-  
-  if not keyword_set(loadonly) then tplot, pans
+  indx = where(pans ne '', npans)
+  if (npans gt 0) then begin
+    pans = pans[indx]
+    if (not keyword_set(loadonly)) then tplot, pans
+  endif else pans = ''
 
   return
 

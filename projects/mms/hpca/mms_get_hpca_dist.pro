@@ -35,8 +35,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-01-16 09:14:28 -0800 (Tue, 16 Jan 2018) $
-;$LastChangedRevision: 24520 $
+;$LastChangedDate: 2018-01-19 14:12:41 -0800 (Fri, 19 Jan 2018) $
+;$LastChangedRevision: 24549 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_get_hpca_dist.pro $
 ;-
 
@@ -115,6 +115,14 @@ endif
 ; check if the time series is monotonic
 ; to avoid doing incorrect calculations when there's a problem with the CDF files
 time_data = *azimuth.x
+
+if tag_exist(dl, 'centered_on_load') && dl.centered_on_load eq 1b then begin
+    ; angle data should not be centered on load, despite what's in the metadata, so we need to 
+    ; correct the offset here
+    offset = (time_data[1]-time_data[0])/2.0
+    time_data = time_data-offset
+endif
+
 wherenonmono = where(time_data[1:*] le time_data, countnonmono)
 if countnonmono ne 0 then begin
   dprint, dlevel = 0, 'Error, non-monotonic data found in the HPCA Epoch_Angles time series data'
@@ -125,7 +133,7 @@ endif
 ;this is used to determine the number of 3D distributions that will be created
 ;and where their corresponding data is located in the particle data structure
 n_times = n_elements((*azimuth.y)[0,0,*])  ;# data samples for each azimuth array 
-data_idx = value_locate(*p.x, *azimuth.x)  ;data index corresponding to each azimuth array
+data_idx = value_locate(*p.x, time_data)  ;data index corresponding to each azimuth array
 full = where( (data_idx[1:*] - data_idx[0:n_elements(data_idx)-2]) eq n_times, n_full)
 if n_full eq 0 then begin
   dprint, dlevel=0, 'Azimuth data does not cover current data''s time range'
@@ -153,18 +161,18 @@ endif
 ;   -These times are not center of distribution but center of first energy sweep
 ;------------------------------------------------------------------
 if keyword_set(times) then begin
-  return, (*azimuth.x)[full]
+  return, (time_data)[full]
 endif
 
 ; Allow calling code to request a time range or specify index to specific sample.
 ;-----------------------------------------------------------------
 if ~undefined(single_time) then begin
-  nearest_time = find_nearest_neighbor(*azimuth.x, time_double(single_time))
+  nearest_time = find_nearest_neighbor(time_data, time_double(single_time))
   if nearest_time eq -1 then begin
     dprint, 'Cannot find requested time in the data set: ' + time_string(single_time)
     return, 0
   endif
-  nearest_index = where(*azimuth.x eq nearest_time, n_full)
+  nearest_index = where(time_data eq nearest_time, n_full)
   full = full[nearest_index]
 endif else begin
   if ~undefined(index) then begin
@@ -172,7 +180,7 @@ endif else begin
     n_full = n_elements(full)
   endif else if ~undefined(trange) then begin
     tr = minmax(time_double(trange))
-    index = where( (*azimuth.x)[full] ge tr[0] and (*azimuth.x)[full] lt tr[1], n_full)
+    index = where( (time_data)[full] ge tr[0] and (time_data)[full] lt tr[1], n_full)
     if n_full eq 0 then begin
       dprint, 'No data in time range: '+strjoin(time_string(tr),' ')
       return, 0
@@ -274,9 +282,9 @@ dist = replicate(template, n_full)
 ;  -this assumes that the times from the particle (and angle) data 
 ;   are at the center of the corresponding energy sweep
 ;  -also assumes that there are no gaps in the data
-dt = (*azimuth.x)[1:*] - (*azimuth.x)[0:*]  ;delta-time for each 1/2 spin
+dt = (time_data)[1:*] - (time_data)[0:*]  ;delta-time for each 1/2 spin
 dt_sweep = (*p.x)[1:*] - (*p.x)[0:*]        ;delta-time for each full energy sweep
-dist.time = (*azimuth.x)[full] - dt_sweep[data_idx]
+dist.time = (time_data)[full] - dt_sweep[data_idx]
 dist.end_time = dist.time + dt[full]  ;index won't exceed elements due to selection criteria
 
 ;get azimuth 
