@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jan 19 18:16:19 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Jan 22 18:19:34 2018.<P>
  
 <HR>
  
@@ -19,7 +19,6 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/mms/examples/advanced</H1>
-<LI><A HREF="#CRIB_TPLOT2CDF2">CRIB_TPLOT2CDF2</A>
 <LI><A HREF="#MMS_BASIC_DAYSIDE">MMS_BASIC_DAYSIDE</A>
 <LI><A HREF="#MMS_BASIC_TAIL">MMS_BASIC_TAIL</A>
 <LI><A HREF="#MMS_FLIPBOOK_CRIB">MMS_FLIPBOOK_CRIB</A>
@@ -27,7 +26,7 @@ This page was created by the IDL library routine
 MMS_FPI_DIST_SLICE_COMPARISON_CRIB</A>
 <LI><A HREF="#MMS_ISEE_3D_CRIB_BASIC">MMS_ISEE_3D_CRIB_BASIC</A>
 <LI><A HREF="#MMS_LOAD_FPI_SUMMARY_CRIB">MMS_LOAD_FPI_SUMMARY_CRIB</A>
-<LI><A HREF="#MMS_MULTI_AXIS_FIGURE">MMS_MULTI_AXIS_FIGURE</A>
+<LI><A HREF="#MMS_MULTIAXIS_CRIB">MMS_MULTIAXIS_CRIB</A>
 <LI><A HREF="#MMS_MVA_CRIB">MMS_MVA_CRIB</A>
 <LI><A HREF="#MMS_NEUTRAL_SHEET_CRIB">MMS_NEUTRAL_SHEET_CRIB</A>
 <LI><A HREF="#MMS_PART_GETSPEC_CRIB">MMS_PART_GETSPEC_CRIB</A>
@@ -35,37 +34,17 @@ MMS_FPI_DIST_SLICE_COMPARISON_CRIB</A>
 <LI><A HREF="#MMS_POYNTING_FLUX_CRIB">MMS_POYNTING_FLUX_CRIB</A>
 <LI><A HREF="#MMS_SLICE2D_FPI_CRIB">MMS_SLICE2D_FPI_CRIB</A>
 <LI><A HREF="#MMS_SLICE2D_HPCA_CRIB">MMS_SLICE2D_HPCA_CRIB</A>
-<LI><A HREF="#MMS_TPLOT2AUTOPLOT">MMS_TPLOT2AUTOPLOT</A>
+<LI><A HREF="#MMS_TPLOT2AUTOPLOT_CRIB">MMS_TPLOT2AUTOPLOT_CRIB</A>
 <br>Crib sheet showing how to send MMS data to Autoplot
+<LI><A HREF="#MMS_TPLOT2CDF2_CRIB">MMS_TPLOT2CDF2_CRIB</A>
 <LI><A HREF="#MMS_WAVPOL_CRIB">MMS_WAVPOL_CRIB</A>
 <br>
 </UL><P>
 <HR>
  
 <H1>Routine Descriptions</H1>
-<A NAME="CRIB_TPLOT2CDF2">
-<H2>CRIB_TPLOT2CDF2</H2></A>
-<A HREF="#MMS_BASIC_DAYSIDE">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-
- Warning: this file is under development!
-
- Example of tplot2cdf2 
- It is originally designed for testing purpuses
- This examples loads and processes data from THEMIS and MMS mission. It saves the results into the cdf file using tplot variables.
-
- $LastChangedBy: adrozdov $
- $LastChangedDate: 2018-01-16 16:37:57 -0800 (Tue, 16 Jan 2018) $
- $LastChangedRevision: 24529 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/crib_tplot2cdf2.pro $
-</PRE><P>
-<STRONG>(See <A href="advanced/crib_tplot2cdf2.pro">projects/mms/examples/advanced/crib_tplot2cdf2.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="MMS_BASIC_DAYSIDE">
 <H2>MMS_BASIC_DAYSIDE</H2></A>
-<A HREF="#CRIB_TPLOT2CDF2">[Previous Routine]</A>
 <A HREF="#MMS_BASIC_TAIL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -207,7 +186,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_LOAD_FPI_SUMMARY_CRIB">
 <H2>MMS_LOAD_FPI_SUMMARY_CRIB</H2></A>
 <A HREF="#MMS_ISEE_3D_CRIB_BASIC">[Previous Routine]</A>
-<A HREF="#MMS_MULTI_AXIS_FIGURE">[Next Routine]</A>
+<A HREF="#MMS_MULTIAXIS_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  MMS FPI summary crib sheet
@@ -246,8 +225,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="advanced/mms_load_fpi_summary_crib.pro">projects/mms/examples/advanced/mms_load_fpi_summary_crib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="MMS_MULTI_AXIS_FIGURE">
-<H2>MMS_MULTI_AXIS_FIGURE</H2></A>
+<A NAME="MMS_MULTIAXIS_CRIB">
+<H2>MMS_MULTIAXIS_CRIB</H2></A>
 <A HREF="#MMS_LOAD_FPI_SUMMARY_CRIB">[Previous Routine]</A>
 <A HREF="#MMS_MVA_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
@@ -262,16 +241,16 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
    please send them to egrimes@igpp.ucla.edu
 
  $LastChangedBy: egrimes $
- $LastChangedDate: 2017-03-27 13:01:47 -0700 (Mon, 27 Mar 2017) $
- $LastChangedRevision: 23048 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_multi_axis_figure.pro $
+ $LastChangedDate: 2018-01-22 13:00:58 -0800 (Mon, 22 Jan 2018) $
+ $LastChangedRevision: 24564 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_multiaxis_crib.pro $
 </PRE><P>
-<STRONG>(See <A href="advanced/mms_multi_axis_figure.pro">projects/mms/examples/advanced/mms_multi_axis_figure.pro</A>)</STRONG><P>
+<STRONG>(See <A href="advanced/mms_multiaxis_crib.pro">projects/mms/examples/advanced/mms_multiaxis_crib.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="MMS_MVA_CRIB">
 <H2>MMS_MVA_CRIB</H2></A>
-<A HREF="#MMS_MULTI_AXIS_FIGURE">[Previous Routine]</A>
+<A HREF="#MMS_MULTIAXIS_CRIB">[Previous Routine]</A>
 <A HREF="#MMS_NEUTRAL_SHEET_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -430,7 +409,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_SLICE2D_HPCA_CRIB">
 <H2>MMS_SLICE2D_HPCA_CRIB</H2></A>
 <A HREF="#MMS_SLICE2D_FPI_CRIB">[Previous Routine]</A>
-<A HREF="#MMS_TPLOT2AUTOPLOT">[Next Routine]</A>
+<A HREF="#MMS_TPLOT2AUTOPLOT_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Purpose:
@@ -463,14 +442,14 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="advanced/mms_slice2d_hpca_crib.pro">projects/mms/examples/advanced/mms_slice2d_hpca_crib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="MMS_TPLOT2AUTOPLOT">
-<H2>MMS_TPLOT2AUTOPLOT</H2></A>
+<A NAME="MMS_TPLOT2AUTOPLOT_CRIB">
+<H2>MMS_TPLOT2AUTOPLOT_CRIB</H2></A>
 <A HREF="#MMS_SLICE2D_HPCA_CRIB">[Previous Routine]</A>
-<A HREF="#MMS_WAVPOL_CRIB">[Next Routine]</A>
+<A HREF="#MMS_TPLOT2CDF2_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
-         mms_tplot2autoplot
+         mms_tplot2autoplot_crib
 
  PURPOSE:
          Crib sheet showing how to send MMS data to Autoplot
@@ -480,16 +459,37 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          the 'Options' menu with the default port (12345)
 
  $LastChangedBy: egrimes $
- $LastChangedDate: 2018-01-19 15:24:57 -0800 (Fri, 19 Jan 2018) $
- $LastChangedRevision: 24554 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_tplot2autoplot.pro $
+ $LastChangedDate: 2018-01-22 12:57:57 -0800 (Mon, 22 Jan 2018) $
+ $LastChangedRevision: 24563 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_tplot2autoplot_crib.pro $
 </PRE><P>
-<STRONG>(See <A href="advanced/mms_tplot2autoplot.pro">projects/mms/examples/advanced/mms_tplot2autoplot.pro</A>)</STRONG><P>
+<STRONG>(See <A href="advanced/mms_tplot2autoplot_crib.pro">projects/mms/examples/advanced/mms_tplot2autoplot_crib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MMS_TPLOT2CDF2_CRIB">
+<H2>MMS_TPLOT2CDF2_CRIB</H2></A>
+<A HREF="#MMS_TPLOT2AUTOPLOT_CRIB">[Previous Routine]</A>
+<A HREF="#MMS_WAVPOL_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ Warning: this file is under development!
+
+ Example of tplot2cdf2 
+ It is originally designed for testing purpuses
+ This examples loads and processes data from THEMIS and MMS mission. It saves the results into the cdf file using tplot variables.
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2018-01-22 08:56:35 -0800 (Mon, 22 Jan 2018) $
+ $LastChangedRevision: 24558 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_tplot2cdf2_crib.pro $
+</PRE><P>
+<STRONG>(See <A href="advanced/mms_tplot2cdf2_crib.pro">projects/mms/examples/advanced/mms_tplot2cdf2_crib.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="MMS_WAVPOL_CRIB">
 <H2>MMS_WAVPOL_CRIB</H2></A>
-<A HREF="#MMS_TPLOT2AUTOPLOT">[Previous Routine]</A>
+<A HREF="#MMS_TPLOT2CDF2_CRIB">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 

@@ -2,17 +2,17 @@
 <html>
  
 <head>
-<TITLE>SPEDAS SW Help for spdsw_r24557_2018-01-19</TITLE>
+<TITLE>SPEDAS SW Help for spdsw_r24567_2018-01-22</TITLE>
 </head>
  
 <body>
-<H2>SPEDAS SW Help for spdsw_r24557_2018-01-19</H2>
+<H2>SPEDAS SW Help for spdsw_r24567_2018-01-22</H2>
 <P>
 This page was created by the IDL library routine 
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jan 19 18:16:19 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Jan 22 18:19:33 2018.<P>
  
 <HR>
  
@@ -368,6 +368,8 @@ projects/mms/common/quicklook</A>
 projects/mms/common/tests</A>
 <LI><A HREF="projects/mms/common/util_spd_doc_list.html">
 projects/mms/common/util</A>
+<LI><A HREF="projects/mms/common/validation_spd_doc_list.html">
+projects/mms/common/validation</A>
 <LI><A HREF="projects/mms/dsp_spd_doc_list.html">projects/mms/dsp</A>
 <LI><A HREF="projects/mms/edi_spd_doc_list.html">projects/mms/edi</A>
 <LI><A HREF="projects/mms/edp_spd_doc_list.html">projects/mms/edp</A>
@@ -959,8 +961,6 @@ CRIB_CALCULATE_LSHELL">CRIB_CALCULATE_LSHELL</A>
 <LI><A HREF="general/spedas_tools/tplot2ap_spd_doc_list.html#CRIB_TPLOT2AP">
 CRIB_TPLOT2AP</A>
 <br>Crib sheet showing how to send data to Autoplot
-<LI><A HREF="projects/mms/examples/advanced_spd_doc_list.html#CRIB_TPLOT2CDF2">
-CRIB_TPLOT2CDF2</A>
 <LI><A HREF="general/examples_spd_doc_list.html#CRIB_TPLOTXY">CRIB_TPLOTXY</A>
 <LI><A HREF="general/examples_spd_doc_list.html#CRIB_TPLOT_ANNOTATION">
 CRIB_TPLOT_ANNOTATION</A>
@@ -2731,6 +2731,8 @@ MMS_BURST_MDQ</A>
 MMS_BURST_SEGMENT</A>
 <LI><A HREF="projects/mms/sitl/interface_spd_doc_list.html#MMS_BURST_SORT_CONVOL
 ">MMS_BURST_SORT_CONVOL</A>
+<LI><A HREF="projects/mms/examples/basic_spd_doc_list.html#MMS_BURST_STATUS_CRIB
+">MMS_BURST_STATUS_CRIB</A>
 <LI><A HREF="projects/mms/common/cdf_spd_doc_list.html#MMS_CDF2TPLOT">
 MMS_CDF2TPLOT</A>
 <LI><A HREF="projects/mms/common/tests_spd_doc_list.html#
@@ -3178,8 +3180,8 @@ MMS_MEC_FIX_METADATA</A>
 <LI><A HREF="projects/mms/mec_spd_doc_list.html#MMS_MEC_FORMATION_PLOT">
 MMS_MEC_FORMATION_PLOT</A>
 <br>Creates a plot showing the spacecraft formation
-<LI><A HREF="projects/mms/examples/advanced_spd_doc_list.html#
-MMS_MULTI_AXIS_FIGURE">MMS_MULTI_AXIS_FIGURE</A>
+<LI><A HREF="projects/mms/examples/advanced_spd_doc_list.html#MMS_MULTIAXIS_CRIB
+">MMS_MULTIAXIS_CRIB</A>
 <LI><A HREF="projects/mms/examples/advanced_spd_doc_list.html#MMS_MVA_CRIB">
 MMS_MVA_CRIB</A>
 <LI><A HREF="projects/mms/examples/advanced_spd_doc_list.html#
@@ -3367,6 +3369,9 @@ MMS_SITL_READ_FEEPS_SECTOR_MASKS_CSV">MMS_SITL_READ_FEEPS_SECTOR_MASKS_CSV</A>
 MMS_SLICE2D_FPI_CRIB">MMS_SLICE2D_FPI_CRIB</A>
 <LI><A HREF="projects/mms/examples/advanced_spd_doc_list.html#
 MMS_SLICE2D_HPCA_CRIB">MMS_SLICE2D_HPCA_CRIB</A>
+<LI><A HREF="projects/mms/common/validation_spd_doc_list.html#
+MMS_SPD_SLICE2D_VALIDATION">MMS_SPD_SLICE2D_VALIDATION</A>
+<br>Creates plots for comparing FPI and HPCA slices
 <LI><A HREF="projects/mms/fgm_spd_doc_list.html#MMS_SPLIT_FGM_DATA">
 MMS_SPLIT_FGM_DATA</A>
 <br>Helper routine for splitting 4-vector FGM data (Bx, By, Bz, b_total)
@@ -3377,9 +3382,11 @@ MMS_SPLIT_FGM_EPH_DATA</A>
 MMS_STATE_LOAD_CLTESTSUITE">MMS_STATE_LOAD_CLTESTSUITE</A>
 <LI><A HREF="projects/mms/sitl/eva/source/utility_spd_doc_list.html#MMS_TEXTBOX
 ">MMS_TEXTBOX</A>
-<LI><A HREF="projects/mms/examples/advanced_spd_doc_list.html#MMS_TPLOT2AUTOPLOT
-">MMS_TPLOT2AUTOPLOT</A>
+<LI><A HREF="projects/mms/examples/advanced_spd_doc_list.html#
+MMS_TPLOT2AUTOPLOT_CRIB">MMS_TPLOT2AUTOPLOT_CRIB</A>
 <br>Crib sheet showing how to send MMS data to Autoplot
+<LI><A HREF="projects/mms/examples/advanced_spd_doc_list.html#
+MMS_TPLOT2CDF2_CRIB">MMS_TPLOT2CDF2_CRIB</A>
 <LI><A HREF="projects/mms/common/quicklook_spd_doc_list.html#MMS_TPLOT_QUICKLOOK
 ">MMS_TPLOT_QUICKLOOK</A>
 <br>Wrapper around tplot specifically for MMS quicklook figures; this
@@ -6589,8 +6596,6 @@ SPD_INIT_TESTS">SPD_INIT_TESTS</A>
 SPD_MAKE_J2000_MATRIX_VEC</A>
 <LI><A HREF="projects/mms/common/data_status_bar_spd_doc_list.html#
 SPD_MMS_LOAD_BSS">SPD_MMS_LOAD_BSS</A>
-<LI><A HREF="projects/mms/examples/basic_spd_doc_list.html#SPD_MMS_LOAD_BSS_CRIB
-">SPD_MMS_LOAD_BSS_CRIB</A>
 <LI><A HREF="spedas_gui/utilities_spd_doc_list.html#SPD_MPAUSE">SPD_MPAUSE</A>
 <LI><A HREF="general/spedas_tools/spd_download_spd_doc_list.html#
 SPD_NETURL_ERROR2MSG">SPD_NETURL_ERROR2MSG</A>
