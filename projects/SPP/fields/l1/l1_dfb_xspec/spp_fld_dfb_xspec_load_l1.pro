@@ -147,7 +147,7 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
           type = 'spectra')), $
           v:data_v}
 
-        options, prefix + 'xspec_' + xspec_type + '_converted', 'ztitle', 'Log Auto [arb.]'
+        ;options, prefix + 'xspec_' + xspec_type + '_converted', 'ztitle', 'Log Auto [arb.]'
 
       endif else begin
 
@@ -162,7 +162,7 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
       options, prefix + 'xspec_' + xspec_type + '_converted', 'panel_size', 2
       options, prefix + 'xspec_' + xspec_type + '_converted', 'spec', 1
       options, prefix + 'xspec_' + xspec_type + '_converted', 'no_interp', 1
-      options, prefix + 'xspec_' + xspec_type + '_converted', 'zlog', 0
+      options, prefix + 'xspec_' + xspec_type + '_converted', 'zlog', strmid(xspec_type,0,1) EQ 'p' ? 1 : 0
       options, prefix + 'xspec_' + xspec_type + '_converted', 'ylog', 1
       options, prefix + 'xspec_' + xspec_type + '_converted', 'ystyle', 1
       options, prefix + 'xspec_' + xspec_type + '_converted', 'yrange', minmax(freq_bins.freq_avg)
@@ -250,6 +250,17 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
 
         endelse
 
+        dfb_xspec_name_ytitle = $
+          strjoin(strsplit($
+          strjoin(strsplit($
+          strjoin(strsplit($
+          strjoin(strsplit($
+          dfb_xspec_name_ytitle,$
+          '_converted', /ex, /reg)),$
+          'erence$', /ex, /reg)),$     ; coherence -> coh in title
+          'se$', /ex, /reg)),$         ; phase -> pha in title
+          '_', /ex),'!C')
+        
         options, prefix + dfb_xspec_name_i, 'ytitle', $
           'DFB!C' + ac_dc_string + ' XSP' + $
           string(xspec_ind) + '!C' + strupcase(dfb_xspec_name_ytitle)
