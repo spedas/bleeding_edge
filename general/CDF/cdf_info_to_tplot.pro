@@ -6,9 +6,9 @@
 ;
 ; Written by Davin Larson
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-07-28 13:40:30 -0700 (Fri, 28 Jul 2017) $
-; $LastChangedRevision: 23719 $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-23 20:38:14 -0800 (Tue, 23 Jan 2018) $
+; $LastChangedRevision: 24575 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_info_to_tplot.pro $
 ;-
 pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
@@ -20,7 +20,7 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
         load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
                                       ;resolve labels implemented as keyword to preserve backwards compatibility
 
-dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 23719 2017-07-28 20:40:30Z jimm $'
+dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 24575 2018-01-24 04:38:14Z adrozdov $'
 tplotnames=''
 vbs = keyword_set(verbose) ? verbose : 0
 

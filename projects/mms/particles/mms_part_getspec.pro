@@ -25,12 +25,15 @@
 ;         add_bfield_dir: add B-field direction (+, -) to the angular spectrograms (phi, theta)
 ;         add_ram_dir: add S/C ram direction (X) to the angular spectrograms (phi, theta)
 ;         dir_interval: number of seconds between B-field and S/C ram direction symbols on angular spectrogram plots
+;         
+;         subtract_error: subtract the distribution error prior to doing the calculations (FPI only, currently)
+;         
 ; Notes:
 ;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-01-19 14:12:41 -0800 (Fri, 19 Jan 2018) $
-;$LastChangedRevision: 24549 $
+;$LastChangedDate: 2018-01-24 10:52:02 -0800 (Wed, 24 Jan 2018) $
+;$LastChangedRevision: 24577 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -63,6 +66,8 @@ pro mms_part_getspec, probes=probes, $
                       mag_suffix=mag_suffix,$
                         
                       subtract_bulk=subtract_bulk, $
+                      subtract_error=subtract_error, $
+                      
                       center_measurement=center_measurement, $
                       tplotnames=tplotnames, $
                       
@@ -154,6 +159,7 @@ pro mms_part_getspec, probes=probes, $
         if instrument eq 'fpi' then begin
             name = 'mms'+probes[probe_idx]+'_d'+species+'s_dist_'+data_rate
             vel_name = 'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_dbcs_'+data_rate
+            if keyword_set(subtract_error) then error_variable = 'mms'+probes[probe_idx]+'_d'+species+'s_disterr_'+data_rate
         endif else if instrument eq 'hpca' then begin
             name =  'mms'+probes[probe_idx]+'_hpca_'+species+'_phase_space_density'
             vel_name = 'mms'+probes[probe_idx]+'_hpca_'+species+'_ion_bulk_velocity'
@@ -163,7 +169,8 @@ pro mms_part_getspec, probes=probes, $
             mag_name=bname, pos_name=pos_name, vel_name=vel_name, energy=energy, $
             pitch=pitch, gyro=gyro_in, phi=phi_in, theta=theta, regrid=regrid, $
             outputs=outputs, suffix=suffix, datagap=datagap, subtract_bulk=subtract_bulk, $
-            tplotnames=tplotnames_thisprobe, _extra=ex
+            tplotnames=tplotnames_thisprobe, subtract_error=subtract_error, $
+            error_variable=error_variable, _extra=ex
             
         if undefined(tplotnames_thisprobe) then continue ; nothing created by mms_part_products
         append_array, tplotnames, tplotnames_thisprobe

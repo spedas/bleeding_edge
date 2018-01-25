@@ -134,9 +134,9 @@
 ; Side Effects:
 ;   Data is returned in pointer variables. Calling routine is responsible for freeing up heap memory - otherwise a memory leak will occur.
 ;
-; $LastChangedBy: pulupa $
-; $LastChangedDate: 2016-11-18 12:20:32 -0800 (Fri, 18 Nov 2016) $
-; $LastChangedRevision: 22377 $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-23 20:38:14 -0800 (Tue, 23 Jan 2018) $
+; $LastChangedRevision: 24575 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_load_vars.pro $
 ;
 ;-
@@ -150,7 +150,7 @@ function cdf_load_vars,files,varnames=vars,varformat=vars_fmt,info=info,verbose=
 vb = keyword_set(verbose) ? verbose : 0
 vars=''
 info = 0
-dprint,dlevel=4,verbose=verbose,'$Id: cdf_load_vars.pro 22377 2016-11-18 20:20:32Z pulupa $'
+dprint,dlevel=4,verbose=verbose,'$Id: cdf_load_vars.pro 24575 2018-01-24 04:38:14Z adrozdov $'
 
 on_ioerror, ferr
 for fi=0,n_elements(files)-1 do begin

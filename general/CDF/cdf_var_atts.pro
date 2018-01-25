@@ -17,9 +17,9 @@
 ;   var;        CDF variable name or number
 ;   attname:    CDF attribute name
 ;CREATED BY:    Davin Larson
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2014-05-20 10:05:23 -0700 (Tue, 20 May 2014) $
-; $LastChangedRevision: 15173 $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-23 20:38:14 -0800 (Tue, 23 Jan 2018) $
+; $LastChangedRevision: 24575 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_var_atts.pro $
 ;-
 

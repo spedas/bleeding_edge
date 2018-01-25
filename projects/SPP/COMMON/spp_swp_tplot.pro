@@ -4,6 +4,7 @@ if keyword_set(setlim) then begin
   options,'spp_*AF*_SPEC' , spec=1
   options,'*MASK',tplot_routine='bitplot'
   options,'*_FLAGS',tplot_routine='bitplot'
+  options,'*_FLAG',tplot_routine='bitplot'
   tplot_options,'no_interp',1
 ;  options,'*SPEC23',panel_size=3
   options,'*rates*CNTS',spec=1,zrange=[1,1],/zlog,yrange=[0,0],ylog=0
@@ -23,6 +24,7 @@ if keyword_set(setlim) then begin
   dprint,setd=2
   store_data,'APID',data='APIDS_*'
   ylim,'APID',800,1000
+  options,'APID',panel_size=2
   
   
 endif
@@ -52,6 +54,8 @@ if keyword_set(name) then begin
     'SA_COVER': tplot, '*spa_*ACT*CVR* *spa_*ACTSTAT*FLAG* *spa*CMD*UKN* *spa*CLK*NYS', add = add
     'SWEM': tplot,'APID PTP_DATA_RATE',add=add
     'TIMING': tplot,'spp_swem_timing_'+['DRIFT_DELTA','CLKS_PER_PPS_DELTA','SCSUBSECSATPPS']
+    'TEMP': tplot,'*TEMP'
+    'TEMPS': tplot,'*ALL_TEMPS
     else:
   endcase
 endif

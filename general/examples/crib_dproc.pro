@@ -10,10 +10,10 @@
 ;
 ;Warning: this crib uses some data from the THEMIS branch.  You'll require those routines to run this crib
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2013-12-16 16:55:27 -0800 (Mon, 16 Dec 2013) $
-; $LastChangedRevision: 13680 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/ssl_general/trunk/examples/crib_calc.pro $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-23 20:38:14 -0800 (Tue, 23 Jan 2018) $
+; $LastChangedRevision: 24575 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_dproc.pro $
 ;
 ;-
 

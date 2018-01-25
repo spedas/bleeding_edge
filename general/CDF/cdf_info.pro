@@ -15,9 +15,9 @@ end
 ;   id:   CDF file ID.
 ;CREATED BY:    Davin Larson
 ; LAST MODIFIED: @(#)cdf_info.pro    1.9 02/11/01
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2014-05-29 12:20:42 -0700 (Thu, 29 May 2014) $
-; $LastChangedRevision: 15257 $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-23 20:38:14 -0800 (Tue, 23 Jan 2018) $
+; $LastChangedRevision: 24575 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_info.pro $
 ;-
 

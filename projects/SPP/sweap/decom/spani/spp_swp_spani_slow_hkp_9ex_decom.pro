@@ -143,8 +143,8 @@ endif
 ;         CH13_OFF:        ishft(b[42],-2),$
 ;         CH14_OFF:        ishft(b[44],-2),$
 ;         CH15_OFF:        ishft(b[46],-2),$
-         GND0:            (spp_swp_word_decom(b,16) AND '3FF'x) * 4.2520,  $
-         GND1:            (spp_swp_word_decom(b,18) AND '3FF'x) * 4.2520,  $
+         MON_P8VA_I:          (spp_swp_word_decom(b,16) AND '3FF'x) * 4.2520,  $
+         MON_N8VA_I:          (spp_swp_word_decom(b,18) AND '3FF'x) * 4.2520,  $
          MON_LVPS_TEMP:   MON_LVPS_TEMP,  $
          MON_22A_V:       (spp_swp_word_decom(b,22) AND '3FF'x) * 0.028104,$
          MON_1P5D_V:      (spp_swp_word_decom(b,24) AND '3FF'x) * 0.0024438,$

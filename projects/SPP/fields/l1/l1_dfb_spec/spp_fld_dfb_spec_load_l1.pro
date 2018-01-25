@@ -68,6 +68,12 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
   options, prefix + 'concat', 'yrange', [-0.5,15.5]
   options, prefix + 'concat', 'ystyle', 1
 
+  options, prefix + 'saturation_flags', 'tplot_routine', 'bitplot'
+  options, prefix + 'saturation_flags', 'numbits', 16
+  options, prefix + 'saturation_flags', 'yminor', 1
+  options, prefix + 'saturation_flags', 'colors', colors
+  options, prefix + 'saturation_flags', 'psyms', spec_number + 3
+
   get_data, prefix + 'spec', data = spec_data
 
   get_data, prefix + 'navg', data = navg_data
@@ -77,6 +83,8 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
   get_data, prefix + 'spec_nelem', data = nelem_data
 
   get_data, prefix + 'concat', data = concat_data
+
+  get_data, prefix + 'saturation_flags', data = sat_data
 
   ; TODO: Make this work with all configurations of spectra
 
@@ -125,6 +133,7 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
         ; TODO: Make this more precise using TMlib time
 
         new_data_x = []
+        new_data_sat_y = []
 
         if is_ac then begin
 
@@ -138,7 +147,11 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
         endelse
 
         for i = 0, n_elements(spec_data.x)-1 do begin
-          new_data_x = [new_data_x,spec_data.x[i] + delta_x * dindgen(n_spec)]
+          new_data_x = [new_data_x,spec_data.x[i] + $
+            delta_x * dindgen(n_spec)]
+
+          new_data_sat_y = [new_data_sat_y, $
+            (sat_data.y[i] / 2l^lindgen(16) MOD 2)[0:n_spec-1]]
         endfor
 
         data_v = transpose(rebin(freq_bins.freq_avg,$
@@ -159,6 +172,19 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
         options, prefix + 'spec_converted', 'ztitle', 'Log Auto [arb.]'
         options, prefix + 'spec_converted', 'ystyle', 1
         options, prefix + 'spec_converted', 'yrange', minmax(freq_bins.freq_avg)
+
+        store_data, prefix + 'sat', $
+          data = {x:new_data_x, y:new_data_sat_y}
+        
+        options, prefix + 'sat', 'psym', spec_number + 3
+        options, prefix + 'sat', 'yrange', [-0.25,1.25]
+        options, prefix + 'sat', 'ystyle', 1
+        options, prefix + 'sat', 'yticks', 1
+        options, prefix + 'sat', 'ytickv', [0,1]
+        options, prefix + 'sat', 'yminor', 1
+        options, prefix + 'sat', 'ysubtitle', ''
+        options, prefix + 'sat', 'panel_size', 0.35
+        options, prefix + 'sat', 'colors', colors
 
       endif else begin
 

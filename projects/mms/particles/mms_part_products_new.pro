@@ -103,8 +103,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-01-19 14:13:51 -0800 (Fri, 19 Jan 2018) $
-;$LastChangedRevision: 24550 $
+;$LastChangedDate: 2018-01-24 10:39:40 -0800 (Wed, 24 Jan 2018) $
+;$LastChangedRevision: 24576 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products_new.pro $
 ;-
 pro mms_part_products_new, $
@@ -137,6 +137,8 @@ pro mms_part_products_new, $
                      suffix=suffix, $ ;tplot suffix to apply when generating outputs
                      
                      subtract_bulk=subtract_bulk, $ ;subtract bulk velocity from FAC angular spectra
+                     subtract_error=subtract_error, $ ; subtract the distribution error variable from the data prior to doing the calculations
+                     error_variable=error_variable, $ ; name of the tplot variable containing the distribution error (required if /subtract_error keyword is specified)
                      
                      datagap=datagap, $ ;setting for tplot variables, controls how long a gap must be before it is drawn.(can also manually degap)
                             
@@ -381,7 +383,8 @@ pro mms_part_products_new, $
     ;Get the data structure for this sample
 
     dist = mms_get_dist(in_tvarname, time_idx[i], /structure, probe=probe, $
-                        species=species, instrument=instrument, units=input_units)
+                        species=species, instrument=instrument, units=input_units, $
+                        subtract_error=subtract_error, error=error_variable)
     
     str_element, dist, 'orig_energy', dist.energy[*, 0, 0], /add
 

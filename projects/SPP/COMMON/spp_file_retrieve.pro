@@ -2,12 +2,12 @@
 ; Function:  files = spp_file_retrieve(PATHNAME)
 ; Purpose:  Retrieve or Download MAVEN data files (i.e. L0 files)  (Can be used to generate filenames too)
 ; INPUT:
-; PATHNAME:  string specifying relative path to files.         Default might change-  Currently:  'maven/pfp/l0/YYYY/MM/mvn_pfp_all_l0_YYYYMMDD_v???.dat'
+; PATHNAME:  string specifying relative path to files.         Default might change-  Currently:  'psp/pfp/l0/YYYY/MM/mvn_pfp_all_l0_YYYYMMDD_v???.dat'
 ;         PATHNAME must be relative to the LOCAL_DATA_DIR and REMOTE_DATA_DIR fields of the source keyword.
 ;         "globbed" filenames (*,?) are accepted.
 ; typical usage:
-;   files = mvn_pfp_file_retrieve('maven/pfp/l0/YYYY/MM/mvn_pfp_all_l0_YYYYMMDD_v???.dat',/daily_names)   ; get L0 files for user defined time span
-;   files = mvn_pfp_file_retrieve(pathname,/daily_names,trange=trange)  ; set time range
+;   files = spp_file_retrieve('psp/xxxxxx/YYYY/MM/mvn_pfp_all_l0_YYYYMMDD_v???.dat',/daily_names)   ; get L0 files for user defined time span
+;   files = spp_file_retrieve(pathname,/daily_names,trange=trange)  ; set time range
 ;Keywords:  (All are optional - none are recommended)
 ; L0:   set to 1 to return PFP L0 files
 ; DAILY_NAMES : resolution (in days) for generating file names. 

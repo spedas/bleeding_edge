@@ -200,4 +200,25 @@
     </cdf_att>
   </cdf_var>
   
+  <cdf_var
+      name   = "dfb_spec_saturation_flags"
+      type   = "integer">
+  <cdf_att
+        FIELDNAM = "saturation_flags"
+        FORMAT = "I08"
+        LABLAXIS = "saturation_flags"
+        VAR_TYPE = "data"
+        DATA_TYPE = "CDF_UINT4"
+        FILLVAL = "4294967295"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "65535"
+        SCALEMIN = "0"
+        SCALEMAX = "65535"
+        UNITS = "None"
+        CATDESC = "DFB spectra saturation flags"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
+  
 

@@ -230,7 +230,6 @@ endif else begin
   cnts = 0
 endelse
 
-
   str = { $
     time:        ccsds.time, $
     apid:        ccsds.apid, $
@@ -282,6 +281,7 @@ pro spp_swp_spi_prod_apdat::handler,ccsds,ptp_header
       else:  dprint,dlevel=2,'Size not recognized: ',strct.ndat
     endcase
   endif
+ ; dprint,dlevel=2,strct.apid,strct.ndat
 
   if self.save_flag && keyword_set(strct) then begin
     dprint,self.name,dlevel=5,self.apid

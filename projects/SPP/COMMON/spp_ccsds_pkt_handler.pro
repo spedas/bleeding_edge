@@ -51,12 +51,12 @@ if 1 then begin    ; new method
         dprint,dlevel=3,format='("Lost ",i5," ",a," (0x", Z03,") packets ",i5," ",a)',  ccsds.seqn_delta-1,apdat.name,apdat.apid,ccsds.seqn,time_string(ccsds.time,prec=3)
       endif
 
-      apdat.handler, ccsds , ptp_header
+      apdat.handler, ccsds , header
 
       ;;  Save statistics - get APID_ALL and APID_GAP
       apdat.increment_counters, ccsds
       stats = spp_apdat(0)
-      stats.handler, ccsds, ptp_header
+      stats.handler, ccsds, header
 
       
 endif else begin   ; old method

@@ -8,10 +8,10 @@
 ;
 ;Warning: this crib uses some data from the THEMIS branch.  You'll require those routines to run this crib
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2008-02-06 13:43:58 -0800 (Wed, 06 Feb 2008) $
-; $LastChangedRevision: 2352 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/ssl_general/trunk/tplot/tplotxy.pro $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2018-01-23 20:38:14 -0800 (Tue, 23 Jan 2018) $
+; $LastChangedRevision: 24575 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_plotxy.pro $
 ;-
 
 ;sets the colors correctly

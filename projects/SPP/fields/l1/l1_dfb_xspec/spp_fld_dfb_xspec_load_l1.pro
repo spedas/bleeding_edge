@@ -2,6 +2,8 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
 
   ; TODO: More X-spectra testing and formatting
 
+  ; TODO: Add saturation flags
+
   if n_elements(file) LT 1 then begin
     print, 'Must provide a CDF file to load"
     return

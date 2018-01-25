@@ -1,4 +1,4 @@
-
+;  This routine will read files that have the same format as that which is produced by the SWEMulator
 
 pro spp_msg_file_read,files
   

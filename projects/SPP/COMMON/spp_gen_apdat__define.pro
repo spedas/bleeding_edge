@@ -106,8 +106,9 @@ pro spp_gen_apdat::handler,ccsds,header
   
   strct = self.decom(ccsds,header)
 
+;dprint,'hello'
   if self.save_flag && keyword_set(strct) then begin
-;    dprint,self.name,dlevel=5,self.apid
+    dprint,self.name,dlevel=4,self.apid
     self.data.append,  strct
   endif
 
