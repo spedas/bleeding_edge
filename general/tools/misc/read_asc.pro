@@ -196,7 +196,7 @@ endfor
 return,data
 
 badfile:
-dprint,!err_string
+dprint,!error_state.msg
 dprint,'linenumber=',linenumber
 dprint,'Invalid file: '+filename
 if keyword_set(lun) then free_lun,lun

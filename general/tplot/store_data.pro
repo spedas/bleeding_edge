@@ -36,9 +36,9 @@
 ;SEE ALSO:    "GET_DATA", "TPLOT_NAMES",  "TPLOT", "OPTIONS"
 ;
 ;CREATED BY:    Davin Larson
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-10-02 12:55:37 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24080 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-01-25 09:26:57 -0800 (Thu, 25 Jan 2018) $
+; $LastChangedRevision: 24590 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/store_data.pro $
 ;-
 pro store_data,name, time,ydata,values, $
@@ -76,7 +76,7 @@ endif else verbose = verbose_t
 
 if size(/type,tagnames) eq 7 then begin
   if size(/type,data) ne 8 then begin
-    dprint,dlevel=3,'Data must be a structure'
+    dprint,dlevel=3,'Variable "'+name +'":  Data must be a structure'
     return
   endif
   if size(/type,time_tag) ne 7 then time_tag = 'TIME'
