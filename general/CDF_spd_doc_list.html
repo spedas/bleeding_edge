@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jan 25 18:16:24 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Jan 26 18:16:26 2018.<P>
  
 <HR>
  
@@ -23,6 +23,7 @@ This page was created by the IDL library routine
 <br>Return an IDL type number given a CDF data type
 <LI><A HREF="#CDF2TPLOT">CDF2TPLOT</A>
 <LI><A HREF="#CDF_DEFAULT_CDFI_STRUCTURE">CDF_DEFAULT_CDFI_STRUCTURE</A>
+<br>Number of functions that generate default structures for CDF files
 <LI><A HREF="#CDF_INFO">CDF_INFO</A>
 <br>Returns a structure with useful information about a CDF file.
 <LI><A HREF="#CDF_INFO_TO_TPLOT">CDF_INFO_TO_TPLOT</A>
@@ -40,8 +41,11 @@ This page was created by the IDL library routine
 <br>Creates an index file for CDF files.
 <LI><A HREF="#PRINT_CDF_INFO">PRINT_CDF_INFO</A>
 <LI><A HREF="#TPLOT2CDF2">TPLOT2CDF2</A>
+<br>Save tplot variables into cdf file
 <LI><A HREF="#TPLOT2CDF_SAVE_VARS">TPLOT2CDF_SAVE_VARS</A>
-<LI><A HREF="#TPLOT_ADD_CDF_ATTRIBUTES">TPLOT_ADD_CDF_ATTRIBUTES</A>
+<br>To dump data and metadata from an IDL structure into a CDF file.
+<LI><A HREF="#TPLOT_ADD_CDF_STRUCTURE">TPLOT_ADD_CDF_STRUCTURE</A>
+<br>In order to be saved in CDF file using TPLOT2CDF2, tplot variable must have CDF structure as a tplot option (see OPTIONS)
 <br>
 </UL><P>
 <HR>
@@ -129,14 +133,15 @@ Author: Davin Larson -  20th century
 <A HREF="#CDF_INFO">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-
- Warning: this file is under development!
-
- Number of functions that generate default structured for CDF files 
-
+PURPOSE: 
+ Number of functions that generate default structures for CDF files
+ This file is designed for developers
+ 
+ Please use TPLOT_ADD_CDF_STRUCTURE instead
+ 
  $LastChangedBy: adrozdov $
- $LastChangedDate: 2018-01-23 20:24:48 -0800 (Tue, 23 Jan 2018) $
- $LastChangedRevision: 24573 $
+ $LastChangedDate: 2018-01-26 13:24:32 -0800 (Fri, 26 Jan 2018) $
+ $LastChangedRevision: 24598 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_default_cdfi_structure.pro $
 </PRE><P>
 <STRONG>(See <A href="CDF/cdf_default_cdfi_structure.pro">general/CDF/cdf_default_cdfi_structure.pro</A>)</STRONG><P>
@@ -602,17 +607,37 @@ LAST MODIFICATION:     @(#)print_cdf_info.pro 1.13 02/11/01
 <A HREF="#TPLOT2CDF_SAVE_VARS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
+PROCEDURE:
+  TPLOT2CDF2, ...
+   
+PURPOSE:
+  Save tplot variables into cdf file
+  tplot variable must have appropriate CDF structure as the option (limits) (see TPLOT_ADD_CDF_STRUCTURE, OPTIONS)
+  Time (x variable of tplot) must be in SPEDAS (unix) format, (see TIME_DOUBLE)
+   
+KEYWORDS:
+   FILENAME: (string) Name of the cdf file to be saved. .cdf extension can be omitted.
+   TVARS: (string or array of strings) Tplot variable name, or list of the tplot variables to be saved 
+   DEFAULT_CDF_STRUCTURE: (flag) Create default CDF structure in tplot variables                   
+   COMPRESS_CDF: (int) Compress CDF file. See CDF_COMPRESSION
+   G_ATTRIBUTES: (struct) Global attributes of CDF file
+  
+  Additional keywords:    
+   INQ: (struct) Structure of CDF file parameters, see TPLOT2CDF_SAVE_VARS code
+   TT2000: (flag) Reserved for future use
 
- Warning: this file is under development!
-
- Save tplot variables into cdf file
- The CDF global attributes can be specified by keywords inq and g_attributes
- The keyword default_cdf_attributes adds default variable attributes to the tplot variables
- Time (x variable of tplot) should be in SPEDAS (unix) format, please see time_double for details
+EXAMPLES:   
+   store_date, 'example_tplot',data={x:time_double('2001-01-01')+[1, 2, 3],y:[10, 20, 30]}
+   tplot2cdf2, filename='example_cdf_file', tvars='example_plot', /default  
+   
+   store_date, 'example_tplot2',data={x:time_double('2001-01-02')+[1, 2],y:[10, 20]}
+   tplot2cdf2, filename='example_cdf_file2', tvars=['example_plot', 'example_tplot2'], /default
+  
+  See crib_tplot2cdf2_basic for additional examples 
  
  $LastChangedBy: adrozdov $
- $LastChangedDate: 2018-01-24 22:43:19 -0800 (Wed, 24 Jan 2018) $
- $LastChangedRevision: 24586 $
+ $LastChangedDate: 2018-01-26 13:24:32 -0800 (Fri, 26 Jan 2018) $
+ $LastChangedRevision: 24598 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot2cdf2.pro $
 </PRE><P>
 <STRONG>(See <A href="CDF/tplot2cdf2.pro">general/CDF/tplot2cdf2.pro</A>)</STRONG><P>
@@ -621,14 +646,17 @@ LAST MODIFICATION:     @(#)print_cdf_info.pro 1.13 02/11/01
 <A NAME="TPLOT2CDF_SAVE_VARS">
 <H2>TPLOT2CDF_SAVE_VARS</H2></A>
 <A HREF="#TPLOT2CDF2">[Previous Routine]</A>
-<A HREF="#TPLOT_ADD_CDF_ATTRIBUTES">[Next Routine]</A>
+<A HREF="#TPLOT_ADD_CDF_STRUCTURE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- PROCEDURE: tplot2cdf_save_vars(cdf_structure,new_cdf_name)
- PURPOSE:  To dump data and metadata from an IDL structure into a CDF file.
-		 This is a fork of the cdf_load_vars.pro.
+ PROCEDURE: 
+    tplot2cdf_save_vars(cdf_structure,new_cdf_name)
+ PURPOSE:  
+    To dump data and metadata from an IDL structure into a CDF file.
+		 This is a fork of the cdf_load_vars.pro!
 					
- INPUTS:   cdf_structure : IDL structure defined by cdf_load_vars.pro
+ INPUTS:   
+     cdf_structure : IDL structure defined by cdf_load_vars.pro
 	    new_cdf_name  : a string to name the new CDF file with
 	    
 	    compress_cdf: if this is set, the produced cdf is compressed
@@ -636,42 +664,63 @@ LAST MODIFICATION:     @(#)print_cdf_info.pro 1.13 02/11/01
 	    cdfparams: (optional) cdf compression parameters
 	    cdf_compress_error: (optional) return string for compression errors 
 	    cdf_tmp_dir: (optional) compression uses this directory for temporary files
- EXAMPLE:  cdf_save_vars(cdfi,'newcdf.cdf')
+ EXAMPLE:  
+     cdf_save_vars(cdfi,'newcdf.cdf')
 
 Note: To use this routine you must have the CDF_EPOCH/CDF_EPOCH16 bug patch on your IDL6.3
 and if you are using Solaris you need to be in 32-bit mode NOT 64-bit (ie, idl -32)
 
  $LastChangedBy: adrozdov $
- $LastChangedDate: 2018-01-23 20:24:48 -0800 (Tue, 23 Jan 2018) $
- $LastChangedRevision: 24573 $
+ $LastChangedDate: 2018-01-26 13:24:32 -0800 (Fri, 26 Jan 2018) $
+ $LastChangedRevision: 24598 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot2cdf_save_vars.pro $
 </PRE><P>
 <STRONG>(See <A href="CDF/tplot2cdf_save_vars.pro">general/CDF/tplot2cdf_save_vars.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="TPLOT_ADD_CDF_ATTRIBUTES">
-<H2>TPLOT_ADD_CDF_ATTRIBUTES</H2></A>
+<A NAME="TPLOT_ADD_CDF_STRUCTURE">
+<H2>TPLOT_ADD_CDF_STRUCTURE</H2></A>
 <A HREF="#TPLOT2CDF_SAVE_VARS">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
+PROCEDURE:
+  TPLOT_ADD_CDF_STRUCTURE, tplot_vars, ...
+   
+PURPOSE:  
+  In order to be saved in CDF file using TPLOT2CDF2, tplot variable must have CDF structure as a tplot option (see OPTIONS) 
+  The attributes of the tplot data (x, y or v) are stored in the CDF structure
+  CDF.VARS     - structure of attributes that describe the data (tplot y variable)
+  CDF.DEPEND_0 - structure of attributes that describe the time (tplot x variable)
+  CDF.DEPEND_1 - structure of attributes that supporting data (tplot v variable)
+  
+  Each structure of attributes must have following fileds:
+  CATDESC, DISPLAY_TYPE ,FIELDNAM, LABLAXIS, UNITS (automatically defined for time), VAR_TYPE
+  FILLVAL, VALIDMIN, VALIDMAX, FORMAT defined based on the nature of the data
+  
+  TPLOT_ADD_CDF_STRUCTURE adds appropriate CDF structure and defines some of the attributes base on the tplot data
+  This procedure must be called before tplot2cdf2. Alternatively, keyword /default of tplto2cdf2 can be used.
+  Most of the attributes are defined as 'undefined' ans should be specify.  
+  
+  If tplot has 2d y but v, that suppose to describe second dimension is absent, then v will be created and an index of the second dimension of y
+   
+INPUT:
+   tplot_vars: (string or array of strings) Tplot variable name, or list of the tplot variables  
+   
+KEYWORDS:
+   TT2000: (flag) Reserved for future use
 
- Warning: this file is under development!
-
- Create default CDF attibutes in the tplot variable
- tplot2cdf2 function requires additional CDF attribute structure
- The attibutes are stored in CDF structure in the tplot limits
- The possible fields are:
- CDF.VARS - default field that describe the data (tplot y variable)
- CDF.DEPEND_0 - this field correspond to time (tplot x variable)   
- CDF.DEPEND_1 - supporting data (tplot v variable)
- 
- If y is 2d but it v is absent, v will be created and an index of the second dimension of y
+EXAMPLES:   
+   store_date, 'example_tplot',data={x:time_double('2001-01-01')+[1, 2, 3],y:[10, 20, 30]}
+   tplot_add_cdf_structure, 'example_plot'  
+   tplot2cdf2, filename='example_cdf_file', tvars='example_plot'
+  
+  See crib_tplot2cdf2_basic for additional examples 
 
  $LastChangedBy: adrozdov $
- $LastChangedDate: 2018-01-23 20:24:48 -0800 (Tue, 23 Jan 2018) $
- $LastChangedRevision: 24573 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot_add_cdf_attributes.pro $
+ $LastChangedDate: 2018-01-26 13:24:32 -0800 (Fri, 26 Jan 2018) $
+ $LastChangedRevision: 24598 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot_add_cdf_structure.pro $
 </PRE><P>
-<STRONG>(See <A href="CDF/tplot_add_cdf_attributes.pro">general/CDF/tplot_add_cdf_attributes.pro</A>)</STRONG><P>
+<STRONG>(See <A href="CDF/tplot_add_cdf_structure.pro">general/CDF/tplot_add_cdf_structure.pro</A>)</STRONG><P>
 <HR>
  
