@@ -4587,7 +4587,7 @@ if (c_0 ne '') then begin ;this should be the real data
               if (num_lists eq 1) then begin
                 new_array = reform(new_array) ;remove 1-d dimensions
               endif else begin
-                 temp_array = append_mydata(new_array, temp_array)
+                 temp_array = spd_cdawlib_append_mydata(new_array, temp_array)
                  if (inum eq num_lists-1) then new_array = reform(temp_array)
 ;print, 'check this syntax '
 ;stop;

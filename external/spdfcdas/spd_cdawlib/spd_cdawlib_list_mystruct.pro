@@ -1,23 +1,23 @@
 ;+
-; NAME:	ffo_string - substitute for string()
+; NAME:	spd_cdawlib_ffo_string - substitute for string()
 ;
 ; PURPOSE: allows override of free format I/O specifications 
 ;
 ; INPUT: format - a format specification, value - a value to be string'ed
 ;
-; Examples: newstring = ffo_string( 'F10.2', 354.9985 )
-;           newstring = ffo_string( struct.format, struct.dat )
+; Examples: newstring = spd_cdawlib_ffo_string( 'F10.2', 354.9985 )
+;           newstring = spd_cdawlib_ffo_string( struct.format, struct.dat )
 ;
 ; NOTE: this function wraps the format string in parenthesis
 ;
 ; original version - JWJ 08/08/2000
 ;
-FUNCTION ffo_string, format, value
+FUNCTION spd_cdawlib_ffo_string, format, value
 
   ; First, if format is defined, just use it against the value
   ; and return the result
   if strlen( format ) gt 0 then begin
-    ; print, 'ffo_string using given format: string( FORMAT = (' + format + '), value)'
+    ; print, 'spd_cdawlib_ffo_string using given format: string( FORMAT = (' + format + '), value)'
     return, string( FORMAT = '(' + format + ')', value )
   endif
 
@@ -26,26 +26,26 @@ FUNCTION ffo_string, format, value
   ; is FLOAT, use F13.6 instead of the IDL 5.2 free format 
   ; specifier of G13.6 which is causes us particular problems
   if size( value, /type ) eq 4 then begin
-    ; print, 'ffo_string overriding free format for FLOAT type: string( FORMAT = (F13.6), value)'
+    ; print, 'spd_cdawlib_ffo_string overriding free format for FLOAT type: string( FORMAT = (F13.6), value)'
     return, string( FORMAT = '(F13.6)', value )
   endif
 
   ; At last, if no particular rules were met for overriding the
   ; format specifcation, use the free format I/O
-  ; print, 'ffo_string doing free format I/O: string( value )'
+  ; print, 'spd_cdawlib_ffo_string doing free format I/O: string( value )'
   return, string( value )
 
-end ; ffo_string
+end ; spd_cdawlib_ffo_string
 
 ;----------------------------------------------------------------------------
 ;+
-; NAME: delete.pro
+; NAME: spd_cdawlib_delete.pro
 ;
 ; PURPOSE: Frees memory
 ;
 ; INPUT;  var   - any variable
 ;
-PRO delete, var
+PRO spd_cdawlib_delete, var
 ;
 ;    ptr=PTR_NEW(var)
 ;   PTR_FREE, ptr
@@ -54,13 +54,13 @@ var = 0B
 end
 ;----------------------------------------------------------------------------
 ;+                                                                            
-; NAME: reform_strc.pro
+; NAME: spd_cdawlib_reform_strc.pro
 ;
 ; PURPOSE: Reforms the data array from a (1,N) to a (N).
 ;
 ; astrc    -  Input structure
 ;
-FUNCTION reform_strc, astrc
+FUNCTION spd_cdawlib_reform_strc, astrc
 istr=0
 namest=tag_names(astrc)
 ns_tags=n_tags(astrc)
@@ -104,9 +104,9 @@ for k=0, ns_tags-1 do begin
 endfor    ; end k
 
 ; Free Memory
-delete, tempa
-delete, tempb
-delete, temp2
+spd_cdawlib_delete, tempa
+spd_cdawlib_delete, tempb
+spd_cdawlib_delete, temp2
 
 return, b
 end
@@ -117,13 +117,13 @@ end
 
 ;----------------------------------------------------------------------------
 ;+
-; NAME: reform_mystruc.pro
+; NAME: spd_cdawlib_reform_mystruct.pro
 ;
 ; PURPOSE: Reforms the data array from a (i,j,k) to a (i*j,k) and (i,j,k,l) to a (i*j*k,l)
 ;
 ; astrc    -  Input structure
 
-FUNCTION reform_mystruct, astrc
+FUNCTION spd_cdawlib_reform_mystruct, astrc
 
   CATCH, err
   IF err NE 0 THEN BEGIN
@@ -202,16 +202,16 @@ for k=0, ns_tags-1 do begin
 endfor
 
 ; Free Memory
-delete, tempa
-delete, tempb
-delete, temp
+spd_cdawlib_delete, tempa
+spd_cdawlib_delete, tempb
+spd_cdawlib_delete, temp
 
 return, b
 end
 
 ;----------------------------------------------------------------------------
 ;+
-; NAME: ord_mystruc.pro
+; NAME: spd_cdawlib_ord_mystruct.pro
 ;
 ; PURPOSE: Reorders the given structure so that the dimension of the data 
 ;          variables is increasing w/ each entry. 
@@ -224,7 +224,7 @@ end
 ;      and index and reorder the structure according to this index. 
 ;      This will make var and uncertainty be listed side by side. 
 
-FUNCTION ord_mystruct, astrc, vorder, is
+FUNCTION spd_cdawlib_ord_mystruct, astrc, vorder, is
 
 vlen=n_elements(vorder)
 vmax=max(vorder)
@@ -293,14 +293,14 @@ for k=is, vmax do begin
 endfor   ; end k
 ;
 ; Free Memeory
-delete, temp
+spd_cdawlib_delete, temp
 
 return, bnew
 end
 ;
 ;----------------------------------------------------------------------------
 ;
-FUNCTION dependn_search,a,i,d
+FUNCTION spd_cdawlib_dependn_search,a,i,d
 ;
 ; INPUT: a - data structure
 ;	 i - index of variable for which we want the values of depend_n
@@ -311,7 +311,7 @@ FUNCTION dependn_search,a,i,d
 catch, error_status
 if(error_status ne 0) then begin
    print, 'STATUS= Data cannot be listed.'
-   print, 'ERROR=Error number: ',error_status,' in listing (dependn_search).'
+   print, 'ERROR=Error number: ',error_status,' in listing (spd_cdawlib_dependn_search).'
    print, 'ERROR=Error Message: ', !ERR_STRING
    close, 1
    return, -1
@@ -420,7 +420,7 @@ return, depn_values
 	   ;    end	  
            ;    else: begin
            ;       print,'WARNING: s/w does not recognize this 2D depend matrix. Too many fillvals?'
-           ;       print,' Returning first row of array. In listing (dependn_search).'
+           ;       print,' Returning first row of array. In listing (spd_cdawlib_dependn_search).'
            ;       ;return, depn_values ; oh well, it's better to return something:
            ;       tmp_stuff=tmp_stuff[*,0]
            ;    end
@@ -433,12 +433,12 @@ end
 
 ;-------------------------------------------------------------------------------------------------
 
-FUNCTION label_search,a,sz,i,k
+FUNCTION spd_cdawlib_label_search,a,sz,i,k
 
-; RCJ 01/29/2003 We are no longer using label_search_max_width.
+; RCJ 01/29/2003 We are no longer using spd_cdawlib_label_search_max_width.
 ;
-; Please pay attention to label_search_max_width
-; if you make changes to label_search. The previous
+; Please pay attention to spd_cdawlib_label_search_max_width
+; if you make changes to spd_cdawlib_label_search. The previous
 ; function is a copy of the latter with one specific
 ; modification, hence any changes may need to be made
 ; in both places
@@ -457,7 +457,7 @@ FUNCTION label_search,a,sz,i,k
 catch, error_status
 if(error_status ne 0) then begin
    print, 'STATUS= Data cannot be listed.'
-   print, 'ERROR=Error number: ',error_status,' in listing (label_search).'
+   print, 'ERROR=Error number: ',error_status,' in listing (spd_cdawlib_label_search).'
    print, 'ERROR=Error Message: ', !ERR_STRING
    close, 1
    return, -1
@@ -535,8 +535,8 @@ if(sz eq 2) then begin
             ; RTB  3/98 
             ;lab_cmd='lab=string(a.'+depend1+'.dat[k])'
 
-            ; JWJ 08/08/2000 - changed below ffo_string() call from a string() call
-            lab=ffo_string(a.(z[0]).format, a.(z[0]).dat[k])
+            ; JWJ 08/08/2000 - changed below spd_cdawlib_ffo_string() call from a string() call
+            lab=spd_cdawlib_ffo_string(a.(z[0]).format, a.(z[0]).dat[k])
 
             label=strtrim(lab(0),2)
          endif else begin
@@ -578,7 +578,7 @@ end
 
 ;-------------------------------------------------------------------------------------------------
 
-FUNCTION unit_search,a,sz,i,k
+FUNCTION spd_cdawlib_unit_search,a,sz,i,k
 
 ;  INPUT: a - data structure
 ;	  sz - dimension of a(i) variable. First element of output of size().
@@ -591,7 +591,7 @@ FUNCTION unit_search,a,sz,i,k
 catch, error_status
 if(error_status ne 0) then begin
    print, 'STATUS= Data cannot be listed.'
-   print, 'ERROR=Error number: ',error_status,' in listing (unit_search).'
+   print, 'ERROR=Error number: ',error_status,' in listing (spd_cdawlib_unit_search).'
    print, 'ERROR=Error Message: ', !ERR_STRING
    close, 1
    return, -1
@@ -663,13 +663,13 @@ return, units
 end
 
 ;-----------------------------------------------------------------------------------
-FUNCTION list_header, a, unit, ntags
+FUNCTION spd_cdawlib_list_header, a, unit, ntags
 
 ; Establish error handler
 catch, error_status
 if(error_status ne 0) then begin
    print, 'STATUS= Data cannot be listed.'
-   print, 'ERROR=Error number: ',error_status,' in listing (list_header).'
+   print, 'ERROR=Error number: ',error_status,' in listing (spd_cdawlib_list_header).'
    print, 'ERROR=Error Message: ', !ERR_STRING
    close, 1
    return, -1 
@@ -779,13 +779,13 @@ return, status
 end
 
 ;----------------------------------------------------------------------------------------------
-FUNCTION ex_prt, unit, var, var2, slen, k 
+FUNCTION spd_cdawlib_ex_prt, unit, var, var2, slen, k 
 
 ; Establish error handler
 catch, error_status
 if(error_status ne 0) then begin
    print, 'STATUS = Data cannot be listed.'
-   print, 'ERROR=Error number: ',error_status,' in listing (ex_prt).'
+   print, 'ERROR=Error number: ',error_status,' in listing (spd_cdawlib_ex_prt).'
    print, 'ERROR=Error Message: ', !ERR_STRING
    close, 1
    return, -1 
@@ -822,11 +822,11 @@ end
 
 ;------------------------------------------------------------------------------------------------
 ;+
-; NAME: wrt_hybd_strct.pro
+; NAME: spd_cdawlib_wrt_hybd_strct.pro
 ;
 ; PURPOSE: Prints ascii file of RV or NRV variables
 ;
-FUNCTION wrt_hybd_strct, a, unit, convar, maxrecs, depend0, mega_num  
+FUNCTION spd_cdawlib_wrt_hybd_strct, a, unit, convar, maxrecs, depend0, mega_num  
 
 ; Establish error handler
 catch, error_status
@@ -840,7 +840,7 @@ if(error_status ne 0) then begin
    if(error_status eq -350) then $ ;  format has too many elements
           print, 'STATUS= Please select fewer variables.' $
           else print, 'STATUS= Data cannot be listed'
-   print, 'ERROR=Error number: ',error_status,' in listing (wrt_hybd_strct).'
+   print, 'ERROR=Error number: ',error_status,' in listing (spd_cdawlib_wrt_hybd_strct).'
    print, 'ERROR=Error Message: ', !ERR_STRING
    return, -1 
 endif
@@ -874,7 +874,7 @@ case convar of
        for i=0L, ntags-1 do begin
           ;  RCJ 03/18/2014  Space below is arbitrarily defined so each global attr name will fit in that
 	  ;       space, and could be chopped if too long.
-	  ;       Needs to be increased if we find longer global attr name. You might need to make changes to ex_prt too.
+	  ;       Needs to be increased if we find longer global attr name. You might need to make changes to spd_cdawlib_ex_prt too.
           ;var='                    '
           var='                              '
           var1=strtrim(names[i],2)
@@ -888,7 +888,7 @@ case convar of
 	     ;print,'var2 = ',var2
 	     ;print,'slen = ',slen
              if(slen gt 80) then begin
-                status=ex_prt(unit,var,var2,slen,0) 
+                status=spd_cdawlib_ex_prt(unit,var,var2,slen,0) 
              endif else begin
                 ;printf, unit, format='("#",5x,a,5x,a)', var, var2
                 printf, unit, format='("#",5x,a,2x,a)', var, var2
@@ -899,7 +899,7 @@ case convar of
                 var2=strtrim(a.(i)[k])
                 slen=strlen(var2)
                 if(slen gt 80) then begin
-                   status=ex_prt(unit,var,var2,slen,k) 
+                   status=spd_cdawlib_ex_prt(unit,var,var2,slen,k) 
                 endif else begin
                    if(k eq 0) then begin
                       ;printf, unit, format='("#",5x,a,5x,a)', var, var2
@@ -954,7 +954,7 @@ case convar of
           status=1
           length=maxrecs
        endif
-       status=list_header(a,unit,ntags)
+       status=spd_cdawlib_list_header(a,unit,ntags)
        ;labels=strarr(ntags-3)
        ;units=strarr(ntags-3) 
        ; RCJ 05/12/2009   Append strings to 'labels' and 'units' instead of presetting the array sizes.
@@ -967,11 +967,11 @@ case convar of
           ;if (a.(i).var_type eq 'data') or (a.(i).var_type eq 'support_data') then begin
           if (a.(i).var_type eq 'data') or ((a.(i).var_type eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
              nvar=a.(i).fillval
-             ;labels(i)=label_search(a,1,i,0)
-	     labels=[labels,label_search(a,1,i,0)]
+             ;labels(i)=spd_cdawlib_label_search(a,1,i,0)
+	     labels=[labels,spd_cdawlib_label_search(a,1,i,0)]
              ;units(i)=a.(i).units
-             ;units(i)=unit_search(a,1,i,0)
-	     units=[units,unit_search(a,1,i,0)]
+             ;units(i)=spd_cdawlib_unit_search(a,1,i,0)
+	     units=[units,spd_cdawlib_unit_search(a,1,i,0)]
              ; if 'EPOCH' or 'EPOCH92' etc.
              if(names[i] eq depend0) then begin
                 temp=create_struct(names[i],a.(i).dateph[0])
@@ -993,7 +993,7 @@ case convar of
        labels=labels[1:*]
        units=units[1:*]
        ; Free Memory
-       delete, temp
+       spd_cdawlib_delete, temp
        printf,unit,format=a.lform,labels
        printf,unit,format=a.uform,units   ;  if too many vars are requested, a.uform could be too long for idl and an error is generated.
        ;
@@ -1031,7 +1031,7 @@ case convar of
           status=1                                  
        endif
        ; Free Memory
-       delete, b
+       spd_cdawlib_delete, b
    end   ; end case 1
    ; 
    ; Non-Record Varying Variables 
@@ -1092,7 +1092,7 @@ case convar of
           status=1                                  
           length=maxrecs
        endif
-       status=list_header(a,unit,ntags)
+       status=spd_cdawlib_list_header(a,unit,ntags)
        num=a.(0).fillval
        labels=strarr(num)
        units=strarr(num)
@@ -1111,9 +1111,9 @@ case convar of
                 if(st_sz[0] eq 1 and st_sz[1] gt 1 and length eq 1) then begin
                    num_var=st_sz[1]
                    for k=0L, num_var-1 do begin
-                      labels(inc)=label_search(a,st_sz[0],i,k)
+                      labels(inc)=spd_cdawlib_label_search(a,st_sz[0],i,k)
                       ;units(inc)=a.(i).units
-		      units(inc)=unit_search(a,st_sz[0],i,k)
+		      units(inc)=spd_cdawlib_unit_search(a,st_sz[0],i,k)
                       ; temp=create_struct(labels(inc),a.(i).dat(k,0))
                       ; temp=create_struct(atags(i)+labels(inc),a.(i).dat(k,0))
 		      unique = strtrim(string(inc), 2)
@@ -1127,10 +1127,10 @@ case convar of
                    endfor   ; end k
                 endif else begin
                    ;print,'2', inc, size(labels)
-                   labels(inc)=label_search(a,st_sz[0],i,0)
+                   labels(inc)=spd_cdawlib_label_search(a,st_sz[0],i,0)
 		   ;print,'labels(inc) 1 = ',labels(inc)
                    ;units(inc)=a.(i).units
-		   units(inc)=unit_search(a,st_sz[0],i,0)
+		   units(inc)=spd_cdawlib_unit_search(a,st_sz[0],i,0)
 		   ;print,'units(inc) 1 = ',units(inc)
                    ; names(i) eq 'EPOCH' or 'EPOCH92' etc.
                    if(names(i) eq depend0) then begin
@@ -1150,9 +1150,9 @@ case convar of
              if(st_sz[0] eq 2) then begin
                 num_var=st_sz[1]
                    for k=0L, num_var-1 do begin
-                      labels(inc)=label_search(a,st_sz[0],i,k)
+                      labels(inc)=spd_cdawlib_label_search(a,st_sz[0],i,k)
                       ;units(inc)=a.(i).units
-		      units(inc)=unit_search(a,st_sz[0],i,k)
+		      units(inc)=spd_cdawlib_unit_search(a,st_sz[0],i,k)
                       ; temp=create_struct(labels(inc),a.(i).dat(k,0))
                       ;temp=create_struct(atags(i)+labels(inc),a.(i).dat(k,0))
 		      unique = strtrim(string(inc), 2)
@@ -1168,7 +1168,7 @@ case convar of
                       inc=inc+1
                    endfor
              endif   ; end if st_sz(0) eq 2
-             dep1=dependn_search(a,i,1)
+             dep1=spd_cdawlib_dependn_search(a,i,1)
              if (dep1[0] ne '') then begin
                 depend1=a.(i).depend_1
                 ; RCJ 05/16/2013  If alt_cdaweb_depend_1 exists, use it instead:
@@ -1181,7 +1181,7 @@ case convar of
           endif   ; end a.(i).var_type
        endfor   ; end i
        ; Free Memory
-       delete, temp
+       spd_cdawlib_delete, temp
        ;
        printf,unit,format=a.lform,labels
        ; listing depend_1 values if they exist. RCJ 04/01
@@ -1254,7 +1254,7 @@ i_ntags = ntags-5
           length=maxrecs
        endif
        ; Free Memory
-       delete, b
+       spd_cdawlib_delete, b
    end   ;   end case 3
    ;
    ; 3-D Record Varying Variables 
@@ -1345,7 +1345,7 @@ i_ntags = ntags-5
        b=create_struct(b,temp)
        ;
        ; Free Memory
-       delete, temp 
+       spd_cdawlib_delete, temp 
        printf,unit,format=a.lform,labels
        printf,unit,format=a.uform,units
        ;
@@ -1380,7 +1380,7 @@ i_ntags = ntags-5
           length=maxrecs
        endif
        ; Free Memory
-       delete, b
+       spd_cdawlib_delete, b
    end   ;  end case 4
    ;
    ; Image Data and 3D data (only difference is 3D data will have depend_3)
@@ -1405,7 +1405,7 @@ i_ntags = ntags-5
           status=1                                  
           length=maxrecs
        endif
-       status=list_header(a,unit,ntags)
+       status=spd_cdawlib_list_header(a,unit,ntags)
        num=a.(0).fillval
        final_labels=''
        final_units=''
@@ -1426,9 +1426,9 @@ i_ntags = ntags-5
 	     ;print,'st_sz = ',st_sz
              if(st_sz[0] le 1) then begin
                 ; get labels and units:
-                labels=[labels,label_search(a,st_sz[0],i,0)]
+                labels=[labels,spd_cdawlib_label_search(a,st_sz[0],i,0)]
                 ;units=[units,a.(i).units]
-                units=[units,unit_search(a,st_sz[0],i,0)]
+                units=[units,spd_cdawlib_unit_search(a,st_sz[0],i,0)]
                 if(names(i) eq depend0) then begin
                    temp=create_struct(names(i),a.(i).dateph[0])
                 endif else begin
@@ -1445,8 +1445,8 @@ i_ntags = ntags-5
                 ; get labels and units:
                 num_var=st_sz[1]
                 for k=0L, num_var-1 do begin
-                   labels=[labels,label_search(a,st_sz[0],i,k)]
-                   units=[units,unit_search(a,st_sz[0],i,k)]
+                   labels=[labels,spd_cdawlib_label_search(a,st_sz[0],i,k)]
+                   units=[units,spd_cdawlib_unit_search(a,st_sz[0],i,k)]
 		   unique = strtrim(string(inc), 2)
                    temp=create_struct(atags(i)+unique,a.(i).dat[k,0])
                    b=create_struct(b,temp)
@@ -1454,7 +1454,7 @@ i_ntags = ntags-5
                 endfor
              endif   ; end st_sz(0) eq 2
              ; Free Memory
-             delete, temp
+             spd_cdawlib_delete, temp
              ;
              labels=labels[1:*]
              final_labels=[final_labels,labels]
@@ -1464,9 +1464,9 @@ i_ntags = ntags-5
              ;
              ; create array of depend_1 values, if they exist, to also be listed
              ; RCJ 07/2013
-             ; exist test is done in dependn_search, if does not exist
+             ; exist test is done in spd_cdawlib_dependn_search, if does not exist
              ; return ''
-             dep1=dependn_search(a,i,1)
+             dep1=spd_cdawlib_dependn_search(a,i,1)
              if (dep1[0] ne '') then begin
                 depend1=a.(i).depend_1
                 ; RCJ 05/16/2013  If alt_cdaweb_depend_1 exists, use it instead:
@@ -1478,9 +1478,9 @@ i_ntags = ntags-5
              dep1_values=[dep1_values,dep1]
              ; create array of depend_2 and _3 values, if they exist, to also be listed
              ; RCJ 07/13
-             ; exist test is done in dependn_search, if does not exist
+             ; exist test is done in spd_cdawlib_dependn_search, if does not exist
              ; return ''
-             dep2=dependn_search(a,i,2)
+             dep2=spd_cdawlib_dependn_search(a,i,2)
              if (dep2[0] ne '') then begin
                 depend2=a.(i).depend_2
                 ; RCJ 05/16/2013  If alt_cdaweb_depend_2 exists, use it instead:
@@ -1490,7 +1490,7 @@ i_ntags = ntags-5
                 dep2=['(@_'+dep2+'_'+dep2_units+')']
              endif 
              dep2_values=[dep2_values,dep2]
-             dep3=dependn_search(a,i,3)
+             dep3=spd_cdawlib_dependn_search(a,i,3)
              if (dep3[0] ne '') then begin
                 depend3=a.(i).depend_3
                 q=where(tag_names(a.(i)) eq 'ALT_CDAWEB_DEPEND_3')
@@ -1651,7 +1651,7 @@ i_ntags = ntags-5
           length=maxrecs
        endif
        ; Free Memory
-       delete, b   
+       spd_cdawlib_delete, b   
    end   ; end case 5
    ;
    ;
@@ -1669,13 +1669,13 @@ end
 
 ;----------------------------------------------------------------------------
 ;+
-; NAME:  form_bld.pro
+; NAME:  spd_cdawlib_form_bld.pro
 ;
 ; PURPOSE: Builds format statements 
 ;
 ; shft - 0= left justified field; 1= right justified field
 ;
-FUNCTION form_bld, col_sz, label, units, dat_len, dep_col_sz, depend1_labels, $
+FUNCTION spd_cdawlib_form_bld, col_sz, label, units, dat_len, dep_col_sz, depend1_labels, $
    dep2_col_sz, depend2_labels, dep3_col_sz, depend3_labels,form, shft
  
 ; Use column size and to build label, unit and data format statements
@@ -1718,13 +1718,13 @@ end
 
 ;----------------------------------------------------------------------------
 ;+ 
-; NAME:  data_len.pro
+; NAME:  spd_cdawlib_data_len.pro
 ;
 ; PURPOSE: Determines the length of the data field given FORMAT, FILLVAL 
 ;
 ;
 
-FUNCTION data_len,format,fillval
+FUNCTION spd_cdawlib_data_len,format,fillval
                   
 ; Set input values if undefined 
 ;
@@ -1821,13 +1821,13 @@ return, frm_st
 
 end
 
-function ep_conv, b, depd0, HANDLE=handle, sec_of_year=sec_of_year
+function spd_cdawlib_ep_conv, b, depd0, HANDLE=handle, sec_of_year=sec_of_year
 ; 
 catch, error_status
 if(error_status ne 0) then begin
    if(error_status eq -78) then $ 
       print, 'STATUS=Available memory exceeded. Re-select time interval.'
-   print, 'ERROR=Error number: ',error_status,' in listing (ep_conv).'
+   print, 'ERROR=Error number: ',error_status,' in listing (spd_cdawlib_ep_conv).'
    print, 'ERROR=Error Message: ', !ERR_STRING
    stop
 endif
@@ -2140,7 +2140,7 @@ print, 'LONG_LIST=',split[t], format=fmt
 ; Reform dat arrays w/in structure.
 ;
 if(keyword_set(DEBUG)) then print, 'Reform arrays w/in structure.'
-a=reform_strc(a)
+a=spd_cdawlib_reform_strc(a)
 ;
 ; Separate variables by their depend_0; build mega-structure
 ;
@@ -2199,7 +2199,7 @@ for mega_loop=1, mega.num do begin
       ; Convert Epoch info. to string
       ;  'EPOCH' or 'EPOCH92' etc.
       if(namest[incep] eq depend0) then begin
-         eptmp=ep_conv(a,depend0,/handle,sec_of_year=sec_of_year)
+         eptmp=spd_cdawlib_ep_conv(a,depend0,/handle,sec_of_year=sec_of_year)
          temp=create_struct('DAT',dat)
          temp1=create_struct(a.(incep),temp)
          temp2=create_struct(temp1,eptmp)
@@ -2214,7 +2214,7 @@ for mega_loop=1, mega.num do begin
       ; Convert Epoch info. to string
       ; 'EPOCH' or 'EPOCH92' etc.
       if(namest[incep] eq depend0) then begin
-         eptmp=ep_conv(a,depend0,sec_of_year=sec_of_year) 
+         eptmp=spd_cdawlib_ep_conv(a,depend0,sec_of_year=sec_of_year) 
          tmp=create_struct(a.(incep),eptmp)
          b=create_struct(namest[incep],tmp)
       endif else begin 
@@ -2244,11 +2244,11 @@ for mega_loop=1, mega.num do begin
       vorder[k]=st_sz[0]
    endfor   ; end k
    ; Free Memory
-   delete, a
-   delete, temp
-   delete, temp1
-   delete, temp2
-   delete, tmp
+   spd_cdawlib_delete, a
+   spd_cdawlib_delete, temp
+   spd_cdawlib_delete, temp1
+   spd_cdawlib_delete, temp2
+   spd_cdawlib_delete, tmp
    ;
    if(keyword_set(DEBUG)) then print, 'Determine type of listing.'
    ; Determine type of listing
@@ -2291,18 +2291,18 @@ for mega_loop=1, mega.num do begin
       return, -1
    endif
    epsz=size(b.(v1[0]).dat)
-   if(epsz[0] eq 0) then b=ord_mystruct(b,vorder,0) else $
-                       b=ord_mystruct(b,vorder,1)
+   if(epsz[0] eq 0) then b=spd_cdawlib_ord_mystruct(b,vorder,0) else $
+                       b=spd_cdawlib_ord_mystruct(b,vorder,1)
 
    ; Reform Image 3D data arrays
    if(noimg eq 0 and keyword_set(DEBUG)) then print, 'Reform 3D Image arrays.'
-   if(noimg eq 0) then  b=reform_mystruct(b)
+   if(noimg eq 0) then  b=spd_cdawlib_reform_mystruct(b)
    
    ; Reform Image 4D data arrays
    ; This will make the 4D data into 2D, ie, one long line for each time element.
    ; Visually, we are going to stretch the 3D data cube into one looooong line of numbers.
    if(no4drv eq 0 and keyword_set(DEBUG)) then print, 'Reform 4D Image arrays.'
-   if(no4drv eq 0) then  b=reform_mystruct(b)
+   if(no4drv eq 0) then  b=spd_cdawlib_reform_mystruct(b)
    
    ; Set/Convert tstart and tstop 
    if(keyword_set(DEBUG)) then print, 'Set/Convert tstart and tstop.'
@@ -2431,7 +2431,7 @@ for mega_loop=1, mega.num do begin
 ; in order to determine the actual number of columns of data requested
 
    for vars = 0, n_tags(b)-1 do begin
-      dep1=dependn_search(b,vars,1)
+      dep1=spd_cdawlib_dependn_search(b,vars,1)
       if (dep1[0] ne '') then begin
 	depend1 = b.(vars).depend_1
         ; RCJ 05/16/2013  If alt_cdaweb_depend_1 exists, use it instead:
@@ -2440,7 +2440,7 @@ for mega_loop=1, mega.num do begin
 	if (n_elements(dep1_values) eq 0) then dep1_values = depend1 else $
 	dep1_values=[dep1_values,depend1]
       endif
-      dep2=dependn_search(b,vars,2)
+      dep2=spd_cdawlib_dependn_search(b,vars,2)
       if (dep2[0] ne '') then begin
 	depend2 = b.(vars).depend_2
         ; RCJ 05/16/2013  If alt_cdaweb_depend_2 exists, use it instead:
@@ -2449,7 +2449,7 @@ for mega_loop=1, mega.num do begin
 	if (n_elements(dep2_values) eq 0) then dep2_values = depend2 else $
 	dep2_values=[dep2_values,depend2]
       endif
-      dep3=dependn_search(b,vars,3)
+      dep3=spd_cdawlib_dependn_search(b,vars,3)
       if (dep3[0] ne '') then begin
 	depend3 = b.(vars).depend_3
         q=where(tag_names(b.(vars)) eq 'ALT_CDAWEB_DEPEND_3')
@@ -2669,12 +2669,12 @@ for mega_loop=1, mega.num do begin
       endfor   ; end i
    endif   ; end if (w gt 0)
    ; Free Memory
-   delete, ctmp
-   delete, tmp1
-   delete, tmpt
-   delete, tmpt1
-   delete, tmp
-   delete, b
+   spd_cdawlib_delete, ctmp
+   spd_cdawlib_delete, tmp1
+   spd_cdawlib_delete, tmpt
+   spd_cdawlib_delete, tmpt1
+   spd_cdawlib_delete, tmp
+   spd_cdawlib_delete, b
    ;
    nvar=0
    for i=0,ns_tags-1 do begin
@@ -2744,12 +2744,12 @@ for mega_loop=1, mega.num do begin
 	 ;    We might run into different, more complex cases in the future. Will deal with
 	 ;    them as they come up. This case is from bar118_1a_2_l2_ephm dataset.
 	 format=strsplit(format,'%',/extract)
-         frm_st=data_len(format[0],c.(i).fillval)
+         frm_st=spd_cdawlib_data_len(format[0],c.(i).fillval)
          status=frm_st.status
          if( status ne 0) then begin
             if reportflag then printf, 1, 'STATUS= Data cannot be listed. '
             print, 'STATUS= Data cannot be listed. '
-            print, 'ERROR=Error: In function data_len'
+            print, 'ERROR=Error: In function spd_cdawlib_data_len'
             close, 1
             return, -1 
          endif
@@ -2767,15 +2767,15 @@ for mega_loop=1, mega.num do begin
          if(norv eq 0) then begin
             ; if(c.(i).lablaxis eq '') then label=c.(i).fieldnam else $
             ;   label=c.(i).lablaxis
-            label=label_search(c,1,i,0)
-            units=unit_search(c,1,i,0)
+            label=spd_cdawlib_label_search(c,1,i,0)
+            units=spd_cdawlib_unit_search(c,1,i,0)
             ;col_sz=strlen(label) > strlen(c.(i).units) > dat_len
             col_sz=strlen(label) > strlen(units) > dat_len
             ; the second set of "col_sz, label" input will be used to define the format
             ; dep_for. This input changes when we have variables w/ depend_1 attribute.
             ; RCJ 04/01  
-            ;sform=form_bld(col_sz, label, c.(i).units, dat_len, col_sz, label, col_sz, label,form, shft)
-            sform=form_bld(col_sz, label, units, dat_len, col_sz, label, col_sz, label,col_sz, label,form, shft)
+            ;sform=spd_cdawlib_form_bld(col_sz, label, c.(i).units, dat_len, col_sz, label, col_sz, label,form, shft)
+            sform=spd_cdawlib_form_bld(col_sz, label, units, dat_len, col_sz, label, col_sz, label,col_sz, label,form, shft)
             lab_for=lab_for + sform.labv
             unt_for=unt_for + sform.untv
             dat_for=dat_for + sform.datv
@@ -2794,8 +2794,8 @@ for mega_loop=1, mega.num do begin
                st_sz=size(c.(i).dat)
                ; Compute depend_0 or Epoch
                if(st_sz[0] le 1) then begin
-                  label=label_search(c,1,i,0)
-		  units=unit_search(c,1,i,0)
+                  label=spd_cdawlib_label_search(c,1,i,0)
+		  units=spd_cdawlib_unit_search(c,1,i,0)
                   num_var=1
                   if(w eq 1 and st_sz[1] gt 1 and st_sz[0] eq 1) then num_var=st_sz[1] 
                   for k=0, num_var-1 do begin
@@ -2804,8 +2804,8 @@ for mega_loop=1, mega.num do begin
                      ; the second set of "col_sz, label" input will be used to define the format
                      ; dep_for. This input changes when we have variables w/ depend_1 attribute.
                      ; RCJ 04/01  
-                     ;sform=form_bld(col_sz, label, c.(i).units, dat_len, col_sz,label,col_sz,label,form, shft)
-                     sform=form_bld(col_sz, label, units, dat_len, col_sz,label,col_sz,label,col_sz,label,form, shft)
+                     ;sform=spd_cdawlib_form_bld(col_sz, label, c.(i).units, dat_len, col_sz,label,col_sz,label,form, shft)
+                     sform=spd_cdawlib_form_bld(col_sz, label, units, dat_len, col_sz,label,col_sz,label,col_sz,label,form, shft)
                      lab_for=lab_for + sform.labv
                      unt_for=unt_for + sform.untv
                      dat_for=dat_for + sform.datv
@@ -2817,7 +2817,7 @@ for mega_loop=1, mega.num do begin
                if(st_sz[0] eq 2) then begin
              
                   num_var=st_sz[1]
-                        depend1_labels=dependn_search(c,i,1) ; st_sz(0)=2
+                        depend1_labels=spd_cdawlib_dependn_search(c,i,1) ; st_sz(0)=2
                         if (depend1_labels[0] ne '') then begin
                               depend1=c.(i).depend_1
                               ; RCJ 05/16/2013  If alt_cdaweb_depend_1 exists, use it instead:
@@ -2827,7 +2827,7 @@ for mega_loop=1, mega.num do begin
                               depend1_labels=['(@_'+depend1_labels+'_'+dep1_units+')']
                               ;dep1_values=[dep1_values,dep1]
                         endif
-                        depend2_labels=dependn_search(c,i,2) ; st_sz(0)=2
+                        depend2_labels=spd_cdawlib_dependn_search(c,i,2) ; st_sz(0)=2
                         if (depend2_labels[0] ne '') then begin
                               depend2=c.(i).depend_2
                               ; RCJ 05/16/2013  If alt_cdaweb_depend_2 exists, use it instead:
@@ -2838,23 +2838,23 @@ for mega_loop=1, mega.num do begin
                         endif
                         ;dep_col_sz=max(strlen(depend1_labels)) > max(strlen(depend2_labels)) >strlen(c.(i).units) > dat_len
                         ; JWJ 07/31/2000 
-                        ; changed below from label_search to label_search_max_width
-                        ;label=label_search_max_width(c,st_sz[0],i,k)
-			; RCJ 01/29/2003. Label_search_max_width no longer being used.
+                        ; changed below from spd_cdawlib_label_search to spd_cdawlib_label_search_max_width
+                        ;label=spd_cdawlib_label_search_max_width(c,st_sz[0],i,k)
+			; RCJ 01/29/2003. spd_cdawlib_label_search_max_width no longer being used.
 			;label=''
 			;units=''
 			for kk=0L,st_sz[1]-1 do begin
-                           label0=label_search(c,st_sz[0],i,kk)
+                           label0=spd_cdawlib_label_search(c,st_sz[0],i,kk)
                            if strlen(label0) gt strlen(label) then label=label0
-                           units0=unit_search(c,st_sz[0],i,kk)
+                           units0=spd_cdawlib_unit_search(c,st_sz[0],i,kk)
                            if strlen(units0) gt strlen(units) then units=units0
 			endfor 
 			; label: this is only the longest of the labels, not a specific label.  
                         dep_col_sz=max(strlen(depend1_labels)) > max(strlen(depend2_labels)) >strlen(units) > dat_len
                         ;col_sz = strlen(label) > strlen(c.(i).units) > dat_len
                         col_sz = strlen(label) > strlen(units) > dat_len
-                        ;sform=form_bld(col_sz, label, c.(i).units, dat_len, dep_col_sz, depend1_labels,dep_col_sz, depend2_labels,form, shft)
-                        sform=form_bld(col_sz, label, units, dat_len, dep_col_sz, depend1_labels,dep_col_sz, depend2_labels,dep_col_sz, depend2_labels,form, shft)
+                        ;sform=spd_cdawlib_form_bld(col_sz, label, c.(i).units, dat_len, dep_col_sz, depend1_labels,dep_col_sz, depend2_labels,form, shft)
+                        sform=spd_cdawlib_form_bld(col_sz, label, units, dat_len, dep_col_sz, depend1_labels,dep_col_sz, depend2_labels,dep_col_sz, depend2_labels,form, shft)
                         ; Modify format 
                         labv=strtrim(num_var,2)+'('+sform.labv+' ' 
                         untv=strtrim(num_var,2)+'('+sform.untv+' '
@@ -2899,15 +2899,15 @@ for mega_loop=1, mega.num do begin
             ; Compute depend_0 or Epoch 
             if(st_sz[0] le 1) then begin
                nvar=nvar+1
-               label=label_search(c,st_sz[0],i,0)
-               units=unit_search(c,st_sz[0],i,0)
+               label=spd_cdawlib_label_search(c,st_sz[0],i,0)
+               units=spd_cdawlib_unit_search(c,st_sz[0],i,0)
                ;col_sz=strlen(label) > strlen(c.(i).units) > dat_len
                col_sz=strlen(label) > strlen(units) > dat_len
                ; the second set of "col_sz, label" input will be used to define the format
                ; dep_for. This input changes when we have variables w/ depend_1 attribute.
                ; RCJ 04/01  
-               ;sform=form_bld(col_sz, label, c.(i).units, dat_len, col_sz, label, col_sz, label,form, shft)
-               sform=form_bld(col_sz, label, units, dat_len, col_sz, label, col_sz, label,col_sz, label,form, shft)
+               ;sform=spd_cdawlib_form_bld(col_sz, label, c.(i).units, dat_len, col_sz, label, col_sz, label,form, shft)
+               sform=spd_cdawlib_form_bld(col_sz, label, units, dat_len, col_sz, label, col_sz, label,col_sz, label,form, shft)
                lab_for=lab_for + sform.labv
                unt_for=unt_for + sform.untv
                dat_for=dat_for + sform.datv
@@ -2922,7 +2922,7 @@ for mega_loop=1, mega.num do begin
                ;if(c.(i).var_type eq 'data') or $
                 ;  (c.(i).var_type eq 'support_data') then begin
                   ; Determine labels
-                  depend1_labels=dependn_search(c,i,1) ; st_sz(0)=2
+                  depend1_labels=spd_cdawlib_dependn_search(c,i,1) ; st_sz(0)=2
                   if (depend1_labels[0] ne '') then begin
                      depend1=c.(i).depend_1
                      ; RCJ 05/16/2013  If alt_cdaweb_depend_1 exists, use it instead:
@@ -2931,7 +2931,7 @@ for mega_loop=1, mega.num do begin
                      dep1_units=c.(strtrim(depend1,2)).units
                      depend1_labels=['(@_'+depend1_labels+'_'+dep1_units+')']
                   endif   
-                  depend2_labels=dependn_search(c,i,2) ; st_sz[0]=2
+                  depend2_labels=spd_cdawlib_dependn_search(c,i,2) ; st_sz[0]=2
                   if (depend2_labels[0] ne '') then begin
                      depend2=c.(i).depend_2
                      ; RCJ 05/16/2013  If alt_cdaweb_depend_2 exists, use it instead:
@@ -2941,7 +2941,7 @@ for mega_loop=1, mega.num do begin
                      depend2_labels=['(@_'+depend2_labels+'_'+dep2_units+')']
                   endif   
 		  ;if this is 2D image there will be no depend3. 
-                     depend3_labels=dependn_search(c,i,3) ; st_sz[0]=3
+                     depend3_labels=spd_cdawlib_dependn_search(c,i,3) ; st_sz[0]=3
                      if (depend3_labels[0] ne '') then begin
                        depend3=c.(i).depend_3
                        q=where(tag_names(c.(i)) eq 'ALT_CDAWEB_DEPEND_3')
@@ -2952,14 +2952,14 @@ for mega_loop=1, mega.num do begin
                   label=''
 		  units=''
                   for kk=0L,st_sz[1]-1 do begin
-                     label0=label_search(c,st_sz[0],i,kk)
+                     label0=spd_cdawlib_label_search(c,st_sz[0],i,kk)
                      if strlen(label0) gt strlen(label) then label=label0
-                     units0=unit_search(c,st_sz[0],i,kk)
+                     units0=spd_cdawlib_unit_search(c,st_sz[0],i,kk)
                      if strlen(units0) gt strlen(units) then units=units0
                   endfor 
 		  dep_col_sz=max(strlen(depend1_labels)) > max(strlen(depend2_labels))  > max(strlen(depend3_labels)) >strlen(units) > dat_len
                   col_sz = strlen(label) > strlen(units) > dat_len
-                  sform=form_bld(col_sz, label, units, dat_len,dep_col_sz,depend1_labels,dep_col_sz,depend2_labels,dep_col_sz,depend3_labels,form, shft)
+                  sform=spd_cdawlib_form_bld(col_sz, label, units, dat_len,dep_col_sz,depend1_labels,dep_col_sz,depend2_labels,dep_col_sz,depend3_labels,form, shft)
                   ;
                	  sform.labv=strmid(sform.labv,0,strlen(sform.labv)-1) ; remove comma
                   lab_for=lab_for + strtrim((st_sz[1]),2)+'('+sform.labv+'),'
@@ -3009,19 +3009,19 @@ for mega_loop=1, mega.num do begin
       printf, unit, format='("#  ")'   
    endif
    ; Free Memory
-   delete, c
+   spd_cdawlib_delete, c
    if keyword_set(DEBUG) then print,'Write out variables.'
-   if(nogatt eq 0) then  status=wrt_hybd_strct(glbatt,unit,0,maxrecs,depend0,mega.num)
-   if(norv   eq 0) then  status=wrt_hybd_strct(rvars,unit,1,maxrecs,depend0,mega.num)  
-   if(nonrv  eq 0) then  status=wrt_hybd_strct(nrvars,unit,2,maxrecs,depend0,mega.num)
-   if(no2drv eq 0) then  status=wrt_hybd_strct(rvars,unit,3,maxrecs,depend0,mega.num)
-   if(no3drv eq 0) then  status=wrt_hybd_strct(rvars,unit,4,maxrecs,depend0,mega.num)
-   if(noimg  eq 0) then  status=wrt_hybd_strct(rvars,unit,5,maxrecs,depend0,mega.num)
+   if(nogatt eq 0) then  status=spd_cdawlib_wrt_hybd_strct(glbatt,unit,0,maxrecs,depend0,mega.num)
+   if(norv   eq 0) then  status=spd_cdawlib_wrt_hybd_strct(rvars,unit,1,maxrecs,depend0,mega.num)  
+   if(nonrv  eq 0) then  status=spd_cdawlib_wrt_hybd_strct(nrvars,unit,2,maxrecs,depend0,mega.num)
+   if(no2drv eq 0) then  status=spd_cdawlib_wrt_hybd_strct(rvars,unit,3,maxrecs,depend0,mega.num)
+   if(no3drv eq 0) then  status=spd_cdawlib_wrt_hybd_strct(rvars,unit,4,maxrecs,depend0,mega.num)
+   if(noimg  eq 0) then  status=spd_cdawlib_wrt_hybd_strct(rvars,unit,5,maxrecs,depend0,mega.num)
    ; RCJ 07/19/2013  After no4drv data has been reformed, the call below is just like the 
    ;     call above, for 'noimg'.
-   if(no4drv eq 0) then  status=wrt_hybd_strct(rvars,unit,5,maxrecs,depend0,mega.num)
+   if(no4drv eq 0) then  status=spd_cdawlib_wrt_hybd_strct(rvars,unit,5,maxrecs,depend0,mega.num)
    ; Free Memory
-   delete, rvars
+   spd_cdawlib_delete, rvars
 endfor ; end mega_loop
 
 time_string=systime()
