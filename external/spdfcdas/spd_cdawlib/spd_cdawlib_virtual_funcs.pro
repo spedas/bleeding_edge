@@ -10,18 +10,15 @@
 ;
 ;------------------------------------------------------------------
 
-compile_opt idl2
-
-
 ;+
 ;
-; NAME: Function VTYPE_NAMES
+; NAME: Function spd_cdawlib_vtype_names
 ;
 ; PURPOSE: Returns array of names or index numbers where the var_type is
 ;          equal to vtype (eg."data").
 ;
 
-function vtype_names, buf, vtype, NAMES=vNAMES
+function spd_cdawlib_vtype_names, buf, vtype, NAMES=vNAMES
 
   tagnames = tag_names(buf)
   tagnums = n_tags(buf)
@@ -68,7 +65,7 @@ end
 ;
 ; INPUT;  a   an idl structure
 
-function buf_trap, a 
+function spd_cdawlib_buf_trap, a 
 
   ibad=0
   str_tst=size(a)
@@ -79,7 +76,7 @@ function buf_trap, a
     v_stat='STATUS=Cannot plot this data'
     a=create_struct('DATASET',v_data,'ERROR',v_err,'STATUS',v_stat)
   endif else begin
-; Test for errors trapped in conv_map_image
+; Test for errors trapped in spd_cdawlib_conv_map_image
    atags=tag_names(a)
    rflag=spd_cdawlib_tagindex('DATASET',atags)
    if(rflag[0] ne -1) then ibad=1
@@ -90,12 +87,12 @@ end
 
 ;+
 ;
-; NAME: Function VV_NAMES
+; NAME: Function spd_cdawlib_vv_names
 ;
 ; PURPOSE: Returns array of virtual variable names or index numbers.
 ;
 
-function vv_names, buf, NAMES=NAMES
+function spd_cdawlib_vv_names, buf, NAMES=NAMES
 
   tagnames = tag_names(buf)
   tagnums = n_tags(buf)
@@ -132,7 +129,7 @@ return, vindices
 end
 ;-----------------------------------------------------------------------------
 ;+
-; NAME: Function CHECK_MYVARTYPE
+; NAME: Function spd_cdawlib_check_myvartype
 ;
 ; PURPOSE:
 ; Check that all variables in the original variable list are declared as
@@ -141,7 +138,7 @@ end
 ;
 ; CALLING SEQUENCE:
 ;
-;          status = check_myvartype(buf,org_names)
+;          status = spd_cdawlib_check_myvartype(buf,org_names)
 ;
 ; VARIABLES:
 ;
@@ -161,13 +158,13 @@ end
 ;
 ; REQUIRED PROCEDURES:
 ;
-function check_myvartype, nbuf, org_names
+function spd_cdawlib_check_myvartype, nbuf, org_names
    status=0
    var_names=strarr(1)
-   var_indices = vtype_names(nbuf,'data',NAMES=var_names)
+   var_indices = spd_cdawlib_vtype_names(nbuf,'data',NAMES=var_names)
    if(var_indices[0] lt 0) then begin
      print, "STATUS= No variable of type DATA detected."
-     print, "ERROR= No var_type=DATA variable found in check_myvartype.pro"
+     print, "ERROR= No var_type=DATA variable found in spd_cdawlib_check_myvartype.pro"
      print, "ERROR= Message: ",var_indices[0]
      status = -1
      return, status
@@ -258,14 +255,14 @@ return, status
 end
 
 ;+
-; NAME: Function ALTERNATE_VIEW
+; NAME: Function spd_cdawlib_alternate_view
 ;
 ; PURPOSE: Find virtual variables and replace their data w/ the component0
 ;          data 
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = alternate_view(buf,org_names)
+;          new_buf = spd_cdawlib_alternate_view(buf,org_names)
 ;
 ; VARIABLES:
 ;
@@ -296,14 +293,14 @@ end
 ;
 ;-------------------------------------------------------------------
 
-function alternate_view, buf,org_names
+function spd_cdawlib_alternate_view, buf,org_names
 
 status=0
 
 ; Establish error handler
   catch, error_status
   if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in alternate_view"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_alternate_view"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -311,9 +308,9 @@ status=0
 
 ; Find virtual variables
    vvtag_names=strarr(1) 
-   vvtag_indices = vv_names(buf,NAMES=vvtag_names)
+   vvtag_indices = spd_cdawlib_vv_names(buf,NAMES=vvtag_names)
    if(vvtag_indices[0] lt 0) then begin
-     print, "ERROR= No VIRTUAL variable found in alternate_view"
+     print, "ERROR= No VIRTUAL variable found in spd_cdawlib_alternate_view"
      print, "ERROR= Message: ",vvtag_indices[0]
      status = -1
      return, status
@@ -346,8 +343,8 @@ status=0
     if (findex[0] ne -1) then $
      func_name=strlowcase(buf.(vvtag_indices[i]).(findex[0]))
 ; Loop through all vv's and assign image handle to all w/ 0 handles RTB 12/98
-; Check if handle = 0 and if function = 'alternate_view'
- if(func_name eq 'alternate_view') then begin
+; Check if handle = 0 and if function = 'spd_cdawlib_alternate_view'
+ if(func_name eq 'spd_cdawlib_alternate_view') then begin
 ;print, func_name 
 ;print, vvtag_names[i]
     if(component0_index ge 0) then begin
@@ -358,7 +355,7 @@ status=0
 
       else print, "Set /NODATASTRUCT keyword in call to read_myCDF";
     endif else begin
-     print, "ERROR= No COMPONENT0 variable found in alternate_view"
+     print, "ERROR= No COMPONENT0 variable found in spd_cdawlib_alternate_view"
      print, "ERROR= Message: ",component0_index
      status = -1
      return, status
@@ -371,19 +368,19 @@ status=0
 ; data otherwise set to support_data
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(buf, org_names)
+   status = spd_cdawlib_check_myvartype(buf, org_names)
 
 return, buf
 end
 
 ;+
-; NAME: Function CLAMP_TO_ZERO
+; NAME: Function spd_cdawlib_clamp_to_zero
 ;
 ; PURPOSE: Clamp all values less than or equal to 'clamp_threshold' to zero. 
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = clamp_to_zero(buf,org_names)
+;          new_buf = spd_cdawlib_clamp_to_zero(buf,org_names)
 ;
 ; VARIABLES:
 ;
@@ -406,17 +403,17 @@ end
 ;
 ;   none
 ;
-; History: Written by Ron Yurow 08/15, based on alternate_view
+; History: Written by Ron Yurow 08/15, based on spd_cdawlib_alternate_view
 ;-
 
-function clamp_to_zero, buf, org_names, index=index
+function spd_cdawlib_clamp_to_zero, buf, org_names, index=index
 
 status=0
 
 ; Establish error handler
   catch, error_status
   if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in clamp_to_zero"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_clamp_to_zero"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -504,7 +501,7 @@ status=0
 
     ENDIF ELSE BEGIN
 
-        print, "ERROR= No COMPONENT0 variable found in clamp_to_zero"
+        print, "ERROR= No COMPONENT0 variable found in spd_cdawlib_clamp_to_zero"
         print, "ERROR= Message: ",component0_index
         status = -1
 
@@ -515,19 +512,19 @@ status=0
 ; data otherwise set to support_data
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(buf, org_names)
+   status = spd_cdawlib_check_myvartype(buf, org_names)
 
 RETURN, buf
 end
 
 ;+
-; NAME: Function COMPOSITE_TBL
+; NAME: Function spd_cdawlib_composite_tbl
 ;
 ; PURPOSE: Create a variable that is a composite of of multiple variables. 
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = composite_tbl(buf,org_names)
+;          new_buf = spd_cdawlib_composite_tbl(buf,org_names)
 ;
 ; VARIABLES:
 ;
@@ -550,17 +547,17 @@ end
 ;
 ;   none
 ;
-; History: Written by Ron Yurow 08/15, based on alternate_view
+; History: Written by Ron Yurow 08/15, based on spd_cdawlib_alternate_view
 ;-
 
-function composite_tbl, buf, org_names, index=index
+function spd_cdawlib_composite_tbl, buf, org_names, index=index
 
 status=0
 
 ; Establish error handler
   catch, error_status
   if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in composite_tbl"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_composite_tbl"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -695,13 +692,13 @@ status=0
 ; data otherwise set to support_data
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(buf, org_names)
+   status = spd_cdawlib_check_myvartype(buf, org_names)
 
 RETURN, buf
 end
 
 ;+
-; NAME: Function arr_slice
+; NAME: Function spd_cdawlib_arr_slice
 ;
 ; PURPOSE: Create a variable by extracting a subset (slice) of a multidimensional array.  
 ;          Works on variables up to 7 dimensions. 
@@ -709,7 +706,7 @@ end
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = arr_slice (buf,org_names)
+;          new_buf = spd_cdawlib_arr_slice (buf,org_names)
 ;
 ; VARIABLES:
 ;
@@ -732,17 +729,17 @@ end
 ;
 ;   none
 ;
-; History: Written by Ron Yurow 05/16, based on alternate_view
+; History: Written by Ron Yurow 05/16, based on spd_cdawlib_alternate_view
 ;-
 
-function arr_slice, buf, org_names, index=index
+function spd_cdawlib_arr_slice, buf, org_names, index=index
 
 status=0
 
 ; Establish error handler
   catch, error_status
   if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in ARR_SLICE"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_arr_slice"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -896,19 +893,19 @@ status=0
 ; data otherwise set to support_data
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(buf, org_names)
+   status = spd_cdawlib_check_myvartype(buf, org_names)
 
 RETURN, buf
 end
 
 ;+
-; NAME: Function CROP_IMAGE
+; NAME: Function spd_cdawlib_crop_image
 ;
 ; PURPOSE: Crop [60,20,*] images into [20,20,*]
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = crop_image(buf,org_names,index)
+;          new_buf = spd_cdawlib_crop_image(buf,org_names,index)
 ;
 ; VARIABLES:
 ;
@@ -925,16 +922,16 @@ end
 ;  new_buf    - an IDL structure containing the populated virtual 
 ;               variable 
 ;
-; History: Written by RCJ 12/00, based on alternate_view
+; History: Written by RCJ 12/00, based on spd_cdawlib_alternate_view
 ;-
 
-function crop_image, buf, org_names, index=index
+function spd_cdawlib_crop_image, buf, org_names, index=index
 status=0
-;print, 'In Crop_image'
+;print, 'In spd_cdawlib_crop_image'
 ; Establish error handler
 catch, error_status
 if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in crop_image"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_crop_image"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -977,13 +974,13 @@ if n_elements(sp) gt 20 then $
 ; data otherwise set to support_data
 ; Find variables w/ var_type == data
 
-status = check_myvartype(buf, org_names)
+status = spd_cdawlib_check_myvartype(buf, org_names)
 
 return, buf
 end
 
 ;+
-; NAME: Function clean_data 
+; NAME: Function spd_cdawlib_clean_data 
 ;
 ; pURPOSE: Remove data 3*sigma from mean 
 ;
@@ -996,18 +993,18 @@ end
 ;
 ; CALLING SEQUENCE:
 ;
-;         data = clean_data(data,keywords...)
+;         data = spd_cdawlib_clean_data(data,keywords...)
 ;
 
 
 
-function clean_data, data, FILLVAL=FILLVAL
+function spd_cdawlib_clean_data, data, FILLVAL=FILLVAL
 
  if not keyword_set(FILLVAL) then FILLVAL=1.0+e31;
    
    w=where(data ne FILLVAL,wn)
    if(wn eq 0) then begin
-     print, "ERROR = No valid data found in function clean_data";
+     print, "ERROR = No valid data found in function spd_cdawlib_clean_data";
      print, "STATUS = No valid data found. Re-select time interval.";
    endif
    
@@ -1037,7 +1034,7 @@ function clean_data, data, FILLVAL=FILLVAL
    t = where(data eq data[0], tn)
    if (tn eq n_elements(data)) then begin
 	wn = 0
-	print, 'DEBUG clean_data - overriding results from moment func. because '
+	print, 'DEBUG spd_cdawlib_clean_data - overriding results from moment func. because '
 	print, 'all data are the same valid value = ',data[0]
    endif
 
@@ -1047,7 +1044,7 @@ return, data
 end
 
 ;+
-; NAME: Function CONV_POS 
+; NAME: Function spd_cdawlib_conv_pos 
 ;
 ; PURPOSE: Find virtual variables and compute their data w/ the component0,
 ;          component1,... data.  This function specifically converts position
@@ -1067,17 +1064,17 @@ end
 ;
 ; CALLING SEQUENCE:
 ;
-;         newbuf = conv_pos(buf,org_names,keywords...)
+;         newbuf = spd_cdawlib_conv_pos(buf,org_names,keywords...)
 ;
 
-function conv_pos, buf, org_names, COORD=COORD, TSTART=TSTART, $ 
+function spd_cdawlib_conv_pos, buf, org_names, COORD=COORD, TSTART=TSTART, $ 
                    TSTOP=TSTOP, DEBUG=DEBUG, INDEX=INDEX
 
  status=0
 ; Establish error handler
  catch, error_status
  if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in conv_pos.pro"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_conv_pos.pro"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -1128,7 +1125,7 @@ function conv_pos, buf, org_names, COORD=COORD, TSTART=TSTART, $
 ; Determine position array 
 ;help, buf.sc_pos_syngci, /struct
   vvtag_names=strarr(1)
-  vvtag_indices = vv_names(buf,NAMES=vvtag_names)
+  vvtag_indices = spd_cdawlib_vv_names(buf,NAMES=vvtag_names)
   vvtag_names = strupcase(vvtag_names)
 
 ;TJK 12/15/2006, the following doesn't work when reading a 
@@ -1200,9 +1197,9 @@ function conv_pos, buf, org_names, COORD=COORD, TSTART=TSTART, $
    tst_theta=dblarr(num)
 
 ; Clean up any bad data; set to fill values outside 3-sigma 
-   phi=clean_data(phi,FILLVAL=fillval)
-   theta=clean_data(theta,FILLVAL=fillval)
-   r=clean_data(r,FILLVAL=fillval)
+   phi=spd_cdawlib_clean_data(phi,FILLVAL=fillval)
+   theta=spd_cdawlib_clean_data(theta,FILLVAL=fillval)
+   r=spd_cdawlib_clean_data(r,FILLVAL=fillval)
 
    wcp=where(phi ne fillval,wcnp)
    wct=where(theta ne fillval,wcnt)
@@ -1392,7 +1389,7 @@ function conv_pos, buf, org_names, COORD=COORD, TSTART=TSTART, $
  if(COORD eq "ANG-GSE") then begin
   nbuf=buf 
   vvtag_names=strarr(1)
-  vvtag_indices = vv_names(buf,NAMES=vvtag_names)
+  vvtag_indices = spd_cdawlib_vv_names(buf,NAMES=vvtag_names)
 
 ; Determine time array 
 ; depend0=depends(INDEX)
@@ -1442,30 +1439,30 @@ function conv_pos, buf, org_names, COORD=COORD, TSTART=TSTART, $
 ; data otherwise set to metadata 
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(nbuf, org_names)
+   status = spd_cdawlib_check_myvartype(nbuf, org_names)
 
 return, nbuf 
 end 
 
 
-;to get help: IDL> ptg,/help
+;to get help: IDL> spd_cdawlib_ptg,/help
 ; ancillary routines --------------------------------------------
 
-FUNCTION dtand,x
+FUNCTION spd_cdawlib_dtand,x
     RETURN,DOUBLE(TAN(x*!DTOR))
 END
 
-FUNCTION datand,x
+FUNCTION spd_cdawlib_datand,x
     RETURN,DOUBLE(ATAN(x)/!DTOR)
 END
 
-FUNCTION fgeodeP,a,b,v1x,v1y,v1z,v2x,v2y,v2z
+FUNCTION spd_cdawlib_fgeodep,a,b,v1x,v1y,v1z,v2x,v2y,v2z
     RETURN,v1x*v2x + v1y*v2y + v1z*v2z * a*a/(b*b)
 END
 
 ;---------------------------------------------------------------
 
-PRO vector_to_ra_decP,x,y,z,ra,dec
+PRO spd_cdawlib_vector_to_ra_decp,x,y,z,ra,dec
 
 
     fill_value = -1.D31
@@ -1485,7 +1482,7 @@ PRO vector_to_ra_decP,x,y,z,ra,dec
 END
 
 ;---------------------------------------------------------------
-PRO drtollP,x,y,z,lat,lon,r
+PRO spd_cdawlib_drtollp,x,y,z,lat,lon,r
 
 ; RTB gci point validity check
     if((abs(x) gt 10000.0) or (abs(y) gt 10000.0) or (abs(z) gt 10000.0)) $
@@ -1521,7 +1518,7 @@ END
 
 ;---------------------------------------------------------------
 
-PRO get_scalarP,Ox,Oy,Oz,Lx,Ly,Lz,emis_hgt,ncols,nrows,s,f
+PRO spd_cdawlib_get_scalarp,Ox,Oy,Oz,Lx,Ly,Lz,emis_hgt,ncols,nrows,s,f
 
 ;...  Equatoral radius (km) and polar flattening of the earth
 ;     Ref: Table 15.4, 'Explanatory Supplement to the
@@ -1545,9 +1542,9 @@ PRO get_scalarP,Ox,Oy,Oz,Lx,Ly,Lz,emis_hgt,ncols,nrows,s,f
       f = (ree - rep)/ree
 
 ;...  get elements of quadratic formula
-      a = fgeodeP(ree,rep,Lx,Ly,Lz,Lx,Ly,Lz)
-      b = fgeodeP(ree,rep,Lx,Ly,Lz,Ox,Oy,Oz) * 2.D
-      c = fgeodeP(ree,rep,Ox,Oy,Oz,Ox,Oy,Oz) - ree*ree
+      a = spd_cdawlib_fgeodep(ree,rep,Lx,Ly,Lz,Lx,Ly,Lz)
+      b = spd_cdawlib_fgeodep(ree,rep,Lx,Ly,Lz,Ox,Oy,Oz) * 2.D
+      c = spd_cdawlib_fgeodep(ree,rep,Ox,Oy,Oz,Ox,Oy,Oz) - ree*ree
 
 ;...  check solutions to quadratic formula
       determinant = b*b - 4.D * a*c 
@@ -1563,7 +1560,7 @@ PRO get_scalarP,Ox,Oy,Oz,Lx,Ly,Lz,emis_hgt,ncols,nrows,s,f
 
 END
 
-pro ptg_new,orb,LpixX,LpixY,LpixZ,emis_hgt,gclat,gclon,r,epoch=epoch
+pro spd_cdawlib_ptg_new,orb,LpixX,LpixY,LpixZ,emis_hgt,gclat,gclon,r,epoch=epoch
 
      size_L=size(LpixX)
 ;... Convert Lpix to a Unit Vector
@@ -1576,7 +1573,7 @@ pro ptg_new,orb,LpixX,LpixY,LpixZ,emis_hgt,gclat,gclon,r,epoch=epoch
 ; Option which could be included
 ;    calculate right ascension and declination
 ;     IF(KEYWORD_SET(getra)) THEN $
-;        vector_to_ra_decP,LpixX,LpixY,LpixZ,ra,dec
+;        spd_cdawlib_vector_to_ra_decp,LpixX,LpixY,LpixZ,ra,dec
 
 ;... Find scalar (s) such that s*L0 points to
 ;    the imaged emission source.  If the line of
@@ -1584,7 +1581,7 @@ pro ptg_new,orb,LpixX,LpixY,LpixZ,emis_hgt,gclat,gclon,r,epoch=epoch
      Ox = orb[0]
      Oy = orb[1]
      Oz = orb[2]
-     get_scalarP,Ox,Oy,Oz,LpixX,LpixY,LpixZ,emis_hgt,size_L[1],size_L[2],s,f
+     spd_cdawlib_get_scalarp,Ox,Oy,Oz,LpixX,LpixY,LpixZ,emis_hgt,size_L[1],size_L[2],s,f
      posX = Ox + s*LpixX
      posY = Oy + s*LpixY
      posZ = Oz + s*LpixZ
@@ -1598,7 +1595,7 @@ pro ptg_new,orb,LpixX,LpixY,LpixZ,emis_hgt,gclat,gclon,r,epoch=epoch
 ; Each point must be checked for outlying cyl. geo values.
   for i=0, size_L[1]-1 do begin
    for j=0, size_L[2]-1 do begin
-     drtollP,p_geoX(i,j),p_geoY(i,j),p_geoZ(i,j),dum1,dum2,dum3
+     spd_cdawlib_drtollp,p_geoX(i,j),p_geoY(i,j),p_geoZ(i,j),dum1,dum2,dum3
 ;print, dum1,dum2, dum3
      gclat(i,j)=dum1
      gclon(i,j)=dum2
@@ -1616,7 +1613,7 @@ pro ptg_new,orb,LpixX,LpixY,LpixZ,emis_hgt,gclat,gclon,r,epoch=epoch
         gdlat = 90.D + 0.D * gclat
         ndx = WHERE(gclat LT 90.,count)
         IF(count GT 0) THEN BEGIN
-           gdlat[ndx] = datand(dtand(gclat[ndx])/(1.D - f)*(1.D - f))
+           gdlat[ndx] = spd_cdawlib_datand(spd_cdawlib_dtand(gclat[ndx])/(1.D - f)*(1.D - f))
         ENDIF
         gclat = gdlat
      ENDIF
@@ -1624,10 +1621,10 @@ pro ptg_new,orb,LpixX,LpixY,LpixZ,emis_hgt,gclat,gclon,r,epoch=epoch
 
 end
 ;-------------------------------------------------------------------------
-;  ROUTINE:	ptg
+;  ROUTINE:	spd_cdawlib_ptg
 ;-------------------------------------------------------------------------
 
-PRO ptg,system,time,l0,att,orb,emis_hgt,gclat,gclon $
+PRO spd_cdawlib_ptg,system,time,l0,att,orb,emis_hgt,gclat,gclon $
        ,geodetic=geodetic,getra=getra,ra=ra,dec=dec,s=s $
        ,LpixX=LpixX,LpixY=LpixY,LpixZ=LpixZ $
        ,posX=posX,posY=posY,posZ=posZ, epoch=epoch $
@@ -1635,11 +1632,11 @@ PRO ptg,system,time,l0,att,orb,emis_hgt,gclat,gclon $
 
     IF(KEYWORD_SET(help)) THEN BEGIN
        PRINT,''
-       PRINT,' PRO ptg,system,time,l0,att,orb,emis_hgt,gclat,gclon
+       PRINT,' PRO spd_cdawlib_ptg,system,time,l0,att,orb,emis_hgt,gclat,gclon
        PRINT,''
        PRINT,' Original base code:  UVIPTG'
        PRINT,' 7/31/95  Author:  G. Germany'
-       PRINT,' Development into PTG: 01/15/98'
+       PRINT,' Development into spd_cdawlib_ptg: 01/15/98'
        PRINT,' Authors:  Mitch Brittnacher & John O''Meara'
        PRINT,''
        PRINT,' calculates geocentric lat,lon, for a complete image
@@ -1727,7 +1724,7 @@ PRO ptg,system,time,l0,att,orb,emis_hgt,gclat,gclon $
        RETURN
      ENDIF   
 
-     versStr = 'PTG v1.0  1/98'
+     versStr = 'spd_cdawlib_ptg v1.0  1/98'
      ncols = 200
      nrows = 228
      zrot  = DBLARR(ncols,nrows)
@@ -1792,7 +1789,7 @@ PRO ptg,system,time,l0,att,orb,emis_hgt,gclat,gclon $
      LpixY = lpx*xax[1] + lpy*yax[1] + lpz*zax[1]
      LpixZ = lpx*xax[2] + lpy*yax[2] + lpz*zax[2]
 
-     ptg_new, orb,LpixX,LpixY,LpixZ,emis_hgt,gclat,gclon,r,epoch=epoch
+     spd_cdawlib_ptg_new, orb,LpixX,LpixY,LpixZ,emis_hgt,gclat,gclon,r,epoch=epoch
 
 ;... Convert Lpix to a Unit Vector
 ;     mag = dfmag(LpixX,LpixY,LpixZ)
@@ -1803,7 +1800,7 @@ PRO ptg,system,time,l0,att,orb,emis_hgt,gclat,gclon $
 ;
 ;;    calculate right ascension and declination
 ;     IF(KEYWORD_SET(getra)) THEN $
-;        vector_to_ra_decP,LpixX,LpixY,LpixZ,ra,dec
+;        spd_cdawlib_vector_to_ra_decp,LpixX,LpixY,LpixZ,ra,dec
 ;
 ;;... Find scalar (s) such that s*L0 points to
 ;;    the imaged emission source.  If the line of
@@ -1812,7 +1809,7 @@ PRO ptg,system,time,l0,att,orb,emis_hgt,gclat,gclon $
 ;     Ox = orb[0]
 ;     Oy = orb[1]
 ;     Oz = orb[2]
-;     get_scalarP,Ox,Oy,Oz,LpixX,LpixY,LpixZ,emis_hgt,ncols,nrows,s,f
+;     spd_cdawlib_get_scalarp,Ox,Oy,Oz,LpixX,LpixY,LpixZ,emis_hgt,ncols,nrows,s,f
 ;
 ;     posX = Ox + s*LpixX
 ;     posY = Oy + s*LpixY
@@ -1836,7 +1833,7 @@ PRO ptg,system,time,l0,att,orb,emis_hgt,gclat,gclon $
 ;; Each point must be checked for outlying cyl. geo values.
 ;  for i=0, 199 do begin
 ;   for j=0, 227 do begin
-;     drtollP,p_geoX(i,j),p_geoY(i,j),p_geoZ(i,j),dum1,dum2,dum3
+;     spd_cdawlib_drtollp,p_geoX(i,j),p_geoY(i,j),p_geoZ(i,j),dum1,dum2,dum3
 ;     gclat(i,j)=dum1
 ;     gclon(i,j)=dum2
 ;     r(i,j)=dum3
@@ -1853,7 +1850,7 @@ PRO ptg,system,time,l0,att,orb,emis_hgt,gclat,gclon $
 ;        gdlat = 90.D + 0.D * gclat
 ;        ndx = WHERE(gclat LT 90.,count)
 ;        IF(count GT 0) THEN BEGIN
-;;           gdlat[ndx] = datand(dtand(gclat[ndx])/(1.D - f)*(1.D - f))
+;;           gdlat[ndx] = spd_cdawlib_datand(spd_cdawlib_dtand(gclat[ndx])/(1.D - f)*(1.D - f))
 ;        ENDIF
 ;        gclat = gdlat
 ;     ENDIF
@@ -1861,7 +1858,7 @@ PRO ptg,system,time,l0,att,orb,emis_hgt,gclat,gclon $
 END
 
 ;+
-; NAME: Function CONV_MAP_IMAGE
+; NAME: Function spd_cdawlib_conv_map_image
 ;
 ; PURPOSE: Convert provided idl structure to structure containing neccesary 
 ;          variables for an auroral image map.  Use variables pointed to by
@@ -1873,7 +1870,7 @@ END
 ; 
 ; CALLING SEQUENCE: 
 ;
-;          new_buf = conv_map_image(buf,org_names)
+;          new_buf = spd_cdawlib_conv_map_image(buf,org_names)
 ;
 ; VARIABLES:
 ;
@@ -1904,18 +1901,18 @@ END
 ;
 ;-------------------------------------------------------------------
 
-function conv_map_image, buf, org_names, DEBUG=DEBUG
+function spd_cdawlib_conv_map_image, buf, org_names, DEBUG=DEBUG
 
 ; Trap any errors propogated through buf
-   if(buf_trap(buf)) then begin
-    print, "idl structure bad (conv_map_image)"
+   if(spd_cdawlib_buf_trap(buf)) then begin
+    print, "idl structure bad (spd_cdawlib_conv_map_image)"
     return, buf 
    endif
 
 ; Check tags 
   tagnames=tag_names(buf)
 ;
-;print, 'In Conv_map_image'
+;print, 'In spd_cdawlib_conv_map_image'
 
 ;TJK added 6/10/98 - if the 1st image virtual variable handle or dat structure
 ;elements are already set, then return buf as is (because the other
@@ -1923,7 +1920,7 @@ function conv_map_image, buf, org_names, DEBUG=DEBUG
 ;function.
 
 vv_tagnames=strarr(1)
-vv_tagindx = vv_names(buf,names=vv_tagnames) ;find the virtual vars
+vv_tagindx = spd_cdawlib_vv_names(buf,names=vv_tagnames) ;find the virtual vars
 vtags = tag_names(buf.(vv_tagindx[0])) ;tags for the 1st Virtual image var.
 if (vv_tagindx[0] lt 0) then return, -1
 
@@ -2062,7 +2059,7 @@ if(ireturn) then return, buf ; Return only if all orig_names are already
               system=system
 
 
-    ptg,system,time,L0,att,orb,emis_hgt,gdlat,gdlon $
+    spd_cdawlib_ptg,system,time,L0,att,orb,emis_hgt,gdlat,gdlon $
        ,getra=getra,ra=ra,dec=dec,s=s $
        ,LpixX=LpixX,LpixY=LpixY,LpixZ=LpixZ $
        ,posX=posX,posY=posY,posZ=posZ, epoch=epoch 
@@ -2092,7 +2089,7 @@ if(ireturn) then return, buf ; Return only if all orig_names are already
 ;  if(mxlat eq mnlat) then bad=1
 ;  if(mxlon eq mnlon) then bad=1
 ;  if(bad) then begin
-;     print, "ERROR= No good GEOD_LAT or GEOD_LON values computed in (conv_map_image)"
+;     print, "ERROR= No good GEOD_LAT or GEOD_LON values computed in (spd_cdawlib_conv_map_image)"
 ;     print, "ERROR= Message: ", mxlat 
 ;     return, -1
 ;  endif
@@ -2111,7 +2108,7 @@ if(ireturn) then return, buf ; Return only if all orig_names are already
     buf.(a0).handle=gdlat_handle
     org_names[corg]='GEOD_LAT'
    endif else begin
-     print, "ERROR= No GEOD_LAT variable found in cdf (conv_map_image)"
+     print, "ERROR= No GEOD_LAT variable found in cdf (spd_cdawlib_conv_map_image)"
      print, "ERROR= Message: ", a0
      return, -1 
    endelse
@@ -2122,7 +2119,7 @@ if(ireturn) then return, buf ; Return only if all orig_names are already
     buf.(a0).handle=gdlon_handle
     org_names[corg+1]='GEOD_LONG'
    endif else begin
-     print, "ERROR= No GEOD_LONG variable found in cdf (conv_map_image)"
+     print, "ERROR= No GEOD_LONG variable found in cdf (spd_cdawlib_conv_map_image)"
      print, "ERROR= Message: ", a0
      return, -1                                                                
    endelse
@@ -2176,13 +2173,13 @@ if(ireturn) then return, buf ; Return only if all orig_names are already
    endif
 
 ; Check buf and reset variables not in orignal variable list to metadata
-   status = check_myvartype(buf, org_names)
+   status = spd_cdawlib_check_myvartype(buf, org_names)
 
 return, buf
 end
 
 
-FUNCTION calc_p, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
+FUNCTION spd_cdawlib_calc_p, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
@@ -2206,7 +2203,7 @@ FUNCTION calc_p, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = calc_p(buf,org_names)
+;          new_buf = spd_cdawlib_calc_p(buf,org_names)
 ;
 ; VARIABLES:
 ;
@@ -2247,7 +2244,7 @@ FUNCTION calc_p, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ; Establish error handler
  catch, error_status
  if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in calc_p.pro"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_calc_p.pro"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -2264,7 +2261,7 @@ FUNCTION calc_p, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 
   nbuf=buf 
   vvtag_names=strarr(1)
-  vvtag_indices = vv_names(buf,NAMES=vvtag_names)
+  vvtag_indices = spd_cdawlib_vv_names(buf,NAMES=vvtag_names)
 
 ; Determine time array 
 ; depend0=depends(INDEX)
@@ -2312,12 +2309,12 @@ FUNCTION calc_p, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ; data otherwise set to metadata 
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(nbuf, org_names)
+   status = spd_cdawlib_check_myvartype(nbuf, org_names)
 
 return, nbuf 
 end 
 
-FUNCTION Add_51s, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
+FUNCTION spd_cdawlib_add_51s, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
@@ -2328,7 +2325,7 @@ FUNCTION Add_51s, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = Add_51s(buf,org_names)
+;          new_buf = spd_cdawlib_add_51s(buf,org_names)
 ;
 ; VARIABLES:
 ;
@@ -2370,7 +2367,7 @@ FUNCTION Add_51s, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ; Establish error handler
  catch, error_status
  if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in Add_51s.pro"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_add_51s.pro"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -2418,19 +2415,19 @@ FUNCTION Add_51s, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ; data otherwise set to metadata 
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(nbuf, org_names)
+   status = spd_cdawlib_check_myvartype(nbuf, org_names)
 
    return, nbuf 
 
 endif else begin
-   print, 'No valid variable found in add_51s, returning -1'
+   print, 'No valid variable found in spd_cdawlib_add_51s, returning -1'
    return, -1
 endelse
 
 end 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
-FUNCTION Add_seconds, buf, org_names, seconds=seconds, INDEX=INDEX, DEBUG=DEBUG
+FUNCTION spd_cdawlib_add_seconds, buf, org_names, seconds=seconds, INDEX=INDEX, DEBUG=DEBUG
 ;
 ;  PURPOSE:
 ;
@@ -2439,7 +2436,7 @@ FUNCTION Add_seconds, buf, org_names, seconds=seconds, INDEX=INDEX, DEBUG=DEBUG
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = Add_seconds(buf, org_names, seconds)
+;          new_buf = spd_cdawlib_add_seconds(buf, org_names, seconds)
 ;
 ; VARIABLES:
 ;
@@ -2486,7 +2483,7 @@ FUNCTION Add_seconds, buf, org_names, seconds=seconds, INDEX=INDEX, DEBUG=DEBUG
 ; Establish error handler
  catch, error_status
  if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in Add_51s.pro"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_add_51s.pro"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -2534,12 +2531,12 @@ FUNCTION Add_seconds, buf, org_names, seconds=seconds, INDEX=INDEX, DEBUG=DEBUG
 ; data otherwise set to metadata 
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(nbuf, org_names)
+   status = spd_cdawlib_check_myvartype(nbuf, org_names)
 
    return, nbuf 
 
 endif else begin
-   print, 'No valid variable found in add_seconds, returning -1'
+   print, 'No valid variable found in spd_cdawlib_add_seconds, returning -1'
    return, -1
 endelse
 
@@ -2548,7 +2545,7 @@ end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-FUNCTION compute_magnitude, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
+FUNCTION spd_cdawlib_compute_magnitude, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ;
 ;  PURPOSE:
 ;
@@ -2556,7 +2553,7 @@ FUNCTION compute_magnitude, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = compute_magnitude(buf,org_names, INDEX=INDEX)
+;          new_buf = spd_cdawlib_compute_magnitude(buf,org_names, INDEX=INDEX)
 ;
 ; VARIABLES:
 ;
@@ -2597,7 +2594,7 @@ FUNCTION compute_magnitude, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ; Establish error handler
  catch, error_status
  if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in compute_magnitude function"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_compute_magnitude function"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -2663,17 +2660,17 @@ FUNCTION compute_magnitude, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ; data otherwise set to metadata 
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(nbuf, org_names)
+   status = spd_cdawlib_check_myvartype(nbuf, org_names)
 
    return, nbuf 
 
 endif else begin
-   print, 'No valid variable found in compute_magnitude, returning -1'
+   print, 'No valid variable found in spd_cdawlib_compute_magnitude, returning -1'
    return, -1
 endelse
 end
 ;;;;;;;;;;;;;;;;;;;;;;
-FUNCTION extract_array, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
+FUNCTION spd_cdawlib_extract_array, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ;
 ;  PURPOSE:
 ;
@@ -2684,7 +2681,7 @@ FUNCTION extract_array, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = extract_array(buf,org_names, INDEX=INDEX)
+;          new_buf = spd_cdawlib_extract_array(buf,org_names, INDEX=INDEX)
 ;
 ; VARIABLES:
 ;
@@ -2784,25 +2781,25 @@ FUNCTION extract_array, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ; data otherwise set to metadata 
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(nbuf, org_names)
+   status = spd_cdawlib_check_myvartype(nbuf, org_names)
 
    return, nbuf 
 
 endif else begin
-   print, 'No valid variable found in extract_array, returning -1'
+   print, 'No valid variable found in spd_cdawlib_extract_array, returning -1'
    return, -1
 endelse
 end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;+
-; NAME: Function HEIGHT_ISIS
+; NAME: Function spd_cdawlib_height_isis
 ;
 ; PURPOSE: Retrieve only height from vector geo_coord:
 ; (lat1, lon1, height1, lat2, lon2, height2, lat3, lon3, height3, .....)
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = height_isis(buf,org_names,index)
+;          new_buf = spd_cdawlib_height_isis(buf,org_names,index)
 ;
 ; VARIABLES:
 ;
@@ -2819,18 +2816,18 @@ end
 ;  new_buf    - an IDL structure containing the populated virtual 
 ;               variable 
 ;
-; History: Written by RCJ 09/01, based on crop_image
+; History: Written by RCJ 09/01, based on spd_cdawlib_crop_image
 ;-
 
-function height_isis, buf, org_names, index=index
+function spd_cdawlib_height_isis, buf, org_names, index=index
 ;
 status=0
-print, 'In Height_isis'
+print, 'In spd_cdawlib_height_isis'
 
 ; Establish error handler
 catch, error_status
 if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in height_isis"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_height_isis"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -2867,7 +2864,7 @@ handle_value,buf.(index).handle,height,/set
 ; Check that all variables in the original variable list are declared as
 ; data otherwise set to support_data
 ; Find variables w/ var_type == data
-status = check_myvartype(buf, org_names)
+status = spd_cdawlib_check_myvartype(buf, org_names)
 
 return, buf
 ;
@@ -2875,13 +2872,13 @@ return, buf
 end 
 
 ;+
-; NAME: Function FLIP_IMAGE
+; NAME: Function spd_cdawlib_flip_image
 ;
-; PURPOSE: Flip_image [*,*] 
+; PURPOSE: spd_cdawlib_flip_image [*,*] 
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = flip_image(buf,org_names,index)
+;          new_buf = spd_cdawlib_flip_image(buf,org_names,index)
 ;
 ; VARIABLES:
 ;
@@ -2901,12 +2898,12 @@ end
 ; History: Written by TJK 01/03 for use w/ IDL RPI data
 ;-
 
-function flip_image, buf, org_names, index=idx
+function spd_cdawlib_flip_image, buf, org_names, index=idx
 status=0
 ; Establish error handler
 catch, error_status
 if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in flip_image"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_flip_image"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -2937,7 +2934,7 @@ if (index ge 0) then begin
  isize = size(idat) ; determine the number of images in the data
  if (isize[0] eq 2) then nimages = 1 else nimages = isize(isize[0])
 
-;print,'Flip_image DEBUG', min(idat, max=dmax) & print, dmax
+;print,'spd_cdawlib_flip_image DEBUG', min(idat, max=dmax) & print, dmax
 
  for i = 0L, nimages-1 do begin
    if (nimages eq 1) then begin 
@@ -2958,7 +2955,7 @@ if (index ge 0) then begin
     endelse
  endfor
 
-print, 'Flip_image DEBUG', min(idat2, max=dmax) & print, dmax
+print, 'spd_cdawlib_flip_image DEBUG', min(idat2, max=dmax) & print, dmax
 
     idat = idat2
     idat2 = 0 ;clear this array out
@@ -2974,21 +2971,21 @@ print, 'Flip_image DEBUG', min(idat2, max=dmax) & print, dmax
 ; data otherwise set to support_data
 ; Find variables w/ var_type == data
 
-status = check_myvartype(buf, org_names)
+status = spd_cdawlib_check_myvartype(buf, org_names)
 endif else buf = -1
 
 return, buf
 end
 
 ;---------------------------------------------------------------------------
-function wind_plot, buf,org_names,index=index
+function spd_cdawlib_wind_plot, buf,org_names,index=index
 
 status=0
 
 ; Establish error handler
 catch, error_status
 if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in wind_plot"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_wind_plot"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -2996,9 +2993,9 @@ endif
 
 ; Find virtual variables
 vvtag_names=strarr(1) 
-vvtag_indices = vv_names(buf,NAMES=vvtag_names)
+vvtag_indices = spd_cdawlib_vv_names(buf,NAMES=vvtag_names)
 if(vvtag_indices[0] lt 0) then begin
-  print, "ERROR= No VIRTUAL variable found in wind_plot"
+  print, "ERROR= No VIRTUAL variable found in spd_cdawlib_wind_plot"
   print, "ERROR= Message: ",vvtag_indices[0]
   status = -1
   return, status
@@ -3030,7 +3027,7 @@ if((component0_index ge 0 )and (component1_index ge 0)) then begin
       handle_value,buf.(index).HANDLE,wind,/set
    endif else print, "Set /NODATASTRUCT keyword in call to spd_cdawlib_read_mycdf";
 endif else begin
-   print, "ERROR= No COMPONENT0 and/or 1 variable found in wind_plot"
+   print, "ERROR= No COMPONENT0 and/or 1 variable found in spd_cdawlib_wind_plot"
    print, "ERROR= Message: ",component0_index, component1_index
    status = -1
    return, status
@@ -3040,12 +3037,12 @@ endelse
    ; data otherwise set to support_data
    ; Find variables w/ var_type == data
 
-   status = check_myvartype(buf, org_names)
+   status = spd_cdawlib_check_myvartype(buf, org_names)
 
 return, buf
-end ; end of wind_plot
+end ; end of spd_cdawlib_wind_plot
 
-FUNCTION comp_epoch, buf, org_names, index=index, DEBUG=DEBUG
+FUNCTION spd_cdawlib_comp_epoch, buf, org_names, index=index, DEBUG=DEBUG
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
@@ -3057,7 +3054,7 @@ FUNCTION comp_epoch, buf, org_names, index=index, DEBUG=DEBUG
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = comp_epoch(buf,org_names,index=index)
+;          new_buf = spd_cdawlib_comp_epoch(buf,org_names,index=index)
 ;
 ; VARIABLES:
 ;
@@ -3089,13 +3086,13 @@ FUNCTION comp_epoch, buf, org_names, index=index, DEBUG=DEBUG
 ;		Initial version
 ;
 ;-------------------------------------------------------------------
-print, 'DEBUG, In comp_epoch'
+print, 'DEBUG, In spd_cdawlib_comp_epoch'
  status=0
 
 ; Establish error handler
  catch, error_status
  if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in comp_epoch"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_comp_epoch"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -3152,18 +3149,18 @@ print, 'DEBUG, In comp_epoch'
 ; data otherwise set to metadata 
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(nbuf, org_names)
+   status = spd_cdawlib_check_myvartype(nbuf, org_names)
 
    return, nbuf 
 
 endif else begin
-   print, 'No valid variable found in comp_epoch, returning -1'
+   print, 'No valid variable found in spd_cdawlib_comp_epoch, returning -1'
    return, -1
 endelse
 
 end 
 
-FUNCTION comp_themis_epoch, buf, org_names, index=index, DEBUG=DEBUG, $
+FUNCTION spd_cdawlib_comp_themis_epoch, buf, org_names, index=index, DEBUG=DEBUG, $
                             sixteen=sixteen
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -3176,7 +3173,7 @@ FUNCTION comp_themis_epoch, buf, org_names, index=index, DEBUG=DEBUG, $
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = comp_themis_epoch(buf,org_names,index=index)
+;          new_buf = spd_cdawlib_comp_themis_epoch(buf,org_names,index=index)
 ;
 ; VARIABLES:
 ;
@@ -3211,13 +3208,13 @@ FUNCTION comp_themis_epoch, buf, org_names, index=index, DEBUG=DEBUG, $
 ;		Initial version
 ;
 ;-------------------------------------------------------------------
-;print, 'DEBUG, In comp_themis_epoch'
+;print, 'DEBUG, In spd_cdawlib_comp_themis_epoch'
  status=0
 
 ; Establish error handler
 ; catch, error_status
 ; if(error_status ne 0) then begin
-;   print, "ERROR= number: ",error_status," in comp_themis_epoch"
+;   print, "ERROR= number: ",error_status," in spd_cdawlib_comp_themis_epoch"
 ;   print, "ERROR= Message: ",!ERR_STRING
 ;   status = -1
 ;   return, status
@@ -3271,7 +3268,7 @@ FUNCTION comp_themis_epoch, buf, org_names, index=index, DEBUG=DEBUG, $
       cdf_epoch, base_time, yr,mo,dd,hr,mm,ss,mil,/break
       cdf_epoch16, base_time16, yr,mo,dd,hr,mm,ss,mil,0,0,0,/compute
   endif
-;  print, 'Inside comp_themis_epoch, number of records will be ',num
+;  print, 'Inside spd_cdawlib_comp_themis_epoch, number of records will be ',num
 
   for i=0L, num-1 do begin
     subsec = (seconds[i]-LONG64(seconds[i]))
@@ -3290,7 +3287,7 @@ FUNCTION comp_themis_epoch, buf, org_names, index=index, DEBUG=DEBUG, $
       endif else begin
           shifted_times[i] =  -1.0e+31 ;set the value to fill
           cdf_epoch, shifted_times[i], yr,mo,dd,hr,mm,ss,mil,/break
-          print, '** From comp_themis_epoch, seconds = ',seconds[i],' index = ', i
+          print, '** From spd_cdawlib_comp_themis_epoch, seconds = ',seconds[i],' index = ', i
           print, '** Epoch being set to -1.0e+31, year, month, day, etc ',yr,mo,dd,hr,mm,ss,mil
       endelse
 
@@ -3302,7 +3299,7 @@ endfor
 ;get the fill value and set it to "shifted_times"
 endif else begin
   shifted_times = buf.(vvar_index).fillval
-  print, 'DEBUG - In comp_themis_epoch, no epoch found, set to fill ',shifted_times
+  print, 'DEBUG - In spd_cdawlib_comp_themis_epoch, no epoch found, set to fill ',shifted_times
 endelse
 
   if (handle_found eq 1) then begin
@@ -3316,18 +3313,18 @@ endelse
 ; data otherwise set to metadata 
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(nbuf, org_names)
+   status = spd_cdawlib_check_myvartype(nbuf, org_names)
 
    return, nbuf 
 
 endif else begin
-   print, 'No valid variable found in comp_themis_epoch, returning -1'
+   print, 'No valid variable found in spd_cdawlib_comp_themis_epoch, returning -1'
    return, -1
 endelse
 
 end 
 ;-------------------------------------------------------------
-function error_bar_array, buf, index=index, value=value
+function spd_cdawlib_error_bar_array, buf, index=index, value=value
 ;
 ; RCJ Apr 2008 Given a fixed uncertainty value, an array
 ; will be generated, the size of the component_0 var, and 
@@ -3346,7 +3343,7 @@ if(component0_index ge 0) then begin
 	buf.(index).handle=handle_create()
 	handle_value,buf.(index).handle,er,/set
    endif else begin
-      print, "ERROR= No COMPONENT0 variable found in error_bar_array"
+      print, "ERROR= No COMPONENT0 variable found in spd_cdawlib_error_bar_array"
       print, "ERROR= Message: ",component0_index
       status = -1
       return, status
@@ -3357,7 +3354,7 @@ return,buf
 end
 
 
-FUNCTION convert_toev, buf, org_names, index=index, DEBUG=DEBUG
+FUNCTION spd_cdawlib_convert_toev, buf, org_names, index=index, DEBUG=DEBUG
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
@@ -3367,7 +3364,7 @@ FUNCTION convert_toev, buf, org_names, index=index, DEBUG=DEBUG
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = convert_toeV(buf,org_names,index=index)
+;          new_buf = spd_cdawlib_convert_toev(buf,org_names,index=index)
 ;
 ; VARIABLES:
 ;
@@ -3399,13 +3396,13 @@ FUNCTION convert_toev, buf, org_names, index=index, DEBUG=DEBUG
 ;		Initial version
 ;
 ;-------------------------------------------------------------------
-print, 'DEBUG, In convert_toev'
+print, 'DEBUG, In spd_cdawlib_convert_toev'
  status=0
 
 ; Establish error handler
  catch, error_status
  if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in convert_toev"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_convert_toev"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -3457,18 +3454,18 @@ print, 'velocity fillvalu = ',fillval
 ; data otherwise set to metadata 
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(nbuf, org_names)
+   status = spd_cdawlib_check_myvartype(nbuf, org_names)
 
    return, nbuf 
 
 endif else begin
-   print, 'No valid variable found in convert_toev, returning -1'
+   print, 'No valid variable found in spd_cdawlib_convert_toev, returning -1'
    return, -1
 endelse
 
 end 
 
-FUNCTION convert_Ni, buf, org_names, index=index, DEBUG=DEBUG
+FUNCTION spd_cdawlib_convert_ni, buf, org_names, index=index, DEBUG=DEBUG
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
@@ -3478,7 +3475,7 @@ FUNCTION convert_Ni, buf, org_names, index=index, DEBUG=DEBUG
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = convert_Ni(buf,org_names,index=index)
+;          new_buf = spd_cdawlib_convert_ni(buf,org_names,index=index)
 ;
 ; VARIABLES:
 ;
@@ -3510,13 +3507,13 @@ FUNCTION convert_Ni, buf, org_names, index=index, DEBUG=DEBUG
 ;		Initial version
 ;
 ;-------------------------------------------------------------------
-print, 'DEBUG, In convert_Ni'
+print, 'DEBUG, In spd_cdawlib_convert_ni'
  status=0
 
 ; Establish error handler
  catch, error_status
  if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in convert_Ni"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_convert_ni"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -3566,12 +3563,12 @@ print, 'log_density fillvalu = ',fillval
 ; data otherwise set to metadata 
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(nbuf, org_names)
+   status = spd_cdawlib_check_myvartype(nbuf, org_names)
 
    return, nbuf 
 
 endif else begin
-   print, 'No valid variable found in convert_Ni, returning -1'
+   print, 'No valid variable found in spd_cdawlib_convert_ni, returning -1'
    return, -1
 endelse
 
@@ -3580,7 +3577,7 @@ end
 
 ;---------------------------------------------------------------
 ;+
-; NAME: Function CONV_POS_HUNGARIAN 
+; NAME: Function spd_cdawlib_conv_pos_HUNGARIAN 
 ;
 ; PURPOSE: Convert cl_sp_aux positions x,y,z from GSE to GEI (GCI).
 ;          It could be confusing to the user that the GSE positions
@@ -3595,16 +3592,16 @@ end
 ;
 ; CALLING SEQUENCE:
 ;
-;         newbuf = conv_pos_hungarian(buf,org_names,index=index)
+;         newbuf = spd_cdawlib_conv_pos_hungarian(buf,org_names,index=index)
 ;
 
-function conv_pos_hungarian, buf, org_names,INDEX=INDEX
+function spd_cdawlib_conv_pos_hungarian, buf, org_names,INDEX=INDEX
 
 status=0
 ; Establish error handler
 ;catch, error_status
 ;if(error_status ne 0) then begin
-;   print, "ERROR= number: ",error_status," in conv_pos_hungarian.pro"
+;   print, "ERROR= number: ",error_status," in spd_cdawlib_conv_pos_hungarian.pro"
 ;   print, "ERROR= Message: ",!ERR_STRING
 ;   status = -1
 ;   return, status
@@ -3657,7 +3654,7 @@ handle_value,buf.(index).handle,gei_xyz,/set
 ; Check that all variables in the original variable list are declared as
 ; data otherwise set to support_data
 ; Find variables w/ var_type == data
-status = check_myvartype(buf, org_names)
+status = spd_cdawlib_check_myvartype(buf, org_names)
 
 return, buf
 ;
@@ -3666,7 +3663,7 @@ end
 
 
 ;Correct FAST DCF By
-FUNCTION correct_FAST_By, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
+FUNCTION spd_cdawlib_correct_fast_by, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
@@ -3683,7 +3680,7 @@ FUNCTION correct_FAST_By, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = convert_Ni(buf,org_names,index=index)
+;          new_buf = spd_cdawlib_convert_ni(buf,org_names,index=index)
 ;
 ; VARIABLES:
 ;
@@ -3715,13 +3712,13 @@ FUNCTION correct_FAST_By, buf, org_names, INDEX=INDEX, DEBUG=DEBUG
 ;		Initial version
 ;
 ;-------------------------------------------------------------------
-print, 'DEBUG, In correct_FAST_By'
+print, 'DEBUG, In spd_cdawlib_correct_fast_by'
  status=0
 
 ; Establish error handler
  catch, error_status
  if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in correct_FAST_By"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_correct_fast_by"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -3824,12 +3821,12 @@ BY=BY*(1.-2.*change_flag)
 ; data otherwise set to metadata 
 ; Find variables w/ var_type == data
 
-   status = check_myvartype(nbuf, org_names)
+   status = spd_cdawlib_check_myvartype(nbuf, org_names)
 
    return, nbuf 
 
 endif else begin
-   print, 'No valid variable found in correct_FAST_By, returning -1'
+   print, 'No valid variable found in spd_cdawlib_correct_fast_by, returning -1'
    return, -1
 endelse
 
@@ -3838,7 +3835,7 @@ end
 
 ;---------------------------------------------------------------
 ;+
-; NAME: Function compute_cadence
+; NAME: Function spd_cdawlib_compute_cadence
 ;
 ; PURPOSE: Determine the resolution between epoch values so that one
 ; can easily see where the "burst" data is located.  Originally
@@ -3852,16 +3849,16 @@ end
 ;
 ; CALLING SEQUENCE:
 ;
-;         newbuf = compute_cadence(buf,org_names,index=index)
+;         newbuf = spd_cdawlib_compute_cadence(buf,org_names,index=index)
 ;
 
-function compute_cadence, buf, org_names,INDEX=INDEX
+function spd_cdawlib_compute_cadence, buf, org_names,INDEX=INDEX
 
 status=0
 ; Establish error handler
 catch, error_status
 if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in compute_cadence"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_compute_cadence"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -3888,7 +3885,7 @@ num_epochs = n_elements(epoch)
 ; So that an actual cadence will be returned no matter how many records are
 ; the CDF contains.
 ;if (num_epochs lt 3) then begin 
-;   print, "ERROR= error detected in compute_cadence"
+;   print, "ERROR= error detected in spd_cdawlib_compute_cadence"
 ;   print, "ERROR= Message: Not enough epoch values to correctly compute cadence values."
 ;   status = -1
 ;   return, status
@@ -3923,20 +3920,20 @@ handle_value,buf.(index).handle,cadence,/set
 ; Check that all variables in the original variable list are declared as
 ; data otherwise set to support_data
 ; Find variables w/ var_type == data
-status = check_myvartype(buf, org_names)
+status = spd_cdawlib_check_myvartype(buf, org_names)
 
 return, buf
 ;
 
 end
 
-;Function: Apply_rtn_qflag
+;Function: spd_cdawlib_apply_rtn_qflag
 ;Purpose: To use the quality variable to "filter out bad messenger 
 ;data points"
 ;Author: Tami Kovalick, Adnet, May, 2012
 ;
 ;
-function apply_rtn_qflag, astruct, orig_names, index=index
+function spd_cdawlib_apply_rtn_qflag, astruct, orig_names, index=index
 
 ;Input: astruct: the structure, created by spd_cdawlib_read_mycdf that should
 ;		 contain at least one Virtual variable.
@@ -3954,7 +3951,7 @@ function apply_rtn_qflag, astruct, orig_names, index=index
 
 atags = tag_names(astruct) ;get the variable names.
 vv_tagnames=strarr(1)
-vv_tagindx = vv_names(astruct,names=vv_tagnames) ;find the virtual vars
+vv_tagindx = spd_cdawlib_vv_names(astruct,names=vv_tagnames) ;find the virtual vars
 
 if keyword_set(index) then begin
   index = index
@@ -3965,7 +3962,7 @@ endif else begin ;get the 1st vv
 
 endelse
 
-;print, 'In Apply_rtn_qflag'
+;print, 'In spd_cdawlib_apply_rtn_qflag'
 ;print, 'Index = ',index
 ;print, 'Virtual variable ', atags(index)
 ;print, 'original variables ',orig_names
@@ -3985,7 +3982,7 @@ if (c_0 ne '') then begin ;this should be the real data
     endelse
   fill_val = astruct.(var_idx).fillval
 
-endif else print, 'Apply_rtn_qflag - parent variable not found'
+endif else print, 'spd_cdawlib_apply_rtn_qflag - parent variable not found'
 
 data_size = size(parent_data)
 
@@ -4035,7 +4032,7 @@ quality_data = 1B
 ; Check astruct and reset variables not in orignal variable list to metadata,
 ; so that variables that weren't requested won't be plotted/listed.
 
-   status = check_myvartype(astruct, orig_names)
+   status = spd_cdawlib_check_myvartype(astruct, orig_names)
 
 return, astruct
 
@@ -4043,13 +4040,13 @@ endif else return, -1 ;if there's no rtn B radial/tangent/normal data return -1
 
 end
 
-;Function: Apply_rtn_cadence
+;Function: spd_cdawlib_apply_rtn_cadence
 ;Purpose: To use the quality variable to "filter out values
 ;when the time cadence is less than 200.
 ;Author: Tami Kovalick, Adnet, May, 2012
 ;
 ;
-function apply_rtn_cadence, astruct, orig_names, index=index
+function spd_cdawlib_apply_rtn_cadence, astruct, orig_names, index=index
 
 ;Input: astruct: the structure, created by spd_cdawlib_read_mycdf that should
 ;		 contain at least one Virtual variable.
@@ -4066,7 +4063,7 @@ function apply_rtn_cadence, astruct, orig_names, index=index
 
 atags = tag_names(astruct) ;get the variable names.
 vv_tagnames=strarr(1)
-vv_tagindx = vv_names(astruct,names=vv_tagnames) ;find the virtual vars
+vv_tagindx = spd_cdawlib_vv_names(astruct,names=vv_tagnames) ;find the virtual vars
 if keyword_set(index) then begin
   index = index
 endif else begin ;get the 1st vv
@@ -4076,7 +4073,7 @@ endif else begin ;get the 1st vv
 
 endelse
 
-;print, 'In Apply_rtn_cadence'
+;print, 'In spd_cdawlib_apply_rtn_cadence'
 ;print, 'Index = ',index
 ;print, 'Virtual variable ', atags(index)
 ;print, 'original variables ',orig_names
@@ -4095,14 +4092,14 @@ if (c_0 ne '') then begin ;this should be the real data
       if (astruct.(var_idx).HANDLE ne 0) then begin
         handle_value, astruct.(var_idx).HANDLE, parent_data
       endif else begin ;need to call the virtual function to compute the quality variables when they don't exist
-          astruct = apply_rtn_qflag(temporary(astruct),orig_names,index=var_idx)
+          astruct = spd_cdawlib_apply_rtn_qflag(temporary(astruct),orig_names,index=var_idx)
           handle_value, astruct.(var_idx).HANDLE, parent_data
       endelse
 
     endelse
   fill_val = astruct.(var_idx).fillval
 
-endif else print, 'Apply_rtn_cadence - parent variable not found'
+endif else print, 'spd_cdawlib_apply_rtn_cadence - parent variable not found'
 
 
 data_size = size(parent_data)
@@ -4123,7 +4120,7 @@ if (c_0 ne '') then begin ;
       if (astruct.(var_idx).HANDLE ne 0) then begin
         handle_value, astruct.(var_idx).HANDLE, cadence_data
       endif else begin ;need to call the virtual function to compute the epoch_cadence when it doesn't exist yet.
-          astruct = compute_cadence(temporary(astruct),orig_names,index=var_idx)
+          astruct = spd_cdawlib_compute_cadence(temporary(astruct),orig_names,index=var_idx)
           handle_value, astruct.(var_idx).HANDLE, cadence_data
 
       endelse
@@ -4161,7 +4158,7 @@ cadence_data = 1B
 ; Check astruct and reset variables not in orignal variable list to metadata,
 ; so that variables that weren't requested won't be plotted/listed.
 
-   status = check_myvartype(astruct, orig_names)
+   status = spd_cdawlib_check_myvartype(astruct, orig_names)
 
 return, astruct
 
@@ -4176,7 +4173,7 @@ end
 ;data files).
 ;
 
-function expand_wave_data, astruct, org_names, INDEX=index, DEBUG=DEBUG
+function spd_cdawlib_expand_wave_data, astruct, org_names, INDEX=index, DEBUG=DEBUG
 ;
 ;  PURPOSE:
 ;
@@ -4190,7 +4187,7 @@ function expand_wave_data, astruct, org_names, INDEX=index, DEBUG=DEBUG
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = expand_wave_data(buf,org_names, INDEX=INDEX)
+;          new_buf = spd_cdawlib_expand_wave_data(buf,org_names, INDEX=INDEX)
 ;
 ; VARIABLES:
 ;
@@ -4224,7 +4221,7 @@ function expand_wave_data, astruct, org_names, INDEX=index, DEBUG=DEBUG
 ; find the 1st virtual variable in the structure.
 atags = tag_names(astruct) ;get the variable names.
 vv_tagnames=strarr(1)
-vv_tagindx = vv_names(astruct,names=vv_tagnames) ;find the virtual vars
+vv_tagindx = spd_cdawlib_vv_names(astruct,names=vv_tagnames) ;find the virtual vars
 if keyword_set(index) then begin
   index = index
 endif else begin ;get the 1st vv
@@ -4234,7 +4231,7 @@ endif else begin ;get the 1st vv
 
 endelse
 
-;print, 'In Expand_wave_data'
+;print, 'In spd_cdawlib_expand_wave_data'
 ;print, 'original variables ',org_names
 c_0 = astruct.(index).COMPONENT_0 ;1st component var (real/parent wave variable)
 
@@ -4250,7 +4247,7 @@ if (c_0 ne '') then begin ;this should be the real data
         handle_value, astruct.(var_idx).HANDLE, Samples
     endelse
   fill_val = astruct.(var_idx).fillval
-endif else print, 'expand_wave_data - parent variable not found'
+endif else print, 'spd_cdawlib_expand_wave_data - parent variable not found'
 
 ;Get the datatype to determine how to process the different types of
 ;data.  Doesn't seem to be any other way to determine some of this.
@@ -4287,7 +4284,7 @@ if (c_0 ne '') then begin ;this should be the Epoch base value
   ;
   ;
   ;astruct.(var_idx).var_type = 'ignore_data'
-endif else print, 'expand_wave_data - Epoch_base variable not found'
+endif else print, 'spd_cdawlib_expand_wave_data - Epoch_base variable not found'
 
 ;TJK made an NRV version of the timeOffsets variable - so using this
 c_0 = astruct.(index).COMPONENT_2 ;3rd component var (time_offsets)
@@ -4312,7 +4309,7 @@ if (c_0 ne '') then begin ;this should be the time offset values
   q=where(qq eq c_0) ;  c_0 always Epoch here?  
   if q[0] eq -1 then astruct.(var_idx).var_type = 'ignore_data'
   ;
-endif else print, 'expand_wave_data - time_offsets variable not found'
+endif else print, 'spd_cdawlib_expand_wave_data - time_offsets variable not found'
 
 ;New epoch variable to be computed/created
 c_0 = astruct.(index).DEPEND_0 ;1st component var (real wave variable)
@@ -4434,18 +4431,18 @@ if (c_0 ne '') then begin ;this should be the new Epoch variable
   d = spd_cdawlib_tagindex('DAT',itags)
     if (d[0] ne -1) then  astruct.(var_idx).DAT = new_epoch
 
-endif else print, 'expand_wave_data - new epoch variable not found'
+endif else print, 'spd_cdawlib_expand_wave_data - new epoch variable not found'
 
 ; Check buf and reset variables not in orignal variable list to metadata
 
-   status = check_myvartype(astruct, org_names)
+   status = spd_cdawlib_check_myvartype(astruct, org_names)
 
    return, astruct
 
 end
 
 ;+
-; NAME: Function make_stack_array
+; NAME: Function spd_cdawlib_make_stack_array
 ;
 ; PURPOSE: take the array of data specified by component_0
 ; and apply the array reduction specified in the display_type
@@ -4453,7 +4450,7 @@ end
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = make_stack_array(buf,org_names)
+;          new_buf = spd_cdawlib_make_stack_array(buf,org_names)
 ;
 ; VARIABLES:
 ;
@@ -4486,14 +4483,14 @@ end
 ;
 ;-------------------------------------------------------------------
 
-function make_stack_array, astruct,org_names,index=index
+function spd_cdawlib_make_stack_array, astruct,org_names,index=index
 
 status=0
 
 ; Establish error handler
   catch, error_status
   if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in make_stack_array"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_make_stack_array"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -4503,7 +4500,7 @@ endif
 ; find the 1st virtual variable in the structure.
 atags = tag_names(astruct) ;get the variable names.
 vv_tagnames=strarr(1)
-vv_tagindx = vv_names(astruct,names=vv_tagnames) ;find the virtual vars
+vv_tagindx = spd_cdawlib_vv_names(astruct,names=vv_tagnames) ;find the virtual vars
 if keyword_set(index) then begin
   index = index
 endif else begin ;get the 1st vv
@@ -4513,7 +4510,7 @@ endif else begin ;get the 1st vv
 
 endelse
 
-;print, 'In make_stack_array'
+;print, 'In spd_cdawlib_make_stack_array'
 ;print, 'original variables ',org_names
 c_0 = astruct.(index).COMPONENT_0 ;1st component var (real/parent wave variable)
 
@@ -4597,9 +4594,9 @@ if (c_0 ne '') then begin ;this should be the real data
         endif
      endfor
 
-  endif else print, 'make_stack_array - DISPLAY_TYPE needed'
+  endif else print, 'spd_cdawlib_make_stack_array - DISPLAY_TYPE needed'
 
-endif else print, 'make_stack_array - parent variable not found'
+endif else print, 'spd_cdawlib_make_stack_array - parent variable not found'
 
 ;Put the reduced sized array in the virtual variables handle
 temp = handle_create(value=new_array)
@@ -4615,13 +4612,13 @@ astruct.(index).DISPLAY_TYPE = ndt ; should be just stack_plot
 ; Check that all variables in the original variable list are declared
 ; as data otherwise set to support_data
 
-   status = check_myvartype(astruct, org_names)
+   status = spd_cdawlib_check_myvartype(astruct, org_names)
 
 return, astruct
 end
 
 ;+
-; NAME: Function fix_sparse
+; NAME: Function spd_cdawlib_fix_sparse
 ;
 ; PURPOSE: take the array of data specified by component_0
 ; and replace all fill values w/ the preceding non-fill value - 
@@ -4629,7 +4626,7 @@ end
 ;
 ; CALLING SEQUENCE:
 ;
-;          new_buf = fix_sparse(buf,org_names)
+;          new_buf = spd_cdawlib_fix_sparse(buf,org_names)
 ;
 ; VARIABLES:
 ;
@@ -4662,14 +4659,14 @@ end
 ;
 ;-------------------------------------------------------------------
 
-function fix_sparse, astruct,org_names,index=index
+function spd_cdawlib_fix_sparse, astruct,org_names,index=index
 
 status=0
 
 ; Establish error handler
   catch, error_status
   if(error_status ne 0) then begin
-   print, "ERROR= number: ",error_status," in fix_sparse"
+   print, "ERROR= number: ",error_status," in spd_cdawlib_fix_sparse"
    print, "ERROR= Message: ",!ERR_STRING
    status = -1
    return, status
@@ -4679,7 +4676,7 @@ endif
 ; find the 1st virtual variable in the structure.
 atags = tag_names(astruct) ;get the variable names.
 vv_tagnames=strarr(1)
-vv_tagindx = vv_names(astruct,names=vv_tagnames) ;find the virtual vars
+vv_tagindx = spd_cdawlib_vv_names(astruct,names=vv_tagnames) ;find the virtual vars
 if keyword_set(index) then begin
   index = index
 endif else begin ;get the 1st vv
@@ -4688,7 +4685,7 @@ endif else begin ;get the 1st vv
 
 endelse
 
-;print, 'In fix_sparse'
+;print, 'In spd_cdawlib_fix_sparse'
 ;print, 'original variables ',org_names
 c_0 = astruct.(index).COMPONENT_0 ;1st component var (real/parent variable)
 
@@ -4729,9 +4726,9 @@ if (c_0 ne '') then begin ;this should be the real data
          endif ; else don't replace any values
        endfor
     endif ;endif 2 dimensions
-  endif else print, 'fix_sparse - fillval required'
+  endif else print, 'spd_cdawlib_fix_sparse - fillval required'
 
-endif else print, 'fix_sparse - parent variable not found'
+endif else print, 'spd_cdawlib_fix_sparse - parent variable not found'
 ;print, new_array
 
 ;Put the reduced sized array in the virtual variables handle
@@ -4741,12 +4738,12 @@ astruct.(index).HANDLE = temp
 ; Check that all variables in the original variable list are declared
 ; as data otherwise set to support_data
 
-   status = check_myvartype(astruct, org_names)
+   status = spd_cdawlib_check_myvartype(astruct, org_names)
 
 return, astruct
 end
 
-;Function: apply_filter_flag
+;Function: spd_cdawlib_apply_filter_flag
 ;Purpose: To use the filter variable to "filter" out unwanted data points
 ;This one is different than the rest in that the user, through the
 ;master cdf can specify the value to be tested against by using
@@ -4761,7 +4758,7 @@ end
 ;
 ;------------------------------------------------------------------
 ;
-function apply_filter_flag, astruct, orig_names, index=index
+function spd_cdawlib_apply_filter_flag, astruct, orig_names, index=index
 
 ;Input: astruct: the structure, created by read_myCDF that should
 ;		 contain at least one Virtual variable.
@@ -4780,7 +4777,7 @@ function apply_filter_flag, astruct, orig_names, index=index
 
 atags = tag_names(astruct) ;get the variable names.
 vv_tagnames=strarr(1)
-vv_tagindx = vv_names(astruct,names=vv_tagnames) ;find the virtual vars
+vv_tagindx = spd_cdawlib_vv_names(astruct,names=vv_tagnames) ;find the virtual vars
 
 if keyword_set(index) then begin
   index = index
@@ -4791,7 +4788,7 @@ endif else begin ;get the 1st vv
 
 endelse
 
-print, 'In apply_filter_flag'
+print, 'In spd_cdawlib_apply_filter_flag'
 ;print, 'original variables ',orig_names
 
 c_0 = astruct.(index).COMPONENT_0 ;1st component var (real flux var)
@@ -4859,7 +4856,7 @@ case (compare_operator) of
          end
    'ge': begin temp = where(filter_data lt compare_val, badcnt) ;***
    end
-   else: print, 'no apply_filter_flag operator specified'
+   else: print, 'no spd_cdawlib_apply_filter_flag operator specified'
 endcase
 
 
@@ -4892,7 +4889,7 @@ filter_data = 1B
 ; Check astruct and reset variables not in orignal variable list to metadata,
 ; so that variables that weren't requested won't be plotted/listed.
 
-   status = check_myvartype(astruct, orig_names)
+   status = spd_cdawlib_check_myvartype(astruct, orig_names)
 
 return, astruct
 
@@ -4901,5 +4898,6 @@ return, astruct
 end
 
 pro spd_cdawlib_virtual_funcs
-;do nothing
+  compile_opt idl2
+  ;do nothing
 end

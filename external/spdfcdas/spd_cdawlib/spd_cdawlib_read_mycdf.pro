@@ -1874,7 +1874,7 @@ end
 ; the CDFs for all variables except the VV.  Population of the VV's data field
 ; in the "burley" structure are handled at the very end in a case statement 
 ; which looks for each VV's variable attribute FUNCTION to determine which 
-; actual "IDL function" to call, ie. conv_pos.
+; actual "IDL function" to call, ie. spd_cdawlib_conv_pos.
 ;-------------------------------------------------------------------------
 
 FUNCTION spd_cdawlib_read_mycdf, vnames, cnames, ALL=ALL,NODATASTRUCT=NODATASTRUCT, $
@@ -3552,28 +3552,28 @@ for i = 0, num_virs do begin
             strlowcase(burley.(vindex).(findex)), ' for variable ',vir_vars.name[i]
 
          case (strlowcase(burley.(vindex).(findex))) of
-         'crop_image': begin
-                          burley=crop_image(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_crop_image': begin
+                          burley=spd_cdawlib_crop_image(temporary(burley),orig_names,index=vindex)
    		       end   
-         'alternate_view': begin
-                              burley = alternate_view(temporary(burley),orig_names)
+         'spd_cdawlib_alternate_view': begin
+                              burley = spd_cdawlib_alternate_view(temporary(burley),orig_names)
                            end
-         'clamp_to_zero': begin
-                              burley = clamp_to_zero(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_clamp_to_zero': begin
+                              burley = spd_cdawlib_clamp_to_zero(temporary(burley),orig_names,index=vindex)
                            end
-         'composite_tbl': begin
-                              burley = composite_tbl(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_composite_tbl': begin
+                              burley = spd_cdawlib_composite_tbl(temporary(burley),orig_names,index=vindex)
                            end
-         'arr_slice':  begin
-                          burley = arr_slice (temporary(burley), orig_names, index=vindex)
+         'spd_cdawlib_arr_slice':  begin
+                          burley = spd_cdawlib_arr_slice(temporary(burley), orig_names, index=vindex)
                        end
-         'conv_pos': begin
+         'spd_cdawlib_conv_pos': begin
 	                ; RCJ 11/21/2003  Added 'index=vindex'. It is necessary if all=1
-                        burley = conv_pos(temporary(burley),orig_names,$
+                        burley = spd_cdawlib_conv_pos(temporary(burley),orig_names,$
                            tstart=start_time, tstop=stop_time,index=vindex)
                      end
-         'conv_pos_hungarian': begin
-                        burley = conv_pos_hungarian(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_conv_pos_hungarian': begin
+                        burley = spd_cdawlib_conv_pos_hungarian(temporary(burley),orig_names,index=vindex)
                      end
          'conv_pos1': begin
                          burley = conv_pos(temporary(burley),orig_names,$
@@ -3585,11 +3585,11 @@ for i = 0, num_virs do begin
                             tstart=start_time, tstop=stop_time, $
                             COORD="SYN-GEO",INDEX=vindex)
                       end
-         'conv_map_image': begin
-                              burley = conv_map_image(temporary(burley),orig_names)
+         'spd_cdawlib_conv_map_image': begin
+                              burley = spd_cdawlib_conv_map_image(temporary(burley),orig_names)
                            end
-         'calc_p': begin
-                      burley = calc_p(temporary(burley),orig_names,INDEX=vindex)
+         'spd_cdawlib_calc_p': begin
+                      burley = spd_cdawlib_calc_p(temporary(burley),orig_names,INDEX=vindex)
                    end
          'create_vis': begin
                           burley = create_vis(temporary(burley),orig_names)
@@ -3603,11 +3603,11 @@ for i = 0, num_virs do begin
          'apply_qflag': begin
                            burley = apply_qflag(temporary(burley),orig_names,index=vindex)
                         end
-         'apply_rtn_qflag': begin
-                           burley = apply_rtn_qflag(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_apply_rtn_qflag': begin
+                           burley = spd_cdawlib_apply_rtn_qflag(temporary(burley),orig_names,index=vindex)
                         end
-         'apply_rtn_cadence': begin
-                           burley = apply_rtn_cadence(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_apply_rtn_cadence': begin
+                           burley = spd_cdawlib_apply_rtn_cadence(temporary(burley),orig_names,index=vindex)
                         end
          'region_filt': begin
                            burley = region_filt(temporary(burley),orig_names,index=vindex)
@@ -3615,20 +3615,20 @@ for i = 0, num_virs do begin
          'convert_log10': begin
                              burley = convert_log10(temporary(burley),orig_names)
                           end
-         'add_51s': begin ;for po_h2_uvi
-                       burley = Add_seconds(temporary(burley),orig_names,index=vindex,seconds=51)
+         'spd_cdawlib_add_51s': begin ;for po_h2_uvi
+                       burley = spd_cdawlib_add_seconds(temporary(burley),orig_names,index=vindex,seconds=51)
                     end
          'add_1800': begin ;for omni
-                       burley = Add_seconds(temporary(burley),orig_names,index=vindex,seconds=1800)
+                       burley = spd_cdawlib_add_seconds(temporary(burley),orig_names,index=vindex,seconds=1800)
                     end
-         'comp_themis_epoch': begin ;for computing THEMIS epoch
-                       burley = comp_themis_epoch(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_comp_themis_epoch': begin ;for computing THEMIS epoch
+                       burley = spd_cdawlib_comp_themis_epoch(temporary(burley),orig_names,index=vindex)
                     end
          'comp_themis_epoch16': begin ;for computing THEMIS epoch
-                       burley = comp_themis_epoch(temporary(burley),orig_names,index=vindex,/sixteen)
+                       burley = spd_cdawlib_comp_themis_epoch(temporary(burley),orig_names,index=vindex,/sixteen)
                     end
-         'apply_filter_flag': begin ; filter out values based on COMPUTE_VAL and COMPUTE_OPERATOR
-                       burley = apply_filter_flag(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_apply_filter_flag': begin ; filter out values based on COMPUTE_VAL and COMPUTE_OPERATOR
+                       burley = spd_cdawlib_apply_filter_flag(temporary(burley),orig_names,index=vindex)
                     end
          'apply_esa_qflag': begin
                        burley = apply_esa_qflag(temporary(burley),orig_names,index=vindex)
@@ -3639,45 +3639,45 @@ for i = 0, num_virs do begin
          'apply_gmom_qflag': begin ;use the esa function
                        burley = apply_esa_qflag(temporary(burley),orig_names,index=vindex)
                     end
-         'compute_magnitude': begin
-                       burley = compute_magnitude(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_compute_magnitude': begin
+                       burley = spd_cdawlib_compute_magnitude(temporary(burley),orig_names,index=vindex)
                     end
-         'height_isis': begin
-                       burley = height_isis(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_height_isis': begin
+                       burley = spd_cdawlib_height_isis(temporary(burley),orig_names,index=vindex)
                     end
-         'flip_image': begin
-                       burley = flip_image(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_flip_image': begin
+                       burley = spd_cdawlib_flip_image(temporary(burley),orig_names,index=vindex)
                     end
-         'wind_plot': begin
-                         burley = wind_plot(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_wind_plot': begin
+                         burley = spd_cdawlib_wind_plot(temporary(burley),orig_names,index=vindex)
                       end
-         'error_bar_array': begin
-                           burley=error_bar_array(temporary(burley), $
+         'spd_cdawlib_error_bar_array': begin
+                           burley=spd_cdawlib_error_bar_array(temporary(burley), $
 			                          index=vindex,value=0.02)
    		       end   
-         'convert_toev': begin
-                           burley=convert_toev(temporary(burley), orig_names, index=vindex)
+         'spd_cdawlib_convert_toev': begin
+                           burley=spd_cdawlib_convert_toev(temporary(burley), orig_names, index=vindex)
                        end
-         'convert_ni': begin
-                           burley=convert_Ni(temporary(burley), orig_names, index=vindex)
+         'spd_cdawlib_convert_ni': begin
+                           burley=spd_cdawlib_convert_ni(temporary(burley), orig_names, index=vindex)
                         end
-         'correct_fast_by': begin
-                           burley = correct_FAST_By(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_correct_fast_by': begin
+                           burley = spd_cdawlib_correct_fast_by(temporary(burley),orig_names,index=vindex)
                         end
-         'compute_cadence': begin
-                           burley = compute_cadence(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_compute_cadence': begin
+                           burley = spd_cdawlib_compute_cadence(temporary(burley),orig_names,index=vindex)
                         end
-         'extract_array': begin
-                           burley = extract_array(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_extract_array': begin
+                           burley = spd_cdawlib_extract_array(temporary(burley),orig_names,index=vindex)
                         end
-         'expand_wave_data': begin
-                           burley = expand_wave_data(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_expand_wave_data': begin
+                           burley = spd_cdawlib_expand_wave_data(temporary(burley),orig_names,index=vindex)
                         end
-         'make_stack_array': begin
-                           burley = make_stack_array(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_make_stack_array': begin
+                           burley = spd_cdawlib_make_stack_array(temporary(burley),orig_names,index=vindex)
                         end
-         'fix_sparse': begin
-                           burley = fix_sparse(temporary(burley),orig_names,index=vindex)
+         'spd_cdawlib_fix_sparse': begin
+                           burley = spd_cdawlib_fix_sparse(temporary(burley),orig_names,index=vindex)
                         end
 
          else : print, 'WARNING= No function for:', vtags[vindex]
@@ -3695,12 +3695,12 @@ var_stat = 0
 
 ;TJK 1/26/01 - add if statement because if one of the virtual variable 
 ;functions has trouble running (doesn't find any data), burley will be
-; equal to -1, then check_myvartype fails...  so basically check to see
+; equal to -1, then spd_cdawlib_check_myvartype fails...  so basically check to see
 ;if burley is a structure, by asking how many tags it has, if its not a
 ;structure, n_tags returns 0
 
 if (n_tags(burley) ne 0) then begin
-   var_stat = check_myvartype(burley, orig_names)
+   var_stat = spd_cdawlib_check_myvartype(burley, orig_names)
    if (var_stat ne 0) then print, 'spd_cdawlib_read_mycdf, no data to plot/list.'
    ; RCJ 01/14/2013  Add keyword 'all' to call to spd_cdawlib_merge_metadata:
    ;burley = spd_cdawlib_merge_metadata(cnames, burley)

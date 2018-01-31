@@ -142,7 +142,7 @@ pro thm_load_esa_post, sname=probe, datatype=dt, level=lvl, $
        options, tplot_var, 'tplot_routine', 'bitplot'
        options, tplot_var, 'labels', ['scpot_flag', 'sat_flag', $
                                       'sw_flag', 'flow_flag', 'earth_shadow', $
-                                      'moon_shadow', 'maneuver']
+                                      'moon_shadow', 'maneuver', 'dens_mismatch']
      Endif
    
   endfor
