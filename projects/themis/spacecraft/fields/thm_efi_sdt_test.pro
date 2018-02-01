@@ -2,7 +2,7 @@
 ; Returns the start and end indices of intervals where a condition
 ; applies
 ;-
-PRO Temp_st_en, condition, st_ss, en_ss, ok=ok
+PRO temp_st_en2, condition, st_ss, en_ss, ok=ok
 
    n = N_ELEMENTS(condition)
    ok = where(condition, nok)
@@ -50,9 +50,9 @@ END
 ;seconds). 
 ;HISTORY:
 ; 2014-10-13, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2015-10-28 15:13:18 -0700 (Wed, 28 Oct 2015) $
-; $LastChangedRevision: 19178 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-01-31 12:01:53 -0800 (Wed, 31 Jan 2018) $
+; $LastChangedRevision: 24613 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_efi_sdt_test.pro $
 ;-
 Pro thm_efi_sdt_test, probe = probe, trange = trange, $
@@ -115,7 +115,7 @@ Pro thm_efi_sdt_test, probe = probe, trange = trange, $
      options, fvar0, 'yrange', [0.0, 1.20]
 ;Get sdt start and end times, if they exist
      flag = d.y eq 1
-     temp_st_en, flag, st_ss, en_ss, ok = ok
+     temp_st_en2, flag, st_ss, en_ss, ok = ok
      If(ok[0] Eq -1) Then Begin
         fvar = thx[isc]+'_efi_sdt_flag'
         store_data, fvar, data = d
@@ -177,7 +177,7 @@ Pro thm_efi_sdt_test, probe = probe, trange = trange, $
      get_data, fvar, data = d
      nd = n_elements(d.x)
      flag = d.y eq 1
-     temp_st_en, flag, st_ss, en_ss, ok = ok
+     temp_st_en2, flag, st_ss, en_ss, ok = ok
      n = n_elements(st_ss)
      fsparse = thx[isc]+'_efi_sdt_flag_sparse'
      If(ok[0] Eq -1) Then Begin

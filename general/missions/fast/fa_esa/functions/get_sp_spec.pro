@@ -38,7 +38,7 @@
 ;	Current version only works for FAST
 ;-
 
-pro get_pa_spec,data_str,  $
+pro get_sp_spec,data_str,  $
 	T1=t1, $
 	T2=t2, $
 	ENERGY=en, $

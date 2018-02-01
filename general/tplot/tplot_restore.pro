@@ -25,9 +25,9 @@
 ;						  text.                   21-may-2008, cg
 ;                       Removed additional output text - Use dprint,debug=3  to restore text.   Nov 2008
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-05-05 11:41:23 -0700 (Fri, 05 May 2017) $
-; $LastChangedRevision: 23271 $
+; $LastChangedBy: lbwilsoniii_desk $
+; $LastChangedDate: 2018-01-31 11:56:26 -0800 (Wed, 31 Jan 2018) $
+; $LastChangedRevision: 24611 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_restore.pro $
 ;-
 pro tplot_restore,filenames=filenames,all=all,append=append,sort=sort,$
@@ -76,8 +76,14 @@ for i=0L, n[0] - 1L do begin
   		if keyword_set(append) and keyword_set(olddata) then begin
   		   if keyword_set(*thisdq.dh) then begin
   				if thisdq.dtype eq 1 then begin
- 					newx = ptr_new([*olddata.x,*(*thisdq.dh).x])
-					newy = ptr_new([*olddata.y,*(*thisdq.dh).y])
+ 					if ptr_valid((*thisdq.dh).x) then $
+ 						newx = ptr_new([*olddata.x,*(*thisdq.dh).x]) else $
+ 						newx = ptr_new(*olddata.x)
+ 					if ptr_valid((*thisdq.dh).y) then $
+ 						newy = ptr_new([*olddata.y,*(*thisdq.dh).y]) else $
+ 						newy = ptr_new(*olddata.y)
+; 					newx = ptr_new([*olddata.x,*(*thisdq.dh).x])
+; 					newy = ptr_new([*olddata.y,*(*thisdq.dh).y])
   					ptr_free,(*thisdq.dh).x,(*thisdq.dh).y
   					oldv = ptr_new()
   					str_element,olddata,'v',oldv

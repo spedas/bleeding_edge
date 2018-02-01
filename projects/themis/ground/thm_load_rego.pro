@@ -1,4 +1,4 @@
-pro thm_load_asi_file_move_onetime   ; temporary routine: Moves ASI files to correct directories.
+pro thm_load_rego_file_move_onetime   ; temporary routine: Moves ASI files to correct directories.
 ; Running this routine (once) will eliminate the need to download previously cached ASI files.
 
 files= file_search(!themis.local_data_dir+'thg/l1/asi/????/20??/rego_l1_as?_????_20*.cdf',count=n)
@@ -62,10 +62,10 @@ end
 ;
 ;
 ;Written by: Ken Bromund ????,   Jan 5 2007
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2014-03-04 16:43:24 -0800 (Tue, 04 Mar 2014) $
-; $LastChangedRevision: 14490 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_asi.pro $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-01-31 12:52:01 -0800 (Wed, 31 Jan 2018) $
+; $LastChangedRevision: 24614 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_rego.pro $
 ;-
 ;
 
@@ -89,7 +89,7 @@ end
 
 ; load data for a single time or a time range into tplot variables
 ; Added tplotnames output keyword, jmm, 26-aug-2009
-pro thm_load_asi_cdf_to_tplot, files=files, all=all, verbose=verbose, $
+pro thm_load_rego_cdf_to_tplot, files=files, all=all, verbose=verbose, $
                                get_support_data=get_support_data, $
                                time=time, tplotnames=tplotnames, _extra=_extra, suffix=suffix
 
@@ -123,7 +123,7 @@ pro thm_load_rego,site = site, datatype = datatype, trange = trange, $
                  progobj=progobj, files=files
 ;                   _extra = _extra
 
-;thm_load_asi_file_move_onetime    ; delete this line after local caches have had time to be corrected (i.e. after July 30, 2007
+;thm_load_rego_file_move_onetime    ; delete this line after local caches have had time to be corrected (i.e. after July 30, 2007
 
   if arg_present(relpathnames_all) then begin
      downloadonly=1
@@ -156,7 +156,7 @@ pro thm_load_rego,site = site, datatype = datatype, trange = trange, $
                version = 'v01', $
                suffix=suffix,$
                relpath_funct = 'clg_load_asi_relpath', $
-               cdf_to_tplot = 'thm_load_asi_cdf_to_tplot', $
+               cdf_to_tplot = 'thm_load_rego_cdf_to_tplot', $
                progobj = progobj, $
                msg_out = msg_out, $
                /no_time_clip,$
