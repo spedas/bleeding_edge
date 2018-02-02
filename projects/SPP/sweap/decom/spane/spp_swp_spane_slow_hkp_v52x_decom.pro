@@ -156,7 +156,7 @@ endif
 
   MON_LVPS_TEMP =   func(swap_endian(/swap_if_little_endian,  fix(b,24 ) ), param = temp_par_10bit)
   MON_ANAL_TEMP =   func(swap_endian(/swap_if_little_endian,  fix(b,42 ) ), param = temp_par_10bit)
-  MON_PCB_TEMP=     func(swap_endian(/swap_if_little_endian,  fix(b,66 ) ), param = temp_par_12bit)
+;  MON_PCB_TEMP=     func(swap_endian(/swap_if_little_endian,  fix(b,66 ) ), param = temp_par_12bit)
   MON_FPGA_TEMP=    func(swap_endian(/swap_if_little_endian,  fix(b,70 ) ), param = temp_par_12bit)
   MON_ASIC_TEMP=    func(swap_endian(/swap_if_little_endian,  fix(b,74 ) ), param = temp_par_12bit)
   
@@ -218,7 +218,7 @@ endif
     adc_VMON_RAW:   swap_endian(/swap_if_little_endian,  fix(b,RAW_HV_VMON_CH ) ) * ref*1250./4095. , $
     adc_VMON_SPL:   swap_endian(/swap_if_little_endian,  fix(b,62 ) )              * ref*20.12/4095. , $
     adc_IMON_RAW:   swap_endian(/swap_if_little_endian,  fix(b,RAW_HV_IMON_CH ) ) * ref*1000./40.2/4095. , $
-    adc_PCB_TEMP:       MON_PCB_TEMP,$ ;swap_endian(/swap_if_little_endian,  fix(b,66 ) )             * ref/4095. , $
+;    adc_PCB_TEMP:       MON_PCB_TEMP,$ ;swap_endian(/swap_if_little_endian,  fix(b,66 ) )             * ref/4095. , $
     adc_VMON_HEM:   swap_endian(/swap_if_little_endian,  fix(b,HEMI_VMON_CH ) )  * ref*500./4095. , $     ;  * ref*1271./4095. , $
     adc_FPGA_TEMP:      MON_FPGA_TEMP,$ ;swap_endian(/swap_if_little_endian,  fix(b,70 ) ) * ref/4095. , $
     ;adc_FPGA_TEMP_HEX: swap_endian(/swap_if_little_endian,  fix(b,70 ) ), $
@@ -238,7 +238,7 @@ endif
     CMD_REC:        swap_endian(/swap_if_little_endian, uint( b,90  ) ) and 'ffff'x , $
     raw_dac:        swap_endian(/swap_if_little_endian, uint( b,92  ) ) and 'ffff'x , $
     hv_conf_flag:   b[94]  , $
-    ACTSTAT_FLAG:   b[95]  , $
+    ACT_FLAG:       b[95]  , $
     mcp_dac:        swap_endian(/swap_if_little_endian, uint( b,96  ) ) and 'ffff'x , $
     mdump_addr:     swap_endian(/swap_if_little_endian, uint( b,98  ) ) and 'ffff'x , $
     peak_cmd_val:   b[100],$

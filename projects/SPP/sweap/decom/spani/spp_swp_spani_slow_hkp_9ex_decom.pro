@@ -215,7 +215,7 @@ endif
          PPULSE_MASK:     spp_swp_word_decom(b,76), $
          PEAK_STEP:       b[78], $
 
-         ACT_FLAGS:       B[79], $
+         ACT_FLAG:       B[79], $
 ;         CVRPRIME:        ishft(b[79],-7) AND '1'b,$
 ;         CVRSEC:          ishft(b[79],-6) AND '1'b,$
 ;         ACTOPENPRIME:    ishft(b[79],-5) AND '1'b,$

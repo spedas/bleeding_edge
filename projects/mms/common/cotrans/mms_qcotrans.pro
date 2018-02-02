@@ -46,13 +46,10 @@
 ;  no_update_labels: Set this keyword if you want the routine to not update the labels automatically
 ;
 ;
-;Notes:
-;  This is a near clone of mms_cotrans and maybe be temporary
-;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-09-02 10:58:42 -0700 (Fri, 02 Sep 2016) $
-;$LastChangedRevision: 21791 $
+;$LastChangedDate: 2018-02-01 15:58:09 -0800 (Thu, 01 Feb 2018) $
+;$LastChangedRevision: 24622 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/cotrans/mms_qcotrans.pro $
 ;-
 

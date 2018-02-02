@@ -21,19 +21,22 @@
 ; OUTPUT:
 ; 
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-11-20 09:33:17 -0800 (Mon, 20 Nov 2017) $
-;$LastChangedRevision: 24314 $
+;$LastChangedDate: 2018-02-01 10:28:16 -0800 (Thu, 01 Feb 2018) $
+;$LastChangedRevision: 24616 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad_spinavg.pro $
 ;
 ; REVISION HISTORY:
-;       + 2016-01-26, I. Cohen      : added scopes keyword and scope_suffix definition to allow for distinction between single telescope PADs (reflects change in mms_eis_pad.pro)
+;       + 2016-01-26, I. Cohen      : added scopes keyword and scope_suffix definition to allow for distinction between 
+;                                     single telescope PADs (reflects change in mms_eis_pad.pro)
 ;       + 2016-04-29 egrimes        : fixed issues with the suffix keyword     
 ;       + 2017-05-15 egrimes        : removed call to congrid, added the "extend_y_edges" option to the output;
 ;                                     this change makes the results produced by this routine consistent with the
 ;                                     non-spin averaged PAD
 ;       + 2017-11-17, I. Cohen      : updated to accept changes to mms_eis_pad.pro, introduced 'combined' datatype;
-;                                     changed probe keyword to probes     
-;       + 2017-11-20, E. Grimes     : a few minor bug fixes caught by the test suite                      
+;                                     changed probe keyword to probes
+;       + 2017-12-04, I. Cohen      : updated to create spin-averaged variables for all PAD variables, to mirror new
+;                                     capabilities of mms_eis_pad.pro (changed pad_name variable to pad_vars); change 
+;                                     size_pabin keyword to size_pabin                   
 ;-
 
 pro mms_eis_pad_spinavg, probes=probes, species = species, data_units = data_units, $
@@ -63,43 +66,40 @@ pro mms_eis_pad_spinavg, probes=probes, species = species, data_units = data_uni
   ;
   ; find where the spins start
   spin_starts = uniq(spin_nums.Y)
-  pad_name = prefix + datatype + '_' + en_range_string + '_' + species + '_' + data_units + scope_suffix + '_pad'
+  pad_vars = tnames(prefix + datatype + '_*keV_' + species + '_' + data_units + scope_suffix + '_pad')
   ;
-  get_data, pad_name, data=pad_data, dlimits=pad_dl
-  ;
-  if ~is_struct(pad_data) then begin
-    ;stop
-    dprint, dlevel = 0, 'Error, variable containing valid PAD data missing.'
-    return
-  endif
-  ;
-  spin_sum_flux = dblarr(n_elements(spin_starts), n_elements(pad_data.Y[0, *]))
-  spin_times = dblarr(n_elements(spin_starts))
-  ;
-  current_start = 0
-  ; loop through the spins for this telescope
-  for spin_idx = 0, n_elements(spin_starts)-1 do begin
-    ; loop over energies
-    spin_sum_flux[spin_idx, *] = average(pad_data.Y[where(spin_nums.y eq spin_nums.y[spin_starts[spin_idx]]), *], 1, /nan)
-    spin_times[spin_idx] = pad_data.X[current_start]
-    current_start = spin_starts[spin_idx]+1
+  for ii=0,n_elements(pad_vars)-1 do begin
+    get_data, pad_vars[ii], data=pad_data, dlimits=pad_dl
+    ;
+    if ~is_struct(pad_data) then begin
+      ;stop
+      dprint, dlevel = 0, 'Error, variable containing valid PAD data missing.'
+      return
+    endif
+    ;
+    spin_sum_flux = dblarr(n_elements(spin_starts), n_elements(pad_data.y[0,*]))
+    spin_times = dblarr(n_elements(spin_starts))
+    ;
+    current_start = 0
+    ; loop through the spins for this telescope
+    for spin_idx = 0, n_elements(spin_starts)-1 do begin
+      ; loop over energies
+      spin_sum_flux[spin_idx, *] = average(pad_data.y[where(spin_nums.y eq spin_nums.y[spin_starts[spin_idx]]), *], 1, /nan)
+      spin_times[spin_idx] = pad_data.X[current_start]
+      current_start = spin_starts[spin_idx]+1
+    endfor
+    ;
+    newname = pad_vars[ii] + '_spin'
+    ;
+    n_pabins = 180./size_pabin
+    new_bins = 180.*indgen(n_pabins+1)/n_pabins
+    new_pa_label = 180.*indgen(n_pabins)/n_pabins+size_pabin/2.
+    ;
+    store_data, newname, data={x: spin_times, y: spin_sum_flux, v: new_pa_label}, dlimits=flux_dl
+    options, newname, spec=1, ystyle=1, ztitle=units_label, minzlog=.01, /extend_y_edges
+    zlim, newname, 0, 0, 1
+    ylim, newname, 1., 180.
+    tdegap, newname, /overwrite
   endfor
   ;
-  newname = prefix+datatype+'_'+en_range_string+'_'+species+'_'+data_units+scope_suffix+'_pad_spin'
-  ;
-  ; the following is because of prefix becoming a single element array in some cases
-  if is_array(newname) then newname = newname[0] 
-  ;
-  n_pabins = 180./size_pabin
-  new_bins = 180.*indgen(n_pabins+1)/n_pabins
-  new_pa_label = 180.*indgen(n_pabins)/n_pabins+size_pabin/2.
-  ;
-  store_data, newname, data={x: spin_times, y: spin_sum_flux, v: new_pa_label}, dlimits=flux_dl
-  ;
-  options, newname, spec=1, ystyle=1, ztitle=units_label, ytitle='MMS'+probes+' EIS '+species, ysubtitle=en_range_string+'!CPAD (deg)', minzlog=.01
-  zlim, newname, 0, 0, 1
-  ylim, newname, 1., 180.
-  options, newname, 'extend_y_edges', 1
-  ;
-  tdegap, newname, /overwrite
 end
