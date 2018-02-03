@@ -29,8 +29,8 @@
 ;     This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-02-01 10:28:16 -0800 (Thu, 01 Feb 2018) $
-;$LastChangedRevision: 24616 $
+;$LastChangedDate: 2018-02-02 08:02:07 -0800 (Fri, 02 Feb 2018) $
+;$LastChangedRevision: 24624 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 ;-
 ; REVISION HISTORY:
@@ -133,7 +133,7 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
           pa_file[*,0] = temp_pad.y
           ;
           ;
-          get_data,prefix+datatype[dd]+'_'+species+'_'+data_units+'_omni',data=omni_data
+          get_data,prefix+datatype[dd]+'_'+species+'_'+data_units+'_omni'+suffix,data=omni_data
           these_energies = where((omni_data.v ge energy[0]) and (omni_data.v le energy[1]))
           if (n_elements(these_energies) eq 0) then begin
             print, 'Energy range selected is not covered by the detector for ' + datatype[dd] + ' ' + species[species_idx] + ' ' + data_units
@@ -222,7 +222,7 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
     endfor
     ;
     if (flag_combine eq 1) then begin
-      mms_eis_combine_proton_pad, probes=probes[pp], data_rate = data_rate, data_units = data_units, size_pabin = size_pabin, energy = energy
+      mms_eis_combine_proton_pad, probes=probes[pp], data_rate = data_rate, data_units = data_units, size_pabin = size_pabin, energy = energy, suffix = suffix
       ;
       combined_var_name = tnames(prefix+'combined*proton*pad')
       ;
@@ -234,6 +234,6 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
     ;
   endfor
   ;
-  if (n_elements(probes) gt 1) then mms_eis_pad_combine_sc, probes = probes, trange = trange, species = species, data_rate = data_rate, energy = energy
+  if (n_elements(probes) gt 1) then mms_eis_pad_combine_sc, probes = probes, trange = trange, species = species, data_rate = data_rate, energy = energy, data_units = data_units, suffix = suffix
   ;
 end

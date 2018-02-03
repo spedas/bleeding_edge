@@ -52,8 +52,8 @@
 ;       TEST:         Returns calibration used.  For testing.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-08-15 17:53:32 -0700 (Tue, 15 Aug 2017) $
-; $LastChangedRevision: 23799 $
+; $LastChangedDate: 2018-02-02 15:09:03 -0800 (Fri, 02 Feb 2018) $
+; $LastChangedRevision: 24636 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_flatfield.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2016-09-28
@@ -68,7 +68,7 @@ function mvn_swe_flatfield, time, nominal=nominal, off=off, set=set, silent=sile
 ; Initialize the common block, if necessary
 
   if ((size(cc_t,/type) eq 0) or (keyword_set(init))) then begin
-    kmax = 6
+    kmax = 7
     swe_ff = replicate(1.,96,kmax+1)
 
 ;   Solar wind calibration period 1  (2014-10-27 to 2015-03-14).
@@ -113,7 +113,7 @@ function mvn_swe_flatfield, time, nominal=nominal, off=off, set=set, silent=sile
 
     swe_ff[*,3] = swe_ff[*,1]
 
-;   Solar wind calibration periods 4 and 5  (2016-05-29 to 2017-13-15)
+;   Solar wind calibration periods 4 and 5  (2016-05-29 to 2017-03-15)
 ;   Results for periods 4 and 5 are very similar, so take the average and use for both.
 
     swe_ff[*,4] = [1.000000 , 1.000000 , 1.000000 , 1.000000 , 0.798163 , 0.808012 , $
@@ -156,14 +156,34 @@ function mvn_swe_flatfield, time, nominal=nominal, off=off, set=set, silent=sile
                    0.886700 , 0.848482 , 0.803069 , 0.834783 , 0.816239 , 0.848178 , $
                    0.849890 , 0.888701 , 0.869474 , 0.890123 , 0.792140 , 0.802523    ]
 
-;   Centers of solar wind calibration periods 1-6
+;   Solar wind calibration period 7 (2017-12-10 to 2018-)
+
+    swe_ff[*,7] = [1.000000 , 1.000000 , 1.000000 , 1.000000 , 0.826444 , 0.837066 , $
+                   1.015703 , 1.044069 , 0.942640 , 0.949980 , 1.070203 , 0.994052 , $
+                   1.043005 , 0.986472 , 1.000000 , 1.000000 , 1.000000 , 1.000000 , $
+                   1.000000 , 0.852803 , 0.846467 , 1.114316 , 1.115836 , 1.142174 , $
+                   1.231015 , 1.225703 , 1.219195 , 1.297896 , 1.311562 , 1.328046 , $
+                   1.122445 , 1.000000 , 0.910900 , 0.910673 , 1.097797 , 1.159101 , $
+                   1.136929 , 1.044102 , 1.034360 , 1.043832 , 1.083907 , 1.120308 , $
+                   1.167846 , 1.142614 , 1.230413 , 1.154342 , 1.147192 , 1.094243 , $
+                   0.820239 , 0.989676 , 1.015383 , 1.047453 , 0.988030 , 0.972597 , $
+                   0.942679 , 1.003293 , 0.970110 , 1.028915 , 1.025568 , 1.030287 , $
+                   1.082605 , 1.104011 , 1.015987 , 0.980897 , 0.763181 , 0.857958 , $
+                   0.951548 , 1.032151 , 1.006613 , 0.928897 , 0.872191 , 0.993612 , $
+                   0.886020 , 0.921059 , 0.952061 , 1.011190 , 1.002990 , 0.973127 , $
+                   0.909985 , 0.929972 , 0.789675 , 0.824692 , 0.991559 , 1.016707 , $
+                   0.885811 , 0.908948 , 0.828224 , 0.836565 , 0.867603 , 0.828621 , $
+                   0.904393 , 0.854450 , 0.910541 , 0.884443 , 0.811724 , 0.825266    ]
+
+;   Centers of solar wind calibration periods 1-7
 
     tt = time_double(['2014-12-22', $    ; Solar Wind 1
                       '2015-08-02', $    ; Solar Wind 2
                       '2016-01-28', $    ; Solar Wind 3
                       '2016-08-22', $    ; Solar Wind 4
                       '2017-01-13', $    ; Solar Wind 5
-                      '2017-06-29'   ])  ; Solar Wind 6
+                      '2017-06-29', $    ; Solar Wind 6
+                      '2017-12-20'   ])  ; Solar Wind 7
 
     cc_t = mvn_swe_crosscal(tt,/silent)
 
@@ -222,11 +242,12 @@ function mvn_swe_flatfield, time, nominal=nominal, off=off, set=set, silent=sile
       test = frac + 5.
     endif
 
-;   Assume calibration reverts to Solar Wind 5 after MCP bump at t_mcp[7]
+;   Solar Wind 7.  Use a fixed calibration after MCP bump at t_mcp[7].
+;   This is similar to the Solar Wind 6 calibration.
 
     if (t ge t_mcp[7]) then begin
-      swe_ogf = swe_ff[*,5]
-      test = 5.
+      swe_ogf = swe_ff[*,7]
+      test = 7.
     endif
 
 ;   Override this with a specific calibration, if requested --> for testing

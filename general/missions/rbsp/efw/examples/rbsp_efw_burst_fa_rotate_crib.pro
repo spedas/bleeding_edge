@@ -8,8 +8,8 @@
 ; HISTORY: Created by Aaron W Breneman, Univ. Minnesota  4/10/2014
 ; VERSION:
 ;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2017-12-05 13:28:50 -0800 (Tue, 05 Dec 2017) $
-;   $LastChangedRevision: 24397 $
+;   $LastChangedDate: 2018-02-02 11:37:33 -0800 (Fri, 02 Feb 2018) $
+;   $LastChangedRevision: 24633 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_burst_fa_rotate_crib.pro $
 ;-
 
@@ -83,7 +83,7 @@ start_after_step = 0.
 ;fn = 'burst_crib_chorus_nov14_2012'
 ;fn = 'burst_crib_chorus_nov14_2012_farot_test'
 ;fn = 'RBSPB_B2_20130214_'
-fn = 'RBSPB_B2_20121121_'
+fn = 'RBSPA_B2_20171121_'
 ;Nov 21, 2012 B2 both on rbspb
 
 mag_ql = 0                      ;load quicklook mag data? Usually only set for very recent dates
@@ -107,8 +107,8 @@ df = 50.                       ;Hz. The delta-freq size for Poynting flux spectr
 ;chunks). Value must be greater than 1 sec
 maxchunktime = 5.               ;min. N/A for B2
 bandpass_data = 'y'
-fmin = 2.                      ;Hz
-fmax = 6000.
+fmin = 100.                      ;Hz
+fmax = 3000.
 
 ;Variables for the Chaston crib sheet twavpol
 ;nopfft=16448    ;# points in the FFT
@@ -142,18 +142,18 @@ if start_after_step eq 0 then begin
   ;   date = '2014-01-23'
   ;   date = '2012-11-01'
 
-  date = '2012-11-21'
+  date = '2017-11-21'
 
   timespan,date
   tr = timerange()
   ;Define timerange for loading of burst waveform
   ;(CURRENTLY NEED AT LEAST 1 SEC OF BURST FOR MGSE TRANSFORMATION TO WORK!!!)
 
-  t0 = date + '/08:00:00'
-  t1 = date + '/08:30:00'
+  t0 = date + '/00:00:00'
+  t1 = date + '/24:00:00'
 
 
-  probe='b'
+  probe='a'
   rbspx = 'rbsp'+probe
 
   dt = time_double(t1) - time_double(t0)

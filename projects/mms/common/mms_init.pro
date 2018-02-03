@@ -20,6 +20,9 @@
 ;                  the software will attempt to download the file from REMOTE_DATA_DIR, place it in LOCAL_DATA_DIR
 ;                  with the same relative pathname, and then continue processing.
 ;
+;   Regarding data directory environment variables: it is highly advised to use the mission specific environment variables
+;                  (e.g., MMS_DATA_DIR) rather than ROOT_DATA_DIR to avoid conflicts with other missions/projects
+;                  
 ;KEYWORDS:
 ;   RESET:           Reset !mms to values in environment (or values in keywords).
 ;   LOCAL_DATA_DIR:  use given value for local_data_dir, rather than environment. Only works on
@@ -34,8 +37,8 @@
 ; 2015-02-15, egrimes, commented out dialog_message in CDF version error due to a bug on MacOS X 10.11.6/IDL 8.5
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-02-15 14:18:31 -0800 (Wed, 15 Feb 2017) $
-; $LastChangedRevision: 22790 $
+; $LastChangedDate: 2018-02-02 09:43:39 -0800 (Fri, 02 Feb 2018) $
+; $LastChangedRevision: 24627 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_init.pro $
 ;-
 

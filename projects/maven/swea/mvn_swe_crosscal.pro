@@ -18,7 +18,7 @@
 ;
 ;    (2) SWIA is measuring the entire ion distribution.  This is safe 
 ;        in the upstream solar wind, as long as the spacecraft is Sun
-;        pointed,  which is most of the time.  Watch out for times of
+;        pointed, which is most of the time.  Watch out for times of
 ;        Earth point.
 ;
 ;    (3) The energy flux in SWEA's blind spots is the same as the 
@@ -49,8 +49,8 @@
 ;       SILENT:       Don't print any warnings or messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-02 16:44:32 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24085 $
+; $LastChangedDate: 2018-02-02 15:08:35 -0800 (Fri, 02 Feb 2018) $
+; $LastChangedRevision: 24635 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_crosscal.pro $
 ;
 ;CREATED BY:    David L. Mitchell  05-04-16
@@ -60,7 +60,7 @@ function mvn_swe_crosscal, time, on=on, off=off, refresh=refresh, extrap=extrap,
 
   @mvn_swe_com
   common swe_cc_com, tc, ac, eflg
-  
+
   if ((size(tc,/type) eq 0) or keyword_set(refresh)) then begin
     tc = time_double(['2014-03-22','2014-11-12', '2015-12-20', '2016-10-25', '2017-08-12'])
     ac = dblarr(3, n_elements(tc))
@@ -68,7 +68,7 @@ function mvn_swe_crosscal, time, on=on, off=off, refresh=refresh, extrap=extrap,
     ac[*,1] = [2.3368D, -9.9426d-4,  2.6014d-5]  ; MCPHV = 2600 V
     ac[*,2] = [2.2143D,  7.9280d-4,  1.4300d-5]  ; MCPHV = 2700 V
     ac[*,3] = [2.0027D,  7.2892d-3, -1.1918d-5]  ; MCPHV = 2750 V
-    ac[*,4] = [2.41D  ,  0.0D     ,  0.0D     ]  ; MCPHV = 2800 V (prelim)
+    ac[*,4] = [2.3813D,  1.9256d-3,  0.0D     ]  ; MCPHV = 2800 V (good through early Jan 2018)
     eflg = 1
   endif
 

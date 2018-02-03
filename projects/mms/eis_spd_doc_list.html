@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Feb  1 18:16:27 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Feb  2 18:16:16 2018.<P>
  
 <HR>
  
@@ -22,14 +22,21 @@ This page was created by the IDL library routine
 <LI><A HREF="#EIS_ANG_ANG">EIS_ANG_ANG</A>
 <LI><A HREF="#EIS_PABIN_INFO">EIS_PABIN_INFO</A>
 <br>Prints EIS PA bin information - for debugging
+<LI><A HREF="#MMS_EIS_COMBINE_PROTON_PAD">MMS_EIS_COMBINE_PROTON_PAD</A>
+<br>Combine ExTOF and PHxTOF proton PADs into a single combined tplot variable
+<LI><A HREF="#MMS_EIS_COMBINE_PROTON_SPEC">MMS_EIS_COMBINE_PROTON_SPEC</A>
+<br>Combine ExTOF and PHxTOF proton energy spectra into a single combined tplot variable
 <LI><A HREF="#MMS_EIS_OMNI">MMS_EIS_OMNI</A>
 <br>Calculates the omni-directional flux for all 6 telescopes
 <LI><A HREF="#MMS_EIS_PAD">MMS_EIS_PAD</A>
 <br>Calculate pitch angle distributions using data from the MMS Energetic Ion Spectrometer (EIS)
+<LI><A HREF="#MMS_EIS_PAD_COMBINE_SC">MMS_EIS_PAD_COMBINE_SC</A>
 <LI><A HREF="#MMS_EIS_PAD_SPINAVG">MMS_EIS_PAD_SPINAVG</A>
 <br>Calculates spin-averaged PADs for the EIS instrument
 <LI><A HREF="#MMS_EIS_SET_METADATA">MMS_EIS_SET_METADATA</A>
 <br>This procedure sets some metadata for EIS data products
+<LI><A HREF="#MMS_EIS_SPEC_COMBINE_SC">MMS_EIS_SPEC_COMBINE_SC</A>
+<br>Combines omni-directional energy spectrogram variable from EIS on multiple MMS spacecraft
 <LI><A HREF="#MMS_EIS_SPIN_AVG">MMS_EIS_SPIN_AVG</A>
 <br>Calculates spin-averaged fluxes for the EIS instrument
 <LI><A HREF="#MMS_LOAD_EIS">MMS_LOAD_EIS</A>
@@ -115,7 +122,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="EIS_PABIN_INFO">
 <H2>EIS_PABIN_INFO</H2></A>
 <A HREF="#EIS_ANG_ANG">[Previous Routine]</A>
-<A HREF="#MMS_EIS_OMNI">[Next Routine]</A>
+<A HREF="#MMS_EIS_COMBINE_PROTON_PAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -138,9 +145,74 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="eis/eis_pabin_info.pro">projects/mms/eis/eis_pabin_info.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_EIS_COMBINE_PROTON_PAD">
+<H2>MMS_EIS_COMBINE_PROTON_PAD</H2></A>
+<A HREF="#EIS_PABIN_INFO">[Previous Routine]</A>
+<A HREF="#MMS_EIS_COMBINE_PROTON_SPEC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+   mms_eis_combine_proton_pad.pro
+
+ PURPOSE:
+   Combine ExTOF and PHxTOF proton PADs into a single combined tplot variable
+
+ KEYWORDS:
+         probes:             string indicating value for MMS SC #
+         data_rate:          data rate ['srvy' (default), 'brst']
+         data_units:         data units ['flux' (default), 'cps', 'counts']
+         size_pabin:         size of the pitch angle bins
+         energy:             energy range to include in the calculation
+
+ CREATED BY: I. Cohen, 2017-11-17
+
+ REVISION HISTORY:
+       + 2017-11-17, I. Cohen      : changed probes keyword to probes
+       
+
+</PRE><P>
+<STRONG>(See <A href="eis/mms_eis_combine_proton_pad.pro">projects/mms/eis/mms_eis_combine_proton_pad.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MMS_EIS_COMBINE_PROTON_SPEC">
+<H2>MMS_EIS_COMBINE_PROTON_SPEC</H2></A>
+<A HREF="#MMS_EIS_COMBINE_PROTON_PAD">[Previous Routine]</A>
+<A HREF="#MMS_EIS_OMNI">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ mms_eis_combine_proton_spec.pro
+
+ PURPOSE:
+   Combine ExTOF and PHxTOF proton energy spectra into a single combined tplot variable
+
+ KEYWORDS:
+         probes:             string indicating value for MMS SC #
+         data_rate:          data rate ['srvy' (default), 'brst']
+         data_units:         data units ['flux' (default), 'cps', 'counts']
+
+ CREATED BY: I. Cohen, 2017-05-24
+
+ REVISION HISTORY:
+       + 2017-06-05, I. Cohen          : added capability to handle burst data
+       + 2017-06-07, I. Cohen          : added capability to handle different data_units
+       + 2017-08-10, I. Cohen          : added warning that combination should only be done for flux data
+       + 2017-08-15, I. Cohen          : adjusted handling of overlapping energy range in combined spectrum
+       + 2017-10-30, I. Cohen          : removed &quot;_omni&quot; suffix
+       + 2017-11-17, I. Cohen          : altered how energy array is constructed; allowed for differences
+                                         in number of time steps between phxtof and extof data; changed probe
+                                         keyword to probes
+       + 2017-12-04, I. Cohen          : added creation of spin-averaged variable; changed to calculate combined
+                                         variables for each individual telescope, instead of just the omni variable;
+                                         added calls to mms_eis_spin_avg.pro and mms_eis_omni.pro
+       + 2018-01-19, I. Cohen          : added capability to handle multiple s/c at once and combine at the end
+                                         
+</PRE><P>
+<STRONG>(See <A href="eis/mms_eis_combine_proton_spec.pro">projects/mms/eis/mms_eis_combine_proton_spec.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_EIS_OMNI">
 <H2>MMS_EIS_OMNI</H2></A>
-<A HREF="#EIS_PABIN_INFO">[Previous Routine]</A>
+<A HREF="#MMS_EIS_COMBINE_PROTON_SPEC">[Previous Routine]</A>
 <A HREF="#MMS_EIS_PAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -172,7 +244,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_EIS_PAD">
 <H2>MMS_EIS_PAD</H2></A>
 <A HREF="#MMS_EIS_OMNI">[Previous Routine]</A>
-<A HREF="#MMS_EIS_PAD_SPINAVG">[Next Routine]</A>
+<A HREF="#MMS_EIS_PAD_COMBINE_SC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -205,16 +277,56 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-02-01 10:28:16 -0800 (Thu, 01 Feb 2018) $
-$LastChangedRevision: 24616 $
+$LastChangedDate: 2018-02-02 08:02:07 -0800 (Fri, 02 Feb 2018) $
+$LastChangedRevision: 24624 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_pad.pro">projects/mms/eis/mms_eis_pad.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_EIS_PAD_COMBINE_SC">
+<H2>MMS_EIS_PAD_COMBINE_SC</H2></A>
+<A HREF="#MMS_EIS_PAD">[Previous Routine]</A>
+<A HREF="#MMS_EIS_PAD_SPINAVG">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         mms_eis_pad_combine_sc
+
+ PURPOSE: Generate composite pitch angle distributions from the EIS sensors across the MMS spacecraft
+       
+ CAVEAT: This procedure does not work across HV turnoffs during periods of time when the EIS instruments
+         had varying HV turnoff locations/times (prior to Phase 2b)
+
+ KEYWORDS:
+         probes:       value for MMS SC #
+         trange:       time range of interest
+         species:      proton (default), alpha, oxygen, electron
+         level:        data level ['l1a','l1b','l2pre','l2' (default)] 
+         data_rate:    instrument data rates ['brst', 'srvy' (default), 'fast', 'slow']
+         energy:       energy range to include in the calculation
+         datatype:     extof (default), phxtof, electronenergy
+
+ CREATED BY: I. Cohen, 2017-08-14
+
+ REVISION HISTORY:
+       + 2017-11-14, I. Cohen    : removed num_smooth keyword and calls to spd_smooth_time
+       + 2017-11-15, I. Cohen    : removed n_pad_spec and num_smooth keywords; added energy,
+                                   data_units, datatype, and species keywords to mirror call
+                                   to mms_eis_pad.pro
+       + 2017-11-17, I. Cohen    : removed combination of phxtof and extof data to rely on use
+                                   of mms_eis_pad.pro and mms_eis_pad_combine_proton_pad.pro;
+                                   replaced species keyword definition with species and removed
+                                   species
+       + 2018-01-04, I. Cohen    : fixed if statement for species case of 'proton'                       
+
+</PRE><P>
+<STRONG>(See <A href="eis/mms_eis_pad_combine_sc.pro">projects/mms/eis/mms_eis_pad_combine_sc.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_EIS_PAD_SPINAVG">
 <H2>MMS_EIS_PAD_SPINAVG</H2></A>
-<A HREF="#MMS_EIS_PAD">[Previous Routine]</A>
+<A HREF="#MMS_EIS_PAD_COMBINE_SC">[Previous Routine]</A>
 <A HREF="#MMS_EIS_SET_METADATA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -263,7 +375,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_EIS_SET_METADATA">
 <H2>MMS_EIS_SET_METADATA</H2></A>
 <A HREF="#MMS_EIS_PAD_SPINAVG">[Previous Routine]</A>
-<A HREF="#MMS_EIS_SPIN_AVG">[Next Routine]</A>
+<A HREF="#MMS_EIS_SPEC_COMBINE_SC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -283,9 +395,45 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="eis/mms_eis_set_metadata.pro">projects/mms/eis/mms_eis_set_metadata.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_EIS_SPEC_COMBINE_SC">
+<H2>MMS_EIS_SPEC_COMBINE_SC</H2></A>
+<A HREF="#MMS_EIS_SET_METADATA">[Previous Routine]</A>
+<A HREF="#MMS_EIS_SPIN_AVG">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         mms_eis_spec_combine_sc
+
+ PURPOSE:
+         Combines omni-directional energy spectrogram variable from EIS on multiple MMS spacecraft
+
+ KEYWORDS:
+         probes:        Probe # to calculate the spin average for
+                       if no probe is specified the default is probe '1'
+         datatype:     eis data types include ['electronenergy', 'extof', 'phxtof'].
+                       If no value is given the default is 'extof'.
+         data_rate:    instrument data rates for eis include 'brst' 'srvy'. The
+                       default is 'srvy'.
+         data_units:   desired units for data. for eis units are ['flux', 'cps', 'counts'].
+                       The default is 'flux'.
+         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
+                       preserving original tplot variable.
+         species:      proton (default), oxygen, alpha or electron
+         
+ CREATED BY: I. Cohen, 2017-11-17
+
+ REVISION HISTORY:
+         + 2017-12-01, I. Cohen        : added call to mms_eis_spin_avg.pro
+         + 2018-01-04, I. Cohen        : removed bad &quot;error&quot; message
+         
+
+</PRE><P>
+<STRONG>(See <A href="eis/mms_eis_spec_combine_sc.pro">projects/mms/eis/mms_eis_spec_combine_sc.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_EIS_SPIN_AVG">
 <H2>MMS_EIS_SPIN_AVG</H2></A>
-<A HREF="#MMS_EIS_SET_METADATA">[Previous Routine]</A>
+<A HREF="#MMS_EIS_SPEC_COMBINE_SC">[Previous Routine]</A>
 <A HREF="#MMS_LOAD_EIS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

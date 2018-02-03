@@ -2,17 +2,17 @@
 <html>
  
 <head>
-<TITLE>SPEDAS SW Help for spdsw_r24622_2018-02-01</TITLE>
+<TITLE>SPEDAS SW Help for spdsw_r24636_2018-02-02</TITLE>
 </head>
  
 <body>
-<H2>SPEDAS SW Help for spdsw_r24622_2018-02-01</H2>
+<H2>SPEDAS SW Help for spdsw_r24636_2018-02-02</H2>
 <P>
 This page was created by the IDL library routine 
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Feb  1 18:16:27 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Feb  2 18:16:16 2018.<P>
  
 <HR>
  
@@ -194,9 +194,6 @@ general/missions/rbsp/spacecraft</A>
 <LI><A HREF="general/missions/wind/waves_spd_doc_list.html">
 general/missions/wind/waves</A>
 <LI><A HREF="general/netCDF_spd_doc_list.html">general/netCDF</A>
-<LI><A HREF="general/qa_tools_spd_doc_list.html">general/qa_tools</A>
-<LI><A HREF="general/qa_tools/mgunit_spd_doc_list.html">general/qa_tools/mgunit
-</A>
 <LI><A HREF="general/science_spd_doc_list.html">general/science</A>
 <LI><A HREF="general/science/spd_part_products_spd_doc_list.html">
 general/science/spd_part_products</A>
@@ -1513,8 +1510,6 @@ FU_FIT2D</A>
 <br>Evaluates a gaussian function with background.
 <LI><A HREF="external/CDAWlib_spd_doc_list.html#GCI_TO_SZA">GCI_TO_SZA</A>
 <br>Converts a GCI coordinate into a solar zenith angle
-<LI><A HREF="general/qa_tools/mgunit_spd_doc_list.html#GENERAL_UT__DEFINE">
-GENERAL_UT__DEFINE</A>
 <LI><A HREF="general/misc/file_stuff_spd_doc_list.html#GENERATE_CHECKSUMS">
 GENERATE_CHECKSUMS</A>
 <LI><A HREF="general/cotrans_spd_doc_list.html#GEO2MAG">GEO2MAG</A>
@@ -2789,10 +2784,18 @@ MMS_EDP_FIX_METADATA</A>
 <br>Helper routine for setting EDP metadata
 <LI><A HREF="projects/mms/examples/basic_spd_doc_list.html#
 MMS_EIS_ANGLE_ANGLE_CRIB">MMS_EIS_ANGLE_ANGLE_CRIB</A>
+<LI><A HREF="projects/mms/eis_spd_doc_list.html#MMS_EIS_COMBINE_PROTON_PAD">
+MMS_EIS_COMBINE_PROTON_PAD</A>
+<br>Combine ExTOF and PHxTOF proton PADs into a single combined tplot variable
+<LI><A HREF="projects/mms/eis_spd_doc_list.html#MMS_EIS_COMBINE_PROTON_SPEC">
+MMS_EIS_COMBINE_PROTON_SPEC</A>
+<br>Combine ExTOF and PHxTOF proton energy spectra into a single combined tplot variable
 <LI><A HREF="projects/mms/eis_spd_doc_list.html#MMS_EIS_OMNI">MMS_EIS_OMNI</A>
 <br>Calculates the omni-directional flux for all 6 telescopes
 <LI><A HREF="projects/mms/eis_spd_doc_list.html#MMS_EIS_PAD">MMS_EIS_PAD</A>
 <br>Calculate pitch angle distributions using data from the MMS Energetic Ion Spectrometer (EIS)
+<LI><A HREF="projects/mms/eis_spd_doc_list.html#MMS_EIS_PAD_COMBINE_SC">
+MMS_EIS_PAD_COMBINE_SC</A>
 <LI><A HREF="projects/mms/eis_spd_doc_list.html#MMS_EIS_PAD_SPINAVG">
 MMS_EIS_PAD_SPINAVG</A>
 <br>Calculates spin-averaged PADs for the EIS instrument
@@ -2801,6 +2804,9 @@ MMS_EIS_SET_METADATA</A>
 <br>This procedure sets some metadata for EIS data products
 <LI><A HREF="projects/mms/sitl/sitl_data_fetch_spd_doc_list.html#MMS_EIS_SITL">
 MMS_EIS_SITL</A>
+<LI><A HREF="projects/mms/eis_spd_doc_list.html#MMS_EIS_SPEC_COMBINE_SC">
+MMS_EIS_SPEC_COMBINE_SC</A>
+<br>Combines omni-directional energy spectrogram variable from EIS on multiple MMS spacecraft
 <LI><A HREF="projects/mms/eis_spd_doc_list.html#MMS_EIS_SPIN_AVG">
 MMS_EIS_SPIN_AVG</A>
 <br>Calculates spin-averaged fluxes for the EIS instrument
@@ -3385,8 +3391,8 @@ MMS_THEMIS_TPLOT2CDF2_CRIB">MMS_THEMIS_TPLOT2CDF2_CRIB</A>
 <LI><A HREF="projects/mms/examples/advanced_spd_doc_list.html#
 MMS_TPLOT2AUTOPLOT_CRIB">MMS_TPLOT2AUTOPLOT_CRIB</A>
 <br>Crib sheet showing how to send MMS data to Autoplot
-<LI><A HREF="projects/mms/examples/advanced_spd_doc_list.html#
-MMS_TPLOT2CDF2_CRIB">MMS_TPLOT2CDF2_CRIB</A>
+<LI><A HREF="projects/mms/examples/advanced_spd_doc_list.html#MMS_TPLOT2CDF_CRIB
+">MMS_TPLOT2CDF_CRIB</A>
 <LI><A HREF="projects/mms/common/quicklook_spd_doc_list.html#MMS_TPLOT_QUICKLOOK
 ">MMS_TPLOT_QUICKLOOK</A>
 <br>Wrapper around tplot specifically for MMS quicklook figures; this
@@ -6670,8 +6676,6 @@ SPD_SMOOTH_TIME</A>
 </A>
 <LI><A HREF="projects/mms/common/tests_spd_doc_list.html#
 SPD_TESTS_WITH_IMG_UT__DEFINE">SPD_TESTS_WITH_IMG_UT__DEFINE</A>
-<LI><A HREF="general/qa_tools_spd_doc_list.html#SPD_TPLOT2CDF_UT__DEFINE">
-SPD_TPLOT2CDF_UT__DEFINE</A>
 <LI><A HREF="general/science/spd_slice2d/core_spd_doc_list.html#
 SPD_TPLOT_AVERAGE">SPD_TPLOT_AVERAGE</A>
 <LI><A HREF="spedas_gui/utilities_spd_doc_list.html#SPD_TPLOT_TRANGE">
@@ -8855,7 +8859,7 @@ TINTERPOL_MXN</A>
 <LI><A HREF="general/spedas_tools/tplot2ap_spd_doc_list.html#TPLOT2AP">TPLOT2AP
 </A>
 <br>Send tplot variables to Autoplot
-<LI><A HREF="general/CDF_spd_doc_list.html#TPLOT2CDF2">TPLOT2CDF2</A>
+<LI><A HREF="general/CDF_spd_doc_list.html#TPLOT2CDF">TPLOT2CDF</A>
 <br>Save tplot variables into cdf file
 <LI><A HREF="general/CDF_spd_doc_list.html#TPLOT2CDF_SAVE_VARS">
 TPLOT2CDF_SAVE_VARS</A>
@@ -8864,7 +8868,7 @@ TPLOT2CDF_SAVE_VARS</A>
 <LI><A HREF="general/tplot_spd_doc_list.html#TPLOTXY">TPLOTXY</A>
 <LI><A HREF="general/CDF_spd_doc_list.html#TPLOT_ADD_CDF_STRUCTURE">
 TPLOT_ADD_CDF_STRUCTURE</A>
-<br>In order to be saved in CDF file using TPLOT2CDF2, tplot variable must have CDF structure as a tplot option (see OPTIONS)
+<br>In order to be saved in CDF file using TPLOT2CDF, tplot variable must have CDF structure as a tplot option (see OPTIONS)
 <LI><A HREF="general/tplot_spd_doc_list.html#TPLOT_APPLY_DATABAR">
 TPLOT_APPLY_DATABAR</A>
 <br>Plots horizontal lines (databars) for plotted tplot variables, if
@@ -8913,8 +8917,6 @@ TPLOT_QUATERNION_ROTATE</A>
 <LI><A HREF="general/missions/rbsp/efw/l1_to_l2_spd_doc_list.html#
 TPLOT_TIME_TO_EPOCH (FUNCTION)">TPLOT_TIME_TO_EPOCH (FUNCTION)</A>
 <br>Convert tplot time stamps into CDF epoch.
-<LI><A HREF="general/qa_tools/mgunit_spd_doc_list.html#TPLOT_UT__DEFINE">
-TPLOT_UT__DEFINE</A>
 <LI><A HREF="general/tplot_spd_doc_list.html#TPLOT_VAR_LABELS">TPLOT_VAR_LABELS
 </A>
 <br>Helper routine for tplot.  Formats var_labels

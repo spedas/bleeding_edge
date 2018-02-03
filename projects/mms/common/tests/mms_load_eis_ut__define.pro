@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_eis_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-11-21 10:46:21 -0800 (Tue, 21 Nov 2017) $
-; $LastChangedRevision: 24331 $
+; $LastChangedDate: 2018-02-02 09:55:11 -0800 (Fri, 02 Feb 2018) $
+; $LastChangedRevision: 24628 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_eis_ut__define.pro $
 ;-
 
@@ -20,7 +20,9 @@ end
 
 function mms_load_eis_ut::test_combined_datatypes_burst_pad
   mms_load_eis, probes=1, datatype=['extof', 'phxtof'], trange=['2015-12-15', '2015-12-16'], data_rate='brst'
-  mms_eis_pad, probe=1, energy=[30, 800], data_rate='brst'
+  mms_eis_pad, probe=1, energy=[30, 800], data_rate='brst', datatype=['extof', 'phxtof']
+  ; need to add assert once bug is fixed
+  return, 1
 end
 
 function mms_load_eis_ut::test_combined_datatypes_pad
@@ -125,17 +127,6 @@ function mms_load_eis_ut::test_angle_angle_load_simple
   assert, spd_data_exists('mms1_epd_eis_extof_proton_flux_omni mms1_epd_eis_extof_alpha_flux_omni mms1_epd_eis_extof_oxygen_flux_omni', '2015-12-15', '2015-12-16'), 'Problem with EIS angle-angle?'
   return, 1
 end
-
-; the following is a regression test for a bug that
-; occurs when the user attempts to load data with
-; 'P2' and 'P3' in the name (v2 and v3 CDF files)
-; 
-;function mms_load_eis_ut::test_p2_and_p3_same_time
-;  mms_load_eis, probe='1', trange=['2015-09-02', '2015-09-03']
-;  mms_load_eis, probe='1', trange=['2015-10-19', '2015-10-20']
-;  
-;  return, 1
-;end
 
 function mms_load_eis_ut::test_yrange_of_spectra
   mms_load_eis, datatype='phxtof', level='l2', probe=1
