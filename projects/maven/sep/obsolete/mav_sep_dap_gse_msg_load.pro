@@ -46,7 +46,7 @@ end
 
 
 
-pro mav_gse_structure_append,ptrs,str,tname=tname,tags=tags
+pro mav_gse_structure_append2,ptrs,str,tname=tname,tags=tags
 
   if keyword_set(str) then begin
      if not keyword_set(ptrs) then ptrs = {x:ptr_new(0),  xi:ptr_new(0)  }
@@ -82,7 +82,7 @@ end
 
 
 
-function mav_misg_status_decom,pkt,rec_time = rec_time
+function mav_misg_status_decom2,pkt,rec_time = rec_time
    if not keyword_set(rec_time) then rec_time = systime(1)
    buffer_uint = pkt.buffer
    sampletime = buffer_uint[0]
@@ -108,7 +108,7 @@ end
 
 
 
-function mav_sep_hkp_decom,msg,last_hkp=last_hkp
+function mav_sep_hkp_decom2,msg,last_hkp=last_hkp
    if msg.valid eq 0 then return, fill_nan(last_hkp)
    time = msg.time
    dtime =  0d   ; msg.time - last_hkp.time
@@ -177,7 +177,7 @@ end
 
 
 
-function mav_sep_noise_decom,msg,hkppkt=hkp,last_noise=last
+function mav_sep_noise_decom2,msg,hkppkt=hkp,last_noise=last
     if msg.valid eq 0 then return, 0
     lastdata =keyword_set(last) ? last.data : 0u
     ddata = msg.data - lastdata
@@ -209,7 +209,7 @@ end
 
 
 
-function mav_sep_science_decom,msg,hkppkt=hkp   , last=last
+function mav_sep_science_decom2,msg,hkppkt=hkp   , last=last
 
     if msg.valid eq 0 then return,0  ; fill_nan(last)
 
@@ -239,7 +239,7 @@ end
 
 
 
-function mav_sep_memdump_decom,msg  ,hkppkt=hkp    , last=last
+function mav_sep_memdump_decom2,msg  ,hkppkt=hkp    , last=last
     if msg.valid eq 0 then return,0
     if keyword_set(hkp) then addr= hkp.mem_addr else addr = 0u
     if keyword_set(last) then LUT = last.lut  else lut = bytarr(2L^17)
@@ -295,7 +295,7 @@ end
 
 
 
-function mav_misg_packet_read_buffer,buffer,time=time
+function mav_misg_packet_read_buffer2,buffer,time=time
     bsize = n_elements(buffer)
     cur_ptr = 0
     smallest_size = 5  ; size of smallest possible message
@@ -367,7 +367,7 @@ pro mav_misg_process_buffer,buffer,time=time
     brk=0
 
     while keyword_set(size(/dimension,lbuffer)) do begin
-        pkt =mav_misg_packet_read_buffer(lbuffer,time=time)
+        pkt =mav_misg_packet_read_buffer2(lbuffer,time=time)
         if keyword_set(pkt)  then begin
             tstr = time_string(pkt.time)
  ;           dprint,dlevel=3,tstr,pkt.sync,pkt.ctype,pkt.length,pkt.buffer,format = '(a,128Z6)'
@@ -402,9 +402,9 @@ pro mav_misg_process_packet,pkt
     end
     'C1'x:  begin
 ;            c= c1++
-        status = mav_misg_status_decom(pkt)
+        status = mav_misg_status_decom2(pkt)
         dprint,status.time_delay,dlevel=4
-;            mav_gse_structure_append  ,status_ptrs, status
+;            mav_gse_structure_append2  ,status_ptrs, status
         time = status.time
         tstr = time_string(status.time,prec=3)
         dprint,unit=u, dlevel=3, c,tstr,pkt.sync,pkt.ctype,pkt.length,pkt.buffer, format='(i6," ",a-24," | ",2Z6,260Z5)'
@@ -426,17 +426,17 @@ pro mav_misg_process_packet,pkt
             '08'x:  dprint,unit=u,dlevel=1,msg.length,'Event'
             '09'x:  dprint,unit=u,dlevel=1,msg.length,'Unused'
             '18'x: begin    ; Science
-                sepscience = mav_sep_science_decom(msg,hkp=sephkp ,last=sepscience)  ;,last=lastscience)
-;                mav_gse_structure_append,  sepscience_ptrs, sepscience
+                sepscience = mav_sep_science_decom2(msg,hkp=sephkp ,last=sepscience)  ;,last=lastscience)
+;                mav_gse_structure_append2,  sepscience_ptrs, sepscience
                 end
             '19'x: begin     ; HKP
-                sephkp = mav_sep_hkp_decom(msg,last=sephkp)
-;                mav_gse_structure_append  ,sephkp_ptrs, sephkp
+                sephkp = mav_sep_hkp_decom2(msg,last=sephkp)
+;                mav_gse_structure_append2  ,sephkp_ptrs, sephkp
                 end
             '1a'x: begin ; Noise
-                sepnoise = mav_sep_noise_decom(msg,hkp=sephkp,last=sepnoise)
+                sepnoise = mav_sep_noise_decom2(msg,hkp=sephkp,last=sepnoise)
 ;                printdat,sepnoise
-;                mav_gse_structure_append, sepnoise_ptrs, sepnoise
+;                mav_gse_structure_append2, sepnoise_ptrs, sepnoise
                 end
             '1b'x:  dprint,unit=u,dlevel=1,msg.length,' MemDump'
             else:   begin
@@ -564,8 +564,8 @@ for fn = 0,n_elements(files)-1 do begin
           end
         'C1'x:  begin
             c= c1++
-            status = mav_misg_status_decom(pkt)
-            mav_gse_structure_append  ,status_ptrs, status
+            status = mav_misg_status_decom2(pkt)
+            mav_gse_structure_append2  ,status_ptrs, status
             time = status.time
             tstr = time_string(status.time,prec=3)
             dprint,unit=u, dlevel=2, c,tstr,pkt.sync,pkt.ctype,pkt.length,pkt.buffer, format='(i6," ",a-24," | ",2Z6,260Z5)'
@@ -590,21 +590,21 @@ for fn = 0,n_elements(files)-1 do begin
              '08'x:  dprint,unit=u,dlevel=1,msg.length,'Event'
              '09'x:  dprint,unit=u,dlevel=1,msg.length,'Unused'
              '18'x: begin    ; Science
-                sepscience = mav_sep_science_decom(msg,hkp=sephkp ,last=sepscience)  ;,last=lastscience)
-                mav_gse_structure_append,  sepscience_ptrs, sepscience
+                sepscience = mav_sep_science_decom2(msg,hkp=sephkp ,last=sepscience)  ;,last=lastscience)
+                mav_gse_structure_append2,  sepscience_ptrs, sepscience
                end
              '19'x: begin     ; HKP
-                sephkp = mav_sep_hkp_decom(msg,last=sephkp)
-                mav_gse_structure_append  ,sephkp_ptrs, sephkp
+                sephkp = mav_sep_hkp_decom2(msg,last=sephkp)
+                mav_gse_structure_append2  ,sephkp_ptrs, sephkp
                end
              '1a'x: begin ; Noise
-                sepnoise = mav_sep_noise_decom(msg,hkp=sephkp,last=sepnoise)
-                mav_gse_structure_append, sepnoise_ptrs, sepnoise
+                sepnoise = mav_sep_noise_decom2(msg,hkp=sephkp,last=sepnoise)
+                mav_gse_structure_append2, sepnoise_ptrs, sepnoise
               end
              '1b'x: begin
                  dprint,unit=u,dlevel=1,msg.length,'MemDump'
-                 sepmemdump = mav_sep_memdump_decom(msg,hkp=sephkp,last=sepmemdump)
-                 mav_gse_structure_append, sepmemdump_ptrs, sepmemdump
+                 sepmemdump = mav_sep_memdump_decom2(msg,hkp=sephkp,last=sepmemdump)
+                 mav_gse_structure_append2, sepmemdump_ptrs, sepmemdump
                 end
              else:
 
@@ -618,11 +618,11 @@ endfor
 
 timespan,minmax((*status_ptrs.x).time)
 
-mav_gse_structure_append  ,status_ptrs,      tname='MISG_STATUS'
-mav_gse_structure_append  ,sephkp_ptrs,      tname='SEP_HKP'
-mav_gse_structure_append  ,sepnoise_ptrs,    tname= 'SEP_NOISE'
-mav_gse_structure_append  ,sepscience_ptrs,  tname = 'SEP_SCIENCE'
-mav_gse_structure_append  ,sepmemdump_ptrs,  tname = 'SEP_MEMDUMP'
+mav_gse_structure_append2  ,status_ptrs,      tname='MISG_STATUS'
+mav_gse_structure_append2  ,sephkp_ptrs,      tname='SEP_HKP'
+mav_gse_structure_append2  ,sepnoise_ptrs,    tname= 'SEP_NOISE'
+mav_gse_structure_append2  ,sepscience_ptrs,  tname = 'SEP_SCIENCE'
+mav_gse_structure_append2  ,sepmemdump_ptrs,  tname = 'SEP_MEMDUMP'
 if keyword_set(u) then free_lun,u
 tplot_options,title = file
 
@@ -921,11 +921,11 @@ end
 ;
 ;timespan,minmax((*status_ptrs.x).time)
 ;
-;mav_gse_structure_append  ,status_ptrs,      tname='MISG_STATUS'
-;mav_gse_structure_append  ,sephkp_ptrs,      tname='SEP_HKP'
-;mav_gse_structure_append  ,sepnoise_ptrs,    tname= 'SEP_NOISE'
-;mav_gse_structure_append  ,sepscience_ptrs,  tname = 'SEP_SCIENCE'
-;mav_gse_structure_append  ,sepmemdump_ptrs,  tname = 'SEP_MEMDUMP'
+;mav_gse_structure_append2  ,status_ptrs,      tname='MISG_STATUS'
+;mav_gse_structure_append2  ,sephkp_ptrs,      tname='SEP_HKP'
+;mav_gse_structure_append2  ,sepnoise_ptrs,    tname= 'SEP_NOISE'
+;mav_gse_structure_append2  ,sepscience_ptrs,  tname = 'SEP_SCIENCE'
+;mav_gse_structure_append2  ,sepmemdump_ptrs,  tname = 'SEP_MEMDUMP'
 ;if keyword_set(u) then free_lun,u
 ;tplot_options,title = file
 ;

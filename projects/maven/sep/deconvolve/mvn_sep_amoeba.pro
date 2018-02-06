@@ -3,7 +3,7 @@
 ;       rights reserved. Unauthorized reproduction is prohibited.
 
 
-Function amotry, p, y, psum, func, ihi, fac
+Function mvn_sep_amotry, p, y, psum, func, ihi, fac
 ; Extrapolates by a factor fac through the face of the simplex, across
 ; from the high point, tries it and replaces the high point if the new
 ; point is better.
@@ -22,7 +22,7 @@ Function amotry, p, y, psum, func, ihi, fac
 end
 
 
-Function Amoeba, ftol, FUNCTION_NAME=func, FUNCTION_VALUE=y, $
+Function Mvn_Sep_Amoeba, ftol, FUNCTION_NAME=func, FUNCTION_VALUE=y, $
 	NCALLS = ncalls, NMAX = nmax, P0 = p0, SCALE=scale, SIMPLEX=p
 ; The Numerical Recipes procedure Amoeba, with some embellishments.
 ;
@@ -179,11 +179,11 @@ while ncalls le nmax do begin		;Each iteration
   endif
     
   ncalls = ncalls + 2
-  ytry = amotry(p, y, psum, func, ihi, -1.0)
-  if ytry le y[ilo] then ytry = amotry(p,y,psum, func, ihi, 2.0) $
+  ytry = mvn_sep_amotry(p, y, psum, func, ihi, -1.0)
+  if ytry le y[ilo] then ytry = mvn_sep_amotry(p,y,psum, func, ihi, 2.0) $
   else if ytry ge y[inhi] then begin
     ysave = y[ihi]
-    ytry = amotry(p,y,psum,func, ihi, 0.5)
+    ytry = mvn_sep_amotry(p,y,psum,func, ihi, 0.5)
     if ytry ge ysave then begin
 	for i=0, ndim do if i ne ilo then begin
 	  psum = 0.5 * (p[*,i] + p[*,ilo])

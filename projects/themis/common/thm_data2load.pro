@@ -30,8 +30,8 @@
 ; development for the next 6 months or so.
 ; 9-apr-2008, jmm, added all instruments, for Version 4_00
 ;$LastChangedBy: jimmpc1 $
-;$LastChangedDate: 2017-07-18 11:40:16 -0700 (Tue, 18 Jul 2017) $
-;$LastChangedRevision: 23628 $
+;$LastChangedDate: 2018-02-05 11:15:12 -0800 (Mon, 05 Feb 2018) $
+;$LastChangedRevision: 24640 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_data2load.pro $
 ;-
 function thm_valid_variables, instrument, level
@@ -194,8 +194,10 @@ function thm_valid_variables, instrument, level
         if(level eq 'l1' or level eq 'l10') then begin ;handle this in the same way as ESA L0
             instr_data = ['psif', 'psef', 'psir', 'pser', 'psib', 'pseb']
         endif else begin
-            sst_l2_datatype_root_list = ['delta_time','en_eflux','density','avgtemp','vthermal','sc_pot','t3','magt3','ptens','mftens','flux','symm',$
-            'symm_ang','magf','velocity_dsl','velocity_gse','velocity_gsm']
+           sst_l2_datatype_root_list = ['delta_time','en_eflux','density','avgtemp','vthermal',$
+                                        'sc_pot','t3','magt3','ptens','mftens','flux','symm',$
+                                        'symm_ang','magf','velocity_dsl','velocity_gse','velocity_gsm',$
+                                        'data_quality']
         
             instr_data = ['psif' +'_'+sst_l2_datatype_root_list,'psef'+'_'+sst_l2_datatype_root_list, $
               'psib' +'_'+sst_l2_datatype_root_list,'pseb'+'_'+sst_l2_datatype_root_list]

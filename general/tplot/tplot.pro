@@ -90,9 +90,9 @@
 ;Still have questions:
 ;   Send e-mail to:  tplot@ssl.berkeley.edu    someone might answer!
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-02-17 13:10:33 -0800 (Fri, 17 Feb 2017) $
-; $LastChangedRevision: 22821 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-02-05 14:00:36 -0800 (Mon, 05 Feb 2018) $
+; $LastChangedRevision: 24644 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot.pro $
 ;-
 
@@ -441,7 +441,8 @@ for i=0,nd-1 do begin
 ;     if size(/type,data.y
      str_element,newlim,'tplot_routine',value=routine
      color_table= struct_value(newlim,'color_table',default=-1) & pct=-1
-     if color_table ge 0 then loadct2,color_table,previous_ct=pct
+     rev_color_table= struct_value(newlim,'reverse_color_table',default=0)
+     if color_table ge 0 then loadct2,color_table,previous_ct=pct,reverse=rev_color_table
 ;if debug() then stop
      call_procedure,routine,data=data,limits=newlim
      if color_table ne pct then loadct2,pct

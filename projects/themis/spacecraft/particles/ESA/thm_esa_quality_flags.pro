@@ -22,8 +22,8 @@
 ;  
 ;  
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-02-23 12:03:56 -0800 (Thu, 23 Feb 2017) $
-; $LastChangedRevision: 22858 $
+; $LastChangedDate: 2018-02-05 13:13:19 -0800 (Mon, 05 Feb 2018) $
+; $LastChangedRevision: 24642 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_esa_quality_flags.pro $
 ;-
 
@@ -120,18 +120,18 @@ pro thm_esa_quality_flags,probe=probe,datatype=datatype,noload=noload,flow_thres
   pak_do = pak_all[idx]
   ok = execute('dat = th'+probe[0]+'_'+pak_do[0]+'_dat')
   
-  ;now calls thm_esa_read_pot, which handles pre-boom-deployment times
-  ;by setting the potential to 0
-  ;For THB post 13-oct-2010, thm_load_esa_pot needs to be called with
-  ;datatype='mom' due to the loss of sphere #2
-  If((probe[0] Eq 'b') And (time_double(date[0]) Gt time_double('2010-10-13'))) Then Begin
-    thm_load_esa_pot, sc = probe, efi_datatype = 'mom'
-  Endif Else If((probe[0] Eq 'a') And (time_double(date[0]) Gt time_double('2015-04-01'))) Then Begin
+;Noload keyword should assume thm_load_esa_pot has been called,
+                                ;jmm, 2018-02-05
+  If(~keyword_set(noload)) Then Begin
+     If((probe[0] Eq 'b') And (time_double(date[0]) Gt time_double('2010-10-13'))) Then Begin
+        thm_load_esa_pot, sc = probe, efi_datatype = 'mom'
+     Endif Else If((probe[0] Eq 'a') And (time_double(date[0]) Gt time_double('2015-04-01'))) Then Begin
     ;probe A has problems with bad pxxm_pot offsets post 1-apr-2015, jmm,
     ;2015-05-26, so this uses the default values
-    thm_load_esa_pot, sc = probe
-  Endif Else thm_load_esa_pot, sc = probe, efi_datatype = 'mom'
-  
+        thm_load_esa_pot, sc = probe
+     Endif Else thm_load_esa_pot, sc = probe, efi_datatype = 'mom'
+  Endif
+
   scpot_name = sc + '_esa_pot' 
   tinterpol_mxn,scpot_name,dat.time,/overwrite ;for an unknown reason, elements in the scpot don't match elements in esa raw data, this interpolates to match them 
   get_data, scpot_name, data = temp_scpot

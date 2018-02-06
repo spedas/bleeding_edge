@@ -973,7 +973,7 @@ if ~keyword_set(tol) then tol = 1e-5
 undefine,over3,over2
 if n_elements(its) eq 0 then its=0
 for i=0,its-1 do begin
-  vec = amoeba( tol, function_name = 'mvn_sep_amoeba_min',nmax=nmax,ncalls=nc,scale=scale,p0=p0 ,simplex=simplex)
+  vec = mvn_sep_amoeba( tol, function_name = 'mvn_sep_amoeba_min',nmax=nmax,ncalls=nc,scale=scale,p0=p0 ,simplex=simplex)
   par0 = mvn_sep_amoeba_min(/ret_par )
   chi2 = mvn_sep_amoeba_min()
  ; printdat,nc,vec,chi2

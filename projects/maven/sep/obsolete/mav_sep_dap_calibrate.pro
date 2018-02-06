@@ -215,7 +215,7 @@ end
 
 
 
-pro mav_sep_extpls_calibrate,threshold=thresh,pnames=pnames
+pro mav_sep_extpls_calibrate2,threshold=thresh,pnames=pnames
 
 col=0
 
@@ -519,7 +519,7 @@ endif
 end
 
 
-;mav_sep_extpls_calibrate,threshold=threshold,pnames=pnames
+;mav_sep_extpls_calibrate2,threshold=threshold,pnames=pnames
 ;mav_sep_dap_calibrate
 ;end
 

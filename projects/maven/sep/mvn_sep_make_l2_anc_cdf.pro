@@ -5,12 +5,12 @@
 ;PURPOSE:
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.  
 ;Author: Davin Larson  - January 2014
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2014-12-11 09:08:45 -0800 (Thu, 11 Dec 2014) $
-; $LastChangedRevision: 16452 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2018-02-05 15:04:54 -0800 (Mon, 05 Feb 2018) $
+; $LastChangedRevision: 24648 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_make_l2_anc_cdf.pro $
 ;-
-function mvn_sep_anc_sw_version
+function mvn_sep_l2_anc_sw_version
 
 tb = scope_traceback(/structure)
 this_file = tb[n_elements(tb)-1].filename   
@@ -22,9 +22,9 @@ sw_structure = {  $
   sw_time_stamp : time_string(this_file_date) , $
   sw_runtime : time_string(systime(1))  , $
   sw_runby :  getenv('LOGNAME') , $
-  svn_changedby : '$LastChangedBy: davin-mac $' , $
-  svn_changedate: '$LastChangedDate: 2014-12-11 09:08:45 -0800 (Thu, 11 Dec 2014) $' , $
-  svn_revision : '$LastChangedRevision: 16452 $' }
+  svn_changedby : '$LastChangedBy: jimm $' , $
+  svn_changedate: '$LastChangedDate: 2018-02-05 15:04:54 -0800 (Mon, 05 Feb 2018) $' , $
+  svn_revision : '$LastChangedRevision: 24648 $' }
 return,sw_structure
 end
 
@@ -47,9 +47,9 @@ end
 ;KEYWORDS:
 ;	FILE: Output file name
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2014-12-11 09:08:45 -0800 (Thu, 11 Dec 2014) $
-; $LastChangedRevision: 16452 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2018-02-05 15:04:54 -0800 (Mon, 05 Feb 2018) $
+; $LastChangedRevision: 24648 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_make_l2_anc_cdf.pro $
 
 
@@ -104,7 +104,7 @@ id13 = cdf_attcreate(fileid,'PI_affiliation',/global_scope)
 id14 = cdf_attcreate(fileid,'Instrument_type',/global_scope)
 id15 = cdf_attcreate(fileid,'Mission_group',/global_scope)
 idxx = cdf_attcreate(fileid,'Parents',/global_scope)
-extra = mvn_sep_anc_sw_version()
+extra = mvn_sep_l2_anc_sw_version()
 if keyword_set(extra) then exnames = tag_names(extra)
 for i=0,n_elements(exnames)-1 do  idxx = cdf_attcreate(fileid,exnames[i],/global_scope)
 

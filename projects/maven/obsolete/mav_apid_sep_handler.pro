@@ -86,7 +86,7 @@ return,memdump
 end
 
 
-pro mav_sep_plot_spectra,data,avg_data=avg_data,window=wnd,color=color
+pro mav_sep_plot_spectra2,data,avg_data=avg_data,window=wnd,color=color
    plt = get_plot_state()
  ;  dprint,'hello'
    if keyword_set(wnd) then  wi,wnd
@@ -289,11 +289,11 @@ pro mav_apid_sep_handler,ccsds,decom=decom,reset=reset,mem1=mem1,mem2=mem2 ;,rea
       '70'x: begin
           mav_gse_structure_append  ,sep1_svy, realtime=realtime, tname='sep1_svy',(sep1_spec=mav_apid_sep_science_decom(ccsds))
            ;         dprint,'Delay=',ccsds.time-systime(1)
-          if abs(ccsds.time-systime(1)) lt 90 then mav_sep_plot_spectra,total(sep1_spec.data,2),avg_data=sep1_avg,window=1,color=2  ;          mav_sep_plot_spectra,spec.data
+          if abs(ccsds.time-systime(1)) lt 90 then mav_sep_plot_spectra2,total(sep1_spec.data,2),avg_data=sep1_avg,window=1,color=2  ;          mav_sep_plot_spectra2,spec.data
           end
       '71'x: begin
           mav_gse_structure_append  ,sep2_svy, realtime=realtime, tname='sep2_svy',(sep2_spec=mav_apid_sep_science_decom(ccsds))          
-          if abs(ccsds.time-systime(1)) lt 90 then mav_sep_plot_spectra,total(sep2_spec.data,2),avg_data=sep2_avg,window=2,color=6  ;          mav_sep_plot_spectra,spec.data
+          if abs(ccsds.time-systime(1)) lt 90 then mav_sep_plot_spectra2,total(sep2_spec.data,2),avg_data=sep2_avg,window=2,color=6  ;          mav_sep_plot_spectra2,spec.data
           end
       '72'x: mav_gse_structure_append  ,sep1_arc, realtime=realtime, tname='sep1_arc',mav_apid_sep_science_decom(ccsds)
       '73'x: mav_gse_structure_append  ,sep2_arc, realtime=realtime, tname='sep2_arc',mav_apid_sep_science_decom(ccsds)

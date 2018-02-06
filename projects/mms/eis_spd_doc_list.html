@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Feb  3 18:16:13 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Feb  5 18:16:14 2018.<P>
  
 <HR>
  
@@ -306,6 +306,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          data_rate:    instrument data rates ['brst', 'srvy' (default), 'fast', 'slow']
          energy:       energy range to include in the calculation
          datatype:     extof (default), phxtof, electronenergy
+         suffix:       suffix used when loading the data
 
  CREATED BY: I. Cohen, 2017-08-14
 
@@ -318,7 +319,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                                    of mms_eis_pad.pro and mms_eis_pad_combine_proton_pad.pro;
                                    replaced species keyword definition with species and removed
                                    species
-       + 2018-01-04, I. Cohen    : fixed if statement for species case of 'proton'                       
+       + 2018-01-04, I. Cohen    : fixed if statement for species case of 'proton'
+       + 2018-02-05, I. Cohen    : added suffix keyword                       
 
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_pad_combine_sc.pro">projects/mms/eis/mms_eis_pad_combine_sc.pro</A>)</STRONG><P>

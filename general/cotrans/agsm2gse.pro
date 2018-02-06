@@ -45,8 +45,8 @@
 ;    
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2015-05-19 15:55:02 -0700 (Tue, 19 May 2015) $
-; $LastChangedRevision: 17652 $
+; $LastChangedDate: 2018-02-05 14:11:03 -0800 (Mon, 05 Feb 2018) $
+; $LastChangedRevision: 24646 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/agsm2gse.pro $
 ;-
 pro agsm2gse, data_in, data_out, sw_velocity = sw_velocity, rotation_angle = rotation_angle
@@ -112,7 +112,7 @@ pro agsm2gse, data_in, data_out, sw_velocity = sw_velocity, rotation_angle = rot
     y_out = transpose(the_arr[1,*])
     z_out = transpose(the_arr[2,*])
 
-    if is_struct(in_dlimits_struct) && is_struct(data_att) then begin
+    if is_struct(in_dlimits_struct) then begin
         str_element, data_att, 'coord_sys', 'gse', /add_replace
         str_element, in_dlimits_struct, 'data_att', data_att, /add_replace
     endif
