@@ -15,8 +15,8 @@
 ; selected lines into an idl window. 
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-07-19 08:24:36 -0700 (Wed, 19 Jul 2017) $
-; $LastChangedRevision: 23646 $
+; $LastChangedDate: 2018-02-06 09:56:06 -0800 (Tue, 06 Feb 2018) $
+; $LastChangedRevision: 24660 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_poynting_flux_crib.pro $
 ;-
 
@@ -146,7 +146,7 @@ mms_load_scm,probe=strmid(satname,3),datatype=scm_data_type,data_rate=scm_data_r
 
 
 ;;=====================
-;; BAND-PATH FILTERING
+;; BAND-PASS FILTERING
 ;;=====================
 tinterpol_mxn,scm_name,edp_name
 get_data,edp_name,time_edp,val_edp,values
@@ -161,7 +161,7 @@ store_data,edp_name+'_filt',data=edp_filtered
 store_data,scm_name+'_filt',data=scm_filtered
 
 ;;======================================================================
-;; Compute Poynting vector in GSE of band-path filtered EDP and SCM DATA
+;; Compute Poynting vector in GSE of band-pass filtered EDP and SCM DATA
 ;;======================================================================
 ; Calculate Poynting flux (bandpass filtered, time domain)
 ndata = n_elements(edp_filtered.x)  

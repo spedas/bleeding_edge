@@ -10,8 +10,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-06-29 14:53:36 -0700 (Wed, 29 Jun 2016) $
-; $LastChangedRevision: 21398 $
+; $LastChangedDate: 2018-02-06 08:47:25 -0800 (Tue, 06 Feb 2018) $
+; $LastChangedRevision: 24659 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_mva_crib.pro $
 ;-
 
@@ -37,7 +37,7 @@ minvar_matrix_make, 'mms1_fgm_b_gse_srvy_l2_bvec', newname='mva_mat_day', $
                     tstart='2015-10-16/13:00', tstop='2015-10-16/14:00'
 
 ; apply transformation to tplot variable
-;   -applies a right handed rotations
+;   -applies a right handed rotation
 tvector_rotate, 'mva_mat_day', 'mms1_fgm_b_gse_srvy_l2_bvec', newname='mva_data_day'
 
 ; update the labels for the transformed variable
