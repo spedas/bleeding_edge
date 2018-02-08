@@ -32,8 +32,8 @@
 ;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-01-24 10:52:02 -0800 (Wed, 24 Jan 2018) $
-;$LastChangedRevision: 24577 $
+;$LastChangedDate: 2018-02-07 09:19:12 -0800 (Wed, 07 Feb 2018) $
+;$LastChangedRevision: 24664 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -116,6 +116,11 @@ pro mms_part_getspec, probes=probes, $
     
     if ~keyword_set(mag_suffix) then mag_suffix = ''
     if ~keyword_set(dir_interval) then dir_interval = 60d 
+    
+    if keyword_set(subtract_error) && instrument eq 'hpca' then begin
+      dprint, dlevel = 0, 'Error, /subtract_error keyword currently only valid for FPI data. No disterr is being subtracted.'
+      stop
+    endif
     
     ; HPCA is required to be at the center of the accumulation interval
     if instrument eq 'hpca' and ~keyword_set(center_measurement) then center_measurement = 1

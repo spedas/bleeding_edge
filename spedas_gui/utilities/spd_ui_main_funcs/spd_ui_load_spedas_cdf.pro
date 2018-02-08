@@ -8,9 +8,9 @@
 ;  Inputs: The info structure from the main gui
 ;
 ;
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2014-02-11 10:54:32 -0800 (Tue, 11 Feb 2014) $
-;$LastChangedRevision: 14326 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2018-02-07 10:44:31 -0800 (Wed, 07 Feb 2018) $
+;$LastChangedRevision: 24665 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/utilities/spd_ui_main_funcs/spd_ui_load_spedas_cdf.pro $
 ;-
 pro spd_ui_load_spedas_cdf,info
@@ -41,7 +41,7 @@ pro spd_ui_load_spedas_cdf,info
     Filter='*.cdf', Dialog_Parent=info.master,file=filestring,path=path,/must_exist,/fix_filter)
   IF(Is_String(fileName)) THEN BEGIN
     init_time=systime(/sec)
-    cdf2tplot, file=fileName , get_support_data=1
+    cdf2tplot, file=fileName , get_support_data=1, all=1
     tplotvars = tnames(create_time=create_times)
     new_vars_ind = where(create_times gt init_time, n_new_vars_ind)
     if n_new_vars_ind gt 0 then begin

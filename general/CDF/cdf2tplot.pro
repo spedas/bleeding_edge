@@ -16,9 +16,9 @@
 ;
 ;Author: Davin Larson -  20th century
 ;
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-01-23 20:38:14 -0800 (Tue, 23 Jan 2018) $
-; $LastChangedRevision: 24575 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-02-07 10:44:31 -0800 (Wed, 07 Feb 2018) $
+; $LastChangedRevision: 24665 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf2tplot.pro $
 ;-
 
@@ -28,7 +28,7 @@ pro cdf2tplot,files,files=files2,prefix=prefix,midfix=midfix,midpos=midpos,suffi
    ,record=record, tplotnames=tplotnames,load_labels=load_labels
 
 
-dprint,dlevel=4,verbose=verbose,'$Id: cdf2tplot.pro 24575 2018-01-24 04:38:14Z adrozdov $'
+dprint,dlevel=4,verbose=verbose,'$Id: cdf2tplot.pro 24665 2018-02-07 18:44:31Z nikos $'
 vb = keyword_set(verbose) ? verbose : 0
 
 if keyword_set(files2) then files=files2    ; added for backward compatibility  and to make it match the documentation
@@ -39,7 +39,7 @@ dprint,dlevel=4,verbose=verbose,'Starting CDF file load'
 if not keyword_set(varformat) then var_type = 'data'
 if keyword_set(get_support_data) then var_type = ['data','support_data']
 cdfi = cdf_load_vars(files,varformat=varformat,var_type=var_type,/spdf_depend, $
-     varnames=varnames2,verbose=verbose,record=record, convert_int1_to_int2=convert_int1_to_int2)
+     varnames=varnames2,verbose=verbose,record=record, convert_int1_to_int2=convert_int1_to_int2, all=all)
 
 dprint,dlevel=4,verbose=verbose,'Starting load into tplot'
 ;  Insert into tplot format
