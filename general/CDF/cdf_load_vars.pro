@@ -135,10 +135,10 @@
 ;   Data is returned in pointer variables. Calling routine is responsible for freeing up heap memory - otherwise a memory leak will occur.
 ;
 ; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-01-23 20:38:14 -0800 (Tue, 23 Jan 2018) $
-; $LastChangedRevision: 24575 $
+; $LastChangedDate: 2018-02-07 21:18:03 -0800 (Wed, 07 Feb 2018) $
+; $LastChangedRevision: 24666 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_load_vars.pro $
-;
+; $ID: $
 ;-
 function cdf_load_vars,files,varnames=vars,varformat=vars_fmt,info=info,verbose=verbose,all=all, $
     record=record,convert_int1_to_int2=convert_int1_to_int2, $
@@ -150,7 +150,7 @@ function cdf_load_vars,files,varnames=vars,varformat=vars_fmt,info=info,verbose=
 vb = keyword_set(verbose) ? verbose : 0
 vars=''
 info = 0
-dprint,dlevel=4,verbose=verbose,'$Id: cdf_load_vars.pro 24575 2018-01-24 04:38:14Z adrozdov $'
+dprint,dlevel=4,verbose=verbose,'$Id: cdf_load_vars.pro 24666 2018-02-08 05:18:03Z adrozdov $'
 
 on_ioerror, ferr
 for fi=0,n_elements(files)-1 do begin

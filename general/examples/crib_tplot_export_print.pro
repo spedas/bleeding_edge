@@ -21,9 +21,9 @@
 ;   If you see any useful commands missing from these cribs, please let us know.
 ;   these cribs can help double as documentation for tplot.
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2013-12-16 14:43:09 -0800 (Mon, 16 Dec 2013) $
-; $LastChangedRevision: 13679 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-02-08 09:11:39 -0800 (Thu, 08 Feb 2018) $
+; $LastChangedRevision: 24671 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_tplot_export_print.pro $
 ;-
 
@@ -54,7 +54,7 @@ cd,current=c
 
 tplot,['sta_SWEA_mom_flux','sta_SWEA_en']
 
-;makepng will export your most recent plot to a png file
+;makepng will export your most recent plot to a PNG file
 makepng,'example'  ;extension appended automatically
 
 print,'  Just exported "example.png" to : ' + c
@@ -65,7 +65,7 @@ stop
 
 tplot,['sta_SWEA_mom_flux','sta_SWEA_en']
 
-;makegif will export your most recent plot to a png file
+;makegif will export your most recent plot to a GIF file
 makegif,'example' ;extension appended automatically
 
 print,'  Just exported "example.gif" to : ' + c
@@ -76,7 +76,7 @@ stop
 
 tplot,['sta_SWEA_mom_flux','sta_SWEA_en']
 
-;makegif will export your most recent plot to a png file
+;makejpg will export your most recent plot to a JPG file
 makejpg,'example' ;extension appended automatically
 
 print,'  Just exported "example.jpg" to : ' + c

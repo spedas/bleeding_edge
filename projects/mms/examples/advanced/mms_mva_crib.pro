@@ -10,8 +10,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-02-06 08:47:25 -0800 (Tue, 06 Feb 2018) $
-; $LastChangedRevision: 24659 $
+; $LastChangedDate: 2018-02-08 13:20:14 -0800 (Thu, 08 Feb 2018) $
+; $LastChangedRevision: 24677 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_mva_crib.pro $
 ;-
 
@@ -31,7 +31,7 @@ mms_load_fgm, probe='1', /time_clip
 
 ; the default call makes a single transformation matrix that covers the entire interval
 ;   -use TSTART and TSTOP keywords to limit the rime range considered
-;   -use NEWNAME keword to specify a name for the output, otherwise
+;   -use NEWNAME keyword to specify a name for the output, otherwise
 ;    matrices are stored as input_name + "_mva_mat"
 minvar_matrix_make, 'mms1_fgm_b_gse_srvy_l2_bvec', newname='mva_mat_day', $
                     tstart='2015-10-16/13:00', tstop='2015-10-16/14:00'
@@ -50,7 +50,7 @@ options, 'mva_data_day', ysubtitle='single transformation!C[nT]'
 timespan, '2015-10-16/13:00', 1, /hour
 tplot, 'mms1_fgm_b_gse_srvy_l2_bvec  mva_data_day'
 
-print,'Heres the fgm data translated into mva coordinates using a single transformation matrix'
+print,'Heres the FGM data translated into MVA coordinates using a single transformation matrix'
 
 stop
 
@@ -74,7 +74,7 @@ options, 'mva_data_hour', ysubtitle='1 hour sliding avg!C[nT]'
 timespan, '2015-10-16/13:00', 1, /hour
 tplot, 'mms1_fgm_b_gse_srvy_l2_bvec  mva_data_hour'
 
-print,'Heres the fgm data translated into mva coordinates using a different transformation every hour'
+print,'Heres the FGM data translated into MVA coordinates using a different transformation every hour'
 
 stop
 
@@ -99,7 +99,7 @@ options, 'mva_data_min_tlim', ysubtitle='5 min sliding avg!C[nT]'
 timespan, '2015-10-16/13:40', 10, /min
 tplot, 'mms1_fgm_b_gse_srvy_l2_bvec  mva_data_min_tlim'
 
-print,'Heres the fgm data translated into mva coordinates using a different transformation every 5 minutes'
+print,'Heres the FGM data translated into MVA coordinates using a different transformation every 5 minutes'
 
 stop
 

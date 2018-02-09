@@ -9,9 +9,9 @@
 ;
 ;HISTORY:
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2015-12-03 13:50:06 -0800 (Thu, 03 Dec 2015) $
-;$LastChangedRevision: 19523 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2018-02-08 14:41:32 -0800 (Thu, 08 Feb 2018) $
+;$LastChangedRevision: 24680 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/misc/spd_ui_spedas_fileconfig.pro $
 ;--------------------------------------------------------------------------------
 
