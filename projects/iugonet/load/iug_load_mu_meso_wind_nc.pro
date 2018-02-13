@@ -30,11 +30,13 @@
 ; A. Shinbori, 12/11/2012.
 ; A. Shinbori, 24/12/2012.
 ; A. Shinbori, 24/01/2014.
-;  
+; A. Shinbori, 09/08/2017.
+; A. Shinbori, 30/11/2017.
+; 
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-05-19 11:44:55 -0700 (Fri, 19 May 2017) $
-; $LastChangedRevision: 23337 $
+; $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
+; $LastChangedRevision: 24682 $
 ; $URL $
 ;-
 
@@ -48,6 +50,15 @@ pro iug_load_mu_meso_wind_nc, level = level, $
 ;***********************
 if (not keyword_set(verbose)) then verbose=2
 
+;***********************
+;Keyword check (trange):
+;***********************
+if not keyword_set(trange) then begin
+  get_timespan, time_org
+endif else begin
+  time_org =time_double(trange)
+endelse
+
 ;*************
 ;Level check:
 ;*************
@@ -60,16 +71,22 @@ levels = ssl_check_valid_name(level, level_all, /ignore_case, /include_all)
 
 print, levels
 
-;******************************************************************
-;Loop on downloading files
-;******************************************************************
-;Get timespan, define FILE_NAMES, and load data:
-;===============================================
-;
+;**************************
+;Loop on downloading files:
+;**************************
 ;===================================================================
 ;Download files, read data, and create tplot vars at each component:
 ;===================================================================
 for ii=0L,n_elements(levels)-1 do begin
+
+  ;==============================================================
+  ;Change time window associated with a time shift from UT to LT:
+  ;==============================================================
+   day_org = (time_org[1] - time_org[0])/86400.d
+   day_mod = day_org + 1
+   timespan, time_org[0] - 3600.0d * 9.0d, day_mod
+   if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) + 9.0d * 3600.0d); for GUI
+   
    if ~size(fns,/type) then begin
      ;****************************
      ;Get files for ith component:
@@ -105,16 +122,6 @@ for ii=0L,n_elements(levels)-1 do begin
      ;===================================================
      ;Read the files:
      ;===============
-   
-     ;---Definition of time and parameters:
-      mu_time = 0
-      uwind = 0
-      vwind = 0
-      wwind = 0
-      flag_uwind = 0
-      flag_vwind = 0
-      flag_wwind = 0
-      
       ;==============
       ;Loop on files: 
       ;==============
@@ -220,6 +227,13 @@ for ii=0L,n_elements(levels)-1 do begin
          ncdf_close,cdfid  ; done  
       endfor
 
+     ;==============================================================
+     ;Change time window associated with a time shift from UT to LT:
+     ;==============================================================
+      timespan, time_org
+      get_timespan, init_time2
+      if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) - 9.0d * 3600.0d); for GUI
+      
       if n_elements(mu_time) gt 1 then begin
     
         ;==============================
@@ -240,6 +254,9 @@ for ii=0L,n_elements(levels)-1 do begin
            ;---Create tplot variable for zonal wind:
             dlimit=create_struct('data_att',create_struct('acknowledgment',acknowledgstring,'PI_NAME', 'T. Nakamura'))                          
             store_data, 'iug_mu_meso_uwnd_'+levels[ii],data={x:mu_time,y:mu_uwnd,v:height_mz},dlimit=dlimit
+
+           ;----Edge data cut:
+            time_clip,'iug_mu_meso_uwnd_'+levels[ii], init_time2[0], init_time2[1], newname = 'iug_mu_meso_uwnd_'+levels[ii]
             
            ;---Add options:
             new_vars=tnames('iug_mu_meso_uwnd*')
@@ -250,6 +267,9 @@ for ii=0L,n_elements(levels)-1 do begin
             
            ;---Create tplot variable for meridional wind:
             store_data, 'iug_mu_meso_vwnd_'+levels[ii],data={x:mu_time,y:mu_vwnd,v:height_mz},dlimit=dlimit
+
+           ;----Edge data cut:
+            time_clip,'iug_mu_meso_vwnd_'+levels[ii], init_time2[0], init_time2[1], newname = 'iug_mu_meso_vwnd_'+levels[ii]
            
            ;---Add options:
             new_vars=tnames('iug_mu_meso_vwnd*')
@@ -260,6 +280,9 @@ for ii=0L,n_elements(levels)-1 do begin
             
            ;---Create tplot variable for vertical wind:
             store_data, 'iug_mu_meso_wwnd_'+levels[ii],data={x:mu_time,y:mu_wwnd,v:height_v},dlimit=dlimit
+
+           ;----Edge data cut:
+            time_clip,'iug_mu_meso_wwnd_'+levels[ii], init_time2[0], init_time2[1], newname = 'iug_mu_meso_wwnd_'+levels[ii]
            
            ;---Add options:
             new_vars=tnames('iug_mu_meso_wwnd*')
@@ -294,6 +317,9 @@ for ii=0L,n_elements(levels)-1 do begin
    mu_uwnd = 0
    mu_vwnd = 0
    mu_wwnd = 0
+
+  ;---Initialization of timespan for parameters:
+   timespan, time_org
    
 endfor      
 ;*************************

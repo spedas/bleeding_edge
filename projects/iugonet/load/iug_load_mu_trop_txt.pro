@@ -35,11 +35,13 @@
 ; A. Shinbori, 19/12/2012.
 ; A. Shinbori, 27/07/2013.
 ; A. Shinbori, 24/01/2014.
+; A. Shinbori, 09/08/2017.
+; A. Shinbori, 30/11/2017.
 ; 
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-05-19 11:44:55 -0700 (Fri, 19 May 2017) $
-; $LastChangedRevision: 23337 $
+; $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
+; $LastChangedRevision: 24682 $
 ; $URL $
 ;-
 
@@ -52,6 +54,15 @@ pro iug_load_mu_trop_txt, parameter=parameter, $
 ;Verbose keyword check:
 ;**********************
 if (not keyword_set(verbose)) then verbose=2
+
+;***********************
+;Keyword check (trange):
+;***********************
+if not keyword_set(trange) then begin
+  get_timespan, time_org
+endif else begin
+  time_org =time_double(trange)
+endelse
 
 ;***********
 ;parameters:
@@ -93,12 +104,9 @@ height_zm=strsplit('1.998,2.145,2.293,2.441,2.589,2.736,2.884,3.032,3.179,3.327,
 ;---Data list which applies the above height data:
 f_list=['19860317','19860318','19860319','19860320','19860321','19910209']
 
-;******************************************************************
-;Loop on downloading files
-;******************************************************************
-;Get timespan, define FILE_NAMES, and load data:
-;===============================================
-;
+;**************************
+;Loop on downloading files:
+;**************************
 ;===================================================================
 ;Download files, read data, and create tplot vars at each component:
 ;===================================================================
@@ -106,6 +114,14 @@ f_list=['19860317','19860318','19860319','19860320','19860321','19910209']
 jj=0L
 
 for ii=0L,n_elements(parameters)-1 do begin
+  ;==============================================================
+  ;Change time window associated with a time shift from UT to LT:
+  ;==============================================================
+   day_org = (time_org[1] - time_org[0])/86400.d
+   day_mod = day_org + 1
+   timespan, time_org[0] - 3600.0d * 9.0d, day_mod
+   if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) + 9.0d * 3600.0d); for GUI
+   
    if ~size(fns,/type) then begin
      ;****************************
      ;Get files for ith component:
@@ -145,10 +161,6 @@ for ii=0L,n_elements(parameters)-1 do begin
      ;---Definition of string variable:
       s=''
 
-     ;---Initialize data and time buffer
-      mu_time=0
-      mu_data=0
-     
      ;============= 
      ;Loop on files: 
      ;==============
@@ -209,8 +221,7 @@ for ii=0L,n_elements(parameters)-1 do begin
                minute = strmid(data(0),14,2)  
                 
               ;---Convert time from local time to unix time      
-               time = time_double(string(year)+'-'+string(month)+'-'+string(day)+'/'+hour+':'+minute) $
-                      -time_double(string(1970)+'-'+string(1)+'-'+string(1)+'/'+string(9)+':'+string(0)+':'+string(0))
+               time = time_double(string(year)+'-'+string(month)+'-'+string(day)+'/'+hour+':'+minute) - double(9) * 3600.0d
                
               ;---Replace missing value by NaN:
                d_num=n_elements(data)-1
@@ -240,6 +251,13 @@ for ii=0L,n_elements(parameters)-1 do begin
          mu_data=0 
       endfor
 
+     ;==============================================================
+     ;Change time window associated with a time shift from UT to LT:
+     ;==============================================================
+      timespan, time_org
+      get_timespan, init_time2
+      if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) - 9.0d * 3600.0d); for GUI
+      
      ;==============================
      ;Store data in TPLOT variables:
      ;==============================
@@ -260,6 +278,9 @@ for ii=0L,n_elements(parameters)-1 do begin
         ;---Create tplot variables for each parameter:
          dlimit=create_struct('data_att',create_struct('acknowledgment',acknowledgstring,'PI_NAME', 'M. Yamamoto'))
          store_data,'iug_mu_trop_'+parameters[ii],data={x:mu_time2, y:mu_data2, v:altitude},dlimit=dlimit
+
+        ;----Edge data cut:
+         time_clip,'iug_mu_trop_'+parameters[ii], init_time2[0], init_time2[1], newname = 'iug_mu_trop_'+parameters[ii]
         
         ;---Add options
          new_vars=tnames('iug_mu_trop_*')
@@ -280,7 +301,10 @@ for ii=0L,n_elements(parameters)-1 do begin
      ;---Add tdegap
       if new_vars[0] ne '' then tdegap, 'iug_mu_trop_'+parameters[ii],/overwrite
    endif
+   
    jj=n_elements(local_paths)
+  ;---Initialization of timespan for parameters:
+   timespan, time_org
 endfor
 
 new_vars=tnames('iug_mu_trop_*')

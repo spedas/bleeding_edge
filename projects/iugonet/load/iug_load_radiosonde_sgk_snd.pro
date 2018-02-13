@@ -26,11 +26,13 @@
 ;MODIFICATIONS:
 ;  A. Shinbori, 24/01/2014.
 ;  A. Shinbori, 28/10/2014.
-;  
+;  A. Shinbori, 09/08/2017.
+;  A. Shinbori, 30/11/2017.
+;    
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-05-19 11:44:55 -0700 (Fri, 19 May 2017) $
-; $LastChangedRevision: 23337 $
+; $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
+; $LastChangedRevision: 24682 $
 ; $URL $
 ;-
 
@@ -43,6 +45,15 @@ pro iug_load_radiosonde_sgk_snd, downloadonly=downloadonly, $
 ;**********************
 if (not keyword_set(verbose)) then verbose=2
 
+;***********************
+;Keyword check (trange):
+;***********************
+if not keyword_set(trange) then begin
+  get_timespan, time_org
+endif else begin
+  time_org =time_double(trange)
+endelse
+
 ;======================
 ;Calculation of height:
 ;======================
@@ -51,6 +62,17 @@ height[0]=0.0
 for i=0L, n_elements(height)-2 do begin
     height[i+1] = height[i]+30.0
 endfor
+
+;**************************
+;Loop on downloading files:
+;**************************
+;==============================================================
+;Change time window associated with a time shift from UT to LT:
+;==============================================================
+day_org = (time_org[1] - time_org[0])/86400.d
+day_mod = day_org + 1
+timespan, time_org[0] - 3600.0d * 9.0d, day_mod
+if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) + 9.0d * 3600.0d); for GUI
 
 ;==================================================================
 ;Download files, read data, and create tplot vars at each component
@@ -77,7 +99,7 @@ if ~size(fns,/type) then begin
    source = file_retrieve(/struct)
    source.verbose=verbose
    source.local_data_dir =  root_data_dir() + 'iugonet/rish/misc/sgk/radiosonde/snd/'
-   source.remote_data_dir = 'http://www.rish.kyoto-u.ac.jp/radar-group/mu/sondedb/'
+   source.remote_data_dir = 'http://database.rish.kyoto-u.ac.jp/arch/iugonet/sonde/data/shigaraki/snd/'
   
   ;=======================================================  
   ;Get files and local paths, and concatenate local paths:
@@ -187,9 +209,7 @@ if (downloadonly eq 0) then begin
       endfor
 
      ;---Convert time from UT to UNIX time
-      time = time_double(string(year)+'-'+string(month)+'-'+string(day)+'/'+string(hh)+':'+string(mm)+':'+string(ss)) $
-             -time_double(string(1970)+'-'+string(1)+'-'+string(1)+'/09:00:00')
-             stop
+      time = time_double(string(year)+'-'+string(month)+'-'+string(day)+'/'+string(hh)+':'+string(mm)+':'+string(ss)) - double(9) * 3600.0d
              
       k=0L
       for i=0L, n_elements(height)-1 do begin
@@ -223,6 +243,12 @@ if (downloadonly eq 0) then begin
       vertical_height=0 
    endfor
 
+  ;==============================================================
+  ;Change time window associated with a time shift from UT to LT:
+  ;==============================================================
+   timespan, time_org
+   get_timespan, init_time2
+   if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) - 9.0d * 3600.0d); for GUI
       
   ;==============================
   ;Store data in TPLOT variables:
@@ -240,14 +266,33 @@ if (downloadonly eq 0) then begin
      ;---Create tplot variables and options
       dlimit=create_struct('data_att',create_struct('acknowledgment',acknowledgstring,'PI_NAME', 'H. Hashiguchi'))
       store_data,'iug_radiosonde_sgk_press',data={x:sonde_time, y:sonde_press, v:height/1000.0},dlimit=dlimit
+      
+     ;----Edge data cut:
+      time_clip,'iug_radiosonde_sgk_press', init_time2[0], init_time2[1], newname = 'iug_radiosonde_sgk_press'
       options,'iug_radiosonde_sgk_press',ytitle='RSND-sgk!CHeight!C[km]',ztitle='Press.!C[hPa]'
+
       store_data,'iug_radiosonde_sgk_temp',data={x:sonde_time, y:sonde_temp, v:height/1000.0},dlimit=dlimit
+      
+     ;----Edge data cut:
+      time_clip,'iug_radiosonde_sgk_temp', init_time2[0], init_time2[1], newname = 'iug_radiosonde_sgk_temp'
       options,'iug_radiosonde_sgk_temp',ytitle='RSND-sgk!CHeight!C[km]',ztitle='Temp.!C[deg.]'
+
       store_data,'iug_radiosonde_sgk_rh',data={x:sonde_time, y:sonde_rh, v:height/1000.0},dlimit=dlimit
+
+     ;----Edge data cut:
+      time_clip,'iug_radiosonde_sgk_rh', init_time2[0], init_time2[1], newname = 'iug_radiosonde_sgk_rh'
       options,'iug_radiosonde_sgk_rh',ytitle='RSND-sgk!CHeight!C[km]',ztitle='RH!C[%]'
+
       store_data,'iug_radiosonde_sgk_vertical_velocity',data={x:sonde_time, y:sonde_vertical_velocity, v:height/1000.0},dlimit=dlimit
+
+     ;----Edge data cut:
+      time_clip,'iug_radiosonde_sgk_uwnd', init_time2[0], init_time2[1], newname = 'iug_radiosonde_sgk_uwnd'
       options,'iug_radiosonde_sgk_vertical_velocity',ytitle='RSND-sgk!CHeight!C[km]',ztitle='Ascending speed!C[m/s]'
+
       store_data,'iug_radiosonde_sgk_vertical_height',data={x:sonde_time, y:sonde_vertical_height, v:height/1000.0},dlimit=dlimit
+
+     ;----Edge data cut:
+      time_clip,'iug_radiosonde_sgk_vwnd', init_time2[0], init_time2[1], newname = 'iug_radiosonde_sgk_vwnd'
       options,'iug_radiosonde_sgk_vertical_height',ytitle='RSND-sgk!CHeight!C[km]',ztitle='Height!C[km]'
       options, ['iug_radiosonde_sgk_press','iug_radiosonde_sgk_temp',$
                 'iug_radiosonde_sgk_rh',$
@@ -272,6 +317,9 @@ if (downloadonly eq 0) then begin
       tdegap, 'iug_radiosonde_sgk_vertical_height',/overwrite
    endif
 endif 
+
+;---Initialization of timespan for parameters-1:
+timespan, time_org
 
 new_vars=tnames('iug_radiosonde_*')
 if new_vars[0] ne '' then begin    

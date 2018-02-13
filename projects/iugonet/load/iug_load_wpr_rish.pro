@@ -37,11 +37,13 @@
 ; A. Shinbori, 04/03/2013.
 ; A. Shinbori, 08/04/2013.
 ; A. Shinbori, 24/01/2014.
-;  
+; A. Shinbori, 09/08/2017.
+; A. Shinbori, 30/11/2017.
+;   
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-05-19 11:44:55 -0700 (Fri, 19 May 2017) $
-; $LastChangedRevision: 23337 $
+; $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
+; $LastChangedRevision: 24682 $
 ; $URL $
 ;-
 
@@ -55,6 +57,15 @@ pro iug_load_wpr_rish, site=site, $
 ;keyword check:
 ;**************
 if (not keyword_set(verbose)) then verbose=2
+
+;***********************
+;Keyword check (trange):
+;***********************
+if not keyword_set(trange) then begin
+  get_timespan, time_org
+endif else begin
+  time_org =time_double(trange)
+endelse
 
 ;***********
 ;site codes:
@@ -98,26 +109,15 @@ site_data_dir = strsplit('bik/wpr/ mnd/wpr/ pon/wpr/ sgk/wpr/',' ', /extract)
 unit_all = strsplit('m/s dB',' ', /extract)
 
 
-;******************************************************************
-;Loop on downloading files
-;******************************************************************
-;Get timespan, define FILE_NAMES, and load data:
-;===============================================
-;
-;==================================================================
-;Download files, read data, and create tplot vars at each component
-;==================================================================
-;******************************************************************
-;Loop on downloading files
-;******************************************************************
-;Get timespan, define FILE_NAMES, and load data:
-;===============================================
-;
-
+;**************************
+;Loop on downloading files:
+;**************************
 ;Definition of parameter
 jj=0L
 k=0L
 n_site=intarr(n_elements(site_data_dir))
+time_shift =dblarr(n_elements(site_data_dir))
+
 start_time=time_double('2006-3-30')
 
 ;In the case that the parameters are except for all.'
@@ -130,12 +130,27 @@ if n_elements(site_code) le n_elements(site_data_dir) then begin
          'pon':n_site[i]=2 
          'sgk':n_site[i]=3 
       endcase
+      case site_code[i] of
+        'bik':time_shift[i] = 9.0d
+        'mnd':time_shift[i] = 8.0d
+        'pon':time_shift[i] = 7.0d
+        'sgk':time_shift[i] = 9.0d
+      endcase
    endfor
 endif
 
 for ii=0L,h_max-1 do begin
    k=n_site[ii]
    for iii=0,n_elements(parameters)-1 do begin
+    
+     ;==============================================================
+     ;Change time window associated with a time shift from UT to LT:
+     ;==============================================================
+      day_org = (time_org[1] - time_org[0])/86400.d
+      day_mod = day_org + 1
+      timespan, time_org[0] - 3600.0d * time_shift[ii], day_mod
+      if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) + time_shift[ii] * 3600.0d); for GUI
+      
       if ~size(fns,/type) then begin
         ;Definition of blr site names:
          case site_code[ii] of
@@ -183,10 +198,6 @@ for ii=0L,h_max-1 do begin
         ;===============      
         ;---Definition of parameters and array:
          s=''
-
-        ;---Initialize data and time buffer:
-         wpr_data = 0
-         wpr_time = 0
          
         ;==============
         ;Loop on files: 
@@ -210,11 +221,11 @@ for ii=0L,h_max-1 do begin
             
            ;---Definition of time zone at each station:
             case site_code2 of
-              'pontianak':time_zone = 7.0
-              'kototabang':time_zone = 7.0
-              'manado':time_zone = 8.0
-              'biak':time_zone = 9.0   
-              'shigaraki':time_zone = 9.0
+              'pontianak':time_zone = 7.0d
+              'kototabang':time_zone = 7.0d
+              'manado':time_zone = 8.0d
+              'biak':time_zone = 9.0d
+              'shigaraki':time_zone = 9.0d
             endcase 
            
            ;Definition of altitude and data arraies:
@@ -256,8 +267,7 @@ for ii=0L,h_max-1 do begin
                   minute = strmid(data(0),14,2)  
                   
                  ;---Convert time from LT to UT
-                  time = time_double(string(year)+'-'+string(month)+'-'+string(day)+'/'+string(hour)+':'+string(minute)+':'+string(0)) $
-                        -time_double(string(1970)+'-'+string(1)+'-'+string(1)+'/'+string(time_zone)+':'+string(0)+':'+string(0))
+                  time = time_double(string(year)+'-'+string(month)+'-'+string(day)+'/'+string(hour)+':'+string(minute)+':'+string(0)) - double(time_zone) * 3600.0d
                  
                  ;---Enter the missing value:
                   for j=0L,n_elements(height)-2 do begin
@@ -276,7 +286,13 @@ for ii=0L,h_max-1 do begin
             endwhile 
             free_lun,lun  
          endfor
-   
+
+        ;==============================================================
+        ;Change time window associated with a time shift from UT to LT:
+        ;==============================================================
+         timespan, time_org
+         get_timespan, init_time2
+         if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) - time_shift[ii] * 3600.0d); for GUI
         ;==============================
         ;Store data in TPLOT variables:
         ;==============================
@@ -311,6 +327,9 @@ for ii=0L,h_max-1 do begin
            ;---Create the tplot variables:
             dlimit=create_struct('data_att',create_struct('acknowledgment',acknowledgstring,'PI_NAME', 'H. Hashiguchi'))
             store_data,'iug_wpr_'+site_code[ii]+'_'+parameters[iii],data={x:wpr_time, y:wpr_data, v:altitude},dlimit=dlimit
+
+           ;----Edge data cut:
+            time_clip, 'iug_wpr_'+site_code[ii]+'_'+parameters[iii], init_time2[0], init_time2[1], newname = 'iug_wpr_'+site_code[ii]+'_'+parameters[iii]
            
            ;---Options of each tplot variable 
             new_vars=tnames('iug_wpr_'+site_code[ii]+'_'+parameters[iii])
@@ -333,8 +352,12 @@ for ii=0L,h_max-1 do begin
          endif
       endif
       jj=n_elements(local_paths)
+     ;---Initialization of timespan for sites
+      timespan, time_org
    endfor
    jj=n_elements(local_paths)
+  ;---Initialization of timespan for sites
+   timespan, time_org
 endfor
 
 new_vars=tnames('iug_wpr_*')

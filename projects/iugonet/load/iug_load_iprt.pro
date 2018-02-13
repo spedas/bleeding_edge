@@ -44,6 +44,7 @@
 ;  12-NOV.-2010, revised by M. Kagitani
 ;  25-NOV.-2010, renamed to 'iug_load_iprt.pro' by M. Kagitani
 ;  22-JAN.-2014, revised by M. Yagi
+;  22-NOV.-2017, revised by F. Tsuchiya
 ;
 ;Acknowledgment:
 ;
@@ -127,7 +128,7 @@ source.local_data_dir = root_data_dir() + 'iugonet/tohokuU/iit/'
 source.remote_data_dir = 'http://radio.gp.tohoku.ac.jp/db/IPRT-SUN/DATA2/'
 
 ; download data
-local_paths = spd_download(remote_file=relpathnames, remote_path=source.remote_data_dir, local_path=source.local_data_dir, _extra=source, /last_version)
+local_files = spd_download(remote_file=relpathnames, remote_path=source.remote_data_dir, local_path=source.local_data_dir, _extra=source, /last_version)
 
 ; if downloadonly set, go to the top of this loop
 if keyword_set(downloadonly) then return
@@ -234,18 +235,24 @@ if size(databufL,/type) eq 1 then begin
                       ,'SPEC',1)
 
   ; store data to tplot variable
+  databufL /= 10.0  ; unit convertion [dB from background] 
+  databufR /= 10.0  ; unit convertion [dB from background]
   store_data, tplot_nameL, data={x:timebuf, y:databufL, v:freq}, dlimit=dlimit
   store_data, tplot_nameR, data={x:timebuf, y:databufR, v:freq}, dlimit=dlimit
 
   ; add options
   options, tplot_nameL, labels=['IPRT_SUN_LCP'] , $
                        ytitle = sxpar(hd,'CTYPE2'), $
-                       ysubtitle = '';, $
-                       title = 'IPRT Solar radio data'
+                       ysubtitle = 'LCP', $
+                       ztitle = 'dB from background', $
+                       datagap = 10
+;                       title = 'IPRT Solar radio data'
   options, tplot_nameR, labels=['IPRT_SUN_RCP'] , $
                        ytitle = sxpar(hd,'CTYPE2'), $
-                       ysubtitle = '';, $
-                       title = 'IPRT Solar radio data'
+                       ysubtitle = 'RCP', $
+                       ztitle = 'dB from background', $
+                       datagap = 10
+;                     title = 'IPRT Solar radio data', $
 endif
 
 ; clear data and time buffer

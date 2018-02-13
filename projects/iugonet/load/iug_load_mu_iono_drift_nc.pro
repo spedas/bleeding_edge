@@ -27,11 +27,13 @@
 ; A. Shinbori, 12/11/2012. 
 ; A. Shinbori, 24/12/2012. 
 ; A. Shinbori, 24/01/2014.
+; A. Shinbori, 09/08/2017.
+; A. Shinbori, 30/11/2017.
 ; 
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-05-19 11:44:55 -0700 (Fri, 19 May 2017) $
-; $LastChangedRevision: 23337 $
+; $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
+; $LastChangedRevision: 24682 $
 ; $URL $
 ;-
 
@@ -44,12 +46,26 @@ pro iug_load_mu_iono_drift_nc, downloadonly = downloadonly, $
 ;**************
 if (not keyword_set(verbose)) then verbose=2
 
-;******************************************************************
-;Loop on downloading files
-;******************************************************************
-;Get timespan, define FILE_NAMES, and load data:
-;===============================================
-;
+;***********************
+;Keyword check (trange):
+;***********************
+if not keyword_set(trange) then begin
+  get_timespan, time_org
+endif else begin
+  time_org =time_double(trange)
+endelse
+
+;**************************
+;Loop on downloading files:
+;**************************
+;==============================================================
+;Change time window associated with a time shift from UT to LT:
+;==============================================================
+day_org = (time_org[1] - time_org[0])/86400.d
+day_mod = day_org + 1
+timespan, time_org[0] - 3600.0d * 9.0d, day_mod
+if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) + 9.0d * 3600.0d); for GUI
+
 ;===================================================================
 ;Download files, read data, and create tplot vars at each component:
 ;===================================================================
@@ -198,6 +214,12 @@ if (downloadonly eq 0) then begin
       ncdf_close,cdfid  ; done
    endfor
 
+  ;==============================================================
+  ;Change time window associated with a time shift from UT to LT:
+  ;==============================================================
+   timespan, time_org
+   get_timespan, init_time2
+   if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) - 9.0d * 3600.0d); for GUI
   ;==============================
   ;Store data in TPLOT variables:
   ;==============================
@@ -215,16 +237,39 @@ if (downloadonly eq 0) then begin
      ;---Create tplot variables for drift velocity and add options:
       dlimit=create_struct('data_att',create_struct('acknowledgment',acknowledgstring,'PI_NAME', 'Y. Otsuka'))
       store_data,'iug_mu_iono_Vperp_e',data={x:site_time, y:Vperp_e_app},dlimit=dlimit
+
+     ;----Edge data cut:
+      time_clip,'iug_mu_iono_Vperp_e', init_time2[0], init_time2[1], newname = 'iug_mu_iono_Vperp_e'
       options,'iug_mu_iono_Vperp_e',ytitle='MU-iono!CVperp_e!C[m/s]'
+      
       store_data,'iug_mu_iono_Vperp_n',data={x:site_time, y:Vperp_n_app},dlimit=dlimit
+
+     ;----Edge data cut:
+      time_clip,'iug_mu_iono_Vperp_n', init_time2[0], init_time2[1], newname = 'iug_mu_iono_Vperp_n'      
       options,'iug_mu_iono_Vperp_n',ytitle='MU-iono!CVperp_n!C[m/s]'
+      
       store_data,'iug_mu_iono_Vpara_u',data={x:site_time, y:Vpara_u_app},dlimit=dlimit
+      
+      ;----Edge data cut:
+      time_clip,'iug_mu_iono_Vpara_u', init_time2[0], init_time2[1], newname = 'iug_mu_iono_Vpara_u'            
       options,'iug_mu_iono_Vpara_u',ytitle='MU-iono!CVpara_u!C[m/s]'
+      
       store_data,'iug_mu_iono_Vz_ns',data={x:site_time, y:Vz_ns_app},dlimit=dlimit
+
+     ;----Edge data cut:
+      time_clip,'iug_mu_iono_Vz_ns', init_time2[0], init_time2[1], newname = 'iug_mu_iono_Vz_ns'
       options,'iug_mu_iono_Vz_ns',ytitle='MU-iono!CVz_ns!C[m/s]'
+      
       store_data,'iug_mu_iono_Vz_ew',data={x:site_time, y:Vz_ew_app},dlimit=dlimit
+
+     ;----Edge data cut:
+      time_clip,'iug_mu_iono_Vz_ew', init_time2[0], init_time2[1], newname = 'iug_mu_iono_Vz_ew'      
       options,'iug_mu_iono_Vz_ew',ytitle='MU-iono!CVz_ew!C[m/s]'
+      
       store_data,'iug_mu_iono_Vd_b',data={x:site_time, y:Vd_b_app},dlimit=dlimit
+
+     ;----Edge data cut:
+      time_clip,'iug_mu_iono_Vd_b', init_time2[0], init_time2[1], newname = 'iug_mu_iono_Vz_ew'
       options,'iug_mu_iono_Vd_b',ytitle='MU-iono!CVd_b!C[m/s]'
    endif
   
@@ -246,6 +291,9 @@ if (downloadonly eq 0) then begin
    tdegap, 'iug_mu_iono_Vd_b',dt=3600,/overwrite 
   
 endif
+
+;---Initialization of timespan for parameters:
+timespan, time_org
 
 new_vars=tnames('iug_mu_iono_V*')
 if new_vars[0] ne '' then begin  

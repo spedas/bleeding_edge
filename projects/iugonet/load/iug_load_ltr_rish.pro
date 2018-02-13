@@ -36,11 +36,13 @@
 ; A. Shinbori, 10/02/2012.
 ; A. Shinbori, 18/12/2012.
 ; A. Shinbori, 24/01/2014.
+; A. Shinbori, 08/08/2017.
+; A. Shinbori, 30/11/2017.
 ;  
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-05-19 11:44:55 -0700 (Fri, 19 May 2017) $
-; $LastChangedRevision: 23337 $
+; $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
+; $LastChangedRevision: 24682 $
 ; $URL $
 ;-
 
@@ -54,6 +56,15 @@ pro iug_load_ltr_rish, site=site, $
 ;keyword check:
 ;**************
 if (not keyword_set(verbose)) then verbose=2
+
+;***********************
+;Keyword check (trange):
+;***********************
+if not keyword_set(trange) then begin
+  get_timespan, time_org
+endif else begin
+  time_org =time_double(trange)
+endelse
 
 ;***********
 ;site codes:
@@ -85,12 +96,6 @@ print, parameters
 ;--- all units (default)
 unit_all = strsplit('m/s dB',' ', /extract)
 
-;******************************************************************
-;Loop on downloading files
-;******************************************************************
-;Get timespan, define FILE_NAMES, and load data:
-;===============================================
-;
 ;===================================================================
 ;Download files, read data, and create tplot vars at each component:
 ;===================================================================
@@ -98,6 +103,15 @@ jj=0L
 start_time=time_double('1999-7-7')
 end_time=time_double('2006-3-29')
 for iii=0L,n_elements(parameters)-1 do begin
+
+  ;==============================================================
+  ;Change time window associated with a time shift from UT to LT:
+  ;==============================================================
+   day_org = (time_org[1] - time_org[0])/86400.d
+   day_mod = day_org + 1
+   timespan, time_org[0] - 3600.0d * 9.0d, day_mod
+   if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) + 9.0d * 3600.0d); for GUI
+  
    if ~size(fns,/type) then begin
       ;****************************
       ;Get files for ith component:
@@ -137,10 +151,6 @@ for iii=0L,n_elements(parameters)-1 do begin
       ;===============
       ;---Definition of string variable:
         s=''
-
-      ;---Initialize data and time buffer:
-       ltr_data = 0
-       ltr_time = 0
       
       ;==============
       ;Loop on files: 
@@ -201,9 +211,8 @@ for iii=0L,n_elements(parameters)-1 do begin
                minute = strmid(data(0),14,2)  
                   
               ;---Convert time from local time to universal time 
-               time = time_double(string(year)+'-'+string(month)+'-'+string(day)+'/'+hour+':'+minute) $
-                      -time_double(string(1970)+'-'+string(1)+'-'+string(1)+'/'+string(9)+':'+string(0)+':'+string(0))
-               if time lt time_double(string(1992)+'-'+string(9)+'-'+string(1)+'/'+string(0)+':'+string(0)+':'+string(0)) then break
+               ltr_time = time_double(string(year)+'-'+string(month)+'-'+string(day)+'/'+hour+':'+minute) - double(9) * 3600.0d
+               if ltr_time lt time_double(string(1992)+'-'+string(9)+'-'+string(1)+'/'+string(0)+':'+string(0)+':'+string(0)) then break
               
               ;---Enter the missing value:
                for j=0L,n_elements(height)-2 do begin
@@ -216,13 +225,19 @@ for iii=0L,n_elements(parameters)-1 do begin
               ;==============================
               ;Append array of time and data:
               ;==============================
-               append_array, ltr_time, time
-               append_array, ltr_data, data2
+               append_array, ltr_time_app, ltr_time
+               append_array, ltr_data_app, data2
             endif
          endwhile 
          free_lun,lun  
       endfor
-   
+
+     ;==============================================================
+     ;Change time window associated with a time shift from UT to LT:
+     ;==============================================================
+      timespan, time_org
+      get_timespan, init_time2
+      if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) - 9.0d * 3600.0d); for GUI
      ;==============================
      ;Store data in TPLOT variables:
      ;==============================
@@ -235,18 +250,21 @@ for iii=0L,n_elements(parameters)-1 do begin
                        + 'LTR data has been partly supported by the IUGONET (Inter-university Upper '$
                        + 'atmosphere Global Observation NETwork) project (http://www.iugonet.org/) funded '$
                        + 'by the Ministry of Education, Culture, Sports, Science and Technology (MEXT), Japan.'
-                       
-      if size(ltr_data,/type) eq 4 then begin  
+                      
+      if size(ltr_data_app,/type) eq 4 then begin  
          o=0 
          if parameters[iii] eq 'pwr1' then o=1  
          if parameters[iii] eq 'pwr2' then o=1
          if parameters[iii] eq 'pwr3' then o=1
          if parameters[iii] eq 'pwr4' then o=1
          if parameters[iii] eq 'pwr5' then o=1
-  
+
         ;---Create tplot variables:
          dlimit=create_struct('data_att',create_struct('acknowledgment',acknowledgstring,'PI_NAME', 'H. Hashiguchi'))
-         store_data,'iug_ltr_'+site_code[0]+'_'+parameters[iii],data={x:ltr_time, y:ltr_data, v:altitude},dlimit=dlimit
+         store_data,'iug_ltr_'+site_code[0]+'_'+parameters[iii],data={x:ltr_time_app, y:ltr_data_app, v:altitude},dlimit=dlimit
+
+        ;----Edge data cut:
+         time_clip, 'iug_ltr_'+site_code[0]+'_'+parameters[iii], init_time2[0], init_time2[1], newname = 'iug_ltr_'+site_code[0]+'_'+parameters[iii]
         
         ;---Add options:
          new_vars=tnames('iug_ltr_'+site_code[0]+'_'+parameters[iii])
@@ -259,8 +277,8 @@ for iii=0L,n_elements(parameters)-1 do begin
       endif
 
      ;---Clear time and data buffer:
-      ltr_data = 0
-      ltr_time = 0
+      ltr_data_app = 0
+      ltr_time_app = 0
      
      ;---Add tdegap         
       new_vars=tnames('iug_ltr_'+site_code[0]+'_'+parameters[iii])
@@ -269,6 +287,8 @@ for iii=0L,n_elements(parameters)-1 do begin
       endif
    endif
    jj=n_elements(local_paths)
+  ;---Initialization of timespan for parameters 
+   timespan, time_org
 endfor 
 
 new_vars=tnames('iug_ltr_*')

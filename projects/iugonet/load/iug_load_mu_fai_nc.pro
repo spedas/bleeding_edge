@@ -31,11 +31,12 @@
 ; A. Shinbori, 17/11/2013.
 ; A. Shinbori, 18/12/2013.
 ; A. Shinbori, 24/01/2014.
-; 
+; A. Shinbori, 30/11/2017.
+;  
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-05-19 11:44:55 -0700 (Fri, 19 May 2017) $
-; $LastChangedRevision: 23337 $
+; $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
+; $LastChangedRevision: 24682 $
 ; $URL $
 ;-
 
@@ -49,6 +50,15 @@ pro iug_load_mu_fai_nc, parameter=parameter, $
 ;keyword check:
 ;**************
 if (not keyword_set(verbose)) then verbose=2
+
+;***********************
+;Keyword check (trange):
+;***********************
+if not keyword_set(trange) then begin
+  get_timespan, time_org
+endif else begin
+  time_org =time_double(trange)
+endelse
 
 ;**********
 ;parameter:
@@ -95,14 +105,20 @@ unit_all = strsplit('m/s dB',' ', /extract)
 ;******************************************************************
 ;Loop on downloading files
 ;******************************************************************
-;Get timespan, define FILE_NAMES, and load data:
-;===============================================
-;
 ;===================================================================
 ;Download files, read data, and create tplot vars at each component:
 ;===================================================================
 jj=0L
 for ii=0L,n_elements(parameters)-1 do begin
+
+  ;==============================================================
+  ;Change time window associated with a time shift from UT to LT:
+  ;==============================================================
+   day_org = (time_org[1] - time_org[0])/86400.d
+   day_mod = day_org + 1
+   timespan, time_org[0] - 3600.0d * 9.0d, day_mod  
+   if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) + 9.0d * 3600.0d); for GUI
+   
    if ~size(fns,/type) then begin
      ;****************************
      ;Get files for ith component:
@@ -137,15 +153,7 @@ for ii=0L,n_elements(parameters)-1 do begin
      ;read data, and create tplot vars at each parameter:
      ;===================================================
      ;Read the files:
-     ;===============
-   
-     ;---Definition of time and parameters:
-      mu_time=0
-      pwr1 = 0
-      wdt1 = 0
-      dpl1 = 0
-      pn1 = 0
-  
+     ;===============  
      ;==============
      ;Loop on files: 
      ;============== 
@@ -292,6 +300,13 @@ for ii=0L,n_elements(parameters)-1 do begin
          append_array, snr1, snr1_mu         
       endfor
 
+     ;==============================================================
+     ;Change time window associated with a time shift from UT to LT:
+     ;==============================================================
+      timespan, time_org
+      get_timespan, init_time2
+      if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) - 9.0d * 3600.0d); for GUI
+      
      ;==============================
      ;Store data in TPLOT variables:
      ;==============================
@@ -331,6 +346,9 @@ for ii=0L,n_elements(parameters)-1 do begin
                
               ;---Create tplot variable for echo power:
                store_data,'iug_mu_fai_'+parameters[ii]+'_pwr'+bname[l],data={x:mu_time, y:pwr2_mu, v:height2},dlimit=dlimit
+
+              ;----Edge data cut:
+               time_clip, 'iug_mu_fai_'+parameters[ii]+'_pwr'+bname[l], init_time2[0], init_time2[1], newname = 'iug_mu_fai_'+parameters[ii]+'_pwr'+bname[l]
               
               ;---Add options and tdegap
                new_vars=tnames('iug_mu_fai_'+parameters[ii]+'_pwr'+bname[l])
@@ -347,6 +365,9 @@ for ii=0L,n_elements(parameters)-1 do begin
               
               ;---Create tplot variable for spectral width:
                store_data,'iug_mu_fai_'+parameters[ii]+'_wdt'+bname[l],data={x:mu_time, y:wdt2_mu, v:height2},dlimit=dlimit
+
+              ;----Edge data cut:
+               time_clip, 'iug_mu_fai_'+parameters[ii]+'_wdt'+bname[l], init_time2[0], init_time2[1], newname = 'iug_mu_fai_'+parameters[ii]+'_wdt'+bname[l]
               
               ;---Add options and tdegap:
                new_vars=tnames('iug_mu_fai_'+parameters[ii]+'_wdt'+bname[l])
@@ -363,6 +384,9 @@ for ii=0L,n_elements(parameters)-1 do begin
                
               ;---Create tplot variable for Doppler velocity:
                store_data,'iug_mu_fai_'+parameters[ii]+'_dpl'+bname[l],data={x:mu_time, y:dpl2_mu, v:height2},dlimit=dlimit
+
+              ;----Edge data cut:
+               time_clip, 'iug_mu_fai_'+parameters[ii]+'_dpl'+bname[l], init_time2[0], init_time2[1], newname = 'iug_mu_fai_'+parameters[ii]+'_dpl'+bname[l]
                
               ;---Add options and tdegap:
                new_vars=tnames('iug_mu_fai_'+parameters[ii]+'_dpl'+bname[l])
@@ -379,6 +403,9 @@ for ii=0L,n_elements(parameters)-1 do begin
               
               ;---Create tplot variable for SNR velocity:
                store_data,'iug_mu_fai_'+parameters[ii]+'_snr'+bname[l],data={x:mu_time, y:snr2_mu, v:height2},dlimit=dlimit
+
+              ;----Edge data cut:
+               time_clip, 'iug_mu_fai_'+parameters[ii]+'_snr'+bname[l], init_time2[0], init_time2[1], newname = 'iug_mu_fai_'+parameters[ii]+'_snr'+bname[l]
             
               ;---Add options and tdegap:
                new_vars=tnames('iug_mu_fai_'+parameters[ii]+'_snr'+bname[l])
@@ -395,6 +422,9 @@ for ii=0L,n_elements(parameters)-1 do begin
               
               ;---Create tplot variable for noise level:
                store_data,'iug_mu_fai_'+parameters[ii]+'_pn'+bname[l],data={x:mu_time, y:pnoise2_mu},dlimit=dlimit
+
+              ;----Edge data cut:
+               time_clip, 'iug_mu_fai_'+parameters[ii]+'_pn'+bname[l], init_time2[0], init_time2[1], newname = 'iug_mu_fai_'+parameters[ii]+'_pn'+bname[l]
                
               ;---Add options and tdegap:
                new_vars=tnames('iug_mu_fai_'+parameters[ii]+'_pn'+bname[l])
@@ -420,7 +450,10 @@ for ii=0L,n_elements(parameters)-1 do begin
    dpl1 = 0
    snr1 = 0
    pn1 = 0
+   
    jj=n_elements(local_paths)
+  ;---Initialization of timespan for parameters:
+   timespan, time_org
 endfor
 
 ;*************************

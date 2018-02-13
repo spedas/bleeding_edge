@@ -31,11 +31,13 @@
 ;MODIFICATIONS:
 ; A. Shinbori, 10/01/2014.
 ; A. Shinbori, 03/02/2014. 
+; A. Shinbori, 09/08/2017.
+; A. Shinbori, 29/11/2017.
 ; 
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-05-19 11:44:55 -0700 (Fri, 19 May 2017) $
-; $LastChangedRevision: 23337 $
+; $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
+; $LastChangedRevision: 24682 $
 ; $URL $
 ;-
 
@@ -54,6 +56,15 @@ if (not keyword_set(verbose)) then verbose=2
 ;Load '1_day' data by default:
 ;*****************************
 if (not keyword_set(length)) then length='1_day'
+
+;***********************
+;Keyword check (trange):
+;***********************
+if not keyword_set(trange) then begin
+  get_timespan, time_org
+endif else begin
+  time_org =time_double(trange)
+endelse
 
 ;****************
 ;Parameter check:
@@ -80,17 +91,22 @@ for i=0L, n_elements(site_data_dir)-1 do begin
    site_data_lastmane[i]=parameters[i]
 endfor
 
-;******************************************************************
-;Loop on downloading files
-;******************************************************************
-;Get timespan, define FILE_NAMES, and load data:
-;===============================================
-;
+;**************************
+;Loop on downloading files:
+;**************************
 ;===================================================================
 ;Download files, read data, and create tplot vars at each component:
 ;===================================================================
 jj=0L
-for iii=0L,n_elements(parameters)-1 do begin   
+for iii=0L,n_elements(parameters)-1 do begin
+  ;==============================================================
+  ;Change time window associated with a time shift from UT to LT:
+  ;==============================================================  
+   day_org = (time_org[1] - time_org[0])/86400.d
+   day_mod = day_org + 1
+   timespan, time_org[0] - 3600.0d * 9.0d, day_mod
+   if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) + 9.0d * 3600.0d); for GUI
+  
    if ~size(fns,/type) then begin
      ;****************************
      ;Get files for ith component:
@@ -124,14 +140,6 @@ for iii=0L,n_elements(parameters)-1 do begin
 
    if (downloadonly eq 0) then begin
 
-     ;---Definition time and parameters:
-      site_time=0
-      zon_wind=0
-      mer_wind=0
-      zon_thermal=0
-      mer_thermal=0
-      meteor_num=0    
-   
      ;======================================
      ;Loop on files (read the NetCDF files): 
      ;======================================
@@ -247,6 +255,12 @@ for iii=0L,n_elements(parameters)-1 do begin
          ncdf_close,cdfid  ; done
       endfor
 
+     ;==============================================================
+     ;Change time window associated with a time shift from UT to LT:
+     ;==============================================================
+      timespan, time_org
+      get_timespan, init_time2
+      if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) - 9.0d * 3600.0d); for GUI
      ;==============================
      ;Store data in TPLOT variables:
      ;==============================
@@ -262,6 +276,10 @@ for iii=0L,n_elements(parameters)-1 do begin
         ;---Create the tplot variable and options for zonal wind:
          dlimit=create_struct('data_att',create_struct('acknowledgment',acknowledgstring,'PI_NAME', 'T. Tsuda'))
          store_data,'iug_meteor_sgk_uwnd_'+parameters[iii],data={x:site_time, y:zon_wind, v:height},dlimit=dlimit
+
+        ;----Edge data cut:
+         time_clip, 'iug_meteor_sgk_uwnd_'+parameters[iii], init_time2[0], init_time2[1], newname = 'iug_meteor_sgk_uwnd_'+parameters[iii]
+         
          new_vars=tnames('iug_meteor_sgk_uwnd_'+parameters[iii])
          if new_vars[0] ne '' then begin      
             options,'iug_meteor_sgk_uwnd_'+parameters[iii],ytitle='MW-sgk!CHeight!C[km]',ztitle='uwnd!C[m/s]'
@@ -269,6 +287,10 @@ for iii=0L,n_elements(parameters)-1 do begin
         
         ;---Create the tplot variable and options for meridional wind:
          store_data,'iug_meteor_sgk_vwnd_'+parameters[iii],data={x:site_time, y:mer_wind, v:height},dlimit=dlimit
+
+        ;----Edge data cut:
+         time_clip, 'iug_meteor_sgk_vwnd_'+parameters[iii], init_time2[0], init_time2[1], newname = 'iug_meteor_sgk_vwnd_'+parameters[iii]
+
          new_vars=tnames('iug_meteor_sgk_vwnd_'+parameters[iii])
          if new_vars[0] ne '' then begin     
             options,'iug_meteor_sgk_vwnd_'+parameters[iii],ytitle='MW-sgk!CHeight!C[km]',ztitle='vwnd!C[m/s]'
@@ -276,6 +298,10 @@ for iii=0L,n_elements(parameters)-1 do begin
         
         ;---Create the tplot variable and options for standard deviation of zonal wind:
          store_data,'iug_meteor_sgk_uwndsig_'+parameters[iii],data={x:site_time, y:zon_thermal, v:height},dlimit=dlimit
+
+        ;----Edge data cut:
+         time_clip, 'iug_meteor_sgk_uwndsig_'+parameters[iii], init_time2[0], init_time2[1], newname = 'iug_meteor_sgk_uwndsig_'+parameters[iii]
+         
          new_vars=tnames('iug_meteor_sgk_uwndsig_'+parameters[iii])
          if new_vars[0] ne '' then begin
             options,'iug_meteor_sgk_uwndsig_'+parameters[iii],ytitle='MW-sgk!CHeight!C[km]',ztitle='uwndsig!C[m/s]'
@@ -283,6 +309,10 @@ for iii=0L,n_elements(parameters)-1 do begin
          
         ;---Create the tplot variable and options for standard deviation of meridional wind:
          store_data,'iug_meteor_sgk_vwndsig_'+parameters[iii],data={x:site_time, y:mer_thermal, v:height},dlimit=dlimit
+
+        ;----Edge data cut:
+         time_clip, 'iug_meteor_sgk_vwndsig_'+parameters[iii], init_time2[0], init_time2[1], newname = 'iug_meteor_sgk_vwndsig_'+parameters[iii]
+        
          new_vars=tnames('iug_meteor_sgk_uwndsig_'+parameters[iii])
          if new_vars[0] ne '' then begin
             options,'iug_meteor_sgk_vwndsig_'+parameters[iii],ytitle='MW-sgk!CHeight!C[km]',ztitle='vwndsig!C[m/s]'        
@@ -290,6 +320,10 @@ for iii=0L,n_elements(parameters)-1 do begin
          
         ;---Create the tplot variable and options for meteor echoes:
          store_data,'iug_meteor_sgk_mwnum_'+parameters[iii],data={x:site_time, y:meteor_num, v:height},dlimit=dlimit
+
+        ;----Edge data cut:
+         time_clip, 'iug_meteor_sgk_mwnum_'+parameters[iii], init_time2[0], init_time2[1], newname = 'iug_meteor_sgk_mwnum_'+parameters[iii]
+         
          new_vars=tnames('iug_meteor_sgk_vwndsig_'+parameters[iii])
          if new_vars[0] ne '' then begin
             options,'iug_meteor_sgk_mwnum_'+parameters[iii],ytitle='MW-sgk!CHeight!C[km]',ztitle='mwnum'
@@ -334,6 +368,8 @@ for iii=0L,n_elements(parameters)-1 do begin
       zlim, 'iug_meteor_sgk_vwnd_*',-100,100
    endif
    jj=n_elements(local_paths)
+  ;---Initializing timespan: 
+   timespan, time_org
 endfor
 
 new_vars=tnames('iug_meteor_sgk_*')
