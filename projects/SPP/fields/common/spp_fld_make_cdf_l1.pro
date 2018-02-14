@@ -33,6 +33,18 @@ pro spp_fld_make_cdf_l1, apid_name, $
   spp_fld_cdf_create, 1, 0, cdf_att, filename_timestring, $
     filename = filename, fileid = fileid
 
+  ;
+  ; Write the packets file
+  ;
+
+  packet_filename = strmid(filename,0,strlen(filename)-3) + 'dat'
+
+  spp_fld_write_packet_file, packet_filename, packets
+
+  ;
+  ; Put data into the CDF file
+  ;
+
   spp_fld_cdf_put_metadata, fileid, filename, cdf_att
 
   spp_fld_cdf_put_time, fileid, times.ToArray()
@@ -41,13 +53,6 @@ pro spp_fld_make_cdf_l1, apid_name, $
 
   spp_fld_cdf_put_data, fileid, data, /close
 
-  ;
-  ; Write the packets file
-  ;
-
-  packet_filename = strmid(filename,0,strlen(filename)-3) + 'dat'
-
-  spp_fld_write_packet_file, packet_filename, packets
 
   ;
   ; If load keyword set, load file into tplot variables

@@ -196,7 +196,8 @@
   <cdf_var
       name = "spec0_ch0"
       type = "integer"
-      nelem = "64">
+      nelem = "64"
+      convert_routine = "none">
   <cdf_att
         FIELDNAM = "spec0_ch0"
         FORMAT = "I8"
@@ -218,7 +219,8 @@
   <cdf_var
       name = "spec0_ch1"
       type = "integer"
-      nelem = "64">
+      nelem = "64"
+      convert_routine = "none">
   <cdf_att
         FIELDNAM = "spec0_ch1"
         FORMAT = "I8"
@@ -240,7 +242,8 @@
   <cdf_var
       name = "spec1_ch0"
       type = "integer"
-      nelem = "64">
+      nelem = "64"
+      convert_routine = "none">
   <cdf_att
         FIELDNAM = "spec1_ch0"
         FORMAT = "I8"
@@ -262,7 +265,8 @@
   <cdf_var
       name = "spec1_ch1"
       type = "integer"
-      nelem = "64">
+      nelem = "64"
+      convert_routine = "none">
   <cdf_att
         FIELDNAM = "spec1_ch1"
         FORMAT = "I8"
@@ -285,7 +289,8 @@
   <cdf_var
       name = "peaks_ch0"
       type = "integer"
-      nelem = "64">
+      nelem = "64"
+      convert_routine = "none">
   <cdf_att
         FIELDNAM = "peaks_ch0"
         FORMAT = "I8"
@@ -307,7 +312,8 @@
   <cdf_var
       name = "peaks_ch1"
       type = "integer"
-      nelem = "64">
+      nelem = "64"
+      convert_routine = "none">
   <cdf_att
         FIELDNAM = "peaks_ch1"
         FORMAT = "I8"
@@ -329,7 +335,8 @@
   <cdf_var
       name = "averages_ch0"
       type = "integer"
-      nelem = "64">
+      nelem = "64"
+      convert_routine = "none">
   <cdf_att
         FIELDNAM = "averages_ch0"
         FORMAT = "I8"
@@ -351,7 +358,8 @@
   <cdf_var
       name = "averages_ch1"
       type = "integer"
-      nelem = "64">
+      nelem = "64"
+      convert_routine = "none">
   <cdf_att
         FIELDNAM = "averages_ch1"
         FORMAT = "I8"

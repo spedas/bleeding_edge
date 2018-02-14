@@ -46,18 +46,32 @@
 ;         - Requires IDL 8.3 or later due to json_parse + orderedhash usage
 ;         
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-01-19 12:00:52 -0800 (Fri, 19 Jan 2018) $
-;$LastChangedRevision: 24543 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2018-02-13 15:05:01 -0800 (Tue, 13 Feb 2018) $
+;$LastChangedRevision: 24699 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
-pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, info=info, server=server, dataset=dataset, path=path, port=port, scheme=scheme, prefix=prefix, tplotvars=tplotvars
+function hapi_get_json, neturl
+  neturl->getProperty, url_path=url_path
+  table = json_parse(string(neturl->get(/buffer)))
+  if table.HasKey('HAPI') then dprint, dlevel = 2,  'HAPI v' + table['HAPI']  + ' (' + url_path + ')'
+  if table.HasKey('status') then begin
+    if table['status'].hasKey('code') && table['status'].hasKey('message') then begin
+      dprint, dlevel = 2, 'HAPI ' + strcompress(string((table['status'])['code']), /rem) + ' ' + (table['status'])['message']  + ' (' + url_path + ')'
+    endif
+  endif
+  return, table
+end
+
+pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, info=info, server=server, $
+  dataset=dataset, path=path, port=port, scheme=scheme, prefix=prefix, tplotvars=tplotvars, timeout=timeout, $
+  connect_timeout=connect_timeout
 
   catch, error_status
   if error_status ne 0 then begin
     catch, /cancel
-    dprint, dlevel=0, 'Error: ' + !error_state.msg
+    dprint, dlevel=0, !error_state.msg
     return
   endif
   if undefined(server) then begin
@@ -77,6 +91,9 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     url_path = url_parts.path
     url_scheme = url_parts.scheme
   endelse
+  
+  if undefined(timeout) then timeout = 3600 ; 1 hour
+  if undefined(connect_timeout) then connect_timeout = 360 ; 6 minutes
   
   if undefined(capabilities) and undefined(catalog) and undefined(info) and undefined(trange) then begin
     trange = timerange()
@@ -100,19 +117,19 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
   neturl->SetProperty, URL_HOST = url_host
   neturl->SetProperty, URL_PORT = port
   neturl->SetProperty, URL_SCHEME = scheme
+  neturl->SetProperty, CONNECT_TIMEOUT = connect_timeout
+  neturl->SetProperty, TIMEOUT = timeout
   
   if keyword_set(capabilities) then begin
     neturl->SetProperty, URL_PATH=path+'/capabilities'
-    capabilities = json_parse(string(neturl->get(/buffer)))
-    print, 'HAPI v' + capabilities['HAPI']
+    capabilities = hapi_get_json(neturl)
     print, 'Output formats: ' + strjoin(capabilities['outputFormats'].toArray(), ', ')
   endif
   
   if keyword_set(catalog) or keyword_set(info) or keyword_set(trange) and info_dataset eq '' then begin
     neturl->SetProperty, URL_PATH=path+'/catalog'
-    catalog = json_parse(string(neturl->get(/buffer)))
+    catalog = hapi_get_json(neturl)
     available_datasets = catalog['catalog']
-    print, 'HAPI v' + catalog['HAPI']
     for dataset_idx = 0, n_elements(available_datasets)-1 do begin
       print, strcompress(string(dataset_idx+1), /rem) + ': ' + (available_datasets[dataset_idx])['id']
       dataset_table[strcompress(string(dataset_idx+1), /rem)] = (available_datasets[dataset_idx])['id']
@@ -125,12 +142,11 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
       if dataset_table.hasKey(info_dataset) then info_dataset = dataset_table[info_dataset]
     endif
     neturl->SetProperty, URL_PATH=path+'/info?id='+info_dataset
-    info = json_parse(string(neturl->get(/buffer)))
+    info = hapi_get_json(neturl)
     
     for param_idx = 0, n_elements(info['parameters'])-1 do begin
       append_array, param_names, ((info['parameters'])[param_idx])['name']
     endfor
-    print, 'HAPI v' + info['HAPI']
     print, 'Dataset: ' + info_dataset
     print, 'Start: ' + info['startDate']
     print, 'End: ' + info['stopDate']
@@ -185,7 +201,6 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     endfor
     
     ; turn the variable tables into proper tplot variables
-    tplotvars = []
     for var_idx = 0, n_elements(variables)-1 do begin
       if variables[var_idx].hasKey('name') and variables[var_idx].hasKey('epoch') and (variables[var_idx])['data'] ne !null then begin
         if undefined(prefix) then prefix=''

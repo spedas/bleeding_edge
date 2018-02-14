@@ -16,9 +16,9 @@
 ;  Old version in particles/deprecated
 ;  
 ;
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2017-10-02 11:19:09 -0700 (Mon, 02 Oct 2017) $
-;$LastChangedRevision: 24078 $
+;$LastChangedBy: jimmpc1 $
+;$LastChangedDate: 2018-02-13 14:26:50 -0800 (Tue, 13 Feb 2018) $
+;$LastChangedRevision: 24697 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/moments/thm_part_moments.pro $
 ;-
 pro thm_part_moments, probes = probes, $ ;string specifying probe(s)
@@ -93,7 +93,7 @@ pro thm_part_moments, probes = probes, $ ;string specifying probe(s)
   dprint,dlevel=0,"WARNING: This routine is now wrapper.  For new code, we recommend using the core routine thm_part_products.pro, see thm_crib_part_products.pro for examples."
 
   if keyword_set(get_moments) || keyword_set(usage) then begin
-    dprint, dlevel=0, 'The "get_moments" and "usage" keywords are no longer supported.  Usage instructions and examples can be found in thm_crib_part_products.pro.
+    dprint, dlevel=0, 'The "get_moments" and "usage" keywords are no longer supported.  Usage instructions and examples can be found in thm_crib_part_products.pro.'
     return ;neither keyword was intended to be used with actual run
   endif
 
