@@ -26,8 +26,8 @@
 ;   Yoshi Miyoshi (miyoshi at stelab.nagoya-u.ac.jp)
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2015-11-18 14:02:09 -0800 (Wed, 18 Nov 2015) $
-; $LastChangedRevision: 19410 $
+; $LastChangedDate: 2018-02-14 11:03:49 -0800 (Wed, 14 Feb 2018) $
+; $LastChangedRevision: 24704 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/akebono/rdm/akb_load_rdm.pro $
 ;-
 
@@ -66,20 +66,22 @@ PRO akb_load_rdm, $
   if keyword_set(no_download) then source.no_download = 1
   if keyword_set(downloadonly) then source.downloadonly = 1
   if keyword_set(verbose) then source.verbose=verbose
-  if keyword_set(trange) and n_elements(trange) eq 2 then timespan, time_double(trange)
-
+  if keyword_set(trange) and n_elements(trange) eq 2 $
+      then tr = timerange(trange) $
+      else tr = timerange()
 
   tmpl = get_akb_rdm_txt_template()
 
   pathformat = 'YYYY/sfyyMMDD'
-
-  relpathnames = file_dailynames(file_format=pathformat,trange=trange)
-
+  
   prefix_project = 'akb_'
   prefix_descriptor = 'rdm_'
   prefix = prefix_project + prefix_descriptor
 
-  files = file_retrieve(relpathnames, _extra=source, /last_version)
+  relpathnames = file_dailynames(file_format=pathformat, trange=tr, /unique)
+  files = spd_download(remote_file=relpathnames, remote_path=source.remote_data_dir, $
+    local_path = source.local_data_dir, no_download = source.no_download, /last_version)
+  
   if keyword_set(downloadonly) then return
 
   ;Exit unless data files are downloaded or found locally.
