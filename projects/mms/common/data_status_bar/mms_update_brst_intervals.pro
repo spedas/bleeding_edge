@@ -16,8 +16,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-11-08 09:45:46 -0800 (Tue, 08 Nov 2016) $
-; $LastChangedRevision: 22338 $
+; $LastChangedDate: 2018-02-15 08:59:05 -0800 (Thu, 15 Feb 2018) $
+; $LastChangedRevision: 24717 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_update_brst_intervals.pro $
 ;-
 
@@ -54,8 +54,8 @@ pro mms_update_brst_intervals
     start_str = time_string(start_interval, tformat='DD-MTH-YYYY')
     end_str = time_string(end_interval, tformat='DD-MTH-YYYY')
     print, '*** now grabbing updates for ' + start_str + ' - ' +  end_str
-    remote_path = 'https://lasp.colorado.edu/mms/sdc/sitl/latis/dap/'
-    ;remote_path = 'https://lasp.colorado.edu/mms/sdc/public/service/latis/'
+    ;remote_path = 'https://lasp.colorado.edu/mms/sdc/sitl/latis/dap/'
+    remote_path = 'https://lasp.colorado.edu/mms/sdc/public/service/latis/'
     remote_file = 'mms_burst_data_segment.csv?FINISHTIME>='+start_str+'&FINISHTIME<'+end_str
     
     brst_file = spd_download(remote_path=remote_path, remote_file=remote_file, $
