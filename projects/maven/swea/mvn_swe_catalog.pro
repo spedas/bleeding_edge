@@ -35,16 +35,26 @@
 ;                      transfers to the SDC.  Works only in unix-like
 ;                      environments.  Use with caution!
 ;
+;       TRANGE:        Search for files only within this time range.
+;                      Only year, month, day are used.
+;
+;       PDS:           Search for files only in this PDS release
+;                      number or range.
+;
+;       DROPBOX:       Place copies of the files into the dropbox
+;                      for delivery to the SDC at midnight.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-04 10:36:01 -0700 (Wed, 04 Oct 2017) $
-; $LastChangedRevision: 24107 $
+; $LastChangedDate: 2018-02-16 11:53:23 -0800 (Fri, 16 Feb 2018) $
+; $LastChangedRevision: 24727 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_catalog.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
 ;FILE: mvn_swe_catalog.pro
 ;-
 pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat, $
-                     verbose=verbose, touch=touch
+                     verbose=verbose, touch=touch, trange=trange, pds=pds, $
+                     dropbox=dropbox
 
 ; Process keywords
 
@@ -53,6 +63,8 @@ pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat
   if (size(verbose,/type) eq 0) then blab = 1 else blab = keyword_set(verbose)
   if (size(ctime,/type) eq 0) then ctime = 0D else ctime = time_double(ctime)
   tflg = keyword_set(touch)
+  dflg = keyword_set(dropbox)
+  pflg = keyword_set(pds)
   
   if (tflg) then begin
     if (ctime eq 0D) then begin
@@ -76,11 +88,34 @@ pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat
 ; Initialize
 
   oneday = 86400D
+  drop_dir = root_data_dir() + 'maven/data/dropbox'
+  if (dflg) then begin
+    finfo = file_info(drop_dir)
+    if (~finfo.exists) then begin
+      print,'Dropbox directory not found: ',drop_dir
+      return
+    endif
+  endif
+  if (dflg) then begin
+    yn = 'N'
+    read, yn, format='(a1)', prompt='Copy all files found to the dropbox (y|n) ? '
+    if (strupcase(yn) ne 'Y') then dflg = 0
+  endif
   data_dir = 'maven/data/sci/swe/l2/'
   froot = 'mvn_swe_l2_'
 
   tmin = time_double('2014-03-01')
   tmax = double(ceil(systime(/sec,/utc)/oneday))*oneday
+
+  if (n_elements(trange) gt 1) then trange = minmax(time_double(trange)) $
+                               else trange = [tmin,tmax]
+
+  if (pflg) then begin
+    trange = replicate(time_struct('2014-11-15'), 2)
+    trange.month += 3*fix([min(pds)-1, max(pds)])
+    trange = time_double(trange)
+    trange[1] -= oneday
+  endif
 
   tstr = time_struct(tmin)
   year0 = tstr.year
@@ -131,10 +166,19 @@ pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat
         finfo = file_info(files)
         valid = where((finfo.exists and (finfo.ctime ge ctime)), nvalid)
         if (nvalid gt 0) then begin
-          dat[k].cat[i,j].files[0:(nvalid-1)] = files[valid]
-          dat[k].cat[i,j].nfiles = nvalid
-          nfound += nvalid
-          if (tflg) then for m=0,(nvalid-1) do spawn, 'touch ' + files[valid[m]]
+          yyyy = strmid(files[valid],19,4,/reverse)
+          mm = strmid(files[valid],15,2,/reverse)
+          dd = strmid(files[valid],13,2,/reverse)
+          times = time_double(yyyy + '-' + mm + '-' + dd)
+          indx = where((times ge trange[0]) and (times le trange[1]), nvalid)
+          if (nvalid gt 0) then begin
+            valid = valid[indx]
+            dat[k].cat[i,j].files[0:(nvalid-1)] = files[valid]
+            dat[k].cat[i,j].nfiles = nvalid
+            nfound += nvalid
+            if (tflg) then for m=0,(nvalid-1) do spawn, 'touch ' + files[valid[m]]
+            if (dflg) then for m=0,(nvalid-1) do spawn, 'cp ' + files[valid[m]] + ' ' + dropbox
+          endif
         endif
       endfor
     endfor

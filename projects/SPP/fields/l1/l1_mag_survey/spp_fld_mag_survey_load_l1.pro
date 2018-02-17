@@ -1,7 +1,7 @@
 ;
 ;  $LastChangedBy: spfuser $
-;  $LastChangedDate: 2017-10-26 11:26:39 -0700 (Thu, 26 Oct 2017) $
-;  $LastChangedRevision: 24218 $
+;  $LastChangedDate: 2018-02-16 16:01:22 -0800 (Fri, 16 Feb 2018) $
+;  $LastChangedRevision: 24731 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
@@ -41,6 +41,8 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
   packet_index = list()
 
   foreach time, times_2d, ind do begin
+
+    dprint, ind, n_elements(times_2d), dwait = 5
 
     ppp = d_ppp.y[ind]
 

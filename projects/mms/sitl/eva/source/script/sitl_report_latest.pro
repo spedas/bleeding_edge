@@ -246,13 +246,16 @@ PRO sitl_report_latest, dir=dir, force=force
     endelse
 
     ; output
-    openw,nf,fjson,/get_lun ; open as a new file
+    print,'$$$$ output start $$$$$$$$$$$$$$$$$$$$$$'
+    openw,mf,fjson,/get_lun ; open as a new file
+    print,'nf,mf=',nf,mf
+    print,'fjson=',fjson
     pmax = n_elements(jarr)
     for p=0,pmax-1 do begin
-      printf, nf, jarr[p]
+      printf, mf, jarr[p]
     endfor
-    free_lun, nf
-    
+    free_lun, mf
+    print,'$$$$ output end $$$$$$$$$$$$$$$$$$$$$$'
   endif; if json
   print, 'SUBMITTED=',SUBMITTED
   toc, clock

@@ -57,9 +57,12 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
   get_data, prefix + 'wf_pkt_data_v', data = d_v
   get_data, prefix + 'wav_tap', data = d_tap
 
-  all_wf_time = []
-  all_wf_decompressed = []
-  all_wf_decompressed_v = []
+  all_wf_time_list = LIST()
+  ;  all_wf_time = []
+  ;  all_wf_decompressed = []
+  ;  all_wf_decompressed_v = []
+  all_wf_decompressed_list = LIST()
+  all_wf_decompressed_v_list = LIST()
 
   ; TODO: Correct delays below for SCM data as well as V/E data
 
@@ -73,88 +76,109 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
     print, 18750d/ 2d^(index), delay_loc &$
   endfor
 
-  ; TODO: Make this faster by having TMlib get the time
+; TODO: Make this faster by having TMlib get the time
 
-  if size(d, /type) EQ 8 then begin
+if size(d, /type) EQ 8 then begin
 
-    for i = 0, n_elements(d.x) - 1 do begin
+  for i = 0, n_elements(d.x) - 1 do begin
 
-      wf_i0 = reform(d.y[i,*])
+    wf_i0 = reform(d.y[i,*])
 
-      wf_i = wf_i0[where(wf_i0 GT -2147483647l)]
+    wf_i = wf_i0[where(wf_i0 GT -2147483647l)]
 
-      wf_i0_v = reform(d_v.y[i,*])
+    wf_i0_v = reform(d_v.y[i,*])
 
-      wf_i_v = wf_i0_v[where(wf_i0 GT -2147483647l)]
+    wf_i_v = wf_i0_v[where(wf_i0 GT -2147483647l)]
 
-      if keyword_set(compressed) then begin
+    if keyword_set(compressed) then begin
 
-        wf_i = decompress(uint(wf_i))
+      wf_i = decompress(uint(wf_i))
 
-      end
+    end
 
-      all_wf_decompressed = [all_wf_decompressed, wf_i]
-      all_wf_decompressed_v = [all_wf_decompressed_v, wf_i_v]
+    ;      all_wf_decompressed = [all_wf_decompressed, wf_i]
+    ;      all_wf_decompressed_v = [all_wf_decompressed_v, wf_i_v]
+    all_wf_decompressed_list.Add, wf_i
+    all_wf_decompressed_v_list.Add, wf_i_v
 
-      ideal_delay_i = ideal_delay[d_tap.y[i]]
+    ideal_delay_i = ideal_delay[d_tap.y[i]]
 
-      delay_i = ideal_delay_i + 0.5/(18750d / (2d^d_tap.y[i]))
+    delay_i = ideal_delay_i + 0.5/(18750d / (2d^d_tap.y[i]))
 
-      wf_time = d_tap.x[i] + $
-        (dindgen(n_elements(wf_i))) / $
-        (18750d / (2d^d_tap.y[i])) - delay_i
+    wf_time = d_tap.x[i] + $
+      (dindgen(n_elements(wf_i))) / $
+      (18750d / (2d^d_tap.y[i])) - delay_i
 
-      all_wf_time = [all_wf_time, wf_time]
+    dprint, i, n_elements(d.x), dwait = 5
 
-    endfor
+    ;all_wf_time = [all_wf_time, wf_time]
+    all_wf_time_list.Add, wf_time
 
-    store_data, prefix + 'wav_data', $
-      dat = {x:all_wf_time, y:all_wf_decompressed}, $
-      dlim = {panel_size:2}
+  endfor
 
-    store_data, prefix + 'wav_data_v', $
-      dat = {x:all_wf_time, y:all_wf_decompressed_v}, $
-      dlim = {panel_size:2}
+  all_wf_time = (spp_fld_square_list(all_wf_time_list)).ToArray()
+  all_wf_decompressed = (spp_fld_square_list(all_wf_decompressed_list)).ToArray()
+  all_wf_decompressed_v = (spp_fld_square_list(all_wf_decompressed_v_list)).ToArray()
 
-    options, prefix + 'wav_data*', 'ynozero', 1
-    options, prefix + 'wav_data', 'ysubtitle', '[Counts]'
-    options, prefix + 'wav_data_v', 'ysubtitle', '[V]'
+  all_wf_time = reform(transpose(all_wf_time), n_elements(all_wf_time))
+  all_wf_decompressed = reform(transpose(all_wf_decompressed), n_elements(all_wf_time))
+  all_wf_decompressed_v = reform(transpose(all_wf_decompressed_v), n_elements(all_wf_time))
 
-    if tnames(prefix + 'wav_sel_string') EQ '' then begin
+  wf_valid_ind = where(finite(all_wf_time), wf_valid_count)
 
-      get_data, prefix + 'wav_sel', data = wav_sel_dat
+  if wf_valid_count GT 0 then begin
+    all_wf_time = all_wf_time[wf_valid_ind]
+    all_wf_decompressed = all_wf_decompressed[wf_valid_ind]
+    all_wf_decompressed_v = all_wf_decompressed_v[wf_valid_ind]
+  endif
 
-      if n_elements(uniq(wav_sel_dat.y)) EQ 1 then $
-        options, prefix + 'wav_data*', 'ytitle', $
-        'DFB WF '+ strmid(prefix,15,2) + compressed_str + $
-        '!CSRC:' + strcompress(string(wav_sel_dat.y[0]))
+  store_data, prefix + 'wav_data', $
+    dat = {x:all_wf_time, y:all_wf_decompressed}, $
+    dlim = {panel_size:2}
 
-    endif else begin
+  store_data, prefix + 'wav_data_v', $
+    dat = {x:all_wf_time, y:all_wf_decompressed_v}, $
+    dlim = {panel_size:2}
 
-      get_data, prefix + 'wav_sel_string', data = wav_sel_dat
-      get_data, prefix + 'wav_tap_string', data = wav_tap_dat
+  options, prefix + 'wav_data*', 'ynozero', 1
+  options, prefix + 'wav_data', 'ysubtitle', '[Counts]'
+  options, prefix + 'wav_data_v', 'ysubtitle', '[V]'
 
-      ytitle = 'DFB WF '+ strmid(prefix,15,2) + compressed_str
+  if tnames(prefix + 'wav_sel_string') EQ '' then begin
 
-      if n_elements(uniq(wav_sel_dat.y)) EQ 1 then $
-        ytitle = ytitle + '!C' + strcompress(wav_sel_dat.y[0], /remove_all)
+    get_data, prefix + 'wav_sel', data = wav_sel_dat
 
-      if n_elements(uniq(wav_tap_dat.y)) EQ 1 then $
-        ytitle = ytitle + '!C' + $
-        strsplit(strcompress(wav_tap_dat.y[0], /remove_all), $
-        'samples/s', /ex) + ' Hz'
+    if n_elements(uniq(wav_sel_dat.y)) EQ 1 then $
+      options, prefix + 'wav_data*', 'ytitle', $
+      'DFB WF '+ strmid(prefix,15,2) + compressed_str + $
+      '!CSRC:' + strcompress(string(wav_sel_dat.y[0]))
 
-      options, prefix + 'wav_data*', 'ytitle', ytitle
+  endif else begin
 
-    endelse
+    get_data, prefix + 'wav_sel_string', data = wav_sel_dat
+    get_data, prefix + 'wav_tap_string', data = wav_tap_dat
 
-  end
+    ytitle = 'DFB WF '+ strmid(prefix,15,2) + compressed_str
 
-  options, prefix + '*string', 'tplot_routine', 'strplot'
-  options, prefix + '*string', 'yrange', [-0.1,1.0]
-  options, prefix + '*string', 'ystyle', 1
-  options, prefix + '*string', 'yticks', 1
-  options, prefix + '*string', 'ytickformat', '(A1)'
-  options, prefix + '*string', 'noclip', 0
+    if n_elements(uniq(wav_sel_dat.y)) EQ 1 then $
+      ytitle = ytitle + '!C' + strcompress(wav_sel_dat.y[0], /remove_all)
+
+    if n_elements(uniq(wav_tap_dat.y)) EQ 1 then $
+      ytitle = ytitle + '!C' + $
+      strsplit(strcompress(wav_tap_dat.y[0], /remove_all), $
+      'samples/s', /ex) + ' Hz'
+
+    options, prefix + 'wav_data*', 'ytitle', ytitle
+
+  endelse
+
+end
+
+options, prefix + '*string', 'tplot_routine', 'strplot'
+options, prefix + '*string', 'yrange', [-0.1,1.0]
+options, prefix + '*string', 'ystyle', 1
+options, prefix + '*string', 'yticks', 1
+options, prefix + '*string', 'ytickformat', '(A1)'
+options, prefix + '*string', 'noclip', 0
 
 end
