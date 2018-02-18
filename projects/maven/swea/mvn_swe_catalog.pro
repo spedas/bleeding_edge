@@ -41,12 +41,12 @@
 ;       PDS:           Search for files only in this PDS release
 ;                      number or range.
 ;
-;       DROPBOX:       Place copies of the files into the dropbox
-;                      for delivery to the SDC at midnight.
+;       DROPBOX:       Place copies of the files into the dropbox.
+;                      This will force delivery to the SDC at midnight.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-16 11:53:23 -0800 (Fri, 16 Feb 2018) $
-; $LastChangedRevision: 24727 $
+; $LastChangedDate: 2018-02-17 16:16:07 -0800 (Sat, 17 Feb 2018) $
+; $LastChangedRevision: 24734 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_catalog.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -66,12 +66,17 @@ pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat
   dflg = keyword_set(dropbox)
   pflg = keyword_set(pds)
   
-  if (tflg) then begin
-    if (ctime eq 0D) then begin
-      print,'TOUCH is set, but CTIME is not set!'
+  if (tflg or dflg) then begin
+    if (~pflg and (ctime eq 0D)) then begin
+      print,'TOUCH or DROPBOX is set, but CTIME or PDS is not set!'
       print,'This could trigger a massive file transfer to the SDC!'
     endif else begin
-      print,'TOUCH all SWEA L2 files created after ',time_string(ctime[0])
+      if (pflg) then begin
+        pmsg = ''
+        for i=min(pds),max(pds) do pmsg += string(i)
+        print,'Transfer all SWEA L2 files for PDS release(s): ',strcompress(pmsg)
+      endif
+      if (ctime gt 0D) then print,'Transfer SWEA L2 files if created after ',time_string(ctime[0])
     endelse
     yn = 'N'
     read, yn, prompt='Are you sure (y|n)? ', format='(a1)'
@@ -88,6 +93,7 @@ pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat
 ; Initialize
 
   oneday = 86400D
+
   drop_dir = root_data_dir() + 'maven/data/dropbox'
   if (dflg) then begin
     finfo = file_info(drop_dir)
@@ -96,11 +102,7 @@ pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat
       return
     endif
   endif
-  if (dflg) then begin
-    yn = 'N'
-    read, yn, format='(a1)', prompt='Copy all files found to the dropbox (y|n) ? '
-    if (strupcase(yn) ne 'Y') then dflg = 0
-  endif
+
   data_dir = 'maven/data/sci/swe/l2/'
   froot = 'mvn_swe_l2_'
 
@@ -177,7 +179,7 @@ pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat
             dat[k].cat[i,j].nfiles = nvalid
             nfound += nvalid
             if (tflg) then for m=0,(nvalid-1) do spawn, 'touch ' + files[valid[m]]
-            if (dflg) then for m=0,(nvalid-1) do spawn, 'cp ' + files[valid[m]] + ' ' + dropbox
+            if (dflg) then for m=0,(nvalid-1) do spawn, 'cp ' + files[valid[m]] + ' ' + drop_dir
           endif
         endif
       endfor
@@ -195,11 +197,14 @@ pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat
   if (blab) then begin
     for i=0,(nyear-1) do begin
       for j=0,11 do begin
-        print, time_string(dat[0].cat[i,j].date,prec=-4)
-        for k=0,(ntypes-1) do print,dat[k].ftype,dat[k].cat[i,j].nfiles,format='(2x,a7,2x,i3)'
-        print,'--------------'
-        print,'total',total(dat.cat[i,j].nfiles),format='(2x,a7,2x,i3)'
-        print,' '
+        n = total(dat.cat[i,j].nfiles)
+        if (n gt 0) then begin
+          print, time_string(dat[0].cat[i,j].date,prec=-4)
+          for k=0,(ntypes-1) do print,dat[k].ftype,dat[k].cat[i,j].nfiles,format='(2x,a7,2x,i3)'
+          print,'--------------'
+          print,'total',n,format='(2x,a7,2x,i3)'
+          print,' '
+        endif
       endfor
     endfor
   endif
