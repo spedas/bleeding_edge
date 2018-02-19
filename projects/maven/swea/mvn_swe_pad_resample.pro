@@ -86,6 +86,10 @@
 ;              velocity is taken from SWIA Course data.  This keyword only
 ;              works after loading (restoring) SWIA data.  
 ;
+;   HIRES:     Calculate a separate pitch angle map for each energy step 
+;              within a sweep using 32-Hz MAG data.
+;              See mvn_swe_padmap_32hz for caveats and details.
+;
 ;   SC_POT:    Correct for the spacecraft potential.
 ;              (Not completely activated yet)
 ;  
@@ -127,8 +131,8 @@
 ;CREATED BY:      Takuya Hara on 2014-09-24.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-12-08 10:08:14 -0800 (Fri, 08 Dec 2017) $
-; $LastChangedRevision: 24412 $
+; $LastChangedDate: 2018-02-18 12:27:03 -0800 (Sun, 18 Feb 2018) $
+; $LastChangedRevision: 24737 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_resample.pro $
 ;
 ;-

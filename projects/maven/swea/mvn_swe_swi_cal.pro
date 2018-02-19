@@ -28,8 +28,8 @@
 ;              masking.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-09-06 18:02:02 -0700 (Wed, 06 Sep 2017) $
-; $LastChangedRevision: 23897 $
+; $LastChangedDate: 2018-02-18 12:25:42 -0800 (Sun, 18 Feb 2018) $
+; $LastChangedRevision: 24735 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_swi_cal.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -66,7 +66,7 @@ pro mvn_swe_swi_cal, coarse=coarse, fine=fine, alpha=alpha, ddd=ddd, pans=pans
 
   if keyword_set(fine) then begin
     mvn_swia_load_l2_data, /loadall, /tplot
-    mvn_swia_part_moments, type=['cs','ca']
+    mvn_swia_part_moments, type=['cs','ca'] ; get coarse moments (mainly for sheath)
 
     if keyword_set(alpha) then begin
       mvn_swia_protonalphamoms_minf

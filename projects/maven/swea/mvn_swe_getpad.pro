@@ -30,8 +30,8 @@
 ;       SHIFTPOT:      Correct for spacecraft potential.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-08-31 11:31:33 -0700 (Thu, 31 Aug 2017) $
-; $LastChangedRevision: 23867 $
+; $LastChangedDate: 2018-02-18 12:36:36 -0800 (Sun, 18 Feb 2018) $
+; $LastChangedRevision: 24740 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getpad.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -177,7 +177,9 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
       print,"No PAD archive data."
       return, 0
     endif
-    
+
+    time -= 1.95D/2D  ; packet times
+
     if keyword_set(all) then begin
       tmin = min(time, max=tmax, /nan)
       indx = where((a3.time ge tmin) and (a3.time le tmax), npts)
@@ -199,6 +201,8 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
       print,"No PAD survey data."
       return, 0
     endif
+
+    time -= 1.95D/2D  ; packet times
     
     if keyword_set(all) then begin
       tmin = min(time, max=tmax, /nan)

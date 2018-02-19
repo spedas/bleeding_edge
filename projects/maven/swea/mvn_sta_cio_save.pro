@@ -21,8 +21,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-01-09 17:06:46 -0800 (Tue, 09 Jan 2018) $
-; $LastChangedRevision: 24496 $
+; $LastChangedDate: 2018-02-18 12:37:38 -0800 (Sun, 18 Feb 2018) $
+; $LastChangedRevision: 24743 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -80,7 +80,7 @@ pro mvn_sta_cio_save, trange, ndays
       if (npkt[2] gt 0L) then begin
         maven_orbit_tplot, /shadow, /loadonly
         mvn_swe_sciplot, padsmo=16, /loadonly
-        mvn_scpot, /force
+        mvn_scpot
         mvn_sundir, frame='swe', /polar
 
         mvn_sta_coldion, density=1, temperature=1, velocity=[1,1,1], $

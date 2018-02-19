@@ -25,8 +25,8 @@
 ;       PANS:          Tplot panel names created when DOPLOT is set.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-10 15:37:18 -0700 (Tue, 10 Oct 2017) $
-; $LastChangedRevision: 24140 $
+; $LastChangedDate: 2018-02-18 12:38:39 -0800 (Sun, 18 Feb 2018) $
+; $LastChangedRevision: 24744 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_restore.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -37,7 +37,7 @@ pro mvn_sta_cio_restore, trange, loadonly=loadonly, result_h=result_h, $
                          pans=pans
 
   rootdir = 'maven/data/sci/sta/l3/cio/YYYY/MM/'
-  fname = 'mvn_sta_cio_YYYYMMDD.sav'
+  fname = 'mvn_sta_cio_YYYYMMDD_v02.sav'
 
   tplot_options, get_opt=topt
   tspan_exists = (max(topt.trange_full) gt time_double('2013-11-18'))

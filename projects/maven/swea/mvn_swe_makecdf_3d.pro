@@ -23,8 +23,8 @@
 ;   ISTP compliance scrub; DLM: 2016-04-08
 ; VERSION:
 ;   $LastChangedBy: dmitchell $
-;   $LastChangedDate: 2017-01-19 13:02:08 -0800 (Thu, 19 Jan 2017) $
-;   $LastChangedRevision: 22635 $
+;   $LastChangedDate: 2018-02-18 12:33:26 -0800 (Sun, 18 Feb 2018) $
+;   $LastChangedRevision: 24738 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makecdf_3d.pro $
 ;
 ;-
@@ -130,14 +130,23 @@ pro mvn_swe_makecdf_3d, data, file = file, version = version, directory = direct
     rev_str = string(revision, format='(i2.2)')
 
     head_file = file + '_r' + rev_str + '.cdf'
+    temp_file = head_file + '_tmp'
     file = path + head_file
 
   endif else begin ; if (not keyword_set(file))
+    path = file_dirname(file) + '/'
+    head_file = file_basename(file)
+    temp_file = head_file + '_tmp'
     ver_str = '00' ; needed in the header
     rev_str = '00' ; needed in the header
   endelse
 
   print, file
+
+; Use a temporary filename to hide from the automated transfer bot while
+; the file is being assembled.
+
+  file = path + temp_file
 
 ; compute various times
 ; load leap seconds
@@ -810,7 +819,20 @@ pro mvn_swe_makecdf_3d, data, file = file, version = version, directory = direct
   cdf_varput, fileid, 'num_dists', long(nrec)
 
   cdf_close,fileid
- 
+
+; Rename the file to the original
+
+  tofile = path + head_file
+  cmd = 'mv ' + file + ' ' + tofile
+  spawn, cmd, result, err
+  if (err ne '') then begin
+    print, "Error renaming file: "
+    print, "  ", cmd
+    print, "  ", err
+    return
+  endif
+  file = tofile
+
 ; compression, md5, and permissions (rw--rw--r--)
 
   mvn_l2file_compress, file

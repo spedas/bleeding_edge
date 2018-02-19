@@ -79,8 +79,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-01-09 15:52:02 -0800 (Tue, 09 Jan 2018) $
-; $LastChangedRevision: 24495 $
+; $LastChangedDate: 2018-02-18 12:37:19 -0800 (Sun, 18 Feb 2018) $
+; $LastChangedRevision: 24742 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -226,7 +226,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
 ; Spacecraft potential
 
-  mvn_scpot, comp=1, /force, /update
+  mvn_scpot
 
 ; Determine the ion suppression method.  Anode-dependent ion suppression
 ; uses experimental code and is for testing purposes only.

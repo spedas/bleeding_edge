@@ -29,8 +29,8 @@
 ;       SHIFTPOT:      Correct for spacecraft potential.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-08-31 11:31:33 -0700 (Thu, 31 Aug 2017) $
-; $LastChangedRevision: 23867 $
+; $LastChangedDate: 2018-02-18 12:37:01 -0800 (Sun, 18 Feb 2018) $
+; $LastChangedRevision: 24741 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_get3d.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -139,6 +139,8 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
       print,"No 3D archive data."
       return, 0
     endif
+
+    time -= 1.95D/2D  ; packet times
     
     if keyword_set(all) then begin
       tmin = min(time, max=tmax, /nan)
@@ -161,7 +163,9 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
       print,"No 3D survey data."
       return, 0
     endif
-    
+
+    time -= 1.95D/2D  ; packet times
+
     if keyword_set(all) then begin
       tmin = min(time, max=tmax, /nan)
       indx = where((swe_3d.time ge tmin) and (swe_3d.time le tmax), npts)
