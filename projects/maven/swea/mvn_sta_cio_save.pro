@@ -21,8 +21,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-18 12:37:38 -0800 (Sun, 18 Feb 2018) $
-; $LastChangedRevision: 24743 $
+; $LastChangedDate: 2018-02-19 13:07:50 -0800 (Mon, 19 Feb 2018) $
+; $LastChangedRevision: 24747 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -71,7 +71,7 @@ pro mvn_sta_cio_save, trange, ndays
 ; If the file already exists, then just update it
 
     finfo = file_info(ofile)
-    if (finfo.exists) then begin
+    if (0) then begin
       print,'CIO save file already exists.  Updating.'
       mvn_sta_cio_update, time
     endif else begin

@@ -79,8 +79,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-18 12:37:19 -0800 (Sun, 18 Feb 2018) $
-; $LastChangedRevision: 24742 $
+; $LastChangedDate: 2018-02-19 12:23:00 -0800 (Mon, 19 Feb 2018) $
+; $LastChangedRevision: 24745 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -775,13 +775,13 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 ;   0 deg = x-y plane ; +90 deg = +z
 ;   cold-ion configuration is +45 deg for twist, +90 deg for no-twist
 
-  get_data,'Sun_SWEA_The',data=sthe,index=i
+  get_data,'Sun_SWEA_The',data=sthe_swe,index=i
   if (i eq 0) then begin
     mvn_sundir, frame='swe', /polar
-    get_data,'Sun_SWEA_The',data=sthe,index=i
+    get_data,'Sun_SWEA_The',data=sthe_swe,index=i
   endif
   if (i gt 0) then begin
-    result_h.sthe = spline(sthe.x, sthe.y, time)
+    result_h.sthe = spline(sthe_swe.x, sthe_swe.y, time)
     result_o1.sthe = result_h.sthe
     result_o2.sthe = result_h.sthe
   endif else print,'MVN_STA_COLDION: Failed to get Sun (PL) direction!'
@@ -790,32 +790,39 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 ;   0 deg = i-j plane ; +90 deg = +k
 ;   cold-ion configuration is ~0 deg
 
-  get_data,'Sun_APP_The',data=sthe,index=i
+  get_data,'Sun_APP_The',data=sthe_app,index=i
   if (i eq 0) then begin
     mvn_sundir, frame='app', /polar
-    get_data,'Sun_APP_The',data=sthe,index=i
+    get_data,'Sun_APP_The',data=sthe_app,index=i
   endif
   if (i gt 0) then begin
-    result_h.sthe_app = spline(sthe.x, sthe.y, time)
-    result_o1.sthe_app = result_h.sthe
-    result_o2.sthe_app = result_h.sthe
+    result_h.sthe_app = spline(sthe_app.x, sthe_app.y, time)
+    result_o1.sthe_app = result_h.sthe_app
+    result_o2.sthe_app = result_h.sthe_app
   endif else print,'MVN_STA_COLDION: Failed to get Sun (APP) direction!'
 
 ; Elevation angle of MSO RAM in the APP frame
 ;   0 deg = i-j plane ; +90 deg = +k
 ;   cold-ion configuration is ~0 deg
 
-  mvn_ramdir, /mso, frame='app', /polar, pans=rpans
-  i = where(stregex(rpans,'The') ne -1, count)
-  if (count gt 0) then begin
-    get_data, rpans[i], data=rthe
-    result_h.rthe_app = spline(rthe.x, rthe.y, time)
+  get_data,'V_sc_APP_The',data=rthe_app,index=i
+  if (i eq 0) then begin
+    mvn_ramdir, /mso, frame='app', /polar
+    get_data,'V_sc_APP_The',data=rthe_app,index=i
+  endif
+  if (i gt 0) then begin
+    if (strupcase(rthe_app.vframe) ne 'MSO') then begin
+      mvn_ramdir, /mso, frame='app', /polar
+      get_data,'V_sc_APP_The',data=rthe_app,index=i
+    endif
+    result_h.rthe_app = spline(rthe_app.x, rthe_app.y, time)
     result_o1.rthe_app = result_h.rthe_app
     result_o2.rthe_app = result_h.rthe_app
   endif else print,'MVN_STA_COLDION: Failed to get MSO RAM direction!'
 
 ; Transform ion bulk velocity to the APP frame
 ;   For [-V,0,0], flow is directed into NGIMS aperture.
+;   Want the velocity out of the i-j plane to be small (well within STATIC fov)
 
   dV = result_h.v_mso - result_h.v_sc
   V_app = spice_vector_rotate(dV,result_h.time,'MAVEN_MSO','MAVEN_APP',check='MAVEN_SPACECRAFT')
@@ -1093,12 +1100,12 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
     options,'rthe_app','constant',0  ; nominal value for STATIC CIO configuration
 
     y = replicate(0,npts,2)
-    indx = where((result_h.sthe ge 40) and (result_h.sthe le 50), count)
+    indx = where(abs(result_h.sthe - 45) lt 5, count)
     if (count gt 0) then y[indx,*] = 1
     indx = where((abs(result_h.sthe_app) le 5) and $
                  (abs(result_h.rthe_app) le 10), count)
     if (count gt 0) then y[indx,*] = 2
-    indx = where((result_h.sthe ge 40) and (result_h.sthe le 50) and $
+    indx = where((abs(result_h.sthe - 45) lt 5) and $
                  (abs(result_h.sthe_app) le 5) and $
                  (abs(result_h.rthe_app) le 10), count)
     if (count gt 0) then y[indx,*] = 3

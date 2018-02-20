@@ -25,8 +25,8 @@
 ;       PANS:          Tplot panel names created when DOPLOT is set.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-18 12:38:39 -0800 (Sun, 18 Feb 2018) $
-; $LastChangedRevision: 24744 $
+; $LastChangedDate: 2018-02-19 12:23:38 -0800 (Mon, 19 Feb 2018) $
+; $LastChangedRevision: 24746 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_restore.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -168,17 +168,17 @@ pro mvn_sta_cio_restore, trange, loadonly=loadonly, result_h=result_h, $
 
 ; Vector Velocity
 
-    store_data,'velocity_h',data={x:result_h.time, y:transpose(result_h.vel), v:[0,1,2]}
+    store_data,'velocity_h',data={x:result_h.time, y:transpose(result_h.v_mso), v:[0,1,2]}
     options,'velocity_h','ytitle','H Vel!ckm/s'
     options,'velocity_h','colors',[2,4,6]
     options,'velocity_h','labels',['Vx','Vy','Vz']
     options,'velocity_h','labflag',1
-    store_data,'velocity_o1',data={x:result_o1.time, y:transpose(result_o1.vel), v:[0,1,2]}
+    store_data,'velocity_o1',data={x:result_o1.time, y:transpose(result_o1.v_mso), v:[0,1,2]}
     options,'velocity_o1','ytitle','O Vel!ckm/s'
     options,'velocity_o1','colors',[2,4,6]
     options,'velocity_o1','labels',['Vx','Vy','Vz']
     options,'velocity_o1','labflag',1
-    store_data,'velocity_o2',data={x:result_o2.time, y:transpose(result_o2.vel), v:[0,1,2]}
+    store_data,'velocity_o2',data={x:result_o2.time, y:transpose(result_o2.v_mso), v:[0,1,2]}
     options,'velocity_o2','ytitle','O2 Vel!ckm/s'
     options,'velocity_o2','colors',[2,4,6]
     options,'velocity_o2','labels',['Vx','Vy','Vz']
@@ -202,10 +202,10 @@ pro mvn_sta_cio_restore, trange, loadonly=loadonly, result_h=result_h, $
 
 ; Polarity of the O2+ bulk flow (+X or -X)
 
-    V_phi = atan(result_o2.vel[2],result_o2.vel[1])*!radeg
+    V_phi = atan(result_o2.v_mso[2],result_o2.v_mso[1])*!radeg
     indx = where(V_phi lt 0., count)
     if (count gt 0L) then V_phi[indx] += 360.
-    V_the = asin(result_o2.vel[0]/result_o2.vbulk)*!radeg
+    V_the = asin(result_o2.v_mso[0]/result_o2.vbulk)*!radeg
 
     store_data,'V_o2_phi',data={x:result_o2.time, y:V_phi}
     ylim,'V_o2_phi',0,360,0
@@ -227,7 +227,7 @@ pro mvn_sta_cio_restore, trange, loadonly=loadonly, result_h=result_h, $
 
     pans = [pans, 'V_o2_phi', 'V_o2_the']
 
-    Vx = result_o2.vel[0] # [1.,1.]
+    Vx = result_o2.v_mso[0] # [1.,1.]
     indx = where(Vx ge 0., npos, complement=jndx, ncomplement=nneg)
     if (npos gt 0L) then Vx[indx,*] = -1.
     if (nneg gt 0L) then Vx[jndx,*] =  1.

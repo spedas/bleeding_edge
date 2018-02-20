@@ -75,7 +75,8 @@
 ;              a ~2-week delay in the production of this dataset.  You can
 ;              set this keyword to the full path and filename of a tplot 
 ;              save/restore file, if one exists.  Otherwise, this routine 
-;              will determine the potential from SWEA alone.
+;              will determine the potential from SWEA and STATIC.
+;              Default = 1 (yes).
 ;
 ;   POSPOT:    Calculate positive potentials with mvn_swe_sc_pot.
 ;              Default = 1 (yes).
@@ -87,6 +88,7 @@
 ;              especially useful in the high-altitude shadow region.
 ;              Assumes that you have calculated STATIC potentials.
 ;              (See mvn_sta_scpot_load.pro)
+;              Default = 1 (yes).
 ;              
 ;   SHAPOT:    Calculate negative potentials with 'mvn_swe_sc_negpot_
 ;              twodir_burst'.  Two estimates are obtained, one each for
@@ -94,33 +96,28 @@
 ;              both directions yield a potential, then the one closer to 
 ;              zero is chosen for merging with other methods.
 ;              Requires keyword NEGPOT to be set.
+;              Default = 1 (yes).
 ;
 ;   PANS:      Named varible to hold the tplot panels created.
 ;
-;   FORCE:     If the composite potential is not available, then automatically
-;              try to calculate the composite potential from SWEA, STATIC, and
-;              LPW data.  Automatically set when COMPOSITE = 0.
-;
 ;   SUCCESS:   Returns exit status.
 ;
-;   UPDATE:    Updates SWEA and STATIC potentials with the composite potential.
-;
 ;OUTPUTS:
-;   None - Result is stored in a common block, returned via the POTENTIAL
+;   None - Result is stored in common blocks, returned via the POTENTIAL
 ;          keyword, and stored as TPLOT variables.  Two TPLOT variables
 ;          are created: one with a single merged potential and one showing
 ;          the five unmerged methods in one panel.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-12-19 13:45:29 -0800 (Tue, 19 Dec 2017) $
-; $LastChangedRevision: 24447 $
+; $LastChangedDate: 2018-02-19 17:53:20 -0800 (Mon, 19 Feb 2018) $
+; $LastChangedRevision: 24748 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot.pro $
 ;
 ;-
 
 pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
                stapot=stapot, lpwpot=lpwpot, shapot=shapot, composite=composite, $
-               pans=pans, force=force, success=success, update=update
+               pans=pans, success=success
 
   compile_opt idl2
 
@@ -143,7 +140,6 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
   if (size(stapot,/type) eq 0) then stapot = 1 else stapot = keyword_set(stapot)
   if (size(shapot,/type) eq 0) then shapot = 1 else shapot = keyword_set(shapot)
   if (shapot) then negpot = 1  ; required for pot_in_shadow to work
-  noguff = keyword_set(force) or ~keyword_set(composite)
 
 ; Set the potential manually
 
@@ -167,10 +163,8 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
     phi = {x:mvn_sc_pot.time, y:mvn_sc_pot.potential}
     store_data,'mvn_sc_pot',data=phi
 
-    if keyword_set(update) then begin
-      mvn_swe_addpot
-      mvn_sta_scpot_update
-    endif
+    mvn_swe_addpot
+    mvn_sta_scpot_update
 
     pot = mvn_sc_pot
     success = 1
@@ -191,22 +185,13 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
       mvn_sc_pot.potential = comp.potential
       mvn_sc_pot.method = comp.method
 
-      if keyword_set(update) then begin
-        mvn_swe_addpot
-        mvn_sta_scpot_update
-      endif
+      mvn_swe_addpot
+      mvn_sta_scpot_update
 
       pot = mvn_sc_pot
       success = 1
       return
     endif else print,"SWE/LPW/STA composite potential not available."
-  endif
-
-  if (not noguff) then begin
-    print,''
-    yn = 'N'
-    read, yn, prompt='Calculate potential now (y|n)? '
-    if (strupcase(yn) ne 'Y') then return
   endif
 
 ; If the routine has not returned by this point, then it has to calculate the
@@ -417,10 +402,8 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
 
 ; Update the SWEA and STATIC potentials.
 
-  if keyword_set(update) then begin
-    mvn_swe_addpot
-    mvn_sta_scpot_update
-  endif
+  mvn_swe_addpot
+  mvn_sta_scpot_update
 
 ; Create a tplot variable for all potential methods (with overlap)
 
