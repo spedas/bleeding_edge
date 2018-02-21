@@ -24,17 +24,20 @@
 ; REVISION HISTORY:
 ;       + 2017-12-04, I. Cohen          : added capability to handle 'combined' datatype
 ;       + 2018-01-18, I. Cohen          : added multisc keyword
+;       + 2018-02-19, I. Cohen          : added 'probe_string' variable to differentiate from probe(s) and avoid
+;                                         errors with overwriting in other procedures
 ;       
 ;       
 ;       
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-02-01 10:28:16 -0800 (Thu, 01 Feb 2018) $
-;$LastChangedRevision: 24616 $
+;$LastChangedDate: 2018-02-20 08:22:36 -0800 (Tue, 20 Feb 2018) $
+;$LastChangedRevision: 24749 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_spin_avg.pro $
 ;-
 
 pro mms_eis_spin_avg, probe=probe, species = species, data_units = data_units, $
   datatype = datatype, data_rate = data_rate, suffix=suffix, multisc = multisc
+  ;
   if undefined(probe) then probe='1' else probe = strcompress(string(probe), /rem)
   if undefined(datatype) then datatype = 'extof'
   if undefined(data_units) then data_units = 'flux'
@@ -48,8 +51,8 @@ pro mms_eis_spin_avg, probe=probe, species = species, data_units = data_units, $
     datatype = 'phxtof'
   endif else new_datatype = datatype
   ;
-  if (multisc eq 1) then probe = probe[0]+'-'+probe[-1]
-  if (data_rate eq 'brst') then prefix = 'mms'+probe+'_epd_eis_brst_' else prefix = 'mms'+probe+'_epd_eis_'
+  if (multisc eq 1) then probe_string = probe[0]+'-'+probe[-1] else probe_string = probe
+  if (data_rate eq 'brst') then prefix = 'mms'+probe_string+'_epd_eis_brst_' else prefix = 'mms'+probe_string+'_epd_eis_'
   ; get the spin #s associated with each measurement
   get_data, prefix + datatype + '_' +  'spin'+suffix, data=spin_nums
   ;

@@ -7,17 +7,18 @@
 ;           
 ;
 ; KEYWORDS:
-;         trange:       time range of interest
-;         probes:       value for MMS SC #
-;         species:      proton (default), alpha, oxygen, electron
-;         energy:       energy range to include in the calculation
-;         size_pabin:   size of the pitch angle bins
-;         data_units:   flux or cps
-;         datatype:     extof, phxtof, electronenergy
-;         scopes:       string array of telescopes to be included in PAD ('0'-'5')
-;         suffix:       suffix used when loading the data
-;         num_smooth:   should contain number of seconds to use when smoothing
-;                         only creates a smoothed product (_pad_smth) if this keyword is specified
+;         trange:               time range of interest
+;         probes:               value for MMS SC #
+;         species:              proton (default), alpha, oxygen, electron
+;         energy:               energy range to include in the calculation
+;         size_pabin:           size of the pitch angle bins
+;         data_units:           flux or cps
+;         datatype:             extof, phxtof, electronenergy
+;         scopes:               string array of telescopes to be included in PAD ('0'-'5')
+;         suffix:               suffix used when loading the data
+;         num_smooth:           should contain number of seconds to use when smoothing
+;                                 only creates a smoothed product (_pad_smth) if this keyword is specified
+;         combine_proton_data:  set equal to 1 to combine extof and phxtof data
 ;
 ; EXAMPLES:
 ;
@@ -29,8 +30,8 @@
 ;     This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-02-02 08:02:07 -0800 (Fri, 02 Feb 2018) $
-;$LastChangedRevision: 24624 $
+;$LastChangedDate: 2018-02-20 08:22:36 -0800 (Tue, 20 Feb 2018) $
+;$LastChangedRevision: 24749 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 ;-
 ; REVISION HISTORY:
@@ -54,13 +55,13 @@
 ;       + 2017-11-20, I. Cohen      : changed names of IDL variables resulting from get_data from all using 'd' to help with troubleshooting; added
 ;                                     degapping
 ;       + 2017-12-04, I. Cohen      : changed bin_size keyword to size_pabin in calls to mms_eis_pad_spinavg.pro
-;
+;       + 2018-02-19, I. Cohen      : added combine_proton_data keyword to enable override of automatic combination of PHxTOF and ExTOF data
 ;                             
 ;-
 
-pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate = data_rate, $
-                energy = energy, size_pabin = size_pabin, data_units = data_units, $
-                datatype = datatype, scopes = scopes, level = level, suffix = suffix, num_smooth = num_smooth
+pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate = data_rate, energy = energy, $
+                size_pabin = size_pabin, data_units = data_units, datatype = datatype, scopes = scopes, level = level, $
+                suffix = suffix, num_smooth = num_smooth
   ;
   compile_opt idl2
   if not KEYWORD_SET(probes) then probes = '1' else probes = strcompress(string(probes), /rem)
@@ -74,16 +75,18 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
   if not KEYWORD_SET(scopes) then scopes = ['0','1','2','3','4','5']
   if not KEYWORD_SET(level) then level = 'l2'
   if not KEYWORD_SET(suffix) then suffix = ''
-  if (species eq 'proton') then begin
-    energy_test1 = where(energy gt 50)
-    energy_test2 = where(energy lt 50)
-    if (energy_test1[0] eq -1) or (energy_test2[0] eq -1) then begin
-      flag_combine = 0
-    endif else begin
-      flag_combine = 1
-      datatype = ['phxtof','extof']
-    endelse
-  endif else flag_combine = 0
+  if undefined(combine_proton_data) then begin
+    if (species eq 'proton') then begin
+      energy_test1 = where(energy gt 50)
+      energy_test2 = where(energy lt 50)
+      if (energy_test1[0] eq -1) or (energy_test2[0] eq -1) then begin
+        combine_proton_data = 0
+      endif else begin
+        combine_proton_data = 1
+        datatype = ['phxtof','extof']
+      endelse
+    endif else combine_proton_data = 0
+  endif
   ;
   ; would be good to get this from the metadata eventually
   units_label = data_units eq 'cps' ? '1/s': '1/(cm!U2!N-sr-s-keV)'
@@ -194,7 +197,7 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
           ;
           store_data, prefix + datatype[dd] + '_' + species[species_idx] + '_' + data_units + scope_suffix + '_pads', data={x:data_flux.x, y:pa_flux, v1:pa_label, v2:omni_data.v[these_energies]}
           tdegap, prefix + datatype[dd] + '_' + species[species_idx] + '_' + data_units + scope_suffix + '_pads', /overwrite
-          ;if (flag_combine ne 1) then begin
+          ;if (combine_proton_data ne 1) then begin
             ;
             ; CREATE PAD VARIABLE INTEGRATED OVER USER-DEFINED ENERGY RANGE
             ;
@@ -221,7 +224,7 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
       endif
     endfor
     ;
-    if (flag_combine eq 1) then begin
+    if (combine_proton_data eq 1) then begin
       mms_eis_combine_proton_pad, probes=probes[pp], data_rate = data_rate, data_units = data_units, size_pabin = size_pabin, energy = energy, suffix = suffix
       ;
       combined_var_name = tnames(prefix+'combined*proton*pad')

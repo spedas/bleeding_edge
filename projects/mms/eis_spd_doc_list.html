@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Feb 19 18:16:20 2018.<P>
+<STRONG>Last modified: </STRONG>Tue Feb 20 18:16:16 2018.<P>
  
 <HR>
  
@@ -168,6 +168,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 
  REVISION HISTORY:
        + 2017-11-17, I. Cohen      : changed probes keyword to probes
+       + 2018-02-19, I. Cohen      : fixed definitions of target_phxtof_energies and target_extof_energies to account for user-defined
+                                     energy ranges that do not include all energy channels; also fixed indexing on line 95 to accommodate
        
 
 </PRE><P>
@@ -205,6 +207,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                                          variables for each individual telescope, instead of just the omni variable;
                                          added calls to mms_eis_spin_avg.pro and mms_eis_omni.pro
        + 2018-01-19, I. Cohen          : added capability to handle multiple s/c at once and combine at the end
+       + 2018-02-19, I. Cohen          : added &quot;total&quot; to NAN creation on lines 77-78 to fix syntax
                                          
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_combine_proton_spec.pro">projects/mms/eis/mms_eis_combine_proton_spec.pro</A>)</STRONG><P>
@@ -255,17 +258,18 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
            
 
  KEYWORDS:
-         trange:       time range of interest
-         probes:       value for MMS SC #
-         species:      proton (default), alpha, oxygen, electron
-         energy:       energy range to include in the calculation
-         size_pabin:   size of the pitch angle bins
-         data_units:   flux or cps
-         datatype:     extof, phxtof, electronenergy
-         scopes:       string array of telescopes to be included in PAD ('0'-'5')
-         suffix:       suffix used when loading the data
-         num_smooth:   should contain number of seconds to use when smoothing
-                         only creates a smoothed product (_pad_smth) if this keyword is specified
+         trange:               time range of interest
+         probes:               value for MMS SC #
+         species:              proton (default), alpha, oxygen, electron
+         energy:               energy range to include in the calculation
+         size_pabin:           size of the pitch angle bins
+         data_units:           flux or cps
+         datatype:             extof, phxtof, electronenergy
+         scopes:               string array of telescopes to be included in PAD ('0'-'5')
+         suffix:               suffix used when loading the data
+         num_smooth:           should contain number of seconds to use when smoothing
+                                 only creates a smoothed product (_pad_smth) if this keyword is specified
+         combine_proton_data:  set equal to 1 to combine extof and phxtof data
 
  EXAMPLES:
 
@@ -277,8 +281,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-02-02 08:02:07 -0800 (Fri, 02 Feb 2018) $
-$LastChangedRevision: 24624 $
+$LastChangedDate: 2018-02-20 08:22:36 -0800 (Tue, 20 Feb 2018) $
+$LastChangedRevision: 24749 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_pad.pro">projects/mms/eis/mms_eis_pad.pro</A>)</STRONG><P>
@@ -312,15 +316,12 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 
  REVISION HISTORY:
        + 2017-11-14, I. Cohen    : removed num_smooth keyword and calls to spd_smooth_time
-       + 2017-11-15, I. Cohen    : removed n_pad_spec and num_smooth keywords; added energy,
-                                   data_units, datatype, and species keywords to mirror call
-                                   to mms_eis_pad.pro
-       + 2017-11-17, I. Cohen    : removed combination of phxtof and extof data to rely on use
-                                   of mms_eis_pad.pro and mms_eis_pad_combine_proton_pad.pro;
-                                   replaced species keyword definition with species and removed
-                                   species
+       + 2017-11-15, I. Cohen    : removed n_pad_spec and num_smooth keywords; added energy, data_units, datatype, and species keywords to mirror call to mms_eis_pad.pro
+       + 2017-11-17, I. Cohen    : removed combination of phxtof and extof data to rely on use of mms_eis_pad.pro and mms_eis_pad_combine_proton_pad.pro;
+                                   replaced species keyword definition with species and removed species
        + 2018-01-04, I. Cohen    : fixed if statement for species case of 'proton'
-       + 2018-02-05, I. Cohen    : added suffix keyword                       
+       + 2018-02-05, I. Cohen    : added suffix keyword
+       + 2018-02-19, I. Cohen    : added ability to handle multiple species                   
 
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_pad_combine_sc.pro">projects/mms/eis/mms_eis_pad_combine_sc.pro</A>)</STRONG><P>
@@ -427,7 +428,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
  REVISION HISTORY:
          + 2017-12-01, I. Cohen        : added call to mms_eis_spin_avg.pro
          + 2018-01-04, I. Cohen        : removed bad &quot;error&quot; message
-         
+         + 2018-02-19, I. Cohen        : added ability to handle multiple species; fixed how missing spacecraft data is handled
 
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_spec_combine_sc.pro">projects/mms/eis/mms_eis_spec_combine_sc.pro</A>)</STRONG><P>
@@ -464,12 +465,14 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
  REVISION HISTORY:
        + 2017-12-04, I. Cohen          : added capability to handle 'combined' datatype
        + 2018-01-18, I. Cohen          : added multisc keyword
+       + 2018-02-19, I. Cohen          : added 'probe_string' variable to differentiate from probe(s) and avoid
+                                         errors with overwriting in other procedures
        
        
        
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-02-01 10:28:16 -0800 (Thu, 01 Feb 2018) $
-$LastChangedRevision: 24616 $
+$LastChangedDate: 2018-02-20 08:22:36 -0800 (Tue, 20 Feb 2018) $
+$LastChangedRevision: 24749 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_spin_avg.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_spin_avg.pro">projects/mms/eis/mms_eis_spin_avg.pro</A>)</STRONG><P>

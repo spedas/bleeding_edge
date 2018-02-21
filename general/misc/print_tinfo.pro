@@ -35,8 +35,8 @@
 ;  
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-08-23 15:30:42 -0700 (Tue, 23 Aug 2016) $
-; $LastChangedRevision: 21698 $
+; $LastChangedDate: 2018-02-20 09:49:14 -0800 (Tue, 20 Feb 2018) $
+; $LastChangedRevision: 24751 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/print_tinfo.pro $
 ;-
 
@@ -65,6 +65,10 @@ pro print_tinfo, tplot_name, time = time, help = help
     if is_struct(dl.cdf.vatt) then begin
       ndimens = ndimen(d.Y)
       metadata = (dl.cdf.vatt)[0]
+      str_element, metadata, 'catdesc', success=s
+      if s then print, metadata.catdesc
+      str_element, metadata, 'var_notes', success=s
+      if s then print, metadata.var_notes
       help, d, /structure ; show the dimensions before showing what data they represent
       if ndimens eq 4 then print, 'Data format: ['+metadata.depend_0+', '+metadata.depend_3+', '+metadata.depend_2+', '+metadata.depend_1+']'
       if ndimens eq 3 then print, 'Data format: ['+metadata.depend_0+', '+metadata.depend_2+', '+metadata.depend_1+']'

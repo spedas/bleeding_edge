@@ -21,8 +21,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-19 13:07:50 -0800 (Mon, 19 Feb 2018) $
-; $LastChangedRevision: 24747 $
+; $LastChangedDate: 2018-02-20 10:50:47 -0800 (Tue, 20 Feb 2018) $
+; $LastChangedRevision: 24753 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -85,7 +85,7 @@ pro mvn_sta_cio_save, trange, ndays
 
         mvn_sta_coldion, density=1, temperature=1, velocity=[1,1,1], $
               result_h=cio_h, result_o1=cio_o1, result_o2=cio_o2, /reset, tavg=16, $
-              success=ok
+              frame='mso', /doplot, pans=pans, success=ok
 
         if (ok) then save, cio_h, cio_o1, cio_o2, file=ofile $
                 else print,'CIO pipeline failed: ',tstring

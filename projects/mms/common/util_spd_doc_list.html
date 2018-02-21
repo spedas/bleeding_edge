@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Feb 19 18:16:20 2018.<P>
+<STRONG>Last modified: </STRONG>Tue Feb 20 18:16:16 2018.<P>
  
 <HR>
  
@@ -23,6 +23,8 @@ This page was created by the IDL library routine
 <br>Create quick plots of spectra at a certain time (i.e., energy vs. eflux, PA vs. eflux, etc)
 <LI><A HREF="#MMS_DRAW_CIRCLE">MMS_DRAW_CIRCLE</A>
 <br>Draws (and fills in) a circle
+<LI><A HREF="#MMS_TEAM_KIBANA">MMS_TEAM_KIBANA</A>
+<br>Opens the MMS Kibana page using your web browser; allows you to see which
 <br>
 </UL><P>
 <HR>
@@ -83,6 +85,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_DRAW_CIRCLE">
 <H2>MMS_DRAW_CIRCLE</H2></A>
 <A HREF="#FLATTEN_SPECTRA">[Previous Routine]</A>
+<A HREF="#MMS_TEAM_KIBANA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -100,5 +103,34 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/mms_draw_circle.pro $
 </PRE><P>
 <STRONG>(See <A href="util/mms_draw_circle.pro">projects/mms/common/util/mms_draw_circle.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MMS_TEAM_KIBANA">
+<H2>MMS_TEAM_KIBANA</H2></A>
+<A HREF="#MMS_DRAW_CIRCLE">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         mms_team_kibana
+
+ PURPOSE:
+         Opens the MMS Kibana page using your web browser; allows you to see which
+         data files are available at the SDC, and when they're available
+ 
+     
+ NOTES:
+         The webpage is restricted to MMS team-members only
+ 
+ EXAMPLE:
+         to open the Kibana page for FPI CDF files:
+         MMS&gt; mms_team_kibana, /fpi
+         
+         
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2018-02-20 14:36:30 -0800 (Tue, 20 Feb 2018) $
+ $LastChangedRevision: 24754 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/mms_team_kibana.pro $
+</PRE><P>
+<STRONG>(See <A href="util/mms_team_kibana.pro">projects/mms/common/util/mms_team_kibana.pro</A>)</STRONG><P>
 <HR>
  
