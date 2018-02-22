@@ -86,8 +86,8 @@
 ;        
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-10-19 12:54:21 -0700 (Thu, 19 Oct 2017) $
-;$LastChangedRevision: 24188 $
+;$LastChangedDate: 2018-02-21 14:47:40 -0800 (Wed, 21 Feb 2018) $
+;$LastChangedRevision: 24756 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec_ascii/mms_load_state.pro $
 ;-
 
@@ -96,7 +96,7 @@ pro mms_load_state, trange = trange_in, probes = probes, datatypes = datatypes, 
     remote_data_dir = remote_data_dir, attitude_only=attitude_only, $
     ephemeris_only = ephemeris_only, no_download=no_download, login_info=login_info, $
     tplotnames = tplotnames, pred_or_def=pred_or_def, no_color_setup = no_color_setup, $
-    suffix = suffix, ascii = ascii
+    suffix = suffix, ascii = ascii, spdf=spdf
 
     ; define probe, product, type, coordinate, and unit names
     p_names = ['1', '2', '3', '4']
@@ -202,7 +202,7 @@ pro mms_load_state, trange = trange_in, probes = probes, datatypes = datatypes, 
        for j = 0, n_elements(level)-1 do begin
             if mec_flag EQ 1 && level[j] NE 'pred' then begin
                  mms_load_mec, probe = probes[i], trange = trange_in, cdf_filenames=cdf_files, $
-                  varformat=mec_varformat, suffix=suffix, /time_clip
+                  varformat=mec_varformat, suffix=suffix, /time_clip, spdf=spdf
                  if ~keyword_set(attitude_only) then begin
                     copy_data, 'mms'+probes[i]+'_mec_r_eci'+suffix, 'mms'+probes[i]+'_defeph_pos'+suffix
                     copy_data, 'mms'+probes[i]+'_mec_v_eci'+suffix, 'mms'+probes[i]+'_defeph_vel'+suffix
