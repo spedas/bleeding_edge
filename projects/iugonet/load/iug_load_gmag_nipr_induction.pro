@@ -77,7 +77,7 @@ for i=0,n_elements(site_code)-1 do begin
 
   ;----- Set sampling time correspoding to input date -----;
   tr=timerange(trange)
-  tr0=tr(0)
+  tr0=tr[0]
   if site_code[i] eq 'syo' then begin
     crttime=time_double('1998-1-1')
     if tr0 lt crttime then tres='2sec' else tres='20hz'

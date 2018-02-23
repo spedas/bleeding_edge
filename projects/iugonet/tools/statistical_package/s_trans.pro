@@ -45,8 +45,8 @@
 ; 
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
-; $LastChangedRevision: 24404 $
+; $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+; $LastChangedRevision: 24758 $
 ; $URL $
 ;-
 
@@ -66,13 +66,13 @@ function hilbert_trans,x,d, analytic = a   ; performs the Hilbert transform of s
    n2=ceil(n/2.)-1    
             
   ;Zero the DC value (required for hilbert trans.)                           ; 
-   y(0) = complex(0,0)
+   y[0] = complex(0,0)
    
   ;Multiplying by I rotates counter c.w. 90 deg.   
-   y(1)=y(1:n2)*i       
-   if (n mod 2) eq 0 then y(n2+1) = complex(0,0)
+   y[1]=y[1:n2]*i       
+   if (n mod 2) eq 0 then y[n2+1] = complex(0,0)
    n2=n-n2
-   y(n2)=y(n2:n-1)/i
+   y[n2]=y[n2:n-1]/i
    
   ;Calculate the power spectrum of y.
    y=float(fft(y,1))
@@ -93,7 +93,7 @@ function gaussian_window, l, w
    ex = (iarr - l/2)^2/(2*sigma^2)
    wl = where(ex lt 25)
   ;Calculate the gaussian.
-   g(wl) = exp(-ex(wl))
+   g[wl] = exp(-ex(wl))
    g = shift(g,-l/2)
    return, complex(g,0)
 end
@@ -129,7 +129,7 @@ if keyword_set(example) then begin
   ;
   ;Output the line and contour plots
    !P.multi=[0,1,2]
-   plot,ex_ts,xtitle='Time (units)',title='Time Series [h(t) = cos(cos(wt))]'
+   plot,ex_ts,xtitle='Time (units)',title='Time Series [h[t] = cos(cos(wt))]'
   
   ; Returns structure, amplitudes only returned
    s = s_trans(ex_ts,/samp, /abs)  
@@ -185,8 +185,8 @@ time_series = ts
 
 ; Check to see if it is a vector, not a 1 x N matrix:
 sz = size(time_series)
-if sz(0) ne 1 then begin
-    if sz(1) eq 1 and sz(2) gt 1 then begin
+if sz[0] ne 1 then begin
+    if sz[1] eq 1 and sz[2] gt 1 then begin
       ; A column vector, change it:
        time_series = reform(time_series)  
        if keyword_set(verbose)then print,'Reforming timeseries'
@@ -207,8 +207,8 @@ if keyword_set(removeedge)  then begin
    sh_len = n_elements(time_series)/10
    if sh_len gt 1 then begin
       wn = hanning(sh_len)
-      time_series(0:sh_len/2-1) = time_series(0:sh_len/2-1)*wn(0:sh_len/2-1)
-      time_series(n_elements(time_series)-sh_len/2:*) = time_series(n_elements(time_series)-sh_len/2:*)*wn(sh_len/2:*)
+      time_series[0:sh_len/2-1] = time_series[0:sh_len/2-1]*wn[0:sh_len/2-1]
+      time_series[n_elements(time_series)-sh_len/2:*] = time_series[n_elements(time_series)-sh_len/2:*]*wn[sh_len/2:*]
    endif
 endif
 
@@ -305,14 +305,14 @@ if keyword_set(abs) or keyword_set(power) then begin
    h = shift(h,-minfreq)
    if minfreq eq 0 then  begin
       gw = fltarr(length)
-      gw(0) = 1
-      loc(*,0) = abs(fft(h*gw,1))
+      gw[0] = 1
+      loc[*,0] = abs(fft(h*gw,1))
    endif else begin
       f = float(minfreq)
       width = factor * length/f
       gw = gaussian_window(length,width)
       b = h * gw
-      loc(*,0) = abs(fft(b,1))
+      loc[*,0] = abs(fft(b,1))
    endelse
    for index = 1,spe_nelements-1 do begin
       f = float(minfreq) + index*freqsamplingrate
@@ -320,7 +320,7 @@ if keyword_set(abs) or keyword_set(power) then begin
       gw = gaussian_window(length,width)
       h = shift(h,-freqsamplingrate)
       b = h * gw
-      loc(*,index) = abs(fft(b,1))
+      loc[*,index] = abs(fft(b,1))
    endfor
    if keyword_set(power) then loc = loc^2
 endif else begin  ; calculate complex ST
@@ -329,14 +329,14 @@ endif else begin  ; calculate complex ST
    h = shift(h,-minfreq)
    if minfreq eq 0 then begin
       gw = fltarr(length)
-      gw(0) = 1
-      loc(*,0) = fft(h*gw,1)     ; 0 freq. equal to DC level
+      gw[0] = 1
+      loc[*,0] = fft(h*gw,1)     ; 0 freq. equal to DC level
    endif else begin
       f = float(minfreq)
       width = factor * length/f
       gw = gaussian_window(length,width)
       b = h * gw
-      loc(*,0) = fft(b,1)
+      loc[*,0] = fft(b,1)
    endelse
    for index = 1,spe_nelements-1  do begin
       f = float(minfreq) + index*freqsamplingrate
@@ -344,7 +344,7 @@ endif else begin  ; calculate complex ST
       gw = gaussian_window(length,width)
       h = shift(h,-freqsamplingrate)
       b = h * gw
-      loc(*,index) = fft(b,1)
+      loc[*,index] = fft(b,1)
    endfor
 endelse
 
@@ -356,7 +356,7 @@ if keyword_set(maskedges) then begin
    edgets = findgen(length)/length
    st = s_trans(edgets,/abs)
    mask=where(st gt maskthreshold,maskcount) ; 5 % is good = 0.05 based on snooping around
-   loc(mask) = 0
+   loc[mask] = 0
 endif
 
 if keyword_set(samplingrate) then begin  ; make structure

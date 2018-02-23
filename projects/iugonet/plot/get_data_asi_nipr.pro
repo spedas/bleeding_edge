@@ -188,7 +188,7 @@ for itime=0L, ntime-1 do begin
         mlt = aacgmmlt( yrs, yrsec, center_mlon ) 
         mlt = ( ( mlt + 24. ) mod 24. ) / 24.*360. ; [deg]
         igt=where(mlt gt 180., cnt)
-        if cnt gt 0 then mlt(igt) -= 360.
+        if cnt gt 0 then mlt[igt] -= 360.
         center_mlt_all[itime, *, *] =mlt
 
         ;----- corner mlt -----;
@@ -197,7 +197,7 @@ for itime=0L, ntime-1 do begin
         mlt = aacgmmlt( yrs, yrsec, corner_mlon ) 
         mlt = ( ( mlt + 24. ) mod 24. ) / 24.*360. ; [deg]
         igt=where(mlt gt 180., cnt)
-        if cnt gt 0 then mlt(igt) -= 360.
+        if cnt gt 0 then mlt[igt] -= 360.
         corner_mlt_all[itime, *, *] =mlt
     endif
 endfor

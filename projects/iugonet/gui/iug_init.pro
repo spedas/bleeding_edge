@@ -107,6 +107,72 @@ if (not keyword_set(exists)) or (keyword_set(reset)) then begin
                   gmag_magdas_ptk:       0b, $
                   gmag_magdas_wad:       0b, $
                   gmag_magdas_yap:       0b, $
+                  gmag_icswse_aab:       0b, $
+                  gmag_icswse_abj:       0b, $
+                  gmag_icswse_abu:       0b, $
+                  gmag_icswse_ama:       0b, $
+                  gmag_icswse_anc:       0b, $
+                  gmag_icswse_asb:       0b, $
+                  gmag_icswse_asw:       0b, $
+                  gmag_icswse_bcl:       0b, $
+                  gmag_icswse_bik:       0b, $
+                  gmag_icswse_bkl:       0b, $
+                  gmag_icswse_can:       0b, $
+                  gmag_icswse_cdo:       0b, $
+                  gmag_icswse_ceb:       0b, $
+                  gmag_icswse_cgr:       0b, $
+                  gmag_icswse_chd:       0b, $
+                  gmag_icswse_ckt:       0b, $
+                  gmag_icswse_cmd:       0b, $
+                  gmag_icswse_dav:       0b, $
+                  gmag_icswse_daw:       0b, $
+                  gmag_icswse_des:       0b, $
+                  gmag_icswse_drb:       0b, $
+                  gmag_icswse_dvs:       0b, $
+                  gmag_icswse_eus:       0b, $
+                  gmag_icswse_ewa:       0b, $
+                  gmag_icswse_fym:       0b, $
+                  gmag_icswse_gsi:       0b, $
+                  gmag_icswse_her:       0b, $
+                  gmag_icswse_hln:       0b, $
+                  gmag_icswse_hob:       0b, $
+                  gmag_icswse_hvd:       0b, $
+                  gmag_icswse_ica:       0b, $
+                  gmag_icswse_ilr:       0b, $
+                  gmag_icswse_jrs:       0b, $
+                  gmag_icswse_jyp:       0b, $
+                  gmag_icswse_kpg:       0b, $
+                  gmag_icswse_krt:       0b, $
+                  gmag_icswse_ktn:       0b, $
+                  gmag_icswse_kuj:       0b, $
+                  gmag_icswse_lag:       0b, $
+                  gmag_icswse_laq:       0b, $
+                  gmag_icswse_lgz:       0b, $
+                  gmag_icswse_lkw:       0b, $
+                  gmag_icswse_lsk:       0b, $
+                  gmag_icswse_lwa:       0b, $
+                  gmag_icswse_mcq:       0b, $
+                  gmag_icswse_mgd:       0b, $
+                  gmag_icswse_mlb:       0b, $
+                  gmag_icswse_mnd:       0b, $
+                  gmag_icswse_mut:       0b, $
+                  gmag_icswse_nab:       0b, $
+                  gmag_icswse_onw:       0b, $
+                  gmag_icswse_prp:       0b, $
+                  gmag_icswse_ptk:       0b, $
+                  gmag_icswse_ptn:       0b, $
+                  gmag_icswse_roc:       0b, $
+                  gmag_icswse_sbh:       0b, $
+                  gmag_icswse_scn:       0b, $
+                  gmag_icswse_sma:       0b, $
+                  gmag_icswse_tgg:       0b, $
+                  gmag_icswse_tik:       0b, $
+                  gmag_icswse_tir:       0b, $
+                  gmag_icswse_twv:       0b, $
+                  gmag_icswse_wad:       0b, $
+                  gmag_icswse_yak:       0b, $
+                  gmag_icswse_yap:       0b, $
+                  gmag_icswse_zgn:       0b, $
                   gps_ro_rish:           0b, $
                   imag_nipr_syo:         0b, $
                   imag_nipr_ice:         0b, $

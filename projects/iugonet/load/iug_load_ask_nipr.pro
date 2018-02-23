@@ -93,7 +93,7 @@ for i=0,n_elements(site_code)-1 do begin
 
     filestest=file_test(files)
     if total(filestest) ge 1 then begin
-      files=files(where(filestest eq 1))
+      files=files[where(filestest eq 1)]
     endif
 
     ;----- Print PI info and rules of the road -----;

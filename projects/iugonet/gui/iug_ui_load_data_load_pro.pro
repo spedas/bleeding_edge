@@ -7,7 +7,7 @@
 ;
 ;HISTORY:
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
+;$LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
 ; 
 ;Modifications:
 ;A. Shinbori, 12/05/2010
@@ -177,8 +177,12 @@ pro iug_ui_load_data_load_pro,    $
       ;----- geomagnetic field fluxgate ----;
       'geomagnetic_field_fluxgate' : begin
           case datatype of
+              'icswse' : begin
+                  iug_load_gmag_icswse_iaga, trange = timeRange, site = site_or_param, resolution = parameters
+                  par_names=tnames('kyumag_mag_*') 
+              end
               'magdas#' : begin
-                  erg_load_gmag_magdas_1sec, range = timeRange, site = site_or_param
+                  erg_load_gmag_magdas_1sec, trange = timeRange, site = site_or_param
                   par_names=tnames('magdas_mag_*') 
               end 
               '210mm#' : begin

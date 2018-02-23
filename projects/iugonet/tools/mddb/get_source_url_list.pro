@@ -46,7 +46,7 @@ FUNCTION get_source_url_list, url_in, xmldir, xmlfile
       
       IF OBJ_VALID(oName) THEN BEGIN
         oNameText = oName->GetFirstChild()
-        url_out(i)=oNameText->GetNodeValue()
+        url_out[i]=oNameText->GetNodeValue()
       ENDIF
     ENDFOR
   ENDIF

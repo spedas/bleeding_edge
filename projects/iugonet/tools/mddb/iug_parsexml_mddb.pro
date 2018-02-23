@@ -41,7 +41,7 @@ if n gt 0 then begin
 
         if OBJ_VALID(oName) then begin
             oNameText = oName->GetFirstChild()
-            output(i)=oNameText->GetNodeValue()
+            output[i]=oNameText->GetNodeValue()
         endif
     endfor
 endif

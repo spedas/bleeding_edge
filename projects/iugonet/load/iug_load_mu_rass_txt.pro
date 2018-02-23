@@ -33,8 +33,8 @@
 ; 
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
-; $LastChangedRevision: 24682 $
+; $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+; $LastChangedRevision: 24758 $
 ; $URL $
 ;-
 
@@ -175,7 +175,7 @@ for ii=0L,n_elements(parameters)-1 do begin
                data2 = fltarr(1,n_elements(data)-1)
                
               ;---Get date and time information:
-               u=strsplit(data(0),' ',/extract)
+               u=strsplit(data[0],' ',/extract)
                date=strsplit(u[0],'-',/extract)
                year = date[2]
                month = date[1]

@@ -27,8 +27,8 @@
 ;
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
-; $LastChangedRevision: 24404 $
+; $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+; $LastChangedRevision: 24758 $
 ; $URL $
 ;-
 
@@ -70,8 +70,8 @@ while min(e_tmp) ne 1e10 do begin
     aaa=where(e_tmp eq min(e_tmp))
     bbb=n_elements(aaa)
     rank=counter+(bbb-1)/2.0
-    h(aaa)=rank
-    e_tmp(aaa)=1e10
+    h[aaa]=rank
+    e_tmp[aaa]=1e10
     counter=counter+bbb
 endwhile
 

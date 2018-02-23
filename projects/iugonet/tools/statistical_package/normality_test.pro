@@ -29,8 +29,8 @@
 ;
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
-; $LastChangedRevision: 24404 $
+; $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+; $LastChangedRevision: 24758 $
 ; $URL $
 ;-
 
@@ -66,7 +66,7 @@ x_d=(x_max-x_min)/nK
 
 for j=0L,nK-2 do begin
     r1=where(c ge (x_min+x_d*j) and c lt (x_min+x_d*(j+1)))
-    if r1(0) ne -1 then begin
+    if r1[0] ne -1 then begin
         append_array,y,n_elements(r1)             ;Actually measured frequency
     endif else begin
         append_array,y,0

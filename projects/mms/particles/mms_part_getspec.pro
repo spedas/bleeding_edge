@@ -32,8 +32,8 @@
 ;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-02-21 14:48:27 -0800 (Wed, 21 Feb 2018) $
-;$LastChangedRevision: 24757 $
+;$LastChangedDate: 2018-02-22 11:35:31 -0800 (Thu, 22 Feb 2018) $
+;$LastChangedRevision: 24759 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -123,6 +123,9 @@ pro mms_part_getspec, probes=probes, $
       stop
     endif
     
+    ; prevents concatenation from previous calls
+    undefine, tplotnames
+    
     ; HPCA is required to be at the center of the accumulation interval
     if instrument eq 'hpca' and ~keyword_set(center_measurement) then center_measurement = 1
     
@@ -177,10 +180,10 @@ pro mms_part_getspec, probes=probes, $
             outputs=outputs, suffix=suffix, datagap=datagap, subtract_bulk=subtract_bulk, $
             tplotnames=tplotnames_thisprobe, subtract_error=subtract_error, $
             error_variable=error_variable, _extra=ex
-            
+
         if undefined(tplotnames_thisprobe) then continue ; nothing created by mms_part_products
         append_array, tplotnames, tplotnames_thisprobe
-        
+
         if keyword_set(add_ram_dir) then begin
             ; average the velocity data before adding to the plot
             avg_data, 'mms'+probes[probe_idx]+'_mec_v_gse', dir_interval

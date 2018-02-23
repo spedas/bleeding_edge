@@ -98,7 +98,7 @@ for i=0, n_elements(site_code)-1 do begin
   filestest=file_test(files)
 
   if(total(filestest) ge 1) then begin
-    files=files(where(filestest eq 1))
+    files=files[where(filestest eq 1)]
   
     ;=========================================
     ;=== Loop on reading meteor radar data ===
@@ -149,7 +149,7 @@ for i=0, n_elements(site_code)-1 do begin
         hour=fix(strmid(data,7,2))
         minute=fix(strmid(data,9,2))
         alt=fix(strmid(data,11,4))
-        ialt=(alt-fix(vdat(0)))/2
+        ialt=(alt-fix(vdat[0]))/2
         nowtime=hour+minute*0.5
         
         if (beftime ne -1) and (nowtime ne beftime) then begin
@@ -169,15 +169,15 @@ for i=0, n_elements(site_code)-1 do begin
         beftime=nowtime
       endwhile
 
-      uwind=uwind(0:itime-1, *)
-      vwind=vwind(0:itime-1, *)
-      uerr=uerr(0:itime-1, *)
-      verr=verr(0:itime-1, *)
-      nw=nw(0:itime-1, *)
-      adif1=adif1(0:itime-1, *)
-      adif2=adif2(0:itime-1, *)
-      adif3=adif3(0:itime-1, *)
-      timevec=timevec(0:itime-1)
+      uwind=uwind[0:itime-1, *]
+      vwind=vwind[0:itime-1, *]
+      uerr=uerr[0:itime-1, *]
+      verr=verr[0:itime-1, *]
+      nw=nw[0:itime-1, *]
+      adif1=adif1[0:itime-1, *]
+      adif2=adif2[0:itime-1, *]
+      adif3=adif3[0:itime-1, *]
+      timevec=timevec[0:itime-1]
 
       ;----- Append data -----;
       append_array, uwind_buf, uwind

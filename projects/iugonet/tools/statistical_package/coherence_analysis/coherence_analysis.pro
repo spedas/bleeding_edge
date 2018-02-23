@@ -31,19 +31,19 @@ print,'coherence confidence interval',g2
 
 max_cxy=0
 for i=0,n_elements(result.cxy)-1 do begin
-  if finite(result.cxy(i)) then begin 
-      if result.cxy(i) ge max_cxy then begin 
-          max_cxy=result.cxy(i)
+  if finite(result.cxy[i]) then begin 
+      if result.cxy[i] ge max_cxy then begin 
+          max_cxy=result.cxy[i]
       endif
   endif
 endfor
 
 print,'max coherence',max_cxy
-main_period=1/(deltat*result.f(where(result.cxy eq max_cxy)))
+main_period=1/(deltat*result.f[where(result.cxy eq max_cxy)])
 print,'main_period  [',deltat,'second]',main_period
 for i=0,n_elements(result.x)-1 do begin
-  if result.cxy(i) gt 0.7 then begin
-    print,'coh',result.cxy(i),'     period',1/(deltat*result.f(i)),'     phase',result.lag(i)*180/!pi
+  if result.cxy[i] gt 0.7 then begin
+    print,'coh',result.cxy[i],'     period',1/(deltat*result.f[i]),'     phase',result.lag[i]*180/!pi
   endif
 endfor
 

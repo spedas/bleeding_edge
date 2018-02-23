@@ -45,11 +45,12 @@
 ; A. Shinbori, 24/01/2014.
 ; A. Shinbori, 08/08/2017.
 ; A. Shinbori, 30/11/2017.
+; A. Shinbori, 16/02/2018.
 ;   
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
-; $LastChangedRevision: 24404 $
+; $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+; $LastChangedRevision: 24758 $
 ; $URL $
 ;-
 
@@ -117,55 +118,57 @@ unit_all = strsplit('m/s dB',' ', /extract)
 ;===================================================================
 jj=0L
 for ii=0L,n_elements(parameters)-1 do begin
-   for iii=0L,n_elements(parameters2)-1 do begin
-
-     ;==============================================================
-     ;Change time window associated with a time shift from UT to LT:
-     ;==============================================================
-      day_org = (time_org[1] - time_org[0])/86400.d
-      day_mod = day_org + 1
-      timespan, time_org[0] - 3600.0d * 7.0d, day_mod
-      if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) + 7.0d * 3600.0d); for GUI
+  
+  ;==============================================================
+  ;Change time window associated with a time shift from UT to LT:
+  ;==============================================================
+   day_org = (time_org[1] - time_org[0])/86400.d
+   day_mod = day_org + 1
+   timespan, time_org[0] - 3600.0d * 7.0d, day_mod
+   if keyword_set(trange) then trange[1] = time_string(time_double(trange[1]) + 7.0d * 3600.0d); for GUI
       
-      if ~size(fns,/type) then begin
-        ;****************************
-        ;Get files for ith component:
-        ;****************************
-         file_names = file_dailynames( $
-         file_format='YYYY/YYYYMMDD/'+$
-                     'YYYYMMDD',trange=trange,times=times,/unique)+'.fai'+parameters[ii]+'.'+parameters2[iii]+'.csv'
-        
-        ;===============================
-        ;Define FILE_RETRIEVE structure:
-        ;===============================
-         source = file_retrieve(/struct)
-         source.verbose=verbose
-         source.local_data_dir = root_data_dir() + 'iugonet/rish/misc/ktb/ear/fai/f_region/csv/'
-         source.remote_data_dir = 'http://www.rish.kyoto-u.ac.jp/ear/data-fai/data/csv/'
-         
-        ;=======================================================
-        ;Get files and local paths, and concatenate local paths:
-        ;=======================================================
-         local_paths = spd_download(remote_file=file_names, remote_path=source.remote_data_dir, local_path=source.local_data_dir, _extra=source, /last_version)
-         local_paths_all = ~(~size(local_paths_all,/type)) ? $
-                           [local_paths_all, local_paths] : local_paths
-         if ~(~size(local_paths_all,/type)) then local_paths=local_paths_all
-      endif else file_names=fns
+   if ~size(fns,/type) then begin
+     ;****************************
+     ;Get files for ith component:
+     ;****************************
+      file_names = file_dailynames( $
+                   file_format='YYYY/YYYYMMDD/'+$
+                   'YYYYMMDD',trange=trange,times=times,/unique)+'.fai'+parameters[ii]+'.csv.tar.gz'
+  
+     ;===============================
+     ;Define FILE_RETRIEVE structure:
+     ;===============================
+      source = file_retrieve(/struct)
+      source.verbose=verbose
+      source.local_data_dir = root_data_dir() + 'iugonet/rish/misc/ktb/ear/fai/f_region/csv/'
+      source.remote_data_dir = 'http://www.rish.kyoto-u.ac.jp/ear/data-fai/data/csv/'
+    
+     ;=======================================================
+     ;Get files and local paths, and concatenate local paths:
+     ;=======================================================
+      local_paths = spd_download(remote_file=file_names, remote_path=source.remote_data_dir, local_path=source.local_data_dir, _extra=source, /last_version)
+      local_paths_all = ~(~size(local_paths_all,/type)) ? $
+                        [local_paths_all, local_paths] : local_paths
+      if ~(~size(local_paths_all,/type)) then local_paths=local_paths_all
+   endif else file_names=fns
 
-     ;--- Load data into tplot variables
-      if (not keyword_set(downloadonly)) then downloadonly=0
+  ;--- Load data into tplot variables
+   if (not keyword_set(downloadonly)) then downloadonly=0
+  
+  
+   for iii=0L,n_elements(parameters2)-1 do begin   
 
       if (downloadonly eq 0) then begin
-         
+
         ;===================================================
         ;read data, and create tplot vars at each parameter:
         ;===================================================
         ;Read the files:
         ;===============
-      
-        ;---Definition of string variable:  
+   
+        ;Definition of string variable:
          s=''
-            
+         
         ;==============
         ;Loop on files: 
         ;==============
@@ -175,10 +178,14 @@ for ii=0L,n_elements(parameters)-1 do begin
             else begin
                dprint,'EAR file ',file,' not found. Skipping'
                continue
-            endelse
+            endelse  
             
-           ;---Open read file:   
-            openr,lun,file,/get_lun  
+           ;---Untar the donwloaded csv files:
+            file_untar, file
+           
+           ;---Open read file:
+            file2 = strmid(file,0,strlen(file)-10) + parameters2[iii]+'.csv'
+            openr,lun,file2,/get_lun 
             
            ;==========================
            ;Read information of range:
@@ -220,11 +227,11 @@ for ii=0L,n_elements(parameters)-1 do begin
                   data2 = fltarr(1,n_elements(data)-1)+!values.f_nan
                   
                  ;---Get date and time information:
-                  year = strmid(data(0),0,4)
-                  month = strmid(data(0),5,2)
-                  day = strmid(data(0),8,2)
-                  hour = strmid(data(0),11,2)
-                  minute = strmid(data(0),14,2)
+                  year = strmid(data[0],0,4)
+                  month = strmid(data[0],5,2)
+                  day = strmid(data[0],8,2)
+                  hour = strmid(data[0],11,2)
+                  minute = strmid(data[0],14,2)
                   
                  ;---Convert time from local time to unix time      
                   time = time_double(string(year)+'-'+string(month)+'-'+string(day)+'/'+hour+':'+minute) - 7.0d * 3600.0d
@@ -297,11 +304,9 @@ for ii=0L,n_elements(parameters)-1 do begin
            tdegap, 'iug_ear_fai'+parameters[ii]+'_'+parameters2[iii],/overwrite
          endif
       endif
-      jj=n_elements(local_paths)
      ;---Initialization of timespan for parameters-2:
       timespan, time_org
    endfor
-   jj=n_elements(local_paths)
   ;---Initialization of timespan for parameters-1:
    timespan, time_org
 endfor

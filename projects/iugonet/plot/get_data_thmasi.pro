@@ -122,8 +122,8 @@ if not is_thumb then begin  ;For asf
     center_glon=fltarr(nx, ny)
     for ix=0, nx-2 do begin
         for iy=0, ny-2 do begin
-            center_glat(ix, iy)=mean(corner_glat(ix:ix+1, iy:iy+1))
-            center_glon(ix, iy)=mean(corner_glon(ix:ix+1, iy:iy+1))
+            center_glat[ix, iy]=mean(corner_glat[ix:ix+1, iy:iy+1])
+            center_glon[ix, iy]=mean(corner_glon[ix:ix+1, iy:iy+1])
         endfor
     endfor
 endif else begin  ;For ast
@@ -135,8 +135,8 @@ endif else begin  ;For ast
     center_glat=fltarr(nx*ny)
     center_glon=fltarr(nx*ny)
     for ipxl=0L, nx*ny-1 do begin
-        center_glat(ipxl)=mean(corner_glat(*, ipxl))
-        center_glon(ipxl)=mean(corner_glon(*, ipxl))
+        center_glat[ipxl]=mean(corner_glat[*, ipxl])
+        center_glon[ipxl]=mean(corner_glon[*, ipxl])
     endfor
 endelse
 
@@ -212,7 +212,7 @@ for itime=0L, ntime-1 do begin
         mlt = aacgmmlt( yrs, yrsec, center_mlon ) 
         mlt = ( ( mlt + 24. ) mod 24. ) / 24.*360. ; [deg]
         igt=where(mlt gt 180., cnt)
-        if cnt gt 0 then mlt(igt) -= 360.
+        if cnt gt 0 then mlt[igt] -= 360.
         center_mlt_all[itime, *, *] =mlt
 
         ;----- corner mlt -----;
@@ -221,7 +221,7 @@ for itime=0L, ntime-1 do begin
         mlt = aacgmmlt( yrs, yrsec, corner_mlon ) 
         mlt = ( ( mlt + 24. ) mod 24. ) / 24.*360. ; [deg]
         igt=where(mlt gt 180., cnt)
-        if cnt gt 0 then mlt(igt) -= 360.
+        if cnt gt 0 then mlt[igt] -= 360.
         corner_mlt_all[itime, *, *] =mlt
     endif
 endfor

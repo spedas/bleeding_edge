@@ -109,7 +109,7 @@ for i=0,n_elements(site_code)-1 do begin
             ;----- Loop for params -----;
             tplot_name_all=tnames(prefix+'*_0')
 	    for itname=0, n_elements(tplot_name_all)-1 do begin
-	        tplot_name_tmp=tplot_name_all(itname)
+	        tplot_name_tmp=tplot_name_all[itname]
 
                 ;----- Get_data of tplot_name_tmp -----;
                 get_data, tplot_name_tmp, data=d, dl=dl, lim=lim 

@@ -36,8 +36,8 @@
 ;     
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
-; $LastChangedRevision: 24682 $
+; $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+; $LastChangedRevision: 24758 $
 ; $URL $
 ;-
 
@@ -229,11 +229,11 @@ for iii=0L,n_elements(parameters)-1 do begin
               ;---Insert data of zonal and meridional winds etc.
                if n eq 0 then begin
                   time_val3 = time
-                  zon_wind_data(0,idx)= data(0)
-                  mer_wind_data(0,idx)= data(1)
-                  zon_thermal_data(0,idx)= data(2)
-                  mer_thermal_data(0,idx)= data(3)
-                  meteor_num_data(0,idx)= data(4)
+                  zon_wind_data[0,idx]= data[0]
+                  mer_wind_data[0,idx]= data[1]
+                  zon_thermal_data[0,idx]= data[2]
+                  mer_thermal_data[0,idx]= data[3]
+                  meteor_num_data[0,idx]= data[4]
                endif
                time_diff=time-time_val
                if n eq 0 then time_diff=3600
@@ -257,18 +257,18 @@ for iii=0L,n_elements(parameters)-1 do begin
                   endif
                   n=n+1
                   for i=0, arr_num-1 do begin
-                     zon_wind_data(0,i)=!values.f_nan
-                     mer_wind_data(0,i)=!values.f_nan
-                     zon_thermal_data(0,i)=!values.f_nan
-                     mer_thermal_data(0,i)=!values.f_nan
-                     meteor_num_data(0,i)=!values.f_nan 
+                     zon_wind_data[0,i]=!values.f_nan
+                     mer_wind_data[0,i]=!values.f_nan
+                     zon_thermal_data[0,i]=!values.f_nan
+                     mer_thermal_data[0,i]=!values.f_nan
+                     meteor_num_data[0,i]=!values.f_nan 
                   endfor 
                endif                
-               zon_wind_data(0,idx)= data(0)
-               mer_wind_data(0,idx)= data(1)
-               zon_thermal_data(0,idx)= data(2)
-               mer_thermal_data(0,idx)= data(3)
-               meteor_num_data(0,idx)= data(4)            
+               zon_wind_data[0,idx]= data[0]
+               mer_wind_data[0,idx]= data[1]
+               zon_thermal_data[0,idx]= data[2]
+               mer_thermal_data[0,idx]= data[3]
+               meteor_num_data[0,idx]= data[4]            
             endif           
          endwhile 
          free_lun,lun

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Feb 21 18:16:22 2018.<P>
+<STRONG>Last modified: </STRONG>Thu Feb 22 18:16:26 2018.<P>
  
 <HR>
  
@@ -27,6 +27,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#IUG_CRIB_EAR">IUG_CRIB_EAR</A>
 <LI><A HREF="#IUG_CRIB_EISCAT">IUG_CRIB_EISCAT</A>
 <LI><A HREF="#IUG_CRIB_EISCAT_VIEF">IUG_CRIB_EISCAT_VIEF</A>
+<LI><A HREF="#IUG_CRIB_GMAG_ICSWSE">IUG_CRIB_GMAG_ICSWSE</A>
 <LI><A HREF="#IUG_CRIB_GMAG_NIPR">IUG_CRIB_GMAG_NIPR</A>
 <LI><A HREF="#IUG_CRIB_GMAG_NIPR_INDUCTION">IUG_CRIB_GMAG_NIPR_INDUCTION</A>
 <LI><A HREF="#IUG_CRIB_GMAG_SERC">IUG_CRIB_GMAG_SERC</A>
@@ -206,7 +207,7 @@ Last Updated:  A. Shinbori,  Decq 02, 2011
 <A NAME="IUG_CRIB_EISCAT_VIEF">
 <H2>IUG_CRIB_EISCAT_VIEF</H2></A>
 <A HREF="#IUG_CRIB_EISCAT">[Previous Routine]</A>
-<A HREF="#IUG_CRIB_GMAG_NIPR">[Next Routine]</A>
+<A HREF="#IUG_CRIB_GMAG_ICSWSE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE: IUG_CRIB_EISCAT_VIEF
@@ -226,9 +227,34 @@ Last Updated:  A. Shinbori,  Decq 02, 2011
 <STRONG>(See <A href="examples/iug_crib_eiscat_vief.pro">projects/iugonet/examples/iug_crib_eiscat_vief.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="IUG_CRIB_GMAG_ICSWSE">
+<H2>IUG_CRIB_GMAG_ICSWSE</H2></A>
+<A HREF="#IUG_CRIB_EISCAT_VIEF">[Previous Routine]</A>
+<A HREF="#IUG_CRIB_GMAG_NIPR">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROGRAM: iug_crib_gmag_icswse
+   This is an example crib sheet that will load the MAGDAS magnetometer data
+   released by International Center for Space Weather Science and Education(ICSWSE)
+   , Kyushu University, Japan. 
+   Open this file in a text editor and then use copy and paste to copy
+   selected lines into an idl window. Or alternatively compile and run
+   using the command:
+     .RUN IUG_CRIB_GMAG_ICSWSE
+
+ NOTE: For more information about MAGDAS and its rules of the road, see:
+       http://data.icswse.kyushu-u.ac.jp/
+ Written by: Shuji Abe,  Feb. 03, 2018
+             International Center for Space Weather Science and Education, Kyushu University, Japan 
+             abeshu _at_ icswse.kyushu-u.ac.jp
+
+</PRE><P>
+<STRONG>(See <A href="examples/iug_crib_gmag_icswse.pro">projects/iugonet/examples/iug_crib_gmag_icswse.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="IUG_CRIB_GMAG_NIPR">
 <H2>IUG_CRIB_GMAG_NIPR</H2></A>
-<A HREF="#IUG_CRIB_EISCAT_VIEF">[Previous Routine]</A>
+<A HREF="#IUG_CRIB_GMAG_ICSWSE">[Previous Routine]</A>
 <A HREF="#IUG_CRIB_GMAG_NIPR_INDUCTION">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

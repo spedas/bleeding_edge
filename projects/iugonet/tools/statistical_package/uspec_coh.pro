@@ -35,8 +35,8 @@
 ;
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
-; $LastChangedRevision: 24404 $
+; $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+; $LastChangedRevision: 24758 $
 ; $URL $
 ;-
 
@@ -98,8 +98,8 @@ print,'main_period = '+strtrim(string(main_period*deltat),2)
 print,'--------------------------------------------------------------------'
 
 for i=0L,n_elements(result.x)-1 do begin
-  if result.cxy(i) gt 0.7 then begin
- ;   print,'coh',result.cxy(i),'     period',1/(deltat*result.f(i)),'     phase',result.lag(i)*180/!pi
+  if result.cxy[i] gt 0.7 then begin
+ ;   print,'coh',result.cxy[i],'     period',1/(deltat*result.f[i]),'     phase',result.lag[i]*180/!pi
   endif
 endfor
 

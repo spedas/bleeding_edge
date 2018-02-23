@@ -59,6 +59,76 @@ case instrument of
     end
     'geomagnetic_field_fluxgate': begin
         case datatype of
+            'icswse': begin
+                case site_or_param of 
+                    'aab': iug_var = !iugonet.data_policy.gmag_icswse_aab
+                    'abj': iug_var = !iugonet.data_policy.gmag_icswse_abj
+                    'abu': iug_var = !iugonet.data_policy.gmag_icswse_abu
+                    'ama': iug_var = !iugonet.data_policy.gmag_icswse_ama
+                    'anc': iug_var = !iugonet.data_policy.gmag_icswse_anc
+                    'asb': iug_var = !iugonet.data_policy.gmag_icswse_asb
+                    'asw': iug_var = !iugonet.data_policy.gmag_icswse_asw
+                    'bcl': iug_var = !iugonet.data_policy.gmag_icswse_bcl
+                    'bik': iug_var = !iugonet.data_policy.gmag_icswse_bik
+                    'bkl': iug_var = !iugonet.data_policy.gmag_icswse_bkl
+                    'can': iug_var = !iugonet.data_policy.gmag_icswse_can
+                    'cdo': iug_var = !iugonet.data_policy.gmag_icswse_cdo
+                    'ceb': iug_var = !iugonet.data_policy.gmag_icswse_ceb
+                    'cgr': iug_var = !iugonet.data_policy.gmag_icswse_cgr
+                    'chd': iug_var = !iugonet.data_policy.gmag_icswse_chd
+                    'ckt': iug_var = !iugonet.data_policy.gmag_icswse_ckt
+                    'cmd': iug_var = !iugonet.data_policy.gmag_icswse_cmd
+                    'dav': iug_var = !iugonet.data_policy.gmag_icswse_dav
+                    'daw': iug_var = !iugonet.data_policy.gmag_icswse_daw
+                    'des': iug_var = !iugonet.data_policy.gmag_icswse_des
+                    'drb': iug_var = !iugonet.data_policy.gmag_icswse_drb
+                    'dvs': iug_var = !iugonet.data_policy.gmag_icswse_dvs
+                    'eus': iug_var = !iugonet.data_policy.gmag_icswse_eus
+                    'ewa': iug_var = !iugonet.data_policy.gmag_icswse_ewa
+                    'fym': iug_var = !iugonet.data_policy.gmag_icswse_fym
+                    'gsi': iug_var = !iugonet.data_policy.gmag_icswse_gsi
+                    'her': iug_var = !iugonet.data_policy.gmag_icswse_her
+                    'hln': iug_var = !iugonet.data_policy.gmag_icswse_hln
+                    'hob': iug_var = !iugonet.data_policy.gmag_icswse_hob
+                    'hvd': iug_var = !iugonet.data_policy.gmag_icswse_hvd
+                    'ica': iug_var = !iugonet.data_policy.gmag_icswse_ica
+                    'ilr': iug_var = !iugonet.data_policy.gmag_icswse_ilr
+                    'jrs': iug_var = !iugonet.data_policy.gmag_icswse_jrs
+                    'jyp': iug_var = !iugonet.data_policy.gmag_icswse_jyp
+                    'kpg': iug_var = !iugonet.data_policy.gmag_icswse_kpg
+                    'krt': iug_var = !iugonet.data_policy.gmag_icswse_krt
+                    'ktn': iug_var = !iugonet.data_policy.gmag_icswse_ktn
+                    'kuj': iug_var = !iugonet.data_policy.gmag_icswse_kuj
+                    'lag': iug_var = !iugonet.data_policy.gmag_icswse_lag
+                    'laq': iug_var = !iugonet.data_policy.gmag_icswse_laq
+                    'lgz': iug_var = !iugonet.data_policy.gmag_icswse_lgz
+                    'lkw': iug_var = !iugonet.data_policy.gmag_icswse_lkw
+                    'lsk': iug_var = !iugonet.data_policy.gmag_icswse_lsk
+                    'lwa': iug_var = !iugonet.data_policy.gmag_icswse_lwa
+                    'mcq': iug_var = !iugonet.data_policy.gmag_icswse_mcq
+                    'mgd': iug_var = !iugonet.data_policy.gmag_icswse_mgd
+                    'mlb': iug_var = !iugonet.data_policy.gmag_icswse_mlb
+                    'mnd': iug_var = !iugonet.data_policy.gmag_icswse_mnd
+                    'mut': iug_var = !iugonet.data_policy.gmag_icswse_mut
+                    'nab': iug_var = !iugonet.data_policy.gmag_icswse_nab
+                    'onw': iug_var = !iugonet.data_policy.gmag_icswse_onw
+                    'prp': iug_var = !iugonet.data_policy.gmag_icswse_prp
+                    'ptk': iug_var = !iugonet.data_policy.gmag_icswse_ptk
+                    'ptn': iug_var = !iugonet.data_policy.gmag_icswse_ptn
+                    'roc': iug_var = !iugonet.data_policy.gmag_icswse_roc
+                    'sbh': iug_var = !iugonet.data_policy.gmag_icswse_sbh
+                    'scn': iug_var = !iugonet.data_policy.gmag_icswse_scn
+                    'sma': iug_var = !iugonet.data_policy.gmag_icswse_sma
+                    'tgg': iug_var = !iugonet.data_policy.gmag_icswse_tgg
+                    'tik': iug_var = !iugonet.data_policy.gmag_icswse_tik
+                    'tir': iug_var = !iugonet.data_policy.gmag_icswse_tir
+                    'twv': iug_var = !iugonet.data_policy.gmag_icswse_twv
+                    'wad': iug_var = !iugonet.data_policy.gmag_icswse_wad
+                    'yak': iug_var = !iugonet.data_policy.gmag_icswse_yak
+                    'yap': iug_var = !iugonet.data_policy.gmag_icswse_yap
+                    'zgn': iug_var = !iugonet.data_policy.gmag_icswse_zgn
+                endcase
+            end
             'magdas#': begin
                 case site_or_param of 
                     'ama': iug_var = !iugonet.data_policy.gmag_magdas_ama
@@ -262,6 +332,76 @@ endif else begin
             end
             'geomagnetic_field_fluxgate': begin
                 case datatype of
+                    'icswse': begin
+                        case site_or_param of 
+                            'aab': !iugonet.data_policy.gmag_icswse_aab = iug_var
+                            'abj': !iugonet.data_policy.gmag_icswse_abj = iug_var
+                            'abu': !iugonet.data_policy.gmag_icswse_abu = iug_var
+                            'ama': !iugonet.data_policy.gmag_icswse_ama = iug_var
+                            'anc': !iugonet.data_policy.gmag_icswse_anc = iug_var
+                            'asb': !iugonet.data_policy.gmag_icswse_asb = iug_var
+                            'asw': !iugonet.data_policy.gmag_icswse_asw = iug_var
+                            'bcl': !iugonet.data_policy.gmag_icswse_bcl = iug_var
+                            'bik': !iugonet.data_policy.gmag_icswse_bik = iug_var
+                            'bkl': !iugonet.data_policy.gmag_icswse_bkl = iug_var
+                            'can': !iugonet.data_policy.gmag_icswse_can = iug_var
+                            'cdo': !iugonet.data_policy.gmag_icswse_cdo = iug_var
+                            'ceb': !iugonet.data_policy.gmag_icswse_ceb = iug_var
+                            'cgr': !iugonet.data_policy.gmag_icswse_cgr = iug_var
+                            'chd': !iugonet.data_policy.gmag_icswse_chd = iug_var
+                            'ckt': !iugonet.data_policy.gmag_icswse_ckt = iug_var
+                            'cmd': !iugonet.data_policy.gmag_icswse_cmd = iug_var
+                            'dav': !iugonet.data_policy.gmag_icswse_dav = iug_var
+                            'daw': !iugonet.data_policy.gmag_icswse_daw = iug_var
+                            'des': !iugonet.data_policy.gmag_icswse_des = iug_var
+                            'drb': !iugonet.data_policy.gmag_icswse_drb = iug_var
+                            'dvs': !iugonet.data_policy.gmag_icswse_dvs = iug_var
+                            'eus': !iugonet.data_policy.gmag_icswse_eus = iug_var
+                            'ewa': !iugonet.data_policy.gmag_icswse_ewa = iug_var
+                            'fym': !iugonet.data_policy.gmag_icswse_fym = iug_var
+                            'gsi': !iugonet.data_policy.gmag_icswse_gsi = iug_var
+                            'her': !iugonet.data_policy.gmag_icswse_her = iug_var
+                            'hln': !iugonet.data_policy.gmag_icswse_hln = iug_var
+                            'hob': !iugonet.data_policy.gmag_icswse_hob = iug_var
+                            'hvd': !iugonet.data_policy.gmag_icswse_hvd = iug_var
+                            'ica': !iugonet.data_policy.gmag_icswse_ica = iug_var
+                            'ilr': !iugonet.data_policy.gmag_icswse_ilr = iug_var
+                            'jrs': !iugonet.data_policy.gmag_icswse_jrs = iug_var
+                            'jyp': !iugonet.data_policy.gmag_icswse_jyp = iug_var
+                            'kpg': !iugonet.data_policy.gmag_icswse_kpg = iug_var
+                            'krt': !iugonet.data_policy.gmag_icswse_krt = iug_var
+                            'ktn': !iugonet.data_policy.gmag_icswse_ktn = iug_var
+                            'kuj': !iugonet.data_policy.gmag_icswse_kuj = iug_var
+                            'lag': !iugonet.data_policy.gmag_icswse_lag = iug_var
+                            'laq': !iugonet.data_policy.gmag_icswse_laq = iug_var
+                            'lgz': !iugonet.data_policy.gmag_icswse_lgz = iug_var
+                            'lkw': !iugonet.data_policy.gmag_icswse_lkw = iug_var
+                            'lsk': !iugonet.data_policy.gmag_icswse_lsk = iug_var
+                            'lwa': !iugonet.data_policy.gmag_icswse_lwa = iug_var
+                            'mcq': !iugonet.data_policy.gmag_icswse_mcq = iug_var
+                            'mgd': !iugonet.data_policy.gmag_icswse_mgd = iug_var
+                            'mlb': !iugonet.data_policy.gmag_icswse_mlb = iug_var
+                            'mnd': !iugonet.data_policy.gmag_icswse_mnd = iug_var
+                            'mut': !iugonet.data_policy.gmag_icswse_mut = iug_var
+                            'nab': !iugonet.data_policy.gmag_icswse_nab = iug_var
+                            'onw': !iugonet.data_policy.gmag_icswse_onw = iug_var
+                            'prp': !iugonet.data_policy.gmag_icswse_prp = iug_var
+                            'ptk': !iugonet.data_policy.gmag_icswse_ptk = iug_var
+                            'ptn': !iugonet.data_policy.gmag_icswse_ptn = iug_var
+                            'roc': !iugonet.data_policy.gmag_icswse_roc = iug_var
+                            'sbh': !iugonet.data_policy.gmag_icswse_sbh = iug_var
+                            'scn': !iugonet.data_policy.gmag_icswse_scn = iug_var
+                            'sma': !iugonet.data_policy.gmag_icswse_sma = iug_var
+                            'tgg': !iugonet.data_policy.gmag_icswse_tgg = iug_var
+                            'tik': !iugonet.data_policy.gmag_icswse_tik = iug_var
+                            'tir': !iugonet.data_policy.gmag_icswse_tir = iug_var
+                            'twv': !iugonet.data_policy.gmag_icswse_twv = iug_var
+                            'wad': !iugonet.data_policy.gmag_icswse_wad = iug_var
+                            'yak': !iugonet.data_policy.gmag_icswse_yak = iug_var
+                            'yap': !iugonet.data_policy.gmag_icswse_yap = iug_var
+                            'zgn': !iugonet.data_policy.gmag_icswse_zgn = iug_var
+                        endcase
+                    end
                     'magdas#': begin
                         case site_or_param of 
                             'ama': !iugonet.data_policy.gmag_magdas_ama = iug_var

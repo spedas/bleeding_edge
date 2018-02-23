@@ -34,8 +34,8 @@
 ;
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
-; $LastChangedRevision: 24404 $
+; $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+; $LastChangedRevision: 24758 $
 ; $URL $
 ;-
 
@@ -73,9 +73,9 @@ x_cor=dblarr(high_lag-low_lag+1)
 y_cor=dblarr(high_lag-low_lag+1)
 
 for i=low_lag,high_lag do begin
-   cross_cor(i-low_lag)=C_CORRELATE(x1,y1,i)
-   x_cor(i-low_lag)=A_CORRELATE(x1,i)
-   y_cor(i-low_lag)=A_CORRELATE(y1,i)
+   cross_cor[i-low_lag]=C_CORRELATE(x1,y1,i)
+   x_cor[i-low_lag]=A_CORRELATE(x1,i)
+   y_cor[i-low_lag]=A_CORRELATE(y1,i)
 endfor
 
 ;Calculate statistical test values:

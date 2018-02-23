@@ -41,8 +41,8 @@
 ;  
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
-; $LastChangedRevision: 24682 $
+; $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+; $LastChangedRevision: 24758 $
 ; $URL $
 ;-
 
@@ -204,11 +204,11 @@ for iii=0L,n_elements(parameters)-1 do begin
                 data = strsplit(s,',',/extract)
          
               ;---Get date and time information:
-               year = strmid(data(0),0,4)
-               month = strmid(data(0),5,2)
-               day = strmid(data(0),8,2)
-               hour = strmid(data(0),11,2)
-               minute = strmid(data(0),14,2)  
+               year = strmid(data[0],0,4)
+               month = strmid(data[0],5,2)
+               day = strmid(data[0],8,2)
+               hour = strmid(data[0],11,2)
+               minute = strmid(data[0],14,2)  
                   
               ;---Convert time from local time to universal time 
                ltr_time = time_double(string(year)+'-'+string(month)+'-'+string(day)+'/'+hour+':'+minute) - double(9) * 3600.0d

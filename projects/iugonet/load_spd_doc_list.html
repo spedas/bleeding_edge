@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Feb 21 18:16:22 2018.<P>
+<STRONG>Last modified: </STRONG>Thu Feb 22 18:16:26 2018.<P>
  
 <HR>
  
@@ -66,6 +66,8 @@ This page was created by the IDL library routine
 <br>loads the EISCAT radar data.
 <LI><A HREF="#IUG_LOAD_EISCAT_VIEF">IUG_LOAD_EISCAT_VIEF</A>
 <br>loads the EISCAT vector Vi and E field data.
+<LI><A HREF="#IUG_LOAD_GMAG_ICSWSE_IAGA">IUG_LOAD_GMAG_ICSWSE_IAGA</A>
+<br>This procedure allows you to download and plot 1-second and 1-minute magnetometer data
 <LI><A HREF="#IUG_LOAD_GMAG_ISEE_FLUXGATE">IUG_LOAD_GMAG_ISEE_FLUXGATE</A>
 <LI><A HREF="#IUG_LOAD_GMAG_ISEE_INDUCTION">IUG_LOAD_GMAG_ISEE_INDUCTION</A>
 <br>To load ISEE induction magnetometer data from the ISEE ERG-SC site
@@ -104,6 +106,10 @@ IUG_LOAD_GMAG_WDC_RELPATH_TO_YEAR</A>
 <LI><A HREF="#IUG_LOAD_IPRT">IUG_LOAD_IPRT</A>
 <LI><A HREF="#IUG_LOAD_IRIO_NIPR">IUG_LOAD_IRIO_NIPR</A>
 <br>Loads the imaging riometer data obtained by NIPR.
+<LI><A HREF="#IUG_LOAD_ISEE_BRIO">IUG_LOAD_ISEE_BRIO</A>
+<br>Loads the broadbeam riometer data obtained from ISEE riometer network.
+<LI><A HREF="#IUG_LOAD_ISEE_VLF">IUG_LOAD_ISEE_VLF</A>
+<br>To load VLF spectrum data obtained by ISEE ELF/VLF network from the ISEE ERG-SC site
 <LI><A HREF="#IUG_LOAD_KYUSHUGCM">IUG_LOAD_KYUSHUGCM</A>
 <br>Loads the Kyushu GCM simulation data.
 <LI><A HREF="#IUG_LOAD_LFRTO">IUG_LOAD_LFRTO</A>
@@ -620,8 +626,8 @@ MODIFICATIONS:
    
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
- $LastChangedRevision: 24404 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_blr_rish.pro">projects/iugonet/load/iug_load_blr_rish.pro</A>)</STRONG><P>
@@ -850,11 +856,12 @@ MODIFICATIONS:
  A. Shinbori, 24/01/2014.
  A. Shinbori, 08/08/2017.
  A. Shinbori, 30/11/2017.
+ A. Shinbori, 16/02/2018.
   
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
- $LastChangedRevision: 24404 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_ear_iono_efr_txt.pro">projects/iugonet/load/iug_load_ear_iono_efr_txt.pro</A>)</STRONG><P>
@@ -969,11 +976,12 @@ MODIFICATIONS:
  A. Shinbori, 24/01/2014.
  A. Shinbori, 08/08/2017.
  A. Shinbori, 30/11/2017.
-   
+ A. Shinbori, 16/02/2018.
+    
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
- $LastChangedRevision: 24404 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_ear_iono_er_txt.pro">projects/iugonet/load/iug_load_ear_iono_er_txt.pro</A>)</STRONG><P>
@@ -1089,11 +1097,12 @@ MODIFICATIONS:
  A. Shinbori, 24/01/2014.
  A. Shinbori, 08/08/2017.
  A. Shinbori, 30/11/2017.
+ A. Shinbori, 16/02/2018.
    
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
- $LastChangedRevision: 24404 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_ear_iono_fr_txt.pro">projects/iugonet/load/iug_load_ear_iono_fr_txt.pro</A>)</STRONG><P>
@@ -1208,11 +1217,12 @@ MODIFICATIONS:
  A. Shinbori, 24/01/2014.
  A. Shinbori, 08/08/2017.
  A. Shinbori, 29/11/2017.
-  
+ A. Shinbori, 16/02/2018.
+   
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
- $LastChangedRevision: 24404 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_ear_iono_vr_txt.pro">projects/iugonet/load/iug_load_ear_iono_vr_txt.pro</A>)</STRONG><P>
@@ -1312,8 +1322,8 @@ MODIFICATIONS:
    
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
- $LastChangedRevision: 24404 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_ear_trop_txt.pro">projects/iugonet/load/iug_load_ear_trop_txt.pro</A>)</STRONG><P>
@@ -1377,7 +1387,7 @@ ACKNOWLEDGEMENT:
 <A NAME="IUG_LOAD_EISCAT_VIEF">
 <H2>IUG_LOAD_EISCAT_VIEF</H2></A>
 <A HREF="#IUG_LOAD_EISCAT">[Previous Routine]</A>
-<A HREF="#IUG_LOAD_GMAG_ISEE_FLUXGATE">[Next Routine]</A>
+<A HREF="#IUG_LOAD_GMAG_ICSWSE_IAGA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE: IUG_LOAD_EISCAT_VIEF
@@ -1420,9 +1430,62 @@ ACKNOWLEDGEMENT:
 <STRONG>(See <A href="load/iug_load_eiscat_vief.pro">projects/iugonet/load/iug_load_eiscat_vief.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="IUG_LOAD_GMAG_ICSWSE_IAGA">
+<H2>IUG_LOAD_GMAG_ICSWSE_IAGA</H2></A>
+<A HREF="#IUG_LOAD_EISCAT_VIEF">[Previous Routine]</A>
+<A HREF="#IUG_LOAD_GMAG_ISEE_FLUXGATE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE: IUG_LOAD_GMAG_ICSWSE_IAGA,
+  iug_load_gmag_icswse_iaga, site = site, resolution = resolution, $
+                      trange = trange, verbose = verbose, $
+                      downloadonly = downloadonly, no_download = no_download, $
+                      no_server = no_server
+PURPOSE:
+  This procedure allows you to download and plot 1-second and 1-minute magnetometer data
+  produced by International Center for Space Weather Science and Education, Kyushu University, Japan,
+  written in IAGA 2002 data exchange format.
+
+KEYWORDS:
+  site  = Observatory name.  For example, iugo_load_gmag_icswse_iaga, site = 'aae'.
+          The default is 'all', i.e., load all available stations.
+  resolution = Time resolution. '1sec' for 1 second data, and '1min' for 1 minute data.
+             The default is 'all'.
+  trange = (Optional) Time range of interest  (2 element array), if
+          this is not set, the default is to prompt the user. Note
+          that if the input time range is not a full day, a full
+          day's data is loaded.
+  /verbose, if set, then output some useful info
+  /downloadonly, if set, then only download the data, do not load it
+                 into variables.
+  /no_server, use only files which are online locally.
+  /no_download, use only files which are online locally. (Identical to no_server keyword.)
+
+EXAMPLE:
+  iug_load_gmag_icswse_iaga, site = 'aae', trange = ['2007-01-22/00:00:00','2007-01-24/00:00:00']
+
+CODE:
+  Shuji Abe
+
+CHANGELOG:
+  08-April-2015, abeshu, initial release
+  07-February-2018, abeshu, update for official release
+  17-February-2018, abeshu, modified header reading
+
+ACKNOWLEDGMENT:
+
+
+ $LastChangedBy: nikos $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/iugonet/load/iug_load_gmag_icswse_iaga.pro $
+</PRE><P>
+<STRONG>(See <A href="load/iug_load_gmag_icswse_iaga.pro">projects/iugonet/load/iug_load_gmag_icswse_iaga.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="IUG_LOAD_GMAG_ISEE_FLUXGATE">
 <H2>IUG_LOAD_GMAG_ISEE_FLUXGATE</H2></A>
-<A HREF="#IUG_LOAD_EISCAT_VIEF">[Previous Routine]</A>
+<A HREF="#IUG_LOAD_GMAG_ICSWSE_IAGA">[Previous Routine]</A>
 <A HREF="#IUG_LOAD_GMAG_ISEE_INDUCTION">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -2410,7 +2473,7 @@ Acknowledgment:
 <A NAME="IUG_LOAD_IRIO_NIPR">
 <H2>IUG_LOAD_IRIO_NIPR</H2></A>
 <A HREF="#IUG_LOAD_IPRT">[Previous Routine]</A>
-<A HREF="#IUG_LOAD_KYUSHUGCM">[Next Routine]</A>
+<A HREF="#IUG_LOAD_ISEE_BRIO">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE: IUG_LOAD_IRIO_NIPR
@@ -2447,9 +2510,106 @@ Acknowledgment:
 <STRONG>(See <A href="load/iug_load_irio_nipr.pro">projects/iugonet/load/iug_load_irio_nipr.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="IUG_LOAD_ISEE_BRIO">
+<H2>IUG_LOAD_ISEE_BRIO</H2></A>
+<A HREF="#IUG_LOAD_IRIO_NIPR">[Previous Routine]</A>
+<A HREF="#IUG_LOAD_ISEE_VLF">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE: IUG_LOAD_ISEE_BRIO
+
+ PURPOSE:
+   Loads the broadbeam riometer data obtained from ISEE riometer network.
+
+ NOTE: This procedure is a simple alias to &quot;erg_load_isee_brio&quot;
+   and calls the original one by just providing the same
+   arguments/keywords given.
+   Some load procedures for the ground-based observational data
+   in the  ERG mission, named &quot;erg_load_???&quot;, can be also called
+   by &quot;iug_load_???&quot;, because these data are related to the both
+   ERG and IUGONET projects.
+   For more information, see http://www.iugonet.org/
+                         and https://ergsc.isee.nagoya-u.ac.jp/index.shtml.en
+   See the rules of the road.
+
+ KEYWORDS:
+   site  = Observatory name, example, iug_load_brio_isee, site='',
+           the default is 'all', i.e., load all available stations.
+           This can be an array of strings, e.g., ['ath', 'hus']
+           or a single string delimited by spaces, e.g., 'ath hus'.
+           Available sites as of July, 2017 : ath, kap, gak, hus
+   trange = (Optional) Time range of interest  (2 element array).
+   /verbose: set to output some useful info
+   /downloadonly: if set, then only download the data, do not load it
+           into variables.
+   /no_download: use only files which are online locally.
+
+ EXAMPLE:
+   iug_load_isee_brio, site='ath', $
+                 trange=['2017-03-20/00:00:00','2017-03-21/00:00:00']
+
+ Written by: Y.-M Tanaka, Dec. 1, 2017 (ytanaka at nipr.ac.jp)
+
+</PRE><P>
+<STRONG>(See <A href="load/iug_load_isee_brio.pro">projects/iugonet/load/iug_load_isee_brio.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="IUG_LOAD_ISEE_VLF">
+<H2>IUG_LOAD_ISEE_VLF</H2></A>
+<A HREF="#IUG_LOAD_ISEE_BRIO">[Previous Routine]</A>
+<A HREF="#IUG_LOAD_KYUSHUGCM">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE: IUG_LOAD_ISEE_VLF
+
+ PURPOSE:
+   To load VLF spectrum data obtained by ISEE ELF/VLF network from the ISEE ERG-SC site
+
+ NOTE: This procedure is a simple alias to &quot;erg_load_isee_vlf&quot;
+   and calls the original one by just providing the same
+   arguments/keywords given.
+   Some load procedures for the ground-based observational data
+   in the  ERG mission, named &quot;erg_load_???&quot;, can be also called
+   by &quot;iug_load_???&quot;, because these data are related to the both
+   ERG and IUGONET projects.
+   For more information, see http://www.iugonet.org/
+                         and https://ergsc.isee.nagoya-u.ac.jp/index.shtml.en
+   See the rules of the road.
+   For more information, see http://stdb2.isee.nagoya-u.ac.jp/vlf/
+
+ KEYWORDS:
+   site  = Observatory name, example, iug_load_isee_vlf, site='ath',
+           the default is 'all', i.e., load all available stations.
+           This can be an array of strings, e.g., ['ath', 'kap']
+           or a single string delimited by spaces, e.g., 'ath kap'.
+           Available sites as of July, 2017 : ath, kap
+   downloadonly : if set, then only download the data, do not load it into variables.
+   no_server : use only files which are online locally.
+   no_download : use only files which are online locally. (Identical to no_server keyword.)
+   trange : Time range of interest  (2 element array).
+   timeclip :  if set, then data are time clipped.
+
+   cal_gain : if set, frequency-dependent gain of the antenna system is calibrated.
+              The unit of gain G(f) is V/T, and calibrated spectral power P(f)
+              at frequecy f is computed as
+
+               P(f) = S(f)/ (G(f)^2) [nT^2/Hz],
+
+              where S(f) is uncaibrated spectral power in unit of V^2/Hz.
+
+ EXAMPLE:
+   iug_load_isee_vlf, site='ath', $
+         trange=['2015-03-17/00:00:00','2015-03-17/02:00:00']
+
+ Written by: Y.-M Tanaka, Dec. 1, 2017 (ytanaka at nipr.ac.jp)
+
+</PRE><P>
+<STRONG>(See <A href="load/iug_load_isee_vlf.pro">projects/iugonet/load/iug_load_isee_vlf.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="IUG_LOAD_KYUSHUGCM">
 <H2>IUG_LOAD_KYUSHUGCM</H2></A>
-<A HREF="#IUG_LOAD_IRIO_NIPR">[Previous Routine]</A>
+<A HREF="#IUG_LOAD_ISEE_VLF">[Previous Routine]</A>
 <A HREF="#IUG_LOAD_LFRTO">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -2616,8 +2776,8 @@ MODIFICATIONS:
   
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
- $LastChangedRevision: 24682 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_ltr_rish.pro">projects/iugonet/load/iug_load_ltr_rish.pro</A>)</STRONG><P>
@@ -2712,8 +2872,8 @@ MODIFICATIONS:
  
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
- $LastChangedRevision: 24682 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_meteor_bik_txt.pro">projects/iugonet/load/iug_load_meteor_bik_txt.pro</A>)</STRONG><P>
@@ -2824,8 +2984,8 @@ MODIFICATIONS:
    
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
- $LastChangedRevision: 24682 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_meteor_ktb_txt.pro">projects/iugonet/load/iug_load_meteor_ktb_txt.pro</A>)</STRONG><P>
@@ -3013,8 +3173,8 @@ MODIFICATIONS:
      
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
- $LastChangedRevision: 24682 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_meteor_sgk_txt.pro">projects/iugonet/load/iug_load_meteor_sgk_txt.pro</A>)</STRONG><P>
@@ -3129,8 +3289,8 @@ MODIFICATIONS:
   
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
- $LastChangedRevision: 24682 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_meteor_srp_txt.pro">projects/iugonet/load/iug_load_meteor_srp_txt.pro</A>)</STRONG><P>
@@ -3509,8 +3669,8 @@ MODIFICATIONS:
   
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
- $LastChangedRevision: 24682 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_mu_fai_txt.pro">projects/iugonet/load/iug_load_mu_fai_txt.pro</A>)</STRONG><P>
@@ -3942,8 +4102,8 @@ MODIFICATIONS:
  
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
- $LastChangedRevision: 24682 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_mu_meso_txt.pro">projects/iugonet/load/iug_load_mu_meso_txt.pro</A>)</STRONG><P>
@@ -4043,8 +4203,8 @@ MODIFICATIONS:
  
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
- $LastChangedRevision: 24682 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_mu_meso_wind_txt.pro">projects/iugonet/load/iug_load_mu_meso_wind_txt.pro</A>)</STRONG><P>
@@ -4150,8 +4310,8 @@ MODIFICATIONS:
  
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
- $LastChangedRevision: 24682 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_mu_meteor_txt.pro">projects/iugonet/load/iug_load_mu_meteor_txt.pro</A>)</STRONG><P>
@@ -4197,8 +4357,8 @@ MODIFICATIONS:
  
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
- $LastChangedRevision: 24682 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_mu_rass_txt.pro">projects/iugonet/load/iug_load_mu_rass_txt.pro</A>)</STRONG><P>
@@ -4251,8 +4411,8 @@ MODIFICATIONS:
  
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
- $LastChangedRevision: 24682 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_mu_trop_txt.pro">projects/iugonet/load/iug_load_mu_trop_txt.pro</A>)</STRONG><P>
@@ -5094,8 +5254,8 @@ MODIFICATIONS:
    
 ACKNOWLEDGEMENT:
  $LastChangedBy: nikos $
- $LastChangedDate: 2018-02-09 12:24:19 -0800 (Fri, 09 Feb 2018) $
- $LastChangedRevision: 24682 $
+ $LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
+ $LastChangedRevision: 24758 $
  $URL $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_wpr_rish.pro">projects/iugonet/load/iug_load_wpr_rish.pro</A>)</STRONG><P>

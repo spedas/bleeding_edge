@@ -95,7 +95,7 @@ for i=0,n_elements(site_code)-1 do begin
   
   ;----- Set sampling time correspoding to input date -----;
   tr=timerange(trange)
-  tr0=tr(0)
+  tr0=tr[0]
   if strlowcase(datatype) eq '1sec' then begin
     case site_code[i] of
       'syo': begin

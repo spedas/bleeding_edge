@@ -7,7 +7,7 @@
 ;
 ;HISTORY:
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
+;$LastChangedDate: 2018-02-22 11:09:13 -0800 (Thu, 22 Feb 2018) $
 ;
 ;Modifications:
 ;A. Shinbori, 02/05/2011
@@ -337,7 +337,7 @@ pro iug_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRange
   typeArray[2] = ptr_new(['troposphere'])
   typeArray[3] = ptr_new(['altitude_prof','latitude_prof','longitude_prof','Vi_E_vectors'])
   typeArray[4] = ptr_new(['troposphere','e_region','ef_region','v_region','f_region'])
-  typeArray[5] = ptr_new(['magdas#','210mm#','ISEE#','WDC_kyoto','NIPR#'])
+  typeArray[5] = ptr_new(['icswse','magdas#','210mm#','ISEE#','WDC_kyoto','NIPR#'])
   typeArray[6] = ptr_new(['NIPR#','ISEE#'])
   typeArray[7] = ptr_new(['Dst_index','AE_index','ASY_index','Wp_index'])
   typeArray[8] = ptr_new(['troposphere'])
@@ -380,7 +380,7 @@ pro iug_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRange
   paramArray[2] = ptr_new(ptrarr(1))
   paramArray[3] = ptr_new(ptrarr(4))
   paramArray[4] = ptr_new(ptrarr(5))
-  paramArray[5] = ptr_new(ptrarr(5))
+  paramArray[5] = ptr_new(ptrarr(6))
   paramArray[6] = ptr_new(ptrarr(2))
   paramArray[7] = ptr_new(ptrarr(4))
   paramArray[8] = ptr_new(ptrarr(1))
@@ -417,15 +417,22 @@ pro iug_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRange
                                  'fb1p16j10','fb1p16j11','fb1p16k1','fb1p16k2','fb1p16k3','fb1p16k4','fb1p16k5',$
                                  'fb8p16','fb8p16k1','fb8p16k2','fb8p16k3','fb8p16k4','fb1p16m2','fb1p16m3',$
                                  'fb1p16m4','fb8p16m1','fb8p16m2'])
-  (*paramArray[5])[0] = ptr_new(['*(all)','ama','asb','daw','her','hln','hob','kuj','laq','mcq','mgd',$
+  (*paramArray[5])[0] = ptr_new(['*(all)','aab','abj','abu','ama','anc','asb','asw','bcl','bik','bkl',$
+                                 'can','cdo','ceb','cgr','chd','ckt','cmd','dav','daw','des',$
+								 'drb','dvs','eus','ewa','fym','gsi','her','hln','hob','hvd',$
+								 'ica','ilr','jrs','jyp','kpg','krt','ktn','kuj','lag','laq',$
+								 'lgz','lkw','lsk','lwa','mcq','mgd','mlb','mnd','mut','nab',$
+								 'onw','prp','ptk','ptn','roc','sbh','scn','sma','tgg','tik',$
+								 'tir','twv','wad','yak','yap','zgn'])
+  (*paramArray[5])[1] = ptr_new(['*(all)','ama','asb','daw','her','hln','hob','kuj','laq','mcq','mgd',$
                                  'mlb','mut','onw','ptk','wad','yap'])
-  (*paramArray[5])[1] = ptr_new(['*(all)','adl','asa','bik','bji','bsw','can','cbi','chd','cst', $
+  (*paramArray[5])[2] = ptr_new(['*(all)','adl','asa','bik','bji','bsw','can','cbi','chd','cst', $
                                  'dal','daw','ewa','gua','irt','kag','kat','kor','kot', $
                                  'ktb','ktn','lmt','lnp','mgd','mcq','msr','mut','onw', $
                                  'ppi','ptk','ptn','rik','tik','wep','wew','wtk','yak', $
                                  'yap','ymk','zgn','zyk'])
-  (*paramArray[5])[2] = ptr_new(['*(all)','msr','rik','kag','ktb','mdm','tew'])
-  (*paramArray[5])[3] = ptr_new(['*(all)','aaa','aae','abg','abk','abn','agn','aia','ale','alm','aml','ams',$
+  (*paramArray[5])[3] = ptr_new(['*(all)','msr','rik','kag','ktb','mdm','tew'])
+  (*paramArray[5])[4] = ptr_new(['*(all)','aaa','aae','abg','abk','abn','agn','aia','ale','alm','aml','ams',$
                                  'amt','amu','anc','ann','api','aqu','arc','are','ark','ars','art','asc','ash','aso','asp',$
                                  'bag','bde','bdv','bel','bfe','bfo','bgy','bji','bjn','blc','blt','bmt','bng','bou',$
                                  'box','brt','brw','bsl','byr','can','cao','cax','cbb','cbi','ccs','cdp','clf','clh',$
@@ -447,7 +454,7 @@ pro iug_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRange
                                  'thy','tik','tir','tkh','tkt','tmk','tnd','tng','tok','tol','too','trd','tro','trw',$
                                  'tsu','ttb','tuc','tun','uba','ujj','ups','val','vic','vla','vlj','vna','vos','vqs',$
                                  'vsk','vss','wat','whn','whs','wik','wil','wit','wmq','wng','yak','ycb','ykc','yss'])
-  (*paramArray[5])[4] = ptr_new(['*(all)','aed','amb','hus','h57','h68','ihd','isa','skl','srm','syo','tjo'])
+  (*paramArray[5])[5] = ptr_new(['*(all)','aed','amb','hus','h57','h68','ihd','isa','skl','srm','syo','tjo'])
   (*paramArray[6])[0] = ptr_new(['*(all)','aed','hus','isa','syo','tjo'])
   (*paramArray[6])[1] = ptr_new(['*(all)','ath','mgd','ptk','msr','sta','gak','kap','zgn','hus'])
   (*paramArray[7])[0] = ptr_new(['*(all)','WDC_kyoto'])
@@ -522,7 +529,7 @@ pro iug_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRange
   param2Array[2] = ptr_new(ptrarr(1))
   param2Array[3] = ptr_new(ptrarr(4))
   param2Array[4] = ptr_new(ptrarr(5))
-  param2Array[5] = ptr_new(ptrarr(5))
+  param2Array[5] = ptr_new(ptrarr(6))
   param2Array[6] = ptr_new(ptrarr(2))
   param2Array[7] = ptr_new(ptrarr(4))
   param2Array[8] = ptr_new(ptrarr(1))
@@ -558,11 +565,12 @@ pro iug_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRange
   (*param2Array[4])[4] = ptr_new(['*','dpl1','dpl2','dpl3','dpl4','dpl5','dpl6','dpl7','dpl8','pwr1','pwr2','pwr3','pwr4','pwr5',$
                                   'pwr6','pwr7','pwr8','wdt1','wdt2','wdt3','wdt4','wdt5','wdt6','wdt7','wdt8','snr1','snr2','snr3',$
                                   'snr4','snr5','snr6','snr7','snr','pn1','pn2','pn3','pn4','pn5','pn6','pn7','pn8']) 
-  (*param2Array[5])[0] = ptr_new(['*','1sec'])
-  (*param2Array[5])[1] = ptr_new(['*','1sec','1min','1h'])
+  (*param2Array[5])[0] = ptr_new(['*','1sec','1min'])
+  (*param2Array[5])[1] = ptr_new(['*','1sec'])
   (*param2Array[5])[2] = ptr_new(['*','1sec','1min','1h'])
-  (*param2Array[5])[3] = ptr_new(['*','min','hour'])
-  (*param2Array[5])[4] = ptr_new(['*','1sec'])  
+  (*param2Array[5])[3] = ptr_new(['*','1sec','1min','1h'])
+  (*param2Array[5])[4] = ptr_new(['*','min','hour'])
+  (*param2Array[5])[5] = ptr_new(['*','1sec'])  
   (*param2Array[6])[0] = ptr_new(['*'])
   (*param2Array[6])[1] = ptr_new(['*'])
   (*param2Array[7])[0] = ptr_new(['*','final','prov'])

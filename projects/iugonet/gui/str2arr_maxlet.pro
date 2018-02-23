@@ -62,16 +62,16 @@ for iarr=0, nele-1 do begin
       endfor
     endelse
 
-    str_arr(iline)=line1
+    str_arr[iline]=line1
     iline++
     remstrlen=strlen(remstr)
   endwhile
 
-  str_arr(iline)=remstr
+  str_arr[iline]=remstr
   iline++
 endfor
 
-str_arr=str_arr(0:iline-1)
+str_arr=str_arr[0:iline-1]
 
 return, str_arr
 
