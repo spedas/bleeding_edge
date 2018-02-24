@@ -94,9 +94,9 @@
 ;Notes: 
 ;
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-02-21 18:05:49 -0800 (Tue, 21 Feb 2017) $
-;$LastChangedRevision: 22843 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2018-02-23 12:24:23 -0800 (Fri, 23 Feb 2018) $
+;$LastChangedRevision: 24767 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/thm_part_products/thm_part_products.pro $
 ;-
 
@@ -376,11 +376,13 @@ pro thm_part_products,probe=probe,$ ;The requested spacecraft ('a','b','c','d','
     thm_pgs_dist_array_start,dist_array,time_idx,dist_ptr_idx=dist_ptr_idx,dist_seg_idx=dist_seg_idx
   endif
 
-  ;copied over from tpm2,
-  ;time correction to point at bin center is applied for ESA, but not for SST
-  if sst then begin
-    times += 1.5
-  endif
+;copied over from tpm2,
+;time correction to point at bin center is applied for ESA, but not for SST
+;JMM, 2018-02-23 -- SST time correction is applied in L0 to L1
+;                   processing, not needed here.
+;  if sst then begin
+;    times += 1.5
+;  endif
 
   times=times[time_idx]
 
