@@ -8,7 +8,7 @@
 ; You can obtain a copy of the agreement at
 ;   docs/NASA_Open_Source_Agreement_1.3.txt
 ; or
-;   http://cdaweb.gsfc.nasa.gov/WebServices/NASA_Open_Source_Agreement_1.3.txt.
+;   https://sscweb.gsfc.nasa.gov/WebServices/NASA_Open_Source_Agreement_1.3.txt.
 ;
 ; See the Agreement for the specific language governing permissions
 ; and limitations under the Agreement.
@@ -22,26 +22,12 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2013 United States Government as represented by the
+; Copyright (c) 2013-2017 United States Government as represented by the
 ; National Aeronautics and Space Administration. No copyright is claimed
-; in the United States under Title 17, U.S.Code. All Other Rights Reserved.
+; in the United States under Title 17, U.S.Code. All Other Rights 
+; Reserved.
 ;
 ;
-
-
-;+
-; This file contains a procedure-oriented wrapper to a subset of
-; functionality from the SpdfSsc class (IDL client interface to
-; <a href="http://sscweb.gsfc.nasa.gov/WebServices">
-; Satellite Situation Center Web Services</a> (SSC WSs)) library.
-;
-; @copyright Copyright (c) 2013 United States Government as 
-;     represented by the National Aeronautics and Space 
-;     Administration. No copyright is claimed in the United States 
-;     under Title 17, U.S.Code. All Other Rights Reserved.
-;
-; @author B. Harris
-;-
 
 
 ;+
@@ -56,10 +42,10 @@
 ;     system value, then an empty string ('') is returned.
 ;-
 function spdfFixCoordinateSystemCase, $
-    coordinateSystem
-    compile_opt idl2
+  coordinateSystem
+  compile_opt idl2
 
-    case strlowcase(coordinateSystem) of
+  case strlowcase(coordinateSystem) of
 
     'geo'     : return, 'Geo'
     'gm'      : return, 'Gm'
@@ -69,15 +55,30 @@ function spdfFixCoordinateSystemCase, $
     'geitod'  : return, 'GeiTod'
     'geij2000': return, 'GeiJ2000'
     else      : return, ''
-    endcase
+  endcase
 
 end
 
 ;+
+; This file contains a procedure-oriented wrapper to a subset of
+; functionality from the SpdfSsc class (IDL client interface to
+; <a href="https://sscweb.gsfc.nasa.gov/WebServices">
+; Satellite Situation Center Web Services</a> (SSC WSs)) library.
+;
+; @copyright Copyright (c) 2013-2017 United States Government as 
+;     represented by the National Aeronautics and Space 
+;     Administration. No copyright is claimed in the United States 
+;     under Title 17, U.S.Code. All Other Rights Reserved.
+;
+; @author B. Harris
+;-
+
+
+;+
 ; This function gets basic location information for a single satellite
-; from <a href="http://www.nasa.gov/">NASA</a>'s
-; <a href="http://spdf.gsfc.nasa.gov/">Space Physics Data Facility</a>
-; <a href="http://sscweb.gsfc.nasa.gov/">Satellite Situation Center</a>.
+; from <a href="https://www.nasa.gov/">NASA</a>'s
+; <a href="https://spdf.gsfc.nasa.gov/">Space Physics Data Facility</a>
+; <a href="https://sscweb.gsfc.nasa.gov/">Satellite Situation Center</a>.
 ; More comprehensive information if available by using 
 ; <code>SpdfSsc::getLocations()</code>.
 ;
@@ -90,6 +91,12 @@ end
 ;            {default='Gse'}
 ;            specifies the coordinate system.  Must be one of the 
 ;            following values: Geo, Gm, Gsm, Sm, GeiTod, or GeiJ2000.
+; @keyword resolutionFactor {in} {optional} {type=int} {default=1}
+;            resolution factor.  A value of 3 will return every third
+;            point.
+; @keyword endpoint {in} {optional} {type=string}
+;              {default='https://sscweb.gsfc.nasa.gov/WS/sscr/2'}
+;              URL of SSC web service.
 ; @keyword quiet {in} {optional} {type=boolean} {default=false}
 ;            SpdfGetLocations normally prints an error message if no 
 ;            data is found.  If QUIET is set, no error messages is 
@@ -97,6 +104,11 @@ end
 ; @keyword httpErrorReporter {in} {optional}
 ;              {type=SpdfHttpErrorReporter}
 ;              used to report an HTTP error.
+; @keyword sslVerifyPeer {in} {optional} {type=int} {default=1}
+;            Specifies whether the authenticity of the peer's SSL
+;            certificate should be verified.  When 0, the connection
+;            succeeds regardless of what the peer SSL certificate
+;            contains.
 ; @returns SpdfLocations object containing requested data.
 ; @examples
 ;   <pre>
@@ -109,8 +121,12 @@ function SpdfGetLocations, $
     satellite, $
     timeSpan, $
     coordinateSystem = coordinateSystem, $
+    resolutionFactor = resolutionFactor, $
+    endpoint = endpoint, $
     quiet = quiet, $
-    httpErrorReporter = httpErrorReporter
+    httpErrorReporter = httpErrorReporter, $
+    sslVerifyPeer = sslVerifyPeer
+
     compile_opt idl2
 
     if keyword_set(coordinateSystem) then begin
@@ -133,10 +149,15 @@ function SpdfGetLocations, $
         coordinateSystem = 'Gse'
     endelse
 
-    ssc = $
-        obj_new('SpdfSsc', $
-            endpoint = 'http://sscweb.gsfc.nasa.gov/WS/sscr/2', $
-            userAgent = 'SpdfGetLocations/1.0')
+    if ~keyword_set(resolutionFactor) then begin
+
+        resolutionFactor = 1
+    endif
+
+    ssc = obj_new('SpdfSsc', $
+              endpoint = endpoint, $
+              userAgent = 'SpdfGetLocations', $
+              sslVerifyPeer = sslVerifyPeer)
 
     timeInterval = $
         obj_new('SpdfTimeInterval', timeSpan[0], timeSpan[1])
@@ -148,24 +169,20 @@ function SpdfGetLocations, $
 
     sats = objarr(1)
 
-    sats[0] = obj_new('SpdfSatelliteSpecification', satellite, 2)
+    sats[0] = obj_new('SpdfSatelliteSpecification', satellite, $
+                      resolutionFactor)
 
     coordinateOptions = objarr(5)
     coordinateOptions[0] = $
-        obj_new('SpdfCoordinateOptions', $
-            coordinateSystem = coordinateSystem, component = 'X')
+        obj_new('SpdfCoordinateOptions', coordinateSystem, 'X')
     coordinateOptions[1] = $
-        obj_new('SpdfCoordinateOptions', $
-            coordinateSystem = coordinateSystem, component = 'Y')
+        obj_new('SpdfCoordinateOptions', coordinateSystem, 'Y')
     coordinateOptions[2] = $
-        obj_new('SpdfCoordinateOptions', $
-            coordinateSystem = coordinateSystem, component = 'Z')
+        obj_new('SpdfCoordinateOptions', coordinateSystem, 'Z')
     coordinateOptions[3] = $
-        obj_new('SpdfCoordinateOptions', $
-            coordinateSystem = coordinateSystem, component = 'Lat')
+        obj_new('SpdfCoordinateOptions', coordinateSystem, 'Lat')
     coordinateOptions[4] = $
-        obj_new('SpdfCoordinateOptions', $
-            coordinateSystem = coordinateSystem, component = 'Lon')
+        obj_new('SpdfCoordinateOptions', coordinateSystem, 'Lon')
 
     outputOptions = $
         obj_new('SpdfOutputOptions', coordinateOptions)

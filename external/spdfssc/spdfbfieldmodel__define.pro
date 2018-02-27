@@ -22,9 +22,10 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2013 United States Government as represented by the 
-; National Aeronautics and Space Administration. No copyright is claimed 
-; in the United States under Title 17, U.S.Code. All Other Rights Reserved.
+; Copyright (c) 2013-2016 United States Government as represented by 
+; the National Aeronautics and Space Administration. No copyright is 
+; claimed in the United States under Title 17, U.S.Code. All Other 
+; Rights Reserved.
 ;
 ;
 
@@ -36,9 +37,9 @@
 ; <a href="http://sscweb.gsfc.nasa.gov/">Satellite Situation Center</a>
 ; (SSC) XML schema.
 ;
-; @copyright Copyright (c) 2013 United States Government as represented
-;     by the National Aeronautics and Space Administration. No
-;     copyright is claimed in the United States under Title 17,
+; @copyright Copyright (c) 2013-2016 United States Government as 
+;     represented by the National Aeronautics and Space Administration.
+;     No copyright is claimed in the United States under Title 17,
 ;     U.S.Code. All Other Rights Reserved.
 ;
 ; @author B. Harris
@@ -48,8 +49,8 @@
 ;+
 ; Creates an SpdfBFieldModel object.
 ;
-; @keyword internalBFieldModel {in} {type=string} {default="IGRF-10"}
-;              internal magnetic field model (valid values: "IGRF-10",
+; @keyword internalBFieldModel {in} {type=string} {default="IGRF"}
+;              internal magnetic field model (valid values: "IGRF",
 ;              "SimpleDipole").
 ; @keyword externalBFieldModel {in} {type=SpdfExternalBFieldModel}
 ;              {default=SpdfTsyganenko89c}
@@ -70,7 +71,7 @@ function SpdfBFieldModel::init, $
         self.internalBFieldModel = internalBFieldModel
     endif else begin
 
-        self.internalBFieldModel = 'IGRF-10'
+        self.internalBFieldModel = 'IGRF'
     endelse
 
     if keyword_set(externalBFieldModel) then begin
@@ -190,7 +191,7 @@ pro SpdfBFieldModel__define
     compile_opt idl2
     struct = { SpdfBFieldModel, $
 
-        internalBFieldModel:'IGRF-10', $
+        internalBFieldModel:'IGRF', $
         externalBFieldModel:obj_new(), $
         traceStopAltitude:100 $
     }

@@ -274,6 +274,11 @@ end
 ;            as a parameter in the callback function. If this keyword
 ;            is not set, the corresponding callback parameter's value
 ;            is undefined.
+; @keyword sslVerifyPeer {in} {optional} {type=int} {default=1}
+;            Specifies whether the authenticity of the peer's SSL
+;            certificate should be verified.  When 0, the connection
+;            succeeds regardless of what the peer SSL certificate
+;            contains.
 ; @returns one of the following: A string containing the full path 
 ;            of the file retrieved from the remote HTTP or FTP server,
 ;            A byte vector, if the BUFFER keyword is set, An array of 
@@ -284,7 +289,8 @@ function SpdfFileDescription::getFile, $
     buffer = buffer, filename = filename, $
     string_array = string_array, $ 
     callback_function = callback_function, $
-    callback_data = callback_data
+    callback_data = callback_data, $
+    sslVerifyPeer = sslVerifyPeer
     compile_opt idl2
 
     if n_elements(filename) eq 0 then begin
@@ -293,13 +299,19 @@ function SpdfFileDescription::getFile, $
         filename = file_basename(urlComponents.path)
     endif
 
+    if n_elements(sslVerifyPeer) eq 0 then begin
+
+        sslVerifyPeer = 1
+    endif
+
     fileUrl = $
         obj_new('IDLnetUrl', $
                 proxy_authentication = self.proxy_authentication, $
                 proxy_hostname = self.proxy_hostname, $
                 proxy_port = self.proxy_port, $
                 proxy_username = self.proxy_username, $
-                proxy_password = self.proxy_password)
+                proxy_password = self.proxy_password, $
+                ssl_verify_peer = sslVerifyPeer)
 
     if keyword_set(callback_function) then begin
 

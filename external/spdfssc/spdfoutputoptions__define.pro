@@ -22,7 +22,7 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2013 United States Government as represented by the 
+; Copyright (c) 2013-2014 United States Government as represented by the 
 ; National Aeronautics and Space Administration. No copyright is claimed 
 ; in the United States under Title 17, U.S.Code. All Other Rights Reserved.
 ;
@@ -36,9 +36,9 @@
 ; <a href="http://sscweb.gsfc.nasa.gov/">Satellite Situation Center</a>
 ; (SSC) XML schema.
 ;
-; @copyright Copyright (c) 2013 United States Government as represented
-;     by the National Aeronautics and Space Administration. No
-;     copyright is claimed in the United States under Title 17,
+; @copyright Copyright (c) 2013-2014 United States Government as 
+;     represented by the National Aeronautics and Space Administration.
+;     No copyright is claimed in the United States under Title 17,
 ;     U.S.Code. All Other Rights Reserved.
 ;
 ; @author B. Harris
@@ -62,7 +62,7 @@
 ;              {type=SpdfDistanceFromOptions)
 ;              specifies distance-from options.
 ; @keyword minMaxPoints {in} {optional} {type=int} {default=2}
-;              number of points used to determin minima or maxima 
+;              number of points used to determine minima or maxima 
 ;              values.
 ; @keyword bFieldTraceOptions {in} {optional} 
 ;              {type=objarr of SpdfBFieldTraceOptions}

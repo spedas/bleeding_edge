@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Feb 23 18:16:23 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Feb 26 18:16:19 2018.<P>
  
 <HR>
  
@@ -45,7 +45,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#TPLOT2CDF_SAVE_VARS">TPLOT2CDF_SAVE_VARS</A>
 <br>To dump data and metadata from an IDL structure into a CDF file.
 <LI><A HREF="#TPLOT_ADD_CDF_STRUCTURE">TPLOT_ADD_CDF_STRUCTURE</A>
-<br>In order to be saved in CDF file using TPLOT2CDF, tplot variable must have CDF structure as a tplot option (see OPTIONS)
+<br>In order to be saved in CDF file using TPLOT2CDF, tplot variable must have CDF
 <br>
 </UL><P>
 <HR>
@@ -697,7 +697,8 @@ PROCEDURE:
   TPLOT_ADD_CDF_STRUCTURE, tplot_vars, ...
    
 PURPOSE:  
-  In order to be saved in CDF file using TPLOT2CDF, tplot variable must have CDF structure as a tplot option (see OPTIONS) 
+  In order to be saved in CDF file using TPLOT2CDF, tplot variable must have CDF
+  structure as a tplot option (see OPTIONS) 
   The attributes of the tplot data (x, y or v) are stored in the CDF structure
   CDF.VARS     - structure of attributes that describe the data (tplot y variable)
   CDF.DEPEND_0 - structure of attributes that describe the time (tplot x variable)
@@ -709,16 +710,23 @@ PURPOSE:
   CATDESC, DISPLAY_TYPE ,FIELDNAM, LABLAXIS, UNITS (automatically defined for time), VAR_TYPE
   FILLVAL, VALIDMIN, VALIDMAX, FORMAT defined based on the nature of the data
   
-  If CDF structure already defined in the tplot variable the defined fields od the strucutre will remane the same.
-  This means, if there was any mistake (e.g. wrong Epoch format), then CDF structure must be recreated (for example, using /new keyword).  
+  If CDF structure already defined in the tplot variable the defined fields of 
+  the CDF strucutre will remane the same. This means, if there was any mistake 
+  (e.g. wrong Epoch format), then CDF structure must be recreated (for example, using /new keyword).  
   
   TPLOT_ADD_CDF_STRUCTURE adds appropriate CDF structure and defines some of the attributes base on the tplot data
   This procedure must be called before tplot2cdf. Alternatively, keyword /default of tplto2cdf2 can be used.
   Most of the attributes are defined as 'undefined' ans should be specify.  
   
-  If tplot has 2d y but v, that suppose to describe second dimension is absent, then v will be created and an index of the second dimension of y
-  
-  If tplot has n-d y but number of dimensions does not correspond to number or supporting variables (x, v or v1, v2 ...) then extra supporting variables (v1, v2 ...) will be removed.
+  If tplot has 2d y, but variable v, that suppose to describe second dimension 
+  is absent, then v will be created and an index of the second dimension of y
+  If Label field is found in metadata of the tplot variable and if number of elements 
+  of along second dimention of y is the same as number of Labels, then v variable
+  will be prepared to be LABL_PTR_1. 
+  TPLOT_ADD_CDF_STRUCTURE supports only LABL_PTR_1 (one label) case. 
+   
+  If tplot has n-d y but number of dimensions does not correspond to number or 
+  supporting variables (x, v or v1, v2 ...) then extra supporting variables (v1, v2 ...) will be removed.
   This behaivour ensures the saving of the tplot into CDF file. 
    
 INPUT:
@@ -740,8 +748,8 @@ CREATED BY:
   Alexander Drozdov
 
  $LastChangedBy: adrozdov $
- $LastChangedDate: 2018-02-12 12:13:23 -0800 (Mon, 12 Feb 2018) $
- $LastChangedRevision: 24690 $
+ $LastChangedDate: 2018-02-26 12:50:29 -0800 (Mon, 26 Feb 2018) $
+ $LastChangedRevision: 24780 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot_add_cdf_structure.pro $
 </PRE><P>
 <STRONG>(See <A href="CDF/tplot_add_cdf_structure.pro">general/CDF/tplot_add_cdf_structure.pro</A>)</STRONG><P>

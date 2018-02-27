@@ -22,7 +22,7 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2013 United States Government as represented by the 
+; Copyright (c) 2013-2014 United States Government as represented by the 
 ; National Aeronautics and Space Administration. No copyright is claimed 
 ; in the United States under Title 17, U.S.Code. All Other Rights Reserved.
 ;
@@ -36,7 +36,7 @@
 ; <a href="http://sscweb.gsfc.nasa.gov/">Satellite Situation Center</a>
 ; (SSC) XML schema.
 ;
-; @copyright Copyright (c) 2013 United States Government as represented
+; @copyright Copyright (c) 2013-2014 United States Government as represented
 ;     by the National Aeronautics and Space Administration. No
 ;     copyright is claimed in the United States under Title 17,
 ;     U.S.Code. All Other Rights Reserved.
@@ -50,7 +50,7 @@
 ;
 ; @param id {in} {type=string}
 ;            satellite identifier.
-; @param time {in} {type=array}
+; @param time {in} {type=dblarr}
 ;            juldate time of location.
 ; @param coordinateSystem {in} {type=string}
 ;            coordinate system (valid values: "Geo", "Gm", "Gse",

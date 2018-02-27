@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Feb 23 18:16:23 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Feb 26 18:16:19 2018.<P>
  
 <HR>
  
@@ -243,6 +243,8 @@ SPDFDATAVIEWDESCRIPTION__DEFINE[11]</A>
 <LI><A HREF="#SPDFHTTPERRORREPORTER__DEFINE[3]">SPDFHTTPERRORREPORTER__DEFINE[3]
 </A>
 <LI><A HREF="#SPDFHTTPERRORREPORTER__DEFINE[4]">SPDFHTTPERRORREPORTER__DEFINE[4]
+</A>
+<LI><A HREF="#SPDFHTTPERRORREPORTER__DEFINE[5]">SPDFHTTPERRORREPORTER__DEFINE[5]
 </A>
 <LI><A HREF="#SPDFINSTRUMENTTYPEDESCRIPTION__DEFINE[1]">
 SPDFINSTRUMENTTYPEDESCRIPTION__DEFINE[1]</A>
@@ -1101,8 +1103,8 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 
  @keyword dataview {in} {optional} {type=string}
               name of dataview to access.
- @param timeInterval {in} {type=SpdfTimeInterval}
-              time range of data to get.
+ @param timeIntervals {in} {type=objarr of SpdfTimeIntervals}
+              time intervals of data to get.
  @param dataset {in} {type=string}
               identifies the dataset from which data is being
               requested.
@@ -1430,6 +1432,11 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
               {default=sp_phys}
               default CDAS dataview value to use in subsequent calls
               when no value is specified.
+ @keyword sslVerifyPeer {in} {optional} {type=int} {default=1}
+              Specifies whether the authenticity of the peer's SSL
+              certificate should be verified.  When 0, the connection 
+              succeeds regardless of what the peer SSL certificate 
+              contains.
  @returns a reference to a CDAS object.
 </PRE><P>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
@@ -1586,6 +1593,7 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
  @field proxy_password IDLnetURL PROXY_PASSWORD property value.
  @field proxy_port IDLnetURL PROXY_PORT property value.
  @field proxy_username IDLnetURL PROXY_USERNAME property value.
+ @field ssl_verify_peer IDLnetURL SSL_VERIFY_PEER property value.
 </PRE><P>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
@@ -3050,6 +3058,11 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
             as a parameter in the callback function. If this keyword
             is not set, the corresponding callback parameter's value
             is undefined.
+ @keyword sslVerifyPeer {in} {optional} {type=int} {default=1}
+            Specifies whether the authenticity of the peer's SSL
+            certificate should be verified.  When 0, the connection
+            succeeds regardless of what the peer SSL certificate
+            contains.
  @returns one of the following: A string containing the full path 
             of the file retrieved from the remote HTTP or FTP server,
             A byte vector, if the BUFFER keyword is set, An array of 
@@ -3310,7 +3323,7 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
             resulting CDF will contain all variables.
             On exit, names of variables actually read (may be more 
             than requested).
- @param timeSpan {in} {type=strarr(2)}
+ @param timeSpans {in} {type=strarr(n, 2)}
             ISO 8601 format strings of the start and stop times of the
             data to get.
  @keyword dataview {in} {optional} {type=string} {default='sp_phys'}
@@ -3345,6 +3358,11 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
             as a parameter in the callback function. If this keyword
             is not set, the corresponding callback parameter's value
             is undefined.
+ @keyword sslVerifyPeer {in} {optional} {type=int} {default=1}
+            Specifies whether the authenticity of the peer's SSL
+            certificate should be verified.  When 0, the connection 
+            succeeds regardless of what the peer SSL certificate 
+            contains.
  @returns structure containing requested data.  Note that a few 
      datasets in CDAS contain variables with names that cannot
      be used as tag names an IDL structure.  In those cases, the
@@ -3365,7 +3383,7 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
     To see further info. about each variable type 
         help, /struct, d.&quot;variablename&quot;
     To make a plot with the CDAWlib s/w type 
-        s = spd_cdawlib_plotmaster(d, /AUTO, /CDAWEB, /GIF, /SMOOTH, /SLOW)
+        s = plotmaster(d, /AUTO, /CDAWEB, /GIF, /SMOOTH, /SLOW)
    &lt;/pre&gt;
 </PRE><P>
 <STRONG>(See <A href="spdfcdas/spdfgetdata.pro">external/spdfcdas/spdfgetdata.pro</A>)</STRONG><P>
@@ -3650,6 +3668,23 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <A NAME="SPDFHTTPERRORREPORTER__DEFINE[4]">
 <H2>SPDFHTTPERRORREPORTER__DEFINE[4]</H2></A>
 <A HREF="#SPDFHTTPERRORREPORTER__DEFINE[3]">[Previous Routine]</A>
+<A HREF="#SPDFHTTPERRORREPORTER__DEFINE[5]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ This procedure prints some diagnostic information from the given
+ HTTP error response file.  It only recognizes the &quot;typical&quot; error
+ response from the CDAS web services.
+
+ @param responseFilename {in} {type=string}
+            the name of an error response file sent when the error
+            occurred.
+</PRE><P>
+<STRONG>(See <A href="spdfcdas/spdfhttperrorreporter__define.pro">external/spdfcdas/spdfhttperrorreporter__define.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SPDFHTTPERRORREPORTER__DEFINE[5]">
+<H2>SPDFHTTPERRORREPORTER__DEFINE[5]</H2></A>
+<A HREF="#SPDFHTTPERRORREPORTER__DEFINE[4]">[Previous Routine]</A>
 <A HREF="#SPDFINSTRUMENTTYPEDESCRIPTION__DEFINE[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -3661,7 +3696,7 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
  
 <A NAME="SPDFINSTRUMENTTYPEDESCRIPTION__DEFINE[1]">
 <H2>SPDFINSTRUMENTTYPEDESCRIPTION__DEFINE[1]</H2></A>
-<A HREF="#SPDFHTTPERRORREPORTER__DEFINE[4]">[Previous Routine]</A>
+<A HREF="#SPDFHTTPERRORREPORTER__DEFINE[5]">[Previous Routine]</A>
 <A HREF="#SPDFINSTRUMENTTYPEDESCRIPTION__DEFINE[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

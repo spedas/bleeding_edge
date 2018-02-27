@@ -22,9 +22,10 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2013 United States Government as represented by the 
-; National Aeronautics and Space Administration. No copyright is claimed 
-; in the United States under Title 17, U.S.Code. All Other Rights Reserved.
+; Copyright (c) 2013-2014 United States Government as represented by the
+; National Aeronautics and Space Administration. No copyright is claimed
+; in the United States under Title 17, U.S.Code. All Other Rights 
+; Reserved.
 ;
 ;
 
@@ -36,9 +37,9 @@
 ; <a href="http://sscweb.gsfc.nasa.gov/">Satellite Situation Center</a>
 ; (SSC) XML schema.
 ;
-; @copyright Copyright (c) 2013 United States Government as represented
-;     by the National Aeronautics and Space Administration. No
-;     copyright is claimed in the United States under Title 17,
+; @copyright Copyright (c) 2013-2014 United States Government as 
+;     represented by the National Aeronautics and Space Administration.
+;     No copyright is claimed in the United States under Title 17,
 ;     U.S.Code. All Other Rights Reserved.
 ;
 ; @author B. Harris
@@ -48,21 +49,40 @@
 ;+
 ; Creates an SpdfCoordinateOptions object.
 ;
-; @keyword coordinateSystem {in} {type=string} 
-;              specifies the coordinateSystem.  Must be one of the
-;              following values: Geo, Gm, Gsm, Sm, GeiTod, or GeiJ2000.
-; @keyword component {in} {type=string}
-;              specifies the coordinate component.  Must be one of the
-;              following values: X, Y, Z, Lat, Lon, or Local_Time.
+; @param coordinateSystem {in} {type=string} 
+;            specifies the coordinateSystem.  Must be one of the
+;            following values: Geo, Gm, Gse, Gsm, Sm, GeiTod, or 
+;            GeiJ2000.
+; @param component {in} {type=string}
+;            specifies the coordinate component.  Must be one of the
+;            following values: X, Y, Z, Lat, Lon, or Local_Time.
 ; @returns reference to an SpdfCoordinateOptions object.
 ;-
 function SpdfCoordinateOptions::init, $
-    coordinateSystem = coordinateSystem, $
-    component = component
+    coordinateSystem, $
+    component
     compile_opt idl2
 
-    self.coordinateSystem = coordinateSystem
-    self.component = component
+    case strlowcase(coordinateSystem) of
+    'geo'      : self.coordinateSystem = 'Geo'
+    'gm'       : self.coordinateSystem = 'Gm'
+    'gse'      : self.coordinateSystem = 'Gse'
+    'gsm'      : self.coordinateSystem = 'Gsm'
+    'sm'       : self.coordinateSystem = 'Sm'
+    'geitod'   : self.coordinateSystem = 'GeiTod'
+    'geij2000' : self.coordinateSystem = 'GeiJ2000'
+    else       : self.coordinateSystem = coordinateSystem
+    endcase
+
+    case strlowcase(component) of
+    'x'          : self.component = 'X'
+    'y'          : self.component = 'Y'
+    'z'          : self.component = 'Z'
+    'lat'        : self.component = 'Lat'
+    'lon'        : self.component = 'Lon'
+    'local_time' : self.component = 'Local_Time'
+    else         : self.component = component
+    endcase
 
     return, self
 end

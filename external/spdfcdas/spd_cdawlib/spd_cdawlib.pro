@@ -11,8 +11,8 @@
 ; MODIFICATION HISTORY:
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2015-06-12 10:48:10 -0700 (Fri, 12 Jun 2015) $
-;$LastChangedRevision: 17856 $
+;$LastChangedDate: 2018-02-25 14:58:49 -0800 (Sun, 25 Feb 2018) $
+;$LastChangedRevision: 24774 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/spdfcdas/spd_cdawlib/spd_cdawlib.pro $
 ;-
 

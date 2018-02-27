@@ -84,7 +84,56 @@ pro SpdfHttpErrorReporter::reportError, $
     if n_elements(responseFilename) ne 0 then begin
 
         print, 'HTTP response filename = ', responseFilename
+        self->printResponse, responseFilename
     endif
+end
+
+
+;+
+; This procedure prints some diagnostic information from the given
+; HTTP error response file.  It only recognizes the "typical" error
+; response from the CDAS web services.
+;
+; @param responseFilename {in} {type=string}
+;            the name of an error response file sent when the error
+;            occurred.
+;-
+pro SpdfHttpErrorReporter::printResponse, $
+    responseFilename
+    compile_opt idl2
+
+    if strlen(responseFilename) eq 0 then return
+
+    print, 'HTTP Error Response'
+
+    response = obj_new('IDLffXMLDOMDocument', filename=responseFilename)
+
+    pElements = response->getElementsByTagName('p')
+
+    for i = 0, pElements->getLength() - 1 do begin
+
+        pNode = pElements->item(i)
+        pAttributes = pNode->getAttributes()
+        pClassAttribute = pAttributes->getNamedItem('class')
+
+        if obj_valid(pClassAttribute) then begin
+
+            pClassValue = pClassAttribute->getNodeValue()
+            pLastChild = pNode->getLastChild()
+
+            if obj_valid(pLastChild) then begin
+
+                pLastChildValue = pLastChild->getNodeValue()
+
+                print, pClassValue, ': ', pLastChildValue
+            endif else begin
+
+                print, pClassValue
+            endelse
+        endif
+    endfor
+
+    obj_destroy, response
 end
 
 

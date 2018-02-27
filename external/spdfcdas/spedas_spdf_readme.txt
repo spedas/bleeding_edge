@@ -14,9 +14,9 @@ In the following, we list the modifications we made to the original spdfcdas+cda
 
 *** 1. spdfcdas file - 25 Files *** 
 
-Release 1.7.10.29 of the CDAS Web Services IDL Library
+Release 1.7.10.37 of the CDAS Web Services IDL Library
 <http://cdaweb.gsfc.nasa.gov/WebServices/REST/CdasIdlLibrary.html> 
-that was deployed on August 7, 2017.
+that was deployed on January 23, 2018.
 
 Local changes: 
 Add the following to spdfcdawebchooser.pro: 

@@ -65,12 +65,18 @@
 ;              {default=sp_phys}
 ;              default CDAS dataview value to use in subsequent calls
 ;              when no value is specified.
+; @keyword sslVerifyPeer {in} {optional} {type=int} {default=1}
+;              Specifies whether the authenticity of the peer's SSL
+;              certificate should be verified.  When 0, the connection 
+;              succeeds regardless of what the peer SSL certificate 
+;              contains.
 ; @returns a reference to a CDAS object.
 ;-
 function SpdfCdas::init, $
     endpoint = endpoint, $
     userAgent = userAgent, $
-    defaultDataview = defaultDataview
+    defaultDataview = defaultDataview, $
+    sslVerifyPeer = sslVerifyPeer
     compile_opt idl2
 
     self.endpoint = self->getDefaultEndpoint()
@@ -91,6 +97,13 @@ function SpdfCdas::init, $
     if keyword_set(defaultDataview) then begin
 
         self.defaultDataview = defaultDataview
+    endif
+
+    self.ssl_verify_peer = 1
+
+    if n_elements(sslVerifyPeer) gt 0 then begin
+
+        self.ssl_verify_peer = sslVerifyPeer
     endif
 
     http_proxy = getenv('HTTP_PROXY')
@@ -905,8 +918,8 @@ end
 ;
 ; @keyword dataview {in} {optional} {type=string}
 ;              name of dataview to access.
-; @param timeInterval {in} {type=SpdfTimeInterval}
-;              time range of data to get.
+; @param timeIntervals {in} {type=objarr of SpdfTimeIntervals}
+;              time intervals of data to get.
 ; @param dataset {in} {type=string}
 ;              identifies the dataset from which data is being
 ;              requested.
@@ -929,15 +942,24 @@ end
 ; @returns SpdfCdasDataResult object.
 ;-
 function SpdfCdas::getCdfData, $
-    dataview = dataview, timeInterval, dataset, variables, $
-    cdfVersion = cdfVersion, cdfFormat = cdfFormat, $
+    dataview = dataview, $
+    timeIntervals, $
+    dataset, $
+    variables, $
+    cdfVersion = cdfVersion, $
+    cdfFormat = cdfFormat, $
     authenticator = authenticator, $
     httpErrorReporter = errorReporter
     compile_opt idl2
 
     if ~keyword_set(dataview) then dataview = self.defaultDataview
 
-    timeIntervals = [timeInterval]
+    sizeTimeIntervals = size(timeIntervals)
+
+    if sizeTimeIntervals[0] eq 0 then begin
+
+        timeIntervals = [timeIntervals]
+    endif
 
     datasetRequest = $
         obj_new('SpdfDatasetRequest', dataset, variables)
@@ -1575,6 +1597,11 @@ function SpdfCdas::makePostRequest, $
 
 ; print, 'POSTing ', xmlRequest
 ; print, 'to ', url
+; requestUrl.GetProperty, ssl_verify_peer=sslVerifyPeer
+; print, 'ssl_verify_peer =', sslVerifyPeer
+; requestUrl.SetProperty, ssl_verify_host=0
+; requestUrl.GetProperty, ssl_verify_host=sslVerifyHost
+; print, 'ssl_verify_host =', sslVerifyHost
 
     result = requestUrl->put(xmlRequest, /buffer, /post, url=url)
 
@@ -1671,7 +1698,8 @@ function SpdfCdas::getRequestUrl, $
                 proxy_hostname = self.proxy_hostname, $
                 proxy_port = self.proxy_port, $
                 proxy_username = self.proxy_username, $
-                proxy_password = self.proxy_password)
+                proxy_password = self.proxy_password, $
+                ssl_verify_peer = self.ssl_verify_peer)
 
     urlComponents = parse_url(url)
 
@@ -1713,6 +1741,7 @@ end
 ; @field proxy_password IDLnetURL PROXY_PASSWORD property value.
 ; @field proxy_port IDLnetURL PROXY_PORT property value.
 ; @field proxy_username IDLnetURL PROXY_USERNAME property value.
+; @field ssl_verify_peer IDLnetURL SSL_VERIFY_PEER property value.
 ;-
 pro SpdfCdas__define
     compile_opt idl2
@@ -1726,6 +1755,7 @@ pro SpdfCdas__define
         proxy_hostname:'', $
         proxy_password:'', $
         proxy_port:'', $
-        proxy_username:'' $
+        proxy_username:'', $
+        ssl_verify_peer:1 $
     }
 end

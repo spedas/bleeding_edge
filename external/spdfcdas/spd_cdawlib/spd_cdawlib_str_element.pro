@@ -49,8 +49,8 @@
 ;LAST MODIFICATION: 01/10/08
 ; CREATED BY: Davin Larson
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-09-29 11:11:07 -0700 (Fri, 29 Sep 2017) $
-; $LastChangedRevision: 24062 $
+; $LastChangedDate: 2018-02-25 14:58:49 -0800 (Sun, 25 Feb 2018) $
+; $LastChangedRevision: 24774 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/spdfcdas/spd_cdawlib/spd_cdawlib_str_element.pro $
 
 ;-

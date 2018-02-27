@@ -519,12 +519,18 @@ For j = 0, 1 Do Begin
     filler = fltarr(2, 3)
     filler[*, *] = float('Nan')
     store_data, itest+'_t3', data = {x:time_double(date_ext)+findgen(2), y:filler}
-    options, itest+'_t3', 'ytitle', 'Ti!C[eV]'
-    options, itest+'_t3', 'ysubtitle', ''
+
+    name1 = itest+'_t3'
+    tdegap, name1, /overwrite, dt = 600.0
+    ylim, name1, .1, 9999, 1
+    options, name1, 'colors', [2, 4, 6, 0]
+    options, name1, 'ytitle', 'Ti!C[eV]'
+    options, name1, 'ysubtitle', ''
+
   endif else begin
     name1 = itest+'_t3'
     tdegap, name1, /overwrite, dt = 600.0
-    ylim, name1, 10, 10000., 1
+    ylim, name1, .1, 9999, 1
     options, name1, 'colors', [2, 4, 6, 0]
     options, name1, 'ytitle', 'Ti!C[eV]'
     options, name1, 'ysubtitle', ''
@@ -657,6 +663,8 @@ no_npot:
   store_data, thx+'_Tie'+mtyp[j], data = [nameti,namete]
   options, thx+'_Tie'+mtyp[j], 'ytitle', 'Ti!Celec!C[eV]'
   options, thx+'_Tie'+mtyp[j], 'ysubtitle', ''
+  ylim, thx+'_Tie'+mtyp[j], .1, 9999, 1
+
   options,nameti,'labels',['Ti!9'+string(120B)+'!X','Ti!9'+string(35B)+'!X']
   options,namete,'labels',['Te!9'+string(120B)+'!X','Te!9'+string(35B)+'!X']
   options, thx+'_Tie'+mtyp[j], 'labflag', 1
@@ -854,7 +862,8 @@ if (gui_plot eq 1) then begin ; for GUI plots we have some differences
     
     ;parallel and perpendicular components: select simple label to avoid font problems  
     options, esaf_t_name, labels=  ['Ti ||', 'Ti per', 'Te ||', 'Te per']
-   
+    options, esaf_t_name, 'colors', [4, 2, 0, 6]
+    
     ; For GUI panels, panel arrangement and height is determined by rows,
     ;   for example: panel_settings->setProperty, row=current_row, rSpan=2
     ;   for this to work we have to delete the 'panel_size' variable

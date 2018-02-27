@@ -42,11 +42,6 @@
 ; @author B. Harris
 ;-
 
-
-;pro nwin ; stub functions that patches CDAWLib
-;end
-;pro tvimage
-;end
 pro twinscolorbar
 end
 
@@ -857,12 +852,12 @@ pro spdfGetCdawebDataExec, $
             localCdfNames[i] = fileDescriptions[i]->getFile()
         endfor
 
-        ; make a copy of localCdfNames that spd_cdawlib_read_mycdf can alter
+        ; make a copy of localCdfNames that read_mycdf can alter
         localCdfNames2 = localCdfNames
-        cdfData = spd_cdawlib_read_mycdf(varNames, localCdfNames2) 
+        cdfData = read_mycdf(varNames, localCdfNames2) 
 
         (scope_varFetch(dataVarName, /enter, level=1)) = $
-            spd_cdawlib_hsave_struct(cdfData, /nosave)
+            hsave_struct(cdfData, /nosave)
 
         resultMsgLines = n_elements(varNames) + 1
 
@@ -998,10 +993,10 @@ pro spdfReadLocalData, $
 
     if files ne '' then begin
 
-        cdfData = spd_cdawlib_read_mycdf(varNames, files, all=1)
+        cdfData = read_mycdf(varNames, files, all=1)
 
         (scope_varFetch(dataVarName, /enter, level=1)) = $
-            spd_cdawlib_hsave_struct(cdfData, /nosave)
+            hsave_struct(cdfData, /nosave)
 
         reply = dialog_message($
                 'Data from the selected file(s) is now available in ' $
@@ -1028,10 +1023,10 @@ pro spdfGetCdawebPlot, $
 
     if n_elements((scope_varFetch(dataVarName, /enter, level=1))) then begin
 
-        ; make a copy of the data for spd_cdawlib_plotmaster to destroy
+        ; make a copy of the data for plotmaster to destroy
         copyOfData = scope_varFetch(dataVarName, level=1)
 
-        s = spd_cdawlib_plotmaster(copyOfData, xsize=600, /AUTO, /CDAWEB, /SMOOTH, /SLOW)
+        s = plotmaster(copyOfData, xsize=600, /AUTO, /CDAWEB, /SMOOTH, /SLOW)
 
     endif else begin
 
@@ -1065,10 +1060,10 @@ pro spdfCreateCdawebListing, $
 
         if filename ne '' then begin
 
-            ; make a copy of the data for spd_cdawlib_list_mystruct to destroy
+            ; make a copy of the data for list_mystruct to destroy
             copyOfData = scope_varFetch(dataVarName, level=1)
 
-            listing = spd_cdawlib_list_mystruct(copyOfData, filename=filename[0])
+            listing = list_mystruct(copyOfData, filename=filename[0])
 
             xdisplayfile, filename[0], group=event.top
 
@@ -1132,7 +1127,7 @@ pro spdfAbout, $
         'Space Physics Data Facility (SPDF)', $
         'https://spdf.gsfc.nasa.gov/', $
         '', $
-        'Current CDAWlib version: ' + spd_cdawlib_version(), $
+        'Current CDAWlib version: ' + version(), $
         'Current SpdfCdas version: ' + state.cdas->getVersion()], $
         title='About', /center, /information)
 end
@@ -1155,7 +1150,7 @@ function spdfGetDataviews, $
     if ~(cdas->isUpToDate()) then begin
 
         reply = dialog_message([ $
-            'Current CDAWlib version: ' + spd_cdawlib_version(), $
+            'Current CDAWlib version: ' + version(), $
             'Current SpdfCdas version: ' + cdas->getVersion(), $
             'Available SpdfCdas version: ' + cdas->getCurrentVersion(), $
             'There is a newer version of the SpdfCdas library available.'], $
@@ -1164,7 +1159,7 @@ function spdfGetDataviews, $
 
     dataviews = cdas->getDataviews()
 
-    extraDataviewIds = getenv('spd_cdawlib_EXTRA_DATAVIEWS')
+    extraDataviewIds = getenv('SPDF_EXTRA_DATAVIEWS')
 
     if strlen(extraDataviewIds) eq 0 then begin
 
@@ -1250,9 +1245,7 @@ pro spdfCdawebChooser, $
     GROUP_LEADER = groupLeaderWidgetId
     compile_opt idl2
 
-
-	RESOLVE_ROUTINE, 'spd_cdawlib_virtual_funcs', /COMPILE_FULL_FILE    
-	cd, current=cwd
+    cd, current=cwd
     if ~file_test(cwd, /write) then begin
 
         print, 'Error: The current working directory (', $

@@ -8,7 +8,7 @@
 ; You can obtain a copy of the agreement at
 ;   docs/NASA_Open_Source_Agreement_1.3.txt
 ; or 
-;   http://sscweb.gsfc.nasa.gov/WebServices/NASA_Open_Source_Agreement_1.3.txt.
+;   https://sscweb.gsfc.nasa.gov/WebServices/NASA_Open_Source_Agreement_1.3.txt.
 ;
 ; See the Agreement for the specific language governing permissions
 ; and limitations under the Agreement.
@@ -22,23 +22,25 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2013 United States Government as represented by the 
-; National Aeronautics and Space Administration. No copyright is claimed 
-; in the United States under Title 17, U.S.Code. All Other Rights Reserved.
+; Copyright (c) 2013-2017 United States Government as represented by the
+; National Aeronautics and Space Administration. No copyright is claimed
+; in the United States under Title 17, U.S.Code. All Other Rights 
+; Reserved.
 ;
 ;
 
 
 ;+
 ; This class represents the remotely callable interface to 
-; <a href="http://www.nasa.gov/">NASA</a>'s
-; <a href="http://spdf.gsfc.nasa.gov/">Space Physics Data Facility</a> (SPDF)
-; <a href="http://en.wikipedia.org/wiki/Web_service#Representational_state_transfer">
+; <a href="https://www.nasa.gov/">NASA</a>'s
+; <a href="https://spdf.gsfc.nasa.gov/">Space Physics Data Facility</a> 
+; (SPDF)
+; <a href="https://en.wikipedia.org/wiki/Web_service#Representational_state_transfer">
 ; RESTful Web services</a>.
 ;
-; @copyright Copyright (c) 2013 United States Government as represented
-;     by the National Aeronautics and Space Administration. No 
-;     copyright is claimed in the United States under Title 17, 
+; @copyright Copyright (c) 2013-2017 United States Government as 
+;     represented by the National Aeronautics and Space Administration.
+;     No copyright is claimed in the United States under Title 17, 
 ;     U.S.Code. All Other Rights Reserved.
 ;
 ; @author B. Harris
@@ -48,6 +50,16 @@
 ;+
 ; Creates an object representing the SPDF Web service.
 ;
+; If access to the Internet is through an HTTP proxy, the caller
+; should ensure that the HTTP_PROXY environment variable is correctly 
+; set before this method is called.  The HTTP_PROXY value should be 
+; of the form
+; http://username:password@hostname:port/.
+;
+; NOTE: Due to support for the HTTP_PROXY environment variable, this
+; class should not be used in a CGI-like environment where HTTP_PROXY
+; can be set by untrusted entities (see httpoxy vulnerability).
+;
 ; @param endpoint {in} {type=string}
 ;            URL of SPDF web service.
 ; @param version {in} {type=string}
@@ -56,24 +68,54 @@
 ;            URL to the file identifying the most up to date version
 ;            of this class.
 ; @keyword userAgent {in} {optional} {type=string} {default=WsExample}
-;              HTTP user-agent value used in communications with SPDF.
+;            HTTP user-agent value used in communications with SPDF.
+; @keyword sslVerifyPeer {in} {optional} {type=int} {default=1}
+;            Specifies whether the authenticity of the peer's SSL
+;            certificate should be verified.  When 0, the connection
+;            succeeds regardless of what the peer SSL certificate
+;            contains.
 ; @returns a reference to a SSC object.
 ;-
 function SpdfRest::init, $
     endpoint, $
     version, $
     currentVersionUrl, $
-    userAgent = userAgent
+    userAgent = userAgent, $
+    sslVerifyPeer = sslVerifyPeer
     compile_opt idl2
 
     self.endpoint = endpoint
     self.version = version
     self.currentVersionUrl = currentVersionUrl
 
+    self.ssl_verify_peer = 1
+
+    if n_elements(sslVerifyPeer) gt 0 then begin
+
+        self.ssl_verify_peer = sslVerifyPeer
+    endif
+
     if ~keyword_set(userAgent) then userAgent = 'WsExample'
 
     self.userAgent = 'User-Agent: ' + userAgent + ' (' + $
         !version.os + ' ' + !version.arch + ') IDL/' + !version.release
+
+    http_proxy = getenv('HTTP_PROXY')
+
+    if strlen(http_proxy) gt 0 then begin
+
+        proxyComponents = parse_url(http_proxy)
+
+        self.proxy_hostname = proxyComponents.host
+        self.proxy_password = proxyComponents.password
+        self.proxy_port = proxyComponents.port
+        self.proxy_username = proxyComponents.username
+
+        if strlen(proxy_username) gt 0 then begin
+
+            self.proxy_authentication = 3
+        endif
+    endif
 
     return, self
 end
@@ -152,7 +194,12 @@ function SpdfSsc::getCurrentVersion
         return, ''
     endif
 
-    url = obj_new('IDLnetURL')
+    url = obj_new('IDLnetURL', $
+                  proxy_authentication = self.proxy_authentication, $
+                  proxy_hostname = self.proxy_hostname, $
+                  proxy_port = self.proxy_port, $
+                  proxy_username = self.proxy_username, $
+                  proxy_password = self.proxy_password)
 
     return, url->get(/string_array, url=self.currentVersionUrl)
 end
@@ -594,7 +641,14 @@ function SpdfRest::getRequestUrl, $
     url, username, password
     compile_opt idl2
 
-    requestUrl = obj_new('IDLnetUrl')
+    requestUrl = $
+        obj_new('IDLnetURL', $
+                proxy_authentication = self.proxy_authentication, $
+                proxy_hostname = self.proxy_hostname, $
+                proxy_port = self.proxy_port, $
+                proxy_username = self.proxy_username, $
+                proxy_password = self.proxy_password, $
+                ssl_verify_peer = self.ssl_verify_peer)
 
     urlComponents = parse_url(url)
 
@@ -628,6 +682,13 @@ end
 ; @field version identifies the version of this class.
 ; @field currentVersionUrl URL to the file identifying the most up to 
 ;            date version of this class.
+; @field proxy_authentication IDLnetURL PROXY_AUTHENTICATION property
+;            value.
+; @field proxy_hostname IDLnetURL PROXY_HOSTNAME property value.
+; @field proxy_password IDLnetURL PROXY_PASSWORD property value.
+; @field proxy_port IDLnetURL PROXY_PORT property value.
+; @field proxy_username IDLnetURL PROXY_USERNAME property value.
+; @field ssl_verify_peer IDLnetURL SSL_VERIFY_PEER property value.
 ;-
 pro SpdfRest__define
     compile_opt idl2
@@ -635,6 +696,12 @@ pro SpdfRest__define
         endpoint:'', $
         userAgent:'', $
         version:'', $
-        currentVersionUrl:'' $
+        currentVersionUrl:'', $
+        proxy_authentication:0, $
+        proxy_hostname:'', $
+        proxy_password:'', $
+        proxy_port:'', $
+        proxy_username:'', $
+        ssl_verify_peer:1 $
     }
 end

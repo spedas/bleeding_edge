@@ -8,7 +8,7 @@
 ; You can obtain a copy of the agreement at
 ;   docs/NASA_Open_Source_Agreement_1.3.txt
 ; or 
-;   http://sscweb.gsfc.nasa.gov/WebServices/NASA_Open_Source_Agreement_1.3.txt.
+;   https://sscweb.gsfc.nasa.gov/WebServices/NASA_Open_Source_Agreement_1.3.txt.
 ;
 ; See the Agreement for the specific language governing permissions
 ; and limitations under the Agreement.
@@ -22,19 +22,20 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2013 United States Government as represented by the 
-; National Aeronautics and Space Administration. No copyright is claimed 
-; in the United States under Title 17, U.S.Code. All Other Rights Reserved.
+; Copyright (c) 2013-2017 United States Government as represented by 
+; the National Aeronautics and Space Administration. No copyright is 
+; claimed in the United States under Title 17, U.S.Code. All Other 
+; Rights Reserved.
 ;
 ;
 
 
 ;+
 ; This program is an example to demonstrate calling the
-; <a href="http://sscweb.gsfc.nasa.gov/">Satellite Situation Center's</a>
-; <a href="http://sscweb.gsfc.nasa.gov/WebServices/REST/">
+; <a href="https://sscweb.gsfc.nasa.gov/">Satellite Situation Center's</a>
+; <a href="https://sscweb.gsfc.nasa.gov/WebServices/REST/">
 ; REST Web Services</a> from an 
-; <a href="http://www.exelisvis.com/">Exelis Visual Information 
+; <a href="http://www.harrisgeospatial.com/">Exelis Visual Information 
 ; Solutions</a>
 ; (VIS) Interactive Data Language (IDL) program.  It demonstrates the 
 ; following:
@@ -45,9 +46,9 @@
 ;     <li>Some basic HTTP error handling.</li>
 ;   </ul>
 ;
-; @copyright Copyright (c) 2013 United States Government as represented
-;     by the National Aeronautics and Space Administration. No
-;     copyright is claimed in the United States under Title 17,
+; @copyright Copyright (c) 2013-2014 United States Government as 
+;     represented by the National Aeronautics and Space Administration.
+;     No copyright is claimed in the United States under Title 17,
 ;     U.S.Code. All Other Rights Reserved.
 ;
 ; @author B. Harris
@@ -56,166 +57,17 @@
 
 
 ;+
-; This procedure is an example to demonstrate calling the SSC REST
-; Web Services from an IDL program.  It demonstrates the following:
-;   <ul>
-;     <li>Getting the available observatories.</li>
-;     <li>Getting the available ground stations.</li>
-;     <li>Getting and displaying satellite location data.</li>
-;     <li>Some basic HTTP error handling.</li>
-;   </ul>
+; Prints an SpdfSssDataResult object.
+;
+; @private
+; @param dataResult {in} {type=SpdfSscDataResult}
+;            DataResult to print.
 ;-
-pro SpdfSscWsExample
+pro SpdfPrintDataResult, $
+    dataResult
     compile_opt idl2
 
-    ssc = $
-        obj_new('SpdfSsc', $
-            endpoint = 'http://sscweb.gsfc.nasa.gov/WS/sscr/2', $
-;            endpoint = 'http://localhost:8084/WS/sscr/2', $
-            userAgent = 'WsExample/1.0')
-
-    errReporter = obj_new('SpdfHttpErrorReporter');
-
-    observatories = $
-        ssc->getObservatories(httpErrorReporter = errReporter)
-
-    print, 'Observatories:'
-    for i = 0, n_elements(observatories) - 1 do begin
-
-        id = (observatories[i])->getId()
-        name = (observatories[i])->getName()
-        spaseId = (observatories[i])->getResourceId()
-
-        print, '  ', id, '  ', name, '  ', spaseId
-
-        spaseGroupIds = (observatories[i])->getGroupIds()
-
-        for j = 0, n_elements(spaseGroupIds) - 1 do begin
-
-            if strlen(spaseGroupIds[j]) gt 0 then begin
-
-                print, '    ', spaseGroupIds[j]
-            endif
-        endfor
-    endfor
-    print
-
-    obj_destroy, observatories
-
-    groundStations = $
-        ssc->getGroundStations(httpErrorReporter = errReporter)
-
-    print, 'Ground Stations:'
-    for i = 0, n_elements(groundStations) - 1 do begin
-
-        location = (groundStations[i])->getLocation()
-        latitude = location->getLatitude()
-        longitude = location->getLongitude()
-
-        print, '  ', (groundStations[i])->getId(), '  ', $
-            (groundStations[i])->getName(), '  ', latitude, $
-            '  ', longitude
-    endfor
-    print
-
-    obj_destroy, groundStations
-
-    timeInterval = $
-        obj_new('SpdfTimeInterval', $
-            julday(1, 2, 2008, 11, 0, 0), $
-            julday(1, 2, 2008, 11, 30, 0))
-
-    sats = objarr(2)
-
-    sats[0] = obj_new('SpdfSatelliteSpecification', 'themisa', 2)
-    sats[1] = obj_new('SpdfSatelliteSpecification', 'themisb', 2)
-
-    coordinateOptions = objarr(6)
-    coordinateOptions[0] = $
-        obj_new('SpdfCoordinateOptions', $
-            coordinateSystem = 'Gse', component = 'X')
-    coordinateOptions[1] = $
-        obj_new('SpdfCoordinateOptions', $
-            coordinateSystem = 'Gse', component = 'Y')
-    coordinateOptions[2] = $
-        obj_new('SpdfCoordinateOptions', $
-            coordinateSystem = 'Gse', component = 'Z')
-    coordinateOptions[3] = $
-        obj_new('SpdfCoordinateOptions', $
-            coordinateSystem = 'Gse', component = 'Lat')
-    coordinateOptions[4] = $
-        obj_new('SpdfCoordinateOptions', $
-            coordinateSystem = 'Gse', component = 'Lon')
-    coordinateOptions[5] = $
-        obj_new('SpdfCoordinateOptions', $
-            coordinateSystem = 'Gse', component = 'Local_Time')
-
-
-    regionOptions = $
-        obj_new('SpdfRegionOptions', $
-            /spacecraft, /radialTracedFootpoint, $
-            /northBTracedFootpoint, /southBTracedFootpoint)
-
-    valueOptions = $
-        obj_new('SpdfValueOptions', $
-            /radialDistance, /bFieldStrength, $
-            /dipoleLValue, /dipoleInvLat)
-
-    distanceFromOptions = $
-        obj_new('SpdfDistanceFromOptions', $
-            /neutralSheet, /bowShock, /mPause, /bGseXYZ)
-
-    bFieldTraceOptions = objarr(2)
-
-    bFieldTraceOptions[0] = $
-        obj_new('SpdfBFieldTraceOptions', $
-            coordinateSystem = 'Geo', $
-            hemisphere = 'North', $
-            /footpointLatitude, /footpointLongitude, /fieldLineLength)
-
-    bFieldTraceOptions[1] = $
-        obj_new('SpdfBFieldTraceOptions', $
-            coordinateSystem = 'Geo', $
-            hemisphere = 'South', $
-            /footpointLatitude, /footpointLongitude, /fieldLineLength)
-
-    outputOptions = $
-        obj_new('SpdfOutputOptions', $
-            coordinateOptions, $
-            /allLocationFilters, $
-            regionOptions = regionOptions, $
-            valueOptions = valueOptions, $
-            distanceFromOptions = distanceFromOptions, $
-            minMaxPoints = 2, $
-            bFieldTraceOptions = bFieldTraceOptions)
-
-    bFieldModel = obj_new('SpdfTsyganenko96BFieldModel')
-
-    locationRequest = $
-        obj_new('SpdfSscDataRequest', $
-            timeInterval, $
-            sats, $
-            outputOptions, $
-            description  = 'Simple locator request.', $
-            bFieldModel = bFieldModel)
-
-    locations = $
-        ssc->getLocations( $
-            locationRequest, $
-            httpErrorReporter = errReporter)
-
-    statusCode = locations->getStatusCode()
-
-    if statusCode eq 'Error' then begin
-
-        print, 'status: ', statusCode
-        subCode = locations->getStatusSubCode()
-        print, 'statusSubCode: ', subCode
-        statusText = locations->getStatusText()
-        print, 'statusText: ', statusText
-    endif
-
-    data = locations->getData()
+    data = dataResult->getData()
 
     if ~obj_valid(data[0]) then begin
 
@@ -264,6 +116,10 @@ pro SpdfSscWsExample
             data[i]->getSouthBTracedFootpointRegions()
 
         print, ''
+;apogee = max(radialLength, apogeeIndex, /NaN, $
+;             min=perigee, subscript_min=perigeeIndex)
+;print, 'Apogee: ', apogeeIndex, bGseX[apogeeIndex], bGseY[apogeeIndex], bGseZ[apogeeIndex], apogee
+;print, 'Perigee: ', perigeeIndex, bGseX[perigeeIndex], bGseY[perigeeIndex], bGseZ[perigeeIndex], perigee
         print, 'Coordinate System: ', strupcase(coordinateSystem)
         print, 'Time                 X               Y              Z'
         for j = 0, n_elements(time) - 1 do begin
@@ -369,8 +225,239 @@ pro SpdfSscWsExample
 ;        p = plot3d(x, y, z, /overplot, window_title='Orbit')
 
     endfor
+end
 
 
+;+
+; Prints an SpdfSssFileResult object and downloads the remote files.
+;
+; @private
+; @param fileResult {in} {type=SpdfSscFileResult}
+;            FileResult to print.
+;-
+pro SpdfPrintFileResult, $
+    fileResult
+    compile_opt idl2
+
+    files = fileResult->getFiles()
+
+    for i = 0, n_elements(files) - 1 do begin
+
+;        files[i]->print
+
+        localFile = files[i]->getFile()
+
+        print, 'File downloaded to ', localFile
+    endfor
+end
+
+
+;+
+; This procedure is an example to demonstrate calling the SSC REST
+; Web Services from an IDL program.  It demonstrates the following:
+;   <ul>
+;     <li>Getting the available observatories.</li>
+;     <li>Getting the available ground stations.</li>
+;     <li>Getting and displaying satellite location data.</li>
+;     <li>Some basic HTTP error handling.</li>
+;   </ul>
+;-
+pro SpdfSscWsExample
+    compile_opt idl2
+
+    ssc = $
+        obj_new('SpdfSsc', $
+            userAgent = 'WsExample')
+
+    errReporter = obj_new('SpdfHttpErrorReporter');
+
+    observatories = $
+        ssc->getObservatories(httpErrorReporter = errReporter)
+
+    print, 'Observatories:'
+    for i = 0, n_elements(observatories) - 1 do begin
+
+        id = (observatories[i])->getId()
+        name = (observatories[i])->getName()
+        spaseId = (observatories[i])->getResourceId()
+
+        print, '  ', id, '  ', name, '  ', spaseId
+
+        spaseGroupIds = (observatories[i])->getGroupIds()
+
+        for j = 0, n_elements(spaseGroupIds) - 1 do begin
+
+            if strlen(spaseGroupIds[j]) gt 0 then begin
+
+                print, '    ', spaseGroupIds[j]
+            endif
+        endfor
+    endfor
+    print
+
+    obj_destroy, observatories
+
+    groundStations = $
+        ssc->getGroundStations(httpErrorReporter = errReporter)
+
+    print, 'Ground Stations:'
+    for i = 0, n_elements(groundStations) - 1 do begin
+
+        location = (groundStations[i])->getLocation()
+        latitude = location->getLatitude()
+        longitude = location->getLongitude()
+
+        print, '  ', (groundStations[i])->getId(), '  ', $
+            (groundStations[i])->getName(), '  ', latitude, $
+            '  ', longitude
+    endfor
+    print
+
+    obj_destroy, groundStations
+
+    timeInterval = $
+        obj_new('SpdfTimeInterval', $
+            julday(1, 2, 2008, 11, 0, 0), $
+            julday(1, 2, 2008, 11, 30, 0))
+
+    sats = objarr(2)
+
+    sats[0] = obj_new('SpdfSatelliteSpecification', 'themisa', 2)
+    sats[1] = obj_new('SpdfSatelliteSpecification', 'themisb', 2)
+
+    locationFilter = $
+        obj_new('SpdfLocationFilter', $
+            minimum = 0b, maximum = 0b, $
+            lowerLimit = -36000.0d, upperLimit = -35000.0d)
+
+;    coordinateOptions = objarr(1)
+;    coordinateOptions[0] = $
+;        obj_new('SpdfFilteredCoordinateOptions', 'Gse', 'X', $
+;                locationFilter)
+
+;goto, noFilter
+
+    coordinateOptions = objarr(6)
+    coordinateOptions[0] = $
+        obj_new('SpdfCoordinateOptions', 'Gse', 'X')
+    coordinateOptions[1] = $
+        obj_new('SpdfCoordinateOptions', 'Gse', 'Y')
+    coordinateOptions[2] = $
+        obj_new('SpdfCoordinateOptions', 'Gse', 'Z')
+    coordinateOptions[3] = $
+        obj_new('SpdfCoordinateOptions', 'Gse', 'Lat')
+    coordinateOptions[4] = $
+        obj_new('SpdfCoordinateOptions', 'Gse', 'Lon')
+    coordinateOptions[5] = $
+        obj_new('SpdfCoordinateOptions', 'Gse', 'Local_Time')
+
+;noFilter:
+
+    regionOptions = $
+        obj_new('SpdfRegionOptions', $
+            /spacecraft, /radialTracedFootpoint, $
+            /northBTracedFootpoint, /southBTracedFootpoint)
+
+    valueOptions = $
+        obj_new('SpdfValueOptions', $
+            /radialDistance, /bFieldStrength, $
+            /dipoleLValue, /dipoleInvLat)
+
+    distanceFromOptions = $
+        obj_new('SpdfDistanceFromOptions', $
+            /neutralSheet, /bowShock, /mPause, /bGseXYZ)
+
+    bFieldTraceOptions = objarr(2)
+
+    bFieldTraceOptions[0] = $
+        obj_new('SpdfBFieldTraceOptions', $
+            coordinateSystem = 'Geo', $
+            hemisphere = 'North', $
+            /footpointLatitude, /footpointLongitude, /fieldLineLength)
+
+    bFieldTraceOptions[1] = $
+        obj_new('SpdfBFieldTraceOptions', $
+            coordinateSystem = 'Geo', $
+            hemisphere = 'South', $
+            /footpointLatitude, /footpointLongitude, /fieldLineLength)
+
+    outputOptions = $
+        obj_new('SpdfOutputOptions', $
+            coordinateOptions, $
+            /allLocationFilters, $
+            regionOptions = regionOptions, $
+            valueOptions = valueOptions, $
+            distanceFromOptions = distanceFromOptions, $
+            minMaxPoints = 2, $
+            bFieldTraceOptions = bFieldTraceOptions)
+
+    bFieldModel = obj_new('SpdfTsyganenko96BFieldModel')
+
+    ;
+    ; The presence of SpdfFormatOptions in the SpdfSscDataRequest
+    ; will result in a CDF or listing file being created instead
+    ; of the values being returned directly into IDL variables.
+    ;
+    formatOptions = $
+        obj_new('SpdfFormatOptions', cdf=0b)
+
+    locationRequest = $
+        obj_new('SpdfSscDataRequest', $
+            timeInterval, $
+            sats, $
+            outputOptions, $
+            description  = 'Simple locator request.', $
+            bFieldModel = bFieldModel)
+;            bFieldModel = bFieldModel, $
+;            formatOptions = formatOptions)
+
+    locations = $
+        ssc->getLocations( $
+            locationRequest, $
+            httpErrorReporter = errReporter)
+
+    if ~obj_valid(locations) then begin
+
+        print, 'getLocations returned an invalid object'
+
+        return
+    endif
+
+    statusCode = locations->getStatusCode()
+
+    if statusCode eq 'Error' then begin
+
+        print, 'status: ', statusCode
+        subCode = locations->getStatusSubCode()
+        print, 'statusSubCode: ', subCode
+        statusText = locations->getStatusText()
+        print, 'statusText: ', statusText
+    endif
+
+    if obj_isa(locations, 'SpdfSscDataResult') then begin
+
+        SpdfPrintDataResult, locations
+    endif else begin  ; SpdfSscFileResult
+
+        SpdfPrintFileResult, locations
+    endelse
+
+    obj_destroy, locations
+    obj_destroy, locationRequest
+    obj_destroy, formatOptions
+    obj_destroy, bFieldModel
+    obj_destroy, outputOptions
+    for i = 0, n_elements(bFieldTraceOptions) - 1 do $
+        obj_destroy, bFieldTraceOptions[i]
+    obj_destroy, distanceFromOptions
+    obj_destroy, valueOptions
+    obj_destroy, regionOptions
+    for i = 0, n_elements(coordinateOptions) - 1 do $
+        obj_destroy, coordinateOptions[i]
+    obj_destroy, locationFilter
+    for i = 0, n_elements(sats) -  1 do obj_destroy, sats[i]
+    obj_destroy, timeInterval
+    obj_destroy, errReporter
     obj_destroy, ssc
 end
 

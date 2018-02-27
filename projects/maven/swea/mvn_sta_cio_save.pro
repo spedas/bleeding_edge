@@ -21,8 +21,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-20 10:50:47 -0800 (Tue, 20 Feb 2018) $
-; $LastChangedRevision: 24753 $
+; $LastChangedDate: 2018-02-26 10:42:55 -0800 (Mon, 26 Feb 2018) $
+; $LastChangedRevision: 24778 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -65,7 +65,7 @@ pro mvn_sta_cio_save, trange, ndays
     mm = strmid(tstring,5,2)
     dd = strmid(tstring,8,2)
     opath = dpath + yyyy + '/' + mm + '/'
-    file_mkdir2, opath, mode='0774'o  ; create directory structure, if needed
+    file_mkdir2, opath, mode='0755'o  ; create directory structure, if needed
     ofile = opath + froot + yyyy + mm + dd + version + '.sav'
 
 ; If the file already exists, then just update it
@@ -87,8 +87,11 @@ pro mvn_sta_cio_save, trange, ndays
               result_h=cio_h, result_o1=cio_o1, result_o2=cio_o2, /reset, tavg=16, $
               frame='mso', /doplot, pans=pans, success=ok
 
-        if (ok) then save, cio_h, cio_o1, cio_o2, file=ofile $
-                else print,'CIO pipeline failed: ',tstring
+        if (ok) then begin
+          save, cio_h, cio_o1, cio_o2, file=ofile
+          spawn, 'chgrp maven ' + ofile
+          spawn, 'chmod 0644 ' + ofile
+        endif else print,'CIO pipeline failed: ',tstring
 
         elapsed_min = (systime(/sec) - timer_start)/60D
         print,elapsed_min,format='("Time to process (min): ",f6.2)'

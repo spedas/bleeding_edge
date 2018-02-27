@@ -47,8 +47,8 @@
 ;         
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-02-13 15:05:01 -0800 (Tue, 13 Feb 2018) $
-;$LastChangedRevision: 24699 $
+;$LastChangedDate: 2018-02-26 11:37:59 -0800 (Mon, 26 Feb 2018) $
+;$LastChangedRevision: 24779 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
@@ -80,7 +80,6 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     dprint, dlevel = 0, '2) http://tsds.org/get/SSCWeb/hapi'
     dprint, dlevel = 0, '3) http://mag.gmu.edu/TestData/hapi'
     dprint, dlevel = 0, '4) https://voyager.gsfc.nasa.gov/hapiproto'
-    dprint, dlevel = 0, '5) http://jfaden.net/HapiServerDemo/hapi'
     return
   endif else begin
     url_parts = parse_url(server)
@@ -167,7 +166,7 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     csv_data = neturl->get(filename='hapidata')
     
     csv = read_csv(csv_data)
-    
+
     ; extract the data
     for param_idx = 0, n_elements(info['parameters'])-1 do begin
       variable = (info['parameters'])[param_idx]

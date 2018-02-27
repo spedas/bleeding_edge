@@ -8,7 +8,7 @@
 ; You can obtain a copy of the agreement at
 ;   docs/NASA_Open_Source_Agreement_1.3.txt
 ; or 
-;   http://sscweb.gsfc.nasa.gov/WebServices/NASA_Open_Source_Agreement_1.3.txt.
+;   https://sscweb.gsfc.nasa.gov/WebServices/NASA_Open_Source_Agreement_1.3.txt.
 ;
 ; See the Agreement for the specific language governing permissions
 ; and limitations under the Agreement.
@@ -22,28 +22,29 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2013 United States Government as represented by the 
-; National Aeronautics and Space Administration. No copyright is claimed 
-; in the United States under Title 17, U.S.Code. All Other Rights Reserved.
+; Copyright (c) 2013-2017 United States Government as represented by 
+; the National Aeronautics and Space Administration. No copyright is 
+; claimed in the United States under Title 17, U.S.Code. All Other 
+; Rights Reserved.
 ;
 ;
 
 
 ;+
 ; This class represents the remotely callable interface to 
-; <a href="http://www.nasa.gov/">NASA</a>'s
-; <a href="http://spdf.gsfc.nasa.gov/">Space Physics Data Facility</a> 
+; <a href="https://www.nasa.gov/">NASA</a>'s
+; <a href="https://spdf.gsfc.nasa.gov/">Space Physics Data Facility</a> 
 ; (SPDF)
-; <a href="http://sscweb.gsfc.nasa.gov/">Satellite Situation Center</a>
+; <a href="https://sscweb.gsfc.nasa.gov/">Satellite Situation Center</a>
 ; (SSC).  The current implementation only support the 
-; <a href="http://sscweb.gsfc.nasa.gov/WebServices/REST/#Get_Locations_POST">
-; "locations" functionality</a>.  Supporting the "conjunctions" and/or
-; "graphs" functionality is a future possibility if there were 
-; sufficient interest.
+; <a href="https://sscweb.gsfc.nasa.gov/WebServices/REST/#Get_Locations_POST">
+; "data locations" functionality</a>.  Supporting the "text (listing)
+; locations", "conjunctions" and/or "graphs" functionality is a 
+; future possibility if there were sufficient interest.
 ;
-; @copyright Copyright (c) 2013 United States Government as represented
-;     by the National Aeronautics and Space Administration. No 
-;     copyright is claimed in the United States under Title 17, 
+; @copyright Copyright (c) 2013-2017 United States Government as 
+;     represented by the National Aeronautics and Space Administration.
+;     No copyright is claimed in the United States under Title 17, 
 ;     U.S.Code. All Other Rights Reserved.
 ;
 ; @author B. Harris
@@ -54,29 +55,36 @@
 ; Creates an object representing SSC.
 ;
 ; @keyword endpoint {in} {optional} {type=string}
-;              {default=http://sscweb.gsfc.nasa.gov/WS/sscr/2}
+;              {default=self->getDefaultEndpoint()}
 ;              URL of SSC web service .
 ; @keyword userAgent {in} {optional} {type=string} {default=WsExample}
 ;              HTTP user-agent value used in communications with SSC.
+; @keyword sslVerifyPeer {in} {optional} {type=int} {default=1}
+;              Specifies whether the authenticity of the peer's SSL
+;              certificate should be verified.  When 0, the connection
+;              succeeds regardless of what the peer SSL certificate
+;              contains.
 ; @returns a reference to a SSC object.
 ;-
 function SpdfSsc::init, $
     endpoint = endpoint, $
-    userAgent = userAgent
+    userAgent = userAgent, $
+    sslVerifyPeer = sslVerifyPeer
     compile_opt idl2
 
     version = '%VERSION*'
     currentVersionUrl = $
-        'http://sscweb.gsfc.nasa.gov/WebServices/REST/spdfSscVersion.txt'
+        'https://sscweb.gsfc.nasa.gov/WebServices/REST/spdfSscVersion.txt'
 
     if ~keyword_set(endpoint) then begin
 
-        endpoint = 'http://sscweb.gsfc.nasa.gov/WS/sscr/2'
+        endpoint = self->getDefaultEndpoint()
     endif
 
     obj = self->SpdfRest::init( $
               endpoint, version, currentVersionUrl, $
-              userAgent = userAgent)
+              userAgent = userAgent + '/' + version, $
+              sslVerifyPeer = sslVerifyPeer)
 
     return, obj
 end
@@ -93,12 +101,38 @@ end
 
 
 ;+
+; Gets the default endpoint value.
+;
+; @returns default endpoint string value.
+;-
+function SpdfSsc::getDefaultEndpoint
+    compile_opt idl2
+
+    endpoint = 'http'
+
+    releaseComponents = strsplit(!version.release, '.', /extract)
+
+    if releaseComponents[0] ge '8' and $
+       releaseComponents[1] ge '4' then begin
+
+        ; Even though earlier versions of IDL are suppose to support
+        ; https, they do not (at least they do not support https to
+        ; cdaweb).
+
+        endpoint = endpoint + 's'
+    endif
+
+    return, endpoint + '://sscweb.gsfc.nasa.gov/WS/sscr/2'
+end
+
+
+;+
 ; Gets a description of all the observatories that are available.
 ;
 ; @keyword httpErrorReporter {in} {optional} 
 ;              {type=SpdfHttpErrorReporter}
 ;              used to report an HTTP error.
-; @returns array of SpdfObservatory objects.
+; @returns array of SpdfObservatoryDescription objects.
 ;-
 function SpdfSsc::getObservatories, $
     httpErrorReporter=errorReporter
@@ -220,7 +254,7 @@ end
 ; @keyword httpErrorReporter {in} {optional} 
 ;              {type=SpdfHttpErrorReporter}
 ;              used to report an HTTP error.
-; @returns SpdfLocationDataResult object.
+; @returns an SpdfSscDataResult or SpdfSscFileResult object.
 ;-
 function SpdfSsc::getLocations, $
     locationRequest, $
@@ -239,14 +273,22 @@ function SpdfSsc::getLocations, $
 
     obj_destroy, requestDoc
 
-    dataDoc = self->makePostRequest(url, xmlRequest, $
-                  errorReporter = errorReporter)
+    resultDoc = self->makePostRequest(url, xmlRequest, $
+                    errorReporter = errorReporter)
 
-    if ~obj_valid(dataDoc) then return, obj_new()
+    if ~obj_valid(resultDoc) then return, obj_new()
 
-    dataResult = self->getDataResult(dataDoc)
+    fileNodeList= resultDoc->getElementsByTagName('Files')
 
-    obj_destroy, dataDoc
+    if fileNodeList->getLength() eq 0 then begin
+
+        dataResult = self->getDataResult(resultDoc)
+    endif else begin
+
+        dataResult = self->getFileResult(resultDoc)
+    endelse
+
+    obj_destroy, resultDoc
 
     return, dataResult
 end
@@ -259,14 +301,19 @@ end
 ;
 ; @param domElement {in} {required} {type=IDLffXMLDOMElement}
 ;                DOM element to search.
+; @keyword name {in} {optional} {type=string} {default='Time'}
+;              name of time tag.
 ; @returns node's julday time value(s) from the given DOM element.
 ;     A scalar value of !values.d_NaN is returned if no value is found.
 ;-
 function SpdfSsc::getTime, $
-    domElement
+    domElement, $
+    name = name
     compile_opt idl2
 
-    nodeList = domElement->getElementsByTagName('Time')
+    if keyword_set(name) then name = name else name = 'Time'
+
+    nodeList = domElement->getElementsByTagName(name)
 
     if nodeList->getLength() eq 0 then return, !values.d_NaN
 
@@ -305,6 +352,108 @@ end
 
 
 ;+
+; Creates an SpdfSscFileResult object from the given ssc:DataResult
+; XML document.
+;
+; @private
+;
+; @param doc {in} {type=IDLffXMLDOMDocument}
+;              SpdfSscDataResult XML document.
+; @returns SpdfSscFileResult object.
+;-
+function SpdfSsc::getFileResult, $
+    doc
+    compile_opt idl2
+
+; doc->save, filename='getFileResult.xml', /pretty_print
+
+    statusCode = self->getDataResultText(doc, 'StatusCode')
+
+    statusSubCode = self->getDataResultText(doc, 'StatusSubCode')
+
+    statusText = self->getDataResultText(doc, 'StatusText')
+
+    if statusCode eq '' then begin
+
+        ; This will not be necessary when the server is fixed to
+        ; include it in a FileResult (fix is in R2.2.7).
+        statusCode = 'Success'
+    endif
+    if statusCode ne 'Success' then begin
+
+        print, 'StatusCode: ', statusCode
+        print, 'StatusSubCode: ', statusSubCode
+        print, 'StatusText: ', statusText
+
+        return, obj_new()
+    endif
+
+    files = self->getFiles(doc)
+
+    fileResult = obj_new('SpdfSscFileResult', $
+        files, $
+        statusCode = statusCode, $
+        statusSubCode = statusSubCode, $
+        statusText = statusText)
+
+    return, fileResult
+end
+
+
+;+
+; Creates an array of SpdfFileDescription objects from the given 
+; ssc:Files XML document.
+;
+; @private
+;
+; @param doc {in} {type=IDLffXMLDOMDocument}
+;              SpdfFileResult XML document.
+; @returns objarr containing SpdfFileDescriptions or an objarr(1) whose
+;     first element is ~obj_valid().
+;-
+function SpdfSsc::getFiles, $
+    doc
+    compile_opt idl2
+
+; doc->save, filename='files.xml', /pretty_print
+
+    filesElements = $
+        doc->getElementsByTagName('Files')
+
+    if filesElements->getLength() eq 0 then begin
+
+        return, objarr(1)
+    endif
+
+    files = objarr(filesElements->getLength())
+
+    for i = 0, filesElements->getLength() - 1 do begin
+
+        filesElement = filesElements->item(i)
+
+        name = self->getNamedElementsFirstChildValue( $
+                   filesElement, 'Name')
+
+        mimeType = self->getNamedElementsFirstChildValue( $
+                       filesElement, 'MimeType')
+
+        length = self->getNamedElementsFirstChildValue( $
+                   filesElement, 'Length')
+
+        lastModified = self->getTime(filesElement, name='LastModified')
+
+        files[i] = obj_new('SpdfFileDescription', $
+            name, $
+            mimeType, $
+            length, $
+            lastModified)
+    endfor
+
+    return, files
+end
+
+
+;+
 ; Creates an SpdfSscDataResult object from the given ssc:DataResult
 ; XML document.
 ;
@@ -317,6 +466,8 @@ end
 function SpdfSsc::getDataResult, $
     doc
     compile_opt idl2
+
+doc->save, filename='getDataResult.xml', /pretty_print
 
     statusCode = self->getDataResultText(doc, 'StatusCode')
 

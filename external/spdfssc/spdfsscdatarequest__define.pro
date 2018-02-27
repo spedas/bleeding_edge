@@ -22,9 +22,10 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2013 United States Government as represented by the 
-; National Aeronautics and Space Administration. No copyright is claimed 
-; in the United States under Title 17, U.S.Code. All Other Rights Reserved.
+; Copyright (c) 2013-2016 United States Government as represented by 
+; the National Aeronautics and Space Administration. No copyright is 
+; claimed in the United States under Title 17, U.S.Code. All Other 
+; Rights Reserved.
 ;
 ;
 
@@ -35,9 +36,9 @@
 ; <a href="http://sscweb.gsfc.nasa.gov/">Satellite Situation Center</a>
 ; (SSC) XML schema.
 ;
-; @copyright Copyright (c) 2013 United States Government as represented
-;     by the National Aeronautics and Space Administration. No
-;     copyright is claimed in the United States under Title 17,
+; @copyright Copyright (c) 2013-2016 United States Government as 
+;     represented by the National Aeronautics and Space Administration.
+;     No copyright is claimed in the United States under Title 17,
 ;     U.S.Code. All Other Rights Reserved.
 ;
 ; @author B. Harris
@@ -57,7 +58,7 @@
 ;            a textual description of this request.
 ; @keyword bFieldModel {in} {optional} {type=SpdfBFieldModel}
 ;            magnetic field model to use.  If not given, a default 
-;            model of IGRF-10 and Tsyganenko 89c with KP values of 
+;            model of IGRF and Tsyganenko 89c with KP values of 
 ;            3-,3,3+ is used. 
 ; @keyword regionOptions {in} {optional} {type=SpdfRegionOptions}
 ;            requested region options.
@@ -115,6 +116,7 @@ pro SpdfSscDataRequest::cleanup
     compile_opt idl2
 
     if ptr_valid(self.satellites) then ptr_free, self.satellites
+
     if obj_valid(self.outputOptions) then begin
 
         obj_destroy, self.outputOptions
@@ -188,7 +190,6 @@ function SpdfSscDataRequest::createDomElement, $
         ovoid = dataRequestElement->appendChild( $
                     locationFilterOptionsElement)
     endif
-
 
     if ptr_valid(self.formatOptions) then begin
 
