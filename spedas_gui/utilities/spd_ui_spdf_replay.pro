@@ -7,9 +7,9 @@
 ;  In the future, we may want to consider replacing the cdawebchooser GUI code with this.
 ;  as I'm forking a little bit here.
 ;  
-;$LastChangedBy: pcruce $
-;$LastChangedDate: 2014-07-30 18:17:41 -0700 (Wed, 30 Jul 2014) $
-;$LastChangedRevision: 15630 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2018-02-27 16:20:33 -0800 (Tue, 27 Feb 2018) $
+;$LastChangedRevision: 24791 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/utilities/spd_ui_spdf_replay.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ pro spd_ui_spdf_replay,tlb,statusbar,historywindow,$
 
   cdas = $
     obj_new('SpdfCdas', $
-    endpoint='http://cdaweb.gsfc.nasa.gov/WS/cdasr/1', $
+    ;endpoint='http://cdaweb.gsfc.nasa.gov/WS/cdasr/1', $
     userAgent='CdawebChooser/1.0')
 
   authenticator = obj_new('SpdfCdawebChooserAuthenticator', tlb)

@@ -49,9 +49,9 @@
 ;
 ;HISTORY:
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-08-15 17:21:26 -0700 (Tue, 15 Aug 2017) $
-;$LastChangedRevision: 23795 $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-02-26 18:38:27 -0800 (Mon, 26 Feb 2018) $
+;$LastChangedRevision: 24789 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/objects/spd_ui_loaded_data__define.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -760,7 +760,11 @@ function SPD_UI_LOADED_DATA::detectInstrument, name, dl,mission
     
       if in_set('gatt', strlowcase(tag_names(dl.cdf))) && is_struct(dl.cdf.gatt) then begin
       
-        if in_set('data_type', strlowcase(tag_names(dl.cdf.gatt))) then begin
+      
+      ; 'data_type' field is not ISTP compatable. This option is left for THEMIS 
+      ; and GOES missions only for backward capability
+      ; Instead, we use Descriptor as a correct instument attribute       
+        if in_set('data_type', strlowcase(tag_names(dl.cdf.gatt))) and in_set(strlowcase(mission),['themis','goes']) then begin
         
           inst_string = strmid(dl.cdf.gatt.data_type,0,3)
         
@@ -814,8 +818,7 @@ function SPD_UI_LOADED_DATA::detectInstrument, name, dl,mission
             'STA': begin
               instrument = 'state'
               success = 1
-            end
-            else: begin
+            end            
               ;;;;; 4/9/2015, egrimes, commented out calls to thm_ui_valid_datatype 
               ;;;;;           because it lives in projects/themis. The regex that follows
               ;;;;;           should pick up these variables, and more.
@@ -842,18 +845,20 @@ function SPD_UI_LOADED_DATA::detectInstrument, name, dl,mission
 ;                instrument='scm'
 ;                success = 1
 ;              endif
-              
-              if mission ne 'THEMIS' && mission ne 'GOES' then begin
-                instrument = dl.cdf.gatt.data_type
-                success=1
+          endcase  
+          
+            endif else begin ; 'data_type'
+              ; If mission is themis or goes, the instrument will be obtained 
+              ; later in the function. This is the case for all other missions
+              if ~in_set(strlowcase(mission),['themis','goes']) and in_set('descriptor', strlowcase(tag_names(dl.cdf.gatt))) then begin                
+                  instrument = dl.cdf.gatt.descriptor
+                  success=1
               endif 
             endelse
-          
-          endcase
-        endif
-      endif
-    endif
-  endif
+
+      endif ; 'gatt'
+    endif ; 'cdf'
+  endif ; ~success 
   
   if ~success then begin
     if mission eq 'THEMIS' then begin

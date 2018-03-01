@@ -21,14 +21,16 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-26 10:42:55 -0800 (Mon, 26 Feb 2018) $
-; $LastChangedRevision: 24778 $
+; $LastChangedDate: 2018-02-27 17:55:49 -0800 (Tue, 27 Feb 2018) $
+; $LastChangedRevision: 24795 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;FILE: mvn_sta_cio_save.pro
 ;-
 pro mvn_sta_cio_save, trange, ndays
+
+  common coldion, cio_h, cio_o1, cio_o2
 
   dpath = root_data_dir() + 'maven/data/sci/sta/l3/cio/'
   froot = 'mvn_sta_cio_'
@@ -66,6 +68,7 @@ pro mvn_sta_cio_save, trange, ndays
     dd = strmid(tstring,8,2)
     opath = dpath + yyyy + '/' + mm + '/'
     file_mkdir2, opath, mode='0755'o  ; create directory structure, if needed
+    spawn, 'chgrp maven ' + opath
     ofile = opath + froot + yyyy + mm + dd + version + '.sav'
 
 ; If the file already exists, then just update it
@@ -73,9 +76,10 @@ pro mvn_sta_cio_save, trange, ndays
     finfo = file_info(ofile)
     if (0) then begin
       print,'CIO save file already exists.  Updating.'
-      mvn_sta_cio_update, time
+      mvn_sta_cio_update, time  ; no need for this anymore
     endif else begin
-      mvn_swe_load_l0, /spiceinit
+      mvn_swe_spice_init, /force, /list
+      mvn_swe_load_l0
       mvn_swe_stat, npkt=npkt, /silent
       if (npkt[2] gt 0L) then begin
         maven_orbit_tplot, /shadow, /loadonly
@@ -84,13 +88,12 @@ pro mvn_sta_cio_save, trange, ndays
         mvn_sundir, frame='swe', /polar
 
         mvn_sta_coldion, density=1, temperature=1, velocity=[1,1,1], $
-              result_h=cio_h, result_o1=cio_o1, result_o2=cio_o2, /reset, tavg=16, $
-              frame='mso', /doplot, pans=pans, success=ok
+              /reset, tavg=16, frame='mso', /doplot, pans=pans, success=ok
 
         if (ok) then begin
           save, cio_h, cio_o1, cio_o2, file=ofile
           spawn, 'chgrp maven ' + ofile
-          spawn, 'chmod 0644 ' + ofile
+          file_chmod, ofile, '644'o
         endif else print,'CIO pipeline failed: ',tstring
 
         elapsed_min = (systime(/sec) - timer_start)/60D

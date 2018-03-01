@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Feb 26 18:16:19 2018.<P>
+<STRONG>Last modified: </STRONG>Wed Feb 28 18:16:19 2018.<P>
  
 <HR>
  
@@ -41,6 +41,7 @@ This page was created by the IDL library routine
 <br>Saves STATIC cold ion outflow results in save/restore files.
 <LI><A HREF="#MVN_STA_CIO_STRUCT">MVN_STA_CIO_STRUCT</A>
 <br>Creates a Cold Ion Outflow data structure.
+<LI><A HREF="#MVN_STA_CIO_TPLOT">MVN_STA_CIO_TPLOT</A>
 <LI><A HREF="#MVN_STA_CIO_UPDATE">MVN_STA_CIO_UPDATE</A>
 <br>Updates STATIC cold ion outflow results in save/restore files.
 <LI><A HREF="#MVN_STA_COLDION">MVN_STA_COLDION</A>
@@ -592,9 +593,11 @@ KEYWORDS:
 
        PANS:          Tplot panel names created when DOPLOT is set.
 
+       SUCCESS:       Success flag.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-02-19 12:23:38 -0800 (Mon, 19 Feb 2018) $
- $LastChangedRevision: 24746 $
+ $LastChangedDate: 2018-02-28 11:18:56 -0800 (Wed, 28 Feb 2018) $
+ $LastChangedRevision: 24804 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_restore.pro $
 
 CREATED BY:    David L. Mitchell
@@ -631,8 +634,8 @@ INPUTS:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-02-26 10:42:55 -0800 (Mon, 26 Feb 2018) $
- $LastChangedRevision: 24778 $
+ $LastChangedDate: 2018-02-27 17:55:49 -0800 (Tue, 27 Feb 2018) $
+ $LastChangedRevision: 24795 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 
 CREATED BY:    David L. Mitchell
@@ -644,7 +647,7 @@ FILE: mvn_sta_cio_save.pro
 <A NAME="MVN_STA_CIO_STRUCT">
 <H2>MVN_STA_CIO_STRUCT</H2></A>
 <A HREF="#MVN_STA_CIO_SAVE">[Previous Routine]</A>
-<A HREF="#MVN_STA_CIO_UPDATE">[Next Routine]</A>
+<A HREF="#MVN_STA_CIO_TPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 FUNCTION:   mvn_sta_cio_struct
@@ -669,9 +672,36 @@ LAST MODIFICATION:
 <STRONG>(See <A href="swea/mvn_sta_cio_struct.pro">projects/maven/swea/mvn_sta_cio_struct.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_CIO_TPLOT">
+<H2>MVN_STA_CIO_TPLOT</H2></A>
+<A HREF="#MVN_STA_CIO_STRUCT">[Previous Routine]</A>
+<A HREF="#MVN_STA_CIO_UPDATE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_sta_cio_tplot
+PURPOSE:
+
+USAGE:
+  mvn_sta_cio_tplot
+
+INPUTS:
+
+KEYWORDS:
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2018-02-27 17:57:49 -0800 (Tue, 27 Feb 2018) $
+ $LastChangedRevision: 24797 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_tplot.pro $
+
+CREATED BY:	David L. Mitchell
+FILE:  mvn_sta_cio_plot.pro
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_sta_cio_tplot.pro">projects/maven/swea/mvn_sta_cio_tplot.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_CIO_UPDATE">
 <H2>MVN_STA_CIO_UPDATE</H2></A>
-<A HREF="#MVN_STA_CIO_STRUCT">[Previous Routine]</A>
+<A HREF="#MVN_STA_CIO_TPLOT">[Previous Routine]</A>
 <A HREF="#MVN_STA_COLDION">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -690,19 +720,11 @@ INPUTS:
                       specified, then the earliest and latest times are used.
                       Fractional days (hh:mm:ss) are ignored.
 
-       ndays:         Number of dates to process.  Only used if TRANGE has
-                      only one element.  Default = 1.
-
-       noguff:        Force update of the shape parameter elements.
-
-       parng:         Pitch angle range for shape parameter elements.
-                        1 = 0-30 deg (default); 2 = 0-45 deg ; 3 = 0-60 deg
-
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-10-06 09:36:43 -0700 (Fri, 06 Oct 2017) $
- $LastChangedRevision: 24120 $
+ $LastChangedDate: 2018-02-27 18:37:52 -0800 (Tue, 27 Feb 2018) $
+ $LastChangedRevision: 24801 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_update.pro $
 
 CREATED BY:    David L. Mitchell
@@ -797,8 +819,8 @@ KEYWORDS:
     SUCCESS:       Processing success flag.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-02-19 12:23:00 -0800 (Mon, 19 Feb 2018) $
- $LastChangedRevision: 24745 $
+ $LastChangedDate: 2018-02-27 17:53:50 -0800 (Tue, 27 Feb 2018) $
+ $LastChangedRevision: 24793 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 
 CREATED BY:    David L. Mitchell
@@ -2292,8 +2314,8 @@ KEYWORDS:
 OUTPUTS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-02-18 12:34:03 -0800 (Sun, 18 Feb 2018) $
- $LastChangedRevision: 24739 $
+ $LastChangedDate: 2018-02-27 21:02:27 -0800 (Tue, 27 Feb 2018) $
+ $LastChangedRevision: 24803 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_kp.pro $
 
 </PRE><P>
