@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Feb 28 18:16:19 2018.<P>
+<STRONG>Last modified: </STRONG>Thu Mar  1 18:16:23 2018.<P>
  
 <HR>
  
@@ -35,7 +35,6 @@ MMS_FPI_DIST_SLICE_COMPARISON_CRIB</A>
 <LI><A HREF="#MMS_POYNTING_FLUX_CRIB">MMS_POYNTING_FLUX_CRIB</A>
 <LI><A HREF="#MMS_SLICE2D_FPI_CRIB">MMS_SLICE2D_FPI_CRIB</A>
 <LI><A HREF="#MMS_SLICE2D_HPCA_CRIB">MMS_SLICE2D_HPCA_CRIB</A>
-<LI><A HREF="#MMS_THEMIS_TPLOT2CDF2_CRIB">MMS_THEMIS_TPLOT2CDF2_CRIB</A>
 <LI><A HREF="#MMS_TPLOT2AUTOPLOT_CRIB">MMS_TPLOT2AUTOPLOT_CRIB</A>
 <br>Crib sheet showing how to send MMS data to Autoplot
 <LI><A HREF="#MMS_TPLOT2CDF_CRIB">MMS_TPLOT2CDF_CRIB</A>
@@ -337,8 +336,8 @@ Purpose:
   spectrograms and moments from level 2 MMS HPCA and FPI distributions.
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-01-19 15:28:11 -0800 (Fri, 19 Jan 2018) $
-$LastChangedRevision: 24556 $
+$LastChangedDate: 2018-03-01 13:55:24 -0800 (Thu, 01 Mar 2018) $
+$LastChangedRevision: 24815 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_part_getspec_crib.pro $
 </PRE><P>
 <STRONG>(See <A href="advanced/mms_part_getspec_crib.pro">projects/mms/examples/advanced/mms_part_getspec_crib.pro</A>)</STRONG><P>
@@ -438,7 +437,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_SLICE2D_HPCA_CRIB">
 <H2>MMS_SLICE2D_HPCA_CRIB</H2></A>
 <A HREF="#MMS_SLICE2D_FPI_CRIB">[Previous Routine]</A>
-<A HREF="#MMS_THEMIS_TPLOT2CDF2_CRIB">[Next Routine]</A>
+<A HREF="#MMS_TPLOT2AUTOPLOT_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Purpose:
@@ -471,30 +470,9 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="advanced/mms_slice2d_hpca_crib.pro">projects/mms/examples/advanced/mms_slice2d_hpca_crib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="MMS_THEMIS_TPLOT2CDF2_CRIB">
-<H2>MMS_THEMIS_TPLOT2CDF2_CRIB</H2></A>
-<A HREF="#MMS_SLICE2D_HPCA_CRIB">[Previous Routine]</A>
-<A HREF="#MMS_TPLOT2AUTOPLOT_CRIB">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-
- Warning: this file is under development!
-
- Example of tplot2cdf2 
- It is originally designed for testing purpuses
- This examples loads and processes data from THEMIS and MMS mission. It saves the results into the cdf file using tplot variables.
-
- $LastChangedBy: adrozdov $
- $LastChangedDate: 2018-01-23 20:38:14 -0800 (Tue, 23 Jan 2018) $
- $LastChangedRevision: 24575 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_themis_tplot2cdf2_crib.pro $
-</PRE><P>
-<STRONG>(See <A href="advanced/mms_themis_tplot2cdf2_crib.pro">projects/mms/examples/advanced/mms_themis_tplot2cdf2_crib.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="MMS_TPLOT2AUTOPLOT_CRIB">
 <H2>MMS_TPLOT2AUTOPLOT_CRIB</H2></A>
-<A HREF="#MMS_THEMIS_TPLOT2CDF2_CRIB">[Previous Routine]</A>
+<A HREF="#MMS_SLICE2D_HPCA_CRIB">[Previous Routine]</A>
 <A HREF="#MMS_TPLOT2CDF_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -523,15 +501,12 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
- Warning: this file is under development!
+ This crib sheet shows how to save MMS data loaded into tplot variables to a CDF file
 
- Example of tplot2cdf 
- It is originally designed for testing purpuses
- This examples loads and processes data from MMS mission. It saves the results into the cdf file using tplot variables.
 
- $LastChangedBy: adrozdov $
- $LastChangedDate: 2018-02-02 11:32:56 -0800 (Fri, 02 Feb 2018) $
- $LastChangedRevision: 24631 $
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2018-03-01 12:32:10 -0800 (Thu, 01 Mar 2018) $
+ $LastChangedRevision: 24811 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_tplot2cdf_crib.pro $
 </PRE><P>
 <STRONG>(See <A href="advanced/mms_tplot2cdf_crib.pro">projects/mms/examples/advanced/mms_tplot2cdf_crib.pro</A>)</STRONG><P>

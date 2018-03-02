@@ -5,8 +5,8 @@
 ;   please send them to egrimes@igpp.ucla.edu
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-02-22 09:05:59 -0800 (Wed, 22 Feb 2017) $
-; $LastChangedRevision: 22846 $
+; $LastChangedDate: 2018-03-01 13:36:16 -0800 (Thu, 01 Mar 2018) $
+; $LastChangedRevision: 24814 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/quicklook/mms_load_eis_pad_crib_qlplots.pro $
 ;-
 
@@ -41,15 +41,21 @@ endif
 ; load ExTOF, PHxTOF and electron data:
 mms_load_eis, probes=probe, trange=trange, datatype=['phxtof', 'extof', 'electronenergy'], level='l1b'
 
+mms_eis_omni, probe, data_units='cps', datatype='phxtof', species='proton'
+mms_eis_omni, probe, data_units='cps', datatype='extof', species='proton'
+mms_eis_omni, probe, data_units='cps', datatype='extof', species='alpha'
+mms_eis_omni, probe, data_units='cps', datatype='extof', species='oxygen'
+mms_eis_omni, probe, data_units='cps', datatype='electronenergy', species='electron'
+
 mms_load_fgm, probes=probe, trange=trange, instrument='dfg', level='ql'
 spd_mms_load_bss, trange=trange, /include_labels
 
 ; calculate the pitch angle distributions
-mms_eis_pad, probe=probe, trange=trange, datatype='extof', level='l1b', energy=[68.71, 100.15], ion_type='proton', data_units='cps'
-mms_eis_pad, probe=probe, trange=trange, datatype='phxtof', level='l1b', energy=[14.34, 20.44], ion_type='proton', data_units='cps'
-mms_eis_pad, probe=probe, trange=trange, datatype='extof', level='l1b', energy=[111.65, 204.48], ion_type='alpha', data_units='cps'
-mms_eis_pad, probe=probe, trange=trange, datatype='extof', level='l1b', energy=[169.59, 220.86], ion_type='oxygen', data_units='cps'
-mms_eis_pad, probe=probe, trange=trange, datatype='electronenergy', level='l1b', energy=[54.24, 89.59], data_units='cps'
+mms_eis_pad, combine=0, probe=probe, trange=trange, datatype='extof', level='l1b', energy=[68.71, 100.15], species='proton', data_units='cps'
+mms_eis_pad, combine=0, probe=probe, trange=trange, datatype='phxtof', level='l1b', energy=[14.34, 20.44], species='proton', data_units='cps'
+mms_eis_pad, combine=0, probe=probe, trange=trange, datatype='extof', level='l1b', energy=[111.65, 204.48], species='alpha', data_units='cps'
+mms_eis_pad, combine=0, probe=probe, trange=trange, datatype='extof', level='l1b', energy=[169.59, 220.86], species='oxygen', data_units='cps'
+mms_eis_pad, combine=0, probe=probe, trange=trange, datatype='electronenergy', level='l1b', energy=[54.24, 89.59], data_units='cps'
 
 ; clip the DFG data to -150nT to 150nT
 tclip, 'mms'+probe+'_dfg_srvy_dmpa_bvec', -150., 150., /overwrite
@@ -58,11 +64,11 @@ options, 'mms'+probe+'_dfg_srvy_dmpa_bvec', labflag=-1
 options, 'mms'+probe+'_dfg_srvy_dmpa_bvec', labels=['Bx DMPA', 'By DMPA', 'Bz DMPA']
 
 panels = 'mms'+probe+'_'+['dfg_srvy_dmpa_bvec', $
-         'epd_eis_electronenergy_54.2400-89.5900keV_electron_cps_omni_pad_spin', $
-         'epd_eis_extof_68.7100-100.150keV_proton_cps_omni_pad_spin', $
-         'epd_eis_phxtof_14.3400-20.4400keV_proton_cps_omni_pad_spin', $
-         'epd_eis_extof_111.650-204.480keV_alpha_cps_omni_pad_spin', $
-         'epd_eis_extof_169.590-220.860keV_oxygen_cps_omni_pad_spin']
+         'epd_eis_electronenergy_54-89keV_electron_cps_omni_pad_spin', $
+         'epd_eis_extof_68-100keV_proton_cps_omni_pad_spin', $
+         'epd_eis_phxtof_14-20keV_proton_cps_omni_pad_spin', $
+         'epd_eis_extof_111-204keV_alpha_cps_omni_pad_spin', $
+         'epd_eis_extof_169-220keV_oxygen_cps_omni_pad_spin']
 
 if ~postscript then window, iw, xsize=width, ysize=height
        

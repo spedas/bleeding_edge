@@ -30,8 +30,8 @@
 ;     This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-02-20 08:22:36 -0800 (Tue, 20 Feb 2018) $
-;$LastChangedRevision: 24749 $
+;$LastChangedDate: 2018-03-01 13:11:47 -0800 (Thu, 01 Mar 2018) $
+;$LastChangedRevision: 24813 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 ;-
 ; REVISION HISTORY:
@@ -61,7 +61,7 @@
 
 pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate = data_rate, energy = energy, $
                 size_pabin = size_pabin, data_units = data_units, datatype = datatype, scopes = scopes, level = level, $
-                suffix = suffix, num_smooth = num_smooth
+                suffix = suffix, num_smooth = num_smooth, combine_proton_data=combine_proton_data
   ;
   compile_opt idl2
   if not KEYWORD_SET(probes) then probes = '1' else probes = strcompress(string(probes), /rem)
