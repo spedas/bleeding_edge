@@ -22,6 +22,13 @@ pro makegap,dg,x,y,dy=dy,v=v
 
 dty = size(/type,y)
 case dty of
+  2: y = float(y)
+  3: y = double(y)
+  else: return
+endcase
+
+dty = size(/type,y)
+case dty of
 	4: filly = !values.f_nan
 	5: filly = !values.d_nan
 else: return
