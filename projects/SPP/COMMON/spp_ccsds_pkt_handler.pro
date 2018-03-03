@@ -27,7 +27,7 @@ pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length,ptp_header=ptp_header,rem
         
     if keyword_set(ptp_header) then begin
       if ptp_header.ptp_size ne ccsds.pkt_size + 17 then begin
-        dprint,dlevel=3,format='("APID: ",Z03," ccsds PKT size: ",i5," does not match ptp size:",i5,a)',ccsds.apid,ccsds.pkt_size+17, ptp_header.ptp_size,' '+time_string(ccsds.time)
+        dprint,dlevel=4,format='("APID: ",Z03," ccsds PKT size: ",i5," does not match ptp size:",i5,a)',ccsds.apid,ccsds.pkt_size+17, ptp_header.ptp_size,' '+time_string(ccsds.time)
       endif
       header=ptp_header
     endif else begin

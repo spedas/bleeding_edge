@@ -1,3 +1,30 @@
+pro spp_swp_ssrreadreq,times
+
+n= n_elements(times)
+if n and 1 then message ,'Must be odd'
+
+
+n2 = n/2
+tt = reform(times,2,n2)
+for i=0,n2-1 do begin
+    blocknums = data_cut('spp_swem_dhkp_SW_SSRWRADDR',tt[*,i])
+    startblock = blocknums[0]
+    deltablock = blocknums[1]-blocknums[0] > 1
+    apmask  =  replicate('ffffffff'x,4)
+    apmask1  = 'FFFFffff'x
+    apmask2  = 'FFFFffff'x
+    apmask3  = 'FFFFffff'x
+;    print,startblock,deltablock,APMASK0,APMASK1,APMASK2,APMASK3,format='("cmd.sw_ssrreadreq(",i6,i5,Z4,Z4,Z4,Z4,")")'
+    print,startblock,deltablock,APMASK,time_string(tt[*,i]),  $
+      format='(%"cmd.SW_SSRREADREQ(%d,%d,0x%8X,0x%8X,0x%8X,0x%8x)  # from: %s  to: %s ")'
+endfor
+
+
+end
+
+
+
+
 pro spp_swp_tplot,name,ADD=ADD,setlim=setlim
 
 if keyword_set(setlim) then begin
@@ -49,7 +76,7 @@ if keyword_set(name) then begin
     'SI_AF0?_1': tplot,'*spani_ar_full_p0_m?_*_SPEC1',add=add
     'SI_HV2': tplot,'*CMDCOUNTER *spi_hkp_HV_CONF_FLAG *spi_hkp_???_DAC *spi_hkp_ADC_VMON_* *spi_hkp_ADC_IMON_*',ADD=ADD
     'SI_MON' : tplot,'*spi_*hkp_MON*',add=add
-    'SI_HV' : tplot,['*CMDCOUNTER','*spi_*CMDS_REC','*spi*DACS*','*spi_*' + strsplit(/extract,'RAW_? MCP_? ACC_?')],add=add
+    'SI_HV' : tplot,['*CMDCOUNTER','*spi_*CMDS_REC','*spi*DACS*','*spi_hkp_HV_MODE','*spi_*' + strsplit(/extract,'RAW_? MCP_? ACC_?')],add=add
     'MANIP':tplot,'manip*_POS',add=add
     'SI_GSE': tplot,add=add,'Igun_* APS3_*'
     'SI': tplot,add=add,'Igun_* manip_*POS *rates_VAL*CNTS *rates_*NO*CNTS '
@@ -61,7 +88,7 @@ if keyword_set(name) then begin
     'SB_COVER': tplot, '*spb*CMD*REC spp_spb_*_ACT_FLAG spp_*SPB_22_C spp_spb_hkp*ANAL_TEMP', add = add
     'SB_COVER': tplot, '*spb_*ACT*CVR* *spb_*ACTSTAT*FLAG *spb*CMD*REC', add = add
  ;   'SA_COVER': tplot, '*spa_*ACT*CVR* *spa_*ACTSTAT*FLAG *spa*CMD*REC', add = add
-    'SWEM': tplot,'APID PTP_DATA_RATE spp_swem_dhkp_SW_CMDCOUNTER',add=add
+    'SWEM': tplot,'APID spp_swem_dhkp_SW_CMDCOUNTER',add=add
     'TIMING': tplot,'spp_swem_timing_'+['DRIFT_DELTA','CLKS_PER_PPS_DELTA','SCSUBSECSATPPS']
     'TEMP': tplot,'*TEMP'
     'TEMPS': tplot,'*ALL_TEMPS

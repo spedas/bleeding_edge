@@ -12,8 +12,8 @@
 ;
 ;HISTORY:
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-07-28 14:47:06 -0700 (Thu, 28 Jul 2016) $
-;$LastChangedRevision: 21561 $
+;$LastChangedDate: 2018-03-02 10:00:15 -0800 (Fri, 02 Mar 2018) $
+;$LastChangedRevision: 24821 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/gui/mms_ui_load_data.pro $
 ;
 ;--------------------------------------------------------------------------------
@@ -360,6 +360,9 @@ pro mms_ui_load_data_event,event
           state.historyWin->update,'MMS add attempted with start time greater than end time.'
           break
         endif
+        
+        state.statusBar->update,'Loading MMS data... (this may take several minutes to complete)'
+        state.historyWin->update,'Loading MMS data... (this may take several minutes to complete)'
         
         spdf_download = widget_info(event.handler,find_by_uname='spdfdownload')
         spdf_set = widget_info(spdf_download, /button_set)
