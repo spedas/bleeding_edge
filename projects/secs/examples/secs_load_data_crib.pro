@@ -35,7 +35,7 @@ stop
 
 ; if no datatype is specified both types will be downloaded
 del_data, '*'
-secs_load_data, trange=['2015-10-16/00:00:00', '2015-10-15/00:03:00']
+secs_load_data, trange=['2015-10-15/00:00:00', '2015-10-15/00:03:00']
 tplot_names
 stop
 

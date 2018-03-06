@@ -49,9 +49,9 @@
 ;
 ;HISTORY:
 ;
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2018-02-26 18:38:27 -0800 (Mon, 26 Feb 2018) $
-;$LastChangedRevision: 24789 $
+;$LastChangedBy: jimmpc1 $
+;$LastChangedDate: 2018-03-05 14:00:03 -0800 (Mon, 05 Mar 2018) $
+;$LastChangedRevision: 24830 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/objects/spd_ui_loaded_data__define.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -766,8 +766,8 @@ function SPD_UI_LOADED_DATA::detectInstrument, name, dl,mission
       ; Instead, we use Descriptor as a correct instument attribute       
         if in_set('data_type', strlowcase(tag_names(dl.cdf.gatt))) and in_set(strlowcase(mission),['themis','goes']) then begin
         
-          inst_string = strmid(dl.cdf.gatt.data_type,0,3)
-        
+          inst_string = strupcase(strmid(dl.cdf.gatt.data_type,0,3))
+          
           case inst_string of
             
             'AST': begin
@@ -786,7 +786,7 @@ function SPD_UI_LOADED_DATA::detectInstrument, name, dl,mission
               instrument = 'esa'
               success = 1
             end
-            'fbk': begin
+            'FBK': begin
               instrument = 'fbk'
               success = 1
             end
@@ -794,7 +794,7 @@ function SPD_UI_LOADED_DATA::detectInstrument, name, dl,mission
               instrument = 'fgm'
               success = 1
             end
-            'fit': begin
+            'FIT': begin
               instrument = 'fit'
               success = 1
             end
@@ -818,8 +818,20 @@ function SPD_UI_LOADED_DATA::detectInstrument, name, dl,mission
             'STA': begin
               instrument = 'state'
               success = 1
-            end            
-              ;;;;; 4/9/2015, egrimes, commented out calls to thm_ui_valid_datatype 
+            end
+            'IDX': begin
+              instrument = 'idx'
+              success = 1
+            end
+            else: begin ;some THEMIS data, has data_type, descriptor switched
+              ; If mission is themis or goes, the instrument will be obtained
+              ; later in the function. This is the case for all other missions
+              if ~in_set(strlowcase(mission),['themis','goes']) and in_set('descriptor', strlowcase(tag_names(dl.cdf.gatt))) then begin
+                instrument = dl.cdf.gatt.descriptor
+                success=1
+              endif
+            end
+            ;;;;; 4/9/2015, egrimes, commented out calls to thm_ui_valid_datatype 
               ;;;;;           because it lives in projects/themis. The regex that follows
               ;;;;;           should pick up these variables, and more.
 ;              ; check for matches with efi data names
