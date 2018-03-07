@@ -149,7 +149,8 @@ endif
 
 
   if keyword_set(exec0) then begin
-    exec, exec_text = 'tplot,verbose=0,trange=systime(1)+[-1,.05]*3600*.1',title=title
+;    exec, exec_text = 'tplot,verbose=0,trange=systime(1)+[-1,.05]*3600*.1',title=title
+    exec, exec_text = ['tplot,verbose=0,trange=spp_rt()+[-1.,.05]*3600','timebar,systime(1)'],title=title
   endif
   tplot_options,title='Real time'
   

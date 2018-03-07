@@ -28,9 +28,9 @@
 ;     
 ;     
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-31 14:31:15 -0700 (Tue, 31 Oct 2017) $
-; $LastChangedRevision: 24245 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-03-06 12:10:55 -0800 (Tue, 06 Mar 2018) $
+; $LastChangedRevision: 24834 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_read_feeps_sector_masks_csv.pro $
 ;-
 
@@ -52,7 +52,7 @@ function mms_read_feeps_sector_masks_csv, trange=trange
     dprint, dlevel = 2, 'Removing sun contamination using the file: MMS#_FEEPS_ContaminatedSectors_'+time_string(nearest_date, tformat='YYYYMMDD')+'.csv
     
     for mms_sc = 1, 4 do begin
-      csv_file = path+'/sun/MMS'+strcompress(string(mms_sc), /rem)+'_FEEPS_ContaminatedSectors_'+time_string(nearest_date, tformat='YYYYMMDD')+'.csv'
+      csv_file = path+'sun/MMS'+strcompress(string(mms_sc), /rem)+'_FEEPS_ContaminatedSectors_'+time_string(nearest_date, tformat='YYYYMMDD')+'.csv'
   
       test = read_csv(csv_file)
       

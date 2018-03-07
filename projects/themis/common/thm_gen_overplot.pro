@@ -486,7 +486,6 @@ For j = 0, 1 Do Begin
   endif else begin
     name1 = itest+'_density'
     tdegap, name1, /overwrite, dt = 600.0
-    ylim, name1, .1, nmax, 1
     options, name1, 'ytitle', 'Ni'
     ok_esai_moms[j] = 1
   endelse
@@ -579,7 +578,6 @@ no_npot:
     options, etest+'_density_npot', 'ysubtitle', ''
   endif else begin 
     name1 = etest+'_density'
-    ylim, name1, .1, nmax, 1
 ;    options, name1, 'ytitle', 'Ne '+thx+'!C!C1/cm!U3'
     options, name1, 'ytitle', 'Ne!C[1/cc]'
     options, name1, 'ysubtitle', ''
@@ -595,7 +593,7 @@ no_npot:
     options, name1x, 'ytitle', 'Ne!C[1/cc]'
     options, name1x, 'ysubtitle', ''
   endelse
-  
+
   if index_esa_e_v[0] eq -1 then begin
     filler = fltarr(2, 3)
     filler[*, *] = float('Nan')
@@ -631,7 +629,7 @@ no_npot:
   endelse
 
 ; plot quantities (manipulating the plot quantities for the sake of plot aesthetics)
-;kluge for labeling the density, added Npot, 2009-10-12, jmm
+; kluge for labeling the density, added Npot, 2009-10-12, jmm
   get_data, etest+'_density', data = d
   get_data, etest+'_density_npot', data = d1
   Ne_kluge_name = 'Ne_'+etest+'_kluge'
@@ -653,11 +651,24 @@ no_npot:
     options, Ne_kluge_name, colors = [0, 6]
     options, Ne_kluge_name, 'labflag', 1
   Endelse
+; Set plot limits here, 2018-03-06, jmm
+  get_data, itest+'_density', data=di0 ;ions
+  if is_struct(di0) then begin
+     nmaxi = max(di0.y, /nan) < 1.0e8
+     undefine, di0
+     ylim, itest+'_density', 0.01, nmax, 1
+  endif else nmaxi = -1.0
+  dummy = dummy > 0.01 ;electrons
+  nmaxe = max(dummy, /nan) < 1.0e8
+  nmax = max([nmaxi, nmaxe])
+  ylim, Ne_kluge_name, 0.01, nmax, 1
   store_data, thx+'_Nie'+mtyp[j], data = [itest+'_density', Ne_kluge_name]
 ;  options, thx+'_Nie'+mtyp[j], 'ytitle', 'Ni,e '+thx+'!C1/cm!U3'
 ;  options, thx+'_Nie'+mtyp[j], 'ytitle', 'Ni,e '+thx
   options, thx+'_Nie'+mtyp[j], 'ytitle', 'Ni!Celec!C[1/cc]'
   options, thx+'_Nie'+mtyp[j], 'ysubtitle', ''
+  options, thx+'_Nie'+mtyp[j], 'yrange', [0.01, nmax]
+;
   nameti=itest+'_t3'
   namete=etest+'_t3'
   store_data, thx+'_Tie'+mtyp[j], data = [nameti,namete]
