@@ -26,14 +26,16 @@
 ;         add_ram_dir: add S/C ram direction (X) to the angular spectrograms (phi, theta)
 ;         dir_interval: number of seconds between B-field and S/C ram direction symbols on angular spectrogram plots
 ;         
+;         subtract_bulk: subtract the bulk velocity prior to doing the calculations
 ;         subtract_error: subtract the distribution error prior to doing the calculations (FPI only, currently)
+;         subtract_spintone: subtract the spin-tone from the velocity vector prior to bulk velocity subtraction (FPI versions 3.2 and later only)
 ;         
 ; Notes:
 ;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-02-22 11:35:31 -0800 (Thu, 22 Feb 2018) $
-;$LastChangedRevision: 24759 $
+;$LastChangedDate: 2018-03-07 15:32:37 -0800 (Wed, 07 Mar 2018) $
+;$LastChangedRevision: 24850 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -67,6 +69,7 @@ pro mms_part_getspec, probes=probes, $
                         
                       subtract_bulk=subtract_bulk, $
                       subtract_error=subtract_error, $
+                      subtract_spintone=subtract_spintone, $ ; FPI CDFs 3.2+ only
                       
                       center_measurement=center_measurement, $
                       tplotnames=tplotnames, $
@@ -169,6 +172,7 @@ pro mms_part_getspec, probes=probes, $
             name = 'mms'+probes[probe_idx]+'_d'+species+'s_dist_'+data_rate
             vel_name = 'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_dbcs_'+data_rate
             if keyword_set(subtract_error) then error_variable = 'mms'+probes[probe_idx]+'_d'+species+'s_disterr_'+data_rate
+            if keyword_set(subtract_spintone) && tnames(vel_name) ne '' && tnames('mms'+probes[probe_idx]+'_d'+species+'s_bulkv_spintone_dbcs_'+data_rate) ne '' then calc, '"'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_dbcs_'+data_rate+'"="'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_dbcs_'+data_rate+'"-"'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_spintone_dbcs_'+data_rate+'"'
         endif else if instrument eq 'hpca' then begin
             name =  'mms'+probes[probe_idx]+'_hpca_'+species+'_phase_space_density'
             vel_name = 'mms'+probes[probe_idx]+'_hpca_'+species+'_ion_bulk_velocity'

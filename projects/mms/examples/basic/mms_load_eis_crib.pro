@@ -12,8 +12,8 @@
 ;   please send them to egrimes@igpp.ucla.edu
 ;   
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-12-18 09:39:08 -0800 (Mon, 18 Dec 2017) $
-; $LastChangedRevision: 24428 $
+; $LastChangedDate: 2018-03-07 15:33:30 -0800 (Wed, 07 Mar 2018) $
+; $LastChangedRevision: 24851 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_eis_crib.pro $
 ;-
 probe = '1'
@@ -30,13 +30,13 @@ tplot, '*_extof_proton_flux_omni_spin'
 stop
 
 ; calculate the PAD for 48-106keV protons
-mms_eis_pad, probe=probe, datatype='extof', species='proton', data_units='flux', energy=[48, 106], level = level
+mms_eis_pad, combine=0, probe=probe, datatype='extof', species='proton', data_units='flux', energy=[48, 106], level = level
 
 ; calculate the PAD for 105-250 keV protons
-mms_eis_pad, probe=probe, datatype='extof', species='proton', data_units='flux', energy=[105, 250], level = level
+mms_eis_pad, combine=0, probe=probe, datatype='extof', species='proton', data_units='flux', energy=[105, 250], level = level
 
 ; plot the PAD for 48-106keV (top), 105-250 keV (bottom) protons
-tplot, '*_epd_eis_extof_*keV_proton_flux_omni_pad_spin'
+tplot, ['mms1_epd_eis_extof_48-106keV_proton_flux_omni_pad_spin', 'mms1_epd_eis_extof_105-250keV_proton_flux_omni_pad_spin']
 stop
 
 ; plot the He++ flux for all channels

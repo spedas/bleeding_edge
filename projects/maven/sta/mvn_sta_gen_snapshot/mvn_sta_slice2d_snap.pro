@@ -98,8 +98,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-11-30 21:18:06 -0800 (Thu, 30 Nov 2017) $
-; $LastChangedRevision: 24371 $
+; $LastChangedDate: 2018-03-07 11:33:31 -0800 (Wed, 07 Mar 2018) $
+; $LastChangedRevision: 24844 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_slice2d_snap.pro $
 ;
 ;-
@@ -120,7 +120,7 @@ PRO mvn_sta_slice2d_snap, var1, var2, archive=archive, window=window, mso=mso, _
   IF SIZE(var2, /type) NE 0 THEN trange = time_double(var2)
   IF keyword_set(dopot) THEN dopot = 1 else dopot = 0
   IF SIZE(sc_pot, /type) NE 0 THEN forcepot = 1 else forcepot = 0
-  voff = subtract
+  if keyword_set(subtract) then voff = subtract else voff = 0
 
   IF keyword_set(window) THEN wnum = window ELSE BEGIN
      IF !d.name NE 'PS' THEN BEGIN
