@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-01-09 14:08:49 -0800 (Tue, 09 Jan 2018) $
-; $LastChangedRevision: 24491 $
+; $LastChangedDate: 2018-03-08 09:26:59 -0800 (Thu, 08 Mar 2018) $
+; $LastChangedRevision: 24855 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
 
@@ -146,7 +146,6 @@ function mms_part_getspec_ut::test_energy_limits_hpca
 end
 
 function mms_part_getspec_ut::test_all_outputs_hpca_srvy
-  species = ['hplus', 'oplus', 'heplus', 'heplusplus']
   mms_part_getspec, probe=1, trange=['2017-10-15/15:00', '2017-10-15/16:00'], instrument='hpca', species='hplus',  /silent, data_rate='srvy', outputs='energy phi theta pa gyro moments'
   mms_part_getspec, probe=1, trange=['2017-10-15/15:00', '2017-10-15/16:00'], instrument='hpca', species='oplus',  /silent, data_rate='srvy', outputs='energy phi theta pa gyro moments'
   mms_part_getspec, probe=1, trange=['2017-10-15/15:00', '2017-10-15/16:00'], instrument='hpca', species='heplus',  /silent, data_rate='srvy', outputs='energy phi theta pa gyro moments'

@@ -26,6 +26,7 @@ if !secs.init ne 0 then return
 !secs = file_retrieve(/structure_format)
 ;Read saved values from file
 ftest = secs_read_config()
+
 If(size(ftest, /type) Eq 8) && ~keyword_set(reset) Then Begin
     !secs.local_data_dir = ftest.local_data_dir
     !secs.remote_data_dir = ftest.remote_data_dir
@@ -39,16 +40,12 @@ Endif else begin; use defaults
     endif else begin
       print,'No secs config found...creating default configuration'
     endelse
-
-    !secs.local_data_dir = 'C:\data\secs\'
-    !secs.remote_data_dir = 'http://vmo.igpp.ucla.edu/data1/SECS/'
+    !secs.local_data_dir = !secs.local_data_dir + 'secs'
+    !secs.remote_data_dir = 'http://vmo.igpp.ucla.edu/data1/SECS'
 endelse
-;if file_test(!secs.local_data_dir+'secs/.master') then begin  ; Local directory IS the master directory
-;   !secs.no_server=1    ;   
-;   !secs.no_download=1  ; This line is superfluous
-;endif
 
-!secs.remote_data_dir = 'http://vmo.igpp.ucla.edu/data1/SECS/'
+!secs.local_data_dir = spd_addslash(!secs.local_data_dir)
+!secs.remote_data_dir = spd_addslash(!secs.remote_data_dir)
 
 !secs.init = 1
 

@@ -95,7 +95,11 @@ PRO elf_load_prm, datatype=datatype, level=level, trange=trange, $
 
         ; calibrate on the fly for now
         get_data, 'ell_prm', data=d, dlimits=dl, limits=l
-
+        
+        if ~is_struct(d) then begin
+          dprint, dlevel = 0, 'No ELFIN data loaded'
+          return
+        endif
         d.y[*,0]=d.y[*,0]/106.4   ;27238.4
         d.y[*,1]=d.y[*,1]/97.9    ;25062.4
         d.y[*,2]=d.y[*,2]/104.5   ;26572.

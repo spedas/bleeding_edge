@@ -98,9 +98,9 @@ pro secs_load_data, trange = trange, datatype = datatype, suffix = suffix, prefi
     ; load magnetometer stations
     if keyword_set(get_stations) then begin
        ; construct file name for download
-       remote_path = source.remote_data_dir+'Stations/'+yr_start+'/'+mo_start+'/'+day_start+'/'
-       local_path = source.local_data_dir+'Stations\'+yr_start+'\'+mo_start+'\'+day_start+'\'
-       filename = 'Stat'+yr_start+mo_start+day_start+'.dat'
+       remote_path = source.remote_data_dir+dir_type[j]+'S/'+yr_start+'/'+mo_start+'/'+day_start+'/'
+       local_path = source.local_data_dir+dir_type[j]+'S/'+yr_start+'/'+mo_start+'/'+day_start+'/'
+       filename = dir_type[j]+'S'+yr_start+mo_start+day_start+'.dat'
        local_file = local_path + filename
        found_file = file_search(local_file, count=ncnt)
        if keyword_set(nodownload) then begin
