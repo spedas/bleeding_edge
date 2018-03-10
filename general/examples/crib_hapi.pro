@@ -7,9 +7,9 @@
 ; NOTES:
 ;       hapi_load_data requires IDL 8.3 or later due to usage of IDL's json_parse + orderedhash
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2018-01-19 12:01:38 -0800 (Fri, 19 Jan 2018) $
-; $LastChangedRevision: 24544 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-03-09 15:32:45 -0800 (Fri, 09 Mar 2018) $
+; $LastChangedRevision: 24864 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_hapi.pro $
 ;-
 
@@ -41,6 +41,11 @@ stop
 ; Load and plot some Geotail mag/position data:
 hapi_load_data, trange=['12-01-27', '12-02-27'], dataset='WEYGAND_GEOTAIL_MAG_GSM', server=server
 tplot, ['b_gsm', 'position_gsm']
+stop
+
+; you can use the 'parameters' keyword to limit the parameters returned by the server
+hapi_load_data, parameters='B_GSM', trange=['12-01-27', '12-02-27'], dataset='WEYGAND_GEOTAIL_MAG_GSM', server=server
+tplot, 'b_gsm'
 stop
 
 end

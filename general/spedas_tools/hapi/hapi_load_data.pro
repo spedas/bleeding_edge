@@ -15,6 +15,8 @@
 ;         dataset:      dataset to load (optional)
 ;         
 ;         server:       HAPI server to connect to (e.g, 'http://datashop.elasticbeanstalk.com/hapi')
+;         parameters:   limit the requested parameters to a string or array of strings (works in 
+;                       conjunction with /info and trange= keywords) (optional)
 ;
 ; EXAMPLES:
 ;  List server capabilities:
@@ -40,6 +42,10 @@
 ;  Load and plot the Voyager flux data:
 ;    IDL> hapi_load_data, trange=['77-09-27', '78-01-20'], dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H', server='http://datashop.elasticbeanstalk.com/hapi'
 ;    IDL> tplot, 'flux'
+;    
+;  Load and plot the Voyager flux data (limit the request to the 'flux' variable via the parameters keyword):
+;    IDL> hapi_load_data, parameter='flux', trange=['77-09-27', '78-01-20'], dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H', server='http://datashop.elasticbeanstalk.com/hapi'
+;    IDL> tplot, 'flux'
 ;  
 ; NOTES:
 ;         - capabilities, catalog, info keywords are informational
@@ -47,8 +53,8 @@
 ;         
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-02-26 11:37:59 -0800 (Mon, 26 Feb 2018) $
-;$LastChangedRevision: 24779 $
+;$LastChangedDate: 2018-03-09 15:28:22 -0800 (Fri, 09 Mar 2018) $
+;$LastChangedRevision: 24863 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
@@ -66,7 +72,7 @@ end
 
 pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, info=info, server=server, $
   dataset=dataset, path=path, port=port, scheme=scheme, prefix=prefix, tplotvars=tplotvars, timeout=timeout, $
-  connect_timeout=connect_timeout
+  connect_timeout=connect_timeout, parameters=parameters
 
   catch, error_status
   if error_status ne 0 then begin
@@ -107,6 +113,11 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
   if undefined(port) then port = url_port
   if undefined(scheme) then scheme = url_scheme
 
+  ; the user specified a list of parameters
+  if ~undefined(parameters) then begin
+    para = strjoin(parameters, ',')
+  endif
+  
   dataset_table = hash()
   if keyword_set(dataset) then info_dataset = dataset else info_dataset = ''
   neturl = obj_new('IDLnetURL')
@@ -140,7 +151,12 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
       read, info_dataset, prompt='Select a dataset: '
       if dataset_table.hasKey(info_dataset) then info_dataset = dataset_table[info_dataset]
     endif
-    neturl->SetProperty, URL_PATH=path+'/info?id='+info_dataset
+    
+    if undefined(para) then $
+      neturl->SetProperty, URL_PATH=path+'/info?id='+info_dataset $
+    else $
+      neturl->SetProperty, URL_PATH=path+'/info?id='+info_dataset+'&parameters='+para
+      
     info = hapi_get_json(neturl)
     
     for param_idx = 0, n_elements(info['parameters'])-1 do begin
@@ -153,11 +169,14 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
   endif
   
   if keyword_set(trange) then begin
-    time_min = time_string(trange[0], tformat='YYYY-MM-DDThh:mm:ss.fff')
-    time_max = time_string(trange[1], tformat='YYYY-MM-DDThh:mm:ss.fff')
-    
-    if time_double(time_min) ge time_double(info['startDate']) and time_double(time_max) le time_double(info['stopDate']) then begin
-      neturl->SetProperty, URL_PATH=path+'/data?id='+info_dataset+'&time.min='+time_min+'&time.max='+time_max 
+    time_min = time_string(time_double_ordinal(trange[0]), tformat='YYYY-MM-DDThh:mm:ss.fff')
+    time_max = time_string(time_double_ordinal(trange[1]), tformat='YYYY-MM-DDThh:mm:ss.fff')
+
+    if time_double(time_min) ge time_double_ordinal(info['startDate']) and time_double(time_max) le time_double_ordinal(info['stopDate']) then begin
+      if undefined(para) then $
+        neturl->SetProperty, URL_PATH=path+'/data?id='+info_dataset+'&time.min='+time_min+'&time.max='+time_max $
+      else $
+        neturl->SetProperty, URL_PATH=path+'/data?id='+info_dataset+'&time.min='+time_min+'&time.max='+time_max+'&parameters='+para
     endif else begin
       dprint, dlevel=0, 'No data available for this trange; data availability for '+info_dataset+' is limited to: ' + info['startDate'] + ' - ' + info['stopDate']
       return
@@ -166,16 +185,11 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     csv_data = neturl->get(filename='hapidata')
     
     csv = read_csv(csv_data)
-
+    
     ; extract the data
     for param_idx = 0, n_elements(info['parameters'])-1 do begin
       variable = (info['parameters'])[param_idx]
-      if strlowcase(((info['parameters'])[param_idx])['name']) eq 'epoch' or $
-        strlowcase(((info['parameters'])[param_idx])['name']) eq 'time' then begin
-        epoch = time_double(csv.(param_idx))
-      endif else begin
-        if ~undefined(epoch) then variable['epoch'] = epoch
-      endelse
+      variable['epoch'] = time_double_ordinal(csv.(0))
 
       if (info['parameters'])[param_idx].hasKey('size') then begin
         data = dblarr(n_elements(csv.(param_idx)), (((info['parameters'])[param_idx])['size'])[0])

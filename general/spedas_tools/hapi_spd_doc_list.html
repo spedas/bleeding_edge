@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Mar  8 18:16:21 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Mar  9 18:16:17 2018.<P>
  
 <HR>
  
@@ -46,6 +46,8 @@ This page was created by the IDL library routine
          dataset:      dataset to load (optional)
          
          server:       HAPI server to connect to (e.g, 'http://datashop.elasticbeanstalk.com/hapi')
+         parameters:   limit the requested parameters to a string or array of strings (works in 
+                       conjunction with /info and trange= keywords) (optional)
 
  EXAMPLES:
   List server capabilities:
@@ -71,6 +73,10 @@ This page was created by the IDL library routine
   Load and plot the Voyager flux data:
     IDL&gt; hapi_load_data, trange=['77-09-27', '78-01-20'], dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H', server='http://datashop.elasticbeanstalk.com/hapi'
     IDL&gt; tplot, 'flux'
+    
+  Load and plot the Voyager flux data (limit the request to the 'flux' variable via the parameters keyword):
+    IDL&gt; hapi_load_data, parameter='flux', trange=['77-09-27', '78-01-20'], dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H', server='http://datashop.elasticbeanstalk.com/hapi'
+    IDL&gt; tplot, 'flux'
   
  NOTES:
          - capabilities, catalog, info keywords are informational
@@ -78,8 +84,8 @@ This page was created by the IDL library routine
          
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-02-26 11:37:59 -0800 (Mon, 26 Feb 2018) $
-$LastChangedRevision: 24779 $
+$LastChangedDate: 2018-03-09 15:28:22 -0800 (Fri, 09 Mar 2018) $
+$LastChangedRevision: 24863 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 </PRE><P>
 <STRONG>(See <A href="hapi/hapi_load_data.pro">general/spedas_tools/hapi/hapi_load_data.pro</A>)</STRONG><P>
