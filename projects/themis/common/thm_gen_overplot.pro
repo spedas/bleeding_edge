@@ -656,18 +656,20 @@ no_npot:
   if is_struct(di0) then begin
      nmaxi = max(di0.y, /nan) < 1.0e8
      undefine, di0
-     ylim, itest+'_density', 0.01, nmax, 1
+     ylim, itest+'_density', 0.001, nmax, 1
   endif else nmaxi = -1.0
-  dummy = dummy > 0.01 ;electrons
+;  dummy = dummy > 0.001 ;electrons
   nmaxe = max(dummy, /nan) < 1.0e8
   nmax = max([nmaxi, nmaxe])
-  ylim, Ne_kluge_name, 0.01, nmax, 1
+  ylim, Ne_kluge_name, 0.001, nmax, 1
   store_data, thx+'_Nie'+mtyp[j], data = [itest+'_density', Ne_kluge_name]
 ;  options, thx+'_Nie'+mtyp[j], 'ytitle', 'Ni,e '+thx+'!C1/cm!U3'
 ;  options, thx+'_Nie'+mtyp[j], 'ytitle', 'Ni,e '+thx
   options, thx+'_Nie'+mtyp[j], 'ytitle', 'Ni!Celec!C[1/cc]'
   options, thx+'_Nie'+mtyp[j], 'ysubtitle', ''
-  options, thx+'_Nie'+mtyp[j], 'yrange', [0.01, nmax]
+  options, thx+'_Nie'+mtyp[j], 'yrange', [0.001, nmax]
+  options, thx+'_Nie'+mtyp[j], 'ylog', 1
+  
 ;
   nameti=itest+'_t3'
   namete=etest+'_t3'

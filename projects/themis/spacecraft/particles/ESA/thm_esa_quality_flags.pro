@@ -22,8 +22,8 @@
 ;  
 ;  
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2018-02-05 13:13:19 -0800 (Mon, 05 Feb 2018) $
-; $LastChangedRevision: 24642 $
+; $LastChangedDate: 2018-03-12 14:57:15 -0700 (Mon, 12 Mar 2018) $
+; $LastChangedRevision: 24875 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_esa_quality_flags.pro $
 ;-
 
@@ -133,9 +133,16 @@ pro thm_esa_quality_flags,probe=probe,datatype=datatype,noload=noload,flow_thres
   Endif
 
   scpot_name = sc + '_esa_pot' 
-  tinterpol_mxn,scpot_name,dat.time,/overwrite ;for an unknown reason, elements in the scpot don't match elements in esa raw data, this interpolates to match them 
-  get_data, scpot_name, data = temp_scpot
-  ;Guard against missing sc_pot variable
+;  tinterpol_mxn,scpot_name,dat.time,/overwrite ;for an unknown
+;  reason (Not unknown-the _esa_pot variable is created from EFI or
+;  MOM data), elements in the scpot don't match elements in esa
+;  raw data, this interpolates to match them. 
+;  Do not overwrite! jmm, 2018-03-12
+  tinterpol_mxn,scpot_name,dat.time,newname='temp_scpot_var'
+  get_data, 'temp_scpot_var', data = temp_scpot
+  del_data, 'temp_scpot_var' ;drop the temp tplot variable
+
+;Guard against missing sc_pot variable
   boom_time = thm_efi_boom_deployment_time(probe = probe)
  
   If is_struct(temp_scpot) Then Begin

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Mar 10 03:16:30 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Mar 12 18:16:20 2018.<P>
  
 <HR>
  
@@ -185,12 +185,18 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          subtract_error: subtract the distribution error prior to doing the calculations (FPI only, currently)
          subtract_spintone: subtract the spin-tone from the velocity vector prior to bulk velocity subtraction (FPI versions 3.2 and later only)
          
+     The following are found by default for the requested instrument/probe/data_rate; use these keywords 
+     to override the defaults:
+         mag_name:  Use a different tplot variable containing magnetic field data for moments and FAC transformations
+         pos_name:  Use a different tplot variable containing spacecraft position for FAC transformations
+         vel_name:  Use a different tplot variable containing velocity data in km/s when subtracting the bulk velocity
+  
  Notes:
          Updated to automatically center HPCA measurements if not specified already, 18Oct2017
          
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-03-07 15:32:37 -0800 (Wed, 07 Mar 2018) $
-$LastChangedRevision: 24850 $
+$LastChangedDate: 2018-03-12 12:28:10 -0700 (Mon, 12 Mar 2018) $
+$LastChangedRevision: 24873 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_getspec.pro">projects/mms/particles/mms_part_getspec.pro</A>)</STRONG><P>

@@ -21,11 +21,8 @@
 pro makegap,dg,x,y,dy=dy,v=v
 
 dty = size(/type,y)
-case dty of
-  2: y = float(y)
-  3: y = double(y)
-  else: return
-endcase
+if dty eq 2 then y = float(y)
+if dty eq 3 then y = double(y)
 
 dty = size(/type,y)
 case dty of

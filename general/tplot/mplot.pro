@@ -102,6 +102,7 @@ str_element,stuff,'labsize',value=lbsize
 str_element,stuff,'bins',value=bins
 str_element,stuff,'indices',value=indices
 str_element,stuff,'charsize',value=charsize
+str_element,stuff,'charthick',value=charthick
 str_element,stuff,'axis',value=axis
 str_element,stuff,'reverse_order',rev_order
 
@@ -331,7 +332,7 @@ for n_=0,n_elements(ind)-1 do begin
         endelse
         
         if ypos le yw[1] and ypos ge yw[0] then $
-          xyouts,xpos,ypos,'  '+labels[n],color=c,/norm,charsize=lbsize
+          xyouts,xpos,ypos,'  '+labels[n],color=c,/norm,charsize=lbsize,charthick=charthick
           
       endif
     endif

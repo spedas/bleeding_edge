@@ -90,9 +90,9 @@
 ;Still have questions:
 ;   Send e-mail to:  tplot@ssl.berkeley.edu    someone might answer!
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-02-05 14:00:36 -0800 (Mon, 05 Feb 2018) $
-; $LastChangedRevision: 24644 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-03-12 09:46:25 -0700 (Mon, 12 Mar 2018) $
+; $LastChangedRevision: 24866 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot.pro $
 ;-
 
@@ -464,15 +464,17 @@ str_element,tplot_vars,'settings.p',!p,/add_replace
 str_element,tplot_vars,'settings.x',!x,/add_replace
 str_element,tplot_vars,'settings.trange_cur',(!x.range * time_scale) + time_offset
 
+
 ;option to control left-hand labels for x-axis
 str_element, def_opts, 'vtitle', vtitle
 
 if keyword_set(vtitle) then begin                 ; finish var_labels
+	str_element,def_opts,'charthick',value=charthick
   xspace = chsize * !d.x_ch_size / !d.x_size
   yspace = chsize * !d.y_ch_size / !d.y_size
   xpos = pos[0,nd-1] - (def_opts.xmargin[0]-1) * xspace
   ypos = pos[1,nd-1] - 1.5 * yspace
-  xyouts,xpos,ypos,vtitle,/norm,charsize=chsize
+  xyouts,xpos,ypos,vtitle,/norm,charsize=chsize,charthick=charthick
 endif
 
 

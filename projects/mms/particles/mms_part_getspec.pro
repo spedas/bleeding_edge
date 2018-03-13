@@ -30,12 +30,18 @@
 ;         subtract_error: subtract the distribution error prior to doing the calculations (FPI only, currently)
 ;         subtract_spintone: subtract the spin-tone from the velocity vector prior to bulk velocity subtraction (FPI versions 3.2 and later only)
 ;         
+;     The following are found by default for the requested instrument/probe/data_rate; use these keywords 
+;     to override the defaults:
+;         mag_name:  Use a different tplot variable containing magnetic field data for moments and FAC transformations
+;         pos_name:  Use a different tplot variable containing spacecraft position for FAC transformations
+;         vel_name:  Use a different tplot variable containing velocity data in km/s when subtracting the bulk velocity
+;  
 ; Notes:
 ;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-03-07 15:32:37 -0800 (Wed, 07 Mar 2018) $
-;$LastChangedRevision: 24850 $
+;$LastChangedDate: 2018-03-12 12:28:10 -0700 (Mon, 12 Mar 2018) $
+;$LastChangedRevision: 24873 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -71,6 +77,11 @@ pro mms_part_getspec, probes=probes, $
                       subtract_error=subtract_error, $
                       subtract_spintone=subtract_spintone, $ ; FPI CDFs 3.2+ only
                       
+                      ; the following are for overriding the defaults
+                      vel_name=vel_name_user, $  ; Tplot variable containing velocity data in km/s for use with /subtract_bulk
+                      mag_name=mag_name_user, $  ; Tplot variable containing magnetic field data for moments and FAC transformations
+                      pos_name=pos_name_user, $  ; Tplot variable containing spacecraft position for FAC transformations
+
                       center_measurement=center_measurement, $
                       tplotnames=tplotnames, $
                       
@@ -140,10 +151,10 @@ pro mms_part_getspec, probes=probes, $
     endfor
 
     ; load state data (needed for coordinate transforms and field aligned coordinates)
-    if defined(state_to_load) then mms_load_state, probes=state_to_load, trange=support_trange, spdf=spdf
+    if defined(state_to_load) && undefined(pos_name_user) then mms_load_state, probes=state_to_load, trange=support_trange, spdf=spdf
 
     ; load magnetic field data
-    if defined(fgm_to_load) then mms_load_fgm, probes=fgm_to_load, trange=support_trange, level='l2', suffix=mag_suffix, spdf=spdf, /time_clip
+    if defined(fgm_to_load) && undefined(mag_name_user) then mms_load_fgm, probes=fgm_to_load, trange=support_trange, level='l2', suffix=mag_suffix, spdf=spdf, /time_clip
 
     if instrument eq 'fpi' then begin
         mms_load_fpi, probes=probes, trange=trange, data_rate=data_rate, level=level, $
@@ -152,7 +163,7 @@ pro mms_part_getspec, probes=probes, $
             min_version=min_version, spdf=spdf
             
         ; load the bulk velocity if the user requested to subtract it
-        if keyword_set(subtract_bulk) then mms_load_fpi, probes=probes, trange=trange, data_rate=data_rate, level=level, $
+        if keyword_set(subtract_bulk) && undefined(vel_name_user) then mms_load_fpi, probes=probes, trange=trange, data_rate=data_rate, level=level, $
             datatype='d'+species+'s-moms', spdf=spdf
     endif else if instrument eq 'hpca' then begin
         mms_load_hpca, probes=probes, trange=trange, data_rate=data_rate, level=level, $
@@ -161,21 +172,21 @@ pro mms_part_getspec, probes=probes, $
             min_version=min_version, spdf=spdf
         
         ; load the bulk velocity if the user requested to subtract it
-        if keyword_set(subtract_bulk) then mms_load_hpca, probes=probes, trange=trange, $
+        if keyword_set(subtract_bulk) && undefined(vel_name_user) then mms_load_hpca, probes=probes, trange=trange, $
             data_rate=data_rate, level=level, datatype='moments', spdf=spdf
     endif
     
     for probe_idx = 0, n_elements(probes)-1 do begin
-        bname = 'mms'+probes[probe_idx]+'_fgm_b_dmpa_srvy_l2_bvec'+mag_suffix
-        pos_name = 'mms'+probes[probe_idx]+ '_defeph_pos'
+        if undefined(mag_name_user) then bname = 'mms'+probes[probe_idx]+'_fgm_b_dmpa_srvy_l2_bvec'+mag_suffix else bname = mag_name_user
+        if undefined(pos_name_user) then pos_name = 'mms'+probes[probe_idx]+ '_defeph_pos' else pos_name = pos_name_user
         if instrument eq 'fpi' then begin
             name = 'mms'+probes[probe_idx]+'_d'+species+'s_dist_'+data_rate
-            vel_name = 'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_dbcs_'+data_rate
+            if undefined(vel_name_user) then vel_name = 'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_dbcs_'+data_rate else vel_name = vel_name_user
             if keyword_set(subtract_error) then error_variable = 'mms'+probes[probe_idx]+'_d'+species+'s_disterr_'+data_rate
             if keyword_set(subtract_spintone) && tnames(vel_name) ne '' && tnames('mms'+probes[probe_idx]+'_d'+species+'s_bulkv_spintone_dbcs_'+data_rate) ne '' then calc, '"'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_dbcs_'+data_rate+'"="'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_dbcs_'+data_rate+'"-"'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_spintone_dbcs_'+data_rate+'"'
         endif else if instrument eq 'hpca' then begin
             name =  'mms'+probes[probe_idx]+'_hpca_'+species+'_phase_space_density'
-            vel_name = 'mms'+probes[probe_idx]+'_hpca_'+species+'_ion_bulk_velocity'
+            if undefined(vel_name_user) then vel_name = 'mms'+probes[probe_idx]+'_hpca_'+species+'_ion_bulk_velocity' else vel_name = vel_name_user
         endif
 
         mms_part_products_new, name, trange=trange, units=units_lc, $
