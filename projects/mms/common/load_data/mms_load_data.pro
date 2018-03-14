@@ -92,8 +92,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-01-18 09:28:13 -0800 (Thu, 18 Jan 2018) $
-;$LastChangedRevision: 24538 $
+;$LastChangedDate: 2018-03-13 10:59:12 -0700 (Tue, 13 Mar 2018) $
+;$LastChangedRevision: 24882 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 
@@ -152,10 +152,15 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
         undefine, varformat
     endif
         
+    if (~undefined(trange) && n_elements(trange) eq 2) && (time_double(trange[1]) lt time_double(trange[0])) then begin
+      dprint, dlevel = 0, 'Error, endtime is before starttime; trange should be: [starttime, endtime]'
+      return
+    endif
+    
     if ~undefined(trange) && n_elements(trange) eq 2 $
       then tr = timerange(trange) $
       else tr = timerange()
-
+    
     ;response_code = spd_check_internet_connection()
     response_code = 200
 
