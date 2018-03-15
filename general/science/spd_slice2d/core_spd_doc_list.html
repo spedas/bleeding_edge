@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Mar 13 18:16:21 2018.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 14 18:16:18 2018.<P>
  
 <HR>
  
@@ -22,6 +22,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#SPD_CAL_ROT">SPD_CAL_ROT</A>
 <br>Returns a rotation matrix that rotates v1,v2 to the x-y plane
 <LI><A HREF="#SPD_PART_VIS">SPD_PART_VIS</A>
+<LI><A HREF="#SPD_SLICE1D_PLOT">SPD_SLICE1D_PLOT</A>
+<br>Create plots for 2D particle slices.
 <LI><A HREF="#SPD_SLICE2D_2DI">SPD_SLICE2D_2DI</A>
 <LI><A HREF="#SPD_SLICE2D_3DI">SPD_SLICE2D_3DI</A>
 <LI><A HREF="#SPD_SLICE2D_CHECKBINS">SPD_SLICE2D_CHECKBINS</A>
@@ -84,7 +86,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/sci
 <A NAME="SPD_PART_VIS">
 <H2>SPD_PART_VIS</H2></A>
 <A HREF="#SPD_CAL_ROT">[Previous Routine]</A>
-<A HREF="#SPD_SLICE2D_2DI">[Next Routine]</A>
+<A HREF="#SPD_SLICE1D_PLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -122,9 +124,40 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/sci
 <STRONG>(See <A href="core/spd_part_vis.pro">general/science/spd_slice2d/core/spd_part_vis.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPD_SLICE1D_PLOT">
+<H2>SPD_SLICE1D_PLOT</H2></A>
+<A HREF="#SPD_PART_VIS">[Previous Routine]</A>
+<A HREF="#SPD_SLICE2D_2DI">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+  spd_slice1d_plot
+
+ PURPOSE:
+  Create plots for 2D particle slices.
+
+ EXAMPLE:
+  spd_slice1d_plot, slice, 'x', 0.0, title='Vx at Vy=0'
+
+ INPUT:
+  slice: 2D array of values to plot
+  direction: axis to plot - 'x' or 'y'
+  value: if direction is 'x', this is the y-value to create a 1D plot at
+
+ KEYWORDS:
+   accepts most keywords accepted by the PLOT procedure
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2018-03-14 14:57:18 -0700 (Wed, 14 Mar 2018) $
+$LastChangedRevision: 24884 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/core/spd_slice1d_plot.pro $
+</PRE><P>
+<STRONG>(See <A href="core/spd_slice1d_plot.pro">general/science/spd_slice2d/core/spd_slice1d_plot.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPD_SLICE2D_2DI">
 <H2>SPD_SLICE2D_2DI</H2></A>
-<A HREF="#SPD_PART_VIS">[Previous Routine]</A>
+<A HREF="#SPD_SLICE1D_PLOT">[Previous Routine]</A>
 <A HREF="#SPD_SLICE2D_3DI">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
