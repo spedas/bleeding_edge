@@ -25,7 +25,7 @@
 ; $LastChangedRevision: 22769 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/secs/secs_load_data.pro $
 ;-
- 
+
 pro secs_load_data, trange = trange, datatype = datatype, suffix = suffix, prefix = prefix, $
                     downloadonly = downloadonly, no_update = no_update, no_download = no_download, $
                     verbose = verbose, get_stations = get_stations
@@ -47,7 +47,6 @@ pro secs_load_data, trange = trange, datatype = datatype, suffix = suffix, prefi
     if undefined(prefix) then prefix = ''
     if not keyword_set(datatype) then datatype = '*'   
     if datatype[0] EQ '*' then datatype = ['eics', 'seca']
-    dirtype = strupcase(strmid(datatype,0,3))
     if not keyword_set(source) then source = !secs
     if (keyword_set(trange) && n_elements(trange) eq 2) $
       then tr = timerange(trange) $
@@ -70,11 +69,12 @@ pro secs_load_data, trange = trange, datatype = datatype, suffix = suffix, prefi
     ; loop for each type of data eics and seca
     for j = 0, n_elements(datatype)-1 do begin
     
-        remote_path = source.remote_data_dir+dirtype[j]+'S/'+yr_start+'/'+mo_start+'/'+day_start+'/'   
-        local_path = source.local_data_dir+dirtype[j]+'S\'+yr_start+'\'+mo_start+'\'+day_start+'\'
-        filenames = dirtype[j]+'S'+yr_start+mo_start+day_start+'_'+dates_str+'.dat'
+        dirtype = strupcase(strmid(datatype[j],0,3))
+        remote_path = source.remote_data_dir+dirtype+'S/'+yr_start+'/'+mo_start+'/'+day_start+'/'   
+        local_path = source.local_data_dir+dirtype+'S/'+yr_start+'/'+mo_start+'/'+day_start+'/'
+        filenames = dirtype+'S'+yr_start+mo_start+day_start+'_'+dates_str+'.dat'
         local_files = local_path + filenames
-        
+       
         files = spd_download(remote_file=filenames, remote_path=remote_path, $
                              local_path = local_path, no_download=no_download, $
                              no_update=no_update)
@@ -92,15 +92,15 @@ pro secs_load_data, trange = trange, datatype = datatype, suffix = suffix, prefi
           'seca': sec_ascii2tplot, files, prefix=prefix, suffix=suffix, verbose=verbose, tplotnames=tplotnames
           else: dprint, dlevel = 0, 'Unknown data type!'
         endcase
-       
-    endfor
 
+      endfor
+       
     ; load magnetometer stations
     if keyword_set(get_stations) then begin
        ; construct file name for download
-       remote_path = source.remote_data_dir+dir_type[j]+'S/'+yr_start+'/'+mo_start+'/'+day_start+'/'
-       local_path = source.local_data_dir+dir_type[j]+'S/'+yr_start+'/'+mo_start+'/'+day_start+'/'
-       filename = dir_type[j]+'S'+yr_start+mo_start+day_start+'.dat'
+       remote_path = source.remote_data_dir+'/Stations/'+yr_start+'/'+mo_start+'/'+day_start+'/'
+       local_path = source.local_data_dir+'/Stations/'+yr_start+'/'+mo_start+'/'+day_start+'/'
+       filename = 'Stat'+yr_start+mo_start+day_start+'.dat'
        local_file = local_path + filename
        found_file = file_search(local_file, count=ncnt)
        if keyword_set(nodownload) then begin

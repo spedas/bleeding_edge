@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Mar 14 18:16:18 2018.<P>
+<STRONG>Last modified: </STRONG>Thu Mar 15 18:16:27 2018.<P>
  
 <HR>
  
@@ -23,7 +23,7 @@ This page was created by the IDL library routine
 <br>Returns a rotation matrix that rotates v1,v2 to the x-y plane
 <LI><A HREF="#SPD_PART_VIS">SPD_PART_VIS</A>
 <LI><A HREF="#SPD_SLICE1D_PLOT">SPD_SLICE1D_PLOT</A>
-<br>Create plots for 2D particle slices.
+<br>Create 1D plot from a 2D particle slice
 <LI><A HREF="#SPD_SLICE2D_2DI">SPD_SLICE2D_2DI</A>
 <LI><A HREF="#SPD_SLICE2D_3DI">SPD_SLICE2D_3DI</A>
 <LI><A HREF="#SPD_SLICE2D_CHECKBINS">SPD_SLICE2D_CHECKBINS</A>
@@ -134,22 +134,27 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/sci
   spd_slice1d_plot
 
  PURPOSE:
-  Create plots for 2D particle slices.
+  Create 1D plot from a 2D particle slice
 
  EXAMPLE:
   spd_slice1d_plot, slice, 'x', 0.0, title='Vx at Vy=0'
 
  INPUT:
-  slice: 2D array of values to plot
+  slice: slice returned by spd_slice2d
   direction: axis to plot - 'x' or 'y'
-  value: if direction is 'x', this is the y-value to create a 1D plot at
+  value: if direction is 'x', this is the y-value to create a 1D plot at; 
+         can also be a range of values, e.g., [-1000, 1000] to sum over 
+         the y-values from -1000 to +1000 
 
  KEYWORDS:
    accepts most keywords accepted by the PLOT procedure
 
+ NOTES:
+   work in progress! please send bugs/problems/complaints/etc to egrimes@igpp.ucla.edu
+   
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-03-14 14:57:18 -0700 (Wed, 14 Mar 2018) $
-$LastChangedRevision: 24884 $
+$LastChangedDate: 2018-03-15 14:38:42 -0700 (Thu, 15 Mar 2018) $
+$LastChangedRevision: 24894 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/core/spd_slice1d_plot.pro $
 </PRE><P>
 <STRONG>(See <A href="core/spd_slice1d_plot.pro">general/science/spd_slice2d/core/spd_slice1d_plot.pro</A>)</STRONG><P>

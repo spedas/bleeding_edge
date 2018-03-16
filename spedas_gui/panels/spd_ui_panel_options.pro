@@ -16,8 +16,8 @@
 ;are issued for invalid entries. This avoids the issue of the text overwriting in spinners as the user types if values aren't valid.
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-10-03 14:12:59 -0700 (Tue, 03 Oct 2017) $
-;$LastChangedRevision: 24103 $
+;$LastChangedDate: 2018-03-15 14:14:59 -0700 (Thu, 15 Mar 2018) $
+;$LastChangedRevision: 24892 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_panel_options.pro $
 ;
 ;--------------------------------------------------------------------------------
@@ -339,7 +339,6 @@ pro spd_ui_panel_spinner_check, tlb,panelsettings,uname,namestring, minvalue,max
   widget_control, id, get_value=val
   if ~finite(val,/nan) then begin
     if val lt minvalue then begin
-      ;Execute('panelSettings->SetProperty, '+propertyname+'=1')
       if keyword_set(reset) then begin
         messageString = namestring+' must be greater than or equal to '+strtrim(string(minvalue),1)+'; value reset.'
         response=dialog_message(messageString,/CENTER)
