@@ -99,11 +99,19 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
 
         get_data, xspec_names[i], dat = xspec_dat_i
 
-        xspec_dat_y_i = reform( $
-          transpose($
-          [[[xspec_dat_i.y[*,1:*:2]]], $
-          [[xspec_dat_i.y[*,0:*:2]]]],[0,2,1]), $
-          size(/dim,xspec_dat_i.y))
+        if xspec_type EQ 'p1' or xspec_type EQ 'p2' then begin
+
+          xspec_dat_y_i = reform( $
+            transpose($
+            [[[xspec_dat_i.y[*,1:*:2]]], $
+            [[xspec_dat_i.y[*,0:*:2]]]],[0,2,1]), $
+            size(/dim,xspec_dat_i.y))
+
+        endif else begin
+          
+          xspec_dat_y_i = xspec_dat_i.y
+          
+        endelse
 
         xspec_dat_y = [[[xspec_dat_y]], [[xspec_dat_y_i]]]
 
@@ -146,7 +154,7 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
         store_data, prefix + 'xspec_' + xspec_type + '_converted', $
           data = {x:xspec_dat_x, $
           y:(spp_fld_dfb_psuedo_log_decompress(xspec_dat_y, $
-          type = 'spectra')), $
+          type = 'spectra', /high_gain)), $
           v:data_v}
 
         ;options, prefix + 'xspec_' + xspec_type + '_converted', 'ztitle', 'Log Auto [arb.]'
@@ -156,7 +164,7 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
         store_data, prefix + 'xspec_' + xspec_type + '_converted', $
           data = {x:xspec_dat_x, $
           y:(spp_fld_dfb_psuedo_log_decompress(xspec_dat_y, $
-          type = 'xspectra')), $
+          type = 'xspectra', /high_gain)), $
           v:data_v}
 
       endelse
@@ -168,6 +176,7 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
       options, prefix + 'xspec_' + xspec_type + '_converted', 'ylog', 1
       options, prefix + 'xspec_' + xspec_type + '_converted', 'ystyle', 1
       options, prefix + 'xspec_' + xspec_type + '_converted', 'yrange', minmax(freq_bins.freq_avg)
+      options, prefix + 'xspec_' + xspec_type + '_converted', 'datagap', 300.
 
     endfor
 
@@ -185,26 +194,22 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
 
     coh = (rc_dat.y^2 + ic_dat.y^2) / (p1_dat.y * p2_dat.y)
 
-    ;    plot, p1_dat.y, /ylog, yrange = [1.e4, 1.e24]
-    ;    oplot, p2_dat.y, col=6
-    ;    oplot, (rc_dat.y^2 + ic_dat.y^2), col = 2
-    ;    oplot, p2_dat.y * p1_dat.y, col=3
-
     phase  = atan(Ic_dat.y / Rc_dat.y) * 180d / !PI
-    phase[where( finite(coh) EQ 0 )] = !VALUES.F_NAN
-    phase[where( coh LT 0.05 )] = !VALUES.F_NAN
+    ;    phase[where( finite(coh) EQ 0 )] = !VALUES.F_NAN
+    ;    phase[where( coh LT 0.05 )] = !VALUES.F_NAN
 
-;    stop
+    ;    stop
 
     store_data, prefix + 'coherence', data = {x:p1_dat.x, $
       y:coh, v:data_v}
-      
+
     options, prefix + 'coherence', 'panel_size', 2
     options, prefix + 'coherence', 'spec', 1
     options, prefix + 'coherence', 'no_interp', 1
     options, prefix + 'coherence', 'zlog', 1
     options, prefix + 'coherence', 'ylog', 1
     options, prefix + 'coherence', 'ystyle', 1
+    options, prefix + 'coherence', 'datagap', 300.
     options, prefix + 'coherence', 'yrange', minmax(freq_bins.freq_avg)
 
     store_data, prefix + 'phase', data = {x:p1_dat.x, $
@@ -215,6 +220,7 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
     options, prefix + 'phase', 'no_interp', 1
     options, prefix + 'phase', 'ylog', 1
     options, prefix + 'phase', 'ystyle', 1
+    options, prefix + 'phase', 'datagap', 300.
     options, prefix + 'phase', 'yrange', minmax(freq_bins.freq_avg)
 
 
@@ -262,7 +268,7 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
           'erence$', /ex, /reg)),$     ; coherence -> coh in title
           'se$', /ex, /reg)),$         ; phase -> pha in title
           '_', /ex),'!C')
-        
+
         options, prefix + dfb_xspec_name_i, 'ytitle', $
           'DFB!C' + ac_dc_string + ' XSP' + $
           string(xspec_ind) + '!C' + strupcase(dfb_xspec_name_ytitle)

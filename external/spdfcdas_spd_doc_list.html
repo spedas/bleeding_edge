@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Mar 15 18:16:27 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Mar 16 18:16:20 2018.<P>
  
 <HR>
  
@@ -61,7 +61,6 @@ This page was created by the IDL library routine
 <LI><A HREF="#SPDFCDAS__DEFINE[31]">SPDFCDAS__DEFINE[31]</A>
 <LI><A HREF="#SPDFCDAS__DEFINE[32]">SPDFCDAS__DEFINE[32]</A>
 <LI><A HREF="#SPDFCDAS__DEFINE[33]">SPDFCDAS__DEFINE[33]</A>
-<LI><A HREF="#SPDFCDAS__DEFINE[34]">SPDFCDAS__DEFINE[34]</A>
 <LI><A HREF="#SPDFCDASDATAREQUEST__DEFINE[1]">SPDFCDASDATAREQUEST__DEFINE[1]</A>
 <LI><A HREF="#SPDFCDASDATAREQUEST__DEFINE[2]">SPDFCDASDATAREQUEST__DEFINE[2]</A>
 <LI><A HREF="#SPDFCDASDATAREQUEST__DEFINE[2]">SPDFCDASDATAREQUEST__DEFINE[2]</A>
@@ -220,6 +219,7 @@ SPDFDATAVIEWDESCRIPTION__DEFINE[11]</A>
 <LI><A HREF="#SPDFGETDATA[1]">SPDFGETDATA[1]</A>
 <LI><A HREF="#SPDFGETDATA[2]">SPDFGETDATA[2]</A>
 <LI><A HREF="#SPDFGETDATA[2]">SPDFGETDATA[2]</A>
+<LI><A HREF="#SPDFGETDEFAULTSSLVERIFYPEER">SPDFGETDEFAULTSSLVERIFYPEER</A>
 <LI><A HREF="#SPDFGRAPHREQUEST__DEFINE[1]">SPDFGRAPHREQUEST__DEFINE[1]</A>
 <LI><A HREF="#SPDFGRAPHREQUEST__DEFINE[2]">SPDFGRAPHREQUEST__DEFINE[2]</A>
 <LI><A HREF="#SPDFGRAPHREQUEST__DEFINE[2]">SPDFGRAPHREQUEST__DEFINE[2]</A>
@@ -879,29 +879,6 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <A HREF="#SPDFCDAS__DEFINE[11]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- Gets the node's value of the first child of the first item of the
- specified element of the given DOM document.
-
- @private
-
- @param domElement {in} {required} {type=IDLffXMLDOMDocument}
-                DOM element to search
- @param tagName {in} {required} {type=string}
-                A scalar string containing the tag name of the desired
-                element.
- @returns node's string value(s) of the first child of the item(s)
-              of the specified element of the given DOM document. An
-              empty string is returned if the value cannot be found.
-</PRE><P>
-<STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="SPDFCDAS__DEFINE[11]">
-<H2>SPDFCDAS__DEFINE[11]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[10]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[12]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
  Gets a description of all the dataviews that are available.
 
  @keyword httpErrorReporter {in} {optional} 
@@ -915,10 +892,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[12]">
-<H2>SPDFCDAS__DEFINE[12]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[11]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[13]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[11]">
+<H2>SPDFCDAS__DEFINE[11]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[10]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[12]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Gets a description of all the observatory groups.
@@ -944,10 +921,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[13]">
-<H2>SPDFCDAS__DEFINE[13]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[12]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[14]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[12]">
+<H2>SPDFCDAS__DEFINE[12]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[11]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[13]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Gets a description of all the instrument types.
@@ -973,10 +950,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[14]">
-<H2>SPDFCDAS__DEFINE[14]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[13]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[15]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[13]">
+<H2>SPDFCDAS__DEFINE[13]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[12]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[14]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Gets a description of all the datasets.
@@ -1043,10 +1020,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[15]">
-<H2>SPDFCDAS__DEFINE[15]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[14]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[16]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[14]">
+<H2>SPDFCDAS__DEFINE[14]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[13]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[15]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Gets a description of a dataset's data inventory.
@@ -1067,10 +1044,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[16]">
-<H2>SPDFCDAS__DEFINE[16]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[15]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[17]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[15]">
+<H2>SPDFCDAS__DEFINE[15]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[14]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[16]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Gets a description of a dataset's variables.
@@ -1092,10 +1069,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[17]">
-<H2>SPDFCDAS__DEFINE[17]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[16]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[18]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[16]">
+<H2>SPDFCDAS__DEFINE[16]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[15]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[17]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Gets &lt;a href=&quot;https://cdf.gsfc.nasa.gov/&quot;&gt;Common Data Format&lt;/a&gt;
@@ -1129,10 +1106,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[18]">
-<H2>SPDFCDAS__DEFINE[18]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[17]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[19]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[17]">
+<H2>SPDFCDAS__DEFINE[17]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[16]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[18]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Gets a textual representation of data from the specified dataset.
@@ -1162,10 +1139,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[19]">
-<H2>SPDFCDAS__DEFINE[19]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[18]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[1]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[18]">
+<H2>SPDFCDAS__DEFINE[18]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[17]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[19]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Gets a graphical representation of data from the specified dataset.
@@ -1194,33 +1171,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[1]">
-<H2>SPDFCDAS__DEFINE[1]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[19]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[20]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- This class represents the remotely callable interface to 
- &lt;a href=&quot;https://www.nasa.gov/&quot;&gt;NASA&lt;/a&gt;'s
- &lt;a href=&quot;https://spdf.gsfc.nasa.gov/&quot;&gt;Space Physics Data Facility&lt;/a&gt; 
- (SPDF)
- &lt;a href=&quot;https://cdaweb.gsfc.nasa.gov/&quot;&gt;Coordinated Data Analysis 
- System&lt;/a&gt; (CDAS).
-
- @copyright Copyright (c) 2010-2017 United States Government as 
-     represented by the National Aeronautics and Space Administration.
-     No copyright is claimed in the United States under Title 17, 
-     U.S.Code. All Other Rights Reserved.
-
- @author B. Harris
-</PRE><P>
-<STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="SPDFCDAS__DEFINE[20]">
-<H2>SPDFCDAS__DEFINE[20]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[1]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[21]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[19]">
+<H2>SPDFCDAS__DEFINE[19]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[18]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Converts the given Julian Day value to an ISO 8601 string 
@@ -1235,10 +1189,33 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[21]">
-<H2>SPDFCDAS__DEFINE[21]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[20]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[22]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[1]">
+<H2>SPDFCDAS__DEFINE[1]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[19]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[20]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ This class represents the remotely callable interface to 
+ &lt;a href=&quot;https://www.nasa.gov/&quot;&gt;NASA&lt;/a&gt;'s
+ &lt;a href=&quot;https://spdf.gsfc.nasa.gov/&quot;&gt;Space Physics Data Facility&lt;/a&gt; 
+ (SPDF)
+ &lt;a href=&quot;https://cdaweb.gsfc.nasa.gov/&quot;&gt;Coordinated Data Analysis 
+ System&lt;/a&gt; (CDAS).
+
+ @copyright Copyright (c) 2010-2018 United States Government as 
+     represented by the National Aeronautics and Space Administration.
+     No copyright is claimed in the United States under Title 17, 
+     U.S.Code. All Other Rights Reserved.
+
+ @author B. Harris
+</PRE><P>
+<STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SPDFCDAS__DEFINE[20]">
+<H2>SPDFCDAS__DEFINE[20]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[1]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[21]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Make a request to CDAS for the specified data.
@@ -1260,10 +1237,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[22]">
-<H2>SPDFCDAS__DEFINE[22]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[21]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[23]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[21]">
+<H2>SPDFCDAS__DEFINE[21]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[20]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[22]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Creates an SpdfCdasDataResult object from the given cdas:DataResult
@@ -1278,10 +1255,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[23]">
-<H2>SPDFCDAS__DEFINE[23]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[22]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[24]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[22]">
+<H2>SPDFCDAS__DEFINE[22]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[21]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[23]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Creates SpdfFileDescription object(s) from the FileDescription
@@ -1296,10 +1273,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[24]">
-<H2>SPDFCDAS__DEFINE[24]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[23]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[25]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[23]">
+<H2>SPDFCDAS__DEFINE[23]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[22]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[24]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Creates an SpdfThumbnailDescription object from the FileDescription
@@ -1315,10 +1292,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[25]">
-<H2>SPDFCDAS__DEFINE[25]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[24]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[26]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[24]">
+<H2>SPDFCDAS__DEFINE[24]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[23]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[25]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Creates a SpdfTimeInterval object from a child TimeInterval element
@@ -1333,10 +1310,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[26]">
-<H2>SPDFCDAS__DEFINE[26]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[25]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[27]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[25]">
+<H2>SPDFCDAS__DEFINE[25]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[24]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[26]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Creates a SpdfTimeInterval object from the given TimeInterval element
@@ -1351,10 +1328,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[27]">
-<H2>SPDFCDAS__DEFINE[27]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[26]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[28]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[26]">
+<H2>SPDFCDAS__DEFINE[26]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[25]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[27]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Creates a julday object from the given time element from a 
@@ -1370,10 +1347,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[28]">
-<H2>SPDFCDAS__DEFINE[28]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[27]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[29]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[27]">
+<H2>SPDFCDAS__DEFINE[27]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[26]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[28]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Gets the ThumbnailId value from the given cdas:FileDescription 
@@ -1388,10 +1365,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[29]">
-<H2>SPDFCDAS__DEFINE[29]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[28]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[2]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[28]">
+<H2>SPDFCDAS__DEFINE[28]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[27]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[29]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Gets the specified node values from the given cdas:DataResult XML 
@@ -1405,6 +1382,37 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
             name of elements whose value is to be gotten.  This is
             expected to be one of Message, Warning, Status, or Error.
  @returns strarr of the specified node values from the given document.
+</PRE><P>
+<STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SPDFCDAS__DEFINE[29]">
+<H2>SPDFCDAS__DEFINE[29]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[28]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Perform an HTTP GET request to the given URL.  This method provides 
+ functionality similar to doing    
+     obj_new('IDLffXMLDOMDocument', filename=url)
+ except that this method will catch an authorization error (401),
+ call the supplied authenticator function, and then retry the
+ request with the authentication credentials obtained from the
+ call to the callers authentication function.
+
+ @private
+
+ @param dataview {in} {type=string}
+            name of dataview to access.
+ @param url {in} {type=string}
+            URL of GET request to make.
+ @keyword authenticator {in} {optional} {type=SpdfAuthenticator}
+              authenticator that is used when a dataview requiring
+              authentication is specified.
+ @keyword errorReporter {in} {optional} {type=string}
+              name of IDL procedure to call if an HTTP error occurs.
+ @returns reference to IDLffXMLDOMDocument representation of HTTP
+     response entity.
 </PRE><P>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
@@ -1424,7 +1432,7 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
  http://username:password@hostname:port/.
 
  @keyword endpoint {in} {optional} {type=string}
-              {default=self-&gt;getDefaultEndpoint()}
+              {default='https://cdaweb.gsfc.nasa.gov/WS/cdasr/1'}
               URL of CDAS web service.
  @keyword userAgent {in} {optional} {type=string} {default=WsExample}
               HTTP user-agent value used in communications with CDAS.
@@ -1459,37 +1467,6 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <A HREF="#SPDFCDAS__DEFINE[31]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- Perform an HTTP GET request to the given URL.  This method provides 
- functionality similar to doing    
-     obj_new('IDLffXMLDOMDocument', filename=url)
- except that this method will catch an authorization error (401),
- call the supplied authenticator function, and then retry the
- request with the authentication credentials obtained from the
- call to the callers authentication function.
-
- @private
-
- @param dataview {in} {type=string}
-            name of dataview to access.
- @param url {in} {type=string}
-            URL of GET request to make.
- @keyword authenticator {in} {optional} {type=SpdfAuthenticator}
-              authenticator that is used when a dataview requiring
-              authentication is specified.
- @keyword errorReporter {in} {optional} {type=string}
-              name of IDL procedure to call if an HTTP error occurs.
- @returns reference to IDLffXMLDOMDocument representation of HTTP
-     response entity.
-</PRE><P>
-<STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="SPDFCDAS__DEFINE[31]">
-<H2>SPDFCDAS__DEFINE[31]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[30]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[32]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
  Perform an HTTP POST request to the given URL.  If an authorization
  error (401) occurs, the supplied authenticator function is called, 
  and then the request is retried with the authentication credentials 
@@ -1514,10 +1491,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[32]">
-<H2>SPDFCDAS__DEFINE[32]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[31]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[33]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[31]">
+<H2>SPDFCDAS__DEFINE[31]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[30]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[32]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Function to handle HTTP request errors.  If an authorization error
@@ -1547,10 +1524,10 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[33]">
-<H2>SPDFCDAS__DEFINE[33]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[32]">[Previous Routine]</A>
-<A HREF="#SPDFCDAS__DEFINE[34]">[Next Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[32]">
+<H2>SPDFCDAS__DEFINE[32]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[31]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[33]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Create an IDLnetURL object from the given URL with any supplied
@@ -1570,9 +1547,9 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPDFCDAS__DEFINE[34]">
-<H2>SPDFCDAS__DEFINE[34]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[33]">[Previous Routine]</A>
+<A NAME="SPDFCDAS__DEFINE[33]">
+<H2>SPDFCDAS__DEFINE[33]</H2></A>
+<A HREF="#SPDFCDAS__DEFINE[32]">[Previous Routine]</A>
 <A HREF="#SPDFCDAS__DEFINE[3]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1600,13 +1577,13 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
  
 <A NAME="SPDFCDAS__DEFINE[3]">
 <H2>SPDFCDAS__DEFINE[3]</H2></A>
-<A HREF="#SPDFCDAS__DEFINE[34]">[Previous Routine]</A>
+<A HREF="#SPDFCDAS__DEFINE[33]">[Previous Routine]</A>
 <A HREF="#SPDFCDAS__DEFINE[4]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- Gets the default endpoint value.
+ Gets the current endpoint value.
 
- @returns default endpoint string value.
+ @returns current endpoint string value.
 </PRE><P>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
@@ -1617,9 +1594,9 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <A HREF="#SPDFCDAS__DEFINE[5]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- Gets the current endpoint value.
+ Gets the current userAgent value.
 
- @returns current endpoint string value.
+ @returns current userAgent string value.
 </PRE><P>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
@@ -1630,9 +1607,9 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <A HREF="#SPDFCDAS__DEFINE[6]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- Gets the current userAgent value.
+ Gets the current defaultDataview value.
 
- @returns current userAgent string value.
+ @returns current defaultDataview string value.
 </PRE><P>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
@@ -1643,9 +1620,9 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <A HREF="#SPDFCDAS__DEFINE[7]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- Gets the current defaultDataview value.
+ Gets the version of this class.
 
- @returns current defaultDataview string value.
+ @returns version of this class.
 </PRE><P>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
@@ -1656,9 +1633,9 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <A HREF="#SPDFCDAS__DEFINE[8]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- Gets the version of this class.
+ Gets the most up to date version of this class.
 
- @returns version of this class.
+ @returns most up to date version of this class.
 </PRE><P>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
@@ -1669,9 +1646,11 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <A HREF="#SPDFCDAS__DEFINE[9]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- Gets the most up to date version of this class.
+ Compares getVersion() and getCurrentVersion() to determine if this
+ class is up to date.
 
- @returns most up to date version of this class.
+ @returns true if getVersion() &gt;= getCurrentVersion().  Otherwise 
+     false.
 </PRE><P>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
@@ -1682,11 +1661,19 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <A HREF="#SPDFCDAWEBCHOOSERAUTHENTICATOR__DEFINE[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- Compares getVersion() and getCurrentVersion() to determine if this
- class is up to date.
+ Gets the node's value of the first child of the first item of the
+ specified element of the given DOM document.
 
- @returns true if getVersion() &gt;= getCurrentVersion().  Otherwise 
-     false.
+ @private
+
+ @param domElement {in} {required} {type=IDLffXMLDOMDocument}
+                DOM element to search
+ @param tagName {in} {required} {type=string}
+                A scalar string containing the tag name of the desired
+                element.
+ @returns node's string value(s) of the first child of the item(s)
+              of the specified element of the given DOM document. An
+              empty string is returned if the value cannot be found.
 </PRE><P>
 <STRONG>(See <A href="spdfcdas/spdfcdas__define.pro">external/spdfcdas/spdfcdas__define.pro</A>)</STRONG><P>
 <HR>
@@ -3307,7 +3294,7 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <A NAME="SPDFGETDATA[2]">
 <H2>SPDFGETDATA[2]</H2></A>
 <A HREF="#SPDFGETDATA[2]">[Previous Routine]</A>
-<A HREF="#SPDFGRAPHREQUEST__DEFINE[1]">[Next Routine]</A>
+<A HREF="#SPDFGETDEFAULTSSLVERIFYPEER">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  This function gets data from &lt;a href=&quot;https://www.nasa.gov/&quot;&gt;NASA&lt;/a&gt;'s
@@ -3389,9 +3376,24 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
 <STRONG>(See <A href="spdfcdas/spdfgetdata.pro">external/spdfcdas/spdfgetdata.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPDFGETDEFAULTSSLVERIFYPEER">
+<H2>SPDFGETDEFAULTSSLVERIFYPEER</H2></A>
+<A HREF="#SPDFGETDATA[2]">[Previous Routine]</A>
+<A HREF="#SPDFGRAPHREQUEST__DEFINE[1]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Gets the default value for the IDLnetURL SSL_VERIFY_PEER property
+ based upon the current version of IDL.
+
+ @returns 0 if current version of IDL cannot verify new SSL certificates.
+     Otherwise, 1.
+</PRE><P>
+<STRONG>(See <A href="spdfcdas/spdfgetdefaultsslverifypeer.pro">external/spdfcdas/spdfgetdefaultsslverifypeer.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPDFGRAPHREQUEST__DEFINE[1]">
 <H2>SPDFGRAPHREQUEST__DEFINE[1]</H2></A>
-<A HREF="#SPDFGETDATA[2]">[Previous Routine]</A>
+<A HREF="#SPDFGETDEFAULTSSLVERIFYPEER">[Previous Routine]</A>
 <A HREF="#SPDFGRAPHREQUEST__DEFINE[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Mar 15 18:16:27 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Mar 16 18:16:20 2018.<P>
  
 <HR>
  
@@ -35,6 +35,8 @@ This page was created by the IDL library routine
 <br>Makes fancy MAG tplot panels: amplitude on a log scale, and phi/theta
 <LI><A HREF="#MVN_SC_RAMDIR">MVN_SC_RAMDIR</A>
 <br>Determines the spacecraft orbital velocity vector relative to
+<LI><A HREF="#MVN_STA_CIO_LOAD">MVN_STA_CIO_LOAD</A>
+<br>Loads all available MAVEN cold ion outflow data that were
 <LI><A HREF="#MVN_STA_CIO_RESTORE">MVN_STA_CIO_RESTORE</A>
 <br>Restores STATIC cold ion outflow results.
 <LI><A HREF="#MVN_STA_CIO_SAVE">MVN_STA_CIO_SAVE</A>
@@ -491,7 +493,7 @@ CREATED BY:	David L. Mitchell  2015-04-02
 <A NAME="MVN_SC_RAMDIR">
 <H2>MVN_SC_RAMDIR</H2></A>
 <A HREF="#MVN_MAG_TPLOT">[Previous Routine]</A>
-<A HREF="#MVN_STA_CIO_RESTORE">[Next Routine]</A>
+<A HREF="#MVN_STA_CIO_LOAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mvn_sc_ramdir
@@ -562,9 +564,44 @@ CREATED BY:    David L. Mitchell  09/18/13
 <STRONG>(See <A href="swea/mvn_sc_ramdir.pro">projects/maven/swea/mvn_sc_ramdir.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_CIO_LOAD">
+<H2>MVN_STA_CIO_LOAD</H2></A>
+<A HREF="#MVN_SC_RAMDIR">[Previous Routine]</A>
+<A HREF="#MVN_STA_CIO_RESTORE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_sta_cio_load
+PURPOSE:
+  Loads all available MAVEN cold ion outflow data that were 
+  processed by mvn_sta_coldion.pro.
+
+INPUTS:
+     ptr   : A named variable to hold a pointer to the data.
+  species  : Which database to load?  ('h', 'o1', 'o2')
+
+KEYWORDS:
+
+    FROOT  : File root for save file (e.g., 'cio_ABCD_').
+
+     TAGS  : A named variable to hold a string array of the names
+             of the data structure tags.
+
+     NPTS  : A named variable to hold the number of data points.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2018-03-16 10:41:25 -0700 (Fri, 16 Mar 2018) $
+ $LastChangedRevision: 24895 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_load.pro $
+
+CREATED BY:	David L. Mitchell
+FILE:  mvn_sta_cio_load.pro
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_sta_cio_load.pro">projects/maven/swea/mvn_sta_cio_load.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_CIO_RESTORE">
 <H2>MVN_STA_CIO_RESTORE</H2></A>
-<A HREF="#MVN_SC_RAMDIR">[Previous Routine]</A>
+<A HREF="#MVN_STA_CIO_LOAD">[Previous Routine]</A>
 <A HREF="#MVN_STA_CIO_SAVE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

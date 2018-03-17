@@ -1,7 +1,7 @@
 ;
-;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2017-11-22 20:43:40 -0800 (Wed, 22 Nov 2017) $
-;  $LastChangedRevision: 24338 $
+;  $LastChangedBy: spfuser $
+;  $LastChangedDate: 2018-03-16 17:03:47 -0700 (Fri, 16 Mar 2018) $
+;  $LastChangedRevision: 24899 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_load_tmlib_data.pro $
 ;
 
@@ -205,23 +205,23 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
   endelse
 
   err = tm_select_server(server)
-  dprint, 'Select Server status: ', dlevel = 3
+  dprint, 'Select Server status: ', err ? 'Error':'OK', dlevel = 3
 
   ; Select MSIE (Mission, Spacecraft, Instrument, Event)
   err = tm_select_domain(sid, "SPP", "SPP", "Fields", tmlib_event)
-  dprint, 'Select MSIE status: ', dlevel = 3
-  dprint, 'Stream ID: ', dlevel = 3
+  dprint, 'Select MSIE status:   ', err ? 'Error':'OK', dlevel = 3
+  dprint, 'Stream ID:            ', sid, dlevel = 3
   if err NE 0 then spp_fld_print_error_stack, err, sid
 
   ; Select a time range
   err = tm_select_stream_timerange(sid, t0, t1)
-  dprint, 'Select timerange status: ', dlevel = 3
+  dprint, 'Select timerange status: ', err ? 'Error':'OK', dlevel = 3
   if err NE 0 then spp_fld_print_error_stack, err, sid
 
   ; Find an event
   first_event = 1
   serr = tm_find_event(sid)
-  dprint, 'First event status', dlevel = 3
+  dprint, 'First event status: ', serr ? 'Not Found':'Found', dlevel = 3
   if serr NE 0 then begin
 
     spp_fld_print_error_stack, serr, sid
@@ -239,6 +239,8 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
 
   while (serr GE 0) do begin
 
+    dprint, ' ', dlevel = 4
+
     if first_event EQ 1 then begin
 
       first_event = 0
@@ -246,7 +248,7 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
     endif else begin
 
       serr = tm_find_event(sid)
-      dprint, 'serr', serr, dlevel = 4
+      dprint, 'serr:     ', serr, dlevel = 4
 
     endelse
 
@@ -254,29 +256,44 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
 
     err_pos = tm_get_position(sid, ur8)
 
+    dprint, 'ERR POS:  ', err_pos, dlevel = 4
+
+    err_met = tm_get_item_i4(sid, "ccsds_sc_time", ccsds_met, 1, ccsds_met_time)
+
+    dprint, 'ERR MET:  ', err_met, dlevel = 4
+
     err_scet = tm_get_item_r8(sid, "ccsds_scet_ur8", ur8_ccsds, 1, scet_size)
+
+    dprint, 'ERR SCET: ', err_scet, dlevel = 4
 
     err_pkt_len = tm_get_item_i4(sid, "ccsds_total_packet_length", $
       ccsds_pkt_len, 1, pkt_len_size)
-
-    err = tm_get_item_i4(sid, "ccsds_entire_packet", $
-      packet, ccsds_pkt_len, pkt_size)
-
-    err = tm_get_item_i4(sid, "ccsds_meat_length", $
+    err_meat_len = tm_get_item_i4(sid, "ccsds_meat_length", $
       ccsds_meat_len, 1, meat_size)
 
-    ;print, 'CCSDS Packet length: ', ccsds_pkt_len
+    err_pkt = tm_get_item_i4(sid, "ccsds_entire_packet", $
+      packet, ccsds_pkt_len, pkt_size)
+    err_meat = tm_get_item_i4(sid, "ccsds_meat", $
+      meat, ccsds_meat_len, meat_size)
 
-    ;err = tm_get_item_i4(sid, "ccsds_met_sec", met_ccsds, 1, size)
+;  packet = [1]
+;
+;  err_pkt = 0
+;  err_meat = 0
+
+    dprint, 'Packet length/ERR: ', ccsds_pkt_len, err_pkt_len, dlevel = 4
+
+    dprint, 'Meat length/ERR:   ', ccsds_meat_len, err_meat_len, dlevel = 4
+
+    dprint, 'Packet sum/ERR:    ', total(abs(packet)), err_pkt, dlevel = 4
+    
+    dprint, 'Meat sum/ERR:      ', total(abs(meat)), err_meat, dlevel = 4
+
+    ;if err_pkt NE 0 or err_meat NE 0 then stop
 
     ; Convert time back to TPLOT time
 
     time = ur8_ccsds * 86400.d + t0_ur8
-
-    dprint, n_elements(times), ' / ', ur8_ccsds, ' / ', $
-      time_string(time), dlevel = 4
-
-    dprint, ccsds_pkt_len, dlevel = 4
 
     t0 = systime(1)
 
@@ -287,7 +304,12 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
 
     end
 
-    if serr EQ 0 then begin
+    dprint, n_elements(times), ' / ', $
+      ccsds_met, ' / ', $
+      string(ur8_ccsds, format = '(F16.8)'), ' / ', $
+      time_string(time), dlevel = 4
+
+    if serr EQ 0 and err_pkt EQ 0 and err_meat EQ 0  then begin
 
       times.Add, time
       packets.Add, packet

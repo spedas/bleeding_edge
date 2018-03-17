@@ -22,7 +22,7 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2010-2017 United States Government as represented by the
+; Copyright (c) 2010-2018 United States Government as represented by the
 ; National Aeronautics and Space Administration. No copyright is claimed
 ; in the United States under Title 17, U.S.Code. All Other Rights 
 ; Reserved.
@@ -38,7 +38,7 @@
 ; <a href="https://cdaweb.gsfc.nasa.gov/">Coordinated Data Analysis 
 ; System</a> (CDAS).
 ;
-; @copyright Copyright (c) 2010-2017 United States Government as 
+; @copyright Copyright (c) 2010-2018 United States Government as 
 ;     represented by the National Aeronautics and Space Administration.
 ;     No copyright is claimed in the United States under Title 17, 
 ;     U.S.Code. All Other Rights Reserved.
@@ -57,7 +57,7 @@
 ; http://username:password@hostname:port/.
 ;
 ; @keyword endpoint {in} {optional} {type=string}
-;              {default=self->getDefaultEndpoint()}
+;              {default='https://cdaweb.gsfc.nasa.gov/WS/cdasr/1'}
 ;              URL of CDAS web service.
 ; @keyword userAgent {in} {optional} {type=string} {default=WsExample}
 ;              HTTP user-agent value used in communications with CDAS.
@@ -79,7 +79,7 @@ function SpdfCdas::init, $
     sslVerifyPeer = sslVerifyPeer
     compile_opt idl2
 
-    self.endpoint = self->getDefaultEndpoint()
+    self.endpoint = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1'
     self.version = '%VERSION*'
     self.currentVersionUrl = $
         'https://cdaweb.gsfc.nasa.gov/WebServices/REST/spdfCdasVersion.txt'
@@ -99,7 +99,7 @@ function SpdfCdas::init, $
         self.defaultDataview = defaultDataview
     endif
 
-    self.ssl_verify_peer = 1
+    self.ssl_verify_peer = SpdfGetDefaultSslVerifyPeer()
 
     if n_elements(sslVerifyPeer) gt 0 then begin
 
@@ -133,32 +133,6 @@ end
 pro SpdfCdas::cleanup
     compile_opt idl2
 
-end
-
-
-;+
-; Gets the default endpoint value.
-;
-; @returns default endpoint string value.
-;-
-function SpdfCdas::getDefaultEndpoint
-    compile_opt idl2
-
-    endpoint = 'http'
-
-    releaseComponents = strsplit(!version.release, '.', /extract)
-
-    if releaseComponents[0] ge '8' and $
-       releaseComponents[1] ge '4' then begin
-
-        ; Even though earlier versions of IDL are suppose to support
-        ; https, they do not (at least they do not support https to
-        ; cdaweb).
-
-        endpoint = endpoint + 's'
-    endif
-
-    return, endpoint + '://cdaweb.gsfc.nasa.gov/WS/cdasr/1'
 end
 
 

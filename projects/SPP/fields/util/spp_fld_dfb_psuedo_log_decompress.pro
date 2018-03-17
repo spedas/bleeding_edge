@@ -1,4 +1,7 @@
-function spp_fld_dfb_psuedo_log_decompress, compressed, type = type
+function spp_fld_dfb_psuedo_log_decompress, compressed, type = type, $
+  high_gain = high_gain 
+
+  if not keyword_set(high_gain) then high_gain = 0
 
   if not keyword_set(type) then type = ''
 
@@ -18,6 +21,8 @@ function spp_fld_dfb_psuedo_log_decompress, compressed, type = type
   ; XSP   SEEE EEMM MMMM MMMM
 
   ; Some examples:
+
+  ; TODO: These examples are out of date, need updating!
 
   ; bp_comp = [0x00,0x07,0x0F,0x20,0x57,0xFF]
   ; bp = spp_fld_dfb_psuedo_log_decompress(bp_comp, type = 'bandpass')
@@ -51,15 +56,21 @@ function spp_fld_dfb_psuedo_log_decompress, compressed, type = type
     'bandpass': begin
       signed = 0
       man_mod = 2ll^4
+      high_gain_divide = 1d ; no high gain division for bandpass
+      decompress_divide = 1d
     end
     'spectra': begin
       signed = 0
       man_mod = 2ll^3
+      high_gain_divide = 2048d
+      decompress_divide = 64d
     end
     'xspectra': begin
       signed = 1
       sign_div = 2ll^15
       man_mod = 2ll^10
+      high_gain_divide = 128d
+      decompress_divide = 4096d
     end
     else: begin
       print, 'no type specified'
@@ -109,6 +120,14 @@ function spp_fld_dfb_psuedo_log_decompress, compressed, type = type
     decompressed[neg_ind] *= -1.d
     
   endif
+  
+  if high_gain then begin
+    
+    decompressed /= high_gain_divide
+    
+  endif
+  
+  decompressed /= decompress_divide
 
   return, decompressed
 

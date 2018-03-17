@@ -13,6 +13,9 @@ function spp_fld_tmlib_item_nelem, item_hash, sid
     endif else begin
 
       err = tm_get_item_i4(sid, (item_hash)['nelem'], nelem, 1, n_returned)
+      dprint, (item_hash)['name'], ' ', (item_hash)['nelem'], err, nelem, dlevel = 4
+;      err = tm_get_item_i4(sid, 'avg_period_raw', ppp, 1, n_returned)
+;      print, err, ppp
 
     endelse
 
@@ -28,10 +31,13 @@ function spp_fld_tmlib_item_nelem, item_hash, sid
 
     err = tm_get_item_i4(sid, 'dbm_nsamples', dbm_nsamples, 1, n_returned)
 
-    print, nelem, dbm_nsamples
+    dprint, nelem, dbm_nsamples, dlevel = 4
 
   endif
 
+;  if (nelem NE 512) and (nelem NE 32) and (nelem NE 1) then stop
+
   return, nelem
+
 
 end

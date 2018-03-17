@@ -8,8 +8,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-05-25 14:40:54 -0700 (Wed, 25 May 2016) $
-;$LastChangedRevision: 21203 $
+;$LastChangedDate: 2018-03-16 16:11:23 -0700 (Fri, 16 Mar 2018) $
+;$LastChangedRevision: 24897 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec_ascii/mms_load_eph_tplot.pro $
 ;-
 pro mms_load_eph_tplot, filenames, tplotnames = tplotnames, prefix = prefix, level = level, $
@@ -77,7 +77,7 @@ pro mms_load_eph_tplot, filenames, tplotnames = tplotnames, prefix = prefix, lev
     if where(datatypes EQ 'vel') NE -1 then begin
         vel_name =  prefix + '_' + level + 'eph_vel' + suffix
         str_element,dl,'data_att.st_type','vel',/add_replace
-        str_element,dl,'data_att.coord_sys','unknown', /add_replace
+        str_element,dl,'data_att.coord_sys','j2000', /add_replace
         str_element,dl,'data_att.units','km/s', /add_replace
         str_element,dl,'labels',['vx','vy','vz'], /add
         str_element,dl,'vname',vel_name, /add
