@@ -17,8 +17,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-11-07 15:42:24 -0800 (Tue, 07 Nov 2017) $
-;$LastChangedRevision: 24275 $
+;$LastChangedDate: 2018-03-18 14:43:40 -0700 (Sun, 18 Mar 2018) $
+;$LastChangedRevision: 24901 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_feeps_pad_spinavg.pro $
 ;-
 pro mms_feeps_pad_spinavg, probe=probe, species = species, data_units = data_units, $
@@ -60,7 +60,6 @@ pro mms_feeps_pad_spinavg, probe=probe, species = species, data_units = data_uni
   get_data, pad_name, data=pad_data, dlimits=pad_dl
 
   if ~is_struct(pad_data) then begin
-    stop
     dprint, dlevel = 0, 'Error, variable containing valid PAD data missing.'
     return
   endif

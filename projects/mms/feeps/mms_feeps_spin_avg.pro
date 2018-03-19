@@ -8,8 +8,8 @@
 ;       with each measurement)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-02-21 11:32:01 -0800 (Tue, 21 Feb 2017) $
-;$LastChangedRevision: 22831 $
+;$LastChangedDate: 2018-03-18 14:43:40 -0700 (Sun, 18 Mar 2018) $
+;$LastChangedRevision: 24901 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_feeps_spin_avg.pro $
 ;-
 pro mms_feeps_spin_avg, probe=probe, data_units = data_units, datatype = datatype, $
@@ -31,7 +31,6 @@ pro mms_feeps_spin_avg, probe=probe, data_units = data_units, datatype = datatyp
   
   if ~is_struct(spin_sectors) then begin
       dprint, dlevel = 0, 'Error, couldn''t find the tplot variable containing the spin sectors for calculating the spin averages.'
-      stop
       return
   endif
 
