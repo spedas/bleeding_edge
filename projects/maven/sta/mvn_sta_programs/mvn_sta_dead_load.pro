@@ -109,6 +109,7 @@ rate = dblarr(npts,64,16)					; energy-deflector event rate
 dead = dblarr(npts,64,16)					; energy-deflector dead time 
 droop = dblarr(npts,64,16)					; energy-deflector droop rate 
 valid = dblarr(npts,64,16)					; energy-deflector valid event rate 
+st_eff = dblarr(npts,64,16)					; energy-deflector start eff 
 anode = dblarr(npts,64,16)					; energy-anode distribution of counts, normalized at each energy - assumes anode distribution does not depend on deflector or mass
 qual = intarr(npts)
 eff_start = fltarr(npts)
@@ -128,6 +129,19 @@ d9_fq_mp = fltarr(npts)
 d9_fq_pk = fltarr(npts)
 d9_ab_mp = fltarr(npts)
 d9_cd_mp = fltarr(npts)
+
+droop_1 = fltarr(npts,64,16)
+droop_2 = fltarr(npts,64,16)
+droop_3 = fltarr(npts,64,16)
+max_droop_1 = fltarr(npts)
+max_droop_2 = fltarr(npts)
+max_droop_3 = fltarr(npts)
+max_rate = fltarr(npts)
+min_droop_1 = fltarr(npts)
+min_droop_2 = fltarr(npts)
+min_droop_3 = fltarr(npts)
+
+
 d1 = mvn_c8_dat.dead1						; 420 ns, fully qualified events
 d2 = mvn_c8_dat.dead2						; 660 ns, unqualified events
 d3 = mvn_c8_dat.dead3						; 460 ns, stop no start events (and stop then start events)
@@ -138,14 +152,24 @@ max_dead = fltarr(npts)
 flag_dead = fltarr(npts)
 
 
-if not keyword_set(dead_droop) then dead_droop=800.		; this was empirically determined from data on 20150107-1520UT, seems good to ~10% 
-if not keyword_set(dead_rate) then dead_rate=1.e5		; this was empirically determined from data on 20150107-1520UT, seems good to ~10% 
+if not keyword_set(dead_droop) then dead_droop=800.		; this was empirically determined from data on 20150107-1520UT, seems good to ~10% anode 7
+if not keyword_set(dead_rate) then dead_rate=1.e5		; this was empirically determined from data on 20150107-1520UT, seems good to ~10% anode 7
 st_def = .70							; default start efficiency at low rates
 sp_def = .47							; default stop efficiency at low rates
 ef3_def = .80							; ef3 accounts for variations in qualified event efficiency including anode losses, was 0.75 prior to 20171002, this should vary - TBD determined from d9
 ef_def = st_def*sp_def
 att=mvn_c0_dat.att_ind[0]
 ind_d9 = 0
+
+; this is to allow variations in dead_rate with anode
+; values should be determined empirically using transions in anode look direction with the solar wind constant
+;	tmp1 = (1./(1.-(droop_an*dead_droop*((anode_sq*rate[i,*,*]-dead_rate*dead_an)>1.)*1.e-9 < .9)))		; 20180112 modification to account for multiple anodes - gives average droop, rather than by anode
+;		  0     1     2	    3     4     5     6     7     8     9    10    11    12    13    14    15
+dead_rate_an = [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 2.00]
+dead_rate_an = replicate(1.,64)#dead_rate_an
+droop_rate_an = [0.80, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 2.00]  
+droop_rate_an = replicate(1.,64)#droop_rate_an
+
 
 for i=0l,npts-1 do begin
 
@@ -169,6 +193,7 @@ for i=0l,npts-1 do begin
 
 	da = 1.d*reform(mvn_da_dat.rates[i,*])*16.#replicate(1.,16)						; apid da is a rate (Hz), *16. keeps it a rate when normalized below by c8/ct
 	c8 = 1.d*reform(replicate(1.,2)#reform(mvn_c8_dat.data[ind_c8,*,*],512),64,16)				; c8/ct will generate the deflection angular distribution
+
 
 	ca = total(reform(mvn_ca_dat.data[ind_ca,*,*],16,4,16),2)					; 16E x 16A assume dist of cnts on anode independent of deflectors, not true for internally backscattered ions
 	ca0 = ca/(total(ca,2)#replicate(1.,16)+.001)							; 16E x 16A normalized anode dist
@@ -234,11 +259,12 @@ if i mod 100 eq 0 then print,minmax(ef1)
 	endelse
 		fq_bk = total(mvn_d9_dat.rates[ind_d9,7,indbk9[0:9]])/10. > 0.
 
-; determine d9 default eff optimal energies determined by max(rst/ab) 
+;*****************************************************************************************************
+; determine d9 default eff at energies determined by max(rst/(ab-min_ab)) because this should be the largest statistically significant without saturation
 
-		fq_pk = max(mvn_d9_dat.rates[ind_d9,7,*],indpk9)
-
+		fq_pk = max(mvn_d9_dat.rates[ind_d9,7,*],indpk9)					; not used anymore except for monitoring
 ; old method
+;
 ;		if (fq_pk-fq_bk) lt 3.e3 then begin
 ;			fq_mp = fq_pk & indmp9=indpk9
 ;		endif else begin
@@ -255,11 +281,20 @@ if i mod 100 eq 0 then print,minmax(ef1)
 ;		if (mvn_d9_dat.rates[ind_d9,10,indmp9] lt 2.*ab_bk) and (ind_d9 ne ind_d9_old) then print,'ab ',time_string(time[i]),fq_pk,fq_mp_tmp,mvn_d9_dat.rates[ind_d9,10,indmp9],ab_bk,indpk9,indmp9
 ;		if (mvn_d9_dat.rates[ind_d9,11,indmp9] lt 2.*cd_bk) and (ind_d9 ne ind_d9_old) then print,'cd ',time_string(time[i]),fq_pk,fq_mp_tmp,mvn_d9_dat.rates[ind_d9,11,indmp9],cd_bk,indpk9,indmp9
 
+;	0  1  2  3  4   5       6      7    8     9     10  11 
+;	TA,TB,TC,TD,RST,NoStart,Unqual,Qual,AnRej,MaRej,A&B,C&D
+
 ; new method 20171002
-		indmp9 = sort(mvn_d9_dat.rates[ind_d9,4,*]/mvn_d9_dat.rates[ind_d9,10,*])
-		fq_mp = total(mvn_d9_dat.rates[ind_d9,7,indmp9[0:3]])/4.
-		ab_mp = total(mvn_d9_dat.rates[ind_d9,10,indmp9[0:3]])/4.
-		cd_mp = total(mvn_d9_dat.rates[ind_d9,11,indmp9[0:3]])/4.
+;		indmp9 = sort(mvn_d9_dat.rates[ind_d9,4,*]/mvn_d9_dat.rates[ind_d9,10,*])		; why lowest rst/a&B?
+;		fq_mp = total(mvn_d9_dat.rates[ind_d9,7,indmp9[0:3]])/4.
+;		ab_mp = total(mvn_d9_dat.rates[ind_d9,10,indmp9[0:3]])/4.
+;		cd_mp = total(mvn_d9_dat.rates[ind_d9,11,indmp9[0:3]])/4.
+
+		min_ab = min(mvn_d9_dat.rates[ind_d9,10,*])
+		indmp9 = sort(mvn_d9_dat.rates[ind_d9,4,*]/(mvn_d9_dat.rates[ind_d9,10,*]-min_ab+1))	; this was changed to get rid of statistically insignificant contributions
+		fq_mp = total(mvn_d9_dat.rates[ind_d9,7,indmp9[0]])/1.
+		ab_mp = total(mvn_d9_dat.rates[ind_d9,10,indmp9[0]])/1.
+		cd_mp = total(mvn_d9_dat.rates[ind_d9,11,indmp9[0]])/1.
 		ef_sp_def = (fq_mp-fq_bk)/((ab_mp-ab_bk)>.001)
 		ef_st_def = (fq_mp-fq_bk)/((cd_mp-cd_bk)>.001) 	
 		
@@ -267,9 +302,11 @@ if i mod 100 eq 0 then print,minmax(ef1)
 ;	ef_sp = 0.2 > (fq/((ab-ab_bk)>(fq+0.00001))) < .6					; efficiency - may need mod, problem??? should lower limit be lower???
 ;	ef_st = 0.2 > (fq/((cd-cd_bk)>(fq+0.00001))) < .8					; efficiency - may need mod, problem??? should lower limit be lower???
 	if ((fq lt 2.*fq_bk) or (ab lt 2.*ab_bk)) then ef_sp=ef_sp_def else $
-		ef_sp = 0.1 > ((fq-fq_bk)/((ab-ab_bk)>(fq-fq_bk)>0.00001)) < ef_sp_def*1.1	; efficiency - changed 20170919 should lower limit be lower???
+;		ef_sp = 0.1 > ((fq-fq_bk)/((ab-ab_bk)>(fq-fq_bk)>0.00001)) < ef_sp_def*1.1	; efficiency - changed 20170919 should lower limit be lower???
+		ef_sp = 0.2 > ((fq-fq_bk)/((ab-ab_bk)>(fq-fq_bk)>0.00001)) < .8			; efficiency - changed 20170919 should upper limit be lower???
 	if ((fq lt 2.*fq_bk) or (cd lt 2.*cd_bk)) then ef_st=ef_st_def else $
-		ef_st = 0.1 > ((fq-fq_bk)/((cd-cd_bk)>(fq-fq_bk)>0.00001)) < ef_st_def*1.1	; efficiency - changed 20170919 should lower limit be lower???
+;		ef_st = 0.1 > ((fq-fq_bk)/((cd-cd_bk)>(fq-fq_bk)>0.00001)) < ef_st_def*1.1	; efficiency - changed 20170919 should lower limit be lower???
+		ef_st = 0.05 > ((fq-fq_bk)/((cd-cd_bk)>(fq-fq_bk)>0.00001)) < ef_st_def*1.1	; efficiency - changed 20180111 should lower limit be lower???
 
 	bkg_ab[i] = ab_bk
 	bkg_cd[i] = cd_bk
@@ -327,7 +364,7 @@ if 1 then begin
 endif
 	
 ; calculate total efficiency 
-;	ef_tl = (1. + (1.-ef_st)*(1.-ef_sp))*ef_st*ef_sp						
+;	ef_tl = (1. + (1.-ef_st)*(1.-ef_sp))*ef_st*ef_sp		; I think the sign is wrong				
 	ef_tl = ef_st*ef_sp						
 
 ; store efficiencies for tplot variables (only used if test keyword is set)
@@ -368,6 +405,32 @@ endif
 	pk2_droop[i] = max(pk2)
 	pk3_droop[i] = max(xx)
 
+;*************************************************************************************************
+;
+;	eflux = (data-bkg)*dead/(gf*eff*dt)
+;
+;	eff and gf are determined by mvn_sta_prod_cal.pro, eff is set to a default value
+
+;	eff[*] = def_eff = .285 
+  
+;	eventually, eff could be adjusted to include the mass and time dependence of efficiency variations
+
+;	dead in the above formula also includes MCP droop and variations in eff from the default.
+; 
+; 	eff_start = qual/C&D ~ 0.65 (EM)
+; 	eff_stop  = qual/A&B ~ 0.47 (EM)
+; 	qual/Trst = (1. + (1.-eff_start)*(1.-eff_stop)) * eff_start * eff_stop
+
+; 	0.36 ~ qual/Trst = (1. + (1.-eff_start)*(1.-eff_stop)) * eff_start * eff_stop ~ 0.36
+; 	print,(1. + (1.-.65)*(1.-.47)) * .65 * .47
+
+;	eff_anode_reject ~ 0.8 
+
+;	def_eff = .285 = eff_anode_reject * (1. + (1.-eff_start)*(1.-eff_stop)) * eff_start * eff_stop 
+
+;************************************************************************************************ 
+;************************************************************************************************ 
+
 ; this is an empirical formula that corrects for MCP droop at high rates
 ;    a dozen algorithms with various parameters were tried using density variations across attenuator changes at periapsis in Jan 2015
 ;	dead_droop is effectively the dead_time of MCP droop in ns, ~800 
@@ -384,12 +447,33 @@ endif
 
 ;	droop[i,*,*] = (1.)*(1.)*(1./(1.-(dead_droop*((rate[i,*,*]-dead_rate)>1.)*1.e-9 < .9)))	
 
-	tmp1 = (1./(1.-(dead_droop*((rate[i,*,*]-dead_rate)>1.)*1.e-9 < .9)))
+	anode_sq = reform(total(anode[i,*,*]^2,3))#replicate(1.,16)
+	dead_an = total(reform(anode[i,*,*])*dead_rate_an,2)#replicate(1.,16)
+	droop_an = total(reform(anode[i,*,*])*droop_rate_an,2)#replicate(1.,16)
+
+;	tmp1 = (1./(1.-(dead_droop*((rate[i,*,*]-dead_rate)>1.)*1.e-9 < .9)))
+;	tmp1 = (1./(1.-(dead_droop*((anode_sq*rate[i,*,*]-dead_rate)>1.)*1.e-9 < .9)))				; 20180112 modification to account for multiple anodes - gives average droop, rather than by anode
+	tmp1 = (1./(1.-(droop_an*dead_droop*((anode_sq*rate[i,*,*]-dead_rate*dead_an)>1.)*1.e-9 < .9)))		; 20180112 modification to account for multiple anodes - gives average droop, rather than by anode
+
+; in the following, ef_def, ef3_def,ef3, ef_tl should probably have anode dependence
+
 	mtmp1 = max(tmp1)
-	tmp2 = (mtmp1-tmp1)*ef_def/mtmp1  + (ef_tl<ef_def)*tmp1/mtmp1
-	tmp3 = (mtmp1-tmp1)*ef3_def/mtmp1 + (ef3<ef3_def)*tmp1/mtmp1
+	tmp2 = (mtmp1-tmp1)*ef_def/mtmp1  + (ef_tl<ef_def)*tmp1/mtmp1		; ef_tl=ef_st*ef_sp, ef_def=st_def*sp_def, st_def=.70, sp_def=.47							; default stop efficiency at low rates
+	tmp3 = (mtmp1-tmp1)*ef3_def/mtmp1 + (ef3<ef3_def)*tmp1/mtmp1		; ef3_def=.80, ef3 = total(c0)/16./((4.*(mvn_d8_dat.rates[ind_d8,7]-bk7))>(1.1*total(c0)/16.))
 
 	droop[i,*,*] = (ef3_def/tmp3)*(ef_def/tmp2)*tmp1	
+
+	droop_1[i,*,*] = tmp1		
+	droop_2[i,*,*] = (ef_def/tmp2)	
+	droop_3[i,*,*] = (ef3_def/tmp3)
+	
+	max_droop_1[i] = max(droop_1[i,*,*])
+	max_droop_2[i] = max(droop_2[i,*,*])
+	max_droop_3[i] = max(droop_3[i,*,*])
+	max_rate[i] = max(rate[i,*,*])
+	min_droop_1[i] = min(droop_1[i,*,*])
+	min_droop_2[i] = min(droop_2[i,*,*])
+	min_droop_3[i] = min(droop_3[i,*,*])
 
 if keyword_set(test) and i mod 1000 eq 1 then begin
 	print,i,time_string(time[i])
@@ -418,9 +502,11 @@ if min(droop[i,*,*]) lt 0. then print,'STATIC MCP Droop calculation error:',i,' 
 endfor
 
 tmp_dat = {time:time,dead:dead,droop:droop,rate:rate,valid:valid,anode:anode}
+tmp_droop_test = {time:time,droop_1:droop_1,droop_2:droop_2,droop_3:droop_3}
 
 if keyword_set(make_common) then begin
-	common mvn_sta_dead,dat_dead		& dat_dead=tmp_dat
+	common mvn_sta_dead,dat_dead				& dat_dead=tmp_dat
+	common mvn_sta_droop_test,dat_droop_test		& dat_droop_test=tmp_droop_test
 endif
 
 if keyword_set(test) then print,'min-max of dead= ',minmax(dead)
@@ -521,6 +607,27 @@ if keyword_set(test) then begin
 		ylim,'mvn_sta_pk12_droop',-.1,1.1,0 & options,'mvn_sta_pk12_droop',colors=cols.green
 	store_data,'mvn_sta_pk_droop',data=['mvn_sta_pk1_droop','mvn_sta_pk2_droop','mvn_sta_pk3_droop','mvn_sta_pk12_droop']
 		ylim,'mvn_sta_pk_droop',-.1,1.1,0
+
+	store_data,'mvn_sta_max_droop_1',data={x:time,y:max_droop_1}
+		ylim,'mvn_sta_max_droop_1',.9,10,1
+	store_data,'mvn_sta_max_droop_2',data={x:time,y:max_droop_2}
+		ylim,'mvn_sta_max_droop_2',.9,10,1
+	store_data,'mvn_sta_max_droop_3',data={x:time,y:max_droop_3}
+		ylim,'mvn_sta_max_droop_3',.9,10,1
+	store_data,'mvn_sta_max_rate',data={x:time,y:max_rate}
+		ylim,'mvn_sta_max_rate',1.e5,4.e6,1
+
+	store_data,'mvn_sta_min_droop_1',data={x:time,y:min_droop_1}
+		ylim,'mvn_sta_min_droop_1',.9,3,1 & options,'mvn_sta_min_droop_1',colors=cols.green
+	store_data,'mvn_sta_min_droop_2',data={x:time,y:min_droop_2}
+		ylim,'mvn_sta_min_droop_2',.9,3,1 & options,'mvn_sta_min_droop_2',colors=cols.green
+	store_data,'mvn_sta_min_droop_3',data={x:time,y:min_droop_3}
+		ylim,'mvn_sta_min_droop_3',.9,3,1 & options,'mvn_sta_min_droop_3',colors=cols.green
+
+	store_data,'mvn_sta_minmax_droop_1',data=['mvn_sta_max_droop_1','mvn_sta_min_droop_1']
+	store_data,'mvn_sta_minmax_droop_2',data=['mvn_sta_max_droop_2','mvn_sta_min_droop_2']
+	store_data,'mvn_sta_minmax_droop_3',data=['mvn_sta_max_droop_3','mvn_sta_min_droop_3']
+
 
 endif
 

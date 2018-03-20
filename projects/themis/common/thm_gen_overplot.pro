@@ -638,6 +638,7 @@ no_npot:
     dummy[*, 0] = d1.y
     dummy[*, 1] = d.y
     dummy[*, 2] = d.y
+    dummy = dummy > 0.001       ;electrons
     store_data, Ne_kluge_name, data = {x:d.x, y:dummy}
     options, Ne_kluge_name, labels = ['Npot', 'Ni', 'Ne']
     options, Ne_kluge_name, colors = [2, 0, 6]
@@ -646,6 +647,7 @@ no_npot:
     dummy = fltarr(n_elements(d.y), 2)
     dummy[*, 0] = d.y
     dummy[*, 1] = d.y
+    dummy = dummy > 0.001       ;electrons
     store_data, Ne_kluge_name, data = {x:d.x, y:dummy}
     options, Ne_kluge_name, labels = ['Ni', 'Ne']
     options, Ne_kluge_name, colors = [0, 6]
@@ -658,16 +660,17 @@ no_npot:
      undefine, di0
      ylim, itest+'_density', 0.001, nmax, 1
   endif else nmaxi = -1.0
-;  dummy = dummy > 0.001 ;electrons
   nmaxe = max(dummy, /nan) < 1.0e8
   nmax = max([nmaxi, nmaxe])
-  ylim, Ne_kluge_name, 0.001, nmax, 1
+  options, Ne_kluge_name, 'yrange', [0.001, nmax]
+  options, Ne_kluge_name, 'ylog', 1
   store_data, thx+'_Nie'+mtyp[j], data = [itest+'_density', Ne_kluge_name]
 ;  options, thx+'_Nie'+mtyp[j], 'ytitle', 'Ni,e '+thx+'!C1/cm!U3'
 ;  options, thx+'_Nie'+mtyp[j], 'ytitle', 'Ni,e '+thx
   options, thx+'_Nie'+mtyp[j], 'ytitle', 'Ni!Celec!C[1/cc]'
   options, thx+'_Nie'+mtyp[j], 'ysubtitle', ''
   options, thx+'_Nie'+mtyp[j], 'yrange', [0.001, nmax]
+  options, thx+'_Nie'+mtyp[j], 'ystyle', 1
   options, thx+'_Nie'+mtyp[j], 'ylog', 1
   
 ;
