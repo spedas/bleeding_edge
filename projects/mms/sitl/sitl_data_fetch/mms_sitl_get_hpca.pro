@@ -23,9 +23,9 @@
 ; NOTES:
 ;     Please see the notes in mms_load_data for more information 
 ;
-;$LastChangedBy: rickwilder $
-;$LastChangedDate: 2015-10-14 14:46:45 -0700 (Wed, 14 Oct 2015) $
-;$LastChangedRevision: 19074 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2018-03-20 07:42:32 -0700 (Tue, 20 Mar 2018) $
+;$LastChangedRevision: 24906 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_get_hpca.pro $
 ;-
 
@@ -78,7 +78,7 @@ function mms_hpca_avg_fov_sitl, data_struct, fov = fov
         anode_index = where(anode_elevation ge fov_tmp[0] and anode_elevation le fov_tmp[1], bin_cnt2)
         if bin_cnt2 eq 0 then begin
             dprint, dlevel = 0, 'No data found within specified elevation range'
-            stop
+           ; stop
         endif
     endif
     data_within_fov = data_struct.Y[*,*,anode_index]

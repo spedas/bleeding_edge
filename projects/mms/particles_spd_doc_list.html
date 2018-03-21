@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Mar 19 18:16:21 2018.<P>
+<STRONG>Last modified: </STRONG>Tue Mar 20 18:16:16 2018.<P>
  
 <HR>
  
@@ -22,6 +22,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_CONVERT_FLUX_UNITS">MMS_CONVERT_FLUX_UNITS</A>
 <LI><A HREF="#MMS_GET_DIST">MMS_GET_DIST</A>
 <LI><A HREF="#MMS_PART_CONV_UNITS">MMS_PART_CONV_UNITS</A>
+<LI><A HREF="#MMS_PART_GETPAD">MMS_PART_GETPAD</A>
+<br>Quickly generate pitch angle spectrograms from multipad output from mms_part_getspec/mms_part_products_new
 <LI><A HREF="#MMS_PART_GETSPEC">MMS_PART_GETSPEC</A>
 <LI><A HREF="#MMS_PART_PRODUCTS">MMS_PART_PRODUCTS</A>
 <LI><A HREF="#MMS_PART_PRODUCTS_NEW">MMS_PART_PRODUCTS_NEW</A>
@@ -32,7 +34,9 @@ This page was created by the IDL library routine
 <br>Generate the field aligned coordinate transformation matrix
 <LI><A HREF="#MMS_PGS_MAKE_PHI_SPEC">MMS_PGS_MAKE_PHI_SPEC</A>
 <LI><A HREF="#MMS_PGS_MAKE_THETA_SPEC">MMS_PGS_MAKE_THETA_SPEC</A>
+<LI><A HREF="#MMS_PGS_MAKE_TPLOT">MMS_PGS_MAKE_TPLOT</A>
 <LI><A HREF="#MMS_PGS_SPLIT_HPCA">MMS_PGS_SPLIT_HPCA</A>
+<LI><A HREF="#MOKA_EG_PGS_MAKE_PAD">MOKA_EG_PGS_MAKE_PAD</A>
 <br>
 </UL><P>
 <HR>
@@ -129,7 +133,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_PART_CONV_UNITS">
 <H2>MMS_PART_CONV_UNITS</H2></A>
 <A HREF="#MMS_GET_DIST">[Previous Routine]</A>
-<A HREF="#MMS_PART_GETSPEC">[Next Routine]</A>
+<A HREF="#MMS_PART_GETPAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -148,9 +152,32 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="particles/mms_part_conv_units.pro">projects/mms/particles/mms_part_conv_units.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_PART_GETPAD">
+<H2>MMS_PART_GETPAD</H2></A>
+<A HREF="#MMS_PART_CONV_UNITS">[Previous Routine]</A>
+<A HREF="#MMS_PART_GETSPEC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         mms_part_getpad
+
+ PURPOSE:
+         Quickly generate pitch angle spectrograms from multipad output from mms_part_getspec/mms_part_products_new
+
+ NOTES:
+         still a work in progress
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2018-03-20 13:51:47 -0700 (Tue, 20 Mar 2018) $
+ $LastChangedRevision: 24919 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getpad.pro $
+</PRE><P>
+<STRONG>(See <A href="particles/mms_part_getpad.pro">projects/mms/particles/mms_part_getpad.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_PART_GETSPEC">
 <H2>MMS_PART_GETSPEC</H2></A>
-<A HREF="#MMS_PART_CONV_UNITS">[Previous Routine]</A>
+<A HREF="#MMS_PART_GETPAD">[Previous Routine]</A>
 <A HREF="#MMS_PART_PRODUCTS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -176,6 +203,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
              'theta' - latitudinal spectrogram
              'gyro' - gyrophase spectrogram
              'pa' - pitch angle spectrogram
+             'multipad' - pitch angle spectrogram at every energy 
+                 (multi-dimensional PAD variable, to be used by mms_part_getpad)
              'moments' - distribution moments (density, velocity, etc.) - see warning at the top of mms_part_products before using this!
          add_bfield_dir: add B-field direction (+, -) to the angular spectrograms (phi, theta)
          add_ram_dir: add S/C ram direction (X) to the angular spectrograms (phi, theta)
@@ -195,8 +224,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          Updated to automatically center HPCA measurements if not specified already, 18Oct2017
          
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-03-12 12:28:10 -0700 (Mon, 12 Mar 2018) $
-$LastChangedRevision: 24873 $
+$LastChangedDate: 2018-03-20 10:14:29 -0700 (Tue, 20 Mar 2018) $
+$LastChangedRevision: 24914 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_getspec.pro">projects/mms/particles/mms_part_getspec.pro</A>)</STRONG><P>
@@ -348,6 +377,8 @@ Data Products:
   'theta' - latitudinal spectrogram
   'gyro' - gyrophase spectrogram
   'pa' - pitch angle spectrogram
+  'multipad' - pitch angle spectrogram at each energy (multi-dimensional tplot variable, 
+       you'll need to use mms_part_getpad to generate PADs at various energies)
   'moments' - distribution moments (density, velocity, etc.)
 
 
@@ -430,8 +461,8 @@ Notes:
 
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-01-24 10:39:40 -0800 (Wed, 24 Jan 2018) $
-$LastChangedRevision: 24576 $
+$LastChangedDate: 2018-03-20 10:10:11 -0700 (Tue, 20 Mar 2018) $
+$LastChangedRevision: 24912 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products_new.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_products_new.pro">projects/mms/particles/mms_part_products_new.pro</A>)</STRONG><P>
@@ -631,7 +662,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_PGS_MAKE_THETA_SPEC">
 <H2>MMS_PGS_MAKE_THETA_SPEC</H2></A>
 <A HREF="#MMS_PGS_MAKE_PHI_SPEC">[Previous Routine]</A>
-<A HREF="#MMS_PGS_SPLIT_HPCA">[Next Routine]</A>
+<A HREF="#MMS_PGS_MAKE_TPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -669,9 +700,51 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="particles/mms_pgs_make_theta_spec.pro">projects/mms/particles/mms_pgs_make_theta_spec.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_PGS_MAKE_TPLOT">
+<H2>MMS_PGS_MAKE_TPLOT</H2></A>
+<A HREF="#MMS_PGS_MAKE_THETA_SPEC">[Previous Routine]</A>
+<A HREF="#MMS_PGS_SPLIT_HPCA">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Procedure:
+  mms_pgs_make_tplot
+
+Purpose:
+  Create tplot variable with standard spectrogram settings.
+
+
+Input:
+  name: name of new tplot variable to create
+  x: x axis (time)
+  v1: first dimension
+  v2: second dimension
+  z: z axis (data)
+  _extra: Any other keywords used will be passed to tplot and
+          set in the dlimits of the new variable.
+          (e.g. ylog=1 to set logarithmic y axis)
+
+
+Output:
+  Creates a tplot variable.
+  tplotnames=tplotnames : Concatenates the name of the new variable onto tnames argument
+
+Notes:
+  Forked from spd_pgs_make_tplot, on 3/13/2018, to support creating multi-dimensional tplot variables
+  in mms_part_products_new
+
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2018-03-20 10:00:31 -0700 (Tue, 20 Mar 2018) $
+$LastChangedRevision: 24910 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_pgs_make_tplot.pro $
+</PRE><P>
+<STRONG>(See <A href="particles/mms_pgs_make_tplot.pro">projects/mms/particles/mms_pgs_make_tplot.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_PGS_SPLIT_HPCA">
 <H2>MMS_PGS_SPLIT_HPCA</H2></A>
-<A HREF="#MMS_PGS_MAKE_THETA_SPEC">[Previous Routine]</A>
+<A HREF="#MMS_PGS_MAKE_TPLOT">[Previous Routine]</A>
+<A HREF="#MOKA_EG_PGS_MAKE_PAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -698,5 +771,34 @@ $LastChangedRevision: 23532 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_pgs_split_hpca.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_pgs_split_hpca.pro">projects/mms/particles/mms_pgs_split_hpca.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MOKA_EG_PGS_MAKE_PAD">
+<H2>MOKA_EG_PGS_MAKE_PAD</H2></A>
+<A HREF="#MMS_PGS_SPLIT_HPCA">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+Procedure:
+  moka_eg_pgs_make_pad
+
+Purpose:
+  Creates a multi-dimensional tplot variable (pitch angle distribution at each energy)
+  called from mms_part_products_new
+
+History:
+  Created on 2017-01-01 by moka
+  Forked on 2018-03-14 by egrimes, with a few big changes:
+  - removed bulk velocity subtraction (now occurs in mms_part_products_new, before getting to this routine)
+  - updated energy/angle bin search to use value_locate
+  - commented out angle padding
+  
+  
+$LastChangedBy: egrimes $
+$LastChangedDate: 2018-03-20 10:06:44 -0700 (Tue, 20 Mar 2018) $
+$LastChangedRevision: 24911 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/moka_eg_pgs_make_pad.pro $
+</PRE><P>
+<STRONG>(See <A href="particles/moka_eg_pgs_make_pad.pro">projects/mms/particles/moka_eg_pgs_make_pad.pro</A>)</STRONG><P>
 <HR>
  

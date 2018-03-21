@@ -21,6 +21,8 @@
 ;  'theta' - latitudinal spectrogram
 ;  'gyro' - gyrophase spectrogram
 ;  'pa' - pitch angle spectrogram
+;  'multipad' - pitch angle spectrogram at each energy (multi-dimensional tplot variable, 
+;       you'll need to use mms_part_getpad to generate PADs at various energies)
 ;  'moments' - distribution moments (density, velocity, etc.)
 ;
 ;
@@ -103,8 +105,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-01-24 10:39:40 -0800 (Wed, 24 Jan 2018) $
-;$LastChangedRevision: 24576 $
+;$LastChangedDate: 2018-03-20 10:10:11 -0700 (Tue, 20 Mar 2018) $
+;$LastChangedRevision: 24912 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products_new.pro $
 ;-
 pro mms_part_products_new, $
@@ -343,7 +345,7 @@ pro mms_part_products_new, $
   ;--------------------------------------------------------
   
   ;create rotation matrix to field aligned coordinates if needed
-  fac_outputs = ['pa','gyro','fac_energy','fac_moments']
+  fac_outputs = ['multipad', 'pa', 'gyro', 'fac_energy', 'fac_moments']
   fac_requested = is_string(ssl_set_intersection(outputs_lc,fac_outputs))
   if fac_requested then begin
     mms_pgs_make_fac,times,mag_name,pos_name,fac_output=fac_matrix,fac_type=fac_type_lc,display_object=display_object,probe=probe
@@ -520,6 +522,10 @@ pro mms_part_products_new, $
       mms_pgs_make_theta_spec, clean_data, spec=pa_spec, yaxis=pa_y, /colatitude, resolution=regrid[1]
     endif
     
+    if in_set(outputs_lc,'multipad') then begin
+     moka_eg_pgs_make_pad, clean_data, spec=pad_spec, xaxis=pad_agl, wegy=pad_en
+    endif
+
     ;Build gyrophase spectrogram
     if in_set(outputs_lc, 'gyro') then begin
       mms_pgs_make_phi_spec, clean_data, spec=gyro_spec, yaxis=gyro_y, resolution=regrid[0]
@@ -583,6 +589,10 @@ pro mms_part_products_new, $
   ;Pitch Angle Spectrograms
   if ~undefined(pa_spec) then begin
     spd_pgs_make_tplot, tplot_prefix+'pa'+suffix, x=times, y=pa_y, z=pa_spec, yrange=pitch,units=units_lc,datagap=datagap,tplotnames=tplotnames
+  endif
+  
+  if ~undefined(pad_spec) then begin
+    mms_pgs_make_tplot, tplot_prefix+'pad'+suffix, x=times, v2=pad_agl, v1=pad_en, z=pad_spec, yrange=pitch,units=units_lc,datagap=datagap,tplotnames=tplotnames
   endif
   
   ;Gyrophase Spectrograms

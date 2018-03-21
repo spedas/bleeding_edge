@@ -7,9 +7,9 @@
 ;       variable (variable containing spin sector #s associated 
 ;       with each measurement)
 ;
-;$LastChangedBy: rickwilder $
-;$LastChangedDate: 2017-08-09 13:51:06 -0700 (Wed, 09 Aug 2017) $
-;$LastChangedRevision: 23769 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2018-03-20 07:42:32 -0700 (Tue, 20 Mar 2018) $
+;$LastChangedRevision: 24906 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_spin_avg.pro $
 ;-
 pro mms_sitl_feeps_spin_avg, probe=probe, data_units = data_units, datatype = datatype, $
@@ -31,7 +31,6 @@ pro mms_sitl_feeps_spin_avg, probe=probe, data_units = data_units, datatype = da
   
   if ~is_struct(spin_sectors) then begin
       dprint, dlevel = 0, 'Error, couldn''t find the tplot variable containing the spin sectors for calculating the spin averages.'
-      stop
       return
   endif
 

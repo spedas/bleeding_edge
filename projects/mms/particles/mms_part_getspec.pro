@@ -21,6 +21,8 @@
 ;             'theta' - latitudinal spectrogram
 ;             'gyro' - gyrophase spectrogram
 ;             'pa' - pitch angle spectrogram
+;             'multipad' - pitch angle spectrogram at every energy 
+;                 (multi-dimensional PAD variable, to be used by mms_part_getpad)
 ;             'moments' - distribution moments (density, velocity, etc.) - see warning at the top of mms_part_products before using this!
 ;         add_bfield_dir: add B-field direction (+, -) to the angular spectrograms (phi, theta)
 ;         add_ram_dir: add S/C ram direction (X) to the angular spectrograms (phi, theta)
@@ -40,8 +42,8 @@
 ;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-03-12 12:28:10 -0700 (Mon, 12 Mar 2018) $
-;$LastChangedRevision: 24873 $
+;$LastChangedDate: 2018-03-20 10:14:29 -0700 (Tue, 20 Mar 2018) $
+;$LastChangedRevision: 24914 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
