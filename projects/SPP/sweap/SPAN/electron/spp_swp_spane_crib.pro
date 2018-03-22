@@ -7,8 +7,8 @@
 ; In the future this will include instructions for looking at flight data
 ; 
 ; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2017-10-13 15:14:53 -0700 (Fri, 13 Oct 2017) $
-; $LastChangedRevision: 24156 $
+; $LastChangedDate: 2018-03-21 13:56:14 -0700 (Wed, 21 Mar 2018) $
+; $LastChangedRevision: 24924 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/electron/spp_swp_spane_crib.pro $
 ;--------------------------------------------------------------------
 
@@ -31,15 +31,15 @@
 ;
 ;
 ;
-
+; note that table files are doubled until [insert date here]
 
 ;;----SPAN-Ae FINAL CALIBRATION FILES----;;
 
-trange = '2017 03 ' + ['28/01','28/05'] ; ramp up MCPs
+trange = '2017 03 ' + ['28/01','28/05'] ; ramp up MCPs ; uses standard tables
 ;trange = ['2017 03 28/02','2017 03 29/00']
-trange = '2017 03 ' + ['28/04','28/06'] ; CPT at HV, begins with threshold tests
-trange = '2017 03 ' + ['28/22','29/01'] ; Gun scan @ 900eV
-trange = '2017 03 ' + ['29/01','29/03'] ; rotations @ 900eV
+trange = '2017 03 ' + ['28/04','28/06'] ; CPT at HV, begins with threshold tests ; slut_py_index_reduced_20170327_223504_2000
+trange = '2017 03 ' + ['28/22','29/01'] ; Gun scan @ 900eV ; slut_py_index_reduced_20170328_130600_2000
+trange = '2017 03 ' + ['29/01','29/03'] ; rotations @ 900eV; ; midway through rotation switches to fixgain = 13 * 2. files do not reflect this. slut_py_index_reduced_20170328_183755_2000
 trange = '2017 03 ' + ['29/08','29/10'] ; spoiler test
 trange = '2017 03 ' + ['29/05','29/08'] ; EA scan @ what energy?
 trange = '2017 03 ' + ['29/15','29/17'] ; EA scan @ what energy?
@@ -99,13 +99,26 @@ trange = '2017 03 ' + ['03/18','03/24'] ; MCP threshold test @ 5keV
 ;trange = '2017 03 ' + ['06/00','06/03'] ; more odd linear scans.
 ;trange = '2017 03 ' + ['06/03','06/19'] ; nothing going on. ramp down/turn off.
 
+;;----SPAN-Ae/B-SPACECRAFT-TVAC----;;
+
+files = spp_file_retrieve('spp/data/sci/sweap/sao/level_zero_telemetry/2018/065/sweap_spp_2018065_01.ptp.gz') ; contains spc data and span-i housekeeping
+
+files = spp_file_retrieve('spp/data/sci/sweap/sao/level_zero_telemetry/2018/065/sweap_spp_2018065_02.ptp.gz') ; first HV ramped, good stuff starts @ 2020 07 17 1800, file ends @ 07 18 ~0500
+
+files = spp_file_retrieve('spp/data/sci/sweap/sao/level_zero_telemetry/2018/065/sweap_spp_2018065_03.ptp.gz') ; first HV ramped, good stuff starts @ 2020 07 17 1800, file ends @ 07 18 ~0500, seems to be the same file as the 02 above.
+
+files = spp_file_retrieve('spp/data/sci/sweap/sao/level_zero_telemetry/2018/066/sweap_spp_2018066_03.ptp.gz') ; Looks like this is hot CPT? Threshold test @ 2020-07-19/09:43
+;also odd counts appear on all anodes @ 2020-07-19/06:11:00 on Ae with no known cause. Gun?? Also - two time jumps @ 2020-07-18/10:07 and @ 2020-07-18/21:40 . Data missing in other places.
+
+files = spp_file_retrieve('spp/data/sci/sweap/sao/level_zero_telemetry/2018/067/sweap_spp_2018067_01.ptp.gz') ; contains all the good stuff : rotations back + forth, spoiler tests, and gun tests. 
+; for gun test, the 
 
 
-
+;;-----EXTRAS-----;;
 
  trange =  '2016 10 '+ ['18/04','19/22']   ; SPANE - A flght in Cal chamber:  MCP test; NOT PREENV CAL
  
- ; SPANAe Pre Env Cal data
+ ; SPANAe Pre Env Cal datat;
  trange = '2016 11 '+ ['18/16','18/18']  ; SPAN-Ae FM preEnv Cal 'spane_ph_thresh_scan' ; incomplete, need tony to parse file?
  trange = '2016 11 '+ ['18/17','18/18']  ; SPAN-Ae FM preEnv Cal 'spane_thresh_scan' (No MCP)
  trange = '2016 11 '+ ['18/21','18/23']  ; SPAN-Ae FM postcoat w/ attenuator: Full rotation (angles incorrect, ROT not zeroed)
@@ -165,7 +178,7 @@ trange = '2017 03 ' + ['03/18','03/24'] ; MCP threshold test @ 5keV
  ;the following files are located in /spaneb, no clue why!
  trange = '2017 01 '+ ['05/00','05/01'] ; cover opening attempt semi cold - opened but after timeout.
  trange = '2017 01 '+ ['06/22','06/23'] ; second cover opening attempt at cold - opened less than timeout
- 
+
  
  ;; SPANB TV 
  trange = '2017 01 '+ ['11/16','11/18'] ; SPAN-B FM Cover Test post tbal, pre tvac, turn on & cpt.

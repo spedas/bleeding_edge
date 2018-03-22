@@ -18,8 +18,8 @@
 ;REVISION HISTORY:
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2015-04-20 16:29:03 -0700 (Mon, 20 Apr 2015) $
-;$LastChangedRevision: 17383 $
+;$LastChangedDate: 2018-03-21 08:32:45 -0700 (Wed, 21 Mar 2018) $
+;$LastChangedRevision: 24920 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/geom_indices/geom_indices_init.pro $
 ;-
 
@@ -61,7 +61,7 @@ pro geom_indices_init,reset=reset
     data_dir = StrJoin( StrSplit(data_dir, '/', /Regex, /Extract, /Preserve_Null), path_sep())
     if STRMID(data_dir, 0, 1, /REVERSE_OFFSET) ne path_sep() then data_dir = data_dir + path_sep()
     !geom_indices.local_data_dir = spd_default_local_data_dir() + 'geom_indices' + path_sep()
-    !geom_indices.remote_data_dir_noaa =  'http://themis-data.igpp.ucla.edu/'  ;noaa_load_kp
+    !geom_indices.remote_data_dir_noaa =  'ftp://ftp.ngdc.noaa.gov/'  ;noaa_load_kp
     !geom_indices.remote_data_dir_kyoto_ae =  'http://wdc.kugi.kyoto-u.ac.jp/' ;kyoto_load_ae
     !geom_indices.remote_data_dir_kyoto_dst = 'http://wdc.kugi.kyoto-u.ac.jp/' ;kyoto_load_dst
     !geom_indices.init = 1

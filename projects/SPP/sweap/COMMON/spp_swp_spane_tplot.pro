@@ -1,12 +1,23 @@
+;--------------------------------------------------------------------
+; PSP SPAN-E TPLOT ROUTINE
+;
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2018-03-21 14:00:10 -0700 (Wed, 21 Mar 2018) $
+; $LastChangedRevision: 24927 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_spane_tplot.pro $
+;--------------------------------------------------------------------
+
 pro spp_swp_spane_tplot,name,ADD=ADD,setlim=setlim
 
   if keyword_set(setlim) then begin
     options,'spp_*AF*_SPEC' , spec=1
+    options, '*spp*sp[a,b]*SPEC', spec = 1
+    zlim, '*spp*sp[a,b]*SPEC', 1,1,1
     options,'*MASK',tplot_routine='bitplot'
     options,'*_FLAG',tplot_routine='bitplot'
     tplot_options,'no_interp',1
     ;  options,'*SPEC23',panel_size=3
-    options,'*rates*CNTS',spec=1,zrange=[1,1],/zlog,yrange=[0,0],ylog=0
+    options,'*rates*CNTS',spec=1,zrange=[1,1],/zlog,yrange=[0,0],ylog=0 
     options,'*rates*CNTS',spec=0,yrange=[1,1],ylog=1
     options,'*hkp_HV_MODE',tplot_routine= 'bitplot'
     options,'*TEMPS',/ynozero
@@ -30,22 +41,16 @@ pro spp_swp_spane_tplot,name,ADD=ADD,setlim=setlim
 
     plot_name = strupcase(strtrim(name,2))
     case plot_name of
-     'SE':   tplot,'*sp?_AF0_ANODE_SPEC *sp?_AF1_*_SPEC spp_sp?_hkp_MRAM_*',ADD=ADD
+     'SUMPLOT': tplot, '*spp_spa_hkp_HV_CONF_FLAG spp_spb_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spb_SF1_CNTS spp_spa_hkp_CMD_REC spp_spb_hkp_CMD_REC spp_spa_SF1_ANODE_SPEC spp_spb_SF1_ANODE_SPEC spp_spa_SF0_NRG_SPEC spp_spb_SF0_NRG_SPEC', add = add
+     'SUMPLOTSA' : tplot, 'spp_spa_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spa_hkp_CMD_REC spp_spa_SF1_ANODE_SPEC spp_spa_SF0_NRG_SPEC'
+     'SUMPLOTSB' : tplot, 'spp_spb_hkp_HV_CONF_FLAG spp_spb_SF1_CNTS spp_spb_hkp_CMD_REC spp_spb_SF1_ANODE_SPEC spp_spb_SF0_NRG_SPEC'
+     'SE':   tplot,'*sp?_SF1_ANODE_SPEC *sp?_SF1_*_SPEC spp_sp?_hkp_MRAM_*',ADD=ADD
      'SE_HV': tplot,'*sp?_hkp_ADC_VMON_* *sp?_hkp_ADC_IMON_*',ADD=ADD
      'SE_LV': tplot,'*sp?_hkp_RIO*',ADD=ADD
      'SA_SPEC': tplot, '*spa_*ADC_VMON_HEM *spa_AF0_CNTS *spa_*AF1_ANODE_SPEC spp_spa_AF1_NRG_SPEC spp_spa_AT0_CNTS spp_spa_AT1_ANODE_SPEC spp_spa_AT1_NRG_SPEC spp_spa_AT1_PEAK_BIN', ADD=ADD
      'SB_SPEC': tplot, 'spp_spb_hkp_ADC_VMON_HEM spp_spb_AF0_CNTS spp_spb_AF1_ANODE_SPEC spp_spb_AF1_NRG_SPEC spp_spb_AT0_CNTS spp_spb_AT1_ANODE_SPEC spp_spb_AT1_NRG_SPEC spp_spb_AT1_PEAK_BIN', ADD=ADD
-     'SI_RATE': tplot,'*rate*CNTS',ADD=ADD
-     'SI_RATE1': tplot,'*rates_'+strsplit(/extract,'VALID_* MULTI_* STARTS_* STOPS_*'),add=add
-     'SI_AF0?_1': tplot,'*spani_ar_full_p0_m?_*_SPEC1',add=add
-     'SI_MON' : tplot,'*spi_*hkp_MON*',add=add
-     'SI_HV' : tplot,'*spi_*' + strsplit(/extract,'RAW_? MCP_? ACC_?'),add=add
      'MANIP':tplot,'manip*_POS',add=add
-     'SI_GSE': tplot,add=add,'Igun_* APS3_*'
-     'SI': tplot,add=add,'Igun_* manip_*POS *rates_VAL*CNTS *rates_*NO*CNTS '
-     'SI_SCAN':tplot,add=add,'*MCP_V *MRAM* *spi_AF0?_NRG_SPEC'
      'SC':  tplot,'spp_*spc*',ADD=ADD
-     'SI_COVER': tplot, '*spi_*ACT*CVR* *spi_*ACTSTAT*FLAGS *spi*CMD*UKN* *spi*CLK*NYS', add = add
      'SB_COVER': tplot, '*spb_*ACT*CVR* *spb_*ACTSTAT*FLAG* *spb*CMD*UKN* *spb*CLK*NYS', add = add
      'SA_COVER': tplot, '*spa_*ACT*CVR* *spa_*ACTSTAT*FLAG* *spa*CMD*UKN* *spa*CLK*NYS', add = add
      'SWEM': tplot,'APID PTP_DATA_RATE',add=add
@@ -54,6 +59,8 @@ pro spp_swp_spane_tplot,name,ADD=ADD,setlim=setlim
      'DEF_SPEC': tplot, '*sp?_*AF0*ANODE*SPEC *sp?_*AF1*ANODE*SPEC* *sp?_*AF1*NRG*SPEC *sp?_*AF1*DEF*SPEC', add = add
      'MRAM': tplot, '*spa*MRAM* *spb*MRAM*', add = add
      'GUNS': tplot, '*gun*', add = add
+     'MONITOR': tplot, 'spp_spa_hkp_CMD_REC spp_spa_hkp_ACT_FLAG spp_spa_hkp_HV_CONF_FLAG spp_spa_SF1_ANODE_SPEC spp_spa_ST1_ANODE_SPEC spp_spb_hkp_CMD_REC spp_spb_hkp_HV_CONF_FLAG spp_spb_hkp_ACT_FLAG spp_spb_SF1_ANODE_SPEC spp_spb_ST1_ANODE_SPEC', add = add
+     'TEMP' : tplot, '
      else:
     endcase
   endif

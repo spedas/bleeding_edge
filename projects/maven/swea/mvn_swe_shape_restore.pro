@@ -21,9 +21,9 @@
 ;       PARNG:         Shape parameter calculated based on 30, 45, and 60 deg, 
 ;                      corresponding to PARNG=1,2,3. Default is PA=45
 ;       
-; $LastChangedBy: xussui $
-; $LastChangedDate: 2017-09-20 14:51:45 -0700 (Wed, 20 Sep 2017) $
-; $LastChangedRevision: 24006 $
+; $LastChangedBy: cfowler2 $
+; $LastChangedDate: 2018-03-21 10:59:12 -0700 (Wed, 21 Mar 2018) $
+; $LastChangedRevision: 24923 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_shape_restore.pro $
 ;
 ;CREATED BY:    Shaosui Xu  06-23-17
@@ -61,13 +61,44 @@ Pro mvn_swe_shape_restore,trange,results=results,tplot=tplot,orbit=orbit,parng=p
     if (nfiles eq 0) then return
     file = file[indx]
 
+;---- Edit to improve speed -- initialize array first
+    print, 'Determining Array Size...'
+    arraySize = 0
+    for j=0,(nfiles-1) do begin
+      if j eq 0 then print, 0, '% complete' else print, (j)/float(nfiles-1)*100., '% complete'
+      restore, filename=file[J]
+      arraySize = arraySize + n_elements(strday)
+    endfor 
+    print, 'Initializing Array...'
+    emptyShp =  {t:0.D,shape:fltarr(3,3),parange:[0.,0.],$
+      alt:0.,sza:0.,lst:0., lat:0.,lon:0.,$
+      xmso:0., ymso:0.,zmso:0., xgeo:0.,$
+      ygeo:0., zgeo:0., mid:0., f40:0., $
+      Bmag:0.,Belev:0.,Baz:0.,Bclk:0.,pot:0.,mag_level:0,$
+      fratio_a2t:fltarr(2,3)}
+
+    shp =  replicate(emptyShp,arraySize)
+    
+    arrayIndex = 0
     for j=0,nfiles-1 do begin
-        restore,filename=file[j]
-        shp=[temporary(shp),strday]
+      restore,filename=file[j]
+      num = n_elements(strday)
+      shp[arrayIndex:(arrayIndex+num-1)] = strday
+      arrayIndex = arrayIndex+num
     endfor
+;---
+
+;--- Previous Method
+;    for j=0,nfiles-1 do begin
+;        restore,filename=file[j]
+;        shp=[temporary(shp),strday]
+;    endfor
+;---
+
+
     intx=where(shp.t ge tmin and shp.t le tmax)
     shp=shp[intx]
-    results=shp
+    results=shp 
     
     if(keyword_set(tplot)) then begin
         if (size(parng,/type) eq 0) then parng=2 else parng=fix(parng[0])

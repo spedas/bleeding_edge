@@ -38,8 +38,8 @@ end
 function spp_swp_spc_hkp_decom,ccsds,ptp_header=ptp_header,apdat=apdat
   ccsds_data = spp_swp_ccsds_data(ccsds)
 
-  if debug(3) then begin
-    dprint,dlevel=3,'SPC',ccsds.pkt_size, n_elements(ccsds_data), ccsds.apid
+  if debug(4) then begin
+    dprint,dlevel=4,'SPC',ccsds.pkt_size, n_elements(ccsds_data), ccsds.apid
     hexprint,ccsds_data[0:31]
     hexprint,spp_swp_spc_data_select(ccsds_data,80,8)
   endif
@@ -76,8 +76,8 @@ function spp_swp_spc_hkp_decom,ccsds,ptp_header=ptp_header,apdat=apdat
          rio_p12_i:    spp_swp_spc_data_select(ccsds_data,350 , 10) * 2.51937422680412000 , $
          rio_n12_I:    spp_swp_spc_data_select(ccsds_data,360 , 10) * 2.44379300000000000 , $
          rio_n55_v:    spp_swp_spc_data_select(ccsds_data,370 , 10) * (-0.05872646784715750) , $
-         rio_8k_v:     spp_swp_spc_data_select(ccsds_data,320 , 10) * 8000./2.5*2.5/(2^10) , $
-         rio_8k_i:     spp_swp_spc_data_select(ccsds_data,320 , 10) * 2.5/0.1*25/(2^10) , $
+         rio_8k_v:     spp_swp_spc_data_select(ccsds_data,380 , 10) * 8000./2.5*2.5/(2.^10) , $  
+         rio_8k_i:     spp_swp_spc_data_select(ccsds_data,390 , 10) * 2.5/0.1*25/(2^10) , $
          gap:0b }
          str.gap = ccsds.gap
   return,str
