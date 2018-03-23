@@ -4,7 +4,7 @@ function spp_poisson, x,  $
     parameters=p  ;,  p_names = p_names, pder_values= pder_values
   
   if not keyword_set(p) then $
-     p = {func:'poisson',h:1.d, avg:1.0d,integer:1}
+     p = {func:'spp_poisson',h:1.d, avg:1.0d,integer:1}
   if n_params() eq 0 then return,p
   
   x1 = p.integer ? round(x) : x

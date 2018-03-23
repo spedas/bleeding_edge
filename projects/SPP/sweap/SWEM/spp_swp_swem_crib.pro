@@ -40,6 +40,10 @@ spp_SSR_file_read, SSRfiles
 
 spp_apdat_info,/print
 
+f='/Users/davin/Downloads/0271373172_2_EA'
+fs = '/Users/davin/Downloads/??????????_?_EA'
+ssrfiles = file_search(fs)
+
 datinfo = spp_apdat('343'x)
 
 
@@ -47,14 +51,42 @@ datinfo = spp_apdat('343'x)
 spp_swp_tplot,'TEMPS'
 spp_swp_tplot,'TEMP'
 
+spp_swp_tplot,'si_hv'
+spp_swp_tplot,'si_rate1',/add
+spp_swp_tplot,'sa_hv'
+spp_swp_tplot,'sb_hv'
 
-
-
-
+tplot,'*SF1_ANODE_SPEC'
 
 
 spp_apdat_info,/print
 
+; TVAC CPT
+rtime = '2018-3-7'
 
+
+path = 'psp/data/sci/sweap/prelaunch/moc/20171218_TIMEJUMP/data_products/SSR_telemetry/YYYY/DOY/*_?_E?
+SSRfiles = spp_file_retrieve(path,trange=trange,/hourly)
+
+met= '2020-7-21'
+
+
+
+path='psp/data/sci/sweap/sao/s#sr_telemetry/YYYY/DOY/*_EA'
+ff=time_string(met,tformat=path)
+str_replace,ff,'s#s','ss'
+
+
+ff = 'psp/data/sci/sweap/sao/ssr_telemetry/2020/191/*_EA'
+SSRfiles = spp_file_retrieve(ff)
+
+spp_ssr_file_read,ssrfiles
+
+
+trange='2018-3-8/'+['0','24']
+trange=['2018-3-7','2018-3-9']
+path = 'spp/data/sci/sweap/prelaunch/gsedata/realtime/hires1/swem/YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
+ptpfiles = spp_file_retrieve(path,trange=trange,/hourly_names)
+spp_ptp_file_read, ptpfiles
 
 

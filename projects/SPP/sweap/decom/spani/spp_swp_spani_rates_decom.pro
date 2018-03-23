@@ -13,7 +13,7 @@ function spp_swp_spani_rates_decom,ccsds, ptp_header=ptp_header, apdat=apdat
   if n_elements(b) ne psize then begin
      dprint,dlevel=1, 'Size error ',ccsds.pkt_size,ccsds.apid
      return,0
-  endif
+  endif  
 
   ;dprint,time_string(ccsds.time)
   sf0 = ccsds_data[11] and 3
@@ -48,7 +48,7 @@ function spp_swp_spani_rates_decom,ccsds, ptp_header=ptp_header, apdat=apdat
   
   ;dprint,sf0
   ;printdat,ccsds,/hex
-  if sf0 and 1 then return,0    ; This gets rid of targeted packets
+;  if sf0 and 1 then return,0    ; This gets rid of targeted packets
 
   return,rates_str
 

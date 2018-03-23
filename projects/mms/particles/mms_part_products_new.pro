@@ -105,8 +105,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-03-20 10:10:11 -0700 (Tue, 20 Mar 2018) $
-;$LastChangedRevision: 24912 $
+;$LastChangedDate: 2018-03-22 10:56:10 -0700 (Thu, 22 Mar 2018) $
+;$LastChangedRevision: 24939 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products_new.pro $
 ;-
 pro mms_part_products_new, $
@@ -522,9 +522,10 @@ pro mms_part_products_new, $
       mms_pgs_make_theta_spec, clean_data, spec=pa_spec, yaxis=pa_y, /colatitude, resolution=regrid[1]
     endif
     
-    if in_set(outputs_lc,'multipad') then begin
-     moka_eg_pgs_make_pad, clean_data, spec=pad_spec, xaxis=pad_agl, wegy=pad_en
-    endif
+   ; temporarily disabled until I hunt down a bug - egrimes, 22March2018
+   ; if in_set(outputs_lc,'multipad') then begin
+   ;  moka_eg_pgs_make_pad, clean_data, spec=pad_spec, xaxis=pad_agl, wegy=pad_en
+   ; endif
 
     ;Build gyrophase spectrogram
     if in_set(outputs_lc, 'gyro') then begin

@@ -1,9 +1,9 @@
 ;+
 ; spp_swp_spi_prod_apdat
-; $LastChangedBy: $
-; $LastChangedDate:  $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-03-22 09:29:23 -0700 (Thu, 22 Mar 2018) $
+; $LastChangedRevision: 24932 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
 
@@ -20,6 +20,22 @@ pro spp_swp_spi_prod_apdat::prod_16A, strct
 ;  self.store_data, strct2, pname
   return
 end
+
+
+
+pro spp_swp_spi_prod_apdat::prod_32E, strct
+
+  pname = '32E_'
+  data = *strct.pdata
+  strct2 = {time:strct.time, $
+    SPEC:data,  $
+    gap: strct.gap}
+
+  if self.save_raw && self.prod_32E then   self.prod_32E.append, strct2
+  ;  self.store_data, strct2, pname
+  return
+end
+
 
 
 
@@ -69,6 +85,7 @@ pro spp_swp_spi_prod_apdat::prod_8Dx32Ex16A, strct   ; this function needs fixin
   endif
   
   pname = '8Dx32Ex16A_'
+  dprint,pname
   
   strct.def_spec   = total(reform(/overwrite,cnts,8,32*16),2)
   strct.anode_spec = total(reform(/overwrite,cnts,8*32,16),1)
@@ -143,7 +160,7 @@ pro spp_swp_spi_prod_apdat::prod_8Dx32Ex16Ax1M, strct   ; this function needs fi
     return
   endif
   pname = '8Dx32Ex16Ax1M_'
-
+dprint,pname
   cnts = *strct.pdata
 
   cnts = reform(cnts,8,32,16,/over)
@@ -169,6 +186,7 @@ pro spp_swp_spi_prod_apdat::prod_16Ax16M, strct   ; this function needs fixing
   endif
   pname = '16Ax16M_'
   
+;  printdat,cnts
 
   cnts = reform(cnts,16,16,/over)
 
@@ -178,7 +196,7 @@ pro spp_swp_spi_prod_apdat::prod_16Ax16M, strct   ; this function needs fixing
 
   strct.anode_spec =  total(cnts,2)
   strct.mass_spec =  total(cnts,1) 
-
+  
   if self.save_raw && self.prod_16Ax16m.append then   self.prod_16Ax16m.append, strct2
 
 end
@@ -273,12 +291,13 @@ pro spp_swp_spi_prod_apdat::handler,ccsds,ptp_header
   if keyword_set(strct) &&  ns gt 0 then begin
     case strct.ndat  of
       16:   self.prod_16a,  strct
+;      32:   self.prod_32e,  strct
       256:  self.prod_16Ax16M, strct
       512:  self.prod_32Ex16A, strct
       2048: self.prod_32Ex16Ax4M, strct
       4096: self.prod_8Dx32Ex16A, strct
       8192: self.prod_8Dx32EX16Ax2M, strct
-      else:  dprint,dlevel=2,'Size not recognized: ',strct.ndat
+      else:  dprint,dlevel=3,'Size not recognized: ',strct.ndat
     endcase
   endif
  ; dprint,dlevel=2,strct.apid,strct.ndat

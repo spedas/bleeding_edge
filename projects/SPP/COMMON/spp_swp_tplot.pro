@@ -1,27 +1,3 @@
-pro spp_swp_ssrreadreq,times
-
-n= n_elements(times)
-if n and 1 then message ,'Must be odd'
-
-
-n2 = n/2
-tt = reform(times,2,n2)
-for i=0,n2-1 do begin
-    blocknums = data_cut('spp_swem_dhkp_SW_SSRWRADDR',tt[*,i])
-    startblock = blocknums[0]
-    deltablock = blocknums[1]-blocknums[0] > 1
-    apmask  =  replicate('ffffffff'x,4)
-    apmask1  = 'FFFFffff'x
-    apmask2  = 'FFFFffff'x
-    apmask3  = 'FFFFffff'x
-;    print,startblock,deltablock,APMASK0,APMASK1,APMASK2,APMASK3,format='("cmd.sw_ssrreadreq(",i6,i5,Z4,Z4,Z4,Z4,")")'
-    print,startblock,deltablock,APMASK,time_string(tt[*,i]),  $
-      format='(%"cmd.SW_SSRREADREQ(%d,%d,0x%8X,0x%8X,0x%8X,0x%8x)  # from: %s  to: %s ")'
-endfor
-
-
-end
-
 
 
 
@@ -34,8 +10,8 @@ if keyword_set(setlim) then begin
   options,'*_FLAG',tplot_routine='bitplot'
   tplot_options,'no_interp',1
 ;  options,'*SPEC23',panel_size=3
-  options,'*rates*CNTS',spec=1,zrange=[1,1],/zlog,yrange=[0,0],ylog=0
-  options,'*rates*CNTS',spec=0,yrange=[1,1],ylog=1
+  options,'*rates*CNTS',spec=1,zrange=[.8,1e3],/zlog,yrange=[0,0],ylog=0
+;  options,'*rates*CNTS',spec=0,yrange=[1,1],ylog=1
   options,'*hkp_HV_MODE',tplot_routine= 'bitplot'
   options,'*TEMPS',/ynozero
   options,'*events*',psym=3
@@ -46,6 +22,10 @@ if keyword_set(setlim) then begin
   options,'Igun_CURRENT',ytitle ='Ie- (uA)'
   options,'*ACT_FLAG',colors='ddgrgrbb'
   options,'spp_spi_hkp_DAC_DEFL',ytitle='DEFL (dac)'
+  options,'*NRG_SPEC',spec=1
+  options,'*tof_TOF',spec=1
+  
+
 
   tplot,var_label=tnames('manip*_POS *DAC_DEFL Igun_VOLTS Igun_CURRENT')
   !y.style=3
@@ -60,7 +40,7 @@ endif
 
 if keyword_set(name) then begin
   
-  plot_name = strupcase(strtrim(name,2))
+  plot_name =  strupcase(strtrim(name,2)) 
   case plot_name of
     'CMDCTR': tplot,'*swem_dhkp_SW_CMDCOUNTER *CMD_REC *CMDS_REC',add=add
     'SE':   tplot,'*sp?_AF0_ANODE_SPEC *sp?_AF1_*_SPEC spp_sp?_hkp_MRAM_*',ADD=ADD
@@ -69,10 +49,15 @@ if keyword_set(name) then begin
     'SB_HV': tplot,'*CMDCOUNTER *spb_*CMD_REC *spb_hkp_HV_CONF_FLAG *spb_hkp_???_DAC *spb_hkp_ADC_VMON_* *spb_hkp_ADC_IMON_* *spb_*SF1_ANODE_SPEC',ADD=ADD
     'SC_HV': tplot,'spp_spc_hkp_ADC*'
     'SE_LV': tplot,'*sp?_hkp_RIO*',ADD=ADD
-    'SA_SPEC': tplot, '*spa_*ADC_VMON_HEM *spa_AF0_CNTS *spa_*AF1_ANODE_SPEC spp_spa_AF1_NRG_SPEC spp_spa_AT0_CNTS spp_spa_AT1_ANODE_SPEC spp_spa_AT1_NRG_SPEC spp_spa_AT1_PEAK_BIN', ADD=ADD
-    'SB_SPEC': tplot, 'spp_spb_hkp_ADC_VMON_HEM spp_spb_AF0_CNTS spp_spb_AF1_ANODE_SPEC spp_spb_AF1_NRG_SPEC spp_spb_AT0_CNTS spp_spb_AT1_ANODE_SPEC spp_spb_AT1_NRG_SPEC spp_spb_AT1_PEAK_BIN', ADD=ADD
+    'SE_SPEC': tplot,'*spa_*ADC_VMON_HEM *spa_SF0_CNTS *spa_*SF1_ANODE_SPEC spp_spa_SF1_NRG_SPEC', ADD=ADD
+    'SA_SPEC': tplot, '*spa_*ADC_VMON_HEM *spa_AF0_CNTS *spa_*AF1_ANODE_SPEC spp_spa_SF1_NRG_SPEC', ADD=ADD
+    'SB_SPEC': tplot, 'spp_spb_hkp_ADC_VMON_HEM spp_spb_SF0_CNTS spp_spb_SF1_ANODE_SPEC spp_spb_SF1_NRG_SPEC', ADD=ADD
+    'SE_A_SPEC': tplot,'*spa_*ADC_VMON_HEM *spa_AF0_CNTS *spa_*AF1_ANODE_SPEC spp_spa_AF1_NRG_SPEC spp_spa_AT0_CNTS spp_spa_AT1_ANODE_SPEC spp_spa_AT1_NRG_SPEC spp_spa_AT1_PEAK_BIN', ADD=ADD
+    'SA_A_SPEC': tplot, '*spa_*ADC_VMON_HEM *spa_AF0_CNTS *spa_*AF1_ANODE_SPEC spp_spa_AF1_NRG_SPEC spp_spa_AT0_CNTS spp_spa_AT1_ANODE_SPEC spp_spa_AT1_NRG_SPEC spp_spa_AT1_PEAK_BIN', ADD=ADD
+    'SB_A_SPEC': tplot, 'spp_spb_hkp_ADC_VMON_HEM spp_spb_AF0_CNTS spp_spb_AF1_ANODE_SPEC spp_spb_AF1_NRG_SPEC spp_spb_AT0_CNTS spp_spb_AT1_ANODE_SPEC spp_spb_AT1_NRG_SPEC spp_spb_AT1_PEAK_BIN', ADD=ADD
     'SI_RATE': tplot,'*rate*CNTS',ADD=ADD
-    'SI_RATE1': tplot,'*rates_'+strsplit(/extract,'VALID_* MULTI_* STARTS_* STOPS_*'),add=add
+    'SI_RATE1': tplot,'*rates_'+strsplit(/extract,'VALID_* STARTS_* STOPS_*'),add=add
+;    'SI_RATE1': tplot,'*rates_'+strsplit(/extract,'VALID_* MULTI_* STARTS_* STOPS_*'),add=add
     'SI_AF0?_1': tplot,'*spani_ar_full_p0_m?_*_SPEC1',add=add
     'SI_HV2': tplot,'*CMDCOUNTER *spi_hkp_HV_CONF_FLAG *spi_hkp_???_DAC *spi_hkp_ADC_VMON_* *spi_hkp_ADC_IMON_*',ADD=ADD
     'SI_MON' : tplot,'*spi_*hkp_MON*',add=add
@@ -88,7 +73,7 @@ if keyword_set(name) then begin
     'SB_COVER': tplot, '*spb*CMD*REC spp_spb_*_ACT_FLAG spp_*SPB_22_C spp_spb_hkp*ANAL_TEMP', add = add
     'SB_COVER': tplot, '*spb_*ACT*CVR* *spb_*ACTSTAT*FLAG *spb*CMD*REC', add = add
  ;   'SA_COVER': tplot, '*spa_*ACT*CVR* *spa_*ACTSTAT*FLAG *spa*CMD*REC', add = add
-    'SWEM': tplot,'APID spp_swem_dhkp_SW_CMDCOUNTER',add=add
+    'SWEM': tplot,'spp_swem_dhkp_*WRADDR APID spp_swem_dhkp_SW_CMDCOUNTER',add=add
     'TIMING': tplot,'spp_swem_timing_'+['DRIFT_DELTA','CLKS_PER_PPS_DELTA','SCSUBSECSATPPS']
     'TEMP': tplot,'*TEMP'
     'TEMPS': tplot,'*ALL_TEMPS

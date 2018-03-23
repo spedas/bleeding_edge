@@ -49,7 +49,7 @@ if ccsds.pkt_size eq 86 then begin   ; This is old version of software????  not 
     SW_FSWSTATE: spp_swp_data_select(ccsds_data,  144 ,  8), $
     SW_EVENTCTR: spp_swp_data_select(ccsds_data,  152 ,  32), $
     SW_LASTFSWEVENT: spp_swp_data_select(ccsds_data,  184 ,  16), $
-    SW_CMDCOUNTER: spp_swp_data_select(ccsds_data,  200 ,  32), $
+    SW_CMDCOUNTER: long(spp_swp_data_select(ccsds_data,  200 ,  32)), $
     SW_CMDSTATUS: spp_swp_data_select(ccsds_data,   232 ,  32), $
     SW_GLOBALSTATUS: spp_swp_data_select(ccsds_data, 264 ,  32), $    ;()
     SW_GLOBAL: spp_swp_data_select(ccsds_data,   264 ,  16), $
@@ -59,8 +59,8 @@ if ccsds.pkt_size eq 86 then begin   ; This is old version of software????  not 
     SW_SRVRDPTR: spp_swp_data_select(ccsds_data,  328 ,  32), $
     SW_SRVWRPTR: spp_swp_data_select(ccsds_data,  368 ,  32), $    ; line added on 2017- 12-10
     SW_ARCRDPTR: spp_swp_data_select(ccsds_data,  392 ,  32), $
-    SW_SSRWRADDR: spp_swp_data_select(ccsds_data,   424 ,  32), $
-    SW_SSRRDADDR: spp_swp_data_select(ccsds_data,   456 ,  32), $
+    SW_SSRWRADDR:   spp_swp_data_select(ccsds_data,   424 ,  32), $
+    SW_SSRRDADDR:  spp_swp_data_select(ccsds_data,   456 ,  32), $
     SW_SPANAECTL: spp_swp_data_select(ccsds_data,   488 ,  8), $
     SW_SPANBCTL: spp_swp_data_select(ccsds_data,  496 ,  8), $
     SW_SPANAICTL: spp_swp_data_select(ccsds_data,   504 ,  8), $

@@ -1,12 +1,12 @@
-  ; $LastChangedBy: phyllisw2 $
-  ; $LastChangedDate: 2017-10-12 16:32:05 -0700 (Thu, 12 Oct 2017) $
-  ; $LastChangedRevision: 24151 $
+  ; $LastChangedBy: davin-mac $
+  ; $LastChangedDate: 2018-03-22 09:31:46 -0700 (Thu, 22 Mar 2018) $
+  ; $LastChangedRevision: 24936 $
   ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_ptp_stream_read.pro $
 
 
 pro spp_ptp_stream_read,buffer,info=info,no_sum=no_sum,verbose=verbose,dlevel=dlevel  ;,time=time
   
-  dlevel = 2
+  dlevel = 3
   bsize= n_elements(buffer) * (size(/n_dimen,buffer) ne 0)
   time = info.time_received
 
