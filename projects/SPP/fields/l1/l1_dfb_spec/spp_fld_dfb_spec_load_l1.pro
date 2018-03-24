@@ -17,9 +17,10 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
     3: colors = 2 ; blue
     4: colors = 1 ; magenta
   endcase
-  
+
   options, prefix + status_items, 'colors', colors
   options, prefix + status_items, 'psym', spec_number + 3
+  options, prefix + status_items, 'symsize', 0.75
   options, prefix + status_items, 'panel_size', 0.75
   options, prefix + status_items, 'ysubtitle', ''
 
@@ -62,11 +63,41 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
   options, prefix + 'gain', 'ysubtitle', ''
   options, prefix + 'gain', 'panel_size', 0.35
 
-  options, prefix + 'navg', 'yrange', [-0.5,15.5]
-  options, prefix + 'navg', 'ystyle', 1
+  get_data, prefix + 'navg', data = dat_navg
 
-  options, prefix + 'concat', 'yrange', [-0.5,15.5]
-  options, prefix + 'concat', 'ystyle', 1
+  if n_elements(uniq(dat_navg.y)) EQ 1 then begin
+
+    options, prefix + 'navg', 'yrange', dat_navg.y + [-1.0,1.0]
+    options, prefix + 'navg', 'yticks', 2
+    options, prefix + 'navg', 'ytickv', dat_navg.y + [-1.0,0.0,1.0]
+    options, prefix + 'navg', 'yminor', 1
+    options, prefix + 'navg', 'ystyle', 1
+    options, prefix + 'navg', 'panel_size', 0.5
+
+  endif else begin
+
+    options, prefix + 'concat', 'yrange', [-0.5,15.5]
+    options, prefix + 'concat', 'ystyle', 1
+
+  endelse
+
+  get_data, prefix + 'concat', data = dat_concat
+
+  if n_elements(uniq(dat_concat.y)) EQ 1 then begin
+
+    options, prefix + 'concat', 'yrange', dat_concat.y + [-1.0,1.0]
+    options, prefix + 'concat', 'yticks', 2
+    options, prefix + 'concat', 'ytickv', dat_concat.y + [-1.0,0.0,1.0]
+    options, prefix + 'concat', 'yminor', 1
+    options, prefix + 'concat', 'ystyle', 1
+    options, prefix + 'concat', 'panel_size', 0.5
+
+  endif else begin
+
+    options, prefix + 'concat', 'yrange', [-0.5,15.5]
+    options, prefix + 'concat', 'ystyle', 1
+
+  endelse
 
   options, prefix + 'saturation_flags', 'tplot_routine', 'bitplot'
   options, prefix + 'saturation_flags', 'numbits', 16
@@ -113,11 +144,11 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
 
         n_total = n_elements(spec_data.y)
 
-        ; The spectral data as returned by TMlib are not in order, instead 
+        ; The spectral data as returned by TMlib are not in order, instead
         ; the order goes like (fs represent increasing frequencies)
         ; [f1, f0, f3, f2, f5, f4, ...]
         ; This reorders the spectra:
-        
+
         spec_data_y = reform( $
           transpose($
           [[[spec_data.y[*,1:*:2]]], $
@@ -126,7 +157,7 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
 
         ; This takes the concatenated spectra array and makes a new array with
         ; one spectra per column
-        
+
         new_data_y = transpose(reform(reform(transpose(spec_data_y), n_total), $
           n_bins, n_total/n_bins))
 
@@ -173,9 +204,12 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
         options, prefix + 'spec_converted', 'ystyle', 1
         options, prefix + 'spec_converted', 'yrange', minmax(freq_bins.freq_avg)
 
+        ; Indicator of saturation.  This variable plots the saturation of
+        ; the DFB (0 = unsaturated, 1 = saturated)
+
         store_data, prefix + 'sat', $
           data = {x:new_data_x, y:new_data_sat_y}
-        
+
         options, prefix + 'sat', 'psym', spec_number + 3
         options, prefix + 'sat', 'yrange', [-0.25,1.25]
         options, prefix + 'sat', 'ystyle', 1
@@ -186,6 +220,25 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
         options, prefix + 'sat', 'panel_size', 0.35
         options, prefix + 'sat', 'colors', colors
 
+        ; Alternate indicator of saturation.  This is the same data in a slightly
+        ; different format, made to make it easy to plot all saturation indicators
+        ; for AC or DC spectra in a single panel.  Only saturation is shown,
+        ; non-saturated data is left blank
+
+        sat_indicator = float(new_data_sat_y)
+
+        non_saturated = where(sat_indicator EQ 0, non_sat_count)
+
+        if non_sat_count GT 0 then sat_indicator[non_saturated] = !values.f_nan
+
+        store_data, prefix + 'sat_indicator', $
+          data = {x:new_data_x, y:sat_indicator + spec_number - 1}
+
+        options, prefix + 'sat_indicator', 'psym', spec_number + 3
+        options, prefix + 'sat_indicator', 'colors', colors
+        options, prefix + 'sat_indicator', 'symsize', 0.75
+        options, prefix + 'sat_indicator', 'labels', [string(spec_number,format='(I1)')]
+        
       endif else begin
 
         print, 'Different spectra configuration in same CDF file'
@@ -211,13 +264,38 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
 
       if dfb_spec_name_i EQ 'spec_converted' then begin
 
-        options, prefix + dfb_spec_name_i, 'ytitle', $
-          'SPP DFB!C' + ac_dc_string + ' SPEC' + $
-          string(spec_ind)
+        ; For the converted spectra: set the title, and add the source
+        ; (as a string) to the title if the source is consistent for
+        ; all of the loaded data.
+
+        dfb_spec_name_ytitle = '' ;'DFB!C' + ac_dc_string + ' SPEC' + $
+        ;string(spec_ind)
+
+        ;        options, prefix + dfb_spec_name_i, 'ytitle', $
+        ;          'SPP DFB!C' + ac_dc_string + ' SPEC' + $
+        ;          string(spec_ind)
 
         options, prefix + dfb_spec_name_i, 'ysubtitle', 'Freq [Hz]'
 
+        if is_ac then options, prefix + dfb_spec_name_i, 'datagap', 30d else $
+          options, prefix + dfb_spec_name_i, 'datagap', 60d
+
+        if tnames(prefix + 'src_sel_string') NE '' then begin
+
+          get_data, prefix + 'src_sel_string', data = src_sel_dat
+
+          if n_elements(uniq(src_sel_dat.y)) EQ 1 then begin
+
+            dfb_spec_name_ytitle += strcompress(src_sel_dat.y[0], /remove_all)
+
+          endif
+
+        endif
+
       endif else begin
+
+        ; For string items only–remove subtitle and remove '_string' from the
+        ; default ytitle
 
         if strmid(prefix + dfb_spec_name_i,6,/rev) EQ '_string' then begin
 
@@ -230,13 +308,17 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
 
           dfb_spec_name_ytitle = dfb_spec_name_i
 
+          if dfb_spec_name_i EQ 'scm_rotate' then dfb_spec_name_ytitle = 'scmrot'
+
         endelse
 
-        options, prefix + dfb_spec_name_i, 'ytitle', $
-          'DFB!C' + ac_dc_string + ' SP' + $
-          string(spec_ind) + '!C' + strupcase(dfb_spec_name_ytitle)
-
       endelse
+
+      ; Set ytitle of TPLOT variable
+
+      options, prefix + dfb_spec_name_i, 'ytitle', $
+        'DFB!C' + ac_dc_string + ' SP' + $
+        string(spec_ind) + '!C' + strupcase(dfb_spec_name_ytitle)
 
     endfor
 
@@ -248,7 +330,10 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
   options, prefix + '*string', 'yticks', 1
   options, prefix + '*string', 'ytickformat', '(A1)'
   options, prefix + '*string', 'noclip', 0
-  
+
+  ; This makes a composite TPLOT variable with all of the source information
+  ; for all of the DC or AC spectra that have been loaded so far
+
   all_prefix = strmid(prefix, 0, strlen(prefix) - 2)
 
   src_names = tnames(all_prefix + '?_src_sel')
@@ -258,5 +343,17 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
   options, all_prefix + 'all_src_sel', 'yrange', [-0.5,15.5]
   options, all_prefix + 'all_src_sel', 'ystyle', 1
   options, all_prefix + 'all_src_sel', 'panel_size', 2.0
+
+  ; Composite TPLOT variable that shows saturation indicator for all data
+
+  sat_indicator_names = tnames(all_prefix + '?_sat_indicator')
+
+  store_data, all_prefix + 'all_sat_indicator', data = sat_indicator_names
+
+  options, all_prefix + 'all_sat_indicator', 'yrange', [0.5,4.5]
+  options, all_prefix + 'all_sat_indicator', 'ystyle', 1
+  options, all_prefix + 'all_sat_indicator', 'yminor', 1
+  options, all_prefix + 'all_sat_indicator', 'panel_size', 1.0
+  options, all_prefix + 'all_sat_indicator', 'ytitle', 'DFB!C' + ac_dc_string + ' SP!CSAT'
 
 end
