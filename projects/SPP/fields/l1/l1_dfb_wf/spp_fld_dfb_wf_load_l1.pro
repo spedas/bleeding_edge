@@ -86,9 +86,14 @@ if size(d, /type) EQ 8 then begin
 
     wf_i = wf_i0[where(wf_i0 GT -2147483647l)]
 
-    wf_i0_v = reform(d_v.y[i,*])
+    if size(d_v, /type) EQ 8 then begin
 
-    wf_i_v = wf_i0_v[where(wf_i0 GT -2147483647l)]
+      wf_i0_v = reform(d_v.y[i,*])
+
+      wf_i_v = wf_i0_v[where(wf_i0 GT -2147483647l)]
+
+    endif
+
 
     if keyword_set(compressed) then begin
 
@@ -99,7 +104,7 @@ if size(d, /type) EQ 8 then begin
     ;      all_wf_decompressed = [all_wf_decompressed, wf_i]
     ;      all_wf_decompressed_v = [all_wf_decompressed_v, wf_i_v]
     all_wf_decompressed_list.Add, wf_i
-    all_wf_decompressed_v_list.Add, wf_i_v
+    if size(d_v, /type) EQ 8 then all_wf_decompressed_v_list.Add, wf_i_v
 
     ideal_delay_i = ideal_delay[d_tap.y[i]]
 
@@ -118,25 +123,29 @@ if size(d, /type) EQ 8 then begin
 
   all_wf_time = (spp_fld_square_list(all_wf_time_list)).ToArray()
   all_wf_decompressed = (spp_fld_square_list(all_wf_decompressed_list)).ToArray()
-  all_wf_decompressed_v = (spp_fld_square_list(all_wf_decompressed_v_list)).ToArray()
+  if size(d_v, /type) EQ 8 then $
+    all_wf_decompressed_v = (spp_fld_square_list(all_wf_decompressed_v_list)).ToArray()
 
   all_wf_time = reform(transpose(all_wf_time), n_elements(all_wf_time))
   all_wf_decompressed = reform(transpose(all_wf_decompressed), n_elements(all_wf_time))
-  all_wf_decompressed_v = reform(transpose(all_wf_decompressed_v), n_elements(all_wf_time))
+  if size(d_v, /type) EQ 8 then $
+    all_wf_decompressed_v = reform(transpose(all_wf_decompressed_v), n_elements(all_wf_time))
 
   wf_valid_ind = where(finite(all_wf_time), wf_valid_count)
 
   if wf_valid_count GT 0 then begin
     all_wf_time = all_wf_time[wf_valid_ind]
     all_wf_decompressed = all_wf_decompressed[wf_valid_ind]
-    all_wf_decompressed_v = all_wf_decompressed_v[wf_valid_ind]
+    if size(d_v, /type) EQ 8 then $
+      all_wf_decompressed_v = all_wf_decompressed_v[wf_valid_ind]
   endif
 
   store_data, prefix + 'wav_data', $
     dat = {x:all_wf_time, y:all_wf_decompressed}, $
     dlim = {panel_size:2}
 
-  store_data, prefix + 'wav_data_v', $
+  if size(d_v, /type) EQ 8 then $
+    store_data, prefix + 'wav_data_v', $
     dat = {x:all_wf_time, y:all_wf_decompressed_v}, $
     dlim = {panel_size:2}
 

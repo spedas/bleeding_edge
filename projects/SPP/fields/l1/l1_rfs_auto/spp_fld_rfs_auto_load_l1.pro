@@ -130,67 +130,71 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
 
     get_data, prefix + raw_spec_i, data = raw_spec_data
 
-    converted_spec_data = spp_fld_rfs_float(raw_spec_data.y)
+    if size(raw_spec_data, /type) EQ 8 then begin
 
-    ; Using definition of power spectral density
-    ;  S = 2 * Nfft / fs |x|^2 / Wss where
-    ; where |x|^2 is an auto spec value of the PFB/DFT
-    ;
-    ; 2             : from definition of S_PFB
-    ; 3             : number of spectral bins summed together
-    ; 4096          : number of FFT points
-    ; 38.4e6        : fs in Hz (divide fs by 8 for LFR)
-    ; 250           : RFS high gain (multiply by 50^2 later on if in low gain)
-    ; 2048          : 2048 counts in the ADC = 1 volt
-    ; 0.782         : WSS for our implementation of the PFB (see pfb_norm.pdf)
-    ; 65536         : factor from integer PFB, equal to (2048./8.)^2
+      converted_spec_data = spp_fld_rfs_float(raw_spec_data.y)
 
-    ; TODO: Correct this for SCM data
+      ; Using definition of power spectral density
+      ;  S = 2 * Nfft / fs |x|^2 / Wss where
+      ; where |x|^2 is an auto spec value of the PFB/DFT
+      ;
+      ; 2             : from definition of S_PFB
+      ; 3             : number of spectral bins summed together
+      ; 4096          : number of FFT points
+      ; 38.4e6        : fs in Hz (divide fs by 8 for LFR)
+      ; 250           : RFS high gain (multiply by 50^2 later on if in low gain)
+      ; 2048          : 2048 counts in the ADC = 1 volt
+      ; 0.782         : WSS for our implementation of the PFB (see pfb_norm.pdf)
+      ; 65536         : factor from integer PFB, equal to (2048./8.)^2
 
-    V2_factor = (2d/3d) * 4096d / 38.4d6 / ((250d*2048d)^2d * 0.782d * 65536d)
+      ; TODO: Correct this for SCM data
 
-    if lfr_flag then V2_factor *= 8
+      V2_factor = (2d/3d) * 4096d / 38.4d6 / ((250d*2048d)^2d * 0.782d * 65536d)
 
-    converted_spec_data *= V2_factor
+      if lfr_flag then V2_factor *= 8
 
-    if n_lo_gain GT 0 then converted_spec_data[lo_gain, *] *= 2500.d
+      converted_spec_data *= V2_factor
 
-    converted_spec_data /= rebin(rfs_nsum.y,$
-      n_elements(rfs_nsum.x),$
-      n_elements(rfs_freqs.reduced_freq))
+      if n_lo_gain GT 0 then converted_spec_data[lo_gain, *] *= 2500.d
 
-    store_data, prefix + raw_spec_i + '_converted', $
-      data = {x:raw_spec_data.x, y:converted_spec_data, $
-      v:rfs_freqs.reduced_freq}
+      converted_spec_data /= rebin(rfs_nsum.y,$
+        n_elements(rfs_nsum.x),$
+        n_elements(rfs_freqs.reduced_freq))
 
-    options, prefix + raw_spec_i + '_converted', 'spec', 1
-    options, prefix + raw_spec_i + '_converted', 'no_interp', 1
-    options, prefix + raw_spec_i + '_converted', 'ylog', 1
-    options, prefix + raw_spec_i + '_converted', 'zlog', 1
-    options, prefix + raw_spec_i + '_converted', 'ztitle', '[V2/Hz]'
-    options, prefix + raw_spec_i + '_converted', 'yrange', $
-      [min(rfs_freqs.reduced_freq), max(rfs_freqs.reduced_freq)]
-    options, prefix + raw_spec_i + '_converted', 'ystyle', 1
-    options, prefix + raw_spec_i + '_converted', 'datagap', 60
-    options, prefix + raw_spec_i + '_converted', 'panel_size', 2.
+      store_data, prefix + raw_spec_i + '_converted', $
+        data = {x:raw_spec_data.x, y:converted_spec_data, $
+        v:rfs_freqs.reduced_freq}
 
-    ytitle = receiver_str + ' AUTO!C' + strupcase(raw_spec_i)
+      options, prefix + raw_spec_i + '_converted', 'spec', 1
+      options, prefix + raw_spec_i + '_converted', 'no_interp', 1
+      options, prefix + raw_spec_i + '_converted', 'ylog', 1
+      options, prefix + raw_spec_i + '_converted', 'zlog', 1
+      options, prefix + raw_spec_i + '_converted', 'ztitle', '[V2/Hz]'
+      options, prefix + raw_spec_i + '_converted', 'yrange', $
+        [min(rfs_freqs.reduced_freq), max(rfs_freqs.reduced_freq)]
+      options, prefix + raw_spec_i + '_converted', 'ystyle', 1
+      options, prefix + raw_spec_i + '_converted', 'datagap', 60
+      options, prefix + raw_spec_i + '_converted', 'panel_size', 2.
 
-    ch_str = strmid(raw_spec_i,strlen(raw_spec_i) - 3, 3)
+      ytitle = receiver_str + ' AUTO!C' + strupcase(raw_spec_i)
 
-    get_data, prefix + ch_str, dat = ch_src_dat
+      ch_str = strmid(raw_spec_i,strlen(raw_spec_i) - 3, 3)
 
-    if size(ch_src_dat, /type) EQ 8 then $
-      if n_elements(uniq(ch_src_dat.y) EQ 1) then $
-      ;options, prefix + raw_spec_i + '_converted', 'ysubtitle', $
-      ;'SRC:' + strcompress(string(ch_src_dat.y[0]))
-      ytitle = ytitle + '!C' + 'SRC' + strcompress(string(ch_src_dat.y[0]))
+      get_data, prefix + ch_str, dat = ch_src_dat
 
-    options, prefix + raw_spec_i + '_converted', 'ytitle', $
-      ytitle
+      if size(ch_src_dat, /type) EQ 8 then $
+        if n_elements(uniq(ch_src_dat.y) EQ 1) then $
+        ;options, prefix + raw_spec_i + '_converted', 'ysubtitle', $
+        ;'SRC:' + strcompress(string(ch_src_dat.y[0]))
+        ytitle = ytitle + '!C' + 'SRC' + strcompress(string(ch_src_dat.y[0]))
 
-    options, prefix + raw_spec_i + '_converted', 'ysubtitle', $
-      'Freq [Hz]'
+      options, prefix + raw_spec_i + '_converted', 'ytitle', $
+        ytitle
+
+      options, prefix + raw_spec_i + '_converted', 'ysubtitle', $
+        'Freq [Hz]'
+
+    end
 
   endfor
 

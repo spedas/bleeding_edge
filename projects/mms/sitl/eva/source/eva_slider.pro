@@ -23,8 +23,8 @@
 ;   Value is the modified time-value (double)
 ;   
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2016-03-30 20:26:47 -0700 (Wed, 30 Mar 2016) $
-; $LastChangedRevision: 20652 $
+; $LastChangedDate: 2018-03-25 06:58:22 -0700 (Sun, 25 Mar 2018) $
+; $LastChangedRevision: 24950 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/eva_slider.pro $
 ;
 PRO eva_slider_set_value, id, value 
@@ -169,9 +169,17 @@ FUNCTION eva_slider, parent, WGRID=wgrid, TIME=time,$
   ;-------------
   v = (value < max_value) > min_value
   vnew = long(100*(v-min_value)/(max_value-min_value))
-  str_element,/add,state,'slider',widget_slider(base,DRAG=1,MAX=100,MIN=0,VALUE=vnew,$
-    /sup,SENSITIVE=sensitive)
-  
+;  print,'*******'
+;  print, value
+;  print, min_value
+;  print, max_value
+;  print, v
+;  print, vnew
+;  print, '*****'
+  if (0 le vnew) and (vnew le 100) then begin
+    str_element,/add,state,'slider',widget_slider(base,DRAG=1,MAX=100,MIN=0,VALUE=vnew,$
+      /sup,SENSITIVE=sensitive)
+  endif
 
   ; Save out the initial state structure into the first childs UVALUE.
   WIDGET_CONTROL, WIDGET_INFO(base, /CHILD), SET_UVALUE=state, /NO_COPY
