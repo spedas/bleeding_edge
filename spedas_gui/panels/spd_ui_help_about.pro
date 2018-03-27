@@ -8,8 +8,8 @@
 ;
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-12-04 14:50:52 -0800 (Mon, 04 Dec 2017) $
-;$LastChangedRevision: 24394 $
+;$LastChangedDate: 2018-03-26 14:11:53 -0700 (Mon, 26 Mar 2018) $
+;$LastChangedRevision: 24956 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_help_about.pro $
 ;-
 
@@ -77,9 +77,9 @@ end
 
 Pro spd_ui_help_about, gui_id, historywin
   ;aboutlabel should show the SPEDAS version and some other info (perhaps build date, web site URL, etc)
-  aboutString= ' SPEDAS 2.1 '  +  string(10B) + string(10B) $
+  aboutString= ' SPEDAS 3.0 '  +  string(10B) + string(10B) $
     + ' Space Physics Environment Data Analysis Software ' $
-    + string(10B) + string(10B) + ' December 2017 ' + string(10B) + string(10B)  $
+    + string(10B) + string(10B) + ' March 2018 ' + string(10B) + string(10B)  $
     + ' For support or bug reports, contact: THEMIS_Science_Support@ssl.berkeley.edu '
 
   cdf_about = spd_ui_help_about_dlm('cdf')

@@ -11,6 +11,7 @@
 ; At those points this procedure is called to average the data, 
 ; concatenate data to output variables, and clear the appropriate 
 ; variables for the next loop.
+; 
 ;
 ;
 ;Input:
@@ -44,8 +45,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-10-18 11:43:30 -0700 (Tue, 18 Oct 2016) $
-;$LastChangedRevision: 22124 $
+;$LastChangedDate: 2018-03-26 12:33:55 -0700 (Mon, 26 Mar 2018) $
+;$LastChangedRevision: 24954 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/core/spd_slice2d_collate.pro $
 ;-
 pro spd_slice2d_collate, data_t = data_t, $
@@ -69,14 +70,16 @@ pro spd_slice2d_collate, data_t = data_t, $
                          dp_out = dp_out, $
                          dt_out = dt_out, $
                          
+                         sum_samples=sum_samples, $
+
                          fail=fail
 
     compile_opt idl2, hidden
 
-
-  ;Average data over number of time samples containing valid measurements
-  data_ave = temporary(data_t) / (weight_t > 1)
-
+  if ~keyword_set(sum_samples) then begin
+    ;Average data over number of time samples containing valid measurements
+    data_ave = temporary(data_t) / (weight_t > 1)
+  endif else data_ave = temporary(data_t) ; the user requested to sum the samples rather than to average
 
   ;Remove bins with no valid data.
   ;Each distribution may have a different set of bins active

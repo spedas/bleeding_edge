@@ -42,7 +42,9 @@
 
   <cdf_var
       name   = "dfb_dc_bpf_src_sel"
-      type   = "integer">
+      type   = "integer"
+      string = "true"
+      string_len = "16">
   <cdf_att
         FIELDNAM = "src_sel"
         FORMAT = "I08"

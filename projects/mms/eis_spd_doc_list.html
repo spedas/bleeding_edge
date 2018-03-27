@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Mar 25 18:16:25 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Mar 26 18:16:21 2018.<P>
  
 <HR>
  
@@ -303,14 +303,15 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          had varying HV turnoff locations/times (prior to Phase 2b)
 
  KEYWORDS:
-         probes:       value for MMS SC #
-         trange:       time range of interest
-         species:      proton (default), alpha, oxygen, electron
-         level:        data level ['l1a','l1b','l2pre','l2' (default)] 
-         data_rate:    instrument data rates ['brst', 'srvy' (default), 'fast', 'slow']
-         energy:       energy range to include in the calculation
-         datatype:     extof (default), phxtof, electronenergy
-         suffix:       suffix used when loading the data
+         probes:               value for MMS SC #
+         trange:               time range of interest
+         species:              proton (default), alpha, oxygen, electron
+         level:                data level ['l1a','l1b','l2pre','l2' (default)] 
+         data_rate:            instrument data rates ['brst', 'srvy' (default), 'fast', 'slow']
+         energy:               energy range to include in the calculation
+         datatype:             extof (default), phxtof, electronenergy
+         suffix:               suffix used when loading the data
+         combine_proton_data:  set equal to 1 to combine extof and phxtof proton data
 
  CREATED BY: I. Cohen, 2017-08-14
 
@@ -321,7 +322,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                                    replaced species keyword definition with species and removed species
        + 2018-01-04, I. Cohen    : fixed if statement for species case of 'proton'
        + 2018-02-05, I. Cohen    : added suffix keyword
-       + 2018-02-19, I. Cohen    : added ability to handle multiple species                   
+       + 2018-02-19, I. Cohen    : added ability to handle multiple species 
+       + 2018-03-20, I. Cohen    : added combine_proton_data keyword                  
 
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_pad_combine_sc.pro">projects/mms/eis/mms_eis_pad_combine_sc.pro</A>)</STRONG><P>

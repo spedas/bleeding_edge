@@ -27,8 +27,8 @@
 ;   and less for electrons.
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-01-10 10:03:46 -0800 (Wed, 10 Jan 2018) $
-;$LastChangedRevision: 24500 $
+;$LastChangedDate: 2018-03-26 12:48:52 -0700 (Mon, 26 Mar 2018) $
+;$LastChangedRevision: 24955 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_slice2d_fpi_crib.pro $
 ;-
 
@@ -182,6 +182,33 @@ dist = mms_get_dist(name, trange=trange, error=error_name, /subtract_error)
 slice = spd_slice2d(dist, time=time, vel_data=vel_name, /subtract_bulk)
 
 ; plot the slice with error and bulk velocity subtracted
+spd_slice2d_plot, slice
+
+stop
+
+;======================================================================
+; Sum over the requested trange rather than averaging
+; using the keyword /sum_samples in the call to spd_slice2d
+;======================================================================
+
+probe='1'
+level='l2'
+species='i'
+data_rate='brst'
+
+name =  'mms'+probe+'_d'+species+'s_dist_'+data_rate
+trange=['2015-10-16/13:06', '2015-10-16/13:07']
+time = '2015-10-16/13:06:00'
+
+mms_load_fpi, data_rate=data_rate, level=level, datatype='d'+species+'s-dist', probe=probe, trange=trange
+
+dist = mms_get_dist(name, trange=trange)
+
+; /sum_samples keyword required to sum over the trange instead of averaging
+; the following sums over 100 samples, starting a time set via time keyword
+slice = spd_slice2d(dist, time=time, samples=100, /sum_samples)
+
+; plot the slice 
 spd_slice2d_plot, slice
 
 stop

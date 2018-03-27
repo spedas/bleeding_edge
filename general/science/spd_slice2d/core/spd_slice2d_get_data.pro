@@ -30,15 +30,15 @@
 ;Notes:
 ; 
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2015-10-02 20:01:21 -0700 (Fri, 02 Oct 2015) $
-;$LastChangedRevision: 18995 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2018-03-26 12:33:55 -0700 (Mon, 26 Mar 2018) $
+;$LastChangedRevision: 24954 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/core/spd_slice2d_get_data.pro $
 ;-
 
 pro spd_slice2d_get_data, ptr_array, trange=trange, erange=erange, energy=energy, $
                           data=data_out, rad=rad_out, phi=phi_out, theta=theta_out, $
-                          dp=dp_out, dt=dt_out, dr=dr_out, $
+                          dp=dp_out, dt=dt_out, dr=dr_out, sum_samples=sum_samples, $
                           fail=fail
 
     compile_opt idl2, hidden
@@ -82,6 +82,7 @@ pro spd_slice2d_get_data, ptr_array, trange=trange, erange=erange, energy=energy
           rad_out = rad_out, dr_out = dr_out, $
           phi_out = phi_out, dp_out = dp_out, $
           theta_out = theta_out, dt_out = dt_out, $
+          sum_samples=sum_samples, $
           
           fail = fail
         if keyword_set(fail) then return
@@ -140,6 +141,7 @@ pro spd_slice2d_get_data, ptr_array, trange=trange, erange=erange, energy=energy
     phi_out = phi_out, dp_out = dp_out, $
     theta_out = theta_out, dt_out = dt_out, $
 
+    sum_samples=sum_samples, $
     fail = fail
 
     

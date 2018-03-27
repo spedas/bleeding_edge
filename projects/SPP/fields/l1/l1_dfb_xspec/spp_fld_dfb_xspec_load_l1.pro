@@ -50,10 +50,25 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
   options, prefix + ['enable','gain','bin'], 'ysubtitle', ''
   options, prefix + ['enable','gain','bin'], 'panel_size', 0.35
 
-  options, prefix + 'navg', 'yrange', [-0.5,10.5]
-  options, prefix + 'navg', 'ystyle', 1
-  options, prefix + 'navg', 'yminor', 1
-  options, prefix + 'navg', 'panel_size', 0.5
+  get_data, prefix + 'navg', data = dat_navg
+
+  if n_elements(uniq(dat_navg.y)) EQ 1 then begin
+
+    options, prefix + 'navg', 'yrange', dat_navg.y + [-1.0,1.0]
+    options, prefix + 'navg', 'yticks', 2
+    options, prefix + 'navg', 'ytickv', dat_navg.y + [-1.0,0.0,1.0]
+    options, prefix + 'navg', 'yminor', 1
+    options, prefix + 'navg', 'ystyle', 1
+    options, prefix + 'navg', 'panel_size', 0.5
+
+  endif else begin
+
+    options, prefix + 'navg', 'yrange', [-0.5,10.5]
+    options, prefix + 'navg', 'ystyle', 1
+    options, prefix + 'navg', 'yminor', 1
+    options, prefix + 'navg', 'panel_size', 0.75
+
+  endelse
 
   options, prefix + 'xspec_??_s?', 'spec', 1
   options, prefix + 'xspec_??_s?', 'no_interp', 1
@@ -108,9 +123,9 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
             size(/dim,xspec_dat_i.y))
 
         endif else begin
-          
+
           xspec_dat_y_i = xspec_dat_i.y
-          
+
         endelse
 
         xspec_dat_y = [[[xspec_dat_y]], [[xspec_dat_y_i]]]
@@ -148,6 +163,8 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
         n_elements(xspec_dat_x)))
 
       ; TODO: fix for negative numbers (no log)
+
+      ; TODO: high/low gain currently set to high
 
       if xspec_type EQ 'p1' or xspec_type EQ 'p2' then begin
 
@@ -227,6 +244,9 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
   endif
 
 
+  p1_ytitle = ''
+  p2_ytitle = ''
+
   dfb_xspec_names = tnames(prefix + '*')
 
   if dfb_xspec_names[0] NE '' then begin
@@ -235,13 +255,75 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
 
       dfb_xspec_name_i = strmid(dfb_xspec_names[i], strlen(prefix))
 
-      if dfb_xspec_name_i EQ 'spec_converted' then begin
+      if strmid(dfb_xspec_name_i,9) EQ 'converted' then begin
 
-        options, prefix + dfb_xspec_name_i, 'ytitle', $
-          'SPP DFB!C' + ac_dc_string + ' XSPEC' + $
-          string(spec_ind)
+        ; For the converted spectra: set the title, and add the source
+        ; (as a string) to the title if the source is consistent for
+        ; all of the loaded data.
+
+        dfb_xspec_name_ytitle = ''
+
+        ;        options, prefix + dfb_xspec_name_i, 'ytitle', $
+        ;          'SPP DFB!C' + ac_dc_string + ' XSPEC' + $
+        ;          string(spec_ind)
 
         options, prefix + dfb_xspec_name_i, 'ysubtitle', 'Freq [Hz]'
+
+        if is_ac then options, prefix + dfb_xspec_name_i, 'datagap', 30d else $
+          options, prefix + dfb_xspec_name_i, 'datagap', 60d
+
+        xspec_type = strmid(dfb_xspec_name_i, 6, 2)
+
+        ;stop
+
+        if tnames(prefix + 'xspec_' + xspec_type + '_converted') NE '' then begin
+
+          if xspec_type EQ 'p1' or xspec_type EQ 'p2' then begin
+
+            get_data, prefix + 'src' + strmid(xspec_type, 1, 1)+ '_string', data = src_sel_dat
+
+            if n_elements(uniq(src_sel_dat.y)) EQ 1 then begin
+
+              xspec_src_string = strcompress(src_sel_dat.y[0], /remove_all)
+
+              xspec_src_ind = strmid(xspec_src_string, 4, 1)
+
+              get_data, strmid(prefix,0,15) + 'spec_' + xspec_src_ind + '_src_sel_string', $
+                data = spec_src_dat
+
+              if size(/type, spec_src_dat) EQ 8 then begin
+
+                ; Before assigning a name to the xspectral data, make sure
+                ; the spectra data overlap in time
+
+                spec_xspec_time_overlap_test = where( $
+                  spec_src_dat.x GT min(src_sel_dat.x) AND $
+                  spec_src_dat.x LT max(src_sel_dat.x), overlap_count)
+
+                if (n_elements(uniq(spec_src_dat.y)) EQ 1) and (overlap_count GT 0) then begin
+
+                  dfb_xspec_name_ytitle += strcompress(spec_src_dat.y[0], /remove_all)
+
+                endif else begin
+
+                  dfb_xspec_name_ytitle += xspec_src_string
+
+                endelse
+
+              endif else begin
+
+                dfb_xspec_name_ytitle += xspec_src_string
+
+              endelse
+
+            endif
+
+            if xspec_type EQ 'p1' then p1_ytitle = dfb_xspec_name_ytitle
+            if xspec_type EQ 'p2' then p2_ytitle = dfb_xspec_name_ytitle
+
+          endif
+
+        endif
 
       endif else begin
 
@@ -269,15 +351,32 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
           'se$', /ex, /reg)),$         ; phase -> pha in title
           '_', /ex),'!C')
 
-        options, prefix + dfb_xspec_name_i, 'ytitle', $
-          'DFB!C' + ac_dc_string + ' XSP' + $
-          string(xspec_ind) + '!C' + strupcase(dfb_xspec_name_ytitle)
-
       endelse
+
+      options, prefix + dfb_xspec_name_i, 'ytitle', $
+        ac_dc_string + ' XSP' + $
+        string(xspec_ind) + '!C' + strupcase(dfb_xspec_name_ytitle)
 
     endfor
 
   endif
+
+  if p1_ytitle NE '' and p2_ytitle NE '' then $
+    xspec_ytitle_sources = p1_ytitle + ' x!C' + p2_ytitle else $
+    xspec_ytitle_sources = ''
+
+  foreach dfb_xspec_name, ['xspec_rc_converted', 'xspec_ic_converted', 'coherence', 'phase'] do begin
+    
+    get_data, prefix + dfb_xspec_name, data=d, al = al
+    
+    str_element, al, 'ytitle', ytitle
+    
+    options, prefix + dfb_xspec_name, 'ytitle', ytitle + '!C' + xspec_ytitle_sources
+    
+    options, prefix + dfb_xspec_name, 'ysubtitle', 'Freq [Hz]'
+
+  endforeach
+
 
   options, prefix + '*string', 'tplot_routine', 'strplot'
   options, prefix + '*string', 'yrange', [-0.1,1.0]

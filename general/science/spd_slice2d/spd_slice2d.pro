@@ -59,6 +59,8 @@
 ;             If neither SAMPLES nor WINDOW are specified then default=1.
 ;    WINDOW: Length in seconds from TIME over which data will be averaged. (int/double)  
 ;      CENTER_TIME: Flag denoting that TIME should be midpoint for window instead of beginning.
+;      
+;    SUM_SAMPLES: Flag denoting that the data should be summed over the requested trange rather than averaged
 ;  
 ;  THREE_D_INTERP: Flag to use 3D interpolation method (described above)      
 ;  TWO_D_INTERP: Flag to use 2D interpolation method (described above)
@@ -213,8 +215,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-05-12 15:18:31 -0700 (Fri, 12 May 2017) $
-;$LastChangedRevision: 23315 $
+;$LastChangedDate: 2018-03-26 12:33:55 -0700 (Mon, 26 Mar 2018) $
+;$LastChangedRevision: 24954 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/spd_slice2d.pro $
 ;-
 
@@ -225,6 +227,7 @@ function spd_slice2d, input1, input2, input3, input4, $
                       center_time=center_time, $
                       trange=trange_in, $
                       samples=samples, $
+                      sum_samples=sum_samples, $ ; sum the data rather than average
                     ; Orientations
                       custom_rotation=custom_rotation, $
                       determ_tolerance=determ_tolerance, $
@@ -406,14 +409,14 @@ endif
 dprint, dlevel=3, strtrim(n_samples,2) + ' samples in time window'
 
 
-
 ; Extract particle data from structures
 ;  -apply energy limits
 ;  -average data over time window
 ;  -output r, phi, theta and dr, dphi, dtheta arrays
 ;------------------------------------------------------------
 spd_slice2d_get_data, ds, trange=trange, erange=erange, energy=energy, fail=fail, $ 
-                 data=datapoints, rad=rad, phi=phi, theta=theta, dr=dr, dp=dp, dt=dt
+                 data=datapoints, rad=rad, phi=phi, theta=theta, dr=dr, dp=dp, dt=dt, $
+                 sum_samples=sum_samples
 if keyword_set(fail) then return, invalid
 
 

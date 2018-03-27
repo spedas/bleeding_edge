@@ -76,8 +76,8 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
 
   endif else begin
 
-    options, prefix + 'concat', 'yrange', [-0.5,15.5]
-    options, prefix + 'concat', 'ystyle', 1
+    options, prefix + 'navg', 'yrange', [-0.5,15.5]
+    options, prefix + 'navg', 'ystyle', 1
 
   endelse
 
@@ -268,12 +268,7 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
         ; (as a string) to the title if the source is consistent for
         ; all of the loaded data.
 
-        dfb_spec_name_ytitle = '' ;'DFB!C' + ac_dc_string + ' SPEC' + $
-        ;string(spec_ind)
-
-        ;        options, prefix + dfb_spec_name_i, 'ytitle', $
-        ;          'SPP DFB!C' + ac_dc_string + ' SPEC' + $
-        ;          string(spec_ind)
+        dfb_spec_name_ytitle = ''
 
         options, prefix + dfb_spec_name_i, 'ysubtitle', 'Freq [Hz]'
 
@@ -317,7 +312,7 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
       ; Set ytitle of TPLOT variable
 
       options, prefix + dfb_spec_name_i, 'ytitle', $
-        'DFB!C' + ac_dc_string + ' SP' + $
+        ac_dc_string + ' SP' + $
         string(spec_ind) + '!C' + strupcase(dfb_spec_name_ytitle)
 
     endfor
