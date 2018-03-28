@@ -67,9 +67,9 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
 
   if n_elements(uniq(dat_navg.y)) EQ 1 then begin
 
-    options, prefix + 'navg', 'yrange', dat_navg.y + [-1.0,1.0]
+    options, prefix + 'navg', 'yrange', dat_navg.y[0] + [-1.0,1.0]
     options, prefix + 'navg', 'yticks', 2
-    options, prefix + 'navg', 'ytickv', dat_navg.y + [-1.0,0.0,1.0]
+    options, prefix + 'navg', 'ytickv', dat_navg.y[0] + [-1.0,0.0,1.0]
     options, prefix + 'navg', 'yminor', 1
     options, prefix + 'navg', 'ystyle', 1
     options, prefix + 'navg', 'panel_size', 0.5
@@ -85,9 +85,9 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
 
   if n_elements(uniq(dat_concat.y)) EQ 1 then begin
 
-    options, prefix + 'concat', 'yrange', dat_concat.y + [-1.0,1.0]
+    options, prefix + 'concat', 'yrange', dat_concat.y[0] + [-1.0,1.0]
     options, prefix + 'concat', 'yticks', 2
-    options, prefix + 'concat', 'ytickv', dat_concat.y + [-1.0,0.0,1.0]
+    options, prefix + 'concat', 'ytickv', dat_concat.y[0] + [-1.0,0.0,1.0]
     options, prefix + 'concat', 'yminor', 1
     options, prefix + 'concat', 'ystyle', 1
     options, prefix + 'concat', 'panel_size', 0.5
