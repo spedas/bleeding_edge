@@ -3,7 +3,7 @@
 ;  thm_crib_esa_bgnd_remove
 ;
 ;Purpose:
-;  Demonstrate examples of background contamination removel from ESA particle data.
+;  Demonstrate examples of background contamination removal from ESA particle data.
 ;
 ;Notes:
 ;  This crib is an updated version of Vassilis's original thm_crib_esa_bgnd_remove.
@@ -13,9 +13,9 @@
 ;  thm_crib_part_products
 ;
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2015-05-04 16:23:01 -0700 (Mon, 04 May 2015) $
-;$LastChangedRevision: 17472 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2018-03-28 08:54:31 -0700 (Wed, 28 Mar 2018) $
+;$LastChangedRevision: 24964 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/examples/advanced/thm_crib_esa_bgnd_remove.pro $
 ;-
 
