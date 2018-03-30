@@ -19,13 +19,14 @@
 ; VERSION:
 ;   $LastChangedBy: rlivi2 $
 ;   $LastChangedDate: 2015-02-23 13:05:25$
-;   $LastChangedRevision: 18258 $
+;   $LastChangedRevision: 24969 $
 ;   $URL svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_3d_snap.pro $
 ;-
 
 
 function maven_spacecraft_vertices, prec=prec, $
-                                    plot_sc=plot_sc
+                                    plot1=plot1,$
+                                    plot2=plot2
 
 
   if ~keyword_set(prec) then prec=100
@@ -37,12 +38,14 @@ function maven_spacecraft_vertices, prec=prec, $
   ;;---------------------------
   ;;Instrument and Gimbal location
 
-  ;;Inner Gimbal
-  g1_gim_loc=[2589.00,203.50, 2044.00]
+  ;;g1_gim_loc=[2589.00,203.50, 2044.00]
+  g1_gim_loc=[2588.00, 272.00, 2060.00]
   ;;Outer Gimbal
-  g2_gim_loc=[2775.00,203.50, 2044.00]
+  ;;g2_gim_loc=[2775.00, 203.50, 2044.00]
+  g2_gim_loc=[2775.00, 204.00, 2060.00]
   ;;STATIC
-  sta_loc=[2589.0+538.00, 203.50+450.00, 1847.50]
+  ;;sta_loc=[2589.0+538.00, 203.50+450.00, 1847.50]
+  sta_loc=[3126.00, -449.00,1847.00]
   ;;SWEA
   swe_loc=[-2359.00,   0.00,-1115.00]
   ;;SWIA
@@ -192,7 +195,7 @@ function maven_spacecraft_vertices, prec=prec, $
 
 
   ;;---------------------------
-  ;;APP
+  ;;APP Boom
   app_body=[$
   [ 2503.00,  141.00, 1984.00],$
   [ 1078.00,  141.00, 1984.00],$
@@ -206,34 +209,134 @@ function maven_spacecraft_vertices, prec=prec, $
   app_body_ind=main_body_ind
 
   ;;---------------------------
-  ;;Gimbal #1
+  ;; Gimbal #1 - Inner
+  ;; (Closer to Spacecraft)
   gi1_body=[$
-  [ 2503.00,  123.00, 1938.00],$
-  [ 2667.00,  123.00, 1938.00],$
-  [ 2503.00,  284.00, 1938.00],$
-  [ 2667.00,  284.00, 1938.00],$
-  [ 2503.00,  123.00, 2150.00],$
-  [ 2667.00,  123.00, 2150.00],$
-  [ 2503.00,  284.00, 2150.00],$
-  [ 2667.00,  284.00, 2150.00]]
+  ;;[ 2503.00,  123.00, 1938.00],$
+  ;;[ 2667.00,  123.00, 1938.00],$
+  ;;[ 2503.00,  284.00, 1938.00],$
+  ;;[ 2667.00,  284.00, 1938.00],$
+  ;;[ 2503.00,  123.00, 2150.00],$
+  ;;[ 2667.00,  123.00, 2150.00],$
+  ;;[ 2503.00,  284.00, 2150.00],$
+  ;;[ 2667.00,  284.00, 2150.00]]
+  [ 2503.00,  123.00, 1980.00],$
+  [ 2667.00,  123.00, 1980.00],$
+  [ 2503.00,  424.00, 1980.00],$
+  [ 2667.00,  424.00, 1980.00],$
+  [ 2503.00,  123.00, 2151.00],$
+  [ 2667.00,  123.00, 2151.00],$
+  [ 2503.00,  424.00, 2151.00],$
+  [ 2667.00,  424.00, 2151.00]]
 
   gi1_body_ind=main_body_ind
 
 
   ;;---------------------------
-  ;;Gimbal #2
+  ;; Gimbal #2 - Outer
+  ;; Closer to APP
   gi2_body=[$
-  [ 2883.00,   60.00, 1882.00],$
-  [ 2667.00,   60.00, 1882.00],$
+  ;;[ 2883.00,   60.00, 1882.00],$
+  ;;[ 2667.00,   60.00, 1882.00],$
+  ;;[ 2883.00,  347.00, 1882.00],$
+  ;;[ 2667.00,  347.00, 1882.00],$
+  ;;[ 2883.00,   60.00, 2205.00],$
+  ;;[ 2667.00,   60.00, 2205.00],$
+  ;;[ 2883.00,  347.00, 2205.00],$
+  ;;[ 2667.00,  347.00, 2205.00]]
+  [ 2883.00,   50.00, 1882.00],$
+  [ 2667.00,   50.00, 1882.00],$
   [ 2883.00,  347.00, 1882.00],$
   [ 2667.00,  347.00, 1882.00],$
-  [ 2883.00,   60.00, 2205.00],$
-  [ 2667.00,   60.00, 2205.00],$
-  [ 2883.00,  347.00, 2205.00],$
-  [ 2667.00,  347.00, 2205.00]]
+  [ 2883.00,   50.00, 2218.00],$
+  [ 2667.00,   50.00, 2218.00],$
+  [ 2883.00,  347.00, 2218.00],$
+  [ 2667.00,  347.00, 2218.00]]
 
   gi2_body_ind=main_body_ind
 
+
+  ;;---------------------------
+  ;; APP Platform A
+  apa_body = [$
+             [ 2883.00, 812.00, 2246.00],$
+             [ 2916.00, 812.00, 2246.00],$
+             [ 2883.00, -63.00, 2246.00],$
+             [ 2916.00, -63.00, 2246.00],$
+             [ 2883.00, 812.00, 1876.00],$
+             [ 2916.00, 812.00, 1876.00],$
+             [ 2883.00, -63.00, 1876.00],$
+             [ 2916.00, -63.00, 1876.00]]
+
+  apa_body_ind=main_body_ind
+  
+
+
+  ;;---------------------------
+  ;; APP Platform B
+  apb_body = [$
+             [ 3330.00, 812.00, 1949.00],$
+             [ 2916.00, 812.00, 1949.00],$
+             [ 3330.00,-370.00, 1949.00],$
+             [ 2916.00,-370.00, 1949.00],$
+             [ 3330.00, 812.00, 1909.00],$
+             [ 2916.00, 812.00, 1909.00],$
+             [ 3330.00,-370.00, 1909.00],$
+             [ 2916.00,-370.00, 1909.00]]
+
+  apb_body_ind=main_body_ind
+
+
+  ;;---------------------------
+  ;; STATIC Body A
+  sba_body = [$
+             [ 3195.00,-224.00, 1773.00],$
+             [ 3052.00,-224.00, 1773.00],$
+             [ 3195.00,-370.00, 1773.00],$
+             [ 3052.00,-370.00, 1773.00],$
+             [ 3195.00,-224.00, 1909.00],$
+             [ 3052.00,-224.00, 1909.00],$
+             [ 3195.00,-370.00, 1909.00],$
+             [ 3052.00,-370.00, 1909.00]]
+
+  sba_body_ind=main_body_ind
+
+  ;;---------------------------
+  ;; STATIC Body B
+  sbb_body = [$
+             [ 3195.00,-519.00, 1778.00],$
+             [ 3052.00,-519.00, 1778.00],$
+             [ 3195.00,-370.00, 1778.00],$
+             [ 3052.00,-370.00, 1778.00],$
+             [ 3195.00,-519.00, 1918.00],$
+             [ 3052.00,-519.00, 1918.00],$
+             [ 3195.00,-370.00, 1918.00],$
+             [ 3052.00,-370.00, 1918.00]]
+
+  sbb_body_ind=main_body_ind
+
+
+
+
+  ;; Initial position of APP
+  IF 1 THEN BEGIN
+     ;; APP Gimbal 2 Rotation
+     ith = 180.*!DTOR - 155.*!DTOR
+     foc = rebin(g2_gim_loc,3,8)
+     mm = [[1,        0,        0],$
+           [0, cos(ith),-sin(ith)],$
+           [0, sin(ith), cos(ith)]]
+     apa_body = (temporary(apa_body)-foc) ## mm + foc
+     apb_body = (temporary(apb_body)-foc) ## mm + foc
+     sba_body = (temporary(sba_body)-foc) ## mm + foc
+     sbb_body = (temporary(sbb_body)-foc) ## mm + foc
+     sta_loc = (temporary(sta_loc)-foc) ## mm + foc
+  ENDIF
+  
+
+
+
+  
   ;;---------------------------
   ;;SWEA Boom
   swe_boom=[$
@@ -276,7 +379,7 @@ function maven_spacecraft_vertices, prec=prec, $
   ;;Same as :
   ;;IDL> cspice_pxform, 'MAVEN_SPACECRAFT','MAVEN_SWEA',et,swea_rot
   ;;IDL> swea_rot=transpose(swea_rot)
-  th=140.D*!DTOR
+  th = 140.D*!DTOR
   swea_rot=[$
            [cos(th), -1.*sin(th),  0.],$
            [sin(th),     cos(th),  0.],$
@@ -294,7 +397,7 @@ function maven_spacecraft_vertices, prec=prec, $
   ;         [  0.D,   0.D,   1.D],$
   ;         [ -1.D,   0.D,   0.D],$
   ;         [  0.D,  -1.D,   0.D]])
-  th=90.D*!DTOR
+  th = 90.D*!DTOR
   swia_rot1=[$
             [        1.D,         0.D,         0.D],$
             [        0.D,     cos(th), -1.*sin(th)],$
@@ -351,6 +454,10 @@ function maven_spacecraft_vertices, prec=prec, $
          'app_body_ind',$
          'gi1_body_ind',$
          'gi2_body_ind',$
+         'apa_body_ind',$
+         'apb_body_ind',$
+         'sba_body_ind',$
+         'sbb_body_ind',$
          'swe_boom_ind']
 
 
@@ -367,6 +474,10 @@ function maven_spacecraft_vertices, prec=prec, $
          [app_body_ind],$
          [gi1_body_ind],$
          [gi2_body_ind],$
+         [apa_body_ind],$
+         [apb_body_ind],$
+         [sba_body_ind],$
+         [sbb_body_ind],$
          [swe_boom_ind]]
 
   ;;array=[4, 6, #-of-object]
@@ -389,54 +500,70 @@ function maven_spacecraft_vertices, prec=prec, $
            [app_body],$
            [gi1_body],$
            [gi2_body],$
+           [apa_body],$
+           [apb_body],$
+           [sba_body],$
+           [sbb_body],$
            [swe_boom]]]
 
   ;;array=[3, 8, #-of-objects]
-  nn1=3
-  nn2=8
-  nn3=n_elements(vertex)/nn1/nn2
+  nn1 = 3
+  nn2 = 8
+  nn3 = n_elements(vertex)/nn1/nn2
   vertex=reform(vertex, nn1, nn2, nn3)
 
 
 
   ;;------------------------------------
-  ;;PLOT TESTING
-  if keyword_set(plot_sc) then begin
+  ;;PLOT TESTING 1
+  if keyword_set(plot1) then begin
+
      ;;Cycle through all n3 objects
-     x1=[-8000,8000]
-     y1=[-8000,8000]
-     pos1=[0.1,0.6,0.9,0.9]
-     pos2=[0.1,0.3,0.9,0.6]
-     pos3=[0.1,0.0,0.9,0.3]
-     window, 1, xsize=600, ysize=900
+     x1   = [-8000,8000]
+     y1   = [-8000,8000]
+
+     shif = [0,0.07,0,0.07]
+     pos0 = [0.1,0.1,0.9,0.9]+shif
+
+     pos1 = [0.1,0.6,0.9,0.9]+shif
+     pos2 = [0.1,0.3,0.9,0.6]+shif
+     pos3 = [0.1,0.0,0.9,0.3]+shif
+
+
+     window, 1, xsize=400, ysize=1200
+
+
      for iobj=0, nn3-1 do begin
         ;;-----------------------------
         ;; Cycle through all 8 vertices.
         for i=0, n2-1 do begin           
-           box=vertex[*,*,iobj]
-           ind=index[*,*,iobj]           
-           indd=[ind[*,i],ind[0,i]]
+           box  = vertex[*,*,iobj]
+           ind  = index[*,*,iobj]           
+           indd = [ind[*,i],ind[0,i]]
            plot, box[0,indd],box[1,indd],$
                  /noerase,$
                  xrange=x1,$
                  yrange=y1,$
                  xstyle=1,$
                  ystyle=1,$
-                 position=pos1
+                 position=pos1,$
+                 /iso
            plot, box[1,indd],box[2,indd],$
                  /noerase,$
                  xrange=x1,$
                  yrange=y1,$
                  xstyle=1,$
                  ystyle=1,$
-                 position=pos2
+                 position=pos2,$
+                 /iso
            plot, box[0,indd],box[2,indd],$
                  /noerase,$
                  xrange=x1,$
                  yrange=y1,$
                  xstyle=1,$
                  ystyle=1,$
-                 position=pos3
+                 position=pos3,$
+                 /iso
         endfor
         ;; ---- Step 1: Create 1x1 surface filled randomly
         xx1 = randomu(seed,100,100)
@@ -446,29 +573,128 @@ function maven_spacecraft_vertices, prec=prec, $
   endif
 
 
-  ;;-----------------------------------
-  ;;Create XYZ coordinates for plotting
-  xx=fltarr(nn3,5.*n2)
-  yy=fltarr(nn3,5.*n2)
-  zz=fltarr(nn3,5.*n2)
-  ;;Cycle through all n3 objects
-  for iobj=0, nn3-1 do begin
-     ;;Cycle through all 8 vertices.
-     ll=indgen(5)
-     for i=0, n2-1 do begin           
-        box=vertex[*,*,iobj]
-        ind=index[*,*,iobj]           
-        indd=[ind[*,i],ind[0,i]]
-        ;;Generate PREC number of points between two vertices.
-        ;;Repeat for all indices.
-        xx[iobj,ll]=reform(box[0,indd])
-        yy[iobj,ll]=reform(box[1,indd])
-        zz[iobj,ll]=reform(box[2,indd])
-        ll=ll+5
-     endfor
-  endfor
+
+
+  ;;------------------------------------
+  ;;PLOT TESTING 2
+  if keyword_set(plot2) then begin
+
+     ;;Cycle through all n3 objects
+     x1   = [-8000,8000]
+     y1   = [-8000,8000]
+
+     shif = [0,0.07,0,0.07]
+
+     pos0 = [0.0,0.0,1.0,1.0]
+
+     pos1 = [0.1,0.6,0.9,0.9]+shif
+     pos2 = [0.1,0.3,0.9,0.6]+shif
+     pos3 = [0.1,0.0,0.9,0.3]+shif
+
+
+     window, 1, xsize=400, ysize=1000
+
+
+     ;; Cycle through outer gimbal
+     FOR iout=65, 180, 10 DO BEGIN
+
+        
+        ith = iout*!DTOR
+        foc = rebin(g2_gim_loc,3,8)
+        mm = [[1,        0,        0],$
+              [0, cos(ith),-sin(ith)],$
+              [0, sin(ith), cos(ith)]]
+
+        a11 = ((apa_body-foc) ## mm) + foc
+        a12 = ((apb_body-foc) ## mm) + foc
+        a13 = ((sba_body-foc) ## mm) + foc
+        a14 = ((sbb_body-foc) ## mm) + foc
+        ;;vertex[*,*,] = (temporary(sta_loc)-foc)  ## mm + foc
+
+
+        ;; Cycle through inner gimbal
+        FOR inn=-90, 135,45 DO BEGIN
+
+           jth = inn*!DTOR*(-1.)
+           foc = rebin(g1_gim_loc,3,8)
+           mm = [[ cos(jth),        0, sin(jth)],$
+                 [        0,        1,        0],$
+                 [-sin(jth),        0, cos(jth)]]
+
+           vertex[*,*,10] = ((gi2_body-foc) ## mm) + foc           
+           vertex[*,*,11] = ((a11-foc) ## mm) + foc
+           vertex[*,*,12] = ((a12-foc) ## mm) + foc
+           vertex[*,*,13] = ((a13-foc) ## mm) + foc
+           vertex[*,*,14] = ((a14-foc) ## mm) + foc
+
+           ;;plot, [0,1],[0,1], position=pos0,/nodata,$
+           ;;      xs=5,ys=5,xr=[0,1],yr=[0,1]
+           ;;polyfill, [0,0,1,1,0], [1,0,0,1,1],color=255
+           erase
+           
+           ;; Cycle through objects 
+           FOR iobj=0, nn3-1 DO BEGIN
+              ;;-----------------------------
+              ;; Cycle through all 8 vertices.
+              FOR i=0, n2-1 DO BEGIN 
+                 box  = vertex[*,*,iobj]
+                 ind  = index[*,*,iobj]           
+                 indd = [ind[*,i],ind[0,i]]
+                 plot, box[0,indd],box[1,indd],$
+                       /noerase,$
+                       xrange=x1,$
+                       yrange=y1,$
+                       xstyle=1,$
+                       ystyle=1,$
+                       position=pos1,$
+                       /iso
+                 plot, box[1,indd],box[2,indd],$
+                       /noerase,$
+                       xrange=x1,$
+                       yrange=y1,$
+                       xstyle=1,$
+                       ystyle=1,$
+                       position=pos2,$
+                       /iso
+                 plot, box[0,indd],box[2,indd],$
+                       /noerase,$
+                       xrange=x1,$
+                       yrange=y1,$
+                       xstyle=1,$
+                       ystyle=1,$
+                       position=pos3,$
+                       /iso
+              ENDFOR
+           ENDFOR
+           stop
+        ENDFOR 
+     ENDFOR 
+  ENDIF 
+
+
   
 
+  ;;-----------------------------------
+  ;;Create XYZ coordinates for plotting
+  xx = fltarr(n3,5.*n2)
+  yy = fltarr(n3,5.*n2)
+  zz = fltarr(n3,5.*n2)
+  ;;Cycle through all n3 objects
+  for iobj=0, n3-1 do begin
+     ;;Cycle through all 8 vertices.
+     ll = indgen(5)
+     for i=0, n2-1 do begin           
+        box  = vertex[*,*,iobj]
+        ind  = index[*,*,iobj]           
+        indd = [ind[*,i],ind[0,i]]
+        ;;Generate PREC number of points between two vertices.
+        ;;Repeat for all indices.
+        xx[iobj,ll] = reform(box[0,indd])
+        yy[iobj,ll] = reform(box[1,indd])
+        zz[iobj,ll] = reform(box[2,indd])
+        ll = ll+5
+     endfor
+  endfor
 
   ;;---------------------------------------------------
   ;;Expand using 'prec'
@@ -484,28 +710,51 @@ function maven_spacecraft_vertices, prec=prec, $
 
   ;;---------------------------------------------------
   ;;Expand using 'prec'
-  nn=5.*n2
-  xx_new=fltarr(nn3,nn*prec)
-  yy_new=fltarr(nn3,nn*prec)
-  zz_new=fltarr(nn3,nn*prec)
-  for iobj=0, nn3-1 do begin    
-     xx_new[iobj,*]=interpol(xx[iobj,*],findgen(nn),findgen(nn*prec)/prec)
-     yy_new[iobj,*]=interpol(yy[iobj,*],findgen(nn),findgen(nn*prec)/prec)
-     zz_new[iobj,*]=interpol(zz[iobj,*],findgen(nn),findgen(nn*prec)/prec)
+  nn = 5.*n2
+  ;;kludge
+  xx_new = fltarr(n3,nn*(prec-5))
+  yy_new = fltarr(n3,nn*(prec-5))
+  zz_new = fltarr(n3,nn*(prec-5))
+  for iobj=0, n3-1 do begin    
+     xx_new[iobj,*] = interpol(xx[iobj,*],findgen(nn),findgen(nn*(prec-5))/prec)
+     yy_new[iobj,*] = interpol(yy[iobj,*],findgen(nn),findgen(nn*(prec-5))/prec)
+     zz_new[iobj,*] = interpol(zz[iobj,*],findgen(nn),findgen(nn*(prec-5))/prec)
   endfor
 
-
+  ;stop
+  ;xx_new = xx
+  ;yy_new = yy
+  ;zz_new = zz
 
 
 
   return, {vertex:vertex, $
+           n1:n1,$
+           n2:n2,$
+           n3:n3,$
            x_sc:xx_new,$
            y_sc:yy_new,$
            z_sc:zz_new,$
            index:index, $
            names:names, $
            rot_matrix:rot_matrix,$
-           rot_matrix_name:rot_matrix_name}
+           rot_matrix_name:rot_matrix_name,$
+           g1_gim_loc:g1_gim_loc,$
+           g2_gim_loc:g2_gim_loc,$
+           sta_loc:sta_loc,$
+           swe_loc:swe_loc,$
+           swi_loc:swi_loc,$
+
+           gi1_body:gi1_body,$
+           gi2_body:gi2_body,$
+           apa_body:apa_body,$
+           apb_body:apb_body,$
+           sba_body:sba_body,$
+           sbb_body:sbb_body,$
+           
+           sep_py_loc:sep_py_loc,$
+           sep_my_loc:sep_my_loc}
+
      
 end
 

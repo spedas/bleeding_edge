@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Mar 28 18:16:20 2018.<P>
+<STRONG>Last modified: </STRONG>Thu Mar 29 18:16:17 2018.<P>
  
 <HR>
  
@@ -23,6 +23,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_COTRANS_UT__DEFINE">MMS_COTRANS_UT__DEFINE</A>
 <LI><A HREF="#MMS_CURLOMETER_UT__DEFINE">MMS_CURLOMETER_UT__DEFINE</A>
 <LI><A HREF="#MMS_FILE_FILTER_UT__DEFINE">MMS_FILE_FILTER_UT__DEFINE</A>
+<LI><A HREF="#MMS_FLIPBOOKIFY_UT__DEFINE">MMS_FLIPBOOKIFY_UT__DEFINE</A>
 <LI><A HREF="#MMS_INIT_UT__DEFINE">MMS_INIT_UT__DEFINE</A>
 <LI><A HREF="#MMS_LOAD_ASPOC_UT__DEFINE">MMS_LOAD_ASPOC_UT__DEFINE</A>
 <LI><A HREF="#MMS_LOAD_BRST_SEGMENTS_UT__DEFINE">
@@ -154,7 +155,7 @@ MMS_LOAD_FAST_SEGMENTS_UT__DEFINE</A>
 <A NAME="MMS_FILE_FILTER_UT__DEFINE">
 <H2>MMS_FILE_FILTER_UT__DEFINE</H2></A>
 <A HREF="#MMS_CURLOMETER_UT__DEFINE">[Previous Routine]</A>
-<A HREF="#MMS_INIT_UT__DEFINE">[Next Routine]</A>
+<A HREF="#MMS_FLIPBOOKIFY_UT__DEFINE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -171,9 +172,34 @@ MMS_LOAD_FAST_SEGMENTS_UT__DEFINE</A>
 <STRONG>(See <A href="tests/mms_file_filter_ut__define.pro">projects/mms/common/tests/mms_file_filter_ut__define.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_FLIPBOOKIFY_UT__DEFINE">
+<H2>MMS_FLIPBOOKIFY_UT__DEFINE</H2></A>
+<A HREF="#MMS_FILE_FILTER_UT__DEFINE">[Previous Routine]</A>
+<A HREF="#MMS_INIT_UT__DEFINE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ Unit tests for mms_flipbookify
+
+
+ NOTES:
+     - Unlike most of our other unit/regression tests, this suite creates plots and videos that
+       need to be checked for formatting issues (~/flipbook/ directory)
+       
+ To run:
+     IDL&gt; mgunit, 'mms_flipbookify_ut'
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2018-03-29 14:05:49 -0700 (Thu, 29 Mar 2018) $
+ $LastChangedRevision: 24968 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_flipbookify_ut__define.pro $
+</PRE><P>
+<STRONG>(See <A href="tests/mms_flipbookify_ut__define.pro">projects/mms/common/tests/mms_flipbookify_ut__define.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_INIT_UT__DEFINE">
 <H2>MMS_INIT_UT__DEFINE</H2></A>
-<A HREF="#MMS_FILE_FILTER_UT__DEFINE">[Previous Routine]</A>
+<A HREF="#MMS_FLIPBOOKIFY_UT__DEFINE">[Previous Routine]</A>
 <A HREF="#MMS_LOAD_ASPOC_UT__DEFINE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
