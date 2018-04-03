@@ -111,7 +111,7 @@ pro mvn_pui_tplot,store=store,tplot=tplot,tohban=tohban,savetplot=savetplot,_ext
 
   endif
 
-  if pui0.do3d then mvn_pui_tplot_3d,store=store,tplot=tplot,_extra=_extra
+  if pui0.do3d then mvn_pui_tplot_3d,store=store,tplot=tplot,_strict_extra=_extra
 
   if keyword_set(tplot) then begin
     datestr=strmid(time_string(pui0.trange[0]),0,10)

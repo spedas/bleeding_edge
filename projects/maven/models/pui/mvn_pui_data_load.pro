@@ -61,7 +61,7 @@ if ~keyword_set(noswea) then begin
   zlim,'swe_a4',1e4,1e9
 ;  tlimit,/full ;revert back to full time period, since swea may change tlimit to its available trange
 ;  mvn_swe_sc_pot,/reset,/fill ;calculate the spacecraft potential from SWEA data
-  options,'swe_a4_pot','ytickunits','scientific'
+  options,'swe_a4',ytickunits='scientific'
   mvn_scpot,/composite
 endif
 

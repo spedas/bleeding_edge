@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Mar 29 18:16:17 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Apr  2 18:16:26 2018.<P>
  
 <HR>
  
@@ -49,6 +49,8 @@ MVN_FILE_SOURCE( [DEFAULT_SOURCE] )</A>
 <br>Sets defaults for mvn_scpot and related routines.  These are stored
 <LI><A HREF="#MVN_SCPOT_RESTORE">MVN_SCPOT_RESTORE</A>
 <br>Reads in save files mvn_swe_l3_scpot_YYYYMMDD_v??_r??, create tplot
+<LI><A HREF="#MVN_SCPOT_SURVEY">MVN_SCPOT_SURVEY</A>
+<br>Makes a survey of the spacecraft potential at periapsis +/- 1 minute.
 <LI><A HREF="#MVN_SET_USERPASS,USERNAME,PASSWORD">
 MVN_SET_USERPASS,USERNAME,PASSWORD</A>
 <br>Sets the username and password for automatic file retrieval
@@ -660,6 +662,9 @@ KEYWORDS:
               UT day boundaries.)  This is the default.  Set this keyword
               to zero to force a recalculation.
 
+   NOCALC:    Do not perform a recalculation.  Use the composite potential
+              or nothing.
+
    LPWPOT:    Use pre-calculated LPW/SWE derived potentials.  There is
               a ~2-week delay in the production of this dataset.  You can
               set this keyword to the full path and filename of a tplot 
@@ -698,8 +703,8 @@ OUTPUTS:
           the five unmerged methods in one panel.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-02-19 17:53:20 -0800 (Mon, 19 Feb 2018) $
- $LastChangedRevision: 24748 $
+ $LastChangedDate: 2018-04-02 10:25:22 -0700 (Mon, 02 Apr 2018) $
+ $LastChangedRevision: 24975 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot.pro $
 
 </PRE><P>
@@ -865,7 +870,7 @@ OUTPUTS:
 <A NAME="MVN_SCPOT_RESTORE">
 <H2>MVN_SCPOT_RESTORE</H2></A>
 <A HREF="#MVN_SCPOT_DEFAULTS">[Previous Routine]</A>
-<A HREF="#MVN_SET_USERPASS,USERNAME,PASSWORD">[Next Routine]</A>
+<A HREF="#MVN_SCPOT_SURVEY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mvn_scpot_restore
@@ -904,9 +909,39 @@ FILE: mvn_scpot_restore
 <STRONG>(See <A href="general/mvn_scpot_restore.pro">projects/maven/general/mvn_scpot_restore.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SCPOT_SURVEY">
+<H2>MVN_SCPOT_SURVEY</H2></A>
+<A HREF="#MVN_SCPOT_RESTORE">[Previous Routine]</A>
+<A HREF="#MVN_SET_USERPASS,USERNAME,PASSWORD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_scpot_survey
+PURPOSE:
+  Makes a survey of the spacecraft potential at periapsis +/- 1 minute.
+
+USAGE:
+  mvn_scpot_survey, result=result
+
+INPUTS:
+      None.
+
+KEYWORDS:
+      DOPLOT:         Create tplot variables.
+       
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2018-04-02 10:32:15 -0700 (Mon, 02 Apr 2018) $
+ $LastChangedRevision: 24976 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot_survey.pro $
+
+CREATED BY:    David L. Mitchell  2017-04-02
+FILE: mvn_scpot_survey
+</PRE><P>
+<STRONG>(See <A href="general/mvn_scpot_survey.pro">projects/maven/general/mvn_scpot_survey.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SET_USERPASS,USERNAME,PASSWORD">
 <H2>MVN_SET_USERPASS,USERNAME,PASSWORD</H2></A>
-<A HREF="#MVN_SCPOT_RESTORE">[Previous Routine]</A>
+<A HREF="#MVN_SCPOT_SURVEY">[Previous Routine]</A>
 <A HREF="#MVN_SPC_CLEAR_SPICE_KERNELS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

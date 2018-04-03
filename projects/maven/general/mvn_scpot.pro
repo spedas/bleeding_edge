@@ -71,6 +71,9 @@
 ;              UT day boundaries.)  This is the default.  Set this keyword
 ;              to zero to force a recalculation.
 ;
+;   NOCALC:    Do not perform a recalculation.  Use the composite potential
+;              or nothing.
+;
 ;   LPWPOT:    Use pre-calculated LPW/SWE derived potentials.  There is
 ;              a ~2-week delay in the production of this dataset.  You can
 ;              set this keyword to the full path and filename of a tplot 
@@ -109,15 +112,15 @@
 ;          the five unmerged methods in one panel.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-19 17:53:20 -0800 (Mon, 19 Feb 2018) $
-; $LastChangedRevision: 24748 $
+; $LastChangedDate: 2018-04-02 10:25:22 -0700 (Mon, 02 Apr 2018) $
+; $LastChangedRevision: 24975 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot.pro $
 ;
 ;-
 
 pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
                stapot=stapot, lpwpot=lpwpot, shapot=shapot, composite=composite, $
-               pans=pans, success=success
+               pans=pans, nocalc=nocalc, success=success
 
   compile_opt idl2
 
@@ -193,6 +196,8 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
       return
     endif else print,"SWE/LPW/STA composite potential not available."
   endif
+
+  if keyword_set(nocalc) then return
 
 ; If the routine has not returned by this point, then it has to calculate the
 ; potential from the original data sources (SWEA, STATIC, LPW).  Thus, we need

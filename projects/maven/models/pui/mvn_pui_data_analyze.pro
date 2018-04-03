@@ -83,17 +83,17 @@ pui.model[1].ifreq.cx=i_cx_o
 sweaef=pui.data.swe.eflux ;solar wind electron energy flux (eV/[cm2 s sr eV])
 sweaefpot=pui.data.swe.efpot
 sweaenpot=pui.data.swe.enpot
-evel=sqrt(2*pui1.sweet*qe/me); %electron velocity in swea energy bins (cm/s)
-evelpot=sqrt(2*sweaenpot*qe/me); %electron velocity in s/c potential corrected swea energy bins (cm/s)
+evel=sqrt(2.*pui1.sweet*qe/me); %electron velocity in swea energy bins (cm/s)
+evelpot=sqrt(2.*sweaenpot*qe/me); %electron velocity in s/c potential corrected swea energy bins (cm/s)
 ;sweadf=sweaef./(ones(inn,1)*sweaet(:,1)'); %SWEA differential flux (cm-2 s-1 sr-1 eV-1)
 ;sweadn=sweadf./(ones(inn,1)*evel'); %SWEA differential density (cm-3 sr-1 eV-1)
 
 dvswea=0; %SWEA energy correction due to S/C potential
-pui.data.swe.eden=4*!pi*pui0.swedee*transpose(sweaef[0:63-dvswea,*])#(1./evel[0:63-dvswea]); %SWEA electron density (cm-3)
-pui.data.swe.edenpot=total(4*!pi*pui0.swedee*sweaefpot*(1./evelpot),1,/nan); %SWEA s/c potential corrected electron density (cm-3)
+pui.data.swe.eden=4.*!pi*pui0.swedee*transpose(sweaef[0:63-dvswea,*])#(1./evel[0:63-dvswea]); %SWEA electron density (cm-3)
+pui.data.swe.edenpot=total(4.*!pi*pui0.swedee*sweaefpot*(1./evelpot),1,/nan); %SWEA s/c potential corrected electron density (cm-3)
 ;sweae=sum(sweaef,2)./sum(sweadf,2); %SWEA temperature (eV)
-ifreq_ei_h=4*!pi*pui0.swedee*sweaef*(xsec_ei[*,1]#onesnt)*1e-18; %H electron impact ionization frequency (s-1 per energy bin)
-ifreq_ei_o=4*!pi*pui0.swedee*sweaef*(xsec_ei[*,2]#onesnt)*1e-18; %O electron impact ionization frequency (s-1 per energy bin)
+ifreq_ei_h=4.*!pi*pui0.swedee*sweaef*(xsec_ei[*,1]#onesnt)*1e-18; %H electron impact ionization frequency (s-1 per energy bin)
+ifreq_ei_o=4.*!pi*pui0.swedee*sweaef*(xsec_ei[*,2]#onesnt)*1e-18; %O electron impact ionization frequency (s-1 per energy bin)
 
 xsec_ei_h=24000.*(sweaenpot-13.4)/(sweaenpot+40)^2.1 ;H electron impact cross sections (Mb) at s/c potential corrected SWEA energies
 xsec_ei_o=12000.*(sweaenpot-13.4)/(sweaenpot+40)^1.8 ;O electron impact cross sections (Mb) at s/c potential corrected SWEA energies

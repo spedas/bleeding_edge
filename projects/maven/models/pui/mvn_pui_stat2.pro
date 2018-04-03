@@ -2,8 +2,8 @@
 ;statistical analysis on results of mvn_pui_stat
 
 pro mvn_pui_stat2
-filename_all='C:\Users\rahmati\idl\idlsave_all10.dat'
-filename_sw='C:\Users\rahmati\idl\idlsave_sw10.dat'
+filename_all='C:\Users\rahmati\idl\idlsave_all11.dat'
+filename_sw='C:\Users\rahmati\idl\idlsave_sw11.dat'
 ;filename_sw='C:\Users\rahmati\idl\idlsave.dat'
 
 if 0 then begin ;load all data
@@ -11,10 +11,10 @@ if 0 then begin ;load all data
   stop
   stat2=reform(stat,size(stat,/n_elements)) ;making stat 1d
   stat3=stat2[where(stat2.centertime gt 0.,/null)] ;where data is available
-  if 1 then begin ;choose solar wind
-    mvn_pui_sw_orbit_coverage,times=stat3.centertime,alt_sw=alt_sw,conservative=0,spice=1
+  if 0 then begin ;choose solar wind
+    mvn_pui_sw_orbit_coverage,times=stat3.centertime,alt_sw=alt_sw,conservative=1,spice=0
     stat4=stat3[where(finite(alt_sw),/null,count1)] ;only solar wind, pretty conservative to keep bad stuff out
-;    save,stat4,binsize,np,filename=filename_sw
+    save,stat4,pui0,filename=filename_sw
   endif else stat4=stat3
 endif else restore,filename_sw ;restores stat4,binsize,np
 ;stop
@@ -35,14 +35,14 @@ if sw10 then begin
   store_data,'pui_stat_sep1_tot',ct,data={x:ct,y:[[transpose(stat4.sep[0].tot)],[100.*replicate(1.,n_elements(ct))]]},limits={ylog:1,yrange:[1,1e4],colors:'brgm',labels:['model','data','cme','100'],labflag:1,ytickunits:'scientific'}
   store_data,'pui_stat_sep2_tot',ct,data={x:ct,y:[[transpose(stat4.sep[1].tot)],[100.*replicate(1.,n_elements(ct))]]},limits={ylog:1,yrange:[1,1e4],colors:'brgm',labels:['model','data','cme','100'],labflag:1,ytickunits:'scientific'}
   store_data,'pui_stat_sep_att',ct,data={x:ct,y:transpose(stat4.sep.att)},limits={yrange:[0,3],colors:'br',labels:['SEP1','SEP2'],labflag:-1,panel_size:0.5} ;1:open att, 2:closed att
-  store_data,'pui_stat_sep_qf',ct,data={x:ct,y:transpose(stat4.sep.qf)},limits={yrange:[0,1],colors:'br',labels:['SEP1','SEP2'],labflag:-1,panel_size:0.5}
+  store_data,'pui_stat_sep_qf',ct,data={x:ct,y:transpose(stat4.sep.qf)},limits={yrange:[-1,2],colors:'br',labels:['SEP1','SEP2'],labflag:-1,panel_size:0.5}
   store_data,'pui_stat_sep_dt',ct,data={x:ct,y:transpose(stat4.sep.dt)},limits={ylog:1,colors:'br',labels:['SEP1','SEP2'],labflag:-1,panel_size:0.5}
-  store_data,'pui_stat_swi_mode',ct,data={x:ct,y:stat4.swi.mode},limits={yrange:[-1,2],panel_size:0.5} ;0: sw mode, 1:sheath mode
-  store_data,'pui_stat_swi_att',ct,data={x:ct,y:stat4.swi.att},limits={yrange:[0,3],panel_size:0.5} ;1:open att, 2:closed att
+  store_data,'pui_stat_swi_mode',ct,data={x:ct,y:stat4.swi.mode},limits={yrange:[-1,2],panel_size:0.5,psym:3} ;0: sw mode, 1:sheath mode
+  store_data,'pui_stat_swi_att',ct,data={x:ct,y:stat4.swi.att},limits={yrange:[0,3],panel_size:0.5,psym:3} ;1:open att, 2:closed att
   store_data,'pui_stat_swi_qf',ct,data={x:ct,y:stat4.swi.qf},limits={yrange:[-1,2],panel_size:0.5}
-  store_data,'pui_stat_swi_dt',ct,data={x:ct,y:stat4.swi.dt},limits={ylog:1,panel_size:0.5}
-  store_data,'pui_stat_sta_dt',ct,data={x:ct,y:stat4.sta.dt},limits={ylog:1,panel_size:0.5}
-  store_data,'pui_stat_sta_dE/E',ct,data={x:ct,y:stat4.sta.dee},limits={ylog:1,panel_size:0.5}
+  store_data,'pui_stat_swi_dt',ct,data={x:ct,y:stat4.swi.dt},limits={ylog:1,panel_size:0.5,psym:3}
+  store_data,'pui_stat_sta_dt',ct,data={x:ct,y:stat4.sta.dt},limits={ylog:1,panel_size:0.5,psym:3}
+  store_data,'pui_stat_sta_dE/E',ct,data={x:ct,y:stat4.sta.dee},limits={ylog:1,panel_size:0.5,psym:3}
   store_data,'pui_stat_sta_mass',ct,data={x:ct,y:transpose(stat4.sta.mass)},limits={ylog:1,panel_size:0.5,psym:3}
   store_data,'pui_stat_scpot',ct,data={x:ct,y:stat4.scpot}
 endif
@@ -63,8 +63,8 @@ if 1 then begin ;getting rid of unfavorable upstream parameters
     stat4=stat4[where(~(lowmag or lowtub or swimode or swiatt or swiqf))]
 ;    stat4[where(stat4.sep[0].qf lt .3,/null)].sep[0].tot[0]=fnan ;more reliable SEP
 ;    stat4[where(stat4.sep[1].qf lt .3,/null)].sep[1].tot[0]=fnan ;more reliable SEP
-    stat4[where(stat4.sep[0].qf lt .3 or stat4.sep[0].tot[0] lt 420./stat4.sep[0].att^6. or stat4.sep[0].tot[1] lt 420./stat4.sep[0].att^6. or stat4.sep[0].tot[2] gt 29./stat4.sep[0].att^6.,/null)].sep[0].tot[0]=fnan ;more reliable SEP
-    stat4[where(stat4.sep[1].qf lt .3 or stat4.sep[1].tot[0] lt 420./stat4.sep[1].att^6. or stat4.sep[1].tot[1] lt 420./stat4.sep[1].att^6. or stat4.sep[1].tot[2] gt 29./stat4.sep[1].att^6.,/null)].sep[1].tot[0]=fnan ;more reliable SEP
+    stat4[where(stat4.sep[0].qf lt .3 or stat4.sep[0].tot[0] lt 420./stat4.sep[0].att^6. or stat4.sep[0].tot[1] lt 420./stat4.sep[0].att^6. or stat4.sep[0].tot[2] gt 24./stat4.sep[0].att^6.,/null)].sep[0].tot[0]=fnan ;more reliable SEP
+    stat4[where(stat4.sep[1].qf lt .3 or stat4.sep[1].tot[0] lt 420./stat4.sep[1].att^6. or stat4.sep[1].tot[1] lt 420./stat4.sep[1].att^6. or stat4.sep[1].tot[2] gt 24./stat4.sep[1].att^6.,/null)].sep[1].tot[0]=fnan ;more reliable SEP
   endif
   if sw6 then stat4[where(lowusw or lowmag or lowtub,/null)].d2m.sep=fnan ;more reliable SEP
   if 0 then begin ;plot upstream parameter histogram distributions
@@ -115,13 +115,15 @@ if 1 then begin ;orbit averaging
     stat5[j].d2m.sta[0]=exp(average(alog(stat6.d2m.sta[0]),2,/nan,stdev=stdev,nsamples=nsamples,weight=stat6.d2m.sta[2]))
     stat5[j].d2m.sta[1]=exp(stdev)
     stat5[j].d2m.sta[2]=nsamples
+    stat5[j].params[0]=average(stat6.params[0],/nan)
+    stat5[j].params[1]=average(stat6.params[1],/nan)
   endfor
 end
 
 if 1 then begin ;arbitrary averaging of orbit averages
   range=minmax(stat4.centertime)
   ndays=(range[1]-range[0])/60./60./24. ;1day resolution
-;  ndays=100
+;  ndays/=7. ;1week res
   nbins=ceil(ndays)
   stat6=stat5
   stat5=replicate(stat4[0],nbins)
@@ -141,10 +143,12 @@ if 1 then begin ;arbitrary averaging of orbit averages
   stat5.d2m[1].swi[0]=exp(average_hist(alog(stat6.d2m[1].swi[0]),stat6.centertime,/nan,xbins=xbins,nbins=nbins,range=range))
   stat5.d2m[0].sta[0]=exp(average_hist(alog(stat6.d2m[0].sta[0]),stat6.centertime,/nan,xbins=xbins,nbins=nbins,range=range))
   stat5.d2m[1].sta[0]=exp(average_hist(alog(stat6.d2m[1].sta[0]),stat6.centertime,/nan,xbins=xbins,nbins=nbins,range=range))
+  stat5.params[0]=average_hist(stat6.params[0],stat6.centertime,/nan,xbins=xbins,nbins=nbins,range=range)
+  stat5.params[1]=average_hist(stat6.params[1],stat6.centertime,/nan,xbins=xbins,nbins=nbins,range=range)
   stat5.centertime=xbins
 endif
 
-if 1 then begin ;everything
+if 0 then begin ;everything
   stat5=stat4
   stat5.mag[0]=sqrt(total(stat4.mag^2,1))
   stat5.swi.vsw[0]=sqrt(total(stat4.swi.vsw^2,1))
@@ -153,19 +157,16 @@ endif
 ct=stat5.centertime
 ;stop
 ;store_data,'*',/delete
-if 1 then begin ;tplot stuff
+if 0 then begin ;tplot stuff
   store_data,'pui_stat_mag',ct,1e9*stat5.mag[0]
 ;  ylim,'pui_stat_mag',.1,100,1
   ylim,'pui_stat_mag',1,20,1
   store_data,'pui_stat_usw',ct,stat5.swi.vsw[0]
-  ylim,'pui_stat_usw',200,700,0
+  ylim,'pui_stat_usw',300,700,0
   store_data,'pui_stat_nsw',ct,stat5.swi.nsw
   ylim,'pui_stat_nsw',.1,100,1
   ylim,'pui_stat_nsw',.7,20,1
 
-;  tplot,'*'
-endif
-if 1 then begin
   store_data,'pui_stat_ifreq_pi',ct,transpose(stat5.ifreq.pi),limits={colors:'br',labels:['H','O'],labflag:1}
 ;  store_data,'pui_stat_ifreq_pi_O',ct,stat5.ifreq[1].pi,limits={ylog:1,yrange:[1e-8,1e-6]}
   store_data,'pui_stat_ifreq_cx',data={x:ct,y:transpose(stat5.ifreq.cx)},limits={ylog:1,yrange:[1e-8,1e-6],colors:'br',labels:['H','O'],labflag:1}
@@ -176,12 +177,13 @@ if 1 then begin
 ;  store_data,'pui_stat_ifreq_ei_O',data={x:ct,y:stat5.ifreq[1].ei},limits={ylog:1,yrange:[1e-8,1e-6]}
   ifreq=[[[stat5.ifreq.pi]],[[stat5.ifreq.cx]],[[stat5.ifreq.ei]]]
   ifreq_tot=total(ifreq,/nan,3)
-  store_data,'pui_stat_ifreq_H_tot',data={x:ct,y:reform(ifreq_tot[0,*])},limits={ylog:1,yrange:[1e-7,1e-6]}
-  store_data,'pui_stat_ifreq_O_tot',data={x:ct,y:reform(ifreq_tot[1,*])},limits={ylog:1,yrange:[1e-7,1e-6]}
-  store_data,'pui_stat_ifreq_H_all',data={x:ct,y:reform(ifreq[0,*,*])},limits={ylog:1,yrange:[1e-9,1e-6],colors:'brg',labels:['PI','CX','EI'],labflag:-1}
-  store_data,'pui_stat_ifreq_O_all',data={x:ct,y:reform(ifreq[1,*,*])},limits={ylog:1,yrange:[1e-9,1e-6],colors:'brg',labels:['PI','CX','EI'],labflag:-1}
+  ifreq2=[[[ifreq[*,*,0]]],[[ifreq[*,*,1]]],[[ifreq[*,*,2]]],[[ifreq_tot]]]
+;  store_data,'pui_stat_ifreq_H_tot',data={x:ct,y:reform(ifreq_tot[0,*])},limits={ylog:1,yrange:[1e-7,1e-6]}
+;  store_data,'pui_stat_ifreq_O_tot',data={x:ct,y:reform(ifreq_tot[1,*])},limits={ylog:1,yrange:[1e-7,1e-6]}
+  store_data,'pui_stat_ifreq_H',data={x:ct,y:reform(ifreq2[0,*,*])},limits={ylog:1,yrange:[1e-9,1e-6],colors:'brgk',labels:['PI','CX','EI','tot'],labflag:-1}
+  store_data,'pui_stat_ifreq_O',data={x:ct,y:reform(ifreq2[1,*,*])},limits={ylog:1,yrange:[1e-9,1e-6],colors:'brgk',labels:['PI','CX','EI','tot'],labflag:-1}
 ;  ylim,'pui_stat_ifreq_*',1e-8,1e-7,0
-  options,'pui_stat_ifreq_pi_?','ystyle',1
+;  options,'pui_stat_ifreq_pi_?','ystyle',1
 
   if sw6 then store_data,'pui_stat_d2m_sep1',ct,stat5.d2m[1].sep[0]
   if sw6 then store_data,'pui_stat_d2m_sep2',ct,stat5.d2m[1].sep[1]
@@ -189,8 +191,6 @@ if 1 then begin
     store_data,'pui_stat_d2m_sep',data={x:ct,y:transpose(stat5.sep.qf)},limits={colors:'br',labels:['SEP1','SEP2'],labflag:-1,psym:1}
 ;    store_data,'pui_stat_d2m_sep1',ct,stat5.sep[0].qf
 ;    store_data,'pui_stat_d2m_sep2',ct,stat5.sep[1].qf
-  endif
-
   store_data,'pui_stat_d2m_H',data={x:ct,y:[[stat5.d2m[0].swi[0]],[stat5.d2m[0].sta[0]]]},limits={colors:'br',labels:['SWIA','STATIC'],labflag:1}
   store_data,'pui_stat_d2m_O',data={x:ct,y:[[stat5.d2m[1].swi[0]],[stat5.d2m[1].sta[0]]]},limits={colors:'br',labels:['SWIA','STATIC'],labflag:1}
 ;  store_data,'pui_stat_d2m_swi_H',ct,stat5.d2m[0].swi[0]
@@ -200,28 +200,50 @@ if 1 then begin
   ylim,'pui_stat_d2m*',.1,10,1
 ;  ylim,'pui_stat_d2m_sep?',.01,100,1
 ;  options,'pui_stat_ifreq_pi_?','psym',3
+
+store_data,'pui_stat_Gyro_Period_(sec)',data={x:ct,y:transpose(stat5.params.tg)},limits={yrange:[1,1e3],ylog:1,labels:['H+','O+'],colors:'br',labflag:1,ytickunits:'scientific'}
+store_data,'pui_stat_Gyro_Radius_(1000km)',data={x:ct,y:transpose(stat5.params.rg/1e6)},limits={yrange:[.1,100],ylog:1,labels:['H+','O+'],colors:'br',labflag:1,ytickunits:'scientific'}
+store_data,'pui_stat_Max_Energy_(keV)',data={x:ct,y:transpose(stat5.params.kemax/1e3)},limits={yrange:[.1,300],ylog:1,labels:['H+','O+'],colors:'br',labflag:1,ytickunits:'scientific'}
+store_data,'pui_stat_Number_Density_(cm-3)',data={x:ct,y:[[transpose(stat5.params.totnnn)],[stat5.swi.nsw]]},limits={yrange:[.001,100],ylog:1,labels:['H+','O+','SWIA'],colors:'brg',labflag:1,ytickunits:'scientific'}
+store_data,'pui_stat_Number_Flux_(cm-2.s-1)',data={x:ct,y:transpose(stat5.params.totphi)},limits={yrange:[1e4,1e6],ylog:1,labels:['H+','O+'],colors:'br',labflag:1}
+store_data,'pui_stat_Momentum_Flux_(g.cm-1.s-2)',data={x:ct,y:transpose(stat5.params.totmph)},limits={yrange:[1e-11,1e-9],ylog:1,labels:['H+','O+'],colors:'br',labflag:1}
+store_data,'pui_stat_Energy_Flux_(eV.cm-2.s-1)',data={x:ct,y:transpose(stat5.params.toteph)},limits={yrange:[1e8,1e10],ylog:1,labels:['H+','O+'],colors:'br',labflag:1}
+
   tplot,'pui_stat_*'
-;  wi,0
-;  tplot,wi=0,'pui_stat_swi_mode pui_stat_swi_att pui_stat_swi_qf pui*mag pui*usw pui*nsw pui*ifreq*'
-;  wi,1
-;  tplot,wi=1,'pui*tot* pui*sep_qf pui*d2m*
+  endif
 endif
 
 if 1 then begin
-  sep1map=mvn_pui_2d_map(stat5.sep[0].xyz,stat5.sep[0].qf,200,/sep)
-  sep2map=mvn_pui_2d_map(stat5.sep[1].xyz,stat5.sep[1].qf,200,/sep)
-  p=image(alog10(sep1map),min=-1,max=1,margin=.1,rgb_table=colortable(33),axis_style=2,title='SEP1 d2m')
+  sepr=sqrt(total(stat4.sep.xyz^2,1,/nan))
+;  p=plot(stat4.sep[0].qf,reform(sepr[0,*])/1e3,'b.',/xlog,/ylog,xtitle='d/m',ytitle='Radial Distance (km)')
+;  p=plot(stat4.sep[1].qf,reform(sepr[1,*])/1e3,'r.',/o)
+  mvn_pui_radial_binner,reform(sepr[0,*]),stat4.sep[0].qf,r0,n0,std0,ste0
+  mvn_pui_radial_binner,reform(sepr[1,*]),stat4.sep[1].qf,r1,n1,std1,ste1
+  p=plot(n0,r0,'b',/o)
+  p=plot(n1,r1,'r',/o)
+  p=plot(n0*ste0,r0,'b--',/o)
+  p=plot(n1*ste1,r1,'r--',/o)
+  p=plot(n0/ste0,r0,'b--',/o)
+  p=plot(n1/ste1,r1,'r--',/o)
+  no=mvn_pui_exoden(1e3*r0,species='O') ;hot O density (cm-3)
+  p=plot(no*mean([[n0],[n1]],dim=2,/nan),r0,'g',/o,name='SEP')
+  sep1map=mvn_pui_2d_map(stat4.sep[0].xyz,stat4.sep[0].qf,100,/sep)
+  sep2map=mvn_pui_2d_map(stat4.sep[1].xyz,stat4.sep[1].qf,100,/sep)
+  p=image(alog10(sep1map),layout=[3,2,3],min=-1,max=1,margin=.1,rgb_table=colortable(33),axis_style=2,title='O SEP1',/current)
   mvn_pui_plot_mars_bow_shock,/half,/kkm
-  p=image(alog10(sep2map),min=-1,max=1,margin=.1,rgb_table=colortable(33),axis_style=2,title='SEP2 d2m')
+  p=image(alog10(sep2map),layout=[3,2,6],min=-1,max=1,margin=.1,rgb_table=colortable(33),axis_style=2,title='O SEP2',/current)
   mvn_pui_plot_mars_bow_shock,/half,/kkm
+  p=colorbar(/orient)
+endif
 
+if 0 then begin
   mstr=['H','O'] ;mass string
   for im=0,1 do begin ;loop over mass 0:H, 1:O
-    p=image(alog10(stat2d.d2m.swi[im]),layout=[2,2,1+im],/current,min=-1,max=1,margin=.1,rgb_table=colortable(33),axis_style=2,title=mstr[im]+' SWIA d2m')
+    p=image(mean(alog10(stat2d.d2m.swi[im]),/nan,dim=3),layout=[3,2,1+im],/current,min=-1,max=1,margin=.1,rgb_table=colortable(33),axis_style=2,title=mstr[im]+' SWIA')
     mvn_pui_plot_mars_bow_shock,/half,/kkm
-    p=image(alog10(stat2d.d2m.sta[im]),layout=[2,2,3+im],/current,min=-1,max=1,margin=.1,rgb_table=colortable(33),axis_style=2,title=mstr[im]+' STATIC d2m')
+    p=image(mean(alog10(stat2d.d2m.sta[im]),/nan,dim=3),layout=[3,2,4+im],/current,min=-1,max=1,margin=.1,rgb_table=colortable(33),axis_style=2,title=mstr[im]+' STATIC')
     mvn_pui_plot_mars_bow_shock,/half,/kkm
-    p=colorbar(/orient)
+;    p=colorbar(/orient)
   endfor
 
 endif
@@ -251,15 +273,28 @@ endif
 
 if 0 then begin ;escape rate vs. Ls
 mvn_pui_au_ls,times=ct,mars_au=mars_au,mars_ls=mars_ls,spice=0
-p=plot([0],/nodata,xrange=[0,370],yrange=[1e25,1e27],/ylog,xtitle='$L_s$',ytitle='H escape rate ($s^{-1}$)')
-;p=plot(/o,mars_ls,6e25*(stat5.d2m[0].sta[0]+stat5.d2m[0].swi[0])/2.,'g.')
-p=plot(/o,mars_ls,6e25*stat5.d2m[0].sta[0],'r',name='STATIC')
-p=plot(/o,mars_ls,6e25*stat5.d2m[0].swi[0],'b',name='SWIA')
+staswi=(stat5.d2m.sta[0]+stat5.d2m.swi[0])/2.
+sep12=mean(stat5.sep.qf,dim=1,/nan)
+staswisep12=mean([[reform(staswi[1,*])],[sep12]],/nan,dim=2)
+h2o=6./7.*mean(staswi[0,*]/staswisep12,/nan)
+have=6e25*mean(staswi[0,*],/nan)
+oave=7e25*mean(staswisep12,/nan)
+h2o2=have/oave
+p=plot([0],/nodata,xrange=[0,360],yrange=[1e25,1e27],/ylog,xtitle='$Solar Longitude ( L_s )$',ytitle='Weekly Averaged Neutral Escape Rate ($s^{-1}$)',xtickinterval=90,xminor=8,xticklen=.5,xsubticklen=.05,xgridstyle=1)
+p=plot(/o,mars_ls,6e25*staswi[0,*],'b',name='H')
+p=plot(/o,mars_ls,7e25*staswisep12,'r',name='O')
 p=legend()
-p=plot([0],/nodata,xrange=[0,370],yrange=[1e25,1e27],/ylog,xtitle='$L_s$',ytitle='O escape rate ($s^{-1}$)')
-p=plot(/o,mars_ls,7e25*stat5.d2m[1].sta[0],'r',name='STATIC')
-p=plot(/o,mars_ls,7e25*stat5.d2m[1].swi[0],'b',name='SWIA')
-p=legend()
+p=plot(/o,[71,71],[1e25,1e27],'c') ;aphelion
+p=plot(/o,[251,251],[1e25,1e27],'m') ;perihelion
+;p=plot([0],/nodata,xrange=[0,360],yrange=[1e25,1e27],/ylog,xtitle='$L_s$',ytitle='H escape rate ($s^{-1}$)',xtickinterval=90)
+;p=plot(/o,mars_ls,6e25*stat5.d2m[0].sta[0],'r',name='STATIC')
+;p=plot(/o,mars_ls,6e25*stat5.d2m[0].swi[0],'b',name='SWIA')
+;p=legend()
+;p=plot([0],/nodata,xrange=[0,360],yrange=[1e25,1e27],/ylog,xtitle='$L_s$',ytitle='O escape rate ($s^{-1}$)',xtickinterval=90)
+
+;p=plot(/o,mars_ls,7e25*stat5.d2m[1].sta[0],'r',name='STATIC')
+;p=plot(/o,mars_ls,7e25*stat5.d2m[1].swi[0],'b',name='SWIA')
+;p=legend()
 ;p=scatterplot(/o,mars_ls,6e25*(stat5.d2m[0].sta[0]+stat5.d2m[0].swi[0])/2.,magnitude=ct,rgb=33)
 endif
 
