@@ -1,13 +1,6 @@
 mms*_dfg_srvy_gsm_dmpa; Bx, By, Bz
 mms*_dfg_srvy_gsm_dmpa_m; |B|
 
-mms*_epd_feeps_srvy_sitl_electron_top_intensity_sensorid_5_clean_sun_removed
-mms*_epd_feeps_srvy_sitl_electron_top_intensity_sensorid_11_clean_sun_removed
-mms*_epd_feeps_srvy_sitl_electron_top_intensity_sensorid_12_clean_sun_removed
 
-mms*_epd_feeps_srvy_sitl_electron_shcoarse            
-mms*_epd_feeps_srvy_sitl_electron_shfine              
-mms*_epd_feeps_srvy_sitl_electron_spinsectnum         
-mms*_epd_feeps_srvy_sitl_electron_intensity_omni      
-mms*_epd_feeps_srvy_sitl_electron_intensity_omni_spin 
-  
+mms*_epd_feeps_srvy_sitl_electron_intensity_omni
+mms*_epd_feeps_srvy_sitl_ion_intensity_omni

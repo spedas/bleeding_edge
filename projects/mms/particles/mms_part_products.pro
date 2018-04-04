@@ -65,7 +65,7 @@
 ;            'flux'   -   # / (cm^2 * s * sr * eV)
 ;            'eflux'  -  eV / (cm^2 * s * sr * eV)  <default>
 ;            'df_cm'  -  s^3 / cm^6
-;            'df'     -  s^3 / km^6
+;            'df_km'     -  s^3 / km^6
 ;
 ;  fac_type:  Select the field aligned coordinate system variant.
 ;             Existing options: "phigeo,mphigeo, xgse"
@@ -104,8 +104,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-06-23 09:42:54 -0700 (Fri, 23 Jun 2017) $
-;$LastChangedRevision: 23505 $
+;$LastChangedDate: 2018-04-03 11:20:00 -0700 (Tue, 03 Apr 2018) $
+;$LastChangedRevision: 24980 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products.pro $
 ;-
 pro mms_part_products, $

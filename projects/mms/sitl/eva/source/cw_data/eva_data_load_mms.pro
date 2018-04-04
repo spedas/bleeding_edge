@@ -108,20 +108,30 @@ FUNCTION eva_data_load_mms, state, no_gui=no_gui, force=force
         pcode=21
         ip=where(perror eq pcode,cp)
         if (strmatch(paramlist[i],'*_feeps_*') and (cp eq 0)) then begin
-          mms_sitl_get_feeps, probes=prb, datatype='electron', level='sitl'
-          
-          ; delete most of the variables
-          tn = tnames(sc+'*feeps*top*',jmax)
-          idx = where(~strmatch(tn,'*clean_sun_removed'),ct)
-          if jmax gt 0 then store_data, tn[idx],/delete
-          
-          ; options
-          tnf = sc+'_epd_feeps_srvy_sitl_electron*intensity*'
-          tn=tnames(tnf,jmax)
+          mms_sitl_get_feeps, probes=prb
+          feeps_e_omni = sc+ '_epd_feeps_srvy_sitl_electron_intensity_omni'
+          feeps_i_omni = sc+ '_epd_feeps_srvy_sitl_ion_intensity_omni'
+          tn=tnames(sc+'_epd_feeps_srvy_sitl_*_intensity_omni', jmax)
           if (strlen(tn[0]) gt 0) and (jmax ge 1) then begin
-            options, tnf, ytitle=sc+'!CFEEPS!Cintnsty',ysubtitle='[keV]'
-            ylim, tnf, 50, 530
+            options, [feeps_e_omni, feeps_i_omni], 'spec', 1
+            options, [feeps_e_omni, feeps_i_omni], 'ylog', 1
+            options, [feeps_e_omni, feeps_i_omni], 'zlog', 1
+            options, feeps_e_omni, ytitle=sc+'!CFEEPS!Celectrons',ysubtitle='[keV]'
+            options, feeps_i_omni, ytitle=sc+'!CFEEPS!Cions',ysubtitle='[keV]'
+            ylim, [feeps_e_omni], 50, 530; 35, 500
+            ylim, [feeps_i_omni], 55, 500
           endif
+;          ; delete most of the variables
+;          tn = tnames(sc+'*feeps*top*',jmax)
+;          idx = where(~strmatch(tn,'*clean_sun_removed'),ct)
+;          if jmax gt 0 then store_data, tn[idx],/delete
+;          ; options
+;          tnf = sc+'_epd_feeps_srvy_sitl_electron*intensity*'
+;          tn=tnames(tnf,jmax)
+;          if (strlen(tn[0]) gt 0) and (jmax ge 1) then begin
+;            options, tnf, ytitle=sc+'!CFEEPS!Cintnsty',ysubtitle='[keV]'
+;            ylim, tnf, 50, 530
+;          endif
           answer = 'Yes'
         endif
         

@@ -10,8 +10,8 @@
 ; 
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-11-28 14:50:45 -0800 (Tue, 28 Nov 2017) $
-; $LastChangedRevision: 24355 $
+; $LastChangedDate: 2018-04-03 15:26:39 -0700 (Tue, 03 Apr 2018) $
+; $LastChangedRevision: 24993 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_fpi_ut__define.pro $
 ;-
 
@@ -20,7 +20,7 @@ function mms_load_fpi_ut::test_moka_mms_pad_fpi_df_suberr
   mms_load_fpi, data_rate='brst', trange=['2015-10-16/13:06', '2015-10-16/13:07'], datatype='des-dist', probe=1
   mms_load_fgm, trange=['2015-10-16/13:06', '2015-10-16/13:07'], probe=1
   dist = mms_get_dist('mms1_des_dist_brst', trange=['2015-10-16/13:06', '2015-10-16/13:07'], /subtract_err, error='mms1_des_disterr_brst')
-  df =  moka_mms_pad_fpi(dist, time='2015-10-16/13:06:30', samples=1, units='df', mag_data='mms1_fgm_b_dmpa_srvy_l2_bvec')
+  df =  moka_mms_pad_fpi(dist, time='2015-10-16/13:06:30', samples=1, units='df_km', mag_data='mms1_fgm_b_dmpa_srvy_l2_bvec')
   return, 1
 end
 
@@ -36,7 +36,7 @@ function mms_load_fpi_ut::test_moka_mms_pad_fpi_time_window
   mms_load_fpi, data_rate='brst', trange=['2015-10-16/13:06', '2015-10-16/13:07'], datatype='des-dist', probe=1
   mms_load_fgm, trange=['2015-10-16/13:06', '2015-10-16/13:07'], probe=1, data_rate='brst'
   dist = mms_get_dist('mms1_des_dist_brst', trange=['2015-10-16/13:06', '2015-10-16/13:07'], /subtract_err, error='mms1_des_disterr_brst')
-  df =  moka_mms_pad_fpi(dist, time='2015-10-16/13:06:30', window=6, units='df', mag_data='mms1_fgm_b_dmpa_brst_l2_bvec')
+  df =  moka_mms_pad_fpi(dist, time='2015-10-16/13:06:30', window=6, units='df_km', mag_data='mms1_fgm_b_dmpa_brst_l2_bvec')
   assert, array_equal(time_string(df.trange), ['2015-10-16/13:06:30', '2015-10-16/13:06:36']), 'Regression with time/windw in PAD code'
   return, 1
 end
@@ -54,7 +54,7 @@ function mms_load_fpi_ut::test_moka_mms_pad_fpi_time_samples
   mms_load_fpi, data_rate='brst', trange=['2015-10-16/13:06', '2015-10-16/13:07'], datatype='des-dist', probe=1
   mms_load_fgm, trange=['2015-10-16/13:06', '2015-10-16/13:07'], probe=1, data_rate='brst'
   dist = mms_get_dist('mms1_des_dist_brst', trange=['2015-10-16/13:06', '2015-10-16/13:07'], /subtract_err, error='mms1_des_disterr_brst')
-  df =  moka_mms_pad_fpi(dist, time='2015-10-16/13:06:30', samples=14, units='df', mag_data='mms1_fgm_b_dmpa_brst_l2_bvec')
+  df =  moka_mms_pad_fpi(dist, time='2015-10-16/13:06:30', samples=14, units='df_km', mag_data='mms1_fgm_b_dmpa_brst_l2_bvec')
   assert, array_equal(time_string(df.trange, tformat='YYYY-MM-DD/hh:mm:ss.fff'), ['2015-10-16/13:06:29.775', '2015-10-16/13:06:30.195']), 'Regression with time/samples in PAD code'
   return, 1
 end
@@ -63,7 +63,7 @@ function mms_load_fpi_ut::test_moka_mms_pad_fpi_window_centered
   mms_load_fpi, data_rate='brst', trange=['2015-10-16/13:06', '2015-10-16/13:07'], datatype='des-dist', probe=1
   mms_load_fgm, trange=['2015-10-16/13:06', '2015-10-16/13:07'], probe=1, data_rate='brst'
   dist = mms_get_dist('mms1_des_dist_brst', trange=['2015-10-16/13:06', '2015-10-16/13:07'], /subtract_err, error='mms1_des_disterr_brst')
-  df =  moka_mms_pad_fpi(/center_time, dist, time='2015-10-16/13:06:30', window=9, units='df', mag_data='mms1_fgm_b_dmpa_brst_l2_bvec')
+  df =  moka_mms_pad_fpi(/center_time, dist, time='2015-10-16/13:06:30', window=9, units='df_km', mag_data='mms1_fgm_b_dmpa_brst_l2_bvec')
   assert, array_equal(time_string(df.trange, tformat='YYYY-MM-DD/hh:mm:ss.fff'), ['2015-10-16/13:06:25.500', '2015-10-16/13:06:34.500']), 'Regression with time/window (centered) in PAD code'
   return, 1
 end

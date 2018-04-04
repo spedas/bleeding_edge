@@ -25,7 +25,7 @@ mms*_exb_fpi_vperp_z;....  Comparison between (ExB)z and FPI Vperp,z
 mms*_epd_eis_extof_proton_flux_omni_spin
 mms*_fpi_ions ;.............. FPI
 ;mms*_hpca_oplus_RF_corrected
-mms*_epd_feeps_srvy_sitl_electron_intensity_omni_spin
+mms*_epd_feeps_srvy_sitl_electron_intensity_omni
 mms*_fpi_electrons;........... FPI
 
 ;--------------------

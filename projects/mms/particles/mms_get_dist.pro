@@ -27,7 +27,7 @@
 ;  instrument:  specify instrument if not present or correct in input_name 
 ;                  'hpca' or 'fpi'
 ;  units:  (HPCA only) specify units of input data if not present or correct in input_name
-;              e.g. 'flux', 'df_cm'  (note: 'df' is in km, 'df_cm' is in cm)
+;              e.g. 'flux', 'df_cm'  (note: 'df_km' is in km, 'df_cm' is in cm)
 ;
 ;
 ;Output:
@@ -38,8 +38,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-10-12 09:09:00 -0700 (Thu, 12 Oct 2017) $
-;$LastChangedRevision: 24145 $
+;$LastChangedDate: 2018-04-03 12:46:57 -0700 (Tue, 03 Apr 2018) $
+;$LastChangedRevision: 24987 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_get_dist.pro $
 ;-
 

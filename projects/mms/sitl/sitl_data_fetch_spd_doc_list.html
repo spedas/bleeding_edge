@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Apr  2 18:16:26 2018.<P>
+<STRONG>Last modified: </STRONG>Tue Apr  3 18:16:17 2018.<P>
  
 <HR>
  
@@ -27,28 +27,6 @@ This page was created by the IDL library routine
 <br>Calculates the omni-directional flux for all 6 telescopes
 <LI><A HREF="#MMS_SITL_EIS_SPIN_AVG">MMS_SITL_EIS_SPIN_AVG</A>
 <br>Calculates spin-averaged fluxes for the EIS instrument
-<LI><A HREF="#MMS_SITL_FEEPS_CORRECT_ENERGIES">MMS_SITL_FEEPS_CORRECT_ENERGIES
-</A>
-<br>This function modifies the energy table in FEEPS spectra (intensity, count_rate, counts) variables
-<LI><A HREF="#MMS_SITL_FEEPS_ENERGY_TABLE">MMS_SITL_FEEPS_ENERGY_TABLE</A>
-<br>This function returns the energy table based on
-<LI><A HREF="#MMS_SITL_FEEPS_FLAT_FIELD_CORRECTIONS">
-MMS_SITL_FEEPS_FLAT_FIELD_CORRECTIONS</A>
-<br>Apply flat field correction factors to FEEPS ion/electron data;
-<LI><A HREF="#MMS_SITL_FEEPS_OMNI">MMS_SITL_FEEPS_OMNI</A>
-<br>Calculates the omni-directional flux for all 24 sensors
-<LI><A HREF="#MMS_SITL_FEEPS_REMOVE_BAD_DATA">MMS_SITL_FEEPS_REMOVE_BAD_DATA</A>
-<br>Removes bad eyes, bad lowest energy channels
-<LI><A HREF="#MMS_SITL_FEEPS_REMOVE_SUN">MMS_SITL_FEEPS_REMOVE_SUN</A>
-<br>Removes the sunlight contamination from FEEPS data
-<LI><A HREF="#MMS_SITL_FEEPS_SECTOR_MASKS">MMS_SITL_FEEPS_SECTOR_MASKS</A>
-<br>Returns the FEEPS sectors to mask due to sunlight contamination
-<LI><A HREF="#MMS_SITL_FEEPS_SECTOR_SPEC">MMS_SITL_FEEPS_SECTOR_SPEC</A>
-<br>Creates sector-spectrograms with FEEPS data (particle data organized by time and sector number)
-<LI><A HREF="#MMS_SITL_FEEPS_SMOOTH">MMS_SITL_FEEPS_SMOOTH</A>
-<LI><A HREF="#MMS_SITL_FEEPS_SPIN_AVG">MMS_SITL_FEEPS_SPIN_AVG</A>
-<LI><A HREF="#MMS_SITL_FEEPS_SPLIT_INTEGRAL_CH">MMS_SITL_FEEPS_SPLIT_INTEGRAL_CH
-</A>
 <LI><A HREF="#MMS_SITL_GET_DSP">MMS_SITL_GET_DSP</A>
 <LI><A HREF="#MMS_SITL_GET_EDI_AMB[1]">MMS_SITL_GET_EDI_AMB[1]</A>
 <LI><A HREF="#MMS_SITL_GET_EDI_AMB[2]">MMS_SITL_GET_EDI_AMB[2]</A>
@@ -64,9 +42,6 @@ MMS_SITL_FEEPS_FLAT_FIELD_CORRECTIONS</A>
 <br>Load data from the Fly's Eye Energetic Particle Sensor (FEEPS) onboard MMS
 <LI><A HREF="#MMS_SITL_GET_HPCA">MMS_SITL_GET_HPCA</A>
 <br>Load data from the MMS Hot Plasma Composition Analyzer (HPCA)
-<LI><A HREF="#MMS_SITL_READ_FEEPS_SECTOR_MASKS_CSV">
-MMS_SITL_READ_FEEPS_SECTOR_MASKS_CSV</A>
-<br>Returns the FEEPS sectors to mask due to sunlight contamination
 <LI><A HREF="#UNH_EDI_AMB_CRIB">UNH_EDI_AMB_CRIB</A>
 <br>
 </UL><P>
@@ -183,7 +158,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_SITL_EIS_SPIN_AVG">
 <H2>MMS_SITL_EIS_SPIN_AVG</H2></A>
 <A HREF="#MMS_SITL_EIS_OMNI">[Previous Routine]</A>
-<A HREF="#MMS_SITL_FEEPS_CORRECT_ENERGIES">[Next Routine]</A>
+<A HREF="#MMS_SITL_GET_DSP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -217,360 +192,9 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="sitl_data_fetch/mms_sitl_eis_spin_avg.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_eis_spin_avg.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="MMS_SITL_FEEPS_CORRECT_ENERGIES">
-<H2>MMS_SITL_FEEPS_CORRECT_ENERGIES</H2></A>
-<A HREF="#MMS_SITL_EIS_SPIN_AVG">[Previous Routine]</A>
-<A HREF="#MMS_SITL_FEEPS_ENERGY_TABLE">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- PROCEDURE:
-       mms_feeps_correct_energies
-
- PURPOSE:
-       This function modifies the energy table in FEEPS spectra (intensity, count_rate, counts) variables
-       using the function: mms_feeps_energy_table (which is s/c, sensor head and sensor ID dependent)
-
- NOTES:
-     BAD EYES are replaced by NaNs
-
-
- $LastChangedBy: rickwilder $
- $LastChangedDate: 2017-08-09 13:51:06 -0700 (Wed, 09 Aug 2017) $
- $LastChangedRevision: 23769 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_correct_energies.pro $
-</PRE><P>
-<STRONG>(See <A href="sitl_data_fetch/mms_sitl_feeps_correct_energies.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_correct_energies.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_SITL_FEEPS_ENERGY_TABLE">
-<H2>MMS_SITL_FEEPS_ENERGY_TABLE</H2></A>
-<A HREF="#MMS_SITL_FEEPS_CORRECT_ENERGIES">[Previous Routine]</A>
-<A HREF="#MMS_SITL_FEEPS_FLAT_FIELD_CORRECTIONS">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- FUNCTION:
-       mms_feeps_energy_table
-
- PURPOSE:
-       This function returns the energy table based on
-       each spacecraft and eye; based on the table from:
-       
-               FlatFieldResults_V3.xlsx
-               
-       from Drew Turner, 1/19/2017
-               
-
- NOTES:
-     BAD EYES are replaced by NaNs
-     
-     - different original energy tables are used depending on if the sensor head is 6-8 (ions) or not (electrons)
-     
-     Electron Eyes: 1, 2, 3, 4, 5, 9, 10, 11, 12
-     Ion Eyes: 6, 7, 8
- 
- $LastChangedBy: rickwilder $
- $LastChangedDate: 2017-08-09 13:51:06 -0700 (Wed, 09 Aug 2017) $
- $LastChangedRevision: 23769 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_energy_table.pro $
-</PRE><P>
-<STRONG>(See <A href="sitl_data_fetch/mms_sitl_feeps_energy_table.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_energy_table.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_SITL_FEEPS_FLAT_FIELD_CORRECTIONS">
-<H2>MMS_SITL_FEEPS_FLAT_FIELD_CORRECTIONS</H2></A>
-<A HREF="#MMS_SITL_FEEPS_ENERGY_TABLE">[Previous Routine]</A>
-<A HREF="#MMS_SITL_FEEPS_OMNI">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- PROCEDURE:
-       mms_feeps_flat_field_corrections
-
- PURPOSE:
-       Apply flat field correction factors to FEEPS ion/electron data;
-       correct factors are from the gain factor found in:
-       
-           FlatFieldResults_V3.xlsx
-           
-       from Drew Turner, 1/19/2017
-
- NOTES:
- 
-   From Drew Turner, 1/18/17:
-       Here are the correction factors that we need to apply to the current 
-       ION counts/rates/fluxes in the CDF files.  
-       NOTE, THIS IS A DIFFERENT TYPE OF CORRECTION THAN THAT FOR THE ELECTRONS!  
-       These shifts should be applied to the counts/rates/fluxes data EYE-BY-EYE on each spacecraft.  
-       These are multiplication factors (i.e., Jnew = Jold * Gcorr). 
-       For those equations, Jold is the original count/rate/flux array and
-       Jnew is the corrected version of the arrays using the factors listed below.
-       
-MMS1:
-Top6: Gcorr = 0.7
-Top7: Gcorr = 2.5
-Top8: Gcorr = 1.5
-Bot6: Gcorr = 0.9
-Bot7: Gcorr = 1.2
-Bot8: Gcorr = 1.0
-
-MMS2:
-Top6: Gcorr = 1.3
-Top7: BAD EYE
-Top8: Gcorr = 0.8
-Bot6: Gcorr = 1.4
-Bot7: BAD EYE
-Bot8: Gcorr = 1.5
-
-MMS3:
-Top6: Gcorr = 0.7
-Top7: Gcorr = 0.8
-Top8: Gcorr = 1.0
-Bot6: Gcorr = 0.9
-Bot7: Gcorr = 0.9
-Bot8: Gcorr = 1.3
-
-MMS4:
-Top6: Gcorr = 0.8
-Top7: BAD EYE
-Top8: Gcorr = 1.0
-Bot6: Gcorr = 0.8
-Bot7: Gcorr = 0.6
-Bot8: Gcorr = 0.9
-
- $LastChangedBy: rickwilder $
- $LastChangedDate: 2017-08-09 13:51:06 -0700 (Wed, 09 Aug 2017) $
- $LastChangedRevision: 23769 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_flat_field_corrections.pro $
-</PRE><P>
-<STRONG>(See <A href="sitl_data_fetch/mms_sitl_feeps_flat_field_corrections.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_flat_field_corrections.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_SITL_FEEPS_OMNI">
-<H2>MMS_SITL_FEEPS_OMNI</H2></A>
-<A HREF="#MMS_SITL_FEEPS_FLAT_FIELD_CORRECTIONS">[Previous Routine]</A>
-<A HREF="#MMS_SITL_FEEPS_REMOVE_BAD_DATA">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- PROCEDURE:
-         mms_feeps_omni
-
- PURPOSE:
-       Calculates the omni-directional flux for all 24 sensors 
-       
-       (this version re-bins the data due to the different energy channels for each s/c, sensor head and sensor ID)
-       
- INPUT:
-       probe:      spacecraft # (1, 2, 3, or 4)
-
- KEYWORDS:
-
-       datatype:   feeps data types include ['electron', 'electron-bottom', 'electron-top',
-                   'ion', 'ion-bottom', 'ion-top'].
-                   If no value is given the default is 'electron'.
-       data_rate:  instrument data rates for feeps include 'brst' 'srvy'. The
-                   default is 'srvy'
-       tplotnames: names of loaded tplot variables
-       suffix:     suffix used in call to mms_load_data; required to find the correct
-                   variables
-       data_units: specify units for omni-directional calculation
-
- NOTES:
-       New version, 1/26/17 - egrimes
-       Newer version, 1/31/17 - dturner
-       Fixed 2 bugs (3/29/17): 1) off by one bug when setting bottom sensor without data to NaNs, and
-                               2) now initializing output as NaNs, to avoid setting channels with 
-                                 counts=0 to NaN - egrimes
-
-
- $LastChangedBy: rickwilder $
- $LastChangedDate: 2017-08-09 13:51:06 -0700 (Wed, 09 Aug 2017) $
- $LastChangedRevision: 23769 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_omni.pro $
-</PRE><P>
-<STRONG>(See <A href="sitl_data_fetch/mms_sitl_feeps_omni.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_omni.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_SITL_FEEPS_REMOVE_BAD_DATA">
-<H2>MMS_SITL_FEEPS_REMOVE_BAD_DATA</H2></A>
-<A HREF="#MMS_SITL_FEEPS_OMNI">[Previous Routine]</A>
-<A HREF="#MMS_SITL_FEEPS_REMOVE_SUN">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- PROCEDURE:
-       mms_feeps_remove_bad_data
-
- PURPOSE:
-       Removes bad eyes, bad lowest energy channels 
-       based on data from Drew Turner, 1/26/2017
-
- NOTES:
-
- $LastChangedBy: rickwilder $
- $LastChangedDate: 2017-08-09 13:51:06 -0700 (Wed, 09 Aug 2017) $
- $LastChangedRevision: 23769 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_remove_bad_data.pro $
-</PRE><P>
-<STRONG>(See <A href="sitl_data_fetch/mms_sitl_feeps_remove_bad_data.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_remove_bad_data.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_SITL_FEEPS_REMOVE_SUN">
-<H2>MMS_SITL_FEEPS_REMOVE_SUN</H2></A>
-<A HREF="#MMS_SITL_FEEPS_REMOVE_BAD_DATA">[Previous Routine]</A>
-<A HREF="#MMS_SITL_FEEPS_SECTOR_MASKS">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- PROCEDURE:
-       mms_feeps_remove_sun
-
- PURPOSE:
-       Removes the sunlight contamination from FEEPS data
-
- NOTES:
-       Will only work in IDL 8.0+, due to the hash table data structure
-     
-       Originally based on code from Drew Turner, 2/1/2016
-
- $LastChangedBy: rickwilder $
- $LastChangedDate: 2017-08-09 13:51:06 -0700 (Wed, 09 Aug 2017) $
- $LastChangedRevision: 23769 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_remove_sun.pro $
-</PRE><P>
-<STRONG>(See <A href="sitl_data_fetch/mms_sitl_feeps_remove_sun.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_remove_sun.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_SITL_FEEPS_SECTOR_MASKS">
-<H2>MMS_SITL_FEEPS_SECTOR_MASKS</H2></A>
-<A HREF="#MMS_SITL_FEEPS_REMOVE_SUN">[Previous Routine]</A>
-<A HREF="#MMS_SITL_FEEPS_SECTOR_SPEC">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- 
- FUNCTION:
-         mms_feeps_sector_masks
-         
- PURPOSE:
-         Returns the FEEPS sectors to mask due to sunlight contamination
- 
- OUTPUT:
-         Hash table containing the sectors to mask for each spacecraft and sensor ID
-         
- EXAMPLE:
-     ; to get the masks for MMS1, top sensor = 1:
-     IDL&gt; masks = mms_feeps_sector_masks()
-     
-     ; note the concatenation: mms+probe#+imask+[t or b]+sensorID
-     IDL&gt; mms1_top_sensor1 = masks['mms1imaskt1']
-     IDL&gt; mms1_top_sensor1
-         2       3       4       5       6      20      21
-     
-     
- NOTES:
-     Will only work in IDL 8.0+, due to the hash table data structure
-     
-     Based on code from Drew Turner, 2/1/2016
-        Modifications: 
-          dindgen -&gt; indgen (egrimes, 2/11/2016)
-
- $LastChangedBy: rickwilder $
- $LastChangedDate: 2016-04-07 09:08:39 -0700 (Thu, 07 Apr 2016) $
- $LastChangedRevision: 20741 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_sector_masks.pro $
-</PRE><P>
-<STRONG>(See <A href="sitl_data_fetch/mms_sitl_feeps_sector_masks.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_sector_masks.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_SITL_FEEPS_SECTOR_SPEC">
-<H2>MMS_SITL_FEEPS_SECTOR_SPEC</H2></A>
-<A HREF="#MMS_SITL_FEEPS_SECTOR_MASKS">[Previous Routine]</A>
-<A HREF="#MMS_SITL_FEEPS_SMOOTH">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- PROCEDURE:
-         mms_feeps_sector_spec
-
- PURPOSE:
-       Creates sector-spectrograms with FEEPS data (particle data organized by time and sector number)
-
- NOTES:
-
- 
- $LastChangedBy: rickwilder $
- $LastChangedDate: 2017-08-09 13:51:06 -0700 (Wed, 09 Aug 2017) $
- $LastChangedRevision: 23769 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_sector_spec.pro $
-</PRE><P>
-<STRONG>(See <A href="sitl_data_fetch/mms_sitl_feeps_sector_spec.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_sector_spec.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_SITL_FEEPS_SMOOTH">
-<H2>MMS_SITL_FEEPS_SMOOTH</H2></A>
-<A HREF="#MMS_SITL_FEEPS_SECTOR_SPEC">[Previous Routine]</A>
-<A HREF="#MMS_SITL_FEEPS_SPIN_AVG">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-Procedure:
-     mms_feeps_smooth
-
-Purpose:
-     Creates tplot variables of the smoothed spectra, with smoothing
-     specified by num_smooth
-
-$LastChangedBy: rickwilder $
-$LastChangedDate: 2017-08-09 13:51:06 -0700 (Wed, 09 Aug 2017) $
-$LastChangedRevision: 23769 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_smooth.pro $
-</PRE><P>
-<STRONG>(See <A href="sitl_data_fetch/mms_sitl_feeps_smooth.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_smooth.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_SITL_FEEPS_SPIN_AVG">
-<H2>MMS_SITL_FEEPS_SPIN_AVG</H2></A>
-<A HREF="#MMS_SITL_FEEPS_SMOOTH">[Previous Routine]</A>
-<A HREF="#MMS_SITL_FEEPS_SPLIT_INTEGRAL_CH">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-Procedure:
-     mms_feeps_spin_avg
-
-Purpose:
-     spin-averages FEEPS spectra using the '_spinsectnum' 
-       variable (variable containing spin sector #s associated 
-       with each measurement)
-
-$LastChangedBy: egrimes $
-$LastChangedDate: 2018-03-20 07:42:32 -0700 (Tue, 20 Mar 2018) $
-$LastChangedRevision: 24906 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_spin_avg.pro $
-</PRE><P>
-<STRONG>(See <A href="sitl_data_fetch/mms_sitl_feeps_spin_avg.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_spin_avg.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_SITL_FEEPS_SPLIT_INTEGRAL_CH">
-<H2>MMS_SITL_FEEPS_SPLIT_INTEGRAL_CH</H2></A>
-<A HREF="#MMS_SITL_FEEPS_SPIN_AVG">[Previous Routine]</A>
-<A HREF="#MMS_SITL_GET_DSP">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- Procedure:
-  mms_feeps_split_integral_ch
-
- Purpose:
-    this procedure splits the last integral channel from the FEEPS spectra, 
-    creating 2 new tplot variables:
-    
-       [original variable]_clean - spectra with the integral channel removed
-       [original variable]_500keV_int - the integral channel that was removed
-
-$LastChangedBy: rickwilder $
-$LastChangedDate: 2017-08-09 13:51:06 -0700 (Wed, 09 Aug 2017) $
-$LastChangedRevision: 23769 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_split_integral_ch.pro $
-</PRE><P>
-<STRONG>(See <A href="sitl_data_fetch/mms_sitl_feeps_split_integral_ch.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_feeps_split_integral_ch.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="MMS_SITL_GET_DSP">
 <H2>MMS_SITL_GET_DSP</H2></A>
-<A HREF="#MMS_SITL_FEEPS_SPLIT_INTEGRAL_CH">[Previous Routine]</A>
+<A HREF="#MMS_SITL_EIS_SPIN_AVG">[Previous Routine]</A>
 <A HREF="#MMS_SITL_GET_EDI_AMB[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -933,67 +557,11 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                        ['YYYY-MM-DD','YYYY-MM-DD'] or to specify more or less than a day 
                        ['YYYY-MM-DD/hh:mm:ss','YYYY-MM-DD/hh:mm:ss']
          probes:       list of probes, valid values for MMS probes are ['1','2','3','4']. 
-                       If no probe is specified the default is '1'
-         level:        indicates level of data processing. levels include 'l1a', 'l1b'. 
-                       The default if no level is specified is 'l1b'
-         datatype:     feeps data types include ['electron', 'electron-bottom', 'electron-top', 
-                       'ion', 'ion-bottom', 'ion-top']. 
-                       If no value is given the default is 'electron'.
-         data_rate:    instrument data rates for feeps include 'brst' 'srvy'. The
-                       default is 'srvy'.
-         data_units:   specify units for omni-directional calculation and spin averaging
-         local_data_dir: local directory to store the CDF files; should be set if
-                       you're on *nix or OSX, the default currently assumes Windows (c:\data\mms\)
-         source:       specifies a different system variable. By default the MMS mission 
-                       system variable is !mms
-         get_support_data: load support data (defined by support_data attribute in the CDF)
-         tplotnames:   names for tplot variables
-         no_color_setup: don't setup graphics configuration; use this keyword when you're using 
-                       this load routine from a terminal without an X server runningdo not set 
-                       colors
-         time_clip:    clip the data to the requested time range; note that if you do not use 
-                       this keyword you may load a longer time range than requested
-         no_update:    set this flag to preserve the original data. if not set and newer data is 
-                       found the existing data will be overwritten
-         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
-                       preserving original tplot variable.
-         varformat:    should be a string (wildcards accepted) that will match the CDF variables
-                       that should be loaded into tplot variables
-         cdf_filenames:  this keyword returns the names of the CDF files used when loading the data
-         cdf_version:  specify a specific CDF version # to load (e.g., cdf_version='4.3.0')
-         latest_version: only grab the latest CDF version in the requested time interval 
-                       (e.g., /latest_version)
-         min_version:  specify a minimum CDF version # to load 
-         spdf: grab the data from the SPDF instead of the LASP SDC (only works for public access)
-
- OUTPUT:
-  
- EXAMPLE:
-     See crib sheet mms_load_feeps_crib.pro for usage examples
-
-     load electron data (srvy mode)
-     MMS1&gt; mms_load_feeps, probes='1', trange=['2015-08-15', '2015-08-16'], datatype='electron'
-     MMS1&gt; mms_feeps_pad,  probe='1', datatype='electron'
-     
- NOTES:
-     Have questions regarding this load routine, or its usage?
-          Send me an email --&gt; egrimes@igpp.ucla.edu
-          
-          
-     The spectra variables created with &quot;_clean&quot; in their names have 
-       the 500 keV integral channel removed.
-     The spectra variables with '_sun_removed' in their names 
-       have the sun contamination removed 
-       
-       (*_clean_sun_removed variables have both the 500 keV integral 
-         channel removed and the sun contamination removed)
- 
- 
-     Please see the notes in mms_load_data for more information 
+                       If no probe is specified the default is '1';
 
 $LastChangedBy: rickwilder $
-$LastChangedDate: 2017-08-09 13:51:06 -0700 (Wed, 09 Aug 2017) $
-$LastChangedRevision: 23769 $
+$LastChangedDate: 2018-04-03 13:31:40 -0700 (Tue, 03 Apr 2018) $
+$LastChangedRevision: 24989 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_get_feeps.pro $
 </PRE><P>
 <STRONG>(See <A href="sitl_data_fetch/mms_sitl_get_feeps.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_get_feeps.pro</A>)</STRONG><P>
@@ -1002,7 +570,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_SITL_GET_HPCA">
 <H2>MMS_SITL_GET_HPCA</H2></A>
 <A HREF="#MMS_SITL_GET_FEEPS">[Previous Routine]</A>
-<A HREF="#MMS_SITL_READ_FEEPS_SECTOR_MASKS_CSV">[Next Routine]</A>
+<A HREF="#UNH_EDI_AMB_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -1037,49 +605,9 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="sitl_data_fetch/mms_sitl_get_hpca.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_get_hpca.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="MMS_SITL_READ_FEEPS_SECTOR_MASKS_CSV">
-<H2>MMS_SITL_READ_FEEPS_SECTOR_MASKS_CSV</H2></A>
-<A HREF="#MMS_SITL_GET_HPCA">[Previous Routine]</A>
-<A HREF="#UNH_EDI_AMB_CRIB">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-
- FUNCTION:
-         mms_read_feeps_sector_masks_csv
-
- PURPOSE:
-         Returns the FEEPS sectors to mask due to sunlight contamination
-
- OUTPUT:
-         Hash table containing the sectors to mask for each spacecraft and sensor ID
-
- EXAMPLE:
-     ; to get the masks for MMS1, top sensor = 1:
-     IDL&gt; masks = mms_read_feeps_sector_masks_csv()
-
-     ; note the concatenation: mms+probe#+imask+[t or b]+sensorID
-     IDL&gt; mms1_top_sensor1 = masks['mms1imaskt1']
-     IDL&gt; mms1_top_sensor1
-         2       3       4       5       6      20      21
-
-
- NOTES:
-     Will only work in IDL 8.0+, due to the hash table data structure
-
-     Updated to use CSV files, 8/1/2016; files must be in the same
-     directory as this routine.
-
- $LastChangedBy: rickwilder $
- $LastChangedDate: 2017-08-09 13:51:06 -0700 (Wed, 09 Aug 2017) $
- $LastChangedRevision: 23769 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_read_feeps_sector_masks_csv.pro $
-</PRE><P>
-<STRONG>(See <A href="sitl_data_fetch/mms_sitl_read_feeps_sector_masks_csv.pro">projects/mms/sitl/sitl_data_fetch/mms_sitl_read_feeps_sector_masks_csv.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="UNH_EDI_AMB_CRIB">
 <H2>UNH_EDI_AMB_CRIB</H2></A>
-<A HREF="#MMS_SITL_READ_FEEPS_SECTOR_MASKS_CSV">[Previous Routine]</A>
+<A HREF="#MMS_SITL_GET_HPCA">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
    Plot EDI ambient data

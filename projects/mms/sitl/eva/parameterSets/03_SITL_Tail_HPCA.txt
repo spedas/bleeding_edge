@@ -35,7 +35,7 @@ mms*_exb_hpca_vperp_z;....  Comparison between (ExB)z and HPCA Vperp,z
 mms*_epd_eis_extof_proton_flux_omni_spin
 mms*_hpca_hplus_RF_corrected
 mms*_hpca_oplus_RF_corrected
-mms*_epd_feeps_srvy_sitl_electron_top_intensity_sensorid_11_clean_sun_removed
+mms*_epd_feeps_srvy_sitl_electron_intensity_omni
 
 ;--------------------
 ; Waves

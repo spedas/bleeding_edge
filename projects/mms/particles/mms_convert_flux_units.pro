@@ -9,9 +9,11 @@
 ;  flux   -   # / (cm^2 * s * sr * eV)
 ;  eflux  -  eV / (cm^2 * s * sr * eV)
 ;  df_cm  -  s^3 / cm^6
-;  df     -  s^3 / km^6
+;  df_km     -  s^3 / km^6
 ;
-;  'df_km' and 'psd' are treated as 'df'
+;  'psd' is treated as 'df_km'
+;  
+;  'df' is no longer supported by these routines due to inconsistencies with THEMIS/other missions in SPEDAS
 ;
 ;Calling Sequence:
 ;  mms_convert_flux_units, dist, units=units, output=output
@@ -23,8 +25,8 @@
 ;  
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-03-10 08:56:27 -0800 (Fri, 10 Mar 2017) $
-;$LastChangedRevision: 22934 $
+;$LastChangedDate: 2018-04-03 11:28:25 -0700 (Tue, 03 Apr 2018) $
+;$LastChangedRevision: 24982 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_convert_flux_units.pro $
 ;-
 pro mms_convert_flux_units,dist,units=units,output=output
@@ -48,8 +50,8 @@ if units_in eq units_out then begin
 endif
 
 ;handle synonymous notations
-if units_in eq 'df_km' or units_in eq 'psd' then units_in = 'df'
-if units_out eq 'df_km' or units_out eq 'psd' then units_out = 'df'
+if units_in eq 'psd' then units_in = 'df_km'
+if units_out eq 'psd' then units_out = 'df_km'
 
 ;get mass of species
 case species_lc of
@@ -66,7 +68,7 @@ endcase
 ;scaling factor between df and flux units
 flux_to_df = A^2 * 0.5447d * 1d6
 
-;convert between km^6 and cm^6 for df
+;convert between km^6 and cm^6 for df_km
 cm_to_km = 1d30
 
 ;calculation will be kept simple and stable as possible by 
@@ -81,16 +83,18 @@ out = [0,0,0]
 case units_in of 
   'flux': in = [1,0,0]
   'eflux': 
-  'df': in = [2,-1,0]
+  'df_km': in = [2,-1,0]
   'df_cm': in = [2,-1,1]
+  'df': message, 'df units no longer supported - use df_km or df_cm instead'
   else: message, 'Unknown input units: '+units_in
 endcase
 
 case units_out of 
   'flux':out = -[1,0,0]
   'eflux': 
-  'df': out = -[2,-1,0]
+  'df_km': out = -[2,-1,0]
   'df_cm': out = -[2,-1,1]
+  'df': message, 'df units no longer supported - use df_km or df_cm instead'
   else: message, 'Unknown output units: '+units_out
 endcase
 

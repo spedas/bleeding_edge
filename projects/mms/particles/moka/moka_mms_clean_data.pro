@@ -7,8 +7,8 @@
 ;#3 copy data and zero inactive bins to ensure areas with no data are represented as NaN
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-02-14 09:11:21 -0800 (Tue, 14 Feb 2017) $
-;$LastChangedRevision: 22774 $
+;$LastChangedDate: 2018-04-03 15:14:57 -0700 (Tue, 03 Apr 2018) $
+;$LastChangedRevision: 24992 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/moka/moka_mms_clean_data.pro $
 ;-
 
@@ -19,7 +19,7 @@ PRO moka_mms_clean_data, data_in, output=output,units=units,disterr=disterr_in
   ; UNITS
   ;------------
   mms_convert_flux_units,data_in,units=units,output=data
-  mms_convert_flux_units,data_in,units='df', output=data_psd
+  mms_convert_flux_units,data_in,units='df_km', output=data_psd
   
   ;-----------
   ; DIMENSION
@@ -46,7 +46,7 @@ PRO moka_mms_clean_data, data_in, output=output,units=units,disterr=disterr_in
     err = fltarr(imax)
     cnt = fltarr(imax)
   endif else begin
-    mms_convert_flux_units,disterr_in,units='df',output=data_err
+    mms_convert_flux_units,disterr_in,units='df_km',output=data_err
     err = reform(data_err.data,imax)
     cnt = (psd/err)^2; actual counts recovered
   endelse

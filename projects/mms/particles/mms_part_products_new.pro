@@ -67,7 +67,7 @@
 ;            'flux'   -   # / (cm^2 * s * sr * eV)
 ;            'eflux'  -  eV / (cm^2 * s * sr * eV)  <default>
 ;            'df_cm'  -  s^3 / cm^6
-;            'df'     -  s^3 / km^6
+;            'df_km'     -  s^3 / km^6
 ;
 ;  fac_type:  Select the field aligned coordinate system variant.
 ;             Existing options: "phigeo,mphigeo, xgse"
@@ -105,8 +105,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-03-22 10:56:10 -0700 (Thu, 22 Mar 2018) $
-;$LastChangedRevision: 24939 $
+;$LastChangedDate: 2018-04-03 11:20:00 -0700 (Tue, 03 Apr 2018) $
+;$LastChangedRevision: 24980 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products_new.pro $
 ;-
 pro mms_part_products_new, $
@@ -437,7 +437,7 @@ pro mms_part_products_new, $
       case dist.units_name of
         'flux': in = [1,0,0]
         'eflux':
-        'df': in = [2,-1,0]
+        'df_km': in = [2,-1,0]
         'df_cm': in = [2,-1,1]
         else: message, 'Unknown input units: '+units_in
       endcase
@@ -445,7 +445,7 @@ pro mms_part_products_new, $
       case units_lc of
         'flux':out = -[1,0,0]
         'eflux':
-        'df': out = -[2,-1,0]
+        'df_km': out = -[2,-1,0]
         'df_cm': out = -[2,-1,1]
         else: message, 'Unknown output units: '+units_out
       endcase
