@@ -13,21 +13,33 @@
 ;                  The MMS software expects all data files to reside in specific subdirectories relative
 ;                  to this root directory.;
 ;
-;   !MMS.REMOTE_DATA_DIR   This is the URL of the server that can provide the data files.
-;                  (default is: "http://themis.ssl.berkeley.edu/data/themis/")
+;   !MMS.REMOTE_DATA_DIR   (warning: SPDF ONLY) - This is the URL of the server that can provide the data files.
+;                  (default is: "https://spdf.sci.gsfc.nasa.gov/pub/data/mms/")
 ;                  if the software does not find a needed file in LOCAL_DATA_DIR,
 ;                  then it will attempt to download the data from the URL and REMOTE_DATA_DIR is defined,
 ;                  the software will attempt to download the file from REMOTE_DATA_DIR, place it in LOCAL_DATA_DIR
 ;                  with the same relative pathname, and then continue processing.
 ;
+;   !MMS.MIRROR_DATA_DIR  - this is a mirror directory (typically over the local network); setting this
+;                 will cause the load routines to check this for files after checking your local data directory. 
+;                 If files are found here, they're copied to your local data directory, and the copied files
+;                 are loaded
+;   
 ;   Regarding data directory environment variables: it is highly advised to use the mission specific environment variables
 ;                  (e.g., MMS_DATA_DIR) rather than ROOT_DATA_DIR to avoid conflicts with other missions/projects
-;                  
+;  
+;   *** please note that setting REMOTE_DATA_DIR will have no effect when loading data from the LASP SDC, due to the 
+;       custom web services at the SDC; this still allows you override the remote path to the data at SPDF, though ***
+;   
 ;KEYWORDS:
 ;   RESET:           Reset !mms to values in environment (or values in keywords).
 ;   LOCAL_DATA_DIR:  use given value for local_data_dir, rather than environment. Only works on
 ;                    initial call or reset.
 ;   REMOTE_DATA_DIR: Use given value for remote_data_dir, rather than env.  Only works on inital
+;                    call or reset.
+;   MIRROR_DATA_DIR:  network mirror directory - for loading data from the local network; note that this 
+;                    will copy files to your local data directory if they're found on the mirror, and this is
+;                    only checked if the files do not currently exist in the LOCAL_DATA_DIR. Only works on inital
 ;                    call or reset.
 ;   NO_COLOR_SETUP   do not set colors if already taken care of
 ;
@@ -35,19 +47,23 @@
 ;HISTORY:
 ; 2015-04-10, moka, Created based on 'thm_init'
 ; 2015-02-15, egrimes, commented out dialog_message in CDF version error due to a bug on MacOS X 10.11.6/IDL 8.5
+; 2018-04-05, egrimes, added MIRROR_DATA_DIR functionality
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-02-02 09:43:39 -0800 (Fri, 02 Feb 2018) $
-; $LastChangedRevision: 24627 $
+; $LastChangedDate: 2018-04-05 14:39:31 -0700 (Thu, 05 Apr 2018) $
+; $LastChangedRevision: 25006 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_init.pro $
 ;-
 
 pro mms_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote_data_dir,$
-  no_color_setup=no_color_setup
+  no_color_setup=no_color_setup, mirror_data_dir=mirror_data_dir
+  
+  def_struct = file_retrieve(/structure_format)
+  str_element, def_struct, 'mirror_data_dir', '', /add
   
   defsysv,'!mms',exists=exists
   if not keyword_set(exists) then begin; if !mms does not exist
-    defsysv,'!mms', file_retrieve(/structure_format)
+    defsysv,'!mms', def_struct
   endif
 
   if keyword_set(reset) then !mms.init=0
@@ -56,6 +72,9 @@ pro mms_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
     ;Assure that trailing slashes exist on data directories
     !mms.local_data_dir = spd_addslash(!mms.local_data_dir)
     !mms.remote_data_dir = spd_addslash(!mms.remote_data_dir)
+    
+    str_element, !mms, 'mirror_data_dir', success=mirror_available
+    if mirror_available && !mms.mirror_data_dir ne '' then !mms.mirror_data_dir = spd_addslash(!mms.mirror_data_dir)
     return
   endif
 
@@ -63,7 +82,7 @@ pro mms_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
   ; On initial call or reset
   ;#######################################################
   
-  !mms = file_retrieve(/structure_format); force setting of all elements to default values.
+  !mms = def_struct; force setting of all elements to default values.
   !mms.preserve_mtime = 0
   
   mms_config,no_color_setup=no_color_setup; override the defaults by local config file
@@ -77,6 +96,9 @@ pro mms_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
   endif
   if keyword_set(remote_data_dir) then begin
     !mms.remote_data_dir = spd_addslash(remote_data_dir)
+  endif
+  if keyword_set(mirror_data_dir) then begin
+    !mms.mirror_data_dir = spd_addslash(mirror_data_dir)
   endif
   
   cdf_lib_info,version=v,subincrement=si,release=r,increment=i,copyright=c

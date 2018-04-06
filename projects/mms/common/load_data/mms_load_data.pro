@@ -92,8 +92,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-03-13 10:59:12 -0700 (Tue, 13 Mar 2018) $
-;$LastChangedRevision: 24882 $
+;$LastChangedDate: 2018-04-05 14:15:02 -0700 (Thu, 05 Apr 2018) $
+;$LastChangedRevision: 25005 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 
@@ -319,9 +319,35 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
                 local_files = local_files_filtered.filename
                 append_array, files, local_files
             endif else begin
-                dprint, dlevel = 0, 'Error, no local or remote data files found: '+$
-                         probe+' '+instrument+' '+data_rate+' '+level+' '+datatype+' (user: '+current_user+')'
-                continue
+                ; check the network mirror site
+                str_element, !mms, 'mirror_data_dir', success=mirror_available
+                if mirror_available && !mms.mirror_data_dir ne '' then begin
+                  mirror_files = mms_get_local_files(probe=probe, instrument=instrument, $
+                    data_rate=data_rate, level=level, datatype=datatype, $
+                    trange=time_double([day_string, end_string]), cdf_version=cdf_version, $
+                    min_version=min_version, latest_version=latest_version, /mirror)
+
+                  if is_string(mirror_files) then begin
+                    ; prepare the file list as a list of structs, (required input to mms_files_in_interval)
+                    local_file_info = replicate({filename: '', timetag: ''}, n_elements(mirror_files))
+                    for local_file_idx = 0, n_elements(mirror_files)-1 do begin
+                      local_file_info[local_file_idx].filename = mirror_files[local_file_idx]
+                    endfor
+  
+                    ; filter to the requested time range
+                    local_files_filtered = mms_files_in_interval(local_file_info, tr)
+                    mirror_files = local_files_filtered.filename
+                    append_array, files, mirror_files
+                  endif else begin
+                    dprint, dlevel = 0, 'Error, no local or remote data files found: '+$
+                      probe+' '+instrument+' '+data_rate+' '+level+' '+datatype+' (user: '+current_user+')'
+                    continue
+                  endelse
+                endif else begin
+                  dprint, dlevel = 0, 'Error, no local or remote data files found: '+$
+                           probe+' '+instrument+' '+data_rate+' '+level+' '+datatype+' (user: '+current_user+')'
+                  continue
+                endelse
             endelse
         endelse       
 

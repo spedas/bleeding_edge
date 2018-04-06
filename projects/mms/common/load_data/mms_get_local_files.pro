@@ -27,14 +27,14 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-11-21 08:13:10 -0800 (Mon, 21 Nov 2016) $
-;$LastChangedRevision: 22384 $
+;$LastChangedDate: 2018-04-05 14:15:02 -0700 (Thu, 05 Apr 2018) $
+;$LastChangedRevision: 25005 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_get_local_files.pro $
 ;-
 
 function mms_get_local_files, probe = probe, instrument = instrument, data_rate = data_rate, $
   level = level, datatype = datatype, trange = trange_in, cdf_version = cdf_version, $
-  latest_version = latest_version, min_version = min_version
+  latest_version = latest_version, min_version = min_version, mirror = mirror
 
             
   compile_opt idl2, hidden
@@ -96,8 +96,13 @@ search_pattern =  escape_string(dir_pattern  + file_pattern, list='\')
 ;all_files = file_search(!mms.local_data_dir,'*.cdf')
 ; Updated with performance enhancement from Naritoshi Kitamura, 11/17/2015, 
 ;     to be more specific on which directory to look into. This can significantly speed up searching for local files
-instr_data_dir = filepath('', ROOT_DIR=!mms.local_data_dir, $
+if keyword_set(mirror) then begin
+  instr_data_dir = filepath('', ROOT_DIR=!mms.mirror_data_dir, $
                               SUBDIRECTORY=[probe, instrument, data_rate, level])
+endif else begin
+  instr_data_dir = filepath('', ROOT_DIR=!mms.local_data_dir, $
+                              SUBDIRECTORY=[probe, instrument, data_rate, level])
+endelse
 all_files = file_search(instr_data_dir,'*.cdf')
 
 ;perform search
@@ -157,6 +162,21 @@ file_strings = file_strings[*,time_idx]
 
 files_out = unh_mms_file_filter(files, /no_time, version=cdf_version, min_version=min_version, latest_version=latest_version)
 
+if keyword_set(mirror) then begin
+  for fi=0, n_elements(files_out)-1 do begin
+    mirror_file = files_out[fi]
+    str_replace, mirror_file, !mms.mirror_data_dir, !mms.local_data_dir
+    append_array, local_files, mirror_file
+    ; make the local data directory, if needed
+    directory = file_dirname(local_files[fi])
+    
+    if file_test(directory,/dir) eq 0 then begin
+      file_mkdir2, directory
+    endif
+  endfor
+  file_copy, files_out, local_files
+  files_out = local_files
+endif
 ;ensure files are in chronological order, just in case (see note in mms_load_data) 
 files_out = files_out[bsort(files_out)]
 

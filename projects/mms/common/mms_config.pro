@@ -29,8 +29,8 @@
 ; 2015-04-10, moka, Created based on 'thm_config'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-07-13 07:40:27 -0700 (Thu, 13 Jul 2017) $
-; $LastChangedRevision: 23598 $
+; $LastChangedDate: 2018-04-05 14:15:02 -0700 (Thu, 05 Apr 2018) $
+; $LastChangedRevision: 25005 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_config.pro $
 ;
 ;-
@@ -75,6 +75,11 @@ PRO mms_config, no_color_setup=no_color_setup, colortable=colortable
   if getenv('MMS_DATA_DIR') ne '' then $
     !mms.local_data_dir = getenv('MMS_DATA_DIR')
   !mms.local_data_dir = spd_addslash(!mms.local_data_dir)
+  
+  if getenv('MIRROR_DATA_DIR') ne '' then begin
+    !mms.mirror_data_dir = getenv('MIRROR_DATA_DIR')
+    !mms.mirror_data_dir = spd_addslash(!mms.mirror_data_dir)
+  endif
   
   ;------------------------
   ; Global Sytem Variables
