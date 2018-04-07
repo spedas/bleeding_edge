@@ -122,8 +122,8 @@
 ;                 (suppress most messages).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-01-16 11:34:10 -0800 (Tue, 16 Jan 2018) $
-; $LastChangedRevision: 24522 $
+; $LastChangedDate: 2018-04-06 16:34:50 -0700 (Fri, 06 Apr 2018) $
+; $LastChangedRevision: 25021 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -632,7 +632,10 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
     tpileup = torb
     twake = torb
     period = torb
+    ptime = torb
     palt = torb
+    plat = torb
+    psza = torb
     sma = dblarr(norb-3L,3)
 
     hwind = twind
@@ -654,7 +657,11 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
     
       torb[k] = time[(j1+j2)/2L]
       period[k] = (time[j2] - time[j1])/3600D
-      palt[k] = (p1 + p2)/2.
+
+      ptime[k] = time[j1]
+      palt[k] = p1
+      plat[k] = lat[j1]
+      psza[k] = sza[j1]
 
       indx = where(finite(wind[j1:j2,0]), count)
       twind[k] = double(count)/dj
@@ -743,7 +750,10 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
           hpileup : hpileup , $   ; hours in MPR
           hwake   : hwake   , $   ; hours in wake
           period  : period  , $   ; orbit period
-          palt    : palt       }  ; periapsis altitude
+          ptime   : ptime   , $   ; periapsis time
+          palt    : palt    , $   ; periapsis altitude
+          plat    : plat    , $   ; periapsis latitude
+          psza    : psza       }  ; periapsis solar zenith angle
 
 ; Stack up times for plotting in one panel
 

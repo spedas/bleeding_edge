@@ -58,6 +58,16 @@
 ;                              Chksum = '82'X
 ;                              GSEOS svn rev 8482
 ;
+;                       7 : Xmax = 5.5, Erange = [200.,200.], V0scale = 0.
+;                           Hires 32-Hz at 200 eV
+;                             -59 < Elev < +61 ; E = 100
+;                              Chksum = '00'X
+;
+;                       8 : Xmax = 5.5, Erange = [50.,50.], V0scale = 0.
+;                           Hires 32-Hz at 50 eV
+;                             -59 < Elev < +61 ; E = 50
+;                              Chksum = '00'X
+;
 ;                     Otherwise, use the following keywords to define the sweep.
 ;
 ;       CHKSUM:       Use checksum to determine which table to use.  Only works
@@ -83,9 +93,13 @@
 ;       DUMPFILE:     Saves an ascii hex dump to this named file, for comparison with
 ;                     PFDPU EEPROM dump.
 ;
+;       CMDFILE:      Saves an ascii command file for upload to the PFDPU.
+;
+;       MEMADDR:      PFDPU memory address to begin loading table.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-07-20 10:04:35 -0700 (Thu, 20 Jul 2017) $
-; $LastChangedRevision: 23677 $
+; $LastChangedDate: 2018-04-06 16:06:19 -0700 (Fri, 06 Apr 2018) $
+; $LastChangedRevision: 25018 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sweep.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-01-03
@@ -93,8 +107,8 @@
 ;-
 pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xmax, $
                    V0scale=V0scale, Vrange=Vrange, Erange=Erange, old_def=old_def, $
-                   chksum=chksum, V0tweak=V0tweak, dumpfile=dumpfile, tstart=tstart, $
-                   tplot=tplot
+                   chksum=chksum, V0tweak=V0tweak, dumpfile=dumpfile, cmdfile=cmdfile, $
+                   memaddr=memaddr, tstart=tstart, tplot=tplot
 
   @mvn_swe_com
 
@@ -111,7 +125,11 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
 ; Use predefined parameters, if possible
 
   case tabnum of
-    0 : old_cal = 0
+    0 : begin
+          old_def = 0
+          old_cal = 0
+          comment = 'Custom table'
+        end
 
     1 : begin
           Xmax = 6D
@@ -165,6 +183,26 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
           old_def = 0
           old_cal = 0
           comment = 'Transition and Science: INTER (V0 on)'
+        end
+
+    7 : begin
+          Xmax = 5.5D
+          V0scale = 0D
+          e200 = 199.05093D  ; energy bin 27 of table 5
+          Erange = [e200,e200]
+          old_def = 0
+          old_cal = 0
+          comment = 'Hires 32-Hz at 200 eV (V0 off)'
+        end
+
+    8 : begin
+          Xmax = 5.5D
+          V0scale = 0D
+          e50 = 49.168077D   ; energy bin 39 of table 5
+          Erange = [e50,e50]
+          old_def = 0
+          old_cal = 0
+          comment = 'Hires 32-Hz at 50 eV (V0 off)'
         end
 
     else : begin
@@ -515,6 +553,54 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
 
     free_lun,lun
 
+  endif
+  
+  if (size(cmdfile,/type) eq 7) then begin
+    if not keyword_set(memaddr) then memaddr = '0'XL
+
+    nswp = 1792            ; number of time steps
+    nbytes = nswp*4*2      ; time steps x surfaces x bytes-per-setting
+    cmd = bytarr(nbytes)
+    even = 2*indgen(nswp)  ; big endian
+    odd = even + 1
+
+    cmd[even] = cmd_def2 / 256
+    cmd[odd]  = cmd_def2 mod 256
+    even += 2*nswp
+    odd += 2*nswp
+    cmd[even] = cmd_def1 / 256
+    cmd[odd]  = cmd_def1 mod 256
+    even += 2*nswp
+    odd += 2*nswp
+    cmd[even] = cmd_anlz / 256
+    cmd[odd]  = cmd_anlz mod 256
+    even += 2*nswp
+    odd += 2*nswp
+    cmd[even] = cmd_v0 / 256
+    cmd[odd]  = cmd_v0 mod 256
+
+    cmd = strtrim(string(cmd, format='(i)'),2)
+
+    openw, lun, cmdfile, /get_lun
+
+      j = 0
+      nload = nbytes/128
+      for i=0,(nload-1) do begin
+        head = string(memaddr,format='("pfdpu_load(0x",z6.6,",[")')
+        printf,lun,head,cmd[j:(j+127)],format='(a,127(a,", "),a,"])")'
+        memaddr += 128
+        j += 128
+      endfor
+
+      nleft = nbytes mod 128
+      if (nleft gt 0) then begin
+        k = nleft - 1
+        fmt = '(a,' + strtrim(string(k),2) + '(a,", "),a,"])")'
+        head = string(memaddr,format='("pfdpu_load(0x",z6.6,",[")')
+        printf,lun,head,cmd[j:(j+k)],format=fmt
+      endif
+
+    free_lun,lun
   endif
 
   return

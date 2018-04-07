@@ -51,8 +51,8 @@
 ;       INVERSE:      Given a table number, return its checksum.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2014-04-30 17:34:56 -0700 (Wed, 30 Apr 2014) $
-; $LastChangedRevision: 14990 $
+; $LastChangedDate: 2018-04-06 16:06:36 -0700 (Fri, 06 Apr 2018) $
+; $LastChangedRevision: 25019 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_tabnum.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-01-03
@@ -66,6 +66,8 @@ function mvn_swe_tabnum, i, inverse=inverse
       4 : chksum = 'DE'XB
       5 : chksum = 'CC'XB
       6 : chksum = '82'XB
+      7 : chksum = '00'XB
+      8 : chksum = '00'XB
       else   : begin
                  print,'Tabnum ',i,' not recognized.',format='(a,i2.2,a)'
                  chksum = 0B
@@ -80,6 +82,11 @@ function mvn_swe_tabnum, i, inverse=inverse
     'DE'XB : tabnum = 4
     'CC'XB : tabnum = 5
     '82'XB : tabnum = 6
+    '00'XB : begin
+               print,'Checksum ',i,' ambiguous (table 7 or 8).',format='(a,Z2.2,a)'
+               print,'Assuming table 7.  Use energy to resolve.'
+               tabnum = 7
+             end
     else   : begin
                print,'Checksum ',i,' not recognized.',format='(a,Z2.2,a)'
                tabnum = 0

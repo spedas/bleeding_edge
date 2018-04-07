@@ -11,10 +11,36 @@
 ; 
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
-; $LastChangedRevision: 24128 $
+; $LastChangedDate: 2018-04-06 14:20:42 -0700 (Fri, 06 Apr 2018) $
+; $LastChangedRevision: 25017 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_init_ut__define.pro $
 ;-
+
+function mms_init_ut::test_mirror_dir
+  ; check the mirror directory, shouldn't exist, but probably does (from previous tests)
+  testdir = file_test('~/mirror_tests/', /dir)
+  if testdir then file_delete, '~/mirror_tests/', /recursive
+  mms_init, local_data_dir='~/mirror_tests/', mirror_data_dir='~/mirror_data/', /reset
+  !mms.no_download = 1
+  mms_load_fpi, trange=['2015-12-15', '2015-12-16'], datatype='des-moms'
+  ; make sure the files were copied to the local_data_dir
+  assert, file_test('~/mirror_tests/mms3/fpi/fast/l2/des-moms/2015/12/mms3_fpi_fast_l2_des-moms_20151215000000_v3.1.0.cdf'), 'Problem with mirror tests'
+  return, 1
+end
+
+function mms_init_ut::test_mirror_dir_environmentvar
+  ; check the mirror directory, shouldn't exist, but probably does (from previous tests)
+  testdir = file_test('~/mirror_tests/', /dir)
+  if testdir then file_delete, '~/mirror_tests/', /recursive
+  setenv, 'MIRROR_DATA_DIR=~/mirror_data/'
+  mms_init, local_data_dir='~/mirror_tests/', /reset
+  !mms.no_download = 1
+  mms_load_fpi, trange=['2015-12-15', '2015-12-16'], datatype='des-moms'
+  ; make sure the files were copied to the local_data_dir
+  assert, file_test('~/mirror_tests/mms3/fpi/fast/l2/des-moms/2015/12/mms3_fpi_fast_l2_des-moms_20151215000000_v3.1.0.cdf'), 'Problem with mirror tests'
+  setenv, 'MIRROR_DATA_DIR='
+  return, 1
+end
 
 function mms_init_ut::test_root_data_dir
   current_root_data_dir = getenv('ROOT_DATA_DIR')

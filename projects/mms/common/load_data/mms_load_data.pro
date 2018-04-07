@@ -92,8 +92,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-05 14:15:02 -0700 (Thu, 05 Apr 2018) $
-;$LastChangedRevision: 25005 $
+;$LastChangedDate: 2018-04-06 13:12:42 -0700 (Fri, 06 Apr 2018) $
+;$LastChangedRevision: 25014 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 
@@ -339,7 +339,7 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
                     mirror_files = local_files_filtered.filename
                     append_array, files, mirror_files
                   endif else begin
-                    dprint, dlevel = 0, 'Error, no local or remote data files found: '+$
+                    dprint, dlevel = 0, 'Error, no local, remote or mirror data files found: '+$
                       probe+' '+instrument+' '+data_rate+' '+level+' '+datatype+' (user: '+current_user+')'
                     continue
                   endelse

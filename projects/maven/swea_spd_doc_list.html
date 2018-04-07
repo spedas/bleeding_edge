@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Apr  5 18:16:22 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Apr  6 18:16:28 2018.<P>
  
 <HR>
  
@@ -4855,6 +4855,16 @@ KEYWORDS:
                               Chksum = '82'X
                               GSEOS svn rev 8482
 
+                       7 : Xmax = 5.5, Erange = [200.,200.], V0scale = 0.
+                           Hires 32-Hz at 200 eV
+                             -59 &lt; Elev &lt; +61 ; E = 100
+                              Chksum = '00'X
+
+                       8 : Xmax = 5.5, Erange = [50.,50.], V0scale = 0.
+                           Hires 32-Hz at 50 eV
+                             -59 &lt; Elev &lt; +61 ; E = 50
+                              Chksum = '00'X
+
                      Otherwise, use the following keywords to define the sweep.
 
        CHKSUM:       Use checksum to determine which table to use.  Only works
@@ -4880,9 +4890,13 @@ KEYWORDS:
        DUMPFILE:     Saves an ascii hex dump to this named file, for comparison with
                      PFDPU EEPROM dump.
 
+       CMDFILE:      Saves an ascii command file for upload to the PFDPU.
+
+       MEMADDR:      PFDPU memory address to begin loading table.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-07-20 10:04:35 -0700 (Thu, 20 Jul 2017) $
- $LastChangedRevision: 23677 $
+ $LastChangedDate: 2018-04-06 16:06:19 -0700 (Fri, 06 Apr 2018) $
+ $LastChangedRevision: 25018 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sweep.pro $
 
 CREATED BY:	David L. Mitchell  2014-01-03
@@ -4993,8 +5007,8 @@ KEYWORDS:
        INVERSE:      Given a table number, return its checksum.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2014-04-30 17:34:56 -0700 (Wed, 30 Apr 2014) $
- $LastChangedRevision: 14990 $
+ $LastChangedDate: 2018-04-06 16:06:36 -0700 (Fri, 06 Apr 2018) $
+ $LastChangedRevision: 25019 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_tabnum.pro $
 
 CREATED BY:	David L. Mitchell  2014-01-03
