@@ -27,8 +27,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-06 14:13:51 -0700 (Fri, 06 Apr 2018) $
-;$LastChangedRevision: 25016 $
+;$LastChangedDate: 2018-04-09 12:14:36 -0700 (Mon, 09 Apr 2018) $
+;$LastChangedRevision: 25023 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_get_local_files.pro $
 ;-
 
@@ -170,17 +170,19 @@ if keyword_set(mirror) then begin
   spawn, 'echo ' + local_dir, local_dir
   for fi=0, n_elements(files_out)-1 do begin
     mirror_file = files_out[fi]
+    ; for windows machines, need forward slashes 
+    mirror_file = strjoin(strsplit(mirror_file, '\', /extract), '/')
     str_replace, mirror_file, mirror_dir, local_dir
     append_array, local_files, mirror_file
     ; make the local data directory, if needed
     directory = file_dirname(local_files[fi])
-    
+
     if file_test(directory,/dir) eq 0 then begin
       file_mkdir2, directory
     endif
   endfor
 
-  file_copy, files_out, local_files;, /overwrite
+  file_copy, files_out, local_files, /overwrite, /allow_same
   files_out = local_files
 endif
 ;ensure files are in chronological order, just in case (see note in mms_load_data) 

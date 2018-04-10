@@ -29,7 +29,7 @@ function spp_fld_select_timespan, input_timespan = input_timespan, $
 
   if n_elements(trange_full) eq 2 then ts = trange_full
 
-  if n_elements(ts) LT 2 then begin
+  if n_elements(ts) LT 2 or max(ts) EQ 0. then begin
 
     ts = [systime(/sec)-60., systime(/sec)]
 

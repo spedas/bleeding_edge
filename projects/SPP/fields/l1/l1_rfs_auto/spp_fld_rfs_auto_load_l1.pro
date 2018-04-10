@@ -119,6 +119,8 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
 
   lo_gain = where(rfs_gain_dat.y EQ 0, n_lo_gain)
 
+  ; TODO: fix loading when peaks = 0
+
   raw_spectra = ['peaks_ch0', 'peaks_ch1', $
     'averages_ch0', 'averages_ch1', $
     'spec0_ch0', 'spec0_ch1', $
