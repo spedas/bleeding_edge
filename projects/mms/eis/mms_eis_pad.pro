@@ -30,8 +30,8 @@
 ;     This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-03-01 13:11:47 -0800 (Thu, 01 Mar 2018) $
-;$LastChangedRevision: 24813 $
+;$LastChangedDate: 2018-04-10 14:11:48 -0700 (Tue, 10 Apr 2018) $
+;$LastChangedRevision: 25029 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 ;-
 ; REVISION HISTORY:
@@ -67,7 +67,7 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
   if not KEYWORD_SET(probes) then probes = '1' else probes = strcompress(string(probes), /rem)
   if not KEYWORD_SET(datatype) then datatype = 'extof'
   if not KEYWORD_SET(species) then species = 'proton'
-  if (datatype eq 'electronenergy') then species = 'electron'
+  if n_elements(datatype) eq 1 && (datatype eq 'electronenergy') then species = 'electron'
   if not KEYWORD_SET(energy) then energy = [55,800]
   if not KEYWORD_SET(size_pabin) then size_pabin = 15
   if not KEYWORD_SET(data_units) then data_units = 'flux'
@@ -137,8 +137,8 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
           ;
           ;
           get_data,prefix+datatype[dd]+'_'+species+'_'+data_units+'_omni'+suffix,data=omni_data
-          these_energies = where((omni_data.v ge energy[0]) and (omni_data.v le energy[1]))
-          if (n_elements(these_energies) eq 0) then begin
+          these_energies = where((omni_data.v ge energy[0]) and (omni_data.v le energy[1]), energies_count)
+          if (energies_count eq 0) then begin
             print, 'Energy range selected is not covered by the detector for ' + datatype[dd] + ' ' + species[species_idx] + ' ' + data_units
             return
           endif

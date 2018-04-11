@@ -53,8 +53,8 @@
 ;         
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-03-09 15:28:22 -0800 (Fri, 09 Mar 2018) $
-;$LastChangedRevision: 24863 $
+;$LastChangedDate: 2018-04-10 09:04:42 -0700 (Tue, 10 Apr 2018) $
+;$LastChangedRevision: 25028 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
@@ -72,8 +72,9 @@ end
 
 pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, info=info, server=server, $
   dataset=dataset, path=path, port=port, scheme=scheme, prefix=prefix, tplotvars=tplotvars, timeout=timeout, $
-  connect_timeout=connect_timeout, parameters=parameters
+  connect_timeout=connect_timeout, parameters=parameters, local_data_dir=local_data_dir
 
+  t0 = systime(/seconds)
   catch, error_status
   if error_status ne 0 then begin
     catch, /cancel
@@ -112,6 +113,7 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
   if undefined(path) then path = url_path
   if undefined(port) then port = url_port
   if undefined(scheme) then scheme = url_scheme
+  if undefined(local_data_dir) then local_data_dir = 'hapi/'
 
   ; the user specified a list of parameters
   if ~undefined(parameters) then begin
@@ -156,8 +158,10 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
       neturl->SetProperty, URL_PATH=path+'/info?id='+info_dataset $
     else $
       neturl->SetProperty, URL_PATH=path+'/info?id='+info_dataset+'&parameters='+para
-      
+    
+    dt_info_t0 = systime(/sec)
     info = hapi_get_json(neturl)
+    dt_info_query = systime(/sec)-dt_info_t0
     
     for param_idx = 0, n_elements(info['parameters'])-1 do begin
       append_array, param_names, ((info['parameters'])[param_idx])['name']
@@ -182,7 +186,13 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
       return
     endelse
 
-    csv_data = neturl->get(filename='hapidata')
+    data_directory = spd_addslash(local_data_dir) + spd_addslash(scheme) + spd_addslash(url_host) + spd_addslash(url_path) + 'data/' + spd_addslash(info_dataset)
+    dir_exists = file_test(data_directory)
+    if ~dir_exists then file_mkdir2, data_directory
+    
+    dt_t0 = systime(/sec)
+    csv_data = neturl->get(filename=data_directory+'hapidata')
+    dt_download = systime(/sec)-dt_t0
     
     csv = read_csv(csv_data)
     
@@ -223,4 +233,8 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
       endif
     endfor
   endif
+  
+  dprint, dlevel=2, 'Time spent querying info from the server: ' + strtrim(dt_info_query, 2) + ' sec'
+  dprint, dlevel=2, 'Time spent downloading the CSV data: ' + strtrim(dt_download, 2) + ' sec'
+  dprint, dlevel=2, 'Total load time: ' + strtrim(systime(/sec)-t0, 2) + ' sec'
 end
