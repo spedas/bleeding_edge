@@ -54,7 +54,7 @@
 ;     The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
 ;
 ;     1) See the following regarding rules for the use of MMS data:
-;         https://lasp.colorado.edu/galaxy/display/mms/MMS+Data+Rights+and+Rules+for+Data+Use
+;         https://lasp.colorado.edu/mms/sdc/public/about/
 ;          
 ;     2) CDF version 3.6.3+ is required to correctly handle leap seconds.  
 ;         
@@ -92,8 +92,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-06 13:12:42 -0700 (Fri, 06 Apr 2018) $
-;$LastChangedRevision: 25014 $
+;$LastChangedDate: 2018-04-12 09:48:20 -0700 (Thu, 12 Apr 2018) $
+;$LastChangedRevision: 25034 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Apr 11 18:16:29 2018.<P>
+<STRONG>Last modified: </STRONG>Thu Apr 12 18:16:11 2018.<P>
  
 <HR>
  
@@ -28,8 +28,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#SPICE_FILE_SOURCE">SPICE_FILE_SOURCE</A>
 <br>Provides a structure that contains information pertinent to the locaton (and downloading) of SPICE data files
 <LI><A HREF="#SPICE_INSTALL">SPICE_INSTALL</A>
-<LI><A HREF="#SPICE_KERNEL_INFO">SPICE_KERNEL_INFO</A>
-<LI><A HREF="#SPICE_KERNEL_LOAD">SPICE_KERNEL_LOAD</A>
+<LI><A HREF="#SPICE_KERNEL_INFO[1]">SPICE_KERNEL_INFO[1]</A>
+<LI><A HREF="#SPICE_KERNEL_INFO[2]">SPICE_KERNEL_INFO[2]</A>
 <LI><A HREF="#SPICE_M2Q">SPICE_M2Q</A>
 <LI><A HREF="#SPICE_POSITION_TO_TPLOT">SPICE_POSITION_TO_TPLOT</A>
 <LI><A HREF="#SPICE_QROT_TO_TPLOT">SPICE_QROT_TO_TPLOT</A>
@@ -202,7 +202,7 @@ OUTPUT:
 <A NAME="SPICE_INSTALL">
 <H2>SPICE_INSTALL</H2></A>
 <A HREF="#SPICE_FILE_SOURCE">[Previous Routine]</A>
-<A HREF="#SPICE_KERNEL_INFO">[Next Routine]</A>
+<A HREF="#SPICE_KERNEL_INFO[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 program: SPICE_INSTALL
@@ -220,10 +220,25 @@ Note:  This routine has not been tested on all platforms. (But should be safe)
 <STRONG>(See <A href="spice/spice_install.pro">general/spice/spice_install.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPICE_KERNEL_INFO">
-<H2>SPICE_KERNEL_INFO</H2></A>
+<A NAME="SPICE_KERNEL_INFO[1]">
+<H2>SPICE_KERNEL_INFO[1]</H2></A>
 <A HREF="#SPICE_INSTALL">[Previous Routine]</A>
-<A HREF="#SPICE_KERNEL_LOAD">[Next Routine]</A>
+<A HREF="#SPICE_KERNEL_INFO[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Function: SPICE_BOD2S
+ Purpose:  returns true name (string) of a body given either the CODE or an alias string
+ usage:
+   name = spice_bod2s(-202)
+   name = spice_bod2s('MAVEN_SC_BUS')   ; name set to 'MAVEN_SPACECRAFT'
+</PRE><P>
+<STRONG>(See <A href="spice/spice_kernel_info.pro">general/spice/spice_kernel_info.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SPICE_KERNEL_INFO[2]">
+<H2>SPICE_KERNEL_INFO[2]</H2></A>
+<A HREF="#SPICE_KERNEL_INFO[1]">[Previous Routine]</A>
+<A HREF="#SPICE_M2Q">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Function: spice_kernel_info
@@ -244,24 +259,9 @@ Keywords:
 <STRONG>(See <A href="spice/spice_kernel_info.pro">general/spice/spice_kernel_info.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPICE_KERNEL_LOAD">
-<H2>SPICE_KERNEL_LOAD</H2></A>
-<A HREF="#SPICE_KERNEL_INFO">[Previous Routine]</A>
-<A HREF="#SPICE_M2Q">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- Function: SPICE_BOD2S
- Purpose:  returns true name (string) of a body given either the CODE or an alias string
- usage:
-   name = spice_bod2s(-202)
-   name = spice_bod2s('MAVEN_SC_BUS')   ; name set to 'MAVEN_SPACECRAFT'
-</PRE><P>
-<STRONG>(See <A href="spice/spice_kernel_load.pro">general/spice/spice_kernel_load.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="SPICE_M2Q">
 <H2>SPICE_M2Q</H2></A>
-<A HREF="#SPICE_KERNEL_LOAD">[Previous Routine]</A>
+<A HREF="#SPICE_KERNEL_INFO[2]">[Previous Routine]</A>
 <A HREF="#SPICE_POSITION_TO_TPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

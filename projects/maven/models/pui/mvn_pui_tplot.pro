@@ -132,6 +132,6 @@ pro mvn_pui_tplot,store=store,tplot=tplot,tohban=tohban,savetplot=savetplot,_ext
     if keyword_set(savetplot) then makepng,datestr+'_main'
   endif
 
-  if keyword_set(tohban) then tplot,'alt2 swe_a4_pot mvn_swis_en_eflux mvn_Nsw_(cm-3) mvn_Vsw_MSO_(km/s) mvn_sep1_A-F_Rate_Energy mvn_sep1_B-O_Rate_Energy mvn_mag_MSO_(nT) mvn_mag_Btot_(nT) mvn_redures_LOmass_sta_c0 mvn_redures_HImass_sta_c0'
+  if keyword_set(tohban) then tplot,'alt2 mvn_euv_l0 swe_a4 mvn_swis_en_eflux mvn_Nsw_(cm-3) mvn_Vsw_MSO_(km/s) mvn_sep1_A-F_Rate_Energy mvn_sep1_B-O_Rate_Energy mvn_mag_MSO_(nT) mvn_mag_Btot_(nT) mvn_redures_LOmass_sta_c0 mvn_redures_HImass_sta_c0'
 
 end

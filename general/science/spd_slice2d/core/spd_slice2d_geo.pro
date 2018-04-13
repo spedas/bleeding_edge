@@ -31,7 +31,13 @@
 ;                  from the slice plane and about the slice's x-axis.
 ;                    e.g. [-25,25] will average data within 25 degrees
 ;                         of the slice plane about it's x-axis
-;
+;   sum_angle: (geometric interpolation only)
+;               Two element array specifying an angle range over which 
+;               summing will be applied. The angle is measured 
+;               from the slice plane and about the slice's x-axis.
+;                 e.g. [-25,25] will sum data within 25 degrees
+;                 of the slice plane about it's x-axis
+;               
 ;   custom_matrix: Rotation matrix from native -> user specified coordinates
 ;                  (applied first)
 ;   rotation_matrix: Rotation matrix from given coordinates to built in 
@@ -60,8 +66,8 @@
 ;    Averaging will significantly lengthen the required time. 
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-10-19 09:02:17 -0700 (Wed, 19 Oct 2016) $
-; $LastChangedRevision: 22148 $
+; $LastChangedDate: 2018-04-12 13:51:19 -0700 (Thu, 12 Apr 2018) $
+; $LastChangedRevision: 25039 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/core/spd_slice2d_geo.pro $
 ;-
 pro spd_slice2d_geo, data=data, resolution=resolution, $
@@ -70,6 +76,7 @@ pro spd_slice2d_geo, data=data, resolution=resolution, $
                      custom_matrix=ct, rotation_matrix=rot, orient_matrix=mt, $
                      shift=shift, $
                      average_angle=average_angle, $
+                     sum_angle=sum_angle, $
                     ; Data Output
                      slice=slice, xgrid=xgrid, ygrid=ygrid, $
                     ; Info Output
@@ -101,8 +108,8 @@ pro spd_slice2d_geo, data=data, resolution=resolution, $
 
   ;Rotate slice coordinates to desired location. 
   ;The "ct" and "rot" matrices transform INTO the slice plane's coordinates.  
-  ;To determine which bins intersect the slice plane the transformtion
-  ;is reversed and the applied to the slice itself to transorm it
+  ;To determine which bins intersect the slice plane the transformation
+  ;is reversed and the applied to the slice itself to transform it
   ;into the data's native coordinates.
   m = mt
   if keyword_set(ct) then begin
@@ -114,15 +121,16 @@ pro spd_slice2d_geo, data=data, resolution=resolution, $
   u = u # transpose(m)
 
 
-  ;Get necesary rotations for averaging.
+  ;Get necessary rotations for averaging/summing.
   ;The coordinates of the slice plane will be rotated through the 
   ;specified angle range. A separate search will be done at each 
   ;new plane. The number of planes is determined from the desired
   ;resolution and the width of the average.
-  if keyword_set(average_angle) then begin
-    alpha = minmax(average_angle)
+  if keyword_set(average_angle) or keyword_set(sum_angle) then begin
+    if keyword_set(sum_angle) then alpha = minmax(sum_angle)
+    if keyword_set(average_angle) then alpha = minmax(average_angle)
     
-    ;number of additional slices to average over 
+    ;number of additional slices to average/sum over 
     na = (2 * sqrt(n) * (alpha[1]-alpha[0])/90.) > 2
     
     ;copy slice's x-vector
@@ -131,9 +139,9 @@ pro spd_slice2d_geo, data=data, resolution=resolution, $
     ;interpolate across the angle range
     a = ([dindgen(na-1)/(na-1),1] * (alpha[1]-alpha[0])) + alpha[0]
 
-    ;constuct quaternion array to get rotation matricies
+    ;construct quaternion array to get rotation matrices
     qs = qcompose(xv,a/rd, /free) ;quaternions to rotate about x by a
-    ms = qtom(qs) ;get matricies
+    ms = qtom(qs) ;get matrices
     
     if n_elements(ms) eq 1 then begin
       fail = 'Error: Cannot construct rotation matrices for angular averaging.'
@@ -245,7 +253,7 @@ pro spd_slice2d_geo, data=data, resolution=resolution, $
   ;Average areas where bins overlapped
   adj = where(weight eq 0, na)
   if na gt 0 then weight[adj] = 1b
-  slice = slice / weight
+  if undefined(sum_angle) then slice = slice / weight
   
   
   ;Align the x & y axis values if there was a shift

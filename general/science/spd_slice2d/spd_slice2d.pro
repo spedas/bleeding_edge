@@ -150,8 +150,9 @@
 ;                 averaging will be applied. The angle is measured 
 ;                 from the slice plane and about the slice's horizontal axis; 
 ;                 positive in the right handed direction. This will
-;                 average over all data within that range. Note: for the 
-;                 default rotation='xy', the angle is measured from the XY 
+;                 average over all data within that range. 
+;                 
+;                 Note: for the default rotation='xy', the angle is measured from the XY 
 ;                 slice plane and about the x-axis
 ;                    e.g. rotation='xy', average_angle=[-25,25] will average data within 25 degrees
 ;                         of the XY slice plane about it's x-axis
@@ -159,6 +160,21 @@
 ;                         rotation='yz', average_angle=[-25,25] will average data within 25 degrees
 ;                         of the YZ slice plane about it's y-axis
 ;
+;  SUM_ANGLE: (geometric interpolation only)
+;                 Two element array specifying an angle range over which 
+;                 summing will be applied. The angle is measured 
+;                 from the slice plane and about the slice's horizontal axis; 
+;                 positive in the right handed direction. This will
+;                 sum over all data within that range. 
+;                 
+;                 Note: for the default rotation='xy', the angle is measured from the XY 
+;                 slice plane and about the x-axis
+;                    e.g. rotation='xy', sum_angle=[-25,25] will sum data within 25 degrees
+;                         of the XY slice plane about it's x-axis
+;                    or     
+;                         rotation='yz', sum_angle=[-25,25] will sum data within 25 degrees
+;                         of the YZ slice plane about it's y-axis
+;               
 ;  MSG_OBJ: Reference to dprint display object.
 ;  
 ;  DETERM_TOLERANCE:  tolerance of the determinant of the custom rotation matrix 
@@ -215,8 +231,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-03-26 12:33:55 -0700 (Mon, 26 Mar 2018) $
-;$LastChangedRevision: 24954 $
+;$LastChangedDate: 2018-04-12 13:51:19 -0700 (Thu, 12 Apr 2018) $
+;$LastChangedRevision: 25039 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/spd_slice2d.pro $
 ;-
 
@@ -255,6 +271,7 @@ function spd_slice2d, input1, input2, input3, input4, $
                     ; TBD
                       subtract_bulk=subtract_bulk, $
                       average_angle=average_angle, $
+                      sum_angle=sum_angle, $
                     ; Other
                       msg_obj=msg_obj, $
                       fail=fail, $
@@ -275,7 +292,7 @@ endif
 
 if undefined(trange_in) then begin
   if undefined(time_in) then begin
-    fail = 'Please specifiy a time or time range over which to compute the slice.  For example: '+ $
+    fail = 'Please specify a time or time range over which to compute the slice.  For example: '+ $
            ssl_newline()+'  "TIME=t, WINDOW=w" or "TRANGE=tr" or "TIME=t, SAMPLES=n"'
     dprint, dlevel=1, fail
     return, invalid
@@ -339,6 +356,17 @@ if type ne 0 && keyword_set(average_angle) then begin
   return, invalid
 endif
 
+if type ne 0 && keyword_set(sum_angle) then begin
+  dprint, dlevel=1, 'Angular summing is only applicable to the geometric method.'+ $
+    'No summing will be applied.'
+  return, invalid
+endif
+
+if keyword_set(average_angle) && keyword_set(sum_angle) then begin
+  dprint, dlevel=1, 'Conflicting keywords specified: sum_angle and average_angle; only one of these keywords can be specified at a time.' + $
+    'No summing/averaging will be applied.'
+  return, invalid
+endif
 
 msg = 'Processing slice at ' + time_string(time, tformat='YYYY/MM/DD hh:mm:ss.fff') +'... '
 dprint, dlevel=2, msg, display_object=msg_obj 
@@ -387,7 +415,7 @@ if undefined(trange) && keyword_set(window) then begin
 endif
 
 ; if no time range or window was specified then get a time range 
-; from the N closest samples to the specied time
+; from the N closest samples to the specified time
 ;   (defaults to 1 if SAMPLES is not defined)
 if undefined(trange) then begin
   trange = spd_slice2d_nearest(ds, time, samples)
@@ -566,6 +594,7 @@ endif else begin
                    average_angle=average_angle, $
                    msg_obj=msg_obj, msg_prefix=msg, $
                    slice=slice, xgrid=xgrid, ygrid=ygrid, $
+                   sum_angle=sum_angle, $
                    fail=fail
 
 endelse

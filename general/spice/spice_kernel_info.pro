@@ -1,3 +1,31 @@
+
+function spice_bodc2s,code
+  cspice_bodc2s,code,name
+  return,name
+end
+
+
+function spice_bods2c,name,found
+  cspice_bods2c,name,code,found
+  return,code
+end
+
+
+;+
+; Function: SPICE_BOD2S
+; Purpose:  returns true name (string) of a body given either the CODE or an alias string
+; usage:
+;   name = spice_bod2s(-202)
+;   name = spice_bod2s('MAVEN_SC_BUS')   ; name set to 'MAVEN_SPACECRAFT'
+;-
+function spice_bod2s,nnn
+  if size(/type,nnn) eq 7 then name=spice_bodc2s(spice_bods2c(nnn)) else cspice_bodc2s,nnn,name
+  return,strupcase(name)
+end
+
+
+
+
 ;+
 ;Function: spice_kernel_info
 ;

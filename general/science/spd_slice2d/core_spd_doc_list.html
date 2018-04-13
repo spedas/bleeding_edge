@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Apr 11 18:16:29 2018.<P>
+<STRONG>Last modified: </STRONG>Thu Apr 12 18:16:11 2018.<P>
  
 <HR>
  
@@ -159,8 +159,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/sci
    work in progress! please send bugs/problems/complaints/etc to egrimes@igpp.ucla.edu
    
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-03-27 12:43:24 -0700 (Tue, 27 Mar 2018) $
-$LastChangedRevision: 24962 $
+$LastChangedDate: 2018-04-12 12:47:41 -0700 (Thu, 12 Apr 2018) $
+$LastChangedRevision: 25038 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/core/spd_slice1d_plot.pro $
 </PRE><P>
 <STRONG>(See <A href="core/spd_slice1d_plot.pro">general/science/spd_slice2d/core/spd_slice1d_plot.pro</A>)</STRONG><P>
@@ -427,7 +427,13 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/sci
                   from the slice plane and about the slice's x-axis.
                     e.g. [-25,25] will average data within 25 degrees
                          of the slice plane about it's x-axis
-
+   sum_angle: (geometric interpolation only)
+               Two element array specifying an angle range over which 
+               summing will be applied. The angle is measured 
+               from the slice plane and about the slice's x-axis.
+                 e.g. [-25,25] will sum data within 25 degrees
+                 of the slice plane about it's x-axis
+               
    custom_matrix: Rotation matrix from native -&gt; user specified coordinates
                   (applied first)
    rotation_matrix: Rotation matrix from given coordinates to built in 
@@ -456,8 +462,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/sci
     Averaging will significantly lengthen the required time. 
  
  $LastChangedBy: egrimes $
- $LastChangedDate: 2016-10-19 09:02:17 -0700 (Wed, 19 Oct 2016) $
- $LastChangedRevision: 22148 $
+ $LastChangedDate: 2018-04-12 13:51:19 -0700 (Thu, 12 Apr 2018) $
+ $LastChangedRevision: 25039 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/core/spd_slice2d_geo.pro $
 </PRE><P>
 <STRONG>(See <A href="core/spd_slice2d_geo.pro">general/science/spd_slice2d/core/spd_slice2d_geo.pro</A>)</STRONG><P>
