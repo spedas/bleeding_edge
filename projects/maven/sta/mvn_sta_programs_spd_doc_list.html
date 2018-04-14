@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Apr 12 18:16:11 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Apr 13 03:16:36 2018.<P>
  
 <HR>
  
@@ -30,6 +30,9 @@ This page was created by the IDL library routine
 <LI><A HREF="#MVN_STA_MAKE_D1E">MVN_STA_MAKE_D1E</A>
 <br>Makes common block structure mvn_d1e (64E-64S-8M) from d1 (32E-64S-8M) and c0 (64E-1S-2M) data products
 <LI><A HREF="#MVN_STA_SC_BINS_INSERT">MVN_STA_SC_BINS_INSERT</A>
+<LI><A HREF="#MVN_STA_SC_BINS_LOAD[1]">MVN_STA_SC_BINS_LOAD[1]</A>
+<LI><A HREF="#MVN_STA_SC_BINS_LOAD[2]">MVN_STA_SC_BINS_LOAD[2]</A>
+<LI><A HREF="#MVN_STA_SC_BINS_LOAD[2]">MVN_STA_SC_BINS_LOAD[2]</A>
 <LI><A HREF="#MVN_STA_SCPOT_LOAD">MVN_STA_SCPOT_LOAD</A>
 <br>Loads scpot into static apid common blocks for science data products - only works if scpot is negative
 <LI><A HREF="#MVN_STA_SCPOT_UPDATE">MVN_STA_SCPOT_UPDATE</A>
@@ -264,6 +267,7 @@ LAST MODIFICATION:
 <A NAME="MVN_STA_SC_BINS_INSERT">
 <H2>MVN_STA_SC_BINS_INSERT</H2></A>
 <A HREF="#MVN_STA_SCPOT_UPDATE">[Previous Routine]</A>
+<A HREF="#MVN_STA_SC_BINS_LOAD[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  FUNCTION:        MVN_STA_SC_BINS_INSERT
@@ -291,5 +295,73 @@ LAST MODIFICATION:
 
 </PRE><P>
 <STRONG>(See <A href="mvn_sta_programs/mvn_sta_sc_bins_insert.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_insert.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_SC_BINS_LOAD[1]">
+<H2>MVN_STA_SC_BINS_LOAD[1]</H2></A>
+<A HREF="#MVN_STA_SC_BINS_INSERT">[Previous Routine]</A>
+<A HREF="#MVN_STA_SC_BINS_LOAD[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ :Name:
+    Roberto Livi
+
+ :Program:
+    MVN_STA_SC_BINS_LOAD
+
+ :Syntax:
+    IDL&gt; mvn_sta_sc_bins_load, /test_plot1, /test_plot2
+
+ :Purpose:
+    Fill MAVEN STATIC common block data with FOV
+    obstruction by the spacecraft.
+
+ :Params:
+    perc_block: Set this number to the desired percentage
+                of covered area before marking a bin as
+                blocked.
+
+ :Returns:
+    None.
+
+ :Keywords:
+    test_plot1: Plots for debugging.
+    test_plot2: More plots for debugging.
+    ssave: Save file for intermediary debugging.
+    rrestore: Restore file for intermediary debugging.
+    verbose: Print out processing status.
+
+ :Version:
+
+   $LastChangedBy: rlivi2 $
+   $LastChangedDate: 2018-04-13 00:25:20 -0700 (Fri, 13 Apr 2018) $
+   $LastChangedRevision: 25044 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load.pro $
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_sc_bins_load.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_SC_BINS_LOAD[2]">
+<H2>MVN_STA_SC_BINS_LOAD[2]</H2></A>
+<A HREF="#MVN_STA_SC_BINS_LOAD[1]">[Previous Routine]</A>
+<A HREF="#MVN_STA_SC_BINS_LOAD[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Inside - Take the dot and cross product of point an nearby vertices
+          to determine whether the point is inside or outisde of box
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_sc_bins_load.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_SC_BINS_LOAD[2]">
+<H2>MVN_STA_SC_BINS_LOAD[2]</H2></A>
+<A HREF="#MVN_STA_SC_BINS_LOAD[2]">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+#################################################
+                Main Function
+#################################################
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_sc_bins_load.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load.pro</A>)</STRONG><P>
 <HR>
  
