@@ -2,7 +2,7 @@
 
 #A script for a cronjob for 0 length file removal
 # 27 * * * * /bin/csh /home/muser/export_socware/idl_socware/projects/maven/l2gen/mvn_l2gen_remove_0logs.sh >/dev/null 2>&1
-source /usr/local/setup/setup_idl8.3		# IDL
+source /usr/local/setup/setup_idl8.5.1		# IDL
 setenv BASE_DATA_DIR /disks/data/
 setenv ROOT_DATA_DIR /disks/data/
 #IDL SETUP for MAVEN

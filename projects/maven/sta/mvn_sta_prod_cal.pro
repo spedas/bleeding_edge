@@ -337,9 +337,18 @@ dead3 = 460.		; stop-no-start and stop-then-start events
 ;************************************************************************************************ 
 ;************************************************************************************************ 
 
+; eff_start = qual/C&D ~ 0.65 (EM)
+; eff_stop  = qual/A&B ~ 0.47 (EM)
+; qual/Trst = (1. + (1.-eff_start)*(1.-eff_stop)) * eff_start * eff_stop
+
+; 0.36 ~ qual/Trst = (1. + (1.-eff_start)*(1.-eff_stop)) * eff_start * eff_stop ~ 0.36
+; print,(1. + (1.-.65)*(1.-.47)) * .65 * .47
+
+;************************************************************************************************ 
+;************************************************************************************************ 
 ; Declare time dependent efficiency arrays -- assume 10 changes in these arrays over time????
 
-def_eff = .285		; early mission solar wind proton efficiency
+def_eff = .285		; early mission solar wind proton efficiency, includes ~0.8 anode rejection efficiency
 
 ; The below arrays are from ground calibrations with the Colutron gun
 ; Ground calibration efficiency of foils, ignoring holes in start foils, at 15 keV, 20 keV for H+,H2+,He+,N+,N2+,CO2+
@@ -454,7 +463,7 @@ def_eff = .285		; early mission solar wind proton efficiency
 
 ; The following will replace the ModeID to Sweep table map
 ;    conf2swp[config4,md2], where md2 is the lower nibble of the header mode, and config4 is from housekeeping
-	conf2swp = intarr(256,16)
+	conf2swp = intarr(512,16)							; may need 512 to grow if config4 upper byte is more than 1
 	conf2swp[0,0:4]=[0,1,2,3,4]							; predelivery values
 	conf2swp[17,0:4]=[0,1,2,3,4]							; LEO to MOI values
 	if first_t gt time_double('2014-03-10/0') then conf2swp[17,0:4]=[5,5,6,3,4]	; Cruciform values loaded
@@ -462,6 +471,10 @@ def_eff = .285		; early mission solar wind proton efficiency
 	conf2swp[2,0:6]=[9,9,10,11,12,13,14]						; Protect  eprom load 2		- 20141127
 	conf2swp[3,0:6]=[15,15,16,17,18,19,20]						; Deep dip eprom load 3		- 20150124
 	conf2swp[4,0:6]=[21,21,22,23,24,25,26]						; Deep dip eprom load 4		- 20150624
+; The following was added for CO2 mode with a SLUT load directly to STATIC, and a Config4 low byte increment to 1 (low and high bytes reversed in housekeeping)
+	conf2swp[260,0:7]=[21,21,22,23,24,25,26,27]					; CO2 mode 20180413, config4=260
+; The following was added to solidify CO2 mode in eprom load 5
+	conf2swp[5,0:7]=[21,21,22,23,24,25,26,27]					; eprom load 5	 201804??
 
 ; SLUT parameters for each STATIC energy sweep table
 ; Note - Slut parameters must be corrected to actual calibration sweep & deflection values with "scale" and "def_scale"
@@ -472,7 +485,7 @@ def_eff = .285		; early mission solar wind proton efficiency
 ; Note - when sweeps are changed/added, "conf2swp,conf2mlut,swp2gfan,swp2gfdf" must be modified in this program
 ; Note - new MLUT tables might also be needed when sweeps are changed -- determined by "conf2mlut"
 
-	n_swp = 27
+	n_swp = 28
 	slut = fltarr(n_swp,7)
 ;	slut[iswp,*]	  Estart,	 Estop,	defmax,	defctr,	gridon,	gridscale,	maxgrid		; mode name
 ; LEO modes
@@ -501,16 +514,18 @@ def_eff = .285		; early mission solar wind proton efficiency
 	slut[18,*] = 	[30000.0,	0.2000,	 0.0,	0.,	24.0,	4.0,		25.]		; scan3			
 	slut[19,*] = 	[30000.0,	0.2000,	45.0,	0.,	24.0,	4.0,		25.]		; eclip3		
 	slut[20,*] = 	[30000.0,	25.000,	45.0,	0.,	 0.0,	2.0,		25.]		; protect3		
-; Science modes - TBD - when next eprom update is performed
+; Science modes - loaded 2015-06-24 - gridon terminated at 12-13 eV
 	slut[21,*] = 	[   50.0,	0.1500,	22.5,	0.,	12.5,	5.0,		25.]		; ram4			eprom 4
 	slut[22,*] = 	[  500.0,	0.3000,	45.0,	0.,	12.8,	5.0,		25.]		; conic4		grid scale changed to 5 so attE works for deep dips
 	slut[23,*] = 	[30000.0,	0.3500,	45.0,	0.,	12.8,	5.0,		25.]		; pickup4		atten disabled, gridon decreased to avoid ionization of neutrals between grids during deep dip
 	slut[24,*] = 	[30000.0,	0.3500,	45.0,	0.,	12.8,	5.0,		25.]		; scan4			atten enabled, same as pickup but with high data rate
 	slut[25,*] = 	[30000.0,	0.3500,	45.0,	0.,	12.8,	5.0,		25.]		; eclip4		atten enabled, same as pickup otherwise
 	slut[26,*] = 	[30000.0,	25.000,	45.0,	0.,	 0.0,	2.0,		25.]		; protect4		
+; CO2 mode added 
+	slut[27,*] = 	[   10.0,	 1.000,	22.5,	0.,	 12.0,	5.0,		25.]		; protect4		
 
 ; iswp to MLUT map	
-	swp2mlut = [0,0,0,3,3,1,1,4,4,1,1,5,5,5,6,1,1,7,7,7,6,1,1,8,8,8,6]				; MLUT table associated with each SLUT sweep table
+	swp2mlut = [0,0,0,3,3,1,1,4,4,1,1,5,5,5,6,1,1,7,7,7,6,1,1,8,8,8,6,1]				; MLUT table associated with each SLUT sweep table
 
 ; Assumptions about how to deal with mechanical attenuator for data products with no angular info 
 ; iswp to anode & def range for geometric factor considerations
@@ -524,11 +539,11 @@ def_eff = .285		; early mission solar wind proton efficiency
 
 	swp2gfan = intarr(n_swp,2)									; For data averaged over anode, swp2gfan gives the assumed anode range for most counts 
 	swp2gfdf = intarr(n_swp,2)									; For data averaged over def step, swp2gfdf gives the assumed def range for most counts 
-	swp2gfan[*,0] = [7,7,6, 0, 0,7,6, 0, 0,7,6, 0, 0, 0, 0,7,6, 0, 0, 0, 0,7,6, 0, 0, 0, 0]		;   Used for APIDs with anode compressed data
-	swp2gfan[*,1] = [7,7,8,15,15,7,8,15,15,7,8,15,15,15,15,7,8,15,15,15,15,7,8,15,15,15,15]		;   RAM mode counts assumed to land in anode 7, CONIC mode counts assumed to land in anodes 6 to 8
+	swp2gfan[*,0] = [7,7,6, 0, 0,7,6, 0, 0,7,6, 0, 0, 0, 0,7,6, 0, 0, 0, 0,7,6, 0, 0, 0, 0,7]	;   Used for APIDs with anode compressed data
+	swp2gfan[*,1] = [7,7,8,15,15,7,8,15,15,7,8,15,15,15,15,7,8,15,15,15,15,7,8,15,15,15,15,7]	;   RAM mode counts assumed to land in anode 7, CONIC mode counts assumed to land in anodes 6 to 8
 
-	swp2gfdf[*,0] = [7,7, 5, 0, 0,7, 5, 0, 0,7, 5, 0, 0, 0, 0,7, 5, 0, 0, 0, 0,7, 5, 0, 0, 0, 0]	;   Used for APIDs with deflector compressed data, determines which sweeps should assume inclusion of large def angles where gf response rolls off
-	swp2gfdf[*,1] = [8,8,10,15,15,8,10,15,15,8,10,15,15,15,15,8,10,15,15,15,15,8,10,15,15,15,15]	;   RAM mode counts assumed to land in def 7-8, CONIC mode counts assumed to land in def 5-10
+	swp2gfdf[*,0] = [7,7, 5, 0, 0,7, 5, 0, 0,7, 5, 0, 0, 0, 0,7, 5, 0, 0, 0, 0,7, 5, 0, 0, 0, 0,7]	;   Used for APIDs with deflector compressed data, determines which sweeps should assume inclusion of large def angles where gf response rolls off
+	swp2gfdf[*,1] = [8,8,10,15,15,8,10,15,15,8,10,15,15,15,15,8,10,15,15,15,15,8,10,15,15,15,15,8]	;   RAM mode counts assumed to land in def 7-8, CONIC mode counts assumed to land in def 5-10
 
 	def_volt_max = 4000.										; max deflector voltage, high energy steps have limited deflection range
 
@@ -614,7 +629,7 @@ endif								;
 			minval = min(abs(slut[iswp,4]-nrg[iswp,*]),ind)
 			if nrg[iswp,ind] gt slut[iswp,4] then ind=(ind+1)<63
 			grid_on[iswp,ind:63,*] = 1.
-			grid_off[iswp,0:ind-1,*] = 1.
+			if ind ge 1 then grid_off[iswp,0:(ind-1),*] = 1.
 		endelse	
 
 	   ; gf_an with [iswp,energy,def,anode,att] dependence	
@@ -1467,7 +1482,8 @@ print,'Processing apid c6'
 				ylim,'mvn_sta_C6_att',-1,4,0
 
 ;			swp_ind = md2swp[md1]									; old version
-			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]	
+;			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]	
+			swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tdis)+.5),md2]	
 			eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5)
 			if tdis[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 			store_data,'mvn_sta_C6_eprom_ver',data={x:tdis,y:eprom_ver}
@@ -1569,7 +1585,9 @@ print,'Processing apid c6'
 ; ??????? i think the above line should sum over anodes and average over deflections so that the integ_t can reflect the dead time correctly
 ; ??????? for ram mode, gf could be constructed to only have GF in the ram direction
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nmass) & eff2[*]=def_eff  & eff_ind=intarr(ndis)
 
 ;	mlut = md2mlut(md1)
@@ -1775,7 +1793,8 @@ print,'Processing apid c0'
 			ylim,'mvn_sta_C0_att',-1,4,0
 
 ;		swp_ind = md2swp[md1]									; old version
-		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+;		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+		swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tt)+.5),md2]					
 			eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tt)+.5)
 			if tt[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -1883,7 +1902,9 @@ print,'Processing apid c0'
 			gf2[23:26,*,3]=gf2[23:26,*,3]*att_corr
 	endif
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nmass) & eff2[*]=def_eff  & eff_ind=intarr(nn)
 
 ;	mlut = md2mlut(md1)
@@ -2073,7 +2094,8 @@ print,'Processing apid c2'
 		store_data,'mvn_sta_C2_SEQ_CNTR2',data={x:tt,y:tmp7.y[0:nn-1]}
 
 ;		swp_ind = md2swp[md1]								; old version
-		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+;		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+		swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tt)+.5),md2]					
 			eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tt)+.5)
 			if tt[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -2168,7 +2190,9 @@ print,'Processing apid c2'
 			gf2[23:26,*,3]=gf2[23:26,*,3]*att_corr
 	endif
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nmass) & eff2[*]=def_eff  & eff_ind=intarr(nn)
 
 ;	mlut = md2mlut(md1)
@@ -2370,7 +2394,8 @@ print,'Processing apid c4'
 			ylim,'mvn_sta_C4_att',-1,4,0
 
 ;		swp_ind = md2swp[md1]									; old version
-		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+;		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+		swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tt)+.5),md2]					
 			eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tt)+.5)
 			if tt[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -2463,7 +2488,9 @@ print,'Processing apid c4'
 			gf2[23:26,*,3]=gf2[23:26,*,3]*att_corr
 	endif
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nmass) & eff2[*]=def_eff  & eff_ind=intarr(nn)
 
 ;	mlut = md2mlut(md1)
@@ -2668,7 +2695,8 @@ print,'Processing apid c8'
 			ylim,'mvn_sta_C8_att',-1,4,0
 
 ;		swp_ind = md2swp[md1]									; old version
-		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+;		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+		swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tt)+.5),md2]					
 			eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tt)+.5)
 			if tt[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -2765,7 +2793,9 @@ print,'Processing apid c8'
 	endif
 
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nbins,nmass) & eff2=reform(eff2,128,nenergy,nbins,nmass) & eff2[*]=def_eff  & eff_ind=intarr(nn)
 
 ;	mlut = md2mlut(md1)
@@ -2973,8 +3003,9 @@ print,'Processing apid ca'
 		store_data,'mvn_sta_CA_att',data={x:tt,y:att0}
 			ylim,'mvn_sta_CA_att',-1,4,0
 
-		swp_ind = md2swp[md1]									; old version
-		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+;		swp_ind = md2swp[md1]									; old version
+;		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+		swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tt)+.5),md2]					
 			eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tt)+.5)
 			if tt[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -3045,7 +3076,9 @@ print,'Processing apid ca'
 	gf2 = reform(total(total(reform(gf,n_swp,avg_nrg,nenergy,avg_def,ndef,16,4),4),2),n_swp,nenergy,nbins,4)/(avg_nrg*avg_def)			;
 
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nbins) & eff2[*]=def_eff  & eff_ind=intarr(nn)
 
 ;	mlut = md2mlut(md1)
@@ -3262,7 +3295,8 @@ if ndis1 gt 1 then begin											; kluge for real time data stream which is mi
 				ylim,'mvn_sta_CC_att',-1,4,0
 
 ;			swp_ind = md2swp[md1]									; old version
-			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+;			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+			swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tdis)+.5),md2]					
 				eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5)
 				if tdis[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -3340,7 +3374,9 @@ if ndis1 gt 1 then begin											; kluge for real time data stream which is mi
 
 
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nbins,nmass) & eff2[*]=def_eff  & eff_ind=intarr(ndis)
 
 ;	mlut = md2mlut(md1)
@@ -3552,7 +3588,8 @@ print,'Processing apid cd'
 				ylim,'mvn_sta_CD_att',-1,4,0
 
 ;			swp_ind = md2swp[md1]									; old version
-			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+;			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+			swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tdis)+.5),md2]					
 				eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5)
 				if tdis[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -3629,7 +3666,9 @@ print,'Processing apid cd'
 	gf1 = total(total(reform(gf,n_swp,avg_nrg,nenergy,avg_def,ndef,16,4),4),2)/(avg_nrg*avg_def)
 	for i=0,n_swp-1 do gf2[i,*,*,*] = avg_an*total(gf1[i,*,*,swp2gfan[i,0]:swp2gfan[i,1],*],4)/(swp2gfan[i,1]-swp2gfan[i,0]+1)
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nbins,nmass) & eff2[*]=def_eff  & eff_ind=intarr(ndis)
 
 ;	mlut = md2mlut(md1)
@@ -3840,7 +3879,8 @@ print,'Processing apid ce'
 				ylim,'mvn_sta_CE_att',-1,4,0
 
 ;			swp_ind = md2swp[md1]									; old version
-			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+;			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+			swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tdis)+.5),md2]					
 				eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5)
 				if tdis[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -3920,7 +3960,9 @@ print,'Processing apid ce'
 	gf2 = reform(total(total(reform(gf,n_swp,avg_nrg,nenergy,avg_def,ndef,16,4),4),2),n_swp,nenergy,nbins,4)/(avg_nrg*avg_def)			;
 
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nbins,nmass) & eff2[*]=def_eff  & eff_ind=intarr(ndis)
 
 ;	mlut = md2mlut(md1)
@@ -4130,7 +4172,8 @@ print,'Processing apid cf'
 				ylim,'mvn_sta_CF_att',-1,4,0
 
 ;			swp_ind = md2swp[md1]									; old version
-			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+;			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+			swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tdis)+.5),md2]					
 				eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5)
 				if tdis[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -4209,7 +4252,9 @@ print,'Processing apid cf'
 ;	gf2 = reform(total(total(reform(gf,n_swp,avg_nrg,nenergy,avg_def,ndef,16,4),4),2),n_swp,nenergy,nbins,4)/avg_nrg/avg_def			;
 	gf2 = reform(total(total(reform(gf,n_swp,avg_nrg,nenergy,avg_def,ndef,16,4),4),2),n_swp,nenergy,nbins,4)/(avg_nrg*avg_def)			;
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nbins,nmass) & eff2[*]=def_eff  & eff_ind=intarr(ndis)
 
 ;	mlut = md2mlut(md1)
@@ -4418,7 +4463,8 @@ print,'Processing apid d0'
 				ylim,'mvn_sta_D0_att',-1,4,0
 
 ;			swp_ind = md2swp[md1]									; old version
-			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+;			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+			swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tdis)+.5),md2]					
 				eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5)
 				if tdis[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -4497,7 +4543,9 @@ print,'Processing apid d0'
 ;	gf2 = reform(total(total(reform(gf,n_swp,avg_nrg,nenergy,avg_def,ndef,16,4),4),2),n_swp,nenergy,nbins,4)/avg_nrg/avg_def			;
 	gf2 = reform(total(total(reform(gf,n_swp,avg_nrg,nenergy,avg_def,ndef,16,4),4),2),n_swp,nenergy,nbins,4)/(avg_nrg*avg_def)			;
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nbins,nmass) & eff2[*]=def_eff  & eff_ind=intarr(ndis)
 
 ;	mlut = md2mlut(md1)
@@ -4710,7 +4758,8 @@ print,'Processing apid d1'
 				ylim,'mvn_sta_D1_att',-1,4,0
 
 ;			swp_ind = md2swp[md1]									; old version
-			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+;			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+			swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tdis)+.5),md2]					
 				eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5)
 				if tdis[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -4797,7 +4846,9 @@ print,'Processing apid d1'
 ;	for i=0,n_swp-1 do gf2[i,*,*] = total(total(gf1[i,*,swp2gfdf[i,0]:swp2gfdf[i,1],swp2gfan[i,0]:swp2gfan[i,1],*],3),3)
 ;	for i=0,n_swp-1 do gf2[i,*,*,*,*] = total(total(gf1[i,*,swp2gfdf[i,0]:swp2gfdf[i,1],swp2gfan[i,0]:swp2gfan[i,1],*],3),3)
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nbins,nmass) & eff2[*]=def_eff  & eff_ind=intarr(ndis)
 
 ;	mlut = md2mlut(md1)
@@ -5003,7 +5054,8 @@ print,'Processing apid d2'
 				ylim,'mvn_sta_D2_att',-1,4,0
 
 ;			swp_ind = md2swp[md1]									; old version
-			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+;			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+			swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tdis)+.5),md2]					
 				eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5)
 				if tdis[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -5084,7 +5136,9 @@ print,'Processing apid d2'
 ;	for i=0,n_swp-1 do gf2[i,*,*] = total(total(gf1[i,*,swp2gfdf[i,0]:swp2gfdf[i,1],swp2gfan[i,0]:swp2gfan[i,1],*],3),3)
 ;	for i=0,n_swp-1 do gf2[i,*,*,*,*] = total(total(gf1[i,*,swp2gfdf[i,0]:swp2gfdf[i,1],swp2gfan[i,0]:swp2gfan[i,1],*],3),3)
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nbins,nmass) & eff2[*]=def_eff  & eff_ind=intarr(ndis)
 
 ;	mlut = md2mlut(md1)
@@ -5291,7 +5345,8 @@ print,'Processing apid d3'
 				ylim,'mvn_sta_D3_att',-1,4,0
 
 ;			swp_ind = md2swp[md1]									; old version
-			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+;			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5),md2]					
+			swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tdis)+.5),md2]					
 				eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tdis)+.5)
 				if tdis[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -5372,7 +5427,9 @@ print,'Processing apid d3'
 ;	for i=0,n_swp-1 do gf2[i,*,*] = total(total(gf1[i,*,swp2gfdf[i,0]:swp2gfdf[i,1],swp2gfan[i,0]:swp2gfan[i,1],*],3),3)
 ;	for i=0,n_swp-1 do gf2[i,*,*,*,*] = total(total(gf1[i,*,swp2gfdf[i,0]:swp2gfdf[i,1],swp2gfan[i,0]:swp2gfan[i,1],*],3),3)
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nbins,nmass) & eff2[*]=def_eff  & eff_ind=intarr(ndis)
 
 ;	mlut = md2mlut(md1)
@@ -5591,7 +5648,8 @@ print,'Processing apid d4'
 			ylim,'mvn_sta_D4_att',-1,4,0
 
 ;		swp_ind = md2swp[md1]									; old version
-		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+;		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+		swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tt)+.5),md2]					
 			eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tt)+.5)
 			if tt[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -5671,7 +5729,9 @@ print,'Processing apid d4'
 ;	for i=0,n_swp-1 do gf2[i,*,*] = total(total(gf1[i,*,swp2gfdf[i,0]:swp2gfdf[i,1],swp2gfan[i,0]:swp2gfan[i,1],*],3),3)
 ;	for i=0,n_swp-1 do gf2[i,*,*,*,*] = total(total(gf1[i,*,swp2gfdf[i,0]:swp2gfdf[i,1],swp2gfan[i,0]:swp2gfan[i,1],*],3),3)
 
-; the following line need to be fixed ?????????????????????????????
+; the following line assumes a constant efficiency as a default until other calibration code can be developed
+;    a proper efficiency calibration is handled mvn_sta_dead_load.pro
+
 	eff2 = fltarr(128,nenergy,nbins,nmass) & eff2[*]=def_eff  & eff_ind=intarr(nn)
 
 ;	mlut = md2mlut(md1)
@@ -5831,7 +5891,8 @@ print,'Processing apid d6'
 			rt2 = (md.y[ind1[i]] and 112)/16				; rate 
 			pc  =  md.y[ind1[i]] and 128					; packet compression
 
-			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,t0)+.5),md2]					
+;			swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,t0)+.5),md2]					
+			swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,t0)+.5),md2]					
 
 			ix  = 0l					; index stepping through an event
 			cy1 = 0l
@@ -6125,7 +6186,8 @@ print,'Processing apid d8'
 		store_data,'mvn_sta_D8_mode',data={x:tt,y:md2}
 			ylim,'mvn_sta_D8_mode',-1,7,0
 
-		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+;		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+		swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tt)+.5),md2]					
 			eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tt)+.5)
 			if tt[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -6264,7 +6326,8 @@ print,'Processing apid d9'
 		store_data,'mvn_sta_D9_mode',data={x:tt,y:md2}
 			ylim,'mvn_sta_D9_mode',-1,7,0
 
-		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+;		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+		swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tt)+.5),md2]					
 			eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tt)+.5)
 			if tt[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 
@@ -6485,7 +6548,8 @@ print,'Processing apid da'
 ;		tt2 = tt + 2.*avg2 
 
 ;		swp_ind = md2swp[md1]									; old version
-		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+;		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+		swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tt)+.5),md2]					
 			eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tt)+.5)
 			if tt[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 		eprom_ver = fix(reform(replicate(1,16) # eprom_ver,16*nn))
@@ -6558,7 +6622,8 @@ print,'Processing apid da'
 			md2_2 = fix(round(interp(md6.y,md6.x,tt8)))
 			rt2_2 = fix(round(interp(rt6.y,rt6.x,tt8)))
 			md1_2 = rt2_2*16+md2_2	 
-			swp_ind_2 = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt8)+.5),md2_2]					
+;			swp_ind_2 = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt8)+.5),md2_2]					
+			swp_ind_2 = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tt8)+.5),md2_2]					
 			en2 = nrg[swp_ind_2,*]
 		endif
 
@@ -6675,7 +6740,8 @@ print,'Processing apid db'
 		store_data,'mvn_sta_DB_mode',data={x:tt,y:md2}
 			ylim,'mvn_sta_DB_mode',-1,7,0
 
-		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+;		swp_ind = conf2swp[fix(interp((config4.y and 255)*1.,config4.x,tt)+.5),md2]					
+		swp_ind = conf2swp[fix(interp((config4.y and 511)*1.,config4.x,tt)+.5),md2]					
 			eprom_ver = fix(interp((config4.y and 255)*1.,config4.x,tt)+.5)
 			if tt[0] lt time_double('2014-10-1/0') then eprom_ver[*]=0
 

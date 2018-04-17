@@ -4,9 +4,9 @@
 ; Makes a blank panel if proper data quantities are not present
 ;
 ;
-; $LastChangedBy: lphilpott $
-; $LastChangedDate: 2012-06-15 11:34:58 -0700 (Fri, 15 Jun 2012) $
-; $LastChangedRevision: 10568 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2018-04-16 10:47:48 -0700 (Mon, 16 Apr 2018) $
+; $LastChangedRevision: 25050 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_blank_panel.pro $
 ;-
 pro thm_blank_panel,mnem,ytitle,labels=labels

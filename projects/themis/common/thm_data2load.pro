@@ -29,9 +29,9 @@
 ; started on 31-Jan-2008, jmm, jimm@ssl.berkeley.edu, this is under
 ; development for the next 6 months or so.
 ; 9-apr-2008, jmm, added all instruments, for Version 4_00
-;$LastChangedBy: jimmpc1 $
-;$LastChangedDate: 2018-02-05 11:15:12 -0800 (Mon, 05 Feb 2018) $
-;$LastChangedRevision: 24640 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2018-04-16 10:47:48 -0700 (Mon, 16 Apr 2018) $
+;$LastChangedRevision: 25050 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_data2load.pro $
 ;-
 function thm_valid_variables, instrument, level
@@ -112,6 +112,12 @@ function thm_valid_variables, instrument, level
             for k = 0, n_elements(instr_type)-1 do instr_data = [instr_data, instr_type[k]+'_'+valid_variables]
         endif else begin
             instr_data = ''
+            instr_type = ['ffp_16', 'ffw_16', 'fff_16', 'ffp_32', 'ffw_32', 'fff_32', 'ffp_64', 'ffw_64', 'fff_64']
+            valid_variables = ['dbpara', 'dbperp', 'eac12', 'eac34', 'eac56', 'edc12', $
+                               'edc34', 'edc56', 'epara', 'eperp', 'scm1', 'scm2', 'scm3', $
+                               'v1', 'v2', 'v3', 'v4', 'v5', 'v6']
+            instr_data = instr_type
+            for k = 0, n_elements(instr_type)-1 do instr_data = [instr_data, instr_type[k]+'_'+valid_variables]
         endelse
     end
     'fgm' : begin ; Fluxgate magnetometer

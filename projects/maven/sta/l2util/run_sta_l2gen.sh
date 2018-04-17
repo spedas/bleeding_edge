@@ -1,6 +1,6 @@
 #!/bin/csh
 
-source /usr/local/setup/setup_idl8.3		# IDL
+source /usr/local/setup/setup_idl8.5.1		# IDL
 setenv BASE_DATA_DIR /disks/data/
 setenv THEMIS_DATA_DIR /disks/themisdata/
 setenv IDL_STARTUP /home/jimm/temp_idl_startup.pro

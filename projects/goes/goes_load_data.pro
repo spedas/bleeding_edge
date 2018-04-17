@@ -21,9 +21,9 @@
 ;             /get_support_data: keep the support data
 ;             /noephem:     Don't keep the ephemeris data
 ; 
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-01-13 12:29:25 -0800 (Fri, 13 Jan 2017) $
-; $LastChangedRevision: 22598 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2018-04-16 15:00:25 -0700 (Mon, 16 Apr 2018) $
+; $LastChangedRevision: 25052 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_load_data.pro $
 ;-
 pro goes_load_data, trange = trange, datatype = datatype, probes = probes, suffix = suffix, $
@@ -184,7 +184,7 @@ pro goes_load_data, trange = trange, datatype = datatype, probes = probes, suffi
         new_tnames = ssl_set_complement([tn_list_before], [tn_list_after])
 
         ; load the ephemeris data in GEI coordinates
-        if undefined(noephem) && new_tnames[0] ne -1 then begin
+        if undefined(noephem) && is_string(new_tnames) then begin
             ephem = goes_load_pos(trange = time_string(tr), probe = probes[idx_probes])
             if is_struct(ephem) then begin
                 ; store the data attributes structure 
@@ -197,7 +197,7 @@ pro goes_load_data, trange = trange, datatype = datatype, probes = probes, suffi
             endelse
         endif
         
-        if new_tnames[0] ne -1 then begin
+        if is_string(new_tnames) then begin
             ; now that we've loaded the variables from the netCDF file into tplot, we can combine 
             ; data for the different telescopes/detectors to TDAS-ify the tvariables
             goes_combine_tdata, datatype = datatype, probe = probes[idx_probes], prefix = prefix, suffix = suffix, $

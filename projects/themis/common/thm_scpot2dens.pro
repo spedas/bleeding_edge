@@ -69,7 +69,7 @@ if is_num(probe_in) then probe = thm_probe_num(probe_in) else $
 
 if is_num(probe) then begin
   print, 'Invalid probe entered '
-  print, 'Valid probes are [a, b, c, d, e], or [1, 2, 3, 4, 5]
+  print, 'Valid probes are [a, b, c, d, e], or [1, 2, 3, 4, 5]'
   return, -1
 endif
 

@@ -12,8 +12,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-07-25 10:34:54 -0700 (Tue, 25 Jul 2017) $
-; $LastChangedRevision: 23698 $
+; $LastChangedDate: 2018-04-16 08:53:47 -0700 (Mon, 16 Apr 2018) $
+; $LastChangedRevision: 25049 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/gui/mms_gui_data_products.pro $
 ;-
 
@@ -40,13 +40,15 @@ function mms_gui_data_products, probes, instrument, rate, level
                                      '_epd_eis_extof_oxygen_flux_omni_spin', $
                                      '_epd_eis_phxtof_proton_flux_omni_spin', $
                                      '_epd_eis_phxtof_alpha_flux_omni_spin', $
-                                     '_epd_eis_phxtof_oxygen_flux_omni_spin']
+                                     '_epd_eis_phxtof_oxygen_flux_omni_spin', $
+                                     '_epd_eis_brst_electronenergy_electron_flux_omni_spin']
 
     valid_products['eis-srvy-l2'] = ['_epd_eis_extof_proton_flux_omni_spin', $
                                      '_epd_eis_extof_alpha_flux_omni_spin', $
                                      '_epd_eis_extof_oxygen_flux_omni_spin', $
                                      '_epd_eis_phxtof_proton_flux_omni_spin', $
-                                     '_epd_eis_phxtof_oxygen_flux_omni_spin']
+                                     '_epd_eis_phxtof_oxygen_flux_omni_spin', $
+                                     '_epd_eis_electronenergy_electron_flux_omni_spin']
      
     valid_products['hpca-srvy-l2'] = ['_hpca_hplus_number_density', $
                                      '_hpca_hplus_ion_bulk_velocity', $

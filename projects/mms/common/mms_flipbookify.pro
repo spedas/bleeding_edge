@@ -96,8 +96,8 @@
 ;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-11-21 12:17:39 -0800 (Tue, 21 Nov 2017) $
-; $LastChangedRevision: 24334 $
+; $LastChangedDate: 2018-04-16 16:07:26 -0700 (Mon, 16 Apr 2018) $
+; $LastChangedRevision: 25055 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_flipbookify.pro $
 ;-
 
@@ -113,14 +113,21 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   resolution=resolution, smooth=smooth, log=log, determ_tolerance=determ_tolerance, $
   plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, $
   background_color_rgb=background_color_rgb, all_colorbars=all_colorbars, charsize=charsize, $
-  subtract_error = subtract_error
+  subtract_error = subtract_error, include_1d_vx=include_1d_vx, include_1d_vy=include_1d_vy, $
+  lineplot_yrange=lineplot_yrange, lineplot_xrange=lineplot_xrange, lineplot_thickness=lineplot_thickness, $
+  ps_xsize=ps_xsize, ps_ysize=ps_ysize, ps_aspect=ps_aspect, nopng=nopng
   
   @tplot_com.pro 
 
   if undefined(instrument) then instrument = 'fpi'
   if undefined(species) then species = 'i'
   if undefined(data_rate) then data_rate = 'brst'
-  if undefined(right_margin) then right_margin = 60
+  
+  if ~undefined(include_1d_vx) or ~undefined(include_1d_vy) then lineplot = 1b
+  if undefined(right_margin) then begin
+    if undefined(lineplot) then right_margin = 60 else right_margin = 75
+    if undefined(lineplot) then right_margin = 60 else right_margin = 85
+  endif
   if undefined(left_margin) then left_margin = 15
   if undefined(probe) then probe = '1' else probe = strcompress(string(probe), /rem)
   if undefined(output_dir) then output_dir = 'flipbook/'
@@ -135,6 +142,7 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   if undefined(vid_bit_rate) then vid_bit_rate = 3000
   if ~undefined(charsize) then !p.charsize = charsize
   window_num = 0b
+  
   
   if ~is_struct(tplot_vars) then begin
     dprint, dlevel=0, 'Error, no tplot window found'
@@ -173,22 +181,22 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
     bfield = 'mms'+probe+'_fgm_b_dmpa_srvy_l2_bvec'
     vel_data = 'mms'+probe+'_d'+species+'s_bulkv_gse_'+data_rate
     if ~spd_data_exists(vel_data, trange[0], trange[1]) then append_array, datatypes, ['d'+species+'s-dist', 'd'+species+'s-moms'] else append_array, datatypes, 'd'+species+'s-dist'
-    if ~spd_data_exists(name, trange[0], trange[1]) then mms_load_fpi, data_rate=data_rate, level=level, datatype=datatypes, probe=probe, trange=trange, /time_clip
+    if ~spd_data_exists(name, trange[0], trange[1]) then mms_load_fpi, data_rate=data_rate, level=level, datatype=datatypes, probe=probe, trange=trange, /time_clip, /center
     if ~spd_data_exists(bfield, trange[0], trange[1]) then mms_load_fgm, level=level, probe=probe, trange=trange, /time_clip
     dist = mms_get_fpi_dist(name, trange=trange, subtract_error=subtract_error, error='mms'+probe+'_d'+species+'s_disterr_'+data_rate)
   endif else if instrument eq 'hpca' then begin
     name = 'mms'+probe+'_hpca_'+species+'_phase_space_density'
     bfield = 'mms'+probe+'_fgm_b_dmpa_srvy_l2_bvec'
     vel_data = 'mms'+probe+'_hpca_'+species+'_ion_bulk_velocity'
-    if ~spd_data_exists(name, trange[0], trange[1]) then mms_load_hpca, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='ion', /time_clip
-    if ~spd_data_exists(vel_data, trange[0], trange[1]) then mms_load_hpca, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='moments', /time_clip
+    if ~spd_data_exists(name, trange[0], trange[1]) then mms_load_hpca, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='ion', /time_clip, /center
+    if ~spd_data_exists(vel_data, trange[0], trange[1]) then mms_load_hpca, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='moments', /time_clip, /center
     if ~spd_data_exists(bfield, trange[0], trange[1]) then mms_load_fgm, level=level, probe=probe, trange=trange, /time_clip
     dist = mms_get_hpca_dist(name, trange=trange)
   endif else begin
     dprint, dlevel = 'invalid instrument; valid options: fpi or hpca'
     return
   endelse
-  
+
   if keyword_set(video) then begin
     video = idlffvideowrite(output_dir+'mms'+probe+'_'+instrument+'_'+species+'_flipbook'+filename_suffix+'.'+vid_format)
     stream = video.addvideostream(tplot_vars.settings.d.x_size, tplot_vars.settings.d.y_size, vid_fps, bit_rate=vid_bit_rate, codec=vid_codec)
@@ -200,21 +208,55 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
 
   for time_idx=0, n_elements(times)-1, time_step do begin
     if keyword_set(postscript) then popen, output_dir+'mms'+probe+'_'+instrument+'_'+species+'_'+time_string(times[time_idx], tformat='YYYY-MM-DD-hh-mm-ss.fff')+filename_suffix, /land
-    slice = spd_slice2d(dist, time=times[time_idx], energy=energy, subtract_bulk=subtract_bulk, geometric=geometric, two_d_interp=two_d_interp, three_d_interp=three_d_interp, custom_rotation=custom_rotation, rotation=slices[0], mag_data=bfield, vel_data=vel_data, samples=samples, window=window, center_time=center_time, resolution=resolution, smooth=smooth, log=log, determ_tolerance=determ_tolerance)
-    slice2 = spd_slice2d(dist, time=times[time_idx], energy=energy, subtract_bulk=subtract_bulk, geometric=geometric, two_d_interp=two_d_interp, three_d_interp=three_d_interp, custom_rotation=custom_rotation, rotation=slices[1], mag_data=bfield, vel_data=vel_data, samples=samples, window=window, center_time=center_time, resolution=resolution, smooth=smooth, log=log, determ_tolerance=determ_tolerance) 
-    slice3 = spd_slice2d(dist, time=times[time_idx], energy=energy, subtract_bulk=subtract_bulk, geometric=geometric, two_d_interp=two_d_interp, three_d_interp=three_d_interp, custom_rotation=custom_rotation, rotation=slices[2], mag_data=bfield, vel_data=vel_data, samples=samples, window=window, center_time=center_time, resolution=resolution, smooth=smooth, log=log, determ_tolerance=determ_tolerance)
-    tplot, title=time_string(times[time_idx], tformat=title)
+    slice = spd_slice2d(dist, time=times[time_idx], energy=energy, subtract_bulk=subtract_bulk, geometric=geometric, two_d_interp=two_d_interp, three_d_interp=three_d_interp, custom_rotation=custom_rotation, rotation=slices[0], mag_data=bfield, vel_data=vel_data, samples=samples, window=window, center_time=center_time, resolution=resolution, smooth=smooth, log=log, determ_tolerance=determ_tolerance, fail=fail)
+    slice2 = spd_slice2d(dist, time=times[time_idx], energy=energy, subtract_bulk=subtract_bulk, geometric=geometric, two_d_interp=two_d_interp, three_d_interp=three_d_interp, custom_rotation=custom_rotation, rotation=slices[1], mag_data=bfield, vel_data=vel_data, samples=samples, window=window, center_time=center_time, resolution=resolution, smooth=smooth, log=log, determ_tolerance=determ_tolerance, fail=fail) 
+    slice3 = spd_slice2d(dist, time=times[time_idx], energy=energy, subtract_bulk=subtract_bulk, geometric=geometric, two_d_interp=two_d_interp, three_d_interp=three_d_interp, custom_rotation=custom_rotation, rotation=slices[2], mag_data=bfield, vel_data=vel_data, samples=samples, window=window, center_time=center_time, resolution=resolution, smooth=smooth, log=log, determ_tolerance=determ_tolerance, fail=fail)
+    tplot, title=time_string(times[time_idx], tformat=title), get_plot_position=positions
     
-    spd_slice2d_plot, slice, window=window_num, /custom, /noerase, position=[0.75, 0.1, 0.90, 1], title='', nocolorbar=undefined(all_colorbars), xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
-    spd_slice2d_plot, slice2, window=window_num, /custom, /noerase, position=[0.75, 0.4, 0.90, 1], title='', xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
-    spd_slice2d_plot, slice3, window=window_num, /custom, /noerase, position=[0.75, 0.7, 0.90, 1], title='', nocolorbar=undefined(all_colorbars), xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
+    if ~is_struct(slice) then begin
+      dprint, dlevel = 0, 'No slice data; ' + fail
+      continue
+    endif
+    
+    top_plot_pos = positions[*, 0]
+    if keyword_set(postscript) then padding = .32 else padding = 0.28
+    
+    if undefined(lineplot) then begin
+      slice_pos = [top_plot_pos[2]+padding/2., 0.1, 0.98, .34]
+      slice2_pos = [top_plot_pos[2]+padding/2., 0.4, 0.98, .64]
+      slice3_pos = [top_plot_pos[2]+padding/2., 0.7, 0.98, .94]
+    endif else begin
+      available_width = 1.-top_plot_pos[2]-.3 ; .3 padding
+      slice_pos = [top_plot_pos[2]+padding/2., 0.1, top_plot_pos[2]+padding/2.+available_width/2., 0.34]
+      slice2_pos = [top_plot_pos[2]+padding/2., 0.4, top_plot_pos[2]+padding/2.+available_width/2., 0.64]
+      slice3_pos = [top_plot_pos[2]+padding/2., 0.7, top_plot_pos[2]+padding/2.+available_width/2., 0.94]
+    endelse
+    
+    spd_slice2d_plot, slice, window=window_num, /custom, /noerase, position=slice_pos, title='', nocolorbar=undefined(all_colorbars), xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
+    spd_slice2d_plot, slice2, window=window_num, /custom, /noerase, position=slice2_pos, title='', xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
+    spd_slice2d_plot, slice3, window=window_num, /custom, /noerase, position=slice3_pos, title='', nocolorbar=undefined(all_colorbars), xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
 
+    
+    if ~undefined(lineplot) then begin
+      line_plot_width = .99-top_plot_pos[2]+padding+available_width/2.
+      if ~undefined(include_1d_vx) then begin
+        spd_slice1d_plot, thick=lineplot_thickness, color=2, slice, 'x', minmax(slice.xgrid), window=window_num, /noerase, position=[top_plot_pos[2]+padding+available_width/2.+0.02, 0.07, 0.99, 0.33], /ylog, yminor=10, yrange=undefined(lineplot_yrange) ? slice.zrange*[0.999,1.001] : lineplot_yrange, xrange=lineplot_xrange
+        spd_slice1d_plot, thick=lineplot_thickness, color=2, slice2, 'x', minmax(slice2.xgrid), window=window_num, /noerase, position=[top_plot_pos[2]+padding+available_width/2.+0.02, 0.39, 0.99, 0.65], /ylog, yminor=10, yrange=undefined(lineplot_yrange) ? slice2.zrange*[0.999,1.001] : lineplot_yrange, xrange=lineplot_xrange
+        spd_slice1d_plot, thick=lineplot_thickness, color=2, slice3, 'x', minmax(slice3.xgrid), window=window_num, /noerase, position=[top_plot_pos[2]+padding+available_width/2.+0.02, 0.71, 0.99, 0.97], /ylog, yminor=10, yrange=undefined(lineplot_yrange) ? slice3.zrange*[0.999,1.001] : lineplot_yrange, xrange=lineplot_xrange
+      endif
+      if ~undefined(include_1d_vy) then begin
+        spd_slice1d_plot, thick=lineplot_thickness, color=6, slice, 'y', minmax(slice.ygrid), window=window_num, /noerase, position=[top_plot_pos[2]+padding+available_width/2.+0.02, 0.07, 0.99, 0.33], /ylog, yminor=10, yrange=undefined(lineplot_yrange) ? slice.zrange*[0.999,1.001] : lineplot_yrange, xrange=lineplot_xrange
+        spd_slice1d_plot, thick=lineplot_thickness, color=6, slice2, 'y', minmax(slice2.ygrid), window=window_num, /noerase, position=[top_plot_pos[2]+padding+available_width/2.+0.02, 0.39, 0.99, 0.65], /ylog, yminor=10, yrange=undefined(lineplot_yrange) ? slice2.zrange*[0.999,1.001] : lineplot_yrange, xrange=lineplot_xrange
+        spd_slice1d_plot, thick=lineplot_thickness, color=6, slice3, 'y', minmax(slice3.ygrid), window=window_num, /noerase, position=[top_plot_pos[2]+padding+available_width/2.+0.02, 0.71, 0.99, 0.97], /ylog, yminor=10, yrange=undefined(lineplot_yrange) ? slice3.zrange*[0.999,1.001] : lineplot_yrange, xrange=lineplot_xrange
+      endif
+    endif
+    
     timebar, times[time_idx], linestyle=linestyle, thick=thickness
     if ~undefined(draw_box) then timebar, (minmax(trange))[0], color=box_color, linestyle=box_style, thick=box_thickness
     if ~undefined(draw_box) then timebar, (minmax(trange))[1], color=box_color, linestyle=box_style, thick=box_thickness
     wait, 0.02
     if keyword_set(postscript) then pclose
-    if ~keyword_set(postscript) then makepng, output_dir+'mms'+probe+'_'+instrument+'_'+species+'_'+time_string(times[time_idx], tformat='YYYY-MM-DD-hh-mm-ss.fff')+filename_suffix
+    if ~keyword_set(postscript) and ~keyword_set(nopng) then makepng, output_dir+'mms'+probe+'_'+instrument+'_'+species+'_'+time_string(times[time_idx], tformat='YYYY-MM-DD-hh-mm-ss.fff')+filename_suffix
     if keyword_set(video) then begin
       void = video.put(stream, tvrd(/true))
     endif
