@@ -16,7 +16,7 @@ ccsds_data = spp_swp_ccsds_data(ccsds)
 
 if ccsds.pkt_size eq 30 then begin
   if debug(2) then begin
-    dprint,'DHKP packet for boot mode ????',ccsds.pkt_size,dlevel=2,dwait = 10
+    dprint,'DHKP packet for boot mode ????',ccsds.pkt_size,dlevel=3,dwait = 10
 ;    hexprint,ccsds_data
     return,0
   endif

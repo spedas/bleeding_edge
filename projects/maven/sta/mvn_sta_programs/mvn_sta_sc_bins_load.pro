@@ -29,9 +29,9 @@
 ;
 ; :Version:
 ;
-;   $LastChangedBy: rlivi2 $
-;   $LastChangedDate: 2018-04-13 00:25:20 -0700 (Fri, 13 Apr 2018) $
-;   $LastChangedRevision: 25044 $
+;   $LastChangedBy: muser $
+;   $LastChangedDate: 2018-04-17 11:33:53 -0700 (Tue, 17 Apr 2018) $
+;   $LastChangedRevision: 25063 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load.pro $
 ;-
 
@@ -360,8 +360,14 @@ PRO mvn_sta_sc_bins_load, perc_block = perc_block,$
    COMMON mvn_d1,mvn_d1_ind,mvn_d1_dat ;4Dx16A   16s  Pickup
    COMMON mvn_d4,mvn_d4_ind,mvn_d4_dat ;4Dx16A    4s  Pickup
 
+   ;; Check if time exists
+   IF n_elements(mvn_c0_dat.time) EQ 0 THEN BEGIN
+      print, 'ERROR: STATIC data needs to be loaded first.'
+      return
+   ENDIF
+
    ;; Generate spacecraft blockage data
-   mvn_spc_fov_blockage, trange=mean(trange),$
+   mvn_spc_fov_blockage, trange=mean(mvn_c0_dat.time),$
                          /invert_phi,  $
                          /invert_theta,$
                          theta = theta, phi=phi,$
@@ -372,12 +378,6 @@ PRO mvn_sta_sc_bins_load, perc_block = perc_block,$
          'ca','cc','cd','ce','cf',$
          'd0','d1','d4']
    nn_apid=n_elements(apid)
-
-   ;; Check if time exists
-   IF n_elements(mvn_c0_dat.time) EQ 0 THEN BEGIN
-      print, 'ERROR: STATIC data needs to be loaded first.'
-      return
-   ENDIF
 
    ;; General Info
    print, 'Blocked Bins - Generate block map '+$

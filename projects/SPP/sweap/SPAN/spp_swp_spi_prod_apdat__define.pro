@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spi_prod_apdat
-; $LastChangedBy: rlivi2 $
-; $LastChangedDate: 2018-04-15 17:39:49 -0700 (Sun, 15 Apr 2018) $
-; $LastChangedRevision: 25047 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-04-17 14:48:19 -0700 (Tue, 17 Apr 2018) $
+; $LastChangedRevision: 25064 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
@@ -13,9 +13,9 @@
 ;; This function needs fixing
 PRO spp_swp_spi_prod_apdat::prod_16A, strct
    cnts = *strct.pdata
-   if n_elements(cnt) ne 16 then begin
+   if n_elements(cnts) ne 16 then begin
       dprint,'Bad size: '+$
-             string(n_elements(data))+ $
+             string(n_elements(cnts))+ $
              ' instead of 16'
       return
    endif
@@ -39,7 +39,7 @@ PRO spp_swp_spi_prod_apdat::prod_32Ex16A, strct
    cnts = *strct.pdata
    if n_elements(cnts) ne 512 then begin
       dprint,'Bad size: '+$
-             string(n_elements(data))+ $
+             string(n_elements(cnts))+ $
              ' instead of 512'
       return
    endif
@@ -69,15 +69,18 @@ PRO spp_swp_spi_prod_apdat::prod_32Ex16M, strct
              ' instead of 512'
       return
    ENDIF
+;   printdat,strct
    pname = '32Ex16M_'
    data = *strct.pdata
    data = reform(data,32,16,/overwrite)
-   spec1 = total(data,2)
-   spec2 = total(data,1 )
+   spec1 = total(data,1)
+   spec2 = total(data,2 )
    strct2 = {time:strct.time, $
              spec1:spec1, $
              spec2:spec2, $
              gap: strct.gap}
+   strct.nrg_spec = spec2
+   strct.mass_spec = spec1
    if self.save_raw && self.prod_32Ex16M then $
     self.prod_32Ex16M.append,strct2
    ;; self.store_data, strct2, pname
@@ -89,9 +92,9 @@ END
 ;; This function needs fixing
 PRO spp_swp_spi_prod_apdat::prod_8Dx32Ex16A, strct   
    cnts = *strct.pdata
-   if n_elements(cnt) ne 4096 then begin
+   if n_elements(cnts) ne 4096 then begin
       dprint,'Bad size: '+$
-             string(n_elements(data))+ $
+             string(n_elements(cnts))+ $
              ' instead of 4096'
       return
    endif
@@ -117,9 +120,9 @@ END
 ;; This function needs fixing
 PRO spp_swp_spi_prod_apdat::prod_32Ex16Ax4M, strct  
    cnts = *strct.pdata
-   if n_elements(cnt) ne 2048 then begin
+   if n_elements(cnts) ne 2048 then begin
       dprint,'Bad size: '+$
-             string(n_elements(data))+ $
+             string(n_elements(cnts))+ $
              ' instead of 2048'
       return
    endif
@@ -171,7 +174,7 @@ PRO spp_swp_spi_prod_apdat::prod_16Ax16M, strct
    cnts = *strct.pdata
    if n_elements(cnts) ne 256 then begin
       dprint,'Bad size: '+$
-             string(n_elements(data))+ $
+             string(n_elements(cnts))+ $
              ' instead of 256'
       return
    endif
@@ -195,7 +198,7 @@ pro spp_swp_spi_prod_apdat::prod_8Dx32E, strct
    cnts = *strct.pdata
    if n_elements(cnts) ne 256 then begin
       dprint,'Bad size: '+$
-             string(n_elements(data))+ $
+             string(n_elements(cnts))+ $
              ' instead of 256'
       return
    endif

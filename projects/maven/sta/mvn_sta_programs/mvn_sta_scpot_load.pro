@@ -30,6 +30,7 @@ pro mvn_sta_scpot_load,tplot=tplot,max_alt=max_alt,max_nrg=max_nrg,ram_min=ram_m
 	common mvn_c0,mvn_c0_ind,mvn_c0_dat 
 	common mvn_ca,mvn_ca_ind,mvn_ca_dat 
 
+
 	if size(mvn_c6_dat,/type) ne 8 or size(mvn_c0_dat,/type) ne 8 or size(mvn_ca_dat,/type) ne 8 then begin
 		print,'Error - c6, c0 and ca data must be loaded'
 		return
@@ -215,7 +216,7 @@ endif
 
 	alt = (pos[*,0]^2+pos[*,1]^2+pos[*,2]^2)^.5 - mars_radius
 
-	min_alt = min(alt)
+	min_alt = min(alt) > 150.
 
 ;**********************************************************
 ; determine sc velocity relative to planet - this is ram velocity
@@ -227,7 +228,7 @@ endif
 	endif else begin
 		mkernels = mvn_spice_kernels(/load)
 		trange = timerange()
-		mvn_sc_ramdir,trange,/app
+		mvn_ramdir,trange,frame=['MAVEN_APP'],dt=1,/polar
 		get_data,'V_sc_MAVEN_APP',data=tmp81
 		if size(tmp81,/type) eq 8 then begin 
 			vtot = (total(tmp81.y*tmp81.y,2))^.5
@@ -235,7 +236,7 @@ endif
 		endif else begin			; approximate velocity from position motion - used prior to 20160805
 			vel = total((pos[1:npts-1,*] - pos[0:npts-2,*])^2,2)^.5/(time[1:npts-1]-time[0:npts-2])	
 			vel = [vel[0],[vel]]
-			print,'ERROR - mvn_sc_ramdir did not run!!! - using maven_orbit_tplot to estimate velocity ignoring planet rotation'
+			print,'ERROR - mvn_ramdir did not run!!! - using maven_orbit_tplot to estimate velocity ignoring planet rotation'
 			print,'ERROR - this approximation will introduce sc_pot error at periapsis!!!'
 		endelse
 	endelse
@@ -255,18 +256,25 @@ endif
 	ano = fltarr(npts)
 	ms = mvn_c6_dat.mass*32.
 
+	mass_o2 = [28,40.]
+	m_o2 = 32.
+	min_o2 = 0
+	engy_o2 = [0,11]
+
 for i=0l,npts-1 do begin
 	if mvn_c6_dat.energy[mvn_c6_dat.swp_ind[i],31,0] lt 2. then begin	; the lower energy limit of the sweep must be less then 2 eV
+
+; the following was used prior to 20170502 - replaced by more accurate vb_pot_4d.pro
+	if 0 then begin
 		cnts=reform(mvn_c6_dat.data[i,*,*])
 		data=reform(mvn_c6_dat.eflux[i,*,*])
-
 
 		mass=reform(mvn_c6_dat.mass_arr[mvn_c6_dat.swp_ind[i],*,*])
 			ind = where(mass lt 25 or mass gt 40,count)
 ;			ind = where(mass lt 30 or mass gt 34,count)			; this was used during some testing to see if it worked better
 			if count ne 0 then data[ind]=0.
 			if count ne 0 then cnts[ind]=0.
-		nrg = (reform(mvn_c6_dat.energy[mvn_c6_dat.swp_ind[i],*,*]) + nrg_offset) > 0.01
+		nrg = (reform(mvn_c6_dat.energy[mvn_c6_dat.swp_ind[i],*,*]) + nrg_offset) > 0.01		; nrg_offset is currently 0, but might be needed
 
 ; anode array may be useful in the future for eliminating data when flow not in ram direction
 		min_ca = min(abs(mvn_ca_dat.time +2. - time[i]),ind_ca) 
@@ -305,7 +313,29 @@ for i=0l,npts-1 do begin
 		vd[i] = total(data)/(total(data/v)>1.e-20) 
 		vth[i] = (total(data*(v-vd[i])^2/v)/(total(data/v)>1.e-20))^.5
 
-		pot[i] = 0.5*ms*(vd[i]^2-vel[i]^2) > ram_min							; ram_min=0.12  the minimum allowed negative potential
+	endif else begin
+		dat6 = mvn_sta_get_c6(mvn_c6_dat.time[i])	
+		cnts = cb_4d(dat6,mass=mass_o2,m_int=m_o2,energy=engy_o2,mincnt=min_o2)				; not quite consistent with vb_pot_4d.pro
+; 3 iterations give an accurate potential
+
+		dat7 = dat6 & dat7.sc_pot=0.
+		vd7 = vb_pot_4d(dat7,mass=mass_o2,m_int=m_o2,energy=engy_o2,mincnt=min_o2,/no_co2)
+		pd7 = 0.5*ms*(vd7^2-vel[i]^2)
+
+		dat8 = dat6 & dat8.sc_pot = -pd7
+		vd8 = vb_pot_4d(dat8,mass=mass_o2,m_int=m_o2,energy=engy_o2,mincnt=min_o2,/no_co2)
+		pd8 = 0.5*ms*(vd8^2-vel[i]^2)
+
+		dat9 = dat6 & dat9.sc_pot = -pd7-pd8
+		vd9 = vb_pot_4d(dat9,mass=mass_o2,m_int=m_o2,energy=engy_o2,mincnt=min_o2,/no_co2)
+		pd9 = 0.5*ms*(vd9^2-vel[i]^2)
+
+		vd[i] = vd7
+	endelse
+
+		pot[i] = pd7+pd8+pd9 > ram_min									; ram_min=0.12  the minimum allowed negative potential
+;		pot[i] = 0.5*ms*(vd[i]^2-vel[i]^2) > ram_min							; ram_min=0.12  the minimum allowed negative potential
+; not sure what these lines do so getting rid of them 
 		if total(cnts) lt 5. and alt[i] le 180. then pot[i]=pot[(i-1)>0] 
 		if total(cnts) lt 5. and alt[i] gt 180. then pot[i]=pot[(i-1)>0]
 ;		if total(cnts) lt 5. and alt[i] gt 180. and den[i] lt 1. then pot[i]=pot[(i-1)>0]
@@ -317,6 +347,7 @@ for i=0l,npts-1 do begin
 endfor
 
 if keyword_set(tplot) then store_data,'mvn_sta_c6_pot_vd',data={x:time,y:vd}
+	if keyword_set(tplot) then options,'mvn_sta_c6_pot_vd',colors=cols.green
 if keyword_set(tplot) then store_data,'mvn_sta_c6_pot_vth',data={x:time,y:vth}
 if keyword_set(tplot) then store_data,'mvn_sta_c6_pot_ec',data={x:time,y:0.5*ms*vd^2}
 ;print,minmax(vth/vd)
@@ -330,6 +361,12 @@ if keyword_set(tplot) then store_data,'mvn_sta_c6_pot_ec',data={x:time,y:0.5*ms*
 	pot22 = fltarr(npts2)
 	pot2_cutoff_cnts = fltarr(npts2)
 	pot2_p_cutoff_cnts = fltarr(npts2)
+	pot2_p_cutoff_cnts0 = fltarr(npts2)
+	pot2_p_cutoff_cnts1 = fltarr(npts2)
+	pot2_p_cutoff_cnts2 = fltarr(npts2)
+	pot2_p_cutoff_cnts3 = fltarr(npts2)
+	modep_reject = fltarr(npts2)
+	modem_reject = fltarr(npts2)
 	pot_bad = fltarr(npts2)
 	cnts_lt_pot = fltarr(npts2)
 	swp_ind = mvn_c0_dat.swp_ind
@@ -361,8 +398,9 @@ if keyword_set(tplot) then store_data,'mvn_sta_c6_pot_ec',data={x:time,y:0.5*ms*
 for i=1l,npts2-2 do begin
 	if mvn_c0_dat.energy[mvn_c0_dat.swp_ind[i],63,0] lt 2. then begin	; the lower energy limit of the sweep must be less then 2 eV
 
-		modep = mvn_c0_dat.mode[i] eq mvn_c0_dat.mode[i+1] 
-		modem = mvn_c0_dat.mode[i] eq mvn_c0_dat.mode[i-1]
+		modep = (mvn_c0_dat.mode[i] eq mvn_c0_dat.mode[i+1]) and (((mvn_c0_dat.quality_flag[i+1] and 64)/64) eq 0)
+		modem = (mvn_c0_dat.mode[i] eq mvn_c0_dat.mode[i-1]) and (((mvn_c0_dat.quality_flag[i-1] and 64)/64) eq 0)
+
 ;		if (pot1[i] lt 3.) or ((alt2[i] gt 400.) and sha2[i] and (o_cnt2[i] lt 25)) then begin					; used prior to 20161130, checked in on ?	
 ;		if (pot1[i] lt 3.) or ((alt2[i] gt 400.) and sha2[i] and (o_cnt2[i] lt 25) and (p_low2[i] lt 20)) then begin		; o_cnt2 >30eV, changed to only use protons when there are enough proton counts, fixed problem on 20160915/2307UT	
 ;		if (pot1[i] lt 3.) or ((alt2[i] gt 400.) and sha2[i] and (o_cnt2[i] lt 25) and (p_low2[i] lt 20)) $
@@ -392,10 +430,11 @@ for i=1l,npts2-2 do begin
 			dat3m=reform(mvn_c0_dat.data[i-1,*,0])
 
 
-		if p_low2[i] gt 30 then begin
-			modep=0
-			modem=0
-		endif
+;		if p_low2[i] gt 30 then begin				; old code
+;			modep=0
+;			modem=0
+;		endif
+
 		dat2c = shift(dat1c,1)
 		dat2p = shift(dat1p,1)
 		dat2m = shift(dat1m,1)
@@ -413,7 +452,7 @@ for i=1l,npts2-2 do begin
 		denergy = reform(mvn_c0_dat.denergy[swp_ind[i],*,0])*energy/energy0
 
 		ind0 = 0 
-; 		ind0 = where (data ge 1. and data2 ge 1. and (data+data2) ge 4.,count)
+; 		ind0 = where (data1 ge 1. and data2 ge 1. and (data1+data2) ge 4.,count)
 ; changed 20170228
 ;		ind0 = where ( 	   ( (data1 ge 1.) and (data2 ge 1.) and ((data1+data2) ge 4.) and  (dat5c ge 1.)	) $
 ;				or ( ((dat3c+dat4c) ge 3.) and  (dat5c ge 1.)			) $
@@ -423,35 +462,42 @@ for i=1l,npts2-2 do begin
 				or ( ((dat1c ge 1.) or (data1 ge 2.)) and ((dat2c ge 1.) or (data2 ge 2.)) and ((dat1c+dat2c) ge 2.) and ((data1+data2) ge 3.) and ((dat1c+dat2c+dat5c) ge 4.)	) $
 				or ( (dat3c ge 1.) and ((dat3c+dat4c) ge 3.) and  ((dat3c+dat4c+dat6c) ge 4.) ) $
 				or ( (dat3c ge 1.) and ((dat3c+dat4c) ge 2.) and  ((dat3c+dat4c+dat6c) ge 5.) )		   ,count)
-		if count gt 0 then mind0=max(ind0) else mind0 = 0  
+;		if count gt 0 then mind0=max(ind0) 			; would crashed, changed 20170812
+		if count gt 0 then mind0=max(ind0) else mind0=1
 		mind0 = mind0 > 1
 
-; interpolate if more than 10 counts
 
-; don't average over time if dat1c has enough counts, added 20170331
-		if count gt 0 and (dat1c[mind0]+dat2c[mind0]+dat2c[(mind0-1)>0]) gt 10. then begin
-			if dat1c[mind0] eq 0 then mind0=(mind0-1)>1
-			data=dat1c
+; don't average over time if dat1c >10 counts, added 20170331
+;		if count gt 0 and (dat1c[mind0]+dat2c[mind0]+dat2c[(mind0-1)>0]) gt 10. then begin	; old method
+		if count gt 0 and (dat1c[mind0]+dat2c[mind0]) ge 10. then begin
+;			if dat1c[mind0] eq 0 then mind0=(mind0-1)>1					; old method
+			data1=dat1c
 			data2=dat2c
+			modep = 0
+			modem = 0
 		endif
 
-;		if energy[mind0] lt max_nrg and ((alt2[i] gt 180.) or ((data[mind0]+data2[mind0]) gt 20.)) then begin
-		if energy[mind0] lt max_nrg and ((alt2[i] gt (min_alt+25.)) or ((data[mind0]+data2[mind0]) gt 20.)) then begin
+; interpolate 
+
+;		if energy[mind0] lt max_nrg and ((alt2[i] gt 180.) or ((data1[mind0]+data2[mind0]) gt 20.)) then begin
+		if energy[mind0] lt max_nrg and ((alt2[i] gt (min_alt+25.)) or ((data1[mind0]+data2[mind0]) ge 20.)) then begin
 ;			e0 = energy[mind0] - denergy[mind0]/2.
-;			d1 = data[mind0] 
+;			d1 = data1[mind0] 
 ;			e1 = energy[mind0] - e0
-;			d2 = data[mind0-1] 
+;			d2 = data2[mind0-1] 
 ;			e2 = energy[mind0-1] - e0
 ;			scale = 0. > (1-(d1/d2)*(e2/e1)^1) < 1.
 ;			pot2[i]= (energy[mind0] - denergy[mind0]/2. + denergy[mind0]*scale) < max_nrg
+
 			e0 = energy[mind0]
-			d0 = data[mind0] 
+			d0 = data1[mind0] 
 			e1 = energy[mind0-1]
-			d1 = data[mind0-1] 
-			pot2[i] = e0 + .5*(e1-e0)*(d1-d0)/(d1+d0+3.)
-			if data[mind0-1] le 3. then pot2[i]=energy[mind0]
+			d1 = data1[mind0-1] 
+			pot2[i] = e0 + .5*(e1-e0)*(d1-d0)/(d1+d0+3.)				; the "3" here just skews it toward mind0 for low count rates
+			if d1 le 3. then pot2[i]=energy[mind0]					; don't interpolate if d1 is small
 		endif else pot2[i] = max_nrg
 ;		endif else pot2[i] = 2.5
+
 ;		if alt2[i] ge 300. and den2[i] lt 1. then pot2[i] = 2.5
 		if (mvn_c0_dat.quality_flag[i] and 192) gt 0 then pot2[i]=pot2[(i-1)>0]
 		if (mvn_c0_dat.quality_flag[i] and 3) gt 0 then pot2[i]=max_nrg
@@ -470,21 +516,42 @@ for i=1l,npts2-2 do begin
 		minval = min(abs(nrg-(2.7+pot0[i])*.70),ind87)
 		if alt2[i] lt alt_vo2 then ind77=ind77>ind87		; this makes sure we don't count o2+ stragglers 
 
-		pot2_cutoff_cnts[i] = total(dat1c[0>(ind77-2):(ind77+1)<63]+dat1p[0>(ind77-2):(ind77+1)<63]+dat1m[0>(ind77-2):(ind77+1)<63])
-		pot2_p_cutoff_cnts[i] = total(dat3c[0>(ind77-1):(ind77+1)<63]+dat3p[0>(ind77-1):(ind77+1)<63]+dat3m[0>(ind77-1):(ind77+1)<63])
+		pot2_cutoff_cnts[i] = total(dat1c[0>(ind77-2):(ind77+1)<63]+modep*dat1p[0>(ind77-2):(ind77+1)<63]+modem*dat1m[0>(ind77-2):(ind77+1)<63])
+		pot2_p_cutoff_cnts[i] = total(dat3c[0>(ind77-1):(ind77+1)<63]+modep*dat3p[0>(ind77-1):(ind77+1)<63]+modem*dat3m[0>(ind77-1):(ind77+1)<63])
+		pot2_p_cutoff_cnts0[i] = (total(dat3c[0>(mind0-2):mind0])+modep*total(dat3p[0>(mind0-1):mind0])+modem*total(dat3m[0>(mind0-1):mind0]))/(1+modep+modem) 
+		pot2_p_cutoff_cnts1[i] = total(dat3c[63<(mind0+1):63]+modep*dat3p[63<(mind0+1):63]+modem*dat3m[63<(mind0+1):63])
+		pot2_p_cutoff_cnts2[i] = total(dat3c[0>(mind0-1):mind0]) 
+		pot2_p_cutoff_cnts3[i] = total(dat3c[63<(mind0+1):63])
+		modep_reject[i] = modep
+		modem_reject[i] = modem
 		ind_cutoff[i]=ind77
 	endif
+
 ;**************************************
 
 endfor
 
 ; for testing only
+if keyword_set(tplot) then store_data,'modep_reject',data={x:time2,y:modep_reject}
+if keyword_set(tplot) then options,'modep_reject',yrange=[-1,2]
+if keyword_set(tplot) then store_data,'modem_reject',data={x:time2,y:modem_reject}
+if keyword_set(tplot) then options,'modem_reject',yrange=[-1,2]
+
+if keyword_set(tplot) then store_data,'pot2_p_cutoff_cnts0',data={x:time2,y:pot2_p_cutoff_cnts0}
+if keyword_set(tplot) then options,'pot2_p_cutoff_cnts0',ylog=1,yrange=[1,100],psym=-1
+if keyword_set(tplot) then store_data,'pot2_p_cutoff_cnts1',data={x:time2,y:pot2_p_cutoff_cnts1}
+if keyword_set(tplot) then options,'pot2_p_cutoff_cnts1',ylog=1,yrange=[1,100],psym=-1
+
+if keyword_set(tplot) then store_data,'pot2_p_cutoff_cnts2',data={x:time2,y:pot2_p_cutoff_cnts2}
+if keyword_set(tplot) then options,'pot2_p_cutoff_cnts2',ylog=1,yrange=[1,100],psym=-1
+if keyword_set(tplot) then store_data,'pot2_p_cutoff_cnts3',data={x:time2,y:pot2_p_cutoff_cnts3}
+if keyword_set(tplot) then options,'pot2_p_cutoff_cnts3',ylog=1,yrange=[1,100],psym=-1
+
 if keyword_set(tplot) then store_data,'ind_cutoff',data={x:time2,y:ind_cutoff}
+if keyword_set(tplot) then store_data,'p_only',data={x:time2,y:p_only}
+	ylim,'p_only',-1,2,0
 
-
-		if keyword_set(tplot) then store_data,'p_only',data={x:time2,y:p_only}
-			ylim,'p_only',-1,2,0
-
+; tplot,['pot2_p_cutoff_cnts0','pot2_p_cutoff_cnts1','pot2_p_cutoff_cnts2','pot2_p_cutoff_cnts3','mvn_sta_c6_O2+_lpw_sc_pot_all','mvn_sta_c6_pot_cutoff_valid','mvn_sta_c0_P1A_L_E_pot','mvn_sta_c0_P1A_H_E_pot']
 
 ; If counts <10eV exceed 10, density>8., and alt>400 then use the total count cutoff without averaging 
 ; Determine pot22, the following is stored as 'mvn_sta_c6_O2+_sc_pot_o+h+'
@@ -759,7 +826,8 @@ if count gt 0 then begin
 endif
 
 ind = where(pot_all ne 0.,count)
-pot_valid = fltarr(npts) & pot_valid[ind]=1
+pot_valid = fltarr(npts) 
+if count ge 1 then pot_valid[ind]=1
 if keyword_set(tplot) then store_data,'mvn_sta_scpot_valid',data={x:time,y:pot_valid}
 	if keyword_set(tplot) then ylim,'mvn_sta_scpot_valid',-1,2,0
 

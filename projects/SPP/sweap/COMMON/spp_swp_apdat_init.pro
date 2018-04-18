@@ -28,7 +28,7 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
   spp_apdat_info,'345'x,name='swem_cmd_echo',routine='spp_generic_decom',tname='spp_cmd_echo_',    save_flag=save_flag,ttags=ttags,rt_flag=rt_flag
   spp_apdat_info,'346'x,name='swem_timing',routine='spp_swp_swem_timing_decom',tname='spp_swem_timing_',ttags='*',save_flag=save_flag,rt_flag=rt_flag 
 
-  spp_apdat_info,'347'x,routine='',tname='spp_swp_347_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag 
+  spp_apdat_info,'347'x,name='Memory Dwell',routine='',tname='spp_swp_347_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag 
 
   spp_apdat_info,'348'x,name='P1',routine='spp_swp_swem_unwrapper',tname='spp_swp_348_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag 
   spp_apdat_info,'349'x,name='P2',routine='spp_swp_swem_unwrapper',tname='spp_swp_349_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag 

@@ -96,8 +96,8 @@
 ;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-04-16 16:07:26 -0700 (Mon, 16 Apr 2018) $
-; $LastChangedRevision: 25055 $
+; $LastChangedDate: 2018-04-17 17:47:11 -0700 (Tue, 17 Apr 2018) $
+; $LastChangedRevision: 25068 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_flipbookify.pro $
 ;-
 
@@ -125,8 +125,7 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   
   if ~undefined(include_1d_vx) or ~undefined(include_1d_vy) then lineplot = 1b
   if undefined(right_margin) then begin
-    if undefined(lineplot) then right_margin = 60 else right_margin = 75
-    if undefined(lineplot) then right_margin = 60 else right_margin = 85
+    if undefined(lineplot) then right_margin = 65 else right_margin = 85
   endif
   if undefined(left_margin) then left_margin = 15
   if undefined(probe) then probe = '1' else probe = strcompress(string(probe), /rem)
@@ -243,11 +242,17 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
         spd_slice1d_plot, thick=lineplot_thickness, color=2, slice, 'x', minmax(slice.xgrid), window=window_num, /noerase, position=[top_plot_pos[2]+padding+available_width/2.+0.02, 0.07, 0.99, 0.33], /ylog, yminor=10, yrange=undefined(lineplot_yrange) ? slice.zrange*[0.999,1.001] : lineplot_yrange, xrange=lineplot_xrange
         spd_slice1d_plot, thick=lineplot_thickness, color=2, slice2, 'x', minmax(slice2.xgrid), window=window_num, /noerase, position=[top_plot_pos[2]+padding+available_width/2.+0.02, 0.39, 0.99, 0.65], /ylog, yminor=10, yrange=undefined(lineplot_yrange) ? slice2.zrange*[0.999,1.001] : lineplot_yrange, xrange=lineplot_xrange
         spd_slice1d_plot, thick=lineplot_thickness, color=2, slice3, 'x', minmax(slice3.xgrid), window=window_num, /noerase, position=[top_plot_pos[2]+padding+available_width/2.+0.02, 0.71, 0.99, 0.97], /ylog, yminor=10, yrange=undefined(lineplot_yrange) ? slice3.zrange*[0.999,1.001] : lineplot_yrange, xrange=lineplot_xrange
+        xyouts, 0.95, 0.93, 'f(v!Dx!N)', color=2, /normal
+        xyouts, 0.95, 0.61, 'f(v!Dx!N)', color=2, /normal
+        xyouts, 0.95, 0.29, 'f(v!Dx!N)', color=2, /normal
       endif
       if ~undefined(include_1d_vy) then begin
         spd_slice1d_plot, thick=lineplot_thickness, color=6, slice, 'y', minmax(slice.ygrid), window=window_num, /noerase, position=[top_plot_pos[2]+padding+available_width/2.+0.02, 0.07, 0.99, 0.33], /ylog, yminor=10, yrange=undefined(lineplot_yrange) ? slice.zrange*[0.999,1.001] : lineplot_yrange, xrange=lineplot_xrange
         spd_slice1d_plot, thick=lineplot_thickness, color=6, slice2, 'y', minmax(slice2.ygrid), window=window_num, /noerase, position=[top_plot_pos[2]+padding+available_width/2.+0.02, 0.39, 0.99, 0.65], /ylog, yminor=10, yrange=undefined(lineplot_yrange) ? slice2.zrange*[0.999,1.001] : lineplot_yrange, xrange=lineplot_xrange
         spd_slice1d_plot, thick=lineplot_thickness, color=6, slice3, 'y', minmax(slice3.ygrid), window=window_num, /noerase, position=[top_plot_pos[2]+padding+available_width/2.+0.02, 0.71, 0.99, 0.97], /ylog, yminor=10, yrange=undefined(lineplot_yrange) ? slice3.zrange*[0.999,1.001] : lineplot_yrange, xrange=lineplot_xrange
+        xyouts, 0.95, 0.89, 'f(v!Dy!N)', color=6, /normal
+        xyouts, 0.95, 0.57, 'f(v!Dy!N)', color=6, /normal
+        xyouts, 0.95, 0.25, 'f(v!Dy!N)', color=6, /normal
       endif
     endif
     

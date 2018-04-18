@@ -9,11 +9,11 @@
 ;MOD HISTORY:
 ;
 ;NOTES:	  
-;	The common block can be accessed via mvn_sta_get_d1e.pro to return a single data structure
+;	The common block can be accessed via mvn_sta_get_c6e.pro to return a single data structure
 ;	Data structures can be operated on by programs like n_4d.pro, v_4d.pro
 ;	Or used in conjunction with iterative programs such as get_4dt.pro and get_en_spec4dt.pro
 ;-
-pro mvn_sta_make_c6e
+pro mvn_sta_make_c6e,lite=lite
 
 common mvn_c6,get_ind_c6,dat_c6
 common mvn_c0,get_ind_c0,dat_c0
@@ -26,8 +26,10 @@ common mvn_c0,get_ind_c0,dat_c0
 	wait,1
 
 	npts_c0 = n_elements(dat_c0.time)*1l
+print,npts_c6,npts_c0
 
 	ind_c0 = round(interp(lindgen(npts_c0),dat_c0.time,dat_c6.time[ind_c6])+.01) < (npts_c0-1)
+
 
 	nenergy = 64
 	nbins   = 1
@@ -95,6 +97,9 @@ common mvn_c0,get_ind_c0,dat_c0
 
 		bkg = (nor_bkg0 + nor_bkg1) * transpose(reform(replicate(1.,2)#reform(transpose(dat_c6.bkg[ind_c6,*,*],[1,0,2]),npts_c6*32*nmass),nenergy,npts_c6,nmass),[1,0,2])
 
+	if keyword_set(lite) then begin
+		eflux=0
+	endif else begin
 		gf1 = 	reform(gf[swp_ind,*,0])*((att_ind eq 0)#replicate(1.,nenergy)) +$
 			reform(gf[swp_ind,*,1])*((att_ind eq 1)#replicate(1.,nenergy)) +$
 			reform(gf[swp_ind,*,2])*((att_ind eq 2)#replicate(1.,nenergy)) +$
@@ -105,6 +110,7 @@ common mvn_c0,get_ind_c0,dat_c0
 		dt = float(integ_t#replicate(1.,1l*nenergy*nmass))
 
 		eflux = ((cnts-bkg)*dead/(gf2*eff2*dt)) > 0.
+	endelse
 
 dat = 		{project_name:		dat_c6.project_name,			$
 		spacecraft:		dat_c6.spacecraft, 			$
