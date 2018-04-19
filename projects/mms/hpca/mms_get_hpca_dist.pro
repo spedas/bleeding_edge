@@ -35,8 +35,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-01-19 14:12:41 -0800 (Fri, 19 Jan 2018) $
-;$LastChangedRevision: 24549 $
+;$LastChangedDate: 2018-04-18 11:58:19 -0700 (Wed, 18 Apr 2018) $
+;$LastChangedRevision: 25074 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_get_hpca_dist.pro $
 ;-
 
@@ -115,13 +115,6 @@ endif
 ; check if the time series is monotonic
 ; to avoid doing incorrect calculations when there's a problem with the CDF files
 time_data = *azimuth.x
-
-if tag_exist(dl, 'centered_on_load') && dl.centered_on_load eq 1b then begin
-    ; angle data should not be centered on load, despite what's in the metadata, so we need to 
-    ; correct the offset here
-    offset = (time_data[1]-time_data[0])/2.0
-    time_data = time_data-offset
-endif
 
 wherenonmono = where(time_data[1:*] le time_data, countnonmono)
 if countnonmono ne 0 then begin
@@ -303,7 +296,7 @@ dist.dphi = transpose( dphi, [1,3,2,0] ) ;shuffle dimensions
 ;copy particle data
 for i=0,  n_elements(dist)-1 do begin
   ;shift from azimuth-energy-elevation to energy-azimuth-elevation
-  dist[i].data = transpose( (*p.y)[data_idx[i]:data_idx[i]+(n_times-1),*,*], [1,0,2] )
+  dist[i].data = transpose( (*p.y)[data_idx[i]-n_times/2.:data_idx[i]+n_times/2.-1,*,*], [1,0,2])
 endfor
 
 ;ensure phi values are in [0,360]
