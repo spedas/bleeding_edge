@@ -42,8 +42,8 @@
 ;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-03-20 10:14:29 -0700 (Tue, 20 Mar 2018) $
-;$LastChangedRevision: 24914 $
+;$LastChangedDate: 2018-04-19 08:18:08 -0700 (Thu, 19 Apr 2018) $
+;$LastChangedRevision: 25076 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -171,7 +171,7 @@ pro mms_part_getspec, probes=probes, $
         mms_load_hpca, probes=probes, trange=trange, data_rate=data_rate, level=level, $
             datatype='ion', center_measurement=center_measurement,  $
             cdf_version=cdf_version, latest_version=latest_version, major_version=major_version, $
-            min_version=min_version, spdf=spdf
+            min_version=min_version, spdf=spdf, /time_clip
         
         ; load the bulk velocity if the user requested to subtract it
         if keyword_set(subtract_bulk) && undefined(vel_name_user) then mms_load_hpca, probes=probes, trange=trange, $

@@ -35,8 +35,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-18 11:58:19 -0700 (Wed, 18 Apr 2018) $
-;$LastChangedRevision: 25074 $
+;$LastChangedDate: 2018-04-19 14:48:25 -0700 (Thu, 19 Apr 2018) $
+;$LastChangedRevision: 25081 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_get_hpca_dist.pro $
 ;-
 
@@ -295,8 +295,12 @@ dist.dphi = transpose( dphi, [1,3,2,0] ) ;shuffle dimensions
 
 ;copy particle data
 for i=0,  n_elements(dist)-1 do begin
+  data_times = *p.x
+  ; need to extract the data from the center of the half-spin
+  if data_idx[i]-n_times/2. lt 0 then start_idx = 0 else start_idx = data_idx[i]-n_times/2.
+  if data_idx[i]+n_times/2.-1 ge n_elements(data_times) then end_idx = n_elements(data_times)-1 else end_idx = data_idx[i]+n_times/2.-1
   ;shift from azimuth-energy-elevation to energy-azimuth-elevation
-  dist[i].data = transpose( (*p.y)[data_idx[i]-n_times/2.:data_idx[i]+n_times/2.-1,*,*], [1,0,2])
+  dist[i].data = transpose( (*p.y)[start_idx:end_idx,*,*], [1,0,2])
 endfor
 
 ;ensure phi values are in [0,360]

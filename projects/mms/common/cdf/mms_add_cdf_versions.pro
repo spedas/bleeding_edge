@@ -35,14 +35,15 @@
 ;       
 ;       
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-12-15 12:56:16 -0800 (Fri, 15 Dec 2017) $
-; $LastChangedRevision: 24423 $
+; $LastChangedDate: 2018-04-19 11:41:45 -0700 (Thu, 19 Apr 2018) $
+; $LastChangedRevision: 25080 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/cdf/mms_add_cdf_versions.pro $
 ;-
 
 pro mms_add_cdf_versions, instrument, versions, data_rate = data_rate, right_align=right_align, $
     top_align=top_align, charsize=charsize
-    common versionnum, versionnum_loc ; so we don't overplot the version #s for different instruments
+    ; so we don't overplot the version #s for different instruments
+    common plotcdfversions, top_right_versionnum_loc, top_left_versionnum_loc, bot_right_versionnum_loc, bot_left_versionnum_loc
     if undefined(charsize) then chsize = 1 else chsize = charsize
     
     if undefined(instrument) then begin
@@ -68,10 +69,24 @@ pro mms_add_cdf_versions, instrument, versions, data_rate = data_rate, right_ali
     endfor
     versions_nodupes = (dupekill.keys()).toArray()
     
+    plot_pos = plot_positions()
+    
     yp = keyword_set(top_align) ? !y.window[0] + 0.02 : !y.window[0] + 0.01
 
     ; x-location to start printing the version # at
-    versionnum_loc = undefined(versionnum_loc) ? 0.01 : versionnum_loc + 0.01
+    if keyword_set(top_align) and keyword_set(right_align) then begin ; top right
+      top_right_versionnum_loc = undefined(top_right_versionnum_loc) ? 0.01 : top_right_versionnum_loc + 0.01
+      versionnum_loc = top_right_versionnum_loc
+    endif else if keyword_set(top_align) and ~keyword_set(right_align) then begin ; top left
+      top_left_versionnum_loc = undefined(top_left_versionnum_loc) ? 0.01 : top_left_versionnum_loc + 0.01
+      versionnum_loc = top_left_versionnum_loc
+    endif else if ~keyword_set(top_algin) and keyword_set(right_align) then begin ; bottom right
+      bot_right_versionnum_loc = undefined(bot_right_versionnum_loc) ? 0.01 : bot_right_versionnum_loc + 0.01
+      versionnum_loc = bot_right_versionnum_loc
+    endif else begin ; bottom left
+      bot_left_versionnum_loc = undefined(bot_left_versionnum_loc) ? 0.01 : bot_left_versionnum_loc
+      versionnum_loc = bot_left_versionnum_loc
+    endelse
 
     ; create an array of version strings for this instrument
     for version_idx = 0, n_elements(versions_nodupes)-1 do append_array, version_strs, 'v' + versions_nodupes[version_idx]
@@ -86,9 +101,17 @@ pro mms_add_cdf_versions, instrument, versions, data_rate = data_rate, right_ali
 
     plot_str = undefined(data_rate) ? strupcase(instrument) + ' ' + plot_str : strupcase(instrument) + ' ' + data_rate + ' ' + plot_str
     
-    xyouts,abs(keyword_set(right_align)-versionnum_loc),abs(keyword_set(top_align)-yp),plot_str,charsize=chsize,/norm,alignment=keyword_set(right_align)
-    
     len_in_px = strlen(plot_str)*!d.x_ch_size
+
+    xyouts,abs(keyword_set(right_align)-versionnum_loc),abs(keyword_set(top_align)-yp), plot_str, charsize=chsize, /norm, alignment=keyword_set(right_align)
     
-    versionnum_loc += len_in_px/float(!d.x_size)
+    if keyword_set(top_align) and keyword_set(right_align) then begin ; top right
+      top_right_versionnum_loc += len_in_px/float(!d.x_size)
+    endif else if keyword_set(top_align) and ~keyword_set(right_align) then begin ; top left
+      top_left_versionnum_loc += len_in_px/float(!d.x_size)
+    endif else if ~keyword_set(top_algin) and keyword_set(right_align) then begin ; bottom right
+      bot_right_versionnum_loc += len_in_px/float(!d.x_size)
+    endif else begin ; bottom left
+      bot_left_versionnum_loc += len_in_px/float(!d.x_size)
+    endelse
 end

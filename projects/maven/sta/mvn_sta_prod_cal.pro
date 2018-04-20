@@ -5853,7 +5853,12 @@ print,'Processing apid d6'
 	if ndis gt 0 and npkts ge 48 then begin
 			ind1 = ind1[ind2]
 			n_events = n_elements(ind1)
-			if n_events ne npkts/48 then print,'Error 1 - D6 packets were missing'
+			if n_events ne npkts/48 then begin
+				print,'Error 1 - D6 packets were missing'
+				print,'n_events,npkts/48=',n_events,npkts/48
+				print,'Truncating n_events from ',n_events,' to ',npkts/48
+				n_events = npkts/48
+			endif
 
 		nmax = n_events*8192l
 			tdc_1 = intarr(nmax)	
