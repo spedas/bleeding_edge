@@ -7,10 +7,76 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-03-08 09:26:59 -0800 (Thu, 08 Mar 2018) $
-; $LastChangedRevision: 24855 $
+; $LastChangedDate: 2018-04-20 09:48:38 -0700 (Fri, 20 Apr 2018) $
+; $LastChangedRevision: 25084 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
+
+; the following produce validation plots that compare DIS and HPCA spectra
+function mms_part_getspec_ut::test_dis_hpca_cold
+  mms_part_getspec, energy=[0, 300], suffix='_cold', instrument='hpca', trange=['2017-08-12/23', '2017-08-12/24'], output=['energy', 'pa', 'gyro', 'phi', 'theta'], probe=3
+  mms_part_getspec, energy=[0, 300], suffix='_cold', species='i', instrument='fpi', trange=['2017-08-12/23', '2017-08-12/24'], output=['energy','phi','theta','pa','gyro'], probe=3
+  tplot, ['mms3_dis_dist_fast_pa_cold', 'mms3_hpca_hplus_phase_space_density_pa_cold']
+  makepng, 'dis-vs-hpca-pa-cold'
+  window, 1
+  tplot, window=1, ['mms3_dis_dist_fast_gyro_cold', 'mms3_hpca_hplus_phase_space_density_gyro_cold']
+  makepng, 'dis-vs-hpca-gyro-cold'
+  window, 2
+  tplot, window=2, ['mms3_dis_dist_fast_energy_cold', 'mms3_hpca_hplus_phase_space_density_energy_cold']
+  makepng, 'dis-vs-hpca-energy-cold'
+  return, 1
+end
+
+function mms_part_getspec_ut::test_dis_hpca_full
+  mms_part_getspec, suffix='_full', instrument='hpca', trange=['2017-08-12/23', '2017-08-12/24'], output=['energy', 'pa', 'gyro', 'phi', 'theta'], probe=3
+  mms_part_getspec, suffix='_full', species='i', instrument='fpi', trange=['2017-08-12/23', '2017-08-12/24'], output=['energy','phi','theta','pa','gyro'], probe=3
+  tplot, ['mms3_dis_dist_fast_pa_full', 'mms3_hpca_hplus_phase_space_density_pa_full']
+  makepng, 'dis-vs-hpca-pa-full'
+  flatten_spectra, /ylog, time='2017-08-12/23:35:12', /png
+  window, 1
+  tplot, window=1, ['mms3_dis_dist_fast_gyro_full', 'mms3_hpca_hplus_phase_space_density_gyro_full']
+  makepng, 'dis-vs-hpca-gyro-full'
+  flatten_spectra, /ylog, time='2017-08-12/23:35:12', /png
+  window, 2
+  tplot, window=2, ['mms3_dis_dist_fast_energy_full', 'mms3_hpca_hplus_phase_space_density_energy_full']
+  makepng, 'dis-vs-hpca-energy-full'
+  flatten_spectra, /ylog, time='2017-08-12/23:35:12', /png
+  return, 1
+end
+
+; -----------------end of the DIS vs. HPCA validation plots
+
+; the following compares eflux produced from the PSD from the getspec code with the eflux in the CDF 
+; file (converted to eflux by multiplying by energy)
+function mms_part_getspec_ut::test_hpca_eflux_vs_pgs
+  mms_part_getspec, suffix='_full', instrument='hpca', trange=['2017-08-12/23', '2017-08-12/24'], output=['energy', 'pa', 'gyro', 'phi', 'theta'], probe=3
+  mms_hpca_calc_anodes, fov=[0, 360], probe=3
+  mms_hpca_spin_sum, probe='3'
+  get_data, 'mms3_hpca_hplus_flux_elev_0-360_spin', data=d, dlimits=dl
+  newdy = d.Y
+  for vi=0, n_elements(d.X)-1 do newdy[vi, *] = d.Y[vi, *]*d.V
+  store_data, 'hpca_eflux', data={x: d.X, y: newdy, v: d.v}, dlimits=dl
+  ylim, 'hpca_eflux', 0, 0, 1
+  zlim, 'hpca_eflux', 0, 0, 1
+  tplot, ['mms3_hpca_hplus_phase_space_density_energy_full', 'hpca_eflux']
+  makepng, 'hpca-pgs-eflux-vs-cdf-eflux'
+  flatten_spectra, /ylog, time='2017-08-12/23:35:12', /png
+  return, 1
+end
+
+function mms_part_getspec_ut::test_fpi_eflux_vs_pgs
+  mms_part_getspec, suffix='_full', instrument='fpi', species='i', trange=['2017-08-12/23', '2017-08-12/24'], output=['energy', 'pa', 'gyro', 'phi', 'theta'], probe=3
+  mms_load_fpi, datatype='dis-moms', trange=['2017-08-12/23', '2017-08-12/24'], /time_clip, probe=3
+  
+  return, 1
+end
+
+; todo
+function mms_part_getspec_ut::test_fpi_multipad
+  mms_part_getspec, probe=4, trange=['2017-10-15/10:50', '2017-10-15/11:00'], output='multipad'
+  
+  return, 1
+end
 
 function mms_part_getspec_ut::test_hpca_flux_units
   mms_part_getspec, probe=4, instrument='hpca', units='flux', trange=['2017-10-15/10:50', '2017-10-15/11:00']

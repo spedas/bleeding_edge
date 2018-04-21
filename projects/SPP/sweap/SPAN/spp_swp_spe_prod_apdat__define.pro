@@ -1,9 +1,9 @@
 ;+
 ; spp_swp_spe_prod_apdat
-; $LastChangedBy: $
-; $LastChangedDate:  $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2018-04-20 12:14:30 -0700 (Fri, 20 Apr 2018) $
+; $LastChangedRevision: 25088 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
 

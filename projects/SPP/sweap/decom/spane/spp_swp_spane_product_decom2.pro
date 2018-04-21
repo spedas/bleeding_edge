@@ -1,7 +1,7 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2016-02-29 17:07:52 -0800 (Mon, 29 Feb 2016) $
-; $LastChangedRevision: 20274 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu:36867/repos/spdsoft/trunk/projects/SPP/sweap/decom/spane/spp_swp_spane_product_decom.pro $
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2018-04-20 12:14:52 -0700 (Fri, 20 Apr 2018) $
+; $LastChangedRevision: 25089 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/spane/spp_swp_spane_product_decom2.pro $
 
 
 function spp_swp_spane_16A, data, header_str=header_str, apdat=apdat,pname=pname
@@ -146,7 +146,6 @@ function spp_swp_spane_product_decom2, ccsds, ptp_header=ptp_header, apdat=apdat
   endif
   
   ccsds_data = spp_swp_ccsds_data(ccsds)  
-;  dprint,'hello
   
   if pksize ne n_elements(ccsds_data) then begin
     dprint,dlevel=1,'Product size mismatch', n_elements(ccsds_data)

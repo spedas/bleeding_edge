@@ -7,8 +7,8 @@
 ; In the future this will include instructions for looking at flight data
 ; 
 ; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-03-21 13:56:14 -0700 (Wed, 21 Mar 2018) $
-; $LastChangedRevision: 24924 $
+; $LastChangedDate: 2018-04-20 16:20:22 -0700 (Fri, 20 Apr 2018) $
+; $LastChangedRevision: 25093 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/electron/spp_swp_spane_crib.pro $
 ;--------------------------------------------------------------------
 
@@ -22,7 +22,7 @@
 ;           ;;; insert sample code here uncommented ;;;
 ;
 ; 2: Set which files to download.
-;     Format: files = spp_file_retrieve(/instrument, /chamber, trange)
+;     Format: files = spp_file_retrieve(/instrument, /chamber, trange = trange)
 ;     Options: Instrument : /spanea, /spaneb, /spani, /spc, /swem
 ;              Chamber :    /snout2, /tv, /cal, /crypt, /rm133
 ; 
@@ -32,6 +32,15 @@
 ;
 ;
 ; note that table files are doubled until [insert date here]
+
+
+;;----SPAN-E TVAC TESTING @ GODDARD (2018)----;;
+; Use the following:
+; files = spp_file_retrieve(/swem, /goddard, trange = trange)
+trange = '2018 03 ' + ['07/16','08/01'] ; fields wpc testing with electron gun
+trange = '2018 03 ' + ['08/00','08/04'] ; threshold tests @ each anode w/electron gun stimuli
+trange = '2018 03 ' + ['08/03','08/06'] ; threshold tests @ MCP values, spoiler test, and energy sweep (also powerdown)
+
 
 ;;----SPAN-Ae FINAL CALIBRATION FILES----;;
 
@@ -111,7 +120,7 @@ files = spp_file_retrieve('spp/data/sci/sweap/sao/level_zero_telemetry/2018/066/
 ;also odd counts appear on all anodes @ 2020-07-19/06:11:00 on Ae with no known cause. Gun?? Also - two time jumps @ 2020-07-18/10:07 and @ 2020-07-18/21:40 . Data missing in other places.
 
 files = spp_file_retrieve('spp/data/sci/sweap/sao/level_zero_telemetry/2018/067/sweap_spp_2018067_01.ptp.gz') ; contains all the good stuff : rotations back + forth, spoiler tests, and gun tests. 
-; for gun test, the 
+; for gun test, the values are: 
 
 
 ;;-----EXTRAS-----;;

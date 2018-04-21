@@ -1,14 +1,14 @@
-; $LastChangedBy:  $
-; $LastChangedDate:  $
-; $LastChangedRevision:  $
-; $URL:  $
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2018-04-20 12:18:10 -0700 (Fri, 20 Apr 2018) $
+; $LastChangedRevision: 25092 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_data_select.pro $
 
 
 
 
 function spp_swp_data_select,bytearray,startbit,nbits
 
-  startbyte = startbit / 8
+  startbyte = startbit / 8; + 2
   startshft = startbit mod 8
   endbyte   = (startbit+nbits-1) / 8
   endshft  = (startbit+nbits) mod 8

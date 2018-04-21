@@ -2,14 +2,15 @@
 ; PSP SPAN-E TPLOT ROUTINE
 ;
 ; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-03-21 14:00:10 -0700 (Wed, 21 Mar 2018) $
-; $LastChangedRevision: 24927 $
+; $LastChangedDate: 2018-04-20 12:17:25 -0700 (Fri, 20 Apr 2018) $
+; $LastChangedRevision: 25091 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_spane_tplot.pro $
 ;--------------------------------------------------------------------
 
 pro spp_swp_spane_tplot,name,ADD=ADD,setlim=setlim
 
   if keyword_set(setlim) then begin
+    options,'*ACT_FLAG',colors='ddgrgrbb'
     options,'spp_*AF*_SPEC' , spec=1
     options, '*spp*sp[a,b]*SPEC', spec = 1
     zlim, '*spp*sp[a,b]*SPEC', 1,1,1
@@ -41,18 +42,18 @@ pro spp_swp_spane_tplot,name,ADD=ADD,setlim=setlim
 
     plot_name = strupcase(strtrim(name,2))
     case plot_name of
-     'SUMPLOT': tplot, '*spp_spa_hkp_HV_CONF_FLAG spp_spb_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spb_SF1_CNTS spp_spa_hkp_CMD_REC spp_spb_hkp_CMD_REC spp_spa_SF1_ANODE_SPEC spp_spb_SF1_ANODE_SPEC spp_spa_SF0_NRG_SPEC spp_spb_SF0_NRG_SPEC', add = add
+     'SUMPLOT': tplot, 'spp_spa_hkp_CMD_REC spp_spb_hkp_CMD_REC spp_spa_hkp_HV_CONF_FLAG spp_spb_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spb_SF1_CNTS spp_spa_SF1_ANODE_SPEC spp_spb_SF1_ANODE_SPEC spp_spa_SF0_NRG_SPEC spp_spb_SF0_NRG_SPEC', add = add
      'SUMPLOTSA' : tplot, 'spp_spa_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spa_hkp_CMD_REC spp_spa_SF1_ANODE_SPEC spp_spa_SF0_NRG_SPEC'
      'SUMPLOTSB' : tplot, 'spp_spb_hkp_HV_CONF_FLAG spp_spb_SF1_CNTS spp_spb_hkp_CMD_REC spp_spb_SF1_ANODE_SPEC spp_spb_SF0_NRG_SPEC'
      'SE':   tplot,'*sp?_SF1_ANODE_SPEC *sp?_SF1_*_SPEC spp_sp?_hkp_MRAM_*',ADD=ADD
      'SE_HV': tplot,'*sp?_hkp_ADC_VMON_* *sp?_hkp_ADC_IMON_*',ADD=ADD
      'SE_LV': tplot,'*sp?_hkp_RIO*',ADD=ADD
-     'SA_SPEC': tplot, '*spa_*ADC_VMON_HEM *spa_AF0_CNTS *spa_*AF1_ANODE_SPEC spp_spa_AF1_NRG_SPEC spp_spa_AT0_CNTS spp_spa_AT1_ANODE_SPEC spp_spa_AT1_NRG_SPEC spp_spa_AT1_PEAK_BIN', ADD=ADD
+     'SA_SPEC': tplot, '*spa_*ADC_VMON_HEM *spa_*SF0*_CNTS *spa_*AF1_ANODE_SPEC spp_spa_AF1_NRG_SPEC spp_spa_AT0_CNTS spp_spa_AT1_ANODE_SPEC spp_spa_AT1_NRG_SPEC spp_spa_AT1_PEAK_BIN', ADD=ADD
      'SB_SPEC': tplot, 'spp_spb_hkp_ADC_VMON_HEM spp_spb_AF0_CNTS spp_spb_AF1_ANODE_SPEC spp_spb_AF1_NRG_SPEC spp_spb_AT0_CNTS spp_spb_AT1_ANODE_SPEC spp_spb_AT1_NRG_SPEC spp_spb_AT1_PEAK_BIN', ADD=ADD
      'MANIP':tplot,'manip*_POS',add=add
      'SC':  tplot,'spp_*spc*',ADD=ADD
-     'SB_COVER': tplot, '*spb_*ACT*CVR* *spb_*ACTSTAT*FLAG* *spb*CMD*UKN* *spb*CLK*NYS', add = add
-     'SA_COVER': tplot, '*spa_*ACT*CVR* *spa_*ACTSTAT*FLAG* *spa*CMD*UKN* *spa*CLK*NYS', add = add
+     'SB_COVER': tplot, '*spb_*ACT*CVR* *spb_*ACT*FLAG* *spb*CMD*UKN* *spb*CLK*NYS', add = add
+     'SA_COVER': tplot, '*spa_*ACT*CVR* *spa_*ACT*FLAG* *spa*CMD*UKN* *spa*CLK*NYS', add = add
      'SWEM': tplot,'APID PTP_DATA_RATE',add=add
      'SWEM_START': tplot, 'spp_swem_ahkp_SPB_22_TEMP spp_swem_ahkp_SPA_22_TEMP spp_swem_ahkp_SPI_22_TEMP spp_swem_crit_SEQN', add = add
      'TIMING': tplot,'spp_swem_timing_'+['DRIFT_DELTA','CLKS_PER_PPS_DELTA','SCSUBSECSATPPS']      

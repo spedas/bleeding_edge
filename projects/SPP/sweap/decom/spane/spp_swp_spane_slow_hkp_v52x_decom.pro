@@ -193,8 +193,8 @@ endif
     HDR_17:         b[17], $
     HDR_18:         b[18], $
     HDR_19:         b[19], $
-    RIO_P8I:         swap_endian(/swap_if_little_endian,  fix(b,20 ) ),$
-    RIO_N8I:         swap_endian(/swap_if_little_endian,  fix(b,22 ) ),$
+    RIO_P8I:         swap_endian(/swap_if_little_endian,  fix(b,20 ) ) * 4.252199,$
+    RIO_N8I:         swap_endian(/swap_if_little_endian,  fix(b,22 ) ) * 4.252199,$
     RIO_LVPS_TEMP:  MON_LVPS_TEMP,$ ;swap_endian(/swap_if_little_endian,  fix(b,24 ) ),$
     ;RIO_LVPS_TEMP_HEX: swap_endian(/swap_if_little_endian,  fix(b,24 ) ), $
     RIO_22VA:       swap_endian(/swap_if_little_endian,  fix(b,26 ) ) * 0.028104,$
