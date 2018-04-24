@@ -26,22 +26,27 @@
 ; tplot_vars_create = if set, call mvn_sta_l2_tplot to get tplot
 ;                     variables
 ; tvar_names = list of the STA tplot variable names loaded
+; l2_version_in = if set, input this version, the default is to use
+;                 the current version, but that may not exist yet if 
+;                 you are reprocessing
 ;OUTPUT:
 ; No variables, data are loaded into common blocks
 ;HISTORY:
 ; 16-may-2014, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-12-11 14:39:21 -0800 (Mon, 11 Dec 2017) $
-; $LastChangedRevision: 24416 $
+; $LastChangedDate: 2018-04-23 12:44:04 -0700 (Mon, 23 Apr 2018) $
+; $LastChangedRevision: 25096 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_l2_load.pro $
 ;-
 Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
                      user_pass = user_pass, no_time_clip = no_time_clip, $
                      tplot_vars_create = tplot_vars_create, $
-                     tvar_names = tvar_names, _extra = _extra
+                     tvar_names = tvar_names, l2_version_in = l2_version_in, $
+                     _extra = _extra
 
 ;Keep track of software versioning here
-  sw_vsn = mvn_sta_current_sw_version()
+  If(keyword_set(l2_version_in)) Then sw_vsn = l2_version_in $
+  Else sw_vsn = mvn_sta_current_sw_version()
   sw_vsn_str = 'v'+string(sw_vsn, format='(i2.2)')
 
 ;The first step is to set up filenames, if there are any

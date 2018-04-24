@@ -21,8 +21,8 @@
 ;       saveflux:      If set to 1, will save eflux for 3 PA ranges to
 ;                      a provided directory. 
 ; $LastChangedBy: xussui $
-; $LastChangedDate: 2017-10-04 17:41:01 -0700 (Wed, 04 Oct 2017) $
-; $LastChangedRevision: 24114 $
+; $LastChangedDate: 2018-04-23 12:05:36 -0700 (Mon, 23 Apr 2018) $
+; $LastChangedRevision: 25095 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_shape_dailysave.pro $
 ;
 ;CREATED BY:    Shaosui Xu, 08/01/2017
@@ -36,7 +36,7 @@ Pro mvn_swe_shape_dailysave,start_day=start_day,end_day=end_day,ndays=ndays,$
 
     dpath=root_data_dir()+'maven/data/sci/swe/l3/shape/'
     froot='mvn_swe_l3_shape_'
-    vr='_v00_r01'
+    vr='_v00_r02'
     oneday=86400.D
 
     if (size(ndays,/type) eq 0 and size(end_day,/type) eq 0) then ndays = 7
@@ -212,6 +212,8 @@ Pro mvn_swe_shape_dailysave,start_day=start_day,end_day=end_day,ndays=ndays,$
             strday.f40 = interpol(f40,t1,tsh)
 
             save,strday,file=ofile,/compress
+            spawn,'chgrp maven '+ofile
+            file_chmod, fname, '0664'o
 
             if (saveflux) then begin
                strc2={t:0.D,f3pa:fltarr(64,3,3),mag_level:0}
@@ -226,6 +228,7 @@ Pro mvn_swe_shape_dailysave,start_day=start_day,end_day=end_day,ndays=ndays,$
                ofile1 = dirflx+'flx_3pa_'+time_string(tst+1000.,tf='YYYYMMDD')+'.sav'
 
                save,flx,file=ofile1,/compress
+               
             endif
         endif
         

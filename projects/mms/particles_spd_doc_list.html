@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Apr 20 18:16:18 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Apr 23 18:16:17 2018.<P>
  
 <HR>
  
@@ -32,6 +32,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_PGS_MAKE_E_SPEC">MMS_PGS_MAKE_E_SPEC</A>
 <LI><A HREF="#MMS_PGS_MAKE_FAC">MMS_PGS_MAKE_FAC</A>
 <br>Generate the field aligned coordinate transformation matrix
+<LI><A HREF="#MMS_PGS_MAKE_MULTIPAD_SPEC">MMS_PGS_MAKE_MULTIPAD_SPEC</A>
 <LI><A HREF="#MMS_PGS_MAKE_PHI_SPEC">MMS_PGS_MAKE_PHI_SPEC</A>
 <LI><A HREF="#MMS_PGS_MAKE_THETA_SPEC">MMS_PGS_MAKE_THETA_SPEC</A>
 <LI><A HREF="#MMS_PGS_MAKE_TPLOT">MMS_PGS_MAKE_TPLOT</A>
@@ -170,8 +171,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          still a work in progress
 
  $LastChangedBy: egrimes $
- $LastChangedDate: 2018-03-20 13:51:47 -0700 (Tue, 20 Mar 2018) $
- $LastChangedRevision: 24919 $
+ $LastChangedDate: 2018-04-23 14:56:45 -0700 (Mon, 23 Apr 2018) $
+ $LastChangedRevision: 25100 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getpad.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_getpad.pro">projects/mms/particles/mms_part_getpad.pro</A>)</STRONG><P>
@@ -595,7 +596,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_PGS_MAKE_FAC">
 <H2>MMS_PGS_MAKE_FAC</H2></A>
 <A HREF="#MMS_PGS_MAKE_E_SPEC">[Previous Routine]</A>
-<A HREF="#MMS_PGS_MAKE_PHI_SPEC">[Next Routine]</A>
+<A HREF="#MMS_PGS_MAKE_MULTIPAD_SPEC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE: mms_pgs_make_fac
@@ -623,9 +624,52 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="particles/mms_pgs_make_fac.pro">projects/mms/particles/mms_pgs_make_fac.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_PGS_MAKE_MULTIPAD_SPEC">
+<H2>MMS_PGS_MAKE_MULTIPAD_SPEC</H2></A>
+<A HREF="#MMS_PGS_MAKE_FAC">[Previous Routine]</A>
+<A HREF="#MMS_PGS_MAKE_PHI_SPEC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Procedure:
+  mms_pgs_make_multipad_spec
+
+Purpose:
+  Builds theta (latitudinal) spectrogram from simplified particle data structure.
+  this is like mms_pgs_make_theta_spec, except it's per energy and this routine expects
+  'spec' to be sent already initialized
+
+
+Input:
+  data: single sanitized data structure
+
+
+Input/Output:
+  spec: The spectrogram (ntimes x n_energy x ny)
+  yaxis: The y axis (ny OR ny x ntimes)
+  colatitude: Flag to specify that data is in colatitude
+  
+  -Each time this procedure runs it will concatenate the sample's data
+   to the SPEC variable.
+  -Both variables will be initialized if not set
+  -The y axis will remain a single dimension until a change is detected
+   in the data, at which point it will be expanded to two dimensions.
+
+
+Notes:
+ forked from mms_pgs_make_theta_spec by egrimes on 23 April 2018
+
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2017-06-30 07:36:07 -0700 (Fri, 30 Jun 2017) $
+$LastChangedRevision: 23532 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_pgs_make_theta_spec.pro $
+</PRE><P>
+<STRONG>(See <A href="particles/mms_pgs_make_multipad_spec.pro">projects/mms/particles/mms_pgs_make_multipad_spec.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_PGS_MAKE_PHI_SPEC">
 <H2>MMS_PGS_MAKE_PHI_SPEC</H2></A>
-<A HREF="#MMS_PGS_MAKE_FAC">[Previous Routine]</A>
+<A HREF="#MMS_PGS_MAKE_MULTIPAD_SPEC">[Previous Routine]</A>
 <A HREF="#MMS_PGS_MAKE_THETA_SPEC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

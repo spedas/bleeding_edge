@@ -16,9 +16,9 @@
 ;                L0's -- for reprocessing
 ;HISTORY:
 ; 2014-05-14, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: jimmpc1 $
-; $LastChangedDate: 2017-09-05 11:35:05 -0700 (Tue, 05 Sep 2017) $
-; $LastChangedRevision: 23885 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2018-04-23 12:53:43 -0700 (Mon, 23 Apr 2018) $
+; $LastChangedRevision: 25098 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2gen.pro $
 ;-
 Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
@@ -229,7 +229,7 @@ Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
   If(keyword_set(use_l2_files)) Then Begin
 ;use no_time_clip to get all data, mvn_sta_l2_load will fill all of
 ;the common blocks
-     mvn_sta_l2_load, /no_time_clip
+     mvn_sta_l2_load, /no_time_clip, _extra = _extra
 ;Check for 2a data, if not present, try L0, jmm, 2015-03-17
      If(~is_struct(mvn_2a_dat)) Then Begin
         mvn_sta_l0_load, files = filex ;filex is still defined.

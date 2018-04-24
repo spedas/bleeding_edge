@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Apr 20 18:16:18 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Apr 23 18:16:16 2018.<P>
  
 <HR>
  
@@ -58,8 +58,8 @@ CALLING SEQUENCE:
 HISTORY:
  2015-01-23
  $LastChangedBy: jimm $
- $LastChangedDate: 2015-01-23 11:07:39 -0800 (Fri, 23 Jan 2015) $
- $LastChangedRevision: 16715 $
+ $LastChangedDate: 2018-04-23 10:48:14 -0700 (Mon, 23 Apr 2018) $
+ $LastChangedRevision: 25094 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_current_sw_version.pro $
 </PRE><P>
 <STRONG>(See <A href="sta/mvn_sta_current_sw_version.pro">projects/maven/sta/mvn_sta_current_sw_version.pro</A>)</STRONG><P>
@@ -243,13 +243,16 @@ KEYWORDS:
  tplot_vars_create = if set, call mvn_sta_l2_tplot to get tplot
                      variables
  tvar_names = list of the STA tplot variable names loaded
+ l2_version_in = if set, input this version, the default is to use
+                 the current version, but that may not exist yet if 
+                 you are reprocessing
 OUTPUT:
  No variables, data are loaded into common blocks
 HISTORY:
  16-may-2014, jmm, jimm@ssl.berkeley.edu
  $LastChangedBy: jimm $
- $LastChangedDate: 2017-12-11 14:39:21 -0800 (Mon, 11 Dec 2017) $
- $LastChangedRevision: 24416 $
+ $LastChangedDate: 2018-04-23 12:44:04 -0700 (Mon, 23 Apr 2018) $
+ $LastChangedRevision: 25096 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_l2_load.pro $
 </PRE><P>
 <STRONG>(See <A href="sta/mvn_sta_l2_load.pro">projects/maven/sta/mvn_sta_l2_load.pro</A>)</STRONG><P>

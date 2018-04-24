@@ -128,14 +128,13 @@ endif
 		            mvn_c0_dat.gf[iswp,*,3]*((iatt eq 3)#replicate(1.,nenergy)), npts*nenergy)#replicate(1.,nmass)
 			gf = mvn_c0_dat.geom_factor*reform(gf,npts,nenergy,nmass)
 			eff = mvn_c0_dat.eff[ieff,*,*]
-			dt = mvn_c0_dat.integ_t#replicate(1.,nenergy*nmass)
+			dt = float(mvn_c0_dat.integ_t#replicate(1.,nenergy*nmass))
 			eflux2 = (data-bkg)*dead/(gf*eff*dt)
-			eflux2 = float(eflux2)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/(eflux>.01))) gt 0. then print,'Error in CDF c0 eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
-			ind = where(qf eq 1)
-			data[ind,*,*]=0.
-			eflux[ind,*,*]=0.
+			ind = where(qf eq 1,count)
+			if count ge 1 then data[ind,*,*]=0.
+			if count ge 1 then eflux[ind,*,*]=0.
 
 		store_data,'mvn_sta_c0_P1A_E',data={x:time,y:total(data,3),v:energy}
 		store_data,'mvn_sta_c0_P1A_H_E',data={x:time,y:reform( (data[*,*,1]-0.006*data[*,*,0]/(1.-(data[*,*,0]/1200.<.9))) >0.),v:energy}
@@ -188,8 +187,8 @@ endif
 			options,'mvn_sta_c0_P1A_L_E',ytitle='sta!CP1A-c0!CM<10amu!CEnergy!CeV'
 			options,'mvn_sta_c0_P1A_M',ytitle='sta!CP1A-c0!C!CMass!Camu'
 			options,'mvn_sta_c0_E',ytitle='sta!Cc0!C!CEnergy!CeV'
-			options,'mvn_sta_c0_H_E',ytitle='sta!Cc0!CM>12amu!CEnergy!CeV'
-			options,'mvn_sta_c0_L_E',ytitle='sta!Cc0!CM<10amu!CEnergy!CeV'
+			options,'mvn_sta_c0_H_E',ytitle='sta c0!CM>12!CEnergy!CeV'
+			options,'mvn_sta_c0_L_E',ytitle='sta c0!CM<10!CEnergy!CeV'
 			options,'mvn_sta_c0_M',ytitle='sta!Cc0!C!CMass!Camu'
 			options,'mvn_sta_c0_tot',ytitle='sta!Cc0!C!CCounts'
 			options,'mvn_sta_c0_att',ytitle='sta!Cc0!C!CAttenuator'
@@ -229,9 +228,8 @@ endif
 		            mvn_c2_dat.gf[iswp,*,3]*((iatt eq 3)#replicate(1.,nenergy)), npts*nenergy)#replicate(1.,nmass)
 			gf = mvn_c2_dat.geom_factor*reform(gf,npts,nenergy,nmass)
 			eff = mvn_c2_dat.eff[ieff,*,*]
-			dt = mvn_c2_dat.integ_t#replicate(1.,nenergy*nmass)
+			dt = float(mvn_c2_dat.integ_t#replicate(1.,nenergy*nmass))
 			eflux2 = (data-bkg)*dead/(gf*eff*dt)
-			eflux2 = float(eflux2)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/(eflux>.01))) gt 0. then print,'Error in CDF c2 eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -312,9 +310,8 @@ endif
 		            mvn_c4_dat.gf[iswp,*,3]*((iatt eq 3)#replicate(1.,nenergy)), npts*nenergy)#replicate(1.,nmass)
 			gf = mvn_c4_dat.geom_factor*reform(gf,npts,nenergy,nmass)
 			eff = mvn_c4_dat.eff[ieff,*,*]
-			dt = mvn_c4_dat.integ_t#replicate(1.,nenergy*nmass)
+			dt = float(mvn_c4_dat.integ_t#replicate(1.,nenergy*nmass))
 			eflux2 = (data-bkg)*dead/(gf*eff*dt)
-			eflux2 = float(eflux2)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/(eflux>.01))) gt 0. then print,'Error in CDF c4 eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -404,9 +401,8 @@ endif
 		            mvn_c6_dat.gf[iswp,*,3]*((iatt eq 3)#replicate(1.,nenergy)), npts*nenergy)#replicate(1.,nmass)
 			gf = mvn_c6_dat.geom_factor*reform(gf,npts,nenergy,nmass)
 			eff = mvn_c6_dat.eff[ieff,*,*]
-			dt = mvn_c6_dat.integ_t#replicate(1.,nenergy*nmass)
+			dt = float(mvn_c6_dat.integ_t#replicate(1.,nenergy*nmass))
 			eflux2 = (data-bkg)*dead/(gf*eff*dt)
-			eflux2 = float(eflux2)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/(eflux>.01))) gt 0. then print,'Error in CDF c6 eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -452,7 +448,7 @@ endif
 			ylim,'mvn_sta_c6_M',.5,100.,1
 			ylim,'mvn_sta_c6_M_twt',.5,100.,1
 			ylim,'mvn_sta_c6_att',-1,4,0
-			ylim,'mvn_sta_c6_mode',-1,7,0
+			ylim,'mvn_sta_c6_mode',-1,8,0
 			ylim,'mvn_sta_c6_rate',-1,7,0
 			ylim,'mvn_sta_c6_scpot',0,0,0
 			ylim,'mvn_sta_c6_neg_scpot',.1,30,1
@@ -526,9 +522,8 @@ endif
 		            mvn_c8_dat.gf[iswp,*,*,3]*((iatt eq 3)#replicate(1.,nenergy*ndef)), npts,nenergy,ndef)
 			gf = mvn_c8_dat.geom_factor*gf
 			eff = mvn_c8_dat.eff[ieff,*,*]
-			dt = mvn_c8_dat.integ_t#replicate(1.,nenergy*ndef)
+			dt = float(mvn_c8_dat.integ_t#replicate(1.,nenergy*ndef))
 			eflux2 = (data-bkg)*dead/(gf*eff*dt)
-			eflux2 = float(eflux2)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/(eflux>.01))) gt 0. then print,'Error in CDF c8 eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -610,9 +605,8 @@ endif
 		            mvn_ca_dat.gf[iswp,*,*,3]*((iatt eq 3)#replicate(1.,nenergy*nbins)), npts*nenergy*nbins)
 			gf = mvn_ca_dat.geom_factor*reform(gf,npts,nenergy,nbins)
 			eff = mvn_ca_dat.eff[ieff,*,*]
-			dt = mvn_ca_dat.integ_t#replicate(1.,nenergy*nbins)
+			dt = float(mvn_ca_dat.integ_t#replicate(1.,nenergy*nbins))
 			eflux2 = (data-bkg)*dead/(gf*eff*dt)
-			eflux2 = float(eflux2)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/(eflux>.01))) gt 0. then print,'Error in CDF ca eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -714,9 +708,8 @@ endif
 				#replicate(1.,nmass)
 			gf = mvn_cc_dat.geom_factor*reform(gf,npts,nenergy,nbins,nmass)
 			eff = mvn_cc_dat.eff[ieff,*,*,*]
-			dt = mvn_cc_dat.integ_t#replicate(1.,nenergy*nbins*nmass)
+			dt = float(mvn_cc_dat.integ_t#replicate(1.,nenergy*nbins*nmass))
 			eflux2 = (data-bkg)*dead/(gf*eff*dt)
-			eflux2 = float(eflux2)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/(eflux>.01))) gt 0. then print,'Error in CDF cc eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -816,9 +809,8 @@ endif
 				#replicate(1.,nmass)
 			gf = mvn_cd_dat.geom_factor*reform(gf,npts,nenergy,nbins,nmass)
 			eff = mvn_cd_dat.eff[ieff,*,*,*]
-			dt = mvn_cd_dat.integ_t#replicate(1.,nenergy*nbins*nmass)
+			dt = float(mvn_cd_dat.integ_t#replicate(1.,nenergy*nbins*nmass))
 			eflux2 = (data-bkg)*dead/(gf*eff*dt)
-			eflux2 = float(eflux2)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/(eflux>.01))) gt 0. then print,'Error in CDF cd eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -918,9 +910,8 @@ endif
 				#replicate(1.,nmass)
 			gf = mvn_ce_dat.geom_factor*reform(gf,npts,nenergy,nbins,nmass)
 			eff = mvn_ce_dat.eff[ieff,*,*,*]
-			dt = mvn_ce_dat.integ_t#replicate(1.,nenergy*nbins*nmass)
+			dt = float(mvn_ce_dat.integ_t#replicate(1.,nenergy*nbins*nmass))
 			eflux2 = (data-bkg)*dead/(gf*eff*dt)
-			eflux2 = float(eflux2)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/eflux)) gt 0. then print,'Error in CDF ce eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -1032,9 +1023,8 @@ endif
 				#replicate(1.,nmass)
 			gf = mvn_cf_dat.geom_factor*reform(gf,npts,nenergy,nbins,nmass)
 			eff = mvn_cf_dat.eff[ieff,*,*,*]
-			dt = mvn_cf_dat.integ_t#replicate(1.,nenergy*nbins*nmass)
+			dt = float(mvn_cf_dat.integ_t#replicate(1.,nenergy*nbins*nmass))
 			eflux2 = (data-bkg)*dead/(gf*eff*dt)
-			eflux2 = float(eflux2)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/eflux)) gt 0. then print,'Error in CDF cf eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -1146,9 +1136,8 @@ endif
 				#replicate(1.,nmass)
 			gf = mvn_d0_dat.geom_factor*reform(gf,npts,nenergy,nbins,nmass)
 			eff = mvn_d0_dat.eff[ieff,*,*,*]
-			dt = mvn_d0_dat.integ_t#replicate(1.,nenergy*nbins*nmass)
+			dt = float(mvn_d0_dat.integ_t#replicate(1.,nenergy*nbins*nmass))
 			eflux2 = (data-bkg)*dead/(gf*eff*dt)
-			eflux2 = float(eflux2)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/eflux)) gt 0. then print,'Error in CDF d0 eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -1170,6 +1159,9 @@ endif
 		store_data,'mvn_sta_d0_H_E',data={x:time,y:total(total(eflux[*,*,*,4:7],4),3)/nbins,v:energy}
 		store_data,'mvn_sta_d0_H_D',data={x:time,y:total(total(reform(total(eflux[*,*,*,4:7],4),npts,nenergy,ndef,nanode),4),2),v:theta}
 		store_data,'mvn_sta_d0_H_A',data={x:time,y:total(total(reform(total(eflux[*,*,*,4:7],4),npts,nenergy,ndef,nanode),3),2),v:phi}
+; this is for looking at pickup ions
+		store_data,'mvn_sta_d0_P4C_H_D_kev',data={x:time,y:total(reform(total(total(data[*,0:9,*,4:7],4),2),npts,ndef,nanode),3),v:theta}
+		store_data,'mvn_sta_d0_P4C_H_A_kev',data={x:time,y:total(reform(total(total(data[*,0:9,*,4:7],4),2),npts,ndef,nanode),2),v:phi}
 
 			ylim,'mvn_sta_d0_tot',0,0,1
 			ylim,'mvn_sta_d0_P4C_E',.1,40000.,1
@@ -1184,6 +1176,8 @@ endif
 			ylim,'mvn_sta_d0_H_E',.1,40000.,1
 			ylim,'mvn_sta_d0_H_D',-50,50,0
 			ylim,'mvn_sta_d0_H_A',-180,200.,0
+			ylim,'mvn_sta_d0_P4C_H_D_kev',-50,50,0
+			ylim,'mvn_sta_d0_P4C_H_A_kev',-180,200.,0
 
 			zlim,'mvn_sta_d0_P4C_E',10,1.e5,1
 			zlim,'mvn_sta_d0_P4C_D',10,1.e5,1
@@ -1196,6 +1190,8 @@ endif
 			zlim,'mvn_sta_d0_H_E',1.e3,1.e9,1
 			zlim,'mvn_sta_d0_H_D',1.e3,1.e9,1
 			zlim,'mvn_sta_d0_H_A',1.e3,1.e9,1
+			zlim,'mvn_sta_d0_P4C_H_D_kev',1,1000,1
+			zlim,'mvn_sta_d0_P4C_H_A_kev',1,1000,1
 
 			datagap=600.
 			options,'mvn_sta_d0*',datagap=datagap
@@ -1220,6 +1216,8 @@ endif
 			options,'mvn_sta_d0_H_E','spec',1
 			options,'mvn_sta_d0_H_D','spec',1
 			options,'mvn_sta_d0_H_A','spec',1
+			options,'mvn_sta_d0_P4C_H_D_kev','spec',1
+			options,'mvn_sta_d0_P4C_H_A_kev','spec',1
 
 			options,'mvn_sta_d0_P4C_E',ytitle='sta!CP4C-d0!C!CEnergy!CeV'
 			options,'mvn_sta_d0_P4C_D',ytitle='sta!CP4C-d0!C!CTheta!Cdeg'
@@ -1234,6 +1232,8 @@ endif
 			options,'mvn_sta_d0_H_E',ytitle='sta!Cd0!C!CEnergy!CeV'
 			options,'mvn_sta_d0_H_D',ytitle='sta!Cd0!C!CTheta!Cdeg'
 			options,'mvn_sta_d0_H_A',ytitle='sta!Cd0!C!CPhi!Cdeg'
+			options,'mvn_sta_d0_P4C_H_D_kev',ytitle='sta d0!C>1keV!CO+ O2+!CTheta!Cdeg'
+			options,'mvn_sta_d0_P4C_H_A_kev',ytitle='sta d0!C>1keV!CO+ O2+!CPhi!Cdeg'
 
 			options,'mvn_sta_d0_E',ztitle='eflux'
 			options,'mvn_sta_d0_D',ztitle='eflux'
@@ -1242,6 +1242,8 @@ endif
 			options,'mvn_sta_d0_H_E',ztitle='eflux'
 			options,'mvn_sta_d0_H_D',ztitle='eflux'
 			options,'mvn_sta_d0_H_A',ztitle='eflux'
+			options,'mvn_sta_d0_P4C_H_D_kev',ztitle='counts'
+			options,'mvn_sta_d0_P4C_H_A_kev',ztitle='counts'
 
 	endif
 
@@ -1280,9 +1282,8 @@ endif
 				#replicate(1.,nmass)
 			gf = mvn_d1_dat.geom_factor*reform(gf,npts,nenergy,nbins,nmass)
 			eff = mvn_d1_dat.eff[ieff,*,*,*]
-			dt = mvn_d1_dat.integ_t#replicate(1.,nenergy*nbins*nmass)
+			dt = float(mvn_d1_dat.integ_t#replicate(1.,nenergy*nbins*nmass))
 			eflux2 = (data-bkg)*dead/(gf*eff*dt)
-			eflux2 = float(eflux2)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/eflux)) gt 0. then print,'Error in CDF d1 eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -1394,9 +1395,8 @@ endif
 				#replicate(1.,nmass)
 			gf = mvn_d4_dat.geom_factor*reform(gf,npts,nenergy,nbins,nmass)
 			eff = mvn_d4_dat.eff[ieff,*,*,*]
-			dt = mvn_d4_dat.integ_t#replicate(1.,nenergy*nbins*nmass)
+			dt = float(mvn_d4_dat.integ_t#replicate(1.,nenergy*nbins*nmass))
 			eflux2 = (data-bkg)*dead/(gf*eff*dt)
-			eflux2 = float(eflux2)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/eflux)) gt 0. then print,'Error in CDF d4 eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -1629,15 +1629,15 @@ endif
 		store_data,'mvn_sta_d9_R2_tot',data={x:time,y:total(reform(data[*,4,*]),2)/64*delta_time}
 		store_data,'mvn_sta_d9_R2_hz',data={x:time,y:total(reform(data[*,4,*]),2)/64}
 
-		store_data,'mvn_sta_d9_R2_ABCD',data={x:time,y:total(data[*,0:3,*],3)}
-		store_data,'mvn_sta_d9_R2_RST',data={x:time,y:total(data[*,4,*],3)}
-		store_data,'mvn_sta_d9_R2_NoStart',data={x:time,y:total(data[*,5,*],3)}
-		store_data,'mvn_sta_d9_R2_Unqual',data={x:time,y:total(data[*,6,*],3)}
-		store_data,'mvn_sta_d9_R2_Qual',data={x:time,y:total(data[*,7,*],3)}
-		store_data,'mvn_sta_d9_R2_AnRej',data={x:time,y:total(data[*,8,*],3)}
-		store_data,'mvn_sta_d9_R2_MaRej',data={x:time,y:total(data[*,9,*],3)}
-		store_data,'mvn_sta_d9_R2_A&B',data={x:time,y:total(data[*,10,*],3)}
-		store_data,'mvn_sta_d9_R2_C&D',data={x:time,y:total(data[*,11,*],3)}
+		store_data,'mvn_sta_d9_R2_ABCD',data={x:time,y:total(data[*,0:3,*],3)/64}
+		store_data,'mvn_sta_d9_R2_RST',data={x:time,y:total(data[*,4,*],3)/64}
+		store_data,'mvn_sta_d9_R2_NoStart',data={x:time,y:total(data[*,5,*],3)/64}
+		store_data,'mvn_sta_d9_R2_Unqual',data={x:time,y:total(data[*,6,*],3)/64}
+		store_data,'mvn_sta_d9_R2_Qual',data={x:time,y:total(data[*,7,*],3)/64}
+		store_data,'mvn_sta_d9_R2_AnRej',data={x:time,y:total(data[*,8,*],3)/64}
+		store_data,'mvn_sta_d9_R2_MaRej',data={x:time,y:total(data[*,9,*],3)/64}
+		store_data,'mvn_sta_d9_R2_A&B',data={x:time,y:total(data[*,10,*],3)/64}
+		store_data,'mvn_sta_d9_R2_C&D',data={x:time,y:total(data[*,11,*],3)/64}
 
 		store_data,'mvn_sta_d9_R2_eff_start',data={x:time,y:total(data[*,7,*],3)/total(data[*,11,*],3)}
 		store_data,'mvn_sta_d9_R2_eff_stop',data={x:time,y:total(data[*,7,*],3)/total(data[*,10,*],3)}
@@ -1751,7 +1751,7 @@ endif
 		energy = reform(mvn_db_dat.energy[iswp,*])
 		erange = [energy[63],energy[0]]
 
-		dt = mvn_db_dat.integ_t
+		dt = float(mvn_db_dat.integ_t)
 
 		store_data,'mvn_sta_db',data={x:time,y:data,v:indgen(1024)}
 		store_data,'mvn_sta_db_tof',data={x:time,y:data,v:tof}
@@ -1786,7 +1786,7 @@ endif
 ; General
 
 	options,'mvn_sta*',no_interp=1
-	ylim,'*mode',-1,7,0
+	ylim,'*mode',-1,8,0
 	ylim,'*rate',-1,7,0
 
 
