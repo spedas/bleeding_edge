@@ -40,7 +40,8 @@ ccsds_data = spp_swp_ccsds_data(ccsds)
 
 
 if ccsds.pkt_size eq 56 then begin
-  dprint,'boot mode',dlevel=3
+  dprint,'boot mode ignored',dlevel=4
+  return,0
   values = swap_endian(ulong(ccsds_data,10,11) )
   values2 = uintarr(4) ;  swap_endian(ulong(ccsds_data,448/8,4) )
   sc_time_subsecs =  (swap_endian(uint(ccsds_data,432/8,1) ,/swap_if_little_endian ))[0]
@@ -52,7 +53,7 @@ if ccsds.pkt_size eq 56 then begin
   sc_time_subsec  = 0u    ;  not sure what it was
   MET_jitter=       values[9]
   
-  sample_clk_per = values[0]
+  sample_clk_per = uint( values[0] )
   scpps_met_time = values[1]
   sample_MET = values[3] + values[2]/ 2d^16
   fields_f123 = values[5] + values[6] / 2d^16
@@ -152,7 +153,7 @@ str = {time:   ccsds.time  ,$
        ptp_delay_time:  ptp_header.ptp_time - ccsds.time, $
        seqn : ccsds.seqn, $
        seqn_delta:  ccsds.seqn_delta < 15u , $
-       sample_clk_per: sample_clk_per  , $
+       sample_clk_per: sample_clk_per  , $                                     ; err
      scpps_met_time:    scpps_met_time ,$
      scpps_met_time_delta:  scpps_met_time - last_str.scpps_met_time, $
      MET_TIME_DIFF:   scpps_met_time - ccsds.met, $
@@ -160,8 +161,8 @@ str = {time:   ccsds.time  ,$
      fields_clk_cycles:  fields_clk_cycles,$
        fields_clk_cycles_delta:  fields_clk_cycles_delta,$
      fields_clk_transition:  fields_clk_transition ,$
-     fields_subsec:         fields_subsec ,$
-     fields_MET_subsec:  fields_MET_subsec ,$
+     fields_subsec:         fields_subsec ,$                                  ; err
+     fields_MET_subsec:  fields_MET_subsec ,$                                  ; err
      MET_jitter:      MET_jitter ,$
      sc_time_subSEC: sc_time_subSEC, $
      sample_MET:        sample_MET ,$
@@ -179,10 +180,10 @@ str = {time:   ccsds.time  ,$
      sc_time_diff :         sc_time    - ttt, $
      drift:     time_drift, $
      drift_delta:  (time_drift -last_str.drift) / ccsds.seqn_delta , $
-     clks_per_pps:  clks_per_pps, $
+     clks_per_pps:  clks_per_pps, $                                                ; err
      clks_per_pps_delta:  long(clks_per_pps_delta - 19200000L), $
-     scsubsecsatpps:scsubsecsatpps,$
-     fields_smpl_timerr :fields_smpl_timerr,$
+     scsubsecsatpps:scsubsecsatpps,$                                         ; err
+     fields_smpl_timerr :fields_smpl_timerr,$                                         ; err
      gap:  ccsds.gap }
        
 ;tploprintdat,str

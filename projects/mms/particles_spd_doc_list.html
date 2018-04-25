@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Apr 23 18:16:17 2018.<P>
+<STRONG>Last modified: </STRONG>Tue Apr 24 18:16:21 2018.<P>
  
 <HR>
  
@@ -37,7 +37,6 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_PGS_MAKE_THETA_SPEC">MMS_PGS_MAKE_THETA_SPEC</A>
 <LI><A HREF="#MMS_PGS_MAKE_TPLOT">MMS_PGS_MAKE_TPLOT</A>
 <LI><A HREF="#MMS_PGS_SPLIT_HPCA">MMS_PGS_SPLIT_HPCA</A>
-<LI><A HREF="#MOKA_EG_PGS_MAKE_PAD">MOKA_EG_PGS_MAKE_PAD</A>
 <br>
 </UL><P>
 <HR>
@@ -464,8 +463,8 @@ Notes:
 
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-04-03 11:20:00 -0700 (Tue, 03 Apr 2018) $
-$LastChangedRevision: 24980 $
+$LastChangedDate: 2018-04-24 16:23:53 -0700 (Tue, 24 Apr 2018) $
+$LastChangedRevision: 25106 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products_new.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_products_new.pro">projects/mms/particles/mms_part_products_new.pro</A>)</STRONG><P>
@@ -586,8 +585,8 @@ Notes:
 
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2017-06-23 08:24:47 -0700 (Fri, 23 Jun 2017) $
-$LastChangedRevision: 23503 $
+$LastChangedDate: 2018-04-24 16:23:53 -0700 (Tue, 24 Apr 2018) $
+$LastChangedRevision: 25106 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_pgs_make_e_spec.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_pgs_make_e_spec.pro">projects/mms/particles/mms_pgs_make_e_spec.pro</A>)</STRONG><P>
@@ -790,7 +789,6 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_PGS_SPLIT_HPCA">
 <H2>MMS_PGS_SPLIT_HPCA</H2></A>
 <A HREF="#MMS_PGS_MAKE_TPLOT">[Previous Routine]</A>
-<A HREF="#MOKA_EG_PGS_MAKE_PAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -817,34 +815,5 @@ $LastChangedRevision: 23532 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_pgs_split_hpca.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_pgs_split_hpca.pro">projects/mms/particles/mms_pgs_split_hpca.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MOKA_EG_PGS_MAKE_PAD">
-<H2>MOKA_EG_PGS_MAKE_PAD</H2></A>
-<A HREF="#MMS_PGS_SPLIT_HPCA">[Previous Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-
-Procedure:
-  moka_eg_pgs_make_pad
-
-Purpose:
-  Creates a multi-dimensional tplot variable (pitch angle distribution at each energy)
-  called from mms_part_products_new
-
-History:
-  Created on 2017-01-01 by moka
-  Forked on 2018-03-14 by egrimes, with a few big changes:
-  - removed bulk velocity subtraction (now occurs in mms_part_products_new, before getting to this routine)
-  - updated energy/angle bin search to use value_locate
-  - commented out angle padding
-  
-  
-$LastChangedBy: egrimes $
-$LastChangedDate: 2018-03-20 10:06:44 -0700 (Tue, 20 Mar 2018) $
-$LastChangedRevision: 24911 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/moka_eg_pgs_make_pad.pro $
-</PRE><P>
-<STRONG>(See <A href="particles/moka_eg_pgs_make_pad.pro">projects/mms/particles/moka_eg_pgs_make_pad.pro</A>)</STRONG><P>
 <HR>
  

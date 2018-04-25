@@ -545,3 +545,11 @@ endif
 end
 
 
+spp_apdat_info,/print
+crit = spp_apdat('340x')
+crit.help
+
+
+
+
+

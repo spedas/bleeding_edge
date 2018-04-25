@@ -13,9 +13,9 @@ function spp_swp_ccsds_decom_mettime,header,spc=spc,span=span,subsec=subsec
   if size(header,/type) eq 1 then begin   ; convert to uints
     n = n_elements(header) 
     header2 = swap_endian(uint(header,0,6 < n/2) ,/swap_if_little_endian )
+    dprint,dlevel=3,'old code!'
     return, spp_swp_ccsds_decom_mettime(header2,subsec=subsec,spc=spc,span=span)
   endif
-  
     ; header assumed to be uints at this point
   n = n_elements(header)
   if n lt 5 then return, !values.d_nan

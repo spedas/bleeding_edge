@@ -13,11 +13,14 @@ function spp_spc_met_to_unixtime,met,reverse=reverse
     return,met -epoch
   endif
   if met lt 1e6 then begin
-    dprint,dlevel=2,'Bad MET ',time_string(met+epoch),dwait=15.
+    dprint,dlevel=2,'Bad MET ',time_string(met+epoch) ;,dwait=15.
     met = !values.d_nan
   endif
   unixtime =  met +  epoch
-  dummy= spp_rt(unixtime)
+  
+;  if unixtime gt 1830297600 then unixtime -= 315532800   ; this cluge is a temporary fix to correct the usr log messages.
+  
+;  dummy= spp_rt(unixtime)
   return,unixtime
 
 end

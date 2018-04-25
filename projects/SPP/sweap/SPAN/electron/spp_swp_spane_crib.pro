@@ -6,9 +6,9 @@
 ; 
 ; In the future this will include instructions for looking at flight data
 ; 
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-04-20 16:20:22 -0700 (Fri, 20 Apr 2018) $
-; $LastChangedRevision: 25093 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-04-24 09:03:12 -0700 (Tue, 24 Apr 2018) $
+; $LastChangedRevision: 25103 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/electron/spp_swp_spane_crib.pro $
 ;--------------------------------------------------------------------
 
@@ -458,6 +458,33 @@ spp_ptp_file_read, spp_file_retrieve('spp/data/sci/sweap/prelaunch/gsedata/EM/SW
 
 
 
+if 0  then begin  ;;  time test 
+   sf = tsample(times=tf)
+   w1 = where(total(sf,2))
+   w1=w1[0]
+   w2=where(sf[w1,*])
+   w2=w2[0]
+   t=tf[w1]
+   dt =  0.43690658  /2
+   print,w2
+   ncts = sf[w1,w2]
+   mx = max(sf)
+   ddt = dt/256 * float(mx-ncts)/mx
+   dt = dt+ddt
+   
+   print,time_string(t+dt*w2/256. - dt*2,prec=3)  ; targeted on
+   
+   print,time_string(t+dt*w2/256. - dt,prec=3)  ; targeted off
+
+   print,time_string(t+dt*w2/256.,prec=4)  ; span-I
+   dt = dt+ddt
+   print,time_string(t+dt*w2/256.,prec=5)  ; span-I
+
+   print,reform(sf[w1,*])
+   
+   
+
+endif
 
 
 

@@ -25,12 +25,12 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-06-23 08:24:47 -0700 (Fri, 23 Jun 2017) $
-;$LastChangedRevision: 23503 $
+;$LastChangedDate: 2018-04-24 16:23:53 -0700 (Tue, 24 Apr 2018) $
+;$LastChangedRevision: 25106 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_pgs_make_e_spec.pro $
 ;-
 
-pro mms_pgs_make_e_spec, data, spec=spec, sigma=sigma, yaxis=yaxis, enormalize=enormalize, _extra=ex
+pro mms_pgs_make_e_spec, data, spec=spec, sigma=sigma, yaxis=yaxis, enormalize=enormalize, energy=energy, _extra=ex
 
   compile_opt idl2, hidden
   
@@ -45,6 +45,8 @@ pro mms_pgs_make_e_spec, data, spec=spec, sigma=sigma, yaxis=yaxis, enormalize=e
     outtable = data.orig_energy
   endelse
 
+  if ~keyword_set(energy) then erange = minmax(data_energy) else erange = energy
+  
   ;copy data and zero inactive bins to ensure
   ;areas with no data are represented as NaN
   d = data.data
@@ -73,7 +75,10 @@ pro mms_pgs_make_e_spec, data, spec=spec, sigma=sigma, yaxis=yaxis, enormalize=e
   endfor
 
   scaling = data.scaling
-   
+  
+  where_out_of_erange = where(outtable lt erange[0] or outtable gt erange[1], outofrangecount)
+  if outofrangecount ne 0 then outbins[where_out_of_erange] = !values.d_nan
+
   ;weighted average to create spectrogram piece
   ;energies with no valid data should come out as NaN
   if n_elements(d[0, *]) gt 1 then begin

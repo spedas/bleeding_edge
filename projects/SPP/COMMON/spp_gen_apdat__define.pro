@@ -10,6 +10,7 @@ COMPILE_OPT IDL2
 void = self->IDL_Object::Init()
 ;printdat,a
 self.apid  =apid
+self.dlevel = 0
 if keyword_set(name) then self.name  =name
 self.ccsds_last = ptr_new(/allocate_heap)
 ;self.ccsds_array = obj_new('dynamicarray')
@@ -23,7 +24,7 @@ END
  
 PRO spp_gen_apdat::Clear, tplot_names=tplot_names
   COMPILE_OPT IDL2
-  dprint,'clear arrays: ',self.apid,self.name,dlevel=4
+  dprint,'clear arrays: ',self.apid,self.name,dlevel=3
   self.nbytes=0
   self.npkts = 0
   self.lost_pkts = 0
@@ -106,9 +107,10 @@ pro spp_gen_apdat::handler,ccsds,header
   
   strct = self.decom(ccsds,header)
 
-;dprint,'hello'
+;if ccsds.seq_group ne 3 then self.help   ;dprint,dlevel=2,ccsds.seq_group,ccsds.apid
+
   if self.save_flag && keyword_set(strct) then begin
-    dprint,self.name,dlevel=4,self.apid
+    dprint,self.name,dlevel=5,self.apid
     self.data.append,  strct
   endif
 
@@ -116,6 +118,10 @@ pro spp_gen_apdat::handler,ccsds,header
     if ccsds.gap eq 1 then strct = [fill_nan(strct[0]),strct]
     store_data,self.tname,data=strct, tagnames=self.ttags , append = 1, gap_tag='GAP'
   endif
+  
+  
+  
+  
 end
  
  
@@ -139,11 +145,12 @@ END
  
  
 PRO spp_gen_apdat::GetProperty,data=data, array=array, npkts=npkts, apid=apid, name=name,  typename=typename, $
-   nsamples=nsamples,nbytes=nbytes,strct=strct,ccsds_last=ccsds_last,tname=tname
+   nsamples=nsamples,nbytes=nbytes,strct=strct,ccsds_last=ccsds_last,tname=tname,dlevel=dlevel,ttags=ttags
 COMPILE_OPT IDL2
 IF (ARG_PRESENT(nbytes)) THEN nbytes = self.nbytes
 IF (ARG_PRESENT(name)) THEN name = self.name
 IF (ARG_PRESENT(tname)) THEN tname = self.tname
+IF (ARG_PRESENT(ttags)) THEN ttags = self.ttags
 IF (ARG_PRESENT(apid)) THEN apid = self.apid
 IF (ARG_PRESENT(npkts)) THEN npkts = self.npkts
 IF (ARG_PRESENT(ccsds_last)) THEN ccsds_last = self.ccsds_last
@@ -151,6 +158,7 @@ IF (ARG_PRESENT(data)) THEN data = self.data
 IF (ARG_PRESENT(array)) THEN array = self.data.array
 IF (ARG_PRESENT(nsamples)) THEN nsamples = self.data.size
 IF (ARG_PRESENT(typename)) THEN typename = typename(*self.data)
+IF (ARG_PRESENT(dlevel)) THEN dlevel = self.dlevel
 if (arg_present(strct) ) then strct = self.struct()
 END
  
@@ -186,7 +194,8 @@ void = {spp_gen_apdat, $
   ttags: '',  $
   ccsds_last: ptr_new(), $
   ccsds_array: obj_new(), $  
-  data: obj_new()  $
+  data: obj_new(), $
+  dlevel: 0  $
   }
 END
 

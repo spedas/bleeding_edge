@@ -5,7 +5,7 @@ function spp_generic_decom,ccsds,ptp_header=ptp_header,apdat=apdat
   endif
   str =   ccsds   ; create_struct(ptp_header,ccsds)
   ;dprint,format="('Generic routine for',Z04)",ccsds.apid                                                                                              
-  if debug(4,msg='Generic') then begin
+  if debug(5,msg='Generic') then begin
      dprint,dlevel=2,'generic:',ccsds.apid,ccsds.pkt_size
  ;    hexprint,ccsds.data
   endif

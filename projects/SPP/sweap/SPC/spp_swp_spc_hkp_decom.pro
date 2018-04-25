@@ -38,13 +38,13 @@ end
 function spp_swp_spc_hkp_decom,ccsds,ptp_header=ptp_header,apdat=apdat
   ccsds_data = spp_swp_ccsds_data(ccsds)
 
-  if debug(4) then begin
+  if debug(5) then begin
     dprint,dlevel=4,'SPC',ccsds.pkt_size, n_elements(ccsds_data), ccsds.apid
     hexprint,ccsds_data[0:31]
     hexprint,spp_swp_spc_data_select(ccsds_data,80,8)
   endif
   
-  dprint,'spc',dlevel=4
+  dprint,'spc',dlevel=5
   
   flt=1.
   str = {time:ccsds.time,  $

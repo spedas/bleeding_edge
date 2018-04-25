@@ -14,6 +14,7 @@
 ;         tplotnames: list of tplot variable names already loaded; should
 ;             include the HPCA spectra variables you would like to spin-sum;
 ;             if not provided, uses tnames() by default. 
+;         avg: average instead of sum
 ;         
 ; OUTPUT:
 ;         Creates tplot variables containing the spin summed fluxes and counts; 
@@ -27,12 +28,12 @@
 ;     
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-04-27 13:29:43 -0700 (Wed, 27 Apr 2016) $
-;$LastChangedRevision: 20941 $
+;$LastChangedDate: 2018-04-24 13:30:07 -0700 (Tue, 24 Apr 2018) $
+;$LastChangedRevision: 25105 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_hpca_spin_sum.pro $
 ;-
 
-pro mms_hpca_spin_sum, probe = probe, datatype=datatype, species=species, fov=fov, tplotnames=tplotnames
+pro mms_hpca_spin_sum, probe = probe, datatype=datatype, species=species, fov=fov, tplotnames=tplotnames, avg=avg
     if undefined(probe) then begin
         dprint, dlevel = 0, 'Error, must provide probe # to spin-sum the HPCA data'
         return
@@ -77,7 +78,8 @@ pro mms_hpca_spin_sum, probe = probe, datatype=datatype, species=species, fov=fo
                   spin_summed = dblarr(n_elements(spin_starts), n_elements(hpca_data.Y[0, *]))
         
                   for spin_idx = 0, n_elements(spin_starts)-2 do begin
-                    spin_summed[spin_idx, *] = total(hpca_data.Y[spin_starts[spin_idx]:spin_starts[spin_idx+1]-1,*], 1, /nan, /double)
+                    if ~keyword_set(avg) then spin_summed[spin_idx, *] = total(hpca_data.Y[spin_starts[spin_idx]:spin_starts[spin_idx+1]-1,*], 1, /nan, /double) $
+                    else spin_summed[spin_idx, *] = average(hpca_data.Y[spin_starts[spin_idx]:spin_starts[spin_idx+1]-1,*], 1, /nan, /double)
                   endfor
         
                   new_varname = varname+'_spin'

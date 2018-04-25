@@ -105,8 +105,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-03 11:20:00 -0700 (Tue, 03 Apr 2018) $
-;$LastChangedRevision: 24980 $
+;$LastChangedDate: 2018-04-24 16:23:53 -0700 (Tue, 24 Apr 2018) $
+;$LastChangedRevision: 25106 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products_new.pro $
 ;-
 pro mms_part_products_new, $
@@ -373,12 +373,21 @@ pro mms_part_products_new, $
   if keyword_set(subtract_bulk) then begin
     mms_pgs_clean_support, times, probe, vel_name=vel_name, vel_out=vel_data
   endif
+  
+  ; the standard way of concatenating the spectra variables doesn't work for the multi-dimensional PAD
+  ; so we need to allocate the memory before going into the loop over times
+  if in_set(outputs_lc, 'multipad') then begin
+    dist = mms_get_dist(in_tvarname, time_idx[0], /structure, probe=probe, $
+      species=species, instrument=instrument, units=input_units, $
+      subtract_error=subtract_error, error=error_variable)
+  
+    multi_pad_out = dblarr(n_elements(time_idx), (dimen(dist.data))[0], (dimen(dist.data))[2])
+  endif
 
   ;--------------------------------------------------------
   ;Loop over time to build the spectrograms/moments
   ;--------------------------------------------------------
-  
-  for i = 0,n_elements(time_idx)-1 do begin
+  for i = 0l,n_elements(time_idx)-1 do begin
   
     spd_pgs_progress_update,last_tm,i,n_elements(time_idx)-1,display_object=display_object,type_string=in_tvarname
   
@@ -485,7 +494,7 @@ pro mms_part_products_new, $
     
     ;Build energy spectrogram
     if in_set(outputs_lc, 'energy') then begin
-      mms_pgs_make_e_spec, clean_data, spec=en_spec, yaxis=en_y
+      mms_pgs_make_e_spec, clean_data, spec=en_spec, yaxis=en_y, energy=energy
     endif
 
     ;Perform transformation to FAC, regrid data, and apply limits in new coords
@@ -521,11 +530,10 @@ pro mms_part_products_new, $
     if in_set(outputs_lc,'pa') then begin
       mms_pgs_make_theta_spec, clean_data, spec=pa_spec, yaxis=pa_y, /colatitude, resolution=regrid[1]
     endif
-    
-   ; temporarily disabled until I hunt down a bug - egrimes, 22March2018
-   ; if in_set(outputs_lc,'multipad') then begin
-   ;  moka_eg_pgs_make_pad, clean_data, spec=pad_spec, xaxis=pad_agl, wegy=pad_en
-   ; endif
+
+    if in_set(outputs_lc, 'multipad') then begin
+      mms_pgs_make_multipad_spec, clean_data, spec=multi_pad_out, yaxis=pad_agl, /colatitude, resolution=regrid[1], wegy=pad_en, time_idx=i
+    endif
 
     ;Build gyrophase spectrogram
     if in_set(outputs_lc, 'gyro') then begin
@@ -534,7 +542,7 @@ pro mms_part_products_new, $
     
     ;Build energy spectrogram from field aligned distribution
     if in_set(outputs_lc, 'fac_energy') then begin
-      mms_pgs_make_e_spec, clean_data, spec=fac_en_spec,  yaxis=fac_en_y
+      mms_pgs_make_e_spec, clean_data, spec=fac_en_spec,  yaxis=fac_en_y, energy=energy
     endif
     
     ;Calculate FAC moments
@@ -592,8 +600,8 @@ pro mms_part_products_new, $
     spd_pgs_make_tplot, tplot_prefix+'pa'+suffix, x=times, y=pa_y, z=pa_spec, yrange=pitch,units=units_lc,datagap=datagap,tplotnames=tplotnames
   endif
   
-  if ~undefined(pad_spec) then begin
-    mms_pgs_make_tplot, tplot_prefix+'pad'+suffix, x=times, v2=pad_agl, v1=pad_en, z=pad_spec, yrange=pitch,units=units_lc,datagap=datagap,tplotnames=tplotnames
+  if in_set(outputs_lc, 'multipad') && ~undefined(multi_pad_out) then begin
+    mms_pgs_make_tplot, tplot_prefix+'pad'+suffix, x=times, v2=pad_agl, v1=pad_en, z=multi_pad_out, yrange=pitch,units=units_lc,datagap=datagap,tplotnames=tplotnames
   endif
   
   ;Gyrophase Spectrograms

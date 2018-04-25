@@ -30,8 +30,19 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
 
   spp_apdat_info,'347'x,name='Memory Dwell',routine='',tname='spp_swp_347_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag 
 
-  spp_apdat_info,'348'x,name='P1',routine='spp_swp_swem_unwrapper',tname='spp_swp_348_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag 
-  spp_apdat_info,'349'x,name='P2',routine='spp_swp_swem_unwrapper',tname='spp_swp_349_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag 
+if 1 then begin
+  spp_apdat_info,'348'x,name='P1',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_348_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+  spp_apdat_info,'349'x,name='P2',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_349_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+  spp_apdat_info,'34A'x,name='P3',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34A_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+  spp_apdat_info,'34b'x,name='P4',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34B_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+  spp_apdat_info,'34c'x,name='P5',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34C_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+  spp_apdat_info,'34d'x,name='P6',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34D_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+  spp_apdat_info,'34e'x,name='P7',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34E_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+  spp_apdat_info,'34f'x,name='P8',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34F_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+  spp_apdat_info,'350'x,name='P9',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_350_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+endif else begin
+  spp_apdat_info,'348'x,name='P1',routine='spp_swp_swem_unwrapper',tname='spp_swp_348_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
+  spp_apdat_info,'349'x,name='P2',routine='spp_swp_swem_unwrapper',tname='spp_swp_349_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
   spp_apdat_info,'34A'x,name='P3',routine='spp_swp_swem_unwrapper',tname='spp_swp_34A_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
   spp_apdat_info,'34b'x,name='P4',routine='spp_swp_swem_unwrapper',tname='spp_swp_34B_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
   spp_apdat_info,'34c'x,name='P5',routine='spp_swp_swem_unwrapper',tname='spp_swp_34C_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
@@ -39,6 +50,8 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
   spp_apdat_info,'34e'x,name='P7',routine='spp_swp_swem_unwrapper',tname='spp_swp_34E_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
   spp_apdat_info,'34f'x,name='P8',routine='spp_swp_swem_unwrapper',tname='spp_swp_34F_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
   spp_apdat_info,'350'x,name='P9',routine='spp_swp_swem_unwrapper',tname='spp_swp_350_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
+  
+endelse
 
 
   ;;############################################

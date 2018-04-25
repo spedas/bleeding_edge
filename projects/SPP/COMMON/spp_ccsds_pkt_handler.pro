@@ -16,7 +16,7 @@ pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length,ptp_header=ptp_header,rem
       break
     endif
     npackets +=1
-    if  debug(4) then begin
+    if  debug(5) then begin
       ccsds_data = spp_swp_ccsds_data(ccsds)  
       n = ccsds.pkt_size
       if n gt 12 then ind = indgen(n-12)+12 else ind = !null      
@@ -27,7 +27,7 @@ pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length,ptp_header=ptp_header,rem
         
     if keyword_set(ptp_header) then begin
       if ptp_header.ptp_size ne ccsds.pkt_size + 17 then begin
-        dprint,dlevel=4,format='("APID: ",Z03," ccsds PKT size: ",i5," does not match ptp size:",i5,a)',ccsds.apid,ccsds.pkt_size+17, ptp_header.ptp_size,' '+time_string(ccsds.time)
+        dprint,dlevel=3,format='("APID: ",Z03," ccsds PKT size: ",i5," does not match ptp size:",i5,a)',ccsds.apid,ccsds.pkt_size+17, ptp_header.ptp_size,' '+time_string(ccsds.time)
       endif
       header=ptp_header
     endif else begin
@@ -48,10 +48,11 @@ if 1 then begin    ; new method
       endif   ; else ccsds_last = !null
 
       if ccsds.seqn_delta gt 1 then begin
-        dprint,dlevel=3,format='("Lost ",i5," ",a," (0x", Z03,") packets ",i5," ",a)',  ccsds.seqn_delta-1,apdat.name,apdat.apid,ccsds.seqn,time_string(ccsds.time,prec=3)
+        dprint,dlevel=4,format='("Lost ",i5," ",a," (0x", Z03,") packets ",i5," ",a)',  ccsds.seqn_delta-1,apdat.name,apdat.apid,ccsds.seqn,time_string(ccsds.time,prec=3)
       endif
 
       apdat.handler, ccsds , header
+      dummy = spp_rt(ccsds.time)     ; This line help keep track of the current real time
 
       ;;  Save statistics - get APID_ALL and APID_GAP
       apdat.increment_counters, ccsds
