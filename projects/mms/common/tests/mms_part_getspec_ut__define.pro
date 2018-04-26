@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-04-20 09:48:38 -0700 (Fri, 20 Apr 2018) $
-; $LastChangedRevision: 25084 $
+; $LastChangedDate: 2018-04-25 09:24:02 -0700 (Wed, 25 Apr 2018) $
+; $LastChangedRevision: 25111 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
 
@@ -51,7 +51,7 @@ end
 function mms_part_getspec_ut::test_hpca_eflux_vs_pgs
   mms_part_getspec, suffix='_full', instrument='hpca', trange=['2017-08-12/23', '2017-08-12/24'], output=['energy', 'pa', 'gyro', 'phi', 'theta'], probe=3
   mms_hpca_calc_anodes, fov=[0, 360], probe=3
-  mms_hpca_spin_sum, probe='3'
+  mms_hpca_spin_sum, probe='3', /avg
   get_data, 'mms3_hpca_hplus_flux_elev_0-360_spin', data=d, dlimits=dl
   newdy = d.Y
   for vi=0, n_elements(d.X)-1 do newdy[vi, *] = d.Y[vi, *]*d.V

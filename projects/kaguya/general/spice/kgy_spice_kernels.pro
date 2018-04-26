@@ -13,8 +13,8 @@
 ;       Yuki Harada on 2016-03-04
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2017-11-21 12:02:46 -0800 (Tue, 21 Nov 2017) $
-; $LastChangedRevision: 24333 $
+; $LastChangedDate: 2018-04-25 01:30:56 -0700 (Wed, 25 Apr 2018) $
+; $LastChangedRevision: 25109 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/general/spice/kgy_spice_kernels.pro $
 ;-
 
@@ -40,13 +40,14 @@ for in=0,n_elements(names)-1 do begin
          ;;; incl. naif????.tls, pck?????.tpc, de???.bsp
       end
       'CK': begin               ;- S/C attitude
-         tr = timerange(trange) ;- spd_download doesn't have trange capability yet...
+         tr = timerange(trange)
 ;         append_array,kernels,file_retrieve('SELENE/kernels/ck/SEL_M_YYYYMM_D_V??.BC',_extra=darts,trange=tr,/monthly)
 ;;          The attitude is sampled at frequency of 2 seconds.
 ;;          The telemetry includes the attitude data as format of
 ;;          "IEEE Standard for Floating-Point Arithmetic"
 ;;          (IEEE 754) using 64 bits. 
-        append_array,kernels,file_retrieve('SELENE/kernels/ck/SEL_M_YYYYMM_S_V??.BC',_extra=darts,trange=tr,/monthly)
+;        append_array,kernels,file_retrieve('SELENE/kernels/ck/SEL_M_YYYYMM_S_V??.BC',_extra=darts,trange=tr,/monthly) ;- obsolete
+         append_array,kernels,spd_download(remote_file='SELENE/kernels/ck/SEL_M_'+time_intervals(trange=tr,/monthly,tf='YYYYMM')+'_S_V??.BC',_extra=darts)
 ;;         In this file, the attitude is sampled at frequency of
 ;;         8 seconds. The precision in the s/c telemetry uses
 ;;         a single-precision (32 bits). The number of time gaps

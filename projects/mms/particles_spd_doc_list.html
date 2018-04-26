@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Apr 24 18:16:21 2018.<P>
+<STRONG>Last modified: </STRONG>Wed Apr 25 18:16:23 2018.<P>
  
 <HR>
  
@@ -27,6 +27,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_PART_GETSPEC">MMS_PART_GETSPEC</A>
 <LI><A HREF="#MMS_PART_PRODUCTS">MMS_PART_PRODUCTS</A>
 <LI><A HREF="#MMS_PART_PRODUCTS_NEW">MMS_PART_PRODUCTS_NEW</A>
+<LI><A HREF="#MMS_PART_SLICE2D">MMS_PART_SLICE2D</A>
 <LI><A HREF="#MMS_PGS_CLEAN_DATA">MMS_PGS_CLEAN_DATA</A>
 <LI><A HREF="#MMS_PGS_CLEAN_SUPPORT">MMS_PGS_CLEAN_SUPPORT</A>
 <LI><A HREF="#MMS_PGS_MAKE_E_SPEC">MMS_PGS_MAKE_E_SPEC</A>
@@ -354,7 +355,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_PART_PRODUCTS_NEW">
 <H2>MMS_PART_PRODUCTS_NEW</H2></A>
 <A HREF="#MMS_PART_PRODUCTS">[Previous Routine]</A>
-<A HREF="#MMS_PGS_CLEAN_DATA">[Next Routine]</A>
+<A HREF="#MMS_PART_SLICE2D">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -470,9 +471,48 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="particles/mms_part_products_new.pro">projects/mms/particles/mms_part_products_new.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_PART_SLICE2D">
+<H2>MMS_PART_SLICE2D</H2></A>
+<A HREF="#MMS_PART_PRODUCTS_NEW">[Previous Routine]</A>
+<A HREF="#MMS_PGS_CLEAN_DATA">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Procedure:
+         mms_part_getspec
+
+
+ Purpose:
+         This is a wrapper around spd_slice2d that loads required
+         support data, creates the slice and plots the slice
+
+ Keywords:
+         probe: MMS s/c # to create the 2D slice for
+         instrument: fpi or hpca
+         species: depends on instrument:
+             FPI: 'e' for electrons, 'i' for ions
+             HPCA: 'hplus' for H+, 'oplus' for O+, 'heplus' for He+, 'heplusplus', for He++
+         level: level of the data you'd like to plot
+         data_rate: data rate of the distribution data you'd like to plot
+         time: time of the 2D slice
+         trange: two-element time range over which data will be averaged (optional, ignored if 'time' is specified)
+         spdf: load the data from the SPDF instead of the LASP SDC
+         output: returns the computed slice
+         units: units of the slice (default is df_cm - other options include 'df_km', 'flux', 'eflux')
+
+ Notes:
+         This routine always centers the distribution/moments data
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2018-04-25 14:27:27 -0700 (Wed, 25 Apr 2018) $
+$LastChangedRevision: 25116 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_slice2d.pro $
+</PRE><P>
+<STRONG>(See <A href="particles/mms_part_slice2d.pro">projects/mms/particles/mms_part_slice2d.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_PGS_CLEAN_DATA">
 <H2>MMS_PGS_CLEAN_DATA</H2></A>
-<A HREF="#MMS_PART_PRODUCTS_NEW">[Previous Routine]</A>
+<A HREF="#MMS_PART_SLICE2D">[Previous Routine]</A>
 <A HREF="#MMS_PGS_CLEAN_SUPPORT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

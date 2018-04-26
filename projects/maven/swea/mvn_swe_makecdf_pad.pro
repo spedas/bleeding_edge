@@ -24,8 +24,8 @@
 ;   ISTP compliance scrub; DLM: 2016-04-08
 ; VERSION:
 ;   $LastChangedBy: dmitchell $
-;   $LastChangedDate: 2018-02-18 12:33:26 -0800 (Sun, 18 Feb 2018) $
-;   $LastChangedRevision: 24738 $
+;   $LastChangedDate: 2018-04-25 16:47:19 -0700 (Wed, 25 Apr 2018) $
+;   $LastChangedRevision: 25120 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makecdf_pad.pro $
 ;
 ;-
@@ -143,13 +143,13 @@ pro mvn_swe_makecdf_pad, data, file = file, version = version, directory = direc
     rev_str = string(revision, format='(i2.2)')
 
     head_file = file + '_r' + rev_str + '.cdf'
-    temp_file = head_file + '_tmp'
+    temp_file = 'tmp_' + head_file
     file = path + head_file
 
   endif else begin ; if (not keyword_set(file))
     path = file_dirname(file) + '/'
     head_file = file_basename(file)
-    temp_file = head_file + '_tmp'
+    temp_file = 'tmp_' + head_file
     ver_str = '00' ; needed in the header
     rev_str = '00' ; needed in the header
   endelse

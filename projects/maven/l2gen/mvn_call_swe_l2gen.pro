@@ -37,9 +37,9 @@
 ;                 data without affecting the cron job)
 ;HISTORY:
 ;Hacked from mvn_call_sta_l2gen, 17-Apr-2014, jmm
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-02 17:30:23 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24095 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2018-04-25 15:54:36 -0700 (Wed, 25 Apr 2018) $
+; $LastChangedRevision: 25118 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_call_swe_l2gen.pro $
 ;-
 Pro mvn_call_swe_l2gen, time_in = time_in, $
@@ -224,7 +224,7 @@ Pro mvn_call_swe_l2gen, time_in = time_in, $
            filei_dir = odir+instrk+'/l2/'+yr+'/'+mo+'/'
            If(is_string(file_search(filei_dir)) Eq 0) Then Begin
               message, /info, 'Creating: '+filei_dir
-              file_mkdir, filei_dir
+              file_mkdir2, filei_dir, mode = '0775'o
            Endif
            load_position = 'l2gen'
            message, /info, 'PROCESSING: '+instrk+' FOR: '+timei

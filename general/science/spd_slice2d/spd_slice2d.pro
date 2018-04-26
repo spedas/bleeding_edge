@@ -231,8 +231,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-12 13:51:19 -0700 (Thu, 12 Apr 2018) $
-;$LastChangedRevision: 25039 $
+;$LastChangedDate: 2018-04-25 14:16:27 -0700 (Wed, 25 Apr 2018) $
+;$LastChangedRevision: 25114 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/spd_slice2d.pro $
 ;-
 
@@ -368,7 +368,8 @@ if keyword_set(average_angle) && keyword_set(sum_angle) then begin
   return, invalid
 endif
 
-msg = 'Processing slice at ' + time_string(time, tformat='YYYY/MM/DD hh:mm:ss.fff') +'... '
+if undefined(time) then tslice = trange_in[0] else tslice = time
+msg = 'Processing slice at ' + time_string(tslice, tformat='YYYY/MM/DD hh:mm:ss.fff') +'... '
 dprint, dlevel=2, msg, display_object=msg_obj 
 
 
@@ -672,7 +673,7 @@ slice = {  $
           }
 
 
-msg = 'Finished slice at '+time_string(time, format=5)
+msg = 'Finished slice at '+time_string(tslice, format=5)
 dprint, dlevel=2, msg, display_object=msg_obj
 
 
