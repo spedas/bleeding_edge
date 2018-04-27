@@ -27,8 +27,8 @@
 ;                   Default is current value of swe_verbose.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-04 10:36:52 -0700 (Wed, 04 Oct 2017) $
-; $LastChangedRevision: 24108 $
+; $LastChangedDate: 2018-04-26 11:23:55 -0700 (Thu, 26 Apr 2018) $
+; $LastChangedRevision: 25125 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_spice_init.pro $
 ;
 ;CREATED BY:    David L. Mitchell  09/18/13
@@ -51,10 +51,38 @@ pro mvn_swe_spice_init, trange=trange, list=list, force=force, status=status, in
       print,"No kernels are loaded."
       return
     endif
-    info = spice_kernel_info()
-    ker_info = info
     print,"Kernels in use:"
     for i=0,(n_ker-1) do print,"  ",file_basename(mk[i])
+
+    dprint,' ', getdebug=bug, dlevel=4
+    if (verbose lt 1) then dprint,' ', setdebug=0, dlevel=4
+
+    print,''
+
+    info = spice_kernel_info()
+    indx = uniq(info.filename)
+    ker_info = info[indx]
+
+    indx = where(strmatch(file_basename(ker_info.filename),'*maven_orb*',/fold), count)
+    if (count gt 0) then begin
+      tmin = min(ker_info[indx].trange, max=tmax)
+      print,"S/C SPK coverage: ",time_string(tmin)," to ",time_string(tmax)
+    endif else print,"No S/C SPK coverage!"
+
+    indx = where(strmatch(file_basename(ker_info.filename),'*_sc_*',/fold))
+    if (count gt 0) then begin
+      tmin = min(ker_info[indx].trange, max=tmax)
+      print,"S/C CK  coverage: ",time_string(tmin)," to ",time_string(tmax)
+    endif else print,"No S/C CK coverage!"
+
+    indx = where(strmatch(file_basename(ker_info.filename),'*_app_*',/fold))
+    if (count gt 0) then begin
+      tmin = min(ker_info[indx].trange, max=tmax)
+      print,"APP CK  coverage: ",time_string(tmin)," to ",time_string(tmax)
+    endif else print,"No APP CK coverage!"
+
+    dprint,' ', setdebug=bug, dlevel=4
+
     return
   endif
 
@@ -116,15 +144,39 @@ pro mvn_swe_spice_init, trange=trange, list=list, force=force, status=status, in
     tls = swe_kernels[j]
     time_verified = systime(1)
     msg = "Success"
+
+    info = spice_kernel_info()
+    indx = uniq(info.filename)
+    ker_info = info[indx]
   endif else begin
     kernel_verified = 0
+    ker_info = 0
     msg = "WARNING: no SPICE kernels!"
   endelse
 
-  info = spice_kernel_info()
-  ker_info = info
-
   print, msg
+
+; Print out time coverage of loaded kernels
+
+  if (kernel_verified) then begin
+    indx = where(strmatch(file_basename(ker_info.filename),'*maven_orb*',/fold), count)
+    if (count gt 0) then begin
+      tmin = min(ker_info[indx].trange, max=tmax)
+      print,"S/C SPK coverage: ",time_string(tmin)," to ",time_string(tmax)
+    endif else print,"No S/C SPK coverage!"
+
+    indx = where(strmatch(file_basename(ker_info.filename),'*_sc_*',/fold))
+    if (count gt 0) then begin
+      tmin = min(ker_info[indx].trange, max=tmax)
+      print,"S/C CK  coverage: ",time_string(tmin)," to ",time_string(tmax)
+    endif else print,"No S/C CK coverage!"
+
+    indx = where(strmatch(file_basename(ker_info.filename),'*_app_*',/fold))
+    if (count gt 0) then begin
+      tmin = min(ker_info[indx].trange, max=tmax)
+      print,"APP CK  coverage: ",time_string(tmin)," to ",time_string(tmax)
+    endif else print,"No APP CK coverage!"
+  endif
 
 ; Restore debug state
 

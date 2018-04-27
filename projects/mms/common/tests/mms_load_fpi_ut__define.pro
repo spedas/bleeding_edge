@@ -10,8 +10,8 @@
 ; 
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-04-03 15:26:39 -0700 (Tue, 03 Apr 2018) $
-; $LastChangedRevision: 24993 $
+; $LastChangedDate: 2018-04-26 13:58:47 -0700 (Thu, 26 Apr 2018) $
+; $LastChangedRevision: 25127 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_fpi_ut__define.pro $
 ;-
 
@@ -393,15 +393,15 @@ function mms_load_fpi_ut::test_dist_burst_with_gaps
 end
 
 ; load data from v3.3 and v3.2 CDF files
-function mms_load_fpi_ut::test_moms_errorflags_updates
-  mms_load_fpi, level='l1b', trange=['2015-10-16', '2015-10-17'], data_rate='brst', cdf_version='3.3', datatype='dis-moms', suffix='_new'
-  mms_load_fpi, level='l1b', trange=['2015-10-16', '2015-10-17'], data_rate='brst', cdf_version='3.2', datatype='dis-moms', suffix='_old'
-  get_data, 'mms3_dis_errorflags_brst_new_moms_flagbars_full', data=newdata
-  get_data, 'mms3_dis_errorflags_brst_old_moms_flagbars_full', data=olddata
-  assert, round(total(olddata.Y[0, *]*10, /nan)) eq 15, 'Problem with v3.2 -> v3.3 regression'
-  assert, round(total(newdata.Y[0, *]*10, /nan)) eq 13, 'Problem with v3.2 -> v3.3 regression'
-  return, 1
-end
+;function mms_load_fpi_ut::test_moms_errorflags_updates
+;  mms_load_fpi, level='l1b', trange=['2015-10-16', '2015-10-17'], data_rate='brst', cdf_version='3.3', datatype='dis-moms', suffix='_new'
+;  mms_load_fpi, level='l1b', trange=['2015-10-16', '2015-10-17'], data_rate='brst', cdf_version='3.2', datatype='dis-moms', suffix='_old'
+;  get_data, 'mms3_dis_errorflags_brst_new_moms_flagbars_full', data=newdata
+;  get_data, 'mms3_dis_errorflags_brst_old_moms_flagbars_full', data=olddata
+;  assert, round(total(olddata.Y[0, *]*10, /nan)) eq 15, 'Problem with v3.2 -> v3.3 regression'
+;  assert, round(total(newdata.Y[0, *]*10, /nan)) eq 13, 'Problem with v3.2 -> v3.3 regression'
+;  return, 1
+;end
 
 ; end of regression tests <------
 

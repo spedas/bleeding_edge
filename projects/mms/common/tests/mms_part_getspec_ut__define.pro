@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-04-25 09:24:02 -0700 (Wed, 25 Apr 2018) $
-; $LastChangedRevision: 25111 $
+; $LastChangedDate: 2018-04-26 11:40:57 -0700 (Thu, 26 Apr 2018) $
+; $LastChangedRevision: 25126 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
 
@@ -50,6 +50,7 @@ end
 ; file (converted to eflux by multiplying by energy)
 function mms_part_getspec_ut::test_hpca_eflux_vs_pgs
   mms_part_getspec, suffix='_full', instrument='hpca', trange=['2017-08-12/23', '2017-08-12/24'], output=['energy', 'pa', 'gyro', 'phi', 'theta'], probe=3
+  mms_load_hpca, trange=['2017-08-12/23', '2017-08-12/24'], /time_clip, probe=3
   mms_hpca_calc_anodes, fov=[0, 360], probe=3
   mms_hpca_spin_sum, probe='3', /avg
   get_data, 'mms3_hpca_hplus_flux_elev_0-360_spin', data=d, dlimits=dl
@@ -67,14 +68,26 @@ end
 function mms_part_getspec_ut::test_fpi_eflux_vs_pgs
   mms_part_getspec, suffix='_full', instrument='fpi', species='i', trange=['2017-08-12/23', '2017-08-12/24'], output=['energy', 'pa', 'gyro', 'phi', 'theta'], probe=3
   mms_load_fpi, datatype='dis-moms', trange=['2017-08-12/23', '2017-08-12/24'], /time_clip, probe=3
-  
+  tplot, ['mms3_dis_energyspectr_omni_fast', 'mms3_dis_dist_fast_energy_full']
+  makepng, 'dis-eflux-vs-pgs-eflux'
+  return, 1
+end
+
+function mms_part_getspec_ut::test_fpi_e_eflux_vs_pgs
+  mms_part_getspec, suffix='_full', instrument='fpi', species='e', trange=['2017-08-12/23', '2017-08-12/24'], output=['energy', 'pa', 'gyro', 'phi', 'theta'], probe=3
+  mms_load_fpi, datatype='des-moms', trange=['2017-08-12/23', '2017-08-12/24'], /time_clip, probe=3
+  tplot, ['mms3_des_energyspectr_omni_fast', 'mms3_des_dist_fast_energy_full']
+  makepng, 'des-eflux-vs-pgs-eflux'
   return, 1
 end
 
 ; todo
 function mms_part_getspec_ut::test_fpi_multipad
-  mms_part_getspec, probe=4, trange=['2017-10-15/10:50', '2017-10-15/11:00'], output='multipad'
-  
+  mms_part_getspec, probe=4, trange=['2017-10-15/10:50', '2017-10-15/11:00'], output='pa multipad'
+  mms_part_getpad, probe=4
+  tplot, ['mms4_des_dist_fast_pa', 'mms4_des_dist_fast_pad_6.52000eV_27525.0eV']
+  makepng, 'multipad-des-pgs-vs-getpad'
+  assert, spd_data_exists('mms4_des_dist_fast_pa mms4_des_dist_fast_pad_6.52000eV_27525.0eV', '2017-10-15/10:50', '2017-10-15/11:00'), 'Problem with multipad test in mms_part_getspec_ut'
   return, 1
 end
 
@@ -103,7 +116,7 @@ end
 function mms_part_getspec_ut::test_pa_limits_hpca
   mms_part_getspec, probe=4, trange=['2015-12-15/10:50', '2015-12-15/11:00'], pitch=[45, 135], instrument='hpca'
   get_data, 'mms4_hpca_hplus_phase_space_density_pa', data=d
-  assert, total(finite(d.Y[0, 0:4])) eq 0 and total(finite(d.Y[0, 13:*])) eq 0, 'Problem with PA limits for HPCA!'
+  assert, total(finite(d.Y[0, 0:3])) eq 0 and total(finite(d.Y[0, 12:*])) eq 0, 'Problem with PA limits for HPCA!'
   return, 1
 end
 

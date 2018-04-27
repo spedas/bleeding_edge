@@ -122,8 +122,8 @@
 ;                 (suppress most messages).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-04-06 16:34:50 -0700 (Fri, 06 Apr 2018) $
-; $LastChangedRevision: 25021 $
+; $LastChangedDate: 2018-04-26 11:02:03 -0700 (Thu, 26 Apr 2018) $
+; $LastChangedRevision: 25123 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -140,7 +140,8 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 ; Quick access to the state vector
 
   if keyword_set(noload) then begin
-    eph = state
+    if (size(orbstat,/type) gt 0) then stat = orbstat
+    if (size(state,/type) gt 0) then eph = state
     return
   endif
 
@@ -618,7 +619,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
 ; Calculate statistics (orbit by orbit)
 
-  alt = (ss[*,3] - 1D)*R_m  ; just used to separate orbits
+  alt = ss[*,4]
   palt = min(alt)
   gndx = where(alt lt 500.)
   di = gndx - shift(gndx,1)
@@ -634,6 +635,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
     period = torb
     ptime = torb
     palt = torb
+    plon = torb
     plat = torb
     psza = torb
     sma = dblarr(norb-3L,3)
@@ -659,7 +661,8 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
       period[k] = (time[j2] - time[j1])/3600D
 
       ptime[k] = time[j1]
-      palt[k] = p1
+      palt[k] = p1         ; minimum altitude, not geometric periapsis
+      plon[k] = lon[j1]
       plat[k] = lat[j1]
       psza[k] = sza[j1]
 
@@ -741,10 +744,10 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 ; Package the results - statistics are on an orbit-by-orbit basis
 
   stat = {time    : torb    , $   ; time (UTC)
-          wind    : twind   , $   ; fraction of time in solar wind
-          sheath  : tsheath , $   ; fraction of time in sheath
-          pileup  : tpileup , $   ; fraction of time in MPR
-          wake    : twake   , $   ; fraction of time in wake
+          twind   : twind   , $   ; fraction of time in solar wind
+          tsheath : tsheath , $   ; fraction of time in sheath
+          tpileup : tpileup , $   ; fraction of time in MPR
+          twake   : twake   , $   ; fraction of time in wake
           hwind   : hwind   , $   ; hours in solar wind
           hsheath : hsheath , $   ; hours in sheath
           hpileup : hpileup , $   ; hours in MPR
@@ -752,8 +755,12 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
           period  : period  , $   ; orbit period
           ptime   : ptime   , $   ; periapsis time
           palt    : palt    , $   ; periapsis altitude
+          plon    : plon    , $   ; periapsis longitude
           plat    : plat    , $   ; periapsis latitude
-          psza    : psza       }  ; periapsis solar zenith angle
+          psza    : psza    , $   ; periapsis solar zenith angle
+          datum   : datum      }  ; reference surface
+
+  orbstat = stat  ; update the common block
 
 ; Stack up times for plotting in one panel
 
@@ -776,14 +783,34 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   ylim, 'stat', 0, 1
   options, 'stat', 'panel_size', 0.75
   options, 'stat', 'ytitle', 'Orbit Fraction'
-  
+
   store_data, 'period', data = {x:torb, y:period}
   options,'period','ytitle','Period'
   options,'period','panel_size',0.5
   options,'period','ynozero',1
-  
-  store_data, 'palt', data = {x:torb, y:palt}
+
+  store_data, 'palt', data = {x:ptime, y:palt}
   options,'palt','ytitle','Periapsis (km)!c' + strlowcase(datum)
+  options,'palt','ynozero',1
+
+  store_data, 'plon', data = {x:ptime, y:plon}
+  ylim,'plon',0,360,0
+  options,'plon','yticks',4
+  options,'plon','yminor',3
+  options,'plon','ytitle','Periapsis Lon (deg)'
+  
+  store_data, 'plat', data = {x:ptime, y:plat}
+  ylim,'plat',-90,90,0
+  options,'plat','yticks',2
+  options,'plat','yminor',3
+  options,'plat','ytitle','Periapsis Lat (deg)'
+
+  store_data, 'psza', data = {x:ptime, y:psza*!radeg}
+  ylim,'psza',0,180,0
+  options,'psza','yticks',2
+  options,'psza','yminor',3
+  options,'psza','constant',[96,102]
+  options,'psza','ytitle','Periapsis SZA (deg)'
   
   store_data, 'lon', data = {x:time, y:lon}
   ylim,'lon',-180,180,0
