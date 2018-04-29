@@ -22,7 +22,7 @@ if ccsds.pkt_size eq 30 then begin
   endif
 endif
 
-
+;dprint,ccsds.pkt_size
 
 ;values = swap_endian(ulong(ccsds_data,10,11) )
 
@@ -84,6 +84,8 @@ if ccsds.pkt_size eq 90 then begin   ; This is old version of software????  not 
     SW_OSERRCOUNT: spp_swp_data_select(ccsds_data,  664  ,  16), $
     gap:0B}
   str2.gap=1
+  ;printdat,str2,/hex
+  
   return,str2
 endif
 

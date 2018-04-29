@@ -9,6 +9,7 @@ pro spp_apdat_info,apids,name=name,verbose=verbose,$
                   matchname = matchname,  $
                   save_flag=save_flag,$
                   nonzero=nonzero,  $
+                  dlevel=dlevel, $
                   all = all, $
                   finish=finish,$
                   tname=tname,$
@@ -60,6 +61,7 @@ pro spp_apdat_info,apids,name=name,verbose=verbose,$
     if n_elements(name)       ne 0 then apdat.name = name
     if n_elements(routine)    ne 0 then apdat.routine=routine
     if n_elements(rt_flag)    ne 0 then apdat.rt_flag = rt_flag
+    if n_elements(dlevel)     ne 0 then apdat.dlevel = dlevel
     if n_elements(tname)      ne 0 then apdat.tname = tname
     if n_elements(ttags)      ne 0 then apdat.ttags = ttags
     if n_elements(save_flag)  ne 0 then apdat.save_flag = save_flag

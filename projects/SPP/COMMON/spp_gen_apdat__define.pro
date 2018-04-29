@@ -10,7 +10,7 @@ COMPILE_OPT IDL2
 void = self->IDL_Object::Init()
 ;printdat,a
 self.apid  =apid
-self.dlevel = 0
+self.dlevel = 2
 if keyword_set(name) then self.name  =name
 self.ccsds_last = ptr_new(/allocate_heap)
 ;self.ccsds_array = obj_new('dynamicarray')
@@ -53,13 +53,13 @@ END
 function spp_gen_apdat::info,header=header
 ;rs =string(format="(Z03,'x ',a-14, i8,i8 ,i12,i3,i3,i8,' ',a-14,a-36,' ',a-36, ' ',a-20,a)",self.apid,self.name,self.npkts,self.lost_pkts, $
 ;    self.nbytes,self.save_flag,self.rt_flag,self.data.size,self.data.typename,string(/print,self),self.routine,self.tname,self.save_tags)
-  fmt ="(Z03,'x ',a-14, i8,i8 ,i12,i3,i3,i8,' ',a-14,a-26,' ',a-36, ' ',a-20,'<',a,'>')"
-  hfmt="( a4,' ',a-14, a8,a8 ,a12,a3,a3,a8,' ',a-14,a-26,' ',a-36, ' ',a-20,'<',a,'>')"
+  fmt ="(Z03,'x ',a-14, i8,i8 ,i12,i3,i3,i3,i8,' ',a-14,a-26,' ',a-36, ' ',a-20,'<',a,'>')"
+  hfmt="( a4,' ',a-14, a8,a8 ,a12,a3,a3,a3,a8,' ',a-14,a-26,' ',a-36, ' ',a-20,'<',a,'>')"
 ;  if keyword_set(header) then rs=string(format=hfmt,'APID','Name','npkts','lost','nbytes','save','rtf','size','type','objname','routine','tname','tags')
   rs =string(format=fmt,self.apid,self.name,self.npkts,self.lost_pkts, $
-    self.nbytes,self.save_flag,self.rt_flag,self.data.size,self.data.typename,typename(self),self.routine,self.tname,self.ttags)
+    self.nbytes,self.save_flag,self.rt_flag,self.dlevel,self.data.size,self.data.typename,typename(self),self.routine,self.tname,self.ttags)
 
-  if keyword_set(header) then rs=string(format=hfmt,'APID','Name','Npkts','lost','nbytes','sv','rt','size','type','objname','routine','tname','tags') +string(13b)+ rs
+  if keyword_set(header) then rs=string(format=hfmt,'APID','Name','Npkts','lost','nbytes','sv','rt','dl','size','type','objname','routine','tname','tags') +string(13b)+ rs
 
 return,rs
 end
@@ -86,7 +86,10 @@ function spp_gen_apdat::decom,ccsds,header
 strct = ccsds
 strct.pdata = ptr_new()
 ap = self.struct()
-if self.routine then  strct = call_function(self.routine,ccsds, ptp_header=header ,apdat = ap)
+if self.routine then  strct = call_function(self.routine,ccsds, ptp_header=header ,apdat = ap) $
+else  strct = ccsds
+dprint,dlevel=self.dlevel+2,phelp=2,strct
+
 return,strct
 end
 
@@ -110,7 +113,7 @@ pro spp_gen_apdat::handler,ccsds,header
 ;if ccsds.seq_group ne 3 then self.help   ;dprint,dlevel=2,ccsds.seq_group,ccsds.apid
 
   if self.save_flag && keyword_set(strct) then begin
-    dprint,self.name,dlevel=5,self.apid
+    dprint,self.name,dlevel=self.dlevel+2,self.apid
     self.data.append,  strct
   endif
 

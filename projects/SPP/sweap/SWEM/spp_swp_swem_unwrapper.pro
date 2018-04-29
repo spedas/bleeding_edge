@@ -1,9 +1,11 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-04-24 09:03:12 -0700 (Tue, 24 Apr 2018) $
-; $LastChangedRevision: 25103 $
+; $LastChangedDate: 2018-04-28 02:07:38 -0700 (Sat, 28 Apr 2018) $
+; $LastChangedRevision: 25136 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SWEM/spp_swp_swem_unwrapper.pro $
 
 function spp_swp_swem_unwrapper,ccsds,ptp_header=ptp_header,apdat=apdat
+  
+  message,'obsolete routine'
   
   if n_params() eq 0 then begin
     dprint,'Not working yet.'

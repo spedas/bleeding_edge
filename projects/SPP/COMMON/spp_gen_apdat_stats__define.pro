@@ -41,7 +41,7 @@ pro spp_gen_apdat_stats::finish,append=append,tres=tres
        nbytes2 = reform(nbytes2,nwnz,2048)
        if debug(3) then printdat, i_2d,nbytes2
        store_data,'spp_swp_data_rate_PKT',data={x:tbins[wnz],Y:nbytes2/float(tres),v:indgen(2048)}
-       store_data,'APIDS_RATE',data={x:tbins[wnz],Y:nbytes2/float(tres),v:indgen(2048)},dlimit={spec:1}
+ ;      store_data,'APIDS_RATE',data={x:tbins[wnz],Y:nbytes2/float(tres),v:indgen(2048)},dlimit={spec:1}
  ;      stop
        
      endif else begin

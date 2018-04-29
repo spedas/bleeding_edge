@@ -40,7 +40,7 @@ ccsds_data = spp_swp_ccsds_data(ccsds)
 
 
 if ccsds.pkt_size eq 56 then begin
-  dprint,'boot mode ignored',dlevel=4
+  dprint,'boot mode ignored',dlevel=3,dwait=30
   return,0
   values = swap_endian(ulong(ccsds_data,10,11) )
   values2 = uintarr(4) ;  swap_endian(ulong(ccsds_data,448/8,4) )
@@ -67,7 +67,7 @@ if ccsds.pkt_size eq 56 then begin
 ;  return,0
   
 endif else if ccsds.pkt_size ge 66 then begin
-  dprint,'Op mode',dlevel=4
+  if ccsds.pkt_size gt 66 then dprint,'Op debug mode',dlevel=3, ccsds.pkt_size, dwait=30
   sample_clk_per = spp_swp_data_select(ccsds_data,80,16)
   scpps_met_time = spp_swp_data_select(ccsds_data,96,32)
 
