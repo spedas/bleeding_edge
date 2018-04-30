@@ -21,7 +21,7 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
    spp_apdat_info,'341'x,name='swem_dig_hkp',  routine='spp_swp_swem_dhkp_decom',  tname='spp_swem_dhkp_',  save_flag=save_flag,ttags='*',  rt_flag=rt_flag 
    spp_apdat_info,'342'x,name='swem_mem_dump', routine='spp_generic_decom',        tname='spp_mem_dump_',   save_flag=save_flag,ttags=ttags,rt_flag=rt_flag
    spp_apdat_info,'343'x,name='swem_ana_hkp',  routine='spp_swp_swem_hkp_decom',   tname='spp_swem_ahkp_',  save_flag=save_flag,ttags='*',  rt_flag=rt_flag 
-   spp_apdat_info,'344'x,name='swem_event_log',routine='spp_generic_decom',        tname='spp_event_log_',  save_flag=save_flag,ttags=ttags,rt_flag=rt_flag 
+   spp_apdat_info,'344'x,name='swem_event_log',apid_obj='spp_swp_swem_events_apdat', tname='spp_event_log_',  save_flag=save_flag,ttags=ttags,rt_flag=rt_flag 
    spp_apdat_info,'345'x,name='swem_cmd_echo', routine='spp_generic_decom',        tname='spp_cmd_echo_',   save_flag=save_flag,ttags=ttags,rt_flag=rt_flag
    spp_apdat_info,'346'x,name='swem_timing',   routine='spp_swp_swem_timing_decom',tname='spp_swem_timing_',ttags='*',save_flag=save_flag,  rt_flag=rt_flag 
    spp_apdat_info,'347'x,name='Memory Dwell',  routine='',                         tname='spp_swp_347_',    ttags='*',save_flag=save_flag,  rt_flag=rt_flag 

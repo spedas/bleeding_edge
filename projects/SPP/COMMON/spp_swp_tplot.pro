@@ -31,8 +31,8 @@ if keyword_set(setlim) then begin
   !y.style=3
   dprint,setd=2
   store_data,'APID',data='APIDS_*'
-  ylim,'APID',820,980
-  options,'APID',panel_size=2
+  ylim,'APID',820,960
+  options,'APID',panel_size=2.5
   
   
 endif

@@ -128,10 +128,10 @@ fields_clk_cycles_delta = long( fix( fields_clk_cycles - last_str.fields_clk_cyc
 ;fields_clk_cycles_delta =  fields_clk_cycles_delta / df0
 
 
-if debug(4) then begin
-  ;dprint,str.fields_clk_cycles_delta
-  hexprint,[fields_clk_cycles,fields_clk_cycles_delta,ulong(sample_clk_per_delta)]
-endif
+;if debug(5) then begin
+;  ;dprint,str.fields_clk_cycles_delta
+;  hexprint,[fields_clk_cycles,fields_clk_cycles_delta,ulong(sample_clk_per_delta)]
+;endif
 
 
 
@@ -188,7 +188,7 @@ str = {time:   ccsds.time  ,$
        
 ;tploprintdat,str
 
-  if debug(4,msg='SWEM Timing') then begin
+  if debug(apdat.dlevel+3,msg='SWEM Timing') then begin
      dprint,dlevel=2,'generic:',ccsds.apid,ccsds.pkt_size+7, n_elements(ccsds_data)
      hexprint,ccsds_data
   endif

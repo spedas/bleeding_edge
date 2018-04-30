@@ -88,7 +88,7 @@ strct.pdata = ptr_new()
 ap = self.struct()
 if self.routine then  strct = call_function(self.routine,ccsds, ptp_header=header ,apdat = ap) $
 else  strct = ccsds
-dprint,dlevel=self.dlevel+2,phelp=2,strct
+dprint,dlevel=self.dlevel+3,phelp=2,strct
 
 return,strct
 end
@@ -109,11 +109,12 @@ end
 pro spp_gen_apdat::handler,ccsds,header
   
   strct = self.decom(ccsds,header)
+  if keyword_set(strct) then  *self.last_data= strct
 
 ;if ccsds.seq_group ne 3 then self.help   ;dprint,dlevel=2,ccsds.seq_group,ccsds.apid
 
   if self.save_flag && keyword_set(strct) then begin
-    dprint,self.name,dlevel=self.dlevel+2,self.apid
+    dprint,self.name,dlevel=self.dlevel+3,self.apid
     self.data.append,  strct
   endif
 
@@ -121,9 +122,6 @@ pro spp_gen_apdat::handler,ccsds,header
     if ccsds.gap eq 1 then strct = [fill_nan(strct[0]),strct]
     store_data,self.tname,data=strct, tagnames=self.ttags , append = 1, gap_tag='GAP'
   endif
-  
-  
-  
   
 end
  
@@ -196,6 +194,7 @@ void = {spp_gen_apdat, $
   tname: '',  $
   ttags: '',  $
   ccsds_last: ptr_new(), $
+  last_data:  ptr_new(),  $
   ccsds_array: obj_new(), $  
   data: obj_new(), $
   dlevel: 0  $

@@ -92,6 +92,6 @@ spp_ptp_file_read, ptpfiles
 
 trange = systime(1) + [-1,0] * 3600.
 path =  'spp/data/sci/sweap/prelaunch/gsedata/realtime/cal/swem/YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
-ptpfiles = spp_file_retrieve(path,trange= systime(1) + [-1,0] * 3600.,/hourly_names)
+ptpfiles = spp_file_retrieve(path,trange= systime(1) + [-3,0] * 3600.,/hourly_names)
 spp_ptp_file_read, ptpfiles
 

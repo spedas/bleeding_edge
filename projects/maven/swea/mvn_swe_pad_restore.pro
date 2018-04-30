@@ -36,8 +36,8 @@
 ;       L2ONLY:        Insist that MAG L2 data were used for resampling.
 ;
 ; $LastChangedBy: rlillis3 $
-; $LastChangedDate: 2017-10-16 10:55:01 -0700 (Mon, 16 Oct 2017) $
-; $LastChangedRevision: 24160 $
+; $LastChangedDate: 2018-04-28 18:30:05 -0700 (Sat, 28 Apr 2018) $
+; $LastChangedRevision: 25142 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_restore.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -117,7 +117,6 @@ pro mvn_swe_pad_restore, trange, orbit=orbit, loadonly=loadonly, unnorm=unnorm, 
         endif else print,"No data were restored."
       endelse
     endfor
-    pad = epad
 
     npts = n_elements(epad.time)
 
@@ -133,7 +132,7 @@ pro mvn_swe_pad_restore, trange, orbit=orbit, loadonly=loadonly, unnorm=unnorm, 
       epad = temporary(epad[indx])
       npts = mpts
     endif
-
+    pad = epad
   endif else begin
 
 ; Restore tplot save file(s)

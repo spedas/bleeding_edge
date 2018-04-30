@@ -35,79 +35,33 @@ pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length,ptp_header=ptp_header,rem
     endelse
 
       
-if 1 then begin    ; new method
-  
-      apdat = spp_apdat(ccsds.apid)
 
-      if keyword_set( *apdat.ccsds_last) then begin        
-        ccsds_last = *apdat.ccsds_last
-        dseq = (( ccsds.seqn - ccsds_last.seqn ) and '3fff'xu)
-        ccsds.seqn_delta = dseq
-        ccsds.time_delta = (ccsds.met - ccsds_last.met)
-        ccsds.gap = (dseq ne 1)
-      endif   ; else ccsds_last = !null
 
-      if ccsds.seqn_delta gt 1 then begin
-        dprint,dlevel=4,format='("Lost ",i5," ",a," (0x", Z03,") packets ",i5," ",a)',  ccsds.seqn_delta-1,apdat.name,apdat.apid,ccsds.seqn,time_string(ccsds.time,prec=3)
-      endif
+    apdat = spp_apdat(ccsds.apid)
 
-      apdat.handler, ccsds , header
-      dummy = spp_rt(ccsds.time)     ; This line help keep track of the current real time
+    if keyword_set( *apdat.ccsds_last) then begin
+      ccsds_last = *apdat.ccsds_last
+      dseq = (( ccsds.seqn - ccsds_last.seqn ) and '3fff'xu)
+      ccsds.seqn_delta = dseq
+      ccsds.time_delta = (ccsds.met - ccsds_last.met)
+      ;        ccsds.gap = (dseq ne 1)
+      ccsds.gap = (dseq gt ccsds_last.seqn_delta)
+      ;   printdat,ccsds
+    endif   ; else ccsds_last = !null
 
-      ;;  Save statistics - get APID_ALL and APID_GAP
-      apdat.increment_counters, ccsds
-      stats = spp_apdat(0)
-      stats.handler, ccsds, header
+    if ccsds.seqn_delta gt 1 then begin
+      dprint,dlevel=5,format='("Lost ",i5," ",a," (0x", Z03,") packets ",i5," ",a)',  ccsds.seqn_delta-1,apdat.name,apdat.apid,ccsds.seqn,time_string(ccsds.time,prec=3)
+    endif
 
-      
-endif else begin   ; old method
-      if 1 then begin
-        store_data,'APIDS_ALL',ccsds.time,ccsds.apid, /append,dlimit={psym:3,symsize:.2 ,ynozero:1}
-      endif
-      spp_apid_data,ccsds.apid,apdata=apdat,/increment
+    apdat.handler, ccsds , header
+    dummy = spp_rt(ccsds.time)     ; This line help keep track of the current real time
 
-      ;; Look for data gaps
-      if keyword_set( *apdat.last_ccsds) then last_ccsds = *apdat.last_ccsds else last_ccsds = 0
+    ;;  Save statistics - get APID_ALL and APID_GAP
+    apdat.increment_counters, ccsds
+    stats = spp_apdat(0)
+    stats.handler, ccsds, header
 
-      if (size(/type,last_ccsds) eq 8)  then begin
-        dseq = (( ccsds.seqn - last_ccsds.seqn ) and '3fff'xu)
-        ccsds.seqn_delta = dseq
-        ccsds.time_delta = (ccsds.met - last_ccsds.met)
-        ccsds.gap = (dseq ne 1)
-      endif
-      
-      if ccsds.gap ne 0  then begin
-        dprint,dlevel=3,format='("Lost ",i5," 0x", Z03, " packets")',  ccsds.seqn_delta,apdat.apid
-        store_data,'APIDS_GAP',ccsds.time,ccsds.apid,  /append,dlimit={psym:4,symsize:.4 ,ynozero:1, colors:'r'}
-      endif
-      
 
-      if isa(apdat.ccsds_array,'dynamicarray') then begin
-        apdat.ccsds_array.append,ccsds
-      endif
-
-      if keyword_set(apdat.decom_obj) then begin  ;; New method
-        apdat.decom_obj.handler,  ccsds,header
-      endif
-      
-      ;Old method
-      if keyword_set(apdat.routine) then begin
-        strct =  call_function(apdat.routine,ccsds, ptp_header=header,apdat=apdat)
-        if  apdat.save_flag && keyword_set(strct) then begin
-          if isa(apdat.data_array,'dynamicarray') then apdat.data_array.append, strct
-        endif
-        if apdat.rt_flag && apdat.rt_tags then begin
-          if ccsds.gap eq 1 then strct = [fill_nan(strct),strct]
-          store_data,apdat.tname,data=strct, tagnames=apdat.rt_tags , append = 1 
-        endif
-      endif else begin
-        if debug(3) then begin
-          dprint,dlevel=2,'Unknown APID: ',ccsds.apid,format='(a,Z04)'
-          if debug(3) then printdat,ccsds
-        endif
-      endelse
-      *apdat.last_ccsds = ccsds
-endelse
  
   endwhile
 

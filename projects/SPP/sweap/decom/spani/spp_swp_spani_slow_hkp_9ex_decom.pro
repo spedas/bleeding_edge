@@ -123,7 +123,7 @@ endif
          seqn_delta:       ccsds.seqn_delta   < 15, $
  
          REVN:            b[12],  $
-         CMDS_REC:        spp_swp_word_decom(b,13)  and 'ff'x,  $
+         CMDS_REC:        spp_swp_word_decom(b,13) ,  $
          CMDS_UNK:        ishft(b[15],-4), $
          CMDS_ERR:        b[15] and 'f'x, $
          CH_OFFSETS:      ch_offsets, $

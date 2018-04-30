@@ -1,30 +1,12 @@
 ;+
 ; spp_swp_spi_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-04-28 14:26:27 -0700 (Sat, 28 Apr 2018) $
-; $LastChangedRevision: 25138 $
+; $LastChangedDate: 2018-04-28 19:31:32 -0700 (Sat, 28 Apr 2018) $
+; $LastChangedRevision: 25144 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
 
-;;-----------------------------------------------;;
-;;                   Moments                     ;;
-;;-----------------------------------------------;;
-;PRO spp_swp_spi_prod_apdat::prod_MOMS, strct
-;   pname = 'MOM_'
-;   moms  = *strct.pdata 
-;   IF n_elements(moms) NE 114 THEN BEGIN
-;      dprint,'Bad size: '+$
-;             string(n_elements(moms))+ $
-;             ' instead of 114'
-;      return
-;   ENDIF
-;   ;; 10 Bytes of SWEM Header
-;   header = moms[0:9]
-;   ;; 13 64bit moments
-;   strct.moms = moms[10:113]
-;   return
-;END 
 
 ;;-----------------------------------------------;;
 ;;                     16A                       ;;
@@ -421,7 +403,6 @@ PRO spp_swp_spi_prod_apdat::handler,ccsds,ptp_header
    ns=1
    IF keyword_set(strct) && ns gt 0 THEN BEGIN
       CASE strct.ndat OF
-;         114:self.prod_MOMS,           strct   removed and put in it own object  DEL
          16:self.prod_16A,             strct
          32:self.prod_32E,             strct
          128:self.prod_08Dx16A,        strct
@@ -454,7 +435,6 @@ FUNCTION spp_swp_spi_prod_apdat::Init,apid,name,_EXTRA=ex
    void = self->spp_gen_apdat::Init(apid,name)   
    ;; Set to 1 to save full 3 or 4 Dimensions of raw data
    self.save_raw = 0
-;   self.prod_MOMS           = obj_new('dynamicarray',name='prod_MOMS')   
    self.prod_16A            = obj_new('dynamicarray',name='prod_16A')
    self.prod_08Dx32E        = obj_new('dynamicarray',name='prod_08Dx32E')
    self.prod_16Ax16M        = obj_new('dynamicarray',name='prod_16Ax16M')
@@ -469,7 +449,6 @@ END
 
 PRO spp_swp_spi_prod_apdat::Clear
    self->spp_gen_apdat::Clear
-;   self.prod_MOMS.array           = !null
    self.prod_16A.array            = !null
    self.prod_16Ax16M.array        = !null
    self.prod_08Dx32E.array        = !null
@@ -487,7 +466,6 @@ PRO spp_swp_spi_prod_apdat__define
            ;; Superclass
            inherits spp_gen_apdat,$ 
            save_raw: 0b,$
-;           prod_MOMS:           obj_new(),$
            prod_16A:            obj_new(),$
            prod_08Dx32E:        obj_new(),$
            prod_16Ax16M:        obj_new(),$
@@ -564,24 +542,3 @@ END
 ;end
 
 
-
-
-
-   ;; Byte array as input
-   ;; if typename(ccsds) eq 'BYTE' then $
-   ;;  return, self.spp_swp_spi_prod_apdat(spp_swp_ccsds_decom(ccsds)) 
-
-
-   ;; if ptr_valid(apdat.last_ccsds) && keyword_set(*apdat.last_ccsds) then $
-   ;;  delta_t = ccsds.time - (*(apdat.last_ccsds)).time $
-   ;; else delta_t = !values.f_nan
-
-
-
-   ;; Part of 32E x 16A decommutator
-   ;;
-   ;;data = *strct.pdata
-   ;;data = reform(data,32,16,/overwrite)
-   ;;spec1 = total(data,2)
-   ;;spec2 = total(data,1 )
-   ;; self.store_data, strct2, pname
