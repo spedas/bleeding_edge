@@ -181,8 +181,20 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
           new_data_x = [new_data_x,spec_data.x[i] + $
             delta_x * dindgen(n_spec)]
 
-          new_data_sat_y = [new_data_sat_y, $
-            (sat_data.y[i] / 2l^lindgen(16) MOD 2)[0:n_spec-1]]
+          if sat_data.y[i] NE 4294967295 then begin ; fill value
+
+            new_data_sat_y = [new_data_sat_y, $
+              (sat_data.y[i] / 2l^lindgen(16) MOD 2)[0:n_spec-1]]
+
+          endif else begin
+
+            ; Currently does not account for partial packets with
+            ; fewer spectra than specified in the CONCAT item
+
+            new_data_sat_y = [new_data_sat_y, lonarr(16)]
+
+          endelse
+
         endfor
 
         data_v = transpose(rebin(freq_bins.freq_avg,$
@@ -238,7 +250,7 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
         options, prefix + 'sat_indicator', 'colors', colors
         options, prefix + 'sat_indicator', 'symsize', 0.75
         options, prefix + 'sat_indicator', 'labels', [string(spec_number,format='(I1)')]
-        
+
       endif else begin
 
         print, 'Different spectra configuration in same CDF file'

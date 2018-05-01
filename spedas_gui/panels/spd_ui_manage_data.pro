@@ -15,8 +15,8 @@
 ; 
 ;HISTORY:
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2015-04-28 13:17:10 -0700 (Tue, 28 Apr 2015) $
-;$LastChangedRevision: 17440 $
+;$LastChangedDate: 2018-04-30 13:23:37 -0700 (Mon, 30 Apr 2018) $
+;$LastChangedRevision: 25150 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_manage_data.pro $
 ;
 ;--------------------------------------------------------------------------------
@@ -501,7 +501,7 @@ pro spd_ui_manage_data, gui_id, loadedData, windowStorage, historywin,treeCopyPt
   trashcan = read_bmp(rpath + 'trashcan.bmp',/rgb)
   leftArrow = read_bmp(rpath + 'arrow_180_medium.bmp',/rgb)
   rightArrow = read_bmp(rpath + 'arrow_000_medium.bmp',/rgb)
-  zoomIn = read_bmp(rpath + 'magnifier_zoom.bmp',/rgb)
+  zoomIn = read_bmp(rpath + 'wrench_screwdriver.bmp',/rgb)
   
   spd_ui_match_background, tlb, trashcan
   spd_ui_match_background, tlb, leftArrow
@@ -509,13 +509,13 @@ pro spd_ui_manage_data, gui_id, loadedData, windowStorage, historywin,treeCopyPt
   spd_ui_match_background, tlb, zoomIn
 
   rightButton = Widget_Button(arrowBase, Value=rightArrow, /Bitmap, $
-                Uvalue='RIGHT', ToolTip='Create a gui variable from tplot data', xsize=27, ysize=27)
+                Uvalue='RIGHT', ToolTip='Create a GUI variable from tplot data', xsize=27, ysize=27)
   leftButton = Widget_Button(arrowBase, Value=leftArrow, /Bitmap,  UValue='LEFT', $
-              ToolTip='Create a tplot variable from gui data', xsize=27, ysize=27)
+              ToolTip='Create a tplot variable from GUI data', xsize=27, ysize=27)
   trashbutton = Widget_Button(arrowBase, Value=trashcan, /Bitmap,  UValue='TRASH', $
-              ToolTip='Delete a Gui Variable', xsize=27, ysize=27) 
+              ToolTip='Delete a GUI Variable', xsize=27, ysize=27) 
   edit_button = widget_button(arrowBase, value=zoomIn, uvalue='EDIT',/Bitmap, $
-              Tooltip='Examine a Gui Variable', xsize=27, ysize=27)
+              Tooltip='Manage a GUI Variable', xsize=27, ysize=27)
   tplotLabel = Widget_Label(tplotDataBase, value='TPLOT Data: ', /align_left)
 ;  tplot_names, names=tplotListNames
   tplotListNames=tnames()        ;Does not have limit on length of name like TPLOT_NAMES.

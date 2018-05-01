@@ -43,9 +43,9 @@
 ;       
 ;       
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2015-12-10 11:16:11 -0800 (Thu, 10 Dec 2015) $
-; $LastChangedRevision: 19568 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2018-04-30 15:17:53 -0700 (Mon, 30 Apr 2018) $
+; $LastChangedRevision: 25152 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot.pro $
 ;-
 
@@ -95,8 +95,12 @@ if undefined(skip_ae_idx) then begin
 ;;=============================================================================
 ;; Panel 1: Kyoto and THEMIS AE
     kyoto_load_ae, datatype = 'ae'
-    thm_make_AE
-    
+;    thm_make_AE
+    thm_load_pseudoAE,datatype='ae'
+    if tnames('thg_idx_ae') eq '' then begin
+       thm_make_AE;no sites check, since the bad sites test is not distributed, jmm, 2018-04-30
+    endif else copy_data, 'thg_idx_ae', 'thmAE'
+
     get_data, 'thmAE', data=thm_ae_data, dlimits=thm_ae_dlimits
     get_data, 'kyoto_ae', data=kyoto_ae_data, dlimits=kyoto_ae_dlimits
     

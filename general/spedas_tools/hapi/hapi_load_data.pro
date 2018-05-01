@@ -53,8 +53,8 @@
 ;         
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-10 09:04:42 -0700 (Tue, 10 Apr 2018) $
-;$LastChangedRevision: 25028 $
+;$LastChangedDate: 2018-04-30 12:15:49 -0700 (Mon, 30 Apr 2018) $
+;$LastChangedRevision: 25148 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
@@ -71,8 +71,8 @@ function hapi_get_json, neturl
 end
 
 pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, info=info, server=server, $
-  dataset=dataset, path=path, port=port, scheme=scheme, prefix=prefix, tplotvars=tplotvars, timeout=timeout, $
-  connect_timeout=connect_timeout, parameters=parameters, local_data_dir=local_data_dir
+  dataset=dataset, path=path, port=port, scheme=scheme, prefix=prefix, tplotnames=tplotnames, timeout=timeout, $
+  connect_timeout=connect_timeout, parameters=parameters, local_data_dir=local_data_dir, suffix=suffix
 
   t0 = systime(/seconds)
   catch, error_status
@@ -114,7 +114,9 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
   if undefined(port) then port = url_port
   if undefined(scheme) then scheme = url_scheme
   if undefined(local_data_dir) then local_data_dir = 'hapi/'
-
+  if undefined(suffix) then suffix = ''
+  if undefined(prefix) then prefix=''
+        
   ; the user specified a list of parameters
   if ~undefined(parameters) then begin
     para = strjoin(parameters, ',')
@@ -187,6 +189,10 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     endelse
 
     data_directory = spd_addslash(local_data_dir) + spd_addslash(scheme) + spd_addslash(url_host) + spd_addslash(url_path) + 'data/' + spd_addslash(info_dataset)
+    
+    ; make sure no :'s show up in the directory
+    data_directory = strjoin(strsplit(data_directory, ':', /extract))
+    
     dir_exists = file_test(data_directory)
     if ~dir_exists then file_mkdir2, data_directory
     
@@ -226,10 +232,9 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     ; turn the variable tables into proper tplot variables
     for var_idx = 0, n_elements(variables)-1 do begin
       if variables[var_idx].hasKey('name') and variables[var_idx].hasKey('epoch') and (variables[var_idx])['data'] ne !null then begin
-        if undefined(prefix) then prefix=''
-        tname = prefix + strlowcase((variables[var_idx])['name'])        
+        tname = prefix + strlowcase((variables[var_idx])['name']) + suffix
         store_data, tname, data={x: (variables[var_idx])['epoch'], y: (variables[var_idx])['data']}
-        append_array, tplotvars, tname
+        append_array, tplotnames, tname
       endif
     endfor
   endif
