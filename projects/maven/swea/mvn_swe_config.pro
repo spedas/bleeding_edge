@@ -20,6 +20,8 @@
 ;    Ext Ops 2   2016-10-01/00:00  - 
 ;                                   |-> Extended Mission 2 (PDS R7.5 - R16)
 ;    Ext Ops 3   2018-10-01/00:00  -
+;                                   |-> Extended Mission 3 (PDS R17 - R20)
+;    Ext Ops 4   2019-10-01/00:00  - 
 ;    -----------------------------------------------------------------------
 ;
 ;USAGE:
@@ -35,8 +37,8 @@
 ;                   changes in a tplot window (assumed to exist).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-02 15:08:14 -0800 (Fri, 02 Feb 2018) $
-; $LastChangedRevision: 24634 $
+; $LastChangedDate: 2018-05-01 17:00:34 -0700 (Tue, 01 May 2018) $
+; $LastChangedRevision: 25154 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -117,7 +119,7 @@ pro mvn_swe_config, list=list, timebar=timebar
   t_mcp = [t_mcp, time_double('2016-10-25/21:52:45')]  ; bias adjustment (2700 -> 2750 V)
   t_mcp = [t_mcp, time_double('2017-08-12/07:24:27')]  ; bias adjustment (2750 -> 2800 V)
 
-  t_mcp = [t_mcp, time_double('2018-01-08/00:00:00')]  ; last SWE-SWI cross calibration
+  t_mcp = [t_mcp, time_double('2018-04-17/00:00:00')]  ; last SWE-SWI cross calibration
 
 ; Gather all the configuration change times into one variable (for timebar).
 
