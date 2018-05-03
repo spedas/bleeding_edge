@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-04-26 11:40:57 -0700 (Thu, 26 Apr 2018) $
-; $LastChangedRevision: 25126 $
+; $LastChangedDate: 2018-05-02 09:22:53 -0700 (Wed, 02 May 2018) $
+; $LastChangedRevision: 25157 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
 
@@ -268,6 +268,10 @@ function mms_part_getspec_ut::test_hpca_regression
   mms_part_getspec, /silent, instrument='hpca', probe='1', species='hplus', data_rate='brst', level='l2', outputs=['phi', 'theta', 'energy', 'pa', 'gyro', 'moments']
   assert, spd_data_exists('mms1_hpca_hplus_phase_space_density_energy mms1_hpca_hplus_phase_space_density_theta mms1_hpca_hplus_phase_space_density_phi mms1_hpca_hplus_phase_space_density_pa mms1_hpca_hplus_phase_space_density_gyro', '2016-10-16/17:39:00', '2016-10-16/17:44:00'), 'Problem with HPCA regression test'
   return, 1
+end
+
+pro mms_part_getspec_ut::teardown
+  del_data, '*'
 end
 
 function mms_part_getspec_ut::init, _extra=e
