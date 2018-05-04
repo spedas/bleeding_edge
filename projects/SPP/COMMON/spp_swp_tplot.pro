@@ -25,6 +25,7 @@ if keyword_set(setlim) then begin
   options,'*NRG_SPEC',spec=1
   options,'*tof_TOF',spec=1
   
+  options,'*_MSG',tplot_routine='strplot'
 
 
   tplot,var_label=tnames('manip*_POS *DAC_DEFL Igun_VOLTS Igun_CURRENT')

@@ -79,8 +79,8 @@
 ; 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-11-16 14:27:59 -0800 (Thu, 16 Nov 2017) $
-;$LastChangedRevision: 24291 $
+;$LastChangedDate: 2018-05-03 16:53:26 -0700 (Thu, 03 May 2018) $
+;$LastChangedRevision: 25163 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_load_hpca.pro $
 ;-
 
@@ -109,6 +109,7 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
             ; count_rate, flux, vel_dist, rf_corr, bkgd_corr
             case datatype of
               'ion': varformat = '*'
+              'combined': varformat = '*'
               'rf_corr': varformat = '*_RF_corrected'
               'count_rate': varformat = '*_count_rate'
               'flux': varformat = '*_flux'

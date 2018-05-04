@@ -11,6 +11,7 @@ void = self->IDL_Object::Init()
 ;printdat,a
 self.apid  =apid
 self.dlevel = 2
+self.last_data_p = ptr_new(!null)
 if keyword_set(name) then self.name  =name
 self.ccsds_last = ptr_new(/allocate_heap)
 ;self.ccsds_array = obj_new('dynamicarray')
@@ -47,6 +48,7 @@ END
 
 PRO spp_gen_apdat::help
   help,/obj,self
+  printdat,self.last_data_p
 END
 
 
@@ -88,7 +90,7 @@ strct.pdata = ptr_new()
 ap = self.struct()
 if self.routine then  strct = call_function(self.routine,ccsds, ptp_header=header ,apdat = ap) $
 else  strct = ccsds
-dprint,dlevel=self.dlevel+3,phelp=2,strct
+dprint,dlevel=self.dlevel+4,phelp=2,strct
 
 return,strct
 end
@@ -109,12 +111,12 @@ end
 pro spp_gen_apdat::handler,ccsds,header
   
   strct = self.decom(ccsds,header)
-  if keyword_set(strct) then  *self.last_data= strct
+  if keyword_set(strct) then  *self.last_data_p= strct
 
 ;if ccsds.seq_group ne 3 then self.help   ;dprint,dlevel=2,ccsds.seq_group,ccsds.apid
 
   if self.save_flag && keyword_set(strct) then begin
-    dprint,self.name,dlevel=self.dlevel+3,self.apid
+    dprint,self.name,dlevel=self.dlevel+4,self.apid
     self.data.append,  strct
   endif
 
@@ -146,7 +148,7 @@ END
  
  
 PRO spp_gen_apdat::GetProperty,data=data, array=array, npkts=npkts, apid=apid, name=name,  typename=typename, $
-   nsamples=nsamples,nbytes=nbytes,strct=strct,ccsds_last=ccsds_last,tname=tname,dlevel=dlevel,ttags=ttags
+   nsamples=nsamples,nbytes=nbytes,strct=strct,ccsds_last=ccsds_last,tname=tname,dlevel=dlevel,ttags=ttags,last_data=last_data
 COMPILE_OPT IDL2
 IF (ARG_PRESENT(nbytes)) THEN nbytes = self.nbytes
 IF (ARG_PRESENT(name)) THEN name = self.name
@@ -156,6 +158,7 @@ IF (ARG_PRESENT(apid)) THEN apid = self.apid
 IF (ARG_PRESENT(npkts)) THEN npkts = self.npkts
 IF (ARG_PRESENT(ccsds_last)) THEN ccsds_last = self.ccsds_last
 IF (ARG_PRESENT(data)) THEN data = self.data
+if (arg_present(last_data)) then last_data = *(self.last_data_p)
 IF (ARG_PRESENT(array)) THEN array = self.data.array
 IF (ARG_PRESENT(nsamples)) THEN nsamples = self.data.size
 IF (ARG_PRESENT(typename)) THEN typename = typename(*self.data)
@@ -194,7 +197,7 @@ void = {spp_gen_apdat, $
   tname: '',  $
   ttags: '',  $
   ccsds_last: ptr_new(), $
-  last_data:  ptr_new(),  $
+  last_data_p:  ptr_new(),  $
   ccsds_array: obj_new(), $  
   data: obj_new(), $
   dlevel: 0  $

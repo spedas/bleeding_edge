@@ -18,9 +18,20 @@ function spp_log_msg_decom,ccsds, ptp_header=ptp_header, apdat=apdat,dlevel=dlev
   time = ptp_header.ptp_time
  ; time=ccsds.time
   ccsds_data = spp_swp_ccsds_data(ccsds)  
-  msg = string(ccsds_data[10:*])
+ ; printdat,apdat
+  if debug(apdat.dlevel+3) then begin
+     printdat,ccsds
+     hexprint,ccsds_data
+  endif
+  bstr = ccsds_data[10:*]
+  if 1 then begin
+    w = where(bstr gt  16,/null)
+    bstr = bstr[w]
+  endif
+  msg = string(bstr)
   dprint,dlevel=apdat.dlevel+2,time_string(time)+  ' "'+msg+'"'
   str={time:time,seq:ccsds.seqn,size:ccsds.pkt_size,msg:msg}
   return,str
 
 end
+

@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-04-20 12:14:30 -0700 (Fri, 20 Apr 2018) $
-; $LastChangedRevision: 25088 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-05-03 15:08:06 -0700 (Thu, 03 May 2018) $
+; $LastChangedRevision: 25162 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -127,7 +127,7 @@ function spp_swp_spe_prod_apdat::decom,ccsds,ptp_header
 pksize = ccsds.pkt_size
 if pksize le 20 then begin
   dprint,dlevel = 2, 'size error - no data'
-  return, 0
+  return, !null
 endif
 
 ccsds_data = spp_swp_ccsds_data(ccsds)
@@ -197,7 +197,7 @@ pro spp_swp_spe_prod_apdat::handler,ccsds,ptp_header
 
   strct = self.decom(ccsds)
   
-  ns=1
+  ns=keyword_set(strct)
   if  ns gt 0 then begin
     case strct.ndat  of
       16:   self.prod_16a,  strct
@@ -205,7 +205,7 @@ pro spp_swp_spe_prod_apdat::handler,ccsds,ptp_header
       256:  self.prod_8Dx32E, strct
       512:  self.prod_16Ax32E, strct
       4096: self.prod_16Ax8Dx32E, strct
-      else:  dprint,dlevel=2,'Size not recognized: ',strct.ndat
+      else:  dprint,dlevel=self.dlevel+3,'Size not recognized: ',strct.ndat
     endcase
   endif
 
@@ -219,6 +219,14 @@ pro spp_swp_spe_prod_apdat::handler,ccsds,ptp_header
     if ccsds.gap eq 1 then strct = [fill_nan(strct[0]),strct]
     store_data,self.tname,data=strct, tagnames=self.ttags , append = 1,gap_tag='GAP'
   endif
+  
+  *self.last_data_p = strct
+  if debug(self.dlevel+3) then begin
+    ;printdat,ccsds  
+    hexprint,(*ccsds.pdata)[0:31]
+    
+  endif
+  
 end
  
 

@@ -13,8 +13,8 @@
 ; 
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-04-27 12:44:59 -0700 (Wed, 27 Apr 2016) $
-; $LastChangedRevision: 20935 $
+; $LastChangedDate: 2018-05-03 17:43:13 -0700 (Thu, 03 May 2018) $
+; $LastChangedRevision: 25164 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_hpca_set_metadata.pro $
 ;-
 
@@ -88,6 +88,11 @@ pro mms_hpca_set_metadata, tplotnames, prefix = prefix, fov = fov, anodes = anod
                     prefix + '_hpca_heplusplus_vel_dist_fn'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U++!N Energy (eV)", ztitle='He!U++!N Velocity Distribution (s!U3!N cm!U-6!N)', ysubtitle=ysubtitle_fov
                     prefix + '_hpca_oplus_vel_dist_fn'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U+!N Energy (eV)", ztitle='O!U+!N Velocity Distribution (s!U3!N cm!U-6!N)', ysubtitle=ysubtitle_fov
                     prefix + '_hpca_oplusplus_vel_dist_fn'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U++!N Energy (eV)", ztitle='O!U++!N Velocity Distribution (s!U3!N cm!U-6!N)', ysubtitle=ysubtitle_fov
+                    
+                    ; SITL omni-directional fluxes
+                    prefix + '_hpca_hplus_omni_flux'+suffix: options, tplotnames[vars_idx], ytitle="H!U+!N Flux", ztitle='H!U+!N Flux (cm!U2!N s sr eV)!U-1!N', ysubtitle='[eV]'
+                    prefix + '_hpca_heplusplus_omni_flux'+suffix: options, tplotnames[vars_idx], ytitle="He!U++!N Flux", ztitle='He!U++!N Flux (cm!U2!N s sr eV)!U-1!N', ysubtitle='[eV]'
+                    prefix + '_hpca_oplus_omni_flux'+suffix: options, tplotnames[vars_idx], ytitle="O!U+!N Flux", ztitle='O!U+!N Flux (cm!U2!N s sr eV)!U-1!N', ysubtitle='[eV]'
                     else: ; do nothing
                 endcase
 

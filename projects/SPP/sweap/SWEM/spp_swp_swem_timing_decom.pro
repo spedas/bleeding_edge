@@ -40,7 +40,7 @@ ccsds_data = spp_swp_ccsds_data(ccsds)
 
 
 if ccsds.pkt_size eq 56 then begin
-  dprint,'boot mode ignored',dlevel=3,dwait=30
+  dprint,'boot mode ignored',dlevel=4,dwait=30
   return,0
   values = swap_endian(ulong(ccsds_data,10,11) )
   values2 = uintarr(4) ;  swap_endian(ulong(ccsds_data,448/8,4) )

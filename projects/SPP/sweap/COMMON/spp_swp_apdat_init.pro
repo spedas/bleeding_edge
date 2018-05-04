@@ -19,33 +19,21 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
    ttags = 'SEQN*'
    spp_apdat_info,'340'x,name='swem_crit_hkp', routine='spp_generic_decom',        tname='spp_swem_crit_',  save_flag=save_flag,ttags=ttags,rt_flag=rt_flag 
    spp_apdat_info,'341'x,name='swem_dig_hkp',  routine='spp_swp_swem_dhkp_decom',  tname='spp_swem_dhkp_',  save_flag=save_flag,ttags='*',  rt_flag=rt_flag 
-   spp_apdat_info,'342'x,name='swem_mem_dump', routine='spp_generic_decom',        tname='spp_mem_dump_',   save_flag=save_flag,ttags=ttags,rt_flag=rt_flag
+   spp_apdat_info,'342'x,name='swem_mem_dump', apid_obj='spp_swp_swem_memdump_apdat',  tname='spp_mem_dump_',   save_flag=save_flag,ttags=ttags,rt_flag=rt_flag
    spp_apdat_info,'343'x,name='swem_ana_hkp',  routine='spp_swp_swem_hkp_decom',   tname='spp_swem_ahkp_',  save_flag=save_flag,ttags='*',  rt_flag=rt_flag 
    spp_apdat_info,'344'x,name='swem_event_log',apid_obj='spp_swp_swem_events_apdat', tname='spp_event_log_',  save_flag=save_flag,ttags=ttags,rt_flag=rt_flag 
    spp_apdat_info,'345'x,name='swem_cmd_echo', routine='spp_generic_decom',        tname='spp_cmd_echo_',   save_flag=save_flag,ttags=ttags,rt_flag=rt_flag
    spp_apdat_info,'346'x,name='swem_timing',   routine='spp_swp_swem_timing_decom',tname='spp_swem_timing_',ttags='*',save_flag=save_flag,  rt_flag=rt_flag 
    spp_apdat_info,'347'x,name='Memory Dwell',  routine='',                         tname='spp_swp_347_',    ttags='*',save_flag=save_flag,  rt_flag=rt_flag 
-   if 1 then begin
-      spp_apdat_info,'348'x,name='P2rt',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_348_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'349'x,name='P2',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_349_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'34A'x,name='P3rt',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34A_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'34b'x,name='P3',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34B_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'34c'x,name='P4rt',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34C_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'34d'x,name='P4',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34D_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'34e'x,name='P5',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34E_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'34f'x,name='P8',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34F_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'350'x,name='P8x',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_350_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
-   endif else begin
-      spp_apdat_info,'348'x,name='P1',routine='spp_swp_swem_unwrapper',tname='spp_swp_348_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'349'x,name='P2',routine='spp_swp_swem_unwrapper',tname='spp_swp_349_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'34A'x,name='P3',routine='spp_swp_swem_unwrapper',tname='spp_swp_34A_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'34b'x,name='P4',routine='spp_swp_swem_unwrapper',tname='spp_swp_34B_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'34c'x,name='P5',routine='spp_swp_swem_unwrapper',tname='spp_swp_34C_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'34d'x,name='P6',routine='spp_swp_swem_unwrapper',tname='spp_swp_34D_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'34e'x,name='P7',routine='spp_swp_swem_unwrapper',tname='spp_swp_34E_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'34f'x,name='P8',routine='spp_swp_swem_unwrapper',tname='spp_swp_34F_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
-      spp_apdat_info,'350'x,name='P9',routine='spp_swp_swem_unwrapper',tname='spp_swp_350_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
-   endelse
+   spp_apdat_info,'348'x,name='P2rt',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_348_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+   spp_apdat_info,'349'x,name='P2',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_349_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+   spp_apdat_info,'34A'x,name='P3rt',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34A_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+   spp_apdat_info,'34b'x,name='P3',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34B_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+   spp_apdat_info,'34c'x,name='P4rt',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34C_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+   spp_apdat_info,'34d'x,name='P4',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34D_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+   spp_apdat_info,'34e'x,name='P5',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34E_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+   spp_apdat_info,'34f'x,name='P8',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_34F_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+   spp_apdat_info,'350'x,name='P8x',apid_obj='spp_swp_wrapper_apdat',tname='spp_swp_350_',   ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
 
    
 

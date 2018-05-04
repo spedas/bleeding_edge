@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spi_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-04-28 19:31:32 -0700 (Sat, 28 Apr 2018) $
-; $LastChangedRevision: 25144 $
+; $LastChangedDate: 2018-05-03 15:08:06 -0700 (Thu, 03 May 2018) $
+; $LastChangedRevision: 25162 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
@@ -142,6 +142,33 @@ PRO spp_swp_spi_prod_apdat::prod_32Ex16A, strct
              spec2:strct.anode}
    if self.save_raw && self.prod_32Ex16A then $
     self.prod_32Ex16A.append,strct2
+END
+
+
+;;-----------------------------------------------;;
+;;                   256  ???                     ;;
+;;-----------------------------------------------;;
+PRO spp_swp_spi_prod_apdat::proc_256, strct
+  pname = '256'
+  cnts  = *strct.pdata
+  if n_elements(cnts) ne 256 then begin
+    dprint,'Bad size: '+$
+      string(n_elements(cnts))+ $
+      ' instead of 512'
+    return
+  endif
+  cnts  = reform(cnts,16,16,/overwrite)   ; this may not be correct multiple
+  tot = total(cnts)
+  strct.nrg_spec   = total(cnts,2)
+  strct.def_spec   = tot
+  strct.mass_spec  = tot
+  strct.anode_spec = total(cnts,1)
+ ; strct2 = {gap:strct.gap,$
+ ;   time:strct.time,$
+ ;   spec1:strct.nrg,$
+ ;   spec2:strct.anode}
+  if self.save_raw && self.prod_256 then $
+    self.prod_256.append,strct
 END
 
 
@@ -362,7 +389,6 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,ptp_header
    ENDELSE 
 
    str = { $
-
          time:        ccsds.time,$
          apid:        ccsds.apid,$
          time_delta:  ccsds.time_delta,$
@@ -371,17 +397,13 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,ptp_header
          seq_group:   ccsds.seq_group,$
          pkt_size:    ccsds.pkt_size,$
          gap:         ccsds.gap,$
-
          f0:          f0,$
          datasize:    ns,$
          ndat:        ndat,$
          mode1:       mode1,$
          mode2:       mode2,$
          log_flag:    log_flag,$
-         status_flag: status_flag,$
-
-         moms:        lonarr(104),$
-   
+         status_flag: status_flag,$   
          cnts:        tcnts,$
          peak_bin:    peak_bin,$
          nrg_spec:    fltarr(32),$
@@ -400,13 +422,17 @@ END
 PRO spp_swp_spi_prod_apdat::handler,ccsds,ptp_header
 
    strct = self.decom(ccsds)
+   if debug(self.dlevel+3) then begin
+      printdat,strct
+      print,strct.apid,strct.datasize
+   endif
    ns=1
    IF keyword_set(strct) && ns gt 0 THEN BEGIN
       CASE strct.ndat OF
          16:self.prod_16A,             strct
          32:self.prod_32E,             strct
          128:self.prod_08Dx16A,        strct
-         256:self.prod_08Dx32E,        strct
+;         256:self.proc_256,        strct
          ;;256: self.prod_16Ax16M,       strct
          512:self.prod_32Ex16M,        strct
          ;;512:self.prod_32Ex16A,        strct
@@ -438,6 +464,7 @@ FUNCTION spp_swp_spi_prod_apdat::Init,apid,name,_EXTRA=ex
    self.prod_16A            = obj_new('dynamicarray',name='prod_16A')
    self.prod_08Dx32E        = obj_new('dynamicarray',name='prod_08Dx32E')
    self.prod_16Ax16M        = obj_new('dynamicarray',name='prod_16Ax16M')
+   self.prod_256            = obj_new('dynamicarray',name='prod_16Ax16M')
    self.prod_32Ex16A        = obj_new('dynamicarray',name='prod_32Ex16A')
    self.prod_32Ex16M        = obj_new('dynamicarray',name='prod_32Ex16M')
    self.prod_08Dx32Ex16A    = obj_new('dynamicarray',name='prod_08Dx32Ex16A')
@@ -451,6 +478,7 @@ PRO spp_swp_spi_prod_apdat::Clear
    self->spp_gen_apdat::Clear
    self.prod_16A.array            = !null
    self.prod_16Ax16M.array        = !null
+   self.prod_256.array        = !null
    self.prod_08Dx32E.array        = !null
    self.prod_32Ex16A.array        = !null
    self.prod_32Ex16M.array        = !null
@@ -469,6 +497,7 @@ PRO spp_swp_spi_prod_apdat__define
            prod_16A:            obj_new(),$
            prod_08Dx32E:        obj_new(),$
            prod_16Ax16M:        obj_new(),$
+           prod_256:            obj_new(),$
            prod_32Ex16A:        obj_new(),$
            prod_32Ex16M:        obj_new(),$
            prod_08Dx32Ex16A:    obj_new(),$

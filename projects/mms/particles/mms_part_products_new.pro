@@ -105,8 +105,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-24 16:23:53 -0700 (Tue, 24 Apr 2018) $
-;$LastChangedRevision: 25106 $
+;$LastChangedDate: 2018-05-03 09:13:04 -0700 (Thu, 03 May 2018) $
+;$LastChangedRevision: 25158 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products_new.pro $
 ;-
 pro mms_part_products_new, $
@@ -551,10 +551,9 @@ pro mms_part_products_new, $
       clean_data.theta = 90-clean_data.theta ;convert back to latitude for moments calc
       ;re-add required fields stripped by FAC transform (should fix there if feature becomes standard)
       if undefined(sc_pot_data) then scpot=0.0 else scpot = sc_pot_data[i]
-      clean_data = create_struct('charge',dist.charge,'magf',[0,0,0.],'sc_pot',scpot,clean_data)
+      if ~keyword_set(no_regrid) then clean_data = create_struct('charge',dist.charge,'magf',[0,0,0.],'sc_pot',scpot,clean_data)
       spd_pgs_moments, clean_data, moments=fac_moments, sc_pot_data=sc_pot_data, index=i, _extra=ex
     endif 
-    
   endfor
  
  

@@ -10,8 +10,8 @@
 ; 
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-04-26 13:58:47 -0700 (Thu, 26 Apr 2018) $
-; $LastChangedRevision: 25127 $
+; $LastChangedDate: 2018-05-03 09:36:17 -0700 (Thu, 03 May 2018) $
+; $LastChangedRevision: 25161 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_fpi_ut__define.pro $
 ;-
 
@@ -371,19 +371,19 @@ function mms_load_fpi_ut::test_load_local_file_badversion
   return, 1
 end
 
-; the following tests loading the ACR burst mode data (that doesn't exist at the SDC yet)
-; and tests /center_measurement functionality; these data files will need to be saved
-; on your local machine before running these tests
-function mms_load_fpi_ut::test_acr_brst_data
-  mms_load_fpi, level='acr', trange=['2016-12-09', '2016-12-10'], probe=1, data_rate='brst'
-  mms_load_fpi, level='acr', trange=['2016-12-09', '2016-12-10'], probe=1, data_rate='brst', suffix='centered', /center_measurement
-  get_data, 'mms1_des_bulkv_dbcs_brst', data=d
-  get_data, 'mms1_dis_bulkv_dbcs_brstcentered', data=c
-  assert, spd_data_exists('mms1_des_bulkv_dbcs_brst mms1_dis_bulkv_dbcs_brstcentered', '2016-12-09', '2016-12-10'), 'Problem checking /center_measurement with ACR brst files'
-  assert, time_string(c.X[0], tformat='YYYY-MM-DD/hh:mm:ss.fff') eq '2016-12-09/08:58:54.110', 'Problem checking /center_measurement with ACR brst files'
-  assert, time_string(d.X[0], tformat='YYYY-MM-DD/hh:mm:ss.fff') eq '2016-12-09/08:58:54.005', 'Problem checking /center_measurement with ACR brst files'
-  return, 1
-end
+; the following tests loading the ACR burst mode data 
+; and tests /center_measurement functionality
+; 3May2018: doesn't work because of incorrect metadata on the CDF files; should be re-enabled when fixed
+;function mms_load_fpi_ut::test_acr_brst_data
+;  mms_load_fpi, level='l2', trange=['2016-12-09', '2016-12-10'], probe=1, data_rate='brst', datatype='des-qmoms'
+;  mms_load_fpi, level='l2', trange=['2016-12-09', '2016-12-10'], probe=1, data_rate='brst', suffix='centered', /center_measurement, datatype='des-qmoms'
+;  get_data, 'mms1_des_bulkv_dbcs_brst', data=d
+;  get_data, 'mms1_des_bulkv_dbcs_brstcentered', data=c
+;  assert, spd_data_exists('mms1_des_bulkv_dbcs_brst mms1_des_bulkv_dbcs_brstcentered', '2016-12-09', '2016-12-10'), 'Problem checking /center_measurement with ACR brst files'
+;  assert, time_string(c.X[0], tformat='YYYY-MM-DD/hh:mm:ss.fff') eq '2016-12-09/08:58:54.110', 'Problem checking /center_measurement with ACR brst files'
+;  assert, time_string(d.X[0], tformat='YYYY-MM-DD/hh:mm:ss.fff') eq '2016-12-09/08:58:54.005', 'Problem checking /center_measurement with ACR brst files'
+;  return, 1
+;end
 
 ; the following tests for a regression when the user runs
 ; mms_get_fpi_dist on a burst interval with gaps

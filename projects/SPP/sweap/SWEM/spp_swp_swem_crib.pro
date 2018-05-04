@@ -89,9 +89,18 @@ path = 'spp/data/sci/sweap/prelaunch/gsedata/realtime/hires1/swem/YYYY/MM/DD/spp
 ptpfiles = spp_file_retrieve(path,trange=trange,/hourly_names)
 spp_ptp_file_read, ptpfiles
 
+trange = ['2018-04-30/18:19:15', '2018-04-30/19:16:50']  ; compression testing
 
-trange = systime(1) + [-1,0] * 3600.
+trange = systime(1) + [-10,0] * 3600.
+dprint,setd=2
 path =  'spp/data/sci/sweap/prelaunch/gsedata/realtime/cal/swem/YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
-ptpfiles = spp_file_retrieve(path,trange= systime(1) + [-3,0] * 3600.,/hourly_names)
+ptpfiles = spp_file_retrieve(path,trange= trange,/hourly_names)
 spp_ptp_file_read, ptpfiles
+
+dprint,setd=4
+
+spp_init_realtime,/swem,/cal,/exec
+
+spp_swp_tplot,/setlim,'swem'
+
 
