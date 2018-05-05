@@ -66,8 +66,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-01-17 13:01:32 -0800 (Wed, 17 Jan 2018) $
-; $LastChangedRevision: 24536 $
+; $LastChangedDate: 2018-05-04 16:12:16 -0700 (Fri, 04 May 2018) $
+; $LastChangedRevision: 25169 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -366,8 +366,9 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
   if (size(a1,/type) eq 8) then begin
     tmin = min(a1.time, max=tmax)
     tsp = [tsp, tmin, tmax]
+    n_a1 = n_elements(a1)
 
-    if (n_elements(a2) gt 1L) then begin
+    if (n_a1 gt 1L) then begin
       dca1 = a1.npkt - shift(a1.npkt,1)
       dta1 = a1.time - shift(a1.time,1)
       store_data,'dca1',data={x:a1[1:*].time, y:dca1[1:*]}
@@ -386,6 +387,32 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       pdC = [pdC,'dca1']
       pdT = [pdT,'dta1']
       TClab[2] = 'A1'
+    
+      if (doburst) then begin
+        bname = 'swe_a1_bar'
+        y = replicate(0.2,n_a1,2)
+        indx = where(dta1 gt 32D, count)
+        if (count gt 0L) then begin
+          y[indx,*] = !values.f_nan
+          y[(indx-1L) > 0L,*] = !values.f_nan
+        endif
+        y[0L,*] = !values.f_nan
+        y[n_a1-1L,*] = !values.f_nan
+        store_data,bname,data={x:a1.time, y:y, v:[0,1]}
+        ylim,bname,0,1,0
+        zlim,bname,0,1,0
+        options,bname,'spec',1
+        options,bname,'panel_size',0.05
+        options,bname,'ytitle',''
+        options,bname,'yticks',1
+        options,bname,'yminor',1
+        options,bname,'no_interp',1
+        options,bname,'xstyle',4
+        options,bname,'ystyle',4
+        options,bname,'no_color_scale',1
+;       pans = [pans, bname]
+      endif
+
     endif
   endif
 
