@@ -45,8 +45,8 @@
 ;                      This will force delivery to the SDC at midnight.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-17 16:16:07 -0800 (Sat, 17 Feb 2018) $
-; $LastChangedRevision: 24734 $
+; $LastChangedDate: 2018-05-05 15:10:09 -0700 (Sat, 05 May 2018) $
+; $LastChangedRevision: 25172 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_catalog.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -165,6 +165,7 @@ pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat
         t1 = time_double(yyyy + '-' + mm)
         t2 = time_double(yyyy + '-' + nm)
         files = file_retrieve(fname,/no_server,last_version=last,trange=[t1,t2])
+        chksum = file_dirname(files) + '/' + file_basename(files,'.cdf') + '.md5'
         finfo = file_info(files)
         valid = where((finfo.exists and (finfo.ctime ge ctime)), nvalid)
         if (nvalid gt 0) then begin
@@ -178,8 +179,18 @@ pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat
             dat[k].cat[i,j].files[0:(nvalid-1)] = files[valid]
             dat[k].cat[i,j].nfiles = nvalid
             nfound += nvalid
-            if (tflg) then for m=0,(nvalid-1) do spawn, 'touch ' + files[valid[m]]
-            if (dflg) then for m=0,(nvalid-1) do spawn, 'cp ' + files[valid[m]] + ' ' + drop_dir
+            if (tflg) then begin
+              for m=0,(nvalid-1) do begin
+                spawn, 'touch ' + files[valid[m]]
+                spawn, 'touch ' + chksum[valid[m]]
+              endfor
+            endif
+            if (dflg) then begin
+              for m=0,(nvalid-1) do begin
+                file_copy, files[valid[m]], drop_dir, /overwrite, /verbose
+                file_copy, chksum[valid[m]], drop_dir, /overwrite, /verbose
+              endfor
+            endif
           endif
         endif
       endfor
