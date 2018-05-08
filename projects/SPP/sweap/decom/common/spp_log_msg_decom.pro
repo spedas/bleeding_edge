@@ -19,7 +19,7 @@ function spp_log_msg_decom,ccsds, ptp_header=ptp_header, apdat=apdat,dlevel=dlev
  ; time=ccsds.time
   ccsds_data = spp_swp_ccsds_data(ccsds)  
  ; printdat,apdat
-  if debug(apdat.dlevel+3) then begin
+  if debug(apdat.dlevel+4) then begin
      printdat,ccsds
      hexprint,ccsds_data
   endif
@@ -30,7 +30,7 @@ function spp_log_msg_decom,ccsds, ptp_header=ptp_header, apdat=apdat,dlevel=dlev
   endif
   msg = string(bstr)
   dprint,dlevel=apdat.dlevel+2,time_string(time)+  ' "'+msg+'"'
-  str={time:time,seq:ccsds.seqn,size:ccsds.pkt_size,msg:msg}
+  str={time:time,seqn:ccsds.seqn,size:ccsds.pkt_size,msg:msg}
   return,str
 
 end

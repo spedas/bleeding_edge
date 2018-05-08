@@ -1,21 +1,22 @@
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-04-20 12:18:10 -0700 (Fri, 20 Apr 2018) $
-; $LastChangedRevision: 25092 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-05-06 21:39:00 -0700 (Sun, 06 May 2018) $
+; $LastChangedRevision: 25173 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_data_select.pro $
 
-
+;  This routine extracts a single byte or uint or ulong or ulong64 from an array of bytes
+;   Words can cross byte boundaries.  If items don't cross byte boundaries then it is faster to access bytes directly
 
 
 function spp_swp_data_select,bytearray,startbit,nbits
 
-  startbyte = startbit / 8; + 2
+  startbyte = startbit / 8               
   startshft = startbit mod 8
   endbyte   = (startbit+nbits-1) / 8
-  endshft  = (startbit+nbits) mod 8
+  endshft  = 7 -  ( (startbit+nbits-1) mod 8)
   nbytes = endbyte - startbyte +1
-  v=0UL
-  mask = 2u ^ (8-startshft) - 1
-;  dprint,startbyte,startshft,endbyte,endshft,nbytes,mask
+  v=0ULL
+  mask =  ishft(1u,8-startshft) - 1      ;2uL ^ (8-startshft) - 1
+;  dprint,dlevel=2,startbyte,startshft,endbyte,endshft,nbytes,mask
   for i = 0,nbytes-1 do begin
     v = ishft(v,8) + bytearray[startbyte+i]
     if mask ne 0 then begin
@@ -31,7 +32,7 @@ function spp_swp_data_select,bytearray,startbit,nbits
     4:    v = ulong(v)
     6:    v = ulong64(v)   
     8 :   v = ulong64(v)   
-    else:  dprint,'error',nbytes
+    else:  dprint,dlevel=2,'Error',nbytes
   endcase
   return,v
 end

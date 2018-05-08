@@ -1,6 +1,6 @@
   ; $LastChangedBy: davin-mac $
-  ; $LastChangedDate: 2018-03-22 09:32:25 -0700 (Thu, 22 Mar 2018) $
-  ; $LastChangedRevision: 24937 $
+  ; $LastChangedDate: 2018-05-07 14:19:03 -0700 (Mon, 07 May 2018) $
+  ; $LastChangedRevision: 25176 $
   ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_ptp_file_read.pro $
   ; adding code
 
@@ -77,7 +77,7 @@ pro spp_ptp_file_read,files,dwait=dwait,no_products=no_products,no_clear=n0_clea
   dt = systime(1)-t0
   dprint,format='("Finished loading in ",f0.1," seconds")',dt
   
-  if not keyword_set(no_clear) then del_data,'*'
+  if not keyword_set(no_clear) then del_data,'spp_*'  ; store_data,/clear,'*'
   if oldmethod then begin
     spp_apid_data,/finish
     spp_apid_data,/rt_flag    ; re-enable realtime

@@ -63,6 +63,8 @@
 ;
 ;       PXLIM:         X limits (Volts) for diagnostic plot.
 ;
+;       PYLIM:         Y limits (Volts) for diagnostic plot.
+;
 ;       MB:            Perform a Maxwell-Boltzmann fit to determine density and 
 ;                      temperature.  Uses a moment calculation to determine the
 ;                      halo density, which is defined as the high energy residual
@@ -90,6 +92,9 @@
 ;
 ;       SSCALE:        Scale factor for secondary electron spectrum.  Default = 5.
 ;                      This scales the secondary electron production efficiency.
+;                      A better value might be ~0.5.  This can be estimated by comparing
+;                      with SWIA densities.  Look for consistent density ratio.  Also,
+;                      shape of energy spectrum.
 ;
 ;       DDD:           Create an energy spectrum from the nearest 3D spectrum and
 ;                      plot for comparison.
@@ -110,6 +115,10 @@
 ;
 ;       RAINBOW:       With NOERASE, overplot spectra using up to 6 different colors.
 ;
+;       RCOLORS:       Instead of the default rainbow colors, use these instead.
+;                      Any number of colors is allowed.  The routine cycles through 
+;                      the colors as needed, if there are many spectra to plot.
+;
 ;       POPEN:         Set this to the name of a postscript file for output.
 ;
 ;       WSCALE:        Window size scale factor.
@@ -124,9 +133,12 @@
 ;                      format accepted by time_double.  (This disables the
 ;                      interactive time range selection.)
 ;
+;       TWOT:          Compare energy of peak energy flux and temperature of 
+;                      Maxwell-Boltzmann fit. (Nominally, E_peak = 2*T)
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-08-04 12:15:25 -0700 (Fri, 04 Aug 2017) $
-; $LastChangedRevision: 23757 $
+; $LastChangedDate: 2018-05-07 11:51:49 -0700 (Mon, 07 May 2018) $
+; $LastChangedRevision: 25175 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -140,7 +152,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
                    xrange=xrange,yrange=frange,sscale=sscale, popen=popen, times=times, $
                    flev=flev, pylim=pylim, k_e=k_e, peref=peref, error_bars=error_bars, $
                    trange=tspan, tsmo=tsmo, wscale=wscale, cscale=cscale, voffset=voffset, $
-                   endx=endx
+                   endx=endx, twot=twot, rcolors=rcolors
 
   @mvn_swe_com
   @mvn_scpot_com
@@ -155,8 +167,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   if (size(Espan,/type) eq 0) then mvn_scpot_defaults
   if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
 
-  if not keyword_set(archive) then aflg = 0 else aflg = 1
-  if keyword_set(burst) then aflg = 1
+  aflg = keyword_set(archive) or keyword_set(burst)
   if not keyword_set(units) then units = 'eflux'
   if keyword_set(sum) then npts = 2 else npts = 1
   if keyword_set(tsmo) then begin
@@ -165,20 +176,26 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     delta_t = double(tsmo)/2D
   endif else dosmo = 0
   if (size(error_bars,/type) eq 0) then ebar = 1 else ebar = keyword_set(error_bars)
-  if keyword_set(ddd) then dflg = 1 else dflg = 0
-  if keyword_set(noerase) then oflg = 0 else oflg = 1
+  dflg = keyword_set(ddd)
+  oflg = ~keyword_set(noerase)
   if (size(scp,/type) eq 0) then scp = !values.f_nan else scp = float(scp[0])
-  if (size(fixy,/type) eq 0) then fixy = 1
-  if keyword_set(fixy) then fflg = 1 else fflg = 0
-  if keyword_set(rainbow) then rflg = 1 else rflg = 0
-  if keyword_set(sec) then dosec = 1 else dosec = 0
+  if (size(fixy,/type) eq 0) then fflg = 1 else fflg = keyword_set(fixy)
+  rflg = keyword_set(rainbow)
+  dosec = keyword_set(sec)
+  dobkg = keyword_set(bkg)
   if not keyword_set(sscale) then sscale = 5D else sscale = double(sscale[0])
-  if keyword_set(bkg) then dobkg = 1 else dobkg = 0
-  if keyword_set(shiftpot) then spflg = 1 else spflg = 0
+  spflg = keyword_set(shiftpot)
   if (n_elements(xrange) ne 2) then xrange = [1.,1.e4]
   if not keyword_set(wscale) then wscale = 1.
   if not keyword_set(cscale) then cscale = 1.
   if not keyword_set(voffset) then voffset = 1.
+  if not keyword_set(rcolors) then begin
+    ncol = 6
+    rcol = indgen(ncol) + 1
+  endif else begin
+    ncol = n_elements(rcolors)
+    rcol = fix(rcolors)
+  endelse
   if (size(popen,/type) eq 7) then begin
     psflg = 1
     psname = popen[0]
@@ -191,7 +208,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   endelse
 
   tflg = 0
-  if keyword_set(tplot) then begin
+  if (keyword_set(tplot) or (n_elements(mvn_swe_engy) lt 2L)) then begin
     get_data,'swe_a4',data=dat,limits=lim,index=i
     if (i gt 0) then begin
       str_element,lim,'ztitle',units_name,success=ok
@@ -200,7 +217,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       tflg = 1
     endif else print,'No SPEC data found in tplot.'
   endif
-  
+
   if (tflg and ebar) then begin
     print,"Can't plot error bars with TPLOT option."
     ebar = 0
@@ -429,7 +446,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     if (ebar) then errplot,x,(y-dy)>tiny,y+dy,width=0
     
     if (rflg) then begin
-      col = (nplot mod 6) + 1
+      col = rcol[nplot mod ncol]
       oplot,x,y,psym=psym,color=col
       errplot,x,(y-dy)>tiny,y+dy,width=0,color=col
     endif
@@ -487,14 +504,16 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       dif_dat.data = (spec.data - sec_dat.data) > 1.
       oplot,sec_dat.energy[kndx],sec_dat.data[kndx],color=5,line=2
       oplot,dif_dat.energy,dif_dat.data,color=5,psym=10
-      
+
+      xyouts,xs,ys,string(sscale, format='("SSCL = ",f5.2)'),charsize=csize1,/norm
+      ys -= dys
+
       str_element, spec, 'sec_spec', sec_dat.data, /add  ; secondary spectrum
       str_element, spec, 'dif_spec', dif_dat.data, /add  ; primary spectrum
     endif
 
 ; Background counts resulting from the wings of the energy response function.
-; Empirical: based on fits to solar wind core
-; Experimental.
+; Empirical: based on fits to solar wind core.  Experimental.
 
     if (dobkg) then begin
       odat = spec
@@ -595,10 +614,18 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     endif
     
     if (mb) then begin
-      E1 = spec.energy
-      F1 = spec.data - spec.bkg
+      if (dosec) then begin
+        E1 = dif_dat.energy
+        F1 = dif_dat.data - dif_dat.bkg
+        counts = dif_dat
+        dcol = 5
+      endif else begin
+        E1 = spec.energy
+        F1 = spec.data - spec.bkg
+        counts = spec
+        dcol = 4
+      endelse
       
-      counts = spec
       mvn_swe_convert_units, counts, 'counts'
       cnts = counts.data
       sig2 = counts.var  ; variance w/ digitization noise
@@ -666,9 +693,11 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       col = 4
       oplot,E1[jndx],swe_maxbol(E1[jndx],par=p),thick=2,color=col,line=1
       oplot,E1[imb],swe_maxbol(E1[imb],par=p),color=col,thick=2
-      xyouts,xs,ys,string(N_tot,format='("N = ",f5.2)'),color=col,charsize=csize1,/norm
+      if keyword_set(twot) then oplot,2.*[p.T,p.T],yrange,line=2,color=5
+
+      xyouts,xs,ys,string(N_tot,format='("N = ",f5.2)'),color=dcol,charsize=csize1,/norm
       ys -= dys
-      xyouts,xs,ys,string(p.T,format='("T = ",f5.2)'),color=col,charsize=csize1,/norm
+      xyouts,xs,ys,string(p.T,format='("T = ",f5.2)'),color=dcol,charsize=csize1,/norm
       ys -= dys
       xyouts,xs,ys,string(p.pot,format='("V = ",f5.2)'),color=col,charsize=csize1,/norm
       ys -= dys
@@ -700,7 +729,13 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     endif
 
     if (mom) then begin
-      eflux = spec
+      if (dosec) then begin
+        eflux = dif_dat
+        dcol = 1
+      endif else begin
+        eflux = spec
+        dcol = 1
+      endelse
       mvn_swe_convert_units, eflux, 'eflux'
       E1 = eflux.energy
       F1 = eflux.data - eflux.bkg
@@ -722,7 +757,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         n_e--
       endelse
 
-      oplot,spec.energy[j],spec.data[j],color=1,psym=10
+      oplot,eflux.energy[j],eflux.data[j],color=1,psym=10
 
       prat = (pot/E1[j]) < 1.
       Enorm = c3*dE[j]*sqrt(1. - prat)*(E1[j]^(-1.5))
@@ -744,9 +779,9 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       tsig = temp*sqrt((N_sig/N_tot)^2. + (psig/pres)^2.)
       print,"Temperature = ",temp," +/- ",tsig,format='(a,f6.3,a,f6.3)'
 
-      xyouts,xs,ys,string(N_tot,format='("N = ",f6.3)'),color=1,charsize=csize1,/norm
+      xyouts,xs,ys,string(N_tot,format='("N = ",f6.3)'),color=dcol,charsize=csize1,/norm
       ys -= dys
-      xyouts,xs,ys,string(temp,format='("T = ",f6.2)'),color=1,charsize=csize1,/norm
+      xyouts,xs,ys,string(temp,format='("T = ",f6.2)'),color=dcol,charsize=csize1,/norm
       ys -= dys
       xyouts,xs,ys,string(pot,format='("V = ",f6.2)'),color=col,charsize=csize1,/norm
       ys -= dys
@@ -854,13 +889,14 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         xyouts,xs,ys,string(dE,format='("dE = ",f6.2)'),charsize=csize1,color=scol,/norm
         ys -= dys
 
-        xyouts,xs,ys,string(dEmax,format='("dEmax = ",f6.2)'),charsize=csize1,/norm
-        ys -= dys
-
-        xyouts,xs,ys,string(thresh,format='("thresh = ",f6.2)'),charsize=csize1,/norm
-        ys -= dys
-
       endif
+
+      xyouts,xs,ys,string(dEmax,format='("dEmax = ",f6.2)'),charsize=csize1,/norm
+      ys -= dys
+
+      xyouts,xs,ys,string(thresh,format='("thresh = ",f6.2)'),charsize=csize1,/norm
+      ys -= dys
+
     endif
 
 ; Print out housekeeping in another window

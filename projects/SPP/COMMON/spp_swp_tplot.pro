@@ -28,7 +28,7 @@ if keyword_set(setlim) then begin
   options,'*_MSG',tplot_routine='strplot'
 
 
-  tplot,var_label=tnames('manip*_POS *DAC_DEFL Igun_VOLTS Igun_CURRENT')
+  ;tplot,var_label=tnames('manip*_POS *DAC_DEFL Igun_VOLTS Igun_CURRENT')
   !y.style=3
   dprint,setd=2
   store_data,'APID',data='APIDS_*'
@@ -75,7 +75,7 @@ if keyword_set(name) then begin
     'SB_COVER': tplot, '*spb_*ACT*CVR* *spb_*ACTSTAT*FLAG *spb*CMD*REC', add = add
  ;   'SA_COVER': tplot, '*spa_*ACT*CVR* *spa_*ACTSTAT*FLAG *spa*CMD*REC', add = add
     'SWEM': tplot,'spp_swem_dhkp_*WRADDR APID spp_swem_dhkp_SW_CMDCOUNTER',add=add
-    'TIMING': tplot,'spp_swem_timing_'+['DRIFT_DELTA','CLKS_PER_PPS_DELTA','SCSUBSECSATPPS']
+    'TIMING': tplot,'spp_swem_timing_'+['TIME_DELTA','SAMPLE_MET_DELTA DRIFT_DELTA','CLKS_PER_PPS_DELTA']
     'TEMP': tplot,'*TEMP'
     'TEMPS': tplot,'*ALL_TEMPS
     'CRIT':tplot,'*SF1_ANODE_SPEC *ACC_? *22_C *HVOUT *RAIL*

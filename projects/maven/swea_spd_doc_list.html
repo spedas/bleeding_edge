@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat May  5 18:16:25 2018.<P>
+<STRONG>Last modified: </STRONG>Mon May  7 18:16:26 2018.<P>
  
 <HR>
  
@@ -5661,6 +5661,8 @@ KEYWORDS:
 
        PXLIM:         X limits (Volts) for diagnostic plot.
 
+       PYLIM:         Y limits (Volts) for diagnostic plot.
+
        MB:            Perform a Maxwell-Boltzmann fit to determine density and 
                       temperature.  Uses a moment calculation to determine the
                       halo density, which is defined as the high energy residual
@@ -5688,6 +5690,9 @@ KEYWORDS:
 
        SSCALE:        Scale factor for secondary electron spectrum.  Default = 5.
                       This scales the secondary electron production efficiency.
+                      A better value might be ~0.5.  This can be estimated by comparing
+                      with SWIA densities.  Look for consistent density ratio.  Also,
+                      shape of energy spectrum.
 
        DDD:           Create an energy spectrum from the nearest 3D spectrum and
                       plot for comparison.
@@ -5708,6 +5713,10 @@ KEYWORDS:
 
        RAINBOW:       With NOERASE, overplot spectra using up to 6 different colors.
 
+       RCOLORS:       Instead of the default rainbow colors, use these instead.
+                      Any number of colors is allowed.  The routine cycles through 
+                      the colors as needed, if there are many spectra to plot.
+
        POPEN:         Set this to the name of a postscript file for output.
 
        WSCALE:        Window size scale factor.
@@ -5722,9 +5731,12 @@ KEYWORDS:
                       format accepted by time_double.  (This disables the
                       interactive time range selection.)
 
+       TWOT:          Compare energy of peak energy flux and temperature of 
+                      Maxwell-Boltzmann fit. (Nominally, E_peak = 2*T)
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-08-04 12:15:25 -0700 (Fri, 04 Aug 2017) $
- $LastChangedRevision: 23757 $
+ $LastChangedDate: 2018-05-07 11:51:49 -0700 (Mon, 07 May 2018) $
+ $LastChangedRevision: 25175 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12

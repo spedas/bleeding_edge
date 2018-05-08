@@ -31,7 +31,7 @@ pro spp_gen_apdat_stats::finish,append=append,tres=tres
        nbytes = average_hist(/ret_total,d.pkt_size,d.time,binval=ibins,xbins=tbins,binsize=double(tres),/shift)
        wnz = where((nbytes + shift(nbytes,1) + shift(nbytes,-1)) ne 0,nwnz)
        if nwnz gt 0 then    store_data,'spp_swp_data_rate_TOT',tbins[wnz],float(nbytes[wnz])/tres
-       if debug(3) then    printdat,d,d.pkt_size,d.time,ibins,nbytes,tbins,wnz
+       if debug(3,msg='debug') then    printdat,d,d.pkt_size,d.time,ibins,nbytes,tbins,wnz
        ibins_c = replicate(-1L,n_elements(nbytes))
        ibins_c[wnz] = lindgen(nwnz)
        

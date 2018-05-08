@@ -10,17 +10,6 @@ store_data,'foo2',data={x:d.x,y:dc}
 
 end
 
-;
-;function spp_swp_data_select,bytearray,startbit,nbits
-;case nbits of 
-;8:    v =  bytearray[startbit/8]
-;16:   v = (swap_endian( uint(bytearray,startbit/8,1) ,/swap_if_little_endian ))[0]
-;32:   v = (swap_endian(ulong(bytearray,startbit/8,1) ,/swap_if_little_endian ))[0]
-;else:  dprint,'error'  
-;endcase
-;return,v
-;end
-
 
 
 function spp_swp_swem_timing_decom,ccsds,ptp_header=ptp_header,apdat=apdat
@@ -35,9 +24,7 @@ endif
 
 ccsds_data = spp_swp_ccsds_data(ccsds)
 
-;if typename(ccsds) eq 'CCSDS_FORMAT' then data = *ccsds.pdata  else data=ccsds.data
-;data = ccsds.data
-
+;printdat,ccsds.pkt_size
 
 if ccsds.pkt_size eq 56 then begin
   dprint,'boot mode ignored',dlevel=4,dwait=30

@@ -132,7 +132,8 @@ end
  
 pro spp_gen_apdat::finish
   if self.npkts ne 0 then self.print ,dlevel=3,'finish'
-  store_data,self.tname,data=self.data.array, tagnames=self.ttags,  gap_tag='GAP',verbose=0
+  if keyword_set(self.data.array) then   store_data,self.tname,data=self.data.array, tagnames=self.ttags,  gap_tag='GAP',verbose=0
+  self.process_time = systime(1)
 end
  
 
@@ -189,6 +190,7 @@ void = {spp_gen_apdat, $
   name: '', $
   nbytes: 0UL,  $
   npkts: 0UL,  $
+  process_time: 0d, $
   lost_pkts: 0UL,  $
   drate: 0. , $
   rt_flag: 0b, $
