@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon May  7 18:16:26 2018.<P>
+<STRONG>Last modified: </STRONG>Tue May  8 18:16:24 2018.<P>
  
 <HR>
  
@@ -25,6 +25,14 @@ This page was created by the IDL library routine
 <br>stores the LMAG static memory
 <LI><A HREF="#KGY_READ_LMAG">KGY_READ_LMAG</A>
 <br>reads in Kaguya MAP/LMAG files
+<LI><A HREF="#KGY_SVM_COM">KGY_SVM_COM</A>
+<br>stores SVM data
+<LI><A HREF="#KGY_SVM_GET">KGY_SVM_GET</A>
+<br>Returns model lunar B vector computed from SVM (Tsunakawa et al., 2015)
+<LI><A HREF="#KGY_SVM_LOAD">KGY_SVM_LOAD</A>
+<br>Downloads and reads in SVM data files
+<LI><A HREF="#KGY_SVM_PRED">KGY_SVM_PRED</A>
+<br>Computes crustal B at Kaguya positions from SVM (Tsunakawa et al., 2015)
 <br>
 </UL><P>
 <HR>
@@ -94,6 +102,7 @@ This page was created by the IDL library routine
 <A NAME="KGY_READ_LMAG">
 <H2>KGY_READ_LMAG</H2></A>
 <A HREF="#KGY_LMAG_COM">[Previous Routine]</A>
+<A HREF="#KGY_SVM_COM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -123,5 +132,107 @@ This page was created by the IDL library routine
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/lmag/kgy_read_lmag.pro $
 </PRE><P>
 <STRONG>(See <A href="lmag/kgy_read_lmag.pro">projects/kaguya/map/lmag/kgy_read_lmag.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="KGY_SVM_COM">
+<H2>KGY_SVM_COM</H2></A>
+<A HREF="#KGY_READ_LMAG">[Previous Routine]</A>
+<A HREF="#KGY_SVM_GET">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+       kgy_svm_com
+ PURPOSE:
+       stores SVM data
+ CREATED BY:
+       Yuki Harada on 2018-05-02
+
+ $LastChangedBy: haraday $
+ $LastChangedDate: 2018-05-08 16:47:27 -0700 (Tue, 08 May 2018) $
+ $LastChangedRevision: 25186 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/lmag/kgy_svm_com.pro $
+</PRE><P>
+<STRONG>(See <A href="lmag/kgy_svm_com.pro">projects/kaguya/map/lmag/kgy_svm_com.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="KGY_SVM_GET">
+<H2>KGY_SVM_GET</H2></A>
+<A HREF="#KGY_SVM_COM">[Previous Routine]</A>
+<A HREF="#KGY_SVM_LOAD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ FUNCTION:
+       kgy_svm_get
+ PURPOSE:
+       Returns model lunar B vector computed from SVM (Tsunakawa et al., 2015)
+       Works in selenographic coordinates
+ CALLING SEQUENCE:
+       bvec = kgy_svm_get(rvec)
+ INPUT:
+       rvec: 3xN array containing X, Y, Z in km
+ OUTPUT:
+       bvec: 3xN array containing Bx, By, Bz in nT
+ CREATED BY:
+       Yuki Harada on 2018-05-02
+       Modified from Bcal.f90 written by H. Tsunakawa
+       The original version is available at
+       http://www.geo.titech.ac.jp/lab/tsunakawa/Kaguya_LMAG
+ REFERENCE:
+       Tsunakawa, H., F. Takahashi, H. Shimizu, H. Shibuya, and M. Matsushima (2015), Surface vector mapping of magnetic anomalies over the Moon using Kaguya and Lunar Prospector observations, J. Geophys. Res. Planets, 120, 1160–1185, doi:10.1002/2014JE004785.
+
+ $LastChangedBy: haraday $
+ $LastChangedDate: 2018-05-08 16:47:27 -0700 (Tue, 08 May 2018) $
+ $LastChangedRevision: 25186 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/lmag/kgy_svm_get.pro $
+</PRE><P>
+<STRONG>(See <A href="lmag/kgy_svm_get.pro">projects/kaguya/map/lmag/kgy_svm_get.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="KGY_SVM_LOAD">
+<H2>KGY_SVM_LOAD</H2></A>
+<A HREF="#KGY_SVM_GET">[Previous Routine]</A>
+<A HREF="#KGY_SVM_PRED">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+       kgy_svm_load
+ PURPOSE:
+       Downloads and reads in SVM data files
+ CREATED BY:
+       Yuki Harada on 2018-05-02
+
+ $LastChangedBy: haraday $
+ $LastChangedDate: 2018-05-08 16:47:27 -0700 (Tue, 08 May 2018) $
+ $LastChangedRevision: 25186 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/lmag/kgy_svm_load.pro $
+</PRE><P>
+<STRONG>(See <A href="lmag/kgy_svm_load.pro">projects/kaguya/map/lmag/kgy_svm_load.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="KGY_SVM_PRED">
+<H2>KGY_SVM_PRED</H2></A>
+<A HREF="#KGY_SVM_LOAD">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+       kgy_svm_pred
+ PURPOSE:
+       Computes crustal B at Kaguya positions from SVM (Tsunakawa et al., 2015)
+ CALLING SEQUENCE:
+       kgy_svm_pred,trange=time_double('2008-01-01/'+['02:00','04:00'])
+ OPTIONAL KEYWORDS:
+       trange: time range (Def: timerange())
+       resolution: time resolution (Def: 4)
+       spice_frame: additional output B frame
+                    available frames: SELENE_M_SPACECRAFT, SSE, GSE
+ CREATED BY:
+       Yuki Harada on 2018-05-08
+
+ $LastChangedBy: haraday $
+ $LastChangedDate: 2018-05-08 16:47:27 -0700 (Tue, 08 May 2018) $
+ $LastChangedRevision: 25186 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/lmag/kgy_svm_pred.pro $
+</PRE><P>
+<STRONG>(See <A href="lmag/kgy_svm_pred.pro">projects/kaguya/map/lmag/kgy_svm_pred.pro</A>)</STRONG><P>
 <HR>
  

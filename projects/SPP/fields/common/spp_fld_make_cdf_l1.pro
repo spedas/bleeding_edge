@@ -1,3 +1,47 @@
+;+
+; NAME:
+;   SPP_FLD_MAKE_CDF_L1
+;
+; PURPOSE:
+;   Produce a Level 1 CDF file for PSP/FIELDS data.  Level 1 files for FIELDS
+;   contain data from a single APID.  This top level program retrieves the
+;   APID-specific data from the packets stored in the FIELDS TMlib database, 
+;   reads CDF metadata from an  APID-specific XML file, and stores the data in 
+;   a L1 CDF file.
+;
+; CALLING SEQUENCE:
+;   spp_fld_make_cdf_l1, apid_name
+;
+; INPUTS:
+;   APID_NAME: The name of the APID for the L1 CDF.  Uses the abbreviated 
+;     APID packet identifier rather than the hex code (e.g. 'rfs_lfr' instead of
+;     '0x2b2').
+;   VARFORMAT: Optional parameter that allows creation of a file with only a
+;     subset of data items from the packet.  For more information, see comments
+;     in SPP_FLD_LOAD_TMLIB_DATA.  If this keyword is not set, all items from
+;     the packet are loaded and stored in the L1 CDF file.
+;   TRANGE: If set, this time range is passed to SPP_FLD_CDF_TIMESPAN and 
+;     used to define the time range for selection of data from the TMlib 
+;     database.  If not set, the current TPLOT time span is used.
+;   LOAD: If set, loads the created CDF file into TPLOT variables after the
+;     file is saved.
+;   
+; OUTPUTS:
+;   FILENAME: The full path of the created CDF file.
+;   FILEID: The CDF file ID assigned to the created CDF file by the
+;     SPP_FLD_CDF_CREATE.
+;
+; EXAMPLE:
+;   spp_fld_make_cdf_l1, 'rfs_lfr_auto', /load
+;
+; CREATED BY:
+;   pulupa
+;
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2018-05-08 15:00:26 -0700 (Tue, 08 May 2018) $
+; $LastChangedRevision: 25183 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_make_cdf_l1.pro $
+;-
 pro spp_fld_make_cdf_l1, apid_name, $
   fileid = fileid, $
   varformat = varformat, $

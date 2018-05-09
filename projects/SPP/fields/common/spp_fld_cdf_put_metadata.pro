@@ -28,8 +28,8 @@
 ;   pulupa
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2017-01-11 16:14:34 -0800 (Wed, 11 Jan 2017) $
-; $LastChangedRevision: 22579 $
+; $LastChangedDate: 2018-05-08 15:00:03 -0700 (Tue, 08 May 2018) $
+; $LastChangedRevision: 25182 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_put_metadata.pro $
 ;-
 
@@ -58,9 +58,9 @@ pro spp_fld_cdf_put_metadata, fileid, filename, cdf_atts
 
 ; TODO: Place this information in an XML file along with the data definitions?
 
-  ; Add CDF metadata which is general for all SPP data products
+  ; Add CDF metadata which is general for all PSP data products
 
-  cdf_attput, fileid, 'Project', 0, 'SPP'
+  cdf_attput, fileid, 'Project', 0, 'PSP'
   cdf_attput, fileid, 'Discipline', 0, 'Solar Physics>Heliospheric Physics'
   cdf_attput, fileid, 'Discipline', 1, 'Space Physics>Interplanetary Studies'
   cdf_attput, fileid, 'Source_name', 0, 'SPP>Solar Probe Plus'
@@ -68,7 +68,7 @@ pro spp_fld_cdf_put_metadata, fileid, filename, cdf_atts
   cdf_attput, fileid, 'PI_affiliation', 0, 'UC Berkeley Space Sciences Laboratory'
   cdf_attput, fileid, 'Instrument_type', 0, 'Electric Fields (space)'
   cdf_attput, fileid, 'Instrument_type', 1, 'Magnetic Fields (space)'
-  cdf_attput, fileid, 'Mission_group', 0, 'SPP'
+  cdf_attput, fileid, 'Mission_group', 0, 'PSP'
 
   cdf_attput, fileid, 'Logical_file_id', 0, filename
 

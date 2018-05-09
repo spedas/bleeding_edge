@@ -30,9 +30,9 @@
 ; CREATED BY:
 ;   pulupa
 ;
-; $LastChangedBy: pulupa $
-; $LastChangedDate: 2017-07-07 09:45:11 -0700 (Fri, 07 Jul 2017) $
-; $LastChangedRevision: 23563 $
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2018-05-08 14:59:32 -0700 (Tue, 08 May 2018) $
+; $LastChangedRevision: 25181 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_create.pro $
 ;-
 pro spp_fld_cdf_create, level, vers_num, cdf_att, filename_timestring, $
@@ -44,7 +44,8 @@ pro spp_fld_cdf_create, level, vers_num, cdf_att, filename_timestring, $
 
   vers_num_str = '_v' + string(vers_num, format = '(I02)')
 
-  if cdf_att['Logical_source'].StartsWith('SPP_FLD_',/FOLD_CASE) then begin
+  if cdf_att['Logical_source'].StartsWith('SPP_FLD_',/FOLD_CASE) OR $
+    cdf_att['Logical_source'].StartsWith('PSP_FLD_',/FOLD_CASE) then begin
 
     cdf_subdir = (cdf_att['Logical_source'].ToLower()).SubString(8)
 

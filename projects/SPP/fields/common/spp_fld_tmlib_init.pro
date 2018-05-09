@@ -1,3 +1,36 @@
+;+
+; NAME:
+;   SPP_FLD_TMLIB_INIT
+;
+; PURPOSE:
+;   Initializes TMlib configuration for loading PSP/FIELDS data.  TMlib 
+;   configuration information is stored in an IDL system variable, 
+;   !SPP_FLD_TMLIB.
+;   
+;   Also calls routines which ensure that several helper functions (for
+;   example, functions which define frequencies for FIELDS spectral data
+;   products) are available for IDL to call.
+;
+; INPUTS:
+;   SERVER: Address of the TMlib server.
+;   TEST_CDF_DIR: The CDF creation routines save CDF files into a directory
+;     defined by the environment variable SPP_FLD_CDF_DIR.  If the TEST_CDF_DIR
+;     keyword is also set, any CDF files created will also be saved to that
+;     directory.
+;
+; EXAMPLE:
+;
+;   spp_fld_tmlib_init, server = 'spffmdb.ssl.berkeley.edu'
+;
+; CREATED BY:
+;   pulupa
+;
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2018-05-08 16:22:30 -0700 (Tue, 08 May 2018) $
+; $LastChangedRevision: 25185 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_tmlib_init.pro $
+;-
+
 pro spp_fld_tmlib_init, server = server, test_cdf_dir = test_cdf_dir
 
   ; Set server
