@@ -4,8 +4,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-11-09 15:48:29 -0800 (Wed, 09 Nov 2016) $
-; $LastChangedRevision: 22348 $
+; $LastChangedDate: 2018-05-09 14:44:46 -0700 (Wed, 09 May 2018) $
+; $LastChangedRevision: 25190 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_plasma_beta_crib.pro $
 ;-
 
@@ -17,7 +17,7 @@ mu0_str = strcompress(string(mu0), /rem)
 Kb_str = strcompress(string(Kb), /rem)
 
 mms_load_fpi, datatype=['dis-moms', 'des-moms'], data_rate='fast', level='l2', probe=probe
-mms_load_fgm, level='l2', probe=1
+mms_load_fgm, level='l2', probe=probe
 
 temp_para_i = 'mms'+probe+'_dis_temppara_fast'
 temp_perp_i = 'mms'+probe+'_dis_tempperp_fast'

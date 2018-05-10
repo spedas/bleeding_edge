@@ -82,6 +82,7 @@ SSRfiles = spp_file_retrieve(ff)
 
 spp_ssr_file_read,ssrfiles
 
+trange = '2018-05-08/03:27:02'   ; racksat memory dump
 
 trange='2018-3-8/'+['0','24']
 trange=['2018-3-7','2018-3-9']

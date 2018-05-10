@@ -110,7 +110,7 @@ end
 
 pro spp_gen_apdat::handler,ccsds,header
   
-  strct = self.decom(ccsds,header)
+  strct = self.decom(ccsds)
   if keyword_set(strct) then  *self.last_data_p= strct
 
 ;if ccsds.seq_group ne 3 then self.help   ;dprint,dlevel=2,ccsds.seq_group,ccsds.apid

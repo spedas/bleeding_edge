@@ -55,7 +55,7 @@ pro spp_apdat_info,apids,name=name,verbose=verbose,$
     apid = apids[i]
     if ~obj_valid(all_apdat[apid])  || (isa(/string,apid_obj_name) && (typename(all_apdat[apid]) ne strupcase(apid_obj_name) ) )  then begin
       dprint,verbose=verbose,dlevel=3,'Initializing APID: ',apid        ; potential memory leak here - old version should be destroyed
-      all_apdat[apid] = obj_new( isa(/string,apid_obj_name) ? apid_obj_name : default_apid_obj_name, apid)       
+      all_apdat[apid] = obj_new( (isa(/string,apid_obj_name) && keyword_set(apid_obj_name)) ? apid_obj_name : default_apid_obj_name, apid)       
     endif
     apdat = all_apdat[apid]
     if n_elements(name)       ne 0 then apdat.name = name
