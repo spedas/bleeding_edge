@@ -19,8 +19,8 @@
 ;       containing your login information. 
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-05-23 14:53:50 -0700 (Mon, 23 May 2016) $
-; $LastChangedRevision: 21179 $
+; $LastChangedDate: 2018-05-11 11:17:19 -0700 (Fri, 11 May 2018) $
+; $LastChangedRevision: 25199 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_update_fast_intervals.pro $
 ;-
 
@@ -35,15 +35,15 @@ pro mms_update_fast_intervals
     
     filenames = mms_get_abs_file_names(start_date=start_date, end_date=end_date)
 
-    file_mkdir2, !mms.local_data_dir + '/abs/'
+    file_mkdir2, spd_addslash(!mms.local_data_dir) + 'abs/'
     for file_idx = 0, n_elements(filenames)-1 do begin
         this_file = (strsplit(filenames[file_idx], '/', /extract))[-1]
-        status = get_mms_abs_selections(filename = this_file, local_dir = !mms.local_data_dir + '/abs/')
+        status = get_mms_abs_selections(filename = this_file, local_dir = spd_addslash(!mms.local_data_dir) + 'abs/')
         append_array, sav_files, this_file
     endfor
     
     for sav_file_idx = 0, n_elements(sav_files)-1 do begin
-        restore, !mms.local_data_dir + '/abs/' + sav_files[sav_file_idx]
+        restore, spd_addslash(!mms.local_data_dir) + 'abs/' + sav_files[sav_file_idx]
         if is_struct(fomstr) then begin
           if tag_exist(fomstr, 'timestamps') then begin
             append_array, start_times, mms_tai2unix(fomstr.timestamps[0])
@@ -53,6 +53,6 @@ pro mms_update_fast_intervals
     endfor
     
     fast_intervals = {start_times: start_times, end_times: end_times}
-    save, fast_intervals, filename=!mms.local_data_dir + '/abs/' + 'mms_fast_intervals.sav'
+    save, fast_intervals, filename=spd_addslash(!mms.local_data_dir) + 'abs/' + 'mms_fast_intervals.sav'
     dprint, dlevel = 0, 'Fast survey intervals updated! Last interval in the file: ' + time_string(start_times[0]) + ' to ' + time_string(end_times[0])
 end

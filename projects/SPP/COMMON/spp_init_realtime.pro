@@ -5,7 +5,6 @@ pro spp_init_realtime,filename=filename,base=base,hub=hub,itf=itf,RM133=RM133,rm
     router=router, instr=instr, recent=recent, hires1=hires1, sslsoc=sslsoc, $
     exec=exec0,ion=ion,tv=tv,cal=cal,snout2=snout2,snout1=snout1,crypt=crypt,apl=apl,moc=moc,gsfc=gsfc
 
-;  common spp_crib_com, recorder_base1,recorder_base2,exec_base
   
   if keyword_set(ion) then spani=1
   if n_elements(hub) eq 0 then hub = 1
@@ -161,7 +160,7 @@ endif
   
   ;;--------------------------------------------------
   ;; Useful command to see what APIDs have been loaded
-  ;spp_apid_data,apdata=ap
+  ;spp_apid_info,/print
   ;print_struct,ap
   ;;-------------------------------------------------
 

@@ -15,7 +15,7 @@ self.last_data_p = ptr_new(!null)
 if keyword_set(name) then self.name  =name
 self.ccsds_last = ptr_new(/allocate_heap)
 ;self.ccsds_array = obj_new('dynamicarray')
-self.data = obj_new('dynamicarray')
+self.data = obj_new('dynamicarray',name = self.name)
 if debug(3) and keyword_set(ex) then dprint,ex,phelp=2,dlevel=2
 IF (ISA(ex)) THEN self->SetProperty, _EXTRA=ex
 RETURN, 1
@@ -25,7 +25,7 @@ END
  
 PRO spp_gen_apdat::Clear, tplot_names=tplot_names
   COMPILE_OPT IDL2
-  dprint,'clear arrays: ',self.apid,self.name,dlevel=3
+  dprint,'clear arrays: ',self.apid,self.name,dlevel=4
   self.nbytes=0
   self.npkts = 0
   self.lost_pkts = 0
@@ -33,6 +33,15 @@ PRO spp_gen_apdat::Clear, tplot_names=tplot_names
   ptr_free,  ptr_extract(*self.ccsds_last)
   *self.ccsds_last = !null
   if keyword_set(tplot_names) && keyword_set(self.tname) then store_data,self.tname+'*',/clear
+END
+
+
+PRO spp_gen_apdat::zero
+  COMPILE_OPT IDL2
+  dprint,'zero counters: ',self.apid,self.name,dlevel=4
+  self.nbytes=0
+  self.npkts = 0
+  self.lost_pkts = 0
 END
 
 
@@ -55,13 +64,13 @@ END
 function spp_gen_apdat::info,header=header
 ;rs =string(format="(Z03,'x ',a-14, i8,i8 ,i12,i3,i3,i8,' ',a-14,a-36,' ',a-36, ' ',a-20,a)",self.apid,self.name,self.npkts,self.lost_pkts, $
 ;    self.nbytes,self.save_flag,self.rt_flag,self.data.size,self.data.typename,string(/print,self),self.routine,self.tname,self.save_tags)
-  fmt ="(Z03,'x ',a-14, i8,i8 ,i12,i3,i3,i3,i8,' ',a-14,a-26,' ',a-36, ' ',a-20,'<',a,'>')"
-  hfmt="( a4,' ',a-14, a8,a8 ,a12,a3,a3,a3,a8,' ',a-14,a-26,' ',a-36, ' ',a-20,'<',a,'>')"
+  fmt ="(Z03,'x ',a-14, i8,i8 ,i12,i3,i3,i3,i8,' ',a-14,a-26,' ',a-20,'<',a,'>','     ',a)"
+  hfmt="( a4,' ',a-14, a8,a8 ,a12,a3,a3,a3,a8,' ',a-14,a-26,' ',a-20,'<',a,'>','     ',a)"
 ;  if keyword_set(header) then rs=string(format=hfmt,'APID','Name','npkts','lost','nbytes','save','rtf','size','type','objname','routine','tname','tags')
   rs =string(format=fmt,self.apid,self.name,self.npkts,self.lost_pkts, $
-    self.nbytes,self.save_flag,self.rt_flag,self.dlevel,self.data.size,self.data.typename,typename(self),self.routine,self.tname,self.ttags)
+    self.nbytes,self.save_flag,self.rt_flag,self.dlevel,self.data.size,self.data.typename,typename(self),self.tname,self.ttags,self.routine)
 
-  if keyword_set(header) then rs=string(format=hfmt,'APID','Name','Npkts','lost','nbytes','sv','rt','dl','size','type','objname','routine','tname','tags') +string(13b)+ rs
+  if keyword_set(header) then rs=string(format=hfmt,'APID','Name','Npkts','lost','nbytes','sv','rt','dl','size','type','objname','tname','tags','routine') +string(13b)+ rs
 
 return,rs
 end
@@ -149,7 +158,8 @@ END
  
  
 PRO spp_gen_apdat::GetProperty,data=data, array=array, npkts=npkts, apid=apid, name=name,  typename=typename, $
-   nsamples=nsamples,nbytes=nbytes,strct=strct,ccsds_last=ccsds_last,tname=tname,dlevel=dlevel,ttags=ttags,last_data=last_data
+   nsamples=nsamples,nbytes=nbytes,strct=strct,ccsds_last=ccsds_last,tname=tname,dlevel=dlevel,ttags=ttags,last_data=last_data, $
+   window=window
 COMPILE_OPT IDL2
 IF (ARG_PRESENT(nbytes)) THEN nbytes = self.nbytes
 IF (ARG_PRESENT(name)) THEN name = self.name
@@ -160,6 +170,7 @@ IF (ARG_PRESENT(npkts)) THEN npkts = self.npkts
 IF (ARG_PRESENT(ccsds_last)) THEN ccsds_last = self.ccsds_last
 IF (ARG_PRESENT(data)) THEN data = self.data
 if (arg_present(last_data)) then last_data = *(self.last_data_p)
+if (arg_present(window)) then window = self.window_obj
 IF (ARG_PRESENT(array)) THEN array = self.data.array
 IF (ARG_PRESENT(nsamples)) THEN nsamples = self.data.size
 IF (ARG_PRESENT(typename)) THEN typename = typename(*self.data)
@@ -202,6 +213,7 @@ void = {spp_gen_apdat, $
   last_data_p:  ptr_new(),  $
   ccsds_array: obj_new(), $  
   data: obj_new(), $
+  window_obj: obj_new(), $
   dlevel: 0  $
   }
 END

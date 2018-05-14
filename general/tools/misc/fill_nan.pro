@@ -11,6 +11,7 @@ case dt of
 3:  rdat[*] = intfill
 12: rdat[*] = intfill
 13: rdat[*] = intfill
+15: rdat[*] = intfill
 4:  rdat[*] = realfill
 5:  rdat[*] = realfill
 6:  rdat[*] = realfill

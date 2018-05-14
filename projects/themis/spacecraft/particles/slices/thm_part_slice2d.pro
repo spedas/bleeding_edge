@@ -199,9 +199,9 @@
 ;  See the crib file: thm_crib_part_slice2d.pro
 ;
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2016-09-02 14:30:38 -0700 (Fri, 02 Sep 2016) $
-;$LastChangedRevision: 21792 $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-05-11 17:35:51 -0700 (Fri, 11 May 2018) $
+;$LastChangedRevision: 25201 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/slices/thm_part_slice2d.pro $
 ;-
 pro thm_part_slice2d, ptrArray, ptrArray2, ptrArray3, ptrArray4, $
@@ -284,7 +284,7 @@ if undefined(units) then units = 'df'
 
 ;Interpolation type:
 if undefined(type) then begin
-  geometric = 1
+  three_d_interp = 1
 endif else begin
   if type[0] eq 0 then geometric = 1
   if type[0] eq 2 then two_d_interp = 1

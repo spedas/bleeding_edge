@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spi_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-05-03 15:08:06 -0700 (Thu, 03 May 2018) $
-; $LastChangedRevision: 25162 $
+; $LastChangedDate: 2018-05-12 22:55:09 -0700 (Sat, 12 May 2018) $
+; $LastChangedRevision: 25202 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
@@ -432,7 +432,7 @@ PRO spp_swp_spi_prod_apdat::handler,ccsds,ptp_header
          16:self.prod_16A,             strct
          32:self.prod_32E,             strct
          128:self.prod_08Dx16A,        strct
-;         256:self.proc_256,        strct
+         256:self.proc_256,        strct
          ;;256: self.prod_16Ax16M,       strct
          512:self.prod_32Ex16M,        strct
          ;;512:self.prod_32Ex16A,        strct

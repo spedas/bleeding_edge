@@ -43,24 +43,30 @@ function spp_swp_ccsds_decom,buffer,offset,buffer_length,remainder=remainder , e
 
 
   d_nan = !values.d_nan
+  f_nan = !values.f_nan
 
   ccsds = { ccsds_format, $
     apid:         0u , $
-    version_flag: 0b , $
+    version :     0b , $   ; this could be eliminated since it is useless
     seq_group:    0b , $
     seqn:         0u , $
     pkt_size:     0ul,  $
-    time:         d_nan,  $
     MET:          d_nan,  $
+    pdata:        ptr_new(),  $         ; pointer to full packet data including header
+    time:         d_nan,  $             ; unixtime 
+    counter:      0ul,    $             ; packet counter as received
+    ptp_time:     d_nan,  $             ; unixtime from ptp packet
+    source:       0u   ,  $             ; an indicator of where this packet came from:
+    source_name:  ''   ,  $             ; file name of source
+    content_id:   0u   ,  $
     ;    data:         pktbuffer, $
-    pdata:        ptr_new(),  $
-    time_delta :  d_nan, $
+    time_delta :  f_nan, $
     seqn_delta :  0u, $
     error :       0b, $
     gap :         1b  }
 
   if buffer_length-offset lt 12 then begin
-    if debug(3) then begin
+    if debug(2) then begin
       dprint,'CCSDS Buffer length too short to include header: ',buffer_length-offset,dlevel=2,offset
       hexprint,buffer
     endif
@@ -70,7 +76,7 @@ function spp_swp_ccsds_decom,buffer,offset,buffer_length,remainder=remainder , e
 
   header = swap_endian(uint(buffer[offset+0:offset+11],0,6) ,/swap_if_little_endian )
 
-  ccsds.version_flag = byte(ishft(header[0],-8) )    ; THIS DOES NOT LOOK CORRECT
+  ccsds.version = byte(ishft(header[0],-11) )    ; Corrected - but includes 2 extra bits
 
   ccsds.apid = header[0] and '7FF'x
 

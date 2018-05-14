@@ -36,7 +36,7 @@ cwd,prompt='IDL> '     ; Display current working directory
 
 !warn.obs_routines = 1
 ;!warn.OBS_SYSVARS = 1
-;!warn.PARENS = 1
+!warn.PARENS = 1
 ;!warn.TRUNCATED_FILENAME = 1
 !quiet = 0
 

@@ -52,7 +52,11 @@ END
 pro DynamicArray::append, b
 compile_opt IDL2
 ind =self.size
-append_array,*self.ptr_array,b,index=ind
+append_array,*self.ptr_array,b,index=ind,error=error
+if keyword_set(error) then begin
+  dprint,dlevel=2,self.name
+  ;self.typename
+endif
 self.size=ind
 end
 

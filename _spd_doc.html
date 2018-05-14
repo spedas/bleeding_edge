@@ -2,17 +2,17 @@
 <html>
  
 <head>
-<TITLE>SPEDAS SW Help for spdsw_r25191_2018-05-09</TITLE>
+<TITLE>SPEDAS SW Help for spdsw_r25215_2018-05-14</TITLE>
 </head>
  
 <body>
-<H2>SPEDAS SW Help for spdsw_r25191_2018-05-09</H2>
+<H2>SPEDAS SW Help for spdsw_r25215_2018-05-14</H2>
 <P>
 This page was created by the IDL library routine 
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed May  9 18:16:34 2018.<P>
+<STRONG>Last modified: </STRONG>Mon May 14 03:16:18 2018.<P>
  
 <HR>
  
@@ -278,6 +278,13 @@ projects/geom_indices/spedas_plugin</A>
 </A>
 <LI><A HREF="projects/goes/spedas_plugin_spd_doc_list.html">
 projects/goes/spedas_plugin</A>
+<LI><A HREF="projects/icon/common_spd_doc_list.html">projects/icon/common</A>
+<LI><A HREF="projects/icon/config_spd_doc_list.html">projects/icon/config</A>
+<LI><A HREF="projects/icon/examples_spd_doc_list.html">projects/icon/examples
+</A>
+<LI><A HREF="projects/icon/load_spd_doc_list.html">projects/icon/load</A>
+<LI><A HREF="projects/icon/spedas_plugin_spd_doc_list.html">
+projects/icon/spedas_plugin</A>
 <LI><A HREF="projects/iugonet/examples_spd_doc_list.html">
 projects/iugonet/examples</A>
 <LI><A HREF="projects/iugonet/gui_spd_doc_list.html">projects/iugonet/gui</A>
@@ -393,8 +400,6 @@ projects/mms/examples/basic</A>
 <LI><A HREF="projects/mms/examples/quicklook_spd_doc_list.html">
 projects/mms/examples/quicklook</A>
 <LI><A HREF="projects/mms/feeps_spd_doc_list.html">projects/mms/feeps</A>
-<LI><A HREF="projects/mms/feeps/deprecated_spd_doc_list.html">
-projects/mms/feeps/deprecated</A>
 <LI><A HREF="projects/mms/fgm_spd_doc_list.html">projects/mms/fgm</A>
 <LI><A HREF="projects/mms/fpi_spd_doc_list.html">projects/mms/fpi</A>
 <LI><A HREF="projects/mms/fsm_spd_doc_list.html">projects/mms/fsm</A>
@@ -2117,6 +2122,46 @@ HAPI_LOAD_DATA</A>
 HYBRID_ORBIT</A>
 <br>Plots
 <A NAME="LIST_I">
+<LI><A HREF="projects/icon/common_spd_doc_list.html#ICON_CHECK_ATT">
+ICON_CHECK_ATT</A>
+<br>Check attributes
+<LI><A HREF="projects/icon/config_spd_doc_list.html#ICON_CONFIG_FILEDIR">
+ICON_CONFIG_FILEDIR</A>
+<br>Get the user directory for ICON
+<LI><A HREF="projects/icon/examples_spd_doc_list.html#ICON_CRIB">ICON_CRIB</A>
+<br>Examples of loading and plotting ICON data
+<LI><A HREF="projects/icon/common_spd_doc_list.html#ICON_DIMENSION_FIX">
+ICON_DIMENSION_FIX</A>
+<br>Fixes netcdf dimansions
+<LI><A HREF="projects/icon/common_spd_doc_list.html#ICON_DOY_DATE">ICON_DOY_DATE
+</A>
+<br>Finds DOY from month and day
+<LI><A HREF="projects/icon/spedas_plugin_spd_doc_list.html#ICON_FILECONFIG">
+ICON_FILECONFIG</A>
+<br>A widget that allows the user to set some of the !icon variables using the Configuration Settings.
+<LI><A HREF="projects/icon/config_spd_doc_list.html#ICON_INIT">ICON_INIT</A>
+<br>Initializes system variables for ICON.
+<LI><A HREF="projects/icon/load_spd_doc_list.html#ICON_LOAD_DATA">ICON_LOAD_DATA
+</A>
+<br>Loads ICON data
+<LI><A HREF="projects/icon/common_spd_doc_list.html#ICON_NETCDF_LOAD_VARS">
+ICON_NETCDF_LOAD_VARS</A>
+<br>Returns a structure with the data from netCDF files
+<LI><A HREF="projects/icon/config_spd_doc_list.html#ICON_READ_CONFIG">
+ICON_READ_CONFIG</A>
+<br>Reads the icon_config file
+<LI><A HREF="projects/icon/common_spd_doc_list.html#ICON_STRUCT_TO_CDFSTRUCT">
+ICON_STRUCT_TO_CDFSTRUCT</A>
+<br>Converts an IDL structure returned from a ICON netCDF file
+<LI><A HREF="projects/icon/spedas_plugin_spd_doc_list.html#ICON_UI_IMPORT_DATA">
+ICON_UI_IMPORT_DATA</A>
+<br>Gui ICON data loader
+<LI><A HREF="projects/icon/spedas_plugin_spd_doc_list.html#ICON_UI_LOAD_DATA">
+ICON_UI_LOAD_DATA</A>
+<br>Creates the SPEDAS GUI tab for loading ICON data.
+<LI><A HREF="projects/icon/config_spd_doc_list.html#ICON_WRITE_CONFIG">
+ICON_WRITE_CONFIG</A>
+<br>Writes the icon_config file
 <LI><A HREF="external/IDL_ICY_spd_doc_list.html#ICY_TEST">ICY_TEST</A>
 <LI><A HREF="general/CDF_spd_doc_list.html#IDL2CDFTYPE">IDL2CDFTYPE</A>
 <br>Given an IDL variable, return the appropriate CDF type code
@@ -2667,6 +2712,8 @@ KGY_IEA_GET3D</A>
 <LI><A HREF="projects/kaguya/map/pace_spd_doc_list.html#KGY_IMA_GET3D">
 KGY_IMA_GET3D</A>
 <br>returns an IMA 3D data structure
+<LI><A HREF="projects/kaguya/map/pace_spd_doc_list.html#KGY_J_3D">KGY_J_3D</A>
+<br>Returns the flux, [Jx,Jy,Jz], 1/(cm^2-s)
 <LI><A HREF="projects/kaguya/map/lmag_spd_doc_list.html#KGY_LMAG_COM">
 KGY_LMAG_COM</A>
 <br>stores the LMAG static memory
@@ -2685,6 +2732,14 @@ KGY_MAP_MAKE_TPLOT</A>
 <LI><A HREF="projects/kaguya/map_spd_doc_list.html#KGY_MAP_QL_DL">KGY_MAP_QL_DL
 </A>
 <br>downloads Kaguya MAP quicklook plots
+<LI><A HREF="projects/kaguya/map/pace_spd_doc_list.html#KGY_MOM_CALC">
+KGY_MOM_CALC</A>
+<br>Computes velocity moments from Kaguya PACE data
+<LI><A HREF="projects/kaguya/map/pace_spd_doc_list.html#KGY_N_3D">KGY_N_3D</A>
+<br>Returns the density, n, 1/cm^3
+<LI><A HREF="projects/kaguya/general_spd_doc_list.html#KGY_ORBIT_SNAP">
+KGY_ORBIT_SNAP</A>
+<br>Plots Kaguya orbits in SSE and ME coordinates.
 <LI><A HREF="projects/kaguya/map/pace_spd_doc_list.html#KGY_PACE_16X64TO4X16">
 KGY_PACE_16X64TO4X16</A>
 <br>rebin a data structure w/ 16x64 angles into 4x16 angles
@@ -2697,12 +2752,20 @@ KGY_PACE_CONVERT_FRAME</A>
 <LI><A HREF="projects/kaguya/map/pace_spd_doc_list.html#KGY_PACE_CONVERT_UNITS">
 KGY_PACE_CONVERT_UNITS</A>
 <br>converts the units for a PACE 3d data structure
+<LI><A HREF="projects/kaguya/map/pace_spd_doc_list.html#KGY_PACE_CONV_SABIN">
+KGY_PACE_CONV_SABIN</A>
+<br>Converts data structure in [nene,ntheta,nphi] to [nene,nbins]
+<LI><A HREF="projects/kaguya/map/pace_spd_doc_list.html#KGY_PACE_INTERP">
+KGY_PACE_INTERP</A>
+<br>Interpolates irregular [phi,theta] sampling into a regular grid
 <LI><A HREF="projects/kaguya/map/pace_spd_doc_list.html#KGY_PACE_PARASPEC">
 KGY_PACE_PARASPEC</A>
 <br>generates energy spectra for 6 pitch angle ranges:
 <LI><A HREF="projects/kaguya/map/pace_spd_doc_list.html#KGY_PACE_PLOT3D_SNAP">
 KGY_PACE_PLOT3D_SNAP</A>
 <br>Plots 3D snapshots for times selected with the cursor in a tplot window.
+<LI><A HREF="projects/kaguya/map/pace_spd_doc_list.html#KGY_P_3D">KGY_P_3D</A>
+<br>Returns the pressure tensor, [Pxx,Pyy,Pzz,Pxy,Pxz,Pyz], eV/cm^3
 <LI><A HREF="projects/kaguya/map/pace_spd_doc_list.html#KGY_READ_FOV">
 KGY_READ_FOV</A>
 <br>reads in Kaguya MAP/PACE FOV files
@@ -2729,6 +2792,10 @@ KGY_SVM_LOAD</A>
 <LI><A HREF="projects/kaguya/map/lmag_spd_doc_list.html#KGY_SVM_PRED">
 KGY_SVM_PRED</A>
 <br>Computes crustal B at Kaguya positions from SVM (Tsunakawa et al., 2015)
+<LI><A HREF="projects/kaguya/map/pace_spd_doc_list.html#KGY_T_3D">KGY_T_3D</A>
+<br>Returns the temperature, [Tx,Ty,Tz,Tavg], eV
+<LI><A HREF="projects/kaguya/map/pace_spd_doc_list.html#KGY_V_3D">KGY_V_3D</A>
+<br>Returns the velocity, [Vx,Vy,Vz], km/s
 <LI><A HREF="projects/ksem_spd_doc_list.html#KSEM_INIT">KSEM_INIT</A>
 <LI><A HREF="general/missions/kyoto_spd_doc_list.html#KYOTO_AE_DOWNLOAD.PRO">
 KYOTO_AE_DOWNLOAD.PRO</A>
@@ -3228,14 +3295,8 @@ MMS_FEEPS_FLAT_FIELD_CORRECTIONS">MMS_FEEPS_FLAT_FIELD_CORRECTIONS</A>
 <LI><A HREF="projects/mms/feeps_spd_doc_list.html#MMS_FEEPS_OMNI">MMS_FEEPS_OMNI
 </A>
 <br>Calculates the omni-directional flux for all 24 sensors
-<LI><A HREF="projects/mms/feeps/deprecated_spd_doc_list.html#MMS_FEEPS_OMNI_OLD
-">MMS_FEEPS_OMNI_OLD</A>
-<br>Calculates the omni-directional flux for all 24 sensors
 <LI><A HREF="projects/mms/feeps_spd_doc_list.html#MMS_FEEPS_PAD">MMS_FEEPS_PAD
 </A>
-<br>Calculate pitch angle distributions using data from the
-<LI><A HREF="projects/mms/feeps/deprecated_spd_doc_list.html#MMS_FEEPS_PAD_OLD">
-MMS_FEEPS_PAD_OLD</A>
 <br>Calculate pitch angle distributions using data from the
 <LI><A HREF="projects/mms/feeps_spd_doc_list.html#MMS_FEEPS_PAD_SPINAVG">
 MMS_FEEPS_PAD_SPINAVG</A>
@@ -3243,17 +3304,11 @@ MMS_FEEPS_PAD_SPINAVG</A>
 <LI><A HREF="projects/mms/feeps_spd_doc_list.html#MMS_FEEPS_PITCH_ANGLES">
 MMS_FEEPS_PITCH_ANGLES</A>
 <br>Generates a tplot variable containing the FEEPS pitch angles for each telescope
-<LI><A HREF="projects/mms/feeps/deprecated_spd_doc_list.html#
-MMS_FEEPS_PITCH_ANGLES_OLD">MMS_FEEPS_PITCH_ANGLES_OLD</A>
-<br>Generates a tplot variable containing the FEEPS pitch angles for each telescope
 <LI><A HREF="projects/mms/feeps_spd_doc_list.html#MMS_FEEPS_REMOVE_BAD_DATA">
 MMS_FEEPS_REMOVE_BAD_DATA</A>
 <br>Removes bad eyes, bad lowest energy channels
 <LI><A HREF="projects/mms/feeps_spd_doc_list.html#MMS_FEEPS_REMOVE_SUN">
 MMS_FEEPS_REMOVE_SUN</A>
-<br>Removes the sunlight contamination from FEEPS data
-<LI><A HREF="projects/mms/feeps/deprecated_spd_doc_list.html#
-MMS_FEEPS_REMOVE_SUN_OLD">MMS_FEEPS_REMOVE_SUN_OLD</A>
 <br>Removes the sunlight contamination from FEEPS data
 <LI><A HREF="projects/mms/feeps_spd_doc_list.html#MMS_FEEPS_SECTOR_SPEC">
 MMS_FEEPS_SECTOR_SPEC</A>
@@ -3266,8 +3321,6 @@ MMS_FEEPS_SMOOTH</A>
 MMS_FEEPS_SPIN_AVG</A>
 <LI><A HREF="projects/mms/feeps_spd_doc_list.html#MMS_FEEPS_SPLIT_INTEGRAL_CH">
 MMS_FEEPS_SPLIT_INTEGRAL_CH</A>
-<LI><A HREF="projects/mms/feeps/deprecated_spd_doc_list.html#
-MMS_FEEPS_SPLIT_INTEGRAL_CH_OLD">MMS_FEEPS_SPLIT_INTEGRAL_CH_OLD</A>
 <LI><A HREF="projects/mms/fgm_spd_doc_list.html#MMS_FGM_FIX_METADATA">
 MMS_FGM_FIX_METADATA</A>
 <br>Helper routine for setting FGM metadata
@@ -9816,6 +9869,7 @@ XV_SCALE_COLOR_TABLE</A>
 YYY_CONFIG_FILEDIR">YYY_CONFIG_FILEDIR</A>
 <LI><A HREF="spedas_gui/api_examples/file_configuration_tab_spd_doc_list.html#
 YYY_INIT">YYY_INIT</A>
+<br>Initializes system variables for yyy data. Can be called from idl_startup to set
 <LI><A HREF="spedas_gui/api_examples/load_data_tab_spd_doc_list.html#
 YYY_LOAD_DATA">YYY_LOAD_DATA</A>
 <LI><A HREF="spedas_gui/api_examples/file_configuration_tab_spd_doc_list.html#

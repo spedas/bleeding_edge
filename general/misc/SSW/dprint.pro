@@ -86,8 +86,8 @@
 ;                          Added PRINT_TRACE,PRINT_DTIME,PRINT_DLEVEL
 ;                          Added Widget options
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2014-12-09 15:53:06 -0800 (Tue, 09 Dec 2014) $
-; $LastChangedRevision: 16427 $
+; $LastChangedDate: 2018-05-13 16:17:36 -0700 (Sun, 13 May 2018) $
+; $LastChangedRevision: 25214 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/SSW/dprint.pro $
 ;
 ;-
@@ -259,7 +259,7 @@ PRO DPRINT,v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,  $
      case dprint_struct.print_trace of
         1: if level ge 2 then stacknames = stacknames[level-1]
         2: if level ge 2 then stacknames[0:level-2] = '  '
-        4: stacknames = string(/print,format='(i2," ",a-32)',level,stacknames[level-1])
+        4: stacknames = string(/print,format='(i2," ",a-36)',level,stacknames[level-1])
         else:   ; do nothing
      endcase
      prefix = [prefix,stacknames]

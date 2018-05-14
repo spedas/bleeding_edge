@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed May  9 18:16:35 2018.<P>
+<STRONG>Last modified: </STRONG>Mon May 14 03:16:18 2018.<P>
  
 <HR>
  
@@ -23,6 +23,7 @@ This page was created by the IDL library routine
 <br>A widget that allows the user to set some of the !yyy environmental variables. The user
 <LI><A HREF="#YYY_CONFIG_FILEDIR">YYY_CONFIG_FILEDIR</A>
 <LI><A HREF="#YYY_INIT">YYY_INIT</A>
+<br>Initializes system variables for yyy data. Can be called from idl_startup to set
 <LI><A HREF="#YYY_READ_CONFIG">YYY_READ_CONFIG</A>
 <br>Reads the yyy_config file
 <LI><A HREF="#YYY_WRITE_CONFIG">YYY_WRITE_CONFIG</A>
@@ -78,13 +79,16 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/
 <A HREF="#YYY_READ_CONFIG">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-PROCEDURE:  yyy_init
-PURPOSE:    Initializes system variables for yyy data.  Can be called from idl_startup to set
+ NAME:  
+   yyy_init
+ 
+ PURPOSE:    
+   Initializes system variables for yyy data. Can be called from idl_startup to set
             custom locations.
 
-$LastChangedBy: nikos $
-$LastChangedDate: 2014-07-09 12:06:56 -0700 (Wed, 09 Jul 2014) $
-$LastChangedRevision: 15537 $
+$LastChangedBy: egrimes $
+$LastChangedDate: 2018-05-13 14:10:12 -0700 (Sun, 13 May 2018) $
+$LastChangedRevision: 25206 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/api_examples/file_configuration_tab/yyy_init.pro $
 </PRE><P>
 <STRONG>(See <A href="file_configuration_tab/yyy_init.pro">spedas_gui/api_examples/file_configuration_tab/yyy_init.pro</A>)</STRONG><P>

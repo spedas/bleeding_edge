@@ -53,8 +53,8 @@
 ;         
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-30 12:15:49 -0700 (Mon, 30 Apr 2018) $
-;$LastChangedRevision: 25148 $
+;$LastChangedDate: 2018-05-13 14:25:55 -0700 (Sun, 13 May 2018) $
+;$LastChangedRevision: 25207 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
@@ -87,6 +87,7 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     dprint, dlevel = 0, '2) http://tsds.org/get/SSCWeb/hapi'
     dprint, dlevel = 0, '3) http://mag.gmu.edu/TestData/hapi'
     dprint, dlevel = 0, '4) https://voyager.gsfc.nasa.gov/hapiproto'
+    dprint, dlevel = 0, '5) https://pds-ppi.igpp.ucla.edu/hapi'
     return
   endif else begin
     url_parts = parse_url(server)

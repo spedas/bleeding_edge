@@ -2,16 +2,18 @@
 
 
 
-pro spp_apdat_info,apids,name=name,verbose=verbose,$
+pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
                   clear=clear,$
+                  zero=zero, $
                   reset=reset,$
                   apdats = apdats, $
-                  matchname = matchname,  $
+                  ;matchname = matchname,  $  obsolete - use string as input
                   save_flag=save_flag,$
                   nonzero=nonzero,  $
                   dlevel=dlevel, $
                   all = all, $
                   finish=finish,$
+                  window_obj=window_obj, $
                   tname=tname,$
                   ttags=ttags,$
                   routine=routine,$
@@ -27,27 +29,32 @@ pro spp_apdat_info,apids,name=name,verbose=verbose,$
     all_apdat=!null
     return
   endif
-  
-  if keyword_set(file_save) then save,file=file_save,all_apdat,/verbose
-  if keyword_set(file_restore) then restore,file=file_restore,all_apdat,/verbose
+
+  if keyword_set(file_restore) then restore,file=file_restore,/verbose
 
   if ~keyword_set(all_apdat) then all_apdat = replicate( obj_new() , 2^11 )
   
-  if n_elements(apids) eq 0 then apids = where(all_apdat,/null)
+  if keyword_set(file_save) then save,file=file_save,all_apdat,/verbose
 
-  if n_elements(matchname) ne 0 then begin
-    all = 1
-    n = n_elements(apids)
-    if n ne 0 then begin
-      names = strarr(n_elements(apids))
-      for i=0,n_elements(apids)-1 do names[i] = all_apdat[apids[i]].name
-      ind = strfilter(names,matchname,/index,/null)
-      ;printdat,names,matchname,ind
-      apids = apids[ind]
-    endif    
+  valid_apdat = all_apdat[ where( obj_valid(all_apdat),nvalid ) ]
 
-  endif
-
+  if isa(apid_description,/string) then begin
+    if nvalid ne 0 then begin
+      names = strarr(nvalid)
+      apids = intarr(nvalid)
+      for i = 0,nvalid -1 do begin
+        names[i] = valid_apdat[i].name
+        apids[i] = valid_apdat[i].apid
+      endfor
+    endif
+    ind = strfilter(names,apid_description,/index,/null)
+    apids = apids[ind]
+;    printdat,names[ind],apids
+  endif else if isa(apid_description,/integer) then begin
+    apids = apid_description
+  endif else  apids = where(all_apdat,/null)
+ 
+  ;printdat,apids
   
   default_apid_obj_name =  'spp_gen_apdat'
 
@@ -64,10 +71,14 @@ pro spp_apdat_info,apids,name=name,verbose=verbose,$
     if n_elements(dlevel)     ne 0 then apdat.dlevel = dlevel
     if n_elements(tname)      ne 0 then apdat.tname = tname
     if n_elements(ttags)      ne 0 then apdat.ttags = ttags
+    if n_elements(window_obj)      ne 0 then begin
+       apdat.window_obj = window(window_title=apdat.name)
+    endif
     if n_elements(save_flag)  ne 0 then apdat.save_flag = save_flag
     if ~keyword_set(all)  &&  (apdat.npkts eq 0) then continue
     if keyword_set(finish) then    apdat.finish
     if keyword_set(clear)  then    apdat.clear
+    if keyword_set(zero)   then    apdat.zero
     if keyword_set(print)  then    apdat.print, header = i eq 0
   endfor
 

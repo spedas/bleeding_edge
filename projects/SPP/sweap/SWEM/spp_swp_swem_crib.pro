@@ -1,6 +1,8 @@
 ;swem crib
 ;
 ;Real time example
+
+if 0 then begin
 spp_init_realtime,/swem,/cal,/exec
 
 
@@ -96,20 +98,9 @@ trange = ['2018-04-30/18:18', '2018-04-30/22:14']  ; compression testing
 path =  'spp/data/sci/sweap/prelaunch/gsedata/realtime/hires1/swem/YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
 spp_init_realtime,/swem,/hires1,/exec
 
-
 path =  'spp/data/sci/sweap/prelaunch/gsedata/realtime/cal/swem/YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
 spp_init_realtime,/swem,/cal,/exec
 
-dprint,setd=2
-
-trange = systime(1) + [-1,0] * 3600.
-ptpfiles = spp_file_retrieve(path,trange= trange,/hourly_names)
-spp_ptp_file_read, ptpfiles
-
-dprint,setd=4
-
-
-spp_swp_tplot,/setlim   ,'swem'
 
 spp_apdat_info,/print
 spp_apdat_info,'7c0'x,dlevel=1
@@ -118,3 +109,28 @@ spp_apdat_info,'7c1'x,dlevel=1
 
 
 
+endif
+
+path =  'spp/data/sci/sweap/prelaunch/gsedata/realtime/cal/swem/YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
+spp_init_realtime,/swem,/cal,/exec
+
+dprint,setd=2
+
+trange = systime(1) + [-2,0] * 3600.
+ptpfiles = spp_file_retrieve(path,trange= trange,/hourly_names)
+
+if 1 then begin
+  spi_memdump = spp_apdat('spi_memdump')
+  spi_memdump.display, win = window(name='spi_memdump')
+  swem_memdump = spp_apdat('swem_memdump')
+  swem_memdump.display, win = window(name='swem_memdump')
+endif
+
+spp_ptp_file_read, ptpfiles
+
+dprint,setd=4
+
+
+spp_swp_tplot,/setlim   ,'swem'
+
+end

@@ -21,7 +21,7 @@ PRO exec_event, ev   ; exec
     CASE ev.id OF
     wids.base:  begin                    ;  Timed events
         widget_control,wids.exec_text,get_value = exec_text
-        dprint,dlevel=4,/phelp,exec_text,/no_check
+;        dprint,dlevel=5,/phelp,exec_text,/no_check
         widget_control,wids.poll_text,get_value = poll_text
         poll_time = double(poll_text)
         if keyword_set(exec_text) then begin

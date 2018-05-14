@@ -1,8 +1,12 @@
-FUNCTION nn,data,time,x=x,y=y,v=v   ;nearest neighbor function
+FUNCTION nn,data,time,x=x,y=y,v=v,progress=progress   ;nearest neighbor function
 ;+
 ;NAME:                  nn
 ;PURPOSE:               Find the index of the data point(s) nearest to the specified time(s)
-;                       You can use find_nearest_neighbor2 function to find the nearest time
+;                       You can use find_nearest_neighbor2 function to find the nearest time.
+;
+;                       This routine can be inefficient when operating on large arrays.  In
+;                       such cases it is better, if possible, to divide the time arrays into
+;                       smaller segments and work on one segment at a time.
 ;                       
 ;CALLING SEQUENCE:      ind=nn(data,time)
 ;INPUTS:                data:  a data structure, a tplot variable name/index,
@@ -12,6 +16,9 @@ FUNCTION nn,data,time,x=x,y=y,v=v   ;nearest neighbor function
 ;OPTIONAL INPUTS:       none
 ;KEYWORD PARAMETERS:    x, y, & v:  set to named keywords to return the values
 ;			of the x, y, & v arrays, if applicable
+;
+;                       progress: If set, then report progress in increments of 1%.
+;                                 No effect when n_elements(time) lt 100.
 ;			
 ;OUTPUTS:               a long scalar index or long array of indicies
 ;                       on failure, returns: -2 if bad inputs, 
@@ -26,9 +33,9 @@ FUNCTION nn,data,time,x=x,y=y,v=v   ;nearest neighbor function
 ; See also:
 ;   find_nearest_neighbor2, find_nearest_neighbor
 ; 
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-; $LastChangedRevision: 24506 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2018-05-10 11:04:34 -0700 (Thu, 10 May 2018) $
+; $LastChangedRevision: 25193 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/nn.pro $
 ;-
   nd = n_elements(data)         ;1 if a str, more if an array
@@ -76,11 +83,24 @@ FUNCTION nn,data,time,x=x,y=y,v=v   ;nearest neighbor function
   n = n_elements(t)
   if n eq 1 then inds = 0l else inds = lonarr(n)
 
-  for i=0l,n-1l do begin 
-    a = abs(dat.x-t[i])
-    b = min(a,c)                ;c contains the index to b
-    inds[i] = c
-  endfor 
+  if keyword_set(progress and (n ge 100)) then begin
+    k = 0
+    onepct = n/100L
+    cr = string(13B)
+    for i=0l,n-1l do begin
+      a = abs(dat.x-t[i])
+      b = min(a,c)                ;c contains the index to b
+      inds[i] = c
+      if ~(i mod onepct) then print, cr, k++, format='(a,i5," % ",$)'
+    endfor
+    print, cr + "  100 % "
+  endif else begin
+    for i=0l,n-1l do begin 
+      a = abs(dat.x-t[i])
+      b = min(a,c)                ;c contains the index to b
+      inds[i] = c
+    endfor
+  endelse
 
   tn = tag_names(dat)
   if arg_present(x) then x = dat.x[inds]

@@ -8,6 +8,7 @@ if keyword_set(setlim) then begin
   options,'*MASK',tplot_routine='bitplot'
   options,'*_FLAGS',tplot_routine='bitplot'
   options,'*_FLAG',tplot_routine='bitplot'
+  options,'*_BITS',tplot_routine='bitplot'
   tplot_options,'no_interp',1
 ;  options,'*SPEC23',panel_size=3
   options,'*rates*CNTS',spec=1,zrange=[.8,1e3],/zlog,yrange=[0,0],ylog=0
@@ -46,6 +47,7 @@ if keyword_set(name) then begin
     'CMDCTR': tplot,'*swem_dhkp_SW_CMDCOUNTER *CMD_REC *CMDS_REC',add=add
     'SE':   tplot,'*sp?_AF0_ANODE_SPEC *sp?_AF1_*_SPEC spp_sp?_hkp_MRAM_*',ADD=ADD
     'SE_HV': tplot,'*sp?_hkp_ADC_VMON_* *sp?_hkp_ADC_IMON_*',ADD=ADD
+    'SA_SUM' : tplot, 'spp_spa_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spa_hkp_CMD_REC spp_spa_SF1_NRG_SPEC spp_spa_SF0_NRG_SPEC',add=add
     'SA_HV': tplot,'*CMDCOUNTER *spa_*CMD_REC *spa_hkp_HV_CONF_FLAG *spa_hkp_???_DAC *spa_hkp_ADC_VMON_* *spa_hkp_ADC_IMON_* *spa_*SF1_ANODE_SPEC',ADD=ADD
     'SB_HV': tplot,'*CMDCOUNTER *spb_*CMD_REC *spb_hkp_HV_CONF_FLAG *spb_hkp_???_DAC *spb_hkp_ADC_VMON_* *spb_hkp_ADC_IMON_* *spb_*SF1_ANODE_SPEC',ADD=ADD
     'SC_HV': tplot,'spp_spc_hkp_ADC*'

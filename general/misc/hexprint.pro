@@ -17,13 +17,13 @@
 ;
 ; :Author: davin  Jan 19, 2015
 ;
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-; $LastChangedRevision: 24506 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-05-13 16:15:11 -0700 (Sun, 13 May 2018) $
+; $LastChangedRevision: 25212 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/hexprint.pro $
 ;
 ;-
-pro hexprint,buffer,unit=unit,filename=filename,decimal=decimal,start=start,nbytes=nbytes,dlevel=dlevel,ncolumns=ncolumns
+pro hexprint,buffer,unit=unit,filename=filename,decimal=decimal,start=start,nbytes=nbytes,dlevel=dlevel,ncolumns=ncolumns,binary=binary,format=sformat,buffer2=buffer2
 
 if size(/type,buffer) eq 7 && file_test(buffer,/regular) then begin   ; display file
    fi = file_info(buffer)
@@ -32,7 +32,7 @@ if size(/type,buffer) eq 7 && file_test(buffer,/regular) then begin   ; display 
    buffer2 = bytarr(nbytes < fi.size)
    readu,ifp,buffer2
    free_lun,ifp
-   hexprint,buffer2,unit=unit,filename=filename,decimal=decimal,ncolumns=ncolumns
+   hexprint,buffer2,unit=unit,filename=filename,decimal=decimal,ncolumns=ncolumns,binary=binary,format=sformat,start=start
    return
 endif
 
@@ -43,6 +43,7 @@ if not keyword_set(unit) then u=-1 else u=unit
 nbts = [0,1,2,4,0,0,0,0,0,0,0,0,2,4,8,8,0,0,0,0]
 type=size(/type,buffer)
 nb = nbts[type]
+if keyword_set(sformat) then format = '(128('+sformat+'," "))' else begin
 case nb of
   1: format = '(128(z02," "))'
   2: format = '(128(z04," "))'
@@ -50,7 +51,15 @@ case nb of
   8: format = '(128(z016," "))'
   else: format =''
 endcase
-if keyword_set(decimal) then begin
+if keyword_set(binary) then begin
+  case nb of
+    1: format = '(128(b08," "))'
+    2: format = '(128(b016," "))'
+    4: format = '(128(b032," "))'
+    8: format = '(128(z064," "))'
+    else: format =''
+  endcase
+endif else if keyword_set(decimal) then begin
   case type of
      1: format = '(128(i3," "))'
      2: format = '(128(i6," "))'
@@ -58,8 +67,8 @@ if keyword_set(decimal) then begin
      else: format = ''
   endcase
 endif
+endelse
 if not keyword_set(format) then print,'No data to display'
-
 
 cols = ([0,32,16,0,8,0,0,0,8])[nb]
 
@@ -69,10 +78,15 @@ remap = bindgen(255)
 remap[0:31] =  32b
 remap[128:*] = 32b
 
-n = n_elements(buffer)
-if keyword_set(nbytes) then n = n < nbytes
+if not keyword_set(nbytes) then nbytes=ulong(1024)
+
+;n = n_elements(buffer)
+;if keyword_set(nbytes) then n = n < nbytes
 blank = '   '
-i=0l
+if n_elements(start) eq 0 then start=0UL
+i=ulong(start)
+n=  ulong(start) + nbytes
+n = n < n_elements(buffer)
 while i lt n do begin
   s = string(i,format='(z06,"x: ")' )
   row = buffer[i:(i+cols-1) < (n-1)]

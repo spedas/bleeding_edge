@@ -47,6 +47,7 @@
 function strfilter,str,matchs,count=count,  $
      wildcard=wildcard,fold_case=fold_case,  $
      delimiter=delimiter, no_match=no_match, $
+     null = null,  $
      index=index,string=retstr,byte=bt,negate=negate
 
 
@@ -125,7 +126,7 @@ endelse    ; end of old version
 
 
 if keyword_set(negate) then ret = (ret eq 0)
-ind = where(ret,count)
+ind = where(ret,count,null=null)
 nstr = count eq 0 ?  '' : str[ind]
 if keyword_set(retstr) then return, nstr
 if keyword_set(index)  then return, ind

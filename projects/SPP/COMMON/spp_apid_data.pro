@@ -14,6 +14,7 @@ pro spp_apid_data,apid,name=name,$
                   increment=increment,$
                   rt_flag=rt_flag
 
+  message,'obsolete routine'
   common spp_swp_raw_data_block_com, all_apdat
 
   if keyword_set(reset) then begin
