@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon May 14 03:16:18 2018.<P>
+<STRONG>Last modified: </STRONG>Mon May 14 18:16:26 2018.<P>
  
 <HR>
  
@@ -25,7 +25,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#YYY_INIT">YYY_INIT</A>
 <br>Initializes system variables for yyy data. Can be called from idl_startup to set
 <LI><A HREF="#YYY_READ_CONFIG">YYY_READ_CONFIG</A>
-<br>Reads the yyy_config file
+<br>Reads the plug-in configuration file (yyy_config.txt). Feel free to copy+paste
 <LI><A HREF="#YYY_WRITE_CONFIG">YYY_WRITE_CONFIG</A>
 <br>Writes the yyy_config file
 <br>
@@ -100,25 +100,34 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/
 <A HREF="#YYY_WRITE_CONFIG">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-NAME:
- yyy_read_config
-PURPOSE:
- Reads the yyy_config file
-CALLING SEQUENCE:
- cstruct = yyy_read_config()
-INPUT:
- none, for the purposes of this example the filename is hardcoded, 
- 'yyy_config.txt',and is put in a folder given by the routine 
- istp_config_filedir, that uses the IDL
- routine app_user_dir to create/obtain it: my linux example:
- /disks/ice/home/jimm/.idl/spedas/yyy_config-4-linux
-OUTPUT:
- cstruct = a structure with the changeable fields of the !istp
+ NAME:
+   yyy_read_config
+   
+ PURPOSE:
+   Reads the plug-in configuration file (yyy_config.txt). Feel free to copy+paste
+   this for your new plug-in, and change 'yyy' to your mission acronym throughout
+   
+ CALLING SEQUENCE:
+   cstruct = yyy_read_config()
+ 
+ INPUT:
+   none, for the purposes of this example the filename is hardcoded, 
+   'yyy_config.txt', and is put in a folder given by the routine 
+   istp_config_filedir, that uses the IDL
+   routine app_user_dir to create/obtain it: my linux example:
+   /disks/ice/home/jimm/.idl/spedas/yyy_config-4-linux
+ 
+ OUTPUT:
+   cstruct = a structure with the changeable fields of the !istp
            structure
- Copied from thm_read_config and tt2000_read_config lphilpott 20-jun-2012
-$LastChangedBy: nikos $
-$LastChangedDate: 2015-11-18 13:41:30 -0800 (Wed, 18 Nov 2015) $
-$LastChangedRevision: 19408 $
+ 
+ HISTORY:
+   Cleaned up for new plug-ins by egrimes 14-may-2018
+   Copied from thm_read_config and tt2000_read_config lphilpott 20-jun-2012
+   
+$LastChangedBy: egrimes $
+$LastChangedDate: 2018-05-14 16:49:20 -0700 (Mon, 14 May 2018) $
+$LastChangedRevision: 25221 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/api_examples/file_configuration_tab/yyy_read_config.pro $
 </PRE><P>
 <STRONG>(See <A href="file_configuration_tab/yyy_read_config.pro">spedas_gui/api_examples/file_configuration_tab/yyy_read_config.pro</A>)</STRONG><P>

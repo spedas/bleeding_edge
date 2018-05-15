@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon May 14 03:16:18 2018.<P>
+<STRONG>Last modified: </STRONG>Mon May 14 18:16:26 2018.<P>
  
 <HR>
  
@@ -62,6 +62,8 @@ THM_CRIB_RECOVERY_VXY_MOM_EARLY_2007[2]</A>
 <LI><A HREF="#THM_CRIB_SST_LOAD_CALIBRATE">THM_CRIB_SST_LOAD_CALIBRATE</A>
 <LI><A HREF="#THM_CRIB_SUPERPO_INTERPOL_HISTO">THM_CRIB_SUPERPO_INTERPOL_HISTO
 </A>
+<LI><A HREF="#THM_CRIB_TPLOT2AUTOPLOT">THM_CRIB_TPLOT2AUTOPLOT</A>
+<br>Crib sheet showing how to send THEMIS data to Autoplot
 <LI><A HREF="#THM_CRIB_TWAVPOL">THM_CRIB_TWAVPOL</A>
 <LI><A HREF="#THM_CRIB_TWAVPOL_SCM">THM_CRIB_TWAVPOL_SCM</A>
 <br>
@@ -1175,7 +1177,7 @@ Notes:
 <A NAME="THM_CRIB_SUPERPO_INTERPOL_HISTO">
 <H2>THM_CRIB_SUPERPO_INTERPOL_HISTO</H2></A>
 <A HREF="#THM_CRIB_SST_LOAD_CALIBRATE">[Previous Routine]</A>
-<A HREF="#THM_CRIB_TWAVPOL">[Next Routine]</A>
+<A HREF="#THM_CRIB_TPLOT2AUTOPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Name:
@@ -1203,9 +1205,33 @@ $URL $
 <STRONG>(See <A href="advanced/thm_crib_superpo_interpol_histo.pro">projects/themis/examples/advanced/thm_crib_superpo_interpol_histo.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_CRIB_TPLOT2AUTOPLOT">
+<H2>THM_CRIB_TPLOT2AUTOPLOT</H2></A>
+<A HREF="#THM_CRIB_SUPERPO_INTERPOL_HISTO">[Previous Routine]</A>
+<A HREF="#THM_CRIB_TWAVPOL">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         thm_crib_tplot2autoplot
+
+ PURPOSE:
+         Crib sheet showing how to send THEMIS data to Autoplot
+
+ NOTES:
+         For this to work, you'll need to open Autoplot and enable the 'Server' feature via
+         the 'Options' menu with the default port (12345)
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2018-05-14 07:45:30 -0700 (Mon, 14 May 2018) $
+ $LastChangedRevision: 25217 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/examples/advanced/thm_crib_tplot2autoplot.pro $
+</PRE><P>
+<STRONG>(See <A href="advanced/thm_crib_tplot2autoplot.pro">projects/themis/examples/advanced/thm_crib_tplot2autoplot.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_CRIB_TWAVPOL">
 <H2>THM_CRIB_TWAVPOL</H2></A>
-<A HREF="#THM_CRIB_SUPERPO_INTERPOL_HISTO">[Previous Routine]</A>
+<A HREF="#THM_CRIB_TPLOT2AUTOPLOT">[Previous Routine]</A>
 <A HREF="#THM_CRIB_TWAVPOL_SCM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

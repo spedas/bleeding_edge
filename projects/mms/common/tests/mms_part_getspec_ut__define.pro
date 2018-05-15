@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-05-02 09:22:53 -0700 (Wed, 02 May 2018) $
-; $LastChangedRevision: 25157 $
+; $LastChangedDate: 2018-05-14 08:48:48 -0700 (Mon, 14 May 2018) $
+; $LastChangedRevision: 25218 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
 
@@ -81,7 +81,6 @@ function mms_part_getspec_ut::test_fpi_e_eflux_vs_pgs
   return, 1
 end
 
-; todo
 function mms_part_getspec_ut::test_fpi_multipad
   mms_part_getspec, probe=4, trange=['2017-10-15/10:50', '2017-10-15/11:00'], output='pa multipad'
   mms_part_getpad, probe=4
