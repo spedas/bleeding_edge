@@ -13,12 +13,12 @@
 ;       Yuki Harada on 2016-03-04
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-04-25 01:30:56 -0700 (Wed, 25 Apr 2018) $
-; $LastChangedRevision: 25109 $
+; $LastChangedDate: 2018-05-15 00:52:42 -0700 (Tue, 15 May 2018) $
+; $LastChangedRevision: 25222 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/general/spice/kgy_spice_kernels.pro $
 ;-
 
-function kgy_spice_kernels, trange=trange, source=source, clear=clear, load=load, last_version=last_version
+function kgy_spice_kernels, trange=trange, source=source, clear=clear, load=load, last_version=last_version, spk_gaps=spk_gaps
 
 if spice_test() eq 0 then return,''
 syst0 = systime(/sec)

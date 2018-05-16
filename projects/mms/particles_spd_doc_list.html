@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon May 14 18:16:26 2018.<P>
+<STRONG>Last modified: </STRONG>Tue May 15 18:16:12 2018.<P>
  
 <HR>
  
@@ -22,6 +22,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_CONVERT_FLUX_UNITS">MMS_CONVERT_FLUX_UNITS</A>
 <LI><A HREF="#MMS_GET_DIST">MMS_GET_DIST</A>
 <LI><A HREF="#MMS_PART_CONV_UNITS">MMS_PART_CONV_UNITS</A>
+<LI><A HREF="#MMS_PART_DES_PHOTOELECTRONS">MMS_PART_DES_PHOTOELECTRONS</A>
+<br>Loads and returns the FPI/DES photoelectron model based on stepper ID
 <LI><A HREF="#MMS_PART_GETPAD">MMS_PART_GETPAD</A>
 <br>Quickly generate pitch angle spectrograms from multipad output from mms_part_getspec/mms_part_products_new
 <LI><A HREF="#MMS_PART_GETSPEC">MMS_PART_GETSPEC</A>
@@ -136,7 +138,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_PART_CONV_UNITS">
 <H2>MMS_PART_CONV_UNITS</H2></A>
 <A HREF="#MMS_GET_DIST">[Previous Routine]</A>
-<A HREF="#MMS_PART_GETPAD">[Next Routine]</A>
+<A HREF="#MMS_PART_DES_PHOTOELECTRONS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -155,9 +157,36 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="particles/mms_part_conv_units.pro">projects/mms/particles/mms_part_conv_units.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_PART_DES_PHOTOELECTRONS">
+<H2>MMS_PART_DES_PHOTOELECTRONS</H2></A>
+<A HREF="#MMS_PART_CONV_UNITS">[Previous Routine]</A>
+<A HREF="#MMS_PART_GETPAD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ FUNCTION:
+         mms_part_des_photoelectrons
+
+ PURPOSE:
+         Loads and returns the FPI/DES photoelectron model based on stepper ID
+
+ INPUT:
+         dist_var: DES distribution data
+         
+
+ NOTES:
+         see: https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2017JA024518
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2018-05-15 17:19:32 -0700 (Tue, 15 May 2018) $
+$LastChangedRevision: 25225 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_des_photoelectrons.pro $
+</PRE><P>
+<STRONG>(See <A href="particles/mms_part_des_photoelectrons.pro">projects/mms/particles/mms_part_des_photoelectrons.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_PART_GETPAD">
 <H2>MMS_PART_GETPAD</H2></A>
-<A HREF="#MMS_PART_CONV_UNITS">[Previous Routine]</A>
+<A HREF="#MMS_PART_DES_PHOTOELECTRONS">[Previous Routine]</A>
 <A HREF="#MMS_PART_GETSPEC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

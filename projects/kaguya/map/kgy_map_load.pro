@@ -23,8 +23,8 @@
 ;     Yuki Harada on 2014-07-02
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2017-11-21 12:02:46 -0800 (Tue, 21 Nov 2017) $
-; $LastChangedRevision: 24333 $
+; $LastChangedDate: 2018-05-15 00:54:22 -0700 (Tue, 15 May 2018) $
+; $LastChangedRevision: 25223 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/kgy_map_load.pro $
 ;-
 
@@ -178,26 +178,26 @@ endif
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;- set default paths to files, will be appended to local_data_dir (def. '~/data/kaguya/')
-;local_data_dir = '~/data/kaguya/'
+;- set default paths to files, will be appended to local_data_dir
 infopath = 'pace/INFO/*.dat'
 fovpath = 'pace/FOV/FOV_ANGLE_*/*/*angle*'
 pbfpath = 'pace/pbf/LEVEL1_VER1/YYYYMMDD/PBF1_C_YYYYMMDD_*_I.DAT*'
 lmagpath = 'lmag/???/YYYYMM/magYYYYMMDD.*.1sec*'
 
+trange = timerange(trange)
 
-
+s = kgy_file_source(_extra=_extra)
 
 ;- read in files
 if keyword_set(infofiles) then kgy_read_inf, infofiles else begin
    if sensor[0] ne 4 and size(esa1_info_str,/type) ne 8 then begin
-      f = kgy_file_retrieve(infopath,local_data_dir=local_data_dir, _extra=_extra)
+      f = file_search( s.local_data_dir + infopath )
       if total(strlen(f)) gt 0 then kgy_read_inf, f
    endif
 endelse
 if keyword_set(fovfiles) then kgy_read_fov, fovfiles else begin
    if sensor[0] ne 4 and size(esa1_fov_str,/type) ne 8 then begin
-      f = kgy_file_retrieve(fovpath,local_data_dir=local_data_dir, _extra=_extra)
+      f = file_search( s.local_data_dir + fovpath )
       if total(strlen(f)) gt 0 then kgy_read_fov, f
    endif
 endelse
@@ -209,7 +209,9 @@ if keyword_set(files) then begin
    idx = where( strmatch(files,'*/mag*') eq 1 , idx_cnt )
    if idx_cnt gt 0 then kgy_read_lmag,files[idx],trange=trange
 endif else begin
-   f = kgy_file_retrieve(pbfpath,trange=trange,/daily,local_data_dir=local_data_dir,_extra=_extra)
+
+
+   f = file_search(time_intervals(trange=trange,tf=s.local_data_dir+pbfpath,/daily))
    fpbf = ''
    senstrs = ['*ESA1*','*ESA2*','*IMA*','*IEA*','*LMAG*']
    for isen=0,n_elements(sensor)-1 do begin
@@ -223,7 +225,7 @@ endif else begin
 
    w = where(sensor eq 4, nw)
    if nw gt 0 then begin
-      f = kgy_file_retrieve(lmagpath,trange=trange,/daily)
+      f = file_search(time_intervals(trange=trange,tf=s.local_data_dir+lmagpath,/daily))
       kgy_read_lmag,f,trange=trange
    endif
 endelse
