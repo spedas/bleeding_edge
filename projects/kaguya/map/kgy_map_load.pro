@@ -23,8 +23,8 @@
 ;     Yuki Harada on 2014-07-02
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-05-15 00:54:22 -0700 (Tue, 15 May 2018) $
-; $LastChangedRevision: 25223 $
+; $LastChangedDate: 2018-05-15 23:37:33 -0700 (Tue, 15 May 2018) $
+; $LastChangedRevision: 25226 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/kgy_map_load.pro $
 ;-
 
@@ -134,36 +134,45 @@ if keyword_set(public) then begin
                           labels:['Lon/180','Lat/90'],labflag:1,constant:0}
 
          ;;; SAT
-         bsat = spice_vector_rotate(bme,ttt,'MOON_ME','SELENE_M_SPACECRAFT',check='SELENE')
          lmag_sat_line $
-            = {time:0.d, alt:!values.f_nan, lat:!values.f_nan, lon:!values.f_nan, Bsat:fltarr(3)}
+            = {time:0.d, alt:!values.f_nan, lat:!values.f_nan, lon:!values.f_nan, Bsat:[!values.f_nan,!values.f_nan,!values.f_nan]}
          lmag_sat = replicate( lmag_sat_line, n_elements(ttt) )
          lmag_sat.time = ttt
-         lmag_sat.bsat = bsat   ;- store Bsat in common block
-         store_data,'kgy_lmag_Bsat',data={x:ttt,y:transpose(bsat)}, $
+         in_gaps = kgy_ck_gaps(ttt)
+         wok = where( ~in_gaps , nwok )
+         if nwok gt 0 then begin
+            bsat = spice_vector_rotate(bme[*,wok],ttt[wok],'MOON_ME','SELENE_M_SPACECRAFT',check='SELENE')
+            lmag_sat[wok].bsat = bsat ;- store Bsat in common block
+         endif
+         store_data,'kgy_lmag_Bsat',data={x:ttt,y:transpose(lmag_sat.bsat)}, $
                     dlim={ytitle:'Bsat!c[nT]',colors:['b','g','r'], $
                           labels:['Bx','By','Bz'],labflag:1,constant:0, $
                           spice_frame:'SELENE_M_SPACECRAFT'}
 
          ;;; SSE
-         rsse = spice_body_pos('SELENE','MOON',utc=ttt,frame='SSE', $
-                               check='SELENE')
-         store_data,'kgy_lmag_Rsse',data={x:ttt,y:transpose(rsse)}, $
-                    dlim={ytitle:'Rsse!c[km]',colors:['b','g','r'], $
-                          labels:['X','Y','Z'],labflag:1,constant:0, $
-                          spice_frame:'SSE'}
-         alt = total(rsse^2,1)^.5-rL ;- alt from SPICE
-         store_data,'kgy_lmag_alt',data={x:ttt,y:alt}, $
-                    dlim={ytitle:'Altitude!c[km]'}
-         sza = reform( acos(rsse[0,*]/total(rsse^2,1)^.5)*!radeg )
-         store_data,'kgy_lmag_sza',data={x:ttt,y:sza}, $
-                    dlim={yrange:[0,180],ystyle:1,yticks:4,yminor:3, $
-                          ytitle:'SZA!c[deg.]',colors:'b',constant:90}
          bsse = spice_vector_rotate(bgse,ttt,'GSE','SSE')
          store_data,'kgy_lmag_Bsse',data={x:ttt,y:transpose(bsse)}, $
                     dlim={ytitle:'Bsse!c[nT]',colors:['b','g','r'], $
                           labels:['Bx','By','Bz'],labflag:1,constant:0, $
                           spice_frame:'SSE'}
+         in_gaps = kgy_spk_gaps(ttt)
+         wok = where( ~in_gaps , nwok )
+         if nwok gt 0 then begin
+            rsse = make_array(value=!values.f_nan,3,n_elements(ttt))
+            rsse[*,wok] = spice_body_pos('SELENE','MOON',utc=ttt[wok],frame='SSE', $
+                                         check='SELENE')
+            store_data,'kgy_lmag_Rsse',data={x:ttt,y:transpose(rsse)}, $
+                       dlim={ytitle:'Rsse!c[km]',colors:['b','g','r'], $
+                             labels:['X','Y','Z'],labflag:1,constant:0, $
+                             spice_frame:'SSE'}
+            alt = total(rsse^2,1)^.5-rL ;- alt from SPICE
+            store_data,'kgy_lmag_alt',data={x:ttt,y:alt}, $
+                       dlim={ytitle:'Altitude!c[km]'}
+            sza = reform( acos(rsse[0,*]/total(rsse^2,1)^.5)*!radeg )
+            store_data,'kgy_lmag_sza',data={x:ttt,y:sza}, $
+                       dlim={yrange:[0,180],ystyle:1,yticks:4,yminor:3, $
+                             ytitle:'SZA!c[deg.]',colors:'b',constant:90}
+         endif
       endif
    endif
 

@@ -42,8 +42,8 @@
 ;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-19 08:18:08 -0700 (Thu, 19 Apr 2018) $
-;$LastChangedRevision: 25076 $
+;$LastChangedDate: 2018-05-16 14:11:58 -0700 (Wed, 16 May 2018) $
+;$LastChangedRevision: 25231 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -196,7 +196,7 @@ pro mms_part_getspec, probes=probes, $
             pitch=pitch, gyro=gyro_in, phi=phi_in, theta=theta, regrid=regrid, $
             outputs=outputs, suffix=suffix, datagap=datagap, subtract_bulk=subtract_bulk, $
             tplotnames=tplotnames_thisprobe, subtract_error=subtract_error, $
-            error_variable=error_variable, _extra=ex
+            error_variable=error_variable, instrument=instrument, species=species, _extra=ex
 
         if undefined(tplotnames_thisprobe) then continue ; nothing created by mms_part_products
         append_array, tplotnames, tplotnames_thisprobe
