@@ -33,9 +33,9 @@ FUNCTION nn,data,time,x=x,y=y,v=v,progress=progress   ;nearest neighbor function
 ; See also:
 ;   find_nearest_neighbor2, find_nearest_neighbor
 ; 
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-05-10 11:04:34 -0700 (Thu, 10 May 2018) $
-; $LastChangedRevision: 25193 $
+; $LastChangedBy: hara $
+; $LastChangedDate: 2018-05-17 14:33:19 -0700 (Thu, 17 May 2018) $
+; $LastChangedRevision: 25233 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/nn.pro $
 ;-
   nd = n_elements(data)         ;1 if a str, more if an array
@@ -83,7 +83,7 @@ FUNCTION nn,data,time,x=x,y=y,v=v,progress=progress   ;nearest neighbor function
   n = n_elements(t)
   if n eq 1 then inds = 0l else inds = lonarr(n)
 
-  if keyword_set(progress and (n ge 100)) then begin
+  if keyword_set(progress) and (n ge 100) then begin
     k = 0
     onepct = n/100L
     cr = string(13B)

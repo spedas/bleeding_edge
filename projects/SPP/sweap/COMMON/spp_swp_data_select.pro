@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-05-06 21:39:00 -0700 (Sun, 06 May 2018) $
-; $LastChangedRevision: 25173 $
+; $LastChangedDate: 2018-05-17 05:03:47 -0700 (Thu, 17 May 2018) $
+; $LastChangedRevision: 25232 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_data_select.pro $
 
 ;  This routine extracts a single byte or uint or ulong or ulong64 from an array of bytes
@@ -9,6 +9,11 @@
 
 function spp_swp_data_select,bytearray,startbit,nbits
 
+  if n_elements(bytearray) * 8 lt (startbit+nbits) then begin
+    dprint,dlevel=1,'Extraction error'
+    stop
+    return, 0
+  endif
   startbyte = startbit / 8               
   startshft = startbit mod 8
   endbyte   = (startbit+nbits-1) / 8

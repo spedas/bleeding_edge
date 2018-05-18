@@ -1,6 +1,7 @@
 
 
-pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length,ptp_header=ptp_header,remainder=remainder   ,recurse_level=recurse_level;,ccsds=ccsds
+pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length,ptp_header=ptp_header,remainder=remainder ,wrapper_apid=wrapper_apid, original_size=original_size $
+    ,recurse_level=recurse_level;,ccsds=ccsds
 
   if not keyword_set(buffer_length) then buffer_length = n_elements(dbuffer)
   if not keyword_set(offset) then offset = 0L
@@ -34,9 +35,6 @@ pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length,ptp_header=ptp_header,rem
       header ={ ptp_time:systime(1), ptp_scid: 0, ptp_source:0, ptp_spare:0, ptp_path:0, ptp_size: 17 + ccsds.pkt_size }
     endelse
 
-      
-
-
     apdat = spp_apdat(ccsds.apid)
 
     if keyword_set( *apdat.ccsds_last) then begin
@@ -61,6 +59,8 @@ pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length,ptp_header=ptp_header,rem
     stats = spp_apdat(0)
     stats.handler, ccsds, header
 
+    ;print,ptrace(option=3)
+    if npackets ne 1 then dprint,dlevel=2,npackets
 
  
   endwhile

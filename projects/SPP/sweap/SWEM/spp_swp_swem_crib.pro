@@ -72,6 +72,8 @@ SSRfiles = spp_file_retrieve(path,trange=trange,/hourly)
 
 met= '2020-7-21'
 
+printdat,spp_file_source(user_pass='davin:password',/set)
+
 
 
 path='psp/data/sci/sweap/sao/s#sr_telemetry/YYYY/DOY/*_EA'
@@ -82,7 +84,13 @@ str_replace,ff,'s#s','ss'
 ff = 'psp/data/sci/sweap/sao/ssr_telemetry/2020/191/*_EA'
 SSRfiles = spp_file_retrieve(ff)
 
+
+ssrfiles = spp_file_retrieve('spp/data/sci/sweap/sao/ssr_telemetry/2018/245/*_EA')                 ;MSIM4:
 spp_ssr_file_read,ssrfiles
+
+ssrfiles = spp_file_retrieve( 'spp/data/sci/MOC/SPP/data_products/ssr_telemetry/2018/245/*_EA')
+
+
 
 trange = '2018-05-08/03:27:02'   ; racksat memory dump
 
@@ -116,7 +124,7 @@ spp_init_realtime,/swem,/cal,/exec
 
 dprint,setd=2
 
-trange = systime(1) + [-2,0] * 3600.
+trange = systime(1) + [-4,0] * 3600.
 ptpfiles = spp_file_retrieve(path,trange= trange,/hourly_names)
 
 if 1 then begin
@@ -131,6 +139,6 @@ spp_ptp_file_read, ptpfiles
 dprint,setd=4
 
 
-spp_swp_tplot,/setlim   ,'swem'
+spp_swp_tplot,/setlim   ,'swem2'
 
 end

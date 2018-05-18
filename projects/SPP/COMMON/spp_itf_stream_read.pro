@@ -149,7 +149,10 @@ pro spp_itf_stream_read,buffer,info=info
   
   ;*info.buffer_ptr = !null
  ; printdat,info
-  
+  if 0 then begin
+    spp_itf_decom,buffer,info=itfstruct
+    return
+  endif
   
   
   if keyword_set(*info.buffer_ptr)  then begin

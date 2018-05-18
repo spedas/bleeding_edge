@@ -58,8 +58,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-06-12 15:08:37 -0700 (Mon, 12 Jun 2017) $
-;$LastChangedRevision: 23455 $
+;$LastChangedDate: 2018-05-17 14:35:23 -0700 (Thu, 17 May 2018) $
+;$LastChangedRevision: 25234 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/cotrans/mms_cotrans.pro $
 ;-
 
@@ -334,11 +334,14 @@ for i = 0, n_elements(in_names)-1 do begin
   spindec = 'mms'+probe+'_defatt_spindec'+support_suffix
 
 
-  ; check if the defatt spinras/spindec variables were loaded
-  ras = tnames(spinras)
-  decl = tnames(spindec)
-  if ras eq '' && decl eq '' then begin
-      dprint, dlevel = 0, 'Error, couldnt find the right ascension/declination variables'
+  ; the following check is only required for DMPA coordinates
+  if strlowcase(in_name) eq 'dmpa' or strlowcase(out_name) eq 'dmpa' then begin
+    ; check if the defatt spinras/spindec variables were loaded
+    ras = tnames(spinras)
+    decl = tnames(spindec)
+    if ras eq '' && decl eq '' then begin
+        dprint, dlevel = 0, 'Error, couldnt find the right ascension/declination variables'
+    endif
   endif
  
   mms_cotrans_transformer, in_name, out_name, in_c, out_coord, $
