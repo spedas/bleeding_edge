@@ -17,18 +17,18 @@
 ;     Yuki Harada on 2014-06-29
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2016-09-09 11:33:47 -0700 (Fri, 09 Sep 2016) $
-; $LastChangedRevision: 21810 $
+; $LastChangedDate: 2018-05-18 00:03:47 -0700 (Fri, 18 May 2018) $
+; $LastChangedRevision: 25235 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_read_inf.pro $
 ;-
 
-pro kgy_read_inf, files, load=load, verbose=verbose
+pro kgy_read_inf, files, load=load, verbose=verbose, _extra=_ex
 
 @kgy_pace_com
 
 if keyword_set(load) then begin
    files = ''
-   s = kgy_file_source(no_server=0,remote_data_dir='http://research.ssl.berkeley.edu/~haraday/data/kaguya/',last_version=1)
+   s = kgy_file_source(remote_data_dir='http://research.ssl.berkeley.edu/~haraday/data/kaguya/',last_version=1, _extra=_ex)
    pfs = 'public/Kaguya_MAP_PACE_information/'+ $
          ['ESA-S1_ENE_POL_AZ_GFACTOR_16X64_*.dat', $
           'ESA-S1_ENE_POL_AZ_GFACTOR_4X16_*.dat', $

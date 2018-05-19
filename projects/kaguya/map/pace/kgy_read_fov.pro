@@ -17,18 +17,18 @@
 ;     Yuki Harada on 2014-07-01
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2016-09-09 11:33:47 -0700 (Fri, 09 Sep 2016) $
-; $LastChangedRevision: 21810 $
+; $LastChangedDate: 2018-05-18 00:03:47 -0700 (Fri, 18 May 2018) $
+; $LastChangedRevision: 25235 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_read_fov.pro $
 ;-
 
-pro kgy_read_fov, files, load=load, verbose=verbose
+pro kgy_read_fov, files, load=load, verbose=verbose, _extra=_ex
 
 @kgy_pace_com
 
 if keyword_set(load) then begin
    files = ''
-   s = kgy_file_source(no_server=0,remote_data_dir='http://research.ssl.berkeley.edu/~haraday/data/kaguya/',last_version=0)
+   s = kgy_file_source(remote_data_dir='http://research.ssl.berkeley.edu/~haraday/data/kaguya/',last_version=0, _extra=_ex)
    pfs = 'public/FOV_ANGLE_*/'+ $
          ['ESAS1/esas1*','ESAS2/esas2*','IEA/iea*','IMA/ima*']
    for ipf=0,n_elements(pfs)-1 do begin

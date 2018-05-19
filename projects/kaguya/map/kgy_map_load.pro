@@ -23,8 +23,8 @@
 ;     Yuki Harada on 2014-07-02
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-05-15 23:37:33 -0700 (Tue, 15 May 2018) $
-; $LastChangedRevision: 25226 $
+; $LastChangedDate: 2018-05-18 00:03:47 -0700 (Fri, 18 May 2018) $
+; $LastChangedRevision: 25235 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/kgy_map_load.pro $
 ;-
 
@@ -46,8 +46,8 @@ if keyword_set(public) then begin
    ;;; PACE information files
    w = where(sensor eq 0 or sensor eq 1 or sensor eq 2 or sensor eq 3, nw)
    if nw gt 0 then begin
-      kgy_read_fov,/load        ;- load fov files
-      kgy_read_inf,/load        ;- load inf files
+      kgy_read_fov,/load, _extra=_extra ;- load fov files
+      kgy_read_inf,/load, _extra=_extra ;- load inf files
    endif
 
    ;;; ESA1
@@ -55,7 +55,7 @@ if keyword_set(public) then begin
    if nw gt 0 then begin
       pf = 'sln-l-pace-3-pbf1-v'+pbfpubversion2+'/YYYYMMDD/data/IPACE_PBF1_yyMMDD_ESA1_V'+pbfpubversion+'.dat.gz'
 ;      pf = 'IPACE_PBF1_yyMMDD_ESA1_V'+pbfpubversion ;- obsolete
-      f = kgy_file_retrieve(pf,trange=trange,/public)
+      f = kgy_file_retrieve(pf,trange=trange,/public, _extra=_extra)
       if total(strlen(f)) gt 0 then kgy_read_pbf, f
       kgy_map_make_tplot, sensor=[0], trange=trange, bkgd=bkgd
    endif
@@ -65,7 +65,7 @@ if keyword_set(public) then begin
    if nw gt 0 then begin
       pf = 'sln-l-pace-3-pbf1-v'+pbfpubversion2+'/YYYYMMDD/data/IPACE_PBF1_yyMMDD_ESA2_V'+pbfpubversion+'.dat.gz'
 ;      pf = 'IPACE_PBF1_yyMMDD_ESA2_V'+pbfpubversion ;- obsolete
-      f = kgy_file_retrieve(pf,trange=trange,/public)
+      f = kgy_file_retrieve(pf,trange=trange,/public, _extra=_extra)
       if total(strlen(f)) gt 0 then kgy_read_pbf, f
       kgy_map_make_tplot, sensor=[1], trange=trange, bkgd=bkgd
    endif
@@ -75,7 +75,7 @@ if keyword_set(public) then begin
    if nw gt 0 then begin
       pf = 'sln-l-pace-3-pbf1-v'+pbfpubversion2+'/YYYYMMDD/data/IPACE_PBF1_yyMMDD_IMA_V'+pbfpubversion+'.dat.gz'
 ;      pf = 'IPACE_PBF1_yyMMDD_IMA_V'+pbfpubversion ;- obsolete
-      f = kgy_file_retrieve(pf,trange=trange,/public)
+      f = kgy_file_retrieve(pf,trange=trange,/public, _extra=_extra)
       if total(strlen(f)) gt 0 then kgy_read_pbf, f
       kgy_map_make_tplot, sensor=[2], trange=trange, bkgd=bkgd
    endif
@@ -85,7 +85,7 @@ if keyword_set(public) then begin
    if nw gt 0 then begin
       pf = 'sln-l-pace-3-pbf1-v'+pbfpubversion2+'/YYYYMMDD/data/IPACE_PBF1_yyMMDD_IEA_V'+pbfpubversion+'.dat.gz'
 ;      pf = 'IPACE_PBF1_yyMMDD_IEA_V'+pbfpubversion ;- obsolete
-      f = kgy_file_retrieve(pf,trange=trange,/public)
+      f = kgy_file_retrieve(pf,trange=trange,/public, _extra=_extra)
       if total(strlen(f)) gt 0 then kgy_read_pbf, f
       kgy_map_make_tplot, sensor=[3], trange=trange, bkgd=bkgd
    endif
@@ -95,12 +95,12 @@ if keyword_set(public) then begin
    if nw gt 0 then begin
       pf = 'sln-l-lmag-3-mag-ts-v'+lmagpubversion+'/nominal/YYYYMMDD/data/MAG_TSYYYYMMDD.dat' ;- -2008-10-31
 ;      pf = 'MAG_TSYYYYMMDD'     ;- 2008 obsolete
-      f = kgy_file_retrieve(pf,trange=trange,/public)
+      f = kgy_file_retrieve(pf,trange=trange,/public, _extra=_extra)
       if total(strlen(f)) gt 0 then kgy_read_lmag, f
 
       pf = 'sln-l-lmag-3-mag-ts-v'+lmagpubversion+'/optional/YYYYMMDD/data/MAG_TSOPYYYYMMDD.dat' ;- 2008-11-01-
 ;      pf = 'MAG_TSOPYYYYMMDD'   ;- 2009 obsolete
-      f = kgy_file_retrieve(pf,trange=trange,/public)
+      f = kgy_file_retrieve(pf,trange=trange,/public, _extra=_extra)
       if total(strlen(f)) gt 0 then kgy_read_lmag, f
       kgy_map_make_tplot, sensor=[4], trange=trange
    endif
@@ -188,10 +188,14 @@ endif
 
 
 ;- set default paths to files, will be appended to local_data_dir
-infopath = 'pace/INFO/*.dat'
-fovpath = 'pace/FOV/FOV_ANGLE_*/*/*angle*'
-pbfpath = 'pace/pbf/LEVEL1_VER1/YYYYMMDD/PBF1_C_YYYYMMDD_*_I.DAT*'
-lmagpath = 'lmag/???/YYYYMM/magYYYYMMDD.*.1sec*'
+str_element,_extra,'infopath',infopath
+str_element,_extra,'fovpath',fovpath
+str_element,_extra,'pbfpath',pbfpath
+str_element,_extra,'lmagpath',lmagpath
+if ~keyword_set(infopath) then infopath = 'pace/INFO/*.dat'
+if ~keyword_set(fovpath) then fovpath = 'pace/FOV/FOV_ANGLE_*/*/*angle*'
+if ~keyword_set(pbfpath) then pbfpath = 'pace/pbf/LEVEL1_VER1/YYYYMMDD/PBF1_C_YYYYMMDD_*_I.DAT*'
+if ~keyword_set(lmagpath) then lmagpath = 'lmag/???/YYYYMM/magYYYYMMDD.*.1sec*'
 
 trange = timerange(trange)
 
