@@ -22,15 +22,16 @@
 ;Notes
 ;
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2015-11-02 14:51:25 -0800 (Mon, 02 Nov 2015) $
-;$LastChangedRevision: 19215 $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-05-21 12:46:11 -0700 (Mon, 21 May 2018) $
+;$LastChangedRevision: 25240 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/core/spd_slice2d_2di.pro $
 ;-
 pro spd_slice2d_2di, datapoints, xyz, resolution, $
                      thetarange=thetarange, zdirrange=zdirrange, $
                      slice_data=slice_data, $
                      xgrid=xgrid, ygrid=ygrid, $
+                     minvelinterp = minvelinterp, $
                      fail=fail
 
     compile_opt idl2, hidden
@@ -145,6 +146,7 @@ pro spd_slice2d_2di, datapoints, xyz, resolution, $
   ; Remove triangles whose total x-y plane velocity is less than
   ; minimum velocity from distribution (prevents interpolation over
   ; lower energy limits)
+ if ~keyword_set(minvelinterp) then begin
   index = where( 1./9 * total( x[tr[0:2,*]] ,1 )^2 + $
                  1./9 * total( y[tr[0:2,*]] ,1 )^2 $
                   gt min(x^2+y^2), $
@@ -157,6 +159,7 @@ pro spd_slice2d_2di, datapoints, xyz, resolution, $
     fail = 'Unknown error in triangulation; cannot interpolate data.'
     return
   endelse
+ endif
  
   ; Set spacing
   xmax = max(abs([y,x]))

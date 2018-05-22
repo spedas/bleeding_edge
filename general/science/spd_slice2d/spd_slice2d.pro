@@ -230,9 +230,9 @@
 ;  Aaron Flores, based on work by Bryan Kerr, Arjun Raj, and Xuzhi Zhou
 ;
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-25 14:16:27 -0700 (Wed, 25 Apr 2018) $
-;$LastChangedRevision: 25114 $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-05-21 12:46:11 -0700 (Mon, 21 May 2018) $
+;$LastChangedRevision: 25240 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/spd_slice2d.pro $
 ;-
 
@@ -250,6 +250,8 @@ function spd_slice2d, input1, input2, input3, input4, $
                       rotation=rotation, $
                       slice_norm=slice_z, $
                       slice_x=slice_x, $
+                     ; Shift the origin before interpolation
+                      displacement=displacement_in, $                        
                     ; Support Data
                       mag_data=mag_data, $
                       vel_data=vel_data, $
@@ -556,6 +558,36 @@ if ~undefined(xyz) then begin
   datapoints = datapoints[sorted]
 endif
 
+minvelinterp = 0
+if keyword_set(displacement_in) then begin
+  ; simple preventetive measure the code will still work if the inpute is wrong
+  if n_elements(displacement_in) ne 3 then begin
+    disp_arr = [0., 0., 0.]
+    dprint, dlevel=2, 'Displacement must be an array of 3 elements. Displacement is set to zero.', display_object=msg_obj
+  endif else disp_arr = displacement_in
+   
+    
+  d = disp_arr
+  case strlowcase(rotation) of
+    'xz': disp_arr = [d[0], d[2], -1*d[1]]
+    'yz': disp_arr = [d[1], d[2], d[0]]
+    else: begin
+      dprint, dlevel=2, 'Displacement currently supports only rotation=xy, xz, yz. Displacement is set to zero.', display_object=msg_obj      
+    end
+  endcase  
+  
+  if type eq 2 and keyword_set(thetarange) then begin
+    dprint, dlevel=2, 'Use zdirrange instead of thetarange with displacement in 2d interpolation.', display_object=msg_obj
+  endif
+  
+  if type eq 1 then begin 
+    dprint, dlevel=2, 'Displacement supports 2d adn 3d interpolation. Displacement is canceled.', display_object=msg_obj    
+  endif else begin 
+    spd_slice2d_translate, vectors=xyz, translate=-1*disp_arr, data=datapoints, /truncate
+    minvelinterp = 1
+  endelse
+  
+endif
 
 
 ; Create slice:
@@ -572,6 +604,7 @@ if type eq 2 then begin
   spd_slice2d_2di, datapoints, xyz, resolution, $
                    thetarange=thetarange, zdirrange=zdirrange, $
                    slice=slice, xgrid=xgrid, ygrid=ygrid, $
+                   minvelinterp=minvelinterp, $
                    fail=fail
 
 ; Linear 3D Interpolation
@@ -580,6 +613,7 @@ endif else if type eq 3 then begin
   dprint, dlevel=4, 'Using 3d linear interpolation'
   spd_slice2d_3di, datapoints, xyz, resolution, drange=drange, $ 
                    slice=slice, xgrid=xgrid, ygrid=ygrid, $
+                   minvelinterp=minvelinterp, $
                    fail=fail
 
 ; Geometric Method
@@ -611,6 +645,13 @@ if keyword_set(smooth) then begin
   spd_slice2d_smooth, slice, smooth
 endif
 
+; Change the axes
+if keyword_set(displacement_in) then begin
+  if type ne 1 then begin 
+    xgrid=xgrid + disp_arr[0]
+    ygrid=ygrid + disp_arr[1]
+  endif
+endif
 
 
 ; Get metadata and return slice structure

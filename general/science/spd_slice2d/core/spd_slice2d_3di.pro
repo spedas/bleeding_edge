@@ -19,13 +19,14 @@
 ;Notes 
 ;
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2015-11-02 14:51:25 -0800 (Mon, 02 Nov 2015) $
-;$LastChangedRevision: 19215 $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-05-21 12:46:11 -0700 (Mon, 21 May 2018) $
+;$LastChangedRevision: 25240 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/core/spd_slice2d_3di.pro $
 ;-
 pro spd_slice2d_3di, datapoints, xyz, resolution, drange=drange, $ 
                      slice=slice, xgrid=xgrid, ygrid=ygrid, $
+                     minvelinterp = minvelinterp, $
                      fail=fail
 
     compile_opt idl2, hidden
@@ -48,6 +49,7 @@ pro spd_slice2d_3di, datapoints, xyz, resolution, drange=drange, $
   ; Remove tetrahedra whose total velocity (centroid) is less than
   ; minimum velocity from distribution (prevents interpolation over
   ; lower energy limits)
+ if ~keyword_set(minvelinterp) then begin
   index = where( 1./16 * total(  x[th[0:3,*]] ,1 )^2 + $
                  1./16 * total(  y[th[0:3,*]] ,1 )^2 + $
                  1./16 * total(  z[th[0:3,*]] ,1 )^2  $
@@ -61,6 +63,7 @@ pro spd_slice2d_3di, datapoints, xyz, resolution, drange=drange, $
     fail = 'Unknown error in triangulation; cannot interpolate data.'
     return
   endelse 
+ endif
 
   ; Interpolate data to regular 3D grid
   vol = qgrid3(x, y, z, datapoints, th, dimension=replicate(resolution,3))
