@@ -20,8 +20,8 @@
 ;
 ;
 ; $LastChangedBy: xussui $
-; $LastChangedDate: 2018-01-02 13:25:51 -0800 (Tue, 02 Jan 2018) $
-; $LastChangedRevision: 24472 $
+; $LastChangedDate: 2018-05-23 13:50:00 -0700 (Wed, 23 May 2018) $
+; $LastChangedRevision: 25251 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot_comp_dailysave.pro $
 ;
 ;CREATED BY:    Shaosui Xu, 08/01/2017
@@ -150,6 +150,9 @@ Pro mvn_scpot_comp_dailysave,start_day=start_day,end_day=end_day,ndays=ndays
                        pot_swepos:pot_swepos, pot_sweneg:pot_sweneg,$
                        pot_sta:pot_sta,pot_sweshdw:pot_sweshdw}
             save,mvn_scpot,file=ofile,/compress
+            spawn,'chgrp maven '+ofile
+            file_chmod, ofile, '0664'o
+            ;spawn,'chmod g+w '+ofile
         endif
     endfor
 

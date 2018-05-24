@@ -2,6 +2,7 @@
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ;-
+COMPILE_OPT IDL2
 
 
 FUNCTION spp_gen_apdat::Init,apid,name,_EXTRA=ex
@@ -11,6 +12,7 @@ void = self->IDL_Object::Init()
 ;printdat,a
 self.apid  =apid
 self.dlevel = 2
+;self.sort_flag = 1
 self.last_data_p = ptr_new(!null)
 if keyword_set(name) then self.name  =name
 self.ccsds_last = ptr_new(/allocate_heap)
@@ -95,11 +97,10 @@ function spp_gen_apdat::decom,ccsds,header
 ;if typename(ccsds) eq 'BYTE' then return,  self.spp_gen_apdat( spp_swp_ccsds_decom(ccsds) )  ;; Byte array as input
 
 strct = ccsds
-strct.pdata = ptr_new()
+  strct.pdata = ptr_new()
 ap = self.struct()
-if self.routine then  strct = call_function(self.routine,ccsds, ptp_header=header ,apdat = ap) $
-else  strct = ccsds
-dprint,dlevel=self.dlevel+4,phelp=2,strct
+if self.routine then  strct = call_function(self.routine,ccsds, ptp_header=header ,apdat = ap) 
+dprint,dlevel=self.dlevel+3,phelp=2,strct
 
 return,strct
 end
@@ -139,12 +140,161 @@ end
  
  
  
-pro spp_gen_apdat::finish
+pro spp_gen_apdat::finish,ttags=ttags
   if self.npkts ne 0 then self.print ,dlevel=3,'finish'
-  if keyword_set(self.data.array) then   store_data,self.tname,data=self.data.array, tagnames=self.ttags,  gap_tag='GAP',verbose=0
+  verbose=1
+  datarray = self.data.array
+  if keyword_set(self.sort_flag) then begin
+    s = sort(datarray.time)
+    datarray = datarray[s]
+  endif
+  if keyword_set(ttags) eq 0 then ttags = self.ttags
+  if keyword_set(datarray) && keyword_set(self.tname) then  begin
+    store_data,self.tname,data=datarray, tagnames=ttags,  gap_tag='GAP',verbose=verbose
+    options,self.tname+'*_BITS',tplot_routine='bitplot'
+  endif
   self.process_time = systime(1)
 end
  
+ 
+ ;+
+;NAME: MVN_SEP_SW_VERSION
+;Function: mvn_spice_kernels(name)
+;PURPOSE:
+; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
+;Author: Davin Larson  - January 2014
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-05-22 03:39:06 -0700 (Tue, 22 May 2018) $
+; $LastChangedRevision: 25243 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
+;-
+function spp_gen_apdat::sw_version
+
+  tb = scope_traceback(/structure)
+  this_file = tb[n_elements(tb)-1].filename
+  this_file_date = (file_info(this_file)).mtime
+
+  sw_hash = orderedhash()
+  
+  sw_hash['sw_version'] =  'v00'
+  sw_hash['sw_time_stamp_file'] = this_file
+  sw_hash['sw_time_stamp'] = time_string(this_file_date)
+  sw_hash['sw_runtime'] = time_string(systime(1))
+  sw_hash['sw_runby'] = getenv('LOGNAME')
+  sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
+  sw_hash['svn_changedate'] = '$LastChangedDate: 2018-05-22 03:39:06 -0700 (Tue, 22 May 2018) $'
+  sw_hash['svn_revision '] = '$LastChangedRevision: 25243 $'
+
+  return,sw_hash
+end
+ 
+function spp_gen_apdat::cdf_global_attributes
+  global_att=orderedhash()
+ 
+  global_att['Acknowledgement'] = !NULL
+  global_att['TITLE'] = 'PSP SPAN Electron and Ion Flux'
+  global_att['Project'] = 'PSP>Parker Solar Probe'
+  global_att['Discipline'] = 'Heliospheric Physics>Particles'
+  global_att['Source_name'] = 'PSP>Parker Solar Probe'
+  global_att['Descriptor'] = 'INSTname>SWEAP generic Sensor Experiment'
+  global_att['Data_type'] = self.name +'>Survey Calibrated Particle Flux'
+  global_att['Data_version'] = 'v00'
+  global_att['TEXT'] = 'PSP'
+  global_att['MODS'] = 'Revision 0'
+  global_att['Logical_file_id'] =  self.name+'_test.cdf'  ; 'mvn_sep_l2_s1-cal-svy-full_20180201_v04_r02.cdf'
+  global_att['dirpath'] = './'
+  global_att['Logical_source'] = 'SEP.cal.spec_svy'
+  global_att['Logical_source_description'] = 'DERIVED FROM: PSP SWEAP'  ; SEP (Solar Energetic Particle) Instrument
+  global_att['Sensor'] = ' '   ;'SEP1'
+  global_att['PI_name'] = 'J. Kasper'
+  global_att['PI_affiliation'] = 'U. Michigan'
+  global_att['IPI_name'] = 'D. Larson (davin@ssl.berkeley.edu)
+  global_att['IPI_affiliation'] = 'U.C. Berkeley Space Sciences Laboratory'
+  global_att['InstrumentLead_name'] = '  ' 
+  global_att['InstrumentLead_affiliation'] = 'U.C. Berkeley Space Sciences Laboratory'
+  global_att['Instrument_type'] = 'Electrostatic Analyzer Particle Detector'
+  global_att['Mission_group'] = 'PSP'
+  global_att['Parents'] = '' ; '2018-02-17/22:17:38   202134481 ChecksumExecutableNotAvailable            /disks/data/maven/data/sci/pfp/l0_all/2018/02/mvn_pfp_all_l0_20180201_v002.dat ...
+  global_att = global_att + self.sw_version()
+;  global_att['Planet'] = 'Mars
+;  global_att['PDS_collection_id'] = 'MAVEN
+;  global_att['PDS_start_time'] = '2018-02-01T00:00:14.230Z
+;  global_att['PDS_stop_time'] = '2018-02-02T00:00:05.594Z
+;  global_att['SW_VERSION'] = 'v00'
+;  global_att['SW_TIME_STAMP_FILE'] = '/home/mavensep/socware/projects/maven/sep/mvn_sep_sw_version.pro
+;  global_att['SW_TIME_STAMP'] =  time_string(systime(1))  
+;  global_att['SW_RUNTIME'] =  time_string(systime(1)) 
+;  global_att['SW_RUNBY'] = 
+;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
+;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-05-22 03:39:06 -0700 (Tue, 22 May 2018) $'
+;  global_att['SVN_REVISION'] = '$LastChangedRevision: 25243 $'
+
+return,global_att
+end
+
+
+
+function spp_gen_apdat::cdf_variable_attributes
+  var_att = orderedhash()
+  var_att['FIELDNAM']= ''
+  var_att['MONOTON']= 'INCREASE'
+  var_att['FORMAT']= ''
+  var_att['FORM_PTR']= ''
+  var_att['LABLAXIS']= ''
+  var_att['LABL_PTR_1']= ''
+  var_att['VAR_TYPE']= 'support_data'
+  var_att['FILLVAL']= !values.f_nan
+  var_att['DEPEND_0']= 'Epoch'
+  var_att['DEPEND_1']= ''
+  var_att['DISPLAY_TYPE']= ''
+  var_att['VALIDMIN']= !null
+  var_att['VALIDMAX']= !null
+  var_att['SCALEMIN']= !null
+  var_att['SCALEMAX']= !null
+  var_att['UNITS']= ''
+  var_att['CATDESC']= ''
+  return,var_att
+end
+
+
+
+
+pro spp_gen_apdat::cdf_create_data_vars, fileid, var, vattributes=atts, varstr
+
+   array = self.data.array    ; this should be an array of structures
+   varnames = tag_names(array)
+   ntags = n_elements(varnames)
+   for i=0,ntags-1 do begin
+     val = array.(i)
+     spp_swp_cdf_var_att_create,fileid,varnames[i],val,attributes=atts
+   endfor
+  
+end
+
+
+pro spp_gen_apdat::cdf_create_file,cdftags=cdftags
+  dprint,'Making CDF for ',self.name,dlevel=self.dlevel
+ ; dirpathname = self.cdf_dirpathname
+ ; filename = dirpathname + self.name
+  global_attributes = self.cdf_global_attributes()
+  
+  filename = global_attributes['Logical_file_id']
+  fileid = cdf_create(filename,/clobber)
+  
+  foreach attvalue,global_attributes,name do begin
+     dummy = cdf_attcreate(fileid,name,/global_scope)
+     if keyword_set(attvalue) then cdf_attput,fileid,name,0,attvalue
+  endforeach
+  
+  var_atts = self.cdf_variable_attributes()
+  foreach att,var_atts,name do begin
+    dummy = cdf_attcreate(fileid,name,/variable_scope)  ;  Variable attributes are created - but not filled
+  endforeach
+  
+  self.cdf_create_data_vars,fileid,vattributes=var_atts
+   
+  cdf_close,fileid
+end
 
 
 
@@ -206,6 +356,7 @@ void = {spp_gen_apdat, $
   drate: 0. , $
   rt_flag: 0b, $
   save_flag: 0b, $
+  sort_flag: 0b, $
   routine:  '', $
   tname: '',  $
   ttags: '',  $

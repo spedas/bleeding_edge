@@ -88,6 +88,10 @@ SSRfiles = spp_file_retrieve(ff)
 ssrfiles = spp_file_retrieve('spp/data/sci/sweap/sao/ssr_telemetry/2018/245/*_EA')                 ;MSIM4:
 spp_ssr_file_read,ssrfiles
 
+ssrfiles = spp_file_retrieve('spp/data/sci/sweap/prelaunch/moc/MOPS_DATA/20180515_MSIM4/ssr_telemetry/2018/245/*_EA')  ;MSIM4:
+spp_ssr_file_read,ssrfiles
+
+
 ssrfiles = spp_file_retrieve( 'spp/data/sci/MOC/SPP/data_products/ssr_telemetry/2018/245/*_EA')
 
 
@@ -124,7 +128,7 @@ spp_init_realtime,/swem,/cal,/exec
 
 dprint,setd=2
 
-trange = systime(1) + [-4,0] * 3600.
+trange = systime(1) + [-2,0] * 3600.
 ptpfiles = spp_file_retrieve(path,trange= trange,/hourly_names)
 
 if 1 then begin

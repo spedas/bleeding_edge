@@ -54,11 +54,12 @@ function spp_swp_ccsds_decom,buffer,offset,buffer_length,remainder=remainder , e
     MET:          d_nan,  $
     pdata:        ptr_new(),  $         ; pointer to full packet data including header
     time:         d_nan,  $             ; unixtime 
-    counter:      0ul,    $             ; packet counter as received
+    counter:      0ul,    $             ; packet counter as received - future use
     ptp_time:     d_nan,  $             ; unixtime from ptp packet
-    source:       0u   ,  $             ; an indicator of where this packet came from:
+    source:       0u   ,  $             ; an indicator of where this packet came from:  0: unknown, apid of wrapper_packet: 0x348 - 0x34f
     source_name:  ''   ,  $             ; file name of source
-    content_id:   0u   ,  $
+;    source_hashcode: UL,  $
+;    content_id:   0u   ,  $
     ;    data:         pktbuffer, $
     time_delta :  f_nan, $
     seqn_delta :  0u, $

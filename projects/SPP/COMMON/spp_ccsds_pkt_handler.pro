@@ -52,7 +52,7 @@ pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length,ptp_header=ptp_header,rem
     endif
 
     apdat.handler, ccsds , header
-    dummy = spp_rt(ccsds.time)     ; This line help keep track of the current real time
+    dummy = spp_rt(ccsds.time)     ; This line helps keep track of the current real time
 
     ;;  Save statistics - get APID_ALL and APID_GAP
     apdat.increment_counters, ccsds
@@ -62,7 +62,6 @@ pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length,ptp_header=ptp_header,rem
     ;print,ptrace(option=3)
     if npackets ne 1 then dprint,dlevel=2,npackets
 
- 
   endwhile
 
 end

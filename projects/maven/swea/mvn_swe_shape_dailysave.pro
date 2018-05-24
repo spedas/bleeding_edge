@@ -21,8 +21,8 @@
 ;       saveflux:      If set to 1, will save eflux for 3 PA ranges to
 ;                      a provided directory. 
 ; $LastChangedBy: xussui $
-; $LastChangedDate: 2018-04-23 12:05:36 -0700 (Mon, 23 Apr 2018) $
-; $LastChangedRevision: 25095 $
+; $LastChangedDate: 2018-05-23 13:49:27 -0700 (Wed, 23 May 2018) $
+; $LastChangedRevision: 25250 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_shape_dailysave.pro $
 ;
 ;CREATED BY:    Shaosui Xu, 08/01/2017
@@ -213,7 +213,7 @@ Pro mvn_swe_shape_dailysave,start_day=start_day,end_day=end_day,ndays=ndays,$
 
             save,strday,file=ofile,/compress
             spawn,'chgrp maven '+ofile
-            file_chmod, fname, '0664'o
+            file_chmod, ofile, '0664'o
 
             if (saveflux) then begin
                strc2={t:0.D,f3pa:fltarr(64,3,3),mag_level:0}

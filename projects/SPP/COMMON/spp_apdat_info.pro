@@ -1,4 +1,4 @@
-
+; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
 
 
 
@@ -9,6 +9,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
                   apdats = apdats, $
                   ;matchname = matchname,  $  obsolete - use string as input
                   save_flag=save_flag,$
+                  sort_flag=sort_flag,$
                   nonzero=nonzero,  $
                   dlevel=dlevel, $
                   all = all, $
@@ -22,17 +23,20 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
                   print=print, $
                   rt_flag=rt_flag
 
-  common spp_apdat_info_com, all_apdat, misc1
+  common spp_apdat_info_com, all_apdat, alt_apdat
 
   if keyword_set(reset) then begin   ; not recommended!
-    obj_free,all_apdat    ; this might not be required in IDL8.x and above
+    obj_destroy,all_apdat    ; this might not be required in IDL8.x and above
     all_apdat=!null
+    alt_apdat= !null
     return
   endif
 
   if keyword_set(file_restore) then restore,file=file_restore,/verbose
 
   if ~keyword_set(all_apdat) then all_apdat = replicate( obj_new() , 2^11 )
+  
+  if ~keyword_set(alt_apdat) then alt_apdat = orderedhash()
   
   if keyword_set(file_save) then save,file=file_save,all_apdat,/verbose
 
@@ -60,20 +64,24 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
 
   for i=0,n_elements(apids)-1 do begin
     apid = apids[i]
-    if ~obj_valid(all_apdat[apid])  || (isa(/string,apid_obj_name) && (typename(all_apdat[apid]) ne strupcase(apid_obj_name) ) )  then begin
+    if alt_apdat.haskey(apid) eq 0 then alt_apdat[apid] = obj_new()   ; initialize new apid
+    apdat_obj = all_apdat[apid]
+    
+    if ~obj_valid(apdat_obj)  || (isa(/string,apid_obj_name) && (typename(apdat_obj) ne strupcase(apid_obj_name) ) )  then begin
       dprint,verbose=verbose,dlevel=3,'Initializing APID: ',apid        ; potential memory leak here - old version should be destroyed
-      all_apdat[apid] = obj_new( (isa(/string,apid_obj_name) && keyword_set(apid_obj_name)) ? apid_obj_name : default_apid_obj_name, apid)       
+      apdat_new = obj_new( (isa(/string,apid_obj_name) && keyword_set(apid_obj_name)) ? apid_obj_name : default_apid_obj_name, apid) 
+      all_apdat[apid] = apdat_new       
+      alt_apdat[apid] = apdat_new
     endif
     apdat = all_apdat[apid]
     if n_elements(name)       ne 0 then apdat.name = name
     if n_elements(routine)    ne 0 then apdat.routine=routine
     if n_elements(rt_flag)    ne 0 then apdat.rt_flag = rt_flag
+    if n_elements(sort_flag)  ne 0 then apdat.sort_flag = sort_flag
     if n_elements(dlevel)     ne 0 then apdat.dlevel = dlevel
     if n_elements(tname)      ne 0 then apdat.tname = tname
     if n_elements(ttags)      ne 0 then apdat.ttags = ttags
-    if n_elements(window_obj)      ne 0 then begin
-       apdat.window_obj = window(window_title=apdat.name)
-    endif
+    if n_elements(window_obj) ne 0 then  apdat.window_obj = window(window_title=apdat.name)
     if n_elements(save_flag)  ne 0 then apdat.save_flag = save_flag
     if ~keyword_set(all)  &&  (apdat.npkts eq 0) then continue
     if keyword_set(finish) then    apdat.finish
