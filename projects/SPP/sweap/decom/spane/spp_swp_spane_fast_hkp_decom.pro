@@ -35,7 +35,7 @@ function spp_swp_spane_fast_hkp_decom,ccsds,ptp_header=ptp_header,apdat=apdat
         ;time:       ptp_header.ptp_time, $
         time:       time, $
         met:        ccsds.met,  $
-        delay_time: ptp_header.ptp_time - ccsds.time, $
+ ;       delay_time: ptp_header.ptp_time - ccsds.time, $
         seqn:   ccsds.seqn, $
         mode1:        mode1,  $
         mode2:        mode2,  $

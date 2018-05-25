@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-05-14 08:48:48 -0700 (Mon, 14 May 2018) $
-; $LastChangedRevision: 25218 $
+; $LastChangedDate: 2018-05-24 14:20:49 -0700 (Thu, 24 May 2018) $
+; $LastChangedRevision: 25261 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
 
@@ -252,6 +252,26 @@ function mms_part_getspec_ut::test_add_dir_fpi
   assert, spd_data_exists('mms1_des_dist_fast_phi mms1_des_dist_fast_phi_bdata mms1_des_dist_fast_minusphi_bdata mms1_des_dist_fast_phi_vdata', '2015-12-15', '2015-12-15/00:20'), 'Problem with FPI add direction'
   assert, spd_data_exists('mms1_des_dist_fast_phi mms1_des_dist_fast_phi_vdata', '2015-12-15', '2015-12-15/00:20'), 'Problem with FPI add direction'
   assert, spd_data_exists('mms1_des_dist_fast_phi mms1_des_dist_fast_phi_bdata mms1_des_dist_fast_minusphi_bdata', '2015-12-15', '2015-12-15/00:20'), 'Problem with FPI add direction'
+  return, 1
+end
+
+function mms_part_getspec_ut::test_add_dir_fpi_suffix
+  mms_part_getspec, suffix='_suffix', trange=['2015-12-15', '2015-12-15/00:20'], /add_bfield, /add_ram, probe=1, instrument='fpi'
+  assert, spd_data_exists('mms1_des_dist_fast_phi_suffix mms1_des_dist_fast_phi_bdata mms1_des_dist_fast_minusphi_bdata mms1_des_dist_fast_phi_vdata', '2015-12-15', '2015-12-15/00:20'), 'Problem with FPI add direction (suffix)'
+  assert, spd_data_exists('mms1_des_dist_fast_phi_suffix mms1_des_dist_fast_phi_vdata', '2015-12-15', '2015-12-15/00:20'), 'Problem with FPI add direction (suffix)'
+  assert, spd_data_exists('mms1_des_dist_fast_phi_suffix mms1_des_dist_fast_phi_bdata mms1_des_dist_fast_minusphi_bdata', '2015-12-15', '2015-12-15/00:20'), 'Problem with FPI add direction (suffix)'
+  get_data, 'mms1_des_dist_fast_phi_with_b_suffix', data=d
+  assert, n_elements(tnames(d)) eq 3, 'Problem with FPI add direction (suffix)'
+  get_data, 'mms1_des_dist_fast_phi_with_v_suffix', data=d
+  assert, n_elements(tnames(d)) eq 2, 'Problem with FPI add direction (suffix)'
+  get_data, 'mms1_des_dist_fast_phi_with_bv_suffix', data=d
+  assert, n_elements(tnames(d)) eq 4, 'Problem with FPI add direction (suffix)'
+  get_data, 'mms1_des_dist_fast_theta_with_b_suffix', data=d
+  assert, n_elements(tnames(d)) eq 3, 'Problem with FPI add direction (suffix)'
+  get_data, 'mms1_des_dist_fast_theta_with_v_suffix', data=d
+  assert, n_elements(tnames(d)) eq 2, 'Problem with FPI add direction (suffix)'
+  get_data, 'mms1_des_dist_fast_theta_with_bv_suffix', data=d
+  assert, n_elements(tnames(d)) eq 4, 'Problem with FPI add direction (suffix)'
   return, 1
 end
 

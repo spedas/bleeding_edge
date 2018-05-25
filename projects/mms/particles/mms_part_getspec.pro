@@ -42,8 +42,8 @@
 ;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-05-16 14:11:58 -0700 (Wed, 16 May 2018) $
-;$LastChangedRevision: 25231 $
+;$LastChangedDate: 2018-05-24 14:08:09 -0700 (Thu, 24 May 2018) $
+;$LastChangedRevision: 25260 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -123,6 +123,8 @@ pro mms_part_getspec, probes=probes, $
         if instrument eq 'fpi' then data_rate = 'fast' else data_rate = 'srvy'
     endif else data_rate = strlowcase(data_rate)
     
+    if data_rate eq 'brst' then mag_data_rate = 'brst' else mag_data_rate = 'srvy'
+    
     if ~keyword_set(species) then begin
         if instrument eq 'fpi' then species = 'e' else species = 'hplus'
     endif else species = strlowcase(species)
@@ -132,7 +134,9 @@ pro mms_part_getspec, probes=probes, $
     endif else probes = strcompress(string(probes), /rem)
     
     if ~keyword_set(mag_suffix) then mag_suffix = ''
-    if ~keyword_set(dir_interval) then dir_interval = 60d 
+    if ~keyword_set(dir_interval) then begin
+      if mag_data_rate eq 'srvy' then dir_interval = 60d else dir_interval = 1
+    endif
     
     if keyword_set(subtract_error) && instrument eq 'hpca' then begin
       dprint, dlevel = 0, 'Error, /subtract_error keyword currently only valid for FPI data. No disterr is being subtracted.'
@@ -148,7 +152,7 @@ pro mms_part_getspec, probes=probes, $
     support_trange = trange + [-60,60]
     
     for probe_idx = 0, n_elements(probes)-1 do begin
-        if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_fgm_b_dmpa_srvy_l2_bvec'+mag_suffix, trange[0], trange[1]) or keyword_set(forceload) then append_array, fgm_to_load, probes[probe_idx]
+        if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_fgm_b_dmpa_'+mag_data_rate+'_l2_bvec'+mag_suffix, trange[0], trange[1]) or keyword_set(forceload) then append_array, fgm_to_load, probes[probe_idx]
         if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_defeph_pos', trange[0], trange[1]) or keyword_set(forceload) then append_array, state_to_load, probes[probe_idx]
     endfor
 
@@ -156,7 +160,7 @@ pro mms_part_getspec, probes=probes, $
     if defined(state_to_load) && undefined(pos_name_user) then mms_load_state, probes=state_to_load, trange=support_trange, spdf=spdf
 
     ; load magnetic field data
-    if defined(fgm_to_load) && undefined(mag_name_user) then mms_load_fgm, probes=fgm_to_load, trange=support_trange, level='l2', suffix=mag_suffix, spdf=spdf, /time_clip
+    if defined(fgm_to_load) && undefined(mag_name_user) then mms_load_fgm, probes=fgm_to_load, trange=support_trange, level='l2', suffix=mag_suffix, spdf=spdf, data_rate=mag_data_rate, /time_clip
 
     if instrument eq 'fpi' then begin
         mms_load_fpi, probes=probes, trange=trange, data_rate=data_rate, level=level, $
@@ -179,7 +183,7 @@ pro mms_part_getspec, probes=probes, $
     endif
     
     for probe_idx = 0, n_elements(probes)-1 do begin
-        if undefined(mag_name_user) then bname = 'mms'+probes[probe_idx]+'_fgm_b_dmpa_srvy_l2_bvec'+mag_suffix else bname = mag_name_user
+        if undefined(mag_name_user) then bname = 'mms'+probes[probe_idx]+'_fgm_b_dmpa_'+mag_data_rate+'_l2_bvec'+mag_suffix else bname = mag_name_user
         if undefined(pos_name_user) then pos_name = 'mms'+probes[probe_idx]+ '_defeph_pos' else pos_name = pos_name_user
         if instrument eq 'fpi' then begin
             name = 'mms'+probes[probe_idx]+'_d'+species+'s_dist_'+data_rate
@@ -210,15 +214,15 @@ pro mms_part_getspec, probes=probes, $
             store_data, name+'_theta_vdata', data={x: velocity_gse.X, y: vel_theta}
             options, name+'_phi_vdata', psym=7, linestyle=6 ; X
             options, name+'_theta_vdata', psym=7, linestyle=6 ; X
-            store_data, name+'_phi_with_v', data=name+'_phi '+name+'_phi_vdata'
-            store_data, name+'_theta_with_v', data=name+'_theta '+name+'_theta_vdata'
-            ylim, name+'_phi_with_v', 0., 360., 0
-            ylim, name+'_theta_with_v', -90., 90., 0
+            store_data, name+'_phi_with_v'+suffix, data=name+'_phi'+suffix+' '+name+'_phi_vdata'
+            store_data, name+'_theta_with_v'+suffix, data=name+'_theta'+suffix+' '+name+'_theta_vdata'
+            ylim, name+'_phi_with_v'+suffix, 0., 360., 0
+            ylim, name+'_theta_with_v'+suffix, -90., 90., 0
         endif
         if keyword_set(add_bfield_dir) then begin
             ; average the B-field before adding to the plot
-            avg_data, 'mms'+probes[probe_idx]+'_fgm_b_dmpa_srvy_l2_bvec', dir_interval
-            get_data, 'mms'+probes[probe_idx]+'_fgm_b_dmpa_srvy_l2_bvec_avg', data=b_field_data
+            avg_data, bname, dir_interval
+            get_data, bname+'_avg', data=b_field_data
             neg_b_field = -b_field_data.Y
             
             cart_to_sphere, b_field_data.Y[*, 0], b_field_data.Y[*, 1], b_field_data.Y[*, 2], r, theta, phi, /PH_0_360
@@ -236,16 +240,16 @@ pro mms_part_getspec, probes=probes, $
             options, name+'_theta_bdata',psym=1, linestyle=6 ; +
             options, name+'_minustheta_bdata',psym=8, linestyle=6 ; -
             
-            store_data, name+'_phi_with_b', data=name+'_phi '+name+'_phi_bdata '+name+'_minusphi_bdata'
-            store_data, name+'_theta_with_b', data=name+'_theta '+name+'_theta_bdata '+name+'_minustheta_bdata'
-            ylim, name+'_phi_with_b', 0., 360., 0
-            ylim, name+'_theta_with_b', -90., 90., 0
+            store_data, name+'_phi_with_b'+suffix, data=name+'_phi'+suffix+' '+name+'_phi_bdata '+name+'_minusphi_bdata'
+            store_data, name+'_theta_with_b'+suffix, data=name+'_theta'+suffix+' '+name+'_theta_bdata '+name+'_minustheta_bdata'
+            ylim, name+'_phi_with_b'+suffix, 0., 360., 0
+            ylim, name+'_theta_with_b'+suffix, -90., 90., 0
         endif
         if keyword_set(add_bfield_dir) and keyword_set(add_ram_dir) then begin
-            store_data, name+'_phi_with_bv', data=name+'_phi '+name+'_phi_bdata '+name+'_minusphi_bdata '+name+'_phi_vdata'
-            store_data, name+'_theta_with_bv', data=name+'_theta '+name+'_theta_bdata '+name+'_minustheta_bdata '+name+'_theta_vdata'
-            ylim, name+'_phi_with_bv', 0., 360., 0
-            ylim, name+'_theta_with_bv', -90., 90., 0
+            store_data, name+'_phi_with_bv'+suffix, data=name+'_phi'+suffix+' '+name+'_phi_bdata '+name+'_minusphi_bdata '+name+'_phi_vdata'
+            store_data, name+'_theta_with_bv'+suffix, data=name+'_theta'+suffix+' '+name+'_theta_bdata '+name+'_minustheta_bdata '+name+'_theta_vdata'
+            ylim, name+'_phi_with_bv'+suffix, 0., 360., 0
+            ylim, name+'_theta_with_bv'+suffix, -90., 90., 0
         endif 
     endfor
     
