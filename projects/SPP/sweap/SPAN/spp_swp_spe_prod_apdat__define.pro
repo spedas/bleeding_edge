@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-05-12 22:55:09 -0700 (Sat, 12 May 2018) $
-; $LastChangedRevision: 25202 $
+; $LastChangedDate: 2018-05-25 18:08:06 -0700 (Fri, 25 May 2018) $
+; $LastChangedRevision: 25278 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -205,7 +205,7 @@ pro spp_swp_spe_prod_apdat::handler,ccsds,ptp_header
       256:  self.prod_8Dx32E, strct
       512:  self.prod_16Ax32E, strct
       4096: self.prod_16Ax8Dx32E, strct
-      else:  dprint,dlevel=self.dlevel+1,'Size not recognized: ',strct.ndat
+      else:  dprint,dlevel=self.dlevel+1,'Size not recognized: ',strct.ndat,dwait=300,' APID: ',self.apid
     endcase
   endif
 

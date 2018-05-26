@@ -164,8 +164,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-05-22 03:39:06 -0700 (Tue, 22 May 2018) $
-; $LastChangedRevision: 25243 $
+; $LastChangedDate: 2018-05-25 18:08:06 -0700 (Fri, 25 May 2018) $
+; $LastChangedRevision: 25278 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -182,8 +182,8 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-  sw_hash['svn_changedate'] = '$LastChangedDate: 2018-05-22 03:39:06 -0700 (Tue, 22 May 2018) $'
-  sw_hash['svn_revision '] = '$LastChangedRevision: 25243 $'
+  sw_hash['svn_changedate'] = '$LastChangedDate: 2018-05-25 18:08:06 -0700 (Fri, 25 May 2018) $'
+  sw_hash['svn_revision '] = '$LastChangedRevision: 25278 $'
 
   return,sw_hash
 end
@@ -226,8 +226,8 @@ function spp_gen_apdat::cdf_global_attributes
 ;  global_att['SW_RUNTIME'] =  time_string(systime(1)) 
 ;  global_att['SW_RUNBY'] = 
 ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-05-22 03:39:06 -0700 (Tue, 22 May 2018) $'
-;  global_att['SVN_REVISION'] = '$LastChangedRevision: 25243 $'
+;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-05-25 18:08:06 -0700 (Fri, 25 May 2018) $'
+;  global_att['SVN_REVISION'] = '$LastChangedRevision: 25278 $'
 
 return,global_att
 end
@@ -272,14 +272,18 @@ pro spp_gen_apdat::cdf_create_data_vars, fileid, var, vattributes=atts, varstr
 end
 
 
-pro spp_gen_apdat::cdf_create_file,cdftags=cdftags
+pro spp_gen_apdat::cdf_create_file,cdftags=cdftags,trange=trange
   dprint,'Making CDF for ',self.name,dlevel=self.dlevel
  ; dirpathname = self.cdf_dirpathname
  ; filename = dirpathname + self.name
   global_attributes = self.cdf_global_attributes()
+  if not keyword_set(trange) then trange=timerange()
+  pathname = root_data_dir() + time_string(trange[0],tformat =self.cdf_pathname )
+  global_attributes['Logical_file_id'] = pathname
   
-  filename = global_attributes['Logical_file_id']
-  fileid = cdf_create(filename,/clobber)
+  pathname = global_attributes['Logical_file_id']
+  file_mkdir2,file_dirname(pathname)
+  fileid = cdf_create(pathname,/clobber)
   
   foreach attvalue,global_attributes,name do begin
      dummy = cdf_attcreate(fileid,name,/global_scope)
@@ -339,7 +343,6 @@ if keyword_set(apid) then dprint,'apid can not be changed!'
 if keyword_set(ex) then begin
   struct_assign,ex,self,/nozero
 endif
-
 END
  
  
@@ -365,6 +368,8 @@ void = {spp_gen_apdat, $
   ccsds_array: obj_new(), $  
   data: obj_new(), $
   window_obj: obj_new(), $
+  cdf_pathname:'', $
+  cdf_tagnames:'', $
   dlevel: 0  $
   }
 END

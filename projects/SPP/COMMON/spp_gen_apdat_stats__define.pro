@@ -20,6 +20,7 @@ pro spp_gen_apdat_stats::finish,append=append,tres=tres
    dprint,dlevel=3,'Executing finish for stats'
    store_data,'APID',data='APIDS_ALL APIDS_GAP',  dlimit={ynozero:1}
    d = self.data.array
+   if n_elements(d) le 1 then return
    if not keyword_set(tres) then tres=120d
    if size(/type,d) eq 8 then begin
      store_data,'APIDS_ALL', d.time, d.apid, append=append ,dlimit={psym:3,symsize:.2 ,ynozero:1}

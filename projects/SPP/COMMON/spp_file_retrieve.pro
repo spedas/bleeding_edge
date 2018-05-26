@@ -1,6 +1,6 @@
 ;+
 ; Function:  files = spp_file_retrieve(PATHNAME)
-; Purpose:  Retrieve or Download MAVEN data files (i.e. L0 files)  (Can be used to generate filenames too)
+; Purpose:  Retrieve or Download Solar Probe data files (i.e. L0 files)  (Can be used to generate filenames too)
 ; INPUT:
 ; PATHNAME:  string specifying relative path to files.         Default might change-  Currently:  'psp/pfp/l0/YYYY/MM/mvn_pfp_all_l0_YYYYMMDD_v???.dat'
 ;         PATHNAME must be relative to the LOCAL_DATA_DIR and REMOTE_DATA_DIR fields of the source keyword.
@@ -30,7 +30,7 @@
 ;-
 function spp_file_retrieve,pathname,trange=trange,ndays=ndays,nhours=nhours,verbose=verbose, source=src, $
    last_version=last_version, $
- ;  valid_only=valid_only,no_update=no_update,create_dir=create_dir,pos_start=pos_start, $
+   no_update=no_update,create_dir=create_dir,pos_start=pos_start, $
    daily_names=daily_names,hourly_names=hourly_names,resolution = res,shiftres=shiftres,valid_only=valid_only,  $
  ;  no_server=no_server,user_pass=user_pass,L0=L0, $
    cal=cal,TVac=Tvac,snout2=snout2,snout1=snout1,crypt=crypt, goddard = goddard ,ion=ion,recent=recent,spani=spani,spanea=spanea,spaneb=spaneb,spc=spc,swem=swem,elec=elec,instr=instr,router=router
@@ -100,7 +100,22 @@ pos_start = strlen(source.local_data_dir)
 
 dprint,dlevel=5,verbose=verbose,phelp=1,source   ; display the options
 
-files = file_retrieve(pathname,_extra=source,trange=trange)
+if keyword_set(res) then begin
+  tr = timerange(trange)
+  str = (tr-sres)/res
+  dtr = (ceil(str[1]) - floor(str[0]) )  > 1           ; must have at least one file
+  times = res * (floor(str[0]) + lindgen(dtr))+sres
+  pathnames = time_string(times,tformat=pathname)
+  pathnames = pathnames[uniq(pathnames)]   ; Remove duplicate filenames - assumes they are sorted
+endif else pathnames = pathname
+
+if keyword_set(create_dir) then begin
+  files = source.local_data_dir + pathnames
+  file_mkdir2,file_dirname( files ),_extra=source
+  return,files
+endif
+
+files = file_retrieve(pathnames,_extra=source)
 dprint,dlevel=3,verbose=verbose,systime(1)-tstart,' seconds to retrieve ',n_elements(files),' files'
 return,files
 

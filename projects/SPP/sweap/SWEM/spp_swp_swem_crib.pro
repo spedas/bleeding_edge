@@ -74,7 +74,8 @@ met= '2020-7-21'
 
 printdat,spp_file_source(user_pass='davin:password',/set)
 
-
+trange = ['2018-03-06/00:00:00','2018-03-09/00:00:00']  ; goddard testing
+ptpfiles = spp_file_retrieve('spp/data/sci/sweap/prelaunch/',/hourly,TRANGE=TRANGE)
 
 path='psp/data/sci/sweap/sao/s#sr_telemetry/YYYY/DOY/*_EA'
 ff=time_string(met,tformat=path)
@@ -96,10 +97,11 @@ ssrfiles = spp_file_retrieve( 'spp/data/sci/MOC/SPP/data_products/ssr_telemetry/
 
 
 
+
 trange = '2018-05-08/03:27:02'   ; racksat memory dump
 
-trange='2018-3-8/'+['0','24']
-trange=['2018-3-7','2018-3-9']
+trange='2018-3-8/'+['1','2']
+trange=['2018-3-7','2018-3-9']  ; goddard testing
 path = 'spp/data/sci/sweap/prelaunch/gsedata/realtime/hires1/swem/YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
 ptpfiles = spp_file_retrieve(path,trange=trange,/hourly_names)
 spp_ptp_file_read, ptpfiles
@@ -129,9 +131,10 @@ spp_init_realtime,/swem,/cal,/exec
 dprint,setd=2
 
 trange = systime(1) + [-2,0] * 3600.
+timespan,trange
 ptpfiles = spp_file_retrieve(path,trange= trange,/hourly_names)
 
-if 1 then begin
+if 0 then begin
   spi_memdump = spp_apdat('spi_memdump')
   spi_memdump.display, win = window(name='spi_memdump')
   swem_memdump = spp_apdat('swem_memdump')
@@ -144,5 +147,13 @@ dprint,setd=4
 
 
 spp_swp_tplot,/setlim   ,'swem2'
+
+if 1 then begin
+ap = spp_apdat('swem_dig_hkp')
+ap.cdf_pathname = ''
+ap.cdf_create_file,trange=trange
+endif
+
+
 
 end

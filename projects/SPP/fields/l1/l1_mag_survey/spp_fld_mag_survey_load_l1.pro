@@ -1,7 +1,7 @@
 ;
 ;  $LastChangedBy: spfuser $
-;  $LastChangedDate: 2018-02-16 16:01:22 -0800 (Fri, 16 Feb 2018) $
-;  $LastChangedRevision: 24731 $
+;  $LastChangedDate: 2018-05-24 22:58:47 -0700 (Thu, 24 May 2018) $
+;  $LastChangedRevision: 25270 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
@@ -117,7 +117,7 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
 
     b_1d = reform(transpose(d_b_2d.y), n_elements(d_b_2d.y))
 
-    b_1d_finite = where(finite(b_1d), finite_count)
+    b_1d_finite = where(finite(b_1d) and (b_1d GT -2147483648), finite_count)
 
     if finite_count GT 0 then begin
 
@@ -131,6 +131,8 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
 
       options, prefix + mag_comp, 'ynozero', 1
       options, prefix + mag_comp, 'panel_size', 1.5
+      options, prefix + mag_comp, 'psym_lim', 200
+      options, prefix + mag_comp, 'max_points', 40000l
 
     end
 
@@ -148,7 +150,9 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
   options, prefix + 'range', 'ystyle', 1
   options, prefix + 'range', 'yticks', 3
   options, prefix + 'range', 'ytickv', [0,1,2,3]  
-  options, prefix + 'range', 'psym', 3
+  ;options, prefix + 'range', 'psym', 3
+  options, prefix + 'range', 'psym_lim', 200
+  options, prefix + 'range', 'max_points', 40000l
   options, prefix + 'range', 'ysubtitle', ''
 
 
@@ -166,16 +170,15 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
 
   options, prefix + 'packet_index', 'ytitle', $
     short_prefix + '!Cpkt_ind'
-  options, prefix + 'packet_index', 'psym', 3
+  ;options, prefix + 'packet_index', 'psym', 3
+  options, prefix + 'packet_index', 'psym_lim', 200
+  options, prefix + 'packet_index', 'max_points', 40000l
   options, prefix + 'packet_index', 'yrange', [0,512]
   options, prefix + 'packet_index', 'ystyle', 1
   options, prefix + 'packet_index', 'yminor', 4
   options, prefix + 'packet_index', 'yticks', 4
   options, prefix + 'packet_index', 'ytickv', [0,128,256,384,512]
   options, prefix + 'packet_index', 'ysubtitle', ''
-
-
-
 
   options, prefix + 'compressed', 'yrange', [-0.25,1.25]
   options, prefix + 'compressed', 'ystyle', 1
@@ -188,8 +191,5 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
   options, prefix + 'compressed', 'ytitle', $
     short_prefix + '!Ccomp'
   options, prefix + 'compressed', 'ysubtitle', ''
-
-
-
 
 end

@@ -10,6 +10,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
                   ;matchname = matchname,  $  obsolete - use string as input
                   save_flag=save_flag,$
                   sort_flag=sort_flag,$
+                  cdf_pathname = cdf_pathname, $
                   nonzero=nonzero,  $
                   dlevel=dlevel, $
                   all = all, $
@@ -18,7 +19,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
                   tname=tname,$
                   ttags=ttags,$
                   routine=routine,$
-                  file_save=file_save, file_restore=file_restore, $
+                  file_save=file_save, file_restore=file_restore,compress=compress, $
                   apid_obj_name = apid_obj_name, $
                   print=print, $
                   rt_flag=rt_flag
@@ -38,7 +39,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   
   if ~keyword_set(alt_apdat) then alt_apdat = orderedhash()
   
-  if keyword_set(file_save) then save,file=file_save,all_apdat,/verbose
+  if keyword_set(file_save) then save,file=file_save,all_apdat,/verbose,compress=compress
 
   valid_apdat = all_apdat[ where( obj_valid(all_apdat),nvalid ) ]
 
@@ -83,6 +84,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     if n_elements(ttags)      ne 0 then apdat.ttags = ttags
     if n_elements(window_obj) ne 0 then  apdat.window_obj = window(window_title=apdat.name)
     if n_elements(save_flag)  ne 0 then apdat.save_flag = save_flag
+    if n_elements(cdf_pathname) ne 0 then apdat.cdf_pathname= cdf_pathname
     if ~keyword_set(all)  &&  (apdat.npkts eq 0) then continue
     if keyword_set(finish) then    apdat.finish
     if keyword_set(clear)  then    apdat.clear

@@ -150,6 +150,8 @@ if size(d, /type) EQ 8 then begin
     dlim = {panel_size:2}
 
   options, prefix + 'wav_data*', 'ynozero', 1
+  options, prefix + 'wav_data*', 'max_points', 40000l
+  options, prefix + 'wav_data*', 'psym_lim', 200
   options, prefix + 'wav_data', 'ysubtitle', '[Counts]'
   options, prefix + 'wav_data_v', 'ysubtitle', '[V]'
 
