@@ -21,13 +21,37 @@ PRO spp_ptp_recorder_event, ev   ; recorder
  ;   on_error,1
 
     widget_control, ev.top, get_uvalue= info   ; get all widget ID's
-    wids = info.wids
+    wids = *info.wids
     localtime=1
     dlevel=info.dlevel
 
     CASE ev.id OF                         ;  Timed events
     wids.base:  begin
-        if info.hfp gt 0 then begin
+   ;   printdat,info
+       on_ioerror, stream_error
+       eofile =0
+       info.time_received = systime(1)
+       widget_control,wids.base,set_uvalue=info
+        
+       if info.hfp gt 0 then begin
+         ;;   Switch file name if needed
+         if info.file_timeres ne 0 then begin
+           if info.time_received ge info.next_filechange then begin
+             dprint,dlevel=dlevel,time_string(info.time_received,prec=3)+ ' Time to change files.'
+             if info.dfp then begin
+               spp_ptp_recorder_event,{top: ev.top, id:wids.dest_button}   ; close old file  - possible error that dfp might change!
+               spp_ptp_recorder_event,{top: ev.top, id:wids.dest_button}   ; open  new file
+             endif
+           endif
+           widget_control, ev.top, get_uvalue= info   ; get all widget ID's
+           info.next_filechange = info.file_timeres * ceil(info.time_received / info.file_timeres)
+           widget_control,wids.base,set_uvalue=info
+         endif
+         if 1 then begin
+           spp_ptp_lun_read,info.hfp,info.dfp,info=info
+           widget_control,wids.base,set_uvalue=info
+           msg = info.msg
+         endif else begin 
             on_ioerror, stream_error
             eofile =0
             info.time_received = systime(1)
@@ -63,22 +87,7 @@ PRO spp_ptp_recorder_event, ev   ; recorder
               widget_control,wids.host_text,get_value=hostname
               widget_control,wids.host_port,get_value=hostport
               dprint,dlevel=dlevel+1,info.title_num+!error_state.msg
-            endif
-
-            ;;   Switch file name if needed
-            if info.file_timeres ne 0 then begin
-              if info.time_received ge info.next_filechange then begin
-                dprint,dlevel=dlevel,time_string(info.time_received,prec=3)+ ' Time to change files.'
-                if info.dfp then begin
-                  spp_ptp_recorder_event,{top: ev.top, id:wids.dest_button}   ; close old file  - possible error that dfp might change!
-                  spp_ptp_recorder_event,{top: ev.top, id:wids.dest_button}   ; open  new file                  
-                endif
-              endif
-              widget_control, ev.top, get_uvalue= info   ; get all widget ID's              
-              info.next_filechange = info.file_timeres * ceil(info.time_received / info.file_timeres)
-              widget_control,wids.base,set_uvalue=info
-            endif
-            
+            endif            
             if i gt 0 then begin                      ;; process data
               buffer = buffer[0:i-1]
               if keyword_set(info.dfp) then writeu,info.dfp, buffer  ;swap_endian(buffer,/swap_if_little_endian)
@@ -93,20 +102,21 @@ PRO spp_ptp_recorder_event, ev   ; recorder
               widget_control,wids.proc_name,get_value = proc_name
               if keyword_set(proc_name) then call_procedure,proc_name[0],buffer ,info=info  ;,time=info.time_received   ; Execute exec_proc here
             endif
-            widget_control,wids.output_text,set_value=msg
-            dprint,dlevel=dlevel+4,info.title_num+msg,/no_check
-            widget_control,wids.poll_int,get_value = poll_int
-            poll_int = float(poll_int) 
-            if poll_int le 0 then poll_int = 1
-            if 1 then begin
-                poll_int = poll_int - (systime(1) mod poll_int)  ; sample on regular boundaries
-            endif
-            
-            if not keyword_set(eofile) then WIDGET_CONTROL, wids.base, TIMER=poll_int else begin
-              widget_control,wids.host_button,timer=2              
-            endelse
-        endif
-        return
+         endelse
+          widget_control,wids.output_text,set_value=msg
+          dprint,dlevel=dlevel+4,info.title_num+msg,/no_check
+          widget_control,wids.poll_int,get_value = poll_int
+          poll_int = float(poll_int)
+          if poll_int le 0 then poll_int = 1
+          if 1 then begin
+            poll_int = poll_int - (systime(1) mod poll_int)  ; sample on regular boundaries
+          endif
+
+          if not keyword_set(eofile) then WIDGET_CONTROL, wids.base, TIMER=poll_int else begin
+            widget_control,wids.host_button,timer=2
+          endelse
+       endif
+       return
     end
     wids.host_button : begin
         widget_control,wids.host_button,get_value=status
@@ -290,8 +300,10 @@ if ~(keyword_set(base) && widget_info(base,/managed) ) then begin
     ids = create_struct(ids,'proc_name',   widget_text(ids.proc_base,xsize=35, uname='PROC_NAME', value = keyword_set(exec_proc) ? exec_proc :'exec_proc_template',/editable, /no_newline))
     ids = create_struct(ids,'done',        WIDGET_BUTTON(ids.proc_base, VALUE='Done', UNAME='DONE'))
     title_num = title+' ('+strtrim(ids.base,2)+'): '
-    info = {wids:ids, $
-;      hostname:host, hostport:port, $
+
+    if 1 then info = { socket_recorder } else begin
+      info = {wids: ptr_new(), $
+        ;      hostname:host, hostport:port, $
         title: title, $
         title_num: title_num, $
         time_received: 0d,  $
@@ -303,12 +315,28 @@ if ~(keyword_set(base) && widget_info(base,/managed) ) then begin
         filename:'', $
         dfp:0 , $
         maxsize:2L^23, $
-        buffer_ptr: ptr_new(!null),   $
-;        pollinterval:1., $
+        buffer_ptr: ptr_new(),   $
+        ;        pollinterval:1., $
         verbose:2, $
         dlevel: 2, $
-        exec_proc_ptr: ptr_new(!null), $        
-        run_proc:keyword_set(set_procbutton) }
+        msg: '', $
+        exec_proc_ptr: ptr_new(), $
+        last_time: 0d, $
+        total_bytes: 0uL, $
+        process_rate : 0d, $
+        run_proc:keyword_set(set_procbutton) }      
+    endelse
+        
+    info.wids = ptr_new(ids)
+    info.next_filechange = 1d20
+    info.title=title
+    info.title_num = title_num
+    info.fileformat = destination
+    info.maxsize = 2L^23
+    info.buffer_ptr = ptr_new(!null)
+    info.verbose =2
+    info.exec_proc_ptr = ptr_new(!null)
+    info.run_proc = keyword_set(set_procbutton) 
         
 ;    info.buffer_ptr = ptr_new( bytarr( info.maxsize ) )
     WIDGET_CONTROL, ids.base, SET_UVALUE=info
@@ -319,7 +347,7 @@ if ~(keyword_set(base) && widget_info(base,/managed) ) then begin
     base = ids.base
 endif else begin
     widget_control, base, get_uvalue= info   ; get all widget ID's
-    ids = info.wids
+    ids = *info.wids
 endelse
 if size(/type,exec_proc) eq 7 then    widget_control,ids.proc_name,set_value=exec_proc
 if size(/type,destination) eq 7 then  widget_control,ids.dest_text,set_value=destination

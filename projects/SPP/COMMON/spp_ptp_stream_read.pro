@@ -1,6 +1,6 @@
   ; $LastChangedBy: davin-mac $
-  ; $LastChangedDate: 2018-03-22 09:31:46 -0700 (Thu, 22 Mar 2018) $
-  ; $LastChangedRevision: 24936 $
+  ; $LastChangedDate: 2018-05-28 15:52:35 -0700 (Mon, 28 May 2018) $
+  ; $LastChangedRevision: 25286 $
   ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_ptp_stream_read.pro $
 
 
@@ -9,7 +9,8 @@ pro spp_ptp_stream_read,buffer,info=info,no_sum=no_sum,verbose=verbose,dlevel=dl
   dlevel = 3
   bsize= n_elements(buffer) * (size(/n_dimen,buffer) ne 0)
   time = info.time_received
-
+  message,/info,'possible obsolete routine'
+  
   common spp_ptp_stream_read_com,last_time,total_bytes,rate_sm
   
   if ~keyword_set(no_sum) then begin

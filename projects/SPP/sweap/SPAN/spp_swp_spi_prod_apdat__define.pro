@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spi_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-05-12 22:55:09 -0700 (Sat, 12 May 2018) $
-; $LastChangedRevision: 25202 $
+; $LastChangedDate: 2018-05-28 15:52:35 -0700 (Mon, 28 May 2018) $
+; $LastChangedRevision: 25286 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
@@ -419,7 +419,7 @@ END
 
 
 
-PRO spp_swp_spi_prod_apdat::handler,ccsds,ptp_header
+PRO spp_swp_spi_prod_apdat::handler,ccsds,ptp_header,source_info=source_info
 
    strct = self.decom(ccsds)
    if debug(self.dlevel+3) then begin

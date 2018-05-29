@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat May 26 03:16:33 2018.<P>
+<STRONG>Last modified: </STRONG>Mon May 28 18:16:26 2018.<P>
  
 <HR>
  
@@ -20,8 +20,6 @@ This page was created by the IDL library routine
 <UL>
 <H1>projects/SPP/COMMON</H1>
 <LI><A HREF="#DYNAMICARRAY__DEFINE">DYNAMICARRAY__DEFINE</A>
-<LI><A HREF="#SOCKET_RECORDER__DEFINE">SOCKET_RECORDER__DEFINE</A>
-<br>Widget tool that opens a socket and records streaming data from a server (host) and can save it to a file
 <LI><A HREF="#SPP_FILE_RETRIEVE">SPP_FILE_RETRIEVE</A>
 <LI><A HREF="#SPP_GEN_APDAT__DEFINE">SPP_GEN_APDAT__DEFINE</A>
 <LI><A HREF="#SPP_PTP_RECORDER">SPP_PTP_RECORDER</A>
@@ -33,7 +31,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="DYNAMICARRAY__DEFINE">
 <H2>DYNAMICARRAY__DEFINE</H2></A>
-<A HREF="#SOCKET_RECORDER__DEFINE">[Next Routine]</A>
+<A HREF="#SPP_FILE_RETRIEVE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  da= DynamicArray([InitialArray][,name='name1')
@@ -57,35 +55,9 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="COMMON/dynamicarray__define.pro">projects/SPP/COMMON/dynamicarray__define.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SOCKET_RECORDER__DEFINE">
-<H2>SOCKET_RECORDER__DEFINE</H2></A>
-<A HREF="#DYNAMICARRAY__DEFINE">[Previous Routine]</A>
-<A HREF="#SPP_FILE_RETRIEVE">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-WIDGET Procedure:
-  socket_recorder
-PURPOSE:
- Widget tool that opens a socket and records streaming data from a server (host) and can save it to a file
- or send to a user specified routine. This tool runs in the background.
- Keywords:
-   SET_FILE_TIMERES : defines how often the current output file will be closed and a new one will be opened
-   DIRECTORY:  string prepended to fileformat when opening an output file.
- Author:
-    Davin Larson - April 2011
-
- $LastChangedBy: davin-mac $
- $LastChangedDate: 2016-09-28 22:56:26 -0700 (Wed, 28 Sep 2016) $
- $LastChangedRevision: 21979 $
- $URL: $
-
-</PRE><P>
-<STRONG>(See <A href="COMMON/socket_recorder__define.pro">projects/SPP/COMMON/socket_recorder__define.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="SPP_FILE_RETRIEVE">
 <H2>SPP_FILE_RETRIEVE</H2></A>
-<A HREF="#SOCKET_RECORDER__DEFINE">[Previous Routine]</A>
+<A HREF="#DYNAMICARRAY__DEFINE">[Previous Routine]</A>
 <A HREF="#SPP_GEN_APDAT__DEFINE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

@@ -23,16 +23,20 @@ end
 pro spp_ptp_lun_read,in_lun,out_lun,info=info
 
   dwait = 10.
+  ;printdat,info
   
   on_ioerror, nextfile
-    info.time_received = systime(1)
+    time = systime(1)
+    info.time_received = time
     msg = time_string(info.time_received,tformat='hh:mm:ss -',local=localtime)
 ;    in_lun = info.hfp
     out_lun = info.dfp
     buf = bytarr(17)
     remainder = !null
-    nbytes = 0
+    nbytes = 0UL
     run_proc = struct_value(info,'run_proc',default=1)
+    fst = fstat(in_lun)
+    spp_apdat_info,current_filename= fst.name
     while file_poll_input(in_lun,timeout=0) && ~eof(in_lun) do begin
       readu,in_lun,buf,transfer_count=nb
       nbytes += nb
@@ -43,7 +47,7 @@ pro spp_ptp_lun_read,in_lun,out_lun,info=info
           remainder = ptp_buf[1:*]
           buf = bytarr(1)
           if debug(2) then begin
-            dprint,dlevel=2,'Lost sync:',dwait=10
+            dprint,dlevel=1,'Lost sync:',dwait=2
           endif
           continue  
       endif
@@ -66,23 +70,41 @@ pro spp_ptp_lun_read,in_lun,out_lun,info=info
       if debug(5) then begin
         hexprint,dlevel=3,ccsds_buf,nbytes=32
       endif
-      if run_proc then   spp_ccsds_pkt_handler,ccsds_buf,ptp_header=ptp_header  
+      if run_proc then   spp_ccsds_pkt_handler,ccsds_buf,source_info=info,ptp_header=ptp_header  
 
       buf = bytarr(17)
       remainder=!null
     endwhile
-    
-    if nbytes ne 0 then msg += string(/print,nbytes,([ptp_buf,ccsds_buf])[0:(nbytes < 32)-1],format='(i6 ," bytes: ", 128(" ",Z02))')  $
-    else msg+= ' No data available'
-
-    dprint,dlevel=4,msg
-    info.msg = msg
 
     if 0 then begin
       nextfile:
       dprint,!error_state.msg
       dprint,'Skipping file'
+    endif    
+
+    if ~keyword_set(no_sum) then begin
+      if keyword_set(info.last_time) then begin
+        dt = time - info.last_time
+        info.total_bytes += nbytes
+        if dt gt .1 then begin
+          rate = info.total_bytes/dt
+          store_data,'PTP_DATA_RATE',append=1,time, rate,dlimit={psym:-4}
+          info.total_bytes =0
+          info.last_time = time
+        endif
+      endif else begin
+        info.last_time = time
+        info.total_bytes = 0
+      endelse
     endif
+
+    
+    if nbytes ne 0 then msg += string(/print,nbytes,([ptp_buf,ccsds_buf])[0:(nbytes < 32)-1],format='(i6 ," bytes: ", 128(" ",Z02))')  $
+    else msg+= ' No data available'
+
+    dprint,dlevel=5,msg
+    info.msg = msg
+
 ;    dprint,dlevel=2,'Compression: ',float(fp)/fi.size
   
 end

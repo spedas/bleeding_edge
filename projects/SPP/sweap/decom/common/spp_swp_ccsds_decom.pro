@@ -13,7 +13,7 @@ function spp_swp_ccsds_decom_mettime,header,spc=spc,span=span,subsec=subsec
   if size(header,/type) eq 1 then begin   ; convert to uints
     n = n_elements(header) 
     header2 = swap_endian(uint(header,0,6 < n/2) ,/swap_if_little_endian )
-    dprint,dlevel=3,'old code!'
+    dprint,dlevel=1,'old code!'
     return, spp_swp_ccsds_decom_mettime(header2,subsec=subsec,spc=spc,span=span)
   endif
     ; header assumed to be uints at this point
@@ -54,25 +54,26 @@ function spp_swp_ccsds_decom,buffer,offset,buffer_length,remainder=remainder , e
     MET:          d_nan,  $
     pdata:        ptr_new(),  $         ; pointer to full packet data including header
     time:         d_nan,  $             ; unixtime 
-    counter:      0ul,    $             ; packet counter as received - future use
+;    counter:      0ul,    $             ; packet counter as received - future use
     ptp_time:     d_nan,  $             ; unixtime from ptp packet
+;    proc_time:    d_nan,  $             ; unixtime when it was processed
     source:       0u   ,  $             ; an indicator of where this packet came from:  0: unknown, apid of wrapper_packet: 0x348 - 0x34f
-    source_name:  ''   ,  $             ; file name of source
-;    source_hashcode: UL,  $
-;    content_id:   0u   ,  $
+;    source_name:  ''   ,  $             ; file name of source
+    source_hash:  0UL,  $               ; hashcode() of source_name
+    content_id:   0u   ,  $             ; used by wrapper packets to define what is inside
     ;    data:         pktbuffer, $
     time_delta :  f_nan, $
     seqn_delta :  0u, $
     error :       0b, $
     gap :         1b  }
 
-  if buffer_length-offset lt 12 then begin
+  if buffer_length-offset lt 6 then begin
     if debug(2) then begin
       dprint,'CCSDS Buffer length too short to include header: ',buffer_length-offset,dlevel=2,offset,dwait=20
       hexprint,buffer
     endif
     error = 1b
-    return, 0
+    return, !null
   endif
 
   header = swap_endian(uint(buffer[offset+0:offset+11],0,6) ,/swap_if_little_endian )

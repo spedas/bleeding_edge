@@ -92,8 +92,20 @@ spp_ssr_file_read,ssrfiles
 ssrfiles = spp_file_retrieve('spp/data/sci/sweap/prelaunch/moc/MOPS_DATA/20180515_MSIM4/ssr_telemetry/2018/245/*_EA')  ;MSIM4:
 spp_ssr_file_read,ssrfiles
 
+prefix = 'spp/data/sci/MOC/SPP_IT/data_products/ssr_telemetry/'
 
-ssrfiles = spp_file_retrieve( 'spp/data/sci/MOC/SPP/data_products/ssr_telemetry/2018/245/*_EA')
+trange = '2020-1-'+['200','202']
+;trange = '2018-1-'+['245','247']
+ssrfiles = spp_file_retrieve( prefix='spp/data/sci/MOC/SPP_IT/data_products/ssr_telemetry/' ,'YYYY/DOY/*_EA',/daily_names,trange=trange)
+
+
+;;----SPAN-E TVAC TESTING @ GODDARD (2018)----;;
+; Use the following:
+; files = spp_file_retrieve(/swem, /goddard, trange = trange)
+trange = '2018 03 ' + ['07/16','08/01'] ; fields wpc testing with electron gun
+trange = '2018 03 ' + ['08/00','08/04'] ; threshold tests @ each anode w/electron gun stimuli
+trange = '2018 03 ' + ['08/03','08/06'] ; threshold tests @ MCP values, spoiler test, and energy sweep (also powerdown)  MET = '2020-1-201'
+
 
 
 
@@ -141,19 +153,15 @@ if 0 then begin
   swem_memdump.display, win = window(name='swem_memdump')
 endif
 
-spp_ptp_file_read, ptpfiles
-
 dprint,setd=4
-
+spp_ptp_file_read, ptpfiles
 
 spp_swp_tplot,/setlim   ,'swem2'
 
-if 1 then begin
+if 0 then begin
 ap = spp_apdat('swem_dig_hkp')
 ap.cdf_pathname = ''
 ap.cdf_create_file,trange=trange
 endif
-
-
 
 end

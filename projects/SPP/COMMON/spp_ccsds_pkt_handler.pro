@@ -1,7 +1,12 @@
 
 
-pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length,ptp_header=ptp_header,remainder=remainder ,wrapper_apid=wrapper_apid, original_size=original_size $
-    ,recurse_level=recurse_level;,ccsds=ccsds
+pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length, $
+  source_info = source_info, $
+  ptp_header=ptp_header, $
+  remainder=remainder ,  $
+  wrapper_apid=wrapper_apid, $
+  original_size=original_size, $
+  recurse_level=recurse_level;,ccsds=ccsds
 
   if not keyword_set(buffer_length) then buffer_length = n_elements(dbuffer)
   if not keyword_set(offset) then offset = 0L
@@ -10,6 +15,7 @@ pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length,ptp_header=ptp_header,rem
   
   while offset lt buffer_length do begin
     ccsds = spp_swp_ccsds_decom(dbuffer,offset,buffer_length,remainder=remainder,dlevel=4)
+    if keyword_set(source_info) then ccsds.source_hash = source_info.input_sourcehash
     if ~keyword_set(ccsds) then begin
       if debug(2) then begin
         dprint,dlevel=4,'Incomplete CCSDS, saving ',n_elements(remainder),' bytes for later '    ;,pkt_size,pkt_size - n_elements(b)
@@ -51,7 +57,7 @@ pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length,ptp_header=ptp_header,rem
       dprint,dlevel=5,format='("Lost ",i5," ",a," (0x", Z03,") packets ",i5," ",a)',  ccsds.seqn_delta-1,apdat.name,apdat.apid,ccsds.seqn,time_string(ccsds.time,prec=3)
     endif
 
-    apdat.handler, ccsds , header
+    apdat.handler, ccsds , header, source_info=source_info
     dummy = spp_rt(ccsds.time)     ; This line helps keep track of the current real time
 
     ;;  Save statistics - get APID_ALL and APID_GAP

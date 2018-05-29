@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-05-25 18:08:06 -0700 (Fri, 25 May 2018) $
-; $LastChangedRevision: 25278 $
+; $LastChangedDate: 2018-05-28 15:52:35 -0700 (Mon, 28 May 2018) $
+; $LastChangedRevision: 25286 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -193,7 +193,7 @@ end
 
 
 
-pro spp_swp_spe_prod_apdat::handler,ccsds,ptp_header
+pro spp_swp_spe_prod_apdat::handler,ccsds,ptp_header,source_info=source_info
 
   strct = self.decom(ccsds)
   

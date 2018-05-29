@@ -2,15 +2,14 @@
  
 pro spp_gen_apdat_stats::handler,ccsds,ptp_header
 
-;printdat,ccsds
+;print_struct,ccsds
 self.increment_counters, ccsds
-self.data.append, {time: ccsds.time,  apid: ccsds.apid ,pkt_size: ccsds.pkt_size,  gap:ccsds.gap }
+strct =ccsds  ;{time: ccsds.time,  apid: ccsds.apid ,pkt_size: ccsds.pkt_size,  gap:ccsds.gap }
+strct.pdata = ptr_new()
+self.data.append, strct
 if self.rt_flag then begin
   store_data,'APIDS_ALL',ccsds.time,ccsds.apid, /append,dlimit={psym:3,symsize:.2 ,ynozero:1}
-  if ccsds.gap ne 0 then  store_data,'APIDS_GAP',ccsds.time,ccsds.apid,  /append,  dlimit={psym:4,symsize:.4 ,ynozero:1, colors:'r'}
-;  printdat,self.sample1
-;  if self.sample1 eq !null then self.sample1 = obj_new('dynamic_array')
-  
+  if ccsds.gap ne 0 then  store_data,'APIDS_GAP',ccsds.time,ccsds.apid,  /append,  dlimit={psym:4,symsize:.4 ,ynozero:1, colors:'r'}  
 endif
 end
  

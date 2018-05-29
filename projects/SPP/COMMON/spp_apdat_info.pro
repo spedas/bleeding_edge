@@ -10,10 +10,12 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
                   ;matchname = matchname,  $  obsolete - use string as input
                   save_flag=save_flag,$
                   sort_flag=sort_flag,$
+                  current_filename = current_filename, $
                   cdf_pathname = cdf_pathname, $
                   nonzero=nonzero,  $
                   dlevel=dlevel, $
                   all = all, $
+                  info = info,  $
                   finish=finish,$
                   window_obj=window_obj, $
                   tname=tname,$
@@ -24,12 +26,13 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
                   print=print, $
                   rt_flag=rt_flag
 
-  common spp_apdat_info_com, all_apdat, alt_apdat
+  common spp_apdat_info_com, all_apdat, alt_apdat, all_info,temp1,temp2
 
   if keyword_set(reset) then begin   ; not recommended!
-    obj_destroy,all_apdat    ; this might not be required in IDL8.x and above
+    obj_destroy,all_apdat,alt_apdat,all_info    ; this might not be required in IDL8.x and above
     all_apdat=!null
     alt_apdat= !null
+    all_info = !null
     return
   endif
 
@@ -38,6 +41,19 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   if ~keyword_set(all_apdat) then all_apdat = replicate( obj_new() , 2^11 )
   
   if ~keyword_set(alt_apdat) then alt_apdat = orderedhash()
+  if ~keyword_set(all_info) then begin
+     all_info = orderedhash()
+     all_info['current_filename'] = 'Unknown'
+     all_info['current_filehash'] = 0UL
+     all_info['file_hash_list'] = orderedhash()
+  endif
+  
+  if keyword_set(current_filename) then begin
+    current_filehash = current_filename.hashcode()
+    all_info['current_filename'] = current_filename
+    hash_list = all_info['file_hash_list']
+    hash_list[current_filehash] = current_filename
+  endif
   
   if keyword_set(file_save) then save,file=file_save,all_apdat,/verbose,compress=compress
 
@@ -91,8 +107,8 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     if keyword_set(zero)   then    apdat.zero
     if keyword_set(print)  then    apdat.print, header = i eq 0
   endfor
-
   apdats=all_apdat[apids]
+  if arg_present(info)  then  info = all_info
   
 end
 

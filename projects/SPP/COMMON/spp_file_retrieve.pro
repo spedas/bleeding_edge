@@ -30,6 +30,7 @@
 ;-
 function spp_file_retrieve,pathname,trange=trange,ndays=ndays,nhours=nhours,verbose=verbose, source=src, $
    last_version=last_version, $
+   prefix = prefix, $
    no_update=no_update,create_dir=create_dir,pos_start=pos_start, $
    daily_names=daily_names,hourly_names=hourly_names,resolution = res,shiftres=shiftres,valid_only=valid_only,  $
  ;  no_server=no_server,user_pass=user_pass,L0=L0, $
@@ -108,6 +109,8 @@ if keyword_set(res) then begin
   pathnames = time_string(times,tformat=pathname)
   pathnames = pathnames[uniq(pathnames)]   ; Remove duplicate filenames - assumes they are sorted
 endif else pathnames = pathname
+
+if  keyword_set(prefix) then pathnames = prefix+pathnames
 
 if keyword_set(create_dir) then begin
   files = source.local_data_dir + pathnames
