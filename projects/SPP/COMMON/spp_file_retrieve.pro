@@ -120,6 +120,7 @@ endif
 
 files = file_retrieve(pathnames,_extra=source)
 dprint,dlevel=3,verbose=verbose,systime(1)-tstart,' seconds to retrieve ',n_elements(files),' files'
+if n_elements(files) eq 1 then files=files[0]
 return,files
 
 

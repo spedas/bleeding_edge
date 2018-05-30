@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon May 28 18:16:26 2018.<P>
+<STRONG>Last modified: </STRONG>Tue May 29 18:16:23 2018.<P>
  
 <HR>
  
@@ -55,6 +55,7 @@ This page was created by the IDL library routine
 <br>Creates data gaps (by inserting NaN) when the time between data points is
 <LI><A HREF="#MPLOT">MPLOT</A>
 <br>General purpose procedure used to make multi-line plots.
+<LI><A HREF="#MPLOT_DOWNSAMPLE_DATA">MPLOT_DOWNSAMPLE_DATA</A>
 <LI><A HREF="#MPLOT_SYMLOG">MPLOT_SYMLOG</A>
 <LI><A HREF="#NORMAL_TO_DATA">NORMAL_TO_DATA</A>
 <LI><A HREF="#OPTIONS">OPTIONS</A>
@@ -711,7 +712,7 @@ LAST MODIFIED:	@(#)makegap.pro	1.2 98/02/18
 <A NAME="MPLOT">
 <H2>MPLOT</H2></A>
 <A HREF="#MAKEGAP">[Previous Routine]</A>
-<A HREF="#MPLOT_SYMLOG">[Next Routine]</A>
+<A HREF="#MPLOT_DOWNSAMPLE_DATA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:  mplot, x, y, [,dy]
@@ -757,9 +758,72 @@ LAST MODIFICATION: 02/11/01
 <STRONG>(See <A href="tplot/mplot.pro">general/tplot/mplot.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MPLOT_DOWNSAMPLE_DATA">
+<H2>MPLOT_DOWNSAMPLE_DATA</H2></A>
+<A HREF="#MPLOT">[Previous Routine]</A>
+<A HREF="#MPLOT_SYMLOG">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE mplot_downsample_data, max_points, x, y
+
+ PURPOSE:
+
+   Enables fast plotting of time series plots with many elements. 
+   
+   This function is intended for use when plotting time series plots using
+   MPLOT.  When n_elements &gt;&gt; number of pixels on the screen, the large number
+   of points slows down plotting considerably without adding any visual
+   information to the final plot.
+   
+   This procedure groups the data into regularly spaced time intervals.  If 
+   MAX_POINTS is set correctly (see below), each interval is less than a pixel
+   in the plot.  The procedure finds the minimum and maximum value of the 
+   time series in that interval, and constructs a new time series from the 
+   minima and maxima.  The new series has many fewer points than the original
+   (and therefore the plotting runs much faster), but the resulting plot is 
+   nearly visually identical to the full time series plot.
+   
+   If the number of input points is smaller than MAX_POINTS, the function does
+   nothing.
+   
+   This should not be used as a 'real' downsampling procedure to make a new
+   time series that can be used for calculations at a reduced cadence--use 
+   only for plotting.
+   
+   Works best with regularly spaced data that is plotted without a plot 
+   symbol set.
+
+ INPUT:
+    
+    MAX_POINTS: The maximum number of points in the downsampled array.
+     Set to a number that is several times larger than the maximum pixel
+     width of the plot window (something like 10000 gives more than enough
+     points for nearly any display, and plots nearly instantly).  If the
+     number of input points is smaller than max_points, the function does
+     nothing.
+     For TPLOT variables, set 'max_points' using the OPTIONS procedure.
+    X: The time array.
+    Y: The data array.
+
+ KEYWORDS:
+
+    DY: Optional uncertainty in y.
+    
+ CREATED BY:
+ 
+   pulupa
+
+ $LastChangedBy: spfuser $
+ $LastChangedDate: 2018-05-29 14:25:32 -0700 (Tue, 29 May 2018) $
+ $LastChangedRevision: 25295 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/mplot_downsample_data.pro $
+</PRE><P>
+<STRONG>(See <A href="tplot/mplot_downsample_data.pro">general/tplot/mplot_downsample_data.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MPLOT_SYMLOG">
 <H2>MPLOT_SYMLOG</H2></A>
-<A HREF="#MPLOT">[Previous Routine]</A>
+<A HREF="#MPLOT_DOWNSAMPLE_DATA">[Previous Routine]</A>
 <A HREF="#NORMAL_TO_DATA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

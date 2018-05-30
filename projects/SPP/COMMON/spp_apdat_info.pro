@@ -12,6 +12,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
                   sort_flag=sort_flag,$
                   current_filename = current_filename, $
                   cdf_pathname = cdf_pathname, $
+                  make_cdf = make_cdf, $
                   nonzero=nonzero,  $
                   dlevel=dlevel, $
                   all = all, $
@@ -103,6 +104,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     if n_elements(cdf_pathname) ne 0 then apdat.cdf_pathname= cdf_pathname
     if ~keyword_set(all)  &&  (apdat.npkts eq 0) then continue
     if keyword_set(finish) then    apdat.finish
+    if keyword_set(make_cdf) then  apdat.cdf_create_file
     if keyword_set(clear)  then    apdat.clear
     if keyword_set(zero)   then    apdat.zero
     if keyword_set(print)  then    apdat.print, header = i eq 0

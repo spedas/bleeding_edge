@@ -162,6 +162,9 @@ if keyword_set(turbo) and ndx eq 1 and xrange[0] ne xrange[1]  and nx gt 1000 th
    y = y[mm[0]:mm[1],*]
    if keyword_set(dy) then    dy = dy[mm[0]:mm[1],*]
 
+   max_points = -1
+   str_element, stuff, 'max_points', value = max_points
+   if max_points GT 0 then mplot_downsample_data, max_points, x, y, dy = dy 
 
 endif
 

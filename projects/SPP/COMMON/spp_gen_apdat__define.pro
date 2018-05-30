@@ -164,8 +164,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-05-28 15:52:35 -0700 (Mon, 28 May 2018) $
-; $LastChangedRevision: 25286 $
+; $LastChangedDate: 2018-05-28 23:22:17 -0700 (Mon, 28 May 2018) $
+; $LastChangedRevision: 25287 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -182,8 +182,8 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-  sw_hash['svn_changedate'] = '$LastChangedDate: 2018-05-28 15:52:35 -0700 (Mon, 28 May 2018) $'
-  sw_hash['svn_revision '] = '$LastChangedRevision: 25286 $'
+  sw_hash['svn_changedate'] = '$LastChangedDate: 2018-05-28 23:22:17 -0700 (Mon, 28 May 2018) $'
+  sw_hash['svn_revision '] = '$LastChangedRevision: 25287 $'
 
   return,sw_hash
 end
@@ -226,8 +226,8 @@ function spp_gen_apdat::cdf_global_attributes
 ;  global_att['SW_RUNTIME'] =  time_string(systime(1)) 
 ;  global_att['SW_RUNBY'] = 
 ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-05-28 15:52:35 -0700 (Mon, 28 May 2018) $'
-;  global_att['SVN_REVISION'] = '$LastChangedRevision: 25286 $'
+;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-05-28 23:22:17 -0700 (Mon, 28 May 2018) $'
+;  global_att['SVN_REVISION'] = '$LastChangedRevision: 25287 $'
 
 return,global_att
 end
@@ -262,24 +262,28 @@ end
 pro spp_gen_apdat::cdf_create_data_vars, fileid, var, vattributes=atts, varstr
 
    array = self.data.array    ; this should be an array of structures
-   varnames = tag_names(array)
-   ntags = n_elements(varnames)
-   for i=0,ntags-1 do begin
-     val = array.(i)
-     spp_swp_cdf_var_att_create,fileid,varnames[i],val,attributes=atts
-   endfor
+   if isa(array) then begin
+     varnames = tag_names(array)
+     ntags = n_elements(varnames)
+     for i=0,ntags-1 do begin
+       val = array.(i)
+       spp_swp_cdf_var_att_create,fileid,varnames[i],val,attributes=atts
+     endfor    
+   endif
   
 end
 
 
 pro spp_gen_apdat::cdf_create_file,cdftags=cdftags,trange=trange
+  if not keyword_set(self.cdf_pathname) then return
+  
   dprint,'Making CDF for ',self.name,dlevel=self.dlevel
  ; dirpathname = self.cdf_dirpathname
  ; filename = dirpathname + self.name
   global_attributes = self.cdf_global_attributes()
   if not keyword_set(trange) then trange=timerange()
-  pathname = root_data_dir() + time_string(trange[0],tformat =self.cdf_pathname )
-  global_attributes['Logical_file_id'] = pathname
+  pathname =  spp_file_retrieve(self.cdf_pathname ,trange=trange,/create_dir,/daily_names)
+  global_attributes['Logical_file_id'] = str_sub(pathname,'$NAME$',self.name)
   
   pathname = global_attributes['Logical_file_id']
   file_mkdir2,file_dirname(pathname)
@@ -298,6 +302,7 @@ pro spp_gen_apdat::cdf_create_file,cdftags=cdftags,trange=trange
   self.cdf_create_data_vars,fileid,vattributes=var_atts
    
   cdf_close,fileid
+  dprint,self.name,':  Created:  ',pathname,dlevel=self.dlevel
 end
 
 
