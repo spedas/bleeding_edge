@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue May 29 18:16:23 2018.<P>
+<STRONG>Last modified: </STRONG>Wed May 30 18:16:25 2018.<P>
  
 <HR>
  
@@ -23,6 +23,8 @@ This page was created by the IDL library routine
 <br>returns an ESA-S1 3D data structure
 <LI><A HREF="#KGY_ESA2_GET3D">KGY_ESA2_GET3D</A>
 <br>returns an ESA-S2 3D data structure
+<LI><A HREF="#KGY_ESA_PAD_COMB">KGY_ESA_PAD_COMB</A>
+<br>generates combined e PAD tplot vairables
 <LI><A HREF="#KGY_IEA_GET3D">KGY_IEA_GET3D</A>
 <br>returns an IEA 3D data structure
 <LI><A HREF="#KGY_IMA_GET3D">KGY_IMA_GET3D</A>
@@ -90,8 +92,8 @@ This page was created by the IDL library routine
        Yuki Harada on 2014-07-01
 
  $LastChangedBy: haraday $
- $LastChangedDate: 2016-09-17 14:37:45 -0700 (Sat, 17 Sep 2016) $
- $LastChangedRevision: 21850 $
+ $LastChangedDate: 2018-05-29 23:13:05 -0700 (Tue, 29 May 2018) $
+ $LastChangedRevision: 25297 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_esa1_get3d.pro $
 </PRE><P>
 <STRONG>(See <A href="pace/kgy_esa1_get3d.pro">projects/kaguya/map/pace/kgy_esa1_get3d.pro</A>)</STRONG><P>
@@ -100,7 +102,7 @@ This page was created by the IDL library routine
 <A NAME="KGY_ESA2_GET3D">
 <H2>KGY_ESA2_GET3D</H2></A>
 <A HREF="#KGY_ESA1_GET3D">[Previous Routine]</A>
-<A HREF="#KGY_IEA_GET3D">[Next Routine]</A>
+<A HREF="#KGY_ESA_PAD_COMB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  FUNCTION:
@@ -122,16 +124,40 @@ This page was created by the IDL library routine
        Yuki Harada on 2014-07-01
 
  $LastChangedBy: haraday $
- $LastChangedDate: 2016-09-17 14:37:45 -0700 (Sat, 17 Sep 2016) $
- $LastChangedRevision: 21850 $
+ $LastChangedDate: 2018-05-29 23:13:05 -0700 (Tue, 29 May 2018) $
+ $LastChangedRevision: 25297 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_esa2_get3d.pro $
 </PRE><P>
 <STRONG>(See <A href="pace/kgy_esa2_get3d.pro">projects/kaguya/map/pace/kgy_esa2_get3d.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="KGY_ESA_PAD_COMB">
+<H2>KGY_ESA_PAD_COMB</H2></A>
+<A HREF="#KGY_ESA2_GET3D">[Previous Routine]</A>
+<A HREF="#KGY_IEA_GET3D">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+     kgy_esa_pad_comb
+ PURPOSE:
+     generates combined e PAD tplot vairables
+ CALLING SEQUENCE:
+     kgy_esa_pad_comb
+ OPTIONAL KEYWORDS:
+ CREATED BY:
+     Yuki Harada on 2018-05-28
+
+ $LastChangedBy: haraday $
+ $LastChangedDate: 2018-05-30 16:47:03 -0700 (Wed, 30 May 2018) $
+ $LastChangedRevision: 25299 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_esa_pad_comb.pro $
+</PRE><P>
+<STRONG>(See <A href="pace/kgy_esa_pad_comb.pro">projects/kaguya/map/pace/kgy_esa_pad_comb.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="KGY_IEA_GET3D">
 <H2>KGY_IEA_GET3D</H2></A>
-<A HREF="#KGY_ESA2_GET3D">[Previous Routine]</A>
+<A HREF="#KGY_ESA_PAD_COMB">[Previous Routine]</A>
 <A HREF="#KGY_IMA_GET3D">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -154,8 +180,8 @@ This page was created by the IDL library routine
        Yuki Harada on 2014-07-02
 
  $LastChangedBy: haraday $
- $LastChangedDate: 2016-09-17 14:37:45 -0700 (Sat, 17 Sep 2016) $
- $LastChangedRevision: 21850 $
+ $LastChangedDate: 2018-05-29 23:13:05 -0700 (Tue, 29 May 2018) $
+ $LastChangedRevision: 25297 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_iea_get3d.pro $
 </PRE><P>
 <STRONG>(See <A href="pace/kgy_iea_get3d.pro">projects/kaguya/map/pace/kgy_iea_get3d.pro</A>)</STRONG><P>
@@ -188,8 +214,8 @@ This page was created by the IDL library routine
        Yuki Harada on 2014-07-02
 
  $LastChangedBy: haraday $
- $LastChangedDate: 2016-09-17 14:37:45 -0700 (Sat, 17 Sep 2016) $
- $LastChangedRevision: 21850 $
+ $LastChangedDate: 2018-05-29 23:13:05 -0700 (Tue, 29 May 2018) $
+ $LastChangedRevision: 25297 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_ima_get3d.pro $
 </PRE><P>
 <STRONG>(See <A href="pace/kgy_ima_get3d.pro">projects/kaguya/map/pace/kgy_ima_get3d.pro</A>)</STRONG><P>

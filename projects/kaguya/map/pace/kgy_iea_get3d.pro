@@ -18,8 +18,8 @@
 ;       Yuki Harada on 2014-07-02
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2016-09-17 14:37:45 -0700 (Sat, 17 Sep 2016) $
-; $LastChangedRevision: 21850 $
+; $LastChangedDate: 2018-05-29 23:13:05 -0700 (Tue, 29 May 2018) $
+; $LastChangedRevision: 25297 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_iea_get3d.pro $
 ;-
 
@@ -417,7 +417,7 @@ if size(lmag_sat,/tname) eq 'STRUCT' then begin
       magf[0] = mean(lmag_sat[idx_mag].bsat[0],/nan)
       magf[1] = mean(lmag_sat[idx_mag].bsat[1],/nan)
       magf[2] = mean(lmag_sat[idx_mag].bsat[2],/nan)
-   endif
+   endif else magf[*] = interp( transpose(lmag_sat.bsat), lmag_sat.time, (start_time+end_time)/2d, interp=129, /no_ex )
 endif
 
 dat = { $

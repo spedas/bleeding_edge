@@ -30,8 +30,8 @@
 ;     Yuki Harada on 2015-01-23
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2017-08-25 14:41:26 -0700 (Fri, 25 Aug 2017) $
-; $LastChangedRevision: 23831 $
+; $LastChangedDate: 2018-05-29 23:13:05 -0700 (Tue, 29 May 2018) $
+; $LastChangedRevision: 25297 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/kgy_map_make_pad.pro $
 ;-
 
@@ -165,6 +165,7 @@ pro kgy_map_make_pad, sensor=sensor, trange=trange, nocntcorr=nocntcorr, erange=
         if dat.type eq pad_h_type or dat.type eq pad_h_type2 then npa = num_pa_h $
         else if dat.type eq pad_l_type or dat.type eq pad_l_type2 then npa = num_pa_l else continue
 
+        if total(finite(dat.magf)) ne 3 then continue
         xyz_to_polar,dat.magf,theta=bth,phi=bph
         pa = pangle(dat.theta,dat.phi,bth,bph)
         pab = fix(pa/180.*npa)  < (npa-1)

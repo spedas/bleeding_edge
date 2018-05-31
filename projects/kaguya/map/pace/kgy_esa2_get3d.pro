@@ -18,8 +18,8 @@
 ;       Yuki Harada on 2014-07-01
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2016-09-17 14:37:45 -0700 (Sat, 17 Sep 2016) $
-; $LastChangedRevision: 21850 $
+; $LastChangedDate: 2018-05-29 23:13:05 -0700 (Tue, 29 May 2018) $
+; $LastChangedRevision: 25297 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_esa2_get3d.pro $
 ;-
 
@@ -86,6 +86,8 @@ case esa2_header_arr[i].type of
       valid = 1
       enesq = reform(esa2_info_str.ene_sqno_16x64[ram,*,0,0])
       polsq = reform(esa2_info_str.pol_sqno_16x64[ram,0,*,0])
+
+      if ram eq 0 then enesq = indgen(32)
 
       energy = replicate(0., 32,16,64)
       theta = replicate(0., 32,16,64)
@@ -158,20 +160,7 @@ case esa2_header_arr[i].type of
       data = replicate(0., 32,16,64)
       data[enesq[*],polsq[*],*] = ccnt[*,*,*]
 
-      if ram eq 0 then begin
-         sortene = sort(energy[*,0,10])
-         data[*,*,*] = data[sortene,*,*]
-         energy[*,*,*] = energy[sortene,*,*]
-         theta[*,*,*] = theta[sortene,*,*]
-         phi[*,*,*] = phi[sortene,*,*]
-         gfactor[*,*,*] = gfactor[sortene,*,*]
-         eff[*,*,*] = eff[sortene,*,*]
-         bins[*,*,*] = bins[sortene,*,*]
-         denergy[*,*,*] = 100.
-         dtheta[*,*,*] = dtheta[sortene,*,*]
-         dphi[*,*,*] = dphi[sortene,*,*]
-         domega[*,*,*] = domega[sortene,*,*]
-      endif
+      if ram eq 0 then denergy[*,*,*] = 100.
 
       if keyword_set(sabin) then begin
          olddata = data
@@ -213,6 +202,8 @@ case esa2_header_arr[i].type of
       valid = 1
       enesq = reform(esa2_info_str.ene_sqno_4x16[ram,*,0,0])
       polsq = reform(esa2_info_str.pol_sqno_4x16[ram,0,*,0])
+
+      if ram eq 0 then enesq = indgen(32)
 
       energy = replicate(0., 32,4,16)
       theta = replicate(0., 32,4,16)
@@ -285,20 +276,7 @@ case esa2_header_arr[i].type of
       data = replicate(0., 32,4,16)
       data[enesq[*],polsq[*],*] = ccnt[*,*,*]
 
-      if ram eq 0 then begin    ;- 4 ene step
-         sortene = sort(energy[*,0,10])
-         data[*,*,*] = data[sortene,*,*]
-         energy[*,*,*] = energy[sortene,*,*]
-         theta[*,*,*] = theta[sortene,*,*]
-         phi[*,*,*] = phi[sortene,*,*]
-         gfactor[*,*,*] = gfactor[sortene,*,*]
-         eff[*,*,*] = eff[sortene,*,*]
-         bins[*,*,*] = bins[sortene,*,*]
-         denergy[*,*,*] = 100.
-         dtheta[*,*,*] = dtheta[sortene,*,*]
-         dphi[*,*,*] = dphi[sortene,*,*]
-         domega[*,*,*] = domega[sortene,*,*]
-      endif
+      if ram eq 0 then denergy[*,*,*] = 100.
 
       if keyword_set(sabin) then begin
          olddata = data
@@ -340,6 +318,12 @@ case esa2_header_arr[i].type of
       valid = 0                 ;- to be updated
       corr = 0
       energy = replicate(0., 32,32)
+      if ram eq 0 then begin
+         energy[0+indgen(8)*4,*] = 0.0978 *1e3 ;- Saito et al. 2010, Table 3
+         energy[1+indgen(8)*4,*] = 0.2993 *1e3
+         energy[2+indgen(8)*4,*] = 0.3998 *1e3
+         energy[3+indgen(8)*4,*] = 0.1976 *1e3
+      endif
       theta = replicate(0., 32,32)
       phi = replicate(0., 32,32)
       gfactor = replicate(0.d, 32,32)
@@ -350,7 +334,11 @@ case esa2_header_arr[i].type of
       dphi = replicate(360./16.,32,32)
       domega = 2.*(dphi/!radeg)*cos(theta/!radeg)*sin(.5*dtheta/!radeg)
       ii = where( esa2_type02_arr.index eq theindex )
-      data = float(esa2_type02_arr[ii].cnt)
+      count = long(esa2_type02_arr[ii].cnt) ;- read_pbf_v1.c
+      tmp_cnt = ishft( count , -5 ) and '7ff'x
+      tmp_sft = count and '1f'x
+      decode_cnt = ishft( tmp_cnt , tmp_sft )
+      data = float(decode_cnt)
    end
 endcase
 
@@ -362,7 +350,7 @@ if size(lmag_sat,/tname) eq 'STRUCT' then begin
       magf[0] = mean(lmag_sat[idx_mag].bsat[0],/nan)
       magf[1] = mean(lmag_sat[idx_mag].bsat[1],/nan)
       magf[2] = mean(lmag_sat[idx_mag].bsat[2],/nan)
-   endif
+   endif else magf[*] = interp( transpose(lmag_sat.bsat), lmag_sat.time, (start_time+end_time)/2d, interp=129, /no_ex )
 endif
 
 dat = { $
@@ -416,6 +404,9 @@ dat = { $
 
       data:data $
       }
+
+;;; mask invalid data in mode 29
+if dat.mode eq '29'xb and dat.type eq 1 and dat.svs eq 0 then dat.valid = 0
 
 return,dat
 

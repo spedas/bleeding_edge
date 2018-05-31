@@ -19,8 +19,8 @@
 ;     Yuki Harada on 2015-01-23
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2016-09-09 11:33:47 -0700 (Fri, 09 Sep 2016) $
-; $LastChangedRevision: 21810 $
+; $LastChangedDate: 2018-05-29 23:13:05 -0700 (Tue, 29 May 2018) $
+; $LastChangedRevision: 25297 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/kgy_map_make_tplot.pro $
 ;-
 
@@ -140,6 +140,7 @@ pro kgy_map_make_tplot, sensor=sensor, trange=trange, bkgd=bkgd, suffix=suffix, 
         dts = replicate(!values.f_nan,n_elements(idx_uniq))
         rams = replicate(!values.f_nan,n_elements(idx_uniq))
         modes = replicate(0l,n_elements(idx_uniq))
+        types = replicate(!values.f_nan,n_elements(idx_uniq))
 
         for iarr=0,5 do begin
            if iarr eq 0 then begin
@@ -159,13 +160,14 @@ pro kgy_map_make_tplot, sensor=sensor, trange=trange, bkgd=bkgd, suffix=suffix, 
               if nw gt 0 then totalcnts[w] = !values.f_nan
            endif
            if iarr eq 2 then begin
-              continue                                       ;- to be updated
               if size(data_arr2,/type) ne 8 then continue    ;- [E,P]
               data_arr = data_arr2
-              totalcnts = transpose(total(data_arr.cnt*long(data_arr.cnt ne uint(-1))-bkgd>0,2))
-              fincnts = transpose(total(long(data_arr.cnt ne uint(-1)),2))
-              w = where(~fincnts,nw)
-              if nw gt 0 then totalcnts[w] = !values.f_nan
+              ;;; decode type02 counts, see read_pbf_v1.c
+              tmp_cnt = ishft( data_arr.cnt , -5 ) and '7ff'x
+              tmp_sft = data_arr.cnt and '1f'x
+              decode_cnt = ishft( tmp_cnt , tmp_sft )
+              totalcnts = transpose( total( decode_cnt[0:3,*,*], 2 ) )
+              totalcnts = totalcnts *!values.f_nan ;- FIXME: type02 data format
            endif
            if iarr eq 3 then begin
               if size(data_arr3,/type) ne 8 then continue ;- [P,E,M]
@@ -200,6 +202,7 @@ pro kgy_map_make_tplot, sensor=sensor, trange=trange, bkgd=bkgd, suffix=suffix, 
               dts[idx_uniq[w]] = header_arr[idx_uniq[w]].time_resolution/1000.
               rams[idx_uniq[w]] = header_arr[idx_uniq[w]].svs_tbl
               modes[idx_uniq[w]] = header_arr[idx_uniq[w]].mode
+              types[idx_uniq[w]] = header_arr[idx_uniq[w]].type
               for iw=0,nw-1 do begin
                  ram = header_arr[idx_uniq[w[iw]]].svs_tbl
                  sene = sort(fov_str.ene[ram,*])
@@ -238,6 +241,10 @@ pro kgy_map_make_tplot, sensor=sensor, trange=trange, bkgd=bkgd, suffix=suffix, 
                    data={x:stimes[idx_uniq],y:modes_num}, $
                    dlim={ytitle:sensorname+'!cmode',yrange:[11,29], $
                          colors:'r',psym:1}
+        store_data,'kgy_'+sensornname+'_type'+suffix, verbose=verbose, $
+                   data={x:stimes[idx_uniq],y:types}, $
+                   dlim={ytitle:sensorname+'!ctype',colors:'r', $
+                         psym:1}
      endif
 
 

@@ -1,7 +1,7 @@
 ;
-;  $LastChangedBy: spfuser $
-;  $LastChangedDate: 2018-05-24 22:58:47 -0700 (Thu, 24 May 2018) $
-;  $LastChangedRevision: 25270 $
+;  $LastChangedBy: pulupalap $
+;  $LastChangedDate: 2018-05-30 14:24:16 -0700 (Wed, 30 May 2018) $
+;  $LastChangedRevision: 25298 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
@@ -109,6 +109,18 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
 
   endforeach
 
+  ; Nominal scale factor (nT / count) for ranges 0-3
+
+  nt_adu = [0.03125,0.1250,0.5,2.0]
+
+  store_data, prefix + 'packet_index', $
+    data = {x:times_1d.ToArray(), y:packet_index.ToArray()}
+
+  store_data, prefix + 'range', $
+    data = {x:times_1d.ToArray(), y:range_bits_1d.ToArray()}
+
+  scale_factor = nt_adu[range_bits_1d.ToArray()]
+
   mag_comps = ['mag_bx', 'mag_by', 'mag_bz']
 
   foreach mag_comp, mag_comps do begin
@@ -125,6 +137,8 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
 
       store_data, prefix + mag_comp, data = {x:times_1d.ToArray(), y:b_1d}
 
+      store_data, prefix + mag_comp + '_nT', data = {x:times_1d.ToArray(), y:b_1d * scale_factor}
+
       options, prefix + mag_comp, 'ytitle', $
         short_prefix + ' b' + mag_comp.Substring(-1,-1)
       options, prefix + mag_comp, 'ysubtitle', '[Counts]'
@@ -134,15 +148,19 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
       options, prefix + mag_comp, 'psym_lim', 200
       options, prefix + mag_comp, 'max_points', 40000l
 
+      options, prefix + mag_comp + '_nT', 'ytitle', $
+        short_prefix + ' b' + mag_comp.Substring(-1,-1)
+      options, prefix + mag_comp + '_nT', 'ysubtitle', '[nT]'
+
+      options, prefix + mag_comp + '_nT', 'ynozero', 1
+      options, prefix + mag_comp + '_nT', 'panel_size', 1.5
+      options, prefix + mag_comp + '_nT', 'psym_lim', 200
+      options, prefix + mag_comp + '_nT', 'max_points', 40000l
+
     end
 
   endforeach
 
-  store_data, prefix + 'packet_index', $
-    data = {x:times_1d.ToArray(), y:packet_index.ToArray()}
-
-  store_data, prefix + 'range', $
-    data = {x:times_1d.ToArray(), y:range_bits_1d.ToArray()}
 
   options, prefix + 'range', 'yrange', [-0.5,3.5]
   options, prefix + 'range', 'ytitle', short_prefix + '!Crange'
