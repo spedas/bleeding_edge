@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spi_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-05-28 15:52:35 -0700 (Mon, 28 May 2018) $
-; $LastChangedRevision: 25286 $
+; $LastChangedDate: 2018-05-30 22:04:01 -0700 (Wed, 30 May 2018) $
+; $LastChangedRevision: 25304 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
@@ -12,7 +12,7 @@
 ;;                     16A                       ;;
 ;;-----------------------------------------------;;
 ;; This function needs fixing
-PRO spp_swp_spi_prod_apdat::prod_16A, strct
+PRO spp_swp_spi_prod_apdat::proc_16A, strct
    pname = '16A_'
    cnts  = *strct.pdata
    IF n_elements(cnts) NE 16 THEN BEGIN
@@ -39,7 +39,7 @@ END
 ;;-----------------------------------------------;;
 ;;                     08D                       ;;
 ;;-----------------------------------------------;;
-PRO spp_swp_spi_prod_apdat::prod_08D, strct
+PRO spp_swp_spi_prod_apdat::proc_08D, strct
    pname = '08D_'
    cnts  = *strct.pdata
    IF n_elements(cnts) NE 8 THEN BEGIN
@@ -66,7 +66,7 @@ END
 ;;-----------------------------------------------;;
 ;;                     32E                       ;;
 ;;-----------------------------------------------;;
-PRO spp_swp_spi_prod_apdat::prod_32E, strct
+PRO spp_swp_spi_prod_apdat::proc_32E, strct
    pname = '32E_'
    cnts  = *strct.pdata
    IF n_elements(cnts) NE 32 THEN BEGIN
@@ -93,7 +93,7 @@ END
 ;;-----------------------------------------------;;
 ;;                   08Dx16A                     ;;
 ;;-----------------------------------------------;;
-PRO spp_swp_spi_prod_apdat::prod_08Dx16A, strct
+PRO spp_swp_spi_prod_apdat::proc_08Dx16A, strct
    pname = '08Dx16A_'
    cnts  = *strct.pdata
    IF n_elements(cnts) NE 128 THEN BEGIN
@@ -121,7 +121,7 @@ END
 ;;-----------------------------------------------;;
 ;;                   32Ex16A                     ;;
 ;;-----------------------------------------------;;
-PRO spp_swp_spi_prod_apdat::prod_32Ex16A, strct
+PRO spp_swp_spi_prod_apdat::proc_32Ex16A, strct
    pname = '32Ex16A_'
    cnts  = *strct.pdata
    if n_elements(cnts) ne 512 then begin
@@ -177,7 +177,7 @@ END
 ;;                   32Ex16M                     ;;
 ;;-----------------------------------------------;;
 ;; This function needs fixing
-PRO spp_swp_spi_prod_apdat::prod_32Ex16M, strct
+PRO spp_swp_spi_prod_apdat::proc_32Ex16M, strct
    cnts = *strct.pdata
    IF n_elements(cnts) NE 512 THEN BEGIN
       dprint,'[32Ex16M] Bad size: '+$
@@ -213,7 +213,7 @@ END
 ;;                 08Dx32Ex16A                   ;;
 ;;-----------------------------------------------;;
 ;; This function needs fixing
-PRO spp_swp_spi_prod_apdat::prod_08Dx32Ex16A, strct   
+PRO spp_swp_spi_prod_apdat::proc_08Dx32Ex16A, strct   
    cnts = *strct.pdata
    IF n_elements(cnts) NE 4096 THEN BEGIN
       dprint,'Bad size: '+$
@@ -241,7 +241,7 @@ END
 ;;                 32Ex16Ax4M                    ;;
 ;;-----------------------------------------------;;
 ;; This function needs fixing
-PRO spp_swp_spi_prod_apdat::prod_32Ex16Ax4M, strct  
+PRO spp_swp_spi_prod_apdat::proc_32Ex16Ax4M, strct  
    cnts = *strct.pdata
    if n_elements(cnts) ne 2048 then begin
       dprint,'Bad size: '+$
@@ -270,7 +270,7 @@ END
 ;;               08Dx32Ex16Ax4M                  ;;
 ;;-----------------------------------------------;;
 ;; This function needs fixing
-PRO spp_swp_spi_prod_apdat::prod_08Dx32EX16Ax2M, strct   
+PRO spp_swp_spi_prod_apdat::proc_08Dx32EX16Ax2M, strct   
    cnts = *strct.pdata
    if n_elements(cnts) ne 8192 then begin
       dprint,'Bad size: '+$
@@ -297,7 +297,7 @@ END
 ;;                   16Ax16M                     ;;
 ;;-----------------------------------------------;;
 ;; This function needs fixing
-PRO spp_swp_spi_prod_apdat::prod_16Ax16M, strct
+PRO spp_swp_spi_prod_apdat::proc_16Ax16M, strct
    cnts = *strct.pdata
    if n_elements(cnts) ne 256 then begin
       dprint,'Bad size: '+$
@@ -323,7 +323,7 @@ END
 ;;                   08Dx32E                     ;;
 ;;-----------------------------------------------;;
 ;; This function needs fixing
-PRO spp_swp_spi_prod_apdat::prod_8Dx32E, strct
+PRO spp_swp_spi_prod_apdat::proc_8Dx32E, strct
    cnts = *strct.pdata
    IF n_elements(cnts) NE 256 THEN BEGIN
       dprint,'Bad size: '+$
@@ -429,16 +429,16 @@ PRO spp_swp_spi_prod_apdat::handler,ccsds,ptp_header,source_info=source_info
    ns=1
    IF keyword_set(strct) && ns gt 0 THEN BEGIN
       CASE strct.ndat OF
-         16:self.prod_16A,             strct
-         32:self.prod_32E,             strct
-         128:self.prod_08Dx16A,        strct
+         16:self.proc_16A,             strct
+         32:self.proc_32E,             strct
+         128:self.proc_08Dx16A,        strct
          256:self.proc_256,        strct
-         ;;256: self.prod_16Ax16M,       strct
-         512:self.prod_32Ex16M,        strct
-         ;;512:self.prod_32Ex16A,        strct
-         2048:self.prod_32Ex16Ax4M,    strct
-         4096:self.prod_08Dx32Ex16A,    strct
-         8192:self.prod_08Dx32EX16Ax2M, strct
+         ;;256: self.proc_16Ax16M,       strct
+         512:self.proc_32Ex16M,        strct
+         ;;512:self.proc_32Ex16A,        strct
+         2048:self.proc_32Ex16Ax4M,    strct
+         4096:self.proc_08Dx32Ex16A,    strct
+         8192:self.proc_08Dx32EX16Ax2M, strct
          else: dprint,dlevel=4,'Size not recognized: ',strct.ndat
       ENDCASE
    endif
@@ -494,7 +494,7 @@ PRO spp_swp_spi_prod_apdat__define
            ;; Superclass
            inherits spp_gen_apdat,$ 
            save_raw: 0b,$
-           prod_16A:            obj_new(),$
+           prod_16A:            obj_new(),$    ; dynamic arrays to hold each type different type of product
            prod_08Dx32E:        obj_new(),$
            prod_16Ax16M:        obj_new(),$
            prod_256:            obj_new(),$
@@ -546,7 +546,7 @@ END
 ;;               08Dx32Ex16Ax1M                  ;;
 ;;-----------------------------------------------;;
 ;; This function needs fixing
-;pro spp_swp_spi_prod_apdat::prod_8Dx32Ex16Ax1M, strct   
+;pro spp_swp_spi_prod_apdat::proc_8Dx32Ex16Ax1M, strct   
 ;  if n_elements(data) ne 4096 then begin
 ;    dprint,'bad size'
 ;    return

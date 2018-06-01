@@ -1,14 +1,14 @@
 ;+
 ; spp_swp_spe_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-05-28 15:52:35 -0700 (Mon, 28 May 2018) $
-; $LastChangedRevision: 25286 $
+; $LastChangedDate: 2018-05-30 22:04:01 -0700 (Wed, 30 May 2018) $
+; $LastChangedRevision: 25304 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
 
 
-pro spp_swp_spe_prod_apdat::prod_16A, strct
+pro spp_swp_spe_prod_apdat::proc_16A, strct
 
   pname = '16A_'
   
@@ -26,7 +26,7 @@ pro spp_swp_spe_prod_apdat::prod_16A, strct
 end
 
 
-pro spp_swp_spe_prod_apdat::prod_32E, strct
+pro spp_swp_spe_prod_apdat::proc_32E, strct
 
   pname = '32E_'
 
@@ -46,7 +46,7 @@ end
 
 ;;----------------------------------------------
 ;;Product Full Sweep: Archive - 32Ex16A -
-pro spp_swp_spe_prod_apdat::prod_8Dx32E, strct
+pro spp_swp_spe_prod_apdat::proc_8Dx32E, strct
   pname = '8Dx32E_'
   cnts = *strct.pdata
   cnts_orig = cnts
@@ -68,7 +68,7 @@ end
 
 ;;----------------------------------------------
 ;;Product Full Sweep: Archive - 32Ex16A -
-pro spp_swp_spe_prod_apdat::prod_16Ax32E, strct
+pro spp_swp_spe_prod_apdat::proc_16Ax32E, strct
   pname = '16Ax32E_'
   cnts = *strct.pdata
 
@@ -89,7 +89,7 @@ end
 
 
 
-pro spp_swp_spe_prod_apdat::prod_16Ax8Dx32E, strct   ; this function needs fixing
+pro spp_swp_spe_prod_apdat::proc_16Ax8Dx32E, strct   ; this function needs fixing
 
   data = *strct.pdata
   if n_elements(data) ne 4096 then begin
@@ -191,21 +191,36 @@ return,str
 end
 
 
-
+function hex,i
+ return, string(format='(Z)',i)
+end
 
 pro spp_swp_spe_prod_apdat::handler,ccsds,ptp_header,source_info=source_info
 
   strct = self.decom(ccsds)
+  if debug(self.dlevel+4,msg='hello') then begin
+    dprint,self.apid
+    ccsds_data = spp_swp_ccsds_data(ccsds)
+
+    hexprint,ccsds_data
+
+    
+  endif
   
   ns=keyword_set(strct)
   if  ns gt 0 then begin
     case strct.ndat  of
-      16:   self.prod_16a,  strct
-      32:   self.prod_32e,  strct
-      256:  self.prod_8Dx32E, strct
-      512:  self.prod_16Ax32E, strct
-      4096: self.prod_16Ax8Dx32E, strct
-      else:  dprint,dlevel=self.dlevel+1,'Size not recognized: ',strct.ndat,dwait=300,' APID: ',self.apid
+      16:   self.proc_16a,  strct
+      32:   self.proc_32e,  strct
+      256:  self.proc_8Dx32E, strct
+      512:  self.proc_16Ax32E, strct
+      4096: self.proc_16Ax8Dx32E, strct
+      else:  begin
+        dprint,dlevel=self.dlevel+1,'Size not recognized: ',strct.ndat,dwait=3,' APID: ',hex(self.apid)
+        hexprint, spp_swp_ccsds_data(ccsds)
+   ;     printdat,ptp_header
+   ;     printdat,source_info
+        end
     endcase
   endif
 
