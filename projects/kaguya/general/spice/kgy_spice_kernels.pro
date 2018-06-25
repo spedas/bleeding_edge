@@ -13,8 +13,8 @@
 ;       Yuki Harada on 2016-03-04
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-05-15 00:52:42 -0700 (Tue, 15 May 2018) $
-; $LastChangedRevision: 25222 $
+; $LastChangedDate: 2018-06-06 16:26:16 -0700 (Wed, 06 Jun 2018) $
+; $LastChangedRevision: 25336 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/general/spice/kgy_spice_kernels.pro $
 ;-
 
@@ -47,7 +47,7 @@ for in=0,n_elements(names)-1 do begin
 ;;          "IEEE Standard for Floating-Point Arithmetic"
 ;;          (IEEE 754) using 64 bits. 
 ;        append_array,kernels,file_retrieve('SELENE/kernels/ck/SEL_M_YYYYMM_S_V??.BC',_extra=darts,trange=tr,/monthly) ;- obsolete
-         append_array,kernels,spd_download(remote_file='SELENE/kernels/ck/SEL_M_'+time_intervals(trange=tr,/monthly,tf='YYYYMM')+'_S_V??.BC',_extra=darts)
+         append_array,kernels,spd_download(remote_file='SELENE/kernels/ck/SEL_M_'+time_intervals(trange=tr+[-1,1]*86400d,/monthly,tf='YYYYMM')+'_S_V??.BC',_extra=darts)
 ;;         In this file, the attitude is sampled at frequency of
 ;;         8 seconds. The precision in the s/c telemetry uses
 ;;         a single-precision (32 bits). The number of time gaps

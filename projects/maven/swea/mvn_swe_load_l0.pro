@@ -85,8 +85,8 @@
 ;                      to a higher number to see more diagnostic messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-02 16:46:12 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24088 $
+; $LastChangedDate: 2018-06-11 14:11:23 -0700 (Mon, 11 Jun 2018) $
+; $LastChangedRevision: 25348 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -123,9 +123,9 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
   if keyword_set(latest) then begin
     tmax = double(ceil(systime(/sec,/utc)/oneday))*oneday
     tmin = tmax - (14D*oneday)
-    file = mvn_pfp_file_retrieve(trange=[tmin,tmax],/l0,/valid,no_download=2,verbose=verbose)
-    nfiles = n_elements(file)
-    if (file[0] eq '') then begin
+    file = mvn_pfp_file_retrieve(trange=[tmin,tmax],/l0,/daily,/valid,no_download=2,verbose=verbose)
+    fndx = where(file ne '', nfiles)
+    if (nfiles eq 0) then begin
       print,"No L0 data in the last two weeks."
       return
     endif
@@ -162,8 +162,20 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
       return
     endif
     tmin = min(time_double(trange), max=tmax)
-    file = mvn_pfp_file_retrieve(trange=[tmin,tmax],/l0,verbose=(verbose > 1))
-    nfiles = n_elements(file)
+    file = mvn_pfp_file_retrieve(trange=[tmin,tmax],/l0,verbose=(verbose > 1),/daily,/valid)
+    fndx = where(file ne '', nfiles)
+
+    if (nfiles eq 0) then begin
+      print,"No merged files found.  Looking for survey only ... "
+      pathname = 'maven/data/sci/pfp/l0/mvn_pfp_svy_l0_YYYYMMDD_v???.dat'
+      file = mvn_pfp_file_retrieve(pathname,trange=[tmin,tmax],verbose=(verbose > 1),/daily,/valid)
+      fndx = where(file ne '', nfiles)
+    endif
+
+    if (nfiles eq 0) then begin
+      print,"No files found: ",time_string(tmin)," to ",time_string(tmax)
+      return
+    endif
   endelse
   
   finfo = file_info(file)

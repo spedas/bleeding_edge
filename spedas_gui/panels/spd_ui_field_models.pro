@@ -9,8 +9,8 @@
 ;
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2016-10-20 14:21:22 -0700 (Thu, 20 Oct 2016) $
-;$LastChangedRevision: 22169 $
+;$LastChangedDate: 2018-06-19 12:03:48 -0700 (Tue, 19 Jun 2018) $
+;$LastChangedRevision: 25372 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_field_models.pro $
 ;-
 
@@ -42,11 +42,12 @@ end
 function spd_ui_field_models_ret_modelname, cur_tab
     ; the tabs are currently: 
     ; 0 - TS04, 1 - T01, 2 - T96, 3 - T89, 4 - IGRF
-    if cur_tab eq 0 then field_model = 'T04S'
-    if cur_tab eq 1 then field_model = 'T01'
-    if cur_tab eq 2 then field_model = 'T96'
-    if cur_tab eq 3 then field_model = 'T89'
-    if cur_tab eq 4 then field_model = 'IGRF'
+    if cur_tab eq 0 then field_model = 'TS07'
+    if cur_tab eq 1 then field_model = 'T04S'
+    if cur_tab eq 2 then field_model = 'T01'
+    if cur_tab eq 3 then field_model = 'T96'
+    if cur_tab eq 4 then field_model = 'T89'
+    if cur_tab eq 5 then field_model = 'IGRF'
     if undefined(field_model) then field_model = 'none'
     return, field_model
 end 
@@ -135,6 +136,9 @@ function spd_ui_field_models_check_params, state, field_model
         if strlowcase(field_model) eq 't04s' && *state.UsersWs ne '' then begin
             w_coeff_tvar = *state.UsersWs
         endif
+        if strlowcase(field_model) eq 'ts04' && *state.UsersWs07 ne '' then begin
+          w_coeff_tvar = *state.UsersWs07
+        endif
         ; get the time range from the position variable
         get_data, *state.tvars_to_trace[0], trange = trange
 
@@ -207,6 +211,19 @@ pro spd_ui_field_models_model_params, tlb, field_model
             Widget_Control, swdensity_wid, sensitive = 1
             Widget_Control, swvel_wid, sensitive = 1
             Widget_Control, dst_wid, sensitive = 1
+        end
+        'ts07': begin
+          Widget_Control, tlb, get_uvalue = ptrState
+          state = *ptrState
+          wid_wlabel = widget_info(tlb, find_by_uname='selectedwlabel')
+          Widget_Control, wid_wlabel, set_value='W coefficients: '
+          Widget_Control, coeffs_wid, set_value=(*state.usersWs07 eq '' ? '[calculate automatically]' : *state.usersWs07)
+          Widget_Control, wcoef_wid, sensitive = 1
+          Widget_Control, imfby_wid, sensitive = 1
+          Widget_Control, imfbz_wid, sensitive = 1
+          Widget_Control, swdensity_wid, sensitive = 1
+          Widget_Control, swvel_wid, sensitive = 1
+          Widget_Control, dst_wid, sensitive = 1
         end
         'igrf': begin
             Widget_Control, wcoef_wid, sensitive = 0
@@ -493,6 +510,9 @@ pro spd_ui_field_models_event, event
                         end
                         't04s': begin
                             tt04s, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors
+                        end 
+                        'ts07': begin
+                            tts07, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors
                         end
                         'igrf': begin
                             tt89, var_to_map, newname=model_var[0], /igrf_only, error=model_errors
@@ -562,7 +582,7 @@ pro spd_ui_field_models_event, event
             helptheuser = dialog_message('Use "Add tilt angle" to add an additional angle to the model tilt angle. This option is ignored if you set the tilt angle manually.', /info)
         end
         'STORMBUTTON01': begin
-            if state.t01_storm eq 0 then warn_about_using_this = dialog_message('The storm-time version of the T01 model is no longer maintained. Consider using the TS04 model instead.', /info)
+            if state.t01_storm eq 0 then warn_about_using_this = dialog_message('The storm-time version of the T01 model is no longer maintained. Consider using the TS04 or TS07 model instead.', /info)
             state.t01_storm = state.t01_storm ? 0b : 1b
             Widget_Control, event.top, set_uvalue = ptr_new(state)
         end
@@ -699,6 +719,20 @@ pro spd_ui_field_models, info
     label_width = 55
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;; Tsyganenko 07 tab ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    t07base = Widget_Base(tabBase, col=2, title='TS07', tab_mode = 1, event_pro='spd_ui_field_models_event')
+    swBase07 = Widget_Base(t07base, /col, xsize=180)
+    swLabel = Widget_Label(swBase07, value='Solar wind parameters:', /align_left)
+    imfByButton = Widget_Button(swBase07, value='IMF By (GSM)', uname='imfby', uval='IMFBY', tooltip = 'Select a variable containing IMF By data')
+    imfBzButton = Widget_Button(swBase07, value='IMF Bz (GSM)', uname='imfbz', uval='IMFBZ', tooltip = 'Select a variable containing IMF Bz data')
+    protonDensityButton = Widget_Button(swBase07, value='Proton density', uname='protondensity', uval='PROTONDENSITY', tooltip = 'Select a variable containing solar wind density data')
+    protonVelocityButton = Widget_Button(swBase07, value='Proton speed', uname='protonvelocity', uval='PROTONVELOCITY', tooltip = 'Select a variable containing solar wind speed data')
+    magBase07 = Widget_Base(t07base, /col, xsize=180)
+    magnetoPLabel = Widget_Label(magBase07, value='Magnetospheric parameters:', /align_left)
+    DstButton = Widget_Button(magBase07, value='Dst', uname='dst', uval='DST', tooltip = 'Select a variable containing Dst data')
+    WcoeffButton = Widget_Button(magBase07, value='W-coefficients (optional)', uname='wcoeff', uval='WCOEFF', tooltip = 'Select a variable containing the W-coefficients. If not set, the appropriate W coefficients will be calculated by Geopack')
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;;;;;;;;;;;;;;;;;;; Tsyganenko-Sitnov 04 tab ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     t04base = Widget_Base(tabBase, col=2, title='TS04', tab_mode = 1, event_pro='spd_ui_field_models_event')
     swBase04 = Widget_Base(t04base, /col, xsize=180)
@@ -726,7 +760,7 @@ pro spd_ui_field_models, info
     DstButton = Widget_Button(magBase01, value='Dst', uname='dst', uval='DST', tooltip = 'Select a variable containing Dst data')
     GcoeffButton = Widget_Button(magBase01, value='G-coefficients (optional)', uname='gcoeff', uval='GCOEFF', tooltip = 'Select a variable containing the G-coefficients. If not set, the appropriate G coefficients will be calculated by Geopack')
     storm01base = Widget_Base(magBase01, /nonexclusive)
-    stormButton = Widget_Button(storm01base, value='During a geomagnetic storm?', uname='stormbutton01', uval='STORMBUTTON01', tooltip='Specify the storm-time version of the T01 model. This option is no longer maintained - consider using TS04 for storm-time models.')
+    stormButton = Widget_Button(storm01base, value='During a geomagnetic storm?', uname='stormbutton01', uval='STORMBUTTON01', tooltip='Specify the storm-time version of the T01 model. This option is no longer maintained - consider using TS04 or TS07 for storm-time models.')
     widget_control, stormButton, set_button = t01_storm
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -774,7 +808,7 @@ pro spd_ui_field_models, info
     modelinfoBase = Widget_Base(modelparamBase, row=7, scr_xsize=350, /align_left)
     colBaseModel = Widget_Base(modelinfoBase, col=2)
     modelLabel = Widget_Label(colBaseModel, value='Model: ', /align_left)
-    selectedModelLabel = Widget_Label(colBaseModel, value='TS04', /align_left, uname='selectedmodel')
+    selectedModelLabel = Widget_Label(colBaseModel, value='TS07', /align_left, uname='selectedmodel')
     colBaseimfy = Widget_Base(modelinfoBase,  uname='imfbybase', row=1, scr_xsize=340)
     imfyLabel = Widget_Label(colBaseimfy, value='IMF By: ', /align_left, scr_xsize=50)
     ; the extra 30-35 whitespace characters in the selected IMF strings are needed because Motif doesn't
@@ -834,6 +868,7 @@ pro spd_ui_field_models, info
              usersDst: ptr_new(dst_tvar), $ ; Dst variable
              usersGs: ptr_new(g_coeff_tvar), $ ; G coefficients, for T01
              usersWs: ptr_new(w_coeff_tvar), $ ; W coefficients, for TS04
+             usersWs07: ptr_new(w_coeff_tvar07), $ ; W coefficients, for TS07
              t01_storm: t01_storm, $ ; allow the user to specify the storm-time version of T01
              t89_iopt: t89_kp, $ ; default to Kp corresponding to 2-,2,2+
              model_types: output_options, $ ; output; [model at position, equatorial footprint, ionospheric footprint]

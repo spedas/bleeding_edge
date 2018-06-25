@@ -106,7 +106,8 @@ trange = '2018 03 ' + ['07/16','08/01'] ; fields wpc testing with electron gun
 trange = '2018 03 ' + ['08/00','08/04'] ; threshold tests @ each anode w/electron gun stimuli
 trange = '2018 03 ' + ['08/03','08/06'] ; threshold tests @ MCP values, spoiler test, and energy sweep (also powerdown)  MET = '2020-1-201'
 
-
+ptp1files = spp_file_retrieve('spp/data/sci/MOC/SPP_IT/data_products/level_zero_telemetry/YYYY/DOY/sweap_spp_YYYYDOY_??.ptp.gz',/daily_names,trange=trange,/valid_only)
+ptp2files = spp_file_retrieve('spp/data/sci/MOC/SPP_IT/data_products/level_zero_telemetry/YYYY/DOY/sweap_spp_YYYYDOY_??.ptp.gz',/daily_names,trange=trange,/valid_only)
 
 
 
@@ -140,11 +141,17 @@ endif
 path =  'spp/data/sci/sweap/prelaunch/gsedata/realtime/cal/swem/YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
 spp_init_realtime,/swem,/cal,/exec
 
-dprint,setd=2
+dprint,setd=4
 
-trange = systime(1) + [-2,0] * 3600.
+trange = systime(1) + [-4,0] * 3600.
 timespan,trange
 ptpfiles = spp_file_retrieve(path,trange= trange,/hourly_names)
+
+if not keyword_set(log) then begin
+  file_open,'w','log/spp_swp_log.txt',unit=log
+  spp_apdat_info,'*log*',output_lun = log
+endif
+
 
 if 0 then begin
   spi_memdump = spp_apdat('spi_memdump')

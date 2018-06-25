@@ -38,7 +38,7 @@ if (dat2.quality_flag and 195) gt 0 then return,!Values.F_NAN
 
 dat = conv_units(dat2,"counts")		; initially use counts
 
-dat = omni4d(dat,/mass)
+dat = omni4d(dat)
 n_e = dat.nenergy
 if dat.nmass gt 1 then mass = dat.mass*dat.mass_arr else mass = dat.mass
 
@@ -47,6 +47,7 @@ bkg = dat.bkg
 energy = dat.energy	
 if n_e eq 64 then nne=4 else nne=3
 if n_e eq 48 then nne=5
+if dat.mode eq 7 then nne=2*nne
 
 if keyword_set(en) then begin
 	ind = where(energy lt en[0] or energy gt en[1],count)
@@ -88,8 +89,20 @@ if total(data-bkg) lt 1 then return, !Values.F_NAN
 charge=dat.charge
 if keyword_set(q) then charge=q
 
+; this section was modified to set data[ind]=0 for ind that have energy<denergy
 if 1 then begin
-	energy=(dat.energy+charge*dat.sc_pot/abs(charge))>0.		; energy/charge analyzer, problems for low energy steps
+;	energy=(dat.energy+charge*dat.sc_pot/abs(charge))>0.		; energy/charge analyzer, problems for low energy steps - this screwed up for negative energies
+	energy=(dat.energy+charge*dat.sc_pot/abs(charge))		; energy/charge analyzer
+	ind99 = where(energy lt dat.denergy/2.,count)
+	if count ge 1 then begin					; throw out any data where Energy+q*sc_pot is less than denergy/2.
+		data[ind99]=0
+		bkg[ind99]=0
+	endif
+	en_jitter = 0.00
+	de = dat.denergy > en_jitter
+	ind = where(energy lt de/2.,nind)
+	if nind gt 0 then energy[ind] = (energy[ind]>0. + de[ind]/2.) > 0.	; this really
+
 endif else begin
 	energy=(dat.energy+charge*dat.sc_pot/abs(charge))		; energy/charge analyzer, require positive energy
 	en_jitter = 0.00

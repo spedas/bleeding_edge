@@ -7,7 +7,7 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
    if keyword_set(reset) then initialized = 0
    if keyword_set(initialized) then return
    initialized =1 
-   dprint,dlevel=3,/phelp ,rt_flag,save_flag
+;   dprint,dlevel=3,/phelp ,rt_flag,save_flag
 
 
    ;; special case to accumulate statistics

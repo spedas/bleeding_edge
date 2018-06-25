@@ -142,7 +142,7 @@ PRO spd_make_j2000_matrix, orb_pos_time, cmatrix
   ;   Calculate the julian date and the time in Julian centuries from J2000
   ;
   fday = secs/DOUBLE(86400.00)
-  jul_day = dxjul(year) + DOUBLE(day)+fday
+  jul_day = julday(1,1,year,0,0,0) + DOUBLE(day)+fday
   time = (jul_day - Jdj2000)/DOUBLE(36525.0)
 
   T2 = time*time

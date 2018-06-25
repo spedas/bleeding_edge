@@ -26,12 +26,14 @@
 ;       + 2018-01-18, I. Cohen          : added multisc keyword
 ;       + 2018-02-19, I. Cohen          : added 'probe_string' variable to differentiate from probe(s) and avoid
 ;                                         errors with overwriting in other procedures
+;       + 2018-06-14, I. Cohen          : changed 'datatype' to 'new_datatype' in definition of p_num to stop error
+;                                         when handling 'combined' data                           
 ;       
 ;       
 ;       
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-02-20 08:22:36 -0800 (Tue, 20 Feb 2018) $
-;$LastChangedRevision: 24749 $
+;$LastChangedDate: 2018-06-14 19:25:13 -0700 (Thu, 14 Jun 2018) $
+;$LastChangedRevision: 25357 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_spin_avg.pro $
 ;-
 
@@ -100,7 +102,7 @@ pro mms_eis_spin_avg, probe=probe, species = species, data_units = data_units, $
     ; changed the energy in late September, when the major file version switched from
     ; v2.1.0 to v3.0.0; set the y axes limits based on version in variable name
     if (datatype eq 'phxtof') && (species eq 'proton') then begin
-      p_num = long(strsplit(telescopes[0], prefix + datatype + '_' + species + '_P.' + data_units + '_t0'+suffix, /extract))
+      p_num = long(strsplit(telescopes[0], prefix + new_datatype + '_' + species + '_P.' + data_units + '_t0'+suffix, /extract))
       if (p_num[0] ge 3) then begin
         ylim, this_scope+sp, 14, 45, 1 
       endif else begin

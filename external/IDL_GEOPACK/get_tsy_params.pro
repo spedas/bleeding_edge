@@ -55,9 +55,9 @@
 ;           
 ;          
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2015-12-03 13:55:21 -0800 (Thu, 03 Dec 2015) $
-; $LastChangedRevision: 19524 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-06-19 12:03:48 -0700 (Tue, 19 Jun 2018) $
+; $LastChangedRevision: 25372 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/get_tsy_params.pro $
 ;-
 pro get_tsy_params,dst_tvar,imf_tvar,Np_tvar,Vp_tvar,model,newname=newname,$
@@ -192,7 +192,7 @@ if strlowcase(model) eq 't01' then begin
    
    if not keyword_set(newname) then newname = 't01_par'
 
-endif else if strlowcase(model) eq 't04s' then begin
+endif else if (strlowcase(model) eq 't04s') or (strlowcase(model) eq 'ts07') then begin
 
    if ~keyword_set(w_coefficients) then begin
        ; the user didn't specify a tplot variable containing W coefficients, 
@@ -223,8 +223,9 @@ endif else if strlowcase(model) eq 't04s' then begin
        endelse
    endelse
    par = {x:ntimes,y:[[pram],[dst],[imf_y],[imf_z],[out[*,0]],[out[*,1]],[out[*,2]],[out[*,3]],[out[*,4]],[out[*,5]]]}
-   if not keyword_set(newname) then newname = 't04s_par'
-
+   if not keyword_set(newname) then begin 
+    if (strlowcase(model) eq 'ts07') then newname = 'ts07_par' else newname = 't04s_par'
+   endif
 endif else if strlowcase(model) eq 't96' then begin
 
    par = {x:ntimes,y:[[pram],[dst],[imf_y],[imf_z],[dblarr(n)],[dblarr(n)],[dblarr(n)],[dblarr(n)],[dblarr(n)],[dblarr(n)]]}

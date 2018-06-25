@@ -1,4 +1,4 @@
-
+This file is obsolete.
 
 pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length, $
   source_info = source_info, $
@@ -15,13 +15,13 @@ pro spp_ccsds_pkt_handler,dbuffer,offset,buffer_length, $
   
   while offset lt buffer_length do begin
     ccsds = spp_swp_ccsds_decom(dbuffer,offset,buffer_length,remainder=remainder,dlevel=4)
-    if keyword_set(source_info) then ccsds.source_hash = source_info.input_sourcehash
     if ~keyword_set(ccsds) then begin
       if debug(2) then begin
         dprint,dlevel=4,'Incomplete CCSDS, saving ',n_elements(remainder),' bytes for later '    ;,pkt_size,pkt_size - n_elements(b)
       endif
       break
     endif
+    if keyword_set(source_info) then ccsds.source_hash = source_info.input_sourcehash
     npackets +=1
     if  debug(5) then begin
       ccsds_data = spp_swp_ccsds_data(ccsds)  

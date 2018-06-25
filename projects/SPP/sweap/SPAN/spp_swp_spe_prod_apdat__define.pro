@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-05-30 22:04:01 -0700 (Wed, 30 May 2018) $
-; $LastChangedRevision: 25304 $
+; $LastChangedDate: 2018-06-06 14:13:49 -0700 (Wed, 06 Jun 2018) $
+; $LastChangedRevision: 25335 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -55,7 +55,7 @@ pro spp_swp_spe_prod_apdat::proc_8Dx32E, strct
   strct.anode_spec = 0.
   strct.nrg_spec = total(cnts,1)
   strct.def_spec =  total(cnts,2)
-  strct.full_spec = cnts_orig
+;  strct.full_spec = cnts_orig
 
   strct2 = {time:strct.time, $  ; add more in the future
     cnts:cnts, $
@@ -121,7 +121,7 @@ end
 
 
 
-function spp_swp_spe_prod_apdat::decom,ccsds,ptp_header
+function spp_swp_spe_prod_apdat::decom,ccsds ,source_dict=source_dict  ;,ptp_header
 ;if typename(ccsds) eq 'BYTE' then return,  self.spp_swp_spe_prod_apdat( spp_swp_ccsds_decom(ccsds) )  ;; Byte array as input
 
 pksize = ccsds.pkt_size
@@ -129,6 +129,11 @@ if pksize le 20 then begin
   dprint,dlevel = 2, 'size error - no data'
   return, !null
 endif
+
+if ccsds.aggregate ne 0 then begin
+  return, self.decom_aggregate(ccsds,source_dict=source_dict)  
+endif
+
 
 ccsds_data = spp_swp_ccsds_data(ccsds)
 
@@ -143,7 +148,7 @@ log_flag  = header[12]
 mode1 = header[13]
 mode2 = (swap_endian(uint(ccsds_data,14) ,/swap_if_little_endian ))
 f0 = (swap_endian(uint(header,16), /swap_if_little_endian))
-status_flag = header[18]
+status_bits = header[18]
 peak_bin = header[19]
 
 
@@ -177,13 +182,13 @@ str = { $
   mode1:        mode1,  $
   mode2:        mode2,  $
   f0:           f0,$
-  status_flag: status_flag,$
+  status_bits: status_bits,$
   peak_bin:    peak_bin, $
   cnts:  tcnts,  $
   anode_spec:  fltarr(16),  $  
   nrg_spec:    fltarr(32),  $
   def_spec:    fltarr(8) ,  $
-  full_spec:   fltarr(256), $
+;  full_spec:   fltarr(256), $
   pdata:        ptr_new(cnts), $
   gap:         ccsds.gap  }
 
@@ -195,20 +200,22 @@ function hex,i
  return, string(format='(Z)',i)
 end
 
-pro spp_swp_spe_prod_apdat::handler,ccsds,ptp_header,source_info=source_info
 
-  strct = self.decom(ccsds)
+
+pro spp_swp_spe_prod_apdat::handler,ccsds,source_dict = source_dict   ;,ptp_header,source_info=source_info
+
+  strcts = self.decom(ccsds)
   if debug(self.dlevel+4,msg='hello') then begin
-    dprint,self.apid
+    dprint,self.apid,strcts.ndat
     ccsds_data = spp_swp_ccsds_data(ccsds)
-
-    hexprint,ccsds_data
-
-    
+    ;hexprint,ccsds_data
   endif
   
-  ns=keyword_set(strct)
-  if  ns gt 0 then begin
+;  print,ns
+  
+  ns=n_elements(strcts)
+  for i=0,ns-1 do begin
+    strct = strcts[i]
     case strct.ndat  of
       16:   self.proc_16a,  strct
       32:   self.proc_32e,  strct
@@ -216,27 +223,28 @@ pro spp_swp_spe_prod_apdat::handler,ccsds,ptp_header,source_info=source_info
       512:  self.proc_16Ax32E, strct
       4096: self.proc_16Ax8Dx32E, strct
       else:  begin
-        dprint,dlevel=self.dlevel+1,'Size not recognized: ',strct.ndat,dwait=3,' APID: ',hex(self.apid)
-        hexprint, spp_swp_ccsds_data(ccsds)
-   ;     printdat,ptp_header
-   ;     printdat,source_info
-        end
-    endcase
-  endif
+        dprint,dlevel=self.dlevel+1,'Size not recognized: ',strct.ndat,' APID: ',(self.apid)
+        if debug(self.dlevel+2) then begin
+          hexprint, spp_swp_ccsds_data(ccsds)
+        endif
+      end
+    endcase  
+    strcts[i] = strct  
+  endfor
 
-  if self.save_flag && keyword_set(strct) then begin
+  if self.save_flag && keyword_set(strcts) then begin
     dprint,self.name,dlevel=5,self.apid
-    self.data.append,  strct
+    self.data.append,  strcts
   endif
 
 
-  if self.rt_flag && keyword_set(strct) then begin
-    if ccsds.gap eq 1 then strct = [fill_nan(strct[0]),strct]
-    store_data,self.tname,data=strct, tagnames=self.ttags , append = 1,gap_tag='GAP'
+  if self.rt_flag && keyword_set(strcts) then begin
+    if ccsds.gap eq 1 then strcts = [fill_nan(strcts[0]),strcts]
+    store_data,self.tname,data=strcts, tagnames=self.ttags , append = 1,gap_tag='GAP'
   endif
   
   *self.last_data_p = strct
-  if debug(self.dlevel+3) then begin
+  if debug(self.dlevel+3,msg='hello2') then begin
     ;printdat,ccsds  
     hexprint,(*ccsds.pdata)[0:31]
     

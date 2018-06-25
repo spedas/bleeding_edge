@@ -15,9 +15,9 @@
 ;Notes: Same as sub_GSE2GSM, with "aberrated GSM" in the output message. The actual aberration 
 ;       occurs in the higher level routine, gse2agsm
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-06-11 13:08:05 -0700 (Mon, 11 Jun 2018) $
+; $LastChangedRevision: 25343 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/cotrans_lib.pro $
 ;-
 pro sub_GSE2aGSM,data_in,data_out,aGSM2GSE=aGSM2GSE
@@ -59,10 +59,6 @@ end
 ;Notes: under construction!!  will run faster in the near future!!
 ;
 ;Written by Hannes Schwarzl
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/cotrans_lib.pro $
 ;-
 pro sub_GSE2GSM,data_in,data_out,GSM2GSE=GSM2GSE
     data_out=data_in
@@ -109,11 +105,6 @@ end
 ;
 ;
 ;Notes: under construction!!  will run faster in the near future!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro sub_GEI2GSE,data_in,data_out,GSE2GEI=GSE2GEI
     data_out=data_in
@@ -158,12 +149,6 @@ end
 ;
 ;
 ;Notes: under construction!!  will run faster in the near future!!
-;
-;Written by Hannes Schwarzl
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/cotrans_lib.pro $
 ;-
 pro sub_GSM2SM,data_in,data_out,SM2GSM=SM2GSM
     data_out=data_in
@@ -208,12 +193,6 @@ end
 ;
 ;
 ;Notes:
-;
-;Written by Patrick Cruce(pcruce@igpp.ucla.edu)
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/cotrans_lib.pro $
 ;-
 pro sub_GEI2GEO,data_in,data_out,GEO2GEI=GEO2GEI
     data_out=data_in
@@ -252,12 +231,6 @@ end
 ;
 ;
 ;Notes:
-;
-;Written by Cindy Russell(clrussell@igpp.ucla.edu)
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/cotrans_lib.pro $
 ;-
 pro sub_GEO2MAG,data_in,data_out,MAG2GEO=MAG2GEO
     data_out=data_in
@@ -295,11 +268,6 @@ end
 ;keywords:
 ;
 ;Example:
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 @matrix_array_lib
 pro subGEI2J2000,TIMES,DATA_in,DATA_out
@@ -311,10 +279,10 @@ pro subGEI2J2000,TIMES,DATA_in,DATA_out
 
     ; create an integer array for ic_conv_matrix
     ; the format is  YYYYDDD for [n,0] and  sss (seconds of day) for [n,1]
-    ts = time_struct(data_in[*,0])
+    ts = time_struct(times)
     orbtime = make_array(count, 2, /long)
     orbtime[*,0] = long((ts.year * 1000.) + ts.doy)
-    orbtime[*,1] = long(fix(ts.sod))
+    orbtime[*,1] = long(ts.sod * 1000)
 
     ; spd_make_j2000_matrix can only handle one time and one vector - hence the loop
 
@@ -343,10 +311,6 @@ end
 ;
 ;Example:
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro subJ20002GEI,TIMES,DATA_in,DATA_out
     ; get array sizes
@@ -359,7 +323,7 @@ pro subJ20002GEI,TIMES,DATA_in,DATA_out
     ts = time_struct(TIMES)
     orbtime = make_array(count, 2, /long)
     orbtime[*,0] = long((ts.year * 1000.) + ts.doy)
-    orbtime[*,1] = long(fix(ts.sod))
+    orbtime[*,1] = long(ts.sod * 1000)
 
     spd_make_j2000_matrix_vec,orbtime,cmatrix
     data_out=ctv_mx_vec_rot(transpose(cmatrix,[0,2,1]),data_in) ;transpose is the inverse for rotation matrix
@@ -383,10 +347,6 @@ end
 ;
 ;keywords:
 ;   /J20002GEI : inverse transformation
-;Example:
-;      sub_GEI2J2000,tha_fglc_gei,tha_fglc_j2000
-;
-;      sub_GEI2J2000,tha_fglc_j2000,tha_fglc_gei,/J20002GEI
 ;
 ;-
 pro sub_GEI2J2000,data_in,data_out,J20002GEI=J20002GEI
@@ -442,11 +402,6 @@ end
 ;
 ;
 ;Notes: under construction!!  will run faster in the near future!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro subGEI2GSE,TIMES,DATA_in,DATA_out
     ; get array sizes
@@ -486,10 +441,6 @@ end
 ;
 ;
 ;Notes: under construction!!  will run faster in the near future!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
 ; $URL $
 ;-
 pro subGSE2GEI,TIMES,DATA_in,DATA_out
@@ -530,11 +481,6 @@ end
 ;
 ;
 ;Notes: under construction!!  will run faster in the near future!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro subGSE2GSM,TIMES,DATA_in,DATA_out
     ; get array sizes
@@ -574,11 +520,6 @@ end
 ;
 ;
 ;Notes: under construction!!  will run faster in the near future!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro subGSM2GSE,TIMES,DATA_in,DATA_out
     ; get array sizes
@@ -617,11 +558,6 @@ end
 ;
 ;
 ;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro subGSM2SM,TIMES,DATA_in,DATA_out
     ; get array sizes
@@ -660,11 +596,6 @@ end
 ;
 ;
 ;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro subSM2GSM,TIMES,DATA_in,DATA_out
     ; get array sizes
@@ -703,11 +634,6 @@ end
 ;
 ;
 ;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro subGEI2GEO,TIMES,DATA_in,DATA_out
       csundir_vect,TIMES.year,TIMES.doy,TIMES.hour,TIMES.min,TIMES.sec,gst,slong,srasn,sdecl,obliq
@@ -738,11 +664,6 @@ end
 ;
 ;
 ;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro subGEO2GEI,TIMES,DATA_in,DATA_out
   csundir_vect,TIMES.year,TIMES.doy,TIMES.hour,TIMES.min,TIMES.sec,gst,slong,srasn,sdecl,obliq
@@ -773,11 +694,6 @@ end
 ;
 ;
 ;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro subGEO2MAG,TIMES,DATA_in,DATA_out
     geo2mag, DATA_in, DATA_out, TIMES
@@ -800,11 +716,6 @@ END
 ;
 ;
 ;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro subMAG2GEO,TIMES,DATA_in,DATA_out
    mag2geo, DATA_in, DATA_out, TIMES
@@ -830,11 +741,6 @@ END
 ;
 ;
 ;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro csundir_vect,iyear,idoy,ih,im,is,gst,slong,sra,sdec,obliq
 
@@ -929,11 +835,6 @@ end
 ;
 ;
 ;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro tgeigse_vect,iyear,idoy,ih,im,is,xgei,ygei,zgei,xgse,ygse,zgse
 
@@ -982,11 +883,6 @@ end
 ;
 ;
 ;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro tgsegei_vect,iyear,idoy,ih,im,is,xgse,ygse,zgse,xgei,ygei,zgei
 
@@ -1035,11 +931,6 @@ end
 ;
 ;
 ;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro tgsegsm_vect,iyear,idoy,ih,im,is,xgse,ygse,zgse,xgsm,ygsm,zgsm
 	  cdipdir_vect,iyear,idoy,gd1,gd2,gd3
@@ -1100,11 +991,6 @@ END
 ;
 ;
 ;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro tgsmgse_vect,iyear,idoy,ih,im,is,xgsm,ygsm,zgsm,xgse,ygse,zgse
 	  cdipdir_vect,iyear,idoy,gd1,gd2,gd3
@@ -1162,11 +1048,6 @@ END
 ;
 ;
 ;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro tgsmsm_vect,iyear,idoy,ih,im,is,xgsm,ygsm,zgsm,xsm,ysm,zsm
 	  cdipdir_vect,iyear,idoy,gd1,gd2,gd3
@@ -1210,11 +1091,6 @@ END
 ;
 ;
 ;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro tsmgsm_vect,iyear,idoy,ih,im,is,xsm,ysm,zsm,xgsm,ygsm,zgsm
 	  cdipdir_vect,iyear,idoy,gd1,gd2,gd3
@@ -1253,12 +1129,7 @@ END
 ;
 ;
 ;
-;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-;
+;Notes: under construction!!;
 ; faster algorithm (for loop across all points avoided) Hannes 05/25/2007
 ;
 ; $URL $
@@ -1347,11 +1218,6 @@ END
 ;
 ;
 ;Notes: under construction!!
-;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-01-26 15:33:45 -0800 (Tue, 26 Jan 2016) $
-; $LastChangedRevision: 19817 $
-; $URL $
 ;-
 pro cdipdir,iyear,idoy,d1,d2,d3
 ;----------------------------------------------------------------------

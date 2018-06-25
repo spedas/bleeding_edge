@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu May 31 18:16:27 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Jun 22 18:16:40 2018.<P>
  
 <HR>
  
@@ -190,7 +190,12 @@ Keywords:
 
          Slice plane along the B field and radial position vectors, B field used as slice's x-axis:
            COORD='rgeo', SLICE_NORM=[0,1,0], SLICE_X=[0,0,1]
-
+ DISPLACEMENT: Vector. New center of the coordinate system.
+       example:
+         Slice at the point x=0.5, y = 0.5 and z=0.1.
+         DISPLACEMENT = [0.5, 0.5. 0.1]
+         
+    
  VEL_DATA: Name of tplot variable containing the bulk velocity data.
            This will be used for slice plane alignment and subtraction.
            If not set the bulk velocity will be automatically calculated
@@ -282,8 +287,8 @@ EXAMPLES:
 
 
 $LastChangedBy: adrozdov $
-$LastChangedDate: 2018-05-11 17:35:51 -0700 (Fri, 11 May 2018) $
-$LastChangedRevision: 25201 $
+$LastChangedDate: 2018-06-04 17:46:48 -0700 (Mon, 04 Jun 2018) $
+$LastChangedRevision: 25322 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/slices/thm_part_slice2d.pro $
 </PRE><P>
 <STRONG>(See <A href="slices/thm_part_slice2d.pro">projects/themis/spacecraft/particles/slices/thm_part_slice2d.pro</A>)</STRONG><P>

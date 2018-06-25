@@ -35,29 +35,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-02-27 16:19:33 -0800 (Tue, 27 Feb 2018) $
-;$LastChangedRevision: 24790 $
+;$LastChangedDate: 2018-06-01 11:07:18 -0700 (Fri, 01 Jun 2018) $
+;$LastChangedRevision: 25311 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_spdfcdawebchooser.pro $
 ;-
 
-
-;+
-; Find and replace for strings.
-;
-; @param inString {in} {type=string}
-;            input string.
-; @param findString {in} {type=string}
-;            find string. It can be a regular expression.
-; @param replaceString {in} {type=string}
-;            replace string.
-; @returns new string
-;            inString where findString is replaced by replaceString.
-;-
-function spd_string_replacen, inString, findString, replaceString
-  if STRLEN(inString) le 0 then return, inString
-  if STRLEN(inString) lt STRLEN(findString) then return, inString
-  return, StrJoin( StrSplit(inString, findString, /Regex, /Extract, /Preserve_Null), replaceString)
-end
 
 ;+
 ; Deletes DEPEND_TIME attributes for SPEDAS and ARTEMIS CDF files.

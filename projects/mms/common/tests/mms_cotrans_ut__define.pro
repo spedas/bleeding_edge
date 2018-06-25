@@ -6,10 +6,21 @@
 ;     IDL> mgunit, 'mms_cotrans_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
-; $LastChangedRevision: 24128 $
+; $LastChangedDate: 2018-06-18 14:46:41 -0700 (Mon, 18 Jun 2018) $
+; $LastChangedRevision: 25366 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_cotrans_ut__define.pro $
 ;-
+
+function mms_cotrans_ut::test_j2000_to_gsm_and_back
+  mms_qcotrans, 'mms1_mec_r_eci', out_coord='gsm', out_suffix='_qeci2gsm'
+  mms_cotrans, 'mms1_mec_r_eci', out_coord='gsm', out_suffix='_eci2gsm'
+  mms_qcotrans, 'mms1_mec_r_eci_qeci2gsm', out_coord='j2000', out_suffix='_qback2eci'
+  mms_cotrans, 'mms1_mec_r_eci_eci2gsm', out_coord='j2000', out_suffix='_back2eci'
+  calc, '"qdiff"="mms1_mec_r_eci_qeci2gsm_qback2eci"-"mms1_mec_r_eci_eci2gsm_back2eci"'
+  get_data, 'qdiff', data=qdiff
+  assert, abs((minmax(qdiff.y))[0]) lt .1 and abs((minmax(qdiff.y))[1]) lt .1, 'Regression in J2000 transformation?'
+  return, 1
+end
 
 function mms_cotrans_ut::test_state_radecl
   mms_load_state, trange=['2016-11-01', '2016-11-02'], probe=1
@@ -97,7 +108,7 @@ function mms_cotrans_ut::test_cotrans_qcotrans_dmpa2gse
   mms_qcotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='gse', out_suffix='_qcotrans_gse'
   calc, '"qdiff"="mms1_fgm_b_dmpa_srvy_l2_bvec_qcotrans_gse"-"mms1_fgm_b_dmpa_srvy_l2_bvec_cotrans_gse"'
   get_data, 'qdiff', data=d
-  zero_idxs = where(d.Y le 0.001, zerocount)
+  zero_idxs = where(d.Y le 0.0001, zerocount)
   if zerocount ne 0 then d.Y[zero_idxs] = !values.d_nan
   assert, abs((minmax(d.Y))[0]) lt 1. && abs((minmax(d.Y))[1]) lt 1., 'Problem with mms_cotrans vs. mms_qcotrans test (dmpa2gse)'
   return, 1
@@ -108,7 +119,7 @@ function mms_cotrans_ut::test_cotrans_qcotrans_dmpa2gsm
   mms_qcotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='gsm', out_suffix='_qcotrans_gsm'
   calc, '"qdiff"="mms1_fgm_b_dmpa_srvy_l2_bvec_qcotrans_gsm"-"mms1_fgm_b_dmpa_srvy_l2_bvec_cotrans_gsm"'
   get_data, 'qdiff', data=d
-  zero_idxs = where(d.Y le 0.001, zerocount)
+  zero_idxs = where(d.Y le 0.0001, zerocount)
   if zerocount ne 0 then d.Y[zero_idxs] = !values.d_nan
   assert, abs((minmax(d.Y))[0]) lt 1. && abs((minmax(d.Y))[1]) lt 1., 'Problem with mms_cotrans vs. mms_qcotrans test (dmpa2gsm)'
   return, 1
@@ -119,7 +130,7 @@ function mms_cotrans_ut::test_cotrans_qcotrans_dmpa2sm
   mms_qcotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='sm', out_suffix='_qcotrans_sm'
   calc, '"qdiff"="mms1_fgm_b_dmpa_srvy_l2_bvec_qcotrans_sm"-"mms1_fgm_b_dmpa_srvy_l2_bvec_cotrans_sm"'
   get_data, 'qdiff', data=d
-  zero_idxs = where(d.Y le 0.001, zerocount)
+  zero_idxs = where(d.Y le 0.0001, zerocount)
   if zerocount ne 0 then d.Y[zero_idxs] = !values.d_nan
   ; egrimes relaxed max difference to 2nT, 5/4/2016, max occurs near perigee where field is > 1000 nT
   assert, abs((minmax(d.Y))[0]) lt 1. && abs((minmax(d.Y))[1]) lt 2., 'Problem with mms_cotrans vs. mms_qcotrans test (dmpa2sm)'
@@ -131,7 +142,7 @@ function mms_cotrans_ut::test_cotrans_qcotrans_gse2sm
   mms_qcotrans, 'mms1_fgm_b_gse_srvy_l2_bvec', out_coord='sm', out_suffix='_qcotrans_sm'
   calc, '"qdiff"="mms1_fgm_b_gse_srvy_l2_bvec_qcotrans_sm"-"mms1_fgm_b_gse_srvy_l2_bvec_cotrans_sm"'
   get_data, 'qdiff', data=d
-  zero_idxs = where(d.Y le 0.001, zerocount)
+  zero_idxs = where(d.Y le 0.0001, zerocount)
   if zerocount ne 0 then d.Y[zero_idxs] = !values.d_nan
   assert, abs((minmax(d.Y))[0]) lt 1. && abs((minmax(d.Y))[1]) lt 1., 'Problem with mms_cotrans vs. mms_qcotrans test (gse2sm)'
   return, 1

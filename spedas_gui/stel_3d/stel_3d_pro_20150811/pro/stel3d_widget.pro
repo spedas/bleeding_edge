@@ -704,7 +704,15 @@ pro stel3d_widget, oData, $
    cUnits=['Count','PSD']
    wLabel = widget_label(wUpRight, VALUE='Units', SCR_YSIZE=20)
    wUnits = widget_droplist(wUpRight, VALUE=cUnits, SCR_XSIZE=90, SCR_YSIZE=20, UNAME='main:UNITBUTTON', UVALUE='main:UNITBUTTON')
-  
+
+   ; set the units per the units keyword
+   idx_units = where(strlowcase(cUnits) eq strlowcase(unit), unit_count)
+   if unit_count eq 0 then begin
+    dprint, dlevel=0, 'Unknown units: ' + unit
+    dprint, dlevel=0, 'Defaulting to count units'
+    unit = 'count'
+   endif else widget_control, wUnits, set_droplist_select=idx_units
+
   mid = widget_base(left, ROW=2, /FRAME, XSIZE=300, XPAD=0, YPAD=0)
     wTimeTextBase = widget_base(mid, ROW=2)
     wStartTimeBase = widget_base(wTimeTextBase, XPAD=0, YPAD=0, COLUMN=2)
@@ -1336,9 +1344,15 @@ pro stel3d_widget, oData, $
     DIMENSIONS = [0.05, 1.5], SHOW_AXIS=2, SHOW_OUTLINE=1, TITLE=mytitle)
   oColorbar->GetProperty, MAJOR=major
   fStep = (max(nrange)-min(nrange))/(major-1)
-  oTickText = obj_new( 'IDLgrText', $
-    strtrim(string(findgen(major)*fStep + min(nrange), FORMAT='(F10.1)'),1), $
-    FONT=oFont )
+  if unit eq 'psd' then begin
+    oTickText = obj_new( 'IDLgrText', $
+      strtrim(string(findgen(major)*fStep + min(nrange), FORMAT='(1E8.0)'),1), $
+      FONT=oFont )
+  endif else begin
+    oTickText = obj_new( 'IDLgrText', $
+      strtrim(string(findgen(major)*fStep + min(nrange), FORMAT='(F10.1)'),1), $
+      FONT=oFont )
+  endelse
 
   oColorbar->SetProperty, $
     TICKTEXT=oTickText, $

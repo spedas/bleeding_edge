@@ -10,8 +10,8 @@
 ;HISTORY:
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-02-08 14:41:32 -0800 (Thu, 08 Feb 2018) $
-;$LastChangedRevision: 24680 $
+;$LastChangedDate: 2018-06-01 11:07:18 -0700 (Fri, 01 Jun 2018) $
+;$LastChangedRevision: 25311 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/misc/spd_ui_spedas_fileconfig.pro $
 ;--------------------------------------------------------------------------------
 
@@ -47,6 +47,7 @@ pro spd_ui_spedas_init_struct,state,struct
   widget_control,state.tempdir,set_value=struct.temp_dir
   widget_control,state.browserexe,set_value=struct.browser_exe
   widget_control,state.tempcdfdir,set_value=struct.temp_cdf_dir  
+  widget_control,state.geoparamdir,set_value=struct.geopack_param_dir
   ;widget_control,state.v_droplist,set_combobox_select=struct.verbose
   Widget_Control,  state.fixlinux, Set_Button=struct.linux_fix
 
@@ -153,7 +154,6 @@ PRO spd_ui_spedas_fileconfig_event, event
     !spedas.temp_cdf_dir = currentDir
 
   END
-  
 
   'TEMPCDFDIRBTN': BEGIN
 
@@ -168,11 +168,38 @@ PRO spd_ui_spedas_fileconfig_event, event
       !spedas.temp_cdf_dir = dirName
       widget_control, state.tempcdfdir, set_value=dirName
     ENDIF ELSE BEGIN
+      ; ok = dialog_message('Selection is not a directory',/center)
+    ENDELSE
+
+
+  END
+  
+  'GEOPARAMDIR': BEGIN
+
+    widget_control, state.geoparamdir, get_value=currentDir
+    !spedas.geopack_param_dir = currentDir
+
+  END
+  
+  'GEOPARAMDIRBTN': BEGIN
+
+    widget_control, state.geoparamdir, get_value=currentDir
+    if currentDir ne '' then path = file_dirname(currentDir)
+    ; call the file chooser window and set the default value
+    ; to the current value in the local data dir text box
+    dirName = Dialog_Pickfile(Title='Select the directory for Geopack parameter files:', $
+      Dialog_Parent=state.master, /must_exist, /DIRECTORY)
+    ; check to make sure the selection is valid
+    IF is_string(dirName) THEN BEGIN
+      !spedas.geopack_param_dir = dirName
+      widget_control, state.geoparamdir, set_value=dirName
+    ENDIF ELSE BEGIN
      ; ok = dialog_message('Selection is not a directory',/center)
     ENDELSE
 
 
   END
+  
   
     'TEMPDIR': BEGIN
 
@@ -216,6 +243,7 @@ PRO spd_ui_spedas_fileconfig_event, event
     widget_control,state.browserexe,set_value=!spedas.browser_exe
     widget_control,state.tempdir,set_value=!spedas.temp_dir
     widget_control,state.tempcdfdir,set_value=!spedas.temp_cdf_dir
+    widget_control,state.geoparamdir,set_value=!spedas.geopack_param_dir
     Widget_Control, state.fixlinux, Set_Button=!spedas.linux_fix
     
     !spedas.templatepath = ''
@@ -326,6 +354,11 @@ PRO spd_ui_spedas_fileconfig, tab_id, historyWin, statusBar
   flabel2 = widget_label(rbase1, value = 'Directory for CDAWeb files:  ')
   tempcdfdir = widget_text(rbase1, /edit, xsiz = 50, /all_events, uval='TEMPCDFDIR', val = !spedas.temp_cdf_dir)
   tempcdfdirbtn = widget_button(rbase1,value='Browse', uval='TEMPCDFDIRBTN', /align_center)
+
+  rbase2 = widget_base(configbase, /row, /align_left, ypad=1)
+  flabe22 = widget_label(rbase2, value = 'Directory for Geopack params: ')
+  geoparamdir = widget_text(rbase2, /edit, xsiz = 50, /all_events, uval='GEOPARAMDIR', val = !spedas.geopack_param_dir)
+  geoparamdirbtn = widget_button(rbase2,value='Browse', uval='GEOPARAMDIRBTN', /align_center)
   
   root_base = widget_base(configbase, /row, /align_left, ypad=1)  
   root_label = widget_label(root_base, value='Root Data Directory:  ')
@@ -376,7 +409,7 @@ PRO spd_ui_spedas_fileconfig, tab_id, historyWin, statusBar
   def_values=['0','0','0','2',0]
   
   state = {spedas_cfg_save:spedas_cfg_save, spd_ui_cfg_sav:spd_ui_cfg_sav, $
-    master:master, browserexe:browserexe, tempdir:tempdir, tempcdfdir:tempcdfdir, $
+    master:master, browserexe:browserexe, tempdir:tempdir, tempcdfdir:tempcdfdir, geoparamdir:geoparamdir, $
     v_values:v_values, v_droplist:v_droplist, statusBar:statusBar, fixlinux:fixlinux, $
     def_values:def_values, historyWin:historyWin, tab_id:tab_id, linux_fix:linux_fix, $
     tmp_pathbase:tmp_pathbase, tmppath:tmppath, tmp_button:tmp_button, tmp_browsebtn:tmp_browsebtn}

@@ -59,9 +59,9 @@
 ;                         errors then try a value of 1.0e8. 
 ; fail = if set to a named variable, returns 1 if an error occurs, 0 otherwise
 ;
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-;$LastChangedRevision: 24506 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2018-06-20 11:26:03 -0700 (Wed, 20 Jun 2018) $
+;$LastChangedRevision: 25373 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/dpwrspc.pro $
 ;
 ;-
@@ -205,9 +205,11 @@ for nthspectrum = 0l, nspectra-1l do begin
 ;
         pwr = dblarr(bign/2+1)
         pwr[0] = xs2[0]/dbign^2
-        pwr[1:bign/2-1] = (xs2[1:bign/2-1] + xs2[bign - dindgen(bign/2-1)])/dbign^2
+;jmm, 2019-06-20 from Bryan Harter, fixed problem where xs2[bign] will be
+;accessed when xs2 is only defined rom zero to bign-1
+        pwr[1:bign/2-1] = (xs2[1:bign/2-1] + $
+                           xs2[bign - (1+lindgen(bign/2-1))])/dbign^2
         pwr[bign/2] = xs2[bign/2]/dbign^2
-;
         if not keyword_set(nohanning) then begin
             wss = dbign*total(window^2)
             pwr = dbign^2*pwr/wss

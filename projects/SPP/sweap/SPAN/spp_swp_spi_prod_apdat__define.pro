@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spi_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-05-30 22:04:01 -0700 (Wed, 30 May 2018) $
-; $LastChangedRevision: 25304 $
+; $LastChangedDate: 2018-06-03 18:19:29 -0700 (Sun, 03 Jun 2018) $
+; $LastChangedRevision: 25316 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
@@ -341,14 +341,14 @@ PRO spp_swp_spi_prod_apdat::proc_8Dx32E, strct
              gap: strct.gap}
    strct.def_spec = total(cnts,2)
    strct.nrg_spec = total(cnts,1) 
-   strct.full_spec = cnts
+;   strct.full_spec = cnts
    IF self.save_raw && self.prod_08Dx32E.append THEN $
     self.prod_08Dx32E.append, strct2
 END 
 
 
 
-FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,ptp_header
+FUNCTION spp_swp_spi_prod_apdat::decom,ccsds, source_dict=source_dict  ;,ptp_header
 
    ;; Check CCSDS Packet Size
    pksize = ccsds.pkt_size
@@ -356,6 +356,11 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,ptp_header
       dprint,dlevel = 2, 'size error - no data ',ccsds.pkt_size,ccsds.apid
       return, 0
    ENDIF
+   
+   if ccsds.aggregate ne 0 then begin
+     return, self.decom_aggregate(ccsds,source_dict=source_dict)
+   endif
+
 
    ;; Check CCSDS Size Match
    ccsds_data = spp_swp_ccsds_data(ccsds)
@@ -371,7 +376,7 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,ptp_header
    mode1    = header[13]
    mode2    = (swap_endian(uint(ccsds_data,14),/swap_if_little_endian))
    f0       = (swap_endian(uint(header,16),/swap_if_little_endian))
-   status_flag = header[18]
+   status_bits = header[18]
    peak_bin    = header[19]
    compression = (header[12] and 'a0'x) ne 0
    bps  =  ([4,1])[ compression ]
@@ -403,13 +408,13 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,ptp_header
          mode1:       mode1,$
          mode2:       mode2,$
          log_flag:    log_flag,$
-         status_flag: status_flag,$   
+         status_bits: status_bits,$   
          cnts:        tcnts,$
          peak_bin:    peak_bin,$
          nrg_spec:    fltarr(32),$
          def_spec:    fltarr(8),$
          mass_spec:   fltarr(32),$
-         full_spec:   fltarr(256),$
+ ;        full_spec:   fltarr(256),$
          anode_spec:  fltarr(16),$
          pdata:       ptr_new(cnts)}
 
@@ -419,42 +424,52 @@ END
 
 
 
-PRO spp_swp_spi_prod_apdat::handler,ccsds,ptp_header,source_info=source_info
+PRO spp_swp_spi_prod_apdat::handler,ccsds,  source_dict = source_dict  ;,ptp_header,source_info=source_info
 
-   strct = self.decom(ccsds)
-   if debug(self.dlevel+3) then begin
-      printdat,strct
-      print,strct.apid,strct.datasize
+   strcts = self.decom(ccsds)
+   if debug(self.dlevel+4,msg='hello') then begin
+     dprint,self.apid
+     ccsds_data = spp_swp_ccsds_data(ccsds)
+     hexprint,ccsds_data
    endif
-   ns=1
-   IF keyword_set(strct) && ns gt 0 THEN BEGIN
-      CASE strct.ndat OF
-         16:self.proc_16A,             strct
-         32:self.proc_32E,             strct
-         128:self.proc_08Dx16A,        strct
-         256:self.proc_256,        strct
-         ;;256: self.proc_16Ax16M,       strct
-         512:self.proc_32Ex16M,        strct
-         ;;512:self.proc_32Ex16A,        strct
-         2048:self.proc_32Ex16Ax4M,    strct
-         4096:self.proc_08Dx32Ex16A,    strct
-         8192:self.proc_08Dx32EX16Ax2M, strct
-         else: dprint,dlevel=4,'Size not recognized: ',strct.ndat
-      ENDCASE
-   endif
-   ;; dprint,dlevel=2,strct.apid,strct.ndat
-   if self.save_flag && keyword_set(strct) then begin
+
+   ns=n_elements(strcts)
+   for i=0,ns-1 do begin
+     strct = strcts[i]
+     CASE strct.ndat OF
+       16:self.proc_16A,             strct
+       32:self.proc_32E,             strct
+       128:self.proc_08Dx16A,        strct
+       256:self.proc_256,        strct
+       ;;256: self.proc_16Ax16M,       strct
+       512:self.proc_32Ex16M,        strct
+       ;;512:self.proc_32Ex16A,        strct
+       2048:self.proc_32Ex16Ax4M,    strct
+       4096:self.proc_08Dx32Ex16A,    strct
+       8192:self.proc_08Dx32EX16Ax2M, strct
+       else: dprint,dlevel=4,'Size not recognized: ',strct.ndat
+     ENDCASE
+   endfor
+
+      
+   if self.save_flag && keyword_set(strcts) then begin
       dprint,self.name,dlevel=5,self.apid
-      self.data.append, strct
+      self.data.append, strcts
    endif
-   if self.rt_flag && keyword_set(strct) then begin
-      if ccsds.gap eq 1 then strct = [fill_nan(strct[0]),strct]
-      store_data,self.tname, data=strct, $
+   
+   if self.rt_flag && keyword_set(strcts) then begin
+      if ccsds.gap eq 1 then strcts = [fill_nan(strcts[0]),strcts]
+      store_data,self.tname, data=strcts, $
                  tagnames=self.ttags, $
                  append = 1,$
                  gap_tag='GAP'
    ENDIF
+   *self.last_data_p = strct
+
 END
+
+
+
 
 FUNCTION spp_swp_spi_prod_apdat::Init,apid,name,_EXTRA=ex
    ;; Call our superclass Initialization method.

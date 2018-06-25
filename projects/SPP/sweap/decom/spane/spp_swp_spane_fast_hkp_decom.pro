@@ -1,6 +1,10 @@
 ;;; Fast Housekeeping Data as of SPAN-E FPGA rev #22, 3/10/2015
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2018-06-18 06:04:35 -0700 (Mon, 18 Jun 2018) $
+; $LastChangedRevision: 25362 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/spane/spp_swp_spane_fast_hkp_decom.pro $
 
-function spp_swp_spane_fast_hkp_decom,ccsds,ptp_header=ptp_header,apdat=apdat
+function spp_swp_spane_fast_hkp_decom,ccsds, source_dict=source_dict  ; ,ptp_header=ptp_header,apdat=apdat
 
   ;;----------------------
   ;; 1. 20 CCSDS header bytes (should be 10?)

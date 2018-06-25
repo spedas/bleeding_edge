@@ -4,23 +4,11 @@
 ; Vectorized version0 of spd_make_j2000_matrix_vec from spd_gei2j2000.pro
 ;
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2015-09-23 12:26:57 -0700 (Wed, 23 Sep 2015) $
-; $LastChangedRevision: 18893 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-06-11 13:13:02 -0700 (Mon, 11 Jun 2018) $
+; $LastChangedRevision: 25346 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/spd_make_j2000_matrix_vec.pro $
 ;-
-
-;      STATEMENT FUNCTION DEFINITION FOR dxjul -- JULIAN EPHEMERIS
-;      DATE AT BEGINNING OF year.
-;
-
-FUNCTION dxjul,i
-
-    RETURN,DOUBLE((-32075+1461*(i+4800-13/12)/4  $
-        +367*(-1+13/12*12)/12-3         $
-        *((i+4900-13/12)/100)/4)-0.5 )
-
-END
 
 PRO spd_make_j2000_matrix_vec, orb_pos_time, cmatrix
 
@@ -49,7 +37,7 @@ PRO spd_make_j2000_matrix_vec, orb_pos_time, cmatrix
   ;   Calculate the julian date and the time in Julian centuries from J2000
   ;
   fday = secs/DOUBLE(86400.00)
-  jul_day = dxjul(year) + DOUBLE(day)+fday
+  jul_day = julday(1,1,year,0,0,0) + DOUBLE(day)+fday
   time = (jul_day - Jdj2000)/DOUBLE(36525.0)
 
   T2 = time*time

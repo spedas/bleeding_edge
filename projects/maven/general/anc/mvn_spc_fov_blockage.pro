@@ -41,8 +41,8 @@
 ;
 ; VERSION:
 ;   $LastChangedBy: rlivi2 $
-;   $LastChangedDate: 2018-04-13 00:26:44 -0700 (Fri, 13 Apr 2018) $
-;   $LastChangedRevision: 25046 $
+;   $LastChangedDate: 2018-06-11 13:31:44 -0700 (Mon, 11 Jun 2018) $
+;   $LastChangedRevision: 25347 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/anc/mvn_spc_fov_blockage.pro $
 ;-
 pro mvn_spc_fov_blockage, trange=trange,$
@@ -194,6 +194,9 @@ pro mvn_spc_fov_blockage, trange=trange,$
    index=inst.index
    original_inst_loc = inst.inst_loc
 
+   ;; Temporary kludge
+   inst.inst_loc = inst_loc
+   
    ;; Create XYZ coordinates for plotting
    nn = 5.*inst.n2 ;; 5 points to draw each side.
    xx = fltarr(inst.n3,nn);5.*inst.n2)
@@ -263,6 +266,7 @@ pro mvn_spc_fov_blockage, trange=trange,$
    new_shift=inst_rot # inst_loc
    inst_loc=new_shift
 
+   
    ;; Change coordinates from cartesian to spherical
    ;; theta - angle from positive z-axis (-90-90)
    ;; phi   - angle around x-y (-180 - 180)

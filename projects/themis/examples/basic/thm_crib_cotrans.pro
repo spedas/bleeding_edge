@@ -20,11 +20,35 @@
 ;    examples/advanced/thm_crib_slp_sse.pro (selenocentric coordinate systems)
 ;    
 ;
-; $LastChangedBy: crussell $
-; $LastChangedDate: 2016-11-29 13:21:52 -0800 (Tue, 29 Nov 2016) $
-; $LastChangedRevision: 22414 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-06-08 14:29:18 -0700 (Fri, 08 Jun 2018) $
+; $LastChangedRevision: 25338 $
 ; $URL $
 ;-
+
+
+;*********************************************************************
+;  This section demonstrates that J2000 -> GEI -> J2000
+;  gives small errors ( e-16 ) for the unit vector
+;*********************************************************************
+
+coord1='j2000' & coord2 = 'gei'
+ex = [ 1.0d, 0.0d, 0.0d ]
+t1 = time_double('2000-01-01') + dindgen(1441)*60
+t2 = time_double('2004-04-01') + dindgen(1441)*60
+t3 = time_double('2008-08-01') + dindgen(1441)*60
+store_data, 'ex', data={x:[t1,t2,t3], y:rebin(transpose(ex), 1441*3, 3)}
+spd_cotrans, 'ex', 'ex_other', in_coord=coord1, out_coord=coord2
+spd_cotrans, 'ex_other', 'ex2', in_coord=coord2, out_coord=coord1
+get_data, 'ex', 0, ex1  &  get_data, 'ex2', 0, ex2
+
+print, 'J2000 -> GEI -> J2000 error:', minmax( ex2-ex1 )
+
+stop
+
+;*********************************************************************
+;  Load THEMIS data
+;*********************************************************************
 
 ; Start with a clean slate
 del_data,'*'
@@ -156,5 +180,6 @@ thm_load_fit,probe='a',coord='gsm'
 
 print,'Data loaded and transformed automatically'
 stop
+
 
 END

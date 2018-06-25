@@ -10,8 +10,8 @@
 ; 
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-05-03 09:36:17 -0700 (Thu, 03 May 2018) $
-; $LastChangedRevision: 25161 $
+; $LastChangedDate: 2018-06-06 09:07:27 -0700 (Wed, 06 Jun 2018) $
+; $LastChangedRevision: 25334 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_fpi_ut__define.pro $
 ;-
 
@@ -100,6 +100,25 @@ function mms_load_fpi_ut::test_subtract_disterr
 end
 
 ; regression tests ---------->
+; problems with qd[ei]s-moms files that have depend_3 but not depend_2 or depend_1
+function mms_load_fpi_ut::test_qmoms_brst
+  mms_load_fpi, datatype='dis-pmoms', data_rate='brst', level='l1b', trange=['2017-07-11/22:33:20', '2017-07-11/22:33:24']
+  get_data, 'mms3_dis_bulkv_part_gse_brst', data=d
+  assert, n_elements(d.v2[0, *]) eq 32, 'Problem loading dis-qmoms files (brst)'
+  get_data, 'mms3_dis_prestensor_part_gse_brst', data=d
+  assert, n_elements(d.v3[0, *]) eq 32, 'Problem loading dis-qmoms files (brst)'
+  return, 1
+end
+
+function mms_load_fpi_ut::test_qmoms_fast
+  mms_load_fpi, datatype='dis-pmoms', data_rate='fast', level='l1b', trange=['2018-05-02/10:00', '2018-05-02/14:00']
+  get_data, 'mms3_dis_bulkv_part_gse_fast', data=d
+  assert, n_elements(d.v2[0, *]) eq 32, 'Problem loading dis-qmoms files'
+  get_data, 'mms3_dis_prestensor_part_gse_fast', data=d
+  assert, n_elements(d.v3[0, *]) eq 32, 'Problem loading dis-qmoms files'
+  return, 1
+end
+
 ; problem / crash with compressionloss variable for fast survey data
 function mms_load_fpi_ut::test_fast_compressionloss
   tr_load  = time_double('2017-07-17/'+['14:05:00','16:00:00'])
@@ -190,7 +209,7 @@ end
 ; tplotnames regressions
 function mms_load_fpi_ut::test_loading_tplotnames_desmoms
   mms_load_fpi, trange=['2015-10-15', '2015-10-16'], datatype='des-moms', tplotnames = tplotnames
-  assert, n_elements(tplotnames) eq 39, '(potential) Problem with number of tplotnames returned from mms_load_fpi'
+  assert, n_elements(tplotnames) eq 41, '(potential) Problem with number of tplotnames returned from mms_load_fpi'
   return, 1
 end
 
@@ -202,7 +221,7 @@ end
 
 function mms_load_fpi_ut::test_loading_tplotnames_des
   mms_load_fpi, trange=['2015-10-15', '2015-10-16'], datatype=['des-moms', 'des-dist'], tplotnames = tplotnames
-  assert, n_elements(tplotnames) eq 49, '(potential) Problem with number of tplotnames returned from mms_load_fpi'
+  assert, n_elements(tplotnames) eq 51, '(potential) Problem with number of tplotnames returned from mms_load_fpi'
   return, 1
 end
 

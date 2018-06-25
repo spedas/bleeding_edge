@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu May 31 18:16:27 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Jun 22 18:16:40 2018.<P>
  
 <HR>
  
@@ -74,6 +74,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#SPD_SMOOTH_TIME">SPD_SMOOTH_TIME</A>
 <br>Smooths a tplot variable in time using a simple boxcar average
 <LI><A HREF="#SPD_STR_SPLIT">SPD_STR_SPLIT</A>
+<LI><A HREF="#SPD_STRING_REPLACEN">SPD_STRING_REPLACEN</A>
+<br>Find and replace for strings.
 <LI><A HREF="#SPD_TPLOT_TRANGE">SPD_TPLOT_TRANGE</A>
 <LI><A HREF="#SPD_UI_CALENDAR.PRO">SPD_UI_CALENDAR.PRO</A>
 <br>Calendar selection widget for the GUI
@@ -2619,7 +2621,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/
 <A NAME="SPD_SMOOTH_TIME">
 <H2>SPD_SMOOTH_TIME</H2></A>
 <A HREF="#SPD_NEW_UNITS">[Previous Routine]</A>
-<A HREF="#SPD_STR_SPLIT">[Next Routine]</A>
+<A HREF="#SPD_STRING_REPLACEN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -2644,9 +2646,39 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/
 <STRONG>(See <A href="utilities/spd_smooth_time.pro">spedas_gui/utilities/spd_smooth_time.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPD_STRING_REPLACEN">
+<H2>SPD_STRING_REPLACEN</H2></A>
+<A HREF="#SPD_SMOOTH_TIME">[Previous Routine]</A>
+<A HREF="#SPD_STR_SPLIT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ spd_string_replacen
+
+PURPOSE:
+ Find and replace for strings.
+ 
+KEYWORDS:
+ inString {in} {type=string}
+            input string.
+ findString {in} {type=string}
+            find string. It can be a regular expression.
+ replaceString {in} {type=string}
+            replace string.
+
+HISTORY:
+
+$LastChangedBy:  $
+$LastChangedDate:$
+$LastChangedRevision:  $
+$URL: $
+</PRE><P>
+<STRONG>(See <A href="utilities/spd_string_replacen.pro">spedas_gui/utilities/spd_string_replacen.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPD_STR_SPLIT">
 <H2>SPD_STR_SPLIT</H2></A>
-<A HREF="#SPD_SMOOTH_TIME">[Previous Routine]</A>
+<A HREF="#SPD_STRING_REPLACEN">[Previous Routine]</A>
 <A HREF="#SPD_TPLOT_TRANGE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

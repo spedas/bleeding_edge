@@ -1,4 +1,10 @@
-function spp_power_supply_decom,ccsds,ptp_header=ptp_header,apdat=apdat
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2018-06-18 06:17:08 -0700 (Mon, 18 Jun 2018) $
+; $LastChangedRevision: 25364 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/common/spp_power_supply_decom.pro $
+
+
+function spp_power_supply_decom,ccsds, source_dict=source_dict  ;ptp_header=ptp_header,apdat=apdat
 
   if n_params() eq 0 then begin
     dprint,'Not working yet.',dlevel=2

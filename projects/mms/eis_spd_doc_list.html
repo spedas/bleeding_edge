@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu May 31 18:16:27 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Jun 22 18:16:40 2018.<P>
  
 <HR>
  
@@ -170,7 +170,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        + 2017-11-17, I. Cohen      : changed probes keyword to probes
        + 2018-02-19, I. Cohen      : fixed definitions of target_phxtof_energies and target_extof_energies to account for user-defined
                                      energy ranges that do not include all energy channels; also fixed indexing on line 95 to accommodate
-       
+       + 2018-06-12, I. Cohen      : removed 12 keV energy from combined pad range; imposed new min energy limit
 
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_combine_proton_pad.pro">projects/mms/eis/mms_eis_combine_proton_pad.pro</A>)</STRONG><P>
@@ -208,6 +208,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                                          added calls to mms_eis_spin_avg.pro and mms_eis_omni.pro
        + 2018-01-19, I. Cohen          : added capability to handle multiple s/c at once and combine at the end
        + 2018-02-19, I. Cohen          : added &quot;total&quot; to NAN creation on lines 77-78 to fix syntax
+       + 2018-06-11, I. Cohen          : added creation of new combined energy limits tplot variable
+       + 2018-06-12, I. Cohen          : removed 12 keV energy channel from combined proton spectrum
                                          
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_combine_proton_spec.pro">projects/mms/eis/mms_eis_combine_proton_spec.pro</A>)</STRONG><P>
@@ -281,8 +283,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-04-10 14:11:48 -0700 (Tue, 10 Apr 2018) $
-$LastChangedRevision: 25029 $
+$LastChangedDate: 2018-06-14 19:25:13 -0700 (Thu, 14 Jun 2018) $
+$LastChangedRevision: 25357 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_pad.pro">projects/mms/eis/mms_eis_pad.pro</A>)</STRONG><P>
@@ -323,7 +325,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        + 2018-01-04, I. Cohen    : fixed if statement for species case of 'proton'
        + 2018-02-05, I. Cohen    : added suffix keyword
        + 2018-02-19, I. Cohen    : added ability to handle multiple species 
-       + 2018-03-20, I. Cohen    : added combine_proton_data keyword                  
+       + 2018-03-20, I. Cohen    : added combine_proton_data keyword
+       + 2018-06-14, I. Cohen    : changed so that if 'combine_proton_data' is set, then only 'combined' data is handled        
 
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_pad_combine_sc.pro">projects/mms/eis/mms_eis_pad_combine_sc.pro</A>)</STRONG><P>
@@ -469,12 +472,14 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        + 2018-01-18, I. Cohen          : added multisc keyword
        + 2018-02-19, I. Cohen          : added 'probe_string' variable to differentiate from probe(s) and avoid
                                          errors with overwriting in other procedures
+       + 2018-06-14, I. Cohen          : changed 'datatype' to 'new_datatype' in definition of p_num to stop error
+                                         when handling 'combined' data                           
        
        
        
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-02-20 08:22:36 -0800 (Tue, 20 Feb 2018) $
-$LastChangedRevision: 24749 $
+$LastChangedDate: 2018-06-14 19:25:13 -0700 (Thu, 14 Jun 2018) $
+$LastChangedRevision: 25357 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_spin_avg.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_spin_avg.pro">projects/mms/eis/mms_eis_spin_avg.pro</A>)</STRONG><P>

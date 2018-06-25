@@ -4,9 +4,9 @@
 ;PURPOSE:    Initializes system variables for spedas data.
 ;            Can be called from idl_startup to set custom locations.
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2015-12-03 13:50:06 -0800 (Thu, 03 Dec 2015) $
-;$LastChangedRevision: 19523 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2018-06-01 11:07:18 -0700 (Fri, 01 Jun 2018) $
+;$LastChangedRevision: 25311 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/misc/spedas_init.pro $
 ;-
 
@@ -21,6 +21,7 @@ pro spedas_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=rem
     tmp_struct = {browser_exe: '', $    ; location of the local browser executable
                   temp_dir: '', $
                   temp_cdf_dir: '', $
+                  geopack_param_dir: '', $ ;location for geopack parameters
                   linux_fix: 0b, $
                   renderer:1B,$  ;OS specific rendering options should go here
                   guiId:0L,  $ ; the widget id of the main gui, needed as an input to command line.
@@ -41,6 +42,7 @@ pro spedas_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=rem
     tmp_struct = {browser_exe: '', $    ; location of the local browser executable
                   temp_dir: '', $
                   temp_cdf_dir: '', $
+                  geopack_param_dir: '', $
                   linux_fix: 0b, $
                   renderer:1B,$  ;OS specific rendering options should go here
                   guiId:0L,  $ ; the widget id of the main gui, needed as an input to command line.
@@ -61,6 +63,7 @@ pro spedas_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=rem
    ; !spedas.local_data_dir = data_dir
     !spedas.temp_dir =  data_dir + 'temp' + path_sep()
     !spedas.temp_cdf_dir =  data_dir + 'cdaweb' + path_sep()
+    !spedas.geopack_param_dir =  data_dir + 'geopack_par' + path_sep()
     !spedas.browser_exe = ''
     !spedas.linux_fix = 0
     ;!spedas.init = 1

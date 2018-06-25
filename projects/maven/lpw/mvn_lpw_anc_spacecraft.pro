@@ -62,6 +62,8 @@
 ;
 ;mvn_lpw_anc_mars_shadow: 1 if MAVEN is within the geometric shadow Mars; 0 if MAVEN is in sunlight.
 ;
+;mvn_lpw_anc_mars_ls: Ls (solar longitude value) of Mars.
+;
 ;With /css set:
 ;mvn_lpw_anc_css_pos_mso: CSS position, in MSO frame, Rmars.
 ;
@@ -91,6 +93,7 @@
 ;Setting /css will get position information of Comet Siding Spring in MSO and IAU frames.
 ;
 ;Set /basic to only calculate MAVEN position and velocity in both the MSO and IAU frames, and altitude in the IAU frame. This helps speed up the routine.
+;       Mars Ls (Solar longitude) value is also calculated.
 ;
 ;Setting /dont_load will skip loading SPICE kernels into IDL memory. Set this if they are already loaded. Default if not set is to load SPICE kernels.
 ;
@@ -1363,6 +1366,95 @@ mvn_pos_iau_cp = stateezr2[0:2,*]  ;copy for getting long, lat, later on
     store_data, 'mvn_lpw_anc_mvn_vel_iau', data={x:unix_in, y:mvn_vel_iau, flag:spk_flag}, dlimit=dlimit, limit=limit  ;#### no velocity yet
     ;---------------------------------
 
+;========
+;===7b===
+;========
+;Ls value for Mars:
+
+;if (spk_coverage eq 'all') then LsMars = CSPICE_LSPCN('MARS',et_time,'NONE') else begin 
+  LsMars = fltarr(nele)
+  
+  for aa = 0, nele-1 do begin  ;do each time point individually
+      if (spkcov[aa] eq 1) then LsMars[aa] = CSPICE_LSPCN('MARS',et_time[aa],'NONE') else LsMars[aa] = !values.f_nan
+  endfor
+;endelse
+
+LsMars = LsMars * 180./!pi  ;convert to degrees
+
+;Store as tplot variable:
+;--------------- dlimit   ------------------
+dlimit=create_struct(   $
+  'Product_name',                  'mvn_lpw_anc_mars_ls', $
+  'Project',                       cdf_istp[12], $
+  'Source_name',                   cdf_istp[0], $     ;Required for cdf production...
+  'Discipline',                    cdf_istp[1], $
+  'Instrument_type',               cdf_istp[2], $
+  'Data_type',                     'Support_data' ,  $
+  'Data_version',                  cdf_istp[4], $  ;Keep this text string, need to add v## when we make the CDF file (done later)
+  'Descriptor',                    cdf_istp[5], $
+  'PI_name',                       cdf_istp[6], $
+  'PI_affiliation',                cdf_istp[7], $
+  'TEXT',                          cdf_istp[8], $
+  'Mission_group',                 cdf_istp[9], $
+  'Generated_by',                  cdf_istp[10],  $
+  'Generation_date',                today_date+' # '+t_routine, $
+  'Rules of use',                  cdf_istp[11], $
+  'Acknowledgement',               cdf_istp[13],   $
+  'x_catdesc',                     'Timestamps for each data point, in UNIX time.', $
+  'y_catdesc',                     'Mars solar longitude.', $
+  ;'v_catdesc',                     'test dlimit file, v', $    ;###
+  'dy_catdesc',                    'Error on the data.', $     ;###
+  ;'dv_catdesc',                    'test dlimit file, dv', $   ;###
+  'flag_catdesc',                  'Flag equals 1 when no SPICE times available.', $   ; ###
+  'x_Var_notes',                   'UNIX time: Number of seconds elapsed since 1970-01-01/00:00:00.', $
+  'y_Var_notes',                   'Mars solar longitude in degrees' , $
+;'v_Var_notes',                   'Frequency bins', $
+'dy_Var_notes',                  'Not used.', $
+  ;'dv_Var_notes',                   'Error on frequency', $
+  'flag_Var_notes',                '0 = no flag: SPICE times available; 1 = flag: no SPICE times available.', $
+'xFieldnam',                     'x: More information.', $      ;###
+  'yFieldnam',                     'y: More information.', $
+  ; 'vFieldnam',                     'v: More information', $
+  'dyFieldnam',                    'dy: Not used.', $
+  ;  'dvFieldnam',                    'dv: More information', $
+  'flagFieldnam',                  'flag: based off of SPICE ck and spk kernel coverage.', $
+  'MONOTON', 'INCREASE', $
+  'SCALEMIN', min(mvn_vel_mso), $
+  'SCALEMAX', max(mvn_vel_mso), $        ;..end of required for cdf production.
+  't_epoch'         ,     t_epoch, $
+  'Time_start'      ,     time_start, $
+  'Time_end'        ,     time_end, $
+  'Time_field'      ,     time_field, $
+  'SPICE_kernel_version', kernel_version, $
+  'SPICE_kernel_flag'      ,     spice_used, $
+  'L0_datafile'     ,     L0_datafile , $
+  'cal_vers'        ,     kernel_version ,$
+  'cal_y_const1'    ,     loaded_kernels , $  ; Fixed convert information from measured binary values to physical units, variables from ground testing and design
+  ;'cal_y_const2'    ,     'Used :'   ; Fixed convert information from measured binary values to physical units, variables from space testing
+  ;'cal_datafile'    ,     'No calibration file used' , $
+  'cal_source'      ,     'SPICE kernels', $
+  'xsubtitle'       ,     '[sec]', $
+  'ysubtitle'       ,     '[Degrees]');, $
+;'cal_v_const1'    ,     'PKT level::' , $ ; Fixed convert information from measured binary values to physical units, variables from ground testing and design
+;'cal_v_const2'    ,     'Used :'   ; Fixed convert information from measured binary values to physical units, variables from space testing
+;'zsubtitle'       ,     '[Attitude]')
+;-------------  limit ----------------
+limit=create_struct(   $
+  'char_size' ,     1.2                      ,$
+  'xtitle' ,        str_xtitle                   ,$
+  'ytitle' ,        'Mars Ls'                 ,$
+  'yrange' ,        [0,360] ,$
+  'ystyle'  ,       1.                       ,$
+  ;'ztitle' ,        'Z-title'                ,$
+  ;'zrange' ,        [min(data.y),max(data.y)],$
+  ;'spec'            ,     1, $
+  ;'xrange2'  ,      [min(data.x),max(data.x)],$           ;for plotting lpw pkt lab data
+  ;'xstyle2'  ,      1                       , $           ;for plotting lpw pkt lab data
+  ;'xlim2'    ,      [min(data.x),max(data.x)], $          ;for plotting lpw pkt lab data
+  'noerrorbars', 1)
+;---------------------------------
+store_data, 'mvn_lpw_anc_mars_ls', data={x:unix_in, y:LsMars, flag:spk_flag}, dlimit=dlimit, limit=limit 
+;---------------------------------
 
 ;========
 ;==8, 9==

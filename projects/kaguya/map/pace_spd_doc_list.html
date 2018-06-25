@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu May 31 18:16:27 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Jun 22 18:16:40 2018.<P>
  
 <HR>
  
@@ -25,8 +25,13 @@ This page was created by the IDL library routine
 <br>returns an ESA-S2 3D data structure
 <LI><A HREF="#KGY_ESA_PAD_COMB">KGY_ESA_PAD_COMB</A>
 <br>generates combined e PAD tplot vairables
+<LI><A HREF="#KGY_ESA_PAD_RESTORE">KGY_ESA_PAD_RESTORE</A>
+<br>Restores pre-generated Kaguya ESA PADs
+<LI><A HREF="#KGY_ESA_PAD_SAVE">KGY_ESA_PAD_SAVE</A>
 <LI><A HREF="#KGY_IEA_GET3D">KGY_IEA_GET3D</A>
 <br>returns an IEA 3D data structure
+<LI><A HREF="#KGY_IMA_EMSPEC">KGY_IMA_EMSPEC</A>
+<br>Plots an energy-TOF profile
 <LI><A HREF="#KGY_IMA_GET3D">KGY_IMA_GET3D</A>
 <br>returns an IMA 3D data structure
 <LI><A HREF="#KGY_J_3D">KGY_J_3D</A>
@@ -134,7 +139,7 @@ This page was created by the IDL library routine
 <A NAME="KGY_ESA_PAD_COMB">
 <H2>KGY_ESA_PAD_COMB</H2></A>
 <A HREF="#KGY_ESA2_GET3D">[Previous Routine]</A>
-<A HREF="#KGY_IEA_GET3D">[Next Routine]</A>
+<A HREF="#KGY_ESA_PAD_RESTORE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -155,10 +160,52 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="pace/kgy_esa_pad_comb.pro">projects/kaguya/map/pace/kgy_esa_pad_comb.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="KGY_ESA_PAD_RESTORE">
+<H2>KGY_ESA_PAD_RESTORE</H2></A>
+<A HREF="#KGY_ESA_PAD_COMB">[Previous Routine]</A>
+<A HREF="#KGY_ESA_PAD_SAVE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+       kgy_esa_pad_restore
+ PURPOSE:
+       Restores pre-generated Kaguya ESA PADs
+ KEYWORDS:
+       trange: time range
+ CREATED BY:
+       Yuki Harada on 2018-06-02
+
+ $LastChangedBy: haraday $
+ $LastChangedDate: 2018-06-10 21:14:06 -0700 (Sun, 10 Jun 2018) $
+ $LastChangedRevision: 25342 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_esa_pad_restore.pro $
+</PRE><P>
+<STRONG>(See <A href="pace/kgy_esa_pad_restore.pro">projects/kaguya/map/pace/kgy_esa_pad_restore.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="KGY_ESA_PAD_SAVE">
+<H2>KGY_ESA_PAD_SAVE</H2></A>
+<A HREF="#KGY_ESA_PAD_RESTORE">[Previous Routine]</A>
+<A HREF="#KGY_IEA_GET3D">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+       kgy_esa_pad_save
+ CREATED BY:
+       Yuki Harada on 2018-06-02
+
+ $LastChangedBy: haraday $
+ $LastChangedDate: 2018-06-10 21:14:06 -0700 (Sun, 10 Jun 2018) $
+ $LastChangedRevision: 25342 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_esa_pad_save.pro $
+</PRE><P>
+<STRONG>(See <A href="pace/kgy_esa_pad_save.pro">projects/kaguya/map/pace/kgy_esa_pad_save.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="KGY_IEA_GET3D">
 <H2>KGY_IEA_GET3D</H2></A>
-<A HREF="#KGY_ESA_PAD_COMB">[Previous Routine]</A>
-<A HREF="#KGY_IMA_GET3D">[Next Routine]</A>
+<A HREF="#KGY_ESA_PAD_SAVE">[Previous Routine]</A>
+<A HREF="#KGY_IMA_EMSPEC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  FUNCTION:
@@ -187,9 +234,34 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="pace/kgy_iea_get3d.pro">projects/kaguya/map/pace/kgy_iea_get3d.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="KGY_IMA_EMSPEC">
+<H2>KGY_IMA_EMSPEC</H2></A>
+<A HREF="#KGY_IEA_GET3D">[Previous Routine]</A>
+<A HREF="#KGY_IMA_GET3D">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+       kgy_ima_emspec
+ PURPOSE:
+       Plots an energy-TOF profile
+ CALLING SEQUENCE:
+       kgy_ima_emspec
+ KEYWORDS:
+       trange: time range
+ CREATED BY:
+       Yuki Harada on 2018-07-12
+
+ $LastChangedBy: haraday $
+ $LastChangedDate: 2018-06-13 01:54:36 -0700 (Wed, 13 Jun 2018) $
+ $LastChangedRevision: 25352 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_ima_emspec.pro $
+</PRE><P>
+<STRONG>(See <A href="pace/kgy_ima_emspec.pro">projects/kaguya/map/pace/kgy_ima_emspec.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="KGY_IMA_GET3D">
 <H2>KGY_IMA_GET3D</H2></A>
-<A HREF="#KGY_IEA_GET3D">[Previous Routine]</A>
+<A HREF="#KGY_IMA_EMSPEC">[Previous Routine]</A>
 <A HREF="#KGY_J_3D">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -560,8 +632,8 @@ CREATED BY:
      Yuki Harada on 2014-07-01
 
  $LastChangedBy: haraday $
- $LastChangedDate: 2018-05-25 00:09:00 -0700 (Fri, 25 May 2018) $
- $LastChangedRevision: 25271 $
+ $LastChangedDate: 2018-06-10 19:49:29 -0700 (Sun, 10 Jun 2018) $
+ $LastChangedRevision: 25341 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_read_fov.pro $
 </PRE><P>
 <STRONG>(See <A href="pace/kgy_read_fov.pro">projects/kaguya/map/pace/kgy_read_fov.pro</A>)</STRONG><P>
@@ -591,8 +663,8 @@ CREATED BY:
      Yuki Harada on 2014-06-29
 
  $LastChangedBy: haraday $
- $LastChangedDate: 2018-05-25 00:09:00 -0700 (Fri, 25 May 2018) $
- $LastChangedRevision: 25271 $
+ $LastChangedDate: 2018-06-10 19:49:29 -0700 (Sun, 10 Jun 2018) $
+ $LastChangedRevision: 25341 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_read_inf.pro $
 </PRE><P>
 <STRONG>(See <A href="pace/kgy_read_inf.pro">projects/kaguya/map/pace/kgy_read_inf.pro</A>)</STRONG><P>

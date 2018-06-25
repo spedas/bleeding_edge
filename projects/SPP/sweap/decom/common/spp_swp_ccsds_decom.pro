@@ -1,6 +1,9 @@
 ; buffer should contain bytes for a single ccsds packet, header is
 ; contained in first 3 words (6 bytes)
-
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2018-06-18 06:06:56 -0700 (Mon, 18 Jun 2018) $
+; $LastChangedRevision: 25363 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/common/spp_swp_ccsds_decom.pro $
 
 ;
 ;function spp_swp_ccsds_data,ccsds
@@ -34,7 +37,7 @@ end
 
 
 
-function spp_swp_ccsds_decom,buffer,offset,buffer_length,remainder=remainder , error=error,verbose=verbose,dlevel=dlevel
+function spp_swp_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,offset,buffer_length,remainder=remainder , error=error,verbose=verbose,dlevel=dlevel
 
   error = 0b
   if not keyword_set(offset) then offset = 0
@@ -60,11 +63,14 @@ function spp_swp_ccsds_decom,buffer,offset,buffer_length,remainder=remainder , e
     source:       0u   ,  $             ; an indicator of where this packet came from:  0: unknown, apid of wrapper_packet: 0x348 - 0x34f
 ;    source_name:  ''   ,  $             ; file name of source
     source_hash:  0UL,  $               ; hashcode() of source_name
-    content_id:   0u   ,  $             ; used by wrapper packets to define what is inside
-    ;    data:         pktbuffer, $
+;    content_id:   0u   ,  $             ; used by wrapper packets to define the apid of the inner packet
+;    content_nsamples:     0u   ,  $             ;  number of packets that were aggregated (composed)
+    aggregate:    0u,  $                ; number of data samples aggregated - determined from outer wrapper header
     time_delta :  f_nan, $
     seqn_delta :  0u, $
     error :       0b, $
+    compr_ratio: 0. , $
+ ;   content_compressed:   0b, $
     gap :         1b  }
 
   if buffer_length-offset lt 6 then begin
@@ -141,6 +147,25 @@ function spp_swp_ccsds_decom,buffer,offset,buffer_length,remainder=remainder , e
     dprint,dlevel=dlevel,verbose=verbose,'Invalid MET: ',MET,' For packet type: ',ccsds.apid
     ccsds.time = d_nan
   endif
+  
+  if isa(wrap_ccsds) then begin
+    ccsds.source = wrap_ccsds.apid
+    ccsds.aggregate = wrap_ccsds.content_aggregate
+  endif
+  if isa(source_dist) then begin
+    if source_dict.haskey('source_info') then ccsds.source_hash = source_dict.source_info.input_sourcehash
+    if source_dict.haskey('ptp_header') then begin
+      ptp_header = source_dict.ptp_header
+      if isa(ptp_header) && ptp_header.ptp_size ne ccsds.pkt_size + 17 then begin
+        dprint,dlevel=2,format='("APID: ",Z03," ccsds PKT size: ",i5," does not match ptp size:",i5,a)',ccsds.apid,ccsds.pkt_size+17, ptp_header.ptp_size,' '+time_string(ccsds.time)
+      endif
+      ccsds.ptp_time = ptp_header.ptp_time
+    endif else begin
+      source_dict.ptp_header2 ={ ptp_time:systime(1), ptp_scid: 0, ptp_source:0, ptp_spare:0, ptp_path:0, ptp_size: 17 + ccsds.pkt_size }
+    endelse
+    
+  endif
+  
   
   return,ccsds
   

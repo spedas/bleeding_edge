@@ -32,9 +32,9 @@
 ;            input units 
 ; err_msg = named variable that contains any error message that might occur
 ;
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-;$LastChangedRevision: 24506 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2018-06-20 11:48:31 -0700 (Wed, 20 Jun 2018) $
+;$LastChangedRevision: 25376 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/pwrspc.pro $
 ;
 ;-
@@ -84,10 +84,12 @@ fk = k/(bign*tres)
 ;
 xs2 = abs(fft(x,1))^2
 ;
-pwr = dblarr(bign/2+1)
+pwr = dblarr(bign/2+1) ;0 to 256, default if bign=512
 pwr[0] = xs2[0]/dbign^2
-pwr[1:bign/2-1] = (xs2[1:bign/2-1] + xs2[bign - dindgen(bign/2-1)])/dbign^2
-pwr[bign/2] = xs2[bign/2]/dbign^2
+;pwr[1:255] = (xs2[1:255]+xs2[512-[1+lindgen(255)]
+;pwr[1:255] = (xs2[1:255]+xs2[511:257]
+pwr[1:bign/2-1] = (xs2[1:bign/2-1] + xs2[bign - (1+lindgen(bign/2-1))])/dbign^2
+pwr[bign/2] = xs2[bign/2]/dbign^2 ;pwr[256]=xs2[256]/dbign^2
 ;
 if not keyword_set(nohanning) then begin
     wss = dbign*total(window^2)

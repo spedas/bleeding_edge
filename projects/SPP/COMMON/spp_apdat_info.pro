@@ -4,9 +4,11 @@
 
 pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
                   clear=clear,$
+                  quick=quick, $
                   zero=zero, $
                   reset=reset,$
                   apdats = apdats, $
+                  output_lun = output_lun, $
                   ;matchname = matchname,  $  obsolete - use string as input
                   save_flag=save_flag,$
                   sort_flag=sort_flag,$
@@ -28,6 +30,15 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
                   rt_flag=rt_flag
 
   common spp_apdat_info_com, all_apdat, alt_apdat, all_info,temp1,temp2
+  
+  if keyword_set(quick) && isa(apid_description,/integer,/scalar) && isa(all_apdat[apid_description]) then begin
+    apdats= all_apdat[apid_description]
+    return
+  endif
+  
+  if keyword_set(quick) then begin
+    dprint,'Unexpected APID:',apid_description
+  endif
 
   if keyword_set(reset) then begin   ; not recommended!
     obj_destroy,all_apdat,alt_apdat,all_info    ; this might not be required in IDL8.x and above
@@ -87,7 +98,8 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     
     if ~obj_valid(apdat_obj)  || (isa(/string,apid_obj_name) && (typename(apdat_obj) ne strupcase(apid_obj_name) ) )  then begin
       dprint,verbose=verbose,dlevel=3,'Initializing APID: ',apid        ; potential memory leak here - old version should be destroyed
-      apdat_new = obj_new( (isa(/string,apid_obj_name) && keyword_set(apid_obj_name)) ? apid_obj_name : default_apid_obj_name, apid) 
+      obj_name = (isa(/string,apid_obj_name) && keyword_set(apid_obj_name)) ? apid_obj_name : default_apid_obj_name
+      apdat_new = obj_new(obj_name , apid,name) 
       all_apdat[apid] = apdat_new       
       alt_apdat[apid] = apdat_new
     endif
@@ -102,6 +114,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     if n_elements(window_obj) ne 0 then  apdat.window_obj = window(window_title=apdat.name)
     if n_elements(save_flag)  ne 0 then apdat.save_flag = save_flag
     if n_elements(cdf_pathname) ne 0 then apdat.cdf_pathname= cdf_pathname
+    if n_elements(output_lun) ne 0 then apdat.output_lun = output_lun
     if ~keyword_set(all)  &&  (apdat.npkts eq 0) then continue
     if keyword_set(finish) then    apdat.finish
     if keyword_set(make_cdf) then  apdat.cdf_create_file
@@ -110,6 +123,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     if keyword_set(print)  then    apdat.print, header = i eq 0
   endfor
   apdats=all_apdat[apids]
+  if n_elements(apdats) eq 1 then apdats = apdats[0]
   if arg_present(info)  then  info = all_info
   
 end

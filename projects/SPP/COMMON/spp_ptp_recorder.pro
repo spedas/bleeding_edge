@@ -104,7 +104,7 @@ PRO spp_ptp_recorder_event, ev   ; recorder
             endif
          endelse
           widget_control,wids.output_text,set_value=msg
-          dprint,dlevel=dlevel+4,info.title_num+msg,/no_check
+          dprint,dlevel=dlevel+5,info.title_num+msg,/no_check
           widget_control,wids.poll_int,get_value = poll_int
           poll_int = float(poll_int)
           if poll_int le 0 then poll_int = 1

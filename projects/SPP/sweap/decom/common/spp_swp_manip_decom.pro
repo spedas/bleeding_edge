@@ -1,5 +1,9 @@
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2018-06-18 06:17:08 -0700 (Mon, 18 Jun 2018) $
+; $LastChangedRevision: 25364 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/common/spp_swp_manip_decom.pro $
 
-function spp_swp_manip_decom,ccsds,ptp_header=ptp_header   ,apdat=apdat
+function spp_swp_manip_decom,ccsds, source_dict=source_dict  ;ptp_header=ptp_header   ,apdat=apdat
 
   ;; From Tony's e-mail, the buffer should
   ;; be...

@@ -30,8 +30,8 @@
 ;     This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-10 14:11:48 -0700 (Tue, 10 Apr 2018) $
-;$LastChangedRevision: 25029 $
+;$LastChangedDate: 2018-06-14 19:25:13 -0700 (Thu, 14 Jun 2018) $
+;$LastChangedRevision: 25357 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 ;-
 ; REVISION HISTORY:
@@ -56,6 +56,7 @@
 ;                                     degapping
 ;       + 2017-12-04, I. Cohen      : changed bin_size keyword to size_pabin in calls to mms_eis_pad_spinavg.pro
 ;       + 2018-02-19, I. Cohen      : added combine_proton_data keyword to enable override of automatic combination of PHxTOF and ExTOF data
+;       + 2018-06-14, I. Cohen      : fixed zlim range for PAD variables with zero counts to differentiate from non-accessed pitch angles
 ;                             
 ;-
 
@@ -142,9 +143,9 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
             print, 'Energy range selected is not covered by the detector for ' + datatype[dd] + ' ' + species[species_idx] + ' ' + data_units
             return
           endif
-          flux_file = dblarr(n_elements(temp_pad.x),n_elements(scopes),n_elements(these_energies))                   ; time x telescopes (look directions) x energy
-          pa_flux = dblarr(n_elements(temp_pad.x),n_pabins,n_elements(these_energies)) + !Values.d_NAN               ; time x bins x energy
-          pa_num_in_bin = dblarr(n_elements(temp_pad.x),n_pabins,n_elements(these_energies))                         ; time x bins x energy
+          flux_file = dblarr(n_elements(temp_pad.x),n_elements(scopes),n_elements(these_energies)) + !Values.d_NAN    ; time x telescopes (look directions) x energy
+          pa_flux = dblarr(n_elements(temp_pad.x),n_pabins,n_elements(these_energies)) + !Values.d_NAN                ; time x bins x energy
+          pa_num_in_bin = dblarr(n_elements(temp_pad.x),n_pabins,n_elements(these_energies))                          ; time x bins x energy
           ;
           for t=0, n_elements(scopes)-1 do begin
             get_data, prefix + datatype[dd] + '_pitch_angle_t'+scopes[t]+suffix, data = data_pa
@@ -171,7 +172,7 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
             e = data_flux.v[these_energies]
             ;
             flux_file[*,t,*] = data_flux.y[*,these_energies]
-          endfor   
+          endfor
           ;
           ; CREATE PAD VARIABLES FOR EACH ENERGY CHANNEL IN USER-DEFINED ENERGY RANGE
           ;
@@ -182,7 +183,7 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
 ;          pa_flux[where(pa_flux eq 0.0)] = !Values.d_NAN                                                      ; fill any missed bins with NAN
           ;
           for ee=0,n_elements(these_energies)-1 do begin
-            energy_string = strcompress(string(fix(data_flux.v[these_energies[ee]])), /rem) + 'keV
+            energy_string = strcompress(string(fix(data_flux.v[these_energies[ee]])), /rem) + 'keV'
             new_name = prefix + datatype[dd] + '_' + energy_string + '_' + species[species_idx] + '_' + data_units + scope_suffix + '_pad'
             ;
             ; the following is because prefix becomes a single-element array in some cases
@@ -190,7 +191,7 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
             ;
             store_data, new_name, data={x:data_flux.x, y:reform(pa_flux[*,*,ee]), v:pa_label}
             options, new_name, yrange = [0,180], ystyle=1, spec = 1, no_interp=1, ytitle = 'MMS'+probes[pp]+' EIS ' + species[species_idx], ysubtitle=energy_string+'!CPA [Deg]', ztitle=units_label, minzlog=.01, /extend_y_edges
-            zlim, new_name, 0, 0, 1
+            if (max(pa_flux[*,*,ee],/NAN) eq 0) then zlim, new_name, 0, 10, 0 else zlim, new_name, 0, 0, 1
             tdegap, new_name, /overwrite
             ;
           endfor

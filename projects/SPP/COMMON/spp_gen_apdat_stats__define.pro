@@ -1,6 +1,6 @@
  
  
-pro spp_gen_apdat_stats::handler,ccsds,ptp_header
+pro spp_gen_apdat_stats::handler,ccsds, source_dict=source_dict ;,ptp_header
 
 ;print_struct,ccsds
 self.increment_counters, ccsds

@@ -35,7 +35,7 @@ END
 PRO DynamicArray::Cleanup
 COMPILE_OPT IDL2
 ; Call our superclass Cleanup method
-*self.ptr_array = !null
+;  *self.ptr_array = !null   ;; line not needed
 ptr_free,self.ptr_array
 self->IDL_Object::Cleanup
 END
@@ -45,6 +45,7 @@ PRO DynamicArray::help
   printdat,self.ptr_array,varname='PTR_ARRAY'
   printdat,self.size,varname='SIZE'
   printdat,self.name,varname='NAME'
+  printdat,typename(*self.ptr_array),varname='TYPE'
 END
 
 
@@ -107,6 +108,11 @@ PRO DynamicArray::SetProperty, array=array, name=name
 COMPILE_OPT IDL2
 ; If user passed in a property, then set it.
 IF (ISA(array) || isa(array,/null)) THEN begin
+  ptrs = ptr_extract(*self.ptr_array)
+  if isa(ptrs) then begin
+    dprint,'Warning! old pointers freed in old dynamicarray: '+self.name,dlevel=2
+    ptr_free,ptrs
+  endif
   *self.ptr_array = array
   self.size = n_elements(array)
 ENDIF

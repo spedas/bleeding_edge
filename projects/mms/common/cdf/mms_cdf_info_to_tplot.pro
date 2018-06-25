@@ -8,8 +8,8 @@
 ; Forked for MMS, 10/22/2015, egrimes@igpp
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-12 09:08:14 -0700 (Thu, 12 Oct 2017) $
-; $LastChangedRevision: 24144 $
+; $LastChangedDate: 2018-06-01 11:45:12 -0700 (Fri, 01 Jun 2018) $
+; $LastChangedRevision: 25314 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/cdf/mms_cdf_info_to_tplot.pro $
 ;-
 pro mms_cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames, non_record_varying=non_record_varying, $
@@ -26,7 +26,7 @@ pro mms_cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames, non_record_varying=
         load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
                                       ;resolve labels implemented as keyword to preserve backwards compatibility
 
-dprint,verbose=verbose,dlevel=4,'$Id: mms_cdf_info_to_tplot.pro 24144 2017-10-12 16:08:14Z egrimes $'
+dprint,verbose=verbose,dlevel=4,'$Id: mms_cdf_info_to_tplot.pro 25314 2018-06-01 18:45:12Z egrimes $'
 tplotnames=''
 vbs = keyword_set(verbose) ? verbose : 0
 
@@ -190,11 +190,20 @@ for i=0,nv-1 do begin
 
      cdfstuff={filename:cdfi.filename,gatt:cdfi.g_attributes,vname:v.name,vatt:attr}
      units = struct_value(attr,'units',default='')
-     if keyword_set(var_3) then data = {x:tvar.dataptr,y:v.dataptr,v1:var_1.dataptr, v2:var_2.dataptr, v3:var_3.dataptr} $
-     else if keyword_set(var_2) then data = {x:tvar.dataptr,y:v.dataptr,v1:var_1.dataptr, v2:var_2.dataptr} $
-     else if keyword_set(var_1) then data = {x:tvar.dataptr,y:v.dataptr, v:var_1.dataptr}  $
-     else data = {x:tvar.dataptr,y:v.dataptr}
-     
+
+     if keyword_set(var_3) and ~keyword_set(var_2) and ~keyword_set(var_1) then begin
+       data = {x:tvar.dataptr,y:v.dataptr, v3:var_3.dataptr}
+     endif else begin
+       ; kludge to support new FPI qd[ie]s-moms files, with depend_2 set but depend_1 not set
+       if keyword_set(var_2) and ~keyword_set(var_1) then begin
+         data = {x:tvar.dataptr,y:v.dataptr, v2:var_2.dataptr}
+       endif else begin
+         if keyword_set(var_3) then data = {x:tvar.dataptr,y:v.dataptr,v1:var_1.dataptr, v2:var_2.dataptr, v3:var_3.dataptr} $
+         else if keyword_set(var_2) then data = {x:tvar.dataptr,y:v.dataptr,v1:var_1.dataptr, v2:var_2.dataptr} $
+         else if keyword_set(var_1) then data = {x:tvar.dataptr,y:v.dataptr, v:var_1.dataptr}  $
+         else data = {x:tvar.dataptr,y:v.dataptr}
+       endelse
+     endelse
      
      ; coordinate system support; loads from the COORDINATE_SYSTEM variable attribute (CDF_CHAR)
      coord_sys =  struct_value(attr,'coordinate_system',default='')

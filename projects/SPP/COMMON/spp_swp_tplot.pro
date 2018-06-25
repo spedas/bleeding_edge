@@ -24,6 +24,7 @@ if keyword_set(setlim) then begin
   options,'*ACT_FLAG',colors='ddgrgrbb'
   options,'spp_spi_hkp_DAC_DEFL',ytitle='DEFL (dac)'
   options,'*NRG_SPEC',spec=1
+  options,'*DEF_SPEC',spec=1
   options,'*tof_TOF',spec=1
   options,'spp_event_log_CODE',psym=4,symsize=.1
   
@@ -54,8 +55,9 @@ if keyword_set(name) then begin
     'SC_HV': tplot,'spp_spc_hkp_ADC*'
     'SE_LV': tplot,'*sp?_hkp_RIO*',ADD=ADD
     'SE_SPEC': tplot,'*spa_*ADC_VMON_HEM *spa_SF0_CNTS *spa_*SF1_ANODE_SPEC spp_spa_SF1_NRG_SPEC', ADD=ADD
-    'SA_SPEC': tplot, '*spa_*ADC_VMON_HEM *spa_AF0_CNTS *spa_*AF1_ANODE_SPEC spp_spa_SF1_NRG_SPEC', ADD=ADD
-    'SB_SPEC': tplot, 'spp_spb_hkp_ADC_VMON_HEM spp_spb_SF0_CNTS spp_spb_SF1_ANODE_SPEC spp_spb_SF1_NRG_SPEC', ADD=ADD
+    'SA_SPEC': tplot, '*spa_SF?_CNTS spp_spa_SF?_NRG_SPEC spp_spa_SF?_DEF_SPEC', ADD=ADD
+    'SB_SPEC': tplot, '*spb_SF?_CNTS spp_spb_SF?_NRG_SPEC spp_spb_SF?_DEF_SPEC', ADD=ADD
+;    'SB_SPEC': tplot, 'spp_spb_hkp_ADC_VMON_HEM spp_spb_SF0_CNTS spp_spb_SF1_ANODE_SPEC spp_spb_SF1_NRG_SPEC', ADD=ADD
     'SE_A_SPEC': tplot,'*spa_*ADC_VMON_HEM *spa_AF0_CNTS *spa_*AF1_ANODE_SPEC spp_spa_AF1_NRG_SPEC spp_spa_AT0_CNTS spp_spa_AT1_ANODE_SPEC spp_spa_AT1_NRG_SPEC spp_spa_AT1_PEAK_BIN', ADD=ADD
     'SA_A_SPEC': tplot, '*spa_*ADC_VMON_HEM *spa_AF0_CNTS *spa_*AF1_ANODE_SPEC spp_spa_AF1_NRG_SPEC spp_spa_AT0_CNTS spp_spa_AT1_ANODE_SPEC spp_spa_AT1_NRG_SPEC spp_spa_AT1_PEAK_BIN', ADD=ADD
     'SB_A_SPEC': tplot, 'spp_spb_hkp_ADC_VMON_HEM spp_spb_AF0_CNTS spp_spb_AF1_ANODE_SPEC spp_spb_AF1_NRG_SPEC spp_spb_AT0_CNTS spp_spb_AT1_ANODE_SPEC spp_spb_AT1_NRG_SPEC spp_spb_AT1_PEAK_BIN', ADD=ADD

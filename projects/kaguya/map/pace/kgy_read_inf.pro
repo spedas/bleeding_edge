@@ -17,8 +17,8 @@
 ;     Yuki Harada on 2014-06-29
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-05-25 00:09:00 -0700 (Fri, 25 May 2018) $
-; $LastChangedRevision: 25271 $
+; $LastChangedDate: 2018-06-10 19:49:29 -0700 (Sun, 10 Jun 2018) $
+; $LastChangedRevision: 25341 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_read_inf.pro $
 ;-
 
@@ -29,7 +29,8 @@ pro kgy_read_inf, files, load=load, verbose=verbose, _extra=_ex
 if keyword_set(load) then begin
    files = ''
    if ~tag_exist(_ex,'no_server') then str_element,_ex,'no_server',0,/add
-   s = kgy_file_source(remote_data_dir='http://research.ssl.berkeley.edu/~haraday/data/kaguya/',last_version=1, _extra=_ex)
+;   s = kgy_file_source(remote_data_dir='http://research.ssl.berkeley.edu/~haraday/data/kaguya/',last_version=1, _extra=_ex)
+   s = kgy_file_source(remote_data_dir='http://step0ku.kugi.kyoto-u.ac.jp/~haraday/data/kaguya/',last_version=0, _extra=_ex)
    pfs = 'public/Kaguya_MAP_PACE_information/'+ $
          ['ESA-S1_ENE_POL_AZ_GFACTOR_16X64_*.dat', $
           'ESA-S1_ENE_POL_AZ_GFACTOR_4X16_*.dat', $
@@ -40,8 +41,10 @@ if keyword_set(load) then begin
           'IMA_ENE_POL_AZ_GFACTOR_16X64_*.dat', $
           'IMA_ENE_POL_AZ_GFACTOR_4X16_*.dat' ]
    for ipf=0,n_elements(pfs)-1 do begin
-      f = file_retrieve(pfs[ipf],_extra=s)
-      if total(strlen(f)) then files = [files,f]
+;      f = file_retrieve(pfs[ipf],_extra=s)
+;      if total(strlen(f)) then files = [files,f]
+      f = spd_download(remote_file=pfs[ipf],_extra=s)
+      if total(file_test(f)) then files = [files,f]
    endfor
    w = where(strlen(files) gt 0 , nw)
    if nw eq 0 then return

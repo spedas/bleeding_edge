@@ -93,7 +93,7 @@
 ;  SLICE_X & SLICE_NORM: These keywords respectively specify the slice plane's 
 ;                        x-axis and normal within the coordinates specified by  
 ;                        CUSTOM_ROTATION and ROTATION. Both keywords take 
-;                        3-vectors as input.
+;                        3-vectors as input. (See note below)
 ;                       
 ;                        If SLICE_X is not specified then the given coordinate's 
 ;                        x-axis will be used. If SLICE_X is not perpendicular to 
@@ -113,7 +113,14 @@
 ;
 ;         Slice is perpendicular to "tvar1" and x axis is defined by projection of "tvar2"
 ;           SLICE_NORM='tvar1', SLICE_X='tvar2'
-;
+;           
+;       NOTE: Update at 06/04/2018 - The SLICE_X & SLICE_NORM are defined after CUSTOM_ROTATION
+;         but before the ROTATION.          
+;           
+; DISPLACEMENT: Vector. New center of the coordinate system.
+;       example:
+;         Slice at the point x=0.5, y = 0.5 and z=0.1.
+;         DISPLACEMENT = [0.5, 0.5. 0.1]
 ;
 ;  MAG_DATA: Name of tplot variable containing magnetic field data or 3-vector.
 ;            This will be used for slice plane alignment and must be in the 
@@ -231,8 +238,8 @@
 ;
 ;
 ;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2018-05-21 12:46:11 -0700 (Mon, 21 May 2018) $
-;$LastChangedRevision: 25240 $
+;$LastChangedDate: 2018-06-04 18:04:52 -0700 (Mon, 04 Jun 2018) $
+;$LastChangedRevision: 25323 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/spd_slice2d.pro $
 ;-
 
@@ -524,17 +531,21 @@ spd_slice2d_custom_rotation, custom_rotation=custom_rotation, trange=trange, fai
          determ_tolerance=determ_tolerance
 if keyword_set(fail) then return, invalid
 
+; Rotation defined by slice normal/x axis options
+
+if (~undefined(slice_x_vec) and ~ARRAY_EQUAL([1,0,0],slice_x_vec, /quiet)) or $
+   (~undefined(slice_z_vec) and ~ARRAY_EQUAL([0,0,1],slice_z_vec, /quiet)) then begin
+   dprint, dlevel=2, 'Warning! behaviour of slice_x_vec and slice_z_vec has been changed (06/04/2018). See the description of the function.', display_object=msg_obj
+endif
+
+spd_slice2d_orientslice, slice_x=slice_x_vec, slice_z=slice_z_vec, fail=fail, $
+  vectors=xyz, bfield=bfield, vbulk=vbulk, sunvec=sunvec, matrix=orient_matrix
+if keyword_set(fail) then return, invalid
 
 ; Built in rotation option
 spd_slice2d_rotate, rotation=rotation, fail=fail, $ 
          vectors=xyz, bfield=bfield, vbulk=vbulk, sunvec=sunvec, matrix=rotation_matrix  
 if keyword_set(fail) then return, invalid
-
-
-; Rotation defined by slice normal/x axis options
-spd_slice2d_orientslice, slice_x=slice_x_vec, slice_z=slice_z_vec, fail=fail, $ 
-         vectors=xyz, bfield=bfield, vbulk=vbulk, sunvec=sunvec, matrix=orient_matrix
-if keyword_set(fail) then return, invalid 
 
 
 ; Subtract bulk velocity vector
@@ -544,7 +555,6 @@ if keyword_set(subtract_bulk) && ~keyword_set(log) then begin
   ;as with rotations, this will be applied later for geometric interp
   geo_shift = vbulk
 endif
-
 
 
 ; Misc.
@@ -566,12 +576,13 @@ if keyword_set(displacement_in) then begin
     dprint, dlevel=2, 'Displacement must be an array of 3 elements. Displacement is set to zero.', display_object=msg_obj
   endif else disp_arr = displacement_in
    
-    
   d = disp_arr
   case strlowcase(rotation) of
-    'xz': disp_arr = [d[0], d[2], -1*d[1]]
+    'xy': disp_arr = [d[0], d[1], d[2]]
+    'xz': disp_arr = [d[0], d[2], -1*d[1]] ; -1 because of the rotation see spd_cal_rot([1,0,0],[0,0,1])
     'yz': disp_arr = [d[1], d[2], d[0]]
     else: begin
+      disp_arr = [0., 0., 0.]
       dprint, dlevel=2, 'Displacement currently supports only rotation=xy, xz, yz. Displacement is set to zero.', display_object=msg_obj      
     end
   endcase  
@@ -581,7 +592,7 @@ if keyword_set(displacement_in) then begin
   endif
   
   if type eq 1 then begin 
-    dprint, dlevel=2, 'Displacement supports 2d adn 3d interpolation. Displacement is canceled.', display_object=msg_obj    
+    dprint, dlevel=2, 'Displacement supports 2d and 3d interpolation. Displacement is canceled.', display_object=msg_obj    
   endif else begin 
     spd_slice2d_translate, vectors=xyz, translate=-1*disp_arr, data=datapoints, /truncate
     minvelinterp = 1

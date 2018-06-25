@@ -108,7 +108,12 @@
 ;
 ;         Slice plane along the B field and radial position vectors, B field used as slice's x-axis:
 ;           COORD='rgeo', SLICE_NORM=[0,1,0], SLICE_X=[0,0,1]
-
+; DISPLACEMENT: Vector. New center of the coordinate system.
+;       example:
+;         Slice at the point x=0.5, y = 0.5 and z=0.1.
+;         DISPLACEMENT = [0.5, 0.5. 0.1]
+;         
+;    
 ; VEL_DATA: Name of tplot variable containing the bulk velocity data.
 ;           This will be used for slice plane alignment and subtraction.
 ;           If not set the bulk velocity will be automatically calculated
@@ -200,8 +205,8 @@
 ;
 ;
 ;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2018-05-11 17:35:51 -0700 (Fri, 11 May 2018) $
-;$LastChangedRevision: 25201 $
+;$LastChangedDate: 2018-06-04 17:46:48 -0700 (Mon, 04 Jun 2018) $
+;$LastChangedRevision: 25322 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/slices/thm_part_slice2d.pro $
 ;-
 pro thm_part_slice2d, ptrArray, ptrArray2, ptrArray3, ptrArray4, $
@@ -364,6 +369,7 @@ slice = spd_slice2d(processed, $
                     rotation=rotation, $
                     slice_norm=slice_z, $
                     slice_x=slice_x, $
+                    displacement=displacement_in, $  
                   ; Support Data
                     mag_data=mag_data, $
                     vel_data=vel_data, $
@@ -426,6 +432,7 @@ if keyword_set(count_threshold) or keyword_set(subtract_counts) then begin
                     rotation=rotation, $
                     slice_norm=slice_z, $
                     slice_x=slice_x, $
+                    displacement=displacement_in, $  
                   ; Support Data
                     mag_data=mag_data, $
                     vel_data=vel_data, $
