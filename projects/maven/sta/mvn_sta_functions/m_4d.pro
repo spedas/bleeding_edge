@@ -39,6 +39,8 @@ endif
 
 if (dat2.quality_flag and 195) gt 0 then return,mom_ten
 
+if dat2.nbins eq 1 then return,mom_ten
+
 dat = conv_units(dat2,"counts")		; initially use counts
 na = dat.nenergy
 nb = dat.nbins
@@ -75,10 +77,13 @@ if keyword_set(ms) then begin
 endif
 
 if keyword_set(mi) then begin
-	dat.mass_arr[*]=mi & mass=dat.mass*dat.mass_arr 
+	dat.mass_arr[*]=mi 
 endif else begin
-	dat.mass_arr[*]=round(dat.mass_arr-.1)>1. & mass=dat.mass*dat.mass_arr	; the minus 0.1 helps account for straggling at low mass
+	if keyword_set(ms) then dat.mass_arr=(ms[0]+ms[1])/2. else $
+	dat.mass_arr[*]=round(dat.mass_arr-.1)>1. 			; the minus 0.1 helps account for straggling at low mass
 endelse
+
+mass=dat.mass*dat.mass_arr 
 
 ;if keyword_set(mincnt) then if total(data) lt mincnt then return,mom_ten
 if keyword_set(mincnt) then if total(data-bkg) lt mincnt then return, mom_ten

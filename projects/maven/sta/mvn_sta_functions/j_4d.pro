@@ -81,10 +81,8 @@ endif else begin
 	dat.mass_arr[*]=round(dat.mass_arr-.1)>1. & mass=dat.mass*dat.mass_arr	; the minus 0.1 helps account for straggling at low mass
 endelse
 
-;if keyword_set(mincnt) then if total(data) lt mincnt then return,0
-;if keyword_set(mincnt) then if total(data-bkg) lt mincnt then return, !Values.F_NAN
+;if keyword_set(mincnt) then if total(data) lt mincnt then return,flux
 if keyword_set(mincnt) then if total(data-bkg) lt mincnt then return, flux
-;if total(data-bkg) lt 1 then return, !Values.F_NAN
 if total(data-bkg) lt 1 then return, flux
 
 dat.cnts=data

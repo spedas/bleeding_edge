@@ -29,15 +29,18 @@ tags = ['project_name','spacecraft','data_name','apid','units_name','units_proce
 
 extract_tags,omni,dat,tags=tags
 
+	nbins = dat.nbins
+	nenergy = dat.nenergy
 	omni.nmass = 1
 
 if keyword_set(ms) then begin
 	ind = where(dat.mass_arr lt ms[0] or dat.mass_arr gt ms[1],count)
 	if count ne 0 then dat.data[ind]=0.
+	if count ne 0 then dat.cnts[ind]=0.
 endif
 
-if not keyword_set(mi) then mi=1.
-	str_element,/add,omni, 'mass_arr',mi
+if keyword_set(mi) then omni.mass = mi*dat.mass 
+	str_element,/add,omni, 'mass_arr',reform(reform(replicate(1.,nenergy*nbins),nenergy,nbins))
 
 if dat.data_name eq 'C8 Energy-Angle-Mass' then begin
 
@@ -71,7 +74,7 @@ endif else if ndimen(dat.data) eq 2 and dat.nbins eq 1 then begin
 	str_element,/add,omni, 'gf'   ,total(dat.gf[*,*],2)/dat.nmass
 	str_element,/add,omni, 'eff'   ,total(dat.eff[*,*],2)/dat.nmass
 	str_element,/add,omni, 'bkg'    ,total(dat.bkg[*,*],2)
-	str_element,/add,omni, 'dead'   ,total(dat.dead[*,*],2)
+	str_element,/add,omni, 'dead'   ,total(dat.dead[*,*],2)/dat.nmass
 	str_element,/add,omni, 'cnts'   ,total(dat.cnts[*,*],2)
 	str_element,/add,omni, 'data'   ,total(dat.data[*,*],2)
 
@@ -90,7 +93,7 @@ endif else if ndimen(dat.data) eq 3 then begin
 	str_element,/add,omni, 'gf'     ,reform(total(  dat.gf[*,*,*],3),dat.nenergy,dat.nbins)/dat.nmass
 	str_element,/add,omni, 'eff'    ,reform(total( dat.eff[*,*,*],3),dat.nenergy,dat.nbins)/dat.nmass
 	str_element,/add,omni, 'bkg'    ,reform(total( dat.bkg[*,*,*],3),dat.nenergy,dat.nbins)
-	str_element,/add,omni, 'dead'    ,reform(total( dat.dead[*,*,*],3),dat.nenergy,dat.nbins)
+	str_element,/add,omni, 'dead'    ,reform(total( dat.dead[*,*,*],3),dat.nenergy,dat.nbins)/dat.nmass
 	str_element,/add,omni, 'cnts'    ,reform(total( dat.cnts[*,*,*],3),dat.nenergy,dat.nbins)
 	str_element,/add,omni, 'data'   ,reform(total(dat.data[*,*,*],3),dat.nenergy,dat.nbins)
 

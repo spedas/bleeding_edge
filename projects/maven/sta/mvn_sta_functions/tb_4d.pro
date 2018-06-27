@@ -44,7 +44,7 @@ if keyword_set(mi) and keyword_set(en) then begin
 endif
 
 dat = conv_units(dat2,"counts")		; initially use counts
-dat = omni4d(dat,/mass)
+dat = omni4d(dat)
 n_e = dat.nenergy
 
 data = dat.cnts 
@@ -55,10 +55,13 @@ energy = dat.energy
 
 
 
-if n_e eq 64 then nne=8 
-if n_e eq 32 then nne=4
+
+if n_e eq 64 then nne=5 
+if n_e eq 32 then nne=3
 if n_e le 16 then nne=2
 if n_e eq 48 then nne=6		; when does this happen? is this for swia?
+if dat.mode eq 7 then nne=2*nne
+
 
 en_min = min(energy)
 en_max = max(energy)
@@ -115,6 +118,13 @@ endif
 ; if the number of counts near the peak is less than 75% of total counts in the energy range, then it is not a beam
 	if total(data) lt .75*total(data2) then return,!Values.F_NAN
 
+; treat low energy outliers with only one count as noise 
+
+	ind = where(data eq 1 and energy lt 0.6*en_peak,count)
+	if count gt 0 then data[ind]=0
+	if count gt 0 then bkg[ind]=0
+
+; don't correct for ion suppression
 
 	data = (data-bkg)>0.
 
@@ -137,34 +147,28 @@ energy=(dat.energy+charge*sc_pot/abs(charge))>0.		; energy/charge analyzer, requ
 
 ; Note - we don't need to divide by mass
 
-v = (2.*energy*charge)^.5		; 
+v = (2.*energy*charge)^.5		; ESA measures energy/charge
 
 
 v = v>0.001
 
 ; Notes	f ~ Counts/v^4 = C/v^4 
+
 ; 	dv/v = constant for logrithmic sweep
 ;	vd = integral(fv v^2dv)/integral(f v^2dv) = sum(C/v^4 * v^4 *dv/v)/sum(C/v^4 * v^3 *dv/v) = sum(C)/sum(C/v)
-;	vth^2 = integral(f(v-vd)^2 v^2dv)/integral(f v^2dv) = sum(C/v^4 * (v-vd)^2 * v^3 *dv/v)/sum(C/v^4 * v^3 *dv/v) = sum(C/v * (v-vd)^2)/sum(C/v)
+;	T/m = integral(f(v-vd)^2 v^2dv)/integral(f v^2dv) = sum(C/v^4 * (v-vd)^2 * v^3 *dv/v)/sum(C/v^4 * v^3 *dv/v) = sum(C/v * (v-vd)^2)/sum(C/v)
 
 if keyword_set(ms) then begin
 	vd = total(data)/(total(data/v)>1.e-20)
 ;	if keyword_set(mi) then if mi lt 5. then vd=0				; not sure about how this is affected by lack of sc_pot
-	vth2  = total((v-vd)^2*data/v)/(total(data/v)>1.e-20)
+	tm  = total((v-vd)^2*data/v)/(total(data/v)>1.e-20)
 endif else begin
 	vd = total(data,1)/(total(data/v,1)>1.e-20)
 	vd = replicate(1.,n_e)#reform(vd,n_elements(vd))
-;print,v[*,0]
-;print,' '
-;print,reform(vd[0,*])
-	vth2  = total((v-vd)^2*data/v,1)/(total(data/v,1)>1.e-20)
-;print,'num',total((v-vd)^2*data/v,1)
-;print,' '
-;print,'den',total(data/v,1)>1.e-20
-;print,' '
+	tm  = total((v-vd)^2*data/v,1)/(total(data/v,1)>1.e-20)
 endelse
 
-return, vth2/2.
+return, tm				; Ti (eV) = integral(.5mv^2 f d3v)/integral(f d3v);   vth^2 = 2T/m ; Eavg=1/2T
 
 end
 

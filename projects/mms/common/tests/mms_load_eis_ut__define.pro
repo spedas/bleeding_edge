@@ -6,15 +6,15 @@
 ;     IDL> mgunit, 'mms_load_eis_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-04-10 14:39:24 -0700 (Tue, 10 Apr 2018) $
-; $LastChangedRevision: 25032 $
+; $LastChangedDate: 2018-06-26 13:19:33 -0700 (Tue, 26 Jun 2018) $
+; $LastChangedRevision: 25396 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_eis_ut__define.pro $
 ;-
 
 function mms_load_eis_ut::test_combined_datatypes_pad_suffix
   mms_load_eis, probes=1, datatype=['extof', 'phxtof'], trange=['2015-12-15', '2015-12-16'], suffix='_asuffix'
   mms_eis_pad, probe=1, energy=[30, 800], suffix='_asuffix'
-  assert, spd_data_exists('mms1_epd_eis_combined_30-800keV_proton_flux_omni_asuffix_pad mms1_epd_eis_combined_30-800keV_proton_flux_omni_asuffix_pad_spin', '2015-12-15', '2015-12-16'), 'Problem with combined datatypes suffix test'
+  assert, spd_data_exists('mms1_epd_eis_combined_35-535keV_proton_flux_omni_asuffix_pad mms1_epd_eis_combined_35-535keV_proton_flux_omni_asuffix_pad_spin', '2015-12-15', '2015-12-16'), 'Problem with combined datatypes suffix test'
   return, 1
 end
 
@@ -36,7 +36,7 @@ end
 function mms_load_eis_ut::test_combined_datatypes_pad
   mms_load_eis, probes=1, datatype=['extof', 'phxtof'], trange=['2015-12-15', '2015-12-16']
   mms_eis_pad, probe=1, energy=[30, 800]
-  assert, spd_data_exists('mms1_epd_eis_combined_proton_flux_omni_pads mms1_epd_eis_combined_30-800keV_proton_flux_omni_pad mms1_epd_eis_combined_30-800keV_proton_flux_omni_pad_spin', '2015-12-15', '2015-12-16'), 'Problem with combined datatypes PAD'
+  assert, spd_data_exists('mms1_epd_eis_combined_proton_flux_omni_pads mms1_epd_eis_combined_35-535keV_proton_flux_omni_pad mms1_epd_eis_combined_35-535keV_proton_flux_omni_pad_spin', '2015-12-15', '2015-12-16'), 'Problem with combined datatypes PAD'
   return, 1
 end
 

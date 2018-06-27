@@ -30,20 +30,21 @@
 ;-
 function nb_4d,dat2,ENERGY=en,ERANGE=er,EBINS=ebins,ANGLE=an,ARANGE=ar,BINS=bins,MASS=ms,m_int=mi,q=q,mincnt=mincnt
 
-density = 0.
+;def_den = !Values.F_NAN
+def_den = 0.
 
 if dat2.valid eq 0 then begin
 	print,'Invalid Data'
-	return, !Values.F_NAN
+	return, def_den
 endif
 
-if (dat2.quality_flag and 195) gt 0 then return,-1
+if (dat2.quality_flag and 195) gt 0 then return, def_den
 
 if keyword_set(mi) and keyword_set(en) then begin
-	if mi le 5. and max(en) le 200. and dat2.att_ind ge 2 then return, !Values.F_NAN
+	if mi le 5. and max(en) le 200. and dat2.att_ind ge 2 then return, -1
 endif
 
-dat = omni4d(dat2,/mass)
+dat = omni4d(dat2)
 n_e = dat.nenergy
 
 data = dat.cnts 
@@ -60,6 +61,7 @@ if n_e eq 64 then nne=8
 if n_e eq 32 then nne=4
 if n_e le 16 then nne=2
 if n_e eq 48 then nne=6		; when does this happen? is this for swia?
+if dat.mode eq 7 then nne=2*nne
 
 en_min = min(energy)
 en_max = max(energy)
@@ -114,7 +116,7 @@ endif
 	endelse
 
 ; if the number of counts near the peak is less than 75% of total counts in the energy range, then it is not a beam
-	if total(data) lt .75*total(data2) then return,!Values.F_NAN
+	if total(data) lt .75*total(data2) then return,def_den
 
 if dat.nmass gt 1 then begin
 	if keyword_set(mi) then begin
@@ -124,12 +126,12 @@ if dat.nmass gt 1 then begin
 	endelse
 endif else mass = dat.mass
 
-;if keyword_set(mincnt) then if total(data) lt mincnt then return,!Values.F_NAN
-if keyword_set(mincnt) then if total(data-bkg) lt mincnt then return, !Values.F_NAN
-if total(data-bkg) lt 1 then return, !Values.F_NAN
+;if keyword_set(mincnt) then if total(data) lt mincnt then return,def_den
+if keyword_set(mincnt) then if total(data-bkg) lt mincnt then return, def_den
+if total(data-bkg) lt 1 then return, def_den
 
 
-if en_peak lt 1.5*en_min or en_peak gt en_max/1.5 then return,!Values.F_NAN
+if en_peak lt 1.5*en_min or en_peak gt en_max/1.5 then return,def_den
 
 dat.cnts=data
 dat.bkg=bkg

@@ -81,11 +81,10 @@ endif
 n=0l
 
 times = call_function(routine,/times) 
-maxind = n_elements(times)-1
+maxind = n_elements(times)-1l
 
 if keyword_set(t1) then tmpmax=min(abs(times-time_double(t1)),idx) else idx=0l
 if keyword_set(t2) then tmpmax=min(abs(times-time_double(t2)),idxmax) else idxmax=maxind
-
 
 	dat = call_function(routine,t,index=idx)
 	while (dat.valid eq 0 and idx lt idxmax) do begin
@@ -133,9 +132,11 @@ if (dat.valid eq 1) then begin
 	n = n+1
 
 endif else begin
-	print,'Invalid packet, dat.valid ne 1, at: ',time_to_str(dat.time)
+;	print,'Invalid packet, dat.valid ne 1, at: ',time_to_str(dat.time)
+	print,'Invalid packet, dat.valid ne 1, at: ',time_string(last_time)
 endelse
 	idx=idx+1
+
 	dat = call_function(routine,t,index=idx)
 	if keyword_set(bkg) then dat.data=dat.data-dat.bkg
 

@@ -42,6 +42,7 @@ na = dat.nenergy
 nb = dat.nbins
 nm = dat.nmass
 
+
 data = dat.cnts 
 energy = dat.energy
 denergy = dat.denergy
@@ -61,6 +62,11 @@ if keyword_set(ms) then begin
 	ind = where(dat.mass_arr lt ms[0] or dat.mass_arr gt ms[1],count)
 	if count ne 0 then data[ind]=0.
 endif
+if keyword_set(bins) then begin
+	mask = reform(reform(replicate(1.,na)#bins,na*nb)#replicate(1.,nm),na,nb,nm)
+	data = data*mask
+endif
+
 
 return, total(data)
 

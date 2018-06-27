@@ -24,25 +24,28 @@
 ;   RESET:     Initialize the spacecraft potential, discarding all previous 
 ;              estimates, and start fresh.
 ;
+;   SCPOT:     If keyword set, it provides s/c potential estimates. 
+;              The default is set to be 1.
+;
 ;OUTPUTS:
 ;   None - Potential results are stored as a TPLOT variable 'negpot_pad'. 
 ;          Four additional TPLOT variables are created for diagnostics. 
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-12-18 12:25:16 -0800 (Mon, 18 Dec 2017) $
-; $LastChangedRevision: 24431 $
+; $LastChangedBy: xussui $
+; $LastChangedDate: 2018-06-26 14:36:25 -0700 (Tue, 26 Jun 2018) $
+; $LastChangedRevision: 25398 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sc_negpot_twodir_burst.pro $
 ;
 ;CREATED BY:    Shaosui Xu  01-03-2017
 ;-
 pro mvn_swe_sc_negpot_twodir_burst, potential=phi, shadow=shadow, swidth=swidth, $
-                                    fill=fill, reset=reset
+                                    fill=fill, reset=reset, scpot=scpot
 
     @mvn_swe_com
     @mvn_scpot_com
   
     if (size(Espan,/type) eq 0) then mvn_scpot_defaults
-
+    if (size(scpot,/type) eq 0) then scpot=1
 ; This routine requires SPEC and PAD burst data.  Make sure they exist.
 
     if (size(mvn_swe_engy,/type) ne 8) then begin
@@ -76,7 +79,7 @@ pro mvn_swe_sc_negpot_twodir_burst, potential=phi, shadow=shadow, swidth=swidth,
 
 ; Calculate potentials
 
-    print,'MVN_SWE_SC_NEGPOT_TWODIR_BURST:  This program is experimental - use with caution.'
+;    print,'MVN_SWE_SC_NEGPOT_TWODIR_BURST:  This program is experimental - use with caution.'
 
     tmin = min(pad3.time, max=tmax)
     tsp = [tmin, tmax]                     ; time coverage for PAD burst data
@@ -195,21 +198,23 @@ pro mvn_swe_sc_negpot_twodir_burst, potential=phi, shadow=shadow, swidth=swidth,
     endif
 
 ;   Package the result
-    scpot0=max(pot,dim=2,/nan)
-    pot1 = interpol(scpot0, t, mvn_sc_pot.time)
-    indx = nn(t, mvn_sc_pot.time)
-    gap = where(abs(t[indx] - mvn_sc_pot.time) gt maxdt, count)
-    if (count gt 0L) then pot1[gap] = badphi  ; estimates too far away
+    if keyword_set(scpot) then begin
+       scpot0=max(pot,dim=2,/nan)
+       pot1 = interp(scpot0,t,mvn_sc_pot.time,no_extra=1,interp_thresh=maxdt)
+;       pot1 = interpol(scpot0, t, mvn_sc_pot.time)
+;       indx = nn(t, mvn_sc_pot.time)
+;       gap = where(abs(t[indx] - mvn_sc_pot.time) gt maxdt, count)
+;       if (count gt 0L) then pot1[gap] = badphi ; estimates too far away
 
-    igud = where(finite(pot1), ngud, complement=ibad, ncomplement=nbad)
-    if (ngud gt 0) then begin
-      store_data,'pot_inshdw',data={x:mvn_sc_pot[igud].time, y:pot1[igud]}
-      options,'pot_inshdw','psym',3
+       igud = where(finite(pot1), ngud, complement=ibad, ncomplement=nbad)
+       if (ngud gt 0) then begin
+          store_data,'pot_inshdw',data={x:mvn_sc_pot[igud].time, y:pot1[igud]}
+          options,'pot_inshdw','psym',3
 
-      phi[igud].potential = pot1[igud]
-      phi[igud].method = 5
+          phi[igud].potential = pot1[igud]
+          phi[igud].method = 5
+       endif
     endif
-
 ;   Fill in the common block (optional)
 
     if (dofill) then begin

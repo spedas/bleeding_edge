@@ -55,6 +55,7 @@ if n_e eq 64 then nne=8
 if n_e eq 32 then nne=4
 if n_e le 16 then nne=2
 if n_e eq 48 then nne=6		; when does this happen? is this for swia?
+if dat.mode eq 7 then nne=2*nne
 
 if keyword_set(en) then begin
 	ind = where(energy lt en[0] or energy gt en[1],count)

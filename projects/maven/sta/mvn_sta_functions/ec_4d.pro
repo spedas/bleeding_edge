@@ -40,7 +40,7 @@ endif
 dat=dat2
 dat.sc_pot=0.
 
-if dat.nbins ne 1 then dat=sum4d(dat)
+if dat.nbins ne 1 then dat=omni4d(dat)
 
 eflux=je_4d(dat,ENERGY=en,ERANGE=er,EBINS=ebins,ANGLE=an,ARANGE=ar,BINS=bins,MASS=ms,m_int=mi,q=q,mincnt=mincnt)
 flux=j_4d(dat,ENERGY=en,ERANGE=er,EBINS=ebins,ANGLE=an,ARANGE=ar,BINS=bins,MASS=ms,m_int=mi,q=q,mincnt=mincnt)
