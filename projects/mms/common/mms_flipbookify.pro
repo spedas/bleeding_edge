@@ -48,6 +48,7 @@
 ;     
 ;     /subtract_error: subtract the distErr variable from the FPI distribution before plotting (FPI only)
 ;     /subtract_bulk: subtract the bulk velocity from the slices before plotting
+;     /subtract_spintone: subtract the spin-tone from the bulk velocity data prior to subtracting the bulk velocity data (FPI only)
 ;     /energy: produce energy slices instead of velocity slices
 ;     
 ;     thickness: thickness of the vertical line drawn at each time step
@@ -96,8 +97,8 @@
 ;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-04-17 17:47:11 -0700 (Tue, 17 Apr 2018) $
-; $LastChangedRevision: 25068 $
+; $LastChangedDate: 2018-06-27 14:58:21 -0700 (Wed, 27 Jun 2018) $
+; $LastChangedRevision: 25408 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_flipbookify.pro $
 ;-
 
@@ -115,7 +116,7 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   background_color_rgb=background_color_rgb, all_colorbars=all_colorbars, charsize=charsize, $
   subtract_error = subtract_error, include_1d_vx=include_1d_vx, include_1d_vy=include_1d_vy, $
   lineplot_yrange=lineplot_yrange, lineplot_xrange=lineplot_xrange, lineplot_thickness=lineplot_thickness, $
-  ps_xsize=ps_xsize, ps_ysize=ps_ysize, ps_aspect=ps_aspect, nopng=nopng
+  ps_xsize=ps_xsize, ps_ysize=ps_ysize, ps_aspect=ps_aspect, nopng=nopng, subtract_spintone=subtract_spintone
   
   @tplot_com.pro 
 
@@ -183,6 +184,10 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
     if ~spd_data_exists(name, trange[0], trange[1]) then mms_load_fpi, data_rate=data_rate, level=level, datatype=datatypes, probe=probe, trange=trange, /time_clip, /center
     if ~spd_data_exists(bfield, trange[0], trange[1]) then mms_load_fgm, level=level, probe=probe, trange=trange, /time_clip
     dist = mms_get_fpi_dist(name, trange=trange, subtract_error=subtract_error, error='mms'+probe+'_d'+species+'s_disterr_'+data_rate)
+    if keyword_set(subtract_spintone) && tnames(vel_data) ne '' && tnames('mms'+probe+'_d'+species+'s_bulkv_spintone_gse_'+data_rate) ne '' then begin
+      dprint, dlevel = 0, 'Subtracting spin tone from FPI bulk velocity'
+      calc, '"'+'mms'+probe+'_d'+species+'s_bulkv_gse_'+data_rate+'"="'+'mms'+probe+'_d'+species+'s_bulkv_gse_'+data_rate+'"-"'+'mms'+probe+'_d'+species+'s_bulkv_spintone_gse_'+data_rate+'"'
+    endif
   endif else if instrument eq 'hpca' then begin
     name = 'mms'+probe+'_hpca_'+species+'_phase_space_density'
     bfield = 'mms'+probe+'_fgm_b_dmpa_srvy_l2_bvec'

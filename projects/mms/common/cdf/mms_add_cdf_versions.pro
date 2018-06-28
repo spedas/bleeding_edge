@@ -17,6 +17,7 @@
 ;       top_align:  start placing version #s strings on the top of the figure
 ;           instead of the bottom
 ;       charsize: character size; default is 1
+;       reset:  reset the position of the labels to the starting point
 ;       
 ; EXAMPLE:
 ;       MMS> mms_load_fpi, versions=fpi_versions
@@ -35,13 +36,14 @@
 ;       
 ;       
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-04-19 11:41:45 -0700 (Thu, 19 Apr 2018) $
-; $LastChangedRevision: 25080 $
+; $LastChangedDate: 2018-06-27 09:18:53 -0700 (Wed, 27 Jun 2018) $
+; $LastChangedRevision: 25404 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/cdf/mms_add_cdf_versions.pro $
 ;-
 
-pro mms_add_cdf_versions, instrument, versions, data_rate = data_rate, right_align=right_align, $
+pro mms_add_cdf_versions, instrument, versions, reset=reset, data_rate = data_rate, right_align=right_align, $
     top_align=top_align, charsize=charsize
+    
     ; so we don't overplot the version #s for different instruments
     common plotcdfversions, top_right_versionnum_loc, top_left_versionnum_loc, bot_right_versionnum_loc, bot_left_versionnum_loc
     if undefined(charsize) then chsize = 1 else chsize = charsize
@@ -73,6 +75,14 @@ pro mms_add_cdf_versions, instrument, versions, data_rate = data_rate, right_ali
     
     yp = keyword_set(top_align) ? !y.window[0] + 0.02 : !y.window[0] + 0.01
 
+    ; allow the user to reset the positions
+    if keyword_set(reset) then begin
+      undefine, top_right_versionnum_loc
+      undefine, top_left_versionnum_loc
+      undefine, bot_right_versionnum_loc
+      undefine, bot_left_versionnum_loc
+    endif
+    
     ; x-location to start printing the version # at
     if keyword_set(top_align) and keyword_set(right_align) then begin ; top right
       top_right_versionnum_loc = undefined(top_right_versionnum_loc) ? 0.01 : top_right_versionnum_loc + 0.01

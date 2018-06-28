@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jun 26 18:16:26 2018.<P>
+<STRONG>Last modified: </STRONG>Wed Jun 27 18:16:27 2018.<P>
  
 <HR>
  
@@ -58,6 +58,9 @@ This page was created by the IDL library routine
 <br>This routine creates a window for the user to set options for markers
 <LI><A HREF="#SPD_UI_MARKER_TITLE">SPD_UI_MARKER_TITLE</A>
 <br>this window is displayed whenever a user has marked an area
+<LI><A HREF="#SPD_UI_MVA">SPD_UI_MVA</A>
+<br>Generates the GUI for minimum variance analysis.
+<LI><A HREF="#SPD_UI_MVA_HELP">SPD_UI_MVA_HELP</A>
 <LI><A HREF="#SPD_UI_NEUTRAL_SHEET_HELP">SPD_UI_NEUTRAL_SHEET_HELP</A>
 <LI><A HREF="#SPD_UI_NEUTRAL_SHEET_MODELS">SPD_UI_NEUTRAL_SHEET_MODELS</A>
 <LI><A HREF="#SPD_UI_NUDGE_OPTIONS">SPD_UI_NUDGE_OPTIONS</A>
@@ -689,7 +692,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/
 <A NAME="SPD_UI_MARKER_TITLE">
 <H2>SPD_UI_MARKER_TITLE</H2></A>
 <A HREF="#SPD_UI_MARKER_OPTIONS">[Previous Routine]</A>
-<A HREF="#SPD_UI_NEUTRAL_SHEET_HELP">[Next Routine]</A>
+<A HREF="#SPD_UI_MVA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -716,9 +719,54 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/
 <STRONG>(See <A href="panels/spd_ui_marker_title.pro">spedas_gui/panels/spd_ui_marker_title.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPD_UI_MVA">
+<H2>SPD_UI_MVA</H2></A>
+<A HREF="#SPD_UI_MARKER_TITLE">[Previous Routine]</A>
+<A HREF="#SPD_UI_MVA_HELP">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+  spd_ui_mva
+
+PURPOSE:
+  Generates the GUI for minimum variance analysis.
+
+HISTORY:
+$LastChangedBy: egrimes $
+$LastChangedDate: 2015-04-15 15:14:31 -0700 (Wed, 15 Apr 2015) $
+$LastChangedRevision: 17332 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/ace/spedas_plugin/ace_ui_load_data.pro $
+
+</PRE><P>
+<STRONG>(See <A href="panels/spd_ui_mva.pro">spedas_gui/panels/spd_ui_mva.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SPD_UI_MVA_HELP">
+<H2>SPD_UI_MVA_HELP</H2></A>
+<A HREF="#SPD_UI_MVA">[Previous Routine]</A>
+<A HREF="#SPD_UI_NEUTRAL_SHEET_HELP">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Name:
+     spd_ui_mva_help
+
+ Purpose:
+     Additional information for the MVA GUI
+
+
+
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2014-08-21 12:21:00 -0700 (Thu, 21 Aug 2014) $
+$LastChangedRevision: 15698 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_neutral_sheet_help.pro $
+</PRE><P>
+<STRONG>(See <A href="panels/spd_ui_mva_help.pro">spedas_gui/panels/spd_ui_mva_help.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPD_UI_NEUTRAL_SHEET_HELP">
 <H2>SPD_UI_NEUTRAL_SHEET_HELP</H2></A>
-<A HREF="#SPD_UI_MARKER_TITLE">[Previous Routine]</A>
+<A HREF="#SPD_UI_MVA_HELP">[Previous Routine]</A>
 <A HREF="#SPD_UI_NEUTRAL_SHEET_MODELS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
