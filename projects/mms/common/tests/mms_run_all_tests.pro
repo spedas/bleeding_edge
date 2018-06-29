@@ -9,8 +9,8 @@
 ;     
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-04-18 08:34:39 -0700 (Wed, 18 Apr 2018) $
-; $LastChangedRevision: 25072 $
+; $LastChangedDate: 2018-06-28 12:35:50 -0700 (Thu, 28 Jun 2018) $
+; $LastChangedRevision: 25416 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_run_all_tests.pro $
 ;-
 
@@ -40,6 +40,7 @@ pro mms_run_all_tests
                    'mms_init_ut', $
                    'mms_curlometer_ut', $
                    'mms_flipbookify_ut', $
+                   'mms_part_slice2d_ut', $
                    'tplot_stuff_ut']
     
     file_out =   'mms_tests_output_'+time_string(systime(/sec), tformat='YYYYMMDD_hhmm')+'.txt'

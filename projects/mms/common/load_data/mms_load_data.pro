@@ -58,7 +58,7 @@
 ;          
 ;     2) CDF version 3.6.3+ is required to correctly handle leap seconds.  
 ;         
-;     3) The local paths will mirror the SDC directory structure
+;     3) The local paths will mirror the SDC/SPDF directory structures
 ;         
 ;     4) Warning about datatypes and paths:
 ;           -- many of the MMS instruments contain datatype details in their path names; for these CDFs
@@ -92,8 +92,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-12 09:48:20 -0700 (Thu, 12 Apr 2018) $
-;$LastChangedRevision: 25034 $
+;$LastChangedDate: 2018-06-28 09:38:49 -0700 (Thu, 28 Jun 2018) $
+;$LastChangedRevision: 25412 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 

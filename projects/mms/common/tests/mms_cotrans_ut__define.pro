@@ -6,10 +6,32 @@
 ;     IDL> mgunit, 'mms_cotrans_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-06-18 14:46:41 -0700 (Mon, 18 Jun 2018) $
-; $LastChangedRevision: 25366 $
+; $LastChangedDate: 2018-06-28 10:19:08 -0700 (Thu, 28 Jun 2018) $
+; $LastChangedRevision: 25413 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_cotrans_ut__define.pro $
 ;-
+
+function mms_cotrans_ut::test_gse_to_gsm_and_back
+  mms_qcotrans, 'mms1_mec_r_gse', out_coord='gsm', out_suffix='_qgse2gsm'
+  mms_cotrans, 'mms1_mec_r_gse', out_coord='gsm', out_suffix='_gse2gsm'
+  mms_qcotrans, 'mms1_mec_r_gse_qgse2gsm', out_coord='gse', out_suffix='_qback2gse'
+  mms_cotrans, 'mms1_mec_r_gse_gse2gsm', out_coord='gse', out_suffix='_back2gse'
+  calc, '"qdiff"="mms1_mec_r_gse_qgse2gsm_qback2gse"-"mms1_mec_r_gse_gse2gsm_back2gse"'
+  get_data, 'qdiff', data=qdiff
+  assert, abs((minmax(qdiff.y))[0]) lt .01 and abs((minmax(qdiff.y))[1]) lt .01, 'Regression in GSE transformation?'
+  return, 1
+end
+
+function mms_cotrans_ut::test_sm_to_gsm_and_back
+  mms_qcotrans, 'mms1_mec_r_sm', out_coord='gsm', out_suffix='_qsm2gsm'
+  mms_cotrans, 'mms1_mec_r_sm', out_coord='gsm', out_suffix='_sm2gsm'
+  mms_qcotrans, 'mms1_mec_r_sm_qsm2gsm', out_coord='sm', out_suffix='_qback2sm'
+  mms_cotrans, 'mms1_mec_r_sm_sm2gsm', out_coord='sm', out_suffix='_back2sm'
+  calc, '"qdiff"="mms1_mec_r_sm_qsm2gsm_qback2sm"-"mms1_mec_r_sm_sm2gsm_back2sm"'
+  get_data, 'qdiff', data=qdiff
+  assert, abs((minmax(qdiff.y))[0]) lt .01 and abs((minmax(qdiff.y))[1]) lt .01, 'Regression in SM transformation?'
+  return, 1
+end
 
 function mms_cotrans_ut::test_j2000_to_gsm_and_back
   mms_qcotrans, 'mms1_mec_r_eci', out_coord='gsm', out_suffix='_qeci2gsm'
