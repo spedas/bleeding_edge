@@ -6,12 +6,29 @@
 ;     IDL> mgunit, 'tplot_stuff_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-11-20 16:07:57 -0800 (Mon, 20 Nov 2017) $
-; $LastChangedRevision: 24328 $
+; $LastChangedDate: 2018-07-09 13:02:45 -0700 (Mon, 09 Jul 2018) $
+; $LastChangedRevision: 25455 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/tplot_stuff_ut__define.pro $
 ;-
 
 ; ------- the following are some regression tests -------
+; check that the changelog was updated
+function tplot_stuff_ut::test_spedas_changelog
+  neturl = obj_new('idlneturl')
+  neturl->setProperty, url_host='spedas.org'
+  neturl->setProperty, url_path='/changelog/index.html'
+  cl = neturl->get(/buffer, /string)
+  last_updated_arr = stregex(cl, '.+Last updated.+</h3>', /extract)
+  last_updated_str = last_updated_arr[where(last_updated_arr ne '')]
+  lu_pos = strpos(last_updated_str, 'Last updated: ')
+  lu_end_pos = strpos(last_updated_str, '</h3>')
+  last_updated_date = strmid(last_updated_str, lu_pos+14, lu_end_pos-lu_pos-14)
+  td = time_double(last_updated_date, tformat='MTH DD, YYYY')
+  current = systime(/sec)
+  assert, current-td le 60*60*30., 'Problem with the SPEDAS changelog?'
+  return, 1
+end
+
 ; the following is a regression test for avg_data bug on EDP data
 function tplot_stuff_ut::test_avg_data_edp
   mms_load_edp,trange=['2017-08-03','2017-08-04'],data_rate='slow',probes='2',datatype='scpot',level='l2',/time_clip

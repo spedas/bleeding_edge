@@ -97,8 +97,8 @@
 ;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-06-27 14:58:21 -0700 (Wed, 27 Jun 2018) $
-; $LastChangedRevision: 25408 $
+; $LastChangedDate: 2018-07-06 11:26:21 -0700 (Fri, 06 Jul 2018) $
+; $LastChangedRevision: 25446 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_flipbookify.pro $
 ;-
 
@@ -178,7 +178,7 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   
   if instrument eq 'fpi' then begin
     name =  'mms'+probe+'_d'+species+'s_dist_'+data_rate
-    bfield = 'mms'+probe+'_fgm_b_dmpa_srvy_l2_bvec'
+    bfield = 'mms'+probe+'_fgm_b_gse_srvy_l2_bvec'
     vel_data = 'mms'+probe+'_d'+species+'s_bulkv_gse_'+data_rate
     if ~spd_data_exists(vel_data, trange[0], trange[1]) then append_array, datatypes, ['d'+species+'s-dist', 'd'+species+'s-moms'] else append_array, datatypes, 'd'+species+'s-dist'
     if ~spd_data_exists(name, trange[0], trange[1]) then mms_load_fpi, data_rate=data_rate, level=level, datatype=datatypes, probe=probe, trange=trange, /time_clip, /center
@@ -190,7 +190,7 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
     endif
   endif else if instrument eq 'hpca' then begin
     name = 'mms'+probe+'_hpca_'+species+'_phase_space_density'
-    bfield = 'mms'+probe+'_fgm_b_dmpa_srvy_l2_bvec'
+    bfield = 'mms'+probe+'_fgm_b_gse_srvy_l2_bvec'
     vel_data = 'mms'+probe+'_hpca_'+species+'_ion_bulk_velocity'
     if ~spd_data_exists(name, trange[0], trange[1]) then mms_load_hpca, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='ion', /time_clip, /center
     if ~spd_data_exists(vel_data, trange[0], trange[1]) then mms_load_hpca, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='moments', /time_clip, /center

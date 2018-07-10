@@ -41,8 +41,8 @@
 ;
 ; VERSION:
 ;   $LastChangedBy: rlivi2 $
-;   $LastChangedDate: 2018-06-11 13:31:44 -0700 (Mon, 11 Jun 2018) $
-;   $LastChangedRevision: 25347 $
+;   $LastChangedDate: 2018-06-29 19:03:04 -0700 (Fri, 29 Jun 2018) $
+;   $LastChangedRevision: 25426 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/anc/mvn_spc_fov_blockage.pro $
 ;-
 pro mvn_spc_fov_blockage, trange=trange,$
@@ -194,48 +194,13 @@ pro mvn_spc_fov_blockage, trange=trange,$
    index=inst.index
    original_inst_loc = inst.inst_loc
 
-   ;; Temporary kludge
+   ;; Reassign inst_loc
    inst.inst_loc = inst_loc
+
+   xx_new = inst.x_sc_res
+   yy_new = inst.y_sc_res
+   zz_new = inst.z_sc_res
    
-   ;; Create XYZ coordinates for plotting
-   nn = 5.*inst.n2 ;; 5 points to draw each side.
-   xx = fltarr(inst.n3,nn);5.*inst.n2)
-   yy = fltarr(inst.n3,nn);5.*inst.n2)
-   zz = fltarr(inst.n3,nn);5.*inst.n2)
-
-   ;; Cycle through all n3 objects
-   for iobj=0, inst.n3-1 do begin
-
-      ;; Cycle through all 8 vertices.
-      ll = indgen(5)
-      for i=0, inst.n2-1 do begin           
-         box  = vertex[*,*,iobj]
-         ind  = index[*,*,iobj]           
-         indd = [ind[*,i],ind[0,i]]
-         ;; Generate PREC number of points between two vertices.
-         ;; Repeat for all indices.
-         xx[iobj,ll] = reform(box[0,indd])
-         yy[iobj,ll] = reform(box[1,indd])
-         zz[iobj,ll] = reform(box[2,indd])
-         ll = ll+5
-      endfor
-   endfor
-   
-   ;; Expand using prec
-   prec = inst.prec
-   xx_new = fltarr(inst.n3,(nn-1)*prec+1)
-   yy_new = fltarr(inst.n3,(nn-1)*prec+1)
-   zz_new = fltarr(inst.n3,(nn-1)*prec+1)
-
-   for iobj=0, inst.n3-1 do begin    
-      xx_new[iobj,*] = interpol(xx[iobj,*],findgen(nn),$
-                                findgen((nn-1)*prec+1)/prec)
-      yy_new[iobj,*] = interpol(yy[iobj,*],findgen(nn),$
-                                findgen((nn-1)*prec+1)/prec)
-      zz_new[iobj,*] = interpol(zz[iobj,*],findgen(nn),$
-                                findgen((nn-1)*prec+1)/prec)
-   endfor
-
    ;; Coordinate Transformation
    coord=transpose([[[xx_new]],[[yy_new]],[[zz_new]]])
 
@@ -263,10 +228,7 @@ pro mvn_spc_fov_blockage, trange=trange,$
    FOR i=0L, nn2*nn3-1L DO $
     new_ver[*,i]= inst_rot # old_ver[*,i]
    coord=reform(new_ver,nn1,nn2,nn3)
-   new_shift=inst_rot # inst_loc
-   inst_loc=new_shift
 
-   
    ;; Change coordinates from cartesian to spherical
    ;; theta - angle from positive z-axis (-90-90)
    ;; phi   - angle around x-y (-180 - 180)
@@ -278,7 +240,7 @@ pro mvn_spc_fov_blockage, trange=trange,$
       theta = reform(temporary(theta), nn2, nn3)
       phi   = reform(temporary(phi),   nn2, nn3)
    ENDIF
-
+   
    ;;Invert Phi
    IF keyword_set(invert_phi) THEN BEGIN 
       phi = (phi+180.) MOD 360
@@ -298,23 +260,87 @@ pro mvn_spc_fov_blockage, trange=trange,$
 
    ;; Draw Objects
    FOR iobj=0L, nn3-1L DO BEGIN
-
-      ;; Exclude APP from drawing
-      IF iobj NE 11 AND $
-       iobj NE 12 AND $
-       iobj NE 13 AND $
-       iobj NE 14 THEN BEGIN 
-
-         ;; Setup phi and theta components
-         phi_temp=phi[*,iobj]
-         theta_temp=theta[*,iobj]
-         if keyword_set(polyfill) then $
-          polyfill, phi_temp,$
-                    theta_temp,$
-                    color=clr1 
-         oplot, phi_temp,theta_temp,$
-                color=clr1
-      ENDIF
+      ;; Setup phi and theta components
+      phi_temp   = phi[*,iobj]
+      theta_temp = theta[*,iobj]
+      if keyword_set(polyfill) then $
+       polyfill, phi_temp,$
+                 theta_temp,$
+                 color=clr1
+      oplot, phi_temp,theta_temp,$
+             color=clr1
    ENDFOR
    
 END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ;;;;;;;;;;;;;;;;;;
+   ;;;; OLD WAY ;;;;;
+   ;;;;;;;;;;;;;;;;;;
+   ;;IF 0 THEN BEGIN
+      
+   ;;;; Create XYZ coordinates for plotting
+   ;;nn = 5.*inst.n2 ;; 5 points to draw each side.
+   ;;xx = fltarr(inst.n3,nn);5.*inst.n2)
+   ;;yy = fltarr(inst.n3,nn);5.*inst.n2)
+   ;;zz = fltarr(inst.n3,nn);5.*inst.n2)
+
+   ;; Cycle through all n3 objects
+   ;;for iobj=0, inst.n3-1 do begin
+
+      ;; Cycle through all 8 vertices.
+      ;;ll = indgen(5)
+      ;;for i=0, inst.n2-1 do begin           
+      ;;   box  = vertex[*,*,iobj]
+      ;;   ind  = index[*,*,iobj]           
+      ;;   indd = [ind[*,i],ind[0,i]]
+      ;;   ;; Generate PREC number of points between two vertices.
+      ;;   ;; Repeat for all indices.
+      ;;   xx[iobj,ll] = reform(box[0,indd])
+      ;;   yy[iobj,ll] = reform(box[1,indd])
+      ;;   zz[iobj,ll] = reform(box[2,indd])
+      ;;   ll = ll+5
+      ;;endfor
+   ;;endfor
+
+   ;; Expand using prec
+   ;;prec = inst.prec
+   ;;xx_new = fltarr(inst.n3,(nn-1)*prec+1)
+   ;;yy_new = fltarr(inst.n3,(nn-1)*prec+1)
+   ;;zz_new = fltarr(inst.n3,(nn-1)*prec+1)
+
+   ;;for iobj=0, inst.n3-1 do begin    
+   ;;   xx_new[iobj,*] = interpol(xx[iobj,*],findgen(nn),$
+   ;;                             findgen((nn-1)*prec+1)/prec)
+   ;;   yy_new[iobj,*] = interpol(yy[iobj,*],findgen(nn),$
+   ;;                             findgen((nn-1)*prec+1)/prec)
+   ;;   zz_new[iobj,*] = interpol(zz[iobj,*],findgen(nn),$
+   ;;                             findgen((nn-1)*prec+1)/prec)
+   ;;endfor
+
+
+   ;;ENDIF
+   ;;;;;;;;;;;;;;;;;;
+   ;;;; NEW WAY ;;;;;
+   ;;;;;;;;;;;;;;;;;;
+
+   ;; WHY THE FOLLOWING??
+   ;;new_shift=inst_rot # inst_loc
+   ;;inst_loc=new_shift
+   

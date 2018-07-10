@@ -17,8 +17,8 @@
 ;     Yuki Harada on 2014-07-01
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-06-10 19:49:29 -0700 (Sun, 10 Jun 2018) $
-; $LastChangedRevision: 25341 $
+; $LastChangedDate: 2018-07-05 01:00:43 -0700 (Thu, 05 Jul 2018) $
+; $LastChangedRevision: 25438 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_read_fov.pro $
 ;-
 
@@ -32,7 +32,36 @@ if keyword_set(load) then begin
 ;   s = kgy_file_source(remote_data_dir='http://research.ssl.berkeley.edu/~haraday/data/kaguya/',last_version=0, _extra=_ex)
    s = kgy_file_source(remote_data_dir='http://step0ku.kugi.kyoto-u.ac.jp/~haraday/data/kaguya/',last_version=0, _extra=_ex)
    pfs = 'public/FOV_ANGLE_070726/'+ $
-         ['ESAS1/esas1*','ESAS2/esas2*','IEA/iea*','IMA/ima*']
+         [ $
+         'ESAS1/esas1-ch_angle', $
+         'ESAS1/esas1-pol_angle-RAM0', $
+         'ESAS1/esas1-pol_angle-RAM1', $
+         'ESAS1/esas1-pol_angle-RAM2', $
+         'ESAS1/esas1-pol_angle-RAM3', $
+         'ESAS1/esas1-pol_angle-RAM4', $
+         'ESAS1/esas1-pol_angle-RAM5', $
+         'ESAS1/esas1-pol_angle-RAM6', $
+         'ESAS1/esas1-pol_angle-RAM7', $
+         'ESAS2/esas2-ch_angle', $
+         'ESAS2/esas2-pol_angle-RAM0', $
+         'ESAS2/esas2-pol_angle-RAM1', $
+         'ESAS2/esas2-pol_angle-RAM2', $
+         'ESAS2/esas2-pol_angle-RAM3', $
+         'ESAS2/esas2-pol_angle-RAM4', $
+         'ESAS2/esas2-pol_angle-RAM5', $
+         'ESAS2/esas2-pol_angle-RAM6', $
+         'ESAS2/esas2-pol_angle-RAM7', $
+         'IEA/iea-ch_angle', $
+         'IEA/iea-pol_angle-RAM0', $
+         'IEA/iea-pol_angle-RAM1', $
+         'IEA/iea-pol_angle-RAM2', $
+         'IEA/iea-pol_angle-RAM3', $
+         'IMA/ima-ch_angle', $
+         'IMA/ima-pol_angle-RAM0', $
+         'IMA/ima-pol_angle-RAM1', $
+         'IMA/ima-pol_angle-RAM2', $
+         'IMA/ima-pol_angle-RAM3' $
+         ]
    for ipf=0,n_elements(pfs)-1 do begin
 ;      f = file_retrieve(pfs[ipf],_extra=s) 
 ;      if total(strlen(f)) then files = [files,f]

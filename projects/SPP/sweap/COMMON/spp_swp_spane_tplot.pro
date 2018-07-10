@@ -2,8 +2,8 @@
 ; PSP SPAN-E TPLOT ROUTINE
 ;
 ; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-04-20 12:17:25 -0700 (Fri, 20 Apr 2018) $
-; $LastChangedRevision: 25091 $
+; $LastChangedDate: 2018-07-06 09:43:49 -0700 (Fri, 06 Jul 2018) $
+; $LastChangedRevision: 25445 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_spane_tplot.pro $
 ;--------------------------------------------------------------------
 
@@ -42,9 +42,10 @@ pro spp_swp_spane_tplot,name,ADD=ADD,setlim=setlim
 
     plot_name = strupcase(strtrim(name,2))
     case plot_name of
-     'SUMPLOT': tplot, 'spp_spa_hkp_CMD_REC spp_spb_hkp_CMD_REC spp_spa_hkp_HV_CONF_FLAG spp_spb_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spb_SF1_CNTS spp_spa_SF1_ANODE_SPEC spp_spb_SF1_ANODE_SPEC spp_spa_SF0_NRG_SPEC spp_spb_SF0_NRG_SPEC', add = add
-     'SUMPLOTSA' : tplot, 'spp_spa_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spa_hkp_CMD_REC spp_spa_SF1_ANODE_SPEC spp_spa_SF0_NRG_SPEC'
-     'SUMPLOTSB' : tplot, 'spp_spb_hkp_HV_CONF_FLAG spp_spb_SF1_CNTS spp_spb_hkp_CMD_REC spp_spb_SF1_ANODE_SPEC spp_spb_SF0_NRG_SPEC'
+     'SUMPLOT': tplot, 'spp_spa_hkp_CMD_REC spp_spb_hkp_CMD_REC spp_spa_hkp_HV_CONF_FLAG spp_spb_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spb_SF1_CNTS spp_spa_SF1_NRG_SPEC spp_spb_SF1_NRG_SPEC spp_spa_SF0_NRG_SPEC spp_spb_SF0_NRG_SPEC', add = add
+     'SUMPLOTSA' : tplot, 'spp_spa_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spa_hkp_CMD_REC spp_spa_SF1_ANODE_SPEC spp_spa_SF0_NRG_SPEC', add = add 
+     'SUMPLOTSB' : tplot, 'spp_spb_hkp_HV_CONF_FLAG spp_spb_SF1_CNTS spp_spb_hkp_CMD_REC spp_spb_SF1_ANODE_SPEC spp_spb_SF0_NRG_SPEC', add = add 
+     'HVRAMP' : tplot, 'spp_spa_hkp_ADC_VMON_MCP spp_spa_hkp_ADC_IMON_MCP spp_spa_hkp_ADC_VMON_RAW spp_spa_hkp_ADC_IMON_RAW', add = add 
      'SE':   tplot,'*sp?_SF1_ANODE_SPEC *sp?_SF1_*_SPEC spp_sp?_hkp_MRAM_*',ADD=ADD
      'SE_HV': tplot,'*sp?_hkp_ADC_VMON_* *sp?_hkp_ADC_IMON_*',ADD=ADD
      'SE_LV': tplot,'*sp?_hkp_RIO*',ADD=ADD

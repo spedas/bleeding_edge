@@ -40,15 +40,16 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-11-20 14:57:18 -0800 (Mon, 20 Nov 2017) $
-;$LastChangedRevision: 24324 $
+;$LastChangedDate: 2018-07-09 11:56:59 -0700 (Mon, 09 Jul 2018) $
+;$LastChangedRevision: 25452 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_fpi_ang_ang.pro $
 ;-
 
 pro mms_fpi_ang_ang, time, probe=probe, energy_range=energy_range, data_rate=data_rate, $
   species=species, all_energies=all_energies, subtract_bulk=subtract_bulk, pa_en_units = pa_en_units, $
   postscript=postscript, png=png, center_measurement=center_measurement, xsize=xsize, ysize=ysize, $
-  filename_suffix = filename_suffix, zrange=zrange, fgm_level=fgm_level, fgm_instrument=fgm_instrument, level=level
+  filename_suffix = filename_suffix, zrange=zrange, fgm_level=fgm_level, fgm_instrument=fgm_instrument, $
+  fgm_data_rate=fgm_data_rate, level=level
 
   if undefined(time) then begin
     time = gettime(key='Enter time: ')
@@ -64,6 +65,7 @@ pro mms_fpi_ang_ang, time, probe=probe, energy_range=energy_range, data_rate=dat
   if undefined(pa_en_units) then pa_en_units = 'df_cm'
   if undefined(fgm_level) then fgm_level = 'l2'
   if undefined(fgm_instrument) then fgm_instrument='fgm'
+  if undefined(fgm_data_rate) and data_rate eq 'brst' then fgm_data_rate='brst' else fgm_data_rate='srvy'
   pa_en_units_str = spd_units_string(pa_en_units)
   
   if ~undefined(postscript) and ~undefined(png) then begin
@@ -99,7 +101,7 @@ pro mms_fpi_ang_ang, time, probe=probe, energy_range=energy_range, data_rate=dat
     dprint, dlevel = 0, 'No FPI data found in the requested time range: ', time_string(trange, tformat='YYYY-MM-DD/hh:mm:ss.fff')
     return
   endif
-  mms_load_fgm, trange=trange, data_rate='srvy', probe=probe, level=fgm_level, instrument=fgm_instrument
+  mms_load_fgm, trange=trange, data_rate=fgm_data_rate, probe=probe, level=fgm_level, instrument=fgm_instrument
 
   get_data, 'mms'+probe+'_d'+species+'s_dist_'+data_rate, data=d, dlimits=dl
 
@@ -182,12 +184,12 @@ pro mms_fpi_ang_ang, time, probe=probe, energy_range=energy_range, data_rate=dat
     if ~undefined(postscript) then popen, 'pad_vs_energy'+filename_suffix, /landscape else window, 4, xsize=xsize, ysize=ysize
 
     if fgm_instrument eq 'dfg' and fgm_level eq 'l2pre' then begin
-      if tnames('mms'+probe+'_dfg_srvy_l2pre_dmpa_bvec') ne '' then b_field = 'mms'+probe+'_dfg_srvy_l2pre_dmpa_bvec' else b_field = 'mms'+probe+'_dfg_b_dmpa_srvy_l2pre_bvec'
-    endif else b_field = 'mms'+probe+'_fgm_b_dmpa_srvy_l2_bvec'
+      if tnames('mms'+probe+'_dfg_'+fgm_data_rate+'_l2pre_gse_bvec') ne '' then b_field = 'mms'+probe+'_dfg_'+fgm_data_rate+'_l2pre_gse_bvec' else b_field = 'mms'+probe+'_dfg_b_gse_'+fgm_data_rate+'_l2pre_bvec'
+    endif else b_field = 'mms'+probe+'_fgm_b_gse_'+fgm_data_rate+'_'+fgm_level+'_bvec'
 
 
     if ~undefined(subtract_bulk) then $
-      pad = moka_mms_pad_fpi(*distptr, *disterrptr, time=closest_time, mag_data=b_field, vel_data='mms'+probe+'_d'+species+'s_bulkv_dbcs_'+data_rate, subtract_bulk=subtract_bulk, units=pa_en_units) $
+      pad = moka_mms_pad_fpi(*distptr, *disterrptr, time=closest_time, mag_data=b_field, vel_data='mms'+probe+'_d'+species+'s_bulkv_gse_'+data_rate, subtract_bulk=subtract_bulk, units=pa_en_units) $
     else $
       pad = moka_mms_pad_fpi(*distptr, *disterrptr, time=closest_time, subtract_bulk=0, units=pa_en_units, mag_data=b_field)
 

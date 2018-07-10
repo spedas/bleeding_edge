@@ -12,38 +12,6 @@
 ;    VY             Y velocity component (km/s)
 ;    VZ             Z velocity component (km/s)
 ;
-; The available coordinate frames are:
-;
-;   IAU_MARS = body-fixed Mars geographic coordinates (non-inertial)
-;
-;              X ->  0 deg E longitude, 0 deg latitude
-;              Y -> 90 deg E longitude, 0 deg latitude
-;              Z -> 90 deg N latitude (= X x Y)
-;              origin = center of Mars
-;              units = kilometers
-;
-;   GEO = synonym (in this routine only) for IAU_MARS
-;
-;   MSO = Mars-Sun-Orbit coordinates (approx. inertial)
-;
-;              X -> from center of Mars to center of Sun
-;              Y -> opposite to Mars' orbital angular velocity vector
-;              Z = X x Y
-;              origin = center of Mars
-;              units = kilometers
-;
-;   J2000 = Mean equator and equinox at J2000 epoch (inertial)
-;
-;              X -> aligned with mean (vernal) equinox
-;              Z -> aligned with celestial north pole (Earth's rotation axis)
-;              Y = Z x X
-;              origin = center of Mars
-;              units = kilometers
-;
-;   PHO = body-fixed Phobos geographic coordinates (non-inertial)
-;
-;   DEI = body-fixed Deimos geographic coordiantes (non-inertial)
-;
 ;USAGE:
 ;  maven_orbit_makeeph, frame=frame, origin=origin, eph=eph
 ;INPUTS:
@@ -53,9 +21,7 @@
 ;
 ;       EPH:       Named variable to hold the ephemeris structure.
 ;
-;       FRAME:     Coordinate frame.  Can be "J2000", "IAU_MARS", or "MSO".
-;                  (Also accepts "GEO" as a synomym for "IAU_MARS".)
-;                  (Also accepts "PHO" for Phobos and "DEI" for Deimos.)
+;       FRAME:     Coordinate frame.  Type mvn_frame_name(/list) for a full list.
 ;
 ;       ORIGIN:    Origin of coordinate frame.  Can be "Mars", "Phobos", or
 ;                  "Deimos".  Default = "Mars".
@@ -82,8 +48,8 @@
 ;                  standard name or id.  Example: OBJECT='-200000'.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-04-17 13:37:18 -0700 (Mon, 17 Apr 2017) $
-; $LastChangedRevision: 23172 $
+; $LastChangedDate: 2018-07-05 13:14:34 -0700 (Thu, 05 Jul 2018) $
+; $LastChangedRevision: 25439 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_makeeph.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-10-13
@@ -155,27 +121,15 @@ pro maven_orbit_makeeph, tstep=tstep, eph=eph, frame=frame, tstart=tstart, tstop
     return
   endif
 
-  frame = strupcase(frame)
-  
-  case strupcase(frame) of
-    'J2000'    : frame = 'J2000'
-    'IAU_MARS' : frame = 'IAU_MARS'
-    'GEO'      : frame = 'IAU_MARS'
-    'MSO'      : frame = 'MSO'
-    'PHO'      : frame = 'IAU_PHOBOS'
-    'DEI'      : frame = 'IAU_DEIMOS'
-    else       : begin
-                   print,'Unrecognized frame: ',frame
-                   print,'Choices are: J2000, IAU_MARS (= GEO), MSO, PHO, DEI.'
-                   return
-                 end
-  endcase
+  frame = mvn_frame_name(frame[0], success=ok)
+  if (not ok[0]) then return
 
   if (size(origin,/type) ne 7) then origin = 'Mars'
+  origin = mvn_frame_name(origin)
   case strupcase(origin) of
-    'MARS'   : center = 'Mars'
-    'PHOBOS' : center = 'Phobos'
-    'DEIMOS' : center = 'Deimos'
+    'IAU_MARS'   : center = 'Mars'
+    'IAU_PHOBOS' : center = 'Phobos'
+    'IAU_DEIMOS' : center = 'Deimos'
     else     : begin
                    print,'Unrecognized origin: ',origin
                    print,'Choices are: Mars, Phobos, Deimos.'

@@ -10,24 +10,28 @@
 ;       types: 'NPW', 'WFC', or ['NPW','WFC'] (Def: ['NPW','WFC'])
 ;       version: data version (Def: '010')
 ;       append: if set, append to pre-loaded tplot variables (Def: clear old data)
+;       wfcdatadir: local directory in which WFC files are stored
 ;       files: local files to read
 ;              if set, does not download files from the data archive site
 ; CREATED BY:
 ;       Yuki Harada on 2016-09-02
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2017-11-21 12:02:46 -0800 (Tue, 21 Nov 2017) $
-; $LastChangedRevision: 24333 $
+; $LastChangedDate: 2018-07-05 01:00:43 -0700 (Thu, 05 Jul 2018) $
+; $LastChangedRevision: 25438 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/lrs/kgy_lrs_load.pro $
 ;-
 
-pro kgy_lrs_load, files=files, version=version, trange=trange, append=append, types=types
+pro kgy_lrs_load, files=files, version=version, trange=trange, append=append, types=types, wfcdatadir=wfcdatadir
 
 
 if ~keyword_set(version) then version = '010' ;- incapable of automatic version search
 version2 = strmid(version,1,1)+'.'+strmid(version,2,1)
 if ~keyword_set(append) then store_data,'kgy_lrs_*',/delete
 if ~keyword_set(types) then types = ['NPW','WFC'] else types = strupcase(types)
+
+;;; wfcdatadir = root_data_dir()+'kaguya/lrs/WFC-H/CDF2/'
+tr = timerange(trange)
 
 ;;; retrieve files
 if ~keyword_set(files) then begin
@@ -43,9 +47,14 @@ if ~keyword_set(files) then begin
 
    ;;; WFC, skip odd hours
    if total(strmatch(types,'WFC')) then begin
-      pf = 'sln-l-lrs-4-wfc-spectrum-v'+version2+'/YYYYMMDD/data/LRS_WFC_V'+version+'_YYYYMMDDhhmmss.cdf'
+      if keyword_set(wfcdatadir) then begin ;- find local files
+         pf = wfcdatadir+time_intervals(tf='LRS_WFC_V'+version+'_YYYYMMDDhhmmss.cdf',/hourly,trange=tr)
+         f = file_search(pf)
+      endif else begin
+         pf = 'sln-l-lrs-4-wfc-spectrum-v'+version2+'/YYYYMMDD/data/LRS_WFC_V'+version+'_YYYYMMDDhhmmss.cdf'
 ;      pf = 'LRS_WFC_V'+version+'_YYYYMMDDhhmmss' ;- obsolete
-      f = kgy_file_retrieve(pf,trange=trange,/public,/hourly,/valid,/skipodd)
+         f = kgy_file_retrieve(pf,trange=trange,/public,/hourly,/valid,/skipodd)
+      endelse
       if total(strlen(f)) gt 0 then files = [files,f]
    endif
 endif
@@ -160,6 +169,7 @@ for ifile=0,n_elements(files)-1 do begin
    ;;; WFC
    if total(strmatch(fname,'*WFC*')) then begin
       ;;; varnames: Ex Ey Frequency Epoch PDC-TI Mode Gain PostGap
+      ;;; cf. muro-shuuron.pdf
 
       ;;; get times
       idx = where( cdfi.vars.name eq 'Epoch' , nw )
@@ -186,6 +196,36 @@ for ifile=0,n_elements(files)-1 do begin
       freq = data
       frequnits = attr.units
 
+      ;;; get Gain
+      idx = where( cdfi.vars.name eq 'Gain' , nw )
+      if nw eq 1 then begin
+         v = cdfi.vars[idx]
+         attr = *v.attrptr
+         if v.numrec gt 0 then begin
+            if v.numrec eq n_elements(times) then data = *v.dataptr $
+            else begin
+               cdf_varget,id,'Gain',data,rec_count=n_elements(times)
+            endelse
+            ;;; 3-4bit( 0x00:40dB 0x01:20dB 0x02:20dB 0x03:0dB )
+            ;;; a = [0,0,0,0,1,1,0,0] & print,a.frombits()
+            gain = ishft( data and 12b , -2 ) ;- 00001100 = 12b
+            w = where( gain eq 0 , nw )
+            if nw gt 0 then gain[w] = 40
+            w = where( gain eq 1 or gain eq 2 , nw )
+            if nw gt 0 then gain[w] = 20
+            w = where( gain eq 3 , nw )
+            if nw gt 0 then gain[w] = 0
+            gain = float(gain)
+            if tag_exist(attr,'fillval') then begin
+               wnan = where( data eq attr.fillval , nwnan )
+               if nwnan gt 0 then gain[wnan] = !values.f_nan
+            endif
+            store_data,'kgy_lrs_wfc_gain', $
+                       data={x:times,y:gain}, $
+                       dlim={ytitle:'LRS WFC!cgain',psym:1,yrange:[0,40]}
+         endif
+      endif
+
       ;;; get Ex
       idx = where( cdfi.vars.name eq 'Ex' , nw )
       if nw eq 1 then begin
@@ -201,13 +241,18 @@ for ifile=0,n_elements(files)-1 do begin
                wnan = where( data eq attr.fillval , nwnan )
                if nwnan gt 0 then data[wnan] = !values.f_nan
             endif
-            store_data,'kgy_lrs_wfc_Ex', $
-                       data={x:times,y:data,v:freq}, $
+            if n_elements(gain) eq n_elements(times) then begin
+               ;;; gain correction
+               ex = data - rebin(gain,n_elements(times),n_elements(freq))
+            endif
+            store_data,'kgy_lrs_wfc_Ex_dB', $
+                       data={x:times,y:ex,v:freq}, $
                        dlim={ytitle:'Ex!cFrequency!c['+frequnits+']', $
                              ylog:1,yticklen:-.01, $
-                             yrange:minmax(freq)>.1,ystyle:1, $
+                             yrange:minmax(freq)>1,ystyle:1, $
                              spec:1,zlog:0,ztitle:attr.units, $
-                             zrange:[-20,60]}
+                             zrange:[-60,20]}
+            ;;; FIXME: conversion to physical units
          endif
       endif
 
@@ -226,13 +271,18 @@ for ifile=0,n_elements(files)-1 do begin
                wnan = where( data eq attr.fillval , nwnan )
                if nwnan gt 0 then data[wnan] = !values.f_nan
             endif
-            store_data,'kgy_lrs_wfc_Ey', $
-                       data={x:times,y:data,v:freq}, $
+            if n_elements(gain) eq n_elements(times) then begin
+               ;;; gain correction
+               ey = data - rebin(gain,n_elements(times),n_elements(freq))
+            endif
+            store_data,'kgy_lrs_wfc_Ey_dB', $
+                       data={x:times,y:ey,v:freq}, $
                        dlim={ytitle:'Ey!cFrequency!c['+frequnits+']', $
                              ylog:1,yticklen:-.01, $
-                             yrange:minmax(freq)>.1,ystyle:1, $
+                             yrange:minmax(freq)>1,ystyle:1, $
                              spec:1,zlog:0,ztitle:attr.units, $
-                             zrange:[-20,60]}
+                             zrange:[-60,20]}
+            ;;; FIXME: conversion to physical units
          endif
       endif
 
@@ -242,39 +292,34 @@ for ifile=0,n_elements(files)-1 do begin
          v = cdfi.vars[idx]
          attr = *v.attrptr
          if v.numrec gt 0 then begin
-            if v.numrec eq n_elements(times) then data = float( *v.dataptr ) $
+            if v.numrec eq n_elements(times) then data = *v.dataptr $
             else begin
                cdf_varget,id,'Mode',data,rec_count=n_elements(times)
-               data = float(reform(data))
             endelse
+; Amount of information is 1 byte.: 1-2bit: Channel( 0x01:X 0x02:Y
+; 0x03:X-Y )  3-4bit: Frequency Band( 0x01:~10kHz 0x02:~1MHz
+; 0x03:~10kHz ~1MHz )  5-6bit: Observation Mode( 0x00:WAVE 0x01:FFT
+; 0x02:PHASE )
+            xymode = float( data and 3b ) ;- 00000011
+            fband = float( ishft( data and 12b , -2 ) ) ;- 00001100
+            omode = float( ishft( data and 48b , -4 ) ) ;- 00110000
             if tag_exist(attr,'fillval') then begin
                wnan = where( data eq attr.fillval , nwnan )
-               if nwnan gt 0 then data[wnan] = !values.f_nan
+               if nwnan gt 0 then begin
+                  xymode[wnan] = !values.f_nan
+                  fband[wnan] = !values.f_nan
+                  omode[wnan] = !values.f_nan
+               endif
             endif
-            store_data,'kgy_lrs_wfc_mode', $
-                       data={x:times,y:data}, $
+            store_data,'kgy_lrs_wfc_xymode', $
+                       data={x:times,y:xymode}, $
+                       dlim={ytitle:'LRS WFC!cXY Ch',psym:1}
+            store_data,'kgy_lrs_wfc_fband', $
+                       data={x:times,y:fband}, $
+                       dlim={ytitle:'LRS WFC!cFreq. Band',psym:1}
+            store_data,'kgy_lrs_wfc_omode', $
+                       data={x:times,y:omode}, $
                        dlim={ytitle:'LRS WFC!cMode',psym:1}
-         endif
-      endif
-
-      ;;; get Gain
-      idx = where( cdfi.vars.name eq 'Gain' , nw )
-      if nw eq 1 then begin
-         v = cdfi.vars[idx]
-         attr = *v.attrptr
-         if v.numrec gt 0 then begin
-            if v.numrec eq n_elements(times) then data = float( *v.dataptr ) $
-            else begin
-               cdf_varget,id,'Gain',data,rec_count=n_elements(times)
-               data = float(reform(data))
-            endelse
-            if tag_exist(attr,'fillval') then begin
-               wnan = where( data eq attr.fillval , nwnan )
-               if nwnan gt 0 then data[wnan] = !values.f_nan
-            endif
-            store_data,'kgy_lrs_wfc_gain', $
-                       data={x:times,y:data}, $
-                       dlim={ytitle:'LRS WFC!cgain',psym:1}
          endif
       endif
 
@@ -307,16 +352,16 @@ for ifile=0,n_elements(files)-1 do begin
          if v.numrec gt 0 then begin
             if v.numrec eq n_elements(times) then data = float( *v.dataptr ) $
             else begin
-               cdf_varget,id,'Gain',data,rec_count=n_elements(times)
+               cdf_varget,id,'PostGap',data,rec_count=n_elements(times)
                data = float(reform(data))
             endelse
             if tag_exist(attr,'fillval') then begin
                wnan = where( data eq attr.fillval , nwnan )
                if nwnan gt 0 then data[wnan] = !values.f_nan
             endif
-            store_data,'kgy_lrs_wfc_qflag', $
+            store_data,'kgy_lrs_wfc_postgap', $
                        data={x:times,y:data}, $
-                       dlim={ytitle:'LRS WFC!cQuality Flag',psym:1}
+                       dlim={ytitle:'LRS WFC!cPost Gap',psym:1}
          endif
       endif
 

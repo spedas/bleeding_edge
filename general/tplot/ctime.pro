@@ -81,8 +81,12 @@ common ctime_common, ptr        ;this should NOT appear in ctime, it is local
         endif else v = float((*ptr.y)[yind])
       endif else begin                ;this is a specplot
         if finite(v) then begin
-          if dimen2(*ptr.v) eq 1 then vr = *ptr.v $
-          else vr = reform((*ptr.v)[yind,*])
+          if wv[0] NE -1 then begin
+            if dimen2(*ptr.v) eq 1 then vr = *ptr.v $
+            else vr = reform((*ptr.v)[yind,*])
+          endif else begin
+            vr = findgen(n_elements((*ptr.y)[0,*]))
+          endelse
           if ytype eq 0 then mini = min(abs(vr-v),yind2,/nan) $ ;lin scale plot
           else mini = min(abs(alog(vr)-alog(v)),yind2,/nan)     ;log scale plot
           v = float(vr[yind2])

@@ -44,9 +44,9 @@
 ; 19-mar-2015, aaf, moments, combined data, eclipse corrections, use plugin replay API 
 ; 
 ; 
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2015-07-09 18:45:50 -0700 (Thu, 09 Jul 2015) $
-;$LastChangedRevision: 18062 $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2018-07-03 21:12:53 -0700 (Tue, 03 Jul 2018) $
+;$LastChangedRevision: 25437 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spedas_plugin/thm_ui_part_getspec_options.pro $
 ;-
 
@@ -367,11 +367,12 @@ pro thm_ui_part_getspec_set_values, state, error=error
 
   ;check energy limit input if option is selected
   id = widget_info(state.tab_id, find_by_uname='energy_button')
-  if widget_info(id, /button_set) then begin
+  state.energy_button = widget_info(id, /button_set) ; Fix the reading of the energy state button  
+  if state.energy_button then begin
     e0 = thm_ui_part_getspec_check_input(state,'energy_min','Energy min',min=0,value=emin)
     e1 = thm_ui_part_getspec_check_input(state,'energy_max','Energy max',min=0,value=emax)
     if ~e0 || ~e1 || emin ge emax then begin
-      if e0 && e1 && emin ge emax then x=dialog_message('Phi minimun must be less than maximum.',/center)
+      if e0 && e1 && emin ge emax then x=dialog_message('Energy minimun must be less than maximum.',/center)
       return
     endif
   endif

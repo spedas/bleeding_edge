@@ -42,8 +42,8 @@
 ;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-05-24 14:08:09 -0700 (Thu, 24 May 2018) $
-;$LastChangedRevision: 25260 $
+;$LastChangedDate: 2018-07-02 15:25:13 -0700 (Mon, 02 Jul 2018) $
+;$LastChangedRevision: 25429 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -152,7 +152,7 @@ pro mms_part_getspec, probes=probes, $
     support_trange = trange + [-60,60]
     
     for probe_idx = 0, n_elements(probes)-1 do begin
-        if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_fgm_b_dmpa_'+mag_data_rate+'_l2_bvec'+mag_suffix, trange[0], trange[1]) or keyword_set(forceload) then append_array, fgm_to_load, probes[probe_idx]
+        if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_fgm_b_gse_'+mag_data_rate+'_l2_bvec'+mag_suffix, trange[0], trange[1]) or keyword_set(forceload) then append_array, fgm_to_load, probes[probe_idx]
         if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_defeph_pos', trange[0], trange[1]) or keyword_set(forceload) then append_array, state_to_load, probes[probe_idx]
     endfor
 
@@ -183,13 +183,13 @@ pro mms_part_getspec, probes=probes, $
     endif
     
     for probe_idx = 0, n_elements(probes)-1 do begin
-        if undefined(mag_name_user) then bname = 'mms'+probes[probe_idx]+'_fgm_b_dmpa_'+mag_data_rate+'_l2_bvec'+mag_suffix else bname = mag_name_user
+        if undefined(mag_name_user) then bname = 'mms'+probes[probe_idx]+'_fgm_b_gse_'+mag_data_rate+'_l2_bvec'+mag_suffix else bname = mag_name_user
         if undefined(pos_name_user) then pos_name = 'mms'+probes[probe_idx]+ '_defeph_pos' else pos_name = pos_name_user
         if instrument eq 'fpi' then begin
             name = 'mms'+probes[probe_idx]+'_d'+species+'s_dist_'+data_rate
-            if undefined(vel_name_user) then vel_name = 'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_dbcs_'+data_rate else vel_name = vel_name_user
+            if undefined(vel_name_user) then vel_name = 'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_gse_'+data_rate else vel_name = vel_name_user
             if keyword_set(subtract_error) then error_variable = 'mms'+probes[probe_idx]+'_d'+species+'s_disterr_'+data_rate
-            if keyword_set(subtract_spintone) && tnames(vel_name) ne '' && tnames('mms'+probes[probe_idx]+'_d'+species+'s_bulkv_spintone_dbcs_'+data_rate) ne '' then calc, '"'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_dbcs_'+data_rate+'"="'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_dbcs_'+data_rate+'"-"'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_spintone_dbcs_'+data_rate+'"'
+            if keyword_set(subtract_spintone) && tnames(vel_name) ne '' && tnames('mms'+probes[probe_idx]+'_d'+species+'s_bulkv_spintone_gse_'+data_rate) ne '' then calc, '"'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_gse_'+data_rate+'"="'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_gse_'+data_rate+'"-"'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_spintone_gse_'+data_rate+'"'
         endif else if instrument eq 'hpca' then begin
             name =  'mms'+probes[probe_idx]+'_hpca_'+species+'_phase_space_density'
             if undefined(vel_name_user) then vel_name = 'mms'+probes[probe_idx]+'_hpca_'+species+'_ion_bulk_velocity' else vel_name = vel_name_user

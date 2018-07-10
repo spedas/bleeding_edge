@@ -31,8 +31,8 @@
 ;   pulupa
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2018-05-08 14:59:32 -0700 (Tue, 08 May 2018) $
-; $LastChangedRevision: 25181 $
+; $LastChangedDate: 2018-06-29 15:35:33 -0700 (Fri, 29 Jun 2018) $
+; $LastChangedRevision: 25422 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_create.pro $
 ;-
 pro spp_fld_cdf_create, level, vers_num, cdf_att, filename_timestring, $
@@ -62,8 +62,8 @@ pro spp_fld_cdf_create, level, vers_num, cdf_att, filename_timestring, $
   if not keyword_set(file) then $
     filename = cdf_dir + $
     '/fields/' + $
-    cdf_subdir + '/' + $
     level_str + '/' + $
+    cdf_subdir + '/' + $
     year_str + '/' + $
     month_str + '/' + $
     filename_hdr + filename_timestring + vers_num_str + '.cdf'

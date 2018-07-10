@@ -8,6 +8,12 @@
 ;
 ; Does NOT require the ICY DLM to be loaded
 ;Author: Davin Larson
+;
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-07-02 11:23:43 -0700 (Mon, 02 Jul 2018) $
+; $LastChangedRevision: 25428 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/time_ephemeris.pro $
+
 ;-
 
 

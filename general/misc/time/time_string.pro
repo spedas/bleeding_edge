@@ -26,7 +26,7 @@ end
 ;  double(s)      seconds since 1970
 ;  string(s)      format:  YYYY-MM-DD/hh:mm:ss
 ;  structure(s)   format:  given in "time_struct"
-;  float(s)
+;  float(s)       not recommended, may result in loss of precision 
 ;  longs(s)
 ;                 values outside normal range will be corrected.
 ;KEYWORDS:
@@ -82,11 +82,17 @@ end
 ;NOTE:
 ;  This routine works on vectors and is designed to be fast.
 ;  Output will have the same dimensions as the input.
+;  
+;  If you call this function using a float for time0, IDL transforms the float
+;  to an exp format, which may result in loss of precision. For example:
+;  time_string(1514851198.0D) = 2018-01-01/23:59:58 (Correct!)
+;  time_string(1514851198.0) = 2018-01-02/00:00 (Wrong!) float becomes 1.5148512e+009 
+;  time_string(1514851198) = 2018-01-01/23:59:58 (Correct!)  
 ;
 ;CREATED BY:    Davin Larson  Oct 1996
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2016-09-28 12:13:15 -0700 (Wed, 28 Sep 2016) $
-; $LastChangedRevision: 21964 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-07-09 14:31:15 -0700 (Mon, 09 Jul 2018) $
+; $LastChangedRevision: 25457 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/time_string.pro $
 ;-
 function time_string,time0, $

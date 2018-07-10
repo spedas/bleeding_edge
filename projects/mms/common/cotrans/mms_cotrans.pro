@@ -14,7 +14,7 @@
 ;
 ;
 ;Example Usage:
-;  mms_cotrans, 'mms1_fgm_b_gse_srvy_l2_bvec', in_coord='dmpa', out_coord='gsm', $
+;  mms_cotrans, 'mms1_fgm_b_gse_srvy_l2_bvec', in_coord='gse', out_coord='gsm', $
 ;                out_suffix='_gsm', /ignore_dlimits
 ;
 ;
@@ -30,9 +30,9 @@
 ;             This keyword is optional if the dlimits.data_att.coord_sys attribute
 ;             is present for the tplot variable, and if present, it must match
 ;             the value of that attribute (see cotrans_set_coord, cotrans_get_coord).
-;               e.g. 'dmpa', 'gse', 'gsm', 'sm', 'gei','geo', 'mag'
+;               e.g. 'gse', 'gsm', 'sm', 'gei','geo', 'mag'
 ;  out_coord:  String specifying the desitnation coordinate system.
-;                e.g. 'dmpa', 'gse', 'gsm', 'sm', 'gei','geo', 'mag' 
+;                e.g. 'gse', 'gsm', 'sm', 'gei','geo', 'mag' 
 ;  in_suffix:  Suffix of input variable name.  This specifies the portion of
 ;              the input variable's name that will be replace with the output
 ;              suffix.  If specified, the name effective input name will be
@@ -55,11 +55,15 @@
 ;
 ;Notes:
 ;  Based on thm_cotrans
+;  
+;  
+;  egrimes disabled DMPA coordinate transformations on 2July18 - please use mms_qcotrans for
+;  these transformations
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-05-17 14:35:23 -0700 (Thu, 17 May 2018) $
-;$LastChangedRevision: 25234 $
+;$LastChangedDate: 2018-07-02 15:50:24 -0700 (Mon, 02 Jul 2018) $
+;$LastChangedRevision: 25433 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/cotrans/mms_cotrans.pro $
 ;-
 
@@ -251,6 +255,11 @@ endif else begin
 
 endelse
 
+; tell the user to use mms_qcotrans instead of mms_cotrans if they're requesting DMPA transformation
+if is_string(ssl_set_intersection([in_coords,out_coord], ['dmpa'])) then begin
+  dprint, dlevel=0, 'Please use mms_qcotrans for transforming data to/from the DMPA coordinate system'
+  return
+endif
 
 ; Determine if probe is required
 ;----------------------------------------------------------

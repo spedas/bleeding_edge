@@ -17,8 +17,8 @@
 ;     Yuki Harada on 2014-06-29
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-06-10 19:49:29 -0700 (Sun, 10 Jun 2018) $
-; $LastChangedRevision: 25341 $
+; $LastChangedDate: 2018-07-05 01:00:43 -0700 (Thu, 05 Jul 2018) $
+; $LastChangedRevision: 25438 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_read_inf.pro $
 ;-
 
@@ -32,14 +32,14 @@ if keyword_set(load) then begin
 ;   s = kgy_file_source(remote_data_dir='http://research.ssl.berkeley.edu/~haraday/data/kaguya/',last_version=1, _extra=_ex)
    s = kgy_file_source(remote_data_dir='http://step0ku.kugi.kyoto-u.ac.jp/~haraday/data/kaguya/',last_version=0, _extra=_ex)
    pfs = 'public/Kaguya_MAP_PACE_information/'+ $
-         ['ESA-S1_ENE_POL_AZ_GFACTOR_16X64_*.dat', $
-          'ESA-S1_ENE_POL_AZ_GFACTOR_4X16_*.dat', $
-          'ESA-S2_ENE_POL_AZ_GFACTOR_16X64_*.dat', $
-          'ESA-S2_ENE_POL_AZ_GFACTOR_4X16_*.dat', $
-          'IEA_ENE_POL_AZ_GFACTOR_16X64_*.dat', $
-          'IEA_ENE_POL_AZ_GFACTOR_4X16_*.dat', $
-          'IMA_ENE_POL_AZ_GFACTOR_16X64_*.dat', $
-          'IMA_ENE_POL_AZ_GFACTOR_4X16_*.dat' ]
+         ['ESA-S1_ENE_POL_AZ_GFACTOR_16X64_20090828.dat', $
+          'ESA-S1_ENE_POL_AZ_GFACTOR_4X16_20090828.dat', $
+          'ESA-S2_ENE_POL_AZ_GFACTOR_16X64_20090828.dat', $
+          'ESA-S2_ENE_POL_AZ_GFACTOR_4X16_20090828.dat', $
+          'IEA_ENE_POL_AZ_GFACTOR_16X64_20080225R.dat', $
+          'IEA_ENE_POL_AZ_GFACTOR_4X16_20080226.dat', $
+          'IMA_ENE_POL_AZ_GFACTOR_16X64_20090212.dat', $
+          'IMA_ENE_POL_AZ_GFACTOR_4X16_20090212.dat' ]
    for ipf=0,n_elements(pfs)-1 do begin
 ;      f = file_retrieve(pfs[ipf],_extra=s)
 ;      if total(strlen(f)) then files = [files,f]

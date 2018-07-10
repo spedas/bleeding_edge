@@ -17,8 +17,8 @@
 ;  If an error occurs fac_output will be undefined on return
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-03-10 08:58:08 -0800 (Fri, 10 Mar 2017) $
-;$LastChangedRevision: 22935 $
+;$LastChangedDate: 2018-07-02 15:28:15 -0700 (Mon, 02 Jul 2018) $
+;$LastChangedRevision: 25430 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_pgs_make_fac.pro $
 ;-
 
@@ -34,7 +34,7 @@ pro mms_pgs_xgse,mag_temp,pos_temp,x_basis,y_basis,z_basis,probe=probe
   x_axis = transpose(rebin([1D,0D,0D],3,n_elements(d.x)))
   
   store_data,'xgse_pgs_temp',data={x:d.x,y:x_axis},dl={data_att:{coord_sys:'gse'}}
-  mms_cotrans,'xgse_pgs_temp','xgse_pgs_temp',out_coord='dmpa',probe=probe
+  mms_cotrans,'xgse_pgs_temp','xgse_pgs_temp',out_coord='gse',probe=probe
     
   ;create orthonormal basis set
   tnormalize,mag_temp,out=z_basis
@@ -63,8 +63,8 @@ pro mms_pgs_phigeo,mag_temp,pos_temp,x_basis,y_basis,z_basis,probe=probe
   ;The conversion swaps the x & y components of position, reflects over x=0,z=0 then projects into the xy plane
   store_data,pos_temp[0],data={x:pos_data.x,y:[[-pos_data.y[*,1]],[pos_data.y[*,0]],[replicate(0.,n_elements(pos_data.x))]]}
   
-  ;transform into dsl because particles are in dmpa
-  mms_cotrans,pos_temp,pos_temp,out_coord='dmpa',probe=probe
+  ;transform into GSE because particles are in GSE
+  mms_cotrans,pos_temp,pos_temp,out_coord='gse',probe=probe
   
   ;create orthonormal basis set
   tnormalize,mag_temp,out=z_basis
@@ -93,8 +93,8 @@ pro mms_pgs_mphigeo,mag_temp,pos_temp,x_basis,y_basis,z_basis,probe=probe
   ;The conversion swaps the x & y components of position, reflects over x=0,z=0 then projects into the xy plane 
   store_data,pos_temp[0],data={x:pos_data.x,y:[[-pos_data.y[*,1]],[pos_data.y[*,0]],[replicate(0.,n_elements(pos_data.x))]]}
   
-  ;transform into dsl because particles are in dmpa
-  mms_cotrans,pos_temp,pos_temp,out_coord='dmpa',probe=probe
+  ;transform into GSE because particles are in GSE
+  mms_cotrans,pos_temp,pos_temp,out_coord='gse',probe=probe
   
   ;create orthonormal basis set
   tnormalize,mag_temp,out=z_basis
@@ -146,8 +146,8 @@ pro mms_pgs_make_fac,times,$ ;the time grid of the particle data
   ;Note this logic could probably be rolled into thm_pgs_clean_support in the future
   if (tnames(mag_tvar_in))[0] ne '' then begin
     mag_temp = mag_tvar_in + '_pgs_temp'
-    ;Right now, magnetic field must be in dmpa coordinates
-    mms_cotrans,mag_tvar_in,mag_temp,out_coord='dmpa',probe=probe
+    ; magnetic field must be in GSE coordinates
+    mms_cotrans,mag_tvar_in,mag_temp,out_coord='gse',probe=probe
     tinterpol_mxn,mag_temp,times,newname=mag_temp,/nan_extrapolate
   endif else begin
     dprint, 'Magnetic field variable not found: "' + mag_tvar_in + $

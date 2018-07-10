@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jun 28 18:16:32 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Jul  9 18:16:34 2018.<P>
  
 <HR>
  
@@ -241,38 +241,6 @@ PURPOSE:
     VY             Y velocity component (km/s)
     VZ             Z velocity component (km/s)
 
- The available coordinate frames are:
-
-   IAU_MARS = body-fixed Mars geographic coordinates (non-inertial)
-
-              X -&gt;  0 deg E longitude, 0 deg latitude
-              Y -&gt; 90 deg E longitude, 0 deg latitude
-              Z -&gt; 90 deg N latitude (= X x Y)
-              origin = center of Mars
-              units = kilometers
-
-   GEO = synonym (in this routine only) for IAU_MARS
-
-   MSO = Mars-Sun-Orbit coordinates (approx. inertial)
-
-              X -&gt; from center of Mars to center of Sun
-              Y -&gt; opposite to Mars' orbital angular velocity vector
-              Z = X x Y
-              origin = center of Mars
-              units = kilometers
-
-   J2000 = Mean equator and equinox at J2000 epoch (inertial)
-
-              X -&gt; aligned with mean (vernal) equinox
-              Z -&gt; aligned with celestial north pole (Earth's rotation axis)
-              Y = Z x X
-              origin = center of Mars
-              units = kilometers
-
-   PHO = body-fixed Phobos geographic coordinates (non-inertial)
-
-   DEI = body-fixed Deimos geographic coordiantes (non-inertial)
-
 USAGE:
   maven_orbit_makeeph, frame=frame, origin=origin, eph=eph
 INPUTS:
@@ -282,9 +250,7 @@ KEYWORDS:
 
        EPH:       Named variable to hold the ephemeris structure.
 
-       FRAME:     Coordinate frame.  Can be &quot;J2000&quot;, &quot;IAU_MARS&quot;, or &quot;MSO&quot;.
-                  (Also accepts &quot;GEO&quot; as a synomym for &quot;IAU_MARS&quot;.)
-                  (Also accepts &quot;PHO&quot; for Phobos and &quot;DEI&quot; for Deimos.)
+       FRAME:     Coordinate frame.  Type mvn_frame_name(/list) for a full list.
 
        ORIGIN:    Origin of coordinate frame.  Can be &quot;Mars&quot;, &quot;Phobos&quot;, or
                   &quot;Deimos&quot;.  Default = &quot;Mars&quot;.
@@ -311,8 +277,8 @@ KEYWORDS:
                   standard name or id.  Example: OBJECT='-200000'.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-04-17 13:37:18 -0700 (Mon, 17 Apr 2017) $
- $LastChangedRevision: 23172 $
+ $LastChangedDate: 2018-07-05 13:14:34 -0700 (Thu, 05 Jul 2018) $
+ $LastChangedRevision: 25439 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_makeeph.pro $
 
 CREATED BY:	David L. Mitchell  2014-10-13

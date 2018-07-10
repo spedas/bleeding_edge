@@ -7,6 +7,8 @@
 ;  performed.  For example, all of the following are expanded
 ;  to 'MAVEN_STATIC': 'maVEn_st', 'sta', 'St'.
 ;
+;  'GEO' is accepted as a synonym for 'MARS'.
+;
 ;  Simply returns the input if the fragment is not recognized
 ;  or ambiguous.
 ;
@@ -22,23 +24,34 @@
 ;                     0 = match not found or ambiguous
 ;                     1 = unique match found
 ;
+;     RESET:      Refresh the list of frame names.
+;
+;     LIST:       Print a list of frame names and exit.  Returns the
+;                 null string.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-07-06 14:44:45 -0700 (Thu, 06 Jul 2017) $
-; $LastChangedRevision: 23560 $
+; $LastChangedDate: 2018-06-29 15:42:33 -0700 (Fri, 29 Jun 2018) $
+; $LastChangedRevision: 25425 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_frame_name.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-function mvn_frame_name, frame, success=success
+function mvn_frame_name, frame, success=success, reset=reset, list=list
 
   common mvn_frame_list, mvn_flist
 
-  if (size(mvn_flist,/type) ne 7) then begin
-    mvn_flist = ['MARS','PHOBOS','DEIMOS','SPACECRAFT','APP','STATIC',$
+  if (keyword_set(reset) or (size(mvn_flist,/type) ne 7)) then begin
+    mvn_flist = ['MARS','GEO','PHOBOS','DEIMOS','SPACECRAFT','APP','STATIC',$
                  'SWIA','SWEA','MAG1','MAG2','EUV','SEP1','SEP2',$
                  'IUVS_LIMB','IUVS_NADIR','NGIMS','MSO','SSO','MME_2000']
   endif
   flist = mvn_flist
+  ffull = ['IAU_'+flist[0:3], 'MAVEN_'+flist[4:*]]
+
+  if keyword_set(list) then begin
+    for i=0,(n_elements(ffull)-1) do print,"  ",ffull[i]
+    return, ''
+  endif
 
   nframe = n_elements(frame)
   success = replicate(0, nframe)
@@ -58,8 +71,6 @@ function mvn_frame_name, frame, success=success
 
 ; Case folded minimum matching for the remainder of the fragment
 
-  ffull = ['IAU_'+flist[0:2], 'MAVEN_'+flist[3:*]]
-
   for j=0,(nframe-1) do begin
     i = strmatch(flist, ftest[j]+'*', /fold)
     case (total(i)) of
@@ -71,6 +82,11 @@ function mvn_frame_name, frame, success=success
       else : print, "Frame ambiguous: ", frame[j]
     endcase
   endfor
+
+; Accept "GEO" as a synonym for "MARS"
+
+  i = where(strcmp(frame, 'IAU_GEO', 7, /fold), count)
+  if (count gt 0) then frame[i] = 'IAU_MARS'
 
   return, frame
 
