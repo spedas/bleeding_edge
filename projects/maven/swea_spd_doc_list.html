@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Jul  9 18:16:35 2018.<P>
+<STRONG>Last modified: </STRONG>Tue Jul 10 18:16:29 2018.<P>
  
 <HR>
  
@@ -4825,7 +4825,7 @@ KEYWORDS:
        PROP:         Print the table properties: checksum, energy and angle ranges.
 
        TABNUM:       Table number corresponding to predefined settings.  Currently,
-                     there are six tables defined:
+                     there are eight tables defined:
 
                        1 : Xmax = 6., Vrange = [0.75, 750.], V0scale = 1., /old_def
                            primary table for ATLO and Inner Cruise (first turnon)
@@ -4898,13 +4898,19 @@ KEYWORDS:
 
        CMDFILE:      Saves an ascii command file for upload to the PFDPU.
 
-       MEMADDR:      PFDPU memory address to begin loading table.
+       MEMADDR:      PFDPU memory address to begin loading table.  Only used if
+                     FORMAT &lt; 2.
 
-       NEWFMT:       Output sweep table in new format (4-byte words).
+       SWEBUF:       SWEA SLUT buffer to load table to (0-7).  Only used if FORMAT = 2.
+
+       FORMAT:       Output sweep table in specified format:
+                        0 = old PFDPU format (bytes)
+                        1 = new PFDPU format (4-byte words)
+                        2 = SWEA native format (2-byte words)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-04-08 15:36:11 -0700 (Sun, 08 Apr 2018) $
- $LastChangedRevision: 25022 $
+ $LastChangedDate: 2018-07-10 09:36:38 -0700 (Tue, 10 Jul 2018) $
+ $LastChangedRevision: 25459 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sweep.pro $
 
 CREATED BY:	David L. Mitchell  2014-01-03

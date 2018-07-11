@@ -22,7 +22,7 @@
 ;       PROP:         Print the table properties: checksum, energy and angle ranges.
 ;
 ;       TABNUM:       Table number corresponding to predefined settings.  Currently,
-;                     there are six tables defined:
+;                     there are eight tables defined:
 ;
 ;                       1 : Xmax = 6., Vrange = [0.75, 750.], V0scale = 1., /old_def
 ;                           primary table for ATLO and Inner Cruise (first turnon)
@@ -95,13 +95,19 @@
 ;
 ;       CMDFILE:      Saves an ascii command file for upload to the PFDPU.
 ;
-;       MEMADDR:      PFDPU memory address to begin loading table.
+;       MEMADDR:      PFDPU memory address to begin loading table.  Only used if
+;                     FORMAT < 2.
 ;
-;       NEWFMT:       Output sweep table in new format (4-byte words).
+;       SWEBUF:       SWEA SLUT buffer to load table to (0-7).  Only used if FORMAT = 2.
+;
+;       FORMAT:       Output sweep table in specified format:
+;                        0 = old PFDPU format (bytes)
+;                        1 = new PFDPU format (4-byte words)
+;                        2 = SWEA native format (2-byte words)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-04-08 15:36:11 -0700 (Sun, 08 Apr 2018) $
-; $LastChangedRevision: 25022 $
+; $LastChangedDate: 2018-07-10 09:36:38 -0700 (Tue, 10 Jul 2018) $
+; $LastChangedRevision: 25459 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sweep.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-01-03
@@ -110,7 +116,7 @@
 pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xmax, $
                    V0scale=V0scale, Vrange=Vrange, Erange=Erange, old_def=old_def, $
                    chksum=chksum, V0tweak=V0tweak, dumpfile=dumpfile, cmdfile=cmdfile, $
-                   memaddr=memaddr, newfmt=newfmt, tstart=tstart, tplot=tplot
+                   memaddr=memaddr, swebuf=swebuf, format=format, tstart=tstart, tplot=tplot
 
   @mvn_swe_com
 
@@ -121,7 +127,17 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
   if not keyword_set(V0tweak) then V0tweak = {gain:1.00, offset:0.}
   if not keyword_set(tstart) then tstart = 0D else tstart = (time_double(tstart))[0]
   doplot = keyword_set(doplot)
-  newfmt = keyword_set(newfmt)
+  if not keyword_set(format) then format = 0
+  if not keyword_set(swebuf) then swebuf = 0
+  case format of
+      0  : print, "Using old PFDPU format."
+      1  : print, "Using new PFDPU format."
+      2  : print, "Using SWEA format."
+    else : begin
+             print, "Unrecognized format: ", format
+             return
+           end
+  endcase
 
   Ka = swe_Ka   ; analyzer constant
 
@@ -582,62 +598,88 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
     cmd[even] = cmd_v0 / 256
     cmd[odd]  = cmd_v0 mod 256
 
-    if (newfmt) then begin
-      cmd = string(cmd, format='(z2.2)')
-      cword = strarr(nbytes/4)
-      for i=0,(nbytes-1),4 do cword[i/4] = '0x' + cmd[i] + cmd[i+1] + cmd[i+2] + cmd[i+3]
-      cmd = cword
-    endif else cmd = strtrim(string(cmd, format='(i)'),2)
+    case format of
+      0 : cmd = strtrim(string(cmd, format='(i)'),2)
+      1 : begin
+            cmd = string(cmd, format='(z2.2)')
+            cword = strarr(nbytes/4)
+            for i=0,(nbytes-1),4 do cword[i/4] = '0x' + cmd[i] + cmd[i+1] + cmd[i+2] + cmd[i+3]
+            cmd = cword
+          end
+      2 : begin
+            cmd = string(cmd, format='(z2.2)')
+            cword = strarr(nbytes/2)
+            for i=0,(nbytes-1),2 do cword[i/2] = '0x' + cmd[i] + cmd[i+1]
+            cmd = cword
+          end
+      else : begin
+               print, "This is impossible!"
+               return
+             end
+    endcase
 
     openw, lun, cmdfile, /get_lun
 
-      printf,lun,"from MAVEN import *"
-      printf,lun,"from fswutil import *"
-      printf,lun,"import maven_log"
-      printf,lun,"log = maven_log.log()"
-      printf,lun,"from __main__ import *"
-      printf,lun,"cmd = maven_cmd()"
-      printf,lun,""
-      printf,lun,"def main():"
-      printf,lun,""
-      printf,lun,"    LOAD_EEPROM_START(112)"
-      j = 0
-      nload = nbytes/128
-      for i=0,(nload-1) do begin
-        if (newfmt) then begin
-          head = 'pfdpu_load(0x' + string(memaddr,format='(z6.6)') + ',"'
-          tail = '")'
-          printf,lun,head,cmd[j:(j+31)],tail,format='(4x,a,31(a,","),a,a)'
-          j += 32
-        endif else begin
-          head = 'pfdpu_load(0x' + string(memaddr,format='(z6.6)') + ',['
-          tail = '])'
-          printf,lun,head,cmd[j:(j+127)],tail,format='(4x,a,127(a,", "),a,a)'
-          j += 128
-        endelse
-        printf,lun,"    sleep(0.5)"
-        memaddr += 128
-      endfor
+      if (format lt 2) then begin
+        printf,lun,"from MAVEN import *"
+        printf,lun,"from fswutil import *"
+        printf,lun,"import maven_log"
+        printf,lun,"log = maven_log.log()"
+        printf,lun,"from __main__ import *"
+        printf,lun,"cmd = maven_cmd()"
+        printf,lun,""
+        printf,lun,"def main():"
+        printf,lun,""
+        printf,lun,"    LOAD_EEPROM_START(112)"
+        j = 0
+        nload = nbytes/128
+        for i=0,(nload-1) do begin
+          if (format eq 1) then begin
+            head = 'pfdpu_load(0x' + string(memaddr,format='(z6.6)') + ',"'
+            tail = '")'
+            printf,lun,head,cmd[j:(j+31)],tail,format='(4x,a,31(a,","),a,a)'
+            j += 32
+          endif else begin
+            head = 'pfdpu_load(0x' + string(memaddr,format='(z6.6)') + ',['
+            tail = '])'
+            printf,lun,head,cmd[j:(j+127)],tail,format='(4x,a,127(a,", "),a,a)'
+            j += 128
+          endelse
+          printf,lun,"    sleep(0.5)"
+          memaddr += 128
+        endfor
 
-      nleft = nbytes mod 128
-      if (nleft gt 0) then begin
-        if (newfmt) then begin
-          k = nleft/4 - 1
-          fmt = '(4x,a,' + strtrim(string(k),2) + '(a,","),a,a)'
-          head = 'pfdpu_load(0x' + string(memaddr,format='(z6.6)') + ',"'
-          tail = '")'
-          printf,lun,head,cmd[j:(j+k)],tail,format=fmt
-        endif else begin
-          k = nleft - 1
-          fmt = '(4x,a,' + strtrim(string(k),2) + '(a,", "),a,a)'
-          head = 'pfdpu_load(0x' + string(memaddr,format='(z6.6)') + ',['
-          tail = '])'
-          printf,lun,head,cmd[j:(j+k)],tail,format=fmt
-        endelse
-        printf,lun,"    sleep(0.5)"
-      endif
+        nleft = nbytes mod 128
+        if (nleft gt 0) then begin
+          if (format eq 1) then begin
+            k = nleft/4 - 1
+            fmt = '(4x,a,' + strtrim(string(k),2) + '(a,","),a,a)'
+            head = 'pfdpu_load(0x' + string(memaddr,format='(z6.6)') + ',"'
+            tail = '")'
+            printf,lun,head,cmd[j:(j+k)],tail,format=fmt
+          endif else begin
+            k = nleft - 1
+            fmt = '(4x,a,' + strtrim(string(k),2) + '(a,", "),a,a)'
+            head = 'pfdpu_load(0x' + string(memaddr,format='(z6.6)') + ',['
+            tail = '])'
+            printf,lun,head,cmd[j:(j+k)],tail,format=fmt
+          endelse
+          printf,lun,"    sleep(0.5)"
+        endif
 
-      printf,lun,"    LOAD_EEPROM_END()"
+        printf,lun,"    LOAD_EEPROM_END()"
+
+      endif else begin
+        printf,lun,"cmd.SWE_SSCTL(0)"
+        printf,lun,"time.sleep(0.1)"
+        printf,lun,"cmd.SWE_LUTPTR(" + strtrim(string(swebuf,format='(i)'),2) + ",0)"
+        printf,lun,"time.sleep(0.1)"
+        nload = nbytes/2
+        for i=0,(nload-1) do begin
+          printf,lun,"cmd.SWE_LUTDAT(" + cmd[i] + ")"
+          printf,lun,"time.sleep(0.1)"
+        endfor
+      endelse
 
     free_lun,lun
   endif

@@ -19,7 +19,7 @@
 ; VERSION:
 ;   $LastChangedBy: rlivi2 $
 ;   $LastChangedDate: 2015-02-23 13:05:25$
-;   $LastChangedRevision: 25045 $
+;   $LastChangedRevision: 25460 $
 ;   $URL svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_3d_snap.pro $
 ;-
 
@@ -101,7 +101,7 @@ pro maven_spacecraft_vertices, prec=prec, $
    ;; SWEA
    swe_loc    = [-2359.00,    0.00,-1115.00]
    ;; SWIA
-   swi_loc    = [-1223.00,-1313.00, 1969.00]
+   swi_loc    = [-1223.00,-1245.00, 1969.00]
    ;; SEP +X/+Y
    sep_py_loc = [ 1245.00, 1143.00, 2080.00]
    ;; SEP +X/-Y
@@ -454,11 +454,11 @@ pro maven_spacecraft_vertices, prec=prec, $
         yy[iobj,ll] = reform(box[1,indd])
         zz[iobj,ll] = reform(box[2,indd])
         ll = ll+5
-     ENDFOR 
+     ENDFOR
   ENDFOR 
   
   ;; prec - Number of points between vertices
-  IF ~keyword_set(prec) then prec=5;100
+  IF ~keyword_set(prec) then prec=100
 
   ;; Expand using 'prec'
   nn = 5.*n2
@@ -474,7 +474,6 @@ pro maven_spacecraft_vertices, prec=prec, $
                                findgen((nn-1)*prec+1)/prec)
   ENDFOR
 
-  
   ;; Final Structure
   inst = {vertex:vertex, $
           n1:n1,n2:n2,n3:n3,$

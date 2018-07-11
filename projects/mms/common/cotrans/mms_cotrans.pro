@@ -62,8 +62,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-07-02 15:50:24 -0700 (Mon, 02 Jul 2018) $
-;$LastChangedRevision: 25433 $
+;$LastChangedDate: 2018-07-09 23:43:53 -0700 (Mon, 09 Jul 2018) $
+;$LastChangedRevision: 25458 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/cotrans/mms_cotrans.pro $
 ;-
 
@@ -256,7 +256,7 @@ endif else begin
 endelse
 
 ; tell the user to use mms_qcotrans instead of mms_cotrans if they're requesting DMPA transformation
-if is_string(ssl_set_intersection([in_coords,out_coord], ['dmpa'])) then begin
+if array_contains([in_coords,out_coord], 'dmpa') then begin
   dprint, dlevel=0, 'Please use mms_qcotrans for transforming data to/from the DMPA coordinate system'
   return
 endif
