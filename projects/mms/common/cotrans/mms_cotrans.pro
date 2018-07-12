@@ -62,8 +62,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-07-09 23:43:53 -0700 (Mon, 09 Jul 2018) $
-;$LastChangedRevision: 25458 $
+;$LastChangedDate: 2018-07-11 08:26:19 -0700 (Wed, 11 Jul 2018) $
+;$LastChangedRevision: 25462 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/cotrans/mms_cotrans.pro $
 ;-
 
@@ -92,7 +92,8 @@ pro mms_cotrans, $
            ignore_dlimits=ignore_dlimits, $
 
            ; other
-           verbose=verbose
+           verbose=verbose, $
+           allow_dmpa=allow_dmpa
 
 
     compile_opt idl2, hidden
@@ -256,8 +257,8 @@ endif else begin
 endelse
 
 ; tell the user to use mms_qcotrans instead of mms_cotrans if they're requesting DMPA transformation
-if array_contains([in_coords,out_coord], 'dmpa') then begin
-  dprint, dlevel=0, 'Please use mms_qcotrans for transforming data to/from the DMPA coordinate system'
+if array_contains([in_coords,out_coord], 'dmpa') && ~keyword_set(allow_dmpa) then begin
+  dprint, dlevel=0, 'Please use mms_qcotrans for transforming data to/from the DMPA coordinate system; note: if you are sure you want to do this transformation with mms_cotrans, you can override this message and do the transformation with the /allow_dmpa keyword'
   return
 endif
 

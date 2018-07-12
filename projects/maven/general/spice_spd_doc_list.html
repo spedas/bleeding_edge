@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jul 10 18:16:29 2018.<P>
+<STRONG>Last modified: </STRONG>Wed Jul 11 18:16:29 2018.<P>
  
 <HR>
  
@@ -31,6 +31,8 @@ This page was created by the IDL library routine
 <br>Updates all spice kernels from NAIF, should be run from a cronjob
 <LI><A HREF="#MVN_SPICE_LOAD">MVN_SPICE_LOAD</A>
 <br>LOADS SPICE kernels and creates a few tplot variables
+<LI><A HREF="#MVN_SPICE_VALID_TIMES">MVN_SPICE_VALID_TIMES</A>
+<br>Checks whether the currently loaded SPICE/kernels are valid for the specified time.
 <br>
 </UL><P>
 <HR>
@@ -198,6 +200,7 @@ OUTPUT:
 <A NAME="MVN_SPICE_LOAD">
 <H2>MVN_SPICE_LOAD</H2></A>
 <A HREF="#MVN_SPICE_KERNELS_UPDATE">[Previous Routine]</A>
+<A HREF="#MVN_SPICE_VALID_TIMES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME: MVN_SPICE_LOAD
@@ -216,5 +219,32 @@ CALLING SEQUENCE:
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu:36867/repos/idl_socware/trunk/projects/maven/general/mvn_file_source.pro $
 </PRE><P>
 <STRONG>(See <A href="spice/mvn_spice_load.pro">projects/maven/general/spice/mvn_spice_load.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_SPICE_VALID_TIMES">
+<H2>MVN_SPICE_VALID_TIMES</H2></A>
+<A HREF="#MVN_SPICE_LOAD">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+FUNCTION:        MVN_SPICE_VALID_TIMES
+
+PURPOSE:         
+                 Checks whether the currently loaded SPICE/kernels are valid for the specified time.
+
+INPUTS:          Time to be checked.
+
+KEYWORDS:        None.
+
+CREATED BY:      Takuya Hara on 2018-07-11.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2018-07-11 17:35:33 -0700 (Wed, 11 Jul 2018) $
+ $LastChangedRevision: 25463 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/spice/mvn_spice_valid_times.pro $
+
+</PRE><P>
+<STRONG>(See <A href="spice/mvn_spice_valid_times.pro">projects/maven/general/spice/mvn_spice_valid_times.pro</A>)</STRONG><P>
 <HR>
  
