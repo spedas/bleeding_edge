@@ -238,28 +238,60 @@ FUNCTION eva_data_load_mms, state, no_gui=no_gui, force=force
         ;-----------
         pcode=40
         ip=where(perror eq pcode,cp)
-        if (strmatch(paramlist[i],'*_dsp_lfb*') and (cp eq 0)) then begin
-          mms_sitl_get_dsp, sc=sc, datatype='bpsd'
-          tn=tnames(sc+'*dsp_lfb*',cnt)
+        if (strmatch(paramlist[i],'*_dsp_*e_*') and (cp eq 0)) then begin
+          ;mms_sitl_get_dsp, sc=sc, datatype='bpsd'
+          mms_load_dsp,probe=prb,datatype='epsd',data_rate='srvy',level='l1b'
+          mms_load_dsp,probe=prb,datatype='epsd',data_rate='fast',level='l2'
+          tn=tnames(sc+'*dsp_lfe*',cnt)
           if (strlen(tn[0]) gt 0) and (cnt gt 0) then begin
-            options,tn,zlog=1
             ylim,tn,30,6000,1
+            zlim,tn,5e-10,1e-6,1
+            options,tn,ysubtitle=''
             answer = 'Yes'
           endif
-        endif
-        
-        pcode=41
-        ip=where(perror eq pcode,cp)
-        if (strmatch(paramlist[i],'*_dsp_mfe*') and (cp eq 0)) then begin
-          mms_sitl_get_dsp, sc=sc, datatype='epsd'
           tn=tnames(sc+'*dsp_mfe*',cnt)
           if (strlen(tn[0]) gt 0) and (cnt gt 0) then begin
-            options,tn,zlog=1
-            ylim,tn,500,130000,1
+            ylim,tn,500,1e+5,1
+            zlim,tn,1e-10,1e-7,1
+            options,tn,ysubtitle=''
             answer = 'Yes'
           endif
         endif
         
+;        pcode=41
+;        ip=where(perror eq pcode,cp)
+;        if (strmatch(paramlist[i],'*_dsp_*b_*') and (cp eq 0)) then begin
+;          ;mms_sitl_get_dsp, sc=sc, datatype='bpsd'
+;          mms_load_dsp,probe=prb,datatype='bpsd',data_rate='srvy',level='l1b'
+;          mms_load_dsp,probe=prb,datatype='bpsd',data_rate='fast',level='l2'
+;          tn=tnames(sc+'*dsp_lfb*',cnt)
+;          if (strlen(tn[0]) gt 0) and (cnt gt 0) then begin
+;            ylim,tn,30,6000,1
+;            zlim,tn,5e-10,1e-6,1
+;            options,tn,ysubtitle=''
+;            answer = 'Yes'
+;          endif
+;          tn=tnames(sc+'*dsp_mf*',cnt)
+;          if (strlen(tn[0]) gt 0) and (cnt gt 0) then begin
+;            ylim,tn,500,1e+5,1
+;            zlim,tn,1e-10,1e-7,1
+;            options,tn,ysubtitle=''
+;            answer = 'Yes'
+;          endif
+;        endif
+        
+;        pcode=41
+;        ip=where(perror eq pcode,cp)
+;        if (strmatch(paramlist[i],'*_dsp_mfe*') and (cp eq 0)) then begin
+;          mms_sitl_get_dsp, sc=sc, datatype='epsd'
+;          tn=tnames(sc+'*dsp_mfe*',cnt)
+;          if (strlen(tn[0]) gt 0) and (cnt gt 0) then begin
+;            ylim,tn,500,1e+5,1
+;            zlim,tn,1e-10,1e-7,1
+;            answer = 'Yes'
+;          endif
+;        endif
+;        
         pcode=42
         ip=where(perror eq pcode,cp)
         if (strmatch(paramlist[i],'*_dsp_bpsd_*') and (cp eq 0)) then begin

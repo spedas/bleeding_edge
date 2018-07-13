@@ -23,6 +23,11 @@ FUNCTION eva_data_load_reformat, paramlist, probelist, FOURTH=fourth
     match += (strpos(paramlist[i],'_p') ge sdif)
     match += (strpos(paramlist[i],'_t') ge sdif)
 
+    ; exception
+    if strmatch(paramlist[i],'mms*_dsp_*') then begin
+      match = 0
+    endif
+    
     if match then begin
       paramlist0 = strmid(paramlist[i],0,slen-lencmb-2); paramlist[i] without suffix
 
