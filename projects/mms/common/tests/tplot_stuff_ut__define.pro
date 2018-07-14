@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'tplot_stuff_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-07-09 13:02:45 -0700 (Mon, 09 Jul 2018) $
-; $LastChangedRevision: 25455 $
+; $LastChangedDate: 2018-07-13 15:36:46 -0700 (Fri, 13 Jul 2018) $
+; $LastChangedRevision: 25470 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/tplot_stuff_ut__define.pro $
 ;-
 
@@ -25,7 +25,7 @@ function tplot_stuff_ut::test_spedas_changelog
   last_updated_date = strmid(last_updated_str, lu_pos+14, lu_end_pos-lu_pos-14)
   td = time_double(last_updated_date, tformat='MTH DD, YYYY')
   current = systime(/sec)
-  assert, current-td le 60*60*30., 'Problem with the SPEDAS changelog?'
+  assert, current-td le 60*60*48., 'Problem with the SPEDAS changelog?'
   return, 1
 end
 

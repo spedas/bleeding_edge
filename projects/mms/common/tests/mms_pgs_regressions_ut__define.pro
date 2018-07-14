@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_pgs_regressions_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-05-03 09:14:43 -0700 (Thu, 03 May 2018) $
-; $LastChangedRevision: 25160 $
+; $LastChangedDate: 2018-07-13 15:55:44 -0700 (Fri, 13 Jul 2018) $
+; $LastChangedRevision: 25472 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_pgs_regressions_ut__define.pro $
 ;-
 
@@ -32,9 +32,9 @@ function mms_pgs_regressions_ut::test_bulk_vel_subtract_pa_range
   mms_load_fgm, probe=probe, trange=support_trange, level='l2'
 
   name = 'mms'+probe+'_d'+species+'s_dist_'+rate
-  bname = 'mms'+probe+'_fgm_b_dmpa_srvy_l2_bvec'
+  bname = 'mms'+probe+'_fgm_b_gse_srvy_l2_bvec'
   pos_name = 'mms' + probe+ '_defeph_pos'
-  vel_name = 'mms' + probe+ '_d'+species+'s_bulkv_dbcs_brst'
+  vel_name = 'mms' + probe+ '_d'+species+'s_bulkv_gse_brst'
   outputs = ['energy', 'theta', 'phi', 'pa', 'moments']
   pitch_angles = [1, 179]
 
@@ -46,10 +46,10 @@ function mms_pgs_regressions_ut::test_bulk_vel_subtract_pa_range
 
   get_data, 'mms3_dis_dist_brst_energy_Xgse', data=d
   max_data = max(d.Y[0, *], maxidx)
-  assert, maxidx ne 0, 'Problem with mms_part_products regression test with bulk velocity subtraction'
+  assert, maxidx ne (where(finite(d.Y[0, *])))[0], 'Problem with mms_part_products regression test with bulk velocity subtraction'
   get_data, 'mms3_dis_dist_brst_energy_Xgse_bulk', data=d
   max_data = max(d.Y[0, *], maxidx)
-  assert, maxidx eq 0 or (maxidx eq 1 and d.Y[0,0] eq 0.0), 'Problem with mms_part_products regression test with bulk velocity subtraction'
+  assert, maxidx eq (where(finite(d.Y[0, *])))[0], 'Problem with mms_part_products regression test with bulk velocity subtraction'
   return, 1
 end
 
@@ -73,9 +73,9 @@ function mms_pgs_regressions_ut::test_bulk_vel_subtract
   mms_load_fgm, probe=probe, trange=support_trange, level='l2'
   
   name = 'mms'+probe+'_d'+species+'s_dist_'+rate
-  bname = 'mms'+probe+'_fgm_b_dmpa_srvy_l2_bvec'
+  bname = 'mms'+probe+'_fgm_b_gse_srvy_l2_bvec'
   pos_name = 'mms' + probe+ '_defeph_pos'
-  vel_name = 'mms' + probe+ '_d'+species+'s_bulkv_dbcs_brst'
+  vel_name = 'mms' + probe+ '_d'+species+'s_bulkv_gse_brst'
   outputs = ['energy', 'theta', 'phi']
 
   ; no bulk velocity subtraction
@@ -86,10 +86,10 @@ function mms_pgs_regressions_ut::test_bulk_vel_subtract
 
   get_data, 'mms3_dis_dist_brst_energy_Xgse', data=d
   max_data = max(d.Y[0, *], maxidx)
-  assert, maxidx ne 0, 'Problem with mms_part_products regression test with bulk velocity subtraction'
+  assert, maxidx ne (where(finite(d.Y[0, *])))[0], 'Problem with mms_part_products regression test with bulk velocity subtraction'
   get_data, 'mms3_dis_dist_brst_energy_Xgse_bulk', data=d
   max_data = max(d.Y[0, *], maxidx)
-  assert, maxidx eq 0 or (maxidx eq 1 and d.Y[0,0] eq 0.0), 'Problem with mms_part_products regression test with bulk velocity subtraction'
+  assert, maxidx eq (where(finite(d.Y[0, *])))[0], 'Problem with mms_part_products regression test with bulk velocity subtraction'
   return, 1
 end
 

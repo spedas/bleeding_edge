@@ -79,8 +79,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-27 17:53:50 -0800 (Tue, 27 Feb 2018) $
-; $LastChangedRevision: 24793 $
+; $LastChangedDate: 2018-07-13 15:49:47 -0700 (Fri, 13 Jul 2018) $
+; $LastChangedRevision: 25471 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -784,9 +784,12 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
     get_data,'Sun_SWEA_The',data=sthe_swe,index=i
   endif
   if (i gt 0) then begin
-    result_h.sthe = spline(sthe_swe.x, sthe_swe.y, time)
-    result_o1.sthe = result_h.sthe
-    result_o2.sthe = result_h.sthe
+    indx = where(finite(sthe_swe.y), count)
+    if (count gt 0) then begin
+      result_h.sthe = spline(sthe_swe.x[indx], sthe_swe.y[indx], time)
+      result_o1.sthe = result_h.sthe
+      result_o2.sthe = result_h.sthe
+    endif else print,'MVN_STA_COLDION: Failed to get Sun (PL) direction!'
   endif else print,'MVN_STA_COLDION: Failed to get Sun (PL) direction!'
 
 ; Elevation angle of the Sun in the APP frame
@@ -796,9 +799,12 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   mvn_sundir, frame='app', /polar
   get_data,'Sun_APP_The',data=sthe_app,index=i
   if (i gt 0) then begin
-    result_h.sthe_app = spline(sthe_app.x, sthe_app.y, time)
-    result_o1.sthe_app = result_h.sthe_app
-    result_o2.sthe_app = result_h.sthe_app
+    indx = where(finite(sthe_app.y), count)
+    if (count gt 0) then begin
+      result_h.sthe_app = spline(sthe_app.x[indx], sthe_app.y[indx], time)
+      result_o1.sthe_app = result_h.sthe_app
+      result_o2.sthe_app = result_h.sthe_app
+    endif else print,'MVN_STA_COLDION: Failed to get Sun (APP) direction!'
   endif else print,'MVN_STA_COLDION: Failed to get Sun (APP) direction!'
 
 ; Elevation angle of MSO RAM in the APP frame
@@ -808,9 +814,12 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   mvn_ramdir, /mso, frame='app', /polar
   get_data,'V_sc_APP_The',data=rthe_app,index=i
   if (i gt 0) then begin
-    result_h.rthe_app = spline(rthe_app.x, rthe_app.y, time)
-    result_o1.rthe_app = result_h.rthe_app
-    result_o2.rthe_app = result_h.rthe_app
+    indx = where(finite(rthe_app.y), count)
+    if (count gt 0) then begin
+      result_h.rthe_app = spline(rthe_app.x[indx], rthe_app.y[indx], time)
+      result_o1.rthe_app = result_h.rthe_app
+      result_o2.rthe_app = result_h.rthe_app
+    endif else print,'MVN_STA_COLDION: Failed to get MSO RAM direction!'
   endif else print,'MVN_STA_COLDION: Failed to get MSO RAM direction!'
 
 ; Transform ion bulk velocity to the APP frame

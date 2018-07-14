@@ -19,8 +19,8 @@
 ;   13. DSP, fast, bpsd omni
 ;   
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-02-16 09:46:56 -0800 (Thu, 16 Feb 2017) $
-; $LastChangedRevision: 22802 $
+; $LastChangedDate: 2018-07-13 17:23:19 -0700 (Fri, 13 Jul 2018) $
+; $LastChangedRevision: 25476 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_basic_dayside.pro $
 ;-
 start_time = systime(/sec)
@@ -59,10 +59,10 @@ options, 'mms'+probe+'_edp_fast_scpot_ln', ytitle='EDP!CFAST!C-ln(scpot)'
 ;------------
 sc = 'mms'+strcompress(string(probe), /rem)
 vthres = 500.
-get_data,sc+'_fgm_b_dmpa_srvy_l2',data=B
-get_data,sc+'_edp_dce_dsl_fast_l2',data=E,dl=dl,lim=lim
-tnB = tnames(sc+'_fgm_b_dmpa_srvy_l2',ctB)
-tnE = tnames(sc+'_edp_dce_dsl_fast_l2',ctE)
+get_data,sc+'_fgm_b_gse_srvy_l2',data=B
+get_data,sc+'_edp_dce_gse_fast_l2',data=E,dl=dl,lim=lim
+tnB = tnames(sc+'_fgm_b_gse_srvy_l2',ctB)
+tnE = tnames(sc+'_edp_dce_gse_fast_l2',ctE)
 if ctB eq 1 and ctE eq 1 then begin
   ; E has a higher time resolution than B
   ; Here, we interpolate B so that its timestamps will match with those of E.
@@ -85,8 +85,8 @@ if ctB eq 1 and ctE eq 1 then begin
   clrs = [2,4,6]
   cmax = n_elements(comp)
   for c=0,cmax-1 do begin
-    store_data,sc+'_exb_dsl_'+comp[c],data={x:E.x,y:EXB[*,c]}
-    options,sc+'_exb_dsl_'+comp[c],labels='(ExB)'+comp[c],labflag=-1,colors=clrs[c],$
+    store_data,sc+'_exb_gse_'+comp[c],data={x:E.x,y:EXB[*,c]}
+    options,sc+'_exb_gse_'+comp[c],labels='(ExB)'+comp[c],labflag=-1,colors=clrs[c],$
       ytitle=sc+'!C(ExB)'+comp[c],ysubtitle='[km/s]',constant=0,ystyle=1
   endfor
 endif
@@ -120,7 +120,7 @@ if ct eq 1 then begin
 
   ; combine
   for c=0,cmax-1 do begin
-    store_data,sc+'_exb_vperp_'+comp[c],data=sc+['_exb_dsl_','_fpi_iBulkVperp_']+comp[c]
+    store_data,sc+'_exb_vperp_'+comp[c],data=sc+['_exb_gse_','_fpi_iBulkVperp_']+comp[c]
     options,sc+'_exb_vperp_'+comp[c],colors=[clrs[c],0],labflag=-1,$
       labels=['(ExB)'+comp[c],'Vperp,'+comp[c]]
   endfor
@@ -153,9 +153,9 @@ zlim, 'mms'+probe+'_edp_hfesp_srvy_l2', 0, 0, 1
 ;options, 'mms'+probe+'_fpi_ibulkv', colors=[2, 4, 6]
 ;options, 'mms'+probe+'_fpi_ibulkv', labels=['Vx', 'Vy', 'Vz']
 ;options, 'mms'+probe+'_fpi_ibulkv', labflag=-1
-options, 'mms'+probe+'_edp_dce_dsl_fast_l2', colors=[2, 4, 6]
-options, 'mms'+probe+'_edp_dce_dsl_fast_l2', labels=['Ex', 'Ey', 'Ez']
-options, 'mms'+probe+'_edp_dce_dsl_fast_l2', labflag=-1
+options, 'mms'+probe+'_edp_dce_gse_fast_l2', colors=[2, 4, 6]
+options, 'mms'+probe+'_edp_dce_gse_fast_l2', labels=['Ex', 'Ey', 'Ez']
+options, 'mms'+probe+'_edp_dce_gse_fast_l2', labflag=-1
 options,'mms'+probe+'_fpi_DISnumberDensity', ytitle='FPI!CDIS!CDensity'
 
 ; clip the field data, so the data at perigee doesn't dominate the figure
@@ -188,7 +188,7 @@ tplot, 'mms'+probe+['_fgm_gsm_srvy', $
                     '_exb_vperp_z', $
                     '_hpca_hplus_flux_elev_0-360', $
                     '_hpca_oplus_flux_elev_0-360', $
-                    '_edp_dce_dsl_fast_l2', $
+                    '_edp_dce_gse_fast_l2', $
                     '_edp_hfesp_srvy_l2', $
                     '_dsp_bpsd_omni_fast_l2' $
                     ], var_label=position_vars

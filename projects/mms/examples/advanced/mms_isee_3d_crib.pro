@@ -30,7 +30,6 @@ mms_load_fgm, probes=probe, data_rate=data_rate, level=level, cdf_filenames=file
 ; - - - FOR FPI E-T & MOMENT DATA - - - 
 datatype='d'+species+'s-moms' 
 mms_load_fpi, probes=probe, datatype=datatype, level=level, data_rate=data_rate 
-;join_vec, 'mms1_dis_bulk'+['x','y','z']+'_dbcs_brst', 'mms1_dis_bulk_dbcs_brst'  
 ;join_vec, 'mms1_dis_bulk'+['x','y','z']+'_gse_brst', 'mms1_dis_bulk_gse_brst'  
 
 ; - - - PLOT VEL, MAG and E-T diagram 
@@ -73,8 +72,8 @@ data = spd_dist_to_hash(dist)
    print, '###############################################' 
    print, 'Once GUI is open, select PSD from Units menu.' 
    print, '###############################################' 
-tvar_b = 'mms'+probe+'_fgm_b_dmpa_'+data_rate+'_l2_bvec' 
-tvar_v = 'mms1_dis_bulkv_dbcs_brst'
+tvar_b = 'mms'+probe+'_fgm_b_gse_'+data_rate+'_l2_bvec' 
+tvar_v = 'mms1_dis_bulkv_gse_brst'
 ;stel3d, data=data, trange=trange, bfield=tvar_b, velocity=tvar_v
 isee_3d, data=data, trange=trange, bfield=tvar_b, velocity=tvar_v
 

@@ -21,8 +21,8 @@
 ;   17. DSP BPSD
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-05 08:47:39 -0700 (Thu, 05 Oct 2017) $
-; $LastChangedRevision: 24115 $
+; $LastChangedDate: 2018-07-13 16:46:14 -0700 (Fri, 13 Jul 2018) $
+; $LastChangedRevision: 25473 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_basic_tail.pro $
 ;-
 
@@ -75,10 +75,10 @@ options, 'mms'+probe+'_edp_fast_scpot_ln', ytitle='EDP!CFAST!C-ln(scpot)'
 ;------------
 sc = 'mms'+strcompress(string(probe), /rem)
 vthres = 500.
-get_data,sc+'_fgm_b_dmpa_srvy_l2',data=B
-get_data,sc+'_edp_dce_dsl_fast_l2',data=E,dl=dl,lim=lim
-tnB = tnames(sc+'_fgm_b_dmpa_srvy_l2',ctB)
-tnE = tnames(sc+'_edp_dce_dsl_fast_l2',ctE)
+get_data,sc+'_fgm_b_gse_srvy_l2',data=B
+get_data,sc+'_edp_dce_gse_fast_l2',data=E,dl=dl,lim=lim
+tnB = tnames(sc+'_fgm_b_gse_srvy_l2',ctB)
+tnE = tnames(sc+'_edp_dce_gse_fast_l2',ctE)
 if ctB eq 1 and ctE eq 1 then begin
   ; E has a higher time resolution than B
   ; Here, we interpolate B so that its timestamps will match with those of E.
@@ -92,8 +92,8 @@ if ctB eq 1 and ctE eq 1 then begin
   EXB[*,1] = ((E.y[*,2]*wBx - E.y[*,0]*wBz)*iwB2 > (-1)*vthres) < vthres
   EXB[*,2] = ((E.y[*,0]*wBy - E.y[*,1]*wBx)*iwB2 > (-1)*vthres) < vthres
   str_element,/delete,'lim','yrange'
-  store_data,sc+'_exb_dsl',data={x:E.x,y:EXB},dl=dl
-  options,sc+'_exb_dsl',labels=['(ExB)x','(ExB)y','(ExB)z'],labflag=-1,colors=[2,4,6],$
+  store_data,sc+'_exb_gse',data={x:E.x,y:EXB},dl=dl
+  options,sc+'_exb_gse',labels=['(ExB)x','(ExB)y','(ExB)z'],labflag=-1,colors=[2,4,6],$
     ytitle=sc+'!CExB',ysubtitle='[km/s]',constant=0,ystyle=1
 endif
 
@@ -120,8 +120,8 @@ tplot, [ae_type eq 'thm' ? 'thmAE' : 'kyoto_ae', $
         'mms'+probe+'_fgm_b_gsm_srvy_l2_btot', $
         'mms'+probe+'_edp_fast_scpot_ln', $
         'mms'+probe+'_fpi_combined_density', $
-        'mms'+probe+'_dis_bulkv_dbcs_fast', $
-        'mms'+probe+'_exb_dsl', $
+        'mms'+probe+'_dis_bulkv_gse_fast', $
+        'mms'+probe+'_exb_gse', $
         'jtotal', $
         'mms'+probe+'_epd_eis_extof_proton_flux_omni', $
         'mms'+probe+'_dis_energyspectr_omni_fast', $

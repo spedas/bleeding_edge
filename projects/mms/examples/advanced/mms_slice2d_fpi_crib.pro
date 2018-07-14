@@ -27,8 +27,8 @@
 ;   and less for electrons.
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-07-09 12:02:30 -0700 (Mon, 09 Jul 2018) $
-;$LastChangedRevision: 25453 $
+;$LastChangedDate: 2018-07-13 17:03:42 -0700 (Fri, 13 Jul 2018) $
+;$LastChangedRevision: 25474 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_slice2d_fpi_crib.pro $
 ;-
 
@@ -110,9 +110,6 @@ mms_load_fgm, probe=probe, trange=trange, level='l2', data_rate=fgm_data_rate
 ;load velocity moment
 mms_load_fpi, data_rate=data_rate, level=level, datatype='d'+species+'s-moms', $
               probe=probe, trange=trange, min_version='2.2.0'
-
-;combine separate velocity components
-;join_vec, vname + ['x','y','z']+'_dbcs_brst', vname
 
 ;field/velocity aligned slice
 ;  -the plot's x axis is parallel to the B field

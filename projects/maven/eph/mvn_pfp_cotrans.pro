@@ -92,8 +92,8 @@
 ;CREATED BY:      Takuya Hara on 2014-11-24.
 ;
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2015-05-06 02:08:17 -0700 (Wed, 06 May 2015) $
-; $LastChangedRevision: 17481 $
+; $LastChangedDate: 2018-07-13 13:16:23 -0700 (Fri, 13 Jul 2018) $
+; $LastChangedRevision: 25468 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/eph/mvn_pfp_cotrans.pro $
 ;
 ;-
@@ -128,9 +128,7 @@ PRO mvn_pfp_cotrans, var, from=from, to=to, verbose=verbose, $
   ENDELSE 
 
   sphere_to_cart, 1.d0, dat.theta, dat.phi, vx, vy, vz
-  et = time_ephemeris(time)
-  objects = ['MARS', 'MAVEN_SPACECRAFT']
-  valid = spice_valid_times(et, object=objects)
+  valid = mvn_spice_valid_times(time, verbose=verbose)
   IF valid EQ 0B THEN BEGIN
      dprint, 'SPICE/kernels are invalid.'
      status = 0

@@ -44,16 +44,16 @@
 ;CREATED BY:      D. L. Mitchell.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-01-02 15:09:09 -0800 (Tue, 02 Jan 2018) $
-; $LastChangedRevision: 24475 $
+; $LastChangedBy: hara $
+; $LastChangedDate: 2018-07-13 13:19:46 -0700 (Fri, 13 Jul 2018) $
+; $LastChangedRevision: 25469 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_functions/mvn_sta_v4d.pro $
 ;
 ;-
 PRO mvn_sta_v4d, trange, frame=frame, _extra=_extra, mass=mass, m_int=mq, $
                  mmin=mmin, mmax=mmax, apid=apid, sum=sum, dopot=dopot, $
                  sc_pot=sc_pot, vsc=vsc, erange=erange, result=result, $
-                 template=template
+                 template=template, verbose=verbose
 
   NaN = !values.f_nan
   NaN3 = replicate(NaN,3)
@@ -81,7 +81,7 @@ PRO mvn_sta_v4d, trange, frame=frame, _extra=_extra, mass=mass, m_int=mq, $
 ; Process inputs
 
   if (size(trange,/type) eq 0) then begin
-    print,'You must supply a time or time range.'
+    dprint, 'You must supply a time or time range.', dlevel=2, verbose=verbose
     return
   endif
   trange = time_double(trange)
@@ -113,6 +113,11 @@ PRO mvn_sta_v4d, trange, frame=frame, _extra=_extra, mass=mass, m_int=mq, $
 
     tmid = (d.time + d.end_time)/2D
 
+    if mvn_spice_valid_times(tmid) eq 0 then begin
+       dprint, dlevel=2, verbose=verbose, 'SPICE/kernels ara invalid.'
+       return
+    endif 
+
     idx = where((d.mass_arr lt mmin) or (d.mass_arr gt mmax), nidx)
     if (nidx gt 0) then d.cnts[idx] = 0.
     undefine, nidx, idx
@@ -123,11 +128,9 @@ PRO mvn_sta_v4d, trange, frame=frame, _extra=_extra, mass=mass, m_int=mq, $
     undefine, nidx, idx           
 
     if (frame ne 'MAVEN_STATIC') then begin
-      mvn_pfp_cotrans, d, from='MAVEN_STATIC', to=frame, /overwrite
-
-      bnew = spice_vector_rotate(d.magf, tmid, 'MAVEN_STATIC', frame, $
-                                 check='MAVEN_SPACECRAFT')
-
+      sstat = execute("mvn_pfp_cotrans, d, from='MAVEN_STATIC', to=frame, /overwrite")
+      if (sstat eq 0) then return
+      bnew = spice_vector_rotate(d.magf, tmid, 'MAVEN_STATIC', frame)
       str_element, d, 'magf', bnew, /add_replace
     endif
 

@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_cotrans_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-07-02 16:00:15 -0700 (Mon, 02 Jul 2018) $
-; $LastChangedRevision: 25434 $
+; $LastChangedDate: 2018-07-13 17:47:38 -0700 (Fri, 13 Jul 2018) $
+; $LastChangedRevision: 25477 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_cotrans_ut__define.pro $
 ;-
 
@@ -44,20 +44,20 @@ function mms_cotrans_ut::test_j2000_to_gsm_and_back
   return, 1
 end
 
-;function mms_cotrans_ut::test_state_radecl
-;  mms_load_state, trange=['2016-11-01', '2016-11-02'], probe=1
-;  mms_load_fgm, trange=['2016-11-01', '2016-11-02'], probe=1
-;  mms_cotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', in_coord='dmpa', out_coord='gse', out_suffix='_gse'
-;  assert, spd_data_exists('mms1_fgm_b_dmpa_srvy_l2_bvec_gse', '2016-11-01', '2016-11-02'), 'Problem with state RADec variables'
-;  return, 1
-;end
+function mms_cotrans_ut::test_state_radecl
+  mms_load_state, trange=['2016-11-01', '2016-11-02'], probe=1
+  mms_load_fgm, trange=['2016-11-01', '2016-11-02'], probe=1
+  mms_cotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', in_coord='dmpa', out_coord='gse', out_suffix='_gse', /allow_dmpa
+  assert, spd_data_exists('mms1_fgm_b_dmpa_srvy_l2_bvec_gse', '2016-11-01', '2016-11-02'), 'Problem with state RADec variables'
+  return, 1
+end
 
-;function mms_cotrans_ut::test_fgm_radecl
-;  mms_load_fgm, level='ql', instrument='dfg', trange=['2016-11-01', '2016-11-02'], probe=1
-;  mms_cotrans, 'mms1_dfg_srvy_dmpa_bvec', in_coord='dmpa', out_coord='gse', out_suffix='_gse'
-;  assert, spd_data_exists('mms1_dfg_srvy_dmpa_bvec_gse', '2016-11-01', '2016-11-02'), 'Problem with FGM QL RADec variables'
-;  return, 1
-;end
+function mms_cotrans_ut::test_fgm_radecl
+  mms_load_fgm, level='ql', instrument='dfg', trange=['2016-11-01', '2016-11-02'], probe=1
+  mms_cotrans, 'mms1_dfg_srvy_dmpa_bvec', in_coord='dmpa', out_coord='gse', out_suffix='_gse', /allow_dmpa
+  assert, spd_data_exists('mms1_dfg_srvy_dmpa_bvec_gse', '2016-11-01', '2016-11-02'), 'Problem with FGM QL RADec variables'
+  return, 1
+end
 
 function mms_cotrans_ut::test_cotrans_sm2gsm
   mms_qcotrans, 'mms1_mec_r_sm', out_coord='gsm', out_suffix='_gsm'
@@ -124,43 +124,43 @@ function mms_cotrans_ut::test_qcotrans_dmpa2gse
   return, 1
 end
 
-;; compare the two methods to check for regressions
-;function mms_cotrans_ut::test_cotrans_qcotrans_dmpa2gse
-;  mms_cotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='gse', out_suffix='_cotrans_gse'
-;  mms_qcotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='gse', out_suffix='_qcotrans_gse'
-;  calc, '"qdiff"="mms1_fgm_b_dmpa_srvy_l2_bvec_qcotrans_gse"-"mms1_fgm_b_dmpa_srvy_l2_bvec_cotrans_gse"'
-;  get_data, 'qdiff', data=d
-;  zero_idxs = where(d.Y le 0.0001, zerocount)
-;  if zerocount ne 0 then d.Y[zero_idxs] = !values.d_nan
-;  assert, abs((minmax(d.Y))[0]) lt 1. && abs((minmax(d.Y))[1]) lt 1., 'Problem with mms_cotrans vs. mms_qcotrans test (dmpa2gse)'
-;  return, 1
-;end
-;
-;function mms_cotrans_ut::test_cotrans_qcotrans_dmpa2gsm
-;  mms_cotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='gsm', out_suffix='_cotrans_gsm'
-;  mms_qcotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='gsm', out_suffix='_qcotrans_gsm'
-;  calc, '"qdiff"="mms1_fgm_b_dmpa_srvy_l2_bvec_qcotrans_gsm"-"mms1_fgm_b_dmpa_srvy_l2_bvec_cotrans_gsm"'
-;  get_data, 'qdiff', data=d
-;  zero_idxs = where(d.Y le 0.0001, zerocount)
-;  if zerocount ne 0 then d.Y[zero_idxs] = !values.d_nan
-;  assert, abs((minmax(d.Y))[0]) lt 1. && abs((minmax(d.Y))[1]) lt 1., 'Problem with mms_cotrans vs. mms_qcotrans test (dmpa2gsm)'
-;  return, 1
-;end
-;
-;function mms_cotrans_ut::test_cotrans_qcotrans_dmpa2sm
-;  mms_cotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='sm', out_suffix='_cotrans_sm'
-;  mms_qcotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='sm', out_suffix='_qcotrans_sm'
-;  calc, '"qdiff"="mms1_fgm_b_dmpa_srvy_l2_bvec_qcotrans_sm"-"mms1_fgm_b_dmpa_srvy_l2_bvec_cotrans_sm"'
-;  get_data, 'qdiff', data=d
-;  zero_idxs = where(d.Y le 0.0001, zerocount)
-;  if zerocount ne 0 then d.Y[zero_idxs] = !values.d_nan
-;  ; egrimes relaxed max difference to 2nT, 5/4/2016, max occurs near perigee where field is > 1000 nT
-;  assert, abs((minmax(d.Y))[0]) lt 1. && abs((minmax(d.Y))[1]) lt 2., 'Problem with mms_cotrans vs. mms_qcotrans test (dmpa2sm)'
-;  return, 1
-;end
+; compare the two methods to check for regressions
+function mms_cotrans_ut::test_cotrans_qcotrans_dmpa2gse
+  mms_cotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='gse', out_suffix='_cotrans_gse', /allow_dmpa
+  mms_qcotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='gse', out_suffix='_qcotrans_gse'
+  calc, '"qdiff"="mms1_fgm_b_dmpa_srvy_l2_bvec_qcotrans_gse"-"mms1_fgm_b_dmpa_srvy_l2_bvec_cotrans_gse"'
+  get_data, 'qdiff', data=d
+  zero_idxs = where(d.Y le 0.0001, zerocount)
+  if zerocount ne 0 then d.Y[zero_idxs] = !values.d_nan
+  assert, abs((minmax(d.Y))[0]) lt 1. && abs((minmax(d.Y))[1]) lt 1., 'Problem with mms_cotrans vs. mms_qcotrans test (dmpa2gse)'
+  return, 1
+end
+
+function mms_cotrans_ut::test_cotrans_qcotrans_dmpa2gsm
+  mms_cotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='gsm', out_suffix='_cotrans_gsm', /allow_dmpa
+  mms_qcotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='gsm', out_suffix='_qcotrans_gsm'
+  calc, '"qdiff"="mms1_fgm_b_dmpa_srvy_l2_bvec_qcotrans_gsm"-"mms1_fgm_b_dmpa_srvy_l2_bvec_cotrans_gsm"'
+  get_data, 'qdiff', data=d
+  zero_idxs = where(d.Y le 0.0001, zerocount)
+  if zerocount ne 0 then d.Y[zero_idxs] = !values.d_nan
+  assert, abs((minmax(d.Y))[0]) lt 1. && abs((minmax(d.Y))[1]) lt 1., 'Problem with mms_cotrans vs. mms_qcotrans test (dmpa2gsm)'
+  return, 1
+end
+
+function mms_cotrans_ut::test_cotrans_qcotrans_dmpa2sm
+  mms_cotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='sm', out_suffix='_cotrans_sm', /allow_dmpa
+  mms_qcotrans, 'mms1_fgm_b_dmpa_srvy_l2_bvec', out_coord='sm', out_suffix='_qcotrans_sm'
+  calc, '"qdiff"="mms1_fgm_b_dmpa_srvy_l2_bvec_qcotrans_sm"-"mms1_fgm_b_dmpa_srvy_l2_bvec_cotrans_sm"'
+  get_data, 'qdiff', data=d
+  zero_idxs = where(d.Y le 0.0001, zerocount)
+  if zerocount ne 0 then d.Y[zero_idxs] = !values.d_nan
+  ; egrimes relaxed max difference to 2nT, 5/4/2016, max occurs near perigee where field is > 1000 nT
+  assert, abs((minmax(d.Y))[0]) lt 1. && abs((minmax(d.Y))[1]) lt 2., 'Problem with mms_cotrans vs. mms_qcotrans test (dmpa2sm)'
+  return, 1
+end
 
 function mms_cotrans_ut::test_cotrans_qcotrans_gse2sm
-  mms_cotrans, 'mms1_fgm_b_gse_srvy_l2_bvec', out_coord='sm', out_suffix='_cotrans_sm'
+  mms_cotrans, 'mms1_fgm_b_gse_srvy_l2_bvec', out_coord='sm', out_suffix='_cotrans_sm', /allow_dmpa
   mms_qcotrans, 'mms1_fgm_b_gse_srvy_l2_bvec', out_coord='sm', out_suffix='_qcotrans_sm'
   calc, '"qdiff"="mms1_fgm_b_gse_srvy_l2_bvec_qcotrans_sm"-"mms1_fgm_b_gse_srvy_l2_bvec_cotrans_sm"'
   get_data, 'qdiff', data=d
