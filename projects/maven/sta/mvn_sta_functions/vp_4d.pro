@@ -1,7 +1,7 @@
 ;+
 ;FUNCTION:	vp_4d(dat,ENERGY=en,ERANGE=er,EBINS=ebins,ANGLE=an,ARANGE=ar,BINS=bins,MASS=ms,m_int=mi,q=q,mincnt=mincnt)
 ;INPUT:	
-;	dat:	structure,	4d data structure filled by themis routines mvn_sta_c6.pro, mvn_sta_d0.pro, etc.
+;	dat:	structure,	4d data structure filled by themis routines mvn_sta_get_c8.pro
 ;KEYWORDS
 ;	ENERGY:	fltarr(2),	optional, min,max energy range for integration
 ;	ERANGE:	fltarr(2),	optional, min,max energy bin numbers for integration
@@ -22,15 +22,23 @@
 ;NOTES:	
 ;	Function normally called by "get_4dt" to
 ;	generate time series data for "tplot.pro".
+;	Modified to use tplot structure 'mvn_sta_o2+_c6_ec'
+;	Only valid <500 km altitude
 ;
 ;CREATED BY:
 ;	J.McFadden	2014-02-27
 ;LAST MODIFICATION:
-;	J.McFadden	2016-06-20
+;	J.McFadden	2018-06-29
 ;-
 function vp_4d,dat2,ENERGY=en,ERANGE=er,EBINS=ebins,ANGLE=an,ARANGE=ar,BINS=bins,MASS=ms,m_int=mi,q=q,mincnt=mincnt
 
 common mvn_sta_offset2,efoldoffset,e0,scale1,offset1
+
+tt=timerange()
+if (size(efoldoffset,/type)) ne 4 or (dat2.time lt tt[0]-100.) or (dat2.end_time gt tt[1]+100.)  then begin
+	mvn_sta_set_th_offset2,(tt[0]+tt[1])/2.
+	print,'Running mvn_sta_set_th_offset2'
+endif 
 
 def = !Values.F_NAN
 if dat2.valid eq 0 then begin
@@ -38,10 +46,13 @@ if dat2.valid eq 0 then begin
 	return, def
 endif
 
-if (dat2.quality_flag and 195) gt 0 then return,!Values.F_NAN
+if (dat2.quality_flag and 195) gt 0 then return,def
 
-if dat2.apid ne 'c8' and dat2.apid ne 'ca' then begin
-	print,'Invalid Data: Data must be Maven APID c8 or ca'
+;if dat2.apid ne 'c8' and dat2.apid ne 'ca' then begin
+;	print,'Invalid Data: Data must be Maven APID c8 or ca'
+;	print,'Invalid Data: Data must be Maven APID c8 or ca'
+if dat2.apid ne 'c8' then begin
+	print,'Invalid Data: Data must be Maven APID c8'
 	return, def
 endif
 
@@ -63,16 +74,17 @@ n_m = dat.nmass
 mass_amu = dat.mass_arr
 pot = dat.sc_pot
 
+; the following is not used at present, but might be used in the future
 common mvn_sta_kk3,kk3
-kk = kk3[dat.att_ind]
+if size(kk3,/type) eq 4 then kk = kk3[dat.att_ind] else kk=0
 
 data = dat.cnts 
 bkg = dat.bkg
 energy = dat.energy
 theta = dat.theta
-if dat2.apid eq 'ca' then data = total(reform(data,16,4,16),2)
-if dat2.apid eq 'ca' then bkg = total(reform(bkg,16,4,16),2)
-if dat2.apid eq 'ca' then energy = total(reform(energy,16,4,16),2)/4.
+;if dat2.apid eq 'ca' then data = total(reform(data,16,4,16),2)
+;if dat2.apid eq 'ca' then bkg = total(reform(bkg,16,4,16),2)
+;if dat2.apid eq 'ca' then energy = total(reform(energy,16,4,16),2)/4.
 
 if keyword_set(en) then begin
 	ind = where(energy lt en[0] or energy gt en[1],count)
@@ -87,16 +99,17 @@ if dat2.apid eq 'c8' then begin
 	ind = where(abs(theta) ge 22.,count)
 	if count gt 0 then data[ind] = 0.
 	spec = total(data,2)
-	peak = max(spec,ind2)
-	peak2=0.
+	pk_spec = max(spec,ind2)
+	peak=energy[ind2,0]
 	get_data,'mvn_sta_o2+_c6_ec',data=tmp97
 	if size(tmp97,/type) eq 8 then begin
 ;		peak = interp(tmp97.y,tmp97.x,dat2.time+2.)
 		min_tim = min(abs(tmp97.x-dat2.time-2.),ind97)
 		peak = tmp97.y[ind97]
-		if keyword_set(en) then peak2 = en[0] > peak < en[1]
-		closest = min(abs(reform(energy[*,0])-peak2),ind2)			; this should work for apid=ca,c6
 	endif
+	if keyword_set(en) then peak2 = en[0] > peak < en[1] else peak2=peak
+	closest = min(abs(reform(energy[*,0])-peak2),ind2)
+	peak2=energy[ind2,0]
 	nne=2
 	if dat.mode eq 7 then nne=nne*2
 	data[0:((ind2-nne)>0),*]=0.
@@ -114,11 +127,19 @@ endif
 ;		scale2 = radii/(debye+radii)		; original guess
 		scale2 = (debye/4.+radii)/(debye+radii)	; scale2->1 as debye->0, scale2-> ~1/4 at debye>>radii, 1/4 is a guess
 		pot2 = pot*scale2			; the amount of potential acceleration normal to analyzer surface
-	endif else pot2=0
+	endif else begin
+; may want to modify this 
+		den98 = nb_4d(dat)
+		debye = 740.*(0.1/den98)^.5		; cm, debye length
+		radii = 5.				; cm, characteristic dimension of analyzer
+;		scale2 = radii/(debye+radii)		; original guess
+		scale2 = (debye/4.+radii)/(debye+radii)	; scale2->1 as debye->0, scale2-> ~1/4 at debye>>radii, 1/4 is a guess
+		pot2 = pot*scale2			; the amount of potential acceleration normal to analyzer surface
+;		pot2=0
+	endelse
 
-
-if keyword_set(mincnt) then if total(data-bkg) lt mincnt then return, !Values.F_NAN
-if total(data-bkg) lt 1 then return, !Values.F_NAN
+if keyword_set(mincnt) then if total(data-bkg) lt mincnt then return,def
+if total(data-bkg) lt 1 then return,def
 
 if keyword_set(mi) then mass = dat.mass*mi else mass=dat.mass*32.			; assume O2+ if not set
 
@@ -151,10 +172,13 @@ offset2=efoldoffset*(1.-erf((energy-e0)/(scale1*e0)))
 
 offset=offset0+offset1+offset2+offset3
 
+
+
 ; not sure which of the following is correct - for density>1.e4, debye length is small (1-2 cm) and scpot does not impact vperp 
 ; there may be lower density cases where debye length is 10 cm where this breaks down.
 v = (2.*(energy+pot)/mass)^.5 > 0.					;       use scpot corrected energy for large debye length
 ;v = (2.*energy/mass)^.5						; don't use scpot corrected energy for small debye length
+
 
 if dat2.apid eq 'ca' then begin
 	phi = total(reform(dat.phi,16,4,16),2)/4.
@@ -181,6 +205,9 @@ th4 = -offset3									; th4 is the APP pointing direction
 ; def_const should be 1 for a planar surface, 0 for spherical
 def_const=1.00									; determined imperically during APP nods 20171008 - might need to be debye length dependent
 th5 = !radeg*atan ((peak2/(peak2+def_const*pot2))^.5*tan(th3/!radeg))		; th5 is the th3 angle corrected for external deflections caused by s/c charging
+
+;print,th5,peak2,def_const,pot2
+
 
 vperp = total(v*data2)/total(data2)*sin((th5-th4)/!radeg)			; vperp is the velocity perpendicular to the "th4" ram direction
 return, vperp									; km/s

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jul 13 18:16:37 2018.<P>
+<STRONG>Last modified: </STRONG>Sat Jul 14 18:16:30 2018.<P>
  
 <HR>
  
@@ -2040,7 +2040,7 @@ LAST MODIFICATION:
 <PRE>
 FUNCTION:	vp_4d(dat,ENERGY=en,ERANGE=er,EBINS=ebins,ANGLE=an,ARANGE=ar,BINS=bins,MASS=ms,m_int=mi,q=q,mincnt=mincnt)
 INPUT:	
-	dat:	structure,	4d data structure filled by themis routines mvn_sta_c6.pro, mvn_sta_d0.pro, etc.
+	dat:	structure,	4d data structure filled by themis routines mvn_sta_get_c8.pro
 KEYWORDS
 	ENERGY:	fltarr(2),	optional, min,max energy range for integration
 	ERANGE:	fltarr(2),	optional, min,max energy bin numbers for integration
@@ -2061,11 +2061,13 @@ PURPOSE:
 NOTES:	
 	Function normally called by &quot;get_4dt&quot; to
 	generate time series data for &quot;tplot.pro&quot;.
+	Modified to use tplot structure 'mvn_sta_o2+_c6_ec'
+	Only valid &lt;500 km altitude
 
 CREATED BY:
 	J.McFadden	2014-02-27
 LAST MODIFICATION:
-	J.McFadden	2016-06-20
+	J.McFadden	2018-06-29
 </PRE><P>
 <STRONG>(See <A href="mvn_sta_functions/vp_4d.pro">projects/maven/sta/mvn_sta_functions/vp_4d.pro</A>)</STRONG><P>
 <HR>
