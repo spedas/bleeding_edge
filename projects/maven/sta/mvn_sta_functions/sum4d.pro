@@ -46,14 +46,15 @@ sum.time     = d1.time     < d2.time
 sum.valid  = d1.valid and d2.valid
 
 value=0 & str_element,sum,'delta_t',value
-	if n_elements(value) gt 1 then sum.delta_t= (d1.delta_t + d2.delta_t)
+	if size(value,/type) eq 5 then sum.delta_t= (d1.delta_t + d2.delta_t)
 value=0 & str_element,sum,'sc_pot',value
 ;	if value le 0 or value ge 0 then sum.sc_pot= (d1.sc_pot*d1.integ_t + d2.sc_pot*d2.integ_t)/sum.integ_t
-	if n_elements(value) gt 1 then sum.sc_pot= (d1.sc_pot*d1.integ_t + d2.sc_pot*d2.integ_t)/sum.integ_t
+	if size(value,/type) eq 4 then sum.sc_pot= (d1.sc_pot*d1.integ_t + d2.sc_pot*d2.integ_t)/sum.integ_t
+
 value=0 & str_element,sum,'b_gse',value
 	if n_elements(value) gt 1 then sum.b_gse= (d1.b_gse*d1.integ_t + d2.b_gse*d2.integ_t)/sum.integ_t
-value=0 & str_element,sum,'magf',value
-	if n_elements(value) gt 1 then sum.magf= (d1.magf*d1.integ_t + d2.magf*d2.integ_t)/sum.integ_t
+;value=0 & str_element,sum,'magf',value
+;	if n_elements(value) gt 1 then sum.magf= (d1.magf*d1.integ_t + d2.magf*d2.integ_t)/sum.integ_t
 value=0 & str_element,sum,'quat_sc',value
 	if n_elements(value) gt 1 then sum.quat_sc= (d1.quat_sc*d1.integ_t + d2.quat_sc*d2.integ_t)/sum.integ_t
 value=0 & str_element,sum,'quat_mso',value

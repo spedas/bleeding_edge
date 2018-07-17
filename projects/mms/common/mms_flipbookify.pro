@@ -37,8 +37,8 @@
 ;
 ;         default: ['xy', 'xz', 'yz']
 ;         
-;     three_d_interp: use the 3D interpolation method
-;     two_d_interp: use the 2D interpolation method (default, fastest)
+;     three_d_interp: use the 3D interpolation method (default)
+;     two_d_interp: use the 2D interpolation method
 ;     geometric: use the geometric interpolation method
 ;     
 ;     custom_rotation: Applies a custom rotation matrix to the data.  Input may be a
@@ -97,8 +97,8 @@
 ;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-07-06 11:26:21 -0700 (Fri, 06 Jul 2018) $
-; $LastChangedRevision: 25446 $
+; $LastChangedDate: 2018-07-16 13:38:43 -0700 (Mon, 16 Jul 2018) $
+; $LastChangedRevision: 25484 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_flipbookify.pro $
 ;-
 
@@ -116,13 +116,17 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   background_color_rgb=background_color_rgb, all_colorbars=all_colorbars, charsize=charsize, $
   subtract_error = subtract_error, include_1d_vx=include_1d_vx, include_1d_vy=include_1d_vy, $
   lineplot_yrange=lineplot_yrange, lineplot_xrange=lineplot_xrange, lineplot_thickness=lineplot_thickness, $
-  ps_xsize=ps_xsize, ps_ysize=ps_ysize, ps_aspect=ps_aspect, nopng=nopng, subtract_spintone=subtract_spintone
+  ps_xsize=ps_xsize, ps_ysize=ps_ysize, ps_aspect=ps_aspect, nopng=nopng, subtract_spintone=subtract_spintone, $
+  fgm_data_rate=fgm_data_rate
   
   @tplot_com.pro 
 
   if undefined(instrument) then instrument = 'fpi'
   if undefined(species) then species = 'i'
   if undefined(data_rate) then data_rate = 'brst'
+  if undefined(fgm_data_rate) then begin
+    if data_rate eq 'brst' then fgm_data_rate = 'brst' else fgm_data_rate = 'srvy'
+  endif
   
   if ~undefined(include_1d_vx) or ~undefined(include_1d_vy) then lineplot = 1b
   if undefined(right_margin) then begin
@@ -136,7 +140,7 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   if undefined(linestyle) then linestyle=2
   if undefined(thickness) then thickness=1
   if undefined(filename_suffix) then filename_suffix = ''
-  if undefined(three_d_interp) and undefined(geometric) then two_d_interp = 1
+  if undefined(two_d_interp) and undefined(geometric) then three_d_interp = 1
   if undefined(vid_format) then vid_format = 'mp4'
   if undefined(vid_fps) then vid_fps = 6 ; video frames per second
   if undefined(vid_bit_rate) then vid_bit_rate = 3000
@@ -178,11 +182,11 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   
   if instrument eq 'fpi' then begin
     name =  'mms'+probe+'_d'+species+'s_dist_'+data_rate
-    bfield = 'mms'+probe+'_fgm_b_gse_srvy_l2_bvec'
+    bfield = 'mms'+probe+'_fgm_b_gse_'+fgm_data_rate+'_l2_bvec'
     vel_data = 'mms'+probe+'_d'+species+'s_bulkv_gse_'+data_rate
     if ~spd_data_exists(vel_data, trange[0], trange[1]) then append_array, datatypes, ['d'+species+'s-dist', 'd'+species+'s-moms'] else append_array, datatypes, 'd'+species+'s-dist'
     if ~spd_data_exists(name, trange[0], trange[1]) then mms_load_fpi, data_rate=data_rate, level=level, datatype=datatypes, probe=probe, trange=trange, /time_clip, /center
-    if ~spd_data_exists(bfield, trange[0], trange[1]) then mms_load_fgm, level=level, probe=probe, trange=trange, /time_clip
+    if ~spd_data_exists(bfield, trange[0], trange[1]) then mms_load_fgm, level=level, probe=probe, trange=trange, data_rate=fgm_data_rate, /time_clip
     dist = mms_get_fpi_dist(name, trange=trange, subtract_error=subtract_error, error='mms'+probe+'_d'+species+'s_disterr_'+data_rate)
     if keyword_set(subtract_spintone) && tnames(vel_data) ne '' && tnames('mms'+probe+'_d'+species+'s_bulkv_spintone_gse_'+data_rate) ne '' then begin
       dprint, dlevel = 0, 'Subtracting spin tone from FPI bulk velocity'
@@ -190,11 +194,11 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
     endif
   endif else if instrument eq 'hpca' then begin
     name = 'mms'+probe+'_hpca_'+species+'_phase_space_density'
-    bfield = 'mms'+probe+'_fgm_b_gse_srvy_l2_bvec'
+    bfield = 'mms'+probe+'_fgm_b_gse_'+fgm_data_rate+'_l2_bvec'
     vel_data = 'mms'+probe+'_hpca_'+species+'_ion_bulk_velocity'
     if ~spd_data_exists(name, trange[0], trange[1]) then mms_load_hpca, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='ion', /time_clip, /center
     if ~spd_data_exists(vel_data, trange[0], trange[1]) then mms_load_hpca, probes=probe, trange=trange, data_rate=data_rate, level=level, datatype='moments', /time_clip, /center
-    if ~spd_data_exists(bfield, trange[0], trange[1]) then mms_load_fgm, level=level, probe=probe, trange=trange, /time_clip
+    if ~spd_data_exists(bfield, trange[0], trange[1]) then mms_load_fgm, level=level, probe=probe, trange=trange, data_rate=fgm_data_rate, /time_clip
     dist = mms_get_hpca_dist(name, trange=trange)
   endif else begin
     dprint, dlevel = 'invalid instrument; valid options: fpi or hpca'
