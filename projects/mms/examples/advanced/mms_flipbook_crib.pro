@@ -10,8 +10,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-07-13 17:03:42 -0700 (Fri, 13 Jul 2018) $
-; $LastChangedRevision: 25474 $
+; $LastChangedDate: 2018-07-18 13:45:21 -0700 (Wed, 18 Jul 2018) $
+; $LastChangedRevision: 25491 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_flipbook_crib.pro $
 ;-
 ;
@@ -56,6 +56,29 @@ tplot, ['mms1_hpca_'+species+'_number_density', 'mms1_hpca_'+species+'_ion_bulk_
 
 ;mms_flipbookify, probe=1, species=species, instrument='hpca', right_margin=80, data_rate=data_rate
 mms_flipbookify, probe=1, species=species, instrument='hpca',  data_rate=data_rate
+stop
+
+;------------------------------------------------------
+; Create plots every N seconds with the seconds keyword
+;------------------------------------------------------
+trange=['2015-10-16/13:06:00', '2015-10-16/13:06:30']
+probe=1
+data_rate = 'brst'
+species = 'i'
+
+mms_load_fgm, trange=trange, probe=probe, /time_clip
+mms_load_fpi, trange=trange, probe=probe, datatype='d'+species+'s-moms', /time_clip, data_rate=data_rate
+
+window, xsize=1000, ysize=650
+
+; store the temperature in the same panel
+store_data, 'temp', data='mms1_d'+species+'s_temppara_brst mms1_d'+species+'s_tempperp_brst'
+
+tplot, ['mms1_fgm_b_gse_srvy_l2_bvec', 'mms1_dis_heatq_gse_brst', 'temp', 'mms1_d'+species+'s_bulkv_gse_brst', $
+  'mms1_d'+species+'s_numberdensity_brst', 'mms1_d'+species+'s_energyspectr_omni_brst']
+
+; use the seconds keyword to create a figure with slices every N seconds (N=1 in this case)
+mms_flipbookify, seconds=1, probe=1, species='i'
 stop
 
 ;------------------------------------------------------

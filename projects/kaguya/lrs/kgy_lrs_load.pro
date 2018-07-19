@@ -17,8 +17,8 @@
 ;       Yuki Harada on 2016-09-02
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-07-05 01:00:43 -0700 (Thu, 05 Jul 2018) $
-; $LastChangedRevision: 25438 $
+; $LastChangedDate: 2018-07-18 17:39:03 -0700 (Wed, 18 Jul 2018) $
+; $LastChangedRevision: 25492 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/lrs/kgy_lrs_load.pro $
 ;-
 
@@ -215,7 +215,7 @@ for ifile=0,n_elements(files)-1 do begin
             if nw gt 0 then gain[w] = 20
             w = where( gain eq 3 , nw )
             if nw gt 0 then gain[w] = 0
-            gain = float(gain)
+            gain = reform(float(gain))
             if tag_exist(attr,'fillval') then begin
                wnan = where( data eq attr.fillval , nwnan )
                if nwnan gt 0 then gain[wnan] = !values.f_nan
@@ -300,9 +300,9 @@ for ifile=0,n_elements(files)-1 do begin
 ; 0x03:X-Y )  3-4bit: Frequency Band( 0x01:~10kHz 0x02:~1MHz
 ; 0x03:~10kHz ~1MHz )  5-6bit: Observation Mode( 0x00:WAVE 0x01:FFT
 ; 0x02:PHASE )
-            xymode = float( data and 3b ) ;- 00000011
-            fband = float( ishft( data and 12b , -2 ) ) ;- 00001100
-            omode = float( ishft( data and 48b , -4 ) ) ;- 00110000
+            xymode = reform(float( data and 3b )) ;- 00000011
+            fband = reform(float( ishft( data and 12b , -2 ) )) ;- 00001100
+            omode = reform(float( ishft( data and 48b , -4 ) )) ;- 00110000
             if tag_exist(attr,'fillval') then begin
                wnan = where( data eq attr.fillval , nwnan )
                if nwnan gt 0 then begin
@@ -339,7 +339,7 @@ for ifile=0,n_elements(files)-1 do begin
                if nwnan gt 0 then data[wnan] = !values.f_nan
             endif
             store_data,'kgy_lrs_wfc_pdc-ti', $
-                       data={x:times,y:data}, $
+                       data={x:times,y:reform(data)}, $
                        dlim={ytitle:'LRS WFC!cPDC-TI',psym:1}
          endif
       endif
@@ -360,7 +360,7 @@ for ifile=0,n_elements(files)-1 do begin
                if nwnan gt 0 then data[wnan] = !values.f_nan
             endif
             store_data,'kgy_lrs_wfc_postgap', $
-                       data={x:times,y:data}, $
+                       data={x:times,y:reform(data)}, $
                        dlim={ytitle:'LRS WFC!cPost Gap',psym:1}
          endif
       endif

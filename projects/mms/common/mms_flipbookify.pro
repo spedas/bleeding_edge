@@ -67,8 +67,11 @@
 ;     title: title of the plot; accepts common time string formats, e.g.,
 ;         title="YYYY-MM-DD/hh:mm:ss.fff"
 ;     
+;     seconds: specify the # of seconds for each slice
+;         (e.g., seconds=1.5 -> plot at every 1.5 seconds)
 ;     time_step: integer specifying the interval to produce plots at 
 ;         (e.g., time_step=1 -> plot at every time, time_step=2 -> every other time, etc)
+;         
 ;     /postscript: save the images as postscript files instead of PNGs
 ;     
 ;     output_dir: directory where the plots are saved (default: 'flipbook/')
@@ -90,15 +93,17 @@
 ;    - experimental, work in progress! email problems to: egrimes@igpp.ucla.edu
 ;    
 ;    - the default time steps are taken from the first panel in the current window
-;      (warning: if this happens to be a full day of srvy mode FGM data, 
+;      warning: if this happens to be a full day of srvy mode FGM data, 
 ;      this will produce > 1 million plots, one at each FGM data point - use the 
-;      time_step keyword to avoid this, e.g., time_step=10000 for one plot per
-;      10,000 FGM data points)
+;      time_step or seconds keywords to avoid this, e.g., 
+;           time_step=10000 for one plot per 10,000 FGM data points
+;           seconds=6 for one plot every 6 seconds
+;           
 ;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-07-16 13:38:43 -0700 (Mon, 16 Jul 2018) $
-; $LastChangedRevision: 25484 $
+; $LastChangedDate: 2018-07-18 13:22:17 -0700 (Wed, 18 Jul 2018) $
+; $LastChangedRevision: 25490 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_flipbookify.pro $
 ;-
 
@@ -117,7 +122,7 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   subtract_error = subtract_error, include_1d_vx=include_1d_vx, include_1d_vy=include_1d_vy, $
   lineplot_yrange=lineplot_yrange, lineplot_xrange=lineplot_xrange, lineplot_thickness=lineplot_thickness, $
   ps_xsize=ps_xsize, ps_ysize=ps_ysize, ps_aspect=ps_aspect, nopng=nopng, subtract_spintone=subtract_spintone, $
-  fgm_data_rate=fgm_data_rate
+  fgm_data_rate=fgm_data_rate, seconds=seconds
   
   @tplot_com.pro 
 
@@ -147,7 +152,6 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   if ~undefined(charsize) then !p.charsize = charsize
   window_num = 0b
   
-  
   if ~is_struct(tplot_vars) then begin
     dprint, dlevel=0, 'Error, no tplot window found'
     return
@@ -174,6 +178,14 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
     if count ne 0 then times = times[new_times_idx]
     if undefined(no_box) then draw_box = 1
   endelse
+  
+  if ~undefined(seconds) then begin
+    for t_idx=0, (long((times[n_elements(times)-1]-times[0])/float(seconds)))-1 do begin
+      append_array, new_times, find_nearest_neighbor(times, times[0]+t_idx*float(seconds))
+    endfor
+    times = new_times
+  endif
+  
   tplot_options, 'xmargin', [left_margin, right_margin]
 
   ; make sure the output directory exists, if not, create it

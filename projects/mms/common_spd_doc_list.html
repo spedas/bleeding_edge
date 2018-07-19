@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Jul 16 18:16:30 2018.<P>
+<STRONG>Last modified: </STRONG>Wed Jul 18 18:16:34 2018.<P>
  
 <HR>
  
@@ -151,8 +151,11 @@ HISTORY:
      title: title of the plot; accepts common time string formats, e.g.,
          title=&quot;YYYY-MM-DD/hh:mm:ss.fff&quot;
      
+     seconds: specify the # of seconds for each slice
+         (e.g., seconds=1.5 -&gt; plot at every 1.5 seconds)
      time_step: integer specifying the interval to produce plots at 
          (e.g., time_step=1 -&gt; plot at every time, time_step=2 -&gt; every other time, etc)
+         
      /postscript: save the images as postscript files instead of PNGs
      
      output_dir: directory where the plots are saved (default: 'flipbook/')
@@ -174,15 +177,17 @@ HISTORY:
     - experimental, work in progress! email problems to: egrimes@igpp.ucla.edu
     
     - the default time steps are taken from the first panel in the current window
-      (warning: if this happens to be a full day of srvy mode FGM data, 
+      warning: if this happens to be a full day of srvy mode FGM data, 
       this will produce &gt; 1 million plots, one at each FGM data point - use the 
-      time_step keyword to avoid this, e.g., time_step=10000 for one plot per
-      10,000 FGM data points)
+      time_step or seconds keywords to avoid this, e.g., 
+           time_step=10000 for one plot per 10,000 FGM data points
+           seconds=6 for one plot every 6 seconds
+           
      
  
  $LastChangedBy: egrimes $
- $LastChangedDate: 2018-07-16 13:38:43 -0700 (Mon, 16 Jul 2018) $
- $LastChangedRevision: 25484 $
+ $LastChangedDate: 2018-07-18 13:22:17 -0700 (Wed, 18 Jul 2018) $
+ $LastChangedRevision: 25490 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_flipbookify.pro $
 </PRE><P>
 <STRONG>(See <A href="common/mms_flipbookify.pro">projects/mms/common/mms_flipbookify.pro</A>)</STRONG><P>
