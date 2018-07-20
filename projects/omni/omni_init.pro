@@ -6,9 +6,9 @@
 ;
 ;HISTORY
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-02-13 08:31:58 -0800 (Mon, 13 Feb 2017) $
-;$LastChangedRevision: 22760 $
+;$LastChangedBy: jimmpc1 $
+;$LastChangedDate: 2018-07-19 14:01:11 -0700 (Thu, 19 Jul 2018) $
+;$LastChangedRevision: 25496 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/omni/omni_init.pro $
 ;-
 pro omni_init, reset=reset  ;, local_data_dir=local_data_dir, remote_data_dir=remote_data_dir
@@ -38,7 +38,12 @@ Endif else begin; use defaults
     endif else begin
       print,'No OMNI config found...creating default configuration'
     endelse
-    !omni.local_data_dir  = root_data_dir() + 'omni/' 
+;Different defaults at SSL, jmm, 2018-07-19, OMNI data is in
+;/disks/data/istp, but root_data_dir will return /disks/data
+    If(root_data_dir() Eq '/disks/data/' && $
+       file_test(root_data_dir()+'themis/.themis_master')) Then Begin
+       !omni.local_data_dir = root_data_dir()+'istp/' ;at SSL - linux
+    Endif Else !omni.local_data_dir  = root_data_dir() + 'omni/' 
     !omni.remote_data_dir = 'https://spdf.gsfc.nasa.gov/pub/data/'
 endelse
 ; omniive_ext isn't needed because we use OMNI data from CDFs at SPDF now
