@@ -5,10 +5,10 @@
 ;
 ;
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2015-02-25 13:10:28 -0800 (Wed, 25 Feb 2015) $
-; $LastChangedRevision: 17040 $
-; $URL $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-07-20 10:29:36 -0700 (Fri, 20 Jul 2018) $
+; $LastChangedRevision: 25499 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/examples/advanced/thm_crib_sst_load_calibrate.pro $
 ;-
 
 

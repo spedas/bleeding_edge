@@ -14,12 +14,13 @@
 ;     
 ;     http://omniweb.gsfc.nasa.gov/html/HROdocum.html
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-05-16 11:32:51 -0700 (Tue, 16 May 2017) $
-; $LastChangedRevision: 23322 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2018-07-20 11:09:15 -0700 (Fri, 20 Jul 2018) $
+; $LastChangedRevision: 25501 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/omni/omni_load_data.pro $
 ;-
-pro omni_load_data,type,files=files,trange=trange,verbose=verbose,downloadonly=downloadonly, $
+pro omni_load_data,type,files=files,trange=trange,verbose=verbose,$
+      downloadonly=downloadonly, $
       varformat=varformat,datatype=datatype, $
       res5min=res5min,res1min=res1min, $
       addmaster=addmaster,data_source=data_source, $
@@ -44,7 +45,7 @@ pro omni_load_data,type,files=files,trange=trange,verbose=verbose,downloadonly=d
     ;URL deprecated by reorg at SPDF
     ;pathformat = 'omni/hro_'+rstr+'/YYYY/omni_hro_'+rstr+'_YYYYMM01_v01.cdf
     ;New URL 2012/10 pcruce@igpp
-    pathformat = 'omni/omni_cdaweb/hro_'+rstr+'/YYYY/omni_hro_'+rstr+'_YYYYMM01_v01.cdf
+    pathformat = 'omni/omni_cdaweb/hro_'+rstr+'/YYYY/omni_hro_'+rstr+'_YYYYMM01_v01.cdf'
     
     ;if not keyword_set(varformat) then begin
     ;   if datatype eq  'k0' then    varformat = 'BGSEc PGSE'
@@ -54,7 +55,13 @@ pro omni_load_data,type,files=files,trange=trange,verbose=verbose,downloadonly=d
     relpathnames = file_dailynames(file_format=pathformat,trange=tr,/unique)
     
     ;files = file_retrieve(relpathnames, _extra=source)
-    files = spd_download(remote_file=relpathnames, remote_path=source.remote_data_dir, local_path = source.local_data_dir, ssl_verify_peer=0, ssl_verify_host=0)
+    files = spd_download(remote_file=relpathnames, $
+                         remote_path=source.remote_data_dir, $
+                         local_path = source.local_data_dir, $
+                         ssl_verify_peer=0, ssl_verify_host=0, $
+                         no_download = source.no_download, $
+                         no_update = source.no_update,  $
+                         file_mode = '666'o, dir_mode = '777'o)
     
     if keyword_set(downloadonly) then return
     
