@@ -83,6 +83,16 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'ch1', 'ytitle', receiver_str + '!CAUTO!CCH1 SRC'
   options, prefix + 'ch?', 'ysubtitle', ''
 
+  options, prefix + 'ch?_string', 'tplot_routine', 'strplot'
+  options, prefix + 'ch?_string', 'yrange', [-0.1,1.0]
+  options, prefix + 'ch?_string', 'ystyle', 1
+  options, prefix + 'ch?_string', 'yticks', 1
+  options, prefix + 'ch?_string', 'ytickformat', '(A1)'
+  options, prefix + 'ch?_string', 'noclip', 0
+  options, prefix + 'ch?_string', 'ysubtitle', ''
+  options, prefix + 'ch0_string', 'ytitle', receiver_str + '!CAUTO!CCH0 SRC'
+  options, prefix + 'ch1_string', 'ytitle', receiver_str + '!CAUTO!CCH1 SRC'
+
   options, prefix + 'spec?_ch?', 'spec', 1
   options, prefix + 'spec?_ch?', 'no_interp', 1
   options, prefix + 'spec?_ch?', 'yrange', [0,64]
@@ -182,13 +192,21 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
 
       ch_str = strmid(raw_spec_i,strlen(raw_spec_i) - 3, 3)
 
-      get_data, prefix + ch_str, dat = ch_src_dat
+      get_data, prefix + ch_str + '_string', dat = ch_src_dat
 
-      if size(ch_src_dat, /type) EQ 8 then $
-        if n_elements(uniq(ch_src_dat.y) EQ 1) then $
-        ;options, prefix + raw_spec_i + '_converted', 'ysubtitle', $
-        ;'SRC:' + strcompress(string(ch_src_dat.y[0]))
-        ytitle = ytitle + '!C' + 'SRC' + strcompress(string(ch_src_dat.y[0]))
+      if size(ch_src_dat, /type) NE 8 then $
+        get_data, prefix + ch_str, dat = ch_src_dat
+
+      if size(ch_src_dat, /type) EQ 8 then begin
+        if n_elements(uniq(ch_src_dat.y) EQ 1) then begin
+          ;options, prefix + raw_spec_i + '_converted', 'ysubtitle', $
+          ;'SRC:' + strcompress(string(ch_src_dat.y[0]))
+          if size(ch_src_dat.y[0], /type) NE 7 then src_string = 'SRC ' else $
+            src_string = ''
+          
+          ytitle = ytitle + '!C' + src_string + strcompress(string(ch_src_dat.y[0]))
+        endif
+      endif
 
       options, prefix + raw_spec_i + '_converted', 'ytitle', $
         ytitle

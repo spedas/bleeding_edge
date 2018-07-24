@@ -110,7 +110,9 @@
   
   <cdf_var
       name   = "ch0"
-      type   = "integer">
+      type   = "integer"
+      string = "true"
+      string_len = "20">
   <cdf_att
         FIELDNAM = "ch0"
         FORMAT = "I8"
@@ -131,7 +133,9 @@
 
   <cdf_var
       name   = "ch1"
-      type   = "integer">
+      type   = "integer"
+      string = "true"
+      string_len = "20">
   <cdf_att
         FIELDNAM = "ch1"
         FORMAT = "I8"

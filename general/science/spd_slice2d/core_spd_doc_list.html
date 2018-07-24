@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jul 20 18:16:28 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Jul 23 18:16:26 2018.<P>
  
 <HR>
  
@@ -23,7 +23,7 @@ This page was created by the IDL library routine
 <br>Returns a rotation matrix that rotates v1,v2 to the x-y plane
 <LI><A HREF="#SPD_PART_VIS">SPD_PART_VIS</A>
 <LI><A HREF="#SPD_SLICE1D_PLOT">SPD_SLICE1D_PLOT</A>
-<br>Create 1D plot from a 2D particle slice
+<br>Create 1D plot from a 2D particle slice; note that:
 <LI><A HREF="#SPD_SLICE2D_2DI">SPD_SLICE2D_2DI</A>
 <LI><A HREF="#SPD_SLICE2D_3DI">SPD_SLICE2D_3DI</A>
 <LI><A HREF="#SPD_SLICE2D_CHECKBINS">SPD_SLICE2D_CHECKBINS</A>
@@ -135,14 +135,19 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/sci
   spd_slice1d_plot
 
  PURPOSE:
-  Create 1D plot from a 2D particle slice
+  Create 1D plot from a 2D particle slice; note that:
+   1) if the 'value' argument is a scalar, this provides
+      a cut through the distribution at the nearest point
+      in that direction
+   2) if the 'value' argument is an array, this sums over
+      the values between the min and max of the array
 
  EXAMPLES:
   MMS&gt; spd_slice1d_plot, slice, 'x', 0.0, title='Vx at Vy=0'
   
   or
   
-  MMS&gt; spd_slice1d_plot, slice, 'x', [-1000, 1000], title='Vx at Vy=[-1000, 1000]'
+  MMS&gt; spd_slice1d_plot, slice, 'x', [-1000, 1000], title='Vx at Vy=[-1000, 1000] (summed)'
 
  see: projects/mms/examples/advanced/mms_slice2d_1d_plot_crib.pro for more examples
  
@@ -160,8 +165,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/sci
    work in progress! please send bugs/problems/complaints/etc to egrimes@igpp.ucla.edu
    
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-04-12 12:47:41 -0700 (Thu, 12 Apr 2018) $
-$LastChangedRevision: 25038 $
+$LastChangedDate: 2018-07-23 11:20:05 -0700 (Mon, 23 Jul 2018) $
+$LastChangedRevision: 25503 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/core/spd_slice1d_plot.pro $
 </PRE><P>
 <STRONG>(See <A href="core/spd_slice1d_plot.pro">general/science/spd_slice2d/core/spd_slice1d_plot.pro</A>)</STRONG><P>
