@@ -14,13 +14,21 @@
 ;        
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-04-05 16:40:06 -0700 (Wed, 05 Apr 2017) $
-;$LastChangedRevision: 23122 $
+;$LastChangedDate: 2018-07-24 14:05:15 -0700 (Tue, 24 Jul 2018) $
+;$LastChangedRevision: 25515 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/TT2000/cdf_leap_second_init.pro $
 ;-
 pro cdf_leap_second_init,reset=reset,no_download=no_download,no_update=no_update,no_clobber=no_clobber,force_download=force_download
 
   compile_opt idl2,hidden
+
+  ; handle errors
+  catch, errors 
+  if errors ne 0 then begin
+    dprint, dlevel=1, 'Error in cdf_leap_second_init: ', !ERROR_STATE.MSG
+    catch, /cancel
+    return
+  endif
 
   defsysv,'!CDF_LEAP_SECONDS',exists=exists
   
