@@ -11,9 +11,9 @@
 ;    Davin Larson - April 2011
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2016-09-28 22:56:26 -0700 (Wed, 28 Sep 2016) $
-; $LastChangedRevision: 21979 $
-; $URL:  $
+; $LastChangedDate: 2018-07-27 16:40:55 -0700 (Fri, 27 Jul 2018) $
+; $LastChangedRevision: 25525 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_ptp_recorder.pro $
 ;
 ;-
 
