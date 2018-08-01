@@ -137,8 +137,8 @@
 ;                      Maxwell-Boltzmann fit. (Nominally, E_peak = 2*T)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-05-07 11:51:49 -0700 (Mon, 07 May 2018) $
-; $LastChangedRevision: 25175 $
+; $LastChangedDate: 2018-07-31 10:54:51 -0700 (Tue, 31 Jul 2018) $
+; $LastChangedRevision: 25528 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -448,7 +448,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     if (rflg) then begin
       col = rcol[nplot mod ncol]
       oplot,x,y,psym=psym,color=col
-      errplot,x,(y-dy)>tiny,y+dy,width=0,color=col
+      if (ebar) then errplot,x,(y-dy)>tiny,y+dy,width=0,color=col
     endif
 
     if (dflg) then begin
@@ -681,7 +681,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
 
         j = where(E1 gt Epeak*2., n_e)
         E_halo = E1[j]
-        F_halo = F1[j] - swe_maxbol(E_halo, par=p)
+        F_halo = (F1[j] - swe_maxbol(E_halo, par=p)) > 0.
         oplot,E_halo,F_halo,color=1,psym=10
         prat = (p.pot/E_halo) < 1.
 

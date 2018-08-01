@@ -5,12 +5,12 @@
 ;   please send them to egrimes@igpp.ucla.edu
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-12-18 09:46:27 -0800 (Mon, 18 Dec 2017) $
-; $LastChangedRevision: 24429 $
+; $LastChangedDate: 2018-07-31 13:09:30 -0700 (Tue, 31 Jul 2018) $
+; $LastChangedRevision: 25533 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_eis_burst_crib.pro $
 ;-
 probe = '1'
-trange = ['2015-10-16', '2015-10-17']
+trange = ['2015-10-16/13', '2015-10-16/13:10']
 prefix = 'mms'+probe
 level = 'l2'
 
@@ -25,10 +25,8 @@ mms_eis_pad, probe=probe, trange=trange, datatype='extof', species='proton', dat
 tdegap, prefix+'_epd_eis_brst_extof_*keV_proton_flux_omni_pad_spin', /overwrite
 
 tplot, prefix+['_epd_eis_brst_extof_proton_flux_omni_spin', $
-               '_epd_eis_brst_extof_*keV_proton_flux_omni_pad_spin']
+               '_epd_eis_brst_extof_55-800keV_proton_flux_omni_pad_spin']
                
-; zoom in
-tlimit, ['2015-10-16/12:55', '2015-10-16/13:10']
 stop
 
 ; load phxtof burst data

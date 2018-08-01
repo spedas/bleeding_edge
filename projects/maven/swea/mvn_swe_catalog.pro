@@ -42,11 +42,11 @@
 ;                      number or range.
 ;
 ;       DROPBOX:       Place copies of the files into the dropbox.
-;                      This will force delivery to the SDC at midnight.
+;                      This will force immediate delivery to the SDC.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-05-05 15:10:09 -0700 (Sat, 05 May 2018) $
-; $LastChangedRevision: 25172 $
+; $LastChangedDate: 2018-07-31 10:55:09 -0700 (Tue, 31 Jul 2018) $
+; $LastChangedRevision: 25529 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_catalog.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13

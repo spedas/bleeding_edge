@@ -22,8 +22,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-09-07 11:39:11 -0700 (Thu, 07 Sep 2017) $
-; $LastChangedRevision: 23909 $
+; $LastChangedDate: 2018-07-31 10:54:21 -0700 (Tue, 31 Jul 2018) $
+; $LastChangedRevision: 25527 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_programs/mvn_sta_scpot_update.pro $
 ;
 ;-
@@ -49,7 +49,7 @@ pro mvn_sta_scpot_update
 ; First get the composite potential
 
   if (size(mvn_c6_dat,/type) ne 8) then begin
-    print,'MVN_STA_SCPOT_SET: No STATIC c6 data. Abort!'
+    print,'MVN_STA_SCPOT_UPDATE: no STATIC data loaded.'
     return
   endif
 
@@ -60,7 +60,7 @@ pro mvn_sta_scpot_update
   fbad = float(nbad)/float(n_elements(mvn_c6_dat.time))
   if (fbad gt 0.25) then begin
     pct = strtrim(string(round(100.*fbad)),2)
-    print,'MVN_STA_SCPOT_SET: Warning! ',pct,'% of potentials are invalid.'
+    print,'MVN_STA_SCPOT_UPDATE: Warning! ',pct,'% of potentials are invalid.'
   endif
 
 ; The following code is almost verbatim from mvn_sta_scpot_load:

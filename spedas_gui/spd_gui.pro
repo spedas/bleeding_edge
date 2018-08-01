@@ -24,8 +24,8 @@
 ;HISTORY:
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-01-19 12:03:41 -0800 (Fri, 19 Jan 2018) $
-;$LastChangedRevision: 24546 $
+;$LastChangedDate: 2018-07-31 14:34:33 -0700 (Tue, 31 Jul 2018) $
+;$LastChangedRevision: 25534 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/spd_gui.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -304,6 +304,12 @@ PRO spd_gui_event, event
       spd_ui_load_spedas_cdf, info
     END
     
+    'LOADASCII': BEGIN
+      ;
+      ; todo: HGS
+      spd_ui_load_spedas_ascii, info, event
+    END
+
     'MANAGEDATA': BEGIN
        spd_ui_manage_data, info.master, info.loadedData, info.windowStorage, info.historywin,info.guiTree
        info.drawObject->Update,info.windowStorage,info.loadedData 
@@ -1451,7 +1457,13 @@ PRO spd_gui,reset=reset,template_filename=template_filename
   loadMenu = Widget_Button(fileMenu, Value='Load Data ', UValue='LOAD', /Separator)
   loadHAPIMenu = Widget_Button(fileMenu, Value='Load Data using HAPI', UValue='LOADHAPI')
   loadCDAWebMenu = Widget_Button(fileMenu, Value='Load Data using CDAWeb', UValue='LOADCDAWEB')
-  loadCDFMenu = Widget_Button(fileMenu, Value='Load CDF', UValue='LOADCDF')
+
+  loadYourDataMenu = Widget_Button(fileMenu, Value='Load Your Data',/menu)
+  loadCDFMenu = Widget_Button(loadYourDataMenu, Value='Load CDF', UValue='LOADCDF')
+  loadAsciiMenu = Widget_Button(loadYourDataMenu, Value='Load ASCII', UValue='LOADASCII')
+
+;  loadCDFMenu = Widget_Button(fileMenu, Value='Load CDF', UValue='LOADCDF')
+;  loadAsciiMenu = Widget_Button(fileMenu, Value='Load ASCII', UValue='LOADASCII')
 
   saveDataAsMenu = Widget_Button(fileMenu, Value='Save Data As... ', UValue='SAVEDATAAS')
   importExportMenu = Widget_button(fileMenu, Value='Manage Data and Import/Export Tplot Variables...', UValue='MANAGEDATA')

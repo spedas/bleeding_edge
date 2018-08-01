@@ -30,8 +30,8 @@
 ;       SHIFTPOT:      Correct for spacecraft potential.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-18 12:36:36 -0800 (Sun, 18 Feb 2018) $
-; $LastChangedRevision: 24740 $
+; $LastChangedDate: 2018-07-31 10:56:47 -0700 (Tue, 31 Jul 2018) $
+; $LastChangedRevision: 25532 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getpad.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -67,7 +67,7 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
         tmin = min(time, max=tmax, /nan)
         indx = where((mvn_swe_pad_arc.time ge tmin) and (mvn_swe_pad_arc.time le tmax), npts)
         if (npts gt 0L) then time = mvn_swe_pad_arc[indx].time $
-                        else print,"No PAD archive data at specified time(s)."        
+                        else print,"No PAD archive data in that time range."        
       endif else npts = n_elements(time)
       
       if (npts gt 0L) then begin
@@ -81,7 +81,7 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
         tmin = min(time, max=tmax, /nan)
         indx = where((mvn_swe_pad.time ge tmin) and (mvn_swe_pad.time le tmax), npts)
         if (npts gt 0L) then time = mvn_swe_pad[indx].time $
-                        else print,"No PAD survey data at specified time(s)."
+                        else print,"No PAD survey data in that time range."
       endif else npts = n_elements(time)
 
       if (npts gt 0L) then begin
@@ -94,10 +94,12 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
   for n=0L,(npts-1L) do begin
     if (aflg) then begin
       tgap = min(abs(mvn_swe_pad_arc.time - time[n]), i)
-      pad[n] = mvn_swe_pad_arc[i]
+      if (tgap lt 2D*(mvn_swe_pad_arc[i].delta_t)) then pad[n] = mvn_swe_pad_arc[i] $
+                                                   else print,"No burst PAD near: ",time_string(time[n])
     endif else begin
       tgap = min(abs(mvn_swe_pad.time - time[n]), i)
-      pad[n] = mvn_swe_pad[i]
+      if (tgap lt 2D*(mvn_swe_pad[i].delta_t)) then pad[n] = mvn_swe_pad[i] $
+                                               else print,"No PAD near: ",time_string(time[n])
     endelse
 
     if (addmag) then begin
@@ -184,7 +186,7 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
       tmin = min(time, max=tmax, /nan)
       indx = where((a3.time ge tmin) and (a3.time le tmax), npts)
       if (npts eq 0L) then begin
-        print,"No PAD archive data at specified time(s)."
+        print,"No PAD archive data in that time range."
         return, 0
       endif
       time = a3[indx].time
@@ -208,7 +210,7 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
       tmin = min(time, max=tmax, /nan)
       indx = where((a2.time ge tmin) and (a2.time le tmax), npts)
       if (npts eq 0L) then begin
-        print,"No PAD survey data at specified time(s)."
+        print,"No PAD survey data in that time range."
         return, 0
       endif
       time = a2[indx].time
@@ -229,13 +231,11 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
     if (aflg) then begin
       tgap = min(abs(a3.time - time[n]), i)
       pkt = a3[i]
-
       thsk = min(abs(swe_hsk.time - a3[i].time), j)
       if (swe_active_chksum ne swe_chksum[j]) then mvn_swe_calib, chksum=swe_chksum[j]
     endif else begin
       tgap = min(abs(a2.time - time[n]), i)
       pkt = a2[i]
-
       thsk = min(abs(swe_hsk.time - a2[i].time), j)
       if (swe_active_chksum ne swe_chksum[j]) then mvn_swe_calib, chksum=swe_chksum[j]
     endelse

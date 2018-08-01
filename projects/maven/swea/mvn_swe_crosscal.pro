@@ -49,8 +49,8 @@
 ;       SILENT:       Don't print any warnings or messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-05-01 17:00:06 -0700 (Tue, 01 May 2018) $
-; $LastChangedRevision: 25153 $
+; $LastChangedDate: 2018-07-31 10:56:04 -0700 (Tue, 31 Jul 2018) $
+; $LastChangedRevision: 25531 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_crosscal.pro $
 ;
 ;CREATED BY:    David L. Mitchell  05-04-16
@@ -68,8 +68,8 @@ function mvn_swe_crosscal, time, on=on, off=off, refresh=refresh, extrap=extrap,
     ac[*,1] = [2.3368D, -9.9426d-4,  2.6014d-5]  ; MCPHV = 2600 V
     ac[*,2] = [2.2143D,  7.9280d-4,  1.4300d-5]  ; MCPHV = 2700 V
     ac[*,3] = [2.0027D,  7.2892d-3, -1.1918d-5]  ; MCPHV = 2750 V
-    ac[*,4] = [2.3240D,  3.2547d-3,  0.0D     ]  ; MCPHV = 2800 V (good through mid-April 2018)
-    eflg = 1
+    ac[*,4] = [2.2870D,  4.5686d-3, -5.9700d-6]  ; MCPHV = 2800 V (good through late July 2018)
+    eflg = 0
   endif
 
   domsg = ~keyword_set(silent)
