@@ -1,8 +1,8 @@
 ; buffer should contain bytes for a single ccsds packet, header is
 ; contained in first 3 words (6 bytes)
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-06-18 06:06:56 -0700 (Mon, 18 Jun 2018) $
-; $LastChangedRevision: 25363 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-07-31 23:41:05 -0700 (Tue, 31 Jul 2018) $
+; $LastChangedRevision: 25535 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/common/spp_swp_ccsds_decom.pro $
 
 ;
@@ -73,16 +73,16 @@ function spp_swp_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsd
  ;   content_compressed:   0b, $
     gap :         1b  }
 
-  if buffer_length-offset lt 6 then begin
+  if buffer_length-offset lt 12 then begin
     if debug(2) then begin
-      dprint,'CCSDS Buffer length too short to include header: ',buffer_length-offset,dlevel=2,offset,dwait=20
+      dprint,'CCSDS Buffer length too short to include full header: ',buffer_length-offset,dlevel=2,offset,dwait=20
       hexprint,buffer
     endif
     error = 1b
     return, !null
   endif
 
-  header = swap_endian(uint(buffer[offset+0:offset+11],0,6) ,/swap_if_little_endian )
+  header = swap_endian(uint(buffer[offset+0:offset+11],0,6) ,/swap_if_little_endian )  ; ??? error here  % Illegal subscript range: BUFFER.
 
   ccsds.version = byte(ishft(header[0],-11) )    ; Corrected - but includes 2 extra bits
 

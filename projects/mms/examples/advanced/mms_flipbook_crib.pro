@@ -10,8 +10,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-07-18 13:45:21 -0700 (Wed, 18 Jul 2018) $
-; $LastChangedRevision: 25491 $
+; $LastChangedDate: 2018-08-01 12:42:28 -0700 (Wed, 01 Aug 2018) $
+; $LastChangedRevision: 25539 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_flipbook_crib.pro $
 ;-
 ;
@@ -55,7 +55,7 @@ window, xsize=1200, ysize=650
 tplot, ['mms1_hpca_'+species+'_number_density', 'mms1_hpca_'+species+'_ion_bulk_velocity', 'mms1_hpca_'+species+'_scalar_temperature', 'mms1_hpca_'+species+'_ion_pressure', 'mms1_fgm_b_gse_srvy_l2_bvec']
 
 ;mms_flipbookify, probe=1, species=species, instrument='hpca', right_margin=80, data_rate=data_rate
-mms_flipbookify, probe=1, species=species, instrument='hpca',  data_rate=data_rate
+mms_flipbookify, probe=1, species=species, instrument='hpca', time_step=100, data_rate=data_rate
 stop
 
 ;------------------------------------------------------

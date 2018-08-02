@@ -21,8 +21,8 @@
 ;    2014/08/12: Created
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
-; $LastChangedRevision: 24404 $
+; $LastChangedDate: 2018-08-01 11:03:38 -0700 (Wed, 01 Aug 2018) $
+; $LastChangedRevision: 25538 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/iugonet/plot/map2d/map2d_grid.pro $
 ;-
 PRO map2d_grid, dlat=dlat, dlon=dlon, color=color, linethick=linethick

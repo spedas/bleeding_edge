@@ -26,8 +26,8 @@
 ;HISTORY:
 ; 14-aug-2012, Atsuki Shinbori
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
-;$LastChangedRevision: 24404 $
+;$LastChangedDate: 2018-08-01 11:03:38 -0700 (Wed, 01 Aug 2018) $
+;$LastChangedRevision: 25538 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/iugonet/tools/statistical_package/ustrans_pwrspc.pro $
 ;-
 

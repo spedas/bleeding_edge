@@ -31,7 +31,7 @@
 ;             PPARC, Tohoku Univ.
 ;
 ;   $LastChangedBy: nikos $
-;   $LastChangedDate: 2017-12-05 22:14:20 -0800 (Tue, 05 Dec 2017) $
+;   $LastChangedDate: 2018-08-01 11:03:38 -0700 (Wed, 01 Aug 2018) $
 ;   $URL:
 ;-
 pro iug_load_avon_vlfb, site=site, parameter=parameter, $
