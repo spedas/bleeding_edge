@@ -75,8 +75,15 @@
 ;                 Used for long range predict and special events kernels.  Replaces
 ;                 keywords EXTENDED and HIRES.
 ;
-;       EXTENDED: Load the long-term predict ephemeris (out to 2019-01-01).  Still
-;                 works but might be phased out.
+;       EXTENDED: Load one of the long-term predict ephemerides.  The value of this
+;                 keyword can be from 1 to 3, corresponding to the following spk
+;                 kernels:
+;
+;                   1 : trj_orb_180516-190319_targetM2020EDL-nso_180515.bsp
+;                   2 : trj_orb_190301-200507_targetM2020EDL-ab4500_180515.bsp
+;                   3 : trj_orb_200501-210512_targetM2020EDL-sro-phaseRange_180517.bsp
+;
+;                 These predict ephemerides were created in May 2018.
 ;
 ;       HIRES:    Only works when EXTENDED is set.  If set, load the 20-sec ephemeris;
 ;                 otherwise, load the 60-sec ephemeris.  OBSOLETE - this keyword now
@@ -122,8 +129,8 @@
 ;                 (suppress most messages).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-04-26 11:02:03 -0700 (Thu, 26 Apr 2018) $
-; $LastChangedRevision: 25123 $
+; $LastChangedDate: 2018-08-02 14:22:18 -0700 (Thu, 02 Aug 2018) $
+; $LastChangedRevision: 25558 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -218,10 +225,30 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   endif
   
   if keyword_set(extended) then begin
-    mname = 'maven_spacecraft_mso_predict.sav'
-    gname = 'maven_spacecraft_geo_predict.sav'
-    treset = 1
-    nocrop = 1
+    case extended of
+       1 : begin
+             mname = 'maven_spacecraft_mso_M2020EDL-nso_180515.sav'
+             gname = 'maven_spacecraft_geo_M2020EDL-nso_180515.sav'
+             treset = 1
+             nocrop = 1
+             print,"Using predict for nominal science orbit (150 x 6200 km)."
+           end
+       2 : begin
+             mname = 'maven_spacecraft_mso_M2020EDL-ab4550_180515.sav'
+             gname = 'maven_spacecraft_geo_M2020EDL-ab4550_180515.sav'
+             treset = 1
+             nocrop = 1
+             print,"Using predict for aerobraking, followed by 150 x 4500 km orbit."
+           end
+       3 : begin
+             mname = 'maven_spacecraft_mso_M2020EDL-sro-phaseRange_180517.sav'
+             gname = 'maven_spacecraft_geo_M2020EDL-sro-phaseRange_180517.sav'
+             treset = 1
+             nocrop = 1
+             print,"Using predict for relay-science orbit (200 x 4500 km)."
+           end
+      else : ; do nothing
+    endcase
   endif
 
   if (n_elements(timecrop) gt 1L) then begin

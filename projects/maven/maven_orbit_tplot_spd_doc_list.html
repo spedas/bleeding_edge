@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Aug  1 18:16:22 2018.<P>
+<STRONG>Last modified: </STRONG>Thu Aug  2 18:16:36 2018.<P>
  
 <HR>
  
@@ -351,7 +351,7 @@ KEYWORDS:
        PREC:     Plot the position of the spacecraft at the selected time,
                  superimposed on the orbit.  Otherwise, the periapsis 
                  location for each orbit is plotted.  For time ranges less
-                 than one day, the default is PREC = 1.  Otherwise the 
+                 than seven days, the default is PREC = 1.  Otherwise the 
                  default is 0.
 
        MHD:      Plot the orbit superimposed on an image of an MHD simulation
@@ -438,8 +438,8 @@ KEYWORDS:
        PSNAME:   Name of a postscript plot.  Works only for orbit plots.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-11-30 21:16:21 -0800 (Thu, 30 Nov 2017) $
- $LastChangedRevision: 24370 $
+ $LastChangedDate: 2018-08-02 14:21:49 -0700 (Thu, 02 Aug 2018) $
+ $LastChangedRevision: 25557 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11
@@ -529,8 +529,15 @@ KEYWORDS:
                  Used for long range predict and special events kernels.  Replaces
                  keywords EXTENDED and HIRES.
 
-       EXTENDED: Load the long-term predict ephemeris (out to 2019-01-01).  Still
-                 works but might be phased out.
+       EXTENDED: Load one of the long-term predict ephemerides.  The value of this
+                 keyword can be from 1 to 3, corresponding to the following spk
+                 kernels:
+
+                   1 : trj_orb_180516-190319_targetM2020EDL-nso_180515.bsp
+                   2 : trj_orb_190301-200507_targetM2020EDL-ab4500_180515.bsp
+                   3 : trj_orb_200501-210512_targetM2020EDL-sro-phaseRange_180517.bsp
+
+                 These predict ephemerides were created in May 2018.
 
        HIRES:    Only works when EXTENDED is set.  If set, load the 20-sec ephemeris;
                  otherwise, load the 60-sec ephemeris.  OBSOLETE - this keyword now
@@ -576,8 +583,8 @@ KEYWORDS:
                  (suppress most messages).
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-04-26 11:02:03 -0700 (Thu, 26 Apr 2018) $
- $LastChangedRevision: 25123 $
+ $LastChangedDate: 2018-08-02 14:22:18 -0700 (Thu, 02 Aug 2018) $
+ $LastChangedRevision: 25558 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11

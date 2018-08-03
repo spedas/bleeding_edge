@@ -25,6 +25,7 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['SCM_xtalk_BY_part1'] =    ['2018-04-17/23:30:00', '2018-04-18/00:30:00']
   fm_times['SCM_xtalk_BY_part2'] =    ['2018-04-18/13:00:00', '2018-04-18/14:45:00']
   fm_times['SCM_xtalk_BZ'] =          ['2018-04-18/15:00:00', '2018-04-18/16:00:00']
+  fm_times['aliveness_V3_anomaly'] =  ['2018-08-01/05:00:00', '2018-08-01/07:30:00']
 
   em_times = orderedhash()
 
@@ -36,6 +37,9 @@ function spp_fld_select_timespan_define_presets, fm_or_em
 
   em_times['EM_test_RFS_cal_v1'] = ['2018-04-12/23:30:00','2018-04-13/01:30:00']
   em_times['EM_test_RFS_cal_v2'] = ['2018-04-13/22:30:00','2018-04-13/01:00:00']
+
+  em_times['EM_test_DFB_CBS_for_SCM_CAL'] = ['2018-07-26/18:00:00','2018-07-26/22:30:00']
+
 
   if fm_or_em EQ 'FM' then return, fm_times else return, em_times
 

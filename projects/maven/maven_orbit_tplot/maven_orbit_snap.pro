@@ -18,7 +18,7 @@
 ;       PREC:     Plot the position of the spacecraft at the selected time,
 ;                 superimposed on the orbit.  Otherwise, the periapsis 
 ;                 location for each orbit is plotted.  For time ranges less
-;                 than one day, the default is PREC = 1.  Otherwise the 
+;                 than seven days, the default is PREC = 1.  Otherwise the 
 ;                 default is 0.
 ;
 ;       MHD:      Plot the orbit superimposed on an image of an MHD simulation
@@ -105,8 +105,8 @@
 ;       PSNAME:   Name of a postscript plot.  Works only for orbit plots.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-11-30 21:16:21 -0800 (Thu, 30 Nov 2017) $
-; $LastChangedRevision: 24370 $
+; $LastChangedDate: 2018-08-02 14:21:49 -0700 (Thu, 02 Aug 2018) $
+; $LastChangedRevision: 25557 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
