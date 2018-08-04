@@ -92,8 +92,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-06-28 09:38:49 -0700 (Thu, 28 Jun 2018) $
-;$LastChangedRevision: 25412 $
+;$LastChangedDate: 2018-08-03 10:21:24 -0700 (Fri, 03 Aug 2018) $
+;$LastChangedRevision: 25568 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 
@@ -106,7 +106,8 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
                   cdf_filenames = cdf_filenames, cdf_version = cdf_version, latest_version = latest_version, $
                   min_version = min_version, cdf_records = cdf_records, spdf = spdf, $
                   center_measurement = center_measurement, available = available, $
-                  versions = versions, always_prompt = always_prompt, major_version=major_version
+                  versions = versions, always_prompt = always_prompt, major_version=major_version, $
+                  tt2000=tt2000
 
     ;temporary variables to track elapsed times
     t0 = systime(/sec)
@@ -288,13 +289,13 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
 
                 if same_file eq 0 then begin
                     td0 = systime(/sec) ;temporary
-                    dprint, dlevel = 0, 'Downloading ' + filename[file_idx] + ' to ' + file_dir
+                    dprint, dlevel = 1, 'Downloading ' + filename[file_idx] + ' to ' + file_dir
                     status = get_mms_science_file(filename=filename[file_idx], local_dir=file_dir, public=public)
 
                     dt_download += systime(/sec) - td0 ;temporary
                     if status eq 0 then append_array, files, file_dir + path_sep() + filename[file_idx]
                 endif else begin
-                    dprint, dlevel = 0, 'Loading local file ' + file_dir + path_sep() + filename[file_idx]
+                    dprint, dlevel = 1, 'Loading local file ' + file_dir + path_sep() + filename[file_idx]
                     append_array, files, file_dir + path_sep() + filename[file_idx]
                 endelse
             endfor
@@ -362,11 +363,12 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
 
         if ~undefined(files) then begin
             lt0 = systime(/sec) ;temporary
-            mms_cdf2tplot, files, tplotnames = loaded_tnames, varformat=varformat, $
+            spd_cdf2tplot, files, tplotnames = loaded_tnames, varformat=varformat, $
                 suffix = suffix, get_support_data = get_support_data, /load_labels, $
                 min_version=min_version,version=cdf_version,latest_version=latest_version, $
                 number_records=cdf_records, center_measurement=center_measurement, $
-                loaded_versions = the_loaded_versions, major_version=major_version
+                loaded_versions = the_loaded_versions, major_version=major_version, $
+                tt2000=tt2000
             dt_load += systime(/sec) - lt0 ;temporary
         endif
 

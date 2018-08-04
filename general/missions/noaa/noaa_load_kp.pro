@@ -21,9 +21,9 @@
 ;HISTORY:
 ;     egrimes, 3/20/2018: updated to use spd_download, and download the file from NOAA NGDC
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-03-20 12:15:43 -0700 (Tue, 20 Mar 2018) $
-;$LastChangedRevision: 24917 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2018-08-03 10:03:33 -0700 (Fri, 03 Aug 2018) $
+;$LastChangedRevision: 25566 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/noaa/noaa_load_kp.pro $
 ;-
 
@@ -38,6 +38,11 @@ pro noaa_load_kp, trange = trange, kp_mirror = kp_mirror, remote_kp_dir=remote_k
     if ~keyword_set(trange) then get_timespan, trange
     ;if ~keyword_set(kp_mirror) then kp_mirror = 'http://themis-data.igpp.ucla.edu/'
     if ~keyword_set(kp_mirror) then kp_mirror = 'ftp://ftp.ngdc.noaa.gov/'
+    ; Settings might contain themis-data.igpp.ucla.edu, in that case change it to ftp.ngdc.noaa.gov
+    if strmatch(kp_mirror, '*themis-data.igpp.ucla.edu*', /fold_case) then begin
+      dprint, "Please check your Geomagnetic Indices settings and !geom_indices. The NOAA remote directory should be ftp://ftp.ngdc.noaa.gov"
+      kp_mirror = 'ftp://ftp.ngdc.noaa.gov/'
+    endif
     if STRLEN(kp_mirror) gt 0 then if STRMID(kp_mirror, STRLEN(kp_mirror)-1, 1) ne "/" then kp_mirror = kp_mirror + "/"
     if ~keyword_set(local_kp_dir) then file_prefix = root_data_dir() + 'geom_indices' + path_sep() $
         else file_prefix = local_kp_dir        
@@ -77,7 +82,14 @@ pro noaa_load_kp, trange = trange, kp_mirror = kp_mirror, remote_kp_dir=remote_k
         if (!error_state.name eq 'IDL_M_CNTOPNFIL') then begin
            ; file = file_retrieve(remote_kp_dir+strcompress(string(years[i]),/rem), remote_data_dir=kp_mirror, local_data_dir=file_prefix, /ascii_mode)
             file = spd_download(remote_file=kp_mirror+remote_kp_dir+strcompress(string(years[i]),/rem), local_path=file_prefix)
-            openr, lun, file
+            result = file_test(file, /read)
+            if result[0] eq 1 then begin
+              openr, lun, file
+            endif else begin
+              msg = 'File does not exist: ' + file
+              dprint, msg
+              return
+            endelse
         endif
         
         ; loop through file

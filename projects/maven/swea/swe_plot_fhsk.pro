@@ -35,8 +35,8 @@
 ;       RESULT:        Named variable to hold structure of results.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-01-18 11:54:21 -0800 (Thu, 18 Jan 2018) $
-; $LastChangedRevision: 24540 $
+; $LastChangedDate: 2018-08-03 14:58:34 -0700 (Fri, 03 Aug 2018) $
+; $LastChangedRevision: 25576 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_plot_fhsk.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2017-01-15
@@ -70,7 +70,7 @@ pro swe_plot_fhsk, pans=pans, trange=trange, tshift=tshift, vnorm=vnorm, avg=avg
 
   for i=0,(npkt-1) do begin
     dt = min(abs(swe_hsk.time - a6[i].time),j)
-    chksum[i] = swe_hsk[j].chksum[swe_hsk[j].ssctl]
+    chksum[i] = swe_hsk[j].chksum[(swe_hsk[j].ssctl < 3)]
     tabnum[i] = mvn_swe_tabnum(chksum[i])
   endfor
 
@@ -157,6 +157,7 @@ pro swe_plot_fhsk, pans=pans, trange=trange, tshift=tshift, vnorm=vnorm, avg=avg
         endif else begin
           x[(k*224L):(k*224L + 223L)] = (a6[i[k]].time + 2D*j[k]) + sweep
           y[(k*224L):(k*224L + 223L)] = a6[i[k]].value[*,j[k]]
+          y[k*224L + 223L] = !values.f_nan
         endelse
       endfor
 

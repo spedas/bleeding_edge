@@ -25,6 +25,10 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['SCM_xtalk_BY_part1'] =    ['2018-04-17/23:30:00', '2018-04-18/00:30:00']
   fm_times['SCM_xtalk_BY_part2'] =    ['2018-04-18/13:00:00', '2018-04-18/14:45:00']
   fm_times['SCM_xtalk_BZ'] =          ['2018-04-18/15:00:00', '2018-04-18/16:00:00']
+  fm_times['magboom_fluxcannon'] =    ['2018-05-23/23:50:00', '2018-05-24/00:10:00']
+  fm_times['v5_newscrews_Jun05'] =    ['2018-06-04/22:40:00', '2018-06-06/00:20:00']
+  fm_times['groundtest_Jun12_OK'] =    ['2018-06-11/22:30:00', '2018-06-12/02:00:00']
+  fm_times['aliveness_Jun19_OK'] =    ['2018-06-19/15:20:00', '2018-06-19/16:40:00']
   fm_times['aliveness_V3_anomaly'] =  ['2018-08-01/05:00:00', '2018-08-01/07:30:00']
 
   em_times = orderedhash()
@@ -40,6 +44,8 @@ function spp_fld_select_timespan_define_presets, fm_or_em
 
   em_times['EM_test_DFB_CBS_for_SCM_CAL'] = ['2018-07-26/18:00:00','2018-07-26/22:30:00']
 
+  em_times['EM_test_1GOhm_Biasing'] = ['2018-08-03/18:00:00','2018-08-03/21:30:00']
+  em_times['EM_test_1GOhm_Biasing_zoom'] = ['2018-08-03/20:22:00','2018-08-03/20:36:00']
 
   if fm_or_em EQ 'FM' then return, fm_times else return, em_times
 
