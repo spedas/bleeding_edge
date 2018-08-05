@@ -138,12 +138,18 @@ spp_apdat_info,'7c1'x,dlevel=1
 
 endif
 
-path =  'spp/data/sci/sweap/prelaunch/gsedata/realtime/cal/swem/YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
-spp_init_realtime,/swem,/cal,/exec
+if 0 then begin
+  path =  'spp/data/sci/sweap/prelaunch/gsedata/realtime/cal/swem/YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
+  spp_init_realtime,/swem,/cal,/exec
+endif else begin
+  path =  'spp/data/sci/sweap/prelaunch/gsedata/realtime/hires1/swem/YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
+  spp_init_realtime,/swem,/hires1,/exec
+  
+endelse
 
 dprint,setd=4
 
-trange = systime(1) + [-4,0] * 3600.
+trange = systime(1) + [-2,0] * 3600.
 timespan,trange
 ptpfiles = spp_file_retrieve(path,trange= trange,/hourly_names)
 
@@ -160,7 +166,7 @@ if 0 then begin
   swem_memdump.display, win = window(name='swem_memdump')
 endif
 
-dprint,setd=4
+dprint,setd=2
 spp_ptp_file_read, ptpfiles
 
 spp_swp_tplot,/setlim   ,'swem2'
