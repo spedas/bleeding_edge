@@ -18,8 +18,8 @@
 ;    SILENT:        Shhhh.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-04-22 13:31:45 -0700 (Sat, 22 Apr 2017) $
-; $LastChangedRevision: 23215 $
+; $LastChangedDate: 2018-08-06 14:15:28 -0700 (Mon, 06 Aug 2018) $
+; $LastChangedRevision: 25592 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_stat.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -68,11 +68,11 @@ pro mvn_swe_stat, npkt=npkt, full=full, silent=silent
     print,n_hsk," Housekeeping packets (normal)"
     print,n_a6," Housekeeping packets (fast)"
     print,n_a0," 3D distributions (survey)"
-    print,n_a1," 3D distributions (archive)"
+    print,n_a1," 3D distributions (burst)"
     print,n_a2," PAD distributions (survey)"
-    print,n_a3," PAD distributions (archive)"
+    print,n_a3," PAD distributions (burst)"
     print,n_a4," ENGY Spectra (survey)"
-    print,n_a5," ENGY Spectra (archive)"
+    print,n_a5," ENGY Spectra (burst)"
     print,mvn_swe_tabnum(swe_active_chksum),format='("Sweep Table: ",i2)'
     print,""
 

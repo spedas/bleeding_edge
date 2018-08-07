@@ -29,8 +29,8 @@
 ;       SHIFTPOT:      Correct for spacecraft potential.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-18 12:37:01 -0800 (Sun, 18 Feb 2018) $
-; $LastChangedRevision: 24741 $
+; $LastChangedDate: 2018-08-06 14:16:40 -0700 (Mon, 06 Aug 2018) $
+; $LastChangedRevision: 25593 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_get3d.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -41,11 +41,30 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
 
   @mvn_swe_com
 
+  if keyword_set(burst) then archive = 1
+
   if (size(time,/type) eq 0) then begin
     if not keyword_set(all) then begin
       print,"You must specify a time."
       return, 0
-    endif else time = swe_3d.time
+    endif else begin
+      ok = 0
+      if keyword_set(archive) then begin
+        if (size(swe_3d,/type) eq 8) then begin
+          time = swe_3d.time
+          ok = 1
+        endif
+      endif else begin
+        if (size(swe_3d_arc,/type) eq 8) then begin
+          time = swe_3d_arc.time
+          ok = 1
+        endif
+      endelse
+      if (not ok) then begin
+        print,"Cannot get 3D times."
+        return, 0
+      endif
+    endelse
   endif
 
   time = time_double(time)
@@ -55,7 +74,6 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
 
   if (size(swe_mag1,/type) eq 8) then addmag = 1 else addmag = 0
   if (size(swe_sc_pot,/type) eq 8) then addpot = 1 else addpot = 0
-  if keyword_set(burst) then archive = 1
 
 ; First attempt to get extract 3D(s) from L2 data
 

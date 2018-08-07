@@ -46,6 +46,8 @@
 ;         versions:     this keyword returns the version #s of the CDF files used when loading the data
 ;         always_prompt: set this keyword to always prompt for the user's username and password;
 ;                       useful if you accidently save an incorrect password, or if your SDC password has changed
+;         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in
+;                       SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
 ; 
 ; 
 ; EXAMPLE:
@@ -79,8 +81,8 @@
 ; 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-05-03 16:53:26 -0700 (Thu, 03 May 2018) $
-;$LastChangedRevision: 25163 $
+;$LastChangedDate: 2018-08-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
+;$LastChangedRevision: 25588 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_load_hpca.pro $
 ;-
 
@@ -93,7 +95,7 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
                   cdf_filenames = cdf_filenames, cdf_version = cdf_version, $
                   latest_version = latest_version, min_version = min_version, $
                   spdf = spdf, center_measurement = center_measurement, available = available, $
-                  versions = versions, always_prompt = always_prompt, major_version=major_version
+                  versions = versions, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
                 
     if undefined(probes) then probes = ['1'] ; default to MMS 1
     if undefined(datatype) then datatype = 'moments' else datatype = strlowcase(datatype)
@@ -140,6 +142,16 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
     endif
     if ~undefined(varformat) && ~undefined(get_support_data) then undefine, get_support_data
     
+    if array_contains(datatype, 'ion') then begin
+      mem_usage = long64(mms_estimate_mem_usage(tr, instrument, data_rate))
+      mem_avail = get_max_memblock2()
+      dprint, dlevel=0, 'WARNING: this call will use: ' + string(mem_usage) + ' MB / available: ' + string(mem_avail) + ' MB'
+      if mem_usage ge mem_avail then begin
+        dprint, dlevel = 0, "WARNING: this request will use all of your system's available memory!"
+        dprint, dlevel = 0, "Try .continue to continue loading if you're brave enough; if you think this message is an error, please report it to egrimes@igpp.ucla.edu"
+      endif
+    endif
+    
     mms_load_data, trange = trange_in, probes = probes, level = level, instrument = 'hpca', $
         data_rate = data_rate, local_data_dir = local_data_dir, source = source, $
         datatype = datatype, get_support_data = get_support_data, varformat = varformat, $
@@ -147,7 +159,7 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
         no_update = no_update, suffix = suffix, cdf_filenames = cdf_filenames, $
         cdf_version = cdf_version, latest_version = latest_version, min_version = min_version, $
         spdf = spdf, center_measurement = center_measurement, available = available, $
-        versions = versions, always_prompt = always_prompt, major_version=major_version
+        versions = versions, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
     
     if undefined(tplotnames) then return
 

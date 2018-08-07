@@ -30,8 +30,8 @@
 ;       SHIFTPOT:      Correct for spacecraft potential.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-07-31 10:56:47 -0700 (Tue, 31 Jul 2018) $
-; $LastChangedRevision: 25532 $
+; $LastChangedDate: 2018-08-06 14:16:52 -0700 (Mon, 06 Aug 2018) $
+; $LastChangedRevision: 25594 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getpad.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -42,13 +42,40 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
 
   @mvn_swe_com
 
+  if keyword_set(burst) then archive = 1
+
   if (size(time,/type) eq 0) then begin
     if not keyword_set(all) then begin
       print,"You must specify a time."
       return, 0
-    endif else time = swe_a2.time
+    endif else begin
+      ok = 0
+      if keyword_set(archive) then begin
+        if ((not ok) and size(swe_a3) eq 8) then begin
+          time = swe_a3.time + (1.95D/2D)  ; center times
+          ok = 1
+        endif
+        if ((not ok) and size(mvn_swe_pad_arc,/type) eq 8) then begin
+          time = mvn_swe_pad_arc.time      ; center times
+          ok = 1
+        endif
+      endif else begin
+        if ((not ok) and size(swe_a2) eq 8) then begin
+          time = swe_a2.time + (1.95D/2D)  ; center times
+          ok = 1
+        endif
+        if ((not ok) and size(mvn_swe_pad,/type) eq 8) then begin
+          time = mvn_swe_pad_arc.time      ; center times
+          ok = 1
+        endif
+      endelse
+      if (not ok) then begin
+        print,"Cannot get PAD times."
+        return, 0
+      endif
+    endelse
   endif
-  
+
   time = time_double(time)
 
   if (size(units,/type) ne 7) then units = 'EFLUX'
@@ -56,7 +83,6 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
 
   if (size(swe_mag1,/type) eq 8) then addmag = 1 else addmag = 0
   if (size(swe_sc_pot,/type) eq 8) then addpot = 1 else addpot = 0
-  if keyword_set(burst) then archive = 1
 
 ;---------------------------------------------------------------------------------
 ; First attempt to get extract PAD(s) from L2 data

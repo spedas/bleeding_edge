@@ -45,6 +45,8 @@
 ;         versions: this keyword returns the version #s of the CDF files used when loading the data
 ;         always_prompt: set this keyword to always prompt for your username and password;
 ;             useful if you accidently save an incorrect password, or if your SDC password has changed
+;         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in 
+;             SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
 ;         
 ;         
 ; EXAMPLE:
@@ -92,8 +94,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-03 10:21:24 -0700 (Fri, 03 Aug 2018) $
-;$LastChangedRevision: 25568 $
+;$LastChangedDate: 2018-08-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
+;$LastChangedRevision: 25588 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 

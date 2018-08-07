@@ -30,6 +30,7 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['groundtest_Jun12_OK'] =    ['2018-06-11/22:30:00', '2018-06-12/02:00:00']
   fm_times['aliveness_Jun19_OK'] =    ['2018-06-19/15:20:00', '2018-06-19/16:40:00']
   fm_times['aliveness_V3_anomaly'] =  ['2018-08-01/05:00:00', '2018-08-01/07:30:00']
+  fm_times['turn_on_look_at_V3'] =    ['2018-08-04/15:30:00', '2018-08-04/21:30:00']
 
   em_times = orderedhash()
 

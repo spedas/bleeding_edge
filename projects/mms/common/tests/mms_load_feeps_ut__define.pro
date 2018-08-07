@@ -6,10 +6,18 @@
 ;     IDL> mgunit, 'mms_load_feeps_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-01-17 15:50:57 -0800 (Wed, 17 Jan 2018) $
-; $LastChangedRevision: 24537 $
+; $LastChangedDate: 2018-08-06 08:13:46 -0700 (Mon, 06 Aug 2018) $
+; $LastChangedRevision: 25584 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_feeps_ut__define.pro $
 ;-
+
+function mms_load_feeps_ut::test_tt2000
+  del_data, '*'
+  mms_load_feeps, trange=['2015-12-15', '2015-12-16'], /tt2000
+  get_data, 'mms1_epd_feeps_srvy_l2_electron_intensity_omni', data=d
+  assert, array_equal(d.X[0:10], [503409669135695872, 503409671556367872, 503409673977072128, 503409676397760000, 503409678818464000, 503409681239136000, 503409683659840000, 503409686080544000, 503409688501216000, 503409690921920000, 503409693342592000]), 'Problem with FEEPS TT2000 test'
+  return, 1
+end
 
 function mms_load_feeps_ut::test_active_eyes_sitl_before_updates
   eye_table_e = mms_feeps_active_eyes(['2015-12-15', '2015-12-16'], 1, 'srvy', 'electron', 'sitl')

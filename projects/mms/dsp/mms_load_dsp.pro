@@ -48,6 +48,8 @@
 ;         versions:     this keyword returns the version #s of the CDF files used when loading the data
 ;         always_prompt: set this keyword to always prompt for the user's username and password;
 ;                       useful if you accidently save an incorrect password, or if your SDC password has changed
+;         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in
+;                       SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
 ;
 ;
 ; EXAMPLE:
@@ -65,8 +67,8 @@
 ;    The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
 ;    
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-10-19 12:54:21 -0700 (Thu, 19 Oct 2017) $
-;$LastChangedRevision: 24188 $
+;$LastChangedDate: 2018-08-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
+;$LastChangedRevision: 25588 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/dsp/mms_load_dsp.pro $
 ;-
 
@@ -79,7 +81,7 @@ pro mms_load_dsp, trange = trange, probes = probes, datatype = datatype, $
     varformat = varformat, cdf_filenames = cdf_filenames, cdf_version = cdf_version, $
     latest_version = latest_version, min_version = min_version, spdf = spdf, $
     available = available, versions = versions, always_prompt = always_prompt, $
-    major_version=major_version
+    major_version=major_version, tt2000=tt2000
 
     if undefined(probes) then probes = [1, 2, 3, 4] ; default to MMS 1
     if undefined(datatype) then datatype = ['epsd', 'bpsd','tdn', 'swd']
@@ -100,7 +102,7 @@ pro mms_load_dsp, trange = trange, probes = probes, datatype = datatype, $
                     no_update = no_update, suffix = suffixes[datatype_idx], varformat = varformat, $
                     cdf_filenames = cdf_filenames_out, cdf_version = cdf_version, $
                     latest_version = latest_version, min_version = min_version, spdf = spdf, available = available, $
-                    versions = cdf_versions_out, always_prompt = always_prompt, major_version=major_version
+                    versions = cdf_versions_out, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
                 append_array, tplot_names_full, tplotnames_out
                 append_array, cdf_filenames_full, cdf_filenames_out
                 append_array, versions_full, cdf_versions_out
@@ -121,7 +123,7 @@ pro mms_load_dsp, trange = trange, probes = probes, datatype = datatype, $
                     no_update = no_update, suffix = suffixes[datatype_idx], varformat = varformat, $
                     cdf_filenames = cdf_filenames_out, cdf_version = cdf_version, $
                     latest_version = latest_version, min_version = min_version, spdf = spdf, available = available, $
-                    versions = cdf_versions_out, always_prompt = always_prompt, major_version=major_version
+                    versions = cdf_versions_out, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
                 append_array, tplot_names_full, tplotnames_out
                 append_array, cdf_filenames_full, cdf_filenames_out
                 append_array, versions_full, cdf_versions_out
@@ -137,7 +139,7 @@ pro mms_load_dsp, trange = trange, probes = probes, datatype = datatype, $
                 no_update = no_update, suffix = suffix, varformat = varformat, $
                 cdf_filenames = cdf_filenames_out, cdf_version = cdf_version, $
                 latest_version = latest_version, min_version = min_version, spdf = spdf, available = available, $
-                versions = cdf_versions_out, always_prompt = always_prompt, major_version=major_version
+                versions = cdf_versions_out, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
             append_array, tplot_names_full, tplotnames_out
             append_array, cdf_filenames_full, cdf_filenames_out
             append_array, versions_full, cdf_versions_out

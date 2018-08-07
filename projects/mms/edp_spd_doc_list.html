@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Aug  4 18:16:33 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Aug  6 18:16:32 2018.<P>
  
 <HR>
  
@@ -101,6 +101,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          versions:     this keyword returns the version #s of the CDF files used when loading the data
          always_prompt: set this keyword to always prompt for the user's username and password;
                        useful if you accidently save an incorrect password, or if your SDC password has changed
+         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in
+                       SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
 
  NOTES:
      The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
@@ -126,8 +128,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
    - Minor updates to defaults by egrimes@igpp
     
 $LastChangedBy: egrimes $
-$LastChangedDate: 2017-10-19 12:54:21 -0700 (Thu, 19 Oct 2017) $
-$LastChangedRevision: 24188 $
+$LastChangedDate: 2018-08-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
+$LastChangedRevision: 25588 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/edp/mms_load_edp.pro $
 </PRE><P>
 <STRONG>(See <A href="edp/mms_load_edp.pro">projects/mms/edp/mms_load_edp.pro</A>)</STRONG><P>
