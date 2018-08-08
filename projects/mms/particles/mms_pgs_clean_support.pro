@@ -28,8 +28,8 @@
 ;    
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-07-02 15:29:04 -0700 (Mon, 02 Jul 2018) $
-;$LastChangedRevision: 25431 $
+;$LastChangedDate: 2018-08-07 13:36:40 -0700 (Tue, 07 Aug 2018) $
+;$LastChangedRevision: 25597 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_pgs_clean_support.pro $
 ;-
 
@@ -76,7 +76,6 @@ pro mms_pgs_clean_support, times, $
     endif
   endelse
 
-
   ; Spacecraft Potential
   ; ----------------------------------------------------------
   ;   -Interpolate potential data if present
@@ -106,7 +105,7 @@ pro mms_pgs_clean_support, times, $
 
   ; Bulk Velocity
   ; ----------------------------------------------------------
-  ;   -Interpolate to particle data's time samples
+  ;   -Interpolate to particle velocity data's time samples
   ;   -Ignore if tplot variable is not specified
   ; ----------------------------------------------------------
   if ~undefined(vel_tvar_in) then begin

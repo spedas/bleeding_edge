@@ -42,8 +42,8 @@
 ;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-07-02 15:25:13 -0700 (Mon, 02 Jul 2018) $
-;$LastChangedRevision: 25429 $
+;$LastChangedDate: 2018-08-07 14:55:09 -0700 (Tue, 07 Aug 2018) $
+;$LastChangedRevision: 25600 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -87,6 +87,11 @@ pro mms_part_getspec, probes=probes, $
                       center_measurement=center_measurement, $
                       tplotnames=tplotnames, $
                       
+                      mag_data_rate=mag_data_rate, $
+                      scpot_data_rate=scpot_data_rate, $
+                      
+                      photoelectron_corrections=photoelectron_corrections, $
+                      
                       cdf_version=cdf_version, $
                       latest_version=latest_version, $
                       major_version=major_version, $
@@ -123,7 +128,8 @@ pro mms_part_getspec, probes=probes, $
         if instrument eq 'fpi' then data_rate = 'fast' else data_rate = 'srvy'
     endif else data_rate = strlowcase(data_rate)
     
-    if data_rate eq 'brst' then mag_data_rate = 'brst' else mag_data_rate = 'srvy'
+    if data_rate eq 'brst' && undefined(mag_data_rate) then mag_data_rate = 'brst' else mag_data_rate = 'srvy'
+    if data_rate eq 'brst' && undefined(scpot_data_rate) then scpot_data_rate = 'brst' else scpot_data_rate = 'fast'
     
     if ~keyword_set(species) then begin
         if instrument eq 'fpi' then species = 'e' else species = 'hplus'
@@ -154,6 +160,7 @@ pro mms_part_getspec, probes=probes, $
     for probe_idx = 0, n_elements(probes)-1 do begin
         if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_fgm_b_gse_'+mag_data_rate+'_l2_bvec'+mag_suffix, trange[0], trange[1]) or keyword_set(forceload) then append_array, fgm_to_load, probes[probe_idx]
         if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_defeph_pos', trange[0], trange[1]) or keyword_set(forceload) then append_array, state_to_load, probes[probe_idx]
+        if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_edp_scpot_'+scpot_data_rate+'_l2', trange[0], trange[1]) or keyword_set(forceload) then append_array, scpot_to_load, probes[probe_idx]
     endfor
 
     ; load state data (needed for coordinate transforms and field aligned coordinates)
@@ -161,6 +168,8 @@ pro mms_part_getspec, probes=probes, $
 
     ; load magnetic field data
     if defined(fgm_to_load) && undefined(mag_name_user) then mms_load_fgm, probes=fgm_to_load, trange=support_trange, level='l2', suffix=mag_suffix, spdf=spdf, data_rate=mag_data_rate, /time_clip
+
+    if defined(scpot_to_load) && array_contains(outputs, 'moments') && species eq 'e' then mms_load_edp, probes=scpot_to_load, trange=support_trange, level='l2', spdf=spdf, data_rate=scpot_data_rate, datatype='scpot'
 
     if instrument eq 'fpi' then begin
         mms_load_fpi, probes=probes, trange=trange, data_rate=data_rate, level=level, $
@@ -185,11 +194,13 @@ pro mms_part_getspec, probes=probes, $
     for probe_idx = 0, n_elements(probes)-1 do begin
         if undefined(mag_name_user) then bname = 'mms'+probes[probe_idx]+'_fgm_b_gse_'+mag_data_rate+'_l2_bvec'+mag_suffix else bname = mag_name_user
         if undefined(pos_name_user) then pos_name = 'mms'+probes[probe_idx]+ '_defeph_pos' else pos_name = pos_name_user
+
         if instrument eq 'fpi' then begin
             name = 'mms'+probes[probe_idx]+'_d'+species+'s_dist_'+data_rate
             if undefined(vel_name_user) then vel_name = 'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_gse_'+data_rate else vel_name = vel_name_user
             if keyword_set(subtract_error) then error_variable = 'mms'+probes[probe_idx]+'_d'+species+'s_disterr_'+data_rate
             if keyword_set(subtract_spintone) && tnames(vel_name) ne '' && tnames('mms'+probes[probe_idx]+'_d'+species+'s_bulkv_spintone_gse_'+data_rate) ne '' then calc, '"'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_gse_'+data_rate+'"="'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_gse_'+data_rate+'"-"'+'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_spintone_gse_'+data_rate+'"'
+            if keyword_set(photoelectron_corrections) then scpot_variable = 'mms'+probes[probe_idx]+'_edp_scpot_'+scpot_data_rate+'_l2'
         endif else if instrument eq 'hpca' then begin
             name =  'mms'+probes[probe_idx]+'_hpca_'+species+'_phase_space_density'
             if undefined(vel_name_user) then vel_name = 'mms'+probes[probe_idx]+'_hpca_'+species+'_ion_bulk_velocity' else vel_name = vel_name_user
@@ -200,7 +211,8 @@ pro mms_part_getspec, probes=probes, $
             pitch=pitch, gyro=gyro_in, phi=phi_in, theta=theta, regrid=regrid, $
             outputs=outputs, suffix=suffix, datagap=datagap, subtract_bulk=subtract_bulk, $
             tplotnames=tplotnames_thisprobe, subtract_error=subtract_error, $
-            error_variable=error_variable, instrument=instrument, species=species, _extra=ex
+            error_variable=error_variable, instrument=instrument, species=species, $
+            sc_pot_name=scpot_variable, _extra=ex
 
         if undefined(tplotnames_thisprobe) then continue ; nothing created by mms_part_products
         append_array, tplotnames, tplotnames_thisprobe

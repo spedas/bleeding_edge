@@ -48,6 +48,8 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   em_times['EM_test_1GOhm_Biasing'] = ['2018-08-03/18:00:00','2018-08-03/21:30:00']
   em_times['EM_test_1GOhm_Biasing_zoom'] = ['2018-08-03/20:22:00','2018-08-03/20:36:00']
 
+  em_times['EM_test_1GOhm_Biasing_V1234'] = ['2018-08-07/01:40:00','2018-08-07/01:45:00']
+
   if fm_or_em EQ 'FM' then return, fm_times else return, em_times
 
 end

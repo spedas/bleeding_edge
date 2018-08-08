@@ -105,8 +105,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-05-03 09:13:04 -0700 (Thu, 03 May 2018) $
-;$LastChangedRevision: 25158 $
+;$LastChangedDate: 2018-08-07 15:14:59 -0700 (Tue, 07 Aug 2018) $
+;$LastChangedRevision: 25601 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products_new.pro $
 ;-
 pro mms_part_products_new, $
@@ -260,18 +260,6 @@ pro mms_part_products_new, $
       outputs_lc[idx] = 'fac_moments'
     endif
   endif
-  
-;  if undefined(mag_name) then begin
-;    mag_name = 'th'+probe_lc+'_fgs'
-;  endif
-;  
-;  if undefined(pos_name) then begin
-;    pos_name = 'th'+probe_lc+'_state_pos'
-;  endif
-;  
-;  if undefined(sc_pot_name) then begin
-;    sc_pot_name = 'th'+probe_lc+'_pxxm_pot' 
-;  endif
   
   if undefined(fac_type) then begin
     fac_type = 'mphigeo'

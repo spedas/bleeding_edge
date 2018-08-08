@@ -106,8 +106,8 @@
 ;                        2 = SWEA native format (2-byte words)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-07-10 09:36:38 -0700 (Tue, 10 Jul 2018) $
-; $LastChangedRevision: 25459 $
+; $LastChangedDate: 2018-08-07 16:27:05 -0700 (Tue, 07 Aug 2018) $
+; $LastChangedRevision: 25602 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sweep.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-01-03
@@ -670,14 +670,18 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
         printf,lun,"    LOAD_EEPROM_END()"
 
       endif else begin
+        swebuf = strtrim(string(swebuf,format='(i)'),2)
         printf,lun,"cmd.SWE_SSCTL(0)"
         printf,lun,"time.sleep(0.1)"
-        printf,lun,"cmd.SWE_LUTPTR(" + strtrim(string(swebuf,format='(i)'),2) + ",0)"
-        printf,lun,"time.sleep(0.1)"
-        nload = nbytes/2
-        for i=0,(nload-1) do begin
-          printf,lun,"cmd.SWE_LUTDAT(" + cmd[i] + ")"
+        nload = nbytes/8
+        for j=0,3 do begin
+          addr = string(4096*j,format='("0x",z4.4)')
+          printf,lun,"cmd.SWE_LUTPTR(" + swebuf + "," + addr + ")"
           printf,lun,"time.sleep(0.1)"
+          for i=0,(nload-1) do begin
+            printf,lun,"cmd.SWE_LUTDAT(" + cmd[i + nswp*j] + ")"
+            printf,lun,"time.sleep(0.1)"
+          endfor
         endfor
       endelse
 
