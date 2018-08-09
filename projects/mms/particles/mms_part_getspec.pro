@@ -32,6 +32,8 @@
 ;         subtract_error: subtract the distribution error prior to doing the calculations (FPI only, currently)
 ;         subtract_spintone: subtract the spin-tone from the velocity vector prior to bulk velocity subtraction (FPI versions 3.2 and later only)
 ;         
+;         photoelectron_corrections: *experimental* photoelectron corrections for DES
+;         
 ;     The following are found by default for the requested instrument/probe/data_rate; use these keywords 
 ;     to override the defaults:
 ;         mag_name:  Use a different tplot variable containing magnetic field data for moments and FAC transformations
@@ -41,9 +43,13 @@
 ; Notes:
 ;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
+;         FPI-DES photoelectrons are corrected using Dan Gershman's photoelectron model; see the following for details: 
+;             Spacecraft and Instrument Photoelectrons Measured by the Dual Electron Spectrometers on MMS
+;             https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2017JA024518
+;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-07 14:55:09 -0700 (Tue, 07 Aug 2018) $
-;$LastChangedRevision: 25600 $
+;$LastChangedDate: 2018-08-08 06:37:03 -0700 (Wed, 08 Aug 2018) $
+;$LastChangedRevision: 25609 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -119,6 +125,10 @@ pro mms_part_getspec, probes=probes, $
     if ~keyword_set(outputs) then begin
         outputs = ['phi','theta','energy','pa','gyro']
     endif else outputs = strlowcase(outputs)
+    
+    if n_elements(outputs) eq 1 then begin
+      outputs = strsplit(outputs,' ',/extract)
+    endif
     
     if ~keyword_set(instrument) then begin
         instrument = 'fpi'
@@ -212,7 +222,8 @@ pro mms_part_getspec, probes=probes, $
             outputs=outputs, suffix=suffix, datagap=datagap, subtract_bulk=subtract_bulk, $
             tplotnames=tplotnames_thisprobe, subtract_error=subtract_error, $
             error_variable=error_variable, instrument=instrument, species=species, $
-            sc_pot_name=scpot_variable, _extra=ex
+            sc_pot_name=scpot_variable, data_rate=data_rate, correct_photoelectrons=photoelectron_corrections, $
+            _extra=ex
 
         if undefined(tplotnames_thisprobe) then continue ; nothing created by mms_part_products
         append_array, tplotnames, tplotnames_thisprobe

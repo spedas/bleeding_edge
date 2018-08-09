@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Aug  7 18:16:28 2018.<P>
+<STRONG>Last modified: </STRONG>Wed Aug  8 18:16:38 2018.<P>
  
 <HR>
  
@@ -247,6 +247,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          subtract_error: subtract the distribution error prior to doing the calculations (FPI only, currently)
          subtract_spintone: subtract the spin-tone from the velocity vector prior to bulk velocity subtraction (FPI versions 3.2 and later only)
          
+         photoelectron_corrections: *experimental* photoelectron corrections for DES
+         
      The following are found by default for the requested instrument/probe/data_rate; use these keywords 
      to override the defaults:
          mag_name:  Use a different tplot variable containing magnetic field data for moments and FAC transformations
@@ -256,9 +258,13 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
  Notes:
          Updated to automatically center HPCA measurements if not specified already, 18Oct2017
          
+         FPI-DES photoelectrons are corrected using Dan Gershman's photoelectron model; see the following for details: 
+             Spacecraft and Instrument Photoelectrons Measured by the Dual Electron Spectrometers on MMS
+             https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2017JA024518
+         
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-08-07 14:55:09 -0700 (Tue, 07 Aug 2018) $
-$LastChangedRevision: 25600 $
+$LastChangedDate: 2018-08-08 06:37:03 -0700 (Wed, 08 Aug 2018) $
+$LastChangedRevision: 25609 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_getspec.pro">projects/mms/particles/mms_part_getspec.pro</A>)</STRONG><P>
@@ -487,7 +493,7 @@ Input Keywords:
   sc_pot_name:  Tplot variable containing spacecraft potential data for moments corrections
   vel_name:  Tplot variable containing velocity data in km/s for use with /subtract_bulk
     
-  units:  Secify units of output variables.  Must be 'eflux' to calculate moments.
+  units:  Specify units of output variables.  Must be 'eflux' to calculate moments.
             'flux'   -   # / (cm^2 * s * sr * eV)
             'eflux'  -  eV / (cm^2 * s * sr * eV)  &lt;default&gt;
             'df_cm'  -  s^3 / cm^6
@@ -526,11 +532,15 @@ Output Keywords:
 
 Notes: 
   -See warning above in purpose description!
+  
+  -FPI-DES photoelectrons are corrected using Dan Gershman's photoelectron model; see the following for details:
+     Spacecraft and Instrument Photoelectrons Measured by the Dual Electron Spectrometers on MMS
+     https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2017JA024518
 
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-08-07 15:14:59 -0700 (Tue, 07 Aug 2018) $
-$LastChangedRevision: 25601 $
+$LastChangedDate: 2018-08-08 06:37:03 -0700 (Wed, 08 Aug 2018) $
+$LastChangedRevision: 25609 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products_new.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_products_new.pro">projects/mms/particles/mms_part_products_new.pro</A>)</STRONG><P>

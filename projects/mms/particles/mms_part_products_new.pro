@@ -63,7 +63,7 @@
 ;  sc_pot_name:  Tplot variable containing spacecraft potential data for moments corrections
 ;  vel_name:  Tplot variable containing velocity data in km/s for use with /subtract_bulk
 ;    
-;  units:  Secify units of output variables.  Must be 'eflux' to calculate moments.
+;  units:  Specify units of output variables.  Must be 'eflux' to calculate moments.
 ;            'flux'   -   # / (cm^2 * s * sr * eV)
 ;            'eflux'  -  eV / (cm^2 * s * sr * eV)  <default>
 ;            'df_cm'  -  s^3 / cm^6
@@ -102,17 +102,22 @@
 ;
 ;Notes: 
 ;  -See warning above in purpose description!
+;  
+;  -FPI-DES photoelectrons are corrected using Dan Gershman's photoelectron model; see the following for details:
+;     Spacecraft and Instrument Photoelectrons Measured by the Dual Electron Spectrometers on MMS
+;     https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2017JA024518
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-07 15:14:59 -0700 (Tue, 07 Aug 2018) $
-;$LastChangedRevision: 25601 $
+;$LastChangedDate: 2018-08-08 06:37:03 -0700 (Wed, 08 Aug 2018) $
+;$LastChangedRevision: 25609 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products_new.pro $
 ;-
 pro mms_part_products_new, $
                      in_tvarname, $ ;the tplot variable name for the MMS being processed
                                     ;specify this or use probe, instr, rate, level, species
 
+                     data_rate=data_rate, $
                      probe=probe, $ ;can be specified if not in tplot variable name
                                     ;needed for some FAC
                      instrument=instrument, $ ;can be specified if not in tplot variable name 
@@ -151,6 +156,8 @@ pro mms_part_products_new, $
                      pos_name=pos_name, $ ;tplot variable containing spacecraft position for FAC transformations
                      vel_name=vel_name, $ tplot variable containing velocity data in km/s
                      
+                     correct_photoelectrons=correct_photoelectrons, $
+                      
                      error=error,$ ;indicate error to calling routine 1=error,0=success
                      
                      start_angle=start_angle, $ ;select a different start angle
@@ -276,25 +283,26 @@ pro mms_part_products_new, $
   ;--------------------------------------------------------
   
   if in_set(outputs_lc,'moments') || in_set(outputs_lc,'fac_moments') then begin
-
-    msg = 'Moments generated with mms_part_products may be missing several important '+ $
-          'corrections, including photoelectron removal and spacecraft potential.  '+ $
-          'The official moments released by the instrument teams include these and '+ $
-          'are the scientific products that should be used for analysis.'
-    msg += ~in_set(outputs_lc,'fac_moments') ? '' : ssl_newline()+ssl_newline()+ $
-          'Field aligned moments should be considered experimental.  '+ $
-          'All output variables will be in the coordinates defined by '+ $
-          'the fac_type option (default: ''mphigeo'').'
-
-    if ~keyword_set(silent) then begin
-      msg += ssl_newline()+ssl_newline()+'Use /silent to disable this warning.'
-      dummy = dialog_message(msg, /center, title='MMS_PART_PRODUCTS:  Warning')
-    endif else begin
-      dprint, dlevel=2, '=========================================================='
-      dprint, dlevel=2, 'WARNING:  '
-      dprint, dlevel=2, msg 
-      dprint, dlevel=2, '=========================================================='
-    endelse
+    if ~keyword_set(correct_photoelectrons) then begin
+      msg = 'Moments generated with mms_part_products may be missing several important '+ $
+            'corrections, including photoelectron removal and spacecraft potential.  '+ $
+            'The official moments released by the instrument teams include these and '+ $
+            'are the scientific products that should be used for analysis.'
+      msg += ~in_set(outputs_lc,'fac_moments') ? '' : ssl_newline()+ssl_newline()+ $
+            'Field aligned moments should be considered experimental.  '+ $
+            'All output variables will be in the coordinates defined by '+ $
+            'the fac_type option (default: ''mphigeo'').'
+  
+      if ~keyword_set(silent) then begin
+        msg += ssl_newline()+ssl_newline()+'Use /silent to disable this warning.'
+        dummy = dialog_message(msg, /center, title='MMS_PART_PRODUCTS:  Warning')
+      endif else begin
+        dprint, dlevel=2, '=========================================================='
+        dprint, dlevel=2, 'WARNING:  '
+        dprint, dlevel=2, msg 
+        dprint, dlevel=2, '=========================================================='
+      endelse
+    endif
 
   endif
   
@@ -371,7 +379,25 @@ pro mms_part_products_new, $
   
     multi_pad_out = dblarr(n_elements(time_idx), (dimen(dist.data))[0], (dimen(dist.data))[2])
   endif
-
+  
+  ; grab the FPI photoelectron model if needed
+  if keyword_set(correct_photoelectrons) then begin
+    fpi_photoelectrons = mms_part_des_photoelectrons(in_tvarname)
+    
+    ; will need stepper parities for burst mode data
+    if data_rate eq 'brst' then begin
+      scprefix = (strsplit(in_tvarname, '_', /extract))[0]
+      get_data, scprefix+'_des_steptable_parity_brst', data=parity
+      
+      ; the following is so that we can use scope_varfetch using the parity_num found in the loop over times
+      ; (scope_varfetch doesn't work with structure.structure syntax)
+      bg_dist_p0 = fpi_photoelectrons.bgdist_p0
+      bg_dist_p1 = fpi_photoelectrons.bgdist_p1
+      n_0 = fpi_photoelectrons.n_0
+      n_1 = fpi_photoelectrons.n_1
+    endif
+  endif
+  
   ;--------------------------------------------------------
   ;Loop over time to build the spectrograms/moments
   ;--------------------------------------------------------
@@ -386,6 +412,41 @@ pro mms_part_products_new, $
                         subtract_error=subtract_error, error=error_variable)
     
     str_element, dist, 'orig_energy', dist.energy[*, 0, 0], /add
+
+    if keyword_set(correct_photoelectrons) then begin
+      get_data, 'mms'+probe+'_des_startdelphi_count_'+data_rate, data=startdelphi
+
+      ; From Dan Gershman's release notes on the FPI photoelectron model:
+      ; Find the index I in the startdelphi_counts_brst or startdelphi_counts_fast array
+      ; [360 possibilities] whose corresponding value is closest to the measured
+      ; startdelphi_count_brst or startdelphi_count_fast for the skymap of interest. The
+      ; closest index can be approximated by I = floor(startdelphi_count_brst/16) or I =
+      ; floor(startdelphi_count_fast/16)
+      start_delphi_I = floor(startdelphi.Y[i]/16.)
+
+      if data_rate eq 'brst' then begin
+        parity_num = strcompress(string(fix(parity.Y[i])), /rem)
+        
+        bg_dist = scope_varfetch('bg_dist_p'+parity_num)
+        n_value = scope_varfetch('n_'+parity_num)
+        
+        fphoto = bg_dist.Y[start_delphi_I, *, *, *]
+
+        ; need to interpolate using SC potential data to get Nphoto value
+        nphoto_scpot_dependent = reform(n_value.Y[start_delphi_I, *])
+        nphoto = interpol(nphoto_scpot_dependent, n_value.V, sc_pot_data[i])
+      endif else begin
+        fphoto = fpi_photoelectrons.bg_dist.Y[start_delphi_I, *, *, *]
+        
+        ; need to interpolate using SC potential data to get Nphoto value
+        nphoto_scpot_dependent = reform(fpi_photoelectrons.N.Y[start_delphi_I, *])
+        nphoto = interpol(nphoto_scpot_dependent, fpi_photoelectrons.N.V, sc_pot_data[i])
+      endelse
+
+      ; now, the corrected distribution function is simply f_corrected = f-fphoto*nphoto
+      ; note: transpose is to shuffle fphoto*nphoto to energy-azimuth-elevation, to match dist.data
+      dist.data = dist.data-transpose(reform(fphoto*nphoto), [2, 0, 1])
+    endif
 
     ;Sanitize Data.
     ;#1 removes unneeded fields from struct to increase efficiency
