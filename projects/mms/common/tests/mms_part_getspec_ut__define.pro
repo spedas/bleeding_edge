@@ -7,10 +7,21 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-05-24 14:20:49 -0700 (Thu, 24 May 2018) $
-; $LastChangedRevision: 25261 $
+; $LastChangedDate: 2018-08-09 16:45:12 -0700 (Thu, 09 Aug 2018) $
+; $LastChangedRevision: 25625 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
+
+function mms_part_getspec_ut::test_des_photoelectron_corrections
+  ; load the moments data for comparisons
+  mms_load_fpi, datatype='des-moms', trange=['2015-12-15', '2015-12-15/1'],  probe=1, /time_clip, data_rate='fast'
+  mms_part_getspec, probe=1, species='e', /photoelectron_corrections, trange=['2015-12-15', '2015-12-15/1'], data_rate='fast', output='moments'
+  calc, '"diff"=100*("mms1_des_dist_fast_density"-"mms1_des_numberdensity_fast")/"mms1_des_numberdensity_fast"
+  get_data, 'diff', data=diff
+  ; check that difference is <= 5% of the density provided by the moments files
+  assert, (minmax(abs(diff.Y)))[1] le 5.0, 'Problem with photoelectron corrections in PGS'
+  return, 1
+end
 
 ; the following produce validation plots that compare DIS and HPCA spectra
 function mms_part_getspec_ut::test_dis_hpca_cold

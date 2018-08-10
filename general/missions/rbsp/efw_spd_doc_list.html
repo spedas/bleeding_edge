@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Aug  8 18:16:38 2018.<P>
+<STRONG>Last modified: </STRONG>Thu Aug  9 18:16:33 2018.<P>
  
 <HR>
  
@@ -84,6 +84,7 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <LI><A HREF="#RBSP_LOAD_EFW_WAVEFORM_L2">RBSP_LOAD_EFW_WAVEFORM_L2</A>
 <LI><A HREF="#RBSP_LOAD_EFW_WAVEFORM_L3">RBSP_LOAD_EFW_WAVEFORM_L3</A>
 <LI><A HREF="#RBSP_LOAD_EFW_XSPEC">RBSP_LOAD_EFW_XSPEC</A>
+<LI><A HREF="#RBSP_LOAD_EMFISIS_BURST_TIMES">RBSP_LOAD_EMFISIS_BURST_TIMES</A>
 <LI><A HREF="#RBSP_LOAD_MANEUVER_FILE">RBSP_LOAD_MANEUVER_FILE</A>
 <LI><A HREF="#RBSP_MGSE2GSE.">RBSP_MGSE2GSE.</A>
 <br>Convert vector in mGSE coord to GSE.
@@ -1868,7 +1869,7 @@ Example:
 <A NAME="RBSP_LOAD_EFW_XSPEC">
 <H2>RBSP_LOAD_EFW_XSPEC</H2></A>
 <A HREF="#RBSP_LOAD_EFW_WAVEFORM_L3">[Previous Routine]</A>
-<A HREF="#RBSP_LOAD_MANEUVER_FILE">[Next Routine]</A>
+<A HREF="#RBSP_LOAD_EMFISIS_BURST_TIMES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure: RBSP_LOAD_EFW_XSPEC
@@ -1911,9 +1912,35 @@ Notes:
 <STRONG>(See <A href="efw/rbsp_load_efw_xspec.pro">general/missions/rbsp/efw/rbsp_load_efw_xspec.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RBSP_LOAD_EMFISIS_BURST_TIMES">
+<H2>RBSP_LOAD_EMFISIS_BURST_TIMES</H2></A>
+<A HREF="#RBSP_LOAD_EFW_XSPEC">[Previous Routine]</A>
+<A HREF="#RBSP_LOAD_MANEUVER_FILE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: RBSP_LOAD_EMFISIS_BURST_TIMES
+
+ SYNTAX:
+	rbsp_load_emfisis_burst_times,probe='a b'
+
+ PURPOSE: Loads EMFISIS Burst data availability
+
+	date = 'yyyy-mm-dd'
+	probe = 'a' or 'b'
+
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2018-08-09 11:15:20 -0700 (Thu, 09 Aug 2018) $
+   $LastChangedRevision: 25613 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_emfisis_burst_times.pro $
+
+</PRE><P>
+<STRONG>(See <A href="efw/rbsp_load_emfisis_burst_times.pro">general/missions/rbsp/efw/rbsp_load_emfisis_burst_times.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RBSP_LOAD_MANEUVER_FILE">
 <H2>RBSP_LOAD_MANEUVER_FILE</H2></A>
-<A HREF="#RBSP_LOAD_EFW_XSPEC">[Previous Routine]</A>
+<A HREF="#RBSP_LOAD_EMFISIS_BURST_TIMES">[Previous Routine]</A>
 <A HREF="#RBSP_MGSE2GSE.">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

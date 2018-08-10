@@ -26,9 +26,9 @@
 ;  Much of this code was copied from thm_part_moments.pro
 ;
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2016-10-07 12:12:46 -0700 (Fri, 07 Oct 2016) $
-;$LastChangedRevision: 22069 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2018-08-09 16:26:49 -0700 (Thu, 09 Aug 2018) $
+;$LastChangedRevision: 25623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_part_products/spd_pgs_moments_tplot.pro $
 ;-
 pro spd_pgs_moments_tplot, moments, $
@@ -91,7 +91,7 @@ pro spd_pgs_moments_tplot, moments, $
   ;-----------------------------------------
   
   ;set ranges and subtitles (mostly copied from thm_part_moments)
-  options,strfilter(mom_tnames,'*_density'+suffix),/def ,/ystyle,/ylog,ysubtitle='!c[1/cc]'
+  options,strfilter(mom_tnames,'*_density'+suffix),/def ,/ystyle,ysubtitle='!c[1/cc]'
   options,strfilter(mom_tnames,'*_velocity'+suffix),/def ,yrange=[-800,800.],/ystyle,ysubtitle='!c[km/s]'
   options,strfilter(mom_tnames,'*_flux'+suffix),/def ,yrange=[-1e8,1e8],/ystyle,ysubtitle='!c[#/s/cm2 ??]'
   options,strfilter(mom_tnames,'*t3'+suffix),/def ,yrange=[1,10000.],/ystyle,/ylog,ysubtitle='!c[eV]'

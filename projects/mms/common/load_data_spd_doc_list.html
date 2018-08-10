@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Aug  8 18:16:38 2018.<P>
+<STRONG>Last modified: </STRONG>Thu Aug  9 18:16:33 2018.<P>
  
 <HR>
  
@@ -23,6 +23,8 @@ This page was created by the IDL library routine
 <br>given a MMS tplot variable name, check to see if attitude and/or ephemeris are available, if they do not, load
 <LI><A HREF="#MMS_CHECK_FILE_EXISTS">MMS_CHECK_FILE_EXISTS</A>
 <br>Checks if a remote MMS data file exists locally. If it does, checks the file size
+<LI><A HREF="#MMS_ESTIMATE_MEM_USAGE">MMS_ESTIMATE_MEM_USAGE</A>
+<br>Estimate memory usage by HPCA ion data
 <LI><A HREF="#MMS_FILES_IN_INTERVAL">MMS_FILES_IN_INTERVAL</A>
 <br>filters file list returned by the SDC to the trange. This filter is purposefully
 <LI><A HREF="#MMS_GET_FILENAME_SIZE">MMS_GET_FILENAME_SIZE</A>
@@ -105,7 +107,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_CHECK_FILE_EXISTS">
 <H2>MMS_CHECK_FILE_EXISTS</H2></A>
 <A HREF="#MMS_AUTOLOAD_SUPPORT">[Previous Routine]</A>
-<A HREF="#MMS_FILES_IN_INTERVAL">[Next Routine]</A>
+<A HREF="#MMS_ESTIMATE_MEM_USAGE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -136,9 +138,32 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="load_data/mms_check_file_exists.pro">projects/mms/common/load_data/mms_check_file_exists.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_ESTIMATE_MEM_USAGE">
+<H2>MMS_ESTIMATE_MEM_USAGE</H2></A>
+<A HREF="#MMS_CHECK_FILE_EXISTS">[Previous Routine]</A>
+<A HREF="#MMS_FILES_IN_INTERVAL">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ FUNCTION:
+         mms_estimate_mem_usage
+
+ PURPOSE:
+         Estimate memory usage by HPCA ion data
+
+ 
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2018-08-09 14:45:46 -0700 (Thu, 09 Aug 2018) $
+ $LastChangedRevision: 25617 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_estimate_mem_usage.pro $
+</PRE><P>
+<STRONG>(See <A href="load_data/mms_estimate_mem_usage.pro">projects/mms/common/load_data/mms_estimate_mem_usage.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_FILES_IN_INTERVAL">
 <H2>MMS_FILES_IN_INTERVAL</H2></A>
-<A HREF="#MMS_CHECK_FILE_EXISTS">[Previous Routine]</A>
+<A HREF="#MMS_ESTIMATE_MEM_USAGE">[Previous Routine]</A>
 <A HREF="#MMS_GET_FILENAME_SIZE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

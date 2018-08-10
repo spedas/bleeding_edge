@@ -102,8 +102,8 @@
 ;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-07-19 15:13:49 -0700 (Thu, 19 Jul 2018) $
-; $LastChangedRevision: 25497 $
+; $LastChangedDate: 2018-08-09 15:31:32 -0700 (Thu, 09 Aug 2018) $
+; $LastChangedRevision: 25622 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_flipbookify.pro $
 ;-
 
@@ -124,7 +124,6 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   ps_xsize=ps_xsize, ps_ysize=ps_ysize, ps_aspect=ps_aspect, nopng=nopng, subtract_spintone=subtract_spintone, $
   fgm_data_rate=fgm_data_rate, seconds=seconds
   
-  @tplot_com.pro 
 
   if undefined(instrument) then instrument = 'fpi'
   if undefined(species) then species = 'i'
@@ -152,19 +151,8 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   if ~undefined(charsize) then !p.charsize = charsize
   filename_prefix = 'mms'+probe+'_'+instrument+'_'+species+'_'
 
-  tpv_opt_tags = tag_names(tplot_vars.options)
-  idx = where( tpv_opt_tags eq 'DATANAMES', icnt)
-  if icnt gt 0 then begin
-    tplotnames = tplot_vars.options.datanames
-    tplotnames = tnames(tplotnames, nd, /all, index=ind)
-    get_data, tplotnames[0], data=top_panel
-    ; in case the top panel contains a pseudovariable
-    if ~is_struct(top_panel) && is_array(top_panel) then get_data, top_panel[0], data=top_panel
-    if is_struct(top_panel) then times = top_panel.x
-  endif else begin
-    dprint, dlevel=0, 'Error, no tplot window found'
-    return
-  endelse
+  times = spd_times_from_top_panel()
+  
   if undefined(trange) then trange = time_double(minmax(times)) else begin
     ; the user specified a trange, so we need to limit the slices to that trange
     ; and draw a box indicating the trange

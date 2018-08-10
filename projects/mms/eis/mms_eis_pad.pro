@@ -30,8 +30,8 @@
 ;     This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-06-14 19:25:13 -0700 (Thu, 14 Jun 2018) $
-;$LastChangedRevision: 25357 $
+;$LastChangedDate: 2018-08-09 10:25:13 -0700 (Thu, 09 Aug 2018) $
+;$LastChangedRevision: 25611 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 ;-
 ; REVISION HISTORY:
@@ -57,6 +57,7 @@
 ;       + 2017-12-04, I. Cohen      : changed bin_size keyword to size_pabin in calls to mms_eis_pad_spinavg.pro
 ;       + 2018-02-19, I. Cohen      : added combine_proton_data keyword to enable override of automatic combination of PHxTOF and ExTOF data
 ;       + 2018-06-14, I. Cohen      : fixed zlim range for PAD variables with zero counts to differentiate from non-accessed pitch angles
+;       + 2018-08-09, I. Cohen      : fixed energy range for integrated PAD variable to match actual range, not user-defined range
 ;                             
 ;-
 
@@ -202,7 +203,7 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
             ;
             ; CREATE PAD VARIABLE INTEGRATED OVER USER-DEFINED ENERGY RANGE
             ;
-            energy_range_string = strcompress(string(fix(energy[0])), /rem) + '-' + strcompress(string(fix(energy[1])), /rem) + 'keV'
+            energy_range_string = strcompress(string(fix(data_flux.v[these_energies[0]])), /rem) + '-' + strcompress(string(fix(data_flux.v[these_energies[-1]])), /rem) + 'keV'
             new_name = prefix + datatype[dd] + '_' + energy_range_string + '_' + species[species_idx] + '_' + data_units + scope_suffix + '_pad'
             ;
             ; the following is because of prefix becoming a single element array in some cases

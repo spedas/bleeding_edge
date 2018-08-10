@@ -81,8 +81,8 @@
 ; 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
-;$LastChangedRevision: 25588 $
+;$LastChangedDate: 2018-08-09 15:03:00 -0700 (Thu, 09 Aug 2018) $
+;$LastChangedRevision: 25620 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_load_hpca.pro $
 ;-
 
@@ -142,17 +142,22 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
     endif
     if ~undefined(varformat) && ~undefined(get_support_data) then undefine, get_support_data
     
+    if ~undefined(trange_in) && n_elements(trange_in) eq 2 $
+      then tr = timerange(trange_in) $
+    else tr = timerange()
+
     if array_contains(datatype, 'ion') then begin
-      mem_usage = long64(mms_estimate_mem_usage(tr, instrument, data_rate))
+      mem_usage = long64(mms_estimate_mem_usage(tr, 'hpca'))
       mem_avail = get_max_memblock2()
       dprint, dlevel=0, 'WARNING: this call will use: ' + string(mem_usage) + ' MB / available: ' + string(mem_avail) + ' MB'
       if mem_usage ge mem_avail then begin
         dprint, dlevel = 0, "WARNING: this request will use all of your system's available memory!"
         dprint, dlevel = 0, "Try .continue to continue loading if you're brave enough; if you think this message is an error, please report it to egrimes@igpp.ucla.edu"
+        stop
       endif
     endif
     
-    mms_load_data, trange = trange_in, probes = probes, level = level, instrument = 'hpca', $
+    mms_load_data, trange = tr, probes = probes, level = level, instrument = 'hpca', $
         data_rate = data_rate, local_data_dir = local_data_dir, source = source, $
         datatype = datatype, get_support_data = get_support_data, varformat = varformat, $
         tplotnames = tplotnames, no_color_setup = no_color_setup, time_clip = time_clip, $
