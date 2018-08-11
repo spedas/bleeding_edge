@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Aug  9 18:16:33 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Aug 10 18:16:40 2018.<P>
  
 <HR>
  
@@ -33,6 +33,8 @@ This page was created by the IDL library routine
 <br>To load the STEL fluxgate geomagnetic data from the STEL ERG-SC site
 <LI><A HREF="#ERG_LOAD_GMAG_STEL_INDUCTION">ERG_LOAD_GMAG_STEL_INDUCTION</A>
 <br>To load STEL induction magnetometer data from the STEL ERG-SC site
+<LI><A HREF="#ISEE_INDUCTION_CAL_RESP">ISEE_INDUCTION_CAL_RESP</A>
+<br>To make calibrated frequency-time spectrogram of ISEE induction magnetometers
 <br>
 </UL><P>
 <HR>
@@ -351,6 +353,7 @@ This page was created by the IDL library routine
 <A NAME="ERG_LOAD_GMAG_STEL_INDUCTION">
 <H2>ERG_LOAD_GMAG_STEL_INDUCTION</H2></A>
 <A HREF="#ERG_LOAD_GMAG_STEL_FLUXGATE">[Previous Routine]</A>
+<A HREF="#ISEE_INDUCTION_CAL_RESP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE: erg_load_gmag_stel_induction
@@ -393,5 +396,51 @@ This page was created by the IDL library routine
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/geomag/erg_load_gmag_stel_induction.pro $
 </PRE><P>
 <STRONG>(See <A href="geomag/erg_load_gmag_stel_induction.pro">projects/erg/ground/geomag/erg_load_gmag_stel_induction.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ISEE_INDUCTION_CAL_RESP">
+<H2>ISEE_INDUCTION_CAL_RESP</H2></A>
+<A HREF="#ERG_LOAD_GMAG_STEL_INDUCTION">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PRO isee_induction_cal_resp
+
+PURPOSE:
+ To make calibrated frequency-time spectrogram of ISEE induction magnetometers
+
+ Calibration for power spectral density at a given frequency is peformed as follows:
+
+    S_calib(f) = S_org(f) / cal_table(f) / cal_table(f)
+
+ where S_calib [nT^2/Hz] is calibrated power spectral density, S_org [V^2/Hz] is power spectral density
+ computed from the data in CDF files, cal_table [V/nT] is the sensitivity included in CDF files.
+
+INPUT:
+ site  = Observatory name, example, erg_load_gmag_stel_induction, site='msr',
+           the default is 'all', i.e., load all available stations.
+           This can be an array of strings, e.g., ['msr', 'sta']
+           or a single string delimited by spaces, e.g., 'msr sta'.
+           Sites: ath mgd ptk msr sta gak kap zgn
+
+ nbox = number of FFT points
+ nshift = number of shift points for FFT, nshift should be equal or lower than nbox
+
+EXAMPLE:
+  ;load 1 day data from Gakona and perform calibration
+  timespan,'2017-03-21',1,/day
+  erg_isee_induction_cal_resp,site='gak',nbox=8192,nshift=1024
+  ;plot uncalibrated and calibrated frequency-time spectrogram
+  tplot,['isee_induction_db_dt_gak_x_dpwrspc','isee_induction_db_dt_gak_x_dpwrspc_corr']
+
+HISTORY:
+   2018-03-22: Initial release by Satoshi Kurita (ISEE, Nagoya U., kurita@isee.nagoya-u.ac.jp)
+
+ $LastChangedBy: nikos $
+ $LastChangedDate: 2018-08-10 15:43:17 -0700 (Fri, 10 Aug 2018) $
+ $LastChangedRevision: 25628 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/geomag/isee_induction_cal_resp.pro $
+
+</PRE><P>
+<STRONG>(See <A href="geomag/isee_induction_cal_resp.pro">projects/erg/ground/geomag/isee_induction_cal_resp.pro</A>)</STRONG><P>
 <HR>
  
