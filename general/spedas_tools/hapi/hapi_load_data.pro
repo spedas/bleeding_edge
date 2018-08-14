@@ -53,8 +53,8 @@
 ;         
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-05-13 14:25:55 -0700 (Sun, 13 May 2018) $
-;$LastChangedRevision: 25207 $
+;$LastChangedDate: 2018-08-13 15:02:43 -0700 (Mon, 13 Aug 2018) $
+;$LastChangedRevision: 25633 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
@@ -75,6 +75,9 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
   connect_timeout=connect_timeout, parameters=parameters, local_data_dir=local_data_dir, suffix=suffix
 
   t0 = systime(/seconds)
+  dt_info_query = 0
+  dt_download = 0
+  
   catch, error_status
   if error_status ne 0 then begin
     catch, /cancel
@@ -83,11 +86,11 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
   endif
   if undefined(server) then begin
     dprint, dlevel = 0, 'Error, no server specified; example servers include:'
-    dprint, dlevel = 0, '1) http://datashop.elasticbeanstalk.com/hapi'
-    dprint, dlevel = 0, '2) http://tsds.org/get/SSCWeb/hapi'
-    dprint, dlevel = 0, '3) http://mag.gmu.edu/TestData/hapi'
-    dprint, dlevel = 0, '4) https://voyager.gsfc.nasa.gov/hapiproto'
-    dprint, dlevel = 0, '5) https://pds-ppi.igpp.ucla.edu/hapi'
+    dprint, dlevel = 0, '- https://cdaweb.gsfc.nasa.gov/hapi'
+    dprint, dlevel = 0, '- https://pds-ppi.igpp.ucla.edu/hapi'
+    dprint, dlevel = 0, '- http://datashop.elasticbeanstalk.com/hapi'
+    dprint, dlevel = 0, '- http://tsds.org/get/SSCWeb/hapi'
+    dprint, dlevel = 0, '- http://mag.gmu.edu/TestData/hapi'
     return
   endif else begin
     url_parts = parse_url(server)
