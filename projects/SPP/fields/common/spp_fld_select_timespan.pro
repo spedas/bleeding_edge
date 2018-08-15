@@ -32,6 +32,19 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['aliveness_V3_anomaly'] =  ['2018-08-01/05:00:00', '2018-08-01/07:30:00']
   fm_times['turn_on_look_at_V3'] =    ['2018-08-04/15:30:00', '2018-08-04/21:30:00']
 
+  fm_times['commissioning_day2'] =            ['2018-08-13/11:00:00', '2018-08-13/18:00:00']
+  fm_times['com_d2_boom_frang_tall'] =        ['2018-08-13/11:46:00', '2018-08-13/11:51:00']
+  fm_times['com_d2_boom_frang_tall_redun'] =  ['2018-08-13/13:05:00', '2018-08-13/13:10:00']
+  fm_times['com_d2_hga_frang'] =              ['2018-08-13/15:05:00', '2018-08-13/15:10:00']
+  fm_times['com_d2_rfs_2fullspec_pre_clam'] = ['2018-08-13/15:25:00', '2018-08-13/15:29:00']
+  fm_times['com_d2_clamshell_v3v4'] =         ['2018-08-13/15:33:00', '2018-08-13/15:48:00']
+  fm_times['com_d2_clamshell_v1v2'] =         ['2018-08-13/15:48:00', '2018-08-13/15:53:00']
+  fm_times['com_d2_rfs_5fullspec_pre_boom'] = ['2018-08-13/16:10:00', '2018-08-13/16:35:00']
+  fm_times['com_d2_hga_frang_redun'] =        ['2018-08-13/16:43:30', '2018-08-13/16:47:30']
+  fm_times['com_d2_thrust_momdump'] =         ['2018-08-13/17:05:00', '2018-08-13/17:15:00']
+  fm_times['com_d2_magboom'] =                ['2018-08-13/17:15:00', '2018-08-13/17:25:00']
+
+
   em_times = orderedhash()
 
   em_times['EM_test_RFS_v29'] = ['2018-02-22/19:30:00','2018-02-22/21:30:00']
