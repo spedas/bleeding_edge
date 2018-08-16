@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Aug 14 18:16:46 2018.<P>
+<STRONG>Last modified: </STRONG>Wed Aug 15 18:16:34 2018.<P>
  
 <HR>
  
@@ -101,6 +101,7 @@ This page was created by the IDL library routine
 <br>Creates a html document from a list of IDL procedures.
 <LI><A HREF="#NDIMEN">NDIMEN</A>
 <br>Returns the number of dimensions in an array.
+<LI><A HREF="#NEAREST_NEIGHBOR">NEAREST_NEIGHBOR</A>
 <LI><A HREF="#SM_NS_MODEL">SM_NS_MODEL</A>
 <br>This routine calculates the NS position along the zaxis at a specific x and y location.
 <LI><A HREF="#THEMIS_NS_MODEL">THEMIS_NS_MODEL</A>
@@ -2634,7 +2635,7 @@ LAST MODIFICATION: 99/04/22
 <A NAME="NDIMEN">
 <H2>NDIMEN</H2></A>
 <A HREF="#MK_HTML_HELP2">[Previous Routine]</A>
-<A HREF="#NN">[Next Routine]</A>
+<A HREF="#NEAREST_NEIGHBOR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 FUNCTION: ndimen
@@ -2651,9 +2652,41 @@ LAST MODIFICATION:	@(#)ndimen.pro	1.6 97/03/10
 <STRONG>(See <A href="misc/ndimen.pro">general/misc/ndimen.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="NEAREST_NEIGHBOR">
+<H2>NEAREST_NEIGHBOR</H2></A>
+<A HREF="#NDIMEN">[Previous Routine]</A>
+<A HREF="#NN">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Name: 
+   nearest_neighbor
+   
+Purpose:
+   Finding the nearest neighbors by interpolating the indices for two arrays. 
+   NANs can be returned when gap/no_extrapolate are used.
+   
+Input:
+   time_series: monotonically increasing time series array 
+   target_time: monotonically increasing time to search for in the time series
+   
+Keywords:   
+   gap: return NANs if time gap &gt; gap (in seconds), see keyword 'interp_threshold' in &quot;interp&quot;
+   no_extrapolate: Set this keyword to prevent extrapolation. See keyword 'no_extrapolate' in &quot;interp&quot;
+   silent: No printing
+ $LastChangedBy: xussui $
+ $LastChangedDate: 2018-08-15 17:23:54 -0700 (Wed, 15 Aug 2018) $
+ $LastChangedRevision: 25642 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/nearest_neighbor.pro $
+ 
+CREATED BY:    Shaosui Xu  2018-08-15
+FILE: nearest_neighbor.pro
+</PRE><P>
+<STRONG>(See <A href="misc/nearest_neighbor.pro">general/misc/nearest_neighbor.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="NN">
 <H2>NN</H2></A>
-<A HREF="#NDIMEN">[Previous Routine]</A>
+<A HREF="#NEAREST_NEIGHBOR">[Previous Routine]</A>
 <A HREF="#OPLOT_ERR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

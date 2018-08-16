@@ -120,11 +120,24 @@
 
   <cdf_var
       name   = "mag_manual"
-      type   = "integer"
-      base   = "event_data_start"
-      offset = "18 * 8 + 13"
-      width  = "1"
-      />
+      type   = "integer">
+    <cdf_att
+        FIELDNAM = "mag_manual"
+        FORMAT = "I8"
+        LABLAXIS = "mag_manual"
+        DATA_TYPE = "CDF_INT2"
+        VAR_TYPE = "data"
+        FILLVAL = "-32767"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "-32767"
+        VALIDMAX = "32767"
+        SCALEMIN = "-32767"
+        SCALEMAX = "32767"
+        UNITS = "Counts"
+        CATDESC = "MAG Manual mode"
+        DEPEND_0 = "epoch">
+    </cdf_att>
+  </cdf_var>
 
   <cdf_var
       name   = "mag_range"

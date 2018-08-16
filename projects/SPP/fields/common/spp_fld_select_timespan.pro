@@ -44,6 +44,16 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['com_d2_thrust_momdump'] =         ['2018-08-13/17:05:00', '2018-08-13/17:15:00']
   fm_times['com_d2_magboom'] =                ['2018-08-13/17:15:00', '2018-08-13/17:25:00']
 
+  fm_times['commissioning_day3'] =            ['2018-08-14/15:00:00', '2018-08-14/17:10:00']
+  fm_times['com_d3_biasing_1'] =              ['2018-08-14/15:30:00', '2018-08-14/15:50:00']
+  fm_times['com_d3_scm_cal'] =                ['2018-08-14/15:48:00', '2018-08-14/15:49:00']
+  fm_times['com_d3_biasing_2'] =              ['2018-08-14/16:05:00', '2018-08-14/16:20:00']
+  fm_times['com_d3_rfs_2fullspec_scm'] =      ['2018-08-14/16:00:00', '2018-08-14/16:15:00']
+  fm_times['com_d3_mag_zero'] =               ['2018-08-14/16:20:00', '2018-08-14/16:50:00']
+
+  fm_times['commissioning_day4'] =            ['2018-08-15/15:00:00', '2018-08-15/17:30:00']
+
+
 
   em_times = orderedhash()
 
