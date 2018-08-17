@@ -27,6 +27,8 @@
 ;  PLOTAXES: Boolean to plot x=0 and y=0 axes (on by default)
 ;  PLOTBULK: Boolean to plot projection of bulk velocity vector (red line).
 ;            (on by default)
+;  PLOTORIGIN: Boolean to plot a new origin at the bulk velocity and/or sun location
+;              instead of plotting the projection
 ;  PLOTBFIELD: Boolean to plot projection of scaled B field (cyan line).
 ;              Requires B field data to be loaded and specified to
 ;              spd_slice2d with mag_data keyword.
@@ -73,8 +75,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-11-29 10:24:51 -0800 (Tue, 29 Nov 2016) $
-;$LastChangedRevision: 22413 $
+;$LastChangedDate: 2018-08-16 10:02:01 -0700 (Thu, 16 Aug 2018) $
+;$LastChangedRevision: 25643 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/spd_slice2d_plot.pro $
 ;
 ;-
@@ -101,6 +103,7 @@ pro spd_slice2d_plot, slice, $
                      ; Other plotting options
                        plotaxes=plotaxes, ecircle=ecircle, sundir=sundir, $ 
                        plotbulk=plotbulk, plotbfield=plotbfield, $
+                       plotorigin=plotorigin, $
                        b_color=b_color, v_color=v_color, sun_color=sun_color, $
                        custom=custom, nocolorbar=nocolorbar, $
                        background_color_index=background_color_index, $
@@ -402,8 +405,11 @@ pro spd_slice2d_plot, slice, $
   ; (on by default so don't warn if cannot be plotted)
   if keyword_set(plotbulk) and ~keyword_set(slice.shift) then begin
     if n_elements(slice.bulk) eq 3 and finite(total(slice.bulk))  then begin
-      ; bulk velocity should already be in the coords defined for the slice plane
-      oplot, [0,slice.bulk[0]], [0,slice.bulk[1]], color=v_color
+    ; bulk velocity should already be in the coords defined for the slice plane
+      if keyword_set(plotorigin) then begin
+        oplot, [slice.bulk[0],slice.bulk[0]], yrange, linestyle=2, thick=1, color=v_color
+        oplot, xrange, [slice.bulk[1],slice.bulk[1]], linestyle=2, thick=1, color=v_color
+      endif else oplot, [0,slice.bulk[0]], [0,slice.bulk[1]], color=v_color
     endif
   endif
 
@@ -414,7 +420,10 @@ pro spd_slice2d_plot, slice, $
       ;sun vector is normalized & in slice plane's coords
       ;make total length equal to the smallest axis limit and plot projection
       sunvec = slice.sunvec * vector_length
-      oplot, [0,sunvec[0]],[0,sunvec[1]], color=sun_color
+      if keyword_set(plotorigin) then begin
+        oplot, [sunvec[0],sunvec[0]], yrange, linestyle=2, thick=1, color=v_color
+        oplot, xrange, [sunvec[1],sunvec[1]], linestyle=2, thick=1, color=v_color
+      endif else oplot, [0,sunvec[0]],[0,sunvec[1]], color=sun_color
     endif else begin
       dprint, dlevel=1, 'No valid sun direction to plot.' 
     endelse

@@ -43,6 +43,7 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['com_d2_hga_frang_redun'] =        ['2018-08-13/16:43:30', '2018-08-13/16:47:30']
   fm_times['com_d2_thrust_momdump'] =         ['2018-08-13/17:05:00', '2018-08-13/17:15:00']
   fm_times['com_d2_magboom'] =                ['2018-08-13/17:15:00', '2018-08-13/17:25:00']
+  fm_times['com_d2_magboom_zoom'] =           ['2018-08-13/17:18:30', '2018-08-13/17:19:30']
 
   fm_times['commissioning_day3'] =            ['2018-08-14/15:00:00', '2018-08-14/17:10:00']
   fm_times['com_d3_biasing_1'] =              ['2018-08-14/15:30:00', '2018-08-14/15:50:00']
@@ -51,8 +52,11 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['com_d3_rfs_2fullspec_scm'] =      ['2018-08-14/16:00:00', '2018-08-14/16:15:00']
   fm_times['com_d3_mag_zero'] =               ['2018-08-14/16:20:00', '2018-08-14/16:50:00']
 
-  fm_times['commissioning_day4'] =            ['2018-08-15/15:00:00', '2018-08-15/17:30:00']
+  fm_times['commissioning_day4'] =            ['2018-08-15/15:00:00', '2018-08-15/21:00:00']
+  fm_times['com_d4_mom_dump'] =               ['2018-08-15/16:40:00', '2018-08-15/16:41:00']
+  fm_times['com_d4_commanded_dump'] =         ['2018-08-15/19:36:45', '2018-08-15/19:37:45']
 
+  fm_times['commissioning_day5'] =            ['2018-08-16/19:50:00', '2018-08-16/22:30:00']
 
 
   em_times = orderedhash()
@@ -72,6 +76,12 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   em_times['EM_test_1GOhm_Biasing_zoom'] = ['2018-08-03/20:22:00','2018-08-03/20:36:00']
 
   em_times['EM_test_1GOhm_Biasing_V1234'] = ['2018-08-07/01:40:00','2018-08-07/01:45:00']
+
+  em_times['EM_test_RFS_5fullspec'] = ['2018-08-06/18:00:00','2018-08-06/18:45:00']
+
+
+  em_times['EM_test_command_v5_256'] = ['2018-08-16/22:30:00','2018-08-16/23:00:00']
+
 
   if fm_or_em EQ 'FM' then return, fm_times else return, em_times
 

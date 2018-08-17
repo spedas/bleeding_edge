@@ -32,6 +32,7 @@
 ;          xsize: x-size of the figures (default: 550px)
 ;          ysize: y-size of the figures (default: 450px)
 ;          filename_suffix: suffix to append to the end of PNG/postscript file names
+;          nocontours: disable pitch angle contours on the angle-angle plots
 ;
 ; NOTES:
 ;          Bulk velocity subtraction (via the /subtract_bulk keyword) only 
@@ -40,8 +41,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-07-09 11:56:59 -0700 (Mon, 09 Jul 2018) $
-;$LastChangedRevision: 25452 $
+;$LastChangedDate: 2018-08-16 10:18:27 -0700 (Thu, 16 Aug 2018) $
+;$LastChangedRevision: 25646 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_fpi_ang_ang.pro $
 ;-
 
@@ -49,7 +50,7 @@ pro mms_fpi_ang_ang, time, probe=probe, energy_range=energy_range, data_rate=dat
   species=species, all_energies=all_energies, subtract_bulk=subtract_bulk, pa_en_units = pa_en_units, $
   postscript=postscript, png=png, center_measurement=center_measurement, xsize=xsize, ysize=ysize, $
   filename_suffix = filename_suffix, zrange=zrange, fgm_level=fgm_level, fgm_instrument=fgm_instrument, $
-  fgm_data_rate=fgm_data_rate, level=level
+  fgm_data_rate=fgm_data_rate, level=level, nocontours=nocontours
 
   if undefined(time) then begin
     time = gettime(key='Enter time: ')
@@ -147,12 +148,29 @@ pro mms_fpi_ang_ang, time, probe=probe, energy_range=energy_range, data_rate=dat
 
   if undefined(all_energies) then begin
     if ~undefined(postscript) then popen, 'azimuth_vs_zenith'+filename_suffix, /landscape else window, 1, xsize=xsize, ysize=ysize
+    
+    if fgm_instrument eq 'dfg' and fgm_level eq 'l2pre' then begin
+      if tnames('mms'+probe+'_dfg_'+fgm_data_rate+'_l2pre_gse_bvec') ne '' then b_field = 'mms'+probe+'_dfg_'+fgm_data_rate+'_l2pre_gse_bvec' else b_field = 'mms'+probe+'_dfg_b_gse_'+fgm_data_rate+'_l2pre_bvec'
+    endif else b_field = 'mms'+probe+'_fgm_b_gse_'+fgm_data_rate+'_'+fgm_level+'_bvec'
+
+    if ~undefined(subtract_bulk) then $
+      pad = moka_mms_pad_fpi(*distptr, *disterrptr, time=closest_time, mag_data=b_field, vel_data='mms'+probe+'_d'+species+'s_bulkv_gse_'+data_rate, subtract_bulk=subtract_bulk, units=pa_en_units) $
+    else $
+      pad = moka_mms_pad_fpi(*distptr, *disterrptr, time=closest_time, subtract_bulk=0, units=pa_en_units, mag_data=b_field)
+
     ; angle-angle over the energy range
     plotxyz, window=1, phi, theta_flow_direction, data_summed, /zlog, /noisotropic, xrange=[0, 360], yrange=[0, 180], zrange=zrange, xsize=xsize, ysize=ysize, $
       xtitle='Az flow angle (deg)', $
       ytitle='Zenith flow angle (deg)', $
       ztitle='f (s!U3!N/cm!U6!N)', $
       title=time_string(closest_time, tformat='YYYY-MM-DD/hh:mm:ss.fff')+' (' + strcompress(string(energy_range[0]) + '-'+string(energy_range[1]), /rem)+ ' eV)'
+      
+    if undefined(nocontours) then begin
+      num_levels = 16
+      contourLevels = 180*indgen(num_levels+1)/num_levels
+      c_levels_str = strcompress(string(contourLevels), /rem)
+      contour, transpose(pad.pa_azpol, [1, 0]), pad.wpol, pad.waz,YSTYLE=1,  xstyle=1, xmargin=2, ymargin=[7, 2], xrange=[0, 360], yrange=[0, 180], Levels=contourLevels,C_Colors=0, /overplot, c_labels=c_levels_str, c_charsize=1
+    endif
     if ~undefined(png) then makepng, 'azimuth_vs_zenith'+filename_suffix
     if ~undefined(postscript) then pclose
 
@@ -183,17 +201,14 @@ pro mms_fpi_ang_ang, time, probe=probe, energy_range=energy_range, data_rate=dat
 
     if ~undefined(postscript) then popen, 'pad_vs_energy'+filename_suffix, /landscape else window, 4, xsize=xsize, ysize=ysize
 
-    if fgm_instrument eq 'dfg' and fgm_level eq 'l2pre' then begin
-      if tnames('mms'+probe+'_dfg_'+fgm_data_rate+'_l2pre_gse_bvec') ne '' then b_field = 'mms'+probe+'_dfg_'+fgm_data_rate+'_l2pre_gse_bvec' else b_field = 'mms'+probe+'_dfg_b_gse_'+fgm_data_rate+'_l2pre_bvec'
-    endif else b_field = 'mms'+probe+'_fgm_b_gse_'+fgm_data_rate+'_'+fgm_level+'_bvec'
+    paendata = transpose(pad.DATA)
+    ; apply energy ranges for PAD vs. energy plot
+    lowerens = where(pad.EGY lt energy_range[0])
+    higherens = where(pad.EGY gt energy_range[1])
+    if lowerens[0] ne -1 then paendata[*, lowerens] = !values.d_nan
+    if higherens[0] ne -1 then paendata[*, higherens] = !values.d_nan
 
-
-    if ~undefined(subtract_bulk) then $
-      pad = moka_mms_pad_fpi(*distptr, *disterrptr, time=closest_time, mag_data=b_field, vel_data='mms'+probe+'_d'+species+'s_bulkv_gse_'+data_rate, subtract_bulk=subtract_bulk, units=pa_en_units) $
-    else $
-      pad = moka_mms_pad_fpi(*distptr, *disterrptr, time=closest_time, subtract_bulk=0, units=pa_en_units, mag_data=b_field)
-
-    plotxyz, pad.PA, pad.EGY, transpose(pad.DATA), /noisotropic, /ylog, /zlog, title=time_string(closest_time, tformat='YYYY-MM-DD/hh:mm:ss.fff'), $
+    plotxyz, pad.PA, pad.EGY, paendata, /noisotropic, /ylog, /zlog, title=time_string(closest_time, tformat='YYYY-MM-DD/hh:mm:ss.fff'), $
       xrange=[0,180], zrange=zrange, xtitle='Pitch angle (deg)', ytitle='Energy (eV)', ztitle=pa_en_units_str, window=4, xsize=xsize, ysize=ysize
 
     if ~undefined(png) then makepng, 'pad_vs_energy'+filename_suffix
