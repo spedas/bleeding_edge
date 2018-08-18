@@ -55,8 +55,8 @@
 ;
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-09-28 11:17:56 -0700 (Thu, 28 Sep 2017) $
-;$LastChangedRevision: 24049 $
+;$LastChangedDate: 2018-08-17 13:38:23 -0700 (Fri, 17 Aug 2018) $
+;$LastChangedRevision: 25662 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/spd_download/spd_download_file.pro $
 ;
 ;-
@@ -89,6 +89,7 @@ function spd_download_file, $
 
 
 output = ''
+temp_filepath = ''
 
 if undefined(url_in) || ~is_string(url_in) then begin
   dprint, dlevel=1, 'No URL supplied'
@@ -243,12 +244,12 @@ if (error ne 0) && (first_time_download eq 1) && (response_code eq 401) then beg
   dprint, dlevel=2, 'Download failed. Trying a second time.'
   
   ;get the file
-  filepath = net_object->get(filename=filename+file_suffix,string_array=string_array)
+  temp_filepath = net_object->get(filename=filename+file_suffix,string_array=string_array)
 
   if ~keyword_set(string_array) then begin
 
     ;move file to the requested location
-    file_move, filepath, filename, /overwrite
+    file_move, temp_filepath, filename, /overwrite
 
     ;set permissions for downloaded file
     if ~undefined(file_mode) then begin
@@ -262,7 +263,7 @@ if (error ne 0) && (first_time_download eq 1) && (response_code eq 401) then beg
     endif else begin
 
     ;output file's contents
-    output = filepath
+    output = temp_filepath
 
     dprint, dlevel=2, 'Download complete'
 
@@ -271,12 +272,12 @@ if (error ne 0) && (first_time_download eq 1) && (response_code eq 401) then beg
 endif else if error eq 0 then begin
 
   ;get the file
-  filepath = net_object->get(filename=filename+file_suffix,string_array=string_array)
+  temp_filepath = net_object->get(filename=filename+file_suffix,string_array=string_array)  
   
   if ~keyword_set(string_array) then begin
     
     ;move file to the requested location
-    file_move, filepath, filename, /overwrite
+    file_move, temp_filepath, filename, /overwrite
 
     ;set permissions for downloaded file
     if ~undefined(file_mode) then begin
@@ -291,7 +292,7 @@ endif else if error eq 0 then begin
   endif else begin
 
     ;output file's contents
-    output = filepath
+    output = temp_filepath
 
     dprint, dlevel=2, 'Download complete'
 
@@ -301,7 +302,7 @@ endif else begin
   catch, /cancel
 
   ;remove temporary file
-  file_delete, filename+file_suffix, /allow_nonexistent
+  file_delete, filename+file_suffix, /allow_nonexistent  
 
   ;handle exceptions from idlneturl
   spd_download_handler, net_object=net_object, $
@@ -310,6 +311,19 @@ endif else begin
                         callback_error=*callback_error
 
 endelse
+
+; If there was a partial download, delete the file.
+net_object->getproperty, response_code=response_code2, response_header=response_header2, url_scheme=url_scheme2
+if (response_code2 eq 18) && file_test(filename) then begin
+  dprint, dlevel=2, 'Error while downloading, partial download will be deleted:  ' + filename
+  file_delete, filename, /allow_nonexistent
+  output = ''
+endif
+
+; Delete temp_filepath, if it exists.
+if (strlen(temp_filepath) gt 12) && file_test(temp_filepath) then begin
+  file_delete, temp_filepath, /allow_nonexistent
+end
 
 obj_destroy, net_object
 

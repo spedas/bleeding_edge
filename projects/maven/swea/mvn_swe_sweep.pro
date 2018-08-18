@@ -106,8 +106,8 @@
 ;                        2 = SWEA native format (2-byte words)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-08-07 16:27:05 -0700 (Tue, 07 Aug 2018) $
-; $LastChangedRevision: 25602 $
+; $LastChangedDate: 2018-08-17 09:59:22 -0700 (Fri, 17 Aug 2018) $
+; $LastChangedRevision: 25655 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sweep.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-01-03
@@ -646,7 +646,7 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
             j += 128
           endelse
           printf,lun,"    sleep(0.5)"
-          memaddr += 128
+          memaddr += 128  ; byte address, not word address
         endfor
 
         nleft = nbytes mod 128
@@ -675,7 +675,7 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
         printf,lun,"time.sleep(0.1)"
         nload = nbytes/8
         for j=0,3 do begin
-          addr = string(4096*j,format='("0x",z4.4)')
+          addr = string(2048*j,format='("0x",z4.4)')  ; word address, not byte address
           printf,lun,"cmd.SWE_LUTPTR(" + swebuf + "," + addr + ")"
           printf,lun,"time.sleep(0.1)"
           for i=0,(nload-1) do begin
