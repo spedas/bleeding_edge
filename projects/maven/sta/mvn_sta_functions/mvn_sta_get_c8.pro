@@ -75,7 +75,12 @@ endif else begin
 
 	nmass   = all_dat.nmass
 ;	gf2	= reform(reform(all_dat.gf[swp_ind,*,*,att],nenergy*nbins)#replicate(1.,nmass),nenergy,nbins,nmass)
-	gf2	= reform(all_dat.gf[swp_ind,*,*,att_ind],nenergy,nbins,nmass)
+;	gf2	= reform(all_dat.gf[swp_ind,*,*,att_ind],nenergy,nbins,nmass)
+		str_element,all_dat,'gf_corr',success=success
+;		if success then gf_corr=reform(all_dat.gf_corr[ind,*])#replicate(1.,all_dat.ndef) else gf_corr=1.
+;	gf2	= (reform(all_dat.gf[swp_ind,*,*,att_ind],nenergy,nbins,nmass))*gf_corr
+		if success then gf_corr=reform(all_dat.gf_corr[ind,*,*]) else gf_corr=1.
+	gf2     = reform( (reform(all_dat.gf[swp_ind,*,*,att_ind])*gf_corr),nenergy,nbins,nmass)
 
 dat = 		{project_name:		all_dat.project_name,						$
 		spacecraft:		all_dat.spacecraft, 						$

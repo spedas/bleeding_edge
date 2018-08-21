@@ -56,7 +56,7 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['com_d4_mom_dump'] =               ['2018-08-15/16:40:00', '2018-08-15/16:41:00']
   fm_times['com_d4_commanded_dump'] =         ['2018-08-15/19:36:45', '2018-08-15/19:37:45']
 
-  fm_times['commissioning_day5'] =            ['2018-08-16/19:50:00', '2018-08-16/22:30:00']
+  fm_times['commissioning_day5'] =            ['2018-08-16/19:50:00', '2018-08-17/05:30:00']
 
   em_times = orderedhash()
 
@@ -79,6 +79,8 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   em_times['EM_test_RFS_5fullspec'] = ['2018-08-06/18:00:00','2018-08-06/18:45:00']
 
   em_times['EM_test_command_v5_256'] = ['2018-08-16/22:30:00','2018-08-16/23:00:00']
+
+  em_times['EM_test_remove_1GOhm'] = ['2018-08-17/16:10:00','2018-08-16/16:40:00']
 
 
   if fm_or_em EQ 'FM' then return, fm_times else return, em_times
@@ -113,20 +115,20 @@ function spp_fld_select_timespan, input_timespan = input_timespan, $
   update = update, $
   preset_times = preset_times, $
   fm_or_em = fm_or_em, $
-  preset_key = preset_key, $
+  overall_preset_key = overall_preset_key, $
   sub_presets = sub_presets
 
   if n_elements(fm_or_em) NE 1 then fm_or_em = 'FM'
 
   preset_times = spp_fld_select_timespan_define_presets(fm_or_em)
 
-  if n_elements(preset_key) EQ 1 then begin
+  if n_elements(overall_preset_key) EQ 1 then begin
 
     sub_presets = ORDEREDHASH()
 
-    if preset_times.HasKey(preset_key) then begin
+    if preset_times.HasKey(overall_preset_key) then begin
 
-      ts = preset_times[preset_key]
+      ts = preset_times[overall_preset_key]
 
       foreach preset_time, preset_times, preset_key do begin
 

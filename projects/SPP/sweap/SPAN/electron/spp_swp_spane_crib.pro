@@ -6,9 +6,9 @@
 ; 
 ; In the future this will include instructions for looking at flight data
 ; 
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-04-24 09:03:12 -0700 (Tue, 24 Apr 2018) $
-; $LastChangedRevision: 25103 $
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2018-08-20 10:21:17 -0700 (Mon, 20 Aug 2018) $
+; $LastChangedRevision: 25663 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/electron/spp_swp_spane_crib.pro $
 ;--------------------------------------------------------------------
 
@@ -32,6 +32,7 @@
 ;
 ;
 ; note that table files are doubled until [insert date here]
+pro nothing
 
 
 ;;----SPAN-E TVAC TESTING @ GODDARD (2018)----;;
@@ -75,6 +76,7 @@ trange = '2017 04 ' + ['02/09','02/11'] ; energy/angle scan @ 3500eV
 
 ;;----SPAN-B FINAL CALIBRATION FILES----;;
 
+files = spp_file_retrieve('spp/data/sci/sweap/prelaunch/gsedata/EM/SWEAP-3/20170224_102402_none/PTP_data.dat') ; includes the first threshold test with no HV and a pulse height test
 trange = '2017 02 ' + ['26/03','26/08'] ; first EA scan at 1keV. Anode 4 is missed. data is missing on MAJA before this, waiting Mercer's completion
 ;trange = '2017 02 ' + ['26/08','26/16'] ; just sitting on anode 0
 trange = '2017 02 ' + ['26/19','27/01'] ; threshold & mcp test @ 1keV
@@ -345,7 +347,7 @@ if 0 then begin
 ;  tplot/
   
 endif
-
+end
 
 pro misc2
   hkp= spp_apdat('36E'x)
@@ -399,14 +401,17 @@ pro spane_threshold_scan,tranges=trange,lim=lim   ;now obsolete
 end
 
 
-pro spane_threshold_scan_phd,tranges=trange,lim=lim
+pro spane_threshold_scan_phd,tranges=trange,lim=lim, xvar = xvar , yvar = yvar, anode = anode
 
   if ~keyword_set(trange) then ctime,trange,npo=2
   swap_interp=0
   xlim,lim,0,550
   ylim,lim,10,5000,1
   options,lim,psym=4
-  scat_plot,swap_interp=swap_interp,'spp_spane_hkp_ACC_DAC','spp_spane_p1_CNTS',trange=trange,lim=lim,xvalue=dac,yvalue=cnts,ydimen= 4;,color=4
+  wi, 1, wsize = [800,1000]
+;  scat_plot,swap_interp=swap_interp,'spp_spa_hkp_MRAM_WR_ADDR','spp_spa_AF0_CNTS',trange=trange,lim=lim,xvalue=dac,yvalue=cnts,ydimen= 4;,color=4
+;  scat_plot,swap_interp = swap_interp, 'spp_spa_hkp_MRAM_WR_ADDR','spp_spa_AF0_CNTS',trange=trange,lim=lim,xvalue=dac,yvalue=cnts,color=4;,ydimen= 4
+  scat_plot,swap_interp = swap_interp, xvar, yvar, trange=trange, lim=lim, xvalue=dac, yvalue=cnts, color=4, ydimen = anode
   range = [80,500]
   xp = dgen(8,range=range)
   yp = xp*0+500
@@ -423,7 +428,7 @@ pro spane_threshold_scan_phd,tranges=trange,lim=lim
   ;  wi,3
   plot,xv,-deriv(xv,func(xv,param=p)),xtitle='Threshold DAC level',ytitle='PHD'
   plt2= get_plot_state()
-
+  print, 'done'
 end
 
 

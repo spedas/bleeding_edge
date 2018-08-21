@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Aug 17 18:16:38 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Aug 20 18:16:36 2018.<P>
  
 <HR>
  
@@ -21,6 +21,8 @@ This page was created by the IDL library routine
 <H1>projects/maven/sta/mvn_sta_programs</H1>
 <LI><A HREF="#MVN_STA_DEAD_LOAD">MVN_STA_DEAD_LOAD</A>
 <br>Loads dead-time arrays into apid common blocks for science data products, modified 20170919 for high background SEP events
+<LI><A HREF="#MVN_STA_GF_CORR">MVN_STA_GF_CORR</A>
+<br>Computes a corrected g-factor for C0, C6, and C8 data products based on the CA data product.
 <LI><A HREF="#MVN_STA_MAG_LOAD">MVN_STA_MAG_LOAD</A>
 <br>Load Magnetometer data and insert values into STATIC
 <LI><A HREF="#MVN_STA_MAG_LOAD_V2">MVN_STA_MAG_LOAD_V2</A>
@@ -43,7 +45,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="MVN_STA_DEAD_LOAD">
 <H2>MVN_STA_DEAD_LOAD</H2></A>
-<A HREF="#MVN_STA_MAG_LOAD">[Next Routine]</A>
+<A HREF="#MVN_STA_GF_CORR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:	mvn_sta_dead_load
@@ -87,9 +89,39 @@ TBDs
 <STRONG>(See <A href="mvn_sta_programs/mvn_sta_dead_load.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_dead_load.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_GF_CORR">
+<H2>MVN_STA_GF_CORR</H2></A>
+<A HREF="#MVN_STA_DEAD_LOAD">[Previous Routine]</A>
+<A HREF="#MVN_STA_MAG_LOAD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+PROCEDURE:       MVN_STA_GF_CORR
+
+PURPOSE:         
+                 Computes a corrected g-factor for C0, C6, and C8 data products based on the CA data product.
+
+INPUTS:          None.
+
+KEYWORDS:
+
+     TPLOT:      Makes some tplot variables by using the corrected g-factor.
+
+CREATED BY:      Takuya Hara on 2018-08-09.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2018-08-20 12:17:17 -0700 (Mon, 20 Aug 2018) $
+ $LastChangedRevision: 25665 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_programs/mvn_sta_gf_corr.pro $
+
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_gf_corr.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_gf_corr.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_MAG_LOAD">
 <H2>MVN_STA_MAG_LOAD</H2></A>
-<A HREF="#MVN_STA_DEAD_LOAD">[Previous Routine]</A>
+<A HREF="#MVN_STA_GF_CORR">[Previous Routine]</A>
 <A HREF="#MVN_STA_MAG_LOAD_V2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

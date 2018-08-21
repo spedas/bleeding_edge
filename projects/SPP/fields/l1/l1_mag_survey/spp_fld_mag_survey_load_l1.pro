@@ -1,7 +1,7 @@
 ;
-;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2018-05-30 14:24:16 -0700 (Wed, 30 May 2018) $
-;  $LastChangedRevision: 25298 $
+;  $LastChangedBy: spfuser $
+;  $LastChangedDate: 2018-08-20 15:13:45 -0700 (Mon, 20 Aug 2018) $
+;  $LastChangedRevision: 25671 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
@@ -160,6 +160,14 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
     end
 
   endforeach
+  
+  get_data, prefix + 'mag_bx_nT', data = d_x
+  get_data, prefix + 'mag_by_nT', data = d_y
+  get_data, prefix + 'mag_bz_nT', data = d_z
+
+  store_data, prefix + 'nT', data = {x:d_x.x, y:[[d_x.y],[d_y.y],[d_z.y]]}
+
+  store_data, prefix + 'nT_mag', data = {x:d_x.x, y:sqrt(d_x.y^2+d_y.y^2+d_z.y^2)}
 
 
   options, prefix + 'range', 'yrange', [-0.5,3.5]
@@ -172,6 +180,7 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
   options, prefix + 'range', 'psym_lim', 200
   options, prefix + 'range', 'max_points', 40000l
   options, prefix + 'range', 'ysubtitle', ''
+  options, prefix + 'range', 'panel_size', 0.75
 
 
   options, prefix + 'avg_period_raw', 'ytitle', short_prefix + '!CAvPR'
@@ -197,6 +206,7 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
   options, prefix + 'packet_index', 'yticks', 4
   options, prefix + 'packet_index', 'ytickv', [0,128,256,384,512]
   options, prefix + 'packet_index', 'ysubtitle', ''
+  options, prefix + 'packet_index', 'panel_size', 0.75
 
   options, prefix + 'compressed', 'yrange', [-0.25,1.25]
   options, prefix + 'compressed', 'ystyle', 1
@@ -209,5 +219,17 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
   options, prefix + 'compressed', 'ytitle', $
     short_prefix + '!Ccomp'
   options, prefix + 'compressed', 'ysubtitle', ''
+
+  options, prefix + 'nT', 'labels', ['Bx','By','Bz']
+  options, prefix + 'nT', 'ytitle', strupcase(short_prefix)
+  options, prefix + 'nT', 'ysubtitle', '[nT]'
+
+  options, prefix + 'nT_mag', 'labels', ['|B|']
+  options, prefix + 'nT_mag', 'ytitle', strupcase(short_prefix)
+  options, prefix + 'nT_mag', 'ysubtitle', '[nT]'
+
+  store_data, strmid(prefix,0,strlen(prefix)-1), data = prefix + ['nT', 'nT_mag']
+
+  options, strmid(prefix,0,strlen(prefix)-1), 'panel_size', 2
 
 end

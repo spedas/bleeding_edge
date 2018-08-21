@@ -1,7 +1,7 @@
 ;+
 ;PROCEDURE: add_data, n1,n2
 ;PURPOSE:
-;   Creates a tplot variable that is the difference of two tplot variables.
+;   Creates a tplot variable that is the sum of two tplot variables.
 ;INPUT: n1,n2  tplot variable names (strings)
 ;KEWORDS:
 ;  copy_dlimits: set to 1 to use the first variable's dlimits, 2 to use the second's

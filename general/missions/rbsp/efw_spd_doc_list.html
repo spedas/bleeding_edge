@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Aug 17 18:16:37 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Aug 20 18:16:36 2018.<P>
  
 <HR>
  
@@ -766,9 +766,9 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
  ARGUMENTS:
 
  KEYWORDS:
-   probe: (In, optional) RBSP spacecraft names, either 'a', or 'b', or 
+   probe: (In, optional) RBSP spacecraft names, either 'a', or 'b', or
          ['a', 'b']. The default is ['a', 'b']
-   datatype: (In, optional) A string scalar of data types that acceptable to 
+   datatype: (In, optional) A string scalar of data types that acceptable to
          *rbsp_load_efw_waveform*.
    trange: (In, optional) Time range for performing the calibration. By
          default, trange = timerange()
@@ -776,9 +776,9 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
          tplot variable with format '*_uvw_offset'.
    coord: (In, optional) If set to 'uvw', despinning will not be performed.
    /no_adc: If set, ADC-to-physical units is ignored.
-   tper: (In, optional) Tplot name of spin period data. By default, 
+   tper: (In, optional) Tplot name of spin period data. By default,
          tper = pertvar. If tper is set, pertvar = tper.
-   tphase: (In, optional) Tplot name of spin phase data. By default, 
+   tphase: (In, optional) Tplot name of spin phase data. By default,
          tphase = 'rbsp' + strlowcase(sc[0]) + '_spinphase'
          Note: tper and and tphase are mostly used for using eclipse-corrected
          spin data.
@@ -799,9 +799,9 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
          1. Added instrument response deconvolution for eb1.
 
  VERSION:
- $LastChangedBy: jianbao_tao $
- $LastChangedDate: 2013-06-21 13:31:17 -0700 (Fri, 21 Jun 2013) $
- $LastChangedRevision: 12569 $
+ $LastChangedBy: aaronbreneman $
+ $LastChangedDate: 2018-08-20 17:03:18 -0700 (Mon, 20 Aug 2018) $
+ $LastChangedRevision: 25681 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_efw_cal_waveform.pro $
 
 </PRE><P>

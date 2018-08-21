@@ -70,7 +70,10 @@ endif else begin
 	mlut_ind= all_dat.mlut_ind[ind]
 	eff_ind	= all_dat.eff_ind[ind]
 	att_ind	= all_dat.att_ind[ind]
-	gf2	= reform(all_dat.gf[swp_ind,*,att_ind])#replicate(1.,all_dat.nmass)
+		str_element,all_dat,'gf_corr',success=success
+		if success then gf_corr=reform(all_dat.gf_corr[ind,*])#replicate(1.,all_dat.nmass) else gf_corr=1.
+	gf2	= (reform(all_dat.gf[swp_ind,*,att_ind])#replicate(1.,all_dat.nmass))*gf_corr
+;	gf2	= reform(all_dat.gf[swp_ind,*,att_ind])#replicate(1.,all_dat.nmass)
 
 dat = 		{project_name:		all_dat.project_name,			$
 		spacecraft:		all_dat.spacecraft, 			$
