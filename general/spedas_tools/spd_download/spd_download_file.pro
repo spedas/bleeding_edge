@@ -55,8 +55,8 @@
 ;
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-08-20 13:02:25 -0700 (Mon, 20 Aug 2018) $
-;$LastChangedRevision: 25666 $
+;$LastChangedDate: 2018-08-21 11:08:16 -0700 (Tue, 21 Aug 2018) $
+;$LastChangedRevision: 25685 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/spd_download/spd_download_file.pro $
 ;
 ;-
@@ -321,8 +321,8 @@ if (response_code2 eq 18) && file_test(filename) then begin
 endif
 
 ; Delete temp_filepath, if it exists.
-if ~keyword_set(string_array) && (strlen(temp_filepath) gt 12) && file_test(temp_filepath) then begin
-  file_delete, temp_filepath, /allow_nonexistent
+if ~keyword_set(string_array) && (strlen(temp_filepath[0]) gt 12) && file_test(temp_filepath[0]) then begin
+  file_delete, temp_filepath[0], /allow_nonexistent
 end
 
 obj_destroy, net_object
