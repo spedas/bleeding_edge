@@ -33,6 +33,7 @@ function mvn_pfp_file_retrieve,pathname,trange=trange,verbose=verbose, source=sr
    remote_kp_cdf=remote_kp_cdf, $   
    insitu_kp_tab = insitu_kp_tab, $
    insitu_kp_cdf=insitu_kp_cdf, $
+   orbit_names=orbit_names,  $
    daily_names=daily_names,hourly_names=hourly_names,resolution = res,shiftres=shiftres,  $
    no_server=no_server,user_pass=user_pass,L0=L0,recent=recent, $
    DPU=DPU,ATLO=ATLO,RT=RT,pformat=pformat,realtime=realtime,no_download=no_download,name=name
@@ -90,7 +91,16 @@ if ~keyword_set(RT) then begin
       times = res * (floor(str[0]) + lindgen(dtr))+sres
       pathnames = time_string(times,tformat=pathname)
       pathnames = pathnames[uniq(pathnames)]   ; Remove duplicate filenames - assumes they are sorted
-    endif else pathnames = pathname
+    endif else if keyword_set(orbit_names) then begin
+      tr = timerange(trange)
+      orbit_range= mvn_orbit_num(time=tr)
+      orbits = fix(orbit_range+[0,1])    ; round to integers
+      orbits = lindgen(orbits[1] - orbits[0]) + orbits[0]
+      times = mvn_orbit_num(orbnum= orbits)  ; might need to add offset?????
+      pathnames = time_string(times,tformat=pathname)
+      orbits = string(format = '(i05)',orbits)
+      for i=0,n_elements(orbits)-1 do pathnames[i] = str_sub(pathnames[i],'ORBIT',orbits[i])
+    endif else  pathnames = pathname
     if keyword_set(create_dir) then begin
       files = source.local_data_dir + pathnames
       file_mkdir2,file_dirname( files ),_extra=source
