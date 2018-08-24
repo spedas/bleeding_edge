@@ -1,6 +1,6 @@
 ; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-08-21 14:35:03 -0700 (Tue, 21 Aug 2018) $
-; $LastChangedRevision: 25687 $
+; $LastChangedDate: 2018-08-23 08:59:38 -0700 (Thu, 23 Aug 2018) $
+; $LastChangedRevision: 25689 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/electron/spp_swp_spane_thresh_analysis.pro $
 
 ;; WORK IN PROGRESS
@@ -104,15 +104,15 @@ pro spp_swp_spane_thresh_analysis,sensor,no_stim,anode,mcp,sigma,goddard = godda
       anode = 0
     endif
     if ~keyword_set(sigma) then begin
-      print, 'No sigma defined: default to 1.1!'
-      sigma = 1.1
+      print, 'No sigma defined: default to 100!'
+      sigma = 100
     endif
     ; Select valid counts with boolean filter ; 
     good = 1
     good = good and (threshIntAnode gt 80) 
     good = good and (threshIntAnode ne 0)
     good = good and (threshIntAnode lt 260); cut out counts from when threshold is below noise.
-    good = good and (specAnode[*,anode] lt 190) ; average max real counts is ~ couple hundred
+    good = good and (specAnode[*,anode] lt 1000) ; average max real counts is ~ couple hundred
     ;good = good and (anodeNumber ne '1f'x) ; set anode equal to 0x1f when not active or when rotating.
     
     hkp = create_struct('time',timeThreshAnode, 'thresh', threshAnode, 'mcpdac', mcpDACanode, 'mcpv', mcpVanode, 'anode', anodeNumber)
@@ -155,6 +155,7 @@ pro spp_swp_spane_thresh_analysis,sensor,no_stim,anode,mcp,sigma,goddard = godda
       oplot, threshDACs, counts, psym = 4, color = colorArray[i]
       sigmaCounts = stddev(counts)
       meanCounts = mean(counts)
+      sigmaCounts = stddev(counts)
       printdat, sigmaCounts
       ;--------------------------------------
       ;eliminate values more than 3sigma away
@@ -167,21 +168,25 @@ pro spp_swp_spane_thresh_analysis,sensor,no_stim,anode,mcp,sigma,goddard = godda
       ;--------------------------------------
       ;calculate fit
       range = [min(threshDACs),max(threshDACs)]
-      xp = dgen(5,range=range)
+      xp = dgen(4,range=range)
       printdat, xp
       yp = xp*0+300
       xv = dgen()
       printdat, yp
       printdat, xv
       yv = spline_fit3(xv,xp,yp,param=p,/ylog)
-      fit,threshDACsValid,countsValid,param=p
-      derivfunction = -deriv(xv,func(xv,param=p))
+      weights = 1.0/countsValid
+      fit, threshDACsValid, countsValid, weight = weights, param=p
+      fitThresh = func(xv, param = p) 
+      derivfunction = -deriv(xv,fitThresh);func(xv,param=p))
       candidateThresh = xv[where(derivfunction eq min(derivfunction[0:50]))] ;; kludge to get threshold that isn't artificially high
+      oplot, xv, fitThresh
       plt1 = get_plot_state()
       ver, candidateThresh, color = fsc_color('green')
       altYrange = [0,3.]
       if i eq 0 then begin
         plot,xv,derivfunction,xtitle='Threshold DAC level, Thresh = ' + strtrim(candidateThresh, 2),ytitle='PHD', yrange = altYrange
+        
         p2 = !P & x2 = !X & y2 = !Y
       endif else begin
         !p = p2 & !x = x2 & !y = y2

@@ -27,6 +27,7 @@
 ; USER_PASS:  user:password combination for the remote server
 ; LIMITATIONS:
 ;   Beware of file pathnames that include the character sequences:  YY,  MM, DD, hh, mm, ss, .f  since these can be retranslated to the time
+;
 ;-
 function mvn_pfp_file_retrieve,pathname,trange=trange,verbose=verbose, source=src,files=files, $
    last_version=last_version,valid_only=valid_only,no_update=no_update,create_dir=create_dir,pos_start=pos_start, $
@@ -94,8 +95,11 @@ if ~keyword_set(RT) then begin
     endif else if keyword_set(orbit_names) then begin
       tr = timerange(trange)
       orbit_range= mvn_orbit_num(time=tr)
-      orbits = fix(orbit_range+[0,1])    ; round to integers
-      orbits = lindgen(orbits[1] - orbits[0]) + orbits[0]
+      orbmin = ceil(min(orbit_range))  ;ACC data only available below ~225 km. Take the next "full" orbit as the start orbit for this time range.
+      orbmax = ceil(max(orbit_range))  ;Same thinking for end orbit number for this time range.      
+      ;orbits = fix(orbit_range+[0,1])    ; round to integers
+      ;orbits = lindgen(orbits[1] - orbits[0]) + orbits[0]
+      orbits = lindgen(orbmax - orbmin) + orbmin     
       times = mvn_orbit_num(orbnum= orbits)  ; might need to add offset?????
       pathnames = time_string(times,tformat=pathname)
       orbits = string(format = '(i05)',orbits)

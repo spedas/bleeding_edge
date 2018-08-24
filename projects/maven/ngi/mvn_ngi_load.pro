@@ -33,9 +33,9 @@
 ;       Requires IDL 7.1 or later to read in .csv files
 ;       Use 'mvn_ngi_read_csv' to load ql data
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2016-06-03 09:19:03 -0700 (Fri, 03 Jun 2016) $
-; $LastChangedRevision: 21261 $
+; $LastChangedBy: haraday $
+; $LastChangedDate: 2018-08-23 17:28:33 -0700 (Thu, 23 Aug 2018) $
+; $LastChangedRevision: 25695 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/ngi/mvn_ngi_load.pro $
 ;-
 
@@ -117,6 +117,11 @@ pro mvn_ngi_load, mspec=mspec, trange=trange, filetype=filetype, verbose=verbose
      endif
      mass = double(d.(idx))
 
+     ;;; get species if exists
+     undefine, species
+     w = where(strmatch(dh,'species'),nw)
+     if nw eq 1 then species = d.(w)
+
      modes = ['csn', 'osnt', 'osnb', 'osion']
 
      ;;; store tplot variables
@@ -141,6 +146,14 @@ pro mvn_ngi_load, mspec=mspec, trange=trange, filetype=filetype, verbose=verbose
               if nwq ne 1 then continue
               quant = double(d.(wq))
               store_data,verbose=verbose,'mvn_ngi_'+filetype[i_filetype]+'_'+modes[i_mode]+'_'+quant_mass[iq]+'_mass'+massstr,data={x:t_unix[idx],y:quant[idx]},dlim={mass:uniqmass[i_mass],filetype:filetype[i_filetype],focusmode:modes[i_mode],level:level}
+              if size(species,/type) ne 0 then begin
+                 spc = species[idx]
+                 ws = where( spc eq spc[0] , nws, comp=cws, ncomp=ncws )
+                 if ncws gt 0 then begin ;- assuming at most 2 species for 1 mass
+                    store_data,verbose=verbose,'mvn_ngi_'+filetype[i_filetype]+'_'+modes[i_mode]+'_'+quant_mass[iq]+'_mass'+massstr+'_'+spc[0],data={x:t_unix[idx[ws]],y:quant[idx[ws]]},dlim={mass:uniqmass[i_mass],filetype:filetype[i_filetype],focusmode:modes[i_mode],level:level}
+                    store_data,verbose=verbose,'mvn_ngi_'+filetype[i_filetype]+'_'+modes[i_mode]+'_'+quant_mass[iq]+'_mass'+massstr+'_'+spc[cws[0]],data={x:t_unix[idx[cws]],y:quant[idx[cws]]},dlim={mass:uniqmass[i_mass],filetype:filetype[i_filetype],focusmode:modes[i_mode],level:level}
+                 endif
+              endif
            endfor               ;- iq
 
         endfor                  ;- i_mass
