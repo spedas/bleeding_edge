@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Aug 23 18:16:38 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Aug 24 11:33:43 2018.<P>
  
 <HR>
  
@@ -48,9 +48,9 @@ This page was created by the IDL library routine
 <br>To make mission overview plots of all instruments
 <LI><A HREF="#THM_GET_FGM_QUALITY_FLAGS">THM_GET_FGM_QUALITY_FLAGS</A>
 <br>returns an spd_qf_list object with quality flags
-<LI><A HREF="#[2]">[2]</A>
-<br>GUI for THEMIS data analysis
 <LI><A HREF="#[1]">[1]</A>
+<br>GUI for THEMIS data analysis
+<LI><A HREF="#[2]">[2]</A>
 <br>GUI for THEMIS data analysis
 <LI><A HREF="#THM_INIT">THM_INIT</A>
 <LI><A HREF="#THM_LOAD_PROC_ARG">THM_LOAD_PROC_ARG</A>
@@ -1709,44 +1709,6 @@ $URL$
 <PRE>
 NAME:
 
- thm_gui_new
-
-PURPOSE:
- GUI for THEMIS data analysis
-
-CALLING SEQUENCE:
- thm_gui_new
-
-INPUT:
- none
- 
- Keywords:
-   Reset - If set will reset all internal settings.  
-           Otherwise, it will try to load the state of the previous call.
-   template_filename - The file name of a previously saved themis template document,
-                   can be used to store user preferences and defaults.
-
-OUTPUT:
- none
-
-HISTORY:
- Made into a wrapper for spd_gui.pro, jmm, 2014-02-11
-
-$LastChangedBy: jimm $
-$LastChangedDate: 2014-02-12 15:49:01 -0800 (Wed, 12 Feb 2014) $
-$LastChangedRevision: 14368 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_gui_new.pro $
-</PRE><P>
-<STRONG>(See <A href="common/thm_gui_new.pro">projects/themis/common/thm_gui_new.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="[2]">
-<H2>[2]</H2></A>
-<A HREF="#[1]">[Previous Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-NAME:
-
  thm_gui
 
 PURPOSE:
@@ -1776,5 +1738,43 @@ $LastChangedRevision: 14368 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_gui.pro $
 </PRE><P>
 <STRONG>(See <A href="common/thm_gui.pro">projects/themis/common/thm_gui.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="[2]">
+<H2>[2]</H2></A>
+<A HREF="#[1]">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+
+ thm_gui_new
+
+PURPOSE:
+ GUI for THEMIS data analysis
+
+CALLING SEQUENCE:
+ thm_gui_new
+
+INPUT:
+ none
+ 
+ Keywords:
+   Reset - If set will reset all internal settings.  
+           Otherwise, it will try to load the state of the previous call.
+   template_filename - The file name of a previously saved themis template document,
+                   can be used to store user preferences and defaults.
+
+OUTPUT:
+ none
+
+HISTORY:
+ Made into a wrapper for spd_gui.pro, jmm, 2014-02-11
+
+$LastChangedBy: jimm $
+$LastChangedDate: 2014-02-12 15:49:01 -0800 (Wed, 12 Feb 2014) $
+$LastChangedRevision: 14368 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_gui_new.pro $
+</PRE><P>
+<STRONG>(See <A href="common/thm_gui_new.pro">projects/themis/common/thm_gui_new.pro</A>)</STRONG><P>
 <HR>
  
