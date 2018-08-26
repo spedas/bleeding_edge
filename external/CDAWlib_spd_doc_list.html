@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Aug 24 11:33:43 2018.<P>
+<STRONG>Last modified: </STRONG>Sat Aug 25 03:16:32 2018.<P>
  
 <HR>
  
@@ -169,9 +169,9 @@ This page was created by the IDL library routine
 <LI><A HREF="#VIRTUAL_FUNCS[11]">VIRTUAL_FUNCS[11]</A>
 <LI><A HREF="#VIRTUAL_FUNCS[12]">VIRTUAL_FUNCS[12]</A>
 <LI><A HREF="#VIRTUAL_FUNCS[13]">VIRTUAL_FUNCS[13]</A>
-<LI><A HREF="#XV_LOOKV_TO_GCI[1]">XV_LOOKV_TO_GCI[1]</A>
+<LI><A HREF="#XV_LOOKV_TO_GCI[2]">XV_LOOKV_TO_GCI[2]</A>
 <br>Converts the XVIS LOOK vector to GCI coordinates
-<LI><A HREF="#COMPUTE_CRDS[1]">COMPUTE_CRDS[1]</A>
+<LI><A HREF="#COMPUTE_CRDS[2]">COMPUTE_CRDS[2]</A>
 <br>Computes all the variables in the XV_DERIVED_DATA block
 <LI><A HREF="#RUNLENGTH">RUNLENGTH</A>
 <br>Give run lengths for array values.
@@ -179,7 +179,7 @@ This page was created by the IDL library routine
 <br>Return the elements common to two given arrays.
 <LI><A HREF="#XV_UNDISTORT">XV_UNDISTORT</A>
 <br>'Warps' a 256 by 256 pixel VIS image to display
-<LI><A HREF="#XV_LOOKV_TO_GCI[2]">XV_LOOKV_TO_GCI[2]</A>
+<LI><A HREF="#XV_LOOKV_TO_GCI[1]">XV_LOOKV_TO_GCI[1]</A>
 <br>Converts the XVIS LOOK vector to GCI coordinates
 <LI><A HREF="#XV_GET_PHIS">XV_GET_PHIS</A>
 <br>Computes the PHI angles at every pixel within an XVIS image.
@@ -192,7 +192,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#VISCAL[2]">VISCAL[2]</A>
 <LI><A HREF="#VISCAL[2]">VISCAL[2]</A>
 <br>Computes coordinates for one image pixel location
-<LI><A HREF="#COMPUTE_CRDS[2]">COMPUTE_CRDS[2]</A>
+<LI><A HREF="#COMPUTE_CRDS[1]">COMPUTE_CRDS[1]</A>
 <br>Computes all the variables in the XV_DERIVED_DATA block
 <LI><A HREF="#DAYGLOW">DAYGLOW</A>
 <br>Computes percentage parameters for the dayglow subtract
@@ -1347,6 +1347,43 @@ All Rights Reserved.
        Computes all the variables in the XV_DERIVED_DATA block
        for an entire image
  CATEGORY:
+
+ CALLING SEQUENCE:
+       Must set up the common block information properly.  This
+       routine is tightly integrated into the XVIS package.
+ INPUTS:
+       None
+ KEYWORD PARAMETERS:
+       NONE
+ OUTPUTS:
+ COMMON BLOCKS:
+       numerous
+ NOTES:
+
+ MODIFICATION HISTORY:
+       Kenny Hunt, 9/1/97
+
+ Copyright (C) 1998, The University of Iowa Department of Physics and Astronomy
+ This software may be used, copied, or redistributed as long as it is not
+ sold and this copyright notice is reproduced on each copy made.  This
+ routine is provided as is without any express or implied warranties
+ whatsoever.
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/viscal.pro">external/CDAWlib/viscal.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="COMPUTE_CRDS[2]">
+<H2>COMPUTE_CRDS[2]</H2></A>
+<A HREF="#COMPUTE_CRDS[1]">[Previous Routine]</A>
+<A HREF="#DAYGLOW">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+       COMPUTE_CRDS
+ PURPOSE:
+       Computes all the variables in the XV_DERIVED_DATA block
+       for an entire image
+ CATEGORY:
  
  CALLING SEQUENCE:
        Must set up the common block information properly.  This
@@ -1371,43 +1408,6 @@ All Rights Reserved.
  whatsoever.
 </PRE><P>
 <STRONG>(See <A href="CDAWlib/vis.pro">external/CDAWlib/vis.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="COMPUTE_CRDS[2]">
-<H2>COMPUTE_CRDS[2]</H2></A>
-<A HREF="#COMPUTE_CRDS[1]">[Previous Routine]</A>
-<A HREF="#DAYGLOW">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- NAME:
-       COMPUTE_CRDS
- PURPOSE:
-       Computes all the variables in the XV_DERIVED_DATA block
-       for an entire image
- CATEGORY:
-
- CALLING SEQUENCE:
-       Must set up the common block information properly.  This
-       routine is tightly integrated into the XVIS package.
- INPUTS:
-       None
- KEYWORD PARAMETERS:
-       NONE
- OUTPUTS:
- COMMON BLOCKS:
-       numerous
- NOTES:
-
- MODIFICATION HISTORY:
-       Kenny Hunt, 9/1/97
-
- Copyright (C) 1998, The University of Iowa Department of Physics and Astronomy
- This software may be used, copied, or redistributed as long as it is not
- sold and this copyright notice is reproduced on each copy made.  This
- routine is provided as is without any express or implied warranties
- whatsoever.
-</PRE><P>
-<STRONG>(See <A href="CDAWlib/viscal.pro">external/CDAWlib/viscal.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="DAYGLOW">
@@ -9485,47 +9485,6 @@ ND
  PURPOSE:
        Converts the XVIS LOOK vector to GCI coordinates
  CATEGORY:
- 
- CALLING SEQUENCE:
-       XV_LOOKV_TO_GCI
- INPUTS:
-       NONE
- KEYWORD PARAMETERS:
-       NONE
- OUTPUTS:
-       NONE
- COMMON BLOCKS:
-       XV_RECORD_DATA
-       XV_FILE_DATA
-       XV_DERIVED_DATA
-       XV_FLAGS
- NOTES:
-       This routine is useful only within the XVIS application
-       It uses COMMON blocks extensively and certain values within
-       the blocks must be set prior to invocation.
- MODIFICATION HISTORY:
-       Kenny Hunt, 9/1/97
-
- Copyright (C) 1998, The University of Iowa Department of Physics and Astronomy
- This software may be used, copied, or redistributed as long as it is not
- sold and this copyright notice is reproduced on each copy made.  This
- routine is provided as is without any express or implied warranties
- whatsoever.
-</PRE><P>
-<STRONG>(See <A href="CDAWlib/vis.pro">external/CDAWlib/vis.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="XV_LOOKV_TO_GCI[2]">
-<H2>XV_LOOKV_TO_GCI[2]</H2></A>
-<A HREF="#XV_LOOKV_TO_GCI[1]">[Previous Routine]</A>
-<A HREF="#XV_SCALE_COLOR_TABLE">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- NAME:
-       XV_LOOKV_TO_GCI
- PURPOSE:
-       Converts the XVIS LOOK vector to GCI coordinates
- CATEGORY:
 
  CALLING SEQUENCE:
        XV_LOOKV_TO_GCI
@@ -9555,6 +9514,47 @@ ND
  whatsoever.
 </PRE><P>
 <STRONG>(See <A href="CDAWlib/viscal.pro">external/CDAWlib/viscal.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="XV_LOOKV_TO_GCI[2]">
+<H2>XV_LOOKV_TO_GCI[2]</H2></A>
+<A HREF="#XV_LOOKV_TO_GCI[1]">[Previous Routine]</A>
+<A HREF="#XV_SCALE_COLOR_TABLE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+       XV_LOOKV_TO_GCI
+ PURPOSE:
+       Converts the XVIS LOOK vector to GCI coordinates
+ CATEGORY:
+ 
+ CALLING SEQUENCE:
+       XV_LOOKV_TO_GCI
+ INPUTS:
+       NONE
+ KEYWORD PARAMETERS:
+       NONE
+ OUTPUTS:
+       NONE
+ COMMON BLOCKS:
+       XV_RECORD_DATA
+       XV_FILE_DATA
+       XV_DERIVED_DATA
+       XV_FLAGS
+ NOTES:
+       This routine is useful only within the XVIS application
+       It uses COMMON blocks extensively and certain values within
+       the blocks must be set prior to invocation.
+ MODIFICATION HISTORY:
+       Kenny Hunt, 9/1/97
+
+ Copyright (C) 1998, The University of Iowa Department of Physics and Astronomy
+ This software may be used, copied, or redistributed as long as it is not
+ sold and this copyright notice is reproduced on each copy made.  This
+ routine is provided as is without any express or implied warranties
+ whatsoever.
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/vis.pro">external/CDAWlib/vis.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="XV_SCALE_COLOR_TABLE">

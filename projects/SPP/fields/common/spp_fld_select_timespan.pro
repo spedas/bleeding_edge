@@ -51,6 +51,7 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['com_d3_biasing_2'] =              ['2018-08-14/16:05:00', '2018-08-14/16:20:00']
   fm_times['com_d3_rfs_2fullspec_scm'] =      ['2018-08-14/16:00:00', '2018-08-14/16:15:00']
   fm_times['com_d3_mag_zero'] =               ['2018-08-14/16:20:00', '2018-08-14/16:50:00']
+  fm_times['com_d3_mago_2Hz'] =               ['2018-08-14/16:47:00', '2018-08-14/17:02:00']
 
   fm_times['commissioning_day4'] =            ['2018-08-15/15:00:00', '2018-08-15/21:00:00']
   fm_times['com_d4_mom_dump'] =               ['2018-08-15/16:40:00', '2018-08-15/16:41:00']

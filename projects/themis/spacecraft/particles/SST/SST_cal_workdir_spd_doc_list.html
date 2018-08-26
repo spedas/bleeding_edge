@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Aug 24 11:33:43 2018.<P>
+<STRONG>Last modified: </STRONG>Sat Aug 25 03:16:32 2018.<P>
  
 <HR>
  
@@ -30,9 +30,9 @@ This page was created by the IDL library routine
 <LI><A HREF="#THM_SST_CONVERT_UNITS2">THM_SST_CONVERT_UNITS2</A>
 <LI><A HREF="#THM_SST_CROSS_CONTAMINATION_REMOVE,DATA_A,DATA_B">
 THM_SST_CROSS_CONTAMINATION_REMOVE,DATA_A,DATA_B</A>
-<LI><A HREF="#THM_SST_DIST3D_16X64[1]">THM_SST_DIST3D_16X64[1]</A>
-<br>This routine returns the appropriate distribution representation struct for
 <LI><A HREF="#THM_SST_DIST3D_16X64[2]">THM_SST_DIST3D_16X64[2]</A>
+<br>This routine returns the appropriate distribution representation struct for
+<LI><A HREF="#THM_SST_DIST3D_16X64[1]">THM_SST_DIST3D_16X64[1]</A>
 <br>This routine defines the appropriate distribution representation struct for
 <LI><A HREF="#THM_SST_DIST3D_DEF">THM_SST_DIST3D_DEF</A>
 <br>This routine returns the appropriate distribution representation struct for
@@ -421,17 +421,16 @@ NOTES:
 NAME:
  thm_sst_dist3d_16x64
 PURPOSE:
-  This routine returns the appropriate distribution representation struct for 
-  16 Energy and 64 angle SST data.(16 energy by 4 theta by 16 phi)
-  Default and/or constant values will be populated.  At this point,
-  the structure should be considered incomplete. 
+  This routine defines the appropriate distribution representation struct for 
+  16 Energy and 64 angle SST data.
+  
 
-$LastChangedBy: aaflores $
-$LastChangedDate: 2012-11-01 16:46:42 -0700 (Thu, 01 Nov 2012) $
-$LastChangedRevision: 11152 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_sst_dist3d_16x64_2.pro $
+$LastChangedBy: pcruce $
+$LastChangedDate: 2013-09-10 16:17:02 -0700 (Tue, 10 Sep 2013) $
+$LastChangedRevision: 13014 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_sst_dist3d_16x64_2__define.pro $
 </PRE><P>
-<STRONG>(See <A href="SST_cal_workdir/thm_sst_dist3d_16x64_2.pro">projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_sst_dist3d_16x64_2.pro</A>)</STRONG><P>
+<STRONG>(See <A href="SST_cal_workdir/thm_sst_dist3d_16x64_2__define.pro">projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_sst_dist3d_16x64_2__define.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="THM_SST_DIST3D_16X64[2]">
@@ -443,16 +442,17 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/th
 NAME:
  thm_sst_dist3d_16x64
 PURPOSE:
-  This routine defines the appropriate distribution representation struct for 
-  16 Energy and 64 angle SST data.
-  
+  This routine returns the appropriate distribution representation struct for 
+  16 Energy and 64 angle SST data.(16 energy by 4 theta by 16 phi)
+  Default and/or constant values will be populated.  At this point,
+  the structure should be considered incomplete. 
 
-$LastChangedBy: pcruce $
-$LastChangedDate: 2013-09-10 16:17:02 -0700 (Tue, 10 Sep 2013) $
-$LastChangedRevision: 13014 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_sst_dist3d_16x64_2__define.pro $
+$LastChangedBy: aaflores $
+$LastChangedDate: 2012-11-01 16:46:42 -0700 (Thu, 01 Nov 2012) $
+$LastChangedRevision: 11152 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_sst_dist3d_16x64_2.pro $
 </PRE><P>
-<STRONG>(See <A href="SST_cal_workdir/thm_sst_dist3d_16x64_2__define.pro">projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_sst_dist3d_16x64_2__define.pro</A>)</STRONG><P>
+<STRONG>(See <A href="SST_cal_workdir/thm_sst_dist3d_16x64_2.pro">projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_sst_dist3d_16x64_2.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="THM_SST_DIST3D_DEF">
