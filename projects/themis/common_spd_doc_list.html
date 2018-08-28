@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Aug 25 03:16:32 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Aug 27 18:16:51 2018.<P>
  
 <HR>
  
@@ -42,6 +42,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#THM_FITGMOM_OVERVIEWS">THM_FITGMOM_OVERVIEWS</A>
 <LI><A HREF="#THM_FITMOM_OVERVIEWS">THM_FITMOM_OVERVIEWS</A>
 <LI><A HREF="#THM_FIX_SPEC_UNITS">THM_FIX_SPEC_UNITS</A>
+<LI><A HREF="#THM_FLIPBOOKIFY">THM_FLIPBOOKIFY</A>
+<br>Turns the current tplot window into a &quot;flipbook&quot; containing:
 <LI><A HREF="#THM_GEN_MULTIPNG_PLOT">THM_GEN_MULTIPNG_PLOT</A>
 <br>Creates full day, 6 hour and 2 hour png files for data for a given
 <LI><A HREF="#THM_GEN_OVERPLOT">THM_GEN_OVERPLOT</A>
@@ -648,7 +650,7 @@ Example:
 <A NAME="THM_FIX_SPEC_UNITS">
 <H2>THM_FIX_SPEC_UNITS</H2></A>
 <A HREF="#THM_FIT_FGM_CROSSCHECK.PRO">[Previous Routine]</A>
-<A HREF="#THM_GEN_MULTIPNG_PLOT">[Next Routine]</A>
+<A HREF="#THM_FLIPBOOKIFY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -680,9 +682,111 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/th
 <STRONG>(See <A href="common/thm_fix_spec_units.pro">projects/themis/common/thm_fix_spec_units.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_FLIPBOOKIFY">
+<H2>THM_FLIPBOOKIFY</H2></A>
+<A HREF="#THM_FIX_SPEC_UNITS">[Previous Routine]</A>
+<A HREF="#THM_GEN_MULTIPNG_PLOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+     thm_flipbookify
+
+ PURPOSE:
+     Turns the current tplot window into a &quot;flipbook&quot; containing:
+
+     1) the current figure (vertical line at each time step)
+     2) THEMIS distribution slices at each time step
+
+
+ KEYWORDS:
+     trange: limit the time range of plots produced (will draw a box around trange by default)
+     instrument: instrument for the slices (default: 'esa')
+     probe:  probe # for the slices (default: 'd')
+     level: level of data for the slices (default: l2)
+     data_rate: data rate to use for the slices (default: 'b')
+     species: species of the slices; valid options include: (default: 'i')
+         'e' for electrons or 'i' for ions
+
+     xrange:  two-element array specifying x-axis range for the slices
+     yrange:  two-element array specifying y-axis range for the slices
+     zrange:  two-element array specifying z-axis range for the slices
+
+     slices: three-element array specifying the slices to plot:
+         'BV':  The x axis is parallel to B field; the bulk velocity defines the x-y plane
+         'BE':  The x axis is parallel to B field; the B x V(bulk) vector defines the x-y plane
+         'xy':  (default) The x axis is along the data's x axis and y is along the data's y axis
+         'xz':  The x axis is along the data's x axis and y is along the data's z axis
+         'yz':  The x axis is along the data's y axis and y is along the data's z axis
+         'xvel':  The x axis is along the data's x axis; the x-y plane is defined by the bulk velocity
+         'perp':  The x axis is the bulk velocity projected onto the plane normal to the B field; y is B x V(bulk)
+         'perp_xy':  The data's x &amp; y axes are projected onto the plane normal to the B field
+         'perp_xz':  The data's x &amp; z axes are projected onto the plane normal to the B field
+         'perp_yz':  The data's y &amp; z axes are projected onto the plane normal to the B field
+
+         default: ['xy', 'xz', 'yz']
+
+     three_d_interp: use the 3D interpolation method (default)
+     two_d_interp: use the 2D interpolation method
+     geometric: use the geometric interpolation method
+
+     custom_rotation: Applies a custom rotation matrix to the data.  Input may be a
+                   3x3 rotation matrix or a tplot variable containing matrices.
+                   If the time window covers multiple matrices they will be averaged.
+                   This is applied before other transformations
+
+     /energy: produce energy slices instead of velocity slices
+
+     thickness: thickness of the vertical line drawn at each time step
+     linestype: style of the vertical line drawn at each time step
+
+     note: box_* keywords require that you specify a trange
+     box_color: color of the box
+     box_style: linestyle of the box
+     box_thickness: thickness of the box
+     /no_box: disable the box
+
+     left_margin: adjust the left-margin of the output images
+     right_margin: adjust the right-margin of the output images (where the
+         slices are stored)
+
+     title: title of the plot; accepts common time string formats, e.g.,
+         title=&quot;YYYY-MM-DD/hh:mm:ss.fff&quot;
+
+     seconds: specify the # of seconds for each slice
+         (e.g., seconds=1.5 -&gt; plot at every 1.5 seconds)
+     time_step: integer specifying the interval to produce plots at
+         (e.g., time_step=1 -&gt; plot at every time, time_step=2 -&gt; every other time, etc)
+
+     /postscript: save the images as postscript files instead of PNGs
+
+     output_dir: directory where the plots are saved (default: 'flipbook/')
+     filename_suffix: suffix to append to the end of the newly created files
+
+     /video: save the sequence of images as a video (.mp4) - currently only works for PNG
+     vid_format: format of the output video; default .mp4;
+         (options include: avi flv gif matroska mjpeg mov mp4 swf wav webm)
+     vid_fps: frames per second for the video; default: 6
+
+ EXAMPLES:
+
+ NOTES:
+
+    - experimental, work in progress! email problems to: egrimes@igpp.ucla.edu
+
+
+
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2018-08-27 15:20:51 -0700 (Mon, 27 Aug 2018) $
+ $LastChangedRevision: 25699 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_flipbookify.pro $
+</PRE><P>
+<STRONG>(See <A href="common/thm_flipbookify.pro">projects/themis/common/thm_flipbookify.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_GEN_MULTIPNG_PLOT">
 <H2>THM_GEN_MULTIPNG_PLOT</H2></A>
-<A HREF="#THM_FIX_SPEC_UNITS">[Previous Routine]</A>
+<A HREF="#THM_FLIPBOOKIFY">[Previous Routine]</A>
 <A HREF="#THM_GEN_OVERPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
