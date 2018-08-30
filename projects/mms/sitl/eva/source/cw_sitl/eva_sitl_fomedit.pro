@@ -7,8 +7,8 @@
 ;   When "Save" is chosen, the "segSelect" structure will be used to update FOM/BAK structures.
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2017-10-31 19:35:36 -0700 (Tue, 31 Oct 2017) $
-; $LastChangedRevision: 24248 $
+; $LastChangedDate: 2018-08-28 22:50:24 -0700 (Tue, 28 Aug 2018) $
+; $LastChangedRevision: 25702 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_fomedit.pro $
 ;
 PRO eva_sitl_FOMedit_event, ev
@@ -79,7 +79,8 @@ PRO eva_sitl_FOMedit_event, ev
     tplot,verbose=0
     widget_control, ev.top, /destroy
   endif else begin
-    eva_sitl_highlight, segSelect.TS, segSelect.TE, segSelect.FOM, wid.state, /rehighlight
+    eva_sitl_highlight, segSelect.TS, segSelect.TE, segSelect.FOM, wid.vvv, /rehighlight
+    ;eva_sitl_highlight, segSelect.TS, segSelect.TE, segSelect.FOM, wid.state, /rehighlight
     str_element,/add,wid,'segSelect',segSelect
     widget_control, ev.top, SET_UVALUE=wid
   endelse
@@ -87,7 +88,7 @@ end
 
 ; INPUT:
 ;   STATE: state for cw_sitl; this information is needed to call >eva_sitl_update_board, wid.state, 1
-PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid
+PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv
   if xregistered('eva_sitl_FOMedit') ne 0 then return
   
   ;//// user setting  /////////////////////////////
@@ -101,7 +102,9 @@ PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid
   
   ; initialize
   device, get_graphics=old_graphics, set_graphics=6
-  eva_sitl_highlight, segSelect.TS, segSelect.TE, segSelect.FOM, state
+  if n_elements(vvv) eq 0 then stop
+  eva_sitl_highlight, segSelect.TS, segSelect.TE, segSelect.FOM, vvv
+
   if n_elements(wgrid) eq 0 then message, "Need wgrid"
   
   time = timerange(/current)
@@ -133,7 +136,7 @@ PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid
   wid = {STATE:state, segSelect:segSelect, SCROLL:scroll, OLD_GRAPHICS:old_graphics, DISLEN:dislen, $
     START_MIN_VALUE: start_min_value, STOP_MIN_VALUE: stop_min_value, FOM_MIN_VALUE: fom_min_value, $
     START_MAX_VALUE: start_max_value, STOP_MAX_VALUE: stop_max_value, FOM_MAX_VALUE: fom_max_value,$
-    WGRID: wgrid }
+    WGRID: wgrid, vvv:vvv }
     
   ; widget layout
   

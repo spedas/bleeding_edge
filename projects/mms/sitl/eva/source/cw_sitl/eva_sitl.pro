@@ -189,7 +189,8 @@ PRO eva_sitl_seg_add, trange, state=state, var=var
     if n_elements(var) eq 0 then message,'Must pass tplot-variable name'
     segSelect = {ts:trange[0], te:tedef, fom:RealFOM, BAK:BAK, discussion:' ', var:var,$
       ts_limit:ts_limit, te_limit:te_limit}
-    eva_sitl_FOMedit, state, segSelect, wgrid=wgrid ;Here, change FOM value only. No trange change.
+    vvv = state.pref.EVA_BAKSTRUCT ? 'mms_stlm_bakstr' : 'mms_stlm_fomstr'
+    eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv ;Here, change FOM value only. No trange change.
   endif
 END
 
@@ -376,7 +377,8 @@ PRO eva_sitl_seg_edit, t, state=state, var=var, delete=delete, split=split
         tplot,verbose=0
       endif; SPLIT
       if (~keyword_set(delete) and ~keyword_set(split)) then begin;............. EDIT
-        eva_sitl_FOMedit, state, segSelect, wgrid=wgrid
+        vvv = state.pref.EVA_BAKSTRUCT ? 'mms_stlm_bakstr' : 'mms_stlm_fomstr'
+        eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv
       endif
     endelse; if segSelect.BAK
   endif else begin
@@ -615,7 +617,9 @@ FUNCTION eva_sitl_event, ev
               left_edges  = (D.x[1:nmax-1:4] > trange[0]) < trange[1]
               right_edges = (D.x[4:nmax-1:4] > trange[0]) < trange[1]
               data        = D.y[2:nmax-1:4]
-              eva_sitl_highlight, left_edges, right_edges, data, state, /noline
+              vvv = state.pref.EVA_BAKSTRUCT ? 'mms_stlm_bakstr' : 'mms_stlm_fomstr'
+              eva_sitl_highlight, left_edges, right_edges, data, vvv, /noline
+              ;eva_sitl_highlight, left_edges, right_edges, data, state, /noline
             endif; if nmax
           endif; if n_tags
         endif else begin

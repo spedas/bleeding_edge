@@ -1,4 +1,4 @@
-PRO eva_sitl_highlight, left_edges, right_edges, data, state, $
+PRO eva_sitl_highlight, left_edges, right_edges, data, var, $;state, $
   color=color, rehighlight=rehighlight, noline=noline
   compile_opt idl2
   @xtplot_com
@@ -12,7 +12,8 @@ PRO eva_sitl_highlight, left_edges, right_edges, data, state, $
   endif
   if n_elements(color) eq 0 then color=1; 128
 
-  var = state.pref.EVA_BAKSTRUCT ? 'mms_stlm_bakstr' : 'mms_stlm_fomstr'
+  ;var = state.pref.EVA_BAKSTRUCT ? 'mms_stlm_bakstr' : 'mms_stlm_fomstr'
+  if undefined(var) then var = 'mms_stlm_fomstr'
   
   ind = where(strcmp(tplot_vars.SETTINGS.VARNAMES,var),ct)
   if ct eq 1 then begin 
