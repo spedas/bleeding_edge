@@ -1,5 +1,6 @@
 PRO eva_sitl_highlight, left_edges, right_edges, data, var, $;state, $
-  color=color, rehighlight=rehighlight, noline=noline
+  color=color, rehighlight=rehighlight, noline=noline, $
+  fom_min_value = fom_min_value, fom_max_value=fom_max_value
   compile_opt idl2
   @xtplot_com
   @tplot_com
@@ -29,15 +30,19 @@ PRO eva_sitl_highlight, left_edges, right_edges, data, var, $;state, $
     time = timerange(/current)
     ts = time[0]
     te = time[1]
-  ;  ; frange (data-y)
-    eva_sitl_strct_yrange, var, yrange=frange
-    fmin = frange[0]
-    fmax = frange[1]
-  
+    if strmatch(var,'mms*') then begin
+      eva_sitl_strct_yrange, var, yrange=frange
+      fmin = frange[0]
+      fmax = frange[1]
+    endif else begin
+      fmin = fom_min_value
+      fmax = fom_max_value
+    endelse
+    
     ; coefficients
     xc = (xe-xs)/(te-ts)
     yc = (ye-ys)/(fmax-fmin)
-    
+
     ; data points in normal coordinate
     for n=0,nmax-1 do begin
       x0 = (xc*(left_edges[n]-ts)+xs > xs) < xe

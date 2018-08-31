@@ -7,8 +7,8 @@
 ;   When "Save" is chosen, the "segSelect" structure will be used to update FOM/BAK structures.
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2018-08-28 22:50:24 -0700 (Tue, 28 Aug 2018) $
-; $LastChangedRevision: 25702 $
+; $LastChangedDate: 2018-08-30 13:59:01 -0700 (Thu, 30 Aug 2018) $
+; $LastChangedRevision: 25707 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_fomedit.pro $
 ;
 PRO eva_sitl_FOMedit_event, ev
@@ -63,8 +63,12 @@ PRO eva_sitl_FOMedit_event, ev
       end
     wid.btnSave: begin
       print,'EVA: ***** EVENT: btnSave *****'
-      eva_sitl_strct_update, segSelect,BAK=wid.state.pref.EVA_BAKSTRUCT
-      eva_sitl_stack
+      if strmatch(wid.proj,'mms') then begin
+        eva_sitl_strct_update, segSelect,BAK=wid.state.pref.EVA_BAKSTRUCT
+        eva_sitl_stack
+      endif else begin
+        sppeva_sitl_tplot_update, segSelect, wid.vvv
+      endelse
       code_exit = 1
     end
     wid.btnCancel: begin
@@ -79,7 +83,8 @@ PRO eva_sitl_FOMedit_event, ev
     tplot,verbose=0
     widget_control, ev.top, /destroy
   endif else begin
-    eva_sitl_highlight, segSelect.TS, segSelect.TE, segSelect.FOM, wid.vvv, /rehighlight
+    eva_sitl_highlight, segSelect.TS, segSelect.TE, segSelect.FOM, wid.vvv, /rehighlight, $
+      fom_min_value = wid.fom_min_value, fom_max_value=wid.fom_max_value
     ;eva_sitl_highlight, segSelect.TS, segSelect.TE, segSelect.FOM, wid.state, /rehighlight
     str_element,/add,wid,'segSelect',segSelect
     widget_control, ev.top, SET_UVALUE=wid
@@ -88,22 +93,26 @@ end
 
 ; INPUT:
 ;   STATE: state for cw_sitl; this information is needed to call >eva_sitl_update_board, wid.state, 1
-PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv
+PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv, proj=proj, $
+  fom_min_value = fom_min_value, fom_max_value=fom_max_value
   if xregistered('eva_sitl_FOMedit') ne 0 then return
   
   ;//// user setting  /////////////////////////////
   dTfrac          = 0.5; fraction of the current time range --> range of time change
   scroll          = 1.0 ; how many seconds to be moved by sliders
   drag            = 1   ; use drag keyword for sliders?
-  fom_min_value   = 2.0  ; min allowable value of FOM
-  fom_max_value   = 255.0 ; max allowable value of FOM
+  if undefined(fom_min_value) then fom_min_value   = 2.0  ; min allowable value of FOM
+  if undefined(fom_max_value) then fom_max_value   = 255.0 ; max allowable value of FOM
   dislen          = ' characters (max 250)'; label for the Discussion Text Field
   ;////////////////////////////////////
   
   ; initialize
+  if undefined(proj) then proj='mms'
   device, get_graphics=old_graphics, set_graphics=6
-  if n_elements(vvv) eq 0 then stop
-  eva_sitl_highlight, segSelect.TS, segSelect.TE, segSelect.FOM, vvv
+  ;if n_elements(vvv) eq 0 then stop
+  if undefined(vvv) then message,'Please specify vvv (eva_sitl_FOMedit)'
+  eva_sitl_highlight, segSelect.TS, segSelect.TE, segSelect.FOM, vvv, $
+    fom_min_value = fom_min_value, fom_max_value=fom_max_value
 
   if n_elements(wgrid) eq 0 then message, "Need wgrid"
   
@@ -136,7 +145,7 @@ PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv
   wid = {STATE:state, segSelect:segSelect, SCROLL:scroll, OLD_GRAPHICS:old_graphics, DISLEN:dislen, $
     START_MIN_VALUE: start_min_value, STOP_MIN_VALUE: stop_min_value, FOM_MIN_VALUE: fom_min_value, $
     START_MAX_VALUE: start_max_value, STOP_MAX_VALUE: stop_max_value, FOM_MAX_VALUE: fom_max_value,$
-    WGRID: wgrid, vvv:vvv }
+    WGRID: wgrid, vvv:vvv, proj:proj }
     
   ; widget layout
   
@@ -167,11 +176,11 @@ PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv
     lblNumEval= widget_label(baseSeg,VALUE='NUM-EVAL-CYCLES: '+strtrim(string(segSelect.NUMEVALCYCLES),2))
     lblParamID= widget_label(baseSeg,VALUE='PARAMETER-SET-ID:'+segSelect.PARAMETERSETID)
     disable = strmatch(strlowcase(segSelect.STATUS),'*finished*') 
-    if disable then ssFOM = -1 else ssFOM = eva_slider(base,title=' FOM ',VALUE=segSelect.FOM,MAX_VALUE=255, MIN_VALUE=0) 
+    if disable then ssFOM = -1 else ssFOM = eva_slider(base,title=' FOM ',VALUE=segSelect.FOM,MAX_VALUE=fom_max_value, MIN_VALUE=0) 
     str_element,/add,wid,'ssFOM',ssFOM
     txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
   endif else begin
-    str_element,/add,wid,'ssFOM',eva_slider(base,title=' FOM ',VALUE=segSelect.FOM,MAX_VALUE=255, MIN_VALUE=0)
+    str_element,/add,wid,'ssFOM',eva_slider(base,title=' FOM ',VALUE=segSelect.FOM,MAX_VALUE=fom_max_value, MIN_VALUE=0)
     txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
     str_element,/add,wid,'lblBuffs',widget_label(base,VALUE=txtbuffs)
     str_element,/add,wid,'sldStart',eva_slider(base,title='Start',$
