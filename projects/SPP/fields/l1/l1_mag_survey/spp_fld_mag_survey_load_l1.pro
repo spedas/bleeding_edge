@@ -1,7 +1,7 @@
 ;
-;  $LastChangedBy: spfuser $
-;  $LastChangedDate: 2018-08-20 15:13:45 -0700 (Mon, 20 Aug 2018) $
-;  $LastChangedRevision: 25671 $
+;  $LastChangedBy: pulupalap $
+;  $LastChangedDate: 2018-08-31 10:27:01 -0700 (Fri, 31 Aug 2018) $
+;  $LastChangedRevision: 25712 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
@@ -223,10 +223,12 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
   options, prefix + 'nT', 'labels', ['Bx','By','Bz']
   options, prefix + 'nT', 'ytitle', strupcase(short_prefix)
   options, prefix + 'nT', 'ysubtitle', '[nT]'
+  options, prefix + 'nT', 'max_points', 40000l
 
   options, prefix + 'nT_mag', 'labels', ['|B|']
   options, prefix + 'nT_mag', 'ytitle', strupcase(short_prefix)
   options, prefix + 'nT_mag', 'ysubtitle', '[nT]'
+  options, prefix + 'nT_mag', 'max_points', 40000l
 
   store_data, strmid(prefix,0,strlen(prefix)-1), data = prefix + ['nT', 'nT_mag']
 

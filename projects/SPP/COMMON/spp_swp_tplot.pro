@@ -37,6 +37,9 @@ if keyword_set(setlim) then begin
   store_data,'APID',data='APIDS_*'
   ylim,'APID',820,960
   options,'APID',panel_size=2.5
+  if setlim eq 2 then begin
+    
+  endif
   
   
 endif
@@ -52,7 +55,7 @@ if keyword_set(name) then begin
     'SA_SUM' : tplot, 'spp_spa_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spa_hkp_CMD_REC spp_spa_SF1_NRG_SPEC spp_spa_SF0_NRG_SPEC',add=add
     'SA_HV': tplot,'*CMDCOUNTER *spa_*CMD_REC *spa_hkp_HV_CONF_FLAG *spa_hkp_???_DAC *spa_hkp_ADC_VMON_* *spa_hkp_ADC_IMON_* *spa_*SF1_ANODE_SPEC',ADD=ADD
     'SB_HV': tplot,'*CMDCOUNTER *spb_*CMD_REC *spb_hkp_HV_CONF_FLAG *spb_hkp_???_DAC *spb_hkp_ADC_VMON_* *spb_hkp_ADC_IMON_* *spb_*SF1_ANODE_SPEC',ADD=ADD
-    'SC_HV': tplot,'spp_spc_hkp_ADC*'
+    'SC_HV': tplot,'spp_spc_hkp_ADC*',add=add
     'SE_LV': tplot,'*sp?_hkp_RIO*',ADD=ADD
     'SE_SPEC': tplot,'*spa_*ADC_VMON_HEM *spa_SF0_CNTS *spa_*SF1_ANODE_SPEC spp_spa_SF1_NRG_SPEC', ADD=ADD
     'SA_SPEC': tplot, '*spa_SF?_CNTS spp_spa_SF?_NRG_SPEC spp_spa_SF?_DEF_SPEC', ADD=ADD
@@ -81,11 +84,10 @@ if keyword_set(name) then begin
  ;   'SA_COVER': tplot, '*spa_*ACT*CVR* *spa_*ACTSTAT*FLAG *spa*CMD*REC', add = add
     'SWEM': tplot,'spp_swem_dhkp_*WRADDR APID spp_swem_dhkp_SW_CMDCOUNTER',add=add
     'SWEM2': tplot,'spp_swem_dhkp_SW_OSCPUUSAGE spp_event_log_BRATE spp_event_log_CODE spp_swem_dhkp_SW_SSRWRADDR APID spp_swem_dhkp_SW_CMDCOUNTER',add=add
-
     'TIMING': tplot,'spp_swem_timing_'+['TIME_DELTA','SAMPLE_MET_DELTA','DRIFT_DELTA','CLKS_PER_PPS_DELTA'],add=add
-    'TEMP': tplot,'*TEMP'
-    'TEMPS': tplot,'*ALL_TEMPS
-    'CRIT':tplot,'*SF1_ANODE_SPEC *ACC_? *22_C *HVOUT *RAIL*
+    'TEMP': tplot,'*TEMP',add=add
+    'TEMPS': tplot,'*ALL_TEMPS',add=add
+    'CRIT':tplot,'*SF1_ANODE_SPEC *ACC_? *22_C *HVOUT *RAIL*',add=add
     else:
   endcase
   wshow,i=0,0

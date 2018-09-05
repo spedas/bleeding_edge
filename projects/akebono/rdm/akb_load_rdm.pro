@@ -26,8 +26,8 @@
 ;   Yoshi Miyoshi (miyoshi at stelab.nagoya-u.ac.jp)
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2018-02-14 11:03:49 -0800 (Wed, 14 Feb 2018) $
-; $LastChangedRevision: 24704 $
+; $LastChangedDate: 2018-09-04 15:55:13 -0700 (Tue, 04 Sep 2018) $
+; $LastChangedRevision: 25724 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/akebono/rdm/akb_load_rdm.pro $
 ;-
 
@@ -39,7 +39,7 @@ function get_akb_rdm_txt_template
     datastart:long(1),$
     delimiter:byte(32),$
     missingvalue:float('NaN'),$
-    commentsymbol:';',$
+    commentsymbol:'',$
     fieldcount:long(11),$
     fieldtypes:long([7,7,4,4,4,4,4,4,4,4,4]), $
     fieldnames:['FIELD01', 'FIELD02', 'FIELD03', 'FIELD04', 'FIELD05', 'FIELD06', 'FIELD07', 'FIELD08', 'FIELD09', 'FIELD10', 'FIELD11'],$
@@ -66,22 +66,20 @@ PRO akb_load_rdm, $
   if keyword_set(no_download) then source.no_download = 1
   if keyword_set(downloadonly) then source.downloadonly = 1
   if keyword_set(verbose) then source.verbose=verbose
-  if keyword_set(trange) and n_elements(trange) eq 2 $
-      then tr = timerange(trange) $
-      else tr = timerange()
+  if keyword_set(trange) and n_elements(trange) eq 2 then timespan, time_double(trange)
+
 
   tmpl = get_akb_rdm_txt_template()
 
   pathformat = 'YYYY/sfyyMMDD'
-  
+
+  relpathnames = file_dailynames(file_format=pathformat,trange=trange)
+
   prefix_project = 'akb_'
   prefix_descriptor = 'rdm_'
   prefix = prefix_project + prefix_descriptor
 
-  relpathnames = file_dailynames(file_format=pathformat, trange=tr, /unique)
-  files = spd_download(remote_file=relpathnames, remote_path=source.remote_data_dir, $
-    local_path = source.local_data_dir, no_download = source.no_download, /last_version)
-  
+  files = file_retrieve(relpathnames, _extra=source, /last_version)
   if keyword_set(downloadonly) then return
 
   ;Exit unless data files are downloaded or found locally.

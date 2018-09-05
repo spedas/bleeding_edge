@@ -7,8 +7,8 @@
 ;   When "Save" is chosen, the "segSelect" structure will be used to update FOM/BAK structures.
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2018-08-30 13:59:01 -0700 (Thu, 30 Aug 2018) $
-; $LastChangedRevision: 25707 $
+; $LastChangedDate: 2018-09-01 11:47:35 -0700 (Sat, 01 Sep 2018) $
+; $LastChangedRevision: 25714 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_fomedit.pro $
 ;
 PRO eva_sitl_FOMedit_event, ev
@@ -94,7 +94,7 @@ end
 ; INPUT:
 ;   STATE: state for cw_sitl; this information is needed to call >eva_sitl_update_board, wid.state, 1
 PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv, proj=proj, $
-  fom_min_value = fom_min_value, fom_max_value=fom_max_value
+  fom_min_value = fom_min_value, fom_max_value=fom_max_value, basepos=basepos
   if xregistered('eva_sitl_FOMedit') ne 0 then return
   
   ;//// user setting  /////////////////////////////
@@ -213,7 +213,8 @@ PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv, proj=proj, $
   ;-----------------
   scr = get_screen_size()
   geo = widget_info(base,/geometry)
-  basepos = state.pref.EVA_BASEPOS
+  if undefined(basepos) then basepos = state.pref.EVA_BASEPOS 
+  ;basepos = state.pref.EVA_BASEPOS
   if basepos le 0 then begin
     xoffset = scr[0]*0.5-geo.xsize*0.5
   endif else begin

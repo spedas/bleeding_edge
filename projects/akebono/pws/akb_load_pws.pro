@@ -25,8 +25,8 @@
 ;   Tomo Hori (horit at stelab.nagoya-u.ac.jp)
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2018-02-14 11:03:49 -0800 (Wed, 14 Feb 2018) $
-; $LastChangedRevision: 24704 $
+; $LastChangedDate: 2018-09-04 15:55:13 -0700 (Tue, 04 Sep 2018) $
+; $LastChangedRevision: 25724 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/akebono/pws/akb_load_pws.pro $
 ;-
 PRO akb_load_pws, $
@@ -46,21 +46,17 @@ PRO akb_load_pws, $
   if keyword_set(downloadonly) then source.downloadonly=1
   if keyword_set(no_download) then source.no_download=1
   if keyword_set(verbose) then source.verbose =verbose
-  if keyword_set(trange) and n_elements(trange) eq 2 $
-      then tr = timerange(trange) $
-      else tr = timerange()
-      
+  if keyword_set(trange) and n_elements(trange) eq 2 then timespan, time_double(trange)
+  
   ;Relative path with wildcards for data files
   pathformat = 'YYYY/ak_h1_pws_YYYYMMDD_v01.cdf'
   
   ;Expand the wildcards in the relative file paths for designated
   ;time range, which is set by "timespan".
-  relpathnames = file_dailynames(file_format=pathformat, trange=tr, /unique)
-    
+  relpathnames = file_dailynames(file_format=pathformat)
+  
   ;Check the time stamps of data files and download  if they are newer
-  files = spd_download(remote_file=relpathnames, remote_path=source.remote_data_dir, $
-    local_path = source.local_data_dir, no_download = source.no_download, /last_version)
-    
+  files = file_retrieve(relpathnames, _extra=source, /last_version)
   if keyword_set(downloadonly) then return
   
   ;Exit unless data files are downloaded or found locally.

@@ -62,6 +62,8 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['com_spc_turnon'] =                  ['2018-08-30/04:00:00', '2018-08-30/12:00:00']
   fm_times['com_spc_turnon_fields_pre_setup'] = ['2018-08-30/05:26:00', '2018-08-30/05:31:00']
 
+  fm_times['deploy_v1234'] =                  ['2018-09-02/21:30:00', '2018-09-03/05:30:00']
+
 
   em_times = orderedhash()
 

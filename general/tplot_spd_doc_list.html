@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Aug 30 18:16:52 2018.<P>
+<STRONG>Last modified: </STRONG>Tue Sep  4 18:16:31 2018.<P>
  
 <HR>
  
@@ -25,6 +25,8 @@ This page was created by the IDL library routine
 <br>A sample crib sheet that explains how to use the &quot;TPLOT&quot; procedure.
 <LI><A HREF="#_TPLOT_EXAMPLE">_TPLOT_EXAMPLE</A>
 <br>A sample crib sheet that explains how to use the &quot;TPLOT&quot; procedure.
+<LI><A HREF="#AUTO_DOWNSAMPLE">AUTO_DOWNSAMPLE</A>
+<br>Downsamples spectral data to fit a given array and interpolates back
 <LI><A HREF="#BITPLOT">BITPLOT</A>
 <br>Plots 'ON' bits for housekeeping type data.
 <LI><A HREF="#CLEAN_SPIKES">CLEAN_SPIKES</A>
@@ -132,8 +134,42 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="AUTO_DOWNSAMPLE">
+<H2>AUTO_DOWNSAMPLE</H2></A>
+<A HREF="#BITPLOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ auto_downsample
+PURPOSE:
+ Downsamples spectral data to fit a given array and interpolates back
+ to the original. For specplot.pro in cases where there is a time
+ variation faster than the time resolution of device pixels. Not
+ done if n_elements(x_out) &gt; n_elements(x_in)/2.
+CALLING SEQUENCE:
+ spec_out = auto_downsample(spec_in, x_in, x_out)
+INPUT:
+ spec_in = a spectrogram, ntimesXnchannels, or nxXny
+ x_in = x coordinate for input
+ x_out = x coordinate for output, the default is to use this for
+         scaling, an interpolate the result back to x_in, the x_out
+         coordinates are not overwritten
+KEYWORDS:
+ downsample_interp2out = if set, then do not interpolate back to the
+                            input coordinates, but to the output coordinates
+HISTORY:
+ 31-aug-2018, jmm, jimm@ssl.berkeley.edu
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2018-09-04 15:23:09 -0700 (Tue, 04 Sep 2018) $
+ $LastChangedRevision: 25723 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/auto_downsample.pro $
+</PRE><P>
+<STRONG>(See <A href="tplot/auto_downsample.pro">general/tplot/auto_downsample.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="BITPLOT">
 <H2>BITPLOT</H2></A>
+<A HREF="#AUTO_DOWNSAMPLE">[Previous Routine]</A>
 <A HREF="#CLEAN_SPIKES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

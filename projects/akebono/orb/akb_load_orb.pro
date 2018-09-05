@@ -27,14 +27,9 @@ PRO akb_load_orb, source=source, $
   if keyword_set(no_server)    then source.no_server=1
   if keyword_set(no_download)  then source.no_download=1
   if keyword_set(verbose) then source.verbose=verbose
-  if keyword_set(trange) and n_elements(trange) eq 2 $
-      then tr = timerange(trange) $
-      else tr = timerange()
-      
-  relpathnames = file_dailynames(file_format=pathformat, trange=tr, /unique)
-  files = spd_download(remote_file=relpathnames, remote_path=source.remote_data_dir, $
-          local_path = source.local_data_dir, no_download = source.no_download, no_server = source.no_server, /last_version)
-  
+  if keyword_set(trange) and n_elements(trange) eq 2 then timespan, time_double(trange)
+
+  files = file_retrieve(relpathnames, _extra=source, /last_version)
   if keyword_set(downloadonly) then return 
 
   ;Exit unless data files are downloaded or found locally.

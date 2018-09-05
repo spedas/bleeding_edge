@@ -5,7 +5,7 @@ function get_akb_orb_txt_template
     datastart:long(1), $
     delimiter:byte(32), $
     missingvalue:float('NaN'), $
-    commentsymbol:';', $
+    commentsymbol:'', $
     fieldcount:long(40), $
     fieldtypes:long([ 3,  5,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  3,  4,  4,  4,  4,  4,  4,  4,  4,  4]), $
     fieldnames:['pass','ut', 'ksc_azm', 'ksc_elv', 'ksc_dis', 'ksc_ang', 'syo_azm', 'syo_elv', 'syo_dis', 'syo_ang', 'pra_azm', 'pra_elv', 'pra_dis', 'pra_ang', 'esr_azm', 'esr_elv', 'esr_dis', 'esr_ang', 'gclat', 'gclon', 'inv', 'fmlat', 'mlat', 'mlt', 'bmdl_x', 'bmdl_y', 'bmdl_z', 'xxlon_sc', 'xxlat_sc', 'aheight', 'lsun', 's_direc_x', 's_direc_y', 's_direc_z', 'sc_pos_x', 'sc_pos_y', 'sc_pos_z', 'sc_vel_x', 'sc_vel_y', 'sc_vel_z'], $

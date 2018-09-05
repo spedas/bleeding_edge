@@ -173,7 +173,7 @@ spp_swp_tplot,/setlim   ,'swem2'
 
 if 0 then begin
 ap = spp_apdat('swem_dig_hkp')
-ap.cdf_pathname = ''
+ap.cdf_pathname = time_string(tformat='psp/data/sci/sweap/swem/YYYY/MM/DD/swem_test_YYYYMMDD.cdf',trange[0])
 ap.cdf_create_file,trange=trange
 endif
 
