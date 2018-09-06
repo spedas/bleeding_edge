@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Sep  4 18:16:31 2018.<P>
+<STRONG>Last modified: </STRONG>Wed Sep  5 18:16:42 2018.<P>
  
 <HR>
  
@@ -232,16 +232,25 @@ FUNCTION:        MVN_SPICE_VALID_TIMES
 PURPOSE:         
                  Checks whether the currently loaded SPICE/kernels are valid for the specified time.
 
-INPUTS:          Time or time array to be checked.
+INPUTS:
+     tvar:       Time or time array to be checked.
 
-KEYWORDS:        None.
+KEYWORDS:
+     TOLERANCE:  Maximum time difference between input time and nearest valid SPICE coverage.
+                 Default = 120 sec.
+
+     SPKONLY:    Consider only SPK kernels.  Any missing CK information is ignored.
+                 Useful when spacecraft orientation is not needed.
+
+     BUSONLY:    Consider only C kernels for the spacecraft bus.  Any missing CK information
+                 for the APP is ignored.  Useful for instruments not mounted on the APP.
 
 CREATED BY:      Takuya Hara on 2018-07-11.
 
 LAST MODIFICATION:
- $LastChangedBy: hara $
- $LastChangedDate: 2018-07-16 13:08:30 -0700 (Mon, 16 Jul 2018) $
- $LastChangedRevision: 25483 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2018-09-05 11:54:32 -0700 (Wed, 05 Sep 2018) $
+ $LastChangedRevision: 25733 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/spice/mvn_spice_valid_times.pro $
 
 </PRE><P>
