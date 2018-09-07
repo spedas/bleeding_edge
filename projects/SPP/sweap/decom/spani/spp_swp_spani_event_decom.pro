@@ -1,4 +1,4 @@
-function spp_swp_spani_event_decom,ccsds, ptp_header=ptp_header, apdat=apdat
+function spp_swp_spani_event_decom,ccsds, ptp_header=ptp_header, apdat=apdat, source_dict=source_dict 
 
   if n_params() eq 0 then begin
     dprint,'Not working yet.'

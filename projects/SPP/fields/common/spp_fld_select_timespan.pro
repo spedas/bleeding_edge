@@ -64,6 +64,36 @@ function spp_fld_select_timespan_define_presets, fm_or_em
 
   fm_times['deploy_v1234'] =                  ['2018-09-02/21:30:00', '2018-09-03/05:30:00']
 
+  deploy_v1_time = time_double('2018-09-02/23:20:20')
+
+  fm_times['deploy_v1_10_min'] =        deploy_v1_time + [-60d, 600d]
+  fm_times['deploy_v1_01_min'] =        deploy_v1_time + [-10d, 60d]
+  fm_times['deploy_v1_15_sec'] =        deploy_v1_time + [-5d, 15d] 
+  
+  deploy_v2_time = time_double('2018-09-03/00:07:40')
+
+  fm_times['deploy_v2_10_min'] =        deploy_v2_time + [-60d, 600d]
+  fm_times['deploy_v2_01_min'] =        deploy_v2_time + [-10d, 60d]
+  fm_times['deploy_v2_15_sec'] =        deploy_v2_time + [-5d, 15d]
+
+  deploy_v3_time = time_double('2018-09-03/00:57:50')
+
+  fm_times['deploy_v3_10_min'] =        deploy_v2_time + [-60d, 600d]
+  fm_times['deploy_v3_01_min'] =        deploy_v2_time + [-10d, 60d]
+  fm_times['deploy_v3_15_sec'] =        deploy_v2_time + [-5d, 15d]
+
+  deploy_v4_time = time_double('2018-09-03/01:30:35')
+
+  fm_times['deploy_v4_10_min'] =        deploy_v2_time + [-60d, 600d]
+  fm_times['deploy_v4_01_min'] =        deploy_v2_time + [-10d, 60d]
+  fm_times['deploy_v4_15_sec'] =        deploy_v2_time + [-5d, 15d]
+
+  fm_times['rfs_default_hold'] = ['2018-09-03/01:49:00', '2018-09-03/02:12:00']
+
+  fm_times['rfs_electrostatic_wave'] = ['2018-09-03/04:20:00', '2018-09-03/04:40:00']
+
+  fm_times['support_sweap_turnon_rt']   = ['2018-09-05/20:00:00', '2018-09-06/02:00:00']
+
 
   em_times = orderedhash()
 
@@ -123,7 +153,8 @@ function spp_fld_select_timespan, input_timespan = input_timespan, $
   preset_times = preset_times, $
   fm_or_em = fm_or_em, $
   overall_preset_key = overall_preset_key, $
-  sub_presets = sub_presets
+  sub_presets = sub_presets, $
+  tlimit = tlimit
 
   if n_elements(fm_or_em) NE 1 then fm_or_em = 'FM'
 
@@ -245,7 +276,7 @@ function spp_fld_select_timespan, input_timespan = input_timespan, $
 
   ;print, time_string(ts)
 
-  timespan, ts
+  if n_elements(ts) GT 0 then tlimit, ts else timespan, ts
 
   return, ts
 

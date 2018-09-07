@@ -1,7 +1,7 @@
 ;
-;  $LastChangedBy: pulupa $
-;  $LastChangedDate: 2017-07-12 15:38:14 -0700 (Wed, 12 Jul 2017) $
-;  $LastChangedRevision: 23594 $
+;  $LastChangedBy: spfuser $
+;  $LastChangedDate: 2018-09-06 16:36:27 -0700 (Thu, 06 Sep 2018) $
+;  $LastChangedRevision: 25742 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_aeb2_hk/spp_fld_aeb2_hk_load_l1.pro $
 ;
 
@@ -22,8 +22,8 @@ pro spp_fld_aeb2_hk_load_l1, file, prefix = prefix
       options, name, 'colors', [6]
       options, name, 'ytitle', name.Remove(0, prefix.Strlen()-1)
 
-      options, name, 'psym', 4
-      options, name, 'symsize', 0.5
+      options, name, 'psym_lim', 100
+      options, name, 'symsize', 0.75
 
     endforeach
 

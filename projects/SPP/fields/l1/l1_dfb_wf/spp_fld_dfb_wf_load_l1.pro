@@ -154,6 +154,7 @@ if size(d, /type) EQ 8 then begin
   options, prefix + 'wav_data*', 'psym_lim', 200
   options, prefix + 'wav_data', 'ysubtitle', '[Counts]'
   options, prefix + 'wav_data_v', 'ysubtitle', '[V]'
+  options, prefix + 'wav_data_v', 'datagap', 60d
 
   if tnames(prefix + 'wav_sel_string') EQ '' then begin
 
