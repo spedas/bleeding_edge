@@ -61,7 +61,7 @@ if not keyword_set(d) then return
 
 n = d.nel
 w = where((d.ne_quality lt 100) or (n lt 0.) or (n gt 300.),nw)
-if nw ne 0 then n(w)=!values.f_nan
+if nw ne 0 then n[w]=!values.f_nan
 
 px = 'wi_wav_'
 

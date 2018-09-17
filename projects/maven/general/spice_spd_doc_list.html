@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Sep  6 18:16:49 2018.<P>
+<STRONG>Last modified: </STRONG>Sun Sep 16 18:16:39 2018.<P>
  
 <HR>
  
@@ -31,6 +31,8 @@ This page was created by the IDL library routine
 <br>Updates all spice kernels from NAIF, should be run from a cronjob
 <LI><A HREF="#MVN_SPICE_LOAD">MVN_SPICE_LOAD</A>
 <br>LOADS SPICE kernels and creates a few tplot variables
+<LI><A HREF="#MVN_SPICE_STAT">MVN_SPICE_STAT</A>
+<br>Reports the status of SPICE.  This is mainly a wrapper for spice_kernel_info(),
 <LI><A HREF="#MVN_SPICE_VALID_TIMES">MVN_SPICE_VALID_TIMES</A>
 <br>Checks whether the currently loaded SPICE/kernels are valid for the specified time.
 <br>
@@ -200,7 +202,7 @@ OUTPUT:
 <A NAME="MVN_SPICE_LOAD">
 <H2>MVN_SPICE_LOAD</H2></A>
 <A HREF="#MVN_SPICE_KERNELS_UPDATE">[Previous Routine]</A>
-<A HREF="#MVN_SPICE_VALID_TIMES">[Next Routine]</A>
+<A HREF="#MVN_SPICE_STAT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME: MVN_SPICE_LOAD
@@ -221,9 +223,42 @@ CALLING SEQUENCE:
 <STRONG>(See <A href="spice/mvn_spice_load.pro">projects/maven/general/spice/mvn_spice_load.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SPICE_STAT">
+<H2>MVN_SPICE_STAT</H2></A>
+<A HREF="#MVN_SPICE_LOAD">[Previous Routine]</A>
+<A HREF="#MVN_SPICE_VALID_TIMES">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_spice_stat
+PURPOSE:
+  Reports the status of SPICE.  This is mainly a wrapper for spice_kernel_info(),
+  providing a concise summary of the key information.
+
+USAGE:
+  mvn_spice_stat
+
+INPUTS:
+
+KEYWORDS:
+
+    LIST:          If set, list the kernels in use.
+
+    INFO:          Returns an array of structures providing detailed information
+                   about each kernel, including coverage in time.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2018-09-16 13:17:25 -0700 (Sun, 16 Sep 2018) $
+ $LastChangedRevision: 25815 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/spice/mvn_spice_stat.pro $
+
+CREATED BY:    David L. Mitchell  09/14/18
+</PRE><P>
+<STRONG>(See <A href="spice/mvn_spice_stat.pro">projects/maven/general/spice/mvn_spice_stat.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SPICE_VALID_TIMES">
 <H2>MVN_SPICE_VALID_TIMES</H2></A>
-<A HREF="#MVN_SPICE_LOAD">[Previous Routine]</A>
+<A HREF="#MVN_SPICE_STAT">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 

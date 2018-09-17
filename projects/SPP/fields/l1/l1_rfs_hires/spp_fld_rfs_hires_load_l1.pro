@@ -112,7 +112,7 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   ; TODO: Replace x3 (now it's in there to compare with LFR which is summed
   ; across 3 bins / smoothed
 
-  converted_data_spec0_ch0 = rfs_float(rfs_dat_spec0_ch0.y) * 3
+  converted_data_spec0_ch0 = spp_fld_rfs_float(rfs_dat_spec0_ch0.y) * 3
 
   ; TODO replace hard coded gain value w/calibrated
 

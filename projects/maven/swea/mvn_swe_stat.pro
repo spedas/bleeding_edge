@@ -18,8 +18,8 @@
 ;    SILENT:        Shhhh.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-08-06 14:15:28 -0700 (Mon, 06 Aug 2018) $
-; $LastChangedRevision: 25592 $
+; $LastChangedDate: 2018-09-14 14:42:46 -0700 (Fri, 14 Sep 2018) $
+; $LastChangedRevision: 25805 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_stat.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12

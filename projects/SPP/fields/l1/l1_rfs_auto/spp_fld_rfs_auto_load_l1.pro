@@ -182,8 +182,17 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
       options, prefix + raw_spec_i + '_converted', 'ylog', 1
       options, prefix + raw_spec_i + '_converted', 'zlog', 1
       options, prefix + raw_spec_i + '_converted', 'ztitle', '[V2/Hz]'
-      options, prefix + raw_spec_i + '_converted', 'yrange', $
-        [min(rfs_freqs.reduced_freq), max(rfs_freqs.reduced_freq)]
+
+      ;      options, prefix + raw_spec_i + '_converted', 'yrange', $
+      ;        [min(rfs_freqs.reduced_freq), max(rfs_freqs.reduced_freq)]
+      if lfr_flag then begin
+        options, prefix + raw_spec_i + '_converted', $
+          'yrange', [1.e4, 2.e6]
+      endif else begin
+        options, prefix + raw_spec_i + '_converted', $
+          'yrange', [1.e6, 2.e7]
+      endelse
+
       options, prefix + raw_spec_i + '_converted', 'ystyle', 1
       options, prefix + raw_spec_i + '_converted', 'datagap', 60
       options, prefix + raw_spec_i + '_converted', 'panel_size', 2.
@@ -203,7 +212,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
           ;'SRC:' + strcompress(string(ch_src_dat.y[0]))
           if size(ch_src_dat.y[0], /type) NE 7 then src_string = 'SRC ' else $
             src_string = ''
-          
+
           ytitle = ytitle + '!C' + src_string + strcompress(string(ch_src_dat.y[0]))
         endif
       endif

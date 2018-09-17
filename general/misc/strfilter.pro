@@ -126,7 +126,11 @@ endelse    ; end of old version
 
 
 if keyword_set(negate) then ret = (ret eq 0)
-ind = where(ret,count,null=null)
+if n_elements(null) ne 0 then begin  
+  ind = where(ret,count, null=null)
+endif else begin
+  ind = where(ret,count)
+endelse
 nstr = count eq 0 ?  '' : str[ind]
 if keyword_set(retstr) then return, nstr
 if keyword_set(index)  then return, ind

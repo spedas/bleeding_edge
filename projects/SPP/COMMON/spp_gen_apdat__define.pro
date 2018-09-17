@@ -14,7 +14,11 @@ self.apid  =apid
 self.dlevel = 2
 ;self.sort_flag = 1
 self.last_data_p = ptr_new(!null)
-if keyword_set(name) then self.name  =name
+if keyword_set(name) then begin
+  self.name  =name
+;  insttype = strsplit(self.name
+;  self.cdf_pathname = prefix + 'sweap/spx/
+endif
 self.ccsds_last = ptr_new(!null)
 self.data = dynamicarray(name=self.name)
 if debug(3) and keyword_set(ex) then dprint,ex,phelp=2,dlevel=2
@@ -185,15 +189,17 @@ pro spp_gen_apdat::finish,ttags=ttags
   if self.npkts ne 0 then self.print ,dlevel=3,'finish'
   verbose=1
   datarray = self.data.array
-  if keyword_set(self.sort_flag) then begin
+  if keyword_set(ttags) eq 0 then ttags = self.ttags
+  if keyword_set(self.sort_flag) && keyword_set(datarray) then begin
     s = sort(datarray.time)
     datarray = datarray[s]
+    self.data.array = datarray
   endif
-  if keyword_set(ttags) eq 0 then ttags = self.ttags
   if keyword_set(datarray) && keyword_set(self.tname) then  begin
     store_data,self.tname,data=datarray, tagnames=ttags,  gap_tag='GAP',verbose=verbose
     options,self.tname+'*_BITS',tplot_routine='bitplot'
   endif
+  
   self.process_time = systime(1)
 end
  
@@ -205,8 +211,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-06-06 04:49:16 -0700 (Wed, 06 Jun 2018) $
-; $LastChangedRevision: 25330 $
+; $LastChangedDate: 2018-09-14 17:17:54 -0700 (Fri, 14 Sep 2018) $
+; $LastChangedRevision: 25813 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -223,8 +229,8 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-  sw_hash['svn_changedate'] = '$LastChangedDate: 2018-06-06 04:49:16 -0700 (Wed, 06 Jun 2018) $'
-  sw_hash['svn_revision '] = '$LastChangedRevision: 25330 $'
+  sw_hash['svn_changedate'] = '$LastChangedDate: 2018-09-14 17:17:54 -0700 (Fri, 14 Sep 2018) $'
+  sw_hash['svn_revision '] = '$LastChangedRevision: 25813 $'
 
   return,sw_hash
 end
@@ -242,10 +248,10 @@ function spp_gen_apdat::cdf_global_attributes
   global_att['Data_version'] = 'v00'
   global_att['TEXT'] = 'PSP'
   global_att['MODS'] = 'Revision 0'
-  global_att['Logical_file_id'] =  self.name+'_test.cdf'  ; 'mvn_sep_l2_s1-cal-svy-full_20180201_v04_r02.cdf'
+  ;global_att['Logical_file_id'] =  self.name+'_test.cdf'  ; 'mvn_sep_l2_s1-cal-svy-full_20180201_v04_r02.cdf'
   global_att['dirpath'] = './'
-  global_att['Logical_source'] = 'SEP.cal.spec_svy'
-  global_att['Logical_source_description'] = 'DERIVED FROM: PSP SWEAP'  ; SEP (Solar Energetic Particle) Instrument
+  ;global_att['Logical_source'] = '.cal.spec_svy'
+  ;global_att['Logical_source_description'] = 'DERIVED FROM: PSP SWEAP'  ; SEP (Solar Energetic Particle) Instrument
   global_att['Sensor'] = ' '   ;'SEP1'
   global_att['PI_name'] = 'J. Kasper'
   global_att['PI_affiliation'] = 'U. Michigan'
@@ -267,8 +273,8 @@ function spp_gen_apdat::cdf_global_attributes
 ;  global_att['SW_RUNTIME'] =  time_string(systime(1)) 
 ;  global_att['SW_RUNBY'] = 
 ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-06-06 04:49:16 -0700 (Wed, 06 Jun 2018) $'
-;  global_att['SVN_REVISION'] = '$LastChangedRevision: 25330 $'
+;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-09-14 17:17:54 -0700 (Fri, 14 Sep 2018) $'
+;  global_att['SVN_REVISION'] = '$LastChangedRevision: 25813 $'
 
 return,global_att
 end
@@ -407,6 +413,7 @@ void = {spp_gen_apdat, $
   save_flag: 0b, $
   sort_flag: 0b, $
   ignore_flag: 0b, $
+  cdf_flag: 0b,  $
   routine:  '', $
   tname: '',  $
   ttags: '',  $

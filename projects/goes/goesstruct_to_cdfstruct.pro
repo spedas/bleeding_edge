@@ -15,8 +15,8 @@
 ;         
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-10 12:05:17 -0700 (Tue, 10 Oct 2017) $
-; $LastChangedRevision: 24139 $
+; $LastChangedDate: 2018-09-13 12:25:51 -0700 (Thu, 13 Sep 2018) $
+; $LastChangedRevision: 25786 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goesstruct_to_cdfstruct.pro $
 ;-
 function GOESstruct_to_cdfstruct, netCDFi
@@ -31,15 +31,18 @@ function GOESstruct_to_cdfstruct, netCDFi
         ; find the GOES spacecraft id
         satellite_id = strsplit(netCDFi.g_attributes.satellite_id, '^GOES-', /regex, /extract)
         prefix = 'g'+satellite_id[0]
-        
+
         case netCDFi.g_attributes.instrument of
             'Magnetometer': instru = 'fgm'
             'Electron,Proton,Alpha Detector': instru = 'epead'
             'Energetic Particle Sensor': instru = 'eps'
             'Magnetospheric Electron Detector': instru = 'maged'
             'Magnetospheric Proton Detector': instru = 'magpd'
+            'Magnetospheric Electron Detector (MAGED)': instru = 'maged'
+            'Magnetospheric Proton Detector (MAGPD)': instru = 'magpd'
             'High energy Proton and Alpha Detector': instru = 'hepad'
             'X-ray Sensor': instru = 'xray'
+            else:  instru = 'unknown'
         endcase
         process_level = netCDFi.g_attributes.process_level
         title = netCDFi.g_attributes.title

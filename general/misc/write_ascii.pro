@@ -12,7 +12,7 @@ pro write_ascii,array,filename,form
 ;write_ascii,[[ct.value],[Bx_sc.value],[By_sc.value],[Bz_sc.value]],'minvar.dat','(f13.3,3(f8.3))'
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 outarray=transpose(array)
-nrows=long(n_elements(outarray(0,*)))
+nrows=long(n_elements(outarray[0,*]))
 if (nrows gt 1000000) then print,"nrows to write in ascii file may be too large..., nrows=",nrows
 if (nrows gt 32766) then begin
   form2add=string(32766)+"("+form+",/),"

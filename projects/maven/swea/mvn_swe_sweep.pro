@@ -5,8 +5,12 @@
 ;  commands, same checksum).  This table is combined with calibration data to 
 ;  determine energy sweep and deflection angle.
 ;
-;  Six predefined tables are provided via keyword TABNUM.  These correspond to 
-;  tables as loaded into flight software.
+;  Eight pre-defined tables are provided via keyword TABNUM.  Tables 1-4 are 
+;  obsolete.  Tables 5 and 6 correspond to tables as loaded into flight software
+;  during commissioning in October 2014.  Table 8 will be loaded into flight 
+;  software as part of an EEPROM update in late August 2018.  Table 7 will be 
+;  loaded via CDI commands, since there is no contiguous block of PFDPU memory 
+;  large enough to hold the table.
 ;
 ;KEYWORDS:
 ;       RESULT:       Named variable to hold result structure: analyzer, deflector,
@@ -106,8 +110,8 @@
 ;                        2 = SWEA native format (2-byte words)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-08-17 09:59:22 -0700 (Fri, 17 Aug 2018) $
-; $LastChangedRevision: 25655 $
+; $LastChangedDate: 2018-09-09 18:00:36 -0700 (Sun, 09 Sep 2018) $
+; $LastChangedRevision: 25759 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sweep.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-01-03

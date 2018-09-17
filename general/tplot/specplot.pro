@@ -50,9 +50,9 @@
 ;
 ;See Also:  "XLIM", "YLIM", "ZLIM",  "OPTIONS",  "TPLOT", "DRAW_COLOR_SCALE"
 ;Author:  Davin Larson,  Space Sciences Lab
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-06-29 15:26:21 -0700 (Thu, 29 Jun 2017) $
-; $LastChangedRevision: 23528 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2018-09-07 13:24:55 -0700 (Fri, 07 Sep 2018) $
+; $LastChangedRevision: 25744 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/specplot.pro $
 ;-
 pro specplot,x,y,z,limits=lim,data=data,overplot=overplot,overlay=overlay,$
@@ -431,6 +431,17 @@ for j=0L,gapcnt do begin
         xp = findgen(nxpix)*(xcrange[1]-xcrange[0])/(nxpix-1) + xcrange[0]
         xs = interp(findgen(nx),x1,xp )
         if keyword_set(x_no_interp) then  xs = round(xs)
+;test for auto_downsample
+        str_element,opt,'auto_downsample',value=a_downsample
+        if keyword_set(a_downsample) then begin
+           if keyword_set(zlog) then begin
+              z11 = 10.0^(z1)
+              z11 = auto_downsample(z11, findgen(nx), xs)
+              z1 = alog10(temporary(z11))
+           endif else begin
+              z11 = auto_downsample(z1, findgen(nx), xs) & z1 = temporary(z11)
+           endelse
+        endif
         image = interpolate(float(z1),xs,ys,missing = !values.f_nan,/grid)  ; using float( ) to fix IDL bug.
 
       ;  str_element,opt,'roi',roi

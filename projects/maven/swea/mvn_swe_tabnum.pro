@@ -2,10 +2,16 @@
 ;FUNCTION:   mvn_swe_tabnum
 ;PURPOSE:
 ;  Given a checksum, determines the corresponding table number.  Only returns
-;  table numbers >= 3.  The first two tables are rarely or never used.
+;  table numbers >= 3.
 ;
-;  Six predefined tables are provided via keyword TABNUM.  These correspond to 
-;  tables as loaded into flight software.
+;  Eight tables are defined.  Tables 1-4 are obsolete.  Tables 5 and 6 
+;  correspond to tables as loaded into flight software during commissioning 
+;  in October 2014.  Table 8 will be loaded into flight software as part of 
+;  an EEPROM update in late August 2018.  Table 7 will be loaded via CDI 
+;  commands, since there is no contiguous block of PFDPU memory large enough 
+;  to hold the table.
+;
+;  Tables 7 and 8 both have a checksum of zero.  Use energy to resolve.
 ;
 ;        1 : Xmax = 6., Vrange = [0.75, 750.], V0scale = 1., /old_def
 ;            primary table for ATLO and Inner Cruise (first turnon)
@@ -41,6 +47,16 @@
 ;               Chksum = '82'X
 ;               GSEOS svn rev 8482
 ;
+;        7 : Xmax = 5.5, Erange = [200.,200.], V0scale = 0.
+;            Hires 32-Hz at 200 eV
+;              -59 < Elev < +61 ; E = 200
+;               Chksum = '00'X
+;
+;        8 : Xmax = 5.5, Erange = [50.,50.], V0scale = 0.
+;            Hires 32-Hz at 50 eV
+;              -59 < Elev < +61 ; E = 50
+;               Chksum = '00'X
+;
 ;USAGE:
 ;  tabnum = mvn_swe_tabnum(i)
 ;
@@ -51,8 +67,8 @@
 ;       INVERSE:      Given a table number, return its checksum.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-04-06 16:06:36 -0700 (Fri, 06 Apr 2018) $
-; $LastChangedRevision: 25019 $
+; $LastChangedDate: 2018-09-09 18:02:35 -0700 (Sun, 09 Sep 2018) $
+; $LastChangedRevision: 25761 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_tabnum.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-01-03

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Sep  6 18:16:49 2018.<P>
+<STRONG>Last modified: </STRONG>Sun Sep 16 18:16:39 2018.<P>
  
 <HR>
  
@@ -589,8 +589,8 @@ KEYWORDS:
      NPTS  : A named variable to hold the number of data points.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-03-16 10:41:25 -0700 (Fri, 16 Mar 2018) $
- $LastChangedRevision: 24895 $
+ $LastChangedDate: 2018-09-09 18:03:30 -0700 (Sun, 09 Sep 2018) $
+ $LastChangedRevision: 25762 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_load.pro $
 
 CREATED BY:	David L. Mitchell
@@ -669,10 +669,15 @@ INPUTS:
                       only one element.  Default = 1.
 
 KEYWORDS:
+       DODEN:         Calculate densities.  Default = 1 (yes).
+
+       DOTEMP:        Calculate temperatures.  Default = 1 (yes).
+
+       DOVEL:         Calculate temperatures.  Default = 1 (yes).
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-02-27 17:55:49 -0800 (Tue, 27 Feb 2018) $
- $LastChangedRevision: 24795 $
+ $LastChangedDate: 2018-09-12 17:08:19 -0700 (Wed, 12 Sep 2018) $
+ $LastChangedRevision: 25781 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 
 CREATED BY:    David L. Mitchell
@@ -701,8 +706,8 @@ CREATED BY:      D. L. Mitchell.
 
 LAST MODIFICATION:
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-01-09 15:51:28 -0800 (Tue, 09 Jan 2018) $
- $LastChangedRevision: 24494 $
+ $LastChangedDate: 2018-09-09 18:05:59 -0700 (Sun, 09 Sep 2018) $
+ $LastChangedRevision: 25764 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_struct.pro $
 
 </PRE><P>
@@ -726,8 +731,8 @@ INPUTS:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-02-27 17:57:49 -0800 (Tue, 27 Feb 2018) $
- $LastChangedRevision: 24797 $
+ $LastChangedDate: 2018-09-09 18:05:05 -0700 (Sun, 09 Sep 2018) $
+ $LastChangedRevision: 25763 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_tplot.pro $
 
 CREATED BY:	David L. Mitchell
@@ -856,8 +861,8 @@ KEYWORDS:
     SUCCESS:       Processing success flag.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-07-13 15:49:47 -0700 (Fri, 13 Jul 2018) $
- $LastChangedRevision: 25471 $
+ $LastChangedDate: 2018-09-13 14:01:10 -0700 (Thu, 13 Sep 2018) $
+ $LastChangedRevision: 25792 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 
 CREATED BY:    David L. Mitchell
@@ -1137,12 +1142,15 @@ INPUTS:
 
 KEYWORDS:
 
+    FINE:          Calculate moments with fine survey.  This provides better values
+                   in the upstream solar wind.
+
     PANS:          Named variable to hold an array of
                    the tplot variable(s) created.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-01-19 14:47:21 -0800 (Fri, 19 Jan 2018) $
- $LastChangedRevision: 24551 $
+ $LastChangedDate: 2018-09-12 17:09:38 -0700 (Wed, 12 Sep 2018) $
+ $LastChangedRevision: 25783 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_addswi.pro $
 
 CREATED BY:    David L. Mitchell  03/18/14
@@ -2454,8 +2462,8 @@ KEYWORDS:
                       to a higher number to see more diagnostic messages.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-06-11 14:11:23 -0700 (Mon, 11 Jun 2018) $
- $LastChangedRevision: 25348 $
+ $LastChangedDate: 2018-09-14 15:17:55 -0700 (Fri, 14 Sep 2018) $
+ $LastChangedRevision: 25810 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 
 CREATED BY:    David L. Mitchell  04-25-13
@@ -4558,7 +4566,7 @@ KEYWORDS:
                    or the current value of trange_full.  Otherwise, ask the user
                    for permission to clear and reload.
 
-    STATUS:        Don't load anything; just list kernels in use.
+    STATUS:        Don't load anything; just give status.
 
     INFO:          Returns an array of structures providing detailed information
                    about each kernel, including coverage in time.
@@ -4567,8 +4575,8 @@ KEYWORDS:
                    Default is current value of swe_verbose.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-04-26 11:23:55 -0700 (Thu, 26 Apr 2018) $
- $LastChangedRevision: 25125 $
+ $LastChangedDate: 2018-09-16 13:19:20 -0700 (Sun, 16 Sep 2018) $
+ $LastChangedRevision: 25816 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_spice_init.pro $
 
 CREATED BY:    David L. Mitchell  09/18/13
@@ -4601,8 +4609,8 @@ KEYWORDS:
     SILENT:        Shhhh.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-08-06 14:15:28 -0700 (Mon, 06 Aug 2018) $
- $LastChangedRevision: 25592 $
+ $LastChangedDate: 2018-09-14 14:42:46 -0700 (Fri, 14 Sep 2018) $
+ $LastChangedRevision: 25805 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_stat.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -4658,6 +4666,8 @@ KEYWORDS:
 
        ORB:          Include the orbit number along the horizontal axis.
 
+       SPICE:        Create a panel showing spice coverage.
+
        VNORM:        Subtract nominal values from all housekeeping voltages and plot all
                      voltage differences in a single panel.  Default = 1 (yes).
 
@@ -4707,8 +4717,8 @@ KEYWORDS:
        BURST:        Plot a color bar showing PAD burst coverage.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-05-04 16:12:16 -0700 (Fri, 04 May 2018) $
- $LastChangedRevision: 25169 $
+ $LastChangedDate: 2018-09-16 13:20:05 -0700 (Sun, 16 Sep 2018) $
+ $LastChangedRevision: 25817 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -4808,8 +4818,12 @@ PURPOSE:
   commands, same checksum).  This table is combined with calibration data to 
   determine energy sweep and deflection angle.
 
-  Six predefined tables are provided via keyword TABNUM.  These correspond to 
-  tables as loaded into flight software.
+  Eight pre-defined tables are provided via keyword TABNUM.  Tables 1-4 are 
+  obsolete.  Tables 5 and 6 correspond to tables as loaded into flight software
+  during commissioning in October 2014.  Table 8 will be loaded into flight 
+  software as part of an EEPROM update in late August 2018.  Table 7 will be 
+  loaded via CDI commands, since there is no contiguous block of PFDPU memory 
+  large enough to hold the table.
 
 KEYWORDS:
        RESULT:       Named variable to hold result structure: analyzer, deflector,
@@ -4909,8 +4923,8 @@ KEYWORDS:
                         2 = SWEA native format (2-byte words)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-08-17 09:59:22 -0700 (Fri, 17 Aug 2018) $
- $LastChangedRevision: 25655 $
+ $LastChangedDate: 2018-09-09 18:00:36 -0700 (Sun, 09 Sep 2018) $
+ $LastChangedRevision: 25759 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sweep.pro $
 
 CREATED BY:	David L. Mitchell  2014-01-03
@@ -4972,10 +4986,16 @@ CREATED BY:    David L. Mitchell
 FUNCTION:   mvn_swe_tabnum
 PURPOSE:
   Given a checksum, determines the corresponding table number.  Only returns
-  table numbers &gt;= 3.  The first two tables are rarely or never used.
+  table numbers &gt;= 3.
 
-  Six predefined tables are provided via keyword TABNUM.  These correspond to 
-  tables as loaded into flight software.
+  Eight tables are defined.  Tables 1-4 are obsolete.  Tables 5 and 6 
+  correspond to tables as loaded into flight software during commissioning 
+  in October 2014.  Table 8 will be loaded into flight software as part of 
+  an EEPROM update in late August 2018.  Table 7 will be loaded via CDI 
+  commands, since there is no contiguous block of PFDPU memory large enough 
+  to hold the table.
+
+  Tables 7 and 8 both have a checksum of zero.  Use energy to resolve.
 
         1 : Xmax = 6., Vrange = [0.75, 750.], V0scale = 1., /old_def
             primary table for ATLO and Inner Cruise (first turnon)
@@ -5011,6 +5031,16 @@ PURPOSE:
                Chksum = '82'X
                GSEOS svn rev 8482
 
+        7 : Xmax = 5.5, Erange = [200.,200.], V0scale = 0.
+            Hires 32-Hz at 200 eV
+              -59 &lt; Elev &lt; +61 ; E = 200
+               Chksum = '00'X
+
+        8 : Xmax = 5.5, Erange = [50.,50.], V0scale = 0.
+            Hires 32-Hz at 50 eV
+              -59 &lt; Elev &lt; +61 ; E = 50
+               Chksum = '00'X
+
 USAGE:
   tabnum = mvn_swe_tabnum(i)
 
@@ -5021,8 +5051,8 @@ KEYWORDS:
        INVERSE:      Given a table number, return its checksum.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-04-06 16:06:36 -0700 (Fri, 06 Apr 2018) $
- $LastChangedRevision: 25019 $
+ $LastChangedDate: 2018-09-09 18:02:35 -0700 (Sun, 09 Sep 2018) $
+ $LastChangedRevision: 25761 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_tabnum.pro $
 
 CREATED BY:	David L. Mitchell  2014-01-03

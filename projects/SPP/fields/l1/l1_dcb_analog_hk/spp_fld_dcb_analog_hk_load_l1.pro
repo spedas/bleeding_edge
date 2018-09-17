@@ -1,7 +1,7 @@
 ;
-;  $LastChangedBy: pulupa $
-;  $LastChangedDate: 2017-07-12 15:38:14 -0700 (Wed, 12 Jul 2017) $
-;  $LastChangedRevision: 23594 $
+;  $LastChangedBy: spfuser $
+;  $LastChangedDate: 2018-09-07 15:53:01 -0700 (Fri, 07 Sep 2018) $
+;  $LastChangedRevision: 25747 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_dcb_analog_hk/spp_fld_dcb_analog_hk_load_l1.pro $
 
 pro spp_fld_dcb_analog_hk_load_l1, file, prefix = prefix
@@ -23,8 +23,9 @@ pro spp_fld_dcb_analog_hk_load_l1, file, prefix = prefix
       options, name, 'colors', [2]
       options, name, 'ytitle', name.Remove(0, prefix.Strlen()-1)
 
-      options, name, 'psym', 4
-      options, name, 'symsize', 0.5
+      ;options, name, 'psym', 4
+      options, name, 'psym_lim', 100
+      options, name, 'symsize', 0.75
 
     endfor
 

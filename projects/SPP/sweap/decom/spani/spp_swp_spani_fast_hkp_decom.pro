@@ -52,7 +52,7 @@ function spp_swp_spani_fast_hkp_decom,ccsds,ptp_header=ptp_header,apdat=apdat,pl
         ;time:       ptp_header.ptp_time, $
         time:       time, $
         met:        ccsds.met,  $
-        delay_time: ptp_header.ptp_time - ccsds.time, $
+        delay_time:  0d, $   needs fixing! ;  ptp_header.ptp_time - ccsds.time, $
         seqn:   ccsds.seqn, $
 
         ;; 16 bits x offset 16 bytes x 512 values

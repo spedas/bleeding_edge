@@ -56,11 +56,11 @@ ga_names=tag_names(cdf_structure.g_attributes)
 ;make names ISTP compliant
 ga=strupcase(strmid(ga_names,0,1))+strlowcase(strmid(ga_names,1))
 index=where(ga eq 'Text' or ga eq 'Title' or ga eq 'Mods' or ga eq 'Link_text' or ga eq 'Link_title' or ga eq 'Http_link')
-if index(0) ne -1 then ga(index)=strupcase(ga(index))
+if index[0] ne -1 then ga[index]=strupcase(ga[index])
 index=where(ga eq 'Pi_name' or ga eq 'Pi_affiliation')
-if index(0) ne -1 then ga(index)=strupcase(strmid(ga_names(index),0,2))+strlowcase(strmid(ga_names(index),2))
+if index[0] ne -1 then ga[index]=strupcase(strmid(ga_names[index],0,2))+strlowcase(strmid(ga_names[index],2))
 index=where(ga eq 'Adid_ref')
-if index(0) ne -1 then ga(index)=strupcase(strmid(ga_names(index),0,4))+strlowcase(strmid(ga_names(index),4))
+if index[0] ne -1 then ga[index]=strupcase(strmid(ga_names[index],0,4))+strlowcase(strmid(ga_names[index],4))
 ga_names_istp_compliant=ga
 
 ;update logical_file_id (these checks are copied from write_data_to_cdf in IDLmakecdf)
@@ -97,13 +97,13 @@ for i=0,cdf_structure.nv-1 do begin
 	   data_dimen=size(*cdf_structure.vars[i].dataptr,/dimen)
 	   dimen_data_dimen=size(data_dimen,/dimen)
 	   if (cdf_structure.vars[i].recvary eq 1) then begin
-	     if dimen_data_dimen(0) eq 1 then data_dimen=0 else data_dimen=data_dimen(1,*)
+	     if dimen_data_dimen[0] eq 1 then data_dimen=0 else data_dimen=data_dimen[1,*]
 	   endif else data_dimen=data_dimen
 	endif else begin
 	   str_element,cdf_structure.vars[i],'d',success=success
 	   if success eq 1 then begin
 	      index=where(cdf_structure.vars[i].d gt 0)
-	      if index(0) ne -1 then data_dimen=cdf_structure.vars[i].d(index) else data_dimen=0
+	      if index[0] ne -1 then data_dimen=cdf_structure.vars[i].d[index] else data_dimen=0
 	   endif else data_dimen=0
 	endelse
 	
@@ -134,11 +134,11 @@ for i=0,cdf_structure.nv-1 do begin
 
 	for j=0,n_elements(va_names)-1 do begin
 	
-		att_exists=cdf_attexists(id,va_names(j),/zvariable)
-		if (att_exists eq 0) then dummy=cdf_attcreate(id,va_names(j),/variable_scope)
-		if cdf_structure.vars[i].datatype eq 'CDF_EPOCH' && ((va_names(j) eq 'FILLVAL') || (va_names(j) eq 'VALIDMIN') || (va_names(j) eq 'VALIDMAX')) then begin
-		  cdf_attput,id,va_names(j),cdf_structure.vars[i].name,va.(j),/zvariable,/cdf_epoch
-		endif else cdf_attput,id,va_names(j),cdf_structure.vars[i].name,va.(j),/zvariable
+		att_exists=cdf_attexists(id,va_names[j],/zvariable)
+		if (att_exists eq 0) then dummy=cdf_attcreate(id,va_names[j],/variable_scope)
+		if cdf_structure.vars[i].datatype eq 'CDF_EPOCH' && ((va_names[j] eq 'FILLVAL') || (va_names[j] eq 'VALIDMIN') || (va_names[j] eq 'VALIDMAX')) then begin
+		  cdf_attput,id,va_names[j],cdf_structure.vars[i].name,va.(j),/zvariable,/cdf_epoch
+		endif else cdf_attput,id,va_names[j],cdf_structure.vars[i].name,va.(j),/zvariable
 			
 	endfor  ; j
 	

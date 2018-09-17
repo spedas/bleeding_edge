@@ -177,4 +177,11 @@ ap.cdf_pathname = time_string(tformat='psp/data/sci/sweap/swem/YYYY/MM/DD/swem_t
 ap.cdf_create_file,trange=trange
 endif
 
+if 0 then begin
+  options,'*SPEC',spec=1
+  zlim,'spp_sp[ab]_SF1_NRG_SPEC', 1,10000,1
+endif
+
+
+
 end

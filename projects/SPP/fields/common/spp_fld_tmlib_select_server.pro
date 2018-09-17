@@ -4,13 +4,14 @@ pro spp_fld_tmlib_select_server, server, server_string = server_string, $
   if not keyword_set(server) then begin
 
     select_server_desc = [ $
-      '0, LABEL, Select RFS server, CENTER', $
+      '0, LABEL, Select TMlib server, CENTER', $
       '0, BUTTON, ' + $
-      '128.32.147.120 - EM server (rflab.ssl.berkeley.edu)|' + $
-      '128.32.147.149 - FM server (spffmdb.ssl.berkeley.edu)|' + $
-      '192.168.0.202  - EM server (accessed from inside 214)|' + $
-      '192.168.0.203  - FM server (accessed from inside 214)|' + $
-      '128.244.182.117  - FM server (I&T),' + $
+      '128.32.147.120  - EM server (rflab.ssl.berkeley.edu)|' + $
+      '128.32.147.149  - FM server (spffmdb.ssl.berkeley.edu)|' + $
+      '192.168.0.202   - EM server (accessed from inside 214)|' + $
+      '192.168.0.203   - FM server (accessed from inside 214)|' + $
+      '128.244.182.117 - FM server (I&T)|' + $
+      '128.32.13.188   - SPFSOC2 (test),' + $
       'EXCLUSIVE,SET_VALUE=0, TAG=server_select', $
       '2, BUTTON, OK, QUIT, TAG=ok']
 
@@ -22,6 +23,7 @@ pro spp_fld_tmlib_select_server, server, server_string = server_string, $
       2:server = '192.168.0.202'
       3:server = '192.168.0.203'
       4:server = '128.244.182.117'
+      5:server = '128.32.13.188'
     endcase
 
     case server_form_str.server_select of
@@ -30,6 +32,7 @@ pro spp_fld_tmlib_select_server, server, server_string = server_string, $
       2:server_string = '192.168.0.202 (EM server/LAN)'
       3:server_string = '192.168.0.203 (FM server/LAN)'
       4:server_string = '128.244.182.117 (IT server/LAN)'
+      5:server_string = '128.32.13.188 (SPFSOC2)'
     endcase
 
     case server_form_str.server_select of
@@ -38,6 +41,7 @@ pro spp_fld_tmlib_select_server, server, server_string = server_string, $
       2:server_dir = 'EM_ucb'
       3:server_dir = 'FM_ucb'
       4:server_dir = 'FM_apl'
+      5:server_dir = 'FM_ucb'
     endcase
 
   endif

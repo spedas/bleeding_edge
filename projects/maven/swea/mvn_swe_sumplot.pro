@@ -17,6 +17,8 @@
 ;
 ;       ORB:          Include the orbit number along the horizontal axis.
 ;
+;       SPICE:        Create a panel showing spice coverage.
+;
 ;       VNORM:        Subtract nominal values from all housekeeping voltages and plot all
 ;                     voltage differences in a single panel.  Default = 1 (yes).
 ;
@@ -66,8 +68,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-05-04 16:12:16 -0700 (Fri, 04 May 2018) $
-; $LastChangedRevision: 25169 $
+; $LastChangedDate: 2018-09-16 13:20:05 -0700 (Sun, 16 Sep 2018) $
+; $LastChangedRevision: 25817 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -77,7 +79,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
                      lut=lut, timing=timing, sifctl=sifctl, tplot_vars_out=pans, $
                      eunits=eunits, png=png, pad_smo=smo, eph=eph, orb=orb, $
                      burst=burst, loadonly=loadonly, fhsk=fhsk, fshift=fshift, $
-                     fnorm=fnorm
+                     fnorm=fnorm, spice=spice
 
   @mvn_swe_com
 
@@ -990,6 +992,46 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
         endif
       endfor
     endif
+  endif
+
+; SPICE coverage
+
+  if keyword_set(spice) then begin
+    oneday = 86400D
+    tmin = min(swe_hsk.time, max=tmax)
+    tmin = floor(tmin/oneday)*oneday
+    tmax = ceil(tmax/oneday)*oneday
+    npts = round(tmax - tmin) + 1L
+    time = tmin + dindgen(npts)
+
+    bname = 'spice'
+    y = replicate(1,npts,2)
+    y[*,0] = mvn_spice_valid_times(time,tol=1)
+    y[*,1] = y[*,0]
+    store_data,bname,data={x:time, y:y, v:[0,1]}
+    ylim,bname,0,1,0
+    zlim,bname,0,2,0
+    options,bname,'spec',1
+    options,bname,'panel_size',0.05
+    options,bname,'ytitle',''
+    options,bname,'yticks',1
+    options,bname,'yminor',1
+    options,bname,'no_interp',1
+    options,bname,'xstyle',4
+    options,bname,'ystyle',4
+    options,bname,'no_color_scale',1
+
+    indx = where(y[*,0] eq 1, count)
+    if (count gt 0L) then begin
+      dt = indx - shift(indx,1)
+      dt[0] = dt[1]
+      gaps = where(dt gt 1, ngaps)
+      if (ngaps gt 0L) then print,"Detected ",strtrim(string(ngaps),2)," gaps in SPICE coverage." $
+                       else print,"No gaps in SPICE coverage."
+    endif else print,"Warning: No valid SPICE data."
+
+    npans = n_elements(pans)
+    pans = [pans[0:(npans-2)],bname,pans[npans-1]]
   endif
 
 ; Gather panels, set limits, and plot

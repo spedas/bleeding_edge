@@ -31,10 +31,11 @@
 function spp_file_retrieve,pathname,trange=trange,ndays=ndays,nhours=nhours,verbose=verbose, source=src, $
    last_version=last_version, $
    prefix = prefix, $
+   ssr = ssr,ptp=ptp, $
    no_update=no_update,create_dir=create_dir,pos_start=pos_start, $
    daily_names=daily_names,hourly_names=hourly_names,resolution = res,shiftres=shiftres,valid_only=valid_only,  $
  ;  no_server=no_server,user_pass=user_pass,L0=L0, $
-   cal=cal,TVac=Tvac,snout2=snout2,snout1=snout1,crypt=crypt, goddard = goddard ,ion=ion,recent=recent,spani=spani,spanea=spanea,spaneb=spaneb,spc=spc,swem=swem,elec=elec,instr=instr,router=router
+   cal=cal,TVac=Tvac,snout2=snout2,snout1=snout1,crypt=crypt, goddard = goddard, hires1 = hires1, ion=ion,recent=recent,spani=spani,spanea=spanea,spaneb=spaneb,spc=spc,swem=swem,elec=elec,instr=instr,router=router
 
 tstart = systime(1)
 
@@ -57,6 +58,7 @@ if keyword_set(elec) then begin
   dprint, 'Please use spanea keyword instead'
 endif
 
+
 ; select for instrument
 ; note that thus far (20180420) spacecraft = swem
 if keyword_set(tvac) then snout2=1
@@ -73,10 +75,23 @@ if keyword_set(snout1) then router = 'snout1'
 if keyword_set(crypt) then router = 'crypt'
 if keyword_set(rm133) then router = 'rm133'
 if keyword_set(goddard) then router = 'hires1'
+if keyword_set(hires1) then router = 'hires1'
+
+if keyword_set(ssr) then begin
+  pathname = 'psp/data/sci/sweap/raw/SSR/YYYY/DOY/*_?_EA'
+  daily_names=1
+endif
+
+if keyword_set(ptp) then begin
+  pathname = 'psp/data/sci/sweap/raw/PTP/YYYY/DOY/sweap_spp_YYYYDOY_??.ptp.gz
+  daily_names=1
+endif
+
 
 if ~keyword_set(pathname) then begin
   pathname = realtime_dir + router+'/'+instr+'/YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
   hourly_names =1
+  valid_only=1
 endif
 
 
@@ -98,6 +113,8 @@ source = spp_file_source(src,verbose=verbose,user_pass=user_pass,no_server=no_se
     last_version=last_version,no_update=no_update,resolution=res)
 
 pos_start = strlen(source.local_data_dir)
+
+
 
 dprint,dlevel=5,verbose=verbose,phelp=1,source   ; display the options
 

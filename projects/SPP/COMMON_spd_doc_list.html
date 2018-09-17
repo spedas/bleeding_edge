@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Sep  6 18:16:49 2018.<P>
+<STRONG>Last modified: </STRONG>Sun Sep 16 18:16:39 2018.<P>
  
 <HR>
  
@@ -24,6 +24,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#SPP_GEN_APDAT__DEFINE">SPP_GEN_APDAT__DEFINE</A>
 <LI><A HREF="#SPP_PTP_RECORDER">SPP_PTP_RECORDER</A>
 <br>Widget tool that opens a socket and records streaming data from a server (host) and can save it to a file
+<LI><A HREF="#SPP_SPC_MET_TO_UNIXTIME">SPP_SPC_MET_TO_UNIXTIME</A>
 <br>
 </UL><P>
 <HR>
@@ -108,6 +109,7 @@ Keywords:  (All are optional - none are recommended)
 <A NAME="SPP_PTP_RECORDER">
 <H2>SPP_PTP_RECORDER</H2></A>
 <A HREF="#SPP_GEN_APDAT__DEFINE">[Previous Routine]</A>
+<A HREF="#SPP_SPC_MET_TO_UNIXTIME">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 WIDGET Procedure:
@@ -128,5 +130,23 @@ PURPOSE:
 
 </PRE><P>
 <STRONG>(See <A href="COMMON/spp_ptp_recorder.pro">projects/SPP/COMMON/spp_ptp_recorder.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SPP_SPC_MET_TO_UNIXTIME">
+<H2>SPP_SPC_MET_TO_UNIXTIME</H2></A>
+<A HREF="#SPP_PTP_RECORDER">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Function:  spp_spc_met_to_unixtime
+Purpose:  Convert MET (mission Elapsed Time) to Unix Time  (which is almost equivalent to UTC)
+see also:  &quot;spp_spc_unixtime_to_met&quot; for the reverse conversion
+ This routine is in the process of being modified to use SPICE Kernels to correct for clock drift as needed.
+ Author: Davin Larson
+ $LastChangedBy: davin-mac $
+ $LastChangedDate: 2018-09-08 13:30:40 -0700 (Sat, 08 Sep 2018) $
+ $LastChangedRevision: 25751 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_spc_met_to_unixtime.pro $
+</PRE><P>
+<STRONG>(See <A href="COMMON/spp_spc_met_to_unixtime.pro">projects/SPP/COMMON/spp_spc_met_to_unixtime.pro</A>)</STRONG><P>
 <HR>
  

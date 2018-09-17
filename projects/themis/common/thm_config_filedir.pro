@@ -12,7 +12,6 @@ Function thm_config_filedir, app_query = app_query, _extra = _extra
 
   readme_txt = ['Directory for configuration files for use by ', $
                 'the THEMIS Data Analysis Software']
-
   If(keyword_set(app_query)) Then Begin
     tdir = app_user_dir_query('themis', 'thm_config', /restrict_os)
     If(n_elements(tdir) Eq 1) Then tdir = tdir[0] 

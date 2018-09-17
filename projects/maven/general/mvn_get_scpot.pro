@@ -21,8 +21,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-11-30 21:14:10 -0800 (Thu, 30 Nov 2017) $
-; $LastChangedRevision: 24368 $
+; $LastChangedDate: 2018-09-12 14:13:48 -0700 (Wed, 12 Sep 2018) $
+; $LastChangedRevision: 25778 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_get_scpot.pro $
 ;
 ;-
@@ -62,6 +62,8 @@ function mvn_get_scpot, time
     if (pct gt 5.) then begin
       msg = strtrim(round(pct),2)
       print,'MVN_GET_SCPOT: ',msg,'% of input times are out of range.'
+      print,'MVN_GET_SCPOT: Potential coverage   = ',time_string([tmin,tmax])
+      print,'MVN_GET_SCPOT: Requested time range = ',time_string(minmax(t))
       print,'MVN_GET_SCPOT: Try rerunning mvn_scpot with a different time range.'
     endif
   endif

@@ -79,8 +79,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-07-13 15:49:47 -0700 (Fri, 13 Jul 2018) $
-; $LastChangedRevision: 25471 $
+; $LastChangedDate: 2018-09-13 14:01:10 -0700 (Thu, 13 Sep 2018) $
+; $LastChangedRevision: 25792 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -498,12 +498,14 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
               indx = where((dat4d.x ge tsp[0]) and (dat4d.x lt tsp[1]), k)
               if (k gt 0L) then begin
                 mvn_sta_v4d, tsp, mass=minmax(mass), m_int=mass[1], frame=frame, $
-                             erange=erange, /dopot, vsc=vsc, apid=v_apid, result=result
+                             erange=erange, /dopot, vsc=vsc, apid=v_apid, result=result, $
+                             /no_spice_check
                 if (result.valid) then v_bulk[j] = result
               endif
             endif else begin
               mvn_sta_v4d, time[j], mass=minmax(mass), m_int=mass[1], frame=frame, $
-                           erange=erange, /dopot, vsc=vsc, apid=v_apid, result=result
+                           erange=erange, /dopot, vsc=vsc, apid=v_apid, result=result, $
+                           /no_spice_check
               if (result.valid) then v_bulk[j] = result
             endelse
           endif
@@ -681,7 +683,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
     if ~(nfilter mod 2) then nfilter++
     topo = round(median(topo, nfilter))  ; dt-width median filter
 
-    indx = nn(ttime, time)
+    indx = nn2(ttime, time)
     result_h.topo = topo[indx]
     result_o1.topo = topo[indx]
     result_o2.topo = topo[indx]
@@ -699,13 +701,69 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
     if ~(nfilter mod 2) then nfilter++
     region = round(median(reg_id.y, nfilter))  ; dt-width median filter
 
-    indx = nn(reg_id.x, time)
+    indx = nn2(reg_id.x, time)
     result_h.region = region[indx]
     result_o1.region = region[indx]
     result_o2.region = region[indx]
   endif else print,'Could not get plasma region information.'
 
-; MSO and GEO ephemerides v 
+; Upstream drivers (direct and proxy)
+
+  path = root_data_dir() + 'maven/data/sci/swe/l3/'
+  tplot_restore, file=(path + 'drivers_merge_l2.tplot')  ; direct (Halekas)
+
+  ngud = 0L
+  get_data, 'bsw', data=imf, index=i
+  if (i gt 0) then begin
+    dtmax = 5D*3600D  ; within 5 hours of sw measurement
+    By = interp(imf.y[*,1], imf.x, time, int=dtmax)
+    Bz = interp(imf.y[*,2], imf.x, time, int=dtmax)
+
+    gap = where(~finite(By) or ~finite(Bz), ngap)
+    if (ngap gt 0) then begin
+      restore, (path + 'mag_sheath.sav')                 ; proxy (Y. Dong)
+      if (size(mag_sheath,/type) eq 8) then begin
+        By[gap] = interp(mag_sheath.mag[*,1], mag_sheath.time, time[gap], int=dtmax)
+        Bz[gap] = interp(mag_sheath.mag[*,2], mag_sheath.time, time[gap], int=dtmax)
+      endif else print,'Could not get solar wind proxy database.'
+    endif
+
+    Bclk = atan(Bz,By)  ; radians (0 = east, pi = west)
+    result_h.imf_clk = Bclk
+    result_o1.imf_clk = Bclk
+    result_o2.imf_clk = Bclk
+
+    igud = where(finite(Bclk), ngud)
+    if (ngud gt 0L) then begin
+      cosclk = cos(Bclk)
+      sinclk = sin(Bclk)
+
+      result_h[igud].v_mse[0] = result_h[igud].v_mso[0]
+      result_h.v_mse[1] = cosclk*result_h.v_mso[1] - sinclk*result_h.v_mso[2]
+      result_h.v_mse[2] = cosclk*result_h.v_mso[2] + sinclk*result_h.v_mso[1]
+
+      result_o1[igud].v_mse[0] = result_o1[igud].v_mso[0]
+      result_o1.v_mse[1] = cosclk*result_o1.v_mso[1] - sinclk*result_o1.v_mso[2]
+      result_o1.v_mse[2] = cosclk*result_o1.v_mso[2] + sinclk*result_o1.v_mso[1]
+
+      result_o2[igud].v_mse[0] = result_o2[igud].v_mso[0]
+      result_o2.v_mse[1] = cosclk*result_o2.v_mso[1] - sinclk*result_o2.v_mso[2]
+      result_o2.v_mse[2] = cosclk*result_o2.v_mso[2] + sinclk*result_o2.v_mso[1]
+    endif
+
+    get_data, 'npsw', data=npsw, index=i
+    Np = interp(npsw.y, npsw.x, time, int=dtmax)  ; cm-3
+    get_data, 'vpsw', data=vpsw, index=i
+    Vp = interp(vpsw.y, vpsw.x, time, int=dtmax)  ; km/s
+
+    Psw = (1.67e-6) * (Np*Vp*Vp)  ; nPa
+    result_h.sw_press = Psw
+    result_o1.sw_press = Psw
+    result_o2.sw_press = Psw
+
+  endif else print,'Could not get upstream drivers database.'
+
+; MSO, MSE and GEO ephemerides
 
   get_data,'alt',data=alt,index=i
   if (i eq 0) then begin
@@ -723,6 +781,14 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   result_h.mso[2] = spline(eph.time, eph.mso_x[*,2], time)
   result_o1.mso = result_h.mso
   result_o2.mso = result_h.mso
+
+  if (ngud gt 0L) then begin
+    result_h[igud].mse[0] = result_h[igud].mso[0]
+    result_h.mse[1] = cosclk*result_h.mso[1] - sinclk*result_h.mso[2]
+    result_h.mse[2] = cosclk*result_h.mso[2] + sinclk*result_h.mso[1]
+    result_o1.mse = result_h.mse
+    result_o2.mse = result_h.mse
+  endif
 
   result_h.geo[0] = spline(eph.time, eph.geo_x[*,0], time)
   result_h.geo[1] = spline(eph.time, eph.geo_x[*,1], time)
@@ -850,16 +916,16 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   phi = atan(sqrt(V_app[0,*]^2. + V_app[1,*]^2.), V_app[2,*])*!radeg - 90.
   result_o2.VK_the = reform(phi)
 
-; Make tplot variables
-
-  if keyword_set(doplot) then mvn_sta_cio_tplot
-
 ; Put copies of the results into the common block
 
   cio_h  = result_h
   cio_o1 = result_o1
   cio_o2 = result_o2
   success = 1
+
+; Make tplot variables
+
+  if keyword_set(doplot) then mvn_sta_cio_tplot
 
   return
   

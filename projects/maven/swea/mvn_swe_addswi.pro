@@ -12,31 +12,44 @@
 ;
 ;KEYWORDS:
 ;
+;    FINE:          Calculate moments with fine survey.  This provides better values
+;                   in the upstream solar wind.
+;
 ;    PANS:          Named variable to hold an array of
 ;                   the tplot variable(s) created.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-01-19 14:47:21 -0800 (Fri, 19 Jan 2018) $
-; $LastChangedRevision: 24551 $
+; $LastChangedDate: 2018-09-12 17:09:38 -0700 (Wed, 12 Sep 2018) $
+; $LastChangedRevision: 25783 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_addswi.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03/18/14
 ;-
-pro mvn_swe_addswi, pans=pans
+pro mvn_swe_addswi, fine=fine, pans=pans
+
+  if keyword_set(fine) then begin
+    type = 'fs'
+    dname = 'mvn_swifs_density'
+    vname = 'mvn_swifs_velocity'
+  endif else begin
+    type = 'cs'
+    dname = 'mvn_swics_density'
+    vname = 'mvn_swics_velocity'
+  endelse
 
   mvn_swia_load_l2_data, /loadall, /tplot
-  mvn_swia_part_moments, type=['cs']
+  mvn_swia_part_moments, type=[type]
 
   pans = ['']
 
-  swi_pan = 'mvn_swics_density'
+  swi_pan = dname
   get_data,swi_pan,index=i
   if (i gt 0) then begin
     options,swi_pan,'ynozero',1
     pans = [pans, swi_pan]
   endif
 
-  get_data,'mvn_swics_velocity',data=swi_v,index=i
+  get_data,vname,data=swi_v,index=i
   if (i gt 0) then begin
     vsw = sqrt(total(swi_v.y^2.,2))
     swi_pan = 'mvn_swi_vsw'

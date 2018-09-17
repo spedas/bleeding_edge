@@ -45,6 +45,9 @@
 ;
 ;   SPICE_LOAD:   Loads the MAVEN SPICE/kernels. 
 ;
+;   NOCHECK:      Do not check for validity of SPICE kernels.  This can be
+;                 overkill if SPICE coverage has already been checked.
+;
 ;   OVERWRITE:    Overwrites resultant angular (theta & phi) arrays in the
 ;                 new coordinates into the input snapshot data structure.
 ;
@@ -91,9 +94,9 @@
 ; 
 ;CREATED BY:      Takuya Hara on 2014-11-24.
 ;
-; $LastChangedBy: hara $
-; $LastChangedDate: 2018-07-13 13:16:23 -0700 (Fri, 13 Jul 2018) $
-; $LastChangedRevision: 25468 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2018-09-13 14:13:46 -0700 (Thu, 13 Sep 2018) $
+; $LastChangedRevision: 25794 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/eph/mvn_pfp_cotrans.pro $
 ;
 ;-
@@ -101,12 +104,15 @@ PRO mvn_pfp_cotrans, var, from=from, to=to, verbose=verbose, $
                      vx=vxn, vy=vyn, vz=vzn, $
                      theta=thetan, phi=phin, status=status, $
                      spice_load=spice_load, $
-                     px=px, py=py, pz=pz, overwrite=overwrite
+                     px=px, py=py, pz=pz, overwrite=overwrite, $
+                     nocheck=nocheck
+
   dat = var
   time = (dat.time + dat.end_time)/2.d0 
   theta = dat.theta
   phi = dat.phi
   
+  dochk = ~keyword_set(nocheck)  ; default is to perform the check
   IF ~keyword_set(from) THEN from = 'MAVEN_SPACECRAFT'
   IF keyword_set(spice_load) THEN $
      mk = mvn_spice_kernels(/load, /all, trange=time, verbose=verbose)
@@ -128,13 +134,16 @@ PRO mvn_pfp_cotrans, var, from=from, to=to, verbose=verbose, $
   ENDELSE 
 
   sphere_to_cart, 1.d0, dat.theta, dat.phi, vx, vy, vz
-  valid = mvn_spice_valid_times(time, verbose=verbose)
-  IF valid EQ 0B THEN BEGIN
-     dprint, 'SPICE/kernels are invalid.'
-     status = 0
-     IF keyword_set(to2) THEN to = to2
-     RETURN
-  ENDIF 
+
+  if (dochk) then begin
+    valid = mvn_spice_valid_times(time, verbose=verbose)
+    IF valid EQ 0B THEN BEGIN
+       dprint, 'SPICE/kernels are invalid.'
+       status = 0
+       IF keyword_set(to2) THEN to = to2
+       RETURN
+    ENDIF
+  endif
 
   q = spice_body_att(from, to, time, $
                      /quaternion, verbose=verbose)
