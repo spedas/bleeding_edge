@@ -12,7 +12,7 @@ function spp_spc_met_to_unixtime_old,met,reverse=reverse
   ;; long(time_double('2010-1-1/0:00')) ; Correct SWEM use
   epoch =  1262304000d
   if keyword_set(reverse) then begin
-    return,met -epoch
+    return,time_double(met) -epoch
   endif
   if met lt 1e6 then begin
     dprint,dlevel=4,'Bad MET ',time_string(met+epoch) ,dwait=5.
@@ -39,11 +39,11 @@ end
 ; This routine is in the process of being modified to use SPICE Kernels to correct for clock drift as needed.
 ; Author: Davin Larson
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-09-08 13:30:40 -0700 (Sat, 08 Sep 2018) $
-; $LastChangedRevision: 25751 $
+; $LastChangedDate: 2018-09-17 08:35:44 -0700 (Mon, 17 Sep 2018) $
+; $LastChangedRevision: 25818 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_spc_met_to_unixtime.pro $
 ;-
-function spp_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=correct_clockdrift   ,reset=reset   ;,prelaunch = prelaunch
+function spp_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=correct_clockdrift   ,reset=reset ,ephemeris_time=et  ;,prelaunch = prelaunch
 
   common spp_spc_met_to_unixtime_com, cor_clkdrift, icy_installed, kernel_verified, time_verified, sclk, tls
 
@@ -79,19 +79,17 @@ function spp_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=correc
 
 
   if n_elements(input) eq 0 then message,'Must provide input'
+  epoch =  1262304000d
+  epoch =  1262304000d -3  ;  '2010-1-1'  add 3 leap seconds
 
   if keyword_set(reverse) then begin
     if n_params() ge 1 then unixtime = input
     if ~keyword_set(cor_clkdrift)  then begin
-     ;  maven: epoch =  946771200d - 12L*3600   ; long(time_double('2000-1-1/12:00'))  ; Normal use
-      epoch =  1262304000d
       ut = time_double(unixtime)
-      ;    if unixtime[0] le 1354320000  then unixtime = met + epoch + 3600L*12   ; correction prior to '2012-12-1'
-      delta = (ut le 1354320000) * 3600L*12
-      met = ut - epoch + delta
+      met = ut - epoch 
       return,met
     endif else begin
-      ;   dprint,'Using cspice',dlevel=3
+      dprint,'Using cspice',dlevel=3
       et = time_ephemeris(unixtime)
       met = double(et)
       for i = 0,n_elements(met)-1 do begin
@@ -102,24 +100,17 @@ function spp_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=correc
       endfor
       return,met
     endelse
+    message   ; this should never occur
     return,met
   endif
 
   met = input
   if ~cor_clkdrift then begin
-    ;    epoch =  978307200d    ; long(time_double('2001-1-1'))  ; valid for files prior to about June, 2012
-   ;maven: epoch =  946771200d - 12L*3600   ; long(time_double('2000-1-1/12:00'))  ; Normal use
-    epoch =  1262304000d
     unixtime =  met +  epoch
-    ;    if unixtime[0] le 1356998400  then unixtime = met + epoch + 3600L*12   ; correction prior to '2013-1-1'
-    ;    if unixtime[0] le 1354320000  then unixtime = met + epoch + 3600L*12   ; correction prior to '2012-12-1'
-    delta = (unixtime le 1354320000) * 3600L*12
-    unixtime += delta
-    ;    if unixtime[0] le 1351728000  then unixtime = met + epoch + 3600L*12   ; correction prior to '2012-11-1'
   endif else begin
     seconds = floor(met,/l64)
     subseconds = met mod 1
-    subticks = round(subseconds*65536)
+    subticks = round(subseconds*50000)
     sclk_in = string(seconds)+':'+string(subticks)
     n = n_elements(met)
     cspice_scs2e, -96, sclk_in, ET
