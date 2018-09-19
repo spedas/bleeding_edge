@@ -50,8 +50,8 @@
 ;
 ; VERSION:
 ; $LastChangedBy: aaronbreneman $
-; $LastChangedDate: 2018-08-20 17:03:18 -0700 (Mon, 20 Aug 2018) $
-; $LastChangedRevision: 25681 $
+; $LastChangedDate: 2018-09-18 10:36:34 -0700 (Tue, 18 Sep 2018) $
+; $LastChangedRevision: 25825 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_efw_cal_waveform.pro $
 ;
 ;-
@@ -63,7 +63,7 @@ pro rbsp_efw_cal_waveform, probe = probe, datatype = datatype, $
 
 compile_opt idl2
 
-dprint,verbose=verbose,dlevel=4,'$Id: rbsp_efw_cal_waveform.pro 25681 2018-08-21 00:03:18Z aaronbreneman $'
+dprint,verbose=verbose,dlevel=4,'$Id: rbsp_efw_cal_waveform.pro 25825 2018-09-18 17:36:34Z aaronbreneman $'
 
 if ~keyword_set(trange) then trange = timerange()
 if size(coord, /type) ne 7 then coord = 'dsc'
@@ -86,16 +86,18 @@ endcase
 
 ;---------------------------------------------------------------------
 ;Determine if we need to apply the 19dB attenuator
-if probe eq 'a' then begin
-  rbsp_on_start = gain19dB.rbspa_on_start
-  rbsp_on_stop = gain19dB.rbspa_on_stop
-endif else begin
-  rbsp_on_start = gain19dB.rbspb_on_start
-  rbsp_on_stop = gain19dB.rbspb_on_stop
-endelse
+if datatype eq 'mscb1' or datatype eq 'mscb2' then begin
 
-ntdB0 = bytarr(n_elements(rbsp_on_start))
-ntdB1 = ntdB0
+  if probe eq 'a' then begin
+    rbsp_on_start = gain19dB.rbspa_on_start
+    rbsp_on_stop = gain19dB.rbspa_on_stop
+  endif else begin
+    rbsp_on_start = gain19dB.rbspb_on_start
+    rbsp_on_stop = gain19dB.rbspb_on_stop
+  endelse
+
+  ntdB0 = bytarr(n_elements(rbsp_on_start))
+  ntdB1 = ntdB0
 
 
 
@@ -138,35 +140,36 @@ ntdB1 = ntdB0
 ;                                    |t0-----t1|
 
 
-for i=0,n_elements(rbsp_on_start)-1 do begin
-  if trange[0] ge time_double(rbsp_on_stop[i]) then ntdB0[i] = 0 else ntdB0[i] = trange[0] ge time_double(rbsp_on_start[i])
-  if trange[1] lt time_double(rbsp_on_start[i]) then ntdB1[i] = 0 else ntdB1[i] = trange[1] le time_double(rbsp_on_stop[i])
-endfor
-
-
-goo = where(ntdB0 + ntdB1 eq 2)
-if goo[0] ne -1 then wholeday_19db = 1 else wholeday_19db = 0
-if not wholeday_19db then begin
-
-  t0z = ''
-  t1z = ''
-  for b=0,n_elements(ntdB0)-1 do begin
-      x = float(ntdB0[b]) - float(ntdB1[b])
-      CASE x OF
-        1: begin
-          t0z = [t0z,time_string(trange[0])]
-          t1z = [t1z,rbsp_on_stop[b]]
-        end
-        -1: begin
-          t0z = [t0z,rbsp_on_start[b]]
-          t1z = [t1z,time_string(trange[1])]
-        end
-        else: print,''
-      ENDCASE
-
+  for i=0,n_elements(rbsp_on_start)-1 do begin
+    if trange[0] ge time_double(rbsp_on_stop[i]) then ntdB0[i] = 0 else ntdB0[i] = trange[0] ge time_double(rbsp_on_start[i])
+    if trange[1] lt time_double(rbsp_on_start[i]) then ntdB1[i] = 0 else ntdB1[i] = trange[1] le time_double(rbsp_on_stop[i])
   endfor
-  t0z = t0z[1:n_elements(t0z)-1]
-  t1z = t1z[1:n_elements(t1z)-1]
+
+
+  goo = where(ntdB0 + ntdB1 eq 2)
+  if goo[0] ne -1 then wholeday_19db = 1 else wholeday_19db = 0
+  if not wholeday_19db then begin
+
+    t0z = ''
+    t1z = ''
+    for b=0,n_elements(ntdB0)-1 do begin
+        x = float(ntdB0[b]) - float(ntdB1[b])
+        CASE x OF
+          1: begin
+            t0z = [t0z,time_string(trange[0])]
+            t1z = [t1z,rbsp_on_stop[b]]
+          end
+          -1: begin
+            t0z = [t0z,rbsp_on_start[b]]
+            t1z = [t1z,time_string(trange[1])]
+          end
+          else: print,''
+        ENDCASE
+
+    endfor
+    t0z = t0z[1:n_elements(t0z)-1]
+    t1z = t1z[1:n_elements(t1z)-1]
+  endif
 endif
 
 

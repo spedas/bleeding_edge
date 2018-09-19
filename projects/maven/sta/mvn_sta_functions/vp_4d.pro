@@ -28,7 +28,7 @@
 ;CREATED BY:
 ;	J.McFadden	2014-02-27
 ;LAST MODIFICATION:
-;	J.McFadden	2018-06-29
+;	J.McFadden	2018-09-18
 ;-
 function vp_4d,dat2,ENERGY=en,ERANGE=er,EBINS=ebins,ANGLE=an,ARANGE=ar,BINS=bins,MASS=ms,m_int=mi,q=q,mincnt=mincnt
 
@@ -48,9 +48,6 @@ endif
 
 if (dat2.quality_flag and 195) gt 0 then return,def
 
-;if dat2.apid ne 'c8' and dat2.apid ne 'ca' then begin
-;	print,'Invalid Data: Data must be Maven APID c8 or ca'
-;	print,'Invalid Data: Data must be Maven APID c8 or ca'
 if dat2.apid ne 'c8' then begin
 	print,'Invalid Data: Data must be Maven APID c8'
 	return, def
@@ -82,9 +79,6 @@ data = dat.cnts
 bkg = dat.bkg
 energy = dat.energy
 theta = dat.theta
-;if dat2.apid eq 'ca' then data = total(reform(data,16,4,16),2)
-;if dat2.apid eq 'ca' then bkg = total(reform(bkg,16,4,16),2)
-;if dat2.apid eq 'ca' then energy = total(reform(energy,16,4,16),2)/4.
 
 if keyword_set(en) then begin
 	ind = where(energy lt en[0] or energy gt en[1],count)
@@ -92,11 +86,18 @@ if keyword_set(en) then begin
 	if count ne 0 then bkg[ind]=0.
 endif
 
+; code only includes +/-22 deg of deflection unless common block thmax_def is set
+; 22. is a good default due to scattered ions backstreaming at theta>22 theta 
+; may want to set thmax_def to 50. if the APP is off-pointing as during NGIMS wind measurements
+
+common sta_c8_th_vperp_default,thmax_def
+if keyword_set(thmax_def) then thmax=thmax_def else thmax=22.
+
 ; assume a O2+ beam if dat2.apid eq 'c8' - only include 3 energies centered on peak
 
 offset_time=0.
 if dat2.apid eq 'c8' then begin
-	ind = where(abs(theta) ge 22.,count)
+	ind = where(abs(theta) ge thmax,count)
 	if count gt 0 then data[ind] = 0.
 	spec = total(data,2)
 	pk_spec = max(spec,ind2)
@@ -118,6 +119,7 @@ if dat2.apid eq 'c8' then begin
 endif 
 
 ; use the debye length and characteristic energy to correct for deflections by s/c potentials caused by surface geometry relative to particle direction
+
 	get_data,'mvn_sta_o2+_o+_c6_density3',data=tmp98
 	if size(tmp98,/type) eq 8 then begin
 		min_tim = min(abs(tmp98.x-dat2.time-2.),ind98)
@@ -159,7 +161,7 @@ if (dat.att_ind eq 0) then offset0=0.0				; 0.0	0
  
 ; offset2,offset1 uses inputs from common mvn_sta_offset2					
 
-offset2=efoldoffset*(1.-erf((energy-e0)/(scale1*e0)))
+offset2=efoldoffset*(1.-erf((energy-e0)/(scale1*(e0+.01))))
 
 ;offset2=0.						; for testing purposes
 
@@ -172,22 +174,13 @@ offset2=efoldoffset*(1.-erf((energy-e0)/(scale1*e0)))
 
 offset=offset0+offset1+offset2+offset3
 
-
-
 ; not sure which of the following is correct - for density>1.e4, debye length is small (1-2 cm) and scpot does not impact vperp 
 ; there may be lower density cases where debye length is 10 cm where this breaks down.
+
 v = (2.*(energy+pot)/mass)^.5 > 0.					;       use scpot corrected energy for large debye length
 ;v = (2.*energy/mass)^.5						; don't use scpot corrected energy for small debye length
 
-
-if dat2.apid eq 'ca' then begin
-	phi = total(reform(dat.phi,16,4,16),2)/4.
-	sth = sin(phi/!radeg) 
-endif else begin
-;	offset=offset+1.5*((2.+dat.sc_pot)>0.)
-;	offset=0.
-	sth = sin((dat.theta+offset)/!radeg)
-endelse
+sth = sin((dat.theta+offset)/!radeg)
 vp = v*sth							; km/s
 
 ;corr = exp((kk/dat.energy)^2)					; don't weight by sensitivity - use highest counts for statistics.
@@ -207,7 +200,6 @@ def_const=1.00									; determined imperically during APP nods 20171008 - might
 th5 = !radeg*atan ((peak2/(peak2+def_const*pot2))^.5*tan(th3/!radeg))		; th5 is the th3 angle corrected for external deflections caused by s/c charging
 
 ;print,th5,peak2,def_const,pot2
-
 
 vperp = total(v*data2)/total(data2)*sin((th5-th4)/!radeg)			; vperp is the velocity perpendicular to the "th4" ram direction
 return, vperp									; km/s
