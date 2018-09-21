@@ -5,15 +5,6 @@
 ;Purpose:
 ;  Generate spectra and moments from 3D MMS particle data.
 ;
-;   -----------------------------------------------------------------------------------------
-;   |  !!!!!! words of caution <------ by egrimes, 4/7/2016:                                |
-;   |   While you can use mms_part_products to generate particle moments for FPI from       |
-;   |   the distributions, these calculations are currently missing several important       |
-;   |   components, including photoelectron removal and S/C potential corrections.          |
-;   |   The official moments released by the team include these, and are the scientific     |
-;   |   products you should use in your analysis; see mms_load_fpi_crib to see how to load  |
-;   |   the FPI moments released by the team (des-moms, dis-moms datatypes)                 |
-;   -----------------------------------------------------------------------------------------
 ;
 ;Data Products:
 ;  'energy' - energy spectrogram
@@ -21,6 +12,8 @@
 ;  'theta' - latitudinal spectrogram
 ;  'gyro' - gyrophase spectrogram
 ;  'pa' - pitch angle spectrogram
+;  'multipad' - pitch angle spectrogram at each energy (multi-dimensional tplot variable, 
+;       you'll need to use mms_part_getpad to generate PADs at various energies)
 ;  'moments' - distribution moments (density, velocity, etc.)
 ;
 ;
@@ -61,7 +54,7 @@
 ;  sc_pot_name:  Tplot variable containing spacecraft potential data for moments corrections
 ;  vel_name:  Tplot variable containing velocity data in km/s for use with /subtract_bulk
 ;    
-;  units:  Secify units of output variables.  Must be 'eflux' to calculate moments.
+;  units:  Specify units of output variables.  Must be 'eflux' to calculate moments.
 ;            'flux'   -   # / (cm^2 * s * sr * eV)
 ;            'eflux'  -  eV / (cm^2 * s * sr * eV)  <default>
 ;            'df_cm'  -  s^3 / cm^6
@@ -85,8 +78,7 @@
 ;    
 ;  datagap:  Setting for tplot variables, controls how long a gap must be before it is drawn. 
 ;            (can also manually degap)
-;  subtract_bulk:  Flag to subtract velocity vector from distribution before
-;                  calculation of field aligned angular spectra.
+;  subtract_bulk:  Flag to subtract bulk velocity (experimental)
 ;
 ;  display_object:  Object allowing dprint to export output messages
 ;
@@ -101,17 +93,26 @@
 ;
 ;Notes: 
 ;  -See warning above in purpose description!
+;  
+;  -FPI-DES photoelectrons are corrected using Dan Gershman's photoelectron model; see the following for details:
+;     Spacecraft and Instrument Photoelectrons Measured by the Dual Electron Spectrometers on MMS
+;     https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2017JA024518
+;     
+;  -Note that there may still be slight differences between the PGS moments and the official moments released by the team.
+;     The official moments released by the team are the scientific
+;     products you should use in your analysis.
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-03 11:20:00 -0700 (Tue, 03 Apr 2018) $
-;$LastChangedRevision: 24980 $
+;$LastChangedDate: 2018-09-20 15:04:07 -0700 (Thu, 20 Sep 2018) $
+;$LastChangedRevision: 25838 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products.pro $
 ;-
 pro mms_part_products, $
                      in_tvarname, $ ;the tplot variable name for the MMS being processed
                                     ;specify this or use probe, instr, rate, level, species
 
+                     data_rate=data_rate, $
                      probe=probe, $ ;can be specified if not in tplot variable name
                                     ;needed for some FAC
                      instrument=instrument, $ ;can be specified if not in tplot variable name 
@@ -138,6 +139,8 @@ pro mms_part_products, $
                      suffix=suffix, $ ;tplot suffix to apply when generating outputs
                      
                      subtract_bulk=subtract_bulk, $ ;subtract bulk velocity from FAC angular spectra
+                     subtract_error=subtract_error, $ ; subtract the distribution error variable from the data prior to doing the calculations
+                     error_variable=error_variable, $ ; name of the tplot variable containing the distribution error (required if /subtract_error keyword is specified)
                      
                      datagap=datagap, $ ;setting for tplot variables, controls how long a gap must be before it is drawn.(can also manually degap)
                             
@@ -148,6 +151,8 @@ pro mms_part_products, $
                      pos_name=pos_name, $ ;tplot variable containing spacecraft position for FAC transformations
                      vel_name=vel_name, $ tplot variable containing velocity data in km/s
                      
+                     correct_photoelectrons=correct_photoelectrons, $
+                      
                      error=error,$ ;indicate error to calling routine 1=error,0=success
                      
                      start_angle=start_angle, $ ;select a different start angle
@@ -168,10 +173,10 @@ pro mms_part_products, $
   twin = systime(/sec)
   error = 1
   
-  if keyword_set(subtract_bulk) then begin
-    dprint, dlevel = 0, 'Error with keyword: subtract_bulk; not yet implemented - no bulk velocity subtraction will be applied.'
-    undefine, subtract_bulk
-  endif
+  ; no regridding allowed when you subtract the bulk velocity because 
+  ; regridding assumes energies are constant across angles (which is
+  ; not the case after the bulk velocity is subtracted)
+  if keyword_set(subtract_bulk) then no_regrid = 1
   
   if ~is_string(in_tvarname) then begin
     dprint, dlevel=0, 'No input data, please specify tplot variable'
@@ -258,18 +263,6 @@ pro mms_part_products, $
     endif
   endif
   
-;  if undefined(mag_name) then begin
-;    mag_name = 'th'+probe_lc+'_fgs'
-;  endif
-;  
-;  if undefined(pos_name) then begin
-;    pos_name = 'th'+probe_lc+'_state_pos'
-;  endif
-;  
-;  if undefined(sc_pot_name) then begin
-;    sc_pot_name = 'th'+probe_lc+'_pxxm_pot' 
-;  endif
-  
   if undefined(fac_type) then begin
     fac_type = 'mphigeo'
   endif
@@ -285,25 +278,26 @@ pro mms_part_products, $
   ;--------------------------------------------------------
   
   if in_set(outputs_lc,'moments') || in_set(outputs_lc,'fac_moments') then begin
-
-    msg = 'Moments generated with mms_part_products may be missing several important '+ $
-          'corrections, including photoelectron removal and spacecraft potential.  '+ $
-          'The official moments released by the instrument teams include these and '+ $
-          'are the scientific products that should be used for analysis.'
-    msg += ~in_set(outputs_lc,'fac_moments') ? '' : ssl_newline()+ssl_newline()+ $
-          'Field aligned moments should be considered experimental.  '+ $
-          'All output variables will be in the coordinates defined by '+ $
-          'the fac_type option (default: ''mphigeo'').'
-
-    if ~keyword_set(silent) then begin
-      msg += ssl_newline()+ssl_newline()+'Use /silent to disable this warning.'
-      dummy = dialog_message(msg, /center, title='MMS_PART_PRODUCTS:  Warning')
-    endif else begin
-      dprint, dlevel=2, '=========================================================='
-      dprint, dlevel=2, 'WARNING:  '
-      dprint, dlevel=2, msg 
-      dprint, dlevel=2, '=========================================================='
-    endelse
+    if ~keyword_set(correct_photoelectrons) then begin
+      msg = 'Moments generated with mms_part_products may be missing several important '+ $
+            'corrections, including photoelectron removal and spacecraft potential.  '+ $
+            'The official moments released by the instrument teams include these and '+ $
+            'are the scientific products that should be used for analysis.'
+      msg += ~in_set(outputs_lc,'fac_moments') ? '' : ssl_newline()+ssl_newline()+ $
+            'Field aligned moments should be considered experimental.  '+ $
+            'All output variables will be in the coordinates defined by '+ $
+            'the fac_type option (default: ''mphigeo'').'
+  
+      if ~keyword_set(silent) then begin
+        msg += ssl_newline()+ssl_newline()+'Use /silent to disable this warning.'
+        dummy = dialog_message(msg, /center, title='MMS_PART_PRODUCTS:  Warning')
+      endif else begin
+        dprint, dlevel=2, '=========================================================='
+        dprint, dlevel=2, 'WARNING:  '
+        dprint, dlevel=2, msg 
+        dprint, dlevel=2, '=========================================================='
+      endelse
+    endif
 
   endif
   
@@ -342,7 +336,7 @@ pro mms_part_products, $
   ;--------------------------------------------------------
   
   ;create rotation matrix to field aligned coordinates if needed
-  fac_outputs = ['pa','gyro','fac_energy','fac_moments']
+  fac_outputs = ['multipad', 'pa', 'gyro', 'fac_energy', 'fac_moments']
   fac_requested = is_string(ssl_set_intersection(outputs_lc,fac_outputs))
   if fac_requested then begin
     mms_pgs_make_fac,times,mag_name,pos_name,fac_output=fac_matrix,fac_type=fac_type_lc,display_object=display_object,probe=probe
@@ -370,29 +364,152 @@ pro mms_part_products, $
   if keyword_set(subtract_bulk) then begin
     mms_pgs_clean_support, times, probe, vel_name=vel_name, vel_out=vel_data
   endif
-
-
+  
+  ; the standard way of concatenating the spectra variables doesn't work for the multi-dimensional PAD
+  ; so we need to allocate the memory before going into the loop over times
+  if in_set(outputs_lc, 'multipad') then begin
+    dist = mms_get_dist(in_tvarname, time_idx[0], /structure, probe=probe, $
+      species=species, instrument=instrument, units=input_units, $
+      subtract_error=subtract_error, error=error_variable)
+  
+    multi_pad_out = dblarr(n_elements(time_idx), (dimen(dist.data))[0], (dimen(dist.data))[2])
+  endif
+  
+  ; grab the FPI photoelectron model if needed
+  if keyword_set(correct_photoelectrons) then begin
+    fpi_photoelectrons = mms_part_des_photoelectrons(in_tvarname)
+    
+    ; will need stepper parities for burst mode data
+    if data_rate eq 'brst' then begin
+      scprefix = (strsplit(in_tvarname, '_', /extract))[0]
+      get_data, scprefix+'_des_steptable_parity_brst', data=parity
+      
+      ; the following is so that we can use scope_varfetch using the parity_num found in the loop over times
+      ; (scope_varfetch doesn't work with structure.structure syntax)
+      bg_dist_p0 = fpi_photoelectrons.bgdist_p0
+      bg_dist_p1 = fpi_photoelectrons.bgdist_p1
+      n_0 = fpi_photoelectrons.n_0
+      n_1 = fpi_photoelectrons.n_1
+    endif
+  endif
+  
   ;--------------------------------------------------------
   ;Loop over time to build the spectrograms/moments
   ;--------------------------------------------------------
-  
-  for i = 0,n_elements(time_idx)-1 do begin
+  for i = 0l,n_elements(time_idx)-1 do begin
   
     spd_pgs_progress_update,last_tm,i,n_elements(time_idx)-1,display_object=display_object,type_string=in_tvarname
   
     ;Get the data structure for this sample
 
     dist = mms_get_dist(in_tvarname, time_idx[i], /structure, probe=probe, $
-                        species=species, instrument=instrument, units=input_units)
-
+                        species=species, instrument=instrument, units=input_units, $
+                        subtract_error=subtract_error, error=error_variable)
+    
     str_element, dist, 'orig_energy', dist.energy[*, 0, 0], /add
-                      
+
+    if keyword_set(correct_photoelectrons) then begin
+      get_data, 'mms'+probe+'_des_startdelphi_count_'+data_rate, data=startdelphi
+
+      ; From Dan Gershman's release notes on the FPI photoelectron model:
+      ; Find the index I in the startdelphi_counts_brst or startdelphi_counts_fast array
+      ; [360 possibilities] whose corresponding value is closest to the measured
+      ; startdelphi_count_brst or startdelphi_count_fast for the skymap of interest. The
+      ; closest index can be approximated by I = floor(startdelphi_count_brst/16) or I =
+      ; floor(startdelphi_count_fast/16)
+      start_delphi_I = floor(startdelphi.Y[i]/16.)
+
+      if data_rate eq 'brst' then begin
+        parity_num = strcompress(string(fix(parity.Y[i])), /rem)
+        
+        bg_dist = scope_varfetch('bg_dist_p'+parity_num)
+        n_value = scope_varfetch('n_'+parity_num)
+        
+        fphoto = bg_dist.Y[start_delphi_I, *, *, *]
+
+        ; need to interpolate using SC potential data to get Nphoto value
+        nphoto_scpot_dependent = reform(n_value.Y[start_delphi_I, *])
+        nphoto = interpol(nphoto_scpot_dependent, n_value.V, sc_pot_data[i])
+      endif else begin
+        fphoto = fpi_photoelectrons.bg_dist.Y[start_delphi_I, *, *, *]
+        
+        ; need to interpolate using SC potential data to get Nphoto value
+        nphoto_scpot_dependent = reform(fpi_photoelectrons.N.Y[start_delphi_I, *])
+        nphoto = interpol(nphoto_scpot_dependent, fpi_photoelectrons.N.V, sc_pot_data[i])
+      endelse
+
+      ; now, the corrected distribution function is simply f_corrected = f-fphoto*nphoto
+      ; note: transpose is to shuffle fphoto*nphoto to energy-azimuth-elevation, to match dist.data
+      dist.data = dist.data-transpose(reform(fphoto*nphoto), [2, 0, 1])
+    endif
+
     ;Sanitize Data.
     ;#1 removes unneeded fields from struct to increase efficiency
     ;#2 Reforms into angle by energy data 
-  
     mms_pgs_clean_data,dist,output=clean_data,units=units_lc
+
+    ;split hpca angle bins to be equal width in phi/theta
+    ;this is needed when skipping the regrid step
+    if instrument eq 'hpca' then begin
+      mms_pgs_split_hpca, clean_data, output=clean_data
+    endif
+
+    ; subtract the bulk velocity
+    if keyword_set(subtract_bulk) then begin
+      spd_pgs_v_shift, clean_data, vel_data[i,*], error=error
+    endif
     
+    if units_lc eq 'eflux' then begin ; from mms_convert_flux_units
+      ;get mass of species
+      case dist.species of
+        'i': A=1;H+
+        'hplus': A=1;H+
+        'heplus': A=4;He+
+        'heplusplus': A=4;He++
+        'oplus': A=16;O+
+        'oplusplus': A=16;O++
+        'e': A=1d/1836;e-
+        else: message, 'Unknown species: '+species_lc
+      endcase
+
+      ;scaling factor between df and flux units
+      flux_to_df = A^2 * 0.5447d * 1d6
+
+      ;convert between km^6 and cm^6 for df
+      cm_to_km = 1d30
+
+      ;calculation will be kept simple and stable as possible by
+      ;pre-determining the final exponent of each scaling factor
+      ;rather than multiplying by all applicable in/out factors
+      ;these exponents should always be integers!
+      ;    [energy, flux_to_df, cm_to_km]
+      in = [0,0,0]
+      out = [0,0,0]
+
+      ;get input/output scaling exponents
+      case dist.units_name of
+        'flux': in = [1,0,0]
+        'eflux':
+        'df_km': in = [2,-1,0]
+        'df_cm': in = [2,-1,1]
+        else: message, 'Unknown input units: '+units_in
+      endcase
+
+      case units_lc of
+        'flux':out = -[1,0,0]
+        'eflux':
+        'df_km': out = -[2,-1,0]
+        'df_cm': out = -[2,-1,1]
+        else: message, 'Unknown output units: '+units_out
+      endcase
+
+      exp = in + out
+
+      ;ensure everything is double prec first for numerical stability
+      ;  -target field won't be mutated since it's part of a structure
+      clean_data.data = double(clean_data.psd) * double(clean_data.orig_energy)^exp[0] * (flux_to_df^exp[1] * cm_to_km^exp[2])
+    endif
+ 
     ;Copy bin status prior to application of angle/energy limits.
     ;Phi limits will need to be re-applied later after phi bins
     ;have been aligned across energy (in case of irregular grid). 
@@ -411,31 +528,25 @@ pro mms_part_products, $
 
     ;Build theta spectrogram
     if in_set(outputs_lc, 'theta') then begin
-      spd_pgs_make_theta_spec, clean_data, spec=theta_spec, yaxis=theta_y
+      mms_pgs_make_theta_spec, clean_data, spec=theta_spec, yaxis=theta_y
     endif
     
     ;Build phi spectrogram
     if in_set(outputs_lc, 'phi') then begin
-      spd_pgs_make_phi_spec, clean_data, spec=phi_spec, yaxis=phi_y
+      mms_pgs_make_phi_spec, clean_data, spec=phi_spec, yaxis=phi_y
     endif
     
     ;Build energy spectrogram
     if in_set(outputs_lc, 'energy') then begin
-      spd_pgs_make_e_spec, clean_data, spec=en_spec, yaxis=en_y
+      mms_pgs_make_e_spec, clean_data, spec=en_spec, yaxis=en_y, energy=energy
     endif
-    
+
     ;Perform transformation to FAC, regrid data, and apply limits in new coords
     if fac_requested then begin
       
       ;limits will be applied to energy-aligned bins
       clean_data.bins = temporary(pre_limit_bins)
       
-      ;split hpca angle bins to be equal width in phi/theta
-      ;this is needed when skipping the regrid step
-      if keyword_set(no_regrid) && instrument eq 'hpca' then begin
-        mms_pgs_split_hpca, clean_data, output=clean_data
-      endif
-
       spd_pgs_limit_range,clean_data,phi=phi,theta=theta,energy=energy 
       
       ;perform FAC transformation and interpolate onto a new, regular grid 
@@ -446,10 +557,6 @@ pro mms_part_products, $
         spd_pgs_regrid,clean_data,regrid,output=clean_data
       endif
 
-      ;shift by bulk velocity vector if requested
-      if keyword_set(subtract_bulk) && ~undefined(vel_data) then begin
-        spd_pgs_v_shift, clean_data, vel_data[i,*], matrix=reform(fac_matrix[i,*,*],3,3), error=error
-      endif
       
       clean_data.theta = 90-clean_data.theta ;pitch angle is specified in co-latitude
       
@@ -462,20 +569,24 @@ pro mms_part_products, $
       endif
 
     endif
-    
+
     ;Build pitch angle spectrogram
     if in_set(outputs_lc,'pa') then begin
-      spd_pgs_make_theta_spec, clean_data, spec=pa_spec, yaxis=pa_y, /colatitude, resolution=regrid[1]
+      mms_pgs_make_theta_spec, clean_data, spec=pa_spec, yaxis=pa_y, /colatitude, resolution=regrid[1]
     endif
-    
+
+    if in_set(outputs_lc, 'multipad') then begin
+      mms_pgs_make_multipad_spec, clean_data, spec=multi_pad_out, yaxis=pad_agl, /colatitude, resolution=regrid[1], wegy=pad_en, time_idx=i
+    endif
+
     ;Build gyrophase spectrogram
     if in_set(outputs_lc, 'gyro') then begin
-      spd_pgs_make_phi_spec, clean_data, spec=gyro_spec, yaxis=gyro_y, resolution=regrid[0]
+      mms_pgs_make_phi_spec, clean_data, spec=gyro_spec, yaxis=gyro_y, resolution=regrid[0]
     endif
     
     ;Build energy spectrogram from field aligned distribution
     if in_set(outputs_lc, 'fac_energy') then begin
-      spd_pgs_make_e_spec, clean_data, spec=fac_en_spec,  yaxis=fac_en_y
+      mms_pgs_make_e_spec, clean_data, spec=fac_en_spec,  yaxis=fac_en_y, energy=energy
     endif
     
     ;Calculate FAC moments
@@ -483,10 +594,10 @@ pro mms_part_products, $
     if in_set(outputs_lc, 'fac_moments') then begin
       clean_data.theta = 90-clean_data.theta ;convert back to latitude for moments calc
       ;re-add required fields stripped by FAC transform (should fix there if feature becomes standard)
-      clean_data = create_struct('charge',dist.charge,'magf',[0,0,0.],'sc_pot',0.,clean_data)
+      if undefined(sc_pot_data) then scpot=0.0 else scpot = sc_pot_data[i]
+      if ~keyword_set(no_regrid) then clean_data = create_struct('charge',dist.charge,'magf',[0,0,0.],'sc_pot',scpot,clean_data)
       spd_pgs_moments, clean_data, moments=fac_moments, sc_pot_data=sc_pot_data, index=i, _extra=ex
     endif 
-    
   endfor
  
  
@@ -512,11 +623,13 @@ pro mms_part_products, $
   ;Energy Spectrograms
   if ~undefined(en_spec) then begin
     spd_pgs_make_tplot, tplot_prefix+'energy'+suffix, x=times, y=en_y, z=en_spec, ylog=1, units=units_lc,datagap=datagap,tplotnames=tplotnames
+    options, tplot_prefix+'energy'+suffix, ysubtitle='[eV]'
   endif
  
   ;Theta Spectrograms
   if ~undefined(theta_spec) then begin
     spd_pgs_make_tplot, tplot_prefix+'theta'+suffix, x=times, y=theta_y, z=theta_spec, yrange=theta,units=units_lc,datagap=datagap,tplotnames=tplotnames
+    options, tplot_prefix+'theta'+suffix, ysubtitle='[deg]'
   endif
   
   ;Phi Spectrograms
@@ -525,11 +638,17 @@ pro mms_part_products, $
     phi_y_range = (undefined(start_angle) ? 0:start_angle) + [0,360]
     spd_pgs_make_tplot, tplot_prefix+'phi'+suffix, x=times, y=phi_y, z=phi_spec, yrange=phi_y_range,units=units_lc,datagap=datagap,tplotnames=tplotnames
     spd_pgs_shift_phi_spec, names=tplot_prefix+'phi'+suffix, start_angle=start_angle
+    options, tplot_prefix+'phi'+suffix, ysubtitle='[deg]'
   endif
   
   ;Pitch Angle Spectrograms
   if ~undefined(pa_spec) then begin
     spd_pgs_make_tplot, tplot_prefix+'pa'+suffix, x=times, y=pa_y, z=pa_spec, yrange=pitch,units=units_lc,datagap=datagap,tplotnames=tplotnames
+    options, tplot_prefix+'pa'+suffix, ysubtitle='[deg]'
+  endif
+  
+  if in_set(outputs_lc, 'multipad') && ~undefined(multi_pad_out) then begin
+    mms_pgs_make_tplot, tplot_prefix+'pad'+suffix, x=times, v2=pad_agl, v1=pad_en, z=multi_pad_out, yrange=pitch,units=units_lc,datagap=datagap,tplotnames=tplotnames
   endif
   
   ;Gyrophase Spectrograms
@@ -538,13 +657,15 @@ pro mms_part_products, $
     gyro_y_range = (undefined(start_angle) ? 0:start_angle) + [0,360]
     spd_pgs_make_tplot, tplot_prefix+'gyro'+suffix, x=times, y=gyro_y, z=gyro_spec, yrange=gyro_y_range,units=units_lc,datagap=datagap,tplotnames=tplotnames
     spd_pgs_shift_phi_spec, names=tplot_prefix+'gyro'+suffix, start_angle=start_angle
+    options, tplot_prefix+'gyro'+suffix, ysubtitle='[deg]'
   endif
   
   ;Field-Aligned Energy Spectrograms
   if ~undefined(fac_en_spec) then begin
     spd_pgs_make_tplot, tplot_prefix+'energy'+suffix, x=times, y=fac_en_y, z=fac_en_spec, ylog=1, units=units_lc,datagap=datagap,tplotnames=tplotnames
+    options, tplot_prefix+'energy'+suffix, ysubtitle='[eV]'
   endif
-  
+
   ;Moments Variables
   if ~undefined(moments) then begin
     moments.time = times

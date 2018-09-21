@@ -23,7 +23,7 @@
 ;             'pa' - pitch angle spectrogram
 ;             'multipad' - pitch angle spectrogram at every energy 
 ;                 (multi-dimensional PAD variable, to be used by mms_part_getpad)
-;             'moments' - distribution moments (density, velocity, etc.) - see warning at the top of mms_part_products before using this!
+;             'moments' - distribution moments (density, velocity, etc.) 
 ;         add_bfield_dir: add B-field direction (+, -) to the angular spectrograms (phi, theta)
 ;         add_ram_dir: add S/C ram direction (X) to the angular spectrograms (phi, theta)
 ;         dir_interval: number of seconds between B-field and S/C ram direction symbols on angular spectrogram plots
@@ -32,7 +32,7 @@
 ;         subtract_error: subtract the distribution error prior to doing the calculations (FPI only, currently)
 ;         subtract_spintone: subtract the spin-tone from the velocity vector prior to bulk velocity subtraction (FPI versions 3.2 and later only)
 ;         
-;         photoelectron_corrections: *experimental* photoelectron corrections for DES
+;         photoelectron_corrections: *experimental* photoelectron corrections for DES; enabled by default for DES moments; you can disable with photoelectron_corrections=0
 ;         
 ;     The following are found by default for the requested instrument/probe/data_rate; use these keywords 
 ;     to override the defaults:
@@ -43,13 +43,15 @@
 ; Notes:
 ;         Updated to automatically center HPCA measurements if not specified already, 18Oct2017
 ;         
+;         Updated to automatically correct FPI-DES moments for photoelectrons, 20Sept2018
+;         
 ;         FPI-DES photoelectrons are corrected using Dan Gershman's photoelectron model; see the following for details: 
 ;             Spacecraft and Instrument Photoelectrons Measured by the Dual Electron Spectrometers on MMS
 ;             https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2017JA024518
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-08 06:37:03 -0700 (Wed, 08 Aug 2018) $
-;$LastChangedRevision: 25609 $
+;$LastChangedDate: 2018-09-20 15:29:23 -0700 (Thu, 20 Sep 2018) $
+;$LastChangedRevision: 25841 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -159,6 +161,11 @@ pro mms_part_getspec, probes=probes, $
       stop
     endif
     
+    ; turn on photoelectron corrections if the user is requesting DES moments, to match the nominal FPI L2 moment calculations 
+    if instrument eq 'fpi' && species eq 'e' && array_contains(outputs, 'moments') then begin
+      if undefined(photoelectron_corrections) then photoelectron_corrections = 1b
+    endif
+    
     ; prevents concatenation from previous calls
     undefine, tplotnames
     
@@ -216,7 +223,7 @@ pro mms_part_getspec, probes=probes, $
             if undefined(vel_name_user) then vel_name = 'mms'+probes[probe_idx]+'_hpca_'+species+'_ion_bulk_velocity' else vel_name = vel_name_user
         endif
 
-        mms_part_products_new, name, trange=trange, units=units_lc, $
+        mms_part_products, name, trange=trange, units=units_lc, $
             mag_name=bname, pos_name=pos_name, vel_name=vel_name, energy=energy, $
             pitch=pitch, gyro=gyro_in, phi=phi_in, theta=theta, regrid=regrid, $
             outputs=outputs, suffix=suffix, datagap=datagap, subtract_bulk=subtract_bulk, $

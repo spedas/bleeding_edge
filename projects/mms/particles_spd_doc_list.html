@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Sep 18 18:16:23 2018.<P>
+<STRONG>Last modified: </STRONG>Thu Sep 20 18:16:36 2018.<P>
  
 <HR>
  
@@ -25,11 +25,10 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_PART_DES_PHOTOELECTRONS">MMS_PART_DES_PHOTOELECTRONS</A>
 <br>Loads and returns the FPI/DES photoelectron model based on stepper ID
 <LI><A HREF="#MMS_PART_GETPAD">MMS_PART_GETPAD</A>
-<br>Quickly generate pitch angle spectrograms from multipad output from mms_part_getspec/mms_part_products_new
+<br>Quickly generate pitch angle spectrograms from multipad output from mms_part_getspec/mms_part_products
 <LI><A HREF="#MMS_PART_GETSPEC">MMS_PART_GETSPEC</A>
 <LI><A HREF="#MMS_PART_ISEE3D">MMS_PART_ISEE3D</A>
 <LI><A HREF="#MMS_PART_PRODUCTS">MMS_PART_PRODUCTS</A>
-<LI><A HREF="#MMS_PART_PRODUCTS_NEW">MMS_PART_PRODUCTS_NEW</A>
 <LI><A HREF="#MMS_PART_SLICE2D">MMS_PART_SLICE2D</A>
 <LI><A HREF="#MMS_PGS_CLEAN_DATA">MMS_PGS_CLEAN_DATA</A>
 <LI><A HREF="#MMS_PGS_CLEAN_SUPPORT">MMS_PGS_CLEAN_SUPPORT</A>
@@ -195,14 +194,14 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          mms_part_getpad
 
  PURPOSE:
-         Quickly generate pitch angle spectrograms from multipad output from mms_part_getspec/mms_part_products_new
+         Quickly generate pitch angle spectrograms from multipad output from mms_part_getspec/mms_part_products
 
  NOTES:
          still a work in progress
 
  $LastChangedBy: egrimes $
- $LastChangedDate: 2018-04-23 14:56:45 -0700 (Mon, 23 Apr 2018) $
- $LastChangedRevision: 25100 $
+ $LastChangedDate: 2018-09-20 15:04:07 -0700 (Thu, 20 Sep 2018) $
+ $LastChangedRevision: 25838 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getpad.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_getpad.pro">projects/mms/particles/mms_part_getpad.pro</A>)</STRONG><P>
@@ -238,7 +237,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
              'pa' - pitch angle spectrogram
              'multipad' - pitch angle spectrogram at every energy 
                  (multi-dimensional PAD variable, to be used by mms_part_getpad)
-             'moments' - distribution moments (density, velocity, etc.) - see warning at the top of mms_part_products before using this!
+             'moments' - distribution moments (density, velocity, etc.) 
          add_bfield_dir: add B-field direction (+, -) to the angular spectrograms (phi, theta)
          add_ram_dir: add S/C ram direction (X) to the angular spectrograms (phi, theta)
          dir_interval: number of seconds between B-field and S/C ram direction symbols on angular spectrogram plots
@@ -247,7 +246,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          subtract_error: subtract the distribution error prior to doing the calculations (FPI only, currently)
          subtract_spintone: subtract the spin-tone from the velocity vector prior to bulk velocity subtraction (FPI versions 3.2 and later only)
          
-         photoelectron_corrections: *experimental* photoelectron corrections for DES
+         photoelectron_corrections: *experimental* photoelectron corrections for DES; enabled by default for DES moments; you can disable with photoelectron_corrections=0
          
      The following are found by default for the requested instrument/probe/data_rate; use these keywords 
      to override the defaults:
@@ -258,13 +257,15 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
  Notes:
          Updated to automatically center HPCA measurements if not specified already, 18Oct2017
          
+         Updated to automatically correct FPI-DES moments for photoelectrons, 20Sept2018
+         
          FPI-DES photoelectrons are corrected using Dan Gershman's photoelectron model; see the following for details: 
              Spacecraft and Instrument Photoelectrons Measured by the Dual Electron Spectrometers on MMS
              https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2017JA024518
          
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-08-08 06:37:03 -0700 (Wed, 08 Aug 2018) $
-$LastChangedRevision: 25609 $
+$LastChangedDate: 2018-09-20 15:29:23 -0700 (Thu, 20 Sep 2018) $
+$LastChangedRevision: 25841 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_getspec.pro">projects/mms/particles/mms_part_getspec.pro</A>)</STRONG><P>
@@ -308,124 +309,6 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_PART_PRODUCTS">
 <H2>MMS_PART_PRODUCTS</H2></A>
 <A HREF="#MMS_PART_ISEE3D">[Previous Routine]</A>
-<A HREF="#MMS_PART_PRODUCTS_NEW">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-Procedure:
-  mms_part_products
-
-Purpose:
-  Generate spectra and moments from 3D MMS particle data.
-
-   -----------------------------------------------------------------------------------------
-   |  !!!!!! words of caution &lt;------ by egrimes, 4/7/2016:                                |
-   |   While you can use mms_part_products to generate particle moments for FPI from       |
-   |   the distributions, these calculations are currently missing several important       |
-   |   components, including photoelectron removal and S/C potential corrections.          |
-   |   The official moments released by the team include these, and are the scientific     |
-   |   products you should use in your analysis; see mms_load_fpi_crib to see how to load  |
-   |   the FPI moments released by the team (des-moms, dis-moms datatypes)                 |
-   -----------------------------------------------------------------------------------------
-
-Data Products:
-  'energy' - energy spectrogram
-  'phi' - azimuthal spectrogram 
-  'theta' - latitudinal spectrogram
-  'gyro' - gyrophase spectrogram
-  'pa' - pitch angle spectrogram
-  'moments' - distribution moments (density, velocity, etc.)
-
-
-Calling Sequence:
-  mms_part_products, tplot_name [,trange=trange] [outputs=outputs] ...
-
-
-Example Usage:
-  -energy, phi, and theta spectrograms
-    mms_part_products, 'mms2_des_dist_brst', outputs='phi theta energy'
-
-  -field aligned spectrograms, limited time range
-    mms_part_products, 'mms2_des_dist_brst', output='pa gyro', $
-                       pos_name = 'mms2_defeph_pos', $
-                       mag_name = 'mms2_fgm_bvec'
-
-  -limit range of input data (gyro and pa limits do not affect phi/theta spectra)
-    mms_part_products, 'mms2_des_dist_brst', output = 'energy pitch', $
-                       energy = [15,1e5], $  ;eV
-                       pitch = [45,135]
-
-Arguments:
-  tplot_name:  Name of the tplot variable containing MMS 3D particle distribution data
-
-
-Input Keywords:
-  trange:  Two element time range [start,end]
-  outputs:  List of requested outputs, array or space separated list, default='energy'
-
-  energy:  Two element energy range [min,max], in eV
-  phi:  Two element phi range [min,max], in degrees, spacecraft spin plane
-  theta:  Two element theta range [min,max], in degrees, latitude from spacecraft spin plane
-  pitch:  Two element pitch angle range [min,max], in degrees, magnetic field pitch angle
-  gyro:  Two element gyrophase range [min,max], in degrees, gyrophase  
-
-  mag_name:  Tplot variable containing magnetic field data for moments and FAC transformations 
-  pos_name:  Tplot variable containing spacecraft position for FAC transformations
-  sc_pot_name:  Tplot variable containing spacecraft potential data for moments corrections
-  vel_name:  Tplot variable containing velocity data in km/s for use with /subtract_bulk
-    
-  units:  Secify units of output variables.  Must be 'eflux' to calculate moments.
-            'flux'   -   # / (cm^2 * s * sr * eV)
-            'eflux'  -  eV / (cm^2 * s * sr * eV)  &lt;default&gt;
-            'df_cm'  -  s^3 / cm^6
-            'df_km'     -  s^3 / km^6
-
-  fac_type:  Select the field aligned coordinate system variant.
-             Existing options: &quot;phigeo,mphigeo, xgse&quot;
-  regrid:  Two element array specifying the resolution of the field-aligned data.
-           [n_gyro,n_pitch], default is [32,16]
-  no_regrid:  (experimental) Skip regrid step when converting to field aligned coordinates.
-              
-  
-  suffix:  Suffix to append to output tplot variable names 
-
-  probe:  Specify probe designation when it cannot be parsed from tplot_name
-  species:  Specify species when it cannot be parsed from tplot_name
-  instrument:  Specify instrument when it cannot be parsed from tplot_name
-  input_units:  (HPCA only) Specify units of input data when they cannot be parsed from tplot_name
-
-  start_angle:  Set a start angle for azimuthal spectrogram y axis
-    
-  datagap:  Setting for tplot variables, controls how long a gap must be before it is drawn. 
-            (can also manually degap)
-  subtract_bulk:  Flag to subtract velocity vector from distribution before
-                  calculation of field aligned angular spectra.
-
-  display_object:  Object allowing dprint to export output messages
-
-  
-Output Keywords:
-  tplotnames:  List of tplot variables that were created
-  get_data_structures:  Set to named variable to return structures directly when
-                        generating field aligned outputs.  This may considerably
-                        slow the process!
-  error:  Error status flag for calling routine, 1=error 0=success
-
-
-Notes: 
-  -See warning above in purpose description!
-
-
-$LastChangedBy: egrimes $
-$LastChangedDate: 2018-04-03 11:20:00 -0700 (Tue, 03 Apr 2018) $
-$LastChangedRevision: 24980 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products.pro $
-</PRE><P>
-<STRONG>(See <A href="particles/mms_part_products.pro">projects/mms/particles/mms_part_products.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_PART_PRODUCTS_NEW">
-<H2>MMS_PART_PRODUCTS_NEW</H2></A>
-<A HREF="#MMS_PART_PRODUCTS">[Previous Routine]</A>
 <A HREF="#MMS_PART_SLICE2D">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -435,15 +318,6 @@ Procedure:
 Purpose:
   Generate spectra and moments from 3D MMS particle data.
 
-   -----------------------------------------------------------------------------------------
-   |  !!!!!! words of caution &lt;------ by egrimes, 4/7/2016:                                |
-   |   While you can use mms_part_products to generate particle moments for FPI from       |
-   |   the distributions, these calculations are currently missing several important       |
-   |   components, including photoelectron removal and S/C potential corrections.          |
-   |   The official moments released by the team include these, and are the scientific     |
-   |   products you should use in your analysis; see mms_load_fpi_crib to see how to load  |
-   |   the FPI moments released by the team (des-moms, dis-moms datatypes)                 |
-   -----------------------------------------------------------------------------------------
 
 Data Products:
   'energy' - energy spectrogram
@@ -536,19 +410,23 @@ Notes:
   -FPI-DES photoelectrons are corrected using Dan Gershman's photoelectron model; see the following for details:
      Spacecraft and Instrument Photoelectrons Measured by the Dual Electron Spectrometers on MMS
      https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2017JA024518
+     
+  -Note that there may still be slight differences between the PGS moments and the official moments released by the team.
+     The official moments released by the team are the scientific
+     products you should use in your analysis.
 
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-08-08 06:37:03 -0700 (Wed, 08 Aug 2018) $
-$LastChangedRevision: 25609 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products_new.pro $
+$LastChangedDate: 2018-09-20 15:04:07 -0700 (Thu, 20 Sep 2018) $
+$LastChangedRevision: 25838 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products.pro $
 </PRE><P>
-<STRONG>(See <A href="particles/mms_part_products_new.pro">projects/mms/particles/mms_part_products_new.pro</A>)</STRONG><P>
+<STRONG>(See <A href="particles/mms_part_products.pro">projects/mms/particles/mms_part_products.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="MMS_PART_SLICE2D">
 <H2>MMS_PART_SLICE2D</H2></A>
-<A HREF="#MMS_PART_PRODUCTS_NEW">[Previous Routine]</A>
+<A HREF="#MMS_PART_PRODUCTS">[Previous Routine]</A>
 <A HREF="#MMS_PGS_CLEAN_DATA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

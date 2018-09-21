@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Sep 18 18:16:23 2018.<P>
+<STRONG>Last modified: </STRONG>Thu Sep 20 18:16:36 2018.<P>
  
 <HR>
  
@@ -20,6 +20,8 @@ This page was created by the IDL library routine
 <UL>
 <H1>projects/mms/particles/deprecated</H1>
 <LI><A HREF="#MMS_PART_PROCESS">MMS_PART_PROCESS</A>
+<LI><A HREF="#MMS_PART_PRODUCTS_NEW">MMS_PART_PRODUCTS_NEW</A>
+<LI><A HREF="#MMS_PART_PRODUCTS_OLD">MMS_PART_PRODUCTS_OLD</A>
 <LI><A HREF="#MMS_PART_WRITE_ASCII">MMS_PART_WRITE_ASCII</A>
 <LI><A HREF="#MOKA_MMS_PAD">MOKA_MMS_PAD</A>
 <LI><A HREF="#MOKA_MMS_PAD_CRIB">MOKA_MMS_PAD_CRIB</A>
@@ -31,7 +33,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="MMS_PART_PROCESS">
 <H2>MMS_PART_PROCESS</H2></A>
-<A HREF="#MMS_PART_WRITE_ASCII">[Next Routine]</A>
+<A HREF="#MMS_PART_PRODUCTS_NEW">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -65,9 +67,245 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="deprecated/mms_part_process.pro">projects/mms/particles/deprecated/mms_part_process.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_PART_PRODUCTS_NEW">
+<H2>MMS_PART_PRODUCTS_NEW</H2></A>
+<A HREF="#MMS_PART_PROCESS">[Previous Routine]</A>
+<A HREF="#MMS_PART_PRODUCTS_OLD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Procedure:
+  mms_part_products
+
+Purpose:
+  Generate spectra and moments from 3D MMS particle data.
+
+
+Data Products:
+  'energy' - energy spectrogram
+  'phi' - azimuthal spectrogram 
+  'theta' - latitudinal spectrogram
+  'gyro' - gyrophase spectrogram
+  'pa' - pitch angle spectrogram
+  'multipad' - pitch angle spectrogram at each energy (multi-dimensional tplot variable, 
+       you'll need to use mms_part_getpad to generate PADs at various energies)
+  'moments' - distribution moments (density, velocity, etc.)
+
+
+Calling Sequence:
+  mms_part_products, tplot_name [,trange=trange] [outputs=outputs] ...
+
+
+Example Usage:
+  -energy, phi, and theta spectrograms
+    mms_part_products, 'mms2_des_dist_brst', outputs='phi theta energy'
+
+  -field aligned spectrograms, limited time range
+    mms_part_products, 'mms2_des_dist_brst', output='pa gyro', $
+                       pos_name = 'mms2_defeph_pos', $
+                       mag_name = 'mms2_fgm_bvec'
+
+  -limit range of input data (gyro and pa limits do not affect phi/theta spectra)
+    mms_part_products, 'mms2_des_dist_brst', output = 'energy pitch', $
+                       energy = [15,1e5], $  ;eV
+                       pitch = [45,135]
+
+Arguments:
+  tplot_name:  Name of the tplot variable containing MMS 3D particle distribution data
+
+
+Input Keywords:
+  trange:  Two element time range [start,end]
+  outputs:  List of requested outputs, array or space separated list, default='energy'
+
+  energy:  Two element energy range [min,max], in eV
+  phi:  Two element phi range [min,max], in degrees, spacecraft spin plane
+  theta:  Two element theta range [min,max], in degrees, latitude from spacecraft spin plane
+  pitch:  Two element pitch angle range [min,max], in degrees, magnetic field pitch angle
+  gyro:  Two element gyrophase range [min,max], in degrees, gyrophase  
+
+  mag_name:  Tplot variable containing magnetic field data for moments and FAC transformations 
+  pos_name:  Tplot variable containing spacecraft position for FAC transformations
+  sc_pot_name:  Tplot variable containing spacecraft potential data for moments corrections
+  vel_name:  Tplot variable containing velocity data in km/s for use with /subtract_bulk
+    
+  units:  Specify units of output variables.  Must be 'eflux' to calculate moments.
+            'flux'   -   # / (cm^2 * s * sr * eV)
+            'eflux'  -  eV / (cm^2 * s * sr * eV)  &lt;default&gt;
+            'df_cm'  -  s^3 / cm^6
+            'df_km'     -  s^3 / km^6
+
+  fac_type:  Select the field aligned coordinate system variant.
+             Existing options: &quot;phigeo,mphigeo, xgse&quot;
+  regrid:  Two element array specifying the resolution of the field-aligned data.
+           [n_gyro,n_pitch], default is [32,16]
+  no_regrid:  (experimental) Skip regrid step when converting to field aligned coordinates.
+              
+  
+  suffix:  Suffix to append to output tplot variable names 
+
+  probe:  Specify probe designation when it cannot be parsed from tplot_name
+  species:  Specify species when it cannot be parsed from tplot_name
+  instrument:  Specify instrument when it cannot be parsed from tplot_name
+  input_units:  (HPCA only) Specify units of input data when they cannot be parsed from tplot_name
+
+  start_angle:  Set a start angle for azimuthal spectrogram y axis
+    
+  datagap:  Setting for tplot variables, controls how long a gap must be before it is drawn. 
+            (can also manually degap)
+  subtract_bulk:  Flag to subtract bulk velocity (experimental)
+
+  display_object:  Object allowing dprint to export output messages
+
+  
+Output Keywords:
+  tplotnames:  List of tplot variables that were created
+  get_data_structures:  Set to named variable to return structures directly when
+                        generating field aligned outputs.  This may considerably
+                        slow the process!
+  error:  Error status flag for calling routine, 1=error 0=success
+
+
+Notes: 
+  -See warning above in purpose description!
+  
+  -FPI-DES photoelectrons are corrected using Dan Gershman's photoelectron model; see the following for details:
+     Spacecraft and Instrument Photoelectrons Measured by the Dual Electron Spectrometers on MMS
+     https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2017JA024518
+     
+  -Note that there may still be slight differences between the PGS moments and the official moments released by the team.
+     The official moments released by the team are the scientific
+     products you should use in your analysis.
+
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2018-09-20 15:38:18 -0700 (Thu, 20 Sep 2018) $
+$LastChangedRevision: 25843 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/deprecated/mms_part_products_new.pro $
+</PRE><P>
+<STRONG>(See <A href="deprecated/mms_part_products_new.pro">projects/mms/particles/deprecated/mms_part_products_new.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MMS_PART_PRODUCTS_OLD">
+<H2>MMS_PART_PRODUCTS_OLD</H2></A>
+<A HREF="#MMS_PART_PRODUCTS_NEW">[Previous Routine]</A>
+<A HREF="#MMS_PART_WRITE_ASCII">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Procedure:
+  mms_part_products_old (deprecated copy of mms_part_products)
+
+Purpose:
+  Generate spectra and moments from 3D MMS particle data.
+
+   -----------------------------------------------------------------------------------------
+   |  !!!!!! words of caution &lt;------ by egrimes, 4/7/2016:                                |
+   |   While you can use mms_part_products to generate particle moments for FPI from       |
+   |   the distributions, these calculations are currently missing several important       |
+   |   components, including photoelectron removal and S/C potential corrections.          |
+   |   The official moments released by the team include these, and are the scientific     |
+   |   products you should use in your analysis; see mms_load_fpi_crib to see how to load  |
+   |   the FPI moments released by the team (des-moms, dis-moms datatypes)                 |
+   -----------------------------------------------------------------------------------------
+
+Data Products:
+  'energy' - energy spectrogram
+  'phi' - azimuthal spectrogram 
+  'theta' - latitudinal spectrogram
+  'gyro' - gyrophase spectrogram
+  'pa' - pitch angle spectrogram
+  'moments' - distribution moments (density, velocity, etc.)
+
+
+Calling Sequence:
+  mms_part_products, tplot_name [,trange=trange] [outputs=outputs] ...
+
+
+Example Usage:
+  -energy, phi, and theta spectrograms
+    mms_part_products, 'mms2_des_dist_brst', outputs='phi theta energy'
+
+  -field aligned spectrograms, limited time range
+    mms_part_products, 'mms2_des_dist_brst', output='pa gyro', $
+                       pos_name = 'mms2_defeph_pos', $
+                       mag_name = 'mms2_fgm_bvec'
+
+  -limit range of input data (gyro and pa limits do not affect phi/theta spectra)
+    mms_part_products, 'mms2_des_dist_brst', output = 'energy pitch', $
+                       energy = [15,1e5], $  ;eV
+                       pitch = [45,135]
+
+Arguments:
+  tplot_name:  Name of the tplot variable containing MMS 3D particle distribution data
+
+
+Input Keywords:
+  trange:  Two element time range [start,end]
+  outputs:  List of requested outputs, array or space separated list, default='energy'
+
+  energy:  Two element energy range [min,max], in eV
+  phi:  Two element phi range [min,max], in degrees, spacecraft spin plane
+  theta:  Two element theta range [min,max], in degrees, latitude from spacecraft spin plane
+  pitch:  Two element pitch angle range [min,max], in degrees, magnetic field pitch angle
+  gyro:  Two element gyrophase range [min,max], in degrees, gyrophase  
+
+  mag_name:  Tplot variable containing magnetic field data for moments and FAC transformations 
+  pos_name:  Tplot variable containing spacecraft position for FAC transformations
+  sc_pot_name:  Tplot variable containing spacecraft potential data for moments corrections
+  vel_name:  Tplot variable containing velocity data in km/s for use with /subtract_bulk
+    
+  units:  Secify units of output variables.  Must be 'eflux' to calculate moments.
+            'flux'   -   # / (cm^2 * s * sr * eV)
+            'eflux'  -  eV / (cm^2 * s * sr * eV)  &lt;default&gt;
+            'df_cm'  -  s^3 / cm^6
+            'df_km'     -  s^3 / km^6
+
+  fac_type:  Select the field aligned coordinate system variant.
+             Existing options: &quot;phigeo,mphigeo, xgse&quot;
+  regrid:  Two element array specifying the resolution of the field-aligned data.
+           [n_gyro,n_pitch], default is [32,16]
+  no_regrid:  (experimental) Skip regrid step when converting to field aligned coordinates.
+              
+  
+  suffix:  Suffix to append to output tplot variable names 
+
+  probe:  Specify probe designation when it cannot be parsed from tplot_name
+  species:  Specify species when it cannot be parsed from tplot_name
+  instrument:  Specify instrument when it cannot be parsed from tplot_name
+  input_units:  (HPCA only) Specify units of input data when they cannot be parsed from tplot_name
+
+  start_angle:  Set a start angle for azimuthal spectrogram y axis
+    
+  datagap:  Setting for tplot variables, controls how long a gap must be before it is drawn. 
+            (can also manually degap)
+  subtract_bulk:  Flag to subtract velocity vector from distribution before
+                  calculation of field aligned angular spectra.
+
+  display_object:  Object allowing dprint to export output messages
+
+  
+Output Keywords:
+  tplotnames:  List of tplot variables that were created
+  get_data_structures:  Set to named variable to return structures directly when
+                        generating field aligned outputs.  This may considerably
+                        slow the process!
+  error:  Error status flag for calling routine, 1=error 0=success
+
+
+Notes: 
+  -See warning above in purpose description!
+
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2018-09-20 15:03:21 -0700 (Thu, 20 Sep 2018) $
+$LastChangedRevision: 25837 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/deprecated/mms_part_products_old.pro $
+</PRE><P>
+<STRONG>(See <A href="deprecated/mms_part_products_old.pro">projects/mms/particles/deprecated/mms_part_products_old.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_PART_WRITE_ASCII">
 <H2>MMS_PART_WRITE_ASCII</H2></A>
-<A HREF="#MMS_PART_PROCESS">[Previous Routine]</A>
+<A HREF="#MMS_PART_PRODUCTS_OLD">[Previous Routine]</A>
 <A HREF="#MOKA_MMS_PAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

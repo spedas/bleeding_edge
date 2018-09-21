@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_pgs_regressions_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-07-13 15:55:44 -0700 (Fri, 13 Jul 2018) $
-; $LastChangedRevision: 25472 $
+; $LastChangedDate: 2018-09-20 15:35:27 -0700 (Thu, 20 Sep 2018) $
+; $LastChangedRevision: 25842 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_pgs_regressions_ut__define.pro $
 ;-
 
@@ -39,10 +39,10 @@ function mms_pgs_regressions_ut::test_bulk_vel_subtract_pa_range
   pitch_angles = [1, 179]
 
   ; no bulk velocity subtraction
-  mms_part_products_new, name, output=outputs, /silent, suffix='_Xgse', pitch=pitch_angles, mag_name=bname, pos_name=pos_name, vel_name=vel_name;, fac_type='Xgse'
+  mms_part_products, name, output=outputs, /silent, suffix='_Xgse', pitch=pitch_angles, mag_name=bname, pos_name=pos_name, vel_name=vel_name;, fac_type='Xgse'
 
   ; and now with bulk velocity subtraction
-  mms_part_products_new, name, output=outputs, /silent, /subtract_bulk, suffix='_Xgse_bulk', pitch=pitch_angles, mag_name=bname, pos_name=pos_name, vel_name=vel_name;, fac_type='Xgse'
+  mms_part_products, name, output=outputs, /silent, /subtract_bulk, suffix='_Xgse_bulk', pitch=pitch_angles, mag_name=bname, pos_name=pos_name, vel_name=vel_name;, fac_type='Xgse'
 
   get_data, 'mms3_dis_dist_brst_energy_Xgse', data=d
   max_data = max(d.Y[0, *], maxidx)
@@ -79,10 +79,10 @@ function mms_pgs_regressions_ut::test_bulk_vel_subtract
   outputs = ['energy', 'theta', 'phi']
 
   ; no bulk velocity subtraction
-  mms_part_products_new, name, output=outputs, /silent, suffix='_Xgse', pitch=pitch_angles, mag_name=bname, pos_name=pos_name, vel_name=vel_name, fac_type='Xgse'
+  mms_part_products, name, output=outputs, /silent, suffix='_Xgse', pitch=pitch_angles, mag_name=bname, pos_name=pos_name, vel_name=vel_name, fac_type='Xgse'
 
   ; and now with bulk velocity subtraction
-  mms_part_products_new, name, output=outputs, /silent, /subtract_bulk, suffix='_Xgse_bulk', pitch=pitch_angles, mag_name=bname, pos_name=pos_name, vel_name=vel_name, fac_type='Xgse'
+  mms_part_products, name, output=outputs, /silent, /subtract_bulk, suffix='_Xgse_bulk', pitch=pitch_angles, mag_name=bname, pos_name=pos_name, vel_name=vel_name, fac_type='Xgse'
 
   get_data, 'mms3_dis_dist_brst_energy_Xgse', data=d
   max_data = max(d.Y[0, *], maxidx)
