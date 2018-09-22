@@ -59,21 +59,21 @@ pro spp_swp_sweepv_dacv, sweepv_dac,$
   for i = 0,49 do begin
      ;; Big fix for low resolution at low end of sweep
      w = where(sweepv_dac le i,nw) 
-     num(i) = nw/nang
+     num[i] = nw/nang
   endfor
   
   cut = where(indgen(50)-num gt 4)
-  thresh = cut(0)
+  thresh = cut[0]
   
   w = where(sweepv_dac le thresh,nw)
   steps = nw/nang
   
   for i = 0,steps-1 do begin
-     sweepv_dac(w(i*nang):w(i*nang+nang-1)) = replicate(thresh-i,nang)
+     sweepv_dac[w[i*nang]:w[i*nang+nang-1]] = replicate(thresh-i,nang)
   endfor
   
   ;; Fix spoiler at low end to match slut
-  spv_dac(w) = round(spv(w)*sweepv_dac(w)*hvgain/spgain) 
+  spv_dac[w] = round(spv[w]*sweepv_dac[w]*hvgain/spgain) 
   
   if keyword_set(plot) then begin
      wi,1

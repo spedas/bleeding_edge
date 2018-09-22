@@ -104,8 +104,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-09-20 15:04:07 -0700 (Thu, 20 Sep 2018) $
-;$LastChangedRevision: 25838 $
+;$LastChangedDate: 2018-09-21 14:26:21 -0700 (Fri, 21 Sep 2018) $
+;$LastChangedRevision: 25851 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products.pro $
 ;-
 pro mms_part_products, $
@@ -378,6 +378,11 @@ pro mms_part_products, $
   ; grab the FPI photoelectron model if needed
   if keyword_set(correct_photoelectrons) then begin
     fpi_photoelectrons = mms_part_des_photoelectrons(in_tvarname)
+    
+    if ~is_struct(fpi_photoelectrons) && fpi_photoelectrons eq -1 then begin
+      dprint, dlevel=0, 'Photoelectron model missing for this date; re-run without photoelectron corrections' 
+      return
+    endif
     
     ; will need stepper parities for burst mode data
     if data_rate eq 'brst' then begin

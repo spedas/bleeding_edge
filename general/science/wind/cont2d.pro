@@ -15,7 +15,7 @@ vy = replicate(1.,2*n+1) # vout
 
 df = distfunc(vx,vy,par=dfpar)
 ;print,minmax_range(df)
-df_range= alog(minmax_range(df))/alog(10.)
+df_range= alog(minmax(df))/alog(10.)
 if keyword_set(cpd) then cpd0=cpd $
 else cpd0 = floor(15/(df_range(1)-df_range(0))) > 1.
 ;print,cpd0
