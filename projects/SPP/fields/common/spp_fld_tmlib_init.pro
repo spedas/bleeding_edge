@@ -3,10 +3,10 @@
 ;   SPP_FLD_TMLIB_INIT
 ;
 ; PURPOSE:
-;   Initializes TMlib configuration for loading PSP/FIELDS data.  TMlib 
-;   configuration information is stored in an IDL system variable, 
+;   Initializes TMlib configuration for loading PSP/FIELDS data.  TMlib
+;   configuration information is stored in an IDL system variable,
 ;   !SPP_FLD_TMLIB.
-;   
+;
 ;   Also calls routines which ensure that several helper functions (for
 ;   example, functions which define frequencies for FIELDS spectral data
 ;   products) are available for IDL to call.
@@ -25,13 +25,13 @@
 ; CREATED BY:
 ;   pulupa
 ;
-; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2018-05-08 16:22:30 -0700 (Tue, 08 May 2018) $
-; $LastChangedRevision: 25185 $
+; $LastChangedBy: pulupa $
+; $LastChangedDate: 2018-09-24 11:18:10 -0700 (Mon, 24 Sep 2018) $
+; $LastChangedRevision: 25856 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_tmlib_init.pro $
 ;-
 
-pro spp_fld_tmlib_init, server = server, test_cdf_dir = test_cdf_dir
+pro spp_fld_tmlib_init, server = server, test_cdf_dir = test_cdf_dir, daily = daily
 
   ; Set server
 
@@ -39,7 +39,11 @@ pro spp_fld_tmlib_init, server = server, test_cdf_dir = test_cdf_dir
 
   ; Set CDF directory
 
-  cdf_dir = getenv('SPP_FLD_CDF_DIR')
+  if n_elements(daily) EQ 0 then begin
+    cdf_dir = getenv('SPP_FLD_CDF_DIR')
+  endif else begin
+    cdf_dir = getenv('SPP_FLD_CDF_DAILY_DIR')
+  endelse
 
   if cdf_dir EQ '' then begin
 

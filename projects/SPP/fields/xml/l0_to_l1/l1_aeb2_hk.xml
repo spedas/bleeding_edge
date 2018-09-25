@@ -42,6 +42,51 @@
 -->
 
   <cdf_var
+      name = "v4_imped"
+      type = "integer"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "v4_imped"
+        FORMAT = "I8"
+        DATA_TYPE = "CDF_UINT2"
+        LABLAXIS = "v4_imped"
+        VAR_TYPE = "data"
+        FILLVAL = "65534"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "3"
+        SCALEMIN = "0"
+        SCALEMAX = "3"
+        UNITS = "None"
+        CATDESC = "V4 Imped Flag"
+        DEPEND_0 = "epoch">  
+  </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name = "v3_imped"
+      type = "integer"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "v3_imped"
+        FORMAT = "I8"
+        DATA_TYPE = "CDF_UINT2"
+        LABLAXIS = "v1_imped"
+        VAR_TYPE = "data"
+        FILLVAL = "65534"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "3"
+        SCALEMIN = "0"
+        SCALEMAX = "3"
+        UNITS = "None"
+        CATDESC = "V3 Imped Flag"
+        DEPEND_0 = "epoch">  
+  </cdf_att>
+  </cdf_var>
+
+
+  <cdf_var
       name           = "pa3_tmon"
       type           = "double"
       raw						 = "pa3_tmon_raw">

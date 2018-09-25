@@ -35,11 +35,54 @@
       type           = "Integer">
   </cdf_var>
 -->
+  <cdf_var
+      name = "v2_imped"
+      type = "integer"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "v2_imped"
+        FORMAT = "I8"
+        DATA_TYPE = "CDF_UINT2"
+        LABLAXIS = "v2_imped"
+        VAR_TYPE = "data"
+        FILLVAL = "65534"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "3"
+        SCALEMIN = "0"
+        SCALEMAX = "3"
+        UNITS = "None"
+        CATDESC = "V2 Imped Flag"
+        DEPEND_0 = "epoch">  
+  </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name = "v1_imped"
+      type = "integer"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "v1_imped"
+        FORMAT = "I8"
+        DATA_TYPE = "CDF_UINT2"
+        LABLAXIS = "v1_imped"
+        VAR_TYPE = "data"
+        FILLVAL = "65534"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "3"
+        SCALEMIN = "0"
+        SCALEMAX = "3"
+        UNITS = "None"
+        CATDESC = "V1 Imped Flag"
+        DEPEND_0 = "epoch">  
+  </cdf_att>
+  </cdf_var>
 
   <cdf_var
       name           = "pa1_tmon"
       type           = "double"
-      raw 					 = "pa1_tmon_raw">
+      raw = "pa1_tmon_raw">
     <cdf_att
         FIELDNAM = "PA1_TMON"
         FORMAT = "F15.3"
@@ -58,9 +101,9 @@
   </cdf_var>
 
   <cdf_var
-      name           = "pa2_tmon"
-      type           = "double"
-      raw 					 = "pa2_tmon_raw">
+      name = "pa2_tmon"
+      type = "double"
+      raw = "pa2_tmon_raw">
     <cdf_att
         FIELDNAM = "PA2_TMON"
         FORMAT = "F15.3"
@@ -79,9 +122,9 @@
   </cdf_var>
 
   <cdf_var
-      name           = "xfl_tmon"
-      type           = "double"
-      raw 					 = "xfl_tmon_raw">
+      name = "xfl_tmon"
+      type = "double"
+      raw = "xfl_tmon_raw">
     <cdf_att
         FIELDNAM = "XFL_TMON"
         FORMAT = "F15.3"

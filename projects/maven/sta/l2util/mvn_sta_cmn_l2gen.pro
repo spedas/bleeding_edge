@@ -131,8 +131,8 @@ End
 ; 6-nov-2014, jmm, Corrects clock drift 
 ; 22-dec-2014, jmm, added eprom_ver and header
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2015-10-21 15:41:49 -0700 (Wed, 21 Oct 2015) $
-; $LastChangedRevision: 19131 $
+; $LastChangedDate: 2018-09-24 13:39:08 -0700 (Mon, 24 Sep 2018) $
+; $LastChangedRevision: 25858 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2gen.pro $
 ;-
 Pro mvn_sta_cmn_l2gen, cmn_dat, otp_struct = otp_struct, directory = directory, $
@@ -424,7 +424,7 @@ Pro mvn_sta_cmn_l2gen, cmn_dat, otp_struct = otp_struct, directory = directory, 
         Else If(vj Eq 'sc_pot') Then vatt.units = 'volts' $
         Else If(vj Eq 'magf') Then vatt.units = 'nT' $
         Else If(vj Eq 'data' Or vj Eq 'bkg') Then vatt.units = 'Counts' $
-        Else If(vj Eq 'eflux') Then vatt.units = 'eV/sr/sec' ;check this
+        Else If(vj Eq 'eflux') Then vatt.units = 'eV/(cm^2-s-sr-eV)' ;check this
      Endelse
 
 ;Depends and labels

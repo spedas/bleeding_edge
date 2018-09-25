@@ -29,13 +29,13 @@
 ; CREATED BY:
 ;   pulupa
 ;
-; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2017-01-11 16:14:34 -0800 (Wed, 11 Jan 2017) $
-; $LastChangedRevision: 22579 $
+; $LastChangedBy: pulupa $
+; $LastChangedDate: 2018-09-24 11:18:10 -0700 (Mon, 24 Sep 2018) $
+; $LastChangedRevision: 25856 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_timespan.pro $
 ;-
 pro spp_fld_cdf_timespan, trange = trange, success = success, $
-  filename_timestring = filename_timestring
+  filename_timestring = filename_timestring, daily = daily
 
   success = 0
 
