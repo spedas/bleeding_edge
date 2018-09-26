@@ -78,6 +78,7 @@ pro spp_ptp_lun_read,in_lun,out_lun,info=info
       buf = bytarr(17)
       remainder=!null
     endwhile
+    flush,out_lun
 
     if 0 then begin
       nextfile:

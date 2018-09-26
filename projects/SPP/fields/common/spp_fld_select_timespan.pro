@@ -78,15 +78,15 @@ function spp_fld_select_timespan_define_presets, fm_or_em
 
   deploy_v3_time = time_double('2018-09-03/00:57:50')
 
-  fm_times['deploy_v3_10_min'] =        deploy_v2_time + [-60d, 600d]
-  fm_times['deploy_v3_01_min'] =        deploy_v2_time + [-10d, 60d]
-  fm_times['deploy_v3_15_sec'] =        deploy_v2_time + [-5d, 15d]
+  fm_times['deploy_v3_10_min'] =        deploy_v3_time + [-60d, 600d]
+  fm_times['deploy_v3_01_min'] =        deploy_v3_time + [-10d, 60d]
+  fm_times['deploy_v3_15_sec'] =        deploy_v3_time + [-5d, 15d]
 
   deploy_v4_time = time_double('2018-09-03/01:30:35')
 
-  fm_times['deploy_v4_10_min'] =        deploy_v2_time + [-60d, 600d]
-  fm_times['deploy_v4_01_min'] =        deploy_v2_time + [-10d, 60d]
-  fm_times['deploy_v4_15_sec'] =        deploy_v2_time + [-5d, 15d]
+  fm_times['deploy_v4_10_min'] =        deploy_v4_time + [-60d, 600d]
+  fm_times['deploy_v4_01_min'] =        deploy_v4_time + [-10d, 60d]
+  fm_times['deploy_v4_15_sec'] =        deploy_v4_time + [-5d, 15d]
 
   fm_times['rfs_default_hold'] = ['2018-09-03/01:49:00', '2018-09-03/02:12:00']
 
