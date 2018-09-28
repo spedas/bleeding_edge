@@ -14,6 +14,8 @@
 ;         bin_size: size of the pitch angle bins
 ;         num_smooth: should contain number of seconds to use when smoothing
 ;             only creates a smoothed product (_pad_smth) if this keyword is specified
+;         angles_from_bfield: calculate the pitch angles from the B-field data instead of
+;             reading from the CDFs
 ;
 ;
 ; EXAMPLES:
@@ -30,17 +32,18 @@
 ;     Revision of mms_feeps_pad by Drew Turner
 ;
 ;     dturner, 26 Jan 2017, Modified mms_feeps_pad to produce results consistent with Drew's own PAD codes for FEEPS
+;     egrimes, 27 Sep 2018, modified to use pitch angles from CDF files for burst mode data; added angles_from_bfield keyword for calculating PAs from the Bfield data
 ;                       
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-11-07 15:41:47 -0800 (Tue, 07 Nov 2017) $
-;$LastChangedRevision: 24274 $
+;$LastChangedDate: 2018-09-27 10:13:28 -0700 (Thu, 27 Sep 2018) $
+;$LastChangedRevision: 25866 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_feeps_pad.pro $
 ;-
 
 pro mms_feeps_pad, bin_size = bin_size, probe = probe, energy = energy, level = level, $
   suffix = suffix_in, datatype = datatype, data_units = data_units, data_rate = data_rate, $
-  num_smooth = num_smooth
+  num_smooth = num_smooth, angles_from_bfield=angles_from_bfield
   
   if undefined(datatype) then datatype='electron' else datatype=strlowcase(datatype)
   if undefined(data_rate) then data_rate = 'srvy' else data_rate=strlowcase(data_rate)
@@ -76,14 +79,16 @@ pro mms_feeps_pad, bin_size = bin_size, probe = probe, energy = energy, level = 
 
   
   ; get the pitch angles
-  ; tdeflag, prefix+'_epd_feeps_pitch_angle'+suffix_in, 'linear', /overwrite
-  ; v5.5+ = mms1_epd_feeps_srvy_l2_electron_pitch_angle
-  ;get_data, prefix+'_epd_feeps_'+data_rate+'_'+level+'_'+datatype+'_pitch_angle'+suffix_in, data=pa_data, dlimits=pa_dlimits
-
+  if data_rate eq 'brst' && undefined(angles_from_bfield) then begin
+    ; tdeflag, prefix+'_epd_feeps_pitch_angle'+suffix_in, 'linear', /overwrite
+    ; v5.5+ = mms1_epd_feeps_srvy_l2_electron_pitch_angle
+    get_data, prefix+'_epd_feeps_'+data_rate+'_'+level+'_'+datatype+'_pitch_angle'+suffix_in, data=pa_data, dlimits=pa_dlimits
+  endif else begin
   ; temporary solution to issue with NaNs in the _pitch_angle variable
   ; calculate the pitch angles from the magnetic field data
-  mms_feeps_pitch_angles, trange=trange, probe=probe, level=level, data_rate=data_rate, datatype=datatype, suffix=suffix_in, idx_maps=idx_maps
-  get_data, prefix+'_epd_feeps_'+data_rate+'_'+level+'_'+datatype+'_pa'+suffix_in, data=pa_data, dlimits=pa_dlimits
+    mms_feeps_pitch_angles, trange=trange, probe=probe, level=level, data_rate=data_rate, datatype=datatype, suffix=suffix_in, idx_maps=idx_maps
+    get_data, prefix+'_epd_feeps_'+data_rate+'_'+level+'_'+datatype+'_pa'+suffix_in, data=pa_data, dlimits=pa_dlimits
+  endelse
 
   if ~is_struct(pa_data) then begin
     dprint, dlevel = 0, 'Error, couldn''t find the PA variable: ' + prefix+'_epd_feeps_'+data_rate+'_'+level+'_'+datatype+'_pitch_angle'+suffix_in

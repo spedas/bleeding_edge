@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_feeps_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-08-06 08:13:46 -0700 (Mon, 06 Aug 2018) $
-; $LastChangedRevision: 25584 $
+; $LastChangedDate: 2018-09-27 12:11:32 -0700 (Thu, 27 Sep 2018) $
+; $LastChangedRevision: 25872 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_feeps_ut__define.pro $
 ;-
 
@@ -557,6 +557,16 @@ function mms_load_feeps_ut::test_pad
   mms_load_feeps, probe=4
   mms_feeps_pad, probe=4
   assert, spd_data_exists('mms4_epd_feeps_srvy_l2_electron_intensity_70-600keV_pad_spin', '2015-12-15', '2015-12-16'), 'Problem with FEEPS full energy range PAD'
+  return, 1
+end
+
+function mms_load_feeps_ut::test_pad_angles_from_bfield
+  mms_load_feeps, probe=1, data_rate='brst'
+  mms_feeps_pad, probe=1, data_rate='brst'
+  assert, ~spd_data_exists('mms1_fgm_b_gse_srvy_l2_bvec', '2015-12-15', '2015-12-16'), 'Problem with /angles_from_bfield?'
+  mms_feeps_pad, probe=1, data_rate='brst', /angles_from_bfield
+  assert, spd_data_exists('mms1_fgm_b_gse_srvy_l2_bvec', '2015-12-15', '2015-12-16'), 'Problem with /angles_from_bfield?'
+  assert, spd_data_exists('mms1_epd_feeps_brst_l2_electron_intensity_70-600keV_pad_spin', '2015-12-15', '2015-12-16'), 'Problem with FEEPS full energy range PAD'
   return, 1
 end
 
