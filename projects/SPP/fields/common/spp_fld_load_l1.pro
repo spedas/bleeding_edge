@@ -8,7 +8,7 @@ pro spp_fld_load_l1, filename, $
 
   ; Load only the global attributes
 
-  cdf_vars = cdf_load_vars(filename, verbose = -1)
+  cdf_vars = cdf_load_vars(filename[0], verbose = -1)
 
   logical_source = cdf_vars.g_attributes.LOGICAL_SOURCE
 

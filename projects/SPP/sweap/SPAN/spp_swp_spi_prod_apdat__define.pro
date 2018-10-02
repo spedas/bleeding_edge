@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spi_prod_apdat
-; $LastChangedBy: rlivi2 $
-; $LastChangedDate: 2018-09-13 15:40:37 -0700 (Thu, 13 Sep 2018) $
-; $LastChangedRevision: 25800 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-10-01 14:52:34 -0700 (Mon, 01 Oct 2018) $
+; $LastChangedRevision: 25880 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
@@ -334,7 +334,7 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,source_dict=source_dict
    IF pksize LE 20 THEN BEGIN
       dprint,dlevel = 2, 'size error - no data ',$
              ccsds.pkt_size,ccsds.apid
-      return, 0
+      return, !null
    ENDIF
    
    if ccsds.aggregate ne 0 then begin
@@ -345,7 +345,7 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,source_dict=source_dict
    ccsds_data = spp_swp_ccsds_data(ccsds)
    IF pksize NE n_elements(ccsds_data) THEN BEGIN
       dprint,dlevel=1,'Product size mismatch'
-      return,0
+      return,!null
    ENDIF
    
    if 0 && (abs(ccsds.time - 1.5363835e+09) lt 100) && (ccsds.apid eq '3a0'x) then begin
@@ -445,7 +445,7 @@ PRO spp_swp_spi_prod_apdat::handler,ccsds,source_dict=source_dict
                  append = 1,$
                  gap_tag='GAP'
    ENDIF
-   *self.last_data_p = strct
+   if keyword_set(strct) then  *self.last_data_p = strct
    
 END
 
@@ -455,6 +455,8 @@ FUNCTION spp_swp_spi_prod_apdat::Init,apid,name,_EXTRA=ex
    ;; Set to 1 to save full 3 or 4 Dimensions of raw data
    self.save_raw = 0
    self.prod_16A            = obj_new('dynamicarray',name='prod_16A')
+   self.prod_32E            = obj_new('dynamicarray',name='prod_32E')
+   self.prod_08Dx16A        = obj_new('dynamicarray',name='prod_08Dx16A')
    self.prod_08Dx32E        = obj_new('dynamicarray',name='prod_08Dx32E')
    self.prod_16Ax16M        = obj_new('dynamicarray',name='prod_16Ax16M')
    self.prod_256            = obj_new('dynamicarray',name='prod_256')
@@ -471,8 +473,10 @@ END
 PRO spp_swp_spi_prod_apdat::Clear
    self->spp_gen_apdat::Clear
    self.prod_16A.array            = !null
+   self.prod_32E.array            = !null
    self.prod_16Ax16M.array        = !null
    self.prod_256.array            = !null
+   self.prod_08Dx16A.array        = !null
    self.prod_08Dx32E.array        = !null
    self.prod_32Ex16A.array        = !null
    self.prod_32Ex16M.array        = !null
@@ -490,6 +494,8 @@ PRO spp_swp_spi_prod_apdat__define
            inherits spp_gen_apdat,$ 
            save_raw: 0b,$
            prod_16A:            obj_new(),$    ; dynamic arrays to hold each type different type of product
+           prod_32E:            obj_new(),$  
+           prod_08Dx16A:        obj_new(),$
            prod_08Dx32E:        obj_new(),$
            prod_16Ax16M:        obj_new(),$
            prod_256:            obj_new(),$

@@ -155,6 +155,7 @@ endif
   
 ;  spp_swp_startup,/rt_flag
   spp_swp_apdat_init,/rt_flag
+  spp_apdat_info,/rt_Flag,/save_flag,/all
   
   ;spp_swp_set_tplot_options
   

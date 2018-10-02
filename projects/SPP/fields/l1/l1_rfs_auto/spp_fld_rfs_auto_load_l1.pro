@@ -1,6 +1,6 @@
 pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
 
-  if n_elements(file) NE 1 or file EQ '' then return
+  if n_elements(file) LT 1 or file[0] EQ '' then return
 
   receiver_str = strupcase(strmid(prefix, 12, 3))
 

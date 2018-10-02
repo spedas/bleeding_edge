@@ -138,7 +138,9 @@ spp_apdat_info,'7c1'x,dlevel=1
 
 endif
 
-if 0 then begin
+if n_elements(racksat) eq 0 then racksat = 1
+
+if keyword_set(racksat) then begin
   path =  'spp/data/sci/sweap/prelaunch/gsedata/realtime/cal/swem/YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
   spp_init_realtime,/swem,/cal,/exec
 endif else begin
@@ -149,7 +151,7 @@ endelse
 
 dprint,setd=4
 
-trange = systime(1) + [-2,0] * 3600.
+trange = systime(1) + [-1,0] * 3600.
 timespan,trange
 ptpfiles = spp_file_retrieve(path,trange= trange,/hourly_names)
 

@@ -11,6 +11,7 @@ pro spp_fld_tmlib_select_server, server, server_string = server_string, $
       '192.168.0.202   - EM server (accessed from inside 214)|' + $
       '192.168.0.203   - FM server (accessed from inside 214)|' + $
       '128.244.182.117 - FM server (I&T)|' + $
+      'sprg/data/spp/  - Daily CDF files (load only)|' + $
       '128.32.13.188   - SPFSOC2 (test),' + $
       'EXCLUSIVE,SET_VALUE=0, TAG=server_select', $
       '2, BUTTON, OK, QUIT, TAG=ok']
@@ -23,7 +24,8 @@ pro spp_fld_tmlib_select_server, server, server_string = server_string, $
       2:server = '192.168.0.202'
       3:server = '192.168.0.203'
       4:server = '128.244.182.117'
-      5:server = '128.32.13.188'
+      5:server = 'http://sprg.ssl.berkeley.edu/data/spp/data/sci/fields/l1/'
+      6:server = '128.32.13.188'
     endcase
 
     case server_form_str.server_select of
@@ -32,7 +34,8 @@ pro spp_fld_tmlib_select_server, server, server_string = server_string, $
       2:server_string = '192.168.0.202 (EM server/LAN)'
       3:server_string = '192.168.0.203 (FM server/LAN)'
       4:server_string = '128.244.182.117 (IT server/LAN)'
-      5:server_string = '128.32.13.188 (SPFSOC2)'
+      5:server_string = 'sprg/data/spp/ (Daily CDF/load only)'
+      6:server_string = '128.32.13.188 (SPFSOC2)'
     endcase
 
     case server_form_str.server_select of
@@ -42,6 +45,7 @@ pro spp_fld_tmlib_select_server, server, server_string = server_string, $
       3:server_dir = 'FM_ucb'
       4:server_dir = 'FM_apl'
       5:server_dir = 'FM_ucb'
+      6:server_dir = 'FM_ucb'
     endcase
 
   endif

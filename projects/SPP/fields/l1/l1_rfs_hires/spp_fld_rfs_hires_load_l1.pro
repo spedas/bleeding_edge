@@ -1,7 +1,7 @@
 pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
 
   ; TODO improve this check for valid CDF file and add to other routines
-  if n_elements(file) NE 1 or file EQ '' then return
+  if n_elements(file) NE 1 or file[0] EQ '' then return
 
   receiver_str = strupcase(strmid(prefix, 12, 3))
 

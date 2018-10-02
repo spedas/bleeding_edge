@@ -1,12 +1,12 @@
   ; $LastChangedBy: davin-mac $
-  ; $LastChangedDate: 2018-05-28 15:52:35 -0700 (Mon, 28 May 2018) $
-  ; $LastChangedRevision: 25286 $
+  ; $LastChangedDate: 2018-10-01 14:52:34 -0700 (Mon, 01 Oct 2018) $
+  ; $LastChangedRevision: 25880 $
   ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_ptp_file_read.pro $
   ; adding code
 
 
 
-pro spp_ptp_file_read,files,dwait=dwait,no_products=no_products,no_clear=n0_clear
+pro spp_ptp_file_read,files,dwait=dwait,no_products=no_products,no_clear=no_clear
   
   
   if not keyword_set(dwait) then   dwait = 10

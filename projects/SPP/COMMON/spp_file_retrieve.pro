@@ -75,7 +75,10 @@ if keyword_set(snout1) then router = 'snout1'
 if keyword_set(crypt) then router = 'crypt'
 if keyword_set(rm133) then router = 'rm133'
 if keyword_set(goddard) then router = 'hires1'
-if keyword_set(hires1) then router = 'hires1'
+if keyword_set(hires1) then begin
+  router = 'hires1'
+  instr = 'swem'
+endif
 
 if keyword_set(ssr) then begin
   pathname = 'psp/data/sci/sweap/raw/SSR/YYYY/DOY/*_?_EA'

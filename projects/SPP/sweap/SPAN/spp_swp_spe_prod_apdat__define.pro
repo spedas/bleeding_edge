@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-06-06 14:13:49 -0700 (Wed, 06 Jun 2018) $
-; $LastChangedRevision: 25335 $
+; $LastChangedDate: 2018-10-01 14:52:34 -0700 (Mon, 01 Oct 2018) $
+; $LastChangedRevision: 25880 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -139,7 +139,7 @@ ccsds_data = spp_swp_ccsds_data(ccsds)
 
 if pksize ne n_elements(ccsds_data) then begin
   dprint,dlevel=1,'Product size mismatch'
-  return,0
+  return,!null
 endif
 
 header    = ccsds_data[0:19]
@@ -243,7 +243,7 @@ pro spp_swp_spe_prod_apdat::handler,ccsds,source_dict = source_dict   ;,ptp_head
     store_data,self.tname,data=strcts, tagnames=self.ttags , append = 1,gap_tag='GAP'
   endif
   
-  *self.last_data_p = strct
+  if keyword_set(strct) then *self.last_data_p = strct
   if debug(self.dlevel+3,msg='hello2') then begin
     ;printdat,ccsds  
     hexprint,(*ccsds.pdata)[0:31]
