@@ -23,9 +23,9 @@
 ;
 ;HISTORY:
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-07-31 14:34:33 -0700 (Tue, 31 Jul 2018) $
-;$LastChangedRevision: 25534 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2018-10-02 16:21:19 -0700 (Tue, 02 Oct 2018) $
+;$LastChangedRevision: 25886 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/spd_gui.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -1420,22 +1420,22 @@ PRO spd_gui,reset=reset,template_filename=template_filename
 
   ; File Pull Down Menu
 
-  fileMenu= Widget_Button(bar, Value='File ', /Menu)
+  fileMenu= Widget_Button(bar, Value='Input/Output Data ', /Menu)
   ;documentMenu = widget_button(fileMenu,value='Document ',/menu)
 ;  newMenu = Widget_Button(fileMenu, Value='New SPEDAS Document...   ', UValue='NEW', $
 ;    Accelerator="Ctrl+N")
-  openMenu = Widget_Button(fileMenu, Value='Open SPEDAS Document...  ', UValue='OPEN', $
+  openMenu = Widget_Button(fileMenu, Value='Open SPEDAS GUI Document...  ', UValue='OPEN', $
     Accelerator="Ctrl+O")
-  saveMenu = Widget_Button(fileMenu, Value='Save SPEDAS Document... ', UValue='SAVE', $
+  saveMenu = Widget_Button(fileMenu, Value='Save SPEDAS GUI Document... ', UValue='SAVE', $
     Accelerator="Ctrl+S")
-  saveAsMenu = Widget_Button(fileMenu, Value='Save SPEDAS Document As... ', UValue='SAVEAS')
+  saveAsMenu = Widget_Button(fileMenu, Value='Save SPEDAS GUI Document As... ', UValue='SAVEAS')
 ;  saveWithMenu = Widget_Button(fileMenu, Value='Save With Data... ', UValue='SAVEWITH', $
 ;    Sensitive=0)
   templateMenu = Widget_Button(fileMenu, Value='Graph Options Template ',/menu)
-  openTemplate = Widget_Button(templateMenu, Value='Open Template...  ', UValue='OPEN_TEMPLATE' )
-  saveTemplate = Widget_Button(templateMenu, Value='Save Template... ', UValue='SAVE_TEMPLATE' )
-  saveAsTemplate = Widget_Button(templateMenu, Value='Save Template As... ', UValue='SAVEAS_TEMPLATE')
-  resetTemplateMenu =  Widget_Button(templateMenu, Value='Reset Template ',/menu)
+  openTemplate = Widget_Button(templateMenu, Value='Open GUI Template...  ', UValue='OPEN_TEMPLATE' )
+  saveTemplate = Widget_Button(templateMenu, Value='Save GUI Template... ', UValue='SAVE_TEMPLATE' )
+  saveAsTemplate = Widget_Button(templateMenu, Value='Save GUI Template As... ', UValue='SAVEAS_TEMPLATE')
+  resetTemplateMenu =  Widget_Button(templateMenu, Value='Reset GUI Template ',/menu)
   
   resetPageTemplate = Widget_Button(resetTemplateMenu, Value='Reset Page Template', UValue='RESET_PAGE_TEMPLATE')
   resetPanelTemplate = Widget_Button(resetTemplateMenu, Value='Reset Panel Template', UValue='RESET_PANEL_TEMPLATE')
@@ -1454,7 +1454,7 @@ PRO spd_gui,reset=reset,template_filename=template_filename
   ;resetLineTemplate = Widget_Button(templateMenu, Value='Reset Line Template', UValue='RESET_LINE_TEMPLATE')
   ;resetVariableTemplate = Widget_Button(templateMenu, Value='Reset Variable Template', UValue='RESET_VARIABLE_TEMPLATE')
     
-  loadMenu = Widget_Button(fileMenu, Value='Load Data ', UValue='LOAD', /Separator)
+  loadMenu = Widget_Button(fileMenu, Value='Load Data... ', UValue='LOAD', /Separator)
   loadHAPIMenu = Widget_Button(fileMenu, Value='Load Data using HAPI', UValue='LOADHAPI')
   loadCDAWebMenu = Widget_Button(fileMenu, Value='Load Data using CDAWeb', UValue='LOADCDAWEB')
 

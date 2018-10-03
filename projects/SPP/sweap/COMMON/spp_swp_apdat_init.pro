@@ -137,7 +137,7 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
    ;;##################
    spe_hkp_tags = 'RIO_???* ADC_*_* *_FLAG MRAM* CLKS_PER_NYS ALL_ADC EASIC_DAC *CMD_* PEAK*'
    spe_hkp_tags = '*'
-   decom_routine = 'spp_swp_spane_product_decom2'
+   ;decom_routine = 'spp_swp_spane_product_decom2' ;; DEPRECATED ;;
    decom_routine_obj = 'spp_swp_spe_prod_apdat'
    ttags = '*'
 

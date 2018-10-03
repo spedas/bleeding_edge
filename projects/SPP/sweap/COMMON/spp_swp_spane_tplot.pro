@@ -2,8 +2,8 @@
 ; PSP SPAN-E TPLOT ROUTINE
 ;
 ; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-07-06 09:43:49 -0700 (Fri, 06 Jul 2018) $
-; $LastChangedRevision: 25445 $
+; $LastChangedDate: 2018-10-02 16:22:01 -0700 (Tue, 02 Oct 2018) $
+; $LastChangedRevision: 25887 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_spane_tplot.pro $
 ;--------------------------------------------------------------------
 
@@ -42,6 +42,8 @@ pro spp_swp_spane_tplot,name,ADD=ADD,setlim=setlim
 
     plot_name = strupcase(strtrim(name,2))
     case plot_name of
+     'SPEHV': tplot, '*sp[a,b]*MCP* *sp[a,b]*RAW*', add = add
+     'SWEMC': tplot, 'spp_swem_ahkp_SPC_22_C spp_swem_ahkp_SPB_22_C spp_swem_ahkp_SPA_22_C spp_swem_ahkp_SPI_22_C', add = add
      'SUMPLOT': tplot, 'spp_spa_hkp_CMD_REC spp_spb_hkp_CMD_REC spp_spa_hkp_HV_CONF_FLAG spp_spb_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spb_SF1_CNTS spp_spa_SF1_NRG_SPEC spp_spb_SF1_NRG_SPEC spp_spa_SF0_NRG_SPEC spp_spb_SF0_NRG_SPEC', add = add
      'SUMPLOTSA' : tplot, 'spp_spa_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spa_hkp_CMD_REC spp_spa_SF1_ANODE_SPEC spp_spa_SF0_NRG_SPEC', add = add 
      'SUMPLOTSB' : tplot, 'spp_spb_hkp_HV_CONF_FLAG spp_spb_SF1_CNTS spp_spb_hkp_CMD_REC spp_spb_SF1_ANODE_SPEC spp_spb_SF0_NRG_SPEC', add = add 

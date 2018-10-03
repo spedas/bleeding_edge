@@ -167,6 +167,35 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
 
       converted_spec_data *= V2_factor
 
+      if lfr_flag then begin
+
+        size_spec = size(converted_spec_data, /dim)
+
+        if n_elements(size_spec) EQ 2 then begin
+
+          cic_r = 8ll
+          cic_n = 4ll
+          cic_m = 1ll
+
+          ; TODO: Check for when CIC M = 2
+
+          cic_factor = $
+            rebin($
+            transpose((sin(!DPI * cic_m * rfs_freqs.reduced_freq / 4.8e6) / $
+            sin(!DPI * rfs_freqs.reduced_freq / 4.8d6 / cic_r))^(2 * cic_n) / $
+            (cic_r * cic_m)^(2 * cic_n)), $
+            size(converted_spec_data,/dim))
+
+          converted_spec_data /= cic_factor
+
+        endif
+
+      endif else begin
+
+        cic_factor = 1d
+
+      endelse
+
       if n_lo_gain GT 0 then converted_spec_data[lo_gain, *] *= 2500.d
 
       converted_spec_data /= rebin(rfs_nsum.y,$

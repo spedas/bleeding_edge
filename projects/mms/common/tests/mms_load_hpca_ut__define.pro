@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_hpca_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-11-30 15:55:05 -0800 (Thu, 30 Nov 2017) $
-; $LastChangedRevision: 24363 $
+; $LastChangedDate: 2018-10-02 11:32:19 -0700 (Tue, 02 Oct 2018) $
+; $LastChangedRevision: 25883 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_hpca_ut__define.pro $
 ;-
 
@@ -202,7 +202,7 @@ end
 
 function mms_load_hpca_ut::test_loading_tplotnames_ion
   mms_load_hpca, probes=2, datatype='ion', level='l2', data_rate='srvy', tplotnames=tpnames
-  assert, n_elements(tpnames) eq 29, '(potential) Problem with number of tplotnames returned by mms_load_hpca (ion)'
+  assert, n_elements(tpnames) eq 31, '(potential) Problem with number of tplotnames returned by mms_load_hpca (ion)'
   return, 1
 end
 

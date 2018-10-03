@@ -33,12 +33,14 @@
 ; CREATED BY:
 ;   pulupa
 ;
-; $LastChangedBy: spfuser $
-; $LastChangedDate: 2017-10-26 11:27:42 -0700 (Thu, 26 Oct 2017) $
-; $LastChangedRevision: 24219 $
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2018-10-02 15:53:19 -0700 (Tue, 02 Oct 2018) $
+; $LastChangedRevision: 25885 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_put_data.pro $
 ;-
-pro spp_fld_cdf_put_data, fileid, data, close = close
+pro spp_fld_cdf_put_data, fileid, data, close = close, compression = compression
+
+  if not keyword_set(compression) then compression = 6
 
   if not keyword_set(fileid) then begin
     print, 'file must be specified'
@@ -171,15 +173,36 @@ pro spp_fld_cdf_put_data, fileid, data, close = close
           numelem = strlen(data_array_string[0]), /rec_vary, /zvariable, $
           /cdf_char)
 
+        if n_elements(compression) GT 0 and n_elements(varid_str) GT 0 then begin
+          CDF_COMPRESSION, fileid, $
+            SET_VAR_GZIP_LEVEL=compression, $
+            VARIABLE=varid_str, $
+            /ZVARIABLE
+        end
+
       endif
 
       if n_elements(data_array_raw) GT 0 then begin
 
-        varid_str = cdf_varcreate(fileid, cdf_var_name + '_raw', $
+        varid_raw = cdf_varcreate(fileid, cdf_var_name + '_raw', $
           dim = cdf_data_dims, /rec_vary, /zvariable, $
           /cdf_int4)
 
+        if n_elements(compression) GT 0 and n_elements(varid_raw) GT 0 then begin
+          CDF_COMPRESSION, fileid, $
+            SET_VAR_GZIP_LEVEL=compression, $
+            VARIABLE=varid_raw, $
+            /ZVARIABLE
+        end
+
       endif
+
+      if n_elements(compression) GT 0 and n_elements(varid) GT 0 then begin
+        CDF_COMPRESSION, fileid, $
+          SET_VAR_GZIP_LEVEL=compression, $
+          VARIABLE=varid, $
+          /ZVARIABLE
+      end
 
       dprint, '', dlevel = 3
       dprint, 'Variable ', varid, cdf_var_name, $
@@ -224,15 +247,15 @@ pro spp_fld_cdf_put_data, fileid, data, close = close
         if n_elements(data_array_raw) GT 0 then begin
 
           case cdf_attname of
-            'FORMAT': cdf_attput, fileid, cdf_attname, varid_str, 'I16', /zvariable
-            'FILLVAL': cdf_attput, fileid, cdf_attname, varid_str, '-2147483647', /zvariable
-            'SCALEMIN': cdf_attput, fileid, cdf_attname, varid_str, '-2147483647', /zvariable
-            'SCALEMAX': cdf_attput, fileid, cdf_attname, varid_str, '2147483647', /zvariable
-            'VALIDMIN': cdf_attput, fileid, cdf_attname, varid_str, '-2147483647', /zvariable
-            'VALIDMAX': cdf_attput, fileid, cdf_attname, varid_str, '2147483647', /zvariable
-            'DATA_TYPE': cdf_attput, fileid, cdf_attname, varid_str, 'CDF_INT4', /zvariable
-            'UNITS':cdf_attput, fileid, cdf_attname, varid_str, "Counts", /zvar
-            ELSE: cdf_attput, fileid, cdf_attname, varid_str, $
+            'FORMAT': cdf_attput, fileid, cdf_attname, varid_raw, 'I16', /zvariable
+            'FILLVAL': cdf_attput, fileid, cdf_attname, varid_raw, '-2147483647', /zvariable
+            'SCALEMIN': cdf_attput, fileid, cdf_attname, varid_raw, '-2147483647', /zvariable
+            'SCALEMAX': cdf_attput, fileid, cdf_attname, varid_raw, '2147483647', /zvariable
+            'VALIDMIN': cdf_attput, fileid, cdf_attname, varid_raw, '-2147483647', /zvariable
+            'VALIDMAX': cdf_attput, fileid, cdf_attname, varid_raw, '2147483647', /zvariable
+            'DATA_TYPE': cdf_attput, fileid, cdf_attname, varid_raw, 'CDF_INT4', /zvariable
+            'UNITS':cdf_attput, fileid, cdf_attname, varid_raw, "Counts", /zvar
+            ELSE: cdf_attput, fileid, cdf_attname, varid_raw, $
               cdf_att, /zvar
           end
         end

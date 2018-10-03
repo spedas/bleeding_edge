@@ -1,8 +1,9 @@
 ; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-04-20 12:14:52 -0700 (Fri, 20 Apr 2018) $
-; $LastChangedRevision: 25089 $
+; $LastChangedDate: 2018-10-02 16:22:53 -0700 (Tue, 02 Oct 2018) $
+; $LastChangedRevision: 25889 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/spane/spp_swp_spane_product_decom2.pro $
 
+;; --------NOTE THIS IS REPLACED WITH SPP_SWP_PROD_APDAT__DEFINE-------- ;;
 
 function spp_swp_spane_16A, data, header_str=header_str, apdat=apdat,pname=pname
 
@@ -202,7 +203,8 @@ function spp_swp_spane_product_decom2, ccsds, ptp_header=ptp_header, apdat=apdat
     cnts_total:  tcnts,  $
 ;    pdata:        ptr_new(data), $
     gap:         ccsds.gap  }
-
+    
+    printdat, tcnts
 
   spp_save_data,hdr,str,apdat=apdat,pname='hdr_'
 
