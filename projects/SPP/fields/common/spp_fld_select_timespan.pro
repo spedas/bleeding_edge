@@ -124,7 +124,10 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['rollslew_hfr_noise'] =   ['2018-09-08/04:50:00', '2018-09-08/05:40:00']
 
 
-  fm_times['umbra_pointing'] =   ['2018-09-17/06:00:00', '2018-09-17/16:00:00']
+  fm_times['umbra_pointing'] =   ['2018-09-17/06:00:00', '2018-09-17/23:00:00']
+
+  fm_times['umbra_pointing_upp'] =   ['2018-09-17/14:00:00', '2018-09-17/17:15:00']
+
 
   fm_times['upp_rfs_lfr_noise'] =   ['2018-09-17/06:30:00', '2018-09-17/08:30:00']
   fm_times['upp_rfs_jovian_emission'] =   ['2018-09-17/09:40:00', '2018-09-17/10:40:00']

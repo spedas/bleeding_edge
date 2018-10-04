@@ -1,2 +1,2 @@
-project: ELFIN Lomo
+project: ELFIN
 load_data: elf_ui_load_data

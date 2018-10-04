@@ -15,4 +15,4 @@ data_processing: mms_ui_qcotrans_options, MMS QCoordinate Transform, ECI
 data_processing: mms_ui_qcotrans_options, MMS QCoordinate Transform, J2000
 config: mms_ui_fileconfig
 menu: mms_ui_gen_overplot, Overview Plots, MMS Overview Plot...
-about: about.txt
+about: about_mms.txt
