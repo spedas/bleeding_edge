@@ -15,9 +15,9 @@
 ;   thm_load_gmag_networks, gmag_networks=gmag_networks, gmag_stations=gmag_stations, selected_network=['gima', 'autumnx']
 ;
 ;HISTORY:
-; $LastChangedBy: crussell $
-; $LastChangedDate: 2017-07-17 12:51:29 -0700 (Mon, 17 Jul 2017) $
-; $LastChangedRevision: 23624 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-10-04 10:33:24 -0700 (Thu, 04 Oct 2018) $
+; $LastChangedRevision: 25913 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_gmag_networks.pro $
 ;-
 
@@ -74,7 +74,7 @@ pro thm_load_gmag_networks, gmag_networks=gmag_networks, gmag_stations=gmag_stat
     dprint, 'GMAG stations file not found. Static loading of stations. Missing file: ' + filename
     gmag_networks=['AARI','ASI','AUTUMN','AUTUMNX','CARISMA','CGSM','DTU','GIMA', 'FALCON', 'KYOTO','Leirvogur','MACCS','McMAC','NRCan','PENGUIn','SGU','STEP','TGO','Themis AE', $
       'Themis AE (pre 2015)','Themis EPO','Themis GBO','USGS']
-    gmag_stations=['abk','akul','amd','amer','amk','and','arct','atha','atu','bbg','benn','bett','bfe','bjn','blc','bmls','bou','brn','brw','bsl','cbb','ccnv','cdrt','chbg', $
+    gmag_stations=['abk','akul','amd','amer','amk','and','arct','atha','atu','bbg','benn','bett','bfe','bjn','blc','bmls','bou','brn','brw','bsl','cbb','ccnv','cdrt', 'chbr', 'chbg', $
       'cigo','cmo','crvr','ded','dik','dmh','dnb','dob','don','drby','eagl','ekat','fcc','fhb','frd','frn','fsim','fsj','fsmi','ftn','fykn','fyts','gako','gbay', $
       'gdh','ghb','gill','gjoa','glyn','gua','han','hlms','homr','hon','hop','hots', 'hov', 'hris', 'hrp','iglo','inuk','inuv','iqa','iva','jan', 'jck','kako','kapu','kar','kena', 'kev','kian','kil','kjpk', 'kodk','kuuj','kuv', $
       'larg','lcl','leth','loys', 'loz','lrel', 'lres','lrg','lrv','lyfd','lyr','mcgr','mas','mea','mek','muo','nain','nal','naq','new','nor','nrd','nrsq','nur','ott','ouj','pang','pbk', 'pblo','pcel','pel','pg0','pg1','pg2','pg3', $

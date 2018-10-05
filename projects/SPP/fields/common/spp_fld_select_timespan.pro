@@ -132,6 +132,14 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['upp_rfs_lfr_noise'] =   ['2018-09-17/06:30:00', '2018-09-17/08:30:00']
   fm_times['upp_rfs_jovian_emission'] =   ['2018-09-17/09:40:00', '2018-09-17/10:40:00']
 
+  fm_times['multi_instrument'] =   ['2018-09-24/12:00:00', '2018-09-28/12:00:00']
+
+
+  fm_times['umbra_pointing_2'] =   ['2018-10-02/03:15:00', '2018-10-02/17:45:00']
+
+  fm_times['venus_flyby_1'] =   ['2018-10-03/01:30:00', '2018-10-03/10:30:00']
+
+  fm_times['fields_rotations'] =   ['2018-10-03/16:30:00', '2018-10-03/21:30:00']
 
 
 

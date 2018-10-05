@@ -110,9 +110,9 @@
 ;                         rather than by network.
 ; 04-Apr-2012, clrussell, Added units to the data_att structure
 ; 
-; $LastChangedBy: crussell $
-; $LastChangedDate: 2017-07-18 12:33:24 -0700 (Tue, 18 Jul 2017) $
-; $LastChangedRevision: 23633 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-10-04 10:33:24 -0700 (Thu, 04 Oct 2018) $
+; $LastChangedRevision: 25913 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_gmag.pro $
 ;-
 
@@ -235,7 +235,7 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
       site = 'all'
     Endif
   Endif else begin
-    vsnames = 'abk akul amd amer arct atha bbg benn bett blc bmls bou brn brw bsl cbb ccnv cdrt chbg cigo cmo crvr ded dik drby eagl ekat fcc frd frn fsim fsj fsmi ftn fykn '+ $
+    vsnames = 'abk akul amd amer arct atha bbg benn bett blc bmls bou brn brw bsl cbb ccnv cdrt chbr chbg cigo cmo crvr ded dik drby eagl ekat fcc frd frn fsim fsj fsmi ftn fykn '+ $
       'fyts gako gbay gill gjoa glyn gua han hlms homr hon hots hris hrp iglo inuk inuv iqa iva kako kapu kena kev kian kil kjpk kodk kuuj larg lcl leth loys loz lrel lrg lrv lyfd mas mcgr mea mek nain new muo nrsq nur'+ $
       'ott ouj pang pbk pblo pcel pel pg0 pg1 pg2 pg3 pg4 pg5 pgeo pina pine pks pokr ptrs puvr radi ran rank rbay redr rich rmus roth salu satx schf sept shu sit sjg snap snkq stfd stfl stj '+ $
       'swno tar tik tpas trap tuc ukia vic viz vldr whit whs wlps wrth ykc yknf'
@@ -274,7 +274,7 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
     endif 
     
     if keyword_set(maccs_sites) then begin
-      site_in = array_concat(['cdrt','crvr','gjoa','iglo','nain','pang','rbay'],site_in)
+      site_in = array_concat(['cdrt','chbr','crvr','gjoa','iglo','nain','pang','rbay'],site_in)
     endif 
  
     if keyword_set(usgs_sites) then begin

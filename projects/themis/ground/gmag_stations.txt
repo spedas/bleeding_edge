@@ -61,6 +61,7 @@ gima|GIMA|cigo|College Intl Geo. Observ, AK
 kyoto|KYOTO|cmo|Fairbanks, AK
 usgs|USGS|cmo|Fairbanks, AK
 maccs|MACCS|crvr|Clyde River, NU
+maccs|MACCS|chbr|Coral Harbour, NU
 ae|Themis AE|ded|Dead Horse, AK
 usgs|USGS|ded|Dead Horse, AK
 ae|Themis AE|dik|Dikson, Russia

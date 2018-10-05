@@ -1,7 +1,7 @@
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2018-09-06 09:47:57 -0700 (Thu, 06 Sep 2018) $
-;  $LastChangedRevision: 25739 $
+;  $LastChangedDate: 2018-10-04 16:38:32 -0700 (Thu, 04 Oct 2018) $
+;  $LastChangedRevision: 25916 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
@@ -36,92 +36,153 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
 
   times_2d = d_ppp.x
 
-  times_1d = list()
-  range_bits_1d = list()
-  packet_index = list()
+;  times_1d = list()
+;  range_bits_1d = list()
+;  packet_index = list()
+  
+  
+  n_times_2d = n_elements(times_2d)
+  
+  times_1d = rebin(times_2d, n_times_2d, 512l)
+    
+  ppp = fix(d_ppp.y)
+  
+  navg = 2l^(fix(ppp))
+      
+  nvec = 512l / 2l^(ppp - 3) * (navg GE 16) + 512l * (navg LT 16)
+  
+  nseconds = 16l * (navg GE 16) + 2l * navg * (navg LT 16)
+  
+  rate = 512l / (2l^(ppp+1))
+  
+  rate_arr = rebin(rate, n_times_2d, 512l)
+  
+  indices = rebin(lindgen(1,512), n_times_2d, 512l)
+  
+  max_inds = rebin(nvec, n_times_2d, 512l)
+  
+  nys_since_start = double(indices) / rate_arr
+  
+  times_1d += nys_since_start * (2.^25/38.4e6) 
+    
+  times_valid_ind = where(indices LT max_inds, n_times_valid, $
+    complement = times_invalid_ind, ncomplement = n_times_invalid)
+  
+  if n_times_valid NE n_elements(times_1d) then $
+    times_1d[times_invalid_ind] = !VALUES.D_NAN
+      
+  ;range_bits_1d = d_range_bits.y
+  
+  range_bits_nys = rebin(d_range_bits.y, n_times_2d, 16l) / $
+    transpose(rebin(4l^[reverse(lindgen(16))], 16l, n_times_2d)) MOD 4
+  
+  range_bits = range_bits_nys[$
+    reform(transpose(rebin(lindgen(n_times_2d), n_times_2d, 512l)), n_elements(nys_since_start)), $
+    reform(long(transpose(nys_since_start * (indices LT max_inds))), n_elements(nys_since_start))]
+        
+  times_1d = reform(transpose(times_1d), n_elements(times_1d))
+  
+  packet_index = reform(transpose(indices), n_elements(times_1d))
 
-  foreach time, times_2d, ind do begin
 
-    dprint, ind, n_elements(times_2d), dwait = 5
+  valid = where(finite(times_1d), n_valid)
 
-    ppp = d_ppp.y[ind]
+  if n_valid GT 0 then begin
+    
+    times_1d = times_1d[valid]
+    
+    packet_index = packet_index[valid]
+    
+    range_bits = range_bits[valid]
+    
+  endif
 
-    navg = 2l^ppp
+;  stop
 
-    ; If the number of averages is less than 16, then
-    ; there are 512 vectors in the packet.  Otherwise, there
-    ; are fewer (See FIELDS CTM)
-
-    if navg LT 16 then begin
-      nvec = 512l
-      nseconds = 2l * navg
-    endif else begin
-      nvec = 512l / 2l^(ppp-3)
-      nseconds = 16l
-    endelse
-
-    ; rate = Vectors per NYS
-
-    rate = 512l / (2l^(ppp+1))
-
-    ; (2.^25 / 38.4d6) is the FIELDS NYS
-    ; 512 vectors with no averaging yields 256 vectors
-    ; per NYS
-
-    timedelta = dindgen(nvec) / rate * (2.^25/38.4e6)
-
-    times_1d.Add, list(time + timedelta, /extract), /extract
-
-    packet_index.Add, dindgen(nvec), /extract
-
-    ; There are 2 range bits per second, left justified
-    ; in a 32 bit range_bit item.  Depending on the averaging
-    ; period, there can be 2, 4, 8, or 16 seconds worth of data
-    ; in the packet, yielding 4, 8, 16, or 32 range bits.
-    ; The data item is always 32 bits long.  If there are fewer than
-    ; 32 range bits required for the length of the packet,
-    ; the first 2 * (# of seconds) bits are used and the
-    ; remainder are zero filled.
-
-    range_bits_i = d_range_bits.y[ind]
-
-    range_bits_str = string(range_bits_i, format = '(b032)')
-
-    ;if range_bits_str NE '01010000000000000000000000000000' then stop
-
-    range_bits_list = list()
-
-    for j = 0, nseconds - 1 do begin
-
-      range_bits_int_j = 0
-
-      range_bits_str_j = strmid(range_bits_str, j * 2, 2)
-
-      reads, range_bits_str_j, range_bits_int_j, format = '(B)'
-
-      range_bits_arr_j = lonarr(rate) + range_bits_int_j
-
-      range_bits_list.Add, range_bits_arr_j, /extract
-
-    end
-
-    range_bits_1d.Add, range_bits_list, /extract
-
-  endforeach
+;  foreach time, times_2d, ind do begin
+;
+;    dprint, ind, n_elements(times_2d), dwait = 5
+;
+;    ppp = d_ppp.y[ind]
+;
+;    navg = 2l^ppp
+;
+;    ; If the number of averages is less than 16, then
+;    ; there are 512 vectors in the packet.  Otherwise, there
+;    ; are fewer (See FIELDS CTM)
+;
+;    if navg LT 16 then begin
+;      nvec = 512l
+;      nseconds = 2l * navg
+;    endif else begin
+;      nvec = 512l / 2l^(ppp-3)
+;      nseconds = 16l
+;    endelse
+;
+;    ; rate = Vectors per NYS
+;
+;    rate = 512l / (2l^(ppp+1))
+;
+;    ; (2.^25 / 38.4d6) is the FIELDS NYS
+;    ; 512 vectors with no averaging yields 256 vectors
+;    ; per NYS
+;
+;    timedelta = dindgen(nvec) / rate * (2.^25/38.4e6)
+;
+;    times_1d.Add, list(time + timedelta, /extract), /extract
+;
+;    packet_index.Add, dindgen(nvec), /extract
+;
+;    ; There are 2 range bits per second, left justified
+;    ; in a 32 bit range_bit item.  Depending on the averaging
+;    ; period, there can be 2, 4, 8, or 16 seconds worth of data
+;    ; in the packet, yielding 4, 8, 16, or 32 range bits.
+;    ; The data item is always 32 bits long.  If there are fewer than
+;    ; 32 range bits required for the length of the packet,
+;    ; the first 2 * (# of seconds) bits are used and the
+;    ; remainder are zero filled.
+;
+;    range_bits_i = d_range_bits.y[ind]
+;
+;    range_bits_str = string(range_bits_i, format = '(b032)')
+;
+;    ;if range_bits_str NE '01010000000000000000000000000000' then stop
+;
+;    range_bits_list = list()
+;
+;    for j = 0, nseconds - 1 do begin
+;
+;      range_bits_int_j = 0
+;
+;      range_bits_str_j = strmid(range_bits_str, j * 2, 2)
+;
+;      reads, range_bits_str_j, range_bits_int_j, format = '(B)'
+;
+;      range_bits_arr_j = lonarr(rate) + range_bits_int_j
+;
+;      range_bits_list.Add, range_bits_arr_j, /extract
+;
+;    end
+;
+;    range_bits_1d.Add, range_bits_list, /extract
+;
+;  endforeach
 
   ; Nominal scale factor (nT / count) for ranges 0-3
 
   nt_adu = [0.03125,0.1250,0.5,2.0]
 
   store_data, prefix + 'packet_index', $
-    data = {x:times_1d.ToArray(), y:packet_index.ToArray()}
+    data = {x:times_1d, y:packet_index}
 
   store_data, prefix + 'range', $
-    data = {x:times_1d.ToArray(), y:range_bits_1d.ToArray()}
+    data = {x:times_1d, y:range_bits}
 
-  scale_factor = nt_adu[range_bits_1d.ToArray()]
+  scale_factor = nt_adu[range_bits]
 
   mag_comps = ['mag_bx', 'mag_by', 'mag_bz']
+
+;  stop
 
   foreach mag_comp, mag_comps do begin
 
@@ -129,15 +190,15 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
 
     b_1d = reform(transpose(d_b_2d.y), n_elements(d_b_2d.y))
 
-    b_1d_finite = where(finite(b_1d) and (b_1d GT -2147483648), finite_count)
+    ;b_1d_finite = where(finite(b_1d) and (b_1d GT -2147483648), finite_count)
 
-    if finite_count GT 0 then begin
+    if n_valid GT 0 then begin
 
-      b_1d = b_1d[b_1d_finite]
+      b_1d = b_1d[valid]
 
-      store_data, prefix + mag_comp, data = {x:times_1d.ToArray(), y:b_1d}
+      store_data, prefix + mag_comp, data = {x:times_1d, y:b_1d}
 
-      store_data, prefix + mag_comp + '_nT', data = {x:times_1d.ToArray(), y:b_1d * scale_factor}
+      store_data, prefix + mag_comp + '_nT', data = {x:times_1d, y:b_1d * scale_factor}
 
       options, prefix + mag_comp, 'ytitle', $
         short_prefix + ' b' + mag_comp.Substring(-1,-1)

@@ -21,9 +21,9 @@
 ;       Plots...
 ; MODIFICATION HISTORY:
 ;       jmm, 4-Jan-2010, jimm@ssl.berkeley.edu
-; $LastChangedBy: aaflores $
-; $LastChangedDate: 2015-04-30 15:28:49 -0700 (Thu, 30 Apr 2015) $
-; $LastChangedRevision: 17458 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-10-04 10:33:24 -0700 (Thu, 04 Oct 2018) $
+; $LastChangedRevision: 25913 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_plot_gmag_by_source.pro $
 ;-
 
@@ -94,7 +94,7 @@ Pro thm_plot_gmag_by_source, date, duration, no_data_load = no_data_load, $
 
       'ualaska':sitesj = ['arct', 'bett', 'cigo', 'eagl', 'fykn', 'gako', $
                           'hlms', 'homr', 'kako', 'pokr', 'trap']
-      'maccs':sitesj = ['cdrt', 'crvr', 'gjoa', 'iglo', 'nain', 'pang', 'rbay']
+      'maccs':sitesj = ['cdrt', 'chbr', 'crvr', 'gjoa', 'iglo', 'nain', 'pang', 'rbay']
       'misc':sitesj = ['atha', 'nrsq']
     Endcase
     if not keyword_set(no_data_load) then begin

@@ -5,8 +5,8 @@
 ;   please send them to egrimes@igpp.ucla.edu
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-03-01 13:36:16 -0800 (Thu, 01 Mar 2018) $
-; $LastChangedRevision: 24814 $
+; $LastChangedDate: 2018-10-04 12:52:22 -0700 (Thu, 04 Oct 2018) $
+; $LastChangedRevision: 25914 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/quicklook/mms_load_eis_pad_crib_qlplots.pro $
 ;-
 
@@ -64,11 +64,11 @@ options, 'mms'+probe+'_dfg_srvy_dmpa_bvec', labflag=-1
 options, 'mms'+probe+'_dfg_srvy_dmpa_bvec', labels=['Bx DMPA', 'By DMPA', 'Bz DMPA']
 
 panels = 'mms'+probe+'_'+['dfg_srvy_dmpa_bvec', $
-         'epd_eis_electronenergy_54-89keV_electron_cps_omni_pad_spin', $
-         'epd_eis_extof_68-100keV_proton_cps_omni_pad_spin', $
-         'epd_eis_phxtof_14-20keV_proton_cps_omni_pad_spin', $
-         'epd_eis_extof_111-204keV_alpha_cps_omni_pad_spin', $
-         'epd_eis_extof_169-220keV_oxygen_cps_omni_pad_spin']
+         'epd_eis_electronenergy_56-87keV_electron_cps_omni_pad_spin', $
+         'epd_eis_extof_80-80keV_proton_cps_omni_pad_spin', $
+         'epd_eis_phxtof_17-17keV_proton_cps_omni_pad_spin', $
+         'epd_eis_extof_140-140keV_alpha_cps_omni_pad_spin', $
+         'epd_eis_extof_191-191keV_oxygen_cps_omni_pad_spin']
 
 if ~postscript then window, iw, xsize=width, ysize=height
        
