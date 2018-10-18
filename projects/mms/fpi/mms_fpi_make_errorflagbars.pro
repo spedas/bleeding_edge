@@ -35,7 +35,7 @@
 ;     bit 1 = overcounting/saturation effects likely present in skymap
 ;     bit 2 = reported spacecraft potential above 20V
 ;     bit 3 = invalid/unavailable spacecraft potential
-;     bit 4 = significant (>25%) cold plasma (<10eV) component
+;     bit 4 = significant (>10%) cold plasma (<10eV) component
 ;     bit 5 = significant (>25%) hot plasma (>30keV) component
 ;     bit 6 = high sonic Mach number (v/vth > 2.5)
 ;     bit 7 = low calculated density (n_DES < 0.05 cm^-3)
@@ -43,13 +43,15 @@
 ;     bit 9 = srvy l2pre magnetic field used instead of brst l2pre magnetic field
 ;     bit 10 = no internally generated photoelectron correction applied
 ;     bit 11 = compression pipeline error
+;     Bit 12 = spintone calculation error (DBCS only)
+;     Bit 13 = significant (>=20%) penetrating radiation (DIS only)
 ;      
 ;   For DES/DIS moments (Fast):
 ;     bit 0 = manually flagged interval --> contact the FPI team for direction when utilizing this data; further correction is required
 ;     bit 1 = overcounting/saturation effects likely present in skymap
 ;     bit 2 = reported spacecraft potential above 20V
 ;     bit 3 = invalid/unavailable spacecraft potential
-;     bit 4 = significant (>25%) cold plasma (<10eV) component
+;     bit 4 = significant (>10%) cold plasma (<10eV) component
 ;     bit 5 = significant (>25%) hot plasma (>30keV) component
 ;     bit 6 = high sonic Mach number (v/vth > 2.5)
 ;     bit 7 = low calculated density (n_DES < 0.05 cm^-3)
@@ -57,14 +59,16 @@
 ;     bit 9 = not used
 ;     bit 10 = no internally generated photoelectron correction applied
 ;     bit 11 = compression pipeline error
+;     Bit 12 = spintone calculation error (DBCS only)
+;     Bit 13 = significant (>=20%) penetrating radiation (DIS only)
 ;
 ;     Original by Naritoshi Kitamura
 ;     
 ;     June 2016: minor updates by egrimes
 ;     
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-11-28 13:11:06 -0800 (Tue, 28 Nov 2017) $
-; $LastChangedRevision: 24354 $
+; $LastChangedDate: 2018-10-05 10:11:48 -0700 (Fri, 05 Oct 2018) $
+; $LastChangedRevision: 25917 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_fpi_make_errorflagbars.pro $
 ;-
 
@@ -90,28 +94,53 @@ PRO mms_fpi_make_errorflagbars, tname, level = level
         if fix(strmid(flags[j],13-i,1)) eq 0 then begin
           flagline[j,i]=!values.f_nan
           if flagline_all[j] ne 1.0 then flagline_all[j]=!values.f_nan else flagline_all[j]=1.0
-          if i ne 1 and i ne 4 and i ne 5 then if flagline_others[j] ne 1.0 then flagline_others[j]=!values.f_nan else flagline_others[j]=1.0
+          if inst eq 'DES' then begin
+            if i ne 1 and i ne 4 and i ne 5 then if flagline_others[j] ne 1.0 then flagline_others[j]=!values.f_nan else flagline_others[j]=1.0
+          endif else begin
+            if i ne 1 and i ne 5 and i ne 13 then if flagline_others[j] ne 1.0 then flagline_others[j]=!values.f_nan else flagline_others[j]=1.0
+          endelse
         endif else begin
-          if i ne 1 and i ne 4 and i ne 5 then flagline_others[j]=1.0
+          if inst eq 'DES' then begin
+            if i ne 1 and i ne 4 and i ne 5 then flagline_others[j]=1.0
+          endif else begin
+            if i ne 1 and i ne 5 and i ne 13 then flagline_others[j]=1.0
+          endelse
           flagline_all[j]=1.0
           flagline[j,i]=1.0
         endelse
       endfor
     endfor
-    store_data,tname+'_flagbars_full',data={x:d.x,y:[[flagline[*,0]],[flagline[*,1]-0.1],[flagline[*,2]-0.2],[flagline[*,3]-0.3],[flagline[*,4]-0.4],[flagline[*,5]-0.5],[flagline[*,6]-0.6],[flagline[*,7]-0.7],[flagline[*,8]-0.8],[flagline[*,9]-0.9],[flagline[*,10]-1.0],[flagline[*,11]-1.1],[flagline[*,12]-1.2]]}
-    ylim,tname+'_flagbars_full',-0.15,1.05,0
-    options,tname+'_flagbars_full',colors=[0,6,4,3,2,1,3,0,2,4,6,0,6],labels=['bit 0','bit 1','bit 2','bit 3','bit 4','bit 5','bit 6','bit 7','bit 8','bit 9','bit 10','bit 11', 'bit 12'],ytitle=inst+'!C'+rate,thick=3,xstyle=4,ystyle=4,ticklen=0,labflag=-1,psym=-6,symsize=0.1,datagap=gap
-    store_data,tname+'_flagbars_main',data={x:d.x,y:[[flagline[*,1]-0.2],[flagline[*,4]-0.4],[flagline[*,5]-0.6],[flagline_others-0.8]]}
-    ylim,tname+'_flagbars_main',0.1,0.9,0
-    options,tname+'_flagbars_main',colors=[6,2,1,0],labels=['Saturation','Cold (>25%)','Hot (>25%)','Others'],ytitle=inst+'!C'+rate,xstyle=4,ystyle=4,ticklen=0,thick=4,panel_size=0.5,labflag=-1,psym=-6,symsize=0.2,datagap=gap
-    store_data,tname+'_flagbars_others',data={x:d.x,y:[[flagline[*,7]-0.8],[flagline[*,6]-0.8],[flagline[*,8]-0.8],[flagline[*,9]-0.8],[flagline[*,2]-0.8],[flagline[*,3]-0.8],[flagline[*,10]-0.8],[flagline[*,0]-0.8],[flagline[*,11]-0.8]]}
-    options,tname+'_flagbars_others',colors=[40,3,255,5,2,1,4,6,200],xstyle=4,ystyle=4,ticklen=0,thick=3,labflag=-1,psym=-6,symsize=0.15,datagap=gap
-    store_data,tname+'_flagbars',data=[tname+'_flagbars_main',tname+'_flagbars_others']
-    ylim,tname+'_flagbars',0.1,0.9,0
-    options,tname+'_flagbars',xstyle=4,ystyle=4,ticklen=0,panel_size=0.5,labsize=1
-    store_data,tname+'_flagbars_mini',data={x:d.x,y:flagline_all}
-    ylim,tname+'_flagbars_mini',0.9,1.1,0
-    options,tname+'_flagbars_mini',colors=0,labels='Flagged',xstyle=4,ystyle=4,ticklen=0,thick=4,panel_size=0.1,labflag=-1,psym=-6,symsize=0.2,datagap=gap,labsize=1
+    if inst eq 'DES' then begin
+      store_data,tname+'_flagbars_full',data={x:d.x,y:[[flagline[*,0]],[flagline[*,1]-0.1],[flagline[*,2]-0.2],[flagline[*,3]-0.3],[flagline[*,4]-0.4],[flagline[*,5]-0.5],[flagline[*,6]-0.6],[flagline[*,7]-0.7],[flagline[*,8]-0.8],[flagline[*,9]-0.9],[flagline[*,10]-1.0],[flagline[*,11]-1.1],[flagline[*,12]-1.2]]}
+      ylim,tname+'_flagbars_full',-0.15,1.25,0
+      options,tname+'_flagbars_full',colors=[0,6,4,3,2,1,3,0,2,4,6,0,2],labels=['bit 0','bit 1','bit 2','bit 3','bit 4','bit 5','bit 6','bit 7','bit 8','bit 9','bit 10','bit 11', 'bit 12'],ytitle=inst+'!C'+rate,thick=3,xstyle=4,ystyle=4,ticklen=0,labflag=-1,psym=-6,symsize=0.1,datagap=gap
+      store_data,tname+'_flagbars_main',data={x:d.x,y:[[flagline[*,1]-0.2],[flagline[*,4]-0.4],[flagline[*,5]-0.6],[flagline_others-0.8]]}
+      ylim,tname+'_flagbars_main',0.1,0.9,0
+      options,tname+'_flagbars_main',colors=[6,2,1,0],labels=['Saturation','Cold (>10%)','Hot (>25%)','Others'],ytitle=inst+'!C'+rate,xstyle=4,ystyle=4,ticklen=0,thick=4,panel_size=0.5,labflag=-1,psym=-6,symsize=0.2,datagap=gap
+      store_data,tname+'_flagbars_others',data={x:d.x,y:[[flagline[*,11]-0.8],[flagline[*,12]-0.8],[flagline[*,7]-0.8],[flagline[*,6]-0.8],[flagline[*,8]-0.8],[flagline[*,9]-0.8],[flagline[*,2]-0.8],[flagline[*,3]-0.8],[flagline[*,10]-0.8],[flagline[*,0]-0.8]]}
+      options,tname+'_flagbars_others',colors=[254,160,40,3,255,5,2,1,4,6],xstyle=4,ystyle=4,ticklen=0,thick=3,labflag=-1,psym=-6,symsize=0.15,datagap=gap
+      store_data,tname+'_flagbars',data=[tname+'_flagbars_main',tname+'_flagbars_others']
+      ylim,tname+'_flagbars',0.1,0.9,0
+      options,tname+'_flagbars',xstyle=4,ystyle=4,ticklen=0,panel_size=0.5,labsize=1
+      store_data,tname+'_flagbars_mini',data={x:d.x,y:flagline_all}
+      ylim,tname+'_flagbars_mini',0.9,1.1,0
+      options,tname+'_flagbars_mini',colors=0,labels='Flagged',xstyle=4,ystyle=4,ticklen=0,thick=4,panel_size=0.1,labflag=-1,psym=-6,symsize=0.2,datagap=gap,labsize=1
+    endif else begin
+      store_data,tname+'_flagbars_full',data={x:d.x,y:[[flagline[*,0]],[flagline[*,1]-0.1],[flagline[*,2]-0.2],[flagline[*,3]-0.3],[flagline[*,4]-0.4],[flagline[*,5]-0.5],[flagline[*,6]-0.6],[flagline[*,7]-0.7],[flagline[*,8]-0.8],[flagline[*,9]-0.9],[flagline[*,10]-1.0],[flagline[*,11]-1.1],[flagline[*,12]-1.2],[flagline[*,13]-1.3]]}
+      ylim,tname+'_flagbars_full',-0.15,1.35,0
+      options,tname+'_flagbars_full',colors=[0,6,4,3,2,1,3,0,2,4,6,0,2,200],labels=['bit 0','bit 1','bit 2','bit 3','bit 4','bit 5','bit 6','bit 7','bit 8','bit 9','bit 10','bit 11', 'bit 12', 'bit 13'],ytitle=inst+'!C'+rate,thick=3,xstyle=4,ystyle=4,ticklen=0,labflag=-1,psym=-6,symsize=0.1,datagap=gap
+      store_data,tname+'_flagbars_main',data={x:d.x,y:[[flagline[*,1]-0.2],[flagline[*,13]-0.4],[flagline[*,5]-0.6],[flagline_others-0.8]]}
+      ylim,tname+'_flagbars_main',0.1,0.9,0
+      options,tname+'_flagbars_main',colors=[6,200,1,0],labels=['Saturation','Radiation','Hot (>25%)','Others'],ytitle=inst+'!C'+rate,xstyle=4,ystyle=4,ticklen=0,thick=4,panel_size=0.5,labflag=-1,psym=-6,symsize=0.2,datagap=gap
+      store_data,tname+'_flagbars_others',data={x:d.x,y:[[flagline[*,11]-0.8],[flagline[*,12]-0.8],[flagline[*,7]-0.8],[flagline[*,6]-0.8],[flagline[*,8]-0.8],[flagline[*,9]-0.8],[flagline[*,2]-0.8],[flagline[*,3]-0.8],[flagline[*,10]-0.8],[flagline[*,0]-0.8]]}
+      options,tname+'_flagbars_others',colors=[254,160,40,3,255,5,2,1,4,6],xstyle=4,ystyle=4,ticklen=0,thick=3,labflag=-1,psym=-6,symsize=0.15,datagap=gap
+      store_data,tname+'_flagbars',data=[tname+'_flagbars_main',tname+'_flagbars_others']
+      ylim,tname+'_flagbars',0.1,0.9,0
+      options,tname+'_flagbars',xstyle=4,ystyle=4,ticklen=0,panel_size=0.5,labsize=1
+      store_data,tname+'_flagbars_mini',data={x:d.x,y:flagline_all}
+      ylim,tname+'_flagbars_mini',0.9,1.1,0
+      options,tname+'_flagbars_mini',colors=0,labels='Flagged',xstyle=4,ystyle=4,ticklen=0,thick=4,panel_size=0.1,labflag=-1,psym=-6,symsize=0.2,datagap=gap,labsize=1
+    endelse
 
     ; kludge for the titles to show up on the y axes
     options, tname+'_flagbars_full', axis={yaxis: 0, ytitle: inst+'!C'+rate, yticks: 1, yminor: 1, ystyle: 0, yticklayout: 1, ytickv: [-1, 2]}

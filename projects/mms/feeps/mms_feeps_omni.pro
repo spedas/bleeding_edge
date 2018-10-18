@@ -31,8 +31,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-09-12 11:01:04 -0700 (Tue, 12 Sep 2017) $
-; $LastChangedRevision: 23954 $
+; $LastChangedDate: 2018-10-08 21:09:02 -0700 (Mon, 08 Oct 2018) $
+; $LastChangedRevision: 25939 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_feeps_omni.pro $
 ;-
 
@@ -143,6 +143,8 @@ pro mms_feeps_omni, probe, datatype = datatype, tplotnames = tplotnames, suffix 
   
   newname = strcompress('mms'+probe+'_epd_feeps_'+data_rate+'_'+level+'_'+datatype+'_'+data_units+'_omni'+suffix, /rem)
 
+  dl.cdf.vatt.catdesc = 'MMS' + probe + ' FEEPS omni-directional ' + datatype + ' ' + data_units
+  
   store_data, newname, data={x: d.x, y: flux_omni, v: en_label}, dlimits=dl
   options, newname, spec=1, /ylog, /zlog ;, yticks=3, ystyle=1, zrange=[1., 1.e6];, no_interp=0, y_no_interp=0, x_no_interp=0
 

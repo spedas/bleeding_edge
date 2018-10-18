@@ -26,12 +26,15 @@
 ;   pulupa
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2017-01-11 16:14:34 -0800 (Wed, 11 Jan 2017) $
-; $LastChangedRevision: 22579 $
+; $LastChangedDate: 2018-10-10 12:00:08 -0700 (Wed, 10 Oct 2018) $
+; $LastChangedRevision: 25952 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_put_time.pro $
 ;-
 
-pro spp_fld_cdf_put_time, fileid, time, suffix = suffix
+pro spp_fld_cdf_put_time, fileid, time, suffix = suffix, $
+  compression = compression
+  
+  if not keyword_set(compression) then compression = 6
 
   if not keyword_set(suffix) then suffix = '' else suffix = suffix + '_'
 
@@ -56,6 +59,13 @@ pro spp_fld_cdf_put_time, fileid, time, suffix = suffix
   name_ep = 'epoch' + suffix
   varid_ep = cdf_varcreate(fileid, name_ep, /CDF_time_tt2000, /REC_VARY, /ZVARIABLE)
 
+  if n_elements(compression) GT 0 then begin
+    CDF_COMPRESSION, fileid, $
+      SET_VAR_GZIP_LEVEL=compression, $
+      VARIABLE=varid_ep, $
+      /ZVARIABLE
+  end
+
   cdf_attput, fileid, 'FIELDNAM',     varid_ep, name_ep, /ZVARIABLE
   cdf_attput, fileid, 'FORMAT',       varid_ep, 'I22', /ZVARIABLE
   cdf_attput, fileid, 'LABLAXIS',     varid_ep, name_ep, /ZVARIABLE
@@ -76,6 +86,13 @@ pro spp_fld_cdf_put_time, fileid, time, suffix = suffix
 
   name_unix = 'time_unix' + suffix
   varid_unix = cdf_varcreate(fileid, name_unix, /CDF_DOUBLE, /REC_VARY, /ZVARIABLE)
+
+  if n_elements(compression) GT 0 then begin
+    CDF_COMPRESSION, fileid, $
+      SET_VAR_GZIP_LEVEL=compression, $
+      VARIABLE=varid_unix, $
+      /ZVARIABLE
+  end
 
   cdf_attput, fileid, 'FIELDNAM',     varid_unix, name_unix, /ZVARIABLE
   cdf_attput, fileid, 'FORMAT',       varid_unix, 'F15.3', /ZVARIABLE
@@ -98,6 +115,13 @@ pro spp_fld_cdf_put_time, fileid, time, suffix = suffix
 
   name_met = 'time_met' + suffix
   varid_met = cdf_varcreate(fileid, name_met, /CDF_DOUBLE, /REC_VARY, /ZVARIABLE)
+
+  if n_elements(compression) GT 0 then begin
+    CDF_COMPRESSION, fileid, $
+      SET_VAR_GZIP_LEVEL=compression, $
+      VARIABLE=varid_met, $
+      /ZVARIABLE
+  end
 
   cdf_attput, fileid, 'FIELDNAM',     varid_met, name_met, /ZVARIABLE
   cdf_attput, fileid, 'FORMAT',       varid_met, 'F15.3', /ZVARIABLE

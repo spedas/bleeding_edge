@@ -37,9 +37,9 @@
 ; CREATED BY:
 ;   pulupa
 ;
-; $LastChangedBy: pulupa $
-; $LastChangedDate: 2018-09-24 11:18:10 -0700 (Mon, 24 Sep 2018) $
-; $LastChangedRevision: 25856 $
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2018-10-09 16:20:48 -0700 (Tue, 09 Oct 2018) $
+; $LastChangedRevision: 25945 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_make_cdf_l1.pro $
 ;-
 pro spp_fld_make_cdf_l1, apid_name, $
@@ -57,9 +57,34 @@ pro spp_fld_make_cdf_l1, apid_name, $
 
   if ts_success NE 1 then return ; TODO: error reporting here
 
+  if strmid(apid_name,0,5) EQ 'ephem' then ephem = 1 else ephem = 0
+
   data = spp_fld_load_tmlib_data(apid_name, $
     varformat = varformat, success = dat_success, $
-    cdf_att = cdf_att, times = times, packets = packets, idl_att = idl_att)
+    cdf_att = cdf_att, times = times, packets = packets, idl_att = idl_att, $
+    att_only = ephem)
+
+  if ephem then begin
+
+    frame = strmid(apid_name, 6)
+
+    ;print, frame
+
+    load_spp_ephem, ref = frame, /minutes, data_return = data_return, /noplot
+
+    times = list(data_return['times'])
+
+    (data['position'])['data'] = data_return['position']
+    (data['velocity'])['data'] = data_return['velocity']
+    (data['sc_x_vector'])['data'] = data_return['sc_x_vector']
+    (data['sc_y_vector'])['data'] = data_return['sc_y_vector']
+    (data['sc_z_vector'])['data'] = data_return['sc_z_vector']
+    (data['c_matrix'])['data'] = data_return['c_matrix']
+
+    dat_success = 1
+    
+  endif
+
 
   if dat_success NE 1 then begin
 
@@ -82,25 +107,27 @@ pro spp_fld_make_cdf_l1, apid_name, $
   ; Write the packets file
   ;
 
-  packet_filename = strmid(filename,0,strlen(filename)-3) + 'dat'
+  if ephem EQ 0 then begin
 
-  if n_elements(daily) EQ 0 then begin
+    packet_filename = strmid(filename,0,strlen(filename)-3) + 'dat'
 
-    spp_fld_write_packet_file, packet_filename, packets
+    if n_elements(daily) EQ 0 then begin
 
-  endif else begin
+      spp_fld_write_packet_file, packet_filename, packets
 
-    ; TODO: Check for presence of environment variables
+    endif else begin
 
-    packet_filename = packet_filename.Replace(getenv('SPP_FLD_CDF_DAILY_DIR'), $
-      getenv('SPP_FLD_DAT_DAILY_DIR'))
-      
-    file_mkdir, file_dirname(packet_filename)
+      ; TODO: Check for presence of environment variables
 
-    spp_fld_write_packet_file, packet_filename, packets
+      packet_filename = packet_filename.Replace('/l1/', '/l1_dat/')
 
-  endelse
+      file_mkdir, file_dirname(packet_filename)
 
+      spp_fld_write_packet_file, packet_filename, packets
+
+    endelse
+
+  endif
 
   ;
   ; Put data into the CDF file
@@ -135,15 +162,17 @@ pro spp_fld_make_cdf_l1, apid_name, $
 
     end
 
-    if file_test(packet_filename) then begin
+    if ephem EQ 0 then begin
+      if file_test(packet_filename) then begin
 
-      if !spp_fld_tmlib.test_cdf_dir NE '' then begin
+        if !spp_fld_tmlib.test_cdf_dir NE '' then begin
 
-        file_copy, packet_filename, !spp_fld_tmlib.test_cdf_dir, /over
+          file_copy, packet_filename, !spp_fld_tmlib.test_cdf_dir, /over
+
+        end
 
       end
-
-    end
+    endif
 
   endif
 

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Oct  4 18:16:26 2018.<P>
+<STRONG>Last modified: </STRONG>Wed Oct 17 18:16:32 2018.<P>
  
 <HR>
  
@@ -316,7 +316,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      bit 1 = overcounting/saturation effects likely present in skymap
      bit 2 = reported spacecraft potential above 20V
      bit 3 = invalid/unavailable spacecraft potential
-     bit 4 = significant (&gt;25%) cold plasma (&lt;10eV) component
+     bit 4 = significant (&gt;10%) cold plasma (&lt;10eV) component
      bit 5 = significant (&gt;25%) hot plasma (&gt;30keV) component
      bit 6 = high sonic Mach number (v/vth &gt; 2.5)
      bit 7 = low calculated density (n_DES &lt; 0.05 cm^-3)
@@ -324,13 +324,15 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      bit 9 = srvy l2pre magnetic field used instead of brst l2pre magnetic field
      bit 10 = no internally generated photoelectron correction applied
      bit 11 = compression pipeline error
+     Bit 12 = spintone calculation error (DBCS only)
+     Bit 13 = significant (&gt;=20%) penetrating radiation (DIS only)
       
    For DES/DIS moments (Fast):
      bit 0 = manually flagged interval --&gt; contact the FPI team for direction when utilizing this data; further correction is required
      bit 1 = overcounting/saturation effects likely present in skymap
      bit 2 = reported spacecraft potential above 20V
      bit 3 = invalid/unavailable spacecraft potential
-     bit 4 = significant (&gt;25%) cold plasma (&lt;10eV) component
+     bit 4 = significant (&gt;10%) cold plasma (&lt;10eV) component
      bit 5 = significant (&gt;25%) hot plasma (&gt;30keV) component
      bit 6 = high sonic Mach number (v/vth &gt; 2.5)
      bit 7 = low calculated density (n_DES &lt; 0.05 cm^-3)
@@ -338,14 +340,16 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      bit 9 = not used
      bit 10 = no internally generated photoelectron correction applied
      bit 11 = compression pipeline error
+     Bit 12 = spintone calculation error (DBCS only)
+     Bit 13 = significant (&gt;=20%) penetrating radiation (DIS only)
 
      Original by Naritoshi Kitamura
      
      June 2016: minor updates by egrimes
      
  $LastChangedBy: egrimes $
- $LastChangedDate: 2017-11-28 13:11:06 -0800 (Tue, 28 Nov 2017) $
- $LastChangedRevision: 24354 $
+ $LastChangedDate: 2018-10-05 10:11:48 -0700 (Fri, 05 Oct 2018) $
+ $LastChangedRevision: 25917 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_fpi_make_errorflagbars.pro $
 </PRE><P>
 <STRONG>(See <A href="fpi/mms_fpi_make_errorflagbars.pro">projects/mms/fpi/mms_fpi_make_errorflagbars.pro</A>)</STRONG><P>

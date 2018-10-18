@@ -53,9 +53,9 @@
 ;
 ;CREATED BY:    Davin Larson  Oct 1996
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2015-11-04 21:35:03 -0800 (Wed, 04 Nov 2015) $
-; $LastChangedRevision: 19252 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-10-17 12:47:15 -0700 (Wed, 17 Oct 2018) $
+; $LastChangedRevision: 25991 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/time_struct.pro $
 ;-
 function time_struct,time,epoch=epoch,no_clean=no_clean,$
@@ -133,7 +133,7 @@ if dt eq 5 or dt eq 4 or dt eq 3 or dt eq 14 then begin         ; input is a dou
         tsts[good].hour = hour
         tsts[good].min  = min
         tsts[good].sec  = sec
-        tsts[good].fsec = round(fsec*1d6)/1d6
+        tsts[good].fsec = round(fsec*1d9)/1d9
         tsts[good].sod  = sod
         tsts[good].daynum = daynum
         tsts[good].dow = daynum mod 7

@@ -33,9 +33,9 @@
 ; CREATED BY:
 ;   pulupa
 ;
-; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2018-10-02 15:53:19 -0700 (Tue, 02 Oct 2018) $
-; $LastChangedRevision: 25885 $
+; $LastChangedBy: pulupa $
+; $LastChangedDate: 2018-10-08 17:26:08 -0700 (Mon, 08 Oct 2018) $
+; $LastChangedRevision: 25932 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_put_data.pro $
 ;-
 pro spp_fld_cdf_put_data, fileid, data, close = close, compression = compression
@@ -60,8 +60,12 @@ pro spp_fld_cdf_put_data, fileid, data, close = close, compression = compression
 
       cdf_var_name = (data_item['cdf_att'])['FIELDNAM']
 
-      null_ind = data_item['data'].Where(!NULL, count = null_count, $
-        complement = non_null_ind, ncomplement = non_null_count)
+      if size(data_item['data'],/type) EQ 11 then begin
+        null_ind = data_item['data'].Where(!NULL, count = null_count, $
+          complement = non_null_ind, ncomplement = non_null_count)
+      endif else begin
+        non_null_count = n_elements(data_item['data'])
+      endelse
 
       cdf_atts = data_item['cdf_att']
 
@@ -73,30 +77,34 @@ pro spp_fld_cdf_put_data, fileid, data, close = close, compression = compression
 
       ; TODO: save raw data in CDF file as well as converted data
 
-      cdf_sparse = (null_count NE 0)
+      ;cdf_sparse = (null_count NE 0)
 
       if non_null_count GT 0 then begin
 
-        if data_item.HasKey('convert_routine') then begin
+        if size(data_item['data'],/type) EQ 11 then begin
+          if data_item.HasKey('convert_routine') then begin
 
-          ; TODO: Check for presence of convert routine, print error if not found
+            ; TODO: Check for presence of convert routine, print error if not found
 
-          raw_data_array = (spp_fld_square_list(data_item['data'])).ToArray()
+            raw_data_array = (spp_fld_square_list(data_item['data'])).ToArray()
 
-          if data_item['convert_routine'] NE 'none' then begin
+            if data_item['convert_routine'] NE 'none' then begin
 
-            data_array = call_function(data_item['convert_routine'], raw_data_array)
+              data_array = call_function(data_item['convert_routine'], raw_data_array)
+
+            endif else begin
+
+              data_array = raw_data_array
+
+            endelse
 
           endif else begin
 
-            data_array = raw_data_array
+            data_array = (data_item['data']).ToArray()
 
           endelse
-
         endif else begin
-
-          data_array = (data_item['data']).ToArray()
-
+          data_array = data_item['data']
         endelse
 
         data_dim = size(data_array, /dim)

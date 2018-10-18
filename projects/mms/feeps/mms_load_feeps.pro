@@ -94,8 +94,8 @@
 ;     Please see the notes in mms_load_data for more information 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
-;$LastChangedRevision: 25588 $
+;$LastChangedDate: 2018-10-08 17:44:24 -0700 (Mon, 08 Oct 2018) $
+;$LastChangedRevision: 25934 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_load_feeps.pro $
 ;-
 pro mms_load_feeps, trange = trange, probes = probes, datatype = datatype, $
@@ -164,7 +164,7 @@ pro mms_load_feeps, trange = trange, probes = probes, datatype = datatype, $
         
         ; remove bad eyes, bad energy channels
         mms_feeps_remove_bad_data, probe=this_probe, datatype=this_datatype, $
-          data_rate=data_rate_in, level = level, suffix = suffix
+          data_rate=data_rate_in, level = level, suffix = suffix, trange=tr
         
         for data_units_idx = 0, n_elements(data_units)-1 do begin
           ; updated active eyes, 9/8/2017

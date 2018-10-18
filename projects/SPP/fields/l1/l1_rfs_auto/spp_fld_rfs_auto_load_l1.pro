@@ -228,6 +228,10 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
 
       ytitle = receiver_str + ' AUTO!C' + strupcase(raw_spec_i)
 
+      avg_pos = strpos(ytitle, 'AVERAGES')
+
+      if avg_pos GE 0 then ytitle = strmid(ytitle, 0, avg_pos) + 'AVGS' + strmid(ytitle, avg_pos+8)
+
       ch_str = strmid(raw_spec_i,strlen(raw_spec_i) - 3, 3)
 
       get_data, prefix + ch_str + '_string', dat = ch_src_dat
@@ -236,14 +240,71 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
         get_data, prefix + ch_str, dat = ch_src_dat
 
       if size(ch_src_dat, /type) EQ 8 then begin
+
+        if size(ch_src_dat.y[0], /type) NE 7 then src_string = 'SRC ' else $
+          src_string = ''
+
         if n_elements(uniq(ch_src_dat.y) EQ 1) then begin
           ;options, prefix + raw_spec_i + '_converted', 'ysubtitle', $
           ;'SRC:' + strcompress(string(ch_src_dat.y[0]))
-          if size(ch_src_dat.y[0], /type) NE 7 then src_string = 'SRC ' else $
-            src_string = ''
 
           ytitle = ytitle + '!C' + src_string + strcompress(string(ch_src_dat.y[0]))
+
+
         endif
+
+        get_data, prefix + ch_str, dat = ch_src_dat_int
+
+        src_hist = histogram(ch_src_dat_int.y, rev = src_rev, locations = src_loc)
+
+        for j = 0, n_elements(src_loc) do begin
+
+          if src_rev[j+1] GT src_rev[j] then begin
+
+            inds = src_rev[src_rev[j]:src_rev[j+1]-1]
+
+
+            src_string2 = strcompress(string(ch_src_dat.y[inds[0]]), /remove_all)
+
+            ytitle2 = receiver_str + ' AUTO!C' + strupcase(raw_spec_i) + '!C' + $
+              src_string + src_string2
+
+            dash_pos = strpos(src_string2, '-')
+
+            if dash_pos GE 0 then src_string2 = strmid(src_string2, 0, dash_pos) + strmid(src_string2, dash_pos+1)
+
+            src_name = prefix + raw_spec_i + '_converted_' + src_string2
+
+            avg_pos = strpos(ytitle2, 'AVERAGES')
+
+            if avg_pos GE 0 then ytitle2 = strmid(ytitle2, 0, avg_pos) + 'AVGS' + strmid(ytitle2, avg_pos+8)
+
+            ;if avg_pos GE 0 then stop
+            ;stop
+
+
+            store_data, src_name, $
+              data = {x:(raw_spec_data.x)[inds], y:converted_spec_data[inds,*], $
+              v:rfs_freqs.reduced_freq}
+
+            options, src_name, 'spec', 1
+            options, src_name, 'no_interp', 1
+            options, src_name, 'ylog', 1
+            options, src_name, 'zlog', 1
+            options, src_name, 'ztitle', '[V2/Hz]'
+            options, src_name, 'ystyle', 1
+            options, src_name, 'datagap', 60
+            options, src_name, 'panel_size', 2.
+            options, src_name, 'ytitle', ytitle2
+
+            options, src_name,  'ysubtitle', 'Freq [Hz]'
+
+          endif
+
+        endfor
+
+        ;         stop
+
       endif
 
       options, prefix + raw_spec_i + '_converted', 'ytitle', $

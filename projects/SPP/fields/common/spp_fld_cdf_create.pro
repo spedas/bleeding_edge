@@ -31,8 +31,8 @@
 ;   pulupa
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2018-06-29 15:35:33 -0700 (Fri, 29 Jun 2018) $
-; $LastChangedRevision: 25422 $
+; $LastChangedDate: 2018-10-10 12:00:08 -0700 (Wed, 10 Oct 2018) $
+; $LastChangedRevision: 25952 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_create.pro $
 ;-
 pro spp_fld_cdf_create, level, vers_num, cdf_att, filename_timestring, $
@@ -75,5 +75,8 @@ pro spp_fld_cdf_create, level, vers_num, cdf_att, filename_timestring, $
 
   fileid = cdf_create(filename, $
     /single_file, /network_encoding, /row_major,/clobber)
+
+  CDF_COMPRESSION,fileid,SET_GZIP_LEVEL=6
+
 
 end

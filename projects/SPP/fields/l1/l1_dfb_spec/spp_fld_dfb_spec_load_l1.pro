@@ -127,7 +127,6 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
       ; elements and concatenated spectra.
 
       if n_elements(uniq(nelem_data.y)) EQ 1 and $
-        n_elements(uniq(navg_data.y)) EQ 1 and $
         n_elements(uniq(concat_data.y)) EQ 1 then begin
 
         if strpos(prefix, 'ac_spec') NE -1 then is_ac = 1 else is_ac = 0
@@ -166,18 +165,23 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
         new_data_x = []
         new_data_sat_y = []
 
-        if is_ac then begin
-
-          if n_avg LE 16 then delta_x = 2d^17 / 150d3 * n_avg / n_spec;; base dt is 1 PPC
-          if n_avg GE 32 then delta_x = 2d^17 / 150d3 * double(floor(n_avg / 16d)) / n_spec ;; base dt is N PPC
-
-        endif else begin
-
-          delta_x = 2d^17 / 150d3 * 512. / n_spec
-
-        endelse
 
         for i = 0, n_elements(spec_data.x)-1 do begin
+
+          if is_ac then begin
+
+            if navg_data.y[i] LE 16 then delta_x = 2d^17 / 150d3 * navg_data.y[i] / n_spec;; base dt is 1 PPC
+            if navg_data.y[i] GE 32 then delta_x = 2d^17 / 150d3 * double(floor(navg_data.y[i] / 16d)) / n_spec ;; base dt is N PPC
+
+          endif else begin
+
+            delta_x = 2d^17 / 150d3 * 512. / n_spec
+            
+            if navg_data.y[i] GT 8 then delta_x *= 2d
+
+          endelse
+
+
           new_data_x = [new_data_x,spec_data.x[i] + $
             delta_x * dindgen(n_spec)]
 

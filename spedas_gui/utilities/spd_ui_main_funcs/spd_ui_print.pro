@@ -13,9 +13,9 @@
 ; Input:
 ;  Info: The info struct from the main gui block
 ;
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2014-02-11 10:54:32 -0800 (Tue, 11 Feb 2014) $
-;$LastChangedRevision: 14326 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2018-10-11 14:50:09 -0700 (Thu, 11 Oct 2018) $
+;$LastChangedRevision: 25964 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/utilities/spd_ui_main_funcs/spd_ui_print.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -64,14 +64,14 @@ pro spd_ui_print,info
   ENDIF
 
   if info.printWarning eq 0 then begin
-    ok = dialog_message("IDL printer support can be unreliable." + ssl_newline() + $
-                        'If you have trouble, try exporting from the "File->Export to Image File" menu.' + ssl_newline() + $
-                        '"File->Export to Image File" supports eps, png, and numerous other image formats.',$
+    ok = dialog_message("IDL printer support can be unreliable." + ssl_newline() + ' ' + ssl_newline()  + $
+                        'If you have trouble, try exporting from the "File->Save Page As Image File" menu.' + ssl_newline() + ' ' + ssl_newline()  + $
+                        '"File->Save Page As Image File" supports eps, png, and numerous other image formats.',$
                         dialog_parent=info.master) 
     info.printwarning=1  
   endif
     
-  info.statusbar->update,'Warning: IDL printer support can be unreliable, if you have trouble try exporting to via the "File->Export to Image File" menu.'  
+  info.statusbar->update,'Warning: IDL printer support can be unreliable, if you have trouble try exporting to via the "File->Save Page As Image File" menu.'  
     
   if ~obj_valid(info.printObj) then begin
     info.printObj = Obj_New("IDLgrPRINTER", Print_Quality=2, Quality=2)

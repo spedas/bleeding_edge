@@ -16,7 +16,9 @@ pro spp_fld_load_l1, filename, $
 
   pos = stregex(logical_source,'[0-9]+$')
 
-  if pos GE 0 and logical_source NE 'SPP_FLD_SC_HK_184' and logical_source NE 'SPP_FLD_SC_HK_191' then begin
+  if pos GE 0 and logical_source NE 'SPP_FLD_SC_HK_184' $
+    and logical_source NE 'SPP_FLD_SC_HK_191' $
+    and strmid(logical_source,0,13) NE 'SPP_FLD_EPHEM' then begin
 
     load_routine_prefix = strmid(logical_source, 0, pos)
 

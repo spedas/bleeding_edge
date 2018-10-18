@@ -4,7 +4,7 @@ PRO sitl_report_latest, dir=dir, force=force
   
   ;//////////////////////////////////////////////
   json = 1L
-  paramset = 'SITL_Tail_Basic';'SITL_Basic_NoFPI';'SITL_Basic_Tail'; SITL_Basic_Dayside
+  paramset = 'SITL_Dayside_Basic';'SITL_Tail_Basic';'SITL_Basic_NoFPI';'SITL_Basic_Tail'; SITL_Basic_Dayside
   if undefined(dir) then dir = '/Volumes/moka/public_html/eva/' $
     else dir = spd_addslash(dir)
   if undefined(force) then force = 1

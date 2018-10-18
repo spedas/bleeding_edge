@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-10-01 14:52:34 -0700 (Mon, 01 Oct 2018) $
-; $LastChangedRevision: 25880 $
+; $LastChangedDate: 2018-10-15 09:31:21 -0700 (Mon, 15 Oct 2018) $
+; $LastChangedRevision: 25974 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -145,14 +145,33 @@ endif
 header    = ccsds_data[0:19]
 ns = pksize - 20
 log_flag  = header[12]
-mode1 = header[13]
+;sample_flag = 
+
+
+archive = ccsds.apid and '8'x                ; archive packet determined from the apid
+
+if archive then begin
+  mode1 = header[13]
+  arc_sum  = 0
+  
+endif else begin    ; survey packet
+  mode1 = 0
+  arc_sum  = header[13]
+  
+endelse
+
+;nsamples = 
+
+
 mode2 = (swap_endian(uint(ccsds_data,14) ,/swap_if_little_endian ))
+tmode = mode2 and 'ff'x
+emode = ishft(mode2 ,-8)
 f0 = (swap_endian(uint(header,16), /swap_if_little_endian))
 status_bits = header[18]
 peak_bin = header[19]
 
 
-compression = (header[12] and 'a0'x) ne 0
+compression = (log_flag and 'a0'x) ne 0
 bps =  ([4,1])[ compression ]
 
 ndat = ns / bps
@@ -168,8 +187,11 @@ endif else begin
   cnts = 0.
 endelse
 
+product_type = 0
+
 str = { $
   time:        ccsds.time, $
+  tt2000:      0LL,  $
   apid:        ccsds.apid, $
   time_delta:  ccsds.time_delta, $
   seqn:        ccsds.seqn,  $
@@ -181,6 +203,9 @@ str = { $
   log_flag:    log_flag, $
   mode1:        mode1,  $
   mode2:        mode2,  $
+  tmode:       tmode, $
+  emode:       emode, $
+  product_type: product_type,  $
   f0:           f0,$
   status_bits: status_bits,$
   peak_bin:    peak_bin, $

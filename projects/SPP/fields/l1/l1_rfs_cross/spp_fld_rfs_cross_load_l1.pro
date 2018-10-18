@@ -93,7 +93,7 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
 
   get_data, prefix + 'xspec_re', data = rfs_dat_xspec_re
 
-  converted_data_xspec_re = rfs_float(rfs_dat_xspec_re.y, /cross)
+  converted_data_xspec_re = spp_fld_rfs_float(rfs_dat_xspec_re.y, /cross)
 
   ; TODO replace hard coded gain value w/calibrated
 

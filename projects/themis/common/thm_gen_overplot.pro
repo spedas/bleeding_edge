@@ -306,7 +306,7 @@ for i=0,n_elements(fbk_tvars)-1 do begin
     options, fbk_tvars[i], 'zlog', 1
     ylim, fbk_tvars[i], 2.0, 2048.0, 1
     thm_spec_lim4overplot, fbk_tvars[i], ylog = 1, zlog = 1, /overwrite
-    options, fbk_tvars[i], 'ytitle', 'FBK!C'+strmid(fbk_tvars[i], 7) +'!C[eV]'
+    options, fbk_tvars[i], 'ytitle', 'FBK!C'+strmid(fbk_tvars[i], 7) +'!C[Hz]'
 ;for ztitle, we need to figure out which type of data is there
 ;      for V channels, <|V|>.
 ;      for E channels, <|mV/m|>.
@@ -681,11 +681,18 @@ no_npot:
   options, thx+'_Tie'+mtyp[j], 'ysubtitle', ''
   ylim, thx+'_Tie'+mtyp[j], .1, 9999, 1
 
-  options,nameti,'labels',['Ti!9'+string(120B)+'!X','Ti!9'+string(35B)+'!X']
-  options,namete,'labels',['Te!9'+string(120B)+'!X','Te!9'+string(35B)+'!X']
+  If(gui_plot eq 1) Then Begin
+     options,nameti,'labels',['Ti prp',' ', 'Ti ||'] ;fix for GUI, fixing compound variable does not work
+     options,namete,'labels',['Te prp',' ', 'Te ||']
+     options,nameti, 'colors', [2, 2, 4]
+     options,namete, 'colors', [6, 6, 0]
+  Endif Else Begin
+     options,nameti,'labels',['Ti!9'+string(120B)+'!X',' ','Ti!9'+string(35B)+'!X']
+     options,namete,'labels',['Te!9'+string(120B)+'!X',' ','Te!9'+string(35B)+'!X']
+     options,nameti, 'colors', [2, 2, 4]
+     options,namete, 'colors', [6, 6, 0]
+  Endelse
   options, thx+'_Tie'+mtyp[j], 'labflag', 1
-  options,nameti, 'colors', [2, 4]
-  options,namete, 'colors', [6, 0]
 Endfor
 SKIP_ESA_LOAD:
 
@@ -751,6 +758,13 @@ load_position='mode'
 ;-------------------------------------------------------------------
 sample_rate_var = thm_sample_rate_bar(date, dur, sc, /outline)
 options, sample_rate_var,'ytitle',''
+If(gui_plot) Then Begin ;try degapping wave and particle burst bars
+  tdegap, 'particle_burst_bar_'+sc, /overwrite, dt = 30.0, /twonan
+  tdegap, 'particle_burst_sym_'+sc, /overwrite, dt = 30.0, /twonan
+  tdegap, 'wave_burst_bar_'+sc, /overwrite, dt = 10.0, /twonan
+  tdegap, 'wave_burst_sym_'+sc, /overwrite, dt = 10.0, /twonan
+Endif 
+
 
 SKIP_SURVEY_MODE:
 load_position='bound'
@@ -876,9 +890,11 @@ if (gui_plot eq 1) then begin ; for GUI plots we have some differences
     tplot_options, 'title', title
     tplot_options, 'ymargin', [3,5]
     
-    ;parallel and perpendicular components: select simple label to avoid font problems  
-    options, esaf_t_name, labels=  ['Ti ||', 'Ti per', 'Te ||', 'Te per']
-    options, esaf_t_name, 'colors', [4, 2, 0, 6]
+;parallel and perpendicular components: select simple label to avoid
+;font problems, does not work, jmm, 2018-10-09
+    
+;    options, esaf_t_name, labels=  ['Ti ||', 'Ti per', 'Te ||', 'Te per']
+;    options, esaf_t_name, 'colors', [4, 2, 0, 6]
     
     ; For GUI panels, panel arrangement and height is determined by rows,
     ;   for example: panel_settings->setProperty, row=current_row, rSpan=2

@@ -17,8 +17,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-03-18 14:43:40 -0700 (Sun, 18 Mar 2018) $
-;$LastChangedRevision: 24901 $
+;$LastChangedDate: 2018-10-15 19:10:11 -0700 (Mon, 15 Oct 2018) $
+;$LastChangedRevision: 25983 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_feeps_pad_spinavg.pro $
 ;-
 pro mms_feeps_pad_spinavg, probe=probe, species = species, data_units = data_units, $
@@ -65,7 +65,7 @@ pro mms_feeps_pad_spinavg, probe=probe, species = species, data_units = data_uni
   endif
 
   spin_sum_flux = dblarr(n_elements(spin_starts), n_elements(pad_data.Y[0, *]))
-  spin_times = dblarr(n_elements(spin_starts))
+  if size(pad_data.X, /type) eq 14 then spin_times = lon64arr(n_elements(spin_starts)) else spin_times = dblarr(n_elements(spin_starts))
 
   current_start = 0
   ; loop through the spins for this telescope

@@ -26,8 +26,8 @@
 ;   pulupa
 ;
 ; $LastChangedBy: pulupa $
-; $LastChangedDate: 2018-09-24 11:18:10 -0700 (Mon, 24 Sep 2018) $
-; $LastChangedRevision: 25856 $
+; $LastChangedDate: 2018-10-05 14:01:48 -0700 (Fri, 05 Oct 2018) $
+; $LastChangedRevision: 25922 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_tmlib_init.pro $
 ;-
 
@@ -42,7 +42,7 @@ pro spp_fld_tmlib_init, server = server, test_cdf_dir = test_cdf_dir, daily = da
   if n_elements(daily) EQ 0 then begin
     cdf_dir = getenv('SPP_FLD_CDF_DIR')
   endif else begin
-    cdf_dir = getenv('SPP_FLD_CDF_DAILY_DIR')
+    cdf_dir = getenv('SPP_FLD_DAILY_DIR')
   endelse
 
   if cdf_dir EQ '' then begin

@@ -14,9 +14,9 @@
 ;OUTPUT:
 ; 
 ;HISTORY:
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-30 13:23:37 -0700 (Mon, 30 Apr 2018) $
-;$LastChangedRevision: 25150 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2018-10-11 13:55:48 -0700 (Thu, 11 Oct 2018) $
+;$LastChangedRevision: 25960 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_manage_data.pro $
 ;
 ;--------------------------------------------------------------------------------
@@ -480,11 +480,11 @@ pro spd_ui_manage_data, gui_id, loadedData, windowStorage, historywin,treeCopyPt
   EndIf
   
   
-  tlb = Widget_Base(/col, Title='Manage Data and Import/Export TPlot Variables', Group_Leader=gui_id, /Modal, /Floating,/tlb_kill_request_events, tab_mode=1)
+  tlb = Widget_Base(/col, Title='Manage Tplot and GUI Variables', Group_Leader=gui_id, /Modal, /Floating,/tlb_kill_request_events, tab_mode=1)
   
   ; Define Base structure for this window
   mainBase = Widget_Base(tlb, /row)
-    tplotDataBase = Widget_Base(mainBase, /col, ypad=10)
+    tplotDataBase = Widget_Base(mainBase, /col)
     arrowBase = Widget_Base(mainBase, /col, ypad=115, xpad=12)
     guiDataBase = Widget_Base(mainBase, /col)
   buttonBase = widget_base(tlb,/row, /align_center)
@@ -492,9 +492,9 @@ pro spd_ui_manage_data, gui_id, loadedData, windowStorage, historywin,treeCopyPt
   
   ; Create the Widgets
   guiLabel = Widget_Label(guiDataBase, value='GUI Data: ',/align_left)
-  guiTree = Obj_New('spd_ui_widget_tree',guiDataBase,'GUI_TREE',loadedData,xsize=xsize, $
-                    ysize=ysize,mode=0,uname='GUI_TREE')       
-  
+  guiTree = Obj_New('spd_ui_widget_tree',guiDataBase,'GUI_TREE',loadedData, XSIZE=300, $
+                     YSIZE=350,mode=0,uname='GUI_TREE')       
+  guiLabelNote = Widget_Label(guiDataBase, value='GUI variables can only be used with the GUI.', /align_left)  
   guiTree->update,from_copy=*treeCopyPtr
   
   getresourcepath,rpath
@@ -522,8 +522,10 @@ pro spd_ui_manage_data, gui_id, loadedData, windowStorage, historywin,treeCopyPt
   if ~keyword_set(tplotListNames) then begin
     tplotListNames = ['']
   endif
-  tplotList = Widget_List(tplotDataBase, value=tplotListNames, xsize=42, $
-              ysize=floor(ysize/(!D.Y_CH_SIZE+4)), uvalue='TPLOT', /multiple)
+  tplotList = Widget_List(tplotDataBase, value=tplotListNames, SCR_XSIZE=300, $
+              SCR_YSIZE=350, uvalue='TPLOT', /multiple)
+
+  tplotLabelNote = Widget_Label(tplotDataBase, value='Tplot variables can only be used with the command line.', /align_left)
   ok_button = widget_button(buttonBase,value='OK',uvalue='OK', xsize=75)
   
   statusBar = Obj_New("SPD_UI_MESSAGE_BAR", statusBase, Xsize=98, YSize=1)

@@ -1,13 +1,13 @@
 ;
-;  $LastChangedBy: spfuser $
-;  $LastChangedDate: 2018-03-16 17:03:47 -0700 (Fri, 16 Mar 2018) $
-;  $LastChangedRevision: 24899 $
+;  $LastChangedBy: pulupa $
+;  $LastChangedDate: 2018-10-08 17:26:08 -0700 (Mon, 08 Oct 2018) $
+;  $LastChangedRevision: 25932 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_load_tmlib_data.pro $
 ;
 
 function spp_fld_load_tmlib_data, l1_data_type,  $
   varformat = varformat, cdf_att = cdf_att, times = times, packets = packets, $
-  idl_att = idl_att, success = success
+  idl_att = idl_att, success = success, att_only = att_only
 
   success = 0
 
@@ -77,7 +77,7 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
     idl_att = ORDEREDHASH()
 
   endelse
-
+  
 
   ; From the list, make a hash object (data_hash).  We make the hash so that
   ; we can index by the item name.  Also make a list of the hash keys (item
@@ -173,6 +173,8 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
     return, 0
 
   endelse
+
+  if keyword_set(att_only) then return, data_hash
 
   ;
   ; Set up parameters for TMlib
