@@ -18,8 +18,8 @@
 ;  
 ;HISTORY:
 ;$LastChangedBy: jimm $
-;$LastChangedDate: 2017-03-13 13:41:46 -0700 (Mon, 13 Mar 2017) $
-;$LastChangedRevision: 22956 $
+;$LastChangedDate: 2018-10-18 11:12:23 -0700 (Thu, 18 Oct 2018) $
+;$LastChangedRevision: 25996 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/fast/fa_fields/fa_load_mag_hr_dcb.pro $
 ;
 ;-
@@ -96,14 +96,17 @@ pro fa_load_mag_hr_dcb,trange=trange,tplotnames=tplotnames, $
   verbose = source.verbose
    
   tr = timerange(trange)
-   
+  
   ;http://cdaweb.gsfc.nasa.gov/istp_public/data/fast/dcb/dcb_hr/1998/09/fast_hr_dcb_19980901002656_v01.cdf
-  file_format = 'YYYY/MM/fast_hr_dcb_YYYYMMDDhh????_'+version+'.cdf'
+  ;https://cdaweb.gsfc.nasa.gov/istp_public/data/fast/dcf/l2/dcb/1996/10/fast_hr_dcb_19961001052936_00441_v02.cdf
+  file_format = 'YYYY/MM/fast_hr_dcb_YYYYMMDDhh????_*_'+version+'.cdf'
 
   relpathnames = file_dailynames(file_format=file_format,trange=tr,/hour_res)
   remote_path = source.remote_data_dir+'fast/dcf/l2/dcb/'
-  local_path = source.local_data_dir+'fast/dcb/dcb_hr/'
-
+;Local path for SSL is different
+  If(file_test('/disks/data/fast/.fast_master')) Then Begin
+     local_path = '/disks/data/fast/l2/DCB/'
+  Endif Else local_path = source.local_data_dir+'fast/dcb/dcb_hr/'
   files = spd_download(remote_file=relpathnames, remote_path=remote_path, $
                        local_path = local_path, no_download = source.no_download, $
                        no_update = source.no_update, $

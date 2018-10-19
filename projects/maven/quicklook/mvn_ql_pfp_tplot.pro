@@ -64,8 +64,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2018-10-11 22:46:40 -0700 (Thu, 11 Oct 2018) $
-; $LastChangedRevision: 25966 $
+; $LastChangedDate: 2018-10-18 13:01:46 -0700 (Thu, 18 Oct 2018) $
+; $LastChangedRevision: 25998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot.pro $
 ;
 ;-
@@ -372,14 +372,21 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
         store_data, 'mvn_lpw_lp_iv_l2', /delete, verbose=verbose
         IF (trange[1]-MAX(d1.x)) GT 0.9 * oneday THEN lflg1 = 1
      ENDIF ELSE lflg1 = 1
-     ;undefine, d, dl, lim, nlim
      IF (lflg1) THEN BEGIN
         lpath = 'maven/data/sci/lpw/tplot/'
         lname = 'YYYY/mvn_lpw_iv_YYYYMMDD.tplot'
-        lfile = mvn_pfp_file_retrieve(lpath + lname, trange=trange, /daily)
+        lfile = mvn_pfp_file_retrieve(lpath + lname, trange=trange, /daily, /valid_only)
         IF (lfile[0] NE '') THEN BEGIN
-           tplot_restore, filenames=lfile, /append
-           get_data, 'mvn_lpw_iv', data=d2
+           FOR i=0, N_ELEMENTS(lfile)-1 DO BEGIN
+              tplot_restore, filenames=lfile[i]
+              get_data, 'mvn_lpw_iv', data=dd
+              IF SIZE(dd.y, /n_dimen) EQ 2 THEN BEGIN
+                 IF SIZE(d2, /type) EQ 0 THEN d2 = {x: dd.x, y: dd.y, v: dd.v} $
+                 ELSE d2 = {x: [d2.x, dd.x], y: [d2.y, dd.y], v: [d2.v, dd.v]}
+                 store_data, 'mvn_lpw_iv', data=d2
+              ENDIF
+              undefine, dd
+           ENDFOR
            IF (~IS_STRUCT(d2)) THEN lflg2 = 1 $
            ELSE BEGIN
               IF SIZE(d1, /type) NE 0 THEN BEGIN
@@ -392,12 +399,14 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
         ENDIF  
      ENDIF 
      get_data, 'mvn_lpw_iv', index=ilpw
-     IF (ilpw EQ 0) THEN BEGIN
+     IF (ilpw EQ 0) THEN $
         store_data, 'mvn_lpw_iv', data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [-45, 45]}, $
                     dlim={yrange: [-43.3274, 43.2675], ystyle: 1, zrange: [-10, -4], zstyle: 1, spec: 1}
-        options, 'mvn_lpw_iv', bottom=7, top=254, no_color_scale=0
-        options, 'mvn_lpw_iv', ytitle='LPW (IV)', ysubtitle='[V]', ztitle='Log(abs(IV))'
-     ENDIF 
+
+     ylim, 'mvn_lpw_iv', -43.3274, 43.2675
+     options, 'mvn_lpw_iv', bottom=7, top=254, no_color_scale=0, datagap=60.d0
+     options, 'mvn_lpw_iv', ytitle='LPW (IV)', ysubtitle='[V]', ztitle='Log(abs(IV))'
+
   ;   lpath = 'maven/data/sci/lpw/l2/'
   ;   lname = 'YYYY/MM/mvn_lpw_l2_wspecpas_YYYYMMDD_*.cdf'
   ;   lfile = mvn_pfp_file_retrieve(lpath + lname, trange=trange, /daily, /valid_only, /last)
