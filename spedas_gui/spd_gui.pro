@@ -23,9 +23,9 @@
 ;
 ;HISTORY:
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-10-11 22:06:21 -0700 (Thu, 11 Oct 2018) $
-;$LastChangedRevision: 25965 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2018-10-22 16:51:04 -0700 (Mon, 22 Oct 2018) $
+;$LastChangedRevision: 26001 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/spd_gui.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -1513,6 +1513,14 @@ PRO spd_gui,reset=reset,template_filename=template_filename
   ;  markerPMenu = Widget_Button(graphMenu, Value='Marker Options... ', UValue='MARKERP')
   variableMenu = Widget_Button(graphMenu, Value='Variable Options... ', UValue='VARIABLE')
 
+
+; Window Pull Down Menu window
+
+  windowMenu = Widget_Button(bar, Value='Pages ', /Menu, UValue=0)
+  newWinMenu = Widget_Button(windowMenu, Value='New ', UValue='NEWWIN',Accelerator="Ctrl+N")
+  closeWinMenu = Widget_Button(windowMenu, Value='Close ', UValue='CLOSE', Accelerator="Ctrl+Z")
+
+
   ; Tools Pull Down Menu (general plugins)
 
   toolsMenu = widget_button(bar, value='Tools ', /menu)
@@ -1572,12 +1580,6 @@ PRO spd_gui,reset=reset,template_filename=template_filename
   Widget_Control, showPositionMenu, Set_Button=1
 
   
-; Window Pull Down Menu window
-
-  windowMenu = Widget_Button(bar, Value='Pages ', /Menu, UValue=0)
-  newWinMenu = Widget_Button(windowMenu, Value='New ', UValue='NEWWIN',Accelerator="Ctrl+N")
-  closeWinMenu = Widget_Button(windowMenu, Value='Close ', UValue='CLOSE', Accelerator="Ctrl+Z")
-
   ; Help Pull Down Menu
 
   helpMenu = Widget_Button(bar, Value='Help ', /Menu)
