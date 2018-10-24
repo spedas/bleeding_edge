@@ -64,8 +64,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2018-10-18 13:01:46 -0700 (Thu, 18 Oct 2018) $
-; $LastChangedRevision: 25998 $
+; $LastChangedDate: 2018-10-23 13:52:27 -0700 (Tue, 23 Oct 2018) $
+; $LastChangedRevision: 26009 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot.pro $
 ;
 ;-
@@ -383,9 +383,11 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
               IF SIZE(dd.y, /n_dimen) EQ 2 THEN BEGIN
                  IF SIZE(d2, /type) EQ 0 THEN d2 = {x: dd.x, y: dd.y, v: dd.v} $
                  ELSE d2 = {x: [d2.x, dd.x], y: [d2.y, dd.y], v: [d2.v, dd.v]}
+                 w = WHERE(d2.x GE trange[0] AND d2.x LE trange[1], nw)
+                 IF nw GT 0 THEN d2 = {x: d2.x[w], y: d2.y[w, *], v: d2.v[w, *]}
                  store_data, 'mvn_lpw_iv', data=d2
               ENDIF
-              undefine, dd
+              undefine, dd, w, nw
            ENDFOR
            IF (~IS_STRUCT(d2)) THEN lflg2 = 1 $
            ELSE BEGIN

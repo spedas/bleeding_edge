@@ -38,8 +38,8 @@
 ;   pulupa
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2018-10-09 16:20:48 -0700 (Tue, 09 Oct 2018) $
-; $LastChangedRevision: 25945 $
+; $LastChangedDate: 2018-10-22 23:03:28 -0700 (Mon, 22 Oct 2018) $
+; $LastChangedRevision: 26006 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_make_cdf_l1.pro $
 ;-
 pro spp_fld_make_cdf_l1, apid_name, $
@@ -61,7 +61,8 @@ pro spp_fld_make_cdf_l1, apid_name, $
 
   data = spp_fld_load_tmlib_data(apid_name, $
     varformat = varformat, success = dat_success, $
-    cdf_att = cdf_att, times = times, packets = packets, idl_att = idl_att, $
+    cdf_att = cdf_att, times = times, utcstr = utcstr, $
+    packets = packets, idl_att = idl_att, $
     att_only = ephem)
 
   if ephem then begin
