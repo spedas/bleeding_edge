@@ -37,9 +37,9 @@
 ; CREATED BY:
 ;   pulupa
 ;
-; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2018-10-22 23:03:28 -0700 (Mon, 22 Oct 2018) $
-; $LastChangedRevision: 26006 $
+; $LastChangedBy: spfuser2 $
+; $LastChangedDate: 2018-10-24 16:20:41 -0700 (Wed, 24 Oct 2018) $
+; $LastChangedRevision: 26012 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_make_cdf_l1.pro $
 ;-
 pro spp_fld_make_cdf_l1, apid_name, $
@@ -59,6 +59,8 @@ pro spp_fld_make_cdf_l1, apid_name, $
 
   if strmid(apid_name,0,5) EQ 'ephem' then ephem = 1 else ephem = 0
 
+  spp_fld_load_ephem, /no_unload
+
   data = spp_fld_load_tmlib_data(apid_name, $
     varformat = varformat, success = dat_success, $
     cdf_att = cdf_att, times = times, utcstr = utcstr, $
@@ -71,7 +73,7 @@ pro spp_fld_make_cdf_l1, apid_name, $
 
     ;print, frame
 
-    load_spp_ephem, ref = frame, /minutes, data_return = data_return, /noplot
+    spp_fld_load_ephem, ref = frame, /minutes, data_return = data_return, /noplot
 
     times = list(data_return['times'])
 
