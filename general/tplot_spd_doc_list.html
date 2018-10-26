@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Oct 24 18:16:35 2018.<P>
+<STRONG>Last modified: </STRONG>Thu Oct 25 18:16:39 2018.<P>
  
 <HR>
  
@@ -3347,7 +3347,8 @@ KEYWORDS:
                no file name is chosen and the all keyword is not set,
 		tplot_restore will look for and restore a file called
 		saved.tplot.
-   all: restore all *.tplot files in current directory
+   all: restore all *.tplot files in current directory (or directory specified by directory keyword)
+   directory: specify a directory other than the current working dir for loading ALL tplot files
    append: append saved data to existing tplot variables
    sort: sort data by time after loading in
    get_tvars: load tplot_vars structure (the structure containing tplot
@@ -3364,9 +3365,9 @@ LAST MODIFICATION:     Added restore_varnames, 19-jun-2007, jmm
 						  text.                   21-may-2008, cg
                        Removed additional output text - Use dprint,debug=3  to restore text.   Nov 2008
 
- $LastChangedBy: lbwilsoniii_desk $
- $LastChangedDate: 2018-01-31 11:56:26 -0800 (Wed, 31 Jan 2018) $
- $LastChangedRevision: 24611 $
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2018-10-25 11:50:37 -0700 (Thu, 25 Oct 2018) $
+ $LastChangedRevision: 26014 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_restore.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/tplot_restore.pro">general/tplot/tplot_restore.pro</A>)</STRONG><P>

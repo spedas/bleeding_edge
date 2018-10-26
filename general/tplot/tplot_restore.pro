@@ -8,7 +8,8 @@
 ;               no file name is chosen and the all keyword is not set,
 ;		tplot_restore will look for and restore a file called
 ;		saved.tplot.
-;   all: restore all *.tplot files in current directory
+;   all: restore all *.tplot files in current directory (or directory specified by directory keyword)
+;   directory: specify a directory other than the current working dir for loading ALL tplot files
 ;   append: append saved data to existing tplot variables
 ;   sort: sort data by time after loading in
 ;   get_tvars: load tplot_vars structure (the structure containing tplot
@@ -25,19 +26,38 @@
 ;						  text.                   21-may-2008, cg
 ;                       Removed additional output text - Use dprint,debug=3  to restore text.   Nov 2008
 ;
-; $LastChangedBy: lbwilsoniii_desk $
-; $LastChangedDate: 2018-01-31 11:56:26 -0800 (Wed, 31 Jan 2018) $
-; $LastChangedRevision: 24611 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-10-25 11:50:37 -0700 (Thu, 25 Oct 2018) $
+; $LastChangedRevision: 26014 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_restore.pro $
 ;-
 pro tplot_restore,filenames=filenames,all=all,append=append,sort=sort,$
-	get_tvars=get_tvars,verbose=verbose, restored_varnames=restored_varnames
+	get_tvars=get_tvars,verbose=verbose, restored_varnames=restored_varnames, $
+	directory=directory
 
 COMPILE_OPT IDL2
 @tplot_com.pro
 
 tplot_quant__define
-if keyword_set(all) then filenames = file_search('*.tplot')
+if keyword_set(directory) and ~keyword_set(all) then begin
+  dprint, dlevel=0, 'Warning: directory keyword only used when /all keyword set'
+endif
+if keyword_set(directory) then begin
+  ;First check for a slash
+  n = n_elements(directory)
+  If(n Eq 0) Then dirslash = '/' Else Begin
+    dirslash = directory
+    For j = 0, n-1 Do Begin
+      temp_string = strtrim(directory[j], 2)
+      ll = strmid(temp_string, strlen(temp_string)-1, 1)
+      If(ll Ne '/' And ll Ne '\') Then temp_string = temp_string+'/'
+      dirslash[j] = temporary(temp_string)
+    Endfor
+  Endelse
+  restore_dir = dirslash
+endif else restore_dir = ''
+
+if keyword_set(all) then filenames = file_search(restore_dir+'*.tplot')
 if size(/type,filenames) ne 7 then $
   filenames = 'saved.tplot'
 n = n_elements(filenames)
