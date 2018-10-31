@@ -70,7 +70,8 @@
 
   <cdf_var
       name = "DFBTEMP"
-      type = "double">
+      type = "double"
+      raw = "DFBTEMP_raw">
     <cdf_att
         FIELDNAM = "DFBTEMP"
         FORMAT = "F15.3"
@@ -91,7 +92,8 @@
 
   <cdf_var
       name = "DCBGND"
-      type = "double">
+      type = "double"
+      raw = "DCBGND_raw">
     <cdf_att
     	FIELDNAM = "DCBGND"
         FORMAT = "F15.3"
@@ -112,7 +114,8 @@
 
   <cdf_var
       name = "DCB33V"
-      type = "double">
+      type = "double"
+      raw = "DCB33V_raw">
     <cdf_att
     	FIELDNAM = "DCB33V"
         FORMAT = "F15.3"
@@ -133,7 +136,8 @@
 
   <cdf_var
       name = "DCB15V"
-      type = "double">
+      type = "double"
+      raw = "DCB15V_raw">
     <cdf_att
         FIELDNAM = "DCB15V"
         FORMAT = "F15.3"
@@ -154,7 +158,8 @@
 
   <cdf_var
       name = "DCB25VD"
-      type = "double">
+      type = "double"
+      raw = "DCB25VD_raw">
     <cdf_att
         FIELDNAM = "DCB25VD"
         FORMAT = "F15.3"
@@ -175,7 +180,8 @@
 
   <cdf_var
       name = "DCB25VA"
-      type = "double">
+      type = "double"
+      raw = "DCB25VA_raw">
     <cdf_att
         FIELDNAM = "DCB25VA"
         FORMAT = "F15.3"
@@ -196,7 +202,8 @@
 
   <cdf_var
       name = "FLASH0"
-      type = "double">
+      type = "double"
+      raw = "FLASH0_raw">
     <cdf_att
         FIELDNAM = "FLASH0"
         FORMAT = "F15.3"
@@ -217,7 +224,8 @@
 
   <cdf_var
       name = "FLASH1"
-      type = "double">
+      type = "double"
+      raw = "FLASH1_raw">
     <cdf_att
         FIELDNAM = "FLASH1"
         FORMAT = "F15.3"
@@ -238,7 +246,8 @@
 
   <cdf_var
       name = "FLASH2"
-      type = "double">
+      type = "double"
+      raw = "FLASH2_raw">
     <cdf_att
         FIELDNAM = "FLASH2"
         FORMAT = "F15.3"
@@ -259,7 +268,8 @@
 
   <cdf_var
       name = "FLASH3"
-      type = "double">
+      type = "double"
+      raw = "FLASH3_raw">
     <cdf_att
         FIELDNAM = "FLASH3"
         FORMAT = "F15.3"
@@ -280,7 +290,8 @@
 
   <cdf_var
       name = "DCBGND1"
-      type = "double">
+      type = "double"
+      raw = "DCBGND1_raw">
     <cdf_att
         FIELDNAM = "DCBGND1"
         FORMAT = "F15.3"
@@ -301,7 +312,8 @@
 
   <cdf_var
       name = "DCBGND2"
-      type = "double">
+      type = "double"
+      raw = "DCBGND2_raw">
     <cdf_att
         FIELDNAM = "DCBGND2"
         FORMAT = "F15.3"
@@ -322,7 +334,8 @@
 
   <cdf_var
       name = "LNPS1_GND"
-      type = "double">
+      type = "double"
+      raw = "LNPS1_GND_raw">
     <cdf_att
         FIELDNAM = "LNPS1_GND"
         FORMAT = "F15.3"
@@ -343,7 +356,8 @@
 
   <cdf_var
       name = "LNPS1_A18V"
-      type = "double">
+      type = "double"
+      raw = "LNPS1_A18V_raw">
     <cdf_att
         FIELDNAM = "LNPS1_A18V"
         FORMAT = "F15.3"
@@ -364,7 +378,8 @@
 
   <cdf_var
       name = "LNPS1_B18V"
-      type = "double">
+      type = "double"
+      raw = "LNPS1_B18V_raw">
     <cdf_att
         FIELDNAM = "LNPS1_B18V"
         FORMAT = "F15.3"
@@ -385,7 +400,8 @@
 
   <cdf_var
       name = "LNPS1_33V"
-      type = "double">
+      type = "double"
+      raw = "LNPS1_33V_raw">
     <cdf_att
         FIELDNAM = "LNPS1_33V"
         FORMAT = "F15.3"
@@ -406,7 +422,8 @@
 
   <cdf_var
       name = "LNPS1_A4V"
-      type = "double">
+      type = "double"
+      raw = "LNPS1_A4V_raw">
     <cdf_att
         FIELDNAM = "LNPS1_A4V"
         FORMAT = "F15.3"
@@ -427,7 +444,8 @@
 
   <cdf_var
       name = "LNPS1_B4V"
-      type = "double">
+      type = "double"
+      raw = "LNPS1_B4V_raw">
     <cdf_att
         FIELDNAM = "LNPS1_B4V"
         FORMAT = "F15.3"
@@ -448,7 +466,8 @@
 
   <cdf_var
       name = "LNPS1_5V"
-      type = "double">
+      type = "double"
+      raw = "LNPS1_5V_raw">
     <cdf_att
         FIELDNAM = "LNPS1_5V"
         FORMAT = "F15.3"
@@ -469,7 +488,8 @@
 
   <cdf_var
       name = "LNPS1_P6V"
-      type = "double">
+      type = "double"
+      raw = "LNPS1_P6V_raw">
     <cdf_att
         FIELDNAM = "LNPS1_P6V"
         FORMAT = "F15.3"
@@ -490,7 +510,8 @@
 
   <cdf_var
       name = "LNPS1_N6V"
-      type = "double">
+      type = "double"
+      raw = "LNPS1_N6V_raw">
     <cdf_att
         FIELDNAM = "LNPS1_N6V"
         FORMAT = "F15.3"
@@ -511,7 +532,8 @@
 
   <cdf_var
       name = "LNPS1_P12V"
-      type = "double">
+      type = "double"
+      raw = "LNPS1_P12V_raw">
     <cdf_att
         FIELDNAM = "LNPS1_P12V"
         FORMAT = "F15.3"
@@ -532,7 +554,8 @@
 
   <cdf_var
       name = "LNPS1_N12V"
-      type = "double">
+      type = "double"
+      raw = "LNPS1_N12V_raw">
     <cdf_att
         FIELDNAM = "LNPS1_N12V"
         FORMAT = "F15.3"
@@ -553,7 +576,8 @@
 
   <cdf_var
       name = "LNPS1_P100V"
-      type = "double">
+      type = "double"
+      raw = "LNPS1_P100V_raw">
     <cdf_att
         FIELDNAM = "LNPS1_P100V"
         FORMAT = "F15.3"
@@ -574,7 +598,8 @@
 
   <cdf_var
       name = "LNPS1_N100V"
-      type = "double">
+      type = "double"
+      raw = "LNPS1_N100V_raw">
     <cdf_att
         FIELDNAM = "LNPS1_N100V"
         FORMAT = "F15.3"
@@ -595,7 +620,8 @@
 
   <cdf_var
       name = "LNPSTEMP"
-      type = "double">
+      type = "double"
+      raw = "LNPSTEMP_raw">
     <cdf_att
         FIELDNAM = "LNPSTEMP"
         FORMAT = "F15.3"
@@ -616,7 +642,8 @@
 
   <cdf_var
       name = "SCMTEMP"
-      type = "double">
+      type = "double"
+      raw = "SCMTEMP_raw">
     <cdf_att
         FIELDNAM = "SCMTEMP"
         FORMAT = "F15.3"
@@ -637,7 +664,8 @@
 
   <cdf_var
       name = "LNPS1_SPARE"
-      type = "double">
+      type = "double"
+      raw = "LNPS1_SPARE_raw">
     <cdf_att
         FIELDNAM = "LNPS1_SPARE"
         FORMAT = "F15.3"

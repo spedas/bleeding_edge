@@ -1,7 +1,7 @@
 ;
-;  $LastChangedBy: pulupa $
-;  $LastChangedDate: 2018-09-24 11:18:22 -0700 (Mon, 24 Sep 2018) $
-;  $LastChangedRevision: 25857 $
+;  $LastChangedBy: spfuser $
+;  $LastChangedDate: 2018-10-26 16:20:20 -0700 (Fri, 26 Oct 2018) $
+;  $LastChangedRevision: 26019 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_aeb1_hk/spp_fld_aeb1_hk_load_l1.pro $
 ;
 
@@ -44,7 +44,7 @@ pro spp_fld_aeb1_hk_load_l1, file, prefix = prefix
       options, name, 'ytitle', name_no_prefix
 
       options, name, 'psym_lim', 100
-      options, name, 'datagap', 600d
+      options, name, 'datagap', 3600d
       options, name, 'symsize', 0.75
 
     endforeach
