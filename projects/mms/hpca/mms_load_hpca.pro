@@ -81,8 +81,8 @@
 ; 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-09 15:03:00 -0700 (Thu, 09 Aug 2018) $
-;$LastChangedRevision: 25620 $
+;$LastChangedDate: 2018-10-31 12:55:04 -0700 (Wed, 31 Oct 2018) $
+;$LastChangedRevision: 26036 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_load_hpca.pro $
 ;-
 
@@ -146,7 +146,7 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
       then tr = timerange(trange_in) $
     else tr = timerange()
 
-    if array_contains(datatype, 'ion') then begin
+    if array_contains(datatype, 'ion') and ~keyword_set(available) then begin
       mem_usage = long64(mms_estimate_mem_usage(tr, 'hpca'))
       mem_avail = get_max_memblock2()
       dprint, dlevel=0, 'WARNING: this call will use: ' + string(mem_usage) + ' MB / available: ' + string(mem_avail) + ' MB'
