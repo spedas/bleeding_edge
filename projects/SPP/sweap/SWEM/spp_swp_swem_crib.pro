@@ -138,6 +138,7 @@ spp_apdat_info,'7c1'x,dlevel=1
 
 endif
 
+if 1 then begin
 if n_elements(racksat) eq 0 then racksat = 1
 
 if keyword_set(racksat) then begin
@@ -184,6 +185,7 @@ if 0 then begin
   zlim,'spp_sp[ab]_SF1_NRG_SPEC', 1,10000,1
 endif
 
+endif
 
 
 end

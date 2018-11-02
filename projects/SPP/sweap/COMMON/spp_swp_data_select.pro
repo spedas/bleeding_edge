@@ -1,10 +1,11 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-05-17 05:03:47 -0700 (Thu, 17 May 2018) $
-; $LastChangedRevision: 25232 $
+; $LastChangedDate: 2018-11-01 15:52:23 -0700 (Thu, 01 Nov 2018) $
+; $LastChangedRevision: 26044 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_data_select.pro $
 
 ;  This routine extracts a single byte or uint or ulong or ulong64 from an array of bytes
 ;   Words can cross byte boundaries.  If items don't cross byte boundaries then it is faster to access bytes directly
+;  Written by Davin Larson 2017-06-02
 
 
 function spp_swp_data_select,bytearray,startbit,nbits

@@ -21,9 +21,9 @@
 ;
 ;Written by Davin Larson, May 1997.
 ;
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-; $LastChangedRevision: 24506 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-11-01 15:30:14 -0700 (Thu, 01 Nov 2018) $
+; $LastChangedRevision: 26039 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/printdat.pro $
 ;-
 pro printdat,data,data2,data3,data4,data5,data6,data7,data8,  $
@@ -44,7 +44,7 @@ pro printdat,data,data2,data3,data4,data5,data6,data7,data8,  $
    nm_width=nm_width, $
    max=max,output=outstring,nstrmax=nstrmax,nptrmax=nptrmax,width=width
 
-
+;help,/trac
 if not keyword_set(rlevel) then rlevel=0
 ;dprint,'Begin ',recurse_level
 if size(/type,data2) eq 7 and not keyword_set(varname) then varname=data2[0]  ; Cluge for backward compatibility
@@ -129,6 +129,15 @@ dim = size(/dimension,data)
 ndim = size(/n_dimension,data)
 nm = (n < opts.max)
 if dt eq 8 and n eq 1 then ndim=0   ;fix of IDL bug
+if dt eq 11 then begin
+   if typename(data) ne 'OBJREF' then begin  
+      dim = [0]
+      ndim = 0
+   endif else begin
+      
+   endelse
+   
+endif
 
 if ndim ge 1 then dimstr = '['+string(dim,format="(8(i0.0,:,','))")+']' $
 else dimstr=''
@@ -146,11 +155,28 @@ case dt of
         valstr = strarr(nm)
         for i=0,nm-1 do valstr[i] = string(/print,data[i])
        end
- 11:   begin    
- ;        help,data, output= valstr                                       ;objects  - very difficult to distinguish lists and arrays of lists
-         nm = 1
-        valstr = strarr(nm)
-        for i=0,nm-1 do valstr[i] = (string(/print,data[i]))[0]
+ 11:   begin  
+          tname = typename(data)  
+          valstr = tname
+          help,data,output=valstr 
+          valstr = '<' + valstr + '>'
+;         help,data, output= valstr                                       ;objects  - very difficult to distinguish lists and arrays of lists
+          nm = 1
+;        valstr = strarr(nm)
+;        for i=0,nm-1 do valstr[i] = (string(/print,data[i]))[0]
+          case tname of
+            'OBJREF': begin
+              valstr1 = tname  ; arrays of objects  or invalid objects
+              dim = size(/dimen,data)
+              ndim = dim[0]
+              if ndim ne 0 then message,/info, 'Array of objects'+' ['+strjoin(strtrim(dim,2),',')+']'
+;              stop
+              end
+            else:  begin
+                ndim = 0
+                dimstr=''
+              end
+          endcase
        end
  else: valstr = strcompress(string(data[0:nm-1],format=opts.iformat),/remove_all)
 endcase
@@ -169,7 +195,7 @@ endelse
 
 s = level + s1 + s2 + ' = '
 
-if dt ne 8 and ndim ge 1 then begin      ; Truncate array if needed
+if (dt ne 8) and ndim ge 1 then begin      ; Truncate array if needed
    w = strlen(s)
    ls = strlen(valstr)
    for i=0,nm-1 do begin
@@ -249,45 +275,86 @@ if dt eq   10  then begin      ; pointers
     endfor
 endif
 
+
 if dt eq 11 then begin      ; objects
-    wnn = where(data ne obj_new() ,nwnn)
-    for w=0,nwnn-1 do begin
-        j = wnn[w]
-        if w gt opts.nptrmax  then break
-        pvarname = varname
-        if ndim ge 1 then pvarname = pvarname + '['+strtrim(j,2)+']'
-        pvarname =  pvarname + '->getall()'
-        plevel = level+'  '
-        if w ge opts.nptrmax then begin
-            s4 = plevel+'Array truncated ...'
-            goto,break_obj
+  n = ndim > 1
+  for j=0,n-1 do begin
+    if ndim ge 1  then dj = data[j] else dj=data
+    tname = typename(dj)
+    nvarname = varname
+    if ndim ge 1 then begin
+      nvarname = nvarname+'['+strtrim(j,2)+']'
+    endif
+    switch tname of
+      'OBJREF' :  begin
+        if obj_valid(dj) eq 0 then nvarname = nvarname + ' (INVALID)'
+ ;       if opts.outs then  append_array,outstring,level+nvarname   else printf,opts.unit,level+nvarname
+        break
+      end
+      'DICTIONARY':
+      'HASH':
+      'LIST' :
+      'ORDEREDHASH':      begin
+        if opts.full then begin
+          if strmid(nvarname,0,1) eq '*' then nvarname='('+nvarname+')'
+          prefix = nvarname+''
+        endif else prefix = '->'
+        foreach v,dj,k do begin
+          if isa(k,'STRING') then ks = quote + k + quote  else if isa(k,/number) then ks = strtrim(k,2)  else ks ='<????>'
+          printdat,v,varname=prefix+'['+ks+']',level=level+'   ',nm_width=nwdth, $
+            output=outstring,options=opts,ptrs=ptrs,allptrs=allptrs,allobjs=allobjs,rlevel=rlevel+1
+        endforeach     
+        break   
+      end
+      else:   begin
+        if obj_valid(dj) eq 0 then break
+;        message,/info,'Unknown object'
+        if (obj_valid(dj) && obj_hasmethod(dj,'printdat_string')) then begin   ; object has printdat method
+            s4 = level+'   '+dj.printdat_string()
+            if opts.outs then  append_array,outstring,s4     else for i=0,n_elements(s4)-1 do  printf,opts.unit,s4[i]
         endif
-        if total(/preserve,data[j] eq allobjs) gt 0 then begin   ; Deja Vu
-            s4= plevel+pvarname+' = Deja Vu!'
-        endif  else begin
-            allobjs = [allobjs,data[j]]
-            if (obj_valid(data[j]) && obj_hasmethod(data[j],'getall')) then begin   ; object has dereference
-                if keyword_set(objs) && total(data[j] eq objs) gt 0 then begin  ;recursive object
-                    s4=plevel+ pvarname+' = RECURSIVE OBJECT IGNORED!'
-                endif else begin
-                    printdat,data[j]->getall(),level=plevel,varname=pvarname,output=outstring, $
-                        options=opts ,ptrs=ptrs, allptrs=allptrs, allobjs=allobjs, rlevel=rlevel+1  , addname='{'+string(/print,data[j])+'}'
-                    continue
-                endelse
-            endif else begin
-                 continue
-;                s4= plevel + pvarname + ' = (unknown object dereference)'
-            endelse
-        endelse
-        break_obj:
-        if opts.outs then  append_array,outstring,s4 $
-        else printf,opts.unit,s4
-    endfor
+;        wnn = where(data ne obj_new() ,nwnn)
+;        for w=0,nwnn-1 do begin
+;          j = wnn[w]
+;          if w gt opts.nptrmax  then break
+;          pvarname = varname
+;          if ndim ge 1 then pvarname = pvarname + '['+strtrim(j,2)+']'
+;          pvarname =  pvarname + '->getall()'
+;          plevel = level+'  '
+;          if w ge opts.nptrmax then begin
+;            s4 = plevel+'Array truncated ...'
+;            goto,break_obj
+;          endif
+;          if total(/preserve,data[j] eq allobjs) gt 0 then begin   ; Deja Vu
+;            s4= plevel+pvarname+' = Deja Vu!'
+;          endif  else begin
+;            allobjs = [allobjs,data[j]]
+;            if (obj_valid(data[j]) && obj_hasmethod(data[j],'getall')) then begin   ; object has dereference
+;              if keyword_set(objs) && total(data[j] eq objs) gt 0 then begin  ;recursive object
+;                s4=plevel+ pvarname+' = RECURSIVE OBJECT IGNORED!'
+;              endif else begin
+;                printdat,data[j]->getall(),level=plevel,varname=pvarname,output=outstring, $
+;                  options=opts ,ptrs=ptrs, allptrs=allptrs, allobjs=allobjs, rlevel=rlevel+1  , addname='{'+string(/print,data[j])+'}'
+;                continue
+;              endelse
+;            endif else begin
+;              continue
+;              ;                s4= plevel + pvarname + ' = (unknown object dereference)'
+;            endelse
+;          endelse
+;          break_obj:
+;          if opts.outs then  append_array,outstring,s4     else printf,opts.unit,s4
+;        endfor
+      end  
+    endswitch
+  endfor
 endif
 
 
 ;dprint,'End'
 
+
+
+
+
 end
-
-

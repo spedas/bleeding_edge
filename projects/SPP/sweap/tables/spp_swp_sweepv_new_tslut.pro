@@ -105,7 +105,7 @@ pro spp_swp_sweepv_new_tslut, sweepv, $
   tsindex = tsindex[1:256]
   
 
-  plot=1
+ ; plot=1
   if keyword_set(plot) then begin
       goto, skip
       wi,3

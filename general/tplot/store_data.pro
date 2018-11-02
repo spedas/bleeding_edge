@@ -37,8 +37,8 @@
 ;
 ;CREATED BY:    Davin Larson
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-01-25 09:26:57 -0800 (Thu, 25 Jan 2018) $
-; $LastChangedRevision: 24590 $
+; $LastChangedDate: 2018-11-01 15:53:28 -0700 (Thu, 01 Nov 2018) $
+; $LastChangedRevision: 26045 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/store_data.pro $
 ;-
 pro store_data,name, time,ydata,values, $
@@ -100,7 +100,7 @@ if size(/type,tagnames) eq 7 then begin
     endif ;else undefine,v
     dl=0
     str_element,dlimits,tags[i],dl    
-    store_data,name+seperator+tags[i],time,y,v,append=append,dlimit=dl
+    store_data,name+seperator+tags[i],time,y,v,append=append,dlimit=dl,verbose=verbose
   endfor
   return
 endif
@@ -209,8 +209,8 @@ if n_params() ge 3 then begin
         append_array,*(*dq.dh).x, time , index=(*dq.dh).x_ind ,new_index=ind ,/fillnan 
         (*dq.dh).x_ind = ind
         append_array,*(*dq.dh).y, ydata, index=(*dq.dh).y_ind ,new_index=ind ,/fillnan ,error = error
-        if keyword_set(error) && debug(4) then begin
-            printdat,dq
+        if keyword_set(error) && debug(3) then begin
+            printdat,name
         endif
         (*dq.dh).y_ind = ind
 ;    dprint,dlevel=3,'Normal in ',dq.name,ind

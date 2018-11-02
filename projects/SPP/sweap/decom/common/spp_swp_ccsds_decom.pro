@@ -1,8 +1,8 @@
 ; buffer should contain bytes for a single ccsds packet, header is
 ; contained in first 3 words (6 bytes)
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-07-31 23:41:05 -0700 (Tue, 31 Jul 2018) $
-; $LastChangedRevision: 25535 $
+; $LastChangedDate: 2018-11-01 15:52:23 -0700 (Thu, 01 Nov 2018) $
+; $LastChangedRevision: 26044 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/common/spp_swp_ccsds_decom.pro $
 
 ;
@@ -147,6 +147,12 @@ function spp_swp_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsd
     dprint,dlevel=dlevel,verbose=verbose,'Invalid MET: ',MET,' For packet type: ',ccsds.apid
     ccsds.time = d_nan
   endif
+
+  if ccsds.MET gt  'FFFFFFF0'x then begin
+    dprint,dlevel=dlevel,verbose=verbose,'MAX MET: ',MET,' For packet type: ',ccsds.apid
+    ccsds.time = d_nan
+  endif
+
   
   if isa(wrap_ccsds) then begin
     ccsds.source = wrap_ccsds.apid

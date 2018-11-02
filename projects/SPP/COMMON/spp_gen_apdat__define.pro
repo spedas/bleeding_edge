@@ -21,7 +21,7 @@ if keyword_set(name) then begin
 endif
 self.ccsds_last = ptr_new(!null)
 self.data = dynamicarray(name=self.name)
-if debug(3) and keyword_set(ex) then dprint,ex,phelp=2,dlevel=2
+if  keyword_set(ex) then dprint,ex,phelp=2,dlevel=self.dlevel
 IF (ISA(ex)) THEN self->SetProperty, _EXTRA=ex
 RETURN, 1
 END
@@ -34,6 +34,7 @@ PRO spp_gen_apdat::Clear, tplot_names=tplot_names
   self.nbytes=0
   self.npkts = 0
   self.lost_pkts = 0
+  ptr_free,ptr_extract(self.data.array)
   self.data.array = !null
   ptr_free,  ptr_extract(*self.ccsds_last)
   *self.ccsds_last = !null
@@ -73,7 +74,7 @@ function spp_gen_apdat::info,header=header
   hfmt="( a4,' ',a-14, a8,a8 ,a12,a3,a3,a3,a8,' ',a-14,a-26,' ',a-20,'<',a,'>','     ',a)"
 ;  if keyword_set(header) then rs=string(format=hfmt,'APID','Name','npkts','lost','nbytes','save','rtf','size','type','objname','routine','tname','tags')
   rs =string(format=fmt,self.apid,self.name,self.npkts,self.lost_pkts, $
-    self.nbytes,self.save_flag,self.rt_flag,self.dlevel,self.data.size,self.data.typename,typename(self),self.tname,self.ttags,self.routine)
+    self.nbytes,self.save_flag,self.rt_flag,self.dlevel,self.data.size,self.data.typestring,typename(self),self.tname,self.ttags,self.routine)
 
   if keyword_set(header) then rs=string(format=hfmt,'APID','Name','Npkts','lost','nbytes','sv','rt','dl','size','type','objname','tname','tags','routine') +string(13b)+ rs
 
@@ -100,7 +101,7 @@ pro spp_gen_apdat::increment_counters,ccsds
   self.nbytes += ccsds.pkt_size
   if ccsds.seqn_delta gt 1 then self.lost_pkts += (ccsds.seqn_delta -1)
   ;  if ccsds.time_delta eq 0 then self.print
-  self.drate = ccsds.pkt_size / ( ccsds.time_delta > .001)
+;  self.drate = ccsds.pkt_size / ( ccsds.time_delta > .001)   ; this line produce numerous floating point exceptions
   *self.ccsds_last = ccsds
 end
 
@@ -187,7 +188,7 @@ end
  
 pro spp_gen_apdat::finish,ttags=ttags
   if self.npkts ne 0 then self.print ,dlevel=3,'finish'
-  verbose=1
+  verbose=0
   datarray = self.data.array
   if keyword_set(ttags) eq 0 then ttags = self.ttags
   if keyword_set(self.sort_flag) && keyword_set(datarray) then begin
@@ -197,7 +198,7 @@ pro spp_gen_apdat::finish,ttags=ttags
   endif
   if keyword_set(datarray) && keyword_set(self.tname) then  begin
     store_data,self.tname,data=datarray, tagnames=ttags,  gap_tag='GAP',verbose=verbose
-    options,self.tname+'*_BITS',tplot_routine='bitplot'
+;    options,self.tname+'*_BITS',tplot_routine='bitplot'
   endif
   
   self.process_time = systime(1)
@@ -211,8 +212,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-09-14 17:17:54 -0700 (Fri, 14 Sep 2018) $
-; $LastChangedRevision: 25813 $
+; $LastChangedDate: 2018-11-01 15:52:23 -0700 (Thu, 01 Nov 2018) $
+; $LastChangedRevision: 26044 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -229,8 +230,8 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-  sw_hash['svn_changedate'] = '$LastChangedDate: 2018-09-14 17:17:54 -0700 (Fri, 14 Sep 2018) $'
-  sw_hash['svn_revision '] = '$LastChangedRevision: 25813 $'
+  sw_hash['svn_changedate'] = '$LastChangedDate: 2018-11-01 15:52:23 -0700 (Thu, 01 Nov 2018) $'
+  sw_hash['svn_revision '] = '$LastChangedRevision: 26044 $'
 
   return,sw_hash
 end
@@ -273,8 +274,8 @@ function spp_gen_apdat::cdf_global_attributes
 ;  global_att['SW_RUNTIME'] =  time_string(systime(1)) 
 ;  global_att['SW_RUNBY'] = 
 ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-09-14 17:17:54 -0700 (Fri, 14 Sep 2018) $'
-;  global_att['SVN_REVISION'] = '$LastChangedRevision: 25813 $'
+;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-11-01 15:52:23 -0700 (Thu, 01 Nov 2018) $'
+;  global_att['SVN_REVISION'] = '$LastChangedRevision: 26044 $'
 
 return,global_att
 end
@@ -337,8 +338,12 @@ pro spp_gen_apdat::cdf_create_file,cdftags=cdftags,trange=trange
   fileid = cdf_create(pathname,/clobber)
   
   foreach attvalue,global_attributes,name do begin
-     dummy = cdf_attcreate(fileid,name,/global_scope)
-     if keyword_set(attvalue) then cdf_attput,fileid,name,0,attvalue
+    dummy = cdf_attcreate(fileid,name,/global_scope)
+;    if keyword_set(attvalue) then begin
+      for gentnum=0,n_elements(attvalue) do begin
+        cdf_attput,fileid,name,gentnum,attvalue[gentnum]
+      endfor
+;    endif
   endforeach
   
   var_atts = self.cdf_variable_attributes()

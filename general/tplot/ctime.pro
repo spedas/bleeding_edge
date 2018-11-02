@@ -252,6 +252,7 @@ end
 ;  IDL> device,set_graph=3,/cursor_crosshair
 ;-
 pro ctime,time,value,zvalue,$
+   fix     = fix,  $         ; use this keyword to reset the graphics curser if ctime has crashed
    append  = append ,$       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    exact   = exact  ,$       ;
    npoints = npoints,$       ; Keywords for setting ctime mode and
@@ -278,6 +279,11 @@ pro ctime,time,value,zvalue,$
    seconds = seconds         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 @tplot_com.pro
+
+if keyword_set(fix) then begin
+  device,set_graph=3,/cursor_crosshair
+  return
+endif
 
 wndw = struct_value(tplot_vars,'settings.window',default=-1)
 if wndw eq -1  then begin

@@ -39,8 +39,8 @@ end
 ; This routine is in the process of being modified to use SPICE Kernels to correct for clock drift as needed.
 ; Author: Davin Larson
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-09-17 08:35:44 -0700 (Mon, 17 Sep 2018) $
-; $LastChangedRevision: 25818 $
+; $LastChangedDate: 2018-11-01 15:52:23 -0700 (Thu, 01 Nov 2018) $
+; $LastChangedRevision: 26044 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_spc_met_to_unixtime.pro $
 ;-
 function spp_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=correct_clockdrift   ,reset=reset ,ephemeris_time=et  ;,prelaunch = prelaunch
@@ -75,7 +75,7 @@ function spp_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=correc
       reset=0
       time_verified = systime(1)
     endif
-  endif else cor_clkdrift = 0b ;need to set this to avoid crash at line 66, jmm, 22-sep-2014
+  endif    ;else cor_clkdrift = 0b ;need to set this to avoid crash at line 66, jmm, 22-sep-2014
 
 
   if n_elements(input) eq 0 then message,'Must provide input'

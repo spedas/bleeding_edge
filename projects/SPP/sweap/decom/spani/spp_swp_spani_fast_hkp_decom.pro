@@ -59,8 +59,8 @@ function spp_swp_spani_fast_hkp_decom,ccsds,ptp_header=ptp_header,apdat=apdat,pl
         ADC:        data $
 
         }
-printdat,fhk
-return,0   ; cluge to prevent error
+;printdat,fhk
+;return,0   ; cluge to prevent error
   return,fhk
 
 end

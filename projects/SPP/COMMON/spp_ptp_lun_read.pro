@@ -20,11 +20,11 @@ end
 
 
 
-pro spp_ptp_lun_read,in_lun,out_lun,info=info
+pro spp_ptp_lun_read,in_lun,out_lun,info=info,source_dict = source_dict
 
   dwait = 10.
   ;printdat,info
-  source_dict = dictionary()
+  if isa(source_dict,'DICTIONARY') eq 0 then source_dict = dictionary()
   
   on_ioerror, nextfile
     time = systime(1)
@@ -73,8 +73,11 @@ pro spp_ptp_lun_read,in_lun,out_lun,info=info
         hexprint,dlevel=3,ccsds_buf,nbytes=32
       endif
       source_dict.ptp_header  = ptp_header
-      if run_proc then   spp_ccsds_spkt_handler,ccsds_buf,source_dict=source_dict
-      ;  if run_proc then   spp_ccsds_pkt_handler,ccsds_buf,source_info=info,ptp_header=ptp_header        
+      if ptp_header.ptp_path ne 'dead'x  then begin
+        if run_proc then   spp_ccsds_spkt_handler,ccsds_buf,source_dict=source_dict
+      endif else begin
+        dprint,'DEAD PTP ',ptp_header.ptp_size,' byte packet at time:'+time_string(ptp_header.ptp_time),dlevel = 2
+      endelse
       buf = bytarr(17)
       remainder=!null
     endwhile
