@@ -40,22 +40,26 @@
 ;              -59 < Elev < +61 ; 3 < E < 4630
 ;               Chksum = 'CC'X
 ;               GSEOS svn rev 8481
+;            loaded into SWEA LUT 0 (via FSW)
 ;
 ;        6 : Xmax = 5.5, Vrange = [2./Ka, 750.], V0scale = 1.
 ;            alternate table for Transition and Science
 ;              -59 < Elev < +61 ; 3 < E < 4650
 ;               Chksum = '82'X
 ;               GSEOS svn rev 8482
+;            loaded into SWEA LUT 1 (via FSW)
 ;
 ;        7 : Xmax = 5.5, Erange = [200.,200.], V0scale = 0.
 ;            Hires 32-Hz at 200 eV
 ;              -59 < Elev < +61 ; E = 200
 ;               Chksum = '00'X
+;            loaded into SWEA LUT 2 (via CDI)
 ;
 ;        8 : Xmax = 5.5, Erange = [50.,50.], V0scale = 0.
 ;            Hires 32-Hz at 50 eV
 ;              -59 < Elev < +61 ; E = 50
 ;               Chksum = '00'X
+;            loaded into SWEA LUT 3 (via FSW)
 ;
 ;USAGE:
 ;  tabnum = mvn_swe_tabnum(i)
@@ -67,8 +71,8 @@
 ;       INVERSE:      Given a table number, return its checksum.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-09-09 18:02:35 -0700 (Sun, 09 Sep 2018) $
-; $LastChangedRevision: 25761 $
+; $LastChangedDate: 2018-11-09 11:41:48 -0800 (Fri, 09 Nov 2018) $
+; $LastChangedRevision: 26098 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_tabnum.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-01-03

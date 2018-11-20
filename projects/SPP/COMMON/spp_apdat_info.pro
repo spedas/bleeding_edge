@@ -1,4 +1,11 @@
+; +
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2018-11-16 11:42:26 -0800 (Fri, 16 Nov 2018) $
+; $LastChangedRevision: 26135 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_apdat_info.pro $
+; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
+; -
 
 
 
@@ -71,6 +78,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
 
   valid_apdat = all_apdat[ where( obj_valid(all_apdat),nvalid ) ]
 
+  ;; What is this section supposed to be doing?? - PLW;;
   if isa(apid_description,/string) then begin
     if nvalid ne 0 then begin
       names = strarr(nvalid)

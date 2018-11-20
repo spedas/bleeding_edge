@@ -62,9 +62,9 @@ end
 ;
 ;
 ;Written by: Ken Bromund ????,   Jan 5 2007
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2018-01-31 12:52:01 -0800 (Wed, 31 Jan 2018) $
-; $LastChangedRevision: 24614 $
+; $LastChangedBy: hfrey $
+; $LastChangedDate: 2018-11-13 14:46:09 -0800 (Tue, 13 Nov 2018) $
+; $LastChangedRevision: 26117 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_rego.pro $
 ;-
 ;
@@ -139,6 +139,7 @@ pro thm_load_rego,site = site, datatype = datatype, trange = trange, $
      if (verbose gt 10) then stop,time_string(trange),site
   endif
 
+  datatype='rgf'
   thm_load_xxx,sname=site, datatype=datatype, trange=trange, $
                time=time, cursor=cursor, $
                level=level, verbose=verbose, downloadonly=downloadonly, $
@@ -146,11 +147,9 @@ pro thm_load_rego,site = site, datatype = datatype, trange = trange, $
                cdf_data=cdf_data,get_cdf_data=arg_present(cdf_data), $
                get_support_data=get_support_data, $
                varnames=varnames, valid_names = valid_names, files=files, $
-               vsnames = 'atha chbg ekat fsmi fsim fykn gako gbay gill '+ $
-               'inuv kapu kian kuuj mcgr pgeo pina rank snkq tpas whit yknf '+ $
-               'nrsq snap talo', $
+               vsnames = 'atha fsmi fsim gill kakt luck lyrn rank resu talo', $
                type_sname = 'site', $
-               vdatatypes = 'asf ast rgf', $
+               vdatatypes = 'rgf', $
                vlevels = 'l1', $
                deflevel = 'l1', $
                version = 'v01', $

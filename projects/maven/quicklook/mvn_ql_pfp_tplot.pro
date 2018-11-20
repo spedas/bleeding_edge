@@ -63,9 +63,9 @@
 ;CREATED BY:      Takuya Hara on 2015-04-09.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2018-10-23 13:52:27 -0700 (Tue, 23 Oct 2018) $
-; $LastChangedRevision: 26009 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2018-11-09 11:37:13 -0800 (Fri, 09 Nov 2018) $
+; $LastChangedRevision: 26090 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot.pro $
 ;
 ;-
@@ -187,6 +187,7 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
      undefine, xswe, yswe, vswe
      undefine, emin, emax
      IF keyword_set(pad) THEN mvn_swe_pad_restore, trange 
+     mvn_swe_clear
   ENDIF 
 
   ; SWIA

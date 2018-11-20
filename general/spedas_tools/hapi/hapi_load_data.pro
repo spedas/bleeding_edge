@@ -53,8 +53,8 @@
 ;         
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-13 15:02:43 -0700 (Mon, 13 Aug 2018) $
-;$LastChangedRevision: 25633 $
+;$LastChangedDate: 2018-11-19 09:41:40 -0800 (Mon, 19 Nov 2018) $
+;$LastChangedRevision: 26149 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
@@ -88,7 +88,6 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     dprint, dlevel = 0, 'Error, no server specified; example servers include:'
     dprint, dlevel = 0, '- https://cdaweb.gsfc.nasa.gov/hapi'
     dprint, dlevel = 0, '- https://pds-ppi.igpp.ucla.edu/hapi'
-    dprint, dlevel = 0, '- http://datashop.elasticbeanstalk.com/hapi'
     dprint, dlevel = 0, '- http://tsds.org/get/SSCWeb/hapi'
     dprint, dlevel = 0, '- http://mag.gmu.edu/TestData/hapi'
     return

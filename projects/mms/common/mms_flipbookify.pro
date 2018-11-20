@@ -102,8 +102,8 @@
 ;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-08-09 15:31:32 -0700 (Thu, 09 Aug 2018) $
-; $LastChangedRevision: 25622 $
+; $LastChangedDate: 2018-11-02 10:05:21 -0700 (Fri, 02 Nov 2018) $
+; $LastChangedRevision: 26047 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_flipbookify.pro $
 ;-
 
@@ -122,7 +122,7 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   subtract_error = subtract_error, include_1d_vx=include_1d_vx, include_1d_vy=include_1d_vy, $
   lineplot_yrange=lineplot_yrange, lineplot_xrange=lineplot_xrange, lineplot_thickness=lineplot_thickness, $
   ps_xsize=ps_xsize, ps_ysize=ps_ysize, ps_aspect=ps_aspect, nopng=nopng, subtract_spintone=subtract_spintone, $
-  fgm_data_rate=fgm_data_rate, seconds=seconds
+  fgm_data_rate=fgm_data_rate, seconds=seconds, erange=erange
   
 
   if undefined(instrument) then instrument = 'fpi'
@@ -202,6 +202,6 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
     include_1d_vx=include_1d_vx, include_1d_vy=include_1d_vy, lineplot_yrange=lineplot_yrange, $
     lineplot_xrange=lineplot_xrange, lineplot_thickness=lineplot_thickness, $
     ps_xsize=ps_xsize, ps_ysize=ps_ysize, ps_aspect=ps_aspect, nopng=nopng, filename_prefix=filename_prefix, $
-    seconds=seconds
+    seconds=seconds, erange=erange
 
 end

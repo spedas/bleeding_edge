@@ -1,4 +1,11 @@
 ;+
+;+
+; spp_swp_spe_prod_apdat
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2018-11-14 17:00:58 -0800 (Wed, 14 Nov 2018) $
+; $LastChangedRevision: 26122 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/strfilter.pro $
+;-
 ;FUNCTION:
 ;  res =  strfilter(stringarray,searchstring)
 ;PURPOSE:

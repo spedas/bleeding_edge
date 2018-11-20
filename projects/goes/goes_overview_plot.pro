@@ -43,9 +43,9 @@
 ;       
 ;       
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2018-04-30 15:17:53 -0700 (Mon, 30 Apr 2018) $
-; $LastChangedRevision: 25152 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-11-16 12:46:28 -0800 (Fri, 16 Nov 2018) $
+; $LastChangedRevision: 26139 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot.pro $
 ;-
 
@@ -348,7 +348,7 @@ endif
     !p.charsize=0.8
     
     if uint(probe) ge 13 then begin
-        part_plots = ['_magpd_dtc_cor_omni_flux',$ ; MAGPD, line for each energy channel
+        part_plots = ['_magpd_dtc_uncor_omni_flux',$ ; MAGPD, line for each energy channel
                       '_elec_uncor_comb_flux', $ ; EPEAD electrons, line for each energy channel
                       '_maged_dtc_cor_omni_flux', $ ; MAGED, line for each energy channel
                       '_prot_uncor_comb_flux'] ; EPEAD high energy protons, line for each energy channel]

@@ -129,8 +129,8 @@
 ;                 (suppress most messages).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-08-02 14:22:18 -0700 (Thu, 02 Aug 2018) $
-; $LastChangedRevision: 25558 $
+; $LastChangedDate: 2018-11-09 11:33:15 -0800 (Fri, 09 Nov 2018) $
+; $LastChangedRevision: 26089 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -836,7 +836,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   ylim,'psza',0,180,0
   options,'psza','yticks',2
   options,'psza','yminor',3
-  options,'psza','constant',[96,102]
+  options,'psza','constant',[98,108]  ; EUV shadow at [150,300] km
   options,'psza','ytitle','Periapsis SZA (deg)'
   
   store_data, 'lon', data = {x:time, y:lon}

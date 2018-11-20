@@ -71,8 +71,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-18 12:26:28 -0800 (Sun, 18 Feb 2018) $
-; $LastChangedRevision: 24736 $
+; $LastChangedDate: 2018-11-09 11:39:31 -0800 (Fri, 09 Nov 2018) $
+; $LastChangedRevision: 26094 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sciplot.pro $
 ;
 ;-
@@ -115,8 +115,17 @@ pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lp
     return
   endif
 
-  get_data,'alt2',data=alt2,index=i
-  if (i eq 0) then maven_orbit_tplot, /loadonly, /shadow, datum=datum
+; Make sure ephemeris covers loaded data
+
+  tplot_options, get=topt
+  if (max(topt.trange) lt 1D) then timespan, (minmax(a4.time) + [0D,34D])
+
+  if (find_handle('alt2',v=-1) gt 0) then begin
+    get_data,'alt',data=alt
+    tsp = minmax(alt.x)
+    indx = where((a4.time lt tsp[0]) or (a4.time gt tsp[1]), count)
+    if (count gt 0) then maven_orbit_tplot, /loadonly, /shadow, datum=datum
+  endif else maven_orbit_tplot, /loadonly, /shadow, datum=datum
 
   mvn_swe_sumplot,/loadonly
 

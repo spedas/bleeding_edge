@@ -10,9 +10,9 @@
 ;           with modifications by A. Kellerman
 ;   
 ;  
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-04-29 08:39:55 -0700 (Fri, 29 Apr 2016) $
-; $LastChangedRevision: 20970 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2018-11-16 12:46:28 -0800 (Fri, 16 Nov 2018) $
+; $LastChangedRevision: 26139 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_lib.pro $
 ;-
 
@@ -351,7 +351,7 @@ end
 ;     Calculates the omni-directional proton flux for each energy channel 
 ;     and combines the data into a single tplot variable
 pro goes_magpd_omni_flux, prefix, suffix
-
+    ; According to Juan Rodriguez, corrected magpd proton values have problems (are all NaN), so we use uncorrected values 
     ; energies for the MAGPD instrument, from the GOES-N databook
     energies = fltarr(5,2)
     ; keV
@@ -371,18 +371,18 @@ pro goes_magpd_omni_flux, prefix, suffix
     for i = 0, 4 do begin
         ; center energy channels
         centered_energies[i] = round((energies[i,1]-energies[i,0])/2.+energies[i,0])
-        magpd_tvar = prefix + '_magpd_'+strcompress(string(centered_energies[i]), /rem)+'keV_dtc_cor_flux'+suffix
+        magpd_tvar = prefix + '_magpd_'+strcompress(string(centered_energies[i]), /rem)+'keV_dtc_uncor_flux'+suffix
         goes_part_omni_flux, magpd_tvar
         tvar_names[i] = magpd_tvar+'_omni'
     endfor
-    join_vec, tvar_names, prefix + '_magpd_dtc_cor_omni_flux'+suffix
+    join_vec, tvar_names, prefix + '_magpd_dtc_uncor_omni_flux'+suffix
     
     ; update the plotting options
-    options, /def, prefix + '_magpd_dtc_cor_omni_flux'+suffix, 'ylog', 1
-    options, /def, prefix + '_magpd_dtc_cor_omni_flux'+suffix, 'labels', strcompress(string(centered_energies)+' keV', /rem)
-    options, /def, prefix + '_magpd_dtc_cor_omni_flux'+suffix, 'labflag', 1
-    options, /def, prefix + '_magpd_dtc_cor_omni_flux'+suffix, 'ytitle', 'Protons!C [p/(cm!U2!N-s-sr-keV)]'
-    options, /def, prefix + '_magpd_dtc_cor_omni_flux'+suffix, 'ysubtitle', ''
+    options, /def, prefix + '_magpd_dtc_uncor_omni_flux'+suffix, 'ylog', 1
+    options, /def, prefix + '_magpd_dtc_uncor_omni_flux'+suffix, 'labels', strcompress(string(centered_energies)+' keV', /rem)
+    options, /def, prefix + '_magpd_dtc_uncor_omni_flux'+suffix, 'labflag', 1
+    options, /def, prefix + '_magpd_dtc_uncor_omni_flux'+suffix, 'ytitle', 'Protons!C [p/(cm!U2!N-s-sr-keV)]'
+    options, /def, prefix + '_magpd_dtc_uncor_omni_flux'+suffix, 'ysubtitle', ''
 end
 ; Procedure: goes_epead_comb_electron_flux
 ;

@@ -34,9 +34,9 @@
 ; No further action will be taken.
 ;
 ;Written by: Harald Frey,   Jan 26 2007
-;   $LastChangedBy: hfrey $
-;   $LastChangedDate: 2017-12-20 11:42:29 -0800 (Wed, 20 Dec 2017) $
-;   $LastChangedRevision: 24451 $
+;   $LastChangedBy: nikos $
+;   $LastChangedDate: 2018-11-08 12:52:45 -0800 (Thu, 08 Nov 2018) $
+;   $LastChangedRevision: 26073 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_asi_cal.pro $
 ;-
 ;
@@ -54,7 +54,7 @@ vstats=strsplit(vstats,' ',/extract)
 if arg_present(vstats) then return
 
 	; set begin and end of trange
-if keyword_set(trange) then time=trange[0] else time=(timerange(trange))[0]
+if keyword_set(trange) then time=trange[0] else time=(timerange('1970-01-01/00:00:00'))[0]
 
 	; get time with cursor
 if keyword_set(cursor) then begin   ; Use the cursor to determine what asi's to load.
@@ -85,12 +85,12 @@ for i=0,n_elements(stats)-1 do begin
   if keyword_set(rego) then prefix = 'rego_l2_asc_' + station + '_' else $
        prefix = 'thg_l2_asc_' + station + '_'
   relpath = 'thg/l2/asi/cal/'
-  ending = '_v01.cdf'
+  ending = '_v0?.cdf'
 
   relpathnames = file_dailynames(relpath,prefix,ending,$
      trange=['1970-01-01/00:00:00','1970-01-01/00:00:00'])
 
-  files = spd_download(remote_file=relpathnames, _extra = !themis)
+  files = spd_download(remote_file=relpathnames, _extra = !themis, /last_version)
 
   if keyword_set(verbose) then  dprint, files
 

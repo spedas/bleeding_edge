@@ -1,9 +1,9 @@
 ;--------------------------------------------------------------------
 ; PSP SPAN TPLOT ROUTINE
 ;
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-09-11 11:57:19 -0700 (Tue, 11 Sep 2018) $
-; $LastChangedRevision: 25773 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-11-08 07:58:40 -0800 (Thu, 08 Nov 2018) $
+; $LastChangedRevision: 26068 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_swp_tplot.pro $
 ;--------------------------------------------------------------------
 
@@ -61,7 +61,9 @@ if keyword_set(name) then begin
     'CMDCTR': tplot,'*swem_dhkp_SW_CMDCOUNTER *CMD_REC *CMDS_REC',add=add
     'SE':   tplot,'*sp?_AF0_ANODE_SPEC *sp?_AF1_*_SPEC spp_sp?_hkp_MRAM_*',ADD=ADD
     'SE_HV': tplot,'*sp?_hkp_ADC_VMON_* *sp?_hkp_ADC_IMON_*',ADD=ADD
-    'SA_SUM' : tplot, 'spp_spa_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spa_hkp_CMD_REC spp_spa_SF1_NRG_SPEC spp_spa_SF0_NRG_SPEC',add=add
+    'SA_SUM' : tplot, 'spp_spa_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spa_hkp_CMD_REC spp_spa_SF1_EMODE spp_spa_SF1_NRG_SPEC',add=add
+    'SB_SUM' : tplot, 'spp_spb_hkp_HV_CONF_FLAG spp_spb_SF1_CNTS spp_spb_hkp_CMD_REC spp_spb_SF1_EMODE spp_spb_SF1_NRG_SPEC',add=add
+;    'SA_SUM' : tplot, 'spp_spa_hkp_HV_CONF_FLAG spp_spa_SF1_CNTS spp_spa_hkp_CMD_REC spp_spa_SF1_EMODE spp_spa_SF1_NRG_SPEC spp_spa_SF0_NRG_SPEC',add=add
     'SA_HV': tplot,'*CMDCOUNTER *spa_*CMD_REC *spa_hkp_HV_CONF_FLAG *spa_hkp_???_DAC *spa_hkp_ADC_VMON_* *spa_hkp_ADC_IMON_* *spa_*SF1_ANODE_SPEC',ADD=ADD
     'SB_HV': tplot,'*CMDCOUNTER *spb_*CMD_REC *spb_hkp_HV_CONF_FLAG *spb_hkp_???_DAC *spb_hkp_ADC_VMON_* *spb_hkp_ADC_IMON_* *spb_*SF1_ANODE_SPEC',ADD=ADD
     'SAB_HV': tplot,'*CMDCOUNTER *sp[ab]_*CMD_REC *sp[ab]_hkp_HV_CONF_FLAG *sp[ab]_hkp_???_DAC *sp[ab]_hkp_ADC_VMON_* *sp[ab]_hkp_ADC_IMON_* *sp[ab]_*SF1_ANODE_SPEC',ADD=ADD

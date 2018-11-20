@@ -10,10 +10,16 @@
 ; 
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-10-24 12:40:44 -0700 (Wed, 24 Oct 2018) $
-; $LastChangedRevision: 26011 $
+; $LastChangedDate: 2018-11-15 09:42:04 -0800 (Thu, 15 Nov 2018) $
+; $LastChangedRevision: 26124 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_fpi_ut__define.pro $
 ;-
+
+function mms_load_fpi_ut::test_pseudo_moms_l3pre_files
+  mms_load_fpi, data_rate='brst', trange=['2015-10-16', '2015-10-17'], level='l3pre', probe=1, datatype='dis-pseudomoms', cdf_filenames=fn
+  assert, spd_data_exists('mms1_dis_pseudo_numberdensity_brst', '2015-10-16', '2015-10-17'), 'Problem with l3pre pseudo moments files'
+  return, 1
+end
 
 ;; the following are tests for moka_mms_pad_fpi
 function mms_load_fpi_ut::test_moka_mms_pad_fpi_df_suberr

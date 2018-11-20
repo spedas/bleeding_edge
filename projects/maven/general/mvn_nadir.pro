@@ -24,6 +24,7 @@
 ;                 to transform the nadir direction into.  Any frame recognized
 ;                 by SPICE is allowed.  The default is 'MAVEN_SPACECRAFT'.
 ;                 Other possibilities are: 'MAVEN_APP', 'MAVEN_STATIC', etc.
+;                 Type 'mvn_frame_name(/list)' to see a full list of frames.
 ;
 ;       POLAR:    If set, convert the direction to polar coordinates and
 ;                 store as additional tplot variables.
@@ -34,8 +35,8 @@
 ;                 default frame, this would be 'Nadir_MAVEN_SPACECRAFT'.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-09-13 18:17:22 -0700 (Wed, 13 Sep 2017) $
-; $LastChangedRevision: 23968 $
+; $LastChangedDate: 2018-11-09 11:31:53 -0800 (Fri, 09 Nov 2018) $
+; $LastChangedRevision: 26086 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_nadir.pro $
 ;
 ;CREATED BY:    David L. Mitchell

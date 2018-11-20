@@ -23,6 +23,7 @@
 ;      5 : 2016-11-28 to 2017-03-15
 ;      6 : 2017-06-13 to 2017-08-22
 ;      7 : 2017-12-10 to 2018-04-25
+;      8 : 2018-06-23 to 2019-04-01  (after aerobraking)
 ;
 ;  Solar wind periods 1 and 3 yield calibrations that are very similar.
 ;  These are combined into a single FOV calibration.  Solar wind period
@@ -53,8 +54,8 @@
 ;       TEST:         Returns calibration used.  For testing.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-05-04 16:11:40 -0700 (Fri, 04 May 2018) $
-; $LastChangedRevision: 25168 $
+; $LastChangedDate: 2018-11-09 11:39:59 -0800 (Fri, 09 Nov 2018) $
+; $LastChangedRevision: 26095 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_flatfield.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2016-09-28
@@ -69,7 +70,7 @@ function mvn_swe_flatfield, time, nominal=nominal, off=off, set=set, silent=sile
 ; Initialize the common block, if necessary
 
   if ((size(cc_t,/type) eq 0) or (keyword_set(init))) then begin
-    kmax = 7
+    kmax = 8
     swe_ff = replicate(1.,96,kmax+1)
 
 ;   Solar wind calibration period 1  (2014-10-27 to 2015-03-14).
@@ -176,7 +177,26 @@ function mvn_swe_flatfield, time, nominal=nominal, off=off, set=set, silent=sile
                    0.887518 , 0.894144 , 0.846486 , 0.852343 , 0.849357 , 0.842190 , $
                    0.915408 , 0.889495 , 0.913418 , 0.913407 , 0.808462 , 0.839137    ]
 
-;   Centers of solar wind calibration periods 1-7
+;   Solar wind calibration period 8 (2018-06-25 to 2018-10-23)
+
+    swe_ff[*,8] = [1.000000 , 1.000000 , 1.000000 , 1.000000 , 0.848268 , 0.817663 , $
+                   0.971194 , 1.038234 , 0.854383 , 0.922714 , 1.021997 , 1.012586 , $
+                   1.010670 , 0.989939 , 1.000000 , 1.000000 , 1.000000 , 1.000000 , $
+                   1.000000 , 0.842374 , 0.822029 , 1.127977 , 1.137520 , 1.161176 , $
+                   1.147164 , 1.261403 , 1.346064 , 1.337868 , 1.367707 , 1.301606 , $
+                   1.058620 , 1.000000 , 0.800091 , 0.888722 , 1.092440 , 1.200858 , $
+                   1.193953 , 1.105637 , 1.044450 , 1.065578 , 1.053355 , 1.156476 , $
+                   1.266993 , 1.187684 , 1.245406 , 1.163345 , 1.143534 , 1.105217 , $
+                   0.728594 , 0.988017 , 1.048587 , 1.053385 , 1.074951 , 1.011503 , $
+                   0.949734 , 1.002251 , 0.956604 , 1.038396 , 1.117419 , 1.085584 , $
+                   1.096525 , 1.073399 , 1.014698 , 1.003830 , 0.646175 , 0.817005 , $
+                   0.881129 , 0.991775 , 0.992065 , 0.912543 , 0.847342 , 0.960749 , $
+                   0.872041 , 0.920697 , 1.025733 , 1.043216 , 1.051184 , 0.973334 , $
+                   0.908639 , 0.933615 , 0.733106 , 0.717613 , 0.985876 , 0.963968 , $
+                   0.890976 , 0.886704 , 0.799568 , 0.838083 , 0.798852 , 0.827223 , $
+                   0.928904 , 0.923130 , 0.935872 , 0.922236 , 0.804775 , 0.800018    ]
+
+;   Centers of solar wind calibration periods 1-8
 
     tt = time_double(['2014-12-22', $    ; Solar Wind 1
                       '2015-08-02', $    ; Solar Wind 2
@@ -184,7 +204,8 @@ function mvn_swe_flatfield, time, nominal=nominal, off=off, set=set, silent=sile
                       '2016-08-22', $    ; Solar Wind 4
                       '2017-01-13', $    ; Solar Wind 5
                       '2017-06-29', $    ; Solar Wind 6
-                      '2018-02-17'   ])  ; Solar Wind 7
+                      '2018-02-17', $    ; Solar Wind 7
+                      '2018-08-13'   ])  ; Solar Wind 8
 
     cc_t = mvn_swe_crosscal(tt,/silent)
 
@@ -243,12 +264,12 @@ function mvn_swe_flatfield, time, nominal=nominal, off=off, set=set, silent=sile
       test = frac + 5.
     endif
 
-;   Solar Wind 7.  Use a fixed calibration after MCP bump at t_mcp[7].
-;   This is similar to the Solar Wind 6 calibration.
+;   End of Solar Wind 6 through Solar Wind 7 and into Solar Wind 8.
 
     if (t ge t_mcp[7]) then begin
-      swe_ogf = swe_ff[*,7]
-      test = 7.
+      frac = (((cc - cc_t[6])/(cc_t[7] - cc_t[6])) > 0.) < 1.
+      swe_ogf = swe_ff[*,7]*(1. - frac) + swe_ff[*,8]*frac
+      test = frac + 7.
     endif
 
 ;   Override this with a specific calibration, if requested --> for testing

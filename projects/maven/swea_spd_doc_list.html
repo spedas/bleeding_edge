@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov  1 18:16:34 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Nov 19 18:16:29 2018.<P>
  
 <HR>
  
@@ -589,8 +589,8 @@ KEYWORDS:
      NPTS  : A named variable to hold the number of data points.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-09-09 18:03:30 -0700 (Sun, 09 Sep 2018) $
- $LastChangedRevision: 25762 $
+ $LastChangedDate: 2018-11-09 11:42:13 -0800 (Fri, 09 Nov 2018) $
+ $LastChangedRevision: 26099 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_load.pro $
 
 CREATED BY:	David L. Mitchell
@@ -861,8 +861,8 @@ KEYWORDS:
     SUCCESS:       Processing success flag.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-09-13 14:01:10 -0700 (Thu, 13 Sep 2018) $
- $LastChangedRevision: 25792 $
+ $LastChangedDate: 2018-11-09 11:42:36 -0800 (Fri, 09 Nov 2018) $
+ $LastChangedRevision: 26100 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 
 CREATED BY:    David L. Mitchell
@@ -1313,9 +1313,9 @@ KEYWORDS:
        REVISION:      Look for L2 files with this revision number.
                       Default is to look for the latest revision.
 
-       CTIME:         Look for L2 files created after this time.
+       MTIME:         Look for L2 files modified after this time.
                       Default is to look for all files regardless of
-                      creation time.
+                      modification time.
 
        RESULT:        Named variable to hold the result structure
                       containing all valid file names organized by
@@ -1341,8 +1341,8 @@ KEYWORDS:
                       This will force immediate delivery to the SDC.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-07-31 10:55:09 -0700 (Tue, 31 Jul 2018) $
- $LastChangedRevision: 25529 $
+ $LastChangedDate: 2018-11-11 12:44:19 -0800 (Sun, 11 Nov 2018) $
+ $LastChangedRevision: 26108 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_catalog.pro $
 
 CREATED BY:    David L. Mitchell  04-25-13
@@ -1455,8 +1455,8 @@ KEYWORDS:
                    changes in a tplot window (assumed to exist).
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-07-31 10:55:30 -0700 (Tue, 31 Jul 2018) $
- $LastChangedRevision: 25530 $
+ $LastChangedDate: 2018-11-09 11:40:32 -0800 (Fri, 09 Nov 2018) $
+ $LastChangedRevision: 26096 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 
 CREATED BY:    David L. Mitchell  03-29-13
@@ -1559,8 +1559,8 @@ KEYWORDS:
        SILENT:       Don't print any warnings or messages.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-07-31 10:56:04 -0700 (Tue, 31 Jul 2018) $
- $LastChangedRevision: 25531 $
+ $LastChangedDate: 2018-11-09 11:41:11 -0800 (Fri, 09 Nov 2018) $
+ $LastChangedRevision: 26097 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_crosscal.pro $
 
 CREATED BY:    David L. Mitchell  05-04-16
@@ -1882,6 +1882,7 @@ PURPOSE:
       5 : 2016-11-28 to 2017-03-15
       6 : 2017-06-13 to 2017-08-22
       7 : 2017-12-10 to 2018-04-25
+      8 : 2018-06-23 to 2019-04-01  (after aerobraking)
 
   Solar wind periods 1 and 3 yield calibrations that are very similar.
   These are combined into a single FOV calibration.  Solar wind period
@@ -1912,8 +1913,8 @@ KEYWORDS:
        TEST:         Returns calibration used.  For testing.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-05-04 16:11:40 -0700 (Fri, 04 May 2018) $
- $LastChangedRevision: 25168 $
+ $LastChangedDate: 2018-11-09 11:39:59 -0800 (Fri, 09 Nov 2018) $
+ $LastChangedRevision: 26095 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_flatfield.pro $
 
 CREATED BY:    David L. Mitchell  2016-09-28
@@ -2005,8 +2006,8 @@ KEYWORDS:
 CREATED BY:	David L. Mitchell  2016-08-03
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-05-08 17:28:10 -0700 (Mon, 08 May 2017) $
- $LastChangedRevision: 23280 $
+ $LastChangedDate: 2018-11-09 11:38:54 -0800 (Fri, 09 Nov 2018) $
+ $LastChangedRevision: 26093 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovcal.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_fovcal.pro">projects/maven/swea/mvn_swe_fovcal.pro</A>)</STRONG><P>
@@ -2037,6 +2038,8 @@ KEYWORDS:
 
        CRANGE:    Color scale range.  Default = [0.5,1.5].
 
+       YRANGE:    RGF range for data point plot.  Default = [0,1.4].
+
        MAP:       Mapping projection.  Can be one of:
                      'mol' = Mollweide
                      'cyl' = Cylindrical
@@ -2060,8 +2063,8 @@ KEYWORDS:
 CREATED BY:	David L. Mitchell  2016-08-03
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-05-08 17:27:35 -0700 (Mon, 08 May 2017) $
- $LastChangedRevision: 23279 $
+ $LastChangedDate: 2018-11-09 11:38:35 -0800 (Fri, 09 Nov 2018) $
+ $LastChangedRevision: 26092 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovplot.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_fovplot.pro">projects/maven/swea/mvn_swe_fovplot.pro</A>)</STRONG><P>
@@ -2362,8 +2365,8 @@ KEYWORDS:
 OUTPUTS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-02-27 21:02:27 -0800 (Tue, 27 Feb 2018) $
- $LastChangedRevision: 24803 $
+ $LastChangedDate: 2018-11-18 11:31:18 -0800 (Sun, 18 Nov 2018) $
+ $LastChangedRevision: 26142 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_kp.pro $
 
 </PRE><P>
@@ -2778,8 +2781,8 @@ CREATED BY:    David L. Mitchell  09/18/13
    ISTP compliance scrub; DLM: 2016-04-08
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2018-04-25 16:47:19 -0700 (Wed, 25 Apr 2018) $
-   $LastChangedRevision: 25120 $
+   $LastChangedDate: 2018-11-18 14:23:15 -0800 (Sun, 18 Nov 2018) $
+   $LastChangedRevision: 26143 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makecdf_3d.pro $
 
 </PRE><P>
@@ -2817,8 +2820,8 @@ CREATED BY:    David L. Mitchell  09/18/13
    ISTP compliance scrub; DLM: 2016-04-08
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2018-04-25 16:47:19 -0700 (Wed, 25 Apr 2018) $
-   $LastChangedRevision: 25120 $
+   $LastChangedDate: 2018-11-18 14:23:15 -0800 (Sun, 18 Nov 2018) $
+   $LastChangedRevision: 26143 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makecdf_pad.pro $
 
 </PRE><P>
@@ -2855,8 +2858,8 @@ CREATED BY:    David L. Mitchell  09/18/13
    ISTP compliance scrub; DLM: 2016-04-08
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2018-04-25 16:47:19 -0700 (Wed, 25 Apr 2018) $
-   $LastChangedRevision: 25120 $
+   $LastChangedDate: 2018-11-18 14:23:15 -0800 (Sun, 18 Nov 2018) $
+   $LastChangedRevision: 26143 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makecdf_spec.pro $
 
 </PRE><P>
@@ -2886,8 +2889,8 @@ KEYWORDS:
        UNITS:    Convert data to these units.  Default = 'eflux'.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2016-09-19 17:08:45 -0700 (Mon, 19 Sep 2016) $
- $LastChangedRevision: 21873 $
+ $LastChangedDate: 2018-11-09 11:38:17 -0800 (Fri, 09 Nov 2018) $
+ $LastChangedRevision: 26091 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makespec.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -3853,8 +3856,8 @@ KEYWORDS:
 OUTPUTS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-02-18 12:26:28 -0800 (Sun, 18 Feb 2018) $
- $LastChangedRevision: 24736 $
+ $LastChangedDate: 2018-11-09 11:39:31 -0800 (Fri, 09 Nov 2018) $
+ $LastChangedRevision: 26094 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sciplot.pro $
 
 </PRE><P>
@@ -4717,8 +4720,8 @@ KEYWORDS:
        BURST:        Plot a color bar showing PAD burst coverage.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-09-16 13:20:05 -0700 (Sun, 16 Sep 2018) $
- $LastChangedRevision: 25817 $
+ $LastChangedDate: 2018-11-09 11:43:27 -0800 (Fri, 09 Nov 2018) $
+ $LastChangedRevision: 26101 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -5024,22 +5027,26 @@ PURPOSE:
               -59 &lt; Elev &lt; +61 ; 3 &lt; E &lt; 4630
                Chksum = 'CC'X
                GSEOS svn rev 8481
+            loaded into SWEA LUT 0 (via FSW)
 
         6 : Xmax = 5.5, Vrange = [2./Ka, 750.], V0scale = 1.
             alternate table for Transition and Science
               -59 &lt; Elev &lt; +61 ; 3 &lt; E &lt; 4650
                Chksum = '82'X
                GSEOS svn rev 8482
+            loaded into SWEA LUT 1 (via FSW)
 
         7 : Xmax = 5.5, Erange = [200.,200.], V0scale = 0.
             Hires 32-Hz at 200 eV
               -59 &lt; Elev &lt; +61 ; E = 200
                Chksum = '00'X
+            loaded into SWEA LUT 2 (via CDI)
 
         8 : Xmax = 5.5, Erange = [50.,50.], V0scale = 0.
             Hires 32-Hz at 50 eV
               -59 &lt; Elev &lt; +61 ; E = 50
                Chksum = '00'X
+            loaded into SWEA LUT 3 (via FSW)
 
 USAGE:
   tabnum = mvn_swe_tabnum(i)
@@ -5051,8 +5058,8 @@ KEYWORDS:
        INVERSE:      Given a table number, return its checksum.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-09-09 18:02:35 -0700 (Sun, 09 Sep 2018) $
- $LastChangedRevision: 25761 $
+ $LastChangedDate: 2018-11-09 11:41:48 -0800 (Fri, 09 Nov 2018) $
+ $LastChangedRevision: 26098 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_tabnum.pro $
 
 CREATED BY:	David L. Mitchell  2014-01-03

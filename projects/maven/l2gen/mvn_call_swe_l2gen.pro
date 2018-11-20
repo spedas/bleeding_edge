@@ -38,8 +38,8 @@
 ;HISTORY:
 ;Hacked from mvn_call_sta_l2gen, 17-Apr-2014, jmm
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2018-04-25 15:54:36 -0700 (Wed, 25 Apr 2018) $
-; $LastChangedRevision: 25118 $
+; $LastChangedDate: 2018-11-13 10:14:27 -0800 (Tue, 13 Nov 2018) $
+; $LastChangedRevision: 26109 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_call_swe_l2gen.pro $
 ;-
 Pro mvn_call_swe_l2gen, time_in = time_in, $
@@ -225,6 +225,7 @@ Pro mvn_call_swe_l2gen, time_in = time_in, $
            If(is_string(file_search(filei_dir)) Eq 0) Then Begin
               message, /info, 'Creating: '+filei_dir
               file_mkdir2, filei_dir, mode = '0775'o
+              If(!version.os Eq 'linux') Then spawn, 'chgrp maven '+filei_dir
            Endif
            load_position = 'l2gen'
            message, /info, 'PROCESSING: '+instrk+' FOR: '+timei

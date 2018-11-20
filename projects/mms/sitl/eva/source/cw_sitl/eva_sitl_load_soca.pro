@@ -75,13 +75,13 @@ PRO eva_sitl_load_soca, state, str_tspan, mdq=mdq
     options,'mms_soca_bakstr','constant',[50,100,150,200]
     dgrand = [dgrand,'mms_soca_bakstr']
     
-    idx = where(strmatch(unix_BAKStr_org.STATUS,"*trimmed*"),ct_trimmed)
-    idx = where(strmatch(unix_BAKStr_org.STATUS,"*subsumed*"),ct_subsumed)
-    if (ct_trimmed+ct_subsumed gt 0) then begin
-      msg = ['Overlapped (TRIMMED or SUBSUMED) segments detected.','']
-      msg = [msg,'Please notify super-SITL.']
-      result = dialog_message(msg,/center)
-    endif
+;    idx = where(strmatch(unix_BAKStr_org.STATUS,"*trimmed*"),ct_trimmed)
+;    idx = where(strmatch(unix_BAKStr_org.STATUS,"*subsumed*"),ct_subsumed)
+;    if (ct_trimmed+ct_subsumed gt 0) then begin
+;      msg = ['Overlapped (TRIMMED or SUBSUMED) segments detected.','']
+;      msg = [msg,'Please notify super-SITL.']
+;      result = dialog_message(msg,/center)
+;    endif
   endelse
   
   ;--------------------------

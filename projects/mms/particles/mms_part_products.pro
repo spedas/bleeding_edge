@@ -104,8 +104,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-09-21 14:26:21 -0700 (Fri, 21 Sep 2018) $
-;$LastChangedRevision: 25851 $
+;$LastChangedDate: 2018-11-19 15:51:32 -0800 (Mon, 19 Nov 2018) $
+;$LastChangedRevision: 26154 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products.pro $
 ;-
 pro mms_part_products, $
@@ -151,8 +151,10 @@ pro mms_part_products, $
                      pos_name=pos_name, $ ;tplot variable containing spacecraft position for FAC transformations
                      vel_name=vel_name, $ tplot variable containing velocity data in km/s
                      
-                     correct_photoelectrons=correct_photoelectrons, $
-                      
+                     correct_photoelectrons=correct_photoelectrons, $ ; Apply both internal photoelectron corrections (Dan Gershman's model) and correct for S/C potential (should not be used with either of the bottom two)
+                     internal_photoelectron_corrections=internal_photoelectron_corrections, $ ; Only apply Dan Gershman's model (i.e., don't correct for the S/C potential in moments_3d)
+                     correct_sc_potential=correct_sc_potential, $ ; only correect for the S/C potential (disables Dan Gershman's model)
+
                      error=error,$ ;indicate error to calling routine 1=error,0=success
                      
                      start_angle=start_angle, $ ;select a different start angle
@@ -376,7 +378,7 @@ pro mms_part_products, $
   endif
   
   ; grab the FPI photoelectron model if needed
-  if keyword_set(correct_photoelectrons) then begin
+  if keyword_set(correct_photoelectrons) || keyword_set(internal_photoelectron_corrections) then begin
     fpi_photoelectrons = mms_part_des_photoelectrons(in_tvarname)
     
     if ~is_struct(fpi_photoelectrons) && fpi_photoelectrons eq -1 then begin
@@ -413,7 +415,7 @@ pro mms_part_products, $
     
     str_element, dist, 'orig_energy', dist.energy[*, 0, 0], /add
 
-    if keyword_set(correct_photoelectrons) then begin
+    if keyword_set(correct_photoelectrons) || keyword_set(internal_photoelectron_corrections) then begin
       get_data, 'mms'+probe+'_des_startdelphi_count_'+data_rate, data=startdelphi
 
       ; From Dan Gershman's release notes on the FPI photoelectron model:
@@ -528,7 +530,7 @@ pro mms_part_products, $
     ;Calculate moments
     ;  -data must be in 'eflux' units 
     if in_set(outputs_lc, 'moments') then begin
-      spd_pgs_moments, clean_data, moments=moments, delta_times=delta_times, mag_data=mag_data, sc_pot_data=sc_pot_data, index=i , _extra = ex
+      spd_pgs_moments, clean_data, moments=moments, delta_times=delta_times, mag_data=mag_data, sc_pot_data=keyword_set(internal_photoelectron_corrections) ? 0 : sc_pot_data, index=i , _extra = ex
     endif 
 
     ;Build theta spectrogram
@@ -599,7 +601,7 @@ pro mms_part_products, $
     if in_set(outputs_lc, 'fac_moments') then begin
       clean_data.theta = 90-clean_data.theta ;convert back to latitude for moments calc
       ;re-add required fields stripped by FAC transform (should fix there if feature becomes standard)
-      if undefined(sc_pot_data) then scpot=0.0 else scpot = sc_pot_data[i]
+      if undefined(sc_pot_data) || keyword_set(internal_photoelectron_corrections) then scpot=0.0 else scpot = sc_pot_data[i]
       if ~keyword_set(no_regrid) then clean_data = create_struct('charge',dist.charge,'magf',[0,0,0.],'sc_pot',scpot,clean_data)
       spd_pgs_moments, clean_data, moments=fac_moments, sc_pot_data=sc_pot_data, index=i, _extra=ex
     endif 

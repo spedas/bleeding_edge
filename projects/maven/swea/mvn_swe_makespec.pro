@@ -16,8 +16,8 @@
 ;       UNITS:    Convert data to these units.  Default = 'eflux'.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2016-09-19 17:08:45 -0700 (Mon, 19 Sep 2016) $
-; $LastChangedRevision: 21873 $
+; $LastChangedDate: 2018-11-09 11:38:17 -0800 (Fri, 09 Nov 2018) $
+; $LastChangedRevision: 26091 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makespec.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -160,8 +160,9 @@ pro mvn_swe_makespec, sum=sum, units=units
 ; SWEA SPEC archive data
 
   if (size(a5,/type) ne 8) then begin
-    print,"No SPEC archive data."
+;   print,"No SPEC archive data."         ; there should never be any SPEC archive data
   endif else begin
+    print,"WARNING: SPEC archive data detected.  This should be impossible."
     npkt = n_elements(a5)                 ; number of packets
     npts = 16L*npkt                       ; 16 spectra per packet
     ones = replicate(1.,npts)

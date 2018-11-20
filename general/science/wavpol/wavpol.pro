@@ -101,17 +101,17 @@
 ;	 100%. Remembercomparing two straight lines yields 100% polarisation.
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-12-21 09:37:46 -0800 (Thu, 21 Dec 2017) $
-; $LastChangedRevision: 24453 $
+; $LastChangedDate: 2018-11-15 18:20:42 -0800 (Thu, 15 Nov 2018) $
+; $LastChangedRevision: 26129 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/wavpol/wavpol.pro $
 ;-
 pro wavpol,ct,Bx,By,Bz,timeline,freqline,powspec,degpol,waveangle,elliptict,helict,pspec3,$
-samp_per=samp_per_input, nopfft=nopfft_input,steplength = steplength_input, bin_freq = bin_freq_input
+samp_per=samp_per_input, nopfft=nopfft_input,steplength = steplength_input, bin_freq = bin_freq_input, err_flag = err_flag
     
     If size(nopfft_input, /type) ne 0 then nopfft = nopfft_input else nopfft = 256
     If size(steplength_input, /type) ne 0 then steplength = steplength_input else steplength =  nopfft/2
     If size(bin_freq_input, /type) ne 0 then bin_freq = bin_freq_input else bin_freq =  3
-    
+    If size(err_flag, /type) ne 0 then err_flag = err_flag else err_flag = 0
     nopoints=n_elements(Bx)
     
     iano      = intarr(nopoints)
@@ -149,7 +149,12 @@ samp_per=samp_per_input, nopfft=nopfft_input,steplength = steplength_input, bin_
     errs = where(iano ge 15, n_batches)
     dprint,''
     dprint, 'Number of continuous batches: ', n_batches
-    
+    if n_batches gt 8d4 then begin
+      dprint,''
+      dprint, 'Large number of batches. Returning to avoid memory runaway.'
+      err_flag = 1;
+      return
+    endif
     nbp_fft_batches = lonarr(n_batches)*0.
     
     ; Total numbers of FFT calculations including 1 leap frog for each batch

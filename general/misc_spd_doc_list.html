@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov  1 18:16:34 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Nov 19 18:16:29 2018.<P>
  
 <HR>
  
@@ -164,7 +164,6 @@ This page was created by the IDL library routine
 <LI><A HREF="#STR_ELEMENT">STR_ELEMENT</A>
 <br>Find (or add) an element of a structure.
 <LI><A HREF="#STRFILTER">STRFILTER</A>
-<br>Returns the subset of stringarray that matchs searchstring
 <LI><A HREF="#STRIPPATH">STRIPPATH</A>
 <LI><A HREF="#STRUCT_VALUE">STRUCT_VALUE</A>
 <LI><A HREF="#TAG_NAMES_R">TAG_NAMES_R</A>
@@ -4072,50 +4071,12 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A HREF="#STRING_PARSER">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-FUNCTION:
-  res =  strfilter(stringarray,searchstring)
-PURPOSE:
-  Returns the subset of stringarray that matchs searchstring
-  '*' will match all (non-null) strings
-  ''  will match only the null string
-  Output can be modified with keywords
-  NOTE: this routine is very similar to the STRMATCH routine introduced in IDL 5.3
-     it has some enhancements that make it useful.
-     (i.e.: filterstring can also be an array)
-INPUT:
-  stringarray:  An array of strings to be filtered
-  searchstring: A string that may contain wildcard characters (&quot;*&quot;)
-           (If searchstring is an array then results are OR'd together)
-RETURN VALUE:
-  Either:
-     Array of matching strings.
-  or:
-     Array of string indices.
-  or:
-     Byte array with same dimension as input string.
-  Depends upon keyword setting (See below)
-
-KEYWORDS:
-  FOLD_CASE: if set then CASE is ignored.   (only IDL 5.3 and later)
-  STRING: if set then the matching strings are returned.  (default)
-  INDEX:  if set then the indices are returned.
-  BYTES:  if set then a byte array is returned with same dimension as input string array (similar to STRMATCH).
-  NEGATE: pass only strings that do NOT match.
-  DELIMITER: Set this to a delimiter that will break searchstring into an array of searchstrings
-  COUNT:  A named variable that will contain the number of matched strings.
-  NO_MATCH:  A named variable that will contain either a subset of searchstring that
-             failed to match stringarray, an array of indices to that subset, or a 
-             byte array whose dimensions match the number of elements in searchstring.
-             The data type returned will match that of the return value.
-             (only IDL 5.3 and later)
-Limitations:
-  This function still needs modification to accept the '?' character
-  July 2000;  modified to use the IDL strmatch function so that '?' is accepted for versions &gt; 5.4
-EXAMPLE:
-  Print,strfilter(findfile('*'),'*.pro',/negate) ; print all files that do NOT end in .pro
-AUTHOR:
-  Davin Larson,  Space Sciences Lab, Berkeley; Feb, 1999
-VERSION:  01/10/08
++
+ spp_swp_spe_prod_apdat
+ $LastChangedBy: phyllisw2 $
+ $LastChangedDate: 2018-11-14 17:00:58 -0800 (Wed, 14 Nov 2018) $
+ $LastChangedRevision: 26122 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/strfilter.pro $
 </PRE><P>
 <STRONG>(See <A href="misc/strfilter.pro">general/misc/strfilter.pro</A>)</STRONG><P>
 <HR>

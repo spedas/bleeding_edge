@@ -237,9 +237,9 @@
 ;  Aaron Flores, based on work by Bryan Kerr, Arjun Raj, and Xuzhi Zhou
 ;
 ;
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2018-06-04 18:04:52 -0700 (Mon, 04 Jun 2018) $
-;$LastChangedRevision: 25323 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2018-11-08 10:24:43 -0800 (Thu, 08 Nov 2018) $
+;$LastChangedRevision: 26069 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/spd_slice2d.pro $
 ;-
 
@@ -533,8 +533,8 @@ if keyword_set(fail) then return, invalid
 
 ; Rotation defined by slice normal/x axis options
 
-if (~undefined(slice_x_vec) and ~ARRAY_EQUAL([1,0,0],slice_x_vec, /quiet)) or $
-   (~undefined(slice_z_vec) and ~ARRAY_EQUAL([0,0,1],slice_z_vec, /quiet)) then begin
+if (~undefined(slice_x_vec) && ~ARRAY_EQUAL([1,0,0],slice_x_vec)) || $
+   (~undefined(slice_z_vec) && ~ARRAY_EQUAL([0,0,1],slice_z_vec)) then begin
    dprint, dlevel=2, 'Warning! behaviour of slice_x_vec and slice_z_vec has been changed (06/04/2018). See the description of the function.', display_object=msg_obj
 endif
 

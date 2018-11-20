@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_hpca_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-10-02 11:32:19 -0700 (Tue, 02 Oct 2018) $
-; $LastChangedRevision: 25883 $
+; $LastChangedDate: 2018-11-19 16:38:24 -0800 (Mon, 19 Nov 2018) $
+; $LastChangedRevision: 26158 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_hpca_ut__define.pro $
 ;-
 
@@ -96,6 +96,16 @@ function mms_load_hpca_ut::test_burst_caps
   mms_load_hpca, probe=1, level='L2', trange=['2015-12-15', '2015-12-16'], data_rate='BRST'
   assert, spd_data_exists('mms1_hpca_heplus_ion_bulk_velocity mms1_hpca_heplus_ion_pressure mms1_hpca_oplus_temperature_tensor', '2015-12-15', '2015-12-16'), $
     'Problem loading burst mode HPCA moment data (caps)'
+  return, 1
+end
+
+function mms_load_hpca_ut::test_center_keyword_varformat
+  mms_load_hpca, varformat='*hplus*', probe=1, level='l2', datatype='moments', trange=['2017-10-15', '2017-10-16'], /center_measurement, suffix='_centered'
+  mms_load_hpca, varformat='*hplus*', probe=1, level='l2', datatype='moments', trange=['2017-10-15', '2017-10-16']
+  get_data, 'mms1_hpca_hplus_ion_bulk_velocity', data=not_centered ; not centered
+  get_data, 'mms1_hpca_hplus_ion_bulk_velocity_centered', data=centered ; centered
+  ; centering adjusts by ~5 seconds
+  assert, round(centered.X[2]-not_centered.X[2]) eq 5, 'Problem centering HPCA moments data'
   return, 1
 end
 

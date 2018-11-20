@@ -76,8 +76,8 @@
 ;CREATED BY:	David L. Mitchell  2016-08-03
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-05-08 17:28:10 -0700 (Mon, 08 May 2017) $
-; $LastChangedRevision: 23280 $
+; $LastChangedDate: 2018-11-09 11:38:54 -0800 (Fri, 09 Nov 2018) $
+; $LastChangedRevision: 26093 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovcal.pro $
 ;-
 pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
@@ -85,6 +85,10 @@ pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
                     lon=lon, lat=lat, calnum=calnum, scp=scp
 
   @mvn_swe_com
+  common colors_com
+
+  ctab = color_table
+  loadct2,34
 
   a = 0.8
   phi = findgen(49)*(2.*!pi/49)
@@ -275,5 +279,6 @@ pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
   wset,Twin
 
   result = {time:time, rgf:rgf, trange:trange}
+  loadct2,ctab
 
 end

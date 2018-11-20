@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-11-01 15:52:23 -0700 (Thu, 01 Nov 2018) $
-; $LastChangedRevision: 26044 $
+; $LastChangedDate: 2018-11-08 07:58:40 -0800 (Thu, 08 Nov 2018) $
+; $LastChangedRevision: 26068 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -197,8 +197,10 @@ endif else begin
 
   str = { $
     time:        ccsds.time, $
-    tt2000:      0LL,  $
+    epoch:      0LL,  $
+    f0:           f0,$
     apid:        ccsds.apid, $
+    source:      0UL,   $
     time_delta:  ccsds.time_delta, $
     seqn:        ccsds.seqn,  $
     seqn_delta:  ccsds.seqn_delta,  $
@@ -212,13 +214,13 @@ endif else begin
     tmode:       tmode, $
     emode:       emode, $
     product_type: product_type,  $
-    f0:           f0,$
     status_bits: status_bits,$
     peak_bin:    peak_bin, $
     cnts:  tcnts,  $
     anode_spec:  fltarr(16),  $
     nrg_spec:    fltarr(32),  $
     def_spec:    fltarr(8) ,  $
+    nrg_vals:    fltarr(32),  $
     ;  full_spec:   fltarr(256), $
     pdata:        ptr_new(cnts), $
     gap:         ccsds.gap  }
@@ -313,6 +315,32 @@ PRO spp_swp_spe_prod_apdat::Clear
   self.prod_16Ax8Dx32E.array = !null
 END
 
+
+PRO spp_swp_spe_prod_apdat::makecdf,trange=trange
+
+  printdat,time_string(trange)
+  datarray = self.data.array
+  if keyword_set(trange) then begin
+    w= where(datarray.time ge trange[0] and datarray.time lt trange[1],/null)
+    datarray = datarray[w]
+  endif
+  if ~keyword_set(datarray) then return
+  w = where( datarray.ndat eq datarray.datasize,/null)
+  datarray = datarray[w]
+  if ~keyword_set(datarray) then return
+
+  if keyword_set(datarray) then begin
+    cdf = spp_swp_span_makecdf(datarray)  ;, datanovary,  varnames=varnames, ignore=ignore,_extra=ex
+    pathformat = self.cdf_pathname
+    filename = time_string(trange[0],tformat=pathformat)
+    filename = str_sub(filename,'$NAME$',self.name)
+    filename = root_data_dir() + filename
+    cdf.write,filename
+    obj_destroy,cdf
+    
+  endif
+end
+ 
 
 
 ;

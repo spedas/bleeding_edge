@@ -4,35 +4,88 @@
 ; Currently this holds all the scrap pieces from calibration / instrument development, which will get moved
 ; Also includes a log of the calibration files and instructions for processing them
 ; 
-; In the future this will include instructions for looking at flight data
+; In the future this will include instructions for looking at flight data:  IN PROG
 ; 
 ; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-08-20 10:21:17 -0700 (Mon, 20 Aug 2018) $
-; $LastChangedRevision: 25663 $
+; $LastChangedDate: 2018-11-06 14:43:56 -0800 (Tue, 06 Nov 2018) $
+; $LastChangedRevision: 26058 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/electron/spp_swp_spane_crib.pro $
 ;--------------------------------------------------------------------
 
-; BASIC STEPS TO LOOKING AT CALIBRATION DATA
+; BASIC STEPS TO LOOKING AT DATA
 ; 
 ; 1: Choose & set a time range. 
-;     Foramt: trange = ['YYYY MM DD/HH','YYYY MM DD/HH']
+;     Format: trange = ['YYYY MM DD/HH','YYYY MM DD/HH']
 ;                                 OR
 ;              trange = 'YYYY MM' + ['DD/HH', 'DD/HH']    ; use if the month is the same for start/end days
-;              
-;           ;;; insert sample code here uncommented ;;;
 ;
 ; 2: Set which files to download.
-;     Format: files = spp_file_retrieve(/instrument, /chamber, trange = trange)
-;     Options: Instrument : /spanea, /spaneb, /spani, /spc, /swem
+;     2a: Calibration Data
+;       Format: files = spp_file_retrieve(/instrument, /chamber, trange = trange)
+;       Options: Instrument : /spanea, /spaneb, /spani, /spc, /swem
 ;              Chamber :    /snout2, /tv, /cal, /crypt, /rm133
+;     2b: Raw SSR Files
+;       Format: files = spp_file_retrieve(/ssr, trange = trange)
 ; 
 ; 3: Decommutate files
-;     spp_ptp_file_read, files
-;
-;
-;
+;     3a: Calibration Data
+;       IDL> spp_ptp_file_read, files
+;     3b: Raw SSR Files
+;       IDL> spp_ssr_file_read, files
+; 4: Plot things
+;     To get a summary of data:
+;       IDL> spp_swp_spane_tplot, 'sumplot', /setlim
+;     To get a listing of all span-a/b tplot variables:
+;       IDL> tplot_names, '*sp[a,b]*
+;     
+; Notes on Data Names:
+; 
+;   SPAN-E produces two products for data taken during the same 
+;   time interval: a "P0" and a "P1" packet. The P0 packet will 
+;   always be a higher-dimension product than the P1 packet. By
+;   default, P0 is a 16X32X8 3D spectrum, and P1 is a 32 reduced 
+;   energy spectrum. 
+;   
+;   SPAN-E also produces Archive and Survey data - expect the
+;   Survey data all the time during encounter. Archive is few 
+;   and far between since it's high rate data and takes up a lot
+;   of downlink to pull from the spacecraft. 
+;   
+;   The last thing you need to know is that SPAN-E alternates
+;   every other accumulation period sweeping either over the 
+;   "Full" range of energies and deflectors, or a "Targeted" 
+;   range where the signal is at a maximum.
+;   
+;   Therefore, when you look at the science data from SPAN-E, 
+;   you can pull a "Survey, Full, 3D" distribution by calling
+;   
+;   IDL> tplot_names, '*sp[a,b]*SF0*SPEC*
+;   
+;   And the slices through that distribution will be called.
+;   
+;   Enjoy!
+;   
+;   For questions or comments about the data:
+;   Phyllis Whittlesey
+;   phyllisw@berkeley.edu
+;   I really do want to work with you!
+;   
+;   
 ; note that table files are doubled until [insert date here]
+
+
+
 pro nothing
+;;----SPAN-E Flight Commissioning Data----;;
+trange = '2018 09 ' + ['05/20','06/18'] ; first light / first HV ramp up, table 10-10 or 5-5
+trange = '2018 09 ' + ['08/04','08/06'] ; transient slew in commissioning
+trange = '2018 09 ' + ['08/08','08/10']; spoiler tests in commissioning
+trange = '2018 09 ' + ['17/06','17/18'] ; Tables were loaded, funny packet business
+trange = '2018 09 ' + ['21/03','21/04'] ; ~ 15 minutes worth of not much going on
+trange = '2018 09 ' + ['24/12','28/04'] ; Table switching, SPAN-B overcurrent (table issue), not much else
+trange = '2018 10 ' + ['02/04','02/17'] ; 14 hours of nominal solar wind before Venus
+trange = '2018 10 ' + ['03/01','03/09'] ; Venus Encounter Data
+trange = '2018 10 ' + ['03/16','04/00'] ; post Venus Cruise phase data
 
 
 ;;----SPAN-E TVAC TESTING @ GODDARD (2018)----;;
@@ -491,6 +544,12 @@ if 0  then begin  ;;  time test
 
 endif
 
+pro spe_kludge, dataNum
+  nrg = dgen(32, range = [500,5], /log)
+  get_data, dataNum, data = d
+  str_element, d, 'v', nrg, /add
+  store_data, dataNum, data = d
+end
 
 
 end

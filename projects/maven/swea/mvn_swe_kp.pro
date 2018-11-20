@@ -46,8 +46,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-27 21:02:27 -0800 (Tue, 27 Feb 2018) $
-; $LastChangedRevision: 24803 $
+; $LastChangedDate: 2018-11-18 11:31:18 -0800 (Sun, 18 Nov 2018) $
+; $LastChangedRevision: 26142 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_kp.pro $
 ;
 ;-
@@ -346,7 +346,8 @@ pro mvn_swe_kp, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, $
   finfo = file_info(fname)
 
 ; If the file already exists, then try to overwrite it;
-; otherwise, create the file and make it group writable.
+; otherwise, create the file, change the group to maven,
+; and make it group writable.
 
   if (finfo.exists) then begin
     if (~file_test(fname,/write)) then begin
@@ -356,6 +357,13 @@ pro mvn_swe_kp, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, $
     tplot_save, pans, file=tname
   endif else begin
     tplot_save, pans, file=tname
+    cmd = 'chgrp maven ' + fname
+    spawn, cmd, result, err
+    if (err ne '') then begin
+      print, "Error changing group for file: "
+      print, "  ", cmd
+      print, "  ", err
+    endif
     file_chmod, fname, '0664'o
   endelse
 

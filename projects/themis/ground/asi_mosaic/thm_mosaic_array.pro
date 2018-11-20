@@ -9,11 +9,12 @@
 ;          2007-02-10, hfrey, extend for cdf-files and tplot
 ;          2007-03-15, hfrey, thumbnails
 ;          2008-04-28, hfrey, run full full_minute with pgm
+;          2018-11-19, hfrey, updated calibration files
 ;
 ; VERSION:
 ;   $LastChangedBy: hfrey $
-;   $LastChangedDate: 2015-12-11 06:10:53 -0800 (Fri, 11 Dec 2015) $
-;   $LastChangedRevision: 19600 $
+;   $LastChangedDate: 2018-11-19 15:31:27 -0800 (Mon, 19 Nov 2018) $
+;   $LastChangedRevision: 26153 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/asi_mosaic/thm_mosaic_array.pro $
 ;-
 
@@ -104,8 +105,8 @@ if keyword_set(verbose) then dprint, 'After init: ',systime(1)-verbose,$
            station_index=where((strpos(cal_files.vars[0].name,station_string)) ne -1)
            cal=cal_files[station_index]
            endif else $
-           thm_load_asi_cal,station_string,cal
-;stop
+           thm_load_asi_cal,station_string,cal,verbose=verbose,trange=time_double(time)
+
          	; get longitude/latitude arrays
          if keyword_set(special) then begin
             dummy=where(strlowcase(special) eq strlowcase(station_string),special_treat)
@@ -154,18 +155,26 @@ if keyword_set(verbose) then dprint, 'After init: ',systime(1)-verbose,$
          ELSE: begin 
             lon_name='thg_asf_'+station_string+'_glon'
             field_index=where(cal.vars.name eq lon_name)
-            x=*cal.vars[field_index[0]].dataptr
-            x=reform(x[1,*,*])
-            lat_name='thg_asf_'+station_string+'_glat'
-            field_index=where(cal.vars.name eq lat_name)
-            y=*cal.vars[field_index[0]].dataptr
-            y=reform(y[1,*,*])
+            dummy=size(*cal.vars[field_index[0]].dataptr)
+            if (dummy[0] eq 3) then begin
+              x=*cal.vars[field_index[0]].dataptr
+              x=reform(x[1,*,*])
+              lat_name='thg_asf_'+station_string+'_glat'
+              field_index=where(cal.vars.name eq lat_name)
+              y=*cal.vars[field_index[0]].dataptr
+              y=reform(y[1,*,*])
+              endif else begin
+              x=*cal.vars[field_index[0]].dataptr
+              lat_name='thg_asf_'+station_string+'_glat'
+              field_index=where(cal.vars.name eq lat_name)
+              y=*cal.vars[field_index[0]].dataptr
+              endelse
             ele_name='thg_asf_'+station_string+'_elev'
             field_index=where(cal.vars.name eq ele_name)
             elev=*cal.vars[field_index[0]].dataptr
             endcase
-        endcase
-
+        endcase
+;stop
          	; images
          u=dat.y
 
@@ -454,8 +463,8 @@ if keyword_set(verbose) then dprint, 'After stations: ',systime(1)-verbose,$
              ele1(*,i_sites)=ele
            endif        ; specific image
        endif 		; found file
-    endfor		; stations
-  endelse		; pgm files
+    endfor		; stations
+  endelse		; pgm files
   endif
 merge=merge_special
 ;stop

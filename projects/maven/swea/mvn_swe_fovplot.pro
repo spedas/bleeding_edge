@@ -18,6 +18,8 @@
 ;
 ;       CRANGE:    Color scale range.  Default = [0.5,1.5].
 ;
+;       YRANGE:    RGF range for data point plot.  Default = [0,1.4].
+;
 ;       MAP:       Mapping projection.  Can be one of:
 ;                     'mol' = Mollweide
 ;                     'cyl' = Cylindrical
@@ -41,12 +43,12 @@
 ;CREATED BY:	David L. Mitchell  2016-08-03
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-05-08 17:27:35 -0700 (Mon, 08 May 2017) $
-; $LastChangedRevision: 23279 $
+; $LastChangedDate: 2018-11-09 11:38:35 -0800 (Fri, 09 Nov 2018) $
+; $LastChangedRevision: 26092 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovplot.pro $
 ;-
-pro mvn_swe_fovplot, dat, bad=ondx, date=date, crange=crange, map=map, result=result, $
-                     lon=lon, lat=lat, psname=psname, cat=cat
+pro mvn_swe_fovplot, dat, bad=ondx, date=date, crange=crange, yrange=yrange, map=map, $
+                     result=result, lon=lon, lat=lat, psname=psname, cat=cat
 
   @mvn_swe_com
 
@@ -62,6 +64,7 @@ pro mvn_swe_fovplot, dat, bad=ondx, date=date, crange=crange, map=map, result=re
 
   if (size(date,/type) ne 7) then date = ''
   if (n_elements(crange) ge 2) then crange = minmax(crange) else crange = [0.5, 1.5]
+  if (n_elements(yrange) ge 2) then yrange = minmax(yrange) else yrange = [0.0, 1.4]
   if (size(map,/type) ne 7) then map = 'ait'
   if not keyword_set(lon) then lon = 180.
   if not keyword_set(lat) then lat = 0.
@@ -142,7 +145,7 @@ pro mvn_swe_fovplot, dat, bad=ondx, date=date, crange=crange, map=map, result=re
 
   plot,k3d,rgf,xrange=[0,96],/xsty,xticks=6,xminor=4,charsize=1.4, $
        ytitle='Relative Geometric Factor',xtitle='Solid Angle Bin', $
-       psym=4,thick=4,yrange=[0,1.4],/ysty,title='',xmargin=[8,5], $
+       psym=4,thick=4,yrange=yrange,/ysty,title='',xmargin=[8,5], $
        ymargin=[5,5]
   oploterr,k3d,rgf,rms_all,3
 

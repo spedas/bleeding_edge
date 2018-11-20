@@ -1,3 +1,7 @@
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2018-11-02 16:20:38 -0700 (Fri, 02 Nov 2018) $
+; $LastChangedRevision: 26055 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/plot3d_new.pro $
 ;+
 ;NAME:
 ;  PLOT3D_NEW

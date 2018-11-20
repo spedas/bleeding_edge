@@ -103,17 +103,18 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-12-21 09:37:46 -0800 (Thu, 21 Dec 2017) $
-; $LastChangedRevision: 24453 $
+; $LastChangedDate: 2018-11-15 18:20:42 -0800 (Thu, 15 Nov 2018) $
+; $LastChangedRevision: 26129 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/wavpol/twavpol.pro $
 ;-
 pro twavpol,tvarname,prefix = prefix, error=error, freqline = freqline, timeline = timeline,$
-nopfft=nopfft,steplength=steplength, bin_freq=bin_freq
+nopfft=nopfft,steplength=steplength, bin_freq=bin_freq, err_flag = err_flag
 
   error=0
 
   if not keyword_set(bin_freq) then dprint,'By default bin_freq = 3. (frequency averaging)'
   if not keyword_set(bin_freq) then bin_freq = 3 else bin_freq = bin_freq
+  if not keyword_set(err_flag) then err_flag = 0 else err_flag = err_flag
 
   if not keyword_set(tvarname) then begin
     dprint, 'tvarname must be set'
@@ -150,20 +151,24 @@ nopfft=nopfft,steplength=steplength, bin_freq=bin_freq
   endif
 
   wavpol, d.x, d.y[*, 0], d.y[*, 1], d.y[*, 2], timeline, freqline,$
-   powspec, degpol, waveangle, elliptict, helict, pspec3, nopfft=nopfft,steplength=steplength,bin_freq=bin_freq
-
-  store_data, prefix+'_powspec', data = {x:timeline, y:powspec, v:freqline}, dlimits = {spec:1B}
-
-  store_data, prefix+'_degpol', data = {x:timeline, y:degpol, v:freqline}, dlimits = {spec:1B}
-
-  store_data, prefix+'_waveangle', data = {x:timeline, y:waveangle, v:freqline}, dlimits = {spec:1B}
-
-  store_data, prefix+'_elliptict', data = {x:timeline, y:elliptict, v:freqline}, dlimits = {spec:1B}
-
-  store_data, prefix+'_helict', data = {x:timeline, y:helict, v:freqline}, dlimits = {spec:1B}
-
-  store_data, prefix+'_pspec3', data = {x:timeline, y:pspec3, v:freqline}, dlimits = {spec:1B}
-
+   powspec, degpol, waveangle, elliptict, helict, pspec3, nopfft=nopfft,steplength=steplength,bin_freq=bin_freq,err_flag = err_flag
+   if err_flag eq 0 then begin
+    store_data, prefix+'_powspec', data = {x:timeline, y:powspec, v:freqline}, dlimits = {spec:1B}
+  
+    store_data, prefix+'_degpol', data = {x:timeline, y:degpol, v:freqline}, dlimits = {spec:1B}
+  
+    store_data, prefix+'_waveangle', data = {x:timeline, y:waveangle, v:freqline}, dlimits = {spec:1B}
+  
+    store_data, prefix+'_elliptict', data = {x:timeline, y:elliptict, v:freqline}, dlimits = {spec:1B}
+  
+    store_data, prefix+'_helict', data = {x:timeline, y:helict, v:freqline}, dlimits = {spec:1B}
+  
+    store_data, prefix+'_pspec3', data = {x:timeline, y:pspec3, v:freqline}, dlimits = {spec:1B}
+  endif else begin
+    err_flag = err_flag
+    return
+  endelse
+  
   error=1
 
 end

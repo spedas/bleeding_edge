@@ -152,6 +152,10 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['v5_sls_to_wiggle_6'] =   ['2018-10-04/12:24:30', '2018-10-04/12:34:30']
   fm_times['v5_sls_to_wiggle_7'] =   ['2018-10-04/12:34:30', '2018-10-04/12:44:30']
 
+  fm_times['e01_dcp_reset'] =   ['2018-10-05/12:00:00', '2018-10-05/15:00:00']
+
+  fm_times['e01_pre_cruise'] =   ['2018-10-05/00:00:00', '2018-10-31/00:00:00']
+
 
   em_times = orderedhash()
 

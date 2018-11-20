@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-08-09 16:45:12 -0700 (Thu, 09 Aug 2018) $
-; $LastChangedRevision: 25625 $
+; $LastChangedDate: 2018-11-08 17:08:24 -0800 (Thu, 08 Nov 2018) $
+; $LastChangedRevision: 26082 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
 
@@ -221,7 +221,7 @@ function mms_part_getspec_ut::test_energy_limits_fpi
 end
 
 function mms_part_getspec_ut::test_energy_limits_hpca_brst
-  mms_part_getspec, probe=1, trange=['2015-12-15/10:00', '2015-12-15/11:00'], energy=[0, 100], instrument='hpca', data_rate='brst'
+  mms_part_getspec, probe=1, trange=['2016-10-16/17:40:00', '2016-10-16/17:42:00'], energy=[0, 100], instrument='hpca', data_rate='brst'
   get_data, 'mms1_hpca_hplus_phase_space_density_energy', data=d
   assert, total(finite(d.Y[0, 27:*])) eq 0, 'Problem with energy limits for HPCA (brst)'
   return, 1

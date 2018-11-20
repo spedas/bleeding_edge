@@ -66,7 +66,8 @@ pro contour4d,tempdat,   $
 	zrange = zrange, $
 	ylin = ylin, $
 	xlin = xlin, $
-	twt = twt
+	twt = twt, $
+	tof = tof
 
 if size(/type,tempdat) ne 8 or tempdat.valid eq 0 then begin
     print,'Invalid Data'
@@ -81,6 +82,7 @@ mdat = omni4d(tempdat)
 mdat = conv_units(mdat,units)
 nenergy = mdat.nenergy
 nmass = mdat.nmass
+b_ns  = 5.844 							; TOF bins/ns for TOF timing (not sure if this is 5.844 or 5.855 for flight unit) 
 
 if not keyword_set(title) then begin
     title = mdat.project_name+'  '+mdat.data_name+' ' + $
@@ -97,10 +99,17 @@ if keyword_set(mass) then begin
 	if not keyword_set(ylin) then ylog=1 else ylog=0
 	yrange=[.5,max(ydat)+1]
 endif else begin
-	ydat=replicate(1.,mdat.nenergy)#findgen(mdat.nmass)
-        if not keyword_set(ytitle) then ytitle = 'Mass Bin'
-	ylog=0
-	yrange=[0,max(ydat)+1]
+	if keyword_set(tof) then begin
+		ydat=mdat.tof_arr/b_ns 
+        	if not keyword_set(ytitle) then ytitle = 'TOF (ns)'
+		if not keyword_set(ylin) then ylog=1 else ylog=0
+		if ylog then yrange=[3,200] else yrange=[0,200]
+	endif else begin
+		ydat=replicate(1.,mdat.nenergy)#findgen(mdat.nmass)
+        	if not keyword_set(ytitle) then ytitle = 'Mass Bin'
+		ylog=0
+		yrange=[0,max(ydat)+1]
+	endelse
 endelse
 	ystyle=1
 	yticks = 0

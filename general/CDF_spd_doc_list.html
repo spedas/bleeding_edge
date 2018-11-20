@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov  1 18:16:34 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Nov 19 18:16:29 2018.<P>
  
 <HR>
  
@@ -630,14 +630,20 @@ load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
          resolve labels implemented as keyword to preserve backwards compatibility 
 
  NOTE:
-   The function uses several mms mms function
+   The function uses several function from mms package, however it can be used 
+   for other missions (and cdf files) as well.
+   The used function spd_cdf_info_to_tplot rely on the order of the variables 
+   in the cdf file. According to ISTP/IACG guidelines &quot;Epoch&quot; should be the 
+   first variable in each CDF data set.
+   https://spdf.gsfc.nasa.gov/istp_guide/variables.html#Epoch    
+   
 
  Author: Davin Larson -  20th century
    Forked from MMS, 04/09/2018, adrozdov
 
  $LastChangedBy: adrozdov $
- $LastChangedDate: 2018-04-16 18:47:45 -0700 (Mon, 16 Apr 2018) $
- $LastChangedRevision: 25058 $
+ $LastChangedDate: 2018-11-15 11:37:22 -0800 (Thu, 15 Nov 2018) $
+ $LastChangedRevision: 26128 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/spd_cdf2tplot.pro $
 </PRE><P>
 <STRONG>(See <A href="CDF/spd_cdf2tplot.pro">general/CDF/spd_cdf2tplot.pro</A>)</STRONG><P>
@@ -659,10 +665,12 @@ Keywords:
 
  Written by Davin Larson
    Forked from MMS, 04/09/2018, adrozdov
+   According to ISTP/IACG guidelines &quot;Epoch&quot; should be the first variable in each CDF data set.
+   https://spdf.gsfc.nasa.gov/istp_guide/variables.html#Epoch
 
- $LastChangedBy: egrimes $
- $LastChangedDate: 2018-07-30 16:29:49 -0700 (Mon, 30 Jul 2018) $
- $LastChangedRevision: 25526 $
+ $LastChangedBy: adrozdov $
+ $LastChangedDate: 2018-11-15 11:37:22 -0800 (Thu, 15 Nov 2018) $
+ $LastChangedRevision: 26128 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/spd_cdf_info_to_tplot.pro $
 </PRE><P>
 <STRONG>(See <A href="CDF/spd_cdf_info_to_tplot.pro">general/CDF/spd_cdf_info_to_tplot.pro</A>)</STRONG><P>

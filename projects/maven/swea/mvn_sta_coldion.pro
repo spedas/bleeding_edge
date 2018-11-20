@@ -79,8 +79,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-09-13 14:01:10 -0700 (Thu, 13 Sep 2018) $
-; $LastChangedRevision: 25792 $
+; $LastChangedDate: 2018-11-09 11:42:36 -0800 (Fri, 09 Nov 2018) $
+; $LastChangedRevision: 26100 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -739,16 +739,16 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
       sinclk = sin(Bclk)
 
       result_h[igud].v_mse[0] = result_h[igud].v_mso[0]
-      result_h.v_mse[1] = cosclk*result_h.v_mso[1] - sinclk*result_h.v_mso[2]
-      result_h.v_mse[2] = cosclk*result_h.v_mso[2] + sinclk*result_h.v_mso[1]
+      result_h.v_mse[1] = cosclk*result_h.v_mso[1] + sinclk*result_h.v_mso[2]
+      result_h.v_mse[2] = cosclk*result_h.v_mso[2] - sinclk*result_h.v_mso[1]
 
       result_o1[igud].v_mse[0] = result_o1[igud].v_mso[0]
-      result_o1.v_mse[1] = cosclk*result_o1.v_mso[1] - sinclk*result_o1.v_mso[2]
-      result_o1.v_mse[2] = cosclk*result_o1.v_mso[2] + sinclk*result_o1.v_mso[1]
+      result_o1.v_mse[1] = cosclk*result_o1.v_mso[1] + sinclk*result_o1.v_mso[2]
+      result_o1.v_mse[2] = cosclk*result_o1.v_mso[2] - sinclk*result_o1.v_mso[1]
 
       result_o2[igud].v_mse[0] = result_o2[igud].v_mso[0]
-      result_o2.v_mse[1] = cosclk*result_o2.v_mso[1] - sinclk*result_o2.v_mso[2]
-      result_o2.v_mse[2] = cosclk*result_o2.v_mso[2] + sinclk*result_o2.v_mso[1]
+      result_o2.v_mse[1] = cosclk*result_o2.v_mso[1] + sinclk*result_o2.v_mso[2]
+      result_o2.v_mse[2] = cosclk*result_o2.v_mso[2] - sinclk*result_o2.v_mso[1]
     endif
 
     get_data, 'npsw', data=npsw, index=i
@@ -784,8 +784,8 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
   if (ngud gt 0L) then begin
     result_h[igud].mse[0] = result_h[igud].mso[0]
-    result_h.mse[1] = cosclk*result_h.mso[1] - sinclk*result_h.mso[2]
-    result_h.mse[2] = cosclk*result_h.mso[2] + sinclk*result_h.mso[1]
+    result_h.mse[1] = cosclk*result_h.mso[1] + sinclk*result_h.mso[2]
+    result_h.mse[2] = cosclk*result_h.mso[2] - sinclk*result_h.mso[1]
     result_o1.mse = result_h.mse
     result_o2.mse = result_h.mse
   endif

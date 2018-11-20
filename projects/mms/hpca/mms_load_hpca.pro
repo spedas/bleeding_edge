@@ -81,8 +81,8 @@
 ; 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-10-31 12:55:04 -0700 (Wed, 31 Oct 2018) $
-;$LastChangedRevision: 26036 $
+;$LastChangedDate: 2018-11-19 16:33:20 -0800 (Mon, 19 Nov 2018) $
+;$LastChangedRevision: 26157 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_load_hpca.pro $
 ;-
 
@@ -132,13 +132,10 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
             datatype='ion'
         endif
     endelse
-    if ~undefined(center_measurement) && ~undefined(varformat) && varformat ne '*' then begin
-      dprint, dlevel = 0, 'Error, cannot specify both the varformat keyword and center measurement keyword in the same call (measurements won''t be centered).'
-      return
-    endif
+
     if ~undefined(varformat) && (varformat[0] ne '*') then begin
-      if is_array(varformat) then varformat = [varformat, '*_ion_energy', '*_start_azimuth'] $
-        else varformat = varformat + ' *_ion_energy *_start_azimuth'
+      if is_array(varformat) then varformat = [varformat, '*_ion_energy', '*_start_azimuth', 'Epoch*'] $
+        else varformat = varformat + ' *_ion_energy *_start_azimuth Epoch*'
     endif
     if ~undefined(varformat) && ~undefined(get_support_data) then undefine, get_support_data
     
@@ -156,7 +153,7 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
         stop
       endif
     endif
-    
+
     mms_load_data, trange = tr, probes = probes, level = level, instrument = 'hpca', $
         data_rate = data_rate, local_data_dir = local_data_dir, source = source, $
         datatype = datatype, get_support_data = get_support_data, varformat = varformat, $

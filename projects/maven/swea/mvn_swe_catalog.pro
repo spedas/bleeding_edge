@@ -17,9 +17,9 @@
 ;       REVISION:      Look for L2 files with this revision number.
 ;                      Default is to look for the latest revision.
 ;
-;       CTIME:         Look for L2 files created after this time.
+;       MTIME:         Look for L2 files modified after this time.
 ;                      Default is to look for all files regardless of
-;                      creation time.
+;                      modification time.
 ;
 ;       RESULT:        Named variable to hold the result structure
 ;                      containing all valid file names organized by
@@ -45,14 +45,14 @@
 ;                      This will force immediate delivery to the SDC.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-07-31 10:55:09 -0700 (Tue, 31 Jul 2018) $
-; $LastChangedRevision: 25529 $
+; $LastChangedDate: 2018-11-11 12:44:19 -0800 (Sun, 11 Nov 2018) $
+; $LastChangedRevision: 26108 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_catalog.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
 ;FILE: mvn_swe_catalog.pro
 ;-
-pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat, $
+pro mvn_swe_catalog, version=version, revision=revision, mtime=mtime, result=dat, $
                      verbose=verbose, touch=touch, trange=trange, pds=pds, $
                      dropbox=dropbox
 
@@ -61,14 +61,14 @@ pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat
   if (size(version,/type) eq 0) then ver = '??' else ver = string(version, format='(i2.2)')
   if (size(revision,/type) eq 0) then rev = '??' else rev = string(revision, format='(i2.2)')
   if (size(verbose,/type) eq 0) then blab = 1 else blab = keyword_set(verbose)
-  if (size(ctime,/type) eq 0) then ctime = 0D else ctime = time_double(ctime)
+  if (size(mtime,/type) eq 0) then mtime = 0D else mtime = time_double(mtime)
   tflg = keyword_set(touch)
   dflg = keyword_set(dropbox)
   pflg = keyword_set(pds)
   
   if (tflg or dflg) then begin
-    if (~pflg and (ctime eq 0D)) then begin
-      print,'TOUCH or DROPBOX is set, but CTIME or PDS is not set!'
+    if (~pflg and (mtime eq 0D)) then begin
+      print,'TOUCH or DROPBOX is set, but MTIME or PDS is not set!'
       print,'This could trigger a massive file transfer to the SDC!'
     endif else begin
       if (pflg) then begin
@@ -76,7 +76,7 @@ pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat
         for i=min(pds),max(pds) do pmsg += string(i)
         print,'Transfer all SWEA L2 files for PDS release(s): ',strcompress(pmsg)
       endif
-      if (ctime gt 0D) then print,'Transfer SWEA L2 files if created after ',time_string(ctime[0])
+      if (mtime gt 0D) then print,'Transfer SWEA L2 files if created after ',time_string(mtime[0])
     endelse
     yn = 'N'
     read, yn, prompt='Are you sure (y|n)? ', format='(a1)'
@@ -167,7 +167,7 @@ pro mvn_swe_catalog, version=version, revision=revision, ctime=ctime, result=dat
         files = file_retrieve(fname,/no_server,last_version=last,trange=[t1,t2])
         chksum = file_dirname(files) + '/' + file_basename(files,'.cdf') + '.md5'
         finfo = file_info(files)
-        valid = where((finfo.exists and (finfo.ctime ge ctime)), nvalid)
+        valid = where((finfo.exists and (finfo.mtime ge mtime)), nvalid)
         if (nvalid gt 0) then begin
           yyyy = strmid(files[valid],19,4,/reverse)
           mm = strmid(files[valid],15,2,/reverse)

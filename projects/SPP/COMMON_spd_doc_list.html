@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov  1 18:16:34 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Nov 19 18:16:29 2018.<P>
  
 <HR>
  
@@ -23,7 +23,9 @@ This page was created by the IDL library routine
 <LI><A HREF="#CDF_TOOLS__DEFINE[2]">CDF_TOOLS__DEFINE[2]</A>
 <LI><A HREF="#DYNAMICARRAY__DEFINE">DYNAMICARRAY__DEFINE</A>
 <LI><A HREF="#SPP_FILE_RETRIEVE">SPP_FILE_RETRIEVE</A>
-<LI><A HREF="#SPP_GEN_APDAT__DEFINE">SPP_GEN_APDAT__DEFINE</A>
+<LI><A HREF="#SPP_GEN_APDAT__DEFINE[1]">SPP_GEN_APDAT__DEFINE[1]</A>
+<LI><A HREF="#SPP_GEN_APDAT__DEFINE[2]">SPP_GEN_APDAT__DEFINE[2]</A>
+<br>Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 <LI><A HREF="#SPP_PTP_RECORDER">SPP_PTP_RECORDER</A>
 <br>Widget tool that opens a socket and records streaming data from a server (host) and can save it to a file
 <LI><A HREF="#SPP_SPC_MET_TO_UNIXTIME">SPP_SPC_MET_TO_UNIXTIME</A>
@@ -40,8 +42,8 @@ This page was created by the IDL library routine
   cdf_tools
   This basic object is the entry point for reading and writing cdf files
  $LastChangedBy: davin-mac $
- $LastChangedDate: 2018-11-01 15:52:23 -0700 (Thu, 01 Nov 2018) $
- $LastChangedRevision: 26044 $
+ $LastChangedDate: 2018-11-08 07:58:40 -0800 (Thu, 08 Nov 2018) $
+ $LastChangedRevision: 26068 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/cdf_tools__define.pro $
  
  Written by Davin Larson October 2018
@@ -112,7 +114,7 @@ This page was created by the IDL library routine
 <A NAME="SPP_FILE_RETRIEVE">
 <H2>SPP_FILE_RETRIEVE</H2></A>
 <A HREF="#DYNAMICARRAY__DEFINE">[Previous Routine]</A>
-<A HREF="#SPP_GEN_APDAT__DEFINE">[Next Routine]</A>
+<A HREF="#SPP_GEN_APDAT__DEFINE[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Function:  files = spp_file_retrieve(PATHNAME)
@@ -147,10 +149,10 @@ Keywords:  (All are optional - none are recommended)
 <STRONG>(See <A href="COMMON/spp_file_retrieve.pro">projects/SPP/COMMON/spp_file_retrieve.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPP_GEN_APDAT__DEFINE">
-<H2>SPP_GEN_APDAT__DEFINE</H2></A>
+<A NAME="SPP_GEN_APDAT__DEFINE[1]">
+<H2>SPP_GEN_APDAT__DEFINE[1]</H2></A>
 <A HREF="#SPP_FILE_RETRIEVE">[Previous Routine]</A>
-<A HREF="#SPP_PTP_RECORDER">[Next Routine]</A>
+<A HREF="#SPP_GEN_APDAT__DEFINE[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
   SPP_GEN_APDAT
@@ -159,9 +161,28 @@ Keywords:  (All are optional - none are recommended)
 <STRONG>(See <A href="COMMON/spp_gen_apdat__define.pro">projects/SPP/COMMON/spp_gen_apdat__define.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPP_GEN_APDAT__DEFINE[2]">
+<H2>SPP_GEN_APDAT__DEFINE[2]</H2></A>
+<A HREF="#SPP_GEN_APDAT__DEFINE[1]">[Previous Routine]</A>
+<A HREF="#SPP_PTP_RECORDER">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME: MVN_SEP_SW_VERSION
+Function: mvn_spice_kernels(name)
+PURPOSE:
+ Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
+Author: Davin Larson  - January 2014
+ $LastChangedBy: phyllisw2 $
+ $LastChangedDate: 2018-11-16 11:50:38 -0800 (Fri, 16 Nov 2018) $
+ $LastChangedRevision: 26137 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
+</PRE><P>
+<STRONG>(See <A href="COMMON/spp_gen_apdat__define.pro">projects/SPP/COMMON/spp_gen_apdat__define.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPP_PTP_RECORDER">
 <H2>SPP_PTP_RECORDER</H2></A>
-<A HREF="#SPP_GEN_APDAT__DEFINE">[Previous Routine]</A>
+<A HREF="#SPP_GEN_APDAT__DEFINE[2]">[Previous Routine]</A>
 <A HREF="#SPP_SPC_MET_TO_UNIXTIME">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

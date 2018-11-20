@@ -12,8 +12,8 @@
 ;   mms_isee_3d_crib.pro - for examples of calling isee_3d directly without the wrapper
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-06-26 16:46:32 -0700 (Tue, 26 Jun 2018) $
-;$LastChangedRevision: 25403 $
+;$LastChangedDate: 2018-11-06 15:31:20 -0800 (Tue, 06 Nov 2018) $
+;$LastChangedRevision: 26059 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_isee_3d_crib_basic.pro $
 ;-
 
@@ -27,14 +27,14 @@ del_data,'*'
 ;setup
 probe = '1'
 species = 'i'
-data_rate = 'brst'
+data_rate = 'fast'
 level = 'l2'
 
 ;use short time range for data due to high resolution (saves time/memory)
 ;time range must include at least three sample times
 ;use longer time range for support data to ensure we have enough to work with
-timespan, '2015-10-20/05:56:30', 4, /sec
-;timespan, '2015-11-18/02:10:00', 10, /sec
+;timespan, '2015-10-20/05:56:30', 4, /sec
+timespan, '2015-11-18/02:10:00', 10, /sec
 
 mms_part_isee3d, probe=probe, species=species, data_rate=data_rate, level=level
 stop

@@ -8,8 +8,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-09-18 11:30:06 -0700 (Mon, 18 Sep 2017) $
-;$LastChangedRevision: 23993 $
+;$LastChangedDate: 2018-11-15 09:45:38 -0800 (Thu, 15 Nov 2018) $
+;$LastChangedRevision: 26125 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_fpi_fix_metadata.pro $
 ;-
 
@@ -197,6 +197,16 @@ pro mms_fpi_fix_metadata, tplotnames, prefix = prefix, instrument = instrument, 
             options, /def, tplot_name, 'labels', 'Ne, electrons'
           end
           prefix[sc_idx] + '_dis_numberdensity_'+data_rate+suffix: begin
+            options, /def, tplot_name, 'colors', 4
+            options, /def, tplot_name, 'ytitle', strupcase(prefix[sc_idx]) + '!CDIS'
+            options, /def, tplot_name, 'labels', 'Ni, ions'
+          end
+          prefix[sc_idx] + '_des_pseudo_numberdensity_'+data_rate+suffix: begin
+            options, /def, tplot_name, 'colors', 2
+            options, /def, tplot_name, 'ytitle', strupcase(prefix[sc_idx]) + '!CDES'
+            options, /def, tplot_name, 'labels', 'Ne, electrons'
+          end
+          prefix[sc_idx] + '_dis_pseudo_numberdensity_'+data_rate+suffix: begin
             options, /def, tplot_name, 'colors', 4
             options, /def, tplot_name, 'ytitle', strupcase(prefix[sc_idx]) + '!CDIS'
             options, /def, tplot_name, 'labels', 'Ni, ions'

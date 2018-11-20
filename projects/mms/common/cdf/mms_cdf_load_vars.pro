@@ -136,8 +136,8 @@
 ;   Data is returned in pointer variables. Calling routine is responsible for freeing up heap memory - otherwise a memory leak will occur.
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-03-01 13:05:18 -0800 (Wed, 01 Mar 2017) $
-; $LastChangedRevision: 22882 $
+; $LastChangedDate: 2018-11-19 16:12:09 -0800 (Mon, 19 Nov 2018) $
+; $LastChangedRevision: 26155 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/cdf/mms_cdf_load_vars.pro $
 ;
 ;-
@@ -151,7 +151,7 @@ function mms_cdf_load_vars,files,varnames=vars,varformat=vars_fmt,info=info,verb
 vb = keyword_set(verbose) ? verbose : 0
 vars=''
 info = 0
-dprint,dlevel=4,verbose=verbose,'$Id: mms_cdf_load_vars.pro 22882 2017-03-01 21:05:18Z egrimes $'
+dprint,dlevel=4,verbose=verbose,'$Id: mms_cdf_load_vars.pro 26155 2018-11-20 00:12:09Z egrimes $'
 
 on_ioerror, ferr
 for fi=0,n_elements(files)-1 do begin
@@ -195,7 +195,7 @@ for fi=0,n_elements(files)-1 do begin
             depnames = ''
             for i=0,n_elements(vars)-1 do begin
                 vnum = where(vars[i] eq info.vars.name,nvnum)
-                if nvnum eq 0 then message,'This should never happen, report error to D. Larson: davin@ssl.berkeley.edu'
+                if nvnum eq 0 then message,'This should never happen, report error to egrimes@igpp.ucla.edu'
                 vi = info.vars[vnum]
                 depnames = [depnames, cdf_var_atts(id,vi.num,zvar=vi.is_zvar,'DEPEND_TIME',default='')]   ;bpif vars[i] eq 'tha_fgl'
                 depnames = [depnames, cdf_var_atts(id,vi.num,zvar=vi.is_zvar,'DEPEND_0',default='')]

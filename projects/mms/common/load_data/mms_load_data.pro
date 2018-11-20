@@ -94,8 +94,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
-;$LastChangedRevision: 25588 $
+;$LastChangedDate: 2018-11-19 16:32:25 -0800 (Mon, 19 Nov 2018) $
+;$LastChangedRevision: 26156 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 
@@ -151,8 +151,8 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
     
     if ~undefined(center_measurement) then begin
         dprint, dlevel = 0, 'Centering the measurement to the middle of the measurement interval'
-        get_support_data = 1
-        undefine, varformat
+     ;   get_support_data = 1
+     ;   undefine, varformat
     endif
         
     if (~undefined(trange) && n_elements(trange) eq 2) && (time_double(trange[1]) lt time_double(trange[0])) then begin

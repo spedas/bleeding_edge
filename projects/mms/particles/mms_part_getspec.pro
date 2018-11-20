@@ -52,8 +52,8 @@
 ;         Spacecraft photoelectrons are corrected in moments_3d
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-09-25 12:35:45 -0700 (Tue, 25 Sep 2018) $
-;$LastChangedRevision: 25862 $
+;$LastChangedDate: 2018-11-19 15:51:32 -0800 (Mon, 19 Nov 2018) $
+;$LastChangedRevision: 26154 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -100,7 +100,9 @@ pro mms_part_getspec, probes=probes, $
                       mag_data_rate=mag_data_rate, $
                       scpot_data_rate=scpot_data_rate, $
                       
-                      photoelectron_corrections=photoelectron_corrections, $
+                      photoelectron_corrections=photoelectron_corrections, $ ; Apply both internal photoelectron corrections (Dan Gershman's model) and correct for S/C potential (should not be used with either of the bottom two)
+                      internal_photoelectron_corrections=internal_photoelectron_corrections, $ ; Only apply Dan Gershman's model (i.e., don't correct for the S/C potential in moments_3d)
+                      correct_sc_potential=correct_sc_potential, $ ; only correect for the S/C potential (disables Dan Gershman's model)
                       
                       cdf_version=cdf_version, $
                       latest_version=latest_version, $
@@ -165,7 +167,7 @@ pro mms_part_getspec, probes=probes, $
     
     ; turn on photoelectron corrections if the user is requesting DES moments, to match the nominal FPI L2 moment calculations 
     if instrument eq 'fpi' && species eq 'e' && array_contains(outputs, 'moments') then begin
-      if undefined(photoelectron_corrections) then photoelectron_corrections = 1b
+      if undefined(photoelectron_corrections) && undefined(internal_photoelectron_corrections) && undefined(correct_sc_potential) then photoelectron_corrections = 1b
     endif
     
     ; prevents concatenation from previous calls
@@ -177,44 +179,53 @@ pro mms_part_getspec, probes=probes, $
     support_trange = trange + [-60,60]
     
     for probe_idx = 0, n_elements(probes)-1 do begin
-        if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_fgm_b_gse_'+mag_data_rate+'_l2_bvec'+mag_suffix, trange[0], trange[1]) or keyword_set(forceload) then append_array, fgm_to_load, probes[probe_idx]
-        if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_defeph_pos', trange[0], trange[1]) or keyword_set(forceload) then append_array, state_to_load, probes[probe_idx]
-        if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_edp_scpot_'+scpot_data_rate+'_l2', trange[0], trange[1]) or keyword_set(forceload) then append_array, scpot_to_load, probes[probe_idx]
+        if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_fgm_b_gse_'+mag_data_rate+'_l2_bvec'+mag_suffix, trange[0], trange[1]) or keyword_set(forceload) then append_array, fgm_to_load, probes[probe_idx] else time_clip, 'mms'+strcompress(string(probes[probe_idx]), /rem)+'_fgm_b_gse_'+mag_data_rate+'_l2_bvec'+mag_suffix, trange[0], trange[1], newname='mms'+strcompress(string(probes[probe_idx]), /rem)+'_fgm_b_gse_'+mag_data_rate+'_l2_bvec'+mag_suffix
+        if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_defeph_pos', trange[0], trange[1]) or keyword_set(forceload) then append_array, state_to_load, probes[probe_idx] else time_clip, 'mms'+strcompress(string(probes[probe_idx]), /rem)+'_defeph_pos', trange[0], trange[1], newname='mms'+strcompress(string(probes[probe_idx]), /rem)+'_defeph_pos'
+        if ~spd_data_exists('mms'+strcompress(string(probes[probe_idx]), /rem)+'_edp_scpot_'+scpot_data_rate+'_l2', trange[0], trange[1]) or keyword_set(forceload) then append_array, scpot_to_load, probes[probe_idx] else time_clip, 'mms'+strcompress(string(probes[probe_idx]), /rem)+'_edp_scpot_'+scpot_data_rate+'_l2', trange[0], trange[1], newname='mms'+strcompress(string(probes[probe_idx]), /rem)+'_edp_scpot_'+scpot_data_rate+'_l2'
     endfor
 
     ; load state data (needed for coordinate transforms and field aligned coordinates)
-    if defined(state_to_load) && undefined(pos_name_user) then mms_load_state, probes=state_to_load, trange=support_trange, spdf=spdf
+    if defined(state_to_load) && undefined(pos_name_user) then mms_load_mec, probes=state_to_load, trange=support_trange, spdf=spdf, varformat='*_mec_v_gse* *_mec_r_gse*'
 
     ; load magnetic field data
-    if defined(fgm_to_load) && undefined(mag_name_user) then mms_load_fgm, probes=fgm_to_load, trange=support_trange, level='l2', suffix=mag_suffix, spdf=spdf, data_rate=mag_data_rate, /time_clip
+    if defined(fgm_to_load) && undefined(mag_name_user) then mms_load_fgm, probes=fgm_to_load, trange=support_trange, level='l2', suffix=mag_suffix, spdf=spdf, data_rate=mag_data_rate, /time_clip, varformat='*_fgm_b_gse_*'
 
-    if defined(scpot_to_load) && array_contains(outputs, 'moments') then mms_load_edp, probes=scpot_to_load, trange=support_trange, level='l2', spdf=spdf, data_rate=scpot_data_rate, datatype='scpot'
+    if defined(scpot_to_load) && array_contains(outputs, 'moments') then mms_load_edp, probes=scpot_to_load, trange=support_trange, level='l2', spdf=spdf, data_rate=scpot_data_rate, datatype='scpot', varformat='*_edp_scpot_*'
 
     if instrument eq 'fpi' then begin
         mms_load_fpi, probes=probes, trange=trange, data_rate=data_rate, level=level, $
             datatype='d'+species+'s-dist', /time_clip, center_measurement=center_measurement, $
             cdf_version=cdf_version, latest_version=latest_version, major_version=major_version, $
-            min_version=min_version, spdf=spdf
+            min_version=min_version, spdf=spdf, varformat='*_d'+species+'s_dist_* *s_disterr_* *_des_startdelphi_count_* *_des_steptable_parity*'
             
         ; load the bulk velocity if the user requested to subtract it
         if keyword_set(subtract_bulk) && undefined(vel_name_user) then mms_load_fpi, probes=probes, trange=trange, data_rate=data_rate, level=level, $
-            datatype='d'+species+'s-moms', spdf=spdf
+            datatype='d'+species+'s-moms', spdf=spdf, varformat='*_d'+species+'s_bulkv_gse_* *s_bulkv_spintone_gse_*'
     endif else if instrument eq 'hpca' then begin
         mms_load_hpca, probes=probes, trange=trange, data_rate=data_rate, level=level, $
             datatype='ion', center_measurement=center_measurement,  $
             cdf_version=cdf_version, latest_version=latest_version, major_version=major_version, $
-            min_version=min_version, spdf=spdf, /time_clip
+            min_version=min_version, spdf=spdf, /time_clip, varformat='*_hpca_'+species+'_phase_space_density'
         
         ; load the bulk velocity if the user requested to subtract it
         if keyword_set(subtract_bulk) && undefined(vel_name_user) then mms_load_hpca, probes=probes, trange=trange, $
-            data_rate=data_rate, level=level, datatype='moments', spdf=spdf
+            data_rate=data_rate, level=level, datatype='moments', spdf=spdf, varformat='*_hpca_'+species+'_ion_bulk_velocity'
     endif
     
     for probe_idx = 0, n_elements(probes)-1 do begin
         if undefined(mag_name_user) then bname = 'mms'+probes[probe_idx]+'_fgm_b_gse_'+mag_data_rate+'_l2_bvec'+mag_suffix else bname = mag_name_user
-        if undefined(pos_name_user) then pos_name = 'mms'+probes[probe_idx]+ '_defeph_pos' else pos_name = pos_name_user
-        if keyword_set(photoelectron_corrections) then scpot_variable = 'mms'+probes[probe_idx]+'_edp_scpot_'+scpot_data_rate+'_l2'
-        
+        if undefined(pos_name_user) then pos_name = 'mms'+probes[probe_idx]+'_mec_r_gse' else pos_name = pos_name_user
+
+        scpot_variable = 'mms'+probes[probe_idx]+'_edp_scpot_'+scpot_data_rate+'_l2'
+
+        ;;;;;;;;;;;;; kludge zone;;;;;;;;;;;
+;        mms_load_aspoc, trange=trange
+;        tinterpol, 'mms'+probes[probe_idx]+'_edp_scpot_fast_l2', 'mms'+probes[probe_idx]+'_aspoc_ionc_l2'
+;        calc, '"scpot_adjusted"="mms'+probes[probe_idx]+'_edp_scpot_fast_l2_interp"+"mms'+probes[probe_idx]+'_aspoc_ionc_l2"'
+;        scpot_variable = 'scpot_adjusted'
+;        ;;;;;;;;;;;;; end kludge zone ;;;;;;;;;;;;
+
+
         if instrument eq 'fpi' then begin
             name = 'mms'+probes[probe_idx]+'_d'+species+'s_dist_'+data_rate
             if undefined(vel_name_user) then vel_name = 'mms'+probes[probe_idx]+'_d'+species+'s_bulkv_gse_'+data_rate else vel_name = vel_name_user
@@ -232,7 +243,8 @@ pro mms_part_getspec, probes=probes, $
             tplotnames=tplotnames_thisprobe, subtract_error=subtract_error, $
             error_variable=error_variable, instrument=instrument, species=species, $
             sc_pot_name=scpot_variable, data_rate=data_rate, correct_photoelectrons=photoelectron_corrections, $
-            _extra=ex
+            internal_photoelectron_corrections=internal_photoelectron_corrections, $
+            correct_sc_potential=correct_sc_potential, _extra=ex
 
         if undefined(tplotnames_thisprobe) then continue ; nothing created by mms_part_products
         append_array, tplotnames, tplotnames_thisprobe
