@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-11-08 17:08:24 -0800 (Thu, 08 Nov 2018) $
-; $LastChangedRevision: 26082 $
+; $LastChangedDate: 2018-11-20 09:09:24 -0800 (Tue, 20 Nov 2018) $
+; $LastChangedRevision: 26163 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_part_getspec_ut__define.pro $
 ;-
 
@@ -61,7 +61,7 @@ end
 ; file (converted to eflux by multiplying by energy)
 function mms_part_getspec_ut::test_hpca_eflux_vs_pgs
   mms_part_getspec, suffix='_full', instrument='hpca', trange=['2017-08-12/23', '2017-08-12/24'], output=['energy', 'pa', 'gyro', 'phi', 'theta'], probe=3
-  mms_load_hpca, trange=['2017-08-12/23', '2017-08-12/24'], /time_clip, probe=3
+  mms_load_hpca, trange=['2017-08-12/23', '2017-08-12/24'], /time_clip, probe=3, datatype='ion'
   mms_hpca_calc_anodes, fov=[0, 360], probe=3
   mms_hpca_spin_sum, probe='3', /avg
   get_data, 'mms3_hpca_hplus_flux_elev_0-360_spin', data=d, dlimits=dl

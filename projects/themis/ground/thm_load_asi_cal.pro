@@ -34,9 +34,9 @@
 ; No further action will be taken.
 ;
 ;Written by: Harald Frey,   Jan 26 2007
-;   $LastChangedBy: nikos $
-;   $LastChangedDate: 2018-11-08 12:52:45 -0800 (Thu, 08 Nov 2018) $
-;   $LastChangedRevision: 26073 $
+;   $LastChangedBy: hfrey $
+;   $LastChangedDate: 2018-11-20 12:23:55 -0800 (Tue, 20 Nov 2018) $
+;   $LastChangedRevision: 26165 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_asi_cal.pro $
 ;-
 ;
@@ -54,7 +54,10 @@ vstats=strsplit(vstats,' ',/extract)
 if arg_present(vstats) then return
 
 	; set begin and end of trange
-if keyword_set(trange) then time=trange[0] else time=(timerange('1970-01-01/00:00:00'))[0]
+if keyword_set(trange) then begin
+   if (size(trange[0],/type) eq 7) then time=time_double(trange[0])
+   if (size(trange[0],/type) eq 5) then time=trange[0] 
+   endif else time=(timerange('2000-01-01/00:00:00'))[0]
 
 	; get time with cursor
 if keyword_set(cursor) then begin   ; Use the cursor to determine what asi's to load.

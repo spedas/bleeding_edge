@@ -1,21 +1,3 @@
-  <item
-      name   = "dfb_wav_sample_rate"
-      type   = "double"
-      value  = "18750. / (2. ** dfb_wav_tap)"
-      />
-      
-  <item
-      name   = "dfb_wav_time_step"
-      type   = "double"
-      value  = "1. / dfb_wav_sample_rate"
-      />
-
-  <item
-      name   = "dfb_wav_time_series_times"
-      type   = "double"
-      value  = "r8gen(0, dfb_wav_time_step, wf_pkt_data_elements, 1, 1, 1, 0)"
-      />
-
   <cdf_var
       name   = "dfb_compression"
       type   = "integer"

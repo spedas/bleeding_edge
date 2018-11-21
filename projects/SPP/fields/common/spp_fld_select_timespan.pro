@@ -156,6 +156,7 @@ function spp_fld_select_timespan_define_presets, fm_or_em
 
   fm_times['e01_pre_cruise'] =   ['2018-10-05/00:00:00', '2018-10-31/00:00:00']
 
+  fm_times['e01_mom_dump'] =   ['2018-11-06/08:30:00', '2018-11-06/08:35:00']
 
   em_times = orderedhash()
 

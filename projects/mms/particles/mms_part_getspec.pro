@@ -52,8 +52,8 @@
 ;         Spacecraft photoelectrons are corrected in moments_3d
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-11-19 15:51:32 -0800 (Mon, 19 Nov 2018) $
-;$LastChangedRevision: 26154 $
+;$LastChangedDate: 2018-11-20 08:16:25 -0800 (Tue, 20 Nov 2018) $
+;$LastChangedRevision: 26162 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -103,6 +103,7 @@ pro mms_part_getspec, probes=probes, $
                       photoelectron_corrections=photoelectron_corrections, $ ; Apply both internal photoelectron corrections (Dan Gershman's model) and correct for S/C potential (should not be used with either of the bottom two)
                       internal_photoelectron_corrections=internal_photoelectron_corrections, $ ; Only apply Dan Gershman's model (i.e., don't correct for the S/C potential in moments_3d)
                       correct_sc_potential=correct_sc_potential, $ ; only correect for the S/C potential (disables Dan Gershman's model)
+                      with_aspoc=with_aspoc, $
                       
                       cdf_version=cdf_version, $
                       latest_version=latest_version, $
@@ -196,7 +197,7 @@ pro mms_part_getspec, probes=probes, $
         mms_load_fpi, probes=probes, trange=trange, data_rate=data_rate, level=level, $
             datatype='d'+species+'s-dist', /time_clip, center_measurement=center_measurement, $
             cdf_version=cdf_version, latest_version=latest_version, major_version=major_version, $
-            min_version=min_version, spdf=spdf, varformat='*_d'+species+'s_dist_* *s_disterr_* *_des_startdelphi_count_* *_des_steptable_parity*'
+            min_version=min_version, spdf=spdf, varformat='*_d'+species+'s_dist_* *s_disterr_* *_d?s_startdelphi_count_* *_d?s_steptable_parity*'
             
         ; load the bulk velocity if the user requested to subtract it
         if keyword_set(subtract_bulk) && undefined(vel_name_user) then mms_load_fpi, probes=probes, trange=trange, data_rate=data_rate, level=level, $
@@ -205,7 +206,7 @@ pro mms_part_getspec, probes=probes, $
         mms_load_hpca, probes=probes, trange=trange, data_rate=data_rate, level=level, $
             datatype='ion', center_measurement=center_measurement,  $
             cdf_version=cdf_version, latest_version=latest_version, major_version=major_version, $
-            min_version=min_version, spdf=spdf, /time_clip, varformat='*_hpca_'+species+'_phase_space_density'
+            min_version=min_version, spdf=spdf, /time_clip, varformat='*_hpca_'+species+'_phase_space_density *_hpca_azimuth_angles_per_ev_degrees'
         
         ; load the bulk velocity if the user requested to subtract it
         if keyword_set(subtract_bulk) && undefined(vel_name_user) then mms_load_hpca, probes=probes, trange=trange, $
@@ -219,10 +220,12 @@ pro mms_part_getspec, probes=probes, $
         scpot_variable = 'mms'+probes[probe_idx]+'_edp_scpot_'+scpot_data_rate+'_l2'
 
         ;;;;;;;;;;;;; kludge zone;;;;;;;;;;;
-;        mms_load_aspoc, trange=trange
-;        tinterpol, 'mms'+probes[probe_idx]+'_edp_scpot_fast_l2', 'mms'+probes[probe_idx]+'_aspoc_ionc_l2'
-;        calc, '"scpot_adjusted"="mms'+probes[probe_idx]+'_edp_scpot_fast_l2_interp"+"mms'+probes[probe_idx]+'_aspoc_ionc_l2"'
-;        scpot_variable = 'scpot_adjusted'
+        if keyword_set(with_aspoc) then begin
+          mms_load_aspoc, trange=trange
+          tinterpol, 'mms'+probes[probe_idx]+'_edp_scpot_'+scpot_data_rate+'_l2', 'mms'+probes[probe_idx]+'_aspoc_ionc_l2'
+          calc, '"scpot_adjusted"="mms'+probes[probe_idx]+'_edp_scpot_'+scpot_data_rate+'_l2_interp"+"mms'+probes[probe_idx]+'_aspoc_ionc_l2"'
+          scpot_variable = 'scpot_adjusted'
+        endif
 ;        ;;;;;;;;;;;;; end kludge zone ;;;;;;;;;;;;
 
 

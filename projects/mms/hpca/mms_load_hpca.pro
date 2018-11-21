@@ -81,8 +81,8 @@
 ; 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-11-19 16:33:20 -0800 (Mon, 19 Nov 2018) $
-;$LastChangedRevision: 26157 $
+;$LastChangedDate: 2018-11-20 07:55:28 -0800 (Tue, 20 Nov 2018) $
+;$LastChangedRevision: 26159 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_load_hpca.pro $
 ;-
 
@@ -178,6 +178,7 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
         append_array, vars_to_check, flux_vars_to_check
         
         for psd_idx = 0, n_elements(vars_to_check)-1 do begin
+            if vars_to_check[psd_idx] eq '' then continue
             get_data, vars_to_check[psd_idx], data=d, dlimits=psd_dl
             
             str_element, d, 'v2', energy_table, success=success
