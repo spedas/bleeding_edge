@@ -25,8 +25,8 @@
 ;  
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-03 11:28:25 -0700 (Tue, 03 Apr 2018) $
-;$LastChangedRevision: 24982 $
+;$LastChangedDate: 2018-11-21 18:02:57 -0800 (Wed, 21 Nov 2018) $
+;$LastChangedRevision: 26169 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_convert_flux_units.pro $
 ;-
 pro mms_convert_flux_units,dist,units=units,output=output
@@ -56,6 +56,7 @@ if units_out eq 'psd' then units_out = 'df_km'
 ;get mass of species
 case species_lc of
    'i': A=1;H+
+   'proton': A=1;H+
    'hplus': A=1;H+
    'heplus': A=4;He+
    'heplusplus': A=4;He++

@@ -74,8 +74,8 @@
 ;          https://groups.google.com/forum/#!forum/spedas
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
-;$LastChangedRevision: 25588 $
+;$LastChangedDate: 2018-11-21 08:55:24 -0800 (Wed, 21 Nov 2018) $
+;$LastChangedRevision: 26167 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_load_fpi.pro $
 ;-
 
@@ -113,9 +113,14 @@ pro mms_load_fpi, trange = trange_in, probes = probes, datatype = datatype, $
         dprint, dlevel = 0, 'Error, can only center measurements for L2 FPI data.'
         return
     endif
-    if ~undefined(center_measurement) && ~undefined(varformat) && varformat ne '*' then begin
-        dprint, dlevel = 0, 'Error, cannot specify both the varformat keyword and center measurement keyword in the same call (measurements won''t be centered).'
-        return
+;    if ~undefined(center_measurement) && ~undefined(varformat) && varformat ne '*' then begin
+;        dprint, dlevel = 0, 'Error, cannot specify both the varformat keyword and center measurement keyword in the same call (measurements won''t be centered).'
+;        return
+;    endif
+
+    if ~undefined(varformat) && (varformat[0] ne '*') then begin
+      if is_array(varformat) then varformat = [varformat, '*Epoch*'] $
+      else varformat = varformat + ' *Epoch*'
     endif
     
     ; different datatypes for burst mode files
