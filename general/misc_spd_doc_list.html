@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Nov 25 18:16:37 2018.<P>
+<STRONG>Last modified: </STRONG>Mon Nov 26 18:16:34 2018.<P>
  
 <HR>
  
@@ -194,6 +194,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#TPWRSPC[2]">TPWRSPC[2]</A>
 <br>wrapper for pwrspc.pro allowing input of a tplot variable name.
 <LI><A HREF="#TRANGE_STR">TRANGE_STR</A>
+<LI><A HREF="#TRES">TRES</A>
+<br>returns the time resolution of a tplot variable, defined as the
 <LI><A HREF="#TSMOOTH_IN_TIME">TSMOOTH_IN_TIME</A>
 <br>Calls smooth_in_time function on a plot variable
 <LI><A HREF="#AVSIG">AVSIG</A>
@@ -5034,7 +5036,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="TRANGE_STR">
 <H2>TRANGE_STR</H2></A>
 <A HREF="#TPWRSPC[2]">[Previous Routine]</A>
-<A HREF="#TSMOOTH_IN_TIME">[Next Routine]</A>
+<A HREF="#TRES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 FUNCTION:   trange_str,t1,t2
@@ -5047,9 +5049,78 @@ LAST MODIFICATION:	@(#)trange_str.pro	1.10 97/12/22
 <STRONG>(See <A href="misc/trange_str.pro">general/misc/trange_str.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="TRES">
+<H2>TRES</H2></A>
+<A HREF="#TRANGE_STR">[Previous Routine]</A>
+<A HREF="#TSMOOTH_IN_TIME">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+tres
+PURPOSE:
+returns the time resolution of a tplot variable, defined as the
+median value of the differences between time values from the data
+points, e.g. median(d.x[1:*]-d.x). Also will return a measure of how
+useful this value is, e.g. what fraction of the points are within 10%
+of the median value. Can be used for multiple variables.
+CALLING SEQUENCE:
+ tres, tplot_var, delta_t, confidence = confidence, $
+                           closeto_fraction = closeto_fraction
+INPUT:
+ tplot_var = a tplot variable name or number
+OUTPUT:
+ delta_t = the time resolution, a median value. If the data variable
+           does not exist, or does not return a median, then the
+           result is -1
+KEYWORDS:
+ confidence = the fraction of dt values that are close to (within
+              a certain percentage) of the returned value. A bad
+              value of this would make this not a good measure of the
+              time resolution of the full sample, and you may want
+              to work in batches.
+ close_fraction = the fractional value that the values of time
+                    interval sizes need to be close to the median
+                    value to be called 'close'. E.g., values are
+                    considered close to the median if the value is 
+                    greater than 1-close_fraction and less than
+                    1+close_fraction times the median. The default
+                    is 0.01. 
+ tplot_var_out = A set of tplot variable names, that correspond to
+                 the values of delta_t and confidence level if there
+                 are multiple tplot variables input as a globbed
+                 string or array.
+EXAMPLE:
+ For THEMIS ESA data:
+ 
+ timespan, '2010-11-26'
+ thm_load_esa,probe='a',level='l2',datatype='*velocity*gsm'
+ tres, 'tha_pe??_velocity_gsm', delta_t, confidence = c, $
+       tplot_var_out = tplot_var_out
+ For k = 0, n_elements(delta_t)-1 Do print, delta_t[k], c[k], '  ', tplot_var_out[k]
+       97.020038     0.765714  tha_peif_velocity_gsm
+       3.0318751     0.990622  tha_peef_velocity_gsm
+       3.0318747     0.999575  tha_peir_velocity_gsm
+       3.0318747     0.999647  tha_peer_velocity_gsm
+       3.0318732     0.991525  tha_peib_velocity_gsm
+       3.0318732     0.988764  tha_peeb_velocity_gsm
+
+ For most of the datatypes the median value is ok, but the time
+ resolution of the PEIF data varies for different modes, so this 
+ is not a good resolution for that variable.
+
+HISTORY:
+ 2018-11-26, jmm, jimm@ssl.berkeley.edu
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2018-11-26 14:59:03 -0800 (Mon, 26 Nov 2018) $
+ $LastChangedRevision: 26176 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tres.pro $
+</PRE><P>
+<STRONG>(See <A href="misc/tres.pro">general/misc/tres.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TSMOOTH_IN_TIME">
 <H2>TSMOOTH_IN_TIME</H2></A>
-<A HREF="#TRANGE_STR">[Previous Routine]</A>
+<A HREF="#TRES">[Previous Routine]</A>
 <A HREF="#TSUB_AVERAGE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

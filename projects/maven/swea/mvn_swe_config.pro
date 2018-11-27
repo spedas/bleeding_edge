@@ -37,8 +37,8 @@
 ;                   changes in a tplot window (assumed to exist).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-25 16:37:09 -0800 (Sun, 25 Nov 2018) $
-; $LastChangedRevision: 26172 $
+; $LastChangedDate: 2018-11-26 10:04:42 -0800 (Mon, 26 Nov 2018) $
+; $LastChangedRevision: 26173 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -108,18 +108,23 @@ pro mvn_swe_config, list=list, timebar=timebar
   t_mcp = [t_mcp, time_double('2015-12-18/23:39:09')]  ; bias adjustment (2600 -> 2700 V)
   t_mcp = [t_mcp, time_double('2015-12-22/20:01:45')]  ; revert to 2600 V after HV reset
   t_mcp = [t_mcp, time_double('2015-12-30/02:28:57')]  ; back to correct bias (2700 V)
-  t_sup = [t_sup, time_double('2017-04-02/00:00:00')]  ; last suppression calibration
 
 ; SWEA data dropouts resulting from PFDPU processing error
 ;
-;  2016-01-28/03:33:52 - 2016-02-02/17:13:42
-;  2016-02-26/14:03:58 - 2016-03-16/03:30:10
+;  2016-01-28/03:33:52 - 2016-02-02/17:13:42           ; first occurrence
+;  2016-02-26/14:03:58 - 2016-03-16/03:30:10           ; 1-bit patch applied on data restart
+;  2018-09-23/22:10:06 - 2018-10-05/19:10:37           ; following EEPROM load missing patch
+                                                       ; (patch reapplied on data restart)
 
 ; 2016-10-01/00:00                                     ; beginning of EM-2
   t_mcp = [t_mcp, time_double('2016-10-25/21:52:45')]  ; bias adjustment (2700 -> 2750 V)
+  t_sup = [t_sup, time_double('2017-04-02/00:00:00')]  ; last suppression calibration
   t_mcp = [t_mcp, time_double('2017-08-12/07:24:27')]  ; bias adjustment (2750 -> 2800 V)
 
 ; 2018-10-01/00:00                                     ; beginning of EM-3
+
+  t_swp = [t_swp, time_double('2018-08-28/14:02:38')]  ; sweep table 8 upload (32-Hz,  50 eV)
+  t_swp = [t_swp, time_double('2018-11-09/17:57:56')]  ; sweep table 7 upload (32-Hz, 200 eV)
 
   t_mcp = [t_mcp, time_double('2018-11-13/11:18:13')]  ; bias adjustment (2800 -> 2875 V)
 
@@ -145,6 +150,8 @@ pro mvn_swe_config, list=list, timebar=timebar
     print,time_string(t_mcp[5]),' --> MCP bias restore to 2700 V'
     print,time_string(t_mcp[6]),' --> MCP bias adjustment (2700 -> 2750 V)'
     print,time_string(t_mcp[7]),' --> MCP bias adjustment (2750 -> 2800 V)'
+    print,time_string(t_swp[2]),' --> sweep table 8 upload'
+    print,time_string(t_swp[3]),' --> sweep table 7 upload'
     print,time_string(t_mcp[8]),' --> MCP bias adjustment (2800 -> 2875 V)'
   endif
 
