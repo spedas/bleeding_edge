@@ -67,9 +67,9 @@ endif
 ;
 
 sz=size(str)
-stype=sz(n_elements(sz)-2)
+stype=sz[n_elements(sz)-2]
 sz=size(tag)
-dtype=sz(n_elements(sz)-2)
+dtype=sz[n_elements(sz)-2]
 if (stype ne 8) or (dtype ne 7) then begin
   if loud then begin
    if stype ne 8 then help,str
@@ -89,7 +89,7 @@ if nt[0] eq -1 then begin
    if (not keyword_set(top_level)) and keyword_set(recurse) then begin
       for i=0,n_elements(tn)-1 do begin
        sz=size(str[0].(i))
-       dtype=sz(n_elements(sz)-2)
+       dtype=sz[n_elements(sz)-2]
        if dtype eq 8 then $
 		status=tag_exist(str[0].(i),tag,index=index)
         if status eq 1b then return,status

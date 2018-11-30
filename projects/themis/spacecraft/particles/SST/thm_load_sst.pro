@@ -38,8 +38,8 @@
 ; Update removed to not use thm_load_xxx by DEL
 ;
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2018-01-26 12:32:10 -0800 (Fri, 26 Jan 2018) $
-; $LastChangedRevision: 24597 $
+; $LastChangedDate: 2018-11-29 10:02:16 -0800 (Thu, 29 Nov 2018) $
+; $LastChangedRevision: 26182 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/SST/thm_load_sst.pro $
 ;-
 
@@ -187,11 +187,14 @@ pro thm_load_sst_l1,datatype=datatype,vdatatypes=vdatatypes,probe=probe,$
       
       valid : 1 }
       
-    store_data,sc+'_isst_config' +suffix[0],data={x:*cache.isst_config_time,y:*cache.isst_config}
-    store_data,sc+'_esst_config' +suffix[0],data={x:*cache.esst_config_time,y:*cache.esst_config}
+    If(ptr_valid(cache.isst_config_time) && ptr_valid(cache.isst_config)) Then $
+       store_data,sc+'_isst_config' +suffix[0],data={x:*cache.isst_config_time,y:*cache.isst_config}
+    If(ptr_valid(cache.esst_config_time) && ptr_valid(cache.esst_config)) Then $
+       store_data,sc+'_esst_config' +suffix[0],data={x:*cache.esst_config_time,y:*cache.esst_config}
 
-    store_data,sc+'_sst_atten' +suffix[0],data={x:*cache.sst_atten_time,y:*cache.sst_atten}, $
-               dlimit={tplot_routine:'bitplot'}
+    If(ptr_valid(cache.sst_atten_time) && ptr_valid(cache.sst_atten)) Then $
+       store_data,sc+'_sst_atten' +suffix[0],data={x:*cache.sst_atten_time,y:*cache.sst_atten}, $
+                  dlimit={tplot_routine:'bitplot'}
     
     if ptr_valid(cache.sir_006_time) && ptr_valid(cache.sir_001_time) then begin
     
@@ -442,7 +445,7 @@ if size(/type,datatype0) gt 0 then datatype = datatype0 ;keep input vars from be
 
 vb = keyword_set(verbose) ? verbose : 0
 vb = vb > my_themis.verbose
-dprint,dlevel=4,verbose=vb,'Start; $Id: thm_load_sst.pro 24597 2018-01-26 20:32:10Z jimm $'
+dprint,dlevel=4,verbose=vb,'Start; $Id: thm_load_sst.pro 26182 2018-11-29 18:02:16Z jimm $'
 
 vprobes = ['a','b','c','d','e'];,'f']
 vlevels = ['l1','l2']
