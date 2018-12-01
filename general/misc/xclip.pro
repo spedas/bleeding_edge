@@ -15,6 +15,8 @@
 ;           -0.0/0.0 (NaN)
 ; clip_adjacent = if set, then clip the vales adjacent to the bad
 ;                 ones, as in tdespike_ae.pro
+; interior_clip (optional): removes data inside the selected region instead of outside the selected region
+; 
 ;HISTORY:
 ; 2-feb-2007, jmm, jimm.ssl.berkeley.edu from Vassilis'
 ; clip_deflag.pro
@@ -22,18 +24,23 @@
 ; 9-oct-2007, added option to clip the points adjacent to the bad
 ;             ones, as in tdespike_ae.pro 
 ; 20-Oct-2007, Jmm, Added this comment to test commit comand
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-;$LastChangedRevision: 24506 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2018-11-30 12:03:45 -0800 (Fri, 30 Nov 2018) $
+;$LastChangedRevision: 26203 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/xclip.pro $
 ;-
-Pro xclip, amin, amax, y, flag = flag, clip_adjacent = clip_adjacent, $
+Pro xclip, amin, amax, y, flag = flag, clip_adjacent = clip_adjacent, interior_clip=interior_clip, $
            _extra = _extra
 
   If size(flag, /type) GT 1 Then big = flag Else big = !values.f_nan
 
 ;More than max value? ;less than min value?
-  ss = where(y Lt amin Or y Gt amax, nss)
+  if keyword_set(interior_clip) then begin
+    ss = where(y gt amin and y lt amax, nss)
+  endif else begin
+    ss = where(y Lt amin or y Gt amax, nss)
+  endelse
+  
   If(nss Gt 0) Then Begin
     If(keyword_set(clip_adjacent)) Then Begin
 ;Y can be 1, 2 or 3 dimensional, the clipping will happen in the first
@@ -51,14 +58,14 @@ Pro xclip, amin, amax, y, flag = flag, clip_adjacent = clip_adjacent, $
         2:begin
           For j = 0, szy[2]-1 Do Begin
             ty = y[*, j]
-            xclip, amin, amax, ty, flag = flag, /clip_adjacent
+            xclip, amin, amax, ty, flag = flag, interior_clip=interior_clip, /clip_adjacent
             y[*, j] = ty
           Endfor
         end
         3:begin
           For k = 0, szy[3]-1 Do For j = 0, szy[2]-1 Do Begin
             ty = y[*, j, k]
-            xclip, amin, amax, ty, flag = flag, /clip_adjacent
+            xclip, amin, amax, ty, flag = flag, interior_clip=interior_clip, /clip_adjacent
             y[*, j, k] = ty
           Endfor
         end

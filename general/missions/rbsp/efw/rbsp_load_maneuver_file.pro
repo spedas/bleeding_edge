@@ -2,7 +2,7 @@
 ; NAME: rbsp_load_maneuver_file
 ; SYNTAX: x = rbsp_load_maneuver_file(probe,date)
 ; PURPOSE: Returns a structure with start and end times of maneuvers
-; from the MOC data product "maneuver_sequence" files. 
+; from the MOC data product "maneuver_sequence" files.
 ; INPUT: probe = 'a' or 'b'
 ;        date = '2012-10-13' format
 ;
@@ -11,20 +11,20 @@
 ; NOTES: uses the MAXARMTIME variable to determine the extent of the
 ; maneuver. This may be the maximum upper limit maneuver time and not
 ; the actual maneuver time. Unfortunately the final maneuver log files are
-; Word documents. 
+; Word documents.
 ;
 ; HISTORY: Written by Aaron W Breneman - University of Minnesota 2014-10-26
-; VERSION: 
+; VERSION:
 ;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2014-10-26 10:14:47 -0700 (Sun, 26 Oct 2014) $
-;   $LastChangedRevision: 16037 $
+;   $LastChangedDate: 2018-11-30 07:38:59 -0800 (Fri, 30 Nov 2018) $
+;   $LastChangedRevision: 26199 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_maneuver_file.pro $
 ;-
 
 
 function rbsp_load_maneuver_file,probe,date,remote_data_dir=remote_data_dir,local_data_dir=local_data_dir
 
-
+  rbsp_efw_init
   rbsp_spice_init
 
 ;URL stuff...
@@ -37,12 +37,18 @@ function rbsp_load_maneuver_file,probe,date,remote_data_dir=remote_data_dir,loca
   dirpath='MOC_data_products/RBSP'+strupcase(probe)+'/maneuver_sequence/'
 
 ;Find out what files are online
-  FILE_HTTP_COPY,dirpath,url_info=ui,links=links,localdir=local_data_dir,$
-                 serverdir=remote_data_dir
+  ui = 'http://themis.ssl.berkeley.edu/data/rbsp/MOC_data_products/RBSPB/maneuver_sequence/*.*'
+  spd_download_expand,ui
+
+;Extract file names
+  links = strarr(n_elements(ui))
+  for i=0,n_elements(links)-1 do begin
+    goo = strsplit(ui[i],'/',/extract)
+    links[i] = goo[7]
+  endfor
 
 
 ;Modify date/time strings
-
   date2 = time_string(time_double(date),tformat='YYYYMMDD')
   year = time_string(time_double(date),tformat='YYYY')
   doy = time_string(time_double(date),tformat='DOY')
@@ -69,7 +75,7 @@ function rbsp_load_maneuver_file,probe,date,remote_data_dir=remote_data_dir,loca
 ;uts holds the unix times of all the files available online to download
 
 
-  test = (time_double(date) - time_double(uts))/86400.   
+  test = (time_double(date) - time_double(uts))/86400.
   goo = where(test eq 0)
 
 
@@ -85,12 +91,25 @@ function rbsp_load_maneuver_file,probe,date,remote_data_dir=remote_data_dir,loca
 
         relpathnames = dirpath + file
 
-                                ;download the file
-        file_loaded = file_retrieve(relpathnames,remote_data_dir=remote_data_dir,$
-                                    local_data_dir=local_data_dir,/last_version)
+
+
+        ;extract the local data path without the filename
+        localgoo = strsplit(relpathnames,'/',/extract)
+        for i=0,n_elements(localgoo)-2 do $
+           if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+        localpath = strtrim(localpath,2) + '/'
+
+        undefine,lf,tns
+        dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+        file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+           local_path=!rbsp_efw.local_data_dir+localpath,$
+           local_file=lf,/last_version)
+        files = !rbsp_efw.local_data_dir + localpath + lf
+
+
 
         openr,lun,local_data_dir + dirpath + file,/get_lun
-        
+
 
         jnk = ''
         for i=0,2 do readf,lun,jnk
@@ -110,7 +129,7 @@ function rbsp_load_maneuver_file,probe,date,remote_data_dir=remote_data_dir,loca
      endfor
 
      maneuver_times = {m0:burnstart,m1:burnend}
-  
+
   endif else maneuver_times = !values.f_nan
 
 
@@ -119,9 +138,3 @@ function rbsp_load_maneuver_file,probe,date,remote_data_dir=remote_data_dir,loca
 
 
 end
-
-
-
-
-
-

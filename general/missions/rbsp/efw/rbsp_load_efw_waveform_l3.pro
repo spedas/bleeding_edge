@@ -37,8 +37,8 @@
 ;             *rbsp_efw_cal_waveform*.
 ;
 ; $LastChangedBy: aaronbreneman $
-; $LastChangedDate: 2016-10-17 09:27:46 -0700 (Mon, 17 Oct 2016) $
-; $LastChangedRevision: 22106 $
+; $LastChangedDate: 2018-11-30 07:35:22 -0800 (Fri, 30 Nov 2018) $
+; $LastChangedRevision: 26187 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_waveform_l3.pro $
 ;-
 
@@ -50,7 +50,7 @@ pro rbsp_load_efw_waveform_l3,probe=probe, trange=trange, $
                               etu=etu,tper = tper, tphase = tphase, _extra = _extra
 
   rbsp_efw_init
-  dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_waveform_l3.pro 22106 2016-10-17 16:27:46Z aaronbreneman $'
+  dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_waveform_l3.pro 26187 2018-11-30 15:35:22Z aaronbreneman $'
 
   UMN_data_location = 'http://rbsp.space.umn.edu/data/rbsp/'
   cache_remote_data_dir = !rbsp_efw.remote_data_dir
@@ -86,16 +86,30 @@ pro rbsp_load_efw_waveform_l3,probe=probe, trange=trange, $
 
      format = rbsppref + '/YYYY/'+rbspx+'_efw-l3_YYYYMMDD_v*.cdf'
      relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
+
+
+     ;extract the local data path without the filename
+     localgoo = strsplit(relpathnames,'/',/extract)
+     for i=0,n_elements(localgoo)-2 do $
+        if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+     localpath = strtrim(localpath,2) + '/'
+
+     undefine,lf,tns
      dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     files = file_retrieve(relpathnames, /last_version, _extra=!rbsp_efw)
+     file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+        local_path=!rbsp_efw.local_data_dir+localpath,$
+        local_file=lf,/last_version)
+     files = !rbsp_efw.local_data_dir + localpath + lf
+
 
      if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
 
      suf=''
      prefix=rbspx+'_efw_'
 
+     tst = file_info(file_loaded)
 
-     cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+     if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
                tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
 
      if is_string(tns) then begin
@@ -105,7 +119,7 @@ pro rbsp_load_efw_waveform_l3,probe=probe, trange=trange, $
 
         dprint, dlevel = 5, verbose = verbose, 'Setting options...'
 
-        options, /def, tns, code_id = '$Id: rbsp_load_efw_waveform_l3.pro 22106 2016-10-17 16:27:46Z aaronbreneman $'
+        options, /def, tns, code_id = '$Id: rbsp_load_efw_waveform_l3.pro 26187 2018-11-30 15:35:22Z aaronbreneman $'
 
         store_data,new_name,/delete
         store_data,old_name,newname=new_name

@@ -46,8 +46,8 @@
 ;             *rbsp_efw_cal_waveform*.
 ;
 ; $LastChangedBy: aaronbreneman $
-; $LastChangedDate: 2014-08-07 12:56:07 -0700 (Thu, 07 Aug 2014) $
-; $LastChangedRevision: 15656 $
+; $LastChangedDate: 2018-11-30 07:35:32 -0800 (Fri, 30 Nov 2018) $
+; $LastChangedRevision: 26188 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_waveform_l2.pro $
 ;-
 
@@ -61,7 +61,7 @@ pro rbsp_load_efw_waveform_l2,probe=probe, datatype=datatype, trange=trange, $
                  tper = tper, tphase = tphase, _extra = _extra
 
 rbsp_efw_init
-dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_waveform_l2.pro 15656 2014-08-07 19:56:07Z aaronbreneman $'
+dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_waveform_l2.pro 26188 2018-11-30 15:35:32Z aaronbreneman $'
 
 UMN_data_location = 'http://rbsp.space.umn.edu/data/rbsp/'
 cache_remote_data_dir = !rbsp_efw.remote_data_dir
@@ -70,7 +70,7 @@ cache_remote_data_dir = !rbsp_efw.remote_data_dir
 if keyword_set(etu) then probe = 'a'
 
 if(keyword_set(probe)) then $
-  p_var = probe
+  p_var = strlowcase(probe)
 
 vb = keyword_set(verbose) ? verbose : 0
 vb = vb > !rbsp_efw.verbose
@@ -116,19 +116,35 @@ for s=0,n_elements(p_var)-1 do begin
      format = rbsppref + '/'+datatype[typeindex]+'/YYYY/'+rbspx+'_efw-l2_'+datatype[typeindex]+'_YYYYMMDD_v*.cdf'
      relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
 ;     if vb ge 4 then printdat,/pgmtrace,relpathnames
-     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     files = file_retrieve(relpathnames, /last_version, _extra=!rbsp_efw)
+;     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+
+
+
+      ;extract the local data path without the filename
+      localgoo = strsplit(relpathnames,'/',/extract)
+      for i=0,n_elements(localgoo)-2 do $
+         if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+      localpath = strtrim(localpath,2) + '/'
+
+      undefine,lf,tns
+      dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+      file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+         local_path=!rbsp_efw.local_data_dir+localpath,$
+         local_file=lf,/last_version)
+      files = !rbsp_efw.local_data_dir + localpath + lf
+
+
+
+;     files = file_retrieve(relpathnames, /last_version, _extra=!rbsp_efw)
 
      if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
 
-;     suf='_raw'
      suf=''
-;     midfix='_hsk_beb_analog_'
      prefix=rbspx+'_efw_'+datatype[typeindex]+'_'
 
 
-;     if keyword_set(get_support_data) then $
-          cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+     tst = file_info(file_loaded)
+     if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
               tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
 
      if is_string(tns) then begin
@@ -155,7 +171,7 @@ for s=0,n_elements(p_var)-1 do begin
 
        colors = color_array[0:n_elements(labels)-1]
 
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_waveform_l2.pro 15656 2014-08-07 19:56:07Z aaronbreneman $'
+       options, /def, tns, code_id = '$Id: rbsp_load_efw_waveform_l2.pro 26188 2018-11-30 15:35:32Z aaronbreneman $'
 
        store_data,new_name,/delete
        store_data,old_name,newname=new_name

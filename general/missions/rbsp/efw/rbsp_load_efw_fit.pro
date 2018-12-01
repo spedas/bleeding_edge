@@ -31,9 +31,9 @@
 ;Notes:
 ; 1. Written by Peter Schroeder, February 2012
 ;
-; $LastChangedBy: peters $
-; $LastChangedDate: 2012-11-07 14:58:26 -0800 (Wed, 07 Nov 2012) $
-; $LastChangedRevision: 11201 $
+; $LastChangedBy: aaronbreneman $
+; $LastChangedDate: 2018-11-30 07:37:40 -0800 (Fri, 30 Nov 2018) $
+; $LastChangedRevision: 26196 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_fit.pro $
 ;-
 
@@ -45,7 +45,7 @@ pro rbsp_load_efw_fit,probe=probe, datatype=datatype, trange=trange, $
                  type=type, integration=integration, msim=msim, etu=etu, qa=qa
 
 rbsp_efw_init
-dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_fit.pro 11201 2012-11-07 22:58:26Z peters $'
+dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_fit.pro 26196 2018-11-30 15:37:40Z aaronbreneman $'
 
 if keyword_set(etu) then probe = 'a'
 
@@ -96,29 +96,43 @@ for s=0,n_elements(p_var)-1 do begin
      format = rbsppref + '/fit/YYYY/'+rbspx+'_l1_fit_YYYYMMDD_v*.cdf'
      relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
 ;     if vb ge 4 then printdat,/pgmtrace,relpathnames
+;     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+;     files = file_retrieve(relpathnames, /last_version, _extra=!rbsp_efw)
+
+
+     ;extract the local data path without the filename
+     localgoo = strsplit(relpathnames,'/',/extract)
+     for i=0,n_elements(localgoo)-2 do $
+        if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+     localpath = strtrim(localpath,2) + '/'
+
+     undefine,lf,tns
      dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     files = file_retrieve(relpathnames, /last_version, _extra=!rbsp_efw)
+     file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+        local_path=!rbsp_efw.local_data_dir+localpath,$
+        local_file=lf,/last_version)
+     files = !rbsp_efw.local_data_dir + localpath + lf
+
+
 
      if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
 
-;     suf='_raw'
      suf=''
-;     midfix='_hsk_beb_analog_'
      prefix=rbspx+'_efw_fit_'
+     tst = file_info(file_loaded)
 
-;     if keyword_set(get_support_data) then $
-          cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+      if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
               tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
 
      if is_string(tns) then begin
-     
+
        pn = byte(p_var[s]) - byte('a')
-       options, /def, tns, colors = probe_colors[pn]       
+       options, /def, tns, colors = probe_colors[pn]
 
        dprint, dlevel = 5, verbose = verbose, 'Setting options...'
 
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_fit.pro 11201 2012-11-07 22:58:26Z peters $'
-  
+       options, /def, tns, code_id = '$Id: rbsp_load_efw_fit.pro 26196 2018-11-30 15:37:40Z aaronbreneman $'
+
        dprint, dwait = 5., verbose = verbose, 'Flushing output'
        dprint, dlevel = 4, verbose = verbose, 'FIT data Loaded for probe: '+p_var[s]
 
@@ -135,8 +149,8 @@ for s=0,n_elements(p_var)-1 do begin
              endif
           endfor
        endif
-       
-       
+
+
      endif else begin
        dprint, dlevel = 0, verbose = verbose, 'No EFW FIT data loaded...'+' Probe: '+p_var[s]
 ;       dprint, dlevel = 0, verbose = verbose, 'Try using get_support_data keyword'

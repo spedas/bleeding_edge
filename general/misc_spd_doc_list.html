@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov 29 18:16:27 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Nov 30 18:16:25 2018.<P>
  
 <HR>
  
@@ -4277,14 +4277,15 @@ KEYWORDS:
  overwrite = if set, write the new data back to the old tplot
              variables, do not set this with newname
  display_object = Object reference to be passed to dprint for output.
+ interior_clip (optional): removes data inside the selected region instead of outside the selected region
 
 
 HISTORY:
  2-feb-2007, jmm, jimm.ssl.berkeley.edu
 
-$LastChangedBy: adrozdov $
-$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-$LastChangedRevision: 24506 $
+$LastChangedBy: nikos $
+$LastChangedDate: 2018-11-30 12:04:47 -0800 (Fri, 30 Nov 2018) $
+$LastChangedRevision: 26204 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tclip.pro $
 </PRE><P>
 <STRONG>(See <A href="misc/tclip.pro">general/misc/tclip.pro</A>)</STRONG><P>
@@ -5293,6 +5294,8 @@ KEYWORDS:
            -0.0/0.0 (NaN)
  clip_adjacent = if set, then clip the vales adjacent to the bad
                  ones, as in tdespike_ae.pro
+ interior_clip (optional): removes data inside the selected region instead of outside the selected region
+ 
 HISTORY:
  2-feb-2007, jmm, jimm.ssl.berkeley.edu from Vassilis'
  clip_deflag.pro
@@ -5300,9 +5303,9 @@ HISTORY:
  9-oct-2007, added option to clip the points adjacent to the bad
              ones, as in tdespike_ae.pro 
  20-Oct-2007, Jmm, Added this comment to test commit comand
-$LastChangedBy: adrozdov $
-$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-$LastChangedRevision: 24506 $
+$LastChangedBy: nikos $
+$LastChangedDate: 2018-11-30 12:03:45 -0800 (Fri, 30 Nov 2018) $
+$LastChangedRevision: 26203 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/xclip.pro $
 </PRE><P>
 <STRONG>(See <A href="misc/xclip.pro">general/misc/xclip.pro</A>)</STRONG><P>

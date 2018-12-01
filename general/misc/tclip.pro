@@ -22,17 +22,18 @@
 ; overwrite = if set, write the new data back to the old tplot
 ;             variables, do not set this with newname
 ; display_object = Object reference to be passed to dprint for output.
+; interior_clip (optional): removes data inside the selected region instead of outside the selected region
 ;
 ;
 ;HISTORY:
 ; 2-feb-2007, jmm, jimm.ssl.berkeley.edu
 ;
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-;$LastChangedRevision: 24506 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2018-11-30 12:04:47 -0800 (Fri, 30 Nov 2018) $
+;$LastChangedRevision: 26204 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tclip.pro $
 ;-
-Pro tclip, varnames_in, amin, amax, newname = newname, display_object=display_object, $
+Pro tclip, varnames_in, amin, amax, newname = newname, display_object=display_object, interior_clip=interior_clip, $
            overwrite = overwrite, _extra = _extra
 
 ;First extract the data
@@ -53,7 +54,7 @@ Pro tclip, varnames_in, amin, amax, newname = newname, display_object=display_ob
     get_data, varnames[j], data = d, dlim = dlim, lim = lim
     If(is_struct(d)) Then Begin
       y = d.y
-      xclip, amin, amax, y, _extra = _extra
+      xclip, amin, amax, y, interior_clip=interior_clip, _extra = _extra
       d.y = temporary(y)
       If(keyword_set(overwrite)) Then new_name = varnames[j] $
       Else new_name = nvn[j]

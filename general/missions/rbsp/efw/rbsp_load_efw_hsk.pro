@@ -33,8 +33,8 @@
 ;    JBT, SSL/UCB, 2012-11-03.
 ;
 ; $LastChangedBy: aaronbreneman $
-; $LastChangedDate: 2015-07-10 07:53:58 -0700 (Fri, 10 Jul 2015) $
-; $LastChangedRevision: 18071 $
+; $LastChangedDate: 2018-11-30 07:37:34 -0800 (Fri, 30 Nov 2018) $
+; $LastChangedRevision: 26195 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_hsk.pro $
 ;-
 
@@ -46,7 +46,7 @@ pro rbsp_load_efw_hsk,probe=probe, datatype=datatype, trange=trange, $
                  type=type, integration=integration, msim=msim, etu=etu, qa=qa
 
 rbsp_efw_init
-dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_hsk.pro 18071 2015-07-10 14:53:58Z aaronbreneman $'
+dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_hsk.pro 26195 2018-11-30 15:37:34Z aaronbreneman $'
 
 if keyword_set(etu) then probe = 'a'
 
@@ -100,30 +100,43 @@ for s=0,n_elements(p_var)-1 do begin
 ;     relpathnames = file_dailynames(thx+'/l1/hsk/',dir='YYYY/',thx+'_l1_hsk_','_v01.cdf',trange=trange,addmaster=addmaster)
      format = rbsppref + '/hsk_beb_analog/YYYY/'+rbspx+'_l1_hsk_beb_analog_YYYYMMDD_v*.cdf'
      relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
-;     if vb ge 4 then printdat,/pgmtrace,relpathnames
-     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     files = file_retrieve(relpathnames, /last_version, _extra=!rbsp_efw)
+
+
+
+       ;extract the local data path without the filename
+       localgoo = strsplit(relpathnames,'/',/extract)
+       for i=0,n_elements(localgoo)-2 do $
+          if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+       localpath = strtrim(localpath,2) + '/'
+
+       undefine,lf,tns
+       dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+       file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+          local_path=!rbsp_efw.local_data_dir+localpath,$
+          local_file=lf,/last_version)
+       files = !rbsp_efw.local_data_dir + localpath + lf
+
+
 
      if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
 
-;     suf='_raw'
      suf=''
-;     midfix='_hsk_beb_analog_'
      prefix=rbspx+'_efw_hsk_beb_analog_'
+     tst = file_info(file_loaded)
 
      if keyword_set(get_support_data) then $
-          cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+          if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
               tplotnames=tns,/convert_int1_to_int2,get_support_data=get_support_data ; load data into tplot variables
 
      if is_string(tns) then begin
-     
+
        pn = byte(p_var[s]) - byte('a')
-       options, /def, tns, colors = probe_colors[pn]       
+       options, /def, tns, colors = probe_colors[pn]
 
        dprint, dlevel = 5, verbose = verbose, 'Setting options...'
 
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_hsk.pro 18071 2015-07-10 14:53:58Z aaronbreneman $'
-  
+       options, /def, tns, code_id = '$Id: rbsp_load_efw_hsk.pro 26195 2018-11-30 15:37:34Z aaronbreneman $'
+
        c_var = [1, 2, 3, 4, 5, 6]
 
 ;       hsk_options_grp = [thx+'_hsk_iefi_ibias',thx+'_hsk_iefi_usher',thx+'_hsk_iefi_guard']
@@ -138,13 +151,13 @@ for s=0,n_elements(p_var)-1 do begin
 ;       options, thx+'_hsk_iefi_braid_raw', data_att = {units:'ADC'}, $
 ;         ysubtitle = '[ADC]', /def
 ;       options, hsk_options_grp+'_cal', colors = c_var, labels = string(c_var), $
-;         labflag = 1, /def   
-           
+;         labflag = 1, /def
+
 ;       options, /def, strfilter(tns, '*ietc_covers*'), tplot_routine = 'bitplot', colors = ''
 ;       options, /def ,strfilter(tns, '*ipwrswitch*'), tplot_routine = 'bitplot', colors= ''
        dprint, dwait = 5., verbose = verbose, 'Flushing output'
        dprint, dlevel = 4, verbose = verbose, 'Housekeeping data Loaded for probe: '+p_var[s]
-       
+
      endif else begin
        dprint, dlevel = 0, verbose = verbose, 'No EFW HSK BEB Analog data loaded...'+' Probe: '+p_var[s]
        dprint, dlevel = 0, verbose = verbose, 'Try using get_support_data keyword'
@@ -152,30 +165,42 @@ for s=0,n_elements(p_var)-1 do begin
 
      format = rbsppref + '/hsk_idpu_analog/YYYY/'+rbspx+'_l1_hsk_idpu_analog_YYYYMMDD_v*.cdf'
      relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
-;     if vb ge 4 then printdat,/pgmtrace,relpathnames
-     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     files = file_retrieve(relpathnames, /last_version, _extra=!rbsp_efw)
+
+
+       ;extract the local data path without the filename
+       localgoo = strsplit(relpathnames,'/',/extract)
+       for i=0,n_elements(localgoo)-2 do $
+          if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+       localpath = strtrim(localpath,2) + '/'
+
+       undefine,lf,tns
+       dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+       file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+          local_path=!rbsp_efw.local_data_dir+localpath,$
+          local_file=lf,/last_version)
+       files = !rbsp_efw.local_data_dir + localpath + lf
+
+
 
      if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
 
-;     suf='_raw'
      suf=''
-;     midfix='_hsk_idpu_analog_'
      prefix=rbspx+'_efw_hsk_idpu_analog_'
+     tst = file_info(file_loaded)
 
      if keyword_set(get_support_data) then $
-          cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+          if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
               tplotnames=tns,/convert_int1_to_int2,get_support_data=get_support_data ; load data into tplot variables
 
      if is_string(tns) then begin
-     
+
        pn = byte(p_var[s]) - byte('a')
-       options, /def, tns, colors = probe_colors[pn]       
+       options, /def, tns, colors = probe_colors[pn]
 
        dprint, dlevel = 5, verbose = verbose, 'Setting options...'
 
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_hsk.pro 18071 2015-07-10 14:53:58Z aaronbreneman $'
-  
+       options, /def, tns, code_id = '$Id: rbsp_load_efw_hsk.pro 26195 2018-11-30 15:37:34Z aaronbreneman $'
+
        c_var = [1, 2, 3, 4, 5, 6]
 
 ;       hsk_options_grp = [thx+'_hsk_iefi_ibias',thx+'_hsk_iefi_usher',thx+'_hsk_iefi_guard']
@@ -190,13 +215,13 @@ for s=0,n_elements(p_var)-1 do begin
 ;       options, thx+'_hsk_iefi_braid_raw', data_att = {units:'ADC'}, $
 ;         ysubtitle = '[ADC]', /def
 ;       options, hsk_options_grp+'_cal', colors = c_var, labels = string(c_var), $
-;         labflag = 1, /def   
-           
+;         labflag = 1, /def
+
 ;       options, /def, strfilter(tns, '*ietc_covers*'), tplot_routine = 'bitplot', colors = ''
 ;       options, /def ,strfilter(tns, '*ipwrswitch*'), tplot_routine = 'bitplot', colors= ''
        dprint, dwait = 5., verbose = verbose, 'Flushing output'
        dprint, dlevel = 4, verbose = verbose, 'Housekeeping data Loaded for probe: '+p_var[s]
-       
+
      endif else begin
        dprint, dlevel = 0, verbose = verbose, 'No EFW HSK IDPU Analog data loaded...'+' Probe: '+p_var[s]
        dprint, dlevel = 0, verbose = verbose, 'Try using get_support_data keyword'
@@ -204,30 +229,42 @@ for s=0,n_elements(p_var)-1 do begin
 
      format = rbsppref + '/hsk_idpu_crit/YYYY/'+rbspx+'_l1_hsk_idpu_crit_YYYYMMDD_v*.cdf'
      relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
-;     if vb ge 4 then printdat,/pgmtrace,relpathnames
-     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     files = file_retrieve(relpathnames, /last_version, _extra=!rbsp_efw)
+
+
+      ;extract the local data path without the filename
+      localgoo = strsplit(relpathnames,'/',/extract)
+      for i=0,n_elements(localgoo)-2 do $
+         if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+      localpath = strtrim(localpath,2) + '/'
+
+      undefine,lf,tns
+      dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+      file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+         local_path=!rbsp_efw.local_data_dir+localpath,$
+         local_file=lf,/last_version)
+      files = !rbsp_efw.local_data_dir + localpath + lf
+
+
 
      if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
 
-;     suf='_raw'
      suf=''
-;     midfix='_hsk_idpu_analog_'
      prefix=rbspx+'_efw_hsk_idpu_crit_'
+     tst = file_info(file_loaded)
 
      if keyword_set(get_support_data) then $
-          cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+          if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
               tplotnames=tns,/convert_int1_to_int2,get_support_data=get_support_data ; load data into tplot variables
 
      if is_string(tns) then begin
-     
+
        pn = byte(p_var[s]) - byte('a')
-       options, /def, tns, colors = probe_colors[pn]       
+       options, /def, tns, colors = probe_colors[pn]
 
        dprint, dlevel = 5, verbose = verbose, 'Setting options...'
 
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_hsk.pro 18071 2015-07-10 14:53:58Z aaronbreneman $'
-  
+       options, /def, tns, code_id = '$Id: rbsp_load_efw_hsk.pro 26195 2018-11-30 15:37:34Z aaronbreneman $'
+
        c_var = [1, 2, 3, 4, 5, 6]
 
 ;       hsk_options_grp = [thx+'_hsk_iefi_ibias',thx+'_hsk_iefi_usher',thx+'_hsk_iefi_guard']
@@ -242,13 +279,13 @@ for s=0,n_elements(p_var)-1 do begin
 ;       options, thx+'_hsk_iefi_braid_raw', data_att = {units:'ADC'}, $
 ;         ysubtitle = '[ADC]', /def
 ;       options, hsk_options_grp+'_cal', colors = c_var, labels = string(c_var), $
-;         labflag = 1, /def   
-           
+;         labflag = 1, /def
+
 ;       options, /def, strfilter(tns, '*ietc_covers*'), tplot_routine = 'bitplot', colors = ''
 ;       options, /def ,strfilter(tns, '*ipwrswitch*'), tplot_routine = 'bitplot', colors= ''
        dprint, dwait = 5., verbose = verbose, 'Flushing output'
        dprint, dlevel = 4, verbose = verbose, 'Housekeeping data Loaded for probe: '+p_var[s]
-       
+
      endif else begin
        dprint, dlevel = 0, verbose = verbose, 'No EFW HSK IDPU CRIT data loaded...'+' Probe: '+p_var[s]
        dprint, dlevel = 0, verbose = verbose, 'Try using get_support_data keyword'
@@ -256,30 +293,42 @@ for s=0,n_elements(p_var)-1 do begin
 
      format = rbsppref + '/hsk_idpu_eng/YYYY/'+rbspx+'_l1_hsk_idpu_eng_YYYYMMDD_v*.cdf'
      relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
-;     if vb ge 4 then printdat,/pgmtrace,relpathnames
-     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     files = file_retrieve(relpathnames, /last_version, _extra=!rbsp_efw)
+
+
+      ;extract the local data path without the filename
+      localgoo = strsplit(relpathnames,'/',/extract)
+      for i=0,n_elements(localgoo)-2 do $
+         if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+      localpath = strtrim(localpath,2) + '/'
+
+      undefine,lf,tns
+      dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+      file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+         local_path=!rbsp_efw.local_data_dir+localpath,$
+         local_file=lf,/last_version)
+      files = !rbsp_efw.local_data_dir + localpath + lf
+
+
 
      if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
 
-;     suf='_raw'
      suf=''
-;     midfix='_hsk_idpu_analog_'
      prefix=rbspx+'_efw_hsk_idpu_eng_'
+     tst = file_info(file_loaded)
 
      if keyword_set(get_support_data) then $
-          cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+          if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
               tplotnames=tns,/convert_int1_to_int2,get_support_data=get_support_data ; load data into tplot variables
 
      if is_string(tns) then begin
-     
+
        pn = byte(p_var[s]) - byte('a')
-       options, /def, tns, colors = probe_colors[pn]       
+       options, /def, tns, colors = probe_colors[pn]
 
        dprint, dlevel = 5, verbose = verbose, 'Setting options...'
 
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_hsk.pro 18071 2015-07-10 14:53:58Z aaronbreneman $'
-  
+       options, /def, tns, code_id = '$Id: rbsp_load_efw_hsk.pro 26195 2018-11-30 15:37:34Z aaronbreneman $'
+
        c_var = [1, 2, 3, 4, 5, 6]
 
 ;       hsk_options_grp = [thx+'_hsk_iefi_ibias',thx+'_hsk_iefi_usher',thx+'_hsk_iefi_guard']
@@ -294,13 +343,13 @@ for s=0,n_elements(p_var)-1 do begin
 ;       options, thx+'_hsk_iefi_braid_raw', data_att = {units:'ADC'}, $
 ;         ysubtitle = '[ADC]', /def
 ;       options, hsk_options_grp+'_cal', colors = c_var, labels = string(c_var), $
-;         labflag = 1, /def   
-           
+;         labflag = 1, /def
+
 ;       options, /def, strfilter(tns, '*ietc_covers*'), tplot_routine = 'bitplot', colors = ''
 ;       options, /def ,strfilter(tns, '*ipwrswitch*'), tplot_routine = 'bitplot', colors= ''
        dprint, dwait = 5., verbose = verbose, 'Flushing output'
        dprint, dlevel = 4, verbose = verbose, 'Housekeeping data Loaded for probe: '+p_var[s]
-       
+
      endif else begin
        dprint, dlevel = 0, verbose = verbose, 'No EFW HSK IDPU ENG data loaded...'+' Probe: '+p_var[s]
        dprint, dlevel = 0, verbose = verbose, 'Try using get_support_data keyword'
@@ -308,30 +357,43 @@ for s=0,n_elements(p_var)-1 do begin
 
      format = rbsppref + '/hsk_idpu_events/YYYY/'+rbspx+'_l1_hsk_idpu_events_YYYYMMDD_v*.cdf'
      relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
-;     if vb ge 4 then printdat,/pgmtrace,relpathnames
-     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     files = file_retrieve(relpathnames, /last_version, _extra=!rbsp_efw)
+
+
+      ;extract the local data path without the filename
+      localgoo = strsplit(relpathnames,'/',/extract)
+      for i=0,n_elements(localgoo)-2 do $
+         if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+      localpath = strtrim(localpath,2) + '/'
+
+      undefine,lf,tns
+      dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+      file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+         local_path=!rbsp_efw.local_data_dir+localpath,$
+         local_file=lf,/last_version)
+      files = !rbsp_efw.local_data_dir + localpath + lf
+
+
+
 
      if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
 
-;     suf='_raw'
      suf=''
-;     midfix='_hsk_idpu_analog_'
      prefix=rbspx+'_efw_hsk_idpu_events_'
+     tst = file_info(file_loaded)
 
 ;     if keyword_set(get_support_data) then $
-          cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+      if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
               tplotnames=tns,/convert_int1_to_int2,get_support_data=get_support_data ; load data into tplot variables
 
      if is_string(tns) then begin
-     
+
        pn = byte(p_var[s]) - byte('a')
-       options, /def, tns, colors = probe_colors[pn]       
+       options, /def, tns, colors = probe_colors[pn]
 
        dprint, dlevel = 5, verbose = verbose, 'Setting options...'
 
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_hsk.pro 18071 2015-07-10 14:53:58Z aaronbreneman $'
-  
+       options, /def, tns, code_id = '$Id: rbsp_load_efw_hsk.pro 26195 2018-11-30 15:37:34Z aaronbreneman $'
+
        c_var = [1, 2, 3, 4, 5, 6]
 
 ;       hsk_options_grp = [thx+'_hsk_iefi_ibias',thx+'_hsk_iefi_usher',thx+'_hsk_iefi_guard']
@@ -346,13 +408,13 @@ for s=0,n_elements(p_var)-1 do begin
 ;       options, thx+'_hsk_iefi_braid_raw', data_att = {units:'ADC'}, $
 ;         ysubtitle = '[ADC]', /def
 ;       options, hsk_options_grp+'_cal', colors = c_var, labels = string(c_var), $
-;         labflag = 1, /def   
-           
+;         labflag = 1, /def
+
 ;       options, /def, strfilter(tns, '*ietc_covers*'), tplot_routine = 'bitplot', colors = ''
 ;       options, /def ,strfilter(tns, '*ipwrswitch*'), tplot_routine = 'bitplot', colors= ''
        dprint, dwait = 5., verbose = verbose, 'Flushing output'
        dprint, dlevel = 4, verbose = verbose, 'Housekeeping data Loaded for probe: '+p_var[s]
-       
+
      endif else begin
        dprint, dlevel = 0, verbose = verbose, 'No EFW HSK IDPU Events data loaded...'+' Probe: '+p_var[s]
 ;       dprint, dlevel = 0, verbose = verbose, 'Try using get_support_data keyword'
@@ -360,30 +422,43 @@ for s=0,n_elements(p_var)-1 do begin
 
      format = rbsppref + '/hsk_idpu_fast/YYYY/'+rbspx+'_l1_hsk_idpu_fast_YYYYMMDD_v*.cdf'
      relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
-;     if vb ge 4 then printdat,/pgmtrace,relpathnames
-     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     files = file_retrieve(relpathnames, /last_version, _extra=!rbsp_efw)
+
+
+      ;extract the local data path without the filename
+      localgoo = strsplit(relpathnames,'/',/extract)
+      for i=0,n_elements(localgoo)-2 do $
+         if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+      localpath = strtrim(localpath,2) + '/'
+
+      undefine,lf,tns
+      dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+      file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+         local_path=!rbsp_efw.local_data_dir+localpath,$
+         local_file=lf,/last_version)
+      files = !rbsp_efw.local_data_dir + localpath + lf
+
+
+
 
      if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
 
-;     suf='_raw'
      suf=''
-;     midfix='_hsk_idpu_analog_'
      prefix=rbspx+'_efw_hsk_idpu_fast_'
+     tst = file_info(file_loaded)
 
      if keyword_set(get_support_data) then $
-          cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+        if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
               tplotnames=tns,/convert_int1_to_int2,get_support_data=get_support_data ; load data into tplot variables
 
      if is_string(tns) then begin
-     
+
        pn = byte(p_var[s]) - byte('a')
-       options, /def, tns, colors = probe_colors[pn]       
+       options, /def, tns, colors = probe_colors[pn]
 
        dprint, dlevel = 5, verbose = verbose, 'Setting options...'
 
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_hsk.pro 18071 2015-07-10 14:53:58Z aaronbreneman $'
-  
+       options, /def, tns, code_id = '$Id: rbsp_load_efw_hsk.pro 26195 2018-11-30 15:37:34Z aaronbreneman $'
+
        c_var = [1, 2, 3, 4, 5, 6]
 
 ;       hsk_options_grp = [thx+'_hsk_iefi_ibias',thx+'_hsk_iefi_usher',thx+'_hsk_iefi_guard']
@@ -398,13 +473,13 @@ for s=0,n_elements(p_var)-1 do begin
 ;       options, thx+'_hsk_iefi_braid_raw', data_att = {units:'ADC'}, $
 ;         ysubtitle = '[ADC]', /def
 ;       options, hsk_options_grp+'_cal', colors = c_var, labels = string(c_var), $
-;         labflag = 1, /def   
-           
+;         labflag = 1, /def
+
 ;       options, /def, strfilter(tns, '*ietc_covers*'), tplot_routine = 'bitplot', colors = ''
 ;       options, /def ,strfilter(tns, '*ipwrswitch*'), tplot_routine = 'bitplot', colors= ''
        dprint, dwait = 5., verbose = verbose, 'Flushing output'
        dprint, dlevel = 4, verbose = verbose, 'Housekeeping data Loaded for probe: '+p_var[s]
-       
+
      endif else begin
        dprint, dlevel = 0, verbose = verbose, 'No EFW HSK IDPU Fast data loaded...'+' Probe: '+p_var[s]
        dprint, dlevel = 0, verbose = verbose, 'Try using get_support_data keyword'

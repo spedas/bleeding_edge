@@ -30,9 +30,9 @@
 ;  type:  set to 'calibrated' to automatically convert data into physical units
 ;  coord: Set to 'uvw' to return data in UVW. Otherwise the output is in DSC
 ;          coordinate system
-;   tper: (In, optional) Tplot name of spin period data. By default, 
+;   tper: (In, optional) Tplot name of spin period data. By default,
 ;         tper = pertvar. If tper is set, pertvar = tper.
-;   tphase: (In, optional) Tplot name of spin phase data. By default, 
+;   tphase: (In, optional) Tplot name of spin phase data. By default,
 ;         tphase = 'rbsp' + strlowcase(sc[0]) + '_spinphase'
 ;         Note: tper and and tphase are mostly used for using eclipse-corrected
 ;         spin data.
@@ -46,8 +46,8 @@
 ;             *rbsp_efw_cal_waveform*.
 ;
 ; $LastChangedBy: aaronbreneman $
-; $LastChangedDate: 2015-07-10 07:53:23 -0700 (Fri, 10 Jul 2015) $
-; $LastChangedRevision: 18069 $
+; $LastChangedDate: 2018-11-30 07:37:20 -0800 (Fri, 30 Nov 2018) $
+; $LastChangedRevision: 26193 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_waveform.pro $
 ;-
 
@@ -61,7 +61,7 @@ pro rbsp_load_efw_waveform,probe=probe, datatype=datatype, trange=trange, $
                  tper = tper, tphase = tphase, _extra = _extra
 
 rbsp_efw_init
-dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_waveform.pro 18069 2015-07-10 14:53:23Z aaronbreneman $'
+dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_waveform.pro 26193 2018-11-30 15:37:20Z aaronbreneman $'
 
 if keyword_set(etu) then probe = 'a'
 
@@ -123,22 +123,37 @@ for s=0,n_elements(p_var)-1 do begin
         else if keyword_set(qa) then rbsppref = rbspx+ '/l1_qa' $
         else rbsppref = rbspx + '/l1'
 
-;     relpathnames = file_dailynames(thx+'/l1/esvy/',dir='YYYY/',thx+'_l1_hsk_','_v01.cdf',trange=trange,addmaster=addmaster)
      format = rbsppref + '/'+datatype[typeindex]+'/YYYY/'+rbspx+'_l1_'+datatype[typeindex]+'_YYYYMMDD_v*.cdf'
      relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
-;     if vb ge 4 then printdat,/pgmtrace,relpathnames
+
+
+     ;extract the local data path without the filename
+     localgoo = strsplit(relpathnames,'/',/extract)
+     for i=0,n_elements(localgoo)-2 do $
+        if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+     localpath = strtrim(localpath,2) + '/'
+
+     undefine,lf,tns
      dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     files = file_retrieve(relpathnames, /last_version, _extra=!rbsp_efw)
+     file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+        local_path=!rbsp_efw.local_data_dir+localpath,$
+        local_file=lf)
+     files = !rbsp_efw.local_data_dir + localpath + lf
+
+
+
+
+
+
+
 
      if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
 
-;     suf='_raw'
      suf=''
-;     midfix='_hsk_beb_analog_'
      prefix=rbspx+'_efw_'+datatype[typeindex]+'_'
 
-;     if keyword_set(get_support_data) then $
-          cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+     tst = file_info(file_loaded)
+     if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
               tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
 
      if is_string(tns) then begin
@@ -146,7 +161,7 @@ for s=0,n_elements(p_var)-1 do begin
        old_name = rbspx+'_efw_'+datatype[typeindex]+'_'+datatype[typeindex]
        new_name = rbspx+'_efw_'+datatype[typeindex]
 
-              
+
        dprint, dlevel = 5, verbose = verbose, 'Setting options...'
 
        case datatype[typeindex] of
@@ -162,21 +177,21 @@ for s=0,n_elements(p_var)-1 do begin
           'mscb2': labels = ['SCMU', 'SCMV', 'SCMW', 'SCMpar', 'SCMperp']
        else: labels = 0
        endcase
-          
+
        colors = color_array[0:n_elements(labels)-1]
 
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_waveform.pro 18069 2015-07-10 14:53:23Z aaronbreneman $'
-  
+       options, /def, tns, code_id = '$Id: rbsp_load_efw_waveform.pro 26193 2018-11-30 15:37:20Z aaronbreneman $'
+
        store_data,new_name,/delete
        store_data,old_name,newname=new_name
        get_data,new_name,dlimits=mydlimits
        str_element,mydlimits,'data_att',default_data_att,/add
        store_data,new_name,dlimits=mydlimits
-       
+
        options,new_name,'labels',labels
        options,new_name,'colors',colors
        options,new_name,'labflag',1
-       
+
  ;      if keyword_set(get_support_data) then begin
  ;        for i=0,n_elements(tns) do begin
  ;           if tns[i] ne old_name then begin
@@ -184,7 +199,7 @@ for s=0,n_elements(p_var)-1 do begin
  ;           endif
  ;        endfor
  ;      endif
-       
+
 ;       hsk_options_grp = [thx+'_hsk_iefi_ibias',thx+'_hsk_iefi_usher',thx+'_hsk_iefi_guard']
 ;       hsk_options_ele = [thx+'_hsk_iefi_ibias?',thx+'_hsk_iefi_usher?',thx+'_hsk_iefi_guard?']
 
@@ -197,8 +212,8 @@ for s=0,n_elements(p_var)-1 do begin
 ;       options, thx+'_hsk_iefi_braid_raw', data_att = {units:'ADC'}, $
 ;         ysubtitle = '[ADC]', /def
 ;       options, hsk_options_grp+'_cal', colors = c_var, labels = string(c_var), $
-;         labflag = 1, /def   
-           
+;         labflag = 1, /def
+
 ;       options, /def, strfilter(tns, '*ietc_covers*'), tplot_routine = 'bitplot', colors = ''
 ;       options, /def ,strfilter(tns, '*ipwrswitch*'), tplot_routine = 'bitplot', colors= ''
 ;       dprint, dwait = 5., verbose = verbose, 'Flushing output'
@@ -211,7 +226,7 @@ for s=0,n_elements(p_var)-1 do begin
            get_support_data = get_support_data, coord = coord, $
            tper = tper, tphase = tphase, noclean = noclean, _extra = _extra
        endif
-       
+
        if not keyword_set(get_support_data) then begin
           for i = 0, n_elements(tns) - 1 do begin
              if strfilter(tns[i],'*'+support_data_keep) eq '' then begin
@@ -223,7 +238,7 @@ for s=0,n_elements(p_var)-1 do begin
              endif
           endfor
        endif
-      
+
      endif else begin
 ;        dprint, dlevel = 0, verbose = verbose, 'No EFW ESVY data loaded...'+' Probe: '+p_var[s]
        dprint, dlevel = 0, verbose = verbose, 'No EFW ' + $

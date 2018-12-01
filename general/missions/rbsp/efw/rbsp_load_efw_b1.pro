@@ -27,9 +27,9 @@
 ;Notes:
 ; 1. Written by Peter Schroeder, February 2012
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2012-10-17 12:51:35 -0700 (Wed, 17 Oct 2012) $
-; $LastChangedRevision: 11031 $
+; $LastChangedBy: aaronbreneman $
+; $LastChangedDate: 2018-11-30 07:37:47 -0800 (Fri, 30 Nov 2018) $
+; $LastChangedRevision: 26197 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_b1.pro $
 ;-
 
@@ -41,7 +41,7 @@ pro rbsp_load_efw_b1,probe=probe, datatype=datatype, trange=trange, $
                  type=type
 
 rbsp_efw_init
-dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_b1.pro 11031 2012-10-17 19:51:35Z jimm $'
+dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_b1.pro 26197 2018-11-30 15:37:47Z aaronbreneman $'
 
 if(keyword_set(probe)) then $
   p_var = probe
@@ -84,26 +84,37 @@ for s=0,n_elements(p_var)-1 do begin
         format = 'burst_selection/int/'+rbspx+'_b1_fmt.cdf' else $
         format = 'burst_selection/'+rbspx+'_b1_fmt.cdf'
      relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
-;     if vb ge 4 then printdat,/pgmtrace,relpathnames
+
+
+     ;extract the local data path without the filename
+     localgoo = strsplit(relpathnames,'/',/extract)
+     for i=0,n_elements(localgoo)-2 do $
+        if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+     localpath = strtrim(localpath,2) + '/'
+
+     undefine,lf,tns
      dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     files = file_retrieve(relpathnames, _extra=!rbsp_efw)
+     file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+        local_path=!rbsp_efw.local_data_dir+localpath,$
+        local_file=lf,/last_version)
+     files = !rbsp_efw.local_data_dir + localpath + lf
+
+
 
      if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
 
-;     suf='_raw'
      suf=''
-;     midfix='_hsk_beb_analog_'
      prefix=rbspx+'_efw_b1_fmt_'
-     
-     data = cdf_load_vars(files[0],varformat='*')
+     tst = file_info(file_loaded)
+     if tst.exists then data = cdf_load_vars(files[0],varformat='*')
      for i = 0, data.nv - 1 do begin
         if data.vars[i].name eq 'MET' then timedata = time_double(/epoch, *(data.vars[i].dataptr))
         if data.vars[i].name eq 'BBI' then bbidata = *(data.vars[i].dataptr)
         if data.vars[i].name eq 'ECI' then ecidata = *(data.vars[i].dataptr)
      endfor
-     
+
      sortindex = sort(timedata)
-     
+
      store_data,prefix+'block_index', data = {x: timedata[sortindex], y: sortindex}
      if keyword_set(bbidata) then begin
         store_data, prefix+'BBI', data = {x: timedata[sortindex], y: bbidata[sortindex]}

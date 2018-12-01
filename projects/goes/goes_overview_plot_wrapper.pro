@@ -34,8 +34,8 @@
 ;
 ;HISTORY:
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-01-13 10:04:19 -0800 (Fri, 13 Jan 2017) $
-;$LastChangedRevision: 22593 $
+;$LastChangedDate: 2018-11-30 12:02:32 -0800 (Fri, 30 Nov 2018) $
+;$LastChangedRevision: 26202 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot_wrapper.pro $
 ;----------
 
@@ -96,7 +96,7 @@ end
 
 function goes_generate_datearray, date_start, date_end
   if date_start eq '' then begin
-    dprint, dlevel = 1, 'Invalid date_start.'
+    dprint, 'Invalid date_start.'
     return, ['0']
   endif
   year01 = STRMID(date_start, 0, 4)
@@ -118,7 +118,7 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
   server_run = server_run, themis_dir = themis_dir, goes_dir = goes_dir
   compile_opt idl2
   
-  dprint, dlevel = 2, 'START GOES overview plot. Date: ' + SYSTIME()
+  dprint, 'START GOES overview plot. Date: ' + SYSTIME()
   
   ; for server cron job set the directories to server directories
   ; so that files will not have to be downloaded every time
@@ -131,7 +131,7 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
   endif
   if ~keyword_set(base_dir) then base_dir='/disks/themisdata/overplots/'
   lastdate_file = base_dir + 'goeslastdate.txt' ;this file holds the last day processed
-  if ~keyword_set(probes) then probes=['10','11','12','13','14','15']
+  if ~keyword_set(probes) || probes eq '' || probes eq 'all' then probes=['10','11','12','13','14','15']
   if ~keyword_set(date_start) then date_start = ''
   if strlen(date_start) ne 10 then date_start = ''
   if ~keyword_set(date_end) then date_end = ''
@@ -150,7 +150,7 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
       date_array = TIMEGEN(len, START=SYSTIME(/JULIAN)-len)
     endif else if STRCMP(date_mod, 'startdateNNN', 9, /FOLD_CASE) then begin
       if  strlen(date_mod) ne 12 then begin
-        dprint, dlevel = 1, 'Invalid date_mod. Please use date_mod=startdateNNN'
+        dprint, 'Invalid date_mod. Please use date_mod=startdateNNN'
         return
       endif
       if date_start ne ''   then begin
@@ -160,12 +160,12 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
         len = STRMID(date_mod, 9, 3)
         date_array = TIMEGEN(len, START=JULDAY(month0,day0,year0))
       endif else begin
-        dprint, dlevel = 1, 'Invalid date_mod. Please use date_mod=daysNNN and a valid date_start'
+        dprint, 'Invalid date_mod. Please use date_mod=daysNNN and a valid date_start'
         return
       endelse
     endif else if STRCMP(date_mod, 'enddateNNN', 7, /FOLD_CASE) then begin
       if  strlen(date_mod) ne 10 then begin
-        dprint, dlevel = 1, 'Invalid date_mod. Please use date_mod=enddateNNN'
+        dprint, 'Invalid date_mod. Please use date_mod=enddateNNN'
         return
       endif
       if date_end ne ''   then begin
@@ -176,11 +176,11 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
         if len ge 1 then len = len - 1
         date_array = TIMEGEN(STEP_SIZE=1, FINAL=JULDAY(month0,day0,year0), START=JULDAY(month0,day0,year0)-len)
       endif else begin
-        dprint, dlevel = 1, 'Invalid date_mod. Please use date_mod=enddateNNN and a valid date_end'
+        dprint, 'Invalid date_mod. Please use date_mod=enddateNNN and a valid date_end'
         return
       endelse
     endif else begin
-      dprint, dlevel = 1, 'Invalid date_mod.'
+      dprint, 'Invalid date_mod.'
       return
     endelse
   endif else begin
@@ -206,9 +206,10 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
       ; check if dir exists, eg: http://satdat.ngdc.noaa.gov/sem/goes/data/new_avg/2011/08/goes13/netcdf/
       remote_http_dir = remote_dir + 'goes' + probe + '/netcdf/'
       if check_goes_noaa_dir(base_dir, remote_http_dir) then begin
-        dprint, dlevel=1, "====================================================="
+        dprint, "====================================================="
         msgstr = "GOES OVERVIEW PLOT: Probe= " + string(probe) + ", date= " + date
-        dprint, dlevel = 1, msgstr
+        dprint, msgstr
+        store_data, delete=tnames()
         heap_gc
         goes_overview_plot, date = date, probe = probe, directory = directory, device = device, geopack_lshell = geopack_lshell, error=error
         if ~keyword_set(error) then error=0
@@ -225,5 +226,5 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
     thm_thmsoc_dblog, server_run=1, process_name='goes_overview_plot_wrapper', severity=2, str_message=str_message
   endif
   
-  dprint, dlevel = 2, 'END GOES overview plot. Date: ' + SYSTIME()
+  dprint, 'END GOES overview plot. Date: ' + SYSTIME()
 end

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov 29 18:16:27 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Nov 30 18:16:25 2018.<P>
  
 <HR>
  
@@ -78,6 +78,7 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <br>Calculate spin phases at arbitrary times using linear interpolation.
 <LI><A HREF="#RBSP_LOAD_EFW_BURST_TIMES">RBSP_LOAD_EFW_BURST_TIMES</A>
 <LI><A HREF="#RBSP_LOAD_EFW_ESVY_MGSE">RBSP_LOAD_EFW_ESVY_MGSE</A>
+<LI><A HREF="#RBSP_LOAD_EFW_FBK_L2">RBSP_LOAD_EFW_FBK_L2</A>
 <LI><A HREF="#RBSP_LOAD_EFW_FIT">RBSP_LOAD_EFW_FIT</A>
 <LI><A HREF="#RBSP_LOAD_EFW_SPEC">RBSP_LOAD_EFW_SPEC</A>
 <LI><A HREF="#RBSP_LOAD_EFW_WAVEFORM">RBSP_LOAD_EFW_WAVEFORM</A>
@@ -1545,8 +1546,8 @@ Written by Aaron Breneman, Oct 31, 2012
 
  VERSION:
    $LastChangedBy: aaronbreneman $
-   $LastChangedDate: 2014-01-16 10:31:20 -0800 (Thu, 16 Jan 2014) $
-   $LastChangedRevision: 13921 $
+   $LastChangedDate: 2018-11-30 07:36:26 -0800 (Fri, 30 Nov 2018) $
+   $LastChangedRevision: 26189 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_burst_times.pro $
 
 </PRE><P>
@@ -1556,7 +1557,7 @@ Written by Aaron Breneman, Oct 31, 2012
 <A NAME="RBSP_LOAD_EFW_ESVY_MGSE">
 <H2>RBSP_LOAD_EFW_ESVY_MGSE</H2></A>
 <A HREF="#RBSP_LOAD_EFW_BURST_TIMES">[Previous Routine]</A>
-<A HREF="#RBSP_LOAD_EFW_FIT">[Next Routine]</A>
+<A HREF="#RBSP_LOAD_EFW_FBK_L2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:	RBSP_LOAD_EFW_ESVY_MGSE
@@ -1603,9 +1604,57 @@ Written by Aaron Breneman, Oct 31, 2012
 <STRONG>(See <A href="efw/rbsp_load_efw_esvy_mgse.pro">general/missions/rbsp/efw/rbsp_load_efw_esvy_mgse.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RBSP_LOAD_EFW_FBK_L2">
+<H2>RBSP_LOAD_EFW_FBK_L2</H2></A>
+<A HREF="#RBSP_LOAD_EFW_ESVY_MGSE">[Previous Routine]</A>
+<A HREF="#RBSP_LOAD_EFW_FIT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Procedure: RBSP_LOAD_EFW_FBK_L2
+
+Purpose:  Loads RBSP EFW L2 filterbank data
+
+keywords:
+  probe = Probe name. The default is 'all', i.e., load all available probes.
+          This can be an array of strings, e.g., ['a', 'b'] or a
+          single string delimited by spaces, e.g., 'a b'
+  varformat=strin
+  TRANGE= (Optional) Time range of interest  (2 element array), if
+          this is not set, the default is to prompt the user. Note
+          that if the input time range is not a full day, a full
+          day's data is loaded
+                       kw to narrow the data products.  Wildcards and glob-style patterns accepted (e.g., ef?, *_dot0).
+  VARNAMES: names of variables to load from cdf: default is all.
+  /DOWNLOADONLY: download file but don't read it. (NOT IMPLEMENTED YET)
+  /ETU: If set, load data from the ETU.
+  /valid_names, if set, then this routine will return the valid probe, datatype
+          and/or level options in named variables supplied as
+          arguments to the corresponding keywords.
+  files   named varible for output of pathnames of local files.
+  /VERBOSE  set to output some useful info
+   tper: (In, optional) Tplot name of spin period data. By default,
+         tper = pertvar. If tper is set, pertvar = tper.
+   tphase: (In, optional) Tplot name of spin phase data. By default,
+         tphase = 'rbsp' + strlowcase(sc[0]) + '_spinphase'
+         Note: tper and and tphase are mostly used for using eclipse-corrected
+         spin data.
+Example:
+   rbsp_load_efw_filterbank_l2,probe=['a', 'b']
+
+ HISTORY:
+   1. Written by Aaron Breneman, August, 2015
+
+ $LastChangedBy: aaronbreneman $
+ $LastChangedDate: 2018-11-30 07:38:18 -0800 (Fri, 30 Nov 2018) $
+ $LastChangedRevision: 26198 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_fbk_l2.pro $
+</PRE><P>
+<STRONG>(See <A href="efw/rbsp_load_efw_fbk_l2.pro">general/missions/rbsp/efw/rbsp_load_efw_fbk_l2.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RBSP_LOAD_EFW_FIT">
 <H2>RBSP_LOAD_EFW_FIT</H2></A>
-<A HREF="#RBSP_LOAD_EFW_ESVY_MGSE">[Previous Routine]</A>
+<A HREF="#RBSP_LOAD_EFW_FBK_L2">[Previous Routine]</A>
 <A HREF="#RBSP_LOAD_EFW_SPEC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1641,9 +1690,9 @@ Example:
 Notes:
  1. Written by Peter Schroeder, February 2012
 
- $LastChangedBy: peters $
- $LastChangedDate: 2012-11-07 14:58:26 -0800 (Wed, 07 Nov 2012) $
- $LastChangedRevision: 11201 $
+ $LastChangedBy: aaronbreneman $
+ $LastChangedDate: 2018-11-30 07:37:40 -0800 (Fri, 30 Nov 2018) $
+ $LastChangedRevision: 26196 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_fit.pro $
 </PRE><P>
 <STRONG>(See <A href="efw/rbsp_load_efw_fit.pro">general/missions/rbsp/efw/rbsp_load_efw_fit.pro</A>)</STRONG><P>
@@ -1688,8 +1737,8 @@ Notes:
  1. Written by Peter Schroeder, February 2012
 
  $LastChangedBy: aaronbreneman $
- $LastChangedDate: 2015-07-10 07:53:08 -0700 (Fri, 10 Jul 2015) $
- $LastChangedRevision: 18068 $
+ $LastChangedDate: 2018-11-30 07:37:12 -0800 (Fri, 30 Nov 2018) $
+ $LastChangedRevision: 26192 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_spec.pro $
 </PRE><P>
 <STRONG>(See <A href="efw/rbsp_load_efw_spec.pro">general/missions/rbsp/efw/rbsp_load_efw_spec.pro</A>)</STRONG><P>
@@ -1732,9 +1781,9 @@ keywords:
   type:  set to 'calibrated' to automatically convert data into physical units
   coord: Set to 'uvw' to return data in UVW. Otherwise the output is in DSC
           coordinate system
-   tper: (In, optional) Tplot name of spin period data. By default, 
+   tper: (In, optional) Tplot name of spin period data. By default,
          tper = pertvar. If tper is set, pertvar = tper.
-   tphase: (In, optional) Tplot name of spin phase data. By default, 
+   tphase: (In, optional) Tplot name of spin phase data. By default,
          tphase = 'rbsp' + strlowcase(sc[0]) + '_spinphase'
          Note: tper and and tphase are mostly used for using eclipse-corrected
          spin data.
@@ -1748,8 +1797,8 @@ Example:
              *rbsp_efw_cal_waveform*.
 
  $LastChangedBy: aaronbreneman $
- $LastChangedDate: 2015-07-10 07:53:23 -0700 (Fri, 10 Jul 2015) $
- $LastChangedRevision: 18069 $
+ $LastChangedDate: 2018-11-30 07:37:20 -0800 (Fri, 30 Nov 2018) $
+ $LastChangedRevision: 26193 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_waveform.pro $
 </PRE><P>
 <STRONG>(See <A href="efw/rbsp_load_efw_waveform.pro">general/missions/rbsp/efw/rbsp_load_efw_waveform.pro</A>)</STRONG><P>
@@ -1808,8 +1857,8 @@ Example:
              *rbsp_efw_cal_waveform*.
 
  $LastChangedBy: aaronbreneman $
- $LastChangedDate: 2014-08-07 12:56:07 -0700 (Thu, 07 Aug 2014) $
- $LastChangedRevision: 15656 $
+ $LastChangedDate: 2018-11-30 07:35:32 -0800 (Fri, 30 Nov 2018) $
+ $LastChangedRevision: 26188 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_waveform_l2.pro $
 </PRE><P>
 <STRONG>(See <A href="efw/rbsp_load_efw_waveform_l2.pro">general/missions/rbsp/efw/rbsp_load_efw_waveform_l2.pro</A>)</STRONG><P>
@@ -1859,8 +1908,8 @@ Example:
              *rbsp_efw_cal_waveform*.
 
  $LastChangedBy: aaronbreneman $
- $LastChangedDate: 2016-10-17 09:27:46 -0700 (Mon, 17 Oct 2016) $
- $LastChangedRevision: 22106 $
+ $LastChangedDate: 2018-11-30 07:35:22 -0800 (Fri, 30 Nov 2018) $
+ $LastChangedRevision: 26187 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_waveform_l3.pro $
 </PRE><P>
 <STRONG>(See <A href="efw/rbsp_load_efw_waveform_l3.pro">general/missions/rbsp/efw/rbsp_load_efw_waveform_l3.pro</A>)</STRONG><P>
@@ -1904,9 +1953,9 @@ Example:
 Notes:
  1. Written by Peter Schroeder, February 2012
 
- $LastChangedBy: peters $
- $LastChangedDate: 2012-11-05 10:31:46 -0800 (Mon, 05 Nov 2012) $
- $LastChangedRevision: 11178 $
+ $LastChangedBy: aaronbreneman $
+ $LastChangedDate: 2018-11-30 07:37:26 -0800 (Fri, 30 Nov 2018) $
+ $LastChangedRevision: 26194 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_xspec.pro $
 </PRE><P>
 <STRONG>(See <A href="efw/rbsp_load_efw_xspec.pro">general/missions/rbsp/efw/rbsp_load_efw_xspec.pro</A>)</STRONG><P>
@@ -1947,7 +1996,7 @@ Notes:
  NAME: rbsp_load_maneuver_file
  SYNTAX: x = rbsp_load_maneuver_file(probe,date)
  PURPOSE: Returns a structure with start and end times of maneuvers
- from the MOC data product &quot;maneuver_sequence&quot; files. 
+ from the MOC data product &quot;maneuver_sequence&quot; files.
  INPUT: probe = 'a' or 'b'
         date = '2012-10-13' format
 
@@ -1956,13 +2005,13 @@ Notes:
  NOTES: uses the MAXARMTIME variable to determine the extent of the
  maneuver. This may be the maximum upper limit maneuver time and not
  the actual maneuver time. Unfortunately the final maneuver log files are
- Word documents. 
+ Word documents.
 
  HISTORY: Written by Aaron W Breneman - University of Minnesota 2014-10-26
- VERSION: 
+ VERSION:
    $LastChangedBy: aaronbreneman $
-   $LastChangedDate: 2014-10-26 10:14:47 -0700 (Sun, 26 Oct 2014) $
-   $LastChangedRevision: 16037 $
+   $LastChangedDate: 2018-11-30 07:38:59 -0800 (Fri, 30 Nov 2018) $
+   $LastChangedRevision: 26199 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_maneuver_file.pro $
 </PRE><P>
 <STRONG>(See <A href="efw/rbsp_load_maneuver_file.pro">general/missions/rbsp/efw/rbsp_load_maneuver_file.pro</A>)</STRONG><P>
