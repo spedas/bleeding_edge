@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-11-08 07:58:40 -0800 (Thu, 08 Nov 2018) $
-; $LastChangedRevision: 26068 $
+; $LastChangedDate: 2018-12-01 07:52:04 -0800 (Sat, 01 Dec 2018) $
+; $LastChangedRevision: 26217 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -197,7 +197,8 @@ endif else begin
 
   str = { $
     time:        ccsds.time, $
-    epoch:      0LL,  $
+    met:         0d, $
+;    epoch:      0LL,  $
     f0:           f0,$
     apid:        ccsds.apid, $
     source:      0UL,   $
@@ -233,9 +234,9 @@ return,str
 end
 
 
-function hex,i
- return, string(format='(Z)',i)
-end
+;function hex,i
+; return, string(format='(Z)',i)
+;end
 
 
 
@@ -316,31 +317,39 @@ PRO spp_swp_spe_prod_apdat::Clear
 END
 
 
-PRO spp_swp_spe_prod_apdat::makecdf,trange=trange
-
-  printdat,time_string(trange)
-  datarray = self.data.array
-  if keyword_set(trange) then begin
-    w= where(datarray.time ge trange[0] and datarray.time lt trange[1],/null)
-    datarray = datarray[w]
-  endif
-  if ~keyword_set(datarray) then return
-  w = where( datarray.ndat eq datarray.datasize,/null)
-  datarray = datarray[w]
-  if ~keyword_set(datarray) then return
-
-  if keyword_set(datarray) then begin
-    cdf = spp_swp_span_makecdf(datarray)  ;, datanovary,  varnames=varnames, ignore=ignore,_extra=ex
-    pathformat = self.cdf_pathname
-    filename = time_string(trange[0],tformat=pathformat)
-    filename = str_sub(filename,'$NAME$',self.name)
-    filename = root_data_dir() + filename
-    cdf.write,filename
-    obj_destroy,cdf
-    
-  endif
-end
+;PRO spp_swp_spe_prod_apdat::makecdf,trange=trange
+;
+;  dprint,/phelp,time_string(trange)
+;  datarray = self.data.array
+;  if keyword_set(trange) then begin
+;    w= where(datarray.time ge trange[0] and datarray.time lt trange[1],/null)
+;    datarray = datarray[w]
+;  endif
+;  if ~keyword_set(datarray) then return
+;  w = where( datarray.ndat eq datarray.datasize,/null)
+;  datarray = datarray[w]
+;  if ~keyword_set(datarray) then return
+;
+;  if keyword_set(datarray) then begin
+;    cdf = spp_swp_span_makecdf(datarray)  ;, datanovary,  varnames=varnames, ignore=ignore,_extra=ex
+;    pathformat = self.cdf_pathname
+;    filename = time_string(trange[0],tformat=pathformat)
+;    filename = str_sub(filename,'$NAME$',self.name)
+;    filename = root_data_dir() + filename
+;    cdf.write,filename
+;    obj_destroy,cdf
+;    
+;  endif
+;end
  
+function spp_swp_spe_prod_apdat::cdf_global_attributes
+  global_att= self.spp_gen_apdat::cdf_global_attributes()
+  global_att['InstrumentLead_name'] = 'P. Whittlesey'
+  global_att['InstrumentLead_email'] = 'phyllisw@berkeley.edu'
+  global_att['InstrumentLead_affiliation'] = 'U.C. Berkeley Space Sciences Laboratory'
+  global_att = global_att + self.sw_version()
+  return,global_att
+end
 
 
 ;

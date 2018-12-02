@@ -1,8 +1,12 @@
 ;+
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-12-01 07:52:04 -0800 (Sat, 01 Dec 2018) $
+; $LastChangedRevision: 26217 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
-COMPILE_OPT IDL2
+;COMPILE_OPT IDL2
 
 
 FUNCTION spp_gen_apdat::Init,apid,name,_EXTRA=ex
@@ -211,9 +215,9 @@ end
 ;PURPOSE:
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-11-16 11:50:38 -0800 (Fri, 16 Nov 2018) $
-; $LastChangedRevision: 26137 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-12-01 07:52:04 -0800 (Sat, 01 Dec 2018) $
+; $LastChangedRevision: 26217 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -229,9 +233,9 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_time_stamp'] = time_string(this_file_date)
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
-  sw_hash['svn_changedby '] = '$LastChangedBy: phyllisw2 $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2018-11-16 11:50:38 -0800 (Fri, 16 Nov 2018) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 26137 $'
+  sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2018-12-01 07:52:04 -0800 (Sat, 01 Dec 2018) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 26217 $'
 
     return,sw_hash
 end
@@ -240,69 +244,121 @@ function spp_gen_apdat::cdf_global_attributes
   global_att=orderedhash()
 
   global_att['Acknowledgement'] = !NULL
-  global_att['TITLE'] = 'PSP SPAN Electron and Ion Flux'
   global_att['Project'] = 'PSP>Parker Solar Probe'
-  global_att['Discipline'] = 'Heliospheric Physics>Particles'
   global_att['Source_name'] = 'PSP>Parker Solar Probe'
+  global_att['Acknowledgement'] = !NULL
+  global_att['TITLE'] = 'PSP SPAN Electron and Ion Data'
+  global_att['Discipline'] = 'Heliospheric Physics>Particles'
   global_att['Descriptor'] = 'INSTname>SWEAP generic Sensor Experiment'
-  global_att['Data_type'] = self.name +'>Survey Calibrated Particle Flux'
+  global_att['Data_type'] = '>Survey Calibrated Particle Flux'
   global_att['Data_version'] = 'v00'
-  global_att['TEXT'] = 'PSP'
+  global_att['TEXT'] = 'Reference Paper or URL'
   global_att['MODS'] = 'Revision 0'
   ;global_att['Logical_file_id'] =  self.name+'_test.cdf'  ; 'mvn_sep_l2_s1-cal-svy-full_20180201_v04_r02.cdf'
   global_att['dirpath'] = './'
   ;global_att['Logical_source'] = '.cal.spec_svy'
   ;global_att['Logical_source_description'] = 'DERIVED FROM: PSP SWEAP'  ; SEP (Solar Energetic Particle) Instrument
-  global_att['Sensor'] = ' '   ;'SEP1'
+  global_att['Sensor'] = ' '
   global_att['PI_name'] = 'J. Kasper'
-  global_att['PI_affiliation'] = 'U. Michigan'
-  global_att['IPI_name'] = 'D. Larson (davin@ssl.berkeley.edu)
+  global_att['PI_affiliation'] = 'Univ. of Michigan'
+  global_att['IPI_name'] = 'D. Larson (davin@ssl.berkeley.edu)'
   global_att['IPI_affiliation'] = 'U.C. Berkeley Space Sciences Laboratory'
+  global_att['IPI_email'] = 'davin@ssl.berkeley.edu'
   global_att['InstrumentLead_name'] = '  '
   global_att['InstrumentLead_affiliation'] = 'U.C. Berkeley Space Sciences Laboratory'
   global_att['Instrument_type'] = 'Electrostatic Analyzer Particle Detector'
   global_att['Mission_group'] = 'PSP'
-  global_att['Parents'] = '' ; '2018-02-17/22:17:38   202134481 ChecksumExecutableNotAvailable            /disks/data/maven/data/sci/pfp/l0_all/2018/02/mvn_pfp_all_l0_20180201_v002.dat ...
+  global_att['Parents'] = ' '
+
   global_att = global_att + self.sw_version()
-  ;  global_att['Planet'] = 'Mars
-  ;  global_att['PDS_collection_id'] = 'MAVEN
-  ;  global_att['PDS_start_time'] = '2018-02-01T00:00:14.230Z
-  ;  global_att['PDS_stop_time'] = '2018-02-02T00:00:05.594Z
   ;  global_att['SW_VERSION'] = 'v00'
   ;  global_att['SW_TIME_STAMP_FILE'] = '/home/mavensep/socware/projects/maven/sep/mvn_sep_sw_version.pro
   ;  global_att['SW_TIME_STAMP'] =  time_string(systime(1))
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
-  ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: phyllisw2 $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-11-16 11:50:38 -0800 (Fri, 16 Nov 2018) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 26137 $'
+  ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-12-01 07:52:04 -0800 (Sat, 01 Dec 2018) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 26217 $'
 
   return,global_att
 end
 
 
 
-function spp_gen_apdat::cdf_variable_attributes
-  var_att = orderedhash()
-  var_att['FIELDNAM']= ''
-  var_att['MONOTON']= 'INCREASE'
-  var_att['FORMAT']= ''
-  var_att['FORM_PTR']= ''
-  var_att['LABLAXIS']= ''
-  var_att['LABL_PTR_1']= ''
-  var_att['VAR_TYPE']= 'support_data'
-  var_att['FILLVAL']= !values.f_nan
-  var_att['DEPEND_0']= 'Epoch'
-  var_att['DEPEND_1']= ''
-  var_att['DISPLAY_TYPE']= ''
-  var_att['VALIDMIN']= !null
-  var_att['VALIDMAX']= !null
-  var_att['SCALEMIN']= !null
-  var_att['SCALEMAX']= !null
-  var_att['UNITS']= ''
-  var_att['CATDESC']= ''
-  return,var_att
+function spp_gen_apdat::cdf_variable_attributes, vname
+  dlevel =3
+  fnan = !values.f_nan
+  att = orderedhash()
+  ;  Create default value place holders
+  att['CATDESC']    = ''
+  att['FIELDNAM']    = vname
+  att['LABLAXIS']    = vname
+  att['DEPEND_0'] = 'Epoch'
+  att['DISPLAY_TYPE'] = ''
+  case vname of
+    'Epoch': begin
+      att['CATDESC']    = 'Time at middle of sample'
+      att['FIELDNAM']    = 'Time in TT2000 format'
+      att['LABLAXIS']    = 'Epoch'
+      att['UNITS']    = 'ns'
+      att['FILLVAL']    = -1
+      att['VALIDMIN']    = -315575942816000000
+      att['VALIDMAX']    = 946728068183000000
+      att['VAR_TYPE']    = 'support_data'
+      att['DICT_KEY']    = 'time>Epoch'
+      att['SCALETYP']    = 'linear'
+      att['MONOTON']    = 'INCREASE'
+    end
+    'TIME': begin
+      att['CATDESC']    = 'Time at middle of sample'
+      att['FIELDNAM']    = 'Time in UTC format'
+      att['LABLAXIS']    = 'Unix Time'
+      att['UNITS']    = 'sec'
+      att['FILLVAL']    = fnan
+      att['VALIDMIN']    = time_double('2010')
+      att['VALIDMAX']    = time_double('2030')
+      att['VAR_TYPE']    = 'support_data'
+      att['DICT_KEY']    = 'time>UTC'
+      att['SCALETYP']    = 'linear'
+      att['MONOTON']    = 'INCREASE'
+    end
+    'COUNTS': begin
+      att['CATDESC']    = 'Counts in Energy/angle bin'
+      att['FIELDNAM']    = 'Counts in '
+      att['DEPEND_0']    = 'Epoch'
+      att['LABLAXIS']    = 'Counts'
+      att['UNITS']    = ''
+      att['FILLVAL']    = fnan
+      att['VALIDMIN']    = 0
+      att['VALIDMAX']    = 1e6
+      att['VAR_TYPE']    = 'data'
+      att['DICT_KEY']    = ''
+      att['SCALETYP']    = 'log'
+      att['MONOTON']    = ''
+    end
+    else:  begin    ; assumed to be support
+      att['CATDESC']    = 'Not known'
+      att['FIELDNAM']    = 'Unknown '
+      att['DEPEND_0']    = 'Epoch'
+      att['LABLAXIS']    = vname
+      att['UNITS']    = ''
+      att['FILLVAL']    = fnan
+      att['VALIDMIN']    = -1e30
+      att['VALIDMAX']    = 1e30
+      att['VAR_TYPE']    = 'ignore_data'
+      att['DICT_KEY']    = ''
+      att['SCALETYP']    = 'linear'
+      att['MONOTON']    = ''
+      dprint,dlevel=dlevel, 'variable ' +vname+ ' not recognized'
+
+    end
+
+  endcase
+
+  return, att
 end
+
+
 
 
 
@@ -320,6 +376,99 @@ pro spp_gen_apdat::cdf_create_data_vars, fileid, var, vattributes=atts, varstr
   endif
 
 end
+
+
+
+
+
+function spp_gen_apdat::cdf_makeobj,  datavary, datanovary,  vnames=vnames, ignore=ignore,global_att=global_att,_extra=ex
+
+  cdf = cdf_tools(_extra=ex)
+  if ~keyword_set(global_att) then begin
+    global_att = orderedhash()
+    global_att['Project'] = 'PSP>Parker Solar Probe'
+  endif
+  cdf.g_attributes += global_att
+
+  fnan = !values.f_nan
+
+  ; Force Epoch as first variable. If datavary contains an EPOCH variable it will add or overwrite this value
+  epoch = time_ephemeris(datavary.time,/et2ut)                ;  may want to change this later to base it on met
+  vho = cdf_tools_varinfo('Epoch',epoch[0],/recvary,datatype = 'CDF_EPOCH')
+  vh = vho.getattr()
+  vh.data.array = epoch
+  vatts =  self.cdf_variable_attributes('Epoch')
+  vh.attributes  += vatts
+  cdf.add_variable, vh
+
+  if keyword_set(datavary) then begin
+    if ~keyword_set(vnames) then vnames = tag_names(datavary)
+    datavary0 = datavary[0]   ; use first element as the template.
+
+    dlevel=5
+    for vn=0,n_elements(vnames)-1 do begin
+      vname = vnames[vn]
+      val = datavary0.(vn)
+      vals = datavary.(vn)
+      if isa(val,'pointer') then begin                ; special case for pointers
+        maxsize = max(datavary.datasize,index)        ; determines maximum size of container
+        val = *vals[index]
+        ndv = n_elements(datavary)
+        ptrs = vals
+        vals = replicate(fill_nan(val[0]),[ndv,maxsize])
+        for i= 0,ndv-1 do if maxsize eq n_elements(*ptrs[i]) then  vals[i,*] = *ptrs[i]    ; only the largest arrays will get filled - should correct in the future.
+      endif else begin
+        vals = reform(transpose(vals))
+      endelse
+      vho = cdf_tools_varinfo(vname, val, /recvary)
+      vh = vho.getattr()
+      vh.data.array = vals
+      vatt  = self.cdf_variable_attributes(vname)
+      ;  dprint,dlevel=dlevel,'hello1'
+      vh.attributes += vatt
+      ;  dprint,dlevel=dlevel,'hello2'
+      cdf.add_variable, vh
+    endfor
+
+  endif
+
+  return,cdf
+end
+
+
+
+
+
+PRO spp_gen_apdat::cdf_makefile,trange=trange
+
+  printdat,time_string(trange)
+  datarray = self.data.array
+  if keyword_set(trange) then begin
+    w= where(datarray.time ge trange[0] and datarray.time lt trange[1],/null)
+    datarray = datarray[w]
+  endif
+  if ~keyword_set(datarray) then return
+  str_element,datarray,'datasize',datasize
+  if keyword_set(datasize) then begin
+      w = where( datarray.ndat eq datarray.datasize,/null)
+      datarray = datarray[w]
+      if ~keyword_set(datarray) then return
+  endif
+
+  if keyword_set(datarray) then begin
+    g_att = self.cdf_global_attributes()
+    cdf = self.cdf_makeobj(datarray,global_att=g_att)  ;, datanovary,  varnames=varnames, ignore=ignore,_extra=ex
+    pathformat = self.cdf_pathname
+    filename = time_string(trange[0],tformat=pathformat)
+    filename = str_sub(filename,'$NAME$',self.name)
+    filename = root_data_dir() + filename
+    cdf.write,filename
+    obj_destroy,cdf
+  endif
+end
+
+
+
 
 
 pro spp_gen_apdat::cdf_create_file,cdftags=cdftags,trange=trange
