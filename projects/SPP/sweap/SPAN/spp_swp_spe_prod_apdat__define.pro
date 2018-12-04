@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-01 07:52:04 -0800 (Sat, 01 Dec 2018) $
-; $LastChangedRevision: 26217 $
+; $LastChangedDate: 2018-12-03 06:41:04 -0800 (Mon, 03 Dec 2018) $
+; $LastChangedRevision: 26219 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -142,6 +142,7 @@ if 1 then begin    ; New merged method
   spp_swp_span_prod__define,str,ccsds
   
 endif else begin
+  message,'Obsolete'
   ccsds_data = spp_swp_ccsds_data(ccsds)
 
   if pksize ne n_elements(ccsds_data) then begin
