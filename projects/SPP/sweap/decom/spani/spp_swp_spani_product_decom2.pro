@@ -1,7 +1,7 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2016-02-29 17:07:52 -0800 (Mon, 29 Feb 2016) $
-; $LastChangedRevision: 20274 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu:36867/repos/spdsoft/trunk/projects/SPP/sweap/decom/spane/spp_swp_spane_product_decom.pro $
+; $LastChangedDate: 2018-12-04 12:32:15 -0800 (Tue, 04 Dec 2018) $
+; $LastChangedRevision: 26232 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/spani/spp_swp_spani_product_decom2.pro $
 
 
 function spp_swp_spani_16A, data, header_str=header_str, apdat=apdat

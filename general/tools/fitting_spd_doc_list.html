@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Dec  3 18:16:34 2018.<P>
+<STRONG>Last modified: </STRONG>Tue Dec  4 18:16:31 2018.<P>
  
 <HR>
  
@@ -32,6 +32,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#MGAUSS">MGAUSS</A>
 <br>Evaluates multiple gaussian function with background.
 <LI><A HREF="#POLYCURVE">POLYCURVE</A>
+<br>Evaluates a (5th degree) polynomial (can be used with &quot;FIT&quot;)
+<LI><A HREF="#POLYCURVE2">POLYCURVE2</A>
 <br>Evaluates a (5th degree) polynomial (can be used with &quot;FIT&quot;)
 <LI><A HREF="#POWER_LAW">POWER_LAW</A>
 <br>Evaluates a power law function (with background) (can be used with &quot;FIT&quot;)
@@ -399,7 +401,7 @@ Written by: Davin Larson
 <A NAME="POLYCURVE">
 <H2>POLYCURVE</H2></A>
 <A HREF="#MGAUSS">[Previous Routine]</A>
-<A HREF="#POWER_LAW">[Next Routine]</A>
+<A HREF="#POLYCURVE2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 FUNCTION  polycurve(x,par=p)
@@ -409,9 +411,22 @@ PURPOSE:
 <STRONG>(See <A href="fitting/polycurve.pro">general/tools/fitting/polycurve.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="POLYCURVE2">
+<H2>POLYCURVE2</H2></A>
+<A HREF="#POLYCURVE">[Previous Routine]</A>
+<A HREF="#POWER_LAW">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION  polycurve(x,par=p)
+PURPOSE:
+   Evaluates a (5th degree) polynomial (can be used with &quot;FIT&quot;)
+</PRE><P>
+<STRONG>(See <A href="fitting/polycurve2.pro">general/tools/fitting/polycurve2.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="POWER_LAW">
 <H2>POWER_LAW</H2></A>
-<A HREF="#POLYCURVE">[Previous Routine]</A>
+<A HREF="#POLYCURVE2">[Previous Routine]</A>
 <A HREF="#SPLFUNC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

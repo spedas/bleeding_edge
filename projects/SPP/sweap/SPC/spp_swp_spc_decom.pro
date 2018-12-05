@@ -1,7 +1,7 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2016-02-15 15:33:11 -0800 (Mon, 15 Feb 2016) $
-; $LastChangedRevision: 20002 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu:36867/repos/spdsoft/trunk/projects/SPP/sweap/SWEM/spp_swp_swem_unwrapper.pro $
+; $LastChangedDate: 2018-12-04 12:32:15 -0800 (Tue, 04 Dec 2018) $
+; $LastChangedRevision: 26232 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPC/spp_swp_spc_decom.pro $
 
 function spp_swp_spc_rss_apdat_decom, bytarray
   if n_elements(bytarray) eq 0 then bytarray = bytarr(8)
