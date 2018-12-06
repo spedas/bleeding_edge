@@ -724,9 +724,36 @@ filler = fltarr(2, 10)          ; (10 chosen arbitrarily)
 filler[*, *] = float('NaN')
 ;Harald requests using FSMI as first choice:
 fsmi_site = tnames('*ask*fsmi*')
-if fsmi_site[0] ne '' then copy_data, fsmi_site[0], 'Keogram' else begin
-  if asi_sites[0] ne '' then copy_data, asi_sites[0], 'Keogram' else store_data, 'Keogram', data = {x:time_double(date_ext)+findgen(2), y:filler, v:findgen(10)}
+if fsmi_site[0] ne '' then begin
+   copy_data, fsmi_site[0], 'Keogram' 
+   have_keogram = 1b
+endif else begin
+  if asi_sites[0] ne '' then begin
+     copy_data, asi_sites[0], 'Keogram' 
+     have_keogram = 1b
+  endif else begin
+     store_data, 'Keogram', data = {x:time_double(date_ext)+findgen(2), y:filler, v:findgen(10)}
+     have_keogram = 0b
+  endelse
 endelse
+;remove all time steps for which all y values are fill= 65335, then degap
+if have_keogram then begin
+   get_data, 'Keogram', data = kd
+   nkd = n_elements(kd.x)
+   nyd = n_elements(kd.y[0, *])
+   drop_kd = bytarr(nkd)
+   for j = 0, nkd-1 do begin
+      jkd_test = where(kd.y[j, *] eq 65535, njkd_test)
+      if njkd_test eq nyd then drop_kd[j] = 1b
+   endfor
+   keep_data = where(drop_kd eq 0, nkeep_data)
+   if nkeep_data gt 0 then begin
+      store_data, 'Keogram', data = {x:kd.x[keep_data], y:float(kd.y[keep_data,*])}
+      tdegap, 'Keogram', dt = 120.0, /twonanpergap, /overwrite
+   endif else begin
+      store_data, 'Keogram', data = {x:time_double(date_ext)+findgen(2), y:filler, v:findgen(10)}
+   endelse
+endif   
 
 ; Get position info
 ;---------------------------------------------------------

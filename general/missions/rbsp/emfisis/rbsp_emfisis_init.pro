@@ -10,7 +10,7 @@
 ;                  to this root directory.;
 ;
 ; !RBSP_EMFISIS.REMOTE_DATA_DIR   This is the URL of the server that can provide the data files.
-;                  (default is: "http://themis.ssl.berkeley.edu/data/themis/")
+;                  (default is: "https://themis.ssl.berkeley.edu/data/themis/")
 ;                  if the software does not find a needed file in LOCAL_DATA_DIR,
 ;                  then it will attempt to download the data from the URL and REMOTE_DATA_DIR is defined,
 ;                  the software will attempt to download the file from REMOTE_DATA_DIR, place it in LOCAL_DATA_DIR
@@ -38,11 +38,11 @@
 ;
 ;          laptop WINDOWS computer located far from a data server, but with internet connection.
 ;   LOCAL_DATA_DIR  = 'C;\data\rbsp\'                              ; Local (portable) directory on laptop
-;   REMOTE_DATA_DIR = 'http://themis.ssl.berkeley.edu/data/themis/'    ;  URL used to download data to LOCAL_DATA_DIR
+;   REMOTE_DATA_DIR = 'https://themis.ssl.berkeley.edu/data/themis/'    ;  URL used to download data to LOCAL_DATA_DIR
 ;
 ;          MacOS computer located away from SSL without a nearby data server
 ;   LOCAL_DATA_DIR  = '/data/rbsp/'                              ; Local (portable) directory on laptop
-;   REMOTE_DATA_DIR = 'http://themis.ssl.berkeley.edu/data/themis/'    ;  URL used to download data to LOCAL_DATA_DIR
+;   REMOTE_DATA_DIR = 'https://themis.ssl.berkeley.edu/data/themis/'    ;  URL used to download data to LOCAL_DATA_DIR
 ;
 ;   Note: If automatic downloads are used. (i.e. REMOTE_DATA_DIR is not an empty string) the user must ensure that
 ;   LOCAL_DATA_DIR is writeable.
@@ -54,9 +54,9 @@
 ;HISTORY
 ; Written by Peter Schroeder July 2011
 ;
-;$LastChangedBy: peters $
-;$LastChangedDate: 2014-02-06 15:30:23 -0800 (Thu, 06 Feb 2014) $
-;$LastChangedRevision: 14188 $
+;$LastChangedBy: aaronbreneman $
+;$LastChangedDate: 2018-12-05 06:59:18 -0800 (Wed, 05 Dec 2018) $
+;$LastChangedRevision: 26238 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/emfisis/rbsp_emfisis_init.pro $
 ;-
 pro rbsp_emfisis_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote_data_dir, $
@@ -143,4 +143,3 @@ print,days,hours,mins,secs,format= '("RBSP countdown:",i4," Days, ",i02," Hours,
 
 
 end
-

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Dec  4 18:16:31 2018.<P>
+<STRONG>Last modified: </STRONG>Wed Dec  5 18:16:30 2018.<P>
  
 <HR>
  
@@ -64,9 +64,9 @@ RBSP_LOAD_EMFISIS_QUICKLOOK (PROCEDURE)</A>
 
   Author:  Peter Schroeder May 2012
 
- $LastChangedBy: peters $
- $LastChangedDate: 2012-05-15 11:57:32 -0700 (Tue, 15 May 2012) $
- $LastChangedRevision: 10429 $
+ $LastChangedBy: aaronbreneman $
+ $LastChangedDate: 2018-12-05 06:57:52 -0800 (Wed, 05 Dec 2018) $
+ $LastChangedRevision: 26237 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/emfisis/rbsp_emfisis_config.pro $
 
 </PRE><P>
@@ -107,7 +107,7 @@ PURPOSE:    Initializes system variables for RBSP EMFISIS.  Can be called from i
                   to this root directory.;
 
  !RBSP_EMFISIS.REMOTE_DATA_DIR   This is the URL of the server that can provide the data files.
-                  (default is: &quot;http://themis.ssl.berkeley.edu/data/themis/&quot;)
+                  (default is: &quot;https://themis.ssl.berkeley.edu/data/themis/&quot;)
                   if the software does not find a needed file in LOCAL_DATA_DIR,
                   then it will attempt to download the data from the URL and REMOTE_DATA_DIR is defined,
                   the software will attempt to download the file from REMOTE_DATA_DIR, place it in LOCAL_DATA_DIR
@@ -135,11 +135,11 @@ KEYWORDS:
 
           laptop WINDOWS computer located far from a data server, but with internet connection.
    LOCAL_DATA_DIR  = 'C;\data\rbsp\'                              ; Local (portable) directory on laptop
-   REMOTE_DATA_DIR = 'http://themis.ssl.berkeley.edu/data/themis/'    ;  URL used to download data to LOCAL_DATA_DIR
+   REMOTE_DATA_DIR = 'https://themis.ssl.berkeley.edu/data/themis/'    ;  URL used to download data to LOCAL_DATA_DIR
 
           MacOS computer located away from SSL without a nearby data server
    LOCAL_DATA_DIR  = '/data/rbsp/'                              ; Local (portable) directory on laptop
-   REMOTE_DATA_DIR = 'http://themis.ssl.berkeley.edu/data/themis/'    ;  URL used to download data to LOCAL_DATA_DIR
+   REMOTE_DATA_DIR = 'https://themis.ssl.berkeley.edu/data/themis/'    ;  URL used to download data to LOCAL_DATA_DIR
 
    Note: If automatic downloads are used. (i.e. REMOTE_DATA_DIR is not an empty string) the user must ensure that
    LOCAL_DATA_DIR is writeable.
@@ -151,9 +151,9 @@ KEYWORDS:
 HISTORY
  Written by Peter Schroeder July 2011
 
-$LastChangedBy: peters $
-$LastChangedDate: 2014-02-06 15:30:23 -0800 (Thu, 06 Feb 2014) $
-$LastChangedRevision: 14188 $
+$LastChangedBy: aaronbreneman $
+$LastChangedDate: 2018-12-05 06:59:18 -0800 (Wed, 05 Dec 2018) $
+$LastChangedRevision: 26238 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/emfisis/rbsp_emfisis_init.pro $
 </PRE><P>
 <STRONG>(See <A href="emfisis/rbsp_emfisis_init.pro">general/missions/rbsp/emfisis/rbsp_emfisis_init.pro</A>)</STRONG><P>

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Dec  4 18:16:31 2018.<P>
+<STRONG>Last modified: </STRONG>Wed Dec  5 18:16:30 2018.<P>
  
 <HR>
  
@@ -21,7 +21,6 @@ This page was created by the IDL library routine
 <H1>general/missions/rbsp/spacecraft</H1>
 <LI><A HREF="#RBSP_LOAD_SA_POINTING">RBSP_LOAD_SA_POINTING</A>
 <LI><A HREF="#RBSP_LOAD_SPICE_KERNELS">RBSP_LOAD_SPICE_KERNELS</A>
-<LI><A HREF="#RBSP_LOAD_SPICE_METAKERNEL">RBSP_LOAD_SPICE_METAKERNEL</A>
 <LI><A HREF="#RBSP_LOAD_SPICE_PREDICT">RBSP_LOAD_SPICE_PREDICT</A>
 <LI><A HREF="#RBSP_LOAD_SPICE_STATE">RBSP_LOAD_SPICE_STATE</A>
 <LI><A HREF="#RBSP_LOAD_STATE (PROCEDURE)">RBSP_LOAD_STATE (PROCEDURE)</A>
@@ -94,7 +93,7 @@ This page was created by the IDL library routine
 <A NAME="RBSP_LOAD_SPICE_KERNELS">
 <H2>RBSP_LOAD_SPICE_KERNELS</H2></A>
 <A HREF="#RBSP_LOAD_SA_POINTING">[Previous Routine]</A>
-<A HREF="#RBSP_LOAD_SPICE_METAKERNEL">[Next Routine]</A>
+<A HREF="#RBSP_LOAD_SPICE_PREDICT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Procedure: RBSP_LOAD_SPICE_KERNELS
@@ -115,38 +114,9 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="spacecraft/rbsp_load_spice_kernels.pro">general/missions/rbsp/spacecraft/rbsp_load_spice_kernels.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_LOAD_SPICE_METAKERNEL">
-<H2>RBSP_LOAD_SPICE_METAKERNEL</H2></A>
-<A HREF="#RBSP_LOAD_SPICE_KERNELS">[Previous Routine]</A>
-<A HREF="#RBSP_LOAD_SPICE_PREDICT">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- Procedure: RBSP_LOAD_SPICE_METAKERNEL
-
- Purpose:  Loads RBSP SPICE metakernels
-
- input:
- metakernel : full path to metakernel file for loading
- 
- keywords:
-	/UNLOAD : unloads all kernels loaded by the four RBSP metakernels
-   mkpath='/path/to/teams/spice/meta' : the full path to the teams/spice/meta
-		directory that contains the up-to-date metakernels from MOC
-	/ALL : load all available kernels
- Examples:
-   rbsp_load_spice_metakernel,/dev ; load development kernels
-	rbsp_load_spice_metakernel,/dev,/unload ; unload development kernels
-   rbsp_load_spice_kernels,/update ; update and load latest MOC kernels
-
- Notes:
-	Default is to load all available kernels if no timespan is set.
-</PRE><P>
-<STRONG>(See <A href="spacecraft/rbsp_load_spice_metakernel.pro">general/missions/rbsp/spacecraft/rbsp_load_spice_metakernel.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="RBSP_LOAD_SPICE_PREDICT">
 <H2>RBSP_LOAD_SPICE_PREDICT</H2></A>
-<A HREF="#RBSP_LOAD_SPICE_METAKERNEL">[Previous Routine]</A>
+<A HREF="#RBSP_LOAD_SPICE_KERNELS">[Previous Routine]</A>
 <A HREF="#RBSP_LOAD_SPICE_STATE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -176,9 +146,9 @@ This page was created by the IDL library routine
 	11/2012, created - Kris Kersten, kris.kersten@gmail.com
 
  VERSION:
-   $LastChangedBy: kersten $
-   $LastChangedDate: 2013-05-07 09:53:04 -0700 (Tue, 07 May 2013) $
-   $LastChangedRevision: 12292 $
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2018-12-05 10:27:34 -0800 (Wed, 05 Dec 2018) $
+   $LastChangedRevision: 26243 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/spacecraft/rbsp_load_spice_predict.pro $
 
 </PRE><P>
@@ -360,9 +330,9 @@ This page was created by the IDL library routine
    2015-09-29: jmm, More error checking, for attitude history files
    which fails for pre IDL 8.
  VERSION:
- $LastChangedBy: jimmpc1 $
- $LastChangedDate: 2017-03-31 16:47:13 -0700 (Fri, 31 Mar 2017) $
- $LastChangedRevision: 23076 $
+ $LastChangedBy: aaronbreneman $
+ $LastChangedDate: 2018-12-05 12:31:41 -0800 (Wed, 05 Dec 2018) $
+ $LastChangedRevision: 26251 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/spacecraft/rbsp_load_state.pro $
 
 </PRE><P>
@@ -488,9 +458,9 @@ KEYWORDS:
 HISTORY
  Written by Peter Schroeder July 2011
 
-$LastChangedBy: peters $
-$LastChangedDate: 2014-02-06 15:30:23 -0800 (Thu, 06 Feb 2014) $
-$LastChangedRevision: 14188 $
+$LastChangedBy: aaronbreneman $
+$LastChangedDate: 2018-12-05 10:41:36 -0800 (Wed, 05 Dec 2018) $
+$LastChangedRevision: 26247 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/spacecraft/rbsp_spice_init.pro $
 </PRE><P>
 <STRONG>(See <A href="spacecraft/rbsp_spice_init.pro">general/missions/rbsp/spacecraft/rbsp_spice_init.pro</A>)</STRONG><P>

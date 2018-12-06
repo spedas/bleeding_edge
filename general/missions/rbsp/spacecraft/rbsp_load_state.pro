@@ -123,9 +123,9 @@
 ;   2015-09-29: jmm, More error checking, for attitude history files
 ;   which fails for pre IDL 8.
 ; VERSION:
-; $LastChangedBy: jimmpc1 $
-; $LastChangedDate: 2017-03-31 16:47:13 -0700 (Fri, 31 Mar 2017) $
-; $LastChangedRevision: 23076 $
+; $LastChangedBy: aaronbreneman $
+; $LastChangedDate: 2018-12-05 12:31:41 -0800 (Wed, 05 Dec 2018) $
+; $LastChangedRevision: 26251 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/spacecraft/rbsp_load_state.pro $
 ;
 ;-
@@ -133,8 +133,15 @@
 ;-------------------------------------------------------------------------------
 function rbsp_load_state_get_attitude_filelist, remote_dir, localdir = localdir
 compile_opt idl2, HIDDEN
-urls = jbt_fileurls(remote_dir, verbose = 0, localdir = localdir)
+
+urls =  remote_dir + '*.ath.bc'
+spd_download_expand,urls
+
+;urls = jbt_fileurls(remote_dir, verbose = 0, localdir = localdir)
 fnames = file_basename(urls)
+
+
+
 
 years = long(strmid(fnames, 6, 4))
 doys  = long(strmid(fnames, 11, 3))
@@ -173,7 +180,7 @@ nfile = n_elements(fnames)
 
 If(n_elements(ind_uniq) Gt 1) Then Begin
    nversions = ind_uniq[1:*] - ind_uniq ; number of versions of each day
-   nversions = [ind_uniq[0], nversions]   
+   nversions = [ind_uniq[0], nversions]
 Endif Else nversions = ind_uniq[0]
 
 n = n_elements(nversions)
@@ -223,13 +230,23 @@ for ip = 0, nsc-1 do begin
   ; Retrieve file names for downloading
   fnames = rbsp_load_state_get_attitude_filelist(remote_dir, localdir = tmpdir)
   ; Loop over files to load.
+;  nfile = n_elements(fnames)
+
+
+;  fnames = remote_dir + '*.tf'
+  spd_download_expand, fnames
   nfile = n_elements(fnames)
+
+
   for i = 0L, nfile-1 do begin
     fname = fnames[i]
     pathname = mocdir + 'attitude_history/' + fname
-    file_http_copy,pathname $
-      , serverdir=serverdir $
-      , localdir=localdir
+
+    undefine,lf,tns
+    file_loaded = spd_download(remote_file=serverdir + pathname,$
+      local_path=!rbsp_efw.local_data_dir+mocdir + 'attitude_history/',$
+      local_file=lf,/last_version)
+
   endfor
 endfor
 
@@ -280,16 +297,26 @@ nsub = n_elements(subdirs)
 for ip = 0, nsc-1 do begin
   sc = probe[ip]
   mocdir = scdirs[ip]
+
+
+  filetags = ['*deph.bsp','*peph_longterm.bsp','*pecl','*tf','*tls','*tsc','*bsp']
+
   for k = 0, nsub - 1 do begin
     subdir = subdirs[k]
     remote_dir = serverdir + mocdir + subdir
     tmpdir = datadir + mocdir
-    urls = jbt_fileurls(remote_dir, verbose = 0, localdir = tmpdir)
+
+
+    urls =  remote_dir + filetags[k]
+    spd_download_expand,urls
     fnamesk = file_basename(urls)
+
     nfile = n_elements(fnamesk)
+
+
 ;Here add some logic so that you don't need to download the
 ;full mission. For each kernel, this just mirrors the
-;load_state_*_kernel logic 
+;load_state_*_kernel logic
     case subdir of
        'leap_second_kernel/': fnames = rbsp_load_state_lsk_kernel(sc, files_in=fnamesk)
        'operations_sclk_kernel/': fnames = rbsp_load_state_sclk_kernel(sc, files_in=fnamesk)
@@ -307,13 +334,20 @@ for ip = 0, nsc-1 do begin
        Else:fnames = fnamesk
     Endcase
     If(~is_string(fnames)) Then continue
+      spd_download_expand, fnames
+
     nfile = n_elements(fnames)
     for i = 0L, nfile-1 do begin
       fname = fnames[i]
       pathname = mocdir + subdir + fname
-      file_http_copy,pathname $
-        , serverdir=serverdir $
-        , localdir=localdir
+
+
+      undefine,lf,tns
+      file_loaded = spd_download(remote_file=serverdir+pathname,$
+        local_path=localdir+mocdir + subdir,$
+        local_file=lf,/last_version)
+
+
     endfor
   endfor
 endfor
@@ -333,20 +367,31 @@ localdir = datadir
 spicedir = 'teams/spice/'
 
 subdirs = ['fk/', 'ik/', 'pck/']
+filetags = ['*.tf','*.ti','*.tpc']
+
 nsub = n_elements(subdirs)
 for k = 0, nsub - 1 do begin
   subdir = subdirs[k]
   remote_dir = serverdir + spicedir + subdir
   tmpdir = datadir + spicedir
-  urls = jbt_fileurls(remote_dir, verbose = 0, localdir = tmpdir)
-  fnames = file_basename(urls)
+;  urls = jbt_fileurls(remote_dir, verbose = 0, localdir = tmpdir)
+;  fnames = file_basename(urls)
+;  nfile = n_elements(fnames)
+  fnames = remote_dir + filetags[k]
+
+
+  spd_download_expand, fnames
   nfile = n_elements(fnames)
+
   for i = 0L, nfile-1 do begin
     fname = fnames[i]
-    pathname = spicedir + subdir + fname
-    file_http_copy,pathname $
-      , serverdir=serverdir $
-      , localdir=localdir
+    ;pathname = spicedir + subdir + fname
+
+    undefine,lf,tns
+    file_loaded = spd_download(remote_file=fname,$
+      local_path=!rbsp_efw.local_data_dir+spicedir+subdir,$
+      local_file=lf,/last_version)
+
   endfor
 endfor
 
@@ -424,7 +469,7 @@ end
 
 ;-------------------------------------------------------------------------------
 ;jmm, 2015-09-22 Added files_in so that URLS can be passed
-;New version, since files no longer contain the full mission, then 
+;New version, since files no longer contain the full mission, then
 function rbsp_load_state_eph_kernel, sc, files_in = files_in
 
 compile_opt idl2, HIDDEN
@@ -551,7 +596,7 @@ nfile = n_elements(flist)
 
 If(n_elements(ind_uniq) Gt 1) Then Begin
    nversions = ind_uniq[1:*] - ind_uniq ; number of versions of each day
-   nversions = [ind_uniq[0], nversions]   
+   nversions = [ind_uniq[0], nversions]
 Endif Else nversions = ind_uniq[0]
 
 n = n_elements(nversions)
@@ -1098,6 +1143,7 @@ for ip = 0, nsc-1 do begin
 ;     toltics = 100d
 ;     toltics = 0d
 ;     cspice_ckgpav, inst, sclkdp[i], toltics, 'GSE', cmat, av, clkout, found
+
     cspice_ckgpav, inst, sclkdp[i], 0d, 'GSE', cmat, av, clkout, found
 
     ;stop
@@ -1270,4 +1316,3 @@ endif else $
   dprint, verbose = verbose, 'SPICE not unloaded. !!!Keep this in mind!!!'
 
 end
-

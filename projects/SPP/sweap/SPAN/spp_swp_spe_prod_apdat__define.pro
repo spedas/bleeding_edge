@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-03 06:41:04 -0800 (Mon, 03 Dec 2018) $
-; $LastChangedRevision: 26219 $
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2018-12-05 12:06:11 -0800 (Wed, 05 Dec 2018) $
+; $LastChangedRevision: 26249 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -11,18 +11,18 @@
 pro spp_swp_spe_prod_apdat::proc_16A, strct
 
   pname = '16A_'
-  
+
   cnts = *strct.pdata
   strct2 = {time:strct.time, $
     cnts:cnts,  $
     gap: strct.gap}
-  
+
   strct.anode_spec = cnts
   strct.nrg_spec = 0.
   strct.def_spec = 0.
-    
+
   self.prod_16A.append, strct2
-;  if self.rt_flag then  self.store_data, strct2, pname
+  ;  if self.rt_flag then  self.store_data, strct2, pname
 end
 
 
@@ -55,7 +55,7 @@ pro spp_swp_spe_prod_apdat::proc_8Dx32E, strct
   strct.anode_spec = 0.
   strct.nrg_spec = total(cnts,1)
   strct.def_spec =  total(cnts,2)
-;  strct.full_spec = cnts_orig
+  ;  strct.full_spec = cnts_orig
 
   strct2 = {time:strct.time, $  ; add more in the future
     cnts:cnts, $
@@ -82,7 +82,7 @@ pro spp_swp_spe_prod_apdat::proc_16Ax32E, strct
     gap: strct.gap}
 
   self.prod_16Ax32E.append, strct2
- ; if self.rt_flag then  self.store_data, strct2, pname
+  ; if self.rt_flag then  self.store_data, strct2, pname
 
 end
 
@@ -105,13 +105,13 @@ pro spp_swp_spe_prod_apdat::proc_16Ax8Dx32E, strct   ; this function needs fixin
   strct2 = {time:strct.time, $  ; add more in the future
     cnts:cnts, $
     gap: strct.gap}
-  
+
   strct.anode_spec = total( total(cnts,2), 2)
   strct.nrg_spec =  total( total(cnts,1), 1 )
   strct.def_spec =  total( total(cnts,1) ,2)
 
   self.prod_16Ax8Dx32E.append, strct2
-;  if self.rt_flag then  self.store_data, strct2, pname
+  ;  if self.rt_flag then  self.store_data, strct2, pname
 end
 
 
@@ -122,116 +122,139 @@ end
 
 
 function spp_swp_spe_prod_apdat::decom,ccsds ,source_dict=source_dict  ;,ptp_header
-;if typename(ccsds) eq 'BYTE' then return,  self.spp_swp_spe_prod_apdat( spp_swp_ccsds_decom(ccsds) )  ;; Byte array as input
+  ;if typename(ccsds) eq 'BYTE' then return,  self.spp_swp_spe_prod_apdat( spp_swp_ccsds_decom(ccsds) )  ;; Byte array as input
 
-pksize = ccsds.pkt_size
-if pksize le 20 then begin
-  dprint,dlevel = 2, 'size error - no data'
-  return, !null
-endif
-
-if ccsds.aggregate ne 0 then begin
-  return, self.decom_aggregate(ccsds,source_dict=source_dict)  
-endif
-
-
-
-archive = ccsds.apid and '8'x                ; archive packet determined from the apid  for spane
-
-if 1 then begin    ; New merged method
-  spp_swp_span_prod__define,str,ccsds
-  
-endif else begin
-  message,'Obsolete'
-  ccsds_data = spp_swp_ccsds_data(ccsds)
-
-  if pksize ne n_elements(ccsds_data) then begin
-    dprint,dlevel=1,'Product size mismatch'
-    return,!null
+  pksize = ccsds.pkt_size
+  if pksize le 20 then begin
+    dprint,dlevel = 2, 'size error - no data'
+    return, !null
   endif
 
-  header    = ccsds_data[0:19]
-  ns = pksize - 20
-  log_flag  = header[12]
-  ;sample_flag =
+  if ccsds.aggregate ne 0 then begin
+    return, self.decom_aggregate(ccsds,source_dict=source_dict)
+  endif
 
 
 
-  if archive then begin
-    mode1 = header[13]
-    arc_sum  = 0
+  archive = ccsds.apid and '8'x                ; archive packet determined from the apid  for spane
 
-  endif else begin    ; survey packet
-    mode1 = 0
-    arc_sum  = header[13]
+  if 1 then begin    ; New merged method
+    spp_swp_span_prod__define,str,ccsds
 
-  endelse
-
-  ;nsamples =
-
-
-  mode2 = (swap_endian(uint(ccsds_data,14) ,/swap_if_little_endian ))
-  tmode = mode2 and 'ff'x
-  emode = ishft(mode2 ,-8)
-  f0 = (swap_endian(uint(header,16), /swap_if_little_endian))
-  status_bits = header[18]
-  peak_bin = header[19]
-
-
-  compression = (log_flag and 'a0'x) ne 0
-  bps =  ([4,1])[ compression ]
-
-  ndat = ns / bps
-
-  if ns gt 0 then begin
-    data      = ccsds_data[20:*]
-    ; data_size = n_elements(data)
-    if compression then    cnts = float( spp_swp_log_decomp(data,0) ) $
-    else    cnts = float(swap_endian(ulong(data,0,ndat) ,/swap_if_little_endian ))
-    tcnts = total(cnts)
   endif else begin
-    tcnts = -1.
-    cnts = 0.
+    message,'Obsolete'
+    ccsds_data = spp_swp_ccsds_data(ccsds)
+
+    if pksize ne n_elements(ccsds_data) then begin
+      dprint,dlevel=1,'Product size mismatch'
+      return,!null
+    endif
+
+    header    = ccsds_data[0:19]
+    ns = pksize - 20
+
+    ; Format for log_flag is LCCSNNNN
+    ; L = 1 = Log Compress on ON
+    ; CC = Meaningless
+    ; S = 0 if Arch is Sampling
+    ; S = 1 if Arch is Summing
+    ; NNNN = the number of accumulation periods (1/4 NYS) for Archive.
+    log_flag  = header[12] ; this should be << = (ishft(header[13],-7) AND 1) >>
+    smp_flag = (ishft(header[13],-4) AND 1)
+    srvy_accum = (header[12] AND 15)
+
+
+
+
+    if archive then begin
+      mode1 = header[13]
+      arch_sum  = 0
+
+    endif else begin    ; survey packet
+      ; Format here is 000SNNNN
+      ; S = 0 if Arch is Sampling
+      ; S = 1 if Arch is Summing
+      ; NNNN = the number of accumulation periods (1/4 NYS) for Archive.
+      mode1 = 0
+      arch_sum  = header[13]
+      arch_smp_flag = ishft(header[13],-4) ; shift four bits to get 5th bit.
+      arch_accum = (header[13] AND 15) ; remove the lower 4 bits.
+      tot_accum_prd = 2 ^ (arch_accum + srvy_accum) ; in 1/4 NYS accumulation periods.
+
+
+
+    endelse
+
+
+
+    mode2 = (swap_endian(uint(ccsds_data,14) ,/swap_if_little_endian ))
+    tmode = mode2 and 'ff'x
+    emode = ishft(mode2 ,-8)
+    f0 = (swap_endian(uint(header,16), /swap_if_little_endian))
+    status_bits = header[18]
+    peak_bin = header[19]
+
+
+    compression = (log_flag and 'a0'x) ne 0
+    bps =  ([4,1])[ compression ]
+
+    ndat = ns / bps
+
+    if ns gt 0 then begin
+      data      = ccsds_data[20:*]
+      ; data_size = n_elements(data)
+      if compression then    cnts = float( spp_swp_log_decomp(data,0) ) $
+      else    cnts = float(swap_endian(ulong(data,0,ndat) ,/swap_if_little_endian ))
+      tcnts = total(cnts)
+    endif else begin
+      tcnts = -1.
+      cnts = 0.
+    endelse
+
+    product_type = 0
+
+    str = { $
+      time:        ccsds.time, $
+      met:         0d, $
+      ;    epoch:      0LL,  $
+      f0:           f0,$
+      apid:        ccsds.apid, $
+      source:      0UL,   $
+      time_delta:  ccsds.time_delta, $
+      seqn:        ccsds.seqn,  $
+      seqn_delta:  ccsds.seqn_delta,  $
+      seq_group:   ccsds.seq_group,  $
+      pkt_size :   ccsds.pkt_size,  $
+      ndat:        ndat, $
+      datasize:    ns, $
+      log_flag:    log_flag, $
+      smp_flag:    smp_flag, $
+      srvy_accum:  srvy_accum, $
+      mode1:       mode1,  $
+      arch_sum:    arch_sum, $
+      arch_smp_flag:  arch_sum_flag, $
+      arch_accum:  arch_accum, $
+      tot_accum_prd:  tot_accum_prd, $
+      mode2:       mode2,  $
+      tmode:       tmode, $
+      emode:       emode, $
+      product_type: product_type,  $
+      status_bits: status_bits,$
+      peak_bin:    peak_bin, $
+      cnts:  tcnts,  $
+      anode_spec:  fltarr(16),  $
+      nrg_spec:    fltarr(32),  $
+      def_spec:    fltarr(8) ,  $
+      nrg_vals:    fltarr(32),  $
+      ;  full_spec:   fltarr(256), $
+      pdata:        ptr_new(cnts), $
+      gap:         ccsds.gap  }
+
   endelse
 
-  product_type = 0
-
-  str = { $
-    time:        ccsds.time, $
-    met:         0d, $
-;    epoch:      0LL,  $
-    f0:           f0,$
-    apid:        ccsds.apid, $
-    source:      0UL,   $
-    time_delta:  ccsds.time_delta, $
-    seqn:        ccsds.seqn,  $
-    seqn_delta:  ccsds.seqn_delta,  $
-    seq_group:   ccsds.seq_group,  $
-    pkt_size :   ccsds.pkt_size,  $
-    ndat:        ndat, $
-    datasize:    ns, $
-    log_flag:    log_flag, $
-    mode1:        mode1,  $
-    mode2:        mode2,  $
-    tmode:       tmode, $
-    emode:       emode, $
-    product_type: product_type,  $
-    status_bits: status_bits,$
-    peak_bin:    peak_bin, $
-    cnts:  tcnts,  $
-    anode_spec:  fltarr(16),  $
-    nrg_spec:    fltarr(32),  $
-    def_spec:    fltarr(8) ,  $
-    nrg_vals:    fltarr(32),  $
-    ;  full_spec:   fltarr(256), $
-    pdata:        ptr_new(cnts), $
-    gap:         ccsds.gap  }
-  
-endelse
 
 
-
-return,str
+  return,str
 end
 
 
@@ -249,9 +272,9 @@ pro spp_swp_spe_prod_apdat::handler,ccsds,source_dict = source_dict   ;,ptp_head
     ccsds_data = spp_swp_ccsds_data(ccsds)
     ;hexprint,ccsds_data
   endif
-  
-;  print,ns
-  
+
+  ;  print,ns
+
   ns=n_elements(strcts)
   for i=0,ns-1 do begin
     strct = strcts[i]
@@ -267,8 +290,8 @@ pro spp_swp_spe_prod_apdat::handler,ccsds,source_dict = source_dict   ;,ptp_head
           hexprint, spp_swp_ccsds_data(ccsds)
         endif
       end
-    endcase  
-    strcts[i] = strct  
+    endcase
+    strcts[i] = strct
   endfor
 
   if self.save_flag && keyword_set(strcts) then begin
@@ -281,16 +304,16 @@ pro spp_swp_spe_prod_apdat::handler,ccsds,source_dict = source_dict   ;,ptp_head
     if ccsds.gap eq 1 then strcts = [fill_nan(strcts[0]),strcts]
     store_data,self.tname,data=strcts, tagnames=self.ttags , append = 1,gap_tag='GAP'
   endif
-  
+
   if keyword_set(strct) then *self.last_data_p = strct
   if debug(self.dlevel+3,msg='hello2') then begin
-    ;printdat,ccsds  
+    ;printdat,ccsds
     hexprint,(*ccsds.pdata)[0:31]
-    
+
   endif
-  
+
 end
- 
+
 
 
 
@@ -339,10 +362,10 @@ END
 ;    filename = root_data_dir() + filename
 ;    cdf.write,filename
 ;    obj_destroy,cdf
-;    
+;
 ;  endif
 ;end
- 
+
 function spp_swp_spe_prod_apdat::cdf_global_attributes
   global_att= self.spp_gen_apdat::cdf_global_attributes()
   global_att['InstrumentLead_name'] = 'P. Whittlesey'
@@ -364,15 +387,15 @@ end
 ;;  store_data, self.prod_16Ax8Dx32E.array , self.prod_16Ax8Dx32E.name
 ;end
 
- 
+
 PRO spp_swp_spe_prod_apdat__define
-void = {spp_swp_spe_prod_apdat, $
-  inherits spp_gen_apdat, $    ; superclass
-  prod_16A     : obj_new(), $
-  prod_32E     : obj_new(), $
-  prod_8Dx32E  :obj_new(), $
-  prod_16Ax32E : obj_new(), $
-  prod_16Ax8Dx32E:  obj_new() $
+  void = {spp_swp_spe_prod_apdat, $
+    inherits spp_gen_apdat, $    ; superclass
+    prod_16A     : obj_new(), $
+    prod_32E     : obj_new(), $
+    prod_8Dx32E  :obj_new(), $
+    prod_16Ax32E : obj_new(), $
+    prod_16Ax8Dx32E:  obj_new() $
   }
 END
 

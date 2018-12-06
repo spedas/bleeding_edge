@@ -1,11 +1,11 @@
-;+
+ ;+
 ; Procedure: RBSP_LOAD_SPICE_METAKERNEL
 ;
 ; Purpose:  Loads RBSP SPICE metakernels
 ;
 ; input:
 ; metakernel : full path to metakernel file for loading
-; 
+;
 ; keywords:
 ;	/UNLOAD : unloads all kernels loaded by the four RBSP metakernels
 ;   mkpath='/path/to/teams/spice/meta' : the full path to the teams/spice/meta
@@ -26,8 +26,8 @@
 ;
 ; VERSION:
 ;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2014-04-05 09:30:44 -0700 (Sat, 05 Apr 2014) $
-;   $LastChangedRevision: 14759 $
+;   $LastChangedDate: 2018-12-05 10:27:58 -0800 (Wed, 05 Dec 2018) $
+;   $LastChangedRevision: 26244 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/spacecraft/rbsp_load_spice_metakernel.pro $
 ;
 ;-
@@ -66,7 +66,7 @@ inblock = 0
 
 while not eof(unit) do begin
   readf, unit, line
-  if strmatch(line, '*KERNELS_TO_LOAD += (*') then inblock = 1 
+  if strmatch(line, '*KERNELS_TO_LOAD += (*') then inblock = 1
   if inblock then begin
     paren1 = strpos(line, "'")
     kerneltoload = strmid(line,paren1+1)
@@ -87,10 +87,10 @@ while not eof(unit) do begin
     str_replace,kerneltoload,'$SPKPE','planetary_ephemeris'
     str_replace,kerneltoload,'$SPKP','ephemeris_predict'
     str_replace,kerneltoload,'$SPKD','ephemerides'
-    
+
     ; strip out extra attitude_history kernels
     if strpos(kerneltoload,'attitude_history/') ne -1 then begin
-		
+
   		; kernels are suffixed with _YYYY_DOY_VV.ath.bc
   		kernelbits=strsplit(kerneltoload,'_',/extract)
   		nkernelbits=n_elements(kernelbits)
@@ -100,7 +100,7 @@ while not eof(unit) do begin
   		sktime=string(kyear,kmonth,kday,format='(I04,"-",I02,"-",I02)')
   		ktime=time_double(sktime)
   		if (ktime lt tr[0]) or (ktime gt tr[1]) then kerneltoload=''
-		
+
     endif
 
     ; strip out extra attitude history full monthly files
@@ -123,9 +123,26 @@ while not eof(unit) do begin
 
     endif
 
-    
+
+
     if kerneltoload ne '' then begin
-      files = file_retrieve(kerneltoload, _extra=!rbsp_spice)
+
+			;extract the local data path without the filename
+			localgoo = strsplit(kerneltoload,'/',/extract)
+			for i=0,n_elements(localgoo)-2 do $
+				 if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+			localpath = strtrim(localpath,2) + '/'
+
+			undefine,lf,tns
+
+
+			file_loaded = spd_download(remote_file=!rbsp_spice.remote_data_dir+kerneltoload,$
+				 local_path=!rbsp_spice.local_data_dir+localpath,$
+				 local_file=lf,/last_version)
+	 		files = !rbsp_spice.local_data_dir + localpath + lf
+
+
+
       print,'Processing '+files[0]
       if keyword_set(unload) then cspice_unload,files $
         else cspice_furnsh,files

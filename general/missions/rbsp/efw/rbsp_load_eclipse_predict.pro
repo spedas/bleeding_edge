@@ -5,7 +5,7 @@
 ;rbsp(a,b)_penumbra
 ;
 ;
-;The x-value is the start time of the umbra(penumbra) and y-value is the duration 
+;The x-value is the start time of the umbra(penumbra) and y-value is the duration
 ;
 ;
 ;probe = 'a' or 'b'
@@ -23,7 +23,7 @@
 
 pro rbsp_load_eclipse_predict,probe,date,remote_data_dir=remote_data_dir,local_data_dir=local_data_dir
 
-
+	rbsp_efw_init
 	rbsp_spice_init
 
 ;URL stuff...
@@ -34,10 +34,20 @@ pro rbsp_load_eclipse_predict,probe,date,remote_data_dir=remote_data_dir,local_d
 		local_data_dir = !rbsp_spice.local_data_dir
 
 	dirpath='MOC_data_products/RBSP'+strupcase(probe)+'/eclipse_predict/'
-	
-;Find out what files are online
-	FILE_HTTP_COPY,dirpath,url_info=ui,links=links,localdir=local_data_dir,$
-		serverdir=remote_data_dir
+
+
+
+	url = remote_data_dir + dirpath + '*.pecl'
+	spd_download_expand,url
+
+	links = strarr(n_elements(url))
+
+	for i=0,n_elements(url)-1 do begin ;$
+		goo = strsplit(url[i],'/',/extract) ;& $
+		links[i] = goo[n_elements(goo)-1] ;& $
+	endfor
+
+
 
 
 ;Modify date/time strings
@@ -72,7 +82,7 @@ pro rbsp_load_eclipse_predict,probe,date,remote_data_dir=remote_data_dir,local_d
 ;Since each file holds the times for multiple eclipse dates we need to figure out
 ;which one to load
 
-	test = (time_double(date) - time_double(uts))/86400.   
+	test = (time_double(date) - time_double(uts))/86400.
 	goo = where(test ge 0)
 
 
@@ -85,15 +95,15 @@ pro rbsp_load_eclipse_predict,probe,date,remote_data_dir=remote_data_dir,local_d
 		;*******
 		;Fix filenames for exceptions. The APL file in the below cases is messed up, maybe
 		;b/c it doesn't have the data it's supposed to have, or b/c the suffix has changed.
-		
+
 		;Exceptions:
 		;A: 10-23 (should work)
 		;B: 10-23 (should work)
-		
+
 		;A: 10-11, 10-12
 		if file eq 'rbspa_2012_285_01.pecl' then file = 'rbspa_2012_285_01.pecl.orig'
 
-		;B: 10-05, 10-06, 10-07, 10-08, 10-09		
+		;B: 10-05, 10-06, 10-07, 10-08, 10-09
 		if file eq 'rbspb_2012_279_01.pecl' then file = 'rbspb_2012_272_01.pecl'
 
 		;*******
@@ -102,12 +112,23 @@ pro rbsp_load_eclipse_predict,probe,date,remote_data_dir=remote_data_dir,local_d
 
 
 
-		;download the file
-		file_loaded = file_retrieve(relpathnames,remote_data_dir=remote_data_dir,$
-			local_data_dir=local_data_dir,/last_version)
+
+		;extract the local data path without the filename
+		localgoo = strsplit(relpathnames,'/',/extract)
+		for i=0,n_elements(localgoo)-2 do $
+			 if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+		localpath = strtrim(localpath,2) + '/'
+
+		undefine,lf,tns
+		dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+		file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+			 local_path=!rbsp_efw.local_data_dir+localpath,$
+			 local_file=lf,/last_version)
 
 
-	;Hopefully the file is now downloaded locally. 
+
+
+	;Hopefully the file is now downloaded locally.
 	;Let's read it
 
 		ft = [3,3,7,3,7,3,7,3,7,4,7,7,4]
@@ -140,9 +161,9 @@ pro rbsp_load_eclipse_predict,probe,date,remote_data_dir=remote_data_dir,local_d
 
 			;start date
 			months2 = fltarr(n_elements(vals.monthstart))
-			for i=0L,n_elements(vals.monthstart) - 1 do begin	$
-				goo = where(vals.monthstart[i] eq months)	& $
-				months2[i] = goo + 1	& $
+			for i=0L,n_elements(vals.monthstart) - 1 do begin	;$
+				goo = where(vals.monthstart[i] eq months)	;& $
+				months2[i] = goo + 1	;& $
 			endfor
 
 			ec_start = strtrim(vals.yearstart,2)+'-'+strtrim(months2,2)+'-'+strtrim(vals.daystart,2) + '/' + vals.timestart
@@ -200,9 +221,3 @@ pro rbsp_load_eclipse_predict,probe,date,remote_data_dir=remote_data_dir,local_d
 
 
 end
-
-
-
-
-
-

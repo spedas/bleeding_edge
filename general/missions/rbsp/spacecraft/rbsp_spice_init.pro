@@ -54,9 +54,9 @@
 ;HISTORY
 ; Written by Peter Schroeder July 2011
 ;
-;$LastChangedBy: peters $
-;$LastChangedDate: 2014-02-06 15:30:23 -0800 (Thu, 06 Feb 2014) $
-;$LastChangedRevision: 14188 $
+;$LastChangedBy: aaronbreneman $
+;$LastChangedDate: 2018-12-05 10:41:36 -0800 (Wed, 05 Dec 2018) $
+;$LastChangedRevision: 26247 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/spacecraft/rbsp_spice_init.pro $
 ;-
 pro rbsp_spice_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote_data_dir, $
@@ -141,4 +141,3 @@ print,days,hours,mins,secs,format= '("RBSP countdown:",i4," Days, ",i02," Hours,
 
 
 end
-

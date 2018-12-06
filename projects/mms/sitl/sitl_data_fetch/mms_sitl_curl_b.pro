@@ -1,12 +1,9 @@
 ; Calculate curl of B for use in EVA/SITL.
 ; flag = 1 if inadequate spacecraft availability for the curlometer.
 ; 
-; 
-;  Updated on 19 Nov 2018 by egrimes: fixed a bug in the cotrans from DMPA to GSE
-;  
 ;  $LastChangedBy: egrimes $
-;  $LastChangedDate: 2018-11-19 15:23:19 -0800 (Mon, 19 Nov 2018) $
-;  $LastChangedRevision: 26150 $
+;  $LastChangedDate: 2018-12-05 10:32:31 -0800 (Wed, 05 Dec 2018) $
+;  $LastChangedRevision: 26246 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_curl_b.pro $
 
 
@@ -23,23 +20,16 @@ if keyword_set(trange) then time = time_double(trange)
 ; Get B-field for all four SC
 
 if ~keyword_set(no_load) then begin
- ; mms_sitl_get_dfg, sc_id = ['mms1', 'mms2', 'mms3', 'mms4']
-  mms_load_fgm, trange=trange, instru='dfg', level='ql', probes=[1, 2, 3, 4], /get_fgm_ephemeris
-  mms_load_state, probes=[1, 2, 3, 4], /ascii, trange = trange
+  mms_sitl_get_dfg, sc_id = ['mms1', 'mms2', 'mms3', 'mms4']
 endif
 
 ; Recombine all B
 dataname = '_dfg_srvy_dmpa' ; NEED TO CHANGE THIS FOR SITL
-dataname_vec = '_dfg_srvy_dmpa_bvec'
 dataname_gse = '_dfg_srvy_gse'
 Name1 = 'mms1' + dataname
 Name2 = 'mms2' + dataname
 Name3 = 'mms3' + dataname
 Name4 = 'mms4' + dataname
-Name1_vec = 'mms1' + dataname_vec
-Name2_vec = 'mms2' + dataname_vec
-Name3_vec = 'mms3' + dataname_vec
-Name4_vec = 'mms4' + dataname_vec
 
 Name1gse = 'mms1' + dataname_gse
 Name2gse = 'mms2' + dataname_gse
@@ -59,30 +49,23 @@ if ~is_struct(d1) or ~is_struct(d2) or ~is_struct(d3) or ~is_struct(d4) then beg
 endif
 
 ; Convert data to gse coordinates
-reduce_bfield_dimensions, Name1, coords='dmpa'
-reduce_bfield_dimensions, Name2, coords='dmpa'
-reduce_bfield_dimensions, Name3, coords='dmpa'
-reduce_bfield_dimensions, Name4, coords='dmpa'
+DEC = '_ql_RADec_gse'
+DEC1 = 'mms1' + DEC
+DEC2 = 'mms2' + DEC
+DEC3 = 'mms3' + DEC
+DEC4 = 'mms4' + DEC
 
-mms_cotrans, /allow_dmpa, [Name1, Name2, Name3, Name4]+'_vec', [Name1gse, Name2gse, Name3gse, Name4gse], out_coord='gse', in_coord='dmpa'
+split_vec, DEC1
+dsl2gse, Name1, DEC1 + '_0', DEC1 + '_1', Name1gse, /ignore_dlimits
 
-;DEC = '_ql_RADec_gse'
-;DEC1 = 'mms1' + DEC
-;DEC2 = 'mms2' + DEC
-;DEC3 = 'mms3' + DEC
-;DEC4 = 'mms4' + DEC
-;
-;split_vec, DEC1
-;dsl2gse, Name1, DEC1 + '_0', DEC1 + '_1', Name1gse, /ignore_dlimits
-;
-;split_vec, DEC2
-;dsl2gse, Name2, DEC2 + '_0', DEC2 + '_1', Name2gse, /ignore_dlimits
-;
-;split_vec, DEC3
-;dsl2gse, Name3, DEC3 + '_0', DEC3 + '_1', Name3gse, /ignore_dlimits
-;
-;split_vec, DEC4
-;dsl2gse, Name4, DEC4 + '_0', DEC4 + '_1', Name4gse, /ignore_dlimits
+split_vec, DEC2
+dsl2gse, Name2, DEC2 + '_0', DEC2 + '_1', Name2gse, /ignore_dlimits
+
+split_vec, DEC3
+dsl2gse, Name3, DEC3 + '_0', DEC3 + '_1', Name3gse, /ignore_dlimits
+
+split_vec, DEC4
+dsl2gse, Name4, DEC4 + '_0', DEC4 + '_1', Name4gse, /ignore_dlimits
 
 get_data, Name1gse, data = d1
 get_data, Name2gse, data = d2

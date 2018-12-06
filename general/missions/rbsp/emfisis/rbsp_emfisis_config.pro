@@ -25,9 +25,9 @@
 ;
 ;  Author:  Peter Schroeder May 2012
 ;
-; $LastChangedBy: peters $
-; $LastChangedDate: 2012-05-15 11:57:32 -0700 (Tue, 15 May 2012) $
-; $LastChangedRevision: 10429 $
+; $LastChangedBy: aaronbreneman $
+; $LastChangedDate: 2018-12-05 06:57:52 -0800 (Wed, 05 Dec 2018) $
+; $LastChangedRevision: 26237 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/emfisis/rbsp_emfisis_config.pro $
 ;
 ;-
@@ -48,7 +48,7 @@ pro rbsp_emfisis_config,caching=caching,colortable=colortable,$
 ; !rbsp_emfisis.remote_data_dir = 'http://rhea.iwf.oeaw.ac.at/themisdata/'      ; In Austria, Does not include ground data!
 ;!rbsp_emfisis.remote_data_dir = 'http://sprg.ssl.berkeley.edu/data/themis/'   ; use as backup web server
 ;!rbsp_emfisis.remote_data_dir = 'http://themis.ssl.berkeley.edu/data/rbsp/'
-!rbsp_emfisis.remote_data_dir = 'http://emfisis.physics.uiowa.edu/'
+!rbsp_emfisis.remote_data_dir = 'https://emfisis.physics.uiowa.edu/'
 
 ;!rbsp_emfisis.use_wget=1   ; uncomment to use experimental wget routine
 ;instead of file_http_copy (not recommended)

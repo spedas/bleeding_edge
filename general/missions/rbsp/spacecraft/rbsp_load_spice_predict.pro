@@ -25,9 +25,9 @@
 ;	11/2012, created - Kris Kersten, kris.kersten@gmail.com
 ;
 ; VERSION:
-;   $LastChangedBy: kersten $
-;   $LastChangedDate: 2013-05-07 09:53:04 -0700 (Tue, 07 May 2013) $
-;   $LastChangedRevision: 12292 $
+;   $LastChangedBy: aaronbreneman $
+;   $LastChangedDate: 2018-12-05 10:27:34 -0800 (Wed, 05 Dec 2018) $
+;   $LastChangedRevision: 26243 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/spacecraft/rbsp_load_spice_predict.pro $
 ;
 ;-
@@ -37,12 +37,30 @@ pro rbsp_load_spice_predict, all=all, unload=unload, $
 		no_download=no_download
 
 	rbsp_spice_init
-	
+	rbsp_efw_init
+
 	if ~icy_test() then return
-	
+
 	if ~keyword_set(no_download) and ~keyword_set(unload) then begin
 		relpathnames='MOC_data_products/RBSP?/attitude_predict/*'
-		tempfiles=file_retrieve(relpathnames, _extra=!rbsp_spice)
+
+
+		;extract the local data path without the filename
+		localgoo = strsplit(relpathnames,'/',/extract)
+		for i=0,n_elements(localgoo)-2 do $
+		  if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+		localpath = strtrim(localpath,2) + '/'
+
+		undefine,lf,tns
+		dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+		file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+		  local_path=!rbsp_efw.local_data_dir+localpath,$
+		  local_file=lf,/last_version)
+		tempfiles = !rbsp_efw.local_data_dir + localpath + lf
+
+
+
+;		tempfiles=file_retrieve(relpathnames, _extra=!rbsp_spice)
 	endif
 
 	aattitude=file_search(!rbsp_spice.local_data_dir+ $
@@ -57,13 +75,15 @@ pro rbsp_load_spice_predict, all=all, unload=unload, $
 	bephemeris=file_search(!rbsp_spice.local_data_dir+ $
 							'/MOC_data_products/RBSPB/ephemeris_predict/*',$
 							/expand_tilde, count=becount)
-	
+
+
+
 	if keyword_set(all) then files=[aattitude,battitude,aephemeris,bephemeris] $
 		else files=[aattitude[0>(aacount-2):0>(aacount-1)], $
 					battitude[0>(bacount-2):0>(bacount-1)], $
 					aephemeris[0>(aecount-2):0>(aecount-1)], $
 					bephemeris[0>(becount-2):0>(becount-1)]]
-	
+
 	files=files[where(files ne '',fcount)]
 
 
@@ -78,5 +98,5 @@ pro rbsp_load_spice_predict, all=all, unload=unload, $
 					' predict kernels.',/continue
 		endelse
 	endif else message,'Predict kernels not found.',/continue
-	
+
 end

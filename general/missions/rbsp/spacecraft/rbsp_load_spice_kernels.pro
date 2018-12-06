@@ -20,9 +20,9 @@
 ;	10/2012, substantially modified - Peter Schroeder, peters@ssl.berkeley.edu
 ;
 ; VERSION:
-;   $LastChangedBy: kersten $
-;   $LastChangedDate: 2013-01-30 16:10:32 -0800 (Wed, 30 Jan 2013) $
-;   $LastChangedRevision: 11506 $
+;   $LastChangedBy: aaronbreneman $
+;   $LastChangedDate: 2018-12-05 10:28:18 -0800 (Wed, 05 Dec 2018) $
+;   $LastChangedRevision: 26245 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/spacecraft/rbsp_load_spice_kernels.pro $
 ;-
 
@@ -30,27 +30,67 @@
 pro rbsp_load_spice_kernels, verbose = verbose, unload=unload, all=all
 
 rbsp_spice_init
+rbsp_efw_init
 
 metaprefix = 'teams/spice/mk'
 
 relpathnames = metaprefix + '/rbsp_meta_general.tm'
-;relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
-dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-files = file_retrieve(relpathnames, _extra=!rbsp_spice)
+
+
+ ;extract the local data path without the filename
+ localgoo = strsplit(relpathnames,'/',/extract)
+ for i=0,n_elements(localgoo)-2 do $
+    if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+ localpath = strtrim(localpath,2) + '/'
+
+ undefine,lf,tns
+ dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+ file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+    local_path=!rbsp_efw.local_data_dir+localpath,$
+    local_file=lf,/last_version)
+ files = !rbsp_efw.local_data_dir + localpath + lf
+
+
 
 rbsp_load_spice_metakernel,files[0],unload=unload,all=all
 
 relpathnames = metaprefix + '/rbsp_meta_time.tm'
-;relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
+
+
+;extract the local data path without the filename
+localgoo = strsplit(relpathnames,'/',/extract)
+for i=0,n_elements(localgoo)-2 do $
+   if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+localpath = strtrim(localpath,2) + '/'
+
+undefine,lf,tns
 dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-files = file_retrieve(relpathnames, _extra=!rbsp_spice)
+file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+   local_path=!rbsp_efw.local_data_dir+localpath,$
+   local_file=lf,/last_version)
+files = !rbsp_efw.local_data_dir + localpath + lf
+
+
+
 
 rbsp_load_spice_metakernel,files[0],unload=unload,all=all
 
 relpathnames = metaprefix + '/rbsp_meta_definitive.tm'
-;relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
+
+
+;extract the local data path without the filename
+localgoo = strsplit(relpathnames,'/',/extract)
+for i=0,n_elements(localgoo)-2 do $
+   if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
+localpath = strtrim(localpath,2) + '/'
+
+undefine,lf,tns
 dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-files = file_retrieve(relpathnames, _extra=!rbsp_spice)
+file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+   local_path=!rbsp_efw.local_data_dir+localpath,$
+   local_file=lf,/last_version)
+files = !rbsp_efw.local_data_dir + localpath + lf
+
 
 rbsp_load_spice_metakernel,files[0],unload=unload,all=all
 
