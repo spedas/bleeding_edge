@@ -32,7 +32,7 @@
 ;Keywords:
 ;   noremove - Don't remove ExMGSE (spinaxis) values when By/Bx>3.732 or Bz/Bx>3.732
 ;   anglemin --> change the minimum allowable angle to something other than 15 deg
-;
+;               Smaller angles will lead to less removed data, but are more risky.
 ;
 ;Written by Aaron W Breneman (UMN) - 2013-06-19
 ;
@@ -278,7 +278,7 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,suffix=su
     if ~keyword_set(nospinfit) then begin
       tplot,['rbsp'+probe+'_mag_mgse',$
       'rbsp'+probe+'_mag_mgse_smoothed',$
-      'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit',$
+;      'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit',$
       'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed_spinfit',$
 ;      'rbsp'+probe+'_E_coro_mgse',$
       'emag',$
@@ -302,6 +302,7 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,suffix=su
     if keyword_set(eu) then timebar,eu.x
     if keyword_set(eu) then timebar,eu.x + eu.y
   endif
+
 
 
 end

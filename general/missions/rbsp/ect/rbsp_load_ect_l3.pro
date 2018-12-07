@@ -25,8 +25,8 @@
 ;
 ; VERSION:
 ;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2017-06-14 16:13:53 -0700 (Wed, 14 Jun 2017) $
-;   $LastChangedRevision: 23472 $
+;   $LastChangedDate: 2018-12-06 10:48:41 -0800 (Thu, 06 Dec 2018) $
+;   $LastChangedRevision: 26267 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/ect/rbsp_load_ect_l3.pro $
 ;
 ;-
@@ -58,7 +58,7 @@ pro rbsp_load_ect_l3,probe,type,get_support_data=get_support_data
       dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
 
       rp = !rbsp_ect.remote_data_dir + rbspx+'/mageis/level3/pitchangle/'+yyyy+'/'
-      rf = rbspx+'_rel03_ect-mageis-L3_'+date+'_v*.cdf'
+      rf = rbspx+'_rel04_ect-mageis-L3_'+date+'_v*.cdf'
       files = spd_download(remote_path=rp,remote_file=rf,$
       local_path=!rbsp_ect.local_data_dir+'mageis/L3/',$
        /last_version)
@@ -100,8 +100,10 @@ pro rbsp_load_ect_l3,probe,type,get_support_data=get_support_data
       prefix=rbspx+'_ect_hope_L'+slevel+'_'
       dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
 
+stop
+
       rp = !rbsp_ect.remote_data_dir + rbspx+'/hope/level3/moments/'+yyyy+'/'
-      rf = rbspx+'_rel03_ect-hope-MOM-L3_'+date+'_v*.cdf'
+      rf = rbspx+'_rel04_ect-hope-MOM-L3_'+date+'_v*.cdf'
       files = spd_download(remote_path=rp,remote_file=rf,$
       local_path=!rbsp_ect.local_data_dir+'hope/L3/',$
        /last_version)
@@ -111,7 +113,7 @@ pro rbsp_load_ect_l3,probe,type,get_support_data=get_support_data
 
 
       rp = !rbsp_ect.remote_data_dir + rbspx+'/hope/level3/pitchangle/'+yyyy+'/'
-      rf = rbspx+'_rel03_ect-hope-PA-L3_'+date+'_v*.cdf'
+      rf = rbspx+'_rel04_ect-hope-PA-L3_'+date+'_v*.cdf'
       files = spd_download(remote_path=rp,remote_file=rf,$
       local_path=!rbsp_ect.local_data_dir+'hope/L3/',$
        /last_version)
@@ -183,10 +185,8 @@ pro rbsp_load_ect_l3,probe,type,get_support_data=get_support_data
       local_path=!rbsp_ect.local_data_dir+'rept/L3/',$
        /last_version)
 
-
       cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
       tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
-
 
 
 

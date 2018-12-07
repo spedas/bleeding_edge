@@ -46,8 +46,8 @@
 ;             *rbsp_efw_cal_waveform*.
 ;
 ; $LastChangedBy: aaronbreneman $
-; $LastChangedDate: 2018-11-30 07:35:32 -0800 (Fri, 30 Nov 2018) $
-; $LastChangedRevision: 26188 $
+; $LastChangedDate: 2018-12-06 09:27:35 -0800 (Thu, 06 Dec 2018) $
+; $LastChangedRevision: 26264 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_waveform_l2.pro $
 ;-
 
@@ -61,7 +61,7 @@ pro rbsp_load_efw_waveform_l2,probe=probe, datatype=datatype, trange=trange, $
                  tper = tper, tphase = tphase, _extra = _extra
 
 rbsp_efw_init
-dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_waveform_l2.pro 26188 2018-11-30 15:35:32Z aaronbreneman $'
+dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_waveform_l2.pro 26264 2018-12-06 17:27:35Z aaronbreneman $'
 
 UMN_data_location = 'http://rbsp.space.umn.edu/data/rbsp/'
 cache_remote_data_dir = !rbsp_efw.remote_data_dir
@@ -135,8 +135,6 @@ for s=0,n_elements(p_var)-1 do begin
 
 
 
-;     files = file_retrieve(relpathnames, /last_version, _extra=!rbsp_efw)
-
      if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
 
      suf=''
@@ -171,7 +169,7 @@ for s=0,n_elements(p_var)-1 do begin
 
        colors = color_array[0:n_elements(labels)-1]
 
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_waveform_l2.pro 26188 2018-11-30 15:35:32Z aaronbreneman $'
+       options, /def, tns, code_id = '$Id: rbsp_load_efw_waveform_l2.pro 26264 2018-12-06 17:27:35Z aaronbreneman $'
 
        store_data,new_name,/delete
        store_data,old_name,newname=new_name

@@ -48,8 +48,6 @@ pro rbsp_efw_spinfit_vxb_subtract_crib,probe,no_spice_load=no_spice_load,noplot=
 
   rbsp_efw_position_velocity_crib,/no_spice_load,/noplot
 
-
-
 ;Load eclipse times
 
   if ~keyword_set(noplot) then begin
@@ -93,6 +91,8 @@ pro rbsp_efw_spinfit_vxb_subtract_crib,probe,no_spice_load=no_spice_load,noplot=
   if pair eq '12' then rbsp_spinfit, rbspx + '_efw_esvy', plane_dim = 0 ; V12
   if pair eq '34' then rbsp_spinfit, rbspx + '_efw_esvy', plane_dim = 1 ; V34
 
+
+
 ;Interpolate the position data to spinfit cadence (it's at 1min by default)
   tinterpol_mxn,rbspx+'_state_vel_mgse',rbspx+'_efw_esvy_spinfit',newname=rbspx+'_state_vel_mgse'
 
@@ -109,7 +109,6 @@ pro rbsp_efw_spinfit_vxb_subtract_crib,probe,no_spice_load=no_spice_load,noplot=
 
 
   rbsp_cotrans, rbspx + '_efw_esvy_spinfit', rbspx + '_sfit'+pair+'_mgse', /dsc2mgse
-
 
 
 ;Find the co-rotation Efield

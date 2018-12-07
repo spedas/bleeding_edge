@@ -31,8 +31,8 @@
 ;
 ; VERSION:
 ;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2017-06-14 16:14:06 -0700 (Wed, 14 Jun 2017) $
-;   $LastChangedRevision: 23473 $
+;   $LastChangedDate: 2018-12-06 11:00:19 -0800 (Thu, 06 Dec 2018) $
+;   $LastChangedRevision: 26268 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/ect/rbsp_load_mageis_l2.pro $
 ;
 ;-
@@ -104,8 +104,10 @@ pro rbsp_load_mageis_l2,probe=probe,get_mag_ephem=get_mag_ephem, $
         str_element,d,'y',d.y[*,goodbins],/add_replace
         newv=dblarr(n_elements(goodbins))
         for i=0,n_elements(goodbins)-1 do $
-        newv[i]=median(d.v[*,goodbins[i]])
-        str_element,d,'v',newv,/add_replace
+          ;newv[i]=median(d.v[*,goodbins[i]])
+;          newv[i]=median(d.v[goodbins[i]])
+          newv[i]=d.v[goodbins[i]]
+          str_element,d,'v',newv,/add_replace
 
         tyrange=[17.,4.e3]
       end

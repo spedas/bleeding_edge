@@ -62,8 +62,8 @@
 ; 1. Written by Peter Schroeder, May 2012
 ;
 ; $LastChangedBy: aaronbreneman $
-; $LastChangedDate: 2017-06-15 13:48:23 -0700 (Thu, 15 Jun 2017) $
-; $LastChangedRevision: 23482 $
+; $LastChangedDate: 2018-12-06 11:03:35 -0800 (Thu, 06 Dec 2018) $
+; $LastChangedRevision: 26269 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/emfisis/rbsp_load_emfisis.pro $
 ;-
 
@@ -81,7 +81,7 @@ pro rbsp_load_emfisis,probe=probe, datatype=datatype, trange=trange, $
 
 
   rbsp_emfisis_init
-  dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_emfisis.pro 23482 2017-06-15 20:48:23Z aaronbreneman $'
+  dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_emfisis.pro 26269 2018-12-06 19:03:35Z aaronbreneman $'
 
   if keyword_set(quicklook) then level = 'Quick-Look'
   if(keyword_set(probe)) then p_var = strlowcase(probe)
@@ -206,6 +206,8 @@ for s=0,n_elements(p_var)-1 do begin
 
 
 
+
+
   if level eq 'Quick-Look' then file = spd_download(remote_path=rp,remote_file=rf,$
   local_path=!rbsp_emfisis.local_data_dir+'Flight/RBSP-'+strupcase(probe)+'/Quick-Look/'+yyyy+'/'+mm+'/'+dd+'/',$
   /last_version)
@@ -263,7 +265,7 @@ for s=0,n_elements(p_var)-1 do begin
     pn = byte(p_var[s]) - byte('a')
     options, /def, tns, colors = probe_colors[pn]
 
-    options, /def, tns, code_id = '$Id: rbsp_load_emfisis.pro 23482 2017-06-15 20:48:23Z aaronbreneman $'
+    options, /def, tns, code_id = '$Id: rbsp_load_emfisis.pro 26269 2018-12-06 19:03:35Z aaronbreneman $'
 
     c_var = [1, 2, 3, 4, 5, 6]
 

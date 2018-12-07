@@ -8,7 +8,7 @@
 ;
 ;   As 10/29/12, Valid datatypes are:
 ;       '1sec-gse' (in default)
-;       '4sec-gse'   
+;       '4sec-gse'
 ;       'hires-gse'
 ;       'uvw'
 ;       'hfr'  (in default)
@@ -33,7 +33,7 @@
 ; ARGUMENTS:
 ;
 ; KEYWORDS:
-;   probe: (In, optional) RBSP spacecraft names, either 'a', or 'b', or 
+;   probe: (In, optional) RBSP spacecraft names, either 'a', or 'b', or
 ;         ['a', 'b']. The default is ['a', 'b']
 ;   datatype: (In, optional) See above.
 ;   _extra: Extra keywords passed into file_http_copy.
@@ -57,9 +57,9 @@
 ;
 ;
 ; VERSION:
-; $LastChangedBy: jianbao_tao $
-; $LastChangedDate: 2012-11-23 12:15:23 -0800 (Fri, 23 Nov 2012) $
-; $LastChangedRevision: 11295 $
+; $LastChangedBy: aaronbreneman $
+; $LastChangedDate: 2018-12-06 09:23:52 -0800 (Thu, 06 Dec 2018) $
+; $LastChangedRevision: 26260 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/emfisis/rbsp_load_emfisis_quicklook.pro $
 ;
 ;-
@@ -93,7 +93,7 @@ end
 function rbsp_load_emfisis_quicklook_fname_filter, dtype
 compile_opt idl2, hidden
 
-case dtype of 
+case dtype of
   '1sec-gse': filter = '*_magnetometer_1sec-gse_*'
   '4sec-gse': filter = '*_magnetometer_4sec-gse_*'
   'hires-gse': filter = '*_magnetometer_hires-gse_*'
@@ -130,7 +130,7 @@ fnames = file_basename(urls)
 
 ; dprint, dtype
 
-; case dtype of 
+; case dtype of
 ;   '1sec-gse': filter = '*_magnetometer_1sec-gse_*'
 ;   '4sec-gse': filter = '*_magnetometer_4sec-gse_*'
 ;   'hires-gse': filter = '*_magnetometer_hires-gse_*'
@@ -176,7 +176,7 @@ compile_opt idl2, hidden
 
 rbx = 'rbsp' + strlowcase(sc) + '_'
 
-case dtype of 
+case dtype of
   '1sec-gse': begin
       tvar = rbx + 'mag_gse_1sec'
       coord  = 'gse'
@@ -256,7 +256,7 @@ function rbsp_load_emfisis_quicklook_spec, dtype
 ; dtype should be a scalar string of data type.
 compile_opt idl2, hidden
 
-case dtype of 
+case dtype of
   '1sec-gse': return, -1
   '4sec-gse': return, -1
   'hires-gse': return, -1
@@ -283,7 +283,7 @@ compile_opt idl2, hidden
 
 ; common rbsp_load_emfisis_quicklook_com, wfr_name
 
-case dtype of 
+case dtype of
   '1sec-gse': return, ''
   '4sec-gse': return, ''
   'hires-gse': return, ''
@@ -330,10 +330,19 @@ pathname = scdir + date_dir + fname
 ; print, 'serverdir: ',serverdir
 ; print, 'localdir: ', localdir
 ; stop
-file_http_copy, pathname $
-  , serverdir=serverdir $
-  , localdir=localdir $
-  , _extra = _extra
+
+
+
+undefine,lf,tns
+file_loaded = spd_download(remote_file=serverdir+pathname+fname,$
+   local_path=localdir+pathname,$
+   local_file=lf,/last_version)
+
+
+;file_http_copy, pathname $
+;  , serverdir=serverdir $
+;  , localdir=localdir $
+;  , _extra = _extra
 
 end
 
@@ -385,13 +394,13 @@ pro rbsp_load_emfisis_quicklook, probe = probe, datatype = datatype $
   , _extra = _extra, use_local = use_local, downloadonly = downloadonly
 
 compile_opt idl2
+rbsp_efw_init
 
 if ~keyword_set(datatype) then datatype = ['1sec-gse', 'hfr', 'wfr-BuBu', $
   'wfr-EuEu']
 if ~keyword_set(probe) then probe = ['a', 'b']
 if n_elements(downloadonly) eq 0 then downloadonly = !rbsp_efw.downloadonly
 
-rbsp_efw_init
 
 tspan = timerange()
 dsta = strmid(time_string(tspan[0]+10.), 0, 10)
@@ -542,4 +551,3 @@ store_data, ['HFR_Spectra', 'BuBu', 'BvBv', 'BwBw', 'EuEu', 'EvEv', 'EwEw'], $
   /del, verbose = 0
 
 end
-

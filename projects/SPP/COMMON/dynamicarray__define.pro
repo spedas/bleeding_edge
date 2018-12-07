@@ -79,7 +79,7 @@ void = self->generic_object::Init()
 self.ptr_array = ptr_new(!null)
 ;dim = size(/dimen,array)
 ;self.size = dim[0]
-self.dlevel = 3
+self.dlevel = 4
 IF (ISA(ex)) THEN self->SetProperty, _EXTRA=ex
 self.append,array
 dprint,dlevel=self.dlevel,'Created new '+typename(self)+ ': "'+self.name+'"'

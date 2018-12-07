@@ -6,10 +6,6 @@ function spp_swp_spani_fast_hkp_decom,ccsds,ptp_header=ptp_header,apdat=apdat,pl
   ;; 1. 16 CCSDS header bytes (should be 10?)
   ;; 2. 512 ADC values, each 2 bytes
   
-  if n_params() eq 0 then begin
-    dprint,'Not working yet.',dlevel=2
-    return,!null
-  endif
 
   
   ccsds_data = spp_swp_ccsds_data(ccsds)
@@ -33,7 +29,7 @@ function spp_swp_spani_fast_hkp_decom,ccsds,ptp_header=ptp_header,apdat=apdat,pl
 
   ;;-----------------------------------------
   ;; Plot data (before and after)
-  plot = 1
+  plot = 0
   if keyword_set(plot) then begin
      !P.MULTI = [0,0,2]
      xx = indgen(512)
@@ -45,12 +41,14 @@ function spp_swp_spani_fast_hkp_decom,ccsds,ptp_header=ptp_header,apdat=apdat,pl
   endif
 
   ;; New York Second
-  time = ccsds.time + (0.87*findgen(512)/512.)
+  times = ccsds.time + (0.87*findgen(512)/512.)
+  time = ccsds.time
 
 
   fhk = { $
         ;time:       ptp_header.ptp_time, $
         time:       time, $
+  ;      times:      times, $
         met:        ccsds.met,  $
         delay_time:  0d, $   needs fixing! ;  ptp_header.ptp_time - ccsds.time, $
         seqn:   ccsds.seqn, $

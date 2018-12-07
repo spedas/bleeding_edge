@@ -32,8 +32,8 @@
 ; 1. Written by Peter Schroeder, February 2012
 ;
 ; $LastChangedBy: aaronbreneman $
-; $LastChangedDate: 2018-11-30 07:37:40 -0800 (Fri, 30 Nov 2018) $
-; $LastChangedRevision: 26196 $
+; $LastChangedDate: 2018-12-06 09:26:48 -0800 (Thu, 06 Dec 2018) $
+; $LastChangedRevision: 26263 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_fit.pro $
 ;-
 
@@ -45,7 +45,7 @@ pro rbsp_load_efw_fit,probe=probe, datatype=datatype, trange=trange, $
                  type=type, integration=integration, msim=msim, etu=etu, qa=qa
 
 rbsp_efw_init
-dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_fit.pro 26196 2018-11-30 15:37:40Z aaronbreneman $'
+dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_fit.pro 26263 2018-12-06 17:26:48Z aaronbreneman $'
 
 if keyword_set(etu) then probe = 'a'
 
@@ -95,9 +95,6 @@ for s=0,n_elements(p_var)-1 do begin
 
      format = rbsppref + '/fit/YYYY/'+rbspx+'_l1_fit_YYYYMMDD_v*.cdf'
      relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
-;     if vb ge 4 then printdat,/pgmtrace,relpathnames
-;     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-;     files = file_retrieve(relpathnames, /last_version, _extra=!rbsp_efw)
 
 
      ;extract the local data path without the filename
@@ -131,7 +128,7 @@ for s=0,n_elements(p_var)-1 do begin
 
        dprint, dlevel = 5, verbose = verbose, 'Setting options...'
 
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_fit.pro 26196 2018-11-30 15:37:40Z aaronbreneman $'
+       options, /def, tns, code_id = '$Id: rbsp_load_efw_fit.pro 26263 2018-12-06 17:26:48Z aaronbreneman $'
 
        dprint, dwait = 5., verbose = verbose, 'Flushing output'
        dprint, dlevel = 4, verbose = verbose, 'FIT data Loaded for probe: '+p_var[s]

@@ -2,8 +2,8 @@
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-05 12:46:20 -0800 (Wed, 05 Dec 2018) $
-; $LastChangedRevision: 26252 $
+; $LastChangedDate: 2018-12-06 14:09:20 -0800 (Thu, 06 Dec 2018) $
+; $LastChangedRevision: 26271 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -216,8 +216,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-05 12:46:20 -0800 (Wed, 05 Dec 2018) $
-; $LastChangedRevision: 26252 $
+; $LastChangedDate: 2018-12-06 14:09:20 -0800 (Thu, 06 Dec 2018) $
+; $LastChangedRevision: 26271 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -234,8 +234,8 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2018-12-05 12:46:20 -0800 (Wed, 05 Dec 2018) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 26252 $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2018-12-06 14:09:20 -0800 (Thu, 06 Dec 2018) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 26271 $'
 
     return,sw_hash
 end
@@ -278,8 +278,8 @@ function spp_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-12-05 12:46:20 -0800 (Wed, 05 Dec 2018) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 26252 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-12-06 14:09:20 -0800 (Thu, 06 Dec 2018) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 26271 $'
 
   return,global_att
 end
@@ -397,15 +397,17 @@ function spp_gen_apdat::cdf_makeobj,  datavary, datanovary,  vnames=vnames, igno
   ; Force Epoch as first variable. If datavary contains an EPOCH variable it will add or overwrite this value
   epoch = time_ephemeris(datavary.time,/ut2et)                ;  may want to change this later to base it on met
   epoch = long64(epoch * 1d9)
-  vho = cdf_tools_varinfo('Epoch',epoch[0],/recvary,datatype = 'CDF_EPOCH')
-  vh = vho.getattr()
-  vh.data.array = epoch
-  vatts =  self.cdf_variable_attributes('Epoch')
-  vh.attributes  += vatts
-  cdf.add_variable, vh
+  vho = cdf_tools_varinfo('Epoch',epoch[0],/recvary,all_values=epoch,datatype = 'CDF_TIME_TT2000')
+;  vh = vho.getattr()
+;  vh.data.array = epoch
+;  vatts =  self.cdf_variable_attributes('Epoch')
+;  vh.attributes  += vatts
+;  cdf.add_variable, vh
+  cdf.add_variable, vho
 
   if keyword_set(datavary) then begin
-    if ~keyword_set(vnames) then vnames = tag_names(datavary)
+;    if ~keyword_set(vnames) then $
+       vnames = tag_names(datavary)   ; if vnames is passed in then there is a bug
     datavary0 = datavary[0]   ; use first element as the template.
 
     dlevel=5
@@ -414,23 +416,29 @@ function spp_gen_apdat::cdf_makeobj,  datavary, datanovary,  vnames=vnames, igno
       val = datavary0.(vn)
       vals = datavary.(vn)
       if isa(val,'pointer') then begin                ; special case for pointers
-        maxsize = max(datavary.datasize,index)        ; determines maximum size of container
+        datasize = lonarr(n_elements(vals))
+        for i=0,n_elements(vals)-1 do   if ptr_valid(vals[i]) then datasize[i] = n_elements( *vals[i] )
+        maxsize = max(datasize,index)        ; determines maximum size of container
+        if maxsize eq 0 then continue
         val = *vals[index]
         ndv = n_elements(datavary)
         ptrs = vals
         vals = replicate(fill_nan(val[0]),[ndv,maxsize])
-        for i= 0,ndv-1 do if maxsize eq n_elements(*ptrs[i]) then  vals[i,*] = *ptrs[i]    ; only the largest arrays will get filled - should correct in the future.
+        for i= 0,ndv-1 do  begin
+          v = *ptrs[i]
+          vals[i,0:n_elements(v)-1] = v    
+        endfor
       endif else begin
         if n_elements(vals) gt 1 then         vals = reform(transpose(vals))
       endelse
-      vho = cdf_tools_varinfo(vname, val, /recvary)
-      vh = vho.getattr()
-      vh.data.array = vals
-      vatt  = self.cdf_variable_attributes(vname)
-      ;  dprint,dlevel=dlevel,'hello1'
-      vh.attributes += vatt
-      ;  dprint,dlevel=dlevel,'hello2'
-      cdf.add_variable, vh
+      vho = cdf_tools_varinfo(vname, val, all_values=vals, /recvary)
+;      vh = vho.getattr()
+;      vh.data.array = vals
+;      vatt  = self.cdf_variable_attributes(vname)
+;      ;  dprint,dlevel=dlevel,'hello1'
+;      vh.attributes += vatt
+;      ;  dprint,dlevel=dlevel,'hello2'
+      cdf.add_variable, vho
     endfor
 
   endif
@@ -451,12 +459,13 @@ PRO spp_gen_apdat::cdf_makefile,trange=trange
     w= where(datarray.time ge trange[0] and datarray.time lt trange[1],/null)
     datarray = datarray[w]
   endif
-  str_element,datarray,'datasize',datasize
-  if keyword_set(datasize) then begin
-      w = where( datarray.ndat eq datarray.datasize,/null)
-      datarray = datarray[w]
-      if ~keyword_set(datarray) then return
-  endif
+  
+;  str_element,datarray,'datasize',datasize
+;  if keyword_set(datasize) then begin
+;      w = where( datarray.ndat eq datarray.datasize,/null)
+;      datarray = datarray[w]
+;      if ~keyword_set(datarray) then return
+;  endif
 
   if keyword_set(datarray) then begin
     g_att = self.cdf_global_attributes()
