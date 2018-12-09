@@ -2,8 +2,8 @@
 ; PSP SPAN TPLOT ROUTINE
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-11-08 07:58:40 -0800 (Thu, 08 Nov 2018) $
-; $LastChangedRevision: 26068 $
+; $LastChangedDate: 2018-12-08 17:22:25 -0800 (Sat, 08 Dec 2018) $
+; $LastChangedRevision: 26287 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_swp_tplot.pro $
 ;--------------------------------------------------------------------
 
@@ -95,7 +95,8 @@ if keyword_set(name) then begin
     'SB_COVER': tplot, '*spb_*ACT*CVR* *spb_*ACTSTAT*FLAG *spb*CMD*REC', add = add
  ;   'SA_COVER': tplot, '*spa_*ACT*CVR* *spa_*ACTSTAT*FLAG *spa*CMD*REC', add = add
     'SWEM': tplot,'spp_swem_dhkp_*WRADDR APID spp_swem_dhkp_SW_CMDCOUNTER',add=add
-    'SWEM2': tplot,'spp_swem_dhkp_SW_OSCPUUSAGE spp_event_log_BRATE spp_event_log_CODE spp_swem_dhkp_SW_SSRWRADDR APID spp_swem_dhkp_SW_CMDCOUNTER',add=add
+    'SWEM2': tplot,'spp_swem_dhkp_SW_OSCPUUSAGE spp_event_log_CODE spp_swem_dhkp_SW_SSRWRADDR APID spp_swem_dhkp_SW_CMDCOUNTER',add=add
+    'SWEM_TEMP' : tplot,'spp_swem_*TEMP'
     'TIMING': tplot,'spp_swem_timing_'+['TIME_DELTA','SAMPLE_MET_DELTA','DRIFT_DELTA','CLKS_PER_PPS_DELTA'],add=add
     'TEMP': tplot,'*TEMP',add=add
     'TEMPS': tplot,'*ALL_TEMPS',add=add

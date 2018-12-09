@@ -16,9 +16,9 @@
 ;
 ;Author: Davin Larson -  20th century
 ;
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-02-07 21:18:03 -0800 (Wed, 07 Feb 2018) $
-; $LastChangedRevision: 24666 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-12-08 09:46:21 -0800 (Sat, 08 Dec 2018) $
+; $LastChangedRevision: 26283 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf2tplot.pro $
 ; $ID: $
 ;-

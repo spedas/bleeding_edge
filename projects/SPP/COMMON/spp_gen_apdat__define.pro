@@ -2,8 +2,8 @@
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-06 14:09:20 -0800 (Thu, 06 Dec 2018) $
-; $LastChangedRevision: 26271 $
+; $LastChangedDate: 2018-12-08 09:48:17 -0800 (Sat, 08 Dec 2018) $
+; $LastChangedRevision: 26284 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -216,8 +216,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-06 14:09:20 -0800 (Thu, 06 Dec 2018) $
-; $LastChangedRevision: 26271 $
+; $LastChangedDate: 2018-12-08 09:48:17 -0800 (Sat, 08 Dec 2018) $
+; $LastChangedRevision: 26284 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -234,8 +234,8 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2018-12-06 14:09:20 -0800 (Thu, 06 Dec 2018) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 26271 $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2018-12-08 09:48:17 -0800 (Sat, 08 Dec 2018) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 26284 $'
 
     return,sw_hash
 end
@@ -278,8 +278,8 @@ function spp_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-12-06 14:09:20 -0800 (Thu, 06 Dec 2018) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 26271 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-12-08 09:48:17 -0800 (Sat, 08 Dec 2018) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 26284 $'
 
   return,global_att
 end
@@ -450,7 +450,7 @@ end
 
 
 
-PRO spp_gen_apdat::cdf_makefile,trange=trange
+PRO spp_gen_apdat::cdf_makefile,trange=trange,verbose=verbose
 
 ;  printdat,time_string(trange)
   datarray = self.data.array
@@ -474,7 +474,8 @@ PRO spp_gen_apdat::cdf_makefile,trange=trange
     filename = time_string(trange[0],tformat=pathformat)
     filename = str_sub(filename,'$NAME$',self.name)
     filename = root_data_dir() + filename
-    cdf.write,filename
+;    dprint,dlevel=self.dlevel,verbose=verbose,
+    cdf.write,filename,verbose = verbose    ; isa(verbose) ? verbose : self.verbose
     obj_destroy,cdf
   endif
 end
@@ -482,42 +483,42 @@ end
 
 
 
-
-pro spp_gen_apdat::cdf_create_file,cdftags=cdftags,trange=trange   ; this routine is almost obsolete
-  if not keyword_set(self.cdf_pathname) then return
-
-  dprint,'Making CDF for ',self.name,dlevel=self.dlevel
-  ; dirpathname = self.cdf_dirpathname
-  ; filename = dirpathname + self.name
-  global_attributes = self.cdf_global_attributes()
-  if not keyword_set(trange) then trange=timerange()
-  pathname =  spp_file_retrieve(self.cdf_pathname ,trange=trange,/create_dir,/daily_names)
-  global_attributes['Logical_file_id'] = str_sub(pathname,'$NAME$',self.name)
-
-  pathname = global_attributes['Logical_file_id']
-  file_mkdir2,file_dirname(pathname)
-  fileid = cdf_create(pathname,/clobber)
-
-  foreach attvalue,global_attributes,name do begin
-    dummy = cdf_attcreate(fileid,name,/global_scope)
-        if keyword_set(attvalue) then begin
-    for gentnum=0,n_elements(attvalue)-1 do begin
-      cdf_attput,fileid,name,gentnum,attvalue[gentnum]
-    endfor
-        endif
-  endforeach
-
-  var_atts = self.cdf_variable_attributes()
-  foreach att,var_atts,name do begin
-    dummy = cdf_attcreate(fileid,name,/variable_scope)  ;  Variable attributes are created - but not filled
-  endforeach
-
-  self.cdf_create_data_vars,fileid,vattributes=var_atts
-
-  cdf_close,fileid
-  dprint,self.name,':  Created:  ',pathname,dlevel=self.dlevel
-end
-
+;
+;pro spp_gen_apdat::cdf_create_file,cdftags=cdftags,trange=trange   ; this routine is almost obsolete
+;  if not keyword_set(self.cdf_pathname) then return
+;
+;  dprint,'Making CDF for ',self.name,dlevel=self.dlevel
+;  ; dirpathname = self.cdf_dirpathname
+;  ; filename = dirpathname + self.name
+;  global_attributes = self.cdf_global_attributes()
+;  if not keyword_set(trange) then trange=timerange()
+;  pathname =  spp_file_retrieve(self.cdf_pathname ,trange=trange,/create_dir,/daily_names)
+;  global_attributes['Logical_file_id'] = str_sub(pathname,'$NAME$',self.name)
+;
+;  pathname = global_attributes['Logical_file_id']
+;  file_mkdir2,file_dirname(pathname)
+;  fileid = cdf_create(pathname,/clobber)
+;
+;  foreach attvalue,global_attributes,name do begin
+;    dummy = cdf_attcreate(fileid,name,/global_scope)
+;        if keyword_set(attvalue) then begin
+;    for gentnum=0,n_elements(attvalue)-1 do begin
+;      cdf_attput,fileid,name,gentnum,attvalue[gentnum]
+;    endfor
+;        endif
+;  endforeach
+;
+;  var_atts = self.cdf_variable_attributes()
+;  foreach att,var_atts,name do begin
+;    dummy = cdf_attcreate(fileid,name,/variable_scope)  ;  Variable attributes are created - but not filled
+;  endforeach
+;
+;  self.cdf_create_data_vars,fileid,vattributes=var_atts
+;
+;  cdf_close,fileid
+;  dprint,self.name,':  Created:  ',pathname,dlevel=self.dlevel
+;end
+;
 
 
 function spp_gen_apdat::struct
@@ -591,6 +592,7 @@ PRO spp_gen_apdat__define
     cdf_pathname:'', $
     cdf_tagnames:'', $
     output_lun: 0, $
+    verbose: 0 , $
     dlevel: 0  $
   }
 END

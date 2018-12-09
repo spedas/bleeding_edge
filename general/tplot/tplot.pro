@@ -90,14 +90,15 @@
 ;Still have questions:
 ;   Send e-mail to:  tplot@ssl.berkeley.edu    someone might answer!
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-11-07 14:02:15 -0800 (Wed, 07 Nov 2018) $
-; $LastChangedRevision: 26065 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-12-08 09:43:52 -0800 (Sat, 08 Dec 2018) $
+; $LastChangedRevision: 26282 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot.pro $
 ;-
 
 pro tplot,datanames,      $
    WINDOW = wind,         $
+   reverse = reverse, $
    NOCOLOR = nocolor,     $
    VERBOSE = verbose,     $
    wshow = wshow,         $
@@ -186,6 +187,7 @@ if n_elements(mix) ne 0 then datanames = tplot_vars.settings.varnames[mix]
 
 if keyword_set(add_var)  then begin
    names = tnames(datanames,/all)
+   if keyword_set(reverse) then names = reverse(names)
    if add_var eq 1 then datanames = [names,tplot_vars.options.varnames] else $
     if (add_var gt n_elements(tplot_vars.options.varnames)) then $
         datanames = [tplot_vars.options.varnames,names] else $

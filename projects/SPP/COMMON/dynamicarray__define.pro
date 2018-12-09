@@ -75,14 +75,14 @@ end
 FUNCTION DynamicArray::Init,array, _EXTRA=ex
 COMPILE_OPT IDL2
 ; Call our superclass Initialization method.
-void = self->generic_object::Init()
+void = self->generic_object::Init(_extra=ex)
 self.ptr_array = ptr_new(!null)
 ;dim = size(/dimen,array)
 ;self.size = dim[0]
-self.dlevel = 4
+;self.dlevel = 4
 IF (ISA(ex)) THEN self->SetProperty, _EXTRA=ex
 self.append,array
-dprint,dlevel=self.dlevel,'Created new '+typename(self)+ ': "'+self.name+'"'
+dprint,verbose=verbose,dlevel=self.dlevel+1,'Created new '+typename(self)+ ': "'+self.name+'"'
 RETURN, 1
 END
  
@@ -91,7 +91,7 @@ PRO DynamicArray::Cleanup
 COMPILE_OPT IDL2
 ; Call our superclass Cleanup method
 ;  *self.ptr_array = !null   ;; line not needed
-dprint,dlevel=self.dlevel,'Cleanup of '+typename(self)+ ': '+self.name
+dprint,verbose=verbose,dlevel=self.dlevel+1,'Cleanup of '+typename(self)+ ': '+self.name
 ptr_free,self.ptr_array
 ;   self->generic_object::Cleanup  ;  not required???
 END
@@ -134,7 +134,7 @@ if 1 then begin  ;  Don't use old routine append_array
   fillnan =1
 
   if isa(a1,'Undefined')  then begin              ; n_elements(a1) eq 0;;  Warning- this could have unexpected results if a1 is a null pointer or null object
-    dprint,dlevel=self.dlevel+2,'Appending Null'
+    dprint,verbose=verbose,dlevel=self.dlevel+1,'Appending Null'
     return     ; Quietly do nothing
   endif
 
@@ -191,7 +191,7 @@ if 1 then begin  ;  Don't use old routine append_array
 
 
   if keyword_set(error) then begin
-    dprint,dlevel=self.dlevel,error
+    dprint,verbose=verbose,dlevel=self.dlevel,error
     return
   endif
   
@@ -202,14 +202,14 @@ if 1 then begin  ;  Don't use old routine append_array
     fill = (*a0)[0]
     if keyword_set(fillnan) then fill =   fill_nan(fill) 
     if n_elements(dim1) ne n_elements(dim0) then begin
-      dprint,dlevel=self.dlevel,'Incompatible appending'
+      dprint,verbose=verbose,dlevel=self.dlevel,'Incompatible appending'
     endif
     dim = dim0
     add = floor((n0+n1) * xfactor+ n1 )
     dim[0] = add
     fillx = replicate(fill,dim)
     *a0 = [*a0,fillx]                       ;  This is the operation that can take a long time to perform
-    dprint,dlevel=self.dlevel+2,'Enlarging '+self.name+' array by ',add,' elements. New size:', size(/dim,*a0)
+    dprint,verbose=verbose,dlevel=self.dlevel+2,'Enlarging '+self.name+' array by ',add,' elements. New size:', size(/dim,*a0)
     n0=n0+add
   endif
 
@@ -223,7 +223,7 @@ endif else begin    ; Usee old version of append_array
   ind =self.size
   append_array,*self.ptr_array,a1,index=ind,error=error
   if keyword_set(error) then begin
-    dprint,dlevel=self.dlevel,self.name,error
+    dprint,verbose=verbose,dlevel=self.dlevel,self.name,error
     ;self.typename
   endif
   self.size=ind  
@@ -263,10 +263,10 @@ PRO DynamicArray::SetProperty, array=array, name=name,dlevel=dlevel
 COMPILE_OPT IDL2
 ; If user passed in a property, then set it.
 IF (ISA(array) || isa(array,/null)) THEN begin
-  dprint,dlevel=self.dlevel+1,'Changing array: "'+self.name+'"'
+  dprint,verbose=verbose,dlevel=self.dlevel+1,'Changing array: "'+self.name+'"'
   ptrs = ptr_extract(*self.ptr_array)
   if isa(ptrs) then begin
-    dprint,'Warning! old pointers NOT freed in old dynamicarray: "'+self.name+'"',dlevel=self.dlevel
+    dprint,verbose=verbose,'Warning! old pointers NOT freed in old dynamicarray: "'+self.name+'"',dlevel=self.dlevel+1
  ;   ptr_free,ptrs
   endif
   *self.ptr_array = !null

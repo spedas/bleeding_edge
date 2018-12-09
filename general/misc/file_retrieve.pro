@@ -84,9 +84,9 @@
 ;    2012-6-25:  local_data_dir and remote_data_dir accept array inputs 
 ;                with the same # of elements as pathnames/newpathnames   -DO NOT USE this option!
 ;
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-;$LastChangedRevision: 24506 $
+;$LastChangedBy: davin-mac $
+;$LastChangedDate: 2018-12-08 09:41:04 -0800 (Sat, 08 Dec 2018) $
+;$LastChangedRevision: 26281 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_retrieve.pro $
 ;-
 
@@ -108,9 +108,10 @@ function server_available,servers,verbose=verbose
 end
 
 
-pro file_retrieve_reset_internet
+pro file_retrieve_reset_internet,delay=delay
   common file_retrieve_com, no_internet_until,wait_time
-  no_internet_until = systime(1)-1.
+  if ~keyword_set(delay) then delay =-1
+  no_internet_until = systime(1) + delay
 end
 
 
@@ -149,11 +150,11 @@ if ~keyword_set(wait_time) then wait_time = 180
 if ~keyword_set(no_internet_until) then no_internet_until = systime(1)-1.
 
 
-dprint,dlevel=4,verbose=verbose,'Start; $Id: file_retrieve.pro 24506 2018-01-11 01:03:26Z adrozdov $'
+dprint,dlevel=4,verbose=verbose,'Start; $Id: file_retrieve.pro 26281 2018-12-08 17:41:04Z davin-mac $'
 if size(/type, local_data_dir)  ne 7 then local_data_dir = root_data_dir()
 
 if keyword_set(structure_format)  && structure_format eq 1 then begin    ; Old version maintained for legacy code   - don't use this any more.
-;   swver = strsplit('$Id: file_retrieve.pro 24506 2018-01-11 01:03:26Z adrozdov $',/extract)
+;   swver = strsplit('$Id: file_retrieve.pro 26281 2018-12-08 17:41:04Z davin-mac $',/extract)
 ;   user_agent =  strjoin(swver[1:3],' ')+' IDL'+!version.release + ' ' + !VERSION.OS + '/' + !VERSION.ARCH+ ' (' + (getenv('USER') ? getenv('USER') : getenv('USERNAME'))+')'
    if n_elements(user_agent) eq 0 then user_agent=''
    str= {   $
