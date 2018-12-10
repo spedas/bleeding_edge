@@ -143,7 +143,7 @@ if keyword_set(interpolate) then begin
       ind = where(tdata.energy gt ethresh,nind)
       if nind gt 0 then begin
         bdfdv = dfdv # replicate(1.,data.nbins)
-        o_data = o_data*(1.+(sx*vframe(0)+sy*vframe(1)+sz*vframe(2))*bdfdv )
+        o_data = o_data*(1.+(sx*vframe[0]+sy*vframe[1]+sz*vframe[2])*bdfdv )
         data.data(ind) = o_data(ind)
       endif
    endif

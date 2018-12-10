@@ -156,6 +156,14 @@ function spp_fld_select_timespan_define_presets, fm_or_em
 
   fm_times['e01_pre_cruise'] =   ['2018-10-05/00:00:00', '2018-10-31/00:00:00']
 
+  fm_times['e01_start_to_perihelion'] =   ['2018-10-31/08:30:00', '2018-11-06/08:35:00']
+
+
+  fm_times['e01_encounter_plus1day'] =   ['2018-10-30/11:56:51', '2018-11-12/18:58:51']
+
+  fm_times['e01_encounter'] =   ['2018-10-31/11:56:51', '2018-11-11/18:58:51']
+
+
   fm_times['e01_mom_dump'] =   ['2018-11-06/08:30:00', '2018-11-06/08:35:00']
 
   em_times = orderedhash()

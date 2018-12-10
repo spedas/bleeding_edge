@@ -24,10 +24,17 @@ cnts = ccsds_data[24:*]
 ;hexprint,cnts
 ;print
   
+  
+  
   str2 = {time: ccsds.time, $
-;     seqcntr : ccsds.seq_cnt, $
-     tof: cnts, $  $ 
+      met: ccsds.met,  $
+      seqn: ccsds.seqn,  $
+      pkt_size: ccsds.pkt_size, $
+     tof: bytarr(512), $  $ 
      gap: 0b   }
+
+if ccsds.pkt_size  eq 536 then str2.tof = cnts     
+     
   return,str2
 
 end

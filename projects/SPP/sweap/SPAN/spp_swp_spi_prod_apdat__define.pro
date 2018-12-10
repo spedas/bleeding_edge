@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spi_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-10-01 14:52:34 -0700 (Mon, 01 Oct 2018) $
-; $LastChangedRevision: 25880 $
+; $LastChangedDate: 2018-12-09 00:29:18 -0800 (Sun, 09 Dec 2018) $
+; $LastChangedRevision: 26297 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
@@ -378,6 +378,7 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,source_dict=source_dict
 
    str = { $
          time:        ccsds.time,$
+         met:         ccsds.met, $
          apid:        ccsds.apid,$
          time_delta:  ccsds.time_delta,$
          seqn:        ccsds.seqn,$
@@ -394,11 +395,11 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,source_dict=source_dict
          status_bits: status_bits,$   
          cnts:        tcnts,$
          peak_bin:    peak_bin,$
-         def_spec:    intarr(8),$
-         ano_spec:    intarr(16),$
-         nrg_spec:    intarr(32),$
-         mas_spec:    intarr(16),$
-         ful_spec:    intarr(256),$
+         def_spec:    fltarr(8),$
+         ano_spec:    fltarr(16),$
+         nrg_spec:    fltarr(32),$
+         mas_spec:    fltarr(16),$
+         ful_spec:    fltarr(256),$
          pdata:       ptr_new(cnts)}
    return,str
 END
