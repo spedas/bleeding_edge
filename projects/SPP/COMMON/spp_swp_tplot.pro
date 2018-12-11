@@ -2,8 +2,8 @@
 ; PSP SPAN TPLOT ROUTINE
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-08 17:22:25 -0800 (Sat, 08 Dec 2018) $
-; $LastChangedRevision: 26287 $
+; $LastChangedDate: 2018-12-10 11:16:06 -0800 (Mon, 10 Dec 2018) $
+; $LastChangedRevision: 26306 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_swp_tplot.pro $
 ;--------------------------------------------------------------------
 
@@ -38,20 +38,46 @@ if keyword_set(setlim) then begin
   options,'spp_event_log_CODE',psym=4,symsize=.1
   
   options,'*_MSG',tplot_routine='strplot'
-
-
+  zlim,'sp*_sp[ab]_???_NRG_SPEC',1,1000,1
+  
   ;tplot,var_label=tnames('manip*_POS *DAC_DEFL Igun_VOLTS Igun_CURRENT')
   !y.style=3
   dprint,setd=2
   store_data,'APID',data='APIDS_*'
   ylim,'APID',820,960
   options,'APID',panel_size=2.5
+
+
   if setlim eq 2 then begin
+    tns = tnames('spp_spi_SF??_NRG_SPEC')
+    nrgs = dgen(32,/log,range=[10000.,500.])
+    foreach tn,tns do begin
+      get_data,tn,data=d
+      str_element,/add,d,'v',nrgs 
+      store_data,tn,data=d 
+    endforeach
+    zlim,tns,1.,10000,1
+    ylim,tns,minmax(nrgs),/log
+
+    tns = tnames('spp_sp[ab]_SF?_NRG_SPEC')
+    nrgs = dgen(32,/log,range=[2000.,2.])
+    foreach tn,tns do begin
+      get_data,tn,data=d
+      str_element,/add,d,'v',nrgs
+      store_data,tn,data=d
+    endforeach
+    zlim,tns,1.,10000.,1
+    ylim,tns,minmax(nrgs),/log
+
+
     
   endif
+
+
   
   
 endif
+
 
 
 if keyword_set(name) then begin

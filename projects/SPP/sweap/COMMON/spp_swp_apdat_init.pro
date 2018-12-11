@@ -63,7 +63,7 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
    ;;decom_routine_i = 'spp_swp_spani_product_decom'
    ;;decom_routine_i = 'spp_swp_spani_product_decom2'
    decom_routine_obj = 'spp_swp_spi_prod_apdat'
-   ttags = '*SPEC* *CNTS* *DATASIZE'
+   ttags = '*SPEC* *CNTS* *DATASIZE MODE2'
    if not keyword_set(no_products) then begin
 
       ;;----------------------------------------------------------- Moments -------------------------------------------------------------------

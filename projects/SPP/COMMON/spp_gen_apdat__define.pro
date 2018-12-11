@@ -2,8 +2,8 @@
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-08 09:48:17 -0800 (Sat, 08 Dec 2018) $
-; $LastChangedRevision: 26284 $
+; $LastChangedDate: 2018-12-09 21:25:16 -0800 (Sun, 09 Dec 2018) $
+; $LastChangedRevision: 26303 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -198,7 +198,9 @@ pro spp_gen_apdat::finish,ttags=ttags
   if keyword_set(self.sort_flag) && keyword_set(datarray) then begin
     s = sort(datarray.time)
     datarray = datarray[s]
+;    dotarray.gap=0
     self.data.array = datarray
+;    self.data.array.gap = 0
   endif
   if keyword_set(datarray) && keyword_set(self.tname) then  begin
     store_data,self.tname,data=datarray, tagnames=ttags,  gap_tag='GAP',verbose=verbose
@@ -216,8 +218,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-08 09:48:17 -0800 (Sat, 08 Dec 2018) $
-; $LastChangedRevision: 26284 $
+; $LastChangedDate: 2018-12-09 21:25:16 -0800 (Sun, 09 Dec 2018) $
+; $LastChangedRevision: 26303 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -234,8 +236,8 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2018-12-08 09:48:17 -0800 (Sat, 08 Dec 2018) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 26284 $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2018-12-09 21:25:16 -0800 (Sun, 09 Dec 2018) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 26303 $'
 
     return,sw_hash
 end
@@ -278,8 +280,8 @@ function spp_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-12-08 09:48:17 -0800 (Sat, 08 Dec 2018) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 26284 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-12-09 21:25:16 -0800 (Sun, 09 Dec 2018) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 26303 $'
 
   return,global_att
 end

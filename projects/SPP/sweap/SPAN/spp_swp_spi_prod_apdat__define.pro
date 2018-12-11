@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spi_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-09 00:29:18 -0800 (Sun, 09 Dec 2018) $
-; $LastChangedRevision: 26297 $
+; $LastChangedDate: 2018-12-09 21:25:16 -0800 (Sun, 09 Dec 2018) $
+; $LastChangedRevision: 26303 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
@@ -375,6 +375,9 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,source_dict=source_dict
       tcnts = -1.
       cnts = 0
    ENDELSE 
+   
+   emode = mode2 and 'f'x
+   pmode = ishft(mode2,4) and 'f'x
 
    str = { $
          time:        ccsds.time,$
@@ -391,6 +394,8 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,source_dict=source_dict
          ndat:        ndat,$
          mode1:       mode1,$
          mode2:       mode2,$
+         emode:       emode, $
+         pmode:       pmode, $
          log_flag:    log_flag,$
          status_bits: status_bits,$   
          cnts:        tcnts,$
