@@ -2,8 +2,8 @@
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-09 21:25:16 -0800 (Sun, 09 Dec 2018) $
-; $LastChangedRevision: 26303 $
+; $LastChangedDate: 2018-12-11 01:19:53 -0800 (Tue, 11 Dec 2018) $
+; $LastChangedRevision: 26309 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -198,9 +198,9 @@ pro spp_gen_apdat::finish,ttags=ttags
   if keyword_set(self.sort_flag) && keyword_set(datarray) then begin
     s = sort(datarray.time)
     datarray = datarray[s]
-;    dotarray.gap=0
+    ;    dotarray.gap=0
     self.data.array = datarray
-;    self.data.array.gap = 0
+    ;    self.data.array.gap = 0
   endif
   if keyword_set(datarray) && keyword_set(self.tname) then  begin
     store_data,self.tname,data=datarray, tagnames=ttags,  gap_tag='GAP',verbose=verbose
@@ -218,8 +218,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-09 21:25:16 -0800 (Sun, 09 Dec 2018) $
-; $LastChangedRevision: 26303 $
+; $LastChangedDate: 2018-12-11 01:19:53 -0800 (Tue, 11 Dec 2018) $
+; $LastChangedRevision: 26309 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -236,8 +236,8 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2018-12-09 21:25:16 -0800 (Sun, 09 Dec 2018) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 26303 $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2018-12-11 01:19:53 -0800 (Tue, 11 Dec 2018) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 26309 $'
 
     return,sw_hash
 end
@@ -280,86 +280,86 @@ function spp_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-12-09 21:25:16 -0800 (Sun, 09 Dec 2018) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 26303 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2018-12-11 01:19:53 -0800 (Tue, 11 Dec 2018) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 26309 $'
 
   return,global_att
 end
 
 
-
-function spp_gen_apdat::cdf_variable_attributes, vname
-  dlevel =3
-  fnan = !values.f_nan
-  att = orderedhash()
-  ;  Create default value place holders
-  att['CATDESC']    = ''
-  att['FIELDNAM']    = vname
-  att['LABLAXIS']    = vname
-  att['DEPEND_0'] = 'Epoch'
-  att['DISPLAY_TYPE'] = ''
-  case vname of
-    'Epoch': begin
-      att['CATDESC']    = 'Time at middle of sample'
-      att['FIELDNAM']    = 'Time in TT2000 format'
-      att['LABLAXIS']    = 'Epoch'
-      att['UNITS']    = 'ns'
-      att['FILLVAL']    = -1
-      att['VALIDMIN']    = -315575942816000000
-      att['VALIDMAX']    = 946728068183000000
-      att['VAR_TYPE']    = 'support_data'
-      att['DICT_KEY']    = 'time>Epoch'
-      att['SCALETYP']    = 'linear'
-      att['MONOTON']    = 'INCREASE'
-    end
-    'TIME': begin
-      att['CATDESC']    = 'Time at middle of sample'
-      att['FIELDNAM']    = 'Time in UTC format'
-      att['LABLAXIS']    = 'Unix Time'
-      att['UNITS']    = 'sec'
-      att['FILLVAL']    = fnan
-      att['VALIDMIN']    = time_double('2010')
-      att['VALIDMAX']    = time_double('2030')
-      att['VAR_TYPE']    = 'support_data'
-      att['DICT_KEY']    = 'time>UTC'
-      att['SCALETYP']    = 'linear'
-      att['MONOTON']    = 'INCREASE'
-    end
-    'COUNTS': begin
-      att['CATDESC']    = 'Counts in Energy/angle bin'
-      att['FIELDNAM']    = 'Counts in '
-      att['DEPEND_0']    = 'Epoch'
-      att['LABLAXIS']    = 'Counts'
-      att['UNITS']    = ''
-      att['FILLVAL']    = fnan
-      att['VALIDMIN']    = 0
-      att['VALIDMAX']    = 1e6
-      att['VAR_TYPE']    = 'data'
-      att['DICT_KEY']    = ''
-      att['SCALETYP']    = 'log'
-      att['MONOTON']    = ''
-    end
-    else:  begin    ; assumed to be support
-      att['CATDESC']    = 'Not known'
-      att['FIELDNAM']    = 'Unknown '
-      att['DEPEND_0']    = 'Epoch'
-      att['LABLAXIS']    = vname
-      att['UNITS']    = ''
-      att['FILLVAL']    = fnan
-      att['VALIDMIN']    = -1e30
-      att['VALIDMAX']    = 1e30
-      att['VAR_TYPE']    = 'ignore_data'
-      att['DICT_KEY']    = ''
-      att['SCALETYP']    = 'linear'
-      att['MONOTON']    = ''
-      dprint,dlevel=dlevel, 'variable ' +vname+ ' not recognized'
-
-    end
-
-  endcase
-
-  return, att
-end
+;
+;function spp_gen_apdat::cdf_variable_attributes, vname
+;  dlevel =3
+;  fnan = !values.f_nan
+;  att = orderedhash()
+;  ;  Create default value place holders
+;  att['CATDESC']    = ''
+;  att['FIELDNAM']    = vname
+;  att['LABLAXIS']    = vname
+;  att['DEPEND_0'] = 'Epoch'
+;  att['DISPLAY_TYPE'] = ''
+;  case vname of
+;    'Epoch': begin
+;      att['CATDESC']    = 'Time at middle of sample'
+;      att['FIELDNAM']    = 'Time in TT2000 format'
+;      att['LABLAXIS']    = 'Epoch'
+;      att['UNITS']    = 'ns'
+;      att['FILLVAL']    = -1
+;      att['VALIDMIN']    = -315575942816000000
+;      att['VALIDMAX']    = 946728068183000000
+;      att['VAR_TYPE']    = 'support_data'
+;      att['DICT_KEY']    = 'time>Epoch'
+;      att['SCALETYP']    = 'linear'
+;      att['MONOTON']    = 'INCREASE'
+;    end
+;    'TIME': begin
+;      att['CATDESC']    = 'Time at middle of sample'
+;      att['FIELDNAM']    = 'Time in UTC format'
+;      att['LABLAXIS']    = 'Unix Time'
+;      att['UNITS']    = 'sec'
+;      att['FILLVAL']    = fnan
+;      att['VALIDMIN']    = time_double('2010')
+;      att['VALIDMAX']    = time_double('2030')
+;      att['VAR_TYPE']    = 'support_data'
+;      att['DICT_KEY']    = 'time>UTC'
+;      att['SCALETYP']    = 'linear'
+;      att['MONOTON']    = 'INCREASE'
+;    end
+;    'COUNTS': begin
+;      att['CATDESC']    = 'Counts in Energy/angle bin'
+;      att['FIELDNAM']    = 'Counts in '
+;      att['DEPEND_0']    = 'Epoch'
+;      att['LABLAXIS']    = 'Counts'
+;      att['UNITS']    = ''
+;      att['FILLVAL']    = fnan
+;      att['VALIDMIN']    = 0
+;      att['VALIDMAX']    = 1e6
+;      att['VAR_TYPE']    = 'data'
+;      att['DICT_KEY']    = ''
+;      att['SCALETYP']    = 'log'
+;      att['MONOTON']    = ''
+;    end
+;    else:  begin    ; assumed to be support
+;      att['CATDESC']    = 'Not known'
+;      att['FIELDNAM']    = 'Unknown '
+;      att['DEPEND_0']    = 'Epoch'
+;      att['LABLAXIS']    = vname
+;      att['UNITS']    = ''
+;      att['FILLVAL']    = fnan
+;      att['VALIDMIN']    = -1e30
+;      att['VALIDMAX']    = 1e30
+;      att['VAR_TYPE']    = 'ignore_data'
+;      att['DICT_KEY']    = ''
+;      att['SCALETYP']    = 'linear'
+;      att['MONOTON']    = ''
+;      dprint,dlevel=dlevel, 'variable ' +vname+ ' not recognized'
+;
+;    end
+;
+;  endcase
+;
+;  return, att
+;end
 
 
 
@@ -400,16 +400,16 @@ function spp_gen_apdat::cdf_makeobj,  datavary, datanovary,  vnames=vnames, igno
   epoch = time_ephemeris(datavary.time,/ut2et)                ;  may want to change this later to base it on met
   epoch = long64(epoch * 1d9)
   vho = cdf_tools_varinfo('Epoch',epoch[0],/recvary,all_values=epoch,datatype = 'CDF_TIME_TT2000')
-;  vh = vho.getattr()
-;  vh.data.array = epoch
-;  vatts =  self.cdf_variable_attributes('Epoch')
-;  vh.attributes  += vatts
-;  cdf.add_variable, vh
+  ;  vh = vho.getattr()
+  ;  vh.data.array = epoch
+  ;  vatts =  self.cdf_variable_attributes('Epoch')
+  ;  vh.attributes  += vatts
+  ;  cdf.add_variable, vh
   cdf.add_variable, vho
 
   if keyword_set(datavary) then begin
-;    if ~keyword_set(vnames) then $
-       vnames = tag_names(datavary)   ; if vnames is passed in then there is a bug
+    ;    if ~keyword_set(vnames) then $
+    vnames = tag_names(datavary)   ; if vnames is passed in then there is a bug
     datavary0 = datavary[0]   ; use first element as the template.
 
     dlevel=5
@@ -428,18 +428,18 @@ function spp_gen_apdat::cdf_makeobj,  datavary, datanovary,  vnames=vnames, igno
         vals = replicate(fill_nan(val[0]),[ndv,maxsize])
         for i= 0,ndv-1 do  begin
           v = *ptrs[i]
-          vals[i,0:n_elements(v)-1] = v    
+          vals[i,0:n_elements(v)-1] = v
         endfor
       endif else begin
         if n_elements(vals) gt 1 then         vals = reform(transpose(vals))
       endelse
       vho = cdf_tools_varinfo(vname, val, all_values=vals, /recvary)
-;      vh = vho.getattr()
-;      vh.data.array = vals
-;      vatt  = self.cdf_variable_attributes(vname)
-;      ;  dprint,dlevel=dlevel,'hello1'
-;      vh.attributes += vatt
-;      ;  dprint,dlevel=dlevel,'hello2'
+      ;      vh = vho.getattr()
+      ;      vh.data.array = vals
+      ;      vatt  = self.cdf_variable_attributes(vname)
+      ;      ;  dprint,dlevel=dlevel,'hello1'
+      ;      vh.attributes += vatt
+      ;      ;  dprint,dlevel=dlevel,'hello2'
       cdf.add_variable, vho
     endfor
 
@@ -454,20 +454,20 @@ end
 
 PRO spp_gen_apdat::cdf_makefile,trange=trange,verbose=verbose
 
-;  printdat,time_string(trange)
+  ;  printdat,time_string(trange)
   datarray = self.data.array
   if ~keyword_set(datarray) then return
   if keyword_set(trange) then begin
     w= where(datarray.time ge trange[0] and datarray.time lt trange[1],/null)
     datarray = datarray[w]
   endif
-  
-;  str_element,datarray,'datasize',datasize
-;  if keyword_set(datasize) then begin
-;      w = where( datarray.ndat eq datarray.datasize,/null)
-;      datarray = datarray[w]
-;      if ~keyword_set(datarray) then return
-;  endif
+
+  ;  str_element,datarray,'datasize',datasize
+  ;  if keyword_set(datasize) then begin
+  ;      w = where( datarray.ndat eq datarray.datasize,/null)
+  ;      datarray = datarray[w]
+  ;      if ~keyword_set(datarray) then return
+  ;  endif
 
   if keyword_set(datarray) then begin
     g_att = self.cdf_global_attributes()
@@ -476,7 +476,7 @@ PRO spp_gen_apdat::cdf_makefile,trange=trange,verbose=verbose
     filename = time_string(trange[0],tformat=pathformat)
     filename = str_sub(filename,'$NAME$',self.name)
     filename = root_data_dir() + filename
-;    dprint,dlevel=self.dlevel,verbose=verbose,
+    ;    dprint,dlevel=self.dlevel,verbose=verbose,
     cdf.write,filename,verbose = verbose    ; isa(verbose) ? verbose : self.verbose
     obj_destroy,cdf
   endif

@@ -1,7 +1,7 @@
 ; +
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-08 17:23:21 -0800 (Sat, 08 Dec 2018) $
-; $LastChangedRevision: 26289 $
+; $LastChangedDate: 2018-12-11 01:19:53 -0800 (Tue, 11 Dec 2018) $
+; $LastChangedRevision: 26309 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
@@ -68,7 +68,8 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   endif
   
   if keyword_set(current_filename) then begin
-    current_filehash = current_filename.hashcode()
+    basename =file_basename(current_filename)
+    current_filehash = basename.hashcode()
     all_info['current_filename'] = current_filename
     all_info['current_filehash'] = current_filehash
     hash_list = all_info['file_hash_list']

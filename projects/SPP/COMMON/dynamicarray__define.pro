@@ -264,12 +264,14 @@ COMPILE_OPT IDL2
 ; If user passed in a property, then set it.
 IF (ISA(array) || isa(array,/null)) THEN begin
   dprint,verbose=verbose,dlevel=self.dlevel+1,'Changing array: "'+self.name+'"'
-  ptrs = ptr_extract(*self.ptr_array)
-  if isa(ptrs) then begin
-    dprint,verbose=verbose,'Warning! old pointers NOT freed in old dynamicarray: "'+self.name+'"',dlevel=self.dlevel+1
- ;   ptr_free,ptrs
+  if 0 then begin   ; This section has been commented out because it was not needed and extraordinarily slow for large arrays
+    ptrs = ptr_extract(*self.ptr_array)
+    if isa(ptrs) then begin
+      dprint,verbose=verbose,'Warning! old pointers NOT freed in old dynamicarray: "'+self.name+'"',dlevel=self.dlevel+1
+ ;     ptr_free,ptrs
+    endif
   endif
-  *self.ptr_array = !null
+  *self.ptr_array = !null    ; Warning there is possibility of leaving dangling pointers.
   self.size = 0
   self.append, array
 ENDIF
