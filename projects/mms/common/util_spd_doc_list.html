@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Dec 11 18:16:32 2018.<P>
+<STRONG>Last modified: </STRONG>Wed Dec 12 14:20:19 2018.<P>
  
 <HR>
  
@@ -23,10 +23,13 @@ This page was created by the IDL library routine
 <br>Create quick plots of spectra at a certain time (i.e., energy vs. eflux, PA vs. eflux, etc)
 <LI><A HREF="#FLATTEN_SPECTRA_MULTI">FLATTEN_SPECTRA_MULTI</A>
 <br>Create quick plots of spectra at multiple times (i.e., energy vs. eflux, PA vs. eflux, etc)
+<LI><A HREF="#MMS_CONVERT_VFRAME">MMS_CONVERT_VFRAME</A>
 <LI><A HREF="#MMS_DRAW_CIRCLE">MMS_DRAW_CIRCLE</A>
 <br>Draws (and fills in) a circle
 <LI><A HREF="#MMS_TEAM_KIBANA">MMS_TEAM_KIBANA</A>
 <br>Opens the MMS Kibana page using your web browser; allows you to see which
+<LI><A HREF="#MMS_TRANSFORM_VELOCITY">MMS_TRANSFORM_VELOCITY</A>
+<LI><A HREF="#MMS_TRANSFORM_VELOCITY_LORENTZ">MMS_TRANSFORM_VELOCITY_LORENTZ</A>
 <br>
 </UL><P>
 <HR>
@@ -88,7 +91,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="FLATTEN_SPECTRA_MULTI">
 <H2>FLATTEN_SPECTRA_MULTI</H2></A>
 <A HREF="#FLATTEN_SPECTRA">[Previous Routine]</A>
-<A HREF="#MMS_DRAW_CIRCLE">[Next Routine]</A>
+<A HREF="#MMS_CONVERT_VFRAME">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -146,9 +149,44 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="util/flatten_spectra_multi.pro">projects/mms/common/util/flatten_spectra_multi.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_CONVERT_VFRAME">
+<H2>MMS_CONVERT_VFRAME</H2></A>
+<A HREF="#FLATTEN_SPECTRA_MULTI">[Previous Routine]</A>
+<A HREF="#MMS_DRAW_CIRCLE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:	
+	mms_convert_vframe
+
+FUNCTION:  convert_vframe ,  dat,  velocity
+PURPOSE:   Change velocity frames 
+INPUT: 
+  dat: 3d data structure
+  velocity: SW velocity vector  [VX,VY,VZ]
+OUTPUT:  3d data structure.  Data will be in a different coordinate frame.
+    (data will also be in units of distrubution function.)
+KEYWORDS:
+   ETHRESH:  Threshold energy for interpolation.
+   BINS:     Angle bins to be used
+   EVALUES:
+   INTERPOLATE:  set to non-zero value to have the data evaluated 
+   (interpolated) at the original energy steps.
+
+CREATED BY:	Davin Larson
+
+Forked for MMS by egrimes, 12/12/2018
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2018-12-12 14:08:01 -0800 (Wed, 12 Dec 2018) $
+$LastChangedRevision: 26317 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/mms_convert_vframe.pro $
+</PRE><P>
+<STRONG>(See <A href="util/mms_convert_vframe.pro">projects/mms/common/util/mms_convert_vframe.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_DRAW_CIRCLE">
 <H2>MMS_DRAW_CIRCLE</H2></A>
-<A HREF="#FLATTEN_SPECTRA_MULTI">[Previous Routine]</A>
+<A HREF="#MMS_CONVERT_VFRAME">[Previous Routine]</A>
 <A HREF="#MMS_TEAM_KIBANA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -172,6 +210,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_TEAM_KIBANA">
 <H2>MMS_TEAM_KIBANA</H2></A>
 <A HREF="#MMS_DRAW_CIRCLE">[Previous Routine]</A>
+<A HREF="#MMS_TRANSFORM_VELOCITY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -200,5 +239,64 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/mms_team_kibana.pro $
 </PRE><P>
 <STRONG>(See <A href="util/mms_team_kibana.pro">projects/mms/common/util/mms_team_kibana.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MMS_TRANSFORM_VELOCITY">
+<H2>MMS_TRANSFORM_VELOCITY</H2></A>
+<A HREF="#MMS_TEAM_KIBANA">[Previous Routine]</A>
+<A HREF="#MMS_TRANSFORM_VELOCITY_LORENTZ">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ mms_transform_velocity
+
+PROCEDURE:   mms_transform_velocity,  vel, theta, phi,  deltav
+PURPOSE:  used by the convert_vframe routine to transform arrays of velocity
+    thetas and phis by the offset deltav
+INPUT:
+  vel:  array of velocities
+  theta: array of theta values
+  phi:   array of phi values
+  deltav: [vx,vy,vz]  (transformation velocity)
+KEYWORDS:
+ vx,vy,vz: return vx,vy,vz separately as well as in vector form
+
+CREATED BY:  Davin Larson
+
+Forked for MMS by egrimes, 12/12/2018
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2018-12-12 14:03:56 -0800 (Wed, 12 Dec 2018) $
+$LastChangedRevision: 26315 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/mms_transform_velocity.pro $
+</PRE><P>
+<STRONG>(See <A href="util/mms_transform_velocity.pro">projects/mms/common/util/mms_transform_velocity.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MMS_TRANSFORM_VELOCITY_LORENTZ">
+<H2>MMS_TRANSFORM_VELOCITY_LORENTZ</H2></A>
+<A HREF="#MMS_TRANSFORM_VELOCITY">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ mms_transform_velocity_lorentz
+
+PROCEDURE:   mms_transform_velocity_lorentz,  vel, theta, phi,  deltav
+PURPOSE:  used by the convert_vframe routine to transform arrays of velocity
+    thetas and phis by the offset deltav
+INPUT:
+  vel:  array of velocities
+  theta: array of theta values
+  phi:   array of phi values
+  deltav: [vx,vy,vz]  (transformation velocity)
+KEYWORDS:
+ vx,vy,vz: return vx,vy,vz separately as well as in vector form
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2018-12-12 14:04:37 -0800 (Wed, 12 Dec 2018) $
+$LastChangedRevision: 26316 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/mms_transform_velocity_lorentz.pro $
+</PRE><P>
+<STRONG>(See <A href="util/mms_transform_velocity_lorentz.pro">projects/mms/common/util/mms_transform_velocity_lorentz.pro</A>)</STRONG><P>
 <HR>
  
