@@ -36,8 +36,8 @@
 ;                       
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-09-27 10:13:28 -0700 (Thu, 27 Sep 2018) $
-;$LastChangedRevision: 25866 $
+;$LastChangedDate: 2018-12-13 07:47:03 -0800 (Thu, 13 Dec 2018) $
+;$LastChangedRevision: 26320 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_feeps_pad.pro $
 ;-
 
@@ -138,7 +138,7 @@ pro mms_feeps_pad, bin_size = bin_size, probe = probe, energy = energy, level = 
     for isen=0, n_elements(particle_idxs)-1 do begin ; loop through sensors
       ; get data
       var_name = strcompress('mms'+probe+'_epd_feeps_'+data_rate+'_'+level+'_'+datatype+'_'+s_type+'_'+data_units+'_sensorid_'+strcompress(string(particle_idxs[isen]+1), /rem)+'_clean_sun_removed'+suffix_in, /rem)
-      get_data, var_name, data = d
+      get_data, var_name, data = d, dlimits=dl
       d.y[where(d.y eq 0.0)] = !values.d_nan ; remove any 0s before averaging
       ; store data in dflux and dpa
       ; Energy indices to use:
@@ -175,7 +175,8 @@ pro mms_feeps_pad, bin_size = bin_size, probe = probe, energy = energy, level = 
   ;new_name = 'mms'+probe+'_epd_feeps_' + datatype + '_' + en_range_string + '_pad'+suffix_in
   new_name = strcompress('mms'+probe+'_epd_feeps_'+data_rate+'_'+level+'_'+datatype+'_'+data_units+'_'+ en_range_string +'_pad'+suffix_in, /rem)
 
-  store_data, new_name, data={x:pa_data.x, y:pa_flux, v:pa_label}
+  dl.cdf.vatt.catdesc= 'MMS'+probe+'!CFEEPS ' + datatype + ' Pitch Angle Distribution (' + en_range_string + ')'
+  store_data, new_name, data={x:pa_data.x, y:pa_flux, v:pa_label}, dlimits=dl
 
   options, new_name, yrange = [0,180], ystyle=1, spec = 1, no_interp=1, minzlog = 0.01, $
     zlog = 1, ytitle = 'MMS'+probe+'!CFEEPS ' + datatype, ysubtitle=en_range_string+'!CPA [Deg]', ztitle=out_units

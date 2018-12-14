@@ -35,14 +35,22 @@ function spp_file_retrieve,pathname,trange=trange,ndays=ndays,nhours=nhours,verb
    ssr = ssr,ptp=ptp, $
    no_update=no_update,create_dir=create_dir,pos_start=pos_start, $
    daily_names=daily_names,hourly_names=hourly_names,resolution = res,shiftres=shiftres,valid_only=valid_only,  $
+   fields_mago_survey = fields_mago_survey, $
  ;  no_server=no_server,user_pass=user_pass,L0=L0, $
    cal=cal,TVac=Tvac,snout2=snout2,snout1=snout1,crypt=crypt, goddard = goddard, hires1 = hires1, ion=ion,recent=recent,spani=spani,spanea=spanea,spaneb=spaneb,spc=spc,swem=swem,elec=elec,instr=instr,router=router
 
 tstart = systime(1)
 
+if keyword_set(fields_mago_survey) then begin
+  pathname = 'psp/data/sci/sweap/.test/l1/mago_survey/YYYY/MM/spp_fld_l1_mago_survey_YYYYMMDD_v00.cdf
+  daily_names = 1
+  valid_only = 1
+endif
+
 if keyword_set(recent) then trange = systime(1) - [recent,0] * 86400d ;    Obtain the last N*24 hours
 if keyword_set(ndays) then trange = time_double(trange[0]) + [0,ndays*86400L]
 if keyword_set(nhours) then trange = time_double(trange[0]) + [0,nhours*3600L]
+
 
 
 sweap_gsedata_dir = 'spp/data/sci/sweap/prelaunch/gsedata/'

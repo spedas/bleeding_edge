@@ -61,7 +61,7 @@ function spp_file_source,DEFAULT_SOURCE,set=set,reset=reset,_extra=ex
       if ~keyword_set(user_pass) then  user_pass = user + ':' + user + '_swp'
       str_element,/add,psource,'USER_PASS',user_pass
       psource.preserve_mtime = 1
-      ;       psource.no_update=1   ; this can be set to 1 only because all files use version numbers and will not be updated.
+      ;       psource.no_update=1   ; this can be set to 1 only because all files use revision numbers and will not be updated.
       psource.min_age_limit=300  ; five minute delay before checking remote server for file index
     endelse
     ;    psource.archive_ext = '.arc'   ; archive old files instead of deleting them

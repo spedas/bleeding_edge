@@ -1,7 +1,7 @@
 ; +
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-11 01:19:53 -0800 (Tue, 11 Dec 2018) $
-; $LastChangedRevision: 26309 $
+; $LastChangedDate: 2018-12-12 23:06:05 -0800 (Wed, 12 Dec 2018) $
+; $LastChangedRevision: 26318 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
@@ -29,6 +29,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
                   finish=finish,$
                   window_obj=window_obj, $
                   tname=tname,$
+                  set_break=set_break, $
                   ttags=ttags,$
                   routine=routine,$
                   file_save=file_save, file_restore=file_restore,compress=compress, $
@@ -65,6 +66,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
      all_info['current_filename'] = 'Unknown'
      all_info['current_filehash'] = 0UL
      all_info['file_hash_list'] = orderedhash()
+     all_info['break'] = 0
   endif
   
   if keyword_set(current_filename) then begin
@@ -75,6 +77,10 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     hash_list = all_info['file_hash_list']
     hash_list[current_filehash] = current_filename
     return
+  endif
+  
+  if keyword_set(set_break) then begin
+    all_info['break'] = 1
   endif
   
   if keyword_set(file_save) then save,file=file_save,all_apdat,/verbose,compress=compress
