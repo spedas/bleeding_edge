@@ -32,8 +32,8 @@
 ; 1. Written by Peter Schroeder, February 2012
 ;
 ; $LastChangedBy: aaronbreneman $
-; $LastChangedDate: 2018-11-30 07:37:12 -0800 (Fri, 30 Nov 2018) $
-; $LastChangedRevision: 26192 $
+; $LastChangedDate: 2018-12-17 14:27:59 -0800 (Mon, 17 Dec 2018) $
+; $LastChangedRevision: 26344 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_spec.pro $
 ;-
 
@@ -46,7 +46,7 @@ pro rbsp_load_efw_spec,probe=probe, datatype=datatype, trange=trange, $
                  pT=pT
 
 rbsp_efw_init
-dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_spec.pro 26192 2018-11-30 15:37:12Z aaronbreneman $'
+dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_spec.pro 26344 2018-12-17 22:27:59Z aaronbreneman $'
 
 if keyword_set(etu) then probe = 'a'
 
@@ -59,17 +59,12 @@ vb = vb > !rbsp_efw.verbose
 vprobes = ['a','b']
 vlevels = ['l1','l2']
 vdatatypes=['spec']
-;default_data_att = {units: 'ADC', coord_sys: 'uvw', st_type: 'none'}
 default_data_att = {units: 'ADC', coord_sys: 'uvw', st_type: 'none', channel:''}
 support_data_keep = ['BEB_config','DFB_config']
 
 
 
-
-
-if ~keyword_set(type) then begin
-  type = 'raw'
-endif
+if ~keyword_set(type) then type = 'calibrated'
 
 if keyword_set(valid_names) then begin
     probe = vprobes
@@ -92,239 +87,209 @@ addmaster=0
 probe_colors = ['m','b']
 
 for s=0,n_elements(p_var)-1 do begin
-     rbspx = 'rbsp'+ p_var[s]
-     if keyword_set(integration) then rbsppref = rbspx + '/l1_int' $
-        else if keyword_set(msim) then rbsppref = rbspx+ '/l1_msim' $
-        else if keyword_set(etu) then rbsppref = rbspx+ '/l1_etu' $
-        else if keyword_set(qa) then rbsppref = rbspx+ '/l1_qa' $
-        else rbsppref = rbspx + '/l1'
+  rbspx = 'rbsp'+ p_var[s]
+  if keyword_set(integration) then rbsppref = rbspx + '/l1_int' $
+    else if keyword_set(msim) then rbsppref = rbspx+ '/l1_msim' $
+    else if keyword_set(etu) then rbsppref = rbspx+ '/l1_etu' $
+    else if keyword_set(qa) then rbsppref = rbspx+ '/l1_qa' $
+    else rbsppref = rbspx + '/l1'
+
+    ;--------------------------------------------------------------
+    ;Find out what spec32 files are online
+    format = rbsppref + '/spec/YYYY/'+rbspx+'_l1_spec_32_YYYYMMDD_v*.cdf'
+    relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
+    dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+
+    ;...and load them
+    file_loaded = []
+    for ff=0, n_elements(relpathnames)-1 do begin
+       undefine,lf
+       localpath = file_dirname(relpathnames[ff])+'/'
+       locpath = !rbsp_efw.local_data_dir+localpath
+       remfile = !rbsp_efw.remote_data_dir+relpathnames[ff]
+       tmp = spd_download(remote_file=remfile, local_path=locpath, local_file=lf,/last_version)
+       locfile = locpath+lf
+       if file_test(locfile) eq 0 then locfile = file_search(locfile)
+       if locfile[0] ne '' then file_loaded = [file_loaded,locfile]
+    endfor
+
+    if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
+    suf=''
+    prefix=rbspx+'_efw_spec_32_'
+    cdf2tplot,file=file_loaded,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+        tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
 
 
+    ;If data has been loaded then continue
+    if is_string(tns) then begin
 
-     format = rbsppref + '/spec/YYYY/'+rbspx+'_l1_spec_32_YYYYMMDD_v*.cdf'
-     relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
-     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+     specname = rbspx+'_efw_spec_32_spec_32'
+     get_data,specname,data=specdata
 
+     for i = 0,6 do begin
+       specnewname = rbspx+'_efw_32_spec'+strcompress(i,/rem)
+       store_data,specnewname,data={x: specdata.x, y: reform(specdata.y[*,*,i]), v: specdata.v2}, $
+         dlimits = {spec: 1, data_att: default_data_att}
+     endfor
 
-     ;extract the local data path without the filename
-     localgoo = strsplit(relpathnames,'/',/extract)
-     for i=0,n_elements(localgoo)-2 do $
-        if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
-     localpath = strtrim(localpath,2) + '/'
+     dprint, dlevel = 5, verbose = verbose, 'Setting options...'
+     options, /def, tns, code_id = '$Id: rbsp_load_efw_spec.pro 26344 2018-12-17 22:27:59Z aaronbreneman $'
+     dprint, dwait = 5., verbose = verbose, 'Flushing output'
+     dprint, dlevel = 4, verbose = verbose, 'SPEC 32 data Loaded for probe: '+p_var[s]
 
-     undefine,lf,tns
-     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
-        local_path=!rbsp_efw.local_data_dir+localpath,$
-        local_file=lf)
-     files = !rbsp_efw.local_data_dir + localpath + lf
-
-
-
-     if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
-
-     suf=''
-     prefix=rbspx+'_efw_spec_32_'
-
-    tst = file_info(file_loaded)
-    if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
-          tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
-
-     if is_string(tns) then begin
-
-       specname = rbspx+'_efw_spec_32_spec_32'
-
-       get_data,specname,data=specdata
-
-       for i = 0,6 do begin
-         specnewname = rbspx+'_efw_32_spec'+strcompress(i,/rem)
-         store_data,specnewname,data={x: specdata.x, y: reform(specdata.y[*,*,i]), v: specdata.v2}, $
-           dlimits = {spec: 1, data_att: default_data_att}
-       endfor
+     ;calibration data
+     if ~strcmp(type, 'raw', /fold) then begin
+       rbsp_efw_cal_spec, probe = p_var[s], $
+         datatype = datatype, trange = trange, pT=pT
+     endif
 
 
-;       pn = byte(p_var[s]) - byte('a')
-;       options, /def, tns, colors = probe_colors[pn]
+     if not keyword_set(get_support_data) then begin
+        for i = 0, n_elements(tns) - 1 do begin
+           if strfilter(tns[i],'*'+support_data_keep) eq '' then begin
+              get_data,tns[i],dlimits=thisdlimits
+              cdf_str = 0
+              str_element,thisdlimits,'cdf',cdf_str
+              if keyword_set(cdf_str) then if cdf_str.vatt.var_type eq 'support_data' then $
+                 store_data,tns[i],/delete
+           endif
+        endfor
+     endif
 
-       dprint, dlevel = 5, verbose = verbose, 'Setting options...'
+    endif else dprint, dlevel = 0, verbose = verbose, 'No EFW SPEC 32 data loaded...'+' Probe: '+p_var[s]
 
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_spec.pro 26192 2018-11-30 15:37:12Z aaronbreneman $'
+    ;--------------------------------------------------------------
+    ;Find out what spec64 files are online
+    format = rbsppref + '/spec/YYYY/'+rbspx+'_l1_spec_64_YYYYMMDD_v*.cdf'
+    relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
+    dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
 
-       dprint, dwait = 5., verbose = verbose, 'Flushing output'
-       dprint, dlevel = 4, verbose = verbose, 'SPEC 32 data Loaded for probe: '+p_var[s]
+    ;...and load them
+    file_loaded = []
+    for ff=0, n_elements(relpathnames)-1 do begin
+       undefine,lf
+       localpath = file_dirname(relpathnames[ff])+'/'
+       locpath = !rbsp_efw.local_data_dir+localpath
+       remfile = !rbsp_efw.remote_data_dir+relpathnames[ff]
+       tmp = spd_download(remote_file=remfile, local_path=locpath, local_file=lf,/last_version)
+       locfile = locpath+lf
+       if file_test(locfile) eq 0 then locfile = file_search(locfile)
+       if locfile[0] ne '' then file_loaded = [file_loaded,locfile]
+    endfor
 
-;calibration data
-       if ~strcmp(type, 'raw', /fold) then begin
-         rbsp_efw_cal_spec, probe = p_var[s], $
-           datatype = datatype, trange = trange, pT=pT
-       endif
+    if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
+    suf=''
+    prefix=rbspx+'_efw_spec_64_'
+    cdf2tplot,file=file_loaded,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+        tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
 
+    ;If data was loaded then continue
+    if is_string(tns) then begin
 
-       if not keyword_set(get_support_data) then begin
-          for i = 0, n_elements(tns) - 1 do begin
-             if strfilter(tns[i],'*'+support_data_keep) eq '' then begin
-                get_data,tns[i],dlimits=thisdlimits
-                cdf_str = 0
-                str_element,thisdlimits,'cdf',cdf_str
-                if keyword_set(cdf_str) then if cdf_str.vatt.var_type eq 'support_data' then $
-                   store_data,tns[i],/delete
-             endif
-          endfor
-       endif
+     specname = rbspx+'_efw_spec_64_spec_64'
+     get_data,specname,data=specdata
 
-     endif else begin
-       dprint, dlevel = 0, verbose = verbose, 'No EFW SPEC 32 data loaded...'+' Probe: '+p_var[s]
-;       dprint, dlevel = 0, verbose = verbose, 'Try using get_support_data keyword'
-     endelse
+     for i = 0,6 do begin
+       specnewname = rbspx+'_efw_64_spec'+strcompress(i,/rem)
+       store_data,specnewname,data={x: specdata.x, y: reform(specdata.y[*,*,i]), v: specdata.v2}, $
+         dlimits = {spec: 1, data_att: default_data_att}
+     endfor
 
-     format = rbsppref + '/spec/YYYY/'+rbspx+'_l1_spec_64_YYYYMMDD_v*.cdf'
-     relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
-;     if vb ge 4 then printdat,/pgmtrace,relpathnames
-     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+     dprint, dlevel = 5, verbose = verbose, 'Setting options...'
+     options, /def, tns, code_id = '$Id: rbsp_load_efw_spec.pro 26344 2018-12-17 22:27:59Z aaronbreneman $'
+     dprint, dwait = 5., verbose = verbose, 'Flushing output'
+     dprint, dlevel = 4, verbose = verbose, 'SPEC 64 data Loaded for probe: '+p_var[s]
 
-
-     ;extract the local data path without the filename
-     localgoo = strsplit(relpathnames,'/',/extract)
-     for i=0,n_elements(localgoo)-2 do $
-        if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
-     localpath = strtrim(localpath,2) + '/'
-
-
-     undefine,lf,tns
-     file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
-        local_path=!rbsp_efw.local_data_dir+localpath,$
-        local_file=lf)
-     files = !rbsp_efw.local_data_dir + localpath + lf
-
-     if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
-
-     suf=''
-     prefix=rbspx+'_efw_spec_64_'
-
-     tst = file_info(file_loaded)
-     if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
-      tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
-
-     if is_string(tns) then begin
-
-       specname = rbspx+'_efw_spec_64_spec_64'
-
-       get_data,specname,data=specdata
-
-       for i = 0,6 do begin
-         specnewname = rbspx+'_efw_64_spec'+strcompress(i,/rem)
-         store_data,specnewname,data={x: specdata.x, y: reform(specdata.y[*,*,i]), v: specdata.v2}, $
-           dlimits = {spec: 1, data_att: default_data_att}
-       endfor
-
-;       pn = byte(p_var[s]) - byte('a')
-;       options, /def, tns, colors = probe_colors[pn]
-
-       dprint, dlevel = 5, verbose = verbose, 'Setting options...'
-
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_spec.pro 26192 2018-11-30 15:37:12Z aaronbreneman $'
-
-       dprint, dwait = 5., verbose = verbose, 'Flushing output'
-       dprint, dlevel = 4, verbose = verbose, 'SPEC 64 data Loaded for probe: '+p_var[s]
-
-;calibration data
-       if ~strcmp(type, 'raw', /fold) then begin
-         rbsp_efw_cal_spec, probe = p_var[s], $
-           datatype = datatype, trange = trange, pT=pT
-       endif
+     ;calibration data
+    if ~strcmp(type, 'raw', /fold) then begin
+     rbsp_efw_cal_spec, probe = p_var[s], $
+       datatype = datatype, trange = trange, pT=pT
+    endif
 
 
-       if not keyword_set(get_support_data) then begin
-          for i = 0, n_elements(tns) - 1 do begin
-             if strfilter(tns[i],'*'+support_data_keep) eq '' then begin
-                get_data,tns[i],dlimits=thisdlimits
-                cdf_str = 0
-                str_element,thisdlimits,'cdf',cdf_str
-                if keyword_set(cdf_str) then if cdf_str.vatt.var_type eq 'support_data' then $
-                   store_data,tns[i],/delete
-             endif
-          endfor
-       endif
+    if not keyword_set(get_support_data) then begin
+      for i = 0, n_elements(tns) - 1 do begin
+         if strfilter(tns[i],'*'+support_data_keep) eq '' then begin
+            get_data,tns[i],dlimits=thisdlimits
+            cdf_str = 0
+            str_element,thisdlimits,'cdf',cdf_str
+            if keyword_set(cdf_str) then if cdf_str.vatt.var_type eq 'support_data' then $
+               store_data,tns[i],/delete
+         endif
+      endfor
+    endif
 
-     endif else begin
-       dprint, dlevel = 0, verbose = verbose, 'No EFW SPEC 64 data loaded...'+' Probe: '+p_var[s]
-;       dprint, dlevel = 0, verbose = verbose, 'Try using get_support_data keyword'
-     endelse
-
-     format = rbsppref + '/spec/YYYY/'+rbspx+'_l1_spec_112_YYYYMMDD_v*.cdf'
-     relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
-;     if vb ge 4 then printdat,/pgmtrace,relpathnames
-     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
+    endif else begin
+    dprint, dlevel = 0, verbose = verbose, 'No EFW SPEC 64 data loaded...'+' Probe: '+p_var[s]
+    ;       dprint, dlevel = 0, verbose = verbose, 'Try using get_support_data keyword'
+    endelse
 
 
-     ;extract the local data path without the filename
-     localgoo = strsplit(relpathnames,'/',/extract)
-     for i=0,n_elements(localgoo)-2 do $
-        if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
-     localpath = strtrim(localpath,2) + '/'
+    ;--------------------------------------------------------------
+    ;Find out what spec112 files are online
+    format = rbsppref + '/spec/YYYY/'+rbspx+'_l1_spec_112_YYYYMMDD_v*.cdf'
+    relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
+    dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
 
-     undefine,lf,tns
-     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
-        local_path=!rbsp_efw.local_data_dir+localpath,$
-        local_file=lf)
-     files = !rbsp_efw.local_data_dir + localpath + lf
+    ;...and load them
+    file_loaded = []
+    for ff=0, n_elements(relpathnames)-1 do begin
+       undefine,lf
+       localpath = file_dirname(relpathnames[ff])+'/'
+       locpath = !rbsp_efw.local_data_dir+localpath
+       remfile = !rbsp_efw.remote_data_dir+relpathnames[ff]
+       tmp = spd_download(remote_file=remfile, local_path=locpath, local_file=lf,/last_version)
+       locfile = locpath+lf
+       if file_test(locfile) eq 0 then locfile = file_search(locfile)
+       if locfile[0] ne '' then file_loaded = [file_loaded,locfile]
+    endfor
 
-     if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
-
-     suf=''
-     prefix=rbspx+'_efw_spec_112_'
-
-     tst = file_info(file_loaded)
-     if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
-              tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
-
-     if is_string(tns) then begin
-
-       specname = rbspx+'_efw_spec_112_spec_112'
-
-       get_data,specname,data=specdata
-
-       for i = 0,6 do begin
-         specnewname = rbspx+'_efw_112_spec'+strcompress(i,/rem)
-         store_data,specnewname,data={x: specdata.x, y: reform(specdata.y[*,*,i]), v: specdata.v2}, $
-           dlimits = {spec: 1, data_att: default_data_att}
-       endfor
-
-       pn = byte(p_var[s]) - byte('a')
-       options, /def, tns, colors = probe_colors[pn]
-
-       dprint, dlevel = 5, verbose = verbose, 'Setting options...'
-
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_spec.pro 26192 2018-11-30 15:37:12Z aaronbreneman $'
-
-       dprint, dwait = 5., verbose = verbose, 'Flushing output'
-       dprint, dlevel = 4, verbose = verbose, 'SPEC 112 data Loaded for probe: '+p_var[s]
-
-;calibration data
-       if ~strcmp(type, 'raw', /fold) then begin
-         rbsp_efw_cal_spec, probe = p_var[s], $
-           datatype = datatype, trange = trange, pT=pT
-       endif
+    if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
+    suf=''
+    prefix=rbspx+'_efw_spec_112_'
+    cdf2tplot,file=file_loaded,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+        tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
 
 
-       if not keyword_set(get_support_data) then begin
-          for i = 0, n_elements(tns) - 1 do begin
-             if strfilter(tns[i],'*'+support_data_keep) eq '' then begin
-                get_data,tns[i],dlimits=thisdlimits
-                cdf_str = 0
-                str_element,thisdlimits,'cdf',cdf_str
-                if keyword_set(cdf_str) then if cdf_str.vatt.var_type eq 'support_data' then $
-                   store_data,tns[i],/delete
-             endif
-          endfor
-       endif
+    ;If data has been loaded then continue
+    if is_string(tns) then begin
 
-     endif else begin
-       dprint, dlevel = 0, verbose = verbose, 'No EFW SPEC 112 data loaded...'+' Probe: '+p_var[s]
-;       dprint, dlevel = 0, verbose = verbose, 'Try using get_support_data keyword'
-     endelse
+     specname = rbspx+'_efw_spec_112_spec_112'
+     get_data,specname,data=specdata
+
+     for i = 0,6 do begin
+       specnewname = rbspx+'_efw_112_spec'+strcompress(i,/rem)
+       store_data,specnewname,data={x: specdata.x, y: reform(specdata.y[*,*,i]), v: specdata.v2}, $
+         dlimits = {spec: 1, data_att: default_data_att}
+     endfor
+
+     pn = byte(p_var[s]) - byte('a')
+     options, /def, tns, colors = probe_colors[pn]
+     dprint, dlevel = 5, verbose = verbose, 'Setting options...'
+     options, /def, tns, code_id = '$Id: rbsp_load_efw_spec.pro 26344 2018-12-17 22:27:59Z aaronbreneman $'
+     dprint, dwait = 5., verbose = verbose, 'Flushing output'
+     dprint, dlevel = 4, verbose = verbose, 'SPEC 112 data Loaded for probe: '+p_var[s]
+
+     ;calibration data
+     if ~strcmp(type, 'raw', /fold) then begin
+       rbsp_efw_cal_spec, probe = p_var[s], $
+         datatype = datatype, trange = trange, pT=pT
+     endif
+
+
+    if not keyword_set(get_support_data) then begin
+      for i = 0, n_elements(tns) - 1 do begin
+         if strfilter(tns[i],'*'+support_data_keep) eq '' then begin
+            get_data,tns[i],dlimits=thisdlimits
+            cdf_str = 0
+            str_element,thisdlimits,'cdf',cdf_str
+            if keyword_set(cdf_str) then if cdf_str.vatt.var_type eq 'support_data' then $
+               store_data,tns[i],/delete
+         endif
+      endfor
+    endif
+
+     endif else dprint, dlevel = 0, verbose = verbose, 'No EFW SPEC 112 data loaded...'+' Probe: '+p_var[s]
 
 endfor
-
 end

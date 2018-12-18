@@ -26,8 +26,8 @@
 ;
 ; VERSION:
 ;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2018-12-05 10:27:34 -0800 (Wed, 05 Dec 2018) $
-;   $LastChangedRevision: 26243 $
+;   $LastChangedDate: 2018-12-17 14:53:42 -0800 (Mon, 17 Dec 2018) $
+;   $LastChangedRevision: 26348 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/spacecraft/rbsp_load_spice_predict.pro $
 ;
 ;-
@@ -59,8 +59,6 @@ pro rbsp_load_spice_predict, all=all, unload=unload, $
 		tempfiles = !rbsp_efw.local_data_dir + localpath + lf
 
 
-
-;		tempfiles=file_retrieve(relpathnames, _extra=!rbsp_spice)
 	endif
 
 	aattitude=file_search(!rbsp_spice.local_data_dir+ $
@@ -98,5 +96,7 @@ pro rbsp_load_spice_predict, all=all, unload=unload, $
 					' predict kernels.',/continue
 		endelse
 	endif else message,'Predict kernels not found.',/continue
+
+
 
 end

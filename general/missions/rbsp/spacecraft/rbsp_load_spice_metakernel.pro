@@ -26,8 +26,8 @@
 ;
 ; VERSION:
 ;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2018-12-05 10:27:58 -0800 (Wed, 05 Dec 2018) $
-;   $LastChangedRevision: 26244 $
+;   $LastChangedDate: 2018-12-17 15:02:04 -0800 (Mon, 17 Dec 2018) $
+;   $LastChangedRevision: 26352 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/spacecraft/rbsp_load_spice_metakernel.pro $
 ;
 ;-
@@ -124,7 +124,6 @@ while not eof(unit) do begin
     endif
 
 
-
     if kerneltoload ne '' then begin
 
 			;extract the local data path without the filename
@@ -140,7 +139,6 @@ while not eof(unit) do begin
 				 local_path=!rbsp_spice.local_data_dir+localpath,$
 				 local_file=lf,/last_version)
 	 		files = !rbsp_spice.local_data_dir + localpath + lf
-
 
 
       print,'Processing '+files[0]

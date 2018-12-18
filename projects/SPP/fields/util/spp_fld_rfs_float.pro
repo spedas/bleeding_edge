@@ -218,14 +218,14 @@ function spp_fld_rfs_float, rfs_input, $
   ; Eliminate invalid input results and return an array of double precision
   ; values.
 
-  rfs_in_invalid = where(rfs_in_long LT 0 or rfs_in_long GE 2ll^16, $
+  rfs_in_invalid = where(rfs_in_long LT 0 or rfs_in_long GE 2ll^16-2, $
     rfs_in_invalid_count)
 
   if rfs_in_invalid_count GT 0 then begin
 
     exp_int[rfs_in_invalid] = -2ll^63
     man_int[rfs_in_invalid] = -2ll^63
-    result[rfs_in_invalid] = -1.0d30
+    result[rfs_in_invalid] = !values.d_nan ; -1.0d30
 
     if n_elements(bigints) GT 0 then begin
 

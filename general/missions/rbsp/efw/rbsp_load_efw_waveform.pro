@@ -46,8 +46,8 @@
 ;             *rbsp_efw_cal_waveform*.
 ;
 ; $LastChangedBy: aaronbreneman $
-; $LastChangedDate: 2018-11-30 07:37:20 -0800 (Fri, 30 Nov 2018) $
-; $LastChangedRevision: 26193 $
+; $LastChangedDate: 2018-12-17 14:06:25 -0800 (Mon, 17 Dec 2018) $
+; $LastChangedRevision: 26341 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_waveform.pro $
 ;-
 
@@ -61,7 +61,7 @@ pro rbsp_load_efw_waveform,probe=probe, datatype=datatype, trange=trange, $
                  tper = tper, tphase = tphase, _extra = _extra
 
 rbsp_efw_init
-dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_waveform.pro 26193 2018-11-30 15:37:20Z aaronbreneman $'
+dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_waveform.pro 26341 2018-12-17 22:06:25Z aaronbreneman $'
 
 if keyword_set(etu) then probe = 'a'
 
@@ -77,6 +77,10 @@ vdatatypes=['esvy', 'vsvy', 'magsvy', 'eb1', 'vb1', 'mscb1', 'eb2', 'vb2', 'mscb
 default_data_att = {units: 'ADC', coord_sys: 'uvw', st_type: 'none'}
 support_data_keep = ['BEB_config','DFB_config']
 
+;-------------------------------------------------
+;Load the level 2 online EFW waveform data product
+;-------------------------------------------------
+
 if keyword_set(level) then if level eq 'l2' then begin
    rbsp_load_efw_waveform_l2,probe=probe, datatype=datatype, trange=trange, $
                  level=level, verbose=verbose, downloadonly=downloadonly, $
@@ -89,10 +93,8 @@ if keyword_set(level) then if level eq 'l2' then begin
    return
 endif
 
-if ~keyword_set(type) then begin
-;   type = 'raw'
-  type = 'calibrated'
-endif
+if ~keyword_set(type) then type = 'calibrated'
+
 
 if keyword_set(valid_names) then begin
     probe = vprobes
@@ -115,48 +117,40 @@ addmaster=0
 color_array = [2,4,6,1,3,2,4,6,1,3]
 
 for s=0,n_elements(p_var)-1 do begin
-   for typeindex = 0,n_elements(datatype)-1 do begin
-     rbspx = 'rbsp'+ p_var[s]
-     if keyword_set(integration) then rbsppref = rbspx + '/l1_int' $
-        else if keyword_set(msim) then rbsppref = rbspx+ '/l1_msim' $
-        else if keyword_set(etu) then rbsppref = rbspx+ '/l1_etu' $
-        else if keyword_set(qa) then rbsppref = rbspx+ '/l1_qa' $
-        else rbsppref = rbspx + '/l1'
+  for typeindex = 0,n_elements(datatype)-1 do begin
+    rbspx = 'rbsp'+ p_var[s]
+    if keyword_set(integration) then rbsppref = rbspx + '/l1_int' $
+      else if keyword_set(msim) then rbsppref = rbspx+ '/l1_msim' $
+      else if keyword_set(etu) then rbsppref = rbspx+ '/l1_etu' $
+      else if keyword_set(qa) then rbsppref = rbspx+ '/l1_qa' $
+      else rbsppref = rbspx + '/l1'
 
-     format = rbsppref + '/'+datatype[typeindex]+'/YYYY/'+rbspx+'_l1_'+datatype[typeindex]+'_YYYYMMDD_v*.cdf'
-     relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
-
-
-     ;extract the local data path without the filename
-     localgoo = strsplit(relpathnames,'/',/extract)
-     for i=0,n_elements(localgoo)-2 do $
-        if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
-     localpath = strtrim(localpath,2) + '/'
-
-     undefine,lf,tns
-     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
-        local_path=!rbsp_efw.local_data_dir+localpath,$
-        local_file=lf)
-     files = !rbsp_efw.local_data_dir + localpath + lf
+    ;Find out what files are available online
+    format = rbsppref + '/'+datatype[typeindex]+'/YYYY/'+rbspx+'_l1_'+datatype[typeindex]+'_YYYYMMDD_v*.cdf'
+    relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
 
 
+    file_loaded = []
+    for ff=0, n_elements(relpathnames)-1 do begin
+      undefine,lf
+      localpath = file_dirname(relpathnames[ff])+'/'
+      locpath = !rbsp_efw.local_data_dir+localpath
+      remfile = !rbsp_efw.remote_data_dir+relpathnames[ff]
+      tmp = spd_download(remote_file=remfile, local_path=locpath, local_file=lf,/last_version)
+      locfile = locpath+lf
+      if file_test(locfile) eq 0 then locfile = file_search(locfile)
+      if locfile[0] ne '' then file_loaded = [file_loaded,locfile]
+    endfor
+
+    if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
+    suf=''
+    prefix=rbspx+'_efw_'+datatype[typeindex]+'_'
+    cdf2tplot,file=file_loaded,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+         tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
 
 
-
-
-
-
-     if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
-
-     suf=''
-     prefix=rbspx+'_efw_'+datatype[typeindex]+'_'
-
-     tst = file_info(file_loaded)
-     if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
-              tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
-
-     if is_string(tns) then begin
+    ;If there are actually files that have been loaded then continue
+    if is_string(tns) then begin
 
        old_name = rbspx+'_efw_'+datatype[typeindex]+'_'+datatype[typeindex]
        new_name = rbspx+'_efw_'+datatype[typeindex]
@@ -178,82 +172,47 @@ for s=0,n_elements(p_var)-1 do begin
        else: labels = 0
        endcase
 
-       colors = color_array[0:n_elements(labels)-1]
+      colors = color_array[0:n_elements(labels)-1]
 
-       options, /def, tns, code_id = '$Id: rbsp_load_efw_waveform.pro 26193 2018-11-30 15:37:20Z aaronbreneman $'
+      options, /def, tns, code_id = '$Id: rbsp_load_efw_waveform.pro 26341 2018-12-17 22:06:25Z aaronbreneman $'
 
-       store_data,new_name,/delete
-       store_data,old_name,newname=new_name
-       get_data,new_name,dlimits=mydlimits
-       str_element,mydlimits,'data_att',default_data_att,/add
-       store_data,new_name,dlimits=mydlimits
+      store_data,new_name,/delete
+      store_data,old_name,newname=new_name
+      get_data,new_name,dlimits=mydlimits
+      str_element,mydlimits,'data_att',default_data_att,/add
+      store_data,new_name,dlimits=mydlimits
 
-       options,new_name,'labels',labels
-       options,new_name,'colors',colors
-       options,new_name,'labflag',1
+      options,new_name,'labels',labels
+      options,new_name,'colors',colors
+      options,new_name,'labflag',1
 
- ;      if keyword_set(get_support_data) then begin
- ;        for i=0,n_elements(tns) do begin
- ;           if tns[i] ne old_name then begin
- ;              get_data,tns[i],dlimits=mydlimits
- ;           endif
- ;        endfor
- ;      endif
+      dprint, dlevel = 4, verbose = verbose, datatype[typeindex] + ' data Loaded for probe: '+p_var[s]
 
-;       hsk_options_grp = [thx+'_hsk_iefi_ibias',thx+'_hsk_iefi_usher',thx+'_hsk_iefi_guard']
-;       hsk_options_ele = [thx+'_hsk_iefi_ibias?',thx+'_hsk_iefi_usher?',thx+'_hsk_iefi_guard?']
+      if ~strcmp(type, 'raw', /fold) then begin
+        rbsp_efw_cal_waveform, probe = p_var[s], $
+          datatype = datatype[typeindex], trange = trange, $
+          get_support_data = get_support_data, coord = coord, $
+          tper = tper, tphase = tphase, noclean = noclean, _extra = _extra
+      endif
 
+      if not keyword_set(get_support_data) then begin
+        for i = 0, n_elements(tns) - 1 do begin
+          if strfilter(tns[i],'*'+support_data_keep) eq '' then begin
+            get_data,tns[i],dlimits=thisdlimits
+            cdf_str = 0
+            str_element,thisdlimits,'cdf',cdf_str
+            if keyword_set(cdf_str) then if cdf_str.vatt.var_type eq 'support_data' then $
+              store_data,tns[i],/delete, verbose = 0
+           endif
+        endfor
+      endif
 
-;       options, hsk_options_grp+'_raw', data_att = {units:'ADC'}, $
-;         ysubtitle = '[ADC]', colors = c_var, labels = string(c_var), $
-;         labflag = 1, /def
-;       options, hsk_options_ele+'_raw', ata_att = {units:'ADC'}, $
-;         ysubtitle = '[ADC]', labflag = 1, /def
-;       options, thx+'_hsk_iefi_braid_raw', data_att = {units:'ADC'}, $
-;         ysubtitle = '[ADC]', /def
-;       options, hsk_options_grp+'_cal', colors = c_var, labels = string(c_var), $
-;         labflag = 1, /def
-
-;       options, /def, strfilter(tns, '*ietc_covers*'), tplot_routine = 'bitplot', colors = ''
-;       options, /def ,strfilter(tns, '*ipwrswitch*'), tplot_routine = 'bitplot', colors= ''
-;       dprint, dwait = 5., verbose = verbose, 'Flushing output'
-;        dprint, dlevel = 4, verbose = verbose, 'Esvy data Loaded for probe: '+p_var[s]
-       dprint, dlevel = 4, verbose = verbose, datatype[typeindex] + ' data Loaded for probe: '+p_var[s]
-
-       if ~strcmp(type, 'raw', /fold) then begin
-         rbsp_efw_cal_waveform, probe = p_var[s], $
-           datatype = datatype[typeindex], trange = trange, $
-           get_support_data = get_support_data, coord = coord, $
-           tper = tper, tphase = tphase, noclean = noclean, _extra = _extra
-       endif
-
-       if not keyword_set(get_support_data) then begin
-          for i = 0, n_elements(tns) - 1 do begin
-             if strfilter(tns[i],'*'+support_data_keep) eq '' then begin
-                get_data,tns[i],dlimits=thisdlimits
-                cdf_str = 0
-                str_element,thisdlimits,'cdf',cdf_str
-                if keyword_set(cdf_str) then if cdf_str.vatt.var_type eq 'support_data' then $
-                   store_data,tns[i],/delete, verbose = 0
-             endif
-          endfor
-       endif
-
-     endif else begin
-;        dprint, dlevel = 0, verbose = verbose, 'No EFW ESVY data loaded...'+' Probe: '+p_var[s]
-       dprint, dlevel = 0, verbose = verbose, 'No EFW ' + $
-         datatype[typeindex] + ' data loaded...'+' Probe: '+p_var[s]
-;       dprint, dlevel = 0, verbose = verbose, 'Try using get_support_data keyword'
-     endelse
-   endfor
+    endif else begin
+      dprint, dlevel = 0, verbose = verbose, 'No EFW ' + $
+      datatype[typeindex] + ' data loaded...'+' Probe: '+p_var[s]
+    endelse
+  endfor
 endfor
-
-;if keyword_set(make_multi_tplotvar) then begin
-;   tns = tnames('th?_hsk_*')
-;   tns_suf = strmid(tns,8)
-;   tns_suf = tns_suf[uniq(tns_suf,sort(tns_suf))]
-;   for i=0,n_elements(tns_suf)-1 do store_data,'Thx_hsk_'+tns_suf[i],data=tnames('th?_hsk_'+tns_suf[i])
-;endif
 
 
 end

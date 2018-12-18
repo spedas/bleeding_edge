@@ -1,6 +1,6 @@
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-11-02 16:20:38 -0700 (Fri, 02 Nov 2018) $
-; $LastChangedRevision: 26055 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2018-12-17 12:29:12 -0800 (Mon, 17 Dec 2018) $
+; $LastChangedRevision: 26339 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/plot3d_new.pro $
 ;+
 ;NAME:
@@ -97,7 +97,7 @@ if keyword_set(bncenter) and n_elements(bdir) eq 2 then begin
    endif
 endif
 
-n_e = bindata.nenergy
+n_e = struct_value( bindata,'nenergy',default = 32)
 nbins = bindata.nbins
 if keyword_set(bins) eq 0 then str_element,bindata,'bins',bins
 
@@ -326,8 +326,7 @@ endfor
 if keyword_set(notitle) then ttl = '' else $
 	if not keyword_set(title) then begin
         str_element,bindata,'trange',trange
-;        if not keyword_set(trange) then $
-           trange=[bindata.time,bindata.end_time]
+;        if not keyword_set(trange) then       trange=[bindata.time,bindata.end_time]
 		ttl = bindata.project_name+'  '+bindata.data_name
 	;	ttl =ttl+'!C'+ trange_str(bindata.time,bindata.end_time)
 		ttl =ttl+'!C'+ trange_str(trange)

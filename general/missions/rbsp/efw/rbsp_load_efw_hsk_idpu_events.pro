@@ -51,9 +51,8 @@ rbsp_efw_init
 dprint,verbose=verbose,dlevel=4,'$Id: rbsp_load_efw_hsk.pro 11201 2012-11-07 22:58:26Z peters $'
 
 if keyword_set(etu) then probe = 'a'
+if keyword_set(probe) then p_var = probe
 
-if(keyword_set(probe)) then $
-  p_var = probe
 
 if n_elements(verbose) gt 0 then vb = verbose else begin
   vb = 0
@@ -64,9 +63,6 @@ vprobes = ['a','b']
 vlevels = ['l1','l2']
 vdatatypes=['hsk']
 
-if ~keyword_set(type) then begin
-  type = 'raw'
-endif
 
 if keyword_set(valid_names) then begin
     probe = vprobes
@@ -97,54 +93,42 @@ for s=0,n_elements(p_var)-1 do begin
         else rbsppref = rbspx + '/l1'
 
 
+				;Find out what IDPU EVENTS files are online
+				format = rbsppref + '/hsk_idpu_events/YYYY/'+rbspx+'_l1_hsk_idpu_events_YYYYMMDD_v*.cdf'
+				relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
 
-	; IDPU EVENTS.
-     format = rbsppref + '/hsk_idpu_events/YYYY/'+rbspx+'_l1_hsk_idpu_events_YYYYMMDD_v*.cdf'
-     relpathnames = file_dailynames(file_format=format,trange=trange,addmaster=addmaster)
+				;...and load them
+	      file_loaded = []
+         for ff=0, n_elements(relpathnames)-1 do begin
+             undefine,lf
+             localpath = file_dirname(relpathnames[ff])+'/'
+             locpath = !rbsp_efw.local_data_dir+localpath
+             remfile = !rbsp_efw.remote_data_dir+relpathnames[ff]
+             tmp = spd_download(remote_file=remfile, local_path=locpath, local_file=lf,/last_version)
+             locfile = locpath+lf
+             if file_test(locfile) eq 0 then locfile = file_search(locfile)
+             if locfile[0] ne '' then file_loaded = [file_loaded,locfile]
+         endfor
+
+		     if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
+		     suf=''
+				 prefix=rbspx+'_efw_hsk_idpu_events_'
+		     cdf2tplot,file=file_loaded,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+		          tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
 
 
-     ;extract the local data path without the filename
-     localgoo = strsplit(relpathnames,'/',/extract)
-     for i=0,n_elements(localgoo)-2 do $
-        if i eq 0. then localpath = localgoo[i] else localpath = localpath + '/' + localgoo[i]
-     localpath = strtrim(localpath,2) + '/'
-
-     undefine,lf,tns
-     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-     file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
-        local_path=!rbsp_efw.local_data_dir+localpath,$
-        local_file=lf,/last_version)
-     files = !rbsp_efw.local_data_dir + localpath + lf
-
-
-
-     if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
-
-     suf=''
-     prefix=rbspx+'_efw_hsk_idpu_events_'
-		 tst = file_info(file_loaded)
-
-     if tst.exists then cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
-              tplotnames=tns,/convert_int1_to_int2,get_support_data=get_support_data ; load data into tplot variables
 
      if is_string(tns) then begin
 
        pn = byte(p_var[s]) - byte('a')
        options, /def, tns, colors = probe_colors[pn]
-
        dprint, dlevel = 5, verbose = verbose, 'Setting options...'
-
        options, /def, tns, code_id = '$Id: rbsp_load_efw_hsk.pro 11201 2012-11-07 22:58:26Z peters $'
-
        c_var = [1, 2, 3, 4, 5, 6]
-
        dprint, dwait = 5., verbose = verbose, 'Flushing output'
        dprint, dlevel = 4, verbose = verbose, 'Housekeeping data Loaded for probe: '+p_var[s]
 
-     endif else begin
-       dprint, dlevel = 0, verbose = verbose, 'No EFW HSK IDPU Events data loaded...'+' Probe: '+p_var[s]
-     endelse
-
+     endif else dprint, dlevel = 0, verbose = verbose, 'No EFW HSK IDPU Events data loaded...'+' Probe: '+p_var[s]
 
     if keyword_set(!rbsp_efw.downloadonly) or keyword_set(downloadonly) then continue
 
