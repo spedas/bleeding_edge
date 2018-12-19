@@ -163,8 +163,15 @@ function spp_fld_select_timespan_define_presets, fm_or_em
 
   fm_times['e01_encounter'] =   ['2018-10-31/11:56:51', '2018-11-11/18:58:51']
 
+  fm_times['e01_rfs_start_peaks'] =   ['2018-11-04/09:25:00', '2018-11-04/09:35:00']
 
-  fm_times['e01_mom_dump'] =   ['2018-11-06/08:30:00', '2018-11-06/08:35:00']
+
+  fm_times['e01_big_typeiii'] =   ['2018-11-04/16:00:00', '2018-11-04/18:00:00']
+
+  fm_times['e01_possible_jovian'] =   ['2018-11-04/16:00:00', '2018-11-04/18:00:00']
+
+
+  fm_times['e01_mom_dump'] =   ['2018-11-06/19:50:00', '2018-11-06/20:30:00']
 
   em_times = orderedhash()
 

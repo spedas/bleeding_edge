@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Dec 17 18:16:33 2018.<P>
+<STRONG>Last modified: </STRONG>Tue Dec 18 18:16:37 2018.<P>
  
 <HR>
  
@@ -20,12 +20,29 @@ This page was created by the IDL library routine
 <UL>
 <H1>projects/elfin</H1>
 <LI><A HREF="#ELF_CONFIG">ELF_CONFIG</A>
+<LI><A HREF="#ELF_FILES_IN_INTERVAL">ELF_FILES_IN_INTERVAL</A>
+<br>filters file list returned by the server to the trange. This filter is purposefully
+<LI><A HREF="#ELF_GET_LOCAL_FILES">ELF_GET_LOCAL_FILES</A>
 <LI><A HREF="#ELF_INIT">ELF_INIT</A>
 <br>Initializes system variables for elf. Currently the variable only contains information
 <LI><A HREF="#ELF_LOAD_DATA">ELF_LOAD_DATA</A>
 <LI><A HREF="#ELF_LOAD_ENG">ELF_LOAD_ENG</A>
 <LI><A HREF="#ELF_LOAD_EPD">ELF_LOAD_EPD</A>
+<LI><A HREF="#ELF_LOAD_FGM">ELF_LOAD_FGM</A>
+<br>Load the ELFIN FGM
+<LI><A HREF="#ELF_LOAD_MRMA">ELF_LOAD_MRMA</A>
+<br>Load the ELFIN mrm data from the ACB board
+<LI><A HREF="#ELF_LOAD_MRMI">ELF_LOAD_MRMI</A>
+<br>Load the ELFIN mrm data from the IDPU board
+<LI><A HREF="#ELF_LOAD_OPTIONS[1]">ELF_LOAD_OPTIONS[1]</A>
+<LI><A HREF="#ELF_LOAD_OPTIONS[2]">ELF_LOAD_OPTIONS[2]</A>
+<LI><A HREF="#ELF_LOAD_OPTIONS[2]">ELF_LOAD_OPTIONS[2]</A>
+<LI><A HREF="#ELF_LOAD_OPTIONS[3]">ELF_LOAD_OPTIONS[3]</A>
+<LI><A HREF="#ELF_LOAD_OPTIONS[4]">ELF_LOAD_OPTIONS[4]</A>
+<LI><A HREF="#ELF_LOAD_OPTIONS[5]">ELF_LOAD_OPTIONS[5]</A>
 <LI><A HREF="#ELF_LOAD_PRM">ELF_LOAD_PRM</A>
+<LI><A HREF="#ELF_LOAD_STATE">ELF_LOAD_STATE</A>
+<br>Load the ELFIN ephemeris and attitude data
 <LI><A HREF="#ELF_SET_VERBOSE">ELF_SET_VERBOSE</A>
 <br>Sets verbose level in !elf.verbose and in tplot_options
 <br>
@@ -35,7 +52,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="ELF_CONFIG">
 <H2>ELF_CONFIG</H2></A>
-<A HREF="#ELF_INIT">[Next Routine]</A>
+<A HREF="#ELF_FILES_IN_INTERVAL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
   PRO elf_config
@@ -75,9 +92,71 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="elfin/elf_config.pro">projects/elfin/elf_config.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ELF_FILES_IN_INTERVAL">
+<H2>ELF_FILES_IN_INTERVAL</H2></A>
+<A HREF="#ELF_CONFIG">[Previous Routine]</A>
+<A HREF="#ELF_GET_LOCAL_FILES">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+   FUNCTION:
+       elf_files_in_interval
+
+   PURPOSE:
+       filters file list returned by the server to the trange. This filter is purposefully
+         liberal, it regularly grabs an extra file due to special cases
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2016-08-11 11:36:41 -0700 (Thu, 11 Aug 2016) $
+ $LastChangedRevision: 21630 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elf/load_data/mms_files_in_interval.pro $
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_files_in_interval.pro">projects/elfin/elf_files_in_interval.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ELF_GET_LOCAL_FILES">
+<H2>ELF_GET_LOCAL_FILES</H2></A>
+<A HREF="#ELF_FILES_IN_INTERVAL">[Previous Routine]</A>
+<A HREF="#ELF_INIT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Procedure:
+  elf_get_local_files
+
+Purpose:
+  Search for local ELFIN files in case a list cannot be retrieved from the
+  remote server.  Returns a sorted list of file paths.
+
+Calling Sequence:
+
+  files = elf_get_local_file_info( probe=probe, instrument=instrument, $
+            data_rate=data_rate, level=level, datatype=datatype, trange=trange)
+
+Input:
+  probe:  (string) Full spacecraft designation, e.g. 'ela'
+  instrument:  (string) Instrument designation, e.g. 'fgm'
+  data_rate:  (string) Data collection mode?  e.g. 'srvy'
+  level:  (string) Data processing level, e.g. 'l1'
+  trange:  (string/double) Two element time range, e.g. ['2015-06-22','2015-06-23']
+  datatype:  (string) Optional datatype specification, e.g. 'pos'
+
+Output:
+  return value:  Sorted string array of file paths, if successful; 0 otherwise
+
+Notes:
+  -Input strings should not contain wildcards (datatype may be '*')
+
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2018-04-09 12:14:36 -0700 (Mon, 09 Apr 2018) $
+$LastChangedRevision: 25023 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elf/common/elf_get_local_files.pro $
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_get_local_files.pro">projects/elfin/elf_get_local_files.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ELF_INIT">
 <H2>ELF_INIT</H2></A>
-<A HREF="#ELF_CONFIG">[Previous Routine]</A>
+<A HREF="#ELF_GET_LOCAL_FILES">[Previous Routine]</A>
 <A HREF="#ELF_LOAD_DATA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -126,35 +205,59 @@ HISTORY:
 <PRE>
 NAME: 
   elf_load_data
-           This routine loads local ELFIN Lomonosov data. 
-           There is no server available yet so all files must
+          This routine loads local ELFIN data. 
+          There is no server available yet so all files must
            be local. The default value is currently set to
-          'C:/data/lomo/elfin/l1/'
+          'C:/data/elfin/el[ab]/l[0,1,2]/instrument/yyyy/mm/dd/*.cdf'
           If you do not want to place your cdf files there you 
           must change the elfin system variable !elf.local_data_dir = 'yourdirectorypath'
 KEYWORDS (commonly used by other load routines):
-  INSTRUMENT = options are 'fgm', 'epd', 'eng' (This will probably change
-               after launch 
-  DATATYPE = This is not yet implemented and may not be needed
-  LEVEL    = This is not yet implemented but options will  most likely include 
-             levels 1 or 2. For Elfin lomo fgm will be the only instrument
-             that has level 2 data. epd and eng only have level 1. Levels
-             have also not been implemented in the load panel gui. 
-  TRANGE   = (Optional) Time range of interest  (2 element array), if
-             this is not set, the default is to prompt the user. Note
-             that if the input time range is not a full day, a full
-             day's data is loaded
-          
+         trange:       time range of interest [starttime, endtime] with the format
+                       ['YYYY-MM-DD','YYYY-MM-DD'] or to specify more or less than a day
+                       ['YYYY-MM-DD/hh:mm:ss','YYYY-MM-DD/hh:mm:ss']
+         probes:       list of probes, valid values for ELFIN probes are ['a','b'].
+                       if no probe is specified the default is probe 'a'
+         level:        indicates level of data processing. levels include 'l1' and 'l2'
+                       The default if no level is specified is 'l1' (l1 default needs to be confirmed)
+         datatype:     depends on the instrument, see header for the instruments load routine
+         data_rate:    instrument data rates 
+         tplotnames:   returns a list of the names of the tplot variables loaded by the load routine
+         get_support_data: load support data (defined by VAR_TYPE=&quot;support_data&quot; in the CDF)
+         no_color_setup: don't setup graphics configuration; use this keyword when you're 
+                       using this load routine from a terminal without an X server running
+         time_clip:    clip the data to the requested time range; note that if you do not use 
+                       this keyword you may load a longer time range than requested
+         no_update:    set this flag to preserve the original data. if not set and newer 
+                       data is found the existing data will be overwritten
+         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
+                       preserving original tplot variable.
+         varformat:    should be a string (wildcards accepted) that will match the CDF variables
+                       that should be loaded into tplot variables
+         cdf_filenames:  this keyword returns the names of the CDF files used when loading the data
+         cdf_version:  specify a specific CDF version # to load (e.g., cdf_version='4.3.0')
+         latest_version: only grab the latest CDF version in the requested time interval
+                       (e.g., /latest_version)
+         major_version: only open the latest major CDF version (e.g., X in vX.Y.Z) in the requested time interval
+         min_version:  specify a minimum CDF version # to load
+         cdf_records: specify the # of records to load from the CDF files; this is useful
+             for grabbing one record from a CDF file
+         spdf:         grab the data from the SPDF instead of the LASP SDC (only works for public data)
+         available:    returns a list of files available at the SDC for the requested parameters
+                       this is useful for finding which files would be downloaded (along with their sizes) if
+                       you didn't specify this keyword (also outputs total download size)
+         versions:     this keyword returns the version #s of the CDF files used when loading the data
+         always_prompt: set this keyword to always prompt for the user's username and password;
+                       useful if you accidently save an incorrect password, or if your SDC password has changed
+         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in
+                       SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
+         pred: set this flag for 'predicted' state data. default state data is 'definitive'.  
+;          
 EXAMPLE:
-   elf_load_data,probe='x'
+   elf_load_data,probe='a'
  
 NOTES:
-   Elfin lomo has not launched yet so naming conventions and file types
-   and levels will most likely change.
    Since there is no data server - yet - files must reside locally.
-   Current file naming convention is lomo_APID_APIDNAME_YYMMDD.cdf.
-   It possible the Elfin load data gui will also include other missions
-   and this should be kept in mind as this routine is expanded. 
+   Current file naming convention is el[a/b]_ll_instr_yyyymmdd_v01.cdf.
      
 </PRE><P>
 <STRONG>(See <A href="elfin/elf_load_data.pro">projects/elfin/elf_load_data.pro</A>)</STRONG><P>
@@ -197,7 +300,7 @@ NOTES:
 <A NAME="ELF_LOAD_EPD">
 <H2>ELF_LOAD_EPD</H2></A>
 <A HREF="#ELF_LOAD_ENG">[Previous Routine]</A>
-<A HREF="#ELF_LOAD_PRM">[Next Routine]</A>
+<A HREF="#ELF_LOAD_FGM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -228,10 +331,356 @@ NOTES:
 <STRONG>(See <A href="elfin/elf_load_epd.pro">projects/elfin/elf_load_epd.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ELF_LOAD_FGM">
+<H2>ELF_LOAD_FGM</H2></A>
+<A HREF="#ELF_LOAD_EPD">[Previous Routine]</A>
+<A HREF="#ELF_LOAD_MRMA">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         elf_load_FGM
+
+ PURPOSE:
+         Load the ELFIN FGM
+
+ KEYWORDS:
+         trange:       time range of interest [starttime, endtime] with the format
+                       ['YYYY-MM-DD','YYYY-MM-DD'] or to specify more or less than a day
+                       ['YYYY-MM-DD/hh:mm:ss','YYYY-MM-DD/hh:mm:ss']
+         probes:       list of probes, valid values for elf probes are ['a','b'].
+                       if no probe is specified the default is probe 'a'
+         datatype:     valid datatypes include level 1 - ['fgf', 'fgs'] and 
+                       level 2 -['fgf_dsl','fgf_gei','fgf_mag','fgs_dsl','fgs_gei','fgs_mag']
+         data_rate:    instrument data rates include ['srvy', 'fast']. The default is 'srvy'.
+         level:        indicates level of data processing. levels include 'l1' and 'l2'
+                       The default if no level is specified is 'l1' (l1 default needs to be confirmed)
+         local_data_dir: local directory to store the CDF files; should be set if
+                       you're on *nix or OSX, the default currently assumes Windows (c:\data\elfin\)
+         source:       specifies a different system variable. By default the elf mission system
+                       variable is !elf
+         get_support_data: load support data (defined by support_data attribute in the CDF)
+         tplotnames:   names for tplot variables
+         no_color_setup: don't setup graphics configuration; use this keyword when you're
+                       using this load routine from a terminal without an X server running
+         time_clip:    clip the data to the requested time range; note that if you do not use
+                       this keyword you may load a longer time range than requested
+         no_update:    set this flag to preserve the original data. if not set and newer data is
+                       found the existing data will be overwritten
+         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
+                       preserving original tplot variable.
+         varformat:    should be a string (wildcards accepted) that will match the CDF variables
+                       that should be loaded into tplot variables
+         cdf_filenames:  this keyword returns the names of the CDF files used when loading the data
+         cdf_version:  specify a specific CDF version # to load (e.g., cdf_version='4.3.0')
+         latest_version: only grab the latest CDF version in the requested time interval
+                       (e.g., /latest_version)
+         major_version: only open the latest major CDF version (e.g., X in vX.Y.Z) in the requested time interval
+         min_version:  specify a minimum CDF version # to load
+         cdf_records:  specify a number of records to load from the CDF files.
+                       e.g., cdf_records=1 only loads in the first data point in the file
+                       This is especially useful for loading S/C position for a single time
+         spdf:         grab the data from the SPDF instead of the LASP SDC (only works for public access)
+         available:    returns a list of files available at the SDC for the requested parameters
+                       this is useful for finding which files would be downloaded (along with their sizes) if
+                       you didn't specify this keyword (also outputs total download size)
+         versions:     this keyword returns the version #s of the CDF files used when loading the data
+         always_prompt: set this keyword to always prompt for the user's username and password;
+                       useful if you accidently save an incorrect password, or if your SDC password has changed
+         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in
+                       SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
+
+ EXAMPLES:
+         to load/plot the FGM magnetometer data for probe a on 2/20/2019:
+         elf&gt; elf_load_fgm, probe='a', trange=['2016-02-20', '2016-02-21'], level='l1'
+         elf&gt; tplot, 'ela_fgs'
+
+ NOTES:
+
+
+$LastChangedBy: clrussell $
+$LastChangedDate: 2018-12-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
+$LastChangedRevision: 25588 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elfin/elf_load_fgm.pro $
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_load_fgm.pro">projects/elfin/elf_load_fgm.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ELF_LOAD_MRMA">
+<H2>ELF_LOAD_MRMA</H2></A>
+<A HREF="#ELF_LOAD_FGM">[Previous Routine]</A>
+<A HREF="#ELF_LOAD_MRMI">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         elf_load_mrma
+
+ PURPOSE:
+         Load the ELFIN mrm data from the ACB board
+
+ KEYWORDS:
+         trange:       time range of interest [starttime, endtime] with the format
+                       ['YYYY-MM-DD','YYYY-MM-DD'] or to specify more or less than a day
+                       ['YYYY-MM-DD/hh:mm:ss','YYYY-MM-DD/hh:mm:ss']
+         probes:       list of probes, valid values for elf probes are ['a','b'].
+                       if no probe is specified the default is probe 'a'
+         datatypes:    only one valid datatype -'mrma' 
+         data_rate:    instrument data rates are not applicable
+         level:        indicates level of data processing. levels include 'l1' and 'l2'
+                       The default if no level is specified is 'l1' (l1 default needs to be confirmed)
+         local_data_dir: local directory to store the CDF files; should be set if
+                       you're on *nix or OSX, the default currently assumes Windows (c:\data\elfin\)
+         source:       specifies a different system variable. By default the elf mission system
+                       variable is !elf
+         get_support_data: load support data (defined by support_data attribute in the CDF)
+         tplotnames:   names for tplot variables
+         no_color_setup: don't setup graphics configuration; use this keyword when you're
+                       using this load routine from a terminal without an X server running
+         time_clip:    clip the data to the requested time range; note that if you do not use
+                       this keyword you may load a longer time range than requested
+         no_update:    set this flag to preserve the original data. if not set and newer data is
+                       found the existing data will be overwritten
+         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
+                       preserving original tplot variable.
+         varformat:    should be a string (wildcards accepted) that will match the CDF variables
+                       that should be loaded into tplot variables
+         cdf_filenames:  this keyword returns the names of the CDF files used when loading the data
+         cdf_version:  specify a specific CDF version # to load (e.g., cdf_version='4.3.0')
+         latest_version: only grab the latest CDF version in the requested time interval
+                       (e.g., /latest_version)
+         major_version: only open the latest major CDF version (e.g., X in vX.Y.Z) in the requested time interval
+         min_version:  specify a minimum CDF version # to load
+         cdf_records:  specify a number of records to load from the CDF files.
+                       e.g., cdf_records=1 only loads in the first data point in the file
+                       This is especially useful for loading S/C position for a single time
+         spdf:         grab the data from the SPDF instead of the LASP SDC (only works for public access)
+         available:    returns a list of files available at the SDC for the requested parameters
+                       this is useful for finding which files would be downloaded (along with their sizes) if
+                       you didn't specify this keyword (also outputs total download size)
+         versions:     this keyword returns the version #s of the CDF files used when loading the data
+         always_prompt: set this keyword to always prompt for the user's username and password;
+                       useful if you accidently save an incorrect password, or if your SDC password has changed
+         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in
+                       SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
+
+ EXAMPLES:
+         to load/plot the mrm attitude data for probe a on 2/20/2019:
+         elf&gt; elf_load_mrma, probe='a', trange=['2016-02-20', '2016-02-21'], level='l1'
+         elf&gt; tplot, 'ela_mrma'
+
+ NOTES:
+
+
+$LastChangedBy: clrussell $
+$LastChangedDate: 2018-12-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
+$LastChangedRevision: 25588 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elfin/elf_load_mrma.pro $
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_load_mrma.pro">projects/elfin/elf_load_mrma.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ELF_LOAD_MRMI">
+<H2>ELF_LOAD_MRMI</H2></A>
+<A HREF="#ELF_LOAD_MRMA">[Previous Routine]</A>
+<A HREF="#ELF_LOAD_OPTIONS[1]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         elf_load_mrmi
+
+ PURPOSE:
+         Load the ELFIN mrm data from the IDPU board
+
+ KEYWORDS:
+         trange:       time range of interest [starttime, endtime] with the format
+                       ['YYYY-MM-DD','YYYY-MM-DD'] or to specify more or less than a day
+                       ['YYYY-MM-DD/hh:mm:ss','YYYY-MM-DD/hh:mm:ss']
+         probes:       list of probes, valid values for elf probes are ['a','b'].
+                       if no probe is specified the default is probe 'a'
+         datatypes:    only valid datatype is 'mrmi'
+         data_rate:    instrument data rates are not applicable
+         level:        indicates level of data processing. levels include 'l1' and 'l2'
+                       The default if no level is specified is 'l1' (l1 default needs to be confirmed)
+         local_data_dir: local directory to store the CDF files; should be set if
+                       you're on *nix or OSX, the default currently assumes Windows (c:\data\elfin\)
+         source:       specifies a different system variable. By default the elf mission system
+                       variable is !elf
+         get_support_data: load support data (defined by support_data attribute in the CDF)
+         tplotnames:   names for tplot variables
+         no_color_setup: don't setup graphics configuration; use this keyword when you're
+                       using this load routine from a terminal without an X server running
+         time_clip:    clip the data to the requested time range; note that if you do not use
+                       this keyword you may load a longer time range than requested
+         no_update:    set this flag to preserve the original data. if not set and newer data is
+                       found the existing data will be overwritten
+         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
+                       preserving original tplot variable.
+         varformat:    should be a string (wildcards accepted) that will match the CDF variables
+                       that should be loaded into tplot variables
+         cdf_filenames:  this keyword returns the names of the CDF files used when loading the data
+         cdf_version:  specify a specific CDF version # to load (e.g., cdf_version='4.3.0')
+         latest_version: only grab the latest CDF version in the requested time interval
+                       (e.g., /latest_version)
+         major_version: only open the latest major CDF version (e.g., X in vX.Y.Z) in the requested time interval
+         min_version:  specify a minimum CDF version # to load
+         cdf_records:  specify a number of records to load from the CDF files.
+                       e.g., cdf_records=1 only loads in the first data point in the file
+                       This is especially useful for loading S/C position for a single time
+         spdf:         grab the data from the SPDF instead of the LASP SDC (only works for public access)
+         available:    returns a list of files available at the SDC for the requested parameters
+                       this is useful for finding which files would be downloaded (along with their sizes) if
+                       you didn't specify this keyword (also outputs total download size)
+         versions:     this keyword returns the version #s of the CDF files used when loading the data
+         always_prompt: set this keyword to always prompt for the user's username and password;
+                       useful if you accidently save an incorrect password, or if your SDC password has changed
+         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in
+                       SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
+
+ EXAMPLES:
+         to load/plot the mrm attitude data for probe a on 2/20/2019:
+         elf&gt; elf_load_mrmi, probe='a', trange=['2016-02-20', '2016-02-21'], level='l1'
+         elf&gt; tplot, 'ela_mrmi'
+
+ NOTES:
+
+
+$LastChangedBy: clrussell $
+$LastChangedDate: 2018-12-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
+$LastChangedRevision: 25588 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elfin/elf_load_mrma.pro $
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_load_mrmi.pro">projects/elfin/elf_load_mrmi.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ELF_LOAD_OPTIONS[1]">
+<H2>ELF_LOAD_OPTIONS[1]</H2></A>
+<A HREF="#ELF_LOAD_MRMI">[Previous Routine]</A>
+<A HREF="#ELF_LOAD_OPTIONS[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Procedure:
+  elf_load_options
+
+Purpose:
+  Provides information on valid data rates, levels, and datatypes
+  for ELFIN science instruments.
+
+  Valid load options for a specified instrument will be returned
+  via a corresponding keyword.
+
+  Each output keyword may be used as an input to narrow the results
+  the the contingent options.
+
+Calling Sequence:
+  elf_load_options, instrument=instrument
+                    [,rate=rate] [,level=level], [,datatype=datatype]
+                    [valid=valid]
+
+Example Usage:
+
+
+Input:
+  instrument:  (string) Instrument designation, e.g. 'afg'
+  rate:  (string)(array) Data rate e.g. 'fast', 'srvy'
+  level:  (string)(array) Data processing level e.g. 'l1b', 'ql'
+  datatype:  (string)(array) Data type, e.g. 'moments'
+
+Output:
+  rate:  If not used as an input this will contain all valid
+         rates for the instrument.
+  level:  If not used as an input this will contain all valid
+          levels, given any specified rate.
+  datatype:  If not used as an input this will contain all valid
+             datatypes, given any specified rate and level.
+  valid:  1 if valid outputs were found, 0 otherwise
+
+Notes:
+
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2016-09-22 12:22:45 -0700 (Thu, 22 Sep 2016) $
+$LastChangedRevision: 21901 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elfin/elf_load_options.pro $
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_load_options.pro">projects/elfin/elf_load_options.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ELF_LOAD_OPTIONS[2]">
+<H2>ELF_LOAD_OPTIONS[2]</H2></A>
+<A HREF="#ELF_LOAD_OPTIONS[1]">[Previous Routine]</A>
+<A HREF="#ELF_LOAD_OPTIONS[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Purpose:
+  Helper function to return structure describing
+  the available data types for State files
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_load_options.pro">projects/elfin/elf_load_options.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ELF_LOAD_OPTIONS[2]">
+<H2>ELF_LOAD_OPTIONS[2]</H2></A>
+<A HREF="#ELF_LOAD_OPTIONS[2]">[Previous Routine]</A>
+<A HREF="#ELF_LOAD_OPTIONS[3]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Purpose:
+  Helper function to return structure describing
+  the available data types for MRM
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_load_options.pro">projects/elfin/elf_load_options.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ELF_LOAD_OPTIONS[3]">
+<H2>ELF_LOAD_OPTIONS[3]</H2></A>
+<A HREF="#ELF_LOAD_OPTIONS[2]">[Previous Routine]</A>
+<A HREF="#ELF_LOAD_OPTIONS[4]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Purpose:
+  Helper function to return structure describing
+  the available data types for FGM
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_load_options.pro">projects/elfin/elf_load_options.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ELF_LOAD_OPTIONS[4]">
+<H2>ELF_LOAD_OPTIONS[4]</H2></A>
+<A HREF="#ELF_LOAD_OPTIONS[3]">[Previous Routine]</A>
+<A HREF="#ELF_LOAD_OPTIONS[5]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Purpose:
+  Helper function to return structure describing
+  the available data types for EPD
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_load_options.pro">projects/elfin/elf_load_options.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ELF_LOAD_OPTIONS[5]">
+<H2>ELF_LOAD_OPTIONS[5]</H2></A>
+<A HREF="#ELF_LOAD_OPTIONS[4]">[Previous Routine]</A>
+<A HREF="#ELF_LOAD_PRM">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Purpose:
+  Extracts valid rate/level/datatype based on input.
+  If an input is specified then only subsets of that input are checked.
+  If an input is not specified then all possible matches are used.
+
+    e.g.  -If rate is specified then only levels and datatypes for
+           that rate are retuned.
+          -If nothing is specified then all rates/levels/datatypes
+           are returned.
+          -If all three are specified then then the output will
+           be identical to the input (if the input is valid).
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_load_options.pro">projects/elfin/elf_load_options.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ELF_LOAD_PRM">
 <H2>ELF_LOAD_PRM</H2></A>
-<A HREF="#ELF_LOAD_EPD">[Previous Routine]</A>
-<A HREF="#ELF_SET_VERBOSE">[Next Routine]</A>
+<A HREF="#ELF_LOAD_OPTIONS[5]">[Previous Routine]</A>
+<A HREF="#ELF_LOAD_STATE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -263,9 +712,84 @@ NOTES:
 <STRONG>(See <A href="elfin/elf_load_prm.pro">projects/elfin/elf_load_prm.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ELF_LOAD_STATE">
+<H2>ELF_LOAD_STATE</H2></A>
+<A HREF="#ELF_LOAD_PRM">[Previous Routine]</A>
+<A HREF="#ELF_SET_VERBOSE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         elf_load_state
+
+ PURPOSE:
+         Load the ELFIN ephemeris and attitude data 
+
+ KEYWORDS:
+         trange:       time range of interest [starttime, endtime] with the format
+                       ['YYYY-MM-DD','YYYY-MM-DD'] or to specify more or less than a day
+                       ['YYYY-MM-DD/hh:mm:ss','YYYY-MM-DD/hh:mm:ss']
+         probes:       list of probes, valid values for elf probes are ['a','b'].
+                       if no probe is specified the default is probe 'a'
+         datatype:     valid datatypes include ['pos', 'vel']
+                       Note: attitude data will be added soon [spinras, spindec, spinper, ..]. 
+         level:        there is only one level for state - 'l1'
+         data_rate:    instrument data rates are not applicable for state data
+         local_data_dir: local directory to store the CDF files; should be set if
+                       you're on *nix or OSX, the default currently assumes Windows (c:\data\elf\)
+         source:       specifies a different system variable. By default the elf mission system
+                       variable is !elf
+         get_support_data: load support data (defined by support_data attribute in the CDF)
+         tplotnames:   names for tplot variables
+         no_color_setup: don't setup graphics configuration; use this keyword when you're
+                       using this load routine from a terminal without an X server running
+         time_clip:    clip the data to the requested time range; note that if you do not use
+                       this keyword you may load a longer time range than requested
+         no_update:    set this flag to preserve the original data. if not set and newer data is
+                       found the existing data will be overwritten
+         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
+                       preserving original tplot variable.
+         varformat:    should be a string (wildcards accepted) that will match the CDF variables
+                       that should be loaded into tplot variables
+         cdf_filenames:  this keyword returns the names of the CDF files used when loading the data
+         cdf_version:  specify a specific CDF version # to load (e.g., cdf_version='4.3.0')
+         latest_version: only grab the latest CDF version in the requested time interval
+                       (e.g., /latest_version)
+         major_version: only open the latest major CDF version (e.g., X in vX.Y.Z) in the requested time interval
+         min_version:  specify a minimum CDF version # to load
+         cdf_records:  specify a number of records to load from the CDF files.
+                       e.g., cdf_records=1 only loads in the first data point in the file
+                       This is especially useful for loading S/C position for a single time
+         spdf:         grab the data from the SPDF instead of the LASP SDC (only works for public access)
+         available:    returns a list of files available at the SDC for the requested parameters
+                       this is useful for finding which files would be downloaded (along with their sizes) if
+                       you didn't specify this keyword (also outputs total download size)
+         versions:     this keyword returns the version #s of the CDF files used when loading the data
+         always_prompt: set this keyword to always prompt for the user's username and password;
+                       useful if you accidently save an incorrect password, or if your SDC password has changed
+         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in
+                       SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
+         pred: set this flag to retrieve predicted data. default is definitive.  
+
+ EXAMPLES:
+         to load/plot the S/C position data for probe a on 2/20/2016:
+         elf&gt; elf_load_state, probe='a', trange=['2016-02-20', '2016-02-21']
+         elf&gt; tplot, 'ela_pos_gsm'
+
+ NOTES:
+    Will need to add attitude data - so far this only handles position and velocity
+   
+
+$LastChangedBy: clrussell $
+$LastChangedDate: 2018-12-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
+$LastChangedRevision: 25588 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elfin/elf_load_state.pro $
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_load_state.pro">projects/elfin/elf_load_state.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ELF_SET_VERBOSE">
 <H2>ELF_SET_VERBOSE</H2></A>
-<A HREF="#ELF_LOAD_PRM">[Previous Routine]</A>
+<A HREF="#ELF_LOAD_STATE">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:

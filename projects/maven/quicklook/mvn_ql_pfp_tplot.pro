@@ -63,9 +63,9 @@
 ;CREATED BY:      Takuya Hara on 2015-04-09.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-09 11:37:13 -0800 (Fri, 09 Nov 2018) $
-; $LastChangedRevision: 26090 $
+; $LastChangedBy: hara $
+; $LastChangedDate: 2018-12-18 14:58:29 -0800 (Tue, 18 Dec 2018) $
+; $LastChangedRevision: 26367 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot.pro $
 ;
 ;-
@@ -386,8 +386,8 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
                  ELSE d2 = {x: [d2.x, dd.x], y: [d2.y, dd.y], v: [d2.v, dd.v]}
                  w = WHERE(d2.x GE trange[0] AND d2.x LE trange[1], nw)
                  IF nw GT 0 THEN d2 = {x: d2.x[w], y: d2.y[w, *], v: d2.v[w, *]}
-                 store_data, 'mvn_lpw_iv', data=d2
               ENDIF
+              IF SIZE(d2, /type) EQ 8 THEN store_data, 'mvn_lpw_iv', data=d2
               undefine, dd, w, nw
            ENDFOR
            IF (~IS_STRUCT(d2)) THEN lflg2 = 1 $
@@ -407,7 +407,7 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
                     dlim={yrange: [-43.3274, 43.2675], ystyle: 1, zrange: [-10, -4], zstyle: 1, spec: 1}
 
      ylim, 'mvn_lpw_iv', -43.3274, 43.2675
-     options, 'mvn_lpw_iv', bottom=7, top=254, no_color_scale=0, datagap=60.d0
+     options, 'mvn_lpw_iv', bottom=7, top=254, no_color_scale=0, datagap=60.d0, spec=1
      options, 'mvn_lpw_iv', ytitle='LPW (IV)', ysubtitle='[V]', ztitle='Log(abs(IV))'
 
   ;   lpath = 'maven/data/sci/lpw/l2/'

@@ -110,7 +110,9 @@
   
   <cdf_var
       name   = "ch0"
-      type   = "integer">
+      type   = "integer"
+      string = "true"
+      string_len = "20">
   <cdf_att
         FIELDNAM = "ch0"
         FORMAT = "I8"
@@ -131,7 +133,9 @@
 
   <cdf_var
       name   = "ch1"
-      type   = "integer">
+      type   = "integer"
+      string = "true"
+      string_len = "20">
   <cdf_att
         FIELDNAM = "ch1"
         FORMAT = "I8"
@@ -277,5 +281,145 @@
         DEPEND_0 = "epoch">  
   </cdf_att>
   </cdf_var>
+
+   <cdf_var
+      name = "spec1_ch0"
+      type = "integer"
+      nelem = "32"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "spec1_ch0"
+        FORMAT = "I8"
+        DATA_TYPE = "CDF_UINT2"
+        LABLAXIS = "spec1_ch0"
+        VAR_TYPE = "data"
+        FILLVAL = "65534"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "65535"
+        SCALEMIN = "0"
+        SCALEMAX = "65535"
+        UNITS = "None"
+        CATDESC = "RFS LFR HiRes SPEC1 Ch0"
+        DEPEND_0 = "epoch">  
+  </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name = "spec1_ch1"
+      type = "integer"
+      nelem = "32"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "spec1_ch1"
+        FORMAT = "I8"
+        DATA_TYPE = "CDF_UINT2"
+        LABLAXIS = "spec1_ch1"
+        VAR_TYPE = "data"
+        FILLVAL = "65534"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "65535"
+        SCALEMIN = "0"
+        SCALEMAX = "65535"
+        UNITS = "None"
+        CATDESC = "RFS LFR HiRes SPEC1 Ch1"
+        DEPEND_0 = "epoch">  
+  </cdf_att>
+  </cdf_var>
+
   
+  <cdf_var
+      name = "peaks_ch0"
+      type = "integer"
+      nelem = "32"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "peaks_ch0"
+        FORMAT = "I8"
+        DATA_TYPE = "CDF_UINT2"
+        LABLAXIS = "peaks_ch0"
+        VAR_TYPE = "data"
+        FILLVAL = "65534"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "65535"
+        SCALEMIN = "0"
+        SCALEMAX = "65535"
+        UNITS = "None"
+        CATDESC = "RFS LFR HiRes Peaks Ch0"
+        DEPEND_0 = "epoch">  
+  </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name = "peaks_ch1"
+      type = "integer"
+      nelem = "32"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "peaks_ch1"
+        FORMAT = "I8"
+        DATA_TYPE = "CDF_UINT2"
+        LABLAXIS = "peaks_ch1"
+        VAR_TYPE = "data"
+        FILLVAL = "65534"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "65535"
+        SCALEMIN = "0"
+        SCALEMAX = "65535"
+        UNITS = "None"
+        CATDESC = "RFS LFR HiRes Peaks Ch1"
+        DEPEND_0 = "epoch">  
+  </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name = "averages_ch0"
+      type = "integer"
+      nelem = "32"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "averages_ch0"
+        FORMAT = "I8"
+        DATA_TYPE = "CDF_UINT2"
+        LABLAXIS = "averages_ch0"
+        VAR_TYPE = "data"
+        FILLVAL = "65534"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "65535"
+        SCALEMIN = "0"
+        SCALEMAX = "65535"
+        UNITS = "None"
+        CATDESC = "RFS LFR HiRes Averages Ch0"
+        DEPEND_0 = "epoch">  
+  </cdf_att>
+  </cdf_var>
+
+  <cdf_var
+      name = "averages_ch1"
+      type = "integer"
+      nelem = "32"
+      convert_routine = "none">
+  <cdf_att
+        FIELDNAM = "averages_ch1"
+        FORMAT = "I8"
+        DATA_TYPE = "CDF_UINT2"
+        LABLAXIS = "averages_ch1"
+        VAR_TYPE = "data"
+        FILLVAL = "65534"
+        DISPLAY_TYPE = "time_series"
+        VALIDMIN = "0"
+        VALIDMAX = "65535"
+        SCALEMIN = "0"
+        SCALEMAX = "65535"
+        UNITS = "None"
+        CATDESC = "RFS LFR HiRes Averages Ch1"
+        DEPEND_0 = "epoch">  
+  </cdf_att>
+  </cdf_var>
+
+ 
 </items>

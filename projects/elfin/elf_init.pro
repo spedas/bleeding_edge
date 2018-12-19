@@ -35,7 +35,7 @@
 ;-
 
 pro elf_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote_data_dir,$
-  no_color_setup=no_color_setup, mirror_data_dir=mirror_data_dir
+  no_color_setup=no_color_setup
 
   def_struct = file_retrieve(/structure_format)
   
@@ -45,6 +45,8 @@ pro elf_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
   endif
   
   if keyword_set(reset) then !elf.init=0
+
+  elf_config,no_color_setup=no_color_setup; override the defaults by local config file
   
   if !elf.init ne 0 then begin
     ;Assure that trailing slashes exist on data directories
@@ -56,8 +58,6 @@ pro elf_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
   !elf = def_struct; force setting of all elements to default values.
   !elf.preserve_mtime = 0
   
-  elf_config,no_color_setup=no_color_setup; override the defaults by local config file
-
   elf_set_verbose ;propagate verbose setting into tplot_vars
   
   ; keywords on first call to elf_init (or /reset) override environment and
@@ -71,7 +71,7 @@ pro elf_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
   if keyword_set(mirror_data_dir) then begin
     !elf.mirror_data_dir = spd_addslash(mirror_data_dir)
   endif
-  
+ 
   cdf_lib_info,version=v,subincrement=si,release=r,increment=i,copyright=c
   cdf_version = string(format="(i0,'.',i0,'.',i0,a)",v,r,i,si)
   printdat,cdf_version
