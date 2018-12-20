@@ -21,8 +21,8 @@
 ;       Yuki Harada on 2014-11-20
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2015-01-16 12:50:20 -0800 (Fri, 16 Jan 2015) $
-; $LastChangedRevision: 16664 $
+; $LastChangedDate: 2018-12-18 20:06:35 -0800 (Tue, 18 Dec 2018) $
+; $LastChangedRevision: 26370 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swia/mvn_swia_diret.pro $
 ;-
 
@@ -107,7 +107,7 @@ pro mvn_swia_diret, frame=frame, units=units, archive=archive, thld_theta=thld_t
         if strlowcase(units) ne 'counts' then $
            eflux_pX[i,*] = total(d.data*d.domega*w,2)/total(d.domega*w,2) $
         else $
-           eflux_pX[i,j] = total(d.data*w,2)
+           eflux_pX[i,*] = total(d.data*w,2)
      endif else eflux_pX[i,*] = !values.f_nan
 
      idx = where( abs(thetanew) le thld_theta $ ;- -X

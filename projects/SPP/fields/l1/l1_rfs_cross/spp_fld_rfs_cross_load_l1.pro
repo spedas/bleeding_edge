@@ -3,9 +3,11 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
   ; TODO improve this check for valid CDF file and add to other routines
   if n_elements(file) LT 1 or file[0] EQ '' then return
 
-  receiver_str = strupcase(strmid(prefix, 12, 3))
+;  receiver_str = strupcase(strmid(prefix, 12, 3))
+;  if receiver_str EQ 'LFR' then lfr_flag = 1 else lfr_flag = 0
 
-  if receiver_str EQ 'LFR' then lfr_flag = 1 else lfr_flag = 0
+  lfr_flag = strpos(prefix, 'lfr') NE -1
+  if lfr_flag then receiver_str = 'LFR' else receiver_str = 'HFR'
 
   rfs_freqs = spp_fld_rfs_freqs(lfr = lfr_flag)
 

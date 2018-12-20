@@ -2,9 +2,11 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
 
   if n_elements(file) LT 1 or file[0] EQ '' then return
 
-  receiver_str = strupcase(strmid(prefix, 12, 3))
+  lfr_flag = strpos(prefix, 'lfr') NE -1
+  if lfr_flag then receiver_str = 'LFR' else receiver_str = 'HFR'
 
-  if receiver_str EQ 'LFR' then lfr_flag = 1 else lfr_flag = 0
+;  receiver_str = strupcase(strmid(prefix, 12, 3))
+;  if receiver_str EQ 'LFR' then lfr_flag = 1 else lfr_flag = 0
 
   rfs_freqs = spp_fld_rfs_freqs(lfr = lfr_flag)
 

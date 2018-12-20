@@ -5,9 +5,11 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
 
   rfs_freqs = spp_fld_rfs_freqs(/lfr, plasma = rfs_plasma)
 
-  receiver_str = strupcase(strmid(prefix, 12, 3))
+  lfr_flag = strpos(prefix, 'lfr') NE -1
+  if lfr_flag then receiver_str = 'LFR' else receiver_str = 'HFR'
 
-  if receiver_str EQ 'LFR' then lfr_flag = 1 else lfr_flag = 0
+;  receiver_str = strupcase(strmid(prefix, 12, 3))
+;  if receiver_str EQ 'LFR' then lfr_flag = 1 else lfr_flag = 0
 
   ; TODO: RFS HiRes frequencies and conversions
   ;rfs_freqs = spp_fld_rfs_freqs(lfr = lfr_flag)
@@ -173,30 +175,39 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   hr_freq_min = []
   hr_freq_all = []
 
-  for i = 0, n_elements(hires_loc.y)-1 do begin
+  hr_ind = hires_loc.y - 8
 
-    hr_i = hires_loc.y[i]
+  hr_freq = (rfs_plasma['LFR_FREQ'])[hr_ind]
+  
+  hr_freq_all = (rfs_plasma['PLASMA_SEL'])[hr_ind,*] * 1171.875d
 
-    hr_ind_i = where(rfs_plasma['LFR_IND'] EQ hr_i)
+  hr_freq_max = max(hr_freq_all,dim=2)
+  hr_freq_min = min(hr_freq_all,dim=2)
 
-    hr_freq_i = (rfs_plasma['LFR_FREQ'])[hr_ind_i]
-
-    hr_freq_all_i = (rfs_plasma['PLASMA_SEL'])[hr_ind_i,*] * 1171.875d
-
-    hr_freq_max_i = max(hr_freq_all_i)
-
-    hr_freq_min_i = min(hr_freq_all_i)
-
-    hr_ind = [hr_ind, hr_ind_i]
-
-    hr_freq = [hr_freq, hr_freq_i]
-    hr_freq_max = [hr_freq_max, hr_freq_max_i]
-    hr_freq_min = [hr_freq_min, hr_freq_min_i]
-
-    hr_freq_all = [hr_freq_all, hr_freq_all_i]
-
-  end
-
+;  for i = 0, n_elements(hires_loc.y)-1 do begin
+;
+;    hr_i = hires_loc.y[i]
+;
+;    hr_ind_i = where(rfs_plasma['LFR_IND'] EQ hr_i)
+;
+;    hr_freq_i = (rfs_plasma['LFR_FREQ'])[hr_ind_i]
+;
+;    hr_freq_all_i = (rfs_plasma['PLASMA_SEL'])[hr_ind_i,*] * 1171.875d
+;
+;    hr_freq_max_i = max(hr_freq_all_i)
+;
+;    hr_freq_min_i = min(hr_freq_all_i)
+;
+;    hr_ind = [hr_ind, hr_ind_i]
+;
+;    hr_freq = [hr_freq, hr_freq_i]
+;    hr_freq_max = [hr_freq_max, hr_freq_max_i]
+;    hr_freq_min = [hr_freq_min, hr_freq_min_i]
+;
+;    hr_freq_all = [hr_freq_all, hr_freq_all_i]
+;
+;  end
+;
   store_data, 'spp_fld_rfs_lfr_hires_freq', $
     data = {x:hires_loc.x, y:hr_freq}
 
@@ -207,8 +218,8 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
     data = {x:hires_loc.x, y:hr_freq_min}
 
   options, 'spp_fld_rfs_lfr_hires_freq*', 'linestyle', 2
-  options, 'spp_fld_rfs_lfr_hires_freq*', 'thick', 2
-  options, 'spp_fld_rfs_lfr_hires_freq*', 'color', 2
+  options, 'spp_fld_rfs_lfr_hires_freq*', 'thick', 1
+  options, 'spp_fld_rfs_lfr_hires_freq*', 'colors', 0
 
 
   for i = 0, n_elements(raw_spectra) - 1 do begin
@@ -357,7 +368,7 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
 
             store_data, src_name, $
               data = {x:(raw_spec_data.x)[inds], y:converted_spec_data[inds,*], $
-              v:rfs_freqs.reduced_freq}
+              v:hr_freq_all}
 
             options, src_name, 'spec', 1
             options, src_name, 'no_interp', 1
@@ -388,7 +399,7 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
     end
 
   endfor
-
+  
 ;options, '*hires*' + ['peaks', 'averages'] + '*converted', 'yrange', [5e4,5e5]
 ;tplot, '*hires*' + ['peaks', 'averages'] + '*converted'
 
