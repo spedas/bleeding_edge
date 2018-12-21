@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Dec 19 18:16:33 2018.<P>
+<STRONG>Last modified: </STRONG>Thu Dec 20 18:16:41 2018.<P>
  
 <HR>
  
@@ -23,6 +23,13 @@ This page was created by the IDL library routine
 <LI><A HREF="#RBSP_EFW_CONVECTION_EFIELD_CRIB">RBSP_EFW_CONVECTION_EFIELD_CRIB
 </A>
 <LI><A HREF="#RBSP_EFW_DCFIELD_REMOVAL_CRIB">RBSP_EFW_DCFIELD_REMOVAL_CRIB</A>
+<LI><A HREF="#RBSP_EFW_EDOTB_TO_ZERO_CRIB">RBSP_EFW_EDOTB_TO_ZERO_CRIB</A>
+<LI><A HREF="#RBSP_EFW_POSITION_VELOCITY_CRIB">RBSP_EFW_POSITION_VELOCITY_CRIB
+</A>
+<LI><A HREF="#RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB">
+RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB</A>
+<LI><A HREF="#RBSP_EFW_VXB_SUBTRACT_CRIB">RBSP_EFW_VXB_SUBTRACT_CRIB</A>
+<br>Creates vxB subtracted tplot variables for the 32 S/s EFW efield data
 <LI><A HREF="#RBSP_LOAD_COLLECTION">RBSP_LOAD_COLLECTION</A>
 <LI><A HREF="#RBSP_LOAD_CONTACT">RBSP_LOAD_CONTACT</A>
 <LI><A HREF="#TWAVPOL_MODIFIED">TWAVPOL_MODIFIED</A>
@@ -73,7 +80,7 @@ This page was created by the IDL library routine
 <A NAME="RBSP_EFW_DCFIELD_REMOVAL_CRIB">
 <H2>RBSP_EFW_DCFIELD_REMOVAL_CRIB</H2></A>
 <A HREF="#RBSP_EFW_CONVECTION_EFIELD_CRIB">[Previous Routine]</A>
-<A HREF="#RBSP_LOAD_COLLECTION">[Next Routine]</A>
+<A HREF="#RBSP_EFW_EDOTB_TO_ZERO_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 *****************************************************************************************
@@ -126,9 +133,177 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="examples/rbsp_efw_dcfield_removal_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_dcfield_removal_crib.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RBSP_EFW_EDOTB_TO_ZERO_CRIB">
+<H2>RBSP_EFW_EDOTB_TO_ZERO_CRIB</H2></A>
+<A HREF="#RBSP_EFW_DCFIELD_REMOVAL_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_POSITION_VELOCITY_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME: rbsp_efw_edotb_to_zero_crib.pro
+PURPOSE: Crib sheet to calculate the RBSP spin-axis Efield (short boom) under the
+ assumption that E*B=0.
+CALLING SEQUENCE:
+ rbsp_efw_edotb_to_zero_crib,'2014-01-01','a'
+INPUT:
+ date: e.g. '2014-01-01'
+ probe: 'a' or 'b'
+KEYWORDS:
+ noremove - Don't remove ExMGSE (spinaxis) values when By/Bx&gt;3.732 or Bz/Bx&gt;3.732
+ anglemin --&gt; Min allowable angle b/t spinplane and Bo. Defaults to 15 deg
+            Smaller angles will lead to less removed data, but can result
+            in larger errors due to division by small numbers
+
+OUTPUT: tplot variables of the spinfit, MGSE electric field with xMGSE
+ calculated assuming E*B=0
+NOTES: Bad E*B=0 data are removed
+ Spin axis values calculated from E*B=0 as
+ Ex = -1*(EyBy + EzBz)/Bx
+
+ The ratios By/Bx and Bz/Bx can fluctuate wildly when Bx gets too small. Therefore we
+ require that these ratios are less than a certain size (i.e. sufficiently big Bx).
+ The standard (from Cluster) is to assume that the angle between any of the spinplane directions
+ (MGSE y and z in this case) and Bo is greater than 15 degrees.
+ 	delta = angle(Bz, Bo) &gt; 15
+ 	epsilon = angle(By, Bo) &gt; 15
+ 	gamma = angle(Bx, Bo) &lt; 75
+
+ Writing out the dot products we get:
+ 	cos(delta) = Bz/Bo
+ 	cos(epsilon) = By/Bo
+ 	cos(gamma) = Bx/Bo
+
+ We can rearrange these as:
+ 	By/Bx = cos(epsilon)/cos(gamma)
+ 	Bz/Bx = cos(delta)/cos(gamma)
+
+ To find the max value of these ratios let epsilon = 15 deg, delta = 15, gamma = 75 deg.
+ 	By/Bx = 3.732
+ 	Bz/Bx = 3.732
+HISTORY: Written by Aaron W Breneman (UMN) - 2013-06-19
+$LastChangedBy: $
+$LastChangedDate: $
+$LastChangedRevision: $
+$URL: $
+</PRE><P>
+<STRONG>(See <A href="examples/rbsp_efw_edotb_to_zero_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_edotb_to_zero_crib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="RBSP_EFW_POSITION_VELOCITY_CRIB">
+<H2>RBSP_EFW_POSITION_VELOCITY_CRIB</H2></A>
+<A HREF="#RBSP_EFW_EDOTB_TO_ZERO_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME: rbsp_efw_position_velocity_crib.pro
+PURPOSE: Loads and plots RBSP (Van Allen probes) position and velocity related data
+CALLING SEQUENCE:
+ timespan,'2014-01-01'
+ rbsp_efw_position_velocity_crib
+INPUT:
+KEYWORDS:
+ no_spice_load -&gt; set if you've already loaded the spice kernels
+	noplot -&gt; set to avoid tplotting
+	notrace -&gt; skip the ttrace2equator call. This takes a lot of computational time
+OUTPUT: various tplot variables
+HISTORY:
+ Written by Aaron Breneman, UMN, Dec 2012
+	email: awbrenem@gmail.com
+REQUIRED: Need to have the SPICE ICY software package installed
+
+$LastChangedBy: $
+$LastChangedDate: $
+$LastChangedRevision: $
+$URL: $
+</PRE><P>
+<STRONG>(See <A href="examples/rbsp_efw_position_velocity_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_position_velocity_crib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB">
+<H2>RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB</H2></A>
+<A HREF="#RBSP_EFW_POSITION_VELOCITY_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_VXB_SUBTRACT_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME: rbsp_efw_spinfit_vxb_subtract_crib.pro
+PURPOSE: Create the vxb subtracted spinfit data product for EFW
+CALLING SEQUENCE:
+ timespan,'2014-01-01'
+ rbsp_efw_spinfit_vxb_crib,'a'
+INPUT: probe --&gt; 'a' or 'b'
+KEYWORDS:
+ ql -&gt; select to load EMFISIS quicklook data. Defaults to hires L3 data but
+				quicklook data are available sooner.
+	qa -&gt; select to load QA waveform data. Don't want to use this route for normal
+				  data processing.
+	hiresl3 -&gt; loads the EMFISIS high resolution 64 S/s L3 GSE data
+ level -&gt; Level of EMFISIS data. Options are:
+   'ql', 'l2', 'l3'. Defaults to EMFISIS L3 data
+ boom_pair -&gt; select the boom pair for the spinfitting. Options are '12','34'
+   Note: if you want to use another boom pair combination, use
+   rbsp_efw_create_esvy_uvw_from_vsvy.pro
+OUTPUT: tplot variables of spinfit, vxb subtracted electric field
+HISTORY: Written by Aaron W Breneman
+         University of Minnesota
+         2013-04-16
+$LastChangedBy: $
+$LastChangedDate: $
+$LastChangedRevision: $
+$URL: $
+</PRE><P>
+<STRONG>(See <A href="examples/rbsp_efw_spinfit_vxb_subtract_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_spinfit_vxb_subtract_crib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="RBSP_EFW_VXB_SUBTRACT_CRIB">
+<H2>RBSP_EFW_VXB_SUBTRACT_CRIB</H2></A>
+<A HREF="#RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_LOAD_COLLECTION">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME: rbsp_efw_vxb_subtract_crib.pro
+PURPOSE:
+ Creates vxB subtracted tplot variables for the 32 S/s EFW efield data
+ ****NOTE: IF YOU DON'T NEED THE FULL 32 S/s RESOLUTION THEN CONSIDER USING
+ ****rbsp_efw_spinfit_vxb_subtract_crib.pro
+ ****THE DATA WILL BE AT SPINPERIOD CADENCE BUT WILL BE CLEANER
+
+ WARNING!!! RESULTS ARE PRELIMINARY. DO NOT PUBLISH OR PRESENT THESE RESULTS
+ WITHOUT FIRST CONSULTING THE EFW PI JOHN WYGANT &lt;wygan001@umn.edu&gt;
+
+CALLING SEQUENCE:
+ timespan,'2014-01-01'
+ rbsp_efw_vxb_subtract_crib,'a'
+
+INPUT: 'a' or 'b' for probe
+KEYWORDS:
+ ql -&gt; use EMFISIS quicklook UVW data instead of 4sec GSE L3. This will be
+       despun and spinfit. This has the advantage of not having to wait for
+       the EMFISIS L3 data set to be produced.
+       Note: Defaults to 4-sec EMFISIS data in GSE. This is actually superior
+       to the hires GSE data b/c it doesn't have spurious data spikes.
+       It works about the same as JBT's method of despinning and then
+       spinfitting the EMFISIS quicklook UVW data.
+
+ hires -&gt; use EMFISIS hires L3 GSE data instead of 4sec GSE L3.
+ qa -&gt; load the QA testing L1 EFW data instead of the usual L1 data
+OUTPUT:
+HISTORY:
+ Created by Aaron Breneman, UMN, Dec 2012
+	email: awbrenem@gmail.com
+REQUIRES: THEMIS TDAS software
+			 http://themis.ssl.berkeley.edu/software.shtml
+		   as well as SPICE software
+
+$LastChangedBy: $
+$LastChangedDate: $
+$LastChangedRevision: $
+$URL: $
+</PRE><P>
+<STRONG>(See <A href="examples/rbsp_efw_vxb_subtract_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_vxb_subtract_crib.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RBSP_LOAD_COLLECTION">
 <H2>RBSP_LOAD_COLLECTION</H2></A>
-<A HREF="#RBSP_EFW_DCFIELD_REMOVAL_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_VXB_SUBTRACT_CRIB">[Previous Routine]</A>
 <A HREF="#RBSP_LOAD_CONTACT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

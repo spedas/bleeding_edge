@@ -48,11 +48,9 @@
 ;-
 
 
-
-pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplot,model=model,ql=ql,$
-  cadence=cadence,nodelete=nodelete,decimate_level=decimate_level,$
-  boom_pair=bp
-
+pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
+  noplot=noplot,model=model,ql=ql,cadence=cadence,nodelete=nodelete,$
+  decimate_level=decimate_level,boom_pair=bp
 
 
   ; initialize RBSP environment
@@ -64,31 +62,31 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
   rbspx = 'rbsp'+probe
   sc = probe
 
+
   ;Get the time range if it hasn't already been set
   x = timerange()
   date = strmid(time_string(x[0]),0,10)
 
+
   if ~keyword_set(model) then model = 't96'
-
-
   if ~keyword_set(cadence) then cadence = '1sec'
 
-  ;;Extended timerange for t01 model
+
+  ;Extended timerange for t01 model
   if model eq 't01' then begin
     x2 = x
     x2[0] = x[0] - 3600.
   endif
 
-  ;Load spice kernels
 
-  ;predicted kernels needed to convert very recent UVW mag data to GSE
+  ;Load spice kernels
+  ;...predicted kernels needed to convert very recent UVW mag data to GSE
   if ~keyword_set(no_spice_load) then rbsp_load_spice_kernels
   if ~keyword_set(bp) then bp = '12'
   if bp eq '12' then plane_dim = 0 else plane_dim = 1
 
+
   ;Load RBSP position data and transform to GSM which is needed for the model subtraction
-
-
   if model eq 't01' then timespan,x2[0],(x2[1] - x2[0]),/seconds
 
   ;Get antenna pointing direction and stuff
@@ -106,12 +104,12 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
 
 
     ;;decimate the data?
-    if keyword_set(decimate_level) then rbsp_decimate,rbspx+'_emfisis_l3_'+cadence+'_gse_Mag',$
-    level=decimate_level,newname=rbspx+'_emfisis_l3_'+cadence+'_gse_Mag'
+    if keyword_set(decimate_level) then $
+      rbsp_decimate,rbspx+'_emfisis_l3_'+cadence+'_gse_Mag',$
+      level=decimate_level,newname=rbspx+'_emfisis_l3_'+cadence+'_gse_Mag'
 
 
     get_data,rbspx+'_emfisis_l3_'+cadence+'_gse_Mag',data=dd
-
     if ~is_struct(dd) then begin
       print,'*****  NO EMFISIS L3 DATA TO LOAD *****'
       print,'exiting rbsp_efw_DCfield_removal_crib.pro'
@@ -126,15 +124,16 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
     rbsp_gse2mgse,rbspx+'_mag_gse',reform(wsc_GSE_tmp.y),newname=rbspx+'_mag_mgse'
 
 
-
   endif
 
   if keyword_set(ql) then begin
     rbsp_load_emfisis,probe=probe,/quicklook
 
     ;;decimate the data?
-    if keyword_set(decimate_level) then rbsp_decimate,rbspx+'_emfisis_quicklook_Mag',$
-    level=decimate_level,newname=rbspx+'_emfisis_quicklook_Mag'
+    if keyword_set(decimate_level) then $
+      rbsp_decimate,rbspx+'_emfisis_quicklook_Mag',$
+      level=decimate_level,newname=rbspx+'_emfisis_quicklook_Mag'
+
 
     get_data,rbspx+'_emfisis_quicklook_Mag',data=dd
     if ~is_struct(dd) then begin
@@ -144,8 +143,8 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
 
 
 
-    ;Some of the EMFISIS quicklook data extend beyond the day loaded. This messes things up
-    ;later. Remove these data points now.
+    ;Some of the EMFISIS quicklook data extend beyond the day loaded.
+    ;This messes things up later. Remove these data points now.
 
     t0 = time_double(date)
     t1 = t0 + 86400.
@@ -158,8 +157,8 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
     replace=1,error=error,newname=rbspx+'_emfisis_quicklook_Magnitude'
 
 
-    ;Create the dlimits structure for the EMFISIS quantity. Jianbao's spinfit program needs
-    ;to see that the coords are 'uvw'
+    ;Create the dlimits structure for the EMFISIS quantity. Jianbao's spinfit
+    ;program needs to see that the coords are 'uvw'
     get_data,rbspx +'_emfisis_quicklook_Mag',data=datt
     data_att = {coord_sys:'uvw'}
     dlim = {data_att:data_att}
@@ -182,12 +181,9 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
 
   ;Transform to GSM
   cotrans,rbspx+'_mag_gse',rbspx+'_mag_gsm',/GSE2GSM
-
   copy_data,rbspx+'_mag_gsm',rbspx+'_mag_gsm_for_subtract'
   copy_data,rbspx+'_mag_gse',rbspx+'_mag_gse_for_subtract'
   copy_data,rbspx+'_mag_mgse',rbspx+'_mag_mgse_for_subtract'
-
-
   copy_data,rbspx+'_state_pos_gsm','pos_gsm'
   posname = 'pos_gsm'
 
@@ -213,8 +209,7 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
   if model eq 't01' then begin
     timespan,x2[0],(x2[1] - x2[0]),/seconds
 
-    g1 = 6.
-    g2 = 10.
+    g1 = 6. & g2 = 10.
     if model eq 't01' then call_procedure,'t'+model,posname,pdyn=2.0D,dsti=-30.0D,$
     yimf=0.0D,zimf=-5.0D,g1=g1,g2=g2,period=0.5
 
@@ -257,14 +252,17 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
 
 
   ;;Create mag - model variable in MGSE and GSE
-  dif_data,rbspx+'_mag_gsm_for_subtract',rbspx+'_mag_gsm_'+model,newname=rbspx+'_mag_gsm_'+model+'_dif'
-  dif_data,rbspx+'_mag_mgse_for_subtract',rbspx+'_mag_mgse_'+model,newname=rbspx+'_mag_mgse_'+model+'_dif'
-  dif_data,rbspx+'_mag_gse_for_subtract',rbspx+'_mag_gse_'+model,newname=rbspx+'_mag_gse_'+model+'_dif'
+  dif_data,rbspx+'_mag_gsm_for_subtract',rbspx+'_mag_gsm_'+model,$
+    newname=rbspx+'_mag_gsm_'+model+'_dif'
+  dif_data,rbspx+'_mag_mgse_for_subtract',rbspx+'_mag_mgse_'+model,$
+    newname=rbspx+'_mag_mgse_'+model+'_dif'
+  dif_data,rbspx+'_mag_gse_for_subtract',rbspx+'_mag_gse_'+model,$
+    newname=rbspx+'_mag_gse_'+model+'_dif'
+
 
   options,rbspx+'_mag_gsm_for_subtract','colors',[2,4,6]
   options,rbspx+'_mag_gse_for_subtract','colors',[2,4,6]
   options,rbspx+'_mag_mgse_for_subtract','colors',[2,4,6]
-
 
   options,rbspx+'_'+'mag'+'_gsm_for_subtract','labels',['gsm x','gsm y','gsm z']
   options,rbspx+'_mag_gsm_'+model,'labels',['gsm x','gsm y','gsm z']
@@ -278,7 +276,6 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
   options,rbspx+'_mag_gse_'+model,'labels',['gse x','gse y','gse z']
   options,rbspx+'_mag_gse_'+model+'_dif','labels',['gse x','gse y','gse z']
 
-
   ylim,rbspx+'_mag_gsm_'+model+'_dif',-100,100
   ylim,rbspx+'_'+'mag'+'_gsm_for_subtract',-3d4,3d4
   ylim,rbspx+'_mag_gsm_'+model,-3d4,3d4
@@ -290,8 +287,6 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
   ylim,rbspx+'_mag_gse_'+model+'_dif',-100,100
   ylim,rbspx+'_'+'mag'+'_gse_for_subtract',-3d4,3d4
   ylim,rbspx+'_mag_gse_'+model,-3d4,3d4
-
-  
 
   options,rbspx+'_mag_gsm_'+model+'_dif','ytitle','Bfield-model!C'+strupcase(model)+'!C[nT]'
   options,rbspx+'_mag_gsm_'+model,'ytitle','Model field!C'+strupcase(model)+'!C[nT]'
@@ -306,7 +301,6 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
   ;;AUTO PARAMETER DETERMINATION FROM ACTUAL DATA
 
   if model ne 't89' then begin
-
 
     kyoto_load_dst
     tdegap,'kyoto_dst',/overwrite
@@ -325,17 +319,12 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
 
     if model eq 't01' then timespan,x2[0],(x2[1] - x2[0]),/seconds
 
-
-
-
-
     ;load wind data
     wi_mfi_load,tplotnames=tn
     wi_3dp_load,tplotnames=tn2
 
     if KEYWORD_SET(tn) and KEYWORD_SET(tn2) then begin
       if (tn[0] ne '') and (tn2[0] ne '') then begin
-
 
         tdegap,'wi_h0_mfi_B3GSE',/overwrite
         tdeflag,'wi_h0_mfi_B3GSE','linear',/overwrite
@@ -373,7 +362,6 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
         newname=rbspx+'_mag_gsm_'+model+'_wind'
 
 
-
         dif_data,rbspx+'_mag_gsm',$
         rbspx+'_mag_gsm_'+model+'_wind',$
         newname=rbspx + '_mag_gsm_' + model + '_wind_dif'
@@ -385,7 +373,6 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
         dif_data,rbspx+'_mag_gse_for_subtract',$
         rbspx+'_mag_gse_'+model+'_wind',$
         newname=rbspx + '_mag_gse_' + model + '_wind_dif'
-
 
 
         ;Create and plot MGSE mag
@@ -436,7 +423,6 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
         endif
 
 
-
         copy_data,'pos_gsm_b'+model,rbspx+'_mag_gsm_'+model+'_ace'
 
 
@@ -446,32 +432,24 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
         newname=rbspx+'_mag_gsm_'+model+'_ace'
 
 
-
         ;Create and plot GSM mag
         dif_data,rbspx+'_mag_gsm',$
         rbspx+'_mag_gsm_'+model+'_ace',$
         newname=rbspx + '_mag_gsm_' + model + '_ace_dif'
 
 
-
         ;Transform the GSE model to MGSE
-
         cotrans,rbspx+'_mag_gsm_'+model+'_ace',rbspx+'_mag_gse_'+model+'_ace',/GSM2GSE
 
 
-
         ;Create and plot GSE mag
-
         dif_data,rbspx+'_mag_gse_for_subtract',$
         rbspx+'_mag_gse_'+model+'_ace',$
         newname=rbspx + '_mag_gse_' + model + '_ace_dif'
 
 
-
-
         ;Create and plot MGSE mag
         rbsp_gse2mgse,rbspx+'_mag_gse_'+model+'_ace',wsc_GSE_tmp.y,newname=rbspx+'_mag_mgse_'+model+'_ace'
-
         dif_data,rbspx+'_mag_mgse_for_subtract',$
         rbspx+'_mag_mgse_'+model+'_ace',$
         newname=rbspx + '_mag_mgse_' + model + '_ace_dif'
@@ -530,33 +508,24 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
         newname=rbspx+'_mag_gsm_'+model+'_omni'
 
 
-
         ;Create and plot GSM mag
-
         dif_data,rbspx+'_mag_gsm',$
         rbspx+'_mag_gsm_'+model+'_omni',$
         newname=rbspx + '_mag_gsm_' + model + '_omni_dif'
 
 
-
-        ;		;Transform the GSE model to MGSE
-
+        ;Transform the GSE model to MGSE
         cotrans,rbspx+'_mag_gsm_'+model+'_omni',rbspx+'_mag_gse_'+model+'_omni',/GSM2GSE
 
 
-
         ;Create and plot GSE mag
-
         dif_data,rbspx+'_mag_gse_for_subtract',$
         rbspx+'_mag_gse_'+model+'_omni',$
         newname=rbspx + '_mag_gse_' + model + '_omni_dif'
 
 
-
         ;Create and plot MGSE mag
-
         rbsp_gse2mgse,rbspx+'_mag_gse_'+model+'_omni',wsc_GSE_tmp.y,newname=rbspx+'_mag_mgse_'+model+'_omni'
-
         dif_data,rbspx+'_mag_mgse_for_subtract',$
         rbspx+'_mag_mgse_'+model+'_omni',$
         newname=rbspx + '_mag_mgse_' + model + '_omni_dif'
@@ -577,7 +546,6 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
 
 
   ;Remove, rename stuff...
-
   if ~keyword_set(nodelete) then begin
     store_data,['*OMNI_HRO*'],/delete
     store_data,['*omni_imf*'],/delete
@@ -595,7 +563,6 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
   options,rbspx + '_mag_mgse_' + model+'_ace_dif','ytitle','Bfield-model!C'+strupcase(model)+'!Cwith ACE input!C[nT]'
   options,rbspx + '_mag_mgse_' + model+'_omni_dif','ytitle','Bfield-model!C'+strupcase(model)+'!Cwith OMNI input!C[nT]'
 
-
   options,rbspx + '_mag_mgse_' + model,'ysubtitle',''
   options,rbspx + '_mag_mgse_' + model+'_wind','ysubtitle',''
   options,rbspx + '_mag_mgse_' + model+'_ace','ysubtitle',''
@@ -605,7 +572,6 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
   options,rbspx + '_mag_mgse_' + model+'_wind_dif','ysubtitle',''
   options,rbspx + '_mag_mgse_' + model+'_ace_dif','ysubtitle',''
   options,rbspx + '_mag_mgse_' + model+'_omni_dif','ysubtitle',''
-
 
 
 
@@ -662,8 +628,6 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
 
 
 
-
-
     ;Plot with zoomed in yscale
     ylim,[rbspx+'_mag_mgse_for_subtract',$
     rbspx+'_mag_mgse_'+model+'_dif',$
@@ -699,10 +663,7 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,noplot=noplo
 
 
 
-
-
     ;compare the four models
-
     ylim,[rbspx+'_mag_mgse_'+model+'_dif',$
     rbspx+'_mag_mgse_'+model+'_wind_dif',$
     rbspx+'_mag_mgse_'+model+'_ace_dif',$

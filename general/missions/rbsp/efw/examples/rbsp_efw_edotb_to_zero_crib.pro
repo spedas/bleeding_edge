@@ -1,52 +1,60 @@
-;Crib sheet to calculate the RBSP spin-axis Efield under the assumption that E*B=0.
+;+
+;NAME: rbsp_efw_edotb_to_zero_crib.pro
+;PURPOSE: Crib sheet to calculate the RBSP spin-axis Efield (short boom) under the
+; assumption that E*B=0.
+;CALLING SEQUENCE:
+; rbsp_efw_edotb_to_zero_crib,'2014-01-01','a'
+;INPUT:
+; date: e.g. '2014-01-01'
+; probe: 'a' or 'b'
+;KEYWORDS:
+; noremove - Don't remove ExMGSE (spinaxis) values when By/Bx>3.732 or Bz/Bx>3.732
+; anglemin --> Min allowable angle b/t spinplane and Bo. Defaults to 15 deg
+;            Smaller angles will lead to less removed data, but can result
+;            in larger errors due to division by small numbers
 ;
-;Bad E*B=0 data are removed
+;OUTPUT: tplot variables of the spinfit, MGSE electric field with xMGSE
+; calculated assuming E*B=0
+;NOTES: Bad E*B=0 data are removed
+; Spin axis values calculated from E*B=0 as
+; Ex = -1*(EyBy + EzBz)/Bx
 ;
+; The ratios By/Bx and Bz/Bx can fluctuate wildly when Bx gets too small. Therefore we
+; require that these ratios are less than a certain size (i.e. sufficiently big Bx).
+; The standard (from Cluster) is to assume that the angle between any of the spinplane directions
+; (MGSE y and z in this case) and Bo is greater than 15 degrees.
+; 	delta = angle(Bz, Bo) > 15
+; 	epsilon = angle(By, Bo) > 15
+; 	gamma = angle(Bx, Bo) < 75
 ;
+; Writing out the dot products we get:
+; 	cos(delta) = Bz/Bo
+; 	cos(epsilon) = By/Bo
+; 	cos(gamma) = Bx/Bo
 ;
+; We can rearrange these as:
+; 	By/Bx = cos(epsilon)/cos(gamma)
+; 	Bz/Bx = cos(delta)/cos(gamma)
 ;
-;Spin axis values calculated from E*B=0 as
-;Ex = -1*(EyBy + EzBz)/Bx
-;
-;The ratios By/Bx and Bz/Bx can fluctuate wildly when Bx gets too small. Therefore we
-;require that these ratios are less than a certain size (i.e. sufficiently big Bx).
-;The standard (from Cluster) is to assume that the angle between any of the spinplane directions
-;(MGSE y and z in this case) and Bo is greater than 15 degrees.
-;	delta = angle(Bz, Bo) > 15
-;	epsilon = angle(By, Bo) > 15
-;	gamma = angle(Bx, Bo) < 75
-;
-;Writing out the dot products we get:
-;	cos(delta) = Bz/Bo
-;	cos(epsilon) = By/Bo
-;	cos(gamma) = Bx/Bo
-;
-;We can rearrange these as:
-;	By/Bx = cos(epsilon)/cos(gamma)
-;	Bz/Bx = cos(delta)/cos(gamma)
-;
-;To find the max value of these ratios let epsilon = 15 deg, delta = 15, gamma = 75 deg.
-;	By/Bx = 3.732
-;	Bz/Bx = 3.732
-;
-;Keywords:
-;   noremove - Don't remove ExMGSE (spinaxis) values when By/Bx>3.732 or Bz/Bx>3.732
-;   anglemin --> change the minimum allowable angle to something other than 15 deg
-;               Smaller angles will lead to less removed data, but are more risky.
-;
-;Written by Aaron W Breneman (UMN) - 2013-06-19
-;
+; To find the max value of these ratios let epsilon = 15 deg, delta = 15, gamma = 75 deg.
+; 	By/Bx = 3.732
+; 	Bz/Bx = 3.732
+;HISTORY: Written by Aaron W Breneman (UMN) - 2013-06-19
+;$LastChangedBy: $
+;$LastChangedDate: $
+;$LastChangedRevision: $
+;$URL: $
+;-
 
 
-
-pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,suffix=suffix,$
-  noplot=noplot,nospinfit=nospinfit,ql=ql,boom_pair=bp,$
+pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,$
+  suffix=suffix,noplot=noplot,nospinfit=nospinfit,ql=ql,boom_pair=bp,$
   rerun=rerun,noremove=noremove,anglemin=anglemin,bad_probe=bad_probe
 
+
   if ~KEYWORD_SET(anglemin) then anglemin = 15.
-
+  ;quantity determined from anglemin
   limiting_ratio = cos(anglemin*!dtor)/cos((90-anglemin)*!dtor)
-
 
   rbspx = 'rbsp' + probe
   timespan,date
@@ -73,16 +81,10 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,suffix=su
   get_data,'rbsp'+probe+'_penumbra',data=ep
 
 
-  ;; ;Load spice
-  ;; 	if ~keyword_set(no_spice_load) then rbsp_load_spice_kernels
-  ;; 	rbsp_load_spice_state,probe=probe,coord='gse',/no_spice_load
-  ;; 	store_data,'rbsp'+probe+'_state_pos_gse',newname='rbsp'+probe+'_pos_gse'
-  ;; 	store_data,'rbsp'+probe+'_state_vel_gse',newname='rbsp'+probe+'_vel_gse'
-
 
   ;Load spinfit MGSE Efield and Bfield
   if ~keyword_set(nospinfit) then begin
-    rbsp_efw_spinfit_vxb_subtract_crib,probe,/noplot,ql=ql,boom_pair=bp;,bad_probe=bad_probe;,rerun=rerun
+    rbsp_efw_spinfit_vxb_subtract_crib,probe,/noplot,ql=ql,boom_pair=bp
     evar = 'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit'
   endif else begin
     rbsp_efw_vxb_subtract_crib,probe,/noplot,ql=ql,bad_probe=bad_probe
@@ -90,29 +92,27 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,suffix=su
   endelse
 
 
-  ;tplot,'rbsp'+probe+'_' + ['vxb_mgse', 'sfit12_mgse']
-  ;	if ~keyword_set(noplot) then tplot,'rbsp'+probe+'_' + ['vxb_mgse','rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit']
   if ~keyword_set(noplot) then tplot,'rbsp'+probe+'_' + ['vxb_mgse',evar]
 
 
 
   ;Grab the spinfit Ew and Bw data
   split_vec,'rbsp'+probe+'_mag_mgse'
-  ;	get_data,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit',data=sfit
   get_data,evar,data=edata
 
 
-
-  if is_struct(edata) then tinterpol_mxn,'rbsp'+probe+'_mag_mgse',edata.x,newname='rbsp'+probe+'_mag_mgse'
+  ;interpolate to common timebase
+  if is_struct(edata) then $
+    tinterpol_mxn,'rbsp'+probe+'_mag_mgse',edata.x,$
+    newname='rbsp'+probe+'_mag_mgse'
 
 
   ;smooth the background magnetic field
   ;over 30 min for the E*B=0 calculation
   rbsp_detrend,'rbsp'+probe+'_mag_mgse',60.*30.
-
-
   get_data,'rbsp'+probe+'_mag_mgse',data=magmgse
   get_data,'rbsp'+probe+'_mag_mgse_smoothed',data=magmgse_smoothed
+
 
   if ~is_struct(magmgse) then begin
     print,'NO MAG DATA FOR rbsp_efw_EdotB_to_zero_crib.pro TO USE...RETURNING'
@@ -121,20 +121,21 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,suffix=su
 
 
   bmag = sqrt(magmgse.y[*,0]^2 + magmgse.y[*,1]^2 + magmgse.y[*,2]^2)
-  bmag_smoothed = sqrt(magmgse_smoothed.y[*,0]^2 + magmgse_smoothed.y[*,1]^2 + magmgse_smoothed.y[*,2]^2)
+  bmag_smoothed = sqrt(magmgse_smoothed.y[*,0]^2 + $
+    magmgse_smoothed.y[*,1]^2 + $
+    magmgse_smoothed.y[*,2]^2)
 
 
   ;Replace axial measurement with E*B=0 version
-  edata.y[*,0] = -1*(edata.y[*,1]*magmgse_smoothed.y[*,1] + edata.y[*,2]*magmgse_smoothed.y[*,2])/magmgse_smoothed.y[*,0]
-  ;; if ~keyword_set(suffix) then store_data,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit',data=edata
-  ;; if keyword_set(suffix) then store_data,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit'+'_'+suffix,data=edata
+  edata.y[*,0] = -1*(edata.y[*,1]*magmgse_smoothed.y[*,1] + $
+    edata.y[*,2]*magmgse_smoothed.y[*,2])/magmgse_smoothed.y[*,0]
   if ~keyword_set(suffix) then store_data,evar,data=edata
   if keyword_set(suffix) then store_data,evar+'_'+suffix,data=edata
 
 
-  ;Find bad E*B=0 data (where the angle b/t spinplane MGSE and Bo is less than 15 deg)
+  ;Find bad E*B=0 data (where the angle b/t spinplane MGSE and Bo is
+  ;less than 15 deg)
   ;Good data has By/Bx < 3.732   and  Bz/Bx < 3.732
-
   By2Bx = abs(magmgse_smoothed.y[*,1]/magmgse_smoothed.y[*,0])
   Bz2Bx = abs(magmgse_smoothed.y[*,2]/magmgse_smoothed.y[*,0])
   store_data,'B2Bx_ratio',data={x:edata.x,y:[[By2Bx],[Bz2Bx]]}
@@ -142,6 +143,7 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,suffix=su
   options,'B2Bx_ratio','ytitle','By/Bx (black)!CBz/Bx (red)'
   badyx = where(By2Bx gt limiting_ratio)
   badzx = where(Bz2Bx gt limiting_ratio)
+
 
   ;Calculate specific limiting angles
   angle_bybx = atan(1/By2Bx)/!dtor
@@ -154,12 +156,10 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,suffix=su
 
 
   ;calculate angles b/t despun spinplane antennas and Bo.
+  ;NOTE: Don't do this calculation for esvy-despun. Takes too long
   n = n_elements(edata.x)
   ang_ey = fltarr(n)
   ang_ez = fltarr(n)
-
-
-  ;Don't do this calculation for esvy-despun. Takes too long
   if n_elements(edata.x) le 86400. then begin
     for i=0L,n-1 do ang_ey[i] = acos(total([0,1,0]*magmgse_smoothed.y[i,*])/(bmag_smoothed[i]))/!dtor
     for i=0L,n-1 do ang_ez[i] = acos(total([0,0,1]*magmgse_smoothed.y[i,*])/(bmag_smoothed[i]))/!dtor
@@ -175,8 +175,8 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,suffix=su
   store_data,'e_sa',data={x:edata.x,y:abs(edata.y[*,0])}
   options,'rat','constant',1
 
+
   ;Check for Spinfit saturation
-  ;; get_data,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit',data=tmpp
   get_data,evar,data=tmpp
   badsatx = where(abs(tmpp.y[*,0]) ge 195.)
   badsaty = where(abs(tmpp.y[*,1]) ge 195.)
@@ -189,8 +189,6 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,suffix=su
   ;....saturated data from Ex
   ;....Ex data when the E*B=0 calculation is unreliable
 
-  ;; if ~keyword_set(suffix) then get_data,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit',data=tmpp
-  ;; if keyword_set(suffix) then  get_data,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit_'+suffix,data=tmpp
   if ~keyword_set(suffix) then get_data,evar,data=tmpp
   if keyword_set(suffix) then  get_data,evar+'_'+suffix,data=tmpp
 
@@ -202,8 +200,6 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,suffix=su
     if badsatz[0] ne -1 then tmpp.y[badsatz,2] = !values.f_nan
   endif
 
-  ;; if ~keyword_set(suffix) then store_data,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit',data=tmpp
-  ;; if keyword_set(suffix) then  store_data,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit_'+suffix,data=tmpp
   if ~keyword_set(suffix) then store_data,evar,data=tmpp
   if keyword_set(suffix) then  store_data,evar+'_'+suffix,data=tmpp
 
@@ -235,9 +231,6 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,suffix=su
 
 
   ;Remove corotation field
-  ;; dif_data,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit','rbsp'+probe+'_E_coro_mgse',newname='rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed_spinfit'
-  ;; if keyword_set(suffix) then dif_data,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit_'+suffix,'rbsp'+probe+'_E_coro_mgse',newname='rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed_spinfit_'+suffix
-
   if ~keyword_set(nospinfit) then begin
     dif_data,evar,'rbsp'+probe+'_E_coro_mgse',newname='rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed_spinfit'
     if keyword_set(suffix) then dif_data,evar+'_'+suffix,'rbsp'+probe+'_E_coro_mgse',newname='rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed_spinfit_'+suffix
@@ -246,21 +239,20 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,suffix=su
     if keyword_set(suffix) then dif_data,evar+'_'+suffix,'rbsp'+probe+'_E_coro_mgse',newname='rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed_'+suffix
   endelse
 
-  ;Plot results
 
+  ;Plot results
   options,'rat','ytitle','|Espinaxis|/!C|Espinplane|'
   options,'e_sp','ytitle','|Espinplane|'
   options,'e_sa','ytitle','|Espinaxis|'
   options,'angles','ytitle','angle b/t Ey & Bo!CEz & Bo (red)'
-  ;	ylim,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit',-10,10
   ylim,evar,-10,10
   ylim,'rbsp'+probe+'_mag_mgse',-200,200
   ylim,['e_sa','e_sp','rat'],0,10
   ylim,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit',-20,20
   ylim,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed_spinfit',-20,20
 
-  ;	options,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit','labels',['xMGSE','yMGSE','zMGSE']
   options,evar,'labels',['xMGSE','yMGSE','zMGSE']
+
 
   ;Create Emag variable. The Efield magnitude shouldn't change as a function
   ;of the spinaxis angle to Bo if the calculated Ex component is accurate (assuming
