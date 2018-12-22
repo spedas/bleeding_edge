@@ -64,9 +64,9 @@
 ;Notes:
 ;  This routine is (should be) platform independent.
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2016-05-25 12:16:39 -0700 (Wed, 25 May 2016) $
-; $LastChangedRevision: 21195 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
+; $LastChangedRevision: 26397 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_load_xxx.pro $
 ;-
 
@@ -281,7 +281,7 @@ pro thm_load_xxx, sname = sname, datatype = datatype, trange = trange, $
         suffix = suffix, varnames = varnames, _extra = _extra
     endif else begin
       if keyword_set(verbose) then dprint,  transpose(['Loading...', files])
-      cdf2tplot, file = files, all = all, verbose = vb, $
+      spd_cdf2tplot, file = files, all = all, verbose = vb, $
         tplotnames = tplotnames, suffix = suffix, $
         midfix = midfix, midpos = 4, varformat = varformatj
     endelse

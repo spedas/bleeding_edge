@@ -1,46 +1,67 @@
-; Created by Jianbao Tao, SSL/UCB.
+;+
+; NAME: rbsp_efw_spinfit_crib.pro
+; SYNTAX:
+; PURPOSE: Crib sheet for crating EFW spinfit electric field in spinning
+;          spacecraft coord (DSC)
+; INPUT:
+; OUTPUT:
+; KEYWORDS:
+; HISTORY: Created by Jianbao Tao, SSL/UCB.
+; VERSION:
+;   $LastChangedBy: aaronbreneman $
+;   $LastChangedDate: 2018-12-21 07:19:38 -0800 (Fri, 21 Dec 2018) $
+;   $LastChangedRevision: 26381 $
+;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_spinfit_crib.pro $
+;-
 
-; Set up
+
+
+;Set up
 date = '2015-08-07'
 sc = 'a'
 rbx = 'rbsp' + sc + '_'
 
+
 timespan, date
 
-; Load spacecraft state information. This step is crucial.
+;Load spacecraft state information. This step is crucial.
 rbsp_load_state, probe = sc
 
-; Check if spin periods have gap.
+
+;Check if spin periods have gap.
 tlist = rbx + ['spinper']
 tplot, tlist
 
-; Load esvy in UVW, which will be fed into rbsp_spinfit.
+;Load esvy in UVW, which will be fed into rbsp_spinfit.
 rbsp_load_efw_waveform, probe = sc, datatype = 'esvy', coord = 'uvw'
-; renaming
+;renaming
 get_data, rbx + 'efw_esvy', data = d, dlim = dl, lim = lim
 store_data, rbx + 'esvy_uvw', data = d, dlim = dl, lim = lim
 
-; Load esvy in DSC, which will be compared with spin-fit results.
+
+;Load esvy in DSC, which will be compared with spin-fit results.
 rbsp_load_efw_waveform, probe = sc, datatype = 'esvy'
 ; renaming
 get_data, rbx + 'esvy_clean', data = d, dlim = dl, lim = lim
 store_data, rbx + 'esvy_dsc', data = d, dlim = dl, lim = lim
 
-; Check
+
+;Check
 tlist = rbx + ['esvy_dsc', 'esvy_uvw']
 tplot, tlist
 
+
 tvar = rbx + 'esvy_uvw'
-; E12
+;E12
 rbsp_spinfit, tvar, plane_dim = 0  ; takes about 30 seconds
 get_data, rbx + 'esvy_uvw_spinfit', data = d, dlim = dl, lim = lim
 store_data, rbx + 'esvy_uvw_spinfit_e12', data = d, dlim = dl, lim = lim
-; E34
+;E34
 rbsp_spinfit, tvar, plane_dim = 1  ; takes about 30 seconds
 get_data, rbx + 'esvy_uvw_spinfit', data = d, dlim = dl, lim = lim
 store_data, rbx + 'esvy_uvw_spinfit_e34', data = d, dlim = dl, lim = lim
 
-; Separate components
+;Separate components
 split_vec, rbx + 'esvy_uvw_spinfit_e12'
 options, rbx + 'esvy_uvw_spinfit_e12_x', colors = [2], labels = ['sfit e12']
 options, rbx + 'esvy_uvw_spinfit_e12_y', colors = [2], labels = ['sfit e12']
@@ -70,11 +91,11 @@ options, rbx + 'edsc_z', labflag = 1
 
 
 
-; Final results
+;Final results
 tplot, rbx + ['edsc_x', 'edsc_y', 'edsc_z']
 
 
-; Load and overplot eclipse times 
+;Load and overplot eclipse times
 rbsp_load_eclipse_predict,sc,date
 get_data,'rbsp'+sc+'_umbra',data=eu
 get_data,'rbsp'+sc+'_penumbra',data=ep
@@ -83,5 +104,3 @@ if is_struct(eu) then timebar,eu.x,color=50
 if is_struct(eu) then timebar,eu.x + eu.y,color=50
 if is_struct(ep) then timebar,ep.x,color=80
 if is_struct(ep) then timebar,ep.x + ep.y,color=80
-
-

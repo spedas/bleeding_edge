@@ -88,6 +88,8 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['deploy_v4_01_min'] =        deploy_v4_time + [-10d, 60d]
   fm_times['deploy_v4_15_sec'] =        deploy_v4_time + [-5d, 15d]
 
+  fm_times['deploy_test_rfs_flags'] = ['2018-09-03/00:57:00', '2018-09-03/01:06:00']
+
   fm_times['rfs_default_hold'] = ['2018-09-03/01:49:00', '2018-09-03/02:12:00']
 
   fm_times['rfs_electrostatic_wave'] = ['2018-09-03/04:20:00', '2018-09-03/04:40:00']

@@ -1,8 +1,22 @@
-; RBSP MagEIS example crib
+;+
+; NAME: rbsp_mageis_example_crib.pro
+; SYNTAX:
+; PURPOSE: Crib sheet showing how to load MagEIS data
+; INPUT:
+; OUTPUT:
+; KEYWORDS:
+; HISTORY: Created by Aaron Breneman
+; VERSION:
+;   $LastChangedBy: aaronbreneman $
+;   $LastChangedDate: 2018-12-21 10:22:06 -0800 (Fri, 21 Dec 2018) $
+;   $LastChangedRevision: 26385 $
+;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_mageis_example_crib.pro $
+;-
+
 
 probe='a'
-
 timespan,'2013-02-17',1
+
 
 rbsp_load_mageis_l2,probe=probe,/get_mag_ephem
 

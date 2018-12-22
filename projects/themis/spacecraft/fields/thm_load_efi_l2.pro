@@ -53,9 +53,9 @@
 ;    through to THM_CAL_EFI.PRO, W.M.Feuerstein, 4/7/2008 (M).
 ;  Fixed crash on passing an argument for RELPATHNAMES_ALL, WMF, 4/9/2008 (Tu).
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-11-16 15:45:58 -0800 (Wed, 16 Nov 2016) $
-; $LastChangedRevision: 22364 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
+; $LastChangedRevision: 26397 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_load_efi_l2.pro $
 ;-
 
@@ -165,7 +165,7 @@ pro thm_load_efi_l2, probe = probe, datatype = datatype, trange = trange, $
       dprint, 'Files: '+files+' not found'
       Return
     Endif
-    cdf2tplot, file = files, all = all, verbose = vb, varformat = varformat, tplotnames = tplotnames
+    spd_cdf2tplot, file = files, all = all, verbose = vb, varformat = varformat, tplotnames = tplotnames
 
     if ~keyword_set(no_time_clip) && keyword_set(trange) then begin
       for l = 0, n_elements(tplotnames)-1 do begin

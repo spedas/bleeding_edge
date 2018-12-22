@@ -27,9 +27,9 @@
 ; 1. Written by Davin Larson, March 2007
 ; 2. If calibrating use dprint,setdebug=5 to see detailed calibration information
 ;
-; $LastChangedBy: aaflores $
-; $LastChangedDate: 2015-04-27 11:26:29 -0700 (Mon, 27 Apr 2015) $
-; $LastChangedRevision: 17433 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
+; $LastChangedRevision: 26397 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/thm_load_hsk.pro $
 ;-
 
@@ -41,7 +41,7 @@ pro thm_load_hsk,probe=probe, datatype=datatype, trange=trange, $
                  type=type
 
 thm_init
-dprint,verbose=verbose,dlevel=4,'$Id: thm_load_hsk.pro 17433 2015-04-27 18:26:29Z aaflores $'
+dprint,verbose=verbose,dlevel=4,'$Id: thm_load_hsk.pro 26397 2018-12-21 19:50:27Z egrimes $'
 
 if(keyword_set(probe)) then $
   p_var = probe
@@ -91,7 +91,7 @@ for s=0,n_elements(p_var)-1 do begin
 
      suf='_raw'
      midfix='_hsk'
-     cdf2tplot,file=files,varformat=varformat,all=0,midfix=midfix,midpos=3,suffix=suf,verbose=vb, $
+     spd_cdf2tplot,file=files,varformat=varformat,all=0,midfix=midfix,midpos=3,suffix=suf,verbose=vb, $
               get_support_data=get_support_data,tplotnames=tns,/convert_int1_to_int2 ; load data into tplot variables
 
      if is_string(tns) then begin
@@ -107,7 +107,7 @@ for s=0,n_elements(p_var)-1 do begin
 
        dprint, dlevel = 5, verbose = verbose, 'Setting options...'
 
-       options, /def, tns, code_id = '$Id: thm_load_hsk.pro 17433 2015-04-27 18:26:29Z aaflores $'
+       options, /def, tns, code_id = '$Id: thm_load_hsk.pro 26397 2018-12-21 19:50:27Z egrimes $'
   
        c_var = [1, 2, 3, 4, 5, 6]
 

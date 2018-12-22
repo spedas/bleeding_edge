@@ -6,9 +6,9 @@
 ;
 ; Written by Davin Larson
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2018-12-20 10:28:02 -0800 (Thu, 20 Dec 2018) $
-; $LastChangedRevision: 26375 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-12-21 11:53:48 -0800 (Fri, 21 Dec 2018) $
+; $LastChangedRevision: 26398 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_info_to_tplot.pro $
 ;-
 pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
@@ -20,7 +20,7 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
         load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
                                       ;resolve labels implemented as keyword to preserve backwards compatibility
 
-dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 26375 2018-12-20 18:28:02Z jwl $'
+dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 26398 2018-12-21 19:53:48Z egrimes $'
 tplotnames=''
 vbs = keyword_set(verbose) ? verbose : 0
 
@@ -101,12 +101,11 @@ for i=0,nv-1 do begin
       continue
    endif
 
-   j = (where(strcmp(cdfi.vars.name , depend_time,/fold_case),nj))[0]
+   j = (where(strcmp(cdfi.vars.name, depend_0, /fold_case),nj))[0]
    if nj gt 0 then tvar = cdfi.vars[j]  else  begin
-     j = (where(strcmp(cdfi.vars.name ,depend_0,/fold_case),nj))[0]
+     j = (where(strcmp(cdfi.vars.name, depend_time, /fold_case),nj))[0]
      if nj gt 0 then tvar = cdfi.vars[j]
    endelse
-
    if nj eq 0 then begin
       dprint,verbose=verbose,dlevel=6,'Skipping variable: "'+v.name+'" ('+var_type+')'
       continue

@@ -26,9 +26,9 @@
 ;   thm_load_mom,/get_suppport_data,probe=['a', 'b']
 ;Notes:
 ;  Temporary version, to avoid conflicts, but can read Level 2 data, jmm
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-10-07 12:12:46 -0700 (Fri, 07 Oct 2016) $
-; $LastChangedRevision: 22069 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
+; $LastChangedRevision: 26397 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/moments/thm_load_mom_l2.pro $
 ;-
 pro thm_load_mom_l2, probe = probe, datatype = datatype, trange = trange, $
@@ -107,7 +107,7 @@ for s = 0, n_elements(probes)-1 do begin
   if keyword_set(downloadonly) then continue
 
   if(keyword_set(varformat)) then vf = varformat else vf = '*'+datatype+'*'
-  cdf2tplot, file = files, varformat = vf, verbose = verbose, varname = loaded_vars, suffix=suffix
+  spd_cdf2tplot, file = files, varformat = vf, verbose = verbose, varname = loaded_vars, suffix=suffix
 ;loaded_vars refers to CDF vars, not necessarily tplot vars
   new_v = tnames(loaded_vars)
   If(new_v[0] Ne '') Then Begin

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Dec 20 18:16:41 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Dec 21 18:16:36 2018.<P>
  
 <HR>
  
@@ -2149,27 +2149,28 @@ Notes:
 <A HREF="#RBSP_READ_ECT_MAG_EPHEM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-*****************************************************************************************
-
   PROCEDURE :  rbsp_poynting_flux
 
-  PURPOSE  : calculates Poynting flux. Separates into field-aligned and perp components
+  PURPOSE  : calculates Poynting flux (ergs/s/cm^2). Separates into field-aligned and perp components
 			  Returns results as tplot variables. Includes
 			  values with and w/o spinaxis component
 
 
   REQUIRES:  tplot library
 
-  KEYWORDS:              Bw -&gt; tplot name of the [n,3] magnetic field waveform
-			  Ew -&gt; tplot name of the [n,3] electric field waveform
-			  Tshort, Tlong -&gt; short and long period of waveform to use. 
-			  Bo -&gt; (optional keyword) array of DC magnetic field directions.
+  KEYWORDS:              Bw -&gt; tplot name of the [n,3] magnetic field
+                               waveform (nT) in MGSE
+			  Ew -&gt; tplot name of the [n,3] electric field
+			        waveform (mV/m) in MGSE
+			  Tshort, Tlong -&gt; short and long period of waveform to use.
+			  Bo -&gt; (optional keyword) array of DC
+			  magnetic field directions in MGSE.
 					Use, for example, if Bw is
 					from AC-coupled data.
                                If not included then Bw is downsampled
                                and used as background field
              method2 -&gt; The waveform data are first downsampled to 1/Tshort to avoid the wasted
-			 computation of having to run program with data at unnecessarily high 
+			 computation of having to run program with data at unnecessarily high
 			 sample rate. The waveform is then run through
 			 bandpass_filter to the frequency range flow=1/Tlong...fhigh=1/Tshort
              method1 (default) -&gt; uses smoothing instead of a
@@ -2200,19 +2201,18 @@ Notes:
  			 		pflux_para   -&gt; Poynting flux along Bo
 
 			 	These partial Poynting flux calculations contain only spin plane Ew.
-			 		pflux_nospinaxis_perp 
+			 		pflux_nospinaxis_perp
 			 		pflux_nospinaxis_para
 
                                All of the above variables projected
                                to the ionosphere
-               
+
 
    CREATED:  11/28/2012
    CREATED BY:  Aaron W. Breneman
     LAST MODIFIED:  MM/DD/YYYY   v1.0.0
-    MODIFIED BY: 
+    MODIFIED BY:
 
-*****************************************************************************************
 </PRE><P>
 <STRONG>(See <A href="efw/rbsp_poynting_flux.pro">general/missions/rbsp/efw/rbsp_poynting_flux.pro</A>)</STRONG><P>
 <HR>
@@ -2267,13 +2267,13 @@ Notes:
             |    /
             |   /
             |  /
-            | / 
+            | /
             |/)angle________ DSC X
 
    NOTES: 1. Similar to thm_spinfit.pro, this routine is a wrapper of
              spinfit.pro for RBSP. Unlike thm_spinfit, this routine only works
              on one tplot variable at a time.
-          2. Normally, this routine saves four tplot variables, such as 
+          2. Normally, this routine saves four tplot variables, such as
                   'rbspa_efw_esvy_spinfit_a'
                   'rbspa_efw_esvy_spinfit_b'
                   'rbspa_efw_esvy_spinfit_c'
@@ -2307,7 +2307,7 @@ Notes:
    tphase: IN, OPTIONAL
          Spin-phase tplot name.
 
-     See spinfit.pro and thm_spinfit.pro for usage of other keywords. 
+     See spinfit.pro and thm_spinfit.pro for usage of other keywords.
      Exception:
      AXIS_DIM defaults to 2 instead of 0 in this routine.
 
@@ -2323,8 +2323,8 @@ Notes:
 
  VERSION:
  $LastChangedBy: aaronbreneman $
- $LastChangedDate: 2017-06-22 15:01:48 -0700 (Thu, 22 Jun 2017) $
- $LastChangedRevision: 23496 $
+ $LastChangedDate: 2018-12-21 11:30:03 -0800 (Fri, 21 Dec 2018) $
+ $LastChangedRevision: 26393 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_spinfit.pro $
 
 </PRE><P>

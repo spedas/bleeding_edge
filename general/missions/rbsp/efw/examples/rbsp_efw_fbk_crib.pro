@@ -30,68 +30,60 @@
 ;		email: awbrenem@gmail.com
 
 
-;pro rbsp_efw_fbk_crib,no_spice_load=no_spice_load,noplot=noplot
 
 
-
-; initialize RBSP environment
+	;initialize RBSP environment
 	rbsp_efw_init
 	!rbsp_efw.user_agent = ''
 
 
-; set desired probe
+	;set desired probe
 	probe = 'a'
 
 
-; set time of interest to a single day
+	;set time of interest to a single day
 	date = '2012-10-13'	; UTC.
 	duration = 1 ; days.
 	timespan, date, duration
 
 
 
-;load data
+	;load data
 	rbsp_load_efw_fbk,probe=probe
 
 
-;Get burst availability
+	;Get burst availability
 	rbsp_load_efw_burst_times,probe=probe
-	options,'rbsp'+probe+'_efw_vb1_available','colors',0	
-	options,'rbsp'+probe+'_efw_vb2_available','colors',0	
+	options,'rbsp'+probe+'_efw_vb1_available','colors',0
+	options,'rbsp'+probe+'_efw_vb2_available','colors',0
 
 
 
-;remove excess tplot variables
+	;remove excess tplot variables
 	store_data,['rbsp'+probe+'_efw_fbk_13_ccsds_data_BEB_config',$
 				'rbsp'+probe+'_efw_fbk_13_ccsds_data_DFB_config'],/delete
 
 
 
 
-;Split up the FBK data into separate tplot variables for each channel
+	;Split up the FBK data into separate tplot variables for each channel
 	rbsp_split_fbk,probe,/combine
 
 
 
-;Set plot options
+	;Set plot options
 	tplot_options,'xmargin',[20.,15.]
 	tplot_options,'ymargin',[3,6]
 	tplot_options,'xticklen',0.08
 	tplot_options,'yticklen',0.02
 	tplot_options,'xthick',2
 	tplot_options,'ythick',2
-	tplot_options,'labflag',-1	
+	tplot_options,'labflag',-1
 
 
 
 
-
-
-
-
-;Plot filterbank spectral quantities
-
-
+	;Plot filterbank spectral quantities
 	tplot_options,'title','RBSP'+probe +' filterbank 1 spec- ' + date
 	tplot,['rbsp'+probe +'_efw_fbk_13_fb1_pk',$
 		   'rbsp'+probe +'_efw_fbk_13_fb1_av',$
@@ -108,8 +100,7 @@
 
 
 
-;Plot combined peak and average quantities separated by bin
-
+	;Plot combined peak and average quantities separated by bin
 	tplot_options,'title','RBSP'+probe +' filterbank 1 combined peak-avg- ' + date
 	tplot,['rbsp'+probe +'_fbk1_13comb_12',$
 		   'rbsp'+probe +'_fbk1_13comb_11',$
@@ -144,14 +135,14 @@
 
 
 
+	;-------------------------------------
+	;Plot to postscript
 
-; dump summary plots to PostScript using popen, pclose
-
-	; PostScript needs a different !p.charsize setting
+	;PostScript needs a different !p.charsize setting
 	old_pcharsize=!p.charsize
 	!p.charsize=0.7
-	
-	; RBSPA FBK summary
+
+	;RBSPA FBK summary
 	popen,'RBSPA_FBK_summary_'+strcompress(date,/remove_all),/port
 		tplot_options,'title','RBSP'+probe +' filterbank 1 spec- ' + date
 		tplot,['rbsp'+probe +'_efw_fbk_13_fb1_pk',$
@@ -170,7 +161,3 @@
 
 
 end
-
-
-
-

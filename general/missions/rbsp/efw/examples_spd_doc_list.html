@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Dec 20 18:16:41 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Dec 21 18:16:36 2018.<P>
  
 <HR>
  
@@ -19,6 +19,9 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>general/missions/rbsp/efw/examples</H1>
+<LI><A HREF="#B1_STATUS_CRIB">B1_STATUS_CRIB</A>
+<LI><A HREF="#MINI_GEM_CRIB">MINI_GEM_CRIB</A>
+<LI><A HREF="#RBSP_BOOM_DIRECTIONS_CRIB">RBSP_BOOM_DIRECTIONS_CRIB</A>
 <LI><A HREF="#RBSP_EFW_BURST_FA_ROTATE_CRIB">RBSP_EFW_BURST_FA_ROTATE_CRIB</A>
 <LI><A HREF="#RBSP_EFW_CONVECTION_EFIELD_CRIB">RBSP_EFW_CONVECTION_EFIELD_CRIB
 </A>
@@ -26,20 +29,89 @@ This page was created by the IDL library routine
 <LI><A HREF="#RBSP_EFW_EDOTB_TO_ZERO_CRIB">RBSP_EFW_EDOTB_TO_ZERO_CRIB</A>
 <LI><A HREF="#RBSP_EFW_POSITION_VELOCITY_CRIB">RBSP_EFW_POSITION_VELOCITY_CRIB
 </A>
+<LI><A HREF="#RBSP_EFW_SPEC_CRIB">RBSP_EFW_SPEC_CRIB</A>
+<LI><A HREF="#RBSP_EFW_SPINFIT_CRIB">RBSP_EFW_SPINFIT_CRIB</A>
 <LI><A HREF="#RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB">
 RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB</A>
+<LI><A HREF="#RBSP_EFW_SUMMARY_CRIB">RBSP_EFW_SUMMARY_CRIB</A>
 <LI><A HREF="#RBSP_EFW_VXB_SUBTRACT_CRIB">RBSP_EFW_VXB_SUBTRACT_CRIB</A>
 <br>Creates vxB subtracted tplot variables for the 32 S/s EFW efield data
+<LI><A HREF="#RBSP_EFW_WAVEFORM_CRIB">RBSP_EFW_WAVEFORM_CRIB</A>
+<LI><A HREF="#RBSP_EFW_XSPEC_CRIB">RBSP_EFW_XSPEC_CRIB</A>
 <LI><A HREF="#RBSP_LOAD_COLLECTION">RBSP_LOAD_COLLECTION</A>
 <LI><A HREF="#RBSP_LOAD_CONTACT">RBSP_LOAD_CONTACT</A>
+<LI><A HREF="#RBSP_MAGEIS_EXAMPLE_CRIB">RBSP_MAGEIS_EXAMPLE_CRIB</A>
 <LI><A HREF="#TWAVPOL_MODIFIED">TWAVPOL_MODIFIED</A>
 <br>
 </UL><P>
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="B1_STATUS_CRIB">
+<H2>B1_STATUS_CRIB</H2></A>
+<A HREF="#MINI_GEM_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: b1_status_crib.pro
+ SYNTAX:
+ PURPOSE: Create tplot variables pertaining to EFW burst existence
+ INPUT:
+ OUTPUT:
+ KEYWORDS:
+	PROCEDURE: .run b1_status_crib
+ HISTORY: Created by Kris Kersten, kris.kersten@gmail.com
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2018-12-21 09:58:30 -0800 (Fri, 21 Dec 2018) $
+   $LastChangedRevision: 26382 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/b1_status_crib.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/b1_status_crib.pro">general/missions/rbsp/efw/examples/b1_status_crib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MINI_GEM_CRIB">
+<H2>MINI_GEM_CRIB</H2></A>
+<A HREF="#B1_STATUS_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_BOOM_DIRECTIONS_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: mini_gem_crib.pro
+ SYNTAX:
+ PURPOSE: EFW crib sheet for the mini-GEM meeting at Fall AGU 2012.
+					 Loads a bunch of useful data products
+ KEYWORDS:
+ HISTORY: Aaron Breneman, UMN, Dec 2012 (awbrenem@gmail.com)
+
+</PRE><P>
+<STRONG>(See <A href="examples/mini_gem_crib.pro">general/missions/rbsp/efw/examples/mini_gem_crib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="RBSP_BOOM_DIRECTIONS_CRIB">
+<H2>RBSP_BOOM_DIRECTIONS_CRIB</H2></A>
+<A HREF="#MINI_GEM_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_BURST_FA_ROTATE_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: rbsp_boom_directions_crib
+ SYNTAX:
+ PURPOSE: find the pointing direction of the EFW booms in GSE coord
+ INPUT: times -&gt; array of times to find boom directions for
+		 probe -&gt; 'a' or 'b'
+ OUTPUT: tplot variables of each antenna direction in GSE ['vecu_gse','vecv_gse','vecw_gse']
+ KEYWORDS:
+ HISTORY: Written by Aaron W Breneman 05/12/2014
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2018-12-21 10:38:56 -0800 (Fri, 21 Dec 2018) $
+   $LastChangedRevision: 26387 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_boom_directions_crib.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/rbsp_boom_directions_crib.pro">general/missions/rbsp/efw/examples/rbsp_boom_directions_crib.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RBSP_EFW_BURST_FA_ROTATE_CRIB">
 <H2>RBSP_EFW_BURST_FA_ROTATE_CRIB</H2></A>
+<A HREF="#RBSP_BOOM_DIRECTIONS_CRIB">[Previous Routine]</A>
 <A HREF="#RBSP_EFW_CONVECTION_EFIELD_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -71,8 +143,12 @@ RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB</A>
  INPUT:
  OUTPUT:
  KEYWORDS:
- HISTORY:
- VERSION: Written by Aaron W Breneman, July 2016. Based on Scott Thaller's crib
+ HISTORY: Written by Aaron W Breneman, July 2016. Based on Scott Thaller's crib
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2018-12-21 07:13:50 -0800 (Fri, 21 Dec 2018) $
+   $LastChangedRevision: 26380 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_convection_efield_crib.pro $
 </PRE><P>
 <STRONG>(See <A href="examples/rbsp_efw_convection_efield_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_convection_efield_crib.pro</A>)</STRONG><P>
 <HR>
@@ -191,7 +267,7 @@ $URL: $
 <A NAME="RBSP_EFW_POSITION_VELOCITY_CRIB">
 <H2>RBSP_EFW_POSITION_VELOCITY_CRIB</H2></A>
 <A HREF="#RBSP_EFW_EDOTB_TO_ZERO_CRIB">[Previous Routine]</A>
-<A HREF="#RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB">[Next Routine]</A>
+<A HREF="#RBSP_EFW_SPEC_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME: rbsp_efw_position_velocity_crib.pro
@@ -218,10 +294,65 @@ $URL: $
 <STRONG>(See <A href="examples/rbsp_efw_position_velocity_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_position_velocity_crib.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RBSP_EFW_SPEC_CRIB">
+<H2>RBSP_EFW_SPEC_CRIB</H2></A>
+<A HREF="#RBSP_EFW_POSITION_VELOCITY_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_SPINFIT_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: rbsp_efw_spec_crib.pro
+ SYNTAX:
+ PURPOSE: Create tplot variables pertaining to RBSP EFW spectral products
+ INPUT:
+ OUTPUT:; SPEC returns 7 channels, with nominal data selection:
+		SPEC0: E12AC
+		SPEC1: E56AC
+		SPEC2: SCMpar
+		SPEC3: SCMperp
+		SPEC4: SCMW
+		SPEC5: V1AC
+		SPEC6: V2AC
+
+ KEYWORDS:
+ HISTORY: ; Kris Kersten, UMN, June 2012 (kris.kersten@gmail.com)
+ 					 Modified by Aaron Breneman, UMN, Dec 2012 (awbrenem@gmail.com)
+
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2018-12-21 10:07:23 -0800 (Fri, 21 Dec 2018) $
+   $LastChangedRevision: 26384 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_spec_crib.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/rbsp_efw_spec_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_spec_crib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="RBSP_EFW_SPINFIT_CRIB">
+<H2>RBSP_EFW_SPINFIT_CRIB</H2></A>
+<A HREF="#RBSP_EFW_SPEC_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: rbsp_efw_spinfit_crib.pro
+ SYNTAX:
+ PURPOSE: Crib sheet for crating EFW spinfit electric field in spinning
+          spacecraft coord (DSC)
+ INPUT:
+ OUTPUT:
+ KEYWORDS:
+ HISTORY: Created by Jianbao Tao, SSL/UCB.
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2018-12-21 07:19:38 -0800 (Fri, 21 Dec 2018) $
+   $LastChangedRevision: 26381 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_spinfit_crib.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/rbsp_efw_spinfit_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_spinfit_crib.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB">
 <H2>RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB</H2></A>
-<A HREF="#RBSP_EFW_POSITION_VELOCITY_CRIB">[Previous Routine]</A>
-<A HREF="#RBSP_EFW_VXB_SUBTRACT_CRIB">[Next Routine]</A>
+<A HREF="#RBSP_EFW_SPINFIT_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_SUMMARY_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME: rbsp_efw_spinfit_vxb_subtract_crib.pro
@@ -253,10 +384,33 @@ $URL: $
 <STRONG>(See <A href="examples/rbsp_efw_spinfit_vxb_subtract_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_spinfit_vxb_subtract_crib.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RBSP_EFW_SUMMARY_CRIB">
+<H2>RBSP_EFW_SUMMARY_CRIB</H2></A>
+<A HREF="#RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_VXB_SUBTRACT_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: rbsp_efw_summary_crib.pro
+ SYNTAX:
+ PURPOSE: Create tplot variables pertaining to EFW summary data
+						(waveform, spec, xspec, filterbank)
+ INPUT:
+ OUTPUT:
+ KEYWORDS:
+ HISTORY: Kris Kersten, UMN, June 2012 (email: kris.kersten@gmail.com)
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2018-12-21 10:03:48 -0800 (Fri, 21 Dec 2018) $
+   $LastChangedRevision: 26383 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_summary_crib.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/rbsp_efw_summary_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_summary_crib.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RBSP_EFW_VXB_SUBTRACT_CRIB">
 <H2>RBSP_EFW_VXB_SUBTRACT_CRIB</H2></A>
-<A HREF="#RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB">[Previous Routine]</A>
-<A HREF="#RBSP_LOAD_COLLECTION">[Next Routine]</A>
+<A HREF="#RBSP_EFW_SUMMARY_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_WAVEFORM_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME: rbsp_efw_vxb_subtract_crib.pro
@@ -301,9 +455,55 @@ $URL: $
 <STRONG>(See <A href="examples/rbsp_efw_vxb_subtract_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_vxb_subtract_crib.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RBSP_EFW_WAVEFORM_CRIB">
+<H2>RBSP_EFW_WAVEFORM_CRIB</H2></A>
+<A HREF="#RBSP_EFW_VXB_SUBTRACT_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_XSPEC_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: rbsp_efw_waveform_crib
+ SYNTAX:
+ PURPOSE: Loads and plots RBSP (Van Allen probes) waveform data
+ KEYWORDS:
+ HISTORY: Kris Kersten, UMN, June 2012 (kris.kersten@gmail.com)
+ 	Modified by Aaron Breneman, UMN, Dec 2012 (awbrenem@gmail.com)
+
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2018-12-21 10:43:50 -0800 (Fri, 21 Dec 2018) $
+   $LastChangedRevision: 26388 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_waveform_crib.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/rbsp_efw_waveform_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_waveform_crib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="RBSP_EFW_XSPEC_CRIB">
+<H2>RBSP_EFW_XSPEC_CRIB</H2></A>
+<A HREF="#RBSP_EFW_WAVEFORM_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_LOAD_COLLECTION">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: rbsp_efw_xspec_crib.pro
+ SYNTAX:
+ PURPOSE: Create tplot variables pertaining to the EFW cross-spectral product
+ INPUT:
+ OUTPUT:
+ KEYWORDS:
+	PROCEDURE: .run b1_status_crib
+ HISTORY: Kris Kersten, UMN, June 2012 (kris.kersten@gmail.com)
+ 				 Modified by Aaron Breneman, UMN, Dec 2012 (awbrenem@gmail.com)
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2018-12-21 10:35:35 -0800 (Fri, 21 Dec 2018) $
+   $LastChangedRevision: 26386 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_xspec_crib.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/rbsp_efw_xspec_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_xspec_crib.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RBSP_LOAD_COLLECTION">
 <H2>RBSP_LOAD_COLLECTION</H2></A>
-<A HREF="#RBSP_EFW_VXB_SUBTRACT_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_XSPEC_CRIB">[Previous Routine]</A>
 <A HREF="#RBSP_LOAD_CONTACT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -328,7 +528,7 @@ $URL: $
 <A NAME="RBSP_LOAD_CONTACT">
 <H2>RBSP_LOAD_CONTACT</H2></A>
 <A HREF="#RBSP_LOAD_COLLECTION">[Previous Routine]</A>
-<A HREF="#TWAVPOL_MODIFIED">[Next Routine]</A>
+<A HREF="#RBSP_MAGEIS_EXAMPLE_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Type: procedure.
@@ -345,9 +545,31 @@ $URL: $
 <STRONG>(See <A href="examples/rbsp_load_contact.pro">general/missions/rbsp/efw/examples/rbsp_load_contact.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RBSP_MAGEIS_EXAMPLE_CRIB">
+<H2>RBSP_MAGEIS_EXAMPLE_CRIB</H2></A>
+<A HREF="#RBSP_LOAD_CONTACT">[Previous Routine]</A>
+<A HREF="#TWAVPOL_MODIFIED">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: rbsp_mageis_example_crib.pro
+ SYNTAX:
+ PURPOSE: Crib sheet showing how to load MagEIS data
+ INPUT:
+ OUTPUT:
+ KEYWORDS:
+ HISTORY: Created by Aaron Breneman
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2018-12-21 10:22:06 -0800 (Fri, 21 Dec 2018) $
+   $LastChangedRevision: 26385 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_mageis_example_crib.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/rbsp_mageis_example_crib.pro">general/missions/rbsp/efw/examples/rbsp_mageis_example_crib.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TWAVPOL_MODIFIED">
 <H2>TWAVPOL_MODIFIED</H2></A>
-<A HREF="#RBSP_LOAD_CONTACT">[Previous Routine]</A>
+<A HREF="#RBSP_MAGEIS_EXAMPLE_CRIB">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 

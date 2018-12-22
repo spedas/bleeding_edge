@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Dec 20 18:16:41 2018.<P>
+<STRONG>Last modified: </STRONG>Fri Dec 21 18:16:36 2018.<P>
  
 <HR>
  
@@ -21,6 +21,9 @@ This page was created by the IDL library routine
 <H1>general/missions/rbsp/efw/calibration_files</H1>
 <LI><A HREF="#RBSP_EFW_DENSITY_FIT_FROM_UH_LINE">
 RBSP_EFW_DENSITY_FIT_FROM_UH_LINE</A>
+<LI><A HREF="#RBSP_EFW_EMFISIS_19DB_GAIN_LIST">RBSP_EFW_EMFISIS_19DB_GAIN_LIST
+</A>
+<LI><A HREF="#RBSP_EFW_EMFISIS_SCM_GAIN_LIST">RBSP_EFW_EMFISIS_SCM_GAIN_LIST</A>
 <LI><A HREF="#RBSP_GET_DENSITY_CALIBRATION">RBSP_GET_DENSITY_CALIBRATION</A>
 <br>
 </UL><P>
@@ -29,7 +32,7 @@ RBSP_EFW_DENSITY_FIT_FROM_UH_LINE</A>
 <H1>Routine Descriptions</H1>
 <A NAME="RBSP_EFW_DENSITY_FIT_FROM_UH_LINE">
 <H2>RBSP_EFW_DENSITY_FIT_FROM_UH_LINE</H2></A>
-<A HREF="#RBSP_GET_DENSITY_CALIBRATION">[Next Routine]</A>
+<A HREF="#RBSP_EFW_EMFISIS_19DB_GAIN_LIST">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: rbsp_efw_density_fit_from_uh_line
@@ -58,9 +61,57 @@ RBSP_EFW_DENSITY_FIT_FROM_UH_LINE</A>
 <STRONG>(See <A href="calibration_files/rbsp_efw_density_fit_from_uh_line.pro">general/missions/rbsp/efw/calibration_files/rbsp_efw_density_fit_from_uh_line.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RBSP_EFW_EMFISIS_19DB_GAIN_LIST">
+<H2>RBSP_EFW_EMFISIS_19DB_GAIN_LIST</H2></A>
+<A HREF="#RBSP_EFW_DENSITY_FIT_FROM_UH_LINE">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_EMFISIS_SCM_GAIN_LIST">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: rbsp_efw_emfisis_19dB_gain_list
+ SYNTAX:
+ PURPOSE: Returns a list of times when EMFISIS turned on/off the 19dB
+          attenuator on the SCM burst waveform signal.
+
+ KEYWORDS:
+ NOTES: Notes to Aaron Breneman: See D. Malaspina email on Feb 2, 2018.
+        Initial list of on/off times from Hospodarsky 2018-02-28 email
+
+ HISTORY: Written by Aaron W Breneman
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2018-12-21 11:35:33 -0800 (Fri, 21 Dec 2018) $
+   $LastChangedRevision: 26395 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/calibration_files/rbsp_efw_emfisis_19dB_gain_list.pro $
+</PRE><P>
+<STRONG>(See <A href="calibration_files/rbsp_efw_emfisis_19dB_gain_list.pro">general/missions/rbsp/efw/calibration_files/rbsp_efw_emfisis_19dB_gain_list.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="RBSP_EFW_EMFISIS_SCM_GAIN_LIST">
+<H2>RBSP_EFW_EMFISIS_SCM_GAIN_LIST</H2></A>
+<A HREF="#RBSP_EFW_EMFISIS_19DB_GAIN_LIST">[Previous Routine]</A>
+<A HREF="#RBSP_GET_DENSITY_CALIBRATION">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: rbsp_efw_emfisis_scm_gain_list.pro
+ SYNTAX:
+ PURPOSE: Returns a list of times when EMFISIS turned on/off the 19dB attenuator
+          on the SCM burst waveform signal.
+ NOTES: Note for Aaron Breneman: See Malaspina email on Feb 2, 2018.
+        Full list of on/off times from Hospdarsky/Bounds 2018-02-28 email
+ KEYWORDS:
+ HISTORY: Aaron Breneman, 2018
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2018-12-21 11:38:35 -0800 (Fri, 21 Dec 2018) $
+   $LastChangedRevision: 26396 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/calibration_files/rbsp_efw_emfisis_scm_gain_list.pro $
+</PRE><P>
+<STRONG>(See <A href="calibration_files/rbsp_efw_emfisis_scm_gain_list.pro">general/missions/rbsp/efw/calibration_files/rbsp_efw_emfisis_scm_gain_list.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RBSP_GET_DENSITY_CALIBRATION">
 <H2>RBSP_GET_DENSITY_CALIBRATION</H2></A>
-<A HREF="#RBSP_EFW_DENSITY_FIT_FROM_UH_LINE">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_EMFISIS_SCM_GAIN_LIST">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: rbsp_get_density_calibration

@@ -33,9 +33,9 @@
 ;   thm_load_state
 ;Notes:
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2015-01-05 17:01:57 -0800 (Mon, 05 Jan 2015) $
-; $LastChangedRevision: 16596 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
+; $LastChangedRevision: 26397 $
 ; $URL $
 ;-
 pro thm_load_state3,probes=probes, datatype=datatype, trange=trange, $
@@ -50,7 +50,7 @@ pro thm_load_state3,probes=probes, datatype=datatype, trange=trange, $
                    progobj=progobj
 
 thm_init
-dprint,verbose=verbose,dlevel=4,'$Id: thm_load_state3.pro 16596 2015-01-06 01:01:57Z pcruce $'
+dprint,verbose=verbose,dlevel=4,'$Id: thm_load_state3.pro 26397 2018-12-21 19:50:27Z egrimes $'
 
 if not keyword_set(version) then version= ['v02', 'v01', 'v00']
 
@@ -98,7 +98,7 @@ for s=0,nprobes-1 do begin
      if keyword_set(downloadonly) then continue
 
      midfix='_state'
-     cdf2tplot,file=files,varformat=varformat,all=0,midfix=midfix,midpos=3,verbose=vb,suffix=suffix, $
+     spd_cdf2tplot,file=files,varformat=varformat,all=0,midfix=midfix,midpos=3,verbose=vb,suffix=suffix, $
               get_support_data=get_support_data,tplotnames=tns,/convert_int1_to_int2 ; load data into tplot variables
 
      pn = byte(probe) - byte('a')
@@ -114,7 +114,7 @@ for s=0,nprobes-1 do begin
      endif
      thm_setprobe_colors, tns
 
-     options,/default,tns,code_id='$Id: thm_load_state3.pro 16596 2015-01-06 01:01:57Z pcruce $'
+     options,/default,tns,code_id='$Id: thm_load_state3.pro 26397 2018-12-21 19:50:27Z egrimes $'
 ;     options,/default,tns,colors = probe_colors[pn]
 
      dprint,dwait=5.,'Flushing output'

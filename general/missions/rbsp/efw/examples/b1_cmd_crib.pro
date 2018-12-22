@@ -1,3 +1,6 @@
+
+;*****OBSOLETE****
+;...CODE WRITTEN FOR EFW TOHBANS. NEW/BETTER ROUTINES NOW AVAILABLE.
 ; efw_b1_cmd crib.pro
 ;
 ; NOTES:
@@ -8,8 +11,8 @@
 ;
 ;
 ;$LastChangedBy: aaronbreneman $
-;$LastChangedDate: 2013-08-05 12:15:35 -0700 (Mon, 05 Aug 2013) $
-;$LastChangedRevision: 12792 $
+;$LastChangedDate: 2018-12-21 10:54:12 -0800 (Fri, 21 Dec 2018) $
+;$LastChangedRevision: 26391 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/b1_cmd_crib.pro $
 
 
@@ -35,7 +38,7 @@ end
 
 
 
-;RBSP-B 7/31/2013 12:50:00-12:52:00 UTC (2 minutes)  
+;RBSP-B 7/31/2013 12:50:00-12:52:00 UTC (2 minutes)
 ;Holzworth lightning request
 timespan,'2013-07-31',3
 probe='a b'
@@ -117,7 +120,7 @@ end
 
 
 
-;RBSP-A 7/29/2013 17:46:00-17:48:00 UTC (2 minutes) 
+;RBSP-A 7/29/2013 17:46:00-17:48:00 UTC (2 minutes)
 ;Holzworth lightning request
 timespan,'2013-07-29',3
 probe='a b'
@@ -131,7 +134,7 @@ rbsp_efw_b1_cmd,probe=probe,trange=trange,cmd_string=cmd_string
 print,cmd_string
 end
 
-;RBSP-A 7/29/2013 17:52:00-17:53:00 UTC (2 minutes) 
+;RBSP-A 7/29/2013 17:52:00-17:53:00 UTC (2 minutes)
 ;Holzworth lightning request
 timespan,'2013-07-29',3
 probe='a b'
@@ -145,7 +148,7 @@ rbsp_efw_b1_cmd,probe=probe,trange=trange,cmd_string=cmd_string
 print,cmd_string
 end
 
-;RBSP-B 7/29/2013 15:53:00-15:56:00 UTC (2 minutes) 
+;RBSP-B 7/29/2013 15:53:00-15:56:00 UTC (2 minutes)
 ;Holzworth lightning request
 timespan,'2013-07-29',3
 probe='a b'
@@ -161,7 +164,7 @@ print,cmd_string
 end
 
 
-;RBSP-A 7/28/2013 14:37:00-14:39:00 UTC (2 minutes) 
+;RBSP-A 7/28/2013 14:37:00-14:39:00 UTC (2 minutes)
 ;Holzworth lightning request
 timespan,'2013-07-28',3
 probe='a b'
@@ -195,7 +198,7 @@ end
 
 
 
-;RBSP-B 7/28/2013 12:34:00-12:35:00 UTC (1 minute) and 
+;RBSP-B 7/28/2013 12:34:00-12:35:00 UTC (1 minute) and
 ;Holzworth lightning request
 timespan,'2013-07-28',3
 probe='a b'
@@ -285,7 +288,7 @@ end
 
 
 
-;RBSP-A 7/24/2013 11:38:00-11:39:00 (1 minute) 
+;RBSP-A 7/24/2013 11:38:00-11:39:00 (1 minute)
 ;Holzworth lightning request
 timespan,'2013-07-24',3
 probe='a b'
@@ -426,7 +429,7 @@ print,cmd_string
 ;util.QUEUE_B1PLAYBACK( 252707, 483)
 end
 
-;RBSP-B 7/27/2013 19:04:00-19:06:00 UTC (2 minutes) 
+;RBSP-B 7/27/2013 19:04:00-19:06:00 UTC (2 minutes)
 ;Holzworth lightning request
 timespan,'2013-07-27',3
 probe='a b'
@@ -1027,7 +1030,7 @@ end
 
 
 
-;RBSP-A 7/15/2013 12:10:00-12:11:00 UTC (1 minute) and 
+;RBSP-A 7/15/2013 12:10:00-12:11:00 UTC (1 minute) and
 ;12:15:00-12:17:00 UTC (2 minutes)
 
 ;Holzworth lightning times
@@ -1061,7 +1064,7 @@ end
 
 
 
-;RBSP-B 7/15/2013 18:00:00-18:02:00 UTC (2 minutes) and 
+;RBSP-B 7/15/2013 18:00:00-18:02:00 UTC (2 minutes) and
 ;18:07:00-18:08:00 UTC (1 minute)
 
 ;Holzworth lightning times
@@ -1179,7 +1182,7 @@ end
 
 
 
-;Plasmasphere spanning 
+;Plasmasphere spanning
 timespan,'2013-07-11',3
 probe='a b'
 rbsp_load_efw_b1,probe=probe
@@ -1195,7 +1198,7 @@ end
 
 
 
-;Plasmasphere spanning 
+;Plasmasphere spanning
 timespan,'2013-07-10',3
 probe='a b'
 rbsp_load_efw_b1,probe=probe
@@ -1226,7 +1229,7 @@ end
 
 
 
-;RBSP-A 7/12/2013 12:20:00-12:23:00 UTC  (3 minutes) 
+;RBSP-A 7/12/2013 12:20:00-12:23:00 UTC  (3 minutes)
 
 ;Holzworth lightning times
 timespan,'2013-07-12',3
@@ -1316,9 +1319,9 @@ end
 
 
 
-;RBSP-A  7/10/2013 15:41:00-15:42:00 and 
+;RBSP-A  7/10/2013 15:41:00-15:42:00 and
 ;				  15:45:00-15:47:00 (1 min and then 2 min, or you can just download from
- ;                15:41:00- 15:47:00 (6 minutes) 
+ ;                15:41:00- 15:47:00 (6 minutes)
 
 ;Holzworth lightning times (Group 1)
 timespan,'2013-07-10',3
@@ -1348,7 +1351,7 @@ print,cmd_string
 ;util.QUEUE_B1PLAYBACK( 187735, 478)
 end
 
-RBSP-B  7/10/2013 11:12:00-11:14:00 ( 2 minutes)  and 
+RBSP-B  7/10/2013 11:12:00-11:14:00 ( 2 minutes)  and
 			     11:15:00 to 11:16:00 (1 minute), or, again, you can
                  just download 11:12:00-11:16:00 (4 minutes
 
@@ -1715,7 +1718,7 @@ end
 
 
 
-; Holzworth request from 12:56 - 12:59. 
+; Holzworth request from 12:56 - 12:59.
 timespan,'2013-07-03',3
 probe='a b'
 rbsp_load_efw_b1,probe=probe

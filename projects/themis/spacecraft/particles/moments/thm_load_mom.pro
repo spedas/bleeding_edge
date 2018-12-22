@@ -64,9 +64,9 @@
 ;  potential, and efficiency.
 ;
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-04-25 11:10:45 -0700 (Mon, 25 Apr 2016) $
-; $LastChangedRevision: 20910 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
+; $LastChangedRevision: 26397 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/moments/thm_load_mom.pro $
 ;-
 
@@ -808,7 +808,7 @@ for s=0,n_elements(probes)-1 do begin
      endif else begin
         message," Don't do this!"
 
-;     cdf2tplot,file=files,all=all,suffix=suf,verbose=verbose ,get_support_data=1 ;get_support_data    ; load data into tplot variables
+;     spd_cdf2tplot,file=files,all=all,suffix=suf,verbose=verbose ,get_support_data=1 ;get_support_data    ; load data into tplot variables
 ;
 ;     get_data,thx+'_mom'+suf,ptr=p
 ;     get_data,thx+'_mom_pot'+suf,ptr=p_pot

@@ -110,8 +110,8 @@
 ;                        2 = SWEA native format (2-byte words)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-09-09 18:00:36 -0700 (Sun, 09 Sep 2018) $
-; $LastChangedRevision: 25759 $
+; $LastChangedDate: 2018-12-21 13:19:25 -0800 (Fri, 21 Dec 2018) $
+; $LastChangedRevision: 26402 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sweep.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-01-03
@@ -134,9 +134,9 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
   if not keyword_set(format) then format = 0
   if not keyword_set(swebuf) then swebuf = 0
   case format of
-      0  : print, "Using old PFDPU format."
-      1  : print, "Using new PFDPU format."
-      2  : print, "Using SWEA format."
+      0  : ; print, "Using old PFDPU format."
+      1  : ; print, "Using new PFDPU format."
+      2  : ; print, "Using SWEA format."
     else : begin
              print, "Unrecognized format: ", format
              return

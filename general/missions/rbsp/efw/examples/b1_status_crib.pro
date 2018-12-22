@@ -1,15 +1,19 @@
-; b1_status_crib.pro
-;
-; NOTES:
-;   - run with IDL> .run b1_status_crib
-;
-; Created by Kris Kersten, kris.kersten@gmail.com
-;
-;
-;$LastChangedBy: aaronbreneman $
-;$LastChangedDate: 2014-01-31 13:21:37 -0800 (Fri, 31 Jan 2014) $
-;$LastChangedRevision: 14107 $
-;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/b1_status_crib.pro $
+;+
+; NAME: b1_status_crib.pro
+; SYNTAX:
+; PURPOSE: Create tplot variables pertaining to EFW burst existence
+; INPUT:
+; OUTPUT:
+; KEYWORDS:
+;	PROCEDURE: .run b1_status_crib
+; HISTORY: Created by Kris Kersten, kris.kersten@gmail.com
+; VERSION:
+;   $LastChangedBy: aaronbreneman $
+;   $LastChangedDate: 2018-12-21 09:58:30 -0800 (Fri, 21 Dec 2018) $
+;   $LastChangedRevision: 26382 $
+;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/b1_status_crib.pro $
+;-
+
 
 
 output_dir='~/Desktop/'
@@ -18,8 +22,8 @@ rbsp_efw_init,remote_data_dir='http://rbsp.space.umn.edu/data/rbsp/'
 
 tnow=systime(1)
 tstart=tnow-30.*86400 ; run previous 30 days
-
 timespan,tstart,30
+
 
 probe='a b'
 
@@ -59,7 +63,6 @@ tmina=bi.x[goodbi[50]]-14400. ; use the 50th goodbi to avoid old block index at 
 
 
 ;----------------
-
 copy_data,'rbspb_efw_b1_fmt_block_index','rbspb_efw_b1_fmt_block_index2'
 options,'rbspb_efw_b1_fmt_block_index','psym',0
 options,'rbspb_efw_b1_fmt_block_index2','psym',4
@@ -87,10 +90,6 @@ store_data,'rbspb_b1_block_index',$
 
 ylim,'rbsp?_b1_block_index',0,262143
 
-
-
-
-
 options,['rbsp?_b1_block_index','rbspa_efw_b1_fmt_block_index',$
 	'rbspa_efw_b1_fmt_block_index_cutoff'],'panel_size',.5
 
@@ -101,10 +100,8 @@ tplot,['rbspa_b1_block_index','rbspa_b1_status',$
 tlimit,[tmin,tmax]
 
 
-pcharsize_saved=!p.charsize
-pfont_saved=!p.font
-pcharthick_saved=!p.charthick
-pthick_saved=!p.thick
+pcharsize_saved=!p.charsize & pfont_saved=!p.font
+pcharthick_saved=!p.charthick & pthick_saved=!p.thick
 
 set_plot,'Z'
 rbsp_efw_init,/reset ; try to get decent colors in the Z buffer
@@ -118,10 +115,10 @@ rbsp_efw_init,/reset ; try to get decent colors in the Z buffer
 ;write_png,output_dir+'b1_status.png',tvrd(true=1)
 
 
-device,set_resolution=[3200,2400],set_font='helvetica',/tt_font,set_character_size=[28,35]
+device,set_resolution=[3200,2400],set_font='helvetica',/tt_font,$
+	set_character_size=[28,35]
 
-!p.thick=4.
-!p.charthick=4.
+!p.thick=4. & !p.charthick=4.
 
 tplot_options,'xmargin',[14,12]
 tplot
@@ -136,24 +133,20 @@ tvlct,r,g,b,/get
 
 sz=size(snapshot,/dimensions)
 snapshot3=bytarr(3,sz[0],sz[1])
-snapshot3[0,*,*]=r[snapshot]
-snapshot3[1,*,*]=g[snapshot]
-snapshot3[2,*,*]=b[snapshot]
+snapshot3[0,*,*]=r[snapshot] & snapshot3[1,*,*]=g[snapshot] & snapshot3[2,*,*]=b[snapshot]
 
 ; shrink snapshot
-xsize=800
-ysize=600
+xsize=800 & ysize=600
 snapshot3=rebin(snapshot3,3,xsize,ysize)
+
 
 ; write a png
 write_png,output_dir+'b1_status.png',snapshot3
 
 set_plot,'X'
 rbsp_efw_init,/reset
-!p.charsize=pcharsize_saved
-!p.font=pfont_saved
-!p.charthick=pcharthick_saved
-!p.thick=pthick_saved
+!p.charsize=pcharsize_saved & !p.font=pfont_saved
+!p.charthick=pcharthick_saved & !p.thick=pthick_saved
 
 
 end

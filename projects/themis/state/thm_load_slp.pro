@@ -119,9 +119,9 @@
 ;   thm_load_slp
 ;   thm_load_slp,datatype='sun_pos',trange=['2007-01-22/00:00:00','2007-01-24/00:00:00']
 ;
-; $LastChangedBy: aaflores $
-; $LastChangedDate: 2015-05-08 18:56:06 -0700 (Fri, 08 May 2015) $
-; $LastChangedRevision: 17543 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
+; $LastChangedRevision: 26397 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/state/thm_load_slp.pro $
 ;-
 function thm_load_slp_relpath,trange=trange
@@ -201,7 +201,7 @@ pro thm_load_slp,datatype = datatype, trange = trange, $
   files = spd_download(remote_file=relpathnames_all,_extra=params)
 
   if ~params.downloadonly then begin
-    cdf2tplot,file=files,verbose=params.verbose,tplotnames=tplotnames,varformat=names,suffix=suffix
+    spd_cdf2tplot,file=files,verbose=params.verbose,tplotnames=tplotnames,varformat=names,suffix=suffix
   
     if ~is_string(tplotnames) then begin
       dprint, dlevel=1, 'Error loading CDF; verify file is present'

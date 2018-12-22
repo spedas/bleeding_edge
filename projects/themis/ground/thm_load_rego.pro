@@ -62,9 +62,9 @@ end
 ;
 ;
 ;Written by: Ken Bromund ????,   Jan 5 2007
-; $LastChangedBy: hfrey $
-; $LastChangedDate: 2018-11-13 14:46:09 -0800 (Tue, 13 Nov 2018) $
-; $LastChangedRevision: 26117 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
+; $LastChangedRevision: 26397 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_rego.pro $
 ;-
 ;
@@ -103,11 +103,11 @@ pro thm_load_rego_cdf_to_tplot, files=files, all=all, verbose=verbose, $
 	; we allow for 1.5 seconds time offset
     if (size(time,/type) eq 5) then record=where(abs(timearr-time) le 1.5,count) else $  ; double
         record=where(abs(timearr-time_double(time)) le 1,count)	; string
-    if (count eq 1) then cdf2tplot,/all,varnames=varnames,file=files,verbose=verbose,record=record[0],$
+    if (count eq 1) then spd_cdf2tplot,/all,varnames=varnames,file=files,verbose=verbose,record=record[0],$
                                    tplotnames=tplotnames,suffix=suffix
 
  endif else $
-    cdf2tplot,/all,file=files,verbose=verbose,tplotnames=tplotnames,suffix=suffix
+    spd_cdf2tplot,/all,file=files,verbose=verbose,tplotnames=tplotnames,suffix=suffix
 end
 
 

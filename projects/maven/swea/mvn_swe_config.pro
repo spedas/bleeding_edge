@@ -22,6 +22,8 @@
 ;    Ext Ops 3   2018-10-01/00:00  -
 ;                                   |-> Extended Mission 3 (PDS R17 - R20)
 ;    Ext Ops 4   2019-10-01/00:00  - 
+;                                   |-> Extended Mission 4 (PDS R21 - R32)
+;    Ext Ops 5   2022-10-01/00:00  -
 ;    -----------------------------------------------------------------------
 ;
 ;USAGE:
@@ -37,8 +39,8 @@
 ;                   changes in a tplot window (assumed to exist).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-26 10:04:42 -0800 (Mon, 26 Nov 2018) $
-; $LastChangedRevision: 26173 $
+; $LastChangedDate: 2018-12-21 13:17:48 -0800 (Fri, 21 Dec 2018) $
+; $LastChangedRevision: 26400 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -48,11 +50,16 @@ pro mvn_swe_config, list=list, timebar=timebar
 
   @mvn_swe_com
 
+; ----- LAUNCH: 2013-11-18/18:28  (MCP bias = 2500 V) -----
+
+; ----- CRUISE -----
+
 ; Sweep table update.  Replace tables 1 and 2 with tables 3 and 4, respectively.
 ; Tables 3 and 4 are used for all cruise data from March 19 to the MOI moratorium.
 ; See mvn_swe_sweep for definitions of all sweep tables.
 
-  t_swp = time_double('2014-03-19/14:00:00')  ; sweep tables 3 and 4 upload
+  t_swp = time_double('2014-03-19/14:00:00')           ; sweep tables 3 and 4 upload
+  t_mcp = time_double('2014-03-22/00:00:00')           ; first SWE-SWI cross calibration
 
 ; Stowed MAG1-to-SWE rotation matrix.  SWEA was launched with a MAG1-to-SWEA rotation
 ; matrix for a deployed boom.  This matrix is used by FSW to create optimal cuts 
@@ -62,12 +69,12 @@ pro mvn_swe_config, list=list, timebar=timebar
 ; Because of an undetected error in the MICD, this matrix and the previous one are 
 ; incorrect by a 90-degree rotation in SWEA azimuth.
 
-  t_mtx = time_double('2014-04-02/14:26:02')  ; stowed boom matrix upload #1
+  t_mtx = time_double('2014-04-02/14:26:02')           ; stowed boom matrix upload #1
 
 ; Deflection scale factor update.  This introduced an error (DSF's too small), but 
 ; at least deflection bins 0 and 1 were set to zero.
 
-  t_dsf = time_double('2014-04-23/17:21:30')  ; deflection scale factor update #1
+  t_dsf = time_double('2014-04-23/17:21:30')           ; deflection scale factor update #1
 
 ; Deflection scale factor update.  This corrected the mistake from the previous
 ; update.  Now DSF's are 0, 0, 1, 1, 1, 1 -- as desired.
@@ -79,30 +86,31 @@ pro mvn_swe_config, list=list, timebar=timebar
 
   t_mtx = [t_mtx, time_double('2014-06-30/17:09:19')]  ; stowed boom matrix upload #2
 
-; Sweep table update.  Replace tables 3 and 4 with tables 5 and 6, respectively.
-; Tables 5 and 6 are used for all data from transition onward.
+; ----- MARS ORBIT INSERTION: 2014-09-22/01:50 -----
 
-  t_swp = [t_swp, time_double('2014-10-06/12:00:00')]  ; sweep table 5 and 6 upload
+; EEPROM load executed on 2014-09-22.  For SWEA this included:
+;   - sweep tables 5 and 6 (used for all data from transition onward)
+;   - deployed boom rotation matrix (with correct MICD)
+;   - science deflection scale factors: cos(swe_el) = [0.63, 0.86, 0.99, 0.98, 0.85, 0.60]
 
-; Deployed MAG1-to-SWE rotation matrix, with corrected MICD.
-;   Deployed boom matrix was uploaded as part of EEPROM load executed on 2014-09-22
+  t_swp = [t_swp, time_double('2014-09-22')]           ; sweep tables 5 and 6 upload
+
+; ----- First SWEA turn-on in orbit (2014-10-06/22:58:28) -----
+
+  t_dsf = [t_dsf, time_double('2014-10-06/22:58:28')]  ; deflection scale factor update #3
+
+; SWEA Boom Deploy
 ;   Boom separation nut pyro was fired at 2014-10-10/15:08:14.684
 ;   Boom shows evidence for motion a few seconds later
 ;   Boom fully deployed by about 2014-10-10/15:09:30
 
-  t_mtx = [t_mtx, time_double('2014-10-10/15:08:40')]  ; deployed boom matrix upload
+  t_mtx = [t_mtx, time_double('2014-10-10/15:08:40')]  ; boom deploy, final matrix valid
 
-; MCP bias adjustment times.  These are used by mvn_swe_crosscal.
-
-; 2013-11-18/18:28                                     ; MAVEN launch (bias = 2500 V)
-  t_mcp = time_double('2014-03-22/00:00:00')           ; first cross calibration measurement
-
-; 2014-09-22/01:50                                     ; MAVEN orbit insertion
   t_sup = time_double('2014-10-14/00:00:00')           ; first suppression calibration
   t_mcp = [t_mcp, time_double('2014-10-17/02:26:41')]  ; bias adjustment (2500 -> 2600 V)
   t_mcp = [t_mcp, time_double('2014-11-12/00:00:00')]  ; bias = 2600 V (beginning of poly fit)
 
-; 2014-11-15/00:00                                     ; beginning of science phase
+; ----- SCIENCE PHASE BEGINS (2014-11-15) -----
 
 ; 2015-11-15/00:00                                     ; beginning of EM-1
   t_mcp = [t_mcp, time_double('2015-12-18/23:39:09')]  ; bias adjustment (2600 -> 2700 V)
@@ -128,7 +136,7 @@ pro mvn_swe_config, list=list, timebar=timebar
 
   t_mcp = [t_mcp, time_double('2018-11-13/11:18:13')]  ; bias adjustment (2800 -> 2875 V)
 
-  t_mcp = [t_mcp, time_double('2018-11-23/00:00:00')]  ; last SWE-SWI cross calibration
+  t_mcp = [t_mcp, time_double('2018-12-09/00:00:00')]  ; last SWE-SWI cross calibration
 
 ; Gather all the configuration change times into one variable (for timebar).
 
@@ -143,7 +151,8 @@ pro mvn_swe_config, list=list, timebar=timebar
     print,time_string(t_dsf[1]),' --> deflection scale factor update #2 (correct)'
     print,time_string(t_mtx[1]),' --> stowed boom matrix upload #2 (correct MICD)'
     print,time_string(t_swp[1]),' --> sweep tables 5 and 6 upload'
-    print,time_string(t_mtx[2]),' --> boom deploy'
+    print,time_string(t_dsf[2]),' --> first SWEA turn on in orbit'
+    print,time_string(t_mtx[2]),' --> boom deploy (with new MAG-to-SWE matrix)'
     print,time_string(t_mcp[1]),' --> MCP bias adjustment (2500 -> 2600 V)'
     print,time_string(t_mcp[3]),' --> MCP bias adjustment (2600 -> 2700 V)'
     print,time_string(t_mcp[4]),' --> MCP bias revert to 2600 V (unintentional)'

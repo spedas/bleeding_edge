@@ -49,8 +49,8 @@
 ;       SILENT:       Don't print any warnings or messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-25 16:36:29 -0800 (Sun, 25 Nov 2018) $
-; $LastChangedRevision: 26171 $
+; $LastChangedDate: 2018-12-21 13:18:09 -0800 (Fri, 21 Dec 2018) $
+; $LastChangedRevision: 26401 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_crosscal.pro $
 ;
 ;CREATED BY:    David L. Mitchell  05-04-16
@@ -69,7 +69,7 @@ function mvn_swe_crosscal, time, on=on, off=off, refresh=refresh, extrap=extrap,
     ac[*,2] = [2.2143D,  7.9280d-4,  1.4300d-5,  0.0D     ]  ; MCPHV = 2700 V
     ac[*,3] = [2.0027D,  7.2892d-3, -1.1918d-5,  0.0D     ]  ; MCPHV = 2750 V
     ac[*,4] = [2.2929D,  6.0841d-3, -2.0345d-5,  3.0202d-8]  ; MCPHV = 2800 V
-    ac[*,5] = [1.98D  ,  0.0D     ,  0.0D     ,  0.0D     ]  ; MCPHV = 2875 V (provisional, little data)
+    ac[*,5] = [2.00D  ,  0.0D     ,  0.0D     ,  0.0D     ]  ; MCPHV = 2875 V (provisional, little data)
     eflg = 0
   endif
 

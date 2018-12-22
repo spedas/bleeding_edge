@@ -1,3 +1,50 @@
+; Density moment
+
+function specmom, eflux, erange=erange
+  mass = 5.6856297d-06             ; electron rest mass [eV/(km/s)^2]
+  c3 = 4D*!dpi*1d-5*sqrt(mass/2D)  ; assume isotropic electron distribution
+
+  mvn_swe_convert_units, eflux, 'eflux'
+  E1 = eflux.energy
+  F1 = eflux.data - eflux.bkg
+  S1 = sqrt(eflux.var)
+  pot = eflux.sc_pot
+
+  dE = E1
+  dE[0] = abs(E1[1] - E1[0])
+  for i=1,62 do dE[i] = abs(E1[i+1] - E1[i-1])/2.
+  dE[63] = abs(E1[63] - E1[62])
+
+  if (n_elements(erange) gt 1) then begin
+    Emin = min(erange, max=Emax)
+    j = where((E1 ge Emin) and (E1 le Emax), n_e)
+  endif else begin
+    j = where(E1 gt pot, n_e)
+    j = j[0:(n_e-2)]  ; one channel cushion from s/c potential
+    n_e--
+  endelse
+
+  prat = (pot/E1[j]) < 1.
+  Enorm = c3*dE[j]*sqrt(1. - prat)*(E1[j]^(-1.5))
+  N_j = Enorm*F1[j]
+  S_j = Enorm*S1[j]
+
+  N_tot = total(N_j)
+  N_sig = sqrt(total(S_j^2.))
+
+  Enorm = (2./3.)*c3*dE[j]*((1. - prat)^1.5)*(E1[j]^(-0.5))
+  P_j = Enorm*F1[j]
+  S_j = Enorm*S1[j]
+
+  pres = total(P_j)
+  psig = sqrt(total(S_j^2.))
+
+  temp = pres/N_tot  ; temperature corresponding to kinetic energy density
+  tsig = temp*sqrt((N_sig/N_tot)^2. + (psig/pres)^2.)
+
+  return, {N:N_tot, Nsig:N_sig, T:temp, Tsig:tsig, indx:j}
+end
+
 ;+
 ;PROCEDURE:   swe_engy_snap
 ;PURPOSE:
@@ -51,6 +98,11 @@
 ;
 ;       PEPEAKS:       Overplot the nominal energies of the photoelectron energy peaks
 ;                      at 23 and 27 eV.
+;
+;       CUII:          Overplot ionization potential of Cu (hemispheres and top cap are
+;                      coated with Cu2S).  This is the threshold for electron impact
+;                      ionization and secondary electron contamination inside the 
+;                      instrument.
 ;
 ;       PEREF:         Overplot photoelectron reference spectra
 ;
@@ -137,8 +189,8 @@
 ;                      Maxwell-Boltzmann fit. (Nominally, E_peak = 2*T)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-07-31 10:54:51 -0700 (Tue, 31 Jul 2018) $
-; $LastChangedRevision: 25528 $
+; $LastChangedDate: 2018-12-21 13:20:24 -0800 (Fri, 21 Dec 2018) $
+; $LastChangedRevision: 26403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -152,7 +204,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
                    xrange=xrange,yrange=frange,sscale=sscale, popen=popen, times=times, $
                    flev=flev, pylim=pylim, k_e=k_e, peref=peref, error_bars=error_bars, $
                    trange=tspan, tsmo=tsmo, wscale=wscale, cscale=cscale, voffset=voffset, $
-                   endx=endx, twot=twot, rcolors=rcolors
+                   endx=endx, twot=twot, rcolors=rcolors, cuii=cuii
 
   @mvn_swe_com
   @mvn_scpot_com
@@ -252,6 +304,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   
   if (size(pot,/type) eq 0) then dopot = 1 else dopot = keyword_set(pot)
   if keyword_set(pepeaks) then dopep = 1 else dopep = 0
+  if keyword_set(cuii) then docu = 1 else docu = 0
   if (size(peref,/type) eq 8) then doper = 1 else doper = 0
   if keyword_set(scat) then scat = 1 else scat = 0
 
@@ -578,6 +631,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       oplot,[27.,27.],yrange,line=2,color=1
       oplot,[60.,60.],yrange,line=2,color=1
     endif
+
+    if (docu) then oplot,[7.73,7.73],yrange,line=2,color=1
     
     if (doper) then begin
       oplot, peref.x, peref.y
@@ -634,6 +689,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       p = swe_maxbol()
       if (finite(scp)) then p.pot = scp $
                        else if (finite(phi)) then p.pot = phi else p.pot = 0.
+      spec.sc_pot = pot
 
       psep = 2.0
       indx = where(E1 gt psep*p.pot)
@@ -699,7 +755,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       ys -= dys
       xyouts,xs,ys,string(p.T,format='("T = ",f5.2)'),color=dcol,charsize=csize1,/norm
       ys -= dys
-      xyouts,xs,ys,string(p.pot,format='("V = ",f5.2)'),color=col,charsize=csize1,/norm
+      xyouts,xs,ys,string(p.pot,format='("V = ",f5.2)'),color=6,charsize=csize1,/norm
       ys -= dys
       if (kap) then begin
         xyouts,xs,ys,string(p.k_n,format='("Nh = ",f5.2)'),color=3,charsize=csize1,/norm
@@ -712,6 +768,15 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         xyouts,xs,ys,string(N_halo,format='("Nh = ",f5.2)'),color=1,charsize=csize1,/norm
         ys -= dys
       endelse
+
+      smom = specmom(spec)
+      ys -= dys
+      xyouts,xs,ys,"Moments:",charsize=csize1,/norm
+      ys -= dys
+      xyouts,xs,ys,string(smom.N,format='("N = ",f5.2)'),charsize=csize1,/norm
+      ys -= dys
+      xyouts,xs,ys,string(smom.T,format='("T = ",f5.2)'),charsize=csize1,/norm
+      ys -= dys
 
       if (scat) then begin
         kndx = where((E1 gt phi) and (E1 lt Epeak), count)
@@ -736,52 +801,19 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         eflux = spec
         dcol = 1
       endelse
-      mvn_swe_convert_units, eflux, 'eflux'
-      E1 = eflux.energy
-      F1 = eflux.data - eflux.bkg
-      S1 = sqrt(eflux.var)
+      if (finite(scp)) then pot = scp $
+                       else if (finite(phi)) then pot = phi else pot = 0.
+      eflux.sc_pot = pot
 
-      dE = E1
-      dE[0] = abs(E1[1] - E1[0])
-      for i=1,62 do dE[i] = abs(E1[i+1] - E1[i-1])/2.
-      dE[63] = abs(E1[63] - E1[62])
+      smom = specmom(eflux)
 
-      if (n_elements(erange) gt 1) then begin
-        Emin = min(erange, max=Emax)
-        j = where((E1 ge Emin) and (E1 le Emax), n_e)
-      endif else begin
-        if (finite(scp)) then pot = scp $
-                         else if (finite(phi)) then pot = phi else pot = 0.
-        j = where(E1 gt pot, n_e)
-        j = j[0:(n_e-2)]  ; one channel cushion from s/c potential
-        n_e--
-      endelse
+      oplot,eflux.energy[smom.indx],eflux.data[smom.indx],color=1,psym=10
+      print,"Density = ",smom.N," +/- ",smom.Nsig,format='(a,f6.3,a,f6.3)'
+      print,"Temperature = ",smom.T," +/- ",smom.Tsig,format='(a,f6.3,a,f6.3)'
 
-      oplot,eflux.energy[j],eflux.data[j],color=1,psym=10
-
-      prat = (pot/E1[j]) < 1.
-      Enorm = c3*dE[j]*sqrt(1. - prat)*(E1[j]^(-1.5))
-      N_j = Enorm*F1[j]
-      S_j = Enorm*S1[j]
-
-      N_tot = total(N_j)
-      N_sig = sqrt(total(S_j^2.))
-      print,"Density = ",N_tot," +/- ",N_sig,format='(a,f6.3,a,f6.3)'
-      
-      Enorm = (2./3.)*c3*dE[j]*((1. - prat)^1.5)*(E1[j]^(-0.5))
-      P_j = Enorm*F1[j]
-      S_j = Enorm*S1[j]
-
-      pres = total(P_j)
-      psig = sqrt(total(S_j^2.))
-
-      temp = pres/N_tot  ; temperature corresponding to kinetic energy density
-      tsig = temp*sqrt((N_sig/N_tot)^2. + (psig/pres)^2.)
-      print,"Temperature = ",temp," +/- ",tsig,format='(a,f6.3,a,f6.3)'
-
-      xyouts,xs,ys,string(N_tot,format='("N = ",f6.3)'),color=dcol,charsize=csize1,/norm
+      xyouts,xs,ys,string(smom.N,format='("N = ",f6.3)'),color=dcol,charsize=csize1,/norm
       ys -= dys
-      xyouts,xs,ys,string(temp,format='("T = ",f6.2)'),color=dcol,charsize=csize1,/norm
+      xyouts,xs,ys,string(smom.T,format='("T = ",f6.2)'),color=dcol,charsize=csize1,/norm
       ys -= dys
       xyouts,xs,ys,string(pot,format='("V = ",f6.2)'),color=col,charsize=csize1,/norm
       ys -= dys

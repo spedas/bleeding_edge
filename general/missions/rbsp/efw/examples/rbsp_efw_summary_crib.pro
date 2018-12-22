@@ -1,31 +1,40 @@
-; rbsp efw summary crib
-;
-; Kris Kersten, UMN, June 2012
-;			email: kris.kersten@gmail.com
+;+
+; NAME: rbsp_efw_summary_crib.pro
+; SYNTAX:
+; PURPOSE: Create tplot variables pertaining to EFW summary data
+;						(waveform, spec, xspec, filterbank)
+; INPUT:
+; OUTPUT:
+; KEYWORDS:
+; HISTORY: Kris Kersten, UMN, June 2012 (email: kris.kersten@gmail.com)
+; VERSION:
+;   $LastChangedBy: aaronbreneman $
+;   $LastChangedDate: 2018-12-21 10:03:48 -0800 (Fri, 21 Dec 2018) $
+;   $LastChangedRevision: 26383 $
+;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_summary_crib.pro $
+;-
 
-; note:  all SPEC, XSPEC data is assumed to have 64 bins
+
 
 ; initialize RBSP environment
 rbsp_efw_init
 
-
 ; set desired probe
-; note: probe can be string 'a' or 'b' for a single probe, or string
-;		array ['a', 'b'] or space-delimited list 'a b' for both probes.
 probe = 'a b'
-
 
 ; set time of interest to a single day
 date = '2013-02-16'	; UTC.
 duration = 1	; days.
 timespan, date, duration
 
-integration=0 ; for looking at integration data
 
-; include support data?
-get_support_data = 0 ; 0=no, 1=yes
+;for looking at integration data
+integration=0
 
-; use raw ADC numbers or physical units?
+;include support data?
+get_support_data = 0
+
+;use raw ADC numbers or physical units?
 type='raw' ; use raw for now. for physical units use type='calibrated'
 
 
@@ -48,27 +57,27 @@ rbsp_load_efw_fbk, probe=probe, type=type, $
 
 
 
-; WAVEFORM  --------------------------------------------------------------------
-; split waveform vectors
+;WAVEFORM  --------------------------------------------------------------------
+;split waveform vectors
 split_vec, 'rbsp?_efw_esvy', suffix='_'+['E12', 'E34', 'E56']
 split_vec, 'rbsp?_efw_vsvy', suffix='_V'+['1','2','3','4','5','6']
 split_vec, 'rbsp?_efw_magsvy', suffix='_'+['U', 'V', 'W']
 split_vec, 'rbsp?_efw_eb1', suffix='_'+['E12', 'E34', 'E56']
 split_vec, 'rbsp?_efw_vb1', suffix='_V'+['1','2','3','4','5','6']
 split_vec, 'rbsp?_efw_mscb1', suffix='_'+['U', 'V', 'W']
-split_vec, 'rbsp?_efw_eb2', suffix='_'+['E12DC', 'E34DC', 'E56DC', 'E12AC', $
+split_vec, 'rbsp?_efw_eb2', suffix='_'+['E12DC', 'E34DC', 'E56DC', 'E12AC',$
 				'E34AC', 'E56AC', 'EDCpar', 'EDCprp', 'EACpar', 'EACprp']
 split_vec, 'rbsp?_efw_vb2', suffix='_V'+['1','2','3','4','5','6']
 split_vec, 'rbsp?_efw_mscb2', suffix='_'+['U', 'V', 'W', 'par', 'perp']
 
 
 
-; SPEC / XSPEC  ----------------------------------------------------------------
+;SPEC / XSPEC  ----------------------------------------------------------------
 ; label SPEC
 spec_sources=['E12AC', 'E56AC', 'SCMpar', 'SCMperp', 'SCMW', 'V1AC', 'V2AC']
 units=' raw counts' ; for now, assume raw counts.  this will change.
 
-; dump everything into the z-axis labels until we sort out proper labeling 
+; dump everything into the z-axis labels until we sort out proper labeling
 options, '*spec0', 'ztitle', spec_sources[0]+units
 options, '*spec1', 'ztitle', spec_sources[1]+units
 options, '*spec2', 'ztitle', spec_sources[2]+units
@@ -95,8 +104,7 @@ options,'rbsp?_efw_xspec*','yticks',3
 
 ; FBK  -------------------------------------------------------------------------
 ; set up FBK labels based on fbk select variable
-fbk_sources=['E12DC', 'E34DC', 'E56DC', 'E12AC', 'E34AC', 'E56AC', $
-			'SCMU', 'SCMV', 'SCMW']
+fbk_sources=['E12DC','E34DC','E56DC','E12AC','E34AC','E56AC','SCMU','SCMV','SCMW']
 
 get_data,'rbspa_efw_fbk_7_fbk_7_select',data=a7select
 get_data,'rbspa_efw_fbk_13_fbk_13_select',data=a13select
@@ -123,23 +131,23 @@ if is_struct(b13select) then $
 
 ; now turn the sources into labels
 units='raw counts'
-options,'rbspa_efw_fbk_7_fb1_av','ztitle',a7_sources[0]+'_avg '+units 
-options,'rbspa_efw_fbk_7_fb1_pk','ztitle',a7_sources[0]+'_peak '+units 
-options,'rbspa_efw_fbk_7_fb2_av','ztitle',a7_sources[1]+'_avg '+units 
-options,'rbspa_efw_fbk_7_fb2_pk','ztitle',a7_sources[1]+'_peak '+units 
-options,'rbspa_efw_fbk_13_fb1_av','ztitle',a13_sources[0]+'_avg '+units 
-options,'rbspa_efw_fbk_13_fb1_pk','ztitle',a13_sources[0]+'_peak '+units 
-options,'rbspa_efw_fbk_13_fb2_av','ztitle',a13_sources[1]+'_avg '+units 
-options,'rbspa_efw_fbk_13_fb2_pk','ztitle',a13_sources[1]+'_peak '+units 
+options,'rbspa_efw_fbk_7_fb1_av','ztitle',a7_sources[0]+'_avg '+units
+options,'rbspa_efw_fbk_7_fb1_pk','ztitle',a7_sources[0]+'_peak '+units
+options,'rbspa_efw_fbk_7_fb2_av','ztitle',a7_sources[1]+'_avg '+units
+options,'rbspa_efw_fbk_7_fb2_pk','ztitle',a7_sources[1]+'_peak '+units
+options,'rbspa_efw_fbk_13_fb1_av','ztitle',a13_sources[0]+'_avg '+units
+options,'rbspa_efw_fbk_13_fb1_pk','ztitle',a13_sources[0]+'_peak '+units
+options,'rbspa_efw_fbk_13_fb2_av','ztitle',a13_sources[1]+'_avg '+units
+options,'rbspa_efw_fbk_13_fb2_pk','ztitle',a13_sources[1]+'_peak '+units
 
-options,'rbspb_efw_fbk_7_fb1_av','ztitle',b7_sources[0]+'_avg '+units 
-options,'rbspb_efw_fbk_7_fb1_pk','ztitle',b7_sources[0]+'_peak '+units 
-options,'rbspb_efw_fbk_7_fb2_av','ztitle',b7_sources[1]+'_avg '+units 
-options,'rbspb_efw_fbk_7_fb2_pk','ztitle',b7_sources[1]+'_peak '+units 
-options,'rbspb_efw_fbk_13_fb1_av','ztitle',b13_sources[0]+'_avg '+units 
-options,'rbspb_efw_fbk_13_fb1_pk','ztitle',b13_sources[0]+'_peak '+units 
-options,'rbspb_efw_fbk_13_fb2_av','ztitle',b13_sources[1]+'_avg '+units 
-options,'rbspb_efw_fbk_13_fb2_pk','ztitle',b13_sources[1]+'_peak '+units 
+options,'rbspb_efw_fbk_7_fb1_av','ztitle',b7_sources[0]+'_avg '+units
+options,'rbspb_efw_fbk_7_fb1_pk','ztitle',b7_sources[0]+'_peak '+units
+options,'rbspb_efw_fbk_7_fb2_av','ztitle',b7_sources[1]+'_avg '+units
+options,'rbspb_efw_fbk_7_fb2_pk','ztitle',b7_sources[1]+'_peak '+units
+options,'rbspb_efw_fbk_13_fb1_av','ztitle',b13_sources[0]+'_avg '+units
+options,'rbspb_efw_fbk_13_fb1_pk','ztitle',b13_sources[0]+'_peak '+units
+options,'rbspb_efw_fbk_13_fb2_av','ztitle',b13_sources[1]+'_avg '+units
+options,'rbspb_efw_fbk_13_fb2_pk','ztitle',b13_sources[1]+'_peak '+units
 
 ; for now the y-axis covers [1,13] (FBK13) and [1,7] (FBK7), so set limits
 ; accordingly
@@ -164,8 +172,8 @@ svy_summary=['_efw_esvy_E12',$
 	'_efw_esvy_E34',$
 	'_efw_esvy_E56',$
 	'_efw_vsvy_V'+string(lindgen(6)+1, format='(I0)'),$
-	'_efw_magsvy_'+['U','V','W'] ]
-	
+	'_efw_magsvy_'+['U','V','W']]
+
 spec_summary=['_efw_64_spec'+string(lindgen(7), format='(I0)')]
 
 xspec_summary=['_efw_xspec_64_xspec0_src1',$
@@ -184,7 +192,7 @@ xspec_summary=['_efw_xspec_64_xspec0_src1',$
 	'_efw_xspec_64_xspec2_src2', $
 	'_efw_xspec_64_xspec3_phase', $
 	'_efw_xspec_64_xspec3_coh']
-	
+
 fbk_summary=['_efw_fbk_7_fb1_av',$
 	'_efw_fbk_7_fb1_pk',$
 	'_efw_fbk_7_fb2_av',$
@@ -236,22 +244,22 @@ tplot, probeid + combo_summary
 old_pcharsize=!p.charsize
 !p.charsize=0.7
 
-; RBSPA
+;RBSPA
 probeid='rbspa'
 popen,strupcase(probeid)+'_DAILY_SUMMARY_'+strcompress(date,/remove_all),/port
 tplot_options,'title',strupcase(probeid)+' DIALY SUMMARY, '+date
 tplot, probeid + combo_summary
 pclose
 
-; RBSPB
+;RBSPB
 probeid='rbspb'
 popen,strupcase(probeid)+'_DAILY_SUMMARY_'+strcompress(date,/remove_all),/port
 tplot_options,'title',strupcase(probeid)+' DIALY SUMMARY, '+date
 tplot, probeid + combo_summary
 pclose
 
-; now reset the charsize
+;now reset the charsize
 !p.charsize=old_pcharsize
 
 
-end ; rbsp_efw_summary_crib
+end ;rbsp_efw_summary_crib

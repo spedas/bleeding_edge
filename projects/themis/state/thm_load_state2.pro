@@ -33,9 +33,9 @@
 ;   thm_load_state
 ;Notes:
 ;
-; $LastChangedBy: aaflores $
-; $LastChangedDate: 2015-04-27 11:26:29 -0700 (Mon, 27 Apr 2015) $
-; $LastChangedRevision: 17433 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
+; $LastChangedRevision: 26397 $
 ; $URL $
 ;-
 pro thm_load_state2,probes=probes, datatype=datatype, trange=trange, $
@@ -51,7 +51,7 @@ pro thm_load_state2,probes=probes, datatype=datatype, trange=trange, $
                    version=version, $
                    progobj=progobj
 
-dprint,verbose=verbose,dlevel=4,'$Id: thm_load_state2.pro 17433 2015-04-27 18:26:29Z aaflores $'
+dprint,verbose=verbose,dlevel=4,'$Id: thm_load_state2.pro 26397 2018-12-21 19:50:27Z egrimes $'
 if not keyword_set(coords) then coords = 'gse'
 r_e = 6371.2  ;mean radius of earth in km
 
@@ -108,7 +108,7 @@ for s=0,nprobes-1 do begin
 
      midfix='_state'
 ;     if 1 then begin
-     cdf2tplot,file=files,varformat=varformat,all=0,midfix=midfix,midpos=3,verbose=vb, suffix=suffix,$
+     spd_cdf2tplot,file=files,varformat=varformat,all=0,midfix=midfix,midpos=3,verbose=vb, suffix=suffix,$
               get_support_data=get_support_data,tplotnames=tns,/convert_int1_to_int2 ; load data into tplot variables
 ;     endif else begin
 ;if not keyword_set(varformat) then var_type = 'data'
@@ -150,7 +150,7 @@ wait,0  ;bp
      endif
      thm_setprobe_colors, tns,/def
 
-     options,/def,tns,code_id='$Id: thm_load_state2.pro 17433 2015-04-27 18:26:29Z aaflores $'
+     options,/def,tns,code_id='$Id: thm_load_state2.pro 26397 2018-12-21 19:50:27Z egrimes $'
 ;     options,/default,tns,colors = probe_colors[pn]
 
      dprint,dlevel=4,'Housekeeping data Loaded for probe: '+probe
