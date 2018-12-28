@@ -128,9 +128,9 @@
 ;       VERBOSE:  Verbosity level passed to mvn_pfp_file_retrieve.  Default = 0
 ;                 (suppress most messages).
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-09 11:33:15 -0800 (Fri, 09 Nov 2018) $
-; $LastChangedRevision: 26089 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2018-12-27 14:26:48 -0800 (Thu, 27 Dec 2018) $
+; $LastChangedRevision: 26406 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -769,109 +769,112 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   endif
 
 ; Package the results - statistics are on an orbit-by-orbit basis
+;check for valid results, torb, etc... may not be defined, jmm,
+;2018-12-17
+  if n_elements(torb) Gt 0 then begin
+     stat = {time    : torb    , $ ; time (UTC)
+             twind   : twind   , $ ; fraction of time in solar wind
+             tsheath : tsheath , $ ; fraction of time in sheath
+             tpileup : tpileup , $ ; fraction of time in MPR
+             twake   : twake   , $ ; fraction of time in wake
+             hwind   : hwind   , $ ; hours in solar wind
+             hsheath : hsheath , $ ; hours in sheath
+             hpileup : hpileup , $ ; hours in MPR
+             hwake   : hwake   , $ ; hours in wake
+             period  : period  , $ ; orbit period
+             ptime   : ptime   , $ ; periapsis time
+             palt    : palt    , $ ; periapsis altitude
+             plon    : plon    , $ ; periapsis longitude
+             plat    : plat    , $ ; periapsis latitude
+             psza    : psza    , $ ; periapsis solar zenith angle
+             datum   : datum      } ; reference surface
 
-  stat = {time    : torb    , $   ; time (UTC)
-          twind   : twind   , $   ; fraction of time in solar wind
-          tsheath : tsheath , $   ; fraction of time in sheath
-          tpileup : tpileup , $   ; fraction of time in MPR
-          twake   : twake   , $   ; fraction of time in wake
-          hwind   : hwind   , $   ; hours in solar wind
-          hsheath : hsheath , $   ; hours in sheath
-          hpileup : hpileup , $   ; hours in MPR
-          hwake   : hwake   , $   ; hours in wake
-          period  : period  , $   ; orbit period
-          ptime   : ptime   , $   ; periapsis time
-          palt    : palt    , $   ; periapsis altitude
-          plon    : plon    , $   ; periapsis longitude
-          plat    : plat    , $   ; periapsis latitude
-          psza    : psza    , $   ; periapsis solar zenith angle
-          datum   : datum      }  ; reference surface
-
-  orbstat = stat  ; update the common block
+     orbstat = stat             ; update the common block
 
 ; Stack up times for plotting in one panel
 
-  tpileup = tpileup + twake
-  tsheath = tsheath + tpileup
-  twind = twind + tsheath
+     tpileup = tpileup + twake
+     tsheath = tsheath + tpileup
+     twind = twind + tsheath
 
 ; Store the data in TPLOT
 
-  store_data, 'twind'  , data = {x:torb, y:twind}
-  store_data, 'tsheath', data = {x:torb, y:tsheath}
-  store_data, 'tpileup', data = {x:torb, y:tpileup}
-  store_data, 'twake'  , data = {x:torb, y:twake, shadow:stype}
+     store_data, 'twind'  , data = {x:torb, y:twind}
+     store_data, 'tsheath', data = {x:torb, y:tsheath}
+     store_data, 'tpileup', data = {x:torb, y:tpileup}
+     store_data, 'twake'  , data = {x:torb, y:twake, shadow:stype}
 
-  options, 'tsheath', 'color', rcols[0]
-  options, 'tpileup', 'color', rcols[1]
-  options, 'twake', 'color', rcols[2]
+     options, 'tsheath', 'color', rcols[0]
+     options, 'tpileup', 'color', rcols[1]
+     options, 'twake', 'color', rcols[2]
 
-  store_data, 'stat', data = ['twind','tsheath','tpileup','twake']
-  ylim, 'stat', 0, 1
-  options, 'stat', 'panel_size', 0.75
-  options, 'stat', 'ytitle', 'Orbit Fraction'
+     store_data, 'stat', data = ['twind','tsheath','tpileup','twake']
+     ylim, 'stat', 0, 1
+     options, 'stat', 'panel_size', 0.75
+     options, 'stat', 'ytitle', 'Orbit Fraction'
 
-  store_data, 'period', data = {x:torb, y:period}
-  options,'period','ytitle','Period'
-  options,'period','panel_size',0.5
-  options,'period','ynozero',1
+     store_data, 'period', data = {x:torb, y:period}
+     options,'period','ytitle','Period'
+     options,'period','panel_size',0.5
+     options,'period','ynozero',1
 
-  store_data, 'palt', data = {x:ptime, y:palt}
-  options,'palt','ytitle','Periapsis (km)!c' + strlowcase(datum)
-  options,'palt','ynozero',1
+     store_data, 'palt', data = {x:ptime, y:palt}
+     options,'palt','ytitle','Periapsis (km)!c' + strlowcase(datum)
+     options,'palt','ynozero',1
 
-  store_data, 'plon', data = {x:ptime, y:plon}
-  ylim,'plon',0,360,0
-  options,'plon','yticks',4
-  options,'plon','yminor',3
-  options,'plon','ytitle','Periapsis Lon (deg)'
+     store_data, 'plon', data = {x:ptime, y:plon}
+     ylim,'plon',0,360,0
+     options,'plon','yticks',4
+     options,'plon','yminor',3
+     options,'plon','ytitle','Periapsis Lon (deg)'
   
-  store_data, 'plat', data = {x:ptime, y:plat}
-  ylim,'plat',-90,90,0
-  options,'plat','yticks',2
-  options,'plat','yminor',3
-  options,'plat','ytitle','Periapsis Lat (deg)'
+     store_data, 'plat', data = {x:ptime, y:plat}
+     ylim,'plat',-90,90,0
+     options,'plat','yticks',2
+     options,'plat','yminor',3
+     options,'plat','ytitle','Periapsis Lat (deg)'
 
-  store_data, 'psza', data = {x:ptime, y:psza*!radeg}
-  ylim,'psza',0,180,0
-  options,'psza','yticks',2
-  options,'psza','yminor',3
-  options,'psza','constant',[98,108]  ; EUV shadow at [150,300] km
-  options,'psza','ytitle','Periapsis SZA (deg)'
+     store_data, 'psza', data = {x:ptime, y:psza*!radeg}
+     ylim,'psza',0,180,0
+     options,'psza','yticks',2
+     options,'psza','yminor',3
+     options,'psza','constant',[98,108] ; EUV shadow at [150,300] km
+     options,'psza','ytitle','Periapsis SZA (deg)'
   
-  store_data, 'lon', data = {x:time, y:lon}
-  ylim,'lon',-180,180,0
-  options,'lon','yticks',4
-  options,'lon','yminor',3
+     store_data, 'lon', data = {x:time, y:lon}
+     ylim,'lon',-180,180,0
+     options,'lon','yticks',4
+     options,'lon','yminor',3
   
-  store_data, 'lat', data = {x:time, y:lat}
-  ylim,'lat',-90,90,0
-  options,'lat','yticks',2
-  options,'lat','yminor',3
-  options,'lat','panel_size',0.5
+     store_data, 'lat', data = {x:time, y:lat}
+     ylim,'lat',-90,90,0
+     options,'lat','yticks',2
+     options,'lat','yminor',3
+     options,'lat','panel_size',0.5
 
 ; Determine orbit numbers
 
-  orbnum = mvn_orbit_num(time=time, verbose=-1)
-  store_data,'orbnum',data={x:time, y:orbnum}
-  tplot_options,'var_label','orbnum'
+     orbnum = mvn_orbit_num(time=time, verbose=-1)
+     store_data,'orbnum',data={x:time, y:orbnum}
+     tplot_options,'var_label','orbnum'
 
 ; Put up the plot
 
-  vars = ['alt2','stat','sza','period','palt','lon','lat']
+     vars = ['alt2','stat','sza','period','palt','lon','lat']
+     
+     if not keyword_set(loadonly) then begin
+        avars = vars[0:2]
+        nvars = n_elements(avars)
 
-  if not keyword_set(loadonly) then begin
-    avars = vars[0:2]
-    nvars = n_elements(avars)
+        str_element, topt, 'varnames', tvars, success=ok
+        if (not ok) then tvars = avars
+        for i=(nvars-1),0,-1 do if (~max(strcmp(avars[i],tvars))) then tvars = [avars[i],tvars]
 
-    str_element, topt, 'varnames', tvars, success=ok
-    if (not ok) then tvars = avars
-    for i=(nvars-1),0,-1 do if (~max(strcmp(avars[i],tvars))) then tvars = [avars[i],tvars]
-
-    if (treset) then timespan,[tmin,tmax],/sec
-    tplot,tvars
-    if (donow) then timebar,systime(/utc,/sec),line=1
-    if (pflg) then timebar,pds_rel,line=2
+        if (treset) then timespan,[tmin,tmax],/sec
+        tplot,tvars
+        if (donow) then timebar,systime(/utc,/sec),line=1
+        if (pflg) then timebar,pds_rel,line=2
+     endif
   endif
 
   return
