@@ -651,7 +651,7 @@ ddlevelsmenu.setup("ddtopmenubar", "topbar") //ddlevelsmenu.setup("mainmenuid", 
 								<option value="2016" />2016
 								<option value="2017" />2017
 								<option value="2018" />2018
-								<option value="2018" />2019
+								<option value="2019" />2019
 							</select>
 							
 							<select name="set_month" id="set_month" onchange="syncBottomToTop()">
@@ -758,7 +758,7 @@ ddlevelsmenu.setup("ddtopmenubar", "topbar") //ddlevelsmenu.setup("mainmenuid", 
 								<option value="2016" />2016
 								<option value="2017" />2017
 								<option value="2018" />2018
-								<option value="2018" />2019
+								<option value="2019" />2019
 							</select>
 							<select name="set_month_bottom" id="set_month_bottom" onchange="syncTopToBottom()">
 								<option value="01" />Jan
