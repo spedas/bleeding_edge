@@ -50,7 +50,7 @@ pro elf_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
   
   if !elf.init ne 0 then begin
     ;Assure that trailing slashes exist on data directories
-    !elf.local_data_dir = spd_addslash(!elf.local_data_dir)
+    !elf.local_data_dir = !elf.local_data_dir + '\'  ;spd_addslash(!elf.local_data_dir)
     !elf.remote_data_dir = spd_addslash(!elf.remote_data_dir)
     return
   endif

@@ -170,8 +170,13 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
 
           if is_ac then begin
 
-            if navg_data.y[i] LE 16 then delta_x = 2d^17 / 150d3 * navg_data.y[i] / n_spec;; base dt is 1 PPC
-            if navg_data.y[i] GE 32 then delta_x = 2d^17 / 150d3 * double(floor(navg_data.y[i] / 16d)) / n_spec ;; base dt is N PPC
+            ;if navg_data.y[i] LE 16 then delta_x = 2d^17 / 150d3 * navg_data.y[i] / n_spec;; base dt is 1 PPC
+            ;if navg_data.y[i] GE 32 then delta_x = 2d^17 / 150d3 * double(floor(navg_data.y[i] / 16d)) / n_spec ;; base dt is N PPC
+
+            n_avg_i = 2l^(navg_data.y[i])
+
+            if n_avg_i LE 16 then delta_x = 2d^17 / 150d3 * n_avg_i / n_spec;; base dt is 1 PPC
+            if n_avg_i GE 32 then delta_x = 2d^17 / 150d3 * double(floor(n_avg_i / 16d)) / n_spec ;; base dt is N PPC
 
           endif else begin
 

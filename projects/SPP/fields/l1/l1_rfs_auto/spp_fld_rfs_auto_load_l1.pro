@@ -16,7 +16,8 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'compression', 'ystyle', 1
   options, prefix + 'compression', 'colors', color
   options, prefix + 'compression', 'yminor', 1
-  options, prefix + 'compression', 'psym', 4
+  ;options, prefix + 'compression', 'psym', 4
+  options, prefix + 'compression', 'psym_lim', 100
   options, prefix + 'compression', 'symsize', 0.5
   options, prefix + 'compression', 'panel_size', 0.35
   options, prefix + 'compression', 'ytitle', receiver_str + '!CAUTO!CCmprs'
@@ -26,7 +27,8 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'peaks', 'ystyle', 1
   options, prefix + 'peaks', 'colors', color
   options, prefix + 'peaks', 'yminor', 1
-  options, prefix + 'peaks', 'psym', 4
+;  options, prefix + 'peaks', 'psym', 4
+  options, prefix + 'peaks', 'psym_lim', 100
   options, prefix + 'peaks', 'symsize', 0.5
   options, prefix + 'peaks', 'panel_size', 0.35
   options, prefix + 'peaks', 'ytitle', receiver_str + '!CAUTO!CPks En'
@@ -36,7 +38,8 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'averages', 'ystyle', 1
   options, prefix + 'averages', 'colors', color
   options, prefix + 'averages', 'yminor', 1
-  options, prefix + 'averages', 'psym', 4
+;  options, prefix + 'averages', 'psym', 4
+  options, prefix + 'averages', 'psym_lim', 100
   options, prefix + 'averages', 'symsize', 0.5
   options, prefix + 'averages', 'panel_size', 0.35
   options, prefix + 'averages', 'ytitle', receiver_str + '!CAUTO!CAvg En'
@@ -49,7 +52,8 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'gain', 'ystyle', 1
   options, prefix + 'gain', 'colors', color
   options, prefix + 'gain', 'yminor', 1
-  options, prefix + 'gain', 'psym', 4
+;  options, prefix + 'gain', 'psym', 4
+  options, prefix + 'gain', 'psym_lim', 100
   options, prefix + 'gain', 'symsize', 0.5
   options, prefix + 'gain', 'panel_size', 0.35
   options, prefix + 'gain', 'ytitle', receiver_str + '!CAUTO!CGain'
@@ -60,7 +64,8 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'hl', 'ystyle', 1
   options, prefix + 'hl', 'colors', color
   options, prefix + 'hl', 'yminor', 1
-  options, prefix + 'hl', 'psym', 4
+;  options, prefix + 'hl', 'psym', 4
+  options, prefix + 'hl', 'psym_lim', 100
   options, prefix + 'hl', 'symsize', 0.5
   options, prefix + 'hl', 'panel_size', 0.5
   options, prefix + 'hl', 'ytitle', receiver_str + '!CAUTO!CHL'
@@ -70,7 +75,8 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'nsum', 'ystyle', 1
   options, prefix + 'nsum', 'yminor', 1
   options, prefix + 'nsum', 'colors', color
-  options, prefix + 'nsum', 'psym', 4
+;  options, prefix + 'nsum', 'psym', 4
+  options, prefix + 'nsum', 'psym_lim', 100
   options, prefix + 'nsum', 'symsize', 0.5
   options, prefix + 'nsum', 'ytitle', receiver_str + '!CAUTO!CNSUM'
   options, prefix + 'nsum', 'ysubtitle', ''
@@ -79,7 +85,8 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'ch?', 'ystyle', 1
   options, prefix + 'ch?', 'yminor', 1
   options, prefix + 'ch?', 'colors', color
-  options, prefix + 'ch?', 'psym', 4
+;  options, prefix + 'ch?', 'psym', 4
+  options, prefix + 'ch?', 'psym_lim', 100
   options, prefix + 'ch?', 'symsize', 0.5
   options, prefix + 'ch0', 'ytitle', receiver_str + '!CAUTO!CCH0 SRC'
   options, prefix + 'ch1', 'ytitle', receiver_str + '!CAUTO!CCH1 SRC'
