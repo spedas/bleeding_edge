@@ -13,8 +13,8 @@
 ; 
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-05-03 17:43:13 -0700 (Thu, 03 May 2018) $
-; $LastChangedRevision: 25164 $
+; $LastChangedDate: 2019-01-08 12:02:58 -0800 (Tue, 08 Jan 2019) $
+; $LastChangedRevision: 26437 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_hpca_set_metadata.pro $
 ;-
 
@@ -53,35 +53,35 @@ pro mms_hpca_set_metadata, tplotnames, prefix = prefix, fov = fov, anodes = anod
 
                 case tplotnames[vars_idx] of
                     ; count rate variable
-                    prefix + '_hpca_hplus_count_rate'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="H!U+!N Energy (eV)", ztitle='H!U+!N Count Rate (0.625 s)!U-1!N', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_heplus_count_rate'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U+!N Energy (eV)", ztitle='He!U+!N Count Rate (0.625 s)!U-1!N', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_heplusplus_count_rate'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U++!N Energy (eV)", ztitle='He!U++!N Count Rate (0.625 s)!U-1!N', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_oplus_count_rate'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U+!N Energy (eV)", ztitle='O!U+!N Count Rate (0.625 s)!U-1!N', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_oplusplus_count_rate'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U++!N Energy (eV)", ztitle='O!U++!N Count Rate (0.625 s)!U-1!N', ysubtitle=ysubtitle_fov
+                    prefix + '_hpca_hplus_count_rate'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="H!U+!N Energy (eV)", ztitle='H!U+!N Count Rate (0.625 s)!U-1!N', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_heplus_count_rate'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U+!N Energy (eV)", ztitle='He!U+!N Count Rate (0.625 s)!U-1!N', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_heplusplus_count_rate'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U++!N Energy (eV)", ztitle='He!U++!N Count Rate (0.625 s)!U-1!N', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_oplus_count_rate'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U+!N Energy (eV)", ztitle='O!U+!N Count Rate (0.625 s)!U-1!N', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_oplusplus_count_rate'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U++!N Energy (eV)", ztitle='O!U++!N Count Rate (0.625 s)!U-1!N', ysubtitle=ysubtitle_fov, yunits='eV'
                     ; RF corrected counts
-                    prefix + '_hpca_hplus_RF_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="H!U+!N Energy (eV)", ztitle='H!U+!N RF Corrected Counts', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_heplus_RF_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U+!N Energy (eV)", ztitle='He!U+!N RF Corrected Counts', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_heplusplus_RF_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U++!N Energy (eV)", ztitle='He!U++!N RF Corrected Counts', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_oplus_RF_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U+!N Energy (eV)", ztitle='O!U+!N RF Corrected Counts', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_oplusplus_RF_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U++!N Energy (eV)", ztitle='O!U++!N RF Corrected Counts', ysubtitle=ysubtitle_fov
+                    prefix + '_hpca_hplus_RF_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="H!U+!N Energy (eV)", ztitle='H!U+!N RF Corrected Counts', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_heplus_RF_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U+!N Energy (eV)", ztitle='He!U+!N RF Corrected Counts', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_heplusplus_RF_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U++!N Energy (eV)", ztitle='He!U++!N RF Corrected Counts', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_oplus_RF_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U+!N Energy (eV)", ztitle='O!U+!N RF Corrected Counts', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_oplusplus_RF_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U++!N Energy (eV)", ztitle='O!U++!N RF Corrected Counts', ysubtitle=ysubtitle_fov, yunits='eV'
                     ; background corrected counts
-                    prefix + '_hpca_hplus_bkgd_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="H!U+!N Energy (eV)", ztitle='H!U+!N Background Corrected Counts', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_heplus_bkgd_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U+!N Energy (eV)", ztitle='He!U+!N Background Corrected Counts', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_heplusplus_bkgd_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U++!N Energy (eV)", ztitle='He!U++!N Background Corrected Counts', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_oplus_bkgd_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U+!N Energy (eV)", ztitle='O!U+!N Background Corrected Counts', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_oplusplus_bkgd_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U++!N Energy (eV)", ztitle='O!U++!N Background Corrected Counts', ysubtitle=ysubtitle_fov
+                    prefix + '_hpca_hplus_bkgd_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="H!U+!N Energy (eV)", ztitle='H!U+!N Background Corrected Counts', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_heplus_bkgd_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U+!N Energy (eV)", ztitle='He!U+!N Background Corrected Counts', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_heplusplus_bkgd_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U++!N Energy (eV)", ztitle='He!U++!N Background Corrected Counts', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_oplus_bkgd_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U+!N Energy (eV)", ztitle='O!U+!N Background Corrected Counts', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_oplusplus_bkgd_corrected'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U++!N Energy (eV)", ztitle='O!U++!N Background Corrected Counts', ysubtitle=ysubtitle_fov, yunits='eV'
                     ; normalized counts
-                    prefix + '_hpca_hplus_norm_counts'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="H!U+!N Energy (eV)", ztitle='H!U+!N Normalized Counts', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_heplus_norm_counts'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U+!N Energy (eV)", ztitle='He!U+!N Normalized Counts', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_heplusplus_norm_counts'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U++!N Energy (eV)", ztitle='He!U++!N Normalized Counts', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_oplus_norm_counts'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U+!N Energy (eV)", ztitle='O!U+!N Normalized Counts', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_oplusplus_norm_counts'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U++!N Energy (eV)", ztitle='O!U++!N Normalized Counts', ysubtitle=ysubtitle_fov
+                    prefix + '_hpca_hplus_norm_counts'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="H!U+!N Energy (eV)", ztitle='H!U+!N Normalized Counts', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_heplus_norm_counts'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U+!N Energy (eV)", ztitle='He!U+!N Normalized Counts', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_heplusplus_norm_counts'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U++!N Energy (eV)", ztitle='He!U++!N Normalized Counts', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_oplus_norm_counts'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U+!N Energy (eV)", ztitle='O!U+!N Normalized Counts', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_oplusplus_norm_counts'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U++!N Energy (eV)", ztitle='O!U++!N Normalized Counts', ysubtitle=ysubtitle_fov, yunits='eV'
                     ; flux
-                    prefix + '_hpca_hplus_flux'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="H!U+!N Energy (eV)", ztitle='H!U+!N Flux (cm!U2!N s sr eV)!U-1!N', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_heplus_flux'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U+!N Energy (eV)", ztitle='He!U+!N Flux (cm!U2!N s sr eV)!U-1!N', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_heplusplus_flux'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U++!N Energy (eV)", ztitle='He!U++!N Flux (cm!U2!N s sr eV)!U-1!N', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_oplus_flux'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U+!N Energy (eV)", ztitle='O!U+!N Flux (cm!U2!N s sr eV)!U-1!N', ysubtitle=ysubtitle_fov
-                    prefix + '_hpca_oplusplus_flux'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U++!N Energy (eV)", ztitle='O!U++!N Flux (cm!U2!N s sr eV)!U-1!N', ysubtitle=ysubtitle_fov
+                    prefix + '_hpca_hplus_flux'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="H!U+!N Energy (eV)", ztitle='H!U+!N Flux (cm!U2!N s sr eV)!U-1!N', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_heplus_flux'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U+!N Energy (eV)", ztitle='He!U+!N Flux (cm!U2!N s sr eV)!U-1!N', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_heplusplus_flux'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U++!N Energy (eV)", ztitle='He!U++!N Flux (cm!U2!N s sr eV)!U-1!N', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_oplus_flux'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U+!N Energy (eV)", ztitle='O!U+!N Flux (cm!U2!N s sr eV)!U-1!N', ysubtitle=ysubtitle_fov, yunits='eV'
+                    prefix + '_hpca_oplusplus_flux'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="O!U++!N Energy (eV)", ztitle='O!U++!N Flux (cm!U2!N s sr eV)!U-1!N', ysubtitle=ysubtitle_fov, yunits='eV'
                     ; velocity distribution function
                     prefix + '_hpca_hplus_vel_dist_fn'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="H!U+!N Energy (eV)", ztitle='H!U+!N Velocity Distribution (s!U3!N cm!U-6!N)', ysubtitle=ysubtitle_fov
                     prefix + '_hpca_heplus_vel_dist_fn'+suffix+this_fov: options, tplotnames[vars_idx], ytitle="He!U+!N Energy (eV)", ztitle='He!U+!N Velocity Distribution (s!U3!N cm!U-6!N)', ysubtitle=ysubtitle_fov

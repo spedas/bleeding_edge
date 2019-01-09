@@ -47,6 +47,8 @@
 ;             Set to 2 for scientific notation only ('1.23e-2')
 ;  [B,V,SUN]_COLOR: Specify the color of the corresponding support vector.
 ;                   (e.g. "b_color=0", see IDL graphics documentation for options)
+;  [B,V,SUN]_THICK: Specify the line thickness of the corresponding support vector
+;  [B,V,SUN]_LINESTYLE: Specify the linestyle of the corresponding support vector
 ;  NOCOLORBAR: Suppress z axis color bar.
 ;
 ;  WINDOW:  Index of plotting window to be used.
@@ -75,8 +77,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-16 10:02:01 -0700 (Thu, 16 Aug 2018) $
-;$LastChangedRevision: 25643 $
+;$LastChangedDate: 2019-01-08 15:44:16 -0800 (Tue, 08 Jan 2019) $
+;$LastChangedRevision: 26442 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/spd_slice2d_plot.pro $
 ;
 ;-
@@ -105,6 +107,9 @@ pro spd_slice2d_plot, slice, $
                        plotbulk=plotbulk, plotbfield=plotbfield, $
                        plotorigin=plotorigin, $
                        b_color=b_color, v_color=v_color, sun_color=sun_color, $
+                       b_thick=b_thick, b_linestyle=b_linestyle, $
+                       v_thick=v_thick, v_linestyle=v_linestyle, $
+                       sun_thick=sun_thick, sun_linestyle=sun_linestyle, $
                        custom=custom, nocolorbar=nocolorbar, $
                        background_color_index=background_color_index, $
                        background_color_rgb=background_color_rgb, $
@@ -154,6 +159,13 @@ pro spd_slice2d_plot, slice, $
   if undefined(b_color) then b_color = !d.table_size-165  ;cyan
   if undefined(v_color) then v_color = !d.table_size-9  ;red
   if undefined(sun_color) then sun_color = 0  ;black
+  
+  if undefined(v_thick) then v_thick = 1
+  if undefined(b_thick) then b_thick = 1
+  if undefined(sun_thick) then sun_thick = 1
+  if undefined(v_linestyle) then v_linestyle = 2
+  if undefined(b_linestyle) then b_linestyle = 2
+  if undefined(sun_linestyle) then sun_linestyle = 2
 
   ; X,Y,Z ranges
   if keyword_set(xrange) && ~keyword_set(slice.rlog) then begin
@@ -407,9 +419,9 @@ pro spd_slice2d_plot, slice, $
     if n_elements(slice.bulk) eq 3 and finite(total(slice.bulk))  then begin
     ; bulk velocity should already be in the coords defined for the slice plane
       if keyword_set(plotorigin) then begin
-        oplot, [slice.bulk[0],slice.bulk[0]], yrange, linestyle=2, thick=1, color=v_color
-        oplot, xrange, [slice.bulk[1],slice.bulk[1]], linestyle=2, thick=1, color=v_color
-      endif else oplot, [0,slice.bulk[0]], [0,slice.bulk[1]], color=v_color
+        oplot, [slice.bulk[0],slice.bulk[0]], yrange, linestyle=v_linestyle, thick=v_thick, color=v_color
+        oplot, xrange, [slice.bulk[1],slice.bulk[1]], linestyle=v_linestyle, thick=v_thick, color=v_color
+      endif else oplot, [0,slice.bulk[0]], [0,slice.bulk[1]], color=v_color, linestyle=v_linestyle, thick=v_thick
     endif
   endif
 
@@ -421,9 +433,9 @@ pro spd_slice2d_plot, slice, $
       ;make total length equal to the smallest axis limit and plot projection
       sunvec = slice.sunvec * vector_length
       if keyword_set(plotorigin) then begin
-        oplot, [sunvec[0],sunvec[0]], yrange, linestyle=2, thick=1, color=v_color
-        oplot, xrange, [sunvec[1],sunvec[1]], linestyle=2, thick=1, color=v_color
-      endif else oplot, [0,sunvec[0]],[0,sunvec[1]], color=sun_color
+        oplot, [sunvec[0],sunvec[0]], yrange, linestyle=sun_linestyle, thick=sun_thick, color=sun_color
+        oplot, xrange, [sunvec[1],sunvec[1]], linestyle=sun_linestyle, thick=sun_thick, color=sun_color
+      endif else oplot, [0,sunvec[0]],[0,sunvec[1]], color=sun_color, linestyle=sun_linestyle, thick=sun_thick
     endif else begin
       dprint, dlevel=1, 'No valid sun direction to plot.' 
     endelse
@@ -438,8 +450,8 @@ pro spd_slice2d_plot, slice, $
       ;and in-plane component as proportional solid line
       bfield = slice.bfield / sqrt(total(slice.bfield^2)) * vector_length
       bdir = slice.bfield[0:1] / sqrt(total(slice.bfield[0:1]^2)) * vector_length
-      oplot, [0,bdir[0]],[0,bdir[1]], color=b_color, linestyle=1
-      oplot, [0,bfield[0]],[0,bfield[1]], color=b_color
+      oplot, [0,bdir[0]],[0,bdir[1]], color=b_color, linestyle=v_linestyle, thick=v_thick
+      oplot, [0,bfield[0]],[0,bfield[1]], color=b_color, linestyle=v_linestyle, thick=v_thick
     endif else begin
       dprint, dlevel=1, 'To plot the B field vector the mag_data keyword must'+ $ 
                         ' be specified in call to spd_slice2d.' 

@@ -25,7 +25,7 @@
 ;-
 
 
-pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct
+pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,graybkg=graybkg
 COMMON colors, r_orig, g_orig, b_orig, r_curr, g_curr, b_curr
 @colors_com
 
@@ -76,6 +76,18 @@ endif
 r[cols] = [0,1,0,0,0,1,1,1]*255b
 g[cols] = [0,0,0,1,1,1,0,1]*255b
 b[cols] = [0,1,1,1,0,0,0,1]*255b
+
+if keyword_set(graybkg) then begin
+    r[cols[7]] = 211b
+    g[cols[7]] = 211b
+    b[cols[7]] = 211b
+    if n_elements(graybkg) eq 3 then begin
+        r[cols[7]] = graybkg[0]
+        g[cols[7]] = graybkg[1]
+        b[cols[7]] = graybkg[2]
+    endif
+endif
+
 tvlct,r,g,b
 
 r_curr = r  ;Important!  Update the colors common block.

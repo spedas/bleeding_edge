@@ -19,15 +19,16 @@
 ;  tplotnames: Array of tplot variable names created by the parent 
 ;              routine.  Any tplot variables created in this routine
 ;              should have their names appended to this array.
-;  
+;  coord: if set, then velocity and flux variables are created for the
+;         input coordinate system, in addition to the DSL variables
 ;
 ;Notes:
 ;  Much of this code was copied from thm_part_moments.pro
 ;
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2016-10-07 12:12:46 -0700 (Fri, 07 Oct 2016) $
-;$LastChangedRevision: 22069 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2019-01-08 14:14:59 -0800 (Tue, 08 Jan 2019) $
+;$LastChangedRevision: 26441 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/thm_part_products/thm_pgs_moments_tplot.pro $
 ;-
 pro thm_pgs_moments_tplot, moments, $
@@ -35,6 +36,7 @@ pro thm_pgs_moments_tplot, moments, $
                            prefix=prefix0, $
                            suffix=suffix0, $
                            tplotnames=tplotnames, $
+                           coord=coord, $;jmm, 2019-01-07
                            _extra = _extra
 
     compile_opt idl2, hidden
@@ -50,7 +52,9 @@ pro thm_pgs_moments_tplot, moments, $
     ;error estimates produced by moments_3d
     valid_moments = ['avgtemp', 'density', 'eflux', 'flux', $
                      'mftens', 'ptens', 'sc_current', $
-                     'velocity', 'vthermal'] 
+                     'velocity', 'vthermal']
+    ;moments with coordinate systems, subject to coord keyword
+    coord_moments = ['eflux', 'flux', 'velocity']    
   endif else begin
     ;moments produced by moments_3d
     valid_moments = ['avgtemp', 'density', 'eflux', 'flux', $
@@ -58,6 +62,8 @@ pro thm_pgs_moments_tplot, moments, $
                      'velocity', 'vthermal', $
                      'magf', 'magt3', 't3', 'sc_pot', 'symm', $
                      'symm_theta', 'symm_phi', 'symm_ang']
+    ;moments with coordinate systems, subject to coord keyword
+    coord_moments = ['eflux', 'flux', 'velocity']
   endelse
 
 
@@ -119,7 +125,13 @@ pro thm_pgs_moments_tplot, moments, $
   spd_new_coords, strfilter(mom_tnames,'*_magf'+suffix), coords_in = 'DSL'
   spd_new_coords, strfilter(mom_tnames,'*_magt3'+suffix), coords_in = 'FA'
 
-  
+  ;change coordinates if coords keyword is set
+  if keyword_set(coord) then begin
+     for j = 0, n_elements(coord_moments)-1 do begin
+        thm_cotrans, strfilter(mom_tnames, '*_'+coord_moments[j]+suffix), $
+                     out_coord = coord, out_suffix = '_'+coord
+     endfor
+  endif
   ;Output the names of created tplot variables
   ;-----------------------------------------
   tplotnames = undefined(tplotnames) ? mom_tnames:array_concat(tplotnames,mom_tnames)

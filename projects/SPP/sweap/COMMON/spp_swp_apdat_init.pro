@@ -53,9 +53,10 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
    ;;##################
 
    ;; Housekeeping - Rates - Events - Manipulator - Memory Dump
-   spp_apdat_info,'3b8'x,name='spi_memdump', apid_obj='spp_swp_memdump_apdat',       tname='spp_spi_memdump_', ttags='*',save_flag=save_flag,rt_flag=rt_flag
+   spp_apdat_info,'3b8'x,name='spi_memdump',  apid_obj='spp_swp_memdump_apdat',       tname='spp_spi_memdump_', ttags='*',save_flag=save_flag,rt_flag=rt_flag
    spp_apdat_info,'3b9'x,name='spi_events',   routine='spp_swp_spani_event_decom',        tname='spp_spi_events_',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
-   spp_apdat_info,'3ba'x,name='spi_tof',      routine='spp_swp_spani_tof_decom',          tname='spp_spi_tof_',      ttags='*',save_flag=save_flag,rt_flag=rt_flag
+   ;;spp_apdat_info,'3ba'x,name='spi_tof',      routine='spp_swp_spani_tof_decom',          tname='spp_spi_tof_',      ttags='*',save_flag=save_flag,rt_flag=rt_flag
+   spp_apdat_info,'3ba'x,name='spi_tof',      apid_obj='spp_swp_spi_tof_apdat',          tname='spp_spi_tof_',      ttags='*',save_flag=save_flag,rt_flag=rt_flag
    spp_apdat_info,'3bb'x,name='spi_rates',    apid_obj='spp_swp_spi_rates_apdat',         tname='spp_spi_rates_',    ttags='*CNTS',save_flag=save_flag,rt_flag=rt_flag
    spp_apdat_info,'3be'x,name='spi_hkp',      apid_obj='spp_swp_spi_hkp_apdat'  ,         tname='spp_spi_hkp_',      ttags='*TEMPS *NYS *MON* *MRAM* DACS HV_MODE CMDS_REC *ACT_FLAG',save_flag=save_flag,rt_flag=rt_flag
    spp_apdat_info,'3bf'x,name='spi_fhkp',     routine='spp_swp_spani_fast_hkp_decom',     tname='spp_spi_fhkp_',     ttags='*',save_flag=save_flag,rt_flag=rt_flag

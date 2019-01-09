@@ -83,7 +83,8 @@
 ;
 ;  display_object:  Object allowing dprint to export output messages
 ;
-;  
+;  coord: if set, then velocity and flux variables are created for the
+;         input coordinate system, in addition to the DSL variables
 ;Output Keywords:
 ;  tplotnames:  List of tplot variables that were created
 ;  get_data_structures:  Set to named variable to return data structures when generating
@@ -95,8 +96,8 @@
 ;
 ;
 ;$LastChangedBy: jimm $
-;$LastChangedDate: 2018-02-23 12:24:23 -0800 (Fri, 23 Feb 2018) $
-;$LastChangedRevision: 24767 $
+;$LastChangedDate: 2019-01-08 14:14:59 -0800 (Tue, 08 Jan 2019) $
+;$LastChangedRevision: 26441 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/thm_part_products/thm_part_products.pro $
 ;-
 
@@ -156,6 +157,7 @@ pro thm_part_products,probe=probe,$ ;The requested spacecraft ('a','b','c','d','
                      display_object=display_object, $ ;object allowing dprint to export output messages
 
                       enormalize=enormalize, $ ; divides flux with maximum flux
+                      coord = coord, $ ;For moments, convert to this coordinate system
                      _extra=ex ;TBD: consider implementing as _strict_extra 
 
 
@@ -163,8 +165,7 @@ pro thm_part_products,probe=probe,$ ;The requested spacecraft ('a','b','c','d','
   
   twin = systime(/sec)
   error = 1
-  
-  
+
   if n_elements(probe) gt 1 then begin
     dprint,"ERROR: thm_part_products doesn't support multiple probes. It can be called multiple times instead.",dlevel=1
     return
@@ -404,7 +405,7 @@ pro thm_part_products,probe=probe,$ ;The requested spacecraft ('a','b','c','d','
       endif
     endif
   endif
-  
+
   ;get support data for moments calculation
   if in_set(outputs_lc,'moments') then begin
     if units_lc ne 'eflux' then begin
@@ -419,7 +420,6 @@ pro thm_part_products,probe=probe,$ ;The requested spacecraft ('a','b','c','d','
   ;--------------------------------------------------------
   ;Loop over time to build the spectrograms/moments
   ;--------------------------------------------------------
-  
   for i = 0,n_elements(time_idx)-1 do begin
   
     spd_pgs_progress_update,last_tm,i,n_elements(time_idx)-1,display_object=display_object,type_string=strupcase(inst_format)
@@ -465,7 +465,6 @@ pro thm_part_products,probe=probe,$ ;The requested spacecraft ('a','b','c','d','
     if in_set(outputs_lc, 'moments') then begin
       spd_pgs_moments, clean_data, moments=moments, sigma=mom_sigma,delta_times=delta_times, get_error=get_error, mag_data=mag_data, sc_pot_data=sc_pot_data, index=i , _extra = ex
     endif
-
     ;Build energy spectrogram
     if in_set(outputs_lc, 'energy') then begin
       spd_pgs_make_e_spec, clean_data, spec=en_spec, sigma=en_sigma, yaxis=en_y, enormalize=enormalize
@@ -535,8 +534,7 @@ pro thm_part_products,probe=probe,$ ;The requested spacecraft ('a','b','c','d','
     endif
     
   endfor
- 
- 
+
   ;Place nans in regions outside the requested range
   ; -This is mainly to remove "bleeding" seen when limiting the range
   ;  along a coordinate where the data is not regularly gridded.
@@ -614,15 +612,14 @@ pro thm_part_products,probe=probe,$ ;The requested spacecraft ('a','b','c','d','
   ;Moments Variables
   if ~undefined(moments) then begin
     moments.time = times
-    thm_pgs_moments_tplot, moments, prefix=tplot_mom_prefix, suffix=suffix, tplotnames=tplotnames
+    thm_pgs_moments_tplot, moments, prefix=tplot_mom_prefix, suffix=suffix, tplotnames=tplotnames, coord = coord ;added coord, 2019-01-07, jmm
   endif
-  
+
   ;Moments Error Esitmates
   if ~undefined(mom_sigma) then begin
     mom_sigma.time = times
-    thm_pgs_moments_tplot, mom_sigma, /get_error, prefix=tplot_mom_prefix, suffix=suffix, tplotnames=tplotnames
+    thm_pgs_moments_tplot, mom_sigma, /get_error, prefix=tplot_mom_prefix, suffix=suffix, tplotnames=tplotnames, coord = coord ;added coord, 2019-01-07, jmm
   endif
-  
   if ~undefined(delta_times) then begin
     store_data,tplot_mom_prefix+'delta_time',data={x:times,y:delta_times},verbose=0
     tplotnames = array_concat(tplot_mom_prefix+'delta_time',tplotnames)
@@ -634,6 +631,6 @@ pro thm_part_products,probe=probe,$ ;The requested spacecraft ('a','b','c','d','
   endif
   
   error = 0
-  
+
   dprint,'Complete. Runtime: ',systime(/sec) - twin,' secs' 
 end

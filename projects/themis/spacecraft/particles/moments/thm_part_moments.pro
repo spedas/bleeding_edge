@@ -16,9 +16,9 @@
 ;  Old version in particles/deprecated
 ;  
 ;
-;$LastChangedBy: jimmpc1 $
-;$LastChangedDate: 2018-02-13 14:26:50 -0800 (Tue, 13 Feb 2018) $
-;$LastChangedRevision: 24697 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2019-01-08 14:13:15 -0800 (Tue, 08 Jan 2019) $
+;$LastChangedRevision: 26440 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/moments/thm_part_moments.pro $
 ;-
 pro thm_part_moments, probes = probes, $ ;string specifying probe(s)
@@ -79,13 +79,12 @@ pro thm_part_moments, probes = probes, $ ;string specifying probe(s)
                       
                       ;will probably be added to new code...
                       verbose = verbose, $
-                        
+                      coord = coord, $
                       
                       _extra = ex
    
                       
     compile_opt idl2
-
 
   ;----------------------------------------------------------------------------
   ;Notify user of newer version and deprecated keywords.
@@ -229,7 +228,6 @@ pro thm_part_moments, probes = probes, $ ;string specifying probe(s)
       sc_pot_name = ''
     endelse
   
-  
     ;Loop over data types
     for j=0, n_elements(datatypes_lc)-1 do begin
     
@@ -262,9 +260,9 @@ pro thm_part_moments, probes = probes, $ ;string specifying probe(s)
                          sst_sun_bins=sst_sun_bins,$   
                          
                          sst_cal=sst_cal, $ ;not an explicit keyword, required to retrieve correct data
-                         
+                         coord = coord, $ ;jmm, 2019-01-08
                          _extra=ex
-    
+
       ;Collect names of new tplot variables
       ;------------------------------------
       if ~undefined(tplotnames_tmp) then begin
@@ -291,7 +289,6 @@ pro thm_part_moments, probes = probes, $ ;string specifying probe(s)
     endfor
     
   endfor
-  
   
   
   

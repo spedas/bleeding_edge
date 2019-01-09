@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Jan  7 03:16:43 2019.<P>
+<STRONG>Last modified: </STRONG>Tue Jan  8 18:16:20 2019.<P>
  
 <HR>
  
@@ -171,7 +171,8 @@ Input Keywords:
 
   display_object:  Object allowing dprint to export output messages
 
-  
+  coord: if set, then velocity and flux variables are created for the
+         input coordinate system, in addition to the DSL variables
 Output Keywords:
   tplotnames:  List of tplot variables that were created
   get_data_structures:  Set to named variable to return data structures when generating
@@ -183,8 +184,8 @@ Notes:
 
 
 $LastChangedBy: jimm $
-$LastChangedDate: 2018-02-23 12:24:23 -0800 (Fri, 23 Feb 2018) $
-$LastChangedRevision: 24767 $
+$LastChangedDate: 2019-01-08 14:14:59 -0800 (Tue, 08 Jan 2019) $
+$LastChangedRevision: 26441 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/thm_part_products/thm_part_products.pro $
 </PRE><P>
 <STRONG>(See <A href="thm_part_products/thm_part_products.pro">projects/themis/spacecraft/particles/thm_part_products/thm_part_products.pro</A>)</STRONG><P>
@@ -669,15 +670,16 @@ Keywords:
   tplotnames: Array of tplot variable names created by the parent 
               routine.  Any tplot variables created in this routine
               should have their names appended to this array.
-  
+  coord: if set, then velocity and flux variables are created for the
+         input coordinate system, in addition to the DSL variables
 
 Notes:
   Much of this code was copied from thm_part_moments.pro
 
 
-$LastChangedBy: nikos $
-$LastChangedDate: 2016-10-07 12:12:46 -0700 (Fri, 07 Oct 2016) $
-$LastChangedRevision: 22069 $
+$LastChangedBy: jimm $
+$LastChangedDate: 2019-01-08 14:14:59 -0800 (Tue, 08 Jan 2019) $
+$LastChangedRevision: 26441 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/thm_part_products/thm_pgs_moments_tplot.pro $
 </PRE><P>
 <STRONG>(See <A href="thm_part_products/thm_pgs_moments_tplot.pro">projects/themis/spacecraft/particles/thm_part_products/thm_pgs_moments_tplot.pro</A>)</STRONG><P>
