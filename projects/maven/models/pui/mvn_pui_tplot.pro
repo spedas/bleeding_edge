@@ -48,9 +48,9 @@ pro mvn_pui_tplot,store=store,tplot=tplot,tohban=tohban,savetplot=savetplot,_ext
     edenpot=pui.data.swe.edenpot ;swea electron density (cm-3)
 
     store_data,'mvn_mag_MSO_(nT)',data={x:centertime,y:1e9*[[onesnt-1.],[mag],[sqrt(total(mag^2,2))]]},limits={yrange:[-10,10],labels:['0','Bx','By','Bz','Btot'],colors:'cbgrk',labflag:1}
-    store_data,'mvn_mag_Btot_(nT)',data={x:centertime,y:1e9*sqrt(total(mag^2,2))},limits={yrange:[.1,1000],ylog:1,ytickunits:'scientific'}
-    store_data,'mvn_Nsw_(cm-3)',data={x:centertime,y:pui.data.swi.swim.density},limits={yrange:[.01,100],ylog:1,ytickunits:'scientific'}
-    store_data,'mvn_Vsw_MSO_(km/s)',data={x:centertime,y:[[onesnt-1.],[transpose(pui.data.swi.swim.velocity_mso)],[-pui.data.swi.swim2.usw]]},limits={labels:['0','Vx','Vy','Vz','-Vtot'],colors:'cbgrk',labflag:1}
+    store_data,'mvn_mag_Btot_(nT)',data={x:centertime,y:1e9*sqrt(total(mag^2,2))},limits={yrange:[.1,1000],ylog:1,ytickunits:'scientific',constant:[1,10,100]}
+    store_data,'mvn_Nsw_(cm-3)',data={x:centertime,y:pui.data.swi.swim.density},limits={yrange:[.01,100],ylog:1,ytickunits:'scientific',constant:[.1,1,10]}
+    store_data,'mvn_Vsw_MSO_(km/s)',data={x:centertime,y:[[onesnt-1.],[transpose(pui.data.swi.swim.velocity_mso)],[-pui.data.swi.swim2.usw]]},limits={labels:['0','Vx','Vy','Vz','-Vtot'],colors:'cbgrk',labflag:1,constant:[200,0,-200,-400,-600,-800,-1000]}
     store_data,'Sin(thetaUB)',data={x:centertime,y:transpose(sintub)},limits={yrange:[0,1]}
     store_data,'E_Motional_(V/km)',data={x:centertime,y:1e3*transpose(emot)},limits={yrange:[.01,10],ylog:1,ytickunits:'scientific'}
     store_data,'Pickup_Gyro_Period_(sec)',data={x:centertime,y:transpose(pui.model[0:1].params.tg)},limits={yrange:[1,1e3],ylog:1,labels:['H+','O+'],colors:'br',labflag:1,ytickunits:'scientific'}
@@ -132,6 +132,6 @@ pro mvn_pui_tplot,store=store,tplot=tplot,tohban=tohban,savetplot=savetplot,_ext
     if keyword_set(savetplot) then makepng,datestr+'_main'
   endif
 
-  if keyword_set(tohban) then tplot,'alt2 mvn_euv_l0 swe_a4 mvn_swis_en_eflux mvn_Nsw_(cm-3) mvn_Vsw_MSO_(km/s) mvn_sep1_A-F_Rate_Energy mvn_sep1_B-O_Rate_Energy mvn_mag_MSO_(nT) mvn_mag_Btot_(nT) mvn_redures_LOmass_sta_c0 mvn_redures_HImass_sta_c0'
+  if keyword_set(tohban) then tplot,'alt2 mvn_euv_l0 swe_a4 mvn_swis_en_eflux mvn_Nsw_(cm-3) mvn_Vsw_MSO_(km/s) mvn_5min_sep1_A-F_Rate_Energy mvn_5min_sep1_B-O_Rate_Energy mvn_mag_MSO_(nT) mvn_mag_Btot_(nT) mvn_redures_LOmass_sta_c0 mvn_redures_HImass_sta_c0 mvn_5min_sep1_arc_ATT'
 
 end

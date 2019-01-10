@@ -178,9 +178,7 @@ if keyword_set(sep1data) then begin
 
   store_data,'mvn_data_redures_sep1',centertime,sep1cps,sep1data.v
   store_data,'mvn_data_redures_sep2',centertime,sep2cps,sep2data.v
-  options,'mvn_data_redures_sep?',spec=1,ztitle='counts/s',ytickunits='scientific',ztickunits='scientific'
-  ylim,'mvn_data_redures_sep?',10,1e3,1
-  zlim,'mvn_data_redures_sep?',.1,1e4,1
+  options,'mvn_data_redures_sep?',yrange=[10,1e3],zrange=[.1,1e4],ylog=1,zlog=1,spec=1,ztitle='counts/s',ytickunits='scientific',ztickunits='scientific'
 endif
 
 ;----------EUV----------

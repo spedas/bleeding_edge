@@ -122,9 +122,6 @@ pui.model[1].ifreq.tot=ifreq_o
 if pui0.ns eq 3 then pui.model[2].ifreq.tot=ifreq_h ;other species are equal to H
 
 store_data,'Ionization_Frequencies_(s-1)',pui.centertime,[[ifreq_o],[ifreq_h],[i_pi_o],[i_pi_h],[i_cx_o],[i_cx_h],[i_ei_o],[i_ei_h],[i_ei_o_pot],[i_ei_h_pot]]
-ylim,'Ionization_Frequencies_(s-1)',1e-9,1e-5,1
-options,'Ionization_Frequencies_(s-1)','labels',['Otot','Htot','PIO','PIH','CXO','CXH','EIO','EIH','EIOpot','EIHpot']
-options,'Ionization_Frequencies_(s-1)','labflag',-1
-;stop
+options,'Ionization_Frequencies_(s-1)',yrange=[1e-9,1e-5],ylog=1,labels=['Otot','Htot','PIO','PIH','CXO','CXH','EIO','EIH','EIOpot','EIHpot'],labflag=-1
 
 end

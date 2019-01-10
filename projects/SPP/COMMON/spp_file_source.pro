@@ -33,10 +33,10 @@
   ; Structure:
   ;  see "FILE_RETRIEVE" for a description of each structure element.
   ;
-  ; $LastChangedBy: $
-  ; $LastChangedDate:  $
-  ; $LastChangedRevision:  $
-  ; $URL:  $
+  ; $LastChangedBy: phyllisw2 $
+  ; $LastChangedDate: 2019-01-09 12:30:40 -0800 (Wed, 09 Jan 2019) $
+  ; $LastChangedRevision: 26447 $
+  ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_file_source.pro $
   ;-
 
 
