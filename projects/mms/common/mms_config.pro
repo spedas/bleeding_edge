@@ -29,8 +29,8 @@
 ; 2015-04-10, moka, Created based on 'thm_config'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-04-05 14:15:02 -0700 (Thu, 05 Apr 2018) $
-; $LastChangedRevision: 25005 $
+; $LastChangedDate: 2019-01-11 12:26:41 -0800 (Fri, 11 Jan 2019) $
+; $LastChangedRevision: 26453 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_config.pro $
 ;
 ;-
@@ -54,15 +54,17 @@ PRO mms_config, no_color_setup=no_color_setup, colortable=colortable
   ; Local Config File
   ;--------------------
   cfg = mms_config_read(); read config file
+
   if (size(cfg,/type) eq 8)then begin; if config file exists, update !mms from the file
     !mms.LOCAL_DATA_DIR = cfg.local_data_dir
+    if tag_exist(cfg, 'mirror_data_dir') then  !mms.MIRROR_DATA_DIR = cfg.mirror_data_dir
   endif else begin; if cfg not found,
     dir = mms_config_filedir(); create config directory
     !mms.LOCAL_DATA_DIR = spd_default_local_data_dir() + 'mms/'
     pref = {LOCAL_DATA_DIR: !mms.LOCAL_DATA_DIR}
     mms_config_write, pref
   endelse
-    
+
   ; Settings of environment variables can override mms_config
   if getenv('MMS_REMOTE_DATA_DIR') ne '' then $
     !mms.remote_data_dir = getenv('MMS_REMOTE_DATA_DIR')
@@ -80,7 +82,7 @@ PRO mms_config, no_color_setup=no_color_setup, colortable=colortable
     !mms.mirror_data_dir = getenv('MIRROR_DATA_DIR')
     !mms.mirror_data_dir = spd_addslash(!mms.mirror_data_dir)
   endif
-  
+
   ;------------------------
   ; Global Sytem Variables
   ;------------------------

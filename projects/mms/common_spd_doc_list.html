@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jan 10 18:16:40 2019.<P>
+<STRONG>Last modified: </STRONG>Fri Jan 11 18:16:28 2019.<P>
  
 <HR>
  
@@ -29,6 +29,8 @@ This page was created by the IDL library routine
 <br>(1) To set a proxy and establish a connection to SDC, on the fly.
 <LI><A HREF="#MMS_SET_VERBOSE">MMS_SET_VERBOSE</A>
 <br>Sets verbose level in !mms.verbose and in tplot_options
+<LI><A HREF="#MMS_UI_CONFIG">MMS_UI_CONFIG</A>
+<br>A widget that allows the user to set some of the fields in the
 <LI><A HREF="#REDUCE_BFIELD_DIMENSIONS">REDUCE_BFIELD_DIMENSIONS</A>
 <br>This routine reduces a tplot variable with B-field
 <br>
@@ -71,8 +73,8 @@ HISTORY:
  2015-04-10, moka, Created based on 'thm_config'
 
  $LastChangedBy: egrimes $
- $LastChangedDate: 2018-04-05 14:15:02 -0700 (Thu, 05 Apr 2018) $
- $LastChangedRevision: 25005 $
+ $LastChangedDate: 2019-01-11 12:26:41 -0800 (Fri, 11 Jan 2019) $
+ $LastChangedRevision: 26453 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_config.pro $
 
 </PRE><P>
@@ -292,7 +294,7 @@ HISTORY:
 <A NAME="MMS_SET_VERBOSE">
 <H2>MMS_SET_VERBOSE</H2></A>
 <A HREF="#MMS_PROXY">[Previous Routine]</A>
-<A HREF="#REDUCE_BFIELD_DIMENSIONS">[Next Routine]</A>
+<A HREF="#MMS_UI_CONFIG">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -320,9 +322,39 @@ HISTORY:
 <STRONG>(See <A href="common/mms_set_verbose.pro">projects/mms/common/mms_set_verbose.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_UI_CONFIG">
+<H2>MMS_UI_CONFIG</H2></A>
+<A HREF="#MMS_SET_VERBOSE">[Previous Routine]</A>
+<A HREF="#REDUCE_BFIELD_DIMENSIONS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ mms_ui_config
+ 
+PURPOSE:
+ A widget that allows the user to set some of the fields in the
+ !mms system variable: Also allows the user to set the mms
+ configuration text file, and save it
+ 
+HISTORY:
+ 17-may-2007, jmm, jimm@ssl.berkeley.edu
+ 2-jul-2007, jmm, 'Add trailing slash to data directories, if necessary
+ 5-may-2008, cg, removed text boxes and replaced with radio buttons or
+                 pulldowns, fixed reset to default
+ 11-feb-2009, jmm, restored old version
+ 11-jan-2019, egrimes, forked for MMS
+ 
+$LastChangedBy: egrimes $
+$LastChangedDate: 2019-01-11 12:28:10 -0800 (Fri, 11 Jan 2019) $
+$LastChangedRevision: 26454 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_ui_config.pro $
+</PRE><P>
+<STRONG>(See <A href="common/mms_ui_config.pro">projects/mms/common/mms_ui_config.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="REDUCE_BFIELD_DIMENSIONS">
 <H2>REDUCE_BFIELD_DIMENSIONS</H2></A>
-<A HREF="#MMS_SET_VERBOSE">[Previous Routine]</A>
+<A HREF="#MMS_UI_CONFIG">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
