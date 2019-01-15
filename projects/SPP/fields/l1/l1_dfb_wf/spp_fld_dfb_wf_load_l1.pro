@@ -25,15 +25,21 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
   if keyword_set(compressed) then compressed_str = '(Comp)' else $
     compressed_str = ''
 
-  options, prefix + 'wav_tap', 'yrange', [-1.,16.]
-  options, prefix + 'wav_tap', 'ystyle', 1
-  options, prefix + 'wav_tap', 'psym', 4
+  get_data, prefix + 'wav_tap', data = d_wav_tap
+  ;options, prefix + 'wav_tap', 'yrange', [-1.,16.]
+  ;options, prefix + 'wav_tap', 'yrange', [min(d_wav_tap.y)-1, max(d_wav_tap.y) + 1]
+  ;options, prefix + 'wav_tap', 'ystyle', 1
+  options, prefix + 'wav_tap', 'ynozero', 1
+  options, prefix + 'wav_tap', 'colors', [6]
+  ;options, prefix + 'wav_tap', 'psym', 4
+  options, prefix + 'wav_tap', 'psym_lim', 100
   options, prefix + 'wav_tap', 'ytitle', $
     'DFB WF ' + strmid(prefix,15,2) + compressed_str + '!CTap'
 
   options, prefix + 'compression', 'yrange', [-0.25,1.25]
   options, prefix + 'compression', 'ystyle', 1
-  options, prefix + 'compression', 'psym', 4
+  ;options, prefix + 'compression', 'psym', 4
+  options, prefix + 'compression', 'psym_lim', 100
   options, prefix + 'compression', 'symsize', 0.5
   options, prefix + 'compression', 'panel_size', 0.5
   options, prefix + 'compression', 'ytitle', $
@@ -41,7 +47,8 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
 
   options, prefix + 'wav_enable', 'yrange', [-0.25,1.25]
   options, prefix + 'wav_enable', 'ystyle', 1
-  options, prefix + 'wav_enable', 'psym', 4
+  ;options, prefix + 'wav_enable', 'psym', 4
+  options, prefix + 'wav_enable', 'psym_lim', 100
   options, prefix + 'wav_enable', 'symsize', 0.5
   options, prefix + 'wav_enable', 'panel_size', 0.5
   options, prefix + 'wav_enable', 'ytitle', $
@@ -50,7 +57,8 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
   options, prefix + 'wav_sel', 'yrange', [-1,16]
   options, prefix + 'wav_sel', 'ystyle', 1
 
-  options, prefix + 'wav_sel', 'psym', 4
+  ;options, prefix + 'wav_sel', 'psym', 4
+  options, prefix + 'wav_sel', 'psym_lim', 4
   options, prefix + 'wav_sel', 'symsize', 0.5
 
   get_data, prefix + 'wf_pkt_data', data = d
