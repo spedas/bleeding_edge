@@ -5,8 +5,8 @@
 ;   please send them to egrimes@igpp.ucla.edu
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-09-20 14:21:38 -0700 (Tue, 20 Sep 2016) $
-; $LastChangedRevision: 21889 $
+; $LastChangedDate: 2019-01-15 11:43:47 -0800 (Tue, 15 Jan 2019) $
+; $LastChangedRevision: 26465 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_version_numbers_crib.pro $
 ;-
 
@@ -31,5 +31,10 @@ mms_add_cdf_versions, 'eis', eis_versions
 mms_add_cdf_versions, 'fpi', fpi_versions, data_rate='fast' ; note usage of data_rate keyword
 mms_add_cdf_versions, 'fgm', fgm_versions
 mms_add_cdf_versions, 'feeps', feeps_versions
+stop
+
+; change the location of the version #s on the figure using the keywords /top_align and/or /right_align
+mms_add_cdf_versions, 'feeps', feeps_versions, /reset, /right_align, /top_align
+stop
 
 end
