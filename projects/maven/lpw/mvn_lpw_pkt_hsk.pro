@@ -68,8 +68,8 @@ pro mvn_lpw_pkt_hsk, output,lpw_const,tplot_var=tplot_var,spice=spice
     ENDIF ELSE BEGIN
       clock_field_str  =  ['Spacecraft Clock ', 's/c time seconds from 1970-01-01/00:00']
       time             = time_sc                                                                                            ;data points in s/c time
-      clock_start_t    = [time_sc(0)-t_epoch,          time_sc(0)]                         ;corresponding start times to above string array, s/c time
-      clock_end_t      = [time_sc(nn_pktnum-1)-t_epoch,time_sc(nn_pktnum-1)] ;corresponding end times, s/c time
+      clock_start_t    = [time_sc[0]-t_epoch,          time_sc[0]]                         ;corresponding start times to above string array, s/c time
+      clock_end_t      = [time_sc[nn_pktnum-1]-t_epoch,time_sc[nn_pktnum-1]] ;corresponding end times, s/c time
       spice_used       = 'SPICE not used'
       str_xtitle       = 'Time (s/c)'
       kernel_version    = 'N/A'
@@ -161,9 +161,9 @@ pro mvn_lpw_pkt_hsk, output,lpw_const,tplot_var=tplot_var,spice=spice
         'y',    fltarr(nn_pktnum,3) )     ;1-D
       ;-------------- derive  time/variable ----------------
       data.x=time
-      data.y[*,0] = output.Preamp_Temp1[*]    * const_hsk_temp(0,0) + const_hsk_temp(1,0)     ;
-      data.y[*,1] = output.Preamp_Temp2[*]    * const_hsk_temp(0,1) + const_hsk_temp(1,1)  ;
-      data.y[*,2] = output.Beb_Temp[*]        * const_hsk_temp(0,2) + const_hsk_temp(1,2) ;
+      data.y[*,0] = output.Preamp_Temp1[*]    * const_hsk_temp[0,0] + const_hsk_temp[1,0]     ;
+      data.y[*,1] = output.Preamp_Temp2[*]    * const_hsk_temp[0,1] + const_hsk_temp[1,1]  ;
+      data.y[*,2] = output.Beb_Temp[*]        * const_hsk_temp[0,2] + const_hsk_temp[1,2] ;
 
       ;-------------------------------------------
       ;--------------- dlimit   ------------------
@@ -195,9 +195,9 @@ pro mvn_lpw_pkt_hsk, output,lpw_const,tplot_var=tplot_var,spice=spice
         'SPICE_kernel_flag'      ,     spice_used, $
         'L0_datafile'     ,     filename_L0 , $
         'cal_vers'        ,     cal_ver+' # '+pkt_ver ,$
-        'cal_y_const1'    ,     'Used: preamp1 ' + strcompress(const_hsk_temp(0,0),/remove_all) +' + '+ strcompress(const_hsk_temp(1,0),/remove_all) + $ ;
-        ' preamp2 ' + strcompress(const_hsk_temp(0,1),/remove_all) +' + '+ strcompress(const_hsk_temp(1,2),/remove_all) + $ ;
-        ' BEB ' + strcompress(const_hsk_temp(0,2),/remove_all) +' + '+ strcompress(const_hsk_temp(1,2),/remove_all) , $; Fixed convert information from measured binary values to physical units, variables from ground testing and design
+        'cal_y_const1'    ,     'Used: preamp1 ' + strcompress(const_hsk_temp[0,0],/remove_all) +' + '+ strcompress(const_hsk_temp[1,0],/remove_all) + $ ;
+        ' preamp2 ' + strcompress(const_hsk_temp[0,1],/remove_all) +' + '+ strcompress(const_hsk_temp[1,2],/remove_all) + $ ;
+        ' BEB ' + strcompress(const_hsk_temp[0,2],/remove_all) +' + '+ strcompress(const_hsk_temp[1,2],/remove_all) , $; Fixed convert information from measured binary values to physical units, variables from ground testing and design
         ;'cal_y_const2'    ,     'Used :' , $  ; Fixed convert information from measured binary values to physical units, variables from space testing
         ;'cal_datafile'    ,     'No calibration file used' , $
         'cal_source'      ,     'Information from PKT: HSK', $
@@ -228,8 +228,8 @@ pro mvn_lpw_pkt_hsk, output,lpw_const,tplot_var=tplot_var,spice=spice
         'y',    fltarr(nn_pktnum,2)  )     ;1-D
       ;-------------- derive  time/variable ----------------
       data.x=time
-      data.y[*,0]=abs(output.plus12va[*]          * const_hsk_voltage(0))
-      data.y[*,1]=abs(output.minus12va[*]         * const_hsk_voltage(1))
+      data.y[*,0]=abs(output.plus12va[*]          * const_hsk_voltage[0])
+      data.y[*,1]=abs(output.minus12va[*]         * const_hsk_voltage[1])
       ;-------------------------------------------
       ;--------------- dlimit   ------------------
       dlimit=create_struct(   $
@@ -260,7 +260,7 @@ pro mvn_lpw_pkt_hsk, output,lpw_const,tplot_var=tplot_var,spice=spice
         'SPICE_kernel_flag'      ,     spice_used, $
         'L0_datafile'     ,     filename_L0 , $
         'cal_vers'        ,     cal_ver+' # '+pkt_ver ,$
-        'cal_y_const1'    ,     'Used: plus12v ' + strcompress(const_hsk_voltage(0),/remove_all) +' +  minus12v '+ strcompress(const_hsk_voltage(1),/remove_all)  , $;
+        'cal_y_const1'    ,     'Used: plus12v ' + strcompress(const_hsk_voltage[0],/remove_all) +' +  minus12v '+ strcompress(const_hsk_voltage[1],/remove_all)  , $;
         ;'cal_y_const2'    ,     'Used :' , $  ; Fixed convert information from measured binary values to physical units, variables from space testing
         ;'cal_datafile'    ,     'No calibration file used' , $
         'cal_source'      ,     'Information from PKT: HSK', $
@@ -290,8 +290,8 @@ pro mvn_lpw_pkt_hsk, output,lpw_const,tplot_var=tplot_var,spice=spice
         'y',    fltarr(nn_pktnum,2)  )     ;1-D
       ;-------------- derive  time/variable ----------------
       data.x=time
-      data.y[*,0]=abs(output.plus5va[*]           * const_hsk_voltage(2))
-      data.y[*,1]=abs(output.minus5va[*]          * const_hsk_voltage(3))
+      data.y[*,0]=abs(output.plus5va[*]           * const_hsk_voltage[2])
+      data.y[*,1]=abs(output.minus5va[*]          * const_hsk_voltage[3])
       ;-------------------------------------------
       ;--------------- dlimit   ------------------
       dlimit=create_struct(   $
@@ -322,7 +322,7 @@ pro mvn_lpw_pkt_hsk, output,lpw_const,tplot_var=tplot_var,spice=spice
         'SPICE_kernel_flag'      ,     spice_used, $
         'L0_datafile'     ,     filename_L0 , $
         'cal_vers'        ,     cal_ver+' # '+pkt_ver ,$
-        'cal_y_const1'    ,     'Used: plus5v ' + strcompress(const_hsk_voltage(2),/remove_all) +' + minus5v '+ strcompress(const_hsk_voltage(3),/remove_all)  , $;
+        'cal_y_const1'    ,     'Used: plus5v ' + strcompress(const_hsk_voltage[2],/remove_all) +' + minus5v '+ strcompress(const_hsk_voltage[3],/remove_all)  , $;
         ;'cal_y_const2'    ,     'Used :' , $  ; Fixed convert information from measured binary values to physical units, variables from space testing
         ;'cal_datafile'    ,     'No calibration file used' , $
         'cal_source'      ,     'Information from PKT: HSK', $
@@ -352,8 +352,8 @@ pro mvn_lpw_pkt_hsk, output,lpw_const,tplot_var=tplot_var,spice=spice
         'y',    fltarr(nn_pktnum,2)  )     ;1-D
       ;-------------- derive  time/variable ----------------
       data.x=time
-      data.y[*,0]=abs(output.plus90va[*]          * const_hsk_voltage(4))
-      data.y[*,1]=abs(output.minus90va[*]         * const_hsk_voltage(5))
+      data.y[*,0]=abs(output.plus90va[*]          * const_hsk_voltage[4])
+      data.y[*,1]=abs(output.minus90va[*]         * const_hsk_voltage[5])
       ;-------------------------------------------
       ;--------------- dlimit   ------------------
       dlimit=create_struct(   $
@@ -384,7 +384,7 @@ pro mvn_lpw_pkt_hsk, output,lpw_const,tplot_var=tplot_var,spice=spice
         'SPICE_kernel_flag'      ,     spice_used, $
         'L0_datafile'     ,     filename_L0 , $
         'cal_vers'        ,     cal_ver+' # '+pkt_ver,$
-        'cal_y_const1'    ,     'Used: plus90v ' + strcompress(const_hsk_voltage(4),/remove_all) +' +  minus90v '+ strcompress(const_hsk_voltage(5),/remove_all)  , $;
+        'cal_y_const1'    ,     'Used: plus90v ' + strcompress(const_hsk_voltage[4],/remove_all) +' +  minus90v '+ strcompress(const_hsk_voltage[5],/remove_all)  , $;
         ;'cal_y_const2'    ,     'Used :' , $  ; Fixed convert information from measured binary values to physical units, variables from space testing
         ;'cal_datafile'    ,     'No calibration file used' , $
         'cal_source'      ,     'Information from PKT: HSK', $
@@ -526,8 +526,8 @@ pro mvn_lpw_pkt_hsk, output,lpw_const,tplot_var=tplot_var,spice=spice
         'SCALEMIN',                    min(data.y), $
         'SCALEMAX',                    max(data.y), $
         't_epoch'         ,            t_epoch, $
-        'Time_start'      ,            [time_sc(0)-t_epoch,          time_sc(0)] , $
-        'Time_end'        ,            [time_sc(nn_pktnum-1)-t_epoch,time_sc(nn_pktnum-1)], $
+        'Time_start'      ,            [time_sc[0]-t_epoch,          time_sc[0]] , $
+        'Time_end'        ,            [time_sc[nn_pktnum-1]-t_epoch,time_sc[nn_pktnum-1]], $
         'Time_field'      ,            ['Spacecraft Clock ', 's/c time seconds from 1970-01-01/00:00'], $
         'SPICE_kernel_version',        'NaN', $
         'SPICE_kernel_flag'      ,     'SPICE not used', $

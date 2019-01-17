@@ -83,13 +83,13 @@ pro mvn_lpw_pkt_euv, output,lpw_const,tplot_var=tplot_var, spice=spice
     ENDIF ELSE BEGIN
       clock_field_str  = ['Spacecraft Clock ', 's/c time seconds from 1970-01-01/00:00']
       time             = time_sc                                                                                            ;data points in s/c time
-      clock_start_t    = [time_sc(0)-t_epoch,          time_sc(0)]                         ;corresponding start times to above string array, s/c time
-      clock_end_t      = [time_sc(nn_pktnum-1)-t_epoch,time_sc(nn_pktnum-1)]               ;corresponding end times, s/c time
+      clock_start_t    = [time_sc[0]-t_epoch,          time_sc[0]]                         ;corresponding start times to above string array, s/c time
+      clock_end_t      = [time_sc[nn_pktnum-1]-t_epoch,time_sc[nn_pktnum-1]]               ;corresponding end times, s/c time
       spice_used       = 'SPICE not used'
       str_xtitle       = 'Time (s/c)'
       kernel_version    = 'N/A'
-      clock_start_t_dt = [time_dt(0)-t_epoch,          time_dt(0)]
-      clock_end_t_dt   = [time_dt(nn_pktnum-1)-t_epoch,time_dt(nn_pktnum-1)]
+      clock_start_t_dt = [time_dt[0]-t_epoch,          time_dt[0]]
+      clock_end_t_dt   = [time_dt[nn_pktnum-1]-t_epoch,time_dt[nn_pktnum-1]]
     ENDELSE
     ;--------------------------------------------------------------------
 
@@ -465,8 +465,8 @@ pro mvn_lpw_pkt_euv, output,lpw_const,tplot_var=tplot_var, spice=spice
         'SCALEMIN',                    min(data.y), $
         'SCALEMAX',                    max(data.y), $
         't_epoch',                     t_epoch, $
-        'Time_start',                  [time_sc(0)-t_epoch,          time_sc(0)] , $
-        'Time_end',                    [time_sc(nn_pktnum-1)-t_epoch,time_sc(nn_pktnum-1)], $
+        'Time_start',                  [time_sc[0]-t_epoch,          time_sc[0]] , $
+        'Time_end',                    [time_sc[nn_pktnum-1]-t_epoch,time_sc[nn_pktnum-1]], $
         'Time_field',                  ['Spacecraft Clock ', 's/c time seconds from 1970-01-01/00:00'], $
         'SPICE_kernel_version',        'NaN', $
         'SPICE_kernel_flag',           'SPICE not used', $

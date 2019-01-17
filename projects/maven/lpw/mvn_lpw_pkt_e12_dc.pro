@@ -84,8 +84,8 @@ If keyword_set(tplot_var) THEN tplot_var = tplot_var ELSE tplot_var = 'SCI'  ;De
         ;--------------------------------------------------------------------    
       nn_pktnum       = nn_pktnum                                                    ; number of data packages 
       nn_size         = nn_pktnum*nn_steps                                           ; number of data points
-      dt              = subcycle_length(output.mc_len[output_state_i])/nn_steps
-      t_s             = subcycle_length(output.mc_len[output_state_i])*3./64         ;this is how long time each measurement point took
+      dt              = subcycle_length[output.mc_len[output_state_i]]/nn_steps
+      t_s             = subcycle_length[output.mc_len[output_state_i]]*3./64         ;this is how long time each measurement point took
                                                                                     ;the time in the header is associated with the last point in the measurement
                                                                                     ;therefore is the time corrected by the thength of the subcycle_length
       ;--------------------------------------------------------------------
@@ -102,8 +102,8 @@ If keyword_set(tplot_var) THEN tplot_var = tplot_var ELSE tplot_var = 'SCI'  ;De
  
   
       ;-------------------- Get correct clock time ------------------------------
-      dt              =subcycle_length(output.mc_len[output_state_i])/nn_steps
-      t_s             =subcycle_length(output.mc_len[output_state_i])*3./64         ;this is how long time each measurement point took
+      dt              =subcycle_length[output.mc_len[output_state_i]]/nn_steps
+      t_s             =subcycle_length[output.mc_len[output_state_i]]*3./64         ;this is how long time each measurement point took
                                                                      ;the time in the header is associated with the last point in the measurement
                                                                      ;therefore is the time corrected by the thength of the subcycle_length
     
@@ -123,13 +123,13 @@ If keyword_set(tplot_var) THEN tplot_var = tplot_var ELSE tplot_var = 'SCI'  ;De
         ENDIF ELSE BEGIN
           clock_field_str  = ['Spacecraft Clock ', 's/c time seconds from 1970-01-01/00:00']
           time             = time_sc                                                                                            ;data points in s/c time
-          clock_start_t    = [time_sc(0)-t_epoch,          time_sc(0)]                         ;corresponding start times to above string array, s/c time
-          clock_end_t      = [time_sc(nn_pktnum-1)-t_epoch,time_sc(nn_pktnum-1)]               ;corresponding end times, s/c time
+          clock_start_t    = [time_sc[0]-t_epoch,          time_sc[0]]                         ;corresponding start times to above string array, s/c time
+          clock_end_t      = [time_sc[nn_pktnum-1]-t_epoch,time_sc[nn_pktnum-1]]               ;corresponding end times, s/c time
           spice_used       = 'SPICE not used'
           str_xtitle       = 'Time (s/c)'  
           kernel_version    = 'N/A'
-          clock_start_t_dt = [time_dt(0)-t_epoch,          time_dt(0)]                                        
-          clock_end_t_dt   = [time_dt(nn_pktnum-1)-t_epoch,time_dt(nn_pktnum-1)]
+          clock_start_t_dt = [time_dt[0]-t_epoch,          time_dt[0]]                                        
+          clock_end_t_dt   = [time_dt[nn_pktnum-1]-t_epoch,time_dt[nn_pktnum-1]]
       ENDELSE           
       ;--------------------------------------------------------------------
  
@@ -151,9 +151,9 @@ If keyword_set(tplot_var) THEN tplot_var = tplot_var ELSE tplot_var = 'SCI'  ;De
                  for i=0L,nn_pktnum-1 do begin
                          ;data.x[nn_steps*i:nn_steps*(i+1)-1] = time[i] + dindgen(nn_steps) * dt[i]  
                         ; data.y[nn_steps*i:nn_steps*(i+1)-1] = output_state_V1[i,*] * const_V1_readback
-                         data.y[nn_steps*i:nn_steps*(i+1)-1] = ((output_state_V1[i,*] * const_V1_readback)-boom1_corr(0))/boom1_corr(1)
-                         data.dy[nn_steps*i:nn_steps*(i+1)-1] =((                  10 * const_V1_readback)-boom1_corr(0))/boom1_corr(1)  ; 10 DN
-                         dataA.y[i,*] =                        ((output_state_V1[i,*] * const_V1_readback)-boom1_corr(0))/boom1_corr(1)
+                         data.y[nn_steps*i:nn_steps*(i+1)-1] = ((output_state_V1[i,*] * const_V1_readback)-boom1_corr[0])/boom1_corr[1]
+                         data.dy[nn_steps*i:nn_steps*(i+1)-1] =((                  10 * const_V1_readback)-boom1_corr[0])/boom1_corr[1]  ; 10 DN
+                         dataA.y[i,*] =                        ((output_state_V1[i,*] * const_V1_readback)-boom1_corr[0])/boom1_corr[1]
                          dataA.y[i,*] = dataA.y[i,*]  - mean(dataA.y[i,*])
                          dataA.v[i,*] = xx
                  endfor        
@@ -231,9 +231,9 @@ If keyword_set(tplot_var) THEN tplot_var = tplot_var ELSE tplot_var = 'SCI'  ;De
                  for i=0L,nn_pktnum-1 do begin                                                        
                       ;data.x[nn_steps*i:nn_steps*(i+1)-1] = time[i] + dindgen(nn_steps)*dt[i]  
                       ;data.y[nn_steps*i:nn_steps*(i+1)-1] = output_state_V2[i,*]*const_V2_readback
-                      data.y[nn_steps*i:nn_steps*(i+1)-1] =  ((output_state_V2[i,*] * const_V2_readback)-boom2_corr(0))/boom2_corr(1)
-                      data.dy[nn_steps*i:nn_steps*(i+1)-1] = ((                  10 * const_V2_readback)-boom2_corr(0))/boom2_corr(1) ;10 DN
-                      dataA.y[i,*] =                         ((output_state_V2[i,*] * const_V2_readback)-boom2_corr(0))/boom2_corr(1)
+                      data.y[nn_steps*i:nn_steps*(i+1)-1] =  ((output_state_V2[i,*] * const_V2_readback)-boom2_corr[0])/boom2_corr[1]
+                      data.dy[nn_steps*i:nn_steps*(i+1)-1] = ((                  10 * const_V2_readback)-boom2_corr[0])/boom2_corr[1] ;10 DN
+                      dataA.y[i,*] =                         ((output_state_V2[i,*] * const_V2_readback)-boom2_corr[0])/boom2_corr[1]
                       dataA.y[i,*] = dataA.y[i,*]  - mean(dataA.y[i,*])
                       dataA.v[i,*] = xx                     
                  endfor
@@ -310,8 +310,8 @@ If keyword_set(tplot_var) THEN tplot_var = tplot_var ELSE tplot_var = 'SCI'  ;De
                  for i=0L,nn_pktnum-1 do begin
                           ;data.x[nn_steps*i:nn_steps*(i+1)-1] = time[i] + dindgen(nn_steps) * dt[i]                                                                                                                                                                                                   
                          ; data.y[nn_steps*i:nn_steps*(i+1)-1] = output_state_E12_LF[i,*] *const_E12_LF                                                                                                                                                                                                  
-                          data.y[nn_steps*i:nn_steps*(i+1)-1] = ((output_state_E12_LF[i,*] *const_E12_LF)-e12_corr(0))/e12_corr(1)
-                          data.dy[nn_steps*i:nn_steps*(i+1)-1] =((10                       *const_E12_LF)-e12_corr(0))/e12_corr(1)  ;10 DN
+                          data.y[nn_steps*i:nn_steps*(i+1)-1] = ((output_state_E12_LF[i,*] *const_E12_LF)-e12_corr[0])/e12_corr[1]
+                          data.dy[nn_steps*i:nn_steps*(i+1)-1] =((10                       *const_E12_LF)-e12_corr[0])/e12_corr[1]  ;10 DN
                  endfor         
                 ;-------------------------------------------
                 ;--------------- dlimit   ------------------
@@ -369,13 +369,13 @@ If keyword_set(tplot_var) THEN tplot_var = tplot_var ELSE tplot_var = 'SCI'  ;De
                  xx=indgen( nn_steps)  ; smallest value 1 second
                  tmp=fltarr(nn_steps)                                                              
                  for i=0L,nn_pktnum-1 do begin
-                           tmp[*]=((output_state_E12_LF[i,*] *const_E12_LF)-e12_corr(0))/e12_corr(1)                          
+                           tmp[*]=((output_state_E12_LF[i,*] *const_E12_LF)-e12_corr[0])/e12_corr[1]                          
                            tmp[0:1]=  !values.f_nan
                            ;;dataA.y[i,*] = ((output_state_E12_LF[i,*] *const_E12_LF)-e12_corr(0))/e12_corr(1)                   
                            flag= 1. ; (max(tmp) LT 5.)*(min(tmp) GT -5.)
                            tmp0= LADFIT(xx[4:nn_steps-1],tmp[4:nn_steps-1])  ;,nan )
                            dataA.y[i,*]            = (tmp -(tmp0[1]*xx+tmp0[0]) )/flag                           
-                           data.y[nn_steps*i:nn_steps*(i+1)-1] = ((output_state_E12_LF[i,*] *const_E12_LF)-e12_corr(0))/e12_corr(1)
+                           data.y[nn_steps*i:nn_steps*(i+1)-1] = ((output_state_E12_LF[i,*] *const_E12_LF)-e12_corr[0])/e12_corr[1]
                            dataA.v[i,*]=xx    
                            da=i*nn_steps     
                            data.y[da:da+nn_steps-1]=(tmp -(tmp0[1]*xx+tmp0[0]) )/flag  
@@ -410,7 +410,7 @@ options,'DAC','psym',-2
                              tmp0=min(abs(d_dac.x-dataA.x[i]),nq)    ; get the DAC value
                              if dataA.x[i] LT d_dac.x[nq] then nq=(nq-1) >0
                              
-                             tmp= ((output_state_E12_LF[i,*] *const_E12_LF)-e12_corr(0))/e12_corr(1)  ; this is the potential                         
+                             tmp= ((output_state_E12_LF[i,*] *const_E12_LF)-e12_corr[0])/e12_corr[1]  ; this is the potential                         
                              tmp2= LADFIT(xx[4:nn_steps-1],tmp[4:nn_steps-1])  ;,nan )
                              tmp3 = (tmp -(tmp2[1]*xx+tmp2[0]) )                     
                   
@@ -649,8 +649,8 @@ options,'DAC','psym',-2
                    'SCALEMIN',                    min(data.y), $
                    'SCALEMAX',                    max(data.y), $        
                    't_epoch'         ,            t_epoch, $    
-                   'Time_start'      ,            [time_sc(0)-t_epoch,          time_sc(0)] , $
-                   'Time_end'        ,            [time_sc(nn_pktnum-1)-t_epoch,time_sc(nn_pktnum-1)], $
+                   'Time_start'      ,            [time_sc[0]-t_epoch,          time_sc[0]] , $
+                   'Time_end'        ,            [time_sc[nn_pktnum-1]-t_epoch,time_sc[nn_pktnum-1]], $
                    'Time_field'      ,             ['Spacecraft Clock ', 's/c time seconds from 1970-01-01/00:00'], $
                    'SPICE_kernel_version',        'NaN', $
                    'SPICE_kernel_flag'      ,     'SPICE not used', $    

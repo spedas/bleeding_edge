@@ -83,7 +83,7 @@ sl = path_sep()  ;/ for unix, \ for windows
       'L0':   begin                            
                      mvn_lpw_r_header_l0, filename,output,packet=packet 
                      tmp=size(output)
-                     if tmp(0) NE 0 then begin                                                              ; check if any packets was found                                        
+                     if tmp[0] NE 0 then begin                                                              ; check if any packets was found                                        
                          mvn_lpw_pkt_instrument_constants,board,lpw_const2=lpw_const                        ; set up the constants used in the below routines 
                          if output.p1+output.p2 +output.p3 +output.p4 +output.p5 GT 0 THEN mvn_lpw_wpkt,output,lpw_const             
                          mvn_lpw_pkt_atr,output,lpw_const,tplot_var=tplot_var,spice=spice
@@ -128,7 +128,7 @@ help,data
                      tplot_var='ALL'
                      mvn_lpw_r_header, filename,output,compressed=compression,packet=packet   
                      tmp=size(output)
-                     if tmp(0) NE 0 then begin                                                              ; check if any packets was found   
+                     if tmp[0] NE 0 then begin                                                              ; check if any packets was found   
                         mvn_lpw_pkt_instrument_constants,board,lpw_const2=lpw_const                         ; set up the constants used in the below routines 
                         if output.p1+output.p2 +output.p3 +output.p4 +output.p5 GT 0 THEN mvn_lpw_wpkt,output,lpw_const             
                         mvn_lpw_pkt_atr,output,lpw_const,tplot_var=tplot_var,spice=spice

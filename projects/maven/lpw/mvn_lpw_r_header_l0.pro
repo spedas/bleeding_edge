@@ -39,7 +39,7 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
   t1=SYSTIME(1,/seconds)
   tmp=strsplit(filename,'/',/extract)                                ; should be mac way
   if n_elements(tmp) EQ 1 then tmp=strsplit(filename,'\',/extract)   ; should be PC way
-  filename_short  =tmp(n_elements(tmp)-1)                            ; this is the name that is stored in the CDF file, the directory information is not of interest only the file name
+  filename_short  =tmp[n_elements(tmp)-1]                            ; this is the name that is stored in the CDF file, the directory information is not of interest only the file name
   print,'lpw_loader filename ',filename,' short ', filename_short
 
   newfile_byte     = read_binary(filename, data_type = 1,endian='big')   ;read byte only  --note many packets have signed information
@@ -117,31 +117,31 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
   ;this is a test....
   ADD1ID = (newfile_byte EQ 1*16+10) ; expect 1a  location 17
 
-  ADDCLbyte = (newfile_byte(0:*)*256+newfile_byte(1:*)*256 GT 1*4096+12*256+5*16)    ; that first clock byte (byte no 17) are Greater or Equal to c1-hex and second  clock byte (byte no 18 ) are Greater or Equal to c1-hex
+  ADDCLbyte = (newfile_byte[0:*]*256+newfile_byte[1:*]*256 GT 1*4096+12*256+5*16)    ; that first clock byte (byte no 17) are Greater or Equal to c1-hex and second  clock byte (byte no 18 ) are Greater or Equal to c1-hex
 
   ;THese are where the LPW packets are locates 12 appart
-  tmp_ss1=SCAPID1(1:*)*INAPID1(12:*)*NNAPID(0:*)*NNAPID(11:*)*LEAPID(15:*)  * ADDCLbyte(17:*)
-  tmp_ss2=SCAPID2(1:*)*INAPID2(12:*)*NNAPID(0:*)*NNAPID(11:*)*LEAPID(15:*)
+  tmp_ss1=SCAPID1[1:*]*INAPID1[12:*]*NNAPID[0:*]*NNAPID[11:*]*LEAPID[15:*]  * ADDCLbyte[17:*]
+  tmp_ss2=SCAPID2[1:*]*INAPID2[12:*]*NNAPID[0:*]*NNAPID[11:*]*LEAPID[15:*]
   ;since there is problem with getting false HSBM packet test thefollowing
   ;;this is a test....find the clock to use that as a discriminator - this assumes the first packet is correct
-  tmp1=newfile_byte(tmp_ss1[0]+17)   ; first time stamp
+  tmp1=newfile_byte[tmp_ss1[0]+17]   ; first time stamp
   ADD1ID = (newfile_byte GE tmp1-1)
   ADD2ID = (newfile_byte LE tmp1+1) ; look at the clock and only allow a narrow change in the clock over the file
 
-  tmp_ss1=SCAPID1(1:*)*INAPID1(12:*)*NNAPID(0:*)*NNAPID(11:*)*LEAPID(15:*) ;changed 20141029  *ADD1ID(17:*)*ADD2ID(17:*)
-  tmp_ss2=SCAPID2(1:*)*INAPID2(12:*)*NNAPID(0:*)*NNAPID(11:*)*LEAPID(15:*)
+  tmp_ss1=SCAPID1[1:*]*INAPID1[12:*]*NNAPID[0:*]*NNAPID[11:*]*LEAPID[15:*] ;changed 20141029  *ADD1ID(17:*)*ADD2ID(17:*)
+  tmp_ss2=SCAPID2[1:*]*INAPID2[12:*]*NNAPID[0:*]*NNAPID[11:*]*LEAPID[15:*]
 
-  min_length=(2L^8*newfile_byte(15:*)+newfile_byte(16:*))  GT 10
+  min_length=(2L^8*newfile_byte[15:*]+newfile_byte[16:*])  GT 10
   tmp_ss=(tmp_ss1 +tmp_ss2)*min_length
   nn=n_elements(tmp_ss)
-  qq=where(tmp_ss(0:nn-8),nq)
+  qq=where(tmp_ss[0:nn-8],nq)
 
   ;******* special treatmenet
-  keep=where((newfile_byte(qq+12) NE 94) or ((newfile_byte(qq+12) EQ 94) and (2L^8*newfile_byte(qq+15)+newfile_byte(qq+16) GT 256)) ,nq ) ;have issue with APID 5e == 94 , needs a longer packet to be an hit
+  keep=where((newfile_byte[qq+12] NE 94) or ((newfile_byte[qq+12] EQ 94) and (2L^8*newfile_byte[qq+15]+newfile_byte[qq+16] GT 256)) ,nq ) ;have issue with APID 5e == 94 , needs a longer packet to be an hit
   qq=qq[keep]
   ;******* special treatmenet
 
-  APID=newfile_byte(qq+12)
+  APID=newfile_byte[qq+12]
 
 
 
@@ -160,15 +160,15 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
 
   If nq GT 0 then begin                                                         ; there is packets found in the file
     counter_specific=qq+11                                                        ;where should I point???? this points to the CCSDS Primary header location
-    vers=newfile_byte(qq+11) /32                                                  ;it should be the first 3 bits in this byte (1 byte is 8 bits)
-    type= newfile_byte(qq+11) /16 mod 8                                           ;packet type this should be bit no 4  0 indicate always telemetry
-    SHF = newfile_byte(qq+11) /8 mod 16                                           ;secondary header flag should be 1 - this should be bit no 5
-    GF= newfile_byte(qq+13)/ 64                                                   ;group flag first 2 bits
-    SC=1L * (2L^8*(newfile_byte(qq+13) mod 2L^6)+newfile_byte(qq+14) )                ;source sequencse counts 14 bits
-    length=2L^8*newfile_byte(qq+15)+newfile_byte(qq+16)                           ;the length of each packet  16 bits
+    vers=newfile_byte[qq+11] /32                                                  ;it should be the first 3 bits in this byte (1 byte is 8 bits)
+    type= newfile_byte[qq+11] /16 mod 8                                           ;packet type this should be bit no 4  0 indicate always telemetry
+    SHF = newfile_byte[qq+11] /8 mod 16                                           ;secondary header flag should be 1 - this should be bit no 5
+    GF= newfile_byte[qq+13]/ 64                                                   ;group flag first 2 bits
+    SC=1L * (2L^8*(newfile_byte[qq+13] mod 2L^6)+newfile_byte[qq+14] )                ;source sequencse counts 14 bits
+    length=2L^8*newfile_byte[qq+15]+newfile_byte[qq+16]                           ;the length of each packet  16 bits
     length_byte=(length+2)*2                                                      ;total length in 8 bits incl MSG header (16 bits before CCSDS prim header)
-    SC_CLK1=double(2LL^24*newfile_byte(qq+17)+2LL^16*newfile_byte(qq+18)+2LL^8*newfile_byte(qq+19)+newfile_byte(qq+20))    ;seconds clock 32 bits
-    SC_CLK2=double(2LL^8*newfile_byte(qq+21)+newfile_byte(qq+22))                 ;sub-secongs   16 bits
+    SC_CLK1=double(2LL^24*newfile_byte[qq+17]+2LL^16*newfile_byte[qq+18]+2LL^8*newfile_byte[qq+19]+newfile_byte[qq+20])    ;seconds clock 32 bits
+    SC_CLK2=double(2LL^8*newfile_byte[qq+21]+newfile_byte[qq+22])                 ;sub-secongs   16 bits
     length2=max(length)
 
     IF total(length2 GT 2048) GT 0 then print,'Warning: the length of ',total(length GT 2048),' packet are too long'
@@ -237,25 +237,25 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
     ;-------------------------------------------------
 
     sizelength       = size(length)                    ; total number of LPW packets
-    If max(length) LT 6 and  sizelength(1)  EQ 0 then begin
+    If max(length) LT 6 and  sizelength[1]  EQ 0 then begin
       print,'### There was no LPW packets found in this file: ', filename,' ###'
     ENDIF ELSE BEGIN                                   ; there is LPW packets in the file
       print,'### There is LPW packets found in this file: ', filename,' ###'
       ;Preallocating values common over multiple packets
-      data_fft         = fltarr(sizelength(1),max(length)-6)
-      DFB_header       = strarr(sizelength(1),16)
+      data_fft         = fltarr(sizelength[1],max(length)-6)
+      DFB_header       = strarr(sizelength[1],16)
       data             = fltarr(1)
-      y                = fltarr(sizelength(1),30)
-      course_clk       = fltarr(sizelength(1))
-      ORB_MD           = fltarr(sizelength(1))
-      MC_LEN           = fltarr(sizelength(1))
-      SMP_AVG          = fltarr(sizelength(1))
-      wave_config      = fltarr(sizelength(1))
-      EUV_config       = fltarr(sizelength(1))
-      ADR_config       = fltarr(sizelength(1))
-      HSK_config       = fltarr(sizelength(1))
-      ATR_config       = fltarr(sizelength(1))
-      GB_e12_hf        = intarr(sizelength(1))          ;this is one bit in the tertiary header
+      y                = fltarr(sizelength[1],30)
+      course_clk       = fltarr(sizelength[1])
+      ORB_MD           = fltarr(sizelength[1])
+      MC_LEN           = fltarr(sizelength[1])
+      SMP_AVG          = fltarr(sizelength[1])
+      wave_config      = fltarr(sizelength[1])
+      EUV_config       = fltarr(sizelength[1])
+      ADR_config       = fltarr(sizelength[1])
+      HSK_config       = fltarr(sizelength[1])
+      ATR_config       = fltarr(sizelength[1])
+      GB_e12_hf        = intarr(sizelength[1])          ;this is one bit in the tertiary header
       ;Resetting dummy variables   keep these, used to check that data was put into the arrays
       p1  = 0L
       p2  = 0L
@@ -325,24 +325,24 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
           ENB                   = newfile_byte[counter+1]   mod 2       ;enb      DFB Tertiary header: format = '(B04,B04,B03,B03,B01,B01)'
           merge_large=indgen(128)*2    +2                                 ; every other even
           merge_small=merge_large       +1                                ; every other odd
-          SWP(p6,*)         = 2L^8*newfile_byte[counter+merge_large] + newfile_byte[counter+merge_small]
+          SWP[p6,*]         = 2L^8*newfile_byte[counter+merge_large] + newfile_byte[counter+merge_small]
           nn=max(merge_small)+1                                            ; add the 2 directly
-          ATR_W_BIAS1(p6)   = 2L^8*newfile_byte[counter+nn+0] + newfile_byte[counter+nn+1]
-          ATR_W_GUARD1(p6)  = 2L^8*newfile_byte[counter+nn+2] + newfile_byte[counter+nn+3]
-          ATR_W_STUB1(p6)   = 2L^8*newfile_byte[counter+nn+4] + newfile_byte[counter+nn+5]
-          Reserved1(p6)     = 2L^8*newfile_byte[counter+nn+6] + newfile_byte[counter+nn+7]
-          ATR_LP_BIAS1(p6)  = 2L^8*newfile_byte[counter+nn+8] + newfile_byte[counter+nn+9]
-          ATR_LP_GUARD1(p6) = 2L^8*newfile_byte[counter+nn+10] + newfile_byte[counter+nn+11]
-          ATR_LP_STUB1(p6)  = 2L^8*newfile_byte[counter+nn+12] + newfile_byte[counter+nn+13]
-          Reserved2(p6)     = 2L^8*newfile_byte[counter+nn+14] + newfile_byte[counter+nn+15]
-          ATR_W_BIAS2(p6)   = 2L^8*newfile_byte[counter+nn+16] + newfile_byte[counter+nn+17]
-          ATR_W_GUARD2(p6)  = 2L^8*newfile_byte[counter+nn+18] + newfile_byte[counter+nn+19]
-          ATR_W_STUB2(p6)   = 2L^8*newfile_byte[counter+nn+20] + newfile_byte[counter+nn+21]
-          Reserved3(p6)     = 2L^8*newfile_byte[counter+nn+22] + newfile_byte[counter+nn+23]
-          ATR_LP_BIAS2(p6)  = 2L^8*newfile_byte[counter+nn+24] + newfile_byte[counter+nn+25]
-          ATR_LP_GUARD2(p6) = 2L^8*newfile_byte[counter+nn+26] + newfile_byte[counter+nn+27]
-          ATR_LP_STUB2(p6)  = 2L^8*newfile_byte[counter+nn+28] + newfile_byte[counter+nn+29]
-          Reserved4(p6)     = 2L^8*newfile_byte[counter+nn+30] + newfile_byte[counter+nn+31]
+          ATR_W_BIAS1[p6]   = 2L^8*newfile_byte[counter+nn+0] + newfile_byte[counter+nn+1]
+          ATR_W_GUARD1[p6]  = 2L^8*newfile_byte[counter+nn+2] + newfile_byte[counter+nn+3]
+          ATR_W_STUB1[p6]   = 2L^8*newfile_byte[counter+nn+4] + newfile_byte[counter+nn+5]
+          Reserved1[p6]     = 2L^8*newfile_byte[counter+nn+6] + newfile_byte[counter+nn+7]
+          ATR_LP_BIAS1[p6]  = 2L^8*newfile_byte[counter+nn+8] + newfile_byte[counter+nn+9]
+          ATR_LP_GUARD1[p6] = 2L^8*newfile_byte[counter+nn+10] + newfile_byte[counter+nn+11]
+          ATR_LP_STUB1[p6]  = 2L^8*newfile_byte[counter+nn+12] + newfile_byte[counter+nn+13]
+          Reserved2[p6]     = 2L^8*newfile_byte[counter+nn+14] + newfile_byte[counter+nn+15]
+          ATR_W_BIAS2[p6]   = 2L^8*newfile_byte[counter+nn+16] + newfile_byte[counter+nn+17]
+          ATR_W_GUARD2[p6]  = 2L^8*newfile_byte[counter+nn+18] + newfile_byte[counter+nn+19]
+          ATR_W_STUB2[p6]   = 2L^8*newfile_byte[counter+nn+20] + newfile_byte[counter+nn+21]
+          Reserved3[p6]     = 2L^8*newfile_byte[counter+nn+22] + newfile_byte[counter+nn+23]
+          ATR_LP_BIAS2[p6]  = 2L^8*newfile_byte[counter+nn+24] + newfile_byte[counter+nn+25]
+          ATR_LP_GUARD2[p6] = 2L^8*newfile_byte[counter+nn+26] + newfile_byte[counter+nn+27]
+          ATR_LP_STUB2[p6]  = 2L^8*newfile_byte[counter+nn+28] + newfile_byte[counter+nn+29]
+          Reserved4[p6]     = 2L^8*newfile_byte[counter+nn+30] + newfile_byte[counter+nn+31]
           p6 = p6 + 1
         ENDFOR                                                          ;loop over the packets
         t2=SYSTIME(1,/seconds)                                          ;to check on speed
@@ -376,7 +376,7 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
             SMP_AVG[i]            =  newfile_byte[counter+1]/2L^4          ;DFB Tertiary header: 8-bits NaN; 4-bits SMP_AVE; 3-bits NaN; 1 bit EUV_ENABLE
             EUV_config[i]         =  newfile_byte[counter+1] mod 1        ;DFB Tertiary header: 8-bits NaN; 4-bits SMP_AVE; 3-bits NaN; 1 bit EUV_ENABLE
             ptr=1L*(counter+2)                                          ;which 16 bit package to start with, checked O
-            ptr_end=ptr+length_byte(i)-2*len_offset                     ;(length2[i]-len_offset)                       ; this has to be checked!!!
+            ptr_end=ptr+length_byte[i]-2*len_offset                     ;(length2[i]-len_offset)                       ; this has to be checked!!!
             nn_e=0                                                      ;keep track of the loops/bits
             therm[ni,*]    = mvn_lpw_r_block16_byte(newfile_byte,ptr,nn_e,mask8,bin_c,index_arr,16,edac_on)
             if edac_on EQ 1 then print,'The compression check EDAC failed in packet no ',p7,i,counter,counter_specific[i],' pointer ',ptr,nn_e,' Packet EUV temp'
@@ -435,22 +435,22 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
               tmp                    = long(2L^8*newfile_byte[merge_large] + newfile_byte[merge_small])    ;<---- signed value -- correct if it is positive
               tmp_neg                = -1.* float((ulong(tmp mod 2L^15) xor (2L^15-1) ) +1)          ;<---- signed value -- correct if it is negative
               tmp_type               =  ulong(tmp)/2L^15                                             ; 0 if pos  but 1 if neg
-              ADR_DYN_OFFSET1(p8)     = (1-1*tmp_type(0))      *tmp(0)      +tmp_type(0)      *tmp_neg(0)
-              ADR_LP_BIAS1(p8,*)      = (1-1*tmp_type(1:127))  *tmp(1:127)  +tmp_type(1:127)  *tmp_neg(1:127)
-              ADR_DYN_OFFSET2(p8)     = (1-1*tmp_type(128))    *tmp(128)    +tmp_type(128)    *tmp_neg(128)
-              ADR_LP_BIAS2(p8,*)      = (1-1*tmp_type(129:255))*tmp(129:255)+tmp_type(129:255)*tmp_neg(129:255)
-              ADR_W_BIAS1(p8)         = (1-1*tmp_type(256))    *tmp(256)    +tmp_type(256)    *tmp_neg(256)
-              ADR_W_GUARD1(p8)        = (1-1*tmp_type(257))    *tmp(257)    +tmp_type(257)    *tmp_neg(257)
-              ADR_W_STUB1(p8)         = (1-1*tmp_type(258))    *tmp(258)    +tmp_type(258)    *tmp_neg(258)
-              ADR_W_V1(p8)            = (1-1*tmp_type(259))    *tmp(259)    +tmp_type(259)    *tmp_neg(259)
-              ADR_LP_GUARD1(p8)       = (1-1*tmp_type(260))    *tmp(260)    +tmp_type(260)    *tmp_neg(260)
-              ADR_LP_STUB1(p8)        = (1-1*tmp_type(261))    *tmp(261)    +tmp_type(261)    *tmp_neg(261)
-              ADR_W_BIAS2(p8)         = (1-1*tmp_type(262))    *tmp(262)    +tmp_type(262)    *tmp_neg(262)
-              ADR_W_GUARD2(p8)        = (1-1*tmp_type(263))    *tmp(263)    +tmp_type(263)    *tmp_neg(263)
-              ADR_W_STUB2(p8)         = (1-1*tmp_type(264))    *tmp(264)    +tmp_type(264)    *tmp_neg(264)
-              ADR_W_V2(p8)            = (1-1*tmp_type(265))    *tmp(265)    +tmp_type(265)    *tmp_neg(265)
-              ADR_LP_GUARD2(p8)       = (1-1*tmp_type(266))    *tmp(266)    +tmp_type(266)    *tmp_neg(266)
-              ADR_LP_STUB2(p8)        = (1-1*tmp_type(267))    *tmp(267)    +tmp_type(267)    *tmp_neg(267)
+              ADR_DYN_OFFSET1[p8]     = (1-1*tmp_type[0])      *tmp[0]      +tmp_type[0]      *tmp_neg[0]
+              ADR_LP_BIAS1[p8,*]      = (1-1*tmp_type[1:127])  *tmp[1:127]  +tmp_type[1:127]  *tmp_neg[1:127]
+              ADR_DYN_OFFSET2[p8]     = (1-1*tmp_type[128])    *tmp[128]    +tmp_type[128]    *tmp_neg[128]
+              ADR_LP_BIAS2[p8,*]      = (1-1*tmp_type[129:255])*tmp[129:255]+tmp_type[129:255]*tmp_neg[129:255]
+              ADR_W_BIAS1[p8]         = (1-1*tmp_type[256])    *tmp[256]    +tmp_type[256]    *tmp_neg[256]
+              ADR_W_GUARD1[p8]        = (1-1*tmp_type[257])    *tmp[257]    +tmp_type[257]    *tmp_neg[257]
+              ADR_W_STUB1[p8]         = (1-1*tmp_type[258])    *tmp[258]    +tmp_type[258]    *tmp_neg[258]
+              ADR_W_V1[p8]            = (1-1*tmp_type[259])    *tmp[259]    +tmp_type[259]    *tmp_neg[259]
+              ADR_LP_GUARD1[p8]       = (1-1*tmp_type[260])    *tmp[260]    +tmp_type[260]    *tmp_neg[260]
+              ADR_LP_STUB1[p8]        = (1-1*tmp_type[261])    *tmp[261]    +tmp_type[261]    *tmp_neg[261]
+              ADR_W_BIAS2[p8]         = (1-1*tmp_type[262])    *tmp[262]    +tmp_type[262]    *tmp_neg[262]
+              ADR_W_GUARD2[p8]        = (1-1*tmp_type[263])    *tmp[263]    +tmp_type[263]    *tmp_neg[263]
+              ADR_W_STUB2[p8]         = (1-1*tmp_type[264])    *tmp[264]    +tmp_type[264]    *tmp_neg[264]
+              ADR_W_V2[p8]            = (1-1*tmp_type[265])    *tmp[265]    +tmp_type[265]    *tmp_neg[265]
+              ADR_LP_GUARD2[p8]       = (1-1*tmp_type[266])    *tmp[266]    +tmp_type[266]    *tmp_neg[266]
+              ADR_LP_STUB2[p8]        = (1-1*tmp_type[267])    *tmp[267]    +tmp_type[267]    *tmp_neg[267]
               p8 = p8 + 1
             ENDFOR                                                           ;loop over the packets
             t2=SYSTIME(1,/seconds)                                           ;to check on speed
@@ -495,29 +495,29 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
                 ORB_MD[i]             = newfile_byte[counter+0] /  2^4        ;orb      DFB Tertiary header: format = '(B04,B04,B04,B03,B01)'
                 SMP_AVG[i]            = newfile_byte[counter+1] /  2^4        ;rpt_rate DFB Tertiary header: format = '(B04,B04,B04,B03,B01)'
                 ENB                   = newfile_byte[counter+1]   mod 2       ;enb      DFB Tertiary header: format = '(B04,B04,B04,B03,B01)'
-                HSK_config(i)       =  2L^8*newfile_byte[counter+0] + newfile_byte[counter+1]
+                HSK_config[i]       =  2L^8*newfile_byte[counter+0] + newfile_byte[counter+1]
                 merge_large            = counter+indgen(10)*2     +2           ; every other value: even
                 merge_small            = merge_large       +1                  ; every other value: odd
                 tmp                    = long(2L^8*newfile_byte[merge_large] + newfile_byte[merge_small])    ;<---- signed value -- correct if it is positive
                 tmp_neg                = -1.* float((ulong(tmp mod 2L^15) xor (2L^15-1) ) +1)          ;<---- signed value -- correct if it is negative
                 tmp_type               =  ulong(tmp)/2L^15                                             ; 0 if pos  but 1 if neg
-                Preamp_Temp1(p9)    =  (1-1*tmp_type(0))      *tmp(0)      +tmp_type(0)      *tmp_neg(0)
-                Preamp_Temp2(p9)    =  (1-1*tmp_type(1))      *tmp(1)      +tmp_type(1)      *tmp_neg(1)
-                Beb_Temp(p9)        =  (1-1*tmp_type(2))      *tmp(2)      +tmp_type(2)      *tmp_neg(2)
-                plus12va(p9)        =  (1-1*tmp_type(3))      *tmp(3)      +tmp_type(3)      *tmp_neg(3)
-                minus12va(p9)       =  (1-1*tmp_type(4))      *tmp(4)      +tmp_type(4)      *tmp_neg(4)
-                plus5va(p9)         =  (1-1*tmp_type(5))      *tmp(5)      +tmp_type(5)      *tmp_neg(5)
-                minus5va(p9)        =  (1-1*tmp_type(6))      *tmp(6)      +tmp_type(6)      *tmp_neg(6)
-                plus90va(p9)        =  (1-1*tmp_type(7))      *tmp(7)      +tmp_type(7)      *tmp_neg(7)
-                minus90va(p9)       =  (1-1*tmp_type(8))      *tmp(8)      +tmp_type(8)      *tmp_neg(8)
-                CMD_ACCEPT(p9)      =  2L^8*newfile_byte[counter+20] + newfile_byte[counter+21]
-                CMD_REJECT(p9)      =  2L^8*newfile_byte[counter+22] + newfile_byte[counter+23]
-                MEM_SEU_COUNTER(p9) =  2L^8*newfile_byte[counter+24] + newfile_byte[counter+25]
-                INT_STAT(p9)        =  2L^8*newfile_byte[counter+26] + newfile_byte[counter+27]
-                CHKSUM(p9)          =  2L^8*newfile_byte[counter+28] + newfile_byte[counter+29]
-                EXT_STAT(p9)        =  2L^8*newfile_byte[counter+30] + newfile_byte[counter+31]
-                DPLY1_CNT(p9)       =  2L^8*newfile_byte[counter+32] + newfile_byte[counter+33]
-                DPLY2_CNT(p9)       =  2L^8*newfile_byte[counter+34] + newfile_byte[counter+35]
+                Preamp_Temp1[p9]    =  (1-1*tmp_type[0])      *tmp[0]      +tmp_type[0]      *tmp_neg[0]
+                Preamp_Temp2[p9]    =  (1-1*tmp_type[1])      *tmp[1]      +tmp_type[1]      *tmp_neg[1]
+                Beb_Temp[p9]        =  (1-1*tmp_type[2])      *tmp[2]      +tmp_type[2]      *tmp_neg[2]
+                plus12va[p9]        =  (1-1*tmp_type[3])      *tmp[3]      +tmp_type[3]      *tmp_neg[3]
+                minus12va[p9]       =  (1-1*tmp_type[4])      *tmp[4]      +tmp_type[4]      *tmp_neg[4]
+                plus5va[p9]         =  (1-1*tmp_type[5])      *tmp[5]      +tmp_type[5]      *tmp_neg[5]
+                minus5va[p9]        =  (1-1*tmp_type[6])      *tmp[6]      +tmp_type[6]      *tmp_neg[6]
+                plus90va[p9]        =  (1-1*tmp_type[7])      *tmp[7]      +tmp_type[7]      *tmp_neg[7]
+                minus90va[p9]       =  (1-1*tmp_type[8])      *tmp[8]      +tmp_type[8]      *tmp_neg[8]
+                CMD_ACCEPT[p9]      =  2L^8*newfile_byte[counter+20] + newfile_byte[counter+21]
+                CMD_REJECT[p9]      =  2L^8*newfile_byte[counter+22] + newfile_byte[counter+23]
+                MEM_SEU_COUNTER[p9] =  2L^8*newfile_byte[counter+24] + newfile_byte[counter+25]
+                INT_STAT[p9]        =  2L^8*newfile_byte[counter+26] + newfile_byte[counter+27]
+                CHKSUM[p9]          =  2L^8*newfile_byte[counter+28] + newfile_byte[counter+29]
+                EXT_STAT[p9]        =  2L^8*newfile_byte[counter+30] + newfile_byte[counter+31]
+                DPLY1_CNT[p9]       =  2L^8*newfile_byte[counter+32] + newfile_byte[counter+33]
+                DPLY2_CNT[p9]       =  2L^8*newfile_byte[counter+34] + newfile_byte[counter+35]
                 p9 = p9 + 1
               ENDFOR                                                          ;loop over the packets
 
@@ -528,7 +528,7 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
               HSK_SC = SC[pkt_HSK]
               for seqIndx = 1, nn_HSK-1 do $
                 if HSK_SC[seqIndx] NE HSK_SC[seqIndx-1]+1 then print, 'HSK Sequence Count Skipped. seqIndex =', seqIndx, '  SC(seqIndx-1) =', HSK_SC[seqIndx-1], '  SC(seqIndx) =', HSK_SC[seqIndx]
-              if (HSK_SC[nn_HSK-1]-HSK_SC[0]+1) NE p9 then print, 'HSK Sequence Count Failed. Should be', p9, ' Reporting ',(HSK_SC(nn_HSK-1)-HSK_SC(0)+1)
+              if (HSK_SC[nn_HSK-1]-HSK_SC[0]+1) NE p9 then print, 'HSK Sequence Count Failed. Should be', p9, ' Reporting ',(HSK_SC[nn_HSK-1]-HSK_SC[0]+1)
               total_hsk_length = total(length[pkt_HSK]+7)
             endif  ELSE BEGIN                                                   ; in case of no package
               Preamp_Temp1      = -1 & Preamp_Temp2      = -1 & Beb_Temp          = -1 & plus12va          = -1 & minus12va         = -1 & $
@@ -555,8 +555,8 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
                   IF ulong(tmp1)/2L^15 EQ 0 then  I_ZERO1[ni]          = tmp1  ELSE $
                     I_ZERO1[ni]                   = -1.* float((ulong(tmp1 mod 2L^15) xor (2L^15-1) ) +1)
                   tmp2                   = 2L^8*newfile_byte[counter+4] + newfile_byte[counter+5]    ;<---- signed value
-                  IF ulong(tmp2)/2L^15 EQ 0 then  SWP1_DYN_OFFSET1(ni) = tmp2  ELSE $
-                    SWP1_DYN_OFFSET1(ni)          = -1.* float((ulong(tmp2 mod 2L^15) xor (2L^15-1) ) +1)
+                  IF ulong(tmp2)/2L^15 EQ 0 then  SWP1_DYN_OFFSET1[ni] = tmp2  ELSE $
+                    SWP1_DYN_OFFSET1[ni]          = -1.* float((ulong(tmp2 mod 2L^15) xor (2L^15-1) ) +1)
                   ptr=1L*(counter+6)                                       ; which 8 bit package to start with
                   ptr_end=ptr+length_byte[i]-14                             ; this has to be checked!!!
                   nn_e=0                                                    ; this is when the data is not exact a factor of 16
@@ -574,7 +574,7 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
                 SWP1_SC = SC[pkt_SWP1]
                 for seqIndx = 1, nn_SWP1-1 do $
                   if SWP1_SC[seqIndx] NE SWP1_SC[seqIndx-1]+1 then print, 'SWP1 Sequence Count Skipped. seqIndex =', seqIndx, '  SC(seqIndx-1) =', SWP1_SC[seqIndx-1], '  SC(seqIndx) =', SWP1_SC[seqIndx]
-                if (SWP1_SC[nn_SWP1-1]-SWP1_SC[0]+1) NE p10 then print, 'SWP1 Sequence Count Failed. Should be', p10, ' Reporting ',(SWP1_SC(nn_SWP1-1)-SWP1_SC(0)+1)
+                if (SWP1_SC[nn_SWP1-1]-SWP1_SC[0]+1) NE p10 then print, 'SWP1 Sequence Count Failed. Should be', p10, ' Reporting ',(SWP1_SC[nn_SWP1-1]-SWP1_SC[0]+1)
                 total_swp1_length = total(length[pkt_SWP1]+7)
               endif ELSE BEGIN                                                  ; if no packet was found
                 SWP1_I1           = -1 & SWP1_V2           = -1 & I_ZERO1           = -1 & SWP1_DYN_OFFSET1  = -1 & ENDELSE
@@ -600,8 +600,8 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
                     IF tmp/2L^15 EQ 0 then  I_ZERO2[ni]          = tmp  ELSE $
                       I_ZERO2[ni]          = -1.* float((ulong(tmp mod 2L^15) xor (2L^15-1) ) +1)
                     tmp                   = 2L^8*newfile_byte[counter+4] + newfile_byte[counter+5]     ;<---- signed value
-                    IF tmp/2L^15 EQ 0 then  SWP2_DYN_OFFSET2(ni) = tmp  ELSE $
-                      SWP2_DYN_OFFSET2(ni) = -1.* float((ulong(tmp mod 2L^15) xor (2L^15-1) ) +1)
+                    IF tmp/2L^15 EQ 0 then  SWP2_DYN_OFFSET2[ni] = tmp  ELSE $
+                      SWP2_DYN_OFFSET2[ni] = -1.* float((ulong(tmp mod 2L^15) xor (2L^15-1) ) +1)
                     ptr=1L*(counter+6)                                        ; which 8 bit package to start with
                     ptr_end=ptr+length_byte[i]-14                             ; this has to be checked!!!
                     nn_e=0                                                    ; this is when the data is not exact a factor of 16
@@ -906,7 +906,7 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
                                 PAS_MF_SC = SC[pkt_PAS_MF]
                                 for seqIndx = 1, nn_PAS_MF-1 do $
                                   if PAS_MF_SC[seqIndx] NE PAS_MF_SC[seqIndx-1]+1 then print, 'PAS_S_MF Sequence Count Skipped. seqIndex =', seqIndx, '  SC(seqIndx-1) =', PAS_MF_SC[seqIndx-1], '  SC(seqIndx) =', PAS_MF_SC[seqIndx]
-                                if (PAS_MF_SC[nn_PAS_MF-1]-PAS_MF_SC[0]+1) NE p18 then print, 'PAS_S_MF Sequence Count Failed. Should be', p18, ' Reporting ',(PAS_MF_SC(nn_PAS_MF-1)-PAS_MF_SC(0)+1)
+                                if (PAS_MF_SC[nn_PAS_MF-1]-PAS_MF_SC[0]+1) NE p18 then print, 'PAS_S_MF Sequence Count Failed. Should be', p18, ' Reporting ',(PAS_MF_SC[nn_PAS_MF-1]-PAS_MF_SC[0]+1)
                                 total_pas_s_mf_length = total(length[pkt_PAS_MF]+7)
                               endif ELSE BEGIN                                                    ; case on no pkt
                                 PAS_S_MF          = -1 &   PAS_MF_PKTCNT     = -1 &    PAS_MF_PKTARR     = -1 & ENDELSE
@@ -1089,9 +1089,9 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
                                         htime_type2         = intarr(nn)
                                         xfer_time2          = fltarr(nn)
                                         for iii = 0,nn-1 do begin
-                                          cap_time2[iii]     =          (1-1*tmp_type(2*iii))      *tmp(2*iii)      +tmp_type(2*iii)      *tmp_neg(2*iii)
-                                          htime_type2[iii]   = tmp(2*iii+1)/2L^14
-                                          xfer_time2[iii]    = tmp(2*iii+1) mod 2L^14
+                                          cap_time2[iii]     =          (1-1*tmp_type[2*iii])      *tmp[2*iii]      +tmp_type[2*iii]      *tmp_neg[2*iii]
+                                          htime_type2[iii]   = tmp[2*iii+1]/2L^14
+                                          xfer_time2[iii]    = tmp[2*iii+1] mod 2L^14
                                         endfor
                                         if ni EQ 0 then cap_time   = cap_time2    ELSE cap_time              = [cap_time   ,cap_time2]
                                         if ni EQ 0 then htime_type = htime_type2  ELSE htime_type            = [htime_type ,htime_type2]

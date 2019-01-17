@@ -1,6 +1,6 @@
 pro tplot_names, datanames , time_range=times, names=names, verbose=verbose,  $
   sort=sortit, tsort=tsort, asort=asort, $
-   reverse=rev, create_time=create_time,all=all,current=current
+   reverse=rev, create_time=create_time,all=all,current=current,silent=silent
 ;+
 ;PROCEDURE:  tplot_names [, datanames ]
 ;PURPOSE:
@@ -66,16 +66,18 @@ endif
      dc = dq.dtype
      dp = dq.dh
      ndp = n_elements(*dp)
-     print,i,n ,format=format1
-     if keyword_set(times) then  print,tr[0],tr[1],format=format2
-     if keyword_set(create_time) then print,systime(0,dq.create_time),format='($," ",a)'
-     if dc eq 3 then for j=0L,ndp-1 do print,(*dp)[j],format='($," ",a)'
-     print
-     if keyword_set(verbose) then begin
-        printdat,dq,level='     '  ;,'DQ'
-;       printdat,*dq.dl,level='      ','DLIMIT'
-;       printdat,*dq.lh,level='      ','LIMIT'
-;       printdat,*dq.dh,level='      ','DATA'
+     if not(keyword_set(silent)) then begin
+       print,i,n ,format=format1
+       if keyword_set(times) then  print,tr[0],tr[1],format=format2
+       if keyword_set(create_time) then print,systime(0,dq.create_time),format='($," ",a)'
+       if dc eq 3 then for j=0L,ndp-1 do print,(*dp)[j],format='($," ",a)'
+       print
+       if keyword_set(verbose) then begin
+          printdat,dq,level='     '  ;,'DQ'
+;         printdat,*dq.dl,level='      ','DLIMIT'
+;         printdat,*dq.lh,level='      ','LIMIT'
+;         printdat,*dq.dh,level='      ','DATA'
+       endif
      endif
   endfor
 

@@ -178,8 +178,8 @@ pro mvn_lpw_pkt_spectra,output,lpw_const,subcycle,type,tplot_var=tplot_var,spice
     ENDIF ELSE BEGIN
       clock_field_str  = ['Spacecraft Clock ', 's/c time seconds from 1970-01-01/00:00']
       time             = time_dt                                                           ;data points in s/c time
-      clock_start_t    = [time_sc(0)-t_epoch,          time_sc(0)]                         ;corresponding start times to above string array, s/c time
-      clock_end_t      = [time_sc(nn_pktnum-1)-t_epoch,time_sc(nn_pktnum-1)]               ;corresponding end times, s/c time
+      clock_start_t    = [time_sc[0]-t_epoch,          time_sc[0]]                         ;corresponding start times to above string array, s/c time
+      clock_end_t      = [time_sc[nn_pktnum-1]-t_epoch,time_sc[nn_pktnum-1]]               ;corresponding end times, s/c time
       spice_used       = 'SPICE not used'
       str_xtitle       = 'Time (s/c)'
       kernel_version    = 'N/A'
@@ -239,7 +239,7 @@ pro mvn_lpw_pkt_spectra,output,lpw_const,subcycle,type,tplot_var=tplot_var,spice
 
 
     for j=0, n_elements(data.x)-1 do begin
-      data.dv(j,*)   =abs( transpose((f_high-f_low)/2) ) ;get the low and high frequency bins
+      data.dv[j,*]   =abs( transpose((f_high-f_low)/2) ) ;get the low and high frequency bins
     endfor
 
     data.dy   = 0.2 * ABS(data.y)   ; 20 % uncertnaty.....
@@ -710,8 +710,8 @@ pro mvn_lpw_pkt_spectra,output,lpw_const,subcycle,type,tplot_var=tplot_var,spice
         'SCALEMIN',                    min(data.y), $
         'SCALEMAX',                    max(data.y), $
         't_epoch'         ,            t_epoch, $
-        'Time_start'      ,            [time_sc(0)-t_epoch,          time_sc(0)] , $
-        'Time_end'        ,            [time_sc(nn_pktnum-1)-t_epoch,time_sc(nn_pktnum-1)], $
+        'Time_start'      ,            [time_sc[0]-t_epoch,          time_sc[0]] , $
+        'Time_end'        ,            [time_sc[nn_pktnum-1]-t_epoch,time_sc[nn_pktnum-1]], $
         'Time_field'      ,            ['Spacecraft Clock ', 's/c time seconds from 1970-01-01/00:00'], $
         'SPICE_kernel_version',        'NaN', $
         'SPICE_kernel_flag'      ,     'SPICE not used', $

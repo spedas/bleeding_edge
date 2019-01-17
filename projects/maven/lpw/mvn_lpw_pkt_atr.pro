@@ -78,8 +78,8 @@ pro mvn_lpw_pkt_atr,output,lpw_const,tplot_var=tplot_var,spice=spice
     ENDIF ELSE BEGIN
       clock_field_str  =  ['Spacecraft Clock ', 's/c time seconds from 1970-01-01/00:00']
       time             = time_sc                                                                                            ;data points in s/c time
-      clock_start_t    = [time_sc(0)-t_epoch,          time_sc(0)]                         ;corresponding start times to above string array, s/c time
-      clock_end_t      = [time_sc(nn_pktnum-1)-t_epoch,time_sc(nn_pktnum-1)] ;corresponding end times, s/c time
+      clock_start_t    = [time_sc[0]-t_epoch,          time_sc[0]]                         ;corresponding start times to above string array, s/c time
+      clock_end_t      = [time_sc[nn_pktnum-1]-t_epoch,time_sc[nn_pktnum-1]] ;corresponding end times, s/c time
       spice_used       = 'SPICE not used'
       str_xtitle       = 'Time (s/c)'
       kernel_version    = 'N/A'
@@ -96,7 +96,7 @@ pro mvn_lpw_pkt_atr,output,lpw_const,tplot_var=tplot_var,spice=spice
     ;-------------- derive  time/variable ----------------
     data.x = time
     for i=0,nn_pktnum-1 do begin
-      data.y[i,*]=bias_arr(output.ATR_SWP[i,*],1)
+      data.y[i,*]=bias_arr[output.ATR_SWP[i,*],1]
       data.v[i,*]=indgen(nn_swp)
     endfor
     ;-------------------------------------------
@@ -314,18 +314,18 @@ pro mvn_lpw_pkt_atr,output,lpw_const,tplot_var=tplot_var,spice=spice
       ;-------------- derive  time/variable ----------------
       data.x = time
       for i=0,nn_pktnum-1 do begin
-        data.y[i,0]=bias_arr(output.ATR_W_BIAS1[i] < 4095,1)
-        data.y[i,1]=guard_arr(output.ATR_W_GUARD1[i]< 4095,1)
-        data.y[i,2]=stub_arr(output.ATR_W_STUB1[i]< 4095,1)
-        data.y[i,3]=bias_arr(output.ATR_LP_BIAS1[i]< 4095,1)
-        data.y[i,4]=guard_arr(output.ATR_LP_GUARD1[i]< 4095,1)
-        data.y[i,5]=stub_arr(output.ATR_LP_STUB1[i]< 4095,1)
-        data.y[i,6]=bias_arr(output.ATR_W_BIAS2[i]< 4095,2)
-        data.y[i,7]=guard_arr(output.ATR_W_GUARD2[i]< 4095,2)
-        data.y[i,8]=stub_arr(output.ATR_W_STUB2[i]< 4095,2)
-        data.y[i,9]=bias_arr(output.ATR_LP_BIAS2[i]< 4095,2)
-        data.y[i,10]=guard_arr(output.ATR_LP_GUARD2[i]< 4095,2)
-        data.y[i,11]=stub_arr(output.ATR_LP_STUB2[i]< 4095,2)
+        data.y[i,0]=bias_arr[output.ATR_W_BIAS1[i] < 4095,1]
+        data.y[i,1]=guard_arr[output.ATR_W_GUARD1[i]< 4095,1]
+        data.y[i,2]=stub_arr[output.ATR_W_STUB1[i]< 4095,1]
+        data.y[i,3]=bias_arr[output.ATR_LP_BIAS1[i]< 4095,1]
+        data.y[i,4]=guard_arr[output.ATR_LP_GUARD1[i]< 4095,1]
+        data.y[i,5]=stub_arr[output.ATR_LP_STUB1[i]< 4095,1]
+        data.y[i,6]=bias_arr[output.ATR_W_BIAS2[i]< 4095,2]
+        data.y[i,7]=guard_arr[output.ATR_W_GUARD2[i]< 4095,2]
+        data.y[i,8]=stub_arr[output.ATR_W_STUB2[i]< 4095,2]
+        data.y[i,9]=bias_arr[output.ATR_LP_BIAS2[i]< 4095,2]
+        data.y[i,10]=guard_arr[output.ATR_LP_GUARD2[i]< 4095,2]
+        data.y[i,11]=stub_arr[output.ATR_LP_STUB2[i]< 4095,2]
         data.v[i,*]=indgen(nn_dac)
       endfor
       str1= ['W_BIAS1','W_GUARD1','W_STUB1','LP_BIAS1','LP_GUARD1','LP_STUB1', $
@@ -561,8 +561,8 @@ pro mvn_lpw_pkt_atr,output,lpw_const,tplot_var=tplot_var,spice=spice
         'SCALEMIN',                    min(data.y), $
         'SCALEMAX',                    max(data.y), $
         't_epoch'         ,            t_epoch, $
-        'Time_start'      ,            [time_sc(0)-t_epoch,          time_sc(0)] , $
-        'Time_end'        ,            [time_sc(nn_pktnum-1)-t_epoch,time_sc(nn_pktnum-1)], $
+        'Time_start'      ,            [time_sc[0]-t_epoch,          time_sc[0]] , $
+        'Time_end'        ,            [time_sc[nn_pktnum-1]-t_epoch,time_sc[nn_pktnum-1]], $
         'Time_field'      ,            ['Spacecraft Clock ', 's/c time seconds from 1970-01-01/00:00'], $
         'SPICE_kernel_version',        'NaN', $
         'SPICE_kernel_flag'      ,     'SPICE not used', $

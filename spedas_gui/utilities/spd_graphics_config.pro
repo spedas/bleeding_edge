@@ -1,17 +1,17 @@
 ;+
 ;  PRO spd_graphics_config
 ;
-;  This routine does just the graphics configuration for themis.  It can be called from routines that
-;  need to have a guaranteed graphics configuration without forcing the rest of the themis initialization
+;  This routine does just the graphics configuration for SPEDAS plug-ins.  It can be called from routines that
+;  need to have a guaranteed graphics configuration without forcing the rest of the plug-in initialization
 ;  to be run.  This is done to avoid overwriting settings that may have been set by users later in their
 ;  session.
 ;  
 ;  Keywords:
 ;   colortable: overwrite the default colortable initialization
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-10-06 12:31:28 -0700 (Thu, 06 Oct 2016) $
-; $LastChangedRevision: 22054 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2019-01-16 13:34:22 -0800 (Wed, 16 Jan 2019) $
+; $LastChangedRevision: 26470 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/utilities/spd_graphics_config.pro $
 ;
 ;-

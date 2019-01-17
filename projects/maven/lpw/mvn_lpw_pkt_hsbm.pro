@@ -135,13 +135,13 @@ pro mvn_lpw_pkt_hsbm, output,lpw_const,type,tplot_var=tplot_var,spice=spice
     ENDIF ELSE BEGIN
       clock_field_str  = ['Spacecraft Clock ', 's/c time seconds from 1970-01-01/00:00']
       time             = time_sc                                                                                            ;data points in s/c time
-      clock_start_t    = [time_sc(0)-t_epoch,          time_sc(0)]                         ;corresponding start times to above string array, s/c time
-      clock_end_t      = [time_sc(nn_pktnum-1)-t_epoch,time_sc(nn_pktnum-1)]               ;corresponding end times, s/c time
+      clock_start_t    = [time_sc[0]-t_epoch,          time_sc[0]]                         ;corresponding start times to above string array, s/c time
+      clock_end_t      = [time_sc[nn_pktnum-1]-t_epoch,time_sc[nn_pktnum-1]]               ;corresponding end times, s/c time
       spice_used       = 'SPICE not used'
       str_xtitle       = 'Time (s/c)'
       kernel_version    = 'N/A'
-      clock_start_t_dt = [time_dt(0)-t_epoch,          time_dt(0)]                                           ; no change for EUV start
-      clock_end_t_dt   = [time_dt(nn_pktnum-1)-t_epoch,time_dt(nn_pktnum-1)]
+      clock_start_t_dt = [time_dt[0]-t_epoch,          time_dt[0]]                                           ; no change for EUV start
+      clock_end_t_dt   = [time_dt[nn_pktnum-1]-t_epoch,time_dt[nn_pktnum-1]]
     ENDELSE
     ;--------------------------------------------------------------------
 
@@ -156,8 +156,8 @@ pro mvn_lpw_pkt_hsbm, output,lpw_const,type,tplot_var=tplot_var,spice=spice
     FOR i=0,nn_pktnum-1 do BEGIN
       data.x[1L*nn_size*i:1L*nn_size*(i+1)-1]  = time[time_sort[i]]+dindgen(nn_size)*dt    ;<----- need to do this here!!!
       ;data.y[1L*nn_size*i:1L*nn_size*(i+1)-1]  = data_hsbm(*,time_sort[i])*const_E12
-      data.y[1L*nn_size*i:1L*nn_size*(i+1)-1]  =(( data_hsbm(*,time_sort[i])*const_E12 )-e12_corr(0))/e12_corr(1)
-      data.dy[1L*nn_size*i:1l*nn_size*(i+1)-1] = ((                    1   *const_E12 )            )/e12_corr(1)   ;  20 DN  uncertanty
+      data.y[1L*nn_size*i:1L*nn_size*(i+1)-1]  =(( data_hsbm[*,time_sort[i]]*const_E12 )-e12_corr[0])/e12_corr[1]
+      data.dy[1L*nn_size*i:1l*nn_size*(i+1)-1] = ((                    1   *const_E12 )            )/e12_corr[1]   ;  20 DN  uncertanty
     ENDFOR
     ;-------------------------------------------
     ;--------------- dlimit   ------------------
@@ -189,7 +189,7 @@ pro mvn_lpw_pkt_hsbm, output,lpw_const,type,tplot_var=tplot_var,spice=spice
       'SPICE_kernel_flag'      ,     spice_used, $
       'L0_datafile'     ,     filename_L0 , $
       'cal_vers'        ,     cal_ver+' # '+pkt_ver ,$
-      'cal_y_const1'    ,     'Used: '+strcompress(const_E12,/remove_all)+' # '+strcompress(e12_corr(0),/remove_all)+' # '+strcompress(e12_corr(1)  ,/remove_all)  ,$ ; Fixed convert information from measured binary values to physical units, variables from ground testing and design
+      'cal_y_const1'    ,     'Used: '+strcompress(const_E12,/remove_all)+' # '+strcompress(e12_corr[0],/remove_all)+' # '+strcompress(e12_corr[1]  ,/remove_all)  ,$ ; Fixed convert information from measured binary values to physical units, variables from ground testing and design
       ;'cal_y_const2'    ,     'Used :' , $  ; Fixed convert information from measured binary values to physical units, variables from space testing
       ;'cal_datafile'    ,     'No calibration file used' , $
       'cal_source'      ,     'Information from PKT: HSBM'+type, $
@@ -231,7 +231,7 @@ pro mvn_lpw_pkt_hsbm, output,lpw_const,type,tplot_var=tplot_var,spice=spice
     xx=lindgen(nn_size)
     if type EQ 'lf' then  $
       FOR i=0,nn_pktnum-1 do begin
-      tmp = (( data_hsbm(*,time_sort[i])*const_E12 )-e12_corr(0))/e12_corr(1)
+      tmp = (( data_hsbm[*,time_sort[i]]*const_E12 )-e12_corr[0])/e12_corr[1]
       tmp2= LADFIT(xx[32:nn_size-1],tmp[32:nn_size-1])  ;,nan )
       tmp3 = (tmp -(tmp2[1]*xx+tmp2[0]) )
       data.y[1L*nn_size*i:1L*nn_size*(i+1)-1]  =  tmp3
@@ -257,7 +257,7 @@ pro mvn_lpw_pkt_hsbm, output,lpw_const,type,tplot_var=tplot_var,spice=spice
     FOR i=0,nn_pktnum-1 do BEGIN
       data.x[i]=time[time_sort[i]]
       ; data.y[i,*]=data_hsbm[*,time_sort[i]]*const_E12
-      data.y[i,*]=((data_hsbm[*,time_sort[i]]*const_E12) -e12_corr(0))/e12_corr(1)
+      data.y[i,*]=((data_hsbm[*,time_sort[i]]*const_E12) -e12_corr[0])/e12_corr[1]
       data.v[i,*]=dindgen(nn_size)*dt
       data.dy[i,*]=SQRT(ABS(data_hsbm[*,time_sort[i]]))*const_E12
     ENDFOR
@@ -441,8 +441,8 @@ pro mvn_lpw_pkt_hsbm, output,lpw_const,type,tplot_var=tplot_var,spice=spice
       'Rules_of_use',                  cdf_istp[11], $
       'Acknowledgement',               cdf_istp[13],   $
       'MONOTON', 'INCREASE', $
-      'SCALEMIN', 0.8*min(data.v(*,0)), $
-      'SCALEMAX', 1.1*max(data.v(*,nn_size/2)), $        ;..end of required for cdf production.
+      'SCALEMIN', 0.8*min(data.v[*,0]), $
+      'SCALEMAX', 1.1*max(data.v[*,nn_size/2]), $        ;..end of required for cdf production.
       't_epoch'         ,     t_epoch, $
       'Time_start'      ,     clock_start_t_dt, $
       'Time_end'        ,     clock_end_t_dt, $
@@ -968,7 +968,7 @@ pro mvn_lpw_pkt_hsbm, output,lpw_const,type,tplot_var=tplot_var,spice=spice
 
     for i=0L,nn_pktnum-1 do begin
       data.x[i]                          = time[time_sort[i]]                  ;sc time only
-      data.y[nn_size*i:nn_size*(i+1)-1]  = data_hsbm(*,time_sort[i])
+      data.y[nn_size*i:nn_size*(i+1)-1]  = data_hsbm[*,time_sort[i]]
       data.y[i,nn_size+0]                = output.orb_md[nn_index[time_sort[i]]]
     endfor
     str1=['E12 DN'+strarr(nn_size),'Orbit mode']
@@ -1004,8 +1004,8 @@ pro mvn_lpw_pkt_hsbm, output,lpw_const,type,tplot_var=tplot_var,spice=spice
       'SCALEMIN',                    min(data.y), $
       'SCALEMAX',                    max(data.y), $
       't_epoch'         ,            t_epoch, $
-      'Time_start'      ,            [time_sc(0)-t_epoch,          time_sc(0)] , $
-      'Time_end'        ,            [time_sc(nn_pktnum-1)-t_epoch,time_sc(nn_pktnum-1)], $
+      'Time_start'      ,            [time_sc[0]-t_epoch,          time_sc[0]] , $
+      'Time_end'        ,            [time_sc[nn_pktnum-1]-t_epoch,time_sc[nn_pktnum-1]], $
       'Time_field'      ,             ['Spacecraft Clock ', 's/c time seconds from 1970-01-01/00:00'], $
       'SPICE_kernel_version',        'NaN', $
       'SPICE_kernel_flag'      ,     'SPICE not used', $
@@ -1031,13 +1031,4 @@ pro mvn_lpw_pkt_hsbm, output,lpw_const,type,tplot_var=tplot_var,spice=spice
   IF output.p22 LE 0 AND type EQ 'hf' THEN print, "mvn_lpw_hsbm.pro skipped for keyword 'hf' as no packets found."
 
 end
-;*******************************************************************
-
-
-
-
-
-
-
-
-
+;****************************************************************

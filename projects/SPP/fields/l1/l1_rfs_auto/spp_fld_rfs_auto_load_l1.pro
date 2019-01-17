@@ -5,8 +5,8 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   lfr_flag = strpos(prefix, 'lfr') NE -1
   if lfr_flag then receiver_str = 'LFR' else receiver_str = 'HFR'
 
-;  receiver_str = strupcase(strmid(prefix, 12, 3))
-;  if receiver_str EQ 'LFR' then lfr_flag = 1 else lfr_flag = 0
+  ;  receiver_str = strupcase(strmid(prefix, 12, 3))
+  ;  if receiver_str EQ 'LFR' then lfr_flag = 1 else lfr_flag = 0
 
   rfs_freqs = spp_fld_rfs_freqs(lfr = lfr_flag)
 
@@ -27,7 +27,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'peaks', 'ystyle', 1
   options, prefix + 'peaks', 'colors', color
   options, prefix + 'peaks', 'yminor', 1
-;  options, prefix + 'peaks', 'psym', 4
+  ;  options, prefix + 'peaks', 'psym', 4
   options, prefix + 'peaks', 'psym_lim', 100
   options, prefix + 'peaks', 'symsize', 0.5
   options, prefix + 'peaks', 'panel_size', 0.35
@@ -38,7 +38,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'averages', 'ystyle', 1
   options, prefix + 'averages', 'colors', color
   options, prefix + 'averages', 'yminor', 1
-;  options, prefix + 'averages', 'psym', 4
+  ;  options, prefix + 'averages', 'psym', 4
   options, prefix + 'averages', 'psym_lim', 100
   options, prefix + 'averages', 'symsize', 0.5
   options, prefix + 'averages', 'panel_size', 0.35
@@ -52,7 +52,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'gain', 'ystyle', 1
   options, prefix + 'gain', 'colors', color
   options, prefix + 'gain', 'yminor', 1
-;  options, prefix + 'gain', 'psym', 4
+  ;  options, prefix + 'gain', 'psym', 4
   options, prefix + 'gain', 'psym_lim', 100
   options, prefix + 'gain', 'symsize', 0.5
   options, prefix + 'gain', 'panel_size', 0.35
@@ -64,7 +64,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'hl', 'ystyle', 1
   options, prefix + 'hl', 'colors', color
   options, prefix + 'hl', 'yminor', 1
-;  options, prefix + 'hl', 'psym', 4
+  ;  options, prefix + 'hl', 'psym', 4
   options, prefix + 'hl', 'psym_lim', 100
   options, prefix + 'hl', 'symsize', 0.5
   options, prefix + 'hl', 'panel_size', 0.5
@@ -75,7 +75,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'nsum', 'ystyle', 1
   options, prefix + 'nsum', 'yminor', 1
   options, prefix + 'nsum', 'colors', color
-;  options, prefix + 'nsum', 'psym', 4
+  ;  options, prefix + 'nsum', 'psym', 4
   options, prefix + 'nsum', 'psym_lim', 100
   options, prefix + 'nsum', 'symsize', 0.5
   options, prefix + 'nsum', 'ytitle', receiver_str + '!CAUTO!CNSUM'
@@ -85,7 +85,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'ch?', 'ystyle', 1
   options, prefix + 'ch?', 'yminor', 1
   options, prefix + 'ch?', 'colors', color
-;  options, prefix + 'ch?', 'psym', 4
+  ;  options, prefix + 'ch?', 'psym', 4
   options, prefix + 'ch?', 'psym_lim', 100
   options, prefix + 'ch?', 'symsize', 0.5
   options, prefix + 'ch0', 'ytitle', receiver_str + '!CAUTO!CCH0 SRC'
@@ -141,9 +141,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   ; TODO: fix loading when peaks = 0
 
   raw_spectra = ['peaks_ch0', 'peaks_ch1', $
-    'averages_ch0', 'averages_ch1', $
-    'spec0_ch0', 'spec0_ch1', $
-    'spec1_ch0', 'spec1_ch1']
+    'averages_ch0', 'averages_ch1']
 
   for i = 0, n_elements(raw_spectra) - 1 do begin
 
@@ -207,7 +205,8 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
 
       if n_lo_gain GT 0 then converted_spec_data[lo_gain, *] *= 2500.d
 
-      converted_spec_data /= rebin(rfs_nsum.y,$
+      if raw_spec_i EQ 'averages_ch0' or raw_spec_i EQ 'averages_ch1' then $
+        converted_spec_data /= rebin(rfs_nsum.y,$
         n_elements(rfs_nsum.x),$
         n_elements(rfs_freqs.reduced_freq))
 
@@ -305,6 +304,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
             options, src_name, 'datagap', 60
             options, src_name, 'panel_size', 2.
             options, src_name, 'ytitle', ytitle2
+            options, src_name, 'color_table', 39
 
             options, src_name,  'ysubtitle', 'Freq [Hz]'
 

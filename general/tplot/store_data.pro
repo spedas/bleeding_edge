@@ -36,9 +36,9 @@
 ;SEE ALSO:    "GET_DATA", "TPLOT_NAMES",  "TPLOT", "OPTIONS"
 ;
 ;CREATED BY:    Davin Larson
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-11-01 15:53:28 -0700 (Thu, 01 Nov 2018) $
-; $LastChangedRevision: 26045 $
+; $LastChangedBy: ehanson $
+; $LastChangedDate: 2019-01-16 14:13:53 -0800 (Wed, 16 Jan 2019) $
+; $LastChangedRevision: 26471 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/store_data.pro $
 ;-
 pro store_data,name, time,ydata,values, $
@@ -56,7 +56,8 @@ pro store_data,name, time,ydata,values, $
    verbose = verbose_t, $
    nostrsw = nostrsw,$
    except_ptrs = except_ptrs, $
-   error=error
+   error=error, $
+   silent=silent
 
 compile_opt idl2, hidden
 
@@ -115,7 +116,7 @@ if keyword_set(clear) then begin
         if index gt 0 then begin
             dq = data_quants[index]
             ptr = *dq.dh
-            dprint,dlevel=2,verbose=verbose,'Clearing: ',names[i]
+            if not(keyword_set(silent)) then dprint,dlevel=2,verbose=verbose,'Clearing: ',names[i]
             if size(/type,ptr) eq 8 then tags = tag_names(ptr) else undefine,tags
             for j=0,n_elements(tags)-1 do begin
                 if size(ptr.(j),/type) eq 10 then  *(ptr.(j)) = 0  $
@@ -141,7 +142,7 @@ if keyword_set(delete) then begin
         delptrs = ptr_extract(data_quants[delevars],except=saveptrs)
         data_quants=data_quants[savevars]
         ptr_free,delptrs
-        dprint,dlevel=1,verbose=verbose,'Deleted ',cnt,' variables'
+        if not(keyword_set(silent)) then dprint,dlevel=1,verbose=verbose,'Deleted ',cnt,' variables'
     endif else dprint,dlevel=1,verbose=verbose,'No matching variables to delete'
     return
 endif
@@ -257,7 +258,8 @@ if n_elements(limits) ne 0 then *dq.lh = limits
 if n_elements(dlimits) ne 0 then *dq.dl = dlimits
 if n_elements(data) ne 0 then begin
     undefine, save_ptrs          ;save_ptrs test later, jmm, 2017-09-25
-    dprint,verbose=verbose,dlevel=1,verb+' tplot variable: ',strtrim(index,2),' ',dq.name
+    if not(keyword_set(silent)) then $
+      dprint,verbose=verbose,dlevel=1,verb+' tplot variable: ',strtrim(index,2),' ',dq.name
     dq.create_time = systime(1)
     if size(/type,data) eq 8 then begin  ; structures
         mytags = tag_names(data)

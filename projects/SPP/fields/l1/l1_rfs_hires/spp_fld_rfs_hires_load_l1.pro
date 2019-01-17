@@ -8,8 +8,8 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   lfr_flag = strpos(prefix, 'lfr') NE -1
   if lfr_flag then receiver_str = 'LFR' else receiver_str = 'HFR'
 
-;  receiver_str = strupcase(strmid(prefix, 12, 3))
-;  if receiver_str EQ 'LFR' then lfr_flag = 1 else lfr_flag = 0
+  ;  receiver_str = strupcase(strmid(prefix, 12, 3))
+  ;  if receiver_str EQ 'LFR' then lfr_flag = 1 else lfr_flag = 0
 
   ; TODO: RFS HiRes frequencies and conversions
   ;rfs_freqs = spp_fld_rfs_freqs(lfr = lfr_flag)
@@ -20,7 +20,7 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'compression', 'ystyle', 1
   options, prefix + 'compression', 'colors', color
   options, prefix + 'compression', 'yminor', 1
-;  options, prefix + 'compression', 'psym', 4
+  ;  options, prefix + 'compression', 'psym', 4
   options, prefix + 'compression', 'psym_lim', 100
   options, prefix + 'compression', 'symsize', 0.5
   options, prefix + 'compression', 'panel_size', 0.35
@@ -30,7 +30,7 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'peaks', 'ystyle', 1
   options, prefix + 'peaks', 'colors', color
   options, prefix + 'peaks', 'yminor', 1
-;  options, prefix + 'peaks', 'psym', 4
+  ;  options, prefix + 'peaks', 'psym', 4
   options, prefix + 'peaks', 'psym_lim', 100
   options, prefix + 'peaks', 'symsize', 0.5
   options, prefix + 'peaks', 'panel_size', 0.35
@@ -40,18 +40,20 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'averages', 'ystyle', 1
   options, prefix + 'averages', 'colors', color
   options, prefix + 'averages', 'yminor', 1
-;  options, prefix + 'averages', 'psym', 4
+  ;  options, prefix + 'averages', 'psym', 4
   options, prefix + 'averages', 'psym_lim', 100
   options, prefix + 'averages', 'symsize', 0.5
   options, prefix + 'averages', 'panel_size', 0.35
   options, prefix + 'averages', 'ytitle', receiver_str + ' HiRes!CAvg En'
 
-  options, prefix + 'gain', 'yrange', [0, 1]
+  options, prefix + 'gain', 'yrange', [-0.25, 1.25]
   options, prefix + 'gain', 'yticks', 1
+  options, prefix + 'gain', 'ytickv', [0,1]
+  options, prefix + 'gain', 'ytickname', ['Lo','Hi']
   options, prefix + 'gain', 'ystyle', 1
   options, prefix + 'gain', 'colors', color
   options, prefix + 'gain', 'yminor', 1
-;  options, prefix + 'gain', 'psym', 4
+  ;  options, prefix + 'gain', 'psym', 4
   options, prefix + 'gain', 'psym_lim', 100
   options, prefix + 'gain', 'symsize', 0.5
   options, prefix + 'gain', 'panel_size', 0.35
@@ -62,7 +64,7 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'hl', 'ystyle', 1
   options, prefix + 'hl', 'colors', color
   options, prefix + 'hl', 'yminor', 1
-;  options, prefix + 'hl', 'psym', 4
+  ;  options, prefix + 'hl', 'psym', 4
   options, prefix + 'hl', 'psym_lim', 100
   options, prefix + 'hl', 'symsize', 0.5
   options, prefix + 'hl', 'panel_size', 0.5
@@ -72,7 +74,7 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'nsum', 'ystyle', 1
   options, prefix + 'nsum', 'yminor', 1
   options, prefix + 'nsum', 'colors', color
-;  options, prefix + 'nsum', 'psym', 4
+  ;  options, prefix + 'nsum', 'psym', 4
   options, prefix + 'nsum', 'psym_lim', 100
   options, prefix + 'nsum', 'symsize', 0.5
   options, prefix + 'nsum', 'ytitle', receiver_str + ' HiRes!CNSUM'
@@ -81,7 +83,7 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'peakmode', 'ystyle', 1
   options, prefix + 'peakmode', 'yminor', 1
   options, prefix + 'peakmode', 'colors', color
-;  options, prefix + 'peakmode', 'psym', 4
+  ;  options, prefix + 'peakmode', 'psym', 4
   options, prefix + 'peakmode', 'psym_lim', 100
   options, prefix + 'peakmode', 'symsize', 0.5
   options, prefix + 'peakmode', 'panel_size', 0.5
@@ -91,7 +93,7 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'peak_location', 'ystyle', 1
   options, prefix + 'peak_location', 'yminor', 1
   options, prefix + 'peak_location', 'colors', color
-;  options, prefix + 'peak_location', 'psym', 4
+  ;  options, prefix + 'peak_location', 'psym', 4
   options, prefix + 'peak_location', 'psym_lim', 100
   options, prefix + 'peak_location', 'symsize', 0.5
   options, prefix + 'peak_location', 'ytitle', receiver_str + ' HiRes!CPeak_location'
@@ -100,7 +102,7 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'ch?', 'ystyle', 1
   options, prefix + 'ch?', 'yminor', 1
   options, prefix + 'ch?', 'colors', color
-;  options, prefix + 'ch?', 'psym', 4
+  ;  options, prefix + 'ch?', 'psym', 4
   options, prefix + 'ch?', 'psym_lim', 100
   options, prefix + 'ch?', 'symsize', 0.5
   options, prefix + 'ch0', 'ytitle', receiver_str + ' HiRes!CCH0 Source'
@@ -170,9 +172,7 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   ;    'SRC:' + strcompress(string(ch1_src_dat.y[0]))
 
   raw_spectra = ['peaks_ch0', 'peaks_ch1', $
-    'averages_ch0', 'averages_ch1', $
-    'spec0_ch0', 'spec0_ch1', $
-    'spec1_ch0', 'spec1_ch1']
+    'averages_ch0', 'averages_ch1']
 
   lfr_flag = 1
 
@@ -187,36 +187,36 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   hr_ind = hires_loc.y - 8
 
   hr_freq = (rfs_plasma['LFR_FREQ'])[hr_ind]
-  
+
   hr_freq_all = (rfs_plasma['PLASMA_SEL'])[hr_ind,*] * 1171.875d
 
   hr_freq_max = max(hr_freq_all,dim=2)
   hr_freq_min = min(hr_freq_all,dim=2)
 
-;  for i = 0, n_elements(hires_loc.y)-1 do begin
-;
-;    hr_i = hires_loc.y[i]
-;
-;    hr_ind_i = where(rfs_plasma['LFR_IND'] EQ hr_i)
-;
-;    hr_freq_i = (rfs_plasma['LFR_FREQ'])[hr_ind_i]
-;
-;    hr_freq_all_i = (rfs_plasma['PLASMA_SEL'])[hr_ind_i,*] * 1171.875d
-;
-;    hr_freq_max_i = max(hr_freq_all_i)
-;
-;    hr_freq_min_i = min(hr_freq_all_i)
-;
-;    hr_ind = [hr_ind, hr_ind_i]
-;
-;    hr_freq = [hr_freq, hr_freq_i]
-;    hr_freq_max = [hr_freq_max, hr_freq_max_i]
-;    hr_freq_min = [hr_freq_min, hr_freq_min_i]
-;
-;    hr_freq_all = [hr_freq_all, hr_freq_all_i]
-;
-;  end
-;
+  ;  for i = 0, n_elements(hires_loc.y)-1 do begin
+  ;
+  ;    hr_i = hires_loc.y[i]
+  ;
+  ;    hr_ind_i = where(rfs_plasma['LFR_IND'] EQ hr_i)
+  ;
+  ;    hr_freq_i = (rfs_plasma['LFR_FREQ'])[hr_ind_i]
+  ;
+  ;    hr_freq_all_i = (rfs_plasma['PLASMA_SEL'])[hr_ind_i,*] * 1171.875d
+  ;
+  ;    hr_freq_max_i = max(hr_freq_all_i)
+  ;
+  ;    hr_freq_min_i = min(hr_freq_all_i)
+  ;
+  ;    hr_ind = [hr_ind, hr_ind_i]
+  ;
+  ;    hr_freq = [hr_freq, hr_freq_i]
+  ;    hr_freq_max = [hr_freq_max, hr_freq_max_i]
+  ;    hr_freq_min = [hr_freq_min, hr_freq_min_i]
+  ;
+  ;    hr_freq_all = [hr_freq_all, hr_freq_all_i]
+  ;
+  ;  end
+  ;
   store_data, 'spp_fld_rfs_lfr_hires_freq', $
     data = {x:hires_loc.x, y:hr_freq}
 
@@ -292,7 +292,8 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
 
       if n_lo_gain GT 0 then converted_spec_data[lo_gain, *] *= 2500.d
 
-      converted_spec_data /= rebin(rfs_nsum.y,$
+      if raw_spec_i EQ 'averages_ch0' or raw_spec_i EQ 'averages_ch1' then $
+        converted_spec_data /= rebin(rfs_nsum.y,$
         n_elements(rfs_nsum.x),32)
 
       store_data, prefix + raw_spec_i + '_converted', $
@@ -403,9 +404,9 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
     end
 
   endfor
-  
-;options, '*hires*' + ['peaks', 'averages'] + '*converted', 'yrange', [5e4,5e5]
-;tplot, '*hires*' + ['peaks', 'averages'] + '*converted'
+
+  ;options, '*hires*' + ['peaks', 'averages'] + '*converted', 'yrange', [5e4,5e5]
+  ;tplot, '*hires*' + ['peaks', 'averages'] + '*converted'
 
 
 end

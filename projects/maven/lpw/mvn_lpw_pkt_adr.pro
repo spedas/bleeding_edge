@@ -97,8 +97,8 @@ pro mvn_lpw_pkt_adr, output,lpw_const,tplot_var=tplot_var,spice=spice
     ENDIF ELSE BEGIN
       clock_field_str  = ['Spacecraft Clock ', 's/c time seconds from 1970-01-01/00:00']
       time             = time_sc                                                                                            ;data points in s/c time
-      clock_start_t    = [time_sc(0)-t_epoch,          time_sc(0)]                         ;corresponding start times to above string array, s/c time
-      clock_end_t      = [time_sc(nn_pktnum-1)-t_epoch,time_sc(nn_pktnum-1)] ;corresponding end times, s/c time
+      clock_start_t    = [time_sc[0]-t_epoch,          time_sc[0]]                         ;corresponding start times to above string array, s/c time
+      clock_end_t      = [time_sc[nn_pktnum-1]-t_epoch,time_sc[nn_pktnum-1]] ;corresponding end times, s/c time
       spice_used       = 'SPICE not used'
       str_xtitle       = 'Time (s/c)'
       kernel_version    = 'N/A'
@@ -115,7 +115,7 @@ pro mvn_lpw_pkt_adr, output,lpw_const,tplot_var=tplot_var,spice=spice
     ;-------------- derive  time/variable ----------------
     data.x = time
     data.y = output.adr_lp_bias1
-    for i=0,nn_pktnum-1 do data.v(i,*)=indgen(nn_steps)
+    for i=0,nn_pktnum-1 do data.v[i,*]=indgen(nn_steps)
     ;-------------------------------------------
     ;--------------- dlimit   ------------------
     dlimit=create_struct(   $
@@ -170,7 +170,7 @@ pro mvn_lpw_pkt_adr, output,lpw_const,tplot_var=tplot_var,spice=spice
     ;IF tplot_var EQ 'all' THEN
     store_data,'mvn_lpw_adr_lp_bias1_raw',data=data,limit=limit,dlimit=dlimit
     ;------------------ Converted ---------------------------
-    data.y                  = bias_arr(data.y,1)
+    data.y                  = bias_arr[data.y,1]
     dlimit.cal_y_const1     = 'Used:  '+bias_file
     limit.zrange            = [min(data.y),max(data.y)]
     limit.ztitle            = 'Bias 1 [V]'
@@ -251,7 +251,7 @@ pro mvn_lpw_pkt_adr, output,lpw_const,tplot_var=tplot_var,spice=spice
     ;IF tplot_var EQ 'all' THEN
     store_data,'mvn_lpw_adr_lp_bias2_raw',data=data,limit=limit,dlimit=dlimit
     ;------------------ Converted ---------------------------
-    data.y                  = bias_arr(data.y,2)
+    data.y                  = bias_arr[data.y,2]
     dlimit.cal_y_const1     = 'Used:  '+bias_file
     limit.zrange            = [min(data.y),max(data.y)]
     limit.ztitle            = 'Bias 2 [V]'
@@ -332,8 +332,8 @@ pro mvn_lpw_pkt_adr, output,lpw_const,tplot_var=tplot_var,spice=spice
     ;IF tplot_var EQ 'all' THEN
     store_data,'mvn_lpw_adr_dyn_offset1_raw',data=data,limit=limit,dlimit=dlimit
     ;---------------- Converted --------------------
-    data.y                       = bias_arr(data.y,1)
-    data.dy                       = (bias_arr((data.y-1)>0,1)-bias_arr((data.y+1)<4095,1))*0.5  ; the error is the size to the next value.
+    data.y                       = bias_arr[data.y,1]
+    data.dy                       = (bias_arr[(data.y-1)>0,1]-bias_arr[(data.y+1)<4095,1])*0.5  ; the error is the size to the next value.
     dlimit.cal_y_const1          = 'Used:  '+ bias_file+ ' # '+'the error is derived as the dV too the nearby points'
     limit.ytitle                 = 'DAC offset '
     limit.yrange                 = [min(data.y),max(data.y)]
@@ -405,8 +405,8 @@ pro mvn_lpw_pkt_adr, output,lpw_const,tplot_var=tplot_var,spice=spice
     ;    IF tplot_var EQ 'all' THEN
     store_data,'mvn_lpw_adr_dyn_offset2_raw',data=data,limit=limit,dlimit=dlimit
     ;---------------- Converted --------------------
-    data.y                       = bias_arr(data.y,2)
-    data.dy                       = (bias_arr((data.y-1)>0,1)-bias_arr((data.y+1)<4095,1))*0.5  ; the error is the size to the next value.
+    data.y                       = bias_arr[data.y,2]
+    data.dy                       = (bias_arr[(data.y-1)>0,1]-bias_arr[(data.y+1)<4095,1])*0.5  ; the error is the size to the next value.
     dlimit.cal_y_const1          = 'Used:  '+ bias_file+ ' # '+'the error is derived as the dV too the nearby points'
     limit.ytitle                 = 'DAC offset'
     limit.yrange                 = [min(data.y),max(data.y)]
@@ -487,18 +487,18 @@ pro mvn_lpw_pkt_adr, output,lpw_const,tplot_var=tplot_var,spice=spice
     limit.ytitle                 = 'Diff Readback Pot 1'
     dlimit.ysubtitle              = '[V]'
     dlimit.cal_y_const1='PKT level:' +stub_file+' # '+guard_file+' # '+bias_file+' # V1 readback '+strcompress(const_V1_readback,/remove_all) + ' # error not derived'
-    data.y[*,0]      = bias_arr(data.y[*,0],1)
-    data.y[*,1]      = guard_arr(data.y[*,1],1)
-    data.y[*,2]      = stub_arr(data.y[*,2],1)
+    data.y[*,0]      = bias_arr[data.y[*,0],1]
+    data.y[*,1]      = guard_arr[data.y[*,1],1]
+    data.y[*,2]      = stub_arr[data.y[*,2],1]
     data.y[*,3]      = data.y[*,3]*const_V1_readback        ;output.adr_w_v1*const_V1_readback
-    data.y[*,4]      = guard_arr(data.y[*,4],1)
-    data.y[*,5]      = stub_arr(data.y[*,5],1)
-    data.dy[*,0]      = (bias_arr( (data.y[*,0]-1)>0,1)-bias_arr( (data.y[*,0]+1)<4095,1))*0.5
-    data.dy[*,1]      = (guard_arr((data.y[*,0]-1)>0,1)-guard_arr((data.y[*,0]+1)<4095,1))*0.5
-    data.dy[*,2]      = (stub_arr( (data.y[*,0]-1)>0,1)-stub_arr( (data.y[*,0]+1)<4095,1))*0.5
+    data.y[*,4]      = guard_arr[data.y[*,4],1]
+    data.y[*,5]      = stub_arr[data.y[*,5],1]
+    data.dy[*,0]      = (bias_arr[ (data.y[*,0]-1)>0,1]-bias_arr[ (data.y[*,0]+1)<4095,1])*0.5
+    data.dy[*,1]      = (guard_arr[(data.y[*,0]-1)>0,1]-guard_arr[(data.y[*,0]+1)<4095,1])*0.5
+    data.dy[*,2]      = (stub_arr[ (data.y[*,0]-1)>0,1]-stub_arr[ (data.y[*,0]+1)<4095,1])*0.5
     data.dy[*,3]      = 1.*const_V1_readback
-    data.dy[*,4]      = (guard_arr((data.y[*,0]-1)>0,1)-guard_arr((data.y[*,0]+1)<4095,1))*0.5
-    data.dy[*,5]      = (stub_arr( (data.y[*,0]-1)>0,1)-stub_arr( (data.y[*,0]+1)<4095,1))*0.5
+    data.dy[*,4]      = (guard_arr[(data.y[*,0]-1)>0,1]-guard_arr[(data.y[*,0]+1)<4095,1])*0.5
+    data.dy[*,5]      = (stub_arr[ (data.y[*,0]-1)>0,1]-stub_arr[ (data.y[*,0]+1)<4095,1])*0.5
     limit.yrange     =[min(data.y),max(data.y)]
     store_data,'mvn_lpw_adr_surface_pot1',data=data,limit=limit,dlimit=dlimit
     ;---------------------------------------------
@@ -575,18 +575,18 @@ pro mvn_lpw_pkt_adr, output,lpw_const,tplot_var=tplot_var,spice=spice
     limit.ytitle                  = 'Diff Readback Pot 2'
     dlimit.ysubtitle              = '[V]'
     dlimit.cal_y_const1='PKT level:' +stub_file+' # '+guard_file+' # '+bias_file+' # V2 readback '+strcompress(const_V2_readback,/remove_all) + ' # error not derived'
-    data.y[*,0]       = bias_arr(data.y[*,0],2)
-    data.y[*,1]       = guard_arr(data.y[*,1],2)
-    data.y[*,2]       = stub_arr(data.y[*,2],2)
+    data.y[*,0]       = bias_arr[data.y[*,0],2]
+    data.y[*,1]       = guard_arr[data.y[*,1],2]
+    data.y[*,2]       = stub_arr[data.y[*,2],2]
     data.y[*,3]       = data.y[*,3]*const_V2_readback        ;output.adr_w_v2*const_V2_readback
-    data.y[*,4]       = guard_arr(data.y[*,4],2)
-    data.y[*,5]       = stub_arr(data.y[*,5],2)
-    data.dy[*,0]      = (bias_arr( (data.y[*,0]-1)>0,2)-bias_arr( (data.y[*,0]+1)<4095,2))*0.5
-    data.dy[*,1]      = (guard_arr((data.y[*,0]-1)>0,2)-guard_arr((data.y[*,0]+1)<4095,2))*0.5
-    data.dy[*,2]      = (stub_arr( (data.y[*,0]-1)>0,2)-stub_arr( (data.y[*,0]+1)<4095,2))*0.5
+    data.y[*,4]       = guard_arr[data.y[*,4],2]
+    data.y[*,5]       = stub_arr[data.y[*,5],2]
+    data.dy[*,0]      = (bias_arr[ (data.y[*,0]-1)>0,2]-bias_arr[ (data.y[*,0]+1)<4095,2])*0.5
+    data.dy[*,1]      = (guard_arr[(data.y[*,0]-1)>0,2]-guard_arr[(data.y[*,0]+1)<4095,2])*0.5
+    data.dy[*,2]      = (stub_arr[ (data.y[*,0]-1)>0,2]-stub_arr[ (data.y[*,0]+1)<4095,2])*0.5
     data.dy[*,3]      = 1.*const_V2_readback
-    data.dy[*,4]      = (guard_arr((data.y[*,0]-1)>0,2)-guard_arr((data.y[*,0]+1)<4095,2))*0.5
-    data.dy[*,5]      = (stub_arr( (data.y[*,0]-1)>0,2)-stub_arr( (data.y[*,0]+1)<4095,2))*0.5
+    data.dy[*,4]      = (guard_arr[(data.y[*,0]-1)>0,2]-guard_arr[(data.y[*,0]+1)<4095,2])*0.5
+    data.dy[*,5]      = (stub_arr[ (data.y[*,0]-1)>0,2]-stub_arr[ (data.y[*,0]+1)<4095,2])*0.5
     limit.yrange     =[min(data.y),max(data.y)]
     store_data,'mvn_lpw_adr_surface_pot2',data=data,limit=limit,dlimit=dlimit
     ;---------------------------------------------
@@ -1046,8 +1046,8 @@ pro mvn_lpw_pkt_adr, output,lpw_const,tplot_var=tplot_var,spice=spice
         'SCALEMIN',                    min(data.y), $
         'SCALEMAX',                    max(data.y), $
         't_epoch'         ,            t_epoch, $
-        'Time_start'      ,            [time_sc(0)-t_epoch,          time_sc(0)] , $
-        'Time_end'        ,            [time_sc(nn_pktnum-1)-t_epoch,time_sc(nn_pktnum-1)], $
+        'Time_start'      ,            [time_sc[0]-t_epoch,          time_sc[0]] , $
+        'Time_end'        ,            [time_sc[nn_pktnum-1]-t_epoch,time_sc[nn_pktnum-1]], $
         'Time_field'      ,            ['Spacecraft Clock ', 's/c time seconds from 1970-01-01/00:00'], $
         'SPICE_kernel_version',        'NaN', $
         'SPICE_kernel_flag'      ,     'SPICE not used', $

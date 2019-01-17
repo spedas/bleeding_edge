@@ -62,8 +62,8 @@ pro mvn_lpw_pkt_htime, output,lpw_const,tplot_var=tplot_var
       time_long[lenght_cum0[i]-length[i]:lenght_cum0[i]-1]=time[i]
     type_3=['lf','mf','hf','unused']  ; 00, 01, 10, 11 see ICD section 9.11
     ; since this ia not archivable or important for data analysis the time is not corrected using spice
-    clock_start_t    = [time(0)-t_epoch,          time(0)]                         ;corresponding start times to above string array, s/c time
-    clock_end_t      = [time(nn_pktnum-1)-t_epoch,time(nn_pktnum-1)] ;corresponding end times, s/c time
+    clock_start_t    = [time[0]-t_epoch,          time[0]]                         ;corresponding start times to above string array, s/c time
+    clock_end_t      = [time[nn_pktnum-1]-t_epoch,time[nn_pktnum-1]] ;corresponding end times, s/c time
     spice_used       = 'SPICE not used'
     str_xtitle       = 'Time (s/c)'
     kernel_version    = 'N/A'
@@ -213,15 +213,15 @@ pro mvn_lpw_pkt_htime, output,lpw_const,tplot_var=tplot_var
         help,output.cap_time,output.xfer_time,output.htime_type
         help,output.cap_time[i,*],output.xfer_time[i,*],output.htime_type[i,*]
 
-        help,data.y[i,max(length)*0:max(length)*0+length(i)-1]
+        help,data.y[i,max(length)*0:max(length)*0+length[i]-1]
         help,time_long,lenght_cum0
-        print,'### ', i ,length(i),lengh_cum0(i)
+        print,'### ', i ,length[i],lengh_cum0[i]
 
         stanna
         data.x[i]                       = time_sc[i]                              ;sc time only
-        data.y[i,max(length)*0:max(length)*0+length(i)-1] = output.cap_time[i,*]
-        data.y[i,max(length)*1:max(length)*1+length(i)-1] = output.xfer_time[i,*]
-        data.y[i,max(length)*2:max(length)*2+length(i)-1] = output.htime_type[i,*]
+        data.y[i,max(length)*0:max(length)*0+length[i]-1] = output.cap_time[i,*]
+        data.y[i,max(length)*1:max(length)*1+length[i]-1] = output.xfer_time[i,*]
+        data.y[i,max(length)*2:max(length)*2+length[i]-1] = output.htime_type[i,*]
         data.y[i,max(length)*3]             = 2^output.smp_avg[output.HTIME_i[i]]   ; smp_avg is used for htime to get the HTIME_rate, Equation see table 7.8 ICD
       endfor
       str1=['Capture Time'+strarr(max(length)),'Transfter Time'+strarr(max(length)), $
@@ -285,5 +285,3 @@ pro mvn_lpw_pkt_htime, output,lpw_const,tplot_var=tplot_var
 end
 ;*******************************************************************
 ;
-
-
