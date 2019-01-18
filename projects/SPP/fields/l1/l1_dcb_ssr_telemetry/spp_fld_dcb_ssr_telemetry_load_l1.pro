@@ -41,7 +41,8 @@ pro spp_fld_dcb_ssr_telemetry_load_l1, file, prefix = prefix
 
       options, name, 'ytickformat', 'spp_fld_dcb_ssr_telemetry_ticks'
 
-      options, name, 'psym', -4
+      ;options, name, 'psym', -4
+      options, name, 'psym_lim', 100
       options, name, 'symsize', 0.5
 
     endfor
