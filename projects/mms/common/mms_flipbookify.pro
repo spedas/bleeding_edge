@@ -102,8 +102,8 @@
 ;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-11-02 10:05:21 -0700 (Fri, 02 Nov 2018) $
-; $LastChangedRevision: 26047 $
+; $LastChangedDate: 2019-01-18 10:55:24 -0800 (Fri, 18 Jan 2019) $
+; $LastChangedRevision: 26480 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_flipbookify.pro $
 ;-
 
@@ -124,7 +124,8 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   ps_xsize=ps_xsize, ps_ysize=ps_ysize, ps_aspect=ps_aspect, nopng=nopng, subtract_spintone=subtract_spintone, $
   fgm_data_rate=fgm_data_rate, seconds=seconds, erange=erange
   
-
+  mms_init
+  
   if undefined(instrument) then instrument = 'fpi'
   if undefined(species) then species = 'i'
   if undefined(data_rate) then data_rate = 'brst'
@@ -133,6 +134,10 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   endif
   
   if ~undefined(include_1d_vx) or ~undefined(include_1d_vy) then lineplot = 1b
+  if ~undefined(postscript) && ~undefined(lineplot) then begin
+    if undefined(left_margin) then left_margin = 5
+    if undefined(right_margin) then right_margin = 100
+  endif
   if undefined(right_margin) then begin
     if undefined(lineplot) then right_margin = 65 else right_margin = 85
   endif

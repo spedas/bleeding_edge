@@ -68,8 +68,8 @@ function spp_fld_select_timespan_define_presets, fm_or_em
 
   fm_times['deploy_v1_10_min'] =        deploy_v1_time + [-60d, 600d]
   fm_times['deploy_v1_01_min'] =        deploy_v1_time + [-10d, 60d]
-  fm_times['deploy_v1_15_sec'] =        deploy_v1_time + [-5d, 15d] 
-  
+  fm_times['deploy_v1_15_sec'] =        deploy_v1_time + [-5d, 15d]
+
   deploy_v2_time = time_double('2018-09-03/00:07:40')
 
   fm_times['deploy_v2_10_min'] =        deploy_v2_time + [-60d, 600d]
@@ -89,6 +89,13 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['deploy_v4_15_sec'] =        deploy_v4_time + [-5d, 15d]
 
   fm_times['deploy_test_rfs_flags'] = ['2018-09-03/00:57:00', '2018-09-03/01:06:00']
+
+
+  fm_times['deploy_hfr_lfr_pre_deploys'] = ['2018-09-02/22:20:00','2018-09-02/22:40:00']
+  fm_times['deploy_hfr_lfr_post_v1_deploy'] = ['2018-09-02/23:47:20','2018-09-02/23:50:35']
+  fm_times['deploy_hfr_lfr_post_v2_deploy'] = ['2018-09-03/00:28:20','2018-09-03/00:35:40']
+  fm_times['deploy_hfr_lfr_post_v3_deploy'] = ['2018-09-03/01:18:20','2018-09-03/01:19:10']
+  fm_times['deploy_hfr_lfr_post_v4_deploy'] = ['2018-09-03/01:48:30','2018-09-03/02:12:00']
 
   fm_times['rfs_default_hold'] = ['2018-09-03/01:49:00', '2018-09-03/02:12:00']
 
@@ -234,11 +241,13 @@ function spp_fld_select_timespan, input_timespan = input_timespan, $
   fm_or_em = fm_or_em, $
   overall_preset_key = overall_preset_key, $
   sub_presets = sub_presets, $
-  tlimit = tlimit
+  tlimit = tlimit, times_only = times_only
 
   if n_elements(fm_or_em) NE 1 then fm_or_em = 'FM'
 
   preset_times = spp_fld_select_timespan_define_presets(fm_or_em)
+
+  if keyword_set(times_only) then return, [0d,0d]
 
   if n_elements(overall_preset_key) EQ 1 then begin
 
