@@ -113,7 +113,9 @@ comment out peaks/averages for cross
   
   <cdf_var
       name   = "ch0"
-      type   = "integer">
+      type   = "integer"
+      string = "true"
+      string_len = "20">
   <cdf_att
         FIELDNAM = "ch0"
         FORMAT = "I8"
@@ -134,11 +136,13 @@ comment out peaks/averages for cross
 
   <cdf_var
       name   = "ch1"
-      type   = "integer">
+      type   = "integer"
+      string = "true"
+      string_len = "20">
   <cdf_att
         FIELDNAM = "ch1"
         FORMAT = "I8"
-    DATA_TYPE = "CDF_INT2"
+        DATA_TYPE = "CDF_INT2"
         LABLAXIS = "ch1"
         VAR_TYPE = "data"
         FILLVAL = "-32767"

@@ -240,6 +240,11 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
 
       if avg_pos GE 0 then ytitle = strmid(ytitle, 0, avg_pos) + 'AVGS' + strmid(ytitle, avg_pos+8)
 
+
+      ; Get information on the source of the spectra.  Return as a string
+      ; if available, if not as a number (retained for backwards compatibility
+      ; with early I&T files which only had a number and no string)
+
       ch_str = strmid(raw_spec_i,strlen(raw_spec_i) - 3, 3)
 
       get_data, prefix + ch_str + '_string', dat = ch_src_dat
@@ -252,16 +257,23 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
         if size(ch_src_dat.y[0], /type) NE 7 then src_string = 'SRC ' else $
           src_string = ''
 
-        if n_elements(uniq(ch_src_dat.y) EQ 1) then begin
-          ;options, prefix + raw_spec_i + '_converted', 'ysubtitle', $
-          ;'SRC:' + strcompress(string(ch_src_dat.y[0]))
-
-          ytitle = ytitle + '!C' + src_string + strcompress(string(ch_src_dat.y[0]))
-
-
-        endif
+        ; Get the source again, as an integer this time.
 
         get_data, prefix + ch_str, dat = ch_src_dat_int
+
+        ; Split the spectra into individual tplot items by source.
+        ; For example, if the above commands load data into the tplot item
+        ;
+        ; spp_fld_rfs_hfr_auto_averages_ch0_converted
+        ; 
+        ; and that item has some spectra from each of V1-V2, V1, and V3, this
+        ; code will create three separate items
+        ;
+        ; spp_fld_rfs_hfr_auto_averages_ch0_converted_V1V2
+        ; spp_fld_rfs_hfr_auto_averages_ch0_converted_V1
+        ; spp_fld_rfs_hfr_auto_averages_ch0_converted_V3
+        ;
+        ; with the appropriate titles
 
         src_hist = histogram(ch_src_dat_int.y, rev = src_rev, locations = src_loc)
 
@@ -270,7 +282,6 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
           if src_rev[j+1] GT src_rev[j] then begin
 
             inds = src_rev[src_rev[j]:src_rev[j+1]-1]
-
 
             src_string2 = strcompress(string(ch_src_dat.y[inds[0]]), /remove_all)
 
@@ -311,8 +322,6 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
           endif
 
         endfor
-
-        ;         stop
 
       endif
 

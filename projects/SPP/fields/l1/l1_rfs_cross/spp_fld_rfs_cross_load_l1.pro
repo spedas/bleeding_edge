@@ -3,8 +3,8 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
   ; TODO improve this check for valid CDF file and add to other routines
   if n_elements(file) LT 1 or file[0] EQ '' then return
 
-;  receiver_str = strupcase(strmid(prefix, 12, 3))
-;  if receiver_str EQ 'LFR' then lfr_flag = 1 else lfr_flag = 0
+  ;  receiver_str = strupcase(strmid(prefix, 12, 3))
+  ;  if receiver_str EQ 'LFR' then lfr_flag = 1 else lfr_flag = 0
 
   lfr_flag = strpos(prefix, 'lfr') NE -1
   if lfr_flag then receiver_str = 'LFR' else receiver_str = 'HFR'
@@ -17,7 +17,7 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
   options, prefix + 'compression', 'ystyle', 1
   options, prefix + 'compression', 'colors', color
   options, prefix + 'compression', 'yminor', 1
-;  options, prefix + 'compression', 'psym', 4
+  ;  options, prefix + 'compression', 'psym', 4
   options, prefix + 'compression', 'psym_lim', 100
   options, prefix + 'compression', 'symsize', 0.5
   options, prefix + 'compression', 'panel_size', 0.35
@@ -28,7 +28,7 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
   options, prefix + 'gain', 'ystyle', 1
   options, prefix + 'gain', 'colors', color
   options, prefix + 'gain', 'yminor', 1
-;  options, prefix + 'gain', 'psym', 4
+  ;  options, prefix + 'gain', 'psym', 4
   options, prefix + 'gain', 'psym_lim', 100
   options, prefix + 'gain', 'symsize', 0.5
   options, prefix + 'gain', 'panel_size', 0.35
@@ -39,7 +39,7 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
   options, prefix + 'hl', 'ystyle', 1
   options, prefix + 'hl', 'colors', color
   options, prefix + 'hl', 'yminor', 1
-;  options, prefix + 'hl', 'psym', 4
+  ;  options, prefix + 'hl', 'psym', 4
   options, prefix + 'hl', 'psym_lim', 100
   options, prefix + 'hl', 'symsize', 0.5
   options, prefix + 'hl', 'panel_size', 0.5
@@ -49,7 +49,7 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
   options, prefix + 'nsum', 'ystyle', 1
   options, prefix + 'nsum', 'yminor', 1
   options, prefix + 'nsum', 'colors', color
-;  options, prefix + 'nsum', 'psym', 4
+  ;  options, prefix + 'nsum', 'psym', 4
   options, prefix + 'nsum', 'psym_lim', 100
   options, prefix + 'nsum', 'symsize', 0.5
   options, prefix + 'nsum', 'ytitle', receiver_str + ' Cross!CNSUM'
@@ -58,7 +58,7 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
   options, prefix + 'ch?', 'ystyle', 1
   options, prefix + 'ch?', 'yminor', 1
   options, prefix + 'ch?', 'colors', color
-;  options, prefix + 'ch?', 'psym', 4
+  ;  options, prefix + 'ch?', 'psym', 4
   options, prefix + 'ch?', 'psym_lim', 100
   options, prefix + 'ch?', 'symsize', 0.5
   options, prefix + 'ch0', 'ytitle', receiver_str + ' Cross!CCH0 Source'
@@ -105,7 +105,7 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
   ; TODO replace hard coded gain value w/calibrated
 
   converted_data_xspec_re *= V2_factor
-  
+
   if n_lo_gain GT 0 then converted_data_xspec_re[lo_gain, *] *= 2500.d
 
   converted_data_xspec_re /= rebin(rfs_nsum.y,$
@@ -124,35 +124,35 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
 
   converted_data_xspec_im *= V2_factor
 
-;  if lfr_flag then begin
-;
-;    size_spec = size(converted_spec_data, /dim)
-;
-;    if n_elements(size_spec) EQ 2 then begin
-;
-;      cic_r = 8ll
-;      cic_n = 4ll
-;      cic_m = 1ll
-;
-;      ; TODO: Check for when CIC M = 2
-;
-;      cic_factor = $
-;        rebin($
-;        transpose((sin(!DPI * cic_m * rfs_freqs.reduced_freq / 4.8e6) / $
-;        sin(!DPI * rfs_freqs.reduced_freq / 4.8d6 / cic_r))^(2 * cic_n) / $
-;        (cic_r * cic_m)^(2 * cic_n)), $
-;        size(converted_spec_data,/dim))
-;
-;      converted_spec_data_re /= cic_factor
-;      converted_spec_data_im /= cic_factor
-;
-;    endif
-;
-;  endif else begin
-;
-;    cic_factor = 1d
-;
-;  endelse
+  ;  if lfr_flag then begin
+  ;
+  ;    size_spec = size(converted_spec_data, /dim)
+  ;
+  ;    if n_elements(size_spec) EQ 2 then begin
+  ;
+  ;      cic_r = 8ll
+  ;      cic_n = 4ll
+  ;      cic_m = 1ll
+  ;
+  ;      ; TODO: Check for when CIC M = 2
+  ;
+  ;      cic_factor = $
+  ;        rebin($
+  ;        transpose((sin(!DPI * cic_m * rfs_freqs.reduced_freq / 4.8e6) / $
+  ;        sin(!DPI * rfs_freqs.reduced_freq / 4.8d6 / cic_r))^(2 * cic_n) / $
+  ;        (cic_r * cic_m)^(2 * cic_n)), $
+  ;        size(converted_spec_data,/dim))
+  ;
+  ;      converted_spec_data_re /= cic_factor
+  ;      converted_spec_data_im /= cic_factor
+  ;
+  ;    endif
+  ;
+  ;  endif else begin
+  ;
+  ;    cic_factor = 1d
+  ;
+  ;  endelse
 
   if n_lo_gain GT 0 then converted_data_xspec_im[lo_gain, *] *= 2500.d
 
@@ -177,14 +177,82 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
   options, prefix + 'xspec_re_converted', 'ytitle', receiver_str + ' Cross!CReal Raw'
   options, prefix + 'xspec_im_converted', 'ytitle', receiver_str + ' Cross!CImag Raw'
 
-  get_data, prefix + 'ch0', dat = ch0_src_dat
-  get_data, prefix + 'ch1', dat = ch1_src_dat
+  get_data, prefix + 'ch0_string', dat = ch0_src_dat
+  get_data, prefix + 'ch1_string', dat = ch1_src_dat
 
-  if n_elements(uniq(ch0_src_dat.y) EQ 1) and $
-    n_elements(uniq(ch1_src_dat.y) EQ 1)then $
-    options, prefix + 'xspec_??_converted', 'ysubtitle', $
-    'SRC ' + $
-    strcompress(string(ch0_src_dat.y[0]), /rem) + '-' + $
-    strcompress(string(ch1_src_dat.y[0]), /rem)
+  if size(/type, ch0_src_dat) NE 8 then $
+    get_data, prefix + 'ch0', dat = ch0_src_dat
+  if size(/type, ch1_src_dat) NE 8 then $
+    get_data, prefix + 'ch1', dat = ch1_src_dat
+
+
+  ch0_src_values = ch0_src_dat.y[uniq(ch0_src_dat.y, sort(ch0_src_dat.y))]
+  ch1_src_values = ch1_src_dat.y[uniq(ch1_src_dat.y, sort(ch1_src_dat.y))]
+
+  for i = 0, n_elements(ch0_src_values) - 1 do begin
+    for j = 0, n_elements(ch1_src_values) - 1 do begin
+      
+      ch0_ij = ch0_src_values[i]
+      ch1_ij = ch1_src_values[j]
+      
+      inds = where(ch0_src_dat.y EQ ch0_ij and ch1_src_dat.y EQ ch1_ij, count)
+      
+      if count GT 0 then begin
+
+        src0_string = strcompress(string(ch0_ij), /remove_all)
+        
+        dash_pos0 = strpos(src0_string, '-')
+
+        if dash_pos0 GE 0 then src0_string = strmid(src0_string, 0, dash_pos0) + strmid(src0_string, dash_pos0+1)
+        
+        src1_string = strcompress(string(ch1_ij), /remove_all)
+
+        dash_pos1 = strpos(src1_string, '-')
+
+        if dash_pos1 GE 0 then src1_string = strmid(src1_string, 0, dash_pos1) + strmid(src1_string, dash_pos1+1)
+
+        src_name_im = prefix + 'im_converted_' + src0_string + '_' + src1_string
+
+        store_data, src_name_im, $
+          data = {x:(rfs_dat_xspec_im.x)[inds], $
+          y:converted_data_xspec_im[inds,*], $
+          v:rfs_freqs.reduced_freq}
+
+        src_name_re = prefix + 're_converted_' + src0_string + '_' + src1_string
+
+        store_data, src_name_re, $
+          data = {x:(rfs_dat_xspec_re.x)[inds], $
+          y:converted_data_xspec_im[inds,*], $
+          v:rfs_freqs.reduced_freq}
+
+        src_name = prefix + '??_converted_' + src0_string + '_' + src1_string
+
+        ytitle = 'RFS Cross!C' + src0_string + '!C' + src1_string
+
+        options, src_name, 'spec', 1
+        options, src_name, 'no_interp', 1
+        options, src_name, 'ylog', 1
+        options, src_name, 'zlog', 0
+        options, src_name, 'ztitle', '[V2/Hz]'
+        options, src_name, 'ystyle', 1
+        options, src_name, 'datagap', 60
+        options, src_name, 'panel_size', 2.
+        options, src_name, 'ytitle', ytitle
+        options, src_name, 'color_table', 39
+
+        ;print, ch0_ij, ch1_ij, count, src_name
+
+      endif
+      
+    endfor
+  endfor
+
+
+  ;  if n_elements(uniq(ch0_src_dat.y) EQ 1) and $
+  ;    n_elements(uniq(ch1_src_dat.y) EQ 1)then $
+  ;    options, prefix + 'xspec_??_converted', 'ysubtitle', $
+  ;    'SRC ' + $
+  ;    strcompress(string(ch0_src_dat.y[0]), /rem) + '-' + $
+  ;    strcompress(string(ch1_src_dat.y[0]), /rem)
 
 end
