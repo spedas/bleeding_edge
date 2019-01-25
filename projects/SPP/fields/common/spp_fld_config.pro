@@ -7,7 +7,16 @@ pro spp_fld_config, colortable=colortable
 
     dirs = ['.',strsplit(!path,sep,/extract)]
 
-    tbl_name = 'colors_cet.tbl'
+    ;
+    ; Load color tables for use by PSP
+    ; The file spp_fld_colors is based on the thm_colors.tbl file
+    ; and the default IDL color table, with additional color maps
+    ; from Peter Kovesi's collection "CET Perceptually Uniform Colour Maps":
+    ; 
+    ; https://peterkovesi.com/projects/colourmaps/
+    ;
+    
+    tbl_name = 'spp_fld_colors.tbl'
 
     tbl_path = (file_search(dirs + slash + tbl_name))[0]
 

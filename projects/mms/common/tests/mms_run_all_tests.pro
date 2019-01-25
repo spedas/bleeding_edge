@@ -9,12 +9,13 @@
 ;     
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-01-22 12:01:22 -0800 (Tue, 22 Jan 2019) $
-; $LastChangedRevision: 26491 $
+; $LastChangedDate: 2019-01-24 09:44:12 -0800 (Thu, 24 Jan 2019) $
+; $LastChangedRevision: 26497 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_run_all_tests.pro $
 ;-
 
 pro mms_run_all_tests
+    tic
     test_suites = ['mms_cdf2tplot_ut', $
                    'mms_cotrans_ut', $
                    'mms_load_data_ut', $
@@ -61,4 +62,5 @@ pro mms_run_all_tests
     endif else begin
         dprint, dlevel = 1, 'Done testing! No problems found '+console_out
     endelse
+    toc
 end

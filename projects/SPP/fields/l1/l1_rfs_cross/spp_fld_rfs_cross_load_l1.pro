@@ -1,17 +1,4 @@
-pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
-
-  ; TODO improve this check for valid CDF file and add to other routines
-  if n_elements(file) LT 1 or file[0] EQ '' then return
-
-  ;  receiver_str = strupcase(strmid(prefix, 12, 3))
-  ;  if receiver_str EQ 'LFR' then lfr_flag = 1 else lfr_flag = 0
-
-  lfr_flag = strpos(prefix, 'lfr') NE -1
-  if lfr_flag then receiver_str = 'LFR' else receiver_str = 'HFR'
-
-  rfs_freqs = spp_fld_rfs_freqs(lfr = lfr_flag)
-
-  cdf2tplot, file, prefix = prefix
+pro spp_fld_rfs_cross_load_l1_metadata_options, prefix, receiver_str, color = color
 
   options, prefix + 'compression', 'yrange', [0, 1]
   options, prefix + 'compression', 'ystyle', 1
@@ -70,8 +57,40 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
   options, prefix + 'xspec_??', 'ystyle', 1
   options, prefix + 'xspec_??', 'datagap', 60
 
+  options, prefix + 'ch?_string', 'tplot_routine', 'strplot'
+  options, prefix + 'ch?_string', 'yrange', [-0.1,1.0]
+  options, prefix + 'ch?_string', 'ystyle', 1
+  options, prefix + 'ch?_string', 'yticks', 1
+  options, prefix + 'ch?_string', 'ytickformat', '(A1)'
+  options, prefix + 'ch?_string', 'noclip', 0
+  options, prefix + 'ch?_string', 'ysubtitle', ''
+  options, prefix + 'ch0_string', 'ytitle', receiver_str + '!CAUTO!CCH0 SRC'
+  options, prefix + 'ch1_string', 'ytitle', receiver_str + '!CAUTO!CCH1 SRC'
+
   options, prefix + 'xspec_re', 'ytitle', receiver_str + ' Cross!CReal Raw'
   options, prefix + 'xspec_im', 'ytitle', receiver_str + ' Cross!CImag Raw'
+
+
+end
+
+pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
+
+  ; TODO improve this check for valid CDF file and add to other routines
+  if n_elements(file) LT 1 or file[0] EQ '' then return
+
+  ;  receiver_str = strupcase(strmid(prefix, 12, 3))
+  ;  if receiver_str EQ 'LFR' then lfr_flag = 1 else lfr_flag = 0
+
+  hfr_pos = strpos(prefix, 'hfr_')
+  if hfr_pos GT 0 then prefix = strmid(prefix, 0, hfr_pos) + strmid(prefix, hfr_pos + 4)
+
+  receiver_str = 'RFS'
+
+  rfs_freqs = spp_fld_rfs_freqs(lfr = lfr_flag)
+
+  cdf2tplot, file, prefix = prefix
+
+  spp_fld_rfs_cross_load_l1_metadata_options, prefix, 'RFS', color = 0
 
   get_data, prefix + 'gain', data = rfs_gain_dat
   get_data, prefix + 'nsum', data = rfs_nsum
@@ -95,9 +114,6 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
 
   V2_factor = (2d/3d) * 4096d / 38.4d6 / ((250d*2048d)^2d * 0.782d * 65536d)
 
-  if lfr_flag then V2_factor *= 8
-
-
   get_data, prefix + 'xspec_re', data = rfs_dat_xspec_re
 
   converted_data_xspec_re = spp_fld_rfs_float(rfs_dat_xspec_re.y, /cross)
@@ -112,9 +128,9 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
     n_elements(rfs_nsum.x),$
     n_elements(rfs_freqs.reduced_freq))
 
-  store_data, prefix + 'xspec_re_converted', $
-    data = {x:rfs_dat_xspec_re.x, y:converted_data_xspec_re, $
-    v:rfs_freqs.reduced_freq}
+  ;store_data, prefix + 'xspec_re_converted', $
+  ;  data = {x:rfs_dat_xspec_re.x, y:converted_data_xspec_re, $
+  ;  v:rfs_freqs.reduced_freq}
 
   get_data, prefix + 'xspec_im', data = rfs_dat_xspec_im
 
@@ -124,35 +140,6 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
 
   converted_data_xspec_im *= V2_factor
 
-  ;  if lfr_flag then begin
-  ;
-  ;    size_spec = size(converted_spec_data, /dim)
-  ;
-  ;    if n_elements(size_spec) EQ 2 then begin
-  ;
-  ;      cic_r = 8ll
-  ;      cic_n = 4ll
-  ;      cic_m = 1ll
-  ;
-  ;      ; TODO: Check for when CIC M = 2
-  ;
-  ;      cic_factor = $
-  ;        rebin($
-  ;        transpose((sin(!DPI * cic_m * rfs_freqs.reduced_freq / 4.8e6) / $
-  ;        sin(!DPI * rfs_freqs.reduced_freq / 4.8d6 / cic_r))^(2 * cic_n) / $
-  ;        (cic_r * cic_m)^(2 * cic_n)), $
-  ;        size(converted_spec_data,/dim))
-  ;
-  ;      converted_spec_data_re /= cic_factor
-  ;      converted_spec_data_im /= cic_factor
-  ;
-  ;    endif
-  ;
-  ;  endif else begin
-  ;
-  ;    cic_factor = 1d
-  ;
-  ;  endelse
 
   if n_lo_gain GT 0 then converted_data_xspec_im[lo_gain, *] *= 2500.d
 
@@ -160,22 +147,22 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
     n_elements(rfs_nsum.x),$
     n_elements(rfs_freqs.reduced_freq))
 
-  store_data, prefix + 'xspec_im_converted', $
-    data = {x:rfs_dat_xspec_im.x, y:converted_data_xspec_im, $
-    v:rfs_freqs.reduced_freq}
+  ;store_data, prefix + 'xspec_im_converted', $
+  ;  data = {x:rfs_dat_xspec_im.x, y:converted_data_xspec_im, $
+  ;  v:rfs_freqs.reduced_freq}
 
-  options, prefix + 'xspec_??_converted', 'spec', 1
-  options, prefix + 'xspec_??_converted', 'no_interp', 1
-  options, prefix + 'xspec_??_converted', 'ylog', 1
-  options, prefix + 'xspec_??_converted', 'zlog', 0
-  options, prefix + 'xspec_??_converted', 'ztitle', '[V2/Hz]'
-  options, prefix + 'xspec_??_converted', 'yrange', [min(rfs_freqs.reduced_freq), max(rfs_freqs.reduced_freq)]
-  options, prefix + 'xspec_??_converted', 'ystyle', 1
-  options, prefix + 'xspec_??_converted', 'datagap', 60
-  options, prefix + 'xspec_??_converted', 'panel_size', 2.
+  ;options, prefix + 'xspec_??_converted', 'spec', 1
+  ;options, prefix + 'xspec_??_converted', 'no_interp', 1
+  ;options, prefix + 'xspec_??_converted', 'ylog', 1
+  ;options, prefix + 'xspec_??_converted', 'zlog', 0
+  ;options, prefix + 'xspec_??_converted', 'ztitle', '[V2/Hz]'
+  ;options, prefix + 'xspec_??_converted', 'yrange', [min(rfs_freqs.reduced_freq), max(rfs_freqs.reduced_freq)]
+  ;options, prefix + 'xspec_??_converted', 'ystyle', 1
+  ;options, prefix + 'xspec_??_converted', 'datagap', 60
+  ;options, prefix + 'xspec_??_converted', 'panel_size', 2.
 
-  options, prefix + 'xspec_re_converted', 'ytitle', receiver_str + ' Cross!CReal Raw'
-  options, prefix + 'xspec_im_converted', 'ytitle', receiver_str + ' Cross!CImag Raw'
+  ;options, prefix + 'xspec_re_converted', 'ytitle', receiver_str + ' Cross!CReal Raw'
+  ;options, prefix + 'xspec_im_converted', 'ytitle', receiver_str + ' Cross!CImag Raw'
 
   get_data, prefix + 'ch0_string', dat = ch0_src_dat
   get_data, prefix + 'ch1_string', dat = ch1_src_dat
@@ -189,64 +176,210 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
   ch0_src_values = ch0_src_dat.y[uniq(ch0_src_dat.y, sort(ch0_src_dat.y))]
   ch1_src_values = ch1_src_dat.y[uniq(ch1_src_dat.y, sort(ch1_src_dat.y))]
 
-  for i = 0, n_elements(ch0_src_values) - 1 do begin
-    for j = 0, n_elements(ch1_src_values) - 1 do begin
-      
-      ch0_ij = ch0_src_values[i]
-      ch1_ij = ch1_src_values[j]
-      
-      inds = where(ch0_src_dat.y EQ ch0_ij and ch1_src_dat.y EQ ch1_ij, count)
-      
-      if count GT 0 then begin
+  receivers = ['','hfr','lfr']
 
-        src0_string = strcompress(string(ch0_ij), /remove_all)
-        
-        dash_pos0 = strpos(src0_string, '-')
+  for rec_i = 0, n_elements(receivers) - 1 do begin
 
-        if dash_pos0 GE 0 then src0_string = strmid(src0_string, 0, dash_pos0) + strmid(src0_string, dash_pos0+1)
-        
-        src1_string = strcompress(string(ch1_ij), /remove_all)
+    rec = receivers[rec_i]
 
-        dash_pos1 = strpos(src1_string, '-')
+    case rec of
+      '': begin
+        auto_match = ''
+        prefix2 = 'spp_fld_rfs_cross_';prefix.Replace('hfr_', '')
+      end
+      'lfr':begin
+        auto_match = 'spp_fld_rfs_lfr_auto_averages_ch0'
+        prefix2 = 'spp_fld_rfs_lfr_cross_';prefix.Replace('hfr_','lfr_')
+      end
+      'hfr':begin
+        auto_match = 'spp_fld_rfs_hfr_auto_averages_ch0'
+        prefix2 = 'spp_fld_rfs_hfr_cross_';;prefix
+      end
+    endcase
 
-        if dash_pos1 GE 0 then src1_string = strmid(src1_string, 0, dash_pos1) + strmid(src1_string, dash_pos1+1)
+    if auto_match NE '' then begin
 
-        src_name_im = prefix + 'im_converted_' + src0_string + '_' + src1_string
+      get_data, auto_match, data = d_auto_match
+      get_data, 'spp_fld_rfs_cross_ch0', data = d_cross_match
 
-        store_data, src_name_im, $
-          data = {x:(rfs_dat_xspec_im.x)[inds], $
-          y:converted_data_xspec_im[inds,*], $
-          v:rfs_freqs.reduced_freq}
+      if size(/type, d_auto_match) EQ 8 then begin
 
-        src_name_re = prefix + 're_converted_' + src0_string + '_' + src1_string
+        union_auto = array_union(d_auto_match.x, d_cross_match.x)
+        ind_auto = where(union_auto GT 0, count_auto)
+        ind_cross = union_auto[where(union_auto GT 0, count_cross)]
 
-        store_data, src_name_re, $
-          data = {x:(rfs_dat_xspec_re.x)[inds], $
-          y:converted_data_xspec_im[inds,*], $
-          v:rfs_freqs.reduced_freq}
+        if count_cross GT 0 then begin
 
-        src_name = prefix + '??_converted_' + src0_string + '_' + src1_string
+          cross_items = prefix + ['compression', 'hl', 'ch0', 'ch1', $
+            'ch0_string', 'ch1_string', 'gain', 'nsum', 'xspec_re', 'xspec_im']
 
-        ytitle = 'RFS Cross!C' + src0_string + '!C' + src1_string
+          for i = 0, n_elements(cross_items) - 1 do begin
 
-        options, src_name, 'spec', 1
-        options, src_name, 'no_interp', 1
-        options, src_name, 'ylog', 1
-        options, src_name, 'zlog', 0
-        options, src_name, 'ztitle', '[V2/Hz]'
-        options, src_name, 'ystyle', 1
-        options, src_name, 'datagap', 60
-        options, src_name, 'panel_size', 2.
-        options, src_name, 'ytitle', ytitle
-        options, src_name, 'color_table', 39
+            item = cross_items[i]
 
-        ;print, ch0_ij, ch1_ij, count, src_name
+            get_data, item, data = data, lim = lim
 
-      endif
-      
+            cross_pos = strpos(item, 'cross_')
+            if cross_pos GT 0 then new_item = strmid(item, 0, cross_pos) + $
+              rec + '_' + strmid(item, cross_pos)
+
+            store_data, new_item, $
+              data = {x:data.x[ind_cross], y:data.y[ind_cross,*]}, dlim = lim
+
+          endfor
+
+
+        endif else begin
+
+          count = 0
+
+        endelse
+
+      endif else begin
+
+        count = 0
+
+      endelse
+
+
+    endif
+
+    for i = 0, n_elements(ch0_src_values) - 1 do begin
+      for j = 0, n_elements(ch1_src_values) - 1 do begin
+
+        ch0_ij = ch0_src_values[i]
+        ch1_ij = ch1_src_values[j]
+
+        inds = where(ch0_src_dat.y EQ ch0_ij and ch1_src_dat.y EQ ch1_ij, count)
+
+        if auto_match NE '' and count GT 0 then begin
+
+          get_data, auto_match, data = d_auto_match
+
+          if size(/type, d_auto_match) EQ 8 then begin
+
+            union_auto = array_union(d_auto_match.x, ch0_src_dat.x[inds])
+            ind_auto = where(union_auto GT 0, count_auto)
+            ind_cross = union_auto[where(union_auto GT 0, count_cross)]
+
+            if count_cross GT 0 then begin
+
+              count = count_cross
+              inds = inds[ind_cross]
+
+            endif else begin
+
+              count = 0
+
+            endelse
+
+          endif else begin
+
+            count = 0
+
+          endelse
+
+        endif
+
+        if count GT 0 then begin
+
+          src0_string = strcompress(string(ch0_ij), /remove_all)
+
+          dash_pos0 = strpos(src0_string, '-')
+
+          if dash_pos0 GE 0 then src0_string = strmid(src0_string, 0, dash_pos0) + strmid(src0_string, dash_pos0+1)
+
+          src1_string = strcompress(string(ch1_ij), /remove_all)
+
+          dash_pos1 = strpos(src1_string, '-')
+
+          if dash_pos1 GE 0 then src1_string = strmid(src1_string, 0, dash_pos1) + strmid(src1_string, dash_pos1+1)
+
+          src_name_im = prefix2 + 'im_converted_' + src0_string + '_' + src1_string
+
+          im_data_y = converted_data_xspec_im[inds,*]
+          re_data_y = converted_data_xspec_re[inds,*]
+
+          if rec EQ 'lfr' then begin
+
+            size_spec = size(im_data_y, /dim)
+
+            if n_elements(size_spec) EQ 2 then begin
+
+              cic_r = 8ll
+              cic_n = 4ll
+              cic_m = 1ll
+
+              rfs_freqs = spp_fld_rfs_freqs(/lfr)
+
+              data_v = rfs_freqs.reduced_freq
+
+              ; TODO: Check for when CIC M = 2
+
+              cic_factor = $
+                rebin($
+                transpose((sin(!DPI * cic_m * data_v / 4.8e6) / $
+                sin(!DPI * data_v / 4.8d6 / cic_r))^(2 * cic_n) / $
+                (cic_r * cic_m)^(2 * cic_n)), $
+                size(im_data_y,/dim))
+
+              im_data_y /= (cic_factor)
+              re_data_y /= (cic_factor)
+              
+              im_data_y *= 8 ; LFR
+              re_data_y *= 8 ; LFR
+
+            endif
+
+          endif else begin
+
+            cic_factor = 1d
+
+            rfs_freqs = spp_fld_rfs_freqs()
+
+            data_v = rfs_freqs.reduced_freq
+
+          endelse
+
+          store_data, src_name_im, $
+            data = {x:(rfs_dat_xspec_im.x)[inds], $
+            y:im_data_y, $
+            v:data_v}
+
+          src_name_re = prefix2 + 're_converted_' + src0_string + '_' + src1_string
+
+          store_data, src_name_re, $
+            data = {x:(rfs_dat_xspec_re.x)[inds], $
+            y:re_data_y, $
+            v:data_v}
+
+          src_name = prefix2 + '??_converted_' + src0_string + '_' + src1_string
+
+          if rec EQ '' then title_rec = 'RFS' else title_rec = strupcase(rec)
+
+          ytitle_re = title_rec + ' XRE!C' + src0_string + '!C' + src1_string
+          ytitle_im = title_rec + ' XIM!C' + src0_string + '!C' + src1_string
+
+          options, src_name, 'spec', 1
+          options, src_name, 'no_interp', 1
+          options, src_name, 'ylog', 1
+          options, src_name, 'zlog', 0
+          options, src_name, 'ztitle', '[V2/Hz]'
+          options, src_name, 'ystyle', 1
+          options, src_name, 'datagap', 60
+          options, src_name, 'panel_size', 2.
+          options, src_name_re, 'ytitle', ytitle_re
+          options, src_name_im, 'ytitle', ytitle_im
+          options, src_name, 'color_table', 39
+
+          ;print, ch0_ij, ch1_ij, count, src_name
+
+        endif
+
+      endfor
     endfor
-  endfor
 
+  endfor
 
   ;  if n_elements(uniq(ch0_src_dat.y) EQ 1) and $
   ;    n_elements(uniq(ch1_src_dat.y) EQ 1)then $
