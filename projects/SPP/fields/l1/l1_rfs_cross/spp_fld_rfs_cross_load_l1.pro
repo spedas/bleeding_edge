@@ -9,9 +9,12 @@ pro spp_fld_rfs_cross_load_l1_metadata_options, prefix, receiver_str, color = co
   options, prefix + 'compression', 'symsize', 0.5
   options, prefix + 'compression', 'panel_size', 0.35
   options, prefix + 'compression', 'ytitle', receiver_str + ' Cross!CCmprs'
+  options, prefix + 'compression', 'datagap', 120
 
-  options, prefix + 'gain', 'yrange', [0, 1]
+  options, prefix + 'gain', 'yrange', [-0.25, 1.25]
   options, prefix + 'gain', 'yticks', 1
+  options, prefix + 'gain', 'ytickv', [0,1]
+  options, prefix + 'gain', 'ytickname', ['Lo','Hi']
   options, prefix + 'gain', 'ystyle', 1
   options, prefix + 'gain', 'colors', color
   options, prefix + 'gain', 'yminor', 1
@@ -19,7 +22,9 @@ pro spp_fld_rfs_cross_load_l1_metadata_options, prefix, receiver_str, color = co
   options, prefix + 'gain', 'psym_lim', 100
   options, prefix + 'gain', 'symsize', 0.5
   options, prefix + 'gain', 'panel_size', 0.35
+  options, prefix + 'gain', 'ysubtitle', ''
   options, prefix + 'gain', 'ytitle', receiver_str + ' Cross!CGain'
+  options, prefix + 'gain', 'datagap', 120
 
   options, prefix + 'hl', 'yrange', [0, 3]
   options, prefix + 'hl', 'yticks', 3
@@ -31,8 +36,9 @@ pro spp_fld_rfs_cross_load_l1_metadata_options, prefix, receiver_str, color = co
   options, prefix + 'hl', 'symsize', 0.5
   options, prefix + 'hl', 'panel_size', 0.5
   options, prefix + 'hl', 'ytitle', receiver_str + ' Cross!CHL'
+  options, prefix + 'hl', 'datagap', 120
 
-  options, prefix + 'nsum', 'yrange', [0, 128]
+  options, prefix + 'nsum', 'yrange', [0, 100]
   options, prefix + 'nsum', 'ystyle', 1
   options, prefix + 'nsum', 'yminor', 1
   options, prefix + 'nsum', 'colors', color
@@ -40,6 +46,7 @@ pro spp_fld_rfs_cross_load_l1_metadata_options, prefix, receiver_str, color = co
   options, prefix + 'nsum', 'psym_lim', 100
   options, prefix + 'nsum', 'symsize', 0.5
   options, prefix + 'nsum', 'ytitle', receiver_str + ' Cross!CNSUM'
+  options, prefix + 'nsum', 'datagap', 120
 
   options, prefix + 'ch?', 'yrange', [0, 7]
   options, prefix + 'ch?', 'ystyle', 1
@@ -48,6 +55,7 @@ pro spp_fld_rfs_cross_load_l1_metadata_options, prefix, receiver_str, color = co
   ;  options, prefix + 'ch?', 'psym', 4
   options, prefix + 'ch?', 'psym_lim', 100
   options, prefix + 'ch?', 'symsize', 0.5
+  options, prefix + 'ch?', 'datagap', 120
   options, prefix + 'ch0', 'ytitle', receiver_str + ' Cross!CCH0 Source'
   options, prefix + 'ch1', 'ytitle', receiver_str + ' Cross!CCH1 Source'
 
@@ -55,7 +63,7 @@ pro spp_fld_rfs_cross_load_l1_metadata_options, prefix, receiver_str, color = co
   options, prefix + 'xspec_??', 'no_interp', 1
   options, prefix + 'xspec_??', 'yrange', [0,64]
   options, prefix + 'xspec_??', 'ystyle', 1
-  options, prefix + 'xspec_??', 'datagap', 60
+  options, prefix + 'xspec_??', 'datagap', 120
 
   options, prefix + 'ch?_string', 'tplot_routine', 'strplot'
   options, prefix + 'ch?_string', 'yrange', [-0.1,1.0]
@@ -228,6 +236,12 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
 
           endfor
 
+          if rec EQ 'lfr' then $
+            spp_fld_rfs_cross_load_l1_metadata_options, $
+            prefix.Replace('_cross', '_lfr_cross'), 'LFR', color = 6
+          if rec EQ 'hfr' then $
+            spp_fld_rfs_cross_load_l1_metadata_options, $
+            prefix.Replace('_cross', '_hfr_cross'), 'HFR', color = 2
 
         endif else begin
 
@@ -325,7 +339,7 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
 
               im_data_y /= (cic_factor)
               re_data_y /= (cic_factor)
-              
+
               im_data_y *= 8 ; LFR
               re_data_y *= 8 ; LFR
 
@@ -371,6 +385,49 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
           options, src_name_re, 'ytitle', ytitle_re
           options, src_name_im, 'ytitle', ytitle_im
           options, src_name, 'color_table', 39
+
+          cross_items = prefix + ['compression', 'hl', 'ch0', 'ch1', $
+            'ch0_string', 'ch1_string', 'gain', 'nsum', 'xspec_re', 'xspec_im']
+
+          for k = 0, n_elements(cross_items) - 1 do begin
+
+            item = cross_items[k]
+
+            if tnames(item) NE '' then begin
+
+              get_data, item, data = data, lim = lim
+
+              if rec NE '' then $
+                get_data, item.Replace('cross_', rec + '_cross_'), data = dummy, lim = lim
+
+              ;cross_pos = strpos(item, 'cross_')
+              ;if cross_pos GT 0 then new_item = strmid(item, 0, cross_pos) + $
+              ;  rec_str + strmid(item, cross_pos) + '_' + src0_string + '_' + src1_string
+
+              if rec NE '' then $
+                new_item = item.Replace('cross_', rec + '_cross_') else $
+                new_item = item
+                
+              new_item = new_item  + '_' + src0_string + '_' + src1_string
+
+              if size(/type, lim) EQ 8 then begin
+
+                ytitle = lim.ytitle
+
+                if rec NE '' then ytitle = ytitle.Replace('RFS', strupcase(rec))
+
+                ytitle = ytitle + '!C' + src0_string + '!C' + src1_string
+
+                lim.ytitle = ytitle
+
+              end
+
+              store_data, new_item, $
+                data = {x:data.x[inds], y:data.y[inds,*]}, dlim = lim
+
+            end
+
+          endfor
 
           ;print, ch0_ij, ch1_ij, count, src_name
 

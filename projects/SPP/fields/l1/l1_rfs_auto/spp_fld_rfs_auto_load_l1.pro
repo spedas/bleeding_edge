@@ -22,9 +22,12 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'compression', 'panel_size', 0.35
   options, prefix + 'compression', 'ytitle', receiver_str + '!CAUTO!CCmprs'
   options, prefix + 'compression', 'ysubtitle', ''
+  options, prefix + 'compression', 'datagap', 120
 
-  options, prefix + 'peaks', 'yrange', [0, 1]
-  options, prefix + 'peaks', 'ystyle', 1
+  options, prefix + 'peaks', 'yrange', [-0.25, 1.25]
+  options, prefix + 'peaks', 'yticks', 1
+  options, prefix + 'peaks', 'ytickv', [0,1]
+  options, prefix + 'peaks', 'yminor', 1
   options, prefix + 'peaks', 'colors', color
   options, prefix + 'peaks', 'yminor', 1
   ;  options, prefix + 'peaks', 'psym', 4
@@ -33,9 +36,12 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'peaks', 'panel_size', 0.35
   options, prefix + 'peaks', 'ytitle', receiver_str + '!CAUTO!CPks En'
   options, prefix + 'peaks', 'ysubtitle', ''
+  options, prefix + 'peaks', 'datagap', 120
 
-  options, prefix + 'averages', 'yrange', [0, 1]
-  options, prefix + 'averages', 'ystyle', 1
+  options, prefix + 'averages', 'yrange', [-0.25, 1.25]
+  options, prefix + 'averages', 'yticks', 1
+  options, prefix + 'averages', 'ytickv', [0,1]
+  options, prefix + 'averages', 'yminor', 1
   options, prefix + 'averages', 'colors', color
   options, prefix + 'averages', 'yminor', 1
   ;  options, prefix + 'averages', 'psym', 4
@@ -44,20 +50,22 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'averages', 'panel_size', 0.35
   options, prefix + 'averages', 'ytitle', receiver_str + '!CAUTO!CAvg En'
   options, prefix + 'averages', 'ysubtitle', ''
+  options, prefix + 'averages', 'datagap', 120
 
   options, prefix + 'gain', 'yrange', [-0.25, 1.25]
   options, prefix + 'gain', 'yticks', 1
   options, prefix + 'gain', 'ytickv', [0,1]
+  options, prefix + 'gain', 'yminor', 1
   options, prefix + 'gain', 'ytickname', ['Lo','Hi']
   options, prefix + 'gain', 'ystyle', 1
   options, prefix + 'gain', 'colors', color
-  options, prefix + 'gain', 'yminor', 1
   ;  options, prefix + 'gain', 'psym', 4
   options, prefix + 'gain', 'psym_lim', 100
   options, prefix + 'gain', 'symsize', 0.5
   options, prefix + 'gain', 'panel_size', 0.35
   options, prefix + 'gain', 'ytitle', receiver_str + '!CAUTO!CGain'
   options, prefix + 'gain', 'ysubtitle', ''
+  options, prefix + 'gain', 'datagap', 120
 
   options, prefix + 'hl', 'yrange', [0, 3]
   options, prefix + 'hl', 'yticks', 3
@@ -70,8 +78,9 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'hl', 'panel_size', 0.5
   options, prefix + 'hl', 'ytitle', receiver_str + '!CAUTO!CHL'
   options, prefix + 'hl', 'ysubtitle', ''
+  options, prefix + 'hl', 'datagap', 120
 
-  options, prefix + 'nsum', 'yrange', [0, 80]
+  options, prefix + 'nsum', 'yrange', [0, 100]
   options, prefix + 'nsum', 'ystyle', 1
   options, prefix + 'nsum', 'yminor', 1
   options, prefix + 'nsum', 'colors', color
@@ -80,6 +89,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'nsum', 'symsize', 0.5
   options, prefix + 'nsum', 'ytitle', receiver_str + '!CAUTO!CNSUM'
   options, prefix + 'nsum', 'ysubtitle', ''
+  options, prefix + 'nsum', 'datagap', 120
 
   options, prefix + 'ch?', 'yrange', [0, 7]
   options, prefix + 'ch?', 'ystyle', 1
@@ -91,6 +101,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'ch0', 'ytitle', receiver_str + '!CAUTO!CCH0 SRC'
   options, prefix + 'ch1', 'ytitle', receiver_str + '!CAUTO!CCH1 SRC'
   options, prefix + 'ch?', 'ysubtitle', ''
+  options, prefix + 'ch?', 'datagap', 120
 
   options, prefix + 'ch?_string', 'tplot_routine', 'strplot'
   options, prefix + 'ch?_string', 'yrange', [-0.1,1.0]
@@ -106,19 +117,19 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
   options, prefix + 'spec?_ch?', 'no_interp', 1
   options, prefix + 'spec?_ch?', 'yrange', [0,64]
   options, prefix + 'spec?_ch?', 'ystyle', 1
-  options, prefix + 'spec?_ch?', 'datagap', 60
+  options, prefix + 'spec?_ch?', 'datagap', 120
 
   options, prefix + 'peaks_ch?', 'spec', 1
   options, prefix + 'peaks_ch?', 'no_interp', 1
   options, prefix + 'peaks_ch?', 'yrange', [0,64]
   options, prefix + 'peaks_ch?', 'ystyle', 1
-  options, prefix + 'peaks_ch?', 'datagap', 60
+  options, prefix + 'peaks_ch?', 'datagap', 120
 
   options, prefix + 'averages_ch?', 'spec', 1
   options, prefix + 'averages_ch?', 'no_interp', 1
   options, prefix + 'averages_ch?', 'yrange', [0,64]
   options, prefix + 'averages_ch?', 'ystyle', 1
-  options, prefix + 'averages_ch?', 'datagap', 60
+  options, prefix + 'averages_ch?', 'datagap', 120
 
   options, prefix + 'spec0_ch0', 'ytitle', receiver_str + '!CAUTO!CSPEC0 CH0 RAW'
   options, prefix + 'spec0_ch1', 'ytitle', receiver_str + '!CAUTO!CSPEC0 CH1 RAW'
@@ -142,6 +153,8 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
 
   raw_spectra = ['peaks_ch0', 'peaks_ch1', $
     'averages_ch0', 'averages_ch1']
+
+  stored_names = []
 
   for i = 0, n_elements(raw_spectra) - 1 do begin
 
@@ -265,7 +278,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
         ; For example, if the above commands load data into the tplot item
         ;
         ; spp_fld_rfs_hfr_auto_averages_ch0_converted
-        ; 
+        ;
         ; and that item has some spectra from each of V1-V2, V1, and V3, this
         ; code will create three separate items
         ;
@@ -302,6 +315,48 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
             ;stop
 
 
+
+            ;if i EQ 0 then begin
+
+            auto_items = prefix + ['compression', 'peaks', 'averages', $
+              'hl', 'ch0', 'ch1', $
+              'ch0_string', 'ch1_string', 'gain', 'nsum']
+
+            for k = 0, n_elements(auto_items) - 1 do begin
+
+              item = auto_items[k]
+
+              if tnames(item) NE '' then begin
+
+                get_data, item, data = data, lim = lim
+
+                new_item = item  + '_' + src_string2
+
+                if size(/type, lim) EQ 8 then begin
+
+                  ytitle = lim.ytitle
+
+                  ytitle = ytitle + '!C' + src_string2
+
+                  lim.ytitle = ytitle
+
+                end
+
+                if (array_union(new_item, stored_names))[0] EQ -1 then begin
+
+                  store_data, new_item, $
+                    data = {x:data.x[inds], y:data.y[inds,*]}, dlim = lim
+
+                  stored_names = [stored_names, new_item]
+
+                end
+
+              end
+
+            endfor
+
+            ;end
+
             store_data, src_name, $
               data = {x:(raw_spec_data.x)[inds], y:converted_spec_data[inds,*], $
               v:rfs_freqs.reduced_freq}
@@ -318,6 +373,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
             options, src_name, 'color_table', 39
 
             options, src_name,  'ysubtitle', 'Freq [Hz]'
+
 
           endif
 

@@ -25,9 +25,13 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'compression', 'symsize', 0.5
   options, prefix + 'compression', 'panel_size', 0.35
   options, prefix + 'compression', 'ytitle', receiver_str + ' HiRes!CCmprs'
+  options, prefix + 'compression', 'ysubtitle', ''
+  options, prefix + 'compression', 'datagap', 120
 
-  options, prefix + 'peaks', 'yrange', [0, 1]
-  options, prefix + 'peaks', 'ystyle', 1
+  options, prefix + 'peaks', 'yrange', [-0.25, 1.25]
+  options, prefix + 'peaks', 'yticks', 1
+  options, prefix + 'peaks', 'ytickv', [0,1]
+  options, prefix + 'peaks', 'yminor', 1
   options, prefix + 'peaks', 'colors', color
   options, prefix + 'peaks', 'yminor', 1
   ;  options, prefix + 'peaks', 'psym', 4
@@ -35,9 +39,13 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'peaks', 'symsize', 0.5
   options, prefix + 'peaks', 'panel_size', 0.35
   options, prefix + 'peaks', 'ytitle', receiver_str + ' HiRes!CPks En'
+  options, prefix + 'peaks', 'ysubtitle', ''
+  options, prefix + 'peaks', 'datagap', 120
 
-  options, prefix + 'averages', 'yrange', [0, 1]
-  options, prefix + 'averages', 'ystyle', 1
+  options, prefix + 'averages', 'yrange', [-0.25, 1.25]
+  options, prefix + 'averages', 'yticks', 1
+  options, prefix + 'averages', 'ytickv', [0,1]
+  options, prefix + 'averages', 'yminor', 1
   options, prefix + 'averages', 'colors', color
   options, prefix + 'averages', 'yminor', 1
   ;  options, prefix + 'averages', 'psym', 4
@@ -45,6 +53,8 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'averages', 'symsize', 0.5
   options, prefix + 'averages', 'panel_size', 0.35
   options, prefix + 'averages', 'ytitle', receiver_str + ' HiRes!CAvg En'
+  options, prefix + 'averages', 'ysubtitle', ''
+  options, prefix + 'averages', 'datagap', 120
 
   options, prefix + 'gain', 'yrange', [-0.25, 1.25]
   options, prefix + 'gain', 'yticks', 1
@@ -58,6 +68,8 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'gain', 'symsize', 0.5
   options, prefix + 'gain', 'panel_size', 0.35
   options, prefix + 'gain', 'ytitle', receiver_str + ' HiRes!CGain'
+  options, prefix + 'gain', 'ysubtitle', ''
+  options, prefix + 'gain', 'datagap', 120
 
   options, prefix + 'hl', 'yrange', [0, 3]
   options, prefix + 'hl', 'yticks', 3
@@ -69,6 +81,8 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'hl', 'symsize', 0.5
   options, prefix + 'hl', 'panel_size', 0.5
   options, prefix + 'hl', 'ytitle', receiver_str + ' HiRes!CHL'
+  options, prefix + 'hl', 'ysubtitle', ''
+  options, prefix + 'hl', 'datagap', 120
 
   options, prefix + 'nsum', 'yrange', [0, 128]
   options, prefix + 'nsum', 'ystyle', 1
@@ -78,6 +92,8 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'nsum', 'psym_lim', 100
   options, prefix + 'nsum', 'symsize', 0.5
   options, prefix + 'nsum', 'ytitle', receiver_str + ' HiRes!CNSUM'
+  options, prefix + 'nsum', 'ysubtitle', ''
+  options, prefix + 'nsum', 'datagap', 120
 
   options, prefix + 'peakmode', 'yrange', [0, 3]
   options, prefix + 'peakmode', 'ystyle', 1
@@ -88,6 +104,8 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'peakmode', 'symsize', 0.5
   options, prefix + 'peakmode', 'panel_size', 0.5
   options, prefix + 'peakmode', 'ytitle', receiver_str + ' HiRes!CPeakMode'
+  options, prefix + 'peakmode', 'ysubtitle', ''
+  options, prefix + 'peakmode', 'datagap', 120
 
   options, prefix + 'peak_location', 'yrange', [0, 64]
   options, prefix + 'peak_location', 'ystyle', 1
@@ -97,6 +115,8 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, prefix + 'peak_location', 'psym_lim', 100
   options, prefix + 'peak_location', 'symsize', 0.5
   options, prefix + 'peak_location', 'ytitle', receiver_str + ' HiRes!CPeak_location'
+  options, prefix + 'peak_location', 'ysubtitle', ''
+  options, prefix + 'peak_location', 'datagap', 120
 
   options, prefix + 'ch?', 'yrange', [0, 7]
   options, prefix + 'ch?', 'ystyle', 1
@@ -105,14 +125,27 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   ;  options, prefix + 'ch?', 'psym', 4
   options, prefix + 'ch?', 'psym_lim', 100
   options, prefix + 'ch?', 'symsize', 0.5
-  options, prefix + 'ch0', 'ytitle', receiver_str + ' HiRes!CCH0 Source'
-  options, prefix + 'ch1', 'ytitle', receiver_str + ' HiRes!CCH1 Source'
+  options, prefix + 'ch?', 'ysubtitle', ''
+  options, prefix + 'ch?', 'datagap', 120
+  options, prefix + 'ch0', 'ytitle', receiver_str + ' HiRes!CCH0 SRC'
+  options, prefix + 'ch1', 'ytitle', receiver_str + ' HiRes!CCH1 SRC'
+
+  options, prefix + 'ch?_string', 'tplot_routine', 'strplot'
+  options, prefix + 'ch?_string', 'yrange', [-0.1,1.0]
+  options, prefix + 'ch?_string', 'ystyle', 1
+  options, prefix + 'ch?_string', 'yticks', 1
+  options, prefix + 'ch?_string', 'ytickformat', '(A1)'
+  options, prefix + 'ch?_string', 'noclip', 0
+  options, prefix + 'ch?_string', 'ysubtitle', ''
+  options, prefix + 'ch0_string', 'ytitle', receiver_str + '!HiRes!CCH0 SRC'
+  options, prefix + 'ch1_string', 'ytitle', receiver_str + '!HiRes!CCH1 SRC'
+
 
   options, prefix + 'spec0_ch?', 'spec', 1
   options, prefix + 'spec0_ch?', 'no_interp', 1
   options, prefix + 'spec0_ch?', 'yrange', [0,32]
   options, prefix + 'spec0_ch?', 'ystyle', 1
-  options, prefix + 'spec0_ch?', 'datagap', 60
+  options, prefix + 'spec0_ch?', 'datagap', 120
 
   options, prefix + 'spec0_ch0', 'ytitle', receiver_str + ' HiRes!CSpec0 Ch0 Raw'
   options, prefix + 'spec0_ch1', 'ytitle', receiver_str + ' HiRes!CSpec0 Ch1 Raw'
@@ -174,6 +207,8 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   raw_spectra = ['peaks_ch0', 'peaks_ch1', $
     'averages_ch0', 'averages_ch1']
 
+  stored_names = []
+
   lfr_flag = 1
 
   get_data, 'spp_fld_rfs_lfr_hires_peak_location', data = hires_loc
@@ -229,6 +264,12 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
   options, 'spp_fld_rfs_lfr_hires_freq*', 'linestyle', 2
   options, 'spp_fld_rfs_lfr_hires_freq*', 'thick', 1
   options, 'spp_fld_rfs_lfr_hires_freq*', 'colors', 0
+
+  options, 'spp_fld_rfs_lfr_hires_freq', 'ytitle', 'LFR HiRes!CFreq!CSel'
+  options, 'spp_fld_rfs_lfr_hires_freq_min', 'ytitle', 'LFR HiRes!CFreq!CMin'
+  options, 'spp_fld_rfs_lfr_hires_freq_max', 'ytitle', 'LFR HiRes!CFreq!CMax'
+
+  options, 'spp_fld_rfs_lfr_hires_freq', 'ysubtitle', '[Hz]'
 
 
   for i = 0, n_elements(raw_spectra) - 1 do begin
@@ -370,6 +411,44 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
             avg_pos = strpos(ytitle2, 'AVERAGES')
 
             if avg_pos GE 0 then ytitle2 = strmid(ytitle2, 0, avg_pos) + 'AVGS' + strmid(ytitle2, avg_pos+8)
+
+            hires_items = prefix + ['compression', 'peaks', 'averages', $
+              'hl', 'ch0', 'ch1', $
+              'ch0_string', 'ch1_string', 'gain', 'nsum', $
+              'peakmode', 'peak_location', 'freq', 'freq_max', 'freq_min']
+
+            for k = 0, n_elements(hires_items) - 1 do begin
+
+              item = hires_items[k]
+
+              if tnames(item) NE '' then begin
+
+                get_data, item, data = data, lim = lim
+
+                new_item = item  + '_' + src_string2
+
+                if size(/type, lim) EQ 8 then begin
+
+                  ytitle = lim.ytitle
+
+                  ytitle = ytitle + '!C' + src_string2
+
+                  lim.ytitle = ytitle
+
+                end
+
+                if (array_union(new_item, stored_names))[0] EQ -1 then begin
+
+                  store_data, new_item, $
+                    data = {x:data.x[inds], y:data.y[inds,*]}, dlim = lim
+
+                  stored_names = [stored_names, new_item]
+
+                end
+
+              end
+
+            endfor
 
             store_data, src_name, $
               data = {x:(raw_spec_data.x)[inds], y:converted_spec_data[inds,*], $
