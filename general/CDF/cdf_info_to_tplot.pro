@@ -6,9 +6,9 @@
 ;
 ; Written by Davin Larson
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-12-21 11:53:48 -0800 (Fri, 21 Dec 2018) $
-; $LastChangedRevision: 26398 $
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2019-01-28 17:11:15 -0800 (Mon, 28 Jan 2019) $
+; $LastChangedRevision: 26510 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_info_to_tplot.pro $
 ;-
 pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
@@ -20,7 +20,7 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
         load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
                                       ;resolve labels implemented as keyword to preserve backwards compatibility
 
-dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 26398 2018-12-21 19:53:48Z egrimes $'
+dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 26510 2019-01-29 01:11:15Z pulupalap $'
 tplotnames=''
 vbs = keyword_set(verbose) ? verbose : 0
 
@@ -84,11 +84,13 @@ for i=0,nv-1 do begin
        continue
    endif
 
-   if finite(fillval) and keyword_set(v.dataptr) and (v.type eq 4 or v.type eq 5) then begin
-       w = where(*v.dataptr eq fillval,nw)
-       if nw gt 0 then (*v.dataptr)[w] = !values.f_nan
+   if (v.type eq 4 or v.type eq 5) then begin
+       if finite(fillval) and keyword_set(v.dataptr) then begin
+           w = where(*v.dataptr eq fillval,nw)
+           if nw gt 0 then (*v.dataptr)[w] = !values.f_nan
+       endif
    endif
-
+   
 ;   plottable_data = strcmp( var_type , 'data',/fold_case)
 
 ;   if keyword_set(get_support_data) then plottable_data or= strcmp( var_type, 'support',7,/fold_case)

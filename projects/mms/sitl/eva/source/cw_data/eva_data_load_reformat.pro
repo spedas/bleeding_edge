@@ -66,19 +66,22 @@ FUNCTION eva_data_load_reformat, paramlist, probelist, FOURTH=fourth
             sfx = '_x'
             pcolor = 2
             Dnew = DD.y[*,0]
-            newlabel = lim.labels[0]
+            iii = where(tgn eq 'LABELS', ic)
+            newlabel = (ic ge 1) ? lim.labels[0] : 'X'
           endif
           if strpos(paramlist[i],'_y') ge 0 then begin
             sfx = '_y'
             pcolor = 4
             Dnew = DD.y[*,1]
-            newlabel = lim.labels[1]
+            iii = where(tgn eq 'LABELS', ic)
+            newlabel = (ic ge 1) ? lim.labels[1] : 'Y'
           endif
           if strpos(paramlist[i],'_z') ge 0 then begin
             sfx = '_z'
             pcolor = 6
             Dnew = DD.y[*,2]
-            newlabel = lim.labels[2]
+            iii = where(tgn eq 'LABELS', ic)
+            newlabel = (ic ge 1) ? lim.labels[2] : 'Z'
           endif
           
           if (strpos(paramlist[i],'_p') ge 0) then begin

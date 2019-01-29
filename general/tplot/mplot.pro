@@ -77,7 +77,6 @@ str_element,limits,'overplot',value=oplot
 str_element,limits,'noerrorbars',noerrorbars
 str_element,limits,'errorthresh',errorthresh
 
-
 xrange=[0.,0.]
 yrange=[0.,0.]
 charsize = !p.charsize
@@ -124,8 +123,6 @@ d1 = dimen1(y)
 d2 = dimen2(y)
 ndx = ndimen(x)
 nx = n_elements(x)
-
-
 
 ;if n_elements(bins) eq 0 then bins = replicate(1b,d2)
 ;if n_elements(bins) eq 1 then if bins[0] eq 1 then bins = replicate(1b,d2)
@@ -194,7 +191,8 @@ if count lt psym_lim then str_element,/add,plotstuff,'psym',psym
 if count lt psym_lim then str_element,/add,oplotstuff,'psym',psym
 
 if count eq 0 then ind = lindgen(n_elements(x))  else ind = good[ind]
-if yrange[0] eq yrange[1] then begin
+if n_elements(yrange) lt 2 || yrange[0] eq yrange[1] then begin
+;if yrange[0] eq yrange[1] then begin
     if ndx eq 1 then $
       yrange = minmax(y[ind,*],posi=ytype,max=max_value,min=min_value) $
     else $

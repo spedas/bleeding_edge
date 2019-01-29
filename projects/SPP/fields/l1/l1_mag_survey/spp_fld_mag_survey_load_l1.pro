@@ -3,10 +3,10 @@
 ;   SPP_FLD_MAG_SURVEY_LOAD_L1
 ;
 ; PURPOSE:
-;   Creates a FIELDS CDF file using the CDF_CREATE function.
+;   Loads a L1 FIELDS MAG SURVEY CDF file into TPLOT variables.
 ;
 ; CALLING SEQUENCE:
-;   spp_fld_cdf_create, file, prefix = prefix
+;   spp_fld_mag_survey_load_l1, file, prefix = prefix
 ;
 ; INPUTS:
 ;   FILE: The name of the FIELDS Level 1 CDF file to be loaded.
@@ -22,9 +22,9 @@
 ; CREATED BY:
 ;   pulupa
 ;
-;  $LastChangedBy: pulupa $
-;  $LastChangedDate: 2019-01-15 11:11:22 -0800 (Tue, 15 Jan 2019) $
-;  $LastChangedRevision: 26462 $
+;  $LastChangedBy: pulupalap $
+;  $LastChangedDate: 2019-01-28 13:52:42 -0800 (Mon, 28 Jan 2019) $
+;  $LastChangedRevision: 26505 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
