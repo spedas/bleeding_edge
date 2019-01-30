@@ -50,8 +50,8 @@
 ;
 ; VERSION:
 ; $LastChangedBy: aaronbreneman $
-; $LastChangedDate: 2018-09-18 10:36:34 -0700 (Tue, 18 Sep 2018) $
-; $LastChangedRevision: 25825 $
+; $LastChangedDate: 2019-01-29 10:01:48 -0800 (Tue, 29 Jan 2019) $
+; $LastChangedRevision: 26513 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_efw_cal_waveform.pro $
 ;
 ;-
@@ -63,7 +63,7 @@ pro rbsp_efw_cal_waveform, probe = probe, datatype = datatype, $
 
 compile_opt idl2
 
-dprint,verbose=verbose,dlevel=4,'$Id: rbsp_efw_cal_waveform.pro 25825 2018-09-18 17:36:34Z aaronbreneman $'
+dprint,verbose=verbose,dlevel=4,'$Id: rbsp_efw_cal_waveform.pro 26513 2019-01-29 18:01:48Z aaronbreneman $'
 
 if ~keyword_set(trange) then trange = timerange()
 if size(coord, /type) ne 7 then coord = 'dsc'
@@ -96,82 +96,30 @@ if datatype eq 'mscb1' or datatype eq 'mscb2' then begin
     rbsp_on_stop = gain19dB.rbspb_on_stop
   endelse
 
-  ntdB0 = bytarr(n_elements(rbsp_on_start))
-  ntdB1 = ntdB0
+
+;***TESTING for 19dB attenuator
+;trange = time_double(['2015-02-15/03:59','2018-09-01/04:00'])
+
+;RBSP_EFW> print,rbsp_on_start
+;2012-09-01/03:58:45 2012-10-06/22:11:39 2014-10-04/01:11:45
+;RBSP_EFW> print,rbsp_on_stop
+;2012-09-01/03:59:09 2012-10-07/22:11:39 2015-02-16/12:11:43
+;***********
 
 
-
-;**************************
-;**TESTING**
-;timespan,'2017-02-17'  ;full day ON test
-;timespan,'2015-02-16'  ;turns ON during day (WORKS)
-;timespan,'2012-10-06'   ;turns OFF midway through day (WORKS)
-;timespan,'2015-06-08'   ;turns OFF, then back on again near end of day (WORKS)
-;trange = timerange()
-
-;for q=0,10 do print,rbsp_on_start[q] + '  ' + rbsp_on_stop[q]
-;2012-10-05/15:59:57  2012-10-06/15:59:51
-;2015-02-16/11:59:54  2015-06-08/23:34:47
-;2015-06-08/23:34:53  2015-09-15/21:29:50
-;2015-09-15/21:48:20  2015-09-22/20:51:39
-;2015-09-22/20:51:45  2015-10-19/20:54:45
-;2015-10-19/21:12:33  2015-11-07/00:49:01
-;2015-11-07/16:17:49  2018-08-20/21:38:32
-
-;[1,n] = t0 after calibration time
-;[n,1] = t1 before calibration end
-
-;4 possible options.
-;1) [1,1] Full day calibrated: t0 and t1 fall within 19dB adjustment
-;2) [0,1] Calibration kicks in during day: t0 is before 19dB starts but t1 is after
-;3) [1,0] Calibration ends during day: t0 is before 19dB ends, but t1 is after
-;4) [0,0] Not calibrated
-
-;|----------------------|  [1,1]
-;    |t0-----t1|
-;
-;    |----------------------| [0,1]
-;|t0-----t1|
-;
-;|----------------------|
-;                  |t0-----t1| [1,0]
-
-;|----------------------|
-;                                    |t0-----t1|
-
+  ;Find timerange when the 19dB attenuator is ON
+  t0z = dblarr(n_elements(rbsp_on_start))
+  t1z = t0z
 
   for i=0,n_elements(rbsp_on_start)-1 do begin
-    if trange[0] ge time_double(rbsp_on_stop[i]) then ntdB0[i] = 0 else ntdB0[i] = trange[0] ge time_double(rbsp_on_start[i])
-    if trange[1] lt time_double(rbsp_on_start[i]) then ntdB1[i] = 0 else ntdB1[i] = trange[1] le time_double(rbsp_on_stop[i])
+    ;no 19dB attenuator if final time is before attenuator ON or if
+    ;first time is after attenuator OFF
+    test_false = logical_or(trange[0] ge time_double(rbsp_on_stop[i]),trange[1] le time_double(rbsp_on_start[i]))
+    if test_false then t0z[i] = 0d else t0z[i] = trange[0] > time_double(rbsp_on_start[i])
+    if t0z[i] eq 0d then t1z[i] = 0d else t1z[i] = trange[1] < time_double(rbsp_on_stop[i])
   endfor
 
-
-  goo = where(ntdB0 + ntdB1 eq 2)
-  if goo[0] ne -1 then wholeday_19db = 1 else wholeday_19db = 0
-  if not wholeday_19db then begin
-
-    t0z = ''
-    t1z = ''
-    for b=0,n_elements(ntdB0)-1 do begin
-        x = float(ntdB0[b]) - float(ntdB1[b])
-        CASE x OF
-          1: begin
-            t0z = [t0z,time_string(trange[0])]
-            t1z = [t1z,rbsp_on_stop[b]]
-          end
-          -1: begin
-            t0z = [t0z,rbsp_on_start[b]]
-            t1z = [t1z,time_string(trange[1])]
-          end
-          else: print,''
-        ENDCASE
-
-    endfor
-    t0z = t0z[1:n_elements(t0z)-1]
-    t1z = t1z[1:n_elements(t1z)-1]
-  endif
 endif
-
 
 ;---------------------------------------------------------------------
 
