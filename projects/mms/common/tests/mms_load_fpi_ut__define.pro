@@ -10,10 +10,22 @@
 ; 
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-11-15 09:42:04 -0800 (Thu, 15 Nov 2018) $
-; $LastChangedRevision: 26124 $
+; $LastChangedDate: 2019-01-30 13:55:54 -0800 (Wed, 30 Jan 2019) $
+; $LastChangedRevision: 26519 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_fpi_ut__define.pro $
 ;-
+
+function mms_load_fpi_ut::test_dis_partmoms
+  mms_load_fpi, trange=['2017-12-15', '2017-12-15/2'], probe=1, datatype='dis-partmoms'
+  assert, spd_data_exists('mms1_dis_numberdensity_part_fast mms1_dis_bulkv_part_gse_fast', '2017-12-15', '2017-12-15/2'), 'Problem with DIS partial moments files'
+  return, 1
+end
+
+function mms_load_fpi_ut::test_des_partmoms
+  mms_load_fpi, trange=['2017-12-15', '2017-12-15/2'], probe=1, datatype='des-partmoms'
+  assert, spd_data_exists('mms1_des_numberdensity_part_fast mms1_des_bulkv_part_gse_fast', '2017-12-15', '2017-12-15/2'), 'Problem with DES partial moments files'
+  return, 1
+end
 
 function mms_load_fpi_ut::test_pseudo_moms_l3pre_files
   mms_load_fpi, data_rate='brst', trange=['2015-10-16', '2015-10-17'], level='l3pre', probe=1, datatype='dis-pseudomoms', cdf_filenames=fn
@@ -145,12 +157,12 @@ end
 ; same as below, except using mms_get_dist
 function mms_load_fpi_ut::test_integration_time_get_dist
   mms_load_fpi, trange=['2015-10-16/13:00', '2015-10-16/13:10'], datatype=['dis-dist', 'des-dist'], data_rate='brst'
-  mms_load_fpi, trange=['2016-12-09', '2016-12-10'], datatype=['dis-qdist', 'des-qdist'], data_rate='brst', suffix='acr', probe=1
+ ; mms_load_fpi, trange=['2016-12-09', '2016-12-10'], datatype=['dis-qdist', 'des-qdist'], data_rate='brst', suffix='acr', probe=1
   mms_load_fpi, trange=['2015-10-16/13:00', '2015-10-16/13:10'], datatype=['dis-dist', 'des-dist'], data_rate='fast'
-  fpi_dist = mms_get_dist('mms1_dis_dist_brstacr',trange=time_double(['2016-12-09', '2016-12-10']), probe = 1, species = 'i')
-  assert, abs(((*fpi_dist)[0].end_time-(*fpi_dist)[0].time)-0.0375)/0.0375d lt 0.001, 'Problem with integration time returned by mms_get_dist (ions, brst, ACR)'
-  fpi_dist = mms_get_dist('mms1_des_dist_brstacr',trange=time_double(['2016-12-09', '2016-12-10']), probe = 1, species = 'e')
-  assert, abs(((*fpi_dist)[0].end_time-(*fpi_dist)[0].time)-0.0075)/0.0075d lt 0.001, 'Problem with integration time returned by mms_get_dist (electrons, brst, ACR)'
+ ; fpi_dist = mms_get_dist('mms1_dis_dist_brstacr',trange=time_double(['2016-12-09', '2016-12-10']), probe = 1, species = 'i')
+ ; assert, abs(((*fpi_dist)[0].end_time-(*fpi_dist)[0].time)-0.0375)/0.0375d lt 0.001, 'Problem with integration time returned by mms_get_dist (ions, brst, ACR)'
+ ; fpi_dist = mms_get_dist('mms1_des_dist_brstacr',trange=time_double(['2016-12-09', '2016-12-10']), probe = 1, species = 'e')
+ ; assert, abs(((*fpi_dist)[0].end_time-(*fpi_dist)[0].time)-0.0075)/0.0075d lt 0.001, 'Problem with integration time returned by mms_get_dist (electrons, brst, ACR)'
  
   fpi_dist = mms_get_dist('mms3_dis_dist_brst',trange=time_double(['2015-10-16/13:00', '2015-10-16/13:10']), probe = 3, species = 'i')
   assert, abs(((*fpi_dist)[0].end_time-(*fpi_dist)[0].time)-0.15)/0.15d lt 0.001, 'Problem with integration time returned by mms_get_dist (ions, brst)'

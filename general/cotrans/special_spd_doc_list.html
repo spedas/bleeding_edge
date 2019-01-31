@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jan 29 18:16:21 2019.<P>
+<STRONG>Last modified: </STRONG>Wed Jan 30 18:16:24 2019.<P>
  
 <HR>
  
@@ -279,6 +279,10 @@ Purpose:
     
     If the target is also an array of matrices then it is equivalent to:
       for i=0,n_ele-1 do out[i,*,*] = reform(m[i,*,*]) # reform(v[i,*,*])   
+    If the target is a tensor, KEYWORD_SET = tensor_rotation
+    then it is equivalent to
+      for i=0,n_ele-1 do out[i,*,*] = transpose(reform(m[i,*,*])) #
+        reform(v[i,*,*]) # reform(m[i, *, *])
     
     Setting the &quot;invert&quot; keyword will produce results that are equivalent to using the '##' 
     operation in the loop above.
@@ -302,7 +306,9 @@ CALLING SEQUENCE:
   Using tplot variables:
     tvector_rotate, 'matrix_var', 'vector_var' [,newname='out_var'] 
                     [,invert=invert] [,suffix=suffix] [,error=error]
-                    [,/vector_skip_nonmonotonic] [,/matrix_skip_nonmonotonic]
+                    [,/vector_skip_nonmonotonic]
+                    [,/matrix_skip_nonmonotonic]
+                    [,/tensor_rotate]
 
   Using arrays:
     tvector_rotate, matrix_array, vector_array, newname=output_array ...
@@ -312,7 +318,7 @@ Arguments:
  mat_var_in: The name of the tplot variable storing input matrices
              The y component of the tplot variable's data struct should be
              an Mx3x3 array, storing a list of transformation matrices. 
-             Array data can be input as well and should be an Mx3x3 array
+             Array or tensor data can be input as well and should be an Mx3x3 array
  
 
  vec_var_in: The name of a tplot variable storing an array of input vectors.
@@ -320,7 +326,7 @@ Arguments:
              You can use globbing to rotate several tplot variables
              storing vectors with a single matrix. The y component of the 
              tplot variable's data struct should be an Nx3 array. 
-             Array data can also be input and should be an Nx3 array. 
+             Array data can also be input and should be an Nx3x3 array. 
 
  newname(optional): the name of the output variable, defaults to 
                     vec_var_in + '_rot'
@@ -347,7 +353,8 @@ Arguments:
  matrix_skip_nonmonotonic(optional): Removes any vector data with non-ascending 
                             timestamps before SLERPing matrices rather than throwing an error.
 
-
+ tensor_rotate: set if the input is a pressure, or momentum flux
+                tensor, requiring an extra matrix multiplication
 Notes: 
  1.  mat_var_in should store rotation or permutation matrices. 
      (ie the columns of any matrix in mat_var_in should form an orthonormal basis) 
@@ -384,9 +391,9 @@ Notes:
 
  SEE ALSO:  mva_matrix_make.pro, fac_matrix_make.pro,rxy_matrix_make
 
- $LastChangedBy: aaflores $
- $LastChangedDate: 2016-04-29 17:15:55 -0700 (Fri, 29 Apr 2016) $
- $LastChangedRevision: 20987 $
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-01-30 15:00:59 -0800 (Wed, 30 Jan 2019) $
+ $LastChangedRevision: 26520 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/special/tvector_rotate.pro $
 </PRE><P>
 <STRONG>(See <A href="special/tvector_rotate.pro">general/cotrans/special/tvector_rotate.pro</A>)</STRONG><P>

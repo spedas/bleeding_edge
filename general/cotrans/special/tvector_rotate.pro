@@ -14,6 +14,10 @@
 ;    
 ;    If the target is also an array of matrices then it is equivalent to:
 ;      for i=0,n_ele-1 do out[i,*,*] = reform(m[i,*,*]) # reform(v[i,*,*])   
+;    If the target is a tensor, KEYWORD_SET = tensor_rotation
+;    then it is equivalent to
+;      for i=0,n_ele-1 do out[i,*,*] = transpose(reform(m[i,*,*])) #
+;        reform(v[i,*,*]) # reform(m[i, *, *])
 ;    
 ;    Setting the "invert" keyword will produce results that are equivalent to using the '##' 
 ;    operation in the loop above.
@@ -37,7 +41,9 @@
 ;  Using tplot variables:
 ;    tvector_rotate, 'matrix_var', 'vector_var' [,newname='out_var'] 
 ;                    [,invert=invert] [,suffix=suffix] [,error=error]
-;                    [,/vector_skip_nonmonotonic] [,/matrix_skip_nonmonotonic]
+;                    [,/vector_skip_nonmonotonic]
+;                    [,/matrix_skip_nonmonotonic]
+;                    [,/tensor_rotate]
 ;
 ;  Using arrays:
 ;    tvector_rotate, matrix_array, vector_array, newname=output_array ...
@@ -47,7 +53,7 @@
 ; mat_var_in: The name of the tplot variable storing input matrices
 ;             The y component of the tplot variable's data struct should be
 ;             an Mx3x3 array, storing a list of transformation matrices. 
-;             Array data can be input as well and should be an Mx3x3 array
+;             Array or tensor data can be input as well and should be an Mx3x3 array
 ; 
 ;
 ; vec_var_in: The name of a tplot variable storing an array of input vectors.
@@ -55,7 +61,7 @@
 ;             You can use globbing to rotate several tplot variables
 ;             storing vectors with a single matrix. The y component of the 
 ;             tplot variable's data struct should be an Nx3 array. 
-;             Array data can also be input and should be an Nx3 array. 
+;             Array data can also be input and should be an Nx3x3 array. 
 ;
 ; newname(optional): the name of the output variable, defaults to 
 ;                    vec_var_in + '_rot'
@@ -82,7 +88,8 @@
 ; matrix_skip_nonmonotonic(optional): Removes any vector data with non-ascending 
 ;                            timestamps before SLERPing matrices rather than throwing an error.
 ;
-;
+; tensor_rotate: set if the input is a pressure, or momentum flux
+;                tensor, requiring an extra matrix multiplication
 ;Notes: 
 ; 1.  mat_var_in should store rotation or permutation matrices. 
 ;     (ie the columns of any matrix in mat_var_in should form an orthonormal basis) 
@@ -119,9 +126,9 @@
 ;
 ; SEE ALSO:  mva_matrix_make.pro, fac_matrix_make.pro,rxy_matrix_make
 ;
-; $LastChangedBy: aaflores $
-; $LastChangedDate: 2016-04-29 17:15:55 -0700 (Fri, 29 Apr 2016) $
-; $LastChangedRevision: 20987 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-01-30 15:00:59 -0800 (Wed, 30 Jan 2019) $
+; $LastChangedRevision: 26520 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/special/tvector_rotate.pro $
 ;-
 
@@ -174,7 +181,8 @@ end
 
 pro tvector_rotate,mat_var_in,vec_var_in,newname = newname,suffix=suffix,error=error,invert=invert,$
                    vector_skip_nonmonotonic=vector_skip_nonmonotonic,$
-                   matrix_skip_nonmonotonic=matrix_skip_nonmonotonic
+                   matrix_skip_nonmonotonic=matrix_skip_nonmonotonic,$
+                   tensor_rotate=tensor_rotate
 
 compile_opt idl2, hidden
 ;puts helper functions in scope
@@ -255,7 +263,7 @@ if tplotvar then begin
           
           if min(v_d.x,/nan) gt max(m_d.x,/nan) || max(v_d.x) lt min(m_d.x) then begin
             dprint,'WARNING: time arrays for matrices and vectors do not overlap.'
-            dprint,'Data is probably from different days.  Result will probably be incorrect.
+            dprint,'Data is probably from different days.  Result will probably be incorrect.'
           endif else begin
             dprint,'WARNING: time arrays do not match.  Matrices will be interpolated to match the times of input vector array'
           endelse
@@ -383,7 +391,10 @@ if tplotvar then begin
          ;Rotation matrices whose columns are a new basis can be combined this way
          ;(i.e. m1 # (m2 # v) = (m1 # m2) # v)
          ;Use keyword to ensure output type is that of v_d.y
-         v_t = ctv_mm_mult(m_d_y,v_d.y,/second_type)
+          if keyword_set(tensor_rotate) then begin
+             v_t = ctv_mm_mult(transpose(m_d_y, [0, 2, 1]),v_d.y,/second_type)
+             v_t = ctv_mm_mult(v_t, m_d_y)
+          endif else v_t = ctv_mm_mult(m_d_y,v_d.y,/second_type)
        endif else begin
          ;rotate vectors using matrix right multiplication
          v_t = ctv_mx_vec_rot(m_d_y,v_d.y)
@@ -556,11 +567,13 @@ endif else begin     ; end of tplotvar
    endif
 
    if n_elements(v_d_s) eq 3 then begin
-      newname = ctv_mm_mult(m_d_y,v_d,/second_type)
+      if keyword_set(tensor_rotate) then begin
+         newname = ctv_mm_mult(transpose(m_d_y,[0,2,1]),v_d,/second_type)
+         newname = ctv_mm_mult(newname, m_d_y) ;cf. tensor_rotate.pro uses ## and not #
+      endif else newname = ctv_mm_mult(m_d_y,v_d,/second_type)
    endif else begin
       newname = ctv_mx_vec_rot(m_d_y,v_d)
    endelse
-          
 endelse    ; end of vector data
    
 error = 1
