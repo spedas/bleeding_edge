@@ -26,8 +26,8 @@
 ;   pulupa
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2018-12-05 11:45:41 -0800 (Wed, 05 Dec 2018) $
-; $LastChangedRevision: 26248 $
+; $LastChangedDate: 2019-01-31 16:47:18 -0800 (Thu, 31 Jan 2019) $
+; $LastChangedRevision: 26531 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_put_time.pro $
 ;-
 
@@ -55,7 +55,20 @@ pro spp_fld_cdf_put_time, fileid, time, met, subseconds, utcstr, $
 
   tmlib_time = time
 
-  unix_time = time_double(utcstr)
+  ;
+  ; The 'utcstr' time is converted from MET + subseconds using PSP SPICE 
+  ; kernels.
+  ;
+  ; For the FIELDS L1 CDF files, we use the (less accurate) 'time', which 
+  ; is also calculated from MET + subseconds, but without the use of SPICE 
+  ; kernels.  This is because the FIELDS L1 files should only contain 
+  ; information directly from the packet-which means they won't need to change
+  ; if, for instance, we get an updated SPICE kernel
+  ;
+  
+  ;unix_time = time_double(utcstr)
+  unix_time = time
+
   met_time = met
 
   if level EQ 1 then begin

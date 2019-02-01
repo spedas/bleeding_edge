@@ -15,7 +15,7 @@ pro spp_fld_dcb_ssr_telemetry_load_l1, file, prefix = prefix
 
   if not keyword_set(prefix) then prefix = 'spp_fld_dcb_ssr_telemetry_'
 
-  cdf2tplot, file, prefix = prefix
+  cdf2tplot, /get_support_data, file, prefix = prefix
 
   get_data, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR', data = ssr_ptr
   get_data, 'spp_fld_dcb_ssr_telemetry_AWININX', data = ssr_ptr_frac

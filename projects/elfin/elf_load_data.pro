@@ -96,7 +96,7 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
   endelse
 
   if undefined(remote_data_dir) then remote_data_dir = source.remote_data_dir
-  
+ 
   if undefined(local_data_dir) then local_data_dir = source.local_data_dir
   ; handle shortcut characters in the user's local data directory
   spawn, 'echo ' + local_data_dir, local_data_dir
@@ -125,8 +125,6 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
   ;combine these flags for now, if we're not downloading files then there is
   ;no reason to contact the server unless mms_get_local_files is unreliable
   no_download = source.no_download or source.no_server or (response_code ne 200) or ~undefined(no_update) or keyword_set(spdf)
-  ; TEMP for debugging and until web data is up
-  no_download = 1
 
   ;clear so new names are not appended to existing array
   undefine, tplotnames
@@ -154,25 +152,29 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
           day_string = time_string(tr[0], tformat='YYYYMMDD')
           ; note, -1 second so we don't download the data for the next day accidently
           end_string = time_string(tr[1], tformat='YYYYMMDD')          
-          daily_names = file_dailynames(trange=tr, /unique, times=times)          
-          fnames = probe + '_' + level + '_' + instrument + '_' + daily_names + '_v01.cdf' 
-         
+          daily_names = file_dailynames(trange=tr, /unique, times=times)
+          if instrument EQ 'fgm' && level EQ 'l1' then $
+             fnames = probe + '_' + level + '_' + datatype + '_' + daily_names + '_v01.cdf' else $           
+             fnames = probe + '_' + level + '_' + instrument + '_' + daily_names + '_v01.cdf' 
+          
           ;clear so new names are not appended to existing array
           undefine, tplotnames
           ; clear CDF filenames, so we're not appending to an existing array
           undefine, cdf_filenames
 
           ; set up the path names
-          ;if instrument EQ state then handle predicted vs definitive data 
+          ;if instrument EQ state then handle predicted vs definitive data directories
           state_subdir = ''
           if instrument EQ 'state' then begin
             if pred then state_subdir='pred/' else state_subdir='defn/'           
           endif
+
           remote_path = remote_data_dir + strlowcase(probe) + '/' + level + '/' + instrument + '/' + state_subdir
           local_path = filepath('', ROOT_DIR=!elf.local_data_dir, $
             SUBDIRECTORY=[probe, level, instrument]) + state_subdir
-          if strlowcase(!version.os_family) eq 'windows' then remote_path = strjoin(strsplit(remote_path, '/', /extract), path_sep())
-          if strlowcase(!version.os_family) eq 'windows' then local_path = strjoin(strsplit(local_path, '/', /extract), path_sep())
+; NOTE: temporarily commented these lines out since it doesn't work for windows ftp
+;          if strlowcase(!version.os_family) eq 'windows' then remote_path = strjoin(strsplit(remote_path, '/', /extract), path_sep())
+;          if strlowcase(!version.os_family) eq 'windows' then local_path = strjoin(strsplit(local_path, '/', /extract), path_sep())
 
           if keyword_set(spdf) then begin
             ;elf_load_data_spdf, probes = probes, datatype = datatypes, instrument = instrument, $
@@ -187,21 +189,32 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
             dprint, dlevel=1, 'ELFIN data is not yet avaialabe from the SPDF'
           endif
 
-          for file_idx = 0, n_elements(fnames) do begin 
- 
+          for file_idx = 0, n_elements(fnames)-1 do begin 
               ; download data as long as no flags are set
               if no_download eq 0 then begin
                 if file_test(local_path,/dir) eq 0 then file_mkdir2, local_path
-                dprint, dlevel=1, 'Downloading ' + fnames(file_idx) + ' to ' + remote_path   
-                paths = ''   ; Temporary until server is up and running                             
-;               paths = spd_download(remote_file=fnames(file_idx), remote_path=remote_path, $
-;                                     local_file=fnames(file_idx), local_path=local_path)
-;                if undefined(paths) or paths='' then $
-;                   dprint, devel=1, 'Unable to download ' + fnames(file_idx)
+                dprint, dlevel=1, 'Downloading ' + fnames(file_idx) + ' to ' + local_path   
+                paths = '' 
+
+                ; NOTE: directory is temporarily password protected. this will be
+                ;       removed when data is made public.
+                user=''   
+                pw=''  
+                print, 'Please enter your ELFIN user name and password' 
+                read,user,prompt='User Name: '
+                read,pw,prompt='Password: '
+
+                paths = spd_download(remote_file=fnames(file_idx), remote_path=remote_path, $
+                                     local_file=fnames(file_idx), local_path=local_path, $
+                                     url_username=user, url_password=pw, ssl_verify_peer=1, $
+                                     ssl_verify_host=1)
+                if undefined(paths) or paths EQ '' then $
+                   dprint, devel=1, 'Unable to download ' + fnames(file_idx) else $
+                   append_array, files, local_path+fnames(file_idx)
+
               endif 
               
               ; if remote file not found or no_download set then look for local copy
-              paths = ''   ; Temporary until server is up and running
               if paths EQ '' OR no_download NE 0 then begin                
                 ; get all files from the beginning of the first day
                 local_files = elf_get_local_files(probe=probe, instrument=instrument, $

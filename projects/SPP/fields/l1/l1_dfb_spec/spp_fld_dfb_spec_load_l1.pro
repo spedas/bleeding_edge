@@ -5,7 +5,7 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
     return
   endif
 
-  cdf2tplot, file, prefix = prefix, varnames = varnames
+  cdf2tplot, /get_support_data, file, prefix = prefix, varnames = varnames
 
   status_items = ['enable','bin','src_sel','scm_rotate','gain','navg','concat']
 

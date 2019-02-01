@@ -28,8 +28,8 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2019-01-28 14:01:38 -0800 (Mon, 28 Jan 2019) $
-;  $LastChangedRevision: 26507 $
+;  $LastChangedDate: 2019-01-30 21:11:34 -0800 (Wed, 30 Jan 2019) $
+;  $LastChangedRevision: 26522 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_dfb_wf/spp_fld_dfb_wf_load_l1.pro $
 ;
 
@@ -47,7 +47,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
 
   ; Load files into TPLOT variables with cdf2tplot
 
-  cdf2tplot, file, prefix = prefix, varnames = varnames, /get_support_data
+  cdf2tplot, /get_support_data, file, prefix = prefix, varnames = varnames
 
   if varnames[0] EQ '' then begin
 

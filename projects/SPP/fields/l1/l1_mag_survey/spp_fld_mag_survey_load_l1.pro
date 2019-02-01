@@ -23,8 +23,8 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2019-01-28 13:52:42 -0800 (Mon, 28 Jan 2019) $
-;  $LastChangedRevision: 26505 $
+;  $LastChangedDate: 2019-01-30 21:11:34 -0800 (Wed, 30 Jan 2019) $
+;  $LastChangedRevision: 26522 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
@@ -37,7 +37,7 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
 
   ; Load the L1 CDF file into IDL.
 
-  cdf2tplot, file, prefix = prefix
+  cdf2tplot, /get_support_data, file, prefix = prefix
 
   if not keyword_set(prefix) then prefix = ''
 

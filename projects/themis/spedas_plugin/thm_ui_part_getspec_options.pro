@@ -44,9 +44,9 @@
 ; 19-mar-2015, aaf, moments, combined data, eclipse corrections, use plugin replay API 
 ; 
 ; 
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2018-07-03 21:12:53 -0700 (Tue, 03 Jul 2018) $
-;$LastChangedRevision: 25437 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2019-01-31 09:51:05 -0800 (Thu, 31 Jan 2019) $
+;$LastChangedRevision: 26523 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spedas_plugin/thm_ui_part_getspec_options.pro $
 ;-
 
@@ -832,7 +832,8 @@ end
 ;event handler
 Pro thm_ui_part_getspec_options_event, event
 
-
+  widget_control, /hourglass
+  
   err_xxx = 0
   Catch, err_xxx
   IF (err_xxx NE 0) THEN BEGIN
@@ -917,7 +918,8 @@ Pro thm_ui_part_getspec_options_event, event
       thm_ui_part_getspec_set_defaults, state
     end
     
-    'APPLY':begin
+    'APPLY':begin  
+      widget_control, /hourglass
       thm_ui_part_getspec_apply, state, error=error
     end
   

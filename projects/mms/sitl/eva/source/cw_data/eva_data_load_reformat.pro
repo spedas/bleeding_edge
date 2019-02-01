@@ -49,6 +49,9 @@ FUNCTION eva_data_load_reformat, paramlist, probelist, FOURTH=fourth
           print, 'EVA: ERROR: '+tn+' is not loaded (eva_data_load_reformat)'
           return, 'No'
         endif
+        if strmatch(tname,'*_fpi_*_vel*') then begin
+          options, tname, labels=['Vx','Vy','Vz'], labflag=-1
+        endif
         get_data, tname, data=DD, lim=lim, dl=dl
         tgn = tag_names(lim)
         idx = where(tgn eq 'lim',ct)

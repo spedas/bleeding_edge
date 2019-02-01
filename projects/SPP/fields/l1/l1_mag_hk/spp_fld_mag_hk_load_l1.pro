@@ -1,13 +1,13 @@
 ;
-;  $LastChangedBy: spfuser $
-;  $LastChangedDate: 2018-09-07 15:53:01 -0700 (Fri, 07 Sep 2018) $
-;  $LastChangedRevision: 25747 $
+;  $LastChangedBy: pulupalap $
+;  $LastChangedDate: 2019-01-30 21:11:34 -0800 (Wed, 30 Jan 2019) $
+;  $LastChangedRevision: 26522 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_hk/spp_fld_mag_hk_load_l1.pro $
 ;
 
 pro spp_fld_mag_hk_load_l1, file, prefix = prefix, colors = colors
 
-  cdf2tplot, file, prefix = prefix
+  cdf2tplot, /get_support_data, file, prefix = prefix
   
   ; TODO: fix the TPLOT titles
 

@@ -1,7 +1,7 @@
 ;
-;  $LastChangedBy: spfuser $
-;  $LastChangedDate: 2018-10-26 16:20:20 -0700 (Fri, 26 Oct 2018) $
-;  $LastChangedRevision: 26019 $
+;  $LastChangedBy: pulupalap $
+;  $LastChangedDate: 2019-01-30 21:11:34 -0800 (Wed, 30 Jan 2019) $
+;  $LastChangedRevision: 26522 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_aeb1_hk/spp_fld_aeb1_hk_load_l1.pro $
 ;
 
@@ -9,7 +9,7 @@ pro spp_fld_aeb1_hk_load_l1, file, prefix = prefix
 
   if not keyword_set(prefix) then prefix = 'spp_fld_aeb1_hk_'
 
-  cdf2tplot, file, prefix = prefix
+  cdf2tplot, /get_support_data, file, prefix = prefix
 
   aeb_hk_names = tnames(prefix + '*')
 

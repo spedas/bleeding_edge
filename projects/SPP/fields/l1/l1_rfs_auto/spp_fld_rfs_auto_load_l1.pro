@@ -10,7 +10,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
 
   rfs_freqs = spp_fld_rfs_freqs(lfr = lfr_flag)
 
-  cdf2tplot, file, prefix = prefix
+  cdf2tplot, /get_support_data, file, prefix = prefix
 
   options, prefix + 'compression', 'yrange', [0, 1]
   options, prefix + 'compression', 'ystyle', 1
