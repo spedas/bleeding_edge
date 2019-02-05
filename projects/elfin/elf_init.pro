@@ -45,19 +45,25 @@ pro elf_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
   endif
   
   if keyword_set(reset) then !elf.init=0
-
-  elf_config,no_color_setup=no_color_setup; override the defaults by local config file
   
   if !elf.init ne 0 then begin
     ;Assure that trailing slashes exist on data directories
-    !elf.local_data_dir = !elf.local_data_dir + '\'  ;spd_addslash(!elf.local_data_dir)
+; NOTE: the line below worked on windows but not on linux
+;    !elf.local_data_dir = !elf.local_data_dir + '\'  ;spd_addslash(!elf.local_data_dir)
+    !elf.local_data_dir = spd_addslash(!elf.local_data_dir)
     !elf.remote_data_dir = spd_addslash(!elf.remote_data_dir)
     return
   endif
   
+  ;#######################################################
+  ; On initial call or reset
+  ;#######################################################
+
   !elf = def_struct; force setting of all elements to default values.
   !elf.preserve_mtime = 0
-  
+
+  elf_config,no_color_setup=no_color_setup; override the defaults by local config file
+
   elf_set_verbose ;propagate verbose setting into tplot_vars
   
   ; keywords on first call to elf_init (or /reset) override environment and
@@ -67,9 +73,6 @@ pro elf_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
   endif
   if keyword_set(remote_data_dir) then begin
     !elf.remote_data_dir = spd_addslash(remote_data_dir)
-  endif
-  if keyword_set(mirror_data_dir) then begin
-    !elf.mirror_data_dir = spd_addslash(mirror_data_dir)
   endif
  
   cdf_lib_info,version=v,subincrement=si,release=r,increment=i,copyright=c
@@ -117,7 +120,7 @@ pro elf_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
   !elf.init = 1
   ;----------------
   
-  dt = - (time_double('2015-3-12/22:44') - systime(1)) / 3600/24
+  dt = - (time_double('2018-09-12/22:44') - systime(1)) / 3600/24
   days = floor(dt)
   dt = (dt - days) * 24
   hours = floor(dt)

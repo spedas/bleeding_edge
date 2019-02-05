@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2017-05-02 22:51:02 -0700 (Tue, 02 May 2017) $
-; $LastChangedRevision: 23260 $
+; $LastChangedDate: 2019-02-04 11:32:08 -0800 (Mon, 04 Feb 2019) $
+; $LastChangedRevision: 26544 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data.pro $
 
 ;PRO eva_data_update_date, state, update=update
@@ -133,6 +133,15 @@ FUNCTION eva_data_load_and_plot, state, cod=cod
   ; Load MMS
   ;----------------------
   
+  ;--- BentPipe should always be loaded ---
+  sc_id = state.probelist_mms
+  if (size(sc_id[0],/type) eq 7) then begin
+    pmax = n_elements(sc_id)
+    if pmax eq 1 then sc = sc_id[0] else sc = sc_id
+    eva_data_load_mms_fpi_pseudomom, sc=sc
+  endif
+  
+  ;----
   idx=where(strmatch(plshort,'mm'),ct)
   paramlist_mms = (ct ge 1) ? paramlist[idx] : ''  
   ;--exceptional parameter --
