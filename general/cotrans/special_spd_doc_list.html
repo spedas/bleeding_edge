@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Feb  4 18:16:21 2019.<P>
+<STRONG>Last modified: </STRONG>Tue Feb  5 18:16:21 2019.<P>
  
 <HR>
  
@@ -24,6 +24,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#TDOTP">TDOTP</A>
 <LI><A HREF="#TINTERPOL_MXN">TINTERPOL_MXN</A>
 <LI><A HREF="#TNORMALIZE">TNORMALIZE</A>
+<LI><A HREF="#TTENSOR_ROTATE">TTENSOR_ROTATE</A>
+<br>Wrapper for tvector_rotate, to allow rotation of pressure and
 <LI><A HREF="#TVECTOR_ROTATE">TVECTOR_ROTATE</A>
 <br>
 </UL><P>
@@ -228,7 +230,7 @@ Examples:
 <A NAME="TNORMALIZE">
 <H2>TNORMALIZE</H2></A>
 <A HREF="#TINTERPOL_MXN">[Previous Routine]</A>
-<A HREF="#TVECTOR_ROTATE">[Next Routine]</A>
+<A HREF="#TTENSOR_ROTATE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE: TNORMALIZE
@@ -259,9 +261,54 @@ NOTES:
 <STRONG>(See <A href="special/tnormalize.pro">general/cotrans/special/tnormalize.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="TTENSOR_ROTATE">
+<H2>TTENSOR_ROTATE</H2></A>
+<A HREF="#TNORMALIZE">[Previous Routine]</A>
+<A HREF="#TVECTOR_ROTATE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ ttensor_rotate
+PURPOSE:
+ Wrapper for tvector_rotate, to allow rotation of pressure and
+ momentum flux tensors defined as ntimes, 6 arrays
+ CALLING SQEUENCE: (same as tvector_rotate)
+  Using tplot variables:
+    ttensor_rotate, 'matrix_var', 'tensor_var' [,newname='out_var'] 
+                    [,invert=invert] [,suffix=suffix] [,error=error]
+                    [,/vector_skip_nonmonotonic]
+                    [,/matrix_skip_nonmonotonic]
+
+Arguments:
+ mat_var_in: The name of the tplot variable storing input matrices
+             The y component of the tplot variable's data struct should be
+             an Mx3x3 array, storing a list of transformation matrices. 
+ tens_var_in: The name of tplot variable(s) storing a pressure or mf tensor
+              The y component of the tplot variable's data
+              struct should be an Nx6 array. 
+ newname(optional): the name of the output variable, defaults to 
+                    tens_var_in + '_rot'
+                    Newname should only be used if a single tensor
+                    variable is rotated
+ suffix: The suffix to be appended to the tplot variable(s)
+         (Default: '_rot')
+ error(optional): named variable in which to return the error state
+ of the computation.  1 = success 0 = failure
+NOTES: the program will change the input tensor or tplot variable(s)
+       to mx3x3 inputs suitable for tvector_rotate and reset at the end
+SEE ALSO:  tvector_rotate.pro, mva_matrix_make.pro,
+           fac_matrix_make.pro,rxy_matrix_make
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-02-05 15:58:04 -0800 (Tue, 05 Feb 2019) $
+ $LastChangedRevision: 26557 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/special/ttensor_rotate.pro $
+</PRE><P>
+<STRONG>(See <A href="special/ttensor_rotate.pro">general/cotrans/special/ttensor_rotate.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TVECTOR_ROTATE">
 <H2>TVECTOR_ROTATE</H2></A>
-<A HREF="#TNORMALIZE">[Previous Routine]</A>
+<A HREF="#TTENSOR_ROTATE">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:

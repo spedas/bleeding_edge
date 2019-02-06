@@ -200,6 +200,8 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
 
                 ; NOTE: directory is temporarily password protected. this will be
                 ;       removed when data is made public.
+                user=''
+                pw=''
                 print, 'Please enter your ELFIN user name and password' 
                 read,user,prompt='User Name: '
                 read,pw,prompt='Password: '
