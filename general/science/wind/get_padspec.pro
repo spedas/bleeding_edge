@@ -25,8 +25,8 @@
 ;-
 
 pro get_padspec,data_str,  $
-  	bins=bins, $       
-	gap_time=gap_time, $ 
+  	bins=bins, $
+	gap_time=gap_time, $
 	no_data=no_data, $
 	units = units,  $
         name  = name, $
@@ -97,7 +97,7 @@ endif
 for i=0,max-1 do begin
    dat = call_function(routine,index=i+istart)
    if dat.valid ne 0 then begin
-     if times(i) ne dat.time then print,time_to_str(dat.time),dat.time-times(i)
+     if times(i) ne dat.time then print,time_string(dat.time),dat.time-times(i)
      if keyword_set(bkg) then   dat = sub3d(dat,bkg)
 ;     data(i,*) = total( dat.data(*,ind), 2)/norm
 ;     energy(i,*) = total( dat.energy(*,ind), 2)/count
