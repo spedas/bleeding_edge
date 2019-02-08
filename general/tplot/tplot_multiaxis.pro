@@ -32,12 +32,12 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-03-27 09:20:06 -0700 (Mon, 27 Mar 2017) $
-;$LastChangedRevision: 23038 $
+;$LastChangedDate: 2019-02-07 12:15:26 -0800 (Thu, 07 Feb 2019) $
+;$LastChangedRevision: 26569 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_multiaxis.pro $
 ;-
 
-pro tplot_multiaxis, left_names, right_names, positions, _extra=_extra
+pro tplot_multiaxis, left_names, right_names, positions, no_zoffset=no_zoffset, _extra=_extra
 
     compile_opt idl2
 
@@ -115,8 +115,8 @@ pro tplot_multiaxis, left_names, right_names, positions, _extra=_extra
     if n_left_only gt 0 then right_plot_list[left_idx] = left_only
     
     ;set appropriate options for variables on plots with left and right axes
-    tplot_multiaxis_kludge, both, /left
-    tplot_multiaxis_kludge, right, /right
+    tplot_multiaxis_kludge, both, /left, no_zoffset=no_zoffset
+    tplot_multiaxis_kludge, right, /right, no_zoffset=no_zoffset
     
     ;plot
     tplot, left_plot_list, _extra=_extra
@@ -124,6 +124,6 @@ pro tplot_multiaxis, left_names, right_names, positions, _extra=_extra
     
     ;remove options that were changed so that variables can be plotted normally again
     ;presumably most users don't touch these, if they do we'll have to store limits structs, barf
-    tplot_multiaxis_kludge, [both,right], /reset
+    tplot_multiaxis_kludge, [both,right], /reset, no_zoffset=no_zoffset
 
 end

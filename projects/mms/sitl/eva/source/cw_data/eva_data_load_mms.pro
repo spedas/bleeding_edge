@@ -52,6 +52,13 @@ FUNCTION eva_data_load_mms, state, no_gui=no_gui, force=force
     progressbar = Obj_New('progressbar', background='white', Text='Loading MMS data ..... 0 %')
     progressbar -> Start
   endif
+  
+  ;... BentPipe should always be loaded ---
+  for p=0,pmax-1 do begin
+    sc = sc_id[p]
+    eva_data_load_mms_fpi_pseudomom, sc=sc_id
+  endfor
+  
   c = 0
   answer = 'No'
   for p=0,pmax-1 do begin; for each requested probe

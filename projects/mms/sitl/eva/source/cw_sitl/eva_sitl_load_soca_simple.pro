@@ -23,7 +23,17 @@ PRO eva_sitl_load_soca_simple, unix_FOMstr=unix_FOMstr,no_gui=no_gui
     if ~keyword_set(no_gui) then result=dialog_message(error_msg,/center)
     return
   endif
+  
   restore, fom_file
+  
+  if FOMstr.VALID eq 0 then begin
+    print,'==============================='
+    print,' WARNING: FOMstr not valid '
+    print,'==============================='
+    print, FOMstr
+    unix_FOMstr = 0.
+    return
+  endif
   mms_convert_fom_tai2unix, FOMstr, unix_FOMstr, start_string
   sz = size(unix_FOMstr,/type)
   if sz[0] ne 8 then stop

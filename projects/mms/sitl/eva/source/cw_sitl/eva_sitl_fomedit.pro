@@ -7,8 +7,8 @@
 ;   When "Save" is chosen, the "segSelect" structure will be used to update FOM/BAK structures.
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2018-09-01 11:47:35 -0700 (Sat, 01 Sep 2018) $
-; $LastChangedRevision: 25714 $
+; $LastChangedDate: 2019-02-07 13:51:10 -0800 (Thu, 07 Feb 2019) $
+; $LastChangedRevision: 26570 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_fomedit.pro $
 ;
 PRO eva_sitl_FOMedit_event, ev
@@ -32,26 +32,36 @@ PRO eva_sitl_FOMedit_event, ev
       segSelect.FOM = FOMvalue
       end
     wid.sldStart: begin
-      if n_elements(wid.wgrid) gt 1 then begin
-        result = min(abs(wid.wgrid-evalue),segSTART)
-        result = min(abs(wid.wgrid-segSelect.TE),segSTOP)
-        len = segSTOP - segSTART
+      if wid.proj eq 'mms' then begin
+        if n_elements(wid.wgrid) gt 1 then begin
+          result = min(abs(wid.wgrid-evalue),segSTART)
+          result = min(abs(wid.wgrid-segSelect.TE),segSTOP)
+          len = segSTOP - segSTART
+        endif else begin
+          len = (segSelect.TE-evalue)/10.d0
+        endelse
+        txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
       endif else begin
-        len = (segSelect.TE-evalue)/10.d0
+        len = sppeva_sitl_get_block(evalue, segSelect.TE)
+        txtbuffs = 'SEGMENT SIZE: '+strtrim(string(floor(len)),2)+' blocks'
       endelse
-      txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
       widget_control, wid.lblBuffs, SET_VALUE=txtbuffs
       segSelect.TS = evalue
       end
     wid.sldStop: begin
-      if n_elements(wid.wgrid) gt 1 then begin
-        result = min(abs(wid.wgrid-segSelect.TS),segSTART)
-        result = min(abs(wid.wgrid-evalue),segSTOP)
-        len = segSTOP - segSTART
+      if wid.proj eq 'mms' then begin
+        if n_elements(wid.wgrid) gt 1 then begin
+          result = min(abs(wid.wgrid-segSelect.TS),segSTART)
+          result = min(abs(wid.wgrid-evalue),segSTOP)
+          len = segSTOP - segSTART
+        endif else begin
+          len = (evalue-segSelect.TS)/10.d0
+        endelse
+        txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
       endif else begin
-        len = (evalue-segSelect.TS)/10.d0
+        len = sppeva_sitl_get_block(segSelect.TS,evalue)
+        txtbuffs = 'SEGMENT SIZE: '+strtrim(string(floor(len)),2)+' blocks'
       endelse
-      txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
       widget_control, wid.lblBuffs, SET_VALUE=txtbuffs
       segSelect.TE = evalue
       end
@@ -133,14 +143,19 @@ PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv, proj=proj, $
   stop_min_value  = Te-dTh > Tc
   stop_max_value  = Te+dTh < te_limit
   
-  if n_elements(wgrid) gt 1 then begin
-    result = min(abs(wgrid-Ts),segSTART)
-    result = min(abs(wgrid-Te),segSTOP)
-    len = segSTOP - segSTART
+  if proj eq 'mms' then begin
+    if n_elements(wgrid) gt 1 then begin
+      result = min(abs(wgrid-Ts),segSTART)
+      result = min(abs(wgrid-Te),segSTOP)
+      len = segSTOP - segSTART
+    endif else begin
+      len = (Te-Ts)/10.d0
+    endelse
+    txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
   endif else begin
-    len = (Te-Ts)/10.d0
+    len = sppeva_sitl_get_block(Ts, Te)
+    txtbuffs = 'SEGMENT SIZE: '+strtrim(string(floor(len)),2)+' blocks'
   endelse
-  
   
   wid = {STATE:state, segSelect:segSelect, SCROLL:scroll, OLD_GRAPHICS:old_graphics, DISLEN:dislen, $
     START_MIN_VALUE: start_min_value, STOP_MIN_VALUE: stop_min_value, FOM_MIN_VALUE: fom_min_value, $
@@ -178,10 +193,10 @@ PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv, proj=proj, $
     disable = strmatch(strlowcase(segSelect.STATUS),'*finished*') 
     if disable then ssFOM = -1 else ssFOM = eva_slider(base,title=' FOM ',VALUE=segSelect.FOM,MAX_VALUE=fom_max_value, MIN_VALUE=0) 
     str_element,/add,wid,'ssFOM',ssFOM
-    txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
+    ;txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
   endif else begin
     str_element,/add,wid,'ssFOM',eva_slider(base,title=' FOM ',VALUE=segSelect.FOM,MAX_VALUE=fom_max_value, MIN_VALUE=0)
-    txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
+    ;txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
     str_element,/add,wid,'lblBuffs',widget_label(base,VALUE=txtbuffs)
     str_element,/add,wid,'sldStart',eva_slider(base,title='Start',$
       VALUE=Ts, MIN_VALUE=start_min_value, MAX_VALUE=start_max_value,  WGRID=wgrid, /time)

@@ -24,11 +24,11 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-03-27 12:58:04 -0700 (Mon, 27 Mar 2017) $
-;$LastChangedRevision: 23047 $
+;$LastChangedDate: 2019-02-07 12:15:26 -0800 (Thu, 07 Feb 2019) $
+;$LastChangedRevision: 26569 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_multiaxis_kludge.pro $
 ;-
-pro tplot_multiaxis_kludge, names, left=left, right=right, reset=reset
+pro tplot_multiaxis_kludge, names, left=left, right=right, reset=reset, no_zoffset=no_zoffset
 
     compile_opt idl2, hidden
 
@@ -92,7 +92,7 @@ for i=0, n_elements(names)-1 do begin
     options, names[i], ystyle=9
     ; instead of turning off color scale with no_color_scale, we'll move it off the screen
     ; to get it back, simply change the margins on the right-hand side
-    options, names[i], 'zoffset', [12, 15]
+    if ~keyword_set(no_zoffset) then options, names[i], 'zoffset', [12, 15]
   endif
 
 endfor
