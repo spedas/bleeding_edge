@@ -68,8 +68,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-09 11:43:27 -0800 (Fri, 09 Nov 2018) $
-; $LastChangedRevision: 26101 $
+; $LastChangedDate: 2019-02-09 16:38:25 -0800 (Sat, 09 Feb 2019) $
+; $LastChangedRevision: 26580 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -83,7 +83,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
 
   @mvn_swe_com
 
-  if not keyword_set(vnorm) then vflg = 1 else vflg = fix(vflg)
+  if (size(vflg,/type) eq 0) then vflg = 1 else vflg = keyword_set(vflg)
   if not keyword_set(sflg) then sflg = 1 else sflg = fix(sflg)
   if not keyword_set(pad_e) then pad_e = 280.
   if not keyword_set(smo) then smo = 1
@@ -211,7 +211,13 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     tmin = min(swe_hsk.time, max=tmax)
     tsp = [tsp, tmin, tmax]
 
-    if (vflg) then vnorm = [28., 12., 5., 3.3, 2.5] else vnorm = replicate(0.,5)
+    if (vflg) then begin
+      vnorm = [28., 12., 5., 3.3, 2.5]
+      voff = vnorm
+    endif else begin
+      vnorm = replicate(1.,5)
+      voff = replicate(0.,5)
+    endelse
 
     store_data,'LVPST' ,data={x:swe_hsk.time, y:swe_hsk.LVPST}
     store_data,'MCPHV' ,data={x:swe_hsk.time, y:swe_hsk.MCPHV}
@@ -222,17 +228,17 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     store_data,'DEF2V' ,data={x:swe_hsk.time, y:swe_hsk.DEF2V}
     store_data,'V0V'   ,data={x:swe_hsk.time, y:swe_hsk.V0V}
     store_data,'ANALT' ,data={x:swe_hsk.time, y:swe_hsk.ANALT}
-    store_data,'P12V'  ,data={x:swe_hsk.time, y:((swe_hsk.P12V-vnorm[1])/vnorm[1])}
-    store_data,'N12V'  ,data={x:swe_hsk.time, y:((swe_hsk.N12V+vnorm[1])/vnorm[1])}
-    store_data,'MCP28V',data={x:swe_hsk.time, y:((swe_hsk.MCP28V-vnorm[0])/vnorm[0])}
-    store_data,'NR28V' ,data={x:swe_hsk.time, y:((swe_hsk.NR28V-vnorm[0])/vnorm[0])}
+    store_data,'P12V'  ,data={x:swe_hsk.time, y:((swe_hsk.P12V-voff[1])/vnorm[1])}
+    store_data,'N12V'  ,data={x:swe_hsk.time, y:((swe_hsk.N12V+voff[1])/vnorm[1])}
+    store_data,'MCP28V',data={x:swe_hsk.time, y:((swe_hsk.MCP28V-voff[0])/vnorm[0])}
+    store_data,'NR28V' ,data={x:swe_hsk.time, y:((swe_hsk.NR28V-voff[0])/vnorm[0])}
     store_data,'DIGT'  ,data={x:swe_hsk.time, y:swe_hsk.DIGT}
-    store_data,'P2P5DV',data={x:swe_hsk.time, y:((swe_hsk.P2P5DV-vnorm[4])/vnorm[4])}
-    store_data,'P5DV'  ,data={x:swe_hsk.time, y:((swe_hsk.P5DV-vnorm[2])/vnorm[2])}
-    store_data,'P3P3DV',data={x:swe_hsk.time, y:((swe_hsk.P3P3DV-vnorm[3])/vnorm[3])}
-    store_data,'P5AV'  ,data={x:swe_hsk.time, y:((swe_hsk.P5AV-vnorm[2])/vnorm[2])}
-    store_data,'N5AV'  ,data={x:swe_hsk.time, y:((swe_hsk.N5AV+vnorm[2])/vnorm[2])}
-    store_data,'P28V'  ,data={x:swe_hsk.time, y:((swe_hsk.P28V-vnorm[0])/vnorm[0])}
+    store_data,'P2P5DV',data={x:swe_hsk.time, y:((swe_hsk.P2P5DV-voff[4])/vnorm[4])}
+    store_data,'P5DV'  ,data={x:swe_hsk.time, y:((swe_hsk.P5DV-voff[2])/vnorm[2])}
+    store_data,'P3P3DV',data={x:swe_hsk.time, y:((swe_hsk.P3P3DV-voff[3])/vnorm[3])}
+    store_data,'P5AV'  ,data={x:swe_hsk.time, y:((swe_hsk.P5AV-voff[2])/vnorm[2])}
+    store_data,'N5AV'  ,data={x:swe_hsk.time, y:((swe_hsk.N5AV+voff[2])/vnorm[2])}
+    store_data,'P28V'  ,data={x:swe_hsk.time, y:((swe_hsk.P28V-voff[0])/vnorm[0])}
     if (vflg) then begin
       options,'P28V',  'color',TCcol[0]   ; magenta
       options,'P12V',  'color',TCcol[1]   ; blue

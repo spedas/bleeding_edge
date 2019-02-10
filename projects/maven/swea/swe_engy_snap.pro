@@ -189,8 +189,8 @@ end
 ;                      Maxwell-Boltzmann fit. (Nominally, E_peak = 2*T)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-12-21 13:20:24 -0800 (Fri, 21 Dec 2018) $
-; $LastChangedRevision: 26403 $
+; $LastChangedDate: 2019-02-09 16:40:01 -0800 (Sat, 09 Feb 2019) $
+; $LastChangedRevision: 26584 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -859,7 +859,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       ys = 0.90
       dys = 0.03
 
-      if not keyword_set(pxlim) then xlim = Espan else xlim = minmax(pxlim)
+      if not keyword_set(pxlim) then xlim = [3,20] else xlim = minmax(pxlim)
       if not keyword_set(pylim) then begin
         indx = where((df.v ge xlim[0]) and (df.v le xlim[1]))
         ymin = min(df.y[indx],/nan) < min(d2f.y[indx],/nan)
@@ -883,7 +883,9 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       oplot,[spec.sc_pot,spec.sc_pot],ylim,line=2,color=6
       oplot,px,py2,color=4
       oplot,xlim,[0,0],line=2
-      oplot,xlim,[thresh,thresh],line=2,color=5      
+      oplot,xlim,[thresh,thresh],line=2,color=5
+      oplot,replicate(min(Espan),2),ylim,line=1
+      oplot,replicate(max(Espan),2),ylim,line=1
 
       if (ncross gt 0L) then begin
         k = max(indx)      ; lowest energy feature above threshold

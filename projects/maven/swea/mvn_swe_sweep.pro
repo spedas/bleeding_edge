@@ -55,22 +55,26 @@
 ;                             -59 < Elev < +61 ; 3 < E < 4630
 ;                              Chksum = 'CC'X
 ;                              GSEOS svn rev 8481
+;                              LUT = 0
 ;
 ;                       6 : Xmax = 5.5, Vrange = [2./Ka, 750.], V0scale = 1.
 ;                           alternate table for Transition and Science
 ;                             -59 < Elev < +61 ; 3 < E < 4650
 ;                              Chksum = '82'X
 ;                              GSEOS svn rev 8482
+;                              LUT = 1
 ;
 ;                       7 : Xmax = 5.5, Erange = [200.,200.], V0scale = 0.
 ;                           Hires 32-Hz at 200 eV
 ;                             -59 < Elev < +61 ; E = 200
 ;                              Chksum = '00'X
+;                              LUT = 2
 ;
 ;                       8 : Xmax = 5.5, Erange = [50.,50.], V0scale = 0.
 ;                           Hires 32-Hz at 50 eV
 ;                             -59 < Elev < +61 ; E = 50
 ;                              Chksum = '00'X
+;                              LUT = 3
 ;
 ;                     Otherwise, use the following keywords to define the sweep.
 ;
@@ -110,8 +114,8 @@
 ;                        2 = SWEA native format (2-byte words)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-12-21 13:19:25 -0800 (Fri, 21 Dec 2018) $
-; $LastChangedRevision: 26402 $
+; $LastChangedDate: 2019-02-09 16:39:20 -0800 (Sat, 09 Feb 2019) $
+; $LastChangedRevision: 26583 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sweep.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-01-03

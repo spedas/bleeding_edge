@@ -26,8 +26,8 @@
 ;       ARCHIVE:       If set, show snapshots of archive data.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2016-10-18 15:23:51 -0700 (Tue, 18 Oct 2016) $
-; $LastChangedRevision: 22133 $
+; $LastChangedDate: 2019-02-09 16:36:54 -0800 (Sat, 09 Feb 2019) $
+; $LastChangedRevision: 26577 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_cal_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -67,7 +67,7 @@ pro swe_cal_snap, ddd=ddd, pad=pad, spec=spec, keepwins=keepwins, units=units, $
 
   limits = {no_interp:1, xrange:[3,5000], xstyle:1, yrange:[0,95], ystyle:1, $
             xmargin:[10,10], xtitle:'Energy (eV)', ytitle:'Angle Bin', $
-            zlog:0, ztitle:'', xlog:1, ylog:0, charsize:1.2, title:''}
+            zlog:0, ztitle:'', xlog:1, ylog:0, charsize:1.5, title:''}
 
 ; Select the first time, then get the data closest that time
 
@@ -126,7 +126,9 @@ pro swe_cal_snap, ddd=ddd, pad=pad, spec=spec, keepwins=keepwins, units=units, $
         limits.title = 'MCP Efficiency'
         specplot,x,y,z3,limits=limits
         limits.title = 'Deadtime Correction'
+        str_element, 'limits', 'zrange', [swe_min_dtc,1.0], /add
         specplot,x,y,z4,limits=limits
+        str_element, 'limits', 'zrange', [0,0], /add
         !p.multi = 0
       endif
     endif
@@ -165,7 +167,9 @@ pro swe_cal_snap, ddd=ddd, pad=pad, spec=spec, keepwins=keepwins, units=units, $
         limits.title = 'MCP Efficiency'
         specplot,x,y,z3,limits=limits
         limits.title = 'Deadtime Correction'
+        str_element, limits, 'zrange', [swe_min_dtc,1.0], /add
         specplot,x,y,z4,limits=limits
+        str_element, limits, 'zrange', [0,0], /add
         !p.multi = 0
       endif
     endif
@@ -184,10 +188,12 @@ pro swe_cal_snap, ddd=ddd, pad=pad, spec=spec, keepwins=keepwins, units=units, $
 
         !p.multi = [0,2,2]
         plot_oo,x,y1,xtitle='Energy (eV)',ytitle=strupcase(dat.units_name),$
-                     yrange=[1.,1.e5],psym=10
-        plot_oi,x,y2,xtitle='Energy (eV)',ytitle='Geometric Factor (x10!u4!n)',psym=10
-        plot_oi,x,y3,xtitle='Energy (eV)',ytitle='MCP Efficiency',psym=10
-        plot_oi,x,y4,xtitle='Energy (eV)',ytitle='Deadtime Correction',psym=10
+                     yrange=[1.,1.e5],psym=10,charsize=limits.charsize
+        plot_oi,x,y2,xtitle='Energy (eV)',ytitle='Geometric Factor (x10!u4!n)',psym=10,$
+                     charsize=limits.charsize
+        plot_oi,x,y3,xtitle='Energy (eV)',ytitle='MCP Efficiency',psym=10,charsize=limits.charsize
+        plot_oi,x,y4,xtitle='Energy (eV)',ytitle='Deadtime Correction',psym=10,$
+                     yrange=[swe_min_dtc,1.0],/ysty,charsize=limits.charsize
         !p.multi = 0
       endif
     endif

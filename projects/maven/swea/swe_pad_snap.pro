@@ -158,9 +158,9 @@
 ;
 ;        NOTE:         Insert a text label.  Keep it short.
 ;        
-; $LastChangedBy: xussui $
-; $LastChangedDate: 2017-11-17 12:09:16 -0800 (Fri, 17 Nov 2017) $
-; $LastChangedRevision: 24303 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2019-02-09 16:36:29 -0800 (Sat, 09 Feb 2019) $
+; $LastChangedRevision: 26576 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -185,6 +185,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   a = 0.8
   phi = findgen(49)*(2.*!pi/49)
   usersym,a*cos(phi),a*sin(phi),/fill
+  cols = get_colors()
 
   tiny = 1.e-31
   if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
@@ -633,7 +634,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
         specplot,x,y1,z1,limits=limits
         str_element, result, 'pad_1', {x:x, y:y1, z:z1}, /add
         if (dopot) then begin
-          if (spflg) then oplot,[-pot,-pot],[0,180],line=2,color=6 $
+          if (spflg) then oplot,[-pot,-pot],[0,180],line=2,color=cols.red $
                      else oplot,[pot,pot],[0,180],line=2
         endif
         if (plot_pa_lims) then begin
@@ -646,7 +647,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
         specplot,x,y2,z2,limits=limits
         str_element, result, 'pad_2', {x:x, y:y2, z:z2}, /add
         if (dopot) then begin
-          if (spflg) then oplot,[-pot,-pot],[0,180],line=2,color=6 $
+          if (spflg) then oplot,[-pot,-pot],[0,180],line=2,color=cols.red $
                      else oplot,[pot,pot],[0,180],line=2
         endif
         if (plot_pa_lims) then begin
@@ -689,7 +690,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
             str_element, result, 'pad_resample', {x:average(pad.energy, 2), y:rpad[0].xax, z:arpad}, /add
 
             if (dopot) then begin
-              if (spflg) then oplot,[-pot,-pot],[0,180],line=2,color=6 $
+              if (spflg) then oplot,[-pot,-pot],[0,180],line=2,color=cols.red $
                          else oplot,[pot,pot],[0,180],line=2
             endif
 
@@ -706,7 +707,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                specplot, average(pad.energy, 2), rpad[0].xax, rerr, lim=rlim
                str_element, result, 'pad_resample_rerr', {x:average(pad.energy, 2), y:rpad[0].xax, z:rerr}, /add
                if (dopot) then begin
-                 if (spflg) then oplot,[-pot,-pot],[0,180],line=2,color=6 $
+                 if (spflg) then oplot,[-pot,-pot],[0,180],line=2,color=cols.red $
                             else oplot,[pot,pot],[0,180],line=2
                endif
             endif 
@@ -771,7 +772,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
         zi = z[i,*]/zmean
         dzi = dz[i,*]/zmean
 
-        col = [replicate(2,8), replicate(6,8)]
+        col = [replicate(cols.blue,8), replicate(cols.red,8)]
 
         plot_io,[-1.],[0.1],psym=3,xtitle='Pitch Angle (deg)',ytitle='Normalized', $
                 yrange=[0.1,10.],ystyle=1,xrange=[0,180],xstyle=1,xticks=6,xminor=3, $
@@ -779,26 +780,26 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 charsize=1.4*cscale, pos=[0.140005, 0.124449 - (wdy/4000.), 0.958005, 0.937783 - (wdy/525.)]
 
         for j=0,15 do oplot,[ylo[j],yhi[j]],[zi[j],zi[j]],color=col[j]
-        oplot,y[i,0:7],zi[0:7],linestyle=1,color=2
-        if (ebar) then errplot,y[i,0:7],(zi[0:7]-dzi[0:7])>tiny,zi[0:7]+dzi[0:7],color=2,width=0
+        oplot,y[i,0:7],zi[0:7],linestyle=1,color=cols.blue
+        if (ebar) then errplot,y[i,0:7],(zi[0:7]-dzi[0:7])>tiny,zi[0:7]+dzi[0:7],color=cols.blue,width=0
         oplot,y[i,0:7],zi[0:7],psym=4
-        oplot,y[i,8:15],zi[8:15],linestyle=1,color=6
-        if (ebar) then errplot,y[i,8:15],(zi[8:15]-dzi[8:15])>tiny,zi[8:15]+dzi[8:15],color=6,width=0
+        oplot,y[i,8:15],zi[8:15],linestyle=1,color=cols.red
+        if (ebar) then errplot,y[i,8:15],(zi[8:15]-dzi[8:15])>tiny,zi[8:15]+dzi[8:15],color=cols.red,width=0
         oplot,y[i,8:15],zi[8:15],psym=4
       
         if (dolab) then begin
           if (label gt 1) then begin
             olab = obin[pad.k3d]
-            for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,8.,olab[j],color=2,align=0.5
-            for j=8,15 do xyouts,(ylo[j]+yhi[j])/2.,0.13,olab[j],color=6,align=0.5
+            for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,8.,olab[j],color=cols.blue,align=0.5
+            for j=8,15 do xyouts,(ylo[j]+yhi[j])/2.,0.13,olab[j],color=cols.red,align=0.5
           endif else begin
             alab = abin[pad.iaz]
             dlab = dbin[pad.jel]
-            for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,8.,alab[j],color=2,align=0.5
-            for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,7.,dlab[j],color=2,align=0.5
+            for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,8.,alab[j],color=cols.blue,align=0.5
+            for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,7.,dlab[j],color=cols.red,align=0.5
 
-            for j=8,15 do xyouts,(ylo[j]+yhi[j])/2.,0.15,alab[j],color=6,align=0.5
-            for j=8,15 do xyouts,(ylo[j]+yhi[j])/2.,0.13,dlab[j],color=6,align=0.5
+            for j=8,15 do xyouts,(ylo[j]+yhi[j])/2.,0.15,alab[j],color=cols.red,align=0.5
+            for j=8,15 do xyouts,(ylo[j]+yhi[j])/2.,0.13,dlab[j],color=cols.red,align=0.5
           endelse
         endif
 
@@ -815,7 +816,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
            
           bperp = [B_mso[1], B_mso[2], -B_geo[0], -B_geo[1]]
           FOR j=0, 3 DO $
-            IF bperp[j] GT 0. THEN append_array, dircol, 6 ELSE append_array, dircol, 2
+            IF bperp[j] GT 0. THEN append_array, dircol, cols.red ELSE append_array, dircol, cols.blue
           FOR j=0, 3 DO $
             XYOUTS, 17.5+45.*j, 7.5, dirname[j], color=!p.color, charsize=1.3*cscale, /data
 
@@ -824,7 +825,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                    /noerase, yticks=1, xticks=1, xminor=1, yminor=1, xstyle=5, ystyle=5
             OPLOT, 0.9*COS(FINDGEN(361)*!DTOR), 0.9*SIN(FINDGEN(361)*!DTOR)
             angle = ATAN(B_mso[2], B_mso[1])
-            IF B_mso[0] GT 0. THEN dircol = 6 ELSE dircol = 2
+            IF B_mso[0] GT 0. THEN dircol = cols.red ELSE dircol = cols.blue
             ARROW, 0., 0., 0.7*COS(angle), 0.7*SIN(angle), /data, color=dircol
             XYOUTS, 0., -1.3, 'MSO', /data, alignment=0.5
             XYOUTS, 0., 0.5, 'Z', /data, alignment=0.5
@@ -834,7 +835,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                    /noerase, yticks=1, xticks=1, xminor=1, yminor=1, xstyle=5, ystyle=5
             OPLOT, 0.9*COS(FINDGEN(361)*!DTOR), 0.9*SIN(FINDGEN(361)*!DTOR)
             angle = ATAN(-B_geo[1], -B_geo[0])
-            IF -B_geo[2] GT 0. THEN dircol = 6 ELSE dircol = 2
+            IF -B_geo[2] GT 0. THEN dircol = cols.red ELSE dircol = cols.blue
             ARROW, 0., 0., 0.7*COS(angle), 0.7*SIN(angle), /data, color=dircol
             XYOUTS, 0., -1.3, 'GEO', /data, alignment=0.5
             XYOUTS, 0., 0.5, 'N', /data, alignment=0.5
@@ -851,7 +852,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
           z3d = reform(ddd.data[ebin,pad.k3d])  ; 3D mapped into PAD
           z3d = z3d/mean(z3d,/nan)
 
-          col = [replicate(3,8), replicate(7,8)]
+          col = [replicate(cols.yellow,8), replicate(cols.green,8)]
 
           for j=0,15 do oplot,[ylo[j],yhi[j]],[z3d[j],z3d[j]],color=col[j],line=2
 
@@ -873,7 +874,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
             Saz = sun.phi[j]
             Sel = sun.the[j]
             if (abs(Sel) gt 61.) then col=!p.color else col=!p.color
-            oplot,[Saz],[Sel],psym=8,color=5,thick=2,symsize=2.0
+            oplot,[Saz],[Sel],psym=8,color=cols.yellow,thick=2,symsize=2.0
 ;           Saz = (Saz + 180.) mod 360.
 ;           Sel = -Sel
 ;           oplot,[Saz],[Sel],psym=7,color=col,thick=2,symsize=1.2
@@ -961,14 +962,14 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
           xtitle='Energy (eV)', ytitle=ytitle, title=time_string(pad.time), $
           charsize=1.4*cscale, xmargin=[10,3]
 
-        oplot, x1, Fp, psym=10, color=6
-        oplot, x2, Fm, psym=10, color=2
-        if (domid) then oplot, x, Fz, psym=10, color=4
+        oplot, x1, Fp, psym=10, color=cols.red
+        oplot, x2, Fm, psym=10, color=cols.blue
+        if (domid) then oplot, x, Fz, psym=10, color=cols.green
 
         if (ebar) then begin
-          errplot, x1*0.999, (Fp-Fp_err)>tiny, Fp+Fp_err, color=6, width=0
-          errplot, x2*1.001, (Fm-Fm_err)>tiny, Fm+Fm_err, color=2, width=0
-          if (domid) then errplot, x, (Fz-Fz_err)>tiny, Fz+Fz_err, color=4, width=0
+          errplot, x1*0.999, (Fp-Fp_err)>tiny, Fp+Fp_err, color=cols.red, width=0
+          errplot, x2*1.001, (Fm-Fm_err)>tiny, Fm+Fm_err, color=cols.blue, width=0
+          if (domid) then errplot, x, (Fz-Fz_err)>tiny, Fz+Fz_err, color=cols.green, width=0
         endif
 
         str_element, result, 'spec_plus', {x:x1, y:Fp, dy:Fp_err}, /add
@@ -976,13 +977,13 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
         str_element, result, 'spec_mid', {x:x, y:Fz, dy:Fz_err}, /add
 
         if (dopot) then begin
-          if (spflg) then oplot,[-pot,-pot],drange,line=2,color=6 $
-                     else oplot,[pot,pot],drange,line=2
+          if (spflg) then oplot,[-pot,-pot],drange,line=2,color=cols.red $
+                     else oplot,[pot,pot],drange,line=cols.blue
         endif
         if (pflg) then begin
-          oplot,[23.,23.],drange,line=2,color=1
-          oplot,[27.,27.],drange,line=2,color=1
-          oplot,[60.,60.],drange,line=2,color=1
+          oplot,[23.,23.],drange,line=2,color=cols.magenta
+          oplot,[27.,27.],drange,line=2,color=cols.magenta
+          oplot,[60.,60.],drange,line=2,color=cols.magenta
         endif
 
         xs = 0.68
@@ -990,13 +991,13 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
         dys = 0.03
         pa_min = round(swidth*!radeg)
         pa_max = 180 - pa_min
-        xyouts,xs,ys,string(pa_min, format='("  0 - ",i2)'),charsize=1.2*cscale,/norm,color=6
+        xyouts,xs,ys,string(pa_min, format='("  0 - ",i2)'),charsize=1.2*cscale,/norm,color=cols.red
         ys -= dys
         if (domid) then begin
-          xyouts,xs,ys,string(pa_min, pa_max, format='(i3," - ",i3)'),charsize=1.2*cscale,/norm,color=4
+          xyouts,xs,ys,string(pa_min, pa_max, format='(i3," - ",i3)'),charsize=1.2*cscale,/norm,color=cols.green
           ys -= dys
         endif
-        xyouts,xs,ys,string(pa_max, format='(i3," - 180")'),charsize=1.2*cscale,/norm,color=2
+        xyouts,xs,ys,string(pa_max, format='(i3," - 180")'),charsize=1.2*cscale,/norm,color=cols.blue
         ys -= dys
 
         if (doalt) then begin
@@ -1053,9 +1054,9 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
             maap = pad.pa_max[63,ipa]*!radeg
             ;if (pad.pa[63,ipa]*!radeg ge 90) then lst = 2 else lst = 0
             ;clr = 244./(npa/2-1)*ip + 10
-            oplot,x,pad.data[*,ipa],psym=10,color=4
+            oplot,x,pad.data[*,ipa],psym=0,color=cols.green
             xyouts,xs,ys,string(mip, maap, format='(i3," - ",i3)'),$
-                   charsize=1.2*cscale,color=4
+                   charsize=1.2*cscale,color=cols.green
             ys /=dys
 
             ;second half
@@ -1066,9 +1067,9 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
             maap=pad.pa_max[63,ipa]*!radeg
             ;if pad.pa[63,ipa]*!radeg ge 90 then lst=2 else lst=0
             ;clr=254.-244./(npa/2-1)*ip
-            oplot,x,pad.data[*,ipa],psym=10,color=6
+            oplot,x,pad.data[*,ipa],psym=0,color=cols.red
             xyouts,xs,ys,string(mip, maap, format='(i3," - ",i3)'),$
-                   charsize=1.2*cscale,color=6
+                   charsize=1.2*cscale,color=cols.red
             ys /= dys
         
             if (dopot) then begin
@@ -1077,9 +1078,9 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                oplot,[pot,pot],drange,line=2
             endif
             if (pflg) then begin
-               oplot,[23.,23.],drange,line=2,color=1
-               oplot,[27.,27.],drange,line=2,color=1
-               oplot,[60.,60.],drange,line=2,color=1
+               oplot,[23.,23.],drange,line=2,color=cols.magenta
+               oplot,[27.,27.],drange,line=2,color=cols.magenta
+               oplot,[60.,60.],drange,line=2,color=cols.magenta
             endif
 
             if (doalt) then begin

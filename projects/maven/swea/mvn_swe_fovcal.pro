@@ -76,8 +76,8 @@
 ;CREATED BY:	David L. Mitchell  2016-08-03
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-09 11:38:54 -0800 (Fri, 09 Nov 2018) $
-; $LastChangedRevision: 26093 $
+; $LastChangedDate: 2019-02-09 16:37:22 -0800 (Sat, 09 Feb 2019) $
+; $LastChangedRevision: 26578 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovcal.pro $
 ;-
 pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
@@ -122,11 +122,13 @@ pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
   swe_3d_snap,ddd=dat,units=units,sum=1,energy=eref
   if (size(dat,/type) ne 8) then begin
     print,"Abort!"
+    loadct2,ctab
     return
   endif
   if (size(scp,/type) ne 0) then scp = float(scp) else scp = dat.sc_pot
   if (~finite(scp)) then begin
     print,"No spacecraft potential!"
+    loadct2,ctab
     return
   endif
   
@@ -187,6 +189,7 @@ pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
   gud = where((swe_sc_mask[*,1] eq 1) and (f gt 0.) and (c gt mincnts), ngud)
   if (ngud lt 2) then begin
     print,"Not enough good data!"
+    loadct2,ctab
     return
   endif
   bad = where(swe_sc_mask[*,1] eq 0, nbad)
@@ -280,5 +283,7 @@ pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
 
   result = {time:time, rgf:rgf, trange:trange}
   loadct2,ctab
+
+  return
 
 end

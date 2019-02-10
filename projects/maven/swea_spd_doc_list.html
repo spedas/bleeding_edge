@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Feb  8 18:16:27 2019.<P>
+<STRONG>Last modified: </STRONG>Sat Feb  9 18:16:23 2019.<P>
  
 <HR>
  
@@ -1457,8 +1457,8 @@ KEYWORDS:
                    changes in a tplot window (assumed to exist).
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-12-21 13:17:48 -0800 (Fri, 21 Dec 2018) $
- $LastChangedRevision: 26400 $
+ $LastChangedDate: 2019-02-09 16:38:40 -0800 (Sat, 09 Feb 2019) $
+ $LastChangedRevision: 26581 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 
 CREATED BY:    David L. Mitchell  03-29-13
@@ -1561,8 +1561,8 @@ KEYWORDS:
        SILENT:       Don't print any warnings or messages.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-12-21 13:18:09 -0800 (Fri, 21 Dec 2018) $
- $LastChangedRevision: 26401 $
+ $LastChangedDate: 2019-02-09 16:38:55 -0800 (Sat, 09 Feb 2019) $
+ $LastChangedRevision: 26582 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_crosscal.pro $
 
 CREATED BY:    David L. Mitchell  05-04-16
@@ -1884,7 +1884,8 @@ PURPOSE:
       5 : 2016-11-28 to 2017-03-15
       6 : 2017-06-13 to 2017-08-22
       7 : 2017-12-10 to 2018-04-25
-      8 : 2018-06-23 to 2019-04-01  (after aerobraking)
+      8 : 2018-06-23 to 2018-11-13 (break at MCP bump)
+      9 : 2018-11-13 to present
 
   Solar wind periods 1 and 3 yield calibrations that are very similar.
   These are combined into a single FOV calibration.  Solar wind period
@@ -1915,8 +1916,8 @@ KEYWORDS:
        TEST:         Returns calibration used.  For testing.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-11-09 11:39:59 -0800 (Fri, 09 Nov 2018) $
- $LastChangedRevision: 26095 $
+ $LastChangedDate: 2019-02-09 16:37:49 -0800 (Sat, 09 Feb 2019) $
+ $LastChangedRevision: 26579 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_flatfield.pro $
 
 CREATED BY:    David L. Mitchell  2016-09-28
@@ -2008,8 +2009,8 @@ KEYWORDS:
 CREATED BY:	David L. Mitchell  2016-08-03
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-11-09 11:38:54 -0800 (Fri, 09 Nov 2018) $
- $LastChangedRevision: 26093 $
+ $LastChangedDate: 2019-02-09 16:37:22 -0800 (Sat, 09 Feb 2019) $
+ $LastChangedRevision: 26578 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovcal.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_fovcal.pro">projects/maven/swea/mvn_swe_fovcal.pro</A>)</STRONG><P>
@@ -4722,8 +4723,8 @@ KEYWORDS:
        BURST:        Plot a color bar showing PAD burst coverage.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-11-09 11:43:27 -0800 (Fri, 09 Nov 2018) $
- $LastChangedRevision: 26101 $
+ $LastChangedDate: 2019-02-09 16:38:25 -0800 (Sat, 09 Feb 2019) $
+ $LastChangedRevision: 26580 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -4873,22 +4874,26 @@ KEYWORDS:
                              -59 &lt; Elev &lt; +61 ; 3 &lt; E &lt; 4630
                               Chksum = 'CC'X
                               GSEOS svn rev 8481
+                              LUT = 0
 
                        6 : Xmax = 5.5, Vrange = [2./Ka, 750.], V0scale = 1.
                            alternate table for Transition and Science
                              -59 &lt; Elev &lt; +61 ; 3 &lt; E &lt; 4650
                               Chksum = '82'X
                               GSEOS svn rev 8482
+                              LUT = 1
 
                        7 : Xmax = 5.5, Erange = [200.,200.], V0scale = 0.
                            Hires 32-Hz at 200 eV
                              -59 &lt; Elev &lt; +61 ; E = 200
                               Chksum = '00'X
+                              LUT = 2
 
                        8 : Xmax = 5.5, Erange = [50.,50.], V0scale = 0.
                            Hires 32-Hz at 50 eV
                              -59 &lt; Elev &lt; +61 ; E = 50
                               Chksum = '00'X
+                              LUT = 3
 
                      Otherwise, use the following keywords to define the sweep.
 
@@ -4928,8 +4933,8 @@ KEYWORDS:
                         2 = SWEA native format (2-byte words)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-12-21 13:19:25 -0800 (Fri, 21 Dec 2018) $
- $LastChangedRevision: 26402 $
+ $LastChangedDate: 2019-02-09 16:39:20 -0800 (Sat, 09 Feb 2019) $
+ $LastChangedRevision: 26583 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sweep.pro $
 
 CREATED BY:	David L. Mitchell  2014-01-03
@@ -5630,8 +5635,8 @@ KEYWORDS:
        ARCHIVE:       If set, show snapshots of archive data.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2016-10-18 15:23:51 -0700 (Tue, 18 Oct 2016) $
- $LastChangedRevision: 22133 $
+ $LastChangedDate: 2019-02-09 16:36:54 -0800 (Sat, 09 Feb 2019) $
+ $LastChangedRevision: 26577 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_cal_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -5788,8 +5793,8 @@ KEYWORDS:
                       Maxwell-Boltzmann fit. (Nominally, E_peak = 2*T)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-12-21 13:20:24 -0800 (Fri, 21 Dec 2018) $
- $LastChangedRevision: 26403 $
+ $LastChangedDate: 2019-02-09 16:40:01 -0800 (Sat, 09 Feb 2019) $
+ $LastChangedRevision: 26584 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6147,9 +6152,9 @@ KEYWORDS:
 
         NOTE:         Insert a text label.  Keep it short.
         
- $LastChangedBy: xussui $
- $LastChangedDate: 2017-11-17 12:09:16 -0800 (Fri, 17 Nov 2017) $
- $LastChangedRevision: 24303 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2019-02-09 16:36:29 -0800 (Sat, 09 Feb 2019) $
+ $LastChangedRevision: 26576 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
