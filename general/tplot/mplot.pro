@@ -35,8 +35,10 @@
 ;
 ;CREATED BY:	Davin Larson
 ;FILE:  mplot.pro
-;VERSION  1.43
-;LAST MODIFICATION: 02/11/01
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-02-10 15:22:39 -0800 (Sun, 10 Feb 2019) $
+; $LastChangedRevision: 26586 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/mplot.pro $
 ;
 ;-
 pro mplot,xt,yt,dy,      $
