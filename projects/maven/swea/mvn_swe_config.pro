@@ -39,8 +39,8 @@
 ;                   changes in a tplot window (assumed to exist).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-09 16:38:40 -0800 (Sat, 09 Feb 2019) $
-; $LastChangedRevision: 26581 $
+; $LastChangedDate: 2019-02-11 14:35:05 -0800 (Mon, 11 Feb 2019) $
+; $LastChangedRevision: 26604 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -128,6 +128,8 @@ pro mvn_swe_config, list=list, timebar=timebar
   t_mcp = [t_mcp, time_double('2016-10-25/21:52:45')]  ; bias adjustment (2700 -> 2750 V)
   t_sup = [t_sup, time_double('2017-04-02/00:00:00')]  ; last suppression calibration
   t_mcp = [t_mcp, time_double('2017-08-12/07:24:27')]  ; bias adjustment (2750 -> 2800 V)
+
+; EEPROM load on 2018-08-28 (apo 7621)
 
 ; 2018-10-01/00:00                                     ; beginning of EM-3
 

@@ -26,7 +26,7 @@ function conv_units, data,units, $
 if size(/type,data) ne 8 then return,0    ; Error
 new_data = data
 if not keyword_set(units) then units = 'Eflux'
-call_procedure,data[0].units_procedure,new_data,units,SCALE=scale, _extra=_extra
+if keyword_set(data[0].units_procedure) then call_procedure,data[0].units_procedure,new_data,units,SCALE=scale, _extra=_extra
 return,new_data
 end
 

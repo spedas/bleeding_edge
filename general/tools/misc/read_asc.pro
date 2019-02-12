@@ -47,13 +47,18 @@ end
 ;   FORMAT={year:0,day:0,sec:0.d,v:fltarr(3),n:0.}
 ;   if this keyword is not specified then a default structure will be created.
 ;CREATED BY: Davin Larson
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-02-11 08:27:41 -0800 (Mon, 11 Feb 2019) $
+; $LastChangedRevision: 26591 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/read_asc.pro $
+
 ;-
 
 function read_asc,filenames,header_info,format=f,verbose=verbose,tags=filetags,time=time $
   ,append=append $
   ,seperators=seps $
   ,ctype=ctype ,remap=remap $
-  ,nheader=nheader , headers=headers  $
+  ,nheader=nheader , headers =headers  $
   ,tokens=tokens, thisfile=thisfile  $
   ,compress = compress  $
   ,conv_time=conv_time $

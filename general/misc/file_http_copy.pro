@@ -133,11 +133,11 @@
  ;       continue the download based on remote file modification time and file size. If the local version was current
  ;       then the connection would be closed
  ;
- ; $LastChangedBy: adrozdov $
- ; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
- ; $LastChangedRevision: 24506 $
+ ; $LastChangedBy: davin-mac $
+ ; $LastChangedDate: 2019-02-11 08:21:32 -0800 (Mon, 11 Feb 2019) $
+ ; $LastChangedRevision: 26587 $
  ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_http_copy.pro $
- ; $Id: file_http_copy.pro 24506 2018-01-11 01:03:26Z adrozdov $
+ ; $Id: file_http_copy.pro 26587 2019-02-11 16:21:32Z davin-mac $
  ;-
  
  
@@ -351,7 +351,7 @@ end
 ;   if count ne 0 then begin
 ;     links = links[sort(links)]
 ;   endif
-   dprint,verbose=verbose,dlevel=4,'Extracted '+strtrim(count,2)+' links from: '+filename
+   dprint,verbose=verbose,dlevel=3,'Extracted '+strtrim(count,2)+' links from: '+filename
    return,count gt 0 ? links[w] : ''
    badfile:
    dprint,dlevel=1,verbose=verbose,'Bad file: '+filename
@@ -534,6 +534,7 @@ end
      STRICT_HTML=STRICT_HTML, $
      progress=progress, $
      links=links2, $               ; Output: links are returned in this variable if the file is an html file
+     get_links=get_links, $        ;  Set this keyword to enable the returning of html links in  files
      force_download=force_download, $  ;Allows download to be forced no matter modification time.  Useful when moving between different repositories(e.g. QA and production data)
      error = error
    ;;
@@ -541,7 +542,7 @@ end
    ;; sockets supported in unix & windows since V5.4, Macintosh since V5.6
    tstart = systime(1)
    
-   dprint,dlevel=5,verbose=verbose,'Start; $Id: file_http_copy.pro 24506 2018-01-11 01:03:26Z adrozdov $
+   dprint,dlevel=5,verbose=verbose,'Start; $Id: file_http_copy.pro 26587 2019-02-11 16:21:32Z davin-mac $
 
    if n_elements(strict_html) eq 0 then begin
       strict_html = 1      ;  set to 1 to be robust,  set to 0 to be much faster
@@ -549,10 +550,15 @@ end
    endif
 
    if keyword_set(user_agent) eq 0 then begin
-     swver = strsplit('$Id: file_http_copy.pro 24506 2018-01-11 01:03:26Z adrozdov $',/extract)
-     user = getenv('USER')
-     if ~user then user=getenv('USERNAME')
-     if ~user then user=getenv('LOGNAME')
+     swver = strsplit('$Id: file_http_copy.pro 26587 2019-02-11 16:21:32Z davin-mac $',/extract)
+     if !version.release ge '7' then begin
+      login_info = get_login_info()
+      user = login_info.user_name+'@'+login_info.machine_name
+     endif else begin
+       user = getenv('USER')
+       if ~user then user=getenv('USERNAME')
+       if ~user then user=getenv('LOGNAME')     
+     endelse
      user_agent =  strjoin(swver[1:3],' ')+' IDL'+!version.release + ' ' + !VERSION.OS + '/' + !VERSION.ARCH+ ' (' + user +')'
    endif
 
@@ -626,7 +632,8 @@ end
        ; First get directory listing and extract links:  
        file_http_copy,sub_pathname,serverdir=serverdir,localdir=localdir,url_info=index, host=host ,ascii_mode=1 ,progress=progress, progobj=progobj $
             ,min_age_limit=min_age_limit,verbose=verbose,file_mode=file_mode,dir_mode=dir_mode,if_modified_since=if_modified_since,STRICT_HTML=STRICT_HTML $
-            , links=links, user_agent=user_agent ,user_pass=user_pass,error=error ;, no_update=no_update  ;,preserve_mtime=preserve_mtime, restore_mtime=restore_mtime
+            , links=links,/get_links, user_agent=user_agent ,user_pass=user_pass,error=error $
+            , update_after=update_after ;, no_update=no_update  ;,preserve_mtime=preserve_mtime, restore_mtime=restore_mtime
        if keyword_set(error) then begin
           dprint,dlevel=1,verbose=verbose,'Error detected ',error 
           goto, final_quit
@@ -647,8 +654,8 @@ end
          dprint,dlevel=5,verbose=verbose,/phelp,end_pathname
          dprint,dlevel=5,verbose=verbose,/phelp,rec_pathnames
          if keyword_set(last_version) then begin
-            i0 = nlinks-1 
-            no_update_temp = (last_version eq 2) or keyword_set(no_update)
+            i0 = (nlinks-last_version) > 0
+            no_update_temp = keyword_set(no_update)  ; (last_version eq 2) or keyword_set(no_update)
          endif else begin
             i0=0L
             no_update_temp = keyword_set(no_update)
@@ -703,7 +710,7 @@ end
        dprint,dlevel=2,verbose=verbose,'Warning: Updates to existing file: "'+lcl.name+'" are not being checked!'
 ;       url_info.localname = localname
 ;       url_info.exists = -1   ; remote file existence is not known!
-       if arg_present(links2) then begin
+       if keyword_set(get_links) then begin
           links2 = file_extract_html_links(localname,verbose=verbose,no_parent=url,strict_html=strict_html)         ; Does this belong here?  this might be producing unneeded work
        endif
        goto, final
@@ -711,7 +718,7 @@ end
 
      if keyword_set(update_after) && lcl.exists && (systime(1) lt time_double(update_after)) then begin
        dprint,dlevel=2,verbose=verbose,'Warning: Updates to existing file: "'+lcl.name+'" will not be checked until '+time_string(update_after,/local_time)+ ' LT'
-       if arg_present(links2) then begin
+       if keyword_set(get_links) then begin
          links2 = file_extract_html_links(localname,verbose=verbose,no_parent=url,strict_html=strict_html)         ; Does this belong here?  this might be producing unneeded work
        endif
        goto, final
@@ -722,7 +729,7 @@ end
        dprint,dlevel=2,verbose=verbose,'Local file: '+lcl.name+ ' exists and is write protected. Skipping.'
 ;       url_info.localname = localname
 ;       url_info.exists = -1   ; existence is not known!
-       if arg_present(links2) then begin
+       if keyword_set(get_links) then begin
            links2 = file_extract_html_links(localname,verbose=verbose,no_parent=url,strict_html=strict_html)     ; Does this belong here?
        endif
        goto, final
@@ -737,7 +744,7 @@ end
        ;url_info.ltime = systime(1)
 ;       url_info.localname = localname
 ;       url_info.exists = 1
-       if arg_present(links2) then begin
+       if keyword_set(get_links) then begin
            links2 = file_extract_html_links(localname,verbose=verbose,no_parent=url,strict_html=strict_html)
            dprint,/phelp,dlevel=4,verbose=verbose,links2
        endif
@@ -749,7 +756,7 @@ end
        dprint,dlevel=1,verbose=verbose,'File: '+localname+' is in the process of being downloaded by another process. Download request is aborted.'
 ;       url_info.localname = localname
 ;       url_info.exists = -1   ; remote file existence is not known!
-       if arg_present(links2) then begin
+       if keyword_set(get_links) then begin
          links2 = file_extract_html_links(localname,verbose=verbose,no_parent=url,strict_html=strict_html)         ; Does this belong here?  this might be producing unneeded work
        endif
        download_file = 0
@@ -760,13 +767,19 @@ end
      if download_file eq 0 then begin
 ;       url_info.localname = localname
 ;       url_info.exists = 1
-       if arg_present(links2) then begin
+       if keyword_set(get_links) then begin
          links2 = file_extract_html_links(localname,verbose=verbose,no_parent=url,strict_html=strict_html)
          dprint,/phelp,dlevel=3,verbose=verbose,links2
        endif
        goto, final
      endif
      
+     
+if 0 then begin
+    dprint,url,localname
+    file_download, url,localname
+  
+endif else begin     
      ;;
      ;; open the connection and request the file
      ;;
@@ -918,9 +931,9 @@ end
            ; 'host' parameter to the target of the redirection.
 
            file_http_copy,location,keyword_set(newpathnames) ? newpathname : '', $
-             localdir=file_dirname(localdir+pathname)+'/',verbose=verbose, links=links2,$; lphilpott may-2012 change localdir so that the final directory the file is saved to is the one intended
+             localdir=file_dirname(localdir+pathname)+'/',verbose=verbose, links=links2,/get_links,$  ; lphilpott may-2012 change localdir so that the final directory the file is saved to is the one intended
              ;localdir=localdir,verbose=verbose, $
-             url_info=url_info,file_mode=file_mode,dir_mode=dir_mode, ascii_mode=ascii_mode,progress=progress, progobj=progobj,  $
+             url_info=url_info, file_mode=file_mode,dir_mode=dir_mode, ascii_mode=ascii_mode,progress=progress, progobj=progobj,  $
              archive_ext=archive_ext, archive_dir=archive_dir, $
              user_agent=user_agent,user_pass=user_pass, if_modified_since=if_modified_since,STRICT_HTML=STRICT_HTML  ;,preserve_mtime=preserve_mtime,restore_mtime=restore_mtime              
            goto, close_server
@@ -1104,6 +1117,9 @@ end
      free_lun, unit
      dprint,dlevel=5,verbose=verbose,'Closing server: ',server
      
+     
+endelse     
+     
      final:
      
      if keyword_set(recurse_limit) then begin    ; Recursive search for files.
@@ -1114,7 +1130,7 @@ end
          file_http_copy,'',serverdir=serverdir,localdir=localdir, $
            min_age_limit=min_age_limit,verbose=verbose,no_update=no_update,progress=progress, progobj=progobj, $
            file_mode=file_mode,dir_mode=dir_mode,ascii_mode=1 , host=host, error=error, $
-           url_info=index,links=links,user_agent=user_agent,user_pass=user_pass,if_modified_since=if_modified_since,STRICT_HTML=STRICT_HTML   ;No need to preserve mtime on dir listings ,preserve_mtime=preserve_mtime
+           url_info=index,links=links,/get_links,user_agent=user_agent,user_pass=user_pass,if_modified_since=if_modified_since,STRICT_HTML=STRICT_HTML   ;No need to preserve mtime on dir listings ,preserve_mtime=preserve_mtime
        endif
        wdir = where(strpos(links,'/',0) gt 0,ndirs)   ; Look in each directory for the requested file
        for i=0,ndirs-1 do begin

@@ -7,8 +7,8 @@
 ;   When "Save" is chosen, the "segSelect" structure will be used to update FOM/BAK structures.
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2019-02-07 13:51:10 -0800 (Thu, 07 Feb 2019) $
-; $LastChangedRevision: 26570 $
+; $LastChangedDate: 2019-02-11 13:54:50 -0800 (Mon, 11 Feb 2019) $
+; $LastChangedRevision: 26603 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_fomedit.pro $
 ;
 PRO eva_sitl_FOMedit_event, ev
@@ -42,8 +42,8 @@ PRO eva_sitl_FOMedit_event, ev
         endelse
         txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
       endif else begin
-        len = sppeva_sitl_get_block(evalue, segSelect.TE)
-        txtbuffs = 'SEGMENT SIZE: '+strtrim(string(floor(len)),2)+' blocks'
+        ptr = sppeva_sitl_get_block(evalue, segSelect.TE)
+        txtbuffs = 'SEGMENT SIZE: '+strtrim(string(ptr.length),2)+' blocks'
       endelse
       widget_control, wid.lblBuffs, SET_VALUE=txtbuffs
       segSelect.TS = evalue
@@ -59,8 +59,8 @@ PRO eva_sitl_FOMedit_event, ev
         endelse
         txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
       endif else begin
-        len = sppeva_sitl_get_block(segSelect.TS,evalue)
-        txtbuffs = 'SEGMENT SIZE: '+strtrim(string(floor(len)),2)+' blocks'
+        ptr = sppeva_sitl_get_block(segSelect.TS,evalue)
+        txtbuffs = 'SEGMENT SIZE: '+strtrim(string(ptr.length),2)+' blocks'
       endelse
       widget_control, wid.lblBuffs, SET_VALUE=txtbuffs
       segSelect.TE = evalue
@@ -153,8 +153,8 @@ PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv, proj=proj, $
     endelse
     txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
   endif else begin
-    len = sppeva_sitl_get_block(Ts, Te)
-    txtbuffs = 'SEGMENT SIZE: '+strtrim(string(floor(len)),2)+' blocks'
+    PTR = sppeva_sitl_get_block(Ts, Te)
+    txtbuffs = 'SEGMENT SIZE: '+strtrim(string(PTR.LENGTH),2)+' blocks'
   endelse
   
   wid = {STATE:state, segSelect:segSelect, SCROLL:scroll, OLD_GRAPHICS:old_graphics, DISLEN:dislen, $

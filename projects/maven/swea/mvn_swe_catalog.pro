@@ -45,8 +45,8 @@
 ;                      This will force immediate delivery to the SDC.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-11 12:44:19 -0800 (Sun, 11 Nov 2018) $
-; $LastChangedRevision: 26108 $
+; $LastChangedDate: 2019-02-11 12:14:26 -0800 (Mon, 11 Feb 2019) $
+; $LastChangedRevision: 26597 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_catalog.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -222,39 +222,44 @@ pro mvn_swe_catalog, version=version, revision=revision, mtime=mtime, result=dat
 
 ; Repackage into more convenient form
 
-  svy3d = {year:dat[0].cat[0,0].year, cat:reform(dat[0].cat[0,*])}
+  k = 0
+  svy3d = {year:dat[k].cat[0,0].year, cat:reform(dat[k].cat[0,*])}
   svy3d = replicate(svy3d, nyear)
   for i=1,(nyear-1) do begin
-    svy3d[i].year = dat[i].cat[i,0].year
-    svy3d[i].cat  = reform(dat[i].cat[i,*])
+    svy3d[i].year = dat[k].cat[i,0].year
+    svy3d[i].cat  = reform(dat[k].cat[i,*])
   endfor
 
-  svypad = {year:dat[1].cat[0,0].year, cat:reform(dat[1].cat[0,*])}
+  k = 1
+  svypad = {year:dat[k].cat[0,0].year, cat:reform(dat[k].cat[0,*])}
   svypad = replicate(svypad, nyear)
   for i=1,(nyear-1) do begin
-    svypad[i].year = dat[1].cat[i,0].year
-    svypad[i].cat  = reform(dat[1].cat[i,*])
+    svypad[i].year = dat[k].cat[i,0].year
+    svypad[i].cat  = reform(dat[k].cat[i,*])
   endfor
 
-  svyspec = {year:dat[2].cat[0,0].year, cat:reform(dat[2].cat[0,*])}
+  k = 2
+  svyspec = {year:dat[k].cat[0,0].year, cat:reform(dat[k].cat[0,*])}
   svyspec = replicate(svyspec, nyear)
   for i=1,(nyear-1) do begin
-    svyspec[i].year = dat[2].cat[i,0].year
-    svyspec[i].cat  = reform(dat[2].cat[i,*])
+    svyspec[i].year = dat[k].cat[i,0].year
+    svyspec[i].cat  = reform(dat[k].cat[i,*])
   endfor
 
-  arc3d = {year:dat[3].cat[0,0].year, cat:reform(dat[3].cat[0,*])}
+  k = 3
+  arc3d = {year:dat[k].cat[0,0].year, cat:reform(dat[k].cat[0,*])}
   arc3d = replicate(arc3d, nyear)
   for i=1,(nyear-1) do begin
-    arc3d[i].year = dat[3].cat[i,0].year
-    arc3d[i].cat  = reform(dat[3].cat[i,*])
+    arc3d[i].year = dat[k].cat[i,0].year
+    arc3d[i].cat  = reform(dat[k].cat[i,*])
   endfor
 
-  arcpad = {year:dat[4].cat[0,0].year, cat:reform(dat[4].cat[0,*])}
+  k = 4
+  arcpad = {year:dat[k].cat[0,0].year, cat:reform(dat[k].cat[0,*])}
   arcpad = replicate(arcpad, nyear)
   for i=1,(nyear-1) do begin
-    arcpad[i].year = dat[4].cat[i,0].year
-    arcpad[i].cat  = reform(dat[4].cat[i,*])
+    arcpad[i].year = dat[k].cat[i,0].year
+    arcpad[i].cat  = reform(dat[k].cat[i,*])
   endfor
 
   cat = {years:dat[0].cat[*,0].year, svy3d:svy3d, svypad:svypad, svyspec:svyspec, $

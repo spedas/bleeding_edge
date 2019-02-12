@@ -5,12 +5,13 @@
 ;
 ;-
 function velocity,nrg,mass,true_veloc=tv,momen_on_mass=mom, $
-electron=el,proton=proton,inverse=inverse
+electron=el,proton=proton,alpha=alpha,inverse=inverse
 
 c2 = 2.99792d5^2
 
 if keyword_set(el) then mass= 511000.d/c2
 if keyword_set(proton) then mass= 511000.d/c2*1836.
+if keyword_set(alpha) then mass= 511000.d/c2*1836. * 2
 
 E0 = mass*c2
 
