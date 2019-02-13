@@ -24,8 +24,8 @@
 ;    -J2000 (identical to ECI)
 ;    
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-11-07 10:53:48 -0800 (Mon, 07 Nov 2016) $
-;$LastChangedRevision: 22326 $
+;$LastChangedDate: 2019-02-12 09:22:39 -0800 (Tue, 12 Feb 2019) $
+;$LastChangedRevision: 26608 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_qcotrans_crib.pro $
 ;-
 
@@ -38,8 +38,10 @@ level = 'l2'
 timespan, '2015-10-16/12', 2, /hour
 trange = timerange()
 
-; load quaternions
-mms_load_mec, probe=probe, trange=trange, varformat='*_quat_*'
+; load quaternions; note: if the default datatype of epht04d isn't available for your date
+;   try the epht89d datatype; these files contain the same ephemeris data as the epht04d files
+;   (only difference are the data products that rely on the Tsyganenko field model)
+mms_load_mec, probe=probe, trange=trange, varformat='*_quat_*', datatype='epht89d'
 
 ; load data to be transformed
 mms_load_fgm, probe=probe, trange=trange, level=level, varformat='*_b_*'

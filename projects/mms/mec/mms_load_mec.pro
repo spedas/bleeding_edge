@@ -56,6 +56,14 @@
 ;         MMS> tplot, 'mms3_mec_r_gsm'
 ;
 ; NOTES:
+;    MISSING DATA: if the MEC data are missing for a date you suspect should contain data (>30 days ago), 
+;                  try loading the datatype 'epht89d' instead of the default of 'epht04d'.
+;                  There are sometimes issues with creating the Tsyganenko 04 data products,
+;                  which leads to the default 'epht04d' files not being available. The 'epht89d' files
+;                  contain the same ephemeris data - the only difference are the data products that rely on 
+;                  the field model. 
+;                  
+; 
 ;    The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
 ; 
 ;    Have questions regarding this load routine, or its usage?
@@ -63,8 +71,8 @@
 ;          
 ;          
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
-;$LastChangedRevision: 25588 $
+;$LastChangedDate: 2019-02-12 09:41:42 -0800 (Tue, 12 Feb 2019) $
+;$LastChangedRevision: 26610 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_load_mec.pro $
 ;-
 

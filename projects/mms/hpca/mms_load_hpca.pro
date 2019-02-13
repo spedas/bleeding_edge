@@ -48,6 +48,7 @@
 ;                       useful if you accidently save an incorrect password, or if your SDC password has changed
 ;         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in
 ;                       SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
+;         disable_mem_usage: disable memory usage checks and warnings
 ; 
 ; 
 ; EXAMPLE:
@@ -81,8 +82,8 @@
 ; 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-11-20 07:55:28 -0800 (Tue, 20 Nov 2018) $
-;$LastChangedRevision: 26159 $
+;$LastChangedDate: 2019-02-12 11:11:47 -0800 (Tue, 12 Feb 2019) $
+;$LastChangedRevision: 26611 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_load_hpca.pro $
 ;-
 
@@ -95,7 +96,8 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
                   cdf_filenames = cdf_filenames, cdf_version = cdf_version, $
                   latest_version = latest_version, min_version = min_version, $
                   spdf = spdf, center_measurement = center_measurement, available = available, $
-                  versions = versions, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
+                  versions = versions, always_prompt = always_prompt, major_version=major_version, $
+                  tt2000=tt2000, disable_mem_usage=disable_mem_usage
                 
     if undefined(probes) then probes = ['1'] ; default to MMS 1
     if undefined(datatype) then datatype = 'moments' else datatype = strlowcase(datatype)
@@ -143,7 +145,7 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
       then tr = timerange(trange_in) $
     else tr = timerange()
 
-    if array_contains(datatype, 'ion') and ~keyword_set(available) then begin
+    if array_contains(datatype, 'ion') and ~keyword_set(available) and ~keyword_set(disable_mem_usage) then begin
       mem_usage = long64(mms_estimate_mem_usage(tr, 'hpca'))
       mem_avail = get_max_memblock2()
       dprint, dlevel=0, 'WARNING: this call will use: ' + string(mem_usage) + ' MB / available: ' + string(mem_avail) + ' MB'

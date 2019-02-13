@@ -27,14 +27,14 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-09 12:14:36 -0700 (Mon, 09 Apr 2018) $
-;$LastChangedRevision: 25023 $
+;$LastChangedDate: 2019-02-12 11:20:23 -0800 (Tue, 12 Feb 2019) $
+;$LastChangedRevision: 26613 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_get_local_files.pro $
 ;-
 
 function mms_get_local_files, probe = probe, instrument = instrument, data_rate = data_rate, $
   level = level, datatype = datatype, trange = trange_in, cdf_version = cdf_version, $
-  latest_version = latest_version, min_version = min_version, mirror = mirror
+  latest_version = latest_version, min_version = min_version, major_version=major_version, mirror = mirror
 
             
   compile_opt idl2, hidden
@@ -160,7 +160,7 @@ file_strings = file_strings[*,time_idx]
 ;Extract the latest version of each file 
 ;----------------------------------------------------------------
 
-files_out = unh_mms_file_filter(files, /no_time, version=cdf_version, min_version=min_version, latest_version=latest_version)
+files_out = unh_mms_file_filter(files, /no_time, version=cdf_version, min_version=min_version, latest_version=latest_version, major_version=major_version)
 
 if keyword_set(mirror) then begin
   mirror_dir = !mms.mirror_data_dir

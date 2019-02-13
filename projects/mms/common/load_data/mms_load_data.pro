@@ -94,8 +94,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-11-19 16:32:25 -0800 (Mon, 19 Nov 2018) $
-;$LastChangedRevision: 26156 $
+;$LastChangedDate: 2019-02-12 11:20:23 -0800 (Tue, 12 Feb 2019) $
+;$LastChangedRevision: 26613 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 
@@ -308,7 +308,7 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
             local_files = mms_get_local_files(probe=probe, instrument=instrument, $
                     data_rate=data_rate, level=level, datatype=datatype, $
                     trange=time_double([day_string, end_string]), cdf_version=cdf_version, $
-                    min_version=min_version, latest_version=latest_version)
+                    min_version=min_version, latest_version=latest_version, major_version=major_version)
 
             if is_string(local_files) then begin
                 ; prepare the file list as a list of structs, (required input to mms_files_in_interval)
@@ -328,7 +328,7 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
                   mirror_files = mms_get_local_files(probe=probe, instrument=instrument, $
                     data_rate=data_rate, level=level, datatype=datatype, $
                     trange=time_double([day_string, end_string]), cdf_version=cdf_version, $
-                    min_version=min_version, latest_version=latest_version, /mirror)
+                    min_version=min_version, latest_version=latest_version, major_version=major_version, /mirror)
 
                   if is_string(mirror_files) then begin
                     ; prepare the file list as a list of structs, (required input to mms_files_in_interval)

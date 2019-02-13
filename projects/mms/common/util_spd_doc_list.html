@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Feb 11 18:16:23 2019.<P>
+<STRONG>Last modified: </STRONG>Tue Feb 12 18:17:01 2019.<P>
  
 <HR>
  
@@ -26,6 +26,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_CONVERT_VFRAME">MMS_CONVERT_VFRAME</A>
 <LI><A HREF="#MMS_DRAW_CIRCLE">MMS_DRAW_CIRCLE</A>
 <br>Draws (and fills in) a circle
+<LI><A HREF="#MMS_REMOVE_OLD_FILES">MMS_REMOVE_OLD_FILES</A>
+<br>Removes old MMS CDF data files stored on your local file system.
 <LI><A HREF="#MMS_TEAM_KIBANA">MMS_TEAM_KIBANA</A>
 <br>Opens the MMS Kibana page using your web browser; allows you to see which
 <LI><A HREF="#MMS_TRANSFORM_VELOCITY">MMS_TRANSFORM_VELOCITY</A>
@@ -193,7 +195,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_DRAW_CIRCLE">
 <H2>MMS_DRAW_CIRCLE</H2></A>
 <A HREF="#MMS_CONVERT_VFRAME">[Previous Routine]</A>
-<A HREF="#MMS_TEAM_KIBANA">[Next Routine]</A>
+<A HREF="#MMS_REMOVE_OLD_FILES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -213,9 +215,40 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="util/mms_draw_circle.pro">projects/mms/common/util/mms_draw_circle.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_REMOVE_OLD_FILES">
+<H2>MMS_REMOVE_OLD_FILES</H2></A>
+<A HREF="#MMS_DRAW_CIRCLE">[Previous Routine]</A>
+<A HREF="#MMS_TEAM_KIBANA">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         mms_remove_old_files
+
+ PURPOSE:
+         Removes old MMS CDF data files stored on your local file system. 
+
+ KEYWORDS:
+         trange: time range of interest; default is full mission
+         probes: list of probes - values for MMS SC #; default is all probes
+         instruments: ['fpi', 'hpca', 'fgm'], etc; default is all instruments
+         levels: level of data processing; default is all levels
+         data_rates: instrument data rate; default is all data rates
+         no_warning: disable warning before deleting files
+ 
+ NOTES:
+         WARNING: this routine requires an internet connection
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2019-02-12 13:43:50 -0800 (Tue, 12 Feb 2019) $
+$LastChangedRevision: 26617 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/mms_remove_old_files.pro $
+</PRE><P>
+<STRONG>(See <A href="util/mms_remove_old_files.pro">projects/mms/common/util/mms_remove_old_files.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_TEAM_KIBANA">
 <H2>MMS_TEAM_KIBANA</H2></A>
-<A HREF="#MMS_DRAW_CIRCLE">[Previous Routine]</A>
+<A HREF="#MMS_REMOVE_OLD_FILES">[Previous Routine]</A>
 <A HREF="#MMS_TRANSFORM_VELOCITY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

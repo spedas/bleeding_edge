@@ -1,11 +1,12 @@
 
 function solve,y,xguess=x0,parameter=par,funct=func
 
+if ~keyword_set(func) then func = par.func
 ;y0 = call_function(func,double(x0),param=par)
 y0 = func(x0,param=par)
 x1 = x0*1.001
 
-for i=0,6 do begin
+for i=0,20 do begin
 ;  y1 = call_function(func,x1,param=par)
   y1 = func(x1,param=par)
 
