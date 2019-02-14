@@ -34,31 +34,42 @@
   ;  see "FILE_RETRIEVE" for a description of each structure element.
   ;
   ; $LastChangedBy: davin-mac $
-  ; $LastChangedDate: 2019-02-08 01:07:25 -0800 (Fri, 08 Feb 2019) $
-  ; $LastChangedRevision: 26574 $
+  ; $LastChangedDate: 2019-02-13 17:49:40 -0800 (Wed, 13 Feb 2019) $
+  ; $LastChangedRevision: 26627 $
   ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_file_source.pro $
   ;-
 
 
 
-function spp_file_source,DEFAULT_SOURCE,set=set,reset=reset,_extra=ex
-  common spp_file_source_com,  psource
+function spp_file_source,default_source,source_key=source_key,set=set,reset=reset,_extra=ex
+  common spp_file_source_com,  source_dict
+  
+  if ~isa(source_dict,'dictionary') then begin
+    source_dict = dictionary()
+  endif
+  if ~keyword_set(source_key) then source_key = 'SWEAP'
+  
+  if ~source_dict.haskey(source_key) then source_dict[source_key] = !null
+  
+  psource = source_dict[source_key]
 
-  if keyword_set(reset) then psource=0
+  if keyword_set(reset) then psource=!null
 
   if not keyword_set(psource) then begin    ; Create the default
-    user = getenv('USER')       ;  Unix
-    if ~keyword_set(user) then user = getenv('USERNAME')   ; PC's
-    if ~keyword_set(user) then user = getenv('LOGNAME')
-    if ~keyword_set(user) then user = 'guest'                ; This line may get deleted in the future!
-    psource = file_retrieve(/struct)   ; get typical default values.
+    dprint,'Define source for: ',source_key
+    psource = file_retrieve(/struct)  ; get typical default values.
     if file_test(psource.local_data_dir+'psp/data/sci/sweap/.master',/regular) then psource.no_server =1  $  ; local directory IS the server directory
     else begin   ; Files will be downloaded from the web
       psource.remote_data_dir = 'http://sprg.ssl.berkeley.edu/data/'
       user_pass = ''
-      str_element,ex,'USER_PASS',user_pass                 ;  Get user_pass if it was passed in
-;      if ~keyword_set(user_pass) then  user_pass = getenv('SPP_USER_PASS')
-      if ~keyword_set(user_pass) then  user_pass = ssl_password(getenv('SPP_USER_PASS'))
+      str_element,ex,'USER_PASS',user_pass                 ;  Get user_pass if it was passed in as a keyword
+      if ~keyword_set(user_pass) then begin
+        case source_key of
+          'SWEAP' : user_pass = ssl_password(getenv('SPP_USER_PASS'))
+          'FIELDS': user_pass = ssl_password(getenv('PSP_STAGING_ID')+':'+getenv('PSP_STAGING_PW'))
+          else    : user_pass = ssl_password(getenv('SPP_USER_PASS'))
+        endcase        
+      endif
       str_element,/add,psource,'USER_PASS',user_pass
       psource.preserve_mtime = 1
       ;       psource.no_update=1   ; this can be set to 1 only because all files use revision numbers and will not be updated.
@@ -69,6 +80,7 @@ function spp_file_source,DEFAULT_SOURCE,set=set,reset=reset,_extra=ex
     psource.verbose=2
 ;    str_element,/add,psource,'LAST_VERSION',1            ;  set this as default since version numbers are generally used.
     str_element,/add,psource,'STRICT_HTML',0            ;  set this as default since version numbers are generally used.
+    source_dict[source_key] = psource
   endif
 
   if size(/type,default_source) eq 8 then  source= default_source  else source = psource
@@ -82,7 +94,7 @@ function spp_file_source,DEFAULT_SOURCE,set=set,reset=reset,_extra=ex
 
 
   if keyword_set(set) then begin    ; set the common block structure
-    psource = source
+    source_dict[source_key] = source
   endif
 
   return,source

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Feb 12 18:17:01 2019.<P>
+<STRONG>Last modified: </STRONG>Wed Feb 13 18:16:24 2019.<P>
  
 <HR>
  
@@ -26,6 +26,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#THM_COTRANS">THM_COTRANS</A>
 <LI><A HREF="#THM_COTRANS_MATRIX">THM_COTRANS_MATRIX</A>
 <br>brute force method of creating rotation matrix for a
+<LI><A HREF="#THM_COTRANS_TENSOR">THM_COTRANS_TENSOR</A>
+<br>wrapper for coordinate transforms to prssure and momentum
 <LI><A HREF="#THM_FAC_MATRIX_MAKE">THM_FAC_MATRIX_MAKE</A>
 <LI><A HREF="#THM_GSM2LMN_WRAP">THM_GSM2LMN_WRAP</A>
 <br>Wrapper transforms THEMIS-generated vector field from GSM to LMN (boundary-normal)
@@ -356,8 +358,9 @@ keywords:
  valid_names:return valid coordinate system names in named varibles supplied to
            in_coord and/or out_coord keywords.
  support_suffix: if support_data is loaded with a suffix you can
- specify it here
-           
+                 specify it here
+ slp_suffix: if slp_sun_pos, slp_lun_pos, slp_lunn_att variables have
+             this suffix, you can specify it here
  out_vars: return a list of the names of any transformed variables
 
  ignore_dlimits: set this keyword to true so that an error will not
@@ -398,9 +401,9 @@ Examples:
   thm_cotrans,'mydslvar1 mydslvar2 mydslvar3', $
               in_coord='dsl', probe='b c d', out_suff='_gse'
 
- $LastChangedBy: aaflores $
- $LastChangedDate: 2016-09-27 17:42:42 -0700 (Tue, 27 Sep 2016) $
- $LastChangedRevision: 21952 $
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-02-13 16:05:02 -0800 (Wed, 13 Feb 2019) $
+ $LastChangedRevision: 26625 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/state/cotrans/thm_cotrans.pro $
 </PRE><P>
 <STRONG>(See <A href="cotrans/thm_cotrans.pro">projects/themis/state/cotrans/thm_cotrans.pro</A>)</STRONG><P>
@@ -409,7 +412,7 @@ Examples:
 <A NAME="THM_COTRANS_MATRIX">
 <H2>THM_COTRANS_MATRIX</H2></A>
 <A HREF="#THM_COTRANS">[Previous Routine]</A>
-<A HREF="#THM_FAC_MATRIX_MAKE">[Next Routine]</A>
+<A HREF="#THM_COTRANS_TENSOR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -449,6 +452,10 @@ KEYWORDS:
  use_spinaxis_correction: uses spinaxis correction as in THM_COTRANS
  use_spinphase_correction: uses spinphase correction as in THM_COTRANS
  use_eclipse_correction: uses eclipse correction as in THM_COTRANS
+ support_suffix: if support_data is loaded with a suffix you can
+ specify it here
+ slp_suffix: if slp_sun_pos, slp_lun_pos, slp_lunn_att variables have
+ this suffix, you can specify it here
 EXAMPLE:
  For converting DSL to GSE coordinates, using ptens variable
   rotmat = thm_cotrans_matrix('tha_peif_ptens', out_coord = 'GSE')
@@ -458,16 +465,91 @@ the in_coord keyword should be set.
 HISTORY:
  2019-01-16, jmm, jimm@ssl.berkeley.edu
  $LastChangedBy: jimm $
- $LastChangedDate: 2019-01-18 12:44:58 -0800 (Fri, 18 Jan 2019) $
- $LastChangedRevision: 26484 $
+ $LastChangedDate: 2019-02-13 11:37:26 -0800 (Wed, 13 Feb 2019) $
+ $LastChangedRevision: 26620 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/state/cotrans/thm_cotrans_matrix.pro $
 </PRE><P>
 <STRONG>(See <A href="cotrans/thm_cotrans_matrix.pro">projects/themis/state/cotrans/thm_cotrans_matrix.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_COTRANS_TENSOR">
+<H2>THM_COTRANS_TENSOR</H2></A>
+<A HREF="#THM_COTRANS_MATRIX">[Previous Routine]</A>
+<A HREF="#THM_FAC_MATRIX_MAKE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+thm_cotrans_tensor
+PURPOSE:
+wrapper for coordinate transforms to prssure and momentum
+flux tensors
+CALLING SEQUENCE:
+ in_coord is optional if dlimits includes a data_att.coord_sys element.
+pro thm_cotrans_tensor, in_name, out_name, $
+                 in_coord=in_coord, out_coord=out_coord, verbose=verbose, $
+                 in_suffix=in_suf, out_suffix=out_suf, $
+                 support_suffix=support_suffix,ignore_dlimits=ignore_dlimits,$
+                 interpolate_state=interpolate_state,out_vars=out_vars,$
+                 use_spinaxis_correction=use_spinaxis_correction, $
+                 use_spinphase_correction=use_spinphase_correction, $
+                 use_eclipse_corrections=use_eclipse_corrections,$
+                 slp_suffix=slp_suffix,no_update_labels=no_update_labels
+INPUT:
+ in_name  Name(s) of input tplot variable(s) (or glob patern)
+          (space-separated list or array of strings.). Non-tensor
+          variables can be mixed in, these will be passed to
+          thm_cotrans directly.
+ out_name Name(s) of output tplot variable(s).  glob patterns not accepted.
+          Number of output names must match number of input names (after glob
+          expansion of input names).  (single string, or array of strings.)
+KEYWORDS:
+  in_coord = 'spg', 'ssl', 'dsl', 'gse', 'gsm','sm', 'gei','geo', 'sse', 'sel' or
+          'mag' coordinate system of input.
+          This keyword is optional if the dlimits.data_att.coord_sys attribute
+          is present for the tplot variable, and if present, it must match
+          the value of that attribute.  See cotrans_set_coord,
+          cotrans_get_coord
+  out_coord = 'spg', 'ssl', 'dsl', 'gse', 'gsm', 'sm', 'gei','geo', 'sse','sel', or 'mag'
+           coordinate system of output.  This keyword is optional if
+           out_suffix is specified and last 3 characters of suffix specify
+           the output coordinate system.
+  in_suffix = optional suffix needed to generate the input data quantity name:
+           'th'+probe+'_'datatype+in_suffix
+  out_suffix = optional suffix to add to output data quantity name.  If
+           in_suffix is present, then in_suffix will be replaced by out_suffix
+           in the output data quantity name.
+ valid_names:return valid coordinate system names in named varibles supplied to
+           in_coord and/or out_coord keywords.
+ support_suffix: if support_data is loaded with a suffix you can
+ specify it here
+           
+ out_vars: return a list of the names of any transformed variables
+
+ ignore_dlimits: set this keyword to true so that an error will not
+     be produced if the internal label of the coordinate system clashed
+     with the user provided coordinate system.
+ interpolate_state: use interpolation on 1-minute state CDF spinper/spinphase
+     samples for despinning instead of spin model
+ use_spinaxis_correction: use spinaxis correction
+ use_spinphase_correction: use spinphase correction
+ use_eclipse_corrections: use eclipse corrections
+ no_update_labels: Set this keyword if you want the routine to not
+                   update the labels automatically
+ reuse_rotation_matrix: If set, use the same rotation atrix for all
+                        inputs, if the time arrays are the same
+ delete_rotation_matrix: If set, delete the rotation matirx variable
+
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-02-13 16:05:02 -0800 (Wed, 13 Feb 2019) $
+ $LastChangedRevision: 26625 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/state/cotrans/thm_cotrans_tensor.pro $
+</PRE><P>
+<STRONG>(See <A href="cotrans/thm_cotrans_tensor.pro">projects/themis/state/cotrans/thm_cotrans_tensor.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_FAC_MATRIX_MAKE">
 <H2>THM_FAC_MATRIX_MAKE</H2></A>
-<A HREF="#THM_COTRANS_MATRIX">[Previous Routine]</A>
+<A HREF="#THM_COTRANS_TENSOR">[Previous Routine]</A>
 <A HREF="#THM_GSM2LMN_WRAP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

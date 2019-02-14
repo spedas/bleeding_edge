@@ -29,8 +29,9 @@
 ; valid_names:return valid coordinate system names in named varibles supplied to
 ;           in_coord and/or out_coord keywords.
 ; support_suffix: if support_data is loaded with a suffix you can
-; specify it here
-;           
+;                 specify it here
+; slp_suffix: if slp_sun_pos, slp_lun_pos, slp_lunn_att variables have
+;             this suffix, you can specify it here
 ; out_vars: return a list of the names of any transformed variables
 ;
 ; ignore_dlimits: set this keyword to true so that an error will not
@@ -71,9 +72,9 @@
 ;  thm_cotrans,'mydslvar1 mydslvar2 mydslvar3', $
 ;              in_coord='dsl', probe='b c d', out_suff='_gse'
 ;
-; $LastChangedBy: aaflores $
-; $LastChangedDate: 2016-09-27 17:42:42 -0700 (Tue, 27 Sep 2016) $
-; $LastChangedRevision: 21952 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-02-13 16:05:02 -0800 (Wed, 13 Feb 2019) $
+; $LastChangedRevision: 26625 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/state/cotrans/thm_cotrans.pro $
 ;-
 
