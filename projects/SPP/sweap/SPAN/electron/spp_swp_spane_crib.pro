@@ -7,8 +7,8 @@
 ; In the future this will include instructions for looking at flight data:  IN PROG
 ; 
 ; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-11-06 14:43:56 -0800 (Tue, 06 Nov 2018) $
-; $LastChangedRevision: 26058 $
+; $LastChangedDate: 2019-02-14 14:22:13 -0800 (Thu, 14 Feb 2019) $
+; $LastChangedRevision: 26631 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/electron/spp_swp_spane_crib.pro $
 ;--------------------------------------------------------------------
 
@@ -400,6 +400,7 @@ if 0 then begin
 ;  tplot/
   
 endif
+
 end
 
 pro misc2
@@ -432,8 +433,6 @@ pro spane_center_energy,tranges=tt,emid=emid,ntot=ntot
     ntot[i] = total(y)
     emid[i] = total(x*y)/total(y)
   endfor
-
-  ;  Emid = [5070, 5107, 5112,
 
 end
 
@@ -487,6 +486,7 @@ end
 
 
 
+pro garbage
 f= spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/z320/20160331_125002_/PTP_data.dat' )
 f= spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/mgsehires1/20160801_092658_flightToFlight_contd/PTP_data.dat' )
 
@@ -513,9 +513,9 @@ spp_msg_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/S
 spp_msg_file_read, spp_file_retrieve( 'spp/data/sci/sweap/prelaunch/gsedata/EM/SWEAP-2/20160805_125639_ramp_up/GSE_all_msg.dat')  ; Ion ramp in which SWEMULATOR reset?
 spp_ptp_file_read, spp_file_retrieve('spp/data/sci/sweap/prelaunch/gsedata/EM/SWEAP-3/20160920_084426_BfltBigCalChamberEAscan/PTP_data.dat.gz')
 spp_ptp_file_read, spp_file_retrieve('spp/data/sci/sweap/prelaunch/gsedata/EM/SWEAP-3/20160923_165136_BfltContinuedPHDscan/PTP_data.dat')
+end
 
-
-
+pro timetest
 if 0  then begin  ;;  time test 
    sf = tsample(times=tf)
    w1 = where(total(sf,2))
@@ -543,14 +543,20 @@ if 0  then begin  ;;  time test
    
 
 endif
+end
 
 pro spe_kludge, dataNum
-  nrg = dgen(32, range = [500,5], /log)
+  nrg = dgen(32, range = [2000,2], /log)
   get_data, dataNum, data = d
   str_element, d, 'v', nrg, /add
   store_data, dataNum, data = d
 end
 
-
+;feed this a get_data from a fullspec.y
+pro kludge_3d, fullspec
+  sizeVar = size(fullspec.x)
+  full3d = reform(fullspec.y, sizeVar[1], 16,8,32)
+  full3d = {x: fullspec.x, y: full3d}
+  store_data, 'psp_swp_spa_L2_sf0_PDATA_3D', data = full3d
 end
 

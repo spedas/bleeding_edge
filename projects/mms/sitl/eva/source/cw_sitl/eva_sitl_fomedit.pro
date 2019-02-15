@@ -7,8 +7,8 @@
 ;   When "Save" is chosen, the "segSelect" structure will be used to update FOM/BAK structures.
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2019-02-11 13:54:50 -0800 (Mon, 11 Feb 2019) $
-; $LastChangedRevision: 26603 $
+; $LastChangedDate: 2019-02-14 15:42:10 -0800 (Thu, 14 Feb 2019) $
+; $LastChangedRevision: 26635 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_fomedit.pro $
 ;
 PRO eva_sitl_FOMedit_event, ev
