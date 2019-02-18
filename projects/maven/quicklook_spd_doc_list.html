@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Feb 15 18:16:26 2019.<P>
+<STRONG>Last modified: </STRONG>Sun Feb 17 18:16:20 2019.<P>
  
 <HR>
  
@@ -19,6 +19,8 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/maven/quicklook</H1>
+<LI><A HREF="#MVN_ATTITUDE_BAR">MVN_ATTITUDE_BAR</A>
+<br>Creates a horizontal color bar for tplot, where the spacecraft attitude
 <LI><A HREF="#MVN_CALL_PFPL2PLOT">MVN_CALL_PFPL2PLOT</A>
 <LI><A HREF="#MVN_GEN_MULTIPNG_PLOT">MVN_GEN_MULTIPNG_PLOT</A>
 <br>Creates full day, and single orbit plots
@@ -64,8 +66,41 @@ MVN_QL_PFP_TPLOT_YTICKNAME_PLUS_LOG</A>
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="MVN_ATTITUDE_BAR">
+<H2>MVN_ATTITUDE_BAR</H2></A>
+<A HREF="#MVN_CALL_PFPL2PLOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_attitude_bar
+PURPOSE:
+  Creates a horizontal color bar for tplot, where the spacecraft attitude
+  is coded by color:
+
+    orange = Sun point
+    blue   = Earth point
+
+USAGE:
+  mvn_attitude_bar
+
+INPUTS:
+       none
+
+KEYWORDS:
+       none
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2019-02-17 09:13:07 -0800 (Sun, 17 Feb 2019) $
+ $LastChangedRevision: 26640 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_attitude_bar.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="quicklook/mvn_attitude_bar.pro">projects/maven/quicklook/mvn_attitude_bar.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_CALL_PFPL2PLOT">
 <H2>MVN_CALL_PFPL2PLOT</H2></A>
+<A HREF="#MVN_ATTITUDE_BAR">[Previous Routine]</A>
 <A HREF="#MVN_GEN_MULTIPNG_PLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
