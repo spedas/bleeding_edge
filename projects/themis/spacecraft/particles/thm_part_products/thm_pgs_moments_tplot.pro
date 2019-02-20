@@ -19,7 +19,8 @@
 ;  tplotnames: Array of tplot variable names created by the parent 
 ;              routine.  Any tplot variables created in this routine
 ;              should have their names appended to this array.
-;  coord: if set, then velocity and flux variables are created for the
+;  coord: if set, then velocity, flux, pressure tensor and momentum
+;         flux tensor variables are created for the
 ;         input coordinate system, in addition to the DSL variables
 ;
 ;Notes:
@@ -27,8 +28,8 @@
 ;
 ;
 ;$LastChangedBy: jimm $
-;$LastChangedDate: 2019-01-08 14:14:59 -0800 (Tue, 08 Jan 2019) $
-;$LastChangedRevision: 26441 $
+;$LastChangedDate: 2019-02-19 11:17:18 -0800 (Tue, 19 Feb 2019) $
+;$LastChangedRevision: 26643 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/thm_part_products/thm_pgs_moments_tplot.pro $
 ;-
 pro thm_pgs_moments_tplot, moments, $
@@ -54,7 +55,8 @@ pro thm_pgs_moments_tplot, moments, $
                      'mftens', 'ptens', 'sc_current', $
                      'velocity', 'vthermal']
     ;moments with coordinate systems, subject to coord keyword
-    coord_moments = ['eflux', 'flux', 'velocity']    
+    coord_vector_moments = ['eflux', 'flux', 'velocity']
+    coord_tensor_moments = ['ptens', 'mftens']    
   endif else begin
     ;moments produced by moments_3d
     valid_moments = ['avgtemp', 'density', 'eflux', 'flux', $
@@ -63,7 +65,8 @@ pro thm_pgs_moments_tplot, moments, $
                      'magf', 'magt3', 't3', 'sc_pot', 'symm', $
                      'symm_theta', 'symm_phi', 'symm_ang']
     ;moments with coordinate systems, subject to coord keyword
-    coord_moments = ['eflux', 'flux', 'velocity']
+    coord_vector_moments = ['eflux', 'flux', 'velocity']
+    coord_tensor_moments = ['ptens', 'mftens']    
   endelse
 
 
@@ -127,8 +130,14 @@ pro thm_pgs_moments_tplot, moments, $
 
   ;change coordinates if coords keyword is set
   if keyword_set(coord) then begin
-     for j = 0, n_elements(coord_moments)-1 do begin
-        thm_cotrans, strfilter(mom_tnames, '*_'+coord_moments[j]+suffix), $
+;vector quantities
+     for j = 0, n_elements(coord_vector_moments)-1 do begin
+        thm_cotrans, strfilter(mom_tnames, '*_'+coord_vector_moments[j]+suffix), $
+                     out_coord = coord, out_suffix = '_'+coord
+     endfor
+;tensor quantities
+     for j = 0, n_elements(coord_tensor_moments)-1 do begin
+        thm_cotrans_tensor, strfilter(mom_tnames, '*_'+coord_tensor_moments[j]+suffix), $
                      out_coord = coord, out_suffix = '_'+coord
      endfor
   endif

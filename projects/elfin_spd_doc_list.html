@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Feb 17 18:16:20 2019.<P>
+<STRONG>Last modified: </STRONG>Tue Feb 19 18:16:22 2019.<P>
  
 <HR>
  
@@ -19,6 +19,8 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/elfin</H1>
+<LI><A HREF="#ELF_CAL_FGM">ELF_CAL_FGM</A>
+<br>Calibrate ELFIN FGM data
 <LI><A HREF="#ELF_CONFIG">ELF_CONFIG</A>
 <LI><A HREF="#ELF_FILES_IN_INTERVAL">ELF_FILES_IN_INTERVAL</A>
 <br>filters file list returned by the server to the trange. This filter is purposefully
@@ -50,8 +52,39 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="ELF_CAL_FGM">
+<H2>ELF_CAL_FGM</H2></A>
+<A HREF="#ELF_CONFIG">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         elf_cal_fgm
+
+ PURPOSE:
+         Calibrate ELFIN FGM data
+
+ KEYWORDS:
+         tvars:       tplot variable names to be calibrated
+         level:       processing level 
+         
+ EXAMPLES:
+         
+         elf&gt; elf_cal_fgm, tvars, level='l1' 
+
+ NOTES:
+
+
+$LastChangedBy: clrussell $
+$LastChangedDate: 2018-12-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
+$LastChangedRevision: 25588 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elfin/elf_cal_fgm.pro $
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_cal_fgm.pro">projects/elfin/elf_cal_fgm.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ELF_CONFIG">
 <H2>ELF_CONFIG</H2></A>
+<A HREF="#ELF_CAL_FGM">[Previous Routine]</A>
 <A HREF="#ELF_FILES_IN_INTERVAL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

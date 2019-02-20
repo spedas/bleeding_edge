@@ -79,7 +79,7 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
 
   if undefined(probes) then probes = ['a'] else probes = strlowcase(probes) ; default to ELFIN A
   probes = strcompress(string(probes), /rem) ; probes should be strings
-  if undefined(instrument) then instrument = 'fgm' else instrument = strlowcase(instrument)
+  ;if undefined(instrument) then instrument = 'fgm' else instrument = strlowcase(instrument)
   if undefined(levels) then begin
     if instrument EQ 'state' then levels = 'l1' else levels = 'l2'
   endif
@@ -170,6 +170,10 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
           if instrument EQ 'fgm' && level EQ 'l1' then $
              fnames = probe + '_' + level + '_' + datatype + '_' + daily_names + '_v01.cdf' else $           
              fnames = probe + '_' + level + '_' + instrument + '_' + daily_names + '_v01.cdf' 
+          if instrument EQ 'epd' && level EQ 'l1' then begin
+             ftype = instrument + strmid(datatype, 1, 2)
+             fnames = probe + '_' + level + '_' + ftype + '_' + daily_names + '_v01.cdf' 
+          endif
           
           ;clear so new names are not appended to existing array
           undefine, tplotnames
@@ -192,6 +196,7 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
           if strlowcase(!version.os_family) eq 'windows' then local_path = strjoin(strsplit(local_path, '/', /extract), path_sep())
 
           for file_idx = 0, n_elements(fnames)-1 do begin 
+
               ; download data as long as no flags are set
               if no_download eq 0 then begin
                 if file_test(local_path,/dir) eq 0 then file_mkdir2, local_path
@@ -223,7 +228,6 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
                   data_rate=data_rate, datatype=datatype, level=level, $
                   trange=time_double([day_string, end_string]), cdf_version=cdf_version, $
                   min_version=min_version, latest_version=latest_version)
-
                 if is_string(local_files) then begin
                   ; prepare the file list as a list of structs, (required input to mms_files_in_interval)
                   local_file_info = replicate({filename: '', timetag: ''}, n_elements(local_files))
@@ -236,7 +240,7 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
                   append_array, files, local_files
                 endif                 
               endif      
-
+              
               if ~undefined(files) then begin
                 spd_cdf2tplot, files, tplotnames = loaded_tnames, varformat=varformat, $
                   suffix = suffix, get_support_data = get_support_data, /load_labels, $

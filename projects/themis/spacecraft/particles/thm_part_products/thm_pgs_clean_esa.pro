@@ -36,9 +36,9 @@
 ;                         Background must be pre-calculated with thm_load_esa_bkg
 ;
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2016-08-24 18:29:05 -0700 (Wed, 24 Aug 2016) $
-;$LastChangedRevision: 21724 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2019-02-19 11:17:18 -0800 (Tue, 19 Feb 2019) $
+;$LastChangedRevision: 26643 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/thm_part_products/thm_pgs_clean_esa.pro $
 ;-
 
@@ -62,7 +62,6 @@ pro thm_pgs_clean_esa,data,units,output=output,_extra=ex,esa_max_energy=esa_max_
   endif else begin
     thm_esa_bgnd_remove, data, _extra = ex
   endelse
-
 
   ;allow user to set threshold of N counts after background removal
   ;this is not recommended but could be useful

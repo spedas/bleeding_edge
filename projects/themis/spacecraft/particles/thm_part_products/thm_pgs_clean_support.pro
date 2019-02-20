@@ -25,9 +25,9 @@
 ;    spacecraft potential - will be 0
 ;    
 ;
-;$LastChangedBy: pcruce $
-;$LastChangedDate: 2015-01-28 10:33:29 -0800 (Wed, 28 Jan 2015) $
-;$LastChangedRevision: 16765 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2019-02-19 11:17:18 -0800 (Tue, 19 Feb 2019) $
+;$LastChangedRevision: 26643 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/thm_part_products/thm_pgs_clean_support.pro $
 ;-
 
@@ -92,7 +92,6 @@ pro thm_pgs_clean_support, times, $
   endif else begin
     dprint, dlevel=1, 'No spacecraft potential specified.  No spacecraft potential will be used in calibrations.'
   endelse
-  
 
   return
 
