@@ -197,11 +197,11 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
 
           for file_idx = 0, n_elements(fnames)-1 do begin 
 
+              paths = '' 
               ; download data as long as no flags are set
               if no_download eq 0 then begin
                 if file_test(local_path,/dir) eq 0 then file_mkdir2, local_path
                 dprint, dlevel=1, 'Downloading ' + fnames[file_idx] + ' to ' + local_path   
-                paths = '' 
 
                 ; NOTE: directory is temporarily password protected. this will be
                 ;       removed when data is made public.
