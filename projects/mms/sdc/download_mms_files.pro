@@ -5,6 +5,7 @@
 ;   ancillary
 ;   sitl_selections
 ;   abs_selections
+;   gls_selections_<algorithm>, where <algorithm> is one of a small set
 ; The 'query' is directly passed to the web service.
 ; See the web service documentation for valid query options.
 function download_mms_files, type, query, local_dir=local_dir, latest=latest, max_files=max_files, public=public

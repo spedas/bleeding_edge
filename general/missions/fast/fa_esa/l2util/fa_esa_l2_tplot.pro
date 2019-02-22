@@ -20,9 +20,9 @@
 ;HISTORY:
 ;2015-09-14, jmm, jimm@ssl.berkeley.edu, hacked from fa_load_esa_l1
 ;and mvn_sta_l2_tplot.
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-04-26 13:57:15 -0700 (Wed, 26 Apr 2017) $
-; $LastChangedRevision: 23227 $
+; $LastChangedBy: jimmpc1 $
+; $LastChangedDate: 2019-02-21 17:14:26 -0800 (Thu, 21 Feb 2019) $
+; $LastChangedRevision: 26668 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/fast/fa_esa/l2util/fa_esa_l2_tplot.pro $
 ;-
 Pro fa_esa_l2_tplot, all = all, type = type, counts = counts, _extra = _extra
@@ -116,7 +116,7 @@ Pro fa_esa_l2_tplot, all = all, type = type, counts = counts, _extra = _extra
      If(all_dat.mode_ind[i] EQ 2) Then Begin
         If(keyword_set(counts)) Then Begin
            data_tplot[i,0:nbj-1]=total(ccvt[all_dat.data[i, 0:nbj-1, 0:nabj-1]], 3)/(all_dat.integ_t[i]*nabj)
-        Endif Else data_tplot[i, 0:nbj-1] = total(all_dat.eflux[i, 0:nbj-1, nabj-1], 3)/nabj
+        Endif Else data_tplot[i, 0:nbj-1] = total(all_dat.eflux[i, 0:nbj-1, 0:nabj-1], 3)/nabj
         energy_tplot[i, *] = all_dat.energy[*, 0, 2]
      Endif
   Endfor

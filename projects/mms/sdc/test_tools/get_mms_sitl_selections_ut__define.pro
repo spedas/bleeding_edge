@@ -1,6 +1,6 @@
 pro get_mms_sitl_selections_ut::setup
   compile_opt strictarr
-  url = get_mms_sitl_connection(host='sdc-web1', port='80', auth='0', /rebuild)
+  url = get_mms_sitl_connection(host='sdc-web-mms.pdmz.lasp.colorado.edu', port='80', auth='0', /rebuild)
   
 end
 
@@ -45,14 +45,16 @@ function get_mms_sitl_selections_ut::test_multiple_files
 end
 
 
-function get_mms_sitl_selections_ut::test_start_date
-  compile_opt strictarr
-  ;test start_date
-  status = get_mms_sitl_selections(start_time='2015-05-12')  ;YYYY-MM-DD
-  assert, status eq 0, 'Error encountered when testing start date'
-  
-  return, 1
-end
+; this test downloads many (2000+) files, growing continuously.
+; it's not worth the time to test regularly.
+;function get_mms_sitl_selections_ut::test_start_date
+;  compile_opt strictarr
+;  ;test start_date
+;  status = get_mms_sitl_selections(start_time='2015-05-12')  ;YYYY-MM-DD
+;  assert, status eq 0, 'Error encountered when testing start date'
+;  
+;  return, 1
+;end
 
 
 function get_mms_sitl_selections_ut::test_end_date
@@ -71,6 +73,16 @@ function get_mms_sitl_selections_ut::test_date_range
   status = get_mms_sitl_selections(start_time='2015-05-08', end_time='2015-05-14')
   assert, status eq 0, 'Error encountered when testing date ranges'
   
+  return, 1
+end
+
+
+function get_mms_sitl_selections_ut::test_gls_selections
+  compile_opt strictarr
+  ;get just the latest file with the default algorithm
+  status = get_mms_gls_selections()
+  assert, status eq 0, 'Error encountered when testing gls selections'
+
   return, 1
 end
 
