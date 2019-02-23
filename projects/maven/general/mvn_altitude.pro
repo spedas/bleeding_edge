@@ -68,13 +68,13 @@
 ;                 for the datum (sph, ell, are, sur).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-06-12 16:58:07 -0700 (Mon, 12 Jun 2017) $
-; $LastChangedRevision: 23458 $
+; $LastChangedDate: 2019-02-22 08:39:25 -0800 (Fri, 22 Feb 2019) $
+; $LastChangedRevision: 26671 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_altitude.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_altitude, trange, dt=dt, cart=cart, datum=datum, latlon=latlon, pans=pans, $
+pro mvn_altitude, trange, dt=dt, cart=cart, datum=dtm, latlon=latlon, pans=pans, $
                   result=result
 
   @maven_orbit_common
@@ -99,11 +99,11 @@ pro mvn_altitude, trange, dt=dt, cart=cart, datum=datum, latlon=latlon, pans=pan
 ; Make sure the datum is valid
 
   dlist = ['sphere','ellipsoid','areoid','surface']
-  if (size(datum,/type) ne 7) then datum = dlist[0]
+  if (size(dtm,/type) ne 7) then dtm = dlist[0]
   i = strmatch(dlist, datum+'*', /fold)
   case (total(i)) of
      0   : begin
-             print, "Datum not recognized: ", datum
+             print, "Datum not recognized: ", dtm
              result = 0
              return
            end

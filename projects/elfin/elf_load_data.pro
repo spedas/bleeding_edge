@@ -191,9 +191,9 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
 
           local_path = filepath('', ROOT_DIR=!elf.local_data_dir, $
             SUBDIRECTORY=[probe, level, instrument]) + state_subdir
-; NOTE: temporarily commented these lines out since it doesn't work for windows ftp
-;          if strlowcase(!version.os_family) eq 'windows' then remote_path = strjoin(strsplit(remote_path, '/', /extract), path_sep())
+
           if strlowcase(!version.os_family) eq 'windows' then local_path = strjoin(strsplit(local_path, '/', /extract), path_sep())
+          if instrument EQ 'state' then local_path = spd_addslash(local_path)
 
           for file_idx = 0, n_elements(fnames)-1 do begin 
 
@@ -218,7 +218,6 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
                 if undefined(paths) or paths EQ '' then $
                    dprint, devel=1, 'Unable to download ' + fnames[file_idx] else $
                    append_array, files, local_path+fnames[file_idx]
-
               endif 
               
               ; if remote file not found or no_download set then look for local copy

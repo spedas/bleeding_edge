@@ -10,6 +10,7 @@ pro spp_swp_sweepv_new, sweepv, $
                         emax = emax, $
                         spfac = spfac, $
                         maxspen = maxspen, $
+                        version = version, $
                         plot = plot
 
   if not keyword_set(k)       then k       = 16.7
@@ -20,6 +21,7 @@ pro spp_swp_sweepv_new, sweepv, $
   if not keyword_set(emax)    then emax    = 20000.
   if not keyword_set(spfac)   then spfac   = 0.
   if not keyword_set(maxspen) then maxspen = 5000.
+  if n_elements(version) eq 0 then version =2
   
   nang = 4096/nen
   
@@ -27,9 +29,9 @@ pro spp_swp_sweepv_new, sweepv, $
 
 	  
   ;; Hemisphere voltage sweep
-  vsweep = reverse(e0/k * (1+exp)^findgen(nen)) 
+  vsweep = reverse(e0/k * (1+exp)^dindgen(nen))
   ;print, format='(f30.20)', vsweep
-  stepnum = findgen(nang/2)
+  stepnum = dindgen(nang/2)
   
   sweepv = 0.
   defv1  = 0.
@@ -38,6 +40,7 @@ pro spp_swp_sweepv_new, sweepv, $
   flip   = 0
   
   for i = 0,nen-1 do begin
+
      vdm = (rmax < vmax/vsweep[i])
 
      ;; Deflector multiplier (including fixed gain)
@@ -46,8 +49,8 @@ pro spp_swp_sweepv_new, sweepv, $
      sweepv = [sweepv,replicate(vsweep[i],nang)]
 
      ;; Spoiler cuts off above some energy
-     if vsweep[i] lt maxspen/k then spr = spfac else spr = 0.0	
-     
+     if vsweep[i] lt maxspen/k then spr = spfac else spr = 0.0
+
      ;; Spoiler multiplier
      spv = [spv,replicate(spr,nang)]				
      
@@ -56,19 +59,22 @@ pro spp_swp_sweepv_new, sweepv, $
      add2 = [replicate(0,nang/2),vd]
      
      ;; Sweep one way on evens, other way on odds
-     if (flip) then begin           
-        add1 = reverse(add1) 
-        add2 = reverse(add2)
-     endif
+     IF version LT 2 THEN BEGIN
+        IF (flip) then begin           
+           add1 = reverse(add1) 
+           add2 = reverse(add2)
+        endif
+     ENDIF
+     
      
      defv1 = [defv1,add1]
      defv2 = [defv2,add2]
      
      ;; An unnecessarily complicated way to do the flipping
      flip = (flip + 1) mod 2 
-     
+
   endfor
-  
+
   spv = spv < 80/sweepv
   
   sweepv = sweepv[1:4096]
@@ -78,7 +84,7 @@ pro spp_swp_sweepv_new, sweepv, $
   
   if keyword_set(plot) then begin
      ;print,nen,nang
-     wi,10, xsize=900, ysize=1200
+     wi,10, xsize=900, ysize=900
      !p.multi = [0,1,3]
      plot,sweepv,psym=10,$
           xtitle = 'Time Step',$

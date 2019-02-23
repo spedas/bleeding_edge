@@ -28,9 +28,9 @@
 ;   is not considered stable for general purpose use and the interface
 ;   may change. 
 ;
-;$LastChangedBy: davin-mac $
-;$LastChangedDate: 2015-10-19 16:18:58 -0700 (Mon, 19 Oct 2015) $
-;$LastChangedRevision: 19110 $
+;$LastChangedBy: jimmpc1 $
+;$LastChangedDate: 2019-02-22 12:24:10 -0800 (Fri, 22 Feb 2019) $
+;$LastChangedRevision: 26686 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_touch.pro $
 ;-
 
@@ -71,7 +71,6 @@ if keyword_set(no_create) then commands = [commands,'-c']
 
 ;if undefined(toffset) then toffset= '+0'
    
-   
 if !version.os_family eq 'unix' then begin
    ;;; if keyword_set(tstring) then commands = [commands,'-d',tstring +toffset]       ;;; previous version
    
@@ -93,7 +92,8 @@ if !version.os_family eq 'unix' then begin
 endif else if !version.os_family eq 'Windows' then begin
     dprint,dlevel=0,'Warning.  FILE_TOUCH is not currently working with Windows.'
     dprint,dlevel=0,'  '
-
+    Return ;If it doesn't work don't use it. This situation only occurs
+           ;if the user has defined linux command on the Windows PC 
     ;kludge to fix time daylightsaving time error in old version of touch
    ;;;if touch_version[0] eq 'touch (GNU fileutils) 3.16' then begin                  ;;;previous version
       ;;;if isdaylightsavingtime(time[0]) then toffset = ' -60'                      ;;; previous version
@@ -106,7 +106,9 @@ endif else if !version.os_family eq 'Windows' then begin
    
    ;;;if keyword_set(tstring) then tstring = '-t "' + tstring+toffset + '"' else tstring=''   ;;; previous version
    if keyword_set(time) then begin
-     tstring = '-t "' + time_string(double(time[0])+double(toffset)*60.*60.+double(dst_offset)*60.*60., tformat='YYYYMMDDhhmm.ss') + '"' 
+     tstring = '-t "' + time_string(double(time[0])+$
+                                    double(dst_offset)*60.*60., $
+                                    tformat='YYYYMMDDhhmm.ss') + '"' 
      dprint,dlevel=6,verbose=verbose,'tstring=' ,tstring
    endif else begin
      tstring=''

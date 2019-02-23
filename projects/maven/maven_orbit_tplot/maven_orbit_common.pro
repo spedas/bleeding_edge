@@ -10,11 +10,11 @@
 ;    @maven_orbit_common
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-04-26 11:01:36 -0700 (Thu, 26 Apr 2018) $
-; $LastChangedRevision: 25122 $
+; $LastChangedDate: 2019-02-22 08:33:51 -0800 (Fri, 22 Feb 2019) $
+; $LastChangedRevision: 26669 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_common.pro $
 ;
 ;CREATED BY:	David L. Mitchell
 ;-
 common mav_orb_tplt, time, state, ss, wind, sheath, pileup, wake, sza, torb, period, $
-                     lon, lat, hgt, mex, rcols, orbnum, orbstat
+                     lon, lat, hgt, datum, mex, rcols, orbnum, orbstat

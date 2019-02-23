@@ -128,9 +128,9 @@
 ;       VERBOSE:  Verbosity level passed to mvn_pfp_file_retrieve.  Default = 0
 ;                 (suppress most messages).
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2018-12-27 14:26:48 -0800 (Thu, 27 Dec 2018) $
-; $LastChangedRevision: 26406 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2019-02-22 16:43:16 -0800 (Fri, 22 Feb 2019) $
+; $LastChangedRevision: 26692 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -139,8 +139,8 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
                        extended=extended, eph=eph, current=current, loadonly=loadonly, $
                        vars=vars, ellip=ellip, hires=hires, timecrop=timecrop, now=now, $
                        colors=colors, reset_trange=reset_trange, nocrop=nocrop, spk=spk, $
-                       segments=segments, shadow=shadow, datum=datum, noload=noload, $
-                       pds=pds, verbose=verbose
+                       segments=segments, shadow=shadow, datum=dtm, noload=noload, $
+                       pds=pds, verbose=verbose, success=success
 
   @maven_orbit_common
 
@@ -148,11 +148,21 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
   if keyword_set(noload) then begin
     if (size(orbstat,/type) gt 0) then stat = orbstat
-    if (size(state,/type) gt 0) then eph = state
+    if (size(state,/type) gt 0) then begin
+      eph = state
+      str_element, eph, 'alt', hgt, /add
+      str_element, eph, 'lon', lon, /add
+      str_element, eph, 'lat', lat, /add
+      str_element, eph, 'sza', sza*!radeg, /add
+      str_element, eph, 'datum', datum, /add
+      success = 1
+    endif
     return
   endif
 
   if (size(verbose,/type) eq 0) then verbose = 0
+
+  success = 0
 
 ; Geodetic parameters for Mars (from the 2009 IAU Report)
 ;   Archinal et al., Celest Mech Dyn Astr 109, Issue 2, 101-135, 2011
@@ -169,11 +179,11 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 ; Determine the reference surface for calculating altitude
 
   dlist = ['sphere','ellipsoid','areoid','surface']
-  if (size(datum,/type) ne 7) then datum = dlist[1]
-  i = strmatch(dlist, datum+'*', /fold)
+  if (size(dtm,/type) ne 7) then dtm = dlist[1]
+  i = strmatch(dlist, dtm+'*', /fold)
   case (total(i)) of
      0   : begin
-             print, "Datum not recognized: ", datum
+             print, "Datum not recognized: ", dtm
              return
            end
      1   : datum = (dlist[where(i eq 1)])[0]
@@ -330,13 +340,32 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   endif else begin
     file = mvn_pfp_file_retrieve(rootdir+mname,last_version=0,source=ssrc,verbose=verbose)
     nfiles = n_elements(file)
+    year = strmid(file,9,4,/rev)
+    month = strmid(file,5,2,/rev)
+
+    date = replicate(time_struct(0D), nfiles)
+    date.year = year
+    date.month = month
+    date.date = 1
+    maxdate = date[n_elements(date)-1]
+    maxdate.month += 1
+    maxdate = time_double(maxdate)
+    date = time_double(date)
+
+    if (tspan[0] gt maxdate) then begin
+      print,"No ephemeris coverage past ",time_string(maxdate)
+      return
+    endif
+    if (tspan[1] lt date[0]) then begin
+      print,"No ephemeris coverage before ",time_string(date[0])
+      return
+    endif
     
     if (docrop) then begin
-      year = strmid(file,9,4,/rev)
-      month = strmid(file,5,2,/rev)
-      date = time_double(year + '-' + month + '-01')
-      i = (min(where(date ge tspan[0])) - 1) > 0
-      j = (max(where(date le tspan[1])) + 1) < (nfiles - 1)
+      i = max(where(date lt tspan[0], icnt))
+      if (icnt eq 0) then i = 0
+      j = min(where(date gt tspan[1], jcnt))
+      if (jcnt eq 0) then j = nfiles - 1
       file = file[i:j]
       nfiles = n_elements(file)
     endif
@@ -381,13 +410,32 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
     file = mvn_pfp_file_retrieve(rootdir+gname,last_version=0,source=ssrc,verbose=verbose)
     nfiles = n_elements(file)
+    year = strmid(file,9,4,/rev)
+    month = strmid(file,5,2,/rev)
+
+    date = replicate(time_struct(0D), nfiles)
+    date.year = year
+    date.month = month
+    date.date = 1
+    maxdate = date[n_elements(date)-1]
+    maxdate.month += 1
+    maxdate = time_double(maxdate)
+    date = time_double(date)
+
+    if (tspan[0] gt maxdate) then begin
+      print,"No ephemeris coverage past ",time_string(maxdate)
+      return
+    endif
+    if (tspan[1] lt date[0]) then begin
+      print,"No ephemeris coverage before ",time_string(date[0])
+      return
+    endif
     
     if (docrop) then begin
-      year = strmid(file,9,4,/rev)
-      month = strmid(file,5,2,/rev)
-      date = time_double(year + '-' + month + '-01')
-      i = (min(where(date ge tspan[0])) - 1) > 0
-      j = (max(where(date le tspan[1])) + 1) < (nfiles - 1)
+      i = max(where(date lt tspan[0], icnt))
+      if (icnt eq 0) then i = 0
+      j = min(where(date gt tspan[1], jcnt))
+      if (jcnt eq 0) then j = nfiles - 1
       file = file[i:j]
       nfiles = n_elements(file)
     endif
@@ -457,6 +505,12 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   
   npts = n_elements(time)
   state = eph
+
+  str_element, eph, 'alt', hgt, /add
+  str_element, eph, 'lon', lon, /add
+  str_element, eph, 'lat', lat, /add
+  str_element, eph, 'sza', sza*!radeg, /add
+  str_element, eph, 'datum', datum, /add
 
   result = {t     : time     , $   ; time (UTC)
             x     : x        , $   ; MSO X (R_m)
@@ -876,6 +930,8 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
         if (pflg) then timebar,pds_rel,line=2
      endif
   endif
+
+  success = 1
 
   return
 

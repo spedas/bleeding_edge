@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Feb 21 18:16:22 2019.<P>
+<STRONG>Last modified: </STRONG>Fri Feb 22 18:16:26 2019.<P>
  
 <HR>
  
@@ -45,6 +45,8 @@ This page was created by the IDL library routine
 <br>Given a time, uses SPICE to determine the location of the
 <LI><A HREF="#MVN_SUN_BAR">MVN_SUN_BAR</A>
 <br>Creates a colored bar indicating sun/shadow.  Assumes that
+<LI><A HREF="#TIME_TO_PERIAPSIS">TIME_TO_PERIAPSIS</A>
+<br>Calculates the time needed for the spacecraft to go from periapsis
 <br>
 </UL><P>
 <HR>
@@ -213,8 +215,8 @@ USAGE:
     @maven_orbit_common
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-04-26 11:01:36 -0700 (Thu, 26 Apr 2018) $
- $LastChangedRevision: 25122 $
+ $LastChangedDate: 2019-02-22 08:33:51 -0800 (Fri, 22 Feb 2019) $
+ $LastChangedRevision: 26669 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_common.pro $
 
 CREATED BY:	David L. Mitchell
@@ -582,9 +584,9 @@ KEYWORDS:
        VERBOSE:  Verbosity level passed to mvn_pfp_file_retrieve.  Default = 0
                  (suppress most messages).
 
- $LastChangedBy: jimm $
- $LastChangedDate: 2018-12-27 14:26:48 -0800 (Thu, 27 Dec 2018) $
- $LastChangedRevision: 26406 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2019-02-22 16:43:16 -0800 (Fri, 22 Feb 2019) $
+ $LastChangedRevision: 26692 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11
@@ -753,6 +755,7 @@ CREATED BY:	David L. Mitchell
 <A NAME="MVN_SUN_BAR">
 <H2>MVN_SUN_BAR</H2></A>
 <A HREF="#MVN_MARS_TERMINATOR">[Previous Routine]</A>
+<A HREF="#TIME_TO_PERIAPSIS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mvn_sun_bar
@@ -775,5 +778,52 @@ KEYWORDS:
 CREATED BY:    David L. Mitchell
 </PRE><P>
 <STRONG>(See <A href="maven_orbit_tplot/mvn_sun_bar.pro">projects/maven/maven_orbit_tplot/mvn_sun_bar.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="TIME_TO_PERIAPSIS">
+<H2>TIME_TO_PERIAPSIS</H2></A>
+<A HREF="#MVN_SUN_BAR">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   time_to_periapsis
+PURPOSE:
+  Calculates the time needed for the spacecraft to go from periapsis
+  to some higher altitude(s).  NAIF conventions are used:
+
+    Periapsis is defined as the minimum distance in the orbit to the 
+    center of Mars (a.k.a. &quot;geometric periapsis&quot;).
+
+    Altitude is calculated with respect to the IAU 2000 Mars ellipsoid
+    (R_equator = 3396.19 km, R_pole = 3376.20 km).  This is known as
+    &quot;areodetic altitude&quot;.
+
+  The spacecraft ephemeris is calculated using maven_orbit_tplot, which
+  in turn uses SPICE.  The ephemeris is refreshed daily at 3:30 am (Pacific)
+  using the latest available kernels from NAIF.  The ephemeris coverage
+  extends from Mars orbit insertion to about eight weeks into the future.
+
+USAGE:
+  time_to_periapsis, h
+
+INPUTS:
+       h:             An array of altitudes (units = km).
+
+KEYWORDS:
+       TIME:          Reference time for selecting the nearest orbit.
+                      Can be in any format accepted by time_double.
+                      If you supply an array of times, only the first
+                      element is used.  If not specified, the current
+                      UTC is used.
+
+       RESULT:        Named variable to hold the result structure.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2019-02-22 16:43:56 -0800 (Fri, 22 Feb 2019) $
+ $LastChangedRevision: 26693 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/time_to_periapsis.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="maven_orbit_tplot/time_to_periapsis.pro">projects/maven/maven_orbit_tplot/time_to_periapsis.pro</A>)</STRONG><P>
 <HR>
  
