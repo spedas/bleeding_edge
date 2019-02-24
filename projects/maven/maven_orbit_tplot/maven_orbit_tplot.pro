@@ -129,8 +129,8 @@
 ;                 (suppress most messages).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-22 16:43:16 -0800 (Fri, 22 Feb 2019) $
-; $LastChangedRevision: 26692 $
+; $LastChangedDate: 2019-02-22 18:20:23 -0800 (Fri, 22 Feb 2019) $
+; $LastChangedRevision: 26695 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -148,15 +148,8 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
   if keyword_set(noload) then begin
     if (size(orbstat,/type) gt 0) then stat = orbstat
-    if (size(state,/type) gt 0) then begin
-      eph = state
-      str_element, eph, 'alt', hgt, /add
-      str_element, eph, 'lon', lon, /add
-      str_element, eph, 'lat', lat, /add
-      str_element, eph, 'sza', sza*!radeg, /add
-      str_element, eph, 'datum', datum, /add
-      success = 1
-    endif
+    if (size(state,/type) gt 0) then eph = maven_orbit_eph()
+    success = 1
     return
   endif
 
@@ -505,12 +498,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   
   npts = n_elements(time)
   state = eph
-
-  str_element, eph, 'alt', hgt, /add
-  str_element, eph, 'lon', lon, /add
-  str_element, eph, 'lat', lat, /add
-  str_element, eph, 'sza', sza*!radeg, /add
-  str_element, eph, 'datum', datum, /add
+  eph = maven_orbit_eph()
 
   result = {t     : time     , $   ; time (UTC)
             x     : x        , $   ; MSO X (R_m)

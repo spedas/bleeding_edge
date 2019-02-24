@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Feb 22 18:16:26 2019.<P>
+<STRONG>Last modified: </STRONG>Sat Feb 23 03:16:36 2019.<P>
  
 <HR>
  
@@ -27,6 +27,8 @@ This page was created by the IDL library routine
 <br>Plots a set of [longitude,latitude] positions over a polar MAG map.
 <LI><A HREF="#MAVEN_ORBIT_COMMON">MAVEN_ORBIT_COMMON</A>
 <br>Common block definition for maven_orbit_tplot and associated routines.
+<LI><A HREF="#MAVEN_ORBIT_EPH">MAVEN_ORBIT_EPH</A>
+<br>Returns the MAVEN spacecraft ephemeris, consisting of the MSO and GEO state
 <LI><A HREF="#MAVEN_ORBIT_MAKEEPH">MAVEN_ORBIT_MAKEEPH</A>
 <br>Generates MAVEN spacecraft state vectors using the SPICE Icy toolkit.
 <LI><A HREF="#MAVEN_ORBIT_MOVIE">MAVEN_ORBIT_MOVIE</A>
@@ -201,7 +203,7 @@ CREATED BY:	David L. Mitchell  04-02-03
 <A NAME="MAVEN_ORBIT_COMMON">
 <H2>MAVEN_ORBIT_COMMON</H2></A>
 <A HREF="#MAG_NPOLE_ORBIT">[Previous Routine]</A>
-<A HREF="#MAVEN_ORBIT_MAKEEPH">[Next Routine]</A>
+<A HREF="#MAVEN_ORBIT_EPH">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 COMMON BLOCK:   maven_orbit_common
@@ -224,9 +226,56 @@ CREATED BY:	David L. Mitchell
 <STRONG>(See <A href="maven_orbit_tplot/maven_orbit_common.pro">projects/maven/maven_orbit_tplot/maven_orbit_common.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MAVEN_ORBIT_EPH">
+<H2>MAVEN_ORBIT_EPH</H2></A>
+<A HREF="#MAVEN_ORBIT_COMMON">[Previous Routine]</A>
+<A HREF="#MAVEN_ORBIT_MAKEEPH">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION:   maven_orbit_eph
+PURPOSE:
+  Returns the MAVEN spacecraft ephemeris, consisting of the MSO and GEO state
+  vectors along with some derived quantities: altitude, GEO longitude, GEO
+  latitude, and solar zenith angle.  The reference surface for calculating
+  altitude (&quot;datum&quot;) is specified.
+
+  The coordinate frames are:
+
+   GEO = body-fixed Mars geographic coordinates (non-inertial) = IAU_MARS
+
+              X -&gt;  0 deg E longitude, 0 deg latitude
+              Y -&gt; 90 deg E longitude, 0 deg latitude
+              Z -&gt; 90 deg N latitude (= X x Y)
+              origin = center of Mars
+              units = kilometers
+
+   MSO = Mars-Sun-Orbit coordinates (approx. inertial)
+
+              X -&gt; from center of Mars to center of Sun
+              Y -&gt; opposite to Mars' orbital angular velocity vector
+              Z = X x Y
+              origin = center of Mars
+              units = kilometers
+
+USAGE:
+  eph = maven_orbit_eph()
+INPUTS:
+       none
+
+KEYWORDS:
+       none
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2019-02-22 18:19:46 -0800 (Fri, 22 Feb 2019) $
+ $LastChangedRevision: 26694 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_eph.pro $
+</PRE><P>
+<STRONG>(See <A href="maven_orbit_tplot/maven_orbit_eph.pro">projects/maven/maven_orbit_tplot/maven_orbit_eph.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MAVEN_ORBIT_MAKEEPH">
 <H2>MAVEN_ORBIT_MAKEEPH</H2></A>
-<A HREF="#MAVEN_ORBIT_COMMON">[Previous Routine]</A>
+<A HREF="#MAVEN_ORBIT_EPH">[Previous Routine]</A>
 <A HREF="#MAVEN_ORBIT_MOVIE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -585,8 +634,8 @@ KEYWORDS:
                  (suppress most messages).
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-02-22 16:43:16 -0800 (Fri, 22 Feb 2019) $
- $LastChangedRevision: 26692 $
+ $LastChangedDate: 2019-02-22 18:20:23 -0800 (Fri, 22 Feb 2019) $
+ $LastChangedRevision: 26695 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11
