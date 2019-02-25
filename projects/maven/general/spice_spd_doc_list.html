@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Feb 23 03:16:36 2019.<P>
+<STRONG>Last modified: </STRONG>Sun Feb 24 18:16:24 2019.<P>
  
 <HR>
  
@@ -246,9 +246,24 @@ KEYWORDS:
     INFO:          Returns an array of structures providing detailed information
                    about each kernel, including coverage in time.
 
+    TPLOT:         Makes a colored bar as a tplot variable, to visually show
+                   coverage:
+
+                      green  = all kernels available
+                      yellow = S/C spk and ck available, missing APP ck
+                      red    = S/C spk available, missing S/C ck
+                      blank  = missing S/C spk
+
+                   which translates to:
+ 
+                      green  = spacecraft and all instruments
+                      yellow = spacecraft and body-mounted instruments only
+                      red    = spacecraft position only
+                      blank  = no geometry at all
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-11-09 11:32:28 -0800 (Fri, 09 Nov 2018) $
- $LastChangedRevision: 26088 $
+ $LastChangedDate: 2019-02-24 16:43:01 -0800 (Sun, 24 Feb 2019) $
+ $LastChangedRevision: 26698 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/spice/mvn_spice_stat.pro $
 
 CREATED BY:    David L. Mitchell  09/14/18

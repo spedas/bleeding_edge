@@ -71,15 +71,15 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-09 11:39:31 -0800 (Fri, 09 Nov 2018) $
-; $LastChangedRevision: 26094 $
+; $LastChangedDate: 2019-02-24 18:13:43 -0800 (Sun, 24 Feb 2019) $
+; $LastChangedRevision: 26699 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sciplot.pro $
 ;
 ;-
 
 pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lpw, euv=euv, $
                      sc_pot=sc_pot, eph=eph, min_pad_eflux=min_pad_eflux, loadonly=loadonly, $
-                     pans=pans, padsmo=padsmo, apid=apid, shape=shape, nadir=nadir, datum=datum
+                     pans=pans, padsmo=padsmo, apid=apid, shape=shape, nadir=nadir, datum=dtm
 
   compile_opt idl2
 
@@ -93,11 +93,11 @@ pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lp
 ; Make sure the datum is valid
 
   dlist = ['sphere','ellipsoid','areoid','surface']
-  if (size(datum,/type) ne 7) then datum = dlist[1]
+  if (size(dtm,/type) ne 7) then dtm = dlist[1]
   i = strmatch(dlist, datum+'*', /fold)
   case (total(i)) of
      0   : begin
-             print, "Datum not recognized: ", datum
+             print, "Datum not recognized: ", dtm
              result = 0
              return
            end
