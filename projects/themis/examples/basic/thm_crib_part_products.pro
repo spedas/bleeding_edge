@@ -9,9 +9,9 @@
 ;  
 ;  Examples on SST specific sun decontamination options can be found in thm_crib_sst.pro
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2016-08-05 18:41:31 -0700 (Fri, 05 Aug 2016) $
-;$LastChangedRevision: 21604 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2019-02-25 14:14:50 -0800 (Mon, 25 Feb 2019) $
+;$LastChangedRevision: 26703 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/examples/basic/thm_crib_part_products.pro $
 ;-
 
@@ -266,5 +266,31 @@ tplot,['thb_peif_eflux_phi','thb_peif_eflux_phi_corrected', $
 
 stop
 
+;----------------------------------------------------------------------------------------------------------------------------
+;Example 12:  Moments with coord keyword set, new variables for
+;velocity, flux, pressure and momentum flux tensors will appear
+;with the coordinate system appended to the variables.
+;----------------------------------------------------------------------------------------------------------------------------
+probe='b'
+datatype='peef'
+trange=['2011-11-20','2011-11-21']
+timespan,trange
+
+;load potential and magnetic field data
+thm_load_mom,probe=probe,trange=trange,datatype='pxxm_pot' 
+thm_load_fit,probe=probe,coord='dsl',trange=trange
+
+;load particle data
+thm_part_load,probe=probe,trange=trange,datatype=datatype
+
+;Note ESA background removal is now enabled by default.
+;Use esa_bgnd=0 keyword to thm_part_products to disable background removal
+thm_part_products,probe=probe,datatype=datatype,trange=trange,outputs='moments',$
+                  coord = 'sm' ;SM coordinates
+
+tplot_options, 'xmargin', [16,10] ;bigger margin on the left, so you can see the labels
+tplot,['thb_peef_velocity','thb_peef_velocity_sm','thb_peef_mftens','thb_peef_mftens_sm']
+
+stop
 
 end

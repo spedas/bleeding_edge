@@ -18,6 +18,10 @@
 ;                   or the current value of trange_full.  Otherwise, ask the user
 ;                   for permission to clear and reload.
 ;
+;    SCLK_VER:      Force the SCLK kernel version to be this.  Sometimes needed for
+;                   accurate relative timing between MAG and SWEA.  If set, then
+;                   FORCE is also set.
+;
 ;    STATUS:        Don't load anything; just give status.
 ;
 ;    INFO:          Returns an array of structures providing detailed information
@@ -27,14 +31,14 @@
 ;                   Default is current value of swe_verbose.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-09-16 13:19:20 -0700 (Sun, 16 Sep 2018) $
-; $LastChangedRevision: 25816 $
+; $LastChangedDate: 2019-02-25 13:39:32 -0800 (Mon, 25 Feb 2019) $
+; $LastChangedRevision: 26702 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_spice_init.pro $
 ;
 ;CREATED BY:    David L. Mitchell  09/18/13
 ;-
-pro mvn_swe_spice_init, trange=trange, list=list, force=force, status=status, info=info, $
-                        verbose=verbose
+pro mvn_swe_spice_init, trange=trange, list=list, force=force, sclk_ver=sclk_ver, $
+                        status=status, info=info, verbose=verbose
 
   @mvn_swe_com
 
@@ -44,6 +48,19 @@ pro mvn_swe_spice_init, trange=trange, list=list, force=force, status=status, in
   noguff = keyword_set(force)
   list = keyword_set(list)
   if (size(verbose,/type) eq 0) then mvn_swe_verbose, get=verbose
+
+  if (size(sclk_ver,/type) gt 0) then begin
+    path = root_data_dir() + 'misc/spice/naif/MAVEN/kernels/sclk/'
+    fname = path + 'MVN_SCLKSCET.' + string(sclk_ver,format='(i5.5)') + '.tsc'
+    finfo = file_info(fname)
+    if (finfo.exists) then begin
+      swap_sclk = 1
+      noguff = 1
+    endif else begin
+      swap_sclk = 0
+      print,"SCLK kernel not found: ",sclk
+    endelse
+  endif
 
   if keyword_set(status) then begin
     mvn_spice_stat, list=list
@@ -86,7 +103,12 @@ pro mvn_swe_spice_init, trange=trange, list=list, force=force, status=status, in
   if (verbose gt 0) then print,' '
 
   cspice_kclear ; remove any previously loaded kernels
-  swe_kernels = mvn_spice_kernels(/all,/load,trange=srange,verbose=(verbose-1))
+  swe_kernels = mvn_spice_kernels(/all,trange=srange,verbose=(verbose-1))
+  if (swap_sclk) then begin
+    i = where(strmatch(swe_kernels,'*SCLK*',/fold_case) eq 1)
+    if (i ge 0) then swe_kernels[i] = fname else swap_sclk = 0
+  endif
+  spice_kernel_load, swe_kernels ; load the kernels
   swe_kernels = spice_test('*')  ; only loaded kernels, no wildcards
   n_ker = n_elements(swe_kernels)
 
@@ -113,6 +135,11 @@ pro mvn_swe_spice_init, trange=trange, list=list, force=force, status=status, in
   info = ker_info
 
   print, msg
+
+  if (swap_sclk) then begin
+    print,""
+    print,"  Using SCLK kernel: ", file_basename(fname)
+  endif
 
 ; Print out time coverage of loaded kernels
 

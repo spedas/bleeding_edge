@@ -75,9 +75,9 @@
 ;Notes:
 ;  This routine is (should be) platform independent.
 ;
-; $LastChangedBy: crussell $
-; $LastChangedDate: 2019-02-20 10:31:57 -0800 (Wed, 20 Feb 2019) $
-; $LastChangedRevision: 26655 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2019-02-25 10:26:38 -0800 (Mon, 25 Feb 2019) $
+; $LastChangedRevision: 26700 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_load_fgm.pro $
 ;-
 
@@ -262,7 +262,8 @@ pro thm_load_fgm, probe = probe, datatype = datatype, trange = trange, $
            delete_support_data = 1
         endif
      endif
-     ;; check that a minimum of 10 minutes is available for spin calibration
+     ;; check that a minimum of 10 minutes is available for spin calibration     
+     if ~keyword_set(trange) then trange=timerange()
      dur = time_double(trange[1])-time_double(trange[0])
      ;; if not then pad duration to 10 minutes 
      if dur LT 600.d then begin

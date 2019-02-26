@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Feb 24 18:16:24 2019.<P>
+<STRONG>Last modified: </STRONG>Mon Feb 25 18:16:24 2019.<P>
  
 <HR>
  
@@ -4572,6 +4572,10 @@ KEYWORDS:
                    or the current value of trange_full.  Otherwise, ask the user
                    for permission to clear and reload.
 
+    SCLK_VER:      Force the SCLK kernel version to be this.  Sometimes needed for
+                   accurate relative timing between MAG and SWEA.  If set, then
+                   FORCE is also set.
+
     STATUS:        Don't load anything; just give status.
 
     INFO:          Returns an array of structures providing detailed information
@@ -4581,8 +4585,8 @@ KEYWORDS:
                    Default is current value of swe_verbose.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-09-16 13:19:20 -0700 (Sun, 16 Sep 2018) $
- $LastChangedRevision: 25816 $
+ $LastChangedDate: 2019-02-25 13:39:32 -0800 (Mon, 25 Feb 2019) $
+ $LastChangedRevision: 26702 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_spice_init.pro $
 
 CREATED BY:    David L. Mitchell  09/18/13
