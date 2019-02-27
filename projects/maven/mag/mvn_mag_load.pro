@@ -10,9 +10,9 @@
 ; Purpose:  Loads MAVEN mag data into tplot variables
 ;
 ; Author: Davin Larson and Roberto Livi
-; $LastChangedBy: hara $
-; $LastChangedDate: 2016-02-25 17:00:15 -0800 (Thu, 25 Feb 2016) $
-; $LastChangedRevision: 20193 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2019-02-26 16:03:39 -0800 (Tue, 26 Feb 2019) $
+; $LastChangedRevision: 26714 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/mag/mvn_mag_load.pro $
 
 ;-
@@ -33,7 +33,8 @@ pro mvn_mag_load,format,$
                  data          = str_all,$
                  spice_frame   = spice_frame,$
                  timecrop      = timecrop,$
-                 mag_product   = mag_product
+                 mag_product   = mag_product,$
+                 sclk_ver      = sclk_ver
   
 
   dirr_l1='maven/data/sci/mag/l1/sav/'
@@ -45,6 +46,8 @@ pro mvn_mag_load,format,$
   if keyword_set(format_old)     then format      = format_old
   if ~keyword_set(format)        then format      = 'L2_1SEC'
   if ~keyword_set(mag_product)   then mag_product = 'MAG1'
+
+  sclk_ver = [-1]
 
 
   ;;------------------------------------------------------
@@ -93,8 +96,21 @@ pro mvn_mag_load,format,$
            dprint,dlevel=2,verbose=verbose,'Restoring file: '+file
            restore,file,verbose= keyword_set(verbose) && verbose ge 3
            append_array,str_all,data,index=ind
+           str_element, header, 'spice_list', spice_list, success=ok
+           if (ok) then begin
+             j = (where(strmatch(spice_list,'*SCLK*') eq 1, cnt))[0]
+             if (cnt gt 0) then begin
+               words = strsplit(spice_list[j],' ',/extract)
+               j = (where(strmatch(words,'*SCLK*') eq 1, cnt))[0]
+               if (cnt gt 0) then begin
+                 words = strsplit(words[j],'.',/extract)
+                 sclk_ver = [sclk_ver, fix(words[1])]
+               endif
+             endif
+           endif
         endfor
         append_array,str_all,index=ind        
+        if (n_elements(sclk_ver) gt 1) then sclk_ver = sclk_ver[1:*]
 
         ;;-----------------------------------------
         ;; Crop save file according to trange
@@ -138,7 +154,7 @@ pro mvn_mag_load,format,$
            store_data,'mvn_B_full',$
                       str_all.time,$
                       transpose(str_all.vec),$
-                      dlimit={spice_frame:frame},$
+                      dlimit={spice_frame:frame, sclk_ver:sclk_ver},$
                       limit={level:'L2'}
            options, 'mvn_B_full', ytitle='L2 [Full] Mag [nT]',/def
         endif
@@ -159,7 +175,7 @@ pro mvn_mag_load,format,$
            store_data,'mvn_B_full_'+to_frame,$
                       str_all.time,$
                       transpose(new_vec),$
-                      dlimit={spice_frame:to_frame}          
+                      dlimit={spice_frame:to_frame, sclk_ver:sclk_ver}          
         endif
      end
 
@@ -199,8 +215,21 @@ pro mvn_mag_load,format,$
            dprint,dlevel=2,verbose=verbose,'Restoring file: '+file
            restore,file,verbose= keyword_set(verbose) && verbose ge 3
            append_array,str_all,data,index=ind
+           str_element, header, 'spice_list', spice_list, success=ok
+           if (ok) then begin
+             j = (where(strmatch(spice_list,'*SCLK*') eq 1, cnt))[0]
+             if (cnt gt 0) then begin
+               words = strsplit(spice_list[j],' ',/extract)
+               j = (where(strmatch(words,'*SCLK*') eq 1, cnt))[0]
+               if (cnt gt 0) then begin
+                 words = strsplit(words[j],'.',/extract)
+                 sclk_ver = [sclk_ver, fix(words[1])]
+               endif
+             endif
+           endif
         endfor
         append_array,str_all,index=ind
+        if (n_elements(sclk_ver) gt 1) then sclk_ver = sclk_ver[1:*]
 
         ;;-----------------------------------------
         ;; Crop save file according to trange
@@ -239,7 +268,7 @@ pro mvn_mag_load,format,$
         store_data,'mvn_B_30sec',$
                    str_all.time,$
                    transpose(str_all.vec),$
-                   dlimit={spice_frame:frame},$
+                   dlimit={spice_frame:frame, sclk_ver:sclk_ver},$
                    limit={level:'L2'}
         options, 'mvn_B_30sec', ytitle='L2 [30sec] Mag [nT]',/def
         if keyword_set(spice_frame) then begin
@@ -255,7 +284,7 @@ pro mvn_mag_load,format,$
            store_data,'mvn_B_30sec_'+to_frame,$
                       str_all.time,$
                       transpose(new_vec),$
-                      dlimit={spice_frame:to_frame}
+                      dlimit={spice_frame:to_frame, sclk_ver:sclk_ver}
         endif
      end
 
@@ -296,8 +325,21 @@ pro mvn_mag_load,format,$
            dprint,dlevel=2,verbose=verbose,'Restoring file: '+file
            restore,file,verbose= keyword_set(verbose) && verbose ge 3
            append_array,str_all,data,index=ind
+           str_element, header, 'spice_list', spice_list, success=ok
+           if (ok) then begin
+             j = (where(strmatch(spice_list,'*SCLK*') eq 1, cnt))[0]
+             if (cnt gt 0) then begin
+               words = strsplit(spice_list[j],' ',/extract)
+               j = (where(strmatch(words,'*SCLK*') eq 1, cnt))[0]
+               if (cnt gt 0) then begin
+                 words = strsplit(words[j],'.',/extract)
+                 sclk_ver = [sclk_ver, fix(words[1])]
+               endif
+             endif
+           endif
         endfor
         append_array,str_all,index=ind
+        if (n_elements(sclk_ver) gt 1) then sclk_ver = sclk_ver[1:*]
 
         ;;-----------------------------------------
         ;; Crop save file according to trange
@@ -336,7 +378,7 @@ pro mvn_mag_load,format,$
         store_data,'mvn_B_1sec',$
                    str_all.time,$
                    transpose(str_all.vec),$
-                   dlimit={spice_frame:frame},$
+                   dlimit={spice_frame:frame, sclk_ver:sclk_ver},$
                    limit={level:'L2'}
         options, 'mvn_B_1sec', ytitle='L2 [1sec] Mag [nT]',/def
         if keyword_set(spice_frame) then begin
@@ -352,7 +394,7 @@ pro mvn_mag_load,format,$
            store_data,'mvn_B_1sec_'+to_frame,$
                       str_all.time,$
                       transpose(new_vec),$
-                      dlimit={spice_frame:to_frame}
+                      dlimit={spice_frame:to_frame, sclk_ver:sclk_ver}
         endif
      end
      
@@ -407,8 +449,21 @@ pro mvn_mag_load,format,$
            dprint,dlevel=2,verbose=verbose,'Restoring file: '+file
            restore,file,verbose= keyword_set(verbose) && verbose ge 3
            append_array,str_all,data,index=ind
+           str_element, header, 'spice_list', spice_list, success=ok
+           if (ok) then begin
+             j = (where(strmatch(spice_list,'*SCLK*') eq 1, cnt))[0]
+             if (cnt gt 0) then begin
+               words = strsplit(spice_list[j],' ',/extract)
+               j = (where(strmatch(words,'*SCLK*') eq 1, cnt))[0]
+               if (cnt gt 0) then begin
+                 words = strsplit(words[j],'.',/extract)
+                 sclk_ver = [sclk_ver, fix(words[1])]
+               endif
+             endif
+           endif
         endfor
         append_array,str_all,index=ind
+        if (n_elements(sclk_ver) gt 1) then sclk_ver = sclk_ver[1:*]
 
         ;;-----------------------------------------
         ;; Crop save file according to trange
@@ -447,7 +502,7 @@ pro mvn_mag_load,format,$
            store_data,'mvn_B_full',$
                       str_all.time,$
                       transpose(str_all.vec),$
-                      dlimit = {spice_frame:frame},$
+                      dlimit = {spice_frame:frame, sclk_ver:sclk_ver},$
                       limit  = {level:'L1'}
         options, 'mvn_B_full', ytitle='L1 [Full] Mag [nT]',/def
         if keyword_set(spice_frame) then begin
@@ -463,7 +518,7 @@ pro mvn_mag_load,format,$
            store_data,'mvn_B_full_'+to_frame,$
                       str_all.time,$
                       transpose(new_vec),$
-                      dlimit = {spice_frame:to_frame},$
+                      dlimit = {spice_frame:to_frame, sclk_ver:sclk_ver},$
                       limit  = {level:'L1'}
            options, 'mvn_B_full', ytitle='L1 [Full] Mag [nT]',/def
         endif
@@ -496,8 +551,21 @@ pro mvn_mag_load,format,$
            dprint,dlevel=2,verbose=verbose,'Restoring file: '+file
            restore,file,verbose= keyword_set(verbose) && verbose ge 3
            append_array,str_all,data,index=ind
+           str_element, header, 'spice_list', spice_list, success=ok
+           if (ok) then begin
+             j = (where(strmatch(spice_list,'*SCLK*') eq 1, cnt))[0]
+             if (cnt gt 0) then begin
+               words = strsplit(spice_list[j],' ',/extract)
+               j = (where(strmatch(words,'*SCLK*') eq 1, cnt))[0]
+               if (cnt gt 0) then begin
+                 words = strsplit(words[j],'.',/extract)
+                 sclk_ver = [sclk_ver, fix(words[1])]
+               endif
+             endif
+           endif
         endfor
         append_array,str_all,index=ind
+        if (n_elements(sclk_ver) gt 1) then sclk_ver = sclk_ver[1:*]
 
         ;;-----------------------------------------
         ;; Crop save file according to trange
@@ -534,7 +602,7 @@ pro mvn_mag_load,format,$
         store_data,'mvn_B_30sec',$
                    str_all.time,$
                    transpose(str_all.vec),$
-                   dlimit = {spice_frame:frame},$
+                   dlimit = {spice_frame:frame, sclk_ver:sclk_ver},$
                    limit  = {level:'L1'}
         options, 'mvn_B_full', ytitle='L1 [30sec] Mag [nT]',/def
         ;store_data,'mvn_Brms_30sec',rms_all.time,transpose(rms_all.vec)
@@ -551,7 +619,7 @@ pro mvn_mag_load,format,$
            store_data,'mvn_B_30sec_'+to_frame,$
                       str_all.time,$
                       transpose(new_vec),$
-                      dlimit = {spice_frame:to_frame},$
+                      dlimit = {spice_frame:to_frame, sclk_ver:sclk_ver},$
                       limit  = {level:'L1'}
            options, 'mvn_B_30sec', ytitle='L1 [30sec] Mag [nT]',/def
         endif
@@ -584,8 +652,21 @@ pro mvn_mag_load,format,$
            dprint,dlevel=2,verbose=verbose,'Restoring file: '+file
            restore,file,verbose= keyword_set(verbose) && verbose ge 3
            append_array,str_all,data,index=ind
+           str_element, header, 'spice_list', spice_list, success=ok
+           if (ok) then begin
+             j = (where(strmatch(spice_list,'*SCLK*') eq 1, cnt))[0]
+             if (cnt gt 0) then begin
+               words = strsplit(spice_list[j],' ',/extract)
+               j = (where(strmatch(words,'*SCLK*') eq 1, cnt))[0]
+               if (cnt gt 0) then begin
+                 words = strsplit(words[j],'.',/extract)
+                 sclk_ver = [sclk_ver, fix(words[1])]
+               endif
+             endif
+           endif
         endfor
         append_array,str_all,index=ind
+        if (n_elements(sclk_ver) gt 1) then sclk_ver = sclk_ver[1:*]
 
         ;;-----------------------------------------
         ;; Crop save file according to trange
@@ -622,7 +703,7 @@ pro mvn_mag_load,format,$
         store_data,'mvn_B_1sec',$
                    str_all.time,$
                    transpose(str_all.vec),$
-                   dlimit = {spice_frame:frame},$
+                   dlimit = {spice_frame:frame, sclk_ver:sclk_ver},$
                    limit  = {level:'L1'}
         options, 'mvn_B_1sec', ytitle='L1 [1sec] Mag [nT]',/def
         if keyword_set(spice_frame) then begin
@@ -638,7 +719,7 @@ pro mvn_mag_load,format,$
            store_data,'mvn_B_1sec_'+to_frame,$
                       str_all.time,$
                       transpose(new_vec),$
-                      dlimit = {spice_frame:to_frame},$
+                      dlimit = {spice_frame:to_frame, sclk_ver:sclk_ver},$
                       limit  = {level:'L1'}
            options, 'mvn_B_1sec', ytitle='L1 [1sec] Mag [nT]',/def
         endif

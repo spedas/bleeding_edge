@@ -25,13 +25,13 @@
 ; CREATED BY:
 ;   pulupa
 ;
-; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2019-01-31 16:47:18 -0800 (Thu, 31 Jan 2019) $
-; $LastChangedRevision: 26531 $
+; $LastChangedBy: pulupa $
+; $LastChangedDate: 2019-02-26 15:19:19 -0800 (Tue, 26 Feb 2019) $
+; $LastChangedRevision: 26713 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_put_time.pro $
 ;-
 
-pro spp_fld_cdf_put_time, fileid, time, met, subseconds, utcstr, $
+pro spp_fld_cdf_put_time, fileid, time, met, subseconds, utcstr, seq_cnt, $
   suffix = suffix, $
   compression = compression, level = level
 
@@ -188,7 +188,7 @@ pro spp_fld_cdf_put_time, fileid, time, met, subseconds, utcstr, $
 
   if level EQ 1 then begin
 
-    name_met = 'time_met' + suffix
+    name_met = 'CCSDS_MET_Seconds' + suffix
     varid_met = cdf_varcreate(fileid, name_met, /CDF_UINT4, /REC_VARY, /ZVARIABLE)
 
     if n_elements(compression) GT 0 then begin
@@ -221,7 +221,7 @@ pro spp_fld_cdf_put_time, fileid, time, met, subseconds, utcstr, $
 
   if level EQ 1 then begin
 
-    name_ssec = 'time_subseconds' + suffix
+    name_ssec = 'CCSDS_MET_SubSeconds' + suffix
     varid_ssec = cdf_varcreate(fileid, name_ssec, /CDF_UINT4, /REC_VARY, /ZVARIABLE)
 
     if n_elements(compression) GT 0 then begin
@@ -250,6 +250,37 @@ pro spp_fld_cdf_put_time, fileid, time, met, subseconds, utcstr, $
 
   endif
 
+  ; Sequence Number
+
+  if level EQ 1 then begin
+
+    name_seq = 'CCSDS_MET_Sequence_Number' + suffix
+    varid_seq = cdf_varcreate(fileid, name_seq, /CDF_UINT4, /REC_VARY, /ZVARIABLE)
+
+    if n_elements(compression) GT 0 then begin
+      CDF_COMPRESSION, fileid, $
+        SET_VAR_GZIP_LEVEL=compression, $
+        VARIABLE=varid_seq, $
+        /ZVARIABLE
+    end
+
+    cdf_attput, fileid, 'FIELDNAM',     varid_seq, name_seq, /ZVARIABLE
+    cdf_attput, fileid, 'FORMAT',       varid_seq, 'I8', /ZVARIABLE
+    cdf_attput, fileid, 'LABLAXIS',     varid_seq, name_ssec, /ZVARIABLE
+    cdf_attput, fileid, 'VAR_TYPE',     varid_seq, 'support_data', /ZVARIABLE
+    cdf_attput, fileid, 'FILLVAL',      varid_seq, 4294967294, /ZVARIABLE
+    cdf_attput, fileid, 'DISPLAY_TYPE', varid_seq, 'time_series', /ZVARIABLE
+    cdf_attput, fileid, 'VALIDMIN',     varid_seq, 0, /ZVARIABLE
+    cdf_attput, fileid, 'VALIDMAX',     varid_seq, 16383, /ZVARIABLE
+    cdf_attput, fileid, 'SCALEMIN',     varid_seq, 0, /ZVARIABLE
+    cdf_attput, fileid, 'SCALEMAX',     varid_seq, 16383, /ZVARIABLE
+    cdf_attput, fileid, 'UNITS',        varid_seq, 'None', /ZVARIABLE
+    cdf_attput, fileid, 'CATDESC',      varid_seq, 'SequenceNumber', /ZVARIABLE
+    cdf_attput, fileid, 'DEPEND_0',     varid_seq, name_ep, /ZVARIABLE
+
+    cdf_varput, fileid, name_seq, seq_cnt
+
+  endif
   ; UTC time string
 
   if level NE 1 then begin

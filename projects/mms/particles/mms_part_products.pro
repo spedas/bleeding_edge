@@ -104,8 +104,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-11-19 15:51:32 -0800 (Mon, 19 Nov 2018) $
-;$LastChangedRevision: 26154 $
+;$LastChangedDate: 2019-02-26 11:27:54 -0800 (Tue, 26 Feb 2019) $
+;$LastChangedRevision: 26708 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products.pro $
 ;-
 pro mms_part_products, $
@@ -353,7 +353,7 @@ pro mms_part_products, $
   endif
   
   ;get support data for moments calculation
-  if in_set(outputs_lc,'moments') || in_set(outputs_lc,'fac_moments') then begin
+  if in_set(outputs_lc,'moments') || in_set(outputs_lc,'fac_moments') || keyword_set(correct_photoelectrons) || keyword_set(internal_photoelectron_corrections) then begin
     if units_lc ne 'eflux' then begin
       dprint,dlevel=1,'Warning: Moments can only be calculated if data is in eflux.  Skipping product.'
       outputs_lc[where(strmatch(outputs_lc,'*moments'))] = ''

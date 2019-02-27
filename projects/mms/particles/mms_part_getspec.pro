@@ -52,8 +52,8 @@
 ;         Spacecraft photoelectrons are corrected in moments_3d
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-11-27 09:48:47 -0800 (Tue, 27 Nov 2018) $
-;$LastChangedRevision: 26178 $
+;$LastChangedDate: 2019-02-26 11:27:36 -0800 (Tue, 26 Feb 2019) $
+;$LastChangedRevision: 26707 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -191,7 +191,7 @@ pro mms_part_getspec, probes=probes, $
     ; load magnetic field data
     if defined(fgm_to_load) && undefined(mag_name_user) then mms_load_fgm, probes=fgm_to_load, trange=support_trange, level='l2', suffix=mag_suffix, spdf=spdf, data_rate=mag_data_rate, /time_clip, varformat='*_fgm_b_gse_*'
 
-    if defined(scpot_to_load) && array_contains(outputs, 'moments') then mms_load_edp, probes=scpot_to_load, trange=support_trange, level='l2', spdf=spdf, data_rate=scpot_data_rate, datatype='scpot', varformat='*_edp_scpot_*'
+    if defined(scpot_to_load) && (array_contains(outputs, 'fac_moments') || array_contains(outputs, 'moments')  || keyword_set(photoelectron_corrections) || keyword_set(internal_photoelectron_corrections)) then mms_load_edp, probes=scpot_to_load, trange=support_trange, level='l2', spdf=spdf, data_rate=scpot_data_rate, datatype='scpot', varformat='*_edp_scpot_*'
 
     if instrument eq 'fpi' then begin
         mms_load_fpi, probes=probes, trange=trange, data_rate=data_rate, level=level, $

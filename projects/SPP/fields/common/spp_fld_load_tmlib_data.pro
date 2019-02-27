@@ -2,8 +2,8 @@
 ;  Called from SPP_FLD_MAKE_CDF_L1
 ;
 ;  $LastChangedBy: pulupa $
-;  $LastChangedDate: 2018-12-17 16:20:45 -0800 (Mon, 17 Dec 2018) $
-;  $LastChangedRevision: 26354 $
+;  $LastChangedDate: 2019-02-26 15:19:19 -0800 (Tue, 26 Feb 2019) $
+;  $LastChangedRevision: 26713 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_load_tmlib_data.pro $
 ;
 
@@ -13,6 +13,7 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
   times = times, $
   utcstr = utcstr, $
   mets = mets, $
+  seq_cnts = seq_cnts, $
   fields_subseconds = fields_subseconds, $
   packets = packets, $
   idl_att = idl_att, success = success, att_only = att_only
@@ -244,6 +245,7 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
   times = LIST()
   utcstr = LIST()
   mets = LIST()
+  seq_cnts = LIST()
   fields_subseconds = LIST()
 
   packets = LIST()
@@ -295,6 +297,10 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
 
     dprint, 'ERR SCET: ', err_scet, dlevel = 4
 
+    err_seq_cnt = tm_get_item_i4(sid, "ccsds_seq_cnt", ccsds_seq_cnt, 1, ccsds_seq_cnt_size)
+
+    dprint, 'ERR SEQ CNT: ', err_seq_cnt, dlevel = 4
+
     err_pkt_len = tm_get_item_i4(sid, "ccsds_total_packet_length", $
       ccsds_pkt_len, 1, pkt_len_size)
     err_meat_len = tm_get_item_i4(sid, "ccsds_meat_length", $
@@ -344,6 +350,7 @@ function spp_fld_load_tmlib_data, l1_data_type,  $
       times.Add, time
       packets.Add, packet
       mets.Add, ccsds_met
+      seq_cnts.Add, ccsds_seq_cnt
       fields_subseconds.Add, fields_subsecond
 
       ; For certain APIDs, some data items only exist in some packets

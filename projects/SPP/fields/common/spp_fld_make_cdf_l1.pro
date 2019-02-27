@@ -37,9 +37,9 @@
 ; CREATED BY:
 ;   pulupa
 ;
-; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2018-11-09 16:45:57 -0800 (Fri, 09 Nov 2018) $
-; $LastChangedRevision: 26103 $
+; $LastChangedBy: pulupa $
+; $LastChangedDate: 2019-02-26 15:19:19 -0800 (Tue, 26 Feb 2019) $
+; $LastChangedRevision: 26713 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_make_cdf_l1.pro $
 ;-
 pro spp_fld_make_cdf_l1, apid_name, $
@@ -64,7 +64,7 @@ pro spp_fld_make_cdf_l1, apid_name, $
   data = spp_fld_load_tmlib_data(apid_name, $
     varformat = varformat, success = dat_success, $
     cdf_att = cdf_att, times = times, utcstr = utcstr, $
-    mets = mets, $
+    mets = mets, seq_cnts = seq_cnts, $
     fields_subseconds = fields_subseconds, $
     packets = packets, idl_att = idl_att, $
     att_only = ephem)
@@ -147,7 +147,8 @@ pro spp_fld_make_cdf_l1, apid_name, $
     times.ToArray(), $
     mets.ToArray(), $
     fields_subseconds.ToArray(), $
-    utcstr.ToArray()
+    utcstr.ToArray(), $
+    seq_cnts.ToArray()
 
   spp_fld_cdf_put_depend, fileid, idl_att = idl_att
 
