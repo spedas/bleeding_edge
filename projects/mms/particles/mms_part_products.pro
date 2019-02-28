@@ -104,8 +104,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-02-26 11:27:54 -0800 (Tue, 26 Feb 2019) $
-;$LastChangedRevision: 26708 $
+;$LastChangedDate: 2019-02-27 14:01:22 -0800 (Wed, 27 Feb 2019) $
+;$LastChangedRevision: 26718 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products.pro $
 ;-
 pro mms_part_products, $
@@ -398,6 +398,7 @@ pro mms_part_products, $
       n_0 = fpi_photoelectrons.n_0
       n_1 = fpi_photoelectrons.n_1
     endif
+    get_data, 'mms'+probe+'_des_startdelphi_count_'+data_rate, data=startdelphi
   endif
   
   ;--------------------------------------------------------
@@ -416,7 +417,6 @@ pro mms_part_products, $
     str_element, dist, 'orig_energy', dist.energy[*, 0, 0], /add
 
     if keyword_set(correct_photoelectrons) || keyword_set(internal_photoelectron_corrections) then begin
-      get_data, 'mms'+probe+'_des_startdelphi_count_'+data_rate, data=startdelphi
 
       ; From Dan Gershman's release notes on the FPI photoelectron model:
       ; Find the index I in the startdelphi_counts_brst or startdelphi_counts_fast array

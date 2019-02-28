@@ -100,10 +100,10 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
 
   ; For now delete existing data types - TO DO: Query user to delete
   ; may want to add this check in elf_load_data
-  tvars2del=tnames('el*p*f*')
-  del_data, tvars2del
+  ;tvars2del=tnames('el*p*f*')
+  ;del_data, tvars2del
   ; track existing vars for commparison later
-  existing_tvars = tnames()
+  ;existing_tvars = tnames()
 
   elf_load_data, trange = trange, probes = probes, level = level, instrument = 'epd', $
     data_rate = data_rate, local_data_dir = local_data_dir, source = source, $
@@ -115,11 +115,23 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
     always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
 
   ; check that tvars were loaded
-  if existing_tvars NE '' then  new_tvars = ssl_set_complement(existing_tvars, tnames()) $
-  else new_tvars=tnames()
+  ;if existing_tvars NE '' then  new_tvars = ssl_set_complement(existing_tvars, tnames()) $
+  ;else new_tvars=tnames()
+  new_tvars=tnames()
+  
   ; fix metadata 
-  if n_elements(new_tvars) GT 0 then for i=0,n_elements(new_tvars)-1 do options, /def, new_tvars[i], 'spec', 1
-
+  if n_elements(new_tvars) GT 0 then begin
+    for i=0,n_elements(new_tvars)-1 do begin
+      get_data, new_tvars[i], data=d, dlimits=dl
+      store_data, new_tvars[i], data={x:d.x, y:d.y, v:findgen(16) } 
+      options, /def, new_tvars[i], 'spec', 1
+      options, /def, new_tvars[i], 'zlog', 1
+      options, /def, new_tvars[i], 'no_interp', 1
+      options, /def, new_tvars[i], 'ystyle', 1
+    endfor
+  endif
+  ; add energy numbers
+  
   ; no reason to continue if the user only requested available data
   if keyword_set(available) then return
 

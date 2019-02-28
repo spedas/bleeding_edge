@@ -71,8 +71,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-24 18:13:43 -0800 (Sun, 24 Feb 2019) $
-; $LastChangedRevision: 26699 $
+; $LastChangedDate: 2019-02-27 11:10:19 -0800 (Wed, 27 Feb 2019) $
+; $LastChangedRevision: 26716 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sciplot.pro $
 ;
 ;-
@@ -94,7 +94,7 @@ pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lp
 
   dlist = ['sphere','ellipsoid','areoid','surface']
   if (size(dtm,/type) ne 7) then dtm = dlist[1]
-  i = strmatch(dlist, datum+'*', /fold)
+  i = strmatch(dlist, dtm+'*', /fold)
   case (total(i)) of
      0   : begin
              print, "Datum not recognized: ", dtm

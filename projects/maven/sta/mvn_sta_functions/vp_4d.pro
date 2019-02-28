@@ -156,9 +156,16 @@ if keyword_set(mi) then mass = dat.mass*mi else mass=dat.mass*32.			; assume O2+
 
 if (dat.att_ind eq 3) then offset0=1.5				; 1.5	0
 if (dat.att_ind eq 2) then offset0=0.0				; 0.0	0
-if (dat.att_ind eq 1) then offset0=1.0				; 1.0	1
-if (dat.att_ind eq 0) then offset0=0.0				; 0.0	0
- 
+;if (dat.att_ind eq 1) then offset0=1.0				; 1.0	1
+;if (dat.att_ind eq 0) then offset0=0.0				; 0.0	0
+
+; changed 20190204 empirically determined on nightside
+; offsets for non-mech-att states are larger than originally estimated
+; offsets are determined at attenuator state changes
+; may need to check for scpot of variation of these offsets - these work for low scpot>-1V
+if (dat.att_ind eq 1) then offset0=2.0				; 
+if (dat.att_ind eq 0) then offset0=1.0				; 
+
 ; offset2,offset1 uses inputs from common mvn_sta_offset2					
 
 offset2=efoldoffset*(1.-erf((energy-e0)/(scale1*(e0+.01))))
