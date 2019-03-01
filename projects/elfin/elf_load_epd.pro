@@ -92,18 +92,11 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
     return
   endif
   if undefined(level) then level = 'l1'
-  if undefined(datatype) AND level eq 'l1' then datatype = ['pes']
-  if undefined(datatype) AND level eq 'l2' then datatype = ['pes_eflux']
+  if undefined(datatype) AND level eq 'l1' then datatype = ['pef']
+  if undefined(datatype) AND level eq 'l2' then datatype = ['pef_eflux']
   datatype = strlowcase(datatype) 
   if undefined(suffix) then suffix = ''
   if undefined(data_rate) then data_rate = ''
-
-  ; For now delete existing data types - TO DO: Query user to delete
-  ; may want to add this check in elf_load_data
-  ;tvars2del=tnames('el*p*f*')
-  ;del_data, tvars2del
-  ; track existing vars for commparison later
-  ;existing_tvars = tnames()
 
   elf_load_data, trange = trange, probes = probes, level = level, instrument = 'epd', $
     data_rate = data_rate, local_data_dir = local_data_dir, source = source, $
@@ -120,7 +113,7 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
   new_tvars=tnames()
   
   ; fix metadata 
-  if n_elements(new_tvars) GT 0 then begin
+  if n_elements(new_tvars) GT 0 && new_tvars NE '' then begin
     for i=0,n_elements(new_tvars)-1 do begin
       get_data, new_tvars[i], data=d, dlimits=dl
       store_data, new_tvars[i], data={x:d.x, y:d.y, v:findgen(16) } 
