@@ -67,7 +67,7 @@
 pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
   level = level, data_rate = data_rate, $
   local_data_dir = local_data_dir, source = source, $
-  get_support_data = get_support_data, $
+  get_support_data = get_support_data, no_cal=no_cal, $
   tplotnames = tplotnames, no_color_setup = no_color_setup, $
   time_clip = time_clip, no_update = no_update, suffix = suffix, $
   varformat = varformat, cdf_filenames = cdf_filenames, $
@@ -113,10 +113,12 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
   new_tvars=tnames()
   
   ; fix metadata 
-  if n_elements(new_tvars) GT 0 && new_tvars NE '' then begin
+  if n_elements(new_tvars) GT 0 && new_tvars[0] NE '' then begin
     for i=0,n_elements(new_tvars)-1 do begin
       get_data, new_tvars[i], data=d, dlimits=dl
-      store_data, new_tvars[i], data={x:d.x, y:d.y, v:findgen(16) } 
+      ebins = elf_convert_epd_mv2eng()
+      if keyword_set(no_cal) then store_data, new_tvars[i], data={x:d.x, y:d.y, v:findgen(16) } $
+         else store_data, new_tvars[i], data={x:d.x, y:d.y, v:ebins }
       options, /def, new_tvars[i], 'spec', 1
       options, /def, new_tvars[i], 'zlog', 1
       options, /def, new_tvars[i], 'no_interp', 1

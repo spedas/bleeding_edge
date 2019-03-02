@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Feb 28 18:16:21 2019.<P>
+<STRONG>Last modified: </STRONG>Fri Mar  1 18:16:22 2019.<P>
  
 <HR>
  
@@ -24,6 +24,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#ELF_CONFIG">ELF_CONFIG</A>
 <LI><A HREF="#ELF_FILES_IN_INTERVAL">ELF_FILES_IN_INTERVAL</A>
 <br>filters file list returned by the server to the trange. This filter is purposefully
+<LI><A HREF="#ELF_GET_AUTHORIZATION">ELF_GET_AUTHORIZATION</A>
 <LI><A HREF="#ELF_GET_LOCAL_FILES">ELF_GET_LOCAL_FILES</A>
 <LI><A HREF="#ELF_INIT">ELF_INIT</A>
 <br>Initializes system variables for elf. Currently the variable only contains information
@@ -129,7 +130,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/el
 <A NAME="ELF_FILES_IN_INTERVAL">
 <H2>ELF_FILES_IN_INTERVAL</H2></A>
 <A HREF="#ELF_CONFIG">[Previous Routine]</A>
-<A HREF="#ELF_GET_LOCAL_FILES">[Next Routine]</A>
+<A HREF="#ELF_GET_AUTHORIZATION">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
    FUNCTION:
@@ -147,9 +148,32 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/el
 <STRONG>(See <A href="elfin/elf_files_in_interval.pro">projects/elfin/elf_files_in_interval.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ELF_GET_AUTHORIZATION">
+<H2>ELF_GET_AUTHORIZATION</H2></A>
+<A HREF="#ELF_FILES_IN_INTERVAL">[Previous Routine]</A>
+<A HREF="#ELF_GET_LOCAL_FILES">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+  Function elf_get_authorization
+
+  This function returns a structure that contains the user_name and password
+  for accessing elfin data. 
+      authorization = { user_name: user_name, password: password }
+
+  Note this function is only necessary for ELFIN data that is not yet public.
+  This procedure will define the location of data files and the data server.
+  This procedure is intended to be called from within the &quot;ELF_INIT&quot; procedure.
+
+  KEYWORDS
+     none
+
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_get_authorization.pro">projects/elfin/elf_get_authorization.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ELF_GET_LOCAL_FILES">
 <H2>ELF_GET_LOCAL_FILES</H2></A>
-<A HREF="#ELF_FILES_IN_INTERVAL">[Previous Routine]</A>
+<A HREF="#ELF_GET_AUTHORIZATION">[Previous Routine]</A>
 <A HREF="#ELF_INIT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

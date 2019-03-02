@@ -205,11 +205,15 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
 
                 ; NOTE: directory is temporarily password protected. this will be
                 ;       removed when data is made public.
-                user=''
-                pw=''
-                print, 'Please enter your ELFIN user name and password' 
-                read,user,prompt='User Name: '
-                read,pw,prompt='Password: '
+                if undefined(user) OR undefined(pw) then authorization = elf_get_authorization()
+                user=authorization.user_name
+                pw=authorization.password                
+                ; only query user if authorization file not found
+                If user EQ '' OR pw EQ '' then begin                 
+                  print, 'Please enter your ELFIN user name and password' 
+                  read,user,prompt='User Name: '
+                  read,pw,prompt='Password: '
+                endif
                  
                 paths = spd_download(remote_file=fnames[file_idx], remote_path=remote_path, $
                                      local_file=fnames[file_idx], local_path=local_path, $
