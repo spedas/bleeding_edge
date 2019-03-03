@@ -13,14 +13,14 @@ pro mvn_sep_pfdpu_tplot_options,tplot=tplot,lowres=lowres
    ylim,prefix+'sep?_arc_DATA',0,260,0
    options,prefix+'sep?_arc_DATA',panel_size=2
 ;   ylim,prefix+'sep?_hkp_RATE_CNTR',0,0,0
-   options,prefix+'sep?_hkp_RATE_CNTR',/default,psym=-3,colors='bgrckm'
+   options,prefix+'sep?_hkp_RATE_CNTR',/default,psym=-3,colors='kgrbcm'
    options,prefix+'sep?_hkp_RATE_CNTR',labels=['A-O','A-T','A-F','B-O','B-T','B-F'],labflag=-1
    ylim,prefix+'sep?_hkp_RATE_CNTR',.5,1e5,1
    ylim,prefix+'sep?_svy_COUNTS_TOTAL',1,1,1  ;,0,0,0
    ylim,prefix+'sep?_noise_SIGMA',1,2
-   options,prefix+'sep?_noise_SIGMA',colors='bgrckm',labels=['A-O','A-T','A-F','B-O','B-T','B-F'],labflag=-1
-   options,prefix+'sep?_noise_BASELINE',colors='bgrckm',labels=['A-O','A-T','A-F','B-O','B-T','B-F'],labflag=-1
-   options,prefix+'sep?_noise_TOT',colors='bgrckm',labels=['A-O','A-T','A-F','B-O','B-T','B-F'],labflag=-1
+   options,prefix+'sep?_noise_SIGMA',colors='kgrbcm',labels=['A-O','A-T','A-F','B-O','B-T','B-F'],labflag=-1
+   options,prefix+'sep?_noise_BASELINE',colors='kgrbcm',labels=['A-O','A-T','A-F','B-O','B-T','B-F'],labflag=-1
+   options,prefix+'sep?_noise_TOT',colors='kgrbcm',labels=['A-O','A-T','A-F','B-O','B-T','B-F'],labflag=-1
    store_data,prefix+'sep1_COUNTS',data=prefix+'sep1_svy_RATE '+prefix+'sep1_hkp_RATE_CNTR '+prefix+'sep1_hkp_EVENT_CNTR'
    store_data,prefix+'sep2_COUNTS',data=prefix+'sep2_svy_RATE '+prefix+'sep2_hkp_RATE_CNTR '+prefix+'sep2_hkp_EVENT_CNTR'
    store_data,'APIDS',data='MAV_APIDS MAV_APID_SKIPPED',dlim={panel_size:3.}
@@ -48,8 +48,8 @@ pro mvn_sep_pfdpu_tplot_options,tplot=tplot,lowres=lowres
    store_data,prefix+'SEPS_hkp_MEM_CHECKSUM',data=prefix+'sep?_hkp_MEM_CHECKSUM'
    store_data,prefix+'SEPS_svy_ATT',data=prefix+'sep?_svy_ATT',dlim={panel_size:.4,yrange:[0,3],labflag:-1}
    store_data,prefix+'SEPS_arc_ATT',data=prefix+'sep?_arc_ATT',dlim={panel_size:.4,yrange:[0,3],labflag:-1}
-   store_data,prefix+'SEPS_svy_DURATION',data=prefix+'sep?_svy_DURATION',dlim={panel_size:.5,labflag:-1}
-   store_data,prefix+'SEPS_arc_DURATION',data=prefix+'sep?_arc_DURATION',dlim={panel_size:.5,labflag:-1}
+   store_data,prefix+'SEPS_svy_DURATION',data=prefix+'sep?_svy_DURATION',dlim={panel_size:.5,labflag:-1,ylog:0}
+   store_data,prefix+'SEPS_arc_DURATION',data=prefix+'sep?_arc_DURATION',dlim={panel_size:.5,labflag:-1,ylog:0}
    store_data,prefix+'SEPS_svy_COUNTS_TOTAL',data=prefix+'sep?_svy_COUNTS_TOTAL',dlim={yrange:[.8,1e5],ylog:1,panel_size:1.5}
    store_data,prefix+'SEPS_svy_ALLTID',data=prefix+'sep?_?'
    store_data,prefix+'SEPS_QL' , data=prefix+'sep?_?_????_tot '+prefix+'sep?_svy_ATT',dlim={yrange:[.8,1e5],ylog:1,panel_size:2.}

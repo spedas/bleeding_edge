@@ -33,10 +33,14 @@ endif else begin
 endelse
 
 pos = replicate(!values.d_nan,3,ns)
+
 if arg_present(ltime)  then ltime = replicate(!values.d_nan,ns)
 if nind ne 0 then begin
      cspice_spkpos,body_name,et[ind],frame,abcorr,obs_name, pos2, ltime2
      pos[*,ind] = pos2
+     
+     
+     
      if keyword_set(ltime) then ltime[ind] = ltime2 
 endif else dprint,'No Valid SPK frame for: ',check_objects
 return,pos
