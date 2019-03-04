@@ -25,17 +25,18 @@
 ; CREATED BY:
 ;   pulupa
 ;
-; $LastChangedBy: pulupa $
-; $LastChangedDate: 2019-02-26 15:19:19 -0800 (Tue, 26 Feb 2019) $
-; $LastChangedRevision: 26713 $
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2019-03-02 23:35:19 -0800 (Sat, 02 Mar 2019) $
+; $LastChangedRevision: 26745 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_put_time.pro $
 ;-
 
 pro spp_fld_cdf_put_time, fileid, time, met, subseconds, utcstr, seq_cnt, $
-  suffix = suffix, $
+  suffix = suffix, ephem = ephem, $
   compression = compression, level = level
 
   if n_elements(level) EQ 0 then level = 1
+  if n_elements(ephem) EQ 0 then ephem = 0
 
   if n_elements(compression) EQ 0 then compression = 6
 
@@ -71,7 +72,7 @@ pro spp_fld_cdf_put_time, fileid, time, met, subseconds, utcstr, seq_cnt, $
 
   met_time = met
 
-  if level EQ 1 then begin
+  if level EQ 1 and ephem EQ 0 then begin
     tt2000_time = long64((add_tt2000_offset(unix_time)-time_double('2000-01-01/12:00:00'))*1d9)
 
   endif else begin
