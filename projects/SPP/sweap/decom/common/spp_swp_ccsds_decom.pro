@@ -1,8 +1,8 @@
 ; buffer should contain bytes for a single ccsds packet, header is
 ; contained in first 3 words (6 bytes)
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-11-01 15:52:23 -0700 (Thu, 01 Nov 2018) $
-; $LastChangedRevision: 26044 $
+; $LastChangedDate: 2019-03-04 13:30:54 -0800 (Mon, 04 Mar 2019) $
+; $LastChangedRevision: 26753 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/common/spp_swp_ccsds_decom.pro $
 
 ;
@@ -158,14 +158,14 @@ function spp_swp_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsd
     ccsds.source = wrap_ccsds.apid
     ccsds.aggregate = wrap_ccsds.content_aggregate
   endif
-  if isa(source_dist) then begin
+  if isa(source_dict) then begin
     if source_dict.haskey('source_info') then ccsds.source_hash = source_dict.source_info.input_sourcehash
-    if source_dict.haskey('ptp_header') then begin
+    if source_dict.haskey('ptp_header') && isa(source_dict.ptp_header) then begin
       ptp_header = source_dict.ptp_header
       if isa(ptp_header) && ptp_header.ptp_size ne ccsds.pkt_size + 17 then begin
         dprint,dlevel=2,format='("APID: ",Z03," ccsds PKT size: ",i5," does not match ptp size:",i5,a)',ccsds.apid,ccsds.pkt_size+17, ptp_header.ptp_size,' '+time_string(ccsds.time)
       endif
-      ccsds.ptp_time = ptp_header.ptp_time
+      if isa(source_dict.ptp_header) then ccsds.ptp_time = ptp_header.ptp_time
     endif else begin
       source_dict.ptp_header2 ={ ptp_time:systime(1), ptp_scid: 0, ptp_source:0, ptp_spare:0, ptp_path:0, ptp_size: 17 + ccsds.pkt_size }
     endelse

@@ -41,8 +41,8 @@
 ;  #4 Based heavily on str2time by Davin Larson.
 ; 
 ;$LastChangedBy: davin-mac $
-;$LastChangedDate: 2014-04-29 20:06:36 -0700 (Tue, 29 Apr 2014) $
-;$LastChangedRevision: 14975 $
+;$LastChangedDate: 2019-03-04 13:43:53 -0800 (Mon, 04 Mar 2019) $
+;$LastChangedRevision: 26755 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/time_parse.pro $
 ;-
 
@@ -77,7 +77,11 @@ function time_parse,s, tformat=tformat,tdiff=tdiff,MMDDYYYY=MMDDYYYY
     
     year=0l & month=0l & date=0 & hour=0 & min=0 & fsec=0.d ;select output types for parse
     for i=0l,n_elements(s)-1l do begin
-      st = string(bt[byte(s[i])])+' 0 0 0 0 0 0'    ; remove separators and pad fields
+      if strlowcase(s[i]) eq 'now' then begin
+        st = string(bt[byte(time_string(systime(1),prec=3))])
+      endif else begin
+        st = string(bt[byte(s[i])])+' 0 0 0 0 0 0'    ; remove separators and pad fields
+      endelse
       if keyword_set(MMDDYYYY) then reads,st,month,date,year,hour,min,fsec  $
       else  reads,st,year,month,date,hour,min,fsec
   

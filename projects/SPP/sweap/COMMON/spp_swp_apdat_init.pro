@@ -17,6 +17,8 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
    ;; SETUP SWEM APIDs
    ;;#################
    ttags = 'SEQN*'
+   spp_apdat_info,'254'x,name='sc_hkp',apid_obj = 'spp_sc_hk_0x254_apdat', tname = 'spp_sc_hkp_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
+   
    spp_apdat_info,'340'x,name='swem_crit_hkp',             tname='spp_swem_crit_',  save_flag=save_flag,ttags=ttags,rt_flag=rt_flag 
    spp_apdat_info,'341'x,name='swem_dig_hkp',  apid_obj='spp_swp_swem_dhkp_apdat',  tname='spp_swem_dhkp_',  save_flag=save_flag,ttags='*',  rt_flag=rt_flag 
    spp_apdat_info,'342'x,name='swem_memdump', apid_obj='spp_swp_memdump_apdat',  tname='spp_swem_memdump_',   save_flag=save_flag,ttags='*',rt_flag=rt_flag

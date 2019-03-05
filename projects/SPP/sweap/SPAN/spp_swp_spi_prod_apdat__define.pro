@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spi_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-09 21:25:16 -0800 (Sun, 09 Dec 2018) $
-; $LastChangedRevision: 26303 $
+; $LastChangedDate: 2019-03-04 12:15:42 -0800 (Mon, 04 Mar 2019) $
+; $LastChangedRevision: 26750 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
@@ -368,15 +368,17 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,source_dict=source_dict
 
    IF ns GT 0 THEN BEGIN
       data      = ccsds_data[20:*]
-      if compression then cnts = spp_swp_log_decomp(data,0) $
+      if compression then cnts = float(spp_swp_log_decomp(data,0)) $
       else cnts = swap_endian(ulong(data,0,ndat) ,/swap_if_little_endian )
       tcnts = total(cnts)
    ENDIF ELSE BEGIN
       tcnts = -1.
-      cnts = 0
+      cnts = 0.
    ENDELSE 
    
-   emode = mode2 and 'f'x
+   emode_ori = mode2 and 'f'x
+   emode = emode_ori
+;   if ccsds.time gt 1.5409458e+09 &&  ccsds.time lt 1.5422472e+09) then emode = 
    pmode = ishft(mode2,4) and 'f'x
 
    str = { $
@@ -395,6 +397,7 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,source_dict=source_dict
          mode1:       mode1,$
          mode2:       mode2,$
          emode:       emode, $
+         emode_ori:   emode_ori, $
          pmode:       pmode, $
          log_flag:    log_flag,$
          status_bits: status_bits,$   

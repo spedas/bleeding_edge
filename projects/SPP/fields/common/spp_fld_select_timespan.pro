@@ -183,6 +183,10 @@ function spp_fld_select_timespan_define_presets, fm_or_em
 
   fm_times['e01_mom_dump'] =   ['2018-11-06/19:50:00', '2018-11-06/20:30:00']
 
+  fm_times['fields_rolls_post_e01'] =    ['2018-11-18/12:00:00', '2018-11-19/00:00:00']
+  fm_times['fields_conics_post_e01'] =   ['2018-12-17/08:00:00', '2018-12-18/16:00:00']
+
+
   em_times = orderedhash()
 
   em_times['EM_test_RFS_v29'] = ['2018-02-22/19:30:00','2018-02-22/21:30:00']
