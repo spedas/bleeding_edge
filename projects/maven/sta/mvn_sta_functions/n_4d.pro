@@ -98,7 +98,7 @@ data=dat.data
 Const = (mass)^(-1.5)*(2.)^(.5)
 charge=dat.charge
 if keyword_set(q) then charge=q
-energy=(dat.energy+charge*dat.sc_pot/abs(charge))>0.		; energy/charge analyzer, require positive energy
+if finite(pot) then energy=(dat.energy+charge*dat.sc_pot/abs(charge))>0. else energy=dat.energy		; energy/charge analyzer, require positive energy
 
 if dat.nbins eq 1 then begin
 	density = total(Const*denergy*(energy^(.5))*data*2.*cos(theta)*sin(dtheta/2.)*dphi,1)

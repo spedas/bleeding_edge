@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spi_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-03-04 12:15:42 -0800 (Mon, 04 Mar 2019) $
-; $LastChangedRevision: 26750 $
+; $LastChangedDate: 2019-03-06 06:04:17 -0800 (Wed, 06 Mar 2019) $
+; $LastChangedRevision: 26767 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
@@ -376,11 +376,12 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,source_dict=source_dict
       cnts = 0.
    ENDELSE 
    
-   emode_ori = mode2 and 'f'x
+   tmode = mode2 and 'f'x
+   emode_ori = ishft(mode2,-4) and 'f'x
    emode = emode_ori
-;   if ccsds.time gt 1.5409458e+09 &&  ccsds.time lt 1.5422472e+09) then emode = 
-   pmode = ishft(mode2,4) and 'f'x
-
+   if ccsds.time gt 1.5409458e+09 &&  ccsds.time lt 1.5422472e+09 then emode = 2u
+   pmode = ishft(mode2,-8) and 'f'x
+   mmode = ishft(mode2,-12) and 'f'x
    str = { $
          time:        ccsds.time,$
          met:         ccsds.met, $
@@ -396,9 +397,11 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,source_dict=source_dict
          ndat:        ndat,$
          mode1:       mode1,$
          mode2:       mode2,$
+         tmode:       tmode, $
          emode:       emode, $
          emode_ori:   emode_ori, $
          pmode:       pmode, $
+         mmode:       mmode, $
          log_flag:    log_flag,$
          status_bits: status_bits,$   
          cnts:        tcnts,$
