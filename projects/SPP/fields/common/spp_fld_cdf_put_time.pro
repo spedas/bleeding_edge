@@ -26,8 +26,8 @@
 ;   pulupa
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2019-03-02 23:35:19 -0800 (Sat, 02 Mar 2019) $
-; $LastChangedRevision: 26745 $
+; $LastChangedDate: 2019-03-07 12:30:19 -0800 (Thu, 07 Mar 2019) $
+; $LastChangedRevision: 26771 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_put_time.pro $
 ;-
 
@@ -243,7 +243,6 @@ pro spp_fld_cdf_put_time, fileid, time, met, subseconds, utcstr, seq_cnt, $
     cdf_attput, fileid, 'SCALEMIN',     varid_ssec, 0, /ZVARIABLE
     cdf_attput, fileid, 'SCALEMAX',     varid_ssec, 65535, /ZVARIABLE
     cdf_attput, fileid, 'UNITS',        varid_ssec, '1/50000 s (S/C) or 1/65536 (FIELDS)', /ZVARIABLE
-    cdf_attput, fileid, 'MONOTON',      varid_ssec, 'INCREASE', /ZVARIABLE
     cdf_attput, fileid, 'CATDESC',      varid_ssec, 'Subseconds', /ZVARIABLE
     cdf_attput, fileid, 'DEPEND_0',     varid_ssec, name_ep, /ZVARIABLE
 

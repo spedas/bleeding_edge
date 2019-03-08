@@ -28,8 +28,8 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2019-01-30 21:11:34 -0800 (Wed, 30 Jan 2019) $
-;  $LastChangedRevision: 26522 $
+;  $LastChangedDate: 2019-03-07 12:38:40 -0800 (Thu, 07 Mar 2019) $
+;  $LastChangedRevision: 26772 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_dfb_wf/spp_fld_dfb_wf_load_l1.pro $
 ;
 
@@ -149,22 +149,6 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
   all_wf_decompressed_list = LIST()
   all_wf_decompressed_v_list = LIST()
 
-  ; Compute the ideal delay from the DFB digital filter.  Note that this only
-  ; applies for DFB V or E data.  The delay depends on the cadence of the
-  ; measurement, contained in the 'tap' metadata.
-
-  Ideal_delay = !null
-  delay_loc = 0d
-  print, 'Sample Rate      ', 'Ideal Cumulative delay (s) - V or E DC only'
-  for index = 0, 15, 1 do begin
-    if index EQ 0 then delay_loc += (4d / 18750d)
-    if index GT 0 then begin
-      delay_loc += (3d / (18750d/ 2d^(index)) + 1d / (18750d/ 2d^(index - 1d)))
-      Ideal_delay = [Ideal_delay, delay_loc]
-      print, 18750d/ 2d^(index), delay_loc
-    endif
-  endfor
-
   if size(d, /type) EQ 8 then begin
 
     ; Step through each packet of waveform data.  wf_i and wf_i_v are the
@@ -199,12 +183,9 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
       ; packet time, the cadence (tap), and the delay.  Add the time
       ; to the overall list of times.
 
-      ideal_delay_i = ideal_delay[d_tap.y[i]]
-      delay_i = ideal_delay_i + 0.5/(18750d / (2d^d_tap.y[i]))
-
       wf_time = d_tap.x[i] + $
         (dindgen(n_elements(wf_i))) / $
-        (18750d / (2d^d_tap.y[i])) - delay_i
+        (18750d / (2d^d_tap.y[i]))
 
       all_wf_time_list.Add, wf_time
 

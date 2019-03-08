@@ -5,6 +5,7 @@ pro spp_swp_sweepv_new_fslut, sweepv, $
                               index,$
                               nen = nen, $
                               plot = plot, $
+                              version = version,  $
                               spfac = spfac
   
   ;; NOTE: Need to add peak-detect bit to 
@@ -14,6 +15,7 @@ pro spp_swp_sweepv_new_fslut, sweepv, $
   ;; (full table has 4x as many)
   if not keyword_set(nen) then nen = 32 
 
+message,'Old routine'
 
   ;;-----------------------------------
   ;; Create new S-LUT
@@ -21,6 +23,7 @@ pro spp_swp_sweepv_new_fslut, sweepv, $
              defv1,$
              defv2,$
              spv,$
+             version = version, $
              plot  = plot,$
              nen   = nen*4, $
              spfac = spfac

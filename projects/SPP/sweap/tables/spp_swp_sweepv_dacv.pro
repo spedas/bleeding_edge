@@ -13,8 +13,10 @@ pro spp_swp_sweepv_dacv, sweepv_dac,$
                          plot = plot,$
                          hvgain = hvgain,$
                          spgain = spgain,$
+                         version = version, $
                          fixgain = fixgain
 
+message,'Obsolete'
   max = 65536.
 
   if not keyword_set(k)       then k       = 16.7
@@ -28,6 +30,7 @@ pro spp_swp_sweepv_dacv, sweepv_dac,$
   if not keyword_set(hvgain)  then hvgain  = 1000.
   if not keyword_set(spgain)  then spgain  = 20.12
   if not keyword_set(fixgain) then fixgain = 13.
+  if not keyword_set(version) then version = 2
   
 
   ;;----------------------------------------------
@@ -36,6 +39,7 @@ pro spp_swp_sweepv_dacv, sweepv_dac,$
                       k = k, rmax = rmax, vmax = vmax, $
                       nen = nen, e0 = e0, emax = emax, $
                       spfac = spfac, maxspen = maxspen, $
+                      version = version, $
                       plot = plot
   
   ;;----------------------------------------------

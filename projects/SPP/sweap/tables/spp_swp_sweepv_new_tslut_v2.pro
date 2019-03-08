@@ -7,6 +7,7 @@ pro spp_swp_sweepv_new_tslut_v2, sweepv, $
                               nen = nen, $
                               edpeak = edpeak, $
                               plot = plot, $
+                              version=version, $
                               spfac = spfac
 
 
@@ -17,6 +18,8 @@ pro spp_swp_sweepv_new_tslut_v2, sweepv, $
   if not keyword_set(edpeak) then edpeak = 0
 
 
+  nen = 32
+
   ;; Get the full sweep table and index
   spp_swp_sweepv_new_fslut_v2,sweepv,$
                    defv1,$
@@ -25,10 +28,12 @@ pro spp_swp_sweepv_new_tslut_v2, sweepv, $
                    fsindex, $
                    nen = nen, $
                    plot = plot, $
+                   version = version, $
                    spfac = spfac 
 
 
-  if 1 then begin
+if ~keyword_set(version) then version=2
+  if  version ge 2 then begin
     ;; Get start index of each sub-stepping
     ;edindex = fsindex[indgen(256)*4]   
     ;; Interval for each E-D step in full sweep
@@ -50,7 +55,7 @@ pro spp_swp_sweepv_new_tslut_v2, sweepv, $
       if (e and 1) then ind = reverse(ind)  ; reverse every odd energy step
       tsindex = [tsindex,ind]
     endfor
-  endif else begin
+  endif else begin   ; old method (version 1)
   
   
     ;; Get center index of each sub-stepping
@@ -128,7 +133,7 @@ pro spp_swp_sweepv_new_tslut_v2, sweepv, $
     endfor
   endelse    
 
-  plot=1
+  ;plot=1
   if keyword_set(plot) then begin
 ;      goto, skip
       wi,6

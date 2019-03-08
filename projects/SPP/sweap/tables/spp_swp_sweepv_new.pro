@@ -23,6 +23,8 @@ pro spp_swp_sweepv_new, sweepv, $
   if not keyword_set(maxspen) then maxspen = 5000.
   if n_elements(version) eq 0 then version =2
   
+  message,'old routine'
+  
   nang = 4096/nen
   
   exp = (emax/e0)^(1.0/(nen-1)) -1 

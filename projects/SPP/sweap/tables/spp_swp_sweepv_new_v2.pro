@@ -9,6 +9,7 @@ pro spp_swp_sweepv_new_v2, sweepv, $
                         e0 = e0, $
                         emax = emax, $
                         spfac = spfac, $
+                        version = version, $
                         maxspen = maxspen, $
                         plot = plot
 

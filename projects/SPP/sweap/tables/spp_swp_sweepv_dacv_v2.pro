@@ -13,6 +13,7 @@ pro spp_swp_sweepv_dacv_v2, sweepv_dac,$
                          plot = plot,$
                          hvgain = hvgain,$
                          spgain = spgain,$
+                         version = version, $
                          fixgain = fixgain
 
   max = 65536.
@@ -82,7 +83,7 @@ pro spp_swp_sweepv_dacv_v2, sweepv_dac,$
           xtitle = 'Time Step',$
           ytitle = 'Sweep DAC',$
           yrange = [0,max],$
-          charsize = 2,$
+          charsize = 2,/xstyle ,$
           /ystyle
      oplot,defv1_dac,color = 50,psym = 10
      oplot,defv2_dac,color = 250,psym = 10
@@ -93,7 +94,7 @@ pro spp_swp_sweepv_dacv_v2, sweepv_dac,$
           yrange = [1,max],$
           /ylog,$
           charsize = 2,$
-          /ystyle
+          /ystyle,/xstyle
      oplot,defv1_dac,color = 50,psym = 10
      oplot,defv2_dac,color = 250,psym = 10
      oplot,spv_dac,color = 150,psym = 10
@@ -104,7 +105,7 @@ pro spp_swp_sweepv_dacv_v2, sweepv_dac,$
           yrange = [0.1,vmax],$
           /ylog,$
           charsize = 2,$
-          /ystyle
+          /ystyle,/xstyle
      oplot,defv1_dac/max*fixgain*sweepv_dac/max*4*hvgain,color = 50,psym = 10
      oplot,defv2_dac/max*fixgain*sweepv_dac/max*4*hvgain,color = 250,psym = 10
      oplot,spv_dac/max*4*spgain,color = 150,psym = 10

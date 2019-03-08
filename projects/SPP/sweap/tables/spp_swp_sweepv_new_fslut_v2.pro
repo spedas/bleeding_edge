@@ -4,6 +4,7 @@ pro spp_swp_sweepv_new_fslut_v2, sweepv, $
                               spv, $
                               index,$
                               nen = nen, $
+                              version = version, $
                               plot = plot, $
                               spfac = spfac
   
@@ -23,6 +24,7 @@ pro spp_swp_sweepv_new_fslut_v2, sweepv, $
              spv,$
              plot  = plot,$
              nen   = nen*4, $
+             version = version, $
              spfac = spfac
   
   ;; Number of angles in coarse sweep, 
@@ -30,11 +32,12 @@ pro spp_swp_sweepv_new_fslut_v2, sweepv, $
   nang = 256/nen * 4            
   
   index = []
+  if ~ keyword_set(version) then version = 2
   
   ;; This makes sure we go one way w/ deflectors 
   ;; on even steps, and the other on odds
   
-  if 1 then begin
+  if  version ge 2 then begin
     
     for e=0,nen-1 do begin
       ind = (e*4+2) * nang + indgen(nang)
@@ -58,7 +61,7 @@ pro spp_swp_sweepv_new_fslut_v2, sweepv, $
           xtitle = 'Time Step',$
           ytitle = 'Sweep Voltage',$
           yrange = [0,4000],$
-          charsize = 2
+          charsize = 2,/xstyle
      oplot,defv1[index]*sweepv[index],color = 50,psym = 10
      oplot,defv2[index]*sweepv[index],color = 250,psym = 10
      plot,sweepv[index],psym=10,$
@@ -67,7 +70,7 @@ pro spp_swp_sweepv_new_fslut_v2, sweepv, $
           yrange = [0.1,4000],$
           /ylog,$
           charsize = 2,$
-          /ystyle
+          /ystyle,/xstyle
      oplot,defv1[index]*sweepv[index],color = 50,psym = 10
      oplot,defv2[index]*sweepv[index],color = 250,psym = 10
      oplot,spv[index]*sweepv[index],color = 150,psym = 10     
@@ -75,7 +78,7 @@ pro spp_swp_sweepv_new_fslut_v2, sweepv, $
           xtitle = 'Time Step',$
           ytitle = 'Sweep Voltage Ratio',$
           charsize = 2,$
-          yrange = [0,12]
+          yrange = [0,12],/xstyle
      oplot,defv1[index],psym=10,color = 50
      oplot,defv2[index],color = 250,psym = 10
      oplot,spv[index],color = 150,psym = 10
@@ -85,7 +88,7 @@ pro spp_swp_sweepv_new_fslut_v2, sweepv, $
      plot,sweepv,defv1-defv2,$,xstyle=3,ystyle=3
           psym = 7,$
           symsize=symsize,$
-          /xlog, $
+          /xlog,/xstyle, $
           xtitle = 'V_SWEEP (Volts)',$
           ytitle = 'V_DEF/V_SWEEP (D1+, D2-)',$
           charsize = 2

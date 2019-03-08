@@ -10,6 +10,7 @@ pro spp_swp_sweepv_new_tslut, sweepv, $
                               spfac = spfac
 
 
+message,'Old version'
   ;;----------------------------------------
   ;; Number of energies in fine sweep table 
   ;; (full table has 4x as many)

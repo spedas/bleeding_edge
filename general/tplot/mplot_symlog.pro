@@ -25,9 +25,9 @@
 ;CREATED BY:      Takuya Hara on 2016-09-27.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2016-09-28 16:30:09 -0700 (Wed, 28 Sep 2016) $
-; $LastChangedRevision: 21976 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-03-07 15:00:40 -0800 (Thu, 07 Mar 2019) $
+; $LastChangedRevision: 26774 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/mplot_symlog.pro $
 ;
 ;-
@@ -167,13 +167,14 @@ PRO mplot_symlog, data=data, limits=lim
   IF SIZE(yrange, /type) NE 0 THEN BEGIN
      ymax = MAX(ABS(yrange))
      ymin = MIN(yrange)
-     
      IF ymin LT 0. THEN BEGIN
         dprint, dlevel=1, verbose=verbose, 'Minimum yrange value is negative!'
-        ymin = .5
+        ymin = Max(abs(yrange))/1.0e3
      ENDIF 
   ENDIF
-  IF SIZE(ymin, /type) EQ 0 THEN ymin = .5
+  IF SIZE(ymin, /type) EQ 0 THEN BEGIN ;set ymin based on data, jmm, 2019-03-05
+     ymin = ymax/1.0e3
+  ENDIF
 
   str_element, plim, 'xtickname', REPLICATE(' ', N_ELEMENTS(xtickname)), /add_replace
   str_element, plim, 'yrange', [ymin, ymax], /add_replace
@@ -203,6 +204,19 @@ PRO mplot_symlog, data=data, limits=lim
   axis, yaxis=0, _extra=alim
   !y.tickname[*] = ytn
 
+;handle possible colors in pseudo variable, jmm, 2019-03-05
+;but only if n_colors = n_labels
+  IF KEYWORD_SET(all_labels) && $ ;Cannot just use keyword_set for colors, index
+     (keyword_set(label_index) || (n_elements(label_index) Gt 0 && label_index[0] Ne -1)) && $
+     (keyword_set(colors) || (n_elements(colors) Gt 0 && colors[0] Ne -1)) THEN BEGIN
+     nc = n_elements(colors)
+     IF NC EQ N_ELEMENTS(all_labels) THEN BEGIN ;one color for each label
+        str_element, plim, 'colors', get_colors(colors[label_index]), /add_replace
+        str_element, nlim, 'colors', get_colors(colors[label_index]), /add_replace
+        pseudo_colors = 1b      ;save a flag for labels
+     ENDIF ELSE pseudo_colors = 0b
+  ENDIF ELSE pseudo_colors = 0b
+
   mplot, data=pdat, limits=plim
   plast = CONVERT_COORD(xlast, pmax, /data, /to_norm)
   plast = REFORM(plast[1, *])
@@ -211,7 +225,7 @@ PRO mplot_symlog, data=data, limits=lim
   nlast = CONVERT_COORD(xlast, nmax, /data, /to_norm)
   nlast = REFORM(nlast[1, *])
 
-  IF N_ELEMENTS(colors) NE 0 THEN col = get_colors(colors)
+  IF KEYWORD_SET(colors) THEN col = get_colors(colors)
   labbins = REPLICATE(1, dimen2(data.y))
   IF KEYWORD_SET(labels) THEN BEGIN
      ylast = plast
@@ -244,7 +258,7 @@ PRO mplot_symlog, data=data, limits=lim
         nlabpos = (FINDGEN(nlabtot) + .5) * (yw[1] - yw[0]) / nlabtot + yw[0]
         IF labflag EQ -1 THEN nlabpos = REVERSE(nlabpos)
      ENDIF 
-     
+
      IF labflag EQ 3 THEN BEGIN ; specified label position
         IF KEYWORD_SET(labpos) THEN BEGIN
            foo = CONVERT_COORD(/data, /to_norm, FINDGEN(N_ELEMENTS(labpos)), labpos)
@@ -252,19 +266,20 @@ PRO mplot_symlog, data=data, limits=lim
         ENDIF ELSE dprint, dlevel=2, 'Custom label position not set, please set LABPOS option.' , verbose=verbose
      ENDIF 
      
-     IF KEYWORD_SET(all_labels) THEN BEGIN ; pseudo var labels
+     IF KEYWORD_SET(all_labels) THEN BEGIN ; pseudo var labels and colors
         lidx = WHERE(label_index LE N_ELEMENTS(all_labels)-1, nl)
         IF nl GT 0 THEN BEGIN
            ; get correct labels and placement for this variable (set in tplot)
            labels = all_labels[label_index[lidx]]
            IF KEYWORD_SET(nlabpos) THEN nlabpos = nlabpos[label_index[lidx]]
         ENDIF ELSE labflag = 0
+        nlab = nl               ;jmm, 2019-03-05, avoid crash at line below: ypos = nlabpos[n]
      ENDIF 
 
      labbins = REPLICATE(1, nlab)
      xpos = xw[1]
   ENDIF ELSE labflag = 0
- 
+
   IF KEYWORD_SET(labels) AND KEYWORD_SET(labflag) THEN BEGIN
      FOR n=0, nlab-1 DO BEGIN
         ypos = 0.
@@ -279,8 +294,11 @@ PRO mplot_symlog, data=data, limits=lim
            ;if count ne 0 then ypos = foo[1,fooind[ms]]
         ENDELSE 
         
-        IF ypos LE yw[1] AND ypos GE yw[0] THEN $
-           XYOUTS, xpos, ypos, '  ' + labels[n], color=col[n], /norm, charsize=lbsize
+        IF ypos LE yw[1] AND ypos GE yw[0] THEN BEGIN
+           IF pseudo_colors THEN col_n = col[label_index] $ ;jmm, 2019-03-05
+           ELSE col_n = col[n]
+           XYOUTS, xpos, ypos, '  ' + labels[n], color=col_n, /norm, charsize=lbsize
+        ENDIF
      ENDFOR 
   ENDIF 
   RETURN
