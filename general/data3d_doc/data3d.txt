@@ -1,4 +1,4 @@
- This is a short summary of the '3d data structure' used for varous SPEDAS particle instruments (including, but not necessarily limited to: THEMIS ESA and SST, FAST ESA, WIND 3DP, STEREO IMPACT, MAVEN SWEA, STATIC, SWIA).  For these instruments, the primary data are not necessarily loaded into TPLOT variables, instead the data are loaded into structures, which in turn are saved in common blocks. For example for the FAST ESA instrument, level 1 data are contained in common blocks:
+ This is a short summary of the '3d data structure' used for various SPEDAS particle instruments (including, but not necessarily limited to: THEMIS ESA and SST, FAST ESA, WIND 3DP, STEREO IMPACT, MAVEN SWEA, STATIC, SWIA).  For these instruments, the primary data are not necessarily loaded into TPLOT variables, instead the data are loaded into structures, which in turn are saved in common blocks. For example for the FAST ESA instrument, level 1 data are contained in common blocks:
 
      common fa_ies_l1, get_ind_ies, all_dat_ies
 
@@ -8,7 +8,7 @@
 
      common fa_eeb_l1, get_ind_eeb, all_dat_eeb
 
-where the index variables (get_ind_*) are pointers to a given point in the data structures (all_dat_*). The data structures are not the same for each of instruments, but are similar; some of them have documentation in the load routine. Sticking with FAST ESA L1, the strucures have the following tags:
+where the index variables (get_ind_*) are pointers to a given point in the data structures (all_dat_*). The data structures are not the same for each of instruments, but are similar; some of them have documentation in the load routine. Sticking with FAST ESA L1, the structures have the following tags:
 
  ;   PROJECT_NAME    STRING    'FAST'
  ;   DATA_NAME       STRING    'Iesa Burst'
@@ -23,12 +23,12 @@ where the index variables (get_ind_*) are pointers to a given point in the data 
  ;   DELTA_T         DOUBLE    Array[NTIMES]    -- end time - start time
  ;   NBINS           BYTE      Array[NTIMES]    -- number of angular bins
  ;   NENERGY         BYTE      Array[NTIMES]    -- number of energy bins
- ;   GEOM_FACTOR     FLOAT     Array[NTIMES]    -- geometry factor: , tpically [cm2-ster-eV/eV]
+ ;   GEOM_FACTOR     FLOAT     Array[NTIMES]    -- geometry factor: , typically [cm2-ster-eV/eV]
  ;   DATA_IND        LONG      Array[NTIMES]    -- the index of each data point (usually lindgen(ntimes))
  ;   GF_IND          INT       Array[NTIMES]    -- an index for each sample into the data.GF array, which will return the appropriate GF value used to calibrate that sample
- ;   BINS_IND        INT       Array[NTIMES]    -- an index for each sample into the data.bins array, which will return the appropriate angulare bin definition for that sample
+ ;   BINS_IND        INT       Array[NTIMES]    -- an index for each sample into the data.bins array, which will return the appropriate angular bin definition for that sample
  ;   MODE_IND        BYTE      Array[NTIMES]    -- an index for the mode value for that sample
- ;   THETA_SHIFT     FLOAT     Array[NTIMES]    -- a value for the shift from the angluar bins to actual pitch angle values
+ ;   THETA_SHIFT     FLOAT     Array[NTIMES]    -- a value for the shift from the angular bins to actual pitch angle values
  ;   THETA_MAX       FLOAT     Array[NTIMES]    -- max. value for angle theta
  ;   THETA_MIN       FLOAT     Array[NTIMES]    -- min. value for angle theta
  ;   BKG             FLOAT     Array[NTIMES]    -- background level
@@ -38,7 +38,7 @@ where the index variables (get_ind_*) are pointers to a given point in the data 
  ;   ENERGY          FLOAT     Array[96, 64, 3] -- energy values for different modes
  ;   BINS            BYTE      Array[96, 64, 3] -- angular bin values for different modes
  ;   THETA           FLOAT     Array[96, 64, 3] -- angle values for different modes
- ;   GF              FLOAT     Array[96, 64]    -- goemetry factors for different modes
+ ;   GF              FLOAT     Array[96, 64]    -- geometry factors for different modes
  ;   DENERGY         FLOAT     Array[96, 64, 3] -- width of energy bins for different modes
  ;   DTHETA          FLOAT     Array[96, 64, 3] -- width of angle bins for different modes
  ;   EFF             FLOAT     Array[96, 64, 3] -- efficiencies for different modes
@@ -46,7 +46,7 @@ where the index variables (get_ind_*) are pointers to a given point in the data 
  ;   MASS            FLOAT         0.0104389    -- proton mass in eV/(km/s)^2
  ;   CHARGE          INT              1         -- charge number
  ;   SC_POT          FLOAT     Array[NTIMES]    -- spacecraft potential in V
- ;   BKG_ARR         FLOAT     Array[96, 64]    -- an energy and angle dependent vlaue for background level
+ ;   BKG_ARR         FLOAT     Array[96, 64]    -- an energy and angle dependent value for background level
  ;   HEADER_BYTES    BYTE      Array[44, NTIMES]-- The packet data header for each sample
 
 
