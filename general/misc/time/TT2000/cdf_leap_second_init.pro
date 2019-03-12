@@ -13,12 +13,12 @@
 ;       #3 This routine may modify the environment variable CDF_LEAPSECONDTABLE and update the CDF leap second table if a new version is found.
 ;        
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-07-24 14:05:15 -0700 (Tue, 24 Jul 2018) $
-;$LastChangedRevision: 25515 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2019-03-11 09:25:23 -0700 (Mon, 11 Mar 2019) $
+;$LastChangedRevision: 26778 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/TT2000/cdf_leap_second_init.pro $
 ;-
-pro cdf_leap_second_init,reset=reset,no_download=no_download,no_update=no_update,no_clobber=no_clobber,force_download=force_download
+pro cdf_leap_second_init,reset=reset,no_download=no_download,no_update=no_update,no_clobber=no_clobber,force_download=force_download,local_data_dir=local_data_dir
 
   compile_opt idl2,hidden
 
@@ -79,6 +79,10 @@ pro cdf_leap_second_init,reset=reset,no_download=no_download,no_update=no_update
     !cdf_leap_seconds.local_data_dir = root_data_dir() + 'misc/'
   endif
    
+  if keyword_set(local_data_dir) then begin
+    !cdf_leap_seconds.local_data_dir = spd_addslash(local_data_dir)
+  endif
+  
   if keyword_set(no_download) then begin
     !cdf_leap_seconds.no_download=1
   endif

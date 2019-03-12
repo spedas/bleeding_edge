@@ -47,6 +47,9 @@ nv = n_elements(tvar)
 for n=0,nv-1 do begin
   varnam=tvar[n]
   vflag=0
+  v2flag=0
+  v3flag=0
+  
   get_data,varnam,data=d, limits=l, dlimits=dl    
   if keyword_set(d) then begin
      time = d.x
@@ -63,6 +66,16 @@ for n=0,nv-1 do begin
         vflag=1
         datav = d.v1
      endif      
+     result = where(tnames eq 'V2')
+     if result NE -1 then begin
+        v2flag = 1
+        datav2= d.v2
+     endif
+     result = where(tnames eq 'V3')
+     if result NE -1 then begin
+        v3flag = 1
+        datav3 = d.v3
+     endif
      if keyword_set(trange) then begin
          tr=time_double(trange)
          w=where(time ge tr[0] and time le tr[1],c)
@@ -78,7 +91,9 @@ for n=0,nv-1 do begin
      endif else c=n_elements(time)
      filename = dir+fname+varnam+ext
      openw,/get_lun,lun,filename,width=2500
-     if vflag then openw,/get_lun,lunv,string(dir+fname+varnam+'_v'+ext),width=2500     
+     if vflag then openw,/get_lun,lunv,string(dir+fname+varnam+'_v'+ext),width=2500    
+     if v2flag then openw, /get_lun, lunv2, string(dir+fname+varnam+'_v2'+ext),width=2500   
+     if v3flag then openw, /get_lun, lunv3, string(dir+fname+varnam+'_v3'+ext),width=2500 
  
      if keyword_set(header) then Begin
         printf, lun, ';VARIABLE NAMES: ', varnam
@@ -135,8 +150,8 @@ for n=0,nv-1 do begin
 	   endif
 
      dim = size(data, /dimensions)
-     if n_elements(dim) eq 1 then ncol=dim(0)
-     if n_elements(dim) ge 2 then ncol=dim(1)
+     if n_elements(dim) eq 1 then ncol=dim[0]
+     if n_elements(dim) ge 2 then ncol=dim[1]
      if n_elements(dim) eq 3 then begin
         col1=reform(data[*,*,0])
         col2=reform(data[*,0,*])
@@ -170,8 +185,8 @@ for n=0,nv-1 do begin
    ;if y-axis scaling information exists, write it to a file   
    if vflag then begin
      dim = size(datav, /dimensions)
-     if n_elements(dim) eq 1 then ncol=dim(0)
-     if n_elements(dim) ge 2 then ncol=dim(1)
+     if n_elements(dim) eq 1 then ncol=dim[0]
+     if n_elements(dim) ge 2 then ncol=dim[1]
      if n_elements(dim) eq 3 then begin
         col1=reform(data[*,*,0])
         col2=reform(data[*,0,*])
@@ -183,7 +198,36 @@ for n=0,nv-1 do begin
      close,lunv
      free_lun, lunv     
    endif
-
+   if v2flag then begin
+     dim = size(datav2, /dimensions)
+     if n_elements(dim) eq 1 then ncol=dim[0]
+     if n_elements(dim) ge 2 then ncol=dim[1]
+     if n_elements(dim) eq 3 then begin
+       col1=reform(data[*,*,0])
+       col2=reform(data[*,0,*])
+       datav2 = [col1, col2]
+     endif
+     for i=0l,dim[0]-1 do begin
+       printf,lunv2,reform(datav2[i,*])
+     endfor
+     close,lunv2
+     free_lun, lunv2
+   endif
+   if v3flag then begin
+     dim = size(datav3, /dimensions)
+     if n_elements(dim) eq 1 then ncol=dim[0]
+     if n_elements(dim) ge 2 then ncol=dim[1]
+     if n_elements(dim) eq 3 then begin
+       col1=reform(data[*,*,0])
+       col2=reform(data[*,0,*])
+       datav3 = [col1, col2]
+     endif
+     for i=0l,dim[0]-1 do begin
+       printf,lunv3,reform(datav3[i,*])
+     endfor
+     close,lunv3
+     free_lun, lunv3
+   endif
 endfor
 
 ;notify user if some of the names do not have tplot variables
