@@ -9,47 +9,69 @@
 ;INPUTS:
 ;
 ;KEYWORDS:
-;       TABNUM:       Table number (1-6) corresponding to predefined settings:
+;       TABNUM:       Table number (1-8) corresponding to predefined settings:
 ;
 ;                       1 : Xmax = 6., Vrange = [0.75, 750.], V0scale = 1., /old_def
 ;                           primary table for ATLO and Inner Cruise (first turnon)
 ;                             -64 < Elev < +66 ; 7 < E < 4650
 ;                              Chksum = 'CC'X
+;                              LUT = 0
 ;
 ;                       2 : Xmax = 6., Vrange = [0.75, 375.], V0scale = 1., /old_def
 ;                           alternate table for ATLO and Inner Cruise (never used)
 ;                             -64 < Elev < +66 ; 7 < E < 2340
 ;                              Chksum = '1E'X
+;                              LUT = 1
 ;
 ;                       3 : Xmax = 5.5, Vrange = [3./Ka, 750.], V0scale = 0., /old_def
 ;                           primary table for Outer Cruise
 ;                             -59 < Elev < +61 ; 3 < E < 4630
 ;                              Chksum = 'C0'X
+;                              LUT = 0
 ;                              GSEOS svn rev 8360
 ;
 ;                       4 : Xmax = 5.5, Vrange = [2./Ka, 750.], V0scale = 1., /old_def
 ;                           alternate table for Outer Cruise
 ;                             -59 < Elev < +61 ; 3 < E < 4650
 ;                              Chksum = 'DE'X
+;                              LUT = 1
 ;                              GSEOS svn rev 8361
 ;
 ;                       5 : Xmax = 5.5, Vrange = [3./Ka, 750.], V0scale = 0.
 ;                           primary table for Transition and Science
 ;                             -59 < Elev < +61 ; 3 < E < 4630
 ;                              Chksum = 'CC'X
+;                              LUT = 0
 ;                              GSEOS svn rev 8481
 ;
 ;                       6 : Xmax = 5.5, Vrange = [2./Ka, 750.], V0scale = 1.
 ;                           alternate table for Transition and Science
 ;                             -59 < Elev < +61 ; 3 < E < 4650
 ;                              Chksum = '82'X
+;                              LUT = 1
 ;                              GSEOS svn rev 8482
 ;
-;                     Default = 3 (outer cruise, VO disabled).
+;                       7 : Xmax = 5.5, Erange = [200.,200.], V0scale = 0.
+;                           Hires 32-Hz at 200 eV
+;                             -59 < Elev < +61 ; E = 200
+;                              Chksum = '00'X
+;                              LUT = 2
+;
+;                       8 : Xmax = 5.5, Erange = [50.,50.], V0scale = 0.
+;                           Hires 32-Hz at 50 eV
+;                             -59 < Elev < +61 ; E = 50
+;                              Chksum = '00'X
+;                              LUT = 3
+;
 ;                     Passed to mvn_swe_sweep.pro.
 ;
 ;       CHKSUM:       Specify the sweep table by its checksum.  See above.
-;                     This only works for table numbers > 3.
+;                     This only works for table numbers > 3.  Warning: Checksums
+;                     for tables 7 and 8 are the same, so using checksums to 
+;                     specify sweep tables is now ambiguous.  See mvn_swe_getlut,
+;                     which resolves this ambiguity with housekeeping sweep
+;                     voltage readbacks and provides a more robust method of 
+;                     determining which LUT is in use at any time.
 ;
 ;       SETCAL:       Structure holding calibration factors to modify.  Structure can
 ;                     have any combination of tags, but only the following are
@@ -66,8 +88,8 @@
 ;       DEFAULT:      Reset calibration factors to the default values (see above).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-04-04 17:28:05 -0700 (Tue, 04 Apr 2017) $
-; $LastChangedRevision: 23102 $
+; $LastChangedDate: 2019-03-15 12:42:02 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26813 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_calib.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -123,35 +145,38 @@ pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default
   endif
 
 ; Find the first valid LUT
-;   chksum =   0B means SWEA has just powered on
+;   chksum =   0B means SWEA has just powered on or is using
+;                 sweep table 7 or 8.
 ;   chksum = 255B means SWEA is loading tables
 
   ok = 0
 
   if (not ok) then begin
     if keyword_set(tabnum) then begin
-      swe_active_chksum = mvn_swe_tabnum(tabnum,/inverse)
-      if (size(swe_hsk,/type) ne 8) then begin
-        tplot_options, get=topt
-        swe_hsk = replicate(swe_hsk_str,2)
-        swe_hsk.time = topt.trange_full
-        swe_hsk.chksum = swe_active_chksum
-        swe_chksum = swe_hsk.chksum
+      if ((tabnum ge 0) and (tabnum le 8)) then begin
+        swe_active_tabnum = tabnum
+        if (size(swe_hsk,/type) ne 8) then begin
+          tplot_options, get=topt
+          swe_hsk = replicate(swe_hsk_str,2)
+          swe_hsk.time = topt.trange_full
+          swe_hsk.chksum = mvn_swe_tabnum(tabnum,/inverse)
+          swe_tabnum = swe_active_tabnum
+        endif
+        ok = 1
       endif
-      if (swe_active_chksum ne 0B) then ok = 1
     endif
   endif
 
   if (not ok) then begin
     if keyword_set(chksum) then begin
-      swe_active_chksum = chksum
-      tabnum = mvn_swe_tabnum(swe_active_chksum)
+      tabnum = mvn_swe_tabnum(chksum)
+      swe_active_tabnum = tabnum
       if (size(swe_hsk,/type) ne 8) then begin
         tplot_options, get=topt
         swe_hsk = replicate(swe_hsk_str,2)
         swe_hsk.time = topt.trange_full
-        swe_hsk.chksum = swe_active_chksum
-        swe_chksum = swe_hsk.chksum
+        swe_hsk.chksum = mvn_swe_tabnum(tabnum,/inverse)
+        swe_tabnum = swe_active_tabnum
       endif
       if (tabnum ne 0) then ok = 1
     endif
@@ -169,8 +194,8 @@ pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default
     
       indx = where((swe_chksum gt 0B) and (swe_chksum lt 255B), count)
       if (count gt 0L) then begin
-        swe_active_chksum = swe_chksum[indx[0]]
-        tabnum = mvn_swe_tabnum(swe_active_chksum)
+        tabnum = mvn_swe_tabnum(swe_chksum[indx[0]])
+        swe_active_tabnum = tabnum
         if (tabnum ne 0) then ok = 1
       endif
     endif else print,"No SWEA housekeeping."
@@ -182,7 +207,7 @@ pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default
     return
   endif
 
-  print, tabnum, swe_active_chksum, format='("LUT: ",i2.2,3x,"Checksum: ",Z2.2)'
+  print, tabnum, mvn_swe_tabnum(tabnum,/inverse), format='("LUT: ",i2.2,3x,"Checksum: ",Z2.2)'
 
 ; Integration time per energy/angle bin prior to summing bins.
 ; There are 7 deflection bins for each of 64 energy bins spanning

@@ -15,20 +15,30 @@
 ;
 ;       UNITS:    Convert data to these units.  Default = 'eflux'.
 ;
+;       TPLOT:    Make a energy-time spectrogram and store in tplot.
+;
+;       SFLG:     If TPLOT is set, then this controls whether the panel
+;                 is a color spectrogram or stacked line plots.
+;                 Default = 1 (color spectrogram).
+;
+;       PAN:      Returns the name of the tplot variable.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-09 11:38:17 -0800 (Fri, 09 Nov 2018) $
-; $LastChangedRevision: 26091 $
+; $LastChangedDate: 2019-03-15 12:39:20 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26809 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makespec.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
 ;FILE: mvn_swe_makespec.pro
 ;-
-pro mvn_swe_makespec, sum=sum, units=units
+pro mvn_swe_makespec, sum=sum, units=units, tplot=tplot, sflg=sflg, pan=ename
 
   @mvn_swe_com
   
   if not keyword_set(sum) then smode = 0 else smode = 1
   if (size(units,/type) ne 7) then units = 'eflux'
+  if (size(sflg,/type) eq 0) then sflg = 1 else sflg = keyword_set(sflg)
+  ename = ''
 
 ; Initialize the deflection scale factors, geometric factor, and MCP efficiency
 
@@ -45,7 +55,10 @@ pro mvn_swe_makespec, sum=sum, units=units
     npts = 16L*npkt               ; 16 spectra per packet
     ones = replicate(1.,16)
 
-    mvn_swe_engy = replicate(swe_engy_struct,npts)
+    if (n_elements(mvn_swe_engy) ne npts) then begin
+      mvn_swe_engy = replicate(swe_engy_struct, npts)
+      mvn_swe_getlut
+    endif
 
     for i=0L,(npkt-1L) do begin
       delta_t = swe_dt[a4[i].period]*dindgen(16) + (1.95D/2D)  ; center time offset (sample mode)
@@ -58,15 +71,15 @@ pro mvn_swe_makespec, sum=sum, units=units
       j0 = i*16L
       for j=0,15 do begin
         tspec = a4[i].time + delta_t[j]
+        dt = min(abs(tspec - swe_hsk.time),k)
 
-        dt = min(abs(tspec - swe_hsk.time),k)                       ; look for config. changes
-        if (swe_active_chksum ne swe_chksum[k]) then begin
-          mvn_swe_calib, chksum=swe_chksum[k]
+        if (mvn_swe_engy[j0+j].lut ne swe_active_tabnum) then begin
+          mvn_swe_calib, tabnum=mvn_swe_engy[j0+j].lut
           gf = total(swe_gf[*,*,0],2)/16.
           eff = total(swe_mcp_eff[*,*,0],2)/16.
         endif
+        mvn_swe_engy[j0+j].chksum = mvn_swe_tabnum(swe_active_tabnum,/inverse)
 
-        mvn_swe_engy[j0+j].chksum = swe_active_chksum                       ; sweep table
         mvn_swe_engy[j0+j].time = a4[i].time + delta_t[j]                   ; center time
         mvn_swe_engy[j0+j].met  = a4[i].met  + delta_t[j]                   ; center met
         mvn_swe_engy[j0+j].end_time = a4[i].time + delta_t[j] + delta_t[0]  ; end time
@@ -87,6 +100,8 @@ pro mvn_swe_makespec, sum=sum, units=units
         mvn_swe_engy[j0+j].var = a4[i].var[*,j]                     ; variance
       endfor
     endfor
+    
+    mvn_swe_engy.units_name = 'counts'                              ; initial units = raw counts
 
 ; The measurement cadence can change while a 16-sample packet is being assembled.
 ; It is possible to correct the timing during mode changes (typically 10 per day)
@@ -141,19 +156,42 @@ pro mvn_swe_makespec, sum=sum, units=units
     
     mvn_swe_engy.valid = 1B               ; Yep, it's valid.
 
-; Flag data at boundaries when sweep table changes
-
-  dlut = mvn_swe_engy.chksum - shift(mvn_swe_engy.chksum,1)
-  dlut[0] = 0B
-  indx = where(dlut ne 0B, count)
-  if (count gt 0L) then begin
-    mvn_swe_engy[indx].data[*] = !values.f_nan
-    mvn_swe_engy[indx].valid = 0B
-  endif
-
 ; Convert to the default or requested units
   
     mvn_swe_convert_units, mvn_swe_engy, units
+
+; Make a tplot variable
+
+    if keyword_set(tplot) then begin
+      x = mvn_swe_engy.time
+      y = transpose(mvn_swe_engy.data)
+      i = where(mvn_swe_engy.lut eq 5B, n)
+      if (n gt 0L) then v = mvn_swe_engy[i[0]].energy else v = swe_swp[*,0]
+      Emin = min(v, max=Emax)
+      i = where(mvn_swe_engy.lut gt 6B, n)
+      if (n gt 0L) then y[i,*] = !values.f_nan  ; mask hires data
+
+      ename = 'swe_a4'
+      eunits = strupcase(mvn_swe_engy[0].units_name)
+      store_data,ename,data={x:x, y:y, v:v}
+      if (sflg) then begin
+        options,ename,'spec',1
+        ylim,ename,Emin,Emax,1
+        options,ename,'ytitle','Energy (eV)'
+        options,ename,'yticks',0
+        options,ename,'yminor',0
+        zlim,ename,0,0,1
+        options,ename,'ztitle',eunits
+        options,ename,'y_no_interp',1
+        options,ename,'x_no_interp',1
+      endif else begin
+        options,ename,'spec',0
+        ylim,ename,1,1e6,1
+        options,ename,'ytitle',eunits
+        options,ename,'yticks',0
+        options,ename,'yminor',0
+      endelse
+    endif
 
   endelse
 
@@ -210,6 +248,8 @@ pro mvn_swe_makespec, sum=sum, units=units
         mvn_swe_engy_arc[j0+j].var = a5[i].var[*,j]                     ; variance
       endfor
     endfor
+    
+    mvn_swe_engy_arc.units_name = 'counts'                              ; initial units = raw counts
 
 ; The measurement cadence can change while a 16-sample packet is being assembled.
 ; It is possible to correct the timing during mode changes (typically 10 per day)
@@ -255,6 +295,11 @@ pro mvn_swe_makespec, sum=sum, units=units
 
     mvn_swe_engy_arc.gf /= scale
 
+; Mask high-resolution data
+
+  indx = where(mvn_swe_engy_arc.lut gt 6B, count)
+  if (count gt 0L) then mvn_swe_engy_arc[indx].data = !values.f_nan
+
 ; Electron rest mass [eV/(km/s)^2]
 
     mvn_swe_engy_arc.mass = mass_e
@@ -262,16 +307,6 @@ pro mvn_swe_makespec, sum=sum, units=units
 ; Validate the data
     
     mvn_swe_engy_arc.valid = 1B               ; Yep, it's valid.
-
-; Flag data at boundaries when sweep table changes
-
-    dlut = mvn_swe_engy_arc.chksum - shift(mvn_swe_engy_arc.chksum,1)
-    dlut[0] = 0B
-    indx = where(dlut ne 0B, count)
-    if (count gt 0L) then begin
-      mvn_swe_engy_arc[indx].data[*] = !values.f_nan
-      mvn_swe_engy_arc[indx].valid = 0B
-    endif
 
 ; Convert to the default or requested units
   

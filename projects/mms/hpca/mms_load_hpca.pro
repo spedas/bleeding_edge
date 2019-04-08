@@ -82,8 +82,8 @@
 ; 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-02-12 11:11:47 -0800 (Tue, 12 Feb 2019) $
-;$LastChangedRevision: 26611 $
+;$LastChangedDate: 2019-03-26 11:33:56 -0700 (Tue, 26 Mar 2019) $
+;$LastChangedRevision: 26906 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_load_hpca.pro $
 ;-
 
@@ -148,7 +148,7 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
     if array_contains(datatype, 'ion') and ~keyword_set(available) and ~keyword_set(disable_mem_usage) then begin
       mem_usage = long64(mms_estimate_mem_usage(tr, 'hpca'))
       mem_avail = get_max_memblock2()
-      dprint, dlevel=0, 'WARNING: this call will use: ' + string(mem_usage) + ' MB / available: ' + string(mem_avail) + ' MB'
+      if mem_usage gt 0 then dprint, dlevel=0, 'WARNING: this call will use: ' + string(mem_usage) + ' MB / available: ' + string(mem_avail) + ' MB'
       if mem_usage ge mem_avail then begin
         dprint, dlevel = 0, "WARNING: this request will use all of your system's available memory!"
         dprint, dlevel = 0, "Try .continue to continue loading if you're brave enough; if you think this message is an error, please report it to egrimes@igpp.ucla.edu"

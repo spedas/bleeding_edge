@@ -13,8 +13,8 @@
 ;     a6:       fast housekeeping
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-02 16:43:30 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24083 $
+; $LastChangedDate: 2019-03-15 12:43:23 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26815 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_com.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2013-03-18
@@ -22,14 +22,15 @@
 ;-
 common swe_raw, a0, a1, a2, a3, a4, a5, a6, swe_hsk, swe_3d, swe_3d_arc, $
                 swe_a0_str, swe_a2_str, swe_a4_str, swe_a6_str, swe_hsk_str, $
-                swe_hsk_names, swe_chksum, swe_active_chksum, pfp_hsk, pfp_hsk_str
+                swe_hsk_names, swe_tabnum, swe_active_tabnum, pfp_hsk, pfp_hsk_str
 
 common swe_dat, swe_3d_struct, swe_pad_struct, swe_engy_struct, swe_mag_struct, $
                 swe_engy_l2_str, swe_pad_l2_str, swe_3d_l2_str, $
                 swe_pot_struct, swe_mag1, swe_mag2, swe_sc_pot, $
                 mvn_swe_engy, mvn_swe_engy_arc, mvn_swe_pad, mvn_swe_pad_arc, $
                 mvn_swe_3d, mvn_swe_3d_arc, swe_specsvy_gf, swe_specarc_gf, $
-                swe_padsvy_gf, swe_padarc_gf, swe_3dsvy_gf, swe_3darc_gf
+                swe_padsvy_gf, swe_padarc_gf, swe_3dsvy_gf, swe_3darc_gf, $
+                swe_fpad, swe_fpad_arc
 
 common swe_cal, decom, swe_v, swe_t, swe_ne, swe_dt, swe_duty, swe_gf, swe_swp, $
                 swe_de, swe_el, swe_del, swe_az, swe_daz, swe_Ka, swe_dead, $

@@ -47,9 +47,9 @@ end
 ;   FORMAT={year:0,day:0,sec:0.d,v:fltarr(3),n:0.}
 ;   if this keyword is not specified then a default structure will be created.
 ;CREATED BY: Davin Larson
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-02-11 08:27:41 -0800 (Mon, 11 Feb 2019) $
-; $LastChangedRevision: 26591 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2019-03-21 10:45:12 -0700 (Thu, 21 Mar 2019) $
+; $LastChangedRevision: 26869 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/read_asc.pro $
 
 ;-
@@ -156,6 +156,7 @@ while not eof(lun) do begin
               1: fill = 0.
               2: fill = 0.d
            endcase
+           if keyword_set(double) then fill = 0d
            if i eq 0 then  f = create_struct(idl_validname(tags[0],/convert_all),fill)  $
            else f = create_struct(f,idl_validname(tags[i],/convert_all),fill)
        endfor

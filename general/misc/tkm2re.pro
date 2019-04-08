@@ -26,9 +26,9 @@
 ;         By default output will be called: input_name+'_RE'
 ;
 ;
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2016-10-26 13:03:09 -0700 (Wed, 26 Oct 2016) $
-;$LastChangedRevision: 22202 $
+;$LastChangedBy: adrozdov $
+;$LastChangedDate: 2019-03-26 12:08:00 -0700 (Tue, 26 Mar 2019) $
+;$LastChangedRevision: 26907 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tkm2re.pro $
 ;-
 
@@ -37,6 +37,10 @@ pro tkm2re,name,newname=newname,suffix=suffix,replace=replace,km=km
 compile_opt idl2
 
 km_in_re = 6371.2
+
+if undefined(name) then begin
+  message,'Please define tvar name'
+endif
 
 names = tnames(name)
 

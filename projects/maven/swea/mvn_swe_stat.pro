@@ -18,8 +18,8 @@
 ;    SILENT:        Shhhh.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-09-14 14:42:46 -0700 (Fri, 14 Sep 2018) $
-; $LastChangedRevision: 25805 $
+; $LastChangedDate: 2019-03-15 12:46:42 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26820 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_stat.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -73,7 +73,7 @@ pro mvn_swe_stat, npkt=npkt, full=full, silent=silent
     print,n_a3," PAD distributions (burst)"
     print,n_a4," ENGY Spectra (survey)"
     print,n_a5," ENGY Spectra (burst)"
-    print,mvn_swe_tabnum(swe_active_chksum),format='("Sweep Table: ",i2)'
+    print,swe_active_tabnum,format='("Sweep Table: ",i2)'
     print,""
 
     if (n_elements(swe_hsk) ne 2) then begin

@@ -68,8 +68,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-09 16:38:25 -0800 (Sat, 09 Feb 2019) $
-; $LastChangedRevision: 26580 $
+; $LastChangedDate: 2019-03-15 12:37:02 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26806 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -847,9 +847,12 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
 
     tmin = min(x, max=tmax)
     tsp = [tsp, tmin, tmax]
-    
-    v = swe_swp[*,0]
+
+    i = where(mvn_swe_engy.lut eq 5B, n)
+    if (n gt 0L) then v = mvn_swe_engy[i[0]].energy else v = swe_swp[*,0]
     Emin = min(v, max=Emax)
+    i = where(mvn_swe_engy.lut gt 6B, n)
+    if (n gt 0L) then y[i,*] = !values.f_nan  ; mask hires data
 
     ename = 'swe_a4'
     store_data,ename,data={x:x, y:y, v:v}
@@ -1062,20 +1065,14 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
   if (tflg) then pans = [pans[1:*],'dC','dT']
 
   if keyword_set(lut) then begin
-    nhsk = n_elements(swe_hsk)
-    lutnum = swe_hsk.ssctl
-    tabnum = replicate(0B,nhsk)
-    
-    for i=0L,(nhsk-1L) do tabnum[i] = mvn_swe_tabnum(swe_hsk[i].chksum[lutnum[i] < 3])
-    indx = where(lutnum gt 3, count)
-    if (count gt 0L) then tabnum[indx] = 0  ; table load during turn-on
-
-    store_data,'TABNUM',data={x:swe_hsk.time, y:tabnum}
-    ylim,'TABNUM',0,8,0
+    store_data,'TABNUM',data={x:mvn_swe_engy.time, y:mvn_swe_engy.lut}
+    ylim,'TABNUM',4.5,8.5,0
     options,'TABNUM','panel_size',0.5
-    options,'TABNUM','yminor',1
     options,'TABNUM','ytitle','SWE LUT'
+    options,'TABNUM','yminor',1
     options,'TABNUM','psym',10
+    options,'TABNUM','colors',[4]
+    options,'TABNUM','constant',[5,7,8]
     pans = [pans, 'TABNUM']
   endif
   

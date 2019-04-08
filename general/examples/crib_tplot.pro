@@ -24,9 +24,9 @@
 ;   If you see any useful commands missing from these cribs, please let us know.
 ;   these cribs can help double as documentation for tplot.
 ;
-; $LastChangedBy: aaflores $
-; $LastChangedDate: 2016-09-14 12:57:40 -0700 (Wed, 14 Sep 2016) $
-; $LastChangedRevision: 21832 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-03-25 14:31:57 -0700 (Mon, 25 Mar 2019) $
+; $LastChangedRevision: 26896 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_tplot.pro $
 ;-
 
@@ -337,5 +337,18 @@ print,"you can use 'store_data' to replace the data, limits, & dlimits after mod
 print,'see the (commented out) lines above for editing/adding limits structures'
 ;replot it
 tplot,['sta_SWEA_mom_flux','sta_SWEA_mom_flux_new']
+
+;you can add a tshift to the data array to shift all times by a
+;constant factor, 
+get_data, 'sta_SWEA_mom_flux', data=d, limit=l, dlimit=dl
+;str_element adds a tag to the structure, using the /add_replace
+;keyword
+str_element, d, 'tshift', 120.0, /add_replace
+store_data,'sta_SWEA_mom_flux_shift120',data=d,limit=l,dlimit=dl ;store it in a new variable
+print, 'you can add a tshift to the data array to shift all times by a constant factor'
+;replot it
+tplot,['sta_SWEA_mom_flux','sta_SWEA_mom_flux_shift120']
+
+
 
 end

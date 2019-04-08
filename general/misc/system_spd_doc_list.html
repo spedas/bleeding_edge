@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Mar 12 18:16:22 2019.<P>
+<STRONG>Last modified: </STRONG>Sun Apr  7 03:16:49 2019.<P>
  
 <HR>
  
@@ -117,6 +117,11 @@ KEYWORDS:
           If FILE is not provided then LOADCT2
           Uses the environment variable IDL_CT_FILE to determine
           the color table file if FILE is not set.
+   line_clrs: array of 24 (3x8 RGB colors)
+          To be used as 8 colors (the first 7 and the last) of the color table.
+          If this is set, but no array is provided, then a default set of 8 colors will be used
+          (four different color schemes are provided, appropriate for colorblind vision).
+
 common blocks:
    colors:      IDL color common block.  Many IDL routines rely on this.
    colors_com:

@@ -21,10 +21,8 @@
 ;   2017/09/27: jet and viridis implemented
 ;   2010/11/20: created
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
-; $LastChangedRevision: 24403 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/loadct_sd.pro $
+; $LastChangedDate: 2019-03-17 21:51:57 -0700 (Sun, 17 Mar 2019) $
+; $LastChangedRevision: 26838 $
 ;-
 
 PRO set_col_tab_from_rgb_txt, rgb_txt, bottom_c

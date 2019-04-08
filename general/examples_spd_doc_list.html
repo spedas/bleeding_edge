@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Mar 12 18:16:22 2019.<P>
+<STRONG>Last modified: </STRONG>Sun Apr  7 03:16:49 2019.<P>
  
 <HR>
  
@@ -20,6 +20,7 @@ This page was created by the IDL library routine
 <UL>
 <H1>general/examples</H1>
 <LI><A HREF="#CRIB_CALC">CRIB_CALC</A>
+<LI><A HREF="#CRIB_COLORS">CRIB_COLORS</A>
 <LI><A HREF="#CRIB_DPROC">CRIB_DPROC</A>
 <LI><A HREF="#CRIB_HAPI">CRIB_HAPI</A>
 <br>Demonstrates how to query Heliophysics API (HAPI) servers and download, load and plot data from them
@@ -46,7 +47,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="CRIB_CALC">
 <H2>CRIB_CALC</H2></A>
-<A HREF="#CRIB_DPROC">[Next Routine]</A>
+<A HREF="#CRIB_COLORS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 procedure:  crib_calc.pro
@@ -68,9 +69,63 @@ Warning: this crib uses some data from the THEMIS branch.  You'll require those 
 <STRONG>(See <A href="examples/crib_calc.pro">general/examples/crib_calc.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="CRIB_COLORS">
+<H2>CRIB_COLORS</H2></A>
+<A HREF="#CRIB_CALC">[Previous Routine]</A>
+<A HREF="#CRIB_DPROC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Name: crib_colors
+
+ Purpose: Crib on how to set colors for line plots and spectrograms
+
+ Notes: Run it by typing in IDL command line:
+           .compile crib_colors
+           .go
+           .c
+        or copy and paste.
+
+ Colors in SPEDAS:
+
+   To view the currently loaded color table, use: xpalette
+   To load the default color table for SPEDAS, type: init_crib_colors
+   The procedure loadct2 loads a color table and changes 8 colors (the first 7 and the last) to these:
+       [black, magenta, blue, cyan, green, yellow, red, white]
+   The last color in the table is used as the plot background, and it is usually white.
+   The first 7 colors are used in line plots, usually with the following order:
+       [blue, green, red, black, yellow, magenta, cyan]
+   The user can specify these 8 colors, using:
+       loadct2, 65, line_clr=line_clr
+       where line_clr is an array of 8 RGB colors: [[0,0,0],...,[255,255,255]]
+   For tplot, you can pick which colors of the color table to use in line plots, with the command &quot;options&quot;, ie:
+       options, 'tplot_name', colors=[1,2,3]
+   Directory general/misc/system contains the default color table 'colors1.tbl',
+       and also 'cbcolors2.tbl' which is a copy of IDL color table 65.
+   For IDL versions before IDL 8.6, the IDL colortable 65 can be loaded using:
+       loadct2, 15, file='cbcolors2.tbl', line_clr=1
+   Users can create their own color tables, and then save them in a file using:
+       TVLCT, red, green, blue, /GET
+       MODIFYCT, 14, 'My Table Name', red, green, blue, FILE='/path/to/file'
+   and then load them using:
+       loadct2, 14, file='/path/to/file', line_clr=1
+
+ For a color picker with colorblind choices, see:
+    http://colorbrewer2.org/#type=sequential&amp;scheme=GnBu&amp;n=6
+
+
+Warning: this crib uses some data from the THEMIS branch.  You'll require those routines to run this crib.
+
+ $LastChangedBy:$
+ $LastChangedDate:$
+ $LastChangedRevision:$
+ $URL:$
+</PRE><P>
+<STRONG>(See <A href="examples/crib_colors.pro">general/examples/crib_colors.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="CRIB_DPROC">
 <H2>CRIB_DPROC</H2></A>
-<A HREF="#CRIB_CALC">[Previous Routine]</A>
+<A HREF="#CRIB_COLORS">[Previous Routine]</A>
 <A HREF="#CRIB_HAPI">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -222,9 +277,9 @@ Warning: this crib uses some data from the THEMIS branch.  You'll require those 
    If you see any useful commands missing from these cribs, please let us know.
    these cribs can help double as documentation for tplot.
 
- $LastChangedBy: aaflores $
- $LastChangedDate: 2016-09-14 12:57:40 -0700 (Wed, 14 Sep 2016) $
- $LastChangedRevision: 21832 $
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-03-25 14:31:57 -0700 (Mon, 25 Mar 2019) $
+ $LastChangedRevision: 26896 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_tplot.pro $
 </PRE><P>
 <STRONG>(See <A href="examples/crib_tplot.pro">general/examples/crib_tplot.pro</A>)</STRONG><P>
@@ -577,7 +632,7 @@ PURPOSE: Sets default plotting colors.
         Defaults to black pen on white background, rainbow color scheme.
 
 ARGUMENTS:   
-   COLORTABLE: Index specifying the desired color table to be passed to LOADCT2
+   color_table: Index specifying the desired color table to be passed to LOADCT2
 
 </PRE><P>
 <STRONG>(See <A href="examples/init_crib_colors.pro">general/examples/init_crib_colors.pro</A>)</STRONG><P>

@@ -183,9 +183,16 @@ pro swe_a0_snap, layout=layout, model=model, keepwins=keepwins, zrange=zrange, z
 
     n_e = ddd.n_e
  
-    x = findgen(80) + 0.5
-    y = findgen(n_e) + 0.5
-    z = ddd.data[*,0:(n_e-1)]
+    x = findgen(82) - 0.5
+    y = findgen(n_e+2) - 0.5
+    zz = ddd.data[*,0:(n_e-1)]
+
+    z = x # y
+    z[1:80, 1:n_e] = zz
+    z[1:80, 0] = z[1:80, 1]
+    z[1:80, n_e+1] = z[1:80, n_e]
+    z[0,*] = z[1,*]
+    z[81,*] = z[80,*]
 
     wset, Swin
 
@@ -208,13 +215,21 @@ pro swe_a0_snap, layout=layout, model=model, keepwins=keepwins, zrange=zrange, z
       wset, Mwin
       swe_testpulser_model,group=ddd.group,result=tpmod
 
+      zz = tpmod.a0
+      z = x # y
+      z[1:80, 1:n_e] = zz
+      z[1:80, 0] = z[1:80, 1]
+      z[1:80, n_e+1] = z[1:80, n_e]
+      z[0,*] = z[1,*]
+      z[81,*] = z[80,*]
+
       title = 'Test Pulser Model: ' + pmsg
       lim = {x_no_interp:1, y_no_interp:1, xrange:[0,80], yrange:[0,n_e], zrange:zrange, $
              xmargin:[10,10], charsize:1.2, xtitle:'Angle Bin', ytitle:'Energy Bin', $
              ztitle:'Counts', title:title, xstyle:1, ystyle:1, zlog:zlog, xticks:5, xminor:4, $
              yticks:4, yminor:4}
 
-      specplot,x,y,tpmod.a0,limits=lim
+      specplot,x,y,z,limits=lim
     endif
 
 ; Print out housekeeping in another window
@@ -231,7 +246,7 @@ pro swe_a0_snap, layout=layout, model=model, keepwins=keepwins, zrange=zrange, z
   
       fmt1 = '(f7.2," V")'
       fmt2 = '(f7.2," C")'
-      fmt3 = '(Z2.2)'
+      fmt3 = '(i2)'
       
       j = jref
     
@@ -287,10 +302,9 @@ pro swe_a0_snap, layout=layout, model=model, keepwins=keepwins, zrange=zrange, z
       xyouts,x1,y1[k],/normal,"DIGT",charsize=csize
       xyouts,x2,y1[k++],/normal,string(swe_hsk[j].DIGT,format=fmt2),charsize=csize,align=1.0
       k++
-      xyouts,x1,y1[k],/normal,"CHKSUM",charsize=csize
-      xyouts,x2,y1[k],/normal,string(swe_hsk[j].CHKSUM[1],format=fmt3),charsize=csize,align=1.0,$
-                       color=col1
-      xyouts,x3,y1[k],/normal,string(swe_hsk[j].CHKSUM[0],format=fmt3),charsize=csize,align=1.0,$
+      xyouts,x1,y1[k],/normal,"TABNUM",charsize=csize
+      if (ddd.lut ge 1 and ddd.lut le 8) then col0 = 4 else col0 = 6
+      xyouts,x2,y1[k],/normal,string(ddd.lut,format=fmt3),charsize=csize,align=1.0,$
                        color=col0
     endif
 

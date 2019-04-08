@@ -207,6 +207,7 @@ w = where(times ge range[0] and times le range[1],nlabs)
 ;if nlabs le 1 then stop
 times=times[w]
 struct  = time_struct(times,local=local_time)
+struct.fsec = round(struct.fsec*1d6)/1d6
 strings = time_string(struct,/format,prec=10,local=local_time)
 
 strings1 = strmid(strings,pos[fld1],width[fld1])

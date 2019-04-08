@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Mar 12 18:16:22 2019.<P>
+<STRONG>Last modified: </STRONG>Sun Apr  7 03:16:49 2019.<P>
  
 <HR>
  
@@ -85,8 +85,8 @@ THEMIS&gt; print,off_s
 
 
  $LastChangedBy: egrimes $
- $LastChangedDate: 2017-02-14 11:10:35 -0800 (Tue, 14 Feb 2017) $
- $LastChangedRevision: 22776 $
+ $LastChangedDate: 2019-03-21 10:47:10 -0700 (Thu, 21 Mar 2019) $
+ $LastChangedRevision: 26870 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/TT2000/add_tt2000_offset.pro $
 </PRE><P>
 <STRONG>(See <A href="TT2000/add_tt2000_offset.pro">general/misc/time/TT2000/add_tt2000_offset.pro</A>)</STRONG><P>
@@ -264,22 +264,22 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
          Converts unix times to TT2000 times. 
 
  INPUT:
-         time: unix time values 
+         unix_times: unix time values 
 
  EXAMPLE:
          IDL&gt; tt2000_time = unix_to_tt2000(1.4501376e+09)
          IDL&gt; tt2000_time
-               503409664183998144
+               503409664183998107
             
           convert back:
-         IDL&gt; print, tt2000_2_unix(503409664183998144)
+         IDL&gt; print, tt2000_2_unix(503409664183998107ll)
                1.4501376e+09
         
 
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-12-05 17:32:38 -0800 (Wed, 05 Dec 2018) $
-$LastChangedRevision: 26258 $
+$LastChangedDate: 2019-03-26 16:57:58 -0700 (Tue, 26 Mar 2019) $
+$LastChangedRevision: 26912 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/TT2000/unix_to_tt2000.pro $
 </PRE><P>
 <STRONG>(See <A href="TT2000/unix_to_tt2000.pro">general/misc/time/TT2000/unix_to_tt2000.pro</A>)</STRONG><P>

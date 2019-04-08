@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Mar 12 18:16:22 2019.<P>
+<STRONG>Last modified: </STRONG>Sun Apr  7 03:16:49 2019.<P>
  
 <HR>
  
@@ -97,6 +97,8 @@ This page was created by the IDL library routine
 <br>Returns a SWEA 3D data structure constructed from L0 data or extracted
 <LI><A HREF="#MVN_SWE_GETBITS">MVN_SWE_GETBITS</A>
 <br>Extracts a sub-word defined by a range of bits from an input word.
+<LI><A HREF="#MVN_SWE_GETLUT">MVN_SWE_GETLUT</A>
+<br>Determines the sweep lookup table used for each 2-sec measurement
 <LI><A HREF="#MVN_SWE_GETPAD">MVN_SWE_GETPAD</A>
 <br>Returns a SWEA PAD data structure constructed from L0 data or extracted
 <LI><A HREF="#MVN_SWE_GETSPEC">MVN_SWE_GETSPEC</A>
@@ -123,6 +125,8 @@ This page was created by the IDL library routine
 <br>Routine to produce CDF file from SWEA pad data structures
 <LI><A HREF="#MVN_SWE_MAKECDF_SPEC">MVN_SWE_MAKECDF_SPEC</A>
 <br>Routine to produce CDF file from SWEA spec data structures
+<LI><A HREF="#MVN_SWE_MAKEFPAD">MVN_SWE_MAKEFPAD</A>
+<br>Constructs Hires PAD data structures from raw data.
 <LI><A HREF="#MVN_SWE_MAKESPEC">MVN_SWE_MAKESPEC</A>
 <br>Constructs ENGY data structure from raw data.
 <LI><A HREF="#MVN_SWE_MCPCAL">MVN_SWE_MCPCAL</A>
@@ -242,6 +246,8 @@ This page was created by the IDL library routine
 <br>Maxwell-Boltzmann distribution for fitting SWEA electron energy spectra.
 <LI><A HREF="#SWE_N_3D">SWE_N_3D</A>
 <br>Returns the density, n, 1/cm^3
+<LI><A HREF="#SWE_PAD32HZ_UNPACK">SWE_PAD32HZ_UNPACK</A>
+<br>Expands a high time resolution PAD structure into 64 single-energy
 <LI><A HREF="#SWE_PAD_SNAP">SWE_PAD_SNAP</A>
 <br>Plots PAD snapshots in a separate window for times selected with the cursor in
 <LI><A HREF="#SWE_PAD_TIMING">SWE_PAD_TIMING</A>
@@ -1222,47 +1228,69 @@ USAGE:
 INPUTS:
 
 KEYWORDS:
-       TABNUM:       Table number (1-6) corresponding to predefined settings:
+       TABNUM:       Table number (1-8) corresponding to predefined settings:
 
                        1 : Xmax = 6., Vrange = [0.75, 750.], V0scale = 1., /old_def
                            primary table for ATLO and Inner Cruise (first turnon)
                              -64 &lt; Elev &lt; +66 ; 7 &lt; E &lt; 4650
                               Chksum = 'CC'X
+                              LUT = 0
 
                        2 : Xmax = 6., Vrange = [0.75, 375.], V0scale = 1., /old_def
                            alternate table for ATLO and Inner Cruise (never used)
                              -64 &lt; Elev &lt; +66 ; 7 &lt; E &lt; 2340
                               Chksum = '1E'X
+                              LUT = 1
 
                        3 : Xmax = 5.5, Vrange = [3./Ka, 750.], V0scale = 0., /old_def
                            primary table for Outer Cruise
                              -59 &lt; Elev &lt; +61 ; 3 &lt; E &lt; 4630
                               Chksum = 'C0'X
+                              LUT = 0
                               GSEOS svn rev 8360
 
                        4 : Xmax = 5.5, Vrange = [2./Ka, 750.], V0scale = 1., /old_def
                            alternate table for Outer Cruise
                              -59 &lt; Elev &lt; +61 ; 3 &lt; E &lt; 4650
                               Chksum = 'DE'X
+                              LUT = 1
                               GSEOS svn rev 8361
 
                        5 : Xmax = 5.5, Vrange = [3./Ka, 750.], V0scale = 0.
                            primary table for Transition and Science
                              -59 &lt; Elev &lt; +61 ; 3 &lt; E &lt; 4630
                               Chksum = 'CC'X
+                              LUT = 0
                               GSEOS svn rev 8481
 
                        6 : Xmax = 5.5, Vrange = [2./Ka, 750.], V0scale = 1.
                            alternate table for Transition and Science
                              -59 &lt; Elev &lt; +61 ; 3 &lt; E &lt; 4650
                               Chksum = '82'X
+                              LUT = 1
                               GSEOS svn rev 8482
 
-                     Default = 3 (outer cruise, VO disabled).
+                       7 : Xmax = 5.5, Erange = [200.,200.], V0scale = 0.
+                           Hires 32-Hz at 200 eV
+                             -59 &lt; Elev &lt; +61 ; E = 200
+                              Chksum = '00'X
+                              LUT = 2
+
+                       8 : Xmax = 5.5, Erange = [50.,50.], V0scale = 0.
+                           Hires 32-Hz at 50 eV
+                             -59 &lt; Elev &lt; +61 ; E = 50
+                              Chksum = '00'X
+                              LUT = 3
+
                      Passed to mvn_swe_sweep.pro.
 
        CHKSUM:       Specify the sweep table by its checksum.  See above.
-                     This only works for table numbers &gt; 3.
+                     This only works for table numbers &gt; 3.  Warning: Checksums
+                     for tables 7 and 8 are the same, so using checksums to 
+                     specify sweep tables is now ambiguous.  See mvn_swe_getlut,
+                     which resolves this ambiguity with housekeeping sweep
+                     voltage readbacks and provides a more robust method of 
+                     determining which LUT is in use at any time.
 
        SETCAL:       Structure holding calibration factors to modify.  Structure can
                      have any combination of tags, but only the following are
@@ -1279,8 +1307,8 @@ KEYWORDS:
        DEFAULT:      Reset calibration factors to the default values (see above).
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-04-04 17:28:05 -0700 (Tue, 04 Apr 2017) $
- $LastChangedRevision: 23102 $
+ $LastChangedDate: 2019-03-15 12:42:02 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26813 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_calib.pro $
 
 CREATED BY:    David L. Mitchell  03-29-13
@@ -1371,8 +1399,8 @@ PURPOSE:
      a6:       fast housekeeping
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-04-22 13:27:15 -0700 (Sat, 22 Apr 2017) $
- $LastChangedRevision: 23210 $
+ $LastChangedDate: 2019-03-15 16:00:57 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26826 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_clear.pro $
 
 CREATED BY:	David L. Mitchell  2013-07-26
@@ -1401,8 +1429,8 @@ PURPOSE:
      a6:       fast housekeeping
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-10-02 16:43:30 -0700 (Mon, 02 Oct 2017) $
- $LastChangedRevision: 24083 $
+ $LastChangedDate: 2019-03-15 12:43:23 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26815 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_com.pro $
 
 CREATED BY:	David L. Mitchell  2013-03-18
@@ -1497,8 +1525,8 @@ OUTPUTS:
 	Returns the same data structure in the new units
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-04-19 13:58:52 -0700 (Wed, 19 Apr 2017) $
- $LastChangedRevision: 23195 $
+ $LastChangedDate: 2019-03-15 12:42:31 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26814 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_convert_units.pro $
 
 </PRE><P>
@@ -2109,8 +2137,8 @@ KEYWORDS:
        SHIFTPOT:      Correct for spacecraft potential.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-08-06 14:16:40 -0700 (Mon, 06 Aug 2018) $
- $LastChangedRevision: 25593 $
+ $LastChangedDate: 2019-03-15 12:45:14 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26818 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_get3d.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -2122,7 +2150,7 @@ FILE: mvn_swe_get3d.pro
 <A NAME="MVN_SWE_GETBITS">
 <H2>MVN_SWE_GETBITS</H2></A>
 <A HREF="#MVN_SWE_GET3D">[Previous Routine]</A>
-<A HREF="#MVN_SWE_GETPAD">[Next Routine]</A>
+<A HREF="#MVN_SWE_GETLUT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 FUNCTION:   mvn_swe_getbits
@@ -2156,9 +2184,38 @@ LAST MODIFICATION:   08/29/11
 <STRONG>(See <A href="swea/mvn_swe_getbits.pro">projects/maven/swea/mvn_swe_getbits.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SWE_GETLUT">
+<H2>MVN_SWE_GETLUT</H2></A>
+<A HREF="#MVN_SWE_GETBITS">[Previous Routine]</A>
+<A HREF="#MVN_SWE_GETPAD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_swe_getlut
+PURPOSE:
+  Determines the sweep lookup table used for each 2-sec measurement
+  cycle.  This information is stored in the SPEC, PAD, and 3D data
+  structures.
+
+USAGE:
+  mvn_swe_getlut
+
+INPUTS:
+
+KEYWORDS:
+
+       TPLOT:    Make a tplot variable.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2019-03-15 12:35:23 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26804 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getlut.pro $
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_swe_getlut.pro">projects/maven/swea/mvn_swe_getlut.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SWE_GETPAD">
 <H2>MVN_SWE_GETPAD</H2></A>
-<A HREF="#MVN_SWE_GETBITS">[Previous Routine]</A>
+<A HREF="#MVN_SWE_GETLUT">[Previous Routine]</A>
 <A HREF="#MVN_SWE_GETSPEC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -2192,9 +2249,12 @@ KEYWORDS:
 
        SHIFTPOT:      Correct for spacecraft potential.
 
+       HIRES:         Returns 0 for normal resolution (2-sec) data; returns 1 for
+                      high resolution (0.03-sec) data.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-08-06 14:16:52 -0700 (Mon, 06 Aug 2018) $
- $LastChangedRevision: 25594 $
+ $LastChangedDate: 2019-03-15 12:46:16 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26819 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getpad.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -2468,8 +2528,8 @@ KEYWORDS:
                       to a higher number to see more diagnostic messages.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-09-14 15:17:55 -0700 (Fri, 14 Sep 2018) $
- $LastChangedRevision: 25810 $
+ $LastChangedDate: 2019-03-15 12:47:07 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26821 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 
 CREATED BY:    David L. Mitchell  04-25-13
@@ -2784,8 +2844,8 @@ CREATED BY:    David L. Mitchell  09/18/13
    ISTP compliance scrub; DLM: 2016-04-08
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2018-11-18 14:23:15 -0800 (Sun, 18 Nov 2018) $
-   $LastChangedRevision: 26143 $
+   $LastChangedDate: 2019-03-15 16:31:45 -0700 (Fri, 15 Mar 2019) $
+   $LastChangedRevision: 26829 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makecdf_3d.pro $
 
 </PRE><P>
@@ -2823,8 +2883,8 @@ CREATED BY:    David L. Mitchell  09/18/13
    ISTP compliance scrub; DLM: 2016-04-08
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2018-11-18 14:23:15 -0800 (Sun, 18 Nov 2018) $
-   $LastChangedRevision: 26143 $
+   $LastChangedDate: 2019-03-15 16:31:37 -0700 (Fri, 15 Mar 2019) $
+   $LastChangedRevision: 26828 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makecdf_pad.pro $
 
 </PRE><P>
@@ -2834,7 +2894,7 @@ CREATED BY:    David L. Mitchell  09/18/13
 <A NAME="MVN_SWE_MAKECDF_SPEC">
 <H2>MVN_SWE_MAKECDF_SPEC</H2></A>
 <A HREF="#MVN_SWE_MAKECDF_PAD">[Previous Routine]</A>
-<A HREF="#MVN_SWE_MAKESPEC">[Next Routine]</A>
+<A HREF="#MVN_SWE_MAKEFPAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -2861,17 +2921,58 @@ CREATED BY:    David L. Mitchell  09/18/13
    ISTP compliance scrub; DLM: 2016-04-08
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2018-11-18 14:23:15 -0800 (Sun, 18 Nov 2018) $
-   $LastChangedRevision: 26143 $
+   $LastChangedDate: 2019-03-15 16:31:31 -0700 (Fri, 15 Mar 2019) $
+   $LastChangedRevision: 26827 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makecdf_spec.pro $
 
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_makecdf_spec.pro">projects/maven/swea/mvn_swe_makecdf_spec.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SWE_MAKEFPAD">
+<H2>MVN_SWE_MAKEFPAD</H2></A>
+<A HREF="#MVN_SWE_MAKECDF_SPEC">[Previous Routine]</A>
+<A HREF="#MVN_SWE_MAKESPEC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_swe_makefpad
+PURPOSE:
+  Constructs Hires PAD data structures from raw data.
+
+USAGE:
+  mvn_swe_makefpad
+
+INPUTS:
+
+KEYWORDS:
+
+       UNITS:    Convert data to these units.  Default = 'eflux'.
+
+       TPLOT:    Make tplot variables.
+
+       MERGE:    If TPLOT is set, then create normal-resolution
+                 PAD spectrograms at the same energies and merge
+                 with the high-resolution data.  Set this keyword
+                 to the desired time range, or just set it to 1 
+                 and the routine will choose a reasonable time 
+                 range that encompasses all the hires data.
+
+       PANS:     Returns names of any tplot variables.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2019-03-15 12:34:42 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26803 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makefpad.pro $
+
+CREATED BY:    David L. Mitchell  03-29-14
+FILE: mvn_swe_makespec.pro
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_swe_makefpad.pro">projects/maven/swea/mvn_swe_makefpad.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SWE_MAKESPEC">
 <H2>MVN_SWE_MAKESPEC</H2></A>
-<A HREF="#MVN_SWE_MAKECDF_SPEC">[Previous Routine]</A>
+<A HREF="#MVN_SWE_MAKEFPAD">[Previous Routine]</A>
 <A HREF="#MVN_SWE_MCPCAL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -2891,9 +2992,17 @@ KEYWORDS:
 
        UNITS:    Convert data to these units.  Default = 'eflux'.
 
+       TPLOT:    Make a energy-time spectrogram and store in tplot.
+
+       SFLG:     If TPLOT is set, then this controls whether the panel
+                 is a color spectrogram or stacked line plots.
+                 Default = 1 (color spectrogram).
+
+       PAN:      Returns the name of the tplot variable.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-11-09 11:38:17 -0800 (Fri, 09 Nov 2018) $
- $LastChangedRevision: 26091 $
+ $LastChangedDate: 2019-03-15 12:39:20 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26809 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makespec.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -3141,8 +3250,8 @@ CREATED BY:      Takuya Hara on 2015-07-20.
 
 LAST MODIFICATION:
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2015-11-09 12:58:41 -0800 (Mon, 09 Nov 2015) $
- $LastChangedRevision: 19318 $
+ $LastChangedDate: 2019-03-15 12:41:01 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26811 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_padmap_32hz.pro $
 
 </PRE><P>
@@ -3392,8 +3501,8 @@ KEYWORDS:
 CREATED BY:      Takuya Hara on 2014-09-24.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-02-18 12:27:03 -0800 (Sun, 18 Feb 2018) $
- $LastChangedRevision: 24737 $
+ $LastChangedDate: 2019-03-15 12:44:29 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26817 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_resample.pro $
 
 </PRE><P>
@@ -3600,8 +3709,8 @@ VERSION:   1.0
    Created by Matt Fillingim
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2015-11-09 15:06:46 -0800 (Mon, 09 Nov 2015) $
-   $LastChangedRevision: 19323 $
+   $LastChangedDate: 2019-03-20 13:57:40 -0700 (Wed, 20 Mar 2019) $
+   $LastChangedRevision: 26864 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_readcdf_3d.pro $
 
 </PRE><P>
@@ -3631,8 +3740,8 @@ VERSION:   1.0
    Created by Matt Fillingim
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2015-11-09 15:06:23 -0800 (Mon, 09 Nov 2015) $
-   $LastChangedRevision: 19321 $
+   $LastChangedDate: 2019-03-20 13:57:40 -0700 (Wed, 20 Mar 2019) $
+   $LastChangedRevision: 26864 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_readcdf_pad.pro $
 
 </PRE><P>
@@ -3662,8 +3771,8 @@ VERSION:   1.0
    Created by Matt Fillingim
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2015-11-09 15:06:32 -0800 (Mon, 09 Nov 2015) $
-   $LastChangedRevision: 19322 $
+   $LastChangedDate: 2019-03-20 13:57:40 -0700 (Wed, 20 Mar 2019) $
+   $LastChangedRevision: 26864 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_readcdf_spec.pro $
 
 </PRE><P>
@@ -3856,11 +3965,14 @@ KEYWORDS:
 
    SHAPE:     Include a panel for the electron shape parameter.
 
+   MAGFULL:   If set, then try to load full resolution (32 Hz) MAG data.
+              Default is to load 1-sec data.
+
 OUTPUTS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-02-27 11:10:19 -0800 (Wed, 27 Feb 2019) $
- $LastChangedRevision: 26716 $
+ $LastChangedDate: 2019-03-15 12:36:16 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26805 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sciplot.pro $
 
 </PRE><P>
@@ -4619,8 +4731,8 @@ KEYWORDS:
     SILENT:        Shhhh.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-09-14 14:42:46 -0700 (Fri, 14 Sep 2018) $
- $LastChangedRevision: 25805 $
+ $LastChangedDate: 2019-03-15 12:46:42 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26820 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_stat.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -4642,8 +4754,8 @@ PURPOSE:
   All times are for the center of the sample.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-10-02 16:48:11 -0700 (Mon, 02 Oct 2017) $
- $LastChangedRevision: 24093 $
+ $LastChangedDate: 2019-03-15 12:43:46 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26816 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_struct.pro $
 
 CREATED BY:	David L. Mitchell  2013-07-26
@@ -4727,8 +4839,8 @@ KEYWORDS:
        BURST:        Plot a color bar showing PAD burst coverage.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-02-09 16:38:25 -0800 (Sat, 09 Feb 2019) $
- $LastChangedRevision: 26580 $
+ $LastChangedDate: 2019-03-15 12:37:02 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26806 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -5069,8 +5181,8 @@ KEYWORDS:
        INVERSE:      Given a table number, return its checksum.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-11-09 11:41:48 -0800 (Fri, 09 Nov 2018) $
- $LastChangedRevision: 26098 $
+ $LastChangedDate: 2019-03-15 12:38:10 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26808 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_tabnum.pro $
 
 CREATED BY:	David L. Mitchell  2014-01-03
@@ -5088,23 +5200,26 @@ FILE:  mvn_swe_tabnum.pro
 FUNCTION:   mvn_swe_validlut
 PURPOSE:
   Checks for valid sweep lookup tables (LUTs).  The valid
-  tables are: 3 (0xC0), 5 (0xCC) and 6 (0x82).  Table 3 is 
-  primary during cruise, and was superceded by table 5 during 
-  transition on Oct. 6, 2014.  Table 6 is very similar to 5, 
-  except that it enables V0.
+  tables are: 3, 5 and 6.  Table 3 is primary during cruise,
+  and was superceded by table 5 during transition on Oct. 6,
+  2014.  Table 6 is very similar to 5, except that it enables
+  V0.
 
+  The high resolution tables (7 and 8) do not comform to the
+  PDS archive specification and will need to be handled
+  separately.
 
 USAGE:
-  valid = mvn_swe_validlut(chksum)
+  valid = mvn_swe_validlut(lut)
 
 INPUTS:
-   chksum:    LUT checksum (see mvn_swe_sweep.pro)
+   lut:       Sweep table number.
 
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-01-09 16:37:53 -0800 (Mon, 09 Jan 2017) $
- $LastChangedRevision: 22543 $
+ $LastChangedDate: 2019-03-15 16:32:12 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26830 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_validlut.pro $
 
 CREATED BY:    David L. Mitchell  02-01-15
@@ -5962,7 +6077,7 @@ FILE: swe_maxbol.pro
 <A NAME="SWE_N_3D">
 <H2>SWE_N_3D</H2></A>
 <A HREF="#SWE_MAXBOL">[Previous Routine]</A>
-<A HREF="#SWE_PAD_SNAP">[Next Routine]</A>
+<A HREF="#SWE_PAD32HZ_UNPACK">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 FUNCTION:	swe_n_3d(dat,EBINS=ebins,ABINS=abins,DBINS=dbins)
@@ -5991,9 +6106,45 @@ LAST MODIFICATION:
 <STRONG>(See <A href="swea/swe_n_3d.pro">projects/maven/swea/swe_n_3d.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SWE_PAD32HZ_UNPACK">
+<H2>SWE_PAD32HZ_UNPACK</H2></A>
+<A HREF="#SWE_N_3D">[Previous Routine]</A>
+<A HREF="#SWE_PAD_SNAP">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION:   swe_pad32hz_unpack
+PURPOSE:
+  Expands a high time resolution PAD structure into 64 single-energy
+  PAD structures, with appropriate timing, magnetic field data, and
+  pitch angle mapping.
+
+USAGE:
+  pad32hz = swe_pad32hz_unpack(pad)
+
+INPUTS:
+       pad:          Array of 64-energy PAD structures with sweep
+                     tables &gt; 6.  (Tables &lt;= 6 are ignored.)
+
+OUTPUT:
+       pad32Hz:      Array of single-energy PAD structures with
+                     high time resolution.
+
+KEYWORDS:
+       none
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2019-03-15 12:34:08 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26802 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad32hz_unpack.pro $
+
+CREATED BY:	David L. Mitchell  2019-03-01
+</PRE><P>
+<STRONG>(See <A href="swea/swe_pad32hz_unpack.pro">projects/maven/swea/swe_pad32hz_unpack.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SWE_PAD_SNAP">
 <H2>SWE_PAD_SNAP</H2></A>
-<A HREF="#SWE_N_3D">[Previous Routine]</A>
+<A HREF="#SWE_PAD32HZ_UNPACK">[Previous Routine]</A>
 <A HREF="#SWE_PAD_TIMING">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -6157,8 +6308,8 @@ KEYWORDS:
         NOTE:         Insert a text label.  Keep it short.
         
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-02-09 16:36:29 -0800 (Sat, 09 Feb 2019) $
- $LastChangedRevision: 26576 $
+ $LastChangedDate: 2019-03-15 12:37:38 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26807 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12

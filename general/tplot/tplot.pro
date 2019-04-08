@@ -27,7 +27,7 @@
 ;             current window is used.
 ;   VAR_LABEL:  String [array]; Variable(s) used for putting labels along
 ;     the bottom. This allows quantities such as altitude to be labeled.
-;   VERSION:  Must be 1,2,3, or 4 (3 is default)  Uses a different labeling
+;   VERSION:  Must be 1,2,3,4,5 or 6 (3 is default)  Uses a different labeling
 ;   scheme.  Version 4 is for rocket-type time scales.
 ;   OVERPLOT: Will not erase the previous screen if set.
 ;   NAMES:    The names of the tplot variables that are plotted.
@@ -90,9 +90,9 @@
 ;Still have questions:
 ;   Send e-mail to:  tplot@ssl.berkeley.edu    someone might answer!
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-08 09:43:52 -0800 (Sat, 08 Dec 2018) $
-; $LastChangedRevision: 26282 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-03-25 11:48:41 -0700 (Mon, 25 Mar 2019) $
+; $LastChangedRevision: 26890 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot.pro $
 ;-
 
@@ -275,12 +275,12 @@ str_element,def_opts,'local_time',local_time
 
 if keyword_set(nocolor) then str_element,def_opts,'nocolor',nocolor,/add_replace
 
-nvlabs = [0.,0.,0.,1.,0.,0.]
+nvlabs = [0.,0.,0.,1.,0.,0.,0.]
 str_element,tplot_vars,'options.var_label',var_label
 if keyword_set(var_label) then if size(/type,var_label) eq 7 then $
     if ndimen(var_label) eq 0 then var_label=tnames(var_label) ;,/extrac)
 ;ensure the index does not go out of range, other values will use default
-if def_opts.version lt 1 or def_opts.version gt 5 then def_opts.version = 3
+if def_opts.version lt 1 or def_opts.version gt 6 then def_opts.version = 3
 nvl = n_elements(var_label) + nvlabs[def_opts.version]
 def_opts.ymargin = def_opts.ymargin + [nvl,0.]
 
@@ -404,6 +404,8 @@ for i=0,nd-1 do begin
         tshift=tshift[0]
 ;  printdat,name,tshift,limits2,dtype
         data.x = (data.x - (time_offset-tshift))/time_scale
+;data.x is no longer unix time here, but is measured from th
+;time_offset value
      endif  else data={x:dindgen(2),y:findgen(2)}
      extract_tags,newlim,data,      except = ['x','y','dy','v']
      extract_tags,newlim,limits2
@@ -446,7 +448,9 @@ for i=0,nd-1 do begin
      rev_color_table= struct_value(newlim,'reverse_color_table',default=0)
      if color_table ge 0 then loadct2,color_table,previous_ct=pct,reverse=rev_color_table
 ;if debug() then stop
+
      call_procedure,routine,data=data,limits=newlim
+
      if color_table ne pct then loadct2,pct
      
      ;get offset into color array (for pseudo vars)
@@ -460,6 +464,7 @@ for i=0,nd-1 do begin
    tplot_vars.settings.y[i]=!y
    tplot_vars.settings.clip[*,i] = !p.clip
 endfor
+
 str_element,tplot_vars,'settings.varnames',varnames,/add_replace
 str_element,tplot_vars,'settings.d',!d,/add_replace
 str_element,tplot_vars,'settings.p',!p,/add_replace

@@ -2,17 +2,17 @@
 <html>
  
 <head>
-<TITLE>SPEDAS SW Help for spdsw_r26785_2019-03-12</TITLE>
+<TITLE>SPEDAS SW Help for spdsw_r26953_2019-04-07</TITLE>
 </head>
  
 <body>
-<H2>SPEDAS SW Help for spdsw_r26785_2019-03-12</H2>
+<H2>SPEDAS SW Help for spdsw_r26953_2019-04-07</H2>
 <P>
 This page was created by the IDL library routine 
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Mar 12 18:16:22 2019.<P>
+<STRONG>Last modified: </STRONG>Sun Apr  7 03:16:49 2019.<P>
  
 <HR>
  
@@ -257,6 +257,8 @@ projects/SPP/sweap/SPAN/common</A>
 projects/SPP/sweap/SPAN/ion</A>
 <LI><A HREF="projects/SPP/sweap/SPAN/ion/CDF_spd_doc_list.html">
 projects/SPP/sweap/SPAN/ion/CDF</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion/DEPRECATED_spd_doc_list.html">
+projects/SPP/sweap/SPAN/ion/DEPRECATED</A>
 <LI><A HREF="projects/SPP/sweap/SWEM_spd_doc_list.html">projects/SPP/sweap/SWEM
 </A>
 <LI><A HREF="projects/SPP/sweap/tables_spd_doc_list.html">
@@ -1043,6 +1045,7 @@ COTRANS_SET_COORD</A>
 <LI><A HREF="general/examples_spd_doc_list.html#CRIB_CALC">CRIB_CALC</A>
 <LI><A HREF="external/IDL_GEOPACK/examples_spd_doc_list.html#
 CRIB_CALCULATE_LSHELL">CRIB_CALCULATE_LSHELL</A>
+<LI><A HREF="general/examples_spd_doc_list.html#CRIB_COLORS">CRIB_COLORS</A>
 <LI><A HREF="general/examples_spd_doc_list.html#CRIB_DPROC">CRIB_DPROC</A>
 <LI><A HREF="general/examples_spd_doc_list.html#CRIB_HAPI">CRIB_HAPI</A>
 <br>Demonstrates how to query Heliophysics API (HAPI) servers and download, load and plot data from them
@@ -4949,6 +4952,9 @@ MVN_SWE_FOVPLOT</A>
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_GETBITS">
 MVN_SWE_GETBITS</A>
 <br>Extracts a sub-word defined by a range of bits from an input word.
+<LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_GETLUT">
+MVN_SWE_GETLUT</A>
+<br>Determines the sweep lookup table used for each 2-sec measurement
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_GETPAD">
 MVN_SWE_GETPAD</A>
 <br>Returns a SWEA PAD data structure constructed from L0 data or extracted
@@ -4997,6 +5003,9 @@ MVN_SWE_MAKECDF_PAD</A>
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_MAKECDF_SPEC">
 MVN_SWE_MAKECDF_SPEC</A>
 <br>Routine to produce CDF file from SWEA spec data structures
+<LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_MAKEFPAD">
+MVN_SWE_MAKEFPAD</A>
+<br>Constructs Hires PAD data structures from raw data.
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_MAKESPEC">
 MVN_SWE_MAKESPEC</A>
 <br>Constructs ENGY data structure from raw data.
@@ -5545,7 +5554,7 @@ POES_WRITE_CONFIG</A>
 <LI><A HREF="general/tools/fitting_spd_doc_list.html#POLYCURVE">POLYCURVE</A>
 <br>Evaluates a (5th degree) polynomial (can be used with &quot;FIT&quot;)
 <LI><A HREF="general/tools/fitting_spd_doc_list.html#POLYCURVE2">POLYCURVE2</A>
-<br>Evaluates a (5th degree) polynomial (can be used with &quot;FIT&quot;)
+<br>Evaluates a (Nth degree) polynomial (can be used with &quot;FIT&quot;)
 <LI><A HREF="general/misc_spd_doc_list.html#POPEN">POPEN</A>
 <br>Change plot device to postscript.
 <LI><A HREF="general/misc_spd_doc_list.html#POPEN_COM">POPEN_COM</A>
@@ -7413,6 +7422,9 @@ SPD_EXTRACT_TVAR_METADATA</A>
 <br>Turns the current tplot window into a &quot;flipbook&quot; containing:
 <LI><A HREF="general/missions/wind/waves_spd_doc_list.html#
 SPD_GEN_PROMPT_ROUTINE">SPD_GEN_PROMPT_ROUTINE</A>
+<LI><A HREF="general/spedas_tools_spd_doc_list.html#SPD_GET_COLOR">SPD_GET_COLOR
+</A>
+<br>Return color index by name
 <LI><A HREF="general/cotrans_spd_doc_list.html#SPD_GET_NUT_ANGLES_VEC">
 SPD_GET_NUT_ANGLES_VEC</A>
 <LI><A HREF="general/spedas_tools/spd_download_spd_doc_list.html#SPD_GET_PROXY">
@@ -8414,17 +8426,55 @@ SPP_SWP_SPE_PROD_APDAT__DEFINE">SPP_SWP_SPE_PROD_APDAT__DEFINE</A>
 SPP_SWP_SPI_CMN_L2VARARR">SPP_SWP_SPI_CMN_L2VARARR</A>
 <br>Returns an array with common block variable names for the input
 <LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_CONFIG_FLIGHT_BACKGROUND">SPP_SWP_SPI_CONFIG_FLIGHT_BACKGROUND</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_CONFIG_FLIGHT_CALIBRATION">SPP_SWP_SPI_CONFIG_FLIGHT_CALIBRATION</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_CONFIG_FLIGHT_CRUISE">SPP_SWP_SPI_CONFIG_FLIGHT_CRUISE</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_CONFIG_FLIGHT_HIGH">SPP_SWP_SPI_CONFIG_FLIGHT_HIGH</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_CONFIG_FLIGHT_LOW">SPP_SWP_SPI_CONFIG_FLIGHT_LOW</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_CONFIG_FLIGHT_MOMENTS">SPP_SWP_SPI_CONFIG_FLIGHT_MOMENTS</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_CONFIG_MODE">SPP_SWP_SPI_CONFIG_MODE</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_CONFIG_SWEM_STATE">SPP_SWP_SPI_CONFIG_SWEM_STATE</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
 SPP_SWP_SPI_FLIGHT_ANO">SPP_SWP_SPI_FLIGHT_ANO</A>
 <LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
 SPP_SWP_SPI_FLIGHT_DAC">SPP_SWP_SPI_FLIGHT_DAC</A>
 <LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
 SPP_SWP_SPI_FLIGHT_DEF">SPP_SWP_SPI_FLIGHT_DEF</A>
 <LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_FLIGHT_ELO">SPP_SWP_SPI_FLIGHT_ELO</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_FLIGHT_ESA">SPP_SWP_SPI_FLIGHT_ESA</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
 SPP_SWP_SPI_FLIGHT_EVT">SPP_SWP_SPI_FLIGHT_EVT</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_FLIGHT_GEO">SPP_SWP_SPI_FLIGHT_GEO</A>
 <LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
 SPP_SWP_SPI_FLIGHT_LOA">SPP_SWP_SPI_FLIGHT_LOA</A>
 <LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_FLIGHT_MAS[1]">SPP_SWP_SPI_FLIGHT_MAS[1]</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_FLIGHT_MAS[2]">SPP_SWP_SPI_FLIGHT_MAS[2]</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_FLIGHT_MAS[2]">SPP_SWP_SPI_FLIGHT_MAS[2]</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_FLIGHT_MAS[3]">SPP_SWP_SPI_FLIGHT_MAS[3]</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_FLIGHT_MAS[4]">SPP_SWP_SPI_FLIGHT_MAS[4]</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_FLIGHT_MAS[5]">SPP_SWP_SPI_FLIGHT_MAS[5]</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_FLIGHT_MAS[6]">SPP_SWP_SPI_FLIGHT_MAS[6]</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
 SPP_SWP_SPI_FLIGHT_MEM">SPP_SWP_SPI_FLIGHT_MEM</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_FLIGHT_MRAM_MAP">SPP_SWP_SPI_FLIGHT_MRAM_MAP</A>
 <LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
 SPP_SWP_SPI_FLIGHT_NRG">SPP_SWP_SPI_FLIGHT_NRG</A>
 <LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
@@ -8433,10 +8483,16 @@ SPP_SWP_SPI_FLIGHT_PAR">SPP_SWP_SPI_FLIGHT_PAR</A>
 SPP_SWP_SPI_FLIGHT_SCI">SPP_SWP_SPI_FLIGHT_SCI</A>
 <LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
 SPP_SWP_SPI_FLIGHT_TBL">SPP_SWP_SPI_FLIGHT_TBL</A>
-<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#SPP_SWP_SPI_PARAM">
-SPP_SWP_SPI_PARAM</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
+SPP_SWP_SPI_FLIGHT_TOF">SPP_SWP_SPI_FLIGHT_TOF</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#SPP_SWP_SPI_LOAD">
+SPP_SWP_SPI_LOAD</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion/DEPRECATED_spd_doc_list.html#
+SPP_SWP_SPI_PARAM_RL_OLD">SPP_SWP_SPI_PARAM_RL_OLD</A>
 <LI><A HREF="projects/SPP/sweap/SPAN_spd_doc_list.html#
 SPP_SWP_SPI_PROD_APDAT__DEFINE">SPP_SWP_SPI_PROD_APDAT__DEFINE</A>
+<LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#SPP_SWP_SPI_SWEEPS">
+SPP_SWP_SPI_SWEEPS</A>
 <LI><A HREF="projects/SPP/sweap/tables_spd_doc_list.html#SPP_SWP_SPI_TABLES">
 SPP_SWP_SPI_TABLES</A>
 <LI><A HREF="projects/SPP/sweap/SPAN/ion_spd_doc_list.html#
@@ -8583,6 +8639,9 @@ SWE_ENGY_TIMING</A>
 <br>Maxwell-Boltzmann distribution for fitting SWEA electron energy spectra.
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#SWE_N_3D">SWE_N_3D</A>
 <br>Returns the density, n, 1/cm^3
+<LI><A HREF="projects/maven/swea_spd_doc_list.html#SWE_PAD32HZ_UNPACK">
+SWE_PAD32HZ_UNPACK</A>
+<br>Expands a high time resolution PAD structure into 64 single-energy
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#SWE_PAD_SNAP">SWE_PAD_SNAP
 </A>
 <br>Plots PAD snapshots in a separate window for times selected with the cursor in

@@ -28,9 +28,9 @@
 ;
 ;HISTORY:
 ;
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2014-02-11 10:54:32 -0800 (Tue, 11 Feb 2014) $
-;$LastChangedRevision: 14326 $
+;$LastChangedBy: jimmpc1 $
+;$LastChangedDate: 2019-03-21 13:15:51 -0700 (Thu, 21 Mar 2019) $
+;$LastChangedRevision: 26874 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/objects/spd_ui_time__define.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -254,7 +254,7 @@ PRO SPD_UI_TIME__DEFINE
               hour: 0,                  $ ; hours (0-23)
               min: 0,                   $ ; minutes (0-59)
               sec: 0,                   $ ; seconds (0-59)
-              fsec: 0,                  $ ; fractional seconds (0-.999999)
+              fsec: 0.0D,               $ ; fractional seconds (0-.999999)
               dayNum: 0l,               $ ; days since 0 AD
               doy: 0,                   $ ; day of year (1-366)
               dow: 0,                   $ ; day of week (1-7)

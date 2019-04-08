@@ -50,6 +50,7 @@
 ;                       useful if you accidently save an incorrect password, or if your SDC password has changed
 ;         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in
 ;                       SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
+;         no_spec:      flag to set tplot options to linear rather than the default of spec
 ;
 ; EXAMPLES:
 ;         to load/plot the EPD data for probe a on 2/20/2019:
@@ -65,7 +66,7 @@
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elfin/elf_load_fgm.pro $
 ;-
 pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
-  level = level, data_rate = data_rate, $
+  level = level, data_rate = data_rate, no_spec = no_spec, $
   local_data_dir = local_data_dir, source = source, $
   get_support_data = get_support_data, no_cal=no_cal, $
   tplotnames = tplotnames, no_color_setup = no_color_setup, $
@@ -83,6 +84,7 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
     dprint, dlevel = 1, 'There are only 2 ELFIN probes - a and b. Please select again.'
     return
   endif
+
   ; check for valid probe names
   probes = strlowcase(probes)
   idx = where(probes EQ 'a', acnt)
@@ -91,45 +93,53 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
     dprint, dlevel = 1, 'Invalid probe name. Valid probes are a and/or b. Please select again.'
     return
   endif
-  if undefined(level) then level = 'l1'
-  if undefined(datatype) AND level eq 'l1' then datatype = ['pef']
-  if undefined(datatype) AND level eq 'l2' then datatype = ['pef_eflux']
-  datatype = strlowcase(datatype) 
+  
+  if undefined(level) then level = 'l1' 
+  ; check for valid datatypes for level 1
+  if undefined(datatype) AND level eq 'l1' then datatype = ['pef', 'pif'] $
+    else datatype = strlowcase(datatype) 
+  idx = where(datatype EQ 'pif', icnt)
+  idx = where(datatype EQ 'pef', ecnt)
+  if icnt EQ 0 && ecnt EQ 0 then begin
+    dprint, dlevel = 1, 'Invalid data type name. Valid types are pef and/or pif. Please select again.'
+    return
+  endif
+  
+  if undefined(datatype) AND level eq 'l2' then datatype = ['pef_eflux'] $
+    else datatype = strlowcase(datatype)
   if undefined(suffix) then suffix = ''
   if undefined(data_rate) then data_rate = ''
 
   elf_load_data, trange = trange, probes = probes, level = level, instrument = 'epd', $
     data_rate = data_rate, local_data_dir = local_data_dir, source = source, $
     datatype = datatype, get_support_data = get_support_data, $
-    tplotnames = tplotnames, no_color_setup = no_color_setup, time_clip = time_clip, $
+    tplotnames = new_tvars, no_color_setup = no_color_setup, time_clip = time_clip, $
     no_update = no_update, suffix = suffix, varformat = varformat, cdf_filenames = cdf_filenames, $
     cdf_version = cdf_version, latest_version = latest_version, min_version = min_version, $
     cdf_records = cdf_records, spdf = spdf, available = available, versions = versions, $
     always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
 
-  ; check that tvars were loaded
-  ;if existing_tvars NE '' then  new_tvars = ssl_set_complement(existing_tvars, tnames()) $
-  ;else new_tvars=tnames()
-  new_tvars=tnames()
+  ; no reason to continue if no data were loaded
+  if undefined(new_tvars) || new_tvars[0] EQ '' then begin
+    dprint, dlevel = 1, 'No data was loaded.'
+    return
+  endif
   
   ; fix metadata 
-  if n_elements(new_tvars) GT 0 && new_tvars[0] NE '' then begin
-    for i=0,n_elements(new_tvars)-1 do begin
-      get_data, new_tvars[i], data=d, dlimits=dl
-;      ebins = elf_convert_epd_mv2eng()
-      store_data, new_tvars[i], data={x:d.x, y:d.y, v:findgen(16) } 
-      options, /def, new_tvars[i], 'spec', 1
-      options, /def, new_tvars[i], 'zlog', 1
-      options, /def, new_tvars[i], 'no_interp', 1
-      options, /def, new_tvars[i], 'ystyle', 1
-    endfor
-  endif
+  for i=0,n_elements(new_tvars)-1 do begin
+    get_data, new_tvars[i], data=d, dlimits=dl, limits=l
+    ;ebins = elf_convert_epd_mv2eng()
+    store_data, new_tvars[i], data={x:d.x, y:d.y, v:findgen(16) } 
+;    options, /def, new_tvars[i], 'spec', 1
+;    options, /def, new_tvars[i], 'zlog', 1
+;    options, /def, new_tvars[i], 'no_interp', 1
+;    options, /def, new_tvars[i], 'ystyle', 1
+  endfor
+    
   ; add energy numbers
   
   ; no reason to continue if the user only requested available data
   if keyword_set(available) then return
 
-  ; no reason to continue if no data were loaded
-  if undefined(tplotnames) then return
 
 END

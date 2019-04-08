@@ -7,8 +7,8 @@
 ;  All times are for the center of the sample.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-02 16:48:11 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24093 $
+; $LastChangedDate: 2019-03-15 12:43:46 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26816 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_struct.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2013-07-26
@@ -139,7 +139,7 @@ pro mvn_swe_struct
                  ctype   : 0B            , $    ; compression type
                  group   : 0B            , $    ; grouping (2^N adjacent bins)
                  period  : 0B            , $    ; sampling interval (2*2^period sec)
-                 lut     : 0B            , $    ; LUT in use (0-7)
+                 lut     : 0B            , $    ; LUT in use (0-8)
                  e0      : 0             , $    ; starting energy step (0, 16, 32, 48)
                  data    : fltarr(80,16) , $    ; data array (80A x 16E)
                  var     : fltarr(80,16)    }   ; variance array (80A x 16E)
@@ -153,6 +153,7 @@ pro mvn_swe_struct
                  ctype   : 0B            , $    ; compression type
                  group   : 0B            , $    ; grouping (2^N adjacent bins)
                  period  : 0B            , $    ; sampling interval (2*2^period sec)
+                 lut     : 0B            , $    ; LUT in use (0-8)
                  Baz     : 0B            , $    ; magnetic field azimuth (0-255)
                  Bel     : 0B            , $    ; magnetic field elevation (0-39)
                  data    : fltarr(16,64) , $    ; data array (16A x 64E)
@@ -167,7 +168,7 @@ pro mvn_swe_struct
                 ctype   : 0B            , $    ; compression type
                 smode   : 0B            , $    ; summing mode (0 = off, 1 = on)
                 period  : 0B            , $    ; sampling interval (2*2^period sec)
-                lut     : 0B            , $    ; LUT in use (0-7)
+                lut     : 0B            , $    ; LUT in use (0-8)
                 data    : fltarr(64,16) , $    ; data array (64E x 16T)
                 var     : fltarr(64,16)    }   ; variance array (64E x 16T)
 
@@ -188,6 +189,7 @@ pro mvn_swe_struct
                    units_name      : 'counts'                , $
                    units_procedure : 'mvn_swe_convert_units' , $
                    chksum          : 0B                      , $  ; LUT checksum
+                   lut             : 0B                      , $  ; active LUT
                    valid           : 0B                      , $
                    met             : 0D                      , $  ; mission elapsed time
                    time            : 0D                      , $  ; unix time
@@ -235,6 +237,7 @@ pro mvn_swe_struct
                     units_name      : 'counts'                , $
                     units_procedure : 'mvn_swe_convert_units' , $
                     chksum          : 0B                      , $  ; LUT checksum
+                    lut             : 0B                      , $  ; active LUT
                     valid           : 0B                      , $
                     met             : 0D                      , $  ; mission elapsed time
                     time            : 0D                      , $  ; unix time
@@ -290,6 +293,7 @@ pro mvn_swe_struct
                      units_name      : 'counts'                , $
                      units_procedure : 'mvn_swe_convert_units' , $
                      chksum          : 0B                      , $  ; LUT checksum
+                     lut             : 0B                      , $  ; active LUT
                      valid           : 0B                      , $
                      met             : 0D                      , $  ; mission elapsed time
                      time            : 0D                      , $  ; unix time

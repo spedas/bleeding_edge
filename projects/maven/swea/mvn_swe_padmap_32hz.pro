@@ -45,8 +45,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2015-11-09 12:58:41 -0800 (Mon, 09 Nov 2015) $
-; $LastChangedRevision: 19318 $
+; $LastChangedDate: 2019-03-15 12:41:01 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26811 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_padmap_32hz.pro $
 ;
 ;-
@@ -68,7 +68,7 @@ FUNCTION mvn_swe_padmap_32hz, pdat, fbdata=fbdata, verbose=verbose, status=statu
      kdx = WHERE(b.x GE pdat.time - 8.d0 AND b.x LE pdat.end_time + 4.d0, nk)
      IF nk GT 0 THEN b = {x: b.x[kdx], y: b.y[kdx, *]} $
      ELSE BEGIN
-        dprint, 'No MAG data found at the spcified time period.', dlevel=2, verbose=verbose
+        dprint, 'No MAG data found at the specified time period.', dlevel=2, verbose=verbose
         status = 0
         RETURN, opdat
      ENDELSE 
@@ -81,7 +81,7 @@ FUNCTION mvn_swe_padmap_32hz, pdat, fbdata=fbdata, verbose=verbose, status=statu
        endcase
      endif else maglev = 0
      if (maglev lt 2) then begin
-       print,"WARNING: Quicklook MAG data - timing may be inaccurate!"
+       dprint, 'WARNING: Quicklook MAG data - timing may be inaccurate!', dlevel=2, verbose=verbose
        if keyword_set(l2only) then begin
          status = 0
          return, opdat
@@ -111,9 +111,9 @@ FUNCTION mvn_swe_padmap_32hz, pdat, fbdata=fbdata, verbose=verbose, status=statu
         RETURN, opdat
      ENDELSE 
 
-     IF tag_exist(pdat, 'time') AND tag_exist(pdat, 'end_time') THEN BEGIN
-        dt = pdat.end_time - pdat.time
-        ftime = INTERPOL([pdat.time-dt, pdat.time, pdat.end_time], [1, 32, 64], indgen(64)+1)
+     IF tag_exist(pdat, 'time') THEN BEGIN
+        dt = 1.95D/64D
+        ftime = (pdat.time - 1.95D/2D + dt/2D) + dt*dindgen(64) ; center time of each energy bin
         str_element, fpdat, 'ftime', ftime, /add_replace
      ENDIF 
   ENDELSE 

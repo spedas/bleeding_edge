@@ -18,10 +18,10 @@
 ; out_dir = the output directory for the .dat files
 ;
 ;
-; $LastChangedBy: crussell $
-; $LastChangedDate: 2012-05-10 14:23:29 -0700 (Thu, 10 May 2012) $
-; $LastChangedRevision: 10410 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/thmsoc/trunk/idl/thmsoc/fmi_gmag/thm_read_fmi10secfile.pro $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2019-03-23 18:49:02 -0700 (Sat, 23 Mar 2019) $
+; $LastChangedRevision: 26887 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/secs/sec_read_ascii_data.pro $
 ;-
 function sec_read_ascii_data, filenames
 
@@ -43,18 +43,19 @@ function sec_read_ascii_data, filenames
     for i=0,n_elements(filenames)-1 do begin
 
       dprint, 'Reading filename: ' + filenames[i]
+      fname = file_basename( filenames[i] )
       ; extract time from filename
-      idx=strpos(filenames[i], '_')
-      year=strmid(filenames[i],idx-8,4)
-      month=strmid(filenames[i],idx-4,2)
-      day=strmid(filenames[i],idx-2,2)
-      hr=strmid(filenames[i],idx+1,2)
-      min=strmid(filenames[i],idx+3,2)
-      sec=strmid(filenames[i],idx+5,2)
+      idx=strpos(fname, '_')
+      year=strmid(fname,idx-8,4)
+      month=strmid(fname,idx-4,2)
+      day=strmid(fname,idx-2,2)
+      hr=strmid(fname,idx+1,2)
+      min=strmid(fname,idx+3,2)
+      sec=strmid(fname,idx+5,2)
       date_str=year+'-'+month+'-'+day+'/'+hr+':'+min+':'+sec
+      dprint, 'date_str = '+date_str
       ; get data from file, data is read in as Lat, Long, Jx, and Jy
       results = read_ascii(filenames[i],template=sec_template)
-
       npts=n_elements(results.lat)
       time=make_array(npts, /double) + time_double(date_str)
       ; append each 10 second file set of data

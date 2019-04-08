@@ -28,10 +28,8 @@
 ; 	2011/11/10: Created
 ; 	2011/06/15: renamed to overlay_map_coast
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
-; $LastChangedRevision: 24403 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/overlay_map_coast.pro $
+; $LastChangedDate: 2019-03-17 21:51:57 -0700 (Sun, 17 Mar 2019) $
+; $LastChangedRevision: 26838 $
 ;-
 PRO overlay_map_coast,fill=fill,col=col, $
       static=static,time=time, geo_plot=geo_plot, coord=coord, $

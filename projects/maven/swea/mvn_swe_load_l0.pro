@@ -85,8 +85,8 @@
 ;                      to a higher number to see more diagnostic messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-09-14 15:17:55 -0700 (Fri, 14 Sep 2018) $
-; $LastChangedRevision: 25810 $
+; $LastChangedDate: 2019-03-15 12:47:07 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26821 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -312,12 +312,16 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
 
   endif
 
-; Determine calibration factors
-; (uses housekeeping to determine sweep table)
+; Initialize calibration factors
+; (uses housekeeping to determine first sweep table)
 
   mvn_swe_calib
 
-; Extract energy spectra
+; Determine sweep table for each measurement
+
+  mvn_swe_getlut
+
+; Make energy spectra
 
   mvn_swe_makespec
 

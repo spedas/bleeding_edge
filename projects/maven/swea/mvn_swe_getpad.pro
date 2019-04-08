@@ -29,20 +29,25 @@
 ;
 ;       SHIFTPOT:      Correct for spacecraft potential.
 ;
+;       HIRES:         Returns 0 for normal resolution (2-sec) data; returns 1 for
+;                      high resolution (0.03-sec) data.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-08-06 14:16:52 -0700 (Mon, 06 Aug 2018) $
-; $LastChangedRevision: 25594 $
+; $LastChangedDate: 2019-03-15 12:46:16 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26819 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getpad.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
 ;FILE: mvn_swe_getpad.pro
 ;-
 function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, burst=burst, $
-                         shiftpot=shiftpot
+                         shiftpot=shiftpot, hires=hires
 
   @mvn_swe_com
 
+  delta_t = 1.95D/2D  ; PAD start time to center time
   if keyword_set(burst) then archive = 1
+  hires = 0
 
   if (size(time,/type) eq 0) then begin
     if not keyword_set(all) then begin
@@ -50,22 +55,23 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
       return, 0
     endif else begin
       ok = 0
+      time = time_double(time)
       if keyword_set(archive) then begin
         if ((not ok) and size(swe_a3) eq 8) then begin
-          time = swe_a3.time + (1.95D/2D)  ; center times
+          time = swe_a3.time + delta_t  ; center times
           ok = 1
         endif
         if ((not ok) and size(mvn_swe_pad_arc,/type) eq 8) then begin
-          time = mvn_swe_pad_arc.time      ; center times
+          time = mvn_swe_pad_arc.time   ; center times
           ok = 1
         endif
       endif else begin
         if ((not ok) and size(swe_a2) eq 8) then begin
-          time = swe_a2.time + (1.95D/2D)  ; center times
+          time = swe_a2.time + delta_t  ; center times
           ok = 1
         endif
         if ((not ok) and size(mvn_swe_pad,/type) eq 8) then begin
-          time = mvn_swe_pad_arc.time      ; center times
+          time = mvn_swe_pad_arc.time   ; center times
           ok = 1
         endif
       endelse
@@ -74,9 +80,7 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
         return, 0
       endif
     endelse
-  endif
-
-  time = time_double(time)
+  endif else time = time_double(time)
 
   if (size(units,/type) ne 7) then units = 'EFLUX'
   if keyword_set(shiftpot) then if (n_elements(swe_sc_pot) lt 2) then mvn_scpot
@@ -200,22 +204,22 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
 ;---------------------------------------------------------------------------------
 ; If necessary (npts = 0), extract PAD(s) from L0 data
 
+  delta_t = 1.95D/2D  ; start time to center time
+  time -= delta_t
+
   if keyword_set(archive) then begin
     if (size(a3,/type) ne 8) then begin
       print,"No PAD archive data."
       return, 0
     endif
 
-    time -= 1.95D/2D  ; packet times
-
     if keyword_set(all) then begin
       tmin = min(time, max=tmax, /nan)
       indx = where((a3.time ge tmin) and (a3.time le tmax), npts)
       if (npts eq 0L) then begin
-        print,"No PAD archive data in that time range."
-        return, 0
-      endif
-      time = a3[indx].time
+        time = mean(time)
+        all = 0
+      endif else time = a3[indx].time
     endif
 
     npts = n_elements(time)
@@ -229,16 +233,14 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
       print,"No PAD survey data."
       return, 0
     endif
-
-    time -= 1.95D/2D  ; packet times
     
     if keyword_set(all) then begin
       tmin = min(time, max=tmax, /nan)
       indx = where((a2.time ge tmin) and (a2.time le tmax), npts)
       if (npts eq 0L) then begin
-        print,"No PAD survey data in that time range."
-        return, 0
-      endif
+        time = mean(time)
+        all = 0
+      endif else time = a2[indx].time
       time = a2[indx].time
     endif
 
@@ -250,6 +252,11 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
     aflg = 0
   endelse
 
+  if (npts eq 0L) then begin
+    print,"No PAD data at specified times(s)."
+    return, 0
+  endif
+
 ; Locate the PAD data closest to the desired time
 
   for n=0L,(npts-1L) do begin
@@ -257,16 +264,18 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
     if (aflg) then begin
       tgap = min(abs(a3.time - time[n]), i)
       pkt = a3[i]
-      thsk = min(abs(swe_hsk.time - a3[i].time), j)
-      if (swe_active_chksum ne swe_chksum[j]) then mvn_swe_calib, chksum=swe_chksum[j]
     endif else begin
       tgap = min(abs(a2.time - time[n]), i)
       pkt = a2[i]
-      thsk = min(abs(swe_hsk.time - a2[i].time), j)
-      if (swe_active_chksum ne swe_chksum[j]) then mvn_swe_calib, chksum=swe_chksum[j]
     endelse
 
-    pad[n].chksum = swe_active_chksum
+; Recalculate calibration factors if LUT changes
+
+    if (pkt.lut ne swe_active_tabnum) then mvn_swe_calib, tabnum=pkt.lut
+    pad[n].lut = pkt.lut
+    pad[n].chksum = mvn_swe_tabnum(pkt.lut,/inverse)
+
+; Timing
  
     dt = 1.95D                            ; measurement span
     pad[n].time = pkt.time + (dt/2D)      ; center time (unix)

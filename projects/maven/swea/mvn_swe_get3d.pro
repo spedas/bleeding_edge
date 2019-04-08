@@ -29,8 +29,8 @@
 ;       SHIFTPOT:      Correct for spacecraft potential.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-08-06 14:16:40 -0700 (Mon, 06 Aug 2018) $
-; $LastChangedRevision: 25593 $
+; $LastChangedDate: 2019-03-15 12:45:14 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26818 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_get3d.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -152,13 +152,14 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
 
 ; If necessary (npts = 0), extract 3D(s) from L0 data
 
+  delta_t = 1.95D/2D  ; start time to center time
+  time -= delta_t     ; packet times
+
   if keyword_set(archive) then begin
     if (size(swe_3d_arc,/type) ne 8) then begin
       print,"No 3D archive data."
       return, 0
     endif
-
-    time -= 1.95D/2D  ; packet times
     
     if keyword_set(all) then begin
       tmin = min(time, max=tmax, /nan)
@@ -182,8 +183,6 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
       return, 0
     endif
 
-    time -= 1.95D/2D  ; packet times
-
     if keyword_set(all) then begin
       tmin = min(time, max=tmax, /nan)
       indx = where((swe_3d.time ge tmin) and (swe_3d.time le tmax), npts)
@@ -202,6 +201,21 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
     aflg = 0
   endelse
 
+  if (npts eq 0L) then begin
+    print,"No 3D data at specified times(s)."
+    return, 0
+  endif
+
+; Initialize calibration
+
+  if (aflg) then begin
+    tgap = min(abs(swe_3d_arc.time - time[0]), i)
+    tabnum = swe_3d_arc[i].lut
+  endif else begin
+    tgap = min(abs(swe_3d.time - time[0]), i)
+    tabnum = swe_3d[i].lut
+  endelse
+
 ; Locate the 3D data closest to the desired time
 
   for n=0L,(npts-1L) do begin
@@ -209,18 +223,18 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
     if (aflg) then begin
       tgap = min(abs(swe_3d_arc.time - time[n]), i)
       pkt = swe_3d_arc[i]
-
-      thsk = min(abs(swe_hsk.time - swe_3d_arc[i].time), j)
-      if (swe_active_chksum ne swe_chksum[j]) then mvn_swe_calib, chksum=swe_chksum[j]
     endif else begin
       tgap = min(abs(swe_3d.time - time[n]), i)
       pkt = swe_3d[i]
-
-      thsk = min(abs(swe_hsk.time - swe_3d[i].time), j)
-      if (swe_active_chksum ne swe_chksum[j]) then mvn_swe_calib, chksum=swe_chksum[j]
     endelse
 
-    ddd[n].chksum = swe_active_chksum
+; Recalculate calibration factors if LUT changes
+
+    if (pkt.lut ne swe_active_tabnum) then mvn_swe_calib, tabnum=pkt.lut
+    ddd[n].lut = pkt.lut
+    ddd[n].chksum = mvn_swe_tabnum(pkt.lut,/inverse)
+
+; Timing
 
     dt = 1.95D                            ; measurement span
     ddd[n].time = pkt.time + (dt/2D)      ; center time

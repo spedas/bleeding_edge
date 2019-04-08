@@ -25,10 +25,8 @@
 ; :Author:
 ;   Yoshi Miyoshi (miyoshi at stelab.nagoya-u.ac.jp)
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2018-09-04 15:55:13 -0700 (Tue, 04 Sep 2018) $
-; $LastChangedRevision: 25724 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/akebono/rdm/akb_load_rdm.pro $
+; $LastChangedDate: 2019-03-17 21:51:57 -0700 (Sun, 17 Mar 2019) $
+; $LastChangedRevision: 26838 $
 ;-
 
 

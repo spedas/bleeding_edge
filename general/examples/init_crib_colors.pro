@@ -8,17 +8,17 @@
 ;        Defaults to black pen on white background, rainbow color scheme.
 ;
 ;ARGUMENTS:   
-;   COLORTABLE: Index specifying the desired color table to be passed to LOADCT2
+;   color_table: Index specifying the desired color table to be passed to LOADCT2
 ;
 ;-
 
-pro init_crib_colors, colortable
+pro init_crib_colors, color_table
     compile_opt idl2, hidden
     
-    if n_elements(colortable) eq 0 then colortable = 43 ; default color table
+    if n_elements(color_table) eq 0 then color_table = 43 ; default color table
     
     ; Color table for ordinary windows
-    loadct2,colortable
+    loadct2,color_table
     
     ; Make black on white background
     !p.background = !d.table_size-1                   ; White background

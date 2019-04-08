@@ -25,10 +25,8 @@
 ; :HISTORY:
 ; 	2011/07/03: Created
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-12-05 22:09:27 -0800 (Tue, 05 Dec 2017) $
-; $LastChangedRevision: 24403 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/get_sd_ave.pro $
+; $LastChangedDate: 2019-03-17 21:51:57 -0700 (Sun, 17 Mar 2019) $
+; $LastChangedRevision: 26838 $
 ;-
 ; A helper function to check if the argument x (scalar or array) falls in the angular range given by 
 ; the argument range (a 2-element 1-D array). Both x and range should be given in degree. 

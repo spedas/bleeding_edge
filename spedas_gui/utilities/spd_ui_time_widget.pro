@@ -33,9 +33,9 @@
 ;
 ;HISTORY:
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2014-02-11 10:54:32 -0800 (Tue, 11 Feb 2014) $
-; $LastChangedRevision: 14326 $
+; $LastChangedBy: jimmpc1 $
+; $LastChangedDate: 2019-03-21 14:07:02 -0700 (Thu, 21 Mar 2019) $
+; $LastChangedRevision: 26875 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/utilities/spd_ui_time_widget.pro $
 ;-
 
@@ -125,7 +125,7 @@ function spd_ui_time_widget_event,event
       state.timerangeobj->getproperty, endtime=end_obj
       spd_ui_calendar,'Choose Start Date/Time:',start_obj, state.base, startyear=state.startyear
       start_obj->getproperty, tdouble=t0
-      
+
       if state.oneday then begin
         end_obj->setproperty, tdouble = t0 + 86400d
         end_obj->getproperty, tstring=t1s
@@ -141,8 +141,8 @@ function spd_ui_time_widget_event,event
           state.valid=1b
           state.statusBar->update, 'Valid Start Time Entered'
         endelse
-      start_obj->getproperty, tstring=start
-      widget_control,state.starttext, set_value = start        
+        start_obj->getproperty, tstring=start
+        widget_control,state.starttext, set_value = start
     END
     'STOP_TIME':BEGIN ; Stop Time entry box
       widget_control,event.id,get_value=value

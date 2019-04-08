@@ -159,8 +159,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;        
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-09 16:36:29 -0800 (Sat, 09 Feb 2019) $
-; $LastChangedRevision: 26576 $
+; $LastChangedDate: 2019-03-15 12:37:38 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26807 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -447,6 +447,28 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
   if keyword_set(zrange) then str_element, limits, 'zrange', zrange, /add
 
+; Calculate PAD timing
+
+  ptime2 = a2.time + 1.95D/2D  ; center times
+  plut2 = a2.lut
+  if (size(swe_fpad,/type) eq 8) then begin
+    ptime2 = [ptime2, swe_fpad.time]
+    plut2 = [plut2, swe_fpad.lut]
+    indx = sort(ptime2)
+    ptime2 = ptime2[indx]
+    plut2 = plut2[indx]
+  endif
+
+  ptime3 = a3.time + 1.95D/2D  ; center times
+  plut3 = a3.lut
+  if (size(swe_fpad_arc,/type) eq 8) then begin
+    ptime3 = [ptime3, swe_fpad_arc.time]
+    plut3 = [plut3, swe_fpad_arc.lut]
+    indx = sort(ptime3)
+    ptime3 = ptime3[indx]
+    plut3 = plut3[indx]
+  endif
+
 ; Select the first time, then get the PAD spectrum closest that time
 
   if size(pad, /type) ne 8 then begin
@@ -504,13 +526,60 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 ; Put up a PAD spectrogram
  
     if (pdflg) then begin
-       pad = mvn_swe_getpad(trange,archive=aflg,all=doall,/sum,units=units)
-       if (hflg) then pad = mvn_swe_padmap_32hz(pad, fbdata=fbdata, /verbose, maglev=maglev)
+       if (n_elements(trange) gt 1) then begin
+         tmin = min(trange, max=tmax)
+         if (aflg) then begin
+           indx = where((ptime3 ge tmin) and (ptime3 le tmax), count)
+           if (max(plut3[indx]) gt 6B) then dwell = 1 else dwell = 0
+         endif else begin
+           indx = where((ptime2 ge tmin) and (ptime2 le tmax), count)
+           if (max(plut2[indx]) gt 6B) then dwell = 1 else dwell = 0
+         endelse
+       endif else begin
+         if (aflg) then begin
+           indx = nn2(ptime3, trange)
+           if (plut3[indx] gt 6B) then dwell = 1 else dwell = 0
+         endif else begin
+           indx = nn2(ptime2, trange)
+           if (plut2[indx] gt 6B) then dwell = 1 else dwell = 0
+         endelse
+       endelse
+
+       if (dwell) then begin
+         if (n_elements(trange) gt 1L) then begin
+           tmin = min(trange, max=tmax)
+           if (aflg) then begin
+             indx = where((swe_fpad_arc.time ge tmin) and (swe_fpad_arc.time le tmax), cnt)
+             pad = mvn_swe_padsum(swe_fpad_arc[indx])
+           endif else begin
+             indx = where((swe_fpad.time ge tmin) and (swe_fpad.time le tmax), cnt)
+             pad = mvn_swe_padsum(swe_fpad[indx])
+           endelse
+         endif else begin
+           if (aflg) then begin
+             indx = nn2(swe_fpad_arc.time, trange)
+             pad = swe_fpad_arc[indx]
+           endif else begin
+             indx = nn2(swe_fpad.time, trange)
+             pad = swe_fpad[indx]
+           endelse
+         endelse
+         hflg = 0
+         n_e = 1
+         tprec = 3
+       endif else begin
+         dt = max(trange) - min(trange)
+         if (dt lt 4D) then trange = mean(trange)
+         pad = mvn_swe_getpad(trange,archive=aflg,all=doall,/sum,units=units)
+         if (hflg) then pad = mvn_swe_padmap_32hz(pad, fbdata=fbdata, /verbose, maglev=maglev)
+         n_e = 64
+         tprec = 0
+       endelse
     endif
-    
+
     if (size(pad,/type) eq 8) then begin
 
-      pmask = replicate(1.,64,16)
+      pmask = replicate(1.,n_e,16)
       counts = pad
       mvn_swe_convert_units, counts, 'counts'
       indx = where(counts.data lt mincounts, count)
@@ -555,7 +624,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
         else     : zlo = 1
       endcase
 
-      tstring = time_string(pad.time)
+      tstring = time_string(pad.time, prec=tprec)
       title = strtrim(string(tstring) + '   ' + note)
       str_element,limits,'title',title,/add
       
@@ -571,7 +640,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
       if (sflg) then begin
         de = min(abs(energy - x),i)
-        energy = x[i]
+        penergy = x[i]
       endif
       
       if (nflg) then begin
@@ -581,7 +650,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
 ; Add extra elements to force specplot to show the full pitch angle range
 
-      y1 = fltarr(64,10)
+      y1 = fltarr(n_e,10)
       ylo1 = y1
       yhi1 = y1
       z1 = y1
@@ -590,7 +659,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
       yhi2 = y1
       z2 = y1
 
-      for i=0,63 do begin
+      for i=0,(n_e-1) do begin
         indx = sort(reform(y[i,0:7]))
         y1[i,1:8] = y[i,indx]
         z1[i,1:8] = z[i,indx]
@@ -612,8 +681,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
       z2[*,0] = z2[*,1]
       z2[*,9] = z2[*,8]
 
-;     str_element,limits,'zrange',success=ok
-      ok = 0
+      str_element,limits,'zrange',success=ok
+;     ok = 0
       if (not ok) then begin
         zmin = min(z, /nan) > zlo
         zmax = max(z, /nan) > (10.*zmin)
@@ -638,10 +707,10 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                      else oplot,[pot,pot],[0,180],line=2
         endif
         if (plot_pa_lims) then begin
-          oplot,[3,5000],[ylo1[63,1],ylo1[63,1]],line=2
-          oplot,[3,5000],[yhi1[63,8],yhi1[63,8]],line=2
+          oplot,[3,5000],[ylo1[(n_e-1),1],ylo1[(n_e-1),1]],line=2
+          oplot,[3,5000],[yhi1[(n_e-1),8],yhi1[(n_e-1),8]],line=2
         endif
-        if (sflg) then oplot,[energy,energy],[0,180],line=2
+        if (sflg) then oplot,[penergy,penergy],[0,180],line=2
 
         limits.title = ''
         specplot,x,y2,z2,limits=limits
@@ -651,10 +720,10 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                      else oplot,[pot,pot],[0,180],line=2
         endif
         if (plot_pa_lims) then begin
-          oplot,[3,5000],[ylo2[63,1],ylo2[63,1]],line=2
-          oplot,[3,5000],[yhi2[63,8],yhi2[63,8]],line=2
+          oplot,[3,5000],[ylo2[(n_e-1),1],ylo2[(n_e-1),1]],line=2
+          oplot,[3,5000],[yhi2[(n_e-1),8],yhi2[(n_e-1),8]],line=2
         endif
-        if (sflg) then oplot,[energy,energy],[0,180],line=2
+        if (sflg) then oplot,[penergy,penergy],[0,180],line=2
         !p.multi = 0
       endif
 
@@ -698,7 +767,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
               oplot,[3,5000],[ylo2[63,1],ylo2[63,1]],line=2
               oplot,[3,5000],[yhi2[63,8],yhi2[63,8]],line=2
             endif
-            if (sflg) then oplot,[energy,energy],[0,180],line=2
+            if (sflg) then oplot,[penergy,penergy],[0,180],line=2
 
             if (uflg) then begin
                str_element, rlim, 'ztitle', 'Relative Uncertainty', /add_replace
@@ -765,7 +834,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
         if (~psflg) then wset, Nwin
         de = min(abs(energy - x),i)
-        energy = x[i]
+        penergy = x[i]
         ylo = reform(pad.pa_min[i,*])*!radeg
         yhi = reform(pad.pa_max[i,*])*!radeg
         zmean = mean(z[i,*],/nan)
@@ -776,7 +845,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
         plot_io,[-1.],[0.1],psym=3,xtitle='Pitch Angle (deg)',ytitle='Normalized', $
                 yrange=[0.1,10.],ystyle=1,xrange=[0,180],xstyle=1,xticks=6,xminor=3, $
-                title=strtrim(string(tstring, energy, note, format='(a19,5x,f6.1," eV   ",a)')), $
+                title=strtrim(string(tstring, penergy, note, format='(a,5x,f6.1," eV   ",a)')), $
                 charsize=1.4*cscale, pos=[0.140005, 0.124449 - (wdy/4000.), 0.958005, 0.937783 - (wdy/525.)]
 
         for j=0,15 do oplot,[ylo[j],yhi[j]],[zi[j],zi[j]],color=col[j]
@@ -843,47 +912,48 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
           endif
         ENDIF
 
-        if (dflg) then begin
+        if (dflg and ~dwell) then begin
           ddd = mvn_swe_get3d(trange,archive=aflg,all=doall,/sum,units=units)
-          indx = where(fovmask[*,boom] eq 0B, count)
-          if (count gt 0L) then ddd.data[*,indx] = !values.f_nan
+          if (size(ddd,/type) eq 8) then begin
+            indx = where(fovmask[*,boom] eq 0B, count)
+            if (count gt 0L) then ddd.data[*,indx] = !values.f_nan
 
-          de = min(abs(ddd.energy[*,0] - energy),ebin)
-          z3d = reform(ddd.data[ebin,pad.k3d])  ; 3D mapped into PAD
-          z3d = z3d/mean(z3d,/nan)
+            de = min(abs(ddd.energy[*,0] - energy),ebin)
+            z3d = reform(ddd.data[ebin,pad.k3d])  ; 3D mapped into PAD
+            z3d = z3d/mean(z3d,/nan)
 
-          col = [replicate(cols.yellow,8), replicate(cols.green,8)]
+            col = [replicate(cols.yellow,8), replicate(cols.green,8)]
 
-          for j=0,15 do oplot,[ylo[j],yhi[j]],[z3d[j],z3d[j]],color=col[j],line=2
+            for j=0,15 do oplot,[ylo[j],yhi[j]],[z3d[j],z3d[j]],color=col[j],line=2
 
-          if (~psflg) then wset, Cwin
-          d_dat = replicate(!values.f_nan,96)
-          d_dat[pad.k3d] = reform(z[i,*])       ; PAD mapped into 3D
-          ddd.data[ebin+1,*] = d_dat            ; overwrite adjacent energy bin
-          ddd.energy[ebin+1,*] = ddd.energy[ebin,*]
-          ddd.magf[0] = cos(pad.Baz)*cos(pad.Bel)
-          ddd.magf[1] = sin(pad.Baz)*cos(pad.Bel)
-          ddd.magf[2] = sin(pad.Bel)
-          plot3d_new,ddd,lat0,lon0,ebins=[ebin,ebin+1]
+            if (~psflg) then wset, Cwin
+            d_dat = replicate(!values.f_nan,96)
+            d_dat[pad.k3d] = reform(z[i,*])       ; PAD mapped into 3D
+            ddd.data[ebin+1,*] = d_dat            ; overwrite adjacent energy bin
+            ddd.energy[ebin+1,*] = ddd.energy[ebin,*]
+            ddd.magf[0] = cos(pad.Baz)*cos(pad.Bel)
+            ddd.magf[1] = sin(pad.Baz)*cos(pad.Bel)
+            ddd.magf[2] = sin(pad.Bel)
+            plot3d_new,ddd,lat0,lon0,ebins=[ebin,ebin+1]
 
-          lab=strcompress(indgen(ddd.nbins),/rem)
-          xyouts,reform(ddd.phi[63,*]),reform(ddd.theta[63,*]),lab,align=0.5
+            lab=strcompress(indgen(ddd.nbins),/rem)
+            xyouts,reform(ddd.phi[63,*]),reform(ddd.theta[63,*]),lab,align=0.5
 
-          if keyword_set(sundir) then begin
-            dt = min(abs(sun.time - mean(ddd.time)),j)
-            Saz = sun.phi[j]
-            Sel = sun.the[j]
-            if (abs(Sel) gt 61.) then col=!p.color else col=!p.color
-            oplot,[Saz],[Sel],psym=8,color=cols.yellow,thick=2,symsize=2.0
-;           Saz = (Saz + 180.) mod 360.
-;           Sel = -Sel
-;           oplot,[Saz],[Sel],psym=7,color=col,thick=2,symsize=1.2
+            if keyword_set(sundir) then begin
+              dt = min(abs(sun.time - mean(ddd.time)),j)
+              Saz = sun.phi[j]
+              Sel = sun.the[j]
+              if (abs(Sel) gt 61.) then col=!p.color else col=!p.color
+              oplot,[Saz],[Sel],psym=8,color=cols.yellow,thick=2,symsize=2.0
+;             Saz = (Saz + 180.) mod 360.
+;             Sel = -Sel
+;             oplot,[Saz],[Sel],psym=7,color=col,thick=2,symsize=1.2
+            endif
           endif
-
         endif
       endif
             
-      if (dospec) then begin
+      if (dospec and ~dwell) then begin
         if (~psflg) then wset, Ewin
         x = pad.energy[*,0]
 
@@ -1029,7 +1099,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
       endif
     endif
     
-    if (doind) then begin
+    if (doind and ~dwell) then begin
         if (~psflg) then wset, Iwin
         x = pad.energy[*,0]
         npa = 16;n_elements(pad.energy[0,*])
@@ -1054,7 +1124,10 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
             maap = pad.pa_max[63,ipa]*!radeg
             ;if (pad.pa[63,ipa]*!radeg ge 90) then lst = 2 else lst = 0
             ;clr = 244./(npa/2-1)*ip + 10
-            oplot,x,pad.data[*,ipa],psym=0,color=cols.green
+            y = pad.data[*,ipa]
+            dy = sqrt(pad.var[*,ipa])
+            oplot,x,y,psym=10,color=cols.green
+            errplot, x, (y-dy)>tiny, y+dy, color=cols.green, width=0
             xyouts,xs,ys,string(mip, maap, format='(i3," - ",i3)'),$
                    charsize=1.2*cscale,color=cols.green
             ys /=dys
@@ -1067,7 +1140,10 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
             maap=pad.pa_max[63,ipa]*!radeg
             ;if pad.pa[63,ipa]*!radeg ge 90 then lst=2 else lst=0
             ;clr=254.-244./(npa/2-1)*ip
-            oplot,x,pad.data[*,ipa],psym=0,color=cols.red
+            y = pad.data[*,ipa]
+            dy = sqrt(pad.var[*,ipa])
+            oplot,x,y,psym=10,color=cols.red
+            errplot, x, (y-dy)>tiny, y+dy, color=cols.red, width=0
             xyouts,xs,ys,string(mip, maap, format='(i3," - ",i3)'),$
                    charsize=1.2*cscale,color=cols.red
             ys /= dys

@@ -23,8 +23,8 @@
 ;	Returns the same data structure in the new units
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-04-19 13:58:52 -0700 (Wed, 19 Apr 2017) $
-; $LastChangedRevision: 23195 $
+; $LastChangedDate: 2019-03-15 12:42:31 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26814 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_convert_units.pro $
 ;
 ;-
@@ -65,20 +65,22 @@ pro mvn_swe_convert_units, data, units, scale=scale
   str_element, data[0], 'nenergy', n_e
   str_element, data, 'group', grp
 
-  indx = where(grp eq 1, count)
-  if (count gt 0) then begin
-    unity = replicate(1.,2)
-    energy1 = reform(energy[*,*,indx], n_e, n_a*count)
-    for i=0,(n_e-1),2 do energy1[i:(i+1),*] = unity # average(energy1[i:(i+1),*],1)
-    energy[*,*,indx] = reform(energy1, n_e, n_a, count)
-  endif
+  if (n_e gt 1) then begin
+    indx = where(grp eq 1, count)
+    if (count gt 0) then begin
+      unity = replicate(1.,2)
+      energy1 = reform(energy[*,*,indx], n_e, n_a*count)
+      for i=0,(n_e-1),2 do energy1[i:(i+1),*] = unity # average(energy1[i:(i+1),*],1)
+      energy[*,*,indx] = reform(energy1, n_e, n_a, count)
+    endif
 
-  indx = where(grp eq 2, count)
-  if (count gt 0) then begin
-    unity = replicate(1.,4)
-    energy1 = reform(energy[*,*,indx], n_e, n_a*count)
-    for i=0,(n_e-1),4 do energy1[i:(i+3),*] = unity # average(energy1[i:(i+3),*],1)
-    energy[*,*,indx] = reform(energy1, n_e, n_a, count)
+    indx = where(grp eq 2, count)
+    if (count gt 0) then begin
+      unity = replicate(1.,4)
+      energy1 = reform(energy[*,*,indx], n_e, n_a*count)
+      for i=0,(n_e-1),4 do energy1[i:(i+3),*] = unity # average(energy1[i:(i+3),*],1)
+      energy[*,*,indx] = reform(energy1, n_e, n_a, count)
+    endif
   endif
 
 ; Calculate the conversion factors

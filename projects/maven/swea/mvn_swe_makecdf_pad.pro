@@ -24,8 +24,8 @@
 ;   ISTP compliance scrub; DLM: 2016-04-08
 ; VERSION:
 ;   $LastChangedBy: dmitchell $
-;   $LastChangedDate: 2018-11-18 14:23:15 -0800 (Sun, 18 Nov 2018) $
-;   $LastChangedRevision: 26143 $
+;   $LastChangedDate: 2019-03-15 16:31:37 -0700 (Fri, 15 Mar 2019) $
+;   $LastChangedRevision: 26828 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makecdf_pad.pro $
 ;
 ;-
@@ -55,19 +55,14 @@ pro mvn_swe_makecdf_pad, data, file = file, version = version, directory = direc
     endif
   endif
 
-; Identify data that do not use sweep table 3 (checksum C0),
-; table 5 (checksum CC) or table 6 (checksum 82).  Table 3 is 
-; primary during cruise, and was superceded by table 5 during 
+; Identify data that do not use sweep table 3, 5 or 6.  Table 3
+; is primary during cruise, and was superceded by table 5 during 
 ; transition on Oct. 6, 2014.  Table 6 is very similar to 5, 
-; except that it enables V0.  Include a 1-record buffer to 
-; account for spectra obtained during the sweep table change. 
-; Exclude these data from the CDF.
+; except that it enables V0.  Exclude invalid data from the CDF.
 
-  indx = where(~mvn_swe_validlut(data.chksum), count)
+  indx = where(~mvn_swe_validlut(data.lut), count)
   if (count gt 0L) then begin
     data[indx].valid = 0B
-    data[(indx - 1L) > 0L].valid = 0B
-    data[(indx + 1L) < (nrec - 1L)].valid = 0B
 
     indx = where(data.valid, nrec)
     if (nrec eq 0L) then begin

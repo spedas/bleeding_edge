@@ -97,10 +97,20 @@ PRO spd_ui_calendar_event, event
              widget_control, state.month, get_value = month
              widget_control, state.day, get_value = day
              
-           ;Create time double from separate time elements and apply to time object
-             datetime = time_double(strtrim(year,2)+'-'+strtrim(month,2)+'-'+strtrim(day,2) $
-                    +'/'+strtrim(state.hour,2)+':'+strtrim(state.minute,2)+':'+strtrim(state.second,2))
-             state.otime->setproperty, tdouble=datetime
+           ;Create time double from separate time elements and apply to time object,
+           ;added fractional seconds, 2019-03-21, jmm
+             If(state.fsecond Eq 0.0) Then Begin
+                datetime = time_double(strtrim(year,2)+'-'+strtrim(month,2)+'-'+strtrim(day,2) $
+                                       +'/'+strtrim(state.hour,2)+':'+strtrim(state.minute,2)+':'+strtrim(state.second,2))
+                state.otime->setproperty, tdouble=datetime
+             Endif Else Begin
+                allsec = strtrim(state.second+state.fsecond,2)
+                datetime_str = strtrim(year,2)+'-'+strtrim(month,2)+'-'+strtrim(day,2) $
+                               +'/'+strtrim(state.hour,2)+':'+strtrim(state.minute,2)+':'+allsec
+                datetime = time_double(datetime_str)
+                state.otime->setproperty, tdouble=datetime
+                state.otime->setproperty, tstring=spd_ui_timefix(datetime_str) ;otherwise tstring does not hold frac seconds value
+             Endelse
              
              widget_control, event.top, set_uvalue=state, /no_copy
              Widget_Control, event.top, /Destroy
@@ -147,6 +157,17 @@ PRO spd_ui_calendar_event, event
                     ENDELSE
                   ENDIF
                 END
+      'FSEC':BEGIN
+               IF event.valid then begin
+                 IF event.value LT 0 OR event.value GE 1.0 THEN BEGIN
+                   limit = event.value lt 0 ? 0:0.99999
+                   state.fsecond = limit
+                   Widget_Control, event.id, set_value = limit
+                 ENDIF ELSE BEGIN
+                   state.fsecond=event.value
+                 ENDELSE
+               ENDIF
+             END
                 
       'DAY':BEGIN
               widget_control, event.id, get_value=day
@@ -182,12 +203,12 @@ PRO spd_ui_calendar, title, otime, gui_id, startyear=startyear
     compile_opt idl2, hidden
 
 ;Verify valid time object was passed in
-  if obj_valid(otime) then begin
-    intime=otime->getstructure()
-  endif else begin
-    otime=obj_new('spd_ui_time')
-    intime=otime->getstructure()
-  endelse
+   if obj_valid(otime) then begin
+     intime=otime->getstructure()
+   endif else begin
+     otime=obj_new('spd_ui_time')
+     intime=otime->getstructure()
+   endelse
 
 ;Create base widgets to hold labels for the selected month, day, and year. Set the initial values of the labels.
    wBase = WIDGET_BASE(COLUMN = 1, SCR_XSIZE = 370, $ 
@@ -216,8 +237,7 @@ PRO spd_ui_calendar, title, otime, gui_id, startyear=startyear
    wHour=spd_ui_spinner(wSubTimeBase, Label='Hour: ', xlabelsize=xls, Increment=1, Value=intime.hour, uval='HOURS')
    wMinute=spd_ui_spinner(wSubTimeBase, Label='Minute: ', xlabelsize=xls, Increment=1, Value=intime.min, uval='MINUTES')
    wSecond=spd_ui_spinner(wSubTimeBase, Label='Second: ', xlabelsize=xls, Increment=1, Value=intime.sec, uval='SECONDS')
-   
-
+   wFsec=spd_ui_spinner(wSubTimeBase, Label='Fraction: ', xlabelsize=xls, Increment=1.0e-6, Value=intime.fsec, uval='FSEC')
 
 ;Calendar proper widgets
   calBase = widget_base(wBase, /col, /align_center)
@@ -271,16 +291,15 @@ PRO spd_ui_calendar, title, otime, gui_id, startyear=startyear
 ;Set widget values
    year = strtrim(intime.year, 2)
 
-
    WIDGET_CONTROL, yearlist, set_combobox_select = where(years eq year)
    WIDGET_CONTROL, monthlist, set_combobox_select = intime.month-1
    WIDGET_CONTROL, wYear, SET_VALUE=widget_info(yearList,/combobox_gettext)
    WIDGET_CONTROL, wMonth, SET_VALUE=strtrim(intime.month,2)
    WIDGET_CONTROL, wDay, SET_VALUE=STRTRIM(intime.date, 2) 
    
-;Hour/min/sec stored directly in state variables, month/day/year stored in their corresponding display widgets
+;Hour/min/sec/fsec stored directly in state variables, month/day/year stored in their corresponding display widgets
    state = {wBase:wBase, calBase:calBase, month:wMonth, temp:-1L, day:wDay, year:wYear, $
-            hour:intime.hour, minute:intime.min, second:intime.sec, otime:otime, numdays:numdays}
+            hour:intime.hour, minute:intime.min, second:intime.sec, fsecond:intime.fsec, otime:otime, numdays:numdays}
  
    spd_ui_calendar_update, wbase, state
    

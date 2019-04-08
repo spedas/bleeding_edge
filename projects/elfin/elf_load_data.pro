@@ -56,7 +56,7 @@
 ;   Current file naming convention is el[a/b]_ll_instr_yyyymmdd_v01.cdf.
 ;     
 ;--------------------------------------------------------------------------------------
-PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
+PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in, $
   levels = levels, instrument = instrument, data_rates = data_rates, $
   local_data_dir = local_data_dir, source = source, pred = pred, $
   get_support_data = get_support_data, login_info = login_info, $
@@ -85,7 +85,7 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
   endif
   levels = strlowcase(levels)  
   if undefined(data_rates) then data_rates = 'srvy' else data_rates = strlowcase(data_rates)
-  if undefined(datatypes_in) then datatypes_in = strlowcase(datatypes_in)
+  if undefined(datatypes_in) then datatypes_in = '' else datatypes_in = strlowcase(datatypes_in)
   if undefined(pred) then pred = 0 else pred = 1
   
   ;ensure datatypes are explicitly set for simplicity
@@ -94,6 +94,8 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
   endif else begin
     datatypes = datatypes_in
   endelse
+
+  if is_string(datatypes) && ~is_array(datatypes) then datatypes = strsplit(datatypes, ' ', /extract)
 
   if undefined(remote_data_dir) then remote_data_dir = source.remote_data_dir
  
@@ -145,7 +147,21 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
   endif
 
   total_size = 0d ; for counting total download size when requesting /available
-
+  
+  if no_download eq 0 then begin
+    ; NOTE: directory is temporarily password protected. this will be
+    ;       removed when data is made public.
+    if undefined(user) OR undefined(pw) then authorization = elf_get_authorization()
+    user=authorization.user_name
+    pw=authorization.password
+    ; only query user if authorization file not found
+    If user EQ '' OR pw EQ '' then begin
+      print, 'Please enter your ELFIN user name and password'
+      read,user,prompt='User Name: '
+      read,pw,prompt='Password: '
+    endif
+  endif
+  
   ;loop over probe, rate, level, and datatype
   ;omitting some tabbing to keep format reasonable
   for probe_idx = 0, n_elements(probes)-1 do begin
@@ -176,7 +192,7 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
           endif
           
           ;clear so new names are not appended to existing array
-          undefine, tplotnames
+       ;   undefine, tplotnames
           ; clear CDF filenames, so we're not appending to an existing array
           undefine, cdf_filenames
 
@@ -202,18 +218,6 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
               if no_download eq 0 then begin
                 if file_test(local_path,/dir) eq 0 then file_mkdir2, local_path
                 dprint, dlevel=1, 'Downloading ' + fnames[file_idx] + ' to ' + local_path   
-
-                ; NOTE: directory is temporarily password protected. this will be
-                ;       removed when data is made public.
-                if undefined(user) OR undefined(pw) then authorization = elf_get_authorization()
-                user=authorization.user_name
-                pw=authorization.password                
-                ; only query user if authorization file not found
-                If user EQ '' OR pw EQ '' then begin                 
-                  print, 'Please enter your ELFIN user name and password' 
-                  read,user,prompt='User Name: '
-                  read,pw,prompt='Password: '
-                endif
                  
                 paths = spd_download(remote_file=fnames[file_idx], remote_path=remote_path, $
                                      local_file=fnames[file_idx], local_path=local_path, $
@@ -243,27 +247,27 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
                   append_array, files, local_files
                 endif                 
               endif      
-              
-              if ~undefined(files) then begin
-                spd_cdf2tplot, files, tplotnames = loaded_tnames, varformat=varformat, $
-                  suffix = suffix, get_support_data = get_support_data, /load_labels, $
-                  min_version=min_version,version=cdf_version,latest_version=latest_version, $
-                  number_records=cdf_records, center_measurement=center_measurement, $
-                  loaded_versions = the_loaded_versions, major_version=major_version, $
-                  tt2000=tt2000
-              endif
-              
-              append_array, cdf_filenames, files
-              if ~undefined(loaded_tnames) then append_array, tplotnames, loaded_tnames
-              if ~undefined(the_loaded_versions) then append_array, versions, the_loaded_versions
-
-              ; forget about the daily files for this probe
-              undefine, files
-              undefine, loaded_tnames
-              undefine, the_loaded_versions
 
           endfor
           
+          if ~undefined(files) then begin
+            spd_cdf2tplot, files, tplotnames = loaded_tnames, varformat=varformat, $
+              suffix = suffix, get_support_data = get_support_data, /load_labels, $
+              min_version=min_version,version=cdf_version,latest_version=latest_version, $
+              number_records=cdf_records, center_measurement=center_measurement, $
+              loaded_versions = the_loaded_versions, major_version=major_version, $
+              tt2000=tt2000
+          endif
+          
+          append_array, cdf_filenames, files
+          if ~undefined(loaded_tnames) then append_array, tplotnames, loaded_tnames
+          if ~undefined(the_loaded_versions) then append_array, versions, the_loaded_versions
+
+          ; forget about the daily files for this probe
+          undefine, files
+          undefine, loaded_tnames
+          undefine, the_loaded_versions
+
         endfor
       endfor
     endfor

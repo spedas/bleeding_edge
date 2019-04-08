@@ -16,8 +16,8 @@
 ;   Created by Matt Fillingim
 ; VERSION:
 ;   $LastChangedBy: dmitchell $
-;   $LastChangedDate: 2015-11-09 15:06:32 -0800 (Mon, 09 Nov 2015) $
-;   $LastChangedRevision: 19322 $
+;   $LastChangedDate: 2019-03-20 13:57:40 -0700 (Wed, 20 Mar 2019) $
+;   $LastChangedRevision: 26864 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_readcdf_spec.pro $
 ;
 ;-
@@ -271,7 +271,8 @@ pro mvn_swe_readcdf_spec, infile, structure
 
 ; *** chksum and valid (chksum is determined by mvn_swe_calib, above)
 
-  structure.chksum = swe_chksum[0]
+  structure.lut = swe_tabnum[0]
+  structure.chksum = mvn_swe_tabnum(swe_tabnum[0], /inverse)
   structure.valid = 1B
 
 ; finis!

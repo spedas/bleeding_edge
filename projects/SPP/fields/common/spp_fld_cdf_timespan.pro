@@ -29,9 +29,9 @@
 ; CREATED BY:
 ;   pulupa
 ;
-; $LastChangedBy: pulupa $
-; $LastChangedDate: 2018-09-24 11:18:10 -0700 (Mon, 24 Sep 2018) $
-; $LastChangedRevision: 25856 $
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2019-04-07 00:53:49 -0700 (Sun, 07 Apr 2019) $
+; $LastChangedRevision: 26953 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_cdf_timespan.pro $
 ;-
 pro spp_fld_cdf_timespan, trange = trange, success = success, $
@@ -50,7 +50,7 @@ pro spp_fld_cdf_timespan, trange = trange, success = success, $
     if n_elements(trange) EQ 1 then daily = 1 else daily = 0
 
     timespan, time_string(trange)
-
+    
   endelse
 
   trange_str = time_string(trange,format=2)

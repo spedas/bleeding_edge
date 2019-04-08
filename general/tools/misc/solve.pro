@@ -1,10 +1,12 @@
+; crude routine to invert a function
+
 
 function solve,y,xguess=x0,parameter=par  ,funct=funct
 
 if ~keyword_set(funct) then funct = par.func
 ;y0 = call_function(funct,double(x0),param=par)
 y0 = func(x0,param=par)
-x1 = x0*1.001
+x1 = x0*1.001+ 1e-4                  ; crude,  and can fail
 
 for i=0,20 do begin
 ;  y1 = call_function(funct,x1,param=par)

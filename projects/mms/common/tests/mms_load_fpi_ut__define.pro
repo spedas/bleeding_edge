@@ -10,8 +10,8 @@
 ; 
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-01-30 13:55:54 -0800 (Wed, 30 Jan 2019) $
-; $LastChangedRevision: 26519 $
+; $LastChangedDate: 2019-03-27 12:48:45 -0700 (Wed, 27 Mar 2019) $
+; $LastChangedRevision: 26920 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_fpi_ut__define.pro $
 ;-
 
@@ -129,11 +129,11 @@ function mms_load_fpi_ut::test_qmoms_brst
 end
 
 function mms_load_fpi_ut::test_qmoms_fast
-  mms_load_fpi, datatype='dis-pmoms', data_rate='fast', level='l1b', trange=['2018-05-02/10:00', '2018-05-02/14:00']
+  mms_load_fpi, datatype='dis-partmoms', data_rate='fast', level='l2', trange=['2018-05-02/10:00', '2018-05-02/14:00']
   get_data, 'mms3_dis_bulkv_part_gse_fast', data=d
-  assert, n_elements(d.v2[0, *]) eq 32, 'Problem loading dis-qmoms files'
+  assert, n_elements(d.v[0, *]) eq 32, 'Problem loading dis-qmoms files'
   get_data, 'mms3_dis_prestensor_part_gse_fast', data=d
-  assert, n_elements(d.v3[0, *]) eq 32, 'Problem loading dis-qmoms files'
+  assert, n_elements(d.v[0, *]) eq 32, 'Problem loading dis-qmoms files'
   return, 1
 end
 

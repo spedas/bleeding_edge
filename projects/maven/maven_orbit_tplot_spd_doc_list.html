@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Mar 12 18:16:22 2019.<P>
+<STRONG>Last modified: </STRONG>Sun Apr  7 03:16:49 2019.<P>
  
 <HR>
  
@@ -266,8 +266,8 @@ KEYWORDS:
        none
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-02-22 18:19:46 -0800 (Fri, 22 Feb 2019) $
- $LastChangedRevision: 26694 $
+ $LastChangedDate: 2019-03-15 12:33:21 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26801 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_eph.pro $
 </PRE><P>
 <STRONG>(See <A href="maven_orbit_tplot/maven_orbit_eph.pro">projects/maven/maven_orbit_tplot/maven_orbit_eph.pro</A>)</STRONG><P>
@@ -581,18 +581,17 @@ KEYWORDS:
                  keywords EXTENDED and HIRES.
 
        EXTENDED: Load one of the long-term predict ephemerides.  The value of this
-                 keyword can be from 1 to 3, corresponding to the following spk
+                 keyword can be from 1 to 4, corresponding to the following spk
                  kernels:
 
-                   1 : trj_orb_180516-190319_targetM2020EDL-nso_180515.bsp
-                   2 : trj_orb_190301-200507_targetM2020EDL-ab4500_180515.bsp
-                   3 : trj_orb_200501-210512_targetM2020EDL-sro-phaseRange_180517.bsp
+                   1 : trj_orb_181015-190307_targetM2020EDL-nso_181017.bsp
+                   2 : trj_orb_190210-200520_targetM2020EDL-ab4500_181018.bsp
+                   3 : trj_orb_200415-210512_targetM2020EDL-sro-phaseJEZ_181030.bsp
+                   4 : trj_orb_210212-260101_210x4360_181101.bsp
 
-                 These predict ephemerides were created in May 2018.
+                 These predict ephemerides were created in Oct/Nov 2018.
 
-       HIRES:    Only works when EXTENDED is set.  If set, load the 20-sec ephemeris;
-                 otherwise, load the 60-sec ephemeris.  OBSOLETE - this keyword now
-                 has no effect at all.
+       HIRES:    OBSOLETE - this keyword has no effect at all.
 
        LOADONLY: Create the TPLOT variables, but do not plot.
 
@@ -634,8 +633,8 @@ KEYWORDS:
                  (suppress most messages).
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-02-22 18:20:23 -0800 (Fri, 22 Feb 2019) $
- $LastChangedRevision: 26695 $
+ $LastChangedDate: 2019-03-20 10:44:28 -0700 (Wed, 20 Mar 2019) $
+ $LastChangedRevision: 26860 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11
@@ -741,12 +740,16 @@ KEYWORDS:
 
                     time  : unix time for used for calculation
                     lst   : local solar time (hrs)
-                    s_lon : sub-solar point longitude (deg)
-                    s_lat : sub-solar point latitude (deg)
+                    slon  : sub-solar point longitude (deg)
+                    slat  : sub-solar point latitude (deg)
+
+       TPLOT:     Make tplot variables.
+
+       PANS:      Returns the names of any tplot variables created.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2016-10-18 21:32:45 -0700 (Tue, 18 Oct 2016) $
- $LastChangedRevision: 22144 $
+ $LastChangedDate: 2019-03-15 12:32:57 -0700 (Fri, 15 Mar 2019) $
+ $LastChangedRevision: 26800 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_mars_localtime.pro $
 
 CREATED BY:	David L. Mitchell

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Mar 12 18:16:22 2019.<P>
+<STRONG>Last modified: </STRONG>Sun Apr  7 03:16:49 2019.<P>
  
 <HR>
  
@@ -145,7 +145,8 @@ PURPOSE:
  Downsamples spectral data to fit a given array and interpolates back
  to the original. For specplot.pro in cases where there is a time
  variation faster than the time resolution of device pixels. Not
- done if n_elements(x_out) &gt; n_elements(x_in)/2.
+ done if n_elements(x_out) &gt; n_elements(x_in)/2, or if dx_out/dx_in
+ is less than 2.0.
 CALLING SEQUENCE:
  spec_out = auto_downsample(spec_in, x_in, x_out)
 INPUT:
@@ -159,9 +160,9 @@ KEYWORDS:
                             input coordinates, but to the output coordinates
 HISTORY:
  31-aug-2018, jmm, jimm@ssl.berkeley.edu
- $LastChangedBy: egrimes $
- $LastChangedDate: 2019-01-08 08:51:00 -0800 (Tue, 08 Jan 2019) $
- $LastChangedRevision: 26434 $
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-03-18 11:26:36 -0700 (Mon, 18 Mar 2019) $
+ $LastChangedRevision: 26846 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/auto_downsample.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/auto_downsample.pro">general/tplot/auto_downsample.pro</A>)</STRONG><P>
@@ -2347,7 +2348,7 @@ KEYWORDS:
              current window is used.
    VAR_LABEL:  String [array]; Variable(s) used for putting labels along
      the bottom. This allows quantities such as altitude to be labeled.
-   VERSION:  Must be 1,2,3, or 4 (3 is default)  Uses a different labeling
+   VERSION:  Must be 1,2,3,4,5 or 6 (3 is default)  Uses a different labeling
    scheme.  Version 4 is for rocket-type time scales.
    OVERPLOT: Will not erase the previous screen if set.
    NAMES:    The names of the tplot variables that are plotted.
@@ -2410,9 +2411,9 @@ QUESTIONS?
 Still have questions:
    Send e-mail to:  tplot@ssl.berkeley.edu    someone might answer!
 
- $LastChangedBy: davin-mac $
- $LastChangedDate: 2018-12-08 09:43:52 -0800 (Sat, 08 Dec 2018) $
- $LastChangedRevision: 26282 $
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-03-25 11:48:41 -0700 (Mon, 25 Mar 2019) $
+ $LastChangedRevision: 26890 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/tplot.pro">general/tplot/tplot.pro</A>)</STRONG><P>
@@ -3457,13 +3458,14 @@ Inputs:
 Outputs:
   vtitle=vtitle: title for var labels
   vlab=vlab: formatted var labels
-  time_offset=time_offset: Used by tplot for ???
-  time_scale=time_scale: Used by tplot for ???
-  
-
- $LastChangedBy: pcruce $
- $LastChangedDate: 2014-01-31 17:32:47 -0800 (Fri, 31 Jan 2014) $
- $LastChangedRevision: 14111 $
+  time_offset=time_offset: Used by tplot, as the start time of the
+                           plot in unix time
+  time_scale=time_scale: Used by tplot to scale the time variable,
+                         typically 1.0, but larger for longer time
+                         ranges
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-03-25 11:48:41 -0700 (Mon, 25 Mar 2019) $
+ $LastChangedRevision: 26890 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_var_labels.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/tplot_var_labels.pro">general/tplot/tplot_var_labels.pro</A>)</STRONG><P>

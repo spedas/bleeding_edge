@@ -68,18 +68,22 @@
 ;
 ;   SHAPE:     Include a panel for the electron shape parameter.
 ;
+;   MAGFULL:   If set, then try to load full resolution (32 Hz) MAG data.
+;              Default is to load 1-sec data.
+;
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-27 11:10:19 -0800 (Wed, 27 Feb 2019) $
-; $LastChangedRevision: 26716 $
+; $LastChangedDate: 2019-03-15 12:36:16 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26805 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sciplot.pro $
 ;
 ;-
 
 pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lpw, euv=euv, $
                      sc_pot=sc_pot, eph=eph, min_pad_eflux=min_pad_eflux, loadonly=loadonly, $
-                     pans=pans, padsmo=padsmo, apid=apid, shape=shape, nadir=nadir, datum=dtm
+                     pans=pans, padsmo=padsmo, apid=apid, shape=shape, nadir=nadir, datum=dtm, $
+                     magfull=magfull
 
   compile_opt idl2
 
@@ -181,8 +185,14 @@ pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lp
 ; MAG data
 
   mvn_swe_addmag
-  mvn_mag_geom
-  mvn_mag_tplot, /model
+  if keyword_set(magfull) then begin
+    mvn_mag_load, 'L2_FULL'
+    mvn_mag_geom, var='mvn_B_full'
+    mvn_mag_tplot, 'mvn_B_full_maven_mso'
+  endif else begin
+    mvn_mag_geom
+    mvn_mag_tplot, /model
+  endelse
   
   mag_pan = ['mvn_mag_bamp','mvn_mag_bang']
 

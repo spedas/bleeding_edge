@@ -19,12 +19,16 @@
 ;
 ;                    time  : unix time for used for calculation
 ;                    lst   : local solar time (hrs)
-;                    s_lon : sub-solar point longitude (deg)
-;                    s_lat : sub-solar point latitude (deg)
+;                    slon  : sub-solar point longitude (deg)
+;                    slat  : sub-solar point latitude (deg)
+;
+;       TPLOT:     Make tplot variables.
+;
+;       PANS:      Returns the names of any tplot variables created.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2016-10-18 21:32:45 -0700 (Tue, 18 Oct 2016) $
-; $LastChangedRevision: 22144 $
+; $LastChangedDate: 2019-03-15 12:32:57 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26800 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_mars_localtime.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -36,6 +40,13 @@ pro mvn_mars_localtime, result=result
   from_frame = 'MAVEN_MSO'
   to_frame = 'IAU_MARS'
 
+  ker = spice_test('*',verbose=-1)
+  if (ker[0] eq '') then begin
+    print,"SPICE not initialized."
+    result = 0
+    return
+  endif
+  
   if (size(state,/type) eq 0) then maven_orbit_tplot, /current, /loadonly
 
 ; Sun is at MSO coordinates of [X, Y, Z] = [1, 0, 0]
@@ -53,15 +64,19 @@ pro mvn_mars_localtime, result=result
   lst = (lon - s_lon)*(12D/180D) - 12D  ; 0 = midnight, 12 = noon
   lst -= 24D*double(floor(lst/24D))     ; wrap to 0-24 range
 
-  store_data,'lst',data={x:time, y:lst}
-  ylim,'lst',0,24,0
-  options,'lst','yticks',4
-  options,'lst','yminor',6
-  options,'lst','psym',3
-  options,'lst','ytitle','LST (hrs)'
+  if keyword_set(tplot) then begin
+    store_data,'lst',data={x:time, y:lst}
+    ylim,'lst',0,24,0
+    options,'lst','yticks',4
+    options,'lst','yminor',6
+    options,'lst','psym',3
+    options,'lst','ytitle','LST (hrs)'
   
-  store_data,'Lss',data={x:time, y:s_lat}
-  options,'Lss','ytitle','Sub-solar!CLat (deg)'
+    store_data,'Lss',data={x:time, y:s_lat}
+    options,'Lss','ytitle','Sub-solar!CLat (deg)'
+
+    pans = ['lst', 'Lss']
+  endif
   
   result = {time:time, lst:lst, slon:s_lon, slat:s_lat}
 

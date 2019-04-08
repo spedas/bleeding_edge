@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Mar 12 18:16:22 2019.<P>
+<STRONG>Last modified: </STRONG>Sun Apr  7 03:16:49 2019.<P>
  
 <HR>
  
@@ -75,6 +75,9 @@ This page was created by the IDL library routine
 
  NOTES:
 
+
+ HISTORY:
+         - egrimes, fixed bug in calibration calculations reported by Andrei, 14 March 2019
 
 $LastChangedBy: clrussell $
 $LastChangedDate: 2018-12-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
@@ -412,6 +415,7 @@ NOTES:
                        useful if you accidently save an incorrect password, or if your SDC password has changed
          tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in
                        SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
+         no_spec:      flag to set tplot options to linear rather than the default of spec
 
  EXAMPLES:
          to load/plot the EPD data for probe a on 2/20/2019:
@@ -494,6 +498,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/el
 
  NOTES:
 
+ HISTORY:
+         egrimes, replaced new_tvars code with tplotnames and enabled calibration by default, 14 March 2019 
 
 $LastChangedBy: clrussell $
 $LastChangedDate: 2018-12-06 11:58:25 -0700 (Mon, 06 Aug 2018) $

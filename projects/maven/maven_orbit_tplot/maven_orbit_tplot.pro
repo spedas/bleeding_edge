@@ -76,18 +76,17 @@
 ;                 keywords EXTENDED and HIRES.
 ;
 ;       EXTENDED: Load one of the long-term predict ephemerides.  The value of this
-;                 keyword can be from 1 to 3, corresponding to the following spk
+;                 keyword can be from 1 to 4, corresponding to the following spk
 ;                 kernels:
 ;
-;                   1 : trj_orb_180516-190319_targetM2020EDL-nso_180515.bsp
-;                   2 : trj_orb_190301-200507_targetM2020EDL-ab4500_180515.bsp
-;                   3 : trj_orb_200501-210512_targetM2020EDL-sro-phaseRange_180517.bsp
+;                   1 : trj_orb_181015-190307_targetM2020EDL-nso_181017.bsp
+;                   2 : trj_orb_190210-200520_targetM2020EDL-ab4500_181018.bsp
+;                   3 : trj_orb_200415-210512_targetM2020EDL-sro-phaseJEZ_181030.bsp
+;                   4 : trj_orb_210212-260101_210x4360_181101.bsp
 ;
-;                 These predict ephemerides were created in May 2018.
+;                 These predict ephemerides were created in Oct/Nov 2018.
 ;
-;       HIRES:    Only works when EXTENDED is set.  If set, load the 20-sec ephemeris;
-;                 otherwise, load the 60-sec ephemeris.  OBSOLETE - this keyword now
-;                 has no effect at all.
+;       HIRES:    OBSOLETE - this keyword has no effect at all.
 ;
 ;       LOADONLY: Create the TPLOT variables, but do not plot.
 ;
@@ -129,8 +128,8 @@
 ;                 (suppress most messages).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-22 18:20:23 -0800 (Fri, 22 Feb 2019) $
-; $LastChangedRevision: 26695 $
+; $LastChangedDate: 2019-03-20 10:44:28 -0700 (Wed, 20 Mar 2019) $
+; $LastChangedRevision: 26860 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -230,29 +229,48 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   if keyword_set(extended) then begin
     case extended of
        1 : begin
-             mname = 'maven_spacecraft_mso_M2020EDL-nso_180515.sav'
-             gname = 'maven_spacecraft_geo_M2020EDL-nso_180515.sav'
+             mname = 'maven_spacecraft_mso_targetM2020EDL-nso_181017.sav'
+             gname = 'maven_spacecraft_geo_targetM2020EDL-nso_181017.sav'
+             timespan, ['2018-10-16','2019-03-07']
              treset = 1
              nocrop = 1
-             print,"Using predict for nominal science orbit (150 x 6200 km)."
+             timecrop = 0
+             print,"Using predict for 150 x 6000 orbit, followed by aerobraking."
+             print,"  SPK = trj_orb_181015-190307_targetM2020EDL-nso_181017.bsp"
            end
        2 : begin
-             mname = 'maven_spacecraft_mso_M2020EDL-ab4550_180515.sav'
-             gname = 'maven_spacecraft_geo_M2020EDL-ab4550_180515.sav'
+             mname = 'maven_spacecraft_mso_targetM2020EDL-ab4500_181018.sav'
+             gname = 'maven_spacecraft_geo_targetM2020EDL-ab4500_181018.sav'
+             timespan, ['2019-02-10','2020-03-20']
              treset = 1
              nocrop = 1
+             timecrop = 0
              print,"Using predict for aerobraking, followed by 150 x 4500 km orbit."
+             print,"  SPK = trj_orb_190210-200520_targetM2020EDL-ab4500_181018.bsp"
            end
        3 : begin
-             mname = 'maven_spacecraft_mso_M2020EDL-sro-phaseRange_180517.sav'
-             gname = 'maven_spacecraft_geo_M2020EDL-sro-phaseRange_180517.sav'
+             mname = 'maven_spacecraft_mso_targetM2020EDL-sro-phaseJEZ_181030.sav'
+             gname = 'maven_spacecraft_geo_targetM2020EDL-sro-phaseJEZ_181030.sav'
+             timespan, ['2020-04-16','2021-05-12']
              treset = 1
              nocrop = 1
-             print,"Using predict for relay-science orbit (200 x 4500 km)."
+             timecrop = 0
+             print,"Using predict for 210 x 4500 km orbit."
+             print,"  SPK = trj_orb_200415-210512_targetM2020EDL-sro-phaseJEZ_181030.bsp"
            end
-      else : ; do nothing
+       4 : begin
+             mname = 'maven_spacecraft_mso_210x4360_181101.sav'
+             gname = 'maven_spacecraft_geo_210x4360_181101.sav'
+             timespan, ['2021-02-13','2026-01-01']
+             treset = 1
+             nocrop = 1
+             timecrop = 0
+             print,"Using long-range predict for 210 x 4360 km orbit."
+             print,"  SPK = trj_orb_210212-260101_210x4360_181101.bsp"
+           end
+      else : extended = 0
     endcase
-  endif
+  endif else extended = 0
 
   if (n_elements(timecrop) gt 1L) then begin
     tspan = minmax(time_double(timecrop))
@@ -333,25 +351,28 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   endif else begin
     file = mvn_pfp_file_retrieve(rootdir+mname,last_version=0,source=ssrc,verbose=verbose)
     nfiles = n_elements(file)
-    year = strmid(file,9,4,/rev)
-    month = strmid(file,5,2,/rev)
 
-    date = replicate(time_struct(0D), nfiles)
-    date.year = year
-    date.month = month
-    date.date = 1
-    maxdate = date[n_elements(date)-1]
-    maxdate.month += 1
-    maxdate = time_double(maxdate)
-    date = time_double(date)
+    if (extended eq 0) then begin
+      year = strmid(file,9,4,/rev)
+      month = strmid(file,5,2,/rev)
 
-    if (tspan[0] gt maxdate) then begin
-      print,"No ephemeris coverage past ",time_string(maxdate)
-      return
-    endif
-    if (tspan[1] lt date[0]) then begin
-      print,"No ephemeris coverage before ",time_string(date[0])
-      return
+      date = replicate(time_struct(0D), nfiles)
+      date.year = year
+      date.month = month
+      date.date = 1
+      maxdate = date[n_elements(date)-1]
+      maxdate.month += 1
+      maxdate = time_double(maxdate)
+      date = time_double(date)
+
+      if (tspan[0] gt maxdate) then begin
+        print,"No ephemeris coverage past ",time_string(maxdate)
+        return
+      endif
+      if (tspan[1] lt date[0]) then begin
+        print,"No ephemeris coverage before ",time_string(date[0])
+        return
+      endif
     endif
     
     if (docrop) then begin
@@ -403,25 +424,28 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
     file = mvn_pfp_file_retrieve(rootdir+gname,last_version=0,source=ssrc,verbose=verbose)
     nfiles = n_elements(file)
-    year = strmid(file,9,4,/rev)
-    month = strmid(file,5,2,/rev)
 
-    date = replicate(time_struct(0D), nfiles)
-    date.year = year
-    date.month = month
-    date.date = 1
-    maxdate = date[n_elements(date)-1]
-    maxdate.month += 1
-    maxdate = time_double(maxdate)
-    date = time_double(date)
+    if (extended eq 0) then begin
+      year = strmid(file,9,4,/rev)
+      month = strmid(file,5,2,/rev)
 
-    if (tspan[0] gt maxdate) then begin
-      print,"No ephemeris coverage past ",time_string(maxdate)
-      return
-    endif
-    if (tspan[1] lt date[0]) then begin
-      print,"No ephemeris coverage before ",time_string(date[0])
-      return
+      date = replicate(time_struct(0D), nfiles)
+      date.year = year
+      date.month = month
+      date.date = 1
+      maxdate = date[n_elements(date)-1]
+      maxdate.month += 1
+      maxdate = time_double(maxdate)
+      date = time_double(date)
+
+      if (tspan[0] gt maxdate) then begin
+        print,"No ephemeris coverage past ",time_string(maxdate)
+        return
+      endif
+      if (tspan[1] lt date[0]) then begin
+        print,"No ephemeris coverage before ",time_string(date[0])
+        return
+      endif
     endif
     
     if (docrop) then begin

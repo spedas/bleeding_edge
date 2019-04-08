@@ -51,7 +51,7 @@
 ;LAST MODIFICATION:   07/24/12
 ;-
 pro swe_a2_snap, layout=layout, model=model, ddd=ddd, keepwins=keepwins, zrange=zrange, zlog=zlog, $
-                 archive=archive, enorm=enorm
+                 archive=archive, burst=burst, enorm=enorm
 
   @mvn_swe_com
   @swe_snap_common
@@ -59,7 +59,7 @@ pro swe_a2_snap, layout=layout, model=model, ddd=ddd, keepwins=keepwins, zrange=
 
   Twin = !d.window
 
-  if keyword_set(archive) then aflg = 1 else aflg = 0
+  if (keyword_set(archive) or keyword_set(burst)) then aflg = 1 else aflg = 0
   if keyword_set(enorm) then begin
     nflg = 1
     zrange = [0.,1.]
@@ -173,12 +173,18 @@ pro swe_a2_snap, layout=layout, model=model, ddd=ddd, keepwins=keepwins, zrange=
 
     pam = mvn_swe_padmap(pad)      ; pitch angle map
     n_e = swe_ne[pad.group]        ; number of energy channels
+    zz = pad.data[*,0:(n_e-1)]     ; raw counts
 
-    x = findgen(16) + 0.5
-    y = findgen(n_e) + 0.5
-    z = pad.data[*,0:(n_e-1)]      ; raw counts
-    
-    if (nflg) then for i=0,(n_e-1) do z[*,i] = z[*,i]/max(z[*,i],/nan)
+    if (nflg) then for i=0,(n_e-1) do zz[*,i] = zz[*,i]/max(zz[*,i],/nan)
+
+    x = findgen(18) - 0.5
+    y = findgen(n_e + 2) - 0.5
+    z = x # y
+    z[1:16, 1:n_e] = zz
+    z[1:16, 0] = z[1:16, 1]
+    z[1:16, n_e+1] = z[1:16, n_e]
+    z[0,*] = z[1,*]
+    z[17,*] = z[16,*]
     
     wset, Swin
 
@@ -188,7 +194,7 @@ pro swe_a2_snap, layout=layout, model=model, ddd=ddd, keepwins=keepwins, zrange=
             format='(a2,4x,a19,4x,"G ",i1,2x,"P ",i1,4x,"Baz = ",f6.1,2x,"Bel = ",f6.1,4x,"NPKT: ",i3)')
     lim = {x_no_interp:1, y_no_interp:1, xrange:[0,16], yrange:[0,n_e], zrange:zrange, $
            xmargin:[10,10], charsize:1.2, xtitle:'Pitch Angle Bin', ytitle:'Energy Bin', $
-           ztitle:'Counts', title:title, xstyle:1, ystyle:1, zlog:zlog, xticks:4, xminor:4, $
+           ztitle:'Raw Counts', title:title, xstyle:1, ystyle:1, zlog:zlog, xticks:4, xminor:4, $
            yticks:4, yminor:4}
 
     indx = where(z eq 0., count)
@@ -207,13 +213,19 @@ pro swe_a2_snap, layout=layout, model=model, ddd=ddd, keepwins=keepwins, zrange=
 
       swe_testpulser_model,pam={andx:andx,dndx:dndx},group=pad.group,result=tpmod
 
+      z[1:16, 1:n_e] = tpmod.a2[*,0:(n_e-1)]      ; raw counts
+      z[1:16, 0] = z[1:16, 1]
+      z[1:16, n_e+1] = z[1:16, n_e]
+      z[0,*] = z[1,*]
+      z[17,*] = z[16,*]
+
       title = 'Test Pulser Model: ' + pmsg
       lim = {x_no_interp:1, y_no_interp:1, xrange:[0,16], yrange:[0,n_e], zrange:zrange, $
              xmargin:[10,10], charsize:1.2, xtitle:'Pitch Angle Bin', ytitle:'Energy Bin', $
-             ztitle:'Counts', title:title, xstyle:1, ystyle:1, zlog:zlog, xticks:4, xminor:4, $
-             yticks:4, yminor:4}
+             ztitle:'Raw Counts', title:title, xstyle:1, ystyle:1, zlog:zlog, xticks:4, $
+             xminor:4, yticks:4, yminor:4}
 
-      specplot,x,y,tpmod.a2,limits=lim
+      specplot,x,y,z,limits=lim
 
       binlab = string(dndx,format='(i2)')
       for i=0,15 do xyouts,x[i],y[n_e-1]*0.95,binlab[i],align=0.5,color=0
@@ -256,14 +268,20 @@ pro swe_a2_snap, layout=layout, model=model, ddd=ddd, keepwins=keepwins, zrange=
       title = '3D to PAD Forward Calculation'
       lim = {x_no_interp:1, y_no_interp:1, xrange:[0,16], yrange:[0,n_e], zrange:zrange, $
              xmargin:[10,10], charsize:1.2, xtitle:'Pitch Angle Bin', ytitle:'Energy Bin', $
-             ztitle:'Counts', title:title, xstyle:1, ystyle:1, zlog:zlog, xticks:4, xminor:4, $
-             yticks:4, yminor:4}
+             ztitle:'Raw Counts', title:title, xstyle:1, ystyle:1, zlog:zlog, xticks:4, $
+             xminor:4, yticks:4, yminor:4}
 
-      z = pad_fc
-      indx = where(z eq 0., count)
-      if (count gt 0L) then z[indx] = !values.f_nan
+      zz = pad_fc
+      indx = where(zz eq 0., count)
+      if (count gt 0L) then zz[indx] = !values.f_nan
     
-      if (nflg) then for i=0,(n_e-1) do z[*,i] = z[*,i]/max(z[*,i],/nan)
+      if (nflg) then for i=0,(n_e-1) do zz[*,i] = zz[*,i]/max(zz[*,i],/nan)
+
+      z[1:16, 1:n_e] = zz[*,0:(n_e-1)]      ; raw counts
+      z[1:16, 0] = z[1:16, 1]
+      z[1:16, n_e+1] = z[1:16, n_e]
+      z[0,*] = z[1,*]
+      z[17,*] = z[16,*]
 
       specplot,x,y,z,limits=lim
 
@@ -341,19 +359,13 @@ pro swe_a2_snap, layout=layout, model=model, ddd=ddd, keepwins=keepwins, zrange=
       xyouts,x1,y1[24],/normal,"DIGT",charsize=csize
       xyouts,x2,y1[24],/normal,string(swe_hsk[j].DIGT,format=fmt2),charsize=csize,align=1.0
       xyouts,x1,y1[26],/normal,"LUT",charsize=csize
-      chksum = swe_hsk[j].CHKSUM[swe_hsk[j].SSCTL]
-      if (mvn_swe_validlut(chksum)) then begin
-        lut = mvn_swe_tabnum(chksum)
-        col0 = 4
-      endif else begin
-        lut = 0
-        col0 = 6
-      endelse
-      xyouts,x2,y1[26],/normal,string(lut,format=fmt4),charsize=csize,align=1.0,color=col0
-;      xyouts,x2,y1[26],/normal,string(swe_hsk[j].CHKSUM[1],format=fmt3),charsize=csize,align=1.0,$
-;                       color=col1
-;      xyouts,x3,y1[26],/normal,string(swe_hsk[j].CHKSUM[0],format=fmt3),charsize=csize,align=1.0,$
-;                       color=col0
+;     chksum = swe_hsk[j].CHKSUM[swe_hsk[j].SSCTL]
+      if (pad.lut ge 1 and pad.lut le 8) then col0 = 4 else col0 = 6
+      xyouts,x2,y1[26],/normal,string(pad.lut,format=fmt4),charsize=csize,align=1.0,color=col0
+;     xyouts,x2,y1[26],/normal,string(swe_hsk[j].CHKSUM[1],format=fmt3),charsize=csize,align=1.0,$
+;                      color=col1
+;     xyouts,x3,y1[26],/normal,string(swe_hsk[j].CHKSUM[0],format=fmt3),charsize=csize,align=1.0,$
+;                      color=col0
     endif
 
 ; Get the next button press

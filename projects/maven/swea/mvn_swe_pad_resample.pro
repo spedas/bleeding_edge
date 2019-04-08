@@ -131,8 +131,8 @@
 ;CREATED BY:      Takuya Hara on 2014-09-24.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-18 12:27:03 -0800 (Sun, 18 Feb 2018) $
-; $LastChangedRevision: 24737 $
+; $LastChangedDate: 2019-03-15 12:44:29 -0700 (Fri, 15 Mar 2019) $
+; $LastChangedRevision: 26817 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_resample.pro $
 ;
 ;-
@@ -367,7 +367,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
                           snap=plot, tplot=tplot, map3d=map3d, swia=swia, $
                           mbins=mbins, sc_pot=sc_pot, symdir=symdir, interpolate=interpolate, $
                           cut=cut, spec=spec, pstyle=pstyle, silent=sil, verbose=vb, $
-                          hires=hires, fbdata=fbdata
+                          hires=hires, fbdata=fbdata, tabnum=tabnum, burst=burst
   COMPILE_OPT idl2
   @mvn_swe_com
   nan = !values.f_nan 
@@ -376,6 +376,9 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
   IF keyword_set(sil) THEN silent = sil ELSE silent = 0
   IF keyword_set(vb) THEN verbose = vb ELSE verbose = 0
   verbose -= silent
+  delta_t = 1.95D/2D  ; start time to center time for PAD and 3D
+  if (not keyword_set(tabnum)) then tabnum = 5B
+  if keyword_set(burst) then archive = 1
 
 ;  IF SIZE(mvn_swe_engy, /type) NE 8 THEN BEGIN
 ;     print, ptrace()
@@ -390,6 +393,15 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
        RETURN
      endif
   ENDIF
+
+  if (tabnum gt 6) then begin
+    get_data,'mvn_B_full',index=i
+    if (i eq 0) then begin
+      print, ptrace()
+      print, '  No 32-Hz MAG data loaded.'
+      return
+    endif
+  endif
   
 ; Determine which data to process (pad or 3d, survey or burst)
 
@@ -399,7 +411,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
 
   IF NOT keyword_set(dtype) THEN BEGIN
      if keyword_set(archive) then begin
-       if (size(a3,/type) eq 8) then dat_time = a3.time
+       if (size(a3,/type) eq 8) then dat_time = a3.time + delta_t  ; center time
        if (size(mvn_swe_pad_arc,/type) eq 8) then dat_time = mvn_swe_pad_arc.time
        if (size(dat_time,/type) eq 0) then begin
          print,'  No PAD archive data.'
@@ -407,7 +419,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
        endif
      endif
      if not keyword_set(archive) then begin
-       if (size(a2,/type) eq 8) then dat_time = a2.time
+       if (size(a2,/type) eq 8) then dat_time = a2.time + delta_t  ; center time
        if (size(mvn_swe_pad,/type) eq 8) then dat_time = mvn_swe_pad.time
        if (size(dat_time,/type) eq 0) then begin
          print,'  No PAD survey data.  Nothing to resample.'
@@ -416,7 +428,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
      endif
   ENDIF ELSE BEGIN
      if keyword_set(archive) then begin
-       if (size(swe_3d_arc,/type) eq 8) then dat_time = swe_3d_arc.time
+       if (size(swe_3d_arc,/type) eq 8) then dat_time = swe_3d_arc.time + delta_t  ; center time
        if (size(mvn_swe_3d_arc,/type) eq 8) then dat_time = mvn_swe_3d_arc.time
        if (size(dat_time,/type) eq 0) then begin
          print,'  No 3D archive data.'
@@ -424,7 +436,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
        endif
      endif
      if not keyword_set(archive) then begin
-       if (size(swe_3d,/type) eq 8) then dat_time = swe_3d.time
+       if (size(swe_3d,/type) eq 8) then dat_time = swe_3d.time + delta_t  ; center time
        if (size(mvn_swe_3d,/type) eq 8) then dat_time = mvn_swe_3d.time
        if (size(dat_time,/type) eq 0) then begin
          print,'  No 3D survey data.  Nothing to resample.'
@@ -435,7 +447,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
      IF keyword_set(symdir) THEN BEGIN
         swe_3d_strahl_dir, result=strahl, archive=archive
         
-        idx = NN(dat_time, strahl.time)
+        idx = nn2(dat_time, strahl.time)
         magf = [ [COS(strahl.theta[idx]*!DTOR) * COS(strahl.phi[idx]*!DTOR)], $
                  [COS(strahl.theta[idx]*!DTOR) * SIN(strahl.phi[idx]*!DTOR)], $
                  [SIN(strahl.theta[idx]*!DTOR)] ]
@@ -444,38 +456,73 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
      ENDIF 
   ENDELSE
 
+; Hires PAD data (select data by table number)
+
+  dwell = 0
+  if ((tabnum eq 7) or (tabnum eq 8)) then begin
+    dtype = 0  ; only PAD data for now
+    if keyword_set(archive) then begin
+      idx = where(a3.lut eq tabnum, ndat)
+      if (ndat eq 0) then begin
+        print, ptrace()
+        print, "  No hires PAD archive data with requested sweep table: ",tabnum
+        archive = 0
+      endif
+    endif
+    if not keyword_set(archive) then begin
+      idx = where(a2.lut eq tabnum, ndat)
+      if (ndat eq 0) then begin
+        print, ptrace()
+        print, "  No hires PAD survey data with requested sweep table: ",tabnum
+        return
+      endif
+    endif
+    dwell = 1
+    case tabnum of
+        7  : erange = 199.
+        8  : erange = 49.
+      else : begin
+               print, ptrace()
+               print, "  This should be impossible!  TABNUM: ",tabnum
+               return
+             end
+    endcase
+  endif
+
 ; Process time or time range, if specified
 
-  IF SIZE(var, /type) NE 0 THEN BEGIN
-     trange = var
-     IF SIZE(trange, /type) EQ 7 THEN trange = time_double(trange)
-     IF SIZE(plot, /type) EQ 0 THEN plot = 1
-     CASE N_ELEMENTS(trange) OF
-        1: BEGIN
-           ndat = 1
-           idx = nn(dat_time, trange)
-        END 
-        2: BEGIN
-           idx = WHERE(dat_time GE MIN(trange) AND dat_time LE MAX(trange), ndat)
-           IF ndat EQ 0 THEN BEGIN
-              PRINT, ptrace()
-              PRINT, '  No data during the specified time you set.'
-              RETURN
-           ENDIF 
-        END 
-        ELSE: BEGIN
-           PRINT, ptrace()
-           PRINT, '  You must input 1 or 2 element(s) of the time interval.'
-           RETURN
-        END 
-     ENDCASE 
-  ENDIF ELSE BEGIN
-     trange = minmax(dat_time)
-     ndat = N_ELEMENTS(dat_time)
-     idx = LINDGEN(ndat)
+  if (not dwell) then begin
+    IF SIZE(var, /type) NE 0 THEN BEGIN
+       trange = var
+       IF SIZE(trange, /type) EQ 7 THEN trange = time_double(trange)
+       IF SIZE(plot, /type) EQ 0 THEN plot = 1
+       CASE N_ELEMENTS(trange) OF
+          1: BEGIN
+             ndat = 1
+             idx = nn2(dat_time, trange)
+          END 
+          2: BEGIN
+             idx = WHERE(dat_time GE MIN(trange) AND dat_time LE MAX(trange), ndat)
+             IF ndat EQ 0 THEN BEGIN
+                PRINT, ptrace()
+                PRINT, '  No data during the specified time you set.'
+                RETURN
+             ENDIF 
+          END 
+          ELSE: BEGIN
+             PRINT, ptrace()
+             PRINT, '  You must input 1 or 2 element(s) of the time interval.'
+             RETURN
+          END 
+       ENDCASE 
+    ENDIF ELSE BEGIN
+       trange = minmax(dat_time)
+       ndat = N_ELEMENTS(dat_time)
+       idx = LINDGEN(ndat)
 
-     IF SIZE(tplot, /type) EQ 0 THEN tplot = 1
-  ENDELSE
+       IF SIZE(tplot, /type) EQ 0 THEN tplot = 1
+    ENDELSE
+  endif
 
 ; Process keywords and set options
 
@@ -496,6 +543,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
   ENDIF
   pflg = BYTARR(4)
   FOR i=0, 3 DO pflg[i] = (pstyle AND 2L^i)/2L^i
+  pflg = [0B,1B,0B,0B]  ; the other flags don't work for me :(
 
 ; Field of view masking
 
@@ -528,28 +576,37 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
 ;   of tables 5 and 6 are within 20% of each other.  So, select 
 ;   energy bins using table 5 only.
 
-  mvn_swe_sweep, tab=5, result=sdat
-  energy = sdat.e
+  if (dwell) then begin
+    nene = 1
+    edx = 0
+    nchan = 64
+  endif else begin
 
-  case n_elements(erange) of
-       0 : begin
-             nene = n_elements(energy)
-             edx = indgen(nene)
-           end
-       1 : begin
-             nene = 1
-             edx = nn(energy, erange)
-           end 
-    else : begin
-             emin = min(erange, max=emax)
-             edx = where((energy ge emin) and (energy le emax), nene)
-             if (nene eq 0) then begin
-                print, ptrace()
-                print, '  No energy bins within range: ',[emin,emax]
-                return
-             endif
-           end 
-  endcase
+    mvn_swe_sweep, tab=5, result=sdat
+    energy = sdat.e
+    nchan = 1
+
+    case n_elements(erange) of
+         0 : begin
+               nene = n_elements(energy)
+               edx = indgen(nene)
+             end
+         1 : begin
+               nene = 1
+               edx = nn2(energy, erange)
+             end 
+      else : begin
+               emin = min(erange, max=emax)
+               edx = where((energy ge emin) and (energy le emax), nene)
+               if (nene eq 0) then begin
+                  print, ptrace()
+                  print, '  No energy bins within range: ',[emin,emax]
+                  return
+               endif
+             end 
+    endcase
+
+  endelse
 
   dformat = {time  : 0.d0                , $
              xax   : FLTARR(nbins)       , $
@@ -558,15 +615,18 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
              std   : FLTARR(nene, nbins) , $
              nbins : FLTARR(nene, nbins)    }
         
-  result = REPLICATE(dformat, ndat)
+  result = replicate(dformat, ndat*nchan)
 
 ; Loop through data in time sequence
 
   FOR i=0L,(ndat-1L) DO BEGIN
      IF keyword_set(dtype) THEN BEGIN
         ddd = mvn_swe_get3d(dat_time[idx[i]], units=units, archive=archive)
+        dname = ddd.data_name
+        energy = average(ddd.energy, 2)
+        tabok = ddd.lut eq tabnum
         if keyword_set(sc_pot) then begin
-          pot = swe_sc_pot[nn(swe_sc_pot.time, ddd.time)].potential
+          pot = swe_sc_pot[nn2(swe_sc_pot.time, ddd.time)].potential
           if (finite(pot)) then begin
             mvn_swe_convert_units, ddd, 'df'
             ddd.energy -= pot
@@ -574,17 +634,14 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
           endif
         endif
         dtime = ddd.time
-        tabok = mvn_swe_validlut(ddd.chksum)
-        energy = average(ddd.energy, 2)
 
         IF keyword_set(swia) THEN $
            ddd = mvn_swe_pad_resample_swia(ddd, archive=archive, interpolate=interpolate, $
                                            silent=silent, sc_pot=sc_pot)
         
         IF keyword_set(symdir) THEN $
-           ddd.magf = strahl.magf[NN(strahl.time, ddd.time), *]
+           ddd.magf = strahl.magf[nn2(strahl.time, ddd.time), *]
      
-        dname = ddd.data_name
         magf = ddd.magf
         magf /= SQRT(TOTAL(magf * magf))
         
@@ -593,33 +650,38 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
         IF keyword_set(map3d) THEN ddd = mvn_swe_pad_resample_map3d(ddd, prf=interpolate)
      ENDIF ELSE BEGIN
         pad = mvn_swe_getpad(dat_time[idx[i]], units=units, archive=archive)
+        dname = pad.data_name
+        energy = average(pad.energy, 2)
+        tabok = pad.lut eq tabnum
         IF (hflg) THEN pad = mvn_swe_padmap_32hz(pad, fbdata=fbdata, verbose=verbose)
+        if (dwell) then pad = swe_pad32hz_unpack(pad)
         if keyword_set(sc_pot) then begin
-          pot = swe_sc_pot[nn(swe_sc_pot.time, pad.time)].potential
+          pot = swe_sc_pot[nn2(swe_sc_pot.time, pad.time)].potential
           if (finite(pot)) then begin
             mvn_swe_convert_units, pad, 'df'
             pad.energy -= pot
             mvn_swe_convert_units, pad, units
           endif
         endif
+
         dtime = pad.time
-        tabok = mvn_swe_validlut(pad.chksum)
-        dname = pad.data_name
-        energy = average(pad.energy, 2)
-        ;; pad.data *= REBIN(TRANSPOSE(obins[pad.k3d]), pad.nenergy, pad.nbins)
-        pad.data *= REBIN(TRANSPOSE(mobins[pad.k3d, boom[i]]), pad.nenergy, pad.nbins)
-        block = WHERE(~FINITE(mobins[pad.k3d, boom[i]]), nblock)
-        IF ((nblock GT 0) and prt) THEN BEGIN
-           tblk = 'Removed anode bin(s) data due to the FOV blockage: ['
-           FOR iblk=0, nblock-1 DO BEGIN
-              tblk += STRING(block[iblk], '(I0)')
-              IF iblk NE nblock-1 THEN tblk += ', '
-           ENDFOR 
-           tblk += ']'
-           dprint, tblk, dlevel=2, verbose=3-silent
-           undefine, iblk, tblk
-        ENDIF 
-        undefine, block, nblock
+
+        for j=0,(nchan-1) do begin
+          ;; pad.data *= REBIN(TRANSPOSE(obins[pad.k3d]), pad.nenergy, pad.nbins)
+          pad[j].data *= REBIN(TRANSPOSE(mobins[pad[j].k3d, boom[i]]), pad[j].nenergy, pad[j].nbins)
+          block = WHERE(~FINITE(mobins[pad[j].k3d, boom[i]]), nblock)
+          IF ((nblock GT 0) and prt) THEN BEGIN
+             tblk = 'Removed anode bin(s) data due to the FOV blockage: ['
+             FOR iblk=0, nblock-1 DO BEGIN
+                tblk += STRING(block[iblk], '(I0)')
+                IF iblk NE nblock-1 THEN tblk += ', '
+             ENDFOR 
+             tblk += ']'
+             dprint, tblk, dlevel=2, verbose=3-silent
+             undefine, iblk, tblk
+          ENDIF 
+          undefine, block, nblock
+        endfor
      ENDELSE 
 
      IF i EQ 0L THEN BEGIN
@@ -629,6 +691,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
      ENDIF 
 
      pa = dformat
+     if (nchan gt 1) then pa = replicate(pa, nchan)
      IF keyword_set(map3d) THEN BEGIN
         pad = ddd
         GOTO, pad_resample
@@ -692,40 +755,42 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
            pa = mvn_swe_pad_resample_prf(pad, dtype, silent=silent, archive=archive, map3d=map3d, $
                                          nbins=nbins, nene=nene, edx=edx, dformat=dformat, energy=energy) $
         ELSE BEGIN
-           pa.time = pad.time
-           xax = (0.5*(180./nbins) + FINDGEN(nbins) * (180./nbins)) * !DTOR
-           ; Resampling
-           FOR j=0, nene-1 DO BEGIN
-              tot = DBLARR(nbins)
-              variance = tot
-              index = tot
-              FOR k=0, pad.nbins-1 DO BEGIN
-                 l = WHERE(~FINITE(pad.data[edx[j], k]), cnt)
-                 IF cnt EQ 0 THEN BEGIN
-                    l = WHERE((xax GE pad.pa_min[edx[j],k]) AND (xax LE pad.pa_max[edx[j],k]), cnt)
-                    IF cnt GT 0 THEN BEGIN
-                       tot[l] += pad.data[edx[j], k]
-                       variance[l] += pad.var[edx[j], k]
-                       index[l] += 1.
-                    ENDIF 
-                 ENDIF 
-                 undefine, l, cnt
-              ENDFOR 
-              undefine, k
+          pa.time = pad.time
+          xax = (0.5*(180./nbins) + FINDGEN(nbins) * (180./nbins)) * !DTOR
+          for m=0,(nchan-1) do begin
+            ; Resampling
+            FOR j=0, nene-1 DO BEGIN
+               tot = DBLARR(nbins)
+               variance = tot
+               index = tot
+               FOR k=0, pad[m].nbins-1 DO BEGIN
+                  l = WHERE(~FINITE(pad[m].data[edx[j], k]), cnt)
+                  IF cnt EQ 0 THEN BEGIN
+                     l = WHERE((xax GE pad[m].pa_min[edx[j],k]) AND (xax LE pad[m].pa_max[edx[j],k]), cnt)
+                     IF cnt GT 0 THEN BEGIN
+                        tot[l] += pad[m].data[edx[j], k]
+                        variance[l] += pad[m].var[edx[j], k]
+                        index[l] += 1.
+                     ENDIF 
+                  ENDIF 
+                  undefine, l, cnt
+               ENDFOR 
+               undefine, k
 
-              pa.avg[j,*] = tot/index               ; average signal of overlapping PA bins
-              pa.nbins[j,*] = index                 ; normalization factor (# overlapping PA bins)
-              pa.index[j,*] = float(index gt 0.)    ; bins that have signal (1=yes, 0=no)
-              pa.std[j,*] = SQRT(variance) / index  ; standard deviation (error propagation)
-              undefine, k, cnt
-              undefine, tot, index, variance
-           ENDFOR  
-           pa.xax = xax * !RADEG
-           undefine, tot, index
+               pa[m].avg[j,*] = tot/index               ; average signal of overlapping PA bins
+               pa[m].nbins[j,*] = index                 ; normalization factor (# overlapping PA bins)
+               pa[m].index[j,*] = float(index gt 0.)    ; bins that have signal (1=yes, 0=no)
+               pa[m].std[j,*] = SQRT(variance) / index  ; standard deviation (error propagation)
+               undefine, k, cnt
+               undefine, tot, index, variance
+            ENDFOR  
+            pa.xax = xax * !RADEG
+            undefine, tot, index
+          endfor
         ENDELSE 
      ENDELSE  
      skip_spec:
-     result[i] = pa
+     if (nchan gt 1) then result[(i*nchan):(i*nchan + 63)] = pa else result[i] = pa
      undefine, pa, data, xax
      undefine, ddd, pad, magf
 
@@ -788,7 +853,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
      nfct = average(zdata, 1, /nan)
      IF keyword_set(normal) THEN BEGIN
         ;; zdata /= REBIN(TRANSPOSE(average(zdata, 1, /nan)), nbins, nene)
-        zdata /= REBIN(TRANSPOSE(nfct), nbins, nene)
+        zdata /= REBIN(TRANSPOSE([nfct]), nbins, nene)
 
         i = WHERE(index EQ 0, cnt)
         IF cnt GT 0 THEN zdata[i] = nan
@@ -816,7 +881,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
      data = TRANSPOSE(average(result.avg, 1, /nan))
      nfactor = average(data, 2, /nan)
      IF keyword_set(normal) THEN BEGIN
-        data /= REBIN(nfactor, ndat, nbins)
+        data /= REBIN(nfactor, ndat*nchan, nbins)
 ;        data /= REBIN(average(data, 2, /nan), ndat, nbins)
         index = TRANSPOSE(average(result.index, 1))
         index[WHERE(index EQ 0.)] = nan
@@ -835,9 +900,10 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
 
      IF NOT keyword_set(pans) THEN pans = 'mvn_swe_pad_resample'
      store_data, pans, $
-                 data={x: result.time, y: data, v: TRANSPOSE(result.xax)}, $ ;, nfactor: nfactor}, $
-                 dlim={nfactor: nfactor, spec: 1, yrange: [0., 180.], ystyle: 1, yticks: 6, yminor: 3, $
-                       ytitle: ytit, ysubtitle: '[deg]', ztitle: ztit, zlog: zlog, zrange: zrange}
+                 data={x: result.time, y: data, v: TRANSPOSE(result.xax)}, $
+                 dlim={nfactor: nfactor, spec: 1, yrange: [0., 180.], ystyle: 1, $
+                       yticks: 6, yminor: 3, ytitle: ytit, ysubtitle: '[deg]', $
+                       ztitle: ztit, zlog: zlog, zrange: zrange, erange:minmax(energy[edx])}
 
   ENDIF 
   ;; plim = {noiso: 1, zlog: 1, charsize: chsz, xticks: 6, xminor: 3, xrange: [0., 180.], ylog: 1}  
@@ -882,7 +948,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
               xrange=minmax(energy), /xstyle, yrange=yrange, /ystyle, xtitle='Energy [eV]', $
               ytitle=oztit, title=tit, pos=pos
 
-     IF keyword_set(normal) THEN zdata2 = zdata * REBIN(TRANSPOSE(nfct), nbins, nene) ELSE zdata2 = zdata
+     IF keyword_set(normal) THEN zdata2 = zdata * REBIN(TRANSPOSE([nfct]), nbins, nene) ELSE zdata2 = zdata
      
      ;; FOR i=0, nbins-1 DO $
      ;;    OPLOT, energy, zdata2[i, *], psym=10, color=lc[i]
