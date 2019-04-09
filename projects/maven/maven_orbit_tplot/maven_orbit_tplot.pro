@@ -127,9 +127,11 @@
 ;       VERBOSE:  Verbosity level passed to mvn_pfp_file_retrieve.  Default = 0
 ;                 (suppress most messages).
 ;
+;       CLEAR:    Clear the common block and exit.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-03-20 10:44:28 -0700 (Wed, 20 Mar 2019) $
-; $LastChangedRevision: 26860 $
+; $LastChangedDate: 2019-04-08 12:28:26 -0700 (Mon, 08 Apr 2019) $
+; $LastChangedRevision: 26955 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -139,9 +141,33 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
                        vars=vars, ellip=ellip, hires=hires, timecrop=timecrop, now=now, $
                        colors=colors, reset_trange=reset_trange, nocrop=nocrop, spk=spk, $
                        segments=segments, shadow=shadow, datum=dtm, noload=noload, $
-                       pds=pds, verbose=verbose, success=success
+                       pds=pds, verbose=verbose, clear=clear, success=success
 
   @maven_orbit_common
+
+; Clear the common block and return
+
+  if keyword_set(clear) then begin
+    time = 0
+    state = 0
+    ss = 0
+    wind = 0
+    sheath = 0
+    pileup = 0
+    wake = 0
+    sza = 0
+    torb = 0
+    period = 0
+    lon = 0
+    lat = 0
+    hgt = 0
+    datum = 0
+    mex = 0
+    rcols = 0
+    orbnum = 0
+    orbstat = 0
+    return
+  endif
 
 ; Quick access to the state vector
 
@@ -241,7 +267,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
        2 : begin
              mname = 'maven_spacecraft_mso_targetM2020EDL-ab4500_181018.sav'
              gname = 'maven_spacecraft_geo_targetM2020EDL-ab4500_181018.sav'
-             timespan, ['2019-02-10','2020-03-20']
+             timespan, ['2019-02-10','2020-05-20']
              treset = 1
              nocrop = 1
              timecrop = 0
@@ -697,7 +723,10 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   ylim, 'alt2', 0, 1000*ceil(max(hgt)/1000.), 0
   options,'alt2','ytitle','Altitude (km)!c' + strlowcase(datum)
 
-  if keyword_set(segments) then options,'alt2','constant',[500,1200,4970,5270] $
+; 6200-km apoapsis: options,'alt2','constant',[500,1200,4970,5270]
+; 4500-km apoapsis: options,'alt2','constant',[500,1050,3460,3850]
+
+  if keyword_set(segments) then options,'alt2','constant',[500,1050,3460,3850] $
                            else options,'alt2','constant',-1
 
   if keyword_set(pds) then begin

@@ -93,6 +93,11 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
     dprint, dlevel = 1, 'Invalid probe name. Valid probes are a and/or b. Please select again.'
     return
   endif
+
+  ;clear so new names are not appended to existing array
+  undefine, tplotnames
+  ; clear CDF filenames, so we're not appending to an existing array
+  undefine, cdf_filenames
   
   if undefined(level) then level = 'l1' 
   ; check for valid datatypes for level 1
@@ -113,27 +118,27 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
   elf_load_data, trange = trange, probes = probes, level = level, instrument = 'epd', $
     data_rate = data_rate, local_data_dir = local_data_dir, source = source, $
     datatype = datatype, get_support_data = get_support_data, $
-    tplotnames = new_tvars, no_color_setup = no_color_setup, time_clip = time_clip, $
+    tplotnames = tplotnames, no_color_setup = no_color_setup, time_clip = time_clip, $
     no_update = no_update, suffix = suffix, varformat = varformat, cdf_filenames = cdf_filenames, $
     cdf_version = cdf_version, latest_version = latest_version, min_version = min_version, $
     cdf_records = cdf_records, spdf = spdf, available = available, versions = versions, $
     always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
 
   ; no reason to continue if no data were loaded
-  if undefined(new_tvars) || new_tvars[0] EQ '' then begin
+  if undefined(tplotnames) || tplotnames[0] EQ '' then begin
     dprint, dlevel = 1, 'No data was loaded.'
     return
   endif
   
   ; fix metadata 
-  for i=0,n_elements(new_tvars)-1 do begin
-    get_data, new_tvars[i], data=d, dlimits=dl, limits=l
+  for i=0,n_elements(tplotnames)-1 do begin
+    get_data, tplotnames[i], data=d, dlimits=dl, limits=l
     ;ebins = elf_convert_epd_mv2eng()
-    store_data, new_tvars[i], data={x:d.x, y:d.y, v:findgen(16) } 
-;    options, /def, new_tvars[i], 'spec', 1
-;    options, /def, new_tvars[i], 'zlog', 1
-;    options, /def, new_tvars[i], 'no_interp', 1
-;    options, /def, new_tvars[i], 'ystyle', 1
+    store_data, tplotnames[i], data={x:d.x, y:d.y, v:findgen(16) } 
+;    options, /def, tplotnames[i], 'spec', 1
+;    options, /def, tplotnames[i], 'zlog', 1
+;    options, /def, tplotnames[i], 'no_interp', 1
+;    options, /def, tplotnames[i], 'ystyle', 1
   endfor
     
   ; add energy numbers

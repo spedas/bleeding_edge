@@ -22,13 +22,13 @@
 ;                     (Full path and name required.)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-04-22 13:27:58 -0700 (Sat, 22 Apr 2017) $
-; $LastChangedRevision: 23211 $
+; $LastChangedDate: 2019-04-08 17:00:54 -0700 (Mon, 08 Apr 2019) $
+; $LastChangedRevision: 26966 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_hskplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2017-04-06
 ;-
-pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk
+pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk, pans=pans
 
   @mvn_swe_com
 
@@ -37,8 +37,10 @@ pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk
   if (size(hsk,/type) eq 7) then begin
     finfo = file_info(hsk)
     if (finfo.exists) then begin
-      rflg = 1
-      hsk_save = swe_hsk
+      if (size(swe_hsk,/type) eq 8) then begin
+        rflg = 1
+        hsk_save = swe_hsk
+      endif else rflg = 0
       restore, file=hsk
       trange = minmax(swe_hsk.time)
       timespan, time_string([trange[0],trange[1]+oneday],prec=-3)
@@ -72,7 +74,7 @@ pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk
     ok = 0
     while (not ok) do begin
       mvn_swe_clear
-      mvn_swe_load_l0, tsp    
+      mvn_swe_load_hsk, tsp    
       if (size(swe_hsk,/type) eq 8) then begin
         all_hsk = swe_hsk
         ok = 1
@@ -88,7 +90,7 @@ pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk
     while (tsp[1] lt stop_day) do begin
       tsp += oneday
       mvn_swe_clear
-      mvn_swe_load_l0, tsp
+      mvn_swe_load_hsk, tsp
       if (size(swe_hsk,/type) eq 8) then all_hsk = [temporary(all_hsk), swe_hsk]
     endwhile
   
@@ -100,41 +102,46 @@ pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk
   pdT = ['']
   pdC = ['']
   TClab = replicate('',8)
-  TCcol = round(findgen(8)*(247./7.)) + 7
+  TCcol = round(findgen(8)*((254.-32.)/7.)) + 32  ; optimized for color table 43
+  TCcol[0] = 1
   Vlab = TClab
   Tlab = TClab[0:2]
+  store_data,'TV_frame',data={x:[0D], y:replicate(-100.,1,7), v:findgen(7)}
+  options,'TV_frame','colors',TCcol
 
   dTmax = 10.
   dCmax = 10.
 
     vflg = 1
 
-    if (vflg) then vnorm = [28., 12., 5., 3.3, 2.5] else vnorm = replicate(0.,5)
-
-    store_data,'SWE28I',data={x:pfp_hsk.time, y:pfp_hsk.SWE28I}
-    options,'SWE28I','ynozero',1
-    options,'SWE28I','ytitle','Current (mA)'
+    if (vflg) then begin
+      vnorm = [28., 12., 5., 3.3, 2.5]
+      voff = vnorm
+    endif else begin
+      vnorm = replicate(1.,5)
+      voff = replicate(0.,5)
+    endelse
 
     store_data,'LVPST' ,data={x:swe_hsk.time, y:swe_hsk.LVPST}
     store_data,'MCPHV' ,data={x:swe_hsk.time, y:swe_hsk.MCPHV}
+       options,'MCPHV','ynozero',1
     store_data,'NRV'   ,data={x:swe_hsk.time, y:swe_hsk.NRV}
     store_data,'ANALV' ,data={x:swe_hsk.time, y:swe_hsk.ANALV}
     store_data,'DEF1V' ,data={x:swe_hsk.time, y:swe_hsk.DEF1V}
     store_data,'DEF2V' ,data={x:swe_hsk.time, y:swe_hsk.DEF2V}
     store_data,'V0V'   ,data={x:swe_hsk.time, y:swe_hsk.V0V}
     store_data,'ANALT' ,data={x:swe_hsk.time, y:swe_hsk.ANALT}
-    store_data,'P12V'  ,data={x:swe_hsk.time, y:(swe_hsk.P12V-vnorm[1])}
-    store_data,'N12V'  ,data={x:swe_hsk.time, y:(swe_hsk.N12V+vnorm[1])}
-    store_data,'MCP28V',data={x:swe_hsk.time, y:(swe_hsk.MCP28V-vnorm[0])}
-    store_data,'NR28V' ,data={x:swe_hsk.time, y:(swe_hsk.NR28V-vnorm[0])}
+    store_data,'P12V'  ,data={x:swe_hsk.time, y:((swe_hsk.P12V-voff[1])/vnorm[1])}
+    store_data,'N12V'  ,data={x:swe_hsk.time, y:((swe_hsk.N12V+voff[1])/vnorm[1])}
+    store_data,'MCP28V',data={x:swe_hsk.time, y:((swe_hsk.MCP28V-voff[0])/vnorm[0])}
+    store_data,'NR28V' ,data={x:swe_hsk.time, y:((swe_hsk.NR28V-voff[0])/vnorm[0])}
     store_data,'DIGT'  ,data={x:swe_hsk.time, y:swe_hsk.DIGT}
-    store_data,'P2P5DV',data={x:swe_hsk.time, y:(swe_hsk.P2P5DV-vnorm[4])}
-    store_data,'P5DV'  ,data={x:swe_hsk.time, y:(swe_hsk.P5DV-vnorm[2])}
-    store_data,'P3P3DV',data={x:swe_hsk.time, y:(swe_hsk.P3P3DV-vnorm[3])}
-    store_data,'P5AV'  ,data={x:swe_hsk.time, y:(swe_hsk.P5AV-vnorm[2])}
-    store_data,'N5AV'  ,data={x:swe_hsk.time, y:(swe_hsk.N5AV+vnorm[2])}
-    store_data,'P28V'  ,data={x:swe_hsk.time, y:(swe_hsk.P28V-vnorm[0])}
-    store_data,'TV_frame',data={x:[0D], y:replicate(-100.,1,7), v:findgen(7)} 
+    store_data,'P2P5DV',data={x:swe_hsk.time, y:((swe_hsk.P2P5DV-voff[4])/vnorm[4])}
+    store_data,'P5DV'  ,data={x:swe_hsk.time, y:((swe_hsk.P5DV-voff[2])/vnorm[2])}
+    store_data,'P3P3DV',data={x:swe_hsk.time, y:((swe_hsk.P3P3DV-voff[3])/vnorm[3])}
+    store_data,'P5AV'  ,data={x:swe_hsk.time, y:((swe_hsk.P5AV-voff[2])/vnorm[2])}
+    store_data,'N5AV'  ,data={x:swe_hsk.time, y:((swe_hsk.N5AV+voff[2])/vnorm[2])}
+    store_data,'P28V'  ,data={x:swe_hsk.time, y:((swe_hsk.P28V-voff[0])/vnorm[0])}
     if (vflg) then begin
       options,'P28V',  'color',TCcol[0]   ; magenta
       options,'P12V',  'color',TCcol[1]   ; blue
@@ -147,8 +154,8 @@ pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk
       store_data,'VoltsC',data=['TV_frame','P28V','P12V','N12V', $
                                 'P5AV','N5AV','P5DV','P3P3DV']  ; skipping P2P5DV
       
-      ylim,'VoltsC',-5,5,0
-      options,'VoltsC','ytitle','Volts'
+      ylim,'VoltsC',-0.05,0.05,0
+      options,'VoltsC','ytitle','Volts (!4D!1HV/V)'  ; DeltaV/V
       options,'VoltsC','yticks',2
       options,'VoltsC','yminor',5
       options,'VoltsC','labflag',1
@@ -172,10 +179,12 @@ pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk
       store_data,'VoltsB',data=['TV_frame','P2P5DV','P3P3DV','P5DV','P5AV','N5AV','NRV']
 
       ylim,'VoltsA',-15,35,0
+      options,'VoltsA','ytitle','Volts'
       options,'VoltsA','yminor',5
       options,'VoltsA','labflag',1
       options,'VoltsA','labels',['+12 V','-12 V','MCP 28V','NR 28V','+28 V','','']
       ylim,'VoltsB',-6,6,0
+      options,'VoltsB','ytitle','Volts'
       options,'VoltsB','yticks',2
       options,'VoltsB','yminor',6
       options,'VoltsB','labflag',1
@@ -184,13 +193,16 @@ pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk
     endelse
 
     store_data,'Temps',data=['TV_frame','LVPST','ANALT','DIGT']
+    options,'Temps','ytitle','Temp (C)'
     options,'ANALT','color',TCcol[0]  ; magenta
     options,'DIGT', 'color',TCcol[1]  ; blue
     options,'LVPST','color',TCcol[2]  ; cyan
-;    ylim,'Temps',20,35,0
-    ylim,'Temps',0,0,0
-;    options,'Temps','yticks',3
-;    options,'Temps','yminor',5
+    tlow = 5*floor((min(swe_hsk.lvpst) < min(swe_hsk.digt) < min(swe_hsk.analt))/5.)
+    thigh = 5*ceil((max(swe_hsk.lvpst) > max(swe_hsk.digt) > max(swe_hsk.analt))/5.)
+    ylim,'Temps',tlow,thigh,0
+    options,'Temps','constant',[0]
+    options,'Temps','yticks',(thigh - tlow)/5
+    options,'Temps','yminor',5
     options,'Temps','labflag',1
     options,'Temps','labels',['ANALT','DIGT','LVPST','','','','']
   

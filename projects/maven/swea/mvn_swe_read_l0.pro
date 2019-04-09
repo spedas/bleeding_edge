@@ -58,8 +58,8 @@
 ;       VERBOSE:       If set, then print diagnostic information to stdout.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-08-15 17:52:47 -0700 (Tue, 15 Aug 2017) $
-; $LastChangedRevision: 23797 $
+; $LastChangedDate: 2019-04-08 16:57:57 -0700 (Mon, 08 Apr 2019) $
+; $LastChangedRevision: 26964 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_read_l0.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -190,7 +190,7 @@ pro mvn_swe_read_l0, filename, trange=trange, cdrift=cdrift, maxbytes=maxbytes, 
   endwhile
   
   if (vflg) then begin
-    print,n_23," PFP Analog packets   (APID 28)"
+    print,n_23," PFP Analog packets   (APID 23)"
     print,n_28," Housekeeping packets (APID 28)"
     print,n_A0," 3D Survey packets    (APID A0)"
     print,n_A1," 3D Archive packets   (APID A1)"

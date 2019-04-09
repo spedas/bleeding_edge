@@ -161,7 +161,7 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
       read,pw,prompt='Password: '
     endif
   endif
-  
+
   ;loop over probe, rate, level, and datatype
   ;omitting some tabbing to keep format reasonable
   for probe_idx = 0, n_elements(probes)-1 do begin

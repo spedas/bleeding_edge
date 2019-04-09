@@ -84,8 +84,8 @@
 ;                      interactive time range selection.)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-12-18 12:27:03 -0800 (Mon, 18 Dec 2017) $
-; $LastChangedRevision: 24435 $
+; $LastChangedDate: 2019-04-08 16:57:37 -0700 (Mon, 08 Apr 2019) $
+; $LastChangedRevision: 26963 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -333,6 +333,8 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
         ddd.dtheta = replicate(1.,64) # reform(ddd.dtheta[min(ebins),*])
       endif
 
+      delta_t = ddd.end_time - ddd.time
+      str_element, ddd, 'trange', [(ddd.time - delta_t), ddd.end_time], /add
       plot3d_new, ddd, lat, lon, ebins=ebins
     
       if (pflg) then begin

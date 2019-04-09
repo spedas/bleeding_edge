@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Apr  7 03:16:49 2019.<P>
+<STRONG>Last modified: </STRONG>Mon Apr  8 18:16:28 2019.<P>
  
 <HR>
  
@@ -109,6 +109,8 @@ This page was created by the IDL library routine
 <br>Initializes SWEA common block (mvn_swe_com).
 <LI><A HREF="#MVN_SWE_KP">MVN_SWE_KP</A>
 <br>Calculates SWEA key parameters.  The result is stored in tplot variables,
+<LI><A HREF="#MVN_SWE_LOAD_HSK">MVN_SWE_LOAD_HSK</A>
+<br>Reads in MAVEN Level 0 telemetry files (PFDPU packets wrapped in
 <LI><A HREF="#MVN_SWE_LOAD_L0">MVN_SWE_LOAD_L0</A>
 <br>Reads in MAVEN Level 0 telemetry files (PFDPU packets wrapped in
 <LI><A HREF="#MVN_SWE_LOAD_L2">MVN_SWE_LOAD_L2</A>
@@ -156,6 +158,8 @@ This page was created by the IDL library routine
 <br>correct for potential and then convert to SWEA original resolution
 <LI><A HREF="#MVN_SWE_QL">MVN_SWE_QL</A>
 <br>Creates SWEA TPLOT variables for QuickLook plots.
+<LI><A HREF="#MVN_SWE_READ_HSK">MVN_SWE_READ_HSK</A>
+<br>Reads in MAVEN Level 0 telemetry files (PFDPU packets wrapped in
 <LI><A HREF="#MVN_SWE_READ_L0">MVN_SWE_READ_L0</A>
 <br>Reads in MAVEN Level 0 telemetry files (PFDPU packets wrapped in
 <LI><A HREF="#MVN_SWE_READCDF_3D">MVN_SWE_READCDF_3D</A>
@@ -2200,14 +2204,14 @@ USAGE:
   mvn_swe_getlut
 
 INPUTS:
+       None.
 
 KEYWORDS:
-
        TPLOT:    Make a tplot variable.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-15 12:35:23 -0700 (Fri, 15 Mar 2019) $
- $LastChangedRevision: 26804 $
+ $LastChangedDate: 2019-04-08 16:56:31 -0700 (Mon, 08 Apr 2019) $
+ $LastChangedRevision: 26962 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getlut.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_getlut.pro">projects/maven/swea/mvn_swe_getlut.pro</A>)</STRONG><P>
@@ -2337,8 +2341,8 @@ KEYWORDS:
                      (Full path and name required.)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-04-22 13:27:58 -0700 (Sat, 22 Apr 2017) $
- $LastChangedRevision: 23211 $
+ $LastChangedDate: 2019-04-08 17:00:54 -0700 (Mon, 08 Apr 2019) $
+ $LastChangedRevision: 26966 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_hskplot.pro $
 
 CREATED BY:    David L. Mitchell  2017-04-06
@@ -2378,7 +2382,7 @@ FILE: mvn_swe_init.pro
 <A NAME="MVN_SWE_KP">
 <H2>MVN_SWE_KP</H2></A>
 <A HREF="#MVN_SWE_INIT">[Previous Routine]</A>
-<A HREF="#MVN_SWE_LOAD_L0">[Next Routine]</A>
+<A HREF="#MVN_SWE_LOAD_HSK">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE: 
@@ -2436,9 +2440,82 @@ OUTPUTS:
 <STRONG>(See <A href="swea/mvn_swe_kp.pro">projects/maven/swea/mvn_swe_kp.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SWE_LOAD_HSK">
+<H2>MVN_SWE_LOAD_HSK</H2></A>
+<A HREF="#MVN_SWE_KP">[Previous Routine]</A>
+<A HREF="#MVN_SWE_LOAD_L0">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_swe_load_hsk
+PURPOSE:
+  Reads in MAVEN Level 0 telemetry files (PFDPU packets wrapped in 
+  spacecraft packets).  SWEA normal housekeeping (APID 28) is decomuted
+  and stored in a common block (mvn_swe_com).
+
+USAGE:
+  mvn_swe_load_hsk, trange
+
+INPUTS:
+       trange:        Load SWEA packets from L0 data spanning this time range.
+                      (Reads multiple L0 files, if necessary.  Use MAXBYTES to
+                      protect against brobdingnagian loads.)
+                      OPTIONAL - recommended method is to run timespan before
+                      calling this routine.
+
+KEYWORDS:
+       FILENAME:      Full path and file name for loading data.  Can be multiple
+                      files.  Takes precedence over trange, ORBIT, and LATEST.
+
+       ORBIT:         Load SWEA data by orbit number or range of orbit numbers 
+                      (trange and LATEST are ignored).  Orbits are numbered using 
+                      the NAIF convention, where the orbit number increments at 
+                      periapsis.  Data are loaded from the apoapsis preceding the
+                      first orbit (periapsis) number to the apoapsis following the
+                      last orbit number.
+
+       LATEST:        Ignore trange (if present), and load all data within the
+                      LATEST days where data exist.  (Routine checks the database
+                      to find latest L0 file.)
+
+       CDRIFT:        Correct for spacecraft clock drift using SPICE.
+                      Default = 1 (yes).
+
+       MAXBYTES:      Maximum number of bytes to process.  Default is all data
+                      within specified time range.
+
+       BADPKT:        An array of structures providing details of bad packets.
+
+       STATUS:        Report statistics of data actually loaded.
+
+       SUMPLOT:       Create a summary plot of the loaded data.
+
+       LOADONLY:      Download data but do not process.
+
+       SPICEINIT:     Force a re-initialization of SPICE.  Use with caution!
+
+       NOSPICE:       Do not initialize SPICE.
+
+       NODUPE:        Filter out identical packets.  Default = 1 (yes).
+
+       REALTIME:      Use realtime file naming convention: YYYYMMDD_HHMMSS_*_l0.dat
+
+       VERBOSE:       Level of diagnostic message suppression.  Default = 0.  Set
+                      to a higher number to see more diagnostic messages.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2019-04-08 16:59:23 -0700 (Mon, 08 Apr 2019) $
+ $LastChangedRevision: 26965 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_hsk.pro $
+
+CREATED BY:    David L. Mitchell
+FILE: mvn_swe_load_hsk.pro
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_swe_load_hsk.pro">projects/maven/swea/mvn_swe_load_hsk.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SWE_LOAD_L0">
 <H2>MVN_SWE_LOAD_L0</H2></A>
-<A HREF="#MVN_SWE_KP">[Previous Routine]</A>
+<A HREF="#MVN_SWE_LOAD_HSK">[Previous Routine]</A>
 <A HREF="#MVN_SWE_LOAD_L2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -3751,7 +3828,7 @@ VERSION:   1.0
 <A NAME="MVN_SWE_READCDF_SPEC">
 <H2>MVN_SWE_READCDF_SPEC</H2></A>
 <A HREF="#MVN_SWE_READCDF_PAD">[Previous Routine]</A>
-<A HREF="#MVN_SWE_READ_L0">[Next Routine]</A>
+<A HREF="#MVN_SWE_READ_HSK">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: 
@@ -3779,9 +3856,55 @@ VERSION:   1.0
 <STRONG>(See <A href="swea/mvn_swe_readcdf_spec.pro">projects/maven/swea/mvn_swe_readcdf_spec.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SWE_READ_HSK">
+<H2>MVN_SWE_READ_HSK</H2></A>
+<A HREF="#MVN_SWE_READCDF_SPEC">[Previous Routine]</A>
+<A HREF="#MVN_SWE_READ_L0">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_swe_read_hsk
+PURPOSE:
+  Reads in MAVEN Level 0 telemetry files (PFDPU packets wrapped in 
+  spacecraft packets).  SWEA normal housekeeping packets (APID 28)
+  are identified and decomuted.  Data are stored in a common block
+  (mvn_swe_com).
+
+USAGE:
+  mvn_swe_read_hsk, filename
+
+INPUTS:
+       filename:      The full filename (including path) of a binary file containing 
+                      zero or more SWEA APID's.  This file can contain compressed
+                      packets.
+
+KEYWORDS:
+       TRANGE:        Only keep packets within this time range.
+
+       CDRIFT:        Correct for spacecraft clock drift using SPICE.
+                      Default = 0 (no).
+
+       MAXBYTES:      Maximum number of bytes to process.  Default is entire file.
+
+       BADPKT:        An array of structures providing details of bad packets.
+
+       APPEND:        Append data to any previously loaded data.
+
+       VERBOSE:       If set, then print diagnostic information to stdout.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2019-04-08 16:59:23 -0700 (Mon, 08 Apr 2019) $
+ $LastChangedRevision: 26965 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_read_hsk.pro $
+
+CREATED BY:    David L. Mitchell
+FILE: mvn_swe_read_hsk.pro
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_swe_read_hsk.pro">projects/maven/swea/mvn_swe_read_hsk.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SWE_READ_L0">
 <H2>MVN_SWE_READ_L0</H2></A>
-<A HREF="#MVN_SWE_READCDF_SPEC">[Previous Routine]</A>
+<A HREF="#MVN_SWE_READ_HSK">[Previous Routine]</A>
 <A HREF="#MVN_SWE_REGID_RESTORE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -3844,8 +3967,8 @@ KEYWORDS:
        VERBOSE:       If set, then print diagnostic information to stdout.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-08-15 17:52:47 -0700 (Tue, 15 Aug 2017) $
- $LastChangedRevision: 23797 $
+ $LastChangedDate: 2019-04-08 16:57:57 -0700 (Mon, 08 Apr 2019) $
+ $LastChangedRevision: 26964 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_read_l0.pro $
 
 CREATED BY:    David L. Mitchell  04-25-13
@@ -5495,8 +5618,8 @@ KEYWORDS:
                       interactive time range selection.)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-12-18 12:27:03 -0800 (Mon, 18 Dec 2017) $
- $LastChangedRevision: 24435 $
+ $LastChangedDate: 2019-04-08 16:57:37 -0700 (Mon, 08 Apr 2019) $
+ $LastChangedRevision: 26963 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6308,8 +6431,8 @@ KEYWORDS:
         NOTE:         Insert a text label.  Keep it short.
         
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-15 12:37:38 -0700 (Fri, 15 Mar 2019) $
- $LastChangedRevision: 26807 $
+ $LastChangedDate: 2019-04-08 17:07:14 -0700 (Mon, 08 Apr 2019) $
+ $LastChangedRevision: 26967 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12

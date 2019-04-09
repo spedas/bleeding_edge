@@ -159,8 +159,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;        
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-03-15 12:37:38 -0700 (Fri, 15 Mar 2019) $
-; $LastChangedRevision: 26807 $
+; $LastChangedDate: 2019-04-08 17:07:14 -0700 (Mon, 08 Apr 2019) $
+; $LastChangedRevision: 26967 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -449,8 +449,14 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
 ; Calculate PAD timing
 
-  ptime2 = a2.time + 1.95D/2D  ; center times
-  plut2 = a2.lut
+  if (size(mvn_swe_pad,/type) eq 8) then begin
+    ptime2 = mvn_swe_pad.time
+    plut2 = replicate(5B, n_elements(ptime2))
+  endif else begin
+    ptime2 = a2.time + 1.95D/2D  ; center times
+    plut2 = a2.lut
+  endelse
+
   if (size(swe_fpad,/type) eq 8) then begin
     ptime2 = [ptime2, swe_fpad.time]
     plut2 = [plut2, swe_fpad.lut]
@@ -459,8 +465,14 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
     plut2 = plut2[indx]
   endif
 
-  ptime3 = a3.time + 1.95D/2D  ; center times
-  plut3 = a3.lut
+  if (size(mvn_swe_pad_arc,/type) eq 8) then begin
+    ptime3 = mvn_swe_pad_arc.time
+    plut3 = replicate(5B, n_elements(ptime3))
+  endif else begin
+    ptime3 = a3.time + 1.95D/2D  ; center times
+    plut3 = a3.lut
+  endelse
+
   if (size(swe_fpad_arc,/type) eq 8) then begin
     ptime3 = [ptime3, swe_fpad_arc.time]
     plut3 = [plut3, swe_fpad_arc.lut]
