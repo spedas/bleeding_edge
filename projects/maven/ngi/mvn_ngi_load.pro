@@ -33,9 +33,9 @@
 ;       Requires IDL 7.1 or later to read in .csv files
 ;       Use 'mvn_ngi_read_csv' to load ql data
 ;
-; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-08-23 17:28:33 -0700 (Thu, 23 Aug 2018) $
-; $LastChangedRevision: 25695 $
+; $LastChangedBy: jimmpc1 $
+; $LastChangedDate: 2019-04-09 16:52:08 -0700 (Tue, 09 Apr 2019) $
+; $LastChangedRevision: 26975 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/ngi/mvn_ngi_load.pro $
 ;-
 
@@ -54,6 +54,15 @@ pro mvn_ngi_load, mspec=mspec, trange=trange, filetype=filetype, verbose=verbose
   if ~keyword_set(nolatest) and ~keyword_set(version) and ~keyword_set(revision) then latest_flg = 1
   if ~keyword_set(version) then version = '??'   ;- to be overwritten by latest version unless /nolatest is set
   if ~keyword_set(revision) then revision = '??' ;- to be overwritten by latest revision unless /nolatest is set
+
+    ;remove any remote-index.html files so that multiple days in a given month will load jmm, 2019-04-09
+  remote_index_file = file_search(root_data_dir()+'maven/data/sci/ngi/'+level+'/????/??/.remote-index.html')
+  if(is_string(remote_index_file)) then begin
+     for j = 0, n_elements(remote_index_file)-1 do begin
+        dprint, dlevel = 2, 'removing: '+remote_index_file[j]
+        file_delete, remote_index_file[j]
+     endfor
+  endif
 
   for i_filetype=0,n_elements(filetype)-1 do begin ;- loop through filetypes
 
@@ -74,7 +83,6 @@ pro mvn_ngi_load, mspec=mspec, trange=trange, filetype=filetype, verbose=verbose
            f = ftmp[lastidx]
         endif else f = ''
      endelse
-
      ;;; check files
      if total(strlen(f)) eq 0 then begin
         dprint,dlevel=2,verbose=verbose,filetype[i_filetype]+' files not found'
