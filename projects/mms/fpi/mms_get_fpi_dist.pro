@@ -38,8 +38,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-12-04 12:37:24 -0800 (Mon, 04 Dec 2017) $
-;$LastChangedRevision: 24392 $
+;$LastChangedDate: 2019-04-10 08:51:06 -0700 (Wed, 10 Apr 2019) $
+;$LastChangedRevision: 26986 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_get_fpi_dist.pro $
 ;-
 
@@ -152,7 +152,7 @@ endelse
 ;slice code expects energy to be the first dimension
 dim = (size(*p.y,/dim))[1:*]
 dim = dim[[2,0,1] ]
-base_arr = fltarr(dim)
+base_arr = dblarr(dim)
 
 ;support data
 ;  -slice routines assume mass in eV/(km/s)^2

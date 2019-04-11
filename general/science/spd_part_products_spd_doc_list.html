@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Apr  9 18:16:33 2019.<P>
+<STRONG>Last modified: </STRONG>Wed Apr 10 18:16:25 2019.<P>
  
 <HR>
  
@@ -26,6 +26,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#SPD_PGS_CONCAT_SPEC">SPD_PGS_CONCAT_SPEC</A>
 <LI><A HREF="#SPD_PGS_CONCAT_YAXIS">SPD_PGS_CONCAT_YAXIS</A>
 <LI><A HREF="#SPD_PGS_DO_FAC">SPD_PGS_DO_FAC</A>
+<LI><A HREF="#SPD_PGS_EXPORT">SPD_PGS_EXPORT</A>
+<br>Exports SPEDAS particle data to ASCII files
 <LI><A HREF="#SPD_PGS_LIMIT_RANGE">SPD_PGS_LIMIT_RANGE</A>
 <LI><A HREF="#SPD_PGS_MAKE_E_SPEC">SPD_PGS_MAKE_E_SPEC</A>
 <LI><A HREF="#SPD_PGS_MAKE_PHI_SPEC">SPD_PGS_MAKE_PHI_SPEC</A>
@@ -246,7 +248,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/sci
 <A NAME="SPD_PGS_DO_FAC">
 <H2>SPD_PGS_DO_FAC</H2></A>
 <A HREF="#SPD_PGS_CONCAT_YAXIS">[Previous Routine]</A>
-<A HREF="#SPD_PGS_LIMIT_RANGE">[Next Routine]</A>
+<A HREF="#SPD_PGS_EXPORT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -272,9 +274,38 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/sci
 <STRONG>(See <A href="spd_part_products/spd_pgs_do_fac.pro">general/science/spd_part_products/spd_pgs_do_fac.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPD_PGS_EXPORT">
+<H2>SPD_PGS_EXPORT</H2></A>
+<A HREF="#SPD_PGS_DO_FAC">[Previous Routine]</A>
+<A HREF="#SPD_PGS_LIMIT_RANGE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ PROCEDURE:
+   spd_pgs_export
+   
+ PURPOSE:
+   Exports SPEDAS particle data to ASCII files
+
+ INPUT:
+   data_in: standard SPEDAS particle data structure
+ 
+ KEYWORDS:
+  filename: output filename
+  precise: increases precision to the maximum (microseconds)
+
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2019-04-10 07:20:38 -0700 (Wed, 10 Apr 2019) $
+$LastChangedRevision: 26982 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_part_products/spd_pgs_export.pro $
+</PRE><P>
+<STRONG>(See <A href="spd_part_products/spd_pgs_export.pro">general/science/spd_part_products/spd_pgs_export.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPD_PGS_LIMIT_RANGE">
 <H2>SPD_PGS_LIMIT_RANGE</H2></A>
-<A HREF="#SPD_PGS_DO_FAC">[Previous Routine]</A>
+<A HREF="#SPD_PGS_EXPORT">[Previous Routine]</A>
 <A HREF="#SPD_PGS_MAKE_E_SPEC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

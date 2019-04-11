@@ -16,9 +16,9 @@
 ; CREATED BY:
 ;       Yuki Harada on 2015-07-13
 ;
-; $LastChangedBy: haraday $
-; $LastChangedDate: 2016-06-03 17:01:43 -0700 (Fri, 03 Jun 2016) $
-; $LastChangedRevision: 21263 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-04-10 10:43:30 -0700 (Wed, 10 Apr 2019) $
+; $LastChangedRevision: 26991 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/ngi/mvn_ngi_remote_list.pro $
 ;-
 

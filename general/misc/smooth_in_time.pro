@@ -49,7 +49,7 @@ End
 ; dt = the averaging time (in seconds)
 ;KEYWORDS:
 ; backward = if set, perform an average over the previous dt, the
-;            default is to average from t-dt/2 to t_dt/2
+;            default is to average from t-dt/2 to t+dt/2
 ; forward = if set, perform an average over the next dt
 ; double = if set, do calculation in double precision
 ;                  regardless of input type. (If input data is double
@@ -108,9 +108,9 @@ End
 ; 28-apr-2008, pcruce, Added interp_resolution option, added memory warning, 
 ;                        mod to guarantee that precision of output is at least as 
 ;                        large as precision of input
-;$LastChangedBy: jimmpc1 $
-;$LastChangedDate: 2012-06-28 13:25:02 -0700 (Thu, 28 Jun 2012) $
-;$LastChangedRevision: 10658 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2019-04-10 17:15:44 -0700 (Wed, 10 Apr 2019) $
+;$LastChangedRevision: 27000 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/smooth_in_time.pro $
 ;-
 

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Apr  9 18:16:33 2019.<P>
+<STRONG>Last modified: </STRONG>Wed Apr 10 18:16:25 2019.<P>
  
 <HR>
  
@@ -41,6 +41,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#THM_CRIB_NEUTRAL_SHEET">THM_CRIB_NEUTRAL_SHEET</A>
 <LI><A HREF="#THM_CRIB_PART_COMBINE">THM_CRIB_PART_COMBINE</A>
 <LI><A HREF="#THM_CRIB_PART_COMBINE_NCOUNT">THM_CRIB_PART_COMBINE_NCOUNT</A>
+<LI><A HREF="#THM_CRIB_PART_EXPORT">THM_CRIB_PART_EXPORT</A>
+<br>This crib sheet shows how to export THEMIS particle (velocity distribution) data to ASCII files
 <LI><A HREF="#THM_CRIB_PART_PRODUCTS_NCOUNT">THM_CRIB_PART_PRODUCTS_NCOUNT</A>
 <LI><A HREF="#THM_CRIB_PART_SLICE1D">THM_CRIB_PART_SLICE1D</A>
 <LI><A HREF="#THM_CRIB_PART_SLICE2D_ADV">THM_CRIB_PART_SLICE2D_ADV</A>
@@ -689,7 +691,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/th
 <A NAME="THM_CRIB_PART_COMBINE_NCOUNT">
 <H2>THM_CRIB_PART_COMBINE_NCOUNT</H2></A>
 <A HREF="#THM_CRIB_PART_COMBINE">[Previous Routine]</A>
-<A HREF="#THM_CRIB_PART_PRODUCTS_NCOUNT">[Next Routine]</A>
+<A HREF="#THM_CRIB_PART_EXPORT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Name:
@@ -721,9 +723,37 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/th
 <STRONG>(See <A href="advanced/thm_crib_part_combine_ncount.pro">projects/themis/examples/advanced/thm_crib_part_combine_ncount.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_CRIB_PART_EXPORT">
+<H2>THM_CRIB_PART_EXPORT</H2></A>
+<A HREF="#THM_CRIB_PART_COMBINE_NCOUNT">[Previous Routine]</A>
+<A HREF="#THM_CRIB_PART_PRODUCTS_NCOUNT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ PURPOSE:
+   This crib sheet shows how to export THEMIS particle (velocity distribution) data to ASCII files
+
+ NOTES: 
+   The underlying routine - spd_pgs_export - will create 5 ASCII files:
+     [filename]_data.txt: the velocity distribution data
+     [filename]_energy.txt: the energy values at each bin
+     [filename]_theta.txt: the theta values at each bin
+     [filename]_phi.txt: the phi values at each bin
+     [filename]_bins.txt: 1 or 0 depending on if this bin is active
+
+   If no filename is specified, dist.project, dist.spacecraft and dist.data_name are used to form the filename
+   
+$LastChangedBy: egrimes $
+$LastChangedDate: 2019-04-10 15:38:44 -0700 (Wed, 10 Apr 2019) $
+$LastChangedRevision: 26999 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/examples/advanced/thm_crib_part_export.pro $
+</PRE><P>
+<STRONG>(See <A href="advanced/thm_crib_part_export.pro">projects/themis/examples/advanced/thm_crib_part_export.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_CRIB_PART_PRODUCTS_NCOUNT">
 <H2>THM_CRIB_PART_PRODUCTS_NCOUNT</H2></A>
-<A HREF="#THM_CRIB_PART_COMBINE_NCOUNT">[Previous Routine]</A>
+<A HREF="#THM_CRIB_PART_EXPORT">[Previous Routine]</A>
 <A HREF="#THM_CRIB_PART_SLICE1D">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

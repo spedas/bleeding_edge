@@ -23,8 +23,8 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2019-01-30 21:11:34 -0800 (Wed, 30 Jan 2019) $
-;  $LastChangedRevision: 26522 $
+;  $LastChangedDate: 2019-04-09 23:28:56 -0700 (Tue, 09 Apr 2019) $
+;  $LastChangedRevision: 26976 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
@@ -164,6 +164,8 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
 
   packet_index = reform(transpose(indices), n_elements(times_1d))
 
+  rate_1d = reform(transpose(rate_arr), n_elements(times_1d))
+
   ; Remove invalid times from the time and metadata vectors.
 
   valid = where(finite(times_1d), n_valid)
@@ -171,6 +173,8 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
   if n_valid GT 0 then begin
 
     times_1d = times_1d[valid]
+
+    rate_1d = rate_1d[valid]
 
     packet_index = packet_index[valid]
 
@@ -191,6 +195,9 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
 
   store_data, prefix + 'range', $
     data = {x:times_1d, y:range_bits}
+
+  store_data, prefix + 'rate', $
+    data = {x:times_1d, y:rate_1d}
 
   ; Store each component of the MAG data in a TPLOT variable.
 
@@ -288,6 +295,17 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
   options, prefix + 'range', 'max_points', 40000l
   options, prefix + 'range', 'ysubtitle', ''
   options, prefix + 'range', 'panel_size', 0.75
+
+  ;options, prefix + 'rate', 'yrange', [-0.5,7.5]
+  options, prefix + 'rate', 'ytitle', short_prefix + '!Crate'
+  ;options, prefix + 'rate', 'yminor', 1
+  ;options, prefix + 'rate', 'ystyle', 1
+  ;options, prefix + 'rate', 'yticks', 7
+  ;options, prefix + 'rate', 'ytickv', [0,1,2,3,4,5,6,7]
+  options, prefix + 'rate', 'psym_lim', 200
+  options, prefix + 'rate', 'max_points', 40000l
+  options, prefix + 'rate', 'ysubtitle', ''
+  options, prefix + 'rate', 'panel_size', 0.75
 
   options, prefix + 'avg_period_raw', 'ytitle', short_prefix + '!CAvPR'
   options, prefix + 'avg_period_raw', 'ysubtitle'
