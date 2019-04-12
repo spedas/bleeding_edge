@@ -1,7 +1,15 @@
 function spp_fld_dfb_psuedo_log_decompress, compressed, type = type, $
-  high_gain = high_gain 
+  high_gain = high_gain
 
-  if not keyword_set(high_gain) then high_gain = 0
+  ;  if not keyword_set(high_gain) then high_gain = 0
+
+  case ndimen(high_gain) of
+    -1: high_gain_2d = rebin([0],size(compressed,/dim))
+    0:high_gain_2d = rebin([hg],size(compressed,/dim))
+    1:high_gain_2d = rebin(high_gain,size(compressed,/dim))
+    2:high_gain_2d = high_gain
+  endcase
+
 
   if not keyword_set(type) then type = ''
 
@@ -34,7 +42,7 @@ function spp_fld_dfb_psuedo_log_decompress, compressed, type = type, $
   ; print, long64(sp)
   ;  0                     7                    15
   ; 64                  7680           16106127360
-  
+
   ; Positive
   ; xs_comp = [0x0000, 0x000F, 0x00FF, 0x03FF, 0x07FF, 0x5555, 0x7FFF]
   ; xs = spp_fld_dfb_psuedo_log_decompress(xs_comp, type = 'xspectra')
@@ -51,7 +59,7 @@ function spp_fld_dfb_psuedo_log_decompress, compressed, type = type, $
   ;              0                   -15                  -255
   ;          -1023                 -2047           -1431306240
   ; -2197949513728
-  
+
   case strlowcase(type) of
     'bandpass': begin
       signed = 0
@@ -79,17 +87,17 @@ function spp_fld_dfb_psuedo_log_decompress, compressed, type = type, $
   endcase
 
   if signed EQ 1 then begin
-    
+
     sign_bit = compressed / sign_div
-    
+
     compressed = compressed MOD sign_div
-    
+
     neg_ind = where(sign_bit NE 0, neg_count)
-    
+
   endif else begin
-    
+
     neg_count = 0
-    
+
   endelse
 
   exponent = compressed / man_mod
@@ -114,19 +122,21 @@ function spp_fld_dfb_psuedo_log_decompress, compressed, type = type, $
       2d^(exponent[exp_nonzero_ind] - 1ll)
 
   endif
-  
+
   if neg_count GT 0 then begin
-    
+
     decompressed[neg_ind] *= -1.d
-    
+
   endif
-  
-  if high_gain then begin
-    
-    decompressed /= high_gain_divide
-    
+
+  high_gain_ind = where(high_gain_2d EQ 1, high_gain_count)
+
+  if high_gain_count GT 0 then begin
+
+    decompressed[high_gain_ind] /= high_gain_divide[high_gain_ind]
+
   endif
-  
+
   decompressed /= decompress_divide
 
   return, decompressed
