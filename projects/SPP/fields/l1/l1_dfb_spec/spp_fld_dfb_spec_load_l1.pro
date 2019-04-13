@@ -298,8 +298,8 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
 
         options, prefix + dfb_spec_name_i, 'ysubtitle', 'Freq [Hz]'
 
-        if is_ac then options, prefix + dfb_spec_name_i, 'datagap', 30d else $
-          options, prefix + dfb_spec_name_i, 'datagap', 60d
+;        if is_ac then options, prefix + dfb_spec_name_i, 'datagap', 120d else $
+;          options, prefix + dfb_spec_name_i, 'datagap', 120d
 
         if tnames(prefix + 'src_sel_string') NE '' then begin
 
