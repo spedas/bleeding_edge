@@ -6,10 +6,16 @@
 ;     IDL> mgunit, 'mms_load_hpca_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-11-19 16:38:24 -0800 (Mon, 19 Nov 2018) $
-; $LastChangedRevision: 26158 $
+; $LastChangedDate: 2019-04-15 08:27:56 -0700 (Mon, 15 Apr 2019) $
+; $LastChangedRevision: 27015 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_hpca_ut__define.pro $
 ;-
+
+function mms_load_hpca_ut::test_sitl_combined
+  mms_load_hpca, level='sitl', datatype='combined', trange=['2019-02-01', '2019-02-02']
+  assert, spd_data_exists('mms1_hpca_hplus_omni_flux mms1_hpca_heplusplus_omni_flux mms1_hpca_oplus_omni_flux mms1_hpca_hplus_number_density mms1_hpca_heplusplus_number_density mms1_hpca_oplus_number_density mms1_hpca_hplus_ion_bulk_velocity mms1_hpca_heplusplus_ion_bulk_velocity mms1_hpca_oplus_ion_bulk_velocity', '2019-02-01', '2019-02-02'), 'Problem with HPCA SITL combined datatype'
+  return, 1
+end
 
 function mms_load_hpca_ut::test_varformat_string
   mms_load_hpca, varformat='*velocity* *tparallel', trange=['2017-10-15', '2017-10-16']

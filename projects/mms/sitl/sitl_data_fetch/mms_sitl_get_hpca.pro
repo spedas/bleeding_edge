@@ -24,8 +24,8 @@
 ;     Please see the notes in mms_load_data for more information 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-03-20 07:42:32 -0700 (Tue, 20 Mar 2018) $
-;$LastChangedRevision: 24906 $
+;$LastChangedDate: 2019-04-15 09:57:18 -0700 (Mon, 15 Apr 2019) $
+;$LastChangedRevision: 27017 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/sitl_data_fetch/mms_sitl_get_hpca.pro $
 ;-
 
@@ -188,6 +188,7 @@ pro mms_sitl_get_hpca, trange = trange, probes = probes, datatype = datatype, $
        ; allow for the following datatypes:
        ; count_rate, flux, vel_dist, rf_corr, bkgd_corr
        case datatype of 
+            'combined': varformat = '*'
             'ion': varformat = '*_RF_corrected'
             'rf_corr': varformat = '*_RF_corrected'
             'count_rate': varformat = '*_count_rate'

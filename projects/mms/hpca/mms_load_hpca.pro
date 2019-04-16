@@ -15,7 +15,7 @@
 ;                       the default if no level is specified is 'L2'.
 ;         datatype:     data types include (note that not all levels have all datatypes):
 ;                       L2: ['ion', 'moments']
-;                       sitl, l1b: ['bkgd_corr', 'count_rate', 'flux', 'moments', 'rf_corr', 'vel_dist'].
+;                       sitl, l1b: ['combined', 'bkgd_corr', 'count_rate', 'flux', 'moments', 'rf_corr', 'vel_dist'].
 ;                       if no value is given the default is 'moments'.
 ;         data_rate:    instrument data rates include 'brst' and 'srvy'; the default is 'srvy'.
 ;         local_data_dir: local directory to store the CDF files
@@ -82,8 +82,8 @@
 ; 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-03-26 11:33:56 -0700 (Tue, 26 Mar 2019) $
-;$LastChangedRevision: 26906 $
+;$LastChangedDate: 2019-04-15 08:23:35 -0700 (Mon, 15 Apr 2019) $
+;$LastChangedRevision: 27014 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_load_hpca.pro $
 ;-
 

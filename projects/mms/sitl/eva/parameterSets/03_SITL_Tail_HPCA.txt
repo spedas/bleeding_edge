@@ -33,8 +33,8 @@ mms*_exb_hpca_vperp_z;....  Comparison between (ExB)z and HPCA Vperp,z
 ; Spectrograms
 ;--------------------
 mms*_epd_eis_extof_proton_flux_omni_spin
-mms*_hpca_hplus_RF_corrected
-mms*_hpca_oplus_RF_corrected
+mms*_hpca_hplus_omni_flux
+mms*_hpca_oplus_omni_flux
 mms*_epd_feeps_srvy_sitl_electron_intensity_omni
 
 ;--------------------

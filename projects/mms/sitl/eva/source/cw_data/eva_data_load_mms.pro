@@ -435,21 +435,32 @@ FUNCTION eva_data_load_mms, state, no_gui=no_gui, force=force
         pcode=60
         ip=where(perror eq pcode,cp)
         level = 'sitl'
-        if (strmatch(paramlist[i],'*_hpca_*rf_corrected') and (cp eq 0)) then begin
+        if (strmatch(paramlist[i],'*_hpca_*_omni_flux') and (cp eq 0)) then begin
           sh='H!U+!N'
           sa='He!U++!N'
           sp='He!U+!N'
           so='O!U+!N'
-          mms_sitl_get_hpca, probes=prb, level=level, datatype='rf_corr'
-
-          options, sc+'_hpca_hplus_RF_corrected', ytitle=sc+'!CHPCA!C'+sh,ysubtitle='[eV]',ztitle='eflux',/spec,/ylog,/zlog
-          ylim,    sc+'_hpca_hplus_RF_corrected', 1, 40000
-          options, sc+'_hpca_heplusplus_RF_corrected', ytitle=sc+'!CHPCA!C'+sa,ysubtitle='[eV]',ztitle='eflux',/spec,/ylog,/zlog
-          ylim,    sc+'_hpca_heplusplus_RF_corrected', 1, 40000
-          options, sc+'_hpca_heplus_RF_corrected', ytitle=sc+'!CHPCA!C'+sp,ysubtitle='[eV]',ztitle='eflux',/spec,/ylog,/zlog
-          ylim,    sc+'_hpca_heplus_RF_corrected', 1, 40000
-          options, sc+'_hpca_oplus_RF_corrected', ytitle=sc+'!CHPCA!C'+so,ysubtitle='[eV]',ztitle='eflux',/spec,/ylog,/zlog
-          ylim,    sc+'_hpca_oplus_RF_corrected', 1, 40000
+; egrimes updated for new combined datatype, 15April19
+;          mms_sitl_get_hpca, probes=prb, level=level, datatype='rf_corr'
+;          options, sc+'_hpca_hplus_RF_corrected', ytitle=sc+'!CHPCA!C'+sh,ysubtitle='[eV]',ztitle='eflux',/spec,/ylog,/zlog
+;          ylim,    sc+'_hpca_hplus_RF_corrected', 1, 40000
+;          options, sc+'_hpca_heplusplus_RF_corrected', ytitle=sc+'!CHPCA!C'+sa,ysubtitle='[eV]',ztitle='eflux',/spec,/ylog,/zlog
+;          ylim,    sc+'_hpca_heplusplus_RF_corrected', 1, 40000
+;          options, sc+'_hpca_heplus_RF_corrected', ytitle=sc+'!CHPCA!C'+sp,ysubtitle='[eV]',ztitle='eflux',/spec,/ylog,/zlog
+;          ylim,    sc+'_hpca_heplus_RF_corrected', 1, 40000
+;          options, sc+'_hpca_oplus_RF_corrected', ytitle=sc+'!CHPCA!C'+so,ysubtitle='[eV]',ztitle='eflux',/spec,/ylog,/zlog
+;          ylim,    sc+'_hpca_oplus_RF_corrected', 1, 40000
+          
+          
+          mms_sitl_get_hpca, probes=prb, level=level, datatype='combined'
+          options, sc+'_hpca_hplus_omni_flux', ytitle=sc+'!CHPCA!C'+sh,ysubtitle='[eV]',ztitle='eflux',/spec,/ylog,/zlog
+          ylim,    sc+'_hpca_hplus_omni_flux', 1, 40000
+          options, sc+'_hpca_heplusplus_omni_flux', ytitle=sc+'!CHPCA!C'+sa,ysubtitle='[eV]',ztitle='eflux',/spec,/ylog,/zlog
+          ylim,    sc+'_hpca_heplusplus_omni_flux', 1, 40000
+         ; options, sc+'_hpca_heplus_RF_corrected', ytitle=sc+'!CHPCA!C'+sp,ysubtitle='[eV]',ztitle='eflux',/spec,/ylog,/zlog
+         ; ylim,    sc+'_hpca_heplus_RF_corrected', 1, 40000
+          options, sc+'_hpca_oplus_omni_flux', ytitle=sc+'!CHPCA!C'+so,ysubtitle='[eV]',ztitle='eflux',/spec,/ylog,/zlog
+          ylim,    sc+'_hpca_oplus_omni_flux', 1, 40000
           answer = 'Yes'
         endif
         
