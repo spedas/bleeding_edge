@@ -82,7 +82,7 @@ self.ptr_array = ptr_new(!null)
 ;self.dlevel = 4
 IF (ISA(ex)) THEN self->SetProperty, _EXTRA=ex
 self.append,array
-dprint,verbose=verbose,dlevel=self.dlevel+1,'Created new '+typename(self)+ ': "'+self.name+'"'
+dprint,verbose=verbose,dlevel=self.dlevel+2,'Created new '+typename(self)+ ': "'+self.name+'"'
 RETURN, 1
 END
  
@@ -91,7 +91,7 @@ PRO DynamicArray::Cleanup
 COMPILE_OPT IDL2
 ; Call our superclass Cleanup method
 ;  *self.ptr_array = !null   ;; line not needed
-dprint,verbose=verbose,dlevel=self.dlevel+1,'Cleanup of '+typename(self)+ ': '+self.name
+dprint,verbose=verbose,dlevel=self.dlevel+2,'Cleanup of '+typename(self)+ ': '+self.name
 ptr_free,self.ptr_array
 ;   self->generic_object::Cleanup  ;  not required???
 END
@@ -263,7 +263,7 @@ PRO DynamicArray::SetProperty, array=array, name=name,dlevel=dlevel
 COMPILE_OPT IDL2
 ; If user passed in a property, then set it.
 IF (ISA(array) || isa(array,/null)) THEN begin
-  dprint,verbose=verbose,dlevel=self.dlevel+1,'Changing array: "'+self.name+'"'
+  dprint,verbose=verbose,dlevel=self.dlevel+2,'Changing array: "'+self.name+'"'
   if 0 then begin   ; This section has been commented out because it was not needed and extraordinarily slow for large arrays
     ptrs = ptr_extract(*self.ptr_array)
     if isa(ptrs) then begin
