@@ -31,8 +31,8 @@
 ;                   Default is current value of swe_verbose.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-26 11:02:38 -0800 (Tue, 26 Feb 2019) $
-; $LastChangedRevision: 26706 $
+; $LastChangedDate: 2019-04-18 05:43:01 -0700 (Thu, 18 Apr 2019) $
+; $LastChangedRevision: 27042 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_spice_init.pro $
 ;
 ;CREATED BY:    David L. Mitchell  09/18/13
@@ -51,13 +51,16 @@ pro mvn_swe_spice_init, trange=trange, list=list, force=force, sclk_ver=sclk_ver
 
   swap_sclk = 0
   if (size(sclk_ver,/type) gt 0) then begin
-    path = root_data_dir() + 'misc/spice/naif/MAVEN/kernels/sclk/'
-    fname = path + 'MVN_SCLKSCET.' + string(sclk_ver,format='(i5.5)') + '.tsc'
-    finfo = file_info(fname)
-    if (finfo.exists) then begin
-      swap_sclk = 1
-      noguff = 1
-    endif else print,"SCLK kernel not found: ",file_basename(fname)
+    vclk = sclk_ver[0]
+    if (vclk ge 0) then begin
+      path = root_data_dir() + 'misc/spice/naif/MAVEN/kernels/sclk/'
+      fname = path + 'MVN_SCLKSCET.' + string(vclk,format='(i5.5)') + '.tsc'
+      finfo = file_info(fname)
+      if (finfo.exists) then begin
+        swap_sclk = 1
+        noguff = 1
+      endif else print,"SCLK kernel not found: ",file_basename(fname)
+    endif else print,"Invalid SCLK kernel version: ",strtrim(string(vclk),2)
   endif
 
   if keyword_set(status) then begin

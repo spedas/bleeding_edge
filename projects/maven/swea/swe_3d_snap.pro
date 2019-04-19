@@ -18,6 +18,10 @@
 ;
 ;       MAP:           Mapping projection.  See plot3d_options for details.
 ;
+;       ZLOG:          If set, use a log color scale.
+;
+;       ZRANGE:        Range for color bar.
+;
 ;       SPEC:          Plot energy spectra using spec3d.
 ;
 ;       POT:           Plot the spacecraft potential on the SPEC plots.
@@ -84,8 +88,8 @@
 ;                      interactive time range selection.)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-04-08 16:57:37 -0700 (Mon, 08 Apr 2019) $
-; $LastChangedRevision: 26963 $
+; $LastChangedDate: 2019-04-18 06:45:17 -0700 (Thu, 18 Apr 2019) $
+; $LastChangedRevision: 27043 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -96,7 +100,8 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
                  symenergy=symenergy, symdiag=symdiag, power=pow, map=map, $
                  abins=abins, dbins=dbins, obins=obins, mask_sc=mask_sc, burst=burst, $
                  plot_sc=plot_sc, padmap=padmap, pot=pot, plot_fov=plot_fov, $
-                 labsize=labsize, trange=tspan, tsmo=tsmo, wscale=wscale
+                 labsize=labsize, trange=tspan, tsmo=tsmo, wscale=wscale, zlog=zlog, $
+                 zrange=zrange
 
   @mvn_swe_com
   @swe_snap_common
@@ -131,6 +136,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
   if (size(units,/type) ne 7) then units = 'crate'
   if (size(map,/type) ne 7) then map = 'ait'
+  if not keyword_set(zrange) then zrange = [0.,0.]
   plot3d_options, map=map
   
   case strupcase(units) of
@@ -335,7 +341,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
       delta_t = ddd.end_time - ddd.time
       str_element, ddd, 'trange', [(ddd.time - delta_t), ddd.end_time], /add
-      plot3d_new, ddd, lat, lon, ebins=ebins
+      plot3d_new, ddd, lat, lon, ebins=ebins, zrange=zrange, log=keyword_set(zlog)
     
       if (pflg) then begin
         dt = min(abs(a2.time - mean(ddd.time)),j)
