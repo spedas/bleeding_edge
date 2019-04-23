@@ -26,9 +26,9 @@
 ;   thm_load_mom,/get_suppport_data,probe=['a', 'b']
 ;Notes:
 ;  Temporary version, to avoid conflicts, but can read Level 2 data, jmm
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
-; $LastChangedRevision: 26397 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-04-22 14:24:42 -0700 (Mon, 22 Apr 2019) $
+; $LastChangedRevision: 27056 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/moments/thm_load_mom_l2.pro $
 ;-
 pro thm_load_mom_l2, probe = probe, datatype = datatype, trange = trange, $
@@ -137,6 +137,40 @@ for s = 0, n_elements(probes)-1 do begin
         Endif
       Endif
     Endfor
+  Endif
+;Set colors, labels, etc.
+  dq = where(strpos(new_v, 'quality') ne -1)
+  If(dq[0] Ne -1) Then Begin
+     ylim, new_v[dq], -1, 8.0, 0
+     options, new_v[dq], 'tplot_routine','bitplot', /default
+     options, new_v[dq], 'labels', ['no-scpot', ' ', 'eesa-low-E', $
+                                    'iesa-low-E', 'n_e >> n_i', $
+                                    'n_i >> n_e', 'man_flag'], /default
+  Endif
+  dv = where(strpos(new_v, 'velocity') ne -1)
+  If(dv[0] Ne -1) Then Begin
+     options, new_v[dv], 'colors', 'bgr', /default
+     options, new_v[dv], 'labels', ['Vx','Vy','Vz'], /default
+  Endif
+  dv = where(strpos(new_v, 'flux') ne -1)
+  If(dv[0] Ne -1) Then Begin
+     options, new_v[dv], 'colors', 'bgr', /default
+     options, new_v[dv], 'labels', ['fx','fy','fz'], /default
+  Endif
+  dv = where(strpos(new_v, 'ptens') ne -1)
+  If(dv[0] Ne -1) Then Begin
+     options, new_v[dv], 'colors', 'bgrmcy', /default
+     options, new_v[dv], 'labels', ['Pxx','Pyy','Pzz','Pxy','Pxz','Pyz'], /default
+  Endif
+  dv = where(strpos(new_v, 'mftens') ne -1)
+  If(dv[0] Ne -1) Then Begin
+     options, new_v[dv], 'colors', 'bgrmcy', /default
+     options, new_v[dv], 'labels', ['Mxx','Myy','Mzz','Mxy','Mxz','Myz'], /default
+  Endif
+  dv = where(strpos(new_v, 't3') ne -1)
+  If(dv[0] Ne -1) Then Begin
+     options, new_v[dv], 'colors', 'bgrmcy', /default
+     options, new_v[dv], 'labels', ['Tx','Ty','Tz'], /default
   Endif
 
 endfor

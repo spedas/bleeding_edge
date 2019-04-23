@@ -101,11 +101,12 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
   
   if undefined(level) then level = 'l1' 
   ; check for valid datatypes for level 1
-  if undefined(datatype) AND level eq 'l1' then datatype = ['pef', 'pif'] $
+  if undefined(datatype) AND level eq 'l1' then datatype = ['pef', 'pif', 'spinper'] $
     else datatype = strlowcase(datatype) 
   idx = where(datatype EQ 'pif', icnt)
   idx = where(datatype EQ 'pef', ecnt)
-  if icnt EQ 0 && ecnt EQ 0 then begin
+  idx = where(datatype EQ 'spinper', scnt)
+  if icnt EQ 0 && ecnt EQ 0 && scnt EQ 0 then begin
     dprint, dlevel = 1, 'Invalid data type name. Valid types are pef and/or pif. Please select again.'
     return
   endif

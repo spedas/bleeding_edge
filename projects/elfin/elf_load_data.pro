@@ -188,6 +188,7 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
              fnames = probe + '_' + level + '_' + instrument + '_' + daily_names + '_v01.cdf' 
           if instrument EQ 'epd' && level EQ 'l1' then begin
              ftype = instrument + strmid(datatype, 1, 2)
+             if datatype EQ 'spinper' then ftype = instrument + 'ef'
              fnames = probe + '_' + level + '_' + ftype + '_' + daily_names + '_v01.cdf' 
           endif
           
@@ -249,7 +250,7 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
               endif      
 
           endfor
-          
+         
           if ~undefined(files) then begin
             spd_cdf2tplot, files, tplotnames = loaded_tnames, varformat=varformat, $
               suffix = suffix, get_support_data = get_support_data, /load_labels, $

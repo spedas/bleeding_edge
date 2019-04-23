@@ -190,6 +190,10 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['sls_test_post_e01'] =   ['2019-03-03/13:00:00', '2019-03-03/15:30:00']
   fm_times['sls_test_post_e01_zoom'] =   ['2019-03-03/13:15:00', '2019-03-03/14:45:00']
 
+
+  fm_times['e02_encounter'] = ['2019-03-30/04:39:00','2019-04-10/16:42:00']
+
+
   em_times = orderedhash()
 
   em_times['EM_test_RFS_v29'] = ['2018-02-22/19:30:00','2018-02-22/21:30:00']
