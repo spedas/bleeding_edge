@@ -55,8 +55,8 @@
 ;
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-08-21 11:08:16 -0700 (Tue, 21 Aug 2018) $
-;$LastChangedRevision: 25685 $
+;$LastChangedDate: 2019-04-23 13:26:33 -0700 (Tue, 23 Apr 2019) $
+;$LastChangedRevision: 27075 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/spd_download/spd_download_file.pro $
 ;
 ;-
@@ -317,6 +317,13 @@ net_object->getproperty, response_code=response_code2, response_header=response_
 if (response_code2 eq 18) && file_test(filename) then begin
   dprint, dlevel=2, 'Error while downloading, partial download will be deleted:  ' + filename
   file_delete, filename, /allow_nonexistent
+  output = ''
+endif
+
+; Delete a cdf or netcdf file if it can't be openned.
+cant_open = spd_cdf_check_delete(filename, /delete_file)
+if n_elements(cant_open) gt 0 then begin
+  dprint, dlevel=2, 'Error while downloading, corrupted download will be deleted:  ' + filename
   output = ''
 endif
 

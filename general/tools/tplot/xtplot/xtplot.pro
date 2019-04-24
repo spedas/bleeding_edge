@@ -9,8 +9,8 @@
 ; 
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2016-04-08 11:22:32 -0700 (Fri, 08 Apr 2016) $
-; $LastChangedRevision: 20762 $
+; $LastChangedDate: 2019-04-23 11:24:00 -0700 (Tue, 23 Apr 2019) $
+; $LastChangedRevision: 27071 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/tplot/xtplot/xtplot.pro $
 PRO xtplot_change_tlimit, strcmd
   compile_opt idl2
@@ -261,12 +261,15 @@ PRO xtplot_event, event
           yC   = event.y/geo.ysize; clicked position
           if (yB le yC) and (yC le yT) then begin
             ; check ylog setting
-            tn = tplot_vars.options.def_datanames[m]
-            get_data,tn,data=D,dl=dl,lim=lim
-            if n_tags(dl) ne 0 then begin
-              index = where(strmatch(strlowcase(tag_names(dl)),'ylog'),c); look for tag 'ylog'
-              if c then ylog = dl.ylog
+            if n_elements(tplot_vars.options.def_datanames) ge mmax then begin
+              tn = tplot_vars.options.def_datanames[m]
+              get_data,tn,data=D,dl=dl,lim=lim
+              if n_tags(dl) ne 0 then begin
+                index = where(strmatch(strlowcase(tag_names(dl)),'ylog'),c); look for tag 'ylog'
+                if c then ylog = dl.ylog
+              endif
             endif
+            
             ; get yrange from the plot
             ysetting = tplot_vars.settings.y
             fmin = ysetting[m].crange[0]
@@ -711,6 +714,10 @@ pro xtplot,datanames,     $
     TRANGE = trng, NAMES = names, PICK = pick, new_tvars = new_tvars, $
     old_tvars = tplot_vars, $; old_tvars is replaced at the beginning of xtplot
     help=help, get_plot_position=plot_pos
+
+;  if ~undefined(w) then begin
+;    print, '**************',w
+;  endif
 
   widget_control, b, GET_UVALUE=widf
 

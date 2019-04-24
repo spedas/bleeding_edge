@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2018-12-11 09:01:24 -0800 (Tue, 11 Dec 2018) $
-; $LastChangedRevision: 26314 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-04-23 17:18:03 -0700 (Tue, 23 Apr 2019) $
+; $LastChangedRevision: 27078 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -161,7 +161,7 @@ function spp_swp_spe_prod_apdat::decom,ccsds ,source_dict=source_dict  ;,ptp_hea
     ; NNNN = the number of accumulation periods (1/4 NYS) for Archive.
     log_flag  = header[12] ; this should be << = (ishft(header[13],-7) AND 1) >>
     smp_flag = (ishft(header[12],-4) AND 1)
-    ;srvy_accum = (header[12] AND 15)
+    srvy_accum = (header[12] AND 15)
 
 
 
@@ -176,7 +176,7 @@ function spp_swp_spe_prod_apdat::decom,ccsds ,source_dict=source_dict  ;,ptp_hea
       ; S = 1 if Arch is Summing
       ; NNNN = the number of accumulation periods (1/4 NYS) for Archive.
       mode1 = 0
-      ;arch_sum  = header[13]
+      arch_sum  = header[13]
       arch_smp_flag = ishft(header[13],-4) ; shift four bits to get 5th bit.
       arch_accum = (header[13] AND 15) ; remove the lower 4 bits.
       tot_accum_prd = 2 ^ (arch_accum + srvy_accum) ; in 1/4 NYS accumulation periods.
@@ -193,6 +193,7 @@ function spp_swp_spe_prod_apdat::decom,ccsds ,source_dict=source_dict  ;,ptp_hea
     f0 = (swap_endian(uint(header,16), /swap_if_little_endian))
     status_bits = header[18]
     peak_bin = header[19]
+    num_accum = 2 ^(header[12] and 'f'x)
 
 
     compression = (log_flag and 'a0'x) ne 0
@@ -228,13 +229,13 @@ function spp_swp_spe_prod_apdat::decom,ccsds ,source_dict=source_dict  ;,ptp_hea
       ndat:        ndat, $
       datasize:    ns, $
       log_flag:    log_flag, $
-      ;smp_flag:    smp_flag, $
-      ;srvy_accum:  srvy_accum, $
+      smp_flag:    smp_flag, $
+      srvy_accum:  srvy_accum, $
       mode1:       mode1,  $
-      ;arch_sum:    arch_sum, $
-      ;arch_smp_flag:  arch_sum_flag, $
-      ;arch_accum:  arch_accum, $
-      ;tot_accum_prd:  tot_accum_prd, $
+      arch_sum:    arch_sum, $
+      arch_smp_flag:  arch_sum_flag, $
+      arch_accum:  arch_accum, $
+      tot_accum_prd:  tot_accum_prd, $
       mode2:       mode2,  $
       tmode:       tmode, $
       emode:       emode, $

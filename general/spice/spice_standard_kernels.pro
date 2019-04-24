@@ -55,7 +55,7 @@ if ~keyword_set(kernels) || (ct - retrievetime) gt waittime then begin     ;
                                         no_server = source.no_server, file_mode = '666'o, dir_mode = '777'o)
 ;    append_array,kernels,  file_retrieve('generic_kernels/spk/planets/de421.bsp',_extra=source)   ; Now obsolete ....  No longer on NAIF site!
 ;    append_array,kernels,  file_retrieve('generic_kernels/spk/planets/a_old_versions/de421.bsp',_extra=source)   ; archived location of de421.bsp
-    append_array, kernels, spd_download_plus(remote_file = source.remote_data_dir+'generic_kernels/spk/planets/de430.bsp', $
+    append_array, kernels, spd_download_plus(remote_file = source.remote_data_dir+'generic_kernels/spk/planets/de435.bsp', $
                                         local_path = source.local_data_dir+'generic_kernels/spk/planets/', $
                                         no_server = source.no_server, file_mode = '666'o, dir_mode = '777'o)
     if keyword_set(mars) then append_array, kernels, spd_download_plus(remote_file = source.remote_data_dir+'generic_kernels/spk/satellites/mar097.bsp', $
