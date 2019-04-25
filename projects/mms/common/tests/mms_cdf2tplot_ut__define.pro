@@ -10,8 +10,8 @@
 ;     taken from v2.1.0 of the FPI CDFs, 3/10/2016
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-11-30 12:30:48 -0800 (Thu, 30 Nov 2017) $
-; $LastChangedRevision: 24359 $
+; $LastChangedDate: 2019-04-24 10:26:16 -0700 (Wed, 24 Apr 2019) $
+; $LastChangedRevision: 27079 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_cdf2tplot_ut__define.pro $
 ;-
 
@@ -112,7 +112,7 @@ end
 function mms_cdf2tplot_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
   ; the following adds code coverage % to the output
-  self->addTestingRoutine, ['mms_cdf2tplot', 'mms_cdf_info_to_tplot']
+  self->addTestingRoutine, ['spd_cdf2tplot', 'spd_cdf_info_to_tplot']
   self->addTestingRoutine, 'mms_cdf_load_vars', /is_function
   return, 1
 end

@@ -159,8 +159,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;        
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-04-08 17:07:14 -0700 (Mon, 08 Apr 2019) $
-; $LastChangedRevision: 26967 $
+; $LastChangedDate: 2019-04-24 13:40:53 -0700 (Wed, 24 Apr 2019) $
+; $LastChangedRevision: 27081 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -449,36 +449,55 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
 ; Calculate PAD timing
 
+  ptime2 = [0D]
+  plut2 = [5B]
+  ptime3 = [0D]
+  plut3 = [5B]
+
   if (size(mvn_swe_pad,/type) eq 8) then begin
     ptime2 = mvn_swe_pad.time
     plut2 = replicate(5B, n_elements(ptime2))
   endif else begin
-    ptime2 = a2.time + 1.95D/2D  ; center times
-    plut2 = a2.lut
+    if (size(a2,/type) eq 8) then begin
+      ptime2 = a2.time + 1.95D/2D  ; center times
+      plut2 = a2.lut
+    endif
   endelse
 
   if (size(swe_fpad,/type) eq 8) then begin
-    ptime2 = [ptime2, swe_fpad.time]
-    plut2 = [plut2, swe_fpad.lut]
-    indx = sort(ptime2)
-    ptime2 = ptime2[indx]
-    plut2 = plut2[indx]
+    if (n_elements(ptime2) gt 1L) then begin
+      ptime2 = [ptime2, swe_fpad.time]
+      plut2 = [plut2, swe_fpad.lut]
+      indx = sort(ptime2)
+      ptime2 = ptime2[indx]
+      plut2 = plut2[indx]
+    endif else begin
+      ptime2 = swe_fpad.time
+      plut2 = swe_fpad.lut
+    endelse
   endif
 
   if (size(mvn_swe_pad_arc,/type) eq 8) then begin
     ptime3 = mvn_swe_pad_arc.time
     plut3 = replicate(5B, n_elements(ptime3))
   endif else begin
-    ptime3 = a3.time + 1.95D/2D  ; center times
-    plut3 = a3.lut
+    if (size(a3,/type) eq 8)  then begin
+      ptime3 = a3.time + 1.95D/2D  ; center times
+      plut3 = a3.lut
+    endif
   endelse
 
   if (size(swe_fpad_arc,/type) eq 8) then begin
-    ptime3 = [ptime3, swe_fpad_arc.time]
-    plut3 = [plut3, swe_fpad_arc.lut]
-    indx = sort(ptime3)
-    ptime3 = ptime3[indx]
-    plut3 = plut3[indx]
+    if (n_elements(ptime3) gt 1L) then begin
+      ptime3 = [ptime3, swe_fpad_arc.time]
+      plut3 = [plut3, swe_fpad_arc.lut]
+      indx = sort(ptime3)
+      ptime3 = ptime3[indx]
+      plut3 = plut3[indx]
+    endif else begin
+      ptime3 = swe_fpad_arc.time
+      plut3 = swe_fpad_arc.lut
+    endelse
   endif
 
 ; Select the first time, then get the PAD spectrum closest that time

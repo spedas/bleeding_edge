@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-04-23 17:18:03 -0700 (Tue, 23 Apr 2019) $
-; $LastChangedRevision: 27078 $
+; $LastChangedDate: 2019-04-24 11:18:02 -0700 (Wed, 24 Apr 2019) $
+; $LastChangedRevision: 27080 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -35,7 +35,7 @@ pro spp_swp_spe_prod_apdat::proc_32E, strct
     cnts:cnts,  $
     gap: strct.gap}
 
-  strct.anode_spec = 0.
+  strct.ano_spec = 0.
   strct.nrg_spec = cnts
   strct.def_spec = 0.
 
@@ -106,7 +106,7 @@ pro spp_swp_spe_prod_apdat::proc_16Ax8Dx32E, strct   ; this function needs fixin
     cnts:cnts, $
     gap: strct.gap}
 
-  strct.anode_spec = total( total(cnts,2), 2)
+  strct.ano_spec = total( total(cnts,2), 2)
   strct.nrg_spec =  total( total(cnts,1), 1 )
   strct.def_spec =  total( total(cnts,1) ,2)
 
@@ -135,14 +135,13 @@ function spp_swp_spe_prod_apdat::decom,ccsds ,source_dict=source_dict  ;,ptp_hea
   endif
 
 
-
-  archive = ccsds.apid and '8'x                ; archive packet determined from the apid  for spane
-
   if 1 then begin    ; New merged method
+    
     spp_swp_span_prod__define,str,ccsds
 
   endif else begin
     message,'Obsolete'
+    archive = ccsds.apid and '8'x                ; archive packet determined from the apid  for spane
     ccsds_data = spp_swp_ccsds_data(ccsds)
 
     if pksize ne n_elements(ccsds_data) then begin

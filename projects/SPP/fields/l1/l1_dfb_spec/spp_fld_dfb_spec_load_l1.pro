@@ -128,13 +128,12 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
       ; Check if all spectra items in the file have the same number of data
       ; elements and concatenated spectra.
 
-      if n_elements(uniq(nelem_data.y)) EQ 1 and $
-        n_elements(uniq(concat_data.y)) EQ 1 then begin
+      if n_elements(uniq(bin_data.y)) EQ 1 then begin
 
         if strpos(prefix, 'ac_spec') NE -1 then is_ac = 1 else is_ac = 0
 
         n_spec = concat_data.y[0] + 1
-        n_bins = nelem_data.y[0] / n_spec
+        n_bins = bin_data.y[0] ? 96 : 56
         n_avg = 2l^(navg_data.y[0])
 
         if is_ac then begin
@@ -144,6 +143,8 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
         endelse
 
         n_total = n_elements(spec_data.y)
+
+        n_spec = n_total / n_elements(spec_data.x) / n_bins
 
         ; The spectral data as returned by TMlib are not in order, instead
         ; the order goes like (fs represent increasing frequencies)
@@ -174,19 +175,16 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
 
           if is_ac then begin
 
-            ;if navg_data.y[i] LE 16 then delta_x = 2d^17 / 150d3 * navg_data.y[i] / n_spec;; base dt is 1 PPC
-            ;if navg_data.y[i] GE 32 then delta_x = 2d^17 / 150d3 * double(floor(navg_data.y[i] / 16d)) / n_spec ;; base dt is N PPC
-
             n_avg_i = 2l^(navg_data.y[i])
 
-            if n_avg_i LE 16 then delta_x = 2d^17 / 150d3 * n_avg_i / n_spec;; base dt is 1 PPC
-            if n_avg_i GE 32 then delta_x = 2d^17 / 150d3 * double(floor(n_avg_i / 16d)) / n_spec ;; base dt is N PPC
+            if n_avg_i LE 16 then delta_x = 2d^17 / 150d3   ;; base dt is 1 PPC
+            if n_avg_i GE 32 then delta_x = 2d^17 / 150d3 * double(floor(n_avg_i / 16d))  ;; base dt is N PPC
 
           endif else begin
 
-            delta_x = 2d^17 / 150d3 * 512. / n_spec
+            n_avg_i = 2l^(navg_data.y[i])
 
-            if navg_data.y[i] GT 8 then delta_x *= 2d
+            delta_x = (2d^17 / 150d3 / 8d) * n_avg_i
 
           endelse
 
@@ -214,6 +212,18 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
         data_v = transpose(rebin(freq_bins.freq_avg,$
           n_elements(freq_bins.freq_avg),$
           n_elements(new_data_x)))
+
+        valid_spec_ind = where(total(abs(new_data_y),2) GT 0, valid_spec_count)
+
+        if valid_spec_count GT 0 then begin
+
+          new_data_x = new_data_x[valid_spec_ind]
+          new_data_y = new_data_y[valid_spec_ind,*]
+          data_v = data_v[valid_spec_ind,*]
+          new_data_gain = new_data_gain[valid_spec_ind]
+          new_data_sat_y = new_data_sat_y[valid_spec_ind]
+
+        endif
 
         store_data, prefix + 'spec_converted', $
           data = {x:new_data_x, $
@@ -267,7 +277,7 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
 
       endif else begin
 
-        print, 'Different spectra configuration in same CDF file'
+        print, 'Currently this routine does not load files with 56 bin spectra and 96 bin spectra in the same CDF file'
 
       endelse
 
@@ -298,8 +308,8 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
 
         options, prefix + dfb_spec_name_i, 'ysubtitle', 'Freq [Hz]'
 
-;        if is_ac then options, prefix + dfb_spec_name_i, 'datagap', 120d else $
-;          options, prefix + dfb_spec_name_i, 'datagap', 120d
+        if is_ac then options, prefix + dfb_spec_name_i, 'datagap', 3600d else $
+          options, prefix + dfb_spec_name_i, 'datagap', 3600d
 
         if tnames(prefix + 'src_sel_string') NE '' then begin
 

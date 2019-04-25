@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spi_prod_apdat
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-03-26 08:56:32 -0700 (Tue, 26 Mar 2019) $
-; $LastChangedRevision: 26902 $
+; $LastChangedDate: 2019-04-24 11:18:02 -0700 (Wed, 24 Apr 2019) $
+; $LastChangedRevision: 27080 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
@@ -348,71 +348,83 @@ FUNCTION spp_swp_spi_prod_apdat::decom,ccsds,source_dict=source_dict
       return,!null
    ENDIF
    
-   if 0 && (abs(ccsds.time - 1.5363835e+09) lt 100) && (ccsds.apid eq '3a0'x) then begin
-    timebar,ccsds.time
-    stop
-   endif
-
-   ;; Parse Header
-   ns = pksize - 20
-   header = ccsds_data[0:19]
-   log_flag = header[12]
-   mode1 = header[13]
-   mode2 = (swap_endian(uint(ccsds_data,14),/swap_if_little_endian))
-   f0 = (swap_endian(uint(header,16),/swap_if_little_endian))
-   status_bits = header[18]
-   peak_bin = header[19]
-   compression = (header[12] and 'a0'x) ne 0
-   bps  =  ([4,1])[ compression ]
-   ndat = ns / bps
-
-   IF ns GT 0 THEN BEGIN
-      data      = ccsds_data[20:*]
-      if compression then cnts = float(spp_swp_log_decomp(data,0)) $
-      else cnts = swap_endian(ulong(data,0,ndat) ,/swap_if_little_endian )
-      tcnts = total(cnts)
-   ENDIF ELSE BEGIN
-      tcnts = -1.
-      cnts = 0.
-   ENDELSE 
    
-   emode2_ori = mode2
-   if ccsds.time gt 1.5409458e+09 &&  ccsds.time lt 1.5422472e+09 then mode2 = uint('0025'x)
-   tmode = mode2 and 'f'x
-   emode = ishft(mode2,-4) and 'f'x
-;   emode = emode_ori
-   pmode = ishft(mode2,-8) and 'f'x
-   mmode = ishft(mode2,-12) and 'f'x
-   str = { $
-         time:        ccsds.time,$
-         met:         ccsds.met, $
-         apid:        ccsds.apid,$
-         time_delta:  ccsds.time_delta,$
-         seqn:        ccsds.seqn,$
-         seqn_delta:  ccsds.seqn_delta,$
-         seq_group:   ccsds.seq_group,$
-         pkt_size:    ccsds.pkt_size,$
-         gap:         ccsds.gap,$
-         f0:          f0,$
-         datasize:    ns,$
-         ndat:        ndat,$
-         mode1:       mode1,$
-         mode2:       mode2,$
-         emode2_ori:   emode2_ori, $
-         tmode:       tmode, $
-         emode:       emode, $
-         pmode:       pmode, $
-         mmode:       mmode, $
-         log_flag:    log_flag,$
-         status_bits: status_bits,$   
-         cnts:        tcnts,$
-         peak_bin:    peak_bin,$
-         def_spec:    fltarr(8),$
-         ano_spec:    fltarr(16),$
-         nrg_spec:    fltarr(32),$
-         mas_spec:    fltarr(16),$
-         ful_spec:    fltarr(256),$
-         pdata:       ptr_new(cnts)}
+
+   if 1 then begin    ; New merged method
+
+     spp_swp_span_prod__define,str,ccsds
+
+   endif else begin
+     message,'Obsolete'
+
+     if 0 && (abs(ccsds.time - 1.5363835e+09) lt 100) && (ccsds.apid eq '3a0'x) then begin
+       timebar,ccsds.time
+       stop
+     endif
+
+     ;; Parse Header
+     ns = pksize - 20
+     header = ccsds_data[0:19]
+     log_flag = header[12]
+     mode1 = header[13]
+     mode2 = (swap_endian(uint(ccsds_data,14),/swap_if_little_endian))
+     f0 = (swap_endian(uint(header,16),/swap_if_little_endian))
+     status_bits = header[18]
+     peak_bin = header[19]
+     compression = (header[12] and 'a0'x) ne 0
+     bps  =  ([4,1])[ compression ]
+     ndat = ns / bps
+
+     IF ns GT 0 THEN BEGIN
+       data      = ccsds_data[20:*]
+       if compression then cnts = float(spp_swp_log_decomp(data,0)) $
+       else cnts = swap_endian(ulong(data,0,ndat) ,/swap_if_little_endian )
+       tcnts = total(cnts)
+     ENDIF ELSE BEGIN
+       tcnts = -1.
+       cnts = 0.
+     ENDELSE
+
+     emode2_ori = mode2
+     if ccsds.time gt 1.5409458e+09 &&  ccsds.time lt 1.5422472e+09 then mode2 = uint('0025'x)
+     tmode = mode2 and 'f'x
+     emode = ishft(mode2,-4) and 'f'x
+     ;   emode = emode_ori
+     pmode = ishft(mode2,-8) and 'f'x
+     mmode = ishft(mode2,-12) and 'f'x
+     str = { $
+       time:        ccsds.time,$
+       met:         ccsds.met, $
+       apid:        ccsds.apid,$
+       time_delta:  ccsds.time_delta,$
+       seqn:        ccsds.seqn,$
+       seqn_delta:  ccsds.seqn_delta,$
+       seq_group:   ccsds.seq_group,$
+       pkt_size:    ccsds.pkt_size,$
+       gap:         ccsds.gap,$
+       f0:          f0,$
+       datasize:    ns,$
+       ndat:        ndat,$
+       mode1:       mode1,$
+       mode2:       mode2,$
+       emode2_ori:   emode2_ori, $
+       tmode:       tmode, $
+       emode:       emode, $
+       pmode:       pmode, $
+       mmode:       mmode, $
+       log_flag:    log_flag,$
+       status_bits: status_bits,$
+       cnts:        tcnts,$
+       peak_bin:    peak_bin,$
+       def_spec:    fltarr(8),$
+       ano_spec:    fltarr(16),$
+       nrg_spec:    fltarr(32),$
+       mas_spec:    fltarr(16),$
+       ;         ful_spec:    fltarr(256),$
+       pdata:       ptr_new(cnts)}
+    
+   endelse
+
    return,str
 END
 
