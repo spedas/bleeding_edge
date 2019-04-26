@@ -74,7 +74,7 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
   public = 0
 
   elf_init, remote_data_dir = remote_data_dir, local_data_dir = local_data_dir, no_color_setup = no_color_setup
-
+  
   if undefined(source) then source = !elf
 
   if undefined(probes) then probes = ['a'] else probes = strlowcase(probes) ; default to ELFIN A
@@ -235,13 +235,15 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
                 local_files = elf_get_local_files(probe=probe, instrument=instrument, $
                   data_rate=data_rate, datatype=datatype, level=level, $
                   trange=time_double([day_string, end_string]), cdf_version=cdf_version, $
-                  min_version=min_version, latest_version=latest_version)
+                  min_version=min_version, latest_version=latest_version, pred=pred)
+
                 if is_string(local_files) then begin
                   ; prepare the file list as a list of structs, (required input to mms_files_in_interval)
                   local_file_info = replicate({filename: '', timetag: ''}, n_elements(local_files))
                   for local_file_idx = 0, n_elements(local_files)-1 do begin
                     local_file_info[local_file_idx].filename = local_files[local_file_idx]
                   endfor
+
                   ; filter to the requested time range
                   local_files_filtered = elf_files_in_interval(local_file_info, tr)
                   local_files = local_files_filtered.filename

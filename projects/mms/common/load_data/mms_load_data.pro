@@ -94,8 +94,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-02-12 11:20:23 -0800 (Tue, 12 Feb 2019) $
-;$LastChangedRevision: 26613 $
+;$LastChangedDate: 2019-04-25 13:00:15 -0700 (Thu, 25 Apr 2019) $
+;$LastChangedRevision: 27091 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 
@@ -370,7 +370,7 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
                 min_version=min_version,version=cdf_version,latest_version=latest_version, $
                 number_records=cdf_records, center_measurement=center_measurement, $
                 loaded_versions = the_loaded_versions, major_version=major_version, $
-                tt2000=tt2000
+                tt2000=tt2000, /disable_cdfcheck
             dt_load += systime(/sec) - lt0 ;temporary
         endif
 

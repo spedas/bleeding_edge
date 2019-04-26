@@ -74,6 +74,8 @@
 ;    
 ;    ssl_verify_peer: set this to verify the authenticity of the peer's SSL certificate (HTTPS)
 ;    ssl_verify_host: set this to verify the authenticity of the server certificate (HTTPS)
+;    
+;    disable_cdfcheck: Useful for large files 
 ;
 ;  IDLnetURL Properties
 ;  ---------------------
@@ -113,8 +115,8 @@
 ;
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-09-18 15:32:58 -0700 (Mon, 18 Sep 2017) $
-;$LastChangedRevision: 23999 $
+;$LastChangedDate: 2019-04-25 15:32:56 -0700 (Thu, 25 Apr 2019) $
+;$LastChangedRevision: 27093 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/spd_download/spd_download.pro $
 ;
 ;-
@@ -152,6 +154,7 @@ function spd_download, $
 
               no_wildcards = no_wildcards, $
 
+              disable_cdfcheck = disable_cdfcheck, $
               _extra=_extra
 
     compile_opt idl2, hidden
@@ -290,6 +293,7 @@ if ~keyword_set(no_download) and ~keyword_set(local_no_download) then begin
                          progress_object = progress_object, $
                          ssl_verify_peer = ssl_verify_peer, $
                          ssl_verify_host = ssl_verify_host, $
+                         disable_cdfcheck=disable_cdfcheck, $
                          _extra=_extra )
     endif else begin
 

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Apr 24 18:16:25 2019.<P>
+<STRONG>Last modified: </STRONG>Thu Apr 25 18:16:31 2019.<P>
  
 <HR>
  
@@ -211,6 +211,8 @@ Input:
     
     ssl_verify_peer: set this to verify the authenticity of the peer's SSL certificate (HTTPS)
     ssl_verify_host: set this to verify the authenticity of the server certificate (HTTPS)
+    
+    disable_cdfcheck: Useful for large files 
 
   IDLnetURL Properties
   ---------------------
@@ -250,8 +252,8 @@ Notes:
 
 
 $LastChangedBy: nikos $
-$LastChangedDate: 2017-09-18 15:32:58 -0700 (Mon, 18 Sep 2017) $
-$LastChangedRevision: 23999 $
+$LastChangedDate: 2019-04-25 15:32:56 -0700 (Thu, 25 Apr 2019) $
+$LastChangedRevision: 27093 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/spd_download/spd_download.pro $
 
 </PRE><P>
@@ -334,9 +336,9 @@ Output:
 Notes:
 
 
-$LastChangedBy: egrimes $
-$LastChangedDate: 2017-01-18 11:25:14 -0800 (Wed, 18 Jan 2017) $
-$LastChangedRevision: 22619 $
+$LastChangedBy: nikos $
+$LastChangedDate: 2019-04-25 15:32:56 -0700 (Thu, 25 Apr 2019) $
+$LastChangedRevision: 27093 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/spd_download/spd_download_expand.pro $
 
 </PRE><P>
@@ -435,7 +437,7 @@ Input:
   dir_mode:  Bit mask specifying permissions for new directories (see file_chmod)
   
   progress_object:  Status update object
-
+  disable_cdfcheck: Useful for large files
   _extra:  Any idlneturl property (except callback_*) can be passed via _extra
            
 
@@ -454,8 +456,8 @@ Notes:
 
 
 $LastChangedBy: nikos $
-$LastChangedDate: 2019-04-23 13:26:33 -0700 (Tue, 23 Apr 2019) $
-$LastChangedRevision: 27075 $
+$LastChangedDate: 2019-04-25 15:32:56 -0700 (Thu, 25 Apr 2019) $
+$LastChangedRevision: 27093 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/spd_download/spd_download_file.pro $
 
 </PRE><P>

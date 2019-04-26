@@ -36,7 +36,7 @@
 ;  dir_mode:  Bit mask specifying permissions for new directories (see file_chmod)
 ;  
 ;  progress_object:  Status update object
-;
+;  disable_cdfcheck: Useful for large files
 ;  _extra:  Any idlneturl property (except callback_*) can be passed via _extra
 ;           
 ;
@@ -55,8 +55,8 @@
 ;
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2019-04-23 13:26:33 -0700 (Tue, 23 Apr 2019) $
-;$LastChangedRevision: 27075 $
+;$LastChangedDate: 2019-04-25 15:32:56 -0700 (Thu, 25 Apr 2019) $
+;$LastChangedRevision: 27093 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/spd_download/spd_download_file.pro $
 ;
 ;-
@@ -81,7 +81,7 @@ function spd_download_file, $
                   string_array = string_array, $
                   ssl_verify_peer = ssl_verify_peer, $
                   ssl_verify_host = ssl_verify_host, $
-                  
+                  disable_cdfcheck=disable_cdfcheck, $
                   _extra = _extra
 
 
@@ -321,10 +321,12 @@ if (response_code2 eq 18) && file_test(filename) then begin
 endif
 
 ; Delete a cdf or netcdf file if it can't be openned.
-cant_open = spd_cdf_check_delete(filename, /delete_file)
-if n_elements(cant_open) gt 0 then begin
-  dprint, dlevel=2, 'Error while downloading, corrupted download will be deleted:  ' + filename
-  output = ''
+if ~keyword_set(disable_cdfcheck) then begin
+  cant_open = spd_cdf_check_delete(filename, /delete_file)
+  if n_elements(cant_open) gt 0 then begin
+    dprint, dlevel=2, 'Error while downloading, corrupted download will be deleted:  ' + filename
+    output = ''
+  endif
 endif
 
 ; Delete temp_filepath, if it exists.

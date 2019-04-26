@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Apr 24 18:16:25 2019.<P>
+<STRONG>Last modified: </STRONG>Thu Apr 25 18:16:31 2019.<P>
  
 <HR>
  
@@ -49,6 +49,8 @@ This page was created by the IDL library routine
 <br>Load the ELFIN ephemeris and attitude data
 <LI><A HREF="#ELF_SET_VERBOSE">ELF_SET_VERBOSE</A>
 <br>Sets verbose level in !elf.verbose and in tplot_options
+<LI><A HREF="#ELF_STATE_FIX_METADATA">ELF_STATE_FIX_METADATA</A>
+<br>Helper routine for setting metadata of ELFIN state variables
 <br>
 </UL><P>
 <HR>
@@ -894,6 +896,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/el
 <A NAME="ELF_SET_VERBOSE">
 <H2>ELF_SET_VERBOSE</H2></A>
 <A HREF="#ELF_LOAD_STATE">[Previous Routine]</A>
+<A HREF="#ELF_STATE_FIX_METADATA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -919,5 +922,26 @@ HISTORY:
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elfin/common/elf_set_verbose.pro $
 </PRE><P>
 <STRONG>(See <A href="elfin/elf_set_verbose.pro">projects/elfin/elf_set_verbose.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ELF_STATE_FIX_METADATA">
+<H2>ELF_STATE_FIX_METADATA</H2></A>
+<A HREF="#ELF_SET_VERBOSE">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         elf_state_fix_metadata
+
+ PURPOSE:
+         Helper routine for setting metadata of ELFIN state variables
+
+
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2017-05-01 13:00:22 -0700 (Mon, 01 May 2017) $
+$LastChangedRevision: 23255 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_mec_fix_metadata.pro $
+</PRE><P>
+<STRONG>(See <A href="elfin/elf_state_fix_metadata.pro">projects/elfin/elf_state_fix_metadata.pro</A>)</STRONG><P>
 <HR>
  
