@@ -16,8 +16,8 @@
 ;      for i=0,n_ele-1 do out[i,*,*] = reform(m[i,*,*]) # reform(v[i,*,*])   
 ;    If the target is a tensor, KEYWORD_SET = tensor_rotation
 ;    then it is equivalent to
-;      for i=0,n_ele-1 do out[i,*,*] = transpose(reform(m[i,*,*])) #
-;        reform(v[i,*,*]) # reform(m[i, *, *])
+;      for i=0,n_ele-1 do out[i,*,*] = reform(m[i,*,*]) #
+;        reform(v[i,*,*]) # transpose(reform(m[i, *, *]))
 ;    
 ;    Setting the "invert" keyword will produce results that are equivalent to using the '##' 
 ;    operation in the loop above.
@@ -127,8 +127,8 @@
 ; SEE ALSO:  mva_matrix_make.pro, fac_matrix_make.pro,rxy_matrix_make
 ;
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-01-30 15:00:59 -0800 (Wed, 30 Jan 2019) $
-; $LastChangedRevision: 26520 $
+; $LastChangedDate: 2019-04-26 14:27:14 -0700 (Fri, 26 Apr 2019) $
+; $LastChangedRevision: 27101 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/special/tvector_rotate.pro $
 ;-
 
@@ -236,7 +236,6 @@ if tplotvar then begin
        m_d_s = size(m_d.y,/dimensions)
     
        if(n_elements(m_d_s) ne 3 || m_d_s[1] ne 3 || m_d_s[2] ne 3) then begin
-    
           dprint,'FX requires matrix data to contain an Nx3x3 array'
           return
        endif
@@ -392,8 +391,8 @@ if tplotvar then begin
          ;(i.e. m1 # (m2 # v) = (m1 # m2) # v)
          ;Use keyword to ensure output type is that of v_d.y
           if keyword_set(tensor_rotate) then begin
-             v_t = ctv_mm_mult(transpose(m_d_y, [0, 2, 1]),v_d.y,/second_type)
-             v_t = ctv_mm_mult(v_t, m_d_y)
+             v_t = ctv_mm_mult(m_d_y,v_d.y,/second_type)
+             v_t = ctv_mm_mult(v_t, transpose(m_d_y, [0, 2, 1]))
           endif else v_t = ctv_mm_mult(m_d_y,v_d.y,/second_type)
        endif else begin
          ;rotate vectors using matrix right multiplication
@@ -568,8 +567,8 @@ endif else begin     ; end of tplotvar
 
    if n_elements(v_d_s) eq 3 then begin
       if keyword_set(tensor_rotate) then begin
-         newname = ctv_mm_mult(transpose(m_d_y,[0,2,1]),v_d,/second_type)
-         newname = ctv_mm_mult(newname, m_d_y) ;cf. tensor_rotate.pro uses ## and not #
+         newname = ctv_mm_mult(m_d_y,v_d,/second_type)
+         newname = ctv_mm_mult(newname, transpose(m_d_y,[0,2,1]))
       endif else newname = ctv_mm_mult(m_d_y,v_d,/second_type)
    endif else begin
       newname = ctv_mx_vec_rot(m_d_y,v_d)

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Apr 25 18:16:31 2019.<P>
+<STRONG>Last modified: </STRONG>Fri Apr 26 18:16:25 2019.<P>
  
 <HR>
  
@@ -328,8 +328,8 @@ Purpose:
       for i=0,n_ele-1 do out[i,*,*] = reform(m[i,*,*]) # reform(v[i,*,*])   
     If the target is a tensor, KEYWORD_SET = tensor_rotation
     then it is equivalent to
-      for i=0,n_ele-1 do out[i,*,*] = transpose(reform(m[i,*,*])) #
-        reform(v[i,*,*]) # reform(m[i, *, *])
+      for i=0,n_ele-1 do out[i,*,*] = reform(m[i,*,*]) #
+        reform(v[i,*,*]) # transpose(reform(m[i, *, *]))
     
     Setting the &quot;invert&quot; keyword will produce results that are equivalent to using the '##' 
     operation in the loop above.
@@ -439,8 +439,8 @@ Notes:
  SEE ALSO:  mva_matrix_make.pro, fac_matrix_make.pro,rxy_matrix_make
 
  $LastChangedBy: jimm $
- $LastChangedDate: 2019-01-30 15:00:59 -0800 (Wed, 30 Jan 2019) $
- $LastChangedRevision: 26520 $
+ $LastChangedDate: 2019-04-26 14:27:14 -0700 (Fri, 26 Apr 2019) $
+ $LastChangedRevision: 27101 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/special/tvector_rotate.pro $
 </PRE><P>
 <STRONG>(See <A href="special/tvector_rotate.pro">general/cotrans/special/tvector_rotate.pro</A>)</STRONG><P>

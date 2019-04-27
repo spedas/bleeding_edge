@@ -46,6 +46,12 @@
 ;  /NO_TIME_CLIP: Disables time clipping, which is the default
 ;  /dead_time_correct: If set, then calculate dead time correction
 ;                      based on ESA moments
+;  /return_mag_rmat: If set, return a tplot variable (ntimes, 3, 3)
+;                    for the rotation matrix used to rotate
+;                    to field-aligned "_mag" variables. Note that this
+;                    matrix needs to be inverted to be used correctly
+;                    with TVECTOR_ROTATE, as here it is used with 
+;                    velocity as a column vector.
 ;Example:
 ;   thm_load_mom,/get_suppport_data,probe=['a', 'b']
 ;Notes:
@@ -64,9 +70,9 @@
 ;  potential, and efficiency.
 ;
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
-; $LastChangedRevision: 26397 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-04-26 15:25:09 -0700 (Fri, 26 Apr 2019) $
+; $LastChangedRevision: 27102 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/moments/thm_load_mom.pro $
 ;-
 
@@ -118,7 +124,8 @@ end
 
 pro thm_store_moment,time,dens,flux,mflux,eflux,mag,prefix = prefix, suffix=sfx,mass=mass, $
         raw=raw, quantity=quantity, tplotnames=tplotnames, $
-        probe=probe,use_eclipse_corrections=use_eclipse_corrections
+        probe=probe,use_eclipse_corrections=use_eclipse_corrections, $
+        return_mag_rmat = return_mag_rmat
 
     compile_opt idl2, hidden
 
@@ -197,6 +204,9 @@ for j=0,n_elements(quantity)-1 do begin
       store_data,prefix+'ptens'+sfx, data={x:time, y:pressure }, $
         dlim={colors:'bgrmcy',labels:press_labels,constant:0.,ysubtitle:'[eV/cc]'}
       tplotnames = array_concat(prefix+'ptens'+sfx,tplotnames)
+;      store_data,prefix+'t3'+sfx,data={x:time,y:pressure[*,0:2]/[dens,dens,dens]},$
+;                 dlim={colors:'bgrmcy',labels:['Tx','Ty','Tz'],ysubtitle:'[eV]',data_att:{units:'eV'}}
+;      tplotnames = array_concat(prefix+'t3'+sfx,tplotnames)
     endif
 
     ptot = total(pressure[*,0:2],2)/3
@@ -210,31 +220,39 @@ for j=0,n_elements(quantity)-1 do begin
      mapt   = [0,4,8,1,2,5]
      n = n_elements(time)
      ptens_mag = fltarr(n,6)
+     mftens_mag = fltarr(n,6)
      vel_mag   = fltarr(n,3)
      vxz = [1,0,0.]
+     If(keyword_set(return_mag_rmat)) Then rmat = fltarr(n, 3, 3)
      for i=0L,n-1 do begin   ; this could easily be speeded up, but it's fast enough now.
-  ;       vxz = reform(flux[i,*])
+;         vxz = reform(flux[i,*])
          rot = rot_mat(reform(mag[i,*]),vxz)
+         If(keyword_set(return_mag_rmat)) Then rmat[i, *, *] = rot
          pt = reform(pressure[i,map3x3],3,3)
          magpt3x3 = invert(rot) # (pt # rot)
          ptens_mag[i,*] = magpt3x3[mapt]
+         mt = reform(mflux[i,map3x3],3,3)
+         magmt3x3 = invert(rot) # (mt # rot)
+         mftens_mag[i,*] = magmt3x3[mapt]
          vm = reform(vel[i,*]) # rot
          vel_mag[i,*] = vm
      endfor
-     store_data,prefix+'velocity_mag',data={x:time,y:vel_mag} ,dlim={colors:'bgr',labels:['Vperp1','Vperp2','Vpar'],ysubtitle:'[km/s]',data_att:{units:'km/s',coord_sys:'mfa'}}
-     store_data,prefix+'ptens_mag',data={x:time,y:ptens_mag},dlim={colors:'bgrmcy',labels:['Pperp1','Pperp2','Ppar','','',''],ysubtitle:'[eV/cc]',data_att:{units:'eV/cm3'}}
-     store_data,prefix+'t3_mag',data={x:time,y:ptens_mag[*,0:2]/[dens,dens,dens]},dlim={colors:'bgrmcy',labels:['Tperp1','Tperp2','Tpar'],ysubtitle:'[eV]',data_att:{units:'eV'}}
-     store_data,prefix+'mag',data={x:time,y:mag},dlim={colors:'bgr',ysubtitle:'[nT]'}
-     tplotnames = array_concat(prefix+['velocity_mag','ptens_mag','t3_mag','mag'],tplotnames)
+     store_data,prefix+'velocity_mag'+sfx,data={x:time,y:vel_mag} ,dlim={colors:'bgr',labels:['Vperp1','Vperp2','Vpar'],ysubtitle:'[km/s]',data_att:{units:'km/s',coord_sys:'mfa'}}
+     store_data,prefix+'ptens_mag'+sfx,data={x:time,y:ptens_mag},dlim={colors:'bgrmcy',labels:['Pperp1','Pperp2','Ppar','','',''],ysubtitle:'[eV/cc]',data_att:{units:'eV/cm3'}}
+     store_data,prefix+'mftens_mag'+sfx,data={x:time,y:mftens_mag},dlim={colors:'bgrmcy',labels:['MFperp1','MFperp2','MFpar','','',''],ysubtitle:'[eV/cc]',data_att:{units:'eV/cm3'}}
+     store_data,prefix+'t3_mag'+sfx,data={x:time,y:ptens_mag[*,0:2]/[dens,dens,dens]},dlim={colors:'bgrmcy',labels:['Tperp1','Tperp2','Tpar'],ysubtitle:'[eV]',data_att:{units:'eV'}}
+     store_data,prefix+'mag'+sfx,data={x:time,y:mag},dlim={colors:'bgr',ysubtitle:'[nT]'}
+     tplotnames = array_concat(prefix+['velocity_mag','ptens_mag','mftens_mag','t3_mag','mag']+sfx,tplotnames)
+     If(keyword_set(return_mag_rmat)) Then Begin
+        store_data,prefix+'rmat'+sfx,data={x:time,y:rmat}
+        tplotnames = array_concat(prefix+'rmat'+sfx,tplotnames)
+     Endif
+
   endif
 
 endfor ; loop over quantity
 
 end
-
-
-
-
 
 pro thm_load_mom_cal_array,time,momraw,scpotraw,qf,shft,$
   iesa_sweep, iesa_sweep_time, eesa_sweep, eesa_sweep_time, $ ;added sweep variables, 1-mar-2010, jmm
@@ -245,7 +263,7 @@ pro thm_load_mom_cal_array,time,momraw,scpotraw,qf,shft,$
   probe=probe,caldata=caldata, coord=coord, $
   verbose=verbose,raw=raw,comptest=comptest, datatype=datatype, $
   use_eclipse_corrections=use_eclipse_corrections, suffix = suffix, $
-  tplotnames=tplotnames
+  tplotnames=tplotnames,return_mag_rmat=return_mag_rmat
 
   compile_opt idl2, hidden
 
@@ -313,7 +331,6 @@ pro thm_load_mom_cal_array,time,momraw,scpotraw,qf,shft,$
   cal_params = dblarr([dimen(caldata.mom_scale),2])
   cal_params[*,*,0] = caldata.mom_scale
   cal_params[*,*,1] = caldata.mom_scale_sw1
-  
   
   ;loop over p[es][ie]m datatypes
   for i=0,3 do begin
@@ -444,8 +461,7 @@ pro thm_load_mom_cal_array,time,momraw,scpotraw,qf,shft,$
     ;store variables for this data type
     thm_store_moment,time,dens,flux,mflux,eflux,mag,prefix = thx+'_'+instr+'_', $
       suffix=sfx,mass=mass[i],raw=raw, quantity=quantities[idx], tplotnames=tplotnames, $
-      probe=probe, use_eclipse_corrections=use_eclipse_corrections
-
+      probe=probe, use_eclipse_corrections=use_eclipse_corrections,return_mag_rmat=return_mag_rmat
   endfor
     
     
@@ -457,7 +473,7 @@ pro thm_load_mom_cal_array,time,momraw,scpotraw,qf,shft,$
       thm_store_moment,time,n_i_tot,nv_i_tot,nvv_i_tot,nvvv_i_tot,mag,$
         prefix = thx+'_'+'ptim_', suffix=sfx,mass=mass[0],raw=raw, quantity=quantities[idx],$
         probe=probe, use_eclipse_corrections=use_eclipse_corrections, $
-        tplotnames=tplotnames
+        tplotnames=tplotnames,return_mag_rmat=return_mag_rmat
           
     endif
      
@@ -466,7 +482,7 @@ pro thm_load_mom_cal_array,time,momraw,scpotraw,qf,shft,$
       thm_store_moment,time,n_e_tot,nv_e_tot,nvv_e_tot,nvvv_e_tot,mag,$
         prefix = thx+'_'+'ptem_', suffix=sfx,mass=mass[1],raw=raw, quantity=quantities[idx],$
         probe=probe, use_eclipse_corrections=use_eclipse_corrections, $
-        tplotnames=tplotnames
+        tplotnames=tplotnames,return_mag_rmat=return_mag_rmat
     endif
 
   endif
@@ -591,7 +607,7 @@ pro thm_load_mom, probe = probe, datatype = datatype_in, trange = trange, all = 
                   source_options = source, type = type, $
                   progobj = progobj, files = files, no_time_clip = no_time_clip, $
                   true_dsl = true_dsl, use_eclipse_corrections = use_eclipse_corrections, $
-                  dead_time_correct = dead_time_correct
+                  dead_time_correct = dead_time_correct, return_mag_rmat = return_mag_rmat
 
 compile_opt idl2
 
@@ -799,7 +815,7 @@ for s=0,n_elements(probes)-1 do begin
        iesa_solarwind_time, eesa_solarwind_time, coord=coord, $
        raw = raw, verbose = verbose, comptest = comptest, datatype = datatype, $
        use_eclipse_corrections=use_eclipse_corrections, suffix = suffix, $
-       tplotnames=tplotnames
+       tplotnames=tplotnames,return_mag_rmat=return_mag_rmat
 
      tplot_ptrs = ptr_extract(tnames(/dataquant))
      unused_ptrs = ptr_extract(cdfi,except=tplot_ptrs)
