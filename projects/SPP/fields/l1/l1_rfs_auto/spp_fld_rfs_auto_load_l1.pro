@@ -318,7 +318,10 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color
 
             ;if i EQ 0 then begin
 
-            auto_items = prefix + ['compression', 'peaks', 'averages', $
+            auto_items = prefix + ['CCSDS_MET_Seconds', $
+              'CCSDS_MET_SubSeconds', $
+              'CCSDS_Sequence_Number', $
+              'compression', 'peaks', 'averages', $
               'hl', 'ch0', 'ch1', $
               'ch0_string', 'ch1_string', 'gain', 'nsum']
 

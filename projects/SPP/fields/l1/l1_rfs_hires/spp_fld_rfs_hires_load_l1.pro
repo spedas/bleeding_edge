@@ -412,7 +412,10 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color
 
             if avg_pos GE 0 then ytitle2 = strmid(ytitle2, 0, avg_pos) + 'AVGS' + strmid(ytitle2, avg_pos+8)
 
-            hires_items = prefix + ['compression', 'peaks', 'averages', $
+            hires_items = prefix + ['CCSDS_MET_Seconds', $
+              'CCSDS_MET_SubSeconds', $
+              'CCSDS_Sequence_Number', $
+              'compression', 'peaks', 'averages', $
               'hl', 'ch0', 'ch1', $
               'ch0_string', 'ch1_string', 'gain', 'nsum', $
               'peakmode', 'peak_location', 'freq', 'freq_max', 'freq_min']

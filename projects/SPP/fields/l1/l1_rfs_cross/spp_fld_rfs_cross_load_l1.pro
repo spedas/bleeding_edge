@@ -218,7 +218,10 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
 
         if count_cross GT 0 then begin
 
-          cross_items = prefix + ['compression', 'hl', 'ch0', 'ch1', $
+          cross_items = prefix + ['CCSDS_MET_Seconds', $
+            'CCSDS_MET_SubSeconds', $
+            'CCSDS_Sequence_Number', $
+            'compression', 'hl', 'ch0', 'ch1', $
             'ch0_string', 'ch1_string', 'gain', 'nsum', 'xspec_re', 'xspec_im']
 
           for i = 0, n_elements(cross_items) - 1 do begin
@@ -386,7 +389,10 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
           options, src_name_im, 'ytitle', ytitle_im
           options, src_name, 'color_table', 39
 
-          cross_items = prefix + ['compression', 'hl', 'ch0', 'ch1', $
+          cross_items = prefix + ['CCSDS_MET_Seconds', $
+            'CCSDS_MET_SubSeconds', $
+            'CCSDS_Sequence_Number', $
+            'compression', 'hl', 'ch0', 'ch1', $
             'ch0_string', 'ch1_string', 'gain', 'nsum', 'xspec_re', 'xspec_im']
 
           for k = 0, n_elements(cross_items) - 1 do begin

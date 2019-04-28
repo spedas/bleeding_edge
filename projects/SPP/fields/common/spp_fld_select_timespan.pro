@@ -192,6 +192,7 @@ function spp_fld_select_timespan_define_presets, fm_or_em
 
 
   fm_times['e02_encounter'] = ['2019-03-30/04:39:00','2019-04-10/16:42:00']
+  fm_times['e02_encounter_plus1day'] = ['2019-03-29/04:39:00','2019-04-11/16:42:00']
 
 
   em_times = orderedhash()
