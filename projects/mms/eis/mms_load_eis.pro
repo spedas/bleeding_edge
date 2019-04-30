@@ -60,7 +60,7 @@
 ;     load PHxTOF data:
 ;     MMS1> mms_load_eis, probes='1', trange=['2015-10-31', '2015-11-01'], datatype='phxtof', level='l2'
 ;     calculate the PHxTOF PAD for protons
-;     MMS1> mms_eis_pad, probe='1', species='ion', datatype='phxtof', ion_type='proton', data_units='flux', energy=[0, 30], level='l2'
+;     MMS1> mms_eis_pad, probe='1', species='proton', datatype='phxtof', data_units='flux', energy=[0, 30], level='l2'
 ;
 ;     See mms_load_eis_crib.pro, mms_load_eis_burst_crib.pro,
 ;         and mms_load_eis_crib_qlplots.pro for usage examples
@@ -88,8 +88,8 @@
 ;                  changed default level to L2
 ;     
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
-;$LastChangedRevision: 25588 $
+;$LastChangedDate: 2019-04-29 13:21:28 -0700 (Mon, 29 Apr 2019) $
+;$LastChangedRevision: 27136 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_load_eis.pro $
 ;-
 

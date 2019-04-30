@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Apr 27 18:16:31 2019.<P>
+<STRONG>Last modified: </STRONG>Mon Apr 29 18:16:25 2019.<P>
  
 <HR>
  
@@ -313,6 +313,7 @@ Keywords:
       be read a la the Kyoto format, and the Kyoto server will not be queried.
   DSTDATA, DSTTIME (Out):  Get 'dst' data, time basis in an array.
   no_server: set this keyword to use only locally available data files (i.e. don't connect to Kyoto server)
+  dst_minutes: set the time for the hourly average at this time point. Default is 30.
 
 Code:
 W.M.Feuerstein, 5/15/2008.
@@ -342,10 +343,10 @@ Acknowledgment:
   [RSA], Alibag [IIG]), NiCT, INTERMAGNET, and many others for their cooperation to
   make the Dst index available.
 
- $LastChangedBy:  $
- $LastChangedDate:  $
- $LastChangedRevision:  $
- $URL $
+ $LastChangedBy: $
+ $LastChangedDate: $
+ $LastChangedRevision: $
+ $URL: $
 </PRE><P>
 <STRONG>(See <A href="kyoto/kyoto_load_dst.pro">general/missions/kyoto/kyoto_load_dst.pro</A>)</STRONG><P>
 <HR>

@@ -19,6 +19,7 @@
 ;      be read a la the Kyoto format, and the Kyoto server will not be queried.
 ;  DSTDATA, DSTTIME (Out):  Get 'dst' data, time basis in an array.
 ;  no_server: set this keyword to use only locally available data files (i.e. don't connect to Kyoto server)
+;  dst_minutes: set the time for the hourly average at this time point. Default is 30.
 ;
 ;Code:
 ;W.M.Feuerstein, 5/15/2008.
@@ -48,13 +49,11 @@
 ;  [RSA], Alibag [IIG]), NiCT, INTERMAGNET, and many others for their cooperation to
 ;  make the Dst index available.
 ;
-; $LastChangedBy:  $
-; $LastChangedDate:  $
-; $LastChangedRevision:  $
-; $URL $
+; $LastChangedBy: $
+; $LastChangedDate: $
+; $LastChangedRevision: $
+; $URL: $
 ;-
-
-compile_opt idl2
 
 pro kyoto_load_dst ,trange=trange, $
   verbose=verbose, $
@@ -65,9 +64,13 @@ pro kyoto_load_dst ,trange=trange, $
   ;source=source
   no_server=no_server, $ ;This functions the same as a no_download (obsolete) keyword would 
   apply_time_clip=apply_time_clip, $ ; This clips the tplot variable to the time specified in trange (this is not necessary if time specified using timespan.
+  dst_minutes=dst_minutes, $ ; The average is for a full hour, and the measurement point will be set at dst_minute. Default is 30.  
   local_data_dir=local_data_dir, $
   remote_data_dir = remote_data_dir
   
+  
+  compile_opt idl2
+
 ;**************************
 ;Load 'remote_data_dir' default:
 ;**************************
@@ -90,6 +93,11 @@ if ~keyword_set(verbose) then verbose=2
 ;Load 'dst' data by default:
 ;**************************
 if ~keyword_set(datatype) then datatype='dst'
+
+; Minutes for the tplot time of the dst measurements.
+if ~keyword_set(dst_minutes) then dst_minutes = '30'
+if dst_minutes gt 59 || dst_minutes lt 0 then dst_minutes = '30' 
+dst_minutes = strmid('00' + strtrim(string(dst_minutes), 2), 1, 2, /reverse_offset)
 
 
 ;*****************
@@ -121,9 +129,7 @@ if ~size(fns,/type) then begin
 
   ;Get files for ith datatype:
   ;***************************
-  file_names = file_dailynames( $
-    file_format='YYYYMM/dst'+ $
-    'yyMM',trange=t,times=times,/unique)+'.for.request
+  file_names = file_dailynames(file_format='YYYYMM/',trange=t,times=times,/unique)+'index.html'
     
   source = file_retrieve(/struct)
   source.verbose=verbose  
@@ -167,11 +173,6 @@ if ~size(fns,/type) then begin
   local_paths=local_paths[uniq(local_paths,sort(local_paths))]
 endif else file_names=fns
 
-;basedate=time_string(times,tformat='YYYY-MM-01')
-;baseyear=strmid(basedate,0,4)
-
-
-
 ;Read the files:
 ;===============
 s=''
@@ -182,54 +183,106 @@ alldstversion = 0
 
 ;Loop on files:
 ;==============
-for i=0,n_elements(local_paths)-1 do begin
-  file= local_paths[i]
+
+; Define arrays for time and data
+all_dst_time = [] ;time array for all files
+all_dst_data = [] ;data array for all files
+dst_data_nan = make_array(24,value=!values.f_nan) ;empty data for a day
+
+; Open and parse each index.html file 
+; Each file contains dst data for one month
+for file_i=0,n_elements(local_paths)-1 do begin
+  file= local_paths[file_i]
   if file_test(/regular,file) then  dprint,'Loading DST file: ',file $
     else begin
       dprint,'DST file ',file,' not found. Skipping'
       continue
     endelse
+    
+    ; Parse filename to find year and month (eg, 201703/index.html)
+    ; If it is not possible to parse the filename, then skip the file    
+    dst_year = '0'
+    dst_month = '0'
+    dst_day = '0'
+    if strlen(file) ge 17 then begin
+      f0 = strmid(file, 16, 6, /reverse_offset) ;this should be like 201703
+      digs=['0','1','2','3','4','5','6','7','8','9']
+      mynumberisinteger = 1
+      for i=0,5 do begin
+        if where(digs eq strmid(f0, i, 1)) lt 0 then begin
+          mynumberisinteger = 0
+          break
+        endif        
+      endfor
+      if mynumberisinteger eq 1 then begin
+        dst_year = strmid(f0, 0, 4)
+        dst_month = strmid(f0, 4, 2)
+      endif  
+    endif
+    if dst_year eq '0' || dst_month eq '0' then begin 
+      ; could not find month or year
+      printd, 'There is a problem with the dst file: ' + file
+      continue
+    endif    
+    
     openr,lun,file,/get_lun
-    ;basetime = time_double(basedate[i])
-    ;
+
     ;Loop on lines (format documented at
     ;http://wdc.kugi.kyoto-u.ac.jp/dstae/format/dstformat.html):
+    ; 2019-04-26: this formatting is no longer valid, now we parse an HTML file
     ;===========================================================
+    find_units = 0
+    find_day = 0
+    find_eof = 0 
     while(not eof(lun)) do begin
       readf,lun,s
-      ok=1
-      if strmid(s,0,1) eq '[' then ok=0
-      if ok && keyword_set(s) then begin
-         dprint,s ,dlevel=5
-         year_lower = (strmid(s,3,2))
-         year_upper= (strmid(s,14,2))
-         month = (strmid(s,5,2))
-         day = (strmid(s,8,2))
-;         hour = (strmid(s,19,2))
-         type = strmid(s,0,3)
-         version=strmid(s,13,1)     ;despite online docs, should be only 0 or 1. (? This is 2 for final data)
-         basetime = time_double(year_upper+year_lower+ $
-           '-'+month+'-'+day)
-         ;
-         kdata = fix ( strmid(s, indgen(24)*4 +20 ,4) )
-         ;
-         ;Append data by type (DST):
-         ;===========================================
-         case type of
-           'DST': begin
-	     append_array,alldst,kdata
-	     append_array,alldsttime, basetime + dindgen(24)*3600d
-             append_array,alldstversion,fix(version)
-	     dprint,' ',s,dlevel=5
-	   end
-         endcase
-         continue
+      s = strtrim(s,2)
+      
+      ; Parse html file
+      if strlowcase(s) eq '' then continue ; if empty, continue
+      if strlen(s) ge 7 && strlowcase(strmid(s,0,7)) eq 'unit=nt' then find_units = 1
+      if find_units eq 0 then continue ; continue till find units
+      if strlowcase(strtrim(s,2)) eq 'day' then begin 
+        find_day = 1
+        continue
       endif
-
-      ;if s eq 'DAY' then ok=1
+      if find_day eq 0 then continue ; continue till skip date
+      
+      ; find end of data, <!--
+      if strlen(s) ge 4 then begin
+        if strmid(s, 0, 4) eq '<!--' then break  ;break reading file
+      endif
+      
+      ; Parse one line of data      
+      s0 = ''
+      for i=0, strlen(s)-1 do begin
+        char0 = strmid(s, i, 1)
+        ; Add spaces before minus sign 
+        ; This is needed for cases when the index is <-100, fdr example 1968-04-05/22:00:00
+        if char0 eq '-' then char0 = ' -' 
+        s0 = s0 + char0
+      endfor
+      
+      d = strsplit(s0, /extract)      
+      if n_elements(d) eq 25 then begin
+        dst_day = d[0]
+        dst_data = fix(d[1:24])
+      endif else begin
+        ;if the line is different, we fill the day with NaN values
+        print, 'Found a line of dst data that has length different than expected. Filled with NaN.'
+        dst_day = strtrim(string(fix(dst_day) + 1), 2)
+        dst_data = dst_data_nan
+      endelse
+      dst_day2 = strmid('0'+ strtrim(string(dst_day),2), 1, 2, /reverse_offset)
+      for i = 0, 23 do begin
+        dst_hour = strmid('0'+ strtrim(string(i), 2), 1, 2, /reverse_offset)
+        all_dst_time = [all_dst_time, dst_year + '-' + dst_month + '-' + dst_day2 + '/' + dst_hour + ':' + dst_minutes + ':00']
+        all_dst_data = [all_dst_data, dst_data[i]]
+      endfor
+   
     endwhile
     free_lun,lun
-endfor
+endfor 
 
 acknowledgestring = 'The DST data are provided by the World Data Center for Geomagnetism, Kyoto, and'+ $
   ' are not for redistribution (http://wdc.kugi.kyoto-u.ac.jp/). Furthermore, we thank'+ $
@@ -237,32 +290,13 @@ acknowledgestring = 'The DST data are provided by the World Data Center for Geom
   ' [RSA], Alibag [IIG]), NiCT, INTERMAGNET, and many others for their cooperation to'+ $
   ' make the Dst index available.'
 
-;Store data in TPLOT variables setting bad data to NaN, and setting ytitle:
-;==========================================================================
-if keyword_set(alldst) then begin
-  alldst= float(alldst)
-  wbad = where(alldst eq 99999,nbad)
-  if nbad gt 0 then alldst[wbad] = !values.f_nan
+if n_elements(all_dst_time) lt 1 then begin
+  dprint, 'No data found.'
+endif else begin
   dlimit=create_struct('data_att',create_struct('acknowledgment',acknowledgestring))
   str_element, dlimit, 'data_att.units', 'nT', /add
-  store_data,'kyoto_dst',data={x:alldsttime, y:alldst},dlimit=dlimit
-
-  ;Determine version and set ytitle:
-  ;=================================
-  prov_ind = where((alldstversion eq 1), cprov)
-  final_ind = where((alldstversion eq 2), cfinal)
-  realtime_ind = where((alldstversion eq 0), crt)
-
-  case 1 of ;NB: if under some strange circumstance you load multiple types of data and some are removed by timeclipping, this isn't smart enough to know.
-    cprov && crt && cfinal: options,'kyoto_dst','ytitle','Kyoto!CRealtime/Prov./Final DST!C[nT]'
-    cprov && crt: options,'kyoto_dst','ytitle','Kyoto!CRealtime/Prov. DST!C[nT]'
-    cprov && cfinal: options,'kyoto_dst','ytitle','Kyoto!CProv./Final DST!C[nT]'
-    crt && cfinal: options,'kyoto_dst','ytitle','Kyoto!CRealtime/Final DST!C[nT]'
-    logical_true(cprov): options,'kyoto_dst','ytitle','Kyoto!CProv. DST!C[nT]'
-    logical_true(crt): options,'kyoto_dst','ytitle','Kyoto!CRealtime DST!C[nT]'
-    logical_true(cfinal): options,'kyoto_dst','ytitle','Kyoto!CFinal DST!C[nT]'
-  endcase
-endif
+  store_data,'kyoto_dst',data={x:time_double(all_dst_time), y:all_dst_data},dlimit=dlimit  
+endelse
 
 ; Clip the data to the user requested time range
 ; ONLY if they have passed the keyword apply_time_clip. This is to ensure these changes don't
@@ -272,6 +306,7 @@ if keyword_set(apply_time_clip) then begin
     If (keyword_set(trange) && n_elements(trange) Eq 2) $
       Then tr = timerange(trange) $
       else tr = timerange()
+    tr = time_double(tr) + [-0.1, 0.1] 
     time_clip, 'kyoto_dst', min(tr), max(tr), /replace, error=tr_err
     if tr_err then del_data, 'kyoto_dst'
   endif

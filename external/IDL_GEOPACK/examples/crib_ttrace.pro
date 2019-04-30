@@ -8,9 +8,9 @@
 ;Haje Korth's IDL/Geopack DLM must be installed for this
 ;       to work
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2014-03-05 09:46:43 -0800 (Wed, 05 Mar 2014) $
-; $LastChangedRevision: 14500 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2019-04-29 10:07:32 -0700 (Mon, 29 Apr 2019) $
+; $LastChangedRevision: 27121 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/examples/crib_ttrace.pro $
 ;-
 
@@ -26,7 +26,8 @@ thm_init
 ;BASIC USAGE
 ;footprint trace in gsm
 
-timespan,'2007-03-23'
+mydate = '2018-03-23'
+timespan, mydate
 
 thm_load_state,probe='c',coord='gsm',suffix='_gsm'
 
@@ -110,7 +111,7 @@ stop
 ;2D PLOT FIELD LINES WITH TRACES
 
 ;generate some dummy data to generate field line traces
-t = replicate(time_double('2007-03-23/11:00:00'), 18)
+t = replicate(time_double(mydate + '/11:00:00'), 18)
 
 x = -1*(dindgen(18)+2)^2
 y = replicate(0D,18)
@@ -128,7 +129,7 @@ ttrace2iono,'trace_data',trace_var_name = 'trace_n', newname='thc_ifoot',externa
 ttrace2iono,'trace_data',trace_var_name = 'trace_s', newname='thc_ifoot',external_model='t89',par=2.0D,in_coord='gsm',out_coord='gsm', /south
 
 ;generate the 2-d plot
-timespan,'2007-03-23/10:00:00',2,/hour
+timespan,mydate+'/10:00:00',2,/hour
 
 tplotxy,'thc_state_pos',/add, versus = 'xrz', xtitle = 'Re', ytitle = 'Re',title = 'fields x vs z',xrange=[-10,-4],yrange=[-6,4]
 
@@ -144,7 +145,7 @@ stop
 ;finish (-:
 
 ;timespan,'2008-07-02',1,/day
-timespan, '2010-07-30',1,/day;date chosen at random here
+timespan, mydate,1,/day;date chosen at random here
 
 thm_load_state,probe='c',coord='gsm'
 
@@ -173,10 +174,10 @@ get_tsy_params,'kyoto_dst','wi_b3gsm','wi_3dp_k0_ion_density','wi_3dp_k0_ion_vel
 
 ;longer timespans take a long time to run
 ;timespan,'2008-07-02/12:00:00',30,/minute
-timespan,'2010-07-30/12:00:00',30,/minute
+timespan,mydate+'/12:00:00',30,/minute
 
 ;time_clip,'thc_state_pos','2008-07-02/12:00:00','2008-07-02/12:30:00',newname='pos_clipped'
-time_clip,'thc_state_pos','2010-07-30/12:00:00','2010-07-30/12:30:00',newname='pos_clipped'
+time_clip,'thc_state_pos',mydate+'/12:00:00',mydate+'/12:30:00',newname='pos_clipped'
 
 ttrace2iono,'pos_clipped',newname='thc_ifoot_gsm',external_model='t96',par='t96_par',/km
 
@@ -294,7 +295,7 @@ tplot,['thc_state_pos','thc_ifoot_gsm'], title = 'Themis C position & footprints
 
 stop
 
-timespan,'2007-03-23',1,/day
+timespan,mydate,1,/day
 
 thm_load_state,probe='c',coord='gsm'
 

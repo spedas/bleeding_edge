@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Apr 27 18:16:31 2019.<P>
+<STRONG>Last modified: </STRONG>Mon Apr 29 18:16:25 2019.<P>
  
 <HR>
  
@@ -26,6 +26,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_COTRANS_QROTATE">MMS_COTRANS_QROTATE</A>
 <LI><A HREF="#MMS_COTRANS_QTRANSFORMER">MMS_COTRANS_QTRANSFORMER</A>
 <LI><A HREF="#MMS_COTRANS_TRANSFORMER">MMS_COTRANS_TRANSFORMER</A>
+<LI><A HREF="#MMS_MP_LMN">MMS_MP_LMN</A>
 <LI><A HREF="#MMS_QCOTRANS">MMS_QCOTRANS</A>
 <LI><A HREF="#MMS_QCOTRANS_CHECK_RATE">MMS_QCOTRANS_CHECK_RATE</A>
 <br>
@@ -328,7 +329,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_COTRANS_TRANSFORMER">
 <H2>MMS_COTRANS_TRANSFORMER</H2></A>
 <A HREF="#MMS_COTRANS_QTRANSFORMER">[Previous Routine]</A>
-<A HREF="#MMS_QCOTRANS">[Next Routine]</A>
+<A HREF="#MMS_MP_LMN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -381,9 +382,37 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="cotrans/mms_cotrans_transformer.pro">projects/mms/common/cotrans/mms_cotrans_transformer.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_MP_LMN">
+<H2>MMS_MP_LMN</H2></A>
+<A HREF="#MMS_COTRANS_TRANSFORMER">[Previous Routine]</A>
+<A HREF="#MMS_QCOTRANS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ PROCEDURE:
+     mms_mp_lmn
+ 
+ NOTES:
+     For more info, see: 
+     Determining L‐M‐N Current Sheet Coordinates at the Magnetopause From Magnetospheric Multiscale Data by Denton et al.
+     
+     http://dx.doi.org/10.1002/2017JA024619
+     
+ HISTORY:
+     Originally provided by Jef Broll; added to SPEDAS by egrimes, April 2019
+
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2019-04-29 12:07:53 -0700 (Mon, 29 Apr 2019) $
+ $LastChangedRevision: 27132 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/cotrans/mms_mp_lmn.pro $
+</PRE><P>
+<STRONG>(See <A href="cotrans/mms_mp_lmn.pro">projects/mms/common/cotrans/mms_mp_lmn.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_QCOTRANS">
 <H2>MMS_QCOTRANS</H2></A>
-<A HREF="#MMS_COTRANS_TRANSFORMER">[Previous Routine]</A>
+<A HREF="#MMS_MP_LMN">[Previous Routine]</A>
 <A HREF="#MMS_QCOTRANS_CHECK_RATE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
