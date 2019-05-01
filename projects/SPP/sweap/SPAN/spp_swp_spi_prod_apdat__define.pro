@@ -1,8 +1,54 @@
 ;+
+;
+; SPP_SWP_SPI_PROD_APDAT
+;
+; APID: 0x380-0x3AF
+; Descritpion: SPAN-Ai Science Packet
+; Size: Vairable
+;
+;----------------------------------------------
+; Byte  |   Bits   |        Data Value
+;----------------------------------------------
+;   0   | 00001aaa | ApID Upper Byte
+;   1   | aaaaaaaa | ApID Lower Byte
+;   2   | 11cccccc | Sequence Count Upper Byte
+;   3   | cccccccc | Sequence Count Lower Byte
+;   4   | LLLLLLLL | Message Length Upper Byte
+;   5   | LLLLLLLL | Message Length Lower Byte
+;   6   | MMMMMMMM | MET Byte 5
+;   7   | MMMMMMMM | MET Byte 4
+;   8   | MMMMMMMM | MET Byte 3
+;   9   | MMMMMMMM | MET Byte 2
+;  10   | ssssssss | MET Byte 1 [subseconds]
+;  11   | ssssssss | s = MET subseconds
+;       |          | x = Cycle Count LSBs
+;       |          |     (sub NYS Indicator)
+;  12   | LTCSNNNN | L = Log Compressed
+;       |          | T = No Targeted Sweep
+;       |          | C = Compress/Truncate TOF
+;       |          | S = Summing
+;       |          | N = 2^N Sum/Sample Period
+;  13   | QQQQQQQQ | Spare
+;  14   | mmmmmmmm | Mode ID Upper Byte
+;  15   | mmmmmmmm | Mode ID Lower Byte
+;  16   | FFFFFFFF | F0 Counter Upper Byte
+;  17   | FFFFFFFF | F0 Counter Lower Byte
+;  18   | AAtHDDDD | A = Attenuator State
+;       |          | t = Test Pulser
+;       |          | H = HV Enable
+;       |          | D = HV Mode
+;  19   | XXXXXXXX | X = Peak Count Step
+;
+; 20 - ???
+; --------
+; Science Product Data
+;
+;
+;
 ; spp_swp_spi_prod_apdat
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-04-24 11:18:02 -0700 (Wed, 24 Apr 2019) $
-; $LastChangedRevision: 27080 $
+; $LastChangedBy: rlivi2 $
+; $LastChangedDate: 2019-04-30 16:27:37 -0700 (Tue, 30 Apr 2019) $
+; $LastChangedRevision: 27155 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 

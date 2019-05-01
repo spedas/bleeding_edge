@@ -34,9 +34,9 @@
 ;             1. New stations (GAK, KAP, NYR, HUS) are included
 ;             2. Use spd_download instead of file_retrieve
 ;
-;
-;   $LastChangedDate: 2019-03-17 21:51:57 -0700 (Sun, 17 Mar 2019) $
-;   $LastChangedRevision: 26838 $
+; 2019-04-30: jmm, added this comment to test SSL SVN
+;   $LastChangedDate: 2019-04-30 16:04:56 -0700 (Tue, 30 Apr 2019) $
+;   $LastChangedRevision: 27154 $
 ;-
 
 pro erg_load_camera_omti_asi, $

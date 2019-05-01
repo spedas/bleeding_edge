@@ -31,9 +31,10 @@
 ; here, and will return a code of 0
 ;HISTORY:
 ; 26-nov-2013, jmm, jimm@ssl.berkeley.edu
+; 30-apr-2019, jmm, Added comment to test SVN updates
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2013-11-26 12:22:47 -0800 (Tue, 26 Nov 2013) $
-; $LastChangedRevision: 13597 $
+; $LastChangedDate: 2019-04-30 15:30:35 -0700 (Tue, 30 Apr 2019) $
+; $LastChangedRevision: 27152 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf2idltype.pro $
 ;-
 Function cdf2idltype, code
