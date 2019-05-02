@@ -27,9 +27,9 @@
 ;                       Removed additional output text - Use dprint,debug=3  to restore text.   Nov 2008
 ;                       Fixed bug on macOS when saving figures of restored data using makepng/makegif/makejpg, 24-jan-2019, egrimes
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-01-24 11:33:50 -0800 (Thu, 24 Jan 2019) $
-; $LastChangedRevision: 26498 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-05-01 09:24:46 -0700 (Wed, 01 May 2019) $
+; $LastChangedRevision: 27161 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_restore.pro $
 ;-
 pro tplot_restore,filenames=filenames,all=all,append=append,sort=sort,$
@@ -39,9 +39,9 @@ pro tplot_restore,filenames=filenames,all=all,append=append,sort=sort,$
 COMPILE_OPT IDL2
 @tplot_com.pro
 
-if !d.name eq 'X' then begin
-  if !version.os_family eq 'unix' then device,retain=2  ; Unix family does not provide backing store by default
-endif
+;if !d.name eq 'X' then begin
+;  if !version.os_family eq 'unix' then device,retain=2  ; Unix family does not provide backing store by default
+;endif
 
 tplot_quant__define
 if keyword_set(directory) and ~keyword_set(all) then begin

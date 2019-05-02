@@ -44,6 +44,8 @@ seconds = seconds, $
 FULL = full,  $
 LAST = last,  $
 ZOOM = zoom,  $
+next = next,  $
+previous = previous, $
 REFDATE = refdate, $
 OLD_TVARS = old_tvars, $
 NEW_TVARS = new_tvars, $
@@ -102,12 +104,14 @@ if keyword_set(current) then begin
 endif
 
 if n eq 0 then begin
-  ctime,t,npoints=2,prompt="Use cursor to select a begin time and an end time",$
-    hours=hours,minutes=minutes,seconds=seconds,days=days,silent=silent
+  delta = tr[1] - tr[0]
+  if keyword_set(previous) then   t = tr -delta else if keyword_set(next) then t = tr +delta else begin
+    ctime,t,npoints=2,prompt="Use cursor to select a begin time and an end time",$
+      hours=hours,minutes=minutes,seconds=seconds,days=days,silent=silent    
+  endelse
   if n_elements(t) ne 2 then return
   t1 = t[0]
   t2 = t[1]
-  delta = tr[1] - tr[0]
   case 1 of
     (t1 lt tr[0]) and (t2 gt tr[1]):  trange = trange_full      ; full range
     (t1 gt tr[1]) and (t2 gt tr[1]):  trange = tr + delta       ; pan right

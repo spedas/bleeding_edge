@@ -6,7 +6,7 @@
 ;   if an element of A is not found in B then the corresponding index is -1
 ; -
 function  array_union,a,b
-ind = replicate(-1,n_elements(a))
+ind = replicate(-1l,n_elements(a))
 for i=0L,n_elements(a)-1 do begin
    x = where(a[i] eq b,count)
    if count gt 0 then ind[i] = x[0]

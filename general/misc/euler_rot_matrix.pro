@@ -6,7 +6,10 @@
 function  euler_rot_matrix,ev,rot_angle=rot_angle,set_angle=sa,parameters=par
 if arg_present(par) and size(/type,par) ne 8 then $
     par = {func:'euler_rot_matrix',eulpar:[1d,0,0,0]}
-if keyword_set(par) then ev=par.eulpar
+if keyword_set(par) then begin
+  par.eulpar = par.eulpar / sqrt(total(par.eulpar ^2))
+  ev=par.eulpar
+endif
 rot = dblarr(3,3)
 e=double(ev)
 if n_elements(ev) eq 3 then begin
@@ -43,7 +46,7 @@ rot[2,2] = e0^2-e1^2-e2^2+e3^2
 rot_angle = acos(e0^2-e1^2-e2^2-e3^2)*180/!dpi * sign(total(e*ev))         ; this can't be correct!!
 ;rot_angle2 = 2*asin(sqrt(e1^2+e2^2+e3^2)) * 180/!dpi * sign(total(e*ev))
 ;dprint,dlevel=4,rot_angle,rot_angle2,ev
-return,set_zeros(rot,3e-16)
+return,set_zeros(rot,5e-16)
 end
 
 
