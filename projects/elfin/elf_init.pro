@@ -45,7 +45,7 @@ pro elf_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
   endif
   
   if keyword_set(reset) then !elf.init=0
-  
+ 
   if !elf.init ne 0 then begin
     ;Assure that trailing slashes exist on data directories
 ; NOTE: the line below worked on windows but not on linux

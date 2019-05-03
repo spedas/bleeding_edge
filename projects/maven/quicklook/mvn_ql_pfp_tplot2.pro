@@ -61,16 +61,15 @@
 ;                 no tplot variables.
 ;
 ;CREATED BY:      Takuya Hara on 2015-04-09.
-;                 Temp version, with 2 in name, will load LPW data
-;                 from L0 file, jmm, jimm@ssl.berkeley.edu
+;
 ;LAST MODIFICATION:
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-02-17 11:57:18 -0800 (Fri, 17 Feb 2017) $
-; $LastChangedRevision: 22819 $
+; $LastChangedDate: 2019-05-02 12:00:20 -0700 (Thu, 02 May 2019) $
+; $LastChangedRevision: 27174 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot2.pro $
 ;
 ;-
-PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, $
+PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no_download=no_download, $
                        pad=pad, tplot=tplot, window=window, tname=ptname, phobos=phobos, $
                        bcrust=bcrust, burst_bar=bbar, bvec=bvec, sundir=sundir, tohban=tohban, tobhan=tobhan, $
                        swia=swi, swea=swe, static=sta, sep=sep, mag=mag, lpw=lpw, euv=euv, spaceweather=spw
@@ -132,11 +131,16 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, $
      IF SIZE(phobos, /type) EQ 0 THEN phobos = 1
      IF SIZE(sundir, /type) EQ 0 THEN sundir = 1
   ENDIF 
+
   ; SPICE
-  status = EXECUTE("mvn_spice_load, trange=trange, /download_only, verbose=verbose")
-  IF status EQ 0 THEN $
-     dprint, 'SPICE/kernels are unexpectedly unable to load.', dlevel=2, verbose=verbose
-  undefine, status
+  IF TOTAL(mvn_spice_valid_times(trange)) LT 2 THEN BEGIN
+     mvn_spice_load, trange=trange, /download_only, verbose=verbose, no_download=no_download
+     store_data, 'orb*num', /delete, verbose=verbose
+  ENDIF 
+  ;status = EXECUTE("mvn_spice_load, trange=trange, /download_only, verbose=verbose")
+  ;IF status EQ 0 THEN $
+  ;   dprint, 'SPICE/kernels are unexpectedly unable to load.', dlevel=2, verbose=verbose
+  ;undefine, status
 
   ; SWEA
   IF (eflg) THEN BEGIN
@@ -174,7 +178,7 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, $
      store_data, 'mvn_swe_etspec', data={x:xswe, y:yswe, v:vswe}, $
                  dlimits={spec: 1, ytitle: 'SWEA', ysubtitle: 'Energy [eV]', yticks: 0, $
                           yminor: 0, y_no_interp: 1, x_no_interp: 1, $
-                          ztitle: 'EFlux', datagap: 300}, limit={ytickformat: 'mvn_ql_pfp_tplot_ytickname_plus_log'}
+                          ztitle: 'EFLUX', datagap: 300}, limit={ytickformat: 'mvn_ql_pfp_tplot_ytickname_plus_log'}
      ylim, 'mvn_swe_etspec', emin, emax, 1, /def
      IF (noswe) THEN BEGIN
         zlim, 'mvn_swe_etspec', 1.d4, 1.d9, 1, /def
@@ -183,6 +187,7 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, $
      undefine, xswe, yswe, vswe
      undefine, emin, emax
      IF keyword_set(pad) THEN mvn_swe_pad_restore, trange 
+     mvn_swe_clear
   ENDIF 
 
   ; SWIA
@@ -215,7 +220,7 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, $
         IF (clip) THEN time_clip, tname, trange[0], trange[1], /replace
         undefine, d, d2, dl, lim
      ENDELSE 
-     options, tname, ztitle='EFlux', ytitle='SWIA', ysubtitle='Energy [eV]', ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log', $
+     options, tname, ztitle='EFLUX', ytitle='SWIA', ysubtitle='Energy [eV]', ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log', $
               bottom=7, top=254, no_color_scale=0
      undefine, tname, ntplot, clip
   ENDIF 
@@ -225,7 +230,7 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, $
      mvn_sta_l2_load, trange=trange, sta_apid=['c0', 'c6'] 
      mvn_sta_l2_tplot
      tname = tnames('mvn_sta*', ntplot, index=n)
-     statn0 = 'mvn_sta_c' + ['0_E', '0_H_E', '6_M']
+     statn0 = 'mvn_sta_c' + ['0_E', '0_H_E', '6_M_twt']
      statn = tnames(statn0, index=m)
      
      IF ntplot EQ 0 THEN BEGIN
@@ -256,10 +261,10 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, $
      ENDELSE 
      undefine, statn0, statn, tname, n, m
      tname = tnames('mvn_sta*', ntplot)
-     options, tname, ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log', ztitle='EFlux'
-     If(ntplot Gt 0) Then options, tname[0], ysubtitle='Energy [eV]' 
-     If(ntplot Gt 1) Then options, tname[1], ysubtitle='Energy [eV]!CM/q > 12' 
-     If(ntplot Gt 2) Then options, tname[2], ysubtitle='Mass [amu]'
+     options, tname, ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log', ztitle='EFLUX'
+     options, tname[0], ysubtitle='Energy [eV]' 
+     options, tname[1], ysubtitle='Energy [eV]!CM/q > 12' 
+     options, tname[2], ysubtitle='Mass [amu]'
 
      suffix = STRARR(ntplot)
      product = STRARR(ntplot)
@@ -279,7 +284,7 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, $
         undefine, d, dall, dl, lim
      ENDFOR
      undefine, tname, ntplot
-     
+
      tname = tnames('mvn_sta*') 
      apid = ['2a','c0','c2','c4','c6','c8', $
              'ca','cc','cd','ce','cf','d0', $
@@ -301,55 +306,42 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, $
   ; because the latest procedure to load SEP data creates
   ; a lot of new tplot variables.                              
   IF (pflg) THEN BEGIN
+     ptime1 = SYSTIME(/sec)
      status = EXECUTE("mvn_sep_load, trange=trange")
-     store_data, 'mvn_pfdpu*', /delete, verbose=verbose
-     store_data, 'mvn_SEP' + ['1F', '1R', '2F', '2R'] + '*', /delete, verbose=verbose
-     store_data, ['APIDS', 'mvn_DPU_TEMP', 'mvn_SEPS_TEMP', 'mvn_pfp_TEMPS', $
-                  'mvn_SEPS_hkp_VCMD_CNTR', 'mvn_SEPS_hkp_MEM_CHECKSUM',     $
-                  'mvn_SEPS_svy_ATT', 'mvn_SEPS_svy_COUNTS_TOTAL', 'mvn_SEPS_svy_ALLTID', $
-                  'mvn_SEPS_QL', 'mvn_SEP*_QUAL_FLAG'], /delete, verbose=verbose
+
+     pname = tnames('*', create_time=ptime2)
+     pname = pname[WHERE(ptime2 GT ptime1)]
+     w = WHERE(STRMATCH(pname, 'mvn_SEP*_eflux') EQ 0, nw, comp=v, ncomp=nv)
+     IF nw GT 0 THEN store_data, pname[w], /delete, verbose=verbose
+     IF nv GT 0 THEN BEGIN
+        FOR ip=0, nv-1 DO store_data, pname[v[ip]], newname=STRLOWCASE(pname[v[ip]])
+        pname = STRLOWCASE(pname[v])
+     ENDIF ELSE BEGIN
+        undefine, pname
+        append_array, pname, 'mvn_sep1' + ['f', 'r'] + '_ion_eflux'
+        append_array, pname, 'mvn_sep1' + ['f', 'r'] + '_elec_eflux'
+        append_array, pname, 'mvn_sep2' + ['f', 'r'] + '_ion_eflux'
+        append_array, pname, 'mvn_sep2' + ['f', 'r'] + '_elec_eflux'
+        FOR ip=0, N_ELEMENTS(pname)-1 DO $
+           store_data, pname[ip], data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [10., 6000]}, $
+                       dlim={spec: 1, ylog: 1, ystyle: 1, yrange: [10., 6000.]}
+     ENDELSE 
      
-     IF status EQ 0 THEN BEGIN
-        septn = 'mvn_sep' + ['1_B-O', '2_B-O', '1_A-F', '2_A-F'] + '_Eflux_Energy'
-        store_data, septn[2], data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [4.3399, 6813.39]}, $
-                    dlim={yrange: [4.3399, 6813.39], ystyle: 1, ylog: 1, zrange: [1., 1.e5], zstyle: 1, zlog: 1, $
-                          spec: 1, ztitle: 'Eflux'}     
-        store_data, septn[0], data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [4.25304, 6677.02]}, $
-                    dlim={yrange: [4.25304, 6677.02], ystyle: 1, ylog: 1, zrange: [1., 1.e5], zstyle: 1, zlog: 1, $
-                          spec: 1, ztitle: 'Eflux'}     
-        store_data, septn[3], data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [4.06606, 6383.48]}, $
-                    dlim={yrange: [4.06606, 6383.48], ystyle: 1, ylog: 1, zrange: [1., 1.e5], zstyle: 1, zlog: 1, $
-                          spec: 1, ztitle: 'Eflux'}     
-        store_data, septn[1], data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [4.13003, 6483.91]}, $
-                    dlim={yrange: [4.13003, 6483.91], ystyle: 1, ylog: 1, zrange: [1., 1.e5], zstyle: 1, zlog: 1, $
-                          spec: 1, ztitle: 'Eflux'}
-        options, septn, bottom=7, top=254
+     options, pname, ysubtitle='Energy [keV]', ztitle='EFLUX', ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log', /def
+     zlim, pname, 1.e0, 1.e5, 1
+     undefine, w, v, nw, nv
+
+     w = WHERE(STRMATCH(pname, '*ion*') EQ 1, nw, comp=v, ncomp=nv)
+     pcomp = (STRSPLIT(TRANSPOSE(pname), '_', /extract)).toarray()
+
+     IF nw GT 0 THEN FOR ip=0, nw-1 DO options, pname[w[ip]], ytitle='SEP ' + STRUPCASE(STRMID(pcomp[w[ip], 1], 3)) + '!CIon'
+     IF nv GT 0 THEN BEGIN
+        ylim, pname[v], 10., 300., 1
+        FOR ip=0, nv-1 DO options, pname[v[ip]], ytitle='SEP ' + STRUPCASE(STRMID(pcomp[v[ip], 1], 3)) + '!Ce!E-!N'
      ENDIF 
-     
-     options, 'mvn_sep1_B-O_Eflux_Energy', ytitle='SEP 1F!CIon', ysubtitle='Energy [keV]', /def
-     options, 'mvn_sep2_B-O_Eflux_Energy', ytitle='SEP 2F!CIon', ysubtitle='Energy [keV]', /def
-     options, 'mvn_sep1_A-F_Eflux_Energy', ytitle='SEP 1F!Ce!E-!N', ysubtitle='Energy [keV]', /def
-     options, 'mvn_sep2_A-F_Eflux_Energy', ytitle='SEP 2F!Ce!E-!N', ysubtitle='Energy [keV]', /def
-     ylim, 'mvn_sep*_A-F_Eflux_Energy', 20., 200., 1
-     zlim, 'mvn_sep*_Eflux_Energy', 1.e1, 1.e5, 1
-     tname = tnames('mvn_sep*', index=n)
-     septn = 'mvn_sep' + ['1_B-O', '2_B-O', '1_A-F', '2_A-F'] + '_Eflux_Energy'
-     septn = tnames(septn, index=m)
-     options, septn, panel_size=1., ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log', /def 
-     
-     state = 'idx = WHERE('
-     FOR i=0, N_ELEMENTS(m)-1 DO BEGIN
-        state += '(n eq m[' + string(i, '(I0)') + '])'
-        IF i NE N_ELEMENTS(m)-1 THEN state += ' OR '
-     ENDFOR 
-     undefine, i
-     state += ', nidx, complement=jdx, ncomplement=njdx)'
-     
-     status = EXECUTE(state)
-     IF status EQ 1 THEN IF njdx GT 0 THEN store_data, n[jdx], /delete, verbose=verbose
-     undefine, idx, jdx, nidx, njdx
-     undefine, state, status
-     undefine, septn, tname, n, m
+     undefine, w, v, nw, nv
+     options, pname, bottom=7, top=254, no_color_scale=0
+     undefine, pname, pcomp, ip
   ENDIF 
 
   ; LPW
@@ -358,61 +350,86 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, $
      lname = 'YYYY/MM/mvn_lpw_l2_lpiv_YYYYMMDD_*.cdf'
      lfile = mvn_pfp_file_retrieve(lpath + lname, trange=trange, /daily, /valid_only, /last)
      IF lfile[0] NE '' THEN BEGIN
+        lflg1 = 0
         mvn_lpw_cdf_cdf2tplot, file=lfile, varformat='data'
         get_data, 'mvn_lpw_lp_iv_l2', data=d, dl=dl, lim=lim
+        extract_tags, d1, TEMPORARY(d), tags=['x', 'y', 'v']
         extract_tags, nlim, lim, tags=['yrange', 'ylog', 'zlog', 'spec', 'no_interp', 'ystyle']
-        nz = where(d.y ne 0, nnz) ;here, guard against no non-zero data
-        If(nnz gt 0) Then Begin
-           mndy = abs(min(d.y[nz]))
-           gz = where(d.y Gt 0, ngz)
-           lz = where(d.y lt 0, nlz)
-           zz = where(d.y Eq 0, nzz)
-           If(ngz gt 0) Then d.y[gz] = alog10(d.y[gz])
-           If(nlz gt 0) Then d.y[lz] = alog10(abs(d.y[lz]))
-           If(nzz gt 0) Then d.y[zz] = alog10(mndy)
-        Endif
-        store_data, 'mvn_lpw_iv', data=d, dl=dl, lim=nlim
-        undefine, d, dl, lim, nlim
+        nz = WHERE(d1.y NE 0, nnz) ; here, guard against no non-zero data
+        IF (nnz GT 0) THEN BEGIN
+           mndy = ABS(MIN(d1.y[nz]))
+           gz = WHERE(d1.y GT 0, ngz)
+           lz = WHERE(d1.y LT 0, nlz)
+           zz = WHERE(d1.y EQ 0, nzz)
+           IF (ngz GT 0) THEN d1.y[gz] = ALOG10(d1.y[gz])
+           IF (nlz GT 0) THEN d1.y[lz] = ALOG10(ABS(d1.y[lz]))
+           IF (nzz GT 0) THEN d1.y[zz] = ALOG10(mndy)
+        ENDIF
+        store_data, 'mvn_lpw_iv', data=d1, dl=dl, lim=nlim
         options, 'mvn_lpw_iv', 'zrange', [-10, -4]
         options, 'mvn_lpw_iv', ytitle='LPW (IV)', ysubtitle='[V]', ztitle='Log(abs(IV))', $
-              xsubtitle='', zsubtitle=''
-     ENDIF ELSE BEGIN
+                 xsubtitle='', zsubtitle=''
+        get_data, 'mvn_lpw_iv', lim=nlim
+        store_data, 'mvn_lpw_lp_iv_l2', /delete, verbose=verbose
+        IF (trange[1]-MAX(d1.x)) GT 0.9 * oneday THEN lflg1 = 1
+     ENDIF ELSE lflg1 = 1
+     IF (lflg1) THEN BEGIN
         lpath = 'maven/data/sci/lpw/tplot/'
         lname = 'YYYY/mvn_lpw_iv_YYYYMMDD.tplot'
-        lfile = mvn_pfp_file_retrieve(lpath+lname, trange=trange, /daily)
-        If(lfile[0] Ne '') Then Begin
-           tplot_restore_error = 0 ;Add catch for tplot_restore errors
-           catch, tplot_restore_error
-           If(tplot_restore_error Ne 0) Then Begin
-              catch, /cancel
-              message, /info, 'TPLOT_RESTORE ERROR'
-              goto, try_l0
-           Endif
-           tplot_restore, filenames=lfile, /append
-           get_data, 'mvn_lpw_iv', data= d
-           If(~is_struct(d)) Then goto, try_l0 Else undefine, d
-        Endif Else Begin
-           try_l0:
-           date_str = time_string(mean(time_double(trange)), precision = -3)
-           mvn_lpw_load, date_str, tplot_var='all', packet='nohsbm', $
-                         /notatlasp, /noserver
-           get_data, 'mvn_lpw_swp1_IV_log', data=d, dl=dl, lim=lim
-           If(is_struct(d)) Then Begin
-              extract_tags, nlim, lim, tags=['yrange', 'ylog', 'zlog', 'spec', 'no_interp', 'ystyle']
-              del_data, 'mvn_lpw_*'
-              store_data, 'mvn_lpw_iv', data=d, dl=dl, lim=nlim
-              undefine, d, dl, lim, nlim
-              options, 'mvn_lpw_iv', 'zrange', [-10, -4]
-              options, 'mvn_lpw_iv', ytitle='LPW-L0 (IV)', ysubtitle='[V]', ztitle='Log(IV)', $
-                       xsubtitle='', zsubtitle=''
-           Endif Else Begin     ;no data -- blank plot
-              store_data, 'mvn_lpw_iv', data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [1., 2.d6]}, $
-                          dlim={yrange: [1, 2.d6], ystyle: 1, ylog: 1, zrange: [1.e-14, 1.e-5], zstyle: 1, zlog: 1, spec: 1}  
-              options, 'mvn_lpw_iv', bottom=7, top=254
-           Endelse
-        Endelse
-     ENDELSE 
-     undefine, lpath, lname, lfile
+        lfile = mvn_pfp_file_retrieve(lpath + lname, trange=trange, /daily, /valid_only)
+        IF (lfile[0] NE '') THEN BEGIN
+           FOR i=0, N_ELEMENTS(lfile)-1 DO BEGIN
+              tplot_restore, filenames=lfile[i]
+              get_data, 'mvn_lpw_iv', data=dd
+              IF SIZE(dd.y, /n_dimen) EQ 2 THEN BEGIN
+                 IF SIZE(d2, /type) EQ 0 THEN d2 = {x: dd.x, y: dd.y, v: dd.v} $
+                 ELSE d2 = {x: [d2.x, dd.x], y: [d2.y, dd.y], v: [d2.v, dd.v]}
+                 w = WHERE(d2.x GE trange[0] AND d2.x LE trange[1], nw)
+                 IF nw GT 0 THEN d2 = {x: d2.x[w], y: d2.y[w, *], v: d2.v[w, *]}
+              ENDIF
+              IF SIZE(d2, /type) EQ 8 THEN store_data, 'mvn_lpw_iv', data=d2
+              undefine, dd, w, nw
+           ENDFOR
+           IF (~IS_STRUCT(d2)) THEN lflg2 = 1 $
+           ELSE BEGIN
+              IF SIZE(d1, /type) NE 0 THEN BEGIN
+                 w = WHERE(d2.x GT MAX(d1.x), nw)
+                 IF nw GT 0 THEN d2 = {x: d2.x[w], y: d2.y[w, *], v: d2.v[w, *]}
+                 store_data, 'mvn_lpw_iv', data={x: [d1.x, d2.x], y: [d1.y, d2.y], v: [d1.v, d2.v]}, dlim=dl, lim=nlim
+                 undefine, w, nw
+              ENDIF 
+           ENDELSE  
+        ENDIF  
+     ENDIF 
+     get_data, 'mvn_lpw_iv', index=ilpw
+     IF (ilpw EQ 0) THEN $
+        store_data, 'mvn_lpw_iv', data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [-45, 45]}, $
+                    dlim={yrange: [-43.3274, 43.2675], ystyle: 1, zrange: [-10, -4], zstyle: 1, spec: 1}
+
+     ylim, 'mvn_lpw_iv', -43.3274, 43.2675
+     options, 'mvn_lpw_iv', bottom=7, top=254, no_color_scale=0, datagap=60.d0, spec=1
+     options, 'mvn_lpw_iv', ytitle='LPW (IV)', ysubtitle='[V]', ztitle='Log(abs(IV))'
+
+  ;   lpath = 'maven/data/sci/lpw/l2/'
+  ;   lname = 'YYYY/MM/mvn_lpw_l2_wspecpas_YYYYMMDD_*.cdf'
+  ;   lfile = mvn_pfp_file_retrieve(lpath + lname, trange=trange, /daily, /valid_only, /last)
+
+  ;   IF lfile[0] NE '' THEN BEGIN
+  ;      mvn_lpw_cdf_cdf2tplot, file=lfile, varformat='data'
+  ;      get_data, 'mvn_lpw_w_spec_pas_l2', data=d, dl=dl, lim=lim
+  ;      extract_tags, nlim, lim, tags=['yrange', 'ylog', 'zlog', 'spec', 'no_interp', 'ystyle']
+  ;      store_data, 'mvn_lpw_w_spec_pas_l2', data=d, dl=dl, lim=nlim
+  ;      zlim, 'mvn_lpw_w_spec_pas_l2', 1.e-15, 1.e-8, /def
+  ;      options, 'mvn_lpw_w_spec_pas_l2', ylog=1
+  ;      undefine, d, dl, lim, nlim
+  ;   ENDIF ELSE BEGIN
+  ;      store_data, 'mvn_lpw_w_spec_pas_l2', data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [1., 2.d6]}, $
+  ;                  dlim={yrange: [1, 2.d6], ystyle: 1, ylog: 1, zrange: [1.e-14, 1.e-5], zstyle: 1, zlog: 1, spec: 1}  
+  ;      options, 'mvn_lpw_w_spec_pas_l2', bottom=7, top=254
+  ;   ENDELSE 
+  ;   options, 'mvn_lpw_w_spec_pas_l2', ytitle='LPW (pas)', ysubtitle='f [Hz]', ztitle='Pwr', $
+  ;            xsubtitle='', zsubtitle=''
+  ;   undefine, lpath, lname, lfile
   ENDIF 
 
   ; EUV
@@ -455,12 +472,12 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, $
         status = EXECUTE("spice_vector_rotate_tplot, 'mvn_B_1sec', 'MAVEN_MSO', verbose=verbose, check_object=check_obj")
         IF status EQ 1 THEN BEGIN 
            store_data, 'mvn_B_1sec', /delete, verbose=verbose
-           bvec = 'mvn_mag_' + STRLOWCASE(lvl) + '_bmso_1sec'
+           bvec = 'mvn_mag_bmso_1sec'
            store_data, 'mvn_B_1sec_MAVEN_MSO', newname=bvec
            frame = 'MSO'
            options, bvec, ysubtitle='Bmso [nT]', /def
         ENDIF ELSE BEGIN
-           bvec = 'mvn_mag_' + STRLOWCASE(lvl) + '_bpl_1sec'
+           bvec = 'mvn_mag_bpl_1sec'
            store_data, 'mvn_B_1sec', newname=bvec
            frame = 'PL'
            options, bvec, ysubtitle='Bpl [nT]', /def
@@ -473,53 +490,27 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, $
         btot = [nan, nan]
      ENDELSE 
      undefine, tname, ntplot
-     options, bvec, labels=['Bx', 'By', 'Bz'], colors='bgr', $
-              labflag=1, constant=0, ytitle='MAG ' + lvl, /def
-     get_data, bvec, data=b;, dl=bl
+     options, bvec, labels=['Bx', 'By', 'Bz'], colors='bgr', labflag=1, constant=0, /def
+     IF lvl NE '' THEN options, bvec, ytitle='MAG ' + lvl ELSE options, bvec, ytitle='MAG'
+     get_data, bvec, data=b ;, dl=bl
      bmax = MAX(btot, /nan)
      IF bmax GT 100. THEN blog = 1 ELSE blog = 0 ; It means B field Log scale or not.     
 
      copy_data, bvec, bvec + '_symlog'
      options, bvec + '_symlog', tplot_routine='mplot_symlog'
 
-;     bp = b.y ; positive sign
-;     bm = b.y ; negative sign
-;     lbp = ['Bx', 'By', 'Bz']
-;     lbm = lbp
-;     FOR il=0, 2 DO IF b.y[N_ELEMENTS(b.x)-1, il] GT 0. THEN lbm[il] = '' ELSE lbp[il] = '' 
-;     undefine, il
-
-;     idx = WHERE(bp LT 0., nidx)
-;     IF nidx GT 0 THEN bp[idx] = nan
-;     idx = WHERE(bm GT 0., nidx)
-;     IF nidx GT 0 THEN bm[idx] = nan
-;     store_data, bvec + '_plus', data={x: b.x, y: bp}, dl=bl
-;     store_data, bvec + '_minus', data={x: b.x, y: ABS(bm)}, dl=bl
-
-;     options, bvec + '_plus', panel_size=0.5, labels=lbp, $
-;              ytitle='MAG ' + lvl, ysubtitle='+B' + STRLOWCASE(frame) + ' [nT]', /def
-;     options, bvec + '_minus', panel_size=0.5, labels=lbm, $
-;              ytitle='MAG ' + lvl, ysubtitle='-B' + STRLOWCASE(frame) + ' [nT]', /def
-;     options, bvec +  ['_plus', '_minus'], labflag=1
-
-     store_data, 'mvn_mag_' + STRLOWCASE(lvl) + '_bamp_1sec', $
-                 data={x: b.x, y: btot}, $
-                 dlimits={ytitle: 'MAG ' + lvl, ysubtitle: '|B| [nT]'}
+     store_data, 'mvn_mag_bamp_1sec', data={x: b.x, y: btot}, dlimits={ysubtitle: '|B| [nT]'}
+     IF lvl NE '' THEN options, 'mvn_mag_bamp_1sec', ytitle='MAG ' + lvl ELSE options, 'mvn_mag_bamp_1sec', ytitle='MAG'
      
      mvn_model_bcrust_load, trange, verbose=verbose, calc=bflg
-     store_data, 'mvn_mag_bamp', data=['mvn_mag_' + STRLOWCASE(lvl) + '_bamp_1sec', 'mvn_mod_bcrust_amp'], $
-                 dlimits={labels: ['Bobs.', 'Bmod.'], colors: [0, 2], labflag: 1, ytitle: 'MAG ' + lvl, ysubtitle: '|B| [nT]'} 
+     store_data, 'mvn_mag_bamp', data=['mvn_mag_bamp_1sec', 'mvn_mod_bcrust_amp'], $
+                 dlimits={labels: ['Data', 'Model'], colors: [0, 2], labflag: -1, ysubtitle: '|B| [nT]'} 
+     IF lvl NE '' THEN options, 'mvn_mag_bamp', ytitle='MAG ' + lvl ELSE options, 'mvn_mag_bamp', ytitle='MAG'
 
      IF (blog) THEN BEGIN
         ylim, 'mvn_mag_bamp', 0.5, bmax*1.1, 1
         options, 'mvn_mag_bamp', ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log'
      ENDIF
-
-;     ylim, bvec + '_plus', 0.5, bmax*1.1, 1
-;     ylim, bvec + '_minus', bmax*1.1, 0.5, 1
-;     options, bvec + '_plus', ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log'
-;     options, bvec + '_minus', ytickformat='mvn_ql_pfp_tplot_ytickname_minus_log'
-
      undefine, bmax, blog, status
      
      bphi = ATAN(b.y[*, 1], b.y[*, 0])
@@ -530,11 +521,11 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, $
 
      aopt = {yaxis: 1, ystyle: 1, yrange: [-90., 90.], ytitle: 'Bthe [deg]', color: 2, yticks: 4, yminor: 3}
      IF tag_exist(topt, 'charsize') THEN str_element, aopt, 'charsize', topt.charsize, /add
-     store_data, 'mvn_mag_' + STRLOWCASE(lvl) + '_bang_1sec', data={x: b.x, y: [ [2.*bthe*!RADEG + 180.], [bphi*!RADEG]]}, $
-                 dlimits={psym: 3, colors: [2, 0], ytitle: 'MAG ' + lvl + '!CAngle (' + frame + ')', ysubtitle: 'Bphi [deg]', $
+     store_data, 'mvn_mag_bang_1sec', data={x: b.x, y: [ [2.*bthe*!RADEG + 180.], [bphi*!RADEG]]}, $
+                 dlimits={psym: 3, colors: [2, 0], ytitle: 'MAG ' + '(' + frame + ')', ysubtitle: 'Bphi [deg]', $
                           yticks: 4, yminor: 3, constant: 180, axis: aopt}
-     ylim, 'mvn_mag_' + STRLOWCASE(lvl) + '_bang_1sec', 0., 360., 0., /def
-     options, 'mvn_mag_' + STRLOWCASE(lvl) + '_bang_1sec', ystyle=9
+     ylim, 'mvn_mag_bang_1sec', 0., 360., 0., /def
+     options, 'mvn_mag_bang_1sec', ystyle=9
      undefine, bphi, bthe, b
   ENDIF 
 
@@ -611,12 +602,12 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, $
   IF keyword_set(tplot) THEN BEGIN
      IF SIZE(ptname, /type) EQ 0 THEN BEGIN
         IF KEYWORD_SET(spw) THEN $
-           ptname = ['mvn_euv_irrad_ch_b', 'mvn_sep1_B-O_Eflux_Energy', 'mvn_sep1_A-F_Eflux_Energy', $
+           ptname = ['mvn_euv_irrad_ch_b', 'mvn_sep1f_ion_eflux', 'mvn_sep1f_elec_eflux', $
                      'mvn_swis_en_eflux', 'mvn_swe_etspec', 'stat'] $
         ELSE $
-           ptname = ['mvn_sep1_B-O_Eflux_Energy', 'mvn_sep2_B-O_Eflux_Energy', $
+           ptname = ['mvn_sep1f_ion_eflux', 'mvn_sep1r_ion_eflux', 'mvn_sep1f_elec_eflux', $
                      'mvn_sta_c0_e', 'mvn_sta_c6_m', 'mvn_swis_en_eflux', $
-                     'mvn_swe_etspec', 'mvn_mag_bamp', bvec, 'alt2']
+                     'mvn_swe_etspec', 'mvn_lpw_iv', 'mvn_mag_bamp', 'mvn_mag_bang_1sec', 'alt2']
 
         IF keyword_set(bbar) THEN ptname = [ptname, 'burst_flag'] 
         IF keyword_set(tohban) THEN ptname = ['mvn_sundir_payload', 'Phobos-MAVEN', ptname]

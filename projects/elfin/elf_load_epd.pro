@@ -16,6 +16,9 @@
 ;         data_rate:    instrument data rates include ['srvy', 'fast']. The default is 'srvy'.
 ;         level:        indicates level of data processing. levels include 'l1' and 'l2'
 ;                       The default if no level is specified is 'l1' 
+;         unit:         Valid units include 'raw', 'flux', and 'eflux' where raw=ADC, 
+;                       flux=mev/cm^2-s-sr-mev and eflux
+;         type:         'raw' or 'calibrated'
 ;         local_data_dir: local directory to store the CDF files; should be set if
 ;                       you're on *nix or OSX, the default currently assumes Windows (c:\data\elfin\)
 ;         source:       specifies a different system variable. By default the elf mission system
@@ -67,8 +70,8 @@
 ;-
 pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
   level = level, data_rate = data_rate, no_spec = no_spec, $
-  local_data_dir = local_data_dir, source = source, $
-  get_support_data = get_support_data, no_cal=no_cal, $
+  local_data_dir = local_data_dir, source = source, units=units, $
+  get_support_data = get_support_data, no_cal=no_cal, type=type, $
   tplotnames = tplotnames, no_color_setup = no_color_setup, $
   time_clip = time_clip, no_update = no_update, suffix = suffix, $
   varformat = varformat, cdf_filenames = cdf_filenames, $
@@ -115,7 +118,11 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
     else datatype = strlowcase(datatype)
   if undefined(suffix) then suffix = ''
   if undefined(data_rate) then data_rate = ''
-
+  if undefined(type) then type='calibrated'
+  if undefined(unit) then begin
+     if type EQ 'raw' then unit='[counts]' else unit='[mev/cm^2-s-st-mev]'
+     
+  endif
   elf_load_data, trange = trange, probes = probes, level = level, instrument = 'epd', $
     data_rate = data_rate, local_data_dir = local_data_dir, source = source, $
     datatype = datatype, get_support_data = get_support_data, $
@@ -131,15 +138,22 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
     return
   endif
   
-  ; fix metadata 
+  ; Post processing - calibration and fix meta data 
   for i=0,n_elements(tplotnames)-1 do begin
+
+    ; calibrate data
+    if type EQ 'calibrated' then elf_cal_epd, probe=probes, trange=trange, tplotname=tplotnames[i]
     get_data, tplotnames[i], data=d, dlimits=dl, limits=l
-    ;ebins = elf_convert_epd_mv2eng()
-    store_data, tplotnames[i], data={x:d.x, y:d.y, v:findgen(16) } 
-;    options, /def, tplotnames[i], 'spec', 1
+    dl.ysubtitle=unit
+    if type EQ 'raw' then v=findgen(16) else v=d.v
+    store_data, tplotnames[i], data={x:d.x, y:d.y, v:v}, dlimits=dl, limits=l 
+    options, tplotnames[i], ylog=1
+    options, tplotnames[i], spec=0
+;    options, /def, tplotnames[i], 'spec', 0
 ;    options, /def, tplotnames[i], 'zlog', 1
 ;    options, /def, tplotnames[i], 'no_interp', 1
 ;    options, /def, tplotnames[i], 'ystyle', 1
+
   endfor
     
   ; add energy numbers

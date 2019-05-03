@@ -24,14 +24,13 @@
 ;          program.
 ; directory = If a png is created, this is the output directory, the
 ;             default is the current working directory.
-; multipngplot = if set, then make multiple plots of 2 and 6 hour
-;               duration, in addition to the regular png plot
+; multipngplot = if set, then make multiple plots for each orbit
 ;HISTORY:
 ; Hacked from thm_over_shell, 2013-05-12, jmm, jimm@ssl.berkeley.edu
 ; CHanged to use thara's mvn_pl_pfp_tplot.pro, 2015-04-14, jmm
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2016-05-23 14:35:24 -0700 (Mon, 23 May 2016) $
-; $LastChangedRevision: 21178 $
+; $LastChangedDate: 2019-05-02 12:08:01 -0700 (Thu, 02 May 2019) $
+; $LastChangedRevision: 27176 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_pfpl2_overplot.pro $
 ;-
 Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
@@ -39,11 +38,13 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
                         makepng=makepng, device = device, $
                         directory = directory, $
                         multipngplot = multipngplot, $
+                        no_bcrust = no_bcrust, $
                         _extra=_extra
 
   mvn_qlook_init, device = device
 
 ;First load the data
+  del_data, '*'
 ;Orbit number
   orbdata = mvn_orbit_num()
   norbits = n_elements(orbdata.num)
@@ -70,17 +71,100 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
      Return
   Endelse
 
-  mvn_ql_pfp_tplot2, tr0, bcrust=1, /tplot, bvec = bvec
-
+;  mvn_ql_pfp_tplot2, tr0, bcrust=1, /tplot, bvec = bvec
+; Load SEP from a different program, 2019-02-20
+  If(keyword_set(no_bcrust)) Then Begin
+     mvn_ql_pfp_tplot2, tr0, bcrust=0, sep = 0, /tplot, bvec = bvec
+  Endif Else Begin
+     mvn_ql_pfp_tplot2, tr0, bcrust=1, sep = 0, /tplot, bvec = bvec
+  Endelse
+;reset colors for B field
+  get_data, 'mvn_mag_bang_1sec', dlimits = dl
+  If(is_struct(dl)) Then Begin
+     str_element, dl, 'colors', [6, 0], /add_replace         ;red, black
+     If(tag_exist(dl, 'axis') && tag_exist(dl.axis, 'color')) Then dl.axis.color = 6
+     store_data, 'mvn_mag_bang_1sec', dlimits = dl
+  Endif
 ;Re-init here
   mvn_qlook_init, device = device
-
 ;Get a burst_data_bar
-  mvn_bb = mvn_qlook_burst_bar(tr0[0], (tr0[1]-tr0[0])/86400.0d0, /outline, /from_l2)
-  varlist = ['mvn_sep1_B-O_Eflux_Energy', 'mvn_sep2_B-O_Eflux_Energy', $
-             'mvn_sta_c0_e', 'mvn_sta_c6_m', 'mvn_swis_en_eflux', $
-             'mvn_swe_etspec', 'mvn_lpw_iv', 'mvn_mag_bamp', bvec, 'alt2', $
-             mvn_bb]
+  mvn_bb = mvn_qlook_burst_bar(tr0[0], (tr0[1]-tr0[0])/86400.0d0, $
+                               /outline, /from_l2)
+  options, mvn_bb, 'panel_size', 0.05 ;smaller panel
+  options, mvn_bb, 'ytitle', 'ATT!CBST'
+;Get an attitude bar
+  mvn_attitude_bar
+  options, 'mvn_att_bar', 'xstyle', 0
+  options, 'mvn_att_bar', 'ystyle', 0
+  options, 'mvn_att_bar', 'labels', ['ATT',''], /default
+  
+;Use mvn_sep_average.pro to get ion and electron fluxes
+  mvn_sep_average, trange = tr0, /load
+  options, 'MVN_SEP_mean_ion_eflux', 'ytitle', 'SEP Ions, !C keV'
+  options, 'MVN_SEP_mean_electron_eflux', 'ytitle', 'SEP Electrons, !C keV'
+  options, 'MVN_SEP_mean_ion_eflux', 'ztitle', 'EFLUX'
+  options, 'MVN_SEP_mean_electron_eflux', 'ztitle', 'EFLUX'
+  options, 'MVN_SEP?attenuator_state', 'psym', 1
+  options, 'MVN_SEP1attenuator_state', 'labels', 'ATN1-red=in'
+  options, 'MVN_SEP2attenuator_state', 'labels', 'ATN2-red=in'
+
+;swap out 0 values in attenuators
+  get_data, 'MVN_SEP1attenuator_state', data = d1
+  If(is_struct(d1)) Then Begin
+     Ok = where(d1.x Gt 0 And d1.y Gt 0, nok)
+     d1y_dummy = float(d1.y) & d1y_dummy[*] = 1.0 ;to not split attenuator states
+     If(nok gt 0) Then store_data, 'MVN_SEP1attenuator_state', $
+                                   data = {x:d1.x[ok], y:d1y_dummy[ok]}
+     Ok2 = where(d1.x Gt 0 And d1.y Eq 2, nok2);use this to overplot
+     oplot_att_in1 = 0b
+     If(nok2 gt 0) Then Begin
+        oplot_att_in1 = 1b
+        store_data, 'SEP1_ATT_IN', $
+                    data = {x:d1.x[ok2], y:d1y_dummy[ok2]}
+        options, 'SEP1_ATT_IN', 'psym', 1
+        options, 'SEP1_ATT_IN', 'color', 6
+        options, 'SEP1_ATT_IN', 'yrange', [0.9,1.1]
+        store_data, 'SEP_V1', data =['MVN_SEP1attenuator_state', $
+                                     'SEP1_ATT_IN']
+     Endif Else copy_data, 'MVN_SEP1attenuator_state', 'SEP_V1'
+  Endif
+  get_data, 'MVN_SEP2attenuator_state', data = d2
+  If(is_struct(d2)) Then Begin
+     Ok = where(d2.x Gt 0 And d2.y Gt 0, nok)
+     d2y_dummy = float(d2.y) & d2y_dummy[*] = 1.0 ;to not split attenuator states
+     If(nok gt 0) Then store_data, 'MVN_SEP2attenuator_state', $
+                                   data = {x:d2.x[ok], y:d2y_dummy[ok]}
+     Ok2 = where(d2.x Gt 0 And d2.y Eq 2, nok2) ;use this to overplot
+     oplot_att_in2 = 0b
+     If(nok2 gt 0) Then Begin
+        oplot_att_in2 = 1b
+        store_data, 'SEP2_ATT_IN', $
+                    data = {x:d2.x[ok2], y:d2y_dummy[ok2]}
+        options, 'SEP2_ATT_IN', 'psym', 1
+        options, 'SEP2_ATT_IN', 'color', 6
+        options, 'SEP2_ATT_IN', 'yrange', [0.9,1.1]
+        store_data, 'SEP_V2', data =['MVN_SEP2attenuator_state', $
+                                     'SEP2_ATT_IN']
+     Endif Else copy_data, 'MVN_SEP2attenuator_state', 'SEP_V2'
+  Endif
+  options, 'SEP_V?', 'yrange', [0.9,1.1]
+  options, 'SEP_V?', 'ystyle', 4
+  options, 'SEP_V?', 'panel_size', 0.15
+
+;try log plot for altitude,
+  ylim, 'alt2', 60.0, 10000.0, 1
+;Change ztitle for mvn_sta_c6_m_twt
+  options, 'mvn_sta_c6_m_twt', 'ztitle', 'EFLUX/TOFBIN'
+  options, 'mvn_sta_c6_m_twt', 'zrange', [1.0e3, 1.0e8]
+  attitude_label = 'Attitude: orange = Sun point; blue = Earth point; green = Fly-Y; red = Fly-Z. '
+  options, 'mvn_att_bar', 'title', attitude_label
+  options, 'mvn_att_bar', 'charsize', 0.5
+;Set up varlist
+  varlist = ['MVN_SEP_mean_ion_eflux', 'MVN_SEP_mean_electron_eflux', $
+             'SEP_V1', 'SEP_V2', $
+             'mvn_sta_c0_e', 'mvn_sta_c6_m_twt', 'mvn_swis_en_eflux', $
+             'mvn_swe_etspec', 'mvn_lpw_iv', 'mvn_mag_bamp', $ 
+             'mvn_mag_bang_1sec', 'alt2', 'mvn_att_bar', mvn_bb]
 
   varlist = mvn_qlook_vcheck(varlist, tr = tr, /blankp)
   If(varlist[0] Eq '')  Then Begin
@@ -103,6 +187,7 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
 ;plot the data
   tplot, varlist, title = 'MAVEN PFP L2 '+d0+'-'+d1, var_label = 'mvn_orbnum'
   tlimit, tr0x[0], tr0x[1]
+;add the attitude label
 
   If(keyword_set(multipngplot) && keyword_set(date)) Then makepng = 1b
   If(keyword_set(makepng)) Then Begin
