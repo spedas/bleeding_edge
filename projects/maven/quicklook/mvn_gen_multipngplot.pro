@@ -26,8 +26,8 @@
 ; 2015-05-13
 ; Added date to filenames, 14-jul-2015, jmm
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2015-07-14 11:11:42 -0700 (Tue, 14 Jul 2015) $
-; $LastChangedRevision: 18122 $
+; $LastChangedDate: 2019-05-03 12:00:40 -0700 (Fri, 03 May 2019) $
+; $LastChangedRevision: 27186 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_gen_multipngplot.pro $
 ;-
 Pro mvn_gen_multipngplot, filename_in, directory = directory, $
@@ -59,7 +59,7 @@ Pro mvn_gen_multipngplot, filename_in, directory = directory, $
   makepng,dir+filename_proto+'_'+ymd, /no_expose, _extra = _extra
 
 ;Orbit plots, filename_proto+'_'+orbit_number+'_'+yymmddhhmmss
-
+;Orbit < 1000 km plots, filename_proto+'_peri_'+orbit_number+'_'+yymmddhhmmss
 ; Get all orbits for this day
   get_data, 'mvn_orbnum1', data = dorb
   If(~is_struct(dorb)) Then Begin
@@ -96,6 +96,33 @@ Pro mvn_gen_multipngplot, filename_in, directory = directory, $
         trjstr1 = time_string(trj[1], format=6)
         fileid = filename_proto+'_'+ymd+'_'+orbno
         makepng, dir+fileid, /no_expose, _extra = _extra
+;Peri plot, only for time range where alt value is less than 1000.0
+;km, inside the current trj
+        get_data, 'alt', data = aj
+        If(~is_struct(aj)) Then Begin
+           dprint, 'Missing altitude data'
+           print, time_string(trj)
+        Endif Else Begin
+           xj = where(aj.x Ge trj[0] And aj.x Le trj[1] $
+                      and aj.y Le 1000.0, nxj)
+           If(nxj Eq 0) Then Begin
+              dprint, 'No altitude data < 1000 km'
+              print, time_string(trj)
+           Endif Else Begin
+;Note that yrange will need to be reset for alt2
+              get_data, 'alt2', limits = ll
+              If(is_struct(ll) && tag_exist(ll, 'yrange')) Then alt_yr = ll.yrange $
+              Else alt_yr = [60.0, 10000.0]
+              options, 'alt2', 'yrange', [60.0, 1000.0]
+;Plot
+              tplot, trange = minmax(aj.x[xj]), title = 'MAVEN PFP L2 Periapsis: Orbit '+$
+                     orbno0+'-'+orbno1, var_label = 'mvn_orbnum'
+;Reset yrange for alt2 variable
+              options, 'alt2', 'yrange', alt_yr
+              fileid = filename_proto+'_peri_'+ymd+'_'+orbno
+              makepng, dir+fileid, /no_expose, _extra = _extra
+           Endelse
+        Endelse
         If(~keyword_set(no_fdb)) Then Begin
 ;use commas for delimiters, since jsp object ignores new lines when
 ;reading the file, then put a comma at the end of each line except for

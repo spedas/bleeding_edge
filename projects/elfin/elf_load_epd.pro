@@ -118,11 +118,11 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
     else datatype = strlowcase(datatype)
   if undefined(suffix) then suffix = ''
   if undefined(data_rate) then data_rate = ''
-  if undefined(type) then type='calibrated'
+  if undefined(type) then type='raw'  ;'calibrated'
   if undefined(unit) then begin
-     if type EQ 'raw' then unit='[counts]' else unit='[mev/cm^2-s-st-mev]'
-     
+     if type EQ 'raw' then unit='[counts]' else unit='[flux]';'[MeV/cm^2-s-st-MeV]'   
   endif
+  
   elf_load_data, trange = trange, probes = probes, level = level, instrument = 'epd', $
     data_rate = data_rate, local_data_dir = local_data_dir, source = source, $
     datatype = datatype, get_support_data = get_support_data, $
@@ -142,10 +142,12 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
   for i=0,n_elements(tplotnames)-1 do begin
 
     ; calibrate data
-    if type EQ 'calibrated' then elf_cal_epd, probe=probes, trange=trange, tplotname=tplotnames[i]
+    if type EQ 'calibrated' or type EQ 'cal' then elf_cal_epd, probe=probes, trange=trange, tplotname=tplotnames[i]
     get_data, tplotnames[i], data=d, dlimits=dl, limits=l
     dl.ysubtitle=unit
-    if type EQ 'raw' then v=findgen(16) else v=d.v
+
+    if n_tags(d) LT 3 then v=findgen(16) else v=d.v
+   
     store_data, tplotnames[i], data={x:d.x, y:d.y, v:v}, dlimits=dl, limits=l 
     options, tplotnames[i], ylog=1
     options, tplotnames[i], spec=0

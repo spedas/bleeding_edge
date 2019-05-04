@@ -127,7 +127,16 @@ function displayImage()
 				    orbno = loadFdbFile0(year, month, day);
 				    document.getElementById("orbno").value = orbno;
 				}
-			    fileName = "mvn_pfp_l2_" + year + month + day + '_' + orbno + ".png" ;
+			    if (hour=="1orb")
+			        {
+			          //full orbit plot
+			          fileName = "mvn_pfp_l2_" + year + month + day + '_' + orbno + ".png" ;
+			        }
+			    else
+			        {
+			          //periapsis orbit plot
+			          fileName = "mvn_pfp_l2_peri_" + year + month + day + '_' + orbno + ".png" ;
+			        }
 			}
 		}
 	    else
@@ -210,7 +219,7 @@ function changeImgSrc(delType)
     var adjmonth = document.getElementById("set_month").value - 1 ;
     var intro_day = document.getElementById("set_day").value ;
     var dateTime = new Date(intro_year, adjmonth, intro_day) ;
-    // Currently only two types of plot, 24 hour and 1orb, 
+    // Currently only three types of plot, 24 hour, 1orb and periapsis, orbp 
     if (hour == "0024")
 	{
 	    var lowHour = parseInt(hour.substring(0,2),10);  //warning, the parseInt function can be finicky if the required base is not provided
@@ -238,7 +247,7 @@ function changeImgSrc(delType)
 	    string_month = num2str(dateTime.getMonth() + 1,2);
 	    string_day = num2str(dateTime.getDate(),2);
 	}
-    else //hour is "1orb"
+    else //hour is "1orb" or "orbp"
 	{
   //Read from the .fdb files
 	    var orbno = document.getElementById("orbno").value;
@@ -397,11 +406,11 @@ function updateMenus(selectedcitygroup){
   //note,  the text of these options is used to make sure that selection is maintained when probe/plottype is changed, if possible.
   //If two similar meaning options are phrased slightly differently, this selection will not be maintained.(For example, one may say "hr", the other, "hour"
     var hour=new Array();
-    hour[0]=["Full-day|0024", "Single-Orbit|1orb"];
-    hour[1]=["Full-day|0024", "Single-Orbit|1orb"];
-    hour[2]=["Full-day|0024", "Single-Orbit|1orb"];
-    hour[3]=["Full-day|0024", "Single-Orbit|1orb"];
-    hour[4]=["Full-day|0024", "Single-Orbit|1orb"];
+    hour[0]=["Full-day|0024", "Single-Orbit|1orb","Orbit-Peri|orbp"];
+    hour[1]=["Full-day|0024", "Single-Orbit|1orb","Orbit-Peri|orbp"];
+    hour[2]=["Full-day|0024", "Single-Orbit|1orb","Orbit-Peri|orbp"];
+    hour[3]=["Full-day|0024", "Single-Orbit|1orb","Orbit-Peri|orbp"];
+    hour[4]=["Full-day|0024", "Single-Orbit|1orb","Orbit-Peri|orbp"];
 
     subtypelist.options.length=0;
     subtypelist_bottom.options.length=0;
@@ -510,7 +519,7 @@ function syncBottomToTop() {
     document.getElementById("sumplotType_bottom").value=document.getElementById("sumplotType").value;
     document.getElementById("subtype_bottom").value=document.getElementById("subtype").value; 
     var hour1 = document.getElementById("hour").value;
-    if(hour1=="1orb")
+    if(hour1=="1orb" || hour1=="orbp")
         {
             document.getElementById("orbno").value = "00FIRST";
         }
@@ -526,7 +535,7 @@ function syncTopToBottom() {
     document.getElementById("sumplotType").value=document.getElementById("sumplotType_bottom").value;
     document.getElementById("subtype").value=document.getElementById("subtype_bottom").value;
     var hour1 = document.getElementById("hour").value;
-    if(hour1=="1orb")
+    if(hour1=="1orb" || hour1=="orbp")
         {
             document.getElementById("orbno").value = "00FIRST";
         }
