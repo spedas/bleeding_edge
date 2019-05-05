@@ -212,7 +212,9 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
 
       if size(/type, d_auto_match) EQ 8 then begin
 
-        union_auto = array_union(d_auto_match.x, d_cross_match.x)
+        ;union_auto = array_union(d_auto_match.x, d_cross_match.x)
+        union_auto = cmset_op(ch0_src_dat.x[inds], 'AND', d_auto_match.x, /index)
+
         ind_auto = where(union_auto GT 0, count_auto)
         ind_cross = union_auto[where(union_auto GT 0, count_cross)]
 
@@ -275,9 +277,21 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
 
           if size(/type, d_auto_match) EQ 8 then begin
 
-            union_auto = array_union(d_auto_match.x, ch0_src_dat.x[inds])
+            ;t0 = systime(/seconds)
+
+            ;union_auto = array_union(d_auto_match.x, ch0_src_dat.x[inds])
+            union_auto = cmset_op(ch0_src_dat.x[inds], 'AND', d_auto_match.x, /index)
+
+            ;print, 'array_union', systime(/seconds) - t0
+
             ind_auto = where(union_auto GT 0, count_auto)
             ind_cross = union_auto[where(union_auto GT 0, count_cross)]
+
+            t1 = systime(/seconds)
+
+            ;print, 'cmset_op', systime(/seconds) - t1
+
+            ;stop
 
             if count_cross GT 0 then begin
 
@@ -413,7 +427,7 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
               if rec NE '' then $
                 new_item = item.Replace('cross_', rec + '_cross_') else $
                 new_item = item
-                
+
               new_item = new_item  + '_' + src0_string + '_' + src1_string
 
               if size(/type, lim) EQ 8 then begin
