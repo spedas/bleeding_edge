@@ -12,6 +12,8 @@
 
 function sum4m,inpdat,mass=ms,m_int=mi         
 
+if not inpdat.valid then return,inpdat
+
 dat = inpdat
 units = dat.units_name
 if size(/type,dat) ne 8 then return,0

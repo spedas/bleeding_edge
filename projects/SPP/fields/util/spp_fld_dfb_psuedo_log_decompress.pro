@@ -5,7 +5,7 @@ function spp_fld_dfb_psuedo_log_decompress, compressed, type = type, $
 
   case ndimen(high_gain) of
     -1: high_gain_2d = rebin([0],size(compressed,/dim))
-    0:high_gain_2d = rebin([hg],size(compressed,/dim))
+    0:high_gain_2d = rebin([high_gain],size(compressed,/dim))
     1:high_gain_2d = rebin(high_gain,size(compressed,/dim))
     2:high_gain_2d = high_gain
   endcase
