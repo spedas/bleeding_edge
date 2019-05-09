@@ -195,6 +195,11 @@ function spp_fld_select_timespan_define_presets, fm_or_em
   fm_times['e02_encounter_plus1day'] = ['2019-03-29/04:39:00','2019-04-11/16:42:00']
 
 
+  fm_times['e02_striated_burst'] = ['2019-04-01/01:50:18', '2019-04-01/02:12:56']
+  fm_times['e02_large_burst_flare_Lang'] = ['2019-04-02/15:23:00', '2019-04-02/16:09:00']
+
+  fm_times['sls_test_post_e02'] =   ['2019-05-07/04:30:00', '2019-05-07/08:00:00']
+
   em_times = orderedhash()
 
   em_times['EM_test_RFS_v29'] = ['2018-02-22/19:30:00','2018-02-22/21:30:00']
@@ -295,7 +300,9 @@ function spp_fld_select_timespan, input_timespan = input_timespan, $
 
     if n_elements(trange_full) eq 2 then ts = trange_full
 
-    if n_elements(ts) LT 2 or max(ts) EQ 0. then begin
+    if n_elements(ts) LT 2 then ts_maxtest = [0d,0d] else ts_maxtest = ts
+
+    if n_elements(ts) LT 2 or max(ts_maxtest) EQ 0. then begin
 
       ts = [systime(/sec)-60., systime(/sec)]
 
@@ -378,7 +385,7 @@ function spp_fld_select_timespan, input_timespan = input_timespan, $
 
   ;print, time_string(ts)
 
-  if n_elements(ts) GT 0 then tlimit, ts else timespan, ts
+  if n_elements(ts) GT 0 and max(ts_maxtest) GT 0d then tlimit, ts else timespan, ts
 
   return, ts
 

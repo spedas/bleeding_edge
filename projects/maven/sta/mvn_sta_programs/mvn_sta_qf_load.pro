@@ -89,7 +89,10 @@ pro mvn_sta_qf_load,verbose=verbose
   tt=timerange()
   orb_time = tt[0]+360.*findgen(240)*(tt[1]-tt[0])/(24.*3600.)
   orb_num = mvn_orbit_num(time=orb_time)-0.3
+
+  mvn_spice_load ;maven_orbit_tplot will crash if the SPICE kernels are not reloaded, during L0 to L2 processing
   maven_orbit_tplot,result=result,/loadonly
+
   R_m = 3389.9D
   npts=n_elements(result.x)
   ss = dblarr(npts, 4)

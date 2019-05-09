@@ -27,9 +27,9 @@
 ; CREATED BY:
 ;   pulupa
 ;
-;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2019-04-29 10:45:30 -0700 (Mon, 29 Apr 2019) $
-;  $LastChangedRevision: 27125 $
+;  $LastChangedBy: pulupa $
+;  $LastChangedDate: 2019-05-08 15:10:10 -0700 (Wed, 08 May 2019) $
+;  $LastChangedRevision: 27210 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_dfb_wf/spp_fld_dfb_wf_load_l1.pro $
 ;
 
@@ -72,6 +72,20 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
   options, prefix + 'wav_tap', 'psym_lim', 100
   options, prefix + 'wav_tap', 'ytitle', $
     'DFB WF ' + strmid(prefix,15,2) + compressed_str + '!CTap'
+
+  options, prefix + 'wav_tap', 'yrange', [min(d_wav_tap.y) - 1, max(d_wav_tap.y) + 1]
+  options, prefix + 'wav_tap', 'ystyle', 1
+
+  get_data, prefix + 'wav_sel', data = d_wav_sel
+  options, prefix + 'wav_sel', 'ynozero', 1
+  options, prefix + 'wav_sel', 'colors', [6]
+  options, prefix + 'wav_sel', 'psym_lim', 100
+  options, prefix + 'wav_sel', 'ytitle', $
+    'DFB WF ' + strmid(prefix,15,2) + compressed_str + '!CSelect'
+
+  options, prefix + 'wav_sel', 'yrange', [min(d_wav_sel.y) - 1, max(d_wav_sel.y) + 1]
+  options, prefix + 'wav_sel', 'ystyle', 1
+
 
   options, prefix + 'compression', 'yrange', [-0.25,1.25]
   options, prefix + 'compression', 'ystyle', 1
