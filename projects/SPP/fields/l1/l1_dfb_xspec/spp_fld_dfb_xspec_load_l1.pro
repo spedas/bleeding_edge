@@ -23,7 +23,8 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
   endcase
 
   options, prefix + status_items, 'colors', colors
-  options, prefix + status_items, 'psym', spec_number + 3
+  ;options, prefix + status_items, 'psym', spec_number + 3
+  options, prefix + status_items, 'psym_lim', 100
   options, prefix + status_items, 'panel_size', 0.75
   options, prefix + status_items, 'ysubtitle', ''
 
@@ -143,12 +144,12 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
 
       if is_ac then begin
 
-        if n_avg LE 16 then delta_x = 2d^17 / 150d3 ;; TODO: verify this
-        if n_avg GE 32 then delta_x = 2d^17 / 150d3 * double(floor(n_avg / 16d)) ;; TODO: verify
+        if n_avg LE 16 then delta_x = 2d^17 / 150d3 ;; base dt is 1 PPC
+        if n_avg GE 32 then delta_x = 2d^17 / 150d3 * double(floor(n_avg / 16d)) ;; base dt is N PPC
 
       endif else begin
 
-        delta_x = double(n_avg) * (1024d / 150d3 * 16d)
+        delta_x = double(n_avg) * (2d^17 / 150d3 / 8d)
 
       endelse
 

@@ -19,7 +19,8 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
   endcase
 
   options, prefix + status_items, 'colors', colors
-  options, prefix + status_items, 'psym', spec_number + 3
+  ;options, prefix + status_items, 'psym', spec_number + 3
+  options, prefix + status_items, 'psym_lim', 100
   options, prefix + status_items, 'symsize', 0.75
   options, prefix + status_items, 'panel_size', 0.75
   options, prefix + status_items, 'ysubtitle', ''

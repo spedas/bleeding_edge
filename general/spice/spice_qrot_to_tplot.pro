@@ -10,7 +10,7 @@
 ; $URL: $
 ;-
 pro spice_qrot_to_tplot,frame1,frame2,utimes=ut,trange=tr,resolution=res,names=name,basetime=basetime,basename=basename,check_objects=check_objects $
-      ,get_omega=get_omega,fix_qsign=fix_qsign,error=error,derror=derror
+      ,get_omega=get_omega,fix_qsign=fix_qsign,error=error,derror=derror,force_objects=force_objects
 if spice_test() eq 0 then return
 if not keyword_set(ut) then begin
    tr = timerange(tr)
@@ -30,7 +30,7 @@ endif
 ; qatt =  spice_body_att(frame1,frame2,ut,/quaternion,fix_qsign=fix_qsign,baserot=baserot,check_objects=check_objects) 
 nreps = 0
 repeat   begin
-   qatt =  spice_body_att(frame1,frame2,ut,/quaternion,fix_qsign=fix_qsign,baserot=baserot,check_objects=check_objects) 
+   qatt =  spice_body_att(frame1,frame2,ut,/quaternion,fix_qsign=fix_qsign,baserot=baserot,check_objects=check_objects,force_objects=force_objects) 
    if keyword_set(error) || keyword_set(derror) then begin
       if nreps++ gt 5 then break
       del_qatt = sqrt(total( (shift(qatt,0,-1) - qatt )  ^2,1))

@@ -61,15 +61,15 @@ for i=0,ncuts-1  do begin
 ;help,varname,d,ld,/st
   if not keyword_set(d) then return
 
-  if n_elements(t) eq 2 then w = where(d.x ge t(0) and d.x lt t(1),c)
+  if n_elements(t) eq 2 then w = where(d.x ge t[0] and d.x lt t[1],c)
   if n_elements(t) eq 1 then dummy = min(abs(d.x - t[0]),w)
-  y = d.y(w,*)
-  x = d.x(w)
+  y = d.y[w,*]
+  x = d.x[w]
   if ndimen(y) eq 2 then y = average(y,1,/nan)
 
   str_element, d, 'v', success = dv_exists
   if dv_exists then begin
-    if ndimen(d.v) eq 2 then v = d.v(w,*) else v =d.v
+    if ndimen(d.v) eq 2 then v = d.v[w,*] else v =d.v
   endif else begin
     v = lindgen(n_elements(y))
   endelse

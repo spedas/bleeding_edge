@@ -26,8 +26,8 @@
 ;   pulupa
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2019-04-23 12:16:15 -0700 (Tue, 23 Apr 2019) $
-; $LastChangedRevision: 27073 $
+; $LastChangedDate: 2019-05-10 13:38:20 -0700 (Fri, 10 May 2019) $
+; $LastChangedRevision: 27215 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_tmlib_init.pro $
 ;-
 
@@ -82,7 +82,7 @@ pro spp_fld_tmlib_init, server = server, test_cdf_dir = test_cdf_dir, daily = da
   !p.background = !d.table_size - 1L
   !p.color = 0
 
-  spp_fld_config
+  ; spp_fld_config
 
   ; Set up routines to load the DFB frequencies
 

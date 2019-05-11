@@ -13,7 +13,7 @@
 ; $URL: $
 ;-
 
-pro spice_position_to_tplot,body,observer,utimes=ut,frame=frame,trange=tr,resolution=res,names=name,scale=scale,normalize=normalize,basename=basename,check_objects=check_objects
+pro spice_position_to_tplot,body,observer,utimes=ut,frame=frame,trange=tr,resolution=res,names=name,scale=scale,normalize=normalize,basename=basename,check_objects=check_objects,force_objects=force_objects
 if not keyword_set(ut) then begin
    tr = timerange(tr)
    if not keyword_set(res) then begin
@@ -23,7 +23,7 @@ if not keyword_set(ut) then begin
 endif
 pstring = '_POS_'
 append_array,check_objects,[body,observer,frame]             ;   must fix this !!
-pos = transpose( spice_body_pos(body,observer,utc=ut,frame=frame, check_objects=check_objects) )
+pos = transpose( spice_body_pos(body,observer,utc=ut,frame=frame, check_objects=check_objects,force_objects=force_objects) )
 if keyword_set(scale) then pos /= scale
 if keyword_set(normalize) then begin 
    pos /= (sqrt(total(pos^2,2)) # [1,1,1])

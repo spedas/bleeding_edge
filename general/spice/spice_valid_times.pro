@@ -14,7 +14,9 @@ if ~keyword_set(tol) then tol=120.
 kinfo = spice_kernel_info(use_cache=1)
 ok = et ne 0  ; get array of 1b     
 for j=0,n_elements(objects)-1 do begin
-  cspice_bods2c,objects[j],code,found
+  cspice_bods2c,objects[j],code,found ;body code
+  if ~found then cspice_namfrm,objects[j],code ;frame code
+  if code ne 0 then found=1
   nw = 0
   if found and keyword_set(kinfo) then  w = where(kinfo.obj_code eq code ,nw)
   if nw ne 0 then begin
