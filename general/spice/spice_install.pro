@@ -6,10 +6,10 @@
 ;Note:  This routine has not been tested on all platforms. (But should be safe)
 ;
 ; Author: Davin Larson   
-; $LastChangedBy: $
-; $LastChangedDate: $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
+; $LastChangedRevision: 27221 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_install.pro $
 ;-
 pro spice_install,no_download=no_download,force=force,localdir=localdir
    if keyword_set(localdir) then dlmdir = localdir+'/' else dlmdir = !dlm_path+'/'

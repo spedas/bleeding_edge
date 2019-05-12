@@ -37,10 +37,10 @@ end
 ;
 ;
 ; Author: Davin Larson
-; $LastChangedBy: $
-; $LastChangedDate: $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
+; $LastChangedRevision: 27221 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_kernel_info.pro $
 ;-
 
 function spice_kernel_info,type=type,verbose=verbose,use_cache=use_cache

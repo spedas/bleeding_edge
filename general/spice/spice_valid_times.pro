@@ -3,10 +3,10 @@
 ;
 ;Purpose: ;
 ; Author: Davin Larson  
-; $LastChangedBy: $
-; $LastChangedDate: $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
+; $LastChangedRevision: 27221 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_valid_times.pro $
 ;-
 function spice_valid_times,et,objects=objects,force_objects=force_objects,tolerance=tol
 if spice_test() eq 0 then message,'SPICE not installed'

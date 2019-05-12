@@ -8,10 +8,10 @@
 ;  Note: time is in the last dimension  (not like tplot storage)
 ; 
 ; Author: Davin Larson  
-; $LastChangedBy: $
-; $LastChangedDate: $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
+; $LastChangedRevision: 27221 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_vector_rotate_tplot.pro $
 ;-
 
 pro SPICE_VECTOR_ROTATE_TPLOT,tvarnames,to_frame,check_objects=check_objects,verbose=verbose,suffix=suffix,names=names,trange=trange

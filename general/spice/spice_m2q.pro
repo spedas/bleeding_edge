@@ -5,10 +5,10 @@
 ;  Note: time is in the last dimension  (not like tplot storage)
 ; ;
 ; Author: Davin Larson  
-; $LastChangedBy: $
-; $LastChangedDate: $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
+; $LastChangedRevision: 27221 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_m2q.pro $
 ;-
 function spice_m2q,mat,baserot=baserot,fix_qsign=fix_qsign
 dim = size(/dimen,mat)

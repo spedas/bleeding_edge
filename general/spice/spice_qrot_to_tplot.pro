@@ -4,10 +4,10 @@
 ;
 ;Purpose: ;
 ; Author: Davin Larson  
-; $LastChangedBy: $
-; $LastChangedDate: $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
+; $LastChangedRevision: 27221 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_qrot_to_tplot.pro $
 ;-
 pro spice_qrot_to_tplot,frame1,frame2,utimes=ut,trange=tr,resolution=res,names=name,basetime=basetime,basename=basename,check_objects=check_objects $
       ,get_omega=get_omega,fix_qsign=fix_qsign,error=error,derror=derror,force_objects=force_objects

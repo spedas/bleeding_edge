@@ -7,10 +7,10 @@
 ;  check_objects: frame or body name that the routine will check for valid times to prevent crashing.
 ;
 ; Author: Davin Larson  
-; $LastChangedBy: $
-; $LastChangedDate: $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
+; $LastChangedRevision: 27221 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_body_pos.pro $
 ;-
 
 function spice_body_pos,body_name,obs_name,utc=utc,et=et,frame=frame,ltime=ltime,abcorr=abcorr,check_objects=check_objects,force_objects=force_objects
