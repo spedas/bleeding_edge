@@ -28,9 +28,9 @@
 ;
 ;HISTORY:
 ;
-;$LastChangedBy: jimmpc1 $
-;$LastChangedDate: 2019-03-21 13:15:51 -0700 (Thu, 21 Mar 2019) $
-;$LastChangedRevision: 26874 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2019-05-13 11:23:24 -0700 (Mon, 13 May 2019) $
+;$LastChangedRevision: 27229 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/objects/spd_ui_time__define.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -102,13 +102,13 @@ PRO SPD_UI_TIME::SetProperty,            $ ; standard set property method
         
    IF N_Elements(tdouble) NE 0 THEN BEGIN
       self.tDouble = tdouble
-      self.tString = Time_String(tdouble)
+      self.tString = Time_String(tdouble,/msec)
       self.tEpoch = Time_Epoch(tdouble)
       self->UpdateStructure
       RETURN
    ENDIF   
    IF N_Elements(tstring) NE 0 THEN BEGIN
-      self.tString = tstring
+      self.tString = Time_String(tstring,/msec)
       self.tDouble = Time_Double(tstring)
       self.tEpoch = Time_Epoch(tstring)
       self->UpdateStructure
@@ -117,7 +117,7 @@ PRO SPD_UI_TIME::SetProperty,            $ ; standard set property method
    IF N_Elements(tepoch) NE 0 THEN BEGIN
       self.tEpoch = tepoch
       self.tDouble = Time_Double(tepoch)
-      self.tString = Time_String(tepoch)
+      self.tString = Time_String(tepoch,/msec)
       self->UpdateStructure
       RETURN
    ENDIF 
@@ -220,13 +220,13 @@ FUNCTION SPD_UI_TIME::Init,             $ ; The INIT method of the bar object.
    ; Check that all parameters have values
    IF N_Elements(tdouble) EQ 0 THEN BEGIN
       IF N_Elements(tstring) EQ 0 THEN BEGIN
-         tstring=Time_String(SysTime(/sec))
+         tstring=Time_String(SysTime(/sec),/msec)
          tdouble=Time_Double(tstring)
       ENDIF ELSE BEGIN
          IF Size(tstring, /Type) EQ 7 THEN tdouble = Time_Double(tstring) ELSE RETURN, 0
       ENDELSE
    ENDIF ELSE BEGIN
-      IF Size(tdouble, /Type) EQ 5 THEN tstring = Time_String(tdouble)ELSE RETURN, 0   
+      IF Size(tdouble, /Type) EQ 5 THEN tstring = Time_String(tdouble,/msec)ELSE RETURN, 0   
    ENDELSE   
    
       ; Set all parameters

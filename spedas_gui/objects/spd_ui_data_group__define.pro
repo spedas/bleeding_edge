@@ -87,8 +87,8 @@
 ;  
 ;  
 ;$LastChangedBy: jimm $
-;$LastChangedDate: 2014-02-11 10:54:32 -0800 (Tue, 11 Feb 2014) $
-;$LastChangedRevision: 14326 $
+;$LastChangedDate: 2019-05-13 11:23:24 -0700 (Mon, 13 May 2019) $
+;$LastChangedRevision: 27229 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/objects/spd_ui_data_group__define.pro $
 ;-
 
@@ -580,7 +580,7 @@ function spd_ui_data_group::getTimeRange
   
   if n_elements(tr) eq 1 then return,0
   
-  return,time_string(tr)
+  return,time_string(tr, /msec)
 
 end
 
