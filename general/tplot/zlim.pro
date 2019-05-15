@@ -17,9 +17,12 @@
 ;                              ; 'ehspec'.
 ;
 ;CREATED BY:	Davin Larson
-;LAST MODIFICATION:	@(#)zlim.pro	1.2 02/11/01
+; $LastChangedBy: ali $
+; $LastChangedDate: 2019-05-14 14:18:26 -0700 (Tue, 14 May 2019) $
+; $LastChangedRevision: 27232 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/zlim.pro $
 ;-
-pro zlim,lim,min,max,log,default=default
+pro zlim,lim,min,max,log,default=default,verbose=verbose
 if n_params() eq 1 then begin
    options,lim,'zrange',default=default
    options,lim,'zstyle',default=default
@@ -27,10 +30,10 @@ if n_params() eq 1 then begin
    return
 endif
 if n_elements(max) eq 0 then range = [0.,0.] else range = float([min,max])
-options,lim,'zrange',range,default=default
+options,lim,'zrange',range,default=default,verbose=verbose
 if range[0] eq range[1] then style=0 else style=1
-options,lim,'zstyle',style,default=default
-if n_elements(log) ne 0 then options,lim,'zlog',log,default=default
+options,lim,'zstyle',style,default=default,verbose=verbose
+if n_elements(log) ne 0 then options,lim,'zlog',log,default=default,verbose=verbose
 return
 end
 

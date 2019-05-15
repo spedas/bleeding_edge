@@ -30,7 +30,12 @@
 ;
 ;CREATED BY:	Jasper Halekas
 ;Modified by:   Davin Larson
-;LAST MODIFICATION:	@(#)options.pro	1.19 99/04/07
+; $LastChangedBy: ali $
+; $LastChangedDate: 2019-05-14 14:18:26 -0700 (Tue, 14 May 2019) $
+; $LastChangedRevision: 27232 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/options.pro $
+
+;
 ;-
 ;obsolete:
 ;  DELETE:  If set, then the corresponding tag_name is removed.
@@ -38,7 +43,7 @@
 ;	    structure or array of structures.  To use this keyword, the
 ;	    value variable must be previously defined.
 
-pro options, struct, tag_name, value,default=default,_extra=ex ;,get=get, delete=delete
+pro options, struct, tag_name, value,default=default,_extra=ex,verbose=verbose ;,get=get, delete=delete
 @tplot_com
 
 

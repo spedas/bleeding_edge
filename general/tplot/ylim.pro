@@ -27,10 +27,12 @@
 ;
 ;SEE ALSO:  "OPTIONS", "TLIMIT", "XLIM", "ZLIM"
 ;CREATED BY:	Davin Larson
-;VERSION: ylim.pro
-;LAST MODIFICATION: 01/06/25
+; $LastChangedBy: ali $
+; $LastChangedDate: 2019-05-14 14:18:26 -0700 (Tue, 14 May 2019) $
+; $LastChangedRevision: 27232 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/ylim.pro $
 ;-
-pro ylim,str,min,max,log,log=lg, style=style, default=default
+pro ylim,str,min,max,log,log=lg, style=style, default=default,verbose=verbose
 if n_params() eq 0 then begin
     ctime,t,y,vname=var,npoints=2
     while keyword_set(var) ne 0 do begin
@@ -50,10 +52,10 @@ if n_elements(lg) ne 0 then log=lg
 if n_elements(min) eq 2 then max=0
 if n_elements(max) eq 0 then range = [0.,0.] else range = float([min,max])
 if n_elements(style) eq 0 then style = 1
-options,str,'yrange',range[0:1],default=default
+options,str,'yrange',range[0:1],default=default,verbose=verbose
 if range[0] eq range[1] then style=0
-options,str,'ystyle',style,default=default
-if n_elements(log) ne 0 then options,str,'ylog',log,default=default
+options,str,'ystyle',style,default=default,verbose=verbose
+if n_elements(log) ne 0 then options,str,'ylog',log,default=default,verbose=verbose
 return
 end
 
