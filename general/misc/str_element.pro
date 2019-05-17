@@ -48,9 +48,9 @@
 ;VERSION  1.10
 ;LAST MODIFICATION: 01/10/08
 ; CREATED BY: Davin Larson
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-11-02 13:38:33 -0700 (Wed, 02 Nov 2016) $
-; $LastChangedRevision: 22260 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-05-16 13:25:00 -0700 (Thu, 16 May 2019) $
+; $LastChangedRevision: 27250 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/str_element.pro $
 ;-
 pro str_element,struct,tagname,value,  $
@@ -60,6 +60,25 @@ pro str_element,struct,tagname,value,  $
    SUCCESS = success, $
    VALUE = value2,   $   ;obsolete keyword
    INDEX = index
+
+
+tname = typename(struct)
+if size(/type,struct) eq 11 && ( tname eq 'DICTIONARY' || tname eq 'ORDEREDHASH' || tname eq 'HASH') then begin
+  success = 0
+  index=-1
+  if keyword_set(delete) then message,'Code not complete',/cont
+  if keyword_set(add_rep) then begin
+     struct[tagname] = value
+  endif else begin
+    tag = tagname
+    if tname eq 'DICTIONARY' then tag = tagname.toupper()
+    if struct.haskey(tag) then begin
+      value = struct[tag]
+      success = 1
+    endif
+  endelse
+  return
+endif
 
 pos = strpos(tagname,'.')
 if pos ge 0 then begin
@@ -149,12 +168,12 @@ if keyword_set(add_rep) or keyword_set(delete) then begin
       tags = tag_names(new_struct)
 ;      old_tags = tag_names(struct)
       for i=0,ntags-1 do begin
-;         if i ne delete_var then begin                                     ;  NOTE: this routine still has a bug with the delete keyword
+        ; if i ne delete_var then begin                                     ;  NOTE: this routine still has a bug with the delete keyword
            str_element,s0,tags[i],index=j
            if i eq nj then new_value = value else new_value=struct.(j)
 ;           str_element,s0,old_tags[i],index=j
            new_struct.(i) = new_value
-;         endif
+       ;  endif
       endfor
 ;      str_element,s0,base_name,index=j
 ;      if not keyword_set(delete) then new_struct.(j) = value

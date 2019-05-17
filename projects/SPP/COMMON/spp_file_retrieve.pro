@@ -1,9 +1,9 @@
 ;+
 ; Written by Davin Larson 
 ; 
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2019-01-30 12:40:28 -0800 (Wed, 30 Jan 2019) $
-; $LastChangedRevision: 26515 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-05-16 13:17:14 -0700 (Thu, 16 May 2019) $
+; $LastChangedRevision: 27246 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_file_retrieve.pro $
 ; 
 ; Function:  files = spp_file_retrieve(PATHNAME)
@@ -38,6 +38,7 @@
 function spp_file_retrieve,pathname,trange=trange,ndays=ndays,nhours=nhours,verbose=verbose, source=src, $
    last_version=last_version, $
    prefix = prefix, $
+   key = source_key, $
    no_server = no_server, $
    ssr = ssr,ptp=ptp, $
    no_update=no_update,create_dir=create_dir,pos_start=pos_start, $
@@ -128,7 +129,7 @@ endif
 ;lv = n_elements(last_version) eq 0 ? 1 : last_version 
 vo = n_elements(valid_only) eq 0 ? 0 : valid_only
 
-source = spp_file_source(src,verbose=verbose,user_pass=user_pass,no_server=no_server,valid_only=vo,  $
+source = spp_file_source(src,source_key=source_key,verbose=verbose,user_pass=user_pass,no_server=no_server,valid_only=vo,  $
     last_version=last_version,no_update=no_update,resolution=res)
 
 pos_start = strlen(source.local_data_dir)

@@ -1,13 +1,14 @@
 ;+
 ;Function: spice_body_att
 ;Purpose:  retrieve the rotation (array or quaternion) to transfer from one frame to another frame
-;
+;  This routine is is basically a wroapper for the routine cspice_pxform. cspice_pxform can fail if there are time intervals missing from the kernels.
+;  This routine can check for those missing intervals (using the check_objects keyword) and complete the task successfully.
 ;  Note: time is in the last dimension  (not like tplot storage)
 ; ;
 ; Author: Davin Larson  
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
-; $LastChangedRevision: 27221 $
+; $LastChangedDate: 2019-05-16 13:19:05 -0700 (Thu, 16 May 2019) $
+; $LastChangedRevision: 27248 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_body_att.pro $
 ;-
 

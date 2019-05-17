@@ -19,12 +19,12 @@
 ;CREATED BY:    Peter Schroeder
 ;LAST MODIFICATION:     tplot_save.pro   97/05/14
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-05-05 11:41:23 -0700 (Fri, 05 May 2017) $
-; $LastChangedRevision: 23271 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-05-16 13:27:55 -0700 (Thu, 16 May 2019) $
+; $LastChangedRevision: 27251 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_save.pro $
 ;-
-pro tplot_save,handlenames,filename=filename,limits=limits,compress=compress,no_add_extension=no_add_extension
+pro tplot_save,handlenames,filename=filename,limits=limits,compress=compress,no_add_extension=no_add_extension,verbose=verbose
 
 COMPILE_OPT IDL2
 @tplot_com.pro
@@ -32,6 +32,17 @@ COMPILE_OPT IDL2
 
 names = tnames(handlenames,n,index=index)
 origdq = data_quants[index]
+if 1 then begin
+  w = where(/null,origdq.dtype eq 3,nw)
+  for i=0,nw-1  do begin
+    names= [names,tnames(*origdq[w[i]].dh)]
+  endfor
+  if nw ne 0 then begin
+    dprint,'Added variables.  ',names
+    names = tnames(names,n,index=index)
+    origdq = data_quants[index]
+  endif
+endif
 
 if keyword_set(limits) then begin
 	dq = origdq
@@ -48,5 +59,5 @@ if size(/type,filename) ne 7 then filename = 'saved'
 
 if n_elements(tplot_vars) gt 0 then tv = tplot_vars else tv = 0
 file_mkdir2,file_dirname(filename)
-save,dq,tv,file=filename+filesuf,compress=compress
+save,dq,tv,file=filename+filesuf,compress=compress,verbose=verbose
 end

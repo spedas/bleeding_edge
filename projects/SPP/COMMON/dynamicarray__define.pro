@@ -76,6 +76,7 @@ FUNCTION DynamicArray::Init,array, _EXTRA=ex
 COMPILE_OPT IDL2
 ; Call our superclass Initialization method.
 void = self->generic_object::Init(_extra=ex)
+self.xfactor = .5
 self.ptr_array = ptr_new(!null)
 ;dim = size(/dimen,array)
 ;self.size = dim[0]
@@ -198,14 +199,14 @@ if 1 then begin  ;  Don't use old routine append_array
   index = self.size
 
   if n1 + index gt n0 then begin    ;   existing buffer not large enough to insert new values - incease size
-    xfactor = .5
+;    xfactor = .5
     fill = (*a0)[0]
     if keyword_set(fillnan) then fill =   fill_nan(fill) 
     if n_elements(dim1) ne n_elements(dim0) then begin
       dprint,verbose=verbose,dlevel=self.dlevel,'Incompatible appending'
     endif
     dim = dim0
-    add = floor((n0+n1) * xfactor+ n1 )
+    add = floor((n0+n1) * self.xfactor+ n1 )
     dim[0] = add
     fillx = replicate(fill,dim)
     *a0 = [*a0,fillx]                       ;  This is the operation that can take a long time to perform
@@ -214,7 +215,7 @@ if 1 then begin  ;  Don't use old routine append_array
   endif
 
 
-  (*a0)[index:index+n1-1,*] = a1               ; Insert new values
+  (*a0)[index:index+n1-1,*,*,*] = a1               ; Insert new values
   self.size  = index + n1
 
   return
@@ -249,7 +250,7 @@ PRO DynamicArray::GetProperty, array=array, size=size, ptr=ptr, name=name  ,  ty
 ; This method can be called either as a static or instance.
 COMPILE_OPT IDL2
 IF (ARG_PRESENT(array)) THEN begin
-  if self.size eq 0 then array=!null   else  array = (*self.ptr_array)[0:self.size-1,*]
+  if self.size eq 0 then array=!null   else  array = (*self.ptr_array)[0:self.size-1,*,*,*]
 ENDIF
 IF (ARG_PRESENT(size)) THEN size = self.size
 IF (ARG_PRESENT(ptr)) THEN ptr = self.ptr_array
@@ -259,7 +260,7 @@ END
  
  
  
-PRO DynamicArray::SetProperty, array=array, name=name,dlevel=dlevel
+PRO DynamicArray::SetProperty, array=array, name=name, xfactor=xfactor ;,dlevel=dlevel
 COMPILE_OPT IDL2
 ; If user passed in a property, then set it.
 IF (ISA(array) || isa(array,/null)) THEN begin
@@ -278,7 +279,8 @@ ENDIF
 if isa(name,/string) then begin
   self.name = name
 endif
-if isa(dlevel) then self.dlevel = dlevel
+if isa(xfactor) then self.xfactor = xfactor
+;if isa(dlevel) then self.dlevel = dlevel
 END
  
  

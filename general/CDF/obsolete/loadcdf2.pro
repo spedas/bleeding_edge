@@ -64,7 +64,7 @@ if keyword_set(zvar) then begin
 endif else begin
   dimc = vinq.dimvar * inq.dim
   dimw = where(dimc eq 0,c)
-  if c ne 0 then dimc(dimw) = 1
+  if c ne 0 then dimc[dimw] = 1
   CDF_varget,id,CDF_var,x,COUNT=dimc,REC_COUNT=nrecs,rec_start=rec_start
 endelse
 

@@ -4,10 +4,10 @@
 ;
 ;Purpose: ;
 ; Author: Davin Larson  
-; $LastChangedBy: $
-; $LastChangedDate: $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-05-16 13:14:07 -0700 (Thu, 16 May 2019) $
+; $LastChangedRevision: 27244 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/qderiv.pro $
 ;-
 function qderiv,t,q
 dq_dt = q

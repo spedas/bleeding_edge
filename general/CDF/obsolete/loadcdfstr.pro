@@ -44,7 +44,7 @@ if keyword_set(append) then index=n_elements(data0)
 
 for num = 0,n_elements(cdf_files)-1 do begin
 
-   cdf_file = cdf_files(num)
+   cdf_file = cdf_files[num]
    id = 0
 
    if size(/type,cdf_file) eq 7 then begin
@@ -78,10 +78,10 @@ for num = 0,n_elements(cdf_files)-1 do begin
    if not keyword_set(append)  then begin      ;define the data structure:
 ;      if keyword_set(time) then dat = {TIME:0.d}
       for n=0,nvars-1 do begin
-          vinq = cdf_varinq(id,cdf_vars(n))
+          vinq = cdf_varinq(id,cdf_vars[n])
           if vinq.is_zvar then dim = vinq.dim else dim = inq.dim*vinq.dimvar
           w = where(dim,ndim)
-          if ndim gt 0 then dim=dim(w) else dim=0
+          if ndim gt 0 then dim=dim[w] else dim=0
 ;print,cdf_vars(n),ndim,dim
           case vinq.datatype of
             'CDF_REAL8' :   value = !values.d_nan
@@ -104,30 +104,30 @@ for num = 0,n_elements(cdf_files)-1 do begin
           endcase
           if ndim gt 0 then val = make_array(value=value,dim=dim)   $
           else val=value
-          a = strpos(tagnames(n),'%')
-          aa = strpos(tagnames(n),'*')
+          a = strpos(tagnames[n],'%')
+          aa = strpos(tagnames[n],'*')
           if a ne -1 then begin
-          	b = strlen(tagnames(n))
-          	oldname = tagnames(n)
-          	tagnames(n) = strmid(oldname,0,a)+'q'+strmid(oldname,a+1,b)
+          	b = strlen(tagnames[n])
+          	oldname = tagnames[n]
+          	tagnames[n] = strmid(oldname,0,a)+'q'+strmid(oldname,a+1,b)
           endif
           if aa ne -1 then begin
-           	b = strlen(tagnames(n))
-          	oldname = tagnames(n)
-          	tagnames(n) = strmid(oldname,0,aa)+'x'+strmid(oldname,aa+1,b)
+           	b = strlen(tagnames[n])
+          	oldname = tagnames[n]
+          	tagnames[n] = strmid(oldname,0,aa)+'x'+strmid(oldname,aa+1,b)
           endif
 
-          str_element,/add,dat,tagnames(n),val
+          str_element,/add,dat,tagnames[n],val
       endfor
       if keyword_set(time) then begin
           w = where(tag_names(dat) eq 'TIME',c)
           if c eq 0 then str_element,/add,dat,'TIME',0.d
       endif
-   endif else dat = data0(0)
+   endif else dat = data0[0]
 
-   vinq = cdf_varinq(id,cdf_vars(0))
+   vinq = cdf_varinq(id,cdf_vars[0])
    !quiet = 1
-   cdf_control,id,variable=cdf_vars(0),get_var_info=varinfo,zvar=vinq.is_zvar
+   cdf_control,id,variable=cdf_vars[0],get_var_info=varinfo,zvar=vinq.is_zvar
    !quiet = 0
    nrecs = varinfo.maxrec+1
    data = replicate(dat,nrecs)
@@ -135,8 +135,8 @@ for num = 0,n_elements(cdf_files)-1 do begin
    del = 0
 
    if keyword_set(time) then begin
-      if cdf_attexists(id,'DEPEND_0',cdf_vars(0),zvar=vinq.is_zvar) then $
-      	cdf_attget,id,'DEPEND_0',cdf_vars(0),epochnum,zvar=vinq.is_zvar $
+      if cdf_attexists(id,'DEPEND_0',cdf_vars[0],zvar=vinq.is_zvar) then $
+      	cdf_attget,id,'DEPEND_0',cdf_vars[0],epochnum,zvar=vinq.is_zvar $
       	else begin
       		for thisvar=0,inq.nvars-1 do begin
       			vinq = cdf_varinq(id,thisvar)
@@ -157,14 +157,14 @@ for num = 0,n_elements(cdf_files)-1 do begin
    endif
 
    for n=0,nvars-1 do begin
-       if cdf_attexists(id,'DEPEND_0',cdf_vars(n),zvar=vinq.is_zvar) then $
-         cdf_attget,id,'DEPEND_0',cdf_vars(n),thisepoch,zvar=vinq.is_zvar $
+       if cdf_attexists(id,'DEPEND_0',cdf_vars[n],zvar=vinq.is_zvar) then $
+         cdf_attget,id,'DEPEND_0',cdf_vars[n],thisepoch,zvar=vinq.is_zvar $
          else thisepoch = epochnum
        if n eq 0 and not keyword_set(time) then epochnum = thisepoch
-       if strpos(tagnames(n),'Epoch') ne -1 then thisepoch = tagnames(n)
+       if strpos(tagnames[n],'Epoch') ne -1 then thisepoch = tagnames[n]
        if thisepoch eq epochnum then begin
-         loadcdf2,id,cdf_vars(n),x,/no_shift,nrecs=nrecs
-         if cdf_attexists(id,'FILLVAL',cdf_vars(n),zvar=vinq.is_zvar) then $
+         loadcdf2,id,cdf_vars[n],x,/no_shift,nrecs=nrecs
+         if cdf_attexists(id,'FILLVAL',cdf_vars[n],zvar=vinq.is_zvar) then $
          	begin
          	case size(/type,x) of
          		4: nan = !values.f_nan
@@ -172,14 +172,14 @@ for num = 0,n_elements(cdf_files)-1 do begin
          	else: nan = 0
          	endcase
          	if nan ne 0 then begin
-         		cdf_attget,id,'FILLVAL',cdf_vars(n),fv,zvar=vinq.is_zvar
+         		cdf_attget,id,'FILLVAL',cdf_vars[n],fv,zvar=vinq.is_zvar
          		fvindx = where(x eq fv,fvcnt)
-         		if fvcnt gt 0 then x(fvindx) = nan
+         		if fvcnt gt 0 then x[fvindx] = nan
          	endif
          endif
-         str_element,/add,data,tagnames(n),x
+         str_element,/add,data,tagnames[n],x
        endif else begin
-         dprint,'Variable '+cdf_vars(n)+' has different Epoch'
+         dprint,'Variable '+cdf_vars[n]+' has different Epoch'
        endelse
    endfor
 
@@ -187,9 +187,9 @@ for num = 0,n_elements(cdf_files)-1 do begin
       novardata = 0
       novartags = strcompress(novarnames,/remove_all)
       for i=0,n_elements(novarnames)-1 do begin
-         loadcdf2,id,novarnames(i),val
+         loadcdf2,id,novarnames[i],val
          if keyword_set(nvtagnames) then nvtag = nvtagnames[i] else $
-         	nvtag = novartags(i)
+         	nvtag = novartags[i]
          str_element,/add,novardata,nvtag,val
       endfor
    endif
@@ -198,9 +198,9 @@ for num = 0,n_elements(cdf_files)-1 do begin
       novarzdata = 0
       novarztags = strcompress(novarznames,/remove_all)
       for i=0,n_elements(novarznames)-1 do begin
-         loadcdf2,id,novarznames(i),val,/zvar
+         loadcdf2,id,novarznames[i],val,/zvar
          if keyword_set(nvztagnames) then nvztag = nvztagnames[i] else $
-         	nvztag = novarztags(i)
+         	nvztag = novarztags[i]
          str_element,/add,novardata,nvztag,val
       endfor
    endif

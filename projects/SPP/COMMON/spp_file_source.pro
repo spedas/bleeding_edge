@@ -34,8 +34,8 @@
   ;  see "FILE_RETRIEVE" for a description of each structure element.
   ;
   ; $LastChangedBy: davin-mac $
-  ; $LastChangedDate: 2019-02-13 17:49:40 -0800 (Wed, 13 Feb 2019) $
-  ; $LastChangedRevision: 26627 $
+  ; $LastChangedDate: 2019-05-16 13:16:27 -0700 (Thu, 16 May 2019) $
+  ; $LastChangedRevision: 27245 $
   ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_file_source.pro $
   ;-
 
@@ -64,7 +64,7 @@ function spp_file_source,default_source,source_key=source_key,set=set,reset=rese
       user_pass = ''
       str_element,ex,'USER_PASS',user_pass                 ;  Get user_pass if it was passed in as a keyword
       if ~keyword_set(user_pass) then begin
-        case source_key of
+        case strupcase(source_key) of
           'SWEAP' : user_pass = ssl_password(getenv('SPP_USER_PASS'))
           'FIELDS': user_pass = ssl_password(getenv('PSP_STAGING_ID')+':'+getenv('PSP_STAGING_PW'))
           else    : user_pass = ssl_password(getenv('SPP_USER_PASS'))

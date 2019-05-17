@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed May 15 18:16:22 2019.<P>
+<STRONG>Last modified: </STRONG>Thu May 16 18:16:30 2019.<P>
  
 <HR>
  
@@ -55,10 +55,10 @@ Function: qderiv
 
 Purpose: ;
  Author: Davin Larson  
- $LastChangedBy: $
- $LastChangedDate: $
- $LastChangedRevision: $
- $URL: $
+ $LastChangedBy: davin-mac $
+ $LastChangedDate: 2019-05-16 13:14:07 -0700 (Thu, 16 May 2019) $
+ $LastChangedRevision: 27244 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/qderiv.pro $
 </PRE><P>
 <STRONG>(See <A href="spice/qderiv.pro">general/spice/qderiv.pro</A>)</STRONG><P>
 <HR>
@@ -76,10 +76,10 @@ Purpose: Computer angular velocity of a rotation quaternion
 Reference:  http://www.euclideanspace.com/physics/kinematics/angularvelocity/QuaternionDifferentiation2.pdf
 
  Author: Davin Larson  
- $LastChangedBy: $
- $LastChangedDate: $
- $LastChangedRevision: $
- $URL: $
+ $LastChangedBy: davin-mac $
+ $LastChangedDate: 2019-05-16 13:14:07 -0700 (Thu, 16 May 2019) $
+ $LastChangedRevision: 27244 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/q_angular_velocity.pro $
 </PRE><P>
 <STRONG>(See <A href="spice/q_angular_velocity.pro">general/spice/q_angular_velocity.pro</A>)</STRONG><P>
 <HR>
@@ -92,13 +92,14 @@ Reference:  http://www.euclideanspace.com/physics/kinematics/angularvelocity/Qua
 <PRE>
 Function: spice_body_att
 Purpose:  retrieve the rotation (array or quaternion) to transfer from one frame to another frame
-
+  This routine is is basically a wroapper for the routine cspice_pxform. cspice_pxform can fail if there are time intervals missing from the kernels.
+  This routine can check for those missing intervals (using the check_objects keyword) and complete the task successfully.
   Note: time is in the last dimension  (not like tplot storage)
  ;
  Author: Davin Larson  
  $LastChangedBy: davin-mac $
- $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
- $LastChangedRevision: 27221 $
+ $LastChangedDate: 2019-05-16 13:19:05 -0700 (Thu, 16 May 2019) $
+ $LastChangedRevision: 27248 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_body_att.pro $
 </PRE><P>
 <STRONG>(See <A href="spice/spice_body_att.pro">general/spice/spice_body_att.pro</A>)</STRONG><P>
