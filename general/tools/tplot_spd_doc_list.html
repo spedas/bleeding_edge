@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu May 16 18:16:30 2019.<P>
+<STRONG>Last modified: </STRONG>Fri May 17 18:16:31 2019.<P>
  
 <HR>
  
@@ -97,7 +97,21 @@ PURPOSE:
    Creates a new tplot variable that is the time average of original.
 INPUT: name  tplot variable names (strings)
 KEYWORDS:
+ newname = new name for the variable
+ append = append this suffix to the variable
+ trange = time range, can be used to alter start and end times, the
+          default is minmax(data.x)
+ day = return values /per day
  display_object = Object reference to be passed to dprint for output.
+ do_stdev = if set create a variable for the standard deviation. with
+            suffix &quot;_stdev&quot;
+Modified by O. Le Contel, LPP, Feb. 19, 2016
+ in order to deal with L64 integer
+
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-05-17 10:42:31 -0700 (Fri, 17 May 2019) $
+ $LastChangedRevision: 27256 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/tplot/avg_data.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/avg_data.pro">general/tools/tplot/avg_data.pro</A>)</STRONG><P>
 <HR>
