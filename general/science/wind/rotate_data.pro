@@ -19,12 +19,12 @@ function rotate_data,data,rotmatrix,name=name
 case size(/type,data) of
    7: begin                                       ; string
       names = tnames(data,nn)
-      for i=0,nn-1 do begin
+      for i=0L,nn-1 do begin
          get_data,names[i],data=tempstr,alimit=limits
          if size(/type,tempstr) ne 8 then return,'NULLDATA'
          newstr = rotate_data(tempstr,rotmatrix,name=name)
          newname = names[i]+'_'+name
-         store_data,newname,data=newstr,limit=limits
+         store_data,newname,data=newstr,dlimit=limits
       endfor
          return,newname
       end

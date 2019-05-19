@@ -28,6 +28,7 @@ pro scat_plot,xname,yname, zname,$
    yvalue=y, $
    color = colors, $
    ydimen = ny, $
+   dens=dens , $
    limits = limits
 
 
@@ -73,7 +74,7 @@ if three then begin
     if index lt 0 then zrange = minmax(z)
     str_element, limits, 'log_color', value = log_color, index = index
     if index lt 0 then log_color = 0
-    colors = bytescale(z, range = zrange, bottom = 40, log = log_color, $
+    colors = bytescale(z, range = zrange, log = log_color, $
     missing = 0)
 endif else begin
     colors = replicate(!p.color, dimen1(time))
@@ -89,7 +90,7 @@ endif
 if n_elements(t0) or n_elements(t1) then begin
    if n_elements(t0) eq 0 then t0 = double(0.)
    if n_elements(t1) eq 0 then t1 = double(1e20)
-   i = where((time ge t0) and (time le t1))
+   i = where((time ge t0) and (time lt t1))
    x = x[i]
    y = y[i]
    t = time[i]
@@ -98,25 +99,36 @@ endif else t=time
 
 ; zap bad data
 ind = where(x lt 1e20)
-x = x(ind) & y = y(ind) & if three then z = z(ind)
+x = x[ind] & y = y[ind] & if three then z = z[ind]
 ind = where(y lt 1e20)
-x = x(ind) & y = y(ind) & if three then z = z(ind)
+x = x[ind] & y = y[ind] & if three then z = z[ind]
 if three then begin
     ind = where(z lt 1e20)
-    x = x(ind) & y = y(ind) &  z = z(ind)
+    x = x[ind] & y = y[ind] &  z = z[ind]
 end
 
 ;get some nice tplot stuff
-@tplot_com
+;@tplot_com
 ;title = tplot_vars.options.title
-if not keyword_set(t0) then t0 = time(0)
+if not keyword_set(t0) then t0 = min(time)
 if not keyword_set(t1) then t1 = max(time)
 ;title = title +'   '+ trange_str(t0,t1)
 title = trange_str(t0,t1)
 
 
 if not keyword_set(overplot) then plot,x,y,xtitle=xtitle, ytitle=ytitle,color=color, title = title, /nodata, _EXTRA = plotstuff
-plots,x,y,color=colors, psym = psym, noclip = 0
+if keyword_set(dens) then begin
+  h=histbins2d(x,y,xbins,ybins)
+  h = float(h)
+  printdat,h,xbins,ybins
+  print,minmax(h)
+  specplot,xbins,ybins,h,limits=limits
+endif else begin
+  plots,x,y,color=colors, psym = psym, noclip = 0
+  
+endelse
+
+
 
 return
 end

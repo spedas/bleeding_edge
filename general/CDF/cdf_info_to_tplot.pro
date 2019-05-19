@@ -6,9 +6,9 @@
 ;
 ; Written by Davin Larson
 ;
-; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2019-01-28 17:11:15 -0800 (Mon, 28 Jan 2019) $
-; $LastChangedRevision: 26510 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-05-18 08:32:39 -0700 (Sat, 18 May 2019) $
+; $LastChangedRevision: 27258 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_info_to_tplot.pro $
 ;-
 pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
@@ -20,7 +20,7 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
         load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
                                       ;resolve labels implemented as keyword to preserve backwards compatibility
 
-dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 26510 2019-01-29 01:11:15Z pulupalap $'
+dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 27258 2019-05-18 15:32:39Z davin-mac $'
 tplotnames=''
 vbs = keyword_set(verbose) ? verbose : 0
 
@@ -128,7 +128,7 @@ for i=0,nv-1 do begin
    spec = strcmp(display_type,'spectrogram',/fold_case)
    log  = strcmp(scaletyp,'log',3,/fold_case)
 
-   if ptr_valid(tvar.dataptr) and ptr_valid(v.dataptr) then begin
+   if ptr_valid(tvar.dataptr) && ptr_valid(v.dataptr) then begin
 
      if size(/n_dimens,*v.dataptr) ne v.ndimen +1 then begin    ; Cluge for (lost) trailing dimension of 1
 ;in rare circumstances, var_2 may not exist here, jmm, 17-mar-2009,
@@ -138,6 +138,7 @@ for i=0,nv-1 do begin
      endif
      cdfstuff={filename:cdfi.filename,gatt:cdfi.g_attributes,vname:v.name,vatt:keyword_set(attr)?attr:0}
      units = struct_value(attr,'units',default='')
+     if keyword_set(var_1) && isa(*var_1.dataptr,/string) then var_1=0     ; check for weird string inputsretadafafafaafaaffaaffaf
      if keyword_set(var_2) then data = {x:tvar.dataptr,y:v.dataptr,v1:var_1.dataptr, v2:var_2.dataptr} $
      else if keyword_set(var_1) then data = {x:tvar.dataptr,y:v.dataptr, v:var_1.dataptr}  $
      else data = {x:tvar.dataptr,y:v.dataptr}
