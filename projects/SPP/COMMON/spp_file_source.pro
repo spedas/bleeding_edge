@@ -34,8 +34,8 @@
   ;  see "FILE_RETRIEVE" for a description of each structure element.
   ;
   ; $LastChangedBy: davin-mac $
-  ; $LastChangedDate: 2019-05-16 13:16:27 -0700 (Thu, 16 May 2019) $
-  ; $LastChangedRevision: 27245 $
+  ; $LastChangedDate: 2019-05-20 21:13:19 -0700 (Mon, 20 May 2019) $
+  ; $LastChangedRevision: 27268 $
   ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_file_source.pro $
   ;-
 
@@ -66,7 +66,10 @@ function spp_file_source,default_source,source_key=source_key,set=set,reset=rese
       if ~keyword_set(user_pass) then begin
         case strupcase(source_key) of
           'SWEAP' : user_pass = ssl_password(getenv('SPP_USER_PASS'))
-          'FIELDS': user_pass = ssl_password(getenv('PSP_STAGING_ID')+':'+getenv('PSP_STAGING_PW'))
+          'FIELDS': begin
+            if getenv('PSP_STAGING_ID') && getenv('PSP_STAGING_PW') then setenv,'FIELDS_USER_PASS='+getenv('PSP_STAGING_ID')+':'+getenv('PSP_STAGING_PW')
+            user_pass = ssl_password(getenv('FIELDS_USER_PASS'))
+            end
           else    : user_pass = ssl_password(getenv('SPP_USER_PASS'))
         endcase        
       endif

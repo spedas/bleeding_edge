@@ -1,9 +1,9 @@
 ;+
 ; Written by Davin Larson 
 ; 
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-05-16 13:17:14 -0700 (Thu, 16 May 2019) $
-; $LastChangedRevision: 27246 $
+; $LastChangedBy: pulupa $
+; $LastChangedDate: 2019-05-21 15:55:18 -0700 (Tue, 21 May 2019) $
+; $LastChangedRevision: 27271 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_file_retrieve.pro $
 ; 
 ; Function:  files = spp_file_retrieve(PATHNAME)
@@ -153,6 +153,10 @@ if keyword_set(create_dir) then begin
   files = source.local_data_dir + pathnames
   file_mkdir2,file_dirname( files ),_extra=source
   return,files
+endif
+
+if keyword_set(source_key) then begin
+  if source_key EQ 'FIELDS' then pathnames = str_sub(pathnames, 's\s', 'ss')
 endif
 
 files = file_retrieve(pathnames,_extra=source)
