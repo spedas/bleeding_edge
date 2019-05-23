@@ -54,6 +54,7 @@
 ;                       useful if you accidently save an incorrect password, or if your SDC password has changed
 ;         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in
 ;                       SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
+;         ignore_telescopes: value (or array of values) representing telescope # to ignore while calculating omni-directional spectrograms
 ;
 ; OUTPUT:
 ;  
@@ -94,8 +95,8 @@
 ;     Please see the notes in mms_load_data for more information 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-10-08 17:44:24 -0700 (Mon, 08 Oct 2018) $
-;$LastChangedRevision: 25934 $
+;$LastChangedDate: 2019-05-22 10:35:03 -0700 (Wed, 22 May 2019) $
+;$LastChangedRevision: 27275 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_load_feeps.pro $
 ;-
 pro mms_load_feeps, trange = trange, probes = probes, datatype = datatype, $
@@ -109,7 +110,7 @@ pro mms_load_feeps, trange = trange, probes = probes, datatype = datatype, $
                   min_version = min_version, spdf = spdf, num_smooth = num_smooth, $
                   available = available, versions = versions, always_prompt = always_prompt, $
                   major_version=major_version, no_flatfield_corrections=no_flatfield_corrections, $
-                  tt2000=tt2000
+                  tt2000=tt2000, ignore_telescopes=ignore_telescopes
 
     if undefined(level) then level_in = 'l2' else level_in = level
     if undefined(probes) then probes_in = ['1'] else probes_in = probes
@@ -169,7 +170,37 @@ pro mms_load_feeps, trange = trange, probes = probes, datatype = datatype, $
         for data_units_idx = 0, n_elements(data_units)-1 do begin
           ; updated active eyes, 9/8/2017
           eyes = mms_feeps_active_eyes(tr, this_probe, data_rate_in, this_datatype, level)
-        
+          
+          ; user requested to ignore a specific telescope
+          if keyword_set(ignore_telescopes) then begin
+            for ignore_idx=0, n_elements(ignore_telescopes)-1 do begin
+              top_or_bottom = strmid(ignore_telescopes[ignore_idx], 0, 1) ; should be t (for top) or b (for bottom)
+              if strlowcase(top_or_bottom) eq 't' then begin
+                new_top_eyes = list(eyes['top'], /extract)
+                eye_to_remove = where(new_top_eyes eq strjoin(strsplit(ignore_telescopes[ignore_idx], 't', /extract)), ignore_count)
+                if ignore_count eq 0 then begin
+                  dprint, dlevel=0, 'Telescope not found: ' + strcompress(string(ignore_telescopes[ignore_idx]), /rem)
+                endif else begin
+                  removed = new_top_eyes.remove(eye_to_remove)
+                endelse
+                eyes['top'] = new_top_eyes.toarray()
+              endif else if strlowcase(top_or_bottom) eq 'b' then begin
+                new_bot_eyes = eyes['bottom']
+                new_bot_eyes = list(eyes['bottom'], /extract)
+                eye_to_remove = where(new_bot_eyes eq strjoin(strsplit(ignore_telescopes[ignore_idx], 'b', /extract)), ignore_count)
+                if ignore_count eq 0 then begin
+                  dprint, dlevel=0, 'Telescope not found: ' + strcompress(string(ignore_telescopes[ignore_idx]), /rem)
+                endif else begin
+                  removed = new_bot_eyes.remove(eye_to_remove)
+                endelse
+                eyes['bottom'] = new_bot_eyes.toarray()
+              endif else begin
+                dprint, dlevel=0, 'Error, unknown telescope specified in the ignore_telescopes keyword.'
+                return
+              endelse
+            endfor
+          endif
+
           ; split the extra integral channel from all of the spectrograms
           mms_feeps_split_integral_ch, data_units[data_units_idx], this_datatype, this_probe, $
               suffix = suffix, data_rate = data_rate_in, level = level_in, sensor_eyes = eyes

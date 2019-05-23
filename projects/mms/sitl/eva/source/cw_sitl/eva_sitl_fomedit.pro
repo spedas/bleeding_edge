@@ -7,8 +7,8 @@
 ;   When "Save" is chosen, the "segSelect" structure will be used to update FOM/BAK structures.
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2019-02-14 15:42:10 -0800 (Thu, 14 Feb 2019) $
-; $LastChangedRevision: 26635 $
+; $LastChangedDate: 2019-05-22 14:59:10 -0700 (Wed, 22 May 2019) $
+; $LastChangedRevision: 27277 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_fomedit.pro $
 ;
 PRO eva_sitl_FOMedit_event, ev
@@ -42,7 +42,7 @@ PRO eva_sitl_FOMedit_event, ev
         endelse
         txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
       endif else begin
-        ptr = sppeva_sitl_get_block(evalue, segSelect.TE)
+        ptr = sppeva_sitl_get_block(evalue, segSelect.TE,/quiet)
         txtbuffs = 'SEGMENT SIZE: '+strtrim(string(ptr.length),2)+' blocks'
       endelse
       widget_control, wid.lblBuffs, SET_VALUE=txtbuffs
@@ -59,7 +59,7 @@ PRO eva_sitl_FOMedit_event, ev
         endelse
         txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
       endif else begin
-        ptr = sppeva_sitl_get_block(segSelect.TS,evalue)
+        ptr = sppeva_sitl_get_block(segSelect.TS,evalue,/quiet)
         txtbuffs = 'SEGMENT SIZE: '+strtrim(string(ptr.length),2)+' blocks'
       endelse
       widget_control, wid.lblBuffs, SET_VALUE=txtbuffs
@@ -153,7 +153,9 @@ PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv, proj=proj, $
     endelse
     txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
   endif else begin
-    PTR = sppeva_sitl_get_block(Ts, Te)
+    print, Ts, Te
+    print, '***********'
+    PTR = sppeva_sitl_get_block(Ts, Te,/quiet)
     txtbuffs = 'SEGMENT SIZE: '+strtrim(string(PTR.LENGTH),2)+' blocks'
   endelse
   

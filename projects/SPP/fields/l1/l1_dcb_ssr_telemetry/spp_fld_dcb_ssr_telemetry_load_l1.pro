@@ -49,4 +49,24 @@ pro spp_fld_dcb_ssr_telemetry_load_l1, file, prefix = prefix
 
   endif
 
+  get_data, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR', data = d_wptr, al = al
+
+  if size(/type, d_wptr) EQ 8 then begin
+
+    store_data, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', lim = al, $
+      data = {x:d_wptr.x, y:d_wptr.y/512d}
+
+    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'ysubtitle', 'Gbit'
+    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'yrange', [0,256]
+    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'ystyle', 1
+    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'yticks', 16
+    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'ytickv', indgen(17) * 256 / 16
+
+  endif
+
+  options, 'spp_fld_dcb_ssr_telemetry_*', 'xticklen', 1
+  options, 'spp_fld_dcb_ssr_telemetry_*', 'yticklen', 1
+  options, 'spp_fld_dcb_ssr_telemetry_*', 'xgridstyle', 1
+  options, 'spp_fld_dcb_ssr_telemetry_*', 'ygridstyle', 1
+
 end
