@@ -49,10 +49,10 @@
 ;  [RSA], Alibag [IIG]), NiCT, INTERMAGNET, and many others for their cooperation to
 ;  make the Dst index available.
 ;
-; $LastChangedBy: $
-; $LastChangedDate: $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2019-05-22 23:26:48 -0700 (Wed, 22 May 2019) $
+; $LastChangedRevision: 27280 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/kyoto/kyoto_load_dst.pro $
 ;-
 
 pro kyoto_load_dst ,trange=trange, $

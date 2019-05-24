@@ -11,8 +11,8 @@
 ;     Updated to use time varying bad eye tables and changed bottom channels that we NaN out from Drew Turner, egrimes, 8Oct2018
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-10-08 17:44:24 -0700 (Mon, 08 Oct 2018) $
-; $LastChangedRevision: 25934 $
+; $LastChangedDate: 2019-05-23 16:53:07 -0700 (Thu, 23 May 2019) $
+; $LastChangedRevision: 27283 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_feeps_remove_bad_data.pro $
 ;-
 
@@ -118,20 +118,60 @@ pro mms_feeps_remove_bad_data, probe=probe, data_rate=data_rate, datatype=dataty
 ;MMS-4: Top: Ch1 on Eye 1; Ch0 on Eye 8
 ;Bot: Ch0 on Eyes 6, 7, 8; Ch1 on Eye 9
 
-  bad_ch0 = hash()
-  bad_ch0['mms1'] = hash('top', [2, 5, 6, 7], 'bottom', [2, 3, 4, 5, 6, 7, 8, 9, 11, 12])
-  bad_ch0['mms2'] = hash('top', [1, 2, 3, 4, 5, 9, 10, 11, 12], 'bottom', [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12])
-  bad_ch0['mms3'] = hash('top', [1, 2, 3, 4, 5, 8, 9, 10, 11, 12], 'bottom', [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12])
-  bad_ch0['mms4'] = hash('top', [1, 2, 3, 4, 5, 8, 9, 10, 11, 12], 'bottom', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-  
-  bad_ch1 = hash()
-  bad_ch1['mms1'] = hash('top', [], 'bottom', [11])
-  bad_ch1['mms2'] = hash('top', [8], 'bottom', [12])
-  bad_ch1['mms3'] = hash('top', [1], 'bottom', [])
-  bad_ch1['mms4'] = hash('top', [1], 'bottom', [6, 9])
-  
+;Need to create this f
+;  bad_ch0 = hash()
+;  bad_ch0['mms1'] = hash('top', [2, 5, 6, 7], 'bottom', [2, 3, 4, 5, 6, 7, 8, 9, 11, 12])
+;  bad_ch0['mms2'] = hash('top', [1, 2, 3, 4, 5, 9, 10, 11, 12], 'bottom', [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12])
+;  bad_ch0['mms3'] = hash('top', [1, 2, 3, 4, 5, 8, 9, 10, 11, 12], 'bottom', [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12])
+;  bad_ch0['mms4'] = hash('top', [1, 2, 3, 4, 5, 8, 9, 10, 11, 12], 'bottom', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+;  
+;  bad_ch1 = hash()
+;  bad_ch1['mms1'] = hash('top', [6], 'bottom', [6,11])
+;  bad_ch1['mms2'] = hash('top', [8], 'bottom', [12])
+;  bad_ch1['mms3'] = hash('top', [1], 'bottom', [])
+;  bad_ch1['mms4'] = hash('top', [1], 'bottom', [6, 9])
+;  
+;    bad_ch0 = hash()
+;    bad_ch0['mms1'] = hash('top', [2, 5, 6, 7], 'bottom', [2, 3, 4, 5, 6, 7, 8, 9, 11, 12])
+;    bad_ch0['mms2'] = hash('top', [1, 2, 3, 4, 5, 9, 10, 11, 12], 'bottom', [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12])
+;    bad_ch0['mms3'] = hash('top', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 'bottom', [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12])
+;    bad_ch0['mms4'] = hash('top', [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12], 'bottom', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+;    
+;    bad_ch1 = hash()
+;    bad_ch1['mms1'] = hash('top', [6], 'bottom', [6,11])
+;    bad_ch1['mms2'] = hash('top', [8], 'bottom', [12])
+;    bad_ch1['mms3'] = hash('top', [1, 6, 7], 'bottom', [6, 7])
+;    bad_ch1['mms4'] = hash('top', [1, 6], 'bottom', [6, 9])
+
+;Edited by Christine Gabrielse May 2019 to include additional channels to mask
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+bad_ch0 = hash()
+bad_ch0['mms1'] = hash('top', [2, 5, 6], 'bottom', [2, 3, 4, 5, 6, 8, 9, 11, 12])
+bad_ch0['mms2'] = hash('top', [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12], 'bottom', [1, 2, 3, 4, 5, 7, 9, 10, 11, 12])
+bad_ch0['mms3'] = hash('top', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 'bottom', [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12])
+bad_ch0['mms4'] = hash('top', [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12], 'bottom', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+
+bad_ch1 = hash()
+bad_ch1['mms1'] = hash('top', [6], 'bottom', [6,11])
+bad_ch1['mms2'] = hash('top', [8], 'bottom', [7, 12])
+bad_ch1['mms3'] = hash('top', [1, 6, 7], 'bottom', [6, 7])
+bad_ch1['mms4'] = hash('top', [1, 6], 'bottom', [6, 7, 8, 9])
+
+bad_ch2 = hash()
+bad_ch2['mms1'] = hash('top', [], 'bottom', [])
+bad_ch2['mms2'] = hash('top', [], 'bottom', [])
+bad_ch2['mms3'] = hash('top', [], 'bottom', [])
+bad_ch2['mms4'] = hash('top', [], 'bottom', [7, 6])
+
+
+
+
   bad_ch0 = bad_ch0['mms'+strcompress(string(probe), /rem)]
   bad_ch1 = bad_ch1['mms'+strcompress(string(probe), /rem)]
+  bad_ch2 = bad_ch2['mms'+strcompress(string(probe), /rem)]
 
   ;;;;;;;;;;;;;;;; bottom channel
   ; top electrons
@@ -198,6 +238,44 @@ pro mms_feeps_remove_bad_data, probe=probe, data_rate=data_rate, datatype=dataty
     append_array, vars_bothchans, tnames('mms'+strcompress(string(probe), /rem)+'_epd_feeps_'+data_rate_level+'_ion_bottom_intensity_sensorid_'+strcompress(string((bad_ch1['bottom'])[bad_idx]), /rem)+suffix)
     append_array, vars_bothchans, tnames('mms'+strcompress(string(probe), /rem)+'_epd_feeps_'+data_rate_level+'_ion_bottom_counts_sensorid_'+strcompress(string((bad_ch1['bottom'])[bad_idx]), /rem)+suffix)
   endfor
+  
+  
+  
+  ;;;;;;;;;;;;;;;; bottom 3 channels
+  ; top electrons
+  for bad_idx=0, n_elements(bad_ch2['top'])-1 do begin
+    if array_contains([6, 7, 8], (bad_ch2['top'])[bad_idx]) then continue ; ion eyes
+    append_array, vars_allchans, tnames('mms'+strcompress(string(probe), /rem)+'_epd_feeps_'+data_rate_level+'_electron_top_count_rate_sensorid_'+strcompress(string((bad_ch2['top'])[bad_idx]), /rem)+suffix)
+    append_array, vars_allchans, tnames('mms'+strcompress(string(probe), /rem)+'_epd_feeps_'+data_rate_level+'_electron_top_intensity_sensorid_'+strcompress(string((bad_ch2['top'])[bad_idx]), /rem)+suffix)
+    append_array, vars_allchans, tnames('mms'+strcompress(string(probe), /rem)+'_epd_feeps_'+data_rate_level+'_electron_top_counts_sensorid_'+strcompress(string((bad_ch2['top'])[bad_idx]), /rem)+suffix)
+  endfor
+
+  ; bottom electrons
+  for bad_idx=0, n_elements(bad_ch2['bottom'])-1 do begin
+    if array_contains([6, 7, 8], (bad_ch2['bottom'])[bad_idx]) then continue ; ion eyes
+    append_array, vars_allchans, tnames('mms'+strcompress(string(probe), /rem)+'_epd_feeps_'+data_rate_level+'_electron_bottom_count_rate_sensorid_'+strcompress(string((bad_ch2['bottom'])[bad_idx]), /rem)+suffix)
+    append_array, vars_allchans, tnames('mms'+strcompress(string(probe), /rem)+'_epd_feeps_'+data_rate_level+'_electron_bottom_intensity_sensorid_'+strcompress(string((bad_ch2['bottom'])[bad_idx]), /rem)+suffix)
+    append_array, vars_allchans, tnames('mms'+strcompress(string(probe), /rem)+'_epd_feeps_'+data_rate_level+'_electron_bottom_counts_sensorid_'+strcompress(string((bad_ch2['bottom'])[bad_idx]), /rem)+suffix)
+  endfor
+
+  ; top ions
+  for bad_idx=0, n_elements(bad_ch2['top'])-1 do begin
+    if ~array_contains([6, 7, 8], (bad_ch2['top'])[bad_idx]) then continue ; ion eyes
+    append_array, vars_allchans, tnames('mms'+strcompress(string(probe), /rem)+'_epd_feeps_'+data_rate_level+'_ion_top_count_rate_sensorid_'+strcompress(string((bad_ch2['top'])[bad_idx]), /rem)+suffix)
+    append_array, vars_allchans, tnames('mms'+strcompress(string(probe), /rem)+'_epd_feeps_'+data_rate_level+'_ion_top_intensity_sensorid_'+strcompress(string((bad_ch2['top'])[bad_idx]), /rem)+suffix)
+    append_array, vars_allchans, tnames('mms'+strcompress(string(probe), /rem)+'_epd_feeps_'+data_rate_level+'_ion_top_counts_sensorid_'+strcompress(string((bad_ch2['top'])[bad_idx]), /rem)+suffix)
+  endfor
+
+  ; bottom ions
+  for bad_idx=0, n_elements(bad_ch2['bottom'])-1 do begin
+    if ~array_contains([6, 7, 8], (bad_ch2['bottom'])[bad_idx]) then continue ; ion eyes
+    append_array, vars_allchans, tnames('mms'+strcompress(string(probe), /rem)+'_epd_feeps_'+data_rate_level+'_ion_bottom_count_rate_sensorid_'+strcompress(string((bad_ch2['bottom'])[bad_idx]), /rem)+suffix)
+    append_array, vars_allchans, tnames('mms'+strcompress(string(probe), /rem)+'_epd_feeps_'+data_rate_level+'_ion_bottom_intensity_sensorid_'+strcompress(string((bad_ch2['bottom'])[bad_idx]), /rem)+suffix)
+    append_array, vars_allchans, tnames('mms'+strcompress(string(probe), /rem)+'_epd_feeps_'+data_rate_level+'_ion_bottom_counts_sensorid_'+strcompress(string((bad_ch2['bottom'])[bad_idx]), /rem)+suffix)
+  endfor
+  
+  
+  
 
   ; the following sets the first energy channel to NaN
   for var_idx=0, n_elements(vars)-1 do begin
@@ -215,6 +293,18 @@ pro mms_feeps_remove_bad_data, probe=probe, data_rate=data_rate, datatype=dataty
       bad.Y[*, 0] = !values.d_nan ; remove the first energy channel
       bad.Y[*, 1] = !values.d_nan ; remove the second energy channel
       store_data, vars_bothchans[var_idx], data=bad, dlimits=dl, limits=l
+    endif
+  endfor
+  
+  ;Added by Christine May 2019
+  ; the following sets the first and second and third energy channels to NaNs
+  for var_idx=0, n_elements(vars_allchans)-1 do begin
+    get_data, vars_allchans[var_idx], data=bad, dlimits=dl, limits=l
+    if is_struct(bad) then begin
+      bad.Y[*, 0] = !values.d_nan ; remove the first energy channel
+      bad.Y[*, 1] = !values.d_nan ; remove the second energy channel
+      bad.Y[*, 2] = !values.d_nan ; remove the third energy channel
+      store_data, vars_allchans[var_idx], data=bad, dlimits=dl, limits=l
     endif
   endfor
   
