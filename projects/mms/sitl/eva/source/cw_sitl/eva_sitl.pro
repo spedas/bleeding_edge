@@ -764,6 +764,9 @@ FUNCTION eva_sitl, parent, $
     EVA_TESTMODE_SUBMIT: 1,$
     EVA_SPLIT_SIZE:0, $; val.NOMINAL_SEG_RANGE[1]}
     EVA_STLM_INPUT:'soca',$;
+    EVA_GLS1_ALGO:'mp-dl-unh',$
+    EVA_GLS2_ALGO:'none',$
+    EVA_GLS3_ALGO:'none',$
     EVA_STLM_UPDATE:1,$
     EVA_BASEPOS: 0}
     

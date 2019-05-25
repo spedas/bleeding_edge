@@ -61,7 +61,7 @@ PRO eva_pref, GROUP_LEADER=group_leader
     str_element,/add,wid,'pfData', eva_data_pref(baseTab,xsize=xsize,group_leader=group_leader); DATA MODULE
     str_element,/add,wid,'pfSitl', eva_sitl_pref(baseTab,xsize=xsize,group_leader=group_leader); SITL MODULE
     str_element,/add,wid,'pfSitl2', eva_sitl_pref2(baseTab,xsize=xsize,group_leader=group_leader); SITL MODULE
-    str_element,/add,wid,'pfGen', eva_pref_gen(baseTab,xsize=xsize,group_leader=group_leader); SITL MODULE
+    str_element,/add,wid,'pfGen', eva_pref_gen(baseTab,xsize=xsize,group_leader=group_leader); GENERAL MODULE
     
 ;    str_element,/add,wid,'pfOrbit',eva_orbit_pref(baseTab,xsize=xsize,group_leader=group_leader); ORBIT MODULE
     

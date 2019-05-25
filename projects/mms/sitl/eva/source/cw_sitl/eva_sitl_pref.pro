@@ -71,6 +71,16 @@ FUNCTION eva_sitl_pref_event, ev
     state.fldSplit: begin
       pref.EVA_SPLIT_SIZE = long(ev.VALUE)
       end
+    state.drpGLS1: begin; { WIDGET_DROPLIST, ID:0L, TOP:0L, HANDLER:0L, INDEX:0L }
+      pref.EVA_GLS1_ALGO = state.glSet[ev.INDEX]
+      end
+    state.drpGLS2: begin; { WIDGET_DROPLIST, ID:0L, TOP:0L, HANDLER:0L, INDEX:0L }
+      pref.EVA_GLS2_ALGO = state.glSet[ev.INDEX]
+    end
+    state.drpGLS3: begin; { WIDGET_DROPLIST, ID:0L, TOP:0L, HANDLER:0L, INDEX:0L }
+      pref.EVA_GLS3_ALGO = state.glSet[ev.INDEX]
+    end
+
 ;    state.bgPath: begin;{ID:0L, TOP:0L, HANDLER:0L, SELECT:0, VALUE:0 }
 ;      pref.EVA_STLM_INPUT = state.PATH_VALUES[ev.VALUE]
 ;      print, pref.EVA_STLM_INPUT,' is chosen'
@@ -111,6 +121,20 @@ FUNCTION eva_sitl_pref, parent, GROUP_LEADER=group_leader, $
     PRO_SET_VALUE = "eva_sitl_pref_set_value",/column,$
     XSIZE = xsize, YSIZE = ysize,sensitive=1,/base_align_left)
   str_element,/add,state,'mainbase',mainbase
+
+  bsGLS = widget_base(mainbase,/column,/frame, space=0, ypad=0)
+    lblGLS = widget_label(bsGLS,VALUE='EVA can display up to three ground-loop variables.')
+    glSet = ['none','mp-dl-unh','something']
+    str_element,/add,state,'drpGLS1',widget_droplist(bsGLS,VALUE=glSet,TITLE='Ground loop algorithm 1:',SENSITIVE=1)
+    str_element,/add,state,'drpGLS2',widget_droplist(bsGLS,VALUE=glSet,TITLE='Ground loop algorithm 2:',SENSITIVE=1)
+    str_element,/add,state,'drpGLS3',widget_droplist(bsGLS,VALUE=glSet,TITLE='Ground loop algorithm 3:',SENSITIVE=1)
+    str_element,/add,state,'glSet',glSet
+    idx = where(glSet eq state.PREF.EVA_GLS1_ALGO,ct)
+    if ct gt 0 then widget_control,state.drpGLS1, SET_DROPLIST_SELECT=idx[0]
+    idx = where(glSet eq state.PREF.EVA_GLS2_ALGO,ct)
+    if ct gt 0 then widget_control,state.drpGLS2, SET_DROPLIST_SELECT=idx[0]
+    idx = where(glSet eq state.PREF.EVA_GLS3_ALGO,ct)
+    if ct gt 0 then widget_control,state.drpGLS3, SET_DROPLIST_SELECT=idx[0]
 
   str_element,/add,state,'bgTestmode',cw_bgroup(mainbase,'Enable file submission to SDC',$
     /NONEXCLUSIVE,SET_VALUE=(~state.PREF.EVA_TESTMODE_SUBMIT))

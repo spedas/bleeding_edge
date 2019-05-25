@@ -116,7 +116,7 @@ PRO sitl_report_latest, dir=dir, force=force
   
   ; buffers selected
   if SUBMITTED then begin
-    str_buff = strtrim(string(s.NBUFFS),2)
+    str_buff = strtrim(string(floor(s.NBUFFS)),2)
     min = floor(float(s.NBUFFS)/6.)
     str_buff += ' ('+strtrim(string(min),2)+' min)'
   endif else str_buff = ''
