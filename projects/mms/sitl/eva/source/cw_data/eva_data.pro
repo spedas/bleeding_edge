@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2019-02-07 13:52:12 -0800 (Thu, 07 Feb 2019) $
-; $LastChangedRevision: 26571 $
+; $LastChangedDate: 2019-05-28 16:33:21 -0700 (Tue, 28 May 2019) $
+; $LastChangedRevision: 27304 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data.pro $
 
 ;PRO eva_data_update_date, state, update=update
@@ -66,7 +66,7 @@ FUNCTION eva_data_validate_time, str_stime, str_etime
   return, msg
 END
 
-FUNCTION eva_data_load_and_plot, state, cod=cod
+FUNCTION eva_data_load_and_plot, state, cod=cod, evtop=evtop
   @tplot_com
 
   ; validate time range
@@ -97,6 +97,8 @@ FUNCTION eva_data_load_and_plot, state, cod=cod
   plshort = strmid(paramlist,0,2); first 2 letters
   str_element,/add,state,'paramlist',paramlist
   
+  
+  
   ;----------------------
   ; Load SITL
   ;----------------------
@@ -110,6 +112,18 @@ FUNCTION eva_data_load_and_plot, state, cod=cod
   endelse
   print, 'EVA: load SITL: number of parameters:'+string(ct)
 
+  ;----------------------
+  ; Load SITL GROUND-LOOP
+  ;----------------------
+  ;idx=where(strpos(paramlist,'_gls') gt 0,ct)
+  ;if(ct gt 0) and ~undefined(evtop) then begin
+  if ~undefined(evtop) then begin
+    widget_control, widget_info(evtop,find='eva_sitl'), GET_VALUE=state_sitl
+    trange = time_double([state.START_TIME, state.END_TIME])
+    algo = [state_sitl.PREF.EVA_GLS1_ALGO, state_sitl.PREF.EVA_GLS2_ALGO, state_sitl.PREF.EVA_GLS3_ALGO]
+    eva_sitl_load_gls, trange=trange, algo=algo
+  endif
+  
   ;----------------------
   ; Load THEMIS
   ;----------------------
@@ -454,14 +468,14 @@ FUNCTION eva_data_event, ev
       print,'EVA: --------------'
       widget_note = 'You must have a valid MMS/SITL account in order to use EVA.'
       connected = mms_login_lasp(username = username, widget_note = widget_note)
-      state = eva_data_load_and_plot(state)
+      state = eva_data_load_and_plot(state, evtop=ev.top)
       end
     state.loadforce: begin
       print,'EVA: --------------'
       print,'EVA:  EVENT: load '
       print,'EVA: --------------'
       del_data,'*'
-      state = eva_data_load_and_plot(state)
+      state = eva_data_load_and_plot(state, evtop=ev.top)
       end
     state.bgOPOD: str_element,/add,state,'OPOD',ev.select
     state.bgSRTV: str_element,/add,state,'SRTV',ev.select

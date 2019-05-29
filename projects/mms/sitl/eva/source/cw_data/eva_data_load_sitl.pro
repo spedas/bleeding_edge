@@ -45,26 +45,7 @@ FUNCTION eva_data_load_sitl, state
     idx=where(strmatch(r,'mms_'+stlm.input+'_fomstr',/fold_case),ct)
     codeFOM = (ct eq 1)
     if codeFOM then begin
-      ;if (state.USER_FLAG ne 4) then begin; If not FPI, use FOMStr as is.
-        get_data,'mms_'+stlm.input+'_fomstr',data=D,lim=lim,dl=dl
-;      endif else begin; If FPI, hack FOMStr
-;        get_data,'mms_soca_fomstr',data=D,lim=lim,dl=dl; Get orignal FOMStr
-;        ; Here, add a dummy segment because a FOMstr has to have at least one segment.
-;        ; But, FPIcal wants to start fresh from no segment.
-;        s = lim.UNIX_FOMstr_org; Take out the original FOMstr "unix_FOMStr_org"
-;        str_element,/add,s,'FOM',[0.]; FOM value = 0
-;        str_element,/add,s,'START',[0L]; start of the 1st cycle
-;        str_element,/add,s,'STOP',[1L]; end fo the 1st cycle
-;        str_element,/add,s,'NSEGS',1L
-;        str_element,/add,s,'NBUFFS',1L
-;        str_element,/add,s,'SEGLENGTHS',1L
-;        str_element,/add,s,'FPICAL',1L; Set 1 to indicate that a dummy segment exists.
-;        str_element,/add,s,'SOURCEID', eva_sourceid()
-;        str_element,/add,lim,'UNIX_FOMstr_org',s; put the hacked version back into "unix_FOMstr_org"
-;        D = eva_sitl_strct_read(s,min(lim.unix_FOMstr_org.START,/nan)); change the tplot-data accordingly
-;        ysubtitle = '(FPI)'
-;      endelse
-
+      get_data,'mms_'+stlm.input+'_fomstr',data=D,lim=lim,dl=dl
       store_data,'mms_stlm_fomstr',data=D,lim=lim,dl=dl
       options,   'mms_stlm_fomstr','unix_FOMStr_mod',lim.unix_FOMStr_org; add unixFOMStr_mod
       options,   'mms_stlm_fomstr','unix_FOMStr_org'; remove unixFOMStr_org

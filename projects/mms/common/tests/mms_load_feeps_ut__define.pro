@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_feeps_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-04-02 17:54:46 -0700 (Tue, 02 Apr 2019) $
-; $LastChangedRevision: 26936 $
+; $LastChangedDate: 2019-05-28 08:38:07 -0700 (Tue, 28 May 2019) $
+; $LastChangedRevision: 27297 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_feeps_ut__define.pro $
 ;-
 
@@ -193,36 +193,36 @@ function mms_load_feeps_ut::test_ion_bad_eyes_srvy
   return, 1
 end
 
-function mms_load_feeps_ut::test_flatfield_corrections_l1b
-  mms_load_feeps, data_rate='brst', probe=4, suffix='_with_flatfield_correction', datatype='ion', level='l1b'
-  mms_load_feeps, data_rate='brst', probe=4, datatype='ion', /no_flatfield_corrections, level='l1b'
-  get_data, 'mms4_epd_feeps_brst_l1b_ion_top_intensity_sensorid_6_clean_sun_removed_with_flatfield_correction', data=corr
-  get_data, 'mms4_epd_feeps_brst_l1b_ion_top_intensity_sensorid_6_clean_sun_removed', data=d
-  factor = corr.Y[2000, 1]/d.Y[2000, 1]
-  assert, factor eq 0.8, 'Problem applying flat field corrections to ions (L1b)'
-  return, 1
-end
-
-function mms_load_feeps_ut::test_flatfield_corrections_l2
-  mms_load_feeps, data_rate='brst', probe=4, suffix='_with_flatfield_correction', datatype='ion'
-  mms_load_feeps, data_rate='brst', probe=4, datatype='ion', /no_flatfield_corrections
-  get_data, 'mms4_epd_feeps_brst_l2_ion_top_intensity_sensorid_6_clean_sun_removed_with_flatfield_correction', data=corr
-  get_data, 'mms4_epd_feeps_brst_l2_ion_top_intensity_sensorid_6_clean_sun_removed', data=d
-  factor = corr.Y[2000, 1]/d.Y[2000, 1]
-  assert, factor eq 0.8, 'Problem applying flat field corrections to ions (L2)'
-  return, 1
-end
-
-; regression test, previously failed due to incorrect sensor head type in mms_feeps_flat_field_corrections
-function mms_load_feeps_ut::test_flatfield_corrections_l2_bottom
-  mms_load_feeps, data_rate='brst', probe=4, suffix='_with_flatfield_correction', datatype='ion'
-  mms_load_feeps, data_rate='brst', probe=4, datatype='ion', /no_flatfield_corrections
-  get_data, 'mms4_epd_feeps_brst_l2_ion_bottom_intensity_sensorid_7_clean_sun_removed_with_flatfield_correction', data=corr
-  get_data, 'mms4_epd_feeps_brst_l2_ion_bottom_intensity_sensorid_7_clean_sun_removed', data=d
-  factor = corr.Y[6305, 2]/d.Y[6305, 2]
-  assert, factor eq 0.6, 'Problem applying flat field corrections to ions (L2) - bottom sensor head'
-  return, 1
-end
+;function mms_load_feeps_ut::test_flatfield_corrections_l1b
+;  mms_load_feeps, data_rate='brst', probe=4, suffix='_with_flatfield_correction', datatype='ion', level='l1b'
+;  mms_load_feeps, data_rate='brst', probe=4, datatype='ion', /no_flatfield_corrections, level='l1b'
+;  get_data, 'mms4_epd_feeps_brst_l1b_ion_top_intensity_sensorid_6_clean_sun_removed_with_flatfield_correction', data=corr
+;  get_data, 'mms4_epd_feeps_brst_l1b_ion_top_intensity_sensorid_6_clean_sun_removed', data=d
+;  factor = corr.Y[2000, 1]/d.Y[2000, 1]
+;  assert, factor eq 0.8, 'Problem applying flat field corrections to ions (L1b)'
+;  return, 1
+;end
+;
+;function mms_load_feeps_ut::test_flatfield_corrections_l2
+;  mms_load_feeps, data_rate='brst', probe=4, suffix='_with_flatfield_correction', datatype='ion'
+;  mms_load_feeps, data_rate='brst', probe=4, datatype='ion', /no_flatfield_corrections
+;  get_data, 'mms4_epd_feeps_brst_l2_ion_top_intensity_sensorid_6_clean_sun_removed_with_flatfield_correction', data=corr
+;  get_data, 'mms4_epd_feeps_brst_l2_ion_top_intensity_sensorid_6_clean_sun_removed', data=d
+;  factor = corr.Y[2000, 1]/d.Y[2000, 1]
+;  assert, factor eq 0.8, 'Problem applying flat field corrections to ions (L2)'
+;  return, 1
+;end
+;
+;; regression test, previously failed due to incorrect sensor head type in mms_feeps_flat_field_corrections
+;function mms_load_feeps_ut::test_flatfield_corrections_l2_bottom
+;  mms_load_feeps, data_rate='brst', probe=4, suffix='_with_flatfield_correction', datatype='ion'
+;  mms_load_feeps, data_rate='brst', probe=4, datatype='ion', /no_flatfield_corrections
+;  get_data, 'mms4_epd_feeps_brst_l2_ion_bottom_intensity_sensorid_7_clean_sun_removed_with_flatfield_correction', data=corr
+;  get_data, 'mms4_epd_feeps_brst_l2_ion_bottom_intensity_sensorid_7_clean_sun_removed', data=d
+;  factor = corr.Y[6305, 2]/d.Y[6305, 2]
+;  assert, factor eq 0.6, 'Problem applying flat field corrections to ions (L2) - bottom sensor head'
+;  return, 1
+;end
 
 function mms_load_feeps_ut::test_bad_lower_channels_brst_l1b
   mms_load_feeps, data_rate='brst', probes=[1, 2, 3, 4], level='l1b'

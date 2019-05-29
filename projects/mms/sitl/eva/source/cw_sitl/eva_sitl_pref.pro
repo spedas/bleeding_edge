@@ -124,7 +124,7 @@ FUNCTION eva_sitl_pref, parent, GROUP_LEADER=group_leader, $
 
   bsGLS = widget_base(mainbase,/column,/frame, space=0, ypad=0)
     lblGLS = widget_label(bsGLS,VALUE='EVA can display up to three ground-loop variables.')
-    glSet = ['none','mp-dl-unh','something']
+    glSet = ['none','mp-dl-unh']
     str_element,/add,state,'drpGLS1',widget_droplist(bsGLS,VALUE=glSet,TITLE='Ground loop algorithm 1:',SENSITIVE=1)
     str_element,/add,state,'drpGLS2',widget_droplist(bsGLS,VALUE=glSet,TITLE='Ground loop algorithm 2:',SENSITIVE=1)
     str_element,/add,state,'drpGLS3',widget_droplist(bsGLS,VALUE=glSet,TITLE='Ground loop algorithm 3:',SENSITIVE=1)
