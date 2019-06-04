@@ -102,6 +102,7 @@
 
 pro mvn_lpw_load_l2, vars, trange=trange, noTPLOT=noTPLOT, success=success, tplotvars=tplotvars
 
+
 proname = 'mvn_lpw_load_l2'
 if size(trange,/type) ne 0. then trange2=trange  ;copy trange, as will convert it to a dbl. Don't want to edit the input as the output will change as it's a keyword.
 if size(vars,/type) eq 0. then vars=['lpnt', 'wspecact', 'wspecpas']  ;default variables if non set.

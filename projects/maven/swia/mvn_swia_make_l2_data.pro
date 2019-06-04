@@ -20,8 +20,8 @@
 ;	OLDCAL: Use old calibration factors appropriate for original table
 ;
 ; $LastChangedBy: jhalekas $
-; $LastChangedDate: 2017-01-17 08:47:51 -0800 (Tue, 17 Jan 2017) $
-; $LastChangedRevision: 22608 $
+; $LastChangedDate: 2019-06-03 06:57:07 -0700 (Mon, 03 Jun 2019) $
+; $LastChangedRevision: 27312 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swia/mvn_swia_make_l2_data.pro $
 ;
 ;-
@@ -158,8 +158,18 @@ for i = 0,days-1 do begin
 
 	if type eq 'svy' then begin
 		if newm then mvn_swia_inst2mso
-		if news then mvn_swia_make_swis_cdf,data_version='v'+version+'r'+revision,file = opath+yyyy+'/'+mmmm+'/mvn_swi_l2_onboardsvyspec_'+yyyy+mmmm+dddd+'_v'+version+'_r'+revision+'.cdf'
-		if newm then mvn_swia_make_swim_cdf,data_version='v'+version+'r'+revision,file = opath+yyyy+'/'+mmmm+'/mvn_swi_l2_onboardsvymom_'+yyyy+mmmm+dddd+'_v'+version+'_r'+revision+'.cdf'
+
+		if news then begin
+			wind = where(swis.time_unix ge (time_double(date)-600) and swis.time_unix le (time_double(date)+24.*3600+600),nwind)
+			if nwind gt 0 then swis = swis[wind]
+			mvn_swia_make_swis_cdf,data_version='v'+version+'r'+revision,file = opath+yyyy+'/'+mmmm+'/mvn_swi_l2_onboardsvyspec_'+yyyy+mmmm+dddd+'_v'+version+'_r'+revision+'.cdf'
+		endif
+
+		if newm then begin
+			wind = where(swim.time_unix ge (time_double(date)-600) and swim.time_unix le (time_double(date)+24.*3600+600),nwind)
+			if nwind gt 0 then swim = swim[wind]
+			mvn_swia_make_swim_cdf,data_version='v'+version+'r'+revision,file = opath+yyyy+'/'+mmmm+'/mvn_swi_l2_onboardsvymom_'+yyyy+mmmm+dddd+'_v'+version+'_r'+revision+'.cdf'
+		endif
 	endif
 	
 	date = time_string(time_double(date)+24.*3600)
