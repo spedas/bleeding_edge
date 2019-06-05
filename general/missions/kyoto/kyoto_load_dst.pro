@@ -50,8 +50,8 @@
 ;  make the Dst index available.
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-05-22 23:26:48 -0700 (Wed, 22 May 2019) $
-; $LastChangedRevision: 27280 $
+; $LastChangedDate: 2019-06-04 13:15:57 -0700 (Tue, 04 Jun 2019) $
+; $LastChangedRevision: 27317 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/kyoto/kyoto_load_dst.pro $
 ;-
 
@@ -169,7 +169,11 @@ if ~size(fns,/type) then begin
   ;     e.g., 'c:\data\dst\datafile.for.request' and 'c:/data/dst/datafile.for.request'
   ; we're simply replacing '\' with '/' in all paths before sending to uniq() 
   ; - works on *nix, Windows 7 - not sure about older Windows machines - egrimes 5/15/2014
-  for lpath_idx = 0, n_elements(local_paths)-1 do local_paths[lpath_idx] = strlowcase(strjoin(strsplit(local_paths[lpath_idx], '\', /extract), '/'))
+  ; - no longer making this change for those using shared folders on Windows - egrimes 6/4/2019
+  for lpath_idx = 0, n_elements(local_paths)-1 do begin
+    if strmid(local_paths[lpath_idx], 0, 2) ne '\\' then local_paths[lpath_idx] = strlowcase(strjoin(strsplit(local_paths[lpath_idx], '\', /extract), '/'))
+  endfor
+  
   local_paths=local_paths[uniq(local_paths,sort(local_paths))]
 endif else file_names=fns
 
