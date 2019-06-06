@@ -393,15 +393,18 @@ pro fit, x, yt, $
           return
        endif
 
-;       wh = where(finite(yt),ngood)
-;       if ngood ne n_elements(yt) then begin
-;          if ngood eq 0 then begin
-;             message,/info,'No valid data!'
-;             return
-;          endif
-;          message,/info,'Warning! Invalid data is ignored.'
-;          x = x
-;       endif
+       if  0 then begin
+         wh = where(finite(yt),ngood)
+         if ngood ne n_elements(yt) then begin
+           if ngood eq 0 then begin
+             message,/info,'No valid data!'
+             return
+           endif
+           message,/info,'Warning! Invalid data is ignored.'
+;           x = x
+         endif
+        
+       endif
        y = yt[*]
        if keyword_set(error_fac) then dy = error_fac*y
        if keyword_set(dy) then begin
@@ -482,7 +485,7 @@ pro fit, x, yt, $
 
           if not keyword_set(testname) then begin
              pderthresh = 1e-12
-             pdernz = total(abs(pder) gt pderthresh,1) gt 0
+             pdernz = total(/nan,abs(pder) gt pderthresh,1) gt 0
              wpdernz = where(pdernz,npdernz)
              wpderaz = where(pdernz eq 0,nz)
              if npdernz ne nterms then begin
@@ -508,15 +511,18 @@ pro fit, x, yt, $
 
 ;         Evaluate alpha and beta matricies.
           ds = ((y-yfit)*w)[*]
+          wf = where(finite(ds),/null)
+          ds = ds[wf]
+          pder = pder[wf,*]
           if npdernz gt 1 then beta = ds # pder[*,wpdernz] $
-          else beta = [total(ds * pder[*,wpdernz])]
+          else beta = [total(ds * pder[*,wpdernz],/nan)]
           alpha = transpose(pder[*,wpdernz]) # (w[*] # replicate(1.,npdernz) * pder[*,wpdernz])
-          chisq1 = total(w*(y-yfit)^2)/nfree ; Present chi squared.
+          chisq1 = total(/nan,w*(y-yfit)^2)/nfree ; Present chi squared.
 
           dprint,verbose=verbose,dlevel=2,strtrim(iter,2),sqrt(chisq1),a[0:mp],flambda,format=gformat
 
           ; If a good fit, no need to iterate
-      all_done = chisq1 lt total(abs(y))/1e7/nfree
+      all_done = chisq1 lt total(/nan,abs(y))/1e7/nfree
 ;
 ;         Invert modified curvature matrix to find new parameters.
 flambda=1e-5
@@ -535,7 +541,7 @@ flambda=1e-5
              xfer_parameters,tparams,p_names,b,/array_to_struct
              yfit = (call_function( Function_name_com, x, param=tparams))[*]
              if logf then yfit = alog(yfit)
-             chisqr = total(w*(y-yfit)^2)/nfree         ; New chisqr
+             chisqr = total(/nan,w*(y-yfit)^2)/nfree         ; New chisqr
 if finite(chisqr) eq 0 then begin
     qflag = 4                   ;added ajh
     dprint,dlevel=0,verbose=verbose,'Invalid Data or Parameters in function '+function_name_com+' Aborting'

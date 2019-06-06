@@ -53,9 +53,9 @@ function histbins,x,xbins, shift=shift, range=range, binsize=binsize, log=log, $
   if not range_defined then begin   ; this should allow an empty bin on either side of the distribution
      if keyword_set(extend_range) then exrange = [-1,1] else exrange = [0,0]
      if keyword_set(shift) then $
-       nrange = (floor(rg/binsize) + [0,1] + exrange)*binsize $
+       nrange = (floor(rg/binsize,/L64) + [0,1] + exrange)*binsize $
      else $
-       nrange = (floor(rg/binsize + .5d) + [-.5d,.5d] + exrange)*binsize
+       nrange = (floor(rg/binsize + .5d,/L64) + [-.5d,.5d] + exrange)*binsize
      if keyword_set(extend) then nrange
   endif else nrange = ((lg ? alog10(range) : range))
   
