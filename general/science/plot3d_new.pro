@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-17 12:29:12 -0800 (Mon, 17 Dec 2018) $
-; $LastChangedRevision: 26339 $
+; $LastChangedDate: 2019-06-12 02:16:27 -0700 (Wed, 12 Jun 2019) $
+; $LastChangedRevision: 27340 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/plot3d_new.pro $
 ;+
 ;NAME:
@@ -89,8 +89,8 @@ if n_elements(smoth)     eq 0 then smoth = smooth_3d
 if n_elements(log) eq 0 then log = logscale_3d
 
 if keyword_set(bncenter) and n_elements(bdir) eq 2 then begin
-   latitude = bdir(0)
-   longitude = bdir(1)
+   latitude = bdir[0]
+   longitude = bdir[1]
    if bncenter lt 0 then begin
       latitude = - latitude
       longitude = longitude + 180
@@ -235,16 +235,16 @@ if keyword_set(triang) then begin
 ;   data = total(bindata.data(e1:e2,*),1)  ; sum over energies
 ;   range = minmax(data(goodbins),/pos)
 
-   theta = total(bindata.theta(e1:e2,*),1)/nsteps
-   phi = total(bindata.phi(e1:e2,*),1)/nsteps
+   theta = total(bindata.theta[e1:e2,*],1)/nsteps
+   phi = total(bindata.phi[e1:e2,*],1)/nsteps
 
    if keyword_set(tbins) then  ind = where(tbins ne 0)  $
    else ind = where(finite(theta) and finite(phi))
 
-if ind(0) eq -1 then goto, contu
-   data  = data(ind)
-   theta = theta(ind)
-   phi   = phi(ind)
+if ind[0] eq -1 then goto, contu
+   data  = data[ind]
+   theta = theta[ind]
+   phi   = phi[ind]
    triangulate,phi,theta,fvalue=data,sphere=sphere,/degrees
    image = trigrid(data,sphere=sphere,[2.,2.],[-180.,-90.,178.,90.],/deg)
    image = bytescale(image,log=log, range=range,zero=zero)
@@ -254,10 +254,10 @@ endif else begin
 ;   range = minmax(data(goodbins))
    data = [!values.f_nan,data]
 ;   data = [0.,data]
-   data = data(ptmap+1)                     ; make 2-dimensional
+   data = data[ptmap+1]                     ; make 2-dimensional
    if( keyword_set(smoth)) then begin
       dim = dimen(data) * 1*smoth   ; increase the dimensions
-      data = rebin(data,dim(0),dim(1))
+      data = rebin(data,dim[0],dim[1])
       data = smooth_periodic(data,smoth)
    endif
 
@@ -288,8 +288,8 @@ endelse
    tv,new,sx,sy,xsize=xsize,ysize=ysize,order=0
 
    if n_elements(bdir) eq 2 then begin     ; draw mag field
-      plots,bdir(1),bdir(0),psym=1
-      plots,bdir(1)+180,-bdir(0),psym=4
+      plots,bdir[1],bdir[0],psym=1
+      plots,bdir[1]+180,-bdir[0],psym=4
    endif
    if n_elements(vsw) then begin
       xyz_to_polar,vsw,theta=th,phi=ph
@@ -297,14 +297,14 @@ endelse
    endif else  plots,179.99,0.,psym=2   ; draw the sun.
 
 
-   if keyword_set(grid_3d) then map_grid,londel=grid_3d(0),latdel=grid_3d(1)
+   if keyword_set(grid_3d) then map_grid,londel=grid_3d[0],latdel=grid_3d[1]
 
    str_element,opts,'plot3d_proc',value=proc3d
    str_element,bindata,'plot3d_proc',value=proc3d
    if keyword_set(proc3d) then begin
        proc = ''
        if ndimen(proc3d) eq 0 then proc=proc3d else begin
-           if plot_num lt n_elements(proc3d) then proc = proc3d(plot_num)
+           if plot_num lt n_elements(proc3d) then proc = proc3d[plot_num]
        endelse
        if keyword_set(proc) then call_procedure,proc,bindata,en2,plot_num
    endif
@@ -312,7 +312,7 @@ endelse
    if keyword_set(labs) then begin
       lab=strcompress(indgen(nbins),/rem)
       colorcode = [!p.background,!p.color]
-      xyouts,phi,theta,lab,align=.5,COLOR=colorcode(bins)
+      xyouts,phi,theta,lab,align=.5,COLOR=colorcode[bins]
    endif
 
    ;map_grid,/label,latdel =45,londel=45,CHARSIZE=charsize

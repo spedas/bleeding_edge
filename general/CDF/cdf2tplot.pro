@@ -17,8 +17,8 @@
 ;Author: Davin Larson -  20th century
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-08 09:46:21 -0800 (Sat, 08 Dec 2018) $
-; $LastChangedRevision: 26283 $
+; $LastChangedDate: 2019-06-12 02:14:56 -0700 (Wed, 12 Jun 2019) $
+; $LastChangedRevision: 27338 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf2tplot.pro $
 ; $ID: $
 ;-
@@ -29,7 +29,7 @@ pro cdf2tplot,files,files=files2,prefix=prefix,midfix=midfix,midpos=midpos,suffi
    ,record=record, tplotnames=tplotnames,load_labels=load_labels
 
 
-dprint,dlevel=4,verbose=verbose,'$Id $'
+dprint,dlevel=4,verbose=verbose,'$Id: cdf2tplot.pro 27338 2019-06-12 09:14:56Z davin-mac $'
 vb = keyword_set(verbose) ? verbose : 0
 
 if keyword_set(files2) then files=files2    ; added for backward compatibility  and to make it match the documentation

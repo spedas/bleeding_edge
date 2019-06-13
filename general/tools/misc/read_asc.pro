@@ -47,9 +47,9 @@ end
 ;   FORMAT={year:0,day:0,sec:0.d,v:fltarr(3),n:0.}
 ;   if this keyword is not specified then a default structure will be created.
 ;CREATED BY: Davin Larson
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-03-21 10:45:12 -0700 (Thu, 21 Mar 2019) $
-; $LastChangedRevision: 26869 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-06-12 02:18:18 -0700 (Wed, 12 Jun 2019) $
+; $LastChangedRevision: 27341 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/read_asc.pro $
 
 ;-
@@ -62,7 +62,7 @@ function read_asc,filenames,header_info,format=f,verbose=verbose,tags=filetags,t
   ,tokens=tokens, thisfile=thisfile  $
   ,compress = compress  $
   ,conv_time=conv_time $
-  ,filter=filter, double=double
+  ,filter=filter, double=double ,tformat=tformat
 ;  ,no_conv_time=no_conv_time
 
 if keyword_set(append) then data=append else data=0
@@ -178,7 +178,7 @@ while not eof(lun) do begin
           if i eq (nt-1) then  pos2 = strlen(s)
           ps = strmid(s,pos1,pos2-pos1)
           pos1=pos2+1
-          if time[i] then f0.(i)=time_double(ps) else begin
+          if time[i] then f0.(i)=time_double(ps,tformat=tformat) else begin
             x=f0.(i)
             reads,ps,x
             f0.(i) = x

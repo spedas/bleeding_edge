@@ -10,6 +10,8 @@ pro spp_fld_load_l1, filename, $
 
   cdf_vars = cdf_load_vars(filename[0], verbose = -1)
 
+  if size(/type, cdf_vars) EQ 2 then return
+
   logical_source = cdf_vars.g_attributes.LOGICAL_SOURCE
 
   ; Cut off numbers at the end

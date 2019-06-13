@@ -73,7 +73,10 @@ str_element,limits,'color',value=col
 
 nb = data3d.nbins
 
-title = data3d.project_name+'  '+data3d.data_name
+project_name = struct_value(data3d,'PROJECT_NAME',default= 'Unknown Project')
+data_name = struct_value(data3d,'DATA_NAME',default= 'Unknown Data')
+
+title = project_name+'  '+ data_name
 str_element, data3d, 'end_time', success = old_style
 If(old_style) Then title = title+'!C'+trange_str(data3d.time,data3d.end_time) $
 Else title = title+'!C'+trange_str(data3d.trange[0],data3d.trange[1])
@@ -98,13 +101,13 @@ str_element,limits,'bins',bins
 
 
 if keyword_set(phi) then begin
-   phi = reform(data3d.phi(0,*))
+   phi = reform(data3d.phi[0,*])
 ;   col = bytescale(phi,range=[-180.,180.])
    col = bytescale(phi);,range=[-180.,180.])
 endif
 
 if keyword_set(theta) then begin
-   theta = reform(data3d.theta(0,*))  ; average theta
+   theta = reform(data3d.theta[0,*])  ; average theta
 ;   col = bytescale(theta,range=[-90.,90.])
    col = bytescale(theta);,range=[-90.,90.])
 endif

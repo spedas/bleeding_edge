@@ -105,8 +105,8 @@
 ;       PSNAME:   Name of a postscript plot.  Works only for orbit plots.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-08-02 14:21:49 -0700 (Thu, 02 Aug 2018) $
-; $LastChangedRevision: 25557 $
+; $LastChangedDate: 2019-06-12 13:39:31 -0700 (Wed, 12 Jun 2019) $
+; $LastChangedRevision: 27345 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -778,6 +778,14 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       L0 = sqrt((L_p1 + psi_p1*x0_p1)^2. - x0_p1*x0_p1)
       oplot,L0*xm,L0*ym,color=3,line=1,thick=thick
 
+    endif
+
+    if (doalt) then begin
+      if (pflg) then i = iref else i = rndx[imin]
+      sc_alt = string(round(hgt[i]), format='("ALT = ",i4)')
+      xyouts, 0.72, 0.950, sc_alt, /norm, charsize=1.1
+      sc_sza = string(round(sza[i]*!radeg), format='("SZA = ",i4)')
+      xyouts, 0.72, 0.935, sc_sza, /norm, charsize=1.1
     endif
 
     !p.multi = 0
