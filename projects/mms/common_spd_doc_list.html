@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Jun 12 18:16:23 2019.<P>
+<STRONG>Last modified: </STRONG>Thu Jun 13 13:19:25 2019.<P>
  
 <HR>
  
@@ -26,6 +26,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_INIT">MMS_INIT</A>
 <br>Initializes system variables for MMS. Can be called from idl_startup to set
 <LI><A HREF="#MMS_PROXY">MMS_PROXY</A>
+<br>(1) To set a proxy and establish a connection to SDC, on the fly.
+<LI><A HREF="#MMS_PROXY_PUBLIC">MMS_PROXY_PUBLIC</A>
 <br>(1) To set a proxy and establish a connection to SDC, on the fly.
 <LI><A HREF="#MMS_SET_VERBOSE">MMS_SET_VERBOSE</A>
 <br>Sets verbose level in !mms.verbose and in tplot_options
@@ -264,7 +266,7 @@ HISTORY:
 <A NAME="MMS_PROXY">
 <H2>MMS_PROXY</H2></A>
 <A HREF="#MMS_INIT">[Previous Routine]</A>
-<A HREF="#MMS_SET_VERBOSE">[Next Routine]</A>
+<A HREF="#MMS_PROXY_PUBLIC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:    mms_proxy
@@ -291,9 +293,41 @@ HISTORY:
 <STRONG>(See <A href="common/mms_proxy.pro">projects/mms/common/mms_proxy.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_PROXY_PUBLIC">
+<H2>MMS_PROXY_PUBLIC</H2></A>
+<A HREF="#MMS_PROXY">[Previous Routine]</A>
+<A HREF="#MMS_SET_VERBOSE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:    mms_proxy_public
+
+PURPOSE:
+   (1) To set a proxy and establish a connection to SDC, on the fly.
+   (2) To store/delete proxy information into/from a configuration file.
+
+NOTE:
+   If the proxy requires proxy_username and proxy_password, then the user
+   needs to use this program everytime he/she needs to access SDC because
+   we do not store a password.
+
+KEYWORDS:
+
+HISTORY:
+ 2015-07-20, moka, Created
+ 2019-06-13, egrimes, forked from original to add support for public users
+                      (forked specifically to avoid regressions for current SITL users)
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2019-06-13 13:18:04 -0700 (Thu, 13 Jun 2019) $
+ $LastChangedRevision: 27348 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_proxy_public.pro $
+</PRE><P>
+<STRONG>(See <A href="common/mms_proxy_public.pro">projects/mms/common/mms_proxy_public.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_SET_VERBOSE">
 <H2>MMS_SET_VERBOSE</H2></A>
-<A HREF="#MMS_PROXY">[Previous Routine]</A>
+<A HREF="#MMS_PROXY_PUBLIC">[Previous Routine]</A>
 <A HREF="#MMS_UI_CONFIG">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
