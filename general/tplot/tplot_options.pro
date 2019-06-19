@@ -17,7 +17,15 @@
 ;         This reference date is used with the gettime subroutine.
 ;   WINDOW:     Window to be used for all time plots. (-1 specifies current
 ;       window.
-;   VERSION:    plot label version. (1 or 2 or 3)
+;   VERSION: plot label version. (1,2,3,4,5,6)
+;     valid inputs for "version" (date annotation | tick annotations)
+;     1: UTC date boundaries | # of hours or days
+;     2: month:day | UTC time (fewer ticks)
+;     3: year(left margin) month:day | UTC time (default)
+;     4: seconds after launch
+;     5: supress time labels
+;     6: time displayed directly below last panel 
+;     this option can also be set when calling tplot ( e.g. tplot, [variable], version=2 )   
 ;   TITLE:	string used for the tplot title
 ;   OPTIONS:	tplot options structure to be passed to replace the current
 ;		structure.

@@ -29,6 +29,14 @@
 ;     the bottom. This allows quantities such as altitude to be labeled.
 ;   VERSION:  Must be 1,2,3,4,5 or 6 (3 is default)  Uses a different labeling
 ;   scheme.  Version 4 is for rocket-type time scales.
+;     valid inputs for "version" (date annotation | tick annotations)
+;     1: UTC date boundaries | # of hours or days
+;     2: month:day | UTC time (fewer ticks)
+;     3: year(left margin) month:day | UTC time (default)
+;     4: seconds after launch
+;     5: supress time labels
+;     6: time displayed directly below last panel
+;     this option can also be set when calling tplot_options ( e.g. tplot, [variable], version=2 )
 ;   OVERPLOT: Will not erase the previous screen if set.
 ;   NAMES:    The names of the tplot variables that are plotted.
 ;   NOCOLOR:  Set this to produce plot without color.
@@ -90,9 +98,9 @@
 ;Still have questions:
 ;   Send e-mail to:  tplot@ssl.berkeley.edu    someone might answer!
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-03-25 11:48:41 -0700 (Mon, 25 Mar 2019) $
-; $LastChangedRevision: 26890 $
+; $LastChangedBy: crussell $
+; $LastChangedDate: 2019-06-18 13:17:12 -0700 (Tue, 18 Jun 2019) $
+; $LastChangedRevision: 27356 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot.pro $
 ;-
 

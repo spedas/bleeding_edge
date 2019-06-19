@@ -158,9 +158,9 @@
 ;
 ;        NOTE:         Insert a text label.  Keep it short.
 ;        
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-04-24 13:40:53 -0700 (Wed, 24 Apr 2019) $
-; $LastChangedRevision: 27081 $
+; $LastChangedBy: xussui $
+; $LastChangedDate: 2019-06-18 12:43:57 -0700 (Tue, 18 Jun 2019) $
+; $LastChangedRevision: 27355 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -177,7 +177,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                   xrange=xrange, error_bars=error_bars, yrange=yrange, trange=tspan, $
                   note=note, mincounts=mincounts, maxrerr=maxrerr, tsmo=tsmo, $
                   sundir=sundir, wscale=wscale, cscale=cscale, fscale=fscale, $
-                  result=result
+                  result=result, vdis=vdis
 
   @mvn_swe_com
   @swe_snap_common
@@ -315,7 +315,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   endelse
   
   if keyword_set(indspec) then doind=1 else doind=0
-  
+  if keyword_set(vdis) then dov=1 else dov=0
+
   if (size(popen,/type) eq 7) then begin
       psflg = 1
       psname = popen[0]
@@ -436,6 +437,13 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
       if ~(free) then wstat = execute("wset, wnum",0,1)
       if wstat eq 0 then window, wnum, free=free, xsize=(Fopt.xsize*2)*wscale, ysize=Fopt.ysize*wscale, xpos=Fopt.xpos+1, ypos=Fopt.ypos+1
       Iwin = !d.window
+      wnum += 1
+  endif
+
+  if (dov) then begin
+      if ~(free) then wstat = execute("wset, wnum",0,1)
+      if wstat eq 0 then window, wnum, free=free, xsize=(Fopt.xsize*2)*wscale, ysize=Fopt.ysize*wscale, xpos=Fopt.xpos+1, ypos=Fopt.ypos+1
+      Vwin = !d.window
       wnum += 1
   endif
 
@@ -782,6 +790,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
             
             bad = where(rerr gt maxrerr, count)
             if (count gt 0L) then arpad[bad] = !values.f_nan
+            respad=arpad
 
             if (nflg) then arpad /= rebin(average(arpad, 2, /nan), n_elements(arpad[*, 0]), n_elements(arpad[0, *]), /sample)
             str_element, rlim, 'title', strtrim(time_string(mean(rpad.time)) + ' (Resampled)' + $
@@ -810,7 +819,87 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                  if (spflg) then oplot,[-pot,-pot],[0,180],line=2,color=cols.red $
                             else oplot,[pot,pot],[0,180],line=2
                endif
-            endif 
+            endif
+
+             if (dov) then begin
+                if (~psflg) then wset, vwin
+                ven = average(pad.energy, 2)
+                ;ven = pad.energy[*,0]
+                vexam = [30.,50.,100.]
+                emass = 9.1e-31
+                vtot = (sqrt(ven*1.6e-19*2./emass) * 1.e-3) ; km/s
+                vexam = (sqrt(vexam*1.6e-19*2./emass) * 1.e-3) ; km/s
+                vpa = rpad[0].xax
+                vc = 2.99792458D5                ; velocity of light [km/s]
+                vmass = (5.10998910D5)/(vc*vc)     ; electron rest mass [eV/(km/s)^2]
+                m_conv = 2D5/(vmass*vmass)        ; mass conversion factor (flux to distribution function)
+                scale = (1.d/(ven^2 * m_conv)) # replicate(1.,128)
+                ;stop
+                vphase = alog10(respad[*,*] * scale)
+                print,minmax(respad),minmax(vphase)
+                ;vphase = transpose(alog10(pad.data * scale))
+                indx=where(finite(vphase) eq 0,cts)
+                vphase[indx] = !values.d_nan
+                mima = minmax(vphase)
+                mima[0]=mima[1]-5;6
+                !p.multi=[0,2,2,0,1]
+                vpara=vtot#cos(vpa*!dtor)
+                vper=vtot#sin(vpa*!dtor)
+                nlv = 15.
+                contour,vphase,vpara,vper,$;,/IRREGULAR
+                    xtit='Vpara (km/s)',ytit='Vper (km/s)',cell_fill=1,$
+                    levels=(mima[1]-mima[0])/(nlv-1)*findgen(nlv)+mima[0],$
+                    c_colors=findgen(nlv)*(254.-8)/(nlv-1)+8,xrange=[-1e4,1e4],$
+                    yrange=[0,1e4],nlevels=nlv,isotropic=1;,c_spacing=0.5
+                vcon=(sqrt(10*1.6e-19*2./emass) * 1.e-3)
+                oplot,vcon*cos(findgen(181)*!dtor),vcon*sin(findgen(181)*!dtor),linestyle=1
+                vcon=(sqrt(50*1.6e-19*2./emass) * 1.e-3)
+                oplot,vcon*cos(findgen(181)*!dtor),vcon*sin(findgen(181)*!dtor),linestyle=1
+                vcon=(sqrt(100*1.6e-19*2./emass) * 1.e-3)
+                oplot,vcon*cos(findgen(181)*!dtor),vcon*sin(findgen(181)*!dtor),linestyle=1
+                vcon=(sqrt(250*1.6e-19*2./emass) * 1.e-3)
+                oplot,vcon*cos(findgen(181)*!dtor),vcon*sin(findgen(181)*!dtor),linestyle=1
+                draw_color_scale,range=[mima[0],mima[1]],brange=[8,254]
+                
+                ien=15+indgen(10)*3
+;                ien=30+indgen(8)*4
+                nen=n_elements(ien)
+                plot,vpa,vphase[ien[0],*],xtit='PA',ytit='df',xrange=[0,180],xstyle=1,$
+                    yrange=minmax(vphase[ien,*])
+                xyouts,182,vphase[ien[0],64],string(ven[ien[0]],'(I4)')+' eV',/data
+                for ie=1,nen-1 do begin
+                    oplot,vpa,vphase[ien[ie],*]
+                    xyouts,182,vphase[ien[ie],64],string(ven[ien[ie]],'(I4)')+' eV',/data
+                endfor
+                
+                phi=0;75.
+                Enp=ven;*1.6e-19
+                nmb=8
+                kTmb=25.; * 1.38e-23/8.613e-5 ;J
+                vmb=sqrt((ven+80.)*1.6e-19*2/emass)*1.e-3 ;km/s
+                
+                fmb = 1.e-10*0.5*exp(-(Enp-phi)/kTmb)
+                pmb = alog10(fmb)
+
+                vnbin=10
+                plot,vpara[*,0],vphase[*,64],xtit='V (km/s)',ytit='df',$
+                ylog=0,xrange=[-1.e4,1.e4],/nodata,yrange=[mima[0],mima[1]]
+                oplot,average(vpara[*,0:vnbin-1],2),average(vphase[*,0:vnbin-1],2,/nan)
+                oplot,average(vper[*,63-vnbin/2-1:63],2),average(vphase[*,63-vnbin/2-1:63],2,/nan),linestyle=2
+                oplot,average(vpara[*,127-vnbin+1:127],2),average(vphase[*,127-vnbin+1:127],2,/nan),color=0
+                oplot,-average(vper[*,64:64+vnbin/2-1],2),average(vphase[*,64:64+vnbin/2-1],2,/nan),$
+                      linestyle=2,color=0
+                oplot,vmb,pmb,linestyle=2,color=6
+                oplot,-vmb,pmb,linestyle=2,color=6
+                print,minmax(vtot),minmax(pmb)
+                for i=0,n_elements(vexam)-1 do begin
+                   oplot,[vexam[i],vexam[i]],!y.crange,linestyle=1
+                   oplot,[-vexam[i],-vexam[i]],!y.crange,linestyle=1
+                endfor
+                !p.multi=0
+                ;stop
+            endif
+ 
          endif 
          if (hflg) then begin
             if tag_exist(pad, 'ftime') then begin
@@ -1241,6 +1330,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
     if (dospec) then wdelete, Ewin
     if (rflg or hflg or uflg) then wdelete, Rwin
     if (doind) then wdelete, Iwin
+    if (dov) then wdelete, vwin
   endif
 
   wset, Twin

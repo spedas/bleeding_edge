@@ -26,8 +26,8 @@
 ;   these cribs can help double as documentation for tplot.
 ;
 ; $LastChangedBy: crussell $
-; $LastChangedDate: 2016-02-01 11:25:06 -0800 (Mon, 01 Feb 2016) $
-; $LastChangedRevision: 19869 $
+; $LastChangedDate: 2019-06-18 13:18:02 -0700 (Tue, 18 Jun 2019) $
+; $LastChangedRevision: 27357 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_tplot_annotation.pro $
 ;-
 
@@ -135,6 +135,7 @@ options,'sta_SWEA_mom_flux',xcharsize=1.0,ycharsize=1.0,xtitle=''
 ;           3: year(left margin) month:day | UTC time (default)
 ;           4: seconds after launch
 ;           5: supress time labels
+;           6: labels directly below last panel
 ;this option can also be set when calling tplot ( e.g. tplot, [variable], version=2 )
 tplot_options, version=1
 
