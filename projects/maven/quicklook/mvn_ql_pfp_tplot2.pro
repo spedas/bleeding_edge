@@ -64,8 +64,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-05-02 12:00:20 -0700 (Thu, 02 May 2019) $
-; $LastChangedRevision: 27174 $
+; $LastChangedDate: 2019-06-20 13:43:09 -0700 (Thu, 20 Jun 2019) $
+; $LastChangedRevision: 27361 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot2.pro $
 ;
 ;-
@@ -494,7 +494,6 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, n
      IF lvl NE '' THEN options, bvec, ytitle='MAG ' + lvl ELSE options, bvec, ytitle='MAG'
      get_data, bvec, data=b ;, dl=bl
      bmax = MAX(btot, /nan)
-     IF bmax GT 100. THEN blog = 1 ELSE blog = 0 ; It means B field Log scale or not.     
 
      copy_data, bvec, bvec + '_symlog'
      options, bvec + '_symlog', tplot_routine='mplot_symlog'
@@ -507,6 +506,9 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, n
                  dlimits={labels: ['Data', 'Model'], colors: [0, 2], labflag: -1, ysubtitle: '|B| [nT]'} 
      IF lvl NE '' THEN options, 'mvn_mag_bamp', ytitle='MAG ' + lvl ELSE options, 'mvn_mag_bamp', ytitle='MAG'
 
+     get_data, 'mvn_mod_bcrust_amp', data=bcrust_mod
+     If(is_struct(bcrust_mod)) Then bmax = max([bmax, bcrust_mod.y], /nan) ;needed if there is no MAG data
+     IF bmax GT 100. THEN blog = 1 ELSE blog = 0 ; It means B field Log scale or not.     
      IF (blog) THEN BEGIN
         ylim, 'mvn_mag_bamp', 0.5, bmax*1.1, 1
         options, 'mvn_mag_bamp', ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log'
