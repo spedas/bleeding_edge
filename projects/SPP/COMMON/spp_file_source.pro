@@ -33,9 +33,9 @@
   ; Structure:
   ;  see "FILE_RETRIEVE" for a description of each structure element.
   ;
-  ; $LastChangedBy: davin-mac $
-  ; $LastChangedDate: 2019-05-20 21:13:19 -0700 (Mon, 20 May 2019) $
-  ; $LastChangedRevision: 27268 $
+  ; $LastChangedBy: pulupalap $
+  ; $LastChangedDate: 2019-06-25 13:51:24 -0700 (Tue, 25 Jun 2019) $
+  ; $LastChangedRevision: 27380 $
   ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_file_source.pro $
   ;-
 
@@ -67,7 +67,11 @@ function spp_file_source,default_source,source_key=source_key,set=set,reset=rese
         case strupcase(source_key) of
           'SWEAP' : user_pass = ssl_password(getenv('SPP_USER_PASS'))
           'FIELDS': begin
-            if getenv('PSP_STAGING_ID') && getenv('PSP_STAGING_PW') then setenv,'FIELDS_USER_PASS='+getenv('PSP_STAGING_ID')+':'+getenv('PSP_STAGING_PW')
+            if getenv('PSP_STAGING_ID') && getenv('PSP_STAGING_PW') then begin
+              setenv,'FIELDS_USER_PASS='+getenv('PSP_STAGING_ID')+':'+getenv('PSP_STAGING_PW')
+            endif else if getenv('USER') && getenv('PSP_STAGING_PW') then begin
+              setenv,'FIELDS_USER_PASS='+getenv('USER')+':'+getenv('PSP_STAGING_PW')
+            endif
             user_pass = ssl_password(getenv('FIELDS_USER_PASS'))
             end
           else    : user_pass = ssl_password(getenv('SPP_USER_PASS'))

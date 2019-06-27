@@ -209,6 +209,17 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
           endelse
 
         endfor
+        
+        ; In addition to the ADC saturation set in the packet, we also
+        ; set the 'soft' saturation flag when a gain boosted DFB spectrum
+        ; has a value of 255 (max value).  See below for interpretation of
+        ; saturation indicator
+        
+        soft_sat_y = ulong(max(new_data_y[*,2:*], dim = 2) EQ 255) * 2
+        
+        new_data_sat_y += soft_sat_y
+        
+       ; stop
 
         data_v = transpose(rebin(freq_bins.freq_avg,$
           n_elements(freq_bins.freq_avg),$
@@ -242,16 +253,17 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
         options, prefix + 'spec_converted', 'yrange', minmax(freq_bins.freq_avg)
 
         ; Indicator of saturation.  This variable plots the saturation of
-        ; the DFB (0 = unsaturated, 1 = saturated)
+        ; the DFB (0 = unsaturated, 1 = ADC saturated, 2 = soft saturated, 
+        ; 3 = ADC and soft saturated)
 
         store_data, prefix + 'sat', $
           data = {x:new_data_x, y:new_data_sat_y}
 
         options, prefix + 'sat', 'psym', spec_number + 3
-        options, prefix + 'sat', 'yrange', [-0.25,1.25]
+        options, prefix + 'sat', 'yrange', [-0.25,3.25]
         options, prefix + 'sat', 'ystyle', 1
-        options, prefix + 'sat', 'yticks', 1
-        options, prefix + 'sat', 'ytickv', [0,1]
+        options, prefix + 'sat', 'yticks', 3
+        options, prefix + 'sat', 'ytickv', [0,1,2,3]
         options, prefix + 'sat', 'yminor', 1
         options, prefix + 'sat', 'ysubtitle', ''
         options, prefix + 'sat', 'panel_size', 0.35
@@ -262,7 +274,7 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
         ; for AC or DC spectra in a single panel.  Only saturation is shown,
         ; non-saturated data is left blank
 
-        sat_indicator = float(new_data_sat_y)
+        sat_indicator = float(new_data_sat_y GT 0)
 
         non_saturated = where(sat_indicator EQ 0, non_sat_count)
 
