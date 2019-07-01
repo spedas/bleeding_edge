@@ -10,15 +10,15 @@
 ;
 ;CREATED BY:
 ;       Davin Larson
-;   $LastChangedBy$
-;   $LastChangedDate$
-;   $LastChangedRevision$
-;   $URL$
+;   $LastChangedBy: $
+;   $LastChangedDate: $
+;   $LastChangedRevision: $
+;   $URL: $
 ; -
 
 function rot_mat,v1,v2
 
-a  = v1/SQRT(TOTAL(v1^2,/NAN,/DOUBLE))  ;; need to normalize for orthonormal basis
+a  = reform(v1/SQRT(TOTAL(v1^2,/NAN,/DOUBLE)))  ;; need to normalize for orthonormal basis
 ;a=v1/(total(v1^2))^.5
 if not keyword_set(v2) then v2 = [1d0,0d0,0d0]
 ;if not keyword_set(v2) then v2 = [1.d,0.d,0.d]
