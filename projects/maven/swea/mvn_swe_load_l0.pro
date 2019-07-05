@@ -85,8 +85,8 @@
 ;                      to a higher number to see more diagnostic messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-03-15 12:47:07 -0700 (Fri, 15 Mar 2019) $
-; $LastChangedRevision: 26821 $
+; $LastChangedDate: 2019-07-02 13:07:47 -0700 (Tue, 02 Jul 2019) $
+; $LastChangedRevision: 27401 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -224,9 +224,21 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
 ;   This is needed for MET -> UNIX time conversion.
 
   if (not keyword_set(nospice)) then begin
-    mk = spice_test('*', verbose=-1)
-    indx = where(mk ne '', count)
-    if (keyword_set(spiceinit) or (count eq 0)) then mvn_swe_spice_init,/force
+    mvn_spice_stat, summary=sinfo, /silent
+    if (keyword_set(spiceinit) or (~sinfo.ck_sc_exists)) then begin
+      mvn_swe_spice_init, /force
+    endif else begin
+      tmin = min(sinfo.ck_sc_trange, max=tmax)
+      if ((trange[0] lt tmin) or (trange[1] gt tmax)) then begin
+        print,"Requested time range extends beyond currently loaded SPICE kernels."
+        yn = 'y'
+        read, yn, prompt='Reinitialize SPICE (y|n) ? '
+        if (strupcase(yn) eq 'Y') then begin
+          tsp = minmax([trange, tmin, tmax])
+          mvn_swe_spice_init, trange=tsp, /force
+        endif
+      endif
+    endelse
   endif
 
 ; Read in the telemetry file and store the packets in a byte array

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jun 28 18:16:27 2019.<P>
+<STRONG>Last modified: </STRONG>Wed Jul  3 18:16:30 2019.<P>
  
 <HR>
  
@@ -113,6 +113,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#TPLOT_QUANT__DEFINE">TPLOT_QUANT__DEFINE</A>
 <LI><A HREF="#TPLOT_QUATERNION_ROTATE">TPLOT_QUATERNION_ROTATE</A>
 <br>Rotates a tplot vector using the tplot quaternion. Will create a new tplot variable.
+<LI><A HREF="#TPLOT_REMOVE_PANEL">TPLOT_REMOVE_PANEL</A>
+<br>Remove panel(s) from the current tplot window
 <LI><A HREF="#TPLOT_RENAME">TPLOT_RENAME</A>
 <br>Simple procedure to perform a rename of tplot variable without copy.
 <LI><A HREF="#TPLOT_RESTORE">TPLOT_RESTORE</A>
@@ -609,9 +611,9 @@ SEE ALSO:	&quot;STORE_DATA&quot;, &quot;TPLOT_NAMES&quot;, &quot;TPLOT&quot;
 CREATED BY:	Davin Larson
 MODIFICATION BY: 	Peter Schroeder
 LAST MODIFICATION:	@(#)get_data.pro	1.28 02/04/17
- $LastChangedBy: jimm $
- $LastChangedDate: 2016-11-01 10:30:00 -0700 (Tue, 01 Nov 2016) $
- $LastChangedRevision: 22247 $
+ $LastChangedBy: davin-mac $
+ $LastChangedDate: 2019-07-03 16:08:21 -0700 (Wed, 03 Jul 2019) $
+ $LastChangedRevision: 27404 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/get_data.pro $
 
 </PRE><P>
@@ -2008,8 +2010,8 @@ KEYWORDS:
                  interval from there.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-06-12 13:37:59 -0700 (Wed, 12 Jun 2019) $
- $LastChangedRevision: 27344 $
+ $LastChangedDate: 2019-07-02 13:04:31 -0700 (Tue, 02 Jul 2019) $
+ $LastChangedRevision: 27398 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/skip.pro $
 
 CREATED BY:    David L. Mitchell
@@ -3367,7 +3369,7 @@ PROCEDURE: tplot_quant__define
 <A NAME="TPLOT_QUATERNION_ROTATE">
 <H2>TPLOT_QUATERNION_ROTATE</H2></A>
 <A HREF="#TPLOT_QUANT__DEFINE">[Previous Routine]</A>
-<A HREF="#TPLOT_RENAME">[Next Routine]</A>
+<A HREF="#TPLOT_REMOVE_PANEL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure: tplot_quaternion_rotate, vectorname, quatname, name=name
@@ -3386,9 +3388,34 @@ Written by: Davin Larson
 <STRONG>(See <A href="tplot/tplot_quaternion_rotate.pro">general/tplot/tplot_quaternion_rotate.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="TPLOT_REMOVE_PANEL">
+<H2>TPLOT_REMOVE_PANEL</H2></A>
+<A HREF="#TPLOT_QUATERNION_ROTATE">[Previous Routine]</A>
+<A HREF="#TPLOT_RENAME">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         tplot_remove_panel
+
+ PURPOSE:
+         Remove panel(s) from the current tplot window
+
+ INPUT:
+         panel_num: int or array of ints containing panel #s 
+                    to remove from the current tplot window
+
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2019-07-02 14:08:30 -0700 (Tue, 02 Jul 2019) $
+$LastChangedRevision: 27402 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_remove_panel.pro $
+</PRE><P>
+<STRONG>(See <A href="tplot/tplot_remove_panel.pro">general/tplot/tplot_remove_panel.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TPLOT_RENAME">
 <H2>TPLOT_RENAME</H2></A>
-<A HREF="#TPLOT_QUATERNION_ROTATE">[Previous Routine]</A>
+<A HREF="#TPLOT_REMOVE_PANEL">[Previous Routine]</A>
 <A HREF="#TPLOT_RESTORE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

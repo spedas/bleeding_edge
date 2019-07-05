@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jun 28 18:16:27 2019.<P>
+<STRONG>Last modified: </STRONG>Wed Jul  3 18:16:30 2019.<P>
  
 <HR>
  
@@ -32,6 +32,8 @@ This page was created by the IDL library routine
 <br>Average data in res second time segments.
 <LI><A HREF="#BIN1D">BIN1D</A>
 <LI><A HREF="#BIN2D">BIN2D</A>
+<LI><A HREF="#BOX_MEAN">BOX_MEAN</A>
+<br>Calculates the mean, median, and standard deviation of a 1-D array
 <LI><A HREF="#BYTESCALE">BYTESCALE</A>
 <LI><A HREF="#CART_TO_SPHERE">CART_TO_SPHERE</A>
 <LI><A HREF="#CDF_FILE_NAMES">CDF_FILE_NAMES</A>
@@ -534,7 +536,7 @@ Uses histogram to bin data according to array binarr. The elements in binarr
 <A NAME="BIN2D">
 <H2>BIN2D</H2></A>
 <A HREF="#BIN1D">[Previous Routine]</A>
-<A HREF="#BYTESCALE">[Next Routine]</A>
+<A HREF="#BOX_MEAN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -629,9 +631,51 @@ Uses histogram to bin data according to array binarr. The elements in binarr
 <STRONG>(See <A href="misc/bin2d.pro">general/misc/bin2d.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="BOX_MEAN">
+<H2>BOX_MEAN</H2></A>
+<A HREF="#BIN2D">[Previous Routine]</A>
+<A HREF="#BYTESCALE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   box_mean
+PURPOSE:
+  Calculates the mean, median, and standard deviation of a 1-D array
+  in a running boxcar.
+
+USAGE:
+  box_mean, var, result=dat
+
+INPUTS:
+       var:     Tplot structure or variable name/number.  Can also
+                simply be an array of numbers.
+
+OUTPUT:         If var is a tplot variable name/number, then the result
+                is stored as a new tplot variable.  Otherwise, the 
+                result is returned via keyword (see below).
+
+KEYWORDS:
+       WIDTH:   Boxcar half-width for calculating mean and sdev.
+                Default = 20 points.  The boxcar is truncated at
+                the beginning and end of the array.
+
+       OUTLIER: Discard points more than this many standard deviations
+                from the mean.  Default = 10.
+
+       RESULT:  Named variable to hold the result.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2019-07-03 16:33:00 -0700 (Wed, 03 Jul 2019) $
+ $LastChangedRevision: 27406 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/box_mean.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="misc/box_mean.pro">general/misc/box_mean.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="BYTESCALE">
 <H2>BYTESCALE</H2></A>
-<A HREF="#BIN2D">[Previous Routine]</A>
+<A HREF="#BOX_MEAN">[Previous Routine]</A>
 <A HREF="#CART_TO_SPHERE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jun 28 18:16:27 2019.<P>
+<STRONG>Last modified: </STRONG>Wed Jul  3 18:16:30 2019.<P>
  
 <HR>
  
@@ -2605,8 +2605,8 @@ KEYWORDS:
                       to a higher number to see more diagnostic messages.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-15 12:47:07 -0700 (Fri, 15 Mar 2019) $
- $LastChangedRevision: 26821 $
+ $LastChangedDate: 2019-07-02 13:07:47 -0700 (Tue, 02 Jul 2019) $
+ $LastChangedRevision: 27401 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 
 CREATED BY:    David L. Mitchell  04-25-13
@@ -4962,8 +4962,8 @@ KEYWORDS:
        BURST:        Plot a color bar showing PAD burst coverage.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-15 12:37:02 -0700 (Fri, 15 Mar 2019) $
- $LastChangedRevision: 26806 $
+ $LastChangedDate: 2019-07-02 13:06:47 -0700 (Tue, 02 Jul 2019) $
+ $LastChangedRevision: 27400 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6493,6 +6493,9 @@ INPUTS:
 KEYWORDS:
        PANS:          Returns the tplot variables created.
 
+       TSPAN:         Include only fast housekeeping packets within this
+                      time span.  This is different from the next keyword!
+
        TRANGE:        Returns a 2xN array of time ranges for the N 
                       tplot variables created.  This makes it easy to
                       zoom in to view each channel.  For example:
@@ -6513,11 +6516,15 @@ KEYWORDS:
        AVG:           If set, average multiple sweeps for each channel.
                       Automatically sets TSHIFT.
 
+       MODEL:         When any of the fast housekeeping channels are one
+                      of the analyzer voltages (ANALV, DEF1V, DEF2V, V0V),
+                      overlay the expected voltages.
+
        RESULT:        Named variable to hold structure of results.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-08-03 14:58:34 -0700 (Fri, 03 Aug 2018) $
- $LastChangedRevision: 25576 $
+ $LastChangedDate: 2019-07-02 13:05:51 -0700 (Tue, 02 Jul 2019) $
+ $LastChangedRevision: 27399 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_plot_fhsk.pro $
 
 CREATED BY:    David L. Mitchell  2017-01-15

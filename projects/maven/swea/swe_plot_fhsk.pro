@@ -12,6 +12,9 @@
 ;KEYWORDS:
 ;       PANS:          Returns the tplot variables created.
 ;
+;       TSPAN:         Include only fast housekeeping packets within this
+;                      time span.  This is different from the next keyword!
+;
 ;       TRANGE:        Returns a 2xN array of time ranges for the N 
 ;                      tplot variables created.  This makes it easy to
 ;                      zoom in to view each channel.  For example:
@@ -32,29 +35,48 @@
 ;       AVG:           If set, average multiple sweeps for each channel.
 ;                      Automatically sets TSHIFT.
 ;
+;       MODEL:         When any of the fast housekeeping channels are one
+;                      of the analyzer voltages (ANALV, DEF1V, DEF2V, V0V),
+;                      overlay the expected voltages.
+;
 ;       RESULT:        Named variable to hold structure of results.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-08-03 14:58:34 -0700 (Fri, 03 Aug 2018) $
-; $LastChangedRevision: 25576 $
+; $LastChangedDate: 2019-07-02 13:05:51 -0700 (Tue, 02 Jul 2019) $
+; $LastChangedRevision: 27399 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_plot_fhsk.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2017-01-15
 ;-
 pro swe_plot_fhsk, pans=pans, trange=trange, tshift=tshift, vnorm=vnorm, avg=avg, $
-                   result=result
+                   model=model, toff=toff, tspan=tspan, result=result
 
   @mvn_swe_com
   
   if (size(a6,/type) ne 8) then begin
-    print,"No fast housekeeping data."
+    print,"No fast housekeeping."
     return
   endif
+
+  if (n_elements(tspan) lt 2) then tspan = minmax(a6.time)
+  tspan = minmax(time_double(tspan))
+  tmin = tspan[0] - 2D
+  tmax = tspan[1] + 4D
+  indx = where((a6.time gt tmin) and (a6.time lt tmax), count)
+  if (count eq 0L) then begin
+    print,'No fast housekeeping within time span.'
+    return
+  endif
+
+  a6_save = a6
+  a6 = a6[indx]
 
   tshift = keyword_set(tshift)
   vnorm = keyword_set(vnorm)
   avg = keyword_set(avg)
   if (avg) then tshift = 1
+
+  if (size(toff,/type) eq 0) then toff = 0.0070D else toff = double(toff[0])
 
   result = {name   : 'SWEA Fast Housekeeping'           , $
             date   : time_string(mean(a6.time),prec=-3) , $
@@ -189,6 +211,81 @@ pro swe_plot_fhsk, pans=pans, trange=trange, tshift=tshift, vnorm=vnorm, avg=avg
   pans = pans[1:*]
   if (tshift) then trange = [(t0 - 0.05),(t0 + 2D)] $
               else trange = reform(trange[2:*], 2, n_elements(pans))
+
+  if keyword_set(model) then begin
+    tswp = (1.95D/1792D)*dindgen(1792)
+
+    str_element, result, 'ANALV', anlv, success=ok
+    if (ok) then begin
+      nswp = n_elements(anlv.x)/224L
+      t = replicate(0D,nswp*1792L)
+      v = t
+      for i=0,(nswp-1) do begin
+        mvn_swe_sweep, tab=anlv.tabnum[i], result=swp
+        t[(i*1792L):(i*1792L + 1791L)] = anlv.x[i*224L] + tswp
+        v[(i*1792L):(i*1792L + 1791L)] = swp.va
+      endfor
+      store_data,'ANALV_MOD',data={x:(t - toff), y:v}
+      options,'ANALV_MOD','datagap',4D
+      store_data,'ANALV_CMP',data=['a6_ANALV','ANALV_MOD']
+      ylim,'ANALV_CMP',0.1,1000,1
+      options,'ANALV_CMP','colors',[4,6]
+    endif
+
+    str_element, result, 'DEF1V', def1v, success=ok
+    if (ok) then begin
+      nswp = n_elements(def1v.x)/224L
+      t = replicate(0D,nswp*1792L)
+      v = t
+      for i=0,(nswp-1) do begin
+        mvn_swe_sweep, tab=def1v.tabnum[i], result=swp
+        t[(i*1792L):(i*1792L + 1791L)] = def1v.x[i*224L] + tswp
+        v[(i*1792L):(i*1792L + 1791L)] = swp.vd2
+      endfor
+      store_data,'DEF1V_MOD',data={x:(t - toff), y:v}
+      options,'DEF1V_MOD','datagap',4D
+      store_data,'DEF1V_CMP',data=['a6_DEF1V','DEF1V_MOD']
+      ylim,'DEF1V_CMP',0.1,3000,1
+      options,'DEF1V_CMP','colors',[4,6]
+    endif
+
+    str_element, result, 'DEF2V', def2v, success=ok
+    if (ok) then begin
+      nswp = n_elements(def2v.x)/224L
+      t = replicate(0D,nswp*1792L)
+      v = t
+      for i=0,(nswp-1) do begin
+        mvn_swe_sweep, tab=def2v.tabnum[i], result=swp
+        t[(i*1792L):(i*1792L + 1791L)] = def2v.x[i*224L] + tswp
+        v[(i*1792L):(i*1792L + 1791L)] = swp.vd1
+      endfor
+      store_data,'DEF2V_MOD',data={x:(t - toff), y:v}
+      options,'DEF2V_MOD','datagap',4D
+      store_data,'DEF2V_CMP',data=['a6_DEF2V','DEF2V_MOD']
+      ylim,'DEF2V_CMP',0.1,3000,1
+      options,'DEF2V_CMP','colors',[4,6]
+    endif
+
+    str_element, result, 'V0V', v0v, success=ok
+    if (ok) then begin
+      nswp = n_elements(v0v.x)/224L
+      t = replicate(0D,nswp*1792L)
+      v = t
+      for i=0,(nswp-1) do begin
+        mvn_swe_sweep, tab=v0v.tabnum[i], result=swp
+        t[(i*1792L):(i*1792L + 1791L)] = v0v.x[i*224L] + tswp
+        v[(i*1792L):(i*1792L + 1791L)] = -swp.v0
+      endfor
+      store_data,'V0V_MOD',data={x:(t - toff), y:v}
+      options,'V0V_MOD','datagap',4D
+      store_data,'V0V_CMP',data=['a6_V0V','V0V_MOD']
+      ylim,'V0V_CMP',0,0,0
+      options,'V0V_CMP','colors',[4,6]
+      options,'V0V_CMP','constant',[0]
+    endif
+  endif
+
+  a6 = a6_save
 
   return
 

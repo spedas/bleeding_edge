@@ -13,13 +13,13 @@
 ;	TRANGE: time range to use
 ;
 ; $LastChangedBy: jhalekas $
-; $LastChangedDate: 2017-12-01 09:01:48 -0800 (Fri, 01 Dec 2017) $
-; $LastChangedRevision: 24379 $
+; $LastChangedDate: 2019-07-01 06:24:45 -0700 (Mon, 01 Jul 2019) $
+; $LastChangedRevision: 27393 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swia/mvn_swia_stacomp.pro $
 ;
 ;-
 
-pro mvn_swia_stacomp, type = type, trange = trange, temperature = temperature
+pro mvn_swia_stacomp, type = type, trange = trange, temperature = temperature, angspec = angspec
 
 if not keyword_set(trange) then ctime,trange,npoints = 2
 if not keyword_set(type) then type = 'd0'
@@ -74,17 +74,17 @@ pspec = sta.y
 aspec = sta.y
 
 for i = 0,nts-1 do begin 
-	dat = mvn_sta_get_c6(ts(i))
+	dat = mvn_sta_get_c6(ts[i])
 	dat = conv_units(dat,'eflux')
 	for j = 0,31 do begin 
-		w = where(dat.mass_arr(j,*) le 1.8)
-		pspec(i,j) = total(dat.data(j,w))
-		w = where(dat.mass_arr(j,*) gt 1.8 and dat.mass_arr(j,*) le 2.5)
-		aspec(i,j) = total(dat.data(j,w))
-		w = where(dat.mass_arr(j,*) gt 8 and dat.mass_arr(j,*) lt 24)
-		ospec(i,j) = total(dat.data(j,w))
-		w = where(dat.mass_arr(j,*) gt 24 and dat.mass_arr(j,*) lt 40)
-		o2spec(i,j) = total(dat.data(j,w))
+		w = where(dat.mass_arr[j,*] le 1.8)
+		pspec[i,j] = total(dat.data[j,w])
+		w = where(dat.mass_arr[j,*] gt 1.8 and dat.mass_arr[j,*] le 2.5)
+		aspec[i,j] = total(dat.data[j,w])
+		w = where(dat.mass_arr[j,*] gt 8 and dat.mass_arr[j,*] lt 24)
+		ospec[i,j] = total(dat.data[j,w])
+		w = where(dat.mass_arr[j,*] gt 24 and dat.mass_arr[j,*] lt 40)
+		o2spec[i,j] = total(dat.data[j,w])
 	endfor
 endfor
 
@@ -93,5 +93,50 @@ store_data,'aspec',data = {x:ts,y:aspec,v:en,ylog:1,spec:1,zlog:1,no_interp:1,yr
 store_data,'ospec',data = {x:ts,y:ospec,v:en,ylog:1,spec:1,zlog:1,no_interp:1,yrange:[1,1e4]}
 store_data,'o2spec',data = {x:ts,y:o2spec,v:en,ylog:1,spec:1,zlog:1,no_interp:1,yrange:[1,1e4]}
 
+if keyword_set(angspec) then begin
+	get_data,'mvn_sta_d1_D',data = dspec
+	get_data,'mvn_sta_d1_A',data = aspec
+	ts = dspec.x
+	nts = n_elements(ts)
+
+	pdspec = dspec
+	paspec = aspec
+	hdspec = dspec
+	haspec = aspec
+
+	for i = 0,nts-1 do begin 
+		dat = mvn_sta_get_d1(ts[i])
+		dat = conv_units(dat,'eflux')
+		udata = reform(dat.data,dat.nenergy,dat.ndef,dat.nanode,dat.nmass)
+		uph = reform(dat.phi,dat.nenergy,dat.ndef,dat.nanode,dat.nmass)
+		uth = reform(dat.theta,dat.nenergy,dat.ndef,dat.nanode,dat.nmass)
+		um = reform(dat.mass_arr,dat.nenergy,dat.ndef,dat.nanode,dat.nmass)
+
+		for j = 0,dat.ndef-1 do begin 
+			umj = um[*,j,*,*]
+			udj = udata[*,j,*,*]
+			w = where(umj le 1.8)
+			pdspec.y[i,j] = total(udj[w])/(dat.nenergy*dat.nanode)
+
+			w = where(umj gt 8)
+			hdspec.y[i,j] = total(udj[w])/(dat.nenergy*dat.nanode)
+		endfor
+
+		for j = 0,dat.nanode-1 do begin
+			umj = um[*,*,j,*]
+			udj = udata[*,*,j,*]
+			w = where(umj le 1.8)
+			paspec.y[i,j] = total(udj[w])/(dat.nenergy*dat.ndef)
+
+			w = where(umj gt 8)
+			haspec.y[i,j] = total(udj[w])/(dat.nenergy*dat.ndef)
+		endfor	
+	endfor
+
+	store_data,'pdspec',data = pdspec
+	store_data,'paspec',data = paspec
+	store_data,'hdspec',data = hdspec
+	store_data,'haspec',data = haspec
+endif
 
 end

@@ -29,9 +29,9 @@
 ;CREATED BY:	Davin Larson
 ;MODIFICATION BY: 	Peter Schroeder
 ;LAST MODIFICATION:	@(#)get_data.pro	1.28 02/04/17
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2016-11-01 10:30:00 -0700 (Tue, 01 Nov 2016) $
-; $LastChangedRevision: 22247 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-07-03 16:08:21 -0700 (Wed, 03 Jul 2019) $
+; $LastChangedRevision: 27404 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/get_data.pro $
 ;
 ;-
@@ -43,6 +43,7 @@ pro get_data,name, time, data, values, $
     ptr_str = ptr_str, $
     index = index, $
     dtype = dtype, $
+    null = null, $
     trange = trange
 
 @tplot_com.pro
@@ -56,6 +57,18 @@ dlim_str = 0
 dtype = 0
 ptr_str = 0
 trange = 0
+if keyword_set(null) then begin
+  time = !null
+  data = !null
+  values = !null
+  data_str = !null
+  lim_str = !null
+  alim_str = !null
+  dlim_str = !null
+  dtype = !null
+  ptr_str = !null
+  trange = !null
+endif
 
 index = find_handle(name)
 

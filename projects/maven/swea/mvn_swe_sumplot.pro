@@ -68,8 +68,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-03-15 12:37:02 -0700 (Fri, 15 Mar 2019) $
-; $LastChangedRevision: 26806 $
+; $LastChangedDate: 2019-07-02 13:06:47 -0700 (Tue, 02 Jul 2019) $
+; $LastChangedRevision: 27400 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -1130,6 +1130,8 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     store_data,'orbnum',data={x:t, y:mvn_orbit_num(time=t)}
     tplot_options,'var_label','orbnum'
   endif
+
+  tplot_options,'datagap',129D  ; 1 sec longer than PFP housekeeping interval
 
   if (doplot) then begin
     tplot,pans,trange=[tmin,tmax]
