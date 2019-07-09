@@ -108,6 +108,8 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
 
   get_data, prefix + 'spec', data = spec_data
 
+  get_data, prefix + 'src_sel_string', data = src_sel_string_data
+
   get_data, prefix + 'gain', data = gain_data
 
   get_data, prefix + 'navg', data = navg_data
@@ -164,15 +166,16 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
         new_data_y = transpose(reform(reform(transpose(spec_data_y), n_total), $
           n_bins, n_total/n_bins))
 
-        ; TODO: Make this more precise using TMlib time
-
         new_data_x = []
         new_data_sat_y = []
         new_data_gain = []
+        new_data_src_string = []
+        
 
         for i = 0, n_elements(spec_data.x)-1 do begin
 
           gain = gain_data.y[i]
+          src_string = src_sel_string_data.y[i]
 
           if is_ac then begin
 
@@ -190,6 +193,9 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
           endelse
 
           new_data_gain = [new_data_gain, lonarr(n_spec) + gain]
+
+          new_data_src_string = [new_data_src_string, strarr(n_spec) + src_string]
+
 
           new_data_x = [new_data_x,spec_data.x[i] + $
             delta_x * dindgen(n_spec)]
@@ -233,6 +239,7 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
           new_data_y = new_data_y[valid_spec_ind,*]
           data_v = data_v[valid_spec_ind,*]
           new_data_gain = new_data_gain[valid_spec_ind]
+          new_data_src_string = new_data_src_string[valid_spec_ind]
           new_data_sat_y = new_data_sat_y[valid_spec_ind]
 
         endif
@@ -242,6 +249,14 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
           y:alog10(spp_fld_dfb_psuedo_log_decompress(new_data_y, $
           type = 'spectra', high_gain = new_data_gain)), $
           v:data_v}
+
+        store_data, prefix + 'src_string_all', $
+          data = {x:new_data_x, $
+          y:new_data_src_string}
+
+        store_data, prefix + 'gain_all', $
+          data = {x:new_data_x, $
+          y:new_data_gain}
 
         options, prefix + 'spec_converted', 'panel_size', 2
         options, prefix + 'spec_converted', 'spec', 1
