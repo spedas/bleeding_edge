@@ -73,8 +73,8 @@
 ;   - Minor updates to defaults by egrimes@igpp
 ;    
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-11-02 10:06:29 -0700 (Fri, 02 Nov 2018) $
-;$LastChangedRevision: 26048 $
+;$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
+;$LastChangedRevision: 27435 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/edp/mms_load_edp.pro $
 ;-
 pro mms_load_edp, trange = trange, probes = probes, datatype = datatype, $
@@ -86,7 +86,7 @@ pro mms_load_edp, trange = trange, probes = probes, datatype = datatype, $
     varformat = varformat, cdf_filenames = cdf_filenames, cdf_version = cdf_version, $
     latest_version = latest_version, min_version = min_version, spdf = spdf, $
     available = available, versions = versions, always_prompt = always_prompt, $
-    major_version=major_version, tt2000=tt2000
+    major_version=major_version, tt2000=tt2000, download_only=download_only
 
     if undefined(probes) then probes = [1, 2, 3, 4] 
     if undefined(datatype) then datatype = ['dce']
@@ -104,8 +104,10 @@ pro mms_load_edp, trange = trange, probes = probes, datatype = datatype, $
         cdf_filenames = cdf_filenames, cdf_version = cdf_version, $
         latest_version = latest_version, min_version = min_version, spdf = spdf, $
         available = available, versions = versions, always_prompt = always_prompt, $
-        major_version=major_version, tt2000=tt2000
+        major_version=major_version, tt2000=tt2000, download_only=download_only
 
+    if keyword_set(download_only) then return
+    
     for level_idx = 0, n_elements(level)-1 do begin
       ; set some of the metadata
       mms_edp_fix_metadata, tplotnames, prefix = 'mms' + probes, instrument = 'edp', data_rate = data_rate, suffix = suffix, level=level[level_idx]

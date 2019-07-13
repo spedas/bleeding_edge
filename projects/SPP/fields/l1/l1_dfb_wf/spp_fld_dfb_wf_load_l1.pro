@@ -27,13 +27,34 @@
 ; CREATED BY:
 ;   pulupa
 ;
-;  $LastChangedBy: pulupa $
-;  $LastChangedDate: 2019-05-08 15:10:10 -0700 (Wed, 08 May 2019) $
-;  $LastChangedRevision: 27210 $
+;  $LastChangedBy: pulupalap $
+;  $LastChangedDate: 2019-07-12 12:04:21 -0700 (Fri, 12 Jul 2019) $
+;  $LastChangedRevision: 27441 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_dfb_wf/spp_fld_dfb_wf_load_l1.pro $
 ;
 
-pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
+pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varformat = varformat
+
+  ; Some special cases for the varformat keyword, used in L1 -> L1b processing.
+
+  load_wf_v = 0
+  load_meta_only = 0
+
+  if n_elements(varformat) GT 0 then begin
+
+    ; Loading metadata only
+
+    if array_equal(['compression', 'wav_enable', 'wav_sel', $
+      'wav_sel_string', 'wav_tap'], varformat) then load_meta_only = 1
+
+    ; Not loading approximate voltage (to reduce memory usage)
+
+    if array_equal(['CCSDS_MET_Seconds', 'CCSDS_MET_SubSeconds', $
+      'compression', 'wav_enable', 'wav_sel', $
+      'wav_sel_string', 'wav_tap', 'wf_pkt_data'], varformat) then $
+      load_wf_v = 0
+
+  endif
 
   ; Check for existence of file
 
@@ -47,7 +68,15 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
 
   ; Load files into TPLOT variables with cdf2tplot
 
-  cdf2tplot, /get_support_data, file, prefix = prefix, varnames = varnames
+  if n_elements(varformat) GT 0 then begin
+
+    cdf2tplot, file, prefix = prefix, varnames = varnames, varformat = varformat
+
+  endif else begin
+
+    cdf2tplot, /get_support, file, prefix = prefix, varnames = varnames, varformat = varformat
+
+  endelse
 
   if varnames[0] EQ '' then begin
 
@@ -119,13 +148,18 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
   ; End plot options
   ;
 
+  if load_meta_only EQ 1 then return
+
   ;
   ; Store waveform data in useful tplot variables
   ;
 
   get_data, prefix + 'wf_pkt_data', data = d
-  get_data, prefix + 'wf_pkt_data_v', data = d_v
+  if load_wf_v EQ 1 then get_data, prefix + 'wf_pkt_data_v', data = d_v
+
   get_data, prefix + 'wav_tap', data = d_tap
+  get_data, prefix + 'wav_sel', data = d_sel
+  get_data, prefix + 'wav_sel_string', data = d_sel_str
 
   ; The L1 files contain the waveform data as it is stored in the packets,
   ; with up to 2106 samples per packet.  When the files are loaded into
@@ -146,94 +180,17 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
   ; The vectors generated in the above steps are added to lists, instead of
   ; simply adding to arrays, because adding to lists is significantly faster
   ; in IDL than array concatenation operations.
-  ; 
-  ; Note: Early version of the DFB L1 CDF files did not contain the rough 
+  ;
+  ; Note: Early version of the DFB L1 CDF files did not contain the rough
   ; conversion into volts.  The line:
-  ; 
+  ;
   ;   if size(d_v, /type) EQ 8
-  ; 
+  ;
   ; which appears several times below, checks for the presence of the voltage
   ; data.  It should be present in any file created since launch.
   ;
 
-;  all_wf_time_list = LIST()
-;  all_wf_decompressed_list = LIST()
-;  all_wf_decompressed_v_list = LIST()
-
   if size(d, /type) EQ 8 then begin
-
-;    ; Step through each packet of waveform data.  wf_i and wf_i_v are the
-;    ; valid count and voltage measurements from each packet (valid = non
-;    ; fill values.
-;
-;    t1 = systime(/sec)
-;
-;    for i = 0, n_elements(d.x) - 1 do begin
-;
-;      wf_i0 = reform(d.y[i,*])
-;      wf_i = wf_i0[where(wf_i0 GT -2147483647l)]
-;
-;      if size(d_v, /type) EQ 8 then begin
-;
-;        wf_i0_v = reform(d_v.y[i,*])
-;        wf_i_v = wf_i0_v[where(wf_i0 GT -2147483647l)]
-;
-;      endif
-;
-;      ; Decompress data if compressed (see note in doclib header)
-;
-;      if keyword_set(compressed) then begin
-;        wf_i = decompress(uint(wf_i))
-;      end
-;
-;      ; Add waveform counts from the packet to the overall list of counts.
-;      all_wf_decompressed_list.Add, wf_i
-;
-;      ; Add waveform voltages from the packet to the overall list of voltages.
-;      if size(d_v, /type) EQ 8 then all_wf_decompressed_v_list.Add, wf_i_v
-;
-;      ; Compute the time delay, then compute the time series based on the
-;      ; packet time, the cadence (tap), and the delay.  Add the time
-;      ; to the overall list of times.
-;
-;      wf_time = d_tap.x[i] + $
-;        (dindgen(n_elements(wf_i))) / $
-;        (18750d / (2d^d_tap.y[i]))
-;
-;      all_wf_time_list.Add, wf_time
-;
-;      dprint, i, n_elements(d.x), dwait = 5
-;
-;    endfor
-;
-;    ; Once we're through all of the packets, we have three IDL LIST variables,
-;    ; with each element in each LIST containing a packet's worth of DFB L1
-;    ; waveform counts, voltages, or time stamps.  These steps turn those LISTs
-;    ; into 1D vectors.
-;
-;    all_wf_time = (spp_fld_square_list(all_wf_time_list)).ToArray()
-;    all_wf_decompressed = $
-;      (spp_fld_square_list(all_wf_decompressed_list)).ToArray()
-;    if size(d_v, /type) EQ 8 then $
-;      all_wf_decompressed_v = $
-;      (spp_fld_square_list(all_wf_decompressed_v_list)).ToArray()
-;
-;    all_wf_time = reform(transpose(all_wf_time), n_elements(all_wf_time))
-;    all_wf_decompressed = $
-;      reform(transpose(all_wf_decompressed), n_elements(all_wf_time))
-;    if size(d_v, /type) EQ 8 then $
-;      all_wf_decompressed_v = $
-;      reform(transpose(all_wf_decompressed_v), n_elements(all_wf_time))
-;
-;    wf_valid_ind = where(finite(all_wf_time), wf_valid_count)
-;
-;    if wf_valid_count GT 0 then begin
-;      all_wf_time = all_wf_time[wf_valid_ind]
-;      all_wf_decompressed = all_wf_decompressed[wf_valid_ind]
-;      if size(d_v, /type) EQ 8 then $
-;        all_wf_decompressed_v = all_wf_decompressed_v[wf_valid_ind]
-;    endif
-
 
     times_2d = d.x
 
@@ -242,29 +199,59 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
     max_samples = (size(d.y))[2]
 
     times_1d = rebin(times_2d, n_times_2d, max_samples)
-    
+
     rate = 18750d / (2d^d_tap.y)
-    
+
     rate_arr = rebin(rate, n_times_2d, max_samples)
-    
-    indices = rebin(lindgen(1,max_samples), n_times_2d, max_samples)
-    
+    tap_arr = rebin(d_tap.y, n_times_2d, max_samples)
+    sel_arr = rebin([d_sel.y], n_times_2d, max_samples)
+
+    sel_uniq = d_sel.y[uniq(d_sel.y, sort(d_sel.y))]
+
+    sel_str_arr = strarr(size(/dim, sel_arr))
+
+    foreach sel, sel_uniq do begin
+
+      sel_ind = where(sel_arr EQ sel, sel_count)
+
+      if sel_count GT 0 then begin
+
+        sel_str = d_sel_str.y[sel_ind[0]]
+
+        sel_str_arr[sel_ind] = sel_str
+
+      endif
+
+    endforeach
+
+    ;    stop
+
+    indices = rebin(indgen(1,max_samples), n_times_2d, max_samples)
+    indices_1d = reform(transpose(indices), n_elements(indices))
+
     times_1d += double(indices) / rate_arr
-    
     times_1d = reform(transpose(times_1d), n_elements(times_1d))
-    
+
     wf_1d = reform(transpose(d.y), n_elements(d.y))
 
-    wf_v_1d = reform(transpose(d_v.y), n_elements(d.y))
-    
+    if load_wf_v EQ 1 then wf_v_1d = reform(transpose(d_v.y), n_elements(d.y))
+
     valid = where(wf_1d GT -2147483647l, n_valid)
-    
+
+    tap_arr_1d = reform(transpose(tap_arr), n_elements(times_1d))
+    sel_str_arr_1d = reform(transpose(sel_str_arr), n_elements(times_1d))
+
     if n_valid GT 0 then begin
-      
+
+      indices_1d = indices_1d[valid]
+
       times_1d = times_1d[valid]
       wf_1d = wf_1d[valid]
-      wf_v_1d = wf_v_1d[valid] 
-      
+      if load_wf_v EQ 1 then wf_v_1d = wf_v_1d[valid]
+
+      tap_arr_1d = tap_arr_1d[valid]
+      sel_str_arr_1d = sel_str_arr_1d[valid]
+
     endif
 
     ; Store the counts data in a tplot variable.
@@ -275,10 +262,21 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
 
     ; Store the voltage data in a tplot variable.
 
-    if size(d_v, /type) EQ 8 then $
-      store_data, prefix + 'wav_data_v', $
-      dat = {x:times_1d, y:wf_v_1d}, $
-      dlim = {panel_size:2}
+    if load_wf_v EQ 1 then begin
+      if size(d_v, /type) EQ 8 then $
+        store_data, prefix + 'wav_data_v', $
+        dat = {x:times_1d, y:wf_v_1d}, $
+        dlim = {panel_size:2}
+    end
+
+    store_data, prefix + 'wav_pkt_index', $
+      dat = {x:times_1d, y:indices_1d}
+
+    store_data, prefix + 'wav_sel_string_all', $
+      dat = {x:times_1d, y:sel_str_arr_1d}
+
+    store_data, prefix + 'wav_tap_all', $
+      dat = {x:times_1d, y:tap_arr_1d}
 
     ; Set plot options for the waveform data
 
@@ -286,11 +284,16 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed
     options, prefix + 'wav_data*', 'max_points', 40000l
     options, prefix + 'wav_data*', 'psym_lim', 200
     options, prefix + 'wav_data', 'ysubtitle', '[Counts]'
-    options, prefix + 'wav_data_v', 'ysubtitle', '[V]'
-    options, prefix + 'wav_data_v', 'datagap', 60d
+
+    if load_wf_v EQ 1 then begin
+
+      options, prefix + 'wav_data_v', 'ysubtitle', '[V]'
+      options, prefix + 'wav_data_v', 'datagap', 60d
+
+    end
 
     ; Set the ytitle for the DFB waveform tplot variable.
-    ; 
+    ;
     ; TODO: Improve this by splitting non-unique waveform sources into
     ; separate tplot variables and labeling them accordingly.
 

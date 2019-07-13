@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Jul  8 18:16:26 2019.<P>
+<STRONG>Last modified: </STRONG>Fri Jul 12 18:16:31 2019.<P>
  
 <HR>
  
@@ -32,6 +32,8 @@ This page was created by the IDL library routine
 <br>Opens the MMS Kibana page using your web browser; allows you to see which
 <LI><A HREF="#MMS_TRANSFORM_VELOCITY">MMS_TRANSFORM_VELOCITY</A>
 <LI><A HREF="#MMS_TRANSFORM_VELOCITY_LORENTZ">MMS_TRANSFORM_VELOCITY_LORENTZ</A>
+<LI><A HREF="#TNAMES_CP">TNAMES_CP</A>
+<br>Simple wrapper around the tnames() function that provides output that
 <br>
 </UL><P>
 <HR>
@@ -86,8 +88,8 @@ This page was created by the IDL library routine
      work in progress; suggestions, comments, complaints, etc: egrimes@igpp.ucla.edu
      
 $LastChangedBy: egrimes $
-$LastChangedDate: 2019-06-04 12:32:47 -0700 (Tue, 04 Jun 2019) $
-$LastChangedRevision: 27314 $
+$LastChangedDate: 2019-07-09 15:24:30 -0700 (Tue, 09 Jul 2019) $
+$LastChangedRevision: 27423 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra.pro $
 </PRE><P>
 <STRONG>(See <A href="util/flatten_spectra.pro">projects/mms/common/util/flatten_spectra.pro</A>)</STRONG><P>
@@ -150,8 +152,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      work in progress; suggestions, comments, complaints, etc: egrimes@igpp.ucla.edu
      
 $LastChangedBy: egrimes $
-$LastChangedDate: 2019-07-08 14:11:07 -0700 (Mon, 08 Jul 2019) $
-$LastChangedRevision: 27415 $
+$LastChangedDate: 2019-07-09 15:38:36 -0700 (Tue, 09 Jul 2019) $
+$LastChangedRevision: 27424 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra_multi.pro $
 </PRE><P>
 <STRONG>(See <A href="util/flatten_spectra_multi.pro">projects/mms/common/util/flatten_spectra_multi.pro</A>)</STRONG><P>
@@ -315,6 +317,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_TRANSFORM_VELOCITY_LORENTZ">
 <H2>MMS_TRANSFORM_VELOCITY_LORENTZ</H2></A>
 <A HREF="#MMS_TRANSFORM_VELOCITY">[Previous Routine]</A>
+<A HREF="#TNAMES_CP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -337,5 +340,27 @@ $LastChangedRevision: 26316 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/mms_transform_velocity_lorentz.pro $
 </PRE><P>
 <STRONG>(See <A href="util/mms_transform_velocity_lorentz.pro">projects/mms/common/util/mms_transform_velocity_lorentz.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="TNAMES_CP">
+<H2>TNAMES_CP</H2></A>
+<A HREF="#MMS_TRANSFORM_VELOCITY_LORENTZ">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ FUNCTION:
+     tnames_cp
+   
+ PURPOSE:
+     Simple wrapper around the tnames() function that provides output that 
+     can be copy+pasted from the console to create new figures. 
+     
+     See the header of tnames for all input and keyword options
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2019-07-09 13:13:14 -0700 (Tue, 09 Jul 2019) $
+ $LastChangedRevision: 27421 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/tnames_cp.pro $
+</PRE><P>
+<STRONG>(See <A href="util/tnames_cp.pro">projects/mms/common/util/tnames_cp.pro</A>)</STRONG><P>
 <HR>
  

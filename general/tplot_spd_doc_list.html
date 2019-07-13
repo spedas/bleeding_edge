@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Jul  8 18:16:26 2019.<P>
+<STRONG>Last modified: </STRONG>Fri Jul 12 18:16:31 2019.<P>
  
 <HR>
  
@@ -3401,13 +3401,28 @@ Written by: Davin Larson
          Remove panel(s) from the current tplot window
 
  INPUT:
-         panel_num: int or array of ints containing panel #s 
-                    to remove from the current tplot window
-
+         panel: int or array of ints containing panel #s 
+                to remove from the current tplot window
+                (starts at 0 at the top)
+                
+                also accepts string or array of strings
+                containing variable names to be removed
+                
+ EXAMPLES:
+   IDL&gt; tplot, ['var1', 'var2', 'var3']
+   
+   to remove 'var2' from the figure:
+   
+   IDL&gt; tplot_remove_panel, 'var2'
+   
+   or:
+   
+   IDL&gt; tplot_remove_panel, 1
+   
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2019-07-02 14:08:30 -0700 (Tue, 02 Jul 2019) $
-$LastChangedRevision: 27402 $
+$LastChangedDate: 2019-07-10 13:21:07 -0700 (Wed, 10 Jul 2019) $
+$LastChangedRevision: 27433 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_remove_panel.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/tplot_remove_panel.pro">general/tplot/tplot_remove_panel.pro</A>)</STRONG><P>

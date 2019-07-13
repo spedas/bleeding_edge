@@ -1,15 +1,15 @@
 ;
-;  $LastChangedBy: spfuser $
-;  $LastChangedDate: 2018-08-20 15:13:45 -0700 (Mon, 20 Aug 2018) $
-;  $LastChangedRevision: 25671 $
+;  $LastChangedBy: pulupalap $
+;  $LastChangedDate: 2019-07-11 16:06:40 -0700 (Thu, 11 Jul 2019) $
+;  $LastChangedRevision: 27437 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_magi_survey_load_l1.pro $
 ;
 
-pro spp_fld_magi_survey_load_l1, file, prefix = prefix
+pro spp_fld_magi_survey_load_l1, file, prefix = prefix, varformat = varformat
 
   if not keyword_set(prefix) then prefix = 'spp_fld_magi_survey_'
 
-  spp_fld_mag_survey_load_l1, file, prefix = prefix
+  spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat
 
   magi_survey_names = tnames(prefix + '*')
 

@@ -82,8 +82,8 @@
 ; 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-04-15 08:23:35 -0700 (Mon, 15 Apr 2019) $
-;$LastChangedRevision: 27014 $
+;$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
+;$LastChangedRevision: 27435 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_load_hpca.pro $
 ;-
 
@@ -97,7 +97,7 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
                   latest_version = latest_version, min_version = min_version, $
                   spdf = spdf, center_measurement = center_measurement, available = available, $
                   versions = versions, always_prompt = always_prompt, major_version=major_version, $
-                  tt2000=tt2000, disable_mem_usage=disable_mem_usage
+                  tt2000=tt2000, disable_mem_usage=disable_mem_usage, download_only=download_only
                 
     if undefined(probes) then probes = ['1'] ; default to MMS 1
     if undefined(datatype) then datatype = 'moments' else datatype = strlowcase(datatype)
@@ -163,9 +163,10 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
         no_update = no_update, suffix = suffix, cdf_filenames = cdf_filenames, $
         cdf_version = cdf_version, latest_version = latest_version, min_version = min_version, $
         spdf = spdf, center_measurement = center_measurement, available = available, $
-        versions = versions, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
+        versions = versions, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000, $
+        download_only=download_only
     
-    if undefined(tplotnames) then return
+    if undefined(tplotnames) || keyword_set(download_only) then return
 
     ;copy ancillary data from support vars into 3D dist vars
     ;once CDFs are fully populated this should be removed

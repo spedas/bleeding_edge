@@ -81,7 +81,7 @@ pro spp_fld_rfs_cross_load_l1_metadata_options, prefix, receiver_str, color = co
 
 end
 
-pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
+pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color, varformat = varformat
 
   ; TODO improve this check for valid CDF file and add to other routines
   if n_elements(file) LT 1 or file[0] EQ '' then return
@@ -96,7 +96,7 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color
 
   rfs_freqs = spp_fld_rfs_freqs(lfr = lfr_flag)
 
-  cdf2tplot, /get_support_data, file, prefix = prefix
+  cdf2tplot, /get_support_data, file, prefix = prefix, varformat = varformat
 
   spp_fld_rfs_cross_load_l1_metadata_options, prefix, 'RFS', color = 0
 

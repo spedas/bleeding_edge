@@ -66,8 +66,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
-;$LastChangedRevision: 25588 $
+;$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
+;$LastChangedRevision: 27435 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/edi/mms_load_edi.pro $
 ;-
 
@@ -80,7 +80,7 @@ pro mms_load_edi, trange = trange, probes = probes, datatype = datatype, $
     varformat = varformat, cdf_filenames = cdf_filenames, cdf_version = cdf_version, $
     latest_version = latest_version, min_version = min_version, spdf = spdf, $
     available = available, versions = versions, always_prompt = always_prompt, $
-    major_version=major_version, tt2000=tt2000
+    major_version=major_version, tt2000=tt2000, download_only=download_only
 
     if undefined(probes) then probes = ['1'] ; default to MMS 1
     if undefined(datatype) then datatype = 'efield'
@@ -99,7 +99,9 @@ pro mms_load_edi, trange = trange, probes = probes, datatype = datatype, $
         no_update = no_update, suffix = suffix, varformat = varformat, cdf_filenames = cdf_filenames, $
         cdf_version = cdf_version, latest_version = latest_version, min_version = min_version, $
         spdf = spdf, available = available, versions = versions, always_prompt = always_prompt, $
-        major_version=major_version, tt2000=tt2000
+        major_version=major_version, tt2000=tt2000, download_only=download_only
+    
+    if keyword_set(download_only) then return
     
     for probe_idx = 0, n_elements(probes)-1 do mms_edi_set_metadata, tplotnames, prefix='mms'+strcompress(string(probes[probe_idx]), /rem), data_rate=data_rate, suffix=suffix
 

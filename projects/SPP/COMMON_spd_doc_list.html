@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Jul  8 18:16:26 2019.<P>
+<STRONG>Last modified: </STRONG>Fri Jul 12 18:16:31 2019.<P>
  
 <HR>
  
@@ -26,6 +26,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#SPP_DATA_PRODUCT__DEFINE">SPP_DATA_PRODUCT__DEFINE</A>
 <LI><A HREF="#SPP_DATA_PRODUCT_HASH">SPP_DATA_PRODUCT_HASH</A>
 <LI><A HREF="#SPP_FILE_RETRIEVE">SPP_FILE_RETRIEVE</A>
+<LI><A HREF="#SPP_FLD_LOAD">SPP_FLD_LOAD</A>
 <LI><A HREF="#SPP_GEN_APDAT__DEFINE[1]">SPP_GEN_APDAT__DEFINE[1]</A>
 <LI><A HREF="#SPP_GEN_APDAT__DEFINE[2]">SPP_GEN_APDAT__DEFINE[2]</A>
 <br>Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
@@ -167,14 +168,14 @@ This page was created by the IDL library routine
 <A NAME="SPP_FILE_RETRIEVE">
 <H2>SPP_FILE_RETRIEVE</H2></A>
 <A HREF="#SPP_DATA_PRODUCT__DEFINE">[Previous Routine]</A>
-<A HREF="#SPP_GEN_APDAT__DEFINE[1]">[Next Routine]</A>
+<A HREF="#SPP_FLD_LOAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Written by Davin Larson 
  
- $LastChangedBy: pulupa $
- $LastChangedDate: 2019-05-21 15:55:18 -0700 (Tue, 21 May 2019) $
- $LastChangedRevision: 27271 $
+ $LastChangedBy: pulupalap $
+ $LastChangedDate: 2019-07-12 07:54:05 -0700 (Fri, 12 Jul 2019) $
+ $LastChangedRevision: 27440 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_file_retrieve.pro $
  
  Function:  files = spp_file_retrieve(PATHNAME)
@@ -209,9 +210,27 @@ Keywords:  (All are optional - none are recommended)
 <STRONG>(See <A href="COMMON/spp_file_retrieve.pro">projects/SPP/COMMON/spp_file_retrieve.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPP_FLD_LOAD">
+<H2>SPP_FLD_LOAD</H2></A>
+<A HREF="#SPP_FILE_RETRIEVE">[Previous Routine]</A>
+<A HREF="#SPP_GEN_APDAT__DEFINE[1]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+  Author: Davin Larson December 2018
+
+ $LastChangedBy: davin-mac $
+ $LastChangedDate: 2019-02-05 16:17:41 -0800 (Tue, 05 Feb 2019) $
+ $LastChangedRevision:  $
+ $URL:  $
+
+</PRE><P>
+<STRONG>(See <A href="COMMON/spp_fld_load.pro">projects/SPP/COMMON/spp_fld_load.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPP_GEN_APDAT__DEFINE[1]">
 <H2>SPP_GEN_APDAT__DEFINE[1]</H2></A>
-<A HREF="#SPP_FILE_RETRIEVE">[Previous Routine]</A>
+<A HREF="#SPP_FLD_LOAD">[Previous Routine]</A>
 <A HREF="#SPP_GEN_APDAT__DEFINE[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

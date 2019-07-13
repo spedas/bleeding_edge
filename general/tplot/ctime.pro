@@ -262,6 +262,7 @@ pro ctime,time,value,zvalue,$
    ynorm   = ynorm  ,$       ; added by JBT
    xnorm   = xnorm  ,$       ; added by JBT
    routine_name = routine_name,  $         ; this routine is called everytime the curser is updated.
+   routine_param = routine_param, $
    cut  = cut       ,$                     ; Shortcut to:  ctime,routine_name='tplot_cut'
    counts  = n   ,$     ;
    vname   = vname  ,$       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -491,11 +492,15 @@ while n lt max do begin
     ind2 = -1
 
     if size(/type,routine_name) eq 7 then begin
-       device, set_graphics = old
-       wset,current_window
-       call_procedure,routine_name,var,t
-       wset, tplot_vars.settings.window
-       device, set_graphics = 6
+      device, set_graphics = old
+      wset,current_window
+      if keyword_set(routine_param) then begin
+        call_procedure,routine_name,var,t,param=routine_param
+      endif else begin
+        call_procedure,routine_name,var,t
+      endelse
+      wset, tplot_vars.settings.window
+      device, set_graphics = 6
     endif
 
 

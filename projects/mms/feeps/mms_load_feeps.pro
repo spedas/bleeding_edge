@@ -95,8 +95,8 @@
 ;     Please see the notes in mms_load_data for more information 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-05-22 10:35:03 -0700 (Wed, 22 May 2019) $
-;$LastChangedRevision: 27275 $
+;$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
+;$LastChangedRevision: 27435 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_load_feeps.pro $
 ;-
 pro mms_load_feeps, trange = trange, probes = probes, datatype = datatype, $
@@ -110,7 +110,7 @@ pro mms_load_feeps, trange = trange, probes = probes, datatype = datatype, $
                   min_version = min_version, spdf = spdf, num_smooth = num_smooth, $
                   available = available, versions = versions, always_prompt = always_prompt, $
                   major_version=major_version, no_flatfield_corrections=no_flatfield_corrections, $
-                  tt2000=tt2000, ignore_telescopes=ignore_telescopes
+                  tt2000=tt2000, ignore_telescopes=ignore_telescopes, download_only=download_only
 
     if undefined(level) then level_in = 'l2' else level_in = level
     if undefined(probes) then probes_in = ['1'] else probes_in = probes
@@ -146,9 +146,9 @@ pro mms_load_feeps, trange = trange, probes = probes, datatype = datatype, $
         no_update = no_update, suffix = suffix, varformat = varformat, cdf_filenames = cdf_filenames, $
         cdf_version = cdf_version, latest_version = latest_version, min_version = min_version, $
         spdf = spdf, available = available, versions = versions, always_prompt = always_prompt, $
-        major_version=major_version, tt2000=tt2000
+        major_version=major_version, tt2000=tt2000, download_only=download_only
     
-    if undefined(tplotnames) || tplotnames[0] eq '' then return
+    if undefined(tplotnames) || tplotnames[0] eq '' || keyword_set(download_only) then return
     
     if level_in eq 'l1a' then return ; avoid the following for L1a data
 

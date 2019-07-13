@@ -47,6 +47,7 @@
 ;             useful if you accidently save an incorrect password, or if your SDC password has changed
 ;         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in 
 ;             SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
+;         download_only: download the data files, but do not read them
 ;         
 ;         
 ; EXAMPLE:
@@ -94,8 +95,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-04-25 13:00:15 -0700 (Thu, 25 Apr 2019) $
-;$LastChangedRevision: 27091 $
+;$LastChangedDate: 2019-07-10 13:53:53 -0700 (Wed, 10 Jul 2019) $
+;$LastChangedRevision: 27434 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 
@@ -109,7 +110,7 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
                   min_version = min_version, cdf_records = cdf_records, spdf = spdf, $
                   center_measurement = center_measurement, available = available, $
                   versions = versions, always_prompt = always_prompt, major_version=major_version, $
-                  tt2000=tt2000
+                  tt2000=tt2000, download_only=download_only
 
     ;temporary variables to track elapsed times
     t0 = systime(/sec)
@@ -186,8 +187,6 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
     undefine, tplotnames
     ; clear CDF filenames, so we're not appending to an existing array
     undefine, cdf_filenames
-
-
 
     if keyword_set(spdf) then begin
         mms_load_data_spdf, probes = probes, datatype = datatypes, instrument = instrument, $
@@ -297,7 +296,9 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
                     dt_download += systime(/sec) - td0 ;temporary
                     if status eq 0 then append_array, files, file_dir + path_sep() + filename[file_idx]
                 endif else begin
-                    dprint, dlevel = 1, 'Loading local file ' + file_dir + path_sep() + filename[file_idx]
+                    if keyword_set(download_only) then begin
+                      dprint, dlevel = 1, 'File is current: ' + file_dir + path_sep() + filename[file_idx]
+                    endif else dprint, dlevel = 1, 'Loading local file ' + file_dir + path_sep() + filename[file_idx]
                     append_array, files, file_dir + path_sep() + filename[file_idx]
                 endelse
             endfor
@@ -363,7 +364,7 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
         ; to cdf2tplot
         files = files[bsort(files)]
 
-        if ~undefined(files) then begin
+        if ~undefined(files) and ~keyword_set(download_only) then begin
             lt0 = systime(/sec) ;temporary
             spd_cdf2tplot, files, tplotnames = loaded_tnames, varformat=varformat, $
                 suffix = suffix, get_support_data = get_support_data, /load_labels, $

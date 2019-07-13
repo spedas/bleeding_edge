@@ -67,8 +67,8 @@
 ;    The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
 ;    
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
-;$LastChangedRevision: 25588 $
+;$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
+;$LastChangedRevision: 27435 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/dsp/mms_load_dsp.pro $
 ;-
 
@@ -81,7 +81,7 @@ pro mms_load_dsp, trange = trange, probes = probes, datatype = datatype, $
     varformat = varformat, cdf_filenames = cdf_filenames, cdf_version = cdf_version, $
     latest_version = latest_version, min_version = min_version, spdf = spdf, $
     available = available, versions = versions, always_prompt = always_prompt, $
-    major_version=major_version, tt2000=tt2000
+    major_version=major_version, tt2000=tt2000, download_only=download_only
 
     if undefined(probes) then probes = [1, 2, 3, 4] ; default to MMS 1
     if undefined(datatype) then datatype = ['epsd', 'bpsd','tdn', 'swd']
@@ -102,7 +102,7 @@ pro mms_load_dsp, trange = trange, probes = probes, datatype = datatype, $
                     no_update = no_update, suffix = suffixes[datatype_idx], varformat = varformat, $
                     cdf_filenames = cdf_filenames_out, cdf_version = cdf_version, $
                     latest_version = latest_version, min_version = min_version, spdf = spdf, available = available, $
-                    versions = cdf_versions_out, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
+                    versions = cdf_versions_out, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000, download_only=download_only
                 append_array, tplot_names_full, tplotnames_out
                 append_array, cdf_filenames_full, cdf_filenames_out
                 append_array, versions_full, cdf_versions_out
@@ -123,7 +123,7 @@ pro mms_load_dsp, trange = trange, probes = probes, datatype = datatype, $
                     no_update = no_update, suffix = suffixes[datatype_idx], varformat = varformat, $
                     cdf_filenames = cdf_filenames_out, cdf_version = cdf_version, $
                     latest_version = latest_version, min_version = min_version, spdf = spdf, available = available, $
-                    versions = cdf_versions_out, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
+                    versions = cdf_versions_out, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000, download_only=download_only
                 append_array, tplot_names_full, tplotnames_out
                 append_array, cdf_filenames_full, cdf_filenames_out
                 append_array, versions_full, cdf_versions_out
@@ -139,7 +139,7 @@ pro mms_load_dsp, trange = trange, probes = probes, datatype = datatype, $
                 no_update = no_update, suffix = suffix, varformat = varformat, $
                 cdf_filenames = cdf_filenames_out, cdf_version = cdf_version, $
                 latest_version = latest_version, min_version = min_version, spdf = spdf, available = available, $
-                versions = cdf_versions_out, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
+                versions = cdf_versions_out, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000, download_only=download_only
             append_array, tplot_names_full, tplotnames_out
             append_array, cdf_filenames_full, cdf_filenames_out
             append_array, versions_full, cdf_versions_out
@@ -149,7 +149,9 @@ pro mms_load_dsp, trange = trange, probes = probes, datatype = datatype, $
     if ~undefined(tplot_names_full) then tplotnames = tplot_names_full
     if ~undefined(cdf_filenames_full) then cdf_filenames = cdf_filenames_full
     if ~undefined(versions_full) then versions = versions_full
-
+    
+    if keyword_set(download_only) then return
+    
     for level_idx = 0, n_elements(level)-1 do begin
       ; set some of the metadata
       mms_dsp_fix_metadata, tplotnames, prefix = 'mms' + probes, instrument = 'dsp', $

@@ -74,8 +74,8 @@
 ;          https://groups.google.com/forum/#!forum/spedas
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-11-21 08:55:24 -0800 (Wed, 21 Nov 2018) $
-;$LastChangedRevision: 26167 $
+;$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
+;$LastChangedRevision: 27435 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_load_fpi.pro $
 ;-
 
@@ -90,7 +90,7 @@ pro mms_load_fpi, trange = trange_in, probes = probes, datatype = datatype, $
                   latest_version = latest_version, min_version = min_version, $
                   spdf = spdf, center_measurement=center_measurement, $
                   available = available, versions = versions, always_prompt = always_prompt, $
-                  major_version=major_version, tt2000=tt2000
+                  major_version=major_version, tt2000=tt2000, download_only=download_only
 
     if undefined(probes) then probes = ['3'] ; default to MMS 3
     if undefined(datatype) then datatype = '*' ; grab all data in the CDF
@@ -138,10 +138,11 @@ pro mms_load_fpi, trange = trange_in, probes = probes, datatype = datatype, $
         no_update = no_update, suffix = suffix, varformat = varformat, cdf_filenames = cdf_filenames, $
         cdf_version = cdf_version, latest_version = latest_version, min_version = min_version, $
         spdf = spdf, center_measurement = center_measurement, available = available, $
-        versions = versions, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
+        versions = versions, always_prompt = always_prompt, major_version=major_version, tt2000=tt2000, $
+        download_only=download_only
 
     ; no reason to continue if the user only requested available data
-    if keyword_set(available) then return
+    if keyword_set(available) || keyword_set(download_only) then return
     
     if undefined(tplotnames) then return
 

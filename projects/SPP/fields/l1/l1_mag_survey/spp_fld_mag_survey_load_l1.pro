@@ -23,12 +23,12 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2019-04-09 23:28:56 -0700 (Tue, 09 Apr 2019) $
-;  $LastChangedRevision: 26976 $
+;  $LastChangedDate: 2019-07-11 16:06:40 -0700 (Thu, 11 Jul 2019) $
+;  $LastChangedRevision: 27437 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
-pro spp_fld_mag_survey_load_l1, file, prefix = prefix
+pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat
 
   if not keyword_set(file) then begin
     print, 'file must be specified'
@@ -37,7 +37,7 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix
 
   ; Load the L1 CDF file into IDL.
 
-  cdf2tplot, /get_support_data, file, prefix = prefix
+  cdf2tplot, /get_support_data, file, prefix = prefix, varformat = varformat
 
   if not keyword_set(prefix) then prefix = ''
 

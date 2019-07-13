@@ -1,4 +1,4 @@
-pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix
+pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix, varformat = varformat
 
   if not keyword_set(prefix) then prefix = 'spp_fld_rfs_rawspectra_'
 
@@ -10,7 +10,7 @@ pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix
 
   endif
 
-  cdf2tplot, /get_support_data, file, prefix = prefix
+  cdf2tplot, /get_support_data, file, prefix = prefix, varformat = varformat
 
   n_wf = 32768l
   f_wf = 38.4e6

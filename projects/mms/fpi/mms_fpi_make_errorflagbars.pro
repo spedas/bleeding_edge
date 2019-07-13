@@ -6,7 +6,7 @@
 ;         Make error flag bars
 ;         
 ;         For DES/DIS moments
-;          tname+'_flagbars_full': Detailed flag bars (12 bars)
+;          tname+'_flagbars_full': Detailed flag bars (all bars)
 ;          tname+'_flagbars'     : Standard flag bars (4 bars)
 ;          tname+'_flagbars_mini': Smallest flag bar (1 bars)
 ;
@@ -67,8 +67,8 @@
 ;     June 2016: minor updates by egrimes
 ;     
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-10-05 10:11:48 -0700 (Fri, 05 Oct 2018) $
-; $LastChangedRevision: 25917 $
+; $LastChangedDate: 2019-07-09 12:14:33 -0700 (Tue, 09 Jul 2019) $
+; $LastChangedRevision: 27416 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_fpi_make_errorflagbars.pro $
 ;-
 
@@ -110,10 +110,11 @@ PRO mms_fpi_make_errorflagbars, tname, level = level
         endelse
       endfor
     endfor
+    labels_full=['Contact FPI','Saturation','SCpot>20V','no SCpot','>25% Cold','>25% Hot','High Mach#','Low Dens','Onboard Mag','L2pre Mag','Photoelectrons','Compression', 'Spintones', 'Radiation']
     if inst eq 'DES' then begin
       store_data,tname+'_flagbars_full',data={x:d.x,y:[[flagline[*,0]],[flagline[*,1]-0.1],[flagline[*,2]-0.2],[flagline[*,3]-0.3],[flagline[*,4]-0.4],[flagline[*,5]-0.5],[flagline[*,6]-0.6],[flagline[*,7]-0.7],[flagline[*,8]-0.8],[flagline[*,9]-0.9],[flagline[*,10]-1.0],[flagline[*,11]-1.1],[flagline[*,12]-1.2]]}
       ylim,tname+'_flagbars_full',-0.15,1.25,0
-      options,tname+'_flagbars_full',colors=[0,6,4,3,2,1,3,0,2,4,6,0,2],labels=['bit 0','bit 1','bit 2','bit 3','bit 4','bit 5','bit 6','bit 7','bit 8','bit 9','bit 10','bit 11', 'bit 12'],ytitle=inst+'!C'+rate,thick=3,xstyle=4,ystyle=4,ticklen=0,labflag=-1,psym=-6,symsize=0.1,datagap=gap
+      options,tname+'_flagbars_full',colors=[0,6,4,3,2,1,3,0,2,4,6,0,2],labels=labels_full,ytitle=inst+'!C'+rate,thick=3,panel_size=0.8,xstyle=4,ystyle=4,ticklen=0,labflag=-1,psym=-6,symsize=0.3,datagap=gap
       store_data,tname+'_flagbars_main',data={x:d.x,y:[[flagline[*,1]-0.2],[flagline[*,4]-0.4],[flagline[*,5]-0.6],[flagline_others-0.8]]}
       ylim,tname+'_flagbars_main',0.1,0.9,0
       options,tname+'_flagbars_main',colors=[6,2,1,0],labels=['Saturation','Cold (>10%)','Hot (>25%)','Others'],ytitle=inst+'!C'+rate,xstyle=4,ystyle=4,ticklen=0,thick=4,panel_size=0.5,labflag=-1,psym=-6,symsize=0.2,datagap=gap
@@ -128,7 +129,7 @@ PRO mms_fpi_make_errorflagbars, tname, level = level
     endif else begin
       store_data,tname+'_flagbars_full',data={x:d.x,y:[[flagline[*,0]],[flagline[*,1]-0.1],[flagline[*,2]-0.2],[flagline[*,3]-0.3],[flagline[*,4]-0.4],[flagline[*,5]-0.5],[flagline[*,6]-0.6],[flagline[*,7]-0.7],[flagline[*,8]-0.8],[flagline[*,9]-0.9],[flagline[*,10]-1.0],[flagline[*,11]-1.1],[flagline[*,12]-1.2],[flagline[*,13]-1.3]]}
       ylim,tname+'_flagbars_full',-0.15,1.35,0
-      options,tname+'_flagbars_full',colors=[0,6,4,3,2,1,3,0,2,4,6,0,2,200],labels=['bit 0','bit 1','bit 2','bit 3','bit 4','bit 5','bit 6','bit 7','bit 8','bit 9','bit 10','bit 11', 'bit 12', 'bit 13'],ytitle=inst+'!C'+rate,thick=3,xstyle=4,ystyle=4,ticklen=0,labflag=-1,psym=-6,symsize=0.1,datagap=gap
+      options,tname+'_flagbars_full',colors=[0,6,4,3,2,1,3,0,2,4,6,0,2,200],labels=labels_full,ytitle=inst+'!C'+rate,thick=3,panel_size=0.8,xstyle=4,ystyle=4,ticklen=0,labflag=-1,psym=-6,symsize=0.3,datagap=gap
       store_data,tname+'_flagbars_main',data={x:d.x,y:[[flagline[*,1]-0.2],[flagline[*,13]-0.4],[flagline[*,5]-0.6],[flagline_others-0.8]]}
       ylim,tname+'_flagbars_main',0.1,0.9,0
       options,tname+'_flagbars_main',colors=[6,200,1,0],labels=['Saturation','Radiation','Hot (>25%)','Others'],ytitle=inst+'!C'+rate,xstyle=4,ystyle=4,ticklen=0,thick=4,panel_size=0.5,labflag=-1,psym=-6,symsize=0.2,datagap=gap

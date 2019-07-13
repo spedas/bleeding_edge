@@ -75,8 +75,8 @@
 ;    Please see the notes in mms_load_data for more information 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
-;$LastChangedRevision: 25588 $
+;$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
+;$LastChangedRevision: 27435 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/scm/mms_load_scm.pro $
 ;-
 
@@ -89,7 +89,8 @@ pro mms_load_scm, trange = trange, probes = probes, datatype = datatype, $
                   cdf_filenames = cdf_filenames, cdf_version = cdf_version, $
                   latest_version = latest_version, min_version = min_version, $
                   spdf = spdf, available = available, versions = versions, $
-                  always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
+                  always_prompt = always_prompt, major_version=major_version, tt2000=tt2000, $
+                  download_only=download_only
 
     if undefined(probes) then probes = ['1'] ; default to MMS 1
     if undefined(datatype) then datatype = ''
@@ -109,8 +110,10 @@ pro mms_load_scm, trange = trange, probes = probes, datatype = datatype, $
         suffix = suffix, varformat = varformat, cdf_filenames = cdf_filenames, $
         cdf_version = cdf_version, latest_version = latest_version, min_version = min_version, $
         spdf = spdf, available = available, versions = versions, always_prompt = always_prompt, $
-        major_version=major_version, tt2000=tt2000
+        major_version=major_version, tt2000=tt2000, download_only=download_only
 
+    if keyword_set(download_only) then return
+    
     if level eq 'l1a' then coord = '123'
     if level eq 'l1b' then coord = 'scm123'
     if level eq 'l2'  then coord = 'gse'
