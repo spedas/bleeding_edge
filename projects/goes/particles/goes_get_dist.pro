@@ -30,9 +30,9 @@
 ;Notes:
 ;
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-10-20 12:38:20 -0700 (Fri, 20 Oct 2017) $
-;$LastChangedRevision: 24199 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2019-07-16 15:30:48 -0700 (Tue, 16 Jul 2019) $
+;$LastChangedRevision: 27472 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/particles/goes_get_dist.pro $
 ;-
 
@@ -60,7 +60,7 @@ endif else begin
 endelse
 
 if keyword_set(uncorrected) && uncorrected eq 1 then begin
-  cor = 'uncor'
+  cor = 'uncori' ;Note it is assumed later that all variables have the same time array, so interpolated variables must be used here, jmm, 2019-07-16
 endif else cor = 'cor'
 
 ;cor = keyword_set(uncorrected) ? 'uncor':'cor'
@@ -204,20 +204,21 @@ dist.end_time = (*p.x)[index] + 30 ;TODO: get integ time
 
 for i=0, dim[0]-1 do begin
 
-  get_data, names[i], ptr=p
+  get_data, names[i], ptr=p_i
 
-  if ~is_struct(p) then begin
+  if ~is_struct(p_i) then begin
     dprint, dlevel=1, 'Variable: '+names[i]+' contains no valid data'
     return, 0
   endif
   
-  if ~array_equal((*p.x)[index],dist.time) then begin
-    dprint, dlevel=1, 'Sample times for '+names[i]+' do match those of other energies; check time range'
-    return, 0
+  if n_elements(*p_i.x) ne n_elements(*p.x) || $
+     ~array_equal((*p_i.x)[index],dist.time) then begin
+     dprint, dlevel=1, 'Sample times for '+names[i]+' do match those of other energies; check time range'
+     return, 0
   endif
 
   ;copy data from tplot variable to corresponding energy
-  dist.data[i,0:n_angles-1,*] = reform( transpose( (*p.y)[index,*] ), 1,n_angles,n_times)
+  dist.data[i,0:n_angles-1,*] = reform( transpose( (*p_i.y)[index,*] ), 1,n_angles,n_times)
 
 endfor
 

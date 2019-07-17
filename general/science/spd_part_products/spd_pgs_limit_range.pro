@@ -23,16 +23,20 @@
 ;  
 ;
 ;
-;$LastChangedBy: pcruce $
-;$LastChangedDate: 2016-01-04 15:09:48 -0800 (Mon, 04 Jan 2016) $
-;$LastChangedRevision: 19671 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2019-07-16 13:07:25 -0700 (Tue, 16 Jul 2019) $
+;$LastChangedRevision: 27461 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_part_products/spd_pgs_limit_range.pro $
 ;-
 
 pro spd_pgs_limit_range, data, phi=phi, theta=theta, energy=energy
 
-    compile_opt idl2, hidden
+  compile_opt idl2, hidden
   
+  if ~is_struct(data) then begin
+     dprint, 'Invalid data structure'
+     return
+  endif
   
   ;Apply phi limits
   if keyword_set(phi) then begin

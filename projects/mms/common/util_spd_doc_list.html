@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jul 12 18:16:31 2019.<P>
+<STRONG>Last modified: </STRONG>Tue Jul 16 18:16:28 2019.<P>
  
 <HR>
  
@@ -21,6 +21,8 @@ This page was created by the IDL library routine
 <H1>projects/mms/common/util</H1>
 <LI><A HREF="#FLATTEN_SPECTRA">FLATTEN_SPECTRA</A>
 <br>Create quick plots of spectra at a certain time (i.e., energy vs. eflux, PA vs. eflux, etc)
+<LI><A HREF="#FLATTEN_SPECTRA_CONVERT_UNITS">FLATTEN_SPECTRA_CONVERT_UNITS</A>
+<br>Helper roputine for flatten_spectra and flatten_spectra_multi
 <LI><A HREF="#FLATTEN_SPECTRA_MULTI">FLATTEN_SPECTRA_MULTI</A>
 <br>Create quick plots of spectra at multiple times (i.e., energy vs. eflux, PA vs. eflux, etc)
 <LI><A HREF="#MMS_CONVERT_VFRAME">MMS_CONVERT_VFRAME</A>
@@ -41,7 +43,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="FLATTEN_SPECTRA">
 <H2>FLATTEN_SPECTRA</H2></A>
-<A HREF="#FLATTEN_SPECTRA_MULTI">[Next Routine]</A>
+<A HREF="#FLATTEN_SPECTRA_CONVERT_UNITS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -88,16 +90,39 @@ This page was created by the IDL library routine
      work in progress; suggestions, comments, complaints, etc: egrimes@igpp.ucla.edu
      
 $LastChangedBy: egrimes $
-$LastChangedDate: 2019-07-09 15:24:30 -0700 (Tue, 09 Jul 2019) $
-$LastChangedRevision: 27423 $
+$LastChangedDate: 2019-07-16 13:52:51 -0700 (Tue, 16 Jul 2019) $
+$LastChangedRevision: 27464 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra.pro $
 </PRE><P>
 <STRONG>(See <A href="util/flatten_spectra.pro">projects/mms/common/util/flatten_spectra.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="FLATTEN_SPECTRA_CONVERT_UNITS">
+<H2>FLATTEN_SPECTRA_CONVERT_UNITS</H2></A>
+<A HREF="#FLATTEN_SPECTRA">[Previous Routine]</A>
+<A HREF="#FLATTEN_SPECTRA_MULTI">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ FUNCTION:
+     flatten_spectra_convert_units
+     
+ PURPOSE:
+     Helper roputine for flatten_spectra and flatten_spectra_multi
+
+ 
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2019-07-16 13:52:51 -0700 (Tue, 16 Jul 2019) $
+ $LastChangedRevision: 27464 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra_convert_units.pro $
+</PRE><P>
+<STRONG>(See <A href="util/flatten_spectra_convert_units.pro">projects/mms/common/util/flatten_spectra_convert_units.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="FLATTEN_SPECTRA_MULTI">
 <H2>FLATTEN_SPECTRA_MULTI</H2></A>
-<A HREF="#FLATTEN_SPECTRA">[Previous Routine]</A>
+<A HREF="#FLATTEN_SPECTRA_CONVERT_UNITS">[Previous Routine]</A>
 <A HREF="#MMS_CONVERT_VFRAME">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -152,8 +177,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      work in progress; suggestions, comments, complaints, etc: egrimes@igpp.ucla.edu
      
 $LastChangedBy: egrimes $
-$LastChangedDate: 2019-07-09 15:38:36 -0700 (Tue, 09 Jul 2019) $
-$LastChangedRevision: 27424 $
+$LastChangedDate: 2019-07-16 13:52:51 -0700 (Tue, 16 Jul 2019) $
+$LastChangedRevision: 27464 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra_multi.pro $
 </PRE><P>
 <STRONG>(See <A href="util/flatten_spectra_multi.pro">projects/mms/common/util/flatten_spectra_multi.pro</A>)</STRONG><P>

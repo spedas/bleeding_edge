@@ -16,9 +16,9 @@
 ;HISTORY:
 ; 19-dec-2007, from Andreas Kieling
 ; 9-jan-2008, jmm, Added directory keyword
-;$LastChangedBy: pcruce $
-;$LastChangedDate: 2010-09-08 14:15:20 -0700 (Wed, 08 Sep 2010) $
-;$LastChangedRevision: 7790 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2019-07-15 11:40:22 -0700 (Mon, 15 Jul 2019) $
+;$LastChangedRevision: 27446 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_memory_plots.pro $
 ;
 Pro thm_memory_plots, date = date, dur = dur, nopng = nopng, $
@@ -58,10 +58,12 @@ Pro thm_memory_plots, date = date, dur = dur, nopng = nopng, $
     endif 
   endfor
 
-  tnames_survey = 'th'+['a','b','c','d','e']+'_hsk_issr_survey_raw'
+  tnames_outer_survey = 'th'+['b','c']+'_hsk_issr_survey_raw'
+  tnames_inner_survey = 'th'+['a','d','e']+'_hsk_issr_survey_raw'
   tnames_burst = 'th'+['a','b','c','d','e']+'_hsk_issr_burst_raw'
-  
-  ylim, tnames_survey, 0, 30000, 0
+
+  ylim, tnames_inner_survey, 0, 30000, 0
+  ylim, tnames_outer_survey, 0, 40000, 0
   ylim, tnames_burst, 0, 25000, 0
   title = 'P5, P1, P2, P3, P4 (TH-A,B,C,D,E)'
   If(not keyword_set(nopng)) Then Begin

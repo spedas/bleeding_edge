@@ -1,4 +1,4 @@
-pro spp_fld_dfb_spec_load_l1, file, prefix = prefix
+pro spp_fld_dfb_spec_load_l1, file, prefix = prefix, varformat = varformat
 
   if n_elements(file) LT 1 then begin
     print, 'Must provide a CDF file to load"

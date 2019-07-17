@@ -28,8 +28,8 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2019-07-12 12:04:21 -0700 (Fri, 12 Jul 2019) $
-;  $LastChangedRevision: 27441 $
+;  $LastChangedDate: 2019-07-16 14:39:25 -0700 (Tue, 16 Jul 2019) $
+;  $LastChangedRevision: 27467 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_dfb_wf/spp_fld_dfb_wf_load_l1.pro $
 ;
 
@@ -37,7 +37,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
 
   ; Some special cases for the varformat keyword, used in L1 -> L1b processing.
 
-  load_wf_v = 0
+  load_wf_v = 1
   load_meta_only = 0
 
   if n_elements(varformat) GT 0 then begin
@@ -51,7 +51,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
 
     if array_equal(['CCSDS_MET_Seconds', 'CCSDS_MET_SubSeconds', $
       'compression', 'wav_enable', 'wav_sel', $
-      'wav_sel_string', 'wav_tap', 'wf_pkt_data'], varformat) then $
+      'wav_sel_string', 'wav_tap', 'wav_tap_string', 'wf_pkt_data'], varformat) then $
       load_wf_v = 0
 
   endif

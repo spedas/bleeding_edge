@@ -1,4 +1,4 @@
-pro spp_fld_dfb_dc_spec_load_l1, file, prefix = prefix
+pro spp_fld_dfb_dc_spec_load_l1, file, prefix = prefix, varformat = varformat
 
   if not keyword_set(prefix) then return
 
@@ -10,6 +10,6 @@ pro spp_fld_dfb_dc_spec_load_l1, file, prefix = prefix
 
   endif
 
-  spp_fld_dfb_spec_load_l1, file, prefix = prefix
+  spp_fld_dfb_spec_load_l1, file, prefix = prefix, varformat = varformat
 
 end

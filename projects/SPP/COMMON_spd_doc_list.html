@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jul 12 18:16:31 2019.<P>
+<STRONG>Last modified: </STRONG>Tue Jul 16 18:16:28 2019.<P>
  
 <HR>
  
@@ -171,13 +171,13 @@ This page was created by the IDL library routine
 <A HREF="#SPP_FLD_LOAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- Written by Davin Larson 
- 
+ Written by Davin Larson
+
  $LastChangedBy: pulupalap $
- $LastChangedDate: 2019-07-12 07:54:05 -0700 (Fri, 12 Jul 2019) $
- $LastChangedRevision: 27440 $
+ $LastChangedDate: 2019-07-16 14:38:58 -0700 (Tue, 16 Jul 2019) $
+ $LastChangedRevision: 27466 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_file_retrieve.pro $
- 
+
  Function:  files = spp_file_retrieve(PATHNAME)
  Purpose:  Retrieve or Download Solar Probe data files (i.e. L0 files)  (Can be used to generate filenames too)
  INPUT:
@@ -189,9 +189,9 @@ This page was created by the IDL library routine
    files = spp_file_retrieve(pathname,/daily_names,trange=trange)  ; set time range
 Keywords:  (All are optional - none are recommended)
  L0:   set to 1 to return PFP L0 files
- DAILY_NAMES : resolution (in days) for generating file names. 
+ DAILY_NAMES : resolution (in days) for generating file names.
          YYYY, yy, MM, DD,  hh,  mm, ss, .f, DOY, DOW, TDIFF are special characters that will be substituted with the appropriate date/time field
-         Be especially careful of extensions that begin with '.f' since these will be translated into a fractional second. 
+         Be especially careful of extensions that begin with '.f' since these will be translated into a fractional second.
          See &quot;time_string&quot;  TFORMAT keyword for more info.
  TRANGE : two element vector containing start and end times (UNIX_TIME or UT string).  if not present then timerange() is called to obtain the limits.
  SOURCE:  alternate file source.   Default is whatever is return by the function:  mvn_file_source()    (see &quot;mvn_file_source&quot; for more info)
