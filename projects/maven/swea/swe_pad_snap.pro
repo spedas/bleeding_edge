@@ -159,8 +159,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;        
 ; $LastChangedBy: xussui $
-; $LastChangedDate: 2019-06-18 12:43:57 -0700 (Tue, 18 Jun 2019) $
-; $LastChangedRevision: 27355 $
+; $LastChangedDate: 2019-07-18 16:29:51 -0700 (Thu, 18 Jul 2019) $
+; $LastChangedRevision: 27481 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -846,6 +846,9 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 vpara=vtot#cos(vpa*!dtor)
                 vper=vtot#sin(vpa*!dtor)
                 nlv = 15.
+
+                str_element, result, 'vdf', {vphase:vphase,vpara:vpara,vper:vper}, /add
+
                 contour,vphase,vpara,vper,$;,/IRREGULAR
                     xtit='Vpara (km/s)',ytit='Vper (km/s)',cell_fill=1,$
                     levels=(mima[1]-mima[0])/(nlv-1)*findgen(nlv)+mima[0],$
