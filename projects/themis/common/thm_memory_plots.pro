@@ -17,8 +17,8 @@
 ; 19-dec-2007, from Andreas Kieling
 ; 9-jan-2008, jmm, Added directory keyword
 ;$LastChangedBy: jimm $
-;$LastChangedDate: 2019-07-15 11:40:22 -0700 (Mon, 15 Jul 2019) $
-;$LastChangedRevision: 27446 $
+;$LastChangedDate: 2019-07-22 13:24:39 -0700 (Mon, 22 Jul 2019) $
+;$LastChangedRevision: 27486 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_memory_plots.pro $
 ;
 Pro thm_memory_plots, date = date, dur = dur, nopng = nopng, $
@@ -60,6 +60,7 @@ Pro thm_memory_plots, date = date, dur = dur, nopng = nopng, $
 
   tnames_outer_survey = 'th'+['b','c']+'_hsk_issr_survey_raw'
   tnames_inner_survey = 'th'+['a','d','e']+'_hsk_issr_survey_raw'
+  tnames_survey = 'th'+['a','b','c','d','e']+'_hsk_issr_survey_raw'
   tnames_burst = 'th'+['a','b','c','d','e']+'_hsk_issr_burst_raw'
 
   ylim, tnames_inner_survey, 0, 30000, 0
