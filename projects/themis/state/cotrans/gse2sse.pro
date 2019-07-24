@@ -67,9 +67,9 @@
 ;      
 ;Written by Jenni Kissinger and Patrick Cruce
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2012-06-04 10:26:03 -0700 (Mon, 04 Jun 2012) $
-; $LastChangedRevision: 10493 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-07-23 12:44:44 -0700 (Tue, 23 Jul 2019) $
+; $LastChangedRevision: 27491 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/state/cotrans/gse2sse.pro $
 ;-
 
@@ -81,7 +81,7 @@ pro gse2sse,name_in,name_sun_pos,name_lun_pos,name_out,sse2gse=sse2gse,$
   compile_opt idl2
 
   if n_params() ne 4 then begin
-    message,'Aborted: Missing 1 or more required arguments: name_in,name_out,name_sun_pos,name_lun_pos
+    message,'Aborted: Missing 1 or more required arguments: name_in,name_out,name_sun_pos,name_lun_pos'
   end
   
   ; check the type of data that is input (strings are tplot variables)
@@ -140,7 +140,7 @@ pro gse2sse,name_in,name_sun_pos,name_lun_pos,name_out,sse2gse=sse2gse,$
       sse_matrix_make,sun_name,lun_name,newname='sse_mat_cotrans',fail=fail,ignore_dlimits=ignore_dlimits
      
       if fail then begin
-        message,'Failed to create SSE rotation matrix
+        message,'Failed to create SSE rotation matrix'
       endif
     
       st_type = 'none'
@@ -256,7 +256,7 @@ pro gse2sse,name_in,name_sun_pos,name_lun_pos,name_out,sse2gse=sse2gse,$
   endelse
  
   if err eq 0 then begin  
-    message,'Error performing rotation during SSE transformation  
+    message,'Error performing rotation during SSE transformation ' 
   endif
   
   ;performing affine offsets for inverse transform
