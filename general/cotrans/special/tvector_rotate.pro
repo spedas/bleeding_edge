@@ -127,8 +127,8 @@
 ; SEE ALSO:  mva_matrix_make.pro, fac_matrix_make.pro,rxy_matrix_make
 ;
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-04-26 14:27:14 -0700 (Fri, 26 Apr 2019) $
-; $LastChangedRevision: 27101 $
+; $LastChangedDate: 2019-07-24 12:01:53 -0700 (Wed, 24 Jul 2019) $
+; $LastChangedRevision: 27496 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/special/tvector_rotate.pro $
 ;-
 
@@ -268,7 +268,9 @@ if tplotvar then begin
           endelse
           
           if n_elements(m_d.x) gt 1 then begin
-          
+            idx = bsort(m_d.x) ;the following test does not work for unsorted data, jmm, 2019-07-24
+            m_d = ctv_reduce_time_dimen(m_d, idx)
+
             idx = where((m_d.x[1:n_elements(m_d.x)-1]-m_d.x[0:n_elements(m_d.x)-2]) lt 0,complement=cidx)
     
             if(idx[0] ne -1) then begin
@@ -294,29 +296,30 @@ if tplotvar then begin
           
           ;check for nonmonotonic entries
           if n_elements(v_d.x) gt 1 then begin
-        
-            idx = where((v_d.x[1:n_elements(v_d.x)-1]-v_d.x[0:n_elements(v_d.x)-2]) le 0,complement=cidx)
-    
-            if(idx[0] ne -1) then begin
-     
-              ;modify the complement(monotonic entries) index, so it corresponds to regular entries, not discrete derivative entries.
-              if cidx[0] eq -1 then begin
-                cidx = [0]
-              endif else begin
-                cidx = [0,cidx+1]
-              endelse
-    
-              ;if requested, repair by removing nonmonotonic entries.
-              if keyword_set(vector_skip_nonmonotonic) then begin
-                dprint,'WARNING: ' + tn[i] + ' timestamps not strictly monotonic. Removing ' + strtrim(n_elements(idx),2) + ' nonmonotonic vector entries.'
-                v_d = ctv_reduce_time_dimen(v_d,cidx)
-              endif else begin
-                dprint, 'ERROR: Vector timestamps not monotonic please remove any non-ascending or repeated timestamps from your data or set keyword: vector_skip_nonmonotonic'
-                return
-              endelse
-    
+             idx = bsort(v_d.x) ;the following test does not work for unsorted data, jmm, 2019-07-24
+             v_d = ctv_reduce_time_dimen(v_d, idx)
+
+             idx = where((v_d.x[1:n_elements(v_d.x)-1]-v_d.x[0:n_elements(v_d.x)-2]) le 0, complement=cidx)
+
+             if(idx[0] ne -1) then begin
+
+               ;modify the complement(monotonic entries) index, so it corresponds to regular entries, not discrete derivative entries.
+               if cidx[0] eq -1 then begin
+                 cidx = [0]
+               endif else begin
+                 cidx = [0,cidx+1]
+               endelse
+
+               ;if requested, repair by removing nonmonotonic entries.
+               if keyword_set(vector_skip_nonmonotonic) then begin
+                 dprint,'WARNING: ' + tn[i] + ' timestamps not strictly monotonic. Removing ' + strtrim(n_elements(idx),2) + ' nonmonotonic vector entries.'
+                 v_d = ctv_reduce_time_dimen(v_d,cidx)
+               endif else begin
+                 dprint, 'ERROR: Vector timestamps not monotonic please remove any non-ascending or repeated timestamps from your data or set keyword: vector_skip_nonmonotonic'
+                 return
+               endelse
+
             endif
-            
           endif
        
           verify_check = ctv_verify_mats(m_d.y)
@@ -330,7 +333,7 @@ if tplotvar then begin
             ;using quaternion library transform into quanternions
             q_in = mtoq(m_d.y)
           endelse
-    
+
           ;interpolate quaternions
           q_out = qslerp(q_in,m_d.x,v_d.x)
     
