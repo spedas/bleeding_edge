@@ -11,11 +11,11 @@ function spp_fld_dcb_ssr_telemetry_ticks, axis, index, number
 
 end
 
-pro spp_fld_dcb_ssr_telemetry_load_l1, file, prefix = prefix
+pro spp_fld_dcb_ssr_telemetry_load_l1, file, prefix = prefix, varformat = varformat
 
   if not keyword_set(prefix) then prefix = 'spp_fld_dcb_ssr_telemetry_'
 
-  cdf2tplot, /get_support_data, file, prefix = prefix
+  cdf2tplot, /get_support_data, file, prefix = prefix, varformat = varformat
 
   get_data, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR', data = ssr_ptr
   get_data, 'spp_fld_dcb_ssr_telemetry_AWININX', data = ssr_ptr_frac

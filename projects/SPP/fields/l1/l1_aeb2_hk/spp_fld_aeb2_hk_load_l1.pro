@@ -1,15 +1,15 @@
 ;
-;  $LastChangedBy: pulupa $
-;  $LastChangedDate: 2019-02-26 15:16:35 -0800 (Tue, 26 Feb 2019) $
-;  $LastChangedRevision: 26710 $
+;  $LastChangedBy: pulupalap $
+;  $LastChangedDate: 2019-07-25 11:27:04 -0700 (Thu, 25 Jul 2019) $
+;  $LastChangedRevision: 27501 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_aeb2_hk/spp_fld_aeb2_hk_load_l1.pro $
 ;
 
-pro spp_fld_aeb2_hk_load_l1, file, prefix = prefix
+pro spp_fld_aeb2_hk_load_l1, file, prefix = prefix, varformat = varformat
 
   if not keyword_set(prefix) then prefix = 'spp_fld_aeb2_hk_'
 
-  cdf2tplot, /get_support_data, file, prefix = prefix
+  cdf2tplot, /get_support_data, file, prefix = prefix, varformat = varformat
 
   rbiases = [49.9e6,99e3,2.89e6]
 

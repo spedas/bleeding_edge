@@ -1,6 +1,6 @@
-pro spp_fld_dfb_dbm_load_l1, file, prefix = prefix
+pro spp_fld_dfb_dbm_load_l1, file, prefix = prefix, varformat = varformat
 
-  cdf2tplot, /get_support_data, file, prefix = prefix
+  cdf2tplot, /get_support_data, file, prefix = prefix, varformat = varformat
 
   options, prefix + 'compression', 'yrange', [-0.5, 1.5]
   options, prefix + 'compression', 'psym', 4
