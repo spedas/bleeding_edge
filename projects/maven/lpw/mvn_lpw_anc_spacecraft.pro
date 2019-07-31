@@ -99,6 +99,9 @@
 ;
 ;Setting /dont_unload will keep SPICE kernels stored in IDL memory. Default is to clear them after running through.
 ;
+;Setting /only_load_spice will load the SPICE kernels in the tplot variable 'mvn_lpw_load_kernel_files' into IDL memory, and then quit
+;       without performing any other calculations.
+;
 ;NOTE: even though kernel_dir is a key word it must still be set. See inputs above.
 ;
 ;
@@ -123,25 +126,20 @@
 ;141031: CF: added keyword /moons, so get position of Phobos and Deimos in MSO and IAU co-ords.
 ;150309: CF: added SPICE routines to get long, lat, and correct altitude based on geodetic co-ords. Also added Phobos and Deimos code as written by Brian Templeman.
 ;2017-03-23: CMF: longlat calculation was incorrect (wrong frame). Corrected, longlat now in the IAU_MARS frame, as described above.
-;
+;2019-07-30: CMF: tried to modify dont_load keyword so that this routine won't check for the tplot variable 'mvn_lpw_load_kernel_files', 
+;                 but there's a bunch of later code that depends on this. For now, this tplot variable needs to be loaded for the routine
+;                 to work.
 ;-
 ;=================
 
-pro mvn_lpw_anc_spacecraft, unix_in, not_quiet=not_quiet, moons=moons, css=css, dont_load=dont_load, dont_unload=dont_unload, basic=basic
+pro mvn_lpw_anc_spacecraft, unix_in, not_quiet=not_quiet, moons=moons, css=css, dont_load=dont_load, dont_unload=dont_unload, basic=basic, $
+                                only_load_spice=only_load_spice
 
 t_routine = SYSTIME(0)
 
 ;Load kernels:
 scid = -202  ;MAVEN s/c ID for SPICE
 kernel_version = 'anc_spacecraft V2.0'   ;needed for dlimits, add loaded kernels to it
-
-;Make sure unix_in is dblarr:
-if size(unix_in, /type) ne 5 then begin
-    print, "#######################"
-    print, "WARNING: unix_in must be a double array of UNIX times."
-    print, "#######################"
-    retall
-endif
 
 if keyword_set(basic) then basic = '1' else basic = '0'  ;reset keyword as it's quicker to check a value than if a keyword is set.
 
@@ -155,32 +153,42 @@ sl = path_sep()  ;/ for unix, \ for Windows
 ;Code for automatically loading found kernels:
 ;Get kernel info from tplot variables and load:
 tplotnames = tnames()  ;list of tplot variables in memory
-    if total(strmatch(tplotnames, 'mvn_lpw_load_kernel_files')) eq 1 then begin  ;found kernel tplot variable
-        get_data, 'mvn_lpw_load_kernel_files', data=data_kernels, dlimit=dl_kernels  ;dl.kernels contains the kernel names
-        nele_kernels = n_elements(dl_kernels.Kernel_files)  ;number of kernels to load
-        loaded_kernels_arr=strarr(nele_kernels)  ;string array
-        loaded_kernels='';dummy string
-        for aa = 0, nele_kernels-1 do begin
-            if not keyword_set(dont_load) then cspice_furnsh, dl_kernels.Kernel_files[aa]  ;load all kernels for now
-    
-            ;Extract just kernel name and remove directory:
-            nind = strpos(dl_kernels.Kernel_files[aa], sl, /reverse_search)  ;nind is the indice of the last '/' in the directory before the kernel name
-            lenstr = strlen(dl_kernels.Kernel_files[aa])  ;length of the string directory
-            kname = strmid(dl_kernels.Kernel_files[aa], nind+1, lenstr-nind)  ;extract just the kernel name
-            loaded_kernels_arr[aa] = kname  ;copy kernels as a string
-            loaded_kernels = loaded_kernels + " # " + kname  ;one long string so can save into dlimit
-            kernel_version = kernel_version + " # " + kname  ;add loaded kernel to dlimit field
-        endfor  ;over aa
-    endif else begin
-          print, "####################"
-          print, "WARNING: No SPICE kernels found which match this data set.
-          print, "Check there are kernels available online for this data.
-          print, "If they are present, check the kernel finder to see if it's finding them."
-          print, "Did you ask IDL to not use SPICE?"
-          print, "####################"
-          retall
-    endelse
-
+        if total(strmatch(tplotnames, 'mvn_lpw_load_kernel_files')) eq 1 then begin  ;found kernel tplot variable
+            get_data, 'mvn_lpw_load_kernel_files', data=data_kernels, dlimit=dl_kernels  ;dl.kernels contains the kernel names
+            nele_kernels = n_elements(dl_kernels.Kernel_files)  ;number of kernels to load
+            loaded_kernels_arr=strarr(nele_kernels)  ;string array
+            loaded_kernels='';dummy string
+            for aa = 0, nele_kernels-1 do begin
+                if not keyword_set(dont_load) then cspice_furnsh, dl_kernels.Kernel_files[aa]  ;load all kernels for now
+        
+                ;Extract just kernel name and remove directory:
+                nind = strpos(dl_kernels.Kernel_files[aa], sl, /reverse_search)  ;nind is the indice of the last '/' in the directory before the kernel name
+                lenstr = strlen(dl_kernels.Kernel_files[aa])  ;length of the string directory
+                kname = strmid(dl_kernels.Kernel_files[aa], nind+1, lenstr-nind)  ;extract just the kernel name
+                loaded_kernels_arr[aa] = kname  ;copy kernels as a string
+                loaded_kernels = loaded_kernels + " # " + kname  ;one long string so can save into dlimit
+                kernel_version = kernel_version + " # " + kname  ;add loaded kernel to dlimit field
+            endfor  ;over aa
+        endif else begin
+                print, "####################"
+                print, "WARNING: No SPICE kernels found which match this data set.
+                print, "Check there are kernels available online for this data.
+                print, "If they are present, check the kernel finder to see if it's finding them."
+                print, "Did you ask IDL to not use SPICE?"
+                print, "####################"
+                retall
+        endelse
+  
+if keyword_set(only_load_spice) then return
+ 
+;Make sure unix_in is dblarr:
+if size(unix_in, /type) ne 5 then begin
+  print, "#######################"
+  print, "WARNING: unix_in must be a double array of UNIX times."
+  print, "#######################"
+  retall
+endif
+ 
 ;==================
 ;Check that we have spk (planet), ck, lsk, fk, sclk kernels loaded for attitude information:
 spk_p = 0  ;planets (MAVEN below)
