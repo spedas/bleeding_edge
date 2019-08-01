@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-04-24 11:18:02 -0700 (Wed, 24 Apr 2019) $
-; $LastChangedRevision: 27080 $
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2019-07-31 11:24:05 -0700 (Wed, 31 Jul 2019) $
+; $LastChangedRevision: 27523 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -17,7 +17,7 @@ pro spp_swp_spe_prod_apdat::proc_16A, strct
     cnts:cnts,  $
     gap: strct.gap}
 
-  strct.anode_spec = cnts
+  strct.ano_spec = cnts
   strct.nrg_spec = 0.
   strct.def_spec = 0.
 

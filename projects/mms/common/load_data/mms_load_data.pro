@@ -95,8 +95,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-07-10 13:53:53 -0700 (Wed, 10 Jul 2019) $
-;$LastChangedRevision: 27434 $
+;$LastChangedDate: 2019-07-31 11:00:21 -0700 (Wed, 31 Jul 2019) $
+;$LastChangedRevision: 27521 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 
@@ -171,6 +171,7 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
     ;combine these flags for now, if we're not downloading files then there is
     ;no reason to contact the server unless mms_get_local_files is unreliable
     no_download = source.no_download or source.no_server or (response_code ne 200) or ~undefined(no_update) or keyword_set(spdf)
+    download_only = source.downloadonly or keyword_set(download_only)
 
     ; only prompt the user if they're going to download data
     if no_download eq 0 then begin
