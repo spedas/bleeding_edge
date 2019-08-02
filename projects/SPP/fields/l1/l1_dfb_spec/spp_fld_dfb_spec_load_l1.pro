@@ -166,66 +166,147 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix, varformat = varformat
         new_data_y = transpose(reform(reform(transpose(spec_data_y), n_total), $
           n_bins, n_total/n_bins))
 
-        new_data_x = []
-        new_data_sat_y = []
-        new_data_gain = []
-        new_data_src_string = []
-        
+  ;; old slow method of loading spectra data
 
-        for i = 0, n_elements(spec_data.x)-1 do begin
+;        t0_old = systime(/sec)
+;
+;        new_data_x = []
+;        new_data_sat_y = []
+;        new_data_gain = []
+;        new_data_src_string = []
+;
+;
+;        for i = 0, n_elements(spec_data.x)-1 do begin
+;
+;          dprint, i, n_elements(spec_data.x), dwait = 5
+;
+;          gain = gain_data.y[i]
+;          src_string = src_sel_string_data.y[i]
+;
+;          if is_ac then begin
+;
+;            n_avg_i = 2l^(navg_data.y[i])
+;
+;            if n_avg_i LE 16 then delta_x = 2d^17 / 150d3   ;; base dt is 1 PPC
+;            if n_avg_i GE 32 then delta_x = 2d^17 / 150d3 * double(floor(n_avg_i / 16d))  ;; base dt is N PPC
+;
+;          endif else begin
+;
+;            n_avg_i = 2l^(navg_data.y[i])
+;
+;            delta_x = (2d^17 / 150d3 / 8d) * n_avg_i
+;
+;          endelse
+;
+;          new_data_gain = [new_data_gain, lonarr(n_spec) + gain]
+;
+;          new_data_src_string = [new_data_src_string, strarr(n_spec) + src_string]
+;
+;
+;          new_data_x = [new_data_x,spec_data.x[i] + $
+;            delta_x * dindgen(n_spec)]
+;
+;          if sat_data.y[i] NE 4294967295 then begin ; fill value
+;
+;            new_data_sat_y = [new_data_sat_y, $
+;              (sat_data.y[i] / 2l^lindgen(16) MOD 2)[0:n_spec-1]]
+;
+;          endif else begin
+;
+;            ; Currently does not account for partial packets with
+;            ; fewer spectra than specified in the CONCAT item
+;
+;            new_data_sat_y = [new_data_sat_y, lonarr(16)]
+;
+;          endelse
+;
+;        endfor
 
-          gain = gain_data.y[i]
-          src_string = src_sel_string_data.y[i]
-
-          if is_ac then begin
-
-            n_avg_i = 2l^(navg_data.y[i])
-
-            if n_avg_i LE 16 then delta_x = 2d^17 / 150d3   ;; base dt is 1 PPC
-            if n_avg_i GE 32 then delta_x = 2d^17 / 150d3 * double(floor(n_avg_i / 16d))  ;; base dt is N PPC
-
-          endif else begin
-
-            n_avg_i = 2l^(navg_data.y[i])
-
-            delta_x = (2d^17 / 150d3 / 8d) * n_avg_i
-
-          endelse
-
-          new_data_gain = [new_data_gain, lonarr(n_spec) + gain]
-
-          new_data_src_string = [new_data_src_string, strarr(n_spec) + src_string]
+        ; code for validating the new loading method by comparing to old
 
 
-          new_data_x = [new_data_x,spec_data.x[i] + $
-            delta_x * dindgen(n_spec)]
+;        print, 'new method took: ',  systime(/sec) - t0_old, ' seconds'
+;
+;        new_data_x_old = new_data_x
+;        new_data_src_string_old = new_data_src_string
+;        new_data_gain_old = new_data_gain
+;        new_data_sat_y_old = new_data_sat_y
+;        t0_new = systime(/sec)
 
-          if sat_data.y[i] NE 4294967295 then begin ; fill value
+;; new faster method
 
-            new_data_sat_y = [new_data_sat_y, $
-              (sat_data.y[i] / 2l^lindgen(16) MOD 2)[0:n_spec-1]]
+        n_pkt = n_elements(spec_data.x)
 
-          endif else begin
+        indices = rebin(lindgen(1,n_spec),n_pkt,n_spec)
+        dindices = rebin(dindgen(1,n_spec),n_pkt,n_spec)
 
-            ; Currently does not account for partial packets with
-            ; fewer spectra than specified in the CONCAT item
+        if is_ac then begin
 
-            new_data_sat_y = [new_data_sat_y, lonarr(16)]
+          delta_x = dblarr(n_pkt)
 
-          endelse
+          dx_ind1 = where(2l^(navg_data.y) LE 16, dx_ind1_count)
+          dx_ind2 = where(2l^(navg_data.y) GT 16, dx_ind2_count)
 
-        endfor
-        
+          if dx_ind1_count GT 0 then $
+            delta_x[dx_ind1] = 2d^17 / 150d3
+
+          if dx_ind2_count GT 0 then $
+            delta_x[dx_ind2] = 2d^17 / 150d3 * $
+            double(floor(2l^(navg_data.y[dx_ind2]) / 16d))
+
+        endif else begin
+
+          delta_x = (2d^17 / 150d3 / 8d) * 2l^(navg_data.y)
+
+        endelse
+
+        new_data_x_2d = rebin(spec_data.x, n_pkt, n_spec)
+        new_data_x_2d += dindices * rebin(delta_x, n_pkt, n_spec)
+
+        new_data_x = reform(transpose(new_data_x_2d), n_elements(new_data_x_2d))
+
+        sat_ind_2d = (rebin(sat_data.y, n_pkt, n_spec) / 2l^indices) MOD 2
+
+        new_data_sat_y = reform(transpose(sat_ind_2d), n_elements(sat_ind_2d))
+
+        new_data_gain = reform(transpose(rebin(gain_data.y, n_pkt, n_spec)), n_pkt * n_spec)
+
+        new_data_src_string = strarr(n_pkt, n_spec)
+
+        src_strings = src_sel_string_data.y[uniq(src_sel_string_data.y, sort(src_sel_string_data.y))]
+
+        foreach s, src_strings do begin
+
+          src_string_ind = where(src_sel_string_data.y EQ s, src_string_count)
+
+          if src_string_count GT 0 then $
+            new_data_src_string[src_string_ind, *] = s
+
+        endforeach
+
+        new_data_src_string = reform(transpose(new_data_src_string), n_elements(new_data_src_string))
+
+        ; code for validating the new loading method by comparing to old
+
+        ;print, 'new method took: ',  systime(/sec) - t0_new, ' seconds'
+
+;        print, array_equal(new_data_x, new_data_x_old)
+;        print, array_equal(new_data_src_string, new_data_src_string_old)
+;        print, array_equal(new_data_gain, new_data_gain_old)
+;        print, array_equal(new_data_sat_y, new_data_sat_y_old)
+
+                ;stop
+
         ; In addition to the ADC saturation set in the packet, we also
         ; set the 'soft' saturation flag when a gain boosted DFB spectrum
         ; has a value of 255 (max value).  See below for interpretation of
         ; saturation indicator
-        
+
         soft_sat_y = ulong(max(new_data_y[*,2:*], dim = 2) EQ 255) * 2
-        
+
         new_data_sat_y += soft_sat_y
-        
-       ; stop
+
+        ; stop
 
         data_v = transpose(rebin(freq_bins.freq_avg,$
           n_elements(freq_bins.freq_avg),$
@@ -268,7 +349,7 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix, varformat = varformat
         options, prefix + 'spec_converted', 'yrange', minmax(freq_bins.freq_avg)
 
         ; Indicator of saturation.  This variable plots the saturation of
-        ; the DFB (0 = unsaturated, 1 = ADC saturated, 2 = soft saturated, 
+        ; the DFB (0 = unsaturated, 1 = ADC saturated, 2 = soft saturated,
         ; 3 = ADC and soft saturated)
 
         store_data, prefix + 'sat', $

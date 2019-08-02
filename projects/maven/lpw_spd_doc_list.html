@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Jul 31 18:16:33 2019.<P>
+<STRONG>Last modified: </STRONG>Thu Aug  1 18:16:30 2019.<P>
  
 <HR>
  
@@ -22,6 +22,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#MVN_LPW_ANC_BOOM">MVN_LPW_ANC_BOOM</A>
 <LI><A HREF="#MVN_LPW_ANC_BOOM_GET_LUTS">MVN_LPW_ANC_BOOM_GET_LUTS</A>
 <LI><A HREF="#MVN_LPW_ANC_BOOM_MARS_SHADOW">MVN_LPW_ANC_BOOM_MARS_SHADOW</A>
+<LI><A HREF="#MVN_LPW_ANC_CK_SPK_CHECK">MVN_LPW_ANC_CK_SPK_CHECK</A>
 <LI><A HREF="#MVN_LPW_ANC_CLEAR_SPICE_KERNELS">MVN_LPW_ANC_CLEAR_SPICE_KERNELS
 </A>
 <br>Clears spice kernels, and unsets the 'kernel verified' flag in the
@@ -212,7 +213,7 @@ MODIFICATIONS:
 <A NAME="MVN_LPW_ANC_BOOM_MARS_SHADOW">
 <H2>MVN_LPW_ANC_BOOM_MARS_SHADOW</H2></A>
 <A HREF="#MVN_LPW_ANC_BOOM_GET_LUTS">[Previous Routine]</A>
-<A HREF="#MVN_LPW_ANC_CLEAR_SPICE_KERNELS">[Next Routine]</A>
+<A HREF="#MVN_LPW_ANC_CK_SPK_CHECK">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -222,9 +223,78 @@ INPUTS:
 <STRONG>(See <A href="lpw/mvn_lpw_anc_boom_mars_shadow.pro">projects/maven/lpw/mvn_lpw_anc_boom_mars_shadow.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_LPW_ANC_CK_SPK_CHECK">
+<H2>MVN_LPW_ANC_CK_SPK_CHECK</H2></A>
+<A HREF="#MVN_LPW_ANC_BOOM_MARS_SHADOW">[Previous Routine]</A>
+<A HREF="#MVN_LPW_ANC_CLEAR_SPICE_KERNELS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Give this routine an array of UNIX times; the routine uses SPICE to check whether there is ck and spk coverage for each timestamp.
+This function occurs in mvn-lpw-anc-spacecraft, but also occurs with several SPICE calculations. Only the ck/spk checking process
+is carried out here (which runs quicker), producing the same tplot variables as those in mvn-lpw-anc-spacecraft. 
+
+The variables produced will have value zero if kernels are present, or 1 if flagged as not present. For 1, SPICE cannot be used to
+get spacecraft position / pointing, depending on which kernel is missing (ck = pointing, spk = position).
+
+
+INPUTS:
+unix_in: UNIX double precision array of timetamps. The routine will check SPICE coverage at each timestep.
+
+
+objcheck: the NAIF object code to be checked for spk (position kernels). -202 is MAVEN, for eg. See 
+           https://lasp.colorado.edu/maven/sdc/public/data/anc/spice/fk/maven_v05.tf
+           for the full list of MAVEN codes.
+ 
+ckcheck: the NAIF object code to be checked for ck (pointing) kernels. These have three additional integers added to the end
+         compared to objcheck. Eg, MAVEN is -202000.           
+           
+refcheck: the reference frame that objcheck should be checked in. Eg 'MAVEN_MSO'.
+
+   NOTES ON INPUTS: the SPICE coverage routines will only work for frames and objects that are CK based (ie can change over time).
+                    each MAVEN object is described in the above weblink, saying whether it's ck based or not. This routine may or may 
+                    not work for certain combinations of instruments and frames. CMF hasn't figured out whether this routine can be made 
+                    generic or not, however, it should work for MAVEN_SPACECRAFT and MAVEN_MSO.
+                
+
+OUTPUTS:
+success: 0: routine failed to make the checkes - it should throw an error if this happens.
+         1: checks completed.
+
+        
+tplot variables: mvn_lpw_anc_ck_flag: flag for s/c pointing for each timestep, 1 = no data, 0 = data present
+                 mvn_lpw_anc_spk_flag: flag for s/c position for each timestep, as above.
+
+OPTIONS:
+Set /loadspice to load the SPICE kernels found in 'mvn_lpw_load_kernel_files' to tplot memory. If not set, routine assumes they are already
+   loaded.
+   
+Set /unloadspice to remove SPICE kernels from IDL memory once checking is complete. If not set, routine will leave them in IDL memory.
+
+
+EGS:
+time = dindgen(86400)+time_double('2014-12-08')  ;make a UNIX time array, or use get_data to grab a time array...
+
+mvn_lpw_anc_get_spice_kernels, time, /notatlasp   ;find SPICE kernels and save into tplot variable 'mvn_lpw_load_kernel_files'
+mvn_lpw_anc_spacecraft, /only_load_spice    ;load SPICE kernels to IDL
+
+mvn_lpw_anc_ck_spk_check, time, ckcheck=-202000, objcheck=-202, refcheck='MAVEN_MSO'   
+                                                         ;check ck and spk coverage, for MAVENs position in the MSO frame.
+                                                         ;As of 2019-07-31, there is ~an hour of missing ck coverage for this date, if
+                                                         ;you want to check the code is working.
+
+NOTES: 
+CMF worked out by hand how many MAVEN clock ticks represent one second: 65535.964843750000. This is hard coded below.
+
+VERSIONS:
+Created: 2019-07-31: Chris Fowler (cmfowler@berkeley.edu): code copied from mvn_lpw_anc_spacecraft.pro to be stand alone.
+
+</PRE><P>
+<STRONG>(See <A href="lpw/mvn_lpw_anc_ck_spk_check.pro">projects/maven/lpw/mvn_lpw_anc_ck_spk_check.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_LPW_ANC_CLEAR_SPICE_KERNELS">
 <H2>MVN_LPW_ANC_CLEAR_SPICE_KERNELS</H2></A>
-<A HREF="#MVN_LPW_ANC_BOOM_MARS_SHADOW">[Previous Routine]</A>
+<A HREF="#MVN_LPW_ANC_CK_SPK_CHECK">[Previous Routine]</A>
 <A HREF="#MVN_LPW_ANC_COVTEST">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
