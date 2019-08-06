@@ -1,4 +1,4 @@
-pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
+pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix, varformat = varformat
 
   ; TODO: More X-spectra testing and formatting
 
@@ -9,7 +9,7 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix
     return
   endif
 
-  cdf2tplot, /get_support_data, file, prefix = prefix, varnames = varnames
+  cdf2tplot, /get_support_data, file, prefix = prefix, varnames = varnames, varformat = varformat
 
   status_items = ['enable', 'concat', 'src1', 'src2', 'gain', 'navg', 'bin']
 

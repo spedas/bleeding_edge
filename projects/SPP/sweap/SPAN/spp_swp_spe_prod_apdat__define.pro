@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2019-07-31 11:24:05 -0700 (Wed, 31 Jul 2019) $
-; $LastChangedRevision: 27523 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-08-04 21:47:55 -0700 (Sun, 04 Aug 2019) $
+; $LastChangedRevision: 27539 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -52,7 +52,7 @@ pro spp_swp_spe_prod_apdat::proc_8Dx32E, strct
   cnts_orig = cnts
 
   cnts = reform(cnts,8,32,/over)
-  strct.anode_spec = 0.
+  strct.ano_spec = 0.
   strct.nrg_spec = total(cnts,1)
   strct.def_spec =  total(cnts,2)
   ;  strct.full_spec = cnts_orig
@@ -73,7 +73,7 @@ pro spp_swp_spe_prod_apdat::proc_16Ax32E, strct
   cnts = *strct.pdata
 
   cnts = reform(cnts,16,32,/over)
-  strct.anode_spec = total(cnts,2)
+  strct.ano_spec = total(cnts,2)
   strct.nrg_spec = total(cnts,1)
   strct.def_spec = 0.
 
@@ -242,7 +242,7 @@ function spp_swp_spe_prod_apdat::decom,ccsds ,source_dict=source_dict  ;,ptp_hea
       status_bits: status_bits,$
       peak_bin:    peak_bin, $
       cnts:  tcnts,  $
-      anode_spec:  fltarr(16),  $
+      ano_spec:  fltarr(16),  $
       nrg_spec:    fltarr(32),  $
       def_spec:    fltarr(8) ,  $
       nrg_vals:    fltarr(32),  $

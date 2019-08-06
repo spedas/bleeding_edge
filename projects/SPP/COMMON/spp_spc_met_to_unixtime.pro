@@ -39,8 +39,8 @@ end
 ; This routine is in the process of being modified to use SPICE Kernels to correct for clock drift as needed.
 ; Author: Davin Larson
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-11-01 15:52:23 -0700 (Thu, 01 Nov 2018) $
-; $LastChangedRevision: 26044 $
+; $LastChangedDate: 2019-08-04 21:46:37 -0700 (Sun, 04 Aug 2019) $
+; $LastChangedRevision: 27538 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_spc_met_to_unixtime.pro $
 ;-
 function spp_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=correct_clockdrift   ,reset=reset ,ephemeris_time=et  ;,prelaunch = prelaunch
@@ -52,7 +52,7 @@ function spp_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=correc
     cor_clkdrift = correct_clockdrift
   endif
 
-  if n_elements(cor_clkdrift) eq 0 then cor_clkdrift = 0b
+  if n_elements(cor_clkdrift) eq 0 then cor_clkdrift = 1b
 
   if keyword_set(cor_clkdrift) then begin
     if  n_elements(kernel_verified) eq 0 || keyword_set(reset) then begin ; check for cspice first
@@ -93,7 +93,7 @@ function spp_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=correc
       et = time_ephemeris(unixtime)
       met = double(et)
       for i = 0,n_elements(met)-1 do begin
-        cspice_sce2s, -202, et[i], sclk_out
+        cspice_sce2s, -96, et[i], sclk_out
         seconds = double(strmid(sclk_out,2,10))
         subticks = double(strmid(sclk_out,13,5))
         met[i] = seconds+subticks/(2.0^16)

@@ -6,12 +6,38 @@
 ;     IDL> mgunit, 'tplot_stuff_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-07-13 15:36:46 -0700 (Fri, 13 Jul 2018) $
-; $LastChangedRevision: 25470 $
+; $LastChangedDate: 2019-08-05 10:27:20 -0700 (Mon, 05 Aug 2019) $
+; $LastChangedRevision: 27541 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/tplot_stuff_ut__define.pro $
 ;-
 
+; test tshift tag
+function tplot_stuff_ut::test_tshift
+  ; .5 at 4 sec
+  store_data, 'tshifttest', data={x: [1, 2, 3, 4, 5, 6, 7], y: [1, 1, 1, .5, 1, 1, 1], tshift: 0}
+  tplot, 'tshifttest'
+  makepng, 'tshift_dip_at_4sec'
+
+  ; .5 at 5 sec (shifted +1)
+  store_data, 'tshifttest', data={x: [1, 2, 3, 4, 5, 6, 7], y: [1, 1, 1, .5, 1, 1, 1], tshift: 1}
+  makepng, 'tshift_dip_at_5sec'
+
+  ; .5 at 3 sec (shifted -1)
+  store_data, 'tshifttest', data={x: [1, 2, 3, 4, 5, 6, 7], y: [1, 1, 1, .5, 1, 1, 1], tshift: -1}
+  tplot, 'tshifttest'
+  makepng, 'tshift_dip_at_3sec'
+  
+  ; .5 at 3.5 sec (shifted -0.5)
+  store_data, 'tshifttest', data={x: [1., 2., 3., 4., 5., 6., 7.], y: [1, 1, 1, .5, 1, 1, 1], tshift: -0.5}
+  tplot, 'tshifttest'
+  makepng, 'tshift_dip_at_3.5sec'
+
+  return, 1
+end
+
 ; ------- the following are some regression tests -------
+; 
+
 ; check that the changelog was updated
 function tplot_stuff_ut::test_spedas_changelog
   neturl = obj_new('idlneturl')
