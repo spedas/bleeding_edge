@@ -167,6 +167,8 @@ decomp19[128:255]=$
 ;
 
 ; Calibration values and arrays -- nominal values used as place holders
+; 20190419 The calculated geom_factor appears to be ~60% too low based on in-flight calibrations
+; geom_factor can be corrected by running mvn_sta_load_gf_update.pro until the l2 files are updated
 									; ESA Entrance Aperture Hex Grids: 91.9% transmission
 									; ESA Exit Grid pair at spyder plate: 89.2% transmission
 									; TOF Start/Stop suppression grids:   83.5% & 82.6% transmission
@@ -179,6 +181,8 @@ decomp19[128:255]=$
 	geom = geom*(0.892)^2						; ESA exit grids are 89.2% transmission -- impact high energy ions, low energy ions see leakage fields
 	geom = geom*(0.9)						; TOF ribs attenuate high energy ions (~0.9)
 	geom_factor = geom
+
+
 
 	nrg_const = 7.8							; simulation energy constant
 	def_const = 6.4							; simulation deflector constant (Vdef/Vinner) for 45 deg deflection
@@ -308,6 +312,8 @@ decomp19[128:255]=$
 ; The overall offset must be determined from calibration data to make the mass peaks line up
 ; 15 keV He+ tof=128, 15keV H+ tof=55, assume foil energy loss ~ (500 + m*1000./8.) -- we don't need this assumption
 ;	offset = (.4934*128 - 55)/(1.-.4934)		where .4934 = (m1/m2)^.5 * ((15000-1000)/(15000-625))^.5
+; Note - the tof_offset was determined by comparison of the measured proton peak to simulation.
+
 	tof_offset = 16
 
 mhist_tof = (findgen(1024)+tof_offset)/b_ns				; need to decide if we want that offset in this formula???????????????????????
@@ -474,7 +480,7 @@ def_eff = .285		; early mission solar wind proton efficiency, includes ~0.8 anod
 ; The following was added for CO2 mode with a SLUT load directly to STATIC, and a Config4 low byte increment to 1 (low and high bytes reversed in housekeeping)
 	conf2swp[260,0:7]=[21,21,22,23,24,25,26,27]					; CO2 mode 20180413, config4=260
 ; The following was added to solidify CO2 mode in eprom load 5
-	conf2swp[5,0:7]=[21,21,22,23,24,25,26,27]					; eprom load 5	 201804??
+	conf2swp[5,0:7]=[21,21,22,23,24,25,26,27]					; eprom load 5	 20180828
 
 ; SLUT parameters for each STATIC energy sweep table
 ; Note - Slut parameters must be corrected to actual calibration sweep & deflection values with "scale" and "def_scale"
@@ -1158,6 +1164,7 @@ endif
 
 ; Generate tof/mass tables
 ;    Assume the foil mass loss is (500+M*1000/8) eV = 500+125*M
+; Note - the tof_offset was determined by comparison of the measured proton peak to simulation.
 
 	p_vel = 0.0438 					; 1000 eV proton velocity in cm/ns
 	const = 2.*1000./(p_vel^2)			; unit conversion  2*energy/(mass-vel^2)
@@ -5849,8 +5856,9 @@ print,'Processing apid d6'
 ; 		these are diagnostic packets and are not needed for science  	
 		get_data,'mvn_STA_D6_DIAG',data=di
 			mm = di.y and 63
-			ind1 = where(mm eq 0)
-			ind2 = where(mm[ind1+47] eq 47,ndis)
+			mpts = n_elements(mm)
+			ind1 = where(mm eq 0,count)
+			if (count gt 0) then ind2 = where(mm[(ind1+47)<(mpts-1)] eq 47,ndis) else ndis=0
 	if ndis gt 0 and npkts ge 48 then begin
 			ind1 = ind1[ind2]
 			n_events = n_elements(ind1)

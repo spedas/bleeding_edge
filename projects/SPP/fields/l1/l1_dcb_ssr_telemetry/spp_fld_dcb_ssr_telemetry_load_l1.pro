@@ -45,6 +45,9 @@ pro spp_fld_dcb_ssr_telemetry_load_l1, file, prefix = prefix, varformat = varfor
       options, name, 'psym_lim', 100
       options, name, 'symsize', 0.5
 
+      options, name, 'datagap', 600
+
+
     endfor
 
   endif
@@ -54,13 +57,13 @@ pro spp_fld_dcb_ssr_telemetry_load_l1, file, prefix = prefix, varformat = varfor
   if size(/type, d_wptr) EQ 8 then begin
 
     store_data, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', lim = al, $
-      data = {x:d_wptr.x, y:d_wptr.y/512d}
+      data = {x:d_wptr.x, y:d_wptr.y/(512d) * (1024d/1000d)^3}
 
     options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'ysubtitle', 'Gbit'
-    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'yrange', [0,256]
+    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'yrange', [0,275]
     options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'ystyle', 1
-    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'yticks', 16
-    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'ytickv', indgen(17) * 256 / 16
+    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'yticks', 11
+    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'ytickv', indgen(12) * 275 / 11
 
   endif
 

@@ -129,7 +129,12 @@ endif
 			gf = mvn_c0_dat.geom_factor*reform(gf,npts,nenergy,nmass)
 			eff = mvn_c0_dat.eff[ieff,*,*]
 			dt = float(mvn_c0_dat.integ_t#replicate(1.,nenergy*nmass))
-			eflux2 = (data-bkg)*dead/(gf*eff*dt)
+
+				str_element,mvn_c0_dat,'gf_corr',success=success2
+				if success2 then gf_corr=reform(mvn_c0_dat.gf_corr[*,*],npts*nenergy)#replicate(1.,mvn_c0_dat.nmass) else gf_corr=1.
+
+			eflux2 = (data-bkg)*dead/(gf*gf_corr*eff*dt)
+;			eflux2 = (data-bkg)*dead/(gf*eff*dt)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/(eflux>.01))) gt 0. then print,'Error in CDF c0 eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -402,7 +407,12 @@ endif
 			gf = mvn_c6_dat.geom_factor*reform(gf,npts,nenergy,nmass)
 			eff = mvn_c6_dat.eff[ieff,*,*]
 			dt = float(mvn_c6_dat.integ_t#replicate(1.,nenergy*nmass))
-			eflux2 = (data-bkg)*dead/(gf*eff*dt)
+
+				str_element,mvn_c6_dat,'gf_corr',success=success2
+				if success2 then gf_corr=reform(mvn_c6_dat.gf_corr[*,*],npts*nenergy)#replicate(1.,mvn_c6_dat.nmass) else gf_corr=1.
+
+			eflux2 = (data-bkg)*dead/(gf*gf_corr*eff*dt)
+;			eflux2 = (data-bkg)*dead/(gf*eff*dt)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/(eflux>.01))) gt 0. then print,'Error in CDF c6 eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -523,7 +533,13 @@ endif
 			gf = mvn_c8_dat.geom_factor*gf
 			eff = mvn_c8_dat.eff[ieff,*,*]
 			dt = float(mvn_c8_dat.integ_t#replicate(1.,nenergy*ndef))
-			eflux2 = (data-bkg)*dead/(gf*eff*dt)
+
+				str_element,mvn_c8_dat,'gf_corr',success=success2
+;				if success2 then gf_corr=reform(mvn_c8_dat.gf_corr[*,*],npts*nenergy)#replicate(1.,mvn_c8_dat.ndef) else gf_corr=1.
+				if success2 then gf_corr=mvn_c8_dat.gf_corr else gf_corr = 1.
+
+			eflux2 = (data-bkg)*dead/(gf*gf_corr*eff*dt)
+;			eflux2 = (data-bkg)*dead/(gf*eff*dt)
 			if success and keyword_set(test) then if max(abs((eflux-eflux2)/(eflux>.01))) gt 0. then print,'Error in CDF c8 eflux ',max(abs((eflux-eflux2)/(eflux>.01)))
 			if not success or keyword_set(replace) then eflux = eflux2
 			ind = where(qf eq 1,count)
@@ -1147,6 +1163,10 @@ endif
 		store_data,'mvn_sta_d0_P4C_E',data={x:time,y:total(total(data,4),3),v:energy}
 		store_data,'mvn_sta_d0_P4C_D',data={x:time,y:total(total(total(reform(data,npts,nenergy,ndef,nanode,nmass),5),4),2),v:theta}
 		store_data,'mvn_sta_d0_P4C_A',data={x:time,y:total(total(total(reform(data,npts,nenergy,ndef,nanode,nmass),5),3),2),v:phi}
+
+		store_data,'mvn_sta_d0_P4C_A_L',data={x:time,y:total(total(total(reform(data[*,*,*,0:3],npts,nenergy,ndef,nanode,nmass/2),5),3),2),v:phi}
+		store_data,'mvn_sta_d0_P4C_A_H',data={x:time,y:total(total(total(reform(data[*,*,*,4:7],npts,nenergy,ndef,nanode,nmass/2),5),3),2),v:phi}
+
 		store_data,'mvn_sta_d0_P4C_M',data={x:time,y:total(total(data,3),2),v:mass}
 		store_data,'mvn_sta_d0_E',data={x:time,y:total(total(eflux,4),3)/nbins,v:energy}
 		store_data,'mvn_sta_d0_D',data={x:time,y:total(total(total(reform(eflux,npts,nenergy,ndef,nanode,nmass),5),4),2),v:theta}
@@ -1162,11 +1182,19 @@ endif
 ; this is for looking at pickup ions
 		store_data,'mvn_sta_d0_P4C_H_D_kev',data={x:time,y:total(reform(total(total(data[*,0:9,*,4:7],4),2),npts,ndef,nanode),3),v:theta}
 		store_data,'mvn_sta_d0_P4C_H_A_kev',data={x:time,y:total(reform(total(total(data[*,0:9,*,4:7],4),2),npts,ndef,nanode),2),v:phi}
+; this is for looking at heavies anode distribution
+		store_data,'mvn_sta_d0_P4C_p_A',data={x:time,y:total(reform(total(reform(data[*,*,*,0:0]),2),npts,ndef,nanode),2),v:phi}
+		store_data,'mvn_sta_d0_P4C_he_A',data={x:time,y:total(reform(total(reform(data[*,*,*,1:1]),2),npts,ndef,nanode),2),v:phi}
+		store_data,'mvn_sta_d0_P4C_o_A',data={x:time,y:total(reform(total(reform(data[*,*,*,4:4]),2),npts,ndef,nanode),2),v:phi}
+		store_data,'mvn_sta_d0_P4C_o2_A',data={x:time,y:total(reform(total(reform(data[*,*,*,5:5]),2),npts,ndef,nanode),2),v:phi}
+
 
 			ylim,'mvn_sta_d0_tot',0,0,1
 			ylim,'mvn_sta_d0_P4C_E',.1,40000.,1
 			ylim,'mvn_sta_d0_P4C_D',-50,50,0
 			ylim,'mvn_sta_d0_P4C_A',-180,200.,0
+				ylim,'mvn_sta_d0_P4C_A_L',-180,200.,0
+				ylim,'mvn_sta_d0_P4C_A_H',-180,200.,0
 			ylim,'mvn_sta_d0_P4C_M',.5,100,1
 			ylim,'mvn_sta_d0_E',.1,40000.,1
 			ylim,'mvn_sta_d0_D',-50,50,0
@@ -1178,10 +1206,16 @@ endif
 			ylim,'mvn_sta_d0_H_A',-180,200.,0
 			ylim,'mvn_sta_d0_P4C_H_D_kev',-50,50,0
 			ylim,'mvn_sta_d0_P4C_H_A_kev',-180,200.,0
+				ylim,'mvn_sta_d0_P4C_p_A',-180,200.,0
+				ylim,'mvn_sta_d0_P4C_he_A',-180,200.,0
+				ylim,'mvn_sta_d0_P4C_o_A',-180,200.,0
+				ylim,'mvn_sta_d0_P4C_o2_A',-180,200.,0
 
 			zlim,'mvn_sta_d0_P4C_E',10,1.e5,1
 			zlim,'mvn_sta_d0_P4C_D',10,1.e5,1
 			zlim,'mvn_sta_d0_P4C_A',10,1.e5,1
+				zlim,'mvn_sta_d0_P4C_A_L',10,1.e5,1
+				zlim,'mvn_sta_d0_P4C_A_H',10,1.e5,1
 			zlim,'mvn_sta_d0_P4C_M',10,1.e5,1
 			zlim,'mvn_sta_d0_E',1.e3,1.e9,1
 			zlim,'mvn_sta_d0_D',1.e3,1.e9,1
@@ -1192,6 +1226,10 @@ endif
 			zlim,'mvn_sta_d0_H_A',1.e3,1.e9,1
 			zlim,'mvn_sta_d0_P4C_H_D_kev',1,1000,1
 			zlim,'mvn_sta_d0_P4C_H_A_kev',1,1000,1
+				zlim,'mvn_sta_d0_P4C_p_A',1,10000,1
+				zlim,'mvn_sta_d0_P4C_he_A',1,10000,1
+				zlim,'mvn_sta_d0_P4C_o_A',1,10000,1
+				zlim,'mvn_sta_d0_P4C_o2_A',1,10000,1
 
 			datagap=600.
 			options,'mvn_sta_d0*',datagap=datagap
@@ -1208,6 +1246,8 @@ endif
 			options,'mvn_sta_d0_P4C_E','spec',1
 			options,'mvn_sta_d0_P4C_D','spec',1
 			options,'mvn_sta_d0_P4C_A','spec',1
+				options,'mvn_sta_d0_P4C_A_L','spec',1
+				options,'mvn_sta_d0_P4C_A_H','spec',1
 			options,'mvn_sta_d0_P4C_M','spec',1
 			options,'mvn_sta_d0_E','spec',1
 			options,'mvn_sta_d0_D','spec',1
@@ -1218,6 +1258,10 @@ endif
 			options,'mvn_sta_d0_H_A','spec',1
 			options,'mvn_sta_d0_P4C_H_D_kev','spec',1
 			options,'mvn_sta_d0_P4C_H_A_kev','spec',1
+				options,'mvn_sta_d0_P4C_p_A','spec',1
+				options,'mvn_sta_d0_P4C_he_A','spec',1
+				options,'mvn_sta_d0_P4C_o_A','spec',1
+				options,'mvn_sta_d0_P4C_o2_A','spec',1
 
 			options,'mvn_sta_d0_P4C_E',ytitle='sta!CP4C-d0!C!CEnergy!CeV'
 			options,'mvn_sta_d0_P4C_D',ytitle='sta!CP4C-d0!C!CTheta!Cdeg'
@@ -1234,6 +1278,10 @@ endif
 			options,'mvn_sta_d0_H_A',ytitle='sta!Cd0!C!CPhi!Cdeg'
 			options,'mvn_sta_d0_P4C_H_D_kev',ytitle='sta d0!C>1keV!CO+ O2+!CTheta!Cdeg'
 			options,'mvn_sta_d0_P4C_H_A_kev',ytitle='sta d0!C>1keV!CO+ O2+!CPhi!Cdeg'
+				options,'mvn_sta_d0_P4C_p_A',ytitle='sta d0!Cp+!CPhi!Cdeg'
+				options,'mvn_sta_d0_P4C_he_A',ytitle='sta d0!Che++!CPhi!Cdeg'
+				options,'mvn_sta_d0_P4C_o_A',ytitle='sta d0!Co+!CPhi!Cdeg'
+				options,'mvn_sta_d0_P4C_o2_A',ytitle='sta d0!Co2+!CPhi!Cdeg'
 
 			options,'mvn_sta_d0_E',ztitle='eflux'
 			options,'mvn_sta_d0_D',ztitle='eflux'
@@ -1244,6 +1292,10 @@ endif
 			options,'mvn_sta_d0_H_A',ztitle='eflux'
 			options,'mvn_sta_d0_P4C_H_D_kev',ztitle='counts'
 			options,'mvn_sta_d0_P4C_H_A_kev',ztitle='counts'
+				options,'mvn_sta_d0_P4C_p_A',ztitle='counts'
+				options,'mvn_sta_d0_P4C_he_A',ztitle='counts'
+				options,'mvn_sta_d0_P4C_o_A',ztitle='counts'
+				options,'mvn_sta_d0_P4C_o2_A',ztitle='counts'
 
 	endif
 
