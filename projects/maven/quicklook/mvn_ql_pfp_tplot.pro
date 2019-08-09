@@ -64,8 +64,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2018-12-18 14:58:29 -0800 (Tue, 18 Dec 2018) $
-; $LastChangedRevision: 26367 $
+; $LastChangedDate: 2019-08-08 13:50:29 -0700 (Thu, 08 Aug 2019) $
+; $LastChangedRevision: 27578 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot.pro $
 ;
 ;-
@@ -178,7 +178,7 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
      store_data, 'mvn_swe_etspec', data={x:xswe, y:yswe, v:vswe}, $
                  dlimits={spec: 1, ytitle: 'SWEA', ysubtitle: 'Energy [eV]', yticks: 0, $
                           yminor: 0, y_no_interp: 1, x_no_interp: 1, $
-                          ztitle: 'EFLUX', datagap: 300}, limit={ytickformat: 'mvn_ql_pfp_tplot_ytickname_plus_log'}
+                          ztitle: 'EFLUX', datagap: 300}, limit={ytickunits: 'scientific'}
      ylim, 'mvn_swe_etspec', emin, emax, 1, /def
      IF (noswe) THEN BEGIN
         zlim, 'mvn_swe_etspec', 1.d4, 1.d9, 1, /def
@@ -220,7 +220,7 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
         IF (clip) THEN time_clip, tname, trange[0], trange[1], /replace
         undefine, d, d2, dl, lim
      ENDELSE 
-     options, tname, ztitle='EFLUX', ytitle='SWIA', ysubtitle='Energy [eV]', ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log', $
+     options, tname, ztitle='EFLUX', ytitle='SWIA', ysubtitle='Energy [eV]', ytickunits='scientific', $
               bottom=7, top=254, no_color_scale=0
      undefine, tname, ntplot, clip
   ENDIF 
@@ -261,7 +261,7 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
      ENDELSE 
      undefine, statn0, statn, tname, n, m
      tname = tnames('mvn_sta*', ntplot)
-     options, tname, ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log', ztitle='EFLUX'
+     options, tname, ytickunits='scientific', ztitle='EFLUX'
      options, tname[0], ysubtitle='Energy [eV]' 
      options, tname[1], ysubtitle='Energy [eV]!CM/q > 12' 
      options, tname[2], ysubtitle='Mass [amu]'
@@ -327,7 +327,7 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
                        dlim={spec: 1, ylog: 1, ystyle: 1, yrange: [10., 6000.]}
      ENDELSE 
      
-     options, pname, ysubtitle='Energy [keV]', ztitle='EFLUX', ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log', /def
+     options, pname, ysubtitle='Energy [keV]', ztitle='EFLUX', ytickunits='scientific', /def
      zlim, pname, 1.e0, 1.e5, 1
      undefine, w, v, nw, nv
 
@@ -442,7 +442,7 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
      ELSE vd = {x: trange, y: REFORM(REPLICATE(nan, 6), [2, 3])}
      undefine, w, nw
 
-     store_data, 'mvn_euv_irrad', data=vd, dlim={datagap: 60., ysubtitle: '[W/m!E2!N]', ytickformat: 'mvn_ql_pfp_tplot_ytickname_plus_log', ylog: 1}
+     store_data, 'mvn_euv_irrad', data=vd, dlim={datagap: 60., ysubtitle: '[W/m!E2!N]', ytickunits: 'scientific', ylog: 1}
      split_vec, 'mvn_euv_irrad', suffix='_ch_' + ['a', 'b', 'c']
      options, 'mvn_euv_irrad', labels=['ch_a:!C  17-22 nm', 'ch_b:!C  0-7 nm', 'ch_c:!C  121-122 nm'], $
               ytitle='EUV!CIrradiance', labflag=1, colors='bgr', /def
@@ -509,7 +509,7 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
 
      IF (blog) THEN BEGIN
         ylim, 'mvn_mag_bamp', 0.5, bmax*1.1, 1
-        options, 'mvn_mag_bamp', ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log'
+        options, 'mvn_mag_bamp', ytickunits='scientific'
      ENDIF
      undefine, bmax, blog, status
      

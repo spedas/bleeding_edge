@@ -24,9 +24,11 @@
 ;	Function normally called by "get_4dt" to
 ;	generate time series data for "tplot.pro".
 ;
+;
 ;CREATED BY:
 ;	J.McFadden	2014-03-12
 ;LAST MODIFICATION:
+;		20190808  factor of 2 error corrected, vth^2= 2.*sigma^2: tp=2.*total((v*sth - v0#replicate(1.,nth))^2*data)/(total(data)>1.e-20
 ;-
 function tp_4d,dat2,ENERGY=en,ERANGE=er,EBINS=ebins,ANGLE=an,ARANGE=ar,BINS=bins,MASS=ms,m_int=mi,q=q,mincnt=mincnt
 
@@ -39,20 +41,38 @@ endif
 
 if (dat2.quality_flag and 195) gt 0 then return,-1
 
-if dat2.apid ne 'C8' and dat2.apid ne 'c8' then begin
-	print,'Invalid Data: Data must be Maven APID C8'
+if dat2.data_name ne 'c8 32e16d' and dat2.data_name ne 'c8e 64e16d' then begin
+	print,'Invalid Data: Data must be Maven APID c8 or c8e'
 	return, 0
 endif
+
+
+
+
+
+
+
+
+
+
+
+
 
 dat = conv_units(dat2,"counts")		; initially use counts
 nth = dat.ndef
 n_e = dat.nenergy
 n_m = dat.nmass
+
 mass_amu = dat.mass_arr
+
 
 data = dat.cnts 
 bkg = dat.bkg
 energy = dat.energy
+dead = dat.dead
+
+;kk2=mvn_sta_get_kk2(dat.time)
+;corr = exp((kk2/energy)^2) < 30.
 
 if keyword_set(en) then begin
 	ind = where(energy lt en[0] or energy gt en[1],count)
@@ -64,16 +84,47 @@ endif
 if keyword_set(mincnt) then if total(data-bkg) lt mincnt then return, !Values.F_NAN
 if total(data-bkg) lt 1 then return, !Values.F_NAN
 
+;	data = ((data-bkg)>0.)*corr*dead
+	data = ((data-bkg)>0.)*dead
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 charge=dat.charge
 if keyword_set(q) then charge=q
-energy=(dat.energy+charge*dat.sc_pot/abs(charge))>0.		; energy/charge analyzer, require positive energy
+;energy=(dat.energy+charge*dat.sc_pot/abs(charge))>0.		; energy/charge analyzer, require positive energy
+energy=dat.energy						; should we ignore s/c potential for this calculation?
 
 v = energy^.5
 sth = sin(dat.theta/!radeg)
-v0 = total(v*sth*data,2)/(total(((data-bkg)>0),2)>1.e-20)
-tp = total((v*sth - v0#replicate(1.,nth))^2*((data-bkg)>0))/(total(((data-bkg)>0))>1.e-20)
+v0 = total(v*sth*data,2)/(total(data,2)>1.e-20)
+tp = 2.*total((v*sth - v0#replicate(1.,nth))^2*data)/(total(data)>1.e-20)
 
 return, tp							; eV
 
 end
-
