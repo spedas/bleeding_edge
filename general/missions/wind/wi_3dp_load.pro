@@ -20,9 +20,9 @@
 ;Notes:
 ; Author: Davin Larson
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2017-07-27 16:30:01 -0700 (Thu, 27 Jul 2017) $
-; $LastChangedRevision: 23716 $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2019-08-08 18:15:11 -0700 (Thu, 08 Aug 2019) $
+; $LastChangedRevision: 27583 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/wind/wi_3dp_load.pro $
 ;-
 pro wi_3dp_load,type,files=files,trange=trange,verbose=verbose,$
@@ -67,7 +67,7 @@ case datatype of
   'pm': begin
     if(at_ssl) then pathformat = 'wind/3dp/pm/YYYY/wi_pm_3dp_YYYYMMDD_'+version+'.cdf' $
     else pathformat = 'wind/3dp/3dp_pm/YYYY/wi_pm_3dp_YYYYMMDD_'+version+'.cdf'
-    if not keyword_set(varformat) then varformat = '?_* TIME'
+    if not keyword_set(varformat) then varformat = '?_* TIME Epoch'
     if not keyword_set(prefix) then prefix = 'wi_3dp_pm_'
   end
 
