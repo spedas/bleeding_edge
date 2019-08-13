@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Aug  9 18:16:31 2019.<P>
+<STRONG>Last modified: </STRONG>Mon Aug 12 18:16:32 2019.<P>
  
 <HR>
  
@@ -24,6 +24,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#CRIB_DPROC">CRIB_DPROC</A>
 <LI><A HREF="#CRIB_HAPI">CRIB_HAPI</A>
 <br>Demonstrates how to query Heliophysics API (HAPI) servers and download, load and plot data from them
+<LI><A HREF="#CRIB_HASH_TABLES_BASIC">CRIB_HASH_TABLES_BASIC</A>
+<br>This crib sheet shows how to work with the IDL data structures: hash and orderedhash
 <LI><A HREF="#CRIB_PLOTXY">CRIB_PLOTXY</A>
 <LI><A HREF="#CRIB_PLOTXYVEC">CRIB_PLOTXYVEC</A>
 <LI><A HREF="#CRIB_PLOTXYZ">CRIB_PLOTXYZ</A>
@@ -151,7 +153,7 @@ Warning: this crib uses some data from the THEMIS branch.  You'll require those 
 <A NAME="CRIB_HAPI">
 <H2>CRIB_HAPI</H2></A>
 <A HREF="#CRIB_DPROC">[Previous Routine]</A>
-<A HREF="#CRIB_PLOTXY">[Next Routine]</A>
+<A HREF="#CRIB_HASH_TABLES_BASIC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: crib_hapi
@@ -170,9 +172,39 @@ Warning: this crib uses some data from the THEMIS branch.  You'll require those 
 <STRONG>(See <A href="examples/crib_hapi.pro">general/examples/crib_hapi.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="CRIB_HASH_TABLES_BASIC">
+<H2>CRIB_HASH_TABLES_BASIC</H2></A>
+<A HREF="#CRIB_HAPI">[Previous Routine]</A>
+<A HREF="#CRIB_PLOTXY">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+NAME:
+  crib_hash_tables_basic
+
+PURPOSE:
+  This crib sheet shows how to work with the IDL data structures: hash and orderedhash
+
+
+ Hash tables are very useful, efficient data structures that allow quick mapping of keys to values:
+ 
+   https://www.harrisgeospatial.com/docs/HASH.html (added to IDL in 8.0)
+   
+   https://www.harrisgeospatial.com/docs/orderedhash.html (added to IDL in 8.4)
+   
+   
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2019-08-12 13:50:35 -0700 (Mon, 12 Aug 2019) $
+ $LastChangedRevision: 27596 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_hash_tables_basic.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/crib_hash_tables_basic.pro">general/examples/crib_hash_tables_basic.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="CRIB_PLOTXY">
 <H2>CRIB_PLOTXY</H2></A>
-<A HREF="#CRIB_HAPI">[Previous Routine]</A>
+<A HREF="#CRIB_HASH_TABLES_BASIC">[Previous Routine]</A>
 <A HREF="#CRIB_PLOTXYVEC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
