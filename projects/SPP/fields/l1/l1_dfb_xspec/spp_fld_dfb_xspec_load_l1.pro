@@ -367,14 +367,18 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix, varformat = varformat
     xspec_ytitle_sources = ''
 
   foreach dfb_xspec_name, ['xspec_rc_converted', 'xspec_ic_converted', 'coherence', 'phase'] do begin
-    
+
     get_data, prefix + dfb_xspec_name, data=d, al = al
-    
-    str_element, al, 'ytitle', ytitle
-    
-    options, prefix + dfb_xspec_name, 'ytitle', ytitle + '!C' + xspec_ytitle_sources
-    
-    options, prefix + dfb_xspec_name, 'ysubtitle', 'Freq [Hz]'
+
+    if size(/type, d) EQ 8 and size(/type, al) EQ 8 then begin
+
+      str_element, al, 'ytitle', ytitle
+
+      options, prefix + dfb_xspec_name, 'ytitle', ytitle + '!C' + xspec_ytitle_sources
+
+      options, prefix + dfb_xspec_name, 'ysubtitle', 'Freq [Hz]'
+
+    endif
 
   endforeach
 
