@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Aug 13 18:16:31 2019.<P>
+<STRONG>Last modified: </STRONG>Wed Aug 14 18:16:30 2019.<P>
  
 <HR>
  
@@ -96,6 +96,8 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <LI><A HREF="#RBSP_SPINFIT (PROCEDURE)">RBSP_SPINFIT (PROCEDURE)</A>
 <br>Derive spin-fit E-field from instantaneous E-field measurements. The
 <LI><A HREF="#RBSP_SPLIT_FBK">RBSP_SPLIT_FBK</A>
+<LI><A HREF="#RBSP_UVW_TO_DSC">RBSP_UVW_TO_DSC</A>
+<LI><A HREF="#RBSP_UVW_TO_GSE">RBSP_UVW_TO_GSE</A>
 <LI><A HREF="#RBSP_UVW_TO_MGSE">RBSP_UVW_TO_MGSE</A>
 <LI><A HREF="#RBSP_VECTOR_BANDPASS">RBSP_VECTOR_BANDPASS</A>
 <br>
@@ -2334,7 +2336,7 @@ Notes:
 <A NAME="RBSP_SPLIT_FBK">
 <H2>RBSP_SPLIT_FBK</H2></A>
 <A HREF="#RBSP_SPINFIT (PROCEDURE)">[Previous Routine]</A>
-<A HREF="#RBSP_UVW_TO_MGSE">[Next Routine]</A>
+<A HREF="#RBSP_UVW_TO_DSC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:	rbsp_split_fbk
@@ -2375,9 +2377,100 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <STRONG>(See <A href="efw/rbsp_split_fbk.pro">general/missions/rbsp/efw/rbsp_split_fbk.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RBSP_UVW_TO_DSC">
+<H2>RBSP_UVW_TO_DSC</H2></A>
+<A HREF="#RBSP_SPLIT_FBK">[Previous Routine]</A>
+<A HREF="#RBSP_UVW_TO_GSE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:	RBSP_UVW_TO_DSC
+
+ SYNTAX:
+   rbsp_uvw_to_dsc,'a',tplot_var
+   rbsp_uvw_to_dsc,'a',tplot_var,/no_spice_load
+
+ PURPOSE:	Rotates data from spinning spacecraft (UVW) coordinates into despun
+			spacecraft (DSC) coordinates.
+
+			DSC is defined:
+				Z_DSC is the spin axis direction, W_SC
+				X_DSC is the sun sensor triggering direction, perpendicular to
+					the spin axis
+				Y_DSC completes the RH system in the spin plane
+
+ INPUT:
+	probe	- either 'a' or 'b'
+	tvar	- TPLOT variable containing 3-component UVW data (either string or
+				integer).
+          
+ KEYWORDS:
+   uangle = degrees, angle between SSH and U
+	suffix = 'string', suffix appended to the tplot variable name. Default is
+			'mgse'
+	/debug - save various quantities for debugging
+
+ NOTES:
+	0) This routine does not check that the supplied data is in UVW system.
+
+ HISTORY:
+	1. Created Nov 2012 - Kris Kersten, kris.kersten@gmail.com
+
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2019-08-14 14:21:10 -0700 (Wed, 14 Aug 2019) $
+   $LastChangedRevision: 27603 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_uvw_to_dsc.pro $
+
+</PRE><P>
+<STRONG>(See <A href="efw/rbsp_uvw_to_dsc.pro">general/missions/rbsp/efw/rbsp_uvw_to_dsc.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="RBSP_UVW_TO_GSE">
+<H2>RBSP_UVW_TO_GSE</H2></A>
+<A HREF="#RBSP_UVW_TO_DSC">[Previous Routine]</A>
+<A HREF="#RBSP_UVW_TO_MGSE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:	RBSP_UVW_TO_GSE
+
+ SYNTAX:
+   rbsp_uvw_to_gse,'a','rbspa_efw_esvy'
+   rbsp_uvw_to_gse,'a','rbspa_efw_esvy',/no_spice_load
+
+ PURPOSE:	Transforms from spinning UVW (RBSP SCIENCE) frame to GSE.
+
+ INPUT:
+	probe	- either 'a' or 'b'
+	tvar	- TPLOT variable containing 3-component UVW data
+			(either string or integer tplot variable id) 
+
+ KEYWORDS:
+	suffix=suffix - optional suffix for rotated tplot variable names
+	/no_spice_load - skip loading/unloading of SPICE kernels
+		NOTE: This assumes spice kernels have been manually loaded using:
+			rbsp_load_spice_predict ; (optional)
+			rbsp_load_spice_kernels ; (required)
+	/remove_offset - remove slowly varying offsets in spin plane
+	/debug - prints debugging info
+
+ NOTES:
+
+ HISTORY:
+	1. Created Jan 2013 - Kris Kersten, kris.kersten@gmail.com
+
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2019-08-14 14:21:17 -0700 (Wed, 14 Aug 2019) $
+   $LastChangedRevision: 27604 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_uvw_to_gse.pro $
+
+</PRE><P>
+<STRONG>(See <A href="efw/rbsp_uvw_to_gse.pro">general/missions/rbsp/efw/rbsp_uvw_to_gse.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RBSP_UVW_TO_MGSE">
 <H2>RBSP_UVW_TO_MGSE</H2></A>
-<A HREF="#RBSP_SPLIT_FBK">[Previous Routine]</A>
+<A HREF="#RBSP_UVW_TO_GSE">[Previous Routine]</A>
 <A HREF="#RBSP_VECTOR_BANDPASS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
