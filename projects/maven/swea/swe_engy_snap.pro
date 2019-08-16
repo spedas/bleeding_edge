@@ -188,9 +188,9 @@ end
 ;       TWOT:          Compare energy of peak energy flux and temperature of 
 ;                      Maxwell-Boltzmann fit. (Nominally, E_peak = 2*T)
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-09 16:40:01 -0800 (Sat, 09 Feb 2019) $
-; $LastChangedRevision: 26584 $
+; $LastChangedBy: xussui $
+; $LastChangedDate: 2019-08-15 14:37:31 -0700 (Thu, 15 Aug 2019) $
+; $LastChangedRevision: 27606 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -204,7 +204,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
                    xrange=xrange,yrange=frange,sscale=sscale, popen=popen, times=times, $
                    flev=flev, pylim=pylim, k_e=k_e, peref=peref, error_bars=error_bars, $
                    trange=tspan, tsmo=tsmo, wscale=wscale, cscale=cscale, voffset=voffset, $
-                   endx=endx, twot=twot, rcolors=rcolors, cuii=cuii
+                   endx=endx, twot=twot, rcolors=rcolors, cuii=cuii, fmfit=fmfit
 
   @mvn_swe_com
   @mvn_scpot_com
@@ -504,6 +504,20 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       if (ebar) then errplot,x,(y-dy)>tiny,y+dy,width=0,color=col
     endif
 
+    if (keyword_set(fmfit) and strupcase(units) eq 'DF') then begin
+       ine = where(x gt 25 and x lt 500 and y gt 0, cte)
+       inen1 = where(x gt 25 and x lt 50)
+       datf = y[ine]
+       V=sqrt(2.*x[ine]*1.6e-19/9.1e-31)*1.e-3 ;km/s          
+       c0=mean(datf[inen1])
+       par = fm_spec_generalized()  
+       par.c0 = double(c0)
+       if cte gt 0 then $
+       fit,V,datf,chi2=ierr,fit=yfit,func='fm_spec_generalized',$
+           names='V0 p C0 r',/logfit, par=par,/silent,/noprint
+       if n_elements(yfit) gt 1 then oplot,x[ine],yfit,psym=psym,color=6
+    endif
+
     if (dflg) then begin
       if (npts gt 1) then ddd = mvn_swe_get3d(trange,/all,/sum) $
                      else ddd = mvn_swe_get3d(spec.time)
@@ -630,6 +644,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       oplot,[23.,23.],yrange,line=2,color=1
       oplot,[27.,27.],yrange,line=2,color=1
       oplot,[60.,60.],yrange,line=2,color=1
+      oplot,[250.,250.],yrange,line=2,color=1
+      oplot,[360.,360.],yrange,line=2,color=1
     endif
 
     if (docu) then oplot,[7.73,7.73],yrange,line=2,color=1
@@ -769,6 +785,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         ys -= dys
       endelse
 
+       
       smom = specmom(spec)
       ys -= dys
       xyouts,xs,ys,"Moments:",charsize=csize1,/norm
