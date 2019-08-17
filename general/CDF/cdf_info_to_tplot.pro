@@ -6,9 +6,9 @@
 ;
 ; Written by Davin Larson
 ;
-; $LastChangedBy: ali $
-; $LastChangedDate: 2019-05-30 19:27:24 -0700 (Thu, 30 May 2019) $
-; $LastChangedRevision: 27309 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-08-16 12:18:41 -0700 (Fri, 16 Aug 2019) $
+; $LastChangedRevision: 27610 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_info_to_tplot.pro $
 ;-
 pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
@@ -20,7 +20,7 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
   load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
   ;resolve labels implemented as keyword to preserve backwards compatibility
 
-  dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 27309 2019-05-31 02:27:24Z ali $'
+  dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 27610 2019-08-16 19:18:41Z jimm $'
     tplotnames=''
   vbs = keyword_set(verbose) ? verbose : 0
 
@@ -107,10 +107,14 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
     endif
 
     j = (where(strcmp(cdfi.vars.name, depend_0, /fold_case),nj))[0]
-    if nj gt 0 then tvar = cdfi.vars[j]  else  begin
-      j = (where(strcmp(cdfi.vars.name, depend_time, /fold_case),nj))[0]
-      if nj gt 0 then tvar = cdfi.vars[j]
+;Fix for WIND data files, which have depend_0 = Epoch, but no data in
+;the variable, jmm, 2019-08-16
+    if nj gt 0 && ptr_valid(cdfi.vars[j].dataptr) then tvar = cdfi.vars[j] else begin
+;    if nj gt 0 then tvar = cdfi.vars[j]  else  begin
+       j = (where(strcmp(cdfi.vars.name, depend_time, /fold_case),nj))[0]
+       if nj gt 0 && ptr_valid(cdfi.vars[j].dataptr) then tvar = cdfi.vars[j] else nj = 0
     endelse
+
     if nj eq 0 then begin
       dprint,verbose=verbose,dlevel=6,'Skipping variable: "'+v.name+'" ('+var_type+')'
       continue

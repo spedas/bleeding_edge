@@ -29,8 +29,8 @@
 ; Hacked from thm_over_shell, 2013-05-12, jmm, jimm@ssl.berkeley.edu
 ; CHanged to use thara's mvn_pl_pfp_tplot.pro, 2015-04-14, jmm
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-05-02 12:08:01 -0700 (Thu, 02 May 2019) $
-; $LastChangedRevision: 27176 $
+; $LastChangedDate: 2019-08-16 13:34:17 -0700 (Fri, 16 Aug 2019) $
+; $LastChangedRevision: 27613 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_pfpl2_overplot.pro $
 ;-
 Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
@@ -85,6 +85,7 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
      If(tag_exist(dl, 'axis') && tag_exist(dl.axis, 'color')) Then dl.axis.color = 6
      store_data, 'mvn_mag_bang_1sec', dlimits = dl
   Endif
+
 ;Re-init here
   mvn_qlook_init, device = device
 ;Get a burst_data_bar
@@ -100,20 +101,20 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
   
 ;Use mvn_sep_average.pro to get ion and electron fluxes
   mvn_sep_average, trange = tr0, /load
-  options, 'MVN_SEP_mean_ion_eflux', 'ytitle', 'SEP Ions, !C keV'
-  options, 'MVN_SEP_mean_electron_eflux', 'ytitle', 'SEP Electrons, !C keV'
-  options, 'MVN_SEP_mean_ion_eflux', 'ztitle', 'EFLUX'
-  options, 'MVN_SEP_mean_electron_eflux', 'ztitle', 'EFLUX'
-  options, 'MVN_SEP?attenuator_state', 'psym', 1
-  options, 'MVN_SEP1attenuator_state', 'labels', 'ATN1-red=in'
-  options, 'MVN_SEP2attenuator_state', 'labels', 'ATN2-red=in'
+  options, 'mvn_L2_sep_mean_ion_eflux', 'ytitle', 'SEP Ions, !C keV'
+  options, 'mvn_L2_sep_mean_electron_eflux', 'ytitle', 'SEP Electrons, !C keV'
+  options, 'mvn_L2_sep_mean_ion_eflux', 'ztitle', 'EFLUX'
+  options, 'mvn_L2_sep_mean_electron_eflux', 'ztitle', 'EFLUX'
+  options, 'mvn_L2_sep?attenuator_state', 'psym', 1
+  options, 'mvn_L2_sep1attenuator_state', 'labels', 'ATN1-red=in'
+  options, 'mvn_L2_sep2attenuator_state', 'labels', 'ATN2-red=in'
 
 ;swap out 0 values in attenuators
-  get_data, 'MVN_SEP1attenuator_state', data = d1
+  get_data, 'mvn_L2_sep1attenuator_state', data = d1
   If(is_struct(d1)) Then Begin
      Ok = where(d1.x Gt 0 And d1.y Gt 0, nok)
      d1y_dummy = float(d1.y) & d1y_dummy[*] = 1.0 ;to not split attenuator states
-     If(nok gt 0) Then store_data, 'MVN_SEP1attenuator_state', $
+     If(nok gt 0) Then store_data, 'mvn_L2_sep1attenuator_state', $
                                    data = {x:d1.x[ok], y:d1y_dummy[ok]}
      Ok2 = where(d1.x Gt 0 And d1.y Eq 2, nok2);use this to overplot
      oplot_att_in1 = 0b
@@ -124,15 +125,15 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
         options, 'SEP1_ATT_IN', 'psym', 1
         options, 'SEP1_ATT_IN', 'color', 6
         options, 'SEP1_ATT_IN', 'yrange', [0.9,1.1]
-        store_data, 'SEP_V1', data =['MVN_SEP1attenuator_state', $
+        store_data, 'SEP_V1', data =['mvn_L2_sep1attenuator_state', $
                                      'SEP1_ATT_IN']
-     Endif Else copy_data, 'MVN_SEP1attenuator_state', 'SEP_V1'
+     Endif Else copy_data, 'mvn_L2_sep1attenuator_state', 'SEP_V1'
   Endif
-  get_data, 'MVN_SEP2attenuator_state', data = d2
+  get_data, 'mvn_L2_sep2attenuator_state', data = d2
   If(is_struct(d2)) Then Begin
      Ok = where(d2.x Gt 0 And d2.y Gt 0, nok)
      d2y_dummy = float(d2.y) & d2y_dummy[*] = 1.0 ;to not split attenuator states
-     If(nok gt 0) Then store_data, 'MVN_SEP2attenuator_state', $
+     If(nok gt 0) Then store_data, 'mvn_L2_sep2attenuator_state', $
                                    data = {x:d2.x[ok], y:d2y_dummy[ok]}
      Ok2 = where(d2.x Gt 0 And d2.y Eq 2, nok2) ;use this to overplot
      oplot_att_in2 = 0b
@@ -143,9 +144,9 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
         options, 'SEP2_ATT_IN', 'psym', 1
         options, 'SEP2_ATT_IN', 'color', 6
         options, 'SEP2_ATT_IN', 'yrange', [0.9,1.1]
-        store_data, 'SEP_V2', data =['MVN_SEP2attenuator_state', $
+        store_data, 'SEP_V2', data =['mvn_L2_sep2attenuator_state', $
                                      'SEP2_ATT_IN']
-     Endif Else copy_data, 'MVN_SEP2attenuator_state', 'SEP_V2'
+     Endif Else copy_data, 'mvn_L2_sep2attenuator_state', 'SEP_V2'
   Endif
   options, 'SEP_V?', 'yrange', [0.9,1.1]
   options, 'SEP_V?', 'ystyle', 4
@@ -160,7 +161,7 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
   options, 'mvn_att_bar', 'title', attitude_label
   options, 'mvn_att_bar', 'charsize', 0.5
 ;Set up varlist
-  varlist = ['MVN_SEP_mean_ion_eflux', 'MVN_SEP_mean_electron_eflux', $
+  varlist = ['mvn_L2_sep_mean_ion_eflux', 'mvn_L2_sep_mean_electron_eflux', $
              'SEP_V1', 'SEP_V2', $
              'mvn_sta_c0_e', 'mvn_sta_c6_m_twt', 'mvn_swis_en_eflux', $
              'mvn_swe_etspec', 'mvn_lpw_iv', 'mvn_mag_bamp', $ 
