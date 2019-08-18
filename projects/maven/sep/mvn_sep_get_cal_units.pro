@@ -1,3 +1,9 @@
+; $LastChangedBy: ali $
+; $LastChangedDate: 2019-08-16 18:18:47 -0700 (Fri, 16 Aug 2019) $
+; $LastChangedRevision: 27614 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_get_cal_units.pro $
+; $ID: $
+
 function mvn_sep_rebin_matrix,mapid,sens
 
 ;   n_p = 30
@@ -306,8 +312,11 @@ str_additions = {   $
     
     if ~keyword_set(lowres) then begin
       w=where(datt,nw)
-      if nw ne 0 then caldata[w] = fill_nan(caldata[0])
-      
+      if nw ne 0 then begin
+        time=caldata.time
+        caldata[w] = fill_nan(caldata[0])
+        caldata.time=time
+      endif
     endif
    endif
    

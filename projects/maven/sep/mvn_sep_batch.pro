@@ -15,8 +15,7 @@ tplot_options,verbose=0
 
 dprint,'Starting SEP batch job at: '+time_string(systime(1),/local)
 
-
-mvn_mag_gen_l1_sav,init=1
+;mvn_mag_gen_l1_sav,init=1 ;looks like muser@mojo has a cronjob that does this too, so commenting it out ;20190814 Ali
 mvn_save_reduce_timeres,init=1,/mag,resstr='1sec',verbose=1
 mvn_save_reduce_timeres,init=1,/mag,resstr='30sec',verbose=1
 
