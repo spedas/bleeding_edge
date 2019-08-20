@@ -16,9 +16,9 @@
 ; Color, linestyle and thick can be included, for each value, or one
 ; scalar for all:
 
-; options, 'tha_efs', 'databar', {yval:[-5., 0, 5.0], color = [2,4,6], linestyle = 2, thick = [2.0, 1.0, 2.0]}
+; options, 'tha_efs', 'databar', {yval:[-5., 0, 5.0], color:[2,4,6], linestyle:2, thick:[2.0, 1.0, 2.0]}
 
-; The timebar value only needs to be a structure if other options are set
+; The databar value only needs to be a structure if other options are set
 ; options, 'tha_efs', 'databar', [6, 7, 8]
 ; will work
 
@@ -35,8 +35,8 @@
 ;HISTORY:
 ; 2016-07-29, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2016-10-10 12:29:12 -0700 (Mon, 10 Oct 2016) $
-; $LastChangedRevision: 22074 $
+; $LastChangedDate: 2019-08-19 12:50:00 -0700 (Mon, 19 Aug 2019) $
+; $LastChangedRevision: 27620 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_apply_databar.pro $
 ;-
 Pro tplot_apply_databar, varname = varname, clear = clear

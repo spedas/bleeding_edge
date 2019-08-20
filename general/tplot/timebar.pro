@@ -78,6 +78,7 @@ PRO timebar,t1,color=color,linestyle=linestyle,thick=thick,verbose=verbose,$
      if n_elements(vn) gt 1 then begin
 ;handle arrays in keywords
         if keyword_set(color) then begin
+           if is_string(color) then color = get_colors(color)
            if n_elements(color) eq nvn then clr = color $
            else clr = intarr(nvn)+color[0]
         endif else clr = bytarr(nvn)
@@ -100,8 +101,10 @@ PRO timebar,t1,color=color,linestyle=linestyle,thick=thick,verbose=verbose,$
 
   nt = n_elements(t)
   if not keyword_set(color) then begin
-    if !p.background eq 0 then color = !d.n_colors-1 else color = 0
-  endif
+     if !p.background eq 0 then color = !d.n_colors-1 else color = 0
+  endif else begin
+     if is_string(color) then color = get_colors(color)
+  endelse
   if n_elements(color) ne nt then color = make_array(nt,value=color)
   if not keyword_set(linestyle) then linestyle = 0
   if n_elements(linestyle) ne nt then linestyle = make_array(nt,value=linestyle)

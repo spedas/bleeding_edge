@@ -21,9 +21,9 @@
 ;             /get_support_data: keep the support data
 ;             /noephem:     Don't keep the ephemeris data
 ; 
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2018-04-16 15:00:25 -0700 (Mon, 16 Apr 2018) $
-; $LastChangedRevision: 25052 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2019-08-19 11:45:10 -0700 (Mon, 19 Aug 2019) $
+; $LastChangedRevision: 27615 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_load_data.pro $
 ;-
 pro goes_load_data, trange = trange, datatype = datatype, probes = probes, suffix = suffix, $
@@ -58,7 +58,7 @@ pro goes_load_data, trange = trange, datatype = datatype, probes = probes, suffi
 
         dprint,dlevel=2,verbose=source.verbose,'Loading GOES-',string(probes[idx_probes], format='(I02)'),' ',strupcase(datatype),' data'
         
-        fullavgpath = ['new_full', 'new_avg']
+        fullavgpath = ['full', 'avg']
         goes_path_dir = fullavgpath[~undefined(avg_1m) or ~undefined(avg_5m)]
         remote_path = goes_path_dir + '/YYYY/MM/goes' + string(probes[idx_probes], format='(I02)') + '/netcdf/'
 

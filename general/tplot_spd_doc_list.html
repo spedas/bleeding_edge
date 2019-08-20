@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Aug 17 03:16:38 2019.<P>
+<STRONG>Last modified: </STRONG>Mon Aug 19 18:16:30 2019.<P>
  
 <HR>
  
@@ -67,8 +67,6 @@ This page was created by the IDL library routine
 <LI><A HREF="#PLOTXYVEC">PLOTXYVEC</A>
 <LI><A HREF="#PLOTXYZ">PLOTXYZ</A>
 <LI><A HREF="#PMPLOT">PMPLOT</A>
-<LI><A HREF="#SCAT_PLOT">SCAT_PLOT</A>
-<br>Produces a scatter plot of selected tplot variables.
 <LI><A HREF="#SKIP">SKIP</A>
 <br>Shifts the tplot plotting window forward/backward by a number of
 <LI><A HREF="#SPECPLOT">SPECPLOT</A>
@@ -1899,7 +1897,7 @@ Purpose:  A library of helper functions for plotxy, plotxyz, and plotxyvec.
 <A NAME="PMPLOT">
 <H2>PMPLOT</H2></A>
 <A HREF="#PLOTXYZ">[Previous Routine]</A>
-<A HREF="#SCAT_PLOT">[Next Routine]</A>
+<A HREF="#SKIP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCECURE:	pmplot
@@ -1940,35 +1938,9 @@ LAST MODIFIED: @(#)pmplot.pro	1.4 02/04/17
 <STRONG>(See <A href="tplot/pmplot.pro">general/tplot/pmplot.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SCAT_PLOT">
-<H2>SCAT_PLOT</H2></A>
-<A HREF="#PMPLOT">[Previous Routine]</A>
-<A HREF="#SKIP">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-PROCEDURE: scat_plot, xname, yname
-PURPOSE:
-   Produces a scatter plot of selected tplot variables.
-   Colors are scaled according to zname, if present
-INPUTS:
-   xname:    xvariable name
-   yname:    yvariable name
-   zname:    if present, color variable name
-KEYWORDS:
-       TRANGE:  two element vector giving start and end time.
-   limits:     a structure with plotting keywords
-   begin_time:   time at which to start plot
-   end_time: time at which to end plot
-
-CREATED BY:    Davin Larson
-LAST MODIFICATION: @(#)scat_plot.pro   1.13 02/04/17
-</PRE><P>
-<STRONG>(See <A href="tplot/scat_plot.pro">general/tplot/scat_plot.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="SKIP">
 <H2>SKIP</H2></A>
-<A HREF="#SCAT_PLOT">[Previous Routine]</A>
+<A HREF="#PMPLOT">[Previous Routine]</A>
 <A HREF="#SPECPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -2911,9 +2883,9 @@ PURPOSE:
  Color, linestyle and thick can be included, for each value, or one
  scalar for all:
 
- options, 'tha_efs', 'databar', {yval:[-5., 0, 5.0], color = [2,4,6], linestyle = 2, thick = [2.0, 1.0, 2.0]}
+ options, 'tha_efs', 'databar', {yval:[-5., 0, 5.0], color:[2,4,6], linestyle:2, thick:[2.0, 1.0, 2.0]}
 
- The timebar value only needs to be a structure if other options are set
+ The databar value only needs to be a structure if other options are set
  options, 'tha_efs', 'databar', [6, 7, 8]
  will work
 
@@ -2930,8 +2902,8 @@ KEYWORDS:
 HISTORY:
  2016-07-29, jmm, jimm@ssl.berkeley.edu
  $LastChangedBy: jimm $
- $LastChangedDate: 2016-10-10 12:29:12 -0700 (Mon, 10 Oct 2016) $
- $LastChangedRevision: 22074 $
+ $LastChangedDate: 2019-08-19 12:50:00 -0700 (Mon, 19 Aug 2019) $
+ $LastChangedRevision: 27620 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_apply_databar.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/tplot_apply_databar.pro">general/tplot/tplot_apply_databar.pro</A>)</STRONG><P>

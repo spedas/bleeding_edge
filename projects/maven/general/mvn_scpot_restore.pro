@@ -25,8 +25,8 @@
 ;       SUCCESS:       Set to 1 if valid potentials are found.
 ;       
 ; $LastChangedBy: xussui $
-; $LastChangedDate: 2017-10-31 14:40:03 -0700 (Tue, 31 Oct 2017) $
-; $LastChangedRevision: 24246 $
+; $LastChangedDate: 2019-08-19 12:20:30 -0700 (Mon, 19 Aug 2019) $
+; $LastChangedRevision: 27618 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot_restore.pro $
 ;
 ;CREATED BY:    Shaosui Xu  06-23-17
@@ -68,20 +68,55 @@ Pro mvn_scpot_restore, trange, results=results, tplot=tplot, orbit=orbit, full=f
     endif
     file = file[indx]
 
+    restore,filename=file[0]
+    str0 = mvn_scpot.pot_comp[0]
+    str0.time = 0.d
+    pot_comp = replicate(str0,45000.*nfiles)
+    str1 = mvn_scpot.pot_swepos[0]
+    str1.time = 0.d
+    pot_swelpw = replicate(str1,45000.*nfiles)
+    pot_swepos = pot_swelpw
+    pot_sweneg = pot_swelpw
+    pot_sta    = pot_swelpw
+    pot_sweshdw = pot_swelpw
+    ct1 = 0
+    ct2 = 0
+    ct3 = 0
+    ct4 = 0
+    ct5 = 0
+    ct6 = 0
     for j=0,nfiles-1 do begin
        restore,filename=file[j]
 
-       pot_comp=[temporary(pot_comp),mvn_scpot.pot_comp]
+       npt1 = n_elements(mvn_scpot.pot_comp)
+       pot_comp[ct1:ct1+npt1-1] = mvn_scpot.pot_comp
+       ct1 = ct1 + npt1
+       ;; pot_comp=[temporary(pot_comp),mvn_scpot.pot_comp]
        
-       pot_swelpw=[temporary(pot_swelpw),mvn_scpot.pot_swelpw]       
+       npt2 = n_elements(mvn_scpot.pot_swelpw)
+       pot_swelpw[ct2:ct2+npt2-1] = mvn_scpot.pot_swelpw
+       ct2 = ct2 + npt2
+       ;; pot_swelpw=[temporary(pot_swelpw),mvn_scpot.pot_swelpw]       
        
-       pot_swepos=[temporary(pot_swepos),mvn_scpot.pot_swepos]       
+       npt3 = n_elements(mvn_scpot.pot_swepos)
+       pot_swepos[ct3:ct3+npt3-1] = mvn_scpot.pot_swepos
+       ct3 = ct3 + npt3
+       ;; pot_swepos=[temporary(pot_swepos),mvn_scpot.pot_swepos]       
 
-       pot_sweneg=[temporary(pot_sweneg),mvn_scpot.pot_sweneg]       
+       npt4 = n_elements(mvn_scpot.pot_sweneg)
+       pot_sweneg[ct4:ct4+npt4-1] = mvn_scpot.pot_sweneg
+       ct4 = ct4 + npt4
+       ;; pot_sweneg=[temporary(pot_sweneg),mvn_scpot.pot_sweneg]       
 
-       pot_sta=[temporary(pot_sta),mvn_scpot.pot_sta]       
+       npt5 = n_elements(mvn_scpot.pot_sta)
+       pot_sta[ct5:ct5+npt5-1] = mvn_scpot.pot_sta
+       ct5 = ct5 + npt5
+       ;; pot_sta=[temporary(pot_sta),mvn_scpot.pot_sta]       
 
-       pot_sweshdw=[temporary(pot_sweshdw),mvn_scpot.pot_sweshdw]
+       npt6 = n_elements(mvn_scpot.pot_sweshdw)
+       pot_sweshdw[ct6:ct6+npt6-1] = mvn_scpot.pot_sweshdw
+       ct6 = ct6 + npt6
+       ;; pot_sweshdw=[temporary(pot_sweshdw),mvn_scpot.pot_sweshdw]
        
     endfor
     

@@ -33,9 +33,9 @@
 ;                             server_run = '1', themis_dir ='/disks/themisdata/', goes_dir = '/disks/data/goes/qa/'
 ;
 ;HISTORY:
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-11-30 12:02:32 -0800 (Fri, 30 Nov 2018) $
-;$LastChangedRevision: 26202 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2019-08-19 12:01:42 -0700 (Mon, 19 Aug 2019) $
+;$LastChangedRevision: 27617 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot_wrapper.pro $
 ;----------
 
@@ -199,7 +199,7 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
     month03 = STRMID(date, 5, 2)
     day03 = STRMID(date, 8, 2)
     directory = base_dir + year03 + path_sep() + month03 + path_sep() + day03 + path_sep()
-    remote_dir = 'satdat.ngdc.noaa.gov/sem/goes/data/new_avg/' + year03 + '/' + month03 + '/'
+    remote_dir = 'satdat.ngdc.noaa.gov/sem/goes/data/avg/' + year03 + '/' + month03 + '/'
     
     for j=0, n_elements(probes)-1 do begin
       probe = probes[j]

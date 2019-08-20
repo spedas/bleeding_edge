@@ -14,8 +14,11 @@
 ;   end_time: time at which to end plot
 ;
 ;CREATED BY:    Davin Larson
-;LAST MODIFICATION: @(#)scat_plot.pro   1.13 02/04/17
-;-
+; $LastChangedBy: ali $
+; $LastChangedDate: 2019-08-19 15:08:26 -0700 (Mon, 19 Aug 2019) $
+; $LastChangedRevision: 27622 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/scat_plot.pro $
+; $ID: $;-
 
 pro scat_plot,xname,yname, zname,$
    begin_time = t0,  $
@@ -76,9 +79,7 @@ if three then begin
     if index lt 0 then log_color = 0
     colors = bytescale(z, range = zrange, log = log_color, $
     missing = 0)
-endif else begin
-    colors = replicate(!p.color, dimen1(time))
-endelse
+endif else if n_elements(colors) eq 0 then colors = replicate(!p.color, dimen1(time))
 
 if n_elements(trn) eq 2 then begin
    trnx = gettime(trn)
