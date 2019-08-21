@@ -133,11 +133,11 @@
  ;       continue the download based on remote file modification time and file size. If the local version was current
  ;       then the connection would be closed
  ;
- ; $LastChangedBy: davin-mac $
- ; $LastChangedDate: 2019-02-11 08:21:32 -0800 (Mon, 11 Feb 2019) $
- ; $LastChangedRevision: 26587 $
+ ; $LastChangedBy: nikos $
+ ; $LastChangedDate: 2019-08-20 12:42:00 -0700 (Tue, 20 Aug 2019) $
+ ; $LastChangedRevision: 27623 $
  ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_http_copy.pro $
- ; $Id: file_http_copy.pro 26587 2019-02-11 16:21:32Z davin-mac $
+ ; $Id: file_http_copy.pro 27623 2019-08-20 19:42:00Z nikos $
  ;-
  
  
@@ -542,7 +542,7 @@ end
    ;; sockets supported in unix & windows since V5.4, Macintosh since V5.6
    tstart = systime(1)
    
-   dprint,dlevel=5,verbose=verbose,'Start; $Id: file_http_copy.pro 26587 2019-02-11 16:21:32Z davin-mac $
+   dprint,dlevel=5,verbose=verbose,'Start; $Id: file_http_copy.pro 27623 2019-08-20 19:42:00Z nikos $
 
    if n_elements(strict_html) eq 0 then begin
       strict_html = 1      ;  set to 1 to be robust,  set to 0 to be much faster
@@ -550,7 +550,7 @@ end
    endif
 
    if keyword_set(user_agent) eq 0 then begin
-     swver = strsplit('$Id: file_http_copy.pro 26587 2019-02-11 16:21:32Z davin-mac $',/extract)
+     swver = strsplit('$Id: file_http_copy.pro 27623 2019-08-20 19:42:00Z nikos $',/extract)
      if !version.release ge '7' then begin
       login_info = get_login_info()
       user = login_info.user_name+'@'+login_info.machine_name
@@ -777,7 +777,7 @@ end
      
 if 0 then begin
     dprint,url,localname
-    file_download, url,localname
+    ;file_download, url,localname
   
 endif else begin     
      ;;
