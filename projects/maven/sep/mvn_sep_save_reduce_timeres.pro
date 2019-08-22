@@ -77,6 +77,11 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
 
     dprint,dlevel=3,fullres_file
 
+    if tr[0] gt time_double('2014-07-17') and tr[0] lt time_double('2014-9-21') then begin
+      dprint,verbose=verbose,dlevel=3,'Cruise to Mars, Spacecraft hybernation
+      continue
+    endif
+
     if file_test(fullres_file,/regular) eq 0 then begin
       dprint,verbose=verbose,dlevel=2,fullres_file+' Not found. Skipping
       continue

@@ -83,8 +83,9 @@
 ;                   2 : trj_orb_190210-200520_targetM2020EDL-ab4500_181018.bsp
 ;                   3 : trj_orb_200415-210512_targetM2020EDL-sro-phaseJEZ_181030.bsp
 ;                   4 : trj_orb_210212-260101_210x4360_181101.bsp
+;                   5 : trj_orb_200415-210512_targetM2020EDL-sro-ERTF1_190411.bsp
 ;
-;                 These predict ephemerides were created in Oct/Nov 2018.
+;                 These ephemerides were created in Oct/Nov 2018 and Apr 2019.
 ;
 ;       HIRES:    OBSOLETE - this keyword has no effect at all.
 ;
@@ -130,8 +131,8 @@
 ;       CLEAR:    Clear the common block and exit.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-04-08 12:28:26 -0700 (Mon, 08 Apr 2019) $
-; $LastChangedRevision: 26955 $
+; $LastChangedDate: 2019-08-21 14:19:45 -0700 (Wed, 21 Aug 2019) $
+; $LastChangedRevision: 27628 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -293,6 +294,16 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
              timecrop = 0
              print,"Using long-range predict for 210 x 4360 km orbit."
              print,"  SPK = trj_orb_210212-260101_210x4360_181101.bsp"
+           end
+       5 : begin
+             mname = 'maven_spacecraft_mso_targetM2020EDL-sro-ERTF1_190411.sav'
+             gname = 'maven_spacecraft_geo_targetM2020EDL-sro-ERTF1_190411.sav'
+             timespan, ['2020-04-16','2021-05-12']
+             treset = 1
+             nocrop = 1
+             timecrop = 0
+             print,"Using predict for 210 x 4500 km orbit."
+             print,"  SPK = trj_orb_200415-210512_targetM2020EDL-sro-ERTF1_190411.bsp"
            end
       else : extended = 0
     endcase

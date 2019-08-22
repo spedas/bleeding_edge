@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2019-08-16 18:18:47 -0700 (Fri, 16 Aug 2019) $
-; $LastChangedRevision: 27614 $
+; $LastChangedDate: 2019-08-20 18:35:15 -0700 (Tue, 20 Aug 2019) $
+; $LastChangedRevision: 27627 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/cdf/mvn_sep_makefile.pro $
 ; $ID: $
 
@@ -81,13 +81,13 @@ pro mvn_sep_makefile,init=init,trange=trange0
 
     L0_files = mvn_pfp_file_retrieve(/l0,trange=tr)   ; should be scalar
 
-    if total(file_test(/regular,l0_files)) eq 0 then begin
-      dprint,dlevel=2,'File not found: '+l0_files
+    if tr[0] gt time_double('2014-07-17') and tr[0] lt time_double('2014-9-21') then begin
+      dprint,dlevel=3,'Cruise to Mars, Spacecraft hybernation, No L0 file: '+l0_files
       continue
     endif
 
-    if tr[0] gt time_double('2014-07-17') and tr[0] lt time_double('2014-10-28') then begin
-      dprint,dlevel=3,'Cruise to Mars, Spacecraft hybernation: '+l0_files
+    if total(file_test(/regular,l0_files)) eq 0 then begin
+      dprint,dlevel=2,'File not found: '+l0_files
       continue
     endif
 

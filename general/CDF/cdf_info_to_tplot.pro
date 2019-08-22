@@ -6,9 +6,9 @@
 ;
 ; Written by Davin Larson
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-08-16 12:18:41 -0700 (Fri, 16 Aug 2019) $
-; $LastChangedRevision: 27610 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2019-08-20 18:31:33 -0700 (Tue, 20 Aug 2019) $
+; $LastChangedRevision: 27626 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_info_to_tplot.pro $
 ;-
 pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
@@ -20,7 +20,7 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
   load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
   ;resolve labels implemented as keyword to preserve backwards compatibility
 
-  dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 27610 2019-08-16 19:18:41Z jimm $'
+  dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 27626 2019-08-21 01:31:33Z ali $'
     tplotnames=''
   vbs = keyword_set(verbose) ? verbose : 0
 
@@ -57,6 +57,7 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
     scaletyp = struct_value(attr,'scaletyp',def='linear')
     fillval = struct_value(attr,'fillval',def=!values.f_nan)
     fieldnam = struct_value(attr,'fieldnam',def=v.name)
+    units = struct_value(attr,'units',default='')
     if strcmp(v.datatype,'CDF_TIME_TT2000',/fold_case) then begin
       defsysv,'!CDF_LEAP_SECONDS',exists=exists
 
@@ -107,12 +108,12 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
     endif
 
     j = (where(strcmp(cdfi.vars.name, depend_0, /fold_case),nj))[0]
-;Fix for WIND data files, which have depend_0 = Epoch, but no data in
-;the variable, jmm, 2019-08-16
+    ;Fix for WIND data files, which have depend_0 = Epoch, but no data in
+    ;the variable, jmm, 2019-08-16
     if nj gt 0 && ptr_valid(cdfi.vars[j].dataptr) then tvar = cdfi.vars[j] else begin
-;    if nj gt 0 then tvar = cdfi.vars[j]  else  begin
-       j = (where(strcmp(cdfi.vars.name, depend_time, /fold_case),nj))[0]
-       if nj gt 0 && ptr_valid(cdfi.vars[j].dataptr) then tvar = cdfi.vars[j] else nj = 0
+      ;    if nj gt 0 then tvar = cdfi.vars[j]  else  begin
+      j = (where(strcmp(cdfi.vars.name, depend_time, /fold_case),nj))[0]
+      if nj gt 0 && ptr_valid(cdfi.vars[j].dataptr) then tvar = cdfi.vars[j] else nj = 0
     endelse
 
     if nj eq 0 then begin
@@ -133,7 +134,9 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
     if nj gt 0 then var_4 = cdfi.vars[j]
 
     spec = strcmp(display_type,'spectrogram',/fold_case)
-    log  = strcmp(scaletyp,'log',3,/fold_case)
+    ylog = strcmp(scaletyp,'log',3,/fold_case)
+    zlog = ylog and spec
+    if zlog then ylog = 0b
 
     if ptr_valid(tvar.dataptr) && ptr_valid(v.dataptr) then begin
 
@@ -144,13 +147,14 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
         var_2 = 0
       endif
       cdfstuff={filename:cdfi.filename,gatt:cdfi.g_attributes,vname:v.name,vatt:keyword_set(attr)?attr:0}
-      units = struct_value(attr,'units',default='')
       if keyword_set(var_1) && isa(*var_1.dataptr,/string) then var_1=0     ; check for weird string input
       if keyword_set(var_2) then data = {x:tvar.dataptr,y:v.dataptr,v1:var_1.dataptr, v2:var_2.dataptr} $
-      else if keyword_set(var_1) then data = {x:tvar.dataptr,y:v.dataptr, v:var_1.dataptr}  $
-      else data = {x:tvar.dataptr,y:v.dataptr}
+      else if keyword_set(var_1) then begin
+        ylog=strcmp(struct_value(*var_1.attrptr,'scaletyp',def='linear'),'log',3,/fold_case)
+        data = {x:tvar.dataptr,y:v.dataptr, v:var_1.dataptr}
+      endif else data = {x:tvar.dataptr,y:v.dataptr}
 
-      dlimit = {cdf:cdfstuff,spec:spec,log:log}
+      dlimit = {cdf:cdfstuff,spec:spec,ylog:ylog,zlog:zlog}
       if keyword_set(units) then str_element,/add,dlimit,'ysubtitle','['+units+']'
 
       if keyword_set(load_labels) then begin
