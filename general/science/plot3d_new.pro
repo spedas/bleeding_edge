@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-06-12 02:16:27 -0700 (Wed, 12 Jun 2019) $
-; $LastChangedRevision: 27340 $
+; $LastChangedBy: mcfadden $
+; $LastChangedDate: 2019-08-22 14:21:52 -0700 (Thu, 22 Aug 2019) $
+; $LastChangedRevision: 27634 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/plot3d_new.pro $
 ;+
 ;NAME:
@@ -326,7 +326,7 @@ endfor
 if keyword_set(notitle) then ttl = '' else $
 	if not keyword_set(title) then begin
         str_element,bindata,'trange',trange
-;        if not keyword_set(trange) then       trange=[bindata.time,bindata.end_time]
+        if not keyword_set(trange) then       trange=[bindata.time,bindata.end_time]
 		ttl = bindata.project_name+'  '+bindata.data_name
 	;	ttl =ttl+'!C'+ trange_str(bindata.time,bindata.end_time)
 		ttl =ttl+'!C'+ trange_str(trange)

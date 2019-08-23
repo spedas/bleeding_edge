@@ -2,11 +2,12 @@
 ;creates the time array of structures containting the reduced time resolution data and model results.
 ;also defines instrument and model constants.
 
-pro mvn_pui_aos,nt=nt,np=np,ns=ns,binsize=binsize,trange=trange,do3d=do3d,nomodel=nomodel,c6=c6,d0=d0
+pro mvn_pui_aos,nt=nt,np=np,ns=ns,eifactor=eifactor,binsize=binsize,trange=trange,do3d=do3d,nomodel=nomodel,c6=c6,d0=d0
 
   if n_elements(nt) eq 0 then nt=4
   if n_elements(np) eq 0 then np=3
   if n_elements(ns) eq 0 then ns=2
+  if n_elements(eifactor) eq 0 then eifactor=10.
   if n_elements(binsize) eq 0 then binsize=0.
   if n_elements(trange) eq 0 then trange=0.
   if n_elements(do3d) eq 0 then do3d=0
@@ -44,6 +45,7 @@ pro mvn_pui_aos,nt=nt,np=np,ns=ns,binsize=binsize,trange=trange,do3d=do3d,nomode
     np:np,            $ ;number of simulated particles
     nt:nt,            $ ;number of time steps
     ns:ns,            $ ;number of species [0:hydrogen, 1:oxygen, >1:other stuff]
+    eifactor:eifactor,$ ;electron impact increase factor inside the bow shock
     ngps:fnanns,      $ ;number of gyro-periods solved
     mamu:fnanns,      $ ;mass of [H=1 C=12 N=14 O=16] (amu)
     msub:0,           $ ;species subscript (0=H, 1=O)

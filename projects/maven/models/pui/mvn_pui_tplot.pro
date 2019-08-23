@@ -85,7 +85,7 @@ pro mvn_pui_tplot,store=store,tplot=tplot,tohban=tohban,savetplot=savetplot,_ext
       store_data,'mvn_tot_puo_sep'+strtrim(i+1,2),data={x:centertime,y:[[sepmtot],[sepdtot],[sepdcme],[100.*onesnt]]},limits={ylog:1,yrange:[1,1e4],colors:'brgm',labels:['model','data','cme','100'],labflag:1,ytickunits:'scientific'}
       store_data,'mvn_model_puo_sep'+strtrim(i+1,2)+'_Quality_Flag',data={x:centertime,y:pui.model[1].fluxes.sep[i].qf},limits={yrange:[-.1,1.2],ystyle:1}
       store_data,'mvn_model_puo_sep'+strtrim(i+1,2)+'_source_MSO_(Rm)',data={x:centertime,y:[[transpose(sepr)],[sqrt(total(sepr^2,1))]]/pui0.rmars/1e3},limits={labels:['x','y','z','r'],colors:'bgrk',labflag:1}
-      store_data,'mvn_model_puo_sep'+strtrim(i+1,2)+'_MSO_(km/s)',data={x:centertime,y:[[transpose(sepv)],[sqrt(total(sepv^2,1))]]/1e3},limits={labels:['x','y','z','v'],colors:'bgrk',labflag:1}
+      store_data,'mvn_model_puo_sep'+strtrim(i+1,2)+'_velocity_MSO_(km/s)',data={x:centertime,y:[[transpose(sepv)],[sqrt(total(sepv^2,1))]]/1e3},limits={labels:['x','y','z','v'],colors:'bgrk',labflag:1}
       store_data,'mvn_model_puh_incident_sep'+strtrim(i+1,2),data={x:centertime,y:transpose(pui.model[0].fluxes.sep[i].incident_rate)},limits={spec:1,zlog:1,yrange:[0,20],zrange:[1,1e4]}
       store_data,'mvn_model_puo_incident_sep'+strtrim(i+1,2),data={x:centertime,y:transpose(pui.model[1].fluxes.sep[i].incident_rate)},limits={spec:1,zlog:1,yrange:[0,200],zrange:[1,1e4]}
       ;store_data,'mvn_model_pux_incident_sep'+strtrim(i+1,2),centertime,transpose(pui.model[2].fluxes.sep[i].incident_rate)
@@ -132,6 +132,8 @@ pro mvn_pui_tplot,store=store,tplot=tplot,tohban=tohban,savetplot=savetplot,_ext
     if keyword_set(savetplot) then makepng,datestr+'_main'
   endif
 
-  if keyword_set(tohban) then tplot,'alt2 mvn_euv_l0 swe_a4 mvn_swis_en_eflux mvn_Nsw_(cm-3) mvn_Vsw_MSO_(km/s) mvn_5min_sep1_A-F_Rate_Energy mvn_5min_sep1_B-O_Rate_Energy mvn_mag_MSO_(nT) mvn_mag_Btot_(nT) mvn_redures_LOmass_sta_c0 mvn_redures_HImass_sta_c0 mvn_5min_sep1_arc_ATT'
-
+  if keyword_set(tohban) then begin
+    wi,24
+    tplot,window=24,'alt2 mvn_euv_l0 swe_a4 mvn_swis_en_eflux mvn_Nsw_(cm-3) mvn_Vsw_MSO_(km/s) mvn_5min_sep1_A-F_Rate_Energy mvn_5min_sep1_B-O_Rate_Energy mvn_mag_MSO_(nT) mvn_mag_Btot_(nT) mvn_redures_LOmass_sta_c0 mvn_redures_HImass_sta_c0 mvn_5min_sep1_arc_ATT'
+  endif
 end

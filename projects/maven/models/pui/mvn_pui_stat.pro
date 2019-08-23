@@ -18,13 +18,13 @@ pro mvn_pui_stat,nospice=nospice,img=img,trange=trange,nodataload=nodataload,bin
 
 secinday=86400L ;number of seconds in a day
 if ~keyword_set(trange) then trange=[time_double('14-11-27'),systime(1)]
-;trange=['14-12-1','14-12-3']
+trange=['19-2-1','now']
 trange=time_double(trange)
 ndays=ceil((trange[1]-trange[0])/secinday) ;number of days
 
 if ~keyword_set(np) then np=3333
 if ~keyword_set(binsize) then binsize=64.
-nt=1+floor((secinday-binsize/2.)/binsize) ;number of time steps
+nt=1+floor((secinday-binsize/2.)/binsize) ;number of time steps in a day
 
 if ~keyword_set(nospice) then begin
   timespan,trange
@@ -54,7 +54,7 @@ stat2d=replicate({d2m:pui3},nswdays)
 
 for j=0,nswdays-1 do begin ;loop over days
   tr=trange[0]+[jsw[j],jsw[j]+1]*secinday
-  mvn_pui_model,binsize=binsize,np=np,/do3d,savetplot=keyword_set(img),/nospice,trange=tr,nodataload=nodataload
+  mvn_pui_model,binsize=binsize,np=np,eifactor=1.,/do3d,savetplot=keyword_set(img),/nospice,trange=tr,nodataload=nodataload
   if ~keyword_set(swim) then continue ;no swia data available
 
   stat[*,j].centertime=pui.centertime

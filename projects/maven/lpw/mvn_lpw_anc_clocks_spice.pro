@@ -45,6 +45,7 @@
 ;04/29/2014 CF: added automated kernel loading added. Also checks to see if times are predicted or reconstructed. 
 ;;140718 clean up for check out L. Andersson
 ;2015-10-08 CMF made clearing SPICE kernels a keyword.
+;2019-08-20 CMF commented out the call to timespan, as this doesn't appear to be necessary.
 ;
 ;-
 
@@ -161,7 +162,7 @@ MET = whole+frac  ;double prec number, seconds into s/c mission (MET)
 ;Call timespan first to avoid the manual call. Get the input string from tplot:
 get_data, 'mvn_lpw_load_file', dlimit=dl
 
-timespan, dl.utc, 1.  ;use the UTC input string 
+;timespan, dl.utc, 1.  ;use the UTC input string   ;CMF commented out on 2019-08-20 - doesn't seem to be needed anymore as not used by code.
 unix_time2 = mvn_spc_met_to_unixtime(MET)  ;default is now to correct for  clockdrift
 
 ;===============================

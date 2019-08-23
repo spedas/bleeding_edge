@@ -31,7 +31,7 @@ endif
 
 if ~keyword_set(nosep) then begin
   mvn_sep_var_restore,units_name='Rate',/basic_tags,lowres=tohban ;load SEP data
-  options,'mvn_5min_sep1_arc_ATT',spec=1,yrange=[0,.1],zrange=[0,.1],ytitle='Burst',yticklen=.0001,xticklen=.5,yticks=1,tpanel_size=.2,no_color_scale=1; tohban burst bar
+  options,'mvn_5min_sep1_arc_ATT',spec=1,yrange=[.1,.2],zrange=[.1,.2],zlog=1,ytitle='Burst',ytickname=[' ',' '],yticklen=.0001,xticklen=.5,yticks=1,tpanel_size=.2,no_color_scale=1; tohban burst bar
   ;  options,'mvn_sep?_?-?_Rate_Energy','panel_size',1
 
   ;cdf2tplot,mvn_pfp_file_retrieve('maven/data/sci/sep/anc/cdf/YYYY/MM/mvn_sep_l2_anc_YYYYMMDD_v??_r??.cdf',/daily),prefix='SepAnc_' ;sep ancillary data

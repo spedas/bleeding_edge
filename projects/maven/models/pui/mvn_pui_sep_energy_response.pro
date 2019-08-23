@@ -42,6 +42,7 @@ for sepn=0,1 do begin
   endfor
   
   ;reducing the count rates by a factor of 100 when the SEP attenuator is closed
+  pui[where(pui.data.sep[sepn].att eq 0,/null)].data.sep[sepn].att=1 ;replacing bad att states (att=0) with open att (att=1)
   sepattfac=(99.*pui.data.sep[sepn].att)-98. ;1->1, 2->100
   sepattfac2=transpose(rebin([sepattfac],[pui0.nt,pui0.sopeb])) ;adjusting the dimensions to sepeb
   pui.model[pui0.msub].fluxes.sep[sepn].model_rate=sepeb/sepattfac2

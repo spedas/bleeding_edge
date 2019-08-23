@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Aug 21 18:16:33 2019.<P>
+<STRONG>Last modified: </STRONG>Thu Aug 22 18:16:32 2019.<P>
  
 <HR>
  
@@ -581,16 +581,17 @@ KEYWORDS:
                  keywords EXTENDED and HIRES.
 
        EXTENDED: Load one of the long-term predict ephemerides.  The value of this
-                 keyword can be from 1 to 4, corresponding to the following spk
+                 keyword can be 1 or 2, corresponding to the following spk
                  kernels:
 
-                   1 : trj_orb_181015-190307_targetM2020EDL-nso_181017.bsp
-                   2 : trj_orb_190210-200520_targetM2020EDL-ab4500_181018.bsp
-                   3 : trj_orb_200415-210512_targetM2020EDL-sro-phaseJEZ_181030.bsp
-                   4 : trj_orb_210212-260101_210x4360_181101.bsp
-                   5 : trj_orb_200415-210512_targetM2020EDL-sro-ERTF1_190411.bsp
+                   1 : trj_orb_190425-201220_targetM2020EDL-eso_190409.bsp
+                   2 : trj_orb_200415-210512_targetM2020EDL-sro-ERTF1_190411.bsp
 
-                 These ephemerides were created in Oct/Nov 2018 and Apr 2019.
+                 These ephemerides were created in Apr 2019, after aerobraking.
+                 The first is &quot;extended science&quot;, with periapsis in the nominal
+                 science density corridor (~150 km altitude).  The second is
+                 &quot;science/relay&quot;, with perapsis raised to a minimum of ~180 km
+                 on 2020-04-22.
 
        HIRES:    OBSOLETE - this keyword has no effect at all.
 
@@ -636,8 +637,8 @@ KEYWORDS:
        CLEAR:    Clear the common block and exit.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-08-21 14:19:45 -0700 (Wed, 21 Aug 2019) $
- $LastChangedRevision: 27628 $
+ $LastChangedDate: 2019-08-22 09:56:32 -0700 (Thu, 22 Aug 2019) $
+ $LastChangedRevision: 27631 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11

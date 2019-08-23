@@ -76,16 +76,17 @@
 ;                 keywords EXTENDED and HIRES.
 ;
 ;       EXTENDED: Load one of the long-term predict ephemerides.  The value of this
-;                 keyword can be from 1 to 4, corresponding to the following spk
+;                 keyword can be 1 or 2, corresponding to the following spk
 ;                 kernels:
 ;
-;                   1 : trj_orb_181015-190307_targetM2020EDL-nso_181017.bsp
-;                   2 : trj_orb_190210-200520_targetM2020EDL-ab4500_181018.bsp
-;                   3 : trj_orb_200415-210512_targetM2020EDL-sro-phaseJEZ_181030.bsp
-;                   4 : trj_orb_210212-260101_210x4360_181101.bsp
-;                   5 : trj_orb_200415-210512_targetM2020EDL-sro-ERTF1_190411.bsp
+;                   1 : trj_orb_190425-201220_targetM2020EDL-eso_190409.bsp
+;                   2 : trj_orb_200415-210512_targetM2020EDL-sro-ERTF1_190411.bsp
 ;
-;                 These ephemerides were created in Oct/Nov 2018 and Apr 2019.
+;                 These ephemerides were created in Apr 2019, after aerobraking.
+;                 The first is "extended science", with periapsis in the nominal
+;                 science density corridor (~150 km altitude).  The second is
+;                 "science/relay", with perapsis raised to a minimum of ~180 km
+;                 on 2020-04-22.
 ;
 ;       HIRES:    OBSOLETE - this keyword has no effect at all.
 ;
@@ -131,8 +132,8 @@
 ;       CLEAR:    Clear the common block and exit.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-08-21 14:19:45 -0700 (Wed, 21 Aug 2019) $
-; $LastChangedRevision: 27628 $
+; $LastChangedDate: 2019-08-22 09:56:32 -0700 (Thu, 22 Aug 2019) $
+; $LastChangedRevision: 27631 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -256,53 +257,23 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   if keyword_set(extended) then begin
     case extended of
        1 : begin
-             mname = 'maven_spacecraft_mso_targetM2020EDL-nso_181017.sav'
-             gname = 'maven_spacecraft_geo_targetM2020EDL-nso_181017.sav'
-             timespan, ['2018-10-16','2019-03-07']
+             mname = 'maven_spacecraft_mso_targetM2020EDL-eso_190409.sav'
+             gname = 'maven_spacecraft_geo_targetM2020EDL-eso_190409.sav'
+             timespan, ['2019-04-25','2020-12-20']
              treset = 1
              nocrop = 1
              timecrop = 0
-             print,"Using predict for 150 x 6000 orbit, followed by aerobraking."
-             print,"  SPK = trj_orb_181015-190307_targetM2020EDL-nso_181017.bsp"
+             print,"Using post-aerobraking extended science predict."
+             print,"  SPK = trj_orb_190425-201220_targetM2020EDL-eso_190409.bsp"
            end
        2 : begin
-             mname = 'maven_spacecraft_mso_targetM2020EDL-ab4500_181018.sav'
-             gname = 'maven_spacecraft_geo_targetM2020EDL-ab4500_181018.sav'
-             timespan, ['2019-02-10','2020-05-20']
-             treset = 1
-             nocrop = 1
-             timecrop = 0
-             print,"Using predict for aerobraking, followed by 150 x 4500 km orbit."
-             print,"  SPK = trj_orb_190210-200520_targetM2020EDL-ab4500_181018.bsp"
-           end
-       3 : begin
-             mname = 'maven_spacecraft_mso_targetM2020EDL-sro-phaseJEZ_181030.sav'
-             gname = 'maven_spacecraft_geo_targetM2020EDL-sro-phaseJEZ_181030.sav'
-             timespan, ['2020-04-16','2021-05-12']
-             treset = 1
-             nocrop = 1
-             timecrop = 0
-             print,"Using predict for 210 x 4500 km orbit."
-             print,"  SPK = trj_orb_200415-210512_targetM2020EDL-sro-phaseJEZ_181030.bsp"
-           end
-       4 : begin
-             mname = 'maven_spacecraft_mso_210x4360_181101.sav'
-             gname = 'maven_spacecraft_geo_210x4360_181101.sav'
-             timespan, ['2021-02-13','2026-01-01']
-             treset = 1
-             nocrop = 1
-             timecrop = 0
-             print,"Using long-range predict for 210 x 4360 km orbit."
-             print,"  SPK = trj_orb_210212-260101_210x4360_181101.bsp"
-           end
-       5 : begin
              mname = 'maven_spacecraft_mso_targetM2020EDL-sro-ERTF1_190411.sav'
              gname = 'maven_spacecraft_geo_targetM2020EDL-sro-ERTF1_190411.sav'
              timespan, ['2020-04-16','2021-05-12']
              treset = 1
              nocrop = 1
              timecrop = 0
-             print,"Using predict for 210 x 4500 km orbit."
+             print,"Using post-aerobraking science-relay predict."
              print,"  SPK = trj_orb_200415-210512_targetM2020EDL-sro-ERTF1_190411.bsp"
            end
       else : extended = 0
