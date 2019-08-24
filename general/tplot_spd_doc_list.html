@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Aug 22 18:16:32 2019.<P>
+<STRONG>Last modified: </STRONG>Fri Aug 23 18:16:35 2019.<P>
  
 <HR>
  
@@ -95,6 +95,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#TPLOT_COM">TPLOT_COM</A>
 <LI><A HREF="#TPLOT_FILE">TPLOT_FILE</A>
 <br>OBSOLETE PROCEDURE!  Use &quot;TPLOT_SAVE&quot; and &quot;TPLOT_RESTORE&quot; instead.
+<LI><A HREF="#TPLOT_FILL_COLOR">TPLOT_FILL_COLOR</A>
+<br>Fills the area under a line in a tplot panel
 <LI><A HREF="#TPLOT_FORCE_MONOTONIC">TPLOT_FORCE_MONOTONIC</A>
 <LI><A HREF="#TPLOT_KEYS">TPLOT_KEYS</A>
 <br>Sets up function keys on user keyboard to perform frequent &quot;tplot&quot;
@@ -2986,7 +2988,7 @@ VERSION: @(#)tplot_com.pro	1.21
 <A NAME="TPLOT_FILE">
 <H2>TPLOT_FILE</H2></A>
 <A HREF="#TPLOT_COM">[Previous Routine]</A>
-<A HREF="#TPLOT_FORCE_MONOTONIC">[Next Routine]</A>
+<A HREF="#TPLOT_FILL_COLOR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:  tplot_file , name [,filename]
@@ -3010,9 +3012,39 @@ LAST MODIFICATION:     tplot_file.pro   98/08/06
 <STRONG>(See <A href="tplot/tplot_file.pro">general/tplot/tplot_file.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="TPLOT_FILL_COLOR">
+<H2>TPLOT_FILL_COLOR</H2></A>
+<A HREF="#TPLOT_FILE">[Previous Routine]</A>
+<A HREF="#TPLOT_FORCE_MONOTONIC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+     tplot_fill_color
+
+ PURPOSE:
+     Fills the area under a line in a tplot panel
+
+ INPUT:
+     vars: string or array of strings specifying which tplot variables to fill
+     colors: int or array of ints specifying the fill colors; must match the number
+           of elements in 'vars'
+
+
+ EXAMPLE:
+     &gt;&gt; tplot, 'kyoto_dst'
+     &gt;&gt; tplot_fill_color, 'kyoto_dst', spd_get_color('blue')
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2019-08-23 16:03:58 -0700 (Fri, 23 Aug 2019) $
+$LastChangedRevision: 27643 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_fill_color.pro $
+</PRE><P>
+<STRONG>(See <A href="tplot/tplot_fill_color.pro">general/tplot/tplot_fill_color.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TPLOT_FORCE_MONOTONIC">
 <H2>TPLOT_FORCE_MONOTONIC</H2></A>
-<A HREF="#TPLOT_FILE">[Previous Routine]</A>
+<A HREF="#TPLOT_FILL_COLOR">[Previous Routine]</A>
 <A HREF="#TPLOT_KEYS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

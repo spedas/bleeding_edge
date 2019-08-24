@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Aug 22 18:16:32 2019.<P>
+<STRONG>Last modified: </STRONG>Fri Aug 23 18:16:35 2019.<P>
  
 <HR>
  
@@ -90,6 +90,8 @@ Warning: this crib uses some data from the THEMIS branch.  You'll require those 
  Colors in SPEDAS:
 
    To view the currently loaded color table, use: xpalette
+   To retrieve a color index by its name, use the routine: spd_get_color (e.g., blue = spd_get_color('blue'))
+       see the header of spd_get_color for supported colors
    To load the default color table for SPEDAS, type: init_crib_colors
    The procedure loadct2 loads a color table and changes 8 colors (the first 7 and the last) to these:
        [black, magenta, blue, cyan, green, yellow, red, white]
