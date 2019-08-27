@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Aug 24 18:16:36 2019.<P>
+<STRONG>Last modified: </STRONG>Mon Aug 26 18:16:27 2019.<P>
  
 <HR>
  
@@ -1489,8 +1489,8 @@ KEYWORDS:
                    changes in a tplot window (assumed to exist).
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-02-11 14:35:05 -0800 (Mon, 11 Feb 2019) $
- $LastChangedRevision: 26604 $
+ $LastChangedDate: 2019-08-26 16:53:18 -0700 (Mon, 26 Aug 2019) $
+ $LastChangedRevision: 27660 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 
 CREATED BY:    David L. Mitchell  03-29-13
@@ -1593,8 +1593,8 @@ KEYWORDS:
        SILENT:       Don't print any warnings or messages.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-02-09 16:38:55 -0800 (Sat, 09 Feb 2019) $
- $LastChangedRevision: 26582 $
+ $LastChangedDate: 2019-08-26 16:52:34 -0700 (Mon, 26 Aug 2019) $
+ $LastChangedRevision: 27659 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_crosscal.pro $
 
 CREATED BY:    David L. Mitchell  05-04-16
@@ -1917,7 +1917,8 @@ PURPOSE:
       6 : 2017-06-13 to 2017-08-22
       7 : 2017-12-10 to 2018-04-25
       8 : 2018-06-23 to 2018-11-13 (break at MCP bump)
-      9 : 2018-11-13 to present
+      9 : 2018-11-13 to 2019-03-25
+     10 : 2019-05-08 to 2019-08-14
 
   Solar wind periods 1 and 3 yield calibrations that are very similar.
   These are combined into a single FOV calibration.  Solar wind period
@@ -1948,8 +1949,8 @@ KEYWORDS:
        TEST:         Returns calibration used.  For testing.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-02-09 16:37:49 -0800 (Sat, 09 Feb 2019) $
- $LastChangedRevision: 26579 $
+ $LastChangedDate: 2019-08-26 16:51:27 -0700 (Mon, 26 Aug 2019) $
+ $LastChangedRevision: 27658 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_flatfield.pro $
 
 CREATED BY:    David L. Mitchell  2016-09-28
@@ -2041,8 +2042,8 @@ KEYWORDS:
 CREATED BY:	David L. Mitchell  2016-08-03
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-02-09 16:37:22 -0800 (Sat, 09 Feb 2019) $
- $LastChangedRevision: 26578 $
+ $LastChangedDate: 2019-08-26 16:50:29 -0700 (Mon, 26 Aug 2019) $
+ $LastChangedRevision: 27657 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovcal.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_fovcal.pro">projects/maven/swea/mvn_swe_fovcal.pro</A>)</STRONG><P>
@@ -2062,7 +2063,10 @@ USAGE:
   mvn_swe_fovplot, dat, result=result
 
 INPUTS:
-       dat:       A FOV calibration structure obtained with mvn_swe_fovcal.
+       dat1:      A FOV calibration structure obtained with mvn_swe_fovcal.
+
+       dat2:      A FOV calibration structure obtained with mvn_swe_fovcal.
+                  If present, create the ratio dat2/dat and propagate errors.
 
 KEYWORDS:
        BAD:       A set of solid angle bins to ignore when calculating the
@@ -2098,8 +2102,8 @@ KEYWORDS:
 CREATED BY:	David L. Mitchell  2016-08-03
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-11-09 11:38:35 -0800 (Fri, 09 Nov 2018) $
- $LastChangedRevision: 26092 $
+ $LastChangedDate: 2019-08-26 16:48:53 -0700 (Mon, 26 Aug 2019) $
+ $LastChangedRevision: 27655 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovplot.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_fovplot.pro">projects/maven/swea/mvn_swe_fovplot.pro</A>)</STRONG><P>
@@ -5881,8 +5885,8 @@ KEYWORDS:
        ARCHIVE:       If set, show snapshots of archive data.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-02-09 16:36:54 -0800 (Sat, 09 Feb 2019) $
- $LastChangedRevision: 26577 $
+ $LastChangedDate: 2019-08-26 16:49:26 -0700 (Mon, 26 Aug 2019) $
+ $LastChangedRevision: 27656 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_cal_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12

@@ -81,11 +81,11 @@
 ;
 ;   4.  If both binsize and binum, binsize will take precedent.
 ;
-;  SEE ALSO: bin1d.pro,plotxyz.pro,thm_crib_plotxyz.pro
+;  SEE ALSO: bin1d.pro,plotxyz.pro,crib_plotxyz.pro
 ;
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-; $LastChangedRevision: 24506 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2019-08-26 16:12:31 -0700 (Mon, 26 Aug 2019) $
+; $LastChangedRevision: 27654 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/bin2d.pro $
 ;-
 

@@ -26,8 +26,8 @@
 ;       ARCHIVE:       If set, show snapshots of archive data.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-09 16:36:54 -0800 (Sat, 09 Feb 2019) $
-; $LastChangedRevision: 26577 $
+; $LastChangedDate: 2019-08-26 16:49:26 -0700 (Mon, 26 Aug 2019) $
+; $LastChangedRevision: 27656 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_cal_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -188,7 +188,7 @@ pro swe_cal_snap, ddd=ddd, pad=pad, spec=spec, keepwins=keepwins, units=units, $
 
         !p.multi = [0,2,2]
         plot_oo,x,y1,xtitle='Energy (eV)',ytitle=strupcase(dat.units_name),$
-                     yrange=[1.,1.e5],psym=10,charsize=limits.charsize
+                     yrange=[1.,1.e6],psym=10,charsize=limits.charsize
         plot_oi,x,y2,xtitle='Energy (eV)',ytitle='Geometric Factor (x10!u4!n)',psym=10,$
                      charsize=limits.charsize
         plot_oi,x,y3,xtitle='Energy (eV)',ytitle='MCP Efficiency',psym=10,charsize=limits.charsize

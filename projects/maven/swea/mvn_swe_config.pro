@@ -39,8 +39,8 @@
 ;                   changes in a tplot window (assumed to exist).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-11 14:35:05 -0800 (Mon, 11 Feb 2019) $
-; $LastChangedRevision: 26604 $
+; $LastChangedDate: 2019-08-26 16:53:18 -0700 (Mon, 26 Aug 2019) $
+; $LastChangedRevision: 27660 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -131,14 +131,17 @@ pro mvn_swe_config, list=list, timebar=timebar
 
 ; EEPROM load on 2018-08-28 (apo 7621)
 
+  t_swp = [t_swp, time_double('2018-08-28/14:02:38')]  ; sweep table 8 upload (32-Hz,  50 eV)
+
 ; 2018-10-01/00:00                                     ; beginning of EM-3
 
-  t_swp = [t_swp, time_double('2018-08-28/14:02:38')]  ; sweep table 8 upload (32-Hz,  50 eV)
   t_swp = [t_swp, time_double('2018-11-09/17:57:56')]  ; sweep table 7 upload (32-Hz, 200 eV)
 
   t_mcp = [t_mcp, time_double('2018-11-13/11:18:13')]  ; bias adjustment (2800 -> 2875 V)
 
-  t_mcp = [t_mcp, time_double('2019-01-31/00:00:00')]  ; last SWE-SWI cross calibration
+  t_mcp = [t_mcp, time_double('2019-06-07/00:00:00')]  ; last SWE-SWI cross calibration
+
+; 2019-10-01/00:00                                     ; beginning of EM-4
 
 ; Gather all the configuration change times into one variable (for timebar).
 

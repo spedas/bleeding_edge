@@ -49,8 +49,8 @@
 ;       SILENT:       Don't print any warnings or messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-09 16:38:55 -0800 (Sat, 09 Feb 2019) $
-; $LastChangedRevision: 26582 $
+; $LastChangedDate: 2019-08-26 16:52:34 -0700 (Mon, 26 Aug 2019) $
+; $LastChangedRevision: 27659 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_crosscal.pro $
 ;
 ;CREATED BY:    David L. Mitchell  05-04-16
@@ -69,7 +69,7 @@ function mvn_swe_crosscal, time, on=on, off=off, refresh=refresh, extrap=extrap,
     ac[*,2] = [2.2143D,  7.9280d-4,  1.4300d-5,  0.0D     ]  ; MCPHV = 2700 V
     ac[*,3] = [2.0027D,  7.2892d-3, -1.1918d-5,  0.0D     ]  ; MCPHV = 2750 V
     ac[*,4] = [2.2929D,  6.0841d-3, -2.0345d-5,  3.0202d-8]  ; MCPHV = 2800 V
-    ac[*,5] = [1.9592D,  2.6086d-3,  0.0D     ,  0.0D     ]  ; MCPHV = 2875 V (provisional)
+    ac[*,5] = [1.9225D,  4.2730d-3, -9.5083d-6,  0.0D     ]  ; MCPHV = 2875 V
     eflg = 0
   endif
 
@@ -87,7 +87,7 @@ function mvn_swe_crosscal, time, on=on, off=off, refresh=refresh, extrap=extrap,
     if (domsg) then print,"SWE-SWI crosscal enabled."
     return, 0.
   endif
-  
+
   if keyword_set(off) then begin
     swe_cc_switch = 0
     if (domsg) then print,"SWE-SWI crosscal disabled."

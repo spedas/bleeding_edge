@@ -6,10 +6,28 @@
 ;     IDL> mgunit, 'tplot_stuff_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-08-05 10:27:20 -0700 (Mon, 05 Aug 2019) $
-; $LastChangedRevision: 27541 $
+; $LastChangedDate: 2019-08-26 11:01:59 -0700 (Mon, 26 Aug 2019) $
+; $LastChangedRevision: 27651 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/tplot_stuff_ut__define.pro $
 ;-
+function tplot_stuff_ut::test_fill_color
+  spd_graphics_config
+  kyoto_load_dst, trange=['2015-12-01', '2015-12-31']
+  tplot, 'kyoto_dst'
+  tplot_fill_color, 'kyoto_dst', 2
+  makepng, 'dst_filled_blue'
+  return, 1
+end
+
+function tplot_stuff_ut::test_fill_color_log
+  spd_graphics_config
+  kyoto_load_dst, trange=['2015-12-01', '2015-12-31']
+  options, 'kyoto_dst', ylog=1
+  tplot, 'kyoto_dst'
+  tplot_fill_color, 'kyoto_dst', 2
+  makepng, 'dst_log_filled_blue'
+  return, 1
+end
 
 ; test tshift tag
 function tplot_stuff_ut::test_tshift

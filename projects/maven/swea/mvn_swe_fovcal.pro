@@ -76,8 +76,8 @@
 ;CREATED BY:	David L. Mitchell  2016-08-03
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-09 16:37:22 -0800 (Sat, 09 Feb 2019) $
-; $LastChangedRevision: 26578 $
+; $LastChangedDate: 2019-08-26 16:50:29 -0700 (Mon, 26 Aug 2019) $
+; $LastChangedRevision: 27657 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovcal.pro $
 ;-
 pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
@@ -214,16 +214,18 @@ pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
   indx = where(pa[gud] le (midpa + olap))
   x1 = pa[gud[indx]]
   y1 = f[gud[indx]]
+  dy1 = df[gud[indx]]
   p1 = {a0:double(min(y1)), a1:0d, a2:0d, a3:0d, a4:0d, a5:0d}
-  fit,x1,y1,func='polycurve',par=p1,names=name1
+  fit,x1,y1,dy=dy1,func='polycurve',par=p1,names=name1
   npa = round(midpa)
   oplot,findgen(npa+1),polycurve(findgen(npa+1),par=p1),color=4,thick=2
 
   jndx = where(pa[gud] gt (midpa - olap))
   x2 = 180. - pa[gud[jndx]]
   y2 = f[gud[jndx]]
+  dy2 = df[gud[jndx]]
   p2 = {a0:double(min(y2)), a1:0d, a2:0d, a3:0d, a4:0d, a5:0d}
-  fit,x2,y2,func='polycurve',par=p2,names=name2
+  fit,x2,y2,dy=dy2,func='polycurve',par=p2,names=name2
   npa = round(180. - midpa)
   oplot,180.-findgen(npa+1),polycurve(findgen(npa+1),par=p2),color=6,thick=2
 
