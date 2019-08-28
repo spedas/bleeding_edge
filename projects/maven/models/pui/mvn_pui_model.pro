@@ -38,7 +38,6 @@ pro mvn_pui_model,binsize=binsize,trange=trange,np=np,ns=ns,do3d=do3d,exoden=exo
     timespan,c=30 ;last 30 days
     binsize=300. ;5min time resolution
     np=3 ;just to run fast
-    tplot_options,'datagap',600. ;blank space for data gaps longer than 10 min
   endif
   if ~keyword_set(binsize) then binsize=32. ;simulation resolution or cadense (seconds)
   if ~keyword_set(trange) then get_timespan,trange else timespan,trange

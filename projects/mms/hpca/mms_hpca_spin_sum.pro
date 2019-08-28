@@ -28,12 +28,12 @@
 ;     
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-24 13:30:07 -0700 (Tue, 24 Apr 2018) $
-;$LastChangedRevision: 25105 $
+;$LastChangedDate: 2019-08-27 15:30:15 -0700 (Tue, 27 Aug 2019) $
+;$LastChangedRevision: 27683 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_hpca_spin_sum.pro $
 ;-
 
-pro mms_hpca_spin_sum, probe = probe, datatype=datatype, species=species, fov=fov, tplotnames=tplotnames, avg=avg
+pro mms_hpca_spin_sum, probe = probe, datatype=datatype, species=species, fov=fov, tplotnames=tplotnames, avg=avg, names_out=names_out
     if undefined(probe) then begin
         dprint, dlevel = 0, 'Error, must provide probe # to spin-sum the HPCA data'
         return
@@ -88,6 +88,7 @@ pro mms_hpca_spin_sum, probe = probe, datatype=datatype, species=species, fov=fo
                   options, new_varname, spec=1
                   ylim, new_varname, 0, 0, 1
                   zlim, new_varname, 0, 0, 1
+                  append_array, names_out, new_varname
                 endfor
             endif
         endfor

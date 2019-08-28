@@ -13,8 +13,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2016-11-03 14:54:06 -0700 (Thu, 03 Nov 2016) $
-; $LastChangedRevision: 22287 $
+; $LastChangedDate: 2019-08-27 14:06:18 -0700 (Tue, 27 Aug 2019) $
+; $LastChangedRevision: 27682 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_specsum.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -37,8 +37,18 @@ function mvn_swe_specsum, spec
   specsum.delta_t = (specsum.end_time - start_time) > spec[0].delta_t
   specsum.dt_arr = total(spec.dt_arr, 2)
 
-  specsum.data = total(spec.data/spec.dtc, 2, /nan)  ; corrected counts
-  specsum.var = total(spec.var/spec.dtc, 2, /nan)    ; variance of sum
+  nrm = spec.data
+  var = spec.var
+  nrm[*] = 1.
+  bndx = where(~finite(spec.data), count)
+  if (count gt 0L) then begin
+    nrm[bndx] = 0.
+    var[bndx] = !values.f_nan
+  endif
+  nrm = total(nrm,2)/float(npts)
+
+  specsum.data = total(spec.data/spec.dtc, 2, /nan)/nrm  ; corrected counts
+  specsum.var = total(var/spec.dtc, 2, /nan)/nrm         ; variance of sum
   specsum.dtc = 1.         ; summing corrected counts is not reversible
   specsum.bkg = total(spec.bkg, 2)/float(npts)
 

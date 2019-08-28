@@ -1,3 +1,4 @@
+
 ;+
 ;PROCEDURE loadct2, colortable
 ;   By default LOADCT2 uses the same color table used by LOADCT
@@ -63,7 +64,7 @@ pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,gr
     dprint,'Device ',!d.name,' does not support color tables. Command Ignored'
     return
   endif
-  if ct le 43 then loadct,ct,bottom=bottom_c,file=file $
+  if (ct le 43 or keyword_set(deffile)) then loadct,ct,bottom=bottom_c,file=file $
   else loadct,ct,bottom=bottom_c ; this line is changed to be able to load color tables > 43
   color_table = ct
 

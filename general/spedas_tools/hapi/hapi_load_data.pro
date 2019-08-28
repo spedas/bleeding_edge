@@ -53,8 +53,8 @@
 ;         
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-11-19 09:41:40 -0800 (Mon, 19 Nov 2018) $
-;$LastChangedRevision: 26149 $
+;$LastChangedDate: 2019-08-27 11:54:08 -0700 (Tue, 27 Aug 2019) $
+;$LastChangedRevision: 27674 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
@@ -85,11 +85,13 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     return
   endif
   if undefined(server) then begin
+    ; https://github.com/hapi-server/servers/blob/master/all.txt
     dprint, dlevel = 0, 'Error, no server specified; example servers include:'
     dprint, dlevel = 0, '- https://cdaweb.gsfc.nasa.gov/hapi'
     dprint, dlevel = 0, '- https://pds-ppi.igpp.ucla.edu/hapi'
-    dprint, dlevel = 0, '- http://tsds.org/get/SSCWeb/hapi'
-    dprint, dlevel = 0, '- http://mag.gmu.edu/TestData/hapi'
+    dprint, dlevel = 0, '- http://planet.physics.uiowa.edu/das/das2Server/hapi'
+    dprint, dlevel = 0, '- https://iswa.gsfc.nasa.gov/IswaSystemWebApp/hapi'
+    dprint, dlevel = 0, '- http://lasp.colorado.edu/lisird/hapi'
     return
   endif else begin
     url_parts = parse_url(server)

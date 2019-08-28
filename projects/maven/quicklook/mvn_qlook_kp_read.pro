@@ -19,9 +19,9 @@
 ;HISTORY:
 ; 18-sep-2015, jmm, jimm@ssl.berkeley.edu
 ; 25-sep-2015, jmm, Moved tplot variable stuff to mvn_qlook_load_kp.pro
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2015-09-25 13:57:25 -0700 (Fri, 25 Sep 2015) $
-;$LastChangedRevision: 18937 $
+;$LastChangedBy: ali $
+;$LastChangedDate: 2019-08-27 13:59:45 -0700 (Tue, 27 Aug 2019) $
+;$LastChangedRevision: 27681 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_qlook_kp_read.pro $
 ;-
 Function mvn_qlook_kp_read, filename, time_array, col_quantity, col_source, $
@@ -47,6 +47,7 @@ Function mvn_qlook_kp_read, filename, time_array, col_quantity, col_source, $
   all_lines = strarr(ll)
   openr, unit, filex, /get_lun
   readf, unit, all_lines
+  free_lun,unit
   ss_h = where(strmid(all_lines, 0, 1) Eq '#', nssh)
   header = all_lines(ss_h)
 

@@ -37,8 +37,8 @@
 ; Hacked from Matt F's crib_l0_to_l2.txt, 2014-11-14: jmm
 ; Better memory management and added keywords to control processing: dlm
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2015-06-04 11:45:17 -0700 (Thu, 04 Jun 2015) $
-; $LastChangedRevision: 17805 $
+; $LastChangedDate: 2019-08-27 11:42:30 -0700 (Tue, 27 Aug 2019) $
+; $LastChangedRevision: 27672 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_swe_l2gen.pro $
 ;- 
 pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
@@ -122,6 +122,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
       indx = where(ddd.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
       if (icnt gt 0L) then ddd[indx].data *= reform(dmask1 # replicate(1.,icnt),64,96,icnt)
       if (jcnt gt 0L) then ddd[jndx].data *= reform(dmask0 # replicate(1.,jcnt),64,96,jcnt)
+      mvn_swe_lowe_mask, ddd
       mvn_swe_makecdf_3d, ddd, directory=directory
       dt = systime(/sec) - timer_start
       print,dt/60D,format='("Time to process (min): ",f6.2)'
@@ -136,6 +137,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
       indx = where(ddd.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
       if (icnt gt 0L) then ddd[indx].data *= reform(dmask1 # replicate(1.,icnt),64,96,icnt)
       if (jcnt gt 0L) then ddd[jndx].data *= reform(dmask0 # replicate(1.,jcnt),64,96,jcnt)
+      mvn_swe_lowe_mask, ddd
       mvn_swe_makecdf_3d, ddd, directory=directory
       dt = systime(/sec) - timer_start
       print,dt/60D,format='("Time to process (min): ",f6.2)'
@@ -160,6 +162,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
         indx = where(pad.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
         if (icnt gt 0L) then pad[indx].data *= reform(pmask1[*,pad[indx].k3d],64,16,icnt)
         if (jcnt gt 0L) then pad[jndx].data *= reform(pmask0[*,pad[jndx].k3d],64,16,jcnt)
+        mvn_swe_lowe_mask, pad
         mvn_swe_makecdf_pad, pad, directory=directory, mname=mname
         dt = systime(/sec) - timer_start
         print,dt/60D,format='("Time to process (min): ",f6.2)'
@@ -174,6 +177,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
         indx = where(pad.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
         if (icnt gt 0L) then pad[indx].data *= reform(pmask1[*,pad[indx].k3d],64,16,icnt)
         if (jcnt gt 0L) then pad[jndx].data *= reform(pmask0[*,pad[jndx].k3d],64,16,jcnt)
+        mvn_swe_lowe_mask, pad
         mvn_swe_makecdf_pad, pad, directory=directory, mname=mname
         dt = systime(/sec) - timer_start
         print,dt/60D,format='("Time to process (min): ",f6.2)'
@@ -187,6 +191,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
     print,"Generating SPEC Survey data"
     spec = mvn_swe_getspec([t0,t1])
     if (size(spec,/type) eq 8) then begin
+      mvn_swe_lowe_mask, spec
       mvn_swe_makecdf_spec, spec, directory=directory
       dt = systime(/sec) - timer_start
       print,dt/60D,format='("Time to process (min): ",f6.2)'
@@ -198,6 +203,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
     print,"Generating SPEC Archive data"
     spec = mvn_swe_getspec([t0,t1], /archive)
     if (size(spec,/type) eq 8) then begin
+      mvn_swe_lowe_mask, spec
       mvn_swe_makecdf_spec, spec, directory=directory
       dt = systime(/sec) - timer_start
       print,dt/60D,format='("Time to process (min): ",f6.2)'

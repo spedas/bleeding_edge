@@ -122,7 +122,7 @@ pro mvn_pui_tplot,store=store,tplot=tplot,tohban=tohban,savetplot=savetplot,_ext
     tplot,window=20,'mvn_mag_Btot_(nT) Sin(thetaUB) E_Motional_(V/km) Pickup_* Ionization_Frequencies_(s-1)'
     if keyword_set(savetplot) then makepng,datestr+'_pickup_params'
     wi,30 ;tplot sep-related stuff
-    tplot,window=30,'mvn_model_pu*_incident_sep1 mvn_model_puo_sep1_source_MSO_(Rm) mvn_model_puo_sep1_MSO_(km/s) mvn_data_redures_sep1 mvn_model_puo_sep1 mvn_d2m_puo_sep1 mvn_tot_puo_sep1 mvn_model_puo_sep1_Quality_Flag O+_Max_Energy_(keV) mvn_SEPS_svy_ATT mvn_model_pu*_incident_sep2 mvn_model_puo_sep2_source_MSO_(Rm) mvn_model_puo_sep2_MSO_(km/s) mvn_data_redures_sep2 mvn_model_puo_sep2 mvn_d2m_puo_sep2 mvn_model_puo_sep2_Quality_Flag mvn_tot_puo_sep2'
+    tplot,window=30,'mvn_model_pu*_incident_sep1 mvn_model_puo_sep1_source_MSO_(Rm) mvn_model_puo_sep1_velocity_MSO_(km/s) mvn_data_redures_sep1 mvn_model_puo_sep1 mvn_d2m_puo_sep1 mvn_tot_puo_sep1 mvn_model_puo_sep1_Quality_Flag O+_Max_Energy_(keV) mvn_SEPS_svy_ATT mvn_model_pu*_incident_sep2 mvn_model_puo_sep2_source_MSO_(Rm) mvn_model_puo_sep2_velocity_MSO_(km/s) mvn_data_redures_sep2 mvn_model_puo_sep2 mvn_d2m_puo_sep2 mvn_model_puo_sep2_Quality_Flag mvn_tot_puo_sep2'
     if keyword_set(savetplot) then makepng,datestr+'_sep'
     wi,31 ;tplot swia/static related stuff
     tplot,window=31,'mvn_model_pu?_tot mvn_alt_sw_(km) mvn_redures_swia mvn_model_swia_O mvn_d2m_ratio_swia_O mvn_model_swia_H mvn_d2m_ratio_swia_H mvn_redures_HImass_sta_c0 mvn_model_O_sta_c0 mvn_d2m_ratio_stat_O mvn_redures_LOmass_sta_c0 mvn_model_H_sta_c0 mvn_d2m_ratio_stat_H'

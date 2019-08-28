@@ -4,9 +4,9 @@
 ;PURPOSE:
 ; A widget to display, edit and save the file 'spd_gui_error.txt' error
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2015-11-12 12:46:06 -0800 (Thu, 12 Nov 2015) $
-;$LastChangedRevision: 19350 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2019-08-27 12:32:12 -0700 (Tue, 27 Aug 2019) $
+;$LastChangedRevision: 27676 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_gui_error.pro $
 ;
 ;-
@@ -44,12 +44,12 @@ Pro spd_gui_error_event, event
         openw, unit, ofile, /get_lun
         For j = 0, nerr-1 Do printf, unit, error_arr[j]
         free_lun, unit
-        If(obj_valid(!spedas.progobj)) Then Begin
+        If(tag_exist(!spedas, 'progobj') && obj_valid(!spedas.progobj)) Then Begin
           !spedas.progobj -> update, 0.0, $
             text = 'SPEDAS Help Request Saved as File: '+ofile
         Endif 
       Endif Else Begin
-        If(obj_valid(!spedas.progobj)) Then $
+        If(tag_exist(!spedas, 'progobj') && obj_valid(!spedas.progobj)) Then $
           !spedas.progobj -> update, 0.0, text = 'Operation Cancelled'
       Endelse
     End

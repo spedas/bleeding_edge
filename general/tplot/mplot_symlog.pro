@@ -25,9 +25,9 @@
 ;CREATED BY:      Takuya Hara on 2016-09-27.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-03-07 15:00:40 -0800 (Thu, 07 Mar 2019) $
-; $LastChangedRevision: 26774 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2019-08-27 09:56:02 -0700 (Tue, 27 Aug 2019) $
+; $LastChangedRevision: 27665 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/mplot_symlog.pro $
 ;
 ;-
@@ -295,8 +295,10 @@ PRO mplot_symlog, data=data, limits=lim
         ENDELSE 
         
         IF ypos LE yw[1] AND ypos GE yw[0] THEN BEGIN
-           IF pseudo_colors THEN col_n = col[label_index] $ ;jmm, 2019-03-05
-           ELSE col_n = col[n]
+           IF ~undefined(col) THEN BEGIN ; if colors aren't defined, default to black, egrimes, 2019-08-27
+               IF pseudo_colors THEN col_n = col[label_index] $ ;jmm, 2019-03-05
+                 ELSE col_n = col[n]
+           ENDIF ELSE col_n = 0
            XYOUTS, xpos, ypos, '  ' + labels[n], color=col_n, /norm, charsize=lbsize
         ENDIF
      ENDFOR 

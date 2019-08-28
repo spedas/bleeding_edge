@@ -12,8 +12,8 @@
 ;HISTORY:
 ;
 ;;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-01-05 18:06:23 -0800 (Thu, 05 Jan 2017) $
-;$LastChangedRevision: 22517 $
+;$LastChangedDate: 2019-08-27 15:31:14 -0700 (Tue, 27 Aug 2019) $
+;$LastChangedRevision: 27684 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/gui/mms_ui_load_data_import.pro $
 ;
 ;-
@@ -78,6 +78,10 @@ pro mms_ui_load_data_import,$
   endif else if instrument eq 'HPCA' then begin
      mms_load_hpca, probes=probes, level=level, trange=timeRange, data_rate=rate, datatype=datatype, tplotnames=tplotnames, /time_clip, spdf=spdf
      
+     if datatype eq 'ion' then begin
+         mms_hpca_calc_anodes, fov=[0, 360], probe=probes
+         mms_hpca_spin_sum, /avg, probe=probes, names_out=tplotnames
+     endif
      ;filter types with too many dimensions so that the user doesn't have to click
      ;through multiple warnings, there must be a better way...
      if is_string(tplotnames) then begin

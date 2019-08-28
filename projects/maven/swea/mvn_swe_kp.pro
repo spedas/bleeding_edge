@@ -46,8 +46,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-18 11:31:18 -0800 (Sun, 18 Nov 2018) $
-; $LastChangedRevision: 26142 $
+; $LastChangedDate: 2019-08-27 16:58:12 -0700 (Tue, 27 Aug 2019) $
+; $LastChangedRevision: 27686 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_kp.pro $
 ;
 ;-
@@ -296,6 +296,15 @@ pro mvn_swe_kp, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, $
   
   pans = [pans, 'mvn_swe_efpos_5_100', 'mvn_swe_efpos_100_500', 'mvn_swe_efpos_500_1000', $
                 'mvn_swe_efneg_5_100', 'mvn_swe_efneg_100_500', 'mvn_swe_efneg_500_1000'   ]
+
+; Mask data for sporadic low energy suppression
+
+  mpans = 'mvn_swe_' + ['shape_par','spec_dens','spec_temp','efpos_5_100','efneg_5_100']
+  for i=0,4 do begin
+    get_data, mpans[i], data=dat
+    mvn_swe_lowe_mask, dat
+    store_data, mpans[i], data=dat
+  endfor
 
 ; Create TPLOT variables for display only
 

@@ -5,7 +5,7 @@
 ;tplot: for selecting the data from the current tplot window
 
 pro mvn_pui_plot_tsample,all=all,tplot=tplot,avrg=avrg,overplot=overplot,xrange=xr,yrange=yr,zeros=zeros,$
-  sep=sep,swe=swe,traj=traj,eflux=eflux,swia3d=swia3d,stah3d=stah3d,stao3d=stao3d
+  sep=sep,traj=traj,eflux=eflux,swia3d=swia3d,stah3d=stah3d,stao3d=stao3d
 
 @mvn_pui_commonblock.pro ;common mvn_pui_common
 
@@ -22,7 +22,6 @@ if keyword_set(avrg) then np=2 else np=1
 
 if keyword_set(all) then begin
   sep=1
-  swe=1
   traj=1
   eflux=1
 endif
@@ -87,8 +86,15 @@ if keyword_set(sep) then begin ;SEP
   p=plot(/o,sepie,sepi[*,1],'m')
   p=plot(/o,entot,ftot,'g')
 
-  p=mvn_pui_sep_angular_response(cosvsep1,cosvsep2,cosvswiy,/trajplot,tsteps=tsteps)
-  p=text(0,0,tstring)
+  ke=average(pui2[*,tsteps].ke,2,/nan)/1e3 ;pickup O+ energy (keV)
+  p=mvn_pui_sep_angular_response(cosvsep1,cosvsep2,cosvswiy,plot_colors=ke)
+  time=pui[tsteps[0]].centertime
+  range=[-1,2]
+  kescaled=bytscl(alog10(ke),min=range[0],max=range[1])
+  mvn_sep_fov_snap,time=time
+  mvn_sep_fov_plot,pos=transpose([[cosvsep1],[-cosvswiy],[cosvsep2]]),cr=kescaled,overplot=keyword_set(time) ;pos is [x,-y,z] in mvn_sep_fov codes (right handed in sep1 coordinates)
+  p=colorbar(rgb=33,range=range,title='Log10 Pickup O+ Energy (keV)',position=[0.7,.2,.95,.22])
+  p=text(0,0.03,tstring+'pui time')
 
   if keyword_set(avrg) then begin
     p=getwindows('sepqf')
@@ -102,31 +108,39 @@ if keyword_set(sep) then begin ;SEP
   endif
 endif
 
-if keyword_set(swe) then begin ;SWEA/SWIA
+if keyword_set(eflux) then begin ;SWEA/SWIA and pickup ion Efluxes
   xswepot=average(pui[tsteps].data.swe.enpot,2,/nan) ;swea s/c potential corrected energy table (eV)
   yswepot=average(pui[tsteps].data.swe.efpot,2,/nan) ;swea pot eflux
   xswe=pui1.sweet ;swea energy table (eV)
   yswe=average(pui[tsteps].data.swe.eflux,2,/nan) ;swea eflux
   xswi=average(info_str[pui[tsteps].data.swi.swis.info_index].energy_coarse,2,/nan) ;swia energy table (eV)
   yswi=average(pui[tsteps].data.swi.swis.data,2,/nan) ;swia energy flux
+  eftot=average(pui[tsteps].model.fluxes.toteflux,3,/nan) ;total flux /[s cm2 keV]
 
   yswepot[where(yswepot eq 0,/null)]=zeros
   yswe[where(yswe eq 0,/null)]=zeros
   yswi[where(yswi eq 0,/null)]=zeros
+  eftot[where(eftot eq 0.,/null)]=zeros
 
-  xr=[1,30e3]
-  yr=[5e2,5e9]
+  xr=[1,300e3]
+  yr=[1e1,5e9]
   xt='Energy (eV)'
-  yt='Eflux (eV/[cm2 s sr eV])'
-  p=getwindows('sweswiflux')
-  if keyword_set(p) then p.setcurrent else p=window(name='sweswiflux')
+  yt='Eflux (eV/[cm2 s eV])'
+  p=getwindows('swe_swi_pui_eflux')
+  if keyword_set(p) then p.setcurrent else p=window(name='swe_swi_pui_eflux')
   p.erase
-  p=plot(/current,[0],/nodata,/xlog,/ylog,xrange=xr,yrange=yr,title='SWEA/SWIA',xtitle=xt,ytitle=yt,xtickunits='scientific',ytickunits='scientific')
+  p=plot(/current,[0],/nodata,/xlog,/ylog,xrange=xr,yrange=yr,title='SWEA/SWIA (/sr) and PUI',xtitle=xt,ytitle=yt,xtickunits='scientific',ytickunits='scientific')
   p=plot(/o,xswepot,yswepot,/stairs,'m',name='SWEA (potential corrected)')
-  p=plot(/o,xswe,yswe,/stairs,'b',name='SWEA (raw)')
-  p=plot(/o,xswi,yswi,/stairs,'r',name='SWIA')
+  p=plot(/o,xswe,yswe,/stairs,'k',name='SWEA (raw)')
+  p=plot(/o,xswi,yswi,/stairs,'g',name='SWIA')
+
+  p=plot(pui1.totet,eftot[*,0],/o,color='b',name='H+') ;pickup H+
+  p=plot(pui1.totet,eftot[*,1],/o,color='r',name='O+') ;pickup O+
+  if pui0.ns ge 3 then p=plot(pui1.totet,eftot[*,2],/o,color='g',name='(H2)+') ;pickup (H2)+
+
   p=legend()
   p=text(0,0,tstring)
+  
 endif
 
 if keyword_set(traj) then begin ;Trajectories and Ring Distribution
@@ -180,20 +194,6 @@ if keyword_set(traj) then begin ;Trajectories and Ring Distribution
   p=text(0,0,tstring)
 endif
 
-if keyword_set(eflux) then begin ;Efluxes
-  eftot=average(pui[tsteps].model.fluxes.toteflux,3,/nan) ;total flux /[s cm2 keV]
-  eftot[where(eftot eq 0.,/null)]=zeros
-  p=getwindows('puieflux')
-  if keyword_set(p) then p.setcurrent else p=window(name='puieflux')
-  p.erase
-  p=plot(/current,[0],/nodata,/xlog,/ylog,yrange=[1e1,1e7],xtitle=xt,ytitle='Eflux (eV/[cm2 s eV])',title='Pickup Ion Efluxes',xtickunits='scientific',ytickunits='scientific')
-  p=plot(pui1.totet,eftot[*,0],/o,color='b',name='H+') ;pickup H+
-  p=plot(pui1.totet,eftot[*,1],/o,color='r',name='O+') ;pickup O+
-  if pui0.ns ge 3 then p=plot(pui1.totet,eftot[*,2],/o,color='g',name='(H2)+') ;pickup (H2)+
-  p=legend()
-  p=text(0,0,tstring)
-endif
-
 if keyword_set(swia3d) or keyword_set(stah3d) or keyword_set(stao3d) then mvn_pui_tplot_3d,swia3d=swia3d,stah3d=stah3d,stao3d=stao3d,lineplot=tsteps
-;stop
+
 end

@@ -16,8 +16,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-01-16 11:52:29 -0800 (Mon, 16 Jan 2017) $
-; $LastChangedRevision: 22604 $
+; $LastChangedDate: 2019-08-27 14:06:18 -0700 (Tue, 27 Aug 2019) $
+; $LastChangedRevision: 27682 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_padsum.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -56,8 +56,18 @@ function mvn_swe_padsum, pad
   padsum.v_flow[1] = mean(pad.v_flow[1], /nan)
   padsum.v_flow[2] = mean(pad.v_flow[2], /nan)
 
-  padsum.data = total(pad.data/pad.dtc,3)  ; corrected counts
-  padsum.var = total(pad.var/pad.dtc,3)    ; variance of sum
+  nrm = pad.data
+  var = pad.var
+  nrm[*] = 1.
+  bndx = where(~finite(pad.data), count)
+  if (count gt 0L) then begin
+    nrm[bndx] = 0.
+    var[bndx] = !values.f_nan
+  endif
+  nrm = total(nrm,3)/float(npts)
+
+  padsum.data = total(pad.data/pad.dtc,3,/nan)/nrm  ; corrected counts
+  padsum.var = total(var/pad.dtc,3,/nan)/nrm        ; variance of sum
   padsum.dtc = 1.         ; summing corrected counts is not reversible
   padsum.bkg = total(pad.bkg,3)/float(npts)
 

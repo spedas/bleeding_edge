@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug 26 18:16:27 2019.<P>
+<STRONG>Last modified: </STRONG>Tue Aug 27 18:16:35 2019.<P>
  
 <HR>
  
@@ -115,6 +115,8 @@ This page was created by the IDL library routine
 <br>Reads in MAVEN Level 0 telemetry files (PFDPU packets wrapped in
 <LI><A HREF="#MVN_SWE_LOAD_L2">MVN_SWE_LOAD_L2</A>
 <br>Reads in MAVEN Level 2 telemetry files (CDF format).  Data are stored in
+<LI><A HREF="#MVN_SWE_LOWE_MASK">MVN_SWE_LOWE_MASK</A>
+<br>Masks data affected by the sporadic low energy suppression anomaly.  The affected spectra
 <LI><A HREF="#MVN_SWE_LPW_SCPOT">MVN_SWE_LPW_SCPOT</A>
 <LI><A HREF="#MVN_SWE_LPW_SCPOT_RESTORE">MVN_SWE_LPW_SCPOT_RESTORE</A>
 <br>Reads in scpot data precalculated by mvn_swe_lpw_scpot
@@ -903,8 +905,8 @@ INPUTS:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2016-11-03 14:54:06 -0700 (Thu, 03 Nov 2016) $
- $LastChangedRevision: 22287 $
+ $LastChangedDate: 2019-08-27 14:06:18 -0700 (Tue, 27 Aug 2019) $
+ $LastChangedRevision: 27682 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_3dsum.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -2436,8 +2438,8 @@ KEYWORDS:
 OUTPUTS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-11-18 11:31:18 -0800 (Sun, 18 Nov 2018) $
- $LastChangedRevision: 26142 $
+ $LastChangedDate: 2019-08-27 16:58:12 -0700 (Tue, 27 Aug 2019) $
+ $LastChangedRevision: 27686 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_kp.pro $
 
 </PRE><P>
@@ -2622,7 +2624,7 @@ FILE: mvn_swe_load_l0.pro
 <A NAME="MVN_SWE_LOAD_L2">
 <H2>MVN_SWE_LOAD_L2</H2></A>
 <A HREF="#MVN_SWE_LOAD_L0">[Previous Routine]</A>
-<A HREF="#MVN_SWE_LPW_SCPOT">[Next Routine]</A>
+<A HREF="#MVN_SWE_LOWE_MASK">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mvn_swe_load_l2
@@ -2698,9 +2700,54 @@ FILE: mvn_swe_load_l2.pro
 <STRONG>(See <A href="swea/mvn_swe_load_l2.pro">projects/maven/swea/mvn_swe_load_l2.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SWE_LOWE_MASK">
+<H2>MVN_SWE_LOWE_MASK</H2></A>
+<A HREF="#MVN_SWE_LOAD_L2">[Previous Routine]</A>
+<A HREF="#MVN_SWE_LPW_SCPOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_swe_lowe_mask
+PURPOSE:
+  Masks data affected by the sporadic low energy suppression anomaly.  The affected spectra
+  are stored in a database.  This routine checks data times against that database and masks
+  affected spectra with NaN's below 28 eV.  Works for all SWEA data types.  Also works for
+  TPLOT variables of the form:
+
+      {x:[time], y:[time,energy], v:[energy]}
+
+  or
+
+      {x:[time], y:[time]}.
+
+  First anomalous spectrum: 2018-12-08/05:27:44
+  Last anomalous spectrum: 2019-05-01/20:58:58
+  Total number of anomalous spectra: 48042
+
+USAGE:
+  mvn_swe_lowe_mask, data
+
+INPUTS:
+         data:       SWEA data structure (SPEC, PAD, or 3D).
+                     Can also be a TPLOT variable.  In this case, tagname 'v', if present,
+                     is interpreted as energy.
+
+KEYWORDS:
+         BADVAL:     Value to mask anomalous data with.  Default = NaN.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2019-08-27 16:35:34 -0700 (Tue, 27 Aug 2019) $
+ $LastChangedRevision: 27685 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_lowe_mask.pro $
+
+CREATED BY:    David L. Mitchell
+FILE: mvn_swe_lowe_mask.pro
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_swe_lowe_mask.pro">projects/maven/swea/mvn_swe_lowe_mask.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SWE_LPW_SCPOT">
 <H2>MVN_SWE_LPW_SCPOT</H2></A>
-<A HREF="#MVN_SWE_LOAD_L2">[Previous Routine]</A>
+<A HREF="#MVN_SWE_LOWE_MASK">[Previous Routine]</A>
 <A HREF="#MVN_SWE_LPW_SCPOT_RESTORE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -3397,8 +3444,8 @@ INPUTS:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-01-16 11:52:29 -0800 (Mon, 16 Jan 2017) $
- $LastChangedRevision: 22604 $
+ $LastChangedDate: 2019-08-27 14:06:18 -0700 (Tue, 27 Aug 2019) $
+ $LastChangedRevision: 27682 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_padsum.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -4776,8 +4823,8 @@ INPUTS:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2016-11-03 14:54:06 -0700 (Thu, 03 Nov 2016) $
- $LastChangedRevision: 22287 $
+ $LastChangedDate: 2019-08-27 14:06:18 -0700 (Tue, 27 Aug 2019) $
+ $LastChangedRevision: 27682 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_specsum.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14

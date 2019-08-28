@@ -16,8 +16,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2016-11-03 14:54:06 -0700 (Thu, 03 Nov 2016) $
-; $LastChangedRevision: 22287 $
+; $LastChangedDate: 2019-08-27 14:06:18 -0700 (Tue, 27 Aug 2019) $
+; $LastChangedRevision: 27682 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_3dsum.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -50,8 +50,18 @@ function mvn_swe_3dsum, ddd
   dddsum.v_flow[1] = mean(ddd.v_flow[1], /nan)
   dddsum.v_flow[2] = mean(ddd.v_flow[2], /nan)
 
-  dddsum.data = total(ddd.data/ddd.dtc,3)  ; corrected counts
-  dddsum.var = total(ddd.var/ddd.dtc,3)    ; variance of sum
+  nrm = ddd.data
+  var = ddd.var
+  nrm[*] = 1.
+  bndx = where(~finite(ddd.data), count)
+  if (count gt 0L) then begin
+    nrm[bndx] = 0.
+    var[bndx] = !values.f_nan
+  endif
+  nrm = total(nrm,3)/float(npts)
+
+  dddsum.data = total(ddd.data/ddd.dtc,3,/nan)/nrm  ; corrected counts
+  dddsum.var = total(var/ddd.dtc,3,/nan)/nrm        ; variance of sum
   dddsum.dtc = 1.         ; summing corrected counts is not reversible
 
   mvn_swe_convert_units, ddd, old_units

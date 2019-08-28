@@ -6,10 +6,15 @@
 ;     IDL> mgunit, 'mms_load_hpca_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-04-15 08:27:56 -0700 (Mon, 15 Apr 2019) $
-; $LastChangedRevision: 27015 $
+; $LastChangedDate: 2019-08-27 10:28:14 -0700 (Tue, 27 Aug 2019) $
+; $LastChangedRevision: 27667 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_hpca_ut__define.pro $
 ;-
+
+function mms_load_hpca_ut::test_hpca_angle_angle_hplus
+  mms_hpca_ang_ang, '2015-10-16/13:06:43', species='hplus', data_rate='brst'
+  return, 1
+end
 
 function mms_load_hpca_ut::test_sitl_combined
   mms_load_hpca, level='sitl', datatype='combined', trange=['2019-02-01', '2019-02-02']
