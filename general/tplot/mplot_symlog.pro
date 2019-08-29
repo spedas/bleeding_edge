@@ -26,8 +26,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-08-27 09:56:02 -0700 (Tue, 27 Aug 2019) $
-; $LastChangedRevision: 27665 $
+; $LastChangedDate: 2019-08-28 07:04:43 -0700 (Wed, 28 Aug 2019) $
+; $LastChangedRevision: 27688 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/mplot_symlog.pro $
 ;
 ;-
@@ -286,6 +286,8 @@ PRO mplot_symlog, data=data, limits=lim
         IF KEYWORD_SET(nlabpos) THEN BEGIN ; evenly spaced labels
            ypos = nlabpos[n]
         ENDIF ELSE BEGIN        ;labels at end of trace
+           ; fixes crash when the variable contains too many labels
+           IF n GE N_ELEMENTS(ylast) THEN CONTINUE
            ypos = ylast[n]
            ;IF WHERE(FINITE(pmax[n])) THEN ylast = pmax[n] ELSE ylast = nmax[n]
            ;ypos = (CONVERT_COORD(trange[1], ylast, /data, /to_norm))[1]
