@@ -189,8 +189,8 @@ end
 ;                      Maxwell-Boltzmann fit. (Nominally, E_peak = 2*T)
 ;
 ; $LastChangedBy: xussui $
-; $LastChangedDate: 2019-08-15 14:37:31 -0700 (Thu, 15 Aug 2019) $
-; $LastChangedRevision: 27606 $
+; $LastChangedDate: 2019-08-29 16:04:00 -0700 (Thu, 29 Aug 2019) $
+; $LastChangedRevision: 27699 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -514,7 +514,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
        par.c0 = double(c0)
        if cte gt 0 then $
        fit,V,datf,chi2=ierr,fit=yfit,func='fm_spec_generalized',$
-           names='V0 p C0 r',/logfit, par=par,/silent,/noprint
+           names='V0 p C0 r',/logfit, par=par,/silent
        if n_elements(yfit) gt 1 then oplot,x[ine],yfit,psym=psym,color=6
     endif
 

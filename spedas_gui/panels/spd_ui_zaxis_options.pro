@@ -1,6 +1,6 @@
 ;NAME:
 ; spd_ui_zaxis_options
-; stop
+;
 ;PURPOSE:
 ; A widget interface for modifying line, zaxis and highlight attributes
 ;
@@ -14,9 +14,9 @@
 ;
 ;
 ;HISTORY:
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-10-03 14:12:59 -0700 (Tue, 03 Oct 2017) $
-;$LastChangedRevision: 24103 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2019-08-29 10:57:18 -0700 (Thu, 29 Aug 2019) $
+;$LastChangedRevision: 27698 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_zaxis_options.pro $
 ;
 ;---------------------------------------------------------------------------------

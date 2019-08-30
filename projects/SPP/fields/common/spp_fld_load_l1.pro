@@ -35,6 +35,7 @@ pro spp_fld_load_l1, filename, $
 
   endelse
 
+
   if not keyword_set(load_procedure) then $
     load_procedure = strlowcase(load_routine_prefix) + '_load_l1'
 

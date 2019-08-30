@@ -6,9 +6,9 @@
 ;Rewritten pcruce@igpp.ucla.edu 9/10/2009
 ;-
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-10-03 14:12:59 -0700 (Tue, 03 Oct 2017) $
-;$LastChangedRevision: 24103 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2019-08-29 10:55:26 -0700 (Thu, 29 Aug 2019) $
+;$LastChangedRevision: 27697 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_variable_options.pro $
 ;-
 
@@ -205,9 +205,9 @@ end
 ;
 ;HISTORY:
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-10-03 14:12:59 -0700 (Tue, 03 Oct 2017) $
-;$LastChangedRevision: 24103 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2019-08-29 10:55:26 -0700 (Thu, 29 Aug 2019) $
+;$LastChangedRevision: 27697 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_variable_options.pro $
 ;---------------------------------------------------------------------------------
 
@@ -219,6 +219,7 @@ PRO spd_ui_variable_options_event, event
     Widget_Control, event.TOP, Get_UValue=state
   endif else begin
     dprint,'IDL error detected, halting execution to prevent unescapable loop'
+    if !version.release ge '8.3' then !debug_process_events = 0 ; required to stop events with the following stop
     stop
   endelse
   

@@ -49,6 +49,24 @@ cosvsep1=-total(vxyz*(replicate(1.,pui0.np)#sep1fov),2)/vtot
 cosvsep2=-total(vxyz*(replicate(1.,pui0.np)#sep2fov),2)/vtot
 cosvswiy=-total(vxyz*(replicate(1.,pui0.np)#swiyfov),2)/vtot
 
+orbit=1e-3*transpose(pui.data.scp) ;spacecraft position: orbit (km)
+stxfov=average(pui[tsteps].data.sta.fov.x,2,/nan) ;static x-fov
+stzfov=average(pui[tsteps].data.sta.fov.z,2,/nan) ;static z-fov
+scp=1e-3*average(pui[tsteps].data.scp,2,/nan) ;spacecraft position (km)
+mag=average(pui[tsteps].data.mag.mso,2,/nan) ;mag field (T)
+magdir=mag/sqrt(total(mag^2)) ;mag direction
+usw=average(pui[tsteps].data.swi.swim.velocity_mso,2,/nan) ;solar wind velocity (km/s)
+uswtot=sqrt(total(usw^2)) ;solar wind speed (km/s)
+esw=crossp(-usw,magdir) ;motional electric field direction (km/s)
+drf=crossp(esw,magdir) ;drift velocity (km/s)
+alfrm=[0.,10.*3400.] ;fov arrow length factor in R_M (km)
+vmax=[0.,-max(sqrt(total(rv[*,1,3:5]^2,3)))] ;max pickup speed (km/s)
+
+uswsep=[total(usw*sep1fov),-total(usw*swiyfov),total(usw*sep2fov)]/uswtot
+magsep=[total(mag*sep1fov),-total(mag*swiyfov),total(mag*sep2fov)]/sqrt(total(mag^2))
+eswsep=[total(esw*sep1fov),-total(esw*swiyfov),total(esw*sep2fov)]/sqrt(total(esw^2))
+drfsep=[total(drf*sep1fov),-total(drf*swiyfov),total(drf*sep2fov)]/sqrt(total(drf^2))
+
 if keyword_set(sep) then begin ;SEP
   sepet=pui1.sepet.sepbo ;sep energy table (keV)
   sepie=.5+findgen(500) ;sep incident energy table (keV)
@@ -89,12 +107,18 @@ if keyword_set(sep) then begin ;SEP
   ke=average(pui2[*,tsteps].ke,2,/nan)/1e3 ;pickup O+ energy (keV)
   p=mvn_pui_sep_angular_response(cosvsep1,cosvsep2,cosvswiy,plot_colors=ke)
   time=pui[tsteps[0]].centertime
-  range=[-1,2]
+  range=[-2,2] ;10 eV to 100 keV
   kescaled=bytscl(alog10(ke),min=range[0],max=range[1])
   mvn_sep_fov_snap,time=time
   mvn_sep_fov_plot,pos=transpose([[cosvsep1],[-cosvswiy],[cosvsep2]]),cr=kescaled,overplot=keyword_set(time) ;pos is [x,-y,z] in mvn_sep_fov codes (right handed in sep1 coordinates)
+  mvn_sep_fov_plot,pos=-magsep,sym={symbol:'D',name:'B in',color:'b'},/overplot
+  mvn_sep_fov_plot,pos=+magsep,sym={symbol:'o',name:'Bout',color:'r'},/overplot
+  mvn_sep_fov_plot,pos=-uswsep,sym={symbol:'S',name:'V sw',color:'r'},/overplot
+  mvn_sep_fov_plot,pos=-eswsep,sym={symbol:'s',name:'E sw',color:'r'},/overplot
+  mvn_sep_fov_plot,pos=-drfsep,sym={symbol:'d',name:'Vdrf',color:'b'},/overplot
   p=colorbar(rgb=33,range=range,title='Log10 Pickup O+ Energy (keV)',position=[0.7,.2,.95,.22])
   p=text(0,0.03,tstring+'pui time')
+  p=legend(sample_width=0,position=[1.09,1.72])
 
   if keyword_set(avrg) then begin
     p=getwindows('sepqf')
@@ -144,19 +168,6 @@ if keyword_set(eflux) then begin ;SWEA/SWIA and pickup ion Efluxes
 endif
 
 if keyword_set(traj) then begin ;Trajectories and Ring Distribution
-  orbit=1e-3*transpose(pui.data.scp) ;spacecraft position: orbit (km)
-  stxfov=average(pui[tsteps].data.sta.fov.x,2,/nan) ;static x-fov
-  stzfov=average(pui[tsteps].data.sta.fov.z,2,/nan) ;static z-fov
-  scp=1e-3*average(pui[tsteps].data.scp,2,/nan) ;spacecraft position (km)
-  mag=average(pui[tsteps].data.mag.mso,2,/nan) ;mag field (T)
-  magdir=mag/sqrt(total(mag^2)) ;mag direction
-  usw=average(pui[tsteps].data.swi.swim.velocity_mso,2,/nan) ;solar wind velocity (km/s)
-  uswtot=sqrt(total(usw^2)) ;solar wind speed (km/s)
-  esw=crossp(-usw,magdir) ;motional electric field direction (km/s)
-  drf=crossp(esw,magdir) ;drift velocity (km/s)
-  alfrm=[0.,10.*3400.] ;fov arrow length factor in R_M (km)
-  vmax=[0.,-max(sqrt(total(rv[*,1,3:5]^2,3)))] ;max pickup speed (km/s)
-
   npf=floor(pui0.np/1.1) ;fraction of number of simulated particles
   p=getwindows('trajxyz')
   if keyword_set(p) then p.setcurrent else p=window(name='trajxyz')
