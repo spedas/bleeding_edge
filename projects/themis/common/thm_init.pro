@@ -57,10 +57,11 @@
 ; 2007-07-02, jmm, Adds trailing slash to local and remote data dirs,
 ;                  if not there
 ; 2013-02-27, jmm, Added comment to test SVN commit
+; 2019-08-30, egrimes, moved !debug_process_events=0 to spedas_init
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2016-10-06 16:54:56 -0700 (Thu, 06 Oct 2016) $
-;$LastChangedRevision: 22062 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2019-08-30 10:49:38 -0700 (Fri, 30 Aug 2019) $
+;$LastChangedRevision: 27704 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_init.pro $
 ;-
 pro thm_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote_data_dir, $
@@ -155,10 +156,6 @@ secs = floor(dt)
 print,ptrace()
 print,days,hours,mins,secs,format= '("THEMIS countdown:",i4," Days, ",i02," Hours, ",i02," Minutes, ",i02," Seconds since launch")'
 
-;debugging fix?
-if !version.release ge '8.3' then begin
-  !debug_process_events = 0
-endif
 
 end
 

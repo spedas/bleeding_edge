@@ -4,9 +4,9 @@
 ;PURPOSE:    Initializes system variables for spedas data.
 ;            Can be called from idl_startup to set custom locations.
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-06-01 11:07:18 -0700 (Fri, 01 Jun 2018) $
-;$LastChangedRevision: 25311 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2019-08-30 10:22:52 -0700 (Fri, 30 Aug 2019) $
+;$LastChangedRevision: 27701 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/misc/spedas_init.pro $
 ;-
 
@@ -112,5 +112,8 @@ pro spedas_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=rem
 
   dprint, setverbose=!spedas.verbose
   printdat,/values,!spedas,varname='!spedas'
+  
+  ; the following is required for developers to use 'stop's in SPEDAS GUI event code
+  if !version.release ge '8.3' then !debug_process_events = 0
   
 end

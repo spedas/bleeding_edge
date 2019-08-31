@@ -42,21 +42,26 @@
 ;                    only checked if the files do not currently exist in the LOCAL_DATA_DIR. Only works on inital
 ;                    call or reset.
 ;   NO_COLOR_SETUP   do not set colors if already taken care of
+;   DEBUGGING_GUI:   set this keyword if you intend to put 'stop's in any GUI widget code, i.e., if you're debugging
+;                    any code that involves widget events (EVA or the SPEDAS GUI)
+;   
 ;
 ;
 ;HISTORY:
 ; 2015-04-10, moka, Created based on 'thm_init'
 ; 2015-02-15, egrimes, commented out dialog_message in CDF version error due to a bug on MacOS X 10.11.6/IDL 8.5
 ; 2018-04-05, egrimes, added MIRROR_DATA_DIR functionality
+; 2019-08-28, egrimes, made debugging fix (!debug_process_events=0) dependent on a keyword (DEBUGGING_GUI)
+;                      this debugging fix is known to cause problems with widgets on some machines
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-04-05 14:39:31 -0700 (Thu, 05 Apr 2018) $
-; $LastChangedRevision: 25006 $
+; $LastChangedDate: 2019-08-30 10:24:21 -0700 (Fri, 30 Aug 2019) $
+; $LastChangedRevision: 27702 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_init.pro $
 ;-
 
 pro mms_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote_data_dir,$
-  no_color_setup=no_color_setup, mirror_data_dir=mirror_data_dir
+  no_color_setup=no_color_setup, mirror_data_dir=mirror_data_dir, debugging_gui=debugging_gui
   
   def_struct = file_retrieve(/structure_format)
   str_element, def_struct, 'mirror_data_dir', '', /add
@@ -159,7 +164,7 @@ pro mms_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
   print,days,hours,mins,secs,format= '("MMS countdown:",i4," Days, ",i02," Hours, ",i02," Minutes, ",i02," Seconds since launch")'
 
   ;debugging fix?
-  if !version.release ge '8.3' then begin
+  if keyword_set(debugging_gui) && !version.release ge '8.3' then begin
     !debug_process_events = 0
   endif
   return
