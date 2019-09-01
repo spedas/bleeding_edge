@@ -26,8 +26,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-08-28 07:04:43 -0700 (Wed, 28 Aug 2019) $
-; $LastChangedRevision: 27688 $
+; $LastChangedDate: 2019-08-31 07:30:30 -0700 (Sat, 31 Aug 2019) $
+; $LastChangedRevision: 27710 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/mplot_symlog.pro $
 ;
 ;-
@@ -187,7 +187,7 @@ PRO mplot_symlog, data=data, limits=lim
   str_element, nlim, 'ystyle', 1, /add_replace
   str_element, nlim, 'ytickformat', 'mplot_symlog_ytick_n', /add_replace
 
-  IF KEYWORD_SET(labels) THEN nlab = N_ELEMENTS(labels) ;# of labels for variable
+  IF KEYWORD_SET(labels) THEN nlab = N_ELEMENTS(labels) ELSE nlab = 1 ;# of labels for variable
   xlast = REPLICATE(tmax, nlab)
 
   IF (overplot) THEN BEGIN
