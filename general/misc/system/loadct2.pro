@@ -30,12 +30,16 @@
 ;Last Modification: loadct2.pro
 ;-
 
-
 pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,graybkg=graybkg, line_clrs=line_clrs
   COMMON colors, r_orig, g_orig, b_orig, r_curr, g_curr, b_curr
   @colors_com
 
   deffile = getenv('IDL_CT_FILE')
+  
+  ; flag specifying that the CT environment variable was set, or color table supplied via file keyword
+  ; this is a kludge to support color table #s above 43 with user-supplied color table files - egrimes, 3Sep2019
+  if keyword_set(deffile) or keyword_set(file) then env_ct_set = 1b else env_ct_set = 0b 
+  
   dir = ''
   if not keyword_set(deffile) then begin  ; looks for color table file in same directory
     stack = scope_traceback(/structure)
@@ -64,7 +68,8 @@ pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,gr
     dprint,'Device ',!d.name,' does not support color tables. Command Ignored'
     return
   endif
-  if ct le 43 then loadct,ct,bottom=bottom_c,file=file $
+  
+  if (ct le 43 or env_ct_set) then loadct,ct,bottom=bottom_c,file=file $
   else loadct,ct,bottom=bottom_c ; this line is changed to be able to load color tables > 43
   color_table = ct
 

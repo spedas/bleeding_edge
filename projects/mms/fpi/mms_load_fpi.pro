@@ -74,8 +74,8 @@
 ;          https://groups.google.com/forum/#!forum/spedas
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
-;$LastChangedRevision: 27435 $
+;$LastChangedDate: 2019-09-03 12:34:11 -0700 (Tue, 03 Sep 2019) $
+;$LastChangedRevision: 27716 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_load_fpi.pro $
 ;-
 
@@ -232,24 +232,7 @@ pro mms_load_fpi, trange = trange_in, probes = probes, datatype = datatype, $
     if ~undefined(tplotnames) && n_elements(tplotnames) ne 0 then begin
         for probe_idx = 0, n_elements(probes)-1 do begin
             this_probe = strcompress(string(probes[probe_idx]), /rem)
-            if ~undefined(versions) && float(strcompress(string(versions[0,0])+'.'+string(versions[0,1]), /rem)) le 2.101 then begin
-                ; fix the energy table for spectra in v2.1 and below moments CDFs
-                mms_load_fpi_fix_spectra, tplotnames, probe = this_probe, $
-                    level = level, data_rate = data_rate, datatype = datatype, suffix = suffix
-                
-                ; fix the energy table for distributions in v2.1 and below dist CDFs
-                mms_load_fpi_fix_dist, tplotnames, probe = this_probe, $
-                    level = level, data_rate = data_rate, datatype = datatype, suffix = suffix
-                    
-                ; fix the angles in the PADs in v2.1 and below moments CDFs
-                mms_load_fpi_fix_angles, tplotnames, probe = this_probe, $ 
-                    level = level, data_rate = data_rate, datatype = datatype, suffix = suffix
-                    
-                ; calculate the omni-directional energy spectra (summed and averaged) for
-                ; v2.1 and below moments CDFs (omni-directional provided in v3.0+)
-                mms_load_fpi_calc_omni, probes[probe_idx], autoscale = autoscale, level = level, $
-                    datatype = datatype, data_rate = data_rate, suffix = suffix
-            endif
+
             ; calculate the averaged PAD from the low, mid, high-energy PAD variables
             mms_load_fpi_calc_pad, probes[probe_idx], level = level, datatype = datatype, $
                 suffix = suffix, data_rate = data_rate

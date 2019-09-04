@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Aug 31 18:16:42 2019.<P>
+<STRONG>Last modified: </STRONG>Tue Sep  3 18:16:32 2019.<P>
  
 <HR>
  
@@ -28,8 +28,6 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_FPI_CORRECT_PHOTOELECTRONS">MMS_FPI_CORRECT_PHOTOELECTRONS</A>
 <LI><A HREF="#MMS_FPI_DIST_ANGLES">MMS_FPI_DIST_ANGLES</A>
 <br>Returns the azimuth/colatitude for FPI sky maps.
-<LI><A HREF="#MMS_FPI_ENERGIES">MMS_FPI_ENERGIES</A>
-<br>Returns the hard coded energies for the FS FPI spectra
 <LI><A HREF="#MMS_FPI_FIX_METADATA">MMS_FPI_FIX_METADATA</A>
 <br>Helper routine for setting FPI metadata. Original metadata from L2 QL plots script
 <LI><A HREF="#MMS_FPI_MAKE_COMPRESSIONLOSSBARS">MMS_FPI_MAKE_COMPRESSIONLOSSBARS
@@ -44,16 +42,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_GET_FPI_INFO">MMS_GET_FPI_INFO</A>
 <LI><A HREF="#MMS_LOAD_FPI">MMS_LOAD_FPI</A>
 <br>Load data from the Fast Plasma Investigation (FPI) onboard MMS
-<LI><A HREF="#MMS_LOAD_FPI_CALC_OMNI">MMS_LOAD_FPI_CALC_OMNI</A>
-<br>Calculates the omni-directional energy spectra (summed and averaged)
 <LI><A HREF="#MMS_LOAD_FPI_CALC_PAD">MMS_LOAD_FPI_CALC_PAD</A>
 <br>Calculates the omni-directional pitch angle distribution (summed and averaged)
-<LI><A HREF="#MMS_LOAD_FPI_FIX_ANGLES">MMS_LOAD_FPI_FIX_ANGLES</A>
-<br>Helper routine for setting the hard coded angles in the FPI load routine
-<LI><A HREF="#MMS_LOAD_FPI_FIX_DIST">MMS_LOAD_FPI_FIX_DIST</A>
-<br>Replace supplementary fields in 3D distribution variables with actual
-<LI><A HREF="#MMS_LOAD_FPI_FIX_SPECTRA">MMS_LOAD_FPI_FIX_SPECTRA</A>
-<br>Helper routine for setting the hard coded energies in the FPI load routine
 <br>
 </UL><P>
 <HR>
@@ -205,7 +195,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_FPI_DIST_ANGLES">
 <H2>MMS_FPI_DIST_ANGLES</H2></A>
 <A HREF="#MMS_FPI_CORRECT_PHOTOELECTRONS">[Previous Routine]</A>
-<A HREF="#MMS_FPI_ENERGIES">[Next Routine]</A>
+<A HREF="#MMS_FPI_FIX_METADATA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -227,34 +217,9 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="fpi/mms_fpi_dist_angles.pro">projects/mms/fpi/mms_fpi_dist_angles.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="MMS_FPI_ENERGIES">
-<H2>MMS_FPI_ENERGIES</H2></A>
-<A HREF="#MMS_FPI_DIST_ANGLES">[Previous Routine]</A>
-<A HREF="#MMS_FPI_FIX_METADATA">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- PROCEDURE:
-         mms_fpi_energies
-
- PURPOSE:
-         Returns the hard coded energies for the FS FPI spectra
-
- NOTE:
-         Expect this routine to be made obsolete after adding the energies to the CDF
-
-
-
-$LastChangedBy: egrimes $
-$LastChangedDate: 2016-02-24 14:52:46 -0800 (Wed, 24 Feb 2016) $
-$LastChangedRevision: 20165 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_fpi_energies.pro $
-</PRE><P>
-<STRONG>(See <A href="fpi/mms_fpi_energies.pro">projects/mms/fpi/mms_fpi_energies.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="MMS_FPI_FIX_METADATA">
 <H2>MMS_FPI_FIX_METADATA</H2></A>
-<A HREF="#MMS_FPI_ENERGIES">[Previous Routine]</A>
+<A HREF="#MMS_FPI_DIST_ANGLES">[Previous Routine]</A>
 <A HREF="#MMS_FPI_MAKE_COMPRESSIONLOSSBARS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -533,7 +498,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_LOAD_FPI">
 <H2>MMS_LOAD_FPI</H2></A>
 <A HREF="#MMS_GET_FPI_INFO">[Previous Routine]</A>
-<A HREF="#MMS_LOAD_FPI_CALC_OMNI">[Next Routine]</A>
+<A HREF="#MMS_LOAD_FPI_CALC_PAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -611,41 +576,16 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
           https://groups.google.com/forum/#!forum/spedas
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
-$LastChangedRevision: 27435 $
+$LastChangedDate: 2019-09-03 12:34:11 -0700 (Tue, 03 Sep 2019) $
+$LastChangedRevision: 27716 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_load_fpi.pro $
 </PRE><P>
 <STRONG>(See <A href="fpi/mms_load_fpi.pro">projects/mms/fpi/mms_load_fpi.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="MMS_LOAD_FPI_CALC_OMNI">
-<H2>MMS_LOAD_FPI_CALC_OMNI</H2></A>
-<A HREF="#MMS_LOAD_FPI">[Previous Routine]</A>
-<A HREF="#MMS_LOAD_FPI_CALC_PAD">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- PROCEDURE:
-         mms_load_fpi_calc_omni
-
- PURPOSE:
-         Calculates the omni-directional energy spectra (summed and averaged) 
-         from the individual tplot variables
-
-
-
-
-$LastChangedBy: egrimes $
-$LastChangedDate: 2016-03-16 09:33:25 -0700 (Wed, 16 Mar 2016) $
-$LastChangedRevision: 20473 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_load_fpi_calc_omni.pro $
-</PRE><P>
-<STRONG>(See <A href="fpi/mms_load_fpi_calc_omni.pro">projects/mms/fpi/mms_load_fpi_calc_omni.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="MMS_LOAD_FPI_CALC_PAD">
 <H2>MMS_LOAD_FPI_CALC_PAD</H2></A>
-<A HREF="#MMS_LOAD_FPI_CALC_OMNI">[Previous Routine]</A>
-<A HREF="#MMS_LOAD_FPI_FIX_ANGLES">[Next Routine]</A>
+<A HREF="#MMS_LOAD_FPI">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -664,80 +604,5 @@ $LastChangedRevision: 21736 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_load_fpi_calc_pad.pro $
 </PRE><P>
 <STRONG>(See <A href="fpi/mms_load_fpi_calc_pad.pro">projects/mms/fpi/mms_load_fpi_calc_pad.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_LOAD_FPI_FIX_ANGLES">
-<H2>MMS_LOAD_FPI_FIX_ANGLES</H2></A>
-<A HREF="#MMS_LOAD_FPI_CALC_PAD">[Previous Routine]</A>
-<A HREF="#MMS_LOAD_FPI_FIX_DIST">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- PROCEDURE:
-         mms_load_fpi_fix_angles
-
- PURPOSE:
-         Helper routine for setting the hard coded angles in the FPI load routine
-
- NOTE:
-         Expect this routine to be made obsolete after adding the angles to the CDF
-
-
-
-$LastChangedBy: egrimes $
-$LastChangedDate: 2016-02-24 14:52:46 -0800 (Wed, 24 Feb 2016) $
-$LastChangedRevision: 20165 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_load_fpi_fix_angles.pro $
-</PRE><P>
-<STRONG>(See <A href="fpi/mms_load_fpi_fix_angles.pro">projects/mms/fpi/mms_load_fpi_fix_angles.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_LOAD_FPI_FIX_DIST">
-<H2>MMS_LOAD_FPI_FIX_DIST</H2></A>
-<A HREF="#MMS_LOAD_FPI_FIX_ANGLES">[Previous Routine]</A>
-<A HREF="#MMS_LOAD_FPI_FIX_SPECTRA">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- PROCEDURE:
-         mms_load_fpi_fix_dist
-
- PURPOSE:
-         Replace supplementary fields in 3D distribution variables with actual
-         values from supplementary tplot variables (E,phi,theta).
-
- NOTE:
-         Expect this routine to be made obsolete after the CDFs are updated
-
-
-
-$LastChangedBy: egrimes $
-$LastChangedDate: 2016-08-26 11:45:19 -0700 (Fri, 26 Aug 2016) $
-$LastChangedRevision: 21737 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_load_fpi_fix_dist.pro $
-</PRE><P>
-<STRONG>(See <A href="fpi/mms_load_fpi_fix_dist.pro">projects/mms/fpi/mms_load_fpi_fix_dist.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_LOAD_FPI_FIX_SPECTRA">
-<H2>MMS_LOAD_FPI_FIX_SPECTRA</H2></A>
-<A HREF="#MMS_LOAD_FPI_FIX_DIST">[Previous Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- PROCEDURE:
-         mms_load_fpi_fix_spectra
-
- PURPOSE:
-         Helper routine for setting the hard coded energies in the FPI load routine
-
- NOTE:
-         Expect this routine to be made obsolete after adding the energies to the CDF
-
-
-
-$LastChangedBy: egrimes $
-$LastChangedDate: 2016-03-16 09:33:25 -0700 (Wed, 16 Mar 2016) $
-$LastChangedRevision: 20473 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_load_fpi_fix_spectra.pro $
-</PRE><P>
-<STRONG>(See <A href="fpi/mms_load_fpi_fix_spectra.pro">projects/mms/fpi/mms_load_fpi_fix_spectra.pro</A>)</STRONG><P>
 <HR>
  
