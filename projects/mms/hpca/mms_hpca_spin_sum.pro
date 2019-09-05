@@ -21,15 +21,15 @@
 ;         the new variables have the suffix "_spin" appended to their names
 ;
 ; NOTES:
-;         Must have HPCA data loaded and summed/averaged over the FoV (or anodes); e.g., 
+;         Must have HPCA data loaded and summed/averaged over the FoV (or anodes); i.e., 
 ;         you must have already called mms_load_hpca and mms_hpca_calc_anodes prior to 
 ;         calling this routine. 
 ;     
 ;     
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-08-27 15:30:15 -0700 (Tue, 27 Aug 2019) $
-;$LastChangedRevision: 27683 $
+;$LastChangedDate: 2019-09-04 15:04:01 -0700 (Wed, 04 Sep 2019) $
+;$LastChangedRevision: 27722 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_hpca_spin_sum.pro $
 ;-
 
