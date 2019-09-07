@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Sep  5 18:16:34 2019.<P>
+<STRONG>Last modified: </STRONG>Fri Sep  6 18:16:39 2019.<P>
  
 <HR>
  
@@ -19,7 +19,9 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/maven/sep</H1>
-<LI><A HREF="#GET_QUATERNION">GET_QUATERNION</A>
+<LI><A HREF="#GET_QUATERNION[1]">GET_QUATERNION[1]</A>
+<br>performs cross product on arrays
+<LI><A HREF="#GET_QUATERNION[2]">GET_QUATERNION[2]</A>
 <LI><A HREF="#MVN_SEP_ANC_MAKE_CDF">MVN_SEP_ANC_MAKE_CDF</A>
 <br>Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 <LI><A HREF="#MVN_SEP_INST_RESPONSE">MVN_SEP_INST_RESPONSE</A>
@@ -34,8 +36,25 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
-<A NAME="GET_QUATERNION">
-<H2>GET_QUATERNION</H2></A>
+<A NAME="GET_QUATERNION[1]">
+<H2>GET_QUATERNION[1]</H2></A>
+<A HREF="#GET_QUATERNION[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION:  crossp_trans(a,b)
+INPUT:
+ a,b:  real(3,n) vector arrays dimension (3,n) or (3)
+PURPOSE:
+ performs cross product on arrays
+CREATED BY:
+ Davin Larson
+</PRE><P>
+<STRONG>(See <A href="sep/get_quaternion.pro">projects/maven/sep/get_quaternion.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="GET_QUATERNION[2]">
+<H2>GET_QUATERNION[2]</H2></A>
+<A HREF="#GET_QUATERNION[1]">[Previous Routine]</A>
 <A HREF="#MVN_SEP_ANC_MAKE_CDF">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -49,7 +68,7 @@ This page was created by the IDL library routine
  
 <A NAME="MVN_SEP_ANC_MAKE_CDF">
 <H2>MVN_SEP_ANC_MAKE_CDF</H2></A>
-<A HREF="#GET_QUATERNION">[Previous Routine]</A>
+<A HREF="#GET_QUATERNION[2]">[Previous Routine]</A>
 <A HREF="#MVN_SEP_INST_RESPONSE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

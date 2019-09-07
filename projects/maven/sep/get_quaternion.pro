@@ -1,4 +1,33 @@
 
+function reform2,vec
+  if n_elements(vec) eq 1 then return, vec[0]
+  return, reform(vec)
+end
+
+
+
+;+
+;FUNCTION:  crossp_trans(a,b)
+;INPUT:
+; a,b:  real(3,n) vector arrays dimension (3,n) or (3)
+;PURPOSE:
+; performs cross product on arrays
+;CREATED BY:
+; Davin Larson
+;-
+function crossp_trans,a,b
+  if n_params() ne 2 then message, ' Wrong format, Use: crossp2(a,b)'
+  dim_a = size(/dimen,a)
+  dim_b = size(/dimen,b)
+  dim = n_elements(dim_a) eq 2 ? dim_a : dim_b   ; crude but works
+  c=replicate(a[0]*b[0] , dim)
+  ;   printdat,dim_a,dim_b,c
+  c[0,*]= reform2(a[1,*]) * reform2(b[2,*]) - reform2(a[2,*]) * reform2(b[1,*])
+  c[1,*]= reform2(a[2,*]) * reform2(b[0,*]) - reform2(a[0,*]) * reform2(b[2,*])
+  c[2,*]= reform2(a[0,*]) * reform2(b[1,*]) - reform2(a[1,*]) * reform2(b[0,*])
+  return,c
+end
+
 
 ;+
 ; function get_quaternion(v1,new_v1)
