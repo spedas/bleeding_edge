@@ -31,8 +31,8 @@
 ;HISTORY:
 ; Hacked from thm_over_shell, 2013-05-12, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2016-04-19 13:17:12 -0700 (Tue, 19 Apr 2016) $
-; $LastChangedRevision: 20859 $
+; $LastChangedDate: 2019-09-09 13:54:30 -0700 (Mon, 09 Sep 2019) $
+; $LastChangedRevision: 27737 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_lpw_overplot.pro $
 Pro mvn_lpw_overplot, date = date, time_range = time_range, $
                       makepng=makepng, device = device, directory = directory, $
@@ -118,8 +118,12 @@ If(is_struct(d)) Then Begin
 ;This needs hard-coding, because the L0 script uses a different
 ;directory keyword...
    pdir1 = '/disks/data/maven/data/sci/lpw/tplot/'+yyyy+'/'
-   If(~is_string(file_search(pdir1))) Then file_mkdir, pdir1
+   If(~is_string(file_search(pdir1))) Then Begin
+      file_mkdir, pdir1
+      file_chmod, pdir1, '775'o
+   Endif
    tplot_save, lpw_vars, filename = pdir1+'mvn_lpw_iv_'+yyyy+mm+dd
+   file_chmod, pdir1+'mvn_lpw_iv_'+yyyy+mm+dd+'.tplot', '664'o
 Endif 
 
 Return
