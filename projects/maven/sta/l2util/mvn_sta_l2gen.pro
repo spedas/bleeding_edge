@@ -17,8 +17,8 @@
 ;HISTORY:
 ; 2014-05-14, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2018-04-23 12:53:43 -0700 (Mon, 23 Apr 2018) $
-; $LastChangedRevision: 25098 $
+; $LastChangedDate: 2019-09-11 15:14:24 -0700 (Wed, 11 Sep 2019) $
+; $LastChangedRevision: 27742 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2gen.pro $
 ;-
 Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
@@ -248,6 +248,10 @@ Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
         is_struct(mvn_ca_dat)) Then mvn_sta_scpot_load
 skip_ephemeris_l2:
   Endif Else Begin
+;Load and save LPW tplot variables, first, because there is a
+;del_data, '*'
+     date0 = time_string(date, precision = -3)
+     mvn_lpw_save_l0, date0, directory = directory
      mvn_sta_l0_load, files = filex
 ;Only call ephemeris_load if the date is more than 5 days ago
 ;Changed to 10 days, 2015-09-30, jmm, back to 2 (!) days, 2016-10-18

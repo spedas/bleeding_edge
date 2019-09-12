@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Sep  9 18:16:31 2019.<P>
+<STRONG>Last modified: </STRONG>Wed Sep 11 18:16:34 2019.<P>
  
 <HR>
  
@@ -52,6 +52,8 @@ This page was created by the IDL library routine
 <br>Decomutater of the LPW telemetry data
 <LI><A HREF="#MVN_LPW_LOAD_FIND_CDF">MVN_LPW_LOAD_FIND_CDF</A>
 <br>Routine to search for the CDF files MAVEN lpw produces, and load them into tplot memory. Routine is called upon by mvn-lpw-load.pro. Routine
+<LI><A HREF="#MVN_LPW_LOAD_L0[1]">MVN_LPW_LOAD_L0[1]</A>
+<LI><A HREF="#MVN_LPW_LOAD_L0[2]">MVN_LPW_LOAD_L0[2]</A>
 <LI><A HREF="#MVN_LPW_LOAD_L2">MVN_LPW_LOAD_L2</A>
 <LI><A HREF="#MVN_LPW_PKT_CLOCKS_SPICE">MVN_LPW_PKT_CLOCKS_SPICE</A>
 <LI><A HREF="#MVN_LPW_PRD_EUV">MVN_LPW_PRD_EUV</A>
@@ -118,6 +120,7 @@ MVN_LPW_PRD_LP_N_T_COMPARE_WAVES[8]</A>
 <br>Decomutater of the LPW telemetry data, THIS IS FOR L0-files, splitted files and gourn data use mvn_lpw_r_heared.pro
 <LI><A HREF="#MVN_LPW_R_MASK">MVN_LPW_R_MASK</A>
 <br>This procedure only defines different masks
+<LI><A HREF="#MVN_LPW_SAVE_L0">MVN_LPW_SAVE_L0</A>
 <br>
 </UL><P>
 <HR>
@@ -1095,7 +1098,7 @@ LAST MODIFICATION:
 <A NAME="MVN_LPW_LOAD_FIND_CDF">
 <H2>MVN_LPW_LOAD_FIND_CDF</H2></A>
 <A HREF="#MVN_LPW_LOAD_FILE">[Previous Routine]</A>
-<A HREF="#MVN_LPW_LOAD_L2">[Next Routine]</A>
+<A HREF="#MVN_LPW_LOAD_L0[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:
@@ -1125,9 +1128,64 @@ MODIFICATIONS:
 <STRONG>(See <A href="lpw/mvn_lpw_load_find_cdf.pro">projects/maven/lpw/mvn_lpw_load_find_cdf.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_LPW_LOAD_L0[1]">
+<H2>MVN_LPW_LOAD_L0[1]</H2></A>
+<A HREF="#MVN_LPW_LOAD_FIND_CDF">[Previous Routine]</A>
+<A HREF="#MVN_LPW_LOAD_L0[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Routine to load multiple days of data using timespan and mvn_lpw_load (which is the L1 loader, not L2).
+
+mvn_lpw_load_append_l1:
+
+Sub routine to append tplot variables together on each iteration of mvn_lpw_load. 
+
+INPUTS:
+ext: string: temporary extension added to end of tplot names when combining.
+
+
+.r /Users/cmfowler/IDL/STATIC_routines/LPW_loader/mvn_lpw_load_l0.pro
+</PRE><P>
+<STRONG>(See <A href="lpw/mvn_lpw_load_l0.pro">projects/maven/lpw/mvn_lpw_load_l0.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_LPW_LOAD_L0[2]">
+<H2>MVN_LPW_LOAD_L0[2]</H2></A>
+<A HREF="#MVN_LPW_LOAD_L0[1]">[Previous Routine]</A>
+<A HREF="#MVN_LPW_LOAD_L2">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Routine to load multiple days of data using timespan and mvn_lpw_load (which is the L1 loader, not L2).
+
+INPUTS:
+
+
+KEYWORDS:
+trange: [a,b], string start and stop times for the time range to load. These should be in the format 'yyyy-mm-dd' (no hr:mn:ss
+        resolution). These follow the same format as timespan, days are loaded from 'a' up to but not including 'b' eg:
+        trange = ['2018-01-01', '2018-01-03'] will load data for two dates, 01 and 02.
+        trange = ['2018-01-01', '2018-01-04'] will load data for three dates, 01, 02 and 03. 
+                
+        This routine will use date ranges set by timespan. If trange is set, this will overwrite the timespan settings.
+
+packet: select which packets to load. See mvn_lpw_load for all options. Suggested setting: packet='nohsbm'. This will load all data
+        except burst data, which takes a long time to load.
+
+clearspice: The mvn_lpw_load routine automatically loads SPICE kernels (used for clock times). The default is to leave
+            these kernels in memory in exit. Use this keyword to alter that behavior:
+            string: '0': leave SPICE kernels in IDL on exit.
+                    '1': remove SPICE kernels from IDL on exit (the default if not set).
+
+notatlasp: Set this keyword if you are not connected to the LASP SPG server, otherwise your IDL session will not be able to find
+           L0 files. 
+
+</PRE><P>
+<STRONG>(See <A href="lpw/mvn_lpw_load_l0.pro">projects/maven/lpw/mvn_lpw_load_l0.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_LPW_LOAD_L2">
 <H2>MVN_LPW_LOAD_L2</H2></A>
-<A HREF="#MVN_LPW_LOAD_FIND_CDF">[Previous Routine]</A>
+<A HREF="#MVN_LPW_LOAD_L0[2]">[Previous Routine]</A>
 <A HREF="#MVN_LPW_PKT_CLOCKS_SPICE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -2691,6 +2749,7 @@ Added a additional feature to find the packets using the SC variable (L. Anderss
 <A NAME="MVN_LPW_R_MASK">
 <H2>MVN_LPW_R_MASK</H2></A>
 <A HREF="#MVN_LPW_R_HEADER_L0">[Previous Routine]</A>
+<A HREF="#MVN_LPW_SAVE_L0">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mvn_lpw_r_mask
@@ -2722,5 +2781,25 @@ VERSION:   2.0
  ;140718 clean up for check out L. Andersson
 </PRE><P>
 <STRONG>(See <A href="lpw/mvn_lpw_r_mask.pro">projects/maven/lpw/mvn_lpw_r_mask.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_LPW_SAVE_L0">
+<H2>MVN_LPW_SAVE_L0</H2></A>
+<A HREF="#MVN_LPW_R_MASK">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Wrapper to run mvn_lpw_load_l0 for a single day, and create tplot save files for each day. To be used at SSL to create local tplot
+save files of LPW l0 data, to avoid the long load times.
+
+
+date: string: 'yyyy-mm-dd': input date to load LPW L0 data for.
+
+Output: routine saves a tplot file containing most useful LPW L0 data products, with the name 'mvn_lpw_tplot_l0_'+date+'.tplot'.
+
+Not all LPW L0 data products are saved - the total file size is ~400 mb per day with all products. Only the most useful for comparison
+with STATIC are saved to reduce file sizes.
+
+</PRE><P>
+<STRONG>(See <A href="lpw/mvn_lpw_save_l0.pro">projects/maven/lpw/mvn_lpw_save_l0.pro</A>)</STRONG><P>
 <HR>
  
