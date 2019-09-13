@@ -168,6 +168,8 @@ function SpdfGetData, $
     sslVerifyPeer = sslVerifyPeer
     compile_opt idl2
 
+    spd_cdawlib_virtual_funcs ; compile required functions
+    
     if ~keyword_set(dataview) then begin
 
         dataview = 'sp_phys'
@@ -302,7 +304,7 @@ function SpdfGetData, $
         localCdfNames2 = localCdfNames
         allVars = ''
         ; reads data into handles (memory) should be fastest
-        data = read_mycdf(allVars, localCdfNames2, all = 1, $
+        data = spd_cdawlib_read_mycdf(allVars, localCdfNames2, all = 1, $
                           /nodata) 
 
         ; reads data into .dat structure tags
@@ -327,7 +329,7 @@ function SpdfGetData, $
             return, 1
         endif
 
-        newbuf = hsave_struct(data, /nosave) 
+        newbuf = spd_cdawlib_hsave_struct(data, /nosave) 
         ; don't use the /nosave if you want it saved
         ; to a save file, need to specify a file name though.
 

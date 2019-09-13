@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Sep 11 18:16:33 2019.<P>
+<STRONG>Last modified: </STRONG>Thu Sep 12 18:16:37 2019.<P>
  
 <HR>
  
@@ -369,10 +369,22 @@ KEYWORDS:
 	hiresl3 -&gt; loads the EMFISIS high resolution 64 S/s L3 GSE data
  level -&gt; Level of EMFISIS data. Options are:
    'ql', 'l2', 'l3'. Defaults to EMFISIS L3 data
- boom_pair -&gt; select the boom pair for the spinfitting. Options are '12','34'
-   Note: if you want to use another boom pair combination, use
-   rbsp_efw_create_esvy_uvw_from_vsvy.pro
+ boom_pair -&gt; select the boom pair for the spinfitting. Any pair is acceptable
+ no_reload -&gt; use to not reload any of the base data. Useful if you want to run this
+         crib sheet multiple times for different boom pairs.
+
 OUTPUT: tplot variables of spinfit, vxb subtracted electric field
+
+NOTES: If doing spinfit on pairs 12, 34, we load the &quot;esvy&quot; waveform. This gives us the Efield array
+(rbsp?_efw_esvy) as [[E12],[E34],[E56]].
+This array is inputted into rbsp_spinfit.pro and the plane_dim is set to 0,1
+depending on which component (E12 or E34) you want to spinfit off of.
+**
+For pairs other than 12, 34, 56, we have to load &quot;vsvy&quot; waveform and construct the components
+manually. The first element of this array (normally E12) will be replaced with the new component.
+For ex, for pair=24, the array (rbsp?_efw_esvy) will be [[E24],[E34],[E56]]. We'll then set plane_dim
+to zero to use this component.
+
 HISTORY: Written by Aaron W Breneman
          University of Minnesota
          2013-04-16

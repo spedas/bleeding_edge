@@ -1,9 +1,9 @@
 ;+
 ; Written by Davin Larson
 ;
-; $LastChangedBy: pulupa $
-; $LastChangedDate: 2019-07-31 17:39:45 -0700 (Wed, 31 Jul 2019) $
-; $LastChangedRevision: 27525 $
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2019-09-12 17:06:03 -0700 (Thu, 12 Sep 2019) $
+; $LastChangedRevision: 27753 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_file_retrieve.pro $
 ;
 ; Function:  files = spp_file_retrieve(PATHNAME)
@@ -116,6 +116,8 @@ function spp_file_retrieve,pathname,trange=trange,ndays=ndays,nhours=nhours,verb
 
 
   if not keyword_set(shiftres) then shiftres =0
+  sres = shiftres
+  
   if keyword_set(daily_names) then begin
     res = round(24*3600L * daily_names)
     sres= round(24*3600L * shiftres)
