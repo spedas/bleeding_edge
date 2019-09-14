@@ -14,16 +14,18 @@
 ;                 date and time_range keywords are ignored.
 ; use_l2_files = If set, use current L2 files as input, and not
 ;                L0's -- for reprocessing
+; lpw_only = if set return after the LPW save file is created
 ;HISTORY:
 ; 2014-05-14, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-09-11 15:14:24 -0700 (Wed, 11 Sep 2019) $
-; $LastChangedRevision: 27742 $
+; $LastChangedBy: muser $
+; $LastChangedDate: 2019-09-13 14:39:56 -0700 (Fri, 13 Sep 2019) $
+; $LastChangedRevision: 27757 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2gen.pro $
 ;-
 Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
                    directory = directory, use_l2_files = use_L2_files, $
-                   xxx = xxx, yyy = yyy, nocatch = nocatch, _extra = _extra
+                   xxx = xxx, yyy = yyy, lpw_only = lpw_only, $
+                   nocatch = nocatch, _extra = _extra
 
 ;Run in Z buffer
   set_plot,'z'
@@ -251,7 +253,8 @@ skip_ephemeris_l2:
 ;Load and save LPW tplot variables, first, because there is a
 ;del_data, '*'
      date0 = time_string(date, precision = -3)
-     mvn_lpw_save_l0, date0, directory = directory
+     mvn_lpw_save_l0, date0;, directory = directory
+     If(keyword_set(lpw_only)) Then Return
      mvn_sta_l0_load, files = filex
 ;Only call ephemeris_load if the date is more than 5 days ago
 ;Changed to 10 days, 2015-09-30, jmm, back to 2 (!) days, 2016-10-18
