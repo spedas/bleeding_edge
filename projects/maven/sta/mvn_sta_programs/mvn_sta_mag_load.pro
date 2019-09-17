@@ -15,8 +15,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-09-13 18:12:29 -0700 (Wed, 13 Sep 2017) $
-; $LastChangedRevision: 23966 $
+; $LastChangedDate: 2019-09-16 12:19:40 -0700 (Mon, 16 Sep 2019) $
+; $LastChangedRevision: 27759 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_programs/mvn_sta_mag_load.pro $
 ;
 ;-
@@ -127,7 +127,7 @@ pro mvn_sta_mag_load, frame=frame, verbose=verbose,  tplot=tplot
            yy=interpol(magf[*,1],time,apid_time)
            zz=interpol(magf[*,2],time,apid_time)
            vec=transpose([[xx],[yy],[zz]])
-           newvec=spice_vector_rotate(vec,utc,$
+           newvec=spice_vector_rotate(vec,apid_time,$
                                       'MAVEN_SPACECRAFT',$
                                       'MAVEN_STATIC',$
                                       check_objects='MAVEN_SPACECRAFT', verbose=verbose)
