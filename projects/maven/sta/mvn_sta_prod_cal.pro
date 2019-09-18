@@ -1789,7 +1789,7 @@ print,'Processing apid c0'
 
 ;	correct C0 attenuator transitions using C6 data if it is available
 		get_data,'mvn_sta_C6_att',data=att6
-		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tt)))
+		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tt)))<3
 
 		header = 256l^3*md.y[0:nn-1] + 256l^2*cavg.y[0:nn-1] + 256l*catt.y[0:nn-1] + diag.y[0:nn-1]
 
@@ -2691,7 +2691,7 @@ print,'Processing apid c8'
 
 ;	correct C8 attenuator transitions using C6 data if it is available
 		get_data,'mvn_sta_C6_att',data=att6
-		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tt)))
+		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tt)))<3
 
 		header = 256l^3*md.y[0:nn-1] + 256l^2*cavg.y[0:nn-1] + 256l*catt.y[0:nn-1] + diag.y[0:nn-1]
 
@@ -3000,7 +3000,7 @@ print,'Processing apid ca'
 
 ;	correct CA attenuator transitions using C6 data if it is available
 		get_data,'mvn_sta_C6_att',data=att6
-		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tt)))
+		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tt)))<3
 
 		header = 256l^3*md.y[0:nn-1] + 256l^2*cavg.y[0:nn-1] + 256l*catt.y[0:nn-1] + diag.y[0:nn-1]
 
@@ -3293,7 +3293,7 @@ if ndis1 gt 1 then begin											; kluge for real time data stream which is mi
 
 ;	correct CC attenuator transitions using C6 data if it is available
 		get_data,'mvn_sta_C6_att',data=att6
-		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))
+		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))<3
 
 			header = 256l^3*md.y[ind[0:ndis-1]] + 256l^2*cavg.y[ind[0:ndis-1]] + 256l*catt.y[ind[0:ndis-1]] + diag.y[ind[0:ndis-1]]
 
@@ -3586,7 +3586,7 @@ print,'Processing apid cd'
 
 ;	correct CD attenuator transitions using C6 data if it is available
 		get_data,'mvn_sta_C6_att',data=att6
-		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))
+		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))<3
 
 			header = 256l^3*md.y[ind[0:ndis-1]] + 256l^2*cavg.y[ind[0:ndis-1]] + 256l*catt.y[ind[0:ndis-1]] + diag.y[ind[0:ndis-1]]
 
@@ -3877,7 +3877,7 @@ print,'Processing apid ce'
 
 ;	correct CE attenuator transitions using C6 data if it is available
 		get_data,'mvn_sta_C6_att',data=att6
-		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))
+		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))<3
 
 			header = 256l^3*md.y[ind[0:ndis-1]] + 256l^2*cavg.y[ind[0:ndis-1]] + 256l*catt.y[ind[0:ndis-1]] + diag.y[ind[0:ndis-1]]
 
@@ -4170,7 +4170,7 @@ print,'Processing apid cf'
 
 ;	correct CF attenuator transitions using C6 data if it is available
 		get_data,'mvn_sta_C6_att',data=att6
-		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))
+		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))<3
 
 			header = 256l^3*md.y[ind[0:ndis-1]] + 256l^2*cavg.y[ind[0:ndis-1]] + 256l*catt.y[ind[0:ndis-1]] + diag.y[ind[0:ndis-1]]
 
@@ -4461,7 +4461,7 @@ print,'Processing apid d0'
 
 ;	correct D0 attenuator transitions using C6 data if it is available
 		get_data,'mvn_sta_C6_att',data=att6
-		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))
+		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))<3
 
 			header = 256l^3*md.y[ind[0:ndis-1]] + 256l^2*cavg.y[ind[0:ndis-1]] + 256l*catt.y[ind[0:ndis-1]] + diag.y[ind[0:ndis-1]]
 
@@ -4756,7 +4756,7 @@ print,'Processing apid d1'
 
 ;	correct D1 attenuator transitions using C6 data if it is available
 		get_data,'mvn_sta_C6_att',data=att6
-		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))
+		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))<3
 
 			header = 256l^3*md.y[ind[0:ndis-1]] + 256l^2*cavg.y[ind[0:ndis-1]] + 256l*catt.y[ind[0:ndis-1]] + diag.y[ind[0:ndis-1]]
 
@@ -5052,7 +5052,7 @@ print,'Processing apid d2'
 
 ;	correct D2 attenuator transitions using C6 data if it is available
 		get_data,'mvn_sta_C6_att',data=att6
-		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))
+		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))<3
 
 			header = 256l^3*md.y[ind[0:ndis-1]] + 256l^2*cavg.y[ind[0:ndis-1]] + 256l*catt.y[ind[0:ndis-1]] + diag.y[ind[0:ndis-1]]
 
@@ -5343,7 +5343,7 @@ print,'Processing apid d3'
 
 ;	correct D3 attenuator transitions using C6 data if it is available
 		get_data,'mvn_sta_C6_att',data=att6
-		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))
+		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tdis)))<3
 
 			header = 256l^3*md.y[ind[0:ndis-1]] + 256l^2*cavg.y[ind[0:ndis-1]] + 256l*catt.y[ind[0:ndis-1]] + diag.y[ind[0:ndis-1]]
 
@@ -5643,7 +5643,7 @@ print,'Processing apid d4'
 
 ;	correct D4 attenuator transitions using C6 data if it is available
 		get_data,'mvn_sta_C6_att',data=att6
-		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tt)))
+		if size(/type,att6) eq 8 then att0 = fix(round(interp(att6.y,att6.x,tt)))<3
 
 
 		header = 256l^3*md.y[0:nn-1] + 256l^2*cavg.y[0:nn-1] + 256l*catt.y[0:nn-1] + diag.y[0:nn-1]

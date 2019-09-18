@@ -78,8 +78,8 @@
 ;          keyword, and stored as a TPLOT variable.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-12-18 12:25:46 -0800 (Mon, 18 Dec 2017) $
-; $LastChangedRevision: 24432 $
+; $LastChangedDate: 2019-09-17 16:58:25 -0700 (Tue, 17 Sep 2019) $
+; $LastChangedRevision: 27777 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sc_pot.pro $
 ;
 ;-
@@ -292,15 +292,17 @@ pro mvn_swe_sc_pot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2,
   store_data,'swe_pos',data=phi
   options,'swe_pos','color',2
 
-  store_data,'df',data={x:pot.time, y:transpose(dfs), v:transpose(ee)}
-  options,'df','spec',1
-  ylim,'df',min(Espan),max(Espan),0
-  zlim,'df',0,0,0
+  if (n_elements(ee) gt 0L) then begin
+    store_data,'df',data={x:pot.time, y:transpose(dfs), v:transpose(ee)}
+    options,'df','spec',1
+    ylim,'df',min(Espan),max(Espan),0
+    zlim,'df',0,0,0
 
-  store_data,'d2f',data={x:pot.time, y:transpose(d2fs), v:transpose(ee)}
-  options,'d2f','spec',1
-  ylim,'d2f',min(Espan),max(Espan),0
-  zlim,'d2f',0,0,0
+    store_data,'d2f',data={x:pot.time, y:transpose(d2fs), v:transpose(ee)}
+    options,'d2f','spec',1
+    ylim,'d2f',min(Espan),max(Espan),0
+    zlim,'d2f',0,0,0
+  endif
 
   return
 

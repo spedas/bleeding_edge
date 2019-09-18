@@ -69,7 +69,8 @@ endif else begin
 	swp_ind	= all_dat.swp_ind[ind]
 	mlut_ind= all_dat.mlut_ind[ind]
 	eff_ind	= all_dat.eff_ind[ind]
-	att_ind	= all_dat.att_ind[ind]
+	att_ind	= all_dat.att_ind[ind]<3		; <3 needed to fix corrupted value at turn-on 20190912
+;	att_ind	= all_dat.att_ind[ind]
 	nenergy = all_dat.nenergy
 	nbins   = all_dat.nbins
 	nmass   = all_dat.nmass

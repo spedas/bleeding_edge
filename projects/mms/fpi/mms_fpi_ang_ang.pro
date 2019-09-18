@@ -41,8 +41,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-08-16 10:18:27 -0700 (Thu, 16 Aug 2018) $
-;$LastChangedRevision: 25646 $
+;$LastChangedDate: 2019-09-17 12:04:17 -0700 (Tue, 17 Sep 2019) $
+;$LastChangedRevision: 27764 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_fpi_ang_ang.pro $
 ;-
 
@@ -96,7 +96,7 @@ pro mms_fpi_ang_ang, time, probe=probe, energy_range=energy_range, data_rate=dat
     return
   endif
   
-  mms_load_fpi, datatype=['d'+species+'s-dist', 'd'+species+'s-moms'], level=level, data_rate=data_rate, trange=trange, probe=probe, center_measurement=center_measurement, /time_clip, tplotnames=tplotnames
+  mms_load_fpi, datatype=['d'+species+'s-dist', 'd'+species+'s-moms'], level=level, data_rate=data_rate, trange=trange, probe=probe, center_measurement=center_measurement, tplotnames=tplotnames
   
   if undefined(tplotnames) then begin
     dprint, dlevel = 0, 'No FPI data found in the requested time range: ', time_string(trange, tformat='YYYY-MM-DD/hh:mm:ss.fff')
