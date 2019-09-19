@@ -24,8 +24,8 @@
 ;HISTORY:
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2018-10-22 16:51:04 -0700 (Mon, 22 Oct 2018) $
-;$LastChangedRevision: 26001 $
+;$LastChangedDate: 2019-09-18 16:34:21 -0700 (Wed, 18 Sep 2019) $
+;$LastChangedRevision: 27784 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/spd_gui.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -1660,16 +1660,16 @@ PRO spd_gui,reset=reset,template_filename=template_filename
   ; Toolbar icon buttons
 
   openBmpButton = Widget_Button(fileToolBase, Value=openbmp, /Bitmap, UValue='OPEN', $
-    ToolTip='Open File')
+    ToolTip='Open GUI document')
   saveBmpButton = Widget_Button(fileToolBase, Value=savebmp, /Bitmap, UValue='SAVE', $
-    ToolTip='Save File')
+    ToolTip='Save GUI document')
   printBmpButton = Widget_Button(fileToolBase, Value=printbmp, /Bitmap, $
     ToolTip='Print', UValue='PRINT')
 ;  undoBmpButton = Widget_Button(editToolBase, Value=undobmp, /Bitmap, ToolTip='Undo', $
 ;    Sensitive=0, UValue='UNDO')
 ;  redoBmpButton = Widget_Button(editToolBase, Value=redobmp, /Bitmap, ToolTip='Redo', $
 ;    Sensitive=0, UValue='REDO')
-  copyBmpButton = Widget_Button(editToolBase, Value=copybmp, /Bitmap, ToolTip='Copy to clipboard', $
+  copyBmpButton = Widget_Button(editToolBase, Value=copybmp, /Bitmap, ToolTip='Copy plot image to clipboard', $
     UValue='COPY')
   zoomInBmpButton = Widget_Button(moveToolBase, Value=zoominbmp, /Bitmap,  $
     ToolTip='Reduces X range by major tick mark', UValue='REDUCE')
@@ -1685,7 +1685,7 @@ PRO spd_gui,reset=reset,template_filename=template_filename
     ToolTip='Create New Page', UValue='NEWWIN')
   helpBmpButton = Widget_Button(helpToolBase, Value=helpbmp, /Bitmap, ToolTip='Help', $
     UValue='HELP')
-  loadBmpButton = Widget_Button(dataToolBase, Value=loadBMP, /Bitmap, ToolTip='Load Data', $
+  loadBmpButton = Widget_Button(dataToolBase, Value=loadBMP, /Bitmap, ToolTip='Load Data from Plug-ins', $
     UValue='LOAD')
   manageBmpButton = Widget_Button(dataToolBase, Value=manageBMP, /Bitmap, ToolTip='Manage GUI Data and Import and Export Tplot data', $
     UValue='MANAGEDATA')
