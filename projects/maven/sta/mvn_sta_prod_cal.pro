@@ -6490,7 +6490,7 @@ print,'Processing apid da'
 
 	nn=0
 	get_data,'mvn_STA_DA_DATA',data=t
-	if size(/type,t) eq 8 then begin
+	if size(/type,t) eq 8 && n_elements(where(t.x gt 0)) Gt 1 then begin
 		npts=1024									; 64Ex1R
 
 		ind1 = where(t.x gt 0, nn)

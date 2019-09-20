@@ -18,8 +18,8 @@
 ;HISTORY:
 ; 2014-05-14, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: muser $
-; $LastChangedDate: 2019-09-13 14:39:56 -0700 (Fri, 13 Sep 2019) $
-; $LastChangedRevision: 27757 $
+; $LastChangedDate: 2019-09-19 11:14:55 -0700 (Thu, 19 Sep 2019) $
+; $LastChangedRevision: 27787 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2gen.pro $
 ;-
 Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
@@ -55,6 +55,10 @@ Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
            'init':begin
               print, 'Problem with initialization'
               goto, skip_db
+           end
+           'lpw_l0':begin
+              print, 'Problem with LPW L0'
+              goto, skip_lpw_l0
            end
            'ephemeris_l0':begin
               print, 'Problem with SPICE'
@@ -252,9 +256,12 @@ skip_ephemeris_l2:
   Endif Else Begin
 ;Load and save LPW tplot variables, first, because there is a
 ;del_data, '*'
+     load_position = 'lpw_l0'
      date0 = time_string(date, precision = -3)
      mvn_lpw_save_l0, date0;, directory = directory
+skip_lpw_l0:
      If(keyword_set(lpw_only)) Then Return
+     load_position = 'init'
      mvn_sta_l0_load, files = filex
 ;Only call ephemeris_load if the date is more than 5 days ago
 ;Changed to 10 days, 2015-09-30, jmm, back to 2 (!) days, 2016-10-18
