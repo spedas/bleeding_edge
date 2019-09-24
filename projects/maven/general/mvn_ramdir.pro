@@ -52,16 +52,20 @@
 ;       PANS:     Named variable to hold the tplot variables created.  For the
 ;                 default frame, this would be 'V_sc_MAVEN_SPACECRAFT'.
 ;
+;       SUCCESS:  Returns 1 on normal operation, 0 otherwise.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-09 11:31:45 -0800 (Fri, 09 Nov 2018) $
-; $LastChangedRevision: 26085 $
+; $LastChangedDate: 2019-09-23 11:13:58 -0700 (Mon, 23 Sep 2019) $
+; $LastChangedRevision: 27790 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar
+pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, success=ok
 
   @maven_orbit_common
+
+  ok = 0
 
   if (size(trange,/type) eq 0) then begin
     tplot_options, get_opt=topt
@@ -73,14 +77,32 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar
   endif
   tmin = min(time_double(trange), max=tmax)
 
-  if (size(state,/type) eq 0) then maven_orbit_tplot, /loadonly
+  if (size(state,/type) eq 0) then begin
+    maven_orbit_tplot, /loadonly
+    if (size(state,/type) eq 0) then begin
+      print,"Cannot get spacecraft state vector."
+      return
+    endif
+  endif
+
   if (size(frame,/type) ne 7) then frame = 'MAVEN_SPACECRAFT'
-  frame = mvn_frame_name(frame)
+  frame = mvn_frame_name(frame, success=flag)
+  bndx = where(flag eq 0, count)
+  if (count gt 0) then frame[bndx] = ''
+
   dopol = keyword_set(polar)
 
   mk = spice_test('*', verbose=-1)
   indx = where(mk ne '', count)
-  if (count eq 0) then mvn_swe_spice_init, trange=[tmin,tmax]
+  if (count eq 0) then begin
+    mvn_swe_spice_init, trange=[tmin,tmax]
+    mk = spice_test('*', verbose=-1)
+    indx = where(mk eq '', count)
+    if (count eq 0) then begin
+      print,"Cannot initialize SPICE."
+      return
+    endif
+  endif
 
 ; First store the spacecraft velocity in the IAU_MARS (or MSO) frame
 
@@ -135,45 +157,55 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar
     endcase
 
     vname = 'V_sc_' + to_frame
-    get_data, vname, data=Vsc
-    str_element, Vsc, 'vframe', vframe, /add
-    str_element, Vsc, 'units', 'km/s', /add
-    store_data, vname, data=Vsc
-    options,vname,'ytitle',vframe + ' RAM (' + fname + ')!ckm/s'
-    options,vname,'colors',[2,4,6]
-    options,vname,'labels',labels
-    options,vname,'labflag',1
-    options,vname,'constant',0
-    pans = [pans, vname]
+    get_data, vname, data=Vsc, index=k
+    if (k gt 0) then begin
+      str_element, Vsc, 'vframe', vframe, /add
+      str_element, Vsc, 'units', 'km/s', /add
+      store_data, vname, data=Vsc
+      options,vname,'ytitle',vframe + ' RAM (' + fname + ')!ckm/s'
+      options,vname,'colors',[2,4,6]
+      options,vname,'labels',labels
+      options,vname,'labflag',1
+      options,vname,'constant',0
+      pans = [pans, vname]
 
-    if (dopol) then begin
-      xyz_to_polar, Vsc, theta=the, phi=phi, /ph_0_360
-      str_element, the, 'vframe', vframe, /add
-      str_element, the, 'units', 'km/s', /add
-      str_element, phi, 'vframe', vframe, /add
-      str_element, phi, 'units', 'km/s', /add
+      if (dopol) then begin
+        xyz_to_polar, Vsc, theta=the, phi=phi, /ph_0_360
+        str_element, the, 'vframe', vframe, /add
+        str_element, the, 'units', 'km/s', /add
+        str_element, phi, 'vframe', vframe, /add
+        str_element, phi, 'units', 'km/s', /add
 
-      the_name = 'V_sc_' + fname + '_The'
-      store_data,the_name,data=the
-      options,the_name,'ytitle',vframe + ' RAM The!c'+fname
-      options,the_name,'ynozero',1
-      options,the_name,'psym',3
+        the_name = 'V_sc_' + fname + '_The'
+        store_data,the_name,data=the
+        options,the_name,'ytitle',vframe + ' RAM The!c'+fname
+        options,the_name,'ynozero',1
+        options,the_name,'psym',3
 
-      phi_name = 'V_sc_' + fname + '_Phi'
-      store_data,phi_name,data=phi
-      ylim,phi_name,0,360,0
-      options,phi_name,'ytitle',vframe + ' RAM Phi!c'+fname
-      options,phi_name,'yticks',4
-      options,phi_name,'yminor',3
-      options,phi_name,'ynozero',1
-      options,phi_name,'psym',3
+        phi_name = 'V_sc_' + fname + '_Phi'
+        store_data,phi_name,data=phi
+        ylim,phi_name,0,360,0
+        options,phi_name,'ytitle',vframe + ' RAM Phi!c'+fname
+        options,phi_name,'yticks',4
+        options,phi_name,'yminor',3
+        options,phi_name,'ynozero',1
+        options,phi_name,'psym',3
 
-      pans = [pans, the_name, phi_name]
-    endif
+        pans = [pans, the_name, phi_name]
+      endif
+    endif else begin
+      print,"Could not rotate to frame: ",to_frame
+    endelse
   endfor
-  
+
+  if (n_elements(pans) lt 2) then begin
+    print,"No valid ram directions."
+    return
+  endif
+
   pans = pans[1:*]
   store_data,'V_sc',/delete
+  ok = 1
 
   return
 
