@@ -33,14 +33,18 @@
 ;       PANS:     Named variable to hold the tplot variables created.  For the
 ;                 default frame, this would be 'Sun_MAVEN_SPACECRAFT'.
 ;
+;       SUCCESS:  Returns 1 on normal completion, 0 otherwise.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-09 11:32:01 -0800 (Fri, 09 Nov 2018) $
-; $LastChangedRevision: 26087 $
+; $LastChangedDate: 2019-09-24 15:48:26 -0700 (Tue, 24 Sep 2019) $
+; $LastChangedRevision: 27792 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_sundir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar
+pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar, success=success
+
+  success = 0
 
   if (size(trange,/type) eq 0) then begin
     tplot_options, get_opt=topt
@@ -57,13 +61,27 @@ pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar
 
   mk = spice_test('*', verbose=-1)
   indx = where(mk ne '', count)
-  if (count eq 0) then mvn_swe_spice_init, trange=[tmin,tmax]
+  if (count eq 0) then begin
+    mvn_swe_spice_init, trange=[tmin,tmax]
+    mk = spice_test('*', verbose=-1)
+    indx = where(mk ne '', count)
+    if (count eq 0) then begin
+      print,"Insufficient SPICE coverage in requested time range."
+      return
+    endif
+  endif
 
   if not keyword_set(dt) then dt = 1D else dt = double(dt[0])
   dopol = keyword_set(polar)
   
   if (size(frame,/type) ne 7) then frame = 'MAVEN_SPACECRAFT'
-  frame = mvn_frame_name(frame)
+  frame = mvn_frame_name(frame, success=i)
+  gndx = where(i, count)
+  if (count eq 0) then begin
+    print,"No valid frames."
+    return
+  endif
+  frame = frame[i[gndx]]
 
 ; First store the Sun direction in MAVEN_SSO coordinates
 
@@ -132,6 +150,8 @@ pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar
   
   pans = pans[1:*]
   store_data,'Sun',/delete
+
+  success = 1
   
   return
 

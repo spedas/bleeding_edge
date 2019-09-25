@@ -34,16 +34,20 @@
 ;       PANS:     Named variable to hold the tplot variables created.  For the
 ;                 default frame, this would be 'Nadir_MAVEN_SPACECRAFT'.
 ;
+;       SUCCESS:  Returns 1 on normal completion, 0 otherwise
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-09 11:31:53 -0800 (Fri, 09 Nov 2018) $
-; $LastChangedRevision: 26086 $
+; $LastChangedDate: 2019-09-24 15:48:26 -0700 (Tue, 24 Sep 2019) $
+; $LastChangedRevision: 27792 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_nadir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar
+pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, success=success
 
   @maven_orbit_common
+
+  success = 0
 
   if (size(trange,/type) eq 0) then begin
     tplot_options, get_opt=topt
@@ -55,16 +59,36 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar
   endif
   tmin = min(time_double(trange), max=tmax)
   
-  if (size(state,/type) eq 0) then maven_orbit_tplot,/load
+  if (size(state,/type) eq 0) then begin
+    maven_orbit_tplot,/load
+    if (size(state,/type) eq 0) then begin
+      print,"Unable to get spacecraft state information."
+      return
+    endif
+  endif
 
   mk = spice_test('*', verbose=-1)
   indx = where(mk ne '', count)
-  if (count eq 0) then mvn_swe_spice_init, trange=[tmin,tmax]
+  if (count eq 0) then begin
+    mvn_swe_spice_init, trange=[tmin,tmax]
+    mk = spice_test('*', verbose=-1)
+    indx = where(mk ne '', count)
+    if (count eq 0) then begin
+      print,"Insufficient SPICE coverage in requested time range."
+      return
+    endif
+  endif
 
   dopol = keyword_set(polar)
   
   if (size(frame,/type) ne 7) then frame = 'MAVEN_SPACECRAFT'
-  frame = mvn_frame_name(frame)
+  frame = mvn_frame_name(frame, success=i)
+  gndx = where(i, count)
+  if (count eq 0) then begin
+    print,"No valid frames."
+    return
+  endif
+  frame = frame[i[gndx]]
 
 ; First store the nadir direction in the IAU_MARS frame
 
@@ -136,6 +160,8 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar
 
   pans = pans[1:*]
   store_data,'Nadir',/delete
+
+  success = 1
   
   return
 

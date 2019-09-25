@@ -55,8 +55,8 @@
 ;       SUCCESS:  Returns 1 on normal operation, 0 otherwise.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-09-23 11:13:58 -0700 (Mon, 23 Sep 2019) $
-; $LastChangedRevision: 27790 $
+; $LastChangedDate: 2019-09-24 15:47:43 -0700 (Tue, 24 Sep 2019) $
+; $LastChangedRevision: 27791 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -99,7 +99,7 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, suc
     mk = spice_test('*', verbose=-1)
     indx = where(mk eq '', count)
     if (count eq 0) then begin
-      print,"Cannot initialize SPICE."
+      print,"Insufficient SPICE coverage in the requested time range."
       return
     endif
   endif
