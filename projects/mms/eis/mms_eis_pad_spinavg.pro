@@ -21,8 +21,8 @@
 ; OUTPUT:
 ; 
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-02-01 10:28:16 -0800 (Thu, 01 Feb 2018) $
-;$LastChangedRevision: 24616 $
+;$LastChangedDate: 2019-09-27 12:58:38 -0700 (Fri, 27 Sep 2019) $
+;$LastChangedRevision: 27793 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad_spinavg.pro $
 ;
 ; REVISION HISTORY:
@@ -49,7 +49,7 @@ pro mms_eis_pad_spinavg, probes=probes, species = species, data_units = data_uni
   if not KEYWORD_SET(data_units) then data_units = 'flux'
   if not KEYWORD_SET(species) then species = 'proton'
   if not KEYWORD_SET(suffix) then suffix_in = '' else suffix_in = suffix
-  if not KEYWORD_SET(energy) then energy = [0, 1000]
+  if not KEYWORD_SET(energy) then energy = [55, 800]
   if not KEYWORD_SET(size_pabin) then size_pabin = 15
   if not KEYWORD_SET(data_rate) then data_rate = 'srvy'
   if not KEYWORD_SET(scopes) then scopes = ['0','1','2','3','4','5']
