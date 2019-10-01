@@ -73,7 +73,9 @@ pro mvn_sta_ephemeris_load,frame=frame,verbose=verbose
                    tt eq 'QUAT_SC' or $
                    tt eq 'QUAT_MSO',nn2)
         if nn2 eq 3 then begin
-           temp=execute('utc=time_string(mvn_'+apid[api]+'_dat.time)')
+           ;temp=execute('utc=time_string(mvn_'+apid[api]+'_dat.time)')  ; don't use start time; use mid point          
+           temp=execute('utc=time_string((mvn_'+apid[api]+'_dat.time + mvn_'+apid[api]+'_dat.end_time)/2.d)')  ;CMF: use midpoint of STATIC measurement
+           
            ;cspice_str2et, utc,et
            pos=spice_body_pos('MAVEN','MARS',frame='MSO',$
                               utc=utc,check_objects='MAVEN_SPACECRAFT') 

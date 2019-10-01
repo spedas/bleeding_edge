@@ -20,13 +20,14 @@
 ;Notes:
 ; Author: Davin Larson
 ;
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2019-08-08 18:15:11 -0700 (Thu, 08 Aug 2019) $
-; $LastChangedRevision: 27583 $
+; $LastChangedBy: jimmpc1 $
+; $LastChangedDate: 2019-09-30 11:13:42 -0700 (Mon, 30 Sep 2019) $
+; $LastChangedRevision: 27799 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/wind/wi_3dp_load.pro $
 ;-
 pro wi_3dp_load,type,files=files,trange=trange,verbose=verbose,$
-                downloadonly=downloadonly, no_download=no_download, no_update=no_update, $
+                downloadonly=downloadonly, no_download=no_download, $
+                no_update=no_update, $
                 varformat=varformat,datatype=datatype, $
                 version=version, $
                 addmaster=addmaster,tplotnames=tn,source=source,suffix=suffix
@@ -37,7 +38,7 @@ if not keyword_set(suffix) then suffix = ''
 
 ;All 3dp data, except for 'k0' is at SSL, but the path is different,
 ;so make the distinction, to avoid trying to download to the
-;unwriteable loal_data_dir
+;unwriteable local_data_dir
 wind_init
 if file_test(!wind.local_data_dir+'wind/.master') && datatype Ne 'k0' then begin
   ; Local directory IS the master directory
@@ -69,6 +70,7 @@ case datatype of
     else pathformat = 'wind/3dp/3dp_pm/YYYY/wi_pm_3dp_YYYYMMDD_'+version+'.cdf'
     if not keyword_set(varformat) then varformat = '?_* TIME Epoch'
     if not keyword_set(prefix) then prefix = 'wi_3dp_pm_'
+    addmaster=1
   end
 
   'elpd_old': begin
@@ -128,7 +130,7 @@ case datatype of
     if not keyword_set(varformat) then varformat = '*'
     if not keyword_set(prefix) then prefix = 'wi_3dp_plsp_'
     fix_sosp_flux =1
-  addmaster=0
+;  addmaster=0
   end
 
   'phsp': begin
@@ -137,7 +139,7 @@ case datatype of
     if not keyword_set(varformat) then varformat = '*'
     if not keyword_set(prefix) then prefix = 'wi_3dp_phsp_'
    ; fix_sosp_flux =1
-  addmaster=0
+;  addmaster=0
   end
 
   'sosp': begin
@@ -146,7 +148,7 @@ case datatype of
     if not keyword_set(varformat) then varformat = '*'  ; 'FLUX EDENS TEMP QP QM QT MAGF TIME'
     if not keyword_set(prefix) then prefix = 'wi_3dp_sosp_'
     fix_sosp_flux =1
-  addmaster=0
+;  addmaster=0
   end
 
   'sosp2': begin ;Note that these files are not online at SSL or SPDF, jmm, 2017-03-06
@@ -177,13 +179,36 @@ if keyword_set(no_update) && no_update ne 0 then source.no_update = 1
 
 relpathnames = file_dailynames(file_format=pathformat,trange=trange,addmaster=addmaster)
 
-files = spd_download(remote_file=relpathnames, remote_path=source.remote_data_dir, local_path = source.local_data_dir, $
-                     no_download = source.no_download, no_update = source.no_update, /last_version, $
-                     file_mode = '666'o, dir_mode = '777'o)
-
-;masterfile is '', so this will never happen, but some masters may
-;have been added earlier with addmaster jmm, 2017-03-06
-if keyword_set(masterfile) then files= [masterfile,files]
+;if data is loaded from cdaweb, then the mastercdf is not in a 0000
+;directory, but at
+;https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0MASTERS
+spdf_test = strpos(source.remote_data_dir, 'spdf')
+If(~at_ssl && keyword_set(addmaster) && spdf_test[0] Ne -1) Then Begin
+   ;the mastercdf is the first in the file list, but check for 8 zeros
+   test_master = strpos(relpathnames, '00000000')
+   ss_master = where(test_master Ne -1)
+   If(ss_master[0] Ne -1) Then Begin
+      cdaweb_masterdir = 'https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0MASTERS/'
+      masterfile0 = cdaweb_masterdir+file_basename(relpathnames[ss_master])
+   Endif
+   masterfile = spd_download(remote_file=masterfile0, local_path = source.local_data_dir, $
+                            no_download = source.no_download, no_update = source.no_update, $
+                            /last_version, $
+                            file_mode = '666'o, dir_mode = '777'o)
+   ss_not_master = where(test_master Eq -1)
+   files = spd_download(remote_file=relpathnames[ss_not_master], $
+                        remote_path=source.remote_data_dir, $
+                        local_path = source.local_data_dir, $
+                        no_download = source.no_download, $
+                        no_update = source.no_update, /last_version, $
+                        file_mode = '666'o, dir_mode = '777'o)
+   files = [masterfile, files]
+Endif Else Begin
+   files = spd_download(remote_file=relpathnames, remote_path=source.remote_data_dir, $
+                        local_path = source.local_data_dir, $
+                        no_download = source.no_download, no_update = source.no_update, $
+                        /last_version, file_mode = '666'o, dir_mode = '777'o)
+Endelse
 
 if keyword_set(downloadonly) then return
 
@@ -207,8 +232,10 @@ if keyword_set(fix_elpd_flux) or keyword_set(fix_sopd_flux) then begin   ;  perf
    get_data,prefix+'FLUX'+suffix,ptr=p_flux
    get_data,prefix+'PANGLE'+suffix,ptr=p_pangles
    get_data,prefix+'ENERGY+suffix',ptr=p_energy
-   str_element,/add,p_flux,'V1',p_energy.y
-   str_element,/add,p_flux,'V2',p_pangles.y
+   If(is_struct(p_energy) && ptr_valid(p_energy.y)) Then $
+      str_element,/add,p_flux,'V1',p_energy.y  
+   If(is_struct(p_pangles) && ptr_valid(p_pangles.y)) Then $
+      str_element,/add,p_flux,'V2',p_pangles.y
    store_data,prefix+'FLUX'+suffix,data = p_flux
 endif
 
@@ -217,7 +244,8 @@ if keyword_set(fix_sosp_flux) then begin
   ;  printdat,tn
    get_data,prefix+'FLUX'+suffix,ptr=p_flux
    get_data,prefix+'ENERGY'+suffix,ptr=p_energy
-   str_element,/add,p_flux,'V',p_energy.y
+   If(is_struct(p_energy) && ptr_valid(p_energy.y)) Then $
+      str_element,/add,p_flux,'V',p_energy.y
    store_data,prefix+'FLUX'+suffix,data = p_flux
 
 endif
