@@ -1,12 +1,17 @@
-pro spp_swp_sweepv_new_fslut_v2, sweepv, $
-                              defv1, $
-                              defv2, $
-                              spv, $
-                              index,$
-                              nen = nen, $
-                              version = version, $
-                              plot = plot, $
-                              spfac = spfac
+;+
+;
+;
+;
+; SPP_SWP_SWEEPV_NEW_FSLUT_V2
+;
+; $LastChangedBy: rlivi2 $
+; $LastChangedDate: 2019-09-30 22:43:05 -0700 (Mon, 30 Sep 2019) $
+; $LastChangedRevision: 27804 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/tables/spp_swp_sweepv_new_fslut_v2.pro $
+;
+;-
+
+PRO spp_swp_sweepv_new_fslut_v2, sweepv,defv1,defv2,spv,index,nen=nen,version=version,plot=plot,spfac=spfac,new_defl=new_defl
   
   ;; NOTE: Need to add peak-detect bit to 
   ;; this when I make it into a table
@@ -15,17 +20,8 @@ pro spp_swp_sweepv_new_fslut_v2, sweepv, $
   ;; (full table has 4x as many)
   if not keyword_set(nen) then nen = 32 
 
-
-  ;;-----------------------------------
   ;; Create new S-LUT
-  spp_swp_sweepv_new_v2,sweepv,$
-             defv1,$
-             defv2,$
-             spv,$
-             plot  = plot,$
-             nen   = nen*4, $
-             version = version, $
-             spfac = spfac
+  spp_swp_sweepv_new_v2,sweepv,defv1,defv2,spv,plot=plot,nen=nen*4,version=version,spfac=spfac,new_defl=new_defl
   
   ;; Number of angles in coarse sweep, 
   ;; taking into account sub-steps
@@ -37,8 +33,7 @@ pro spp_swp_sweepv_new_fslut_v2, sweepv, $
   ;; This makes sure we go one way w/ deflectors 
   ;; on even steps, and the other on odds
   
-  if  version ge 2 then begin
-    
+  if  version ge 2 then begin    
     for e=0,nen-1 do begin
       ind = (e*4+2) * nang + indgen(nang)
       if e mod 2 then ind = reverse(ind)
