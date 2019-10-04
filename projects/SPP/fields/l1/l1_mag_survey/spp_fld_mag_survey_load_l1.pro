@@ -10,8 +10,8 @@
 ;
 ; INPUTS:
 ;   FILE: The name of the FIELDS Level 1 CDF file to be loaded.
-;   PREFIX: The standard input is 'spp_fld_magi_survey_' or 
-;     'spp_fld_mago_survey_' 
+;   PREFIX: The standard input is 'spp_fld_magi_survey_' or
+;     'spp_fld_mago_survey_'
 ;
 ; OUTPUTS: No outputs returned.  TPLOT variables containing MAG data from
 ;   the specified CDF file will be created.
@@ -23,12 +23,13 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2019-07-11 16:06:40 -0700 (Thu, 11 Jul 2019) $
-;  $LastChangedRevision: 27437 $
+;  $LastChangedDate: 2019-10-03 16:20:19 -0700 (Thu, 03 Oct 2019) $
+;  $LastChangedRevision: 27812 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
-pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat
+pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat, $
+  downsample = downsample
 
   if not keyword_set(file) then begin
     print, 'file must be specified'
@@ -115,7 +116,7 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat
   ;   0         1                      256              512          2
   ;   1         2                      128              512          4
   ;   2         4                       64              512          8
-  ;   3         5                       32              512         16
+  ;   3         8                       32              512         16
   ;   4        16                       16              256         16
   ;   5        32                        8              128         16
   ;   6        64                        4               64         16
@@ -210,15 +211,34 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat
 
     get_data, prefix + mag_comp + '_2d', data = d_b_2d
 
-    d_2d_size = size(d_b_2d.y, /dim)
+    if n_elements(downsample) EQ 1 then begin
 
-    if d_2d_size[0] GT 0 and n_elements(d_2d_size) EQ 2 then begin
+      spp_fld_mag_survey_4_Sa_per_Cyc, d_ppp.y, d_b_2d.y, d_b_2d.x, $
+        times_1d = times_1d, b_1d = b_1d
 
-      if d_2d_size[1] LT 512 then begin
+      ;      times_1d =
+      ;      b_1d =
+      valid = where(finite(times_1d), n_valid)
 
-        d_b_2d_pad = make_array(d_2d_size[0], 512l - d_2d_size[1])
+      scale_factor = nt_adu[0]
 
-        b_2d = [[d_b_2d.y], [d_b_2d_pad]]
+    endif else begin
+
+      d_2d_size = size(d_b_2d.y, /dim)
+
+      if d_2d_size[0] GT 0 and n_elements(d_2d_size) EQ 2 then begin
+
+        if d_2d_size[1] LT 512 then begin
+
+          d_b_2d_pad = make_array(d_2d_size[0], 512l - d_2d_size[1])
+
+          b_2d = [[d_b_2d.y], [d_b_2d_pad]]
+
+        endif else begin
+
+          b_2d = d_b_2d.y
+
+        endelse
 
       endif else begin
 
@@ -226,15 +246,11 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat
 
       endelse
 
-    endif else begin
+      ; Transform the array into a 1D vector.
 
-      b_2d = d_b_2d.y
+      b_1d = reform(transpose(b_2d), n_elements(b_2d))
 
     endelse
-
-    ; Transform the array into a 1D vector.
-
-    b_1d = reform(transpose(b_2d), n_elements(b_2d))
 
     if n_valid GT 0 then begin
 

@@ -1,7 +1,8 @@
 pro spp_fld_load_l1, filename, $
   load_procedure = load_procedure, $
   file_timerange = file_timerange, $
-  varformat = varformat
+  varformat = varformat, $
+  downsample = downsample
 
   defsysv, '!SPP_FLD_TMLIB', exists = exists
 
@@ -39,25 +40,43 @@ pro spp_fld_load_l1, filename, $
   if not keyword_set(load_procedure) then $
     load_procedure = strlowcase(load_routine_prefix) + '_load_l1'
 
-  call_procedure, load_procedure, filename, prefix = prefix, varformat = varformat
+;stop
+
+  if n_elements(downsample) GT 0 then begin
+
+    ;stop
+
+    call_procedure, load_procedure, filename, prefix = prefix, varformat = varformat, $
+      downsample = downsample
+
+  endif else begin
+
+    call_procedure, load_procedure, filename, prefix = prefix, varformat = varformat
+  endelse
+
+;  stop
+
+;  stop
+
+
 
   file_timestring0 = strmid(file_basename(cdf_vars.g_attributes.logical_file_id), $
     strlen(logical_source)+3) ; for the L1
 
   if strlen(file_timestring0) LT 40 then begin
-    
+
     time_start = time_double(strmid(file_timestring0, 1, 8), tformat = 'YYYYMMDD')
-    
+
     time_stop = time_start + 86400d
-  
+
   endif else begin
-    
+
     time_start = time_double(strmid(file_timestring0, 1, 15), tformat = 'YYYYMMDD_hhmmss')
-    
+
     time_stop = time_double(strmid(file_timestring0, 17, 15), tformat = 'YYYYMMDD_hhmmss')
-    
+
   endelse
-  
+
   file_timerange = [time_start, time_stop]
 
 end
