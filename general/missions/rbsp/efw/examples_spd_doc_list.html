@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Oct  3 18:16:49 2019.<P>
+<STRONG>Last modified: </STRONG>Fri Oct  4 18:16:36 2019.<P>
  
 <HR>
  
@@ -280,6 +280,9 @@ KEYWORDS:
  no_spice_load -&gt; set if you've already loaded the spice kernels
 	noplot -&gt; set to avoid tplotting
 	notrace -&gt; skip the ttrace2equator call. This takes a lot of computational time
+ nospinaxis_calcs -&gt; skip the part that loads the spinaxis pointing direction.
+   This can be problematic on certain dates. Only set if you don't need the
+   spinaxis direction or the sc velocity in mGSE coord
 OUTPUT: various tplot variables
 HISTORY:
  Written by Aaron Breneman, UMN, Dec 2012
