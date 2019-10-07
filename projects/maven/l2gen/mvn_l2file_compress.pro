@@ -15,9 +15,9 @@
 ;None, so far
 ;HISTORY:
 ; 26-nov-2014, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: muser $
-; $LastChangedDate: 2017-01-11 16:14:27 -0800 (Wed, 11 Jan 2017) $
-; $LastChangedRevision: 22578 $
+; $LastChangedBy: jimmpc1 $
+; $LastChangedDate: 2019-10-06 14:57:53 -0700 (Sun, 06 Oct 2019) $
+; $LastChangedRevision: 27823 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_l2file_compress.pro $
 ;-
 Pro mvn_l2file_compress, fullfile0, _extra = _extra
@@ -43,7 +43,7 @@ Pro mvn_l2file_compress, fullfile0, _extra = _extra
   file_path = file_dirname(fullfile)
 
   fullfile = './'+file
-  file_move, fullfile_init, fullfile
+  file_move, fullfile_init, fullfile, /overwrite
 
   file_id = file_basename(file, '.cdf')
 
@@ -73,8 +73,8 @@ Pro mvn_l2file_compress, fullfile0, _extra = _extra
   spawn, 'chmod g+w '+md5file
 
 ;move the fullfile and md5file to the data directory
-  file_move, fullfile, fullfile_init
-  file_move, md5file, file_path[0]+'/'+file_basename(md5file)
+  file_move, fullfile, fullfile_init, /overwrite
+  file_move, md5file, file_path[0]+'/'+file_basename(md5file), /overwrite
 
 
   Return
