@@ -13,7 +13,12 @@
 pro print_cdf_info,filename,printatt=printatt
 if keyword_set(filename) eq 0 then filename = dialog_pickfile()
 print,'File: ',filename
-id=cdf_open(filename)
+;Get cdf version, hacked from read_myCDF, jmm, 2019-10-07
+CDF_LIB_INFO, VERSION=V, RELEASE=R, COPYRIGHT=C, INCREMENT=I
+cdfversion = string(V, R, I, FORMAT='(I0,".",I0,".",I0,A)')
+;set readonly for versions prior to cdf 3.7.0
+if cdfversion Lt '3.7.0' then readonly = 1b else readonly = 0b
+id=cdf_open(filename,readonly=readonly)
 info=cdf_info(id)
 printdat,info,nstr=1
 ;print,'dim=',info.dim

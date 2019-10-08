@@ -134,9 +134,9 @@
 ; Side Effects:
 ;   Data is returned in pointer variables. Calling routine is responsible for freeing up heap memory - otherwise a memory leak will occur.
 ;
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-02-07 21:18:03 -0800 (Wed, 07 Feb 2018) $
-; $LastChangedRevision: 24666 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-10-07 12:15:58 -0700 (Mon, 07 Oct 2019) $
+; $LastChangedRevision: 27825 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_load_vars.pro $
 ; $ID: $
 ;-
@@ -150,7 +150,13 @@ function cdf_load_vars,files,varnames=vars,varformat=vars_fmt,info=info,verbose=
 vb = keyword_set(verbose) ? verbose : 0
 vars=''
 info = 0
-dprint,dlevel=4,verbose=verbose,'$Id: cdf_load_vars.pro 24666 2018-02-08 05:18:03Z adrozdov $'
+dprint,dlevel=4,verbose=verbose,'$Id: cdf_load_vars.pro 27825 2019-10-07 19:15:58Z jimm $'
+
+;Get cdf version, hacked from read_myCDF, jmm, 2019-10-07
+CDF_LIB_INFO, VERSION=V, RELEASE=R, COPYRIGHT=C, INCREMENT=I
+cdfversion = string(V, R, I, FORMAT='(I0,".",I0,".",I0,A)')
+;set readonly for versions prior to cdf 3.7.0
+if cdfversion Lt '3.7.0' then readonly = 1b else readonly = 0b
 
 on_ioerror, ferr
 for fi=0,n_elements(files)-1 do begin
@@ -158,7 +164,7 @@ for fi=0,n_elements(files)-1 do begin
         dprint,dlevel=1,verbose=verbose,'File not found: "'+files[fi]+'"'
         continue
     endif
-    id=cdf_open(files[fi])
+    id=cdf_open(files[fi], readonly = readonly)
     if not keyword_set(info) then begin
         info = cdf_info(id,verbose=verbose) ;, convert_int1_to_int2=convert_int1_to_int2)
     endif  

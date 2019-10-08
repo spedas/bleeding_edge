@@ -15,9 +15,9 @@ end
 ;   id:   CDF file ID.
 ;CREATED BY:    Davin Larson
 ; LAST MODIFIED: @(#)cdf_info.pro    1.9 02/11/01
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-01-23 20:38:14 -0800 (Tue, 23 Jan 2018) $
-; $LastChangedRevision: 24575 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-10-07 12:15:58 -0700 (Mon, 07 Oct 2019) $
+; $LastChangedRevision: 27825 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_info.pro $
 ;-
 
@@ -26,10 +26,15 @@ tstart = systime(1)
 if n_elements(id0) eq 0 then id0 = dialog_pickfile(/multi)
 vb = keyword_set(verbose) ? verbose : 0
 
-;for i=0,n_elements(id0)-1 do begin
+;Get cdf version, hacked from read_myCDF
+CDF_LIB_INFO, VERSION=V, RELEASE=R, COPYRIGHT=C, INCREMENT=I
+cdfversion = string(V, R, I, FORMAT='(I0,".",I0,".",I0,A)')
+;set readonly for versions prior to cdf 3.7.0
+if cdfversion Lt '3.7.0' then readonly = 1b else readonly = 0b
 
+;for i=0,n_elements(id0)-1 do begin
 if size(/type,id0) eq 7 then begin
-   if file_test(id0) then  id=cdf_open(id0)  $
+   if file_test(id0) then  id=cdf_open(id0, readonly = readonly)  $
    else begin
       if vb ge 1 then dprint,verbose=verbose,'File not found: "'+id0+'"'
       return,0

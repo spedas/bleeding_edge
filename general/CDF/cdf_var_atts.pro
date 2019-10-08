@@ -17,9 +17,9 @@
 ;   var;        CDF variable name or number
 ;   attname:    CDF attribute name
 ;CREATED BY:    Davin Larson
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-01-23 20:38:14 -0800 (Tue, 23 Jan 2018) $
-; $LastChangedRevision: 24575 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-10-07 12:15:58 -0700 (Mon, 07 Oct 2019) $
+; $LastChangedRevision: 27825 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_var_atts.pro $
 ;-
 
@@ -27,7 +27,13 @@ function  cdf_var_atts,id0,var,attname,default=default,zvar=zvar,names_only=name
      attributes=att, $   ; Keyword is obsolete, don't use
      convert_int1_to_int2=convert_int1_to_int2
 
-if size(/type,id0) eq 7 then id=cdf_open(id0) else id=id0
+;Get cdf version, hacked from read_myCDF, jmm, 2019-10-07
+CDF_LIB_INFO, VERSION=V, RELEASE=R, COPYRIGHT=C, INCREMENT=I
+cdfversion = string(V, R, I, FORMAT='(I0,".",I0,".",I0,A)')
+;set readonly for versions prior to cdf 3.7.0
+if cdfversion Lt '3.7.0' then readonly = 1b else readonly = 0b
+
+if size(/type,id0) eq 7 then id=cdf_open(id0, readonly=readonly) else id=id0
 t0=systime(1)
 attstr = n_elements(default) ne 0 ? default : 0   ; Define  default return value
 
