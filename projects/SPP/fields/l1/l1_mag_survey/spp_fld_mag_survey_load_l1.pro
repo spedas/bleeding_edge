@@ -23,13 +23,15 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2019-10-03 16:20:19 -0700 (Thu, 03 Oct 2019) $
-;  $LastChangedRevision: 27812 $
+;  $LastChangedDate: 2019-10-12 09:28:00 -0700 (Sat, 12 Oct 2019) $
+;  $LastChangedRevision: 27845 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
 pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat, $
   downsample = downsample
+
+  if n_elements(downsample) EQ 0 then downsample = 0
 
   if not keyword_set(file) then begin
     print, 'file must be specified'
@@ -211,9 +213,9 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat, $
 
     get_data, prefix + mag_comp + '_2d', data = d_b_2d
 
-    if n_elements(downsample) EQ 1 then begin
+    if downsample NE 0 then begin
 
-      spp_fld_mag_survey_4_Sa_per_Cyc, d_ppp.y, d_b_2d.y, d_b_2d.x, $
+      spp_fld_mag_survey_4_sa_per_cyc, d_ppp.y, d_b_2d.y, d_b_2d.x, $
         times_1d = times_1d, b_1d = b_1d
 
       ;      times_1d =

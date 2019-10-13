@@ -32,8 +32,8 @@
 ;
 ;ACKNOWLEDGEMENT:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2018-08-01 11:03:38 -0700 (Wed, 01 Aug 2018) $
-; $LastChangedRevision: 25538 $
+; $LastChangedDate: 2019-10-12 12:38:21 -0700 (Sat, 12 Oct 2019) $
+; $LastChangedRevision: 27847 $
 ; $URL $
 ;-
 
@@ -198,7 +198,7 @@ for i=0L,n_elements(time_03)-1 do begin
         data_02h=data_02[where(time_02 gt time_03[i])]
         time_02h=time_02[where(time_02 gt time_03[i])]
         for j=0L,n_elements(data_02h)-1 do begin
-            if finite(data_02h[j])) then begin
+            if finite(data_02h[j]) then begin
                 inter_highD=data_02h[j]
                 inter_highT=time_02h[j]
                 break

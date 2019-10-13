@@ -23,7 +23,7 @@
 ;             PPARC, Tohoku Univ.
 ;
 ;   $LastChangedBy: nikos $
-;   $LastChangedDate: 2018-08-01 11:03:38 -0700 (Wed, 01 Aug 2018) $
+;   $LastChangedDate: 2019-10-12 12:38:21 -0700 (Sat, 12 Oct 2019) $
 ;   $URL:
 ;-
 
@@ -61,10 +61,11 @@ for i=0,n_elements(site_code)-1 do begin
 
   ;--- Set the file path
   source.local_data_dir = root_data_dir() + 'iugonet/tohokuu/radio_obs/iit/hfspec/'
-  source.remote_data_dir = 'http://ariel.gp.tohoku.ac.jp/~jupiter/it_hf/cdf2/'
+;  source.remote_data_dir = 'http://ariel.gp.tohoku.ac.jp/~jupiter/it_hf/cdf2/'
+  source.remote_data_dir = 'http://adrastea.gp.tohoku.ac.jp/~jupiter/it_hf/cdf2/'
 
   ;--- Download file
-  relfnames = filedate+'/'+'it_h1_hf_'+filehour+'_v02.cdf'
+  relfnames = filedate+'/'+'it_h1_hf_'+filehour+'_v0?.cdf'
   datfiles = spd_download(remote_file=relfnames, remote_path=source.remote_data_dir, local_path=source.local_data_dir, _extra=source, /last_version)
 
   ;--- Skip load where no data

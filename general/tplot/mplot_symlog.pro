@@ -26,8 +26,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-08-31 07:30:30 -0700 (Sat, 31 Aug 2019) $
-; $LastChangedRevision: 27710 $
+; $LastChangedDate: 2019-10-08 11:11:53 -0700 (Tue, 08 Oct 2019) $
+; $LastChangedRevision: 27831 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/mplot_symlog.pro $
 ;
 ;-
@@ -167,8 +167,8 @@ PRO mplot_symlog, data=data, limits=lim
   IF SIZE(yrange, /type) NE 0 THEN BEGIN
      ymax = MAX(ABS(yrange))
      ymin = MIN(yrange)
-     IF ymin LT 0. THEN BEGIN
-        dprint, dlevel=1, verbose=verbose, 'Minimum yrange value is negative!'
+     IF ymin LE 0.0 THEN BEGIN
+        dprint, dlevel=1, verbose=verbose, 'Minimum yrange value is negative or zero!'
         ymin = Max(abs(yrange))/1.0e3
      ENDIF 
   ENDIF
