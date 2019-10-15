@@ -14,11 +14,12 @@
 ;  verbose:     Display information.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-09-16 12:19:40 -0700 (Mon, 16 Sep 2019) $
-; $LastChangedRevision: 27759 $
+; $LastChangedBy: cmfowler $
+; $LastChangedDate: 2019-10-14 09:53:47 -0700 (Mon, 14 Oct 2019) $
+; $LastChangedRevision: 27848 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_programs/mvn_sta_mag_load.pro $
 ;
+;.r /Users/cmfowler/IDL/STATIC_routines/mvn_sta_mag_load/mvn_sta_mag_load_cmf.pro
 ;-
 pro mvn_sta_mag_load, frame=frame, verbose=verbose,  tplot=tplot
 
@@ -106,8 +107,9 @@ pro mvn_sta_mag_load, frame=frame, verbose=verbose,  tplot=tplot
   bb[*,0]=smooth_in_time(magf[*,0],time,4)
   bb[*,1]=smooth_in_time(magf[*,1],time,4)
   bb[*,2]=smooth_in_time(magf[*,2],time,4)
-  magf=bb
-
+  magf2 = magf  ;retain original MAG data
+  magf=bb  ;smoothed MAG data
+  
   ;-------------------------------------------------------------------------
   ;Davin's SPICE Routines to convert from mag to sta (frame of reference). 
   mk = mvn_spice_kernels(/all,/load,trange=trange,verbose=verbose)
@@ -126,7 +128,36 @@ pro mvn_sta_mag_load, frame=frame, verbose=verbose,  tplot=tplot
            xx=interpol(magf[*,0],time,apid_time)
            yy=interpol(magf[*,1],time,apid_time)
            zz=interpol(magf[*,2],time,apid_time)
-           vec=transpose([[xx],[yy],[zz]])
+           
+           ;=======================
+           ;CMF Added this section:
+           ;Do not interpolate MAG data to STA time - this doesn't take into account the integration time of STATIC. Use an average 
+           ;of MAG over the STATIC measurement time instead. This needs to be done in a for loop:
+           neleAP = n_elements(apid_time)
+           xx2 = fltarr(neleAP)+!values.f_nan  ;store average of mag data during each STA measurement. 
+           yy2 = fltarr(neleAP)+!values.f_nan
+           zz2 = fltarr(neleAP)+!values.f_nan
+           
+           start_time2 = time_double(start_time)
+           end_time2 = time_double(end_time)
+           for ttt = 0l, neleAP-1l do begin
+                iKP = where(time ge start_time2[ttt] and time lt end_time2[ttt], niKP)
+                if niKP ge 3 then begin
+                    xx2[ttt] = mean(magf[iKP,0],/nan)  ;average of MAG data in between STATIC measurements
+                    yy2[ttt] = mean(magf[iKP,1],/nan)
+                    zz2[ttt] = mean(magf[iKP,2],/nan)                   
+                endif else begin
+                    xx2[ttt] = xx[ttt]  ;If for some reason there are no MAG data during this time period, use the interpolated data
+                    yy2[ttt] = yy[ttt]
+                    zz2[ttt] = zz[ttt]
+                endelse
+            
+           endfor
+           ;=======================
+           
+           ;vec=transpose([[xx],[yy],[zz]])
+           vec=transpose([[xx2],[yy2],[zz2]])   ;CMF added this
+           
            newvec=spice_vector_rotate(vec,apid_time,$
                                       'MAVEN_SPACECRAFT',$
                                       'MAVEN_STATIC',$
