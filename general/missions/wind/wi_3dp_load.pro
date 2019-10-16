@@ -21,8 +21,8 @@
 ; Author: Davin Larson
 ;
 ; $LastChangedBy: jimmpc1 $
-; $LastChangedDate: 2019-09-30 11:13:42 -0700 (Mon, 30 Sep 2019) $
-; $LastChangedRevision: 27799 $
+; $LastChangedDate: 2019-10-15 16:35:03 -0700 (Tue, 15 Oct 2019) $
+; $LastChangedRevision: 27870 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/wind/wi_3dp_load.pro $
 ;-
 pro wi_3dp_load,type,files=files,trange=trange,verbose=verbose,$
@@ -81,9 +81,9 @@ case datatype of
     addmaster=1
   end
 
-  'elpd': begin ;note that SPDF does not have these files, jmm, 2017-03-06
+  'elpd': begin ;note that SPDF does not have 'new' files, jmm, 2017-03-06
     if(at_ssl) then pathformat = 'wind/3dp/elpd2/YYYY/wi_3dp_elpd_YYYYMMDD_'+version+'.cdf' $
-    else pathformat = 'wind/3dp/3dp_elpd2/YYYY/wi_3dp_elpd_YYYYMMDD_'+version+'.cdf'
+    else pathformat = 'wind/3dp/3dp_elpd/YYYY/wi_elpd_3dp_YYYYMMDD_'+version+'.cdf'
     if not keyword_set(varformat) then varformat = '*'; 'FLUX EDENS TEMP QP QM QT MAGF TIME'
     if not keyword_set(prefix) then prefix = 'wi_3dp_elpd_'
     fix_elpd_flux = 1
@@ -231,7 +231,7 @@ cdf2tplot,file=files,varformat=varformat,verbose=verbose,prefix=prefix ,tplotnam
 if keyword_set(fix_elpd_flux) or keyword_set(fix_sopd_flux) then begin   ;  perform cluge because CDF file attributes are not set for these files
    get_data,prefix+'FLUX'+suffix,ptr=p_flux
    get_data,prefix+'PANGLE'+suffix,ptr=p_pangles
-   get_data,prefix+'ENERGY+suffix',ptr=p_energy
+   get_data,prefix+'ENERGY'+suffix,ptr=p_energy
    If(is_struct(p_energy) && ptr_valid(p_energy.y)) Then $
       str_element,/add,p_flux,'V1',p_energy.y  
    If(is_struct(p_pangles) && ptr_valid(p_pangles.y)) Then $
@@ -250,12 +250,16 @@ if keyword_set(fix_sosp_flux) then begin
 
 endif
 
-
-
 if datatype eq 'elpd' then begin
    reduce_pads,'wi_3dp_elpd_FLUX'+suffix,1,4,4
    reduce_pads,'wi_3dp_elpd_FLUX'+suffix,2,0,0
-   reduce_pads,'wi_3dp_elpd_FLUX'+suffix,2,12,12
+;data does not always have enough angular bins, jmm, 2019-10-15
+   get_data,'wi_3dp_elpd_PANGLE'+suffix,ptr=p_pangles
+   If(is_struct(p_pangles) && ptr_valid(p_pangles.y)) Then Begin
+      szp = size(*p_pangles.y)
+      If(szp[0] Eq 2 && szp[2] Ge 12) Then $
+         reduce_pads,'wi_3dp_elpd_FLUX'+suffix,2,12,12
+   Endif
 endif
 
 options,/def,strfilter(tn,'wi_3dp_ion_vel',delim=' ') , colors='bgr', labels=['Vx','Vy','Vz']   ; set colors for the vector quantities
