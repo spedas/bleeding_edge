@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Oct 15 18:15:42 2019.<P>
+<STRONG>Last modified: </STRONG>Wed Oct 16 18:15:44 2019.<P>
  
 <HR>
  
@@ -189,6 +189,8 @@ This page was created by the IDL library routine
 <br>Prints a time stamp along the lower right edge of the current plot box
 <LI><A HREF="#TIME_TICKS">TIME_TICKS</A>
 <br>Returns a structure that can be used to create time ticks for a plot.
+<LI><A HREF="#TIMEBOX_MEAN">TIMEBOX_MEAN</A>
+<br>Calculates the mean, median, and standard deviation of a 1-D array
 <LI><A HREF="#TINTERPOL">TINTERPOL</A>
 <LI><A HREF="#TKM2RE">TKM2RE</A>
 <LI><A HREF="#TPLOT_NOISE_VARS">TPLOT_NOISE_VARS</A>
@@ -4575,7 +4577,7 @@ HISTORY:
 <A NAME="THIGH_PASS_FILTER">
 <H2>THIGH_PASS_FILTER</H2></A>
 <A HREF="#THEMIS_NS_MODEL">[Previous Routine]</A>
-<A HREF="#TIME_AVERAGE">[Next Routine]</A>
+<A HREF="#TIMEBOX_MEAN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE: thigh_pass_filter, varname, dt, newname = newname
@@ -4625,9 +4627,56 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <STRONG>(See <A href="misc/thigh_pass_filter.pro">general/misc/thigh_pass_filter.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="TIMEBOX_MEAN">
+<H2>TIMEBOX_MEAN</H2></A>
+<A HREF="#THIGH_PASS_FILTER">[Previous Routine]</A>
+<A HREF="#TIME_AVERAGE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   timebox_mean
+PURPOSE:
+  Calculates the mean, median, and standard deviation of a 1-D array
+  for the input time resolution.
+
+USAGE:
+  timebox_mean, var, resolution = resolution, result=dat
+
+INPUTS:
+       var:     Tplot-like data structure {x:unix time, y:data} 
+                or variable name/number.
+
+OUTPUT:         If var is a tplot variable name/number, then the result
+                is stored as a new tplot variable.  Otherwise, the 
+                result is returned via keyword (see below).
+
+KEYWORDS:
+       RESOLUTON: time resolution of average in seconds, the default
+                  is one day. 86400.0 seconds
+
+       OUTLIER: Discard points more than this many standard deviations
+                from the mean.  Default = 10.
+
+       RESULT:  Named variable to hold the result.
+       TIME_RANGE: the input time range, the default is
+                   to obtain the time range from the data
+       TIME_BINS_IN: Use these bins for input, either a 2Xnbins array
+                     or 1D array of Nbins+1, The 2Xnbins array option
+                     allows for discontinuous binning.
+HISTORY:
+       Hacked from box_mean.pro, jmm, jimm@ssl.berkeley.eud
+
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-10-16 14:04:32 -0700 (Wed, 16 Oct 2019) $
+ $LastChangedRevision: 27880 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/timebox_mean.pro $
+
+</PRE><P>
+<STRONG>(See <A href="misc/timebox_mean.pro">general/misc/timebox_mean.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TIME_AVERAGE">
 <H2>TIME_AVERAGE</H2></A>
-<A HREF="#THIGH_PASS_FILTER">[Previous Routine]</A>
+<A HREF="#TIMEBOX_MEAN">[Previous Routine]</A>
 <A HREF="#TIME_CLIP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Oct 15 18:15:42 2019.<P>
+<STRONG>Last modified: </STRONG>Wed Oct 16 18:15:44 2019.<P>
  
 <HR>
  
@@ -174,6 +174,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
             defined by coord (do not use with xyz keyword)
        sundir: direction of the sun (+x) in the figure (right or left); default is 'right'
                (+N direction for LMN coordinate)
+       independent_axes: by default, the same scale is used for each axis; set this keyword
+            to use different scales for the x, y, and z axes 
                
  EXAMPLES:
        mms_mec_formation_plot, '2016-1-08/2:36', /xy_projection, coord='gse'
@@ -198,8 +200,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        and Kim Kokkonen at LASP
 
  $LastChangedBy: egrimes $
- $LastChangedDate: 2016-08-09 12:53:09 -0700 (Tue, 09 Aug 2016) $
- $LastChangedRevision: 21625 $
+ $LastChangedDate: 2019-10-16 10:31:13 -0700 (Wed, 16 Oct 2019) $
+ $LastChangedRevision: 27875 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_mec_formation_plot.pro $
 </PRE><P>
 <STRONG>(See <A href="mec/mms_mec_formation_plot.pro">projects/mms/mec/mms_mec_formation_plot.pro</A>)</STRONG><P>

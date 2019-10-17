@@ -29,6 +29,8 @@
 ;            defined by coord (do not use with xyz keyword)
 ;       sundir: direction of the sun (+x) in the figure (right or left); default is 'right'
 ;               (+N direction for LMN coordinate)
+;       independent_axes: by default, the same scale is used for each axis; set this keyword
+;            to use different scales for the x, y, and z axes 
 ;               
 ; EXAMPLES:
 ;       mms_mec_formation_plot, '2016-1-08/2:36', /xy_projection, coord='gse'
@@ -53,14 +55,14 @@
 ;       and Kim Kokkonen at LASP
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-08-09 12:53:09 -0700 (Tue, 09 Aug 2016) $
-; $LastChangedRevision: 21625 $
+; $LastChangedDate: 2019-10-16 10:31:13 -0700 (Wed, 16 Oct 2019) $
+; $LastChangedRevision: 27875 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_mec_formation_plot.pro $
 ;-
 
 pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_factor, $
   xy_projection=xy_projection, xz_projection=xz_projection, yz_projection=yz_projection, $
-  coord=coord, lmn=lmn, xyz=xyz, sundir=sundir
+  coord=coord, lmn=lmn, xyz=xyz, sundir=sundir, independent_axes=independent_axes
 
   if undefined(coord) then coord='gse' else coord=strlowcase(coord)
   if undefined(sundir) then sundir = 'right'
@@ -109,26 +111,51 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
   zes = (zes - mean(zes))
 
   ; get ranges
-  if not undefined(lmn) then begin
-    if sundir eq 'left' then begin
-      xrange = 1.3 * [max(xes), min(xes)]
-      yrange = 1.3 * [min(yes), max(yes)]
-    endif else begin
-      xrange = 1.3 * [min(xes), max(xes)]
-      yrange = 1.3 * [max(yes), min(yes)]
-    endelse
-    zrange = 1.3 * [min(zes), max(zes)]
-    light=0
+  if keyword_set(independent_axes) then begin
+      if not undefined(lmn) then begin
+        if sundir eq 'left' then begin
+          xrange = 1.3 * [max(xes), min(xes)]
+          yrange = 1.3 * [min(yes), max(yes)]
+        endif else begin
+          xrange = 1.3 * [min(xes), max(xes)]
+          yrange = 1.3 * [max(yes), min(yes)]
+        endelse
+        zrange = 1.3 * [min(zes), max(zes)]
+        light=0
+      endif else begin
+        if sundir eq 'left' then begin
+          xrange = 1.3 * [max(xes), min(xes)]
+          yrange = 1.3 * [max(yes), min(yes)]
+        endif else begin
+          xrange = 1.3 * [min(xes), max(xes)]
+          yrange = 1.3 * [min(yes), max(yes)]
+        endelse
+        zrange = 1.3 * [min(zes), max(zes)]
+        light=1
+      endelse
   endif else begin
-    if sundir eq 'left' then begin
-      xrange = 1.3 * [max(xes), min(xes)]
-      yrange = 1.3 * [max(yes), min(yes)]
+    ; use a common range for all axes (default)
+    if not undefined(lmn) then begin
+      if sundir eq 'left' then begin
+        xrange = 1.3 * [max([xes, yes, zes]), min([xes, yes, zes])]
+        yrange = 1.3 * [min([xes, yes, zes]), max([xes, yes, zes])]
+      endif else begin
+        xrange = 1.3 * [min([xes, yes, zes]), max([xes, yes, zes])]
+        yrange = 1.3 * [max([xes, yes, zes]), min([xes, yes, zes])]
+      endelse
+      zrange = 1.3 * [min([xes, yes, zes]), max([xes, yes, zes])]
+      light=0
     endif else begin
-      xrange = 1.3 * [min(xes), max(xes)]
-      yrange = 1.3 * [min(yes), max(yes)]
+      if sundir eq 'left' then begin
+        xrange = 1.3 * [max([xes, yes, zes]), min([xes, yes, zes])]
+        yrange = 1.3 * [max([xes, yes, zes]), min([xes, yes, zes])]
+      endif else begin
+        xrange = 1.3 * [min([xes, yes, zes]), max([xes, yes, zes])]
+        yrange = 1.3 * [min([xes, yes, zes]), max([xes, yes, zes])]
+      endelse
+      zrange = 1.3 * [min([xes, yes, zes]), max([xes, yes, zes])]
+      light=1
     endelse
-    zrange = 1.3 * [min(zes), max(zes)]
-    light=1
   endelse
 
   ; edges between vertices
