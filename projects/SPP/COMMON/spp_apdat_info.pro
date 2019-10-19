@@ -1,11 +1,23 @@
 ; +
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-12-12 23:06:05 -0800 (Wed, 12 Dec 2018) $
-; $LastChangedRevision: 26318 $
+; $LastChangedDate: 2019-10-17 23:57:28 -0700 (Thu, 17 Oct 2019) $
+; $LastChangedRevision: 27889 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
 ; -
+
+
+function spp_apdat_info_restore,save_file
+
+   restore,save_file,/verbose
+   return, all_apdat
+end
+   
+   
+  
+
+
 
 
 
@@ -21,6 +33,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
                   sort_flag=sort_flag,$
                   current_filename = current_filename, $
                   cdf_pathname = cdf_pathname, $
+                  cdf_linkname = cdf_linkname, $
                   make_cdf = make_cdf, $
                   nonzero=nonzero,  $
                   dlevel=dlevel, $
@@ -28,6 +41,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
                   info = info,  $
                   finish=finish,$
                   window_obj=window_obj, $
+                  append_filename=append_filename,  $
                   tname=tname,$
                   set_break=set_break, $
                   ttags=ttags,$
@@ -38,6 +52,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
                   rt_flag=rt_flag
 
   common spp_apdat_info_com, all_apdat, alt_apdat, all_info,temp1,temp2
+  
   
   if keyword_set(quick) && isa(apid_description,/integer,/scalar) && isa(all_apdat[apid_description]) then begin
     apdats= all_apdat[apid_description]
@@ -59,6 +74,16 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   if keyword_set(file_restore) then restore,file=file_restore,/verbose
 
   if ~keyword_set(all_apdat) then all_apdat = replicate( obj_new() , 2^11 )
+
+  if keyword_set(append_filename) then begin
+    aps = spp_apdat_info_restore(append_filename)
+    for i=0 , n_elements(aps) do begin
+      if obj_valid(all_apdat[i]) then all_apdat[i].append , aps[i] else all_apdat[i] = aps[i]
+    endfor
+    return
+  endif
+
+
   
   if ~keyword_set(alt_apdat) then alt_apdat = orderedhash()
   if ~keyword_set(all_info) then begin
@@ -131,6 +156,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     if n_elements(window_obj) ne 0 then  apdat.window_obj = window(window_title=apdat.name)
     if n_elements(save_flag)  ne 0 then apdat.save_flag = save_flag
     if n_elements(cdf_pathname) ne 0 then apdat.cdf_pathname= cdf_pathname
+    if n_elements(cdf_linkname) ne 0 then apdat.cdf_linkname= cdf_linkname
     if n_elements(output_lun) ne 0 then apdat.output_lun = output_lun
     if ~keyword_set(all)  &&  (apdat.npkts eq 0) then continue
     if keyword_set(finish) then    apdat.finish

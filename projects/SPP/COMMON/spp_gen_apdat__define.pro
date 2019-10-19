@@ -2,8 +2,8 @@
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-08-13 22:40:01 -0700 (Tue, 13 Aug 2019) $
-; $LastChangedRevision: 27601 $
+; $LastChangedDate: 2019-10-17 23:57:28 -0700 (Thu, 17 Oct 2019) $
+; $LastChangedRevision: 27889 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -67,9 +67,20 @@ END
 
 PRO spp_gen_apdat::help
   help,/obj,self
-  printdat,self.last_data_p
+  printdat,self.last_data_p,varname='last_data_p'
 END
 
+
+pro spp_gen_apdat::append,new
+if self.npkts eq 0 then begin
+  self = new
+endif else begin
+  self.npkts += new.npkts
+  self.data.append, new.data
+endelse
+
+
+end
 
 function spp_gen_apdat::info,header=header
   ;rs =string(format="(Z03,'x ',a-14, i8,i8 ,i12,i3,i3,i8,' ',a-14,a-36,' ',a-36, ' ',a-20,a)",self.apid,self.name,self.npkts,self.lost_pkts, $
@@ -218,8 +229,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-08-13 22:40:01 -0700 (Tue, 13 Aug 2019) $
-; $LastChangedRevision: 27601 $
+; $LastChangedDate: 2019-10-17 23:57:28 -0700 (Thu, 17 Oct 2019) $
+; $LastChangedRevision: 27889 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -236,8 +247,8 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2019-08-13 22:40:01 -0700 (Tue, 13 Aug 2019) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 27601 $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2019-10-17 23:57:28 -0700 (Thu, 17 Oct 2019) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 27889 $'
 
     return,sw_hash
 end
@@ -280,8 +291,8 @@ function spp_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2019-08-13 22:40:01 -0700 (Tue, 13 Aug 2019) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 27601 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2019-10-17 23:57:28 -0700 (Thu, 17 Oct 2019) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 27889 $'
 
   return,global_att
 end
@@ -477,6 +488,7 @@ PRO spp_gen_apdat::cdf_makefile,trange=trange,verbose=verbose
     filename = time_string(trange[0],tformat=pathformat)
     filename = str_sub(filename,'$NAME$',self.name)
     filename = root_data_dir() + filename
+    if keyword_set(self.cdf_linkname) then cdf.linkname = root_data_dir() +self.cdf_linkname
     ;    dprint,dlevel=self.dlevel,verbose=verbose,
     cdf.write,filename,verbose = verbose    ; isa(verbose) ? verbose : self.verbose
     obj_destroy,cdf
@@ -593,6 +605,7 @@ PRO spp_gen_apdat__define
     data: obj_new(), $
     window_obj: obj_new(), $
     cdf_pathname:'', $
+    cdf_linkname:'', $
     cdf_tagnames:'', $
     output_lun: 0, $
     verbose: 0 , $
