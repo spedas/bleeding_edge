@@ -21,35 +21,45 @@
 ;       HSK:          Restore housekeeping from this IDL save/restore file.
 ;                     (Full path and name required.)
 ;
+;       RESET:        Sets common block HSK to zero.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-04-08 17:00:54 -0700 (Mon, 08 Apr 2019) $
-; $LastChangedRevision: 26966 $
+; $LastChangedDate: 2019-10-21 10:15:04 -0700 (Mon, 21 Oct 2019) $
+; $LastChangedRevision: 27902 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_hskplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2017-04-06
 ;-
-pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk, pans=pans
+pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk, reset=reset, pans=pans
 
   @mvn_swe_com
 
   oneday = 86400D
+  if keyword_set(reset) then swe_hsk = 0
+  rflg = 0
 
   if (size(hsk,/type) eq 7) then begin
     finfo = file_info(hsk)
     if (finfo.exists) then begin
       if (size(swe_hsk,/type) eq 8) then begin
-        rflg = 1
         hsk_save = swe_hsk
-      endif else rflg = 0
+        rflg = 1
+      endif
       restore, file=hsk
       trange = minmax(swe_hsk.time)
       timespan, time_string([trange[0],trange[1]+oneday],prec=-3)
     endif else begin
-      rflg = 0
       print,"File not found: ",hsk
       return
     endelse
-  endif else rflg = 0
+  endif
+
+  if (~rflg and size(swe_hsk,/type) eq 8) then begin
+    trange = minmax(swe_hsk.time)
+    timespan, time_string([trange[0],trange[1]+oneday],prec=-3)
+    hsk_save = swe_hsk
+    rflg = 1
+  endif
 
   if (~rflg) then begin  
     if keyword_set(orbit) then begin
@@ -200,7 +210,7 @@ pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk, pans=pans
     tlow = 5*floor((min(swe_hsk.lvpst) < min(swe_hsk.digt) < min(swe_hsk.analt))/5.)
     thigh = 5*ceil((max(swe_hsk.lvpst) > max(swe_hsk.digt) > max(swe_hsk.analt))/5.)
     ylim,'Temps',tlow,thigh,0
-    options,'Temps','constant',[0]
+    options,'Temps','constant',[-10,-5,0,5]
     options,'Temps','yticks',(thigh - tlow)/5
     options,'Temps','yminor',5
     options,'Temps','labflag',1

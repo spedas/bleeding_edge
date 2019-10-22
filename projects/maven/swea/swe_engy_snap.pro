@@ -45,6 +45,23 @@ function specmom, eflux, erange=erange
   return, {N:N_tot, Nsig:N_sig, T:temp, Tsig:tsig, indx:j}
 end
 
+; Sheath "flat-top" distribution function
+
+function fm_spec_generalized, V, parameters = par
+
+    if not keyword_set(par) then begin
+        par = {V0 : 5000.d,   $ ;km/s
+            p : 5.5d,    $ ;
+            r : 4.5d,    $
+            C0 : 1.d-10, $
+            func : 'fm_spec_generalized' };max df
+    endif
+    if n_params() eq 0 then return,par
+
+    df = par.C0*(1+(V/par.V0)^(2.*par.r))^(-par.p/par.r)
+    return,df
+end
+
 ;+
 ;PROCEDURE:   swe_engy_snap
 ;PURPOSE:
@@ -188,9 +205,9 @@ end
 ;       TWOT:          Compare energy of peak energy flux and temperature of 
 ;                      Maxwell-Boltzmann fit. (Nominally, E_peak = 2*T)
 ;
-; $LastChangedBy: xussui $
-; $LastChangedDate: 2019-08-29 16:04:00 -0700 (Thu, 29 Aug 2019) $
-; $LastChangedRevision: 27699 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2019-10-21 11:16:21 -0700 (Mon, 21 Oct 2019) $
+; $LastChangedRevision: 27904 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -635,8 +652,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     endif
 
     if (dopot) then begin
-      apot = abs(pot)
-      if (spflg) then oplot,[apot,apot],yrange,line=2,color=4 $
+      if (spflg) then oplot,[-pot,-pot],yrange,line=2,color=4 $
                  else oplot,[pot,pot],yrange,line=2,color=6
     endif
     

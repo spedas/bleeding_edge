@@ -15,17 +15,20 @@
 ; use_l2_files = If set, use current L2 files as input, and not
 ;                L0's -- for reprocessing
 ; lpw_only = if set return after the LPW save file is created
+; skip_bins = for L2-L2 processing, skip_bins skips the
+;             mvn_sta_sc_bins_load program which takes hours
+;             for a full day's data
 ;HISTORY:
 ; 2014-05-14, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: muser $
-; $LastChangedDate: 2019-09-19 11:14:55 -0700 (Thu, 19 Sep 2019) $
-; $LastChangedRevision: 27787 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-10-21 14:45:00 -0700 (Mon, 21 Oct 2019) $
+; $LastChangedRevision: 27909 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2gen.pro $
 ;-
 Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
                    directory = directory, use_l2_files = use_L2_files, $
                    xxx = xxx, yyy = yyy, lpw_only = lpw_only, $
-                   nocatch = nocatch, _extra = _extra
+                   skip_bins = skip_bins, nocatch = nocatch, _extra = _extra
 
 ;Run in Z buffer
   set_plot,'z'
@@ -245,10 +248,11 @@ Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
      mvn_sta_mag_load
      mvn_sta_qf14_load
 ;added mvn_sta_sc_bins_load, 2015-10-25, jmm
-     mk = mvn_spice_kernels(/all,/load,trange=timerange())
-     If(is_struct(mvn_c8_dat)) Then mvn_sta_sc_bins_load
 ;ephemeris might crash, don't kill the process, jmm, 2016-02-03
      load_position = 'ephemeris_l2'
+     mk = mvn_spice_kernels(/all,/load,trange=timerange())
+     If(is_struct(mvn_c8_dat) && ~keyword_set(skip_bins)) $
+     Then mvn_sta_sc_bins_load
      mvn_sta_ephemeris_load
      If(is_struct(mvn_c6_dat) && is_struct(mvn_c0_dat) && $
         is_struct(mvn_ca_dat)) Then mvn_sta_scpot_load

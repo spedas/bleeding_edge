@@ -34,7 +34,7 @@ free_lun, unit
 tend = time_double(en_time[0])
 If(tstart Ge tend) Then exit
 ;do the process one day at a time, in the local working directory
-mvn_call_sta_l2gen, days_in = time_string(tstart), temp_dir = './', /use_l2_files, l2_version_in = 1 ;for reprocess 2018-04-23
+mvn_call_sta_l2gen, days_in = time_string(tstart), temp_dir = './', /use_l2_files
 ;Add a day and reset start time file
 tstart_new = tstart+86400.0d0
 openw, unit, this_file+'_start_time.txt', /get_lun

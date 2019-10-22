@@ -68,8 +68,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-07-02 13:06:47 -0700 (Tue, 02 Jul 2019) $
-; $LastChangedRevision: 27400 $
+; $LastChangedDate: 2019-10-21 10:09:53 -0700 (Mon, 21 Oct 2019) $
+; $LastChangedRevision: 27900 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -297,7 +297,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     tlow = 5*floor((min(swe_hsk.lvpst) < min(swe_hsk.digt) < min(swe_hsk.analt))/5.)
     thigh = 5*ceil((max(swe_hsk.lvpst) > max(swe_hsk.digt) > max(swe_hsk.analt))/5.)
     ylim,'Temps',tlow,thigh,0
-    options,'Temps','constant',[0]
+    options,'Temps','constant',[-10,-5,0,5,10]
     options,'Temps','yticks',(thigh - tlow)/5
     options,'Temps','yminor',5
     options,'Temps','labflag',1
