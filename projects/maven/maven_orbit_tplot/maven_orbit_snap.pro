@@ -104,9 +104,9 @@
 ;
 ;       PSNAME:   Name of a postscript plot.  Works only for orbit plots.
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-06-12 13:39:31 -0700 (Wed, 12 Jun 2019) $
-; $LastChangedRevision: 27345 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2019-10-22 17:48:31 -0700 (Tue, 22 Oct 2019) $
+; $LastChangedRevision: 27918 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -327,7 +327,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   if (psflg) then popen, psname
 
   while (ok) do begin
-    title = string(time_string(tref),oref,format='(a19,2x,"(Orbit ",i4,")")')
+    title = string(time_string(tref),oref,format='(a19,2x,"(Orbit ",i5,")")')
     if (noerase) then title = ''
 
     if (~psflg) then begin

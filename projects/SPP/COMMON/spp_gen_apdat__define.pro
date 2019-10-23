@@ -2,8 +2,8 @@
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-10-17 23:57:28 -0700 (Thu, 17 Oct 2019) $
-; $LastChangedRevision: 27889 $
+; $LastChangedDate: 2019-10-22 14:44:54 -0700 (Tue, 22 Oct 2019) $
+; $LastChangedRevision: 27914 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -229,8 +229,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-10-17 23:57:28 -0700 (Thu, 17 Oct 2019) $
-; $LastChangedRevision: 27889 $
+; $LastChangedDate: 2019-10-22 14:44:54 -0700 (Tue, 22 Oct 2019) $
+; $LastChangedRevision: 27914 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -247,8 +247,8 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2019-10-17 23:57:28 -0700 (Thu, 17 Oct 2019) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 27889 $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2019-10-22 14:44:54 -0700 (Tue, 22 Oct 2019) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 27914 $'
 
     return,sw_hash
 end
@@ -263,14 +263,14 @@ function spp_gen_apdat::cdf_global_attributes
   global_att['TITLE'] = 'PSP SPAN Electron and Ion Data'
   global_att['Discipline'] = 'Heliospheric Physics>Particles'
   global_att['Descriptor'] = 'INSTname>SWEAP generic Sensor Experiment'
-  global_att['Data_type'] = '>Survey Calibrated Particle Flux'
+  global_att['Data_type'] = '>Survey Calibrated Particle Flux'   ; needs correcting 
   global_att['Data_version'] = 'v00'
   global_att['TEXT'] = 'Reference Paper or URL'
   global_att['MODS'] = 'Revision 0'
-  ;global_att['Logical_file_id'] =  self.name+'_test.cdf'  ; 'mvn_sep_l2_s1-cal-svy-full_20180201_v04_r02.cdf'
+  global_att['Logical_file_id'] =  self.name  ; 'mvn_sep_l2_s1-cal-svy-full_20180201_v04_r02.cdf'
   global_att['dirpath'] = './'
-  ;global_att['Logical_source'] = '.cal.spec_svy'
-  ;global_att['Logical_source_description'] = 'DERIVED FROM: PSP SWEAP'  ; SEP (Solar Energetic Particle) Instrument
+  global_att['Logical_source'] = self.name
+  global_att['Logical_source_description'] = 'DERIVED FROM: PSP SWEAP SPAN-Instruments'  ; SEP (Solar Energetic Particle) Instrument
   global_att['Sensor'] = ' '
   global_att['PI_name'] = 'J. Kasper'
   global_att['PI_affiliation'] = 'Univ. of Michigan'
@@ -291,8 +291,8 @@ function spp_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2019-10-17 23:57:28 -0700 (Thu, 17 Oct 2019) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 27889 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2019-10-22 14:44:54 -0700 (Tue, 22 Oct 2019) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 27914 $'
 
   return,global_att
 end
