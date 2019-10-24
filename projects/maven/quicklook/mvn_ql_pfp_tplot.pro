@@ -64,8 +64,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2019-08-08 13:50:29 -0700 (Thu, 08 Aug 2019) $
-; $LastChangedRevision: 27578 $
+; $LastChangedDate: 2019-10-23 10:44:28 -0700 (Wed, 23 Oct 2019) $
+; $LastChangedRevision: 27921 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot.pro $
 ;
 ;-
@@ -302,20 +302,34 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
   ENDIF 
 
   ; SEP
-  ; I might change tplot variables used as a quicklook, 
-  ; because the latest procedure to load SEP data creates
-  ; a lot of new tplot variables.                              
   IF (pflg) THEN BEGIN
+     plvl = 'L2'
      ptime1 = SYSTIME(/sec)
-     status = EXECUTE("mvn_sep_load, trange=trange")
-
+     status = EXECUTE("mvn_sep_load, trange=trange, /l2, /eflux")
+     IF (status EQ 0) THEN BEGIN
+        status = EXECUTE("mvn_sep_load, trange=trange")
+        plvl = 'L1'
+     ENDIF 
      pname = tnames('*', create_time=ptime2)
      pname = pname[WHERE(ptime2 GT ptime1)]
-     w = WHERE(STRMATCH(pname, 'mvn_SEP*_eflux') EQ 0, nw, comp=v, ncomp=nv)
+     IF (plvl EQ 'L2') THEN w = WHERE(STRMATCH(pname, 'mvn_*sep*_eflux') EQ 0, nw, comp=v, ncomp=nv)
+     IF (plvl EQ 'L1') THEN w = WHERE(STRMATCH(pname, 'mvn_SEP*_eflux') EQ 0, nw, comp=v, ncomp=nv)
+
      IF nw GT 0 THEN store_data, pname[w], /delete, verbose=verbose
      IF nv GT 0 THEN BEGIN
-        FOR ip=0, nv-1 DO store_data, pname[v[ip]], newname=STRLOWCASE(pname[v[ip]])
-        pname = STRLOWCASE(pname[v])
+        IF (plvl EQ 'L2') THEN BEGIN
+           pcomp = (STRSPLIT(TRANSPOSE(pname[v]), '_', /extract)).toarray()
+           ip = WHERE(STRMATCH(pcomp, 'elec*') EQ 1, nip)
+           IF nip GT 0 THEN pcomp[ip] = 'elec'
+           pcomp = [ [pcomp[*, 0]], [pcomp[*, 2:*]]]
+           FOR ip=0, nv-1 DO store_data, pname[v[ip]], newname=STRJOIN(REFORM(pcomp[ip, *]), '_')
+           pname = pname[v]
+           FOR ip=0, nv-1 DO pname[ip] = STRJOIN(REFORM(pcomp[ip, *]), '_')
+        ENDIF 
+        IF (plvl EQ 'L1') THEN BEGIN
+           FOR ip=0, nv-1 DO store_data, pname[v[ip]], newname=STRLOWCASE(pname[v[ip]])
+           pname = STRLOWCASE(pname[v])
+        ENDIF 
      ENDIF ELSE BEGIN
         undefine, pname
         append_array, pname, 'mvn_sep1' + ['f', 'r'] + '_ion_eflux'
@@ -327,7 +341,7 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
                        dlim={spec: 1, ylog: 1, ystyle: 1, yrange: [10., 6000.]}
      ENDELSE 
      
-     options, pname, ysubtitle='Energy [keV]', ztitle='EFLUX', ytickunits='scientific', /def
+     options, pname, ysubtitle='Energy [keV]', ztitle='EFLUX', ytickunits='scientific';, /def
      zlim, pname, 1.e0, 1.e5, 1
      undefine, w, v, nw, nv
 

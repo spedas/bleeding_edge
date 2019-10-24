@@ -21,9 +21,9 @@
 ;  time_scale=time_scale: Used by tplot to scale the time variable,
 ;                         typically 1.0, but larger for longer time
 ;                         ranges
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-03-25 11:48:41 -0700 (Mon, 25 Mar 2019) $
-; $LastChangedRevision: 26890 $
+; $LastChangedBy: crussell $
+; $LastChangedDate: 2019-10-23 10:21:50 -0700 (Wed, 23 Oct 2019) $
+; $LastChangedRevision: 27920 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_var_labels.pro $
 ;-
 
@@ -186,14 +186,29 @@ pro tplot_var_labels,def_opts,trg,var_label,local_time,pos,chsize,vtitle=vtitle,
           if nw gt 0 then vlab[w] = ''
           ;reduce multi dim var label to one dimen of label strings for plotting
           vlab = strjoin(transpose(vlab),'!C')
+
           ; egrimes added version 6 on 21 March 2019 - flips the time label to the top
-          if def_opts.version eq 6 then begin
-            time_setup.xtickname = time_setup.xtickname+'!C'+vlab
-            if n_elements(vdimen) eq 2 then begin ;handle additional left-hand labels for multi-dim case
-              vtitle = vtitle + '!C' + strjoin(replicate(def.ytitle+'!C',vdimen[1]))
-            endif else begin
-              vtitle = vtitle + '!C' + def.ytitle
-            endelse
+          ; clrussell added version 7 on 11 Oct 2019 - flips time label to top, removes
+          ; 'hhmm' and moves date text up one line
+          if def_opts.version ge 6 then begin
+            if def_opts.version eq 6 then begin
+              time_setup.xtickname = time_setup.xtickname+'!C'+vlab
+              if n_elements(vdimen) eq 2 then begin ;handle additional left-hand labels for multi-dim case
+                vtitle = vtitle + '!C' + strjoin(replicate(def.ytitle+'!C',vdimen[1]))
+              endif else begin
+                vtitle = vtitle + '!C' + def.ytitle
+              endelse
+            endif
+            if def_opts.version eq 7 then begin
+              if i NE 0 then time_setup.xtickname = time_setup.xtickname+'!C'+vlab $
+              else time_setup.xtickname = time_setup.xtickname+vlab
+              if n_elements(vdimen) eq 2 then begin ;handle additional left-hand labels for multi-dim case
+                vtitle = vtitle + '!C' + strjoin(replicate(def.ytitle+'!C',vdimen[1]))
+              endif else begin
+                if i EQ 0 then vtitle = strmid(vtitle,6,11) + '!C' + def.ytitle  $
+                else vtitle=vtitle + '!C' + def.ytitle
+              endelse
+            endif
           endif else begin
             time_setup.xtickname = vlab+'!C'+time_setup.xtickname
             if n_elements(vdimen) eq 2 then begin ;handle additional left-hand labels for multi-dim case

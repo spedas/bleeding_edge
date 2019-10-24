@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Oct 22 18:16:49 2019.<P>
+<STRONG>Last modified: </STRONG>Wed Oct 23 18:15:46 2019.<P>
  
 <HR>
  
@@ -132,8 +132,8 @@ This page was created by the IDL library routine
                    1. New stations (GAK, KAP, ZGN) are included
                    2. Use spd_download instead of file_retrieve
 
- $LastChangedDate: 2019-03-17 21:51:57 -0700 (Sun, 17 Mar 2019) $
- $LastChangedRevision: 26838 $
+ $LastChangedDate: 2019-10-23 14:19:14 -0700 (Wed, 23 Oct 2019) $
+ $LastChangedRevision: 27922 $
 
 </PRE><P>
 <STRONG>(See <A href="geomag/erg_load_gmag_isee_induction.pro">projects/erg/ground/geomag/erg_load_gmag_isee_induction.pro</A>)</STRONG><P>
@@ -408,7 +408,7 @@ INPUT:
            the default is 'all', i.e., load all available stations.
            This can be an array of strings, e.g., ['msr', 'sta']
            or a single string delimited by spaces, e.g., 'msr sta'.
-           Sites: ath mgd ptk msr sta gak kap zgn
+           Sites: ath mgd ptk msr sta gak kap zgn hus(after 2018-09-06)
 
  nbox = number of FFT points
  nshift = number of shift points for FFT, nshift should be equal or lower than nbox
@@ -423,8 +423,8 @@ EXAMPLE:
 HISTORY:
    2018-03-22: Initial release by Satoshi Kurita (ISEE, Nagoya U., kurita@isee.nagoya-u.ac.jp)
 
- $LastChangedDate: 2019-03-17 21:51:57 -0700 (Sun, 17 Mar 2019) $
- $LastChangedRevision: 26838 $
+ $LastChangedDate: 2019-10-23 14:19:14 -0700 (Wed, 23 Oct 2019) $
+ $LastChangedRevision: 27922 $
 
 </PRE><P>
 <STRONG>(See <A href="geomag/isee_induction_cal_resp.pro">projects/erg/ground/geomag/isee_induction_cal_resp.pro</A>)</STRONG><P>

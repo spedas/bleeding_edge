@@ -36,6 +36,7 @@
 ;     4: seconds after launch
 ;     5: supress time labels
 ;     6: time displayed directly below last panel
+;     7: time displayed directly below last panel (1 line date text only)
 ;     this option can also be set when calling tplot_options ( e.g. tplot, [variable], version=2 )
 ;   OVERPLOT: Will not erase the previous screen if set.
 ;   NAMES:    The names of the tplot variables that are plotted.
@@ -99,8 +100,8 @@
 ;   Send e-mail to:  tplot@ssl.berkeley.edu    someone might answer!
 ;
 ; $LastChangedBy: crussell $
-; $LastChangedDate: 2019-06-18 13:17:12 -0700 (Tue, 18 Jun 2019) $
-; $LastChangedRevision: 27356 $
+; $LastChangedDate: 2019-10-23 10:21:50 -0700 (Wed, 23 Oct 2019) $
+; $LastChangedRevision: 27920 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot.pro $
 ;-
 
@@ -283,12 +284,12 @@ str_element,def_opts,'local_time',local_time
 
 if keyword_set(nocolor) then str_element,def_opts,'nocolor',nocolor,/add_replace
 
-nvlabs = [0.,0.,0.,1.,0.,0.,0.]
+nvlabs = [0.,0.,0.,1.,0.,0.,0.,0.]
 str_element,tplot_vars,'options.var_label',var_label
 if keyword_set(var_label) then if size(/type,var_label) eq 7 then $
     if ndimen(var_label) eq 0 then var_label=tnames(var_label) ;,/extrac)
 ;ensure the index does not go out of range, other values will use default
-if def_opts.version lt 1 or def_opts.version gt 6 then def_opts.version = 3
+if def_opts.version lt 1 or def_opts.version gt 7 then def_opts.version = 3
 nvl = n_elements(var_label) + nvlabs[def_opts.version]
 def_opts.ymargin = def_opts.ymargin + [nvl,0.]
 
