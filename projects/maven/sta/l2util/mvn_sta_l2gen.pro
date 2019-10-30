@@ -20,9 +20,9 @@
 ;             for a full day's data
 ;HISTORY:
 ; 2014-05-14, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-10-21 14:45:00 -0700 (Mon, 21 Oct 2019) $
-; $LastChangedRevision: 27909 $
+; $LastChangedBy: jimmpc1 $
+; $LastChangedDate: 2019-10-28 16:49:04 -0700 (Mon, 28 Oct 2019) $
+; $LastChangedRevision: 27940 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2gen.pro $
 ;-
 Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
@@ -247,6 +247,7 @@ Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
 ;Add mag load, ephemeris_load, 2015-03-15, jmm
      mvn_sta_mag_load
      mvn_sta_qf14_load
+     If(keyword_set(skip_bins)) Then mvn_sta_l2_gf_update       ;2019-10-28, jmm
 ;added mvn_sta_sc_bins_load, 2015-10-25, jmm
 ;ephemeris might crash, don't kill the process, jmm, 2016-02-03
      load_position = 'ephemeris_l2'

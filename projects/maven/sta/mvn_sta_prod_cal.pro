@@ -6836,6 +6836,9 @@ print,'Processing apid db'
    endif
 endif
 
+; this program modifies the geometric factor values in the comment blocks - modified 20191028
+
+mvn_sta_l2_gf_update
 
 ;***************************************************************************************************************
 ;***************************************************************************************************************

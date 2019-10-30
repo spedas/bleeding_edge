@@ -66,8 +66,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
-;$LastChangedRevision: 27435 $
+;$LastChangedDate: 2019-10-29 13:44:10 -0700 (Tue, 29 Oct 2019) $
+;$LastChangedRevision: 27944 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/edi/mms_load_edi.pro $
 ;-
 
@@ -103,6 +103,6 @@ pro mms_load_edi, trange = trange, probes = probes, datatype = datatype, $
     
     if keyword_set(download_only) then return
     
-    for probe_idx = 0, n_elements(probes)-1 do mms_edi_set_metadata, tplotnames, prefix='mms'+strcompress(string(probes[probe_idx]), /rem), data_rate=data_rate, suffix=suffix
+    for probe_idx = 0, n_elements(probes)-1 do mms_edi_set_metadata, tplotnames, prefix='mms'+strcompress(string(probes[probe_idx]), /rem), data_rate=data_rate, level=level, suffix=suffix
 
 end

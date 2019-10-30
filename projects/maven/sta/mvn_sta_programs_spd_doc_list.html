@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Oct 24 18:15:40 2019.<P>
+<STRONG>Last modified: </STRONG>Tue Oct 29 18:16:27 2019.<P>
  
 <HR>
  
@@ -23,6 +23,8 @@ This page was created by the IDL library routine
 <br>Loads dead-time arrays into apid common blocks for science data products, modified 20170919 for high background SEP events
 <LI><A HREF="#MVN_STA_GF_CORR">MVN_STA_GF_CORR</A>
 <br>Computes a corrected g-factor for C0, C6, and C8 data products based on the CA data product.
+<LI><A HREF="#MVN_STA_L2_GF_UPDATE">MVN_STA_L2_GF_UPDATE</A>
+<br>Used to update the geom_factor in data structures based on inflight calibrations, assumes c6 data is loaded for gf_old keyword
 <LI><A HREF="#MVN_STA_MAG_LOAD">MVN_STA_MAG_LOAD</A>
 <br>Load Magnetometer data and insert values into STATIC
 <LI><A HREF="#MVN_STA_MAG_LOAD_V2">MVN_STA_MAG_LOAD_V2</A>
@@ -92,7 +94,7 @@ TBDs
 <A NAME="MVN_STA_GF_CORR">
 <H2>MVN_STA_GF_CORR</H2></A>
 <A HREF="#MVN_STA_DEAD_LOAD">[Previous Routine]</A>
-<A HREF="#MVN_STA_MAG_LOAD">[Next Routine]</A>
+<A HREF="#MVN_STA_L2_GF_UPDATE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -119,9 +121,37 @@ LAST MODIFICATION:
 <STRONG>(See <A href="mvn_sta_programs/mvn_sta_gf_corr.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_gf_corr.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_L2_GF_UPDATE">
+<H2>MVN_STA_L2_GF_UPDATE</H2></A>
+<A HREF="#MVN_STA_GF_CORR">[Previous Routine]</A>
+<A HREF="#MVN_STA_MAG_LOAD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:	mvn_sta_l2_gf_update,current_scale=current_scale,gf_scale=gf_scale,gf_old=gf_old
+PURPOSE:	
+	Used to update the geom_factor in data structures based on inflight calibrations, assumes c6 data is loaded for gf_old keyword
+INPUT:		
+
+KEYWORDS:
+	gf_scale	flt		scale factor multiplied by original geom_factor 
+	gf_old  	0/1		if set will transform geom_factor back to the value estimated at launch, 
+
+CREATED BY:	J. McFadden	2019/04/19
+VERSION:	1
+LAST MODIFICATION:  2019/04/19
+MOD HISTORY:
+
+NOTES
+	A minimal gf_scale=1.3 is needed to match LPW fp measurements on 20180531 (-3.0V) with no ion suppression
+ 	Default gf_scale=1.5 determined from 20190405 transition from fly-Z (-0.3) to fly-Y (-2.0V) to get kk3 = [3.1,2.8,3.0,2.4]
+		combined with LPW waves calibraton on 20190331
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_l2_gf_update.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_l2_gf_update.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_MAG_LOAD">
 <H2>MVN_STA_MAG_LOAD</H2></A>
-<A HREF="#MVN_STA_GF_CORR">[Previous Routine]</A>
+<A HREF="#MVN_STA_L2_GF_UPDATE">[Previous Routine]</A>
 <A HREF="#MVN_STA_MAG_LOAD_V2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -366,9 +396,9 @@ LAST MODIFICATION:
 
  :Version:
 
-   $LastChangedBy: muser $
-   $LastChangedDate: 2018-04-17 11:33:53 -0700 (Tue, 17 Apr 2018) $
-   $LastChangedRevision: 25063 $
+   $LastChangedBy: jimm $
+   $LastChangedDate: 2019-10-29 18:09:51 -0700 (Tue, 29 Oct 2019) $
+   $LastChangedRevision: 27947 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load.pro $
 </PRE><P>
 <STRONG>(See <A href="mvn_sta_programs/mvn_sta_sc_bins_load.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load.pro</A>)</STRONG><P>

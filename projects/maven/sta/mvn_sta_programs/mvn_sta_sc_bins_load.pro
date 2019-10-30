@@ -29,9 +29,9 @@
 ;
 ; :Version:
 ;
-;   $LastChangedBy: muser $
-;   $LastChangedDate: 2018-04-17 11:33:53 -0700 (Tue, 17 Apr 2018) $
-;   $LastChangedRevision: 25063 $
+;   $LastChangedBy: jimm $
+;   $LastChangedDate: 2019-10-29 18:09:51 -0700 (Tue, 29 Oct 2019) $
+;   $LastChangedRevision: 27947 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load.pro $
 ;-
 
@@ -111,16 +111,16 @@ FUNCTION mvn_sta_sc_bins_inside, x, y, px, py, Index=index
    i  = indgen(n,/Long)           ;; indices 0...N-1
    ip = indgen(n,/Long) + 1       ;; indices 1...N
    nn = n_elements(x) 
-   X1 = px(i)  # replicate(1,nn) - replicate(1,n) # reform([x],nn)
-   Y1 = py(i)  # replicate(1,nn) - replicate(1,n) # reform([y],nn)
-   X2 = px(ip) # replicate(1,nn) - replicate(1,n) # reform([x],nn)
-   Y2 = py(ip) # replicate(1,nn) - replicate(1,n) # reform([y],nn)
+   X1 = px[i]  # replicate(1,nn) - replicate(1,n) # reform([x],nn)
+   Y1 = py[i]  # replicate(1,nn) - replicate(1,n) # reform([y],nn)
+   X2 = px[ip] # replicate(1,nn) - replicate(1,n) # reform([x],nn)
+   Y2 = py[ip] # replicate(1,nn) - replicate(1,n) # reform([y],nn)
    dp = x2*x1 + y1*y2              ;; Dot-product
    cp = x1*y2 - y1*x2              ;; Cross-product
    theta = atan(cp,dp)
    ret = replicate(0L, n_elements(x))
    i = where(abs(total(theta,1)) gt 0.01,count)
-   IF (count GT 0) THEN ret(i)=1
+   IF (count GT 0) THEN ret[i]=1
    IF (n_elements(ret) eq 1) then ret=ret[0]
    IF (keyword_set(index)) THEN $
     ret=(indgen(/long, n_elements(x)))(where(ret eq 1))
@@ -486,16 +486,35 @@ PRO mvn_sta_sc_bins_load, perc_block = perc_block,$
                ;; Loop through six sides of object
                FOR j=0, (30-1)*inst.prec, 4*inst.prec+inst.prec DO BEGIN
 
+
                   ;; Result gives points within xtmp1 and ytmp1
-                  res_ins = mvn_sta_sc_bins_inside($
-                            xtmp1,$
-                            ytmp1,$
-                            phitmp1[j:j+4*inst.prec,i],$
-                            theta[j:j+4*inst.prec,i])
+;                  res_ins = mvn_sta_sc_bins_inside($
+;                            xtmp1,$
+;                            ytmp1,$
+;                            phitmp1[j:j+4*inst.prec,i],$
+;                            theta[j:j+4*inst.prec,i])
 
                   ;; 0 - Outside, i.e. clear
                   ;; 1 - Inside, i.e. blocked/obscured
-                  pp   = where(res_ins EQ 1,cc)
+;                  pp   = where(res_ins EQ 1,cc)
+
+;Only test witin theta, phi limits here, too, jmm, 2019-10-29
+                  philim = minmax(phitmp1[j:j+4*inst.prec,i])
+                  thetalim = minmax(theta[j:j+4*inst.prec,i])
+                  xxyy_pp1 = where(xtmp1 le philim[1] and $
+                                   xtmp1 ge philim[0] and $
+                                   ytmp1 le thetalim[1] and $
+                                   ytmp1 ge thetalim[0], nlim)
+                  res_ins = lonarr(n_elements(xtmp1))
+                  if nlim gt 0 then begin
+                     res_ins1a = mvn_sta_sc_bins_inside($
+                                 xtmp1[xxyy_pp1],$
+                                 ytmp1[xxyy_pp1],$
+                                 phitmp1[j:j+4*inst.prec,i],$
+                                 theta[j:j+4*inst.prec,i])
+                     res_ins[xxyy_pp1] = res_ins1a
+                  endif
+                  pp = where(res_ins Eq 1, cc)
 
                   ;; If points were found then add them to map
                   IF cc NE 0 THEN final_map[idx,xxyy_pp[pp]] = 1
