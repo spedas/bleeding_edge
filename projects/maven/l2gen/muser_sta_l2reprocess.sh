@@ -21,11 +21,15 @@ setenv IDL_PATH $IDL_PATH':'+$IDL_BASE_DIR
 # Set path for tmp files
 setenv CDF_TMP /mydisks/home/maven
 
+# create a date to append to batch otput
+setenv datestr `date +%Y%m%d%H%M%S`
+set suffix="$datestr"
+
 #check for lock file(s) here
 if (! -e /mydisks/home/maven/muser/STAL2lock.txt && ! -e /mydisks/home/maven/muser/STAL2Rlock.txt) then
     cd /mydisks/home/maven
     rm -f run_sta_l2reprocess.bm
-    rm -f /mydisks/home/maven/muser/run_sta_l2reprocess.txt
+    rm -f /mydisks/home/maven/stalog/run_sta_l2reprocess.txt$suffix
 
     set line="rerun_sta_l2gen"
     echo $line > run_sta_l2reprocess.bm
