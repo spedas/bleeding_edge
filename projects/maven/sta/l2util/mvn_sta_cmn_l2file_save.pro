@@ -23,8 +23,8 @@
 ;HISTORY:
 ; 22-jul-2014, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: muser $
-; $LastChangedDate: 2017-01-11 16:13:57 -0800 (Wed, 11 Jan 2017) $
-; $LastChangedRevision: 22577 $
+; $LastChangedDate: 2019-11-02 17:17:47 -0700 (Sat, 02 Nov 2019) $
+; $LastChangedRevision: 27969 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2file_save.pro $
 ;-
 Pro mvn_sta_cmn_l2file_save, otp_struct, fullfile0, temp_dir = temp_dir, $
@@ -97,6 +97,7 @@ Pro mvn_sta_cmn_l2file_save, otp_struct, fullfile0, temp_dir = temp_dir, $
 
 ;move the files to the output directory
   dir = file_dirname(fullfile)
+  print, 'Moving: '+fullfilex+' To: '+fullfile
   file_move, fullfilex, fullfile, /overwrite
   file_move, md5filex, md5file, /overwrite
 

@@ -20,9 +20,9 @@
 ;             for a full day's data
 ;HISTORY:
 ; 2014-05-14, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: jimmpc1 $
-; $LastChangedDate: 2019-10-28 16:49:04 -0700 (Mon, 28 Oct 2019) $
-; $LastChangedRevision: 27940 $
+; $LastChangedBy: muser $
+; $LastChangedDate: 2019-11-02 17:20:14 -0700 (Sat, 02 Nov 2019) $
+; $LastChangedRevision: 27970 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2gen.pro $
 ;-
 Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
@@ -208,6 +208,7 @@ Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
      dir_out = dir_out0+yyyy+'/'+mmmm+'/'
      dir_out_d1 = dir_out0+'d1_sav/'+yyyy+'/'+mmmm+'/'
   Endelse
+  print, 'OUTPUT DIRECTORY: '+dir_out
   If(~is_string(file_search(dir_out))) Then file_mkdir, dir_out
   If(~is_string(file_search(dir_out_d1))) Then file_mkdir, dir_out_d1
 ;define the common blocks

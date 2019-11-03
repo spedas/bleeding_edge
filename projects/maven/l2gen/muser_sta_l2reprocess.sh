@@ -35,7 +35,7 @@ if (! -e /mydisks/home/maven/muser/STAL2lock.txt && ! -e /mydisks/home/maven/mus
     echo $line > run_sta_l2reprocess.bm
     echo exit >> run_sta_l2reprocess.bm
 
-    idl run_sta_l2reprocess.bm > /mydisks/home/maven/muser/run_sta_l2reprocess.txt &
+    idl run_sta_l2reprocess.bm > /mydisks/home/maven/stalog/run_sta_l2reprocess.txt$suffix &
 #else close quietly
 endif 
 

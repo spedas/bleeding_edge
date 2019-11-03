@@ -130,9 +130,9 @@ End
 ; 1-nov-2014, jmm, PDS compliance
 ; 6-nov-2014, jmm, Corrects clock drift 
 ; 22-dec-2014, jmm, added eprom_ver and header
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2018-09-24 13:39:08 -0700 (Mon, 24 Sep 2018) $
-; $LastChangedRevision: 25858 $
+; $LastChangedBy: muser $
+; $LastChangedDate: 2019-11-02 17:17:47 -0700 (Sat, 02 Nov 2019) $
+; $LastChangedRevision: 27969 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2gen.pro $
 ;-
 Pro mvn_sta_cmn_l2gen, cmn_dat, otp_struct = otp_struct, directory = directory, $
@@ -781,6 +781,7 @@ Pro mvn_sta_cmn_l2gen, cmn_dat, otp_struct = otp_struct, directory = directory, 
   otp_struct.g_attributes.PDS_collection_id = ext
 
 ;save the file -- full database management
+  Print, 'Saving: '+fullfile0
   mvn_sta_cmn_l2file_save, otp_struct, fullfile0, no_compression = no_compression, _extra = _extra
 
   Return
