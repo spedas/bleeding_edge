@@ -1,6 +1,6 @@
 ;Define the common blocks for testing
-;define the common blocks
-  common mvn_2a, mvn_2a_ind, mvn_2a_dat ;this one is HKP data
+;define the common blocks, and zero out
+  common mvn_2a, mvn_2a_ind, mvn_2a_dat
   common mvn_c0, mvn_c0_ind, mvn_c0_dat
   common mvn_c2, mvn_c2_ind, mvn_c2_dat
   common mvn_c4, mvn_c4_ind, mvn_c4_dat
