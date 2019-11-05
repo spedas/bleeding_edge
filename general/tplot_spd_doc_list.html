@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Nov  3 18:15:54 2019.<P>
+<STRONG>Last modified: </STRONG>Mon Nov  4 18:16:25 2019.<P>
  
 <HR>
  
@@ -97,6 +97,8 @@ This page was created by the IDL library routine
 <br>OBSOLETE PROCEDURE!  Use &quot;TPLOT_SAVE&quot; and &quot;TPLOT_RESTORE&quot; instead.
 <LI><A HREF="#TPLOT_FILL_COLOR">TPLOT_FILL_COLOR</A>
 <br>Fills the area under a line in a tplot panel
+<LI><A HREF="#TPLOT_FILL_TIME_INTV">TPLOT_FILL_TIME_INTV</A>
+<br>Allow different background color, or other polyfill options for time
 <LI><A HREF="#TPLOT_FORCE_MONOTONIC">TPLOT_FORCE_MONOTONIC</A>
 <LI><A HREF="#TPLOT_KEYS">TPLOT_KEYS</A>
 <br>Sets up function keys on user keyboard to perform frequent &quot;tplot&quot;
@@ -2464,9 +2466,9 @@ QUESTIONS?
 Still have questions:
    Send e-mail to:  tplot@ssl.berkeley.edu    someone might answer!
 
- $LastChangedBy: crussell $
- $LastChangedDate: 2019-10-23 10:21:50 -0700 (Wed, 23 Oct 2019) $
- $LastChangedRevision: 27920 $
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-11-04 16:23:54 -0800 (Mon, 04 Nov 2019) $
+ $LastChangedRevision: 27973 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/tplot.pro">general/tplot/tplot.pro</A>)</STRONG><P>
@@ -3024,7 +3026,7 @@ LAST MODIFICATION:     tplot_file.pro   98/08/06
 <A NAME="TPLOT_FILL_COLOR">
 <H2>TPLOT_FILL_COLOR</H2></A>
 <A HREF="#TPLOT_FILE">[Previous Routine]</A>
-<A HREF="#TPLOT_FORCE_MONOTONIC">[Next Routine]</A>
+<A HREF="#TPLOT_FILL_TIME_INTV">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -3051,9 +3053,69 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tpl
 <STRONG>(See <A href="tplot/tplot_fill_color.pro">general/tplot/tplot_fill_color.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="TPLOT_FILL_TIME_INTV">
+<H2>TPLOT_FILL_TIME_INTV</H2></A>
+<A HREF="#TPLOT_FILL_COLOR">[Previous Routine]</A>
+<A HREF="#TPLOT_FORCE_MONOTONIC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+tplot_fill_time_intv
+PURPOSE:
+Allow different background color, or other polyfill options for time
+intervals for a tplot variable. Called only from tplot.pro, Do not
+use this in any other environment
+CALLING SEQUENCE:
+tplot_fill_time_intv, routine, data, newlim
+INPUT:
+routine - thie is the plot routine for a given tplot variable,
+          typically 'mplot' or 'specplot' or 'bitplot'
+data - the data structure for the input variable
+newlim - the limits structure, this must contain a tag
+         'fill_time_intv' = {time:interval_times, color:color values}
+         The time intervals can be an array of 2, or 2Xntimes, color
+         values can be scalar, or an array of ntimes. Other polyfill
+         options, such as line_fill, orientation, thick, can be input
+         as a structure in the fill_time_intv structure and a polyopt
+         structure,
+time_offset - the plot start time needed for the correct position 
+EXAMPLES:
+ (see also crib_fill_time_intv.pro in spdsw/general/examples)
+
+a solid background color, using options, for the variable 'sta_SWEA_mom_flux'
+options, 'sta_SWEA_mom_flux', 'fill_time_intv', $
+         {time:['2008-03-23/02:00','2008-03-23/04:00'], color:2}
+
+different intervals with different colors, using options, for the flux variable
+2Xn_times intervals
+t1 = '2008-03-23/'+[['02:00','04:00'],['07:00','09:00'],['16:24','22:00']]
+c1 = 'rgb' ;you can use string color values in addition to absolute numbers 
+
+options, 'sta_SWEA_mom_flux', 'fill_time_intv', {time:t1, color:c1}
+
+set polyopt:{line_fill:1,orientation:45} to use angled 
+parallel lines and not solid colors
+2Xn_times intervals
+t1 = '2008-03-23/'+[['02:00','04:00'],['07:00','09:00'],['16:24','22:00']]
+c1 = [4,6,2]
+
+options, 'sta_SWEA_mom_flux', 'fill_time_intv', 
+          {time:t1, color:c1, polyopt:{line_fill:1,orientation:45.0}}
+See crib sheet for more options
+
+HISTORY:
+ 2019-11-04, jmm, jimm@ssl.berkeley.edu
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-11-04 16:23:54 -0800 (Mon, 04 Nov 2019) $
+ $LastChangedRevision: 27973 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_fill_time_intv.pro $
+</PRE><P>
+<STRONG>(See <A href="tplot/tplot_fill_time_intv.pro">general/tplot/tplot_fill_time_intv.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TPLOT_FORCE_MONOTONIC">
 <H2>TPLOT_FORCE_MONOTONIC</H2></A>
-<A HREF="#TPLOT_FILL_COLOR">[Previous Routine]</A>
+<A HREF="#TPLOT_FILL_TIME_INTV">[Previous Routine]</A>
 <A HREF="#TPLOT_KEYS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

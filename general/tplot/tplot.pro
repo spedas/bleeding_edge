@@ -99,9 +99,9 @@
 ;Still have questions:
 ;   Send e-mail to:  tplot@ssl.berkeley.edu    someone might answer!
 ;
-; $LastChangedBy: crussell $
-; $LastChangedDate: 2019-10-23 10:21:50 -0700 (Wed, 23 Oct 2019) $
-; $LastChangedRevision: 27920 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-11-04 16:23:54 -0800 (Mon, 04 Nov 2019) $
+; $LastChangedRevision: 27973 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot.pro $
 ;-
 
@@ -345,7 +345,6 @@ if keyword_set(tbnames) then begin
    endfor
 endif
 
-
 str_element,/add,tplot_vars,'settings.y', replicate(!y,nd)
 str_element,/add,tplot_vars,'settings.clip',lonarr(6,nd)
 
@@ -413,7 +412,7 @@ for i=0,nd-1 do begin
         tshift=tshift[0]
 ;  printdat,name,tshift,limits2,dtype
         data.x = (data.x - (time_offset-tshift))/time_scale
-;data.x is no longer unix time here, but is measured from th
+;data.x is no longer unix time here, but is measured from the
 ;time_offset value
      endif  else data={x:dindgen(2),y:findgen(2)}
      extract_tags,newlim,data,      except = ['x','y','dy','v']
@@ -457,9 +456,13 @@ for i=0,nd-1 do begin
      rev_color_table= struct_value(newlim,'reverse_color_table',default=0)
      if color_table ge 0 then loadct2,color_table,previous_ct=pct,reverse=rev_color_table
 ;if debug() then stop
-
      call_procedure,routine,data=data,limits=newlim
 
+;Allow fill of time interval with different background color, or other
+;polyfill options, given by fill_time_intv structure, jmm, 2019-11-04
+     str_element, newlim, 'fill_time_intv', success = fill_intv
+     if fill_intv eq 1 then tplot_fill_time_intv, routine, data, newlim, time_offset
+           
      if color_table ne pct then loadct2,pct
      
      ;get offset into color array (for pseudo vars)

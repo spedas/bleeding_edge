@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Nov  3 18:15:54 2019.<P>
+<STRONG>Last modified: </STRONG>Mon Nov  4 18:16:25 2019.<P>
  
 <HR>
  
@@ -22,6 +22,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#CRIB_CALC">CRIB_CALC</A>
 <LI><A HREF="#CRIB_COLORS">CRIB_COLORS</A>
 <LI><A HREF="#CRIB_DPROC">CRIB_DPROC</A>
+<LI><A HREF="#CRIB_FILL_TIME_INTV">CRIB_FILL_TIME_INTV</A>
 <LI><A HREF="#CRIB_HAPI">CRIB_HAPI</A>
 <br>Demonstrates how to query Heliophysics API (HAPI) servers and download, load and plot data from them
 <LI><A HREF="#CRIB_HASH_TABLES_BASIC">CRIB_HASH_TABLES_BASIC</A>
@@ -130,7 +131,7 @@ Warning: this crib uses some data from the THEMIS branch.  You'll require those 
 <A NAME="CRIB_DPROC">
 <H2>CRIB_DPROC</H2></A>
 <A HREF="#CRIB_COLORS">[Previous Routine]</A>
-<A HREF="#CRIB_HAPI">[Next Routine]</A>
+<A HREF="#CRIB_FILL_TIME_INTV">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 procedure:  crib_dproc.pro
@@ -152,9 +153,49 @@ Warning: this crib uses some data from the THEMIS branch.  You'll require those 
 <STRONG>(See <A href="examples/crib_dproc.pro">general/examples/crib_dproc.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="CRIB_FILL_TIME_INTV">
+<H2>CRIB_FILL_TIME_INTV</H2></A>
+<A HREF="#CRIB_DPROC">[Previous Routine]</A>
+<A HREF="#CRIB_HAPI">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: crib_fill_time_intv
+ 
+ PURPOSE:  Crib to demonstrate thte fill_time_intv option for tplot
+           You can run this crib by typing:
+           IDL&gt;.compile crib_fill_time_intv
+           IDL&gt;.go
+           
+           When you reach a stop, press
+           IDL&gt;.c
+           to continue
+           
+           Or you can copy and paste commands directly onto the command line
+
+ SEE ALSO: crib_tplot.pro  (basic tplot commands)
+           crib_tplot_layout.pro  (how to arrange plots within a window, and data within a plot)
+           crib_tplot_range.pro   (how to control the range and scaling of plots)
+           crib_tplot_export_print.pro (how to export images of plots into pngs and postscripts)
+           crib_tplot_annotation.pro  (how to control labels, titles, and colors of plots)
+
+ NOTES:
+  1.  As a rule of thumb, &quot;tplot_options&quot; controls settings that are global to any tplot
+   &quot;options&quot; controls settings that are specific to a tplot variable
+   
+  2.  If you see any useful commands missing from these cribs, please let us know.
+   these cribs can help double as documentation for tplot.
+
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-11-04 16:24:36 -0800 (Mon, 04 Nov 2019) $
+ $LastChangedRevision: 27974 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_fill_time_intv.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/crib_fill_time_intv.pro">general/examples/crib_fill_time_intv.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="CRIB_HAPI">
 <H2>CRIB_HAPI</H2></A>
-<A HREF="#CRIB_DPROC">[Previous Routine]</A>
+<A HREF="#CRIB_FILL_TIME_INTV">[Previous Routine]</A>
 <A HREF="#CRIB_HASH_TABLES_BASIC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
