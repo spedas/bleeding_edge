@@ -29,8 +29,8 @@
 ; Hacked from thm_over_shell, 2013-05-12, jmm, jimm@ssl.berkeley.edu
 ; CHanged to use thara's mvn_pl_pfp_tplot.pro, 2015-04-14, jmm
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-08-16 13:34:17 -0700 (Fri, 16 Aug 2019) $
-; $LastChangedRevision: 27613 $
+; $LastChangedDate: 2019-11-05 11:36:35 -0800 (Tue, 05 Nov 2019) $
+; $LastChangedRevision: 27984 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_pfpl2_overplot.pro $
 ;-
 Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
@@ -70,7 +70,11 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
      dprint, 'Need orbit_number, date or time_range input keywords set'
      Return
   Endelse
-
+; No plots prior to 2014-10-14, as all of the data may not exist
+  If(time_double(tr0[0]) Lt time_double('2014-10-12T12:00:00')) Then Begin
+     dprint, 'Date too early: '+time_string(tr0[0])
+     Return
+  Endif
 ;  mvn_ql_pfp_tplot2, tr0, bcrust=1, /tplot, bvec = bvec
 ; Load SEP from a different program, 2019-02-20
   If(keyword_set(no_bcrust)) Then Begin
