@@ -83,7 +83,6 @@ end
 
 pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color, varformat = varformat
 
-  ; TODO improve this check for valid CDF file and add to other routines
   if n_elements(file) LT 1 or file[0] EQ '' then return
 
   ;  receiver_str = strupcase(strmid(prefix, 12, 3))
@@ -126,8 +125,6 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color, varformat =
 
   converted_data_xspec_re = spp_fld_rfs_float(rfs_dat_xspec_re.y, /cross)
 
-  ; TODO replace hard coded gain value w/calibrated
-
   converted_data_xspec_re *= V2_factor
 
   if n_lo_gain GT 0 then converted_data_xspec_re[lo_gain, *] *= 2500.d
@@ -144,9 +141,9 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color, varformat =
 
   converted_data_xspec_im = spp_fld_rfs_float(rfs_dat_xspec_im.y, /cross)
 
-  ; TODO replace hard coded gain value w/calibrated
+  ; See "Notes on RFS Polarization" for source of the -1
 
-  converted_data_xspec_im *= V2_factor
+  converted_data_xspec_im *= -1d * V2_factor
 
 
   if n_lo_gain GT 0 then converted_data_xspec_im[lo_gain, *] *= 2500.d
