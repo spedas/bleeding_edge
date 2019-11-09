@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov  7 18:15:39 2019.<P>
+<STRONG>Last modified: </STRONG>Fri Nov  8 18:16:30 2019.<P>
  
 <HR>
  
@@ -50,6 +50,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#GET_YLIMITS">GET_YLIMITS</A>
 <br>Calculates appropriate ylimits for a string array of &quot;TPLOT&quot; variables
 <LI><A HREF="#GETTIME">GETTIME</A>
+<LI><A HREF="#HIGHLIGHT_TIME_INTERVAL">HIGHLIGHT_TIME_INTERVAL</A>
+<br>for a given tplot variable, click on a time interval to highlight
 <LI><A HREF="#ITON">ITON</A>
 <br>Convert an index or array of indicies to data names.
 <LI><A HREF="#JOIN_VEC">JOIN_VEC</A>
@@ -648,7 +650,7 @@ LAST MODIFICATION:	@(#)get_timespan.pro	1.9 97/06/02
 <A NAME="GET_YLIMITS">
 <H2>GET_YLIMITS</H2></A>
 <A HREF="#GET_TIMESPAN">[Previous Routine]</A>
-<A HREF="#ITON">[Next Routine]</A>
+<A HREF="#HIGHLIGHT_TIME_INTERVAL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:  get_ylimits, datastr, limits, trg
@@ -667,9 +669,54 @@ LAST MODIFIED:	%W% %E%
 <STRONG>(See <A href="tplot/get_ylimits.pro">general/tplot/get_ylimits.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="HIGHLIGHT_TIME_INTERVAL">
+<H2>HIGHLIGHT_TIME_INTERVAL</H2></A>
+<A HREF="#GET_YLIMITS">[Previous Routine]</A>
+<A HREF="#ITON">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+highlight_time_interval
+PURPOSE:
+for a given tplot variable, click on a time interval to highlight
+using the fill_time_intv option
+CALLING SEQUENCE:
+highlight_time_interval, tplot_variable, time_interval=time_interval,
+                         color = color, polyfill_options =
+                         polyfill_options, delete=delete
+INPUT:
+tplot_variable - one or more tplot variables, No input will apply to
+                 all tplot variables.
+KEYWORDS:
+time_interval - a 2 or 2Xntimes array of time intervals. The default
+                is to use interactive ctime calls. If interactive,
+                then n_intervals is used to calculate the number of
+                time_intervals.
+color - a color value or ntimes color values, the default is color
+        zero, string input is ok, e.g., 'rgb' for three intervals
+line_fill - sets polyfill line_fill option, that uses parallel lines
+            instead of solid color
+orientation - angle in degrees for orientation of lines for line_fill
+              option
+linestyle - linestyle for line_fill option
+thick - line thickness for line_fill option
+n_intervals - used for cases with no time inputs, for number of
+              intervals to choose interactively.
+delete - delete highlights.
+refresh - call tplot to show the intervals
+NOTES:
+ The same intervals are applied to each of the input tplot variables
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-11-08 12:13:20 -0800 (Fri, 08 Nov 2019) $
+ $LastChangedRevision: 27995 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/highlight_time_interval.pro $
+</PRE><P>
+<STRONG>(See <A href="tplot/highlight_time_interval.pro">general/tplot/highlight_time_interval.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ITON">
 <H2>ITON</H2></A>
-<A HREF="#GET_YLIMITS">[Previous Routine]</A>
+<A HREF="#HIGHLIGHT_TIME_INTERVAL">[Previous Routine]</A>
 <A HREF="#JOIN_VEC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -3076,8 +3123,7 @@ newlim - the limits structure, this must contain a tag
          The time intervals can be an array of 2, or 2Xntimes, color
          values can be scalar, or an array of ntimes. Other polyfill
          options, such as line_fill, orientation, thick, can be input
-         as a structure in the fill_time_intv structure and a polyopt
-         structure,
+         in the fill_time_intv structure,
 time_offset - the plot start time needed for the correct position 
 EXAMPLES:
  (see also crib_fill_time_intv.pro in spdsw/general/examples)
@@ -3093,21 +3139,21 @@ c1 = 'rgb' ;you can use string color values in addition to absolute numbers
 
 options, 'sta_SWEA_mom_flux', 'fill_time_intv', {time:t1, color:c1}
 
-set polyopt:{line_fill:1,orientation:45} to use angled 
+set line_fill:1,orientation:45 to use angled 
 parallel lines and not solid colors
 2Xn_times intervals
 t1 = '2008-03-23/'+[['02:00','04:00'],['07:00','09:00'],['16:24','22:00']]
 c1 = [4,6,2]
 
 options, 'sta_SWEA_mom_flux', 'fill_time_intv', 
-          {time:t1, color:c1, polyopt:{line_fill:1,orientation:45.0}}
+          {time:t1, color:c1, line_fill:1, orientation:45.0}
 See crib sheet for more options
 
 HISTORY:
  2019-11-04, jmm, jimm@ssl.berkeley.edu
  $LastChangedBy: jimm $
- $LastChangedDate: 2019-11-04 16:23:54 -0800 (Mon, 04 Nov 2019) $
- $LastChangedRevision: 27973 $
+ $LastChangedDate: 2019-11-08 11:30:01 -0800 (Fri, 08 Nov 2019) $
+ $LastChangedRevision: 27993 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_fill_time_intv.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/tplot_fill_time_intv.pro">general/tplot/tplot_fill_time_intv.pro</A>)</STRONG><P>

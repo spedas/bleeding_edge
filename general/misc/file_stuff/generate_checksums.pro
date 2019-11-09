@@ -152,7 +152,7 @@ if nfiles ne 0  then begin
     last = max([fi.mtime,fi.ctime])
     if sum_info.mtime lt last  || keyword_set(force_regen) then begin
       dprint,verbose=verbose,dlevel=2,tab+startpath+':  '+strtrim(nfiles,2)+' files match ["'+strjoin(FILE_PATTERN,'",  "')+'"]'
-      checksum = file_checksum(files,verbose=verbose,relative_position = keyword_set(full_path) ? 0 : strlen(startpath)  )
+      checksum = file_checksum(files,verbose=verbose,relative_position = keyword_set(full_path) ? 0 : strlen(startpath) ,/add_mtime )
       if size(/type,checksum_file) eq 7 then begin
         openw,unit,/get_lun,startpath+checksum_file
         for i=0,n_elements(checksum)-1 do printf,unit,checksum[i]

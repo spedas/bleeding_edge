@@ -24,6 +24,7 @@ if ~keyword_set(method) then method = 'sha1'
 
 if ~keyword_set(hash_init)   then begin
     hash_executable = 'shasum'
+    if !version.os eq 'linux' then hash_executable = 'sha1sum'
     spawn,hash_executable+' --version',hash_version,hash_error
     hash_init = 4
     if keyword_set(hash_error) then begin
