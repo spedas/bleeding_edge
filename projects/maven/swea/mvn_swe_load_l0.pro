@@ -79,14 +79,18 @@
 ;
 ;       NODUPE:        Filter out identical packets.  Default = 1 (yes).
 ;
+;       SURVEY:        If no merged file(s) exist over requested time range, then 
+;                      look for survey-only files.  This is slow, because the
+;                      survey files are all located in a single directory.
+;
 ;       REALTIME:      Use realtime file naming convention: YYYYMMDD_HHMMSS_*_l0.dat
 ;
 ;       VERBOSE:       Level of diagnostic message suppression.  Default = 0.  Set
 ;                      to a higher number to see more diagnostic messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-07-02 13:07:47 -0700 (Tue, 02 Jul 2019) $
-; $LastChangedRevision: 27401 $
+; $LastChangedDate: 2019-11-11 12:06:40 -0800 (Mon, 11 Nov 2019) $
+; $LastChangedRevision: 28001 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -95,7 +99,7 @@
 pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes, badpkt=badpkt, $
                              cdrift=cdrift, sumplot=sumplot, status=status, orbit=orbit, $
                              loadonly=loadonly, spiceinit=spiceinit, nodupe=nodupe, $
-                             realtime=realtime, nospice=nospice, verbose=verbose
+                             survey=survey, realtime=realtime, nospice=nospice, verbose=verbose
 
   @mvn_swe_com
 
@@ -106,6 +110,7 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
 ; Process keywords
 
   if (size(verbose,/type) eq 0) then mvn_swe_verbose, get=verbose
+  dosurvey = keyword_set(survey)
 
   if not keyword_set(maxbytes) then maxbytes = 0
   if (size(nodupe,/type) eq 0) then nodupe = 1
@@ -165,7 +170,7 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
     file = mvn_pfp_file_retrieve(trange=[tmin,tmax],/l0,verbose=(verbose > 1),/daily,/valid)
     fndx = where(file ne '', nfiles)
 
-    if (nfiles eq 0) then begin
+    if (dosurvey and (nfiles eq 0)) then begin
       print,"No merged files found.  Looking for survey only ... "
       pathname = 'maven/data/sci/pfp/l0/mvn_pfp_svy_l0_YYYYMMDD_v???.dat'
       file = mvn_pfp_file_retrieve(pathname,trange=[tmin,tmax],verbose=(verbose > 1),/daily,/valid)
