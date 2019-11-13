@@ -36,9 +36,9 @@
 ;HISTORY:
 ; Hacked from Matt F's crib_l0_to_l2.txt, 2014-11-14: jmm
 ; Better memory management and added keywords to control processing: dlm
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-08-27 11:42:30 -0700 (Tue, 27 Aug 2019) $
-; $LastChangedRevision: 27672 $
+; $LastChangedBy: muser $
+; $LastChangedDate: 2019-11-12 15:57:15 -0800 (Tue, 12 Nov 2019) $
+; $LastChangedRevision: 28013 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_swe_l2gen.pro $
 ;- 
 pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
@@ -89,6 +89,12 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 
   t0 = time_double(time)
   t1 = t0 + 86400D
+
+; Added to assure that pre-orbit files are not processed
+  If(t0 Lt time_double('2014-10-13')) Then Begin
+     dprint, 'Old File Date: '+time_string(d0)
+     Return
+  Endif
 
   message, /info, 'PROCESSING: '+time_string(t0)
   timespan, t0, 1

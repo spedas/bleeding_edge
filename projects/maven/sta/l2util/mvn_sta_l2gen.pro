@@ -20,9 +20,9 @@
 ;             for a full day's data
 ;HISTORY:
 ; 2014-05-14, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: jimmpc1 $
-; $LastChangedDate: 2019-11-03 10:31:45 -0800 (Sun, 03 Nov 2019) $
-; $LastChangedRevision: 27971 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-11-12 15:38:14 -0800 (Tue, 12 Nov 2019) $
+; $LastChangedRevision: 28011 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2gen.pro $
 ;-
 Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
@@ -185,8 +185,9 @@ Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
   timespan, d0, 1
 
 ;At this point, I have a date, check to see if it is reasonable
-  If(d0 Lt time_double('2013-12-04')) Then Begin
-     dprint, 'Bad File Date: '+time_string(d0)
+;  If(d0 Lt time_double('2013-12-04')) Then Begin
+  If(d0 Lt time_double('2014-10-13')) Then Begin
+     dprint, 'Old File Date: '+time_string(d0)
      Return
   Endif
   date = d0
