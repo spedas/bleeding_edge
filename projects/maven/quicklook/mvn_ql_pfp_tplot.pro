@@ -64,8 +64,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2019-10-23 10:44:28 -0700 (Wed, 23 Oct 2019) $
-; $LastChangedRevision: 27921 $
+; $LastChangedDate: 2019-11-13 14:20:44 -0800 (Wed, 13 Nov 2019) $
+; $LastChangedRevision: 28018 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot.pro $
 ;
 ;-
@@ -137,10 +137,6 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
      mvn_spice_load, trange=trange, /download_only, verbose=verbose, no_download=no_download
      store_data, 'orb*num', /delete, verbose=verbose
   ENDIF 
-  ;status = EXECUTE("mvn_spice_load, trange=trange, /download_only, verbose=verbose")
-  ;IF status EQ 0 THEN $
-  ;   dprint, 'SPICE/kernels are unexpectedly unable to load.', dlevel=2, verbose=verbose
-  ;undefine, status
 
   ; SWEA
   IF (eflg) THEN BEGIN
@@ -182,7 +178,7 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
      ylim, 'mvn_swe_etspec', emin, emax, 1, /def
      IF (noswe) THEN BEGIN
         zlim, 'mvn_swe_etspec', 1.d4, 1.d9, 1, /def
-        options, 'mvn_swe_etspec', bottom=7, top=254, no_color_scale=0
+        options, 'mvn_swe_etspec', bottom=7, top=254, no_color_scale=0, dummy=1
      ENDIF ELSE zlim, 'mvn_swe_etspec', 0, 0, 1, /def
      undefine, xswe, yswe, vswe
      undefine, emin, emax
@@ -205,7 +201,7 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
         tname = 'mvn_swis_en_eflux'
         store_data, tname, data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [25.9375, 23244.8]}, $
                     dlim={datagap: [180L], ylog: [1L], zlog: [1L], spec: [1L], no_interp: [1L], $
-                          yrange: [4L, 30000], ystyle: [1L], zrange: [1.e4, 1.e8]}
+                          yrange: [4L, 30000], ystyle: [1L], zrange: [1.e4, 1.e8], dummy: 1}
      ENDIF ELSE BEGIN
         aname = tnames('mvn_swi*')
         idx = WHERE(aname NE tname)
@@ -238,13 +234,13 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
 
         store_data, statn0[0], data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [0.1046, 31380.]}, $
                     dlim={yrange: [0.1, 4.e4], ystyle: 1, ylog: 1, zrange: [1.e3, 1.e9], zstyle: 1, zlog: 1, $
-                          datagap: 7., spec: 1}
+                          datagap: 7., spec: 1, dummy: 1}
         store_data, statn0[1], data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [0.1046, 31380.]}, $
                     dlim={yrange: [0.1, 4.e4], ystyle: 1, ylog: 1, zrange: [1.e3, 1.e9], zstyle: 1, zlog: 1, $
-                          datagap: 7., spec: 1}
+                          datagap: 7., spec: 1, dummy: 1}
         store_data, statn0[2], data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [0.1046, 31380.]}, $
                     dlim={yrange: [0.5, 100.], ystyle: 1, ylog: 1, zrange: [1.e3, 1.e9], zstyle: 1, zlog: 1, $
-                          datagap: 7., spec: 1}  
+                          datagap: 7., spec: 1, dummy: 1}  
      ENDIF ELSE BEGIN
         state = 'idx = WHERE('
         FOR i=0, N_ELEMENTS(m)-1 DO BEGIN
@@ -338,7 +334,7 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
         append_array, pname, 'mvn_sep2' + ['f', 'r'] + '_elec_eflux'
         FOR ip=0, N_ELEMENTS(pname)-1 DO $
            store_data, pname[ip], data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [10., 6000]}, $
-                       dlim={spec: 1, ylog: 1, ystyle: 1, yrange: [10., 6000.]}
+                       dlim={spec: 1, ylog: 1, ystyle: 1, yrange: [10., 6000.], dummy: 1}
      ENDELSE 
      
      options, pname, ysubtitle='Energy [keV]', ztitle='EFLUX', ytickunits='scientific';, /def
@@ -415,35 +411,15 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
            ENDELSE  
         ENDIF  
      ENDIF 
-     get_data, 'mvn_lpw_iv', index=ilpw
+     get_data, 'mvn_lpw_iv', index=ilpw, data=dlpw
      IF (ilpw EQ 0) THEN $
         store_data, 'mvn_lpw_iv', data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [-45, 45]}, $
-                    dlim={yrange: [-43.3274, 43.2675], ystyle: 1, zrange: [-10, -4], zstyle: 1, spec: 1}
+                    dlim={yrange: [-43.3274, 43.2675], ystyle: 1, zrange: [-10, -4], zstyle: 1, spec: 1, dummy: 1} $
+     ELSE IF SIZE(dlpw.y, /n_dimension) NE 2 THEN options, 'mvn_lpw_iv', dummy=1
 
      ylim, 'mvn_lpw_iv', -43.3274, 43.2675
      options, 'mvn_lpw_iv', bottom=7, top=254, no_color_scale=0, datagap=60.d0, spec=1
      options, 'mvn_lpw_iv', ytitle='LPW (IV)', ysubtitle='[V]', ztitle='Log(abs(IV))'
-
-  ;   lpath = 'maven/data/sci/lpw/l2/'
-  ;   lname = 'YYYY/MM/mvn_lpw_l2_wspecpas_YYYYMMDD_*.cdf'
-  ;   lfile = mvn_pfp_file_retrieve(lpath + lname, trange=trange, /daily, /valid_only, /last)
-
-  ;   IF lfile[0] NE '' THEN BEGIN
-  ;      mvn_lpw_cdf_cdf2tplot, file=lfile, varformat='data'
-  ;      get_data, 'mvn_lpw_w_spec_pas_l2', data=d, dl=dl, lim=lim
-  ;      extract_tags, nlim, lim, tags=['yrange', 'ylog', 'zlog', 'spec', 'no_interp', 'ystyle']
-  ;      store_data, 'mvn_lpw_w_spec_pas_l2', data=d, dl=dl, lim=nlim
-  ;      zlim, 'mvn_lpw_w_spec_pas_l2', 1.e-15, 1.e-8, /def
-  ;      options, 'mvn_lpw_w_spec_pas_l2', ylog=1
-  ;      undefine, d, dl, lim, nlim
-  ;   ENDIF ELSE BEGIN
-  ;      store_data, 'mvn_lpw_w_spec_pas_l2', data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [1., 2.d6]}, $
-  ;                  dlim={yrange: [1, 2.d6], ystyle: 1, ylog: 1, zrange: [1.e-14, 1.e-5], zstyle: 1, zlog: 1, spec: 1}  
-  ;      options, 'mvn_lpw_w_spec_pas_l2', bottom=7, top=254
-  ;   ENDELSE 
-  ;   options, 'mvn_lpw_w_spec_pas_l2', ytitle='LPW (pas)', ysubtitle='f [Hz]', ztitle='Pwr', $
-  ;            xsubtitle='', zsubtitle=''
-  ;   undefine, lpath, lname, lfile
   ENDIF 
 
   ; EUV
@@ -516,7 +492,8 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
      store_data, 'mvn_mag_bamp_1sec', data={x: b.x, y: btot}, dlimits={ysubtitle: '|B| [nT]'}
      IF lvl NE '' THEN options, 'mvn_mag_bamp_1sec', ytitle='MAG ' + lvl ELSE options, 'mvn_mag_bamp_1sec', ytitle='MAG'
      
-     mvn_model_bcrust_load, trange, verbose=verbose, calc=bflg
+     IF SIZE(bflg, /type) NE 0 THEN IF bflg EQ 0 THEN bflg2 = 1
+     mvn_model_bcrust_load, trange, verbose=verbose, calc=bflg, nocalc=bflg2
      store_data, 'mvn_mag_bamp', data=['mvn_mag_bamp_1sec', 'mvn_mod_bcrust_amp'], $
                  dlimits={labels: ['Data', 'Model'], colors: [0, 2], labflag: -1, ysubtitle: '|B| [nT]'} 
      IF lvl NE '' THEN options, 'mvn_mag_bamp', ytitle='MAG ' + lvl ELSE options, 'mvn_mag_bamp', ytitle='MAG'

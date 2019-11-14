@@ -27,8 +27,9 @@ if nw ne 0 then begin
   
   u = uniq(new_last_dirs)                         ; get unique directories
   file_mkdir2,new_last_dirs[u]                    ; create directories if needed
-;  printdat,last_files,new_last_dirs + last_bnames
-  file_link,/hardlink,last_files, new_last_dirs+last_bnames ,/allow_same
+  ;dprint,'files to be linked:',transpose(last_files)
+  file_link,/hardlink,last_files, new_last_dirs+last_bnames ,/allow_same,/verbose
+  ;dprint,'hardlinks created:',transpose(new_last_dirs+last_bnames)
 endif 
 
 

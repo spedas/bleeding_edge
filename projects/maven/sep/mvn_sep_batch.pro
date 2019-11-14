@@ -13,7 +13,7 @@ tplot_options,verbose=0
 ;dprint,'Starting file transfer job at: '+time_string(systime(1),/local)
 ;mvn_common_l0_file_transfer
 
-dprint,'Starting SEP batch job at: '+time_string(systime(1),/local)
+dprint,'Starting SEP batch job at: '+time_string(systime(1),/local)+' host:'+getenv('HOST')+' user:'+getenv('USER')+' group:'+getenv('GROUP')
 
 ;mvn_mag_gen_l1_sav,init=1 ;looks like muser@mojo has a cronjob that does this too, so commenting it out ;20190814 Ali
 mvn_save_reduce_timeres,init=1,/mag,resstr='1sec',verbose=1
