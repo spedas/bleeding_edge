@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov 14 18:15:44 2019.<P>
+<STRONG>Last modified: </STRONG>Fri Nov 15 18:15:50 2019.<P>
  
 <HR>
  
@@ -22,11 +22,11 @@ This page was created by the IDL library routine
 <LI><A HREF="#CRIB_CALC">CRIB_CALC</A>
 <LI><A HREF="#CRIB_COLORS">CRIB_COLORS</A>
 <LI><A HREF="#CRIB_DPROC">CRIB_DPROC</A>
-<LI><A HREF="#CRIB_FILL_TIME_INTV">CRIB_FILL_TIME_INTV</A>
 <LI><A HREF="#CRIB_HAPI">CRIB_HAPI</A>
 <br>Demonstrates how to query Heliophysics API (HAPI) servers and download, load and plot data from them
 <LI><A HREF="#CRIB_HASH_TABLES_BASIC">CRIB_HASH_TABLES_BASIC</A>
 <br>This crib sheet shows how to work with the IDL data structures: hash and orderedhash
+<LI><A HREF="#CRIB_HIGHLIGHT_TIME_INTERVAL">CRIB_HIGHLIGHT_TIME_INTERVAL</A>
 <LI><A HREF="#CRIB_PLOTXY">CRIB_PLOTXY</A>
 <LI><A HREF="#CRIB_PLOTXYVEC">CRIB_PLOTXYVEC</A>
 <LI><A HREF="#CRIB_PLOTXYZ">CRIB_PLOTXYZ</A>
@@ -131,7 +131,7 @@ Warning: this crib uses some data from the THEMIS branch.  You'll require those 
 <A NAME="CRIB_DPROC">
 <H2>CRIB_DPROC</H2></A>
 <A HREF="#CRIB_COLORS">[Previous Routine]</A>
-<A HREF="#CRIB_FILL_TIME_INTV">[Next Routine]</A>
+<A HREF="#CRIB_HAPI">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 procedure:  crib_dproc.pro
@@ -153,10 +153,62 @@ Warning: this crib uses some data from the THEMIS branch.  You'll require those 
 <STRONG>(See <A href="examples/crib_dproc.pro">general/examples/crib_dproc.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="CRIB_FILL_TIME_INTV">
-<H2>CRIB_FILL_TIME_INTV</H2></A>
+<A NAME="CRIB_HAPI">
+<H2>CRIB_HAPI</H2></A>
 <A HREF="#CRIB_DPROC">[Previous Routine]</A>
-<A HREF="#CRIB_HAPI">[Next Routine]</A>
+<A HREF="#CRIB_HASH_TABLES_BASIC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: crib_hapi
+
+ PURPOSE:  
+       Demonstrates how to query Heliophysics API (HAPI) servers and download, load and plot data from them
+
+ NOTES:
+       hapi_load_data requires IDL 8.3 or later due to usage of IDL's json_parse + orderedhash
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2018-11-19 09:13:20 -0800 (Mon, 19 Nov 2018) $
+ $LastChangedRevision: 26148 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_hapi.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/crib_hapi.pro">general/examples/crib_hapi.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="CRIB_HASH_TABLES_BASIC">
+<H2>CRIB_HASH_TABLES_BASIC</H2></A>
+<A HREF="#CRIB_HAPI">[Previous Routine]</A>
+<A HREF="#CRIB_HIGHLIGHT_TIME_INTERVAL">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+NAME:
+  crib_hash_tables_basic
+
+PURPOSE:
+  This crib sheet shows how to work with the IDL data structures: hash and orderedhash
+
+
+ Hash tables are very useful, efficient data structures that allow quick mapping of keys to values:
+ 
+   https://www.harrisgeospatial.com/docs/HASH.html (added to IDL in 8.0)
+   
+   https://www.harrisgeospatial.com/docs/orderedhash.html (added to IDL in 8.4)
+   
+   
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2019-08-12 13:50:35 -0700 (Mon, 12 Aug 2019) $
+ $LastChangedRevision: 27596 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_hash_tables_basic.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/crib_hash_tables_basic.pro">general/examples/crib_hash_tables_basic.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="CRIB_HIGHLIGHT_TIME_INTERVAL">
+<H2>CRIB_HIGHLIGHT_TIME_INTERVAL</H2></A>
+<A HREF="#CRIB_HASH_TABLES_BASIC">[Previous Routine]</A>
+<A HREF="#CRIB_PLOTXY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: crib_fill_time_intv
@@ -186,68 +238,16 @@ Warning: this crib uses some data from the THEMIS branch.  You'll require those 
    these cribs can help double as documentation for tplot.
 
  $LastChangedBy: jimm $
- $LastChangedDate: 2019-11-08 11:30:39 -0800 (Fri, 08 Nov 2019) $
- $LastChangedRevision: 27994 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_fill_time_intv.pro $
+ $LastChangedDate: 2019-11-15 11:21:00 -0800 (Fri, 15 Nov 2019) $
+ $LastChangedRevision: 28024 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_highlight_time_interval.pro $
 </PRE><P>
-<STRONG>(See <A href="examples/crib_fill_time_intv.pro">general/examples/crib_fill_time_intv.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="CRIB_HAPI">
-<H2>CRIB_HAPI</H2></A>
-<A HREF="#CRIB_FILL_TIME_INTV">[Previous Routine]</A>
-<A HREF="#CRIB_HASH_TABLES_BASIC">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- NAME: crib_hapi
-
- PURPOSE:  
-       Demonstrates how to query Heliophysics API (HAPI) servers and download, load and plot data from them
-
- NOTES:
-       hapi_load_data requires IDL 8.3 or later due to usage of IDL's json_parse + orderedhash
-
- $LastChangedBy: egrimes $
- $LastChangedDate: 2018-11-19 09:13:20 -0800 (Mon, 19 Nov 2018) $
- $LastChangedRevision: 26148 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_hapi.pro $
-</PRE><P>
-<STRONG>(See <A href="examples/crib_hapi.pro">general/examples/crib_hapi.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="CRIB_HASH_TABLES_BASIC">
-<H2>CRIB_HASH_TABLES_BASIC</H2></A>
-<A HREF="#CRIB_HAPI">[Previous Routine]</A>
-<A HREF="#CRIB_PLOTXY">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-
-NAME:
-  crib_hash_tables_basic
-
-PURPOSE:
-  This crib sheet shows how to work with the IDL data structures: hash and orderedhash
-
-
- Hash tables are very useful, efficient data structures that allow quick mapping of keys to values:
- 
-   https://www.harrisgeospatial.com/docs/HASH.html (added to IDL in 8.0)
-   
-   https://www.harrisgeospatial.com/docs/orderedhash.html (added to IDL in 8.4)
-   
-   
-
- $LastChangedBy: egrimes $
- $LastChangedDate: 2019-08-12 13:50:35 -0700 (Mon, 12 Aug 2019) $
- $LastChangedRevision: 27596 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_hash_tables_basic.pro $
-</PRE><P>
-<STRONG>(See <A href="examples/crib_hash_tables_basic.pro">general/examples/crib_hash_tables_basic.pro</A>)</STRONG><P>
+<STRONG>(See <A href="examples/crib_highlight_time_interval.pro">general/examples/crib_highlight_time_interval.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="CRIB_PLOTXY">
 <H2>CRIB_PLOTXY</H2></A>
-<A HREF="#CRIB_HASH_TABLES_BASIC">[Previous Routine]</A>
+<A HREF="#CRIB_HIGHLIGHT_TIME_INTERVAL">[Previous Routine]</A>
 <A HREF="#CRIB_PLOTXYVEC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
