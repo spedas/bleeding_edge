@@ -3,7 +3,7 @@
 Pro mvn_l2gen_remove_0logs, dir = dir, _extra = _extra
 ;-
   If(~keyword_set(dir)) Then dir = '/mydisks/home/maven/stalog/'
-  files = file_search(dir+'run_sta_l2gen.txt*', count = nfiles)
+  files = file_search(dir+'run_sta_l2*.txt*', count = nfiles)
   If(nfiles Eq 0) Then Begin
     message, /info, 'No log files in: '+dir
     Return

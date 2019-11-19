@@ -64,15 +64,15 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2019-11-13 14:20:44 -0800 (Wed, 13 Nov 2019) $
-; $LastChangedRevision: 28018 $
+; $LastChangedDate: 2019-11-18 16:22:29 -0800 (Mon, 18 Nov 2019) $
+; $LastChangedRevision: 28031 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot.pro $
 ;
 ;-
 PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no_download=no_download, $
                       pad=pad, tplot=tplot, window=window, tname=ptname, phobos=phobos, $
                       bcrust=bcrust, burst_bar=bbar, bvec=bvec, sundir=sundir, tohban=tohban, tobhan=tobhan, $
-                      swia=swi, swea=swe, static=sta, sep=sep, mag=mag, lpw=lpw, euv=euv, spaceweather=spw
+                      swia=swi, swea=swe, static=sta, sep=sep, mag=mag, lpw=lpw, euv=euv, spaceweather=spw, pos=pos
 
   oneday = 24.d0 * 3600.d0
   nan = !values.f_nan
@@ -113,6 +113,7 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
      IF SIZE(lpw, /type) EQ 0 THEN lpw = 0
      IF SIZE(euv, /type) EQ 0 THEN euv = 1
      IF SIZE(bbar, /type) EQ 0 THEN bbar = 1
+     IF SIZE(pos, /type) EQ 0 THEN pos = 1
   ENDIF 
 
   IF SIZE(swi, /type) EQ 0 THEN iflg = 1 ELSE iflg = swi 
@@ -122,6 +123,7 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
   IF SIZE(mag, /type) EQ 0 THEN mflg = 1 ELSE mflg = mag 
   IF SIZE(lpw, /type) EQ 0 THEN lflg = 1 ELSE lflg = lpw 
   IF SIZE(euv, /type) EQ 0 THEN vflg = 0 ELSE vflg = euv ; Perhaps it changes someday... 
+  IF SIZE(pos, /type) EQ 0 THEN oflg = 1 ELSE oflg = pos
   IF keyword_set(tobhan) THEN BEGIN
      dprint, 'It is a misspelling! (Tobhan -> Tohban)...', dlevel=2, verbose=verbose
      tohban = 1                 ; Many people tend to mistake its spelling...
@@ -521,17 +523,19 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
   ENDIF 
 
   ; Ephemeris
-  maven_orbit_tplot, /current, /load, timecrop=[-2.d0, 2.d0]*oneday + trange ; +/- 2 day is buffer.
-  options, 'alt2', panel_size=2./3., ytitle='Alt. [km]'
-  IF KEYWORD_SET(spw) THEN BEGIN
-     options, ['twake', 'tpileup', 'tsheath', 'twind'], 'color'
-     options, 'twake', colors=2
-     options, 'tpileup', colors=5
-     options, 'tsheath', colors=4
-     options, 'twind', colors=0
-     options, 'stat', yminor=2, labflag=-1, labels=['WIND', 'SHEATH', 'PILEUP', 'SHADOW'], ytitle='Orbit!CFraction'
-     ylim, 'stat', -0.05, 1.05
-  ENDIF
+  IF (oflg) THEN BEGIN
+     maven_orbit_tplot, /current, /load, timecrop=[-2.d0, 2.d0]*oneday + trange ; +/- 2 day is buffer.
+     options, 'alt2', panel_size=2./3., ytitle='Alt. [km]'
+     IF KEYWORD_SET(spw) THEN BEGIN
+        options, ['twake', 'tpileup', 'tsheath', 'twind'], 'color'
+        options, 'twake', colors=2
+        options, 'tpileup', colors=5
+        options, 'tsheath', colors=4
+        options, 'twind', colors=0
+        options, 'stat', yminor=2, labflag=-1, labels=['WIND', 'SHEATH', 'PILEUP', 'SHADOW'], ytitle='Orbit!CFraction'
+        ylim, 'stat', -0.05, 1.05
+     ENDIF
+  ENDIF 
   IF keyword_set(phobos) THEN BEGIN
      mvn_phobos_tplot, trange=trange
      options, 'Phobos-MAVEN', panel_size=0.75, ytitle='Phobos!CMAVEN', ylog=1, /def

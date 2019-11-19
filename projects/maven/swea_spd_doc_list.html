@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Nov 15 18:15:50 2019.<P>
+<STRONG>Last modified: </STRONG>Mon Nov 18 18:15:48 2019.<P>
  
 <HR>
  
@@ -2505,14 +2505,18 @@ KEYWORDS:
 
        NODUPE:        Filter out identical packets.  Default = 1 (yes).
 
+       SURVEY:        If no merged file(s) exist over requested time range, then 
+                      look for survey-only files.  This is slow, because the
+                      survey files are all located in a single directory.
+
        REALTIME:      Use realtime file naming convention: YYYYMMDD_HHMMSS_*_l0.dat
 
        VERBOSE:       Level of diagnostic message suppression.  Default = 0.  Set
                       to a higher number to see more diagnostic messages.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-04-08 16:59:23 -0700 (Mon, 08 Apr 2019) $
- $LastChangedRevision: 26965 $
+ $LastChangedDate: 2019-11-18 14:25:54 -0800 (Mon, 18 Nov 2019) $
+ $LastChangedRevision: 28030 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_hsk.pro $
 
 CREATED BY:    David L. Mitchell

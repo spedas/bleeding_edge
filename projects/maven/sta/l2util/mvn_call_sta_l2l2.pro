@@ -13,9 +13,9 @@
 ; out_dir = the directory in which you write the data, default is './'
 ;HISTORY:
 ;Hacked from mvn_call_sta_l2gen, 2016-10-18, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: jimmpc1 $
-; $LastChangedDate: 2017-09-05 11:35:05 -0700 (Tue, 05 Sep 2017) $
-; $LastChangedRevision: 23885 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-11-18 09:08:17 -0800 (Mon, 18 Nov 2019) $
+; $LastChangedRevision: 28028 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_call_sta_l2l2.pro $
 ;-
 Pro mvn_call_sta_l2l2, out_dir = out_dir, $
@@ -91,7 +91,7 @@ Pro mvn_call_sta_l2l2, out_dir = out_dir, $
      today = time_string(systime(/sec), precision = -3)
      btime = time_string(btime, precision = -3)
      If(time_double(btime) Ge time_double(today)) Then Begin
-        dprint, 'No Times to process'
+;        dprint, 'No Times to process'
         Return
      Endif
 ;Process 3, 10, 30, 60 days before
