@@ -64,15 +64,15 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2019-11-18 16:22:29 -0800 (Mon, 18 Nov 2019) $
-; $LastChangedRevision: 28031 $
+; $LastChangedDate: 2019-11-19 15:41:37 -0800 (Tue, 19 Nov 2019) $
+; $LastChangedRevision: 28043 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot.pro $
 ;
 ;-
 PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no_download=no_download, $
                       pad=pad, tplot=tplot, window=window, tname=ptname, phobos=phobos, $
                       bcrust=bcrust, burst_bar=bbar, bvec=bvec, sundir=sundir, tohban=tohban, tobhan=tobhan, $
-                      swia=swi, swea=swe, static=sta, sep=sep, mag=mag, lpw=lpw, euv=euv, spaceweather=spw, pos=pos
+                      swia=swi, swea=swe, static=sta, sep=sep, mag=mag, lpw=lpw, euv=euv, spaceweather=spw, pos=pos, restore=restore, png=png, filename=filename
 
   oneday = 24.d0 * 3600.d0
   nan = !values.f_nan
@@ -103,6 +103,12 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
      dprint, 'You must set the specified time interval to load.'
      RETURN
   ENDIF
+
+  IF KEYWORD_SET(restore) THEN BEGIN
+     mvn_ql_pfp_tplot_restore, trange, tplot=tplot, verbose=verbose, no_download=no_download
+     IF KEYWORD_SET(png) THEN GOTO, get_png 
+     RETURN
+  ENDIF 
 
   IF KEYWORD_SET(spw) THEN BEGIN
      IF SIZE(swi, /type) EQ 0 THEN swi = 1
@@ -609,5 +615,13 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
      ENDIF 
      tplot, ptname, wi=wnum 
   ENDIF 
+
+  IF KEYWORD_SET(png) THEN BEGIN
+     get_png:
+     IF SIZE(filename, /type) EQ 0 THEN $
+        filename = 'mvn_ql_pfp_tplot_' + time_string(trange[0], tformat='yyMMDD_') + time_string(trange[1], tformat='yyMMDD')
+     makepng, filename, wi=wnum
+  ENDIF 
+
   RETURN
 END
