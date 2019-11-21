@@ -57,8 +57,8 @@
 ;       Major update on 2017-07-24 - incl. negative pot
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2017-10-26 08:53:13 -0700 (Thu, 26 Oct 2017) $
-; $LastChangedRevision: 24217 $
+; $LastChangedDate: 2019-11-20 16:17:13 -0800 (Wed, 20 Nov 2019) $
+; $LastChangedRevision: 28047 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_lpw_scpot.pro $
 ;-
 
@@ -244,7 +244,7 @@ if keyword_set(plot) then begin
    options,'swe_pos',psym=3,constant=[3],yrange=[0,20]
    store_data,'swe_comb',data=['swe_a4','swe_pos'], $
               dlim={yrange:[3,4627.5],ystyle:1}
-   options,'mvn_lpw_swp1_IV',spec=1,zrange=[-1.e-7,1.e-7],yrange=[-20,20], $
+   options,'mvn_lpw_swp1_IV',spec=1,zrange=[-1.e-7,1.e-7],yrange=[-45,45],ystyle=1, $
            yticklen=-.01,no_interp=1,ytitle='LPW!cswp1',datagap=maxgap
    options,'alt2',panel_size=.5,ytitle='Alt!c[km]',ylog=1,yrange=[100,1e4], $
            constant=[alt_swepos,alt_sta,alt_sweneg]
@@ -393,25 +393,32 @@ for it=(ntsmo-1)/2,n_elements(div.x)-(ntsmo-1)/2-1 do begin
    w = where( vol gt vfloat[it]+vbuffer and finite(der) , nw)
    if nw gt 0 then der[w] = 0.
 
-   ;;; average into 1 V regular bins and oversample
-   der1v = time_average(vol,der,newt=vol1v,tr=[-20,20],res=1.)
-   w = where(finite(der1v),nw)
-   if nw eq 0 then continue
-   ders[it,*] = interp( der1v[w], vol1v[w], vols[it,*], /no_ex )
-   ders[it,*] = ders[it,*] / max(ders[it,*],/nan) ;- normalize
+   if max(vol,/nan) lt 40 then begin
+      ;;; average into 1 V regular bins and oversample
+      der1v = time_average(vol,der,newt=vol1v,tr=[-20,20],res=1.)
+      w = where(finite(der1v),nw)
+      if nw eq 0 then continue
+      ders[it,*] = interp( der1v[w], vol1v[w], vols[it,*], /no_ex )
+      ders[it,*] = ders[it,*] / max(ders[it,*],/nan) ;- normalize
+   endif else begin ;- +/-45 V sweep
+      ders[it,*] = interp( der, vol, vols[it,*], /no_ex ) ;- no ave
+      ders[it,*] = ders[it,*] / max(ders[it,*],/nan) ;- normalize
+   endelse
 
-   ;;; grab the dI/dV peak
+    ;;; grab the dI/dV peak
     w = where( vols[it,*] gt vrinfl[0]-1 and vols[it,*] lt vrinfl[1]+1 $
               and finite(ders[it,*]), nw)
    if nw gt 6 then begin
       x = reform(vols[it,w])
       y = reform(ders[it,w])
-      ymax = max(y,imax,/nan)
-      if ymax gt .5 then begin  ;- only clear peaks
+
+      wpeaks = where( y gt .8 , nwpeaks )
+      if nwpeaks gt 0 then begin  ;- only clear peaks
+         imax = wpeaks[0]          ;- lowest-V peak is trustable
          p = {a:2.d*(2.*!pi)^.5,s:1.d,x0:double(x[imax])}
          fit,x,y,param=p,funct='gauss2',verb=-1 ;- initial fit
          y2 = y
-         w = where( x gt p.x0+p.s or x lt p.x0-p.s , nw )
+         w = where( x gt p.x0+p.s or x lt p.x0-p.s or x gt p.x0+1. , nw ) ;- experimental, aggressive supression of high-V tails
          if nw gt 0 then y2[w] = 0.                 ;- suppress the wings
          fit,x,y2,param=p,funct='gauss2',verb=-1, $ ;- 2nd fit
              fitvalues=yfit
@@ -420,6 +427,21 @@ for it=(ntsmo-1)/2,n_elements(div.x)-(ntsmo-1)/2-1 do begin
             chi2[it] = total((y-yfit)^2)/(n_elements(y)-3.) ;- chi2 for qflag
          endif
       endif
+
+      ;; ymax = max(y,imax,/nan)
+      ;; if ymax gt .5 then begin  ;- only clear peaks
+      ;;    p = {a:2.d*(2.*!pi)^.5,s:1.d,x0:double(x[imax])}
+      ;;    fit,x,y,param=p,funct='gauss2',verb=-1 ;- initial fit
+      ;;    y2 = y
+      ;;    w = where( x gt p.x0+p.s or x lt p.x0-p.s , nw )
+      ;;    if nw gt 0 then y2[w] = 0.                 ;- suppress the wings
+      ;;    fit,x,y2,param=p,funct='gauss2',verb=-1, $ ;- 2nd fit
+      ;;        fitvalues=yfit
+      ;;    if p.x0 gt vrinfl[0] and p.x0 lt vrinfl[1] then begin
+      ;;       vinfl[it] = p.x0    ;- This is what I want
+      ;;       chi2[it] = total((y-yfit)^2)/(n_elements(y)-3.) ;- chi2 for qflag
+      ;;    endif
+      ;; endif
    endif
 endfor                          ;- it loop
 
