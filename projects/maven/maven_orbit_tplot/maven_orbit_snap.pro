@@ -60,6 +60,7 @@
 ;                      1 : Plot optical shadow boundary at surface.
 ;                      2 : Plot optical shadow boundary at s/c altitude.
 ;                      3 : Plot EUV shadow boundary at s/c altitude.
+;                      4 : Plot EUV shadow at electron absorption altitude.
 ;
 ;       NOERASE:  Don't erase previously plotted positions.  Can be used to build
 ;                 up a visual representation of sampling.
@@ -102,11 +103,13 @@
 ;
 ;       MAGNIFY:  Change size of plot windows.
 ;
+;       LABEL:    Add text labels showing altitude and solar zenith angle.
+;
 ;       PSNAME:   Name of a postscript plot.  Works only for orbit plots.
 ;
-; $LastChangedBy: ali $
-; $LastChangedDate: 2019-10-22 17:48:31 -0700 (Tue, 22 Oct 2019) $
-; $LastChangedRevision: 27918 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2019-11-21 14:42:47 -0800 (Thu, 21 Nov 2019) $
+; $LastChangedRevision: 28051 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -115,7 +118,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     npole=npole, noerase=noerase, keep=keep, color=color, reset=reset, cyl=cyl, times=times, $
     nodot=nodot, terminator=terminator, thick=thick, Bdir=Bdir, scale=scale, scsym=scsym, $
     magnify=magnify, Bclip=Bclip, Vdir=Vdir, Vclip=Vclip, Vscale=Vscale, Vrange=Vrange, $
-    alt=doalt, psname=psname
+    alt=doalt, psname=psname, label=label
 
   @maven_orbit_common
   @swe_snap_common
@@ -153,6 +156,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   if keyword_set(Vdir) then dov = 1 else dov = 0
 
   doalt = keyword_set(doalt)
+  dolab = keyword_set(label)
 
   if keyword_set(times) then begin
     times = time_double(times)
@@ -316,6 +320,8 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   dt = min(abs(time - tref), iref, /nan)
   tref = time[iref]
   oref = orbnum[iref]
+  zref = sza[iref]*!radeg
+  href = hgt[iref]
   ndays = (tref - time[0])/86400D
 
   dt = min(abs(torb - tref), jref, /nan)
@@ -560,6 +566,12 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
       oplot,xpileup,ypileup,color=3,line=1,thick=thick
 
+      if (dolab) then begin
+        xyouts, 0.73, 0.95, "ALT = " + string(round(href), format='(i4)'), /norm, charsize=csize/2.
+        xyouts, 0.73, 0.93, "SZA = " + string(round(zref), format='(i4)'), /norm, charsize=csize/2.
+        xyouts, 0.67, 0.62, "View from Pole", /norm, charsize=csize/2.
+        xyouts, 0.67, 0.285, "View from Sun", /norm, charsize=csize/2.
+      endif
     endif
 
 ; X-Z Projection
@@ -982,6 +994,8 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       dt = min(abs(time - trange[0]), iref)
       tref = time[iref]
       oref = orbnum[iref]
+      zref = sza[iref]*!radeg
+      href = hgt[iref]
       ndays = (tref - time[0])/86400D
     endif
 

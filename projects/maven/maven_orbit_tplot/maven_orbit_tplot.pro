@@ -49,8 +49,8 @@
 ;                 For display only - not included in statistics.  Default is NaN.
 ;
 ;       SHADOW:   Choose shadow boundary definition:
-;                    0 : optical shadow at spacecraft altitude (default)
-;                    1 : EUV shadow at spacecraft altitude
+;                    0 : optical shadow at spacecraft altitude
+;                    1 : EUV shadow at spacecraft altitude (default)
 ;
 ;       SEGMENTS: Plot nominal altitudes for orbit segment boundaries as dotted
 ;                 horizontal lines.  Closely spaced lines are transitions, during
@@ -79,14 +79,15 @@
 ;                 keyword can be 1 or 2, corresponding to the following spk
 ;                 kernels:
 ;
-;                   1 : trj_orb_190425-201220_targetM2020EDL-eso_190409.bsp
-;                   2 : trj_orb_200415-210512_targetM2020EDL-sro-ERTF1_190411.bsp
+;                   1 : trj_orb_191220-201220_targetM2020EDL-xso_191120.bsp
+;                   2 : trj_orb_200415-210512_targetM2020EDL-sro-ERTF2_191120.bsp
 ;
-;                 These ephemerides were created in Apr 2019, after aerobraking.
-;                 The first is "extended science", with periapsis in the nominal
-;                 science density corridor (~150 km altitude).  The second is
+;                 These ephemerides were created in November 2019.
+;                 The first is "extended science", with periapsis starting in the
+;                 nominal science density corridor (~150 km altitude) and then 
+;                 allowed to drift upward after 2020-04-10.  The second is
 ;                 "science/relay", with perapsis raised to a minimum of ~180 km
-;                 on 2020-04-22.
+;                 on 2020-09-16.
 ;
 ;       HIRES:    OBSOLETE - this keyword has no effect at all.
 ;
@@ -132,8 +133,8 @@
 ;       CLEAR:    Clear the common block and exit.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-08-22 09:56:32 -0700 (Thu, 22 Aug 2019) $
-; $LastChangedRevision: 27631 $
+; $LastChangedDate: 2019-11-21 15:03:13 -0800 (Thu, 21 Nov 2019) $
+; $LastChangedRevision: 28053 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -224,6 +225,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
   domex = keyword_set(domex)
   eflg = keyword_set(ellip)
+  if (size(shadow,/type) eq 0) then shadow = 1
   sflg = keyword_set(shadow)
   if not keyword_set(ialt) then ialt = !values.f_nan
   if keyword_set(hires) then res = '20sec' else res = '60sec'
@@ -256,27 +258,33 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   
   if keyword_set(extended) then begin
     case extended of
+       0 : ; do nothing (don't use extended predict ephemeris)
        1 : begin
-             mname = 'maven_spacecraft_mso_targetM2020EDL-eso_190409.sav'
-             gname = 'maven_spacecraft_geo_targetM2020EDL-eso_190409.sav'
-             timespan, ['2019-04-25','2020-12-20']
+             mname = 'maven_spacecraft_mso_targetM2020EDL-xso_191120.sav'
+             gname = 'maven_spacecraft_geo_targetM2020EDL-xso_191120.sav'
+             timespan, ['2019-12-20','2020-12-20']
              treset = 1
              nocrop = 1
              timecrop = 0
              print,"Using post-aerobraking extended science predict."
-             print,"  SPK = trj_orb_190425-201220_targetM2020EDL-eso_190409.bsp"
+             print,"  SPK = trj_orb_191220-201220_targetM2020EDL-xso_191120.bsp"
            end
        2 : begin
-             mname = 'maven_spacecraft_mso_targetM2020EDL-sro-ERTF1_190411.sav'
-             gname = 'maven_spacecraft_geo_targetM2020EDL-sro-ERTF1_190411.sav'
+             mname = 'maven_spacecraft_mso_targetM2020EDL-sro-ERTF2_191120.sav'
+             gname = 'maven_spacecraft_geo_targetM2020EDL-sro-ERTF2_191120.sav'
              timespan, ['2020-04-16','2021-05-12']
              treset = 1
              nocrop = 1
              timecrop = 0
              print,"Using post-aerobraking science-relay predict."
-             print,"  SPK = trj_orb_200415-210512_targetM2020EDL-sro-ERTF1_190411.bsp"
+             print,"  SPK = trj_orb_200415-210512_targetM2020EDL-sro-ERTF2_191120.bsp"
            end
-      else : extended = 0
+      else : begin
+               print, "Extended ephemeris predict choices are:"
+               print, "  1 : 2019-12-20 to 2020-12-20 with periapsis drift after 2020-04-10"
+               print, "  2 : 2020-04-16 to 2021-05-12 with periapsis drift then raise on 2020-09-16"
+               return
+             end
     endcase
   endif else extended = 0
 

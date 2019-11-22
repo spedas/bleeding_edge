@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Nov 20 18:15:44 2019.<P>
+<STRONG>Last modified: </STRONG>Thu Nov 21 18:15:39 2019.<P>
  
 <HR>
  
@@ -444,6 +444,7 @@ KEYWORDS:
                       1 : Plot optical shadow boundary at surface.
                       2 : Plot optical shadow boundary at s/c altitude.
                       3 : Plot EUV shadow boundary at s/c altitude.
+                      4 : Plot EUV shadow at electron absorption altitude.
 
        NOERASE:  Don't erase previously plotted positions.  Can be used to build
                  up a visual representation of sampling.
@@ -486,11 +487,13 @@ KEYWORDS:
 
        MAGNIFY:  Change size of plot windows.
 
+       LABEL:    Add text labels showing altitude and solar zenith angle.
+
        PSNAME:   Name of a postscript plot.  Works only for orbit plots.
 
- $LastChangedBy: ali $
- $LastChangedDate: 2019-10-22 17:48:31 -0700 (Tue, 22 Oct 2019) $
- $LastChangedRevision: 27918 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2019-11-21 14:42:47 -0800 (Thu, 21 Nov 2019) $
+ $LastChangedRevision: 28051 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11
@@ -554,8 +557,8 @@ KEYWORDS:
                  For display only - not included in statistics.  Default is NaN.
 
        SHADOW:   Choose shadow boundary definition:
-                    0 : optical shadow at spacecraft altitude (default)
-                    1 : EUV shadow at spacecraft altitude
+                    0 : optical shadow at spacecraft altitude
+                    1 : EUV shadow at spacecraft altitude (default)
 
        SEGMENTS: Plot nominal altitudes for orbit segment boundaries as dotted
                  horizontal lines.  Closely spaced lines are transitions, during
@@ -584,14 +587,15 @@ KEYWORDS:
                  keyword can be 1 or 2, corresponding to the following spk
                  kernels:
 
-                   1 : trj_orb_190425-201220_targetM2020EDL-eso_190409.bsp
-                   2 : trj_orb_200415-210512_targetM2020EDL-sro-ERTF1_190411.bsp
+                   1 : trj_orb_191220-201220_targetM2020EDL-xso_191120.bsp
+                   2 : trj_orb_200415-210512_targetM2020EDL-sro-ERTF2_191120.bsp
 
-                 These ephemerides were created in Apr 2019, after aerobraking.
-                 The first is &quot;extended science&quot;, with periapsis in the nominal
-                 science density corridor (~150 km altitude).  The second is
+                 These ephemerides were created in November 2019.
+                 The first is &quot;extended science&quot;, with periapsis starting in the
+                 nominal science density corridor (~150 km altitude) and then 
+                 allowed to drift upward after 2020-04-10.  The second is
                  &quot;science/relay&quot;, with perapsis raised to a minimum of ~180 km
-                 on 2020-04-22.
+                 on 2020-09-16.
 
        HIRES:    OBSOLETE - this keyword has no effect at all.
 
@@ -637,8 +641,8 @@ KEYWORDS:
        CLEAR:    Clear the common block and exit.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-08-22 09:56:32 -0700 (Thu, 22 Aug 2019) $
- $LastChangedRevision: 27631 $
+ $LastChangedDate: 2019-11-21 15:03:13 -0800 (Thu, 21 Nov 2019) $
+ $LastChangedRevision: 28053 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11

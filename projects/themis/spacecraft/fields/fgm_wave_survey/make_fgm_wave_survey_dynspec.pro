@@ -18,9 +18,9 @@
 ; Examples:
 ;   See helper routine make_fgm_wave_survey_testdates
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2012-09-07 11:22:10 -0700 (Fri, 07 Sep 2012) $
-; $LastChangedRevision: 10902 $
+; $LastChangedBy: jimmpc1 $
+; $LastChangedDate: 2019-11-21 09:43:28 -0800 (Thu, 21 Nov 2019) $
+; $LastChangedRevision: 28049 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/fgm_wave_survey/make_fgm_wave_survey_dynspec.pro $
 ;-
 
@@ -346,15 +346,15 @@ if (keyword_set(ylog) eq 0) then begin
   if keyword_set(fge) then begin
     yrange = [0.,4.]
   endif else begin
-    yrange  = [0.,2.]
+    yrange  = [0.,8.]
   endelse
   
 endif else begin
 
   if keyword_set(fge) then begin
-    yrange = [0.05,4.]
+    yrange = [0.05, 4.]
   endif else begin
-    yrange  = [0.05, 2.]
+    yrange  = [0.05, 8.]
   endelse
    
 endelse
@@ -362,8 +362,8 @@ endelse
 tplot_options,'ymargin',ymargin
 tplot_options,'xmargin',[12,10]
 
-options, '*', yrange=yrange
-options, '*', ylog=ylog
+options, '*dynspec*', yrange=yrange
+options, '*dynspec*', ylog=ylog
 
 tplot_options,'ygap',0.0d
 
