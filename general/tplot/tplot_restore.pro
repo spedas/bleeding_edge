@@ -27,9 +27,9 @@
 ;                       Removed additional output text - Use dprint,debug=3  to restore text.   Nov 2008
 ;                       Fixed bug on macOS when saving figures of restored data using makepng/makegif/makejpg, 24-jan-2019, egrimes
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-05-01 09:24:46 -0700 (Wed, 01 May 2019) $
-; $LastChangedRevision: 27161 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-11-22 14:51:58 -0800 (Fri, 22 Nov 2019) $
+; $LastChangedRevision: 28062 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_restore.pro $
 ;-
 pro tplot_restore,filenames=filenames,all=all,append=append,sort=sort,$
@@ -101,12 +101,22 @@ for i=0L, n[0] - 1L do begin
   		if keyword_set(append) and keyword_set(olddata) then begin
   		   if keyword_set(*thisdq.dh) then begin
   				if thisdq.dtype eq 1 then begin
+ 					if ptr_valid((*thisdq.dh).y) then begin
+;check y dimensions prior to appending, jmm, 2019-11-22
+                                           n1 = size(*olddata.y, /n_dimen)
+                                           n2 = size(*(*thisdq.dh).y, /n_dimen)
+                                           s1 = size(*olddata.y, /dimen)
+                                           s2 = size(*(*thisdq.dh).y, /dimen)
+                                           if (n1 ne n2) || (n_elements(s1) gt 1 && ~array_equal(s1[1:*], s2[1:*])) then begin
+                                              dprint, dlevel=1, 'Variable '+thisdq.name+' Y size mismatch; not appended'
+                                              continue
+                                           endif else begin
+                                              newy = ptr_new([*olddata.y,*(*thisdq.dh).y])
+                                           endelse
+                                        endif else newy = ptr_new(*olddata.y)
  					if ptr_valid((*thisdq.dh).x) then $
  						newx = ptr_new([*olddata.x,*(*thisdq.dh).x]) else $
  						newx = ptr_new(*olddata.x)
- 					if ptr_valid((*thisdq.dh).y) then $
- 						newy = ptr_new([*olddata.y,*(*thisdq.dh).y]) else $
- 						newy = ptr_new(*olddata.y)
 ; 					newx = ptr_new([*olddata.x,*(*thisdq.dh).x])
 ; 					newy = ptr_new([*olddata.y,*(*thisdq.dh).y])
   					ptr_free,(*thisdq.dh).x,(*thisdq.dh).y

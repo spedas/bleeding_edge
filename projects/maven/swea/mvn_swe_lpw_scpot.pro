@@ -57,8 +57,8 @@
 ;       Major update on 2017-07-24 - incl. negative pot
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2019-11-20 16:17:13 -0800 (Wed, 20 Nov 2019) $
-; $LastChangedRevision: 28047 $
+; $LastChangedDate: 2019-11-21 21:19:51 -0800 (Thu, 21 Nov 2019) $
+; $LastChangedRevision: 28054 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_lpw_scpot.pro $
 ;-
 
@@ -418,7 +418,8 @@ for it=(ntsmo-1)/2,n_elements(div.x)-(ntsmo-1)/2-1 do begin
          p = {a:2.d*(2.*!pi)^.5,s:1.d,x0:double(x[imax])}
          fit,x,y,param=p,funct='gauss2',verb=-1 ;- initial fit
          y2 = y
-         w = where( x gt p.x0+p.s or x lt p.x0-p.s or x gt p.x0+1. , nw ) ;- experimental, aggressive supression of high-V tails
+         w = where( x gt p.x0+p.s or x lt p.x0-p.s or x gt p.x0+1. , nw ) ;- experimental, aggressive suppression of high-V tails
+         if div.x[it] lt time_double('2015-04-04') then w = where( x gt p.x0+p.s or x lt p.x0-p.s , nw ) ;- conservative suppression at early mission
          if nw gt 0 then y2[w] = 0.                 ;- suppress the wings
          fit,x,y2,param=p,funct='gauss2',verb=-1, $ ;- 2nd fit
              fitvalues=yfit
@@ -669,9 +670,9 @@ for iorb=iorb0,iorb1 do begin
 
 
    store_data,'scpots', $
-              data=['swe_pos','neg_pot','mvn_sta_c6_scpot',orbstr+'_mvn_swe_lpw_scpot_good'], $
-              dlim={labels:['swe+','swe-','sta','swe/lpw'], $
-                    colors:[2,6,4,0],labflag:1,datagap:maxgap,yrange:[-20,20], $
+              data=[orbstr+'_mvn_swe_lpw_scpot_pol','swe_pos','neg_pot','mvn_sta_c6_scpot',orbstr+'_mvn_swe_lpw_scpot_good'], $
+              dlim={labels:['swe/lpw','swe+','swe-','sta','swe/lpw'], $
+                    colors:[1,2,6,4,0],labflag:1,datagap:maxgap,yrange:[-20,20], $
                     constant:[0],panel_size:1.5}
 
    ;;; tplot

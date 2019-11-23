@@ -159,8 +159,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;        
 ; $LastChangedBy: xussui $
-; $LastChangedDate: 2019-07-18 16:29:51 -0700 (Thu, 18 Jul 2019) $
-; $LastChangedRevision: 27481 $
+; $LastChangedDate: 2019-11-22 14:50:57 -0800 (Fri, 22 Nov 2019) $
+; $LastChangedRevision: 28061 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -824,6 +824,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
              if (dov) then begin
                 if (~psflg) then wset, vwin
                 ven = average(pad.energy, 2)
+                ine = where(ven gt 0)
+                ven = ven[ine]
                 ;ven = pad.energy[*,0]
                 vexam = [30.,50.,100.]
                 emass = 9.1e-31
@@ -835,7 +837,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 m_conv = 2D5/(vmass*vmass)        ; mass conversion factor (flux to distribution function)
                 scale = (1.d/(ven^2 * m_conv)) # replicate(1.,128)
                 ;stop
-                vphase = alog10(respad[*,*] * scale)
+                vphase = alog10(respad[ine,*] * scale)
                 print,minmax(respad),minmax(vphase)
                 ;vphase = transpose(alog10(pad.data * scale))
                 indx=where(finite(vphase) eq 0,cts)
@@ -870,10 +872,14 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 plot,vpa,vphase[ien[0],*],xtit='PA',ytit='df',xrange=[0,180],xstyle=1,$
                     yrange=minmax(vphase[ien,*])
                 xyouts,182,vphase[ien[0],64],string(ven[ien[0]],'(I4)')+' eV',/data
-                for ie=1,nen-1 do begin
+                ;for ie=1,nen-1 do begin
+                ie=0
+                while (ie le nen-1) and (ie le n_elements(ven)-1) do begin
                     oplot,vpa,vphase[ien[ie],*]
                     xyouts,182,vphase[ien[ie],64],string(ven[ien[ie]],'(I4)')+' eV',/data
-                endfor
+                    ie++
+                endwhile
+                ;endfor
                 
                 phi=0;75.
                 Enp=ven;*1.6e-19
@@ -892,8 +898,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 oplot,average(vpara[*,127-vnbin+1:127],2),average(vphase[*,127-vnbin+1:127],2,/nan),color=0
                 oplot,-average(vper[*,64:64+vnbin/2-1],2),average(vphase[*,64:64+vnbin/2-1],2,/nan),$
                       linestyle=2,color=0
-                oplot,vmb,pmb,linestyle=2,color=6
-                oplot,-vmb,pmb,linestyle=2,color=6
+                ;oplot,vmb,pmb,linestyle=2,color=6
+                ;oplot,-vmb,pmb,linestyle=2,color=6
                 print,minmax(vtot),minmax(pmb)
                 for i=0,n_elements(vexam)-1 do begin
                    oplot,[vexam[i],vexam[i]],!y.crange,linestyle=1
@@ -1061,7 +1067,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
             lab=strcompress(indgen(ddd.nbins),/rem)
             xyouts,reform(ddd.phi[63,*]),reform(ddd.theta[63,*]),lab,align=0.5
-
+            mvn_spc_fov_blockage, clr=200, /swea, /invert_phi, /invert_theta
             if keyword_set(sundir) then begin
               dt = min(abs(sun.time - mean(ddd.time)),j)
               Saz = sun.phi[j]
