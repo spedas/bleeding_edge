@@ -133,8 +133,8 @@
 ;       CLEAR:    Clear the common block and exit.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-11-21 15:03:13 -0800 (Thu, 21 Nov 2019) $
-; $LastChangedRevision: 28053 $
+; $LastChangedDate: 2019-11-25 12:42:28 -0800 (Mon, 25 Nov 2019) $
+; $LastChangedRevision: 28063 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -256,6 +256,9 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
     endif
   endif
   
+  str_element, topt, 'title', ttitle, success=ok
+  if (not ok) then ttitle = ''
+
   if keyword_set(extended) then begin
     case extended of
        0 : ; do nothing (don't use extended predict ephemeris)
@@ -268,6 +271,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
              timecrop = 0
              print,"Using post-aerobraking extended science predict."
              print,"  SPK = trj_orb_191220-201220_targetM2020EDL-xso_191120.bsp"
+             ttitle = "trj_orb_191220-201220_targetM2020EDL-xso_191120.bsp"
            end
        2 : begin
              mname = 'maven_spacecraft_mso_targetM2020EDL-sro-ERTF2_191120.sav'
@@ -278,6 +282,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
              timecrop = 0
              print,"Using post-aerobraking science-relay predict."
              print,"  SPK = trj_orb_200415-210512_targetM2020EDL-sro-ERTF2_191120.bsp"
+             ttitle = "trj_orb_200415-210512_targetM2020EDL-sro-ERTF2_191120.bsp"
            end
       else : begin
                print, "Extended ephemeris predict choices are:"
@@ -956,7 +961,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
         for i=(nvars-1),0,-1 do if (~max(strcmp(avars[i],tvars))) then tvars = [avars[i],tvars]
 
         if (treset) then timespan,[tmin,tmax],/sec
-        tplot,tvars
+        tplot,tvars,title=ttitle
         if (donow) then timebar,systime(/utc,/sec),line=1
         if (pflg) then timebar,pds_rel,line=2
      endif

@@ -87,15 +87,17 @@
 ;
 ;       DEFAULT:      Reset calibration factors to the default values (see above).
 ;
+;       LIST:         List the current calibration constants.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-03-15 12:42:02 -0700 (Fri, 15 Mar 2019) $
-; $LastChangedRevision: 26813 $
+; $LastChangedDate: 2019-11-25 14:09:26 -0800 (Mon, 25 Nov 2019) $
+; $LastChangedRevision: 28065 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_calib.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
 ;FILE: mvn_swe_calib.pro
 ;-
-pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default
+pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default, list=list
 
   @mvn_swe_com
 
@@ -482,6 +484,20 @@ pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default
 
   c = 2.99792458D5               ; velocity of light [km/s]
   mass_e = (5.10998910D5)/(c*c)  ; electron rest mass [eV/(km/s)^2]
+
+;                       {swe_Ka      : 6.17      , $   ; analyzer constant
+;                        swe_G       : 0.009/16. , $   ; nominal geometric factor
+;                        swe_Ke      : 2.8       , $   ; electron suppression constant
+;                        swe_dead    : 2.8e-6    , $   ; deadtime per preamp
+;                        swe_min_dtc : 0.25         }  ; max 4x deadtime correction
+
+  if keyword_set(list) then begin
+    print, "analyzer constant  = ", swe_Ka, format='(a,f5.2)'
+    print, "geometric factor   = ", swe_G*16., format='(a,e9.2)'
+    print, "elec. suppression  = ", swe_Ke, format='(a,f5.2)'
+    print, "deadtime per anode = ", swe_dead, format='(a,e9.2)'
+    print, "max deadtime corr. = ", 1./swe_min_dtc, format='(a,f5.2)'
+  endif
 
   return
 
