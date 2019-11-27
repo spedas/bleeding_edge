@@ -57,8 +57,8 @@
 ;       Major update on 2017-07-24 - incl. negative pot
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2019-11-21 21:19:51 -0800 (Thu, 21 Nov 2019) $
-; $LastChangedRevision: 28054 $
+; $LastChangedDate: 2019-11-25 19:45:00 -0800 (Mon, 25 Nov 2019) $
+; $LastChangedRevision: 28067 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_lpw_scpot.pro $
 ;-
 
@@ -739,9 +739,9 @@ store_data,'mvn_swe_lpw_scpot',data=d, $
            dlim={datagap:maxgap,ytitle:'SWEA-LPW!cscpot!c[V]'}
 
 store_data,'scpots', $
-           data=['swe_pos','neg_pot','mvn_sta_c6_scpot','mvn_swe_lpw_scpot'], $
-           dlim={labels:['swe+','swe-','sta','swe/lpw'], $
-                 colors:[2,6,4,0],labflag:1,datagap:maxgap,yrange:[-20,20], $
+           data=['mvn_swe_lpw_scpot_pol','swe_pos','neg_pot','mvn_sta_c6_scpot','mvn_swe_lpw_scpot'], $
+           dlim={labels:['swe/lpw','swe+','swe-','sta','swe/lpw'], $
+                 colors:[1,2,6,4,0],labflag:1,datagap:maxgap,yrange:[-20,20], $
                  constant:0}
 
 end
