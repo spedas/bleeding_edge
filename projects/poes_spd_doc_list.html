@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Nov 26 03:15:45 2019.<P>
+<STRONG>Last modified: </STRONG>Mon Dec  2 18:15:43 2019.<P>
  
 <HR>
  
@@ -234,9 +234,9 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/po
        
        
 
- $LastChangedBy: egrimes $
- $LastChangedDate: 2017-02-13 15:50:23 -0800 (Mon, 13 Feb 2017) $
- $LastChangedRevision: 22770 $
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-12-02 13:19:57 -0800 (Mon, 02 Dec 2019) $
+ $LastChangedRevision: 28068 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot.pro $
 </PRE><P>
 <STRONG>(See <A href="poes/poes_overview_plot.pro">projects/poes/poes_overview_plot.pro</A>)</STRONG><P>
@@ -267,8 +267,10 @@ KEYWORDS:
                  date_mod='daysNNN' produces plots from today to NNN days back (days001 is today only)
                  date_mod='startdateNNN' produces plots from datestart to NNN days after that
                  date_mod='enddateNNN' produces plots from dateend to NNN days before that
-                 date_mod='continue' continue from last date of processing (text file: base_dir + 'poeslastdate.txt')
-
+                 date_mod='continue' continue from last date of
+                           processing (text file: base_dir + 'poeslastdate.txt')
+                 reprocess=if set, ignore last date file, so as to
+                           avoid issues with the regular cronjob
 OUTPUT:
          png files in base_dir
 
@@ -303,9 +305,9 @@ NOTES:
   2015 15,16,18,19
 
 HISTORY:
-$LastChangedBy: nikos $
-$LastChangedDate: 2016-03-08 15:12:27 -0800 (Tue, 08 Mar 2016) $
-$LastChangedRevision: 20356 $
+$LastChangedBy: jimm $
+$LastChangedDate: 2019-12-02 14:13:30 -0800 (Mon, 02 Dec 2019) $
+$LastChangedRevision: 28069 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot_wrapper.pro $
 </PRE><P>
 <STRONG>(See <A href="poes/poes_overview_plot_wrapper.pro">projects/poes/poes_overview_plot_wrapper.pro</A>)</STRONG><P>

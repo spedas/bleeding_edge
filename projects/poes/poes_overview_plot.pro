@@ -19,9 +19,9 @@
 ;       
 ;       
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-02-13 15:50:23 -0800 (Mon, 13 Feb 2017) $
-; $LastChangedRevision: 22770 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-12-02 13:19:57 -0800 (Mon, 02 Dec 2019) $
+; $LastChangedRevision: 28068 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot.pro $
 ;-
 
@@ -48,8 +48,8 @@ pro poes_overview_plot, date = date, probe = probe_in, duration = duration, erro
     if undefined(date) then date = '2013-03-17/00:00:00'
     if undefined(probe_in) then probe_in = 'noaa19'
     if is_numeric(probe_in) then probe_in = 'noaa' + probe_in
-    if undefined(duration) then duration = 0.08333 ; days
-    ;if undefined(duration) then duration = 1 ; days
+;    if undefined(duration) then duration = 0.08333 ; days
+    if undefined(duration) then duration = 1 ; days
     
     if undefined(directory) then dir = path_sep() + probe_in+path_sep() else dir = directory
     if ~undefined(device) then begin 
@@ -68,7 +68,7 @@ pro poes_overview_plot, date = date, probe = probe_in, duration = duration, erro
 
     ; make sure the data was loaded
     poes_data_loaded = tnames(poes_plots)
-    
+
     if n_elements(poes_data_loaded) gt 1 then begin
         if undefined(gui_overplot) then begin
             ; setup the plot

@@ -18,8 +18,10 @@
 ;                 date_mod='daysNNN' produces plots from today to NNN days back (days001 is today only)
 ;                 date_mod='startdateNNN' produces plots from datestart to NNN days after that
 ;                 date_mod='enddateNNN' produces plots from dateend to NNN days before that
-;                 date_mod='continue' continue from last date of processing (text file: base_dir + 'poeslastdate.txt')
-;
+;                 date_mod='continue' continue from last date of
+;                           processing (text file: base_dir + 'poeslastdate.txt')
+;                 reprocess=if set, ignore last date file, so as to
+;                           avoid issues with the regular cronjob
 ;OUTPUT:
 ;         png files in base_dir
 ;
@@ -54,9 +56,9 @@
 ;  2015 15,16,18,19
 ;
 ;HISTORY:
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2016-03-08 15:12:27 -0800 (Tue, 08 Mar 2016) $
-;$LastChangedRevision: 20356 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2019-12-02 14:13:30 -0800 (Mon, 02 Dec 2019) $
+;$LastChangedRevision: 28069 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot_wrapper.pro $
 ;----------
 
@@ -136,7 +138,8 @@ end
 
 pro poes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
   date_mod = date_mod, probes = probes, base_dir = base_dir, $
-  server_run = server_run, themis_dir = themis_dir, poes_dir = poes_dir
+  server_run = server_run, themis_dir = themis_dir, poes_dir = poes_dir, $
+  reprocess = reprocess
   compile_opt idl2
   
   dprint, dlevel = 2, 'START POES overview plot. Date: ' + SYSTIME()
@@ -230,8 +233,9 @@ pro poes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
         msgstr = "POES OVERVIEW PLOT: Probe= " + string(probe) + ", date= " + date
         dprint, dlevel = 1, msgstr
         heap_gc
-        poes_overview_plot, date = date, probe = probe, directory = directory, device = device 
-        poes_write_lastdate, lastdate_file, date
+        poes_overview_plot, date = date, probe = probe, directory = directory, $
+                            device = device , duration = 1
+        if ~keyword_set(reprocess) then poes_write_lastdate, lastdate_file, date ;jmm, 2019-12-12
       endif
     endfor
   endfor
