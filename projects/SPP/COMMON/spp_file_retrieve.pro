@@ -1,9 +1,9 @@
 ;+
 ; Written by Davin Larson
 ;
-; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2019-09-12 17:06:03 -0700 (Thu, 12 Sep 2019) $
-; $LastChangedRevision: 27753 $
+; $LastChangedBy: pulupa $
+; $LastChangedDate: 2019-12-03 17:18:39 -0800 (Tue, 03 Dec 2019) $
+; $LastChangedRevision: 28071 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_file_retrieve.pro $
 ;
 ; Function:  files = spp_file_retrieve(PATHNAME)
@@ -163,6 +163,8 @@ function spp_file_retrieve,pathname,trange=trange,ndays=ndays,nhours=nhours,verb
       for i = 0, n_elements(pathnames) - 1 do begin
         if strpos(pathnames[i], '/l2/') EQ -1 then pathnames = str_sub(pathnames, 'dfb_dc_spec_', 'dfb_dc_spec')
         if strpos(pathnames[i], '/l2/') EQ -1 then pathnames = str_sub(pathnames, 'dfb_ac_spec_', 'dfb_ac_spec')
+        if strpos(pathnames[i], '/l2/') EQ -1 then pathnames = str_sub(pathnames, 'dfb_dc_xspec_', 'dfb_dc_xspec')
+        if strpos(pathnames[i], '/l2/') EQ -1 then pathnames = str_sub(pathnames, 'dfb_ac_xspec_', 'dfb_ac_xspec')
       endfor
     endif
     ;if source_key EQ 'FIELDS' then pathnames = str_sub(pathnames, 'dfb_ac_spec_', 'dfb_ac_spec')
