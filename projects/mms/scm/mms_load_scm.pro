@@ -75,8 +75,8 @@
 ;    Please see the notes in mms_load_data for more information 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
-;$LastChangedRevision: 27435 $
+;$LastChangedDate: 2019-12-04 14:03:21 -0800 (Wed, 04 Dec 2019) $
+;$LastChangedRevision: 28081 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/scm/mms_load_scm.pro $
 ;-
 
@@ -119,7 +119,7 @@ pro mms_load_scm, trange = trange, probes = probes, datatype = datatype, $
     if level eq 'l2'  then coord = 'gse'
     
     for datatype_idx = 0, n_elements(datatype)-1 do begin
-      mms_set_scm_options, tplotnames, prefix = 'mms' + probes, datatype = datatype[datatype_idx], coord=coord
+      mms_set_scm_options, tplotnames, prefix = 'mms' + probes, datatype = datatype[datatype_idx], coord=coord, suffix=suffix
     endfor
     
     
