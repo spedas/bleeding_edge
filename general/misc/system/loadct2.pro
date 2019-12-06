@@ -31,6 +31,7 @@
 ;-
 
 pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,graybkg=graybkg, line_clrs=line_clrs
+  compile_opt idl2, hidden
   COMMON colors, r_orig, g_orig, b_orig, r_curr, g_curr, b_curr
   @colors_com
 
