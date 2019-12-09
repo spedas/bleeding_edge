@@ -1,6 +1,6 @@
-; $LastChangedBy: mcfadden $
-; $LastChangedDate: 2019-08-22 14:21:52 -0700 (Thu, 22 Aug 2019) $
-; $LastChangedRevision: 27634 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2019-12-08 03:32:45 -0800 (Sun, 08 Dec 2019) $
+; $LastChangedRevision: 28098 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/plot3d_new.pro $
 ;+
 ;NAME:
@@ -113,7 +113,7 @@ endif
 if n_elements(bins) ne nbins then bins = replicate(1,bindata.nbins)
 goodbins = where(bins,ngood)
 badbins = where(bins eq 0,nbad)
-if nbad ne 0 then bindata.data(*,badbins) = !values.f_nan
+if nbad ne 0 then bindata.data[*,badbins] = !values.f_nan
 
 triang = keyword_set(triang_3d)
 
@@ -165,11 +165,11 @@ stacking= [ [1,1],   [1,1],   [1,2],   [2,2],   [2,2],   [2,3],   [2,3],  $
    [7,8],   [7,8],   [8,8],   [8,8],   [8,8],   [8,8],   [8,8],   [8,8],  $
    [8,8],   [8,8]]
 
-if n_elements(stack) ne 2 then stack=stacking(*,n_p)
+if n_elements(stack) ne 2 then stack=stacking[*,n_p]
 
 if not keyword_set(noerase)   then noerase   = 0 else noerase   = 1
 if not keyword_set(row_major) then row_major = 0 else row_major = 1
-!p.multi=[noerase,stack(0),stack(1),0,row_major]
+!p.multi=[noerase,stack[0],stack[1],0,row_major]
 
 if !p.charsize ne 0 then charsize = !p.charsize else charsize = 1
 !y.omargin = [1,4]
@@ -187,11 +187,11 @@ yposmin = 1.
 
 
 for plot_num=0,n_p-1 do begin
-   e1 = start(plot_num)
-   en1 = total(bindata.energy(e1,*))/n_elements(bindata.energy(e1,*))
+   e1 = start[plot_num]
+   en1 = total(bindata.energy[e1,*])/n_elements(bindata.energy[e1,*])
 
-   e2 = stop(plot_num)
-   en2 = total(bindata.energy(e2,*))/n_elements(bindata.energy(e2,*))
+   e2 = stop[plot_num]
+   en2 = total(bindata.energy[e2,*])/n_elements(bindata.energy[e2,*])
 
    if e1 ne e2 then begin
      ttl = string(en1)+' - '+string(en2)+' eV'
@@ -224,11 +224,11 @@ if keyword_set(setlim) then begin
 endif
 
 
-data = total(bindata.data(e1:e2,*),1)  ; sum over energies
+data = total(bindata.data[e1:e2,*],1)  ; sum over energies
 
 if keyword_set(zrange) then range = zrange[*]  $
 else  begin
-   range = minmax(data(goodbins),/pos)
+   range = minmax(data[goodbins],/pos)
 endelse
 
 if keyword_set(triang) then begin
