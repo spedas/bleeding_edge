@@ -63,9 +63,9 @@
 ;CREATED BY:      Takuya Hara on 2015-04-09.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2019-11-19 15:41:37 -0800 (Tue, 19 Nov 2019) $
-; $LastChangedRevision: 28043 $
+; $LastChangedBy: muser $
+; $LastChangedDate: 2019-12-10 16:10:20 -0800 (Tue, 10 Dec 2019) $
+; $LastChangedRevision: 28107 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot.pro $
 ;
 ;-
@@ -620,7 +620,8 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
      get_png:
      IF SIZE(filename, /type) EQ 0 THEN $
         filename = 'mvn_ql_pfp_tplot_' + time_string(trange[0], tformat='yyMMDD_') + time_string(trange[1], tformat='yyMMDD')
-     makepng, filename, wi=wnum
+     IF !d.name Ne 'Z' THEN makepng, filename, wi=wnum $
+     ELSE makepng, filename
   ENDIF 
 
   RETURN

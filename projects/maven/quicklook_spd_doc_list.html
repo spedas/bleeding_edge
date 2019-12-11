@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Dec  9 18:15:47 2019.<P>
+<STRONG>Last modified: </STRONG>Tue Dec 10 18:15:45 2019.<P>
  
 <HR>
  
@@ -35,6 +35,8 @@ This page was created by the IDL library routine
 <br>Top shell for production of MAVEN PFP overview plots
 <LI><A HREF="#MVN_PFPL2_1DAY">MVN_PFPL2_1DAY</A>
 <br>reads in a start and end date, and reprocesses all of the days in
+<LI><A HREF="#MVN_PFPL2_LONGPLOT">MVN_PFPL2_LONGPLOT</A>
+<br>MAVEN PFP GEN Quicklook Plot, long-term 2 weeks
 <LI><A HREF="#MVN_PFPL2_OVERPLOT">MVN_PFPL2_OVERPLOT</A>
 <br>MAVEN PFP GEN Quicklook Plot
 <LI><A HREF="#MVN_QL_PFP_TPLOT">MVN_QL_PFP_TPLOT</A>
@@ -135,11 +137,14 @@ KEYWORDS:
  search_time_range = if set, then use this time range to find files
                      to be processed, instead of just before or after
                      time. 
+ no_proc_mail = do not send email when starting a process, so that
+                there aren't a bunch of e,ails during reprocessing
 HISTORY:
 Hacked from mvn_call_sta_l2gen.pro 2015-06-02, jmm
- $LastChangedBy: jimmpc1 $
- $LastChangedDate: 2017-09-05 11:35:05 -0700 (Tue, 05 Sep 2017) $
- $LastChangedRevision: 23885 $
+Added call to mvn_pfpl2_longplot, 2019-12-10, jmm
+ $LastChangedBy: muser $
+ $LastChangedDate: 2019-12-10 16:10:20 -0800 (Tue, 10 Dec 2019) $
+ $LastChangedRevision: 28107 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_call_pfpl2plot.pro $
 </PRE><P>
 <STRONG>(See <A href="quicklook/mvn_call_pfpl2plot.pro">projects/maven/quicklook/mvn_call_pfpl2plot.pro</A>)</STRONG><P>
@@ -386,7 +391,7 @@ HISTORY:
 <A NAME="MVN_PFPL2_1DAY">
 <H2>MVN_PFPL2_1DAY</H2></A>
 <A HREF="#MVN_OVER_SHELL">[Previous Routine]</A>
-<A HREF="#MVN_PFPL2_OVERPLOT">[Next Routine]</A>
+<A HREF="#MVN_PFPL2_LONGPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -409,9 +414,49 @@ HISTORY:
 <STRONG>(See <A href="quicklook/mvn_pfpl2_1day.pro">projects/maven/quicklook/mvn_pfpl2_1day.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_PFPL2_LONGPLOT">
+<H2>MVN_PFPL2_LONGPLOT</H2></A>
+<A HREF="#MVN_PFPL2_1DAY">[Previous Routine]</A>
+<A HREF="#MVN_PFPL2_OVERPLOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ mvn_pfpl2_longplot
+PURPOSE:
+ MAVEN PFP GEN Quicklook Plot, long-term 2 weeks
+CALLING SEQUENCE:
+ mvn_pfpl2_longplot, date = date, ndays = nays, makepng=makepng, $
+                     device = device, directory = pdir
+INPUT:
+ No explicit input, everthing is via keyword.
+OUTPUT:
+ Plots, on the screen or in a png file
+KEYWORDS:
+ date = If set, a plot for the input date and the previous ndays
+ ndays = the number of days to plot
+              attempted.
+ makepng = If set, make a png file, with filename
+           'mvn_gen_qlook_start_time_end_time.png'
+ device = a device for set_plot, the default is to use the current
+          setting, for cron jobs, device = 'z' is recommended. Note
+          that this does not reset the device at the end of the
+          program.
+ directory = If a png is created, this is the output directory, the
+             default is the current working directory.
+ multipngplot = if set, then make multiple plots for each orbit
+HISTORY:
+ Hacked from mvn_pfpl2_overplot, 2019-12-10, jmm, jimm@ssl.berkeley.edu
+ $LastChangedBy: muser $
+ $LastChangedDate: 2019-12-10 16:10:20 -0800 (Tue, 10 Dec 2019) $
+ $LastChangedRevision: 28107 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_pfpl2_longplot.pro $
+</PRE><P>
+<STRONG>(See <A href="quicklook/mvn_pfpl2_longplot.pro">projects/maven/quicklook/mvn_pfpl2_longplot.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_PFPL2_OVERPLOT">
 <H2>MVN_PFPL2_OVERPLOT</H2></A>
-<A HREF="#MVN_PFPL2_1DAY">[Previous Routine]</A>
+<A HREF="#MVN_PFPL2_LONGPLOT">[Previous Routine]</A>
 <A HREF="#MVN_QLOOK_1DAY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -433,7 +478,7 @@ KEYWORDS:
               the date keyword, if both are set, the time range is
               attempted.
  makepng = If set, make a png file, with filename
-           'mvn_gen_qlook_start_time_end_time.png'
+           'mvn_pfp_l2_date.png'
  device = a device for set_plot, the default is to use the current
           setting, for cron jobs, device = 'z' is recommended. Note
           that this does not reset the device at the end of the
@@ -445,8 +490,8 @@ HISTORY:
  Hacked from thm_over_shell, 2013-05-12, jmm, jimm@ssl.berkeley.edu
  CHanged to use thara's mvn_pl_pfp_tplot.pro, 2015-04-14, jmm
  $LastChangedBy: jimm $
- $LastChangedDate: 2019-11-05 11:36:35 -0800 (Tue, 05 Nov 2019) $
- $LastChangedRevision: 27984 $
+ $LastChangedDate: 2019-12-10 13:21:36 -0800 (Tue, 10 Dec 2019) $
+ $LastChangedRevision: 28104 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_pfpl2_overplot.pro $
 </PRE><P>
 <STRONG>(See <A href="quicklook/mvn_pfpl2_overplot.pro">projects/maven/quicklook/mvn_pfpl2_overplot.pro</A>)</STRONG><P>
@@ -777,9 +822,9 @@ NOTE:            This routine is assumed to be used when there are
 CREATED BY:      Takuya Hara on 2015-04-09.
 
 LAST MODIFICATION:
- $LastChangedBy: hara $
- $LastChangedDate: 2019-11-19 15:41:37 -0800 (Tue, 19 Nov 2019) $
- $LastChangedRevision: 28043 $
+ $LastChangedBy: muser $
+ $LastChangedDate: 2019-12-10 16:10:20 -0800 (Tue, 10 Dec 2019) $
+ $LastChangedRevision: 28107 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot.pro $
 
 </PRE><P>
@@ -857,8 +902,8 @@ CREATED BY:      Takuya Hara on 2015-04-09.
 
 LAST MODIFICATION:
  $LastChangedBy: jimm $
- $LastChangedDate: 2019-06-20 13:43:09 -0700 (Thu, 20 Jun 2019) $
- $LastChangedRevision: 27361 $
+ $LastChangedDate: 2019-12-10 13:21:36 -0800 (Tue, 10 Dec 2019) $
+ $LastChangedRevision: 28104 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot2.pro $
 
 </PRE><P>
@@ -908,9 +953,9 @@ EXAMPLE:         IDL&gt; mvn_ql_pfp_tplot_save, '2019-11-13', '2019-11-19'
 CREATED BY:      Takuya Hara on 2019-11-13.
 
 LAST MODIFICATION:
- $LastChangedBy: muser $
- $LastChangedDate: 2019-11-25 14:39:37 -0800 (Mon, 25 Nov 2019) $
- $LastChangedRevision: 28066 $
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2019-12-10 13:25:11 -0800 (Tue, 10 Dec 2019) $
+ $LastChangedRevision: 28105 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot_save.pro $
 
 </PRE><P>

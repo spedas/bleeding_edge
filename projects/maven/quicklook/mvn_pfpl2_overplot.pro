@@ -17,7 +17,7 @@
 ;              the date keyword, if both are set, the time range is
 ;              attempted.
 ; makepng = If set, make a png file, with filename
-;           'mvn_gen_qlook_start_time_end_time.png'
+;           'mvn_pfp_l2_date.png'
 ; device = a device for set_plot, the default is to use the current
 ;          setting, for cron jobs, device = 'z' is recommended. Note
 ;          that this does not reset the device at the end of the
@@ -29,8 +29,8 @@
 ; Hacked from thm_over_shell, 2013-05-12, jmm, jimm@ssl.berkeley.edu
 ; CHanged to use thara's mvn_pl_pfp_tplot.pro, 2015-04-14, jmm
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-11-05 11:36:35 -0800 (Tue, 05 Nov 2019) $
-; $LastChangedRevision: 27984 $
+; $LastChangedDate: 2019-12-10 13:21:36 -0800 (Tue, 10 Dec 2019) $
+; $LastChangedRevision: 28104 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_pfpl2_overplot.pro $
 ;-
 Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
@@ -75,7 +75,7 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
      dprint, 'Date too early: '+time_string(tr0[0])
      Return
   Endif
-;  mvn_ql_pfp_tplot2, tr0, bcrust=1, /tplot, bvec = bvec
+; mvn_ql_pfp_tplot2, tr0, bcrust=1, /tplot, bvec = bvec
 ; Load SEP from a different program, 2019-02-20
   If(keyword_set(no_bcrust)) Then Begin
      mvn_ql_pfp_tplot2, tr0, bcrust=0, sep = 0, /tplot, bvec = bvec

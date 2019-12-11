@@ -64,8 +64,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-06-20 13:43:09 -0700 (Thu, 20 Jun 2019) $
-; $LastChangedRevision: 27361 $
+; $LastChangedDate: 2019-12-10 13:21:36 -0800 (Tue, 10 Dec 2019) $
+; $LastChangedRevision: 28104 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot2.pro $
 ;
 ;-
@@ -234,7 +234,7 @@ PRO mvn_ql_pfp_tplot2, var, orbit=orbit, verbose=verbose, no_delete=no_delete, n
      statn = tnames(statn0, index=m)
      
      IF ntplot EQ 0 THEN BEGIN
-        dprint, 'There is no STATIC tplot variables.', dlevel=2, verbose=verbose
+        dprint, 'There are no STATIC tplot variables.', dlevel=2, verbose=verbose
 
         store_data, statn0[0], data={x: trange, y: REFORM(REPLICATE(nan, 4), [2, 2]), v: [0.1046, 31380.]}, $
                     dlim={yrange: [0.1, 4.e4], ystyle: 1, ylog: 1, zrange: [1.e3, 1.e9], zstyle: 1, zlog: 1, $

@@ -26,11 +26,14 @@
 ; search_time_range = if set, then use this time range to find files
 ;                     to be processed, instead of just before or after
 ;                     time. 
+; no_proc_mail = do not send email when starting a process, so that
+;                there aren't a bunch of e,ails during reprocessing
 ;HISTORY:
 ;Hacked from mvn_call_sta_l2gen.pro 2015-06-02, jmm
-; $LastChangedBy: jimmpc1 $
-; $LastChangedDate: 2017-09-05 11:35:05 -0700 (Tue, 05 Sep 2017) $
-; $LastChangedRevision: 23885 $
+;Added call to mvn_pfpl2_longplot, 2019-12-10, jmm
+; $LastChangedBy: muser $
+; $LastChangedDate: 2019-12-10 16:10:20 -0800 (Tue, 10 Dec 2019) $
+; $LastChangedRevision: 28107 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_call_pfpl2plot.pro $
 ;-
 Pro mvn_call_pfpl2plot, time_in = time_in, $
@@ -40,6 +43,8 @@ Pro mvn_call_pfpl2plot, time_in = time_in, $
                         use_file4time = use_file4time, $
                         search_time_range = search_time_range, $
                         days_in = days_in, $
+                        instrument = instrument, $
+                        no_proc_mail = no_proc_mail, $
                         _extra = _extra
   
   common temp_call_sta_l2gen, load_position
@@ -83,13 +88,18 @@ Pro mvn_call_pfpl2plot, time_in = time_in, $
            print, '***************FILE SKIPPED****************'
            goto, SKIP_FILE
         end
+        'pfp12_long':Begin
+           print, '***************FILE SKIPPED****************'
+           goto, SKIP_FILE
+        end
         else: goto, SKIP_ALL
      endcase
   endif
   If(keyword_set(out_dir)) Then odir = out_dir Else odir = '/disks/data/maven/data/sci/'
 
 ;--------------------------------
-  instr = 'pfpl2'
+  If(keyword_set(instrument)) Then instr = instrument $
+  Else instr = ['pfpl2', 'pfpl2_long']
   ninstr = n_elements(instr)
   If(~keyword_set(days_in) && ~keyword_set(search_time_range)) Then Begin
      If(keyword_set(time_in)) Then Begin
@@ -115,6 +125,13 @@ Pro mvn_call_pfpl2plot, time_in = time_in, $
      Endif Else Begin
         Case instrk Of ;some instruments require multiple directories
            'pfpl2': Begin
+              instr_dir = ['lpw','mag','sep','sta','swe','swi']
+              suffix = ['cdf','sts','cdf','cdf','cdf','cdf']
+              sdir = '/disks/data/maven/data/sci/'+instr_dir+'/l2/*/*/*.'+suffix
+;Add bcrust save files:
+              sdir = [sdir, '/disks/data/maven/data/mod/bcrust/*/*/*.tplot']
+           End
+           'pfpl2_long': Begin
               instr_dir = ['lpw','mag','sep','sta','swe','swi']
               suffix = ['cdf','sts','cdf','cdf','cdf','cdf']
               sdir = '/disks/data/maven/data/sci/'+instr_dir+'/l2/*/*/*.'+suffix
@@ -174,14 +191,16 @@ Pro mvn_call_pfpl2plot, time_in = time_in, $
      Endif Else Begin
         nproc = n_elements(timep_do)
 ;Send a message that processing is starting
-        ofile0 = '/mydisks/home/maven/muser/pfpl2_msg0.txt'+ff_ext
-        openw, tunit, ofile0, /get_lun
-        printf, tunit, 'Processing: '+instrk
-        For i = 0, nproc-1 Do printf, tunit, timep_do[i]
-        free_lun, tunit
-        cmd0 = 'mailx -s "PFPL2 process start" jimm@ssl.berkeley.edu < '+ofile0
-        spawn, cmd0
-        file_delete, ofile0
+        If(~keyword_set(no_proc_mail)) Then Begin
+           ofile0 = '/mydisks/home/maven/muser/pfpl2_msg0.txt'+ff_ext
+           openw, tunit, ofile0, /get_lun
+           printf, tunit, 'Processing: '+instrk
+           For i = 0, nproc-1 Do printf, tunit, timep_do[i]
+           free_lun, tunit
+           cmd0 = 'mailx -s "PFPL2 process start" jimm@ssl.berkeley.edu < '+ofile0
+           spawn, cmd0
+           file_delete, ofile0
+        Endif
         For i = 0, nproc-1 Do Begin
 ;extract the date from the filename
            timei0 = timep_do[i]
@@ -201,13 +220,21 @@ Pro mvn_call_pfpl2plot, time_in = time_in, $
               message, /info, 'Creating: '+filei_dir
               file_mkdir, filei_dir
            Endif
-           load_position = 'pfp12'
            message, /info, 'PROCESSING: '+instrk+' FOR: '+timei
            Case instrk Of
-              'pfpl2': mvn_pfpl2_overplot, date = timei, directory = filei_dir, $
-                                           device = 'z', /multipngplot, _extra =_extra
-              Else: mvn_pfpl2_overplot, date = timei, directory = filei_dir, $
-                                        device = 'z', /multipngplot, _extra =_extra
+              'pfpl2': Begin
+                 load_position = 'pfp12'
+                 mvn_pfpl2_overplot, date = timei, directory = filei_dir, $
+                                     device = 'z', /multipngplot, _extra =_extra
+              End
+              'pfpl2_long': Begin ;add longplot, jmm, 2019-12-10
+                 load_position = 'pfp12_long'
+                 mvn_pfpl2_longplot, date = timei, directory = filei_dir, $
+                                     device = 'z', _extra = _extra
+              End
+              Else: Begin
+                 dprint, 'No instrument defined: '+instrk
+              End
            Endcase
            SKIP_FILE: 
            del_data, '*'
@@ -215,20 +242,19 @@ Pro mvn_call_pfpl2plot, time_in = time_in, $
         Endfor
         SKIP_INSTR: load_position = 'instrument'
 ;Send a message that processing is done
-        ofile1 = '/mydisks/home/maven/muser/pfpl2_msg1.txt'+ff_ext
-        openw, tunit, ofile1, /get_lun
-        printf, tunit, 'Finished Processing: '+instrk
-        free_lun, tunit
-        cmd1 = 'mailx -s "PFPL2 process end" jimm@ssl.berkeley.edu < '+ofile1
-        spawn, cmd1
-        file_delete, ofile1
+        If(~keyword_set(no_proc_mail)) Then Begin
+           ofile1 = '/mydisks/home/maven/muser/pfpl2_msg1.txt'+ff_ext
+           openw, tunit, ofile1, /get_lun
+           printf, tunit, 'Finished Processing: '+instrk
+           free_lun, tunit
+           cmd1 = 'mailx -s "PFPL2 process end" jimm@ssl.berkeley.edu < '+ofile1
+           spawn, cmd1
+           file_delete, ofile1
+        Endif
      Endelse
   Endfor
 
   SKIP_ALL:
   Return
 End
-
-
-   
 
