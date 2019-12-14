@@ -113,10 +113,16 @@ function displayImage()
 	    var type = document.getElementById("subtype").value ;
 	    if (type=="pfpl2")
 		{
-		    if (hour=="0024") 
+		    if (hour=="0024") //full day plots
 			{
 			    fileName = "mvn_pfp_l2_" + year + month + day+ ".png" ;
 			    //set orbno to "00FIRST" every time you plot a full-day plot
+			    document.getElementById("orbno").value = "00FIRST";
+			}
+		    if (hour=="ltrm") //two-week plots
+			{
+			    fileName = "mvn_pfp_l2_long_" + year + month + day+ "_000000.png" ;
+			    //set orbno to "00FIRST" every time you plot a long-term plot
 			    document.getElementById("orbno").value = "00FIRST";
 			}
 		    else
@@ -219,11 +225,40 @@ function changeImgSrc(delType)
     var adjmonth = document.getElementById("set_month").value - 1 ;
     var intro_day = document.getElementById("set_day").value ;
     var dateTime = new Date(intro_year, adjmonth, intro_day) ;
-    // Currently only three types of plot, 24 hour, 1orb and periapsis, orbp 
+    // Currently only four types of plot, 24 hour, 1orb and periapsis, orbp and long term
     if (hour == "0024")
 	{
 	    var lowHour = parseInt(hour.substring(0,2),10);  //warning, the parseInt function can be finicky if the required base is not provided
 	    var highHour = parseInt(hour.substring(2,4),10); //for example parseInt("08") will return 0 and not 8, but parseInt("08",10) returns 8
+	    var interval = highHour-lowHour;
+
+  // Determine how/if the date should be changed
+  // Uses a little bit of modular arithmetic to make code more 
+  // general, concise, and maintainable.
+  
+	    if (delType == "dec") {
+		interval *= -1;
+	    } else if (delType != "inc") {
+		interval = 0;
+	    }
+	    var quotient = Math.floor((lowHour + interval)/24);
+
+	    lowHour = (lowHour + interval) % 24;
+	    if (lowHour < 0) {  //javascript modulus returns negative mod...
+		lowHour += 24;
+	    }
+	    highHour = lowHour + Math.abs(interval);
+	    dateTime.setDate(dateTime.getDate() + quotient) ;
+	    string_year = num2str(dateTime.getFullYear(),4);
+	    string_month = num2str(dateTime.getMonth() + 1,2);
+	    string_day = num2str(dateTime.getDate(),2);
+	}
+    else if (hour == "ltrm") //essentially the same as the hour = 0024 option, will increment by day
+	{
+	    // var lowHour = parseInt(hour.substring(0,2),10);  //warning, the parseInt function can be finicky if the required base is not provided
+	    // var highHour = parseInt(hour.substring(2,4),10); //for example parseInt("08") will return 0 and not 8, but parseInt("08",10) returns 8
+            var lowHour = 0;
+	    var highHour = 24;
 	    var interval = highHour-lowHour;
 
   // Determine how/if the date should be changed
@@ -406,11 +441,11 @@ function updateMenus(selectedcitygroup){
   //note,  the text of these options is used to make sure that selection is maintained when probe/plottype is changed, if possible.
   //If two similar meaning options are phrased slightly differently, this selection will not be maintained.(For example, one may say "hr", the other, "hour"
     var hour=new Array();
-    hour[0]=["Full-day|0024", "Single-Orbit|1orb","Orbit-Peri|orbp"];
-    hour[1]=["Full-day|0024", "Single-Orbit|1orb","Orbit-Peri|orbp"];
-    hour[2]=["Full-day|0024", "Single-Orbit|1orb","Orbit-Peri|orbp"];
-    hour[3]=["Full-day|0024", "Single-Orbit|1orb","Orbit-Peri|orbp"];
-    hour[4]=["Full-day|0024", "Single-Orbit|1orb","Orbit-Peri|orbp"];
+    hour[0]=["Full-day|0024", "Single-Orbit|1orb", "Orbit-Peri|orbp", "Long-term|ltrm"];
+    hour[1]=["Full-day|0024", "Single-Orbit|1orb", "Orbit-Peri|orbp", "Long-term|ltrm"];
+    hour[2]=["Full-day|0024", "Single-Orbit|1orb", "Orbit-Peri|orbp", "Long-term|ltrm"];
+    hour[3]=["Full-day|0024", "Single-Orbit|1orb", "Orbit-Peri|orbp", "Long-term|ltrm"];
+    hour[4]=["Full-day|0024", "Single-Orbit|1orb", "Orbit-Peri|orbp", "Long-term|ltrm"];
 
     subtypelist.options.length=0;
     subtypelist_bottom.options.length=0;
@@ -661,6 +696,8 @@ ddlevelsmenu.setup("ddtopmenubar", "topbar") //ddlevelsmenu.setup("mainmenuid", 
 								<option value="2017" />2017
 								<option value="2018" />2018
 								<option value="2019" />2019
+								<option value="2020" />2020
+								<option value="2021" />2021
 							</select>
 							
 							<select name="set_month" id="set_month" onchange="syncBottomToTop()">
@@ -768,6 +805,8 @@ ddlevelsmenu.setup("ddtopmenubar", "topbar") //ddlevelsmenu.setup("mainmenuid", 
 								<option value="2017" />2017
 								<option value="2018" />2018
 								<option value="2019" />2019
+								<option value="2020" />2020
+								<option value="2021" />2021
 							</select>
 							<select name="set_month_bottom" id="set_month_bottom" onchange="syncTopToBottom()">
 								<option value="01" />Jan
