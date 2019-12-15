@@ -119,7 +119,7 @@ function displayImage()
 			    //set orbno to "00FIRST" every time you plot a full-day plot
 			    document.getElementById("orbno").value = "00FIRST";
 			}
-		    if (hour=="ltrm") //two-week plots
+		    else if (hour=="ltrm") //two-week plots
 			{
 			    fileName = "mvn_pfp_l2_long_" + year + month + day+ "_000000.png" ;
 			    //set orbno to "00FIRST" every time you plot a long-term plot
@@ -211,7 +211,7 @@ function searchStringInArray (str, strArray) {
     return -1;
 }
 
-//changeImgSrc is called when the next, and last buttins are hit
+//changeImgSrc is called when the next, and last buttons are hit
 function changeImgSrc(delType)
 {
     var hour = document.getElementById("hour").value ;
