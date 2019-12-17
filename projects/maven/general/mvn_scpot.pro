@@ -112,8 +112,8 @@
 ;          the five unmerged methods in one panel.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-04-02 10:25:22 -0700 (Mon, 02 Apr 2018) $
-; $LastChangedRevision: 24975 $
+; $LastChangedDate: 2019-12-16 11:40:04 -0800 (Mon, 16 Dec 2019) $
+; $LastChangedRevision: 28117 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot.pro $
 ;
 ;-
@@ -264,7 +264,7 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
   if (lpwpot) then begin
      get_data, 'mvn_swe_lpw_scpot_pol', index=i
      if (i gt 0) then store_data, 'mvn_swe_lpw_scpot_pol', /delete
-     mvn_swe_lpw_scpot_restore
+     mvn_swe_lpw_scpot_restore  ; ,suffix='_v01_r10' ; for testing
 
      get_data, 'mvn_swe_lpw_scpot_pol', data=lpwphi, index=i
      if (i gt 0) then begin
@@ -351,13 +351,21 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
 
         phi = interp(stapot.y, stapot.x, time, interp_thresh=maxdt, /no_extrap)
 
-;       Trust all negative values within the EUV shadow and above max_sta_alt
+;       Trust all values within the EUV shadow and above max_sta_alt
 
         indx = where(finite(phi) and wake and (alt gt max_sta_alt), count)
         if (count gt 0L) then begin
           mvn_sc_pot[indx].potential = phi[indx]
           mvn_sc_pot[indx].method = 4
         endif
+
+;       Trust all values between 200 and 300 km ; hmm need something better
+;
+;        indx = where(finite(phi) and (alt gt max_sta_alt) and (alt lt 300.), count)
+;        if (count gt 0L) then begin
+;          mvn_sc_pot[indx].potential = phi[indx]
+;          mvn_sc_pot[indx].method = 4
+;        endif
 
 ;       Fill in missing values.  If more than one of LPW, SWE and STA provide values,
 ;       choose one that is greater (less negative or more positive).

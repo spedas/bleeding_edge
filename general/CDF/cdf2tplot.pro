@@ -5,20 +5,33 @@
 ; 
 ; VARFORMAT = PATTERN  ; PATTERN should be a string (wildcards accepted) that will match the CDF variable that should be made into tplot variables
 ; PREFIX = STRING      ; String that will be pre-pended to all tplot variable names. 
-; SUFFIX = STRING      ; String appended to end of each tplot variable created.
+; SUFFIX = STRING      ; String appended to end of each tplot variable name
+; MIDFIX = STRING      ; String in the middle of each tplot variable name
+; MIDPOS = STRING/NUMBER ; A position for the midfix, either a string
+;                          to be replaced by the midfix, or a position
+;                          at which the midfix is inserted
 ; VARNAMES = named variable ; CDF variable names are returned in this variable
 ; /GET_SUPPORT_DATA    ; Often required to get support data if the CDF file does not have all the needed depend attributes
 ; 
 ; record=record if only one record and not full cdf-file is requested
-;
-;load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
-;         resolve labels implemented as keyword to preserve backwards compatibility 
+; /ALL ; Retrun all variables
+; /CONVERT_INT1_TO_INT2 ; Set this keyword to convert signed one byte to signed 2 byte integers.
+;                         This is useful because IDL does not have the equivalent of INT1   (bytes are unsigned)  
+; TPLOTNAMES = STRING   ; The names of the tplot variables (not the
+;                         CDF variables, which are returned in varnames)
+; load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
+;         resolve labels implemented as keyword to preserve backwards
+;         compatibility.
+;NOTES:
+; CDF attributes are obtained from the first file in the array of files input.
+; To load attributes from a separate SPDF-style mastercdf, prepend the
+; files input with the name of the mastercdf, full-path please. 
 ;
 ;Author: Davin Larson -  20th century
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-06-12 02:14:56 -0700 (Wed, 12 Jun 2019) $
-; $LastChangedRevision: 27338 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-12-16 11:06:22 -0800 (Mon, 16 Dec 2019) $
+; $LastChangedRevision: 28116 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf2tplot.pro $
 ; $ID: $
 ;-
@@ -29,7 +42,7 @@ pro cdf2tplot,files,files=files2,prefix=prefix,midfix=midfix,midpos=midpos,suffi
    ,record=record, tplotnames=tplotnames,load_labels=load_labels
 
 
-dprint,dlevel=4,verbose=verbose,'$Id: cdf2tplot.pro 27338 2019-06-12 09:14:56Z davin-mac $'
+dprint,dlevel=4,verbose=verbose,'$Id: cdf2tplot.pro 28116 2019-12-16 19:06:22Z jimm $'
 vb = keyword_set(verbose) ? verbose : 0
 
 if keyword_set(files2) then files=files2    ; added for backward compatibility  and to make it match the documentation
