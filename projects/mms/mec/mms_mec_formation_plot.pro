@@ -55,8 +55,8 @@
 ;       and Kim Kokkonen at LASP
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-10-16 10:31:13 -0700 (Wed, 16 Oct 2019) $
-; $LastChangedRevision: 27875 $
+; $LastChangedDate: 2019-12-17 12:23:21 -0800 (Tue, 17 Dec 2019) $
+; $LastChangedRevision: 28120 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_mec_formation_plot.pro $
 ;-
 
@@ -189,21 +189,21 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
   
   if keyword_set(xy_projection) || keyword_set(projection) then begin
       z_projection = make_array(4, value=zrange[0])
-      plot3z = plot3d(xes, yes, z_projection, 'o', linestyle='none', $
+      plot3z = plot3d(xes, yes, z_projection, sym_object=orb(lighting=0), linestyle='none', $
         sym_size=2, /sym_filled, sym_transparency=sym_transparency, vert_colors=spacecraft_colors, $
         /overplot, perspective=perspective, margin=margin)
   endif
 
   if keyword_set(xz_projection) || keyword_set(projection) then begin
       y_projection = make_array(4, value=yrange[1])
-      plot3y = plot3d(xes, y_projection, zes, 'o', linestyle='none', $
+      plot3y = plot3d(xes, y_projection, zes, sym_object=orb(lighting=0), linestyle='none', $
         sym_size=2, /sym_filled, sym_transparency=sym_transparency, vert_colors=spacecraft_colors, $
         /overplot, perspective=perspective, margin=margin)
   endif
   
   if keyword_set(yz_projection) || keyword_set(projection) then begin
       x_projection = make_array(4, value=xrange[1])
-      plot3x = plot3d(x_projection, yes, zes, 'o', linestyle='none', $
+      plot3x = plot3d(x_projection, yes, zes, sym_object=orb(lighting=0), linestyle='none', $
         sym_size=3, /sym_filled, sym_transparency=sym_transparency, vert_colors=spacecraft_colors, $
         /overplot, perspective=perspective, margin=margin)
   endif
@@ -250,4 +250,5 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
     t1 = text(0.5, yl+0.05, 'LMN Coordinates', font_size=8, font_color='black')
   endelse
   t1 = text(0.5, yl+0.025, 'Origin at MMS centroid', font_size=8, font_color='black')
+  
 end
