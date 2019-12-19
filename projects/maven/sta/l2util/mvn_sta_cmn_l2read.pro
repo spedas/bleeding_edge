@@ -67,9 +67,9 @@
 ;            here ends up in the structure for the common blocks
 ;HISTORY:
 ; 2014-05-12, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-01-10 13:58:40 -0800 (Tue, 10 Jan 2017) $
-; $LastChangedRevision: 22570 $
+; $LastChangedBy: muser $
+; $LastChangedDate: 2019-12-18 12:32:32 -0800 (Wed, 18 Dec 2019) $
+; $LastChangedRevision: 28122 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2read.pro $
 ;-
 Function mvn_sta_cmn_l2read, filename, trange = trange, cdf_info = cdfi, _extra = _extra
@@ -98,7 +98,7 @@ Function mvn_sta_cmn_l2read, filename, trange = trange, cdf_info = cdfi, _extra 
      t = *tstr.vars[ss_tvar].dataptr
      ss_t = where(t Ge tr0[0] And t Lt tr0[1], nss_t)
      If(nss_t Eq 0) Then Begin
-        dprint, 'No data in time range:'+time_string(tr0)
+        dprint, 'No data in time range:'+time_string(tr0)+' for:'+filename
         Return, otp
      Endif
      record = ss_t[0]

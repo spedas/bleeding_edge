@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Dec 17 18:16:08 2019.<P>
+<STRONG>Last modified: </STRONG>Wed Dec 18 18:15:41 2019.<P>
  
 <HR>
  
@@ -34,6 +34,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#MVN_OVER_SHELL">MVN_OVER_SHELL</A>
 <br>Top shell for production of MAVEN PFP overview plots
 <LI><A HREF="#MVN_PFPL2_1DAY">MVN_PFPL2_1DAY</A>
+<br>reads in a start and end date, and reprocesses all of the days in
+<LI><A HREF="#MVN_PFPL2_LONG_1DAY">MVN_PFPL2_LONG_1DAY</A>
 <br>reads in a start and end date, and reprocesses all of the days in
 <LI><A HREF="#MVN_PFPL2_LONGPLOT">MVN_PFPL2_LONGPLOT</A>
 <br>MAVEN PFP GEN Quicklook Plot, long-term 2 weeks
@@ -417,7 +419,7 @@ HISTORY:
 <A NAME="MVN_PFPL2_LONGPLOT">
 <H2>MVN_PFPL2_LONGPLOT</H2></A>
 <A HREF="#MVN_PFPL2_1DAY">[Previous Routine]</A>
-<A HREF="#MVN_PFPL2_OVERPLOT">[Next Routine]</A>
+<A HREF="#MVN_PFPL2_LONG_1DAY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -446,17 +448,44 @@ KEYWORDS:
  multipngplot = if set, then make multiple plots for each orbit
 HISTORY:
  Hacked from mvn_pfpl2_overplot, 2019-12-10, jmm, jimm@ssl.berkeley.edu
- $LastChangedBy: jimm $
- $LastChangedDate: 2019-12-13 13:33:17 -0800 (Fri, 13 Dec 2019) $
- $LastChangedRevision: 28110 $
+ $LastChangedBy: muser $
+ $LastChangedDate: 2019-12-18 13:09:39 -0800 (Wed, 18 Dec 2019) $
+ $LastChangedRevision: 28124 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_pfpl2_longplot.pro $
 </PRE><P>
 <STRONG>(See <A href="quicklook/mvn_pfpl2_longplot.pro">projects/maven/quicklook/mvn_pfpl2_longplot.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_PFPL2_LONG_1DAY">
+<H2>MVN_PFPL2_LONG_1DAY</H2></A>
+<A HREF="#MVN_PFPL2_LONGPLOT">[Previous Routine]</A>
+<A HREF="#MVN_PFPL2_OVERPLOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+mvn_pfpl2_long_1day
+PURPOSE:
+reads in a start and end date, and reprocesses all of the days in
+the interval. This is a main program, designed to be called from a
+shell script. Processes 1 day at a time
+CALLING SEQUENCE:
+ .run mvn_pfpl2_long_1day
+INPUT:
+start_time, end_time are input from files
+mvn_pfpl2_long_1day_start_time.txt and
+mvn_pfpl2_long_1day_end_time.txt.
+OUTPUT:
+PLots, so far pfpl2 long-term (2 week plots)
+HISTORY:
+ 2015-04-24, jmm, jimm@ssl.berkeley.edu
+ 2019-12-18, jmm, Optimized for pfpl2_long reprocess
+</PRE><P>
+<STRONG>(See <A href="quicklook/mvn_pfpl2_long_1day.pro">projects/maven/quicklook/mvn_pfpl2_long_1day.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_PFPL2_OVERPLOT">
 <H2>MVN_PFPL2_OVERPLOT</H2></A>
-<A HREF="#MVN_PFPL2_LONGPLOT">[Previous Routine]</A>
+<A HREF="#MVN_PFPL2_LONG_1DAY">[Previous Routine]</A>
 <A HREF="#MVN_QLOOK_1DAY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

@@ -1,6 +1,8 @@
 ;; mvn_mag_batch  - to be run from a cron job
 
 ;;---------------------------------------------
+;; Temporarily add level 1 process, 
+mvn_mag_gen_l1_sav,init=1
 ;; Create 32Hz IDL .sav files for level 1 and 2
 mvn_mag_gen_sav,init=1, coord='pl'
 ;mvn_mag_gen_sav,init=1, coord='ss'

@@ -30,12 +30,20 @@ for i=0L,nd-1 do begin
 
   mag_l1_files = mvn_pfp_file_retrieve(STS_fileformat,trange=tr,/daily_names)
   mag_l1_file = mag_l1_files[0]
-  
+
   if file_test(mag_l1_file,/regular) eq 0 then continue
 
   append_array,prereq_files,mag_l1_file
 
   sav_filename = mvn_pfp_file_retrieve(L1fmt,/daily,trange=tr[0],source=source,verbose=verbose,create_dir=1)
+
+  tmp_filename = file_basename(sav_filename, '.sav')
+  t1 = time_double(strmid(tmp_filename, 19), tformat='YYYYMMDD')
+;Early phase mag files are not working in checksum?
+  If(t1 lt time_double('2014-10-06/00:00:00')) Then Begin
+     dprint, 'Not Processing: '+sav_filename
+     Continue
+  Endif
 
   prereq_info = file_info(prereq_files)
   prereq_timestamp = max([prereq_info.mtime, prereq_info.ctime])
