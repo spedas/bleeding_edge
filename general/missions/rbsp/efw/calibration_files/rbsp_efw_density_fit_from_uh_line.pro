@@ -1,6 +1,6 @@
 ;+
 ; NAME: rbsp_efw_density_fit_from_uh_line
-; SYNTAX: 
+; SYNTAX:
 ; PURPOSE: Return a tplot variable of density based on sc
 ; potential. Calibrations from the UH line are updated every few weeks
 ; The double-exponential fit is based on Escoubet 1997
@@ -16,10 +16,10 @@
 ;
 ; HISTORY: Written by Aaron W Breneman (UMN), based on Scott
 ; Thaller's density calibrations to EMFISIS upper hybrid line
-; VERSION: 
+; VERSION:
 ;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2016-05-12 13:15:09 -0700 (Thu, 12 May 2016) $
-;   $LastChangedRevision: 21066 $
+;   $LastChangedDate: 2019-12-19 12:12:54 -0800 (Thu, 19 Dec 2019) $
+;   $LastChangedRevision: 28128 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/calibration_files/rbsp_efw_density_fit_from_uh_line.pro $
 ;-
 
@@ -48,7 +48,7 @@ pro rbsp_efw_density_fit_from_uh_line,sc_potential,sc,newname=newname,dmin=dmin,
         tst = where(times ge time_double(cal.t0[i]) and times lt time_double(cal.t1[i]))
         if tst[0] ne -1 then begin
            dentmp = cal.A[i]*exp(v*cal.B[i]) + cal.C[i]*exp(v*cal.D[i])
-           den[tst] = dentmp
+           den[tst] = dentmp[tst]
            timesf[tst] = times[tst]
         endif
      endfor
@@ -79,6 +79,3 @@ pro rbsp_efw_density_fit_from_uh_line,sc_potential,sc,newname=newname,dmin=dmin,
   endif else print,'NO VALID TPLOT VARIABLE INPUTTED.....SKIPPING'
 
 end
-
-
-

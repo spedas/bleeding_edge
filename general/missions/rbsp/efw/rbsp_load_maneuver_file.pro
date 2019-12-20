@@ -16,8 +16,8 @@
 ; HISTORY: Written by Aaron W Breneman - University of Minnesota 2014-10-26
 ; VERSION:
 ;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2018-11-30 07:38:59 -0800 (Fri, 30 Nov 2018) $
-;   $LastChangedRevision: 26199 $
+;   $LastChangedDate: 2019-12-19 11:19:56 -0800 (Thu, 19 Dec 2019) $
+;   $LastChangedRevision: 28126 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_maneuver_file.pro $
 ;-
 
@@ -37,7 +37,7 @@ function rbsp_load_maneuver_file,probe,date,remote_data_dir=remote_data_dir,loca
   dirpath='MOC_data_products/RBSP'+strupcase(probe)+'/maneuver_sequence/'
 
 ;Find out what files are online
-  ui = 'http://themis.ssl.berkeley.edu/data/rbsp/MOC_data_products/RBSPB/maneuver_sequence/*.*'
+  ui = 'http://themis.ssl.berkeley.edu/data/rbsp/MOC_data_products/RBSP'+strupcase(probe)+'/maneuver_sequence/*.*'
   spd_download_expand,ui
 
 ;Extract file names

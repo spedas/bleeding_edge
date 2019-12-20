@@ -63,9 +63,9 @@
 ;CREATED BY:      Takuya Hara on 2015-04-09.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: muser $
-; $LastChangedDate: 2019-12-10 16:10:20 -0800 (Tue, 10 Dec 2019) $
-; $LastChangedRevision: 28107 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2019-12-19 14:15:40 -0800 (Thu, 19 Dec 2019) $
+; $LastChangedRevision: 28130 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot.pro $
 ;
 ;-
@@ -552,29 +552,34 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
         btime = swica.time_unix + 4.d0 * swica.num_accum/2.d0
         bdata = FLTARR(N_ELEMENTS(btime))
         bdata[*] = 1.
+        IF N_ELEMENTS(btime) GT 2 THEN BEGIN
         ; Forward survey
-        dt = btime[1:N_ELEMENTS(btime)-1] - btime[0:N_ELEMENTS(btime)-2]
-        gap = FLOAT(ROUND(MIN(dt))) 
-        idx = WHERE(dt GT 600., ndat)
-        IF ndat GT 0 THEN BEGIN
-           btime = [btime, btime[idx] + gap/2.d0]
-           bdata = [bdata, REPLICATE(nan, ndat)]
-           idx = SORT(btime)
-           btime = btime[idx]
-           bdata = bdata[idx]
-        ENDIF 
-        undefine, idx, ndat, dt
+           dt = btime[1:N_ELEMENTS(btime)-1] - btime[0:N_ELEMENTS(btime)-2]
+           gap = FLOAT(ROUND(MIN(dt))) 
+           idx = WHERE(dt GT 600., ndat)
+           IF ndat GT 0 THEN BEGIN
+              btime = [btime, btime[idx] + gap/2.d0]
+              bdata = [bdata, REPLICATE(nan, ndat)]
+              idx = SORT(btime)
+              btime = btime[idx]
+              bdata = bdata[idx]
+           ENDIF 
+           undefine, idx, ndat, dt
         ; Backward survey
-        dt = ABS((REVERSE(btime))[1:N_ELEMENTS(btime)-1] - (REVERSE(btime))[0:N_ELEMENTS(btime)-2])
-        idx = WHERE(dt GT 600., ndat)
-        IF ndat GT 0 THEN BEGIN
-           btime = [btime, (REVERSE(btime))[idx] - gap/2.d0]
-           bdata = [bdata, REPLICATE(nan, ndat)]
-           idx = SORT(btime)
-           btime = btime[idx]
-           bdata = bdata[idx]
-        ENDIF 
-        undefine, idx, ndat, dt
+           dt = ABS((REVERSE(btime))[1:N_ELEMENTS(btime)-1] - (REVERSE(btime))[0:N_ELEMENTS(btime)-2])
+           idx = WHERE(dt GT 600., ndat)
+           IF ndat GT 0 THEN BEGIN
+              btime = [btime, (REVERSE(btime))[idx] - gap/2.d0]
+              bdata = [bdata, REPLICATE(nan, ndat)]
+              idx = SORT(btime)
+              btime = btime[idx]
+              bdata = bdata[idx]
+           ENDIF 
+           undefine, idx, ndat, dt
+        ENDIF ELSE BEGIN
+           btime = trange
+           bdata = [nan, nan]
+        ENDELSE
      ENDIF ELSE BEGIN
         btime = trange
         bdata = [nan, nan]

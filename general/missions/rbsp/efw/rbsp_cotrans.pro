@@ -43,7 +43,7 @@
 ;
 ;   mat_dsc: (In, optional) A tplot name of the rotation matrix between DSC and
 ;         GSE. It is usually loaded in rbsp_load_state. By default, this name is
-;         derived as 
+;         derived as
 ;                 strmid(from_tvar, 0, 6) + 'mat_dsc'
 ;   vectype: (In, optional) The type of the vectors being transformed. Valid
 ;         types are 'E', 'B', and 'V'. By default, vectype = ''. This string is
@@ -64,9 +64,9 @@
 ;               1. Added dsc-to-fac transformation.
 ;
 ; VERSION:
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-10-06 16:51:43 -0700 (Thu, 06 Oct 2016) $
-; $LastChangedRevision: 22061 $
+; $LastChangedBy: aaronbreneman $
+; $LastChangedDate: 2019-12-19 12:45:43 -0800 (Thu, 19 Dec 2019) $
+; $LastChangedRevision: 28129 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_cotrans.pro $
 ;
 ;-
@@ -128,7 +128,7 @@ endif
 if n_elements(vectype) eq 0 then vectype = ''
 
 ; Prefix for component labels
-case strupcase(vectype) of 
+case strupcase(vectype) of
   'E': prefix = 'E'
   'B': prefix = 'B'
   'V': prefix = 'V'
@@ -138,29 +138,29 @@ labels = prefix + ['x ', 'y ', 'z '] + strupcase(to_coord)
 
 tmpname = 'rbsp_cotrans_tmp'
 case type of
-  'gse2gsm': begin 
+  'gse2gsm': begin
 ;       dprint, verbose = verbose, 'GSE -> GSM...'
       cotrans, from_tvar, to_tvar, /gse2gsm
     end
-  'gse2dsc': begin 
+  'gse2dsc': begin
       if ~spd_check_tvar(mat_dsc) then begin
         dprint, 'ERROR: ' + $
           'The rotation matrix between GSE and DSC is not available.'
         return
       endif
       dprint, verbose = verbose, 'GSE -> DSC...'
-      tvector_rotate, mat_dsc, from_tvar, /invert, newname = to_tvar
+      tvector_rotate, mat_dsc, from_tvar, /invert, newname = to_tvar,/vector_skip_nonmonotonic
     end
-  'dsc2gse': begin 
+  'dsc2gse': begin
       if ~spd_check_tvar(mat_dsc) then begin
         dprint, 'ERROR: ' + $
           'The rotation matrix between GSE and DSC is not available.'
         return
       endif
       dprint, verbose = verbose, 'DSC -> GSE...'
-      tvector_rotate, mat_dsc, from_tvar, newname = to_tvar
+      tvector_rotate, mat_dsc, from_tvar, newname = to_tvar,/vector_skip_nonmonotonic
     end
-  'dsc2mgse': begin 
+  'dsc2mgse': begin
       ; dsc to gse, and construct wgse for rbsp_gse2mgse
       if ~spd_check_tvar(mat_dsc) then begin
         dprint, 'ERROR: ' + $
@@ -175,8 +175,8 @@ case type of
         dlim = {data_att:{coord_sys:'dsc'}}
 
       dprint, verbose = verbose, 'DSC -> GSE...'
-      tvector_rotate, mat_dsc, from_tvar, newname = tmpname
-      tvector_rotate, mat_dsc, 'tmp_wgse_in_dsc', newname = 'tmp_wgse_in_gse'
+      tvector_rotate, mat_dsc, from_tvar, newname = tmpname,/vector_skip_nonmonotonic
+      tvector_rotate, mat_dsc, 'tmp_wgse_in_dsc', newname = 'tmp_wgse_in_gse',/vector_skip_nonmonotonic
       get_data, 'tmp_wgse_in_gse', data = dtmp
       wgse = dtmp.y
       store_data, 'tmp_wgse_in_gse', /del
@@ -185,7 +185,7 @@ case type of
       rbsp_gse2mgse, tmpname, wgse,newname = to_tvar
       store_data, tmpname, /del
     end
-  'gse2mgse': begin 
+  'gse2mgse': begin
       ; dsc to gse, and construct wgse for rbsp_gse2mgse
       if ~spd_check_tvar(mat_dsc) then begin
         dprint, 'ERROR: ' + $
@@ -200,7 +200,7 @@ case type of
         dlim = {data_att:{coord_sys:'dsc'}}
 
       dprint, verbose = verbose, 'DSC -> GSE...'
-      tvector_rotate, mat_dsc, 'tmp_wgse_in_dsc', newname = 'tmp_wgse_in_gse'
+      tvector_rotate, mat_dsc, 'tmp_wgse_in_dsc', newname = 'tmp_wgse_in_gse',/vector_skip_nonmonotonic
       get_data, 'tmp_wgse_in_gse', data = dtmp
       wgse = dtmp.y
       store_data, 'tmp_wgse_in_gse', /del
@@ -208,21 +208,21 @@ case type of
       ; gse to mgse
       rbsp_gse2mgse, from_tvar, wgse,newname = to_tvar
     end
-  'dsc2gsm': begin 
+  'dsc2gsm': begin
       if ~spd_check_tvar(mat_dsc) then begin
         dprint, 'ERROR: ' + $
           'The rotation matrix between GSE and DSC is not available.'
         return
       endif
       dprint, verbose = verbose, 'DSC -> GSE...'
-      tvector_rotate, mat_dsc, from_tvar, newname = tmpname
+      tvector_rotate, mat_dsc, from_tvar, newname = tmpname,/vector_skip_nonmonotonic
       cotrans, tmpname, to_tvar, /gse2gsm
       store_data, tmpname, /del
     end
-  'gsm2gse': begin 
+  'gsm2gse': begin
       cotrans, from_tvar, to_tvar, /gsm2gse
     end
-  'gsm2dsc': begin 
+  'gsm2dsc': begin
       if ~spd_check_tvar(mat_dsc) then begin
         dprint, 'ERROR: ' + $
           'The rotation matrix between GSE and DSC is not available.'
@@ -230,10 +230,10 @@ case type of
       endif
       cotrans, from_tvar, tmpname, /gsm2gse
       dprint, verbose = verbose, 'GSE -> DSC...'
-      tvector_rotate, mat_dsc, tmpname, /invert, newname = to_tvar
+      tvector_rotate, mat_dsc, tmpname, /invert, newname = to_tvar,/vector_skip_nonmonotonic
       store_data, tmpname, /del
     end
-  'dsc2fac': begin 
+  'dsc2fac': begin
       if ~spd_check_tvar(tmag) then begin
         dprint, 'ERROR: ' + $
           'Background magnetic field not available. Abort.'
@@ -248,7 +248,7 @@ case type of
         return
       endif
       tvector_rotate, rbx + 'dsc2fac_matrix', from_tvar, $
-        newname = to_tvar 
+        newname = to_tvar,/vector_skip_nonmonotonic
       store_data, rbx + 'dsc2fac_matrix', /del
       get_data, to_tvar, dlim = dl
       str_element, dl, 'data_att.coord_sys', 'fac', /add
@@ -265,4 +265,3 @@ endcase
 options, to_tvar, colors = [2, 4, 6], labels = labels, labflag = 1
 
 end
-

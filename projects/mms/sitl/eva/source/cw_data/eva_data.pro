@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2019-05-28 16:33:21 -0700 (Tue, 28 May 2019) $
-; $LastChangedRevision: 27304 $
+; $LastChangedDate: 2019-12-19 12:09:55 -0800 (Thu, 19 Dec 2019) $
+; $LastChangedRevision: 28127 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data.pro $
 
 ;PRO eva_data_update_date, state, update=update
@@ -117,9 +117,12 @@ FUNCTION eva_data_load_and_plot, state, cod=cod, evtop=evtop
   ;----------------------
   ;idx=where(strpos(paramlist,'_gls') gt 0,ct)
   ;if(ct gt 0) and ~undefined(evtop) then begin
-  if ~undefined(evtop) then begin
-    widget_control, widget_info(evtop,find='eva_sitl'), GET_VALUE=state_sitl
-    trange = time_double([state.START_TIME, state.END_TIME])
+  widget_control, widget_info(evtop,find='eva_sitl'), GET_VALUE=state_sitl
+  trange_sitl_window = time_double(state_sitl.trange_sitl_window)
+  trange_user_specified = time_double([state.START_TIME, state.END_TIME])
+  
+  if( ~undefined(evtop) and (trange_user_specified[1] gt trange_sitl_window[0]) )then begin
+    trange = trange_user_specified
     algo = [state_sitl.PREF.EVA_GLS1_ALGO, state_sitl.PREF.EVA_GLS2_ALGO, state_sitl.PREF.EVA_GLS3_ALGO]
     eva_sitl_load_gls, trange=trange, algo=algo
   endif
@@ -286,6 +289,7 @@ FUNCTION eva_data_login, state, evTop
         message,'Failed to load validation structure.'
       endif
       str_element,/add,sitl_state,'val',val
+      str_element,/add,sitl_state,'trange_sitl_window',[start_time,end_time]
       widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
       
       ;---------------------
