@@ -116,6 +116,14 @@
 ;       TPLOT:     The number of an IDL window for a time series plot
 ;                  of altitude and orbital velocity.  Default = none.
 ;
+;       WSCALE:    Window size scale factor.  Default = 1.
+;
+;       XYPLANE:   Plot the orbit in the XY plane only.  Only works if
+;                  OPLOT is set.
+;
+;       XYRANGE:   Axis plot ranges in planetary radii.  Default is to 
+;                  fit the orbit on the plot.
+;
 ;       NODOT:     Do not plot a symbol for periapsis.
 ;
 ;       PS:        Postscript plots are produced for OPLOT and TPLOT.
@@ -133,8 +141,8 @@
 ;                  elements as SEGMENTS.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-05-28 12:35:58 -0700 (Sun, 28 May 2017) $
-; $LastChangedRevision: 23358 $
+; $LastChangedDate: 2019-12-20 11:02:44 -0800 (Fri, 20 Dec 2019) $
+; $LastChangedRevision: 28133 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/morbit.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -142,7 +150,8 @@
 pro morbit, param, dt=dt, planet=planet, nmax=nmax, oerr=oerr, result=result, $
                    norbit=norbit, oplot=oplot, tplot=tplot, orient=orient, $
                    flythru=flythru, shock=shock, ps=ps, xyrange=xyrange, $
-                   silent=silent, segments=segments, scolors=scolors, nodot=nodot
+                   silent=silent, segments=segments, scolors=scolors, $
+                   wscale=wscale, xyplane=xyplane, nodot=nodot
 
   if (size(param,/type) ne 8) then begin
     print, 'You must specify an orbit parameter structure.'
@@ -151,6 +160,10 @@ pro morbit, param, dt=dt, planet=planet, nmax=nmax, oerr=oerr, result=result, $
 
   dtor = !dpi/180D
   dodot = ~keyword_set(nodot)
+  xyflg = keyword_set(xyplane)
+  if (size(wscale,/type) eq 0) then wscale = 1.
+  if (xyflg) then wsize = round([535.,500.]*wscale) else wsize = round([326.,920.]*wscale)
+  csize = 1.2*wscale
   
   nseg = n_elements(segments)
   if (n_elements(scolors) ne nseg) then begin
@@ -238,7 +251,7 @@ pro morbit, param, dt=dt, planet=planet, nmax=nmax, oerr=oerr, result=result, $
 
   if (size(oplot,/type) ne 0) then begin
     oflg = 1
-    window,oplot,xsize=326,ysize=920,xpos=25,ypos=25
+    window,oplot,xsize=wsize[0],ysize=wsize[1],xpos=25,ypos=25
   endif else oflg = 0
 
   if (size(tplot,/type) ne 0) then begin
@@ -583,17 +596,19 @@ OSHAPE:
 
       if (psflg) then begin
         popen,'morbit_oplot'
-        !p.multi = [3,2,2]
+        if (xyflg) then !p.multi = 0 else !p.multi = [3,2,2]
       endif else begin
         wset, oplot
-        !p.multi = [3,1,3]
+        if (xyflg) then !p.multi = 0 else !p.multi = [3,1,3]
       endelse
 
       x = ss[*,0]/R
       y = ss[*,1]/R
       z = ss[*,2]/R
       s = sqrt(x*x + y*y)
-      
+
+; X-Y plane
+
       xo = x
       yo = y
 
@@ -693,169 +708,176 @@ OSHAPE:
         oplot,xpileup,ypileup,color=scol,line=1
       endif
 
-      x = ss[*,0]/R
-      y = ss[*,1]/R
-      z = ss[*,2]/R
-      s = sqrt(x*x + z*z)
+; X-Z plane
 
-      indx = where((y gt 0.) and (s lt 1.), count)
-      if (count gt 0L) then begin
-        x[indx] = !values.f_nan
-        z[indx] = !values.f_nan
-      endif
+      if (~xyflg) then begin
+        x = ss[*,0]/R
+        y = ss[*,1]/R
+        z = ss[*,2]/R
+        s = sqrt(x*x + z*z)
 
-      if (psflg) then begin
-        plot,[xrange[0]],[yrange[0]],xrange=xrange,yrange=yrange,$
-             /xsty,/ysty,xtitle='X (Rp)',ytitle='Z (Rp)',charsize=1.0,$
-             ymargin=[16,1]
-        oplot,xm,ym,color=6, thick=2
-        if (doseg) then begin
-          tstart = tseg
-          tstop = shift(tseg,-1)
-          tstop[nseg-1] = max(t)
-          for i=0,(nseg-1) do begin
-            sndx = where((t ge tstart[i]) and (t lt tstop[i]), count)
-            if (count gt 0) then oplot,x[sndx],z[sndx],color=cseg[i]
-          endfor
-        endif else oplot,x,z
-        if (dodot) then oplot,[x[imin]],[z[imin]],psym=4,color=4,thick=2
-      endif else begin
-        plot,xm,ym,xrange=xrange,yrange=yrange,/xsty,/ysty, $
-             xtitle='X (Rp)',ytitle='Z (Rp)',charsize=2.0
-        oplot,xm,ym,color=6
-        if (doseg) then begin
-          tstart = tseg
-          tstop = shift(tseg,-1)
-          tstop[nseg-1] = max(t)
-          for i=0,(nseg-1) do begin
-            sndx = where((t ge tstart[i]) and (t lt tstop[i]), count)
-            if (count gt 0) then oplot,x[sndx],z[sndx],color=cseg[i]
-          endfor
-        endif else oplot,x,z
-        if (dodot) then oplot,[x[imin]],[z[imin]],psym=4,color=4,thick=2
-      endelse
+        indx = where((y gt 0.) and (s lt 1.), count)
+        if (count gt 0L) then begin
+          x[indx] = !values.f_nan
+          z[indx] = !values.f_nan
+        endif
 
-; Shock conic
-
-      if (sflg) then begin
-
-        phm = 160.*!dtor 
-        phi = (-150. + findgen(301))*!dtor
-        rho = L/(1. + psi*cos(phi))
-
-        xs = x0 + rho*cos(phi)
-        zs = rho*sin(phi)
-        oplot,xs,zs,color=scol,line=1
-
-        s = sqrt(y*y + z*z)
-        phi = atan(s,(x - x0))
-        rho = sqrt((x - x0)^2. + s*s)
-        indx = where(rho lt L/(1. + psi*cos(phi < phm)), count)
-        if (count gt 0L) then oplot, x[indx], z[indx], color=4, psym=3
-
-      endif
-
-; MPB conic
-
-      if (mflg) then begin
-
-        phi = (-160. + findgen(160))*!dtor
-
-        rho = L_p1/(1. + psi_p1*cos(phi))
-        x1 = x0_p1 + rho*cos(phi)
-        y1 = rho*sin(phi)
-
-        rho = L_p2/(1. + psi_p2*cos(phi))
-        x2 = x0_p2 + rho*cos(phi)
-        y2 = rho*sin(phi)
-
-        indx = where(x1 ge 0)
-        jndx = where(x2 lt 0)
-        xpileup = [x2[jndx], x1[indx]]
-        ypileup = [y2[jndx], y1[indx]]
-
-        phi = findgen(161)*!dtor
-
-        rho = L_p1/(1. + psi_p1*cos(phi))
-        x1 = x0_p1 + rho*cos(phi)
-        y1 = rho*sin(phi)
-
-        rho = L_p2/(1. + psi_p2*cos(phi))
-        x2 = x0_p2 + rho*cos(phi)
-        y2 = rho*sin(phi)
-
-        indx = where(x1 ge 0)
-        jndx = where(x2 lt 0)
-        xpileup = [xpileup, x1[indx], x2[jndx]]
-        ypileup = [ypileup, y1[indx], y2[jndx]]
-
-        oplot,xpileup,ypileup,color=scol,line=1
-
-      endif
-
-      x = ss[*,0]/R
-      y = ss[*,1]/R
-      z = ss[*,2]/R
-      s = sqrt(y*y + z*z)
-      indx = where((x lt 0.) and (s lt 1.), count)
-      if (count gt 0L) then begin
-        y[indx] = !values.f_nan
-        z[indx] = !values.f_nan
-      endif
-
-      if (psflg) then begin
-        plot,[xrange[0]],[yrange[0]],xrange=xrange,yrange=yrange,$
-             /xsty,/ysty,xtitle='Y (Rp)',ytitle='Z (Rp)',charsize=1.0, $
-             ymargin=[16,1]
-        oplot,xm,ym,color=6,thick=2
-        if (doseg) then begin
-          tstart = tseg
-          tstop = shift(tseg,-1)
-          tstop[nseg-1] = max(t)
-          for i=0,(nseg-1) do begin
-            sndx = where((t ge tstart[i]) and (t lt tstop[i]), count)
-            if (count gt 0) then oplot,y[sndx],z[sndx],color=cseg[i]
-          endfor
-        endif else oplot,y,z
-        if (dodot) then oplot,[y[imin]],[z[imin]],psym=4,color=4,thick=2
-      endif else begin
-        plot,xm,ym,xrange=xrange,yrange=yrange,/xsty,/ysty, $
-             xtitle='Y (Rp)',ytitle='Z (Rp)',charsize=2.0
-        oplot,xm,ym,color=6
-        if (doseg) then begin
-          tstart = tseg
-          tstop = shift(tseg,-1)
-          tstop[nseg-1] = max(t)
-          for i=0,(nseg-1) do begin
-            sndx = where((t ge tstart[i]) and (t lt tstop[i]), count)
-            if (count gt 0) then oplot,y[sndx],z[sndx],color=cseg[i]
-          endfor
-        endif else oplot,y,z
-        if (dodot) then oplot,[y[imin]],[z[imin]],psym=4,color=4,thick=2
-      endelse
+        if (psflg) then begin
+          plot,[xrange[0]],[yrange[0]],xrange=xrange,yrange=yrange,$
+               /xsty,/ysty,xtitle='X (Rp)',ytitle='Z (Rp)',charsize=1.0,$
+               ymargin=[16,1]
+          oplot,xm,ym,color=6, thick=2
+          if (doseg) then begin
+            tstart = tseg
+            tstop = shift(tseg,-1)
+            tstop[nseg-1] = max(t)
+            for i=0,(nseg-1) do begin
+              sndx = where((t ge tstart[i]) and (t lt tstop[i]), count)
+              if (count gt 0) then oplot,x[sndx],z[sndx],color=cseg[i]
+            endfor
+          endif else oplot,x,z
+          if (dodot) then oplot,[x[imin]],[z[imin]],psym=4,color=4,thick=2
+        endif else begin
+          plot,xm,ym,xrange=xrange,yrange=yrange,/xsty,/ysty, $
+               xtitle='X (Rp)',ytitle='Z (Rp)',charsize=2.0
+          oplot,xm,ym,color=6
+          if (doseg) then begin
+            tstart = tseg
+            tstop = shift(tseg,-1)
+            tstop[nseg-1] = max(t)
+            for i=0,(nseg-1) do begin
+              sndx = where((t ge tstart[i]) and (t lt tstop[i]), count)
+              if (count gt 0) then oplot,x[sndx],z[sndx],color=cseg[i]
+            endfor
+          endif else oplot,x,z
+          if (dodot) then oplot,[x[imin]],[z[imin]],psym=4,color=4,thick=2
+        endelse
 
 ; Shock conic
 
-      if (sflg) then begin
+        if (sflg) then begin
 
-        phm = 160.*!dtor
-        L0 = sqrt((L + psi*x0)^2. - x0*x0)
-        oplot,L0*xm,L0*ym,color=scol,line=1
+          phm = 160.*!dtor 
+          phi = (-150. + findgen(301))*!dtor
+          rho = L/(1. + psi*cos(phi))
 
-        s = sqrt(y*y + z*z)
-        phi = atan(s,(x - x0))
-        rho = sqrt((x - x0)^2. + s*s)
-        indx = where(rho lt L/(1. + psi*cos(phi < phm)), count)
-        if (count gt 0L) then oplot, y[indx], z[indx], color=4, psym=3
+          xs = x0 + rho*cos(phi)
+          zs = rho*sin(phi)
+          oplot,xs,zs,color=scol,line=1
 
-      endif
+          s = sqrt(y*y + z*z)
+          phi = atan(s,(x - x0))
+          rho = sqrt((x - x0)^2. + s*s)
+          indx = where(rho lt L/(1. + psi*cos(phi < phm)), count)
+          if (count gt 0L) then oplot, x[indx], z[indx], color=4, psym=3
+
+        endif
 
 ; MPB conic
 
-      if (mflg) then begin
+        if (mflg) then begin
 
-        L0 = sqrt((L_p1 + psi_p1*x0_p1)^2. - x0_p1*x0_p1)
-        oplot,L0*xm,L0*ym,color=scol,line=1
+          phi = (-160. + findgen(160))*!dtor
+
+          rho = L_p1/(1. + psi_p1*cos(phi))
+          x1 = x0_p1 + rho*cos(phi)
+          y1 = rho*sin(phi)
+
+          rho = L_p2/(1. + psi_p2*cos(phi))
+          x2 = x0_p2 + rho*cos(phi)
+          y2 = rho*sin(phi)
+
+          indx = where(x1 ge 0)
+          jndx = where(x2 lt 0)
+          xpileup = [x2[jndx], x1[indx]]
+          ypileup = [y2[jndx], y1[indx]]
+
+          phi = findgen(161)*!dtor
+
+          rho = L_p1/(1. + psi_p1*cos(phi))
+          x1 = x0_p1 + rho*cos(phi)
+          y1 = rho*sin(phi)
+
+          rho = L_p2/(1. + psi_p2*cos(phi))
+          x2 = x0_p2 + rho*cos(phi)
+          y2 = rho*sin(phi)
+
+          indx = where(x1 ge 0)
+          jndx = where(x2 lt 0)
+          xpileup = [xpileup, x1[indx], x2[jndx]]
+          ypileup = [ypileup, y1[indx], y2[jndx]]
+
+          oplot,xpileup,ypileup,color=scol,line=1
+
+        endif
+
+; Y-Z plane
+
+        x = ss[*,0]/R
+        y = ss[*,1]/R
+        z = ss[*,2]/R
+        s = sqrt(y*y + z*z)
+        indx = where((x lt 0.) and (s lt 1.), count)
+        if (count gt 0L) then begin
+          y[indx] = !values.f_nan
+          z[indx] = !values.f_nan
+        endif
+
+        if (psflg) then begin
+          plot,[xrange[0]],[yrange[0]],xrange=xrange,yrange=yrange,$
+               /xsty,/ysty,xtitle='Y (Rp)',ytitle='Z (Rp)',charsize=1.0, $
+               ymargin=[16,1]
+          oplot,xm,ym,color=6,thick=2
+          if (doseg) then begin
+            tstart = tseg
+            tstop = shift(tseg,-1)
+            tstop[nseg-1] = max(t)
+            for i=0,(nseg-1) do begin
+              sndx = where((t ge tstart[i]) and (t lt tstop[i]), count)
+              if (count gt 0) then oplot,y[sndx],z[sndx],color=cseg[i]
+            endfor
+          endif else oplot,y,z
+          if (dodot) then oplot,[y[imin]],[z[imin]],psym=4,color=4,thick=2
+        endif else begin
+          plot,xm,ym,xrange=xrange,yrange=yrange,/xsty,/ysty, $
+               xtitle='Y (Rp)',ytitle='Z (Rp)',charsize=2.0
+          oplot,xm,ym,color=6
+          if (doseg) then begin
+            tstart = tseg
+            tstop = shift(tseg,-1)
+            tstop[nseg-1] = max(t)
+            for i=0,(nseg-1) do begin
+              sndx = where((t ge tstart[i]) and (t lt tstop[i]), count)
+              if (count gt 0) then oplot,y[sndx],z[sndx],color=cseg[i]
+            endfor
+          endif else oplot,y,z
+          if (dodot) then oplot,[y[imin]],[z[imin]],psym=4,color=4,thick=2
+        endelse
+
+; Shock conic
+
+        if (sflg) then begin
+
+          phm = 160.*!dtor
+          L0 = sqrt((L + psi*x0)^2. - x0*x0)
+          oplot,L0*xm,L0*ym,color=scol,line=1
+
+          s = sqrt(y*y + z*z)
+          phi = atan(s,(x - x0))
+          rho = sqrt((x - x0)^2. + s*s)
+          indx = where(rho lt L/(1. + psi*cos(phi < phm)), count)
+          if (count gt 0L) then oplot, y[indx], z[indx], color=4, psym=3
+
+        endif
+
+; MPB conic
+
+        if (mflg) then begin
+
+          L0 = sqrt((L_p1 + psi_p1*x0_p1)^2. - x0_p1*x0_p1)
+          oplot,L0*xm,L0*ym,color=scol,line=1
+          
+        endif
 
       endif
 
@@ -907,24 +929,24 @@ OSHAPE:
   lat = lat/dtor
   incl = incl/dtor
 
-  result = {t      : t        , $       ; time from apoapsis (sec)
-            dist   : dist     , $       ; radial distance (km)
-            thet   : thet     , $       ; true anomaly (radians)
-            x      : ss       , $       ; cartesian coord. (km)
-            alt    : dist - R , $       ; altitude (km)
-            vel    : v        , $       ; orbital velocity (km/s)
-            period : period   , $       ; orbital period (hours)
-            sma    : sma      , $       ; semi-major axis (km)
-            palt   : palt     , $       ; periapsis altitude (km)
-            plon   : lon      , $       ; periapsis longitude (deg)
-            plat   : lat      , $       ; periapsis latitude (deg)
-            aalt   : aalt     , $       ; apoapsis altitude (km)
-            ecc    : ecc      , $       ; orbital eccentricity
-            incl   : incl     , $       ; orbital inclination (deg)
-            swfrac : swfrac   , $       ; fraction of time in solar wind
-            planet : planet   , $       ; planet name
-            radius : R        , $       ; planet radius (km)
-            Vesc   : Vesc        }      ; escape velocity (km/s)
+  result = {t      : t         , $       ; time from apoapsis (sec)
+            dist   : dist      , $       ; radial distance (km)
+            thet   : thet      , $       ; true anomaly (radians)
+            x      : ss        , $       ; cartesian coord. (km)
+            alt    : dist - R  , $       ; altitude (km)
+            vel    : v         , $       ; orbital velocity (km/s)
+            period : period    , $       ; orbital period (hours)
+            sma    : sma       , $       ; semi-major axis (km)
+            palt   : palt      , $       ; periapsis altitude (km)
+            plon   : lon       , $       ; periapsis longitude (deg)
+            plat   : lat       , $       ; periapsis latitude (deg)
+            aalt   : aalt      , $       ; apoapsis altitude (km)
+            ecc    : ecc       , $       ; orbital eccentricity
+            incl   : incl      , $       ; orbital inclination (deg)
+            swfrac : swfrac    , $       ; fraction of time in solar wind
+            planet : planet    , $       ; planet name
+            radius : R         , $       ; planet radius (km)
+            Vesc   : Vesc         }      ; escape velocity (km/s)
 
 ; Output the orbit parameters
 

@@ -25,9 +25,9 @@
 ;OUTPUT:
 ; fully qualified kernel filename(s)
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
-; $LastChangedRevision: 27221 $
+; $LastChangedBy: rlillis3 $
+; $LastChangedDate: 2019-12-20 16:22:29 -0800 (Fri, 20 Dec 2019) $
+; $LastChangedRevision: 28135 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_standard_kernels.pro $
 ;-
 function spice_standard_kernels,load=load,source=src,reset=reset,verbose=verbose,mars=mars,no_update=no_update
@@ -55,7 +55,7 @@ if ~keyword_set(kernels) || (ct - retrievetime) gt waittime then begin     ;
                                         no_server = source.no_server, file_mode = '666'o, dir_mode = '777'o)
 ;    append_array,kernels,  file_retrieve('generic_kernels/spk/planets/de421.bsp',_extra=source)   ; Now obsolete ....  No longer on NAIF site!
 ;    append_array,kernels,  file_retrieve('generic_kernels/spk/planets/a_old_versions/de421.bsp',_extra=source)   ; archived location of de421.bsp
-    append_array, kernels, spd_download_plus(remote_file = source.remote_data_dir+'generic_kernels/spk/planets/de435.bsp', $
+    append_array, kernels, spd_download_plus(remote_file = source.remote_data_dir+'generic_kernels/spk/planets/de438.bsp', $
                                         local_path = source.local_data_dir+'generic_kernels/spk/planets/', $
                                         no_server = source.no_server, file_mode = '666'o, dir_mode = '777'o)
     if keyword_set(mars) then append_array, kernels, spd_download_plus(remote_file = source.remote_data_dir+'generic_kernels/spk/satellites/mar097.bsp', $

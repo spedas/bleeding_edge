@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Dec 19 18:15:51 2019.<P>
+<STRONG>Last modified: </STRONG>Fri Dec 20 18:16:19 2019.<P>
  
 <HR>
  
@@ -149,6 +149,14 @@ KEYWORDS:
        TPLOT:     The number of an IDL window for a time series plot
                   of altitude and orbital velocity.  Default = none.
 
+       WSCALE:    Window size scale factor.  Default = 1.
+
+       XYPLANE:   Plot the orbit in the XY plane only.  Only works if
+                  OPLOT is set.
+
+       XYRANGE:   Axis plot ranges in planetary radii.  Default is to 
+                  fit the orbit on the plot.
+
        NODOT:     Do not plot a symbol for periapsis.
 
        PS:        Postscript plots are produced for OPLOT and TPLOT.
@@ -166,8 +174,8 @@ KEYWORDS:
                   elements as SEGMENTS.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-05-28 12:35:58 -0700 (Sun, 28 May 2017) $
- $LastChangedRevision: 23358 $
+ $LastChangedDate: 2019-12-20 11:02:44 -0800 (Fri, 20 Dec 2019) $
+ $LastChangedRevision: 28133 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/morbit.pro $
 
 CREATED BY:	David L. Mitchell
