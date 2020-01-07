@@ -1,64 +1,55 @@
 ; +
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-10-17 23:57:28 -0700 (Thu, 17 Oct 2019) $
-; $LastChangedRevision: 27889 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-01-06 15:04:36 -0800 (Mon, 06 Jan 2020) $
+; $LastChangedRevision: 28167 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
 ; -
 
-
-function spp_apdat_info_restore,save_file
-
-   restore,save_file,/verbose
-   return, all_apdat
+function spp_apdat_info_restore,save_file,verbose=verbose
+  restore,save_file,verbose=verbose
+  return, all_apdat
 end
-   
-   
-  
-
-
-
-
 
 pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
-                  clear=clear,$
-                  quick=quick, $
-                  zero=zero, $
-                  reset=reset,$
-                  apdats = apdats, $
-                  output_lun = output_lun, $
-                  ;matchname = matchname,  $  obsolete - use string as input
-                  save_flag=save_flag,$
-                  sort_flag=sort_flag,$
-                  current_filename = current_filename, $
-                  cdf_pathname = cdf_pathname, $
-                  cdf_linkname = cdf_linkname, $
-                  make_cdf = make_cdf, $
-                  nonzero=nonzero,  $
-                  dlevel=dlevel, $
-                  all = all, $
-                  info = info,  $
-                  finish=finish,$
-                  window_obj=window_obj, $
-                  append_filename=append_filename,  $
-                  tname=tname,$
-                  set_break=set_break, $
-                  ttags=ttags,$
-                  routine=routine,$
-                  file_save=file_save, file_restore=file_restore,compress=compress, $
-                  apid_obj_name = apid_obj_name, $
-                  print=print, $
-                  rt_flag=rt_flag
+  clear=clear,$
+  quick=quick, $
+  zero=zero, $
+  reset=reset,$
+  apdats = apdats, $
+  output_lun = output_lun, $
+  ;matchname = matchname,  $  obsolete - use string as input
+  save_flag=save_flag,$
+  sort_flag=sort_flag,$
+  current_filename = current_filename, $
+  append_filename=append_filename,  $
+  cdf_pathname = cdf_pathname, $
+  cdf_linkname = cdf_linkname, $
+  make_cdf = make_cdf, $
+  nonzero=nonzero,  $
+  dlevel=dlevel, $
+  all = all, $
+  info = info,  $
+  finish=finish,$
+  window_obj=window_obj, $
+  tname=tname,$
+  set_break=set_break, $
+  ttags=ttags,$
+  routine=routine,$
+  file_save=file_save, file_restore=file_restore,compress=compress, $
+  apid_obj_name = apid_obj_name, $
+  print=print, $
+  rt_flag=rt_flag
 
   common spp_apdat_info_com, all_apdat, alt_apdat, all_info,temp1,temp2
-  
-  
+
+
   if keyword_set(quick) && isa(apid_description,/integer,/scalar) && isa(all_apdat[apid_description]) then begin
     apdats= all_apdat[apid_description]
     return
   endif
-  
+
   if keyword_set(quick) then begin
     dprint,'Unexpected APID:',apid_description,dlevel=3
   endif
@@ -71,29 +62,30 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     return
   endif
 
-  if keyword_set(file_restore) then restore,file=file_restore,/verbose
+  if keyword_set(file_restore) then restore,file_restore,/verbose,/relax
 
   if ~keyword_set(all_apdat) then all_apdat = replicate( obj_new() , 2^11 )
 
   if keyword_set(append_filename) then begin
-    aps = spp_apdat_info_restore(append_filename)
-    for i=0 , n_elements(aps) do begin
-      if obj_valid(all_apdat[i]) then all_apdat[i].append , aps[i] else all_apdat[i] = aps[i]
+    dprint,'Restoring file: '+append_filename
+    aps = spp_apdat_info_restore(append_filename,verbose=verbose)
+    apids = where(aps,/null)
+    for i=0 , n_elements(apids)-1 do begin
+      apid = apids[i]
+      if obj_valid(all_apdat[apid]) then all_apdat[apid].append , aps[apid] else all_apdat[apid] = aps[apid]
     endfor
     return
   endif
 
-
-  
   if ~keyword_set(alt_apdat) then alt_apdat = orderedhash()
   if ~keyword_set(all_info) then begin
-     all_info = orderedhash()
-     all_info['current_filename'] = 'Unknown'
-     all_info['current_filehash'] = 0UL
-     all_info['file_hash_list'] = orderedhash()
-     all_info['break'] = 0
+    all_info = orderedhash()
+    all_info['current_filename'] = 'Unknown'
+    all_info['current_filehash'] = 0UL
+    all_info['file_hash_list'] = orderedhash()
+    all_info['break'] = 0
   endif
-  
+
   if keyword_set(current_filename) then begin
     basename =file_basename(current_filename)
     current_filehash = basename.hashcode()
@@ -103,11 +95,11 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     hash_list[current_filehash] = current_filename
     return
   endif
-  
+
   if keyword_set(set_break) then begin
     all_info['break'] = 1
   endif
-  
+
   if keyword_set(file_save) then save,file=file_save,all_apdat,/verbose,compress=compress
 
   valid_apdat = all_apdat[ where( obj_valid(all_apdat),nvalid ) ]
@@ -124,25 +116,25 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     endif
     ind = strfilter(names,apid_description,/index,/null)
     apids = apids[ind]
-;    printdat,names[ind],apids
+    ;    printdat,names[ind],apids
   endif else if isa(apid_description,/integer) then begin
     apids = apid_description
   endif else  apids = where(all_apdat,/null)
- 
+
   ;printdat,apids
-  
+
   default_apid_obj_name =  'spp_gen_apdat'
 
   for i=0,n_elements(apids)-1 do begin
     apid = apids[i]
     if alt_apdat.haskey(apid) eq 0 then alt_apdat[apid] = obj_new()   ; initialize new apid
     apdat_obj = all_apdat[apid]
-    
+
     if ~obj_valid(apdat_obj)  || (isa(/string,apid_obj_name) && (typename(apdat_obj) ne strupcase(apid_obj_name) ) )  then begin
       dprint,verbose=verbose,dlevel=3,'Initializing APID: ',apid        ; potential memory leak here - old version should be destroyed
       obj_name = (isa(/string,apid_obj_name) && keyword_set(apid_obj_name)) ? apid_obj_name : default_apid_obj_name
-      apdat_new = obj_new(obj_name , apid,name) 
-      all_apdat[apid] = apdat_new       
+      apdat_new = obj_new(obj_name , apid,name)
+      all_apdat[apid] = apdat_new
       alt_apdat[apid] = apdat_new
     endif
     apdat = all_apdat[apid]
@@ -168,6 +160,6 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   apdats=all_apdat[apids]
   if n_elements(apdats) eq 1 then apdats = apdats[0]
   if arg_present(info)  then  info = all_info
-  
+
 end
 

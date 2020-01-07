@@ -1,9 +1,9 @@
 ;+
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-10-22 14:44:54 -0700 (Tue, 22 Oct 2019) $
-; $LastChangedRevision: 27914 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-01-06 15:04:36 -0800 (Mon, 06 Jan 2020) $
+; $LastChangedRevision: 28167 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -76,10 +76,8 @@ if self.npkts eq 0 then begin
   self = new
 endif else begin
   self.npkts += new.npkts
-  self.data.append, new.data
+  self.data.append, new.data.array
 endelse
-
-
 end
 
 function spp_gen_apdat::info,header=header
@@ -228,9 +226,9 @@ end
 ;PURPOSE:
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-10-22 14:44:54 -0700 (Tue, 22 Oct 2019) $
-; $LastChangedRevision: 27914 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-01-06 15:04:36 -0800 (Mon, 06 Jan 2020) $
+; $LastChangedRevision: 28167 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -246,9 +244,9 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_time_stamp'] = time_string(this_file_date)
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
-  sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2019-10-22 14:44:54 -0700 (Tue, 22 Oct 2019) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 27914 $'
+  sw_hash['svn_changedby '] = '$LastChangedBy: ali $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2020-01-06 15:04:36 -0800 (Mon, 06 Jan 2020) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 28167 $'
 
     return,sw_hash
 end
@@ -290,9 +288,9 @@ function spp_gen_apdat::cdf_global_attributes
   ;  global_att['SW_TIME_STAMP'] =  time_string(systime(1))
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
-  ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2019-10-22 14:44:54 -0700 (Tue, 22 Oct 2019) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 27914 $'
+  ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: ali $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2020-01-06 15:04:36 -0800 (Mon, 06 Jan 2020) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 28167 $'
 
   return,global_att
 end

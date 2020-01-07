@@ -1,3 +1,7 @@
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-01-06 16:23:26 -0800 (Mon, 06 Jan 2020) $
+; $LastChangedRevision: 28170 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_save_reduce_timeres.pro $
 
 pro mvn_save_reduce_timeres,pathformat,trange=trange0,init=init,timestamp=timestamp,verbose=verbose,mag_cluge=mag_cluge,resstr=resstr,resolution=res,description=description
 
@@ -61,13 +65,14 @@ for i=0L,nd-1 do begin
 ;  all_dependents=''
   all_dependents = file_checksum(prereq_files,/add_mtime)
   
+  info=0
   for j=0,n_elements(fullres_files)-1 do begin
      f = fullres_files[j]
      if file_test(/regular,f) eq 0 then continue
      restore,f    ;,/verbose   ; it is presumed that the variables: 'data' and 'dependents' are defined here.
      append_array,alldata,data
      append_array,all_dependents,dependents
-     if j eq 1 then info = header else info=0
+     if j eq 1 then info = header 
   endfor
   
   data = average_hist(alldata,alldata.time,binsize=res,range=tr,stdev=sigma,xbins=centertime)
