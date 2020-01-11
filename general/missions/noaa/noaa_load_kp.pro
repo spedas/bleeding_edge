@@ -17,13 +17,16 @@
 ;    datatype: type of index to load, should be one of the following:
 ;          'kp', 'ap', 'sol_rot_num', 'sol_rot_day', 'kp_sum', 'ap_mean', 
 ;          'cp', 'c9', 'sunspot_number', 'solar_radio_flux', 'flux_qualifier'
+;    gfz: load data from:
+;           ftp://ftp.gfz-potsdam.de/pub/home/obs/kp-ap/wdc/
+;         instead of NOAA
 ;
 ;HISTORY:
 ;     egrimes, 3/20/2018: updated to use spd_download, and download the file from NOAA NGDC
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-08-03 10:03:33 -0700 (Fri, 03 Aug 2018) $
-;$LastChangedRevision: 25566 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2020-01-10 12:19:33 -0800 (Fri, 10 Jan 2020) $
+;$LastChangedRevision: 28184 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/noaa/noaa_load_kp.pro $
 ;-
 
@@ -34,9 +37,10 @@ function kp_return_fraction, value
     return, kp_lhs + kp_rhs/3.
 end
 pro noaa_load_kp, trange = trange, kp_mirror = kp_mirror, remote_kp_dir=remote_kp_dir,$
-                  local_kp_dir = local_kp_dir, datatype = datatype
+                  local_kp_dir = local_kp_dir, datatype = datatype, gfz=gfz
     if ~keyword_set(trange) then get_timespan, trange
     ;if ~keyword_set(kp_mirror) then kp_mirror = 'http://themis-data.igpp.ucla.edu/'
+    if keyword_set(gfz) then kp_mirror = 'ftp://ftp.gfz-potsdam.de/'
     if ~keyword_set(kp_mirror) then kp_mirror = 'ftp://ftp.ngdc.noaa.gov/'
     ; Settings might contain themis-data.igpp.ucla.edu, in that case change it to ftp.ngdc.noaa.gov
     if strmatch(kp_mirror, '*themis-data.igpp.ucla.edu*', /fold_case) then begin
@@ -48,6 +52,7 @@ pro noaa_load_kp, trange = trange, kp_mirror = kp_mirror, remote_kp_dir=remote_k
         else file_prefix = local_kp_dir        
     if STRLEN(file_prefix) gt 0 then if STRMID(file_prefix, STRLEN(file_prefix)-1, 1) ne path_sep() then file_prefix = file_prefix + path_sep()    
     ;if ~keyword_set(remote_kp_dir) then remote_kp_dir = 'thg/mirrors/kp/noaa/'
+    if keyword_set(gfz) then remote_kp_dir = 'pub/home/obs/kp-ap/wdc/'
     if ~keyword_set(remote_kp_dir) then remote_kp_dir = 'STP/GEOMAGNETIC_DATA/INDICES/KP_AP/'
     starttime = time_struct(trange[0])
     endtime = time_struct(trange[1])
@@ -72,7 +77,7 @@ pro noaa_load_kp, trange = trange, kp_mirror = kp_mirror, remote_kp_dir=remote_k
      
     ; loop through years
     for i=0, nyears-1 do begin
-        kpfile = file_prefix+strcompress(years[i],/rem)
+        if keyword_set(gfz) then kpfile = file_prefix+'kp'+strcompress(string(years[i]),/rem)+'.wdc' else kpfile = file_prefix+strcompress(years[i],/rem)
         
         ; try to open the Kp data file
         get_lun, lun
@@ -81,7 +86,8 @@ pro noaa_load_kp, trange = trange, kp_mirror = kp_mirror, remote_kp_dir=remote_k
         ; file doesn't exist locally, download from a mirror
         if (!error_state.name eq 'IDL_M_CNTOPNFIL') then begin
            ; file = file_retrieve(remote_kp_dir+strcompress(string(years[i]),/rem), remote_data_dir=kp_mirror, local_data_dir=file_prefix, /ascii_mode)
-            file = spd_download(remote_file=kp_mirror+remote_kp_dir+strcompress(string(years[i]),/rem), local_path=file_prefix)
+            if keyword_set(gfz) then filename = 'kp'+strcompress(string(years[i]),/rem)+'.wdc' else filename = strcompress(string(years[i]),/rem)
+            file = spd_download(remote_file=kp_mirror+remote_kp_dir+filename, local_path=file_prefix)
             result = file_test(file, /read)
             if result[0] eq 1 then begin
               openr, lun, file
