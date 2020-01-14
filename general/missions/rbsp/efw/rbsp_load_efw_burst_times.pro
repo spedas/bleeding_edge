@@ -23,8 +23,8 @@
 ;
 ; VERSION:
 ;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2018-11-30 07:36:26 -0800 (Fri, 30 Nov 2018) $
-;   $LastChangedRevision: 26189 $
+;   $LastChangedDate: 2020-01-13 10:26:26 -0800 (Mon, 13 Jan 2020) $
+;   $LastChangedRevision: 28188 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_burst_times.pro $
 ;
 ;-
@@ -85,11 +85,17 @@ pro rbsp_load_efw_burst_times,probe=probe,trange=trange, $
 
 	     undefine,lf,tns
 	     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-	     file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+
+
+	     file_loaded = spd_download(remote_file=rbsp_burst.remote_data_dir+relpathnames,$
 	        local_path=!rbsp_efw.local_data_dir+localpath,$
 	        local_file=lf,/last_version)
 	     files = !rbsp_efw.local_data_dir + localpath + lf
 
+;			 file_loaded = spd_download(remote_file=!rbsp_efw.remote_data_dir+relpathnames,$
+;	        local_path=!rbsp_efw.local_data_dir+localpath,$
+;	        local_file=lf,/last_version)
+;	     files = !rbsp_efw.local_data_dir + localpath + lf
 
 
 				nfiles=size(files,/n_elements)
