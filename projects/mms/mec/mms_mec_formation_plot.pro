@@ -55,17 +55,22 @@
 ;       and Kim Kokkonen at LASP
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-12-17 12:23:21 -0800 (Tue, 17 Dec 2019) $
-; $LastChangedRevision: 28120 $
+; $LastChangedDate: 2020-01-14 17:43:09 -0800 (Tue, 14 Jan 2020) $
+; $LastChangedRevision: 28190 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_mec_formation_plot.pro $
 ;-
 
 pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_factor, $
   xy_projection=xy_projection, xz_projection=xz_projection, yz_projection=yz_projection, $
-  coord=coord, lmn=lmn, xyz=xyz, sundir=sundir, independent_axes=independent_axes
+  coord=coord, lmn=lmn, xyz=xyz, sundir=sundir, independent_axes=independent_axes, bfield_center=bfield_center, $
+  fgm_data_rate=fgm_data_rate, fpi_data_rate=fpi_data_rate, dis_center=dis_center, des_center=des_center, $
+  fpi_normalization=fpi_normalization, vector_x=vector_x, vector_y=vector_y, vector_z=vector_z, vector_colors=vector_colors, $
+  bfield_sc=bfield_sc
 
   if undefined(coord) then coord='gse' else coord=strlowcase(coord)
   if undefined(sundir) then sundir = 'right'
+  if undefined(fgm_data_rate) then fgm_data_rate = 'srvy'
+  if undefined(fpi_data_rate) then fpi_data_rate = 'fast'
   
   ; load one minute of position data
   current_time = [time_double(time), time_double(time)+60.]
@@ -86,7 +91,60 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
   if ~is_struct(d1) || ~is_struct(d2) || ~is_struct(d3) || ~is_struct(d4) then begin
     dprint, dlevel = 0, 'Error, couldn''t find the spacecraft position for one or more MMS spacecraft. Try a different time'
     return
-  endif  
+  endif
+  
+  if keyword_set(bfield_center) then begin
+    mms_load_fgm, trange=current_time, probes=[1, 2, 3, 4], varformat='*_b_'+coord+'*', data_rate=fgm_data_rate, /time_clip
+    get_data, 'mms1_fgm_b_'+coord+'_'+fgm_data_rate+'_l2_bvec', data=b1
+    get_data, 'mms2_fgm_b_'+coord+'_'+fgm_data_rate+'_l2_bvec', data=b2
+    get_data, 'mms3_fgm_b_'+coord+'_'+fgm_data_rate+'_l2_bvec', data=b3
+    get_data, 'mms4_fgm_b_'+coord+'_'+fgm_data_rate+'_l2_bvec', data=b4
+    
+    if ~is_struct(b1) || ~is_struct(b2) || ~is_struct(b3) || ~is_struct(b4) then begin
+      dprint, dlevel = 0, 'Error, couldn''t find the magnetic field data for one or more MMS spacecraft. Try a different time'
+      return
+    endif
+    
+    bx_avg = (b1.y[0, 0]+b2.y[0, 0]+b3.y[0, 0]+b4.y[0, 0])/4.0d
+    by_avg = (b1.y[0, 1]+b2.y[0, 1]+b3.y[0, 1]+b4.y[0, 1])/4.0d
+    bz_avg = (b1.y[0, 2]+b2.y[0, 2]+b3.y[0, 2]+b4.y[0, 2])/4.0d
+  endif
+  
+  if keyword_set(dis_center) then append_array, fpi_datatypes, 'dis-moms'
+  if keyword_set(des_center) then append_array, fpi_datatypes, 'des-moms'
+  
+  if ~undefined(fpi_datatypes) then begin
+     mms_load_fpi, trange=current_time, probes=[1, 2, 3, 4], datatype=fpi_datatypes, data_rate=fpi_data_rate, /time_clip, varformat='*_d?s_bulkv_'+coord+'*'
+     
+     if keyword_set(dis_center) then begin
+       get_data, 'mms1_dis_bulkv_'+coord+'_'+fpi_data_rate, data=dis_v1
+       get_data, 'mms2_dis_bulkv_'+coord+'_'+fpi_data_rate, data=dis_v2
+       get_data, 'mms3_dis_bulkv_'+coord+'_'+fpi_data_rate, data=dis_v3
+       get_data, 'mms4_dis_bulkv_'+coord+'_'+fpi_data_rate, data=dis_v4
+       
+       if ~is_struct(dis_v1) || ~is_struct(dis_v2) || ~is_struct(dis_v3) || ~is_struct(dis_v4) then begin
+         dprint, dlevel = 0, 'Error, couldn''t find the DIS data for one or more MMS spacecraft. Try a different time'
+         return
+       endif
+       dis_vx = (dis_v1.y[0, 0]+dis_v2.y[0, 0]+dis_v3.y[0, 0]+dis_v4.y[0, 0])/4.0d
+       dis_vy = (dis_v1.y[0, 1]+dis_v2.y[0, 1]+dis_v3.y[0, 1]+dis_v4.y[0, 1])/4.0d
+       dis_vz = (dis_v1.y[0, 2]+dis_v2.y[0, 2]+dis_v3.y[0, 2]+dis_v4.y[0, 2])/4.0d
+     endif
+     if keyword_set(des_center) then begin
+       get_data, 'mms1_des_bulkv_'+coord+'_'+fpi_data_rate, data=des_v1
+       get_data, 'mms2_des_bulkv_'+coord+'_'+fpi_data_rate, data=des_v2
+       get_data, 'mms3_des_bulkv_'+coord+'_'+fpi_data_rate, data=des_v3
+       get_data, 'mms4_des_bulkv_'+coord+'_'+fpi_data_rate, data=des_v4
+
+       if ~is_struct(des_v1) || ~is_struct(des_v2) || ~is_struct(des_v3) || ~is_struct(des_v4) then begin
+         dprint, dlevel = 0, 'Error, couldn''t find the DES data for one or more MMS spacecraft. Try a different time'
+         return
+       endif
+       des_vx = (des_v1.y[0, 0]+des_v2.y[0, 0]+des_v3.y[0, 0]+des_v4.y[0, 0])/4.0d
+       des_vy = (des_v1.y[0, 1]+des_v2.y[0, 1]+des_v3.y[0, 1]+des_v4.y[0, 1])/4.0d
+       des_vz = (des_v1.y[0, 2]+des_v2.y[0, 2]+des_v3.y[0, 2]+des_v4.y[0, 2])/4.0d
+     endif
+  endif
 
   if not undefined(lmn) then xyz=lmn
 
@@ -157,6 +215,8 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
       light=1
     endelse
   endelse
+  
+  if undefined(fpi_normalization) then fpi_normalization = max(abs([xrange, yrange, zrange]))
 
   ; edges between vertices
   xes1 = [xes[0], xes[1], xes[2], xes[3], xes[0], xes[3], xes[1], xes[0], xes[2]]
@@ -172,12 +232,12 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
     p = plot3d(xes1, yes1, zes1, thick=2, color='dim grey', $
       axis_style=2, xtitle='X, km', ytitle='Y, km', ztitle='Z, km', $
       xrange=xrange, yrange=yrange, zrange=zrange, $
-      perspective=perspective, margin=margin)
+      perspective=perspective, margin=margin, hide=~undefined(no_edges))
   endif else begin
     p = plot3d(xes1, yes1, zes1, thick=2, color='dim grey', $
       axis_style=2, xtitle='N, km', ytitle='M, km', ztitle='L, km', $
       xrange=xrange, yrange=yrange, zrange=zrange, $
-      perspective=perspective, margin=margin)
+      perspective=perspective, margin=margin, hide=~undefined(no_edges))
   endelse
 
   plot2 = plot3d(xes, yes, zes, linestyle='none', color='black', sym_object = orb(lighting=light), $
@@ -251,4 +311,44 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
   endelse
   t1 = text(0.5, yl+0.025, 'Origin at MMS centroid', font_size=8, font_color='black')
   
+  if ~undefined(bx_avg) && ~undefined(by_avg) && ~undefined(bz_avg) then begin
+    bplot3d = plot3d([0, bx_avg], [0, by_avg], [0, bz_avg], /overplot, color=[255, 0, 0])
+  endif
+  
+  if ~undefined(dis_vx) && ~undefined(dis_vy) && ~undefined(dis_vz) then begin
+    dis_vals = [dis_vx, dis_vy, dis_vz]
+    dis_vals_norm = dis_vals*fpi_normalization/sqrt(dis_vals[0]^2+dis_vals[1]^2+dis_vals[2]^2)
+    displot3d = plot3d([0, dis_vals_norm[0]], [0, dis_vals_norm[0]], [0, dis_vals_norm[0]], /overplot, color=[0, 255, 0])
+  endif
+  
+  if ~undefined(des_vx) && ~undefined(des_vy) && ~undefined(des_vz) then begin
+    des_vals = [des_vx, des_vy, des_vz]
+    des_vals_norm = des_vals*fpi_normalization/sqrt(des_vals[0]^2+des_vals[1]^2+des_vals[2]^2)
+    desplot3d = plot3d([0, des_vals_norm[0]], [0, des_vals_norm[1]], [0, des_vals_norm[2]], /overplot, color=[0, 0, 255])
+  endif
+  
+  if ~undefined(vector_x) && ~undefined(vector_y) && ~undefined(vector_z) then begin
+    for vector_id=0, n_elements(vector_x[0, *])-1 do begin
+      if undefined(vector_colors) then color=[0, 0, 0] else color=vector_colors[*, vector_id]
+      userplot3d = plot3d(vector_x[*, vector_id], vector_y[*, vector_id], vector_z[*, vector_id], /overplot, color=[0, 0, 0])
+    endfor
+  endif
+
+  if ~undefined(bfield_sc) then begin
+    mms_load_fgm, trange=current_time, probes=[1, 2, 3, 4], /time_clip, data_rate=fgm_data_rate, varformat='*_b_'+coord+'*'
+    get_data, 'mms1_fgm_b_'+coord+'_srvy_l2_bvec', data=b1
+    get_data, 'mms2_fgm_b_'+coord+'_srvy_l2_bvec', data=b2
+    get_data, 'mms3_fgm_b_'+coord+'_srvy_l2_bvec', data=b3
+    get_data, 'mms4_fgm_b_'+coord+'_srvy_l2_bvec', data=b4
+    
+    bf1 = reform(b1.y[0, *])
+    bf2 = reform(b2.y[0, *])
+    bf3 = reform(b3.y[0, *])
+    bf4 = reform(b4.y[0, *])
+    
+    b1plot3d = plot3d([xes[0], xes[0]+bf1[0]], [yes[0], yes[0]+bf1[1]], [zes[0], zes[0]+bf1[2]], /overplot, color=[255, 0, 0])
+    b2plot3d = plot3d([xes[1], xes[1]+bf2[0]], [yes[1], yes[1]+bf2[1]], [zes[1], zes[1]+bf2[2]], /overplot, color=[255, 0, 0])
+    b3plot3d = plot3d([xes[2], xes[2]+bf3[0]], [yes[2], yes[2]+bf3[1]], [zes[2], zes[2]+bf3[2]], /overplot, color=[255, 0, 0])
+    b4plot3d = plot3d([xes[3], xes[3]+bf4[0]], [yes[3], yes[3]+bf4[1]], [zes[3], zes[3]+bf4[2]], /overplot, color=[255, 0, 0])
+  endif
 end
