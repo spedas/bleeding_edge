@@ -16,9 +16,9 @@
 ; CREATED BY:
 ;       Yuki Harada on 2015-07-13
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-04-10 10:43:30 -0700 (Wed, 10 Apr 2019) $
-; $LastChangedRevision: 26991 $
+; $LastChangedBy: haraday $
+; $LastChangedDate: 2020-01-15 17:13:48 -0800 (Wed, 15 Jan 2020) $
+; $LastChangedRevision: 28192 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/ngi/mvn_ngi_remote_list.pro $
 ;-
 
@@ -65,12 +65,12 @@ function mvn_ngi_remote_list, trange=trange, filetype=filetype, verbose=verbose,
   w = where( strlen(f) gt 0 , nw )
   if nw eq 0 then files = '' else files = f[w]
 
-  vidx = strpos(f,'_v')
+  vidx = strpos(f,'_v',/reverse_search) ;- search _v?? from the end of the filename
   w = where( vidx ne -1 , nw )
   if nw gt 0 then version = string(max(fix(strmid(f[w],vidx[w]+2,2))),f='(i2.2)') else version='' ;- latest version
   w = where( strmatch(f,'*_v'+version+'*') , nw )
   if nw gt 0 then f = f[w]      ;- only latest version files
-  ridx = strpos(f,'_r')
+  ridx = strpos(f,'_r',/reverse_search) ;- search _r?? from the end of the filename
   w = where( ridx ne -1 , nw )
   if nw gt 0 then revision = string(max(fix(strmid(f[w],ridx[w]+2,2))),f='(i2.2)') else revision='' ;- latest revision
 
