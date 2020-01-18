@@ -25,8 +25,10 @@
 ;CREATED BY:   Laila Andersson  06-01-11
 ;FILE: mvn_lpw_r_header_l0.pro
 ;VERSION:   2.0
-;LAST MODIFICATION:   140718 L. Andersson
-;FIs so that HSBM packets can be read
+;VERSION:   2.0
+;LAST MODIFICATION:  2019-12-30  L. Andersson
+;2019-12-30 bad sc clock is removed but was time limeted to ~jan 2020, this is now expanded on 
+;140718 FIs so that HSBM packets can be read
 ;Added the correction features for the 0.5 SC clock gitter  (C Fowler)
 ;Added a additional feature to find the packets using the SC variable (L. Andersson)
 ;;140718 clean up for check out L. Andersson
@@ -178,13 +180,12 @@ pro mvn_lpw_r_header_l0, filename,output,packet=packet
     t1=systime(1,/seconds)
 
 
-
     ;  ;--------------------------------------------------------------------
     ;  ; there has been incorrect timestamps found
     ;  ;remove the extreme from the array by removing them in the APID array
     ;
     time_sc          = double(SC_CLK1) + SC_CLK2/2l^16
-    tmp              = where( (time_sc GT 3.8e8 and time_sc LT 6.3e8) EQ 0,nq)  ; after ~jan 2012 while before ~jan 2020 based on zero is Jan 2000 (t_epoch)
+    tmp              = where( (time_sc GT 3.8e8 and time_sc LT 6.3e8*2) EQ 0,nq)  ; after ~jan 2012 while before ~jan 2020 based on zero is Jan 2000 (t_epoch)
     if nq GT 0 then APID[tmp] = 0   ; remove these packets
     ;--------------------------------------------------------------------
 
