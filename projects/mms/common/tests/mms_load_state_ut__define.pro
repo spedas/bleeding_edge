@@ -7,8 +7,8 @@
 ;     
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
-; $LastChangedRevision: 24128 $
+; $LastChangedDate: 2020-01-22 15:01:05 -0800 (Wed, 22 Jan 2020) $
+; $LastChangedRevision: 28212 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_state_ut__define.pro $
 ;-
 
@@ -32,7 +32,7 @@ function mms_load_state_ut::test_orbit_plots
     ; download the latest orbits plot
     orbitplot = spd_download(remote_file = 'http://themis.ssl.berkeley.edu/themisdata/thg/l0/asi/'+time_string(systime(1)-2*86400., tformat='YYYY/MM')+'/orbit_multi_mission_'+time_string(systime(1)-2*86400., tformat='YYYY-MM-DD')+'_0024.gif')
     read_gif, orbitplot[0], orbitimage, r, g, b
-    wherenot255 = where(orbitimage[400:600, 400:500] ne 255) ; should be the part of the plot with the MMS labels
+    wherenot255 = where(orbitimage[400:600, 530:630] ne 255) ; should be the part of the plot with the MMS labels
     ; check if the space where the MMS labels are supposed to be are all white (if so, the MMS labels aren't there)
     assert, is_array(wherenot255), 'Problem with orbit plots?'
     return, 1
