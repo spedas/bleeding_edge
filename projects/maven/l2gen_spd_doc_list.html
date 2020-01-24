@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Jan 22 18:16:05 2020.<P>
+<STRONG>Last modified: </STRONG>Thu Jan 23 18:16:01 2020.<P>
  
 <HR>
  
@@ -305,11 +305,16 @@ KEYWORDS:
  no_reset_time = if set, then don't reset the time in 
                  most_recent_l0_processed.txt (useful for repocessing
                  data without affecting the cron job)
+ max_l0_files = This is the maximum number of L0 files that can be
+                processed, the deault is 30. This is a fail-safe to
+                avoid mass reprocessing of data, if a bunch of file
+                ctime values are inadvertently changed. If more files
+                than this limit are tried, an error email will be sent.
 HISTORY:
 Hacked from mvn_call_sta_l2gen, 17-Apr-2014, jmm
- $LastChangedBy: jimm $
- $LastChangedDate: 2018-11-13 10:14:27 -0800 (Tue, 13 Nov 2018) $
- $LastChangedRevision: 26109 $
+ $LastChangedBy: jimmpc1 $
+ $LastChangedDate: 2020-01-23 16:37:04 -0800 (Thu, 23 Jan 2020) $
+ $LastChangedRevision: 28220 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_call_swe_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2gen/mvn_call_swe_l2gen.pro">projects/maven/l2gen/mvn_call_swe_l2gen.pro</A>)</STRONG><P>

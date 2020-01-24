@@ -9,9 +9,9 @@ mms*_fpi_ion_vel_dbcs
 mms*_fpi_elec_vel_dbcs
 mms*_fpi_ions             
 mms*_fpi_electrons     
-mms*_fpi_epad_lowen_fast  
-mms*_fpi_epad_miden_fast  
-mms*_fpi_epad_highen_fast 
+mms*_fpi_epad_lowen_fast ; .... low-energy, 4 - 20 eV
+mms*_fpi_epad_miden_fast  ; ... mid-energy, 24 - 112 eV
+mms*_fpi_epad_highen_fast  ; ... high-energy, 132.8 - 868 eV
         
     
          

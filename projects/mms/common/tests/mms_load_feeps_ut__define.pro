@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_feeps_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-05-28 08:38:07 -0700 (Tue, 28 May 2019) $
-; $LastChangedRevision: 27297 $
+; $LastChangedDate: 2020-01-23 11:33:28 -0800 (Thu, 23 Jan 2020) $
+; $LastChangedRevision: 28213 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_feeps_ut__define.pro $
 ;-
 
@@ -224,26 +224,27 @@ end
 ;  return, 1
 ;end
 
-function mms_load_feeps_ut::test_bad_lower_channels_brst_l1b
-  mms_load_feeps, data_rate='brst', probes=[1, 2, 3, 4], level='l1b'
-  ; MMS1: Bottom Eyes: 2, 3, 4, 5, 9, 11, 12
-  get_data, 'mms1_epd_feeps_brst_l1b_electron_bottom_intensity_sensorid_2_clean_sun_removed', data=d
-  assert, ~finite(d.Y[101, 0]), 'Problem removing bad lower energy channels! (L1b)'
-
-  ; MMS2: Bottom Eyes: 1, 2, 3, 4, 5, 9, 10, 11, 12
-  get_data, 'mms2_epd_feeps_brst_l1b_electron_bottom_intensity_sensorid_4_clean_sun_removed', data=d
-  assert, ~finite(d.Y[101, 0]), 'Problem removing bad lower energy channels! (L1b)'
-
-  ; MMS3: Bottom Eyes: 1, 9, 10, 11
-  get_data, 'mms3_epd_feeps_brst_l1b_electron_bottom_intensity_sensorid_9_clean_sun_removed', data=d
-  assert, ~finite(d.Y[101, 0]), 'Problem removing bad lower energy channels! (L1b)'
-
-  ; MMS4: Bottom Eyes: 1, 3, 9, 12
-  get_data, 'mms4_epd_feeps_brst_l1b_electron_bottom_intensity_sensorid_3_clean_sun_removed', data=d
-  assert, ~finite(d.Y[101, 0]), 'Problem removing bad lower energy channels! (L1b)'
-
-  return, 1
-end
+;; regression test disabled, 23Jan20, due to data missing at the SDC
+;function mms_load_feeps_ut::test_bad_lower_channels_brst_l1b
+;  mms_load_feeps, data_rate='brst', probes=[1, 2, 3, 4], level='l1b'
+;  ; MMS1: Bottom Eyes: 2, 3, 4, 5, 9, 11, 12
+;  get_data, 'mms1_epd_feeps_brst_l1b_electron_bottom_intensity_sensorid_2_clean_sun_removed', data=d
+;  assert, ~finite(d.Y[101, 0]), 'Problem removing bad lower energy channels! (L1b)'
+;
+;  ; MMS2: Bottom Eyes: 1, 2, 3, 4, 5, 9, 10, 11, 12
+;  get_data, 'mms2_epd_feeps_brst_l1b_electron_bottom_intensity_sensorid_4_clean_sun_removed', data=d
+;  assert, ~finite(d.Y[101, 0]), 'Problem removing bad lower energy channels! (L1b)'
+;
+;  ; MMS3: Bottom Eyes: 1, 9, 10, 11
+;  get_data, 'mms3_epd_feeps_brst_l1b_electron_bottom_intensity_sensorid_9_clean_sun_removed', data=d
+;  assert, ~finite(d.Y[101, 0]), 'Problem removing bad lower energy channels! (L1b)'
+;
+;  ; MMS4: Bottom Eyes: 1, 3, 9, 12
+;  get_data, 'mms4_epd_feeps_brst_l1b_electron_bottom_intensity_sensorid_3_clean_sun_removed', data=d
+;  assert, ~finite(d.Y[101, 0]), 'Problem removing bad lower energy channels! (L1b)'
+;
+;  return, 1
+;end
 
 function mms_load_feeps_ut::test_bad_lower_channels_srvy_sitl
   mms_load_feeps, probes=[1, 2, 3, 4], level='sitl', trange=['2016-11-01', '2016-11-02']
@@ -598,24 +599,25 @@ function mms_load_feeps_ut::test_load_l1b_ion
   return, 1
 end
 
-function mms_load_feeps_ut::test_load_l1b_pad
-  del_data, '*'
-  mms_load_feeps, level='l1b', data_rate='Brst'
-  mms_feeps_pad, level='l1B', data_rate='Brst'
-  assert, spd_data_exists('mms1_epd_feeps_brst_l1b_electron_intensity_70-600keV_pad_spin mms1_epd_feeps_brst_l1b_electron_intensity_70-600keV_pad', '2015-12-15', '2015-12-16'), $
-    'Problem loading burst mode FEEPS PAD for L1b data'
-  return, 1
-end
+;; regression test disabled, 23Jan20, due to data missing at the SDC
+;function mms_load_feeps_ut::test_load_l1b_pad
+;  del_data, '*'
+;  mms_load_feeps, level='l1b', data_rate='Brst'
+;  mms_feeps_pad, level='l1B', data_rate='Brst'
+;  assert, spd_data_exists('mms1_epd_feeps_brst_l1b_electron_intensity_70-600keV_pad_spin mms1_epd_feeps_brst_l1b_electron_intensity_70-600keV_pad', '2015-12-15', '2015-12-16'), $
+;    'Problem loading burst mode FEEPS PAD for L1b data'
+;  return, 1
+;end
 
-function mms_load_feeps_ut::test_load_l1b_pad_ion
-  del_data, '*'
-  mms_load_feeps, level='l1b', data_rate='Brst', datatype='Ion'
-  mms_feeps_pad, level='l1B', data_rate='Brst', datatype='Ion'
-  
-  assert, spd_data_exists('mms1_epd_feeps_brst_l1b_ion_intensity_omni_spin mms1_epd_feeps_brst_l1b_ion_intensity_omni', '2015-12-15', '2015-12-16'), $
-    'Problem loading burst mode FEEPS PAD for L1b data'
-  return, 1
-end
+;function mms_load_feeps_ut::test_load_l1b_pad_ion
+;  del_data, '*'
+;  mms_load_feeps, level='l1b', data_rate='Brst', datatype='Ion'
+;  mms_feeps_pad, level='l1B', data_rate='Brst', datatype='Ion'
+;  
+;  assert, spd_data_exists('mms1_epd_feeps_brst_l1b_ion_intensity_omni_spin mms1_epd_feeps_brst_l1b_ion_intensity_omni', '2015-12-15', '2015-12-16'), $
+;    'Problem loading burst mode FEEPS PAD for L1b data'
+;  return, 1
+;end
 
 function mms_load_feeps_ut::test_load_suffix_pad
   del_data, '*'

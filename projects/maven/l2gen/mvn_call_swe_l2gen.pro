@@ -35,11 +35,16 @@
 ; no_reset_time = if set, then don't reset the time in 
 ;                 most_recent_l0_processed.txt (useful for repocessing
 ;                 data without affecting the cron job)
+; max_l0_files = This is the maximum number of L0 files that can be
+;                processed, the deault is 30. This is a fail-safe to
+;                avoid mass reprocessing of data, if a bunch of file
+;                ctime values are inadvertently changed. If more files
+;                than this limit are tried, an error email will be sent.
 ;HISTORY:
 ;Hacked from mvn_call_sta_l2gen, 17-Apr-2014, jmm
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2018-11-13 10:14:27 -0800 (Tue, 13 Nov 2018) $
-; $LastChangedRevision: 26109 $
+; $LastChangedBy: jimmpc1 $
+; $LastChangedDate: 2020-01-23 16:37:04 -0800 (Thu, 23 Jan 2020) $
+; $LastChangedRevision: 28220 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_call_swe_l2gen.pro $
 ;-
 Pro mvn_call_swe_l2gen, time_in = time_in, $
@@ -49,6 +54,7 @@ Pro mvn_call_swe_l2gen, time_in = time_in, $
                         search_time_range = search_time_range, $
                         days_in = days_in, $
                         l2only = l2only, $
+                        max_l0_files = max_l0_files, $
                         no_reset_time = no_reset_time, $
                         _extra = _extra
   
@@ -64,6 +70,9 @@ Pro mvn_call_swe_l2gen, time_in = time_in, $
   
   einit = 0
   catch, error_status
+;Do not process more than maxfiles L0 files
+  If(keyword_set(max_l0_files)) Then maxfiles = max_l0_files $
+  Else maxfiles = 30
 ;create a random number for emails
   Ff_ext = strcompress(/remove_all, string(long(100000.0*randomu(seed))))
   if error_status ne 0 then begin
@@ -146,8 +155,8 @@ Pro mvn_call_swe_l2gen, time_in = time_in, $
            Else: instr_dir = instrk
         Endcase
 ;Set up check directories, l0 is first
-;        sdir = '/disks/data/maven/data/sci/pfp/l0_all/*/*/mvn_pfp_all_l0_*.dat'
-        sdir = '/disks/data/maven/data/sci/pfp/l0/mvn_pfp_all_l0_*.dat'
+        sdir = '/disks/data/maven/data/sci/pfp/l0_all/*/*/mvn_pfp_all_l0_*.dat'
+;        sdir = '/disks/data/maven/data/sci/pfp/l0/mvn_pfp_all_l0_*.dat'
         pfile = file_search(sdir)
         If(keyword_set(use_file4time)) Then Begin
  ;Get the file date
@@ -173,6 +182,10 @@ Pro mvn_call_swe_l2gen, time_in = time_in, $
         Endif Else Begin
            proc_file = where(test_time GT btime, nproc)
         Endelse
+        If(nproc Gt maxfiles) Then Begin
+           dprint, 'Too many files > '+string(maxfiles)
+           message, 'Too many files to process > '+string(maxfiles)
+        Endif
         If(nproc Gt 0) Then Begin
 ;Get the file date
            timep = file_basename(pfile[proc_file])
