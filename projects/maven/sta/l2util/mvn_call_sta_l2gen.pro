@@ -33,9 +33,9 @@
 ;                than this limit are tried, an error email will be sent.
 ;HISTORY:
 ;Hacked from thm_all_l1l2_gen, 17-Apr-2014, jmm
-; $LastChangedBy: jimmpc1 $
-; $LastChangedDate: 2020-01-23 16:37:04 -0800 (Thu, 23 Jan 2020) $
-; $LastChangedRevision: 28220 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2020-01-24 09:13:20 -0800 (Fri, 24 Jan 2020) $
+; $LastChangedRevision: 28228 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_call_sta_l2gen.pro $
 ;-
 Pro mvn_call_sta_l2gen, time_in = time_in, $
@@ -156,7 +156,12 @@ Pro mvn_call_sta_l2gen, time_in = time_in, $
            test_time = time_double(time_string(temporary(timep), /date_only))
         Endif Else Begin
            finfo = file_info(pfile)
+;"fix" for full mission touch of Jan-23-2020, jmm
            test_time = finfo.ctime ;changed from mtime, jmm, 2016-07-20
+           touched = where(finfo.ctime Lt time_double('2020-01-23/22:00:00'), ntouched)
+           If(ntouched Gt 0) Then Begin
+              test_time[touched] = finfo[touched].mtime
+           Endif
         Endelse
         If(keyword_set(search_time_range)) Then Begin
            atime_test = test_time GT time_double(search_time_range[0])

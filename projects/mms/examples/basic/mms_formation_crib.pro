@@ -9,8 +9,8 @@
 ;   please send them to egrimes@igpp.ucla.edu
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-05-26 08:08:50 -0700 (Thu, 26 May 2016) $
-; $LastChangedRevision: 21217 $
+; $LastChangedDate: 2020-01-24 10:38:53 -0800 (Fri, 24 Jan 2020) $
+; $LastChangedRevision: 28232 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_formation_crib.pro $
 ;-
 
@@ -19,21 +19,40 @@ time = '2015-10-16/13:07'
 
 ; without XY-plane projections
 mms_mec_formation_plot, time
-
 stop
 
 ; with the XY projections
 mms_mec_formation_plot, time, /xy_projection
-
 stop
 
 ; with XY projections and the tetrahedron quality factor
 mms_mec_formation_plot, time, /xy_projection, /quality
-
 stop
 
 ; use a different coordinate system
 mms_mec_formation_plot, time, coord='gsm'
+stop
+
+; plot the average B-field in the center of the plot (average of all 4 spacecraft)
+mms_mec_formation_plot, '2016-1-08/2:36', /bfield_center
+stop
+
+; plot the average DIS and DES bulk velocities in the center of the plot (averages of all 4 spacecraft)
+mms_mec_formation_plot, '2016-1-08/2:36', /dis_center, /des_center
+stop
+
+; include a user-specified vector on the plot
+mms_mec_formation_plot, '2016-1-08/2:36', vector_x=[0, 1], vector_y=[0, 1], vector_z=[0, 5]
+stop
+
+; include multiple user-specified vectors on the plot
+mms_mec_formation_plot, '2016-1-08/2:36', vector_x=[[0, 1], [0, 7]], vector_y=[[0, 1], [0, 1]], vector_z=[[0, 5], [0, 1]], $
+  vector_colors=[[255, 0, 0], [0, 0, 255]] ; note: by default, the colors are black; to change the colors, set the vector_colors keyword (RGB)
+stop
+
+; include a user-specified vector on the plot with projections
+mms_mec_formation_plot, '2016-1-08/2:36', vector_x=[0, 1], vector_y=[0, 1], vector_z=[0, 5], /projection, vector_colors=[255, 0, 0]
+stop
 
 end
 

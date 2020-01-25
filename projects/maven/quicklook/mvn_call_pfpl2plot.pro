@@ -31,9 +31,9 @@
 ;HISTORY:
 ;Hacked from mvn_call_sta_l2gen.pro 2015-06-02, jmm
 ;Added call to mvn_pfpl2_longplot, 2019-12-10, jmm
-; $LastChangedBy: muser $
-; $LastChangedDate: 2019-12-10 16:10:20 -0800 (Tue, 10 Dec 2019) $
-; $LastChangedRevision: 28107 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2020-01-24 12:38:49 -0800 (Fri, 24 Jan 2020) $
+; $LastChangedRevision: 28237 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_call_pfpl2plot.pro $
 ;-
 Pro mvn_call_pfpl2plot, time_in = time_in, $
@@ -113,8 +113,11 @@ Pro mvn_call_pfpl2plot, time_in = time_in, $
         dprint, 'bad input time?'
         Return
      Endif
-  Endif Else btime = systime(/sec)-88410.0d0 ;shouldn't be needed
-     
+  Endif Else Begin ;ANother fix for files touched, 2020-01-24, jmm
+     btime = systime(/sec)-88410.0d0 ;shouldn't be needed
+     btime = btime > time_double('2020-01-23/22:00:00')
+  Endelse
+  
 ;For each instrument
   For k = 0, ninstr-1 Do Begin
      load_position = 'instrument'

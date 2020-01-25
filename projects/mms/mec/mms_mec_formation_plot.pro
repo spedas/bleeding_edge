@@ -55,8 +55,8 @@
 ;       and Kim Kokkonen at LASP
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-01-14 17:43:09 -0800 (Tue, 14 Jan 2020) $
-; $LastChangedRevision: 28190 $
+; $LastChangedDate: 2020-01-24 13:21:30 -0800 (Fri, 24 Jan 2020) $
+; $LastChangedRevision: 28239 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_mec_formation_plot.pro $
 ;-
 
@@ -65,12 +65,16 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
   coord=coord, lmn=lmn, xyz=xyz, sundir=sundir, independent_axes=independent_axes, bfield_center=bfield_center, $
   fgm_data_rate=fgm_data_rate, fpi_data_rate=fpi_data_rate, dis_center=dis_center, des_center=des_center, $
   fpi_normalization=fpi_normalization, vector_x=vector_x, vector_y=vector_y, vector_z=vector_z, vector_colors=vector_colors, $
-  bfield_sc=bfield_sc
+  bfield_sc=bfield_sc, bfield_color=bfield_color, dis_color=dis_color, des_color=des_color, sc_size=sc_size
 
   if undefined(coord) then coord='gse' else coord=strlowcase(coord)
   if undefined(sundir) then sundir = 'right'
   if undefined(fgm_data_rate) then fgm_data_rate = 'srvy'
   if undefined(fpi_data_rate) then fpi_data_rate = 'fast'
+  if undefined(bfield_color) then bfield_color = [255, 0, 0] ; red
+  if undefined(dis_color) then dis_color = [0, 255, 0] ; green
+  if undefined(des_color) then des_color = [0, 0, 255] ; blue
+  if undefined(sc_size) then sc_size = 3
   
   ; load one minute of position data
   current_time = [time_double(time), time_double(time)+60.]
@@ -241,7 +245,7 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
   endelse
 
   plot2 = plot3d(xes, yes, zes, linestyle='none', color='black', sym_object = orb(lighting=light), $
-    sym_size=3, /sym_filled, vert_colors=spacecraft_colors, perspective=1, $
+    sym_size=sc_size, /sym_filled, vert_colors=spacecraft_colors, perspective=1, $
     margin=margin, /overplot)
 
   ; draw spacecraft projections
@@ -250,21 +254,21 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
   if keyword_set(xy_projection) || keyword_set(projection) then begin
       z_projection = make_array(4, value=zrange[0])
       plot3z = plot3d(xes, yes, z_projection, sym_object=orb(lighting=0), linestyle='none', $
-        sym_size=2, /sym_filled, sym_transparency=sym_transparency, vert_colors=spacecraft_colors, $
+        sym_size=sc_size, /sym_filled, sym_transparency=sym_transparency, vert_colors=spacecraft_colors, $
         /overplot, perspective=perspective, margin=margin)
   endif
 
   if keyword_set(xz_projection) || keyword_set(projection) then begin
       y_projection = make_array(4, value=yrange[1])
       plot3y = plot3d(xes, y_projection, zes, sym_object=orb(lighting=0), linestyle='none', $
-        sym_size=2, /sym_filled, sym_transparency=sym_transparency, vert_colors=spacecraft_colors, $
+        sym_size=sc_size, /sym_filled, sym_transparency=sym_transparency, vert_colors=spacecraft_colors, $
         /overplot, perspective=perspective, margin=margin)
   endif
   
   if keyword_set(yz_projection) || keyword_set(projection) then begin
       x_projection = make_array(4, value=xrange[1])
       plot3x = plot3d(x_projection, yes, zes, sym_object=orb(lighting=0), linestyle='none', $
-        sym_size=3, /sym_filled, sym_transparency=sym_transparency, vert_colors=spacecraft_colors, $
+        sym_size=sc_size, /sym_filled, sym_transparency=sym_transparency, vert_colors=spacecraft_colors, $
         /overplot, perspective=perspective, margin=margin)
   endif
 
@@ -312,43 +316,80 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
   t1 = text(0.5, yl+0.025, 'Origin at MMS centroid', font_size=8, font_color='black')
   
   if ~undefined(bx_avg) && ~undefined(by_avg) && ~undefined(bz_avg) then begin
-    bplot3d = plot3d([0, bx_avg], [0, by_avg], [0, bz_avg], /overplot, color=[255, 0, 0])
+    bplot3d = plot3d([0, bx_avg], [0, by_avg], [0, bz_avg], /overplot, color=bfield_color)
   endif
   
   if ~undefined(dis_vx) && ~undefined(dis_vy) && ~undefined(dis_vz) then begin
     dis_vals = [dis_vx, dis_vy, dis_vz]
     dis_vals_norm = dis_vals*fpi_normalization/sqrt(dis_vals[0]^2+dis_vals[1]^2+dis_vals[2]^2)
-    displot3d = plot3d([0, dis_vals_norm[0]], [0, dis_vals_norm[0]], [0, dis_vals_norm[0]], /overplot, color=[0, 255, 0])
+    displot3d = plot3d([0, dis_vals_norm[0]], [0, dis_vals_norm[0]], [0, dis_vals_norm[0]], /overplot, color=dis_color)
   endif
   
   if ~undefined(des_vx) && ~undefined(des_vy) && ~undefined(des_vz) then begin
     des_vals = [des_vx, des_vy, des_vz]
     des_vals_norm = des_vals*fpi_normalization/sqrt(des_vals[0]^2+des_vals[1]^2+des_vals[2]^2)
-    desplot3d = plot3d([0, des_vals_norm[0]], [0, des_vals_norm[1]], [0, des_vals_norm[2]], /overplot, color=[0, 0, 255])
+    desplot3d = plot3d([0, des_vals_norm[0]], [0, des_vals_norm[1]], [0, des_vals_norm[2]], /overplot, color=des_color)
   endif
   
+  ; plot user-specified vectors
   if ~undefined(vector_x) && ~undefined(vector_y) && ~undefined(vector_z) then begin
     for vector_id=0, n_elements(vector_x[0, *])-1 do begin
       if undefined(vector_colors) then color=[0, 0, 0] else color=vector_colors[*, vector_id]
-      userplot3d = plot3d(vector_x[*, vector_id], vector_y[*, vector_id], vector_z[*, vector_id], /overplot, color=[0, 0, 0])
+      userplot3d = plot3d(vector_x[*, vector_id], vector_y[*, vector_id], vector_z[*, vector_id], /overplot, color=color)
+      
+      ; also plot projections
+      if keyword_set(xy_projection) || keyword_set(projection) then begin
+        plot3z = plot3d(vector_x[*, vector_id], vector_y[*, vector_id], z_projection,  color=color, $
+          /overplot, perspective=perspective, margin=margin)
+      endif
+      if keyword_set(xz_projection) || keyword_set(projection) then begin
+        plot3y = plot3d(vector_x[*, vector_id], y_projection, vector_z[*, vector_id], color=color, $
+          /overplot, perspective=perspective, margin=margin)
+      endif
+      
+      if keyword_set(yz_projection) || keyword_set(projection) then begin
+        plot3x = plot3d(x_projection,  vector_y[*, vector_id], vector_z[*, vector_id], color=color, $
+          /overplot, perspective=perspective, margin=margin)
+      endif
     endfor
   endif
 
   if ~undefined(bfield_sc) then begin
     mms_load_fgm, trange=current_time, probes=[1, 2, 3, 4], /time_clip, data_rate=fgm_data_rate, varformat='*_b_'+coord+'*'
-    get_data, 'mms1_fgm_b_'+coord+'_srvy_l2_bvec', data=b1
-    get_data, 'mms2_fgm_b_'+coord+'_srvy_l2_bvec', data=b2
-    get_data, 'mms3_fgm_b_'+coord+'_srvy_l2_bvec', data=b3
-    get_data, 'mms4_fgm_b_'+coord+'_srvy_l2_bvec', data=b4
+    get_data, 'mms1_fgm_b_'+coord+'_'+fgm_data_rate+'_l2_bvec', data=b1
+    get_data, 'mms2_fgm_b_'+coord+'_'+fgm_data_rate+'_l2_bvec', data=b2
+    get_data, 'mms3_fgm_b_'+coord+'_'+fgm_data_rate+'_l2_bvec', data=b3
+    get_data, 'mms4_fgm_b_'+coord+'_'+fgm_data_rate+'_l2_bvec', data=b4
     
-    bf1 = reform(b1.y[0, *])
-    bf2 = reform(b2.y[0, *])
-    bf3 = reform(b3.y[0, *])
-    bf4 = reform(b4.y[0, *])
+    b_data = hash()
+    b_data[0] = reform(b1.y[0, *])
+    b_data[1] = reform(b2.y[0, *])
+    b_data[2] = reform(b3.y[0, *])
+    b_data[3] = reform(b4.y[0, *])
     
-    b1plot3d = plot3d([xes[0], xes[0]+bf1[0]], [yes[0], yes[0]+bf1[1]], [zes[0], zes[0]+bf1[2]], /overplot, color=[255, 0, 0])
-    b2plot3d = plot3d([xes[1], xes[1]+bf2[0]], [yes[1], yes[1]+bf2[1]], [zes[1], zes[1]+bf2[2]], /overplot, color=[255, 0, 0])
-    b3plot3d = plot3d([xes[2], xes[2]+bf3[0]], [yes[2], yes[2]+bf3[1]], [zes[2], zes[2]+bf3[2]], /overplot, color=[255, 0, 0])
-    b4plot3d = plot3d([xes[3], xes[3]+bf4[0]], [yes[3], yes[3]+bf4[1]], [zes[3], zes[3]+bf4[2]], /overplot, color=[255, 0, 0])
+    for spacecraft_idx=0, 3 do begin
+      plot3d = plot3d([xes[spacecraft_idx], xes[spacecraft_idx]+(b_data[spacecraft_idx])[0]], [yes[spacecraft_idx], yes[spacecraft_idx]+(b_data[spacecraft_idx])[1]], [zes[spacecraft_idx], zes[spacecraft_idx]+(b_data[spacecraft_idx])[2]], /overplot, color=bfield_color)
+    endfor
+
+    ; also plot projections
+    if keyword_set(xy_projection) || keyword_set(projection) then begin
+      for spacecraft_idx=0, 3 do begin
+        plot3z = plot3d([xes[spacecraft_idx], xes[spacecraft_idx]+(b_data[spacecraft_idx])[0]], [yes[spacecraft_idx], yes[spacecraft_idx]+(b_data[spacecraft_idx])[1]], z_projection+0.001,  color=bfield_color, $
+          /overplot, perspective=perspective, margin=margin)
+      endfor
+    endif
+    if keyword_set(xz_projection) || keyword_set(projection) then begin
+      for spacecraft_idx=0, 3 do begin
+        plot3y = plot3d([xes[spacecraft_idx], xes[spacecraft_idx]+(b_data[spacecraft_idx])[0]], y_projection-0.001, [zes[spacecraft_idx], zes[spacecraft_idx]+(b_data[spacecraft_idx])[2]], color=bfield_color, $
+          /overplot, perspective=perspective, margin=margin)
+      endfor
+    endif
+
+    if keyword_set(yz_projection) || keyword_set(projection) then begin
+      for spacecraft_idx=0, 3 do begin
+        plot3x = plot3d(x_projection-0.001,  [yes[spacecraft_idx], yes[spacecraft_idx]+(b_data[spacecraft_idx])[1]], [zes[spacecraft_idx], zes[spacecraft_idx]+(b_data[spacecraft_idx])[2]], color=bfield_color, $
+          /overplot, perspective=perspective, margin=margin)
+      endfor
+    endif
   endif
 end
