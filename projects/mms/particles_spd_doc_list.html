@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jan 24 19:30:07 2020.<P>
+<STRONG>Last modified: </STRONG>Tue Jan 28 18:15:56 2020.<P>
  
 <HR>
  
@@ -40,6 +40,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_PGS_MAKE_THETA_SPEC">MMS_PGS_MAKE_THETA_SPEC</A>
 <LI><A HREF="#MMS_PGS_MAKE_TPLOT">MMS_PGS_MAKE_TPLOT</A>
 <LI><A HREF="#MMS_PGS_SPLIT_HPCA">MMS_PGS_SPLIT_HPCA</A>
+<LI><A HREF="#MMS_SLICE1D_PLOT_FPI">MMS_SLICE1D_PLOT_FPI</A>
+<br>Create 1D plot from a 2D particle slice
 <br>
 </UL><P>
 <HR>
@@ -978,6 +980,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_PGS_SPLIT_HPCA">
 <H2>MMS_PGS_SPLIT_HPCA</H2></A>
 <A HREF="#MMS_PGS_MAKE_TPLOT">[Previous Routine]</A>
+<A HREF="#MMS_SLICE1D_PLOT_FPI">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -1004,5 +1007,44 @@ $LastChangedRevision: 23532 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_pgs_split_hpca.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_pgs_split_hpca.pro">projects/mms/particles/mms_pgs_split_hpca.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MMS_SLICE1D_PLOT_FPI">
+<H2>MMS_SLICE1D_PLOT_FPI</H2></A>
+<A HREF="#MMS_PGS_SPLIT_HPCA">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+  spd_slice1d_plot with FPI modifications by Simon Wellenzohn
+
+ PURPOSE:
+   Create 1D plot from a 2D particle slice
+
+   This version allows you to plot the integral over a certain angle section (white lines in the plot) of the 2D distribution.
+   The X axis of the plot created is a histogram with the width of the columns representing the energy channels of FPI.
+
+ EXAMPLES:
+ 
+  MMS&gt; mms_slice1d_plot_fpi, slice, alpha=[0,0], width=[30,30], xrange=[-2500, 2500], yrange=[1e-25, 1d-22], export=export_dir
+
+
+ INPUT:
+  slice: slice returned by spd_slice2d
+  alpha: angle in degrees to the x axis marking the center of the circle sector given for both the - and + x side
+  width: angle in degrees which sets the width of the circle sector given for both - and + x side
+  xrange: sets the xrange in km/s
+  yrange: sets y range in integrated flux
+  export: export path as string
+
+ NOTES:
+    minor modifications by egrimes, Jan 2020
+ 
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2020-01-28 17:59:08 -0800 (Tue, 28 Jan 2020) $
+ $LastChangedRevision: 28247 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_slice1d_plot_fpi.pro $
+</PRE><P>
+<STRONG>(See <A href="particles/mms_slice1d_plot_fpi.pro">projects/mms/particles/mms_slice1d_plot_fpi.pro</A>)</STRONG><P>
 <HR>
  
