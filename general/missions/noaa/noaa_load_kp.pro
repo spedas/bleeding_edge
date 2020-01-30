@@ -25,8 +25,8 @@
 ;     egrimes, 3/20/2018: updated to use spd_download, and download the file from NOAA NGDC
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-01-10 12:19:33 -0800 (Fri, 10 Jan 2020) $
-;$LastChangedRevision: 28184 $
+;$LastChangedDate: 2020-01-29 11:49:55 -0800 (Wed, 29 Jan 2020) $
+;$LastChangedRevision: 28249 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/noaa/noaa_load_kp.pro $
 ;-
 
@@ -52,7 +52,7 @@ pro noaa_load_kp, trange = trange, kp_mirror = kp_mirror, remote_kp_dir=remote_k
         else file_prefix = local_kp_dir        
     if STRLEN(file_prefix) gt 0 then if STRMID(file_prefix, STRLEN(file_prefix)-1, 1) ne path_sep() then file_prefix = file_prefix + path_sep()    
     ;if ~keyword_set(remote_kp_dir) then remote_kp_dir = 'thg/mirrors/kp/noaa/'
-    if keyword_set(gfz) then remote_kp_dir = 'pub/home/obs/kp-ap/wdc/'
+    if keyword_set(gfz) then remote_kp_dir = 'pub/home/obs/kp-ap/wdc/yearly/'
     if ~keyword_set(remote_kp_dir) then remote_kp_dir = 'STP/GEOMAGNETIC_DATA/INDICES/KP_AP/'
     starttime = time_struct(trange[0])
     endtime = time_struct(trange[1])
