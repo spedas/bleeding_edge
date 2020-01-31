@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Jan 29 18:15:51 2020.<P>
+<STRONG>Last modified: </STRONG>Thu Jan 30 18:15:54 2020.<P>
  
 <HR>
  
@@ -23,6 +23,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_BASIC_TAIL">MMS_BASIC_TAIL</A>
 <LI><A HREF="#MMS_EVENT_SEARCH_CRIB">MMS_EVENT_SEARCH_CRIB</A>
 <LI><A HREF="#MMS_FLIPBOOK_CRIB">MMS_FLIPBOOK_CRIB</A>
+<LI><A HREF="#MMS_FPI_CURLOMETER_CRIB">MMS_FPI_CURLOMETER_CRIB</A>
+<br>Crib sheet showing how to combine curlometer calculations with FPI data; the ouput figure includes:
 <LI><A HREF="#MMS_FPI_DIST_SLICE_COMPARISON_CRIB">
 MMS_FPI_DIST_SLICE_COMPARISON_CRIB</A>
 <LI><A HREF="#MMS_HPCA_EIS_COMBINED_CRIB">MMS_HPCA_EIS_COMBINED_CRIB</A>
@@ -144,7 +146,7 @@ MMS_FPI_DIST_SLICE_COMPARISON_CRIB</A>
 <A NAME="MMS_FLIPBOOK_CRIB">
 <H2>MMS_FLIPBOOK_CRIB</H2></A>
 <A HREF="#MMS_EVENT_SEARCH_CRIB">[Previous Routine]</A>
-<A HREF="#MMS_FPI_DIST_SLICE_COMPARISON_CRIB">[Next Routine]</A>
+<A HREF="#MMS_FPI_CURLOMETER_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -165,9 +167,40 @@ MMS_FPI_DIST_SLICE_COMPARISON_CRIB</A>
 <STRONG>(See <A href="advanced/mms_flipbook_crib.pro">projects/mms/examples/advanced/mms_flipbook_crib.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_FPI_CURLOMETER_CRIB">
+<H2>MMS_FPI_CURLOMETER_CRIB</H2></A>
+<A HREF="#MMS_FLIPBOOK_CRIB">[Previous Routine]</A>
+<A HREF="#MMS_FPI_DIST_SLICE_COMPARISON_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         mms_fpi_curlometer_crib
+
+ PURPOSE:
+         Crib sheet showing how to combine curlometer calculations with FPI data; the ouput figure includes:
+         
+         1) DIS energy spectra
+         2) DES energy spectra
+         3) B-field in GSE coordinates
+         4) div/curl
+         5) J (Jx, Jy, Jz and J magnitude)
+         6) DES velocity (Vx, Vy, Vz and V magnitude)
+         7) DIS and DES densities
+         8) DES temperatures
+         9) DIS temperatures
+
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2020-01-30 14:41:18 -0800 (Thu, 30 Jan 2020) $
+ $LastChangedRevision: 28260 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_fpi_curlometer_crib.pro $
+</PRE><P>
+<STRONG>(See <A href="advanced/mms_fpi_curlometer_crib.pro">projects/mms/examples/advanced/mms_fpi_curlometer_crib.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_FPI_DIST_SLICE_COMPARISON_CRIB">
 <H2>MMS_FPI_DIST_SLICE_COMPARISON_CRIB</H2></A>
-<A HREF="#MMS_FLIPBOOK_CRIB">[Previous Routine]</A>
+<A HREF="#MMS_FPI_CURLOMETER_CRIB">[Previous Routine]</A>
 <A HREF="#MMS_HPCA_EIS_COMBINED_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
