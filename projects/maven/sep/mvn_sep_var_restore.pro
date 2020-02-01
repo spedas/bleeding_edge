@@ -1,3 +1,8 @@
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-01-31 14:37:52 -0800 (Fri, 31 Jan 2020) $
+; $LastChangedRevision: 28266 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_var_restore.pro $
+
 pro mvn_sep_var_restore,pathname,trange=trange,verbose=verbose,download_only=download_only,prereq_info=prereq_temp,filename=files,no_finish=no_finish, $
                         lowres=lowres,units_name=units_name,svy_tags=svy_tags,hkp_tags=hkp_tags,noise_tags=noise_tags,pfdpu_hkp_tags=pfdpu_hkp_tags,   $
                         shkp_tags=shkp_tags,oper_tags=oper_tags,basic_tags=basic_tags,full_tags=full_tags,arc=arc
@@ -15,7 +20,10 @@ if ~keyword_set(files) then begin
   ndays=1
   if not keyword_set(pathname) then pathname =  'maven/data/sci/sep/l1/sav/YYYY/MM/mvn_sep_l1_YYYYMMDD_$NDAY.sav'
   pn = str_sub(pathname, '$NDAY', strtrim(ndays,2) +'day')
-  if keyword_set(lowres) then pn='maven/data/sci/sep/l1/sav_5min/YYYY/MM/mvn_sep_l1_YYYYMMDD_5min.sav'
+  if keyword_set(lowres) then begin
+    pn='maven/data/sci/sep/l1/sav_5min/YYYY/MM/mvn_sep_l1_YYYYMMDD_5min.sav'
+    if lowres eq 2 then pn='maven/data/sci/sep/l1/sav_01hr/YYYY/MM/mvn_sep_l1_YYYYMMDD_01hr.sav'
+  endif
   files = mvn_pfp_file_retrieve(pn,/daily,trange=trange,source=source,verbose=verbose,/valid_only,no_update=0,last_version=0)
 endif
 

@@ -1,3 +1,8 @@
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-01-31 14:37:52 -0800 (Fri, 31 Jan 2020) $
+; $LastChangedRevision: 28266 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_save_reduce_timeres.pro $
+
 ;20160623 Ali
 ;variation of Davin's mvn_save_reduce_timeres
 ;for reducing SEP L1 time resolution.
@@ -37,9 +42,10 @@ function mvn_sep_att_correction,data,res,tr,fltatt=fltatt ;throws out att actuat
 end
 
 function mvn_sep_att_arc,data ;keeps burst (archive) att states in the lowres files
-  arc=replicate({time:data[0].time,att:data[0].att},n_elements(data))
+  arc=replicate({time:data[0].time,att:data[0].att,duration:data[0].duration},n_elements(data))
   arc.time=data.time
   arc.att=data.att
+  arc.duration=data.duration
   return,arc
 end
 
@@ -61,6 +67,7 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
   endif
 
   fullres_fmt='maven/data/sci/sep/l1/sav/YYYY/MM/mvn_sep_l1_YYYYMMDD_1day.sav'
+  if resstr eq '01hr' then fullres_fmt='maven/data/sci/sep/l1/sav_5min/YYYY/MM/mvn_sep_l1_YYYYMMDD_5min.sav'
   redures_fmt='maven/data/sci/sep/l1/sav_'+resstr+'/YYYY/MM/mvn_sep_l1_YYYYMMDD_'+resstr+'.sav'
 
   day = 86400L
@@ -102,14 +109,20 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
 
     f = fullres_file
     if file_test(/regular,f) eq 0 then continue
-    source_filename=f
     restore,f
+    source_filename=f
 
-    if n_elements(s1_svy) gt 1 then s1_svy=mvn_sep_att_correction(s1_svy,res,tr,/fltatt) else s1_svy=0
-    if n_elements(s2_svy) gt 1 then s2_svy=mvn_sep_att_correction(s2_svy,res,tr,/fltatt) else s2_svy=0
+    if resstr eq '5min' then begin
+      if n_elements(s1_svy) gt 1 then s1_svy=mvn_sep_att_correction(s1_svy,res,tr,/fltatt) else s1_svy=0
+      if n_elements(s2_svy) gt 1 then s2_svy=mvn_sep_att_correction(s2_svy,res,tr,/fltatt) else s2_svy=0
 
-    if keyword_set(s1_arc) then s1_arc=mvn_sep_att_arc(s1_arc)
-    if keyword_set(s2_arc) then s2_arc=mvn_sep_att_arc(s2_arc)
+      if keyword_set(s1_arc) then s1_arc=mvn_sep_att_arc(s1_arc)
+      if keyword_set(s2_arc) then s2_arc=mvn_sep_att_arc(s2_arc)
+    endif else begin
+      if n_elements(s1_svy) gt 1 then s1_svy=average_hist(s1_svy,s1_svy.time,binsize=res,range=tr,/nan)
+      if n_elements(s2_svy) gt 1 then s2_svy=average_hist(s2_svy,s2_svy.time,binsize=res,range=tr,/nan)
+      if n_elements(ap24) gt 24 then ap24=average_hist(ap24,ap24.time,binsize=res,range=tr,/nan) else ap24=0
+    endelse
 
     if n_elements(s1_arc) gt 1 then s1_arc=average_hist(s1_arc,s1_arc.time,binsize=res,range=tr,/nan) else s1_arc=0
     if n_elements(s2_arc) gt 1 then s2_arc=average_hist(s2_arc,s2_arc.time,binsize=res,range=tr,/nan) else s2_arc=0

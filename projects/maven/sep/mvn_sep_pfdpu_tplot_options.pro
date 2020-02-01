@@ -1,7 +1,14 @@
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-01-31 14:37:52 -0800 (Fri, 31 Jan 2020) $
+; $LastChangedRevision: 28266 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_pfdpu_tplot_options.pro $
 
 pro mvn_sep_pfdpu_tplot_options,tplot=tplot,lowres=lowres
   prefix = 'mvn_'
-  if keyword_set(lowres) then prefix='mvn_5min_'
+  if keyword_set(lowres) then begin
+    prefix='mvn_5min_'
+    if lowres eq 2 then prefix='mvn_01hr_'
+  endif
    tplot_options,'no_interp',1                       ;  This is rude!
    tplot_options,'ynozero',1
 ;   store_data,'mav_apid_all',data=tnames('MAV_APIDS MAV_APID_SKIPPED') ;,dlimit=tplot_routine='bitplot'

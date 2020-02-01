@@ -1,11 +1,7 @@
-;function mvn_sep_convert_units,spectra,units=units
-;
-;
-;return,znorm
-;end
-;
-;
-
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-01-31 14:37:52 -0800 (Fri, 31 Jan 2020) $
+; $LastChangedRevision: 28266 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_create_subarrays.pro $
 
 pro mvn_sep_create_subarrays,data_str,trange=trange,tname=tname,bmaps=bmaps,mapids=mapids $
    ,yval=yval,zval=zval,smooth=smooth,smpar=smpar,units_name=units_name,lowres=lowres,arc=arc
@@ -46,7 +42,10 @@ pro mvn_sep_create_subarrays,data_str,trange=trange,tname=tname,bmaps=bmaps,mapi
      mapnum = mapids[i]
      if mapnum eq 0 then continue
      tname = 'mvn_sep'+strtrim(sepn,2)
-     if keyword_set(lowres) then tname = 'mvn_5min_sep'+strtrim(sepn,2)
+     if keyword_set(lowres) then begin
+      tname = 'mvn_5min_sep'+strtrim(sepn,2)
+      if lowres eq 2 then tname = 'mvn_01hr_sep'+strtrim(sepn,2)
+     endif
      if keyword_set(arc) then tname = 'mvn_arc_sep'+strtrim(sepn,2)
  ;    tname=data_str+string(mapnum,format='(i03)')
 ;     mapname = mvn_sep_mapnum_to_mapname(mapnum)
@@ -134,6 +133,15 @@ pro mvn_sep_create_subarrays,data_str,trange=trange,tname=tname,bmaps=bmaps,mapi
                       end
            'flux'   : begin
                          znorm = (geom * dt) # (eff * denergy)
+                         data = cnts / znorm
+                         zrange = [.001,1e3]
+                         spec = 0
+                         yrange =   [1,1e6]  ;zrange * 100
+                         units = '#/s/cm2/sr/keV'
+                         tdata = total(data * (replicate(1,nt) # denergy),2)
+                     end
+           'flux1'   : begin
+                         znorm = (geoms[1] * dt) # (eff * denergy)
                          data = cnts / znorm
                          zrange = [.001,1e3]
                          spec = 0

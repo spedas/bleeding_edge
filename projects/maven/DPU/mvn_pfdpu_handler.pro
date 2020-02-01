@@ -171,7 +171,10 @@ pro mvn_pfdpu_handler,ccsds,decom=decom,reset=reset,clear=clear,set_realtime=set
         endif
         dprint,dlevel=2,'PFDPU handler ' ,keyword_set(clear) ? 'Clearing' : ''
         prefix='mvn_
-        if keyword_set(lowres) then prefix='mvn_5min_'
+        if keyword_set(lowres) then begin
+          prefix='mvn_5min_'
+          if lowres eq 2 then prefix='mvn_01hr_' 
+        endif
         if keyword_set(finish) then begin
            if ~keyword_set(hkp_tags) then hkp_tags='*TEMP PFPP28V *28I'
            if ~keyword_set(shkp_tags) then shkp_tags='ACT*'

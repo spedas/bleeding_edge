@@ -29,9 +29,15 @@ endif
 
 prefix='mvn_SEP'+strtrim(sepnum,2)
 if keyword_set(smoothcounts) then prefix='<mvn>_SEP'+strtrim(sepnum,2)
-if keyword_set(lowres) then prefix='mvn_5min_SEP'+strtrim(sepnum,2)
+if keyword_set(lowres) then begin
+  prefix='mvn_5min_SEP'+strtrim(sepnum,2)
+  if lowres eq 2 then prefix='mvn_01hr_SEP'+strtrim(sepnum,2)
+endif
 if keyword_set(arc) then prefix='mvn_arc_SEP'+strtrim(sepnum,2)
-if keyword_set(smoothcounts) and keyword_set(lowres) then prefix='<mvn>_5min_SEP'+strtrim(sepnum,2)
+if keyword_set(smoothcounts) and keyword_set(lowres) then begin
+  prefix='<mvn>_5min_SEP'+strtrim(sepnum,2)
+  if lowres eq 2 then prefix='<mvn>_01hr_SEP'+strtrim(sepnum,2)
+endif
 if keyword_set(smoothcounts) and keyword_set(arc) then prefix='<mvn>_arc_SEP'+strtrim(sepnum,2)
 
   ;
@@ -65,6 +71,7 @@ if keyword_set(smoothcounts) and keyword_set(arc) then prefix='<mvn>_arc_SEP'+st
   w = where(bad, count)
   ; if (count gt 0L) then data[w] = !values.f_nan
   store_data,prefix+'F_ion_eflux',newdat.time,transpose(data),transpose(newdat.f_ion_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1.,1e5],zlog:1,panel_size:panel_size}
+  store_data,prefix+'F_ion_eflux_unc',newdat.time,transpose(ddata),transpose(newdat.f_ion_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1.,1e5],zlog:1,panel_size:panel_size}
 
   data = newdat.r_ion_eflux
   ddata = newdat.r_ion_eflux_unc
@@ -72,6 +79,7 @@ if keyword_set(smoothcounts) and keyword_set(arc) then prefix='<mvn>_arc_SEP'+st
   w = where(bad, count)
   ; if (count gt 0L) then data[w] = !values.f_nan
   store_data,prefix+'R_ion_eflux',newdat.time,transpose(data),transpose(newdat.R_ion_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1.,1e5],zlog:1,panel_size:panel_size}
+  store_data,prefix+'R_ion_eflux_unc',newdat.time,transpose(ddata),transpose(newdat.R_ion_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1.,1e5],zlog:1,panel_size:panel_size}
 
   data = newdat.f_elec_eflux
   ddata = newdat.f_elec_eflux_unc
@@ -93,6 +101,7 @@ if keyword_set(smoothcounts) and keyword_set(arc) then prefix='<mvn>_arc_SEP'+st
   w = where(bad, count)
   ; if (count gt 0L) then data[w] = !values.f_nan
   store_data,prefix+'F_ion_flux',newdat.time,transpose(data),transpose(newdat.f_ion_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
+  store_data,prefix+'F_ion_flux_unc',newdat.time,transpose(ddata),transpose(newdat.f_ion_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
 
   data= rr # data
   ddata= sqrt(rr # (ddata ^2))
@@ -106,6 +115,7 @@ if keyword_set(smoothcounts) and keyword_set(arc) then prefix='<mvn>_arc_SEP'+st
   w = where(bad, count)
   ; if (count gt 0L) then data[w] = !values.f_nan
   store_data,prefix+'R_ion_flux',newdat.time,transpose(data),transpose(newdat.f_ion_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
+  store_data,prefix+'R_ion_flux_unc',newdat.time,transpose(ddata),transpose(newdat.f_ion_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
 
   data= rr # data
   ddata= sqrt(rr # (ddata ^2))

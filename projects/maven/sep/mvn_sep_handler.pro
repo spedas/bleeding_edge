@@ -1,3 +1,7 @@
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-01-31 14:37:52 -0800 (Fri, 31 Jan 2020) $
+; $LastChangedRevision: 28266 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_handler.pro $
 
 function  find_peak,d,cbins,window = wnd,threshold=threshold
 nan = !values.d_nan
@@ -25,9 +29,6 @@ peak.x0=avg
 peak.s=sdev
 return,peak
 end
-
-
-
 
 
 
@@ -582,7 +583,10 @@ pro mvn_sep_handler,ccsds,decom=decom,reset=reset,debug=debug,finish=finish,set_
         if keyword_set( record_filenames) then append_array,source_filenames,record_filenames       
         dprint,dlevel=2,'SEP handler: ' , keyword_set(clear) ? 'Clearing Data' : 'Finalizing'
         prefix = 'mvn_'
-        if keyword_set(lowres) then prefix='mvn_5min_'
+        if keyword_set(lowres) then begin
+          prefix='mvn_5min_'
+          if lowres eq 2 then prefix='mvn_01hr_'
+        endif
         if ~keyword_set(hkp_tags) then hkp_tags = 'RATE_CNTR VCMD_CNTR AMON_* DACS'
         if ~keyword_set(svy_tags) then svy_tags = 'DATA ATT COUNTS_TOTAL DURATION'
         if ~keyword_set(noise_tags) then noise_tags = 'BASELINE SIGMA DATA TOT'
