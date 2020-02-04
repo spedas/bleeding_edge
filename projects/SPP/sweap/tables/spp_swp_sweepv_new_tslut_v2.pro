@@ -4,14 +4,14 @@
 ;
 ; SPP_SWP_SWEEPV_NEW_TSLUT_V2
 ;
-; $LastChangedBy: rlivi2 $
-; $LastChangedDate: 2019-09-30 22:43:00 -0700 (Mon, 30 Sep 2019) $
-; $LastChangedRevision: 27803 $
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2020-02-03 14:37:14 -0800 (Mon, 03 Feb 2020) $
+; $LastChangedRevision: 28269 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/tables/spp_swp_sweepv_new_tslut_v2.pro $
 ;
 ;-
 
-PRO spp_swp_sweepv_new_tslut_v2,sweepv,defv1,defv2,spv,fsindex,tsindex,nen=nen,edpeak=edpeak,plot=plot,version=version,spfac=spfac,new_defl=new_defl
+PRO spp_swp_sweepv_new_tslut_v2,sweepv,defv1,defv2,spv,fsindex,tsindex,nen=nen,e0=e0,emax=emax,edpeak=edpeak,plot=plot,version=version,spfac=spfac,new_defl=new_defl
 
 
    ;; Number of energies in fine sweep table 
@@ -23,7 +23,7 @@ PRO spp_swp_sweepv_new_tslut_v2,sweepv,defv1,defv2,spv,fsindex,tsindex,nen=nen,e
    nen = 32
 
    ;; Get the full sweep table and index
-   spp_swp_sweepv_new_fslut_v2,sweepv,defv1,defv2,spv,fsindex,nen=nen,plot=plot,version=version,spfac=spfac,new_defl=new_defl
+   spp_swp_sweepv_new_fslut_v2,sweepv,defv1,defv2,spv,fsindex,nen=nen,e0=e0,emax=emax,plot=plot,version=version,spfac=spfac,new_defl=new_defl
 
    ;; Default version is 2
    if ~keyword_set(version) then version=2
@@ -157,7 +157,8 @@ PRO spp_swp_sweepv_new_tslut_v2,sweepv,defv1,defv2,spv,fsindex,tsindex,nen=nen,e
            charsize = 2,$
            symsize = symsize, $
            /xstyle,$
-           /ystyle
+           /ystyle, $
+           yrange = [-12, 12]
       plots,sweepv[tsindex],defv1[tsindex]-defv2[tsindex], psym=4,color = 150,symsize = symsize
       oplot,sweepv[tsindex],defv1[tsindex]-defv2[tsindex], psym=-7,color=2,symsize = symsize
       plots,sweepv[pindexs],defv1[pindexs]-defv2[pindexs],    psym = 7,color = 6,thick=2 ;,symsize = symsize

@@ -20,9 +20,9 @@
 ;Notes:
 ; Author: Davin Larson
 ;
-; $LastChangedBy: jimmpc1 $
-; $LastChangedDate: 2019-10-15 16:35:03 -0700 (Tue, 15 Oct 2019) $
-; $LastChangedRevision: 27870 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2020-02-03 15:08:57 -0800 (Mon, 03 Feb 2020) $
+; $LastChangedRevision: 28271 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/wind/wi_3dp_load.pro $
 ;-
 pro wi_3dp_load,type,files=files,trange=trange,verbose=verbose,$
@@ -190,11 +190,12 @@ If(~at_ssl && keyword_set(addmaster) && spdf_test[0] Ne -1) Then Begin
    If(ss_master[0] Ne -1) Then Begin
       cdaweb_masterdir = 'https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0MASTERS/'
       masterfile0 = cdaweb_masterdir+file_basename(relpathnames[ss_master])
+      master_local_path = source.local_data_dir+file_dirname(relpathnames[ss_master], /mark_directory)
    Endif
-   masterfile = spd_download(remote_file=masterfile0, local_path = source.local_data_dir, $
-                            no_download = source.no_download, no_update = source.no_update, $
-                            /last_version, $
-                            file_mode = '666'o, dir_mode = '777'o)
+   masterfile = spd_download(remote_file=masterfile0, local_path = master_local_path, $
+                             no_download = source.no_download, no_update = source.no_update, $
+                             /last_version, $
+                             file_mode = '666'o, dir_mode = '777'o)
    ss_not_master = where(test_master Eq -1)
    files = spd_download(remote_file=relpathnames[ss_not_master], $
                         remote_path=source.remote_data_dir, $
