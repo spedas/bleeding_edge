@@ -12,14 +12,19 @@
 ;  This routine is still in development.
 ;
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2017-07-27 16:30:01 -0700 (Thu, 27 Jul 2017) $
-; $LastChangedRevision: 23716 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2020-02-04 11:26:38 -0800 (Tue, 04 Feb 2020) $
+; $LastChangedRevision: 28274 $
 ; $URL $
 ;-
 pro wi_swe_load,type,files=files,trange=trange,verbose=verbose,downloadonly=downloadonly, $
       get_support_data=get_support_data,varformat=varformat,datatype=datatype, $
       tplotnames=tplotnames,source=source,suffix=suffix
+
+  if keyword_set(addmaster) then begin
+     dprint, 'WIND orbit, MFI, and SWE files are istp-compliant.'
+     dprint, 'The addmaster keyword has been deprecated, as of Feb. 2020.'
+  endif
 
    if not keyword_set(datatype) then datatype = 'k0'
 
@@ -45,7 +50,7 @@ if not keyword_set(varformat) then begin
    if datatype eq 'h0'  then varformat= '*'                                     ; Electrons
 endif
 
-relpathnames = file_dailynames(file_format=pathformat,trange=trange,addmaster=addmaster)
+relpathnames = file_dailynames(file_format=pathformat,trange=trange)
 
 files = spd_download(remote_file=relpathnames, remote_path=source.remote_data_dir, local_path = source.local_data_dir, $
                      no_download = source.no_download, no_update = source.no_update, /last_version, $

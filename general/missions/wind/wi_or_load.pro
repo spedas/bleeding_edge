@@ -12,14 +12,19 @@
 ;  This routine is still in development.
 ; Author: Davin Larson
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2017-07-27 16:30:01 -0700 (Thu, 27 Jul 2017) $
-; $LastChangedRevision: 23716 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2020-02-04 11:26:38 -0800 (Tue, 04 Feb 2020) $
+; $LastChangedRevision: 28274 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/wind/wi_or_load.pro $
 ;-
 pro wi_or_load,type,trange=trange,verbose=verbose,downloadonly=downloadonly, $
       varformat=varformat,datatype=datatype, no_download=no_download, no_update=no_update, $
       addmaster=addmaster,data_source=data_source,tplotnames=tn,source_options=source,suffix=suffix
+
+if keyword_set(addmaster) then begin
+   dprint, 'WIND orbit, MFI and SWE files are istp-compliant.'
+   dprint, 'The addmaster keyword has been deprecated, as of Feb. 2020.'
+endif
 
 if not keyword_set(datatype) then datatype = 'pre'
 
@@ -27,9 +32,9 @@ istp_init
 if not keyword_set(source) then source = !istp
 
 ;path deprecated by changes at SPDF
-;pathformat = 'wind/'+datatype+'_or/YYYY/wi_or_'+datatype+'_YYYYMMDD_v0?.cdf'
+;pathformat = 'wind/'+datatype+'_or/YYYY/wi_or_'+datatype+'_YYYYMMDD_v??.cdf'
 ;New URL 2012/10 pcruce@igpp
-pathformat = 'wind/orbit/'+datatype+'_or/YYYY/wi_or_'+datatype+'_YYYYMMDD_v0?.cdf'
+pathformat = 'wind/orbit/'+datatype+'_or/YYYY/wi_or_'+datatype+'_YYYYMMDD_v??.cdf'
 
 if not keyword_set(varformat) then begin
    varformat = 'GSE_POS'
@@ -38,7 +43,7 @@ endif
 if keyword_set(no_download) && no_download ne 0 then source.no_download = 1
 if keyword_set(no_update) && no_update ne 0 then source.no_update = 1
 
-relpathnames = file_dailynames(file_format=pathformat,trange=trange,addmaster=addmaster)
+relpathnames = file_dailynames(file_format=pathformat,trange=trange)
 
 files = spd_download(remote_file=relpathnames, remote_path=source.remote_data_dir, local_path = source.local_data_dir, $
                      no_download = source.no_download, no_update = source.no_update, /last_version, $

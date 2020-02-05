@@ -6,8 +6,8 @@
 ;  Author: Davin Larson
 ;
 ;$LastChangedBy: davin-mac $
-;$LastChangedDate: 2016-02-25 11:47:52 -0800 (Thu, 25 Feb 2016) $
-;$LastChangedRevision: 20181 $
+;$LastChangedDate: 2020-02-04 11:51:47 -0800 (Tue, 04 Feb 2020) $
+;$LastChangedRevision: 28276 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/tplot/wvlt/wav_data.pro $
 ;
 ;-
@@ -499,7 +499,8 @@ end
 
 
 pro wav_data,varname, period=period,prange=prange,frange=frange, $
-  param=param,avg_period=avg_period, $
+  param=param,avg_period=avg_period, $,
+  nmorlet = nmorlet, $
   tplot_prefix=tplot_prefix, $
   data=b, wavelet=wv, time=time, mask=msk,$
   magrat=magrat, $
@@ -510,15 +511,19 @@ pro wav_data,varname, period=period,prange=prange,frange=frange, $
   fraction = frac, $
   rotmat=rotmat, get_rotmat=get_rotmat, $
   wid=wid, $
+  hermition_k = hermition_k, $
   dimennum=dimennum,rotate_pow=rotate_pow, $
   maxpoints=maxpoints,rbin=rbin,$
   cross1=cross_cor1, cross2=cross_cor2, $
   trange=tr,resolution=resolution,verbose=verbose, $
   display_object=display_obj
 
-
 if keyword_set(varname)   then begin
-
+  
+  if keyword_set(nmorlet) then begin
+    param = nmorlet * 2* !dpi
+  endif
+  
   name=keyword_set(tplot_prefix) ? tplot_prefix : (tnames(varname))[0]
   
   get_data,name,time,B
@@ -655,7 +660,7 @@ yax = keyword_set(per_axis) ? period : 1/period
 ysubtitle = keyword_set(per_axis) ? 'Seconds' : 'f (Hz)'
 mm = minmax(yax)
 
-if not keyword_set(avg_period) then avg_period=12.
+if n_elements(avg_period) eq 0  then avg_period=6.
 dprint,verbose=verbose,dlevel=3,/phelp,avg_period
 
 ;if not keyword_set(wid) then  wid = 3 > round(period/2/dt*avg_period)*2+1 < (nt-1)
@@ -743,8 +748,10 @@ rdtime = reduce_tres(time,r)
 polopts = {spec:1,yrange:mm,ylog:1,ystyle:1,no_interp:1,zrange:[-1,1],zlog:0,zstyle:1,ztitle:ztitle,ysubtitle:ysubtitle}
 powopts = {spec:1,yrange:mm,ylog:1,ystyle:1,no_interp:1,zlog:1,zstyle:1,zrange:zrange,ztitle:ztitle,ysubtitle:ysubtitle}
 
+wvs = '_wv'
+if keyword_set(nmorlet) then wvs += strtrim(fix(nmorlet),2)
 powopts.ztitle='P!dTot!n'+tsfx
-store_data,name+'_wv_pow',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=powopts
+store_data,name+wvs+'_pow',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=powopts
 
 if nk eq 1 then return     ; scaler quantities...
 ;if nk eq 2 then stop
@@ -756,7 +763,7 @@ if keyword_set(get_components)  then begin
    for i=0,nk-1 do begin
        powopts.ztitle='P!d'+cstr[i]+'!n'+tsfx
        pow = (abs(wv[*,*,i])^2)
-       store_data,name+'_'+cstr[i]+'_wv_pow',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=powopts
+       store_data,name+'_'+cstr[i]+wvs+'_pow',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=powopts
    endfor
 
 endif
@@ -770,18 +777,18 @@ if keyword_set(magrat) then begin
    smooth_wavelet,pol,wid    & ztitle = '<'+ztitle+'>'
    ratopts.ztitle=ztitle
    ratopts.zrange=[0,1]
-   store_data,name+'_wv_rat_par',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
+   store_data,name+wvs+'_rat_par',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
 endif
 
 if 0 then begin
 smooth_wavelet,pow,wid
 powopts.ztitle='<P!dTot!n>'+tsfx
-store_data,name+'_wvs_pow',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=powopts
+store_data,name+wvs+'s_pow',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=powopts
 if keyword_set(magrat) then begin
    smooth_wavelet,powb,wid
    ratopts.ztitle='<P!dmag!n>/<P!dtot!n>'
    pol = powb/pow
-   store_data,name+'_wvs_rat_par',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
+   store_data,name+wvs+'s_rat_par',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
 endif
 endif
 
@@ -795,10 +802,10 @@ if nk eq 2 then begin
    powl = abs(wv[*,*,0]-i*wv[*,*,1])^2
    pol = (powr-powl)/(powl+powr)
 ;   polopts.ztitle='!19s!x!dp!n'
-;   store_data,name+'_wv_pol2_perp',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=polopts
+;   store_data,name+wvs+'_pol2_perp',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=polopts
    smooth_wavelet,pol,wid
    polopts.ztitle='<!19s!x!dp!n>'
-   store_data,name+'_wv_pol_perp',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=polopts
+   store_data,name+wvs+'_pol_perp',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=polopts
 
 
 endif
@@ -811,7 +818,7 @@ if keyword_set(rotate_pow) then begin
 
    i=complex(0,1)
    powr = abs(wv[*,*,0]+i*wv[*,*,1])^2
-   powl = abs(wv[*,*,0]-i*wv[*,*,1])^2
+   powl = abs(wv[*,*,0]-i*wv[*,*,1])^2   ; should divide by 2?
    powb = abs(wv[*,*,2])^2
 ;   smooth_wavelet,powb,wid
 ;   pow = (abs(wv[*,*,0])^2 + abs(wv[*,*,1])^2)
@@ -819,15 +826,15 @@ if keyword_set(rotate_pow) then begin
 
    pol = powb/(powb+powl+powr)
    smooth_wavelet,pol,wid
-   store_data,name+'_wv_pol_par',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
+   store_data,name+wvs+'_pol_par',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
 
 ;   pol = imaginary(wv[*,*,0]*conj(wv[*,*,1]))/pow*2
    pol = (powr-powl)/(powl+powr)
 ;   polopts.ztitle='!19s!x!dp!n'
-;   store_data,name+'_wv_pol2_perp',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=polopts
+;   store_data,name+wvs+'_pol2_perp',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=polopts
    smooth_wavelet,pol,wid
    polopts.ztitle='<!19s!x!dp!n>'
-   store_data,name+'_wv_pol_perp',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=polopts
+   store_data,name+wvs+'_pol_perp',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=polopts
 
    smooth_wavelet,powr,wid
    smooth_wavelet,powl,wid
@@ -836,64 +843,120 @@ if keyword_set(rotate_pow) then begin
 if 0 then begin
    pol = powb/(powb+powl+powr)
    ratopts.ztitle='<P!d||!n>/<P!dtot!n>'
-   store_data,name+'_wvs_pol_par',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
+   store_data,name+wvs+'s_pol_par',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
 
    pol = (powr-powl)/(powr+powl)
    polopts.ztitle='!19s!x!d<p>!n'
-   store_data,name+'_wvs_pol_perp',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=polopts
+   store_data,name+wvs+'s_pol_perp',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=polopts
 endif
 
 if keyword_set(all) then begin
    i=complex(0,1)
    powopts.ztitle='P!dB!n'+tsfx
-   store_data,name+'_wv_pow_par',data={x:rdtime,y:reduce_tres(powb*mask,r),v:yax},dlim=powopts
+   store_data,name+wvs+'_pow_par',data={x:rdtime,y:reduce_tres(powb*mask,r),v:yax},dlim=powopts
    powopts.ztitle='P!dperp!n'+tsfx
-   store_data,name+'_wv_pow_perp',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=powopts
+   store_data,name+wvs+'_pow_perp',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=powopts
    pow = abs(wv[*,*,0]+i*wv[*,*,1])^2/2
    powopts.ztitle='P!dR!n'+tsfx
-   store_data,name+'_wv_pow_r',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=powopts
+   store_data,name+wvs+'_pow_r',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=powopts
    pow = abs(wv[*,*,0]-i*wv[*,*,1])^2/2
    powopts.ztitle='P!dL!n'+tsfx
-   store_data,name+'_wv_pow_l',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=powopts
+   store_data,name+wvs+'_pow_l',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=powopts
 endif
 
 
 endif
+
+;hermition=1
+if keyword_set(hermition_k) then begin
+  ;wv_hm = dcomplexarr(nt,jv1,nk,nk)
+  dprint,yax
+  wv_hm = dcomplexarr(nt,nk,nk)
+  for j=0,nk-1 do for k=0,nk-1 do wv_hm[*,j,k] = conj(wv[*,hermition_k,j]) * wv[*,hermition_k,k]
+  wv_pow = wv_hm[*,0,0] + wv_hm[*,1,1] + wv_hm[*,2,2] 
+  dbb = reform(wv_hm,nt,nk*nk)
+  dbb = dbb[*,[0,4,8,1,2,5]]
+  printdat,wv_pow,wv_hm
+  dprint,dlevel=2,'Herm Freq = ',yax[hermition_k]
+  store_data,name+wvs+'_H_pow',time,wv_pow
+;  store_data,name+wvs+'_H_real',time,float(dbb)
+  store_data,name+wvs+'_HN_real',time,float(dbb)/ (wv_pow # [1,1,1,1,1,1])
+;  store_data,name+wvs+'_H_imag',time,imaginary(dbb)
+  store_data,name+wvs+'_HN_imag',time,imaginary(dbb)/ (wv_pow # [1,1,1,1,1,1])
+  if 1 then begin
+    bxbx = dbb[*,0]
+    byby = dbb[*,1]
+    bzbz = dbb[*,2]
+    bxby = dbb[*,3]
+    bxbz = dbb[*,4]
+    bybz = dbb[*,5]
+    a2 = bxbx+byby+bzbz
+    a1 = bxby*conj(bxby)+bybz*conj(bybz)+bxbz*conj(bxbz)-bxbx*byby-byby*bzbz-bzbz*bxbx
+    a0 = bxbx*byby*bzbz-bxbx*(bybz*conj(bybz))-byby*(bxbz*conj(bxbz))-bzbz*(bxby*conj(bxby))+bxby*conj(bxbz)*bybz+conj(bxby)*bxbz*conj(bybz)
+    a2 = double(a2)
+    a1 = double(a1)
+    a0 = double(a0)
+    polyroots,a0,a1,a2,-1,z1=z1,z2=z2,z3=z3
+    z1=float(z1)
+    z2=float(z2)
+    z3=float(z3)
+    eigenvalues = [[z1],[z2],[z3]]
+  endif else   begin
+    eigenvalues = fltarr(nt,3)
+    for n=0,nt-1 do begin
+      array = reform(wv_hm[n,*,*])
+      H = LA_ELMHES(array, q,   PERMUTE_RESULT = permute, SCALE_RESULT = scale)
+      ; Compute eigenvalues, T, and QZ arrays:
+      eigenvalues[n,*] = LA_HQR(h, q, PERMUTE_RESULT = permute)
+      ; Compute eigenvectors corresponding to
+      ; the first 3 eigenvalues.
+      ;   select = [1, 1, 1, REPLICATE(0, nk - 3)]
+      ;   eigenvectors = LA_EIGENVEC(H, Q,  PERMUTE_RESULT = permute, SCALE_RESULT = scale ) ;,   EIGENINDEX = eigenindex,  SELECT = select)
+      ;   PRINT, 'LA_EIGENVEC eigenvalues:'
+      ;   PRINT, eigenvalues[eigenindex]
+    endfor
+  endelse
+  store_data,name+wvs+'_H_eval',time,float(eigenvalues)
+  
+  
+endif
+
+
 
 if keyword_set(cross_cor1) then begin
    i=complex(0,1)
    cross_corr_wavelet,wv[*,*,0]+i*wv[*,*,1],wv[*,*,0]-i*wv[*,*,1],wid,pol,pow,powb,gsmooth=1
    ratopts.ztitle='!19g!x!dl!n'
-   store_data,name+'_wv_gam_lin',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
+   store_data,name+wvs+'_gam_lin',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
    polopts.ztitle='C!dl!n'
-   store_data,name+'_wv_coin_lin',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=polopts
+   store_data,name+wvs+'_coin_lin',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=polopts
    polopts.ztitle='Q!dl!n'
-   store_data,name+'_wv_quad_lin',data={x:rdtime,y:reduce_tres(powb*mask,r),v:yax},dlim=polopts
+   store_data,name+wvs+'_quad_lin',data={x:rdtime,y:reduce_tres(powb*mask,r),v:yax},dlim=polopts
 
    cross_corr_wavelet,wv[*,*,0],wv[*,*,1],wid,pol,pow,powb,gsmooth=1
    ratopts.ztitle='!19g!x!dp!n'
-   store_data,name+'_wv_gam_cir',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
+   store_data,name+wvs+'_gam_cir',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
    polopts.ztitle='C!dp!n'
-   store_data,name+'_wv_coin_cir',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=polopts
+   store_data,name+wvs+'_coin_cir',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=polopts
    polopts.ztitle='Q!dp!n'
-   store_data,name+'_wv_quad_cir',data={x:rdtime,y:reduce_tres(powb*mask,r),v:yax},dlim=polopts
+   store_data,name+wvs+'_quad_cir',data={x:rdtime,y:reduce_tres(powb*mask,r),v:yax},dlim=polopts
 endif
 if keyword_set(cross_cor2) then begin
    cross_corr_wavelet,wv[*,*,2],wv[*,*,0]+i*wv[*,*,1],wid,pol,pow,powb
    ratopts.ztitle='!19g!x!dpr!n'
-   store_data,name+'_wv_gam_pr',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
+   store_data,name+wvs+'_gam_pr',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
    polopts.ztitle='C!dpr!n'
-   store_data,name+'_wv_coin_pr',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=polopts
+   store_data,name+wvs+'_coin_pr',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=polopts
    polopts.ztitle='Q!dpr!n'
-   store_data,name+'_wv_quad_pr',data={x:rdtime,y:reduce_tres(powb*mask,r),v:yax},dlim=polopts
+   store_data,name+wvs+'_quad_pr',data={x:rdtime,y:reduce_tres(powb*mask,r),v:yax},dlim=polopts
 
    cross_corr_wavelet,wv[*,*,2],wv[*,*,0]-i*wv[*,*,1],wid,pol,pow,powb
    ratopts.ztitle='!19g!x!dpl!n'
-   store_data,name+'_wv_gam_pl',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
+   store_data,name+wvs+'_gam_pl',data={x:rdtime,y:reduce_tres(pol*mask,r),v:yax},dlim=ratopts
    polopts.ztitle='C!dpl!n'
-   store_data,name+'_wv_coin_pl',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=polopts
+   store_data,name+wvs+'_coin_pl',data={x:rdtime,y:reduce_tres(pow*mask,r),v:yax},dlim=polopts
    polopts.ztitle='Q!dpl!n'
-   store_data,name+'_wv_quad_pl',data={x:rdtime,y:reduce_tres(powb*mask,r),v:yax},dlim=polopts
+   store_data,name+wvs+'_quad_pl',data={x:rdtime,y:reduce_tres(powb*mask,r),v:yax},dlim=polopts
 
 endif
 
