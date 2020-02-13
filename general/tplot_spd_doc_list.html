@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Feb 11 18:15:43 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Feb 12 18:15:48 2020.<P>
  
 <HR>
  
@@ -3091,10 +3091,14 @@ LAST MODIFICATION:     tplot_file.pro   98/08/06
  EXAMPLE:
      &gt;&gt; tplot, 'kyoto_dst'
      &gt;&gt; tplot_fill_color, 'kyoto_dst', spd_get_color('blue')
+     
+ WARNING:
+     if you see strange results with a variable containing NaNs, run 'tdegap' 
+     on the variable prior to creating the figure to remove the NaNs
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2019-08-23 16:03:58 -0700 (Fri, 23 Aug 2019) $
-$LastChangedRevision: 27643 $
+$LastChangedDate: 2020-02-12 12:40:17 -0800 (Wed, 12 Feb 2020) $
+$LastChangedRevision: 28296 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_fill_color.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/tplot_fill_color.pro">general/tplot/tplot_fill_color.pro</A>)</STRONG><P>
