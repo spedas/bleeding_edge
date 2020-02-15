@@ -54,15 +54,15 @@ pro mvn_sep_anc_read_cdf, files, tplot = tplot, sep_ancillary = sep_ancillary
   tmp = replicate (SEP_ancillarya, nt)
   tmp.time = times
  
- 
+
 ; SEP look directions in three coordinate systems
-  look_directions_MSO =[[[*cdfi.vars[5].dataptr]], [[*cdfi.vars[6].dataptr]],$
-    [[*cdfi.vars[7].dataptr]],[[*cdfi.vars[8].dataptr]]]
+  look_directions_MSO =[[[*cdfi.vars[6].dataptr]], [[*cdfi.vars[7].dataptr]],$
+    [[*cdfi.vars[8].dataptr]],[[*cdfi.vars[9].dataptr]]]
 ; note that SSO coordinates are only useful or relevant for cruise phase data (2013-11-18 to 2014-09-21)
-  look_directions_SSO =[[[*cdfi.vars[9].dataptr]], [[*cdfi.vars[10].dataptr]],$
-    [[*cdfi.vars[11].dataptr]],[[*cdfi.vars[12].dataptr]]]
-  look_directions_GEO =[[[*cdfi.vars[13].dataptr]], [[*cdfi.vars[14].dataptr]],$
-    [[*cdfi.vars[15].dataptr]],[[*cdfi.vars[16].dataptr]]]
+  look_directions_SSO =[[[*cdfi.vars[10].dataptr]], [[*cdfi.vars[11].dataptr]],$
+    [[*cdfi.vars[12].dataptr]],[[*cdfi.vars[13].dataptr]]]
+  look_directions_GEO =[[[*cdfi.vars[14].dataptr]], [[*cdfi.vars[15].dataptr]],$
+    [[*cdfi.vars[16].dataptr]],[[*cdfi.vars[17].dataptr]]]
   
   tmp.look_directions_MSO = transpose (look_directions_MSO, [2, 1, 0])
   tmp.look_directions_SSO = transpose (look_directions_SSO, [2, 1, 0])
@@ -70,46 +70,61 @@ pro mvn_sep_anc_read_cdf, files, tplot = tplot, sep_ancillary = sep_ancillary
   
   dimensions = size(look_directions,/dimensions)
   
-  tmp.fov_phi_centers = transpose ([[*cdfi.vars[20].dataptr], [*cdfi.vars[21].dataptr],$
-                                    [*cdfi.vars[22].dataptr],[*cdfi.vars[23].dataptr]])
+  tmp.fov_phi_centers = transpose ([[*cdfi.vars[18].dataptr], [*cdfi.vars[19].dataptr],$
+                                    [*cdfi.vars[20].dataptr],[*cdfi.vars[21].dataptr]])
 
-  tmp.fov_theta_centers = transpose ([[*cdfi.vars[24].dataptr], [*cdfi.vars[25].dataptr],$
-                                      [*cdfi.vars[26].dataptr],[*cdfi.vars[27].dataptr]])
-  tmp.fov_full_MSO = transpose ([[*cdfi.vars[28].dataptr], [*cdfi.vars[29].dataptr],$
-                                 [*cdfi.vars[30].dataptr],[*cdfi.vars[31].dataptr]])
+  tmp.fov_theta_centers = transpose ([[*cdfi.vars[22].dataptr], [*cdfi.vars[23].dataptr],$
+                                      [*cdfi.vars[24].dataptr],[*cdfi.vars[25].dataptr]])
 
-  tmp.FOV_sun_angle = transpose ([[*cdfi.vars[32].dataptr], [*cdfi.vars[33].dataptr],$
-                                  [*cdfi.vars[34].dataptr],[*cdfi.vars[35].dataptr]])
-  tmp.FOV_ram_angle = transpose ([[*cdfi.vars[36].dataptr], [*cdfi.vars[37].dataptr],$
+  ;for K = 0, 75-1 do print,k, ' ', cdfi.vars[k].name
+  tmp1f = *cdfi.vars[30].dataptr
+  tmp1r = *cdfi.vars[31].dataptr
+  tmp2f = *cdfi.vars[32].dataptr
+  tmp2r = *cdfi.vars[33].dataptr
+  
+  for j = 0, ntheta-1 do begin
+     for K = 0, nphi-1 do begin   
+        for i = 0, 2 do begin
+           tmp.fov_full_MSO[0,k,j,i] = reform (tmp1f[*,k,j,i])
+           tmp.fov_full_MSO[1,k,j,i] = reform (tmp1r[*,k,j,i])
+           tmp.fov_full_MSO[2,k,j,i] = reform (tmp2f[*,k,j,i])
+           tmp.fov_full_MSO[3,k,j,i] = reform (tmp2r[*,k,j,i])
+        endfor
+     endfor
+  endfor
+
+  tmp.FOV_sun_angle = transpose ([[*cdfi.vars[36].dataptr], [*cdfi.vars[37].dataptr],$
                                   [*cdfi.vars[38].dataptr],[*cdfi.vars[39].dataptr]])
-  tmp.FOV_nadir_angle = transpose ([[*cdfi.vars[40].dataptr], [*cdfi.vars[41].dataptr],$
-                                    [*cdfi.vars[42].dataptr],[*cdfi.vars[43].dataptr]])
-  tmp.FOV_pitch_angle = transpose ([[*cdfi.vars[44].dataptr], [*cdfi.vars[45].dataptr],$
+  tmp.FOV_ram_angle = transpose ([[*cdfi.vars[40].dataptr], [*cdfi.vars[41].dataptr],$
+                                  [*cdfi.vars[42].dataptr],[*cdfi.vars[43].dataptr]])
+  tmp.FOV_nadir_angle = transpose ([[*cdfi.vars[44].dataptr], [*cdfi.vars[45].dataptr],$
                                     [*cdfi.vars[46].dataptr],[*cdfi.vars[47].dataptr]])
-  tmp.fraction_FOV_Mars = transpose ([[*cdfi.vars[48].dataptr], [*cdfi.vars[49].dataptr],$
-                                      [*cdfi.vars[50].dataptr],[*cdfi.vars[51].dataptr]])
-  tmp.fraction_FOV_illuminated = transpose ([[*cdfi.vars[52].dataptr], [*cdfi.vars[53].dataptr],$
-                                             [*cdfi.vars[54].dataptr],[*cdfi.vars[55].dataptr]])
+  tmp.FOV_pitch_angle = transpose ([[*cdfi.vars[48].dataptr], [*cdfi.vars[49].dataptr],$
+                                    [*cdfi.vars[50].dataptr],[*cdfi.vars[51].dataptr]])
+  tmp.fraction_FOV_Mars = transpose ([[*cdfi.vars[52].dataptr], [*cdfi.vars[53].dataptr],$
+                                      [*cdfi.vars[54].dataptr],[*cdfi.vars[55].dataptr]])
+  tmp.fraction_FOV_illuminated = transpose ([[*cdfi.vars[56].dataptr], [*cdfi.vars[57].dataptr],$
+                                             [*cdfi.vars[58].dataptr],[*cdfi.vars[59].dataptr]])
 
-  tmp.Mars_fraction_sky = *cdfi.vars[56].dataptr
-  tmp.qrot_SEP1_to_MSO = transpose (*cdfi.vars[57].dataptr)
-  tmp.qrot_SEP2_to_MSO = transpose (*cdfi.vars[58].dataptr)
-  tmp.qrot_SEP1_to_SSO = transpose (*cdfi.vars[59].dataptr)
-  tmp.qrot_SEP2_to_SSO = transpose (*cdfi.vars[60].dataptr)
-  tmp.qrot_SEP1_to_GEO = transpose (*cdfi.vars[61].dataptr)
-  tmp.qrot_SEP2_to_GEO = transpose (*cdfi.vars[62].dataptr)
-  tmp.mvn_pos_MSO = transpose (*cdfi.vars[63].dataptr)
-  tmp.mvn_pos_GEO = transpose (*cdfi.vars[64].dataptr)
-  tmp.mvn_pos_ECLIPJ2000 = transpose (*cdfi.vars[65].dataptr)
-  tmp.Earth_pos_ECLIPJ2000 = transpose (*cdfi.vars[66].dataptr)
-  tmp.Mars_pos_ECLIPJ2000 = transpose (*cdfi.vars[67].dataptr)
-  tmp.mvn_lat_GEO=*cdfi.vars[68].dataptr
-  tmp.mvn_elon_GEO=*cdfi.vars[69].dataptr
+  tmp.Mars_fraction_sky = *cdfi.vars[60].dataptr
+  tmp.qrot_SEP1_to_MSO = transpose (*cdfi.vars[61].dataptr)
+  tmp.qrot_SEP2_to_MSO = transpose (*cdfi.vars[62].dataptr)
+  tmp.qrot_SEP1_to_SSO = transpose (*cdfi.vars[63].dataptr)
+  tmp.qrot_SEP2_to_SSO = transpose (*cdfi.vars[64].dataptr)
+  tmp.qrot_SEP1_to_GEO = transpose (*cdfi.vars[65].dataptr)
+  tmp.qrot_SEP2_to_GEO = transpose (*cdfi.vars[66].dataptr)
+  tmp.mvn_pos_MSO = transpose (*cdfi.vars[67].dataptr)
+  tmp.mvn_pos_GEO = transpose (*cdfi.vars[68].dataptr)
+  tmp.mvn_pos_ECLIPJ2000 = transpose (*cdfi.vars[69].dataptr)
+  tmp.Earth_pos_ECLIPJ2000 = transpose (*cdfi.vars[70].dataptr)
+  tmp.Mars_pos_ECLIPJ2000 = transpose (*cdfi.vars[71].dataptr)
+  tmp.mvn_lat_GEO=*cdfi.vars[72].dataptr
+  tmp.mvn_elon_GEO=*cdfi.vars[73].dataptr
   tmp.mvn_alt_areoid = mvn_get_altitude(reform (tmp.mvn_pos_GEO[0,*]),$
                                                   reform (tmp.mvn_pos_GEO[1,*]),$
     reform (tmp.mvn_pos_GEO[2,*]))
-  tmp.mvn_sza=*cdfi.vars[70].dataptr
-  tmp.mvn_slt=*cdfi.vars[71].dataptr
+  tmp.mvn_sza=*cdfi.vars[74].dataptr
+  tmp.mvn_slt=*cdfi.vars[75].dataptr
   ; now increment the 'full' ancillary array
   SEP_ancillary = [SEP_ancillary, tmp]
   endfor
