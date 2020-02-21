@@ -18,8 +18,8 @@
 ;
 ;CREATED BY:	Davin Larson
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2019-05-14 14:18:26 -0700 (Tue, 14 May 2019) $
-; $LastChangedRevision: 27232 $
+; $LastChangedDate: 2020-02-20 12:13:34 -0800 (Thu, 20 Feb 2020) $
+; $LastChangedRevision: 28324 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/zlim.pro $
 ;-
 pro zlim,lim,min,max,log,default=default,verbose=verbose
@@ -29,8 +29,9 @@ if n_params() eq 1 then begin
    options,lim,'zlog',default=default
    return
 endif
+if n_elements(min) eq 2 then max=0
 if n_elements(max) eq 0 then range = [0.,0.] else range = float([min,max])
-options,lim,'zrange',range,default=default,verbose=verbose
+options,lim,'zrange',range[0:1],default=default,verbose=verbose
 if range[0] eq range[1] then style=0 else style=1
 options,lim,'zstyle',style,default=default,verbose=verbose
 if n_elements(log) ne 0 then options,lim,'zlog',log,default=default,verbose=verbose

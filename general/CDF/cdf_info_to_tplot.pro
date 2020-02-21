@@ -7,8 +7,8 @@
 ; Written by Davin Larson
 ;
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2019-08-20 18:31:33 -0700 (Tue, 20 Aug 2019) $
-; $LastChangedRevision: 27626 $
+; $LastChangedDate: 2020-02-20 12:11:01 -0800 (Thu, 20 Feb 2020) $
+; $LastChangedRevision: 28323 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_info_to_tplot.pro $
 ;-
 pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
@@ -20,7 +20,7 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
   load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
   ;resolve labels implemented as keyword to preserve backwards compatibility
 
-  dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 27626 2019-08-21 01:31:33Z ali $'
+  dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 28323 2020-02-20 20:11:01Z ali $'
     tplotnames=''
   vbs = keyword_set(verbose) ? verbose : 0
 
@@ -151,11 +151,17 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
       if keyword_set(var_2) then data = {x:tvar.dataptr,y:v.dataptr,v1:var_1.dataptr, v2:var_2.dataptr} $
       else if keyword_set(var_1) then begin
         ylog=strcmp(struct_value(*var_1.attrptr,'scaletyp',def='linear'),'log',3,/fold_case)
+        yunits = struct_value(*var_1.attrptr,'units',default='')
         data = {x:tvar.dataptr,y:v.dataptr, v:var_1.dataptr}
       endif else data = {x:tvar.dataptr,y:v.dataptr}
 
       dlimit = {cdf:cdfstuff,spec:spec,ylog:ylog,zlog:zlog}
-      if keyword_set(units) then str_element,/add,dlimit,'ysubtitle','['+units+']'
+      if keyword_set(units) then begin
+        if spec && keyword_set(var_1) && var_1.recvary then begin
+          str_element,/add,dlimit,'ztitle','['+units+']'
+          if keyword_set(yunits) then str_element,/add,dlimit,'ysubtitle','['+yunits+']'
+        endif else str_element,/add,dlimit,'ysubtitle','['+units+']'
+      endif
 
       if keyword_set(load_labels) then begin
         labl_ptr_1 = struct_value(attr,'labl_ptr_1',default='')

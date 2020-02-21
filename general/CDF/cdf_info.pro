@@ -14,10 +14,9 @@ end
 ;INPUT:
 ;   id:   CDF file ID.
 ;CREATED BY:    Davin Larson
-; LAST MODIFIED: @(#)cdf_info.pro    1.9 02/11/01
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-10-07 12:15:58 -0700 (Mon, 07 Oct 2019) $
-; $LastChangedRevision: 27825 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-02-20 12:09:03 -0800 (Thu, 20 Feb 2020) $
+; $LastChangedRevision: 28322 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_info.pro $
 ;-
 
@@ -42,6 +41,7 @@ if size(/type,id0) eq 7 then begin
 endif  else id=id0
 
 inq = cdf_inquire(id)
+CDF_COMPRESSION,id,GET_COMPRESSION=comp_level,GET_GZIP_LEVEL=gzip_level
 q = !quiet
 cdf_control,id,get_filename=fn
 ; need to add .cdf to the filename, since "cdf_control,id, get_filename="
@@ -56,6 +56,7 @@ varinfo_format = {name:'',num:0, is_zvar:0, datatype:'',type:0, $
 ;   userstr1:'', $
 ;   index:0,     $
    numelem:0, recvary:0b, numrec:0l, $
+   comp:0, gzip:0, block:0, $
    ndimen:0, d:lonarr(6) , $
    dataptr:ptr_new(), attrptr:ptr_new()  }
 
@@ -73,13 +74,18 @@ for zvar = 0,1 do begin   ; regular variables first, then zvariables
   for v = 0,nvars-1 do begin
     vi = cdf_varinq(id,v,zvar=zvar)
     vinfo[i].num = v
-    vinfo[i].is_zvar = zvar
+    vinfo[i].is_zvar = vi.is_zvar
     vinfo[i].name = vi.name
     vinfo[i].datatype = vi.datatype
     vinfo[i].type = cdf_var_type(vi.datatype)
     vinfo[i].numelem = vi.numelem
     recvar = vi.recvar eq 'VARY'
     vinfo[i].recvary = recvar
+    
+    CDF_COMPRESSION,id,VARIABLE=v,zvar=vi.is_zvar,GET_VAR_COMPRESSION=comp,GET_VAR_GZIP_LEVEL=gzip,GET_VAR_BLOCKINGFACTOR=block
+    vinfo[i].comp = comp
+    vinfo[i].gzip = gzip
+    vinfo[i].block = block
 
     if recvar then begin
 ;if vb ge 6 then print,ptrace(),v,' '+vi.name
@@ -124,7 +130,7 @@ for zvar = 0,1 do begin   ; regular variables first, then zvariables
   endfor
 endfor
 
-res = create_struct('filename',fn,'inq',inq,'g_attributes',g_atts,'g_att_names',g_att_names,'nv',nv,'vars',vinfo)  ;'num_recs',num_recs,'nvars',nv
+res = create_struct('filename',fn,'inq',inq,'compression',comp_level,'gzip_level',gzip_level,'g_attributes',g_atts,'g_att_names',g_att_names,'nv',nv,'vars',vinfo)  ;'num_recs',num_recs,'nvars',nv
 if size(/type,id0) eq 7 then cdf_close,id
 
 dprint,dlevel=4,verbose=verbose,'Time=',systime(1)-tstart
