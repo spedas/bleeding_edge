@@ -36,8 +36,8 @@
 ;CREATED BY:	Davin Larson
 ;FILE:  mplot.pro
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-02-10 15:22:39 -0800 (Sun, 10 Feb 2019) $
-; $LastChangedRevision: 26586 $
+; $LastChangedDate: 2020-02-21 16:42:35 -0800 (Fri, 21 Feb 2020) $
+; $LastChangedRevision: 28332 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/mplot.pro $
 ;
 ;-
@@ -120,6 +120,7 @@ str_element,plotstuff,'ytype',value=ytype
 str_element,plotstuff,'ylog',value=ytype
 str_element,plotstuff,'max_value',value=max_value
 str_element,plotstuff,'min_value',value=min_value
+str_element,plotstuff,'notes',value=notes
 
 d1 = dimen1(y)
 d2 = dimen2(y)
@@ -214,10 +215,19 @@ if keyword_set(nocolor) then if nocolor ne 2 or !d.name eq 'PS' then $
 
 nc = n_elements(col)
 
-if keyword_set(oplot) eq 0 then $
-   box,plotstuff,xrange,yrange
+if keyword_set(oplot) eq 0 then  begin
+  box,plotstuff,xrange,yrange
+endif
 ;   plot,/nodata,xrange,yrange,_EXTRA = plotstuff
 
+str_element,stuff,'notes',notes
+if keyword_set(notes) then begin
+  dprint,dlevel=3,notes
+  xpos = !x.window[0] + .03*(!x.window[1]-!x.window[0])
+  ypos = !y.window[1] - .03*(!y.window[1]-!y.window[0]) 
+  xyouts,xpos,ypos,'!c'+notes,/normal
+
+endif
 
 str_element,stuff,'constant',constant
 str_element,stuff,'nsmooth',nsmooth
