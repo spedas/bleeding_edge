@@ -7,10 +7,13 @@
 ;     This procedure sets some metadata for EIS data products
 ;
 ;
+; HISTORY:
+;     2020 Feb 24 -  Ian Cohen at APL: changed defualt yrange of electronenergy data to scale automatically to accommodate changes to electron energy
+;                     channels
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-10-21 08:30:55 -0700 (Fri, 21 Oct 2016) $
-; $LastChangedRevision: 22184 $
+; $LastChangedDate: 2020-02-25 10:57:51 -0800 (Tue, 25 Feb 2020) $
+; $LastChangedRevision: 28340 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_set_metadata.pro $
 ;-
 ;
@@ -44,7 +47,7 @@ pro mms_eis_set_metadata, tplotnames, probe = probe, level=level, data_rate = da
             if keyword_set(no_interp) then options, '*phxtof_*_flux_omni*', no_interp=1, y_no_interp=1
         end
         'electronenergy': begin
-            ylim,'*_electronenergy_electron_flux_omni*', 40, 660, 1
+            ylim,'*_electronenergy_electron_flux_omni*', 0, 0, 1
             zlim, '*_electronenergy_electron_flux_omni*', 0, 0, 1
             options, '*_electronenergy_electron_flux_omni*', ystyle=1, yticks=2
             if undefined(no_interp) && data_rate eq 'srvy' then options, '*_electronenergy_electron_flux_omni*', no_interp=0, y_no_interp=0
