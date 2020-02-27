@@ -54,10 +54,12 @@ FUNCTION eva_data_load_mms, state, no_gui=no_gui, force=force
   endif
   
   ;... BentPipe should always be loaded ---
-  for p=0,pmax-1 do begin
-    sc = sc_id[p]
-    eva_data_load_mms_fpi_pseudomom, sc=sc_id
-  endfor
+  if state.PREF.EVA_TRIGGER then begin
+    for p=0,pmax-1 do begin
+      sc = sc_id[p]
+      eva_data_load_mms_fpi_pseudomom, sc=sc_id
+    endfor
+  endif
   
   c = 0
   answer = 'No'

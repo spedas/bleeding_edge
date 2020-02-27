@@ -84,6 +84,12 @@ FUNCTION eva_data_pref_event, ev
         pref.ABS_LOCAL = file
       endif
       end
+    ;------------------
+    ; TRIGGER
+    ;------------------
+    state.bgTrigger:begin
+      pref.EVA_TRIGGER = ev.SELECT
+      end
     else:
   endcase
   ;-----
@@ -124,6 +130,9 @@ FUNCTION eva_data_pref, parent, GROUP_LEADER=group_leader, $
   openBMP = read_bmp(rpath + 'folder_horizontal_open.bmp',/rgb)
   spd_ui_match_background, mainbase, openBMP
 
+  str_element,/add,state,'bgTrigger',cw_bgroup(mainbase,'Load trigger data automatically',$
+    /NONEXCLUSIVE,SET_VALUE=(state.PREF.EVA_TRIGGER))
+  
   str_element,/add,state,'lblCurrent',widget_label(mainbase,VALUE='EVA cache (.tplot files) location',XSIZE=xsize*0.9)
   baseInput = widget_base(mainbase,/row,/align_center)
     str_element,/add,state,'txtPath',widget_text(baseInput,VALUE=state.PREF.EVA_CACHE_DIR,XSIZE=55,/editable)

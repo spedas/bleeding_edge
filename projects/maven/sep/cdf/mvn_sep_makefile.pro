@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2019-08-20 18:35:15 -0700 (Tue, 20 Aug 2019) $
-; $LastChangedRevision: 27627 $
+; $LastChangedDate: 2020-02-26 12:51:18 -0800 (Wed, 26 Feb 2020) $
+; $LastChangedRevision: 28348 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/cdf/mvn_sep_makefile.pro $
 ; $ID: $
 
@@ -114,6 +114,7 @@ pro mvn_sep_makefile,init=init,trange=trange0
     target_timestamp = target_info.mtime
 
     if prereq_timestamp gt target_timestamp then begin    ; skip if L1 does not need to be regenerated
+      if tr[0] lt systime(1)-100l*24l*3600l then message,'L0 files changed more than 100 days in the past!!! Exiting...'
       mvn_sep_load,/l0,files = l0_files
       dprint,dlevel=1,'Generating L1 file: '+L1_filename
       prereq_info = file_checksum(prereq_files,/add_mtime)
