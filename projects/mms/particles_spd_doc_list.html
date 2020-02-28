@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Feb 26 18:15:45 2020.<P>
+<STRONG>Last modified: </STRONG>Thu Feb 27 18:15:49 2020.<P>
  
 <HR>
  
@@ -632,7 +632,7 @@ Exporting keywords:
        
 Interpolation Methods:
 
-   3D Interpolation (default):
+   3D Interpolation:
      The entire 3-dimensional distribution is linearly interpolated onto a
      regular 3d grid and a slice is extracted from the volume.
 
@@ -640,7 +640,7 @@ Interpolation Methods:
      Datapoints within the specified theta or z-axis range are projected onto
      the slice plane and linearly interpolated onto a regular 2D grid.
 
-   Geometric:
+   Geometric (default):
      Each point on the plot is given the value of the bin it intersects.
      This allows bin boundaries to be drawn at high resolutions.
  
@@ -653,9 +653,12 @@ Interpolation Methods:
  Notes:
          This routine always centers the distribution/moments data
          
+         Default interpolation changed to geometric (from 3D), egrimes, 27Feb2020
+           (requested by the FPI team at last year's GEM)
+         
 $LastChangedBy: egrimes $
-$LastChangedDate: 2019-04-29 17:42:15 -0700 (Mon, 29 Apr 2019) $
-$LastChangedRevision: 27143 $
+$LastChangedDate: 2020-02-27 14:33:12 -0800 (Thu, 27 Feb 2020) $
+$LastChangedRevision: 28355 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_slice2d.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_slice2d.pro">projects/mms/particles/mms_part_slice2d.pro</A>)</STRONG><P>
