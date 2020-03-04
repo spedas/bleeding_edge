@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_eis_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-10-05 12:20:19 -0700 (Fri, 05 Oct 2018) $
-; $LastChangedRevision: 25920 $
+; $LastChangedDate: 2020-03-03 09:01:23 -0800 (Tue, 03 Mar 2020) $
+; $LastChangedRevision: 28364 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_eis_ut__define.pro $
 ;-
 
@@ -151,7 +151,7 @@ function mms_load_eis_ut::test_yrange_of_spectra
   
   mms_load_eis, datatype='electronenergy', level='l2', probe=1
   get_data, 'mms1_epd_eis_electronenergy_electron_flux_omni_spin', limits=electrons_l
-  assert, array_equal(electrons_l.yrange, [40, 660]), 'Problem with yrange of L2 electronenergy variable'
+  assert, array_equal(electrons_l.yrange, [0, 0]), 'Problem with yrange of L2 electronenergy variable'
   
   del_data, '*'
   
