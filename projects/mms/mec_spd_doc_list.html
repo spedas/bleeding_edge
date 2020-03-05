@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Mar  3 18:16:04 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar  4 18:15:44 2020.<P>
  
 <HR>
  
@@ -183,6 +183,12 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        should create something like:
        https://lasp.colorado.edu/mms/sdc/public/data/sdc/mms_formation_plots/mms_formation_plot_20160108023624.png
        
+       With vectors
+       mms_mec_formation_plot,'2016-1-08/2:36',fpi_data_rate='fast',fpi_normalization=0.1d,fgm_normalization=1.d,/dis_center,/des_center,/bfield_center,/projection,plotmargin=1.0,sc_size=2.0,sundir='left'
+       mms_mec_formation_plot,'2016-1-08/2:36',fpi_data_rate='fast',fpi_normalization=0.1d,fgm_normalization=1.d,/dis_sc,/des_sc,/bfield_sc,/projection,plotmargin=1.0,sc_size=2.0,sundir='left'
+       mms_mec_formation_plot,'2015-10-16/13:07:02.40',fpi_data_rate='brst',fpi_normalization=0.02d,fgm_data_rate='brst',fgm_normalization=1.d,/dis_center,/des_center,/bfield_center,/projection,plotmargin=0.3,sc_size=2,sundir='left'
+       mms_mec_formation_plot,'2015-10-16/13:07:02.40',fpi_data_rate='brst',fpi_normalization=0.02d,fgm_data_rate='brst',fgm_normalization=1.d,/dis_sc,/des_sc,/bfield_sc,/projection,plotmargin=1.2,sc_size=1.5,sundir='left'
+
        Sun to the left:
        mms_mec_formation_plot, '2016-1-08/2:36', /xy_projection, coord='gse', sundir='left'
        
@@ -200,8 +206,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        and Kim Kokkonen at LASP
 
  $LastChangedBy: egrimes $
- $LastChangedDate: 2020-01-24 13:21:30 -0800 (Fri, 24 Jan 2020) $
- $LastChangedRevision: 28239 $
+ $LastChangedDate: 2020-03-04 09:14:53 -0800 (Wed, 04 Mar 2020) $
+ $LastChangedRevision: 28368 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_mec_formation_plot.pro $
 </PRE><P>
 <STRONG>(See <A href="mec/mms_mec_formation_plot.pro">projects/mms/mec/mms_mec_formation_plot.pro</A>)</STRONG><P>

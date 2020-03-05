@@ -2,7 +2,7 @@ pro spp_fld_load_l1, filename, $
   load_procedure = load_procedure, $
   file_timerange = file_timerange, $
   varformat = varformat, $
-  downsample = downsample
+  downsample = downsample, add_prefix = add_prefix
 
   defsysv, '!SPP_FLD_TMLIB', exists = exists
 
@@ -41,6 +41,8 @@ pro spp_fld_load_l1, filename, $
     load_procedure = strlowcase(load_routine_prefix) + '_load_l1'
 
 ;stop
+  
+  if n_elements(add_prefix) GT 0 then prefix = add_prefix + prefix
 
   if n_elements(downsample) GT 0 then begin
 
