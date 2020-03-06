@@ -85,9 +85,9 @@
 ;                          Added DWAIT keyword
 ;                          Added PRINT_TRACE,PRINT_DTIME,PRINT_DLEVEL
 ;                          Added Widget options
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-05-13 16:17:36 -0700 (Sun, 13 May 2018) $
-; $LastChangedRevision: 25214 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-03-05 13:24:53 -0800 (Thu, 05 Mar 2020) $
+; $LastChangedRevision: 28381 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/SSW/dprint.pro $
 ;
 ;-
@@ -243,7 +243,7 @@ PRO DPRINT,v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,  $
 
    if dprint_struct.print_dlevel then  prefix=[prefix, string(dlevel,dbg,format='(i0.0,"/",i0.0)') ]
    if dprint_struct.print_time   then  prefix=[prefix, time_string(tformat=dprint_struct.tformat,newtime,/local)]
-   if dprint_struct.print_dtime  then  prefix=[prefix, string(format='(f6.2)',delta_time) ]
+   if dprint_struct.print_dtime  then  prefix=[prefix, string(format='(f10.3)',delta_time) ]
    if dprint_struct.print_trace ne 0  then  begin
      stack = scope_traceback(/structure,system=0)
      level = n_elements(stack) -1
@@ -259,7 +259,7 @@ PRO DPRINT,v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,  $
      case dprint_struct.print_trace of
         1: if level ge 2 then stacknames = stacknames[level-1]
         2: if level ge 2 then stacknames[0:level-2] = '  '
-        4: stacknames = string(/print,format='(i2," ",a-36)',level,stacknames[level-1])
+        4: stacknames = string(/print,format='(i2," ",a-30)',level,stacknames[level-1])
         else:   ; do nothing
      endcase
      prefix = [prefix,stacknames]

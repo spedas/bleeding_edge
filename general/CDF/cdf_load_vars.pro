@@ -134,9 +134,9 @@
 ; Side Effects:
 ;   Data is returned in pointer variables. Calling routine is responsible for freeing up heap memory - otherwise a memory leak will occur.
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-10-07 12:15:58 -0700 (Mon, 07 Oct 2019) $
-; $LastChangedRevision: 27825 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-03-05 13:22:41 -0800 (Thu, 05 Mar 2020) $
+; $LastChangedRevision: 28380 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_load_vars.pro $
 ; $ID: $
 ;-
@@ -150,7 +150,7 @@ function cdf_load_vars,files,varnames=vars,varformat=vars_fmt,info=info,verbose=
 vb = keyword_set(verbose) ? verbose : 0
 vars=''
 info = 0
-dprint,dlevel=4,verbose=verbose,'$Id: cdf_load_vars.pro 27825 2019-10-07 19:15:58Z jimm $'
+dprint,dlevel=4,verbose=verbose,'$Id: cdf_load_vars.pro 28380 2020-03-05 21:22:41Z ali $'
 
 ;Get cdf version, hacked from read_myCDF, jmm, 2019-10-07
 CDF_LIB_INFO, VERSION=V, RELEASE=R, COPYRIGHT=C, INCREMENT=I
@@ -163,6 +163,10 @@ for fi=0,n_elements(files)-1 do begin
     if file_test(files[fi]) eq 0 then begin
         dprint,dlevel=1,verbose=verbose,'File not found: "'+files[fi]+'"'
         continue
+    endif
+    if (file_info(files[fi])).size eq 0 then begin
+      dprint,dlevel=1,verbose=verbose,'Zero file-size: "'+files[fi]+'"'
+      continue
     endif
     id=cdf_open(files[fi], readonly = readonly)
     if not keyword_set(info) then begin

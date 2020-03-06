@@ -19,9 +19,9 @@
 ;CREATED BY:    Peter Schroeder
 ;LAST MODIFICATION:     tplot_save.pro   97/05/14
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-05-16 13:27:55 -0700 (Thu, 16 May 2019) $
-; $LastChangedRevision: 27251 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-03-05 13:17:11 -0800 (Thu, 05 Mar 2020) $
+; $LastChangedRevision: 28378 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_save.pro $
 ;-
 pro tplot_save,handlenames,filename=filename,limits=limits,compress=compress,no_add_extension=no_add_extension,verbose=verbose
@@ -60,4 +60,5 @@ if size(/type,filename) ne 7 then filename = 'saved'
 if n_elements(tplot_vars) gt 0 then tv = tplot_vars else tv = 0
 file_mkdir2,file_dirname(filename)
 save,dq,tv,file=filename+filesuf,compress=compress,verbose=verbose
+dprint,dlevel=1,'Saved tplot file: '+filename+filesuf
 end

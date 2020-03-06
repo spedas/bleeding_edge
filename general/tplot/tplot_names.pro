@@ -22,13 +22,16 @@ pro tplot_names, datanames , time_range=times, names=names, verbose=verbose,  $
 ;CREATED BY:	Davin Larson
 ;SEE ALSO:   "TNAMES"  "TPLOT"
 ;MODS:     Accepts wildcards
-;LAST MODIFICATION:	@(#)tplot_names.pro	1.19 01/10/08
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-03-05 13:17:11 -0800 (Thu, 05 Mar 2020) $
+; $LastChangedRevision: 28378 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_names.pro $
 ;-
 @tplot_com.pro
 
 
 if n_elements(data_quants) eq 0 then begin
-   print,"No data has been saved yet"
+   dprint,"No data has been saved yet"
    return
 endif
 
