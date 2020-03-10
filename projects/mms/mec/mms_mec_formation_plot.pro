@@ -31,6 +31,30 @@
 ;               (+N direction for LMN coordinate)
 ;       independent_axes: by default, the same scale is used for each axis; set this keyword
 ;            to use different scales for the x, y, and z axes 
+;       plotmargin: margin of the figure (default: 0.3)
+;       sc_size: size of the spacecraft on the figure (default: 3)
+;      
+; VECTOR KEYWORDS:
+;   The following keywords allow you to add various types of vectors to the figure, and control the look of the vectors
+;         bfield_center: add the average B-field vector to the center of the figure (average of all 4 spacecraft)
+;         bfield_sc: add the B-field vector at each spacecraft
+;         bfield_color: change the color of the B-field vector (default: red)
+;         fgm_data_rate: B-field data rate to use (default: srvy)
+;         fgm_normalization: normalization factor of the B-field vector (allows you to scale down/up the vector; default: 1)
+;         
+;         dis_center: add the average DIS bulk velocity vector to the center of the figure (average of all 4 spacecraft)
+;         des_center: add the average DES bulk velocity vector to the center of the figure (average of all 4 spacecraft)
+;         dis_sc: add the DIS bulk velocity vector at each spacecraft
+;         des_sc: add the DES bulk velocity vector at each spacecraft
+;         dis_color: change the color of the DIS bulk velocity vector
+;         des_color: change the color of the DES bulk velocity vector
+;         fpi_data_rate: data rate of the DIS/DES data to use when plotting the vectors (default: fast)
+;         fpi_normalization: normalization factor of the bulk velocity vectors (allows you to scale down/up the vectors)
+;         
+;         vector_x: include a user-specified vector on the plot (x-components)
+;         vector_y: include a user-specified vector on the plot (y-components)
+;         vector_z: include a user-specified vector on the plot (z-components)
+;         vector_colors: color of the user-specified vectors on the plot
 ;               
 ; EXAMPLES:
 ;       mms_mec_formation_plot, '2016-1-08/2:36', /xy_projection, coord='gse'
@@ -54,6 +78,7 @@
 ;       mms_mec_formation_plot, '2016-1-08/2:36', /xy_projection, coord='gse', xyz=[[0.00,0.00,1.00],[0.00,-1.00,0.00],[1.00,0.00,0.00]], sundir='left'
 ;
 ; HISTORY:
+;       March 2020: Many updates to vector keywords from Naritoshi Kitamura
 ;       August 2016: Lots of updates from Naritoshi Kitamura
 ; 
 ;       The original copy of this comes from the 
@@ -61,8 +86,8 @@
 ;       and Kim Kokkonen at LASP
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-03-04 09:14:53 -0800 (Wed, 04 Mar 2020) $
-; $LastChangedRevision: 28368 $
+; $LastChangedDate: 2020-03-09 09:57:44 -0700 (Mon, 09 Mar 2020) $
+; $LastChangedRevision: 28388 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_mec_formation_plot.pro $
 ;-
 
