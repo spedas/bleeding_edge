@@ -46,9 +46,9 @@
 ;
 ;
 ; spp_swp_spi_prod_apdat
-; $LastChangedBy: rlivi2 $
-; $LastChangedDate: 2019-04-30 16:27:37 -0700 (Tue, 30 Apr 2019) $
-; $LastChangedRevision: 27155 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-03-11 14:03:37 -0700 (Wed, 11 Mar 2020) $
+; $LastChangedRevision: 28404 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
 
@@ -558,6 +558,13 @@ PRO spp_swp_spi_prod_apdat::Clear
    self.prod_08Dx32EX16Ax2M.array = !null
 END
 
+function spp_swp_spi_prod_apdat::cdf_global_attributes
+  global_att= self.spp_gen_apdat::cdf_global_attributes()
+  global_att['InstrumentLead_name'] = 'R. Livi'
+  global_att['InstrumentLead_email'] = 'rlivi@berkeley.edu'
+  return,global_att
+end
+
 PRO spp_swp_spi_prod_apdat__define
 
    void = {spp_swp_spi_prod_apdat, $
@@ -579,13 +586,6 @@ PRO spp_swp_spi_prod_apdat__define
            prod_08Dx32EX16Ax2M: obj_new() $
           }
 END
-
-
-
-
-
-
-
 
 
 
