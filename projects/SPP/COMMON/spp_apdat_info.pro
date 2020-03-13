@@ -1,7 +1,7 @@
 ; +
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-01-06 15:04:36 -0800 (Mon, 06 Jan 2020) $
-; $LastChangedRevision: 28167 $
+; $LastChangedDate: 2020-03-12 13:05:22 -0700 (Thu, 12 Mar 2020) $
+; $LastChangedRevision: 28409 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
@@ -62,7 +62,11 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     return
   endif
 
-  if keyword_set(file_restore) then restore,file_restore,/verbose,/relax
+  if keyword_set(file_restore) then begin
+    dprint,'Restoring file: '+file_restore
+    restore,file_restore,/verbose,/relax
+    dprint,'Restored  file: '+file_restore
+  endif
 
   if ~keyword_set(all_apdat) then all_apdat = replicate( obj_new() , 2^11 )
 
@@ -74,6 +78,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
       apid = apids[i]
       if obj_valid(all_apdat[apid]) then all_apdat[apid].append , aps[apid] else all_apdat[apid] = aps[apid]
     endfor
+    dprint,'Restored  file: '+append_filename
     return
   endif
 
@@ -100,7 +105,11 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     all_info['break'] = 1
   endif
 
-  if keyword_set(file_save) then save,file=file_save,all_apdat,/verbose,compress=compress
+  if keyword_set(file_save) then begin
+    dprint,'Saving file: '+file_save
+    save,file=file_save,all_apdat,/verbose,compress=compress
+    dprint,'Saved  file: '+file_save
+  endif
 
   valid_apdat = all_apdat[ where( obj_valid(all_apdat),nvalid ) ]
 
