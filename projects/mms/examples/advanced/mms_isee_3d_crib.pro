@@ -9,6 +9,7 @@
 ;     Please use both 'bfield' and 'velocity' keywords to run isee3d. 
 ; 
 ; HISTORY: 
+;     Updated by egrimes, March 13, 2020; replaced hard-coded data rates with data_rate variable, and added fgm_data_rate option
 ;     Updated by Kunihiro Keika, ISEE, Nagoya Univ., May 20, 2016. 
 ;     Preparedy by Kunihiro Keika, ISEE, Nagoya Univ., Mar. 2016. 
 ; 
@@ -20,25 +21,26 @@ timespan, trange
 probe='1'
 species='i' 
 data_rate='brst'
+fgm_data_rate='brst'
 level='l2'
 
 
 ; - - - FOR MAGNETIC FIELD DATA - - - - 
 ;Load magnetic field data (Despun MPA-Alligned Coordinate, DMPA) 
-mms_load_fgm, probes=probe, data_rate=data_rate, level=level, cdf_filenames=files;, /latest_version, 
+mms_load_fgm, probes=probe, data_rate=fgm_data_rate, level=level, cdf_filenames=files;, /latest_version, 
 
 ; - - - FOR FPI E-T & MOMENT DATA - - - 
 datatype='d'+species+'s-moms' 
 mms_load_fpi, probes=probe, datatype=datatype, level=level, data_rate=data_rate 
-;join_vec, 'mms1_dis_bulk'+['x','y','z']+'_gse_brst', 'mms1_dis_bulk_gse_brst'  
+;join_vec, 'mms1_dis_bulk'+['x','y','z']+'_gse_'+data_rate, 'mms1_dis_bulk_gse_'+data_rate
 
 ; - - - PLOT VEL, MAG and E-T diagram 
 tvar_plot = [$ 
-           'mms1_dis_energyspectr_px_brst', $ 
-;           'mms1_fgm_b_dmpa_brst_l2', $ 
-           'mms1_fgm_b_gse_brst_l2', $ 
-           'mms1_dis_bulkv_gse_brst', $   
-;           'mms1_dis_bulk_gse_brst', $   
+           'mms1_dis_energyspectr_px_'+data_rate, $ 
+;           'mms1_fgm_b_dmpa_'+data_rate+'_l2', $ 
+           'mms1_fgm_b_gse_'+fgm_data_rate+'_l2', $ 
+           'mms1_dis_bulkv_gse_'+data_rate, $   
+;           'mms1_dis_bulk_gse_'+data_rate, $   
            ''] 
 !p.charsize=1.2
 tplot_options, 'tickinterval', 30.
@@ -72,8 +74,8 @@ data = spd_dist_to_hash(dist)
    print, '###############################################' 
    print, 'Once GUI is open, select PSD from Units menu.' 
    print, '###############################################' 
-tvar_b = 'mms'+probe+'_fgm_b_gse_'+data_rate+'_l2_bvec' 
-tvar_v = 'mms1_dis_bulkv_gse_brst'
+tvar_b = 'mms'+probe+'_fgm_b_gse_'+fgm_data_rate+'_l2_bvec' 
+tvar_v = 'mms1_dis_bulkv_gse_'+data_rate
 ;stel3d, data=data, trange=trange, bfield=tvar_b, velocity=tvar_v
 isee_3d, data=data, trange=trange, bfield=tvar_b, velocity=tvar_v
 
