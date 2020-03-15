@@ -30,6 +30,7 @@ FUNCTION eva_data_load_mms, state, no_gui=no_gui, force=force
   ; CATCH ERROR
   ;-------------
   perror = -1
+  pcode = -1
   catch, error_status; !ERROR_STATE is set
   if error_status ne 0 then begin
     ;catch, /cancel; Disable the catch system
@@ -54,11 +55,15 @@ FUNCTION eva_data_load_mms, state, no_gui=no_gui, force=force
   endif
   
   ;... BentPipe should always be loaded ---
-  if state.PREF.EVA_TRIGGER then begin
-    for p=0,pmax-1 do begin
-      sc = sc_id[p]
-      eva_data_load_mms_fpi_pseudomom, sc=sc_id
-    endfor
+  a = tag_names(state)
+  idx = where(a eq 'PREF',ct)
+  if ct gt 0 then begin
+    if state.PREF.EVA_TRIGGER then begin
+      for p=0,pmax-1 do begin
+        sc = sc_id[p]
+        eva_data_load_mms_fpi_pseudomom, sc=sc_id
+      endfor
+    endif
   endif
   
   c = 0
@@ -67,6 +72,8 @@ FUNCTION eva_data_load_mms, state, no_gui=no_gui, force=force
     sc = sc_id[p]
     prb = strmid(sc,3,1)
     for i=0,imax-1 do begin; for each requested parameter
+      
+      
       if ~keyword_set(no_gui) then begin
         if progressbar->CheckCancel() then begin
           ok = Dialog_Message('User cancelled operation.',/center) ; Other cleanup, etc. here.
