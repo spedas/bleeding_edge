@@ -206,8 +206,8 @@ end
 ;                      Maxwell-Boltzmann fit. (Nominally, E_peak = 2*T)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-10-21 11:16:21 -0700 (Mon, 21 Oct 2019) $
-; $LastChangedRevision: 27904 $
+; $LastChangedDate: 2020-03-17 11:23:25 -0700 (Tue, 17 Mar 2020) $
+; $LastChangedRevision: 28422 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -282,14 +282,9 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     if (i gt 0) then begin
       str_element,lim,'ztitle',units_name,success=ok
       if (ok) then units_name = strlowcase(units_name) else units_name = 'unknown'
-      tspec = {time:dat.x, data:dat.y, energy:dat.v, units_name:units_name}
+      tspec = {time:dat.x, data:dat.y, var:(dat.dy)^2., energy:dat.v, units_name:units_name}
       tflg = 1
     endif else print,'No SPEC data found in tplot.'
-  endif
-
-  if (tflg and ebar) then begin
-    print,"Can't plot error bars with TPLOT option."
-    ebar = 0
   endif
 
   get_data,'alt',data=alt
@@ -441,15 +436,28 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
 
     if ((npts eq 1) and (~dosmo)) then begin
       dt = min(abs(trange[0] - tspec.time), i)
-      spec = {time:tspec.time[i], data:reform(tspec.data[i,*]), $
-              energy:tspec.energy, units_name:tspec.units_name, $
-              sc_pot:pot}
+      spec = {time:tspec.time[i], data:reform(tspec.data[i,*]), var:reform(tspec.var[i,*]), $
+              energy:tspec.energy, units_name:tspec.units_name, sc_pot:pot}
     endif else begin
       tmin = min(trange, max=tmax)
-      i = where((tspec.time ge tmin) and (tspec.time le tmax), count)
-      if (count gt 0L) then begin
-        spec = {time:mean(tspec.time[i]), data:average(tspec.data[i,*],1,/nan), $
-                energy:tspec.energy, units_name:tspec.units_name, sc_pot:pot}
+      i = where((tspec.time ge tmin) and (tspec.time le tmax), nspec)
+      if (nspec gt 0L) then begin
+        dat = tspec.data[i,*]
+        var = tspec.var[i,*]
+        nrm = dat
+        nrm[*] = 1.
+        bndx = where(~finite(dat), count)
+        if (count gt 0L) then begin
+          nrm[bndx] = 0.
+          var[bndx] = !values.f_nan
+        endif
+        nrm = total(nrm, 1)/float(nspec)
+
+        avg = total(dat[i,*], 1, /nan)/nrm
+        var = total(var[i,*], 1, /nan)/nrm
+
+        spec = {time:mean(tspec.time[i]), data:avg, var:var, energy:tspec.energy, $
+                units_name:tspec.units_name, sc_pot:pot}
       endif
     endelse
   endif else begin
@@ -783,7 +791,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       oplot,E1[imb],swe_maxbol(E1[imb],par=p),color=col,thick=2
       if keyword_set(twot) then oplot,2.*[p.T,p.T],yrange,line=2,color=5
 
-      xyouts,xs,ys,string(N_tot,format='("N = ",f5.2)'),color=dcol,charsize=csize1,/norm
+      xyouts,xs,ys,string(N_tot,format='("N = ",f6.2)'),color=dcol,charsize=csize1,/norm
       ys -= dys
       xyouts,xs,ys,string(p.T,format='("T = ",f5.2)'),color=dcol,charsize=csize1,/norm
       ys -= dys
@@ -841,10 +849,10 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       smom = specmom(eflux)
 
       oplot,eflux.energy[smom.indx],eflux.data[smom.indx],color=1,psym=10
-      print,"Density = ",smom.N," +/- ",smom.Nsig,format='(a,f6.3,a,f6.3)'
-      print,"Temperature = ",smom.T," +/- ",smom.Tsig,format='(a,f6.3,a,f6.3)'
+      print,"Density = ",smom.N," +/- ",smom.Nsig,format='(a,f6.2,a,f6.2)'
+      print,"Temperature = ",smom.T," +/- ",smom.Tsig,format='(a,f6.2,a,f6.2)'
 
-      xyouts,xs,ys,string(smom.N,format='("N = ",f6.3)'),color=dcol,charsize=csize1,/norm
+      xyouts,xs,ys,string(smom.N,format='("N = ",f6.2)'),color=dcol,charsize=csize1,/norm
       ys -= dys
       xyouts,xs,ys,string(smom.T,format='("T = ",f6.2)'),color=dcol,charsize=csize1,/norm
       ys -= dys
@@ -975,16 +983,23 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       x1 = 0.05
       x2 = 0.75
       x3 = x2 - 0.12
-      y1 = 0.95 - 0.035*findgen(28)
+      y1 = 0.95 - 0.034*findgen(28)
   
       fmt1 = '(f7.2," V")'
       fmt2 = '(f7.2," C")'
       fmt3 = '(i2)'
+      fmt4 = '(Z2.2)'
       
       j = jref
 
       k = swe_hsk[j].ssctl
-      if (k lt 4) then tabnum = mvn_swe_tabnum(swe_hsk[j].chksum[k]) else tabnum = -1
+      if (k lt 4) then begin
+        chksum = swe_hsk[j].chksum[k]
+        tabnum = mvn_swe_tabnum(chksum)
+      endif else begin
+        chksum = 'FF'x
+        tabnum = -1
+      endelse
 
       erase
       xyouts,x1,y1[0],/normal,"SWEA Housekeeping",charsize=csize
@@ -1029,6 +1044,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       xyouts,x2,y1[24],/normal,string(swe_hsk[j].DIGT,format=fmt2),charsize=csize,align=1.0
       xyouts,x1,y1[26],/normal,"SWEEP TABLE",charsize=csize
       xyouts,x2,y1[26],/normal,string(tabnum,format=fmt3),charsize=csize,align=1.0
+      xyouts,x1,y1[27],/normal,"CHECKSUM",charsize=csize
+      xyouts,x2,y1[27],/normal,string(chksum,format=fmt4),charsize=csize,align=1.0
     endif
 
 ; Get the next button press
@@ -1055,13 +1072,27 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
             dt = min(abs(trange[0] - tspec.time), i)
             spec = {time:tspec.time[i], data:reform(tspec.data[i,*]), $
                     energy:tspec.energy, units_name:tspec.units_name, $
-                    sc_pot:pot}
+                    sc_pot:pot, var:reform(tspec.var[i,*])}
           endif else begin
             tmin = min(trange, max=tmax)
-            i = where((tspec.time ge tmin) and (tspec.time le tmax), count)
-            if (count gt 0L) then begin
-              spec = {time:mean(tspec.time[i]), data:average(tspec.data[i,*],1,/nan), $
-                      energy:tspec.energy, units_name:tspec.units_name, sc_pot:pot}
+            i = where((tspec.time ge tmin) and (tspec.time le tmax), nspec)
+            if (nspec gt 0L) then begin
+              dat = tspec.data[i,*]
+              var = tspec.var[i,*]
+              nrm = dat
+              nrm[*] = 1.
+              bndx = where(~finite(dat), count)
+              if (count gt 0L) then begin
+                nrm[bndx] = 0.
+                var[bndx] = !values.f_nan
+              endif
+              nrm = total(nrm, 1)/float(nspec)
+
+              avg = total(dat[i,*], 1, /nan)/nrm
+              var = total(var[i,*], 1, /nan)/nrm
+
+              spec = {time:mean(tspec.time[i]), data:avg, var:var, energy:tspec.energy, $
+                      units_name:tspec.units_name, sc_pot:pot}
             endif
           endelse
         endif else begin

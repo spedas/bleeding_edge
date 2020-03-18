@@ -39,8 +39,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2016-05-06 10:21:51 -0700 (Fri, 06 May 2016) $
-; $LastChangedRevision: 21027 $
+; $LastChangedDate: 2020-03-17 11:24:31 -0700 (Tue, 17 Mar 2020) $
+; $LastChangedRevision: 28424 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_n1d.pro $
 ;
 ;-
@@ -243,6 +243,13 @@ pro mvn_swe_n1d, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, mask
     dsig[indx] = !values.f_nan
     tsig[indx] = !values.f_nan
   endif
+
+  lowe_test = {x:t, y:replicate(1.,npts)}
+  mvn_swe_lowe_mask, lowe_test
+  dens *= lowe_test.y
+  temp *= lowe_test.y
+  dsig *= lowe_test.y
+  tsig *= lowe_test.y
 
 ; Create TPLOT variables
 

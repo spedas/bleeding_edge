@@ -16,7 +16,7 @@
 ;  spice_frame = mvn_frame_name(frame)
 ;
 ;INPUTS:
-;       frame:    Sring scalar or array of MAVEN frame name fragments.
+;       frame:    String scalar or array of MAVEN frame name fragments.
 ;
 ;KEYWORDS:
 ;     SUCCESS:    An array of integers with the same number of elements
@@ -30,8 +30,8 @@
 ;                 null string.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-06-29 15:42:33 -0700 (Fri, 29 Jun 2018) $
-; $LastChangedRevision: 25425 $
+; $LastChangedDate: 2020-03-17 11:18:25 -0700 (Tue, 17 Mar 2020) $
+; $LastChangedRevision: 28418 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_frame_name.pro $
 ;
 ;CREATED BY:    David L. Mitchell

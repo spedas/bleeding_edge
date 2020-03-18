@@ -68,8 +68,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-10-21 10:09:53 -0700 (Mon, 21 Oct 2019) $
-; $LastChangedRevision: 27900 $
+; $LastChangedDate: 2020-03-17 11:23:59 -0700 (Tue, 17 Mar 2020) $
+; $LastChangedRevision: 28423 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -844,6 +844,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
 
     x = mvn_swe_engy.time
     y = transpose(mvn_swe_engy.data)
+    dy = transpose(sqrt(mvn_swe_engy.var))
 
     tmin = min(x, max=tmax)
     tsp = [tsp, tmin, tmax]
@@ -855,7 +856,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     if (n gt 0L) then y[i,*] = !values.f_nan  ; mask hires data
 
     ename = 'swe_a4'
-    store_data,ename,data={x:x, y:y, v:v}
+    store_data,ename,data={x:x, y:y, dy:dy, v:v}
      if (sflg) then begin
       options,ename,'spec',1
       ylim,ename,Emin,Emax,1
@@ -1082,6 +1083,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     options,'SIFCTL','spec',1
     ylim,'SIFCTL',0,15,0
     zlim,'SIFCTL',0,1,0
+    options,'SIFCTL','panel_size',0.5
     options,'SIFCTL','yticks',3
     options,'SIFCTL','yminor',5
     options,'SIFCTL','ytitle','SIFCTL'
