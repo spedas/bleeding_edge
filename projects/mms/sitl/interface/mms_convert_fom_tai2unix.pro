@@ -80,6 +80,17 @@ pro mms_convert_fom_tai2unix, tai_fomstr, unix_fomstr, start_string
   
   unix_fomstr.cyclestart = cyclestart_unix
   
+  
+  ; Check and see if the new sitl-defined closed time exists, and if so, convert it
+  str_element, tai_fomstr, 'close_time', success = s
+
+  if s eq 1 then begin
+    close_time_unix = mms_tai2unix(tai_fomstr.close_time)
+    str_element, unix_fomstr, 'close_time', /delete
+    str_element, unix_fomstr, 'close_time', ulong(close_time_unix), /add
+  endif
+
+  
   ;timestamps_unix = cyclestart_unix + dindgen(n_elements(unix_fomstr.timestamps))*10
   
   timestamps_unix = mms_tai2unix(unix_fomstr.timestamps)

@@ -92,6 +92,11 @@ FUNCTION eva_data_load_sitl, state
     eva_sitl_strct_yrange,'mms_stlm_output_fom'
     eva_sitl_strct_yrange,'mms_stlm_fomstr'
     
+    
+    ; 'mms_sroi'
+    eva_sitl_sroi_bar, trange=time_double(str_tspan)
+    
+    
     ; Update the history
     eva_sitl_stack
   endif

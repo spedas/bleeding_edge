@@ -850,6 +850,9 @@ FUNCTION eva_sitl, parent, $
       str_element,/add,state,'drpSave',widget_droplist(bsActionHighlight,VALUE=svSet,$
         TITLE='FOM:',SENSITIVE=1)
         str_element,/add,state,'svSet',svSet
+    bsActionUplink = widget_base(bsAction0, /COLUMN, SPACE=0, YPAD=0)
+      str_element,/add,state,'lblEvalStartTime',widget_label(bsActionUplink,VALUE='Next SITL Window Start Time: N/A                    ',/align_left)
+      str_element,/add,state,'lblUplink',widget_label(bsActionUplink,VALUE='Uplink - No  ')
 
   bsActionSubmit = widget_base(subbase,/ROW, SENSITIVE=0)
   str_element,/add,state,'bsActionSubmit',bsActionSubmit

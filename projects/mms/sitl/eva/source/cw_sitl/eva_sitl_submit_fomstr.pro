@@ -50,6 +50,9 @@ PRO eva_sitl_submit_FOMStr, tlb, TESTING, vcase, user_flag=user_flag
     if strmatch(strlowcase(answer),'no') then return
   endif
   
+  r = eva_sitluplink_validateFOM(lim.UNIX_FOMSTR_MOD)
+  if (r gt 0) then return
+  
   ;------------------
   ; Submit
   ;------------------

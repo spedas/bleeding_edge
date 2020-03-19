@@ -9,8 +9,8 @@
 ;
 ;
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2017-10-31 19:35:36 -0700 (Tue, 31 Oct 2017) $
-; $LastChangedRevision: 24248 $
+; $LastChangedDate: 2020-03-18 17:36:38 -0700 (Wed, 18 Mar 2020) $
+; $LastChangedRevision: 28432 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/eva.pro $
 PRO eva_event, event
   @tplot_com
@@ -145,6 +145,11 @@ PRO eva
   ;---------------------------------
   str_element,/add,wid,'sitl', eva_sitl(baseTab,xsize=cpwidth);330); SITL MODULE
 
+  ;---------------------------------
+  ;  SITL (Uplink)
+  ;---------------------------------
+  str_element,/add,wid,'sitluplink', eva_sitluplink(baseTab)
+    
   ;---------------------------------
   ;  ORBIT
   ;---------------------------------

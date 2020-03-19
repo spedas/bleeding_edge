@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2020-02-26 12:39:55 -0800 (Wed, 26 Feb 2020) $
-; $LastChangedRevision: 28347 $
+; $LastChangedDate: 2020-03-18 17:36:38 -0700 (Wed, 18 Mar 2020) $
+; $LastChangedRevision: 28432 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data.pro $
 
 ;PRO eva_data_update_date, state, update=update
@@ -158,6 +158,9 @@ FUNCTION eva_data_load_and_plot, state, cod=cod, evtop=evtop
   ;--exceptional parameter --
   idx=where(strmatch(paramlist,'thg_idx_ae'),ct2)
   if ct2 eq 1 then paramlist_mms = [paramlist_mms,'thg_idx_ae']
+;  idx=where(strmatch(paramlist,'mms_sroi'),ct3)
+;  if ct3 eq 0 then paramlist_mms = ['mms_sroi',paramlist_mms]
+;  
   ;----    
   str_element,/add,state,'paramlist_mms',paramlist_mms
   rst_mms = 'No'
@@ -195,6 +198,8 @@ FUNCTION eva_data_load_and_plot, state, cod=cod, evtop=evtop
       s = (ct gt 0)
       id_sitl = widget_info(state.parent, find_by_uname='eva_sitl')
       widget_control, id_sitl, SET_VALUE=s
+;      id_sitl = widget_info(state.parent, find_by_uname='eva_sitluplink')
+;      widget_control, id_sitl, SET_VALUE=s
     endif
   endif
   
@@ -290,6 +295,15 @@ FUNCTION eva_data_login, state, evTop
       endif
       str_element,/add,sitl_state,'val',val
       str_element,/add,sitl_state,'trange_sitl_window',[start_time,end_time]
+      widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
+      
+      ;---------------------
+      ; Update SITLUPLINK MODULE
+      ;---------------------
+      id_sitl = widget_info(state.parent, find_by_uname='eva_sitluplink')
+      sitl_stash = WIDGET_INFO(id_sitl, /CHILD)
+      widget_control, sitl_stash, GET_UVALUE=sitl_state, /NO_COPY;******* GET
+      widget_control, sitl_state.subbase, SENSITIVE=(user_flag ge 1); main SITL control
       widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
       
       ;---------------------
@@ -512,7 +526,7 @@ FUNCTION eva_data, parent, $
   user_flag = 0
   ;userType = ['Guest','MMS member','SITL','Super SITL'];'FPI-cal'
   userType = ['Public','SITL','Super SITL']; MMS data is open to public; No meaning for having Guest 
-  
+    
   ;----- PREFERENCES -----
   
   ;home_dir = (file_search('~',/expand_tilde))[0]+'/'

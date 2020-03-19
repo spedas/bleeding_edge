@@ -25,7 +25,7 @@ pro mms_convert_fom_unix2tai, unix_fomstr, tai_fomstr
 ;  cycle_start_tai = cycle_start_utc + current_leap - 9
   
   cycle_start_tai = mms_unix2tai(unix_fomstr.cyclestart)
-  
+    
   ;------------------------------------------------------------------------------
   ; Create the modified structure
   ;------------------------------------------------------------------------------
@@ -33,6 +33,16 @@ pro mms_convert_fom_unix2tai, unix_fomstr, tai_fomstr
   tai_fomstr = unix_fomstr
   
   tai_fomstr.cyclestart = cycle_start_tai
+  
+  ; If it exists, we convert the close time.
+  
+  str_element, unix_fomstr, 'evalstarttime', success = s
+  
+  if s eq 1 then begin
+    close_time_tai = mms_unix2tai(unix_fomstr.evalstarttime)
+    str_element, tai_fomstr, 'evalstarttime', /delete
+    str_element, tai_fomstr, 'evalstarttime', ulong(close_time_tai), /add
+  endif
   
   ; Lets create new_timetags
   

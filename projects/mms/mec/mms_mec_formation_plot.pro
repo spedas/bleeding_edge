@@ -36,16 +36,16 @@
 ;      
 ; VECTOR KEYWORDS:
 ;   The following keywords allow you to add various types of vectors to the figure, and control the look of the vectors
-;         bfield_center: add the average B-field vector to the center of the figure (average of all 4 spacecraft)
-;         bfield_sc: add the B-field vector at each spacecraft
+;         bfield_center: add the average B-field vector to the center of the figure (average of all 4 spacecraft; GSE or GSM coordinates only)
+;         bfield_sc: add the B-field vector at each spacecraft (GSE or GSM coordinates only)
 ;         bfield_color: change the color of the B-field vector (default: red)
 ;         fgm_data_rate: B-field data rate to use (default: srvy)
 ;         fgm_normalization: normalization factor of the B-field vector (allows you to scale down/up the vector; default: 1)
 ;         
-;         dis_center: add the average DIS bulk velocity vector to the center of the figure (average of all 4 spacecraft)
-;         des_center: add the average DES bulk velocity vector to the center of the figure (average of all 4 spacecraft)
-;         dis_sc: add the DIS bulk velocity vector at each spacecraft
-;         des_sc: add the DES bulk velocity vector at each spacecraft
+;         dis_center: add the average DIS bulk velocity vector to the center of the figure (average of all 4 spacecraft; GSE coordinates only)
+;         des_center: add the average DES bulk velocity vector to the center of the figure (average of all 4 spacecraft; GSE coordinates only)
+;         dis_sc: add the DIS bulk velocity vector at each spacecraft (GSE coordinates only)
+;         des_sc: add the DES bulk velocity vector at each spacecraft (GSE coordinates only)
 ;         dis_color: change the color of the DIS bulk velocity vector
 ;         des_color: change the color of the DES bulk velocity vector
 ;         fpi_data_rate: data rate of the DIS/DES data to use when plotting the vectors (default: fast)
@@ -86,8 +86,8 @@
 ;       and Kim Kokkonen at LASP
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-03-09 09:57:44 -0700 (Mon, 09 Mar 2020) $
-; $LastChangedRevision: 28388 $
+; $LastChangedDate: 2020-03-18 08:53:32 -0700 (Wed, 18 Mar 2020) $
+; $LastChangedRevision: 28428 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_mec_formation_plot.pro $
 ;-
 
@@ -119,6 +119,20 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
       get_data, 'mms_tetrahedron_qf', data=tqf
   endif
 
+  if keyword_set(dis_center) || keyword_set(dis_sc) || keyword_set(des_center) || keyword_set(des_sc) then begin
+    if coord ne 'gse' then begin
+      dprint, dlevel=0, "Error, FPI bulk velocity vectors can only be added in GSE coordinates; " + strupcase(coord) + " requested"
+      return
+    endif
+  endif
+  
+  if keyword_set(bfield_center) || keyword_set(bfield_sc) then begin
+    if ~array_contains(['gse', 'gsm'], coord) then begin
+      dprint, dlevel=0, "Error, B-field vectors can only be added in GSE or GSM coordinates; " + strupcase(coord) + " requested"
+      return
+    endif
+  endif
+  
   get_data, 'mms1_mec_r_'+coord, data=d1
   get_data, 'mms2_mec_r_'+coord, data=d2
   get_data, 'mms3_mec_r_'+coord, data=d3
