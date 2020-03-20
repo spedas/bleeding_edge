@@ -52,6 +52,14 @@ FUNCTION eva_sitl_pref_event, ev
 ;      widget_control, state.STATE_SITL.btnSplit, SENSITIVE=(~ev.SELECT)
 ;      widget_control, state.STATE_SITL.btnFill, SENSITIVE=(~ev.SELECT)
 ;      widget_control, state.STATE_SITL.drpHighlight, SENSITIVE=ev.SELECT
+      
+      ;-----------------
+      ; UPLINK
+      ;-----------------
+      ;strUplink = (state.state_sitl.UPLINK) ? 'UPLINK' : 'DRAFT'
+      ;strButton = (ev.SELECT) ? 'BAKSTR' : strUplink
+      strButton = (ev.SELECT) ? 'BAKSTR' : 'DRAFT'
+      widget_control, state.STATE_SITL.btnSubmit, SET_VALUE='   '+strButton+'   '
       end
     state.bgTestmode:  begin;{ID:0L, TOP:0L, HANDLER:0L, SELECT:0, VALUE:0 }
       pref.EVA_TESTMODE_SUBMIT = (~ev.SELECT); "Selected" means "submission enabled (i.e, not in test mode)"

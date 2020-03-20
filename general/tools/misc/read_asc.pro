@@ -46,10 +46,11 @@ end
 ;      the format could be specified as:
 ;   FORMAT={year:0,day:0,sec:0.d,v:fltarr(3),n:0.}
 ;   if this keyword is not specified then a default structure will be created.
+;   NHEADER:  set to number of header lines
 ;CREATED BY: Davin Larson
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-06-12 02:18:18 -0700 (Wed, 12 Jun 2019) $
-; $LastChangedRevision: 27341 $
+; $LastChangedDate: 2020-03-18 19:42:06 -0700 (Wed, 18 Mar 2020) $
+; $LastChangedRevision: 28440 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/read_asc.pro $
 
 ;-

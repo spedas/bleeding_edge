@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2020-03-18 17:36:38 -0700 (Wed, 18 Mar 2020) $
-; $LastChangedRevision: 28432 $
+; $LastChangedDate: 2020-03-18 23:24:29 -0700 (Wed, 18 Mar 2020) $
+; $LastChangedRevision: 28442 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data.pro $
 
 ;PRO eva_data_update_date, state, update=update
@@ -198,8 +198,6 @@ FUNCTION eva_data_load_and_plot, state, cod=cod, evtop=evtop
       s = (ct gt 0)
       id_sitl = widget_info(state.parent, find_by_uname='eva_sitl')
       widget_control, id_sitl, SET_VALUE=s
-;      id_sitl = widget_info(state.parent, find_by_uname='eva_sitluplink')
-;      widget_control, id_sitl, SET_VALUE=s
     endif
   endif
   

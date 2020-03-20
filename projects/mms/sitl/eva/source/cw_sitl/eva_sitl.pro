@@ -787,7 +787,8 @@ FUNCTION eva_sitl, parent, $
     rehighlight: 0,$
     launchtime: systime(1,/utc),$
     user_flag: 0, $
-    userType: ['MMS member','SITL','Super SITL']};,'FPI cal']}
+    userType: ['MMS member','SITL','Super SITL'],$
+    uplink:0L};,'FPI cal']}
     ;userType: ['Guest','MMS member','SITL','Super SITL']};,'FPI cal']}
 
   ; ----- CONFIG (READ) -----
@@ -852,7 +853,7 @@ FUNCTION eva_sitl, parent, $
         str_element,/add,state,'svSet',svSet
     bsActionUplink = widget_base(bsAction0, /COLUMN, SPACE=0, YPAD=0)
       str_element,/add,state,'lblEvalStartTime',widget_label(bsActionUplink,VALUE='Next SITL Window Start Time: N/A                    ',/align_left)
-      str_element,/add,state,'lblUplink',widget_label(bsActionUplink,VALUE='Uplink - No  ')
+      ;str_element,/add,state,'lblUplink',widget_label(bsActionUplink,VALUE='Uplink - No  ')
 
   bsActionSubmit = widget_base(subbase,/ROW, SENSITIVE=0)
   str_element,/add,state,'bsActionSubmit',bsActionSubmit
@@ -860,7 +861,7 @@ FUNCTION eva_sitl, parent, $
 ;    str_element,/add,state,'btnEmail',widget_button(bsActionSubmit,VALUE=' Email ')
     dumSubmit2 = widget_base(bsActionSubmit,xsize=80); Comment out this line when using Email
     dumSubmit = widget_base(bsActionSubmit,xsize=60)
-    str_element,/add,state,'btnSubmit',widget_button(bsActionSubmit,VALUE='   SUBMIT   ')
+    str_element,/add,state,'btnSubmit',widget_button(bsActionSubmit,VALUE='   DRAFT   ')
   
   ; Save out the initial state structure into the first childs UVALUE.
   WIDGET_CONTROL, WIDGET_INFO(mainbase, /CHILD), SET_UVALUE=state, /NO_COPY

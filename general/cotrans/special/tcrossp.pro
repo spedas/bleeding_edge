@@ -21,6 +21,7 @@
 ;                 of elements in time, uses data_cut, which
 ;                 interpolates the data in v2 to the number of times
 ;                 given by v1
+; multiplier: scale factor to multiply by 
 ; Outputs(optional):
 ;   out:
 ;     Returns output in array format, if this argument is present, no tplot variable will be created
@@ -42,16 +43,17 @@
 ;---> Arguments can be mixed array/tplot type.(ie one array, one tplot variable)  If no argument is a tplot variable, no tplot variable can be created as an argument.
 ;
 ;---> Does not currently accept multiple inputs.  Can only cross two variables at a time.
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2012-07-20 11:39:26 -0700 (Fri, 20 Jul 2012) $
-; $LastChangedRevision: 10727 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2020-03-18 19:39:21 -0700 (Wed, 18 Mar 2020) $
+; $LastChangedRevision: 28439 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/special/tcrossp.pro $
 ;-
 ;
 
-pro tcrossp, v1, v2, newname = newname, error = error, out = out_d, diff_tsize_ok = diff_tsize_ok
+pro tcrossp, v1, v2, newname = newname, error = error, out = out_d, diff_tsize_ok = diff_tsize_ok,multiplier=multiplier
 
 
+if n_elements(multiplier) eq 0 then multiplier = 1.
 if arg_present(error) then error = 0
 
 ;input checks
@@ -172,9 +174,9 @@ if is_struct(v1_d) && is_struct(v2_d) && ~array_equal(v1_d.x,v2_d.x) then begin
 endif
 
 ;the calculation(delightfully symmetric)
-x = data1[*,1] * data2[*,2] - data1[*,2] * data2[*,1]
-y = data1[*,2] * data2[*,0] - data1[*,0] * data2[*,2]
-z = data1[*,0] * data2[*,1] - data1[*,1] * data2[*,0]
+x = multiplier* (data1[*,1] * data2[*,2] - data1[*,2] * data2[*,1])
+y = multiplier* (data1[*,2] * data2[*,0] - data1[*,0] * data2[*,2])
+z = multiplier* (data1[*,0] * data2[*,1] - data1[*,1] * data2[*,0])
 
 ;stick em together as a single array
 out_d = [[x],[y],[z]] 

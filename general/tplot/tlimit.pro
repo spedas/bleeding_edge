@@ -61,7 +61,10 @@ if size(/type,refdate) eq 7 then str_element,tplot_vars,'options.refdate',$
 
 ; if silent keyword is not explicitly set or set to zero, default behavior
 ; is silent for windows, not silent for others.
-if size(/type, silent) eq 0 then silent = !version.os_family eq 'Windows'
+if size(/type, silent) eq 0 then begin
+  if !version.os_family eq 'Windows' then silent = 1
+  if !version.os eq 'darwin' then silent=1
+endif
 
 n = n_params()
 str_element,tplot_vars,'options.trange',trange

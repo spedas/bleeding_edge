@@ -415,7 +415,7 @@ if not keyword_set(debug) then begin
     plots,[0,1],[ohy,ohy], color=color,/norm,/thick,lines=0 ;erase crosshairs
     plots,[hx,hx],[0,1],   color=color,/norm,/thick,lines=0
     print
-    print,'Error: ',!error_state.code          ;report problem
+    dprint,'Error: ',!error_state.code          ;report problem
     print,!error_state.msg
     tvcrs,0                         ;turn off cursor
     device,set_graphics=old         ;restore old graphics state

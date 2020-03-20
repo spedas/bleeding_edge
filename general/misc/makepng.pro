@@ -35,10 +35,22 @@ pro makepng,filename,multiple=multiple,close=close,ct=ct,no_expose=no_expose,  $
     ;   return
     ;endif
 
-    if n_elements(window) ne 0 then wset,window
+    if not keyword_set(filename) then filename = 'plot'
+    if n_elements(window) ne 0 then begin
+      if n_elements(window) eq 1 && window eq -1 then begin
+        device,window_state=windows
+        window = where(windows,/null)
+      endif
+      if n_elements(window) gt 1 then begin
+        for w=0,n_elements(window)-1 do begin
+          makepng,filename+'_w'+strtrim(window[w],2),timetag=timetag,window=window[w],verbose=verbose
+        endfor
+        return
+      endif
+      wset,window
+    endif
     if not keyword_set(no_expose) then  wi,window,verbose=0  ; wshow,icon=0
     if n_elements(ct) ne 0 then loadct2,ct  ;cluge!
-    if not keyword_set(filename) then filename = 'plot'
     if keyword_set(timetag) then begin
         if timetag gt 2 then tt = timetag else tt = systime(1)
         suffix= time_string(local = timetag eq 1,tt,tformat='_YYYYMMDD_hhmmss')

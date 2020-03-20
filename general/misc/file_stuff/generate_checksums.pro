@@ -160,7 +160,7 @@ if nfiles ne 0  then begin
       endif
     endif    
   endif else begin
-    dprint,dlevel=3,verbose=verbose,tab+startpath+' Found '+strtrim(nfiles,2)+' files, but can not write to directory. '
+    dprint,dlevel=2,verbose=verbose,tab+startpath+' Found '+strtrim(nfiles,2)+' files, but can not write to directory. '
   endelse
 endif
 
