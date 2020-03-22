@@ -26,6 +26,8 @@
 ;      8 : 2018-06-23 to 2018-11-13 (break at MCP bump)
 ;      9 : 2018-11-13 to 2019-03-25
 ;     10 : 2019-05-08 to 2019-08-14
+;     11 : 2019-10-23 to 2019-12-23
+;     12 : 2020-03-03 to ...
 ;
 ;  Solar wind periods 1 and 3 yield calibrations that are very similar.
 ;  These are combined into a single FOV calibration.  Solar wind period
@@ -56,8 +58,8 @@
 ;       TEST:         Returns calibration used.  For testing.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-08-26 16:51:27 -0700 (Mon, 26 Aug 2019) $
-; $LastChangedRevision: 27658 $
+; $LastChangedDate: 2020-03-21 14:50:59 -0700 (Sat, 21 Mar 2020) $
+; $LastChangedRevision: 28450 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_flatfield.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2016-09-28
@@ -72,7 +74,7 @@ function mvn_swe_flatfield, time, nominal=nominal, off=off, set=set, silent=sile
 ; Initialize the common block, if necessary
 
   if ((size(cc_t,/type) eq 0) or (keyword_set(init))) then begin
-    kmax = 10
+    kmax = 11
     swe_ff = replicate(1.,96,kmax+1)
 
 ;   Solar wind calibration period 1  (2014-10-27 to 2015-03-14).
@@ -236,7 +238,12 @@ function mvn_swe_flatfield, time, nominal=nominal, off=off, set=set, silent=sile
                     0.923548 , 0.972435 , 0.917691 , 0.929452 , 0.915833 , 0.894578 , $
                     1.001139 , 0.952609 , 1.041941 , 0.994645 , 0.940149 , 0.930939    ]
 
-;   Centers of solar wind calibration periods 1-9
+;   Solar wind calibration period 11 (2019-10-23 to 2019-12-23)
+;     November shows no measurable difference between SW10 and SW11
+
+    swe_ff[*,11] = swe_ff[*,10]
+
+;   Centers of solar wind calibration periods 1-11
 
     tt = time_double(['2014-12-22', $    ; Solar Wind 1
                       '2015-08-02', $    ; Solar Wind 2
@@ -247,7 +254,8 @@ function mvn_swe_flatfield, time, nominal=nominal, off=off, set=set, silent=sile
                       '2018-02-17', $    ; Solar Wind 7
                       '2018-08-13', $    ; Solar Wind 8
                       '2019-01-22', $    ; Solar Wind 9
-                      '2019-06-23'   ])  ; Solar Wind 10
+                      '2019-06-23', $    ; Solar Wind 10
+                      '2019-11-22'   ])  ; Solar Wind 11
 
     cc_t = mvn_swe_crosscal(tt,/silent)
 
@@ -314,7 +322,7 @@ function mvn_swe_flatfield, time, nominal=nominal, off=off, set=set, silent=sile
       test = frac + 7.
     endif
 
-;   Solar Wind 9 through Solar Wind 10, and beyond.
+;   Solar Wind 9 through first month of Solar Wind 11.
 
     if (t ge t_mcp[8]) then begin
       frac = (((cc - cc_t[8])/(cc_t[9] - cc_t[8])) > 0.) < 1.
