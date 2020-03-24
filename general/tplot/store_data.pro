@@ -36,9 +36,9 @@
 ;SEE ALSO:    "GET_DATA", "TPLOT_NAMES",  "TPLOT", "OPTIONS"
 ;
 ;CREATED BY:    Davin Larson
-; $LastChangedBy: ehanson $
-; $LastChangedDate: 2019-01-16 14:13:53 -0800 (Wed, 16 Jan 2019) $
-; $LastChangedRevision: 26471 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2020-03-23 14:04:56 -0700 (Mon, 23 Mar 2020) $
+; $LastChangedRevision: 28455 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/store_data.pro $
 ;-
 pro store_data,name, time,ydata,values, $
@@ -163,8 +163,11 @@ if dt eq 7 then begin
   endif
   if total( array_union(byte(name),byte(' *?[]\'))  ge 0) then begin
        dprint,verbose=verbose,'Invalid name: "'+name+'"; Name may not contain spaces, or the characters: "* ? [ ] \"'
-       error=1
-       return
+       invc = [' ', '*', '?', '[', ']', '\']
+       For ii = 0, n_elements(invc)-1 Do name = ssw_str_replace(name, invc[ii], '$')
+       dprint, verbose=verbose,'Replaced invalid characters with $, name: '+name
+;       error = 1
+;       return
   endif
   if n_elements(data_quants) eq 0 then index = 0 else  index = find_handle(name)
 endif else if (dt ge 1) and (dt le 3) then begin

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Mar 21 18:15:48 2020.<P>
+<STRONG>Last modified: </STRONG>Mon Mar 23 18:15:49 2020.<P>
  
 <HR>
  
@@ -31,7 +31,8 @@ RBSP_EFW_MAKE_L2_ESVY_UVW (PROCEDURE)</A>
 <LI><A HREF="#RBSP_EFW_MAKE_L2_SPEC">RBSP_EFW_MAKE_L2_SPEC</A>
 <LI><A HREF="#RBSP_EFW_MAKE_L2_SPINFIT">RBSP_EFW_MAKE_L2_SPINFIT</A>
 <br>Generate level-2 EFW &quot;spinfit&quot; CDF files
-<LI><A HREF="#RBSP_EFW_MAKE_L2_VSVY">RBSP_EFW_MAKE_L2_VSVY</A>
+<LI><A HREF="#RBSP_EFW_MAKE_L2_VSVY[2]">RBSP_EFW_MAKE_L2_VSVY[2]</A>
+<LI><A HREF="#RBSP_EFW_MAKE_L2_VSVY[1]">RBSP_EFW_MAKE_L2_VSVY[1]</A>
 <LI><A HREF="#RBSP_EFW_MAKE_L3">RBSP_EFW_MAKE_L3</A>
 <LI><A HREF="#TPLOT_TIME_TO_EPOCH (FUNCTION)">TPLOT_TIME_TO_EPOCH (FUNCTION)</A>
 <br>Convert tplot time stamps into CDF epoch.
@@ -327,7 +328,7 @@ used for the L2 CDF files
 <A NAME="RBSP_EFW_MAKE_L2_SPINFIT">
 <H2>RBSP_EFW_MAKE_L2_SPINFIT</H2></A>
 <A HREF="#RBSP_EFW_MAKE_L2_SPEC">[Previous Routine]</A>
-<A HREF="#RBSP_EFW_MAKE_L2_VSVY">[Next Routine]</A>
+<A HREF="#RBSP_EFW_MAKE_L2_VSVY[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -371,9 +372,76 @@ used for the L2 CDF files
 <STRONG>(See <A href="l1_to_l2/rbsp_efw_make_l2_spinfit.pro">general/missions/rbsp/efw/l1_to_l2/rbsp_efw_make_l2_spinfit.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_EFW_MAKE_L2_VSVY">
-<H2>RBSP_EFW_MAKE_L2_VSVY</H2></A>
+<A NAME="RBSP_EFW_MAKE_L2_VSVY[1]">
+<H2>RBSP_EFW_MAKE_L2_VSVY[1]</H2></A>
 <A HREF="#RBSP_EFW_MAKE_L2_SPINFIT">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_MAKE_L2_VSVY[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+   rbsp_efw_make_l2_vsvy
+
+ PURPOSE: Create L2 (level-2) CDF files from the Van Allen Probe EFW
+			Vsvy data product.
+
+
+ CALLING SEQUENCE:
+
+ ARGUMENTS:	sc -&gt; Which probe? 'a' or 'b'
+				date -&gt; ex, '2013-10-13'
+
+ KEYWORDS:
+
+
+ EXAMPLES:	rbsp_efw_make_l2_vsvy,'a','2012-10-13'
+
+ NOTES: This program stuffs the following quantities into the skeleton CDF file.
+		V1-V6 -&gt; single-ended potential quantities
+		(Vx+Vy)/2 -&gt; opposing boom averages
+
+
+	The flag array to be inserted into CDF has the following 20 fields:
+		global_flag
+		eclipse
+		maneuver
+		efw_sweep
+		efw_deploy
+		v1_saturation
+		v2_saturation
+		v3_saturation
+		v4_saturation
+		v5_saturation
+		v6_saturation
+		Espb_magnitude
+		Eparallel_magnitude
+		magnetic_wake
+		undefined
+		undefined
+		undefined
+		undefined
+		undefined
+		undefined
+
+	This program only sets the values of the V1-V6_saturation. The other values
+	are set to N/A or to unknown
+
+
+ HISTORY:
+   March 2013: Created by Aaron Breneman, University of Minnesota
+
+
+ VERSION:
+	$LastChangedBy: aaronbreneman $
+	$LastChangedDate: 2020-03-23 08:07:16 -0700 (Mon, 23 Mar 2020) $
+	$LastChangedRevision: 28451 $
+ 	$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/l1_to_l2/rbsp_efw_make_l2_vsvy_hires.pro $
+</PRE><P>
+<STRONG>(See <A href="l1_to_l2/rbsp_efw_make_l2_vsvy_hires.pro">general/missions/rbsp/efw/l1_to_l2/rbsp_efw_make_l2_vsvy_hires.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="RBSP_EFW_MAKE_L2_VSVY[2]">
+<H2>RBSP_EFW_MAKE_L2_VSVY[2]</H2></A>
+<A HREF="#RBSP_EFW_MAKE_L2_VSVY[1]">[Previous Routine]</A>
 <A HREF="#RBSP_EFW_MAKE_L3">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -440,7 +508,7 @@ used for the L2 CDF files
  
 <A NAME="RBSP_EFW_MAKE_L3">
 <H2>RBSP_EFW_MAKE_L3</H2></A>
-<A HREF="#RBSP_EFW_MAKE_L2_VSVY">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_MAKE_L2_VSVY[2]">[Previous Routine]</A>
 <A HREF="#TPLOT_TIME_TO_EPOCH (FUNCTION)">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
