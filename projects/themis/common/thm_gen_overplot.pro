@@ -719,23 +719,32 @@ thm_load_ask, /verbose
 SKIP_ASI_LOAD:
 
 asi_sites = tnames('*ask*')
-
 filler = fltarr(2, 10)          ; (10 chosen arbitrarily)
 filler[*, *] = float('NaN')
-;Harald requests using FSMI as first choice:
-fsmi_site = tnames('*ask*fsmi*')
-if fsmi_site[0] ne '' then begin
-   copy_data, fsmi_site[0], 'Keogram' 
-   have_keogram = 1b
-endif else begin
-  if asi_sites[0] ne '' then begin
-     copy_data, asi_sites[0], 'Keogram' 
-     have_keogram = 1b
-  endif else begin
-     store_data, 'Keogram', data = {x:time_double(date_ext)+findgen(2), y:filler, v:findgen(10)}
-     have_keogram = 0b
-  endelse
-endelse
+;2020-03-24, FSIM, FSMI, RANK, SNKQ checked in that order
+test_sites = tnames('thg_ask_'+['fsim', 'fsmi', 'rank', 'snkq'])
+other_sites = ssl_set_complement(test_sites, asi_sites)
+If(other_sites[0] Eq -1) Then other_sites = '' ;protect against low-probability
+asi_sites = [test_sites, other_sites]
+;check sites for good data in order
+have_keogram = 0b
+If(is_string(asi_sites)) Then Begin
+   For ksite = 0, n_elements(asi_sites)-1 Do Begin
+      If(~have_keogram) Then Begin
+         get_data, asi_sites[ksite], data = askd
+         If(is_struct(askd)) Then Begin
+            copy_data, asi_sites[ksite], 'Keogram'
+            have_keogram= 1b
+            undefine, askd
+            break               ;out of loop
+         Endif
+      Endif
+   Endfor
+Endif
+If(~have_keogram) Then Begin ;for no data at any site
+   store_data, 'Keogram', data = {x:time_double(date_ext)+findgen(2), y:filler, v:findgen(10)}
+   have_keogram = 0b
+Endif
 ;remove all time steps for which all y values are fill= 65335, then degap
 if have_keogram then begin
    get_data, 'Keogram', data = kd

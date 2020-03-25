@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_eis_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-03-03 09:01:23 -0800 (Tue, 03 Mar 2020) $
-; $LastChangedRevision: 28364 $
+; $LastChangedDate: 2020-03-24 10:54:13 -0700 (Tue, 24 Mar 2020) $
+; $LastChangedRevision: 28460 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_eis_ut__define.pro $
 ;-
 
@@ -187,8 +187,8 @@ function mms_load_eis_ut::test_yrange_of_spectra_brst
 end
 function mms_load_eis_ut::test_load_pad_suffix
   mms_load_eis, datatype='phxtof', level='l2', probe=3, suffix='_p'
-  mms_eis_pad, datatype='phxtof', suffix='_p', probe=3
-  assert, spd_data_exists('mms3_epd_eis_phxtof_58-58keV_proton_flux_omni_p_pad_spin mms3_epd_eis_phxtof_58-58keV_proton_flux_omni_p_pad', '2015-12-15', '2015-12-16'), $
+  mms_eis_pad, datatype='phxtof', suffix='_p', probe=3, energy=[10, 60]
+  assert, spd_data_exists('mms3_epd_eis_phxtof_12-58keV_proton_flux_omni_p_pad_spin mms3_epd_eis_phxtof_12-58keV_proton_flux_omni_p_pad', '2015-12-15', '2015-12-16'), $
     'Problem loading EIS PAD with suffix keyword'
   return, 1
 end
@@ -262,8 +262,8 @@ function mms_load_eis_ut::test_load_electron
 end
 
 function mms_load_eis_ut::test_pad_limited_en
-  mms_eis_pad, energy=[300, 400]
-  assert, spd_data_exists('mms1_epd_eis_extof_318-318keV_proton_flux_omni_pad_spin', '2015-12-15', '2015-12-16'), $
+  mms_eis_pad, energy=[100, 500]
+  assert, spd_data_exists('mms1_epd_eis_extof_121-318keV_proton_flux_omni_pad_spin', '2015-12-15', '2015-12-16'), $
     'Problem with EIS PAD (limited energy range)'
   return, 1
 end
