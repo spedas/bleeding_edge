@@ -12,6 +12,15 @@ PRO eva_sitl_submit_FOMStr, tlb, TESTING, vcase, user_flag=user_flag
   header = eva_sitl_text_selection(lmod.unix_FOMstr_mod)
   
   ;------------------
+  ; UPLINK Check
+  ;------------------
+  result = eva_sitluplink_log(tai_FOMstr_mod, title=title, /check)
+  if result eq 'abort' then begin
+    print, result
+    return
+  endif
+  
+  ;------------------
   ; Modification Check
   ;------------------
   ;diff = eva_sitl_strct_comp(tai_FOMstr_mod, tai_FOMstr_org);
@@ -27,7 +36,7 @@ PRO eva_sitl_submit_FOMStr, tlb, TESTING, vcase, user_flag=user_flag
     answer = dialog_message(msg,/question,/center,title=title)
     if strcmp(answer,'No') then return
   endif
-  
+    
   ;------------------
   ; Validation
   ;------------------
@@ -50,7 +59,7 @@ PRO eva_sitl_submit_FOMStr, tlb, TESTING, vcase, user_flag=user_flag
     if strmatch(strlowcase(answer),'no') then return
   endif
   
-  r = eva_sitluplink_validateFOM(lim.UNIX_FOMSTR_MOD)
+  r = eva_sitluplink_validateFOM(lmod.UNIX_FOMSTR_MOD)
   if (r gt 0) then return
   
   ;------------------
@@ -67,16 +76,14 @@ PRO eva_sitl_submit_FOMStr, tlb, TESTING, vcase, user_flag=user_flag
   endif else begin
     case vcase of
       0:begin
-          mms_put_fom_structure, tai_FOMstr_mod, tai_FOMStr_org, $
-            error_flags,  orange_warning_flags,  yellow_warning_flags,$; Error Flags
-            error_msg,    orange_warning_msg,    yellow_warning_msg,  $; Error Messages
-            error_times,  orange_warning_times,  yellow_warning_times,$; Erroneous Segments (ptr_arr)
-            error_indices,orange_warning_indices,yellow_warning_indices,$; Error Indices (ptr_arr)
-            problem_status, /warning_override
-        
-
-          ptr_free, error_times, orange_warning_times, yellow_warning_times
-          ptr_free, error_indices, orange_warning_indices, yellow_warning_indices
+        mms_put_fom_structure, tai_FOMstr_mod, tai_FOMStr_org, $
+          error_flags,  orange_warning_flags,  yellow_warning_flags,$; Error Flags
+          error_msg,    orange_warning_msg,    yellow_warning_msg,  $; Error Messages
+          error_times,  orange_warning_times,  yellow_warning_times,$; Erroneous Segments (ptr_arr)
+          error_indices,orange_warning_indices,yellow_warning_indices,$; Error Indices (ptr_arr)
+          problem_status, /warning_override
+        ptr_free, error_times, orange_warning_times, yellow_warning_times
+        ptr_free, error_indices, orange_warning_indices, yellow_warning_indices
         end
       3:begin
         s = tai_FOMstr_mod
@@ -102,6 +109,7 @@ PRO eva_sitl_submit_FOMStr, tlb, TESTING, vcase, user_flag=user_flag
         msg=[msg, 'A validation email will be sent to you (within 60 min)']
         msg=[msg, 'if successfully received at SDC.']
         rst = dialog_message(msg,/information,/center,title=title)
+        print, eva_sitluplink_log(tai_FOMstr_mod)
         end
       2: begin
         msg='Attempt to submit FOM structure interrupted, check your internet connection and try again.'

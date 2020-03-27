@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2020-03-18 23:24:29 -0700 (Wed, 18 Mar 2020) $
-; $LastChangedRevision: 28442 $
+; $LastChangedDate: 2020-03-26 17:31:13 -0700 (Thu, 26 Mar 2020) $
+; $LastChangedRevision: 28469 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data.pro $
 
 ;PRO eva_data_update_date, state, update=update
@@ -302,6 +302,15 @@ FUNCTION eva_data_login, state, evTop
       sitl_stash = WIDGET_INFO(id_sitl, /CHILD)
       widget_control, sitl_stash, GET_UVALUE=sitl_state, /NO_COPY;******* GET
       widget_control, sitl_state.subbase, SENSITIVE=(user_flag ge 1); main SITL control
+      
+      tgn = tag_names(s)
+      idxA=where(strlowcase(tgn) eq 'uplinkflag',ctA)
+      idxB=where(strlowcase(tgn) eq 'evalstarttime',ctB)
+      strUplinkflag = (ctA eq 1) ? strtrim(string(s.UPLINKFLAG),2) : 'N/A'
+      strEvalstarttime  = (ctB eq 1) ? time_string(s.EVALSTARTTIME) : 'N/A'
+      widget_control, sitl_state.lblABS_tstart, SET_VALUE = 'EVAL START TIME: '+strUplinkflag
+      widget_control, sitl_state.lblABS_uplink, SET_VALUE = 'UPLINK FLAG: '+strEvalstarttime
+      
       widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
       
       ;---------------------
