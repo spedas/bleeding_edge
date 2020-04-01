@@ -19,6 +19,7 @@ tplot_options,'psym_lim',100
 tplot_options,'ygap',.5
 tplot_options,'lazy_ytitle',1     ; breaks "_" into carriage return on ytitle
 tplot_options,'xmargin',[15,12]
+tplot_options, 'no_interp', 1
 
 ; Uncomment and edit either of the following lines to change root data directory (Trailing / is required)
 ;if !version.os_family eq 'Windows' then  setenv,'ROOT_DATA_DIR=e:/data/'
