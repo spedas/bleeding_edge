@@ -29,8 +29,8 @@
 ; 2015-04-10, moka, Created based on 'thm_config'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-01-11 12:26:41 -0800 (Fri, 11 Jan 2019) $
-; $LastChangedRevision: 26453 $
+; $LastChangedDate: 2020-04-02 14:20:37 -0700 (Thu, 02 Apr 2020) $
+; $LastChangedRevision: 28484 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_config.pro $
 ;
 ;-
@@ -72,6 +72,9 @@ PRO mms_config, no_color_setup=no_color_setup, colortable=colortable
   
   if getenv('ROOT_DATA_DIR') ne '' then $
     !mms.LOCAL_DATA_DIR = spd_addslash(getenv('ROOT_DATA_DIR'))+'mms/'
+    
+  if getenv('SPEDAS_DATA_DIR') ne '' then $
+    !mms.LOCAL_DATA_DIR = spd_addslash(getenv('SPEDAS_DATA_DIR'))+'mms/'
 
   ; Settings of environment variables can override mms_config
   if getenv('MMS_DATA_DIR') ne '' then $

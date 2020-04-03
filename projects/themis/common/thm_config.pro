@@ -30,9 +30,9 @@
 ;           directories, if they are not there
 ;           cg, 2008-5-6, reset default default directory
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-10-06 12:31:28 -0700 (Thu, 06 Oct 2016) $
-; $LastChangedRevision: 22054 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2020-04-02 14:24:09 -0700 (Thu, 02 Apr 2020) $
+; $LastChangedRevision: 28485 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_config.pro $
 ;
 ;-
@@ -85,6 +85,10 @@ If(size(ftest, /type) Eq 8) Then Begin
 Endif
 
 ; Settings of environment variables can override thm_config
+
+if getenv('SPEDAS_DATA_DIR') ne '' then $
+   !themis.local_data_dir =  spd_addslash(getenv('SPEDAS_DATA_DIR'))+'themis/'
+  
 if getenv('THEMIS_DATA_DIR') ne '' then $
    !themis.local_data_dir = getenv('THEMIS_DATA_DIR')
 

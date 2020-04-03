@@ -53,8 +53,8 @@
 ;         
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-08-27 11:54:08 -0700 (Tue, 27 Aug 2019) $
-;$LastChangedRevision: 27674 $
+;$LastChangedDate: 2020-04-02 13:20:42 -0700 (Thu, 02 Apr 2020) $
+;$LastChangedRevision: 28481 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
@@ -207,6 +207,9 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     
     csv = read_csv(csv_data)
     
+    var_count = 0
+    var_map = hash() ; maps variable name to variable index (index of the variable in the 'variables' variable..)
+    
     ; extract the data
     for param_idx = 0, n_elements(info['parameters'])-1 do begin
       variable = (info['parameters'])[param_idx]
@@ -229,16 +232,54 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
           if count ne 0 then data[datanofill] = !values.d_nan
         endif
       endelse
+      
+      ; check for spectra variables
+      if (info['parameters'])[param_idx].hasKey('bins') then begin
+        bin_data = ((info['parameters'])[param_idx])['bins']
+        
+        ; bins is specified as an array, presumably for multi-dimensional data
+        if n_elements(bin_data) eq 1 then begin
+          bin_centers = ((((info['parameters'])[param_idx])['bins'])[0])['centers']
+          
+          ; if the bins are specified as a list, assume these are the bin values
+          if isa(bin_centers, 'list') then begin
+            variable['v'] = bin_centers.ToArray()
+          endif
+          
+          ; if the bins are specified as a string, assume this is a reference to the bin values
+          ; store as the name of the parameter containing the V data for now; we'll look up the 
+          ; actual values when creating the variable
+          if isa(bin_centers, 'string') then begin
+            variable['v'] = bin_centers
+          endif
+        endif
+      endif
+      
       variable['data'] = data
+      var_map[variable['name']] = var_count
       
       append_array, variables, variable
+      var_count += 1
     endfor
     
     ; turn the variable tables into proper tplot variables
     for var_idx = 0, n_elements(variables)-1 do begin
       if variables[var_idx].hasKey('name') and variables[var_idx].hasKey('epoch') and (variables[var_idx])['data'] ne !null then begin
         tname = prefix + strlowcase((variables[var_idx])['name']) + suffix
-        store_data, tname, data={x: (variables[var_idx])['epoch'], y: (variables[var_idx])['data']}
+        
+        if variables[var_idx].hasKey('v') then begin
+          if isa((variables[var_idx])['v'], 'string') then begin 
+            ; the y-values for the spectra are stored in another parameter
+            bins = (variables[var_map[(variables[var_idx])['v']]])['data']
+            store_data, tname, data={x: (variables[var_idx])['epoch'], y: (variables[var_idx])['data'], v: bins}
+          endif else begin
+            ; the y-values are stored in the info response
+            store_data, tname, data={x: (variables[var_idx])['epoch'], y: (variables[var_idx])['data'], v: (variables[var_idx])['v']}
+          endelse
+          options, tname, 'spec', 1, /def
+        endif else begin
+          store_data, tname, data={x: (variables[var_idx])['epoch'], y: (variables[var_idx])['data']}
+        endelse
         append_array, tplotnames, tname
       endif
     endfor

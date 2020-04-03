@@ -7,8 +7,8 @@
 ; Written by Davin Larson
 ;
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-02-20 12:11:01 -0800 (Thu, 20 Feb 2020) $
-; $LastChangedRevision: 28323 $
+; $LastChangedDate: 2020-04-01 23:29:16 -0700 (Wed, 01 Apr 2020) $
+; $LastChangedRevision: 28474 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_info_to_tplot.pro $
 ;-
 pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
@@ -20,7 +20,7 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
   load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
   ;resolve labels implemented as keyword to preserve backwards compatibility
 
-  dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 28323 2020-02-20 20:11:01Z ali $'
+  dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 28474 2020-04-02 06:29:16Z ali $'
     tplotnames=''
   vbs = keyword_set(verbose) ? verbose : 0
 
@@ -58,6 +58,7 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
     fillval = struct_value(attr,'fillval',def=!values.f_nan)
     fieldnam = struct_value(attr,'fieldnam',def=v.name)
     units = struct_value(attr,'units',default='')
+    if units eq ' ' then units=''
     if strcmp(v.datatype,'CDF_TIME_TT2000',/fold_case) then begin
       defsysv,'!CDF_LEAP_SECONDS',exists=exists
 
