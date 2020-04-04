@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Apr  2 18:15:49 2020.<P>
+<STRONG>Last modified: </STRONG>Fri Apr  3 18:15:48 2020.<P>
  
 <HR>
  
@@ -19,6 +19,8 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>general/spice</H1>
+<LI><A HREF="#ORRERY">ORRERY</A>
+<br>Plots the orbits of the planets to scale as viewed from the
 <LI><A HREF="#Q_ANGULAR_VELOCITY">Q_ANGULAR_VELOCITY</A>
 <LI><A HREF="#QDERIV">QDERIV</A>
 <LI><A HREF="#SPICE_BODY_ATT">SPICE_BODY_ATT</A>
@@ -45,8 +47,111 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="ORRERY">
+<H2>ORRERY</H2></A>
+<A HREF="#QDERIV">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   orrery
+PURPOSE:
+  Plots the orbits of the planets to scale as viewed from the
+  north ecliptic pole, based on the DE435 ephemeris.  Planet
+  locations are shown by colored disks at the time(s) provided.
+  If time is an array, then colored arcs are drawn to show the
+  orbital positions spanned by the input time array.  In this
+  case, colored disks mark the beginning, middle and end of
+  each arc.  Time can also be input by clicking in a tplot
+  window (see keyword MOVIE).
+
+  By default, this routine shows the inner planets (Mercury
+  to Mars).  Use keyword OUTER to show all the planets plus
+  Pluto.  In this case, the inner planets will be smooshed
+  together in the center.  When viewing the inner planets,
+  the Archmedian spiral of the solar wind magnetic field can 
+  be overlaid (keyword SPIRAL).  Keyword VSW sets the solar 
+  wind velocity for calculating the spiral.
+
+  The routine was originally designed (long ago) to show
+  only Earth and Mars.  Some useful Earth-Mars geometry is
+  calculated and can be shown using LABEL=2.  Information
+  includes:
+
+    Earth-Sun-Mars angle (amount of solar rotation E -&gt; M)
+    Sun-Mars-Earth angle (elongation of Earth from Mars)
+    Earth-Mars distance
+    One-way light time
+    Subsolar latitude on Mars
+
+  Optionally returns (keyword EPH) the orbital positions of 
+  the planets plus Pluto for the entire ephemeris time period.
+
+USAGE:
+  orrery [, time] [,KEYWORD=value, ...]
+
+INPUTS:
+       time:      Show planet positions at this time(s).  Valid
+                  times are from 1900-01-05 to 2100-01-01 in any
+                  format accepted by time_double().
+
+                  If not specified, use the current system time.
+
+KEYWORDS:
+       NOPLOT:    Skip the plot (useful with keyword EPH).
+
+       NOBOX:     Hide the axis box.
+
+       LABEL:     Controls the amount of text labels.
+                    0 = no labels
+                    1 = a few labels (default)
+                    2 = all labels (incl. E-M geometry)
+
+       SCALE:     Scale factor for adjusting the size of the
+                  plot window.  Default = 1.
+
+       EPH:       Named variable to hold structure planetary
+                  orbital ephemeris data (1900-2100).
+
+       STEREO:    Plot the locations of the STEREO spacecraft,
+                  when available.
+
+       RELOAD:    Reload the ephemerides.
+
+       PHASE:     Plot the orbital positions spanning a given
+                  MGS mission phase.  Input time is ignored.
+                  Still works, but nobody cares anymore.
+
+       SPIRAL:    Plot the Archmedian spiral of the solar wind
+                  magnetic field.  (Only works for inner planets.)
+
+       VSW:       Solar wind velocity for calculating the spiral.
+                  Default = 400 km/s.
+
+       MOVIE:     Click on an existing tplot window and/or drag the 
+                  cursor for a movie effect.
+
+       KEEPWIN:   Just keep the plot window (don't ask).
+
+       OUTER:     Plot the outer planets.  The inner planets will
+                  be crowded together in the center, and the SPIRAL
+                  keyword is ignored (set to zero).  Pluto's orbit
+                  is incomplete over the 1900-2100 ephemeris range.
+
+       TPLOT:     Create Earth-Mars geometry tplot variables 
+                  spanning 1900-2100.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2020-04-03 17:43:07 -0700 (Fri, 03 Apr 2020) $
+ $LastChangedRevision: 28496 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery.pro $
+
+CREATED BY:	David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="spice/orrery.pro">general/spice/orrery.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="QDERIV">
 <H2>QDERIV</H2></A>
+<A HREF="#ORRERY">[Previous Routine]</A>
 <A HREF="#Q_ANGULAR_VELOCITY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

@@ -1,7 +1,7 @@
 function rotate_tensor,tens,rot
 ;Purpose:  rotate an nth rank tensor in 3 dimensions.
 ;caveats:  Not well tested. tensor should probably be symmetric.
-;   all dimensions should be 3
+;   all dimensions are typically 3 in 3 space
 ;Author:  Davin Larson
 
 rank = ndimen(tens)
@@ -21,4 +21,5 @@ endfor
 return,rtens
 
 end
+
 

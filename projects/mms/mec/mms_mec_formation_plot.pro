@@ -86,8 +86,8 @@
 ;       and Kim Kokkonen at LASP
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-03-18 08:53:32 -0700 (Wed, 18 Mar 2020) $
-; $LastChangedRevision: 28428 $
+; $LastChangedDate: 2020-04-03 16:15:38 -0700 (Fri, 03 Apr 2020) $
+; $LastChangedRevision: 28490 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_mec_formation_plot.pro $
 ;-
 
@@ -330,30 +330,36 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
         /overplot, perspective=perspective, margin=margin)
   endif
 
-  ; mark origin on xy plane
-  w = min(abs([xrange, yrange]))/10
-  if zrange[0] lt zrange[1] then delta_z = 0.001 else delta_z = -0.001
-  p1 = plot3d([-w, w], [0, 0], make_array(2, value=z_projection[0]+delta_z), thick=1, color='black', $
-    /overplot, perspective=perspective, buffer=buffer, margin=margin)
-  p1 = plot3d([0, 0], [-w, w], make_array(2, value=z_projection[0]+delta_z), thick=1, color='black', $
-    /overplot, perspective=perspective, buffer=buffer, margin=margin)
-
-  ; mark origin on yz plane
-  w = min(abs([yrange, zrange]))/10
-  if xrange[1] lt xrange[0] then delta_x = 0.001 else delta_x = -0.001
-  p2 = plot3d(make_array(2, value=x_projection[0]+delta_x), [-w, w], [0, 0], thick=1, color='black', $
-    /overplot, perspective=perspective, buffer=buffer, margin=margin)
-  p2 = plot3d(make_array(2, value=x_projection[0]+delta_x), [0, 0], [-w, w], thick=1, color='black', $
-    /overplot, perspective=perspective, buffer=buffer, margin=margin)
-
-  ; mark origin on xz plane
-  w = min(abs([xrange, zrange]))/10
-  if yrange[1] lt yrange[0] then delta_y = 0.001 else delta_y = -0.001
-  p3 = plot3d([-w, w], make_array(2, value=y_projection[0]+delta_y), [0, 0], thick=1, color='black', $
-    /overplot, perspective=perspective, buffer=buffer, margin=margin)
-  p3 = plot3d([0, 0], make_array(2, value=y_projection[0]+delta_y), [-w, w], thick=1, color='black', $
-    /overplot, perspective=perspective, buffer=buffer, margin=margin)
-    
+  if keyword_set(xy_projection) || keyword_set(projection) then begin
+    ; mark origin on xy plane
+    w = min(abs([xrange, yrange]))/10
+    if zrange[0] lt zrange[1] then delta_z = 0.001 else delta_z = -0.001
+    p1 = plot3d([-w, w], [0, 0], make_array(2, value=z_projection[0]+delta_z), thick=1, color='black', $
+      /overplot, perspective=perspective, buffer=buffer, margin=margin)
+    p1 = plot3d([0, 0], [-w, w], make_array(2, value=z_projection[0]+delta_z), thick=1, color='black', $
+      /overplot, perspective=perspective, buffer=buffer, margin=margin)
+  endif 
+  
+  if keyword_set(yz_projection) || keyword_set(projection) then begin
+    ; mark origin on yz plane
+    w = min(abs([yrange, zrange]))/10
+    if xrange[1] lt xrange[0] then delta_x = 0.001 else delta_x = -0.001
+    p2 = plot3d(make_array(2, value=x_projection[0]+delta_x), [-w, w], [0, 0], thick=1, color='black', $
+      /overplot, perspective=perspective, buffer=buffer, margin=margin)
+    p2 = plot3d(make_array(2, value=x_projection[0]+delta_x), [0, 0], [-w, w], thick=1, color='black', $
+      /overplot, perspective=perspective, buffer=buffer, margin=margin)
+  endif
+  
+  if keyword_set(yz_projection) || keyword_set(projection) then begin
+    ; mark origin on xz plane
+    w = min(abs([xrange, zrange]))/10
+    if yrange[1] lt yrange[0] then delta_y = 0.001 else delta_y = -0.001
+    p3 = plot3d([-w, w], make_array(2, value=y_projection[0]+delta_y), [0, 0], thick=1, color='black', $
+      /overplot, perspective=perspective, buffer=buffer, margin=margin)
+    p3 = plot3d([0, 0], make_array(2, value=y_projection[0]+delta_y), [-w, w], thick=1, color='black', $
+      /overplot, perspective=perspective, buffer=buffer, margin=margin)
+  endif
+  
   ; setup the axes
   ax = p.axes
   ax[0].tickfont_size = 7

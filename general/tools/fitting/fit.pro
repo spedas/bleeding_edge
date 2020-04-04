@@ -343,6 +343,8 @@ pro fit, x, yt, $
        fitvalues = 0
        result = 0
        qflag = 0                ;added ajh
+       chisqr = !values.f_nan
+
 
 ; SET ALL DEFAULTS:
        ;Name of function to fit
@@ -388,30 +390,34 @@ pro fit, x, yt, $
            message,'PARAMETERS must be a structure.'
        endif
 
-       if n_elements(yt) eq 0 then begin
-          dprint,dlevel=1,'No data to fit to!'
-          return
-       endif
-
-       if  0 then begin
-         wh = where(finite(yt),ngood)
-         if ngood ne n_elements(yt) then begin
-           if ngood eq 0 then begin
-             message,/info,'No valid data!'
-             return
-           endif
-           message,/info,'Warning! Invalid data is ignored.'
-;           x = x
+       ndat = n_elements(yt)
+       if ndat eq 0 then begin
+          dprint,dlevel=1,'No data provided. Assuming function is to be minimized'
+          w = 1.d
+          y =  0d
+ ;         return
+       endif else begin
+         y = yt[*]  
+         if keyword_set(error_fac) then dy = error_fac*y
+         if keyword_set(dy) then begin
+           if logf then w = (y/dy[*])^2 else w=1/(dy[*])^2
          endif
-        
-       endif
-       y = yt[*]
-       if keyword_set(error_fac) then dy = error_fac*y
-       if keyword_set(dy) then begin
-         if logf then w = (y/dy[*])^2 else w=1/(dy[*])^2
-       endif
-       if logf then y = alog(y)
-       if n_elements(w) eq 0 then w = replicate(1.d, n_elements(y) )
+         if logf then y = alog(y)
+         if n_elements(w) eq 0 then w = replicate(1.d, n_elements(y) )
+       endelse
+
+;       if  0 then begin
+;         wh = where(finite(yt),ngood)
+;         if ngood ne n_elements(yt) then begin
+;           if ngood eq 0 then begin
+;             message,/info,'No valid data!'
+;             return
+;           endif
+;           message,/info,'Warning! Invalid data is ignored.'
+;;           x = x
+;         endif
+;       endif
+
 
        flambda = 0.001          ;Initial lambda
 
@@ -426,8 +432,9 @@ pro fit, x, yt, $
 
        xfer_parameters,params,p_names,a,fullnames=fullnames,num_p=nterms,/struct_to_array
        if nterms eq 0 then begin
-           message,/info,'No parameters to fit'
-           return
+         dprint,'No parameters to fit'
+         qflag = 6
+         goto , done
        endif
 
        if  keyword_set(p_limits) then begin
@@ -450,61 +457,67 @@ pro fit, x, yt, $
        for iter = 1, itmax do begin   ; Iteration loop
           xfer_parameters,params,p_names,a,fullnames=fullnames,num_p=nterms,/struct_to_arr
 
-          pder = dblarr(n_elements(y),nterms)
+;          pder = dblarr(n_elements(y),nterms)
           if keyword_set(NODERIVATIVE) then begin  ;  Evaluate function and estimate partial derivatives
-             yfit = (call_function( Function_name_com, x, param=params))[*]
-             if logf then yfit = alog(yfit)
-             xfer_parameters,params,p_names,a,/struct_to_array
-             for term=0, nterms-1 do begin
-                p = a       ; Copy current parameters
-                ; Increment size for forward difference derivative
-                inc = eps * abs(p[term])
-                if (inc eq 0.) then inc = eps
-                if keyword_set(minres) then inc = inc > minres
-                p[term] = p[term] + inc
-                tparams = params
-                xfer_parameters,tparams,p_names,p,/array_to_struct
-                yfit1 = (call_function( Function_name_com, x, param=tparams))[*]
-                if logf then yfit1 = alog(yfit1)
-                pder[*,term] = (yfit1-yfit)/inc
-             endfor
+            yfit = (call_function( Function_name_com, x, param=params))[*]
+            ndat = n_elements(yfit)
+            pder = dblarr(ndat,nterms)
+            if logf then yfit = alog(yfit)
+            xfer_parameters,params,p_names,a,/struct_to_array
+            for term=0, nterms-1 do begin
+              p = a       ; Copy current parameters
+              ; Increment size for forward difference derivative
+              inc = eps * abs(p[term])
+              if (inc eq 0.) then inc = eps
+              if keyword_set(minres) then inc = inc > minres
+              p[term] = p[term] + inc
+              tparams = params
+              xfer_parameters,tparams,p_names,p,/array_to_struct
+              yfit1 = (call_function( Function_name_com, x, param=tparams))[*]
+              if logf then yfit1 = alog(yfit1)
+              pder[*,term] = (yfit1-yfit)/inc
+            endfor
           endif else begin       ; The user's procedure will compute partial derivatives
-             yfit = (call_function(Function_name_com, x, param=params,  $
-                  p_na=fullnames,pder = pder))[*]
-             if logf then begin
-                  pder = pder / (yfit # replicate(1.,nterms) )
-                  yfit = alog(yfit)
-             endif
-             xfer_parameters,params,p_names,a,/struct_to_array
+            pder = dblarr(ndat,nterms)
+            yfit = (call_function(Function_name_com, x, param=params, p_na=fullnames,pder = pder))[*]
+            if logf then begin
+              pder = pder / (yfit # replicate(1.,nterms) )
+              yfit = alog(yfit)
+            endif
+            xfer_parameters,params,p_names,a,/struct_to_array
           endelse
 
           mp = (nterms < maxprint)-1
-              if nterms ne nterms_last then $
-                 dprint,verbose=verbose,dlevel=1,'Iter','Chi',fullnames[0:mp],'Lambda',format=nformat
-              nterms_last = nterms
+          if nterms ne nterms_last then $
+            dprint,verbose=verbose,dlevel=1,'Iter','Chi',fullnames[0:mp],'Lambda',format=nformat
+          nterms_last = nterms
 
           if not keyword_set(testname) then begin
-             pderthresh = 1e-12
-             pdernz = total(/nan,abs(pder) gt pderthresh,1) gt 0
-             wpdernz = where(pdernz,npdernz)
-             wpderaz = where(pdernz eq 0,nz)
-             if npdernz ne nterms then begin
-                dprint,verbose=verbose,'Warning: Not fitting the following parameters: ',fullnames[wpderaz]
-             endif
+            pderthresh = 1e-12
+            pdernz = total(/nan,abs(pder) gt pderthresh,1) gt 0
+            wpdernz = where(pdernz,npdernz)
+            wpderaz = where(pdernz eq 0,nz)
+            if npdernz ne nterms then begin
+              dprint,verbose=verbose,'Warning: Not fitting the following parameters: ',fullnames[wpderaz]
+            endif
           endif else begin
              wpdernz=indgen(nterms)
              npdernz = nterms
           endelse
           if npdernz le 0 then begin
              dprint,verbose=verbose,dlevel=0,'No free parameters to fit!'
-             return
+             qflag = 5
+             goto, done
           endif
 
-          nfree = n_elements(y) - npdernz ; Degrees of freedom
-          if nfree lt 0 then dprint,verbose=verbose,dlevel=0, 'Not enough data points.'
+          nfree = ndat - npdernz ; Degrees of freedom
+          if nfree lt 0 then begin
+            dprint,verbose=verbose,dlevel=0, 'Not enough data points.'
+            nfree = .25d  ; ???
+          endif
           if nfree eq 0 then begin
-             dprint,verbose=verbose,dlevel=1,'Warning: No Degrees of Freedom'
-             nfree = 0.5d
+            dprint,verbose=verbose,dlevel=1,'Warning: No Degrees of Freedom'
+            nfree = 0.5d
           endif
 
           diag = lindgen(npdernz)*(npdernz+1) ; Subscripts of diagonal elements
@@ -514,18 +527,18 @@ pro fit, x, yt, $
           wf = where(finite(ds),/null)
           ds = ds[wf]
           pder = pder[wf,*]
-          if npdernz gt 1 then beta = ds # pder[*,wpdernz] $
-          else beta = [total(ds * pder[*,wpdernz],/nan)]
-          alpha = transpose(pder[*,wpdernz]) # (w[*] # replicate(1.,npdernz) * pder[*,wpdernz])
+          if npdernz gt 1 then beta = ds # pder[*,wpdernz]   else  beta = [total(ds * pder[*,wpdernz],/nan)]
+          if n_elements(yt) eq 0 then w_pder = 1 else w_pder = w[*] # replicate(1.,npdernz)
+          alpha = transpose(pder[*,wpdernz]) # (w_pder * pder[*,wpdernz])
           chisq1 = total(/nan,w*(y-yfit)^2)/nfree ; Present chi squared.
 
           dprint,verbose=verbose,dlevel=2,strtrim(iter,2),sqrt(chisq1),a[0:mp],flambda,format=gformat
 
           ; If a good fit, no need to iterate
-      all_done = chisq1 lt total(/nan,abs(y))/1e7/nfree
+          all_done = chisq1 lt total(/nan,abs(y))/1e7/nfree
 ;
 ;         Invert modified curvature matrix to find new parameters.
-flambda=1e-5
+          flambda=1e-5
           tparams = params
           repeat begin
              flambda = flambda*10.
@@ -538,26 +551,29 @@ flambda=1e-5
              b = a
              b[wpdernz] = a[wpdernz]+ array/c # transpose(beta) ; New params
              b = a_min >  b  < a_max         ; limit range of parameters
+             if ~total(finite(b)) then begin
+                dprint,'Bad Parameters'
+             endif
              xfer_parameters,tparams,p_names,b,/array_to_struct
              yfit = (call_function( Function_name_com, x, param=tparams))[*]
              if logf then yfit = alog(yfit)
              chisqr = total(/nan,w*(y-yfit)^2)/nfree         ; New chisqr
-if finite(chisqr) eq 0 then begin
-    qflag = 4                   ;added ajh
-    dprint,dlevel=0,verbose=verbose,'Invalid Data or Parameters in function '+function_name_com+' Aborting'
-    dprint,dlevel=0,verbose=verbose,iter,sqrt(chisq1),b[0:mp],format=vformat
- ;   dprint,'Determinant=',determ(array,/check)
-    if keyword_set(debug) then stop
-    goto,done2
-endif
-if flambda ge 1e5 then  begin
-    qflag = 2                   ;added ajh
-    dprint,dlevel=1,verbose=verbose,'flambda too large (',flambda,') for ',function_name_com,' Aborting'
-    dprint,dlevel=1,verbose=verbose,iter,sqrt(chisq1),b[0:mp],format=vformat
- ;   print,'Determinant=',determ(array,/check)
-    if keyword_set(debug) then stop
-    goto,done2
-endif
+             if finite(chisqr) eq 0 then begin
+               qflag = 4                   ;added ajh
+               dprint,dlevel=0,verbose=verbose,'Invalid Data or Parameters in function '+function_name_com+' Aborting'
+               dprint,dlevel=0,verbose=verbose,iter,sqrt(chisq1),b[0:mp],format=vformat
+               ;   dprint,'Determinant=',determ(array,/check)
+               if keyword_set(debug) then stop
+               goto,done2
+             endif
+             if flambda ge 1e5 then  begin
+               qflag = 2                   ;added ajh
+               dprint,dlevel=1,verbose=verbose,'flambda too large (',flambda,') for ',function_name_com,' Aborting'
+               dprint,dlevel=1,verbose=verbose,iter,sqrt(chisq1),b[0:mp],format=vformat
+               ;   print,'Determinant=',determ(array,/check)
+               if keyword_set(debug) then stop
+               goto,done2
+             endif
 
 ;        if all_done then goto, done
              if keyword_set(debug) then stop
@@ -575,10 +591,12 @@ endif
 done2:
 done:
        sigma = replicate(!values.d_nan,nterms)
-       sigma[wpdernz] = sqrt(array[diag]/alpha[diag] * sqrt(chisqr)) ; Return sigma's
+       if npdernz ge 1 then begin
+         sigma[wpdernz] = sqrt(array[diag]/alpha[diag] * sqrt(chisqr)) ; Return sigma's        
+       endif
 ;       sigma[wpdernz] = sqrt(array[diag]/alpha[diag] * (1+flambda)) ; Return sigma's
 ;       sigma[wpdernz] = sqrt((invert(alpha/c))[diag]/alpha[diag] ) ; Return sigma's
-       chi2 = chisqr                          ; Return chi-squared
+       chi2 = float(chisqr)                          ; Return chi-squared
 ;       IF iter NE itmax+1 THEN qflag = 1 ;added ajh
        dprint,verbose=verbose,dlevel=1,strtrim(iter+1,2),sqrt(chi2),a[0:mp],flambda,format=gformat
        dprint,verbose=verbose,dlevel=1,'Unc:',sqrt(chi2),sigma[0:mp],flambda,format=gformat
@@ -586,22 +604,13 @@ done:
        if logf then yfit = exp(yfit)
        fitvalues = yfit
        if arg_present(summary) then begin
-          summary ={ p_names:fullnames, p_values:a, p_sigma:sigma, chi:sqrt(chi2), its:iter, qflag:qflag}
+          summary ={ p_names:fullnames, p_values:a, p_sigma:sigma, chi:sqrt(chi2), nterms:nterms, nparamsnz:nparamsnz ,its:iter, qflag:qflag}
        endif
        if arg_present(result) then begin
           nul_params = fill_nan(params)
           dparams = nul_params
           xfer_parameters,dparams,p_names,sigma,/array_to_struct
-;          if size(/type,result) eq 8 then begin
-;              result.par = params
-;              result.dpar = dparams
-;              result.chi2 = chi2
-;              result.its = iter
-;              result.qflag = qflag
-;          endif else begin
-              result = {par:params,  dpar:dparams, $
-              chi:sqrt(chi2), its:iter , qflag:qflag }
-;          endelse
+          result = {time:systime(1) , par:params,  dpar:dparams,  chi:sqrt(chi2),  nterms:nterms, npdernz:npdernz ,its:iter , qflag:qflag ,ndat:ndat}
           if qflag ge 4 then begin
               result.par = nul_params
               result.dpar = nul_params

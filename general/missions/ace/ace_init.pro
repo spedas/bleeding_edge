@@ -7,9 +7,9 @@
 ;
 ; Author: Cindy Goethel
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2014-02-06 01:14:57 -0800 (Thu, 06 Feb 2014) $
-; $LastChangedRevision: 14170 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2020-04-03 09:58:23 -0700 (Fri, 03 Apr 2020) $
+; $LastChangedRevision: 28486 $
 ; $URL $
 ;-
 
@@ -92,6 +92,10 @@ pro ace_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
 
     !ace = file_retrieve(/structure_format)
     !ace.local_data_dir = root_data_dir()
+    
+    if getenv('SPEDAS_DATA_DIR') ne '' then $
+      !ace.LOCAL_DATA_DIR = spd_addslash(getenv('SPEDAS_DATA_DIR'))+'ace/'
+      
     !ace.remote_data_dir = 'http://themis.ssl.berkeley.edu/data/'
 
     if file_test(!ace.local_data_dir+'ace/.master') then begin ; Local directory IS the master directory

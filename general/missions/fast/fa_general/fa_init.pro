@@ -43,7 +43,7 @@ if keyword_set(remote_data_dir) then !fast.remote_data_dir=remote_data_dir
 if keyword_set(no_download) then !fast.no_download=no_download
 servertestfile='.fast_master'
 if file_test(!fast.local_data_dir+servertestfile) then begin !fast.no_server=1 !fast.no_download=1   ; This line is superfluous.endif
-
+if getenv('SPEDAS_DATA_DIR') ne '' then $      !fast.LOCAL_DATA_DIR = spd_addslash(getenv('SPEDAS_DATA_DIR'))+'fast/'
 if getenv('FAST_REMOTE_DATA_DIR') NE '' then $
 	!fast.remote_data_dir=getenv('FAST_REMOTE_DATA_DIR')
 if getenv('FAST_LOCAL_DATA_DIR') NE '' then $

@@ -6,9 +6,9 @@
 ;
 ;HISTORY
 ;
-;$LastChangedBy: jimmpc1 $
-;$LastChangedDate: 2018-07-19 14:01:11 -0700 (Thu, 19 Jul 2018) $
-;$LastChangedRevision: 25496 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2020-04-03 09:58:23 -0700 (Fri, 03 Apr 2020) $
+;$LastChangedRevision: 28486 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/omni/omni_init.pro $
 ;-
 pro omni_init, reset=reset  ;, local_data_dir=local_data_dir, remote_data_dir=remote_data_dir
@@ -51,6 +51,9 @@ endelse
 !omni.min_age_limit = 900    ; Don't check for new files if local file is less than 900 seconds old.
 ;!omni.use_wget= getenv('username') eq 'davin'
 
+if getenv('SPEDAS_DATA_DIR') ne '' then $
+   !omni.LOCAL_DATA_DIR = spd_addslash(getenv('SPEDAS_DATA_DIR'))+'omni/'
+  
 if keyword_set(local_data_dir) then  $
    !omni.local_data_dir = local_data_dir
 

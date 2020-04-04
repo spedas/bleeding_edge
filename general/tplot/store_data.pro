@@ -36,15 +36,16 @@
 ;SEE ALSO:    "GET_DATA", "TPLOT_NAMES",  "TPLOT", "OPTIONS"
 ;
 ;CREATED BY:    Davin Larson
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-03-23 14:04:56 -0700 (Mon, 23 Mar 2020) $
-; $LastChangedRevision: 28455 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2020-04-03 17:11:34 -0700 (Fri, 03 Apr 2020) $
+; $LastChangedRevision: 28492 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/store_data.pro $
 ;-
 pro store_data,name, time,ydata,values, $
    data = data, $
    append=append, $
    tagnames = tagnames, $
+   seperator = seperator, $
    time_tag = time_tag, $
    gap_tag  = gap_tag,  $
    limits= limits, $
@@ -93,6 +94,12 @@ if size(/type,tagnames) eq 7 then begin
     if keyword_set(gap_tag) && tags[i] eq gap_tag then continue
     y = data.(i)
     if size(/type,y) eq 10 then continue   ; ignore pointers
+    ;if size(/type,y) eq 7 then continue    ; ignore strings
+    if size(/type,y) eq 8  then begin      ; recursively handle substructures
+      str_element,/add,y,'time',time
+      store_data,name+seperator+tags[i],data=y,tagnames = '*',seperator='.'
+      continue
+    endif
     dimy = size(/n_dimen,y)
     if dimy eq 2 || nd eq 1 then begin
        y = transpose([y])

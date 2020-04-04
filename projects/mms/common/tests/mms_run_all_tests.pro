@@ -9,8 +9,8 @@
 ;     
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-08-13 11:39:37 -0700 (Tue, 13 Aug 2019) $
-; $LastChangedRevision: 27597 $
+; $LastChangedDate: 2020-04-03 17:44:21 -0700 (Fri, 03 Apr 2020) $
+; $LastChangedRevision: 28498 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_run_all_tests.pro $
 ;-
 
@@ -43,10 +43,11 @@ pro mms_run_all_tests
                    'mms_flipbookify_ut', $
                    'mms_part_slice2d_ut', $
                    'flatten_spectra_ut', $
+                   'mms_formation_plot_ut', $
                    'mms_event_search_ut', $
                    'mms_python_validation_ut', $
                    'tplot_stuff_ut']
-    
+
     file_out =   'mms_tests_output_'+time_string(systime(/sec), tformat='YYYYMMDD_hhmm')+'.txt'
     
     mgunit, test_suites, filename=file_out, nfail=nfail, npass=npass, nskip=nskip
