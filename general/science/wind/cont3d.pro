@@ -28,19 +28,19 @@ add_str_element,contstuff,'ytitle',ytitle
 
 dfdata = dat3d.df2d
 
-range = minmax_range(dfdata,/pos)   ; get min positive values
-print,range
+range = minmax(dfdata,/pos)   ; get min positive values
+printdat,range
 
 dfdata = alog(dfdata)/alog(10.) 
 range =  alog(range)/alog(10.)
 
 if n_elements(cpd) eq 0 then begin
-   cpd = fix(30/(range(1)-range(0))) > 1
+   cpd = fix(30/(range[1]-range[0])) > 1
    print,cpd,' contours per decade'
 endif
-nlevels = fix((range(1)-range(0)+1)*cpd)
+nlevels = fix((range[1]-range[0.]+1)*cpd)
 nlevels = (nlevels > 2) < 30
-levels = reverse((fix(floor(range(1)*cpd))-findgen(nlevels))/cpd)
+levels = reverse((fix(floor(range[1]*cpd))-findgen(nlevels))/cpd)
 print,nlevels,cpd
 c_colors = bytescale(findgen(nlevels))
 
@@ -83,7 +83,7 @@ endif
 if keyword_set(circles) then begin
    angles=findgen(181)*2./!radeg
    for c=0,n_elements(circles)-1 do begin
-      r = circles(c)
+      r = circles[c]
       oplot,r*cos(angles),r*sin(angles),linestyle=1,color=red
    endfor
 endif   

@@ -19,9 +19,9 @@
 ;   FILLNAN:  Set this keyword to fill padded values with NANs.
 ;   DONE: Equivalent to calling without the a1 argument.
 ;CREATED BY:    Davin Larson
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-; $LastChangedRevision: 24506 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2020-04-04 00:09:13 -0700 (Sat, 04 Apr 2020) $
+; $LastChangedRevision: 28501 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/append_array.pro $
 
 ;LAST MODIFIED: @(#)append_array.pro    1.6 98/08/13
@@ -51,17 +51,24 @@ if arg_present(index) or n_elements(index) ne 0 then begin
 
 error = 0
 if a0_set && size(/type,a0) ne size(/type,a1) then begin
-   if debug(3) then printdat,a0,a1
+   if debug(2) then printdat,a0,a1
    dprint,dlevel=2,verbose=verbose,'Incompatible types! Can not append'
    error = 1
    return
 endif
 
 if a0_set && n_tags(/length,a0) ne n_tags(/length,a1) then begin
-   printdat,a0,a1
+   if debug(3) then printdat,a0,a1
    dprint,dlevel=2,verbose=verbose,'Incompatible structures! Can not append'
    error = 2
    return
+endif
+
+if a0_set && n_tags(a0) ne n_tags(a1) then begin
+  if debug(3) then printdat,a0,a1
+  dprint,dlevel=2,verbose=verbose,'Incompatible structures! Can not append'
+  error = 2
+  return
 endif
 
 

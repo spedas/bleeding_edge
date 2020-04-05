@@ -19,19 +19,19 @@
 ;Written by: Davin Larson
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2012-05-29 10:45:13 -0700 (Tue, 29 May 2012) $
-; $LastChangedRevision: 10470 $
+; $LastChangedDate: 2020-04-04 00:08:25 -0700 (Sat, 04 Apr 2020) $
+; $LastChangedRevision: 28500 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/fitting/mgauss.pro $
 ;-
 
-function mgauss, x,a, parameters=p,numg=numg,binsize=binsize,shift=shift
+function mgauss, x,a, parameters=p,numg=numg,binsize=binsize,shift=shift,quantize=quantize
 
 if not keyword_set(p) then begin
    if not keyword_set(numg) then numg=1
    g1 = {name:'',a:1.d, x0:0.d, s:1.0d}
    g = replicate(g1,numg)
    g.x0 = findgen(numg)
-   p = {func:"mgauss",binsize:keyword_set(binsize) ? binsize : 0.,quantize:1,shift:keyword_set(shift),bkg:0d,xunits:'',a0:0d,a1:1d,g:g}
+   p = {func:"mgauss",binsize:keyword_set(binsize) ? binsize : 0.,quantize:keyword_set(quantize),shift:keyword_set(shift),bkg:0d,xunits:'',a0:0d,a1:1d,g:g}
 endif
 
 if n_params() eq 0 then return,p
