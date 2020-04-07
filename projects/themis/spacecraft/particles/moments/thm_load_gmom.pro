@@ -31,9 +31,9 @@
 ;   thm_load_gmom,probe=['a', 'b']
 ;Notes:
 ;  Temporary version, to avoid conflicts, but can read Level 2 data, jmm
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
-; $LastChangedRevision: 26397 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2020-04-06 14:49:09 -0700 (Mon, 06 Apr 2020) $
+; $LastChangedRevision: 28516 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/moments/thm_load_gmom.pro $
 ;-
 pro thm_load_gmom, probe = probe, datatype = datatype, trange = trange, $
@@ -121,7 +121,7 @@ for s = 0, n_elements(probes)-1 do begin
   dprint, dlevel = 3, 'pathformat: ', pathformat
 
   relpathnames = file_dailynames(file_format = pathformat, trange = trange, addmaster = addmaster)
-  files = file_retrieve(relpathnames, _extra = source)
+  files = spd_download(remote_file=relpathnames, _extra=source)
 
   if file_list_flag then begin ;concatenate the list
     if n_elements(file_list) eq 0 then begin

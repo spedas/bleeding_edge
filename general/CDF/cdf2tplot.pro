@@ -22,6 +22,9 @@
 ; load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
 ;         resolve labels implemented as keyword to preserve backwards
 ;         compatibility.
+; smex_epoch=if set, interpret variables called "epoch" as seconds
+;            from 1968-05-24, rather than the CDF EPoch variable,
+;            needed to read CDF files created by SDT
 ;NOTES:
 ; CDF attributes are obtained from the first file in the array of files input.
 ; To load attributes from a separate SPDF-style mastercdf, prepend the
@@ -30,8 +33,8 @@
 ;Author: Davin Larson -  20th century
 ;
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-12-16 11:06:22 -0800 (Mon, 16 Dec 2019) $
-; $LastChangedRevision: 28116 $
+; $LastChangedDate: 2020-04-06 14:11:58 -0700 (Mon, 06 Apr 2020) $
+; $LastChangedRevision: 28515 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf2tplot.pro $
 ; $ID: $
 ;-
@@ -39,10 +42,9 @@
 pro cdf2tplot,files,files=files2,prefix=prefix,midfix=midfix,midpos=midpos,suffix=suffix ,newname=newname $
    ,varformat=varformat ,varnames=varnames2 $
    ,all=all,verbose=verbose, get_support_data=get_support_data, convert_int1_to_int2=convert_int1_to_int2 $
-   ,record=record, tplotnames=tplotnames,load_labels=load_labels
+   ,record=record, tplotnames=tplotnames,load_labels=load_labels,smex_epoch=smex_epoch
 
-
-dprint,dlevel=4,verbose=verbose,'$Id: cdf2tplot.pro 28116 2019-12-16 19:06:22Z jimm $'
+dprint,dlevel=4,verbose=verbose,'$Id: cdf2tplot.pro 28515 2020-04-06 21:11:58Z jimm $'
 vb = keyword_set(verbose) ? verbose : 0
 
 if keyword_set(files2) then files=files2    ; added for backward compatibility  and to make it match the documentation
@@ -58,7 +60,7 @@ cdfi = cdf_load_vars(files,varformat=varformat,var_type=var_type,/spdf_depend, $
 dprint,dlevel=4,verbose=verbose,'Starting load into tplot'
 ;  Insert into tplot format
 cdf_info_to_tplot,cdfi,varnames2,all=all,prefix=prefix,midfix=midfix,midpos=midpos,suffix=suffix,newname=newname, $  ;bpif keyword_set(all) eq 0
-       verbose=verbose,  tplotnames=tplotnames,load_labels=load_labels
+       verbose=verbose,  tplotnames=tplotnames,load_labels=load_labels, smex_epoch=smex_epoch
 
 
 dprint,dlevel=4,verbose=verbose,'Starting Clean up' ;bpif keyword_set(all) eq 0

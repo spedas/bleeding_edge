@@ -734,6 +734,9 @@ If(is_string(asi_sites)) Then Begin
          get_data, asi_sites[ksite], data = askd
          If(is_struct(askd)) Then Begin
             copy_data, asi_sites[ksite], 'Keogram'
+            ask_site = strmid(asi_sites[ksite], 8)
+            options, 'Keogram', 'ytitle', 'Keogram'
+            options, 'Keogram', 'ysubtitle', ask_site
             have_keogram= 1b
             undefine, askd
             break               ;out of loop
@@ -743,6 +746,8 @@ If(is_string(asi_sites)) Then Begin
 Endif
 If(~have_keogram) Then Begin ;for no data at any site
    store_data, 'Keogram', data = {x:time_double(date_ext)+findgen(2), y:filler, v:findgen(10)}
+   options, 'Keogram', 'ytitle', 'Keogram'
+   options, 'Keogram', 'ysubtitle', ''
    have_keogram = 0b
 Endif
 ;remove all time steps for which all y values are fill= 65335, then degap
@@ -917,9 +922,6 @@ vars_full = ['thg_idx_ae', roi_bar, 'Keogram', thx+'_fgs_gse', $
              esaf_n_name, esaif_v_name, esaf_t_name, sample_rate_var, $
              ssti_name, esaif_flux_name, sste_name,  $
              esaef_flux_name, thx+'_fb_*', thx+'_pos_gse_z']
-
-options, 'Keogram', 'ytitle', 'Keogram'
-options, 'Keogram', 'ysubtitle', ''
 
 if (gui_plot eq 1) then begin ; for GUI plots we have some differences 
     title = probes_title[pindex[0]] + ' (TH-'+strupcase(sc)+')'

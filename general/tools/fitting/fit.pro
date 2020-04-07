@@ -306,6 +306,13 @@ end
 ;             much more user friendly, and allows a subset of parameters to
 ;             be fit.
 ;           - Allowed vectors and recursively searched structures to be fit as well.
+;           
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2020-04-06 01:11:48 -0700 (Mon, 06 Apr 2020) $
+; $LastChangedRevision: 28511 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/fitting/fit.pro $
+;           
+;           
 ;-
 
 pro fit, x, yt, $
@@ -326,6 +333,7 @@ pro fit, x, yt, $
           debug = debug, $
           testname = testname, $
           minresolution = minres, $
+          pre_result = pre_result, $
           result = result, $
           fitvalues = fitvalues, $
           overplot = overplot, $
@@ -371,7 +379,7 @@ pro fit, x, yt, $
        derstr +='Partial derivatives computed '+ [ 'analytically','numerically' ]
        if keyword_set(dy) then derstr += ' (weighted fit)'
        printdat,p_names,/value,output=str
-       dprint,verbose=verbose,dlevel=1,derstr[NODERIVATIVE]+'  '+str
+       dprint,verbose=verbose,dlevel=2,derstr[NODERIVATIVE]+'  '+str
 
        ; If we will be estimating partial derivatives then compute machine
        ; precision
@@ -489,7 +497,7 @@ pro fit, x, yt, $
 
           mp = (nterms < maxprint)-1
           if nterms ne nterms_last then $
-            dprint,verbose=verbose,dlevel=1,'Iter','Chi',fullnames[0:mp],'Lambda',format=nformat
+            dprint,verbose=verbose,dlevel=2,'Iter','Chi',fullnames[0:mp],'Lambda',format=nformat
           nterms_last = nterms
 
           if not keyword_set(testname) then begin
@@ -498,7 +506,7 @@ pro fit, x, yt, $
             wpdernz = where(pdernz,npdernz)
             wpderaz = where(pdernz eq 0,nz)
             if npdernz ne nterms then begin
-              dprint,verbose=verbose,'Warning: Not fitting the following parameters: ',fullnames[wpderaz]
+              dprint,verbose=verbose,'Warning: Not fitting the following parameters: ',fullnames[wpderaz],dlevel=1
             endif
           endif else begin
              wpdernz=indgen(nterms)
@@ -599,7 +607,7 @@ done:
        chi2 = float(chisqr)                          ; Return chi-squared
 ;       IF iter NE itmax+1 THEN qflag = 1 ;added ajh
        dprint,verbose=verbose,dlevel=1,strtrim(iter+1,2),sqrt(chi2),a[0:mp],flambda,format=gformat
-       dprint,verbose=verbose,dlevel=1,'Unc:',sqrt(chi2),sigma[0:mp],flambda,format=gformat
+       dprint,verbose=verbose,dlevel=2,'Unc:',sqrt(chi2),sigma[0:mp],flambda,format=gformat
        dprint,verbose=verbose,dlevel=4,'Chi2 =',chi2,'  flambda =',flambda
        if logf then yfit = exp(yfit)
        fitvalues = yfit
@@ -610,7 +618,9 @@ done:
           nul_params = fill_nan(params)
           dparams = nul_params
           xfer_parameters,dparams,p_names,sigma,/array_to_struct
-          result = {time:systime(1) , par:params,  dpar:dparams,  chi:sqrt(chi2),  nterms:nterms, npdernz:npdernz ,its:iter , qflag:qflag ,ndat:ndat}
+          ;pre_struct = {time:systime(1), index:0l }
+          result = { par:params,  dpar:dparams,  chi:sqrt(chi2),  nterms:nterms, npdernz:npdernz ,its:iter , qflag:qflag ,ndat:ndat}
+          if keyword_set(pre_result) then result = create_struct(pre_result,result)
           if qflag ge 4 then begin
               result.par = nul_params
               result.dpar = nul_params
