@@ -53,6 +53,8 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix, varformat = varformat
 
   get_data, prefix + 'navg', data = dat_navg
 
+  if size(/type, dat_navg) NE 8 then return
+
   if n_elements(uniq(dat_navg.y)) EQ 1 then begin
 
     options, prefix + 'navg', 'yrange', dat_navg.y[0] + [-1.0,1.0]

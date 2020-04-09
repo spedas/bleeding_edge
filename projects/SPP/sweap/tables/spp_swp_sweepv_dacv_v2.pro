@@ -3,9 +3,9 @@
 ; SPP_SWP_SWEEPV_DACV_V2
 ;
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-10-01 17:17:54 -0700 (Tue, 01 Oct 2019) $
-; $LastChangedRevision: 27808 $
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2020-04-08 09:46:30 -0700 (Wed, 08 Apr 2020) $
+; $LastChangedRevision: 28526 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/tables/spp_swp_sweepv_dacv_v2.pro $
 ;
 ;-
@@ -56,7 +56,7 @@ PRO spp_swp_sweepv_dacv_v2,sweepv_dac,defv1_dac,defv2_dac,spv_dac,k=k,rmax=rmax,
       defv2_dac = lonarr(4096)
       FOR i=0, 4095 DO BEGIN
          angleIndex = i MOD 32
-         angleDac = spp_swp_sweepv_defl_func(angles[angleIndex])
+         angleDac = spp_swp_sweepv_defl_func(/spe, angles[angleIndex])
          IF angleDac GT 0 THEN BEGIN 
             defv1_dac[i] = round(abs(angleDac))
             defv2_dac[i] = 0

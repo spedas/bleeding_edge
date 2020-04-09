@@ -5,8 +5,8 @@
 ; SPP_SWP_SWEEPV_NEW_FSLUT_V2
 ;
 ; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2020-02-03 14:37:14 -0800 (Mon, 03 Feb 2020) $
-; $LastChangedRevision: 28269 $
+; $LastChangedDate: 2020-04-08 09:51:32 -0700 (Wed, 08 Apr 2020) $
+; $LastChangedRevision: 28529 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/tables/spp_swp_sweepv_new_fslut_v2.pro $
 ;
 ;-
@@ -89,7 +89,7 @@ PRO spp_swp_sweepv_new_fslut_v2, sweepv,defv1,defv2,spv,index,nen=nen, e0=e0,ema
           charsize = 2, yrange = [-12., 12.]
      plots,sweepv[index],defv1[index]-defv2[index], $
            psym = 7,color = 150,symsize=symsize
-     oplot,sweepv[index],defv1[index]-defv2[index],symsize=symsize,  psym = -4,color = 2
+     oplot,sweepv[index],defv1[index]-defv2[index],symsize=symsize,  psym = -4,color = 2, thick = 2
   endif
   
 end
