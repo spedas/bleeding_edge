@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Apr  9 18:15:48 2020.<P>
+<STRONG>Last modified: </STRONG>Fri Apr 10 18:15:48 2020.<P>
  
 <HR>
  
@@ -65,7 +65,7 @@ PURPOSE:
 
   By default, this routine shows the inner planets (Mercury
   to Mars).  Use keyword OUTER to show all the planets plus
-  Pluto.  In this case, the inner planets will be smooshed
+  Pluto.  In this case, the inner planets will be crowded
   together in the center.  When viewing the inner planets,
   the Archmedian spiral of the solar wind magnetic field can 
   be overlaid (keyword SPIRAL).  Keyword VSW sets the solar 
@@ -78,9 +78,9 @@ PURPOSE:
 
     Earth-Sun-Mars angle (amount of solar rotation E -&gt; M)
     Sun-Mars-Earth angle (elongation of Earth from Mars)
-    Earth-Mars distance
-    One-way light time
-    Subsolar latitude on Mars
+    Sun-Earth-Mars angle (elongation of Mars from Earth)
+    One-way light time (Mars to Earth, min)
+    Subsolar latitude on Mars (deg)
 
   Optionally returns (keyword EPH) the orbital positions of 
   the planets plus Pluto for the entire ephemeris time period.
@@ -117,7 +117,7 @@ KEYWORDS:
        RELOAD:    Reload the ephemerides.
 
        SPIRAL:    Plot the Archmedian spiral of the solar wind
-                  magnetic field.  (Only works for inner planets.)
+                  magnetic field.
 
        VSW:       Solar wind velocity for calculating the spiral.
                   Default = 400 km/s.
@@ -133,6 +133,9 @@ KEYWORDS:
                   is incomplete over the 1900-2100 ephemeris range.
 
        XYRANGE:   Plot range in X and Y (AU).  Overrides default.
+                  If one value is supplied, plot range is -XYRANGE
+                  to +XYRANGE.  If two or more values are supplied,
+                  then plot range is min(XYRANGE) to max(XYRANGE).
                   If set, then all planets within the plot window
                   are shown, and the Archmedian spiral (if set)
                   extends out to the orbit of Saturn.
@@ -141,8 +144,8 @@ KEYWORDS:
                   spanning 1900-2100.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-04-06 12:34:15 -0700 (Mon, 06 Apr 2020) $
- $LastChangedRevision: 28513 $
+ $LastChangedDate: 2020-04-10 10:44:12 -0700 (Fri, 10 Apr 2020) $
+ $LastChangedRevision: 28543 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery.pro $
 
 CREATED BY:	David L. Mitchell

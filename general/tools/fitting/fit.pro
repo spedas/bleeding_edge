@@ -308,8 +308,8 @@ end
 ;           - Allowed vectors and recursively searched structures to be fit as well.
 ;           
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-04-06 01:11:48 -0700 (Mon, 06 Apr 2020) $
-; $LastChangedRevision: 28511 $
+; $LastChangedDate: 2020-04-10 15:18:30 -0700 (Fri, 10 Apr 2020) $
+; $LastChangedRevision: 28548 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/fitting/fit.pro $
 ;           
 ;           
@@ -437,7 +437,7 @@ pro fit, x, yt, $
        vformat='(i3,":",20(" ",g11.4))'
        sformat='("Unc:",20(" ",g11.4))'
 
-
+       params_0 = params
        xfer_parameters,params,p_names,a,fullnames=fullnames,num_p=nterms,/struct_to_array
        if nterms eq 0 then begin
          dprint,'No parameters to fit'
@@ -515,6 +515,7 @@ pro fit, x, yt, $
           if npdernz le 0 then begin
              dprint,verbose=verbose,dlevel=0,'No free parameters to fit!'
              qflag = 5
+             chisq1 = !values.f_nan
              goto, done
           endif
 
@@ -604,7 +605,7 @@ done:
        endif
 ;       sigma[wpdernz] = sqrt(array[diag]/alpha[diag] * (1+flambda)) ; Return sigma's
 ;       sigma[wpdernz] = sqrt((invert(alpha/c))[diag]/alpha[diag] ) ; Return sigma's
-       chi2 = float(chisqr)                          ; Return chi-squared
+       chi2 = float(chisq1)                          ; Return chi-squared
 ;       IF iter NE itmax+1 THEN qflag = 1 ;added ajh
        dprint,verbose=verbose,dlevel=1,strtrim(iter+1,2),sqrt(chi2),a[0:mp],flambda,format=gformat
        dprint,verbose=verbose,dlevel=2,'Unc:',sqrt(chi2),sigma[0:mp],flambda,format=gformat

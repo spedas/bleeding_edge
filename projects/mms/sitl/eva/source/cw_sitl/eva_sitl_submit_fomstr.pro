@@ -61,7 +61,7 @@ PRO eva_sitl_submit_FOMStr, tlb, TESTING, vcase, user_flag=user_flag
   
   r = eva_sitluplink_validateFOM(lmod.UNIX_FOMSTR_MOD)
   if (r gt 0) then return
-  
+ 
   ;------------------
   ; Submit
   ;------------------

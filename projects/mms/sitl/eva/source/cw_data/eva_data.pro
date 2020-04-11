@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2020-03-26 17:31:13 -0700 (Thu, 26 Mar 2020) $
-; $LastChangedRevision: 28469 $
+; $LastChangedDate: 2020-04-10 16:26:23 -0700 (Fri, 10 Apr 2020) $
+; $LastChangedRevision: 28549 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data.pro $
 
 ;PRO eva_data_update_date, state, update=update
@@ -271,6 +271,26 @@ FUNCTION eva_data_login, state, evTop
       end_time = time_string(s.TIMESTAMPS[s.NUMCYCLES-1]+dtlast,precision=3)
       
       ;---------------------
+      ; Update SITLUPLINK MODULE
+      ;---------------------
+      id_sitl = widget_info(state.parent, find_by_uname='eva_sitluplink')
+      sitl_stash = WIDGET_INFO(id_sitl, /CHILD)
+      widget_control, sitl_stash, GET_UVALUE=sitl_state, /NO_COPY;******* GET
+      widget_control, sitl_state.subbase, SENSITIVE=(user_flag ge 1); main SITL control
+
+      tgn = tag_names(s)
+      idxA=where(strlowcase(tgn) eq 'uplinkflag',ctA)
+      idxB=where(strlowcase(tgn) eq 'evalstarttime',ctB)
+      strUplinkflag = (ctA eq 1) ? strtrim(string(s.UPLINKFLAG),2) : 'N/A'
+      strEvalstarttime  = (ctB eq 1) ? time_string(s.EVALSTARTTIME) : 'N/A'
+      
+      widget_control, sitl_state.lblABS_tstart, SET_VALUE = 'EVAL START TIME: '+strEvalstarttime
+      widget_control, sitl_state.lblABS_uplink, SET_VALUE = 'UPLINK FLAG: '+strUplinkflag
+      widget_control, sitl_state.bgUplink, SET_VALUE = s.UPLINKFLAG
+
+      widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
+      
+      ;---------------------
       ; Update SITL MODULE
       ;---------------------
       lbl = ' '+start_time+' - '+end_time
@@ -293,25 +313,14 @@ FUNCTION eva_data_login, state, evTop
       endif
       str_element,/add,sitl_state,'val',val
       str_element,/add,sitl_state,'trange_sitl_window',[start_time,end_time]
-      widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
       
-      ;---------------------
-      ; Update SITLUPLINK MODULE
-      ;---------------------
-      id_sitl = widget_info(state.parent, find_by_uname='eva_sitluplink')
-      sitl_stash = WIDGET_INFO(id_sitl, /CHILD)
-      widget_control, sitl_stash, GET_UVALUE=sitl_state, /NO_COPY;******* GET
-      widget_control, sitl_state.subbase, SENSITIVE=(user_flag ge 1); main SITL control
-      
-      tgn = tag_names(s)
-      idxA=where(strlowcase(tgn) eq 'uplinkflag',ctA)
-      idxB=where(strlowcase(tgn) eq 'evalstarttime',ctB)
-      strUplinkflag = (ctA eq 1) ? strtrim(string(s.UPLINKFLAG),2) : 'N/A'
-      strEvalstarttime  = (ctB eq 1) ? time_string(s.EVALSTARTTIME) : 'N/A'
-      widget_control, sitl_state.lblABS_tstart, SET_VALUE = 'EVAL START TIME: '+strUplinkflag
-      widget_control, sitl_state.lblABS_uplink, SET_VALUE = 'UPLINK FLAG: '+strEvalstarttime
+      if(s.UPLINKFLAG eq 1)then begin
+        widget_control, sitl_state.btnSubmit,SET_VALUE='   UPLINK   '
+      endif
       
       widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
+      
+      
       
       ;---------------------
       ; Update DATA MODULE

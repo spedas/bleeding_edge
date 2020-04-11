@@ -28,8 +28,8 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2019-07-16 14:39:25 -0700 (Tue, 16 Jul 2019) $
-;  $LastChangedRevision: 27467 $
+;  $LastChangedDate: 2020-04-10 12:31:08 -0700 (Fri, 10 Apr 2020) $
+;  $LastChangedRevision: 28545 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_dfb_wf/spp_fld_dfb_wf_load_l1.pro $
 ;
 
@@ -96,25 +96,34 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
   ; Plot options for DFB WF metadata
 
   get_data, prefix + 'wav_tap', data = d_wav_tap
-  options, prefix + 'wav_tap', 'ynozero', 1
-  options, prefix + 'wav_tap', 'colors', [6]
-  options, prefix + 'wav_tap', 'psym_lim', 100
-  options, prefix + 'wav_tap', 'ytitle', $
-    'DFB WF ' + strmid(prefix,15,2) + compressed_str + '!CTap'
 
-  options, prefix + 'wav_tap', 'yrange', [min(d_wav_tap.y) - 1, max(d_wav_tap.y) + 1]
-  options, prefix + 'wav_tap', 'ystyle', 1
+  if size(/type, d_wav_tap) EQ 8 then begin
+
+    options, prefix + 'wav_tap', 'ynozero', 1
+    options, prefix + 'wav_tap', 'colors', [6]
+    options, prefix + 'wav_tap', 'psym_lim', 100
+    options, prefix + 'wav_tap', 'ytitle', $
+      'DFB WF ' + strmid(prefix,15,2) + compressed_str + '!CTap'
+
+    options, prefix + 'wav_tap', 'yrange', [min(d_wav_tap.y) - 1, max(d_wav_tap.y) + 1]
+    options, prefix + 'wav_tap', 'ystyle', 1
+
+  endif
 
   get_data, prefix + 'wav_sel', data = d_wav_sel
-  options, prefix + 'wav_sel', 'ynozero', 1
-  options, prefix + 'wav_sel', 'colors', [6]
-  options, prefix + 'wav_sel', 'psym_lim', 100
-  options, prefix + 'wav_sel', 'ytitle', $
-    'DFB WF ' + strmid(prefix,15,2) + compressed_str + '!CSelect'
 
-  options, prefix + 'wav_sel', 'yrange', [min(d_wav_sel.y) - 1, max(d_wav_sel.y) + 1]
-  options, prefix + 'wav_sel', 'ystyle', 1
+  if size(/type, d_wav_sel) EQ 8 then begin
 
+    options, prefix + 'wav_sel', 'ynozero', 1
+    options, prefix + 'wav_sel', 'colors', [6]
+    options, prefix + 'wav_sel', 'psym_lim', 100
+    options, prefix + 'wav_sel', 'ytitle', $
+      'DFB WF ' + strmid(prefix,15,2) + compressed_str + '!CSelect'
+
+    options, prefix + 'wav_sel', 'yrange', [min(d_wav_sel.y) - 1, max(d_wav_sel.y) + 1]
+    options, prefix + 'wav_sel', 'ystyle', 1
+
+  endif
 
   options, prefix + 'compression', 'yrange', [-0.25,1.25]
   options, prefix + 'compression', 'ystyle', 1
@@ -155,7 +164,10 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
   ;
 
   get_data, prefix + 'wf_pkt_data', data = d
+    
   if load_wf_v EQ 1 then get_data, prefix + 'wf_pkt_data_v', data = d_v
+
+  if size(/type, d) NE 8 then return
 
   get_data, prefix + 'wav_tap', data = d_tap
   get_data, prefix + 'wav_sel', data = d_sel

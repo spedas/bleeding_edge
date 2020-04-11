@@ -3,14 +3,14 @@
 ; SPP_SWP_SWEEPV_DACV_V2
 ;
 ;
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2020-04-08 09:46:30 -0700 (Wed, 08 Apr 2020) $
-; $LastChangedRevision: 28526 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-04-10 17:15:29 -0700 (Fri, 10 Apr 2020) $
+; $LastChangedRevision: 28550 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/tables/spp_swp_sweepv_dacv_v2.pro $
 ;
 ;-
 
-PRO spp_swp_sweepv_dacv_v2,sweepv_dac,defv1_dac,defv2_dac,spv_dac,k=k,rmax=rmax,vmax=vmax,nen=nen,e0=e0,emax=emax,spfac=spfac,maxspen=maxspen,plot=plot,hvgain=hvgain,spgain=spgain,version=version,fixgain=fixgain,new_defl=new_defl
+PRO spp_swp_sweepv_dacv_v2,sweepv_dac,defv1_dac,defv2_dac,spv_dac,k=k,rmax=rmax,vmax=vmax,nen=nen,e0=e0,emax=emax,spfac=spfac,maxspen=maxspen,plot=plot,hvgain=hvgain,spgain=spgain,version=version,fixgain=fixgain,new_defl=new_defl,spe=spe
 
    max = 65536.
    
@@ -56,7 +56,7 @@ PRO spp_swp_sweepv_dacv_v2,sweepv_dac,defv1_dac,defv2_dac,spv_dac,k=k,rmax=rmax,
       defv2_dac = lonarr(4096)
       FOR i=0, 4095 DO BEGIN
          angleIndex = i MOD 32
-         angleDac = spp_swp_sweepv_defl_func(/spe, angles[angleIndex])
+         angleDac = spp_swp_sweepv_defl_func(spe=spe, angles[angleIndex])
          IF angleDac GT 0 THEN BEGIN 
             defv1_dac[i] = round(abs(angleDac))
             defv2_dac[i] = 0
