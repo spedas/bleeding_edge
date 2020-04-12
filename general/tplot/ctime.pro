@@ -491,6 +491,10 @@ while n lt max do begin
     endelse
     ind2 = -1
 
+    if keyword_set(routine_param) && isa(routine_param,'dictionary') && isa(routine_param.haskey('routine_name') ) then begin
+      routine_name=routine_param.routine_name
+    endif
+
     if size(/type,routine_name) eq 7 then begin
       device, set_graphics = old
       wset,current_window
