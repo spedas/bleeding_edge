@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Apr 11 18:15:57 2020.<P>
+<STRONG>Last modified: </STRONG>Sun Apr 12 18:15:55 2020.<P>
  
 <HR>
  
@@ -67,7 +67,7 @@ PURPOSE:
   to Mars).  Use keyword OUTER to show all the planets plus
   Pluto.  In this case, the inner planets will be crowded
   together in the center.  When viewing the inner planets,
-  the Archmedian spiral of the solar wind magnetic field can 
+  the Archimedean spiral of the solar wind magnetic field can 
   be overlaid (keyword SPIRAL).  Keyword VSW sets the solar 
   wind velocity for calculating the spiral.
 
@@ -116,11 +116,18 @@ KEYWORDS:
 
        RELOAD:    Reload the ephemerides.
 
-       SPIRAL:    Plot the Archmedian spiral of the solar wind
-                  magnetic field.
+       SPIRAL:    Plot the Parker (Archimedean) spiral of the
+                  solar wind magnetic field.
 
        VSW:       Solar wind velocity for calculating the spiral.
-                  Default = 400 km/s.
+                  Default = 400 km/s.  (Usually within range from
+                  250 to 750 km/s.)
+
+       SROT:      Solar siderial rotation period in days for 
+                  calculating the spiral.  Default = 25.38 days,
+                  which gives the typically observed Parker spiral
+                  angle at Earth (47 deg) for a solar wind velocity
+                  of 400 km/s.
 
        MOVIE:     Click on an existing tplot window and/or drag the 
                   cursor for a movie effect.
@@ -137,15 +144,15 @@ KEYWORDS:
                   to +XYRANGE.  If two or more values are supplied,
                   then plot range is min(XYRANGE) to max(XYRANGE).
                   If set, then all planets within the plot window
-                  are shown, and the Archmedian spiral (if set)
+                  are shown, and the Archimedean spiral (if set)
                   extends out to the orbit of Saturn.
 
        TPLOT:     Create Earth-Mars geometry tplot variables 
                   spanning 1900-2100.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-04-10 10:44:12 -0700 (Fri, 10 Apr 2020) $
- $LastChangedRevision: 28543 $
+ $LastChangedDate: 2020-04-12 12:37:28 -0700 (Sun, 12 Apr 2020) $
+ $LastChangedRevision: 28561 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery.pro $
 
 CREATED BY:	David L. Mitchell

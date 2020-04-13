@@ -11,6 +11,8 @@ PRO eva_sitl_submit_FOMStr, tlb, TESTING, vcase, user_flag=user_flag
   mms_convert_fom_unix2tai, lorg.unix_FOMStr_org, tai_FOMstr_org; Original FOM for reference
   header = eva_sitl_text_selection(lmod.unix_FOMstr_mod)
   
+  
+  
   ;------------------
   ; UPLINK Check
   ;------------------
