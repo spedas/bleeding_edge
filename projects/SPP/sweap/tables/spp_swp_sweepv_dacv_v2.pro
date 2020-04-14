@@ -3,9 +3,9 @@
 ; SPP_SWP_SWEEPV_DACV_V2
 ;
 ;
-; $LastChangedBy: ali $
-; $LastChangedDate: 2020-04-10 17:15:29 -0700 (Fri, 10 Apr 2020) $
-; $LastChangedRevision: 28550 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2020-04-13 00:22:29 -0700 (Mon, 13 Apr 2020) $
+; $LastChangedRevision: 28562 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/tables/spp_swp_sweepv_dacv_v2.pro $
 ;
 ;-
@@ -91,7 +91,7 @@ PRO spp_swp_sweepv_dacv_v2,sweepv_dac,defv1_dac,defv2_dac,spv_dac,k=k,rmax=rmax,
 
    
    ;; Fix spoiler at low end to match slut
-   spv_dac[w] = round(spv[w]*sweepv_dac[w]*hvgain/spgain) 
+   spv_dac[w] = round(spv[w]*sweepv_dac[w]*hvgain/spgain)    ; THIS LOOKS very sloppy  W = -1 here.
    
    if keyword_set(plot) then begin
       wi,1

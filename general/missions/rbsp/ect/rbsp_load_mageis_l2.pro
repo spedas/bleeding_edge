@@ -30,9 +30,9 @@
 ;
 ;
 ; VERSION:
-;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2018-12-06 11:00:19 -0800 (Thu, 06 Dec 2018) $
-;   $LastChangedRevision: 26268 $
+;   $LastChangedBy: jimm $
+;   $LastChangedDate: 2020-04-13 13:25:55 -0700 (Mon, 13 Apr 2020) $
+;   $LastChangedRevision: 28568 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/ect/rbsp_load_mageis_l2.pro $
 ;
 ;-
@@ -76,7 +76,7 @@ pro rbsp_load_mageis_l2,probe=probe,get_mag_ephem=get_mag_ephem, $
 
 
 
-    cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
+    spd_cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
     tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
 
     ; format L2 TPLOT vars

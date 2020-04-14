@@ -86,8 +86,8 @@
 ;       and Kim Kokkonen at LASP
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-04-03 16:15:38 -0700 (Fri, 03 Apr 2020) $
-; $LastChangedRevision: 28490 $
+; $LastChangedDate: 2020-04-13 17:10:08 -0700 (Mon, 13 Apr 2020) $
+; $LastChangedRevision: 28573 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_mec_formation_plot.pro $
 ;-
 
@@ -371,13 +371,40 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
   ax[7].hide=1
 
   x1 = 0.33
-  yl = 0.03
+
+  if ~undefined(bfield_center) or ~undefined(bfield_sc) or ~undefined(dis_center) or ~undefined(dis_sc) or ~undefined(des_center) or ~undefined(des_sc) then begin
+    yl = 0.07
+  endif else yl = 0.03
+  
   for s=0,n_elements(spacecraft_names)-1 do begin
     xs = x1 + 0.13*s
-    s1 = symbol(xs,yl,symbol='o', sym_color=spacecraft_colors[*,s], overplot=1, /sym_filled, sym_size=2.0)
+    s1 = symbol(xs, yl,symbol='o', sym_color=spacecraft_colors[*,s], overplot=1, /sym_filled, sym_size=2.0)
     t1 = text(xs + 0.02, yl-0.015, spacecraft_names[s], font_size=12, font_color=spacecraft_colors[*,s])
   endfor
-
+ 
+  vec_lab_count = 0
+  x_vec_pos = 0.33
+  y_vec_pos = 0.03
+  
+  if ~undefined(bfield_center) or ~undefined(bfield_sc) then begin
+    s2 = symbol(x_vec_pos, y_vec_pos-0.005, symbol='hline', sym_color=bfield_color, overplot=1, /sym_filled, sym_size=2.0)
+    t2 = text(x_vec_pos + 0.02, y_vec_pos-0.015, 'FGM', font_size=12, font_color=bfield_color)
+    vec_lab_count += 1
+  endif
+  
+  if ~undefined(dis_center) or ~undefined(dis_sc) then begin
+    xs = x_vec_pos + 0.13*vec_lab_count
+    s2 = symbol(xs, y_vec_pos-0.005, symbol='hline', sym_color=dis_color, overplot=1, /sym_filled, sym_size=2.0)
+    t2 = text(xs + 0.02, y_vec_pos-0.015, 'DIS', font_size=12, font_color=dis_color)
+    vec_lab_count += 1
+  endif
+  
+  if ~undefined(des_center) or ~undefined(des_sc) then begin
+    xs = x_vec_pos + 0.13*vec_lab_count
+    s2 = symbol(xs, y_vec_pos-0.005, symbol='hline', sym_color=des_color, overplot=1, /sym_filled, sym_size=2.0)
+    t2 = text(xs + 0.02, y_vec_pos-0.015, 'DES', font_size=12, font_color=des_color)
+  endif
+  
   title_string = 'MMS Formation'
   ; report the exact requested time
   ; even though the actual result time may be a few seconds different
