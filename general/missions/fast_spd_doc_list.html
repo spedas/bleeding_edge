@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Apr 13 18:15:58 2020.<P>
+<STRONG>Last modified: </STRONG>Tue Apr 14 18:15:58 2020.<P>
  
 <HR>
  
@@ -20,10 +20,7 @@ This page was created by the IDL library routine
 <UL>
 <H1>general/missions/fast</H1>
 <LI><A HREF="#FA_FILE_SOURCE">FA_FILE_SOURCE</A>
-<LI><A HREF="#FA_K0_LOAD2">FA_K0_LOAD2</A>
 <LI><A HREF="#FA_ORBIT_TIME">FA_ORBIT_TIME</A>
-<LI><A HREF="#ISTP_FA_K0_LOAD">ISTP_FA_K0_LOAD</A>
-<br>Loads FAST k0 data from SPDF
 <br>
 </UL><P>
 <HR>
@@ -31,7 +28,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="FA_FILE_SOURCE">
 <H2>FA_FILE_SOURCE</H2></A>
-<A HREF="#FA_K0_LOAD2">[Next Routine]</A>
+<A HREF="#FA_ORBIT_TIME">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Purpose:
@@ -45,26 +42,9 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="fast/fa_file_source.pro">general/missions/fast/fa_file_source.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="FA_K0_LOAD2">
-<H2>FA_K0_LOAD2</H2></A>
-<A HREF="#FA_FILE_SOURCE">[Previous Routine]</A>
-<A HREF="#FA_ORBIT_TIME">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- Loads Fast Data
- Usage:
-    fa_k0_load,'ees'
-    fa_k0_load,'ies'
-    fa_k0_load,'dcf'
- Davin Larson
-</PRE><P>
-<STRONG>(See <A href="fast/fa_k0_load2.pro">general/missions/fast/fa_k0_load2.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="FA_ORBIT_TIME">
 <H2>FA_ORBIT_TIME</H2></A>
-<A HREF="#FA_K0_LOAD2">[Previous Routine]</A>
-<A HREF="#ISTP_FA_K0_LOAD">[Next Routine]</A>
+<A HREF="#FA_FILE_SOURCE">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  converts time to FAST orbit number
@@ -72,30 +52,5 @@ This page was created by the IDL library routine
  D Larson
 </PRE><P>
 <STRONG>(See <A href="fast/fa_orbit_time.pro">general/missions/fast/fa_orbit_time.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="ISTP_FA_K0_LOAD">
-<H2>ISTP_FA_K0_LOAD</H2></A>
-<A HREF="#FA_ORBIT_TIME">[Previous Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-NAME:
- ISTP_FA_K0_LOAD
-PURPOSE:
- Loads FAST k0 data from SPDF
-CALLING SEQUENCE:
- istp_fa_k0_load,types,trange=trange,verbose=verbose
-INPUT:
- types = data types, default is ['ees', 'ies'], can load 'acf',
-         'dcf', 'tms'
-OUTPUT:
- tplot variables with prefix 'istp_fa_'
-
- $LastChangedBy: $
- $LastChangedDate: $
- $LastChangedRevision: $
- $URL: $
-</PRE><P>
-<STRONG>(See <A href="fast/istp_fa_k0_load2.pro">general/missions/fast/istp_fa_k0_load2.pro</A>)</STRONG><P>
 <HR>
  

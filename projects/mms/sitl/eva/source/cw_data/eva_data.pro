@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2020-04-10 16:26:23 -0700 (Fri, 10 Apr 2020) $
-; $LastChangedRevision: 28549 $
+; $LastChangedDate: 2020-04-13 23:30:26 -0700 (Mon, 13 Apr 2020) $
+; $LastChangedRevision: 28575 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data.pro $
 
 ;PRO eva_data_update_date, state, update=update
@@ -127,6 +127,40 @@ FUNCTION eva_data_load_and_plot, state, cod=cod, evtop=evtop
     eva_sitl_load_gls, trange=trange, algo=algo
   endif
   
+  ;*************************
+  ;------------------------------------------------------
+  ; Force Uplink=0 if Uplink=1 and No evalstartime in ABS
+  ;------------------------------------------------------
+
+  
+  forceUplinkZero = 0
+  tn=tnames('mms_stlm_fomstr',ct)
+  if(ct eq 1) then begin
+    get_data,'mms_stlm_fomstr',data=D,dl=dl,lim=lim
+    s = lim.UNIX_FOMSTR_MOD
+    tgn = tag_names(s)
+    idxB=where(strlowcase(tgn) eq 'evalstarttime',ctB)
+    if((ctB eq 0) and (lim.UNIX_FOMSTR_MOD.UPLINKFLAG[0] eq 1)) then begin
+      str_element,/add, s, 'uplinkflag', 0
+      options,'mms_stlm_fomstr','unix_FOMStr_mod',s ; update structure
+      forceUplinkZero = 1
+    endif
+  endif
+  
+  if (forceUplinkZero) then begin
+    id_sitl = widget_info(state.parent, find_by_uname='eva_sitluplink')
+    sitl_stash = WIDGET_INFO(id_sitl, /CHILD)
+    widget_control, sitl_stash, GET_UVALUE=sitl_state, /NO_COPY;******* GET
+    widget_control, sitl_state.bgUplink, SET_VALUE = 0
+    widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
+    
+    id_sitl = widget_info(state.parent, find_by_uname='eva_sitl')
+    sitl_stash = WIDGET_INFO(id_sitl, /CHILD)
+    widget_control, sitl_stash, GET_UVALUE=sitl_state, /NO_COPY;******* GET
+    widget_control, sitl_state.btnSubmit,SET_VALUE='   DRAFT   '
+    widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
+  endif
+  ;*************************
   ;----------------------
   ; Load THEMIS
   ;----------------------

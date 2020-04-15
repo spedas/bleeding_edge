@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Apr 13 18:15:58 2020.<P>
+<STRONG>Last modified: </STRONG>Tue Apr 14 18:15:58 2020.<P>
  
 <HR>
  
@@ -66,10 +66,7 @@ PURPOSE:
   By default, this routine shows the inner planets (Mercury
   to Mars).  Use keyword OUTER to show all the planets plus
   Pluto.  In this case, the inner planets will be crowded
-  together in the center.  When viewing the inner planets,
-  the Archimedean spiral of the solar wind magnetic field can 
-  be overlaid (keyword SPIRAL).  Keyword VSW sets the solar 
-  wind velocity for calculating the spiral.
+  together in the center.
 
   The routine was originally designed (long ago) to show
   only Earth and Mars.  Some useful Earth-Mars geometry is
@@ -81,6 +78,9 @@ PURPOSE:
     Sun-Earth-Mars angle (elongation of Mars from Earth)
     One-way light time (Mars to Earth, min)
     Subsolar latitude on Mars (deg)
+
+  Use keyword PLANET to calculate the same geometry for any
+  other planet.
 
   Optionally returns (keyword EPH) the orbital positions of 
   the planets plus Pluto for the entire ephemeris time period.
@@ -105,6 +105,18 @@ KEYWORDS:
                     1 = a few labels (default)
                     2 = all labels (incl. E-M geometry)
 
+       PLANET:    Planet number or name for calculating geometry
+                  with respect to Earth.  Numbering starts at 1.
+                  For string input, case-folded minimum matching
+                  is performed.
+
+                    1 = Mercury, 2 = Venus, ..., 9 = Pluto.
+                    Default = 4 or 'Mars'.
+                    A value of 3 or 'Earth' is invalid.
+
+                  The plot limits will be set to include this and
+                  all interior planets.
+
        SCALE:     Scale factor for adjusting the size of the
                   plot window.  Default = 1.
 
@@ -112,22 +124,27 @@ KEYWORDS:
                   orbital ephemeris data (1900-2100).
 
        STEREO:    Plot the locations of the STEREO spacecraft,
-                  when available.
+                  when available.  (The ephemeris for Stereo-B
+                  has an error near the beginning of the mission,
+                  associated with a maneuver to place it in the
+                  &quot;behind&quot; orbit.)
 
        RELOAD:    Reload the ephemerides.
 
        SPIRAL:    Plot the Parker (Archimedean) spiral of the
-                  solar wind magnetic field.
+                  solar wind magnetic field.  Spiral is shown out
+                  to the orbit of Saturn, where the magnetic field
+                  is nearly tangential to the orbit.
 
        VSW:       Solar wind velocity for calculating the spiral.
-                  Default = 400 km/s.  (Usually within range from
-                  250 to 750 km/s.)
+                  Default = 400 km/s.  (Usually within the range
+                  of 250 to 750 km/s.)
 
        SROT:      Solar siderial rotation period in days for 
-                  calculating the spiral.  Default = 25.38 days,
-                  which gives the typically observed Parker spiral
-                  angle at Earth (47 deg) for a solar wind velocity
-                  of 400 km/s.
+                  calculating the spiral.  Default = 25.38 days
+                  (i.e., Carrington), which gives the typically 
+                  observed Parker spiral angle at Earth (47 deg) 
+                  for a solar wind velocity of 400 km/s.
 
        MOVIE:     Click on an existing tplot window and/or drag the 
                   cursor for a movie effect.
@@ -135,8 +152,7 @@ KEYWORDS:
        KEEPWIN:   Just keep the plot window (don't ask).
 
        OUTER:     Plot the outer planets.  The inner planets will
-                  be crowded together in the center, and the SPIRAL
-                  keyword is ignored (set to zero).  Pluto's orbit
+                  be crowded together in the center.  Pluto's orbit
                   is incomplete over the 1900-2100 ephemeris range.
 
        XYRANGE:   Plot range in X and Y (AU).  Overrides default.
@@ -147,12 +163,12 @@ KEYWORDS:
                   are shown, and the Archimedean spiral (if set)
                   extends out to the orbit of Saturn.
 
-       TPLOT:     Create Earth-Mars geometry tplot variables 
+       TPLOT:     Create Earth-PLANET geometry tplot variables 
                   spanning 1900-2100.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-04-12 12:37:28 -0700 (Sun, 12 Apr 2020) $
- $LastChangedRevision: 28561 $
+ $LastChangedDate: 2020-04-14 09:46:40 -0700 (Tue, 14 Apr 2020) $
+ $LastChangedRevision: 28576 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery.pro $
 
 CREATED BY:	David L. Mitchell

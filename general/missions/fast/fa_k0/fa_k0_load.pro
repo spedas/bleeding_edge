@@ -1,13 +1,20 @@
 ;+
 ;PURPOSE: Download FAST CDF files off themis.ssl.berkeley.edu or sprg.ssl.berkeley.edu.
 ;         Load FAST data into TPLOT variables.
-;USEAGE: fa_k0_load,TYPES,ORBITRANGE/TRANGE=[SOMETHING,SOMETHING]
+;USAGE: fa_k0_load,TYPES,ORBITRANGE/TRANGE=[SOMETHING,SOMETHING]
 ;        If TYPES is not specified, ['ees','ies'] is used as default TYPES.
-;		 If keywords ORBITRANGE, TRANGE, STIMES, and SORBITS are not set, fa_k0_load calls timerange().
+;		 If keywords ORBITRANGE, TRANGE, STIMES, and SORBITS
+;                are not set, fa_k0_load calls timerange().
+;        NOTE THAT only 'ees', 'ies', 'orb', 'tms', 'acf' data are
+;        available from ssl.berkeley.edu, for FAST K0 data available
+;        from NASA SPDF, use ISTP_FA_K0_LOAD.pro. Note also that the
+;        ssl.berkeley.edu versions of K0 data are more recent than
+;        those at SPDF.
 ;EXAMPLES: fa_k0_load,'ees',orbit=51314
 ;          fa_k0_load,'ies',orbit=51314
 ;          fa_k0_load,'orb',orbit=51314
 ;          fa_k0_load,'tms',orbit=51314
+;          fa_k0_load,'acf',orbit=01314 ;acf files do not exist past 03709
 ;KEYWORDS: FILENAMES - String array of filenames of CDF files on local hard drive.
 ;          VERSION - Specify a version number for all CDF files, i.e. version='04'.
 ;          TRANGE - Specify time range in which FAST data will be loaded, i.e. trange=['1998-1-1/21:00','1998-1-2/4:00']
@@ -29,6 +36,10 @@
 ;				 Written by Davin Larson.
 ;                Heavily modified by Dillon Wong.
 ;                v7 May 26, 2010.
+; $LastChangedBy: $
+; $LastChangedDate: $
+; $LastChangedRevision: $
+; $URL: $
 ;-
 
 pro fa_k0_load,types, $
@@ -147,7 +158,7 @@ for k=0,n_elements(types)-1 do begin
 	
 	if file_input EQ 0 then begin
 		if keyword_set(version) then begin
-			vxx='v'+version
+			vxx='v'+string(version, format='(i2.2)')
 		endif else begin
 			vxx='v'+fa_config('version','K0_'+type,valid=vx_flag)
 			if vx_flag EQ 0 then begin
