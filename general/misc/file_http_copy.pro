@@ -134,10 +134,10 @@
  ;       then the connection would be closed
  ;
  ; $LastChangedBy: nikos $
- ; $LastChangedDate: 2019-08-20 12:42:00 -0700 (Tue, 20 Aug 2019) $
- ; $LastChangedRevision: 27623 $
+ ; $LastChangedDate: 2020-04-15 11:56:17 -0700 (Wed, 15 Apr 2020) $
+ ; $LastChangedRevision: 28584 $
  ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_http_copy.pro $
- ; $Id: file_http_copy.pro 27623 2019-08-20 19:42:00Z nikos $
+ ; $Id: file_http_copy.pro 28584 2020-04-15 18:56:17Z nikos $
  ;-
  
  
@@ -542,7 +542,7 @@ end
    ;; sockets supported in unix & windows since V5.4, Macintosh since V5.6
    tstart = systime(1)
    
-   dprint,dlevel=5,verbose=verbose,'Start; $Id: file_http_copy.pro 27623 2019-08-20 19:42:00Z nikos $
+   dprint,dlevel=5,verbose=verbose,'Start; $Id: file_http_copy.pro 28584 2020-04-15 18:56:17Z nikos $
 
    if n_elements(strict_html) eq 0 then begin
       strict_html = 1      ;  set to 1 to be robust,  set to 0 to be much faster
@@ -550,7 +550,7 @@ end
    endif
 
    if keyword_set(user_agent) eq 0 then begin
-     swver = strsplit('$Id: file_http_copy.pro 27623 2019-08-20 19:42:00Z nikos $',/extract)
+     swver = strsplit('$Id: file_http_copy.pro 28584 2020-04-15 18:56:17Z nikos $',/extract)
      if !version.release ge '7' then begin
       login_info = get_login_info()
       user = login_info.user_name+'@'+login_info.machine_name
@@ -829,46 +829,54 @@ endif else begin
        if error eq -298 then dprint,dlevel=1,verbose=verbose,"Connection refused. Do you need to provide a password?"
        goto, final_quit
      endif
-     dprint,dlevel=4,verbose=verbose,'Purl= '+purl
-     printf, unit, 'GET '+purl +  ' HTTP/1.0'
+     dprint,dlevel=4,verbose=verbose,'Purl= '+purl     
+     ; printf, unit, 'GET '+purl +  ' HTTP/1.0'
+     get_str = 'GET '+purl +  ' HTTP/1.0'
      
      ; aaflores july-2012 Allow HOST keyword to overwrite default value
      if ~keyword_set(host) then host = server
      ; lphilpott may-2012 Add Host header to fix problem with site that have a permanent redirect
-     printf, unit, 'Host: ' + host
+     ; printf, unit, 'Host: ' + host
+     newline = string([13B, 10B])
+     get_str += newline + 'Host: ' + host
      
      if keyword_set(user_agent) then begin
-       printf, unit, 'User-Agent: '+user_agent
+       ;printf, unit, 'User-Agent: '+user_agent
+       get_str += newline + 'User-Agent: '+user_agent
        dprint,dlevel=4,verbose=verbose,'User Agent: '+user_agent
      endif
      if size(/type,referrer) eq 7 then begin
-       printf, unit,  'Referer: '+referrer
+       ;printf, unit,  'Referer: '+referrer
+       get_str += newline + 'Referer: '+referrer
        dprint,dlevel=4,verbose=verbose,'Referer: '+referrer
      endif
      if keyword_set(user_pass) then begin      
-       printf, unit,  'Authorization: Basic '+ (strpos(user_pass,':') ge 0 ?  idl_base64(byte(user_pass)) : user_pass)
+       ;printf, unit,  'Authorization: Basic '+ (strpos(user_pass,':') ge 0 ?  idl_base64(byte(user_pass)) : user_pass)
+       get_str += newline + 'Authorization: Basic '+ (strpos(user_pass,':') ge 0 ?  idl_base64(byte(user_pass)) : user_pass)
        dprint,dlevel=4,verbose=verbose,'USER_PASS: '+user_pass
      endif
      
      if n_elements(if_modified_since) eq 0 then if_modified_since=1 
      if keyword_set(if_modified_since) then begin
        filemodtime = time_string(if_modified_since lt 2 ? lcl.mtime+1 : if_modified_since , tformat='DOW, DD MTH YYYY hh:mm:ss GMT' )       
-       printf, unit, 'If-Modified-Since: '+filemodtime
+       ;printf, unit, 'If-Modified-Since: '+filemodtime
+       get_str += newline + 'If-Modified-Since: '+filemodtime
        dprint,dlevel=4,verbose=verbose,'If-Modified-Since: '+filemodtime
      endif
-     printf, unit, ''
+     get_str += newline + newline
+     printf, unit, get_str 
      
      LinesRead = 0
-     text = 'XXX'
+     textstr = 'XXX'
      ;;
      ;; now read the header
      ;;
      On_IOERROR, done
      
      Header = strarr(256)
-     WHILE  text NE '' do begin
-       readf, unit, text
-       Header[LinesRead] = text
+     WHILE  textstr NE '' do begin
+       readf, unit, textstr
+       Header[LinesRead] = textstr
        LinesRead = LinesRead+1
        IF LinesRead MOD 256 EQ 0 THEN $
          Header=[Header, StrArr(256)]
@@ -1014,11 +1022,11 @@ endif else begin
            dprint,dlevel=3,verbose=verbose,'Downloading "'+localname+'" as a text file.'
            lines=0ul
            while  eof(unit) EQ 0 do begin
-             readf, unit, text
-             printf, wunit, text
-             dprint,dlevel=5,verbose=verbose,text
+             readf, unit, textstr
+             printf, wunit, textstr
+             dprint,dlevel=5,verbose=verbose,textstr
              if arg_present(links2) then begin
-                extract_html_links,strict_html=strict_html,text,links2 ,/relative, /normal,no_parent=url
+                extract_html_links,strict_html=strict_html,textstr,links2 ,/relative, /normal,no_parent=url
                 dprint,/phelp,dlevel=6,verbose=verbose,links2
              endif
              dprint,dwait=5,dlevel=1,verbose=verbose,'Downloading "'+localname+'"  Please wait '+string( lines)+' lines'
