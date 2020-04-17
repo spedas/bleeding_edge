@@ -46,8 +46,8 @@ function ssw_str_replace, source, insub, outsub
 s1=size(source)
 s2=size(insub)
 s3=size(outsub)
-if (s1(n_elements(s1)-2) ne 7) then return,''
-if (s2(n_elements(s2)-2) ne 7) then begin
+if (s1[n_elements(s1)-2] ne 7) then return,''
+if (s2[n_elements(s2)-2] ne 7) then begin
  if n_elements(source) eq 1 then return,source[0] else return,source
 endif
 
@@ -58,7 +58,7 @@ endif
 
 ;remove substrings is default
 
-if (s3(n_elements(s3)-2) ne 7) then outsub=''
+if (s3[n_elements(s3)-2] ne 7) then outsub=''
 
 verbose=keyword_set(verbose)
 if (keyword_set(source)) then if (total(strlen(source)) gt 200000l) then begin
@@ -83,7 +83,7 @@ if strlen(insub[0]) eq 1 and strlen(outsub[0]) eq 1 then begin
    binsub=byte(insub[0])
    boutsub=byte(outsub[0])
    winsub=where(bsource eq binsub[0],icount)
-   if icount gt 0 then bsource(winsub)=boutsub[0]
+   if icount gt 0 then bsource[winsub]=boutsub[0]
    newstring=string(bsource)      
 endif else begin
 ;   ; slf, find uniq 1 character delimiter (makes str2arr phase much faster)
@@ -91,7 +91,7 @@ endif else begin
    di=-1
    repeat begin
       di=di+1
-      arr_delim=delim_list(di)
+      arr_delim=delim_list[di]
       chk=strpos(tsource,arr_delim)
       tdelim=where(chk gt -1,dcount)
    endrep until (dcount eq 0) or (di eq n_elements(delim_list)-1)
