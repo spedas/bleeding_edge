@@ -308,8 +308,8 @@ end
 ;           - Allowed vectors and recursively searched structures to be fit as well.
 ;           
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-04-10 15:18:30 -0700 (Fri, 10 Apr 2020) $
-; $LastChangedRevision: 28548 $
+; $LastChangedDate: 2020-04-20 12:01:32 -0700 (Mon, 20 Apr 2020) $
+; $LastChangedRevision: 28593 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/fitting/fit.pro $
 ;           
 ;           
@@ -537,14 +537,14 @@ pro fit, x, yt, $
           ds = ds[wf]
           pder = pder[wf,*]
           if npdernz gt 1 then beta = ds # pder[*,wpdernz]   else  beta = [total(ds * pder[*,wpdernz],/nan)]
-          if n_elements(yt) eq 0 then w_pder = 1 else w_pder = w[*] # replicate(1.,npdernz)
+          if n_elements(ds) eq 0 then w_pder = 1 else w_pder = w[wf] # replicate(1.,npdernz)
           alpha = transpose(pder[*,wpdernz]) # (w_pder * pder[*,wpdernz])
           chisq1 = total(/nan,w*(y-yfit)^2)/nfree ; Present chi squared.
 
           dprint,verbose=verbose,dlevel=2,strtrim(iter,2),sqrt(chisq1),a[0:mp],flambda,format=gformat
 
           ; If a good fit, no need to iterate
-          all_done = chisq1 lt total(/nan,abs(y))/1e7/nfree
+          all_done = chisq1 lt total(/nan,abs(y[wf]))/1e7/nfree
 ;
 ;         Invert modified curvature matrix to find new parameters.
           flambda=1e-5
