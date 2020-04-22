@@ -1,7 +1,7 @@
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2019-07-25 11:27:04 -0700 (Thu, 25 Jul 2019) $
-;  $LastChangedRevision: 27501 $
+;  $LastChangedDate: 2020-04-21 16:24:51 -0700 (Tue, 21 Apr 2020) $
+;  $LastChangedRevision: 28596 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_aeb2_hk/spp_fld_aeb2_hk_load_l1.pro $
 ;
 
@@ -86,9 +86,9 @@ pro spp_fld_aeb2_hk_load_l1, file, prefix = prefix, varformat = varformat
       options, name, 'labels', labels
       options, name, 'ytitle', name.Remove(0, prefix.Strlen()-1)
 
-      options, name, 'psym_lim', 100
+      options, name, 'psym_lim', 400
       options, name, 'datagap', 3600d
-      options, name, 'symsize', 0.75
+      options, name, 'symsize', 0.5
 
     endforeach
 

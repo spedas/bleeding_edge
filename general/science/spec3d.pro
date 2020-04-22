@@ -41,11 +41,12 @@ pro spec3d,tempdat,   $
   dydat = dydat, $
   BINS = bins,     $
   VELOCITY = vel, $
+  verbose=verbose,  $
   OVERPLOT = oplot
 ;@wind_com.pro
 
 if size(/type,tempdat) ne 8 || tempdat.valid eq 0 then begin
-  dprint, 'Invalid Data'
+  dprint, 'Invalid Data',dlevel=2,verbose=verbose
   return
 endif
 
