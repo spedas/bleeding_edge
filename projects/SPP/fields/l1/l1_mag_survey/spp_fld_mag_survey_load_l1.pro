@@ -23,8 +23,8 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2019-10-12 09:28:00 -0700 (Sat, 12 Oct 2019) $
-;  $LastChangedRevision: 27845 $
+;  $LastChangedDate: 2020-04-22 17:56:06 -0700 (Wed, 22 Apr 2020) $
+;  $LastChangedRevision: 28602 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
@@ -197,7 +197,7 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat, $
     data = {x:times_1d, y:packet_index}
 
   store_data, prefix + 'range', $
-    data = {x:times_1d, y:range_bits}
+    data = {x:times_1d, y:long(range_bits)}
 
   store_data, prefix + 'rate', $
     data = {x:times_1d, y:rate_1d}
@@ -312,18 +312,31 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat, $
   options, prefix + 'range', 'psym_lim', 200
   options, prefix + 'range', 'max_points', 40000l
   options, prefix + 'range', 'ysubtitle', ''
-  options, prefix + 'range', 'panel_size', 0.75
+  options, prefix + 'range', 'panel_size', 0.5
+  options, prefix + 'range', 'datagap', 3600d
+  options, prefix + 'range', 'ygridstyle', 1
+  options, prefix + 'range', 'yticklen', 1
 
+  mag_rates = 2d^(indgen(8)+1) ;/ 2d^17 * 150000d
   ;options, prefix + 'rate', 'yrange', [-0.5,7.5]
   options, prefix + 'rate', 'ytitle', short_prefix + '!Crate'
   ;options, prefix + 'rate', 'yminor', 1
   ;options, prefix + 'rate', 'ystyle', 1
   ;options, prefix + 'rate', 'yticks', 7
   ;options, prefix + 'rate', 'ytickv', [0,1,2,3,4,5,6,7]
+  options, prefix + 'rate', 'yrange', [2 / 1.2, 256 * 1.2]
+  options, prefix + 'rate', 'ystyle', 1
+  options, prefix + 'rate', 'ylog', 1
+  options, prefix + 'rate', 'yticks', 7
+  options, prefix + 'rate', 'ytickv', mag_rates
+  options, prefix + 'rate', 'ytickformat', '(F5.1)'
   options, prefix + 'rate', 'psym_lim', 200
   options, prefix + 'rate', 'max_points', 40000l
   options, prefix + 'rate', 'ysubtitle', ''
-  options, prefix + 'rate', 'panel_size', 0.75
+  options, prefix + 'rate', 'panel_size', 1
+  options, prefix + 'rate', 'datagap', 3600d
+  options, prefix + 'rate', 'ygridstyle', 1
+  options, prefix + 'rate', 'yticklen', 1
 
   options, prefix + 'avg_period_raw', 'ytitle', short_prefix + '!CAvPR'
   options, prefix + 'avg_period_raw', 'ysubtitle'

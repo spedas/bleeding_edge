@@ -75,6 +75,7 @@ pro spp_fld_dcb_ssr_telemetry_load_l1, file, prefix = prefix, varformat = varfor
     options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'yrange', [0,275]
     options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'ystyle', 1
     options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'yticks', 11
+    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'panel_size', 2
     options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'ytickv', indgen(12) * 275 / 11
 
   endif
@@ -83,5 +84,6 @@ pro spp_fld_dcb_ssr_telemetry_load_l1, file, prefix = prefix, varformat = varfor
   options, 'spp_fld_dcb_ssr_telemetry_*', 'yticklen', 1
   options, 'spp_fld_dcb_ssr_telemetry_*', 'xgridstyle', 1
   options, 'spp_fld_dcb_ssr_telemetry_*', 'ygridstyle', 1
+  options, 'spp_fld_dcb_ssr_telemetry_*', 'yminor', 1
 
 end

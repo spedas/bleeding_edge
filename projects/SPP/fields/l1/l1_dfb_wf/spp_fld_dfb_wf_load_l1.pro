@@ -28,8 +28,8 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2020-04-10 12:31:08 -0700 (Fri, 10 Apr 2020) $
-;  $LastChangedRevision: 28545 $
+;  $LastChangedDate: 2020-04-22 17:55:19 -0700 (Wed, 22 Apr 2020) $
+;  $LastChangedRevision: 28599 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_dfb_wf/spp_fld_dfb_wf_load_l1.pro $
 ;
 
@@ -125,33 +125,49 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
 
   endif
 
-  options, prefix + 'compression', 'yrange', [-0.25,1.25]
-  options, prefix + 'compression', 'ystyle', 1
-  options, prefix + 'compression', 'psym_lim', 100
-  options, prefix + 'compression', 'symsize', 0.5
-  options, prefix + 'compression', 'panel_size', 0.5
-  options, prefix + 'compression', 'ytitle', $
-    'DFB WF ' + strmid(prefix,15,2) + compressed_str + '!CCompression'
+  if (tnames(prefix + 'compression'))[0] NE '' then begin
 
-  options, prefix + 'wav_enable', 'yrange', [-0.25,1.25]
-  options, prefix + 'wav_enable', 'ystyle', 1
-  options, prefix + 'wav_enable', 'psym_lim', 100
-  options, prefix + 'wav_enable', 'symsize', 0.5
-  options, prefix + 'wav_enable', 'panel_size', 0.5
-  options, prefix + 'wav_enable', 'ytitle', $
-    'DFB WF ' +  strmid(prefix,15,2) + compressed_str + '!CEnable'
+    options, prefix + 'compression', 'yrange', [-0.25,1.25]
+    options, prefix + 'compression', 'ystyle', 1
+    options, prefix + 'compression', 'psym_lim', 100
+    options, prefix + 'compression', 'symsize', 0.5
+    options, prefix + 'compression', 'panel_size', 0.5
+    options, prefix + 'compression', 'ytitle', $
+      'DFB WF ' + strmid(prefix,15,2) + compressed_str + '!CCompression'
 
-  options, prefix + 'wav_sel', 'yrange', [-1,16]
-  options, prefix + 'wav_sel', 'ystyle', 1
-  options, prefix + 'wav_sel', 'psym_lim', 4
-  options, prefix + 'wav_sel', 'symsize', 0.5
+  endif
 
-  options, prefix + '*string', 'tplot_routine', 'strplot'
-  options, prefix + '*string', 'yrange', [-0.1,1.0]
-  options, prefix + '*string', 'ystyle', 1
-  options, prefix + '*string', 'yticks', 1
-  options, prefix + '*string', 'ytickformat', '(A1)'
-  options, prefix + '*string', 'noclip', 0
+  if (tnames(prefix + 'wav_enable'))[0] NE '' then begin
+
+    options, prefix + 'wav_enable', 'yrange', [-0.25,1.25]
+    options, prefix + 'wav_enable', 'ystyle', 1
+    options, prefix + 'wav_enable', 'psym_lim', 100
+    options, prefix + 'wav_enable', 'symsize', 0.5
+    options, prefix + 'wav_enable', 'panel_size', 0.5
+    options, prefix + 'wav_enable', 'ytitle', $
+      'DFB WF ' +  strmid(prefix,15,2) + compressed_str + '!CEnable'
+
+  endif
+
+  if (tnames(prefix + 'wav_sel'))[0] NE '' then begin
+
+    options, prefix + 'wav_sel', 'yrange', [-1,16]
+    options, prefix + 'wav_sel', 'ystyle', 1
+    options, prefix + 'wav_sel', 'psym_lim', 4
+    options, prefix + 'wav_sel', 'symsize', 0.5
+
+  endif
+
+  if (tnames(prefix + '*string'))[0] NE '' then begin
+
+    options, prefix + '*string', 'tplot_routine', 'strplot'
+    options, prefix + '*string', 'yrange', [-0.1,1.0]
+    options, prefix + '*string', 'ystyle', 1
+    options, prefix + '*string', 'yticks', 1
+    options, prefix + '*string', 'ytickformat', '(A1)'
+    options, prefix + '*string', 'noclip', 0
+
+  endif
 
   ;
   ; End plot options
@@ -164,7 +180,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
   ;
 
   get_data, prefix + 'wf_pkt_data', data = d
-    
+
   if load_wf_v EQ 1 then get_data, prefix + 'wf_pkt_data_v', data = d_v
 
   if size(/type, d) NE 8 then return
