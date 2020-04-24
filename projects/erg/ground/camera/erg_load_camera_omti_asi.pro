@@ -9,7 +9,7 @@
 ;           The default is 'all', i.e., load all available stations.
 ;           This can be an array of strings, e.g., ['sgk', 'sta']
 ;           or a single string delimited by spaces, e.g., 'sgk sta'.
-;           Sites: ith rsb trs ath mgd ptk rik sgk sta yng isg drw ktb syo gak kap hus nyr
+;           Sites: abu ath drw eur gak hlk hus isg ist ith kap ktb mgd nai nyr ptk rik rsb sgk sta syo trs yng
 ;   wavelength = Wavelength in Angstrom, i.e., 5577, 6300, 7200, 7774, 5893, etc.
 ;                The default is 5577. This can be an array of integers, e.g., [5577, 6300]
 ;                or strings, e.g., '5577', '5577 6300', and ['5577', '6300'].
@@ -34,9 +34,11 @@
 ;             1. New stations (GAK, KAP, NYR, HUS) are included
 ;             2. Use spd_download instead of file_retrieve
 ;
-;
-;   $LastChangedDate: 2019-10-23 14:19:14 -0700 (Wed, 23 Oct 2019) $
-;   $LastChangedRevision: 27922 $
+; 2020-03-25: Atsuki Shinbori, ISEE, Nagoya U. (shinbori at isee.nagoya-u.ac.jp)
+;             1. New stations (ABU, EUR, HLK, IST, and NAI) are included
+;             
+;   $LastChangedDate: 2020-04-23 14:59:10 -0700 (Thu, 23 Apr 2020) $
+;   $LastChangedRevision: 28604 $
 ;-
 
 pro erg_load_camera_omti_asi, $
@@ -47,7 +49,7 @@ pro erg_load_camera_omti_asi, $
 ;*** site codes ***
 ;--- all sites (default)
 site_code_all = strsplit( $
-  'ith rsb trs ath mgd ptk rik sgk sta yng isg drw ktb syo gak kap hus nyr', $
+  'abu ath drw eur gak hlk hus isg ist ith kap ktb mgd nai nyr ptk rik rsb sgk sta syo trs yng', $
   ' ', /extract)
 
 ;--- check site codes
