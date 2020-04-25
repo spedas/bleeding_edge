@@ -33,14 +33,14 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix, varformat = varformat
   options, prefix + 'concat', 'ytickv', [0.,1.,2.]
   options, prefix + 'concat', 'ystyle', 1
   options, prefix + 'concat', 'yminor', 1
-  options, prefix + 'concat', 'panel_size', 0.5
+  options, prefix + 'concat', 'panel_size', 0.65
 
   options, prefix + 'src?', 'yrange', [-0.5,3.5]
   options, prefix + 'src?', 'yticks', 4
   options, prefix + 'src?', 'ytickv', [0.,1.,2.,3.]
   options, prefix + 'src?', 'ystyle', 1
   options, prefix + 'src?', 'yminor', 1
-  options, prefix + 'src?', 'panel_size', 0.5
+  options, prefix + 'src?', 'panel_size', 0.65
   options, prefix + 'src?', 'labels', [string(spec_number,format='(I1)')]
 
   options, prefix + ['enable','gain','bin'], 'yrange', [-0.25,1.25]
@@ -49,7 +49,7 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix, varformat = varformat
   options, prefix + ['enable','gain','bin'], 'ytickv', [0,1]
   options, prefix + ['enable','gain','bin'], 'yminor', 1
   options, prefix + ['enable','gain','bin'], 'ysubtitle', ''
-  options, prefix + ['enable','gain','bin'], 'panel_size', 0.35
+  options, prefix + ['enable','gain','bin'], 'panel_size', 0.5
 
   get_data, prefix + 'navg', data = dat_navg
 
@@ -62,7 +62,7 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix, varformat = varformat
     options, prefix + 'navg', 'ytickv', dat_navg.y[0] + [-1.0,0.0,1.0]
     options, prefix + 'navg', 'yminor', 1
     options, prefix + 'navg', 'ystyle', 1
-    options, prefix + 'navg', 'panel_size', 0.5
+    options, prefix + 'navg', 'panel_size', 0.65
 
   endif else begin
 
@@ -357,7 +357,7 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix, varformat = varformat
       endelse
 
       options, prefix + dfb_xspec_name_i, 'ytitle', $
-        ac_dc_string + ' XSP' + $
+        ac_dc_string + '!CXSP' + $
         string(xspec_ind) + '!C' + strupcase(dfb_xspec_name_ytitle)
 
     endfor

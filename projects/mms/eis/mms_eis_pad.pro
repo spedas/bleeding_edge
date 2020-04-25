@@ -19,6 +19,10 @@
 ;         num_smooth:           should contain number of seconds to use when smoothing
 ;                                 only creates a smoothed product (_pad_smth) if this keyword is specified
 ;         combine_proton_data:  set equal to 1 to combine extof and phxtof data
+;         mmsx_vars:            set equal to 1 to combine SC into mms-x variables if more than 1 SC is present
+;                                 (default = 0)
+;         range_pad_only:       set equal to 1 to create only an integral PAD over the user-defined energy range,
+;                                 no PADs for individual energy channels (default = 0)
 ;
 ; EXAMPLES:
 ;
@@ -30,8 +34,8 @@
 ;     This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-03-23 14:26:36 -0700 (Mon, 23 Mar 2020) $
-;$LastChangedRevision: 28456 $
+;$LastChangedDate: 2020-04-24 14:24:14 -0700 (Fri, 24 Apr 2020) $
+;$LastChangedRevision: 28608 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 ;-
 ; REVISION HISTORY:
@@ -59,12 +63,15 @@
 ;       + 2018-06-14, I. Cohen      : fixed zlim range for PAD variables with zero counts to differentiate from non-accessed pitch angles
 ;       + 2018-08-09, I. Cohen      : fixed energy range for integrated PAD variable to match actual range, not user-defined range
 ;       + 2020-03-23, I. Cohen      : create integral PAD tplot variable only if user-defined energy range covers more than 1 EIS energy channel
+;       + 2020-03-30, I. Cohen      : added/mirrored datatype to call of mms_eis_pad_combine_sc.pro
+;       + 2020-04-24, I. Cohen      : added mmsx_vars and range_pad_only keywords; changed so that MMS-X vars are only generated if requested by user
 ;                             
 ;-
 
-pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate = data_rate, energy = energy, $
+pro mms_eis_pad, probes = probes, trange = trange, species = species, data_rate = data_rate, energy = energy, $
                 size_pabin = size_pabin, data_units = data_units, datatype = datatype, scopes = scopes, level = level, $
-                suffix = suffix, num_smooth = num_smooth, combine_proton_data=combine_proton_data
+                suffix = suffix, num_smooth = num_smooth, combine_proton_data=combine_proton_data, mmsx_vars = mmsx_vars, $
+                range_pad_only = range_pad_only
   ;
   compile_opt idl2
   if not KEYWORD_SET(probes) then probes = '1' else probes = strcompress(string(probes), /rem)
@@ -78,6 +85,8 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
   if not KEYWORD_SET(scopes) then scopes = ['0','1','2','3','4','5']
   if not KEYWORD_SET(level) then level = 'l2'
   if not KEYWORD_SET(suffix) then suffix = ''
+  if undefined(mmsx_vars) then mmsx_vars = 0
+  if undefined(range_pad_only) then range_pad_only = 0
   if undefined(combine_proton_data) then begin
     if (species eq 'proton') then begin
       energy_test1 = where(energy gt 50)
@@ -178,53 +187,53 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
           ;
           ; CREATE PAD VARIABLES FOR EACH ENERGY CHANNEL IN USER-DEFINED ENERGY RANGE
           ;
-          for i=0, n_elements(data_flux.x)-1 do for j=0, n_pabins-1 do for ee=0,n_elements(these_energies)-1 do begin
-            ind = where((pa_file[i,*] + pa_halfang_width ge pa_label[j]-delta_pa) and (pa_file[i,*] - pa_halfang_width lt pa_label[j]+delta_pa))
-            if (ind[0] ne -1) then pa_flux[i,j,ee] = average(flux_file[i,ind,ee], 2, /NAN)
-          endfor
-;          pa_flux[where(pa_flux eq 0.0)] = !Values.d_NAN                                                      ; fill any missed bins with NAN
-          ;
-          for ee=0,n_elements(these_energies)-1 do begin
-            energy_string = strcompress(string(fix(data_flux.v[these_energies[ee]])), /rem) + 'keV'
-            new_name = prefix + datatype[dd] + '_' + energy_string + '_' + species[species_idx] + '_' + data_units + scope_suffix + '_pad'
+          if (range_pad_only ne 1) then begin
+            for i=0, n_elements(data_flux.x)-1 do for j=0, n_pabins-1 do for ee=0,n_elements(these_energies)-1 do begin
+              ind = where((pa_file[i,*] + pa_halfang_width ge pa_label[j]-delta_pa) and (pa_file[i,*] - pa_halfang_width lt pa_label[j]+delta_pa))
+              if (ind[0] ne -1) then pa_flux[i,j,ee] = average(flux_file[i,ind,ee], 2, /NAN)
+            endfor
+  ;          pa_flux[where(pa_flux eq 0.0)] = !Values.d_NAN                                                      ; fill any missed bins with NAN
             ;
-            ; the following is because prefix becomes a single-element array in some cases
-            if is_array(new_name) then new_name = new_name[0]
-            ;
-            store_data, new_name, data={x:data_flux.x, y:reform(pa_flux[*,*,ee]), v:pa_label}
-            options, new_name, yrange = [0,180], ystyle=1, spec = 1, no_interp=1, ytitle = 'MMS'+probes[pp]+' EIS ' + species[species_idx], ysubtitle=energy_string+'!CPA [Deg]', ztitle=units_label, minzlog=.01, /extend_y_edges
-            if (max(pa_flux[*,*,ee],/NAN) eq 0) then zlim, new_name, 0, 10, 0 else zlim, new_name, 0, 0, 1
-            tdegap, new_name, /overwrite
-            ;
-          endfor
-          ;
-          store_data, prefix + datatype[dd] + '_' + species[species_idx] + '_' + data_units + scope_suffix + '_pads', data={x:data_flux.x, y:pa_flux, v1:pa_label, v2:omni_data.v[these_energies]}
-          tdegap, prefix + datatype[dd] + '_' + species[species_idx] + '_' + data_units + scope_suffix + '_pads', /overwrite
-          ;if (combine_proton_data ne 1) then begin
-            ;
-            ; CREATE PAD VARIABLE INTEGRATED OVER USER-DEFINED ENERGY RANGE
-            ;
-            if (n_elements(these_energies) gt 1) then begin
-              energy_range_string = strcompress(string(fix(data_flux.v[these_energies[0]])), /rem) + '-' + strcompress(string(fix(data_flux.v[these_energies[-1]])), /rem) + 'keV'
-              new_name = prefix + datatype[dd] + '_' + energy_range_string + '_' + species[species_idx] + '_' + data_units + scope_suffix + '_pad'
+            for ee=0,n_elements(these_energies)-1 do begin
+              energy_string = strcompress(string(fix(data_flux.v[these_energies[ee]])), /rem) + 'keV'
+              new_name = prefix + datatype[dd] + '_' + energy_string + '_' + species[species_idx] + '_' + data_units + scope_suffix + '_pad'
               ;
-              ; the following is because of prefix becoming a single element array in some cases
+              ; the following is because prefix becomes a single-element array in some cases
               if is_array(new_name) then new_name = new_name[0]
-              avg_pa_flux = dblarr(n_elements(data_flux.x),n_pabins) + !Values.d_NAN                                    ; time x bins
-              for tt=0,n_elements(data_flux.x)-1 do for bb=0,n_pabins-1 do avg_pa_flux[tt,bb] = average(pa_flux[tt,bb,*],/NAN)
               ;
-  ;            avg_pa_flux[where(avg_pa_flux eq 0.0)] = !Values.d_NAN
-              store_data, new_name, data={x:data_flux.x, y:avg_pa_flux, v:pa_label}
-              options, new_name, yrange = [0,180], ystyle=1, spec = 1, no_interp=1, ytitle = 'MMS'+probes[pp]+' EIS ' + species[species_idx], ysubtitle=energy_range_string+'!CPA [Deg]', ztitle=units_label, minzlog=.01, /extend_y_edges
-              zlim, new_name, 5e2, 1e4, 1
+              store_data, new_name, data={x:data_flux.x, y:reform(pa_flux[*,*,ee]), v:pa_label}
+              options, new_name, yrange = [0,180], ystyle=1, spec = 1, no_interp=1, ytitle = 'MMS'+probes[pp]+' EIS ' + species[species_idx], ysubtitle=energy_string+'!CPA [Deg]', ztitle=units_label, minzlog=.01, /extend_y_edges
+              if (max(pa_flux[*,*,ee],/NAN) eq 0) then zlim, new_name, 0, 10, 0 else zlim, new_name, 0, 0, 1
               tdegap, new_name, /overwrite
               ;
-              ; now do the spin average
-              mms_eis_pad_spinavg, probes=probes[pp], species=species[species_idx], datatype=datatype[dd], energy=energy, data_units=data_units, size_pabin=size_pabin, data_rate = data_rate, scopes=scopes, suffix = suffix
-              ;
-              if ~undefined(num_smooth) then spd_smooth_time, new_name, newname=new_name+'_smth', num_smooth, /nan
-            endif
-          ;endif
+            endfor
+            ;
+            store_data, prefix + datatype[dd] + '_' + species[species_idx] + '_' + data_units + scope_suffix + '_pads', data={x:data_flux.x, y:pa_flux, v1:pa_label, v2:omni_data.v[these_energies]}
+            tdegap, prefix + datatype[dd] + '_' + species[species_idx] + '_' + data_units + scope_suffix + '_pads', /overwrite
+          endif
+          ;
+          ; CREATE PAD VARIABLE INTEGRATED OVER USER-DEFINED ENERGY RANGE
+          ;
+          if (n_elements(these_energies) gt 1) then begin
+            energy_range_string = strcompress(string(fix(data_flux.v[these_energies[0]])), /rem) + '-' + strcompress(string(fix(data_flux.v[these_energies[-1]])), /rem) + 'keV'
+            new_name = prefix + datatype[dd] + '_' + energy_range_string + '_' + species[species_idx] + '_' + data_units + scope_suffix + '_pad'
+            ;
+            ; the following is because of prefix becoming a single element array in some cases
+            if is_array(new_name) then new_name = new_name[0]
+            avg_pa_flux = dblarr(n_elements(data_flux.x),n_pabins) + !Values.d_NAN                                    ; time x bins
+            for tt=0,n_elements(data_flux.x)-1 do for bb=0,n_pabins-1 do avg_pa_flux[tt,bb] = average(pa_flux[tt,bb,*],/NAN)
+            ;
+;            avg_pa_flux[where(avg_pa_flux eq 0.0)] = !Values.d_NAN
+            store_data, new_name, data={x:data_flux.x, y:avg_pa_flux, v:pa_label}
+            options, new_name, yrange = [0,180], ystyle=1, spec = 1, no_interp=1, ytitle = 'MMS'+probes[pp]+' EIS ' + species[species_idx], ysubtitle=energy_range_string+'!CPA [Deg]', ztitle=units_label, minzlog=.01, /extend_y_edges
+            zlim, new_name, 5e2, 1e4, 1
+            tdegap, new_name, /overwrite
+            ;
+            ; now do the spin average
+            mms_eis_pad_spinavg, probes=probes[pp], species=species[species_idx], datatype=datatype[dd], energy=energy, data_units=data_units, size_pabin=size_pabin, data_rate = data_rate, scopes=scopes, suffix = suffix
+            ;
+            if ~undefined(num_smooth) then spd_smooth_time, new_name, newname=new_name+'_smth', num_smooth, /nan
+          endif
         endfor
       endif
     endfor
@@ -242,6 +251,7 @@ pro mms_eis_pad,probes = probes, trange = trange, species = species, data_rate =
     ;
   endfor
   ;
-  if (n_elements(probes) gt 1) then mms_eis_pad_combine_sc, probes = probes, trange = trange, species = species, data_rate = data_rate, energy = energy, data_units = data_units, suffix = suffix
+  ; NOTE: PLEASE SPECIFY IN ANY PRESENTATIONS OR PUBLICATIONS WHICH SPACECRAFT ARE INCLUDED IF YOU GENERATE AND USE MMS-X VARIABLES
+  if (n_elements(probes) gt 1) and (mmsx_vars eq 1) then mms_eis_pad_combine_sc, probes = probes, trange = trange, species = species, data_rate = data_rate, energy = energy, data_units = data_units, suffix = suffix, datatype = datatype
   ;
 end
