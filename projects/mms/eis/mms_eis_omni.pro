@@ -14,11 +14,12 @@
 ;       + 2016-03-09, I. Cohen      : altered ylabel for new omni variables
 ;       + 2018-01-03, I. Cohen      : added counts as acceptable data_units option
 ;       + 2018-01-19, I. Cohen      : simplified how p_num is pulled out
-;       + 2018-01-23, I. Cohen      : convert zeros in data to NANs to correctly handle averaging                              
+;       + 2018-01-23, I. Cohen      : convert zeros in data to NANs to correctly handle averaging         
+;       + 2020-04-27, I. Cohen      : added creation of single variable with energy limits of each channel                    
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-02-01 10:28:16 -0800 (Thu, 01 Feb 2018) $
-;$LastChangedRevision: 24616 $
+;$LastChangedDate: 2020-04-27 12:15:45 -0700 (Mon, 27 Apr 2020) $
+;$LastChangedRevision: 28611 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_omni.pro $
 ;-
 
@@ -75,11 +76,18 @@ pro mms_eis_omni, probe, species = species, datatype = datatype, tplotnames = tp
     ; EIS changed the energization of the channels when the major file version switched from
     ; v2.1.0 to v3.0.0. (P# represents major version #)
     if (datatype eq 'phxtof') && (species eq 'proton') then begin
-      if(p_num ge 3) then options, newname, yticks=2, yrange=[14, 45], ystyle=1 else options, newname, yticks=2, yrange=[10, 28], ystyle=1
+      if (p_num ge 3) then options, newname, yticks=2, yrange=[14, 45], ystyle=1 else options, newname, yticks=2, yrange=[10, 28], ystyle=1
     endif
     ;
     append_array, tplotnames, newname
     ; degap the data
     tdegap, newname, /overwrite
   endif
+  ;
+  ; create new variable with omni energy limits
+  get_data, prefix+species_str+'_t0_energy_dminus', data=energy_minus
+  get_data, prefix+species_str+'_t0_energy', data=energy_gm
+  get_data, prefix+species_str+'_t0_energy_dplus', data=energy_plus
+  if is_struct(energy_minus) and is_struct(energy_plus) then store_data, prefix+species_str+'_energy_range', data={x:energy_gm.x, y: [[energy_gm.y-energy_minus.y],[energy_gm.y+energy_plus.y]]} $
+    else print, '*DMINUS/*DPLUS VARIABLES FOR CHANNEL ENERGY LIMITS ARE NOT LOADED'
 end

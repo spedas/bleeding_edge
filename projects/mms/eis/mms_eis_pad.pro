@@ -34,8 +34,8 @@
 ;     This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-04-24 14:24:14 -0700 (Fri, 24 Apr 2020) $
-;$LastChangedRevision: 28608 $
+;$LastChangedDate: 2020-04-27 12:15:45 -0700 (Mon, 27 Apr 2020) $
+;$LastChangedRevision: 28611 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 ;-
 ; REVISION HISTORY:
@@ -65,6 +65,7 @@
 ;       + 2020-03-23, I. Cohen      : create integral PAD tplot variable only if user-defined energy range covers more than 1 EIS energy channel
 ;       + 2020-03-30, I. Cohen      : added/mirrored datatype to call of mms_eis_pad_combine_sc.pro
 ;       + 2020-04-24, I. Cohen      : added mmsx_vars and range_pad_only keywords; changed so that MMS-X vars are only generated if requested by user
+;       + 2020-04-27, I. Cohen      : updated to correctly calculate and name PAD variables based on actual energy range of each channel
 ;                             
 ;-
 
@@ -149,8 +150,17 @@ pro mms_eis_pad, probes = probes, trange = trange, species = species, data_rate 
           ;
           ;
           get_data,prefix+datatype[dd]+'_'+species+'_'+data_units+'_omni'+suffix,data=omni_data
-          these_energies = where((omni_data.v ge energy[0]) and (omni_data.v le energy[1]), energies_count)
-          if (energies_count eq 0) then begin
+          get_data,prefix+datatype[dd]+'_'+species+'_energy_range',data=erange
+          if (is_struct(erange) eq 0) then begin
+            print, 'Energy range variable is missing from loaded EIS data'
+            return
+          endif
+          inchan_check_low = dblarr(n_elements(omni_data.v))
+          inchan_check_hi = dblarr(n_elements(omni_data.v))
+          inchan_check_low[where((erange.y[*, 0] ge energy[0]) and (erange.y[*, 0] le energy[1]), energies_count_low)] = 1d
+          inchan_check_hi[where((erange.y[*, 1] ge energy[0]) and (erange.y[*, 1] le energy[1]), energies_count_hi)] = 1d
+          these_energies = where((inchan_check_low gt 0) or (inchan_check_hi gt 0))
+          if (energies_count_low eq 0) or (energies_count_hi eq 0) then begin
             print, 'Energy range selected is not covered by the detector for ' + datatype[dd] + ' ' + species[species_idx] + ' ' + data_units
             return
           endif
@@ -195,7 +205,7 @@ pro mms_eis_pad, probes = probes, trange = trange, species = species, data_rate 
   ;          pa_flux[where(pa_flux eq 0.0)] = !Values.d_NAN                                                      ; fill any missed bins with NAN
             ;
             for ee=0,n_elements(these_energies)-1 do begin
-              energy_string = strcompress(string(fix(data_flux.v[these_energies[ee]])), /rem) + 'keV'
+              energy_string = strcompress(string(fix(erange.y[these_energies[ee], 0])), /rem)+'-'+strcompress(string(fix(erange.y[these_energies[ee], 1])), /rem) + 'keV'
               new_name = prefix + datatype[dd] + '_' + energy_string + '_' + species[species_idx] + '_' + data_units + scope_suffix + '_pad'
               ;
               ; the following is because prefix becomes a single-element array in some cases
@@ -215,7 +225,7 @@ pro mms_eis_pad, probes = probes, trange = trange, species = species, data_rate 
           ; CREATE PAD VARIABLE INTEGRATED OVER USER-DEFINED ENERGY RANGE
           ;
           if (n_elements(these_energies) gt 1) then begin
-            energy_range_string = strcompress(string(fix(data_flux.v[these_energies[0]])), /rem) + '-' + strcompress(string(fix(data_flux.v[these_energies[-1]])), /rem) + 'keV'
+            energy_range_string = strcompress(string(fix(erange.y[these_energies[0], 0])), /rem)+'-'+strcompress(string(fix(erange.y[these_energies[-1], 1])), /rem) + 'keV'
             new_name = prefix + datatype[dd] + '_' + energy_range_string + '_' + species[species_idx] + '_' + data_units + scope_suffix + '_pad'
             ;
             ; the following is because of prefix becoming a single element array in some cases
