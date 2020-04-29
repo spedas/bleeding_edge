@@ -1,9 +1,9 @@
 ;+
 ; Written by Davin Larson
 ;
-; $LastChangedBy: pulupa $
-; $LastChangedDate: 2019-12-03 17:18:39 -0800 (Tue, 03 Dec 2019) $
-; $LastChangedRevision: 28071 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2020-04-28 16:55:34 -0700 (Tue, 28 Apr 2020) $
+; $LastChangedRevision: 28618 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_file_retrieve.pro $
 ;
 ; Function:  files = spp_file_retrieve(PATHNAME)
@@ -145,7 +145,7 @@ function spp_file_retrieve,pathname,trange=trange,ndays=ndays,nhours=nhours,verb
     str = (tr-sres)/res
     dtr = (ceil(str[1]) - floor(str[0]) )  > 1           ; must have at least one file
     times = res * (floor(str[0]) + lindgen(dtr))+sres
-    pathnames = time_string(times,tformat=pathname)
+    pathnames = time_string(times,tformat=pathname,escape_seq = '\')
     pathnames = pathnames[uniq(pathnames)]   ; Remove duplicate filenames - assumes they are sorted
   endif else pathnames = pathname
 
