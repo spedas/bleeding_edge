@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Apr 28 18:15:48 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Apr 29 18:16:28 2020.<P>
  
 <HR>
  
@@ -21,7 +21,7 @@ This page was created by the IDL library routine
 <H1>general/missions/rbsp/efw/utils</H1>
 <LI><A HREF="#EXPAND_TILDE()">EXPAND_TILDE()</A>
 <br>Expand tilde in UNIX directory names
-<LI><A HREF="#FINDPATH">FINDPATH</A>
+<LI><A HREF="#FINDPATH[2]">FINDPATH[2]</A>
 <LI><A HREF="#JBT_DATE2JDAY (FUNCTION)">JBT_DATE2JDAY (FUNCTION)</A>
 <br>Convert a date string in format 'yyyy-mm-dd', such as '2012-10-16', into a
 <LI><A HREF="#JBT_EXTREMA (FUNCTION)">JBT_EXTREMA (FUNCTION)</A>
@@ -58,7 +58,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="EXPAND_TILDE()">
 <H2>EXPAND_TILDE()</H2></A>
-<A HREF="#FINDPATH">[Next Routine]</A>
+<A HREF="#FINDPATH[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -96,29 +96,30 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="utils/expand_tilde.pro">general/missions/rbsp/efw/utils/expand_tilde.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="FINDPATH">
-<H2>FINDPATH</H2></A>
+<A NAME="FINDPATH[2]">
+<H2>FINDPATH[2]</H2></A>
 <A HREF="#EXPAND_TILDE()">[Previous Routine]</A>
 <A HREF="#JBT_DATE2JDAY (FUNCTION)">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- NAME: findpath.pro 
- SYNTAX: 
- PURPOSE: Finds the path to a particular file in current IDL paths
- ARGUMENTS: 
+FUNCTION: findpath.pro
+
+PURPOSE: Finds the path to a particular file in current IDL paths
+
+ARGUMENTS:
     FILENAME  -&gt; Name of the file to find   - STRING
     PATH      &lt;- Path to file (without &quot;/&quot;) - STRING
 
- RETURNS:  Status of find
+RETURNS:  Status of find
             0 - Failure
             1 - Success (exact match)
             2 - Success (after adding &quot;.pro&quot;)
-        
- KEYWORDS:
+
+KEYWORDS:
     EXACT    /  Find exact match only (Don't try to add '.pro')
     VERBOSE  /  Print out search pathes
 
- CALLING SEQUENCE: found=findpath('filename',pathname) 
+CALLING SEQUENCE: found=findpath('filename',pathname)
                   case found of
                     0 : ERROR
                     1 : fullpath=pathname+'/'+filename
@@ -127,29 +128,25 @@ This page was created by the IDL library routine
               or
                   if not findpath('filename',path,/exact) then ERROR
 
- NOTES:  By default, FINDPATH searches for exact match.  If not found
+NOTES:  By default, FINDPATH searches for exact match.  If not found
         looks for 'filename' with &quot;.pro&quot; appended (unless /EXACT keyword
         is set).
 
- CREATED BY: John P. Dombeck 7/03/2001
+CREATED BY: John P. Dombeck 7/03/2001
 
- MODIFICATION HISTORY:
+MODIFICATION HISTORY:
 
   07/03/01- J. Dombeck    Original writing
   06/25/04- J. Dombeck    Added VERBOSE keyword
                           Changed close -&gt; free_lun
- VERSION: 
-   $LastChangedBy: aaronbreneman $
-   $LastChangedDate: 2014-09-10 07:48:14 -0700 (Wed, 10 Sep 2014) $
-   $LastChangedRevision: 15750 $
-   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/utils/findpath.pro $
+
 </PRE><P>
 <STRONG>(See <A href="utils/findpath.pro">general/missions/rbsp/efw/utils/findpath.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="JBT_DATE2JDAY (FUNCTION)">
 <H2>JBT_DATE2JDAY (FUNCTION)</H2></A>
-<A HREF="#FINDPATH">[Previous Routine]</A>
+<A HREF="#FINDPATH[2]">[Previous Routine]</A>
 <A HREF="#JBT_EXTREMA (FUNCTION)">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

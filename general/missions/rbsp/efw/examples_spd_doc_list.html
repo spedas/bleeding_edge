@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Apr 28 18:15:48 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Apr 29 18:16:28 2020.<P>
  
 <HR>
  
@@ -277,12 +277,16 @@ CALLING SEQUENCE:
  rbsp_efw_position_velocity_crib
 INPUT:
 KEYWORDS:
+ probe = set to specify to load only &quot;a&quot; or &quot;b&quot; other than both.
  no_spice_load -&gt; set if you've already loaded the spice kernels
 	noplot -&gt; set to avoid tplotting
 	notrace -&gt; skip the ttrace2equator call. This takes a lot of computational time
  nospinaxis_calcs -&gt; skip the part that loads the spinaxis pointing direction.
    This can be problematic on certain dates. Only set if you don't need the
    spinaxis direction or the sc velocity in mGSE coord
+ _extra --&gt; possible useful extra keywords include:
+       no_spice_load
+       no_rbsp_efw_init
 OUTPUT: various tplot variables
 HISTORY:
  Written by Aaron Breneman, UMN, Dec 2012

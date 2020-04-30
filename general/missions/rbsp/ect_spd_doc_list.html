@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Apr 28 18:15:48 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Apr 29 18:16:28 2020.<P>
  
 <HR>
  
@@ -23,6 +23,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#RBSP_ECT_INIT">RBSP_ECT_INIT</A>
 <LI><A HREF="#RBSP_LOAD_ECT_L3">RBSP_LOAD_ECT_L3</A>
 <LI><A HREF="#RBSP_LOAD_MAGEIS_L2">RBSP_LOAD_MAGEIS_L2</A>
+<LI><A HREF="#RBSP_READ_ECT_MAG_EPHEM[1]">RBSP_READ_ECT_MAG_EPHEM[1]</A>
 <br>
 </UL><P>
 <HR>
@@ -181,6 +182,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="RBSP_LOAD_MAGEIS_L2">
 <H2>RBSP_LOAD_MAGEIS_L2</H2></A>
 <A HREF="#RBSP_LOAD_ECT_L3">[Previous Routine]</A>
+<A HREF="#RBSP_READ_ECT_MAG_EPHEM[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: rbsp_load_mageis_l2
@@ -221,5 +223,30 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 
 </PRE><P>
 <STRONG>(See <A href="ect/rbsp_load_mageis_l2.pro">general/missions/rbsp/ect/rbsp_load_mageis_l2.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="RBSP_READ_ECT_MAG_EPHEM[1]">
+<H2>RBSP_READ_ECT_MAG_EPHEM[1]</H2></A>
+<A HREF="#RBSP_LOAD_MAGEIS_L2">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: rbsp_read_ect_mag_ephem
+ SYNTAX:
+ PURPOSE: Read in RBSP ECT's official magnetic field model predicted quantities
+ INPUT: sc -&gt; 'a' or 'b'
+		 date -&gt; '2014-01-01'
+        type -&gt; defaults to OP77Q. Can also have &quot;TS04D&quot; (definitive)
+        or &quot;T89Q&quot; for predicted.
+ OUTPUT: tplot variables with prefix 'rbsp'+sc+'_ME_'
+		  Will also return perigeetimes as keyword
+ KEYWORDS:
+ HISTORY: Written by Aaron W Breneman, UMN
+ VERSION:
+   $LastChangedBy: $
+   $LastChangedDate: $
+   $LastChangedRevision: $
+   $URL: $
+</PRE><P>
+<STRONG>(See <A href="ect/rbsp_read_ect_mag_ephem.pro">general/missions/rbsp/ect/rbsp_read_ect_mag_ephem.pro</A>)</STRONG><P>
 <HR>
  

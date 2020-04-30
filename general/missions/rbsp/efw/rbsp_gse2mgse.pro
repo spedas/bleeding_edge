@@ -31,7 +31,7 @@
 ;	   get_data,rbspx+'_spinaxis_direction_gse',data=wsc_GSE
 ;	   wgse = wsc_gse.y
 ;
-;		 newname = name for output tplot variable. If not set then new name is 
+;		 newname = name for output tplot variable. If not set then new name is
 ;					old name + '_mgse'
 ;
 ;

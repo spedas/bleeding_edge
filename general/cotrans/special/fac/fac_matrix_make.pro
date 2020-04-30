@@ -88,14 +88,17 @@
 ;     cotrans,cotrans_get_coord,tvector_rotate,minvar_matrix_make,fac_crib
 ;
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2016-10-13 11:17:14 -0700 (Thu, 13 Oct 2016) $
-; $LastChangedRevision: 22094 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2020-04-29 11:48:35 -0700 (Wed, 29 Apr 2020) $
+; $LastChangedRevision: 28649 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/special/fac/fac_matrix_make.pro $
 ;-
 
 pro fac_matrix_make,mag_var_name,other_dim=other_dim, pos_var_name=pos_var_name, $
                     newname=newname, error=error, degap=degap, _extra=ex
+
+
+compile_opt idl2
 
 ;the valid_coords array is positional...so the order of coordnames
 ;should match their processing order in the code below
@@ -510,9 +513,9 @@ valid_coords[3] : begin
     y_2 = dindgen(n_elements(theta_t),3)
 
     ; next get unit vector phi coordinates in GEI system (overwrite y_2)
-    y_2(*,0)=cos(theta_d*!PI/180.)*cos(phi_d*!PI/180.)
-    y_2(*,1)=sin(theta_d*!PI/180.)*cos(phi_d*!PI/180.)
-    y_2(*,2)=-sin(phi_d*!PI/180.)
+    y_2[*,0]=cos(theta_d*!PI/180.)*cos(phi_d*!PI/180.)
+    y_2[*,1]=sin(theta_d*!PI/180.)*cos(phi_d*!PI/180.)
+    y_2[*,2]=-sin(phi_d*!PI/180.)
 
     ; transform into mag field coordinate system
 
@@ -627,9 +630,9 @@ valid_coords[4] : begin
     y_2 = dindgen(n_elements(theta_t),3)
 
     ; next get unit vector phi coordinates in GEI system (overwrite y_2)
-    y_2(*,0)=cos(theta_d*!PI/180.)*cos(phi_d*!PI/180.)
-    y_2(*,1)=sin(theta_d*!PI/180.)*cos(phi_d*!PI/180.)
-    y_2(*,2)=-sin(phi_d*!PI/180.)
+    y_2[*,0]=cos(theta_d*!PI/180.)*cos(phi_d*!PI/180.)
+    y_2[*,1]=sin(theta_d*!PI/180.)*cos(phi_d*!PI/180.)
+    y_2[*,2]=-sin(phi_d*!PI/180.)
 
     ; transform into mag field coordinate system
 
@@ -748,9 +751,9 @@ valid_coords[5]: begin
     y_2 = dindgen(n_elements(theta_t),3)
 
     ; next get unit vector phi coordinates in SM system (overwrite y_2)
-    y_2(*,0)=-sin(phi_d*!PI/180.)
-    y_2(*,1)=cos(phi_d*!PI/180.)
-    y_2(*,2)=0.
+    y_2[*,0]=-sin(phi_d*!PI/180.)
+    y_2[*,1]=cos(phi_d*!PI/180.)
+    y_2[*,2]=0.
 
     str_element,d,'v',SUCCESS=s
 
@@ -868,9 +871,9 @@ valid_coords[6]: begin
     y_2 = dindgen(n_elements(theta_t),3)
 
     ; next get unit vector phi coordinates in SM system (overwrite y_2)
-    y_2(*,0)=-sin(phi_d*!PI/180.)
-    y_2(*,1)=cos(phi_d*!PI/180.)
-    y_2(*,2)=0.
+    y_2[*,0]=-sin(phi_d*!PI/180.)
+    y_2[*,1]=cos(phi_d*!PI/180.)
+    y_2[*,2]=0.
 
     str_element,d,'v',SUCCESS=s
 

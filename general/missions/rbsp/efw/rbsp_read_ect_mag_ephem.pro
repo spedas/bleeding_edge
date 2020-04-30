@@ -18,14 +18,15 @@
 ;-
 
 
-pro rbsp_read_ect_mag_ephem,sc,   perigeetimes,pre=pre,type=type
-
+pro rbsp_read_ect_mag_ephem,sc,perigeetimes,$
+  pre=pre,type=type,$
+  _extra=extra
 
   if ~keyword_set(type) then type = 'OP77Q'
 
 
 
-  rbsp_efw_init
+  if ~tag_exist(extra,'no_rbsp_efw_init') then rbsp_efw_init
   rbsp_spice_init
 
 

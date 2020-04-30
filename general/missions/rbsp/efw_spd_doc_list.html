@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Apr 28 18:15:48 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Apr 29 18:16:28 2020.<P>
  
 <HR>
  
@@ -19,29 +19,32 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>general/missions/rbsp/efw</H1>
-<LI><A HREF="#RBSP_AC_HIGHPASS_RESPONSE (FUNCTION)">
-RBSP_AC_HIGHPASS_RESPONSE (FUNCTION)</A>
+<LI><A HREF="#FINDPATH[1]">FINDPATH[1]</A>
+<LI><A HREF="#RBSP_AC_HIGHPASS_RESPONSE (FUNCTION)[1]">
+RBSP_AC_HIGHPASS_RESPONSE (FUNCTION)[1]</A>
 <br>Calculate the response of the one-pole 10 Hz high-pass analog filter applied
-<LI><A HREF="#RBSP_ADC_RESPONSE (FUNCTION)">RBSP_ADC_RESPONSE (FUNCTION)</A>
+<LI><A HREF="#RBSP_ADC_RESPONSE (FUNCTION)[1]">RBSP_ADC_RESPONSE (FUNCTION)[1]
+</A>
 <br>Calculate the responses of the RBSP DFB ADC chip.
-<LI><A HREF="#RBSP_ANTI_ALIASING_RESPONSE (FUNCTION)">
-RBSP_ANTI_ALIASING_RESPONSE (FUNCTION)</A>
+<LI><A HREF="#RBSP_ANTI_ALIASING_RESPONSE (FUNCTION)[1]">
+RBSP_ANTI_ALIASING_RESPONSE (FUNCTION)[1]</A>
 <br>Calculate the frequency responses of the anti-aliasing filters for RBSP
 <LI><A HREF="#RBSP_COROTATION_EFIELD">RBSP_COROTATION_EFIELD</A>
 <LI><A HREF="#RBSP_COTRANS (PROCEDURE)">RBSP_COTRANS (PROCEDURE)</A>
 <br>A wrapper of cotrans for RBSP, with a few mission-specific features added.
 <LI><A HREF="#RBSP_DESPIN (PROCEDURE)">RBSP_DESPIN (PROCEDURE)</A>
 <br>Rotate data from a spinning frame to DSC. By default, the spinning frame is
-<LI><A HREF="#RBSP_DFB_RESPONSE (FUNCTION)">RBSP_DFB_RESPONSE (FUNCTION)</A>
-<br>Calculate DFB responses at given frequencies. Two modes are suppored. If the
-<LI><A HREF="#RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)">
-RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)</A>
-<br>Returns a structure with all the boom lengths for input date and time
-<LI><A HREF="#RBSP_EFW_BOOM_LENGTH (FUNCTION)">RBSP_EFW_BOOM_LENGTH (FUNCTION)
+<LI><A HREF="#RBSP_DFB_RESPONSE (FUNCTION)[1]">RBSP_DFB_RESPONSE (FUNCTION)[1]
 </A>
+<br>Calculate DFB responses at given frequencies. Two modes are suppored. If the
+<LI><A HREF="#RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)[1]">
+RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)[1]</A>
+<br>Returns a structure with all the boom lengths for input date and time
+<LI><A HREF="#RBSP_EFW_BOOM_LENGTH (FUNCTION)[1]">
+RBSP_EFW_BOOM_LENGTH (FUNCTION)[1]</A>
 <br>Return the boom length for a give time.
-<LI><A HREF="#RBSP_EFW_BOOM_RESPONSE (FUNCTION)">
-RBSP_EFW_BOOM_RESPONSE (FUNCTION)</A>
+<LI><A HREF="#RBSP_EFW_BOOM_RESPONSE (FUNCTION)[1]">
+RBSP_EFW_BOOM_RESPONSE (FUNCTION)[1]</A>
 <LI><A HREF="#RBSP_EFW_CAL_FBK">RBSP_EFW_CAL_FBK</A>
 <LI><A HREF="#RBSP_EFW_CAL_SPEC">RBSP_EFW_CAL_SPEC</A>
 <LI><A HREF="#RBSP_EFW_CAL_WAVEFORM (PROCEDURE)">
@@ -58,19 +61,19 @@ RBSP_EFW_CAL_WAVEFORM (PROCEDURE)</A>
 <LI><A HREF="#RBSP_EFW_CONFIG_FILEDIR">RBSP_EFW_CONFIG_FILEDIR</A>
 <LI><A HREF="#RBSP_EFW_CREATE_ESVY_UVW_FROM_VSVY">
 RBSP_EFW_CREATE_ESVY_UVW_FROM_VSVY</A>
-<LI><A HREF="#RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)">
-RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)</A>
+<LI><A HREF="#RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)[1]">
+RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)[1]</A>
 <br>De-convolve instrument responses for RBSP EFW data, including search-coil
 <LI><A HREF="#RBSP_EFW_GET_CAL_PARAMS (FUNCTION)">
 RBSP_EFW_GET_CAL_PARAMS (FUNCTION)</A>
 <br>Return RBSP EFW calibration parameters for converting L1 data to L2 data.
-<LI><A HREF="#RBSP_EFW_GET_GAIN_RESULTS">RBSP_EFW_GET_GAIN_RESULTS</A>
+<LI><A HREF="#RBSP_EFW_GET_GAIN_RESULTS[1]">RBSP_EFW_GET_GAIN_RESULTS[1]</A>
 <br>return structure with freq-dependent calibration curves for the searchcoil and EDC
 <LI><A HREF="#RBSP_EFW_INIT">RBSP_EFW_INIT</A>
 <LI><A HREF="#RBSP_EFW_READ_CONFIG">RBSP_EFW_READ_CONFIG</A>
 <br>Reads the rbsp_efw_config file
-<LI><A HREF="#RBSP_GET_EFW_DFB_CONFIG (FUNCTION)">
-RBSP_GET_EFW_DFB_CONFIG (FUNCTION)</A>
+<LI><A HREF="#RBSP_GET_EFW_DFB_CONFIG (FUNCTION)[1]">
+RBSP_GET_EFW_DFB_CONFIG (FUNCTION)[1]</A>
 <br>Decode the EFW DFB Config byte
 <LI><A HREF="#RBSP_GSE2MGSE">RBSP_GSE2MGSE</A>
 <LI><A HREF="#RBSP_INTERP_SPIN_PHASE (FUNCTION)">
@@ -89,10 +92,11 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <LI><A HREF="#RBSP_LOAD_MANEUVER_FILE">RBSP_LOAD_MANEUVER_FILE</A>
 <LI><A HREF="#RBSP_MGSE2GSE.">RBSP_MGSE2GSE.</A>
 <br>Convert vector in mGSE coord to GSE.
-<LI><A HREF="#RBSP_MSC_RESPONSE (FUNCTION)">RBSP_MSC_RESPONSE (FUNCTION)</A>
+<LI><A HREF="#RBSP_MSC_RESPONSE (FUNCTION)[1]">RBSP_MSC_RESPONSE (FUNCTION)[1]
+</A>
 <br>Calculate the transmittance of the search-coil magnetometer.
 <LI><A HREF="#RBSP_POYNTING_FLUX">RBSP_POYNTING_FLUX</A>
-<LI><A HREF="#RBSP_READ_ECT_MAG_EPHEM">RBSP_READ_ECT_MAG_EPHEM</A>
+<LI><A HREF="#RBSP_READ_ECT_MAG_EPHEM[2]">RBSP_READ_ECT_MAG_EPHEM[2]</A>
 <LI><A HREF="#RBSP_SPINFIT (PROCEDURE)">RBSP_SPINFIT (PROCEDURE)</A>
 <br>Derive spin-fit E-field from instantaneous E-field measurements. The
 <LI><A HREF="#RBSP_SPLIT_FBK">RBSP_SPLIT_FBK</A>
@@ -105,9 +109,57 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <HR>
  
 <H1>Routine Descriptions</H1>
-<A NAME="RBSP_AC_HIGHPASS_RESPONSE (FUNCTION)">
-<H2>RBSP_AC_HIGHPASS_RESPONSE (FUNCTION)</H2></A>
-<A HREF="#RBSP_ADC_RESPONSE (FUNCTION)">[Next Routine]</A>
+<A NAME="FINDPATH[1]">
+<H2>FINDPATH[1]</H2></A>
+<A HREF="#RBSP_AC_HIGHPASS_RESPONSE (FUNCTION)[1]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION: findpath.pro
+
+PURPOSE: Finds the path to a particular file in current IDL paths
+
+ARGUMENTS:
+    FILENAME  -&gt; Name of the file to find   - STRING
+    PATH      &lt;- Path to file (without &quot;/&quot;) - STRING
+
+RETURNS:  Status of find
+            0 - Failure
+            1 - Success (exact match)
+            2 - Success (after adding &quot;.pro&quot;)
+
+KEYWORDS:
+    EXACT    /  Find exact match only (Don't try to add '.pro')
+    VERBOSE  /  Print out search pathes
+
+CALLING SEQUENCE: found=findpath('filename',pathname)
+                  case found of
+                    0 : ERROR
+                    1 : fullpath=pathname+'/'+filename
+                    2 : fullpath=pathname+'/'+filename+'.pro'
+                  endcase
+              or
+                  if not findpath('filename',path,/exact) then ERROR
+
+NOTES:  By default, FINDPATH searches for exact match.  If not found
+        looks for 'filename' with &quot;.pro&quot; appended (unless /EXACT keyword
+        is set).
+
+CREATED BY: John P. Dombeck 7/03/2001
+
+MODIFICATION HISTORY:
+
+  07/03/01- J. Dombeck    Original writing
+  06/25/04- J. Dombeck    Added VERBOSE keyword
+                          Changed close -&gt; free_lun
+
+</PRE><P>
+<STRONG>(See <A href="efw/findpath.pro">general/missions/rbsp/efw/findpath.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="RBSP_AC_HIGHPASS_RESPONSE (FUNCTION)[1]">
+<H2>RBSP_AC_HIGHPASS_RESPONSE (FUNCTION)[1]</H2></A>
+<A HREF="#FINDPATH[1]">[Previous Routine]</A>
+<A HREF="#RBSP_ADC_RESPONSE (FUNCTION)[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -149,10 +201,10 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <STRONG>(See <A href="efw/rbsp_ac_highpass_response.pro">general/missions/rbsp/efw/rbsp_ac_highpass_response.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_ADC_RESPONSE (FUNCTION)">
-<H2>RBSP_ADC_RESPONSE (FUNCTION)</H2></A>
-<A HREF="#RBSP_AC_HIGHPASS_RESPONSE (FUNCTION)">[Previous Routine]</A>
-<A HREF="#RBSP_ANTI_ALIASING_RESPONSE (FUNCTION)">[Next Routine]</A>
+<A NAME="RBSP_ADC_RESPONSE (FUNCTION)[1]">
+<H2>RBSP_ADC_RESPONSE (FUNCTION)[1]</H2></A>
+<A HREF="#RBSP_AC_HIGHPASS_RESPONSE (FUNCTION)[1]">[Previous Routine]</A>
+<A HREF="#RBSP_ANTI_ALIASING_RESPONSE (FUNCTION)[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -199,9 +251,9 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <STRONG>(See <A href="efw/rbsp_adc_response.pro">general/missions/rbsp/efw/rbsp_adc_response.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_ANTI_ALIASING_RESPONSE (FUNCTION)">
-<H2>RBSP_ANTI_ALIASING_RESPONSE (FUNCTION)</H2></A>
-<A HREF="#RBSP_ADC_RESPONSE (FUNCTION)">[Previous Routine]</A>
+<A NAME="RBSP_ANTI_ALIASING_RESPONSE (FUNCTION)[1]">
+<H2>RBSP_ANTI_ALIASING_RESPONSE (FUNCTION)[1]</H2></A>
+<A HREF="#RBSP_ADC_RESPONSE (FUNCTION)[1]">[Previous Routine]</A>
 <A HREF="#RBSP_COROTATION_EFIELD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -246,7 +298,7 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
  
 <A NAME="RBSP_COROTATION_EFIELD">
 <H2>RBSP_COROTATION_EFIELD</H2></A>
-<A HREF="#RBSP_ANTI_ALIASING_RESPONSE (FUNCTION)">[Previous Routine]</A>
+<A HREF="#RBSP_ANTI_ALIASING_RESPONSE (FUNCTION)[1]">[Previous Routine]</A>
 <A HREF="#RBSP_COTRANS (PROCEDURE)">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -364,7 +416,7 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <A NAME="RBSP_DESPIN (PROCEDURE)">
 <H2>RBSP_DESPIN (PROCEDURE)</H2></A>
 <A HREF="#RBSP_COTRANS (PROCEDURE)">[Previous Routine]</A>
-<A HREF="#RBSP_DFB_RESPONSE (FUNCTION)">[Next Routine]</A>
+<A HREF="#RBSP_DFB_RESPONSE (FUNCTION)[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -430,10 +482,10 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <STRONG>(See <A href="efw/rbsp_despin.pro">general/missions/rbsp/efw/rbsp_despin.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_DFB_RESPONSE (FUNCTION)">
-<H2>RBSP_DFB_RESPONSE (FUNCTION)</H2></A>
+<A NAME="RBSP_DFB_RESPONSE (FUNCTION)[1]">
+<H2>RBSP_DFB_RESPONSE (FUNCTION)[1]</H2></A>
 <A HREF="#RBSP_DESPIN (PROCEDURE)">[Previous Routine]</A>
-<A HREF="#RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)">[Next Routine]</A>
+<A HREF="#RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -499,10 +551,10 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <STRONG>(See <A href="efw/rbsp_dfb_response.pro">general/missions/rbsp/efw/rbsp_dfb_response.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)">
-<H2>RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)</H2></A>
-<A HREF="#RBSP_DFB_RESPONSE (FUNCTION)">[Previous Routine]</A>
-<A HREF="#RBSP_EFW_BOOM_LENGTH (FUNCTION)">[Next Routine]</A>
+<A NAME="RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)[1]">
+<H2>RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)[1]</H2></A>
+<A HREF="#RBSP_DFB_RESPONSE (FUNCTION)[1]">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_BOOM_LENGTH (FUNCTION)[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -549,10 +601,10 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <STRONG>(See <A href="efw/rbsp_efw_boom_deploy_history.pro">general/missions/rbsp/efw/rbsp_efw_boom_deploy_history.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_EFW_BOOM_LENGTH (FUNCTION)">
-<H2>RBSP_EFW_BOOM_LENGTH (FUNCTION)</H2></A>
-<A HREF="#RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)">[Previous Routine]</A>
-<A HREF="#RBSP_EFW_BOOM_RESPONSE (FUNCTION)">[Next Routine]</A>
+<A NAME="RBSP_EFW_BOOM_LENGTH (FUNCTION)[1]">
+<H2>RBSP_EFW_BOOM_LENGTH (FUNCTION)[1]</H2></A>
+<A HREF="#RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)[1]">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_BOOM_RESPONSE (FUNCTION)[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -593,9 +645,9 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <STRONG>(See <A href="efw/rbsp_efw_boom_length.pro">general/missions/rbsp/efw/rbsp_efw_boom_length.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_EFW_BOOM_RESPONSE (FUNCTION)">
-<H2>RBSP_EFW_BOOM_RESPONSE (FUNCTION)</H2></A>
-<A HREF="#RBSP_EFW_BOOM_LENGTH (FUNCTION)">[Previous Routine]</A>
+<A NAME="RBSP_EFW_BOOM_RESPONSE (FUNCTION)[1]">
+<H2>RBSP_EFW_BOOM_RESPONSE (FUNCTION)[1]</H2></A>
+<A HREF="#RBSP_EFW_BOOM_LENGTH (FUNCTION)[1]">[Previous Routine]</A>
 <A HREF="#RBSP_EFW_CAL_FBK">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -635,7 +687,7 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
  
 <A NAME="RBSP_EFW_CAL_FBK">
 <H2>RBSP_EFW_CAL_FBK</H2></A>
-<A HREF="#RBSP_EFW_BOOM_RESPONSE (FUNCTION)">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_BOOM_RESPONSE (FUNCTION)[1]">[Previous Routine]</A>
 <A HREF="#RBSP_EFW_CAL_SPEC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1061,7 +1113,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="RBSP_EFW_CREATE_ESVY_UVW_FROM_VSVY">
 <H2>RBSP_EFW_CREATE_ESVY_UVW_FROM_VSVY</H2></A>
 <A HREF="#RBSP_EFW_CONFIG_FILEDIR">[Previous Routine]</A>
-<A HREF="#RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)">[Next Routine]</A>
+<A HREF="#RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: rbsp_efw_create_esvy_uvw_from_vsvy.pro
@@ -1123,8 +1175,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <STRONG>(See <A href="efw/rbsp_efw_create_esvy_uvw_from_vsvy.pro">general/missions/rbsp/efw/rbsp_efw_create_esvy_uvw_from_vsvy.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)">
-<H2>RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)</H2></A>
+<A NAME="RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)[1]">
+<H2>RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)[1]</H2></A>
 <A HREF="#RBSP_EFW_CREATE_ESVY_UVW_FROM_VSVY">[Previous Routine]</A>
 <A HREF="#RBSP_EFW_GET_CAL_PARAMS (FUNCTION)">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
@@ -1181,8 +1233,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
  
 <A NAME="RBSP_EFW_GET_CAL_PARAMS (FUNCTION)">
 <H2>RBSP_EFW_GET_CAL_PARAMS (FUNCTION)</H2></A>
-<A HREF="#RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)">[Previous Routine]</A>
-<A HREF="#RBSP_EFW_GET_GAIN_RESULTS">[Next Routine]</A>
+<A HREF="#RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)[1]">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_GET_GAIN_RESULTS[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -1222,8 +1274,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <STRONG>(See <A href="efw/rbsp_efw_get_cal_params.pro">general/missions/rbsp/efw/rbsp_efw_get_cal_params.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_EFW_GET_GAIN_RESULTS">
-<H2>RBSP_EFW_GET_GAIN_RESULTS</H2></A>
+<A NAME="RBSP_EFW_GET_GAIN_RESULTS[1]">
+<H2>RBSP_EFW_GET_GAIN_RESULTS[1]</H2></A>
 <A HREF="#RBSP_EFW_GET_CAL_PARAMS (FUNCTION)">[Previous Routine]</A>
 <A HREF="#RBSP_EFW_INIT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
@@ -1265,7 +1317,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
  
 <A NAME="RBSP_EFW_INIT">
 <H2>RBSP_EFW_INIT</H2></A>
-<A HREF="#RBSP_EFW_GET_GAIN_RESULTS">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_GET_GAIN_RESULTS[1]">[Previous Routine]</A>
 <A HREF="#RBSP_EFW_READ_CONFIG">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1335,7 +1387,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="RBSP_EFW_READ_CONFIG">
 <H2>RBSP_EFW_READ_CONFIG</H2></A>
 <A HREF="#RBSP_EFW_INIT">[Previous Routine]</A>
-<A HREF="#RBSP_GET_EFW_DFB_CONFIG (FUNCTION)">[Next Routine]</A>
+<A HREF="#RBSP_GET_EFW_DFB_CONFIG (FUNCTION)[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -1361,8 +1413,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <STRONG>(See <A href="efw/rbsp_efw_read_config.pro">general/missions/rbsp/efw/rbsp_efw_read_config.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_GET_EFW_DFB_CONFIG (FUNCTION)">
-<H2>RBSP_GET_EFW_DFB_CONFIG (FUNCTION)</H2></A>
+<A NAME="RBSP_GET_EFW_DFB_CONFIG (FUNCTION)[1]">
+<H2>RBSP_GET_EFW_DFB_CONFIG (FUNCTION)[1]</H2></A>
 <A HREF="#RBSP_EFW_READ_CONFIG">[Previous Routine]</A>
 <A HREF="#RBSP_GSE2MGSE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
@@ -1403,7 +1455,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
  
 <A NAME="RBSP_GSE2MGSE">
 <H2>RBSP_GSE2MGSE</H2></A>
-<A HREF="#RBSP_GET_EFW_DFB_CONFIG (FUNCTION)">[Previous Routine]</A>
+<A HREF="#RBSP_GET_EFW_DFB_CONFIG (FUNCTION)[1]">[Previous Routine]</A>
 <A HREF="#RBSP_INTERP_SPIN_PHASE (FUNCTION)">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1439,7 +1491,7 @@ Input : tname = the tplot variable with data in GSE coord [n,3]
 	   get_data,rbspx+'_spinaxis_direction_gse',data=wsc_GSE
 	   wgse = wsc_gse.y
 
-		 newname = name for output tplot variable. If not set then new name is 
+		 newname = name for output tplot variable. If not set then new name is
 					old name + '_mgse'
 
 
@@ -2023,7 +2075,7 @@ Notes:
 <A NAME="RBSP_MGSE2GSE.">
 <H2>RBSP_MGSE2GSE.</H2></A>
 <A HREF="#RBSP_LOAD_MANEUVER_FILE">[Previous Routine]</A>
-<A HREF="#RBSP_MSC_RESPONSE (FUNCTION)">[Next Routine]</A>
+<A HREF="#RBSP_MSC_RESPONSE (FUNCTION)[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  TYPE:
@@ -2096,8 +2148,8 @@ Notes:
 <STRONG>(See <A href="efw/rbsp_mgse2gse.pro">general/missions/rbsp/efw/rbsp_mgse2gse.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_MSC_RESPONSE (FUNCTION)">
-<H2>RBSP_MSC_RESPONSE (FUNCTION)</H2></A>
+<A NAME="RBSP_MSC_RESPONSE (FUNCTION)[1]">
+<H2>RBSP_MSC_RESPONSE (FUNCTION)[1]</H2></A>
 <A HREF="#RBSP_MGSE2GSE.">[Previous Routine]</A>
 <A HREF="#RBSP_POYNTING_FLUX">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
@@ -2147,8 +2199,8 @@ Notes:
  
 <A NAME="RBSP_POYNTING_FLUX">
 <H2>RBSP_POYNTING_FLUX</H2></A>
-<A HREF="#RBSP_MSC_RESPONSE (FUNCTION)">[Previous Routine]</A>
-<A HREF="#RBSP_READ_ECT_MAG_EPHEM">[Next Routine]</A>
+<A HREF="#RBSP_MSC_RESPONSE (FUNCTION)[1]">[Previous Routine]</A>
+<A HREF="#RBSP_READ_ECT_MAG_EPHEM[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
   PROCEDURE :  rbsp_poynting_flux
@@ -2219,8 +2271,8 @@ Notes:
 <STRONG>(See <A href="efw/rbsp_poynting_flux.pro">general/missions/rbsp/efw/rbsp_poynting_flux.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_READ_ECT_MAG_EPHEM">
-<H2>RBSP_READ_ECT_MAG_EPHEM</H2></A>
+<A NAME="RBSP_READ_ECT_MAG_EPHEM[2]">
+<H2>RBSP_READ_ECT_MAG_EPHEM[2]</H2></A>
 <A HREF="#RBSP_POYNTING_FLUX">[Previous Routine]</A>
 <A HREF="#RBSP_SPINFIT (PROCEDURE)">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
@@ -2247,7 +2299,7 @@ Notes:
  
 <A NAME="RBSP_SPINFIT (PROCEDURE)">
 <H2>RBSP_SPINFIT (PROCEDURE)</H2></A>
-<A HREF="#RBSP_READ_ECT_MAG_EPHEM">[Previous Routine]</A>
+<A HREF="#RBSP_READ_ECT_MAG_EPHEM[2]">[Previous Routine]</A>
 <A HREF="#RBSP_SPLIT_FBK">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

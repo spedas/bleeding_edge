@@ -6,12 +6,16 @@
 ; rbsp_efw_position_velocity_crib
 ;INPUT:
 ;KEYWORDS:
+; probe = set to specify to load only "a" or "b" other than both.
 ; no_spice_load -> set if you've already loaded the spice kernels
 ;	noplot -> set to avoid tplotting
 ;	notrace -> skip the ttrace2equator call. This takes a lot of computational time
 ; nospinaxis_calcs -> skip the part that loads the spinaxis pointing direction.
 ;   This can be problematic on certain dates. Only set if you don't need the
 ;   spinaxis direction or the sc velocity in mGSE coord
+; _extra --> possible useful extra keywords include:
+;       no_spice_load
+;       no_rbsp_efw_init
 ;OUTPUT: various tplot variables
 ;HISTORY:
 ; Written by Aaron Breneman, UMN, Dec 2012
@@ -25,15 +29,23 @@
 ;-
 
 
-pro rbsp_efw_position_velocity_crib,no_spice_load=no_spice_load,noplot=noplot,$
-    notrace=notrace,nospinaxis_calcs=nospinaxis_calcs
+pro rbsp_efw_position_velocity_crib,$
+  probe=probe,$
+  noplot=noplot,$
+  notrace=notrace,$
+  nospinaxis_calcs=nospinaxis_calcs,$
+  _extra=extra
 
 
+  if KEYWORD_SET(probe) then begin
+    if probe eq 'a' then no_b = 1
+    if probe eq 'b' then no_a = 1
+  endif
 
 
   ;initialize RBSP environment
-  rbsp_efw_init
-  !rbsp_efw.user_agent = ''
+  rbsp_efw_init,_extra=extra
+
 
   ;Set timerange if it's not already set
   x = timerange()
@@ -43,12 +55,13 @@ pro rbsp_efw_position_velocity_crib,no_spice_load=no_spice_load,noplot=noplot,$
 
 
   ;Load spice predicted values. Override with actual values if they exist
-  if ~keyword_set(no_spice_load) then rbsp_load_spice_kernels
+  ;if ~keyword_set(no_spice_load) then rbsp_load_spice_kernels,_extra=extra
+;  rbsp_load_spice_kernels,_extra=extra
 
 
   ;Load state data
-  if ~KEYWORD_SET(no_a) then rbsp_load_spice_state,probe='a',coord='gse',/no_spice_load
-  if ~KEYWORD_SET(no_b) then rbsp_load_spice_state,probe='b',coord='gse',/no_spice_load
+  if ~KEYWORD_SET(no_a) then rbsp_load_spice_state,probe='a',coord='gse',_extra=extra
+  if ~KEYWORD_SET(no_b) then rbsp_load_spice_state,probe='b',coord='gse',_extra=extra
 
 
 
@@ -311,40 +324,40 @@ pro rbsp_efw_position_velocity_crib,no_spice_load=no_spice_load,noplot=noplot,$
 
 
 
-  ;Plot various quantities
-  if ~keyword_set(noplot) then begin
-
-    tplot_options,'title','rbsp position data'
-
-    ;Plot position quantities
-    tplot,['rbsp?_state_pos_gse',$
-          'rbsp?_state_pos_gsm',$
-          'rbsp?_state_pos_sm']
-
-    tplot,['rbsp?_state_mlat',$
-          'rbsp?_state_lshell',$
-          'rbsp?_state_mlt']
-
-
-    ;Plot velocity quantities
-    tplot,['rbspa_state_vmag',$
-          'rbspa_state_vel_gse',$
-          'rbspa_state_vel_mgse',$
-          'rbspa_state_vel_gsm',$
-          'rbspa_state_vel_sm',$
-          'rbspb_state_vmag',$
-          'rbspb_state_vel_gse',$
-          'rbspb_state_vel_mgse',$
-          'rbspb_state_vel_gsm',$
-          'rbspb_state_vel_sm']
-
-    ;Plot separations b/t sc
-    tplot,['rbsp_state_sc_sep',$
-          'rbsp_state_gse_sep',$
-          'rbsp_state_mlt_diff',$
-          'rbsp_state_lshell_diff',$
-          'rbsp_state_mlat_diff']
-
-  endif
+;  ;Plot various quantities
+;  if ~keyword_set(noplot) then begin
+;
+;    tplot_options,'title','rbsp position data'
+;
+;    ;Plot position quantities
+;    tplot,['rbsp?_state_pos_gse',$
+;          'rbsp?_state_pos_gsm',$
+;          'rbsp?_state_pos_sm']
+;
+;    tplot,['rbsp?_state_mlat',$
+;          'rbsp?_state_lshell',$
+;          'rbsp?_state_mlt']
+;
+;
+;    ;Plot velocity quantities
+;    tplot,['rbspa_state_vmag',$
+;          'rbspa_state_vel_gse',$
+;          'rbspa_state_vel_mgse',$
+;          'rbspa_state_vel_gsm',$
+;          'rbspa_state_vel_sm',$
+;          'rbspb_state_vmag',$
+;          'rbspb_state_vel_gse',$
+;          'rbspb_state_vel_mgse',$
+;          'rbspb_state_vel_gsm',$
+;          'rbspb_state_vel_sm']
+;
+;    ;Plot separations b/t sc
+;    tplot,['rbsp_state_sc_sep',$
+;          'rbsp_state_gse_sep',$
+;          'rbsp_state_mlt_diff',$
+;          'rbsp_state_lshell_diff',$
+;          'rbsp_state_mlat_diff']
+;
+;  endif
 
 end
