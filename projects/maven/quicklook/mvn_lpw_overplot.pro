@@ -28,17 +28,19 @@
 ; directory = If a png is created, this is the output directory, the
 ;             default is the current working directory.
 ; noload_data = if set, don't load data
+; noplot = if set, don't plot the data
 ;HISTORY:
 ; Hacked from thm_over_shell, 2013-05-12, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-09-09 13:54:30 -0700 (Mon, 09 Sep 2019) $
-; $LastChangedRevision: 27737 $
+; $LastChangedDate: 2020-04-30 12:45:05 -0700 (Thu, 30 Apr 2020) $
+; $LastChangedRevision: 28651 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_lpw_overplot.pro $
 Pro mvn_lpw_overplot, date = date, time_range = time_range, $
                       makepng=makepng, device = device, directory = directory, $
                       l0_input_file = l0_input_file, $
                       noload_data = noload_data, $
                       multipngplot = multipngplot, $
+                      noplot = noplot, $
                       _extra=_extra
 
 mvn_qlook_init, device = device
@@ -95,16 +97,17 @@ date = p1[4]
 d0 = time_double(time_string(date))
 tr = tr > d0
 ;plot the data
-tplot, varlist, title = 'MAVEN LPW Quicklook '+date, var_label = 'mvn_orbnum'
+If(~keyword_set(noplot)) Then Begin
+   tplot, varlist, title = 'MAVEN LPW Quicklook '+date, var_label = 'mvn_orbnum'
 
-If(keyword_set(multipngplot)) Then makepng = 1b
-If(keyword_set(makepng)) Then Begin
-    If(keyword_set(directory)) Then pdir = directory Else pdir = './'
-    fname = pdir+mvn_qlook_filename('lpw', tr, _extra=_extra)
-    If(keyword_set(multipngplot)) Then mvn_gen_multipngplot, fname, directory = pdir $
-    Else makepng, fname
+   If(keyword_set(multipngplot)) Then makepng = 1b
+   If(keyword_set(makepng)) Then Begin
+      If(keyword_set(directory)) Then pdir = directory Else pdir = './'
+      fname = pdir+mvn_qlook_filename('lpw', tr, _extra=_extra)
+      If(keyword_set(multipngplot)) Then mvn_gen_multipngplot, fname, directory = pdir $
+      Else makepng, fname
+   Endif
 Endif
-
 ;store LPW tplot variable for PFP L2 plotting
 get_data, 'mvn_lpw_swp1_IV_log', data=d, dl=dl, lim=lim
 If(is_struct(d)) Then Begin

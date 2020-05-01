@@ -28,9 +28,9 @@
 ;HISTORY:
 ; Hacked from thm_over_shell, 2013-05-12, jmm, jimm@ssl.berkeley.edu
 ; CHanged to use thara's mvn_pl_pfp_tplot.pro, 2015-04-14, jmm
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-12-10 13:21:36 -0800 (Tue, 10 Dec 2019) $
-; $LastChangedRevision: 28104 $
+; $LastChangedBy: muser $
+; $LastChangedDate: 2020-04-30 13:16:07 -0700 (Thu, 30 Apr 2020) $
+; $LastChangedRevision: 28652 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_pfpl2_overplot.pro $
 ;-
 Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
@@ -75,7 +75,13 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
      dprint, 'Date too early: '+time_string(tr0[0])
      Return
   Endif
-; mvn_ql_pfp_tplot2, tr0, bcrust=1, /tplot, bvec = bvec
+; run mvn_lpw_overplot for this date, to insure the presence of the lpw_iv
+; tplot save file, only if the date keyword is used, as in
+; mvn_call_pfpl2plot.pro
+  If(keyword_set(date)) Then Begin
+     mvn_lpw_overplot, date = date, /noplot
+     del_data, '*'
+  Endif
 ; Load SEP from a different program, 2019-02-20
   If(keyword_set(no_bcrust)) Then Begin
      mvn_ql_pfp_tplot2, tr0, bcrust=0, sep = 0, /tplot, bvec = bvec
