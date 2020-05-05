@@ -35,9 +35,9 @@
 ;
 ;
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2016-01-13 16:16:11 -0800 (Wed, 13 Jan 2016) $
-;$LastChangedRevision: 19727 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2020-05-04 13:37:27 -0700 (Mon, 04 May 2020) $
+;$LastChangedRevision: 28663 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/core/spd_slice2d_orientslice.pro $
 ;
 ;-
@@ -46,7 +46,7 @@
 ; slice plane's coordinates (determined by SLICE_NORM and SLICE_X)
 pro spd_slice2d_orientslice, vectors=vectors, vbulk=vbulk, bfield=bfield, sunvec=sunvec, $
                              type=type, slice_x=slice_x, slice_z=slice_z, $
-                             matrix = matrix, fail=fail
+                             matrix = matrix, fail=fail, perp_vbulk=perp_vbulk
                                   
     compile_opt idl2, hidden
 
@@ -133,6 +133,7 @@ pro spd_slice2d_orientslice, vectors=vectors, vbulk=vbulk, bfield=bfield, sunvec
   ;Transform particle and support vectors
   if ~undefined(vectors) then vectors = matrix ## temporary(vectors)
   if n_elements(vbulk) eq 3 then vbulk = matrix ## vbulk
+  if n_elements(perp_vbulk) eq 3 then perp_vbulk = matrix ## perp_vbulk
   if n_elements(bfield) eq 3 then bfield = matrix ## bfield
   if n_elements(sunvec) eq 3 then sunvec = matrix ## sunvec
 

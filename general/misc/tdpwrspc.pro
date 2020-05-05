@@ -31,9 +31,9 @@
 ; 27-mar-2007, jmm, jimm.ssl.berkeley.edu
 ; 10-apr-2007, jmm, fixed 2 bugs wrt structure definition
 ;
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-; $LastChangedRevision: 24506 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2020-05-04 10:04:11 -0700 (Mon, 04 May 2020) $
+; $LastChangedRevision: 28662 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tdpwrspc.pro $
 ;-
 Pro tdpwrspc, varname, newname = newname, $
@@ -42,7 +42,6 @@ Pro tdpwrspc, varname, newname = newname, $
 
 ;test the input variable, and call recursively if y has two dimensions
   get_data, varname, data = d, dlim = dlim, lim = lim
-
   If(is_struct(d)) Then Begin
       sdy = size(d.y, /n_dimension)
       If(sdy Eq 2) Then Begin
@@ -95,7 +94,7 @@ Pro tdpwrspc, varname, newname = newname, $
 ;64 and nshiftpoints to 32, and use larger values when there are more
 ;points
           if ~keyword_set(nboxpoints) then begin
-              nbp = max([2^(floor(alog(nok)/alog(2),/l64)-5),8])
+              nbp = max([2L^(floor(alog(nok)/alog(2),/l64)-5),8])
           endif else begin
               nbp = nboxpoints
           endelse
@@ -110,7 +109,6 @@ Pro tdpwrspc, varname, newname = newname, $
               dprint, 'Not enough data in time range'
               Return
           Endif
-          
           dpwrspc, t, y, tp, f, p, nboxpoints = nbp, nshiftpoints = nsp, _extra = _extra
 
           If(tp[0] Ne -1) Then Begin

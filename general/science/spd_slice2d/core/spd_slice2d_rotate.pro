@@ -26,16 +26,16 @@
 ;  time range of the slice. 
 ;
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2016-02-17 17:51:00 -0800 (Wed, 17 Feb 2016) $
-;$LastChangedRevision: 20059 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2020-05-04 13:37:27 -0700 (Mon, 04 May 2020) $
+;$LastChangedRevision: 28663 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/core/spd_slice2d_rotate.pro $
 ;
 ;-
 pro spd_slice2d_rotate, rotation=rotation, $
                vectors=vectors, bfield=bfield, vbulk=vbulk, sunvec=sunvec, $
                matrix=matrix, $
-               fail=fail
+               fail=fail, perp_vbulk=perp_vbulk
 
     compile_opt idl2, hidden
 
@@ -94,6 +94,7 @@ pro spd_slice2d_rotate, rotation=rotation, $
   ;Transform particle and support vectors 
   if ~undefined(vectors) then vectors = matrix ## temporary(vectors)
   if n_elements(vbulk) eq 3 then vbulk = matrix ## vbulk
+  if n_elements(perp_vbulk) eq 3 then perp_vbulk = matrix ## perp_vbulk
   if n_elements(bfield) eq 3 then bfield = matrix ## bfield
   if n_elements(sunvec) eq 3 then sunvec = matrix ## sunvec
 

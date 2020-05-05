@@ -1,4 +1,3 @@
-
 ;+
 ;Function:
 ;  spd_slice2d
@@ -130,8 +129,6 @@
 ;            same coordinates as the particle data.
 ;            If not set the bulk velocity will be automatically calculated
 ;            from the distribution (when needed).
-;
-;
 ;Other Keywords:
 ;  RESOLUTION: Integer specifying the resolution along each dimension of the
 ;              slice (defaults:  2D/3D interpolation: 150, geometric: 500) 
@@ -188,7 +185,8 @@
 ;           (maximum acceptable difference from determ(C)=1 where C is the 
 ;           user's custom rotation matrix); default is 1e-6
 ; 
-;
+;  SUBTRACT_BULK: Subtract bulk velocity vector
+;  PERP_SUBTRACT_BULK: Subtract the component of velocity perpendicular to the B field
 ;Output:
 ; Returns a structure to be passed to spd_slice2d_plot:
 ;      {
@@ -237,9 +235,9 @@
 ;  Aaron Flores, based on work by Bryan Kerr, Arjun Raj, and Xuzhi Zhou
 ;
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-11-08 10:24:43 -0800 (Thu, 08 Nov 2018) $
-;$LastChangedRevision: 26069 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2020-05-04 13:59:39 -0700 (Mon, 04 May 2020) $
+;$LastChangedRevision: 28665 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/spd_slice2d.pro $
 ;-
 
@@ -284,6 +282,9 @@ function spd_slice2d, input1, input2, input3, input4, $
                     ; Other
                       msg_obj=msg_obj, $
                       fail=fail, $
+                    ; Test
+                      perp_subtract_bulk=perp_subtract_bulk, $ ;only subtract velocity perp to B
+                      perp_vel_data=perp_vel_data, $           ;tplot variable with perp velocity
                       _extra = _extra
 
     compile_opt idl2
@@ -524,11 +525,25 @@ spd_slice2d_get_support, sun_data, trange, output=sunvec
 spd_slice2d_get_support, slice_x, trange, output=slice_x_vec
 spd_slice2d_get_support, slice_z, trange, output=slice_z_vec
 
+; Create perp velocity tplot variable, carefully, by rotating into
+; 'bv' system, then set X component of velocity ot zero, and inverse
+If(keyword_set(perp_subtract_bulk)) Then Begin
+   rotation_tmp = 'bv'
+   vbulk_tmp = vbulk
+   bfield_tmp = bfield
+   spd_slice2d_rotate, rotation=rotation_tmp, fail=fail, $ 
+                       vbulk=vbulk_tmp, bfield=bfield_tmp, $
+                       matrix=rotation_matrix_tmp
+   if keyword_set(fail) then return, invalid
+   perp_vbulk = vbulk_tmp & perp_vbulk[0] = 0.00
+;now unrotate the perp_vbulk vector
+   perp_vbulk = transpose(rotation_matrix_tmp) ## perp_vbulk
+Endif
 
 ; Custom rotation
 spd_slice2d_custom_rotation, custom_rotation=custom_rotation, trange=trange, fail=fail, $
          vectors=xyz, bfield=bfield, vbulk=vbulk, sunvec=sunvec, matrix=custom_matrix, $
-         determ_tolerance=determ_tolerance
+         determ_tolerance=determ_tolerance, perp_vbulk=perp_vbulk
 if keyword_set(fail) then return, invalid
 
 ; Rotation defined by slice normal/x axis options
@@ -539,12 +554,14 @@ if (~undefined(slice_x_vec) && ~ARRAY_EQUAL([1,0,0],slice_x_vec)) || $
 endif
 
 spd_slice2d_orientslice, slice_x=slice_x_vec, slice_z=slice_z_vec, fail=fail, $
-  vectors=xyz, bfield=bfield, vbulk=vbulk, sunvec=sunvec, matrix=orient_matrix
+  vectors=xyz, bfield=bfield, vbulk=vbulk, sunvec=sunvec, matrix=orient_matrix, $
+  perp_vbulk=perp_vbulk
 if keyword_set(fail) then return, invalid
 
 ; Built in rotation option
 spd_slice2d_rotate, rotation=rotation, fail=fail, $ 
-         vectors=xyz, bfield=bfield, vbulk=vbulk, sunvec=sunvec, matrix=rotation_matrix  
+         vectors=xyz, bfield=bfield, vbulk=vbulk, sunvec=sunvec, matrix=rotation_matrix, $
+         perp_vbulk=perp_vbulk
 if keyword_set(fail) then return, invalid
 
 
@@ -554,8 +571,12 @@ if keyword_set(subtract_bulk) && ~keyword_set(log) then begin
   if keyword_set(fail) then return, invalid
   ;as with rotations, this will be applied later for geometric interp
   geo_shift = vbulk
+endif else if keyword_set(perp_subtract_bulk) && ~keyword_set(log) then begin
+  spd_slice2d_subtract, vectors=xyz, velocity=perp_vbulk, fail=fail
+  if keyword_set(fail) then return, invalid
+  ;as with rotations, this will be applied later for geometric interp
+  geo_shift = perp_vbulk
 endif
-
 
 ; Misc.
 ;------------------------------------------------------------
@@ -717,6 +738,7 @@ slice = {  $
          ; Support Data
           shift: undefined(subtract_bulk) ? 0:vbulk, $ ;for plotting energy limits
           bulk: undefined(vbulk) ? 0:vbulk, $      ;bulk velocity vector
+          perp_bulk: undefined(perp_vbulk) ? 0:perp_vbulk, $      ;perp bulk velocity vector
           bfield: undefined(bfield) ? 0:bfield, $ ;bfield vector
           sunvec: undefined(sunvec) ? 0:sunvec, $  ;sun vector
           custom_matrix: custom_matrix, $ ;applied custom rotation matrix

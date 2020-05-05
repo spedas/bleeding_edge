@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri May  1 18:16:37 2020.<P>
+<STRONG>Last modified: </STRONG>Mon May  4 18:16:22 2020.<P>
  
 <HR>
  
@@ -161,8 +161,6 @@ Orientation Keywords:
             same coordinates as the particle data.
             If not set the bulk velocity will be automatically calculated
             from the distribution (when needed).
-
-
 Other Keywords:
   RESOLUTION: Integer specifying the resolution along each dimension of the
               slice (defaults:  2D/3D interpolation: 150, geometric: 500) 
@@ -219,7 +217,8 @@ Other Keywords:
            (maximum acceptable difference from determ(C)=1 where C is the 
            user's custom rotation matrix); default is 1e-6
  
-
+  SUBTRACT_BULK: Subtract bulk velocity vector
+  PERP_SUBTRACT_BULK: Subtract the component of velocity perpendicular to the B field
 Output:
  Returns a structure to be passed to spd_slice2d_plot:
       {
@@ -268,9 +267,9 @@ CREATED BY:
   Aaron Flores, based on work by Bryan Kerr, Arjun Raj, and Xuzhi Zhou
 
 
-$LastChangedBy: egrimes $
-$LastChangedDate: 2018-11-08 10:24:43 -0800 (Thu, 08 Nov 2018) $
-$LastChangedRevision: 26069 $
+$LastChangedBy: jimm $
+$LastChangedDate: 2020-05-04 13:59:39 -0700 (Mon, 04 May 2020) $
+$LastChangedRevision: 28665 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/spd_slice2d.pro $
 </PRE><P>
 <STRONG>(See <A href="spd_slice2d/spd_slice2d.pro">general/science/spd_slice2d/spd_slice2d.pro</A>)</STRONG><P>
