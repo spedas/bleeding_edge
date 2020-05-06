@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon May  4 18:16:22 2020.<P>
+<STRONG>Last modified: </STRONG>Tue May  5 18:16:13 2020.<P>
  
 <HR>
  
@@ -520,6 +520,12 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          DETERM_TOLERANCE:  tolerance of the determinant of the custom rotation matrix
            (maximum acceptable difference from determ(C)=1 where C is the
            user's custom rotation matrix); default is 1e-6
+           
+         SUBTRACT_BULK: subtract the bulk velocity prior to doing the calculations
+         PERP_SUBTRACT_BULK: subtract the perpendicular bulk velocity in field-aligned coordinates
+                 i.e., finds the perp velocity by rotating into the 'bv' system, then sets the X component 
+                 of velocity to zero, and inverse, then subtracts this velocity instead of the full bulk
+                 velocity
 
 Orientation Keywords:
          ROTATION: Aligns the data relative to the magnetic field and/or bulk velocity.
@@ -657,8 +663,8 @@ Interpolation Methods:
            (requested by the FPI team at last year's GEM)
          
 $LastChangedBy: egrimes $
-$LastChangedDate: 2020-02-27 14:33:12 -0800 (Thu, 27 Feb 2020) $
-$LastChangedRevision: 28355 $
+$LastChangedDate: 2020-05-05 13:43:39 -0700 (Tue, 05 May 2020) $
+$LastChangedRevision: 28669 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_slice2d.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_slice2d.pro">projects/mms/particles/mms_part_slice2d.pro</A>)</STRONG><P>
