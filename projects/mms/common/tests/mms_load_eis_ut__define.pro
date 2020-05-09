@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_eis_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-03-24 10:54:13 -0700 (Tue, 24 Mar 2020) $
-; $LastChangedRevision: 28460 $
+; $LastChangedDate: 2020-05-08 13:19:04 -0700 (Fri, 08 May 2020) $
+; $LastChangedRevision: 28677 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_eis_ut__define.pro $
 ;-
 
@@ -71,14 +71,14 @@ end
 function mms_load_eis_ut::test_multi_probe_pad
   mms_load_eis, probes=[1, 2, 3, 4]
   mms_eis_pad, probes=[1, 2, 3, 4]
-  assert, spd_data_exists('mms1-4_epd_eis_extof_proton_flux_omni_pads mms1-4_epd_eis_extof_74-469keV_proton_flux_omni_pad', '2015-12-15', '2015-12-16'), 'Problem with multi-probe EIS PAD'
+  assert, spd_data_exists('mms4_epd_eis_extof_44-1315keV_proton_flux_omni_pad_spin mms3_epd_eis_extof_43-10489keV_proton_flux_omni_pad_spin mms2_epd_eis_extof_44-10489keV_proton_flux_omni_pad_spin mms1_epd_eis_extof_46-10489keV_proton_flux_omni_pad_spin', '2015-12-15', '2015-12-16'), 'Problem with multi-probe EIS PAD'
   return, 1
 end
 
 function mms_load_eis_ut::test_num_smooth_pad
   mms_load_eis, level='l2'
   mms_eis_pad, num_smooth=20.0
-  assert, spd_data_exists('mms1_epd_eis_extof_56-535keV_proton_flux_omni_pad mms1_epd_eis_extof_56-535keV_proton_flux_omni_pad_spin mms1_epd_eis_extof_56-535keV_proton_flux_omni_pad_smth', '2015-12-15', '2015-12-16'), 'Problem with creating smoothed PAD (EIS)'
+  assert, spd_data_exists('mms1_epd_eis_extof_46-10489keV_proton_flux_omni_pad mms1_epd_eis_extof_46-10489keV_proton_flux_omni_pad_spin mms1_epd_eis_extof_46-10489keV_proton_flux_omni_pad_smth', '2015-12-15', '2015-12-16'), 'Problem with creating smoothed PAD (EIS)'
   return, 1
 end
 
@@ -248,7 +248,7 @@ function mms_load_eis_ut::test_load_electron_pad
   del_data, '*'
   mms_load_eis, datatype='electronenergy', level='l2'
   mms_eis_pad, datatype='electronenergy'
-  assert, spd_data_exists('mms1_epd_eis_electronenergy_69-661keV_electron_flux_omni_pad_spin', '2015-12-15', '2015-12-16'), $
+  assert, spd_data_exists('mms1_epd_eis_electronenergy_54-1232keV_electron_flux_omni_pad_spin', '2015-12-15', '2015-12-16'), $
     'Problem loading EIS electron PAD'
   return, 1
 end
@@ -272,7 +272,7 @@ function mms_load_eis_ut::test_brst_caps_pad
   del_data, '*'
   mms_load_eis, data_rate='BRST', level='l2'
   mms_eis_pad, data_rate='BRST'
-  assert, spd_data_exists('mms1_epd_eis_brst_extof_56-740keV_proton_flux_omni_pad_spin', '2015-12-15', '2015-12-16'), $
+  assert, spd_data_exists('mms1_epd_eis_brst_extof_54-897keV_proton_flux_omni_pad_spin', '2015-12-15', '2015-12-16'), $
     'Problem with EIS burst mode PAD (caps)'
   return, 1
 end
@@ -281,14 +281,14 @@ function mms_load_eis_ut::test_brst_pad
   del_data, '*'
   mms_load_eis, data_rate='brst', level='l2'
   mms_eis_pad, data_rate='brst'
-  assert, spd_data_exists('mms1_epd_eis_brst_extof_56-740keV_proton_flux_omni_pad_spin', '2015-12-15', '2015-12-16'), $
+  assert, spd_data_exists('mms1_epd_eis_brst_extof_54-897keV_proton_flux_omni_pad_spin', '2015-12-15', '2015-12-16'), $
     'Problem with EIS burst mode PAD'
   return, 1
 end
 
 function mms_load_eis_ut::test_pad
   mms_eis_pad
-  assert, spd_data_exists('mms1_epd_eis_extof_56-535keV_proton_flux_omni_pad_spin', '2015-12-15', '2015-12-16'), $
+  assert, spd_data_exists('mms1_epd_eis_extof_46-10489keV_proton_flux_omni_pad_spin', '2015-12-15', '2015-12-16'), $
     'Problem with EIS PAD'
   return, 1
 end
@@ -321,7 +321,7 @@ end
 
 function mms_load_eis_ut::test_pad_binsize
   mms_eis_pad, size_pabin=3
-  get_data, 'mms1_epd_eis_extof_56-535keV_proton_flux_omni_pad_spin', data=d
+  get_data, 'mms1_epd_eis_extof_46-10489keV_proton_flux_omni_pad_spin', data=d
   assert, n_elements(d.V) eq 60, 'Problem with bin_size keyword in mms_eis_pad'
   return, 1
 end
