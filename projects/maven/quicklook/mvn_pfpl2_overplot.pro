@@ -28,9 +28,9 @@
 ;HISTORY:
 ; Hacked from thm_over_shell, 2013-05-12, jmm, jimm@ssl.berkeley.edu
 ; CHanged to use thara's mvn_pl_pfp_tplot.pro, 2015-04-14, jmm
-; $LastChangedBy: muser $
-; $LastChangedDate: 2020-04-30 13:16:07 -0700 (Thu, 30 Apr 2020) $
-; $LastChangedRevision: 28652 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2020-05-11 09:25:43 -0700 (Mon, 11 May 2020) $
+; $LastChangedRevision: 28679 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_pfpl2_overplot.pro $
 ;-
 Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
@@ -77,9 +77,12 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
   Endif
 ; run mvn_lpw_overplot for this date, to insure the presence of the lpw_iv
 ; tplot save file, only if the date keyword is used, as in
-; mvn_call_pfpl2plot.pro
+; mvn_call_pfpl2plot.pro. This piles up spice kernels, so clear out
+; spice kernels after use, they'll have to be reloaded, 
+; jmm, 2020-05-11
   If(keyword_set(date)) Then Begin
      mvn_lpw_overplot, date = date, /noplot
+     mvn_spc_clear_spice_kernels
      del_data, '*'
   Endif
 ; Load SEP from a different program, 2019-02-20
