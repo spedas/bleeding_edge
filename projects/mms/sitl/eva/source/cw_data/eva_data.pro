@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2020-04-13 23:30:26 -0700 (Mon, 13 Apr 2020) $
-; $LastChangedRevision: 28575 $
+; $LastChangedDate: 2020-05-12 10:24:37 -0700 (Tue, 12 May 2020) $
+; $LastChangedRevision: 28685 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data.pro $
 
 ;PRO eva_data_update_date, state, update=update
@@ -152,6 +152,7 @@ FUNCTION eva_data_load_and_plot, state, cod=cod, evtop=evtop
     sitl_stash = WIDGET_INFO(id_sitl, /CHILD)
     widget_control, sitl_stash, GET_UVALUE=sitl_state, /NO_COPY;******* GET
     widget_control, sitl_state.bgUplink, SET_VALUE = 0
+    widget_control, sitl_state.mainbase, TLB_SET_TITLE='ENABLE UPLINK'
     widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
     
     id_sitl = widget_info(state.parent, find_by_uname='eva_sitl')
@@ -160,6 +161,9 @@ FUNCTION eva_data_load_and_plot, state, cod=cod, evtop=evtop
     widget_control, sitl_state.btnSubmit,SET_VALUE='   DRAFT   '
     widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
   endif
+  
+  eva_sitluplink_title, state.parent
+  
   ;*************************
   ;----------------------
   ; Load THEMIS
@@ -323,6 +327,8 @@ FUNCTION eva_data_login, state, evTop
       widget_control, sitl_state.bgUplink, SET_VALUE = s.UPLINKFLAG
 
       widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
+      
+      eva_sitluplink_title, state.parent
       
       ;---------------------
       ; Update SITL MODULE

@@ -212,6 +212,12 @@ PRO sitl_report_latest, dir=dir, force=force
     free_lun, nf
   endif
   
+  ; Orbit Number
+ 
+  str_trange = time_string(trange) 
+  sroi_array = get_mms_srois(start_time=str_trange[0], end_time=str_trange[1], sc_id = 'mms'+probes[0])
+  this_orbit = sroi_array[0].ORBIT
+  
   ;------------------
   ; OUTPUT (JSON)
   ;------------------
@@ -221,7 +227,7 @@ PRO sitl_report_latest, dir=dir, force=force
       return
     endif
     strct = {roi:str_roi, sitl:str_sitl, buff:str_buff, fname:fname, pname:pname, $
-      select:select, yyyy:yyyy, notes:str_notes}
+      select:select, yyyy:yyyy, notes:str_notes, orbit:this_orbit}
     
     ; Read existing json
     fjson  = spd_addslash(dir)+'sitl_report.json'

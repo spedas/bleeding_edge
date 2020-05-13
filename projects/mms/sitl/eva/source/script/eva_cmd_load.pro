@@ -43,8 +43,8 @@
 ; CREATED BY: Mitsuo Oka   Jan 2016
 ;
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2017-07-19 12:43:41 -0700 (Wed, 19 Jul 2017) $
-; $LastChangedRevision: 23659 $
+; $LastChangedDate: 2020-05-12 14:46:27 -0700 (Tue, 12 May 2020) $
+; $LastChangedRevision: 28688 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/script/eva_cmd_load.pro $
 ;-
 PRO eva_cmd_load,paramset=paramset,probes=probes,trange=trange,timespan=timespan,$
@@ -144,10 +144,16 @@ PRO eva_cmd_load,paramset=paramset,probes=probes,trange=trange,timespan=timespan
   ; Main Program
   ;---------------------------------
   result = eva_data_load_mms(state,/no_gui,force=force)  
+  
+  
   if strmatch(result,'Yes') then begin
     paramlist = strlowcase(state.paramlist_mms)
     probelist = state.probelist_mms
     result = eva_data_load_reformat(paramlist, probelist,/FOURTH)
+    idx=where(paramlist eq 'mms_sroi',ct)
+    if(ct gt 0) then begin
+      eva_sitl_sroi_bar,trange=trange,sc_id=probelist[0];,colors=colors
+    endif
   endif
   
   dt = systime(/sec)-t0
