@@ -11,7 +11,7 @@
 ;  datapoints:  N elements array of data values
 ;  xyz:  Nx3 array of vectors
 ;  resolution:  Resolution (R) in points of each dimension of the output
-;  thetarange:  Elevation range about the slice place used to select points for interpolation
+;  thetarange:  Elevation range about the slice plane used to select points for interpolation
 ;  zdirrange:  Linear range perpendicular to the slice plane used to select points
 ;              for interpolation (if thetarange is not specified).
 ;
@@ -22,9 +22,9 @@
 ;Notes
 ;
 ;
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2018-05-21 12:46:11 -0700 (Mon, 21 May 2018) $
-;$LastChangedRevision: 25240 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2020-05-14 09:56:46 -0700 (Thu, 14 May 2020) $
+;$LastChangedRevision: 28690 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/core/spd_slice2d_2di.pro $
 ;-
 pro spd_slice2d_2di, datapoints, xyz, resolution, $

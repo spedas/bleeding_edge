@@ -57,22 +57,23 @@ PRO sitl_report_latest, dir=dir, force=force
   ;--------------------------------------
   ; CHECK Submission of SITL_selections
   ;--------------------------------------
-;  if (s.METADATAEVALTIME ne unix_FOMstr.METADATAEVALTIME) then begin
-;    print,'SITL_selections not submitted yet...returning'
-;    ;return
-;    SUBMITTED = 0L
-;  endif else SUBMITTED = 1L
+  if (s.METADATAEVALTIME ne unix_FOMstr.METADATAEVALTIME) then begin
+    print,'SITL_selections not submitted yet...returning'
+    ;return
+    SUBMITTED = 0L
+  endif else SUBMITTED = 1L
+  force = 1
   
-  rtr  = [s.TIMESTAMPS[0], s.TIMESTAMPS[s.NUMCYCLES-1]]; SITL file
-  rtr0 = [unix_FOMstr.TIMESTAMPS[0], unix_FOMstr.TIMESTAMPS[unix_FOMstr.NUMCYCLES-1]]; ABS file
-  sol = segment_overlap(rtr, rtr0)
-  if (sol eq 2) or (sol eq -2) then begin
-    SUBMITTED = 0
-    force = 1 
-  endif else begin
-    SUBMITTED = 1
-    force = 1;0
-  endelse
+;  rtr  = [s.TIMESTAMPS[0], s.TIMESTAMPS[s.NUMCYCLES-1]]; SITL file
+;  rtr0 = [unix_FOMstr.TIMESTAMPS[0], unix_FOMstr.TIMESTAMPS[unix_FOMstr.NUMCYCLES-1]]; ABS file
+;  sol = segment_overlap(rtr, rtr0)
+;  if (sol eq 2) or (sol eq -2) then begin
+;    SUBMITTED = 0
+;    force = 1 
+;  endif else begin
+;    SUBMITTED = 1
+;    force = 1;0
+;  endelse
 
   ;-------------------
   ; GET INFORMATION
