@@ -95,8 +95,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-07-31 11:00:21 -0700 (Wed, 31 Jul 2019) $
-;$LastChangedRevision: 27521 $
+;$LastChangedDate: 2020-05-15 09:31:22 -0700 (Fri, 15 May 2020) $
+;$LastChangedRevision: 28694 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 
@@ -197,7 +197,8 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
           no_server = no_server, data_rate = data_rates, get_support_data = get_support_data, $
           varformat = varformat, center_measurement=center_measurement, cdf_filenames = cdf_filenames, $
           cdf_records = cdf_records, min_version = min_version, cdf_version = cdf_version, $
-          latest_version = latest_version, time_clip = time_clip, suffix = suffix, versions = versions
+          latest_version = latest_version, time_clip = time_clip, suffix = suffix, versions = versions, $
+          download_only=download_only
         return
     endif
         

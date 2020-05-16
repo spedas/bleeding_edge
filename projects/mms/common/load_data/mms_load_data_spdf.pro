@@ -27,8 +27,8 @@
 ;       is due to the different directory structures mentioned above.
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-11-30 15:09:28 -0800 (Thu, 30 Nov 2017) $
-;$LastChangedRevision: 24361 $
+;$LastChangedDate: 2020-05-15 09:38:15 -0700 (Fri, 15 May 2020) $
+;$LastChangedRevision: 28695 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data_spdf.pro $
 ;-
 
@@ -41,7 +41,8 @@ pro mms_load_data_spdf, probes = probes, datatype = datatype, instrument = instr
                    center_measurement=center_measurement, cdf_filenames = cdf_filenames, $
                    cdf_records = cdf_records, min_version = min_version, $
                    cdf_version = cdf_version, latest_version = latest_version, $
-                   time_clip = time_clip, suffix = suffix, versions = versions
+                   time_clip = time_clip, suffix = suffix, versions = versions, $
+                   download_only=download_only
 
     if not keyword_set(datatype) then datatype = '*'
     if not keyword_set(level) then level = 'l2'
@@ -221,12 +222,14 @@ pro mms_load_data_spdf, probes = probes, datatype = datatype, instrument = instr
         
         if n_elements(files) eq 1 && files eq '' then continue
 
-        mms_cdf2tplot, files, tplotnames = new_tplotnames, varformat=varformat, $
-                suffix = suffix, get_support_data = get_support_data, /load_labels, $
-                min_version=min_version,version=cdf_version,latest_version=latest_version, $
-                number_records=cdf_records, center_measurement=center_measurement, $
-                loaded_versions = the_loaded_versions
-        append_array, tplotnames, new_tplotnames
+        if ~keyword_set(download_only) then begin
+          mms_cdf2tplot, files, tplotnames = new_tplotnames, varformat=varformat, $
+                  suffix = suffix, get_support_data = get_support_data, /load_labels, $
+                  min_version=min_version,version=cdf_version,latest_version=latest_version, $
+                  number_records=cdf_records, center_measurement=center_measurement, $
+                  loaded_versions = the_loaded_versions
+          append_array, tplotnames, new_tplotnames
+        endif
         
         ; add the loaded files to the cdf_filenames keyword
         append_array, cdf_filenames, files
