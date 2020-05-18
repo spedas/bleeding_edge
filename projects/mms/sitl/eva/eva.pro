@@ -9,8 +9,8 @@
 ;
 ;
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2020-03-18 17:36:38 -0700 (Wed, 18 Mar 2020) $
-; $LastChangedRevision: 28432 $
+; $LastChangedDate: 2020-05-17 16:06:55 -0700 (Sun, 17 May 2020) $
+; $LastChangedRevision: 28696 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/eva.pro $
 PRO eva_event, event
   @tplot_com
@@ -148,7 +148,7 @@ PRO eva
   ;---------------------------------
   ;  SITL (Uplink)
   ;---------------------------------
-  str_element,/add,wid,'sitluplink', eva_sitluplink(baseTab)
+  str_element,/add,wid,'sitluplink', eva_sitluplink(baseTab, base)
     
   ;---------------------------------
   ;  ORBIT
@@ -156,6 +156,11 @@ PRO eva
   ;str_element,/add,wid,'orbit', cw_orbit(baseTab); ORBIT MODULE
 
   ; Orbit Module NOTE: set ysize=1 before setting map=0 at line 352 (widget_control, wid.orbit, map=0)
+
+  ;---------------------------------
+  ;  SUBMIT
+  ;---------------------------------
+  str_element,/add,wid,'sitlsubmit',eva_sitlsubmit(base)
 
   widget_control, base, /REALIZE
 

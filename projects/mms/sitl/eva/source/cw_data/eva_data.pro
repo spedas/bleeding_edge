@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2020-05-12 10:24:37 -0700 (Tue, 12 May 2020) $
-; $LastChangedRevision: 28685 $
+; $LastChangedDate: 2020-05-17 16:06:55 -0700 (Sun, 17 May 2020) $
+; $LastChangedRevision: 28696 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data.pro $
 
 ;PRO eva_data_update_date, state, update=update
@@ -127,6 +127,7 @@ FUNCTION eva_data_load_and_plot, state, cod=cod, evtop=evtop
     eva_sitl_load_gls, trange=trange, algo=algo
   endif
   
+
   ;*************************
   ;------------------------------------------------------
   ; Force Uplink=0 if Uplink=1 and No evalstartime in ABS
@@ -213,7 +214,17 @@ FUNCTION eva_data_load_and_plot, state, cod=cod, evtop=evtop
   ;rst_mms = (ct ge 1) ? eva_data_load_mms(state) : 'No'
   print, 'EVA: load MMS: number of parameters'+string(ct)
 
-  
+  ;---------------------
+  ; Update SUBMIT MODULE
+  ;---------------------
+  id_submit = widget_info(state.parent, find_by_uname='eva_sitlsubmit')
+  submit_stash = WIDGET_INFO(id_submit, /CHILD)
+  widget_control, submit_stash, GET_UVALUE=submit_state, /NO_COPY;******* GET
+  widget_control, submit_state.mainbase,SENSITIVE=1
+  widget_control, submit_stash, SET_UVALUE=submit_state, /NO_COPY;******* SET
+
+
+
   ;----------------------
   ; Plot
   ;----------------------
@@ -341,7 +352,7 @@ FUNCTION eva_data_login, state, evTop
       widget_control, sitl_stash, GET_UVALUE=sitl_state, /NO_COPY;******* GET
       widget_control, sitl_state.lblTgtTimeMain, SET_VALUE=lbl; target time time label
       widget_control, sitl_state.bsAction0, SENSITIVE=(user_flag ge 1); main SITL control
-      widget_control, sitl_state.bsActionSubmit, SENSITIVE=(user_flag ge 1); submit button
+;      widget_control, sitl_state.bsActionSubmit, SENSITIVE=(user_flag ge 1); submit button
       this_hlSet = (user_flag ge 2) ? sitl_state.hlSet2 : sitl_state.hlSet; hightlight list
       widget_control, sitl_state.drpHighlight, SET_VALUE=this_hlSet; highlight droplit
       str_element,/add,sitl_state,'user_flag',user_flag; synchronize user_flag/userType
@@ -360,8 +371,7 @@ FUNCTION eva_data_login, state, evTop
       
       widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
       
-      
-      
+
       ;---------------------
       ; Update DATA MODULE
       ;---------------------

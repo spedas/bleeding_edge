@@ -525,46 +525,46 @@ FUNCTION eva_sitl_event, ev
       print,'EVA: ***** EVENT: btnAllAuto *****'
       eva_sitl_fom_recover,'rvrt'
       end
-    state.btnValidate: begin
-      save = 0
-      print,'EVA: ***** EVENT: btnValidate *****'
-      title = 'Validation'
-      if state.PREF.EVA_BAKSTRUCT then begin
-        tn = tnames()
-        idx = where(strmatch(tn,'mms_stlm_bakstr'),ct)
-        if ct eq 0 then begin
-          msg = 'Back-Structure not found. If you wish to'
-          msg = [msg, 'submit a FOM structure, please disable the back-']
-          msg = [msg, 'structure mode.']
-          rst = dialog_message(msg,/error,/center,title=title)
-        endif else begin
-          get_data,'mms_stlm_bakstr',data=Dmod, lim=lmod,dl=dlmod
-          get_data,'mms_soca_bakstr',data=Dorg, lim=lorg,dl=dlorg
-          tai_BAKStr_org = lorg.unix_BAKStr_org
-          str_element,/add,tai_BAKStr_org,'START', mms_unix2tai(lorg.unix_BAKStr_org.START); LONG
-          str_element,/add,tai_BAKStr_org,'STOP',  mms_unix2tai(lorg.unix_BAKStr_org.STOP) ; LONG
-          tai_BAKStr_mod = lmod.unix_BAKStr_mod
-          str_element,/add,tai_BAKStr_mod,'START', mms_unix2tai(lmod.unix_BAKStr_mod.START); LONG
-          str_element,/add,tai_BAKStr_mod,'STOP',  mms_unix2tai(lmod.unix_BAKStr_mod.STOP) ; LONG
-          
-          header = eva_sitl_text_selection(lmod.unix_BAKStr_mod,/bak)
-          
-          vsp = '////////////////////////////'
-          header = [header, vsp+' VALIDATION RESTULT (NEW SEGMENTS) '+vsp]
-          r = eva_sitl_validate(tai_BAKStr_mod, -1, vcase=1, header=header, /quiet, valstruct=state.val); Validate New Segs
-          header = [r.msg,' ', vsp+' VALIDATION RESULT (MODIFIED SEGMENTS) '+vsp]
-          r2 = eva_sitl_validate(tai_BAKStr_mod, tai_BAKStr_org, vcase=2, header=header, valstruct=state.val); Validate Modified Seg
-        endelse; if ct eq 0
-      endif else begin
-        get_data,'mms_stlm_fomstr',data=Dmod, lim=lmod,dl=dlmod
-        get_data,'mms_soca_fomstr',data=Dorg, lim=lorg,dl=dlorg
-        mms_convert_fom_unix2tai, lmod.unix_FOMStr_mod, tai_FOMstr_mod; Modified FOM to be checked
-        mms_convert_fom_unix2tai, lorg.unix_FOMStr_org, tai_FOMstr_org; Original FOM for reference
-        header = eva_sitl_text_selection(lmod.unix_FOMstr_mod)
-        vcase = 0;(state.USER_FLAG eq 4) ? 3 : 0
-        r = eva_sitl_validate(tai_FOMstr_mod, tai_FOMstr_org, vcase=vcase, header=header, valstruct=state.val)
-      endelse
-      end
+;    state.btnValidate: begin
+;      save = 0
+;      print,'EVA: ***** EVENT: btnValidate *****'
+;      title = 'Validation'
+;      if state.PREF.EVA_BAKSTRUCT then begin
+;        tn = tnames()
+;        idx = where(strmatch(tn,'mms_stlm_bakstr'),ct)
+;        if ct eq 0 then begin
+;          msg = 'Back-Structure not found. If you wish to'
+;          msg = [msg, 'submit a FOM structure, please disable the back-']
+;          msg = [msg, 'structure mode.']
+;          rst = dialog_message(msg,/error,/center,title=title)
+;        endif else begin
+;          get_data,'mms_stlm_bakstr',data=Dmod, lim=lmod,dl=dlmod
+;          get_data,'mms_soca_bakstr',data=Dorg, lim=lorg,dl=dlorg
+;          tai_BAKStr_org = lorg.unix_BAKStr_org
+;          str_element,/add,tai_BAKStr_org,'START', mms_unix2tai(lorg.unix_BAKStr_org.START); LONG
+;          str_element,/add,tai_BAKStr_org,'STOP',  mms_unix2tai(lorg.unix_BAKStr_org.STOP) ; LONG
+;          tai_BAKStr_mod = lmod.unix_BAKStr_mod
+;          str_element,/add,tai_BAKStr_mod,'START', mms_unix2tai(lmod.unix_BAKStr_mod.START); LONG
+;          str_element,/add,tai_BAKStr_mod,'STOP',  mms_unix2tai(lmod.unix_BAKStr_mod.STOP) ; LONG
+;          
+;          header = eva_sitl_text_selection(lmod.unix_BAKStr_mod,/bak)
+;          
+;          vsp = '////////////////////////////'
+;          header = [header, vsp+' VALIDATION RESTULT (NEW SEGMENTS) '+vsp]
+;          r = eva_sitl_validate(tai_BAKStr_mod, -1, vcase=1, header=header, /quiet, valstruct=state.val); Validate New Segs
+;          header = [r.msg,' ', vsp+' VALIDATION RESULT (MODIFIED SEGMENTS) '+vsp]
+;          r2 = eva_sitl_validate(tai_BAKStr_mod, tai_BAKStr_org, vcase=2, header=header, valstruct=state.val); Validate Modified Seg
+;        endelse; if ct eq 0
+;      endif else begin
+;        get_data,'mms_stlm_fomstr',data=Dmod, lim=lmod,dl=dlmod
+;        get_data,'mms_soca_fomstr',data=Dorg, lim=lorg,dl=dlorg
+;        mms_convert_fom_unix2tai, lmod.unix_FOMStr_mod, tai_FOMstr_mod; Modified FOM to be checked
+;        mms_convert_fom_unix2tai, lorg.unix_FOMStr_org, tai_FOMstr_org; Original FOM for reference
+;        header = eva_sitl_text_selection(lmod.unix_FOMstr_mod)
+;        vcase = 0;(state.USER_FLAG eq 4) ? 3 : 0
+;        r = eva_sitl_validate(tai_FOMstr_mod, tai_FOMstr_org, vcase=vcase, header=header, valstruct=state.val)
+;      endelse
+;      end
 ;    state.btnEmail: begin
 ;      print,'EVA: ***** EVENT: btnEmail *****'
 ;      if state.PREF.EVA_BAKSTRUCT then begin
@@ -649,48 +649,48 @@ FUNCTION eva_sitl_event, ev
         else: answer = dialog_message('Something is wrong.')
       endcase
       end
-    state.btnSubmit: begin
-      save=0
-      print,'EVA: ***** EVENT: btnSubmit *****'
-      print,'EVA: TESTMODE='+string(state.PREF.EVA_TESTMODE_SUBMIT)
-      submit_code = 1
-      if state.PREF.EVA_BAKSTRUCT then begin 
-        eva_sitl_submit_bakstr,ev.top, state.PREF.EVA_TESTMODE_SUBMIT
-      endif else begin
-        
-        ; Look for pre-existing note
-        get_data,'mms_stlm_fomstr',data=Dmod, lim=lmod,dl=dlmod
-        tn = tag_names(lmod.unix_FOMstr_mod)
-        idx = where(strmatch(tn,'NOTE'),ct)
-        if ct gt 0 then begin
-          varname = lmod.unix_FOMstr_mod.NOTE
-        endif else varname = ''
-        
-        ; Textbox for NOTE
-        varname = mms_TextBox(Title='EVA TEXTBOX', Group_Leader=ev.top, $
-          Label='Please add/edit your comment on this ROI: ', $
-          SecondLabel='(The text will wrap automatically. A carriage',$
-          ThirdLabel='return is same as hitting the Save button.)',$
-          Cancel=cancelled, Continue_Submission=contin, $
-          XSize=300, Value=varname)
-        
-        ; Submission
-        if not cancelled then begin
-          print,'EVA: Saving the following string:', varname
-          get_data,'mms_stlm_fomstr',data=Dmod, lim=lmod,dl=dlmod
-          str_element,/add,lmod,'unix_FOMstr_mod.NOTE', varname
-          store_data,'mms_stlm_fomstr',data=Dmod, lim=lmod, dl=dlmod
-          if contin then begin
-            print,'EVA: Continue Submission....'
-            vcase = 0;(state.USER_FLAG eq 4) ? 3 : 0
-            eva_sitl_submit_fomstr,ev.top, state.PREF.EVA_TESTMODE_SUBMIT, vcase, user_flag=state.USER_FLAG
-          endif else print,'EVA:  but just saved...'
-        endif else begin
-          print,'EVA: Submission cancelled...'
-        endelse
-        
-      endelse
-      end
+;    state.btnSubmit: begin
+;      save=0
+;      print,'EVA: ***** EVENT: btnSubmit *****'
+;      print,'EVA: TESTMODE='+string(state.PREF.EVA_TESTMODE_SUBMIT)
+;      submit_code = 1
+;      if state.PREF.EVA_BAKSTRUCT then begin 
+;        eva_sitl_submit_bakstr,ev.top, state.PREF.EVA_TESTMODE_SUBMIT
+;      endif else begin
+;        
+;        ; Look for pre-existing note
+;        get_data,'mms_stlm_fomstr',data=Dmod, lim=lmod,dl=dlmod
+;        tn = tag_names(lmod.unix_FOMstr_mod)
+;        idx = where(strmatch(tn,'NOTE'),ct)
+;        if ct gt 0 then begin
+;          varname = lmod.unix_FOMstr_mod.NOTE
+;        endif else varname = ''
+;        
+;        ; Textbox for NOTE
+;        varname = mms_TextBox(Title='EVA TEXTBOX', Group_Leader=ev.top, $
+;          Label='Please add/edit your comment on this ROI: ', $
+;          SecondLabel='(The text will wrap automatically. A carriage',$
+;          ThirdLabel='return is same as hitting the Save button.)',$
+;          Cancel=cancelled, Continue_Submission=contin, $
+;          XSize=300, Value=varname)
+;        
+;        ; Submission
+;        if not cancelled then begin
+;          print,'EVA: Saving the following string:', varname
+;          get_data,'mms_stlm_fomstr',data=Dmod, lim=lmod,dl=dlmod
+;          str_element,/add,lmod,'unix_FOMstr_mod.NOTE', varname
+;          store_data,'mms_stlm_fomstr',data=Dmod, lim=lmod, dl=dlmod
+;          if contin then begin
+;            print,'EVA: Continue Submission....'
+;            vcase = 0;(state.USER_FLAG eq 4) ? 3 : 0
+;            eva_sitl_submit_fomstr,ev.top, state.PREF.EVA_TESTMODE_SUBMIT, vcase, user_flag=state.USER_FLAG
+;          endif else print,'EVA:  but just saved...'
+;        endif else begin
+;          print,'EVA: Submission cancelled...'
+;        endelse
+;        
+;      endelse
+;      end
     state.drDash: begin
       save=0
       sanitize_fpi=0
@@ -756,7 +756,7 @@ FUNCTION eva_sitl, parent, $
 
   IF NOT (KEYWORD_SET(uval))  THEN uval = 0
   IF NOT (KEYWORD_SET(uname))  THEN uname = 'eva_sitl'
-  if not (keyword_set(title)) then title='   SITL   '
+  if not (keyword_set(title)) then title='   MAIN   '
   
   ; ----- STATE -----
   pref = {$
@@ -788,8 +788,10 @@ FUNCTION eva_sitl, parent, $
     launchtime: systime(1,/utc),$
     user_flag: 0, $
     userType: ['MMS member','SITL','Super SITL'],$
-    uplink:0L};,'FPI cal']}
+    uplink:0L};,$;'FPI cal']}
     ;userType: ['Guest','MMS member','SITL','Super SITL']};,'FPI cal']}
+    ;val: mms_load_fom_validation()}
+
 
   ; ----- CONFIG (READ) -----
   cfg = mms_config_read()         ; Read config file and
@@ -851,17 +853,17 @@ FUNCTION eva_sitl, parent, $
       str_element,/add,state,'drpSave',widget_droplist(bsActionHighlight,VALUE=svSet,$
         TITLE='FOM:',SENSITIVE=1)
         str_element,/add,state,'svSet',svSet
-    bsActionUplink = widget_base(bsAction0, /COLUMN, SPACE=0, YPAD=0)
-      str_element,/add,state,'lblEvalStartTime',widget_label(bsActionUplink,VALUE='Next SITL Window Start Time: N/A                    ',/align_left)
-      ;str_element,/add,state,'lblUplink',widget_label(bsActionUplink,VALUE='Uplink - No  ')
+;    bsActionUplink = widget_base(bsAction0, /COLUMN, SPACE=0, YPAD=0)
+;      str_element,/add,state,'lblEvalStartTime',widget_label(bsActionUplink,VALUE='Next SITL Window Start Time: N/A                    ',/align_left)
+;      ;str_element,/add,state,'lblUplink',widget_label(bsActionUplink,VALUE='Uplink - No  ')
 
-  bsActionSubmit = widget_base(subbase,/ROW, SENSITIVE=0)
-  str_element,/add,state,'bsActionSubmit',bsActionSubmit
-    str_element,/add,state,'btnValidate',widget_button(bsActionSubmit,VALUE=' Validate ')
-;    str_element,/add,state,'btnEmail',widget_button(bsActionSubmit,VALUE=' Email ')
-    dumSubmit2 = widget_base(bsActionSubmit,xsize=80); Comment out this line when using Email
-    dumSubmit = widget_base(bsActionSubmit,xsize=60)
-    str_element,/add,state,'btnSubmit',widget_button(bsActionSubmit,VALUE='   DRAFT   ')
+;  bsActionSubmit = widget_base(subbase,/ROW, SENSITIVE=0)
+;  str_element,/add,state,'bsActionSubmit',bsActionSubmit
+;    str_element,/add,state,'btnValidate',widget_button(bsActionSubmit,VALUE=' Validate ')
+;;    str_element,/add,state,'btnEmail',widget_button(bsActionSubmit,VALUE=' Email ')
+;    dumSubmit2 = widget_base(bsActionSubmit,xsize=80); Comment out this line when using Email
+;    dumSubmit = widget_base(bsActionSubmit,xsize=60)
+;    str_element,/add,state,'btnSubmit',widget_button(bsActionSubmit,VALUE='   DRAFT   ')
   
   ; Save out the initial state structure into the first childs UVALUE.
   WIDGET_CONTROL, WIDGET_INFO(mainbase, /CHILD), SET_UVALUE=state, /NO_COPY

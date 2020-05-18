@@ -1,5 +1,5 @@
 ; output: unix_FOMstr
-PRO eva_sitl_load_soca_simple, unix_FOMstr=unix_FOMstr,no_gui=no_gui
+PRO eva_sitl_load_soca_simple, unix_FOMstr=unix_FOMstr,no_gui=no_gui, fom_file=fom_file
   compile_opt idl2
   
   ;------------------------------------
