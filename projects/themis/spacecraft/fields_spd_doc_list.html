@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun May 17 18:15:52 2020.<P>
+<STRONG>Last modified: </STRONG>Mon May 18 18:15:50 2020.<P>
  
 <HR>
  
@@ -71,6 +71,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#THM_SCM_DECONVO_VEC[1]">THM_SCM_DECONVO_VEC[1]</A>
 <LI><A HREF="#THM_SCM_DECONVO_VEC[2]">THM_SCM_DECONVO_VEC[2]</A>
 <LI><A HREF="#THM_SCM_MODPHA">THM_SCM_MODPHA</A>
+<LI><A HREF="#THM_SCW_DEGAP">THM_SCW_DEGAP</A>
+<br>Helper function for thm_cal_scm, this interpolates over short gaps
 <LI><A HREF="#THM_SPINAVG[1]">THM_SPINAVG[1]</A>
 <LI><A HREF="#THM_SPINAVG[2]">THM_SPINAVG[2]</A>
 <br>average data over spin periods, and return a tplot variable
@@ -971,10 +973,10 @@ HISTORY:
  Modification to add Nan value only for last batch
  in step 6, start_step condition has been commented
  in outputs to tplot section, mode has been replaced by strlowcase(mode)
-
-$LastChangedBy: jwl $
-$LastChangedDate: 2016-12-20 16:18:08 -0800 (Tue, 20 Dec 2016) $
-$LastChangedRevision: 22467 $
+ 18-may-2020, jmm, makes alt_scw the default, so scw data is degapped
+$LastChangedBy: jimm $
+$LastChangedDate: 2020-05-18 12:57:52 -0700 (Mon, 18 May 2020) $
+$LastChangedRevision: 28710 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_cal_scm.pro $
 </PRE><P>
 <STRONG>(See <A href="fields/thm_cal_scm.pro">projects/themis/spacecraft/fields/thm_cal_scm.pro</A>)</STRONG><P>
@@ -2090,6 +2092,7 @@ keywords:
   CLEANUP: Pass through to THM_CAL_SCM.PRO.
   SCM_CAL: Structure containing the calibration parameters
   /NO_TIME_CLIP: Disables time clipping, which is the default
+  TYPE: Input, string.  Set to 'calibrated' or 'raw'.
 
  use_eclipse_corrections:  Only applies when loading and calibrating
    Level 1 data. Defaults to 0 (no eclipse spin model corrections 
@@ -2165,9 +2168,9 @@ Modifications:
                     called from the command line. Re-tabbed, to find
                     an 'End of file encountered...' bug.
 
- $LastChangedBy: nikos $
- $LastChangedDate: 2016-11-16 15:45:58 -0800 (Wed, 16 Nov 2016) $
- $LastChangedRevision: 22364 $
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2020-05-18 12:58:23 -0700 (Mon, 18 May 2020) $
+ $LastChangedRevision: 28711 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_load_scm.pro $
 </PRE><P>
 <STRONG>(See <A href="fields/thm_load_scm.pro">projects/themis/spacecraft/fields/thm_load_scm.pro</A>)</STRONG><P>
@@ -2250,7 +2253,7 @@ Keywords:
 <A NAME="THM_SCM_MODPHA">
 <H2>THM_SCM_MODPHA</H2></A>
 <A HREF="#THM_SCM_DECONVO_VEC[2]">[Previous Routine]</A>
-<A HREF="#THM_SPINAVG[1]">[Next Routine]</A>
+<A HREF="#THM_SCW_DEGAP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Broken out of thm_scm_gainant_vec.pro for VM purposes, jmm,
@@ -2263,9 +2266,35 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/th
 <STRONG>(See <A href="fields/thm_scm_modpha.pro">projects/themis/spacecraft/fields/thm_scm_modpha.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_SCW_DEGAP">
+<H2>THM_SCW_DEGAP</H2></A>
+<A HREF="#THM_SCM_MODPHA">[Previous Routine]</A>
+<A HREF="#THM_SPINAVG[1]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ thm_scw_degap
+PURPOSE:
+ Helper function for thm_cal_scm, this interpolates over short gaps
+ in wave burst data, this is the default for L1 SCM data input
+ as of 2020-05-18. Previously temp_scw_degap.pro
+INPUT:
+ probe = ['a','b','c','d','e']
+KEYWORDS:
+ max_degap_dt = maximum size for degap, the default is 0.20 seconds
+HISTORY:
+ Originally temp_scw_degap, from 2014, renamed 2020-05-18
+$LastChangedBy: jimm $                                                          
+$LastChangedDate: 2020-05-18 12:57:52 -0700 (Mon, 18 May 2020) $               
+$LastChangedRevision: 28710 $                                                  
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_scw_degap.pro $
+</PRE><P>
+<STRONG>(See <A href="fields/thm_scw_degap.pro">projects/themis/spacecraft/fields/thm_scw_degap.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_SPINAVG[1]">
 <H2>THM_SPINAVG[1]</H2></A>
-<A HREF="#THM_SCM_MODPHA">[Previous Routine]</A>
+<A HREF="#THM_SCW_DEGAP">[Previous Routine]</A>
 <A HREF="#THM_SPINAVG[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

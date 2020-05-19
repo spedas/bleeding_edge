@@ -34,6 +34,7 @@
 ;  CLEANUP: Pass through to THM_CAL_SCM.PRO.
 ;  SCM_CAL: Structure containing the calibration parameters
 ;  /NO_TIME_CLIP: Disables time clipping, which is the default
+;  TYPE: Input, string.  Set to 'calibrated' or 'raw'.
 ;
 ; use_eclipse_corrections:  Only applies when loading and calibrating
 ;   Level 1 data. Defaults to 0 (no eclipse spin model corrections 
@@ -109,9 +110,9 @@
 ;                    called from the command line. Re-tabbed, to find
 ;                    an 'End of file encountered...' bug.
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-11-16 15:45:58 -0800 (Wed, 16 Nov 2016) $
-; $LastChangedRevision: 22364 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2020-05-18 12:58:23 -0700 (Mon, 18 May 2020) $
+; $LastChangedRevision: 28711 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_load_scm.pro $
 ;-
 pro thm_load_scm_post, sname = probe, datatype = dt, level = lvl, $
@@ -296,6 +297,7 @@ pro thm_load_scm, probe = probe, datatype = datatype, trange = trange, $
 
   if lvl eq 'l2' and keyword_set(type) then begin
     dprint,  "Type keyword not valid for level 2 data. We'll ignore it"
+    type = 0b
   endif
   
   if lvl eq 'l1' then begin

@@ -113,10 +113,10 @@
 ; Modification to add Nan value only for last batch
 ; in step 6, start_step condition has been commented
 ; in outputs to tplot section, mode has been replaced by strlowcase(mode)
-;
-;$LastChangedBy: jwl $
-;$LastChangedDate: 2016-12-20 16:18:08 -0800 (Tue, 20 Dec 2016) $
-;$LastChangedRevision: 22467 $
+; 18-may-2020, jmm, makes alt_scw the default, so scw data is degapped
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2020-05-18 12:57:52 -0700 (Mon, 18 May 2020) $
+;$LastChangedRevision: 28710 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_cal_scm.pro $
 ;-
 
@@ -222,15 +222,15 @@ Pro thm_cal_scm, probe = probe, datatype = datatype, $
       If(obj_valid(progobj)) Then progobj -> update, 0.0, text = 'Processing Probe: '+ p_i
       dprint, dlevel = 4,  'Processing Probe: ', p_i
 ;If alt_scw is set, then degap the SCW data
-      If(keyword_set(alt_scw)) Then temp_scw_degap, p_i
-
+;alt_scw  is now the default
+;      If(keyword_set(alt_scw)) Then 
+      thm_scw_degap, p_i, suffix = in_suffix
       for j = 0, n_elements(defdatatypes)-1 do begin
         dt_j = defdatatypes[j]
         dt_j_types = strfilter(dts, dt_j+'*', count = n_dt_j_types)
         if n_dt_j_types gt 0 then begin
           in_name = 'th'+p_i+'_'+dt_j
           hed_name = 'th'+p_i+'_'+dt_j+'_hed' 
-          
           If(obj_valid(progobj)) Then progobj -> update, 0.0, text = 'Calibrating: '+ dt_j_types
           dprint, dlevel = 4,  'Calibrating: ', dt_j_types
           thm_cal_scm, in_name, hed_name, in_suffix = in_suffix, $
@@ -361,8 +361,18 @@ Pro thm_cal_scm, probe = probe, datatype = datatype, $
   If size(k_nk, /type) ne 0 Then nk = k_nk Else nk = 0
   If size(k_fdet, /type) ne 0 Then fdet = k_fdet Else fdet = 0.0
   if size(k_despin, /type) ne 0 Then despin = k_despin Else despin = 1
-  if size(k_n_spinfit, /type) ne 0 Then $
-    n_spinfit = k_n_spinfit else n_spinfit = 2
+  If size(k_n_spinfit, /type) Ne 0 Then n_spinfit = k_n_spinfit $
+  Else n_spinfit = 2
+;    case mode of ;set n_spinfit to 1 as default for SCW, jmm, 2020-05-18
+;       'scf': n_spinfit = 2
+;       'scp': n_spinfit = 2
+;       'scw': n_spinfit = 1
+;       else: begin
+;          n_spinfit = 1
+;          dprint,  '*** unknown or unset mode, n_spinfit set to 1'
+;       endelse
+;    endcase
+;  Endelse
 
   if not keyword_set(str_cleanup) then cleanup = 'none' $
   else cleanup = ssl_check_valid_name(strlowcase(str_cleanup), $

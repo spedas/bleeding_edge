@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2020-05-17 16:06:55 -0700 (Sun, 17 May 2020) $
-; $LastChangedRevision: 28696 $
+; $LastChangedDate: 2020-05-18 11:42:31 -0700 (Mon, 18 May 2020) $
+; $LastChangedRevision: 28707 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data.pro $
 
 ;PRO eva_data_update_date, state, update=update
@@ -156,11 +156,11 @@ FUNCTION eva_data_load_and_plot, state, cod=cod, evtop=evtop
     widget_control, sitl_state.mainbase, TLB_SET_TITLE='ENABLE UPLINK'
     widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
     
-    id_sitl = widget_info(state.parent, find_by_uname='eva_sitl')
-    sitl_stash = WIDGET_INFO(id_sitl, /CHILD)
-    widget_control, sitl_stash, GET_UVALUE=sitl_state, /NO_COPY;******* GET
-    widget_control, sitl_state.btnSubmit,SET_VALUE='   DRAFT   '
-    widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
+;    id_sitl = widget_info(state.parent, find_by_uname='eva_sitl')
+;    sitl_stash = WIDGET_INFO(id_sitl, /CHILD)
+;    widget_control, sitl_stash, GET_UVALUE=sitl_state, /NO_COPY;******* GET
+;    widget_control, sitl_state.btnSubmit,SET_VALUE='   DRAFT   '
+;    widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
   endif
   
   eva_sitluplink_title, state.parent
@@ -365,9 +365,9 @@ FUNCTION eva_data_login, state, evTop
       str_element,/add,sitl_state,'val',val
       str_element,/add,sitl_state,'trange_sitl_window',[start_time,end_time]
       
-      if(s.UPLINKFLAG eq 1)then begin
-        widget_control, sitl_state.btnSubmit,SET_VALUE='   UPLINK   '
-      endif
+;      if(s.UPLINKFLAG eq 1)then begin
+;        widget_control, sitl_state.btnSubmit,SET_VALUE='   UPLINK   '
+;      endif
       
       widget_control, sitl_stash, SET_UVALUE=sitl_state, /NO_COPY;******* SET
       

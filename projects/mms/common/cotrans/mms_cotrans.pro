@@ -62,8 +62,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-07-11 08:26:19 -0700 (Wed, 11 Jul 2018) $
-;$LastChangedRevision: 25462 $
+;$LastChangedDate: 2020-05-18 12:42:05 -0700 (Mon, 18 May 2020) $
+;$LastChangedRevision: 28709 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/cotrans/mms_cotrans.pro $
 ;-
 
@@ -257,8 +257,8 @@ endif else begin
 endelse
 
 ; tell the user to use mms_qcotrans instead of mms_cotrans if they're requesting DMPA transformation
-if array_contains([in_coords,out_coord], 'dmpa') && ~keyword_set(allow_dmpa) then begin
-  dprint, dlevel=0, 'Please use mms_qcotrans for transforming data to/from the DMPA coordinate system; note: if you are sure you want to do this transformation with mms_cotrans, you can override this message and do the transformation with the /allow_dmpa keyword'
+if (array_contains([in_coords,out_coord], 'dmpa') or array_contains([in_coords,out_coord], 'dsl')) && ~keyword_set(allow_dmpa) then begin
+  dprint, dlevel=0, 'Please use mms_qcotrans for transforming data to/from the DMPA/DSL coordinate system; note: if you are sure you want to do this transformation with mms_cotrans, you can override this message and do the transformation with the /allow_dmpa keyword'
   return
 endif
 
