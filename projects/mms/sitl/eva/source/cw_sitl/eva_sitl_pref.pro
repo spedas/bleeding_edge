@@ -53,13 +53,20 @@ FUNCTION eva_sitl_pref_event, ev
 ;      widget_control, state.STATE_SITL.btnFill, SENSITIVE=(~ev.SELECT)
 ;      widget_control, state.STATE_SITL.drpHighlight, SENSITIVE=ev.SELECT
       
-      ;-----------------
-      ; UPLINK
-      ;-----------------
-      ;strUplink = (state.state_sitl.UPLINK) ? 'UPLINK' : 'DRAFT'
-      ;strButton = (ev.SELECT) ? 'BAKSTR' : strUplink
+      ;---------------------
+      ; Update SUBMIT MODULE
+      ;---------------------
       strButton = (ev.SELECT) ? 'BAKSTR' : 'DRAFT'
-      widget_control, state.STATE_SITL.btnSubmit, SET_VALUE='   '+strButton+'   '
+      id_submit = widget_info(state.group_leader, find_by_uname='eva_sitlsubmit')
+      submit_stash = WIDGET_INFO(id_submit, /CHILD)
+      widget_control, submit_stash, GET_UVALUE=submit_state, /NO_COPY;******* GET
+      widget_control, submit_state.btnDraft, SET_VALUE = ' '+strButton+' '
+      widget_control, submit_stash, SET_UVALUE=submit_state, /NO_COPY;******* SET
+      id_submit = widget_info(state.group_leader, find_by_uname='eva_sitluplink')
+      submit_stash = WIDGET_INFO(id_submit, /CHILD)
+      widget_control, submit_stash, GET_UVALUE=submit_state, /NO_COPY;******* GET
+      widget_control, submit_state.mainbase, SENSITIVE=(~ev.SELECT)
+      widget_control, submit_stash, SET_UVALUE=submit_state, /NO_COPY;******* SET
       end
     state.bgTestmode:  begin;{ID:0L, TOP:0L, HANDLER:0L, SELECT:0, VALUE:0 }
       pref.EVA_TESTMODE_SUBMIT = (~ev.SELECT); "Selected" means "submission enabled (i.e, not in test mode)"
@@ -118,7 +125,8 @@ FUNCTION eva_sitl_pref, parent, GROUP_LEADER=group_leader, $
 
   ; ----- STATE OF THIS WIDGET -----  
   path_values = ['soca','socs','stla']
-  state = {pref:state_sitl.PREF, state_sitl:state_sitl, path_values:path_values}
+  state = {pref:state_sitl.PREF, state_sitl:state_sitl, path_values:path_values, $
+    group_leader:group_leader}
     
   ; ----- WIDGET LAYOUT -----
   geo = widget_info(parent,/geometry)

@@ -12,8 +12,8 @@
 ;         end_times:    returns an array of unix times (double) containing the end of each burst interval
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-11-14 09:33:40 -0800 (Mon, 14 Nov 2016) $
-;$LastChangedRevision: 22352 $
+;$LastChangedDate: 2020-05-19 12:45:03 -0700 (Tue, 19 May 2020) $
+;$LastChangedRevision: 28714 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_brst_segments.pro $
 ;-
 
@@ -24,6 +24,9 @@ pro mms_load_brst_segments, trange=trange, suffix=suffix, start_times=start_time
   else tr = timerange()
   
   mms_init
+  
+  undefine, start_times
+  undefine, end_times
 
   brst_file = spd_download(remote_file='http://www.spedas.org/mms/mms_brst_intervals.sav', $
     local_file=!mms.local_data_dir+'mms_brst_intervals.sav', $
