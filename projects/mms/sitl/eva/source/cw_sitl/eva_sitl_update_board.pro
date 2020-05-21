@@ -3,8 +3,8 @@
 ; activate = 2; sensitive (initialize)
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2017-04-18 22:08:12 -0700 (Tue, 18 Apr 2017) $
-; $LastChangedRevision: 23190 $
+; $LastChangedDate: 2020-05-19 21:49:21 -0700 (Tue, 19 May 2020) $
+; $LastChangedRevision: 28715 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_update_board.pro $
 ;
 PRO eva_sitl_update_board, state, activate
@@ -120,7 +120,7 @@ PRO eva_sitl_update_board, state, activate
     mymodel ->Add,oL1_Line
     
     ; color bar (level 0)
-    oL0_Label = obj_new('IDLgrText','Target',FONT=myfont,COLOR=cwindow,LOCATION=[xL,yL0])
+    oL0_Label = obj_new('IDLgrText','',FONT=myfont,COLOR=cwindow,LOCATION=[xL,yL0])
     oL0_Number= obj_new('IDLgrText','XX',FONT=myfont,COLOR=cwindow,LOCATION=[xL,yL0-dy])
     oL0_Line = OBJ_NEW('IDLgrPlot', [0,0],[0,0], COLOR=cwindow)
     mymodel ->Add,oL0_Label

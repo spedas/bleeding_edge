@@ -78,14 +78,14 @@ PRO eva_sitl_submit_FOMStr, tlb, TESTING, vcase, user_flag=user_flag
   endif else begin
     case vcase of
       0:begin
-;        mms_put_fom_structure, tai_FOMstr_mod, tai_FOMStr_org, $
-;          error_flags,  orange_warning_flags,  yellow_warning_flags,$; Error Flags
-;          error_msg,    orange_warning_msg,    yellow_warning_msg,  $; Error Messages
-;          error_times,  orange_warning_times,  yellow_warning_times,$; Erroneous Segments (ptr_arr)
-;          error_indices,orange_warning_indices,yellow_warning_indices,$; Error Indices (ptr_arr)
-;          problem_status, /warning_override
-;        ptr_free, error_times, orange_warning_times, yellow_warning_times
-;        ptr_free, error_indices, orange_warning_indices, yellow_warning_indices
+        mms_put_fom_structure, tai_FOMstr_mod, tai_FOMStr_org, $
+          error_flags,  orange_warning_flags,  yellow_warning_flags,$; Error Flags
+          error_msg,    orange_warning_msg,    yellow_warning_msg,  $; Error Messages
+          error_times,  orange_warning_times,  yellow_warning_times,$; Erroneous Segments (ptr_arr)
+          error_indices,orange_warning_indices,yellow_warning_indices,$; Error Indices (ptr_arr)
+          problem_status, /warning_override
+        ptr_free, error_times, orange_warning_times, yellow_warning_times
+        ptr_free, error_indices, orange_warning_indices, yellow_warning_indices
         end
       3:begin
         s = tai_FOMstr_mod
