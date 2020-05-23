@@ -7,9 +7,9 @@
 ; KEYWORDS:
 ; HISTORY: Created by Aaron W Breneman, Univ. Minnesota  4/10/2014
 ; VERSION:
-;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2018-02-02 11:37:33 -0800 (Fri, 02 Feb 2018) $
-;   $LastChangedRevision: 24633 $
+;   $LastChangedBy: nikos $
+;   $LastChangedDate: 2020-05-21 20:36:46 -0700 (Thu, 21 May 2020) $
+;   $LastChangedRevision: 28720 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_burst_fa_rotate_crib.pro $
 ;-
 

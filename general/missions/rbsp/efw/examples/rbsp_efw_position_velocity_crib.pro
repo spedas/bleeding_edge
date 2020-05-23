@@ -22,10 +22,10 @@
 ;	email: awbrenem@gmail.com
 ;REQUIRED: Need to have the SPICE ICY software package installed
 ;
-;$LastChangedBy: $
-;$LastChangedDate: $
-;$LastChangedRevision: $
-;$URL: $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2020-05-21 20:36:46 -0700 (Thu, 21 May 2020) $
+;$LastChangedRevision: 28720 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_position_velocity_crib.pro $
 ;-
 
 

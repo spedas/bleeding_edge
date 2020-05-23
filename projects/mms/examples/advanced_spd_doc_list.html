@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed May 20 18:15:52 2020.<P>
+<STRONG>Last modified: </STRONG>Fri May 22 18:15:51 2020.<P>
  
 <HR>
  
@@ -21,6 +21,8 @@ This page was created by the IDL library routine
 <H1>projects/mms/examples/advanced</H1>
 <LI><A HREF="#MMS_BASIC_DAYSIDE">MMS_BASIC_DAYSIDE</A>
 <LI><A HREF="#MMS_BASIC_TAIL">MMS_BASIC_TAIL</A>
+<LI><A HREF="#MMS_COTRANS_LMN_CRIB">MMS_COTRANS_LMN_CRIB</A>
+<br>Shows how to tranforms MMS vector fields to LMN (boundary-normal) coordinates
 <LI><A HREF="#MMS_EVENT_SEARCH_CRIB">MMS_EVENT_SEARCH_CRIB</A>
 <LI><A HREF="#MMS_FLIPBOOK_CRIB">MMS_FLIPBOOK_CRIB</A>
 <LI><A HREF="#MMS_FPI_CURLOMETER_CRIB">MMS_FPI_CURLOMETER_CRIB</A>
@@ -89,7 +91,7 @@ MMS_FPI_DIST_SLICE_COMPARISON_CRIB</A>
 <A NAME="MMS_BASIC_TAIL">
 <H2>MMS_BASIC_TAIL</H2></A>
 <A HREF="#MMS_BASIC_DAYSIDE">[Previous Routine]</A>
-<A HREF="#MMS_EVENT_SEARCH_CRIB">[Next Routine]</A>
+<A HREF="#MMS_COTRANS_LMN_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  script for basic tail science figures (from EVA, first plot)
@@ -121,9 +123,31 @@ MMS_FPI_DIST_SLICE_COMPARISON_CRIB</A>
 <STRONG>(See <A href="advanced/mms_basic_tail.pro">projects/mms/examples/advanced/mms_basic_tail.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_COTRANS_LMN_CRIB">
+<H2>MMS_COTRANS_LMN_CRIB</H2></A>
+<A HREF="#MMS_BASIC_TAIL">[Previous Routine]</A>
+<A HREF="#MMS_EVENT_SEARCH_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         mms_cotrans_lmn_crib
+
+ PURPOSE:
+         Shows how to tranforms MMS vector fields to LMN (boundary-normal) coordinates
+         using the Shue et al., 1998 magnetopause model
+
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2020-05-22 14:49:22 -0700 (Fri, 22 May 2020) $
+$LastChangedRevision: 28727 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_cotrans_lmn_crib.pro $
+</PRE><P>
+<STRONG>(See <A href="advanced/mms_cotrans_lmn_crib.pro">projects/mms/examples/advanced/mms_cotrans_lmn_crib.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_EVENT_SEARCH_CRIB">
 <H2>MMS_EVENT_SEARCH_CRIB</H2></A>
-<A HREF="#MMS_BASIC_TAIL">[Previous Routine]</A>
+<A HREF="#MMS_COTRANS_LMN_CRIB">[Previous Routine]</A>
 <A HREF="#MMS_FLIPBOOK_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

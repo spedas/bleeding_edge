@@ -40,10 +40,10 @@
 ; 	By/Bx = 3.732
 ; 	Bz/Bx = 3.732
 ;HISTORY: Written by Aaron W Breneman (UMN) - 2013-06-19
-;$LastChangedBy: $
-;$LastChangedDate: $
-;$LastChangedRevision: $
-;$URL: $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2020-05-21 20:36:46 -0700 (Thu, 21 May 2020) $
+;$LastChangedRevision: 28720 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_edotb_to_zero_crib.pro $
 ;-
 
 

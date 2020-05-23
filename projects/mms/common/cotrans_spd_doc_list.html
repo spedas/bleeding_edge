@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed May 20 18:15:52 2020.<P>
+<STRONG>Last modified: </STRONG>Fri May 22 18:15:51 2020.<P>
  
 <HR>
  
@@ -22,6 +22,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#DMPA2DSL">DMPA2DSL</A>
 <LI><A HREF="#DMPA2GSE">DMPA2GSE</A>
 <LI><A HREF="#MMS_COTRANS">MMS_COTRANS</A>
+<LI><A HREF="#MMS_COTRANS_LMN">MMS_COTRANS_LMN</A>
+<br>Tranforms MMS vector fields from GSM coordinates to LMN (boundary-normal) coordinates
 <LI><A HREF="#MMS_COTRANS_PARSE">MMS_COTRANS_PARSE</A>
 <LI><A HREF="#MMS_COTRANS_QROTATE">MMS_COTRANS_QROTATE</A>
 <LI><A HREF="#MMS_COTRANS_QTRANSFORMER">MMS_COTRANS_QTRANSFORMER</A>
@@ -141,7 +143,7 @@ Notes:
 <A NAME="MMS_COTRANS">
 <H2>MMS_COTRANS</H2></A>
 <A HREF="#DMPA2GSE">[Previous Routine]</A>
-<A HREF="#MMS_COTRANS_PARSE">[Next Routine]</A>
+<A HREF="#MMS_COTRANS_LMN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -214,9 +216,41 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="cotrans/mms_cotrans.pro">projects/mms/common/cotrans/mms_cotrans.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_COTRANS_LMN">
+<H2>MMS_COTRANS_LMN</H2></A>
+<A HREF="#MMS_COTRANS">[Previous Routine]</A>
+<A HREF="#MMS_COTRANS_PARSE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         mms_cotrans_lmn
+
+ PURPOSE:
+         Tranforms MMS vector fields from GSM coordinates to LMN (boundary-normal) coordinates
+         using the Shue et al., 1998 magnetopause model
+
+ KEYWORDS:
+         gsm: input vector is in GSM coordinates (note: if the coordinate system is stored in the tplot metadata, these keywords are not required)
+         gse: input vector is in GSE coordinates
+         probe: MMS probe #; not required if the input variable follows the standard MMS naming scheme, e.g., mms1_mec_r_gsm
+         data_rate: data rate of the MEC data
+
+ NOTES:
+         Based on the THEMIS version, thm_cotrans_lmn
+ 
+         Also accepts all keywords available to solarwind_load
+         
+$LastChangedBy: egrimes $
+$LastChangedDate: 2020-05-22 14:44:16 -0700 (Fri, 22 May 2020) $
+$LastChangedRevision: 28725 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/cotrans/mms_cotrans_lmn.pro $
+</PRE><P>
+<STRONG>(See <A href="cotrans/mms_cotrans_lmn.pro">projects/mms/common/cotrans/mms_cotrans_lmn.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_COTRANS_PARSE">
 <H2>MMS_COTRANS_PARSE</H2></A>
-<A HREF="#MMS_COTRANS">[Previous Routine]</A>
+<A HREF="#MMS_COTRANS_LMN">[Previous Routine]</A>
 <A HREF="#MMS_COTRANS_QROTATE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

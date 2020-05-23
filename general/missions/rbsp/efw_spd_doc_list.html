@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed May 20 18:15:52 2020.<P>
+<STRONG>Last modified: </STRONG>Fri May 22 18:15:51 2020.<P>
  
 <HR>
  
@@ -37,9 +37,6 @@ RBSP_ANTI_ALIASING_RESPONSE (FUNCTION)[1]</A>
 <LI><A HREF="#RBSP_DFB_RESPONSE (FUNCTION)[1]">RBSP_DFB_RESPONSE (FUNCTION)[1]
 </A>
 <br>Calculate DFB responses at given frequencies. Two modes are suppored. If the
-<LI><A HREF="#RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)[1]">
-RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)[1]</A>
-<br>Returns a structure with all the boom lengths for input date and time
 <LI><A HREF="#RBSP_EFW_BOOM_LENGTH (FUNCTION)[1]">
 RBSP_EFW_BOOM_LENGTH (FUNCTION)[1]</A>
 <br>Return the boom length for a give time.
@@ -485,7 +482,7 @@ MODIFICATION HISTORY:
 <A NAME="RBSP_DFB_RESPONSE (FUNCTION)[1]">
 <H2>RBSP_DFB_RESPONSE (FUNCTION)[1]</H2></A>
 <A HREF="#RBSP_DESPIN (PROCEDURE)">[Previous Routine]</A>
-<A HREF="#RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)[1]">[Next Routine]</A>
+<A HREF="#RBSP_EFW_BOOM_LENGTH (FUNCTION)[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -551,59 +548,9 @@ MODIFICATION HISTORY:
 <STRONG>(See <A href="efw/rbsp_dfb_response.pro">general/missions/rbsp/efw/rbsp_dfb_response.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)[1]">
-<H2>RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)[1]</H2></A>
-<A HREF="#RBSP_DFB_RESPONSE (FUNCTION)[1]">[Previous Routine]</A>
-<A HREF="#RBSP_EFW_BOOM_LENGTH (FUNCTION)[1]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- NAME:
-   rbsp_efw_boom_deploy_history (function)
-
- PURPOSE:
-   Returns a structure with all the boom lengths for input date and time
-
- CATEGORIES:
-
- CALLING SEQUENCE:
-
- NOTES: Boom deploy schedule from https://efw.ssl.berkeley.edu/svn/SOC/software/deploy_history/
-
-		 To Convert SPB total stroke to dipole tip-to-tip, double stroke length and 
-		 add 1.82 m; e.g. 20-m stroke = 41.8-m tip-to-tip dipole.
-
-		 To convert AXB total stroke to dipole tip-to-tip, add AFT and FWD total strokes 
-		 and add 1.2 m for deck spacing and 0.76 m for whip and sphere
-		 e.g. 4.02-m stroke on FWD and AFT AXB stacers gives a dipole tip-to-tip of 10.0 m.
-
- ARGUMENTS:
-
- KEYWORDS:	allvals -&gt; set to fill with a structure with all the mission boom length
-						changes based on date and time
-
- COMMON BLOCKS:
-
- EXAMPLES:
-
- SEE ALSO:
-
- HISTORY:
-	2013-05-17:	Created by Aaron Breneman (UMN)
-
-
- VERSION:
- $LastChangedBy: aaronbreneman $
- $LastChangedDate: 2014-10-28 13:46:07 -0700 (Tue, 28 Oct 2014) $
- $LastChangedRevision: 16071 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_efw_boom_deploy_history.pro $
-
-</PRE><P>
-<STRONG>(See <A href="efw/rbsp_efw_boom_deploy_history.pro">general/missions/rbsp/efw/rbsp_efw_boom_deploy_history.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="RBSP_EFW_BOOM_LENGTH (FUNCTION)[1]">
 <H2>RBSP_EFW_BOOM_LENGTH (FUNCTION)[1]</H2></A>
-<A HREF="#RBSP_EFW_BOOM_DEPLOY_HISTORY (FUNCTION)[1]">[Previous Routine]</A>
+<A HREF="#RBSP_DFB_RESPONSE (FUNCTION)[1]">[Previous Routine]</A>
 <A HREF="#RBSP_EFW_BOOM_RESPONSE (FUNCTION)[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

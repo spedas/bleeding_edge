@@ -9,9 +9,9 @@
 ; KEYWORDS: 
 ; HISTORY: 2014-04-09, created by Sheng Tian, UMN
 ; VERSION: 
-;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2014-04-10 08:52:58 -0700 (Thu, 10 Apr 2014) $
-;   $LastChangedRevision: 14788 $
+;   $LastChangedBy: nikos $
+;   $LastChangedDate: 2020-05-21 20:36:46 -0700 (Thu, 21 May 2020) $
+;   $LastChangedRevision: 28720 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_load_collection.pro $
 ;-
 

@@ -8,9 +8,9 @@
 ;	PROCEDURE: .run b1_status_crib
 ; HISTORY: Created by Kris Kersten, kris.kersten@gmail.com
 ; VERSION:
-;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2018-12-21 09:58:30 -0800 (Fri, 21 Dec 2018) $
-;   $LastChangedRevision: 26382 $
+;   $LastChangedBy: nikos $
+;   $LastChangedDate: 2020-05-21 20:36:46 -0700 (Thu, 21 May 2020) $
+;   $LastChangedRevision: 28720 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/b1_status_crib.pro $
 ;-
 

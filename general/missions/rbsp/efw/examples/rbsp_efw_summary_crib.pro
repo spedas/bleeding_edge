@@ -8,9 +8,9 @@
 ; KEYWORDS:
 ; HISTORY: Kris Kersten, UMN, June 2012 (email: kris.kersten@gmail.com)
 ; VERSION:
-;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2018-12-21 10:03:48 -0800 (Fri, 21 Dec 2018) $
-;   $LastChangedRevision: 26383 $
+;   $LastChangedBy: nikos $
+;   $LastChangedDate: 2020-05-21 20:36:46 -0700 (Thu, 21 May 2020) $
+;   $LastChangedRevision: 28720 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_summary_crib.pro $
 ;-
 

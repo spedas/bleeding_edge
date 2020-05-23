@@ -32,10 +32,10 @@
 ;HISTORY: Written by Aaron W Breneman
 ;         University of Minnesota
 ;         2013-04-16
-;$LastChangedBy: $
-;$LastChangedDate: $
-;$LastChangedRevision: $
-;$URL: $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2020-05-21 20:36:46 -0700 (Thu, 21 May 2020) $
+;$LastChangedRevision: 28720 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_spinfit_vxb_subtract_crib.pro $
 ;-
 
 pro rbsp_efw_spinfit_vxb_subtract_crib,probe,no_spice_load=no_spice_load,$
