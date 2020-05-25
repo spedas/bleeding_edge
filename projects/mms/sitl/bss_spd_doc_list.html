@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat May 23 18:15:49 2020.<P>
+<STRONG>Last modified: </STRONG>Sun May 24 18:15:52 2020.<P>
  
 <HR>
  
@@ -24,7 +24,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_BSS_TABLE">MMS_BSS_TABLE</A>
 <br>To create a table of segments in the back-structure
 <LI><A HREF="#MMS_GET_ROI">MMS_GET_ROI</A>
-<br>To return the ROI timerange closest to the specified time &quot;t&quot;.
+<br>To return the SROI timerange closest to the specified time &quot;t&quot;.
 <br>
 </UL><P>
 <HR>
@@ -130,50 +130,51 @@ This page was created by the IDL library routine
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:  mms_get_roi
-    
+
  PURPOSE:
-   To return the ROI timerange closest to the specified time &quot;t&quot;.
+   To return the SROI timerange closest to the specified time &quot;t&quot;.
    If &quot;t&quot; is a large enough time range, then all ROIs within the time range
-   will be returned. 
- 
+   will be returned.
+
  CALLING SEQUENCE: roi = mms_get_roi( t [, num] )
- 
+
  INPUT:
     t (optional) Can be either string or double.
-                 Can be either a scalar or a 2-element array. 
+                 Can be either a scalar or a 2-element array.
                  If omitted, current time (UTC) will be used as the input.
- 
+
  OUTPUT:
     (2 x N) array indicating matched ROI time ranges.
     N is the number of matched ROIs.
- 
+
  OTHER OUTPUT:
     num : the number of matched ROIs
-    
+
  KEYWORDS:
     NEXT: Returns the next ROI (does not overlap with the input timerange)
     PREVIOUS: Returns the previous ROI (does not overlap with the input timerange)
-    
+
  EXAMPLES:
-    
+
    (1) Find all ROIs within a time range
-     
-   MMS&gt; print, time_string(mms_get_roi(['2015-10-01/00:00','2015-10-07/24:00']))
 
-   (2) Find the ROI closest to time 2015-10-02/06:00
-   
-   MMS&gt; print, time_string(mms_get_roi('2015-10-02/06:00'))
+   MMS&gt; print, time_string(mms_get_roi(['2015-12-01/00:00','2015-12-07/24:00']))
 
-   (3) Find the ROI just after 2015-10-02/06:00
+   (2) Find the ROI closest to time 2015-12-02/06:00
 
-   MMS&gt; print, time_string(mms_get_roi('2015-10-02/06:00',/next))
+   MMS&gt; print, time_string(mms_get_roi('2015-12-02/06:00'))
+
+   (3) Find the ROI just after 2015-12-02/06:00
+
+   MMS&gt; print, time_string(mms_get_roi('2015-12-02/06:00',/next))
 
 
  CREATED BY: moka in Oct 2015
+ UPDATED after introducing dynamic SITL window: May 2020
 
  $LastChangedBy: moka $
- $LastChangedDate: 2016-01-11 11:40:15 -0800 (Mon, 11 Jan 2016) $
- $LastChangedRevision: 19706 $
+ $LastChangedDate: 2020-05-24 15:23:34 -0700 (Sun, 24 May 2020) $
+ $LastChangedRevision: 28734 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/bss/mms_get_roi.pro $
 </PRE><P>
 <STRONG>(See <A href="bss/mms_get_roi.pro">projects/mms/sitl/bss/mms_get_roi.pro</A>)</STRONG><P>

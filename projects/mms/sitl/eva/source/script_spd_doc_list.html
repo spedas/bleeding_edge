@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat May 23 18:15:49 2020.<P>
+<STRONG>Last modified: </STRONG>Sun May 24 18:15:52 2020.<P>
  
 <HR>
  
@@ -23,6 +23,8 @@ This page was created by the IDL library routine
 <br>This is a command-line script for loading a set of parameters for SITL and/or EVA.
 <LI><A HREF="#EVA_FONT_TEST">EVA_FONT_TEST</A>
 <br>Use this script when the dashboard in EVA's main control panel look corrupted
+<LI><A HREF="#EVA_GET_SITL_SELECTIONS">EVA_GET_SITL_SELECTIONS</A>
+<br>To download SITL-selection files (max 10000 files) for a defined time period
 <LI><A HREF="#EVA_SITL_RESTORE_TXT">EVA_SITL_RESTORE_TXT</A>
 <br>This is a command-line script to be used when the SITL has a long list of
 <br>
@@ -89,7 +91,7 @@ This page was created by the IDL library routine
 <A NAME="EVA_FONT_TEST">
 <H2>EVA_FONT_TEST</H2></A>
 <A HREF="#EVA_CMD_LOAD">[Previous Routine]</A>
-<A HREF="#EVA_SITL_RESTORE_TXT">[Next Routine]</A>
+<A HREF="#EVA_GET_SITL_SELECTIONS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -117,9 +119,51 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="script/eva_font_test.pro">projects/mms/sitl/eva/source/script/eva_font_test.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="EVA_GET_SITL_SELECTIONS">
+<H2>EVA_GET_SITL_SELECTIONS</H2></A>
+<A HREF="#EVA_FONT_TEST">[Previous Routine]</A>
+<A HREF="#EVA_SITL_RESTORE_TXT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:  eva_get_sitl_selections
+
+ PURPOSE:
+   To download SITL-selection files (max 10000 files) for a defined time period 
+   and return those filenames. If the time period is not defined, 
+   the latest file will be downloaded. The file timestamps can 
+   also be returned (i.e., the time the SITL submitted the selections)
+
+ CALLING SEQUENCE: filenames = eva_get_sitl_selections(trange=trange [, num] )
+
+ INPUT:
+    trange: (optional, either string or double)
+       - The time range from which SITL selection files are searched.
+       - The file stamps (i.e., the time the SITL submitted the
+         selections) are used for the search. 
+       - If omitted, the latest file will be searched.                     
+
+ OUTPUT:
+    filenames: a string array indicating the filenames of matched SITL-selections.
+
+ OTHER OUTPUT:
+    n         : the number of matched files.
+    filetimes: the time stamps (i.e., the time the SITL submitted the
+                selections) of matched files.
+
+
+ CREATED BY: moka in May 2020
+
+ $LastChangedBy: moka $
+ $LastChangedDate: 2016-01-11 11:40:15 -0800 (Mon, 11 Jan 2016) $
+ $LastChangedRevision: 19706 $
+ $URL: svn+ssh://ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/bss/mms_get_roi.pro $
+</PRE><P>
+<STRONG>(See <A href="script/eva_get_sitl_selections.pro">projects/mms/sitl/eva/source/script/eva_get_sitl_selections.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="EVA_SITL_RESTORE_TXT">
 <H2>EVA_SITL_RESTORE_TXT</H2></A>
-<A HREF="#EVA_FONT_TEST">[Previous Routine]</A>
+<A HREF="#EVA_GET_SITL_SELECTIONS">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
