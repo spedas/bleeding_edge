@@ -6,8 +6,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-05-25 14:40:54 -0700 (Wed, 25 May 2016) $
-; $LastChangedRevision: 21203 $
+; $LastChangedDate: 2020-05-27 17:10:16 -0700 (Wed, 27 May 2020) $
+; $LastChangedRevision: 28742 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_state_crib.pro $
 ;-
 
@@ -49,7 +49,7 @@ stop
 del_data, 'mms*_def*'
 
 ; set to future date
-date = '2017-11-31/00:00:00'
+date = '2040-11-31/00:00:00'
 timespan,date,1,/day
 
 ; request definitive data (because date is in the future definitive

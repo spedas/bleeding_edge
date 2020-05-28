@@ -10,8 +10,8 @@
 ; 3) For more information about SCM data, please contact olivier.lecontel@lpp.polytechnique.fr
 ;  
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-05-25 13:35:14 -0700 (Wed, 25 May 2016) $
-; $LastChangedRevision: 21199 $
+; $LastChangedDate: 2020-05-27 17:11:06 -0700 (Wed, 27 May 2020) $
+; $LastChangedRevision: 28743 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_scm_crib.pro $
 ;-
 
@@ -74,6 +74,7 @@ tlimit,trange
 if scm_datatype eq 'scb' then nboxpoints_input = 8192 else nboxpoints_input = 512
 
 tdpwrspc, scm_name, nboxpoints=nboxpoints_input,nshiftpoints=nboxpoints_input,bin=1
+stop
 
 if scm_datatype eq 'scsrvy' then Fmin = 0.5
 if scm_datatype eq 'scsrvy' then Fmax = 16.
