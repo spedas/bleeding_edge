@@ -6,10 +6,23 @@
 ;     IDL> mgunit, 'mms_cotrans_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-07-13 17:47:38 -0700 (Fri, 13 Jul 2018) $
-; $LastChangedRevision: 25477 $
+; $LastChangedDate: 2020-05-28 14:28:23 -0700 (Thu, 28 May 2020) $
+; $LastChangedRevision: 28748 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_cotrans_ut__define.pro $
 ;-
+
+function mms_cotrans_ut::test_cotrans_to_lmn
+  mms_cotrans_lmn, 'mms1_fgm_b_gsm_srvy_l2_bvec', 'mms1_fgm_b_lmn_srvy_l2_bvec'
+  mms_cotrans_lmn, 'mms1_fgm_b_gse_srvy_l2_bvec', 'mms1_fgm_b_lmn_srvy_l2_bvec_fromgse'
+  assert, spd_data_exists('mms1_fgm_b_lmn_srvy_l2_bvec', '2015-12-1', '2015-12-2'), 'Problem going from GSM to LMN coordinates'
+  assert, spd_data_exists('mms1_fgm_b_lmn_srvy_l2_bvec_fromgse', '2015-12-1', '2015-12-2'), 'Problem going from GSE to LMN coordinates'
+  get_data, 'mms1_fgm_b_lmn_srvy_l2_bvec', data=gse
+  get_data, 'mms1_fgm_b_lmn_srvy_l2_bvec', data=gsm
+  assert, abs(gse.y[0, 0]-gsm.y[0, 0]) lt 0.01, 'Problem with LMN transformations'
+  assert, abs(gse.y[0, 1]-gsm.y[0, 1]) lt 0.01, 'Problem with LMN transformations'
+  assert, abs(gse.y[0, 2]-gsm.y[0, 2]) lt 0.01, 'Problem with LMN transformations'
+  return, 1
+end
 
 function mms_cotrans_ut::test_gse_to_gsm_and_back
   mms_qcotrans, 'mms1_mec_r_gse', out_coord='gsm', out_suffix='_qgse2gsm'
