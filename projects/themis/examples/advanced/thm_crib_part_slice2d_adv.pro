@@ -16,8 +16,8 @@
 ;   (Also part of the plugins menu in the SPEDAS GUI) 
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2016-11-30 11:43:37 -0800 (Wed, 30 Nov 2016) $
-;$LastChangedRevision: 22421 $
+;$LastChangedDate: 2020-06-02 17:15:12 -0700 (Tue, 02 Jun 2020) $
+;$LastChangedRevision: 28761 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/examples/advanced/thm_crib_part_slice2d_adv.pro $;
 ;-
 
@@ -29,7 +29,7 @@ compile_opt idl2
 
 ; Interpolation methods:
 ;------------------------------------
-;  Geomtric:
+;  Geometric:
 ;    Each point on the plot is given the value of the bin it instersects.
 ;    This allows bin boundaries to be drawn at high resolutions.
 ;  
@@ -292,11 +292,11 @@ stop
 ; - Averaging may take up to 60+ seconds with full resolution (500)
 ;   this example uses lower range to decrease computation time.
 thm_part_slice2d, peeb_arr, slice_time=slice_time, timewin=timewin, $
-;                  /three_d_interp, $ ; only for /geometric. For interp this does not work
+                  type=0, $ ; Geometric interpolation. Angular averaging is only applicable to the geometric method
                   rotation='BV', $
                   mag_data=mag_data, $    ; specify mag data for rotation
                   vel_data=vel_data, $    ; specify velocity data for rotation
-                  average_angle=[-30,30], $   ; min/max to avg. about x (B) axis; could be +/- 90 takes long
+                  average_angle=[-30,30], $   ; min/max to avg. about x (B) axis; could be +/- 90 takes long 
                   part_slice=part_slice
 
 thm_part_slice2d_plot, part_slice
@@ -311,10 +311,10 @@ stop
 ;  -The performs the same operation as the last example with SST data.
 ;  -The averaging range has been increased to include a larger portion of the distribution. 
 thm_part_slice2d, psif_arr, slice_time=slice_time, timewin=timewin, $
-;                  /three_d_interp, $ ; works only for /geometric (default). For interp this does not wor
+                  type=0, $  ; Geometric interpolation. Angular averaging is only applicable to the geometric method
                   rotation='bv', $  
                   mag_data=mag_data, $
-                  average_angle=[-45,45], $   ; min/max to average about x
+                  average_angle=[-45,45], $   ; min/max to average about x ;Angular averaging is only applicable to the geometric method
                   part_slice=part_slice
 
 thm_part_slice2d_plot, part_slice
