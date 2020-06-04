@@ -61,6 +61,7 @@ FUNCTION eva_sitl_pref_event, ev
       submit_stash = WIDGET_INFO(id_submit, /CHILD)
       widget_control, submit_stash, GET_UVALUE=submit_state, /NO_COPY;******* GET
       widget_control, submit_state.btnDraft, SET_VALUE = ' '+strButton+' '
+      submit_state.PREF.EVA_BAKSTRUCT = ev.SELECT
       widget_control, submit_stash, SET_UVALUE=submit_state, /NO_COPY;******* SET
       id_submit = widget_info(state.group_leader, find_by_uname='eva_sitluplink')
       submit_stash = WIDGET_INFO(id_submit, /CHILD)
