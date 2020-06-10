@@ -13,7 +13,7 @@
 ;                       if no probe is specified the default is probe '1'
 ;         level:        indicates level of data processing. Current levels include: 
 ;                       ['l1a', 'l1b', 'l2', 'l2pre', 'ql', 'sitl']
-;         datatype:     data types include currently include  ['dce', 'dcv', 'ace', 'hmfe']; default is dce
+;         datatype:     data types include currently include  ['dce', 'dcv', 'ace', 'hmfe', 'scpot']; default is dce
 ;         data_rate:    instrument data rates include ['brst', 'fast', 'slow', 'srvy']. 
 ;                       the default is 'fast'
 ;         local_data_dir: local directory to store the CDF files; should be set if you're on
@@ -73,8 +73,8 @@
 ;   - Minor updates to defaults by egrimes@igpp
 ;    
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
-;$LastChangedRevision: 27435 $
+;$LastChangedDate: 2020-06-09 14:30:21 -0700 (Tue, 09 Jun 2020) $
+;$LastChangedRevision: 28770 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/edp/mms_load_edp.pro $
 ;-
 pro mms_load_edp, trange = trange, probes = probes, datatype = datatype, $

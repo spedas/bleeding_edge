@@ -26,23 +26,25 @@
 ; HISTORY:
 ;   adapted from thm_load_asi
 ;   2015-07-21, hfrey, included call to REGO cal-files
+;   2020-06-09, jmm, checks for v02 files and corrects mlat and mlon
+;   variables for ASK data.
 ;
-;Notes:
+; Notes:
 ;
 ; To get an array of valid names make the following call;
 ;   thm_load_asi_cal,valid_names=vn
 ; No further action will be taken.
 ;
 ;Written by: Harald Frey,   Jan 26 2007
-;   $LastChangedBy: hfrey $
-;   $LastChangedDate: 2018-11-20 12:23:55 -0800 (Tue, 20 Nov 2018) $
-;   $LastChangedRevision: 26165 $
+;   $LastChangedBy: jimm $
+;   $LastChangedDate: 2020-06-09 10:49:40 -0700 (Tue, 09 Jun 2020) $
+;   $LastChangedRevision: 28769 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_asi_cal.pro $
 ;-
 ;
 pro thm_load_asi_cal,site,cal_struc,trange=trange,verbose=verbose,all=all $
    ,downloadonly=downloadonly,valid_names = vstats, $
-   cursor=cursor,rego=rego
+   cursor=cursor,rego=rego,file_version_in=file_version_in
 
 thm_init
 
@@ -72,7 +74,7 @@ if keyword_set(all) then stations='*' else stations=site
 stats = strfilter(vstats,stations,delimiter=' ',/string)  ; vstats is the subarray of valid stations
 
 if not keyword_set(stats) then  begin
-   dprint, 'Input must be one or more of the following strings:
+   dprint, 'Input must be one or more of the following strings:'
    dprint, vstats
    return
 endif
@@ -88,7 +90,10 @@ for i=0,n_elements(stats)-1 do begin
   if keyword_set(rego) then prefix = 'rego_l2_asc_' + station + '_' else $
        prefix = 'thg_l2_asc_' + station + '_'
   relpath = 'thg/l2/asi/cal/'
-  ending = '_v0?.cdf'
+;allow old version in for testing v02 fix
+  If(keyword_set(file_version_in)) Then Begin
+     ending = '_v'+string(file_version_in[0], format='(i2.2)')+'.cdf'
+  Endif Else ending = '_v0?.cdf'
 
   relpathnames = file_dailynames(relpath,prefix,ending,$
      trange=['1970-01-01/00:00:00','1970-01-01/00:00:00'])
@@ -113,6 +118,23 @@ for i=0,n_elements(stats)-1 do begin
   if (count gt 0) then $       		; Load data from file(s)
        cal = cdf_load_vars(files,varnames=varnames2,verbose=verbose,record=record[count-1],/all) $
        else cal=-1
+
+  ;fix for mlat, mlon for version 02 files, jmm, 2020-06-08
+  tmp_file = strsplit(file_basename(files[0]), '_', /extract)
+  If(tmp_file[n_elements(tmp_file)-1] Eq 'v02.cdf') Then Begin
+     a = where(cal.vars.name Eq 'thg_asf_'+station+'_mlat')
+     b = where(cal.vars.name Eq 'thg_ask_'+station+'_mlat')
+     f_mlat = *cal.vars[a].dataptr
+     If(ptr_valid(cal.vars[b].dataptr)) Then ptr_free, cal.vars[b].dataptr
+     cal.vars[b].dataptr = ptr_new(reform(f_mlat[127, 0:255]))
+
+     a = where(cal.vars.name Eq 'thg_asf_'+station+'_mlon')
+     b = where(cal.vars.name Eq 'thg_ask_'+station+'_mlon')
+     f_mlon = *cal.vars[a].dataptr
+     If(ptr_valid(cal.vars[b].dataptr)) Then ptr_free, cal.vars[b].dataptr
+     cal.vars[b].dataptr = ptr_new(reform(f_mlon[127, 0:255]))
+  Endif
+
   if (i gt 0) then cal_struc=[cal_struc,cal] else cal_struc=cal
   
 endfor

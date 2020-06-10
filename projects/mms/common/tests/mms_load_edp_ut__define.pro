@@ -6,15 +6,16 @@
 ;     IDL> mgunit, 'mms_load_edp_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-09 09:19:08 -0700 (Mon, 09 Oct 2017) $
-; $LastChangedRevision: 24128 $
+; $LastChangedDate: 2020-06-09 14:30:40 -0700 (Tue, 09 Jun 2020) $
+; $LastChangedRevision: 28771 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_edp_ut__define.pro $
 ;-
 
 ; the following is a regression test for a bug that occurs with the L2 HFESP CDFs
 function mms_load_edp_ut::test_load_hfesp_cdf_bug
-    mms_load_edp,trange=mms_get_roi('2016-02-28/16:00:00',/next),probes=4,level='l2',data_rate='srvy',datatype='hfesp'
-    assert, spd_data_exists('mms4_edp_hfesp_srvy_l2', '2016-02-28/16:00', '2016-02-29/03:00'), $
+    trange = mms_get_roi('2016-02-28/16:00:00',/next)
+    mms_load_edp,trange=trange,probes=4,level='l2',data_rate='srvy',datatype='hfesp'
+    assert, spd_data_exists('mms4_edp_hfesp_srvy_l2', trange[0], trange[1]), $
       'Problem loading the EDP HFESP data during regression test'
     get_data, 'mms4_edp_hfesp_srvy_l2', data=hfesp_data
     assert, n_elements(hfesp_data.V) eq 322, 'Problem with HFESP regression test'

@@ -13,7 +13,7 @@
 ;
 ;   There are three methods for generating slices:
 ;
-;   Geomtric:
+;   Geometric:
 ;     Each point on the plot is given the value of the bin it instersects.
 ;     This allows bin boundaries to be drawn at high resolutions.
 ;
@@ -23,7 +23,7 @@
 ;
 ;   3D Interpolation:
 ;     The entire 3-dimensional distribution is linearly interpolated onto a 
-;     regular 3d grid and a slice is extracted from the volume.
+;     regular 3d grid and a slice is extracted from the volume. (default)
 ;
 ;    
 ;Calling Sequence:
@@ -50,9 +50,10 @@
 ; ENERGY: Flag to plot data against energy (in eV) instead of velocity.
 ; LOG: Flag to apply logarithmic scaling to the radial mesure (i.e. energy/velocity).
 ;      (on by default if /ENERGY is set)
-;        
+; 
+; GEOMETRIC: Flag to use geometric method (described above)
 ; TWO_D_INTERP: Flag to use 2D interpolation method (described above)
-; THREE_D_INTERP: Flag to use 3D interpolation method (described above)
+; THREE_D_INTERP: Flag to use 3D interpolation method (described above, the default)
 ; 
 ; COORD: A string designating the coordinate system in which the slice will be 
 ;        oriented.  Options are 'DSL', 'GSM', 'GSE' and the following magnetic
@@ -204,9 +205,9 @@
 ;  See the crib file: thm_crib_part_slice2d.pro
 ;
 ;
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2018-06-04 17:46:48 -0700 (Mon, 04 Jun 2018) $
-;$LastChangedRevision: 25322 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2020-06-09 16:15:53 -0700 (Tue, 09 Jun 2020) $
+;$LastChangedRevision: 28772 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/slices/thm_part_slice2d.pro $
 ;-
 pro thm_part_slice2d, ptrArray, ptrArray2, ptrArray3, ptrArray4, $
@@ -223,7 +224,9 @@ pro thm_part_slice2d, ptrArray, ptrArray2, ptrArray3, ptrArray4, $
                     ; Support Data
                       mag_data=mag_data, vel_data=vel_data, $
                     ; Type options
-                      type=type, two_d_interp=two_d_interp, $
+                      type=type, $  
+                      geometric=geometric, $
+                      two_d_interp=two_d_interp, $
                       three_d_interp=three_d_interp, $
                     ; Other options
                       units=units, resolution=resolution, $
@@ -289,12 +292,16 @@ if undefined(units) then units = 'df'
 
 ;Interpolation type:
 if undefined(type) then begin
-  three_d_interp = 1
+  if keyword_set(geometric) then type=0 
+  if keyword_set(two_d_interp) then type=2  
+  if keyword_set(three_d_interp) then type=3 
 endif else begin
-  if type[0] eq 0 then geometric = 1
-  if type[0] eq 2 then two_d_interp = 1
-  if type[0] eq 3 then three_d_interp = 1
+  if type[0] eq 0 then geometric = 1 
+  if type[0] eq 2 then two_d_interp = 1 
+  if type[0] eq 3 then three_d_interp = 1 
+  type = type[0]
 endelse
+if undefined(type) then type = 3 ;3D Interpolation is the dafault
 
 probe = keyword_set((*ptrArray[0])[0].spacecraft) ? (*ptrArray[0])[0].spacecraft : $
                  strmid((*ptrArray[0])[0].project_name, 0, /reverse_offset)

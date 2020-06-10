@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Jun  8 18:16:04 2020.<P>
+<STRONG>Last modified: </STRONG>Tue Jun  9 18:15:56 2020.<P>
  
 <HR>
  
@@ -19,6 +19,7 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/themis/ground</H1>
+<LI><A HREF="#TEST_ASK_CAL2">TEST_ASK_CAL2</A>
 <LI><A HREF="#THM_ALT_STACKPLOT.PRO">THM_ALT_STACKPLOT.PRO</A>
 <br>To create 3 PNG files displaying the H,D and Z components of the magnetic field
 <LI><A HREF="#THM_ASI_CREATE_MOSAIC">THM_ASI_CREATE_MOSAIC</A>
@@ -57,8 +58,26 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="TEST_ASK_CAL2">
+<H2>TEST_ASK_CAL2</H2></A>
+<A HREF="#THM_ALT_STACKPLOT.PRO">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Checks ASK MLAT and MLON values for v02 cal files versus v01 values
+for the first tme in each file.
+Input station, output cal01 and cal02 are the output cal structures.
+example: 
+test_ask_cal2, 'gill'
+Plots will show version 02 ask mlat, mlon as line, version 01 ask
+mlat, mlon as red plus signs.
+ro test_ask_cal2, station, cal01, cal02
+</PRE><P>
+<STRONG>(See <A href="ground/test_ask_cal2.pro">projects/themis/ground/test_ask_cal2.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_ALT_STACKPLOT.PRO">
 <H2>THM_ALT_STACKPLOT.PRO</H2></A>
+<A HREF="#TEST_ASK_CAL2">[Previous Routine]</A>
 <A HREF="#THM_ASI_CREATE_MOSAIC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -671,17 +690,19 @@ Written by: Ken Bromund ????,   Jan 5 2007
  HISTORY:
    adapted from thm_load_asi
    2015-07-21, hfrey, included call to REGO cal-files
+   2020-06-09, jmm, checks for v02 files and corrects mlat and mlon
+   variables for ASK data.
 
-Notes:
+ Notes:
 
  To get an array of valid names make the following call;
    thm_load_asi_cal,valid_names=vn
  No further action will be taken.
 
 Written by: Harald Frey,   Jan 26 2007
-   $LastChangedBy: hfrey $
-   $LastChangedDate: 2018-11-20 12:23:55 -0800 (Tue, 20 Nov 2018) $
-   $LastChangedRevision: 26165 $
+   $LastChangedBy: jimm $
+   $LastChangedDate: 2020-06-09 10:49:40 -0700 (Tue, 09 Jun 2020) $
+   $LastChangedRevision: 28769 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_asi_cal.pro $
 </PRE><P>
 <STRONG>(See <A href="ground/thm_load_asi_cal.pro">projects/themis/ground/thm_load_asi_cal.pro</A>)</STRONG><P>

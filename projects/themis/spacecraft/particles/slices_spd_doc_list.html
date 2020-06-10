@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Jun  8 18:16:04 2020.<P>
+<STRONG>Last modified: </STRONG>Tue Jun  9 18:15:56 2020.<P>
  
 <HR>
  
@@ -95,7 +95,7 @@ Purpose:
 
    There are three methods for generating slices:
 
-   Geomtric:
+   Geometric:
      Each point on the plot is given the value of the bin it instersects.
      This allows bin boundaries to be drawn at high resolutions.
 
@@ -105,7 +105,7 @@ Purpose:
 
    3D Interpolation:
      The entire 3-dimensional distribution is linearly interpolated onto a 
-     regular 3d grid and a slice is extracted from the volume.
+     regular 3d grid and a slice is extracted from the volume. (default)
 
     
 Calling Sequence:
@@ -132,9 +132,10 @@ Keywords:
  ENERGY: Flag to plot data against energy (in eV) instead of velocity.
  LOG: Flag to apply logarithmic scaling to the radial mesure (i.e. energy/velocity).
       (on by default if /ENERGY is set)
-        
+ 
+ GEOMETRIC: Flag to use geometric method (described above)
  TWO_D_INTERP: Flag to use 2D interpolation method (described above)
- THREE_D_INTERP: Flag to use 3D interpolation method (described above)
+ THREE_D_INTERP: Flag to use 3D interpolation method (described above, the default)
  
  COORD: A string designating the coordinate system in which the slice will be 
         oriented.  Options are 'DSL', 'GSM', 'GSE' and the following magnetic
@@ -286,9 +287,9 @@ EXAMPLES:
   See the crib file: thm_crib_part_slice2d.pro
 
 
-$LastChangedBy: adrozdov $
-$LastChangedDate: 2018-06-04 17:46:48 -0700 (Mon, 04 Jun 2018) $
-$LastChangedRevision: 25322 $
+$LastChangedBy: nikos $
+$LastChangedDate: 2020-06-09 16:15:53 -0700 (Tue, 09 Jun 2020) $
+$LastChangedRevision: 28772 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/slices/thm_part_slice2d.pro $
 </PRE><P>
 <STRONG>(See <A href="slices/thm_part_slice2d.pro">projects/themis/spacecraft/particles/slices/thm_part_slice2d.pro</A>)</STRONG><P>
