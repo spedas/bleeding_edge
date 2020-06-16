@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jun 11 18:15:58 2020.<P>
+<STRONG>Last modified: </STRONG>Mon Jun 15 18:16:01 2020.<P>
  
 <HR>
  
@@ -23,6 +23,8 @@ This page was created by the IDL library routine
 <br>Loads the brst segment intervals into a bar that can be plotted
 <LI><A HREF="#MMS_LOAD_FAST_SEGMENTS">MMS_LOAD_FAST_SEGMENTS</A>
 <br>Loads the fast segment intervals into a bar that can be plotted
+<LI><A HREF="#MMS_LOAD_SROI_SEGMENTS">MMS_LOAD_SROI_SEGMENTS</A>
+<br>Loads the SRoI segment intervals into a bar that can be plotted
 <LI><A HREF="#MMS_UPDATE_BRST_INTERVALS">MMS_UPDATE_BRST_INTERVALS</A>
 <LI><A HREF="#MMS_UPDATE_FAST_INTERVALS">MMS_UPDATE_FAST_INTERVALS</A>
 <LI><A HREF="#SPD_MMS_LOAD_BSS">SPD_MMS_LOAD_BSS</A>
@@ -59,7 +61,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_LOAD_FAST_SEGMENTS">
 <H2>MMS_LOAD_FAST_SEGMENTS</H2></A>
 <A HREF="#MMS_LOAD_BRST_SEGMENTS">[Previous Routine]</A>
-<A HREF="#MMS_UPDATE_BRST_INTERVALS">[Next Routine]</A>
+<A HREF="#MMS_LOAD_SROI_SEGMENTS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -82,9 +84,36 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="data_status_bar/mms_load_fast_segments.pro">projects/mms/common/data_status_bar/mms_load_fast_segments.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_LOAD_SROI_SEGMENTS">
+<H2>MMS_LOAD_SROI_SEGMENTS</H2></A>
+<A HREF="#MMS_LOAD_FAST_SEGMENTS">[Previous Routine]</A>
+<A HREF="#MMS_UPDATE_BRST_INTERVALS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         mms_load_sroi_segments
+
+ PURPOSE:
+         Loads the SRoI segment intervals into a bar that can be plotted
+
+ KEYWORDS:
+         trange:       time range of interest
+         probe:        spacecraft probe # to load the SRoIs for (default: 1)
+         suffix:       suffix to append to the SRoI segments bar tplot variable
+         start_times:  returns an array of unix times (double) containing the start for each SRoI interval
+         end_times:    returns an array of unix times (double) containing the end of each SRoI interval
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2020-06-15 11:56:47 -0700 (Mon, 15 Jun 2020) $
+$LastChangedRevision: 28778 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_sroi_segments.pro $
+</PRE><P>
+<STRONG>(See <A href="data_status_bar/mms_load_sroi_segments.pro">projects/mms/common/data_status_bar/mms_load_sroi_segments.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_UPDATE_BRST_INTERVALS">
 <H2>MMS_UPDATE_BRST_INTERVALS</H2></A>
-<A HREF="#MMS_LOAD_FAST_SEGMENTS">[Previous Routine]</A>
+<A HREF="#MMS_LOAD_SROI_SEGMENTS">[Previous Routine]</A>
 <A HREF="#MMS_UPDATE_FAST_INTERVALS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
