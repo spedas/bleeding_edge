@@ -1,3 +1,9 @@
+;+
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-06-16 08:55:23 -0700 (Tue, 16 Jun 2020) $
+; $LastChangedRevision: 28779 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_apdat_init.pro $
+;-
 
 pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
                        rt_flag= rt_Flag, $
@@ -17,7 +23,14 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
    ;; SETUP SWEM APIDs
    ;;#################
    ttags = 'SEQN*'
-   spp_apdat_info,'254'x,name='sc_hkp',apid_obj = 'spp_sc_hk_0x254_apdat', tname = 'spp_sc_hkp_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
+   spp_apdat_info,'1c5'x,name='sc_hkp_0x1c5',apid_obj = 'spp_sc_hk_0x1c5_apdat', tname = 'spp_sc_hkp_0x1c5_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
+   spp_apdat_info,'1de'x,name='sc_hkp_0x1de',apid_obj = 'spp_sc_hk_0x1de_apdat', tname = 'spp_sc_hkp_0x1de_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
+   spp_apdat_info,'1df'x,name='sc_hkp_0x1df',apid_obj = 'spp_sc_hk_0x1df_apdat', tname = 'spp_sc_hkp_0x1df_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
+   spp_apdat_info,'254'x,name='sc_hkp_0x254',apid_obj = 'spp_sc_hk_0x254_apdat', tname = 'spp_sc_hkp_0x254_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
+   spp_apdat_info,'255'x,name='sc_hkp_0x255',apid_obj = 'spp_sc_hk_0x255_apdat', tname = 'spp_sc_hkp_0x255_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
+   spp_apdat_info,'256'x,name='sc_hkp_0x256',apid_obj = 'spp_sc_hk_0x256_apdat', tname = 'spp_sc_hkp_0x256_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
+   spp_apdat_info,'257'x,name='sc_hkp_0x257',apid_obj = 'spp_sc_hk_0x257_apdat', tname = 'spp_sc_hkp_0x257_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
+   spp_apdat_info,'262'x,name='sc_hkp_0x262',apid_obj = 'spp_sc_hk_0x262_apdat', tname = 'spp_sc_hkp_0x262_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
    
    spp_apdat_info,'340'x,name='swem_crit_hkp',             tname='spp_swem_crit_',  save_flag=save_flag,ttags=ttags,rt_flag=rt_flag 
    spp_apdat_info,'341'x,name='swem_dig_hkp',  apid_obj='spp_swp_swem_dhkp_apdat',  tname='spp_swem_dhkp_',  save_flag=save_flag,ttags='*',  rt_flag=rt_flag 

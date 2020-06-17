@@ -2,8 +2,8 @@
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-01-06 15:04:36 -0800 (Mon, 06 Jan 2020) $
-; $LastChangedRevision: 28167 $
+; $LastChangedDate: 2020-06-16 08:55:23 -0700 (Tue, 16 Jun 2020) $
+; $LastChangedRevision: 28779 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -84,7 +84,7 @@ function spp_gen_apdat::info,header=header
   ;rs =string(format="(Z03,'x ',a-14, i8,i8 ,i12,i3,i3,i8,' ',a-14,a-36,' ',a-36, ' ',a-20,a)",self.apid,self.name,self.npkts,self.lost_pkts, $
   ;    self.nbytes,self.save_flag,self.rt_flag,self.data.size,self.data.typename,string(/print,self),self.routine,self.tname,self.save_tags)
   fmt ="(Z03,'x ',a-14, i8,i8 ,i12,i3,i3,i3,i8,' ',a-14,a-26,' ',a-20,'<',a,'>','     ',a)"
-  hfmt="( a4,' ',a-14, a8,a8 ,a12,a3,a3,a3,a8,' ',a-14,a-26,' ',a-20,'<',a,'>','     ',a)"
+  hfmt="( a4,' ' ,a-14, a8,a8 ,a12,a3,a3,a3,a8,' ',a-14,a-26,' ',a-20,'<',a,'>','     ',a)"
   ;  if keyword_set(header) then rs=string(format=hfmt,'APID','Name','npkts','lost','nbytes','save','rtf','size','type','objname','routine','tname','tags')
   rs =string(format=fmt,self.apid,self.name,self.npkts,self.lost_pkts, $
     self.nbytes,self.save_flag,self.rt_flag,self.dlevel,self.data.size,self.data.typestring,typename(self),self.tname,self.ttags,self.routine)
@@ -227,8 +227,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-01-06 15:04:36 -0800 (Mon, 06 Jan 2020) $
-; $LastChangedRevision: 28167 $
+; $LastChangedDate: 2020-06-16 08:55:23 -0700 (Tue, 16 Jun 2020) $
+; $LastChangedRevision: 28779 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -245,8 +245,8 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: ali $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2020-01-06 15:04:36 -0800 (Mon, 06 Jan 2020) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 28167 $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2020-06-16 08:55:23 -0700 (Tue, 16 Jun 2020) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 28779 $'
 
     return,sw_hash
 end
@@ -289,8 +289,8 @@ function spp_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: ali $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2020-01-06 15:04:36 -0800 (Mon, 06 Jan 2020) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 28167 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2020-06-16 08:55:23 -0700 (Tue, 16 Jun 2020) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 28779 $'
 
   return,global_att
 end
