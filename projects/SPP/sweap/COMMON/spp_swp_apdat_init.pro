@@ -1,7 +1,7 @@
 ;+
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-06-16 08:55:23 -0700 (Tue, 16 Jun 2020) $
-; $LastChangedRevision: 28779 $
+; $LastChangedDate: 2020-06-18 10:30:04 -0700 (Thu, 18 Jun 2020) $
+; $LastChangedRevision: 28786 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_apdat_init.pro $
 ;-
 
@@ -56,7 +56,8 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
    ;;################
    ;;#   SPC APIDs  #
    ;;################
-   spp_apdat_info,'352'x,name='spc_352', apid_obj=!null,     tname='spp_spc_352_',ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag 
+   spp_apdat_info,'351'x,name='spc_351', apid_obj=!null,     tname='spp_spc_351_',ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag 
+   spp_apdat_info,'352'x,name='spc_352', apid_obj=!null,     tname='spp_spc_352_',ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
    spp_apdat_info,'353'x,name='spc_353', apid_obj=!null,     tname='spp_spc_353_',ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag 
    spp_apdat_info,'354'x,name='spc_rss', apid_obj=!null,      tname='spp_spc_rss_',ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
    spp_apdat_info,'35E'x,name='spc_35E', apid_obj=!null,     tname='spp_spc_35E_',ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag 
