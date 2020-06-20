@@ -3,11 +3,13 @@
 ; structures of the given type. 
 ; This may return an error code or -1 if no data are found.
 ;-
-function execute_latis_query, path, query, struct, embedded_delimiters=embedded_delimiters
+function execute_latis_query, path, query, struct, embedded_delimiters=embedded_delimiters, public=public
 
   ;Get IDLnetUrl object. May prompt for login.
   ;connection = get_mms_sitl_connection(host="sdc-web1", port="8080") ;for internal testing
-  connection = get_mms_sitl_connection()
+  if keyword_set(public) then begin
+    connection = get_mms_sdc_connection()
+  endif else connection = get_mms_sitl_connection()
   
   ;Make the request. Get an array of comma separated value strings.
   data = execute_mms_sitl_query(connection, path, query)
