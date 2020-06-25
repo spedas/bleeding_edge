@@ -51,7 +51,7 @@ FUNCTION mms_bss_history_threshold, wt
   m=24 & change_date[m] = '2017-09-11/00:00' & change_val[m] = 17350L
   m=25 & change_date[m] = '2018-12-17/00:00' & change_val[m] = 16500L
   m=26 & change_date[m] = '2019-04-26/00:00' & change_val[m] = 18000L
-  
+  m=27 & change_date[m] = '2020-06-24/00:00' & change_val[m] = 16576L
 
 
 

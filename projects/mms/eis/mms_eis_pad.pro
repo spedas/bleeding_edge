@@ -34,8 +34,8 @@
 ;     This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-04-27 12:15:45 -0700 (Mon, 27 Apr 2020) $
-;$LastChangedRevision: 28611 $
+;$LastChangedDate: 2020-06-23 19:27:06 -0700 (Tue, 23 Jun 2020) $
+;$LastChangedRevision: 28799 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 ;-
 ; REVISION HISTORY:
@@ -66,6 +66,7 @@
 ;       + 2020-03-30, I. Cohen      : added/mirrored datatype to call of mms_eis_pad_combine_sc.pro
 ;       + 2020-04-24, I. Cohen      : added mmsx_vars and range_pad_only keywords; changed so that MMS-X vars are only generated if requested by user
 ;       + 2020-04-27, I. Cohen      : updated to correctly calculate and name PAD variables based on actual energy range of each channel
+;       + 2020-06-23, E. Grimes     : fixed minor issues with the suffix keyword, and removed probe keyword in call to mms_eis_pad_combine_sc
 ;                             
 ;-
 
@@ -150,7 +151,7 @@ pro mms_eis_pad, probes = probes, trange = trange, species = species, data_rate 
           ;
           ;
           get_data,prefix+datatype[dd]+'_'+species+'_'+data_units+'_omni'+suffix,data=omni_data
-          get_data,prefix+datatype[dd]+'_'+species+'_energy_range',data=erange
+          get_data,prefix+datatype[dd]+'_'+species+'_energy_range'+suffix,data=erange
           if (is_struct(erange) eq 0) then begin
             print, 'Energy range variable is missing from loaded EIS data'
             return
@@ -262,6 +263,6 @@ pro mms_eis_pad, probes = probes, trange = trange, species = species, data_rate 
   endfor
   ;
   ; NOTE: PLEASE SPECIFY IN ANY PRESENTATIONS OR PUBLICATIONS WHICH SPACECRAFT ARE INCLUDED IF YOU GENERATE AND USE MMS-X VARIABLES
-  if (n_elements(probes) gt 1) and (mmsx_vars eq 1) then mms_eis_pad_combine_sc, probes = probes, trange = trange, species = species, data_rate = data_rate, energy = energy, data_units = data_units, suffix = suffix, datatype = datatype
+  if (n_elements(probes) gt 1) and (mmsx_vars eq 1) then mms_eis_pad_combine_sc, trange = trange, species = species, data_rate = data_rate, energy = energy, data_units = data_units, suffix = suffix, datatype = datatype
   ;
 end

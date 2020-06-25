@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jun 23 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Jun 24 18:15:54 2020.<P>
  
 <HR>
  
@@ -216,6 +216,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                                          handle burst data
        + 2018-10-19, I. Cohen          : fixed issue in matching phxtof/extof timing when there are more extof events
        + 2020-04-07, S. Bingham        : fixed issue in mismatching phxtof/extof timing &amp; E channel stitching
+       + 2020-06-23, E. Grimes         : updated call to mms_eis_omni to use the /spin keyword when calculating the spin-averages
                        
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_combine_proton_spec.pro">projects/mms/eis/mms_eis_combine_proton_spec.pro</A>)</STRONG><P>
@@ -243,11 +244,12 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        + 2018-01-03, I. Cohen      : added counts as acceptable data_units option
        + 2018-01-19, I. Cohen      : simplified how p_num is pulled out
        + 2018-01-23, I. Cohen      : convert zeros in data to NANs to correctly handle averaging         
-       + 2020-04-27, I. Cohen      : added creation of single variable with energy limits of each channel                    
+       + 2020-04-27, I. Cohen      : added creation of single variable with energy limits of each channel    
+       + 2020-06-23, E. Grimes     : added 'spin' keyword for properly handling suffixes on spin-averaged data                
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2020-04-27 12:15:45 -0700 (Mon, 27 Apr 2020) $
-$LastChangedRevision: 28611 $
+$LastChangedDate: 2020-06-23 19:27:06 -0700 (Tue, 23 Jun 2020) $
+$LastChangedRevision: 28799 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_omni.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_omni.pro">projects/mms/eis/mms_eis_omni.pro</A>)</STRONG><P>
@@ -294,8 +296,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2020-04-27 12:15:45 -0700 (Mon, 27 Apr 2020) $
-$LastChangedRevision: 28611 $
+$LastChangedDate: 2020-06-23 19:27:06 -0700 (Tue, 23 Jun 2020) $
+$LastChangedRevision: 28799 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_pad.pro">projects/mms/eis/mms_eis_pad.pro</A>)</STRONG><P>
@@ -597,10 +599,11 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      4/20/2016  - egrimes added omni-directional spectra (without spin averaging)
      4/28/2016  - egrimes changed no_interp options to include non-spin averaged omni-directional spectra
                   changed default level to L2
+     6/23/2020  - egrimes changed calls to mms_eis_omni to use /spin keyword
      
 $LastChangedBy: egrimes $
-$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
-$LastChangedRevision: 27435 $
+$LastChangedDate: 2020-06-23 19:27:06 -0700 (Tue, 23 Jun 2020) $
+$LastChangedRevision: 28799 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_load_eis.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_load_eis.pro">projects/mms/eis/mms_load_eis.pro</A>)</STRONG><P>

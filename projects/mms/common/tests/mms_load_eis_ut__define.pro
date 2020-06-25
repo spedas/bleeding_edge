@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_eis_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-05-08 13:19:04 -0700 (Fri, 08 May 2020) $
-; $LastChangedRevision: 28677 $
+; $LastChangedDate: 2020-06-24 10:57:42 -0700 (Wed, 24 Jun 2020) $
+; $LastChangedRevision: 28803 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_eis_ut__define.pro $
 ;-
 
@@ -42,29 +42,29 @@ end
 
 function mms_load_eis_ut::test_multi_probe_pad_suffix
   mms_load_eis, probes=[1, 2, 3, 4], suffix='_thisisasuffix'
-  mms_eis_pad, probes=[1, 2, 3, 4], suffix='_thisisasuffix'
-  assert, spd_data_exists('mms1-4_epd_eis_extof_proton_flux_omni_thisisasuffix_pads', '2015-12-15', '2015-12-16'), 'Problem with multi-probe PAD test with suffix'
+  mms_eis_pad, probes=[1, 2, 3, 4], suffix='_thisisasuffix', /mmsx_vars
+  assert, spd_data_exists('mmsx_epd_eis_extof_proton_flux_omni_thisisasuffix_pads', '2015-12-15', '2015-12-16'), 'Problem with multi-probe PAD test with suffix'
   return, 1
 end
 
 function mms_load_eis_ut::test_multi_probe_pad_burst_suffix
   mms_load_eis, probes=[1, 2, 3, 4], suffix='_thisisasuffix', data_rate='brst'
-  mms_eis_pad, probes=[1, 2, 3, 4], suffix='_thisisasuffix', data_rate='brst'
-  assert, spd_data_exists('mms1-4_epd_eis_brst_extof_proton_flux_omni_thisisasuffix_pads', '2015-12-15', '2015-12-16'), 'Problem with multi-probe PAD test with suffix'
+  mms_eis_pad, probes=[1, 2, 3, 4], suffix='_thisisasuffix', data_rate='brst', /mmsx_vars
+  assert, spd_data_exists('mmsx_epd_eis_brst_extof_proton_flux_omni_thisisasuffix_pads', '2015-12-15', '2015-12-16'), 'Problem with multi-probe PAD test with suffix'
   return, 1
 end
 
 function mms_load_eis_ut::test_multi_probe_pad_burst
   mms_load_eis, data_rate='brst', probes=[1, 2, 3, 4]
-  mms_eis_pad, data_rate='brst', probes=[1, 2, 3, 4]
-  assert, spd_data_exists('mms1-4_epd_eis_brst_extof_proton_flux_omni_pads mms1-4_epd_eis_brst_extof_58-679keV_proton_flux_omni_pad', '2015-12-15', '2015-12-16'), 'Problem with multi-probe EIS PAD with burst data'
+  mms_eis_pad, data_rate='brst', probes=[1, 2, 3, 4], /mmsx_vars
+  assert, spd_data_exists('mmsx_epd_eis_brst_extof_proton_flux_omni_pads mmsx_epd_eis_brst_extof_55-823keV_proton_flux_omni_pad', '2015-12-15', '2015-12-16'), 'Problem with multi-probe EIS PAD with burst data'
   return, 1
 end
 
 function mms_load_eis_ut::test_mult_probe_pad_cps
   mms_load_eis, probes=[1, 2, 3, 4], data_units='cps', trange=['2015-12-15', '2015-12-16']
-  mms_eis_pad, probes=[1, 2, 3, 4], data_units='cps'
-  assert, spd_data_exists('mms1-4_epd_eis_extof_proton_cps_omni_pads', '2015-12-15', '2015-12-16'), 'Problem with multi-probe counts/s test'
+  mms_eis_pad, probes=[1, 2, 3, 4], data_units='cps', /mmsx_vars
+  assert, spd_data_exists('mmsx_epd_eis_extof_proton_cps_omni_pads', '2015-12-15', '2015-12-16'), 'Problem with multi-probe counts/s test'
   return, 1
 end
 
@@ -187,8 +187,8 @@ function mms_load_eis_ut::test_yrange_of_spectra_brst
 end
 function mms_load_eis_ut::test_load_pad_suffix
   mms_load_eis, datatype='phxtof', level='l2', probe=3, suffix='_p'
-  mms_eis_pad, datatype='phxtof', suffix='_p', probe=3, energy=[10, 60]
-  assert, spd_data_exists('mms3_epd_eis_phxtof_12-58keV_proton_flux_omni_p_pad_spin mms3_epd_eis_phxtof_12-58keV_proton_flux_omni_p_pad', '2015-12-15', '2015-12-16'), $
+  mms_eis_pad, datatype='phxtof', suffix='_p', probe=3, energy=[10, 80]
+  assert, spd_data_exists('mms3_epd_eis_phxtof_10-79keV_proton_flux_omni_p_pad_spin mms3_epd_eis_phxtof_10-79keV_proton_flux_omni_p_pad', '2015-12-15', '2015-12-16'), $
     'Problem loading EIS PAD with suffix keyword'
   return, 1
 end
@@ -263,7 +263,7 @@ end
 
 function mms_load_eis_ut::test_pad_limited_en
   mms_eis_pad, energy=[100, 500]
-  assert, spd_data_exists('mms1_epd_eis_extof_121-318keV_proton_flux_omni_pad_spin', '2015-12-15', '2015-12-16'), $
+  assert, spd_data_exists('mms1_epd_eis_extof_68-693keV_proton_flux_omni_pad', '2015-12-15', '2015-12-16'), $
     'Problem with EIS PAD (limited energy range)'
   return, 1
 end

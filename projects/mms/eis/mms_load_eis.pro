@@ -86,10 +86,11 @@
 ;     4/20/2016  - egrimes added omni-directional spectra (without spin averaging)
 ;     4/28/2016  - egrimes changed no_interp options to include non-spin averaged omni-directional spectra
 ;                  changed default level to L2
+;     6/23/2020  - egrimes changed calls to mms_eis_omni to use /spin keyword
 ;     
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
-;$LastChangedRevision: 27435 $
+;$LastChangedDate: 2020-06-23 19:27:06 -0700 (Tue, 23 Jun 2020) $
+;$LastChangedRevision: 28799 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_load_eis.pro $
 ;-
 
@@ -135,8 +136,9 @@ pro mms_load_eis, trange = trange, probes = probes, datatype = datatype, $
             this_datatype = datatype[datatype_idx]
             if (this_datatype eq 'electronenergy') then begin
               mms_eis_spin_avg, probe=probes[probe_idx], datatype='electronenergy', species='electron', data_units = data_units, suffix=suffix, data_rate = data_rate
+              
               ; create spin averaged omni-directional spectra
-              mms_eis_omni, probes[probe_idx], species='electron', datatype='electronenergy', tplotnames = tplotnames, suffix = suffix+'_spin', data_units = data_units, data_rate = data_rate
+              mms_eis_omni, /spin, probes[probe_idx], species='electron', datatype='electronenergy', tplotnames = tplotnames, suffix = suffix, data_units = data_units, data_rate = data_rate
             
               ; create non-spin averaged omni-directional spectra
               mms_eis_omni, probes[probe_idx], species='electron', datatype='electronenergy', tplotnames = tplotnames, suffix = suffix, data_units = data_units, data_rate = data_rate            
@@ -145,10 +147,12 @@ pro mms_load_eis, trange = trange, probes = probes, datatype = datatype, $
               mms_eis_spin_avg, probe=probes[probe_idx], datatype='extof', species='proton', data_units = data_units, suffix=suffix, data_rate = data_rate
               mms_eis_spin_avg, probe=probes[probe_idx], datatype='extof', species='oxygen', data_units = data_units, suffix=suffix, data_rate = data_rate
               mms_eis_spin_avg, probe=probes[probe_idx], datatype='extof', species='alpha', data_units = data_units, suffix=suffix, data_rate = data_rate
+              
               ; create spin averaged omni-directional spectra
-              mms_eis_omni, probes[probe_idx], species='proton', datatype='extof',tplotnames = tplotnames, suffix = suffix+'_spin', data_units = data_units, data_rate = data_rate
-              mms_eis_omni, probes[probe_idx], species='alpha', datatype='extof',tplotnames = tplotnames, suffix = suffix+'_spin', data_units = data_units, data_rate = data_rate
-              mms_eis_omni, probes[probe_idx], species='oxygen', datatype='extof',tplotnames = tplotnames, suffix = suffix+'_spin', data_units = data_units, data_rate = data_rate
+              mms_eis_omni, /spin, probes[probe_idx], species='proton', datatype='extof',tplotnames = tplotnames, suffix = suffix, data_units = data_units, data_rate = data_rate
+              mms_eis_omni, /spin, probes[probe_idx], species='alpha', datatype='extof',tplotnames = tplotnames, suffix = suffix, data_units = data_units, data_rate = data_rate
+              mms_eis_omni, /spin, probes[probe_idx], species='oxygen', datatype='extof',tplotnames = tplotnames, suffix = suffix, data_units = data_units, data_rate = data_rate
+              
               ; create non-spin averaged omni-directional spectra
               mms_eis_omni, probes[probe_idx], species='proton', datatype='extof',tplotnames = tplotnames, suffix = suffix, data_units = data_units, data_rate = data_rate
               mms_eis_omni, probes[probe_idx], species='alpha', datatype='extof',tplotnames = tplotnames, suffix = suffix, data_units = data_units, data_rate = data_rate
@@ -158,10 +162,12 @@ pro mms_load_eis, trange = trange, probes = probes, datatype = datatype, $
             if (this_datatype eq 'phxtof') then begin
               mms_eis_spin_avg, probe=probes[probe_idx], datatype='phxtof', species='proton', data_units = data_units, suffix=suffix, data_rate = data_rate
               mms_eis_spin_avg, probe=probes[probe_idx], datatype='phxtof', species='oxygen', data_units = data_units, suffix=suffix, data_rate = data_rate
+              
               ; create spin averaged omni-directional spectra
-              mms_eis_omni, probes[probe_idx], species='proton', datatype='phxtof',tplotnames = tplotnames, suffix = suffix+'_spin', data_units = data_units, data_rate = data_rate
-              mms_eis_omni, probes[probe_idx], species='oxygen', datatype='phxtof',tplotnames = tplotnames, suffix = suffix+'_spin', data_units = data_units, data_rate = data_rate
-               ; create non-spin averaged omni-directional spectra
+              mms_eis_omni, /spin, probes[probe_idx], species='proton', datatype='phxtof',tplotnames = tplotnames, suffix = suffix, data_units = data_units, data_rate = data_rate
+              mms_eis_omni, /spin, probes[probe_idx], species='oxygen', datatype='phxtof',tplotnames = tplotnames, suffix = suffix, data_units = data_units, data_rate = data_rate
+              
+              ; create non-spin averaged omni-directional spectra
               mms_eis_omni, probes[probe_idx], species='proton', datatype='phxtof',tplotnames = tplotnames, suffix = suffix, data_units = data_units, data_rate = data_rate
               mms_eis_omni, probes[probe_idx], species='oxygen', datatype='phxtof',tplotnames = tplotnames, suffix = suffix, data_units = data_units, data_rate = data_rate
             endif
