@@ -27,10 +27,9 @@ function submit_mms_sitl_selections, local_file
   size = (file_info(local_file)).size
   ;TODO: check if too large? or just let service tell us
   
-  url_path = "/mms/sdc/sitl/files/api/v1/upload"
+  url_path = "mms/sdc/sitl/files/api/v1/upload"
   query = "file=" + file
 
-  ;connection = get_mms_sitl_connection(host='sdc-web1', authentication=0)
   connection = get_mms_sitl_connection()
   connection->SetProperty, URL_PATH=url_path
   connection->SetProperty, URL_QUERY=query

@@ -5,7 +5,8 @@
 function get_mms_sdc_connection, host=host, port=port, authentication=authentication, $
   group_leader=group_leader, rebuild=rebuild, username=username, password=password, $
   PROXY_AUTHENTICATION=proxy_authentication, PROXY_HOSTNAME=proxy_hostname, $
-  PROXY_PASSWORD=proxy_password, PROXY_PORT=proxy_port, PROXY_USERNAME=proxy_username
+  PROXY_PASSWORD=proxy_password, PROXY_PORT=proxy_port, PROXY_USERNAME=proxy_username, $
+  scheme=scheme
   
   common mms_sitl_connection, netUrl, connection_time, login_source
   
@@ -19,8 +20,16 @@ function get_mms_sdc_connection, host=host, port=port, authentication=authentica
     if (duration gt expire_duration) then mms_sitl_logout
   endif
   
-  if n_elements(host) eq 0 then host = "lasp.colorado.edu"  ;"sdc-web1"  ;"dmz-shib1"
-  if n_elements(port) eq 0 then port = 80
+  if n_elements(host) eq 0 then host = "lasp.colorado.edu"
+  if host eq "lasp.colorado.edu" then begin
+    ; only https supported
+    scheme = "https"
+    port = 443
+  endif else begin
+    ; assume internal server
+    if n_elements(scheme) eq 0 then scheme = "http"
+    if n_elements(port) eq 0 then port = 80
+  endelse
   if n_elements(authentication) eq 0 then authentication = 1 ;basic
 
   ;Make sure the singleton instance has been created
@@ -35,9 +44,9 @@ function get_mms_sdc_connection, host=host, port=port, authentication=authentica
   if (doRebuild eq 1) then begin
     ; Construct the IDLnetURL object and set the login properties.
     netUrl = OBJ_NEW('IDLnetUrl')
+    netUrl->SetProperty, URL_SCHEME = scheme
     netUrl->SetProperty, URL_HOST = host
     netUrl->SetProperty, URL_PORT = port
-    netUrl->SetProperty, URL_SCHEME = 'https'
     netUrl->SetProperty, SSL_VERIFY_HOST = 0 ;don't worry about certificate
     netUrl->SetProperty, SSL_VERIFY_PEER = 0
     

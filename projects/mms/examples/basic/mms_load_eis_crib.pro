@@ -12,8 +12,8 @@
 ;   please send them to egrimes@igpp.ucla.edu
 ;   
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-03-07 15:33:30 -0800 (Wed, 07 Mar 2018) $
-; $LastChangedRevision: 24851 $
+; $LastChangedDate: 2020-06-25 14:27:22 -0700 (Thu, 25 Jun 2020) $
+; $LastChangedRevision: 28810 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_eis_crib.pro $
 ;-
 probe = '1'
@@ -36,7 +36,7 @@ mms_eis_pad, combine=0, probe=probe, datatype='extof', species='proton', data_un
 mms_eis_pad, combine=0, probe=probe, datatype='extof', species='proton', data_units='flux', energy=[105, 250], level = level
 
 ; plot the PAD for 48-106keV (top), 105-250 keV (bottom) protons
-tplot, ['mms1_epd_eis_extof_48-106keV_proton_flux_omni_pad_spin', 'mms1_epd_eis_extof_105-250keV_proton_flux_omni_pad_spin']
+tplot, ['mms1_epd_eis_extof_46-146keV_proton_flux_omni_pad_spin', 'mms1_epd_eis_extof_101-412keV_proton_flux_omni_pad_spin']
 stop
 
 ; plot the He++ flux for all channels
@@ -60,7 +60,7 @@ stop
 mms_eis_pad, probe=probe, datatype='phxtof', species='proton', data_units='flux', energy=[0, 30], level = level
 
 tplot, ['*_epd_eis_phxtof_proton_flux_omni_spin', $
-        '*_epd_eis_phxtof_0-30keV_proton_flux_omni_pad_spin']
+        '*_epd_eis_phxtof_9-41keV_proton_flux_omni_pad_spin']
 stop
 
 ; load some electron data; note that the datatype for electron data is "electronenergy"
@@ -68,7 +68,7 @@ mms_load_eis, probes=probe, trange=trange, datatype='electronenergy', level = le
 mms_eis_pad, probe=probe, species='electron', datatype='electronenergy', data_units='flux', level = level
 
 ; plot the electron spectra
-tplot, ['*_epd_eis_electronenergy_electron_flux_omni_spin', '*_epd_eis_electronenergy_*keV_electron_flux_omni_pad_spin']
+tplot, ['*_epd_eis_electronenergy_electron_flux_omni_spin', '*_epd_eis_electronenergy_54-1232keV_electron_flux_omni_pad_spin']
 
 stop
 end

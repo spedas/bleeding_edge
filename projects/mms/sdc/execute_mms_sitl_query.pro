@@ -32,7 +32,9 @@ function execute_mms_sitl_query, netURL, url_path, query, filename=filename
       500: printf, -2, "ERROR in execute_mms_sitl_query: Service failed to handle the query: " + url_path + '?' + query
       23: printf, -2, "ERROR in execute_mms_sitl_query: Not able to save result to: " + filename
       else: begin
-       ; printf, -2, "ERROR in execute_mms_sitl_query: Service request failed with IDL error code: " + strtrim(error_status,2)  
+        ; printf, -2, "ERROR in execute_mms_sitl_query: Service request failed with IDL error code: " + strtrim(error_status,2) + $
+        ;   " and http response: " + strtrim(code, 2)   
+        ; help, !error_state
         error_map = spd_neturl_error2msg()
         if code lt n_elements(error_map) then dprint, dlevel = 0, 'HTTPS Error: ' + error_map[code] else help, !error_state
       end

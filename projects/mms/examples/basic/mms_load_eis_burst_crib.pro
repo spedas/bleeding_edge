@@ -5,8 +5,8 @@
 ;   please send them to egrimes@igpp.ucla.edu
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-07-31 13:09:30 -0700 (Tue, 31 Jul 2018) $
-; $LastChangedRevision: 25533 $
+; $LastChangedDate: 2020-06-25 14:30:43 -0700 (Thu, 25 Jun 2020) $
+; $LastChangedRevision: 28811 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_eis_burst_crib.pro $
 ;-
 probe = '1'
@@ -25,7 +25,7 @@ mms_eis_pad, probe=probe, trange=trange, datatype='extof', species='proton', dat
 tdegap, prefix+'_epd_eis_brst_extof_*keV_proton_flux_omni_pad_spin', /overwrite
 
 tplot, prefix+['_epd_eis_brst_extof_proton_flux_omni_spin', $
-               '_epd_eis_brst_extof_55-800keV_proton_flux_omni_pad_spin']
+               '_epd_eis_brst_extof_54-897keV_proton_flux_omni_pad_spin']
                
 stop
 
@@ -38,7 +38,7 @@ mms_eis_pad, probe=probe, trange=trange, datatype='phxtof', species='proton', da
 tdegap, prefix+'_epd_eis_brst_phxtof_*keV_proton_flux_omni_pad_spin', /overwrite
 
 tplot, prefix+['_epd_eis_brst_phxtof_proton_flux_omni_spin', $
-    '_epd_eis_brst_phxtof_*keV_proton_flux_omni_pad_spin']
+    '_epd_eis_brst_phxtof_54-76keV_proton_flux_omni_pad_spin']
 
 stop
 
@@ -52,7 +52,7 @@ mms_load_eis, probes=probe, trange=['2016-04-23', '2016-04-24'], datatype='elect
 mms_eis_pad, probe=probe, species='electron', datatype='electronenergy', data_units='flux', data_rate='brst', level='l2'
 
 tplot, ['mms1_epd_eis_brst_electronenergy_electron_flux_omni_spin', $
-        'mms1_epd_eis_brst_electronenergy_55-800keV_electron_flux_omni_pad_spin'], $
+        'mms1_epd_eis_brst_electronenergy_54-841keV_electron_flux_omni_pad_spin'], $
         trange=['2016-04-23', '2016-04-24'] ; trange required to reset the trange of the plot (default set above to October 2015)
 
 ; list tplot variables that were loaded

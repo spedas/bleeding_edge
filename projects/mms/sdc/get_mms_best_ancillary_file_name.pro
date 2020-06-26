@@ -34,7 +34,7 @@ function get_mms_best_ancillary_file_name, sc_id, product, date
   connection = get_mms_sitl_connection()
 
   ; get the json response with best file name
-  url_path = "/mms/sdc/sitl/files/api/v1/day_info/ancillary"
+  url_path = "mms/sdc/sitl/files/api/v1/day_info/ancillary"
   result = execute_mms_sitl_query(connection, url_path, query)
   
   ; Check for error (long integer code as opposed to json string)

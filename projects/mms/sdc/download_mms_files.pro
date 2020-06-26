@@ -18,7 +18,7 @@ function download_mms_files, type, query, local_dir=local_dir, latest=latest, ma
   if n_elements(local_dir) eq 0 then cd, current=local_dir
 
   ; Define the URL path for the download web service for the given data type.
-  url_path = keyword_set(public) ? "/mms/sdc/public/files/api/v1/download/" + type : "/mms/sdc/sitl/files/api/v1/download/" + type
+  url_path = keyword_set(public) ? "mms/sdc/public/files/api/v1/download/" + type : "mms/sdc/sitl/files/api/v1/download/" + type
 
   ; Get the IDLnetURL singleton. May prompt for password.
   connection = get_mms_sitl_connection()
