@@ -34,6 +34,8 @@
 ; MORSCHHAUSER:   Uses Morschhauser's 2014 spherical harmonic model.
 ;                 (It is the default model to calculate).
 ;
+;     LANGLAIS:   Uses Langlais's 2019 spherical harmonic model.
+;
 ;         NMAX:   Specifies nmax for spherical harmonic model in the event
 ;                 the user does not want to use the full model
 ;                 (e.g. invoking /Cain defaults to nmax=90, but you
@@ -79,6 +81,10 @@
 ;                A spherical harmonic model of the lithospheric magnetic field of Mars,
 ;                J. Geophys. Res. Planets, 119, 1162-1188, doi:10.1002/2013JE004555.
 ;
+;     LANGLAIS:  Langlais, B., Thebault, E., Houliez, A., Purucker, M. E., & Lillis, R. J. (2019), 
+;                A new model of the crustal magnetic field of Mars using MGS and MAVEN, 
+;                Journal of Geophysical Research: Planets, 124, 1542– 1569. https://doi.org/10.1029/2018JE005854.
+;
 ;NOTES:
 ;   1. This routine relies on information from an IDL save file. The name
 ;      of the save file is set as 'martiancrustmodels.sav' in the main procedure. 
@@ -107,8 +113,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2017-03-24 17:13:41 -0700 (Fri, 24 Mar 2017) $
-; $LastChangedRevision: 23034 $
+; $LastChangedDate: 2020-06-26 16:13:25 -0700 (Fri, 26 Jun 2020) $
+; $LastChangedRevision: 28816 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust.pro $
 ;
 ;-
@@ -420,7 +426,7 @@ pro mvn_model_bcrust, var, resolution=resolution, data=modelmag, $
                       arkani=arkani, purucker=purucker, $
                       cain_2003=cain_2003, cain_2011=cain_2011, $
                       version=version, tplot=tplot, path=path, $
-                      morschhauser=morschhauser, pos=pos, no_download=no_download
+                      morschhauser=morschhauser, pos=pos, no_download=no_download, langlais=langlais
 
   IF keyword_set(sl) THEN silent = sl ELSE silent = 0
   IF keyword_set(vb) THEN verbose = vb ELSE verbose = 0
@@ -477,15 +483,16 @@ pro mvn_model_bcrust, var, resolution=resolution, data=modelmag, $
   IF keyword_set(cain_2011) THEN cflg11 = 1 ELSE cflg11 = 0
   IF keyword_set(arkani) THEN aflg = 1 ELSE aflg = 0
   IF keyword_set(purucker) THEN pflg = 1 ELSE pflg = 0
+  IF keyword_set(langlais) THEN lflg = 1 ELSE lflg = 0
   
-  IF (mflg + cflg03 + cflg11 + aflg + pflg EQ 0) THEN BEGIN
+  IF (mflg + cflg03 + cflg11 + aflg + pflg + lflg EQ 0) THEN BEGIN
      IF verbose GE 0 THEN BEGIN
         print, ptrace()
         print, '  The Morschhauser model is used in default.'
      ENDIF 
      mflg = 1
   ENDIF 
-  IF (mflg + cflg03 + cflg11 + aflg + pflg GT 1) THEN BEGIN
+  IF (mflg + cflg03 + cflg11 + aflg + pflg + lflg GT 1) THEN BEGIN
      dprint, "'mvn_model_bcrust' must be called with only one crustal model selected."
      RETURN
   ENDIF 
@@ -564,6 +571,17 @@ pro mvn_model_bcrust, var, resolution=resolution, data=modelmag, $
         h = h[0:nmax+1, 0:nmax+1]
      ENDIF ELSE nmax = 110
      rplanet = 0.339350d4
+  ENDIF 
+  IF (lflg) THEN BEGIN
+     modeler = 'langlais'
+     mname = 'Langlais'
+     g = gl
+     h = hl
+     IF N_ELEMENTS(nmax) EQ 1 THEN BEGIN
+        g = g[0:nmax+1, 0:nmax+1]
+        h = h[0:nmax+1, 0:nmax+1]
+     ENDIF ELSE nmax = 134
+     rplanet = 3393.5D
   ENDIF 
 
   ; Convert pc cartesian coords to pc lon/lat/r

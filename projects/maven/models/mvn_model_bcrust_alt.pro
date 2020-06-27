@@ -27,19 +27,22 @@
 ; MORSCHHAUSER:   Uses Morschhauser's 2014 110-deg and order spherical harmonic model.
 ;                 (It is the default model to be calculated).
 ;
+;     LANGLAIS:   Uses Langlais's 2019 134-deg and order spherical harmonic model.
+;
 ;CREATED BY:      Takuya Hara on 2015-11-04.
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2015-11-04 12:00:06 -0800 (Wed, 04 Nov 2015) $
-; $LastChangedRevision: 19236 $
+; $LastChangedDate: 2020-06-26 16:21:51 -0700 (Fri, 26 Jun 2020) $
+; $LastChangedRevision: 28817 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust_alt.pro $
 ;
 ;-
 PRO mvn_model_bcrust_alt, alt, result=result, verbose=verbose, resolution=resolution, $
                           arkani=arkani, purucker=purucker, $
                           cain_2003=cain_2003, cain_2011=cain_2011, $
-                          morschhauser=morschhauser, plot=plot, window=window
+                          morschhauser=morschhauser, plot=plot, window=window, $
+                          langlais=langlais, _extra=extra, zrange=zrange
 
   IF SIZE(result, /type) EQ 8 THEN BEGIN
      IF tag_exist(result, 'lat') AND tag_exist(result, 'lon') AND $
@@ -82,7 +85,7 @@ PRO mvn_model_bcrust_alt, alt, result=result, verbose=verbose, resolution=resolu
   mvn_model_bcrust, pos=pos, data=data, $ 
                     arkani=arkani, purucker=purucker, $
                     cain_2003=cain_2003, cain_2011=cain_2011, $
-                    morschhauser=morschhauser
+                    morschhauser=morschhauser, langlais=langlais, _extra=extra
 
   br = TRANSPOSE(REFORM(REFORM(data.lg[0, *]), [180, 360]))
   bt = TRANSPOSE(REFORM(REFORM(data.lg[1, *]), [180, 360]))
@@ -93,6 +96,7 @@ PRO mvn_model_bcrust_alt, alt, result=result, verbose=verbose, resolution=resolu
   IF keyword_set(cain_2011) THEN modeler = 'Cain_2011'
   IF keyword_set(purucker) THEN modeler = 'Purucker'
   IF keyword_set(morschhauser) THEN modeler = 'Morschhauser'
+  IF keyword_set(langlais) THEN modeler = 'Langlais'
   IF SIZE(modeler, /type) EQ 0 THEN modeler = 'Morschhauser'
 
   result = {name: modeler, alt: FLOAT(alt), lon: lon, lat: lat, br: br, bt: bt, bp: bp}
@@ -112,12 +116,13 @@ PRO mvn_model_bcrust_alt, alt, result=result, verbose=verbose, resolution=resolu
 
      wset, wnum
      IF !d.name EQ 'X' THEN !p.charsize = 1.3
+     IF NOT KEYWORD_SET(zrange) THEN zrange = [-20., 20.]
      title = result.name + ' at ' + STRING(result.alt, '(F0.1)') + ' km'
-     plotxyz, lon, lat, br, zrange=[-20., 20.], xtitle='Lon [deg]', ytitle='Lat [deg]', ztitle='Br [nT]', ymargin=[.2, .075], $
+     plotxyz, lon, lat, br, zrange=zrange, xtitle='Lon [deg]', ytitle='Lat [deg]', ztitle='Br [nT]', ymargin=[.2, .075], $
               xticks=4, xminor=3, yticks=4, yminor=3, xrange=[0., 360.], yrange=[-90., 90.], multi='1,3', title=title
-     plotxyz, lon, lat, bt, zrange=[-20., 20.], xtitle='Lon [deg]', ytitle='Lat [deg]', ztitle='Bt [nT]', ymargin=[.2, .075], $
+     plotxyz, lon, lat, bt, zrange=zrange, xtitle='Lon [deg]', ytitle='Lat [deg]', ztitle='Bt [nT]', ymargin=[.2, .075], $
               xticks=4, xminor=3, yticks=4, yminor=3, xrange=[0., 360.], yrange=[-90., 90.], /add
-     plotxyz, lon, lat, bp, zrange=[-20., 20.], xtitle='Lon [deg]', ytitle='Lat [deg]', ztitle='Bp [nT]', ymargin=[.2, .075], $
+     plotxyz, lon, lat, bp, zrange=zrange, xtitle='Lon [deg]', ytitle='Lat [deg]', ztitle='Bp [nT]', ymargin=[.2, .075], $
               xticks=4, xminor=3, yticks=4, yminor=3, xrange=[0., 360.], yrange=[-90., 90.], /add
 
      !p.charsize = ochsz

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jun 25 18:15:55 2020.<P>
+<STRONG>Last modified: </STRONG>Fri Jun 26 18:15:57 2020.<P>
  
 <HR>
  
@@ -68,6 +68,8 @@ KEYWORDS:
  MORSCHHAUSER:   Uses Morschhauser's 2014 spherical harmonic model.
                  (It is the default model to calculate).
 
+     LANGLAIS:   Uses Langlais's 2019 spherical harmonic model.
+
          NMAX:   Specifies nmax for spherical harmonic model in the event
                  the user does not want to use the full model
                  (e.g. invoking /Cain defaults to nmax=90, but you
@@ -113,6 +115,10 @@ MODEL REFERENCES:
                 A spherical harmonic model of the lithospheric magnetic field of Mars,
                 J. Geophys. Res. Planets, 119, 1162-1188, doi:10.1002/2013JE004555.
 
+     LANGLAIS:  Langlais, B., Thebault, E., Houliez, A., Purucker, M. E., &amp; Lillis, R. J. (2019), 
+                A new model of the crustal magnetic field of Mars using MGS and MAVEN, 
+                Journal of Geophysical Research: Planets, 124, 1542– 1569. https://doi.org/10.1029/2018JE005854.
+
 NOTES:
    1. This routine relies on information from an IDL save file. The name
       of the save file is set as 'martiancrustmodels.sav' in the main procedure. 
@@ -141,8 +147,8 @@ CREATED BY:	  Takuya Hara on 2015-02-12.
 
 LAST MODIFICATION:
  $LastChangedBy: hara $
- $LastChangedDate: 2017-03-24 17:13:41 -0700 (Fri, 24 Mar 2017) $
- $LastChangedRevision: 23034 $
+ $LastChangedDate: 2020-06-26 16:13:25 -0700 (Fri, 26 Jun 2020) $
+ $LastChangedRevision: 28816 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust.pro $
 
 </PRE><P>
@@ -183,12 +189,14 @@ KEYWORDS:
  MORSCHHAUSER:   Uses Morschhauser's 2014 110-deg and order spherical harmonic model.
                  (It is the default model to be calculated).
 
+     LANGLAIS:   Uses Langlais's 2019 134-deg and order spherical harmonic model.
+
 CREATED BY:      Takuya Hara on 2015-11-04.
 
 LAST MODIFICATION:
  $LastChangedBy: hara $
- $LastChangedDate: 2015-11-04 12:00:06 -0800 (Wed, 04 Nov 2015) $
- $LastChangedRevision: 19236 $
+ $LastChangedDate: 2020-06-26 16:21:51 -0700 (Fri, 26 Jun 2020) $
+ $LastChangedRevision: 28817 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust_alt.pro $
 
 </PRE><P>
