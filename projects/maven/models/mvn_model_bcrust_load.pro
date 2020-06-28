@@ -32,6 +32,8 @@
 ;
 ;     PURUCKER:   Loads Purucker's spherical harmonic model.
 ;
+;     LANGLAIS:   Loads Langlais's 2019 spherical harmonic model.
+;
 ;         CALC:   If there are no tplot save files to load, the Martian
 ;                 crustal magnetic field is calculated by 'mvn_model_bcrust'.
 ;
@@ -49,9 +51,9 @@
 ;CREATED BY:      Takuya Hara on 2015-02-18.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2015-11-17 09:05:18 -0800 (Tue, 17 Nov 2015) $
-; $LastChangedRevision: 19384 $
+; $LastChangedBy: hara $
+; $LastChangedDate: 2020-06-26 19:17:41 -0700 (Fri, 26 Jun 2020) $
+; $LastChangedRevision: 28818 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust_load.pro $
 ;
 ;-
@@ -59,7 +61,7 @@ PRO mvn_model_bcrust_load, var, orbit=orbit, silent=sl, verbose=vb, calc=calc, s
                            cain_2003=cain_2003, cain_2011=cain_2011, arkani=arkani, $
                            purucker=purucker, morschhauser=morschhauser, path=path, $
                            resolution=resolution, data=modelmag, nmax=nmax, version=version, $
-                           nocalc=nocalc, _extra=ext
+                           nocalc=nocalc, _extra=ext, langlais=langlais
 
   IF SIZE(var, /type) NE 0 THEN BEGIN
      trange = time_double(var)
@@ -93,7 +95,7 @@ PRO mvn_model_bcrust_load, var, orbit=orbit, silent=sl, verbose=vb, calc=calc, s
 
   mvn_model_bcrust_restore, trange, silent=silent, verbose=verbose, status=status,  $
                             cain_2003=cain_2003, cain_2011=cain_2011, arkani=arkani, $
-                            purucker=purucker, morschhauser=morschhauser
+                            purucker=purucker, morschhauser=morschhauser, langlais=langlais
   
   IF status EQ 0 THEN BEGIN
      CASE (cflg) OF
@@ -109,20 +111,21 @@ PRO mvn_model_bcrust_load, var, orbit=orbit, silent=sl, verbose=vb, calc=calc, s
 
      IF yes EQ 1 THEN BEGIN
         IF SIZE(morschhauser, /type) EQ 0 THEN morschhauser = 1
-        dotplot = INTARR(5)
+        dotplot = INTARR(6)
         dotplot[*] = 0
         dotplot[0] = keyword_set(morschhauser)
         dotplot[1] = keyword_set(cain_2003)
         dotplot[2] = keyword_set(cain_2011)
         dotplot[3] = keyword_set(arkani)
         dotplot[4] = keyword_set(purucker)
+        dotplot[5] = keyword_set(langlais)
         IF TOTAL(dotplot) EQ 1 THEN suffix = ''
         tname = 'mvn_model_bcrust'
         nname = 'mvn_mod_bcrust'
-        modeler = ['morschhauser', 'cain_2003', 'cain_2011', 'arkani', 'purucker']
-        suffixes = ['_m', '_c03', '_c11', '_a', '_p']
+        modeler = ['morschhauser', 'cain_2003', 'cain_2011', 'arkani', 'purucker', 'langlais']
+        suffixes = ['_m', '_c03', '_c11', '_a', '_p', '_l']
 
-        FOR i=0, 4 DO BEGIN
+        FOR i=0, N_ELEMENTS(dotplot)-1 DO BEGIN
            IF (dotplot[i]) THEN BEGIN
               CASE i OF
                  0: mor = 1
@@ -130,13 +133,14 @@ PRO mvn_model_bcrust_load, var, orbit=orbit, silent=sl, verbose=vb, calc=calc, s
                  2: c11 = 1
                  3: ark = 1
                  4: pur = 1
+                 5: lan = 1
               ENDCASE 
 
               mvn_model_bcrust, trange, resolution=resolution, data=modelmag, $
                                 silent=silent, verbose=verbose, $
                                 arkani=ark, purucker=pur, /tplot,     $
                                 cain_2003=c03, cain_2011=c11,     $
-                                version=version, morschhauser=mor, _extra=ext
+                                version=version, morschhauser=mor, langlais=lan, _extra=ext
               
               IF SIZE(suffix, /type) NE 0 THEN suf = suffix ELSE suf = suffixes[i]
               store_data, tname + '_geo_' + modeler[i], /delete, verbose=verbose
@@ -148,7 +152,7 @@ PRO mvn_model_bcrust_load, var, orbit=orbit, silent=sl, verbose=vb, calc=calc, s
                  RETURN
               ENDIF 
               undefine, suf
-              undefine, mor, c03, c11, ark, pur
+              undefine, mor, c03, c11, ark, pur, lag
            ENDIF 
         ENDFOR 
         status = 1

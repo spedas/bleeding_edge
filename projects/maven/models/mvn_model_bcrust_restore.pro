@@ -29,18 +29,20 @@
 ;
 ;     PURUCKER:   Restores Purucker's spherical harmonic model.
 ;
+;     LANGLAIS:   Restores Langlais's 2019 spherical harmonic model.
+;
 ;CREATED BY:      Takuya Hara on 2015-02-18.
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2015-04-29 12:56:13 -0700 (Wed, 29 Apr 2015) $
-; $LastChangedRevision: 17449 $
+; $LastChangedDate: 2020-06-26 22:07:05 -0700 (Fri, 26 Jun 2020) $
+; $LastChangedRevision: 28820 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust_restore.pro $
 ;
 ;-
 PRO mvn_model_bcrust_restore, var, orbit=orbit, silent=sl, verbose=vb, status=status,  $
                               cain_2003=cain_2003, cain_2011=cain_2011, arkani=arkani, $
-                              purucker=purucker, morschhauser=morschhauser, path=path
+                              purucker=purucker, morschhauser=morschhauser, path=path, langlais=langlais
 
   IF SIZE(var, /type) NE 0 THEN BEGIN
      trange = time_double(var)
@@ -81,110 +83,47 @@ PRO mvn_model_bcrust_restore, var, orbit=orbit, silent=sl, verbose=vb, status=st
      dprint, 'No tplot save files found.'
      status = 0
      RETURN
-  ENDIF
+  ENDIF ELSE status = 1
   undefine, idx
 
   IF SIZE(morschhauser, /type) EQ 0 THEN morschhauser = 1 $
   ELSE IF morschhauser NE 0 THEN morschhauser = 1
-  nmod =  ( N_ELEMENTS(cain_2003) + N_ELEMENTS(cain_2011) + $
-            N_ELEMENTS(purucker)  + N_ELEMENTS(arkani) + N_ELEMENTS(morschhauser))
+
+  nmod =  ( KEYWORD_SET(cain_2003) + KEYWORD_SET(cain_2011) + KEYWORD_SET(purucker) + $
+            KEYWORD_SET(arkani) + KEYWORD_SET(morschhauser) + KEYWORD_SET(langlais) )
   IF nmod EQ 1 THEN suffix = ''
 
-  dotplot = INTARR(5)
+  dotplot = INTARR(6)
   dotplot[*] = 0
   dotplot[0] = keyword_set(morschhauser)
   dotplot[1] = keyword_set(cain_2003)
   dotplot[2] = keyword_set(cain_2011)
   dotplot[3] = keyword_set(arkani)
   dotplot[4] = keyword_set(purucker)
+  dotplot[5] = keyword_set(langlais)
 
-  tname = 'mvn_model_bcrust'
-  prt = 1
-  status = 0
-  FOR i=0L, ndat-1L DO BEGIN
-     IF (FILE_INFO(file[i])).exists EQ 1 THEN BEGIN
-        status = 1
-        tplot_restore, filename=file[i]
-
-        IF (prt) THEN BEGIN
-           print, ptrace()
-           prt = 0
-        ENDIF 
-        print, '  Restoring ' + FILE_BASENAME(file[i])
-
-        IF (dotplot[0]) THEN BEGIN
-           get_data, tname + '_mso_morschhauser', data=dm, dl=dlm
-           append_array, tm, dm.x
-           append_array, bm, dm.y
-        ENDIF 
-        IF (dotplot[1]) THEN BEGIN
-           get_data, tname + '_mso_cain_2003', data=dc03, dl=dlc03
-           append_array, tc03, dc03.x
-           append_array, bc03, dc03.y
-        ENDIF 
-        IF (dotplot[2]) THEN BEGIN
-           get_data, tname + '_mso_cain_2011', data=dc11, dl=dlc11
-           append_array, tc11, dc11.x
-           append_array, bc11, dc11.y
-        ENDIF 
-        IF (dotplot[3]) THEN BEGIN
-           get_data, tname + '_mso_arkani', data=da, dl=dla
-           append_array, ta, da.x
-           append_array, ba, da.y
-        ENDIF 
-        IF (dotplot[4]) THEN BEGIN
-           get_data, tname + '_mso_purucker', data=dp, dl=dlp
-           append_array, tp, dp.x
-           append_array, bp, dp.y
-        ENDIF
-     ENDIF 
-     store_data, tname + '*', /delete, verbose=verbose
-  ENDFOR  
-  
-  IF (status EQ 0) THEN BEGIN
-     dprint, 'There has not been any tplot save files yet.'
-     status = 0
-     RETURN
-  ENDIF 
+  tplot_restore, filename=file, /append
 
   tname = 'mvn_mod_bcrust'
   modeler = [ 'Morschhauser', $
               'Cain (2003)' , $
               'Cain (2011)' , $
               'Arkani',       $
-              'Purucker'      ]
+              'Purucker',     $
+              'Langlais'      ]
 
-  suffixes = ['_m', '_c03', '_c11', '_a', '_p']
-  FOR i=0, 4 DO BEGIN
-     IF (dotplot[i]) THEN BEGIN
-        CASE i OF
-           0: BEGIN
-              time = tm
-              bmso = bm
-              dlim = dlm
-           END 
-           1: BEGIN
-              time = tc03
-              bmso = bc03
-              dlim = dlc03
-           END 
-           2: BEGIN
-              time = tc11
-              bmso = bc11
-              dlim = dlc11
-           END 
-           3: BEGIN
-              time = ta
-              bmso = ba
-              dlim = dla
-           END 
-           4: BEGIN
-              time = tp
-              bmso = bp
-              dlim = dlp
-           END 
-        ENDCASE 
-           
+  modelers = ['morschhauser', 'cain_2003', 'cain_2011', 'arkani', 'purucker', 'langlais'] 
+  suffixes = ['_m', '_c03', '_c11', '_a', '_p', '_l']
+
+  FOR i=0, N_ELEMENTS(dotplot)-1 DO BEGIN
+     IF dotplot[i] THEN BEGIN
+        get_data, 'mvn_model_bcrust_mso_' + modelers[i], time, bmso, dlim=dlim, index=index
+
+        IF index EQ 0 THEN BEGIN
+           dprint, modeler[i] + ' crustal B field model is not available yet.', dlevel=0, verbose=verbose
+           CONTINUE
+        ENDIF 
+
         bmso = bmso[UNIQ(time, SORT(time)), *]
         time = time[UNIQ(time, SORT(time))]
         
@@ -196,12 +135,14 @@ PRO mvn_model_bcrust_restore, var, orbit=orbit, silent=sl, verbose=vb, status=st
            store_data, tname + '_mso' + suf, data={x: time, y: bmso}, dlimits=dlim, lim={ytitle: 'Model'}
            store_data, tname + '_amp' + suf, data={x: time, y: SQRT(TOTAL(bmso*bmso, 2))}, $
                        dlimits={ytitle: modeler[i], ysubtitle: '|B| [nT]'}, limits={ytitle: 'Model'}
-                       
-           IF SIZE(suffix, /type) NE 0 THEN RETURN 
+           
+           IF SIZE(suffix, /type) NE 0 THEN BREAK 
         ENDIF 
         undefine, idx, cnt
-        undefine, time, bmso, dlim
+        undefine, time, bmso, dlim        
      ENDIF 
   ENDFOR 
+
+  store_data, tnames('mvn_model_bcrust_mso_*'), /delete, verbose=verbose
   RETURN
 END
