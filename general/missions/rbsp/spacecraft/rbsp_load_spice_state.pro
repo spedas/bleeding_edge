@@ -24,23 +24,32 @@
 ;	abcorr = aberration correction.  See SPICE documentation for description.
 ;		Default is NONE.
 ;	obs = SPICE observer. Default is EARTH.
+; _extra --> possible useful keywords include:
+;		no_spice_load
 ;
 ; HISTORY:
 ;	1. Created Oct 2012 - Kris Kersten, kris.kersten@gmail.com
 ;
 ; VERSION:
-;   $LastChangedBy: kersten $
-;   $LastChangedDate: 2012-11-08 12:03:41 -0800 (Thu, 08 Nov 2012) $
-;   $LastChangedRevision: 11210 $
+;   $LastChangedBy: aaronbreneman $
+;   $LastChangedDate: 2020-06-29 14:11:22 -0700 (Mon, 29 Jun 2020) $
+;   $LastChangedRevision: 28822 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/spacecraft/rbsp_load_spice_state.pro $
 ;
 ;-
 
-pro rbsp_load_spice_state,probe=probe,coord=coord,dt=dt, $
-	times=times,no_spice_load=no_spice_load,abcorr=abcorr,obs=obs
+pro rbsp_load_spice_state,$
+	probe=probe,$
+	coord=coord,$
+	dt=dt,$
+	times=times,$
+	abcorr=abcorr,$
+	obs=obs,$
+	_extra=extra
+
 
 	if ~icy_test() then return
-	
+
 	if ~keyword_set(probe) then begin
 		message,'Probe not set. Returning.',/continue
 		return
@@ -51,7 +60,7 @@ pro rbsp_load_spice_state,probe=probe,coord=coord,dt=dt, $
 			return
 		endif
 	endelse
-	
+
 	; valid RBSP SPICE coordinate systems (as defined in rbsp_general010.tf
 	; frame kernel)
 	vcoords=['GEI', $
@@ -79,32 +88,32 @@ pro rbsp_load_spice_state,probe=probe,coord=coord,dt=dt, $
 			return
 		endif
 	endelse
-	
+
 	; set default SPICE options
 	if ~keyword_set(abcorr) then abcorr='NONE'
 	if ~keyword_set(obs) then obs='EARTH'
-	
-	
+
+
 	if ~keyword_set(times) then begin
 
 		if ~keyword_set(dt) then dt=60.
 		tr=timerange()
 		nt=long((tr[1]-tr[0])/dt)+1
 		times=tr[0]+(dindgen(nt))*dt
-	
+
 	endif else begin
-	
+
 		times=time_double(times)
-	
+
 	endelse
 
 
-	if ~keyword_set(no_spice_load) then rbsp_load_spice_kernels
+	rbsp_load_spice_kernels,_extra=extra
 
 	ts=time_string(times)
 	strput,ts,'T',10
 	cspice_str2et,ts,et
-	
+
 	scid='RADIATION BELT STORM PROBE '+strupcase(probe)
 	cspice_spkezr,scid,et,coord,abcorr,obs,state,ltime
 
@@ -121,7 +130,7 @@ pro rbsp_load_spice_state,probe=probe,coord=coord,dt=dt, $
 		colors:[2,4,6],$
 		labels:['x','y','z']+'_'+strlowcase(coord),$
 		ysubtitle:'[km]'}
-		
+
 	store_data,'rbsp'+probe+'_state_pos_'+strlowcase(coord), $
 		data={x:times,y:position,v:[1,2,3]},dlimits=dl
 
@@ -131,9 +140,20 @@ pro rbsp_load_spice_state,probe=probe,coord=coord,dt=dt, $
 	dl.labels=['vx','vy','vz']+'_'+strlowcase(coord)
 	dl.ysubtitle='[km/s]'
 
-	store_data,'rbsp'+probe+'_state_vel_'+strlowcase(coord), $
-		data={x:times,y:velocity,v:[1,2,3]},dlimits=dl
 
-	if ~keyword_set(no_spice_load) then rbsp_load_spice_kernels,/unload
+	;Calculate velocity from position rather than straight from SPICE.
+	;I've found (Aaron, June 20, 2020) that it's more accurate this way.
+	;(see ephemeris_comparison.pro)
+
+	get_data,'rbsp'+probe+'_state_pos_'+strlowcase(coord),data=d
+  vx = deriv(d.x,d.y[*,0]) & vy = deriv(d.x,d.y[*,1]) & vz = deriv(d.x,d.y[*,2])
+  store_data,'rbsp'+probe+'_state_vel_'+strlowcase(coord),$
+		d.x,[[vx],[vy],[vz]],[1,2,3],dlimits=dl
+
+
+;	store_data,'rbsp'+probe+'_state_vel2_'+strlowcase(coord), $
+;		data={x:times,y:velocity,v:[1,2,3]},dlimits=dl
+
+	;rbsp_load_spice_kernels,/unload,_extra=extra
 
 end
