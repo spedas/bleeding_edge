@@ -35,8 +35,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2020-06-26 22:07:05 -0700 (Fri, 26 Jun 2020) $
-; $LastChangedRevision: 28820 $
+; $LastChangedDate: 2020-06-30 13:36:11 -0700 (Tue, 30 Jun 2020) $
+; $LastChangedRevision: 28825 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust_restore.pro $
 ;
 ;-
@@ -104,6 +104,15 @@ PRO mvn_model_bcrust_restore, var, orbit=orbit, silent=sl, verbose=vb, status=st
 
   tplot_restore, filename=file, /append
 
+  get_data, 'mvn_model_bcrust_mso_spice_kernels', index=index, data=mk
+  IF (index NE 0) THEN BEGIN
+     kernels = mk.y
+     IF N_ELEMENTS(kernels) GT 1 THEN kernels = STRJOIN(kernels, ' ')
+     kernels = STRSPLIT(kernels, ' ', /extract)
+     kernels = spd_uniq(kernels)
+  ENDIF 
+  undefine, index, mk
+
   tname = 'mvn_mod_bcrust'
   modeler = [ 'Morschhauser', $
               'Cain (2003)' , $
@@ -136,6 +145,7 @@ PRO mvn_model_bcrust_restore, var, orbit=orbit, silent=sl, verbose=vb, status=st
            store_data, tname + '_amp' + suf, data={x: time, y: SQRT(TOTAL(bmso*bmso, 2))}, $
                        dlimits={ytitle: modeler[i], ysubtitle: '|B| [nT]'}, limits={ytitle: 'Model'}
            
+           IF SIZE(kernels, /type) NE 0 THEN options, tname + '_mso' + suf, 'spice_file', kernels
            IF SIZE(suffix, /type) NE 0 THEN BREAK 
         ENDIF 
         undefine, idx, cnt
