@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jun 30 18:15:52 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Jul  1 18:15:52 2020.<P>
  
 <HR>
  
@@ -135,6 +135,8 @@ This page was created by the IDL library routine
 <br>Displays information and contents of a data variable. (Very similar to HELP procedure but much more verbose.)
 <LI><A HREF="#PTR_EXTRACT">PTR_EXTRACT</A>
 <LI><A HREF="#PTRACE">PTRACE</A>
+<LI><A HREF="#PUTWIN">PUTWIN</A>
+<br>Creates a window and places it, according to one of four possible
 <LI><A HREF="#PWRSPC">PWRSPC</A>
 <br>Called with times time and data quantity, PWRSPC returns a power
 <LI><A HREF="#READ_ASCII_CMDLINE">READ_ASCII_CMDLINE</A>
@@ -2813,7 +2815,8 @@ INPUTS:
 
 OUTPUTS:
    i:          Indices of the nearest neighbors in time1 to the elements of
-               time2.
+               time2.  Note that i indexes time1 and has the same number of
+               elements as time2.
 
 KEYWORDS:
 
@@ -2827,9 +2830,11 @@ KEYWORDS:
 
    VALID:      Remove all occurrences of -1 from array before returning.
 
+   VINDEX:     Indicies of time2 with valid neighbors in time1.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-03-21 14:49:10 -0700 (Sat, 21 Mar 2020) $
- $LastChangedRevision: 28448 $
+ $LastChangedDate: 2020-07-01 11:10:48 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28828 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/nn2.pro $
 
 CREATED BY:	David L. Mitchell  2018-08-23
@@ -3135,7 +3140,7 @@ Written:  Jan 2007,  D. Larson
 <A NAME="PTR_EXTRACT">
 <H2>PTR_EXTRACT</H2></A>
 <A HREF="#PTRACE">[Previous Routine]</A>
-<A HREF="#PWRSPC">[Next Routine]</A>
+<A HREF="#PUTWIN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME: ptr_extract
@@ -3154,9 +3159,111 @@ Created by Davin Larson. May 2002.
 <STRONG>(See <A href="misc/ptr_extract.pro">general/misc/ptr_extract.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="PUTWIN">
+<H2>PUTWIN</H2></A>
+<A HREF="#PTR_EXTRACT">[Previous Routine]</A>
+<A HREF="#PWRSPC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   putwin
+PURPOSE:
+  Creates a window and places it, according to one of four possible
+  monitor configurations, with offsets relative to the screen edges.
+  This is a user-friendly version of window that is designed for a 
+  multiple monitor setup.
+
+  This routine is hardware dependent and will not work properly until
+  it is configured for your monitor(s) and their arrangement, which
+  determine how IDL positions graphics windows.  See keyword CONFIG.
+
+  If no configuration is defined, putwin behaves exactly like window.
+  This allows the routine to be used in public code, where the user 
+  may not know about or does not want to use its functionality.
+
+USAGE:
+  putwin, wnum, [KEYWORD=value, ...]
+
+INPUTS:
+       wnum:      Window number.  Can be an integer from 0 to 31.
+                  Otherwise the next free widow number &gt;= 32 is
+                  used.
+
+KEYWORDS:
+       Accepts all keywords for WINDOW.  In addition, the following
+       are defined:
+
+       CONFIG:    Monitor configuration (default = -1):
+
+                    -1 = disabled: putwin acts like window
+                     0 = 1440x900 only
+                     1 = 1440x900 (below), 5120x1440 (above)
+                     2 = 1440x900 (below), 2560x1440 (left, right)
+                     3 = 1440x900 (below), 2560x1440 (above)
+
+                  Additional configurations (&gt; 3) can be defined.
+                  Do not edit configurations that you do not own.
+                  You will need the screen dimensions (in pixels)
+                  and the coordinates of the lower left corner for
+                  every monitor.  Note that these coordinates depend
+                  on the arrangement of the monitors in the operating
+                  system.
+
+                  If this keyword is set, the configuration is defined
+                  and stored in a common block, but no window is
+                  created.  If CONFIG = -1, putwin behaves exactly like
+                  window, and all of the following keywords are silently
+                  ignored.
+
+       MONITOR:   Put window in this monitor:
+
+                    0 = notebook monitor
+                    1 = external monitor 1 (above or left)
+                    2 = external monitor 2 (right)
+                  
+                  See keyword CONFIG.  Default is 1 if there is at
+                  least one external monitor and 0 otherwise.
+
+       DX:        Horizontal offset from CORNER (pixels).
+                  Replaces XPOS.  Default = 0.
+
+       DY:        Vertical offset from CORNER (pixels).
+                  Replaces YPOS.  Default = 0.
+
+       CORNER:    DX and DY are measured from this corner:
+
+                    0 = top left (default)
+                    1 = top right
+                    2 = bottom left
+                    3 = bottom right
+
+       SCALE:     Scale factor for setting the window size.
+                  Default = 1.
+
+       FULL:      If set, make a full-screen window in MONITOR.
+                  (Ignore XSIZE, YSIZE, DX, DY, and CORNER.)
+
+       KEY:       A structure containing any of the above keywords
+                  plus XSIZE and YSIZE:
+
+                    {KEYWORD:value, KEYWORD:value, ...}
+
+                  Keywords set using this mechanism take precedence.
+                  All other keywords for WINDOW must be passed  
+                  separately in the usual way.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2020-07-01 11:59:19 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28839 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
+
+CREATED BY:	David L. Mitchell  2020-06-03
+</PRE><P>
+<STRONG>(See <A href="misc/putwin.pro">general/misc/putwin.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="PWRSPC">
 <H2>PWRSPC</H2></A>
-<A HREF="#PTR_EXTRACT">[Previous Routine]</A>
+<A HREF="#PUTWIN">[Previous Routine]</A>
 <A HREF="#READ_ASCII_CMDLINE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

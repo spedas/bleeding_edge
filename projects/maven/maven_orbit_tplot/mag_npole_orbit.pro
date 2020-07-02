@@ -35,8 +35,8 @@
 ;                      2 : EUV shadow boundary at s/c altitude.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-01-09 16:53:18 -0800 (Mon, 09 Jan 2017) $
-; $LastChangedRevision: 22552 $
+; $LastChangedDate: 2020-07-01 11:18:35 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28832 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mag_npole_orbit.pro $
 ;
 ;CREATED BY:	David L. Mitchell  04-02-03
@@ -46,6 +46,7 @@ pro mag_npole_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
                      terminator=ttime, shadow=shadow, alt=alt
 
   common magpole_orb_com, img, ppos
+  @swe_snap_common
 
   twin = !d.window
   owin = 27
@@ -79,7 +80,10 @@ pro mag_npole_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
     i = sz[2] + (2*xoff)
     j = sz[3] + (2*yoff)
 
-    window,owin,xsize=i,ysize=j
+    Mopt2 = Mopt
+    Mopt2.xsize = i
+    Mopt2.ysize = j
+    putwin, owin, key=Mopt2
 
     px = [0.0, 1.0] * !d.x_vsize + xoff
     py = [0.0, 1.0] * !d.y_vsize + yoff

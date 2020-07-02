@@ -24,8 +24,8 @@
 ;       PAN:      Returns the name of the tplot variable.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-03-15 12:39:20 -0700 (Fri, 15 Mar 2019) $
-; $LastChangedRevision: 26809 $
+; $LastChangedDate: 2020-07-01 11:22:53 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28838 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makespec.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -55,10 +55,7 @@ pro mvn_swe_makespec, sum=sum, units=units, tplot=tplot, sflg=sflg, pan=ename
     npts = 16L*npkt               ; 16 spectra per packet
     ones = replicate(1.,16)
 
-    if (n_elements(mvn_swe_engy) ne npts) then begin
-      mvn_swe_engy = replicate(swe_engy_struct, npts)
-      mvn_swe_getlut
-    endif
+    mvn_swe_getlut
 
     for i=0L,(npkt-1L) do begin
       delta_t = swe_dt[a4[i].period]*dindgen(16) + (1.95D/2D)  ; center time offset (sample mode)

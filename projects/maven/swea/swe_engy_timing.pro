@@ -9,18 +9,53 @@
 ;INPUTS:
 ;
 ;KEYWORDS:
+;       CAL:           Use calibrated data (mvn_swe_engy).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2016-11-22 17:32:54 -0800 (Tue, 22 Nov 2016) $
-; $LastChangedRevision: 22400 $
+; $LastChangedDate: 2020-07-01 11:20:36 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28835 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_timing.pro $
 ;
 ;CREATED BY:    David L. Mitchell  06-25-13
 ;FILE: swe_engy_timing.pro
 ;-
-pro swe_engy_timing
+pro swe_engy_timing, cal=cal
 
   @mvn_swe_com
+
+  if keyword_set(cal) then begin
+    if (size(mvn_swe_engy,/type) ne 8) then begin
+      print,"No calibrated SPEC data."
+      return
+    endif
+
+    nspec = n_elements(mvn_swe_engy)
+    edat = reform(mvn_swe_engy.data, 64L*nspec)
+    eswp = reform(mvn_swe_engy.energy, 64L*nspec)
+    etime = dblarr(64L,nspec)
+    units = strupcase(mvn_swe_engy[0].units_name)
+    delta_t = 1.95D/2D  ; center time offset
+
+    tvec = dindgen(448)*(1.95D/448D)
+    tsam = dblarr(64)
+    for j=0,63 do tsam[j] = total(tvec[(j*7+1):(j*7+6)])/6D
+
+    for j=0L,(nspec-1L) do etime[*,j] = tsam + mvn_swe_engy[j].time
+
+    etime = reform(etime, 64L*nspec) - delta_t
+      
+    store_data,'edat_svy',data={x:etime, y:edat}
+    options,'edat_svy','ytitle','SWE SPEC!c' + units
+    options,'edat_svy','psym',1
+    ylim,'edat_svy',0,0,1
+
+    store_data,'eswp_svy',data={x:etime, y:eswp}
+    options,'eswp_svy','ytitle','SWE SPEC!cEnergy (eV)'
+    options,'eswp_svy','psym',10
+    ylim,'eswp_svy',0,0,1
+
+    return
+  endif
 
   if (size(a4,/type) eq 8) then begin
 

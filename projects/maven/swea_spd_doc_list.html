@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jun 30 18:15:52 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Jul  1 18:15:52 2020.<P>
  
 <HR>
  
@@ -2550,7 +2550,17 @@ PROCEDURE:   mvn_swe_getlut
 PURPOSE:
   Determines the sweep lookup table used for each 2-sec measurement
   cycle.  This information is stored in the SPEC, PAD, and 3D data
-  structures.
+  structures.  The vast majority of the time a single sweep table is
+  used, in which case this routine is trivial.  The exceptions are
+  power on, monthly calibrations (until late 2019) and high time
+  resolution campaigns.  The latter two use rapid mode toggling, so
+  that high cadence housekeeping is needed to keep track of the mode
+  changes.  Even then, there are occasional mismatches between the 
+  sweep table reported in housekeeping and the one actually used for 
+  measurements.  Three methods are provided (via keyword) to identify 
+  and correct these mismatches.  None is perfect, but at least one of
+  them, depending on the circumstances, has been able to identify all
+  table changes correctly ... so far.
 
 USAGE:
   mvn_swe_getlut
@@ -2561,9 +2571,16 @@ INPUTS:
 KEYWORDS:
        TPLOT:    Make a tplot variable.
 
+       DT_LUT:   Time offset between housekeeping SSCTL values and
+                 science data.  Units: sec.  Default = 0D.
+
+       VOLT:     Use analyzer voltage to identify tables 7 and 8.
+
+       FLUX:     Use constant flux to identify tables 7 and 8.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-04-08 16:56:31 -0700 (Mon, 08 Apr 2019) $
- $LastChangedRevision: 26962 $
+ $LastChangedDate: 2020-07-01 11:22:18 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28837 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getlut.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_getlut.pro">projects/maven/swea/mvn_swe_getlut.pro</A>)</STRONG><P>
@@ -3291,8 +3308,8 @@ OUTPUTS:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2015-02-04 13:39:41 -0800 (Wed, 04 Feb 2015) $
- $LastChangedRevision: 16859 $
+ $LastChangedDate: 2020-07-01 11:21:18 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28836 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_magdir.pro $
 
 CREATED BY:    David L. Mitchell  09/18/13
@@ -3445,9 +3462,12 @@ KEYWORDS:
 
        PANS:     Returns names of any tplot variables.
 
+       PFILE:    Name of an IDL save file containing the hires PAD
+                 data structures: swe_fpad, swe_fpad_arc.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-15 12:34:42 -0700 (Fri, 15 Mar 2019) $
- $LastChangedRevision: 26803 $
+ $LastChangedDate: 2020-07-01 11:22:53 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28838 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makefpad.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -3487,8 +3507,8 @@ KEYWORDS:
        PAN:      Returns the name of the tplot variable.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-15 12:39:20 -0700 (Fri, 15 Mar 2019) $
- $LastChangedRevision: 26809 $
+ $LastChangedDate: 2020-07-01 11:22:53 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28838 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makespec.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -6031,8 +6051,8 @@ KEYWORDS:
                       interactive time range selection.)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-04-18 06:45:17 -0700 (Thu, 18 Apr 2019) $
- $LastChangedRevision: 27043 $
+ $LastChangedDate: 2020-07-01 11:20:00 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28834 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6448,8 +6468,8 @@ KEYWORDS:
                       Maxwell-Boltzmann fit. (Nominally, E_peak = 2*T)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-03-17 11:23:25 -0700 (Tue, 17 Mar 2020) $
- $LastChangedRevision: 28422 $
+ $LastChangedDate: 2020-07-01 12:21:06 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28842 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6473,10 +6493,11 @@ USAGE:
 INPUTS:
 
 KEYWORDS:
+       CAL:           Use calibrated data (mvn_swe_engy).
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2016-11-22 17:32:54 -0800 (Tue, 22 Nov 2016) $
- $LastChangedRevision: 22400 $
+ $LastChangedDate: 2020-07-01 11:20:36 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28835 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_timing.pro $
 
 CREATED BY:    David L. Mitchell  06-25-13
@@ -6843,9 +6864,9 @@ KEYWORDS:
 
         NOTE:         Insert a text label.  Keep it short.
         
- $LastChangedBy: xussui $
- $LastChangedDate: 2019-11-22 14:50:57 -0800 (Fri, 22 Nov 2019) $
- $LastChangedRevision: 28061 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2020-07-01 12:21:06 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28842 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6932,8 +6953,8 @@ KEYWORDS:
        RESULT:        Named variable to hold structure of results.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-07-02 13:05:51 -0700 (Tue, 02 Jul 2019) $
- $LastChangedRevision: 27399 $
+ $LastChangedDate: 2020-07-01 11:22:53 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28838 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_plot_fhsk.pro $
 
 CREATED BY:    David L. Mitchell  2017-01-15
@@ -7022,8 +7043,8 @@ PURPOSE:
   Common block for swe_snap_layout.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2016-09-19 16:59:18 -0700 (Mon, 19 Sep 2016) $
- $LastChangedRevision: 21863 $
+ $LastChangedDate: 2020-07-01 11:19:05 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28833 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_snap_common.pro $
 
 CREATED BY:    David L. Mitchell
@@ -7046,6 +7067,9 @@ PURPOSE:
   this routine.  It is perfectly safe to simply ignore the existence 
   of this routine.  It is admittedly only useful to the author.
 
+  See putwin.pro for details on how the configuration structures are
+  used to create and place windows.
+
 USAGE:
   swe_snap_layout, layout
 
@@ -7053,18 +7077,21 @@ INPUTS:
        layout:        Integer specifying the layout:
 
                         0 --&gt; Default.  No fixed window positions.
-                        1 --&gt; Macbook 1440x900 with Dell 1920x1200 (above)
-                        2 --&gt; Twin Dell 1920x1200 (left, right)
-                        3 --&gt; Macbook 1440x900 with ViewSonic 1680x1050 (above)
-                        4 --&gt; Macbook 1440x900 with Dell 2560x1440 (above)
-                        5 --&gt; Macbook 1440x900 (below) with twin Dell 1920x1200 (left, right)
-                        6 --&gt; Macbook 1440x900 (below) with twin Dell 2560x1440 (left, right)
+                        1 --&gt; Macbook 1440x900 (below) with Dell 5120x1440 (above)
+                        2 --&gt; Macbook 1440x900 (below) with twin Dell 2560x1440 (left, right)
+                        3 --&gt; Macbook 1440x900 (below) with Dell 2560x1440 (above)
 
 KEYWORDS:
 
+       HOME:          Equivalent to LAYOUT=3.
+
+       WORK:          Equivalent to LAYOUT=2.
+
+       WORK2:         Equivalent to LAYOUT=1.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-05-08 17:32:11 -0700 (Mon, 08 May 2017) $
- $LastChangedRevision: 23287 $
+ $LastChangedDate: 2020-07-01 11:19:05 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28833 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_snap_layout.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12

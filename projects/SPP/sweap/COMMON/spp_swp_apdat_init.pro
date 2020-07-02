@@ -1,7 +1,7 @@
 ;+
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-06-22 15:26:08 -0700 (Mon, 22 Jun 2020) $
-; $LastChangedRevision: 28794 $
+; $LastChangedDate: 2020-07-01 08:47:47 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28827 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_apdat_init.pro $
 ;-
 
@@ -23,6 +23,7 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
    ;; SETUP SWEM APIDs
    ;;#################
    ttags = 'SEQN*'
+   spp_apdat_info,'081'x,name='sc_hkp_0x081',apid_obj = 'spp_sc_hk_0x081_apdat', tname = 'spp_sc_hkp_0x081_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
    spp_apdat_info,'1c5'x,name='sc_hkp_0x1c5',apid_obj = 'spp_sc_hk_0x1c5_apdat', tname = 'spp_sc_hkp_0x1c5_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
    spp_apdat_info,'1de'x,name='sc_hkp_0x1de',apid_obj = 'spp_sc_hk_0x1de_apdat', tname = 'spp_sc_hkp_0x1de_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
    spp_apdat_info,'1df'x,name='sc_hkp_0x1df',apid_obj = 'spp_sc_hk_0x1df_apdat', tname = 'spp_sc_hkp_0x1df_', save_flag=save_flag,ttags='*',rt_flag=rt_flag

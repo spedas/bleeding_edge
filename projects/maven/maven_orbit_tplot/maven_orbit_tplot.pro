@@ -58,9 +58,10 @@
 ;                 boundaries vary with orbit period.
 ;
 ;       RESULT:   Named variable to hold the MSO ephemeris with some calculated
-;                 quantities.
+;                 quantities.  OBSOLETE.  Use keyword EPH instead.
 ;
-;       EPH:      Named variable to hold the MSO and GEO state vectors.
+;       EPH:      Named variable to hold the MSO and GEO state vectors along with 
+;                 some calculated values.
 ;
 ;       CURRENT:  Load the ephemeris from MOI to the current date + 2 weeks.  This
 ;                 uses reconstructed SPK kernels, as available, then predicts.
@@ -76,18 +77,29 @@
 ;                 keywords EXTENDED and HIRES.
 ;
 ;       EXTENDED: Load one of the long-term predict ephemerides.  The value of this
-;                 keyword can be 1 or 2, corresponding to the following spk
+;                 keyword can range from 1 to 4, corresponding to the following spk
 ;                 kernels:
 ;
 ;                   1 : trj_orb_191220-201220_targetM2020EDL-xso_191120.bsp
 ;                   2 : trj_orb_200415-210512_targetM2020EDL-sro-ERTF2_191120.bsp
+;                   3 : trj_orb_210212-260101_dsf4_200429.bsp
+;                   4 : trj_orb_260101-301230_dsf4_200429.bsp
 ;
-;                 These ephemerides were created in November 2019.
+;                 Ephemerides 1 and 2 were created in November 2019.
 ;                 The first is "extended science", with periapsis starting in the
 ;                 nominal science density corridor (~150 km altitude) and then 
 ;                 allowed to drift upward after 2020-04-10.  The second is
 ;                 "science/relay", with perapsis raised to a minimum of ~180 km
 ;                 on 2020-09-16.
+;
+;                 Ephemerides 3 and 4 were created in April 2020.
+;                 These extend the science-relay orbit out to the nominal end of
+;                 mission.  It is assumed that periapsis will continue to vary
+;                 between 180 and 240 km without corridor control.  Atmospheric
+;                 drag will gradually reduce apoapsis from 4400 km in early 2021
+;                 to 3850 km by the end of 2030.  Because of operational
+;                 constraints, the orbit cannot be allowed to decay this much, so
+;                 some change in the long-term mission design is required.
 ;
 ;       HIRES:    OBSOLETE - this keyword has no effect at all.
 ;
@@ -133,8 +145,8 @@
 ;       CLEAR:    Clear the common block and exit.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-11-25 12:42:28 -0800 (Mon, 25 Nov 2019) $
-; $LastChangedRevision: 28063 $
+; $LastChangedDate: 2020-07-01 11:17:53 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28831 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -284,10 +296,34 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
              print,"  SPK = trj_orb_200415-210512_targetM2020EDL-sro-ERTF2_191120.bsp"
              ttitle = "trj_orb_200415-210512_targetM2020EDL-sro-ERTF2_191120.bsp"
            end
+       3 : begin
+             mname = 'maven_spacecraft_mso_2021-2026_dsf4_200429.sav'
+             gname = 'maven_spacecraft_geo_2021-2026_dsf4_200429.sav'
+             timespan, ['2021-02-13','2026-01-01']
+             treset = 1
+             nocrop = 1
+             timecrop = 0
+             print,"Using long-range science-relay predict."
+             print,"  SPK = trj_orb_210212-260101_dsf4_200429.bsp"
+             ttitle = "trj_orb_210212-260101_dsf4_200429.bsp"
+           end
+       4 : begin
+             mname = 'maven_spacecraft_mso_2026-2030_dsf4_200429.sav'
+             gname = 'maven_spacecraft_geo_2026-2030_dsf4_200429.sav'
+             timespan, ['2026-01-01','2030-12-30']
+             treset = 1
+             nocrop = 1
+             timecrop = 0
+             print,"Using super-long-range science-relay predict."
+             print,"  SPK = trj_orb_260101-301230_dsf4_200429.bsp"
+             ttitle = "trj_orb_260101-301230_dsf4_200429.bsp"
+           end
       else : begin
                print, "Extended ephemeris predict choices are:"
                print, "  1 : 2019-12-20 to 2020-12-20 with periapsis drift after 2020-04-10"
                print, "  2 : 2020-04-16 to 2021-05-12 with periapsis drift then raise on 2020-09-16"
+               print, "  3 : 2021-02-13 to 2026-01-01 long-range science-relay"
+               print, "  4 : 2026-01-01 to 2030-12-30 super-long-range science-relay"
                return
              end
     endcase
@@ -507,7 +543,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
     lat = adat.lat
 
     maven_g = 0
-    
+
     eph = {time:time, mso_x:mso_x, mso_v:mso_v, geo_x:geo_x, geo_v:geo_v}
 
   endelse

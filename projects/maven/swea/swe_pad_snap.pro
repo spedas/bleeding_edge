@@ -158,9 +158,9 @@
 ;
 ;        NOTE:         Insert a text label.  Keep it short.
 ;        
-; $LastChangedBy: xussui $
-; $LastChangedDate: 2019-11-22 14:50:57 -0800 (Fri, 22 Nov 2019) $
-; $LastChangedRevision: 28061 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2020-07-01 12:21:06 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28842 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -182,13 +182,14 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   @mvn_swe_com
   @swe_snap_common
 
+  if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
+
   a = 0.8
   phi = findgen(49)*(2.*!pi/49)
   usersym,a*cos(phi),a*sin(phi),/fill
   cols = get_colors()
 
   tiny = 1.e-31
-  if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
 
   if (size(note,/type) ne 7) then note = ''
   if keyword_set(archive) then aflg = 1 else aflg = 0
@@ -392,32 +393,34 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   endelse
 
   wdy = 0.
-  if keyword_set(dir) then if (dir gt 1) then wdy = 0.125*Nopt.ysize
+  if keyword_set(dir) then if (dir gt 1) then wdy = fix(0.125*Nopt.ysize)
+  Nopt2 = Nopt
+  Nopt2.ysize += wdy
 
   if (~rflg) then begin
     if (~free) then wstat = execute("wset, wnum",0,1)
-    if wstat eq 0 then window, wnum, free=free, xsize=Popt.xsize*wscale, ysize=Popt.ysize*wscale, xpos=Popt.xpos, ypos=Popt.ypos
+    if wstat eq 0 then putwin, wnum, free=free, key=Popt, scale=wscale  ; PAD
     Pwin = !d.window
     wnum += 1
   endif
 
   if (sflg) then begin
     if (~free) then wstat = execute("wset, wnum",0,1)
-    if wstat eq 0 then window, wnum, free=free, xsize=Nopt.xsize*wscale, ysize=(Nopt.ysize + wdy)*wscale, xpos=Nopt.xpos, ypos=Nopt.ypos
+    if wstat eq 0 then putwin, wnum, free=free, key=Nopt2, scale=wscale ; PAD E-cut
     Nwin = !d.window
     wnum += 1
   endif
   
   if (dflg) then begin
     if (~free) then wstat = execute("wset, wnum",0,1)
-    if wstat eq 0 then window, wnum, free=free, xsize=Copt.xsize*wscale, ysize=Copt.ysize*wscale, xpos=Copt.xpos, ypos=Copt.ypos
+    if wstat eq 0 then putwin, wnum, free=free, key=Copt, scale=wscale  ; 3D view
     Cwin = !d.window
     wnum += 1
   endif
   
   if (dospec) then begin
     if (~free) then wstat = execute("wset, wnum",0,1)
-    if wstat eq 0 then window, wnum, free=free, xsize=Fopt.xsize*wscale, ysize=Fopt.ysize*wscale, xpos=Fopt.xpos, ypos=Fopt.ypos
+    if wstat eq 0 then putwin, wnum, free=free, key=Fopt, scale=wscale  ; PAD spec
     Ewin = !d.window
     wnum += 1
   endif
@@ -425,9 +428,9 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   if (rflg or hflg or uflg) then begin
      if (~free) then wstat = execute("wset, wnum",0,1)
      if wstat eq 0 then begin
-       ysize = Popt.ysize*0.5*(rflg+hflg+uflg)
-       ypos = Popt.ypos + (Popt.ysize - ysize)
-       window, wnum, free=free, xsize=Popt.xsize*wscale, ysize=ysize*wscale, xpos=Popt.xpos, ypos=ypos
+       Popt2 = Popt
+       Popt2.ysize *= 0.5*(rflg+hflg+uflg)
+       putwin, wnum, free=free, key=Popt2, scale=wscale
      endif
      Rwin = !d.window
      wnum += 1
@@ -435,14 +438,26 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
   if (doind) then begin
       if ~(free) then wstat = execute("wset, wnum",0,1)
-      if wstat eq 0 then window, wnum, free=free, xsize=(Fopt.xsize*2)*wscale, ysize=Fopt.ysize*wscale, xpos=Fopt.xpos+1, ypos=Fopt.ypos+1
+      if wstat eq 0 then begin
+        Fopt2 = Fopt
+        Fopt2.xsize *= 2
+        Fopt2.dx += 1
+        Fopt2.dy += 1
+        putwin, wnum, free=free, key=Fopt2, scale=wscale
+      endif
       Iwin = !d.window
       wnum += 1
   endif
 
   if (dov) then begin
       if ~(free) then wstat = execute("wset, wnum",0,1)
-      if wstat eq 0 then window, wnum, free=free, xsize=(Fopt.xsize*2)*wscale, ysize=Fopt.ysize*wscale, xpos=Fopt.xpos+1, ypos=Fopt.ypos+1
+      if wstat eq 0 then begin
+        Fopt2 = Fopt
+        Fopt2.xsize *= 2
+        Fopt2.dx += 1
+        Fopt2.dy += 1
+        putwin, wnum, free=free, key=Fopt2, scale=wscale
+      endif
       Vwin = !d.window
       wnum += 1
   endif
@@ -781,6 +796,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
             if rtime[0] eq rtime[1] then rtime = rtime[0]
             mvn_swe_pad_resample, rtime, snap=0, tplot=0, result=rpad, silent=3, hires=hflg, $
                                   fbdata=fbdata, sc_pot=spflg, archive=aflg, mbins=fovmask[*,boom]
+
             arpad = rpad.avg
             if size(arpad, /n_dimension) eq 3 then arpad = average(arpad, 3)
 
@@ -994,7 +1010,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
             alab = abin[pad.iaz]
             dlab = dbin[pad.jel]
             for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,8.,alab[j],color=cols.blue,align=0.5
-            for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,7.,dlab[j],color=cols.red,align=0.5
+            for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,7.,dlab[j],color=cols.blue,align=0.5
 
             for j=8,15 do xyouts,(ylo[j]+yhi[j])/2.,0.15,alab[j],color=cols.red,align=0.5
             for j=8,15 do xyouts,(ylo[j]+yhi[j])/2.,0.13,dlab[j],color=cols.red,align=0.5

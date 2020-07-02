@@ -42,8 +42,8 @@
 ;       RESULT:        Named variable to hold structure of results.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-07-02 13:05:51 -0700 (Tue, 02 Jul 2019) $
-; $LastChangedRevision: 27399 $
+; $LastChangedDate: 2020-07-01 11:22:53 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28838 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_plot_fhsk.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2017-01-15
@@ -90,10 +90,13 @@ pro swe_plot_fhsk, pans=pans, trange=trange, tshift=tshift, vnorm=vnorm, avg=avg
   chksum = bytarr(npkt)
   tabnum = intarr(npkt)
 
+  mvn_swe_getlut
+  if (size(mvn_swe_engy,/type) ne 8) then mvn_swe_makespec
+
   for i=0,(npkt-1) do begin
-    dt = min(abs(swe_hsk.time - a6[i].time),j)
-    chksum[i] = swe_hsk[j].chksum[(swe_hsk[j].ssctl < 3)]
-    tabnum[i] = mvn_swe_tabnum(chksum[i])
+    dt = min(abs(mvn_swe_engy.time - a6[i].time),j)
+    tabnum[i] = mvn_swe_engy[j].lut
+    chksum[i] = mvn_swe_tabnum(tabnum[i],/inverse)
   endfor
 
   str_element,a6,'chksum',chksum,/add

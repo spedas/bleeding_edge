@@ -1,14 +1,14 @@
 ; +
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-03-12 13:05:22 -0700 (Thu, 12 Mar 2020) $
-; $LastChangedRevision: 28409 $
+; $LastChangedDate: 2020-07-01 15:24:10 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28848 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
 ; -
 
-function spp_apdat_info_restore,save_file,verbose=verbose
-  restore,save_file,verbose=verbose
+function spp_apdat_info_restore,sav_file,verbose=verbose
+  restore,sav_file,verbose=verbose,/relax,/skip
   return, all_apdat
 end
 
@@ -23,7 +23,6 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   save_flag=save_flag,$
   sort_flag=sort_flag,$
   current_filename = current_filename, $
-  append_filename=append_filename,  $
   cdf_pathname = cdf_pathname, $
   cdf_linkname = cdf_linkname, $
   make_cdf = make_cdf, $
@@ -37,10 +36,10 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   set_break=set_break, $
   ttags=ttags,$
   routine=routine,$
-  file_save=file_save, file_restore=file_restore,compress=compress, $
+  file_save=file_save,file_restore=file_restore,compress=compress, $
   apid_obj_name = apid_obj_name, $
   print=print, $
-  rt_flag=rt_flag
+  rt_flag=rt_flag,noprod=noprod,trim=trim
 
   common spp_apdat_info_com, all_apdat, alt_apdat, all_info,temp1,temp2
 
@@ -55,32 +54,14 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   endif
 
   if keyword_set(reset) then begin   ; not recommended!
-    obj_destroy,all_apdat,alt_apdat,all_info    ; this might not be required in IDL8.x and above
+;    obj_destroy,all_apdat,alt_apdat,all_info    ; this might not be required in IDL8.x and above
     all_apdat=!null
     alt_apdat= !null
     all_info = !null
     return
   endif
 
-  if keyword_set(file_restore) then begin
-    dprint,'Restoring file: '+file_restore
-    restore,file_restore,/verbose,/relax
-    dprint,'Restored  file: '+file_restore
-  endif
-
   if ~keyword_set(all_apdat) then all_apdat = replicate( obj_new() , 2^11 )
-
-  if keyword_set(append_filename) then begin
-    dprint,'Restoring file: '+append_filename
-    aps = spp_apdat_info_restore(append_filename,verbose=verbose)
-    apids = where(aps,/null)
-    for i=0 , n_elements(apids)-1 do begin
-      apid = apids[i]
-      if obj_valid(all_apdat[apid]) then all_apdat[apid].append , aps[apid] else all_apdat[apid] = aps[apid]
-    endfor
-    dprint,'Restored  file: '+append_filename
-    return
-  endif
 
   if ~keyword_set(alt_apdat) then alt_apdat = orderedhash()
   if ~keyword_set(all_info) then begin
@@ -105,10 +86,34 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     all_info['break'] = 1
   endif
 
+  if keyword_set(file_restore) then begin
+    basename = file_basename(file_restore.substring(0,-5))
+    hashcode = basename.hashcode()
+    filetime = spp_spc_met_to_unixtime(ulong(strmid(basename,0,10)))
+    if all_info['file_hash_list'].haskey(hashcode) then begin
+      dprint,dlevel=1,'Skipping already loaded file: '+file_restore+time_string(filetime,tformat='  YYYY-MM-DD/hh:mm:ss (DOY)'),verbose=verbose
+      return
+    endif
+    dprint,'Restoring file: '+file_restore+' Size: '+strtrim((file_info(file_restore)).size/1e3,2)+' KB'
+    aps = spp_apdat_info_restore(file_restore,verbose=verbose)
+    apids = where(aps,/null)
+    for i=0 , n_elements(apids)-1 do begin
+      apid = apids[i]
+      if obj_valid(all_apdat[apid]) then all_apdat[apid].append , aps[apid] else all_apdat[apid] = aps[apid]
+    endfor
+    dprint,'Restored file:  '+file_restore+' Date: '+time_string(filetime,tformat='YYYY-MM-DD/hh:mm:ss (DOY)')
+    spp_apdat_info,current_filename=file_restore.substring(0,-5) ;delete the '.sav' part
+  endif
+
   if keyword_set(file_save) then begin
+    memdumps=['342'x,'3b8'x,'36d'x,'37d'x]
+    foreach memdump,memdumps do all_apdat[memdump].nomem ;clearing the memdump ram to get smaller file size
+    spp_apdat_info,'sp[abi]_[as][ft]*',/noprod ;clearing multidimensional products
+    spp_apdat_info,/trim ;trimming the size and clearing last_data_p and ccsds_last
     dprint,'Saving file: '+file_save
-    save,file=file_save,all_apdat,/verbose,compress=compress
-    dprint,'Saved  file: '+file_save
+    save,file=file_save,all_apdat,verbose=verbose,compress=compress
+    dprint,'Saved file:  '+file_save
+;    foreach memdump,memdumps do all_apdat[memdump] = obj_new('spp_swp_memdump_apdat',memdump,(spp_apdat(memdump)).name) ;repopulating memdump
   endif
 
   valid_apdat = all_apdat[ where( obj_valid(all_apdat),nvalid ) ]
@@ -164,6 +169,8 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     if keyword_set(make_cdf) then  apdat.cdf_create_file
     if keyword_set(clear)  then    apdat.clear
     if keyword_set(zero)   then    apdat.zero
+    if keyword_set(noprod) then    apdat.noprod
+    if keyword_set(trim)   then    apdat.trim
     if keyword_set(print)  then    apdat.print, header = i eq 0
   endfor
   apdats=all_apdat[apids]

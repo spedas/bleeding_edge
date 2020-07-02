@@ -27,8 +27,8 @@
 ;       PANS:      Returns the names of any tplot variables created.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-03-15 12:32:57 -0700 (Fri, 15 Mar 2019) $
-; $LastChangedRevision: 26800 $
+; $LastChangedDate: 2020-07-01 11:16:48 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28830 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_mars_localtime.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -40,13 +40,15 @@ pro mvn_mars_localtime, result=result
   from_frame = 'MAVEN_MSO'
   to_frame = 'IAU_MARS'
 
-  ker = spice_test('*',verbose=-1)
-  if (ker[0] eq '') then begin
-    print,"SPICE not initialized."
+  mk = spice_test('*', verbose=-1)
+  ok = max(stregex(mk,'maven_v[0-9]{2}.tf',/subexpr,/fold_case)) gt (-1)
+
+  if (not ok) then begin
+    print,"MAVEN frames kernel (maven_v??.tf) not loaded. Can't determine local time."
     result = 0
     return
   endif
-  
+
   if (size(state,/type) eq 0) then maven_orbit_tplot, /current, /loadonly
 
 ; Sun is at MSO coordinates of [X, Y, Z] = [1, 0, 0]

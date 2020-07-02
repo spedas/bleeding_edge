@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jun 30 18:15:52 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Jul  1 18:15:52 2020.<P>
  
 <HR>
  
@@ -85,8 +85,8 @@ KEYWORDS:
                   plot size and position.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2014-10-31 14:24:42 -0700 (Fri, 31 Oct 2014) $
- $LastChangedRevision: 16108 $
+ $LastChangedDate: 2020-07-01 12:20:16 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28841 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/hybrid_orbit.pro $
 
 CREATED BY:	David L. Mitchell  04-02-03
@@ -138,10 +138,11 @@ KEYWORDS:
                       0 : Optical shadow boundary at surface.
                       1 : Optical shadow boundary at s/c altitude.
                       2 : EUV shadow boundary at s/c altitude.
+                      3 : EUV shadow at electron absorption altitude.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-01-09 16:53:18 -0800 (Mon, 09 Jan 2017) $
- $LastChangedRevision: 22552 $
+ $LastChangedDate: 2020-07-01 12:20:16 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28841 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mag_mola_orbit.pro $
 
 CREATED BY:	David L. Mitchell  04-02-03
@@ -191,8 +192,8 @@ KEYWORDS:
                       2 : EUV shadow boundary at s/c altitude.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-01-09 16:53:18 -0800 (Mon, 09 Jan 2017) $
- $LastChangedRevision: 22552 $
+ $LastChangedDate: 2020-07-01 11:18:35 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28832 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mag_npole_orbit.pro $
 
 CREATED BY:	David L. Mitchell  04-02-03
@@ -420,7 +421,11 @@ KEYWORDS:
 
        CYL:      Plot MSO cylindrical projection (x vs. sqrt(y^2 + z^2)).
 
-       XZ:       Plot only the XZ projection.
+       XZ:       Plot only the XZ projection (view from side).
+
+       XY:       Plot only the XY projection (view from ecliptic north).
+
+       YZ:       Plot only the YZ projection (view from Sun)
 
        MARS:     Plot the position of the spacecraft (PREC=1) or periapsis 
                  (PREC=0) on an image of Mars topography and magnetic field
@@ -428,7 +433,7 @@ KEYWORDS:
                    1 : Use a small image
                    2 : Use a large image
 
-       NPOLE:    Plot the position of the spacecraft (PREC=1) or periapsios
+       NPOLE:    Plot the position of the spacecraft (PREC=1) or periapsis
                  (PREC=0) on a north polar projection (lat &gt; 55 deg).  The
                  background image is the north polar magnetic anomalies observed
                  at 180-km altitude by MGS (from Acuna).
@@ -492,8 +497,8 @@ KEYWORDS:
        PSNAME:   Name of a postscript plot.  Works only for orbit plots.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-11-21 14:42:47 -0800 (Thu, 21 Nov 2019) $
- $LastChangedRevision: 28051 $
+ $LastChangedDate: 2020-07-01 12:20:16 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28841 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11
@@ -566,9 +571,10 @@ KEYWORDS:
                  boundaries vary with orbit period.
 
        RESULT:   Named variable to hold the MSO ephemeris with some calculated
-                 quantities.
+                 quantities.  OBSOLETE.  Use keyword EPH instead.
 
-       EPH:      Named variable to hold the MSO and GEO state vectors.
+       EPH:      Named variable to hold the MSO and GEO state vectors along with 
+                 some calculated values.
 
        CURRENT:  Load the ephemeris from MOI to the current date + 2 weeks.  This
                  uses reconstructed SPK kernels, as available, then predicts.
@@ -584,18 +590,29 @@ KEYWORDS:
                  keywords EXTENDED and HIRES.
 
        EXTENDED: Load one of the long-term predict ephemerides.  The value of this
-                 keyword can be 1 or 2, corresponding to the following spk
+                 keyword can range from 1 to 4, corresponding to the following spk
                  kernels:
 
                    1 : trj_orb_191220-201220_targetM2020EDL-xso_191120.bsp
                    2 : trj_orb_200415-210512_targetM2020EDL-sro-ERTF2_191120.bsp
+                   3 : trj_orb_210212-260101_dsf4_200429.bsp
+                   4 : trj_orb_260101-301230_dsf4_200429.bsp
 
-                 These ephemerides were created in November 2019.
+                 Ephemerides 1 and 2 were created in November 2019.
                  The first is &quot;extended science&quot;, with periapsis starting in the
                  nominal science density corridor (~150 km altitude) and then 
                  allowed to drift upward after 2020-04-10.  The second is
                  &quot;science/relay&quot;, with perapsis raised to a minimum of ~180 km
                  on 2020-09-16.
+
+                 Ephemerides 3 and 4 were created in April 2020.
+                 These extend the science-relay orbit out to the nominal end of
+                 mission.  It is assumed that periapsis will continue to vary
+                 between 180 and 240 km without corridor control.  Atmospheric
+                 drag will gradually reduce apoapsis from 4400 km in early 2021
+                 to 3850 km by the end of 2030.  Because of operational
+                 constraints, the orbit cannot be allowed to decay this much, so
+                 some change in the long-term mission design is required.
 
        HIRES:    OBSOLETE - this keyword has no effect at all.
 
@@ -641,8 +658,8 @@ KEYWORDS:
        CLEAR:    Clear the common block and exit.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-11-25 12:42:28 -0800 (Mon, 25 Nov 2019) $
- $LastChangedRevision: 28063 $
+ $LastChangedDate: 2020-07-01 11:17:53 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28831 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11
@@ -713,8 +730,8 @@ KEYWORDS:
                   plot size and position.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2014-10-31 14:24:42 -0700 (Fri, 31 Oct 2014) $
- $LastChangedRevision: 16108 $
+ $LastChangedDate: 2020-07-01 11:18:35 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28832 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mhd_orbit.pro $
 
 CREATED BY:	David L. Mitchell  04-02-03
@@ -756,8 +773,8 @@ KEYWORDS:
        PANS:      Returns the names of any tplot variables created.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-15 12:32:57 -0700 (Fri, 15 Mar 2019) $
- $LastChangedRevision: 26800 $
+ $LastChangedDate: 2020-07-01 11:16:48 -0700 (Wed, 01 Jul 2020) $
+ $LastChangedRevision: 28830 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_mars_localtime.pro $
 
 CREATED BY:	David L. Mitchell

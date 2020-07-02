@@ -1,9 +1,9 @@
 ;+
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-06-25 18:57:28 -0700 (Thu, 25 Jun 2020) $
-; $LastChangedRevision: 28814 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-07-01 08:47:47 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28827 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -31,7 +31,6 @@ FUNCTION spp_gen_apdat::Init,apid,name,_EXTRA=ex
 END
 
 
-
 PRO spp_gen_apdat::Clear, tplot_names=tplot_names
   COMPILE_OPT IDL2
   dprint,'clear arrays: ',self.apid,self.name,dlevel=4
@@ -55,7 +54,6 @@ PRO spp_gen_apdat::zero
 END
 
 
-
 PRO spp_gen_apdat::Cleanup
   COMPILE_OPT IDL2
   ; Call our superclass Cleanup method
@@ -64,27 +62,38 @@ PRO spp_gen_apdat::Cleanup
 END
 
 
-
 PRO spp_gen_apdat::help
   help,/obj,self
   printdat,self.last_data_p,varname='last_data_p'
 END
 
 
+pro spp_gen_apdat::trim
+  self.data.trim
+  *self.last_data_p=!null
+  *self.ccsds_last=!null
+end
+
+
 pro spp_gen_apdat::copy,new
   self.npkts = new.npkts
-  self.data.array  = new.data.array
+  self.nbytes = new.nbytes
+  self.lost_pkts = new.lost_pkts
+  self.data.array = new.data.array
 end
 
 
 pro spp_gen_apdat::append,new
-if self.npkts eq 0 then begin
-  self.copy,  new
-endif else begin
-  self.npkts += new.npkts
-  self.data.append, new.data.array
-endelse
+  if self.npkts eq 0 then begin
+    self.copy,  new
+  endif else begin
+    self.npkts += new.npkts
+    self.nbytes += new.nbytes
+    self.lost_pkts += new.lost_pkts
+    self.data.append, new.data.array
+  endelse
 end
+
 
 function spp_gen_apdat::info,header=header
   ;rs =string(format="(Z03,'x ',a-14, i8,i8 ,i12,i3,i3,i8,' ',a-14,a-36,' ',a-36, ' ',a-20,a)",self.apid,self.name,self.npkts,self.lost_pkts, $
@@ -106,13 +115,11 @@ PRO spp_gen_apdat::print,dlevel=dlevel,verbose=verbose,strng,header=header
 END
 
 
-
 ;pro spp_gen_apdat::store_data,  strct,pname,verbose=verbose
 ;  if self.rt_flag && self.rt_tags then begin
 ;    store_data,self.tname+pname,data=strct, tagnames=self.rt_tags, /append, verbose=0, gap_tag='GAP'
 ;  endif
 ;end
-
 
 
 pro spp_gen_apdat::increment_counters,ccsds
@@ -123,7 +130,6 @@ pro spp_gen_apdat::increment_counters,ccsds
   ;  self.drate = ccsds.pkt_size / ( ccsds.time_delta > .001)   ; this line produce numerous floating point exceptions
   *self.ccsds_last = ccsds
 end
-
 
 
 function spp_gen_apdat::decom_aggregate,ccsds0,source_dict=source_dict
@@ -176,8 +182,6 @@ function spp_gen_apdat::decom,ccsds,source_dict=source_dict   ;header
 end
 
 
-
-
 pro spp_gen_apdat::handler,ccsds,source_dict=source_dict ;,header,source_info=source_info
 
   ;dprint,dlevel=self.dlevel,'hi',self.apid,self.dlevel
@@ -201,8 +205,6 @@ pro spp_gen_apdat::handler,ccsds,source_dict=source_dict ;,header,source_info=so
   endif
 
 end
-
-
 
 
 pro spp_gen_apdat::finish,ttags=ttags
@@ -232,9 +234,9 @@ end
 ;PURPOSE:
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-06-25 18:57:28 -0700 (Thu, 25 Jun 2020) $
-; $LastChangedRevision: 28814 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-07-01 08:47:47 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28827 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -250,9 +252,9 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_time_stamp'] = time_string(this_file_date)
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
-  sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2020-06-25 18:57:28 -0700 (Thu, 25 Jun 2020) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 28814 $'
+  sw_hash['svn_changedby '] = '$LastChangedBy: ali $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2020-07-01 08:47:47 -0700 (Wed, 01 Jul 2020) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 28827 $'
 
     return,sw_hash
 end
@@ -267,7 +269,7 @@ function spp_gen_apdat::cdf_global_attributes
   global_att['TITLE'] = 'PSP SPAN Electron and Ion Data'
   global_att['Discipline'] = 'Heliospheric Physics>Particles'
   global_att['Descriptor'] = 'INSTname>SWEAP generic Sensor Experiment'
-  global_att['Data_type'] = '>Survey Calibrated Particle Flux'   ; needs correcting 
+  global_att['Data_type'] = '>Survey Calibrated Particle Flux'   ; needs correcting
   global_att['Data_version'] = 'v00'
   global_att['TEXT'] = 'Reference Paper or URL'
   global_att['MODS'] = 'Revision 0'
@@ -294,91 +296,12 @@ function spp_gen_apdat::cdf_global_attributes
   ;  global_att['SW_TIME_STAMP'] =  time_string(systime(1))
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
-  ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2020-06-25 18:57:28 -0700 (Thu, 25 Jun 2020) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 28814 $'
+  ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: ali $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2020-07-01 08:47:47 -0700 (Wed, 01 Jul 2020) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 28827 $'
 
   return,global_att
 end
-
-
-;
-;function spp_gen_apdat::cdf_variable_attributes, vname
-;  dlevel =3
-;  fnan = !values.f_nan
-;  att = orderedhash()
-;  ;  Create default value place holders
-;  att['CATDESC']    = ''
-;  att['FIELDNAM']    = vname
-;  att['LABLAXIS']    = vname
-;  att['DEPEND_0'] = 'Epoch'
-;  att['DISPLAY_TYPE'] = ''
-;  case vname of
-;    'Epoch': begin
-;      att['CATDESC']    = 'Time at middle of sample'
-;      att['FIELDNAM']    = 'Time in TT2000 format'
-;      att['LABLAXIS']    = 'Epoch'
-;      att['UNITS']    = 'ns'
-;      att['FILLVAL']    = -1
-;      att['VALIDMIN']    = -315575942816000000
-;      att['VALIDMAX']    = 946728068183000000
-;      att['VAR_TYPE']    = 'support_data'
-;      att['DICT_KEY']    = 'time>Epoch'
-;      att['SCALETYP']    = 'linear'
-;      att['MONOTON']    = 'INCREASE'
-;    end
-;    'TIME': begin
-;      att['CATDESC']    = 'Time at middle of sample'
-;      att['FIELDNAM']    = 'Time in UTC format'
-;      att['LABLAXIS']    = 'Unix Time'
-;      att['UNITS']    = 'sec'
-;      att['FILLVAL']    = fnan
-;      att['VALIDMIN']    = time_double('2010')
-;      att['VALIDMAX']    = time_double('2030')
-;      att['VAR_TYPE']    = 'support_data'
-;      att['DICT_KEY']    = 'time>UTC'
-;      att['SCALETYP']    = 'linear'
-;      att['MONOTON']    = 'INCREASE'
-;    end
-;    'COUNTS': begin
-;      att['CATDESC']    = 'Counts in Energy/angle bin'
-;      att['FIELDNAM']    = 'Counts in '
-;      att['DEPEND_0']    = 'Epoch'
-;      att['LABLAXIS']    = 'Counts'
-;      att['UNITS']    = ''
-;      att['FILLVAL']    = fnan
-;      att['VALIDMIN']    = 0
-;      att['VALIDMAX']    = 1e6
-;      att['VAR_TYPE']    = 'data'
-;      att['DICT_KEY']    = ''
-;      att['SCALETYP']    = 'log'
-;      att['MONOTON']    = ''
-;    end
-;    else:  begin    ; assumed to be support
-;      att['CATDESC']    = 'Not known'
-;      att['FIELDNAM']    = 'Unknown '
-;      att['DEPEND_0']    = 'Epoch'
-;      att['LABLAXIS']    = vname
-;      att['UNITS']    = ''
-;      att['FILLVAL']    = fnan
-;      att['VALIDMIN']    = -1e30
-;      att['VALIDMAX']    = 1e30
-;      att['VAR_TYPE']    = 'ignore_data'
-;      att['DICT_KEY']    = ''
-;      att['SCALETYP']    = 'linear'
-;      att['MONOTON']    = ''
-;      dprint,dlevel=dlevel, 'variable ' +vname+ ' not recognized'
-;
-;    end
-;
-;  endcase
-;
-;  return, att
-;end
-
-
-
-
 
 
 ;pro spp_gen_apdat::cdf_create_data_vars, fileid, var, vattributes=atts, varstr
@@ -395,9 +318,6 @@ end
 ;  endif
 ;
 ;end
-
-
-
 
 
 function spp_gen_apdat::cdf_makeobj,  datavary, datanovary,  vnames=vnames, ignore=ignore,global_att=global_att,_extra=ex
@@ -465,9 +385,6 @@ function spp_gen_apdat::cdf_makeobj,  datavary, datanovary,  vnames=vnames, igno
 end
 
 
-
-
-
 PRO spp_gen_apdat::cdf_makefile,trange=trange,verbose=verbose
 
   ;  printdat,time_string(trange)
@@ -498,8 +415,6 @@ PRO spp_gen_apdat::cdf_makefile,trange=trange,verbose=verbose
     obj_destroy,cdf
   endif
 end
-
-
 
 
 ;
@@ -547,9 +462,7 @@ function spp_gen_apdat::struct
 END
 
 
-
-
-PRO spp_gen_apdat::GetProperty,data=data, array=array, npkts=npkts, apid=apid, name=name,  typename=typename, $
+PRO spp_gen_apdat::GetProperty,data=data, array=array, npkts=npkts,lost_pkts=lost_pkts, apid=apid, name=name,  typename=typename, $
   nsamples=nsamples,nbytes=nbytes,strct=strct,ccsds_last=ccsds_last,tname=tname,dlevel=dlevel,ttags=ttags,last_data=last_data, $
   window=window
   COMPILE_OPT IDL2
@@ -559,6 +472,7 @@ PRO spp_gen_apdat::GetProperty,data=data, array=array, npkts=npkts, apid=apid, n
   IF (ARG_PRESENT(ttags)) THEN ttags = self.ttags
   IF (ARG_PRESENT(apid)) THEN apid = self.apid
   IF (ARG_PRESENT(npkts)) THEN npkts = self.npkts
+  IF (ARG_PRESENT(lost_pkts)) THEN lost_pkts = self.lost_pkts
   IF (ARG_PRESENT(ccsds_last)) THEN ccsds_last = self.ccsds_last
   IF (ARG_PRESENT(data)) THEN data = self.data
   if (arg_present(last_data)) then last_data = *(self.last_data_p)
@@ -571,7 +485,6 @@ PRO spp_gen_apdat::GetProperty,data=data, array=array, npkts=npkts, apid=apid, n
 END
 
 
-
 PRO spp_gen_apdat::SetProperty,apid=apid, _extra=ex
   COMPILE_OPT IDL2
   ; If user passed in a property, then set it.
@@ -582,7 +495,6 @@ PRO spp_gen_apdat::SetProperty,apid=apid, _extra=ex
     struct_assign,ex,self,/nozero
   endif
 END
-
 
 
 PRO spp_gen_apdat__define
@@ -612,10 +524,9 @@ PRO spp_gen_apdat__define
     cdf_linkname:'', $
     cdf_tagnames:'', $
     output_lun: 0 $
-;    verbose: 0 , $
-;    dlevel: 0  $
+    ;    verbose: 0 , $
+    ;    dlevel: 0  $
   }
 END
-
 
 

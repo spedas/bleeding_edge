@@ -25,8 +25,8 @@
 ;                  plot size and position.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2014-10-31 14:24:42 -0700 (Fri, 31 Oct 2014) $
-; $LastChangedRevision: 16108 $
+; $LastChangedDate: 2020-07-01 12:20:16 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28841 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/hybrid_orbit.pro $
 ;
 ;CREATED BY:	David L. Mitchell  04-02-03
@@ -35,6 +35,9 @@ pro hybrid_orbit, lon, lat, lon_sc, lat_sc, psym=psym, lstyle=lstyle, $
                  color=color, reset=reset, xy=xy, xz=xz, sc=sc, flip=flip
 
   common hybrid_orb_com, img, ppos
+  @swe_snap_common
+
+  if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
 
   twin = !d.window
   owin = 31
@@ -72,7 +75,11 @@ pro hybrid_orbit, lon, lat, lon_sc, lat_sc, psym=psym, lstyle=lstyle, $
     i = sz[2] + (2*xoff)
     j = sz[3] + (2*yoff)
 
-    window,owin,xsize=i,ysize=j
+    Mopt2 = Mopt
+    Mopt2.xsize = i
+    Mopt2.ysize = j
+    help,Mopt2,/str
+    putwin, owin, key=Mopt2
 
     px = [0.0, 1.0] * !d.x_vsize + xoff + 16
     py = [0.0, 1.0] * !d.y_vsize + yoff + 10

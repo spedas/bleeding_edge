@@ -1,12 +1,10 @@
 ;+
 ; spp_swp_spe_prod_apdat
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-08-04 21:47:55 -0700 (Sun, 04 Aug 2019) $
-; $LastChangedRevision: 27539 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-07-01 08:47:47 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28827 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
-
-
 
 pro spp_swp_spe_prod_apdat::proc_16A, strct
 
@@ -66,6 +64,7 @@ pro spp_swp_spe_prod_apdat::proc_8Dx32E, strct
 
 end
 
+
 ;;----------------------------------------------
 ;;Product Full Sweep: Archive - 32Ex16A -
 pro spp_swp_spe_prod_apdat::proc_16Ax32E, strct
@@ -85,8 +84,6 @@ pro spp_swp_spe_prod_apdat::proc_16Ax32E, strct
   ; if self.rt_flag then  self.store_data, strct2, pname
 
 end
-
-
 
 
 pro spp_swp_spe_prod_apdat::proc_16Ax8Dx32E, strct   ; this function needs fixing
@@ -115,12 +112,6 @@ pro spp_swp_spe_prod_apdat::proc_16Ax8Dx32E, strct   ; this function needs fixin
 end
 
 
-
-
-
-
-
-
 function spp_swp_spe_prod_apdat::decom,ccsds ,source_dict=source_dict  ;,ptp_header
   ;if typename(ccsds) eq 'BYTE' then return,  self.spp_swp_spe_prod_apdat( spp_swp_ccsds_decom(ccsds) )  ;; Byte array as input
 
@@ -136,7 +127,7 @@ function spp_swp_spe_prod_apdat::decom,ccsds ,source_dict=source_dict  ;,ptp_hea
 
 
   if 1 then begin    ; New merged method
-    
+
     spp_swp_span_prod__define,str,ccsds
 
   endif else begin
@@ -162,9 +153,6 @@ function spp_swp_spe_prod_apdat::decom,ccsds ,source_dict=source_dict  ;,ptp_hea
     smp_flag = (ishft(header[12],-4) AND 1)
     srvy_accum = (header[12] AND 15)
 
-
-
-
     if archive then begin
       mode1 = header[13]
       arch_sum  = 0
@@ -179,12 +167,7 @@ function spp_swp_spe_prod_apdat::decom,ccsds ,source_dict=source_dict  ;,ptp_hea
       arch_smp_flag = ishft(header[13],-4) ; shift four bits to get 5th bit.
       arch_accum = (header[13] AND 15) ; remove the lower 4 bits.
       tot_accum_prd = 2 ^ (arch_accum + srvy_accum) ; in 1/4 NYS accumulation periods.
-
-
-
     endelse
-
-
 
     mode2 = (swap_endian(uint(ccsds_data,14) ,/swap_if_little_endian ))
     tmode = mode2 and 'ff'x
@@ -193,7 +176,6 @@ function spp_swp_spe_prod_apdat::decom,ccsds ,source_dict=source_dict  ;,ptp_hea
     status_bits = header[18]
     peak_bin = header[19]
     num_accum = 2 ^(header[12] and 'f'x)
-
 
     compression = (log_flag and 'a0'x) ne 0
     bps =  ([4,1])[ compression ]
@@ -263,7 +245,6 @@ end
 ;end
 
 
-
 pro spp_swp_spe_prod_apdat::handler,ccsds,source_dict = source_dict   ;,ptp_header,source_info=source_info
 
   strcts = self.decom(ccsds)
@@ -276,6 +257,7 @@ pro spp_swp_spe_prod_apdat::handler,ccsds,source_dict = source_dict   ;,ptp_head
   ;  print,ns
 
   ns=n_elements(strcts)
+
   for i=0,ns-1 do begin
     strct = strcts[i]
     case strct.ndat  of
@@ -315,10 +297,6 @@ pro spp_swp_spe_prod_apdat::handler,ccsds,source_dict = source_dict   ;,ptp_head
 end
 
 
-
-
-
-
 FUNCTION spp_swp_spe_prod_apdat::Init,apid,name,_EXTRA=ex
   void = self->spp_gen_apdat::Init(apid,name)   ; Call our superclass Initialization method.
   self.prod_16A        = obj_new('dynamicarray',name='prod_16A_')
@@ -330,7 +308,6 @@ FUNCTION spp_swp_spe_prod_apdat::Init,apid,name,_EXTRA=ex
 END
 
 
-
 PRO spp_swp_spe_prod_apdat::Clear
   self->spp_gen_apdat::Clear
   self.prod_16A.array     = !null
@@ -338,6 +315,17 @@ PRO spp_swp_spe_prod_apdat::Clear
   self.prod_8Dx32E.array  = !null
   self.prod_16Ax32E.array = !null
   self.prod_16Ax8Dx32E.array = !null
+END
+
+
+PRO spp_swp_spe_prod_apdat::noprod
+
+  self.prod_16A.array     = !null
+  self.prod_32E.array     = !null
+  self.prod_8Dx32E.array  = !null
+  self.prod_16Ax32E.array = !null
+  self.prod_16Ax8Dx32E.array = !null
+
 END
 
 
@@ -398,6 +386,4 @@ PRO spp_swp_spe_prod_apdat__define
     prod_16Ax8Dx32E:  obj_new() $
   }
 END
-
-
 

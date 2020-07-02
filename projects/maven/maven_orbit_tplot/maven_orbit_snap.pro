@@ -36,7 +36,11 @@
 ;
 ;       CYL:      Plot MSO cylindrical projection (x vs. sqrt(y^2 + z^2)).
 ;
-;       XZ:       Plot only the XZ projection.
+;       XZ:       Plot only the XZ projection (view from side).
+;
+;       XY:       Plot only the XY projection (view from ecliptic north).
+;
+;       YZ:       Plot only the YZ projection (view from Sun)
 ;
 ;       MARS:     Plot the position of the spacecraft (PREC=1) or periapsis 
 ;                 (PREC=0) on an image of Mars topography and magnetic field
@@ -44,7 +48,7 @@
 ;                   1 : Use a small image
 ;                   2 : Use a large image
 ;
-;       NPOLE:    Plot the position of the spacecraft (PREC=1) or periapsios
+;       NPOLE:    Plot the position of the spacecraft (PREC=1) or periapsis
 ;                 (PREC=0) on a north polar projection (lat > 55 deg).  The
 ;                 background image is the north polar magnetic anomalies observed
 ;                 at 180-km altitude by MGS (from Acuna).
@@ -108,8 +112,8 @@
 ;       PSNAME:   Name of a postscript plot.  Works only for orbit plots.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-11-21 14:42:47 -0800 (Thu, 21 Nov 2019) $
-; $LastChangedRevision: 28051 $
+; $LastChangedDate: 2020-07-01 12:20:16 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28841 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -118,10 +122,12 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     npole=npole, noerase=noerase, keep=keep, color=color, reset=reset, cyl=cyl, times=times, $
     nodot=nodot, terminator=terminator, thick=thick, Bdir=Bdir, scale=scale, scsym=scsym, $
     magnify=magnify, Bclip=Bclip, Vdir=Vdir, Vclip=Vclip, Vscale=Vscale, Vrange=Vrange, $
-    alt=doalt, psname=psname, label=label
+    alt=doalt, psname=psname, label=label, xy=xy, yz=yz
 
   @maven_orbit_common
   @swe_snap_common
+
+  if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
 
   if (size(time,/type) ne 5) then begin
     print, "You must run maven_orbit_tplot first!"
@@ -169,8 +175,38 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     ntimes = 1L
     tflg = 0
   endelse
-  
-  if keyword_set(xz) then xzflg = 1 else xzflg = 0
+
+  xzflg = 1  ; view from side
+  xyflg = 1  ; view from ecliptic north
+  yzflg = 1  ; view from Sun
+  npans = 3
+
+  if keyword_set(xz) then begin
+    xyflg = 0
+    yzflg = 0
+    xy = 0
+    yz = 0
+    npans = 1
+    csize *= 0.75
+  endif
+
+  if keyword_set(xy) then begin
+    xzflg = 0
+    yzflg = 0
+    xz = 0
+    yz = 0
+    npans = 1
+    csize *= 0.75
+  endif
+
+  if keyword_set(yz) then begin
+    xzflg = 0
+    xyflg = 0
+    xz = 0
+    yz = 0
+    npans = 1
+    csize *= 0.75
+  endif
 
   if keyword_set(mhd) then begin
     if (mhd gt 1) then begin
@@ -233,52 +269,27 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     psflg = 1
   endif else begin
     psflg = 0
-    if (xzflg) then begin
-      window,26,xsize=round(600.*mag),ysize=round(538.*mag)
+    if (npans eq 1) then begin
+      putwin, 26, key=Oopt1, scale=mag  ; MSO projections 1x1
       Owin = !d.window
     endif else begin
-      device, get_screen_size=scr
-      oscale = 0.965*(scr[1]/943.) < 1.06
-
-      xsize = round(350.*oscale*mag)
-      ysize = round(943.*oscale*mag)
-      xpos = 0
-      ypos = 0
-
-      if (snap_index gt 0) then begin
-        xsize = round(Oopt.xsize*mag)
-        ysize = round(Oopt.ysize*mag)
-        xpos = Oopt.xpos
-        ypos = Oopt.ypos
-      endif
-
-      window,26,xsize=xsize,ysize=ysize,xpos=xpos,ypos=ypos
+      putwin, 26, key=Oopt, scale=mag   ; MSO projections 1x3
       Owin = !d.window
     endelse
   endelse
 
   if (gflg) then begin
-    window,/free,xsize=round(600.*mag),ysize=round(280.*mag)
+    SSopt = {xsize:600, ysize:280, dx:10, dy:10, monitor:0, corner:2}
+    putwin, /free, key=SSopt, scale=mag  ; MSO Lat-Lon
     Gwin = !d.window
   endif
 
   if (cyflg) then begin
-    if (snap_index gt 0) then begin
-      xsize = round(OCopt.xsize*mag)
-      ysize = round(OCopt.ysize*mag)
-      xpos = OCopt.xpos
-      ypos = OCopt.ypos
-    endif else begin
-      xsize = round(600.*mag)
-      ysize = round(350.*mag)
-      xpos = 0
-      ypos = 0
-    endelse
-    window,/free,xsize=xsize,ysize=ysize,xpos=xpos,ypos=ypos
+    putwin, /free, key=OCopt, scale=mag  ; MSO cylindrical
     Cwin = !d.window
   endif
 
-  if (mflg gt 0) then begin
+  if (mflg gt 0) then begin              ; GEO Lat-Lon
     if (~noerase or reset) then mag_mola_orbit, -100., -100., big=mbig, /reset
   endif
 
@@ -436,8 +447,11 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
 ; X-Y Projection
 
-    if (xzflg eq 0) then begin
-      !p.multi = [3,1,3]
+    pan = npans
+    msg = title
+
+    if (xyflg) then begin
+      !p.multi = [pan, 1, npans]
 
       x = xo
       y = yo
@@ -457,7 +471,8 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       szaref = acos(cos(mlon)*cos(mlat))
 
       plot,xm,ym,xrange=xrange,yrange=yrange,/xsty,/ysty,/noerase, $
-           xtitle='X (Rp)',ytitle='Y (Rp)',charsize=csize,title=title,thick=thick
+           xtitle='X (Rp)',ytitle='Y (Rp)',charsize=csize,title=msg,thick=thick
+      msg = ''
       oplot,xm,ym,color=6,thick=thick
       oplot,x,y,thick=thick
 
@@ -567,144 +582,160 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       oplot,xpileup,ypileup,color=3,line=1,thick=thick
 
       if (dolab) then begin
-        xyouts, 0.73, 0.95, "ALT = " + string(round(href), format='(i4)'), /norm, charsize=csize/2.
-        xyouts, 0.73, 0.93, "SZA = " + string(round(zref), format='(i4)'), /norm, charsize=csize/2.
-        xyouts, 0.67, 0.62, "View from Pole", /norm, charsize=csize/2.
-        xyouts, 0.67, 0.285, "View from Sun", /norm, charsize=csize/2.
+        if (npans eq 1) then begin
+          xyouts, 0.70, 0.87, "View from Pole", /norm, charsize=csize
+          xyouts, 0.70, 0.82, "ALT = " + string(round(href), format='(i4)'), /norm, charsize=csize
+          xyouts, 0.70, 0.77, "SZA = " + string(round(zref), format='(i4)'), /norm, charsize=csize
+        endif else begin
+          xyouts, 0.73, 0.95, "ALT = " + string(round(href), format='(i4)'), /norm, charsize=csize/2.
+          xyouts, 0.73, 0.93, "SZA = " + string(round(zref), format='(i4)'), /norm, charsize=csize/2.
+          xyouts, 0.67, 0.62, "View from Side", /norm, charsize=csize/2.
+          xyouts, 0.67, 0.285, "View from Sun", /norm, charsize=csize/2.
+        endelse
       endif
+
+      pan--
     endif
 
 ; X-Z Projection
 
-    if (xzflg) then !p.multi = [1,1,1] else !p.multi = [2,1,3]
+    if (xzflg) then begin
+      !p.multi = [pan, 1, npans]
 
-    x = xo
-    y = yo
-    z = zo
-    s = sqrt(x*x + z*z)
+      x = xo
+      y = yo
+      z = zo
+      s = sqrt(x*x + z*z)
 
-    indx = where((y gt 0.) and (s lt 1.), count)
-    if (count gt 0L) then begin
-      x[indx] = !values.f_nan
-      z[indx] = !values.f_nan
-    endif
+      indx = where((y gt 0.) and (s lt 1.), count)
+      if (count gt 0L) then begin
+        x[indx] = !values.f_nan
+        z[indx] = !values.f_nan
+      endif
 
-    if (xzflg) then msg = title else msg = ''
+      plot,xm,ym,xrange=xrange,yrange=yrange,/xsty,/ysty,/noerase, $
+           xtitle='X (Rp)',ytitle='Z (Rp)',charsize=csize,title=msg,thick=thick
+      msg = ''
+      oplot,xm,ym,color=6,thick=thick
+      oplot,x,z,thick=thick
 
-    plot,xm,ym,xrange=xrange,yrange=yrange,/xsty,/ysty,/noerase, $
-         xtitle='X (Rp)',ytitle='Z (Rp)',charsize=csize,title=msg,thick=thick
-    oplot,xm,ym,color=6,thick=thick
-    oplot,x,z,thick=thick
+      if (pflg) then i = imid else i = imin
+      if (dodot) then oplot,[x[i]],[z[i]],psym=8,color=5,thick=thick
 
-    if (pflg) then i = imid else i = imin
-    if (dodot) then oplot,[x[i]],[z[i]],psym=8,color=5,thick=thick
-
-    if (dob) then begin
-        cts = n_elements(rndx)
-        for i=0,cts-1,nskp do begin
+      if (dob) then begin
+          cts = n_elements(rndx)
+          for i=0,cts-1,nskp do begin
             x1=x[i]
             y1=z[i]
             x2=scale*bb[i,0]+x1
             y2=scale*bb[i,2]+y1
-            if bb[i,1] le 0 then clr=64 $
-            else clr=254
+            if bb[i,1] le 0 then clr=64 else clr=254
             oplot,[x1,x2],[y1,y2],color=clr
+          endfor
+      endif
+
+      if (dov) then begin
+        cts = n_elements(rndx)
+        for i=0,cts-1,nskp do begin
+          x1=x[i]
+          y1=z[i]
+          x2=Vscale*vv[i,0]+x1
+          y2=Vscale*vv[i,2]+y1
+          if vv[i,1] le 0 then clr=64 $
+          else clr=254
+          oplot,[x1,x2],[y1,y2],color=clr
         endfor
-    endif
+      endif
 
-    if (dov) then begin
-      cts = n_elements(rndx)
-      for i=0,cts-1,nskp do begin
-        x1=x[i]
-        y1=z[i]
-        x2=Vscale*vv[i,0]+x1
-        y2=Vscale*vv[i,2]+y1
-        if vv[i,1] le 0 then clr=64 $
-        else clr=254
-        oplot,[x1,x2],[y1,y2],color=clr
-      endfor
-    endif
+      x = xs
+      y = ys
+      z = zs
 
-    x = xs
-    y = ys
-    z = zs
+      indx = where((y gt 0.) and (s lt 1.), count)
+      if (count gt 0L) then begin
+        x[indx] = !values.f_nan
+        z[indx] = !values.f_nan
+      endif
+      oplot,x,z,color=rcols[0],thick=thick
 
-    indx = where((y gt 0.) and (s lt 1.), count)
-    if (count gt 0L) then begin
-      x[indx] = !values.f_nan
-      z[indx] = !values.f_nan
-    endif
-    oplot,x,z,color=rcols[0],thick=thick
+      x = xp
+      y = yp
+      z = zp
 
-    x = xp
-    y = yp
-    z = zp
+      indx = where((y gt 0.) and (s lt 1.), count)
+      if (count gt 0L) then begin
+        x[indx] = !values.f_nan
+        y[indx] = !values.f_nan
+      endif
+      oplot,x,z,color=rcols[1],thick=thick
 
-    indx = where((y gt 0.) and (s lt 1.), count)
-    if (count gt 0L) then begin
-      x[indx] = !values.f_nan
-      y[indx] = !values.f_nan
-    endif
-    oplot,x,z,color=rcols[1],thick=thick
+      x = xw
+      y = yw
+      z = zw
 
-    x = xw
-    y = yw
-    z = zw
-
-    indx = where((y gt 0.) and (s lt 1.), count)
-    if (count gt 0L) then begin
-      x[indx] = !values.f_nan
-      z[indx] = !values.f_nan
-    endif
-    oplot,x,z,color=rcols[2],thick=thick
+      indx = where((y gt 0.) and (s lt 1.), count)
+      if (count gt 0L) then begin
+        x[indx] = !values.f_nan
+        z[indx] = !values.f_nan
+      endif
+      oplot,x,z,color=rcols[2],thick=thick
 
 ; Shock conic
 
-    phi = (-150. + findgen(301))*!dtor
-    rho = L/(1. + psi*cos(phi))
+      phi = (-150. + findgen(301))*!dtor
+      rho = L/(1. + psi*cos(phi))
 
-    xshock = x0 + rho*cos(phi)
-    zshock = rho*sin(phi)
-    oplot,xshock,zshock,color=3,line=1,thick=thick
+      xshock = x0 + rho*cos(phi)
+      zshock = rho*sin(phi)
+      oplot,xshock,zshock,color=3,line=1,thick=thick
 
 ; MPB conic
 
-    phi = (-160. + findgen(160))*!dtor
+      phi = (-160. + findgen(160))*!dtor
 
-    rho = L_p1/(1. + psi_p1*cos(phi))
-    x1 = x0_p1 + rho*cos(phi)
-    z1 = rho*sin(phi)
+      rho = L_p1/(1. + psi_p1*cos(phi))
+      x1 = x0_p1 + rho*cos(phi)
+      z1 = rho*sin(phi)
 
-    rho = L_p2/(1. + psi_p2*cos(phi))
-    x2 = x0_p2 + rho*cos(phi)
-    z2 = rho*sin(phi)
+      rho = L_p2/(1. + psi_p2*cos(phi))
+      x2 = x0_p2 + rho*cos(phi)
+      z2 = rho*sin(phi)
 
-    indx = where(x1 ge 0)
-    jndx = where(x2 lt 0)
-    xpileup = [x2[jndx], x1[indx]]
-    zpileup = [z2[jndx], z1[indx]]
+      indx = where(x1 ge 0)
+      jndx = where(x2 lt 0)
+      xpileup = [x2[jndx], x1[indx]]
+      zpileup = [z2[jndx], z1[indx]]
 
-    phi = findgen(161)*!dtor
+      phi = findgen(161)*!dtor
 
-    rho = L_p1/(1. + psi_p1*cos(phi))
-    x1 = x0_p1 + rho*cos(phi)
-    z1 = rho*sin(phi)
+      rho = L_p1/(1. + psi_p1*cos(phi))
+      x1 = x0_p1 + rho*cos(phi)
+      z1 = rho*sin(phi)
 
-    rho = L_p2/(1. + psi_p2*cos(phi))
-    x2 = x0_p2 + rho*cos(phi)
-    z2 = rho*sin(phi)
+      rho = L_p2/(1. + psi_p2*cos(phi))
+      x2 = x0_p2 + rho*cos(phi)
+      z2 = rho*sin(phi)
 
-    indx = where(x1 ge 0)
-    jndx = where(x2 lt 0)
-    xpileup = [xpileup, x1[indx], x2[jndx]]
-    zpileup = [zpileup, z1[indx], z2[jndx]]
+      indx = where(x1 ge 0)
+      jndx = where(x2 lt 0)
+      xpileup = [xpileup, x1[indx], x2[jndx]]
+      zpileup = [zpileup, z1[indx], z2[jndx]]
 
-    oplot,xpileup,zpileup,color=3,line=1,thick=thick
+      oplot,xpileup,zpileup,color=3,line=1,thick=thick
+
+      if (dolab and (npans eq 1)) then begin
+        xyouts, 0.70, 0.87, "View from Side", /norm, charsize=csize
+        xyouts, 0.70, 0.82, "ALT = " + string(round(href), format='(i4)'), /norm, charsize=csize
+        xyouts, 0.70, 0.77, "SZA = " + string(round(zref), format='(i4)'), /norm, charsize=csize
+      endif
+
+      pan--
+    endif
 
 ; Y-Z Projection
 
-    if (xzflg eq 0) then begin
-      !p.multi = [1,1,3]
+    if (yzflg) then begin
+      !p.multi = [pan, 1, npans]
 
       x = xo
       y = yo
@@ -718,7 +749,8 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       endif
 
       plot,xm,ym,xrange=xrange,yrange=yrange,/xsty,/ysty,/noerase, $
-           xtitle='Y (Rp)',ytitle='Z (Rp)',charsize=csize,thick=thick
+           xtitle='Y (Rp)',ytitle='Z (Rp)',title=msg,charsize=csize,thick=thick
+      msg = ''
       oplot,xm,ym,color=6,thick=thick
       oplot,y,z,thick=thick
 
@@ -790,85 +822,82 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       L0 = sqrt((L_p1 + psi_p1*x0_p1)^2. - x0_p1*x0_p1)
       oplot,L0*xm,L0*ym,color=3,line=1,thick=thick
 
-    endif
+      if (dolab and (npans eq 1)) then begin
+        xyouts, 0.70, 0.87, "View from Sun", /norm, charsize=csize
+        xyouts, 0.70, 0.82, "ALT = " + string(round(href), format='(i4)'), /norm, charsize=csize
+        xyouts, 0.70, 0.77, "SZA = " + string(round(zref), format='(i4)'), /norm, charsize=csize
+      endif
 
-    if (doalt) then begin
-      if (pflg) then i = iref else i = rndx[imin]
-      sc_alt = string(round(hgt[i]), format='("ALT = ",i4)')
-      xyouts, 0.72, 0.950, sc_alt, /norm, charsize=1.1
-      sc_sza = string(round(sza[i]*!radeg), format='("SZA = ",i4)')
-      xyouts, 0.72, 0.935, sc_sza, /norm, charsize=1.1
     endif
 
     !p.multi = 0
 
 ; Put up cylindrical projection
 
-   if (cyflg) then begin
-     wset, Cwin
-     if (first) then erase
+     if (cyflg) then begin
+       wset, Cwin
+       if (first) then erase
 
-     x = xo
-     y = yo
-     z = zo
-     s = sqrt(y*y + z*z)
+       x = xo
+       y = yo
+       z = zo
+       s = sqrt(y*y + z*z)
 
-     plot,xm,ym,xrange=xrange,yrange=[0,yrange[1]],/xsty,/ysty,/noerase, $
-          xtitle='X (Rp)',ytitle='S (Rp)',charsize=csize,title=title,thick=thick
-     oplot,xm,ym,color=6,thick=thick
-     oplot,x,s,thick=thick
+       plot,xm,ym,xrange=xrange,yrange=[0,yrange[1]],/xsty,/ysty,/noerase, $
+            xtitle='X (Rp)',ytitle='S (Rp)',charsize=csize,title=title,thick=thick
+       oplot,xm,ym,color=6,thick=thick
+       oplot,x,s,thick=thick
 
-    if (pflg) then i = imid else i = imin
-    if (dodot) then oplot,[x[i]],[s[i]],psym=8,color=5,thick=thick
+      if (pflg) then i = imid else i = imin
+      if (dodot) then oplot,[x[i]],[s[i]],psym=8,color=5,thick=thick
 
-    oplot,xs,sqrt(ys*ys + zs*zs),color=rcols[0],thick=thick
-    oplot,xp,sqrt(yp*yp + zp*zp),color=rcols[1],thick=thick
-    oplot,xw,sqrt(yw*yw + zw*zw),color=rcols[2],thick=thick
+      oplot,xs,sqrt(ys*ys + zs*zs),color=rcols[0],thick=thick
+      oplot,xp,sqrt(yp*yp + zp*zp),color=rcols[1],thick=thick
+      oplot,xw,sqrt(yw*yw + zw*zw),color=rcols[2],thick=thick
 
 ; Shock conic
 
-    phi = (-150. + findgen(301))*!dtor
-    rho = L/(1. + psi*cos(phi))
+      phi = (-150. + findgen(301))*!dtor
+      rho = L/(1. + psi*cos(phi))
 
-    xshock = x0 + rho*cos(phi)
-    zshock = rho*sin(phi)
-    oplot,xshock,zshock,color=3,line=1,thick=thick
+      xshock = x0 + rho*cos(phi)
+      zshock = rho*sin(phi)
+      oplot,xshock,zshock,color=3,line=1,thick=thick
 
 ; MPB conic
 
-    phi = (-160. + findgen(160))*!dtor
+      phi = (-160. + findgen(160))*!dtor
 
-    rho = L_p1/(1. + psi_p1*cos(phi))
-    x1 = x0_p1 + rho*cos(phi)
-    z1 = rho*sin(phi)
+      rho = L_p1/(1. + psi_p1*cos(phi))
+      x1 = x0_p1 + rho*cos(phi)
+      z1 = rho*sin(phi)
 
-    rho = L_p2/(1. + psi_p2*cos(phi))
-    x2 = x0_p2 + rho*cos(phi)
-    z2 = rho*sin(phi)
+      rho = L_p2/(1. + psi_p2*cos(phi))
+      x2 = x0_p2 + rho*cos(phi)
+      z2 = rho*sin(phi)
 
-    indx = where(x1 ge 0)
-    jndx = where(x2 lt 0)
-    xpileup = [x2[jndx], x1[indx]]
-    zpileup = [z2[jndx], z1[indx]]
+      indx = where(x1 ge 0)
+      jndx = where(x2 lt 0)
+      xpileup = [x2[jndx], x1[indx]]
+      zpileup = [z2[jndx], z1[indx]]
 
-    phi = findgen(161)*!dtor
+      phi = findgen(161)*!dtor
 
-    rho = L_p1/(1. + psi_p1*cos(phi))
-    x1 = x0_p1 + rho*cos(phi)
-    z1 = rho*sin(phi)
+      rho = L_p1/(1. + psi_p1*cos(phi))
+      x1 = x0_p1 + rho*cos(phi)
+      z1 = rho*sin(phi)
 
-    rho = L_p2/(1. + psi_p2*cos(phi))
-    x2 = x0_p2 + rho*cos(phi)
-    z2 = rho*sin(phi)
+      rho = L_p2/(1. + psi_p2*cos(phi))
+      x2 = x0_p2 + rho*cos(phi)
+      z2 = rho*sin(phi)
 
-    indx = where(x1 ge 0)
-    jndx = where(x2 lt 0)
-    xpileup = [xpileup, x1[indx], x2[jndx]]
-    zpileup = [zpileup, z1[indx], z2[jndx]]
+      indx = where(x1 ge 0)
+      jndx = where(x2 lt 0)
+      xpileup = [xpileup, x1[indx], x2[jndx]]
+      zpileup = [zpileup, z1[indx], z2[jndx]]
 
-    oplot,xpileup,zpileup,color=3,line=1,thick=thick
-
-   endif
+      oplot,xpileup,zpileup,color=3,line=1,thick=thick
+    endif
 
 ; Put up the ground track
 

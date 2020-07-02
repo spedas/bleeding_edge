@@ -88,8 +88,8 @@
 ;                      interactive time range selection.)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-04-18 06:45:17 -0700 (Thu, 18 Apr 2019) $
-; $LastChangedRevision: 27043 $
+; $LastChangedDate: 2020-07-01 11:20:00 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28834 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -235,23 +235,27 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
   Twin = !d.window
 
-  window, /free, xsize=Dopt.xsize*wscale, ysize=Dopt.ysize*wscale, xpos=Dopt.xpos, ypos=Dopt.ypos
+  putwin, /free, key=Dopt, scale=wscale
   Dwin = !d.window
 
   if (sflg) then begin
-    window, /free, xsize=Sopt.xsize*wscale, ysize=Sopt.ysize*wscale, xpos=Sopt.xpos, ypos=Sopt.ypos
+    putwin, /free, key=Sopt, scale=wscale
     Swin = !d.window
   endif
   
   if (dflg) then begin
-    window, /free, xsize=Sopt.xsize*wscale, ysize=Sopt.ysize*wscale, xpos=Sopt.xpos, ypos=Sopt.ypos
+    putwin, /free, key=Sopt, scale=wscale
     Fwin = !d.window
   endif
   
   if (dopam) then begin
-    window, /free, xsize=Nopt.xsize*wscale, ysize=Nopt.ysize*wscale, xpos=Nopt.xpos, ypos=Nopt.ypos
+    putwin, /free, key=Nopt, scale=wscale
     Pwin = !d.window
   endif
+
+; Use a better color table for 3D plots
+
+  loadct2, 34, previous=ptab
 
   got3d = 0
   if (size(ddd,/type) eq 8) then begin
@@ -459,6 +463,10 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
     endif else ok = 0
 
   endwhile
+
+; Restore the previous color table
+
+  loadct2, ptab
 
   if (kflg) then begin
     wdelete, Dwin

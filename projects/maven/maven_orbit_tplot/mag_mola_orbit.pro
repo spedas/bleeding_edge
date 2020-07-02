@@ -37,10 +37,11 @@
 ;                      0 : Optical shadow boundary at surface.
 ;                      1 : Optical shadow boundary at s/c altitude.
 ;                      2 : EUV shadow boundary at s/c altitude.
+;                      3 : EUV shadow at electron absorption altitude.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-01-09 16:53:18 -0800 (Mon, 09 Jan 2017) $
-; $LastChangedRevision: 22552 $
+; $LastChangedDate: 2020-07-01 12:20:16 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28841 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mag_mola_orbit.pro $
 ;
 ;CREATED BY:	David L. Mitchell  04-02-03
@@ -51,6 +52,8 @@ pro mag_mola_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
 
   common magmola_orb_com, img, ppos
   @swe_snap_common
+
+  if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
 
   twin = !d.window
   owin = 29
@@ -85,20 +88,8 @@ pro mag_mola_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
     i = sz[2] + (2*xoff)
     j = sz[3] + (2*yoff)
     
-    if (snap_index gt 0) then begin
-	  if keyword_set(big) then begin
-	    xpos = MMopt.xpos
-	    ypos = MMopt.ypos
-	  endif else begin
-	    xpos = Mopt.xpos
-	    ypos = Mopt.ypos
-	  endelse
-    endif else begin
-      xpos = 0
-      ypos = 0
-    endelse
-
-    window,owin,xsize=i,ysize=j,xpos=xpos,ypos=ypos
+	if keyword_set(big) then Mkey = MMopt else Mkey = Mopt
+	putwin, owin, key=Mkey
 
     px = [0.0, 1.0] * !d.x_vsize + xoff + 16
     py = [0.0, 1.0] * !d.y_vsize + yoff + 10
@@ -107,7 +98,7 @@ pro mag_mola_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
     eflg = 1
   endif
 
-  wset,owin
+  wset, owin
 
   if (eflg) then tv,img,ppos[0],ppos[1],/true
 

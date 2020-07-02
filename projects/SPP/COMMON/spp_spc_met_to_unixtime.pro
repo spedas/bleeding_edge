@@ -38,9 +38,9 @@ end
 ;see also:  "spp_spc_unixtime_to_met" for the reverse conversion
 ; This routine is in the process of being modified to use SPICE Kernels to correct for clock drift as needed.
 ; Author: Davin Larson
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-08-04 21:46:37 -0700 (Sun, 04 Aug 2019) $
-; $LastChangedRevision: 27538 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-07-01 08:47:47 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28827 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_spc_met_to_unixtime.pro $
 ;-
 function spp_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=correct_clockdrift   ,reset=reset ,ephemeris_time=et  ;,prelaunch = prelaunch
@@ -58,8 +58,8 @@ function spp_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=correc
     if  n_elements(kernel_verified) eq 0 || keyword_set(reset) then begin ; check for cspice first
       if spice_test() then begin
         ;       tls = spice_standard_kernels(/load) ;jmm, 22-sep-2014;  DEL, tls  included in call on next line
-        tls  = spp_spice_kernels('LSK',/load)  ; getting only the LSK file
-        sclk = spp_spice_kernels('SCK',/load)
+        tls  = spp_spice_kernels('LSK',/load,trange=[0,1])  ; getting only the LSK file
+        sclk = spp_spice_kernels('SCK',/load,trange=[0,1]) ;dummy trange is set to prevent time prompt if timespan not set
         if keyword_set(sclk)  then begin
           kernel_verified = 1
         endif else begin

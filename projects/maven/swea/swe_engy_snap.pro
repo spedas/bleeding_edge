@@ -206,8 +206,8 @@ end
 ;                      Maxwell-Boltzmann fit. (Nominally, E_peak = 2*T)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-03-17 11:23:25 -0700 (Tue, 17 Mar 2020) $
-; $LastChangedRevision: 28422 $
+; $LastChangedDate: 2020-07-01 12:21:06 -0700 (Wed, 01 Jul 2020) $
+; $LastChangedRevision: 28842 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -227,6 +227,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   @mvn_scpot_com
   @swe_snap_common
 
+  if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
+
   mass = 5.6856297d-06             ; electron rest mass [eV/(km/s)^2]
   c1 = (mass/(2D*!dpi))^1.5
   c2 = (2d5/(mass*mass))
@@ -234,7 +236,6 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   tiny = 1.e-31
 
   if (size(Espan,/type) eq 0) then mvn_scpot_defaults
-  if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
 
   aflg = keyword_set(archive) or keyword_set(burst)
   if not keyword_set(units) then units = 'eflux'
@@ -392,16 +393,16 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
 
   Twin = !d.window
 
-  window, /free, xsize=wscale*Eopt.xsize, ysize=wscale*Eopt.ysize, xpos=Eopt.xpos, ypos=Eopt.ypos
+  putwin, /free, key=Eopt, scale=wscale
   Ewin = !d.window
 
   if (hflg) then begin
-    window, /free, xsize=Hopt.xsize, ysize=Hopt.ysize, xpos=Hopt.xpos, ypos=Hopt.ypos
+    putwin, /free, key=Hopt
     Hwin = !d.window
   endif
   
   if (pflg) then begin
-    window, /free, xsize=Sopt.xsize, ysize=Sopt.ysize, xpos=Sopt.xpos, ypos=Sopt.ypos
+    putwin, /free, key=Sopt
     Pwin = !d.window
   endif
 
