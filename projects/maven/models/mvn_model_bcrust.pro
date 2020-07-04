@@ -113,8 +113,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2020-06-30 11:44:55 -0700 (Tue, 30 Jun 2020) $
-; $LastChangedRevision: 28823 $
+; $LastChangedDate: 2020-07-02 20:28:24 -0700 (Thu, 02 Jul 2020) $
+; $LastChangedRevision: 28850 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust.pro $
 ;
 ;-
@@ -443,7 +443,7 @@ pro mvn_model_bcrust, var, resolution=resolution, data=modelmag, $
      
      num = N_ELEMENTS(trange)
      IF TOTAL(mvn_spice_valid_times([tmin, tmax], verbose=verbose)) LT 2 THEN $
-        mk = mvn_spice_kernels(/all, /load, trange=[tmin, tmax], verbose=verbose, no_download=no_download)
+        mk = mvn_spice_kernels(/all, /load, /clear, trange=[tmin, tmax], verbose=verbose, no_download=no_download)
      pgeo = FLOAT(spice_body_pos('MAVEN', 'MARS', utc=trange, frame='IAU_MARS'))
      eph = {x_pc: REFORM(pgeo[0, *]), y_pc: REFORM(pgeo[1, *]), z_pc: REFORM(pgeo[2, *])}
      ;get_mvn_eph, trange, eph, silent=silent, no_download=no_download
@@ -624,7 +624,7 @@ pro mvn_model_bcrust, var, resolution=resolution, data=modelmag, $
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   IF SIZE(trange, /type) NE 0 THEN BEGIN
      IF TOTAL(mvn_spice_valid_times([tmin, tmax], verbose=verbose)) LT 2 THEN $
-        mk = mvn_spice_kernels(/all, /load, trange=[tmin, tmax], verbose=verbose, no_download=no_download)
+        mk = mvn_spice_kernels(/all, /load, /clear, trange=[tmin, tmax], verbose=verbose, no_download=no_download)
      bss = spice_vector_rotate(TRANSPOSE(bpc), trange, 'IAU_MARS', 'MAVEN_MSO',   $
                                check_objects='MAVEN_SPACECRAFT', verbose=verbose)
      bss = TRANSPOSE(bss)
