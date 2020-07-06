@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jul  4 03:15:58 2020.<P>
+<STRONG>Last modified: </STRONG>Sun Jul  5 18:15:54 2020.<P>
  
 <HR>
  
@@ -130,6 +130,7 @@ KEYWORDS:
                   &quot;behind&quot; orbit.  This routine deletes the bad
                   ephemeris values and interpolates across the 
                   gap.)
+                    Coverage: 2006-10-26 to 2020-10-26
 
        SORB:      Plot the location of Solar Orbiter.  Includes a
                   predict ephemeris.
@@ -141,7 +142,8 @@ KEYWORDS:
 
        SALL:      Plot all of the above spacecraft locations.
 
-       RELOAD:    Reload the ephemerides.
+       RELOAD:    Reload the ephemerides.  (Does not reinitialize
+                  SPICE -- use cspice_kclear for that.)
 
        SPIRAL:    Plot the Parker (Archimedean) spiral of the
                   solar wind magnetic field.  Spiral is shown out
@@ -175,16 +177,19 @@ KEYWORDS:
                   are shown, and the Archimedean spiral (if set)
                   extends out to the orbit of Saturn.
 
-       TPLOT:     Create Earth-PLANET geometry tplot variables 
-                  spanning 1900-2100.
+       TPLOT:     Create Earth-PLANET geometry and spacecraft position
+                  tplot variables.
 
        VERBOSE:   Controls verbosity of file_retrieve.
                   Default = 0 (no output).  Try a value &gt; 2 to see
                   more messages; &gt; 4 for lots of messages.
 
+       FULL:      Show everything: planets and spacecraft, Parker
+                  spiral, and all labels.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-03 21:36:28 -0700 (Fri, 03 Jul 2020) $
- $LastChangedRevision: 28853 $
+ $LastChangedDate: 2020-07-05 17:10:16 -0700 (Sun, 05 Jul 2020) $
+ $LastChangedRevision: 28854 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery.pro $
 
 CREATED BY:	David L. Mitchell
