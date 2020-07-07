@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Jul  5 18:15:54 2020.<P>
+<STRONG>Last modified: </STRONG>Mon Jul  6 18:15:52 2020.<P>
  
 <HR>
  
@@ -61,6 +61,7 @@ RBSP_EFW_CREATE_ESVY_UVW_FROM_VSVY</A>
 <LI><A HREF="#RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)[1]">
 RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)[1]</A>
 <br>De-convolve instrument responses for RBSP EFW data, including search-coil
+<LI><A HREF="#RBSP_EFW_DSC_TO_MGSE">RBSP_EFW_DSC_TO_MGSE</A>
 <LI><A HREF="#RBSP_EFW_GET_CAL_PARAMS (FUNCTION)">
 RBSP_EFW_GET_CAL_PARAMS (FUNCTION)</A>
 <br>Return RBSP EFW calibration parameters for converting L1 data to L2 data.
@@ -1125,7 +1126,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)[1]">
 <H2>RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)[1]</H2></A>
 <A HREF="#RBSP_EFW_CREATE_ESVY_UVW_FROM_VSVY">[Previous Routine]</A>
-<A HREF="#RBSP_EFW_GET_CAL_PARAMS (FUNCTION)">[Next Routine]</A>
+<A HREF="#RBSP_EFW_DSC_TO_MGSE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -1178,9 +1179,64 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <STRONG>(See <A href="efw/rbsp_efw_deconvol_inst_resp.pro">general/missions/rbsp/efw/rbsp_efw_deconvol_inst_resp.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RBSP_EFW_DSC_TO_MGSE">
+<H2>RBSP_EFW_DSC_TO_MGSE</H2></A>
+<A HREF="#RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)[1]">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_GET_CAL_PARAMS (FUNCTION)">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:	RBSP_EFW_DSC_TO_MGSE
+
+ SYNTAX:
+   rbsp_dsc_to_mgse,'a',tplot_var,wgse
+
+
+ PURPOSE:	Rotates data from despun spacecraft coordinates (DSC) into the
+			modified GSE (MGSE) coordinate system. 
+
+			DSC is defined:
+				Z_DSC is the spin axis direction, W_SC
+				X_DSC is the sun sensor triggering direction, perpendicular to
+					the spin axis
+				Y_DSC completes the RH system in the spin plane
+
+			MGSE is defined:
+				Y_MGSE=-W_SC(GSE) x Z_GSE
+				Z_MGSE=W_SC(GSE) x Y_MGSE
+				X_MGSE=Y_MGSE x Z_MGSE
+
+ INPUT:
+	probe	- either 'a' or 'b'
+	tvar	- TPLOT variable containing 3-component DSC data (either string or
+				integer).
+	tvar_wgse    - TPLOT variable containing the spin axis pointing direction in GSE coord. 
+					Get this from rbsp_load_spice_cdf_file.pro
+
+ KEYWORDS:
+	suffix = 'string', suffix appended to the tplot variable name. Default is
+			'mgse'
+	uangle = degrees, angle between sun sensor and +U (EFW 1) boom
+	/debug - save various quantities for debugging
+
+ NOTES:
+	0) This routine does not check that the supplied data is in DSC system.
+
+ HISTORY:
+	1. Created July 2020 - Aaron Breneman forked from Kris Kersten's rbsp_dsc_to_mgse.pro
+
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2020-07-06 14:13:56 -0700 (Mon, 06 Jul 2020) $
+   $LastChangedRevision: 28855 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_efw_dsc_to_mgse.pro $
+
+</PRE><P>
+<STRONG>(See <A href="efw/rbsp_efw_dsc_to_mgse.pro">general/missions/rbsp/efw/rbsp_efw_dsc_to_mgse.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RBSP_EFW_GET_CAL_PARAMS (FUNCTION)">
 <H2>RBSP_EFW_GET_CAL_PARAMS (FUNCTION)</H2></A>
-<A HREF="#RBSP_EFW_DECONVOL_INST_RESP (FUNCTION)[1]">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_DSC_TO_MGSE">[Previous Routine]</A>
 <A HREF="#RBSP_EFW_GET_GAIN_RESULTS[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
