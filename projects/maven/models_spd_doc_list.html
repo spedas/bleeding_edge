@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Jul  6 18:15:52 2020.<P>
+<STRONG>Last modified: </STRONG>Tue Jul  7 18:15:53 2020.<P>
  
 <HR>
  
@@ -21,6 +21,7 @@ This page was created by the IDL library routine
 <H1>projects/maven/models</H1>
 <LI><A HREF="#MVN_MODEL_BCRUST">MVN_MODEL_BCRUST</A>
 <LI><A HREF="#MVN_MODEL_BCRUST_ALT">MVN_MODEL_BCRUST_ALT</A>
+<LI><A HREF="#MVN_MODEL_BCRUST_CALC">MVN_MODEL_BCRUST_CALC</A>
 <LI><A HREF="#MVN_MODEL_BCRUST_LOAD">MVN_MODEL_BCRUST_LOAD</A>
 <LI><A HREF="#MVN_MODEL_BCRUST_RESTORE">MVN_MODEL_BCRUST_RESTORE</A>
 <br>
@@ -147,8 +148,8 @@ CREATED BY:	  Takuya Hara on 2015-02-12.
 
 LAST MODIFICATION:
  $LastChangedBy: hara $
- $LastChangedDate: 2020-07-02 20:28:24 -0700 (Thu, 02 Jul 2020) $
- $LastChangedRevision: 28850 $
+ $LastChangedDate: 2020-07-07 11:33:30 -0700 (Tue, 07 Jul 2020) $
+ $LastChangedRevision: 28857 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust.pro $
 
 </PRE><P>
@@ -158,7 +159,7 @@ LAST MODIFICATION:
 <A NAME="MVN_MODEL_BCRUST_ALT">
 <H2>MVN_MODEL_BCRUST_ALT</H2></A>
 <A HREF="#MVN_MODEL_BCRUST">[Previous Routine]</A>
-<A HREF="#MVN_MODEL_BCRUST_LOAD">[Next Routine]</A>
+<A HREF="#MVN_MODEL_BCRUST_CALC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -203,9 +204,53 @@ LAST MODIFICATION:
 <STRONG>(See <A href="models/mvn_model_bcrust_alt.pro">projects/maven/models/mvn_model_bcrust_alt.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_MODEL_BCRUST_CALC">
+<H2>MVN_MODEL_BCRUST_CALC</H2></A>
+<A HREF="#MVN_MODEL_BCRUST_ALT">[Previous Routine]</A>
+<A HREF="#MVN_MODEL_BCRUST_LOAD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+FUNCTION:        MVN_MODEL_BCRUST_CALC
+
+PURPOSE:         Calculates vector magnetic field at a given location (a_over_r, sct, scp)
+                 in spherical coordinates from a spherical harmonic crustal model.
+
+INPUTS: 
+         
+      G, H:      The coefficients, in square arrays with dimensions [nmax+1, nmax+1].
+                 Coeffs are stored according to [n, m].
+
+  A_OVER_R:      The value of a/r in the spherical harmonic expansion,
+                 or the mean Martian radius by the radius at which
+                 you are calculating the field.
+
+  SCT, SCP:      The colatitude and east longitude at which you are calculating
+                 the field, IN RADIANS.
+
+OUTPUTS:         [Br, Bt, Bp] at scr, sct, scp.
+
+KEYWORDS:        None.
+
+NOTE:            It originally comes from sph_b.pro, which is a subroutine included in mvn_model_bcrust.pro.
+                 The original sph_b.pro was written by Dave Brain on 2001-10-08.
+                 It is vectorized to perform the fast calculation.
+
+CREATED BY:      Takuya Hara on 2020-07-07.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2020-07-07 11:27:32 -0700 (Tue, 07 Jul 2020) $
+ $LastChangedRevision: 28856 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust_calc.pro $
+
+</PRE><P>
+<STRONG>(See <A href="models/mvn_model_bcrust_calc.pro">projects/maven/models/mvn_model_bcrust_calc.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_MODEL_BCRUST_LOAD">
 <H2>MVN_MODEL_BCRUST_LOAD</H2></A>
-<A HREF="#MVN_MODEL_BCRUST_ALT">[Previous Routine]</A>
+<A HREF="#MVN_MODEL_BCRUST_CALC">[Previous Routine]</A>
 <A HREF="#MVN_MODEL_BCRUST_RESTORE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

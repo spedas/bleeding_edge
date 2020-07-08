@@ -10,8 +10,8 @@
 ;Author: Davin Larson
 ;
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-01-07 10:33:30 -0800 (Tue, 07 Jan 2020) $
-; $LastChangedRevision: 28171 $
+; $LastChangedDate: 2020-07-07 14:08:46 -0700 (Tue, 07 Jul 2020) $
+; $LastChangedRevision: 28858 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/time_ephemeris.pro $
 
 ;-
@@ -28,7 +28,7 @@ if not keyword_set(ls_num) then begin
     utc_et_diff = time_double('2000-1-1/12:00:00') -32.184   ;  -32.18392728
     ls_etimes = ls_utimes + ls_num - utc_et_diff 
 ;  printdat,ls_num,ls_utimes,ls_etimes,utc_et_diff
-    disable_time = time_double('2021-1-1')
+    disable_time = time_double('2021-7-1')
     if systime(1) gt disable_time-30*86400L then message,'Warning: This procedure must be modified to account for potential leap seconds in the near future.',/cont
 endif
 

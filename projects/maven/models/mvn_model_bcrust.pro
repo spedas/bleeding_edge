@@ -113,8 +113,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2020-07-02 20:28:24 -0700 (Thu, 02 Jul 2020) $
-; $LastChangedRevision: 28850 $
+; $LastChangedDate: 2020-07-07 11:33:30 -0700 (Tue, 07 Jul 2020) $
+; $LastChangedRevision: 28857 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust.pro $
 ;
 ;-
@@ -426,7 +426,8 @@ pro mvn_model_bcrust, var, resolution=resolution, data=modelmag, $
                       arkani=arkani, purucker=purucker, $
                       cain_2003=cain_2003, cain_2011=cain_2011, $
                       version=version, tplot=tplot, path=path, spice_list=spice_list, $
-                      morschhauser=morschhauser, pos=pos, no_download=no_download, langlais=langlais
+                      morschhauser=morschhauser, pos=pos, no_download=no_download, langlais=langlais, $
+                      fast=fast, ndat=ndat
 
   IF keyword_set(sl) THEN silent = sl ELSE silent = 0
   IF keyword_set(vb) THEN verbose = vb ELSE verbose = 0
@@ -500,13 +501,6 @@ pro mvn_model_bcrust, var, resolution=resolution, data=modelmag, $
      dprint, "'mvn_model_bcrust' must be called with only one crustal model selected."
      RETURN
   ENDIF 
-;  IF ( N_ELEMENTS(cain_2003) + N_ELEMENTS(cain_2011) + $
-;       N_ELEMENTS(purucker)  + N_ELEMENTS(arkani) + N_ELEMENTS(morschhauser)) NE 1 THEN BEGIN
-;     IF verbose GE 0 THEN BEGIN
-;        print, ptrace()
-;        print, '  The Morschhauser model is used in default.'
-;     ENDIF 
-;     morschhauser = 1
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; Restore model information ;
@@ -602,20 +596,34 @@ pro mvn_model_bcrust, var, resolution=resolution, data=modelmag, $
   bpcsph = DBLARR(3, num)
 
   ; Apply crustal B field model
-  fifb = string("15B) ;"
   t0 = SYSTIME(/sec) 
-  IF (verbose GE 0) THEN print, ptrace() 
-  FOR i = 0L, num-1 DO BEGIN
-     ans = sph_b( g, h, rplanet/pcr[i], pct[i], pcp[i] )
-     bpcsph[*,i] = ans
-     IF (verbose GE 0) THEN $
-        print, format='(a, a, a, I0, a, I0, a, f6.2, a, f0.1, a, $)', $
-               '      ', fifb, '  Modeling ', num, $
-               ' observations with ' + mname + ' nmax = ', nmax, ': ', $
-               (i+1)/float(num)*100., '% complete (Elapsed time: ', SYSTIME(/sec)-t0, ' sec).'
-  ENDFOR                        ; i
-  IF (verbose GE 0) THEN print, ''
-
+  IF KEYWORD_SET(fast) THEN BEGIN
+     bpcsph = mvn_model_bcrust_calc(g, h, rplanet/pcr, pct,  pcp) 
+     dprint, 'Calculation is completed: ', time_string(SYSTIME(/sec)-t0, tformat='mm:ss.fff'), dlevel=2, verbose=verbose
+  ENDIF ELSE BEGIN
+     fifb = string("15B) ;"
+     IF (verbose GE 0) THEN print, ptrace() 
+     FOR i=0L, num-1 DO BEGIN
+        IF KEYWORD_SET(ndat) THEN BEGIN
+           imin = i * LONG(ndat)
+           imax = (imin + LONG(ndat)) < (num - 1)
+           IF (num - 1) - imax LT 0.25 * ndat THEN imax = num - 1
+           ans = mvn_model_bcrust_calc(g, h, rplanet/pcr[imin:imax], pct[imin:imax],  pcp[imin:imax])
+           bpcsph[*, imin:imax] = ans
+        ENDIF ELSE BEGIN
+           imax = i
+           ans = sph_b( g, h, rplanet/pcr[i], pct[i], pcp[i] )
+           bpcsph[*, i] = ans
+        ENDELSE 
+        IF (verbose GE 0) THEN $
+           print, format='(a, a, a, I0, a, I0, a, f6.2, a, f0.1, a, $)', $
+                  '      ', fifb, '  Modeling ', num, $
+                  ' observations with ' + mname + ' nmax = ', nmax, ': ', $
+                  (imax+1)/float(num)*100., '% complete (Elapsed time: ', SYSTIME(/sec)-t0, ' sec).'
+        IF (imax EQ num-1) THEN BREAK
+     ENDFOR                     ; i
+     IF (verbose GE 0) THEN print, ''
+  ENDELSE 
   ; Convert spherical data to cartesian
   bpc = datas2c(bpcsph[0, *], bpcsph[1, *], bpcsph[2, *], pct, pcp) 
                  
