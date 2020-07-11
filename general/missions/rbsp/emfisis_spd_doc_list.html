@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jul  9 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Fri Jul 10 18:16:33 2020.<P>
  
 <HR>
  
@@ -24,6 +24,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#RBSP_EMFISIS_INIT">RBSP_EMFISIS_INIT</A>
 <LI><A HREF="#RBSP_EMFISIS_READ_CONFIG">RBSP_EMFISIS_READ_CONFIG</A>
 <br>Reads the rbsp_emfisis_config file
+<LI><A HREF="#RBSP_EMFISIS_REMOVE_PERIGEE_SPIKE">
+RBSP_EMFISIS_REMOVE_PERIGEE_SPIKE</A>
 <LI><A HREF="#RBSP_LOAD_EMFISIS_QUICKLOOK (PROCEDURE)">
 RBSP_LOAD_EMFISIS_QUICKLOOK (PROCEDURE)</A>
 <br>Load EMFISIS quick-look data. As noted by the EMFISIS team, the quick-look
@@ -162,7 +164,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="RBSP_EMFISIS_READ_CONFIG">
 <H2>RBSP_EMFISIS_READ_CONFIG</H2></A>
 <A HREF="#RBSP_EMFISIS_INIT">[Previous Routine]</A>
-<A HREF="#RBSP_LOAD_EMFISIS_QUICKLOOK (PROCEDURE)">[Next Routine]</A>
+<A HREF="#RBSP_EMFISIS_REMOVE_PERIGEE_SPIKE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -188,9 +190,20 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <STRONG>(See <A href="emfisis/rbsp_emfisis_read_config.pro">general/missions/rbsp/emfisis/rbsp_emfisis_read_config.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RBSP_EMFISIS_REMOVE_PERIGEE_SPIKE">
+<H2>RBSP_EMFISIS_REMOVE_PERIGEE_SPIKE</H2></A>
+<A HREF="#RBSP_EMFISIS_READ_CONFIG">[Previous Routine]</A>
+<A HREF="#RBSP_LOAD_EMFISIS_QUICKLOOK (PROCEDURE)">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Remove spikes around perigee due to mode switch.
+</PRE><P>
+<STRONG>(See <A href="emfisis/rbsp_emfisis_remove_perigee_spike.pro">general/missions/rbsp/emfisis/rbsp_emfisis_remove_perigee_spike.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RBSP_LOAD_EMFISIS_QUICKLOOK (PROCEDURE)">
 <H2>RBSP_LOAD_EMFISIS_QUICKLOOK (PROCEDURE)</H2></A>
-<A HREF="#RBSP_EMFISIS_READ_CONFIG">[Previous Routine]</A>
+<A HREF="#RBSP_EMFISIS_REMOVE_PERIGEE_SPIKE">[Previous Routine]</A>
 <A HREF="#RBSP_SUBTRACT_DCFIELD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
