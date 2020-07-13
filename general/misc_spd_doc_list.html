@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jul 11 03:15:58 2020.<P>
+<STRONG>Last modified: </STRONG>Sun Jul 12 18:15:55 2020.<P>
  
 <HR>
  
@@ -3211,8 +3211,8 @@ KEYWORDS:
                   If this keyword is set, the configuration is defined
                   and stored in a common block, but no window is
                   created.  If CONFIG = -1, putwin behaves exactly like
-                  window, and all of the following keywords are silently
-                  ignored.
+                  window, and all of the following keywords, with the
+                  exception of SCALE are silently ignored.
 
        MONITOR:   Put window in this monitor:
 
@@ -3236,7 +3236,9 @@ KEYWORDS:
                     2 = bottom left
                     3 = bottom right
 
-       SCALE:     Scale factor for setting the window size.
+       SCALE:     Scale factor for setting the window size.  Only
+                  applies when XSIZE and/or YSIZE are set explicitly 
+                  (via keyword) or implictly (via swe_snap_layout).
                   Default = 1.
 
        FULL:      If set, make a full-screen window in MONITOR.
@@ -3252,8 +3254,8 @@ KEYWORDS:
                   separately in the usual way.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-01 11:59:19 -0700 (Wed, 01 Jul 2020) $
- $LastChangedRevision: 28839 $
+ $LastChangedDate: 2020-07-12 16:40:46 -0700 (Sun, 12 Jul 2020) $
+ $LastChangedRevision: 28880 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 
 CREATED BY:	David L. Mitchell  2020-06-03
