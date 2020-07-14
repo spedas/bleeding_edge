@@ -42,6 +42,11 @@
 ;					direction ("Two vec" rotation only). The x-z plane will contain vec2.
 ;					Note that vec2 must be the same size as vec
 ;
+;
+; Other keywords:
+;     vec2_rotated --> vec2 projected along the new coordinate system
+;
+;
 ; NOTES: For EFA and Two Vec rotations, if "waveform" and "vec" have the same number of elements then
 ;		the rotations are vectorized and the program runs quickly. This doesn't work for the Min Var
 ;		rotation b/c "waveform" and "vec" cannot be the same size.
@@ -54,17 +59,16 @@
 ;
 ; VERSION:
 ;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2016-08-23 11:30:41 -0700 (Tue, 23 Aug 2016) $
-;   $LastChangedRevision: 21691 $
+;   $LastChangedDate: 2020-07-13 16:24:22 -0700 (Mon, 13 Jul 2020) $
+;   $LastChangedRevision: 28885 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/utils/rbsp_rotate_field_2_vec.pro $
 ;-
 
 
 
 
-function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
-
-
+function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa,$
+  vecrotated=vec2_rotated
 
 
   get_data,waveform,data=wf
@@ -97,8 +101,8 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
   endif
 
 
-  vec = vec_tmp
-  if is_struct(vec2_tmp) then vec2 = vec2_tmp
+  if is_struct(vec_tmp)  then vecgoo = vec_tmp
+  if is_struct(vec2_tmp) then vec2goo = vec2_tmp
 
 
 
@@ -109,9 +113,9 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
 ;-----------------------------------------------------------------------------
 
 
-  if is_struct(vec) and is_struct(vec2) then begin
-     s1 = size(vec.y)
-     s2 = size(vec2.y)
+  if is_struct(vecgoo) and is_struct(vec2goo) then begin
+     s1 = size(vecgoo.y)
+     s2 = size(vec2goo.y)
      if not (s1[1] eq s2[1]) or not (s1[2] eq s2[2]) then begin
         print,'VEC AND VEC2 MUST HAVE THE SAME SIZE'
         return,1
@@ -119,7 +123,7 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
   endif
 
 
-  if ~is_struct(vec) then begin
+  if ~is_struct(vecgoo) then begin
      print,'NO VECTOR (TO ROTATE TO) INPUTTED. CANNOT ROTATE'
      return,1
   endif
@@ -182,13 +186,13 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
 
 
 
-  boo = size(vec.y,/dimensions)
-  if n_elements(boo) gt 1 then Vecmag = sqrt(vec.y[*,0]^2 + vec.y[*,1]^2 + vec.y[*,2]^2)
-  if n_elements(boo) eq 1 then Vecmag = sqrt(vec.y[0]^2 + vec.y[1]^2 + vec.y[2]^2)
-  if is_struct(vec2) then begin
-     boo = size(vec2.y,/dimensions)
-     if n_elements(boo) gt 1 then Vec2mag = sqrt(vec2.y[*,0]^2 + vec2.y[*,1]^2 + vec2.y[*,2]^2)
-     if n_elements(boo) eq 1 then Vec2mag = sqrt(vec2.y[0]^2 + vec2.y[1]^2 + vec2.y[2]^2)
+  boo = size(vecgoo.y,/dimensions)
+  if n_elements(boo) gt 1 then Vecmag = sqrt(vecgoo.y[*,0]^2 + vecgoo.y[*,1]^2 + vecgoo.y[*,2]^2)
+  if n_elements(boo) eq 1 then Vecmag = sqrt(vecgoo.y[0]^2 + vecgoo.y[1]^2 + vecgoo.y[2]^2)
+  if is_struct(vec2goo) then begin
+     boo = size(vec2goo.y,/dimensions)
+     if n_elements(boo) gt 1 then Vec2mag = sqrt(vec2goo.y[*,0]^2 + vec2goo.y[*,1]^2 + vec2goo.y[*,2]^2)
+     if n_elements(boo) eq 1 then Vec2mag = sqrt(vec2goo.y[0]^2 + vec2goo.y[1]^2 + vec2goo.y[2]^2)
   endif
 
   x=[1,0,0]
@@ -198,11 +202,11 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
 
 
 
-                                ;-------------------------------------------------------------------------------------------
-                                ;DETERMINE NUMBER OF CHUNKS. ALL THE DATA WITHIN A CHUNK IS ROTATED TO A SINGLE VECTOR "VEC"
-                                ;-------------------------------------------------------------------------------------------
+  ;-------------------------------------------------------------------------------------------
+  ;DETERMINE NUMBER OF CHUNKS. ALL THE DATA WITHIN A CHUNK IS ROTATED TO A SINGLE VECTOR "VEC"
+  ;-------------------------------------------------------------------------------------------
 
-  nchunks = n_elements(vec.x)
+  nchunks = n_elements(vecgoo.x)
   chsz = n_elements(wf.x)/(nchunks-1) ;size of each chunk
 
 ;  ;number of additional times to loop to compensate for rounding error
@@ -210,7 +214,7 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
 ;  remainder = (n_elements(wf.x) - nchunks*chsz)/chsz
 
 
-                                ;The size of each chunk must be greater than 1 for a min variance analysis
+  ;The size of each chunk must be greater than 1 for a min variance analysis
   if chsz le 1 and ~keyword_set(vec2) and ~keyword_set(efa) then begin
      print,'CHUNK SIZE (CHSZ) MUST BE > 1 FOR MIN VAR ANALYSIS'
      print,'MAKE SURE THAT THE VECTOR YOU ARE ROTATING TO DOESNT HAVE THE SAME # OF DATA POINTS AS WAVEFORM'
@@ -226,12 +230,12 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
 
 
 
-                                ;--------------------------------
-                                ;ROTATE TO MIN VAR COORD.....
-                                ;--------------------------------
+  ;--------------------------------
+  ;ROTATE TO MIN VAR COORD.....
+  ;--------------------------------
   if ~keyword_set(efa) and ~keyword_set(vec2) then begin
 
-                                ;Check for NaN values. These will mess up Minvar rotation
+     ;Check for NaN values. These will mess up Minvar rotation
      goo = where(finite(wf.y) eq 0)
      too = where(finite(wf.x) eq 0)
      if goo[0] ne -1 or too[0] ne -1 then begin
@@ -241,12 +245,12 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
      endif
 
 
-     Emax = fltarr(n_elements(vec.x),3)
-     Eint = fltarr(n_elements(vec.x),3)
-     Emin = fltarr(n_elements(vec.x),3)
-     khat = fltarr(n_elements(vec.x),3)
-     theta_kb = fltarr(n_elements(vec.x))
-     dtheta_kb = fltarr(n_elements(vec.x))
+     Emax = fltarr(n_elements(vecgoo.x),3)
+     Eint = fltarr(n_elements(vecgoo.x),3)
+     Emin = fltarr(n_elements(vecgoo.x),3)
+     khat = fltarr(n_elements(vecgoo.x),3)
+     theta_kb = fltarr(n_elements(vecgoo.x))
+     dtheta_kb = fltarr(n_elements(vecgoo.x))
 
 
 
@@ -263,8 +267,8 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
 
         if goo[0] eq -1 and too[0] eq -1 then begin
 
-                                ;find minimum variance field components
-        vals = rbsp_min_var_rot(wf.y[s:e,*],bkg_field=reform(vec.y[j,*]),/nomssg)
+        ;find minimum variance field components
+        vals = rbsp_min_var_rot(wf.y[s:e,*],bkg_field=reform(vecgoo.y[j,*]),/nomssg)
         Emaxt = vals.eigenvectors[*,2]*vals.eigenvalues[0]
         Eintt = vals.eigenvectors[*,1]*vals.eigenvalues[1]
         Emint = vals.eigenvectors[*,0]*vals.eigenvalues[2]
@@ -276,7 +280,7 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
         Emax_hat = Emaxt/Emax_mag
 
 
-        zs = reform(vec.y[j,*]/Vecmag[j])
+        zs = reform(vecgoo.y[j,*]/Vecmag[j])
         ys = crossp(zs,Emax_hat)
         ysmag = sqrt(ys[0]^2 + ys[1]^2 + ys[2]^2)
         ys = ys/ysmag
@@ -291,7 +295,7 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
                                 ;print,acos(total(xs*ys))/!dtor
 
 
-                                ;redefine vectors in Min Var coord -----------
+        ;redefine vectors in Min Var coord -----------
         vec_minvar = [0,0,Vecmag[j]]
 
 
@@ -322,18 +326,18 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
                                 ;print,'SIZE OF FINAL ARRAY',size(vecFAx)
 
      store_data,waveform + '_FA_minvar',data={x:wf.x,y:[[vecFAx],[vecFAy],[vecFAz]]}
-     store_data,'emax_vec_minvar',data={x:vec.x,y:Emax}
-     store_data,'eint_vec_minvar',data={x:vec.x,y:Eint}
-     store_data,'emin_vec_minvar',data={x:vec.x,y:Emin}
-     store_data,'minvar_eigenvalues',data={x:vec.x,y:[[Emax_mag],[Eint_mag],[Emin_mag]]}
-     store_data,'emax2eint',data={x:vec.x,y:Emax_mag/Eint_mag}
-     store_data,'eint2emin',data={x:vec.x,y:Eint_mag/Emin_mag}
-     store_data,'theta_kb',data={x:vec.x,y:theta_kb}
-     store_data,'dtheta_kb',data={x:vec.x,y:dtheta_kb}
-     store_data,'emax_unitvec',data={x:vec.x,y:Emax/Emax_mag}  ;defined in terms of input coord
-     store_data,'eint_unitvec',data={x:vec.x,y:Eint/Eint_mag}
-     store_data,'emin_unitvec',data={x:vec.x,y:Emin/Emin_mag}
-     store_data,'k_unitvec',data={x:vec.x,y:khat}
+     store_data,'emax_vec_minvar',data={x:vecgoo.x,y:Emax}
+     store_data,'eint_vec_minvar',data={x:vecgoo.x,y:Eint}
+     store_data,'emin_vec_minvar',data={x:vecgoo.x,y:Emin}
+     store_data,'minvar_eigenvalues',data={x:vecgoo.x,y:[[Emax_mag],[Eint_mag],[Emin_mag]]}
+     store_data,'emax2eint',data={x:vecgoo.x,y:Emax_mag/Eint_mag}
+     store_data,'eint2emin',data={x:vecgoo.x,y:Eint_mag/Emin_mag}
+     store_data,'theta_kb',data={x:vecgoo.x,y:theta_kb}
+     store_data,'dtheta_kb',data={x:vecgoo.x,y:dtheta_kb}
+     store_data,'emax_unitvec',data={x:vecgoo.x,y:Emax/Emax_mag}  ;defined in terms of input coord
+     store_data,'eint_unitvec',data={x:vecgoo.x,y:Eint/Eint_mag}
+     store_data,'emin_unitvec',data={x:vecgoo.x,y:Emin/Emin_mag}
+     store_data,'k_unitvec',data={x:vecgoo.x,y:khat}
 
      struct = {notes:['ROTATED TO MIN-VAR COORDINATES']}
 
@@ -343,12 +347,15 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
 
 
 
-                                ;------------------------------------------------------------------
-                                ;Two vector rotation (z-axis along vec and vec2 is in x-z plane)
-                                ;------------------------------------------------------------------
+  ;------------------------------------------------------------------
+  ;Two vector rotation (z-axis along vec and vec2 is in x-z plane)
+  ;------------------------------------------------------------------
   if not keyword_set(efa) and keyword_set(vec2) then begin
 
+     ;this will be the vec2 projected along the final coordinates.
+     vec2_rotated = fltarr(nchunks,3)
      if chsz gt 1 then begin
+
 
         for j=0L,nchunks-2 do begin
 
@@ -356,8 +363,8 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
            e = (j+1)*chsz-1
 
 
-           zs = reform(vec.y[j,*]/Vecmag[j]) ;unit vector along z (mag field)
-           ys = reform(crossp(zs,vec2.y[j,*]/Vec2mag[j]))
+           zs = reform(vecgoo.y[j,*]/Vecmag[j]) ;unit vector along z (mag field)
+           ys = reform(crossp(zs,vec2goo.y[j,*]/Vec2mag[j]))
            ys = ys/sqrt(ys[0]^2 + ys[1]^2 + ys[2]^2)
            xs = crossp(ys,zs)
            xs = xs/sqrt(xs[0]^2 + xs[1]^2 + xs[2]^2)
@@ -376,12 +383,17 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
            vecFAy[s:e] = tmpy
            vecFAz[s:e] = tmpz
 
+           vec2x = vec2goo.y[j,0]*xs[0] + vec2goo.y[j,1]*xs[1] + vec2goo.y[j,2]*xs[2]
+           vec2y = vec2goo.y[j,0]*ys[0] + vec2goo.y[j,1]*ys[1] + vec2goo.y[j,2]*ys[2]
+           vec2z = vec2goo.y[j,0]*zs[0] + vec2goo.y[j,1]*zs[1] + vec2goo.y[j,2]*zs[2]
+           vec2_rotated[j,*] = [[vec2x],[vec2y],[vec2z]]/sqrt(vec2x^2 + vec2y^2 + vec2z^2)
+
 
         endfor
      endif
 
-                                ;if "vec" has the same number of elements as "wf" then we can do the rotations
-                                ;all at once
+    ;if "vec" has the same number of elements as "wf" then we can do the rotations
+    ;all at once
      if chsz eq 1 then begin
 
         n = n_elements(wf.x)
@@ -393,8 +405,8 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
         z[*,2] = 1
 
 
-        zs = [[reform(vec.y[*,0])/vecmag],[reform(vec.y[*,1])/vecmag],[reform(vec.y[*,2])/vecmag]] ;unit vector along z (mag field)
-        ys = [[zs[*,1]*vec2.y[*,2]-zs[*,2]*vec2.y[*,1]],[zs[*,2]*vec2.y[*,0]-zs[*,0]*vec2.y[*,2]],[zs[*,0]*vec2.y[*,1]-zs[*,1]*vec2.y[*,0]]]
+        zs = [[reform(vecgoo.y[*,0])/vecmag],[reform(vecgoo.y[*,1])/vecmag],[reform(vecgoo.y[*,2])/vecmag]] ;unit vector along z (mag field)
+        ys = [[zs[*,1]*vec2goo.y[*,2]-zs[*,2]*vec2goo.y[*,1]],[zs[*,2]*vec2goo.y[*,0]-zs[*,0]*vec2goo.y[*,2]],[zs[*,0]*vec2goo.y[*,1]-zs[*,1]*vec2goo.y[*,0]]]
 
         ysmag = sqrt(ys[*,0]^2 + ys[*,1]^2 + ys[*,2]^2)
         ys = [[ys[*,0]/ysmag],[ys[*,1]/ysmag],[ys[*,2]/ysmag]]
@@ -434,7 +446,7 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
            s = j*chsz
            e = (j+1)*chsz-1
 
-           zs = reform(vec.y[j,*]/Vecmag[j])      ;unit vector along z (mag field)
+           zs = reform(vecgoo.y[j,*]/Vecmag[j])      ;unit vector along z (mag field)
            ys = crossp(zs,z)                      ;This y-axis will be relatively close to the original x-axis.
            ysmag = sqrt(ys[0]^2 + ys[1]^2 + ys[2]^2)
            ys = ys/ysmag
@@ -467,7 +479,7 @@ function rbsp_rotate_field_2_vec,waveform,vec,vec2=vec2,efa=efa
         z[*,2] = 1
 
 
-        zs = [[reform(vec.y[*,0])/vecmag],[reform(vec.y[*,1])/vecmag],[reform(vec.y[*,2])/vecmag]] ;unit vector along z (mag field)
+        zs = [[reform(vecgoo.y[*,0])/vecmag],[reform(vecgoo.y[*,1])/vecmag],[reform(vecgoo.y[*,2])/vecmag]] ;unit vector along z (mag field)
         ys = [[zs[*,1]*z[*,2]-zs[*,2]*z[*,1]],[zs[*,2]*z[*,0]-zs[*,0]*z[*,2]],[zs[*,0]*z[*,1]-zs[*,1]*z[*,0]]]
         ysmag = sqrt(ys[*,0]^2 + ys[*,1]^2 + ys[*,2]^2)
         ys = [[ys[*,0]/ysmag],[ys[*,1]/ysmag],[ys[*,2]/ysmag]]

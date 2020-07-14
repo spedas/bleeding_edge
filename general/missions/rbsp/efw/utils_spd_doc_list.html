@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Jul 12 18:15:55 2020.<P>
+<STRONG>Last modified: </STRONG>Mon Jul 13 18:15:51 2020.<P>
  
 <HR>
  
@@ -835,6 +835,11 @@ myrotma = MIN_VAR(myavgmax[avsra],myavgmay[avsra],myavgmaz[avsra],EIG_VALS=myeig
 					direction (&quot;Two vec&quot; rotation only). The x-z plane will contain vec2.
 					Note that vec2 must be the same size as vec
 
+
+ Other keywords:
+     vec2_rotated --&gt; vec2 projected along the new coordinate system
+
+
  NOTES: For EFA and Two Vec rotations, if &quot;waveform&quot; and &quot;vec&quot; have the same number of elements then
 		the rotations are vectorized and the program runs quickly. This doesn't work for the Min Var
 		rotation b/c &quot;waveform&quot; and &quot;vec&quot; cannot be the same size.
@@ -847,8 +852,8 @@ myrotma = MIN_VAR(myavgmax[avsra],myavgmay[avsra],myavgmaz[avsra],EIG_VALS=myeig
 
  VERSION:
    $LastChangedBy: aaronbreneman $
-   $LastChangedDate: 2016-08-23 11:30:41 -0700 (Tue, 23 Aug 2016) $
-   $LastChangedRevision: 21691 $
+   $LastChangedDate: 2020-07-13 16:24:22 -0700 (Mon, 13 Jul 2020) $
+   $LastChangedRevision: 28885 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/utils/rbsp_rotate_field_2_vec.pro $
 </PRE><P>
 <STRONG>(See <A href="utils/rbsp_rotate_field_2_vec.pro">general/missions/rbsp/efw/utils/rbsp_rotate_field_2_vec.pro</A>)</STRONG><P>
