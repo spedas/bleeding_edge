@@ -62,8 +62,8 @@
 ; 
 ;
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-10-02 11:19:09 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24078 $
+; $LastChangedDate: 2020-07-14 10:56:48 -0700 (Tue, 14 Jul 2020) $
+; $LastChangedRevision: 28887 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_load_sst2.pro $
 ;-
 
@@ -110,7 +110,7 @@ pro thm_load_sst2_count_rate,tplotname,suffix
   
    out_name = stem+'_count_rate'+suffix
    store_data,out_name,data={x:d.x,y:count_dat}
-   options,out_name,yrange=[0,2e4] 
+   options,out_name,yrange=[0,5e4] 
   
 end
 
@@ -320,7 +320,7 @@ my_themis = source_options
 
 vb = keyword_set(verbose) ? verbose : 0
 vb = vb > my_themis.verbose
-dprint,dlevel=4,verbose=vb,'Start; $Id: thm_load_sst2.pro 24078 2017-10-02 18:19:09Z jimm $'
+dprint,dlevel=4,verbose=vb,'Start; $Id: thm_load_sst2.pro 28887 2020-07-14 17:56:48Z jimm $'
 
 vprobes = ['a','b','c','d','e'];,'f']
 vlevels = ['l1','l2']

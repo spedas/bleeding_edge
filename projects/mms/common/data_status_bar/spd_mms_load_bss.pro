@@ -32,10 +32,14 @@
 ; CREATED BY: Mitsuo Oka   Oct 2015
 ; 
 ; Updated by egrimes, June 2016
+; Updated by egrimes, July 2020 - to get the fast segment bars using the new SRoI code instead of 
+;      the older fast segment routine for dates on and after 6Nov15 (this is because the older fast segment
+;      bars routine returns incorrect segments for later in the mission, but the SRoI routine doesn't work 
+;      for dates before 6Nov15)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-08-08 11:39:45 -0700 (Tue, 08 Aug 2017) $
-;$LastChangedRevision: 23765 $
+;$LastChangedDate: 2020-07-14 11:52:54 -0700 (Tue, 14 Jul 2020) $
+;$LastChangedRevision: 28888 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/spd_mms_load_bss.pro $
 ;-
 
@@ -68,9 +72,18 @@ PRO spd_mms_load_bss, trange=trange, datatype=datatype, include_labels=include_l
   for n=0,nmax-1 do begin
     case datatype[n] of
       'fast': begin
-         mms_load_fast_segments, trange=trange
-         options,'mms_bss_fast',thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
-          ticklen=0,panel_size=panel_size,colors=6, labels=[fast_label], labsize=1, charsize=1.
+         ; use the old fast segments code for dates before 6Nov15
+         if time_double(trange[0]) le time_double('2015-11-06') then begin
+           mms_load_fast_segments, trange=trange
+           options,'mms_bss_fast',thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
+            ticklen=0,panel_size=panel_size,colors=6, labels=[fast_label], labsize=1, charsize=1.
+          endif else begin
+            ; use SRoI code (probe 1) for dates on and after 6Nov15
+            mms_load_sroi_segments, trange=trange
+            copy_data, 'mms1_bss_sroi', 'mms_bss_fast'
+            options,'mms_bss_fast',thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
+              ticklen=0,panel_size=panel_size,colors=6, labels=[fast_label], labsize=1, charsize=1.
+          endelse
        end
       'burst': begin
          mms_load_brst_segments, trange=trange
