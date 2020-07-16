@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_cotrans_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-05-28 14:28:23 -0700 (Thu, 28 May 2020) $
-; $LastChangedRevision: 28748 $
+; $LastChangedDate: 2020-07-15 13:37:49 -0700 (Wed, 15 Jul 2020) $
+; $LastChangedRevision: 28892 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_cotrans_ut__define.pro $
 ;-
 
@@ -156,7 +156,8 @@ function mms_cotrans_ut::test_cotrans_qcotrans_dmpa2gsm
   get_data, 'qdiff', data=d
   zero_idxs = where(d.Y le 0.0001, zerocount)
   if zerocount ne 0 then d.Y[zero_idxs] = !values.d_nan
-  assert, abs((minmax(d.Y))[0]) lt 1. && abs((minmax(d.Y))[1]) lt 1., 'Problem with mms_cotrans vs. mms_qcotrans test (dmpa2gsm)'
+  ; egrimes relaxed max difference to 3nT, 7/15/2020, after update to IGRF coefficients in cotrans_lib
+  assert, abs((minmax(d.Y))[0]) lt 3. && abs((minmax(d.Y))[1]) lt 3., 'Problem with mms_cotrans vs. mms_qcotrans test (dmpa2gsm)'
   return, 1
 end
 
@@ -168,7 +169,8 @@ function mms_cotrans_ut::test_cotrans_qcotrans_dmpa2sm
   zero_idxs = where(d.Y le 0.0001, zerocount)
   if zerocount ne 0 then d.Y[zero_idxs] = !values.d_nan
   ; egrimes relaxed max difference to 2nT, 5/4/2016, max occurs near perigee where field is > 1000 nT
-  assert, abs((minmax(d.Y))[0]) lt 1. && abs((minmax(d.Y))[1]) lt 2., 'Problem with mms_cotrans vs. mms_qcotrans test (dmpa2sm)'
+  ; egrimes relaxed max difference to 3nT, 7/15/2020, after update to IGRF coefficients in cotrans_lib
+  assert, abs((minmax(d.Y))[0]) lt 3. && abs((minmax(d.Y))[1]) lt 3., 'Problem with mms_cotrans vs. mms_qcotrans test (dmpa2sm)'
   return, 1
 end
 
@@ -179,7 +181,8 @@ function mms_cotrans_ut::test_cotrans_qcotrans_gse2sm
   get_data, 'qdiff', data=d
   zero_idxs = where(d.Y le 0.0001, zerocount)
   if zerocount ne 0 then d.Y[zero_idxs] = !values.d_nan
-  assert, abs((minmax(d.Y))[0]) lt 1. && abs((minmax(d.Y))[1]) lt 1., 'Problem with mms_cotrans vs. mms_qcotrans test (gse2sm)'
+  ; egrimes relaxed max difference to 3nT, 7/15/2020, after update to IGRF coefficients in cotrans_lib
+  assert, abs((minmax(d.Y))[0]) lt 3. && abs((minmax(d.Y))[1]) lt 3., 'Problem with mms_cotrans vs. mms_qcotrans test (gse2sm)'
   return, 1
 end
 

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jul 14 18:15:54 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Jul 15 18:15:51 2020.<P>
  
 <HR>
  
@@ -797,7 +797,7 @@ myrotma = MIN_VAR(myavgmax[avsra],myavgmay[avsra],myavgmaz[avsra],EIG_VALS=myeig
 			where 'waveform' is a tplot variable and 'vec'
 			is either a tplot variable or an array of [3]
 
- PURPOSE: Returns the input waveform or vector rotated to one of the following systems.
+ PURPOSE: Returns rotation matrix and the input waveform or vector rotated to one of the following systems.
 				a) Min Var - input &quot;vec&quot; (e.g. DC Bfield) only
 					z-hat defined to be direction of &quot;vec&quot;
 					y_hat is given by vec cross x_max, where x_max is the maximum variance eigenvector
@@ -815,10 +815,10 @@ myrotma = MIN_VAR(myavgmax[avsra],myavgmay[avsra],myavgmaz[avsra],EIG_VALS=myeig
               y-hat ~ (Bo x r)        (azimuthal)
               x-hat ~ (y-hat x Bo)    (radial)
 
-				c) EFA - similar to Two Vec, but doesn't require an additional input vector
+				c) EFA - similar to Two Vec, but doesn't require an additional input vector.
+         Instead uses the input x-hat (i.e. [1,0,0])
 					z-hat is direction of &quot;vec&quot;
-					y-hat is the x-axis of input coord (roughly), formed by crossing vec
-					with [0,1,0].
+         and x-z plane consists of Vec and [1,0,0]
 					Uses this if /efa is set
 
  INPUT: Tplot variable names of:
@@ -831,30 +831,9 @@ myrotma = MIN_VAR(myavgmax[avsra],myavgmay[avsra],myavgmaz[avsra],EIG_VALS=myeig
 					&quot;vec&quot; and &quot;waveform&quot; must be
 					the same!
                                        Also note that m != n necessarily
-		vec2  -&gt; (optional) Same type as &quot;vec&quot;. Used to determine the perp
-					direction (&quot;Two vec&quot; rotation only). The x-z plane will contain vec2.
-					Note that vec2 must be the same size as vec
 
 
- Other keywords:
-     vec2_rotated --&gt; vec2 projected along the new coordinate system
 
-
- NOTES: For EFA and Two Vec rotations, if &quot;waveform&quot; and &quot;vec&quot; have the same number of elements then
-		the rotations are vectorized and the program runs quickly. This doesn't work for the Min Var
-		rotation b/c &quot;waveform&quot; and &quot;vec&quot; cannot be the same size.
-
- OUTPUT: Returns tplot variables of rotated waveform in requested coordinates
-
- HISTORY:
- 	CREATED BY:    Aaron Breneman, 03/16/2010
-				   Major modification for use with tplot variables AWB (2/26/2014)
-
- VERSION:
-   $LastChangedBy: aaronbreneman $
-   $LastChangedDate: 2020-07-13 16:24:22 -0700 (Mon, 13 Jul 2020) $
-   $LastChangedRevision: 28885 $
-   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/utils/rbsp_rotate_field_2_vec.pro $
 </PRE><P>
 <STRONG>(See <A href="utils/rbsp_rotate_field_2_vec.pro">general/missions/rbsp/efw/utils/rbsp_rotate_field_2_vec.pro</A>)</STRONG><P>
 <HR>
