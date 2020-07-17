@@ -8,24 +8,25 @@
 ;
 ;  REQUIRES:  tplot library
 ;
-;  KEYWORDS:              Bw -> tplot name of the [n,3] magnetic field
-;                               waveform (nT) in MGSE
+;  KEYWORDS:
+;       Bw -> tplot name of the [n,3] magnetic field
+;             waveform (nT) in MGSE
 ;			  Ew -> tplot name of the [n,3] electric field
 ;			        waveform (mV/m) in MGSE
 ;			  Tshort, Tlong -> short and long period of waveform to use.
-;			  Bo -> (optional keyword) array of DC
-;			  magnetic field directions in MGSE.
-;					Use, for example, if Bw is
-;					from AC-coupled data.
-;                               If not included then Bw is downsampled
-;                               and used as background field
-;             method2 -> The waveform data are first downsampled to 1/Tshort to avoid the wasted
-;			 computation of having to run program with data at unnecessarily high
-;			 sample rate. The waveform is then run through
-;			 bandpass_filter to the frequency range flow=1/Tlong...fhigh=1/Tshort
-;             method1 (default) -> uses smoothing instead of a
-;                        bandpass_filter which results in a sharper freq rolloff than
-;                        smoothing method. Both methods give very similar results for test chorus waves
+;
+;       Bo -> (optional keyword) array of DC magnetic field directions in MGSE.
+;					Use, for example, if Bw is from AC-coupled data.
+;         If not included then Bw is downsampled and used as background field
+;
+;       method1 -> uses smoothing instead of a bandpass_filter which
+;                  results in a sharper freq rolloff than smoothing method.
+;                  Both methods give very similar results for test chorus waves
+;       method2 (default -- seems to work much better for higher freqs) ->
+;                  The waveform data are first downsampled to 1/Tshort to avoid the wasted
+;			             computation of having to run program with data at unnecessarily high
+;			             sample rate. The waveform is then run through
+;			             bandpass_filter to the frequency range flow=1/Tlong...fhigh=1/Tshort
 ;
 ;   NOTES:     DO NOT INPUT DATA WITH SIGNIFICANT GAPS
 ;
@@ -38,24 +39,24 @@
 ;********************************************************************
 ;			 Poynting flux coord system
 ;   		 	P1mgse = Bmgse x xhat_mgse  (xhat_mgse is spin axis component)
-;				P2mgse = Bmgse x P1mgse
-;  		   		P3mgse = Bmgse
+;				  P2mgse = Bmgse x P1mgse
+;  		   	P3mgse = Bmgse
 ;
 ;
 ;
 ;			 The output tplot variables are:
 ;
 ;			 	These three output variables contain a mix of spin axis and spin plane components:
-;		 		        pflux_perp1  -> Poynting flux in perp1 direction
+;		 		  pflux_perp1  -> Poynting flux in perp1 direction
 ;			 		pflux_perp2  -> Poynting flux in perp2 direction
-; 			 		pflux_para   -> Poynting flux along Bo
+; 			 	pflux_para   -> Poynting flux along Bo
 ;
 ;			 	These partial Poynting flux calculations contain only spin plane Ew.
 ;			 		pflux_nospinaxis_perp
 ;			 		pflux_nospinaxis_para
 ;
-;                               All of the above variables projected
-;                               to the ionosphere
+;       All of the above variables projected
+;       to the ionosphere
 ;
 ;
 ;   CREATED:  11/28/2012
@@ -66,7 +67,7 @@
 ;-
 
 
-pro rbsp_poynting_flux,Bw,Ew,Tshort,Tlong,Bo=Bo,method2=method2
+pro rbsp_poynting_flux,Bw,Ew,Tshort,Tlong,Bo=Bo,method1=method1
 
 
   get_data,Bw,data=Bw_test
@@ -87,7 +88,7 @@ pro rbsp_poynting_flux,Bw,Ew,Tshort,Tlong,Bo=Bo,method2=method2
     rbsp_downsample,Bw,suffix='_DC',1/40.
     Bdc = Bw + '_DC'
   endif else begin
-    tinterpol_mxn,Bo,Bw,newname='Mag_mgse_DC'
+    tinterpol_mxn,Bo,Bw,newname='Mag_mgse_DC',/spline
     Bdc = 'Mag_mgse_DC'
   endelse
 
@@ -95,9 +96,9 @@ pro rbsp_poynting_flux,Bw,Ew,Tshort,Tlong,Bo=Bo,method2=method2
   ;Interpolate to get MagDC and Ew data to be on the same times as the Bw data
   get_data,Bw,data=goo
   times = goo.x
-  tinterpol_mxn,Ew,times
+  tinterpol_mxn,Ew,times,/spline
   Ew = Ew + '_interp'
-  tinterpol_mxn,Bdc,times
+  tinterpol_mxn,Bdc,times,/spline
   Bdc = Bdc + '_interp'
 
 
@@ -150,6 +151,8 @@ pro rbsp_poynting_flux,Bw,Ew,Tshort,Tlong,Bo=Bo,method2=method2
   Bmgse_dc_uvec[*,1] = Bmgse_dc.y[*,1]/Bmag_dc
   Bmgse_dc_uvec[*,2] = Bmgse_dc.y[*,2]/Bmag_dc
 
+  P3mgse = Bmgse_dc_uvec
+
 
   get_data,Ew,data=Emgse
   get_data,Bw,data=Bmgse
@@ -161,26 +164,28 @@ pro rbsp_poynting_flux,Bw,Ew,Tshort,Tlong,Bo=Bo,method2=method2
   Ep1 = fltarr(nelem) & Ep2 = Ep1 & Ep3 = Ep1
   for i=0L,nelem-1 do Ep1[i] = total(reform(Emgse[i,*])*reform(P1mgse[i,*]))
   for i=0L,nelem-1 do Ep2[i] = total(reform(Emgse[i,*])*reform(P2mgse[i,*]))
-  for i=0L,nelem-1 do Ep3[i] = total(reform(Emgse[i,*])*reform(Bmgse_dc_uvec[i,*]))
+  for i=0L,nelem-1 do Ep3[i] = total(reform(Emgse[i,*])*reform(P3mgse[i,*]))
   Ep = [[Ep1],[Ep2],[Ep3]]
 
 
   Bp1 = fltarr(nelem) & Bp2 = Bp1 & Bp3 = Bp1
   for i=0L,nelem-1 do Bp1[i] = total(reform(Bmgse[i,*])*reform(P1mgse[i,*]))
   for i=0L,nelem-1 do Bp2[i] = total(reform(Bmgse[i,*])*reform(P2mgse[i,*]))
-  for i=0L,nelem-1 do Bp3[i] = total(reform(Bmgse[i,*])*reform(Bmgse_dc_uvec[i,*]))
+  for i=0L,nelem-1 do Bp3[i] = total(reform(Bmgse[i,*])*reform(P3mgse[i,*]))
   Bp = [[Bp1],[Bp2],[Bp3]]
 
 
+  ;Determine data rate
+  goo = rbsp_sample_rate(times,out_med_avg=medavg)
+  rate = medavg[0]
+
 
 ;--------------------------------------------------
-;Method 1 - use IDL's smooth function (default method)
+;Method 1 - use IDL's smooth function
 ;--------------------------------------------------
 
-  if ~keyword_set(method2) then begin
+  if keyword_set(method1) then begin
 
-    goo = rbsp_sample_rate(times,out_med_avg=medavg)
-    rate = medavg[0]
 
     ;Find lower and upper periods for smoothing
     detren = floor(Tlong * rate)
@@ -253,6 +258,11 @@ pro rbsp_poynting_flux,Bw,Ew,Tshort,Tlong,Bo=Bo,method2=method2
     Epf = BANDPASS_FILTER(Ep2,flow,fhigh) ;,/gaussian)
     Bpf = BANDPASS_FILTER(Bp2,flow,fhigh) ;,/gaussian)
 
+    smoo = floor(Tshort * nyquist)
+    B1bg=smooth((Bmgse_dc_uvec[*,0]),smoo,/nan)
+    B2bg=smooth((Bmgse_dc_uvec[*,1]),smoo,/nan)
+    B3bg=smooth((Bmgse_dc_uvec[*,2]),smoo,/nan)
+
 
     ;Remove the padded zeros
     fE = Epf[0:nelem-1,*]/1000.   ;V/m
@@ -275,12 +285,22 @@ pro rbsp_poynting_flux,Bw,Ew,Tshort,Tlong,Bo=Bo,method2=method2
   S1=(fE2*fB3-fE3*fB2)/muo
   S2=(fE3*fB1-fE1*fB3)/muo
   S3=(fE1*fB2-fE2*fB1)/muo
-  Sp1 = (fE1*fB3)/muo        ;nospinaxis perp
-  Sp2 = (fE1*fB2)/muo        ;nospinaxis parallel
+
+  ;No calculate Pflux for the versions without the "spinaxis" component
+  ;Sp below stands for spinplane. Note that Sp1-hat is a different direction than p1-hat
+  Sp1 = (fE1*fB3)/muo  ;remaining perp (to Bo) component while ignoring less reliable direction (in -1*p2-hat direction)
+  Sp2 = (fE1*fB2)/muo  ;projected onto parallel (Bo) direction while ignoring less reliable direction (in p3-hat direction)
+
 
   ;erg/s/cm2
   S1 = S1*(1d7/1d4) & S2 = S2*(1d7/1d4) & S3 = S3*(1d7/1d4)
   Sp1 = Sp1*(1d7/1d4) & Sp2 = Sp2*(1d7/1d4)
+
+  Svec_pfluxcoord = [[S1],[S2],[S3]]
+  S1tmp = S1
+  S1tmp[*] = 0.
+  Svec_nospinaxis_pfluxcoord = [[S1tmp],[-1*Sp1],[Sp2]]
+
 
 ;--------------------------------------------------
 ;Find angle b/t Poynting flux and Bo
@@ -288,7 +308,6 @@ pro rbsp_poynting_flux,Bw,Ew,Tshort,Tlong,Bo=Bo,method2=method2
 
   Bbkgnd = [[B1bg],[B2bg],[B3bg]]
 
-  ;Bmgse_dc_uvec[*,0]
   S_mag = sqrt(S1^2 + S2^2 + S3^2)
 
   ;Bo defined to be along the third component
@@ -306,25 +325,22 @@ pro rbsp_poynting_flux,Bw,Ew,Tshort,Tlong,Bo=Bo,method2=method2
 
 
 
-;Define the P unit vectors in terms of MGSE(xhat,yhat,zhat)
-;P1M = -By*zhat + Bz*yhat =  [0,B3bg,-B2bg]
-;P2M = Bx*By*yhat + Bx*Bz*zhat - By^2*xhat - Bz^2*xhat = [-B2bg^2 - B3bg^2,B1bg*B2bg,B1bg*B3bg]
-;P3M = Bx*xhat + By*yhat + Bz*zhat = [B1bg,B2bg,B3bg]
+  ;Define the P unit vectors in terms of input coord system (xhat,yhat,zhat)
+  Svecx = fltarr(n_elements(S1)) & Svecy = Svecx & Svecz = Svecx
+  for i=0L,n_elements(S1)-1 do Svecx[i] = S1[i]*p1mgse[i,0] + S2[i]*p2mgse[i,0] + S3[i]*p3mgse[i,0]
+  for i=0L,n_elements(S1)-1 do Svecy[i] = S1[i]*p1mgse[i,1] + S2[i]*p2mgse[i,1] + S3[i]*p3mgse[i,1]
+  for i=0L,n_elements(S1)-1 do Svecz[i] = S1[i]*p1mgse[i,2] + S2[i]*p2mgse[i,2] + S3[i]*p3mgse[i,2]
+  Svec_mgse = [[Svecx],[Svecy],[Svecz]]
+
+  ;Same as above but with the "nospinaxis" version. From above, Sp1 is in the
+  ;-1*p2-hat direction and Sp2 is in the p3-hat direction
+  Svecx2 = fltarr(n_elements(Sp1)) & Svecy2 = Svecx2 & Svecz2 = Svecx2
+  for i=0L,n_elements(S1)-1 do Svecx2[i] = Sp1[i]*(-1)*p2mgse[i,0] + Sp2[i]*p3mgse[i,0]
+  for i=0L,n_elements(S1)-1 do Svecy2[i] = Sp1[i]*(-1)*p2mgse[i,1] + Sp2[i]*p3mgse[i,1]
+  for i=0L,n_elements(S1)-1 do Svecz2[i] = Sp1[i]*(-1)*p2mgse[i,2] + Sp2[i]*p3mgse[i,2]
+  Svec_mgse2 = [[Svecx2],[Svecy2],[Svecz2]]
 
 
-;;Normally our Poynting flux vector is defined as
-;Svec = [S1,S2,S3] = S1*P1 + S2*P2 + S3*P3
-;;Poynting flux defined in terms of P[MGSE]
-;Svec = S1*P1M + S2*P2M + S3*P3M
-
-  Svecx = -1*S2*B2bg^2 - 1*S2*B3bg^2 + S3
-  Svecy = S1*B3bg + S2*B1bg*B2bg + S3*B2bg
-  Svecz = -1*S1*B2bg + S2*B1bg*B3bg + S3*B3bg
-
-
-  ;This should be the Poynting flux vector in terms of MGSE
-  ;coord....need to test!!!
-  Svec_MGSE = [[Svecx],[Svecy],[Svecz]]
 
 
 
@@ -355,22 +371,30 @@ pro rbsp_poynting_flux,Bw,Ew,Tshort,Tlong,Bo=Bo,method2=method2
   store_data,'pflux_perp1',data={x:times,y:S1}
   store_data,'pflux_perp2',data={x:times,y:S2}
   store_data,'pflux_nospinaxis_para',data={x:times,y:Sp2}
-  store_data,'pflux_nospinaxis_perp',data={x:times,y:Sp1}
+  store_data,'pflux_nospinaxis_perp',data={x:times,y:-1*Sp1}
   store_data,'pflux_Ew',data={x:times,y:1000.*[[fE1],[fE2],[fE3]]} ;change back to mV/m
   store_data,'pflux_Bw',data={x:times,y:1d9*[[fB1],[fB2],[fB3]]}   ;change back to nT
   store_data,'pflux_para_iono',data={x:times,y:S3_ion}
   store_data,'pflux_perp1_iono',data={x:times,y:S1_ion}
   store_data,'pflux_perp2_iono',data={x:times,y:S2_ion}
   store_data,'pflux_nospinaxis_para_iono',data={x:times,y:Sp2_ion}
-  store_data,'pflux_nospinaxis_perp_iono',data={x:times,y:Sp1_ion}
+  store_data,'pflux_nospinaxis_perp_iono',data={x:times,y:-1*Sp1_ion}
   store_data,'angle_pflux_Bo',data={x:times,y:angle_SB}
   ;store_data,'pflux_para_mgse',data={x:times,y:pflux_para_mgse}
   ;store_data,'pflux_perp1_mgse',data={x:times,y:pflux_perp1_mgse}
   ;store_data,'pflux_perp2_mgse',data={x:times,y:pflux_perp2_mgse}
+  store_data,'pflux_pfluxcoord',data={x:times,y:Svec_pfluxcoord}
+  store_data,'pflux_nospinaxis_pfluxcoord',data={x:times,y:Svec_nospinaxis_pfluxcoord}
   store_data,'pflux_mgse',data={x:times,y:Svec_mgse}
+  store_data,'pflux_nospinaxis_mgse',data={x:times,y:Svec_mgse2}
 
 
 
+
+  options,'pflux_pfluxcoord','ytitle','Poynting flux in P1,P2,P3 coord system!C[erg/cm^2/s]'
+  options,'pflux_nospinaxis_pfluxcoord','ytitle','Poynting flux in P1,P2,P3 coord system!Ccalculated without spinaxis component!C[erg/cm^2/s]'
+  options,'pflux_mgse','ytitle','Poynting flux in mgse coord system!C[erg/cm^2/s]'
+  options,'pflux_nospinaxis_mgse','ytitle','Poynting flux in mgse coord system!Ccalculated without spinaxis component!C[erg/cm^2/s]'
   options,'pflux_Ew','ytitle','Ew!Cpflux coord!C[mV/m]'
   options,'pflux_Bw','ytitle','Bw!Cpflux coord!C[nT]'
   options,'pflux_Ew','ytitle','Ew!Cpflux!C[mV/m]'
@@ -386,7 +410,6 @@ pro rbsp_poynting_flux,Bw,Ew,Tshort,Tlong,Bo=Bo,method2=method2
   options,'pflux_perp2_iono','ytitle','pflux!Cmapped!Cperp2 to Bo!C[erg/cm^2/s]'
   options,'pflux_para_iono','ytitle','pflux!Cmapped!Cparallel to Bo!C[erg/cm^2/s]'
   options,'angle_pflux_Bo','ytitle','Angle (deg) b/t!CBo and Pflux'
-  options,'pflux_mgse','ytitle','Pflux in MGSE coord'
   options,'pflux_nospinaxis_perp','labels','No spin axis!C comp'
   options,'pflux_nospinaxis_para','labels','No spin axis!C comp!C+ along Bo'
   options,'pflux_nospinaxis_perp_iono','labels','No spin axis!C comp'
@@ -398,10 +421,10 @@ pro rbsp_poynting_flux,Bw,Ew,Tshort,Tlong,Bo=Bo,method2=method2
   options,'pflux_nospinaxis_para_iono','colors',2
   options,'pflux_nospinaxis_perp_iono','colors',1
 
-  ylim,['pflux_perp1','pflux_perp2','pflux_para'],-0.2,0.2
-  ylim,['pflux_nospinaxis_perp','pflux_nospinaxis_para'],-0.2,0.2
-  ylim,['pflux_nospinaxis_perp_iono','pflux_nospinaxis_para_iono'],-10,10
-  ylim,['pflux_perp1_iono','pflux_perp2_iono','pflux_para_iono'],0,0
+;  ylim,['pflux_perp1','pflux_perp2','pflux_para'],-0.2,0.2
+;  ylim,['pflux_nospinaxis_perp','pflux_nospinaxis_para'],-0.2,0.2
+;  ylim,['pflux_nospinaxis_perp_iono','pflux_nospinaxis_para_iono'],-10,10
+;  ylim,['pflux_perp1_iono','pflux_perp2_iono','pflux_para_iono'],0,0
 
 
 

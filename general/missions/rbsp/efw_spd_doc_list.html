@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Jul 15 18:15:51 2020.<P>
+<STRONG>Last modified: </STRONG>Thu Jul 16 18:15:53 2020.<P>
  
 <HR>
  
@@ -2215,24 +2215,25 @@ Notes:
 
   REQUIRES:  tplot library
 
-  KEYWORDS:              Bw -&gt; tplot name of the [n,3] magnetic field
-                               waveform (nT) in MGSE
+  KEYWORDS:
+       Bw -&gt; tplot name of the [n,3] magnetic field
+             waveform (nT) in MGSE
 			  Ew -&gt; tplot name of the [n,3] electric field
 			        waveform (mV/m) in MGSE
 			  Tshort, Tlong -&gt; short and long period of waveform to use.
-			  Bo -&gt; (optional keyword) array of DC
-			  magnetic field directions in MGSE.
-					Use, for example, if Bw is
-					from AC-coupled data.
-                               If not included then Bw is downsampled
-                               and used as background field
-             method2 -&gt; The waveform data are first downsampled to 1/Tshort to avoid the wasted
-			 computation of having to run program with data at unnecessarily high
-			 sample rate. The waveform is then run through
-			 bandpass_filter to the frequency range flow=1/Tlong...fhigh=1/Tshort
-             method1 (default) -&gt; uses smoothing instead of a
-                        bandpass_filter which results in a sharper freq rolloff than
-                        smoothing method. Both methods give very similar results for test chorus waves
+
+       Bo -&gt; (optional keyword) array of DC magnetic field directions in MGSE.
+					Use, for example, if Bw is from AC-coupled data.
+         If not included then Bw is downsampled and used as background field
+
+       method1 -&gt; uses smoothing instead of a bandpass_filter which
+                  results in a sharper freq rolloff than smoothing method.
+                  Both methods give very similar results for test chorus waves
+       method2 (default -- seems to work much better for higher freqs) -&gt;
+                  The waveform data are first downsampled to 1/Tshort to avoid the wasted
+			             computation of having to run program with data at unnecessarily high
+			             sample rate. The waveform is then run through
+			             bandpass_filter to the frequency range flow=1/Tlong...fhigh=1/Tshort
 
    NOTES:     DO NOT INPUT DATA WITH SIGNIFICANT GAPS
 
@@ -2245,24 +2246,24 @@ Notes:
 ********************************************************************
 			 Poynting flux coord system
    		 	P1mgse = Bmgse x xhat_mgse  (xhat_mgse is spin axis component)
-				P2mgse = Bmgse x P1mgse
-  		   		P3mgse = Bmgse
+				  P2mgse = Bmgse x P1mgse
+  		   	P3mgse = Bmgse
 
 
 
 			 The output tplot variables are:
 
 			 	These three output variables contain a mix of spin axis and spin plane components:
-		 		        pflux_perp1  -&gt; Poynting flux in perp1 direction
+		 		  pflux_perp1  -&gt; Poynting flux in perp1 direction
 			 		pflux_perp2  -&gt; Poynting flux in perp2 direction
- 			 		pflux_para   -&gt; Poynting flux along Bo
+ 			 	pflux_para   -&gt; Poynting flux along Bo
 
 			 	These partial Poynting flux calculations contain only spin plane Ew.
 			 		pflux_nospinaxis_perp
 			 		pflux_nospinaxis_para
 
-                               All of the above variables projected
-                               to the ionosphere
+       All of the above variables projected
+       to the ionosphere
 
 
    CREATED:  11/28/2012
