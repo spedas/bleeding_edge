@@ -2,8 +2,8 @@
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-07-01 08:47:47 -0700 (Wed, 01 Jul 2020) $
-; $LastChangedRevision: 28827 $
+; $LastChangedDate: 2020-07-17 17:23:27 -0700 (Fri, 17 Jul 2020) $
+; $LastChangedRevision: 28907 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -207,24 +207,26 @@ pro spp_gen_apdat::handler,ccsds,source_dict=source_dict ;,header,source_info=so
 end
 
 
+pro spp_gen_apdat::sort
+  datarray = self.data.array
+  if keyword_set(datarray) then begin
+    s = sort(datarray.time)
+    datarray = datarray[s]
+    self.data.array = datarray
+  endif
+  self.process_time = systime(1)
+end
+
+
 pro spp_gen_apdat::finish,ttags=ttags
   if self.npkts ne 0 then self.print ,dlevel=3,'finish'
   verbose=0
   datarray = self.data.array
   if keyword_set(ttags) eq 0 then ttags = self.ttags
-  if keyword_set(self.sort_flag) && keyword_set(datarray) then begin
-    s = sort(datarray.time)
-    datarray = datarray[s]
-    ;    dotarray.gap=0
-    self.data.array = datarray
-    ;    self.data.array.gap = 0
-  endif
   if keyword_set(datarray) && keyword_set(self.tname) then  begin
     store_data,self.tname,data=datarray, tagnames=ttags,  gap_tag='GAP',verbose=verbose
     ;    options,self.tname+'*_BITS',tplot_routine='bitplot'
   endif
-
-  self.process_time = systime(1)
 end
 
 
@@ -235,8 +237,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-07-01 08:47:47 -0700 (Wed, 01 Jul 2020) $
-; $LastChangedRevision: 28827 $
+; $LastChangedDate: 2020-07-17 17:23:27 -0700 (Fri, 17 Jul 2020) $
+; $LastChangedRevision: 28907 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -253,8 +255,8 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: ali $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2020-07-01 08:47:47 -0700 (Wed, 01 Jul 2020) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 28827 $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2020-07-17 17:23:27 -0700 (Fri, 17 Jul 2020) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 28907 $'
 
     return,sw_hash
 end
@@ -297,8 +299,8 @@ function spp_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: ali $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2020-07-01 08:47:47 -0700 (Wed, 01 Jul 2020) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 28827 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2020-07-17 17:23:27 -0700 (Fri, 17 Jul 2020) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 28907 $'
 
   return,global_att
 end

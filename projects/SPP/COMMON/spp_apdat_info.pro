@@ -1,7 +1,7 @@
 ; +
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-07-01 15:24:10 -0700 (Wed, 01 Jul 2020) $
-; $LastChangedRevision: 28848 $
+; $LastChangedDate: 2020-07-17 17:23:27 -0700 (Fri, 17 Jul 2020) $
+; $LastChangedRevision: 28907 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
@@ -58,7 +58,6 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     all_apdat=!null
     alt_apdat= !null
     all_info = !null
-    return
   endif
 
   if ~keyword_set(all_apdat) then all_apdat = replicate( obj_new() , 2^11 )
@@ -73,7 +72,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   endif
 
   if keyword_set(current_filename) then begin
-    basename =file_basename(current_filename)
+    basename =file_basename(current_filename,'.sav')
     current_filehash = basename.hashcode()
     all_info['current_filename'] = current_filename
     all_info['current_filehash'] = current_filehash
@@ -87,7 +86,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   endif
 
   if keyword_set(file_restore) then begin
-    basename = file_basename(file_restore.substring(0,-5))
+    basename = file_basename(file_restore,'.sav')
     hashcode = basename.hashcode()
     filetime = spp_spc_met_to_unixtime(ulong(strmid(basename,0,10)))
     if all_info['file_hash_list'].haskey(hashcode) then begin
@@ -102,7 +101,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
       if obj_valid(all_apdat[apid]) then all_apdat[apid].append , aps[apid] else all_apdat[apid] = aps[apid]
     endfor
     dprint,'Restored file:  '+file_restore+' Date: '+time_string(filetime,tformat='YYYY-MM-DD/hh:mm:ss (DOY)')
-    spp_apdat_info,current_filename=file_restore.substring(0,-5) ;delete the '.sav' part
+    spp_apdat_info,current_filename=file_restore
   endif
 
   if keyword_set(file_save) then begin
@@ -165,8 +164,9 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     if n_elements(cdf_linkname) ne 0 then apdat.cdf_linkname= cdf_linkname
     if n_elements(output_lun) ne 0 then apdat.output_lun = output_lun
     if ~keyword_set(all)  &&  (apdat.npkts eq 0) then continue
-    if keyword_set(finish) then    apdat.finish
-    if keyword_set(make_cdf) then  apdat.cdf_create_file
+    if keyword_set(sort_flag) then apdat.sort
+    if keyword_set(finish)    then apdat.finish
+    if keyword_set(make_cdf)  then apdat.cdf_create_file
     if keyword_set(clear)  then    apdat.clear
     if keyword_set(zero)   then    apdat.zero
     if keyword_set(noprod) then    apdat.noprod
