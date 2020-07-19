@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jul 17 18:15:51 2020.<P>
+<STRONG>Last modified: </STRONG>Sat Jul 18 18:15:51 2020.<P>
  
 <HR>
  
@@ -136,7 +136,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#PTR_EXTRACT">PTR_EXTRACT</A>
 <LI><A HREF="#PTRACE">PTRACE</A>
 <LI><A HREF="#PUTWIN">PUTWIN</A>
-<br>Creates a window and places it, according to one of four possible
+<br>Creates a window and places it in a specified monitor, with
 <LI><A HREF="#PWRSPC">PWRSPC</A>
 <br>Called with times time and data quantity, PWRSPC returns a power
 <LI><A HREF="#READ_ASCII_CMDLINE">READ_ASCII_CMDLINE</A>
@@ -3167,10 +3167,9 @@ Created by Davin Larson. May 2002.
 <PRE>
 PROCEDURE:   putwin
 PURPOSE:
-  Creates a window and places it, according to one of four possible
-  monitor configurations, with offsets relative to the screen edges.
-  This is a user-friendly version of window that is designed for a 
-  multiple monitor setup.
+  Creates a window and places it in a specified monitor, with
+  offsets relative to the screen edges. This is a user-friendly
+  version of WINDOW that is designed for a multiple monitor setup.
 
   This routine is hardware dependent and will not work properly until
   it is configured for your monitor(s) and their arrangement, which
@@ -3192,33 +3191,39 @@ KEYWORDS:
        Accepts all keywords for WINDOW.  In addition, the following
        are defined:
 
-       CONFIG:    Monitor configuration (default = -1):
+       CONFIG:    Can take one of three forms: integer, integer array,
+                  or string, corresponding to different methods of 
+                  determining the monitor configuration.
 
-                    -1 = disabled: putwin acts like window
-                     0 = 1440x900 only
-                     1 = 1440x900 (below), 5120x1440 (above)
-                     2 = 1440x900 (below), 2560x1440 (left, right)
-                     3 = 1440x900 (below), 2560x1440 (above)
+                  Integer (pre-defined configurations):
 
-                  Additional configurations (&gt; 3) can be defined.
-                  Do not edit configurations that you do not own.
-                  You will need the screen dimensions (in pixels)
-                  and the coordinates of the lower left corner for
-                  every monitor.  Note that these coordinates depend
-                  on the arrangement of the monitors in the operating
-                  system.
+                    -1 = disabled: putwin acts like window (default)
+                     0 = 1440x878 only
+                     1 = 1440x878 (below), 5120x1440 (above)
+                     2 = 1440x878 (below), 2560x1440 (left, right)
+                     3 = 1440x878 (below), 2560x1440 (above)
 
-                  If this keyword is set, the configuration is defined
-                  and stored in a common block, but no window is
-                  created.  If CONFIG = -1, putwin behaves exactly like
-                  window, and all of the following keywords, with the
-                  exception of SCALE are silently ignored.
+                  Integer Array (user-defined configuration):
 
-       MONITOR:   Put window in this monitor:
+                     4 x N integer array for N monitors.  For each 
+                     monitor, specify the coordinates of the lower
+                     left corner (x0, y0) and the screen dimensions
+                     (xdim, ydim):
 
-                    0 = notebook monitor
-                    1 = external monitor 1 (above or left)
-                    2 = external monitor 2 (right)
+                       cfg[0:3,i] = [x0, y0, xdim, ydim]
+
+                  String (automatically defined configuration):
+
+                     If set to 'automatic' (minimum matching), get
+                     the configuration using IDLsysMonitorInfo.
+                     (Not thoroughly tested.)
+
+                  In any case, the configuration is defined and stored in
+                  a common block, but no window is created.
+
+       STAT:      Output the current monitor configuration.
+
+       MONITOR:   Put window in this monitor.
                   
                   See keyword CONFIG.  Default is 1 if there is at
                   least one external monitor and 0 otherwise.
@@ -3229,7 +3234,13 @@ KEYWORDS:
        DY:        Vertical offset from CORNER (pixels).
                   Replaces YPOS.  Default = 0.
 
-       CORNER:    DX and DY are measured from this corner:
+                  The standard WINDOW procedure does not account for
+                  the window title bar width, so that widows placed
+                  along the bottom of a monitor are clipped.  This
+                  procedure fixes that issue.
+
+       CORNER:    DX and DY are measured from this corner of the
+                  specified monitor.
 
                     0 = top left (default)
                     1 = top right
@@ -3240,6 +3251,11 @@ KEYWORDS:
                   applies when XSIZE and/or YSIZE are set explicitly 
                   (via keyword) or implictly (via swe_snap_layout).
                   Default = 1.
+
+                  If the combination of XSIZE, YSIZE, SCALE, DX and
+                  DY cause the window to extend beyond the monitor,
+                  first DX and DY, then XSIZE and YSIZE are reduced
+                  until the window does fit.
 
        FULL:      If set, make a full-screen window in MONITOR.
                   (Ignore XSIZE, YSIZE, DX, DY, and CORNER.)
@@ -3254,8 +3270,8 @@ KEYWORDS:
                   separately in the usual way.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-12 16:40:46 -0700 (Sun, 12 Jul 2020) $
- $LastChangedRevision: 28880 $
+ $LastChangedDate: 2020-07-18 14:50:15 -0700 (Sat, 18 Jul 2020) $
+ $LastChangedRevision: 28909 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 
 CREATED BY:	David L. Mitchell  2020-06-03

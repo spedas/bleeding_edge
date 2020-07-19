@@ -31,8 +31,8 @@
 ;       WORK2:         Equivalent to LAYOUT=1.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-07-01 11:19:05 -0700 (Wed, 01 Jul 2020) $
-; $LastChangedRevision: 28833 $
+; $LastChangedDate: 2020-07-18 15:17:05 -0700 (Sat, 18 Jul 2020) $
+; $LastChangedRevision: 28910 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_snap_layout.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -95,12 +95,12 @@ pro swe_snap_layout, layout, home=home, work=work, work2=work2
              Copt = {xsize:500, ysize:700, dx:10, dy:10, monitor:2, corner:2}   ; PAD 3D View
              Fopt = {xsize:400, ysize:600, dx:820, dy:10, monitor:2, corner:0}  ; PAD SPEC
 
-             Eopt = {xsize:400, ysize:600, dx:10, dy:10, monitor:0, corner:0}   ; SPEC
-             Hopt = {xsize:200, ysize:600, dx:420, dy:10, monitor:0, corner:0}  ; HSK
+             Eopt = {xsize:400, ysize:600, dx:10, dy:10, monitor:2, corner:0}   ; SPEC
+             Hopt = {xsize:200, ysize:600, dx:420, dy:10, monitor:2, corner:0}  ; HSK
 
              Oopt  = {xsize:322,  ysize:868, dx:10, dy:10, monitor:2, corner:0} ; Orbit 1x3
-             Oopt1 = {xsize:500,  ysize:473, dx:10, dy:10, monitor:0, corner:0} ; Orbit 1x1
-             OCopt = {xsize:600,  ysize:350, dx:10, dy:10, monitor:0, corner:2} ; Orbit cylindrical
+             Oopt1 = {xsize:500,  ysize:473, dx:10, dy:10, monitor:2, corner:0} ; Orbit 1x1
+             OCopt = {xsize:600,  ysize:350, dx:10, dy:10, monitor:2, corner:2} ; Orbit cylindrical
              Mopt  = {xsize:757,  ysize:409, dx:10, dy:10, monitor:2, corner:1} ; Mars Small
              MMopt = {xsize:1082, ysize:572, dx:10, dy:10, monitor:2, corner:1} ; Mars Large
              SSopt = {xsize:600,  ysize:280, dx:10, dy:10, monitor:2, corner:2} ; MSO Lat-Lon
