@@ -31,8 +31,8 @@
 ; CREATED BY: Mitsuo Oka  Aug 2015
 ;
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2015-09-15 06:24:47 -0700 (Tue, 15 Sep 2015) $
-; $LastChangedRevision: 18796 $
+; $LastChangedDate: 2020-07-19 10:13:49 -0700 (Sun, 19 Jul 2020) $
+; $LastChangedRevision: 28911 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/bss/mms_bss_list.pro $
 ;-
 PRO mms_bss_list, bss=bss, overwritten=overwritten, bad=bad, _extra=_extra
@@ -68,13 +68,24 @@ PRO mms_bss_list, bss=bss, overwritten=overwritten, bad=bad, _extra=_extra
     return
   endif
   nmax = n_elements(bss.FOM)
-  print, ' --------------------------------------------------------------------'
-  print, '   ID   START_TIME        LENGTH   FOM  STATUS, SOURCEID, DISCUSSION
-  print, ' --------------------------------------------------------------------'
-  for n=0,nmax-1 do begin
-    print, bss.DATASEGMENTID[n],time_string(bss.START[n]),bss.SEGLENGTHS[n],$
-      bss.FOM[n], bss.STATUS[n], bss.SOURCEID[n],bss.DISCUSSION[n],$
-      format='(I7,A20,",",I3,",",F6.1,", ",A,", ",A,", ",A)'
-  endfor
+  if keyword_set(overwritten) then begin
+    print, ' --------------------------------------------------------------------'
+    print, '   ID   SEGMENT_TIME        LENGTH   FOM  STATUS, FINISH_TIME, SOURCEID, DISCUSSION
+    print, ' --------------------------------------------------------------------'
+    for n=0,nmax-1 do begin
+      print, bss.DATASEGMENTID[n],time_string(bss.START[n]),bss.SEGLENGTHS[n],$
+        bss.FOM[n], bss.STATUS[n], bss.FINISHTIME[n], bss.SOURCEID[n], bss.DISCUSSION[n],$
+        format='(I7,A20,",",I3,",",F6.1,", ",A,", ",A,", ",A,", ",A)'
+    endfor
+  endif else begin
+    print, ' --------------------------------------------------------------------'
+    print, '   ID   SEGMENT_TIME        LENGTH   FOM  STATUS, SOURCEID, DISCUSSION
+    print, ' --------------------------------------------------------------------'
+    for n=0,nmax-1 do begin
+      print, bss.DATASEGMENTID[n],time_string(bss.START[n]),bss.SEGLENGTHS[n],$
+        bss.FOM[n], bss.STATUS[n], bss.SOURCEID[n], bss.DISCUSSION[n],$
+        format='(I7,A20,",",I3,",",F6.1,", ",A,", ",A,", ",A)'
+    endfor
+  endelse
   print, nmax, ' segments found'
 END
