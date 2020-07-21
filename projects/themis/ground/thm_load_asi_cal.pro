@@ -37,8 +37,8 @@
 ;
 ;Written by: Harald Frey,   Jan 26 2007
 ;   $LastChangedBy: jimm $
-;   $LastChangedDate: 2020-06-09 10:49:40 -0700 (Tue, 09 Jun 2020) $
-;   $LastChangedRevision: 28769 $
+;   $LastChangedDate: 2020-07-20 10:58:45 -0700 (Mon, 20 Jul 2020) $
+;   $LastChangedRevision: 28913 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_asi_cal.pro $
 ;-
 ;
@@ -119,15 +119,14 @@ for i=0,n_elements(stats)-1 do begin
        cal = cdf_load_vars(files,varnames=varnames2,verbose=verbose,record=record[count-1],/all) $
        else cal=-1
 
-  ;fix for mlat, mlon for version 02 files, jmm, 2020-06-08
+;fix for mlat, mlon for version 02 files, jmm, 2020-06-08, fixed fix 2020-07-20
   tmp_file = strsplit(file_basename(files[0]), '_', /extract)
-  If(tmp_file[n_elements(tmp_file)-1] Eq 'v02.cdf') Then Begin
+  If(is_struct(cal) && tmp_file[n_elements(tmp_file)-1] Eq 'v02.cdf') Then Begin
      a = where(cal.vars.name Eq 'thg_asf_'+station+'_mlat')
      b = where(cal.vars.name Eq 'thg_ask_'+station+'_mlat')
      f_mlat = *cal.vars[a].dataptr
      If(ptr_valid(cal.vars[b].dataptr)) Then ptr_free, cal.vars[b].dataptr
      cal.vars[b].dataptr = ptr_new(reform(f_mlat[127, 0:255]))
-
      a = where(cal.vars.name Eq 'thg_asf_'+station+'_mlon')
      b = where(cal.vars.name Eq 'thg_ask_'+station+'_mlon')
      f_mlon = *cal.vars[a].dataptr

@@ -12,9 +12,9 @@
 ;          2018-11-19, hfrey, updated calibration files
 ;
 ; VERSION:
-;   $LastChangedBy: hfrey $
-;   $LastChangedDate: 2018-11-19 15:31:27 -0800 (Mon, 19 Nov 2018) $
-;   $LastChangedRevision: 26153 $
+;   $LastChangedBy: jimm $
+;   $LastChangedDate: 2020-07-20 11:00:46 -0700 (Mon, 20 Jul 2020) $
+;   $LastChangedRevision: 28914 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/asi_mosaic/thm_mosaic_array.pro $
 ;-
 
@@ -108,6 +108,12 @@ if keyword_set(verbose) then dprint, 'After init: ',systime(1)-verbose,$
            thm_load_asi_cal,station_string,cal,verbose=verbose,trange=time_double(time)
 
          	; get longitude/latitude arrays
+;Temp fix for missing calibration data, skip this one
+         IF(~IS_STRUCT(cal)) THEN BEGIN
+            dprint, 'MISSING CAL DATA, SKIPPING: '+station_string
+            print, time_string(time)
+            CONTINUE
+         ENDIF
          if keyword_set(special) then begin
             dummy=where(strlowcase(special) eq strlowcase(station_string),special_treat)
             endif else special_treat=0
