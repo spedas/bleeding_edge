@@ -144,9 +144,13 @@
 ;
 ;       CLEAR:    Clear the common block and exit.
 ;
+;       SAVE:     Make a save file for all tplot variables and the common block.
+;
+;       RESTORE:  Restore tplot variables and the common block from a save file.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-07-01 11:17:53 -0700 (Wed, 01 Jul 2020) $
-; $LastChangedRevision: 28831 $
+; $LastChangedDate: 2020-07-22 19:19:26 -0700 (Wed, 22 Jul 2020) $
+; $LastChangedRevision: 28927 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -156,7 +160,8 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
                        vars=vars, ellip=ellip, hires=hires, timecrop=timecrop, now=now, $
                        colors=colors, reset_trange=reset_trange, nocrop=nocrop, spk=spk, $
                        segments=segments, shadow=shadow, datum=dtm, noload=noload, $
-                       pds=pds, verbose=verbose, clear=clear, success=success
+                       pds=pds, verbose=verbose, clear=clear, success=success, $
+                       save=save, restore=restore
 
   @maven_orbit_common
 
@@ -196,6 +201,31 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   if (size(verbose,/type) eq 0) then verbose = 0
 
   success = 0
+
+; Create a save file
+
+  if (size(save,/type) eq 7) then begin
+    path = root_data_dir() + 'maven/anc/spice/sav/'
+    fname = path + save + '.sav'
+    save, time, state, ss, wind, sheath, pileup, wake, sza, torb, period, $
+          lon, lat, hgt, datum, mex, rcols, orbnum, orbstat, file=fname
+
+    fname = path + save
+    tplot_save, file=fname
+    return
+  endif
+
+; Restore from a save file
+
+  if (size(restore,/type) eq 7) then begin
+    path = root_data_dir() + 'maven/anc/spice/sav/'
+    fname = path + restore + '.sav'
+    restore, file=fname
+
+    fname = path + restore + '.tplot'
+    tplot_restore, file=fname
+    return
+  endif
 
 ; Geodetic parameters for Mars (from the 2009 IAU Report)
 ;   Archinal et al., Celest Mech Dyn Astr 109, Issue 2, 101-135, 2011

@@ -8,8 +8,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-07-26 14:29:31 -0700 (Tue, 26 Jul 2016) $
-;$LastChangedRevision: 21545 $
+;$LastChangedDate: 2020-07-23 14:51:27 -0700 (Thu, 23 Jul 2020) $
+;$LastChangedRevision: 28930 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/edp/mms_edp_fix_metadata.pro $
 ;-
 
@@ -28,6 +28,10 @@ pro mms_edp_fix_metadata, tplotnames, prefix = prefix, instrument = instrument, 
                 tplot_name = tplotnames[name_idx]
     
                 case tplot_name of
+                    prefix[sc_idx] + '_'+instrument+'_dce_par_epar_'+data_rate+'_'+level+suffix: begin
+                      options, /def, tplot_name, 'colors', [1, 0]
+                      options, /def, tplot_name, 'labels', ['Error', 'E!D||!N']
+                    end
                     prefix[sc_idx] + '_'+instrument+'_dce_gse_'+data_rate+'_'+level+suffix: begin
                       options, /def, tplot_name, 'labflag', 1
                       options, /def, tplot_name, 'colors', [2,4,6]
