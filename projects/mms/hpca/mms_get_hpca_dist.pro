@@ -35,8 +35,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-19 14:48:25 -0700 (Thu, 19 Apr 2018) $
-;$LastChangedRevision: 25081 $
+;$LastChangedDate: 2020-07-24 11:04:47 -0700 (Fri, 24 Jul 2020) $
+;$LastChangedRevision: 28935 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_get_hpca_dist.pro $
 ;-
 
@@ -133,7 +133,6 @@ if n_full eq 0 then begin
   return, 0
 endif
 
-;hopefully this is temporary:
 ;filter times when azimuth data is all zero
 ;  -just check the first energy & elevation
 ;  -assume azimuth values are positive
