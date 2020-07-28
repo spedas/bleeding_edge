@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jul 24 18:15:52 2020.<P>
+<STRONG>Last modified: </STRONG>Mon Jul 27 18:15:54 2020.<P>
  
 <HR>
  
@@ -82,6 +82,7 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <LI><A HREF="#RBSP_LOAD_EFW_FBK_L2">RBSP_LOAD_EFW_FBK_L2</A>
 <LI><A HREF="#RBSP_LOAD_EFW_FIT">RBSP_LOAD_EFW_FIT</A>
 <LI><A HREF="#RBSP_LOAD_EFW_SPEC">RBSP_LOAD_EFW_SPEC</A>
+<LI><A HREF="#RBSP_LOAD_EFW_SPEC_L2">RBSP_LOAD_EFW_SPEC_L2</A>
 <LI><A HREF="#RBSP_LOAD_EFW_WAVEFORM">RBSP_LOAD_EFW_WAVEFORM</A>
 <LI><A HREF="#RBSP_LOAD_EFW_WAVEFORM_L2">RBSP_LOAD_EFW_WAVEFORM_L2</A>
 <LI><A HREF="#RBSP_LOAD_EFW_WAVEFORM_L3">RBSP_LOAD_EFW_WAVEFORM_L3</A>
@@ -1758,7 +1759,7 @@ Notes:
 <A NAME="RBSP_LOAD_EFW_SPEC">
 <H2>RBSP_LOAD_EFW_SPEC</H2></A>
 <A HREF="#RBSP_LOAD_EFW_FIT">[Previous Routine]</A>
-<A HREF="#RBSP_LOAD_EFW_WAVEFORM">[Next Routine]</A>
+<A HREF="#RBSP_LOAD_EFW_SPEC_L2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure: RBSP_LOAD_EFW_SPEC
@@ -1801,9 +1802,57 @@ Notes:
 <STRONG>(See <A href="efw/rbsp_load_efw_spec.pro">general/missions/rbsp/efw/rbsp_load_efw_spec.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RBSP_LOAD_EFW_SPEC_L2">
+<H2>RBSP_LOAD_EFW_SPEC_L2</H2></A>
+<A HREF="#RBSP_LOAD_EFW_SPEC">[Previous Routine]</A>
+<A HREF="#RBSP_LOAD_EFW_WAVEFORM">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Procedure: RBSP_LOAD_EFW_SPEC_L2
+
+Purpose:  Loads RBSP EFW L2 spectrogram data from EFW server
+
+keywords:
+  probe = Probe name. The default is 'all', i.e., load all available probes.
+          This can be an array of strings, e.g., ['a', 'b'] or a
+          single string delimited by spaces, e.g., 'a b'
+  varformat=strin
+  TRANGE= (Optional) Time range of interest  (2 element array), if
+          this is not set, the default is to prompt the user. Note
+          that if the input time range is not a full day, a full
+          day's data is loaded
+                       kw to narrow the data products.  Wildcards and glob-style patterns accepted (e.g., ef?, *_dot0).
+  VARNAMES: names of variables to load from cdf: default is all.
+  /DOWNLOADONLY: download file but don't read it. (NOT IMPLEMENTED YET)
+  /ETU: If set, load data from the ETU.
+  /valid_names, if set, then this routine will return the valid probe, datatype
+          and/or level options in named variables supplied as
+          arguments to the corresponding keywords.
+  files   named varible for output of pathnames of local files.
+  /VERBOSE  set to output some useful info
+   tper: (In, optional) Tplot name of spin period data. By default,
+         tper = pertvar. If tper is set, pertvar = tper.
+   tphase: (In, optional) Tplot name of spin phase data. By default,
+         tphase = 'rbsp' + strlowcase(sc[0]) + '_spinphase'
+         Note: tper and and tphase are mostly used for using eclipse-corrected
+         spin data.
+Example:
+   rbsp_load_efw_spec_l2,probe=['a', 'b']
+
+ HISTORY:
+   1. Written by Aaron Breneman, August, 2015
+
+ $LastChangedBy: aaronbreneman $
+ $LastChangedDate: 2020-07-27 13:36:11 -0700 (Mon, 27 Jul 2020) $
+ $LastChangedRevision: 28942 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_load_efw_spec_l2.pro $
+</PRE><P>
+<STRONG>(See <A href="efw/rbsp_load_efw_spec_l2.pro">general/missions/rbsp/efw/rbsp_load_efw_spec_l2.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RBSP_LOAD_EFW_WAVEFORM">
 <H2>RBSP_LOAD_EFW_WAVEFORM</H2></A>
-<A HREF="#RBSP_LOAD_EFW_SPEC">[Previous Routine]</A>
+<A HREF="#RBSP_LOAD_EFW_SPEC_L2">[Previous Routine]</A>
 <A HREF="#RBSP_LOAD_EFW_WAVEFORM_L2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
