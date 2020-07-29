@@ -10,10 +10,16 @@
 ;         suffix:       suffix to append to the fast segments bar tplot variable
 ;         start_times:  returns an array of unix times (double) containing the start for each fast interval
 ;         end_times:    returns an array of unix times (double) containing the end of each fast interval
-;         
+; 
+; NOTES:
+;         WARNING: this routine no longer loads the correct fast segments for later in the mission; 
+;                  for loading fast segment bars correctly throughout the entire mission, please
+;                  use the wrapper: spd_mms_load_bss, which switches between this routine (for dates 
+;                  before 6Nov15) and the new SRoI code (mms_load_sroi_segments) for dates on and after 6Nov15 
+; 
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-08-08 09:33:48 -0700 (Tue, 08 Aug 2017) $
-;$LastChangedRevision: 23763 $
+;$LastChangedDate: 2020-07-28 14:48:00 -0700 (Tue, 28 Jul 2020) $
+;$LastChangedRevision: 28949 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_fast_segments.pro $
 ;-
 
