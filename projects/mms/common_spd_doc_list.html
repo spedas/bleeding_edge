@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Jul 29 18:15:52 2020.<P>
+<STRONG>Last modified: </STRONG>Thu Jul 30 18:15:52 2020.<P>
  
 <HR>
  
@@ -21,6 +21,8 @@ This page was created by the IDL library routine
 <H1>projects/mms/common</H1>
 <LI><A HREF="#MMS_CONFIG">MMS_CONFIG</A>
 <br>This procedure serves as the MMS configuration file.  It sets global (system)
+<LI><A HREF="#MMS_FIND_PERIGEE_TIMES">MMS_FIND_PERIGEE_TIMES</A>
+<br>Function that returns the times of perigee closest to the input time (using the MEC data)
 <LI><A HREF="#MMS_FLIPBOOKIFY">MMS_FLIPBOOKIFY</A>
 <br>Turns the current tplot window into a &quot;flipbook&quot; containing:
 <LI><A HREF="#MMS_INIT">MMS_INIT</A>
@@ -42,7 +44,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="MMS_CONFIG">
 <H2>MMS_CONFIG</H2></A>
-<A HREF="#MMS_FLIPBOOKIFY">[Next Routine]</A>
+<A HREF="#MMS_FIND_PERIGEE_TIMES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:    mms_config
@@ -83,9 +85,41 @@ HISTORY:
 <STRONG>(See <A href="common/mms_config.pro">projects/mms/common/mms_config.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_FIND_PERIGEE_TIMES">
+<H2>MMS_FIND_PERIGEE_TIMES</H2></A>
+<A HREF="#MMS_CONFIG">[Previous Routine]</A>
+<A HREF="#MMS_FLIPBOOKIFY">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ FUNCTION:
+         mms_find_perigee_times
+
+ PURPOSE:
+         Function that returns the times of perigee closest to the input time (using the MEC data)
+ 
+ INPUT: 
+         time: time to find perigee
+         
+ KEYWORDS:
+         probe: spacecraft probe #
+         
+ EXAMPLE:
+         trange=mms_find_perigee_times('2017-03-21/00:00:00', probe='1')
+         
+ NOTES:
+         Created by Naritoshi Kitamura
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2020-07-30 12:21:34 -0700 (Thu, 30 Jul 2020) $
+ $LastChangedRevision: 28955 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_find_perigee_times.pro $
+</PRE><P>
+<STRONG>(See <A href="common/mms_find_perigee_times.pro">projects/mms/common/mms_find_perigee_times.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_FLIPBOOKIFY">
 <H2>MMS_FLIPBOOKIFY</H2></A>
-<A HREF="#MMS_CONFIG">[Previous Routine]</A>
+<A HREF="#MMS_FIND_PERIGEE_TIMES">[Previous Routine]</A>
 <A HREF="#MMS_INIT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

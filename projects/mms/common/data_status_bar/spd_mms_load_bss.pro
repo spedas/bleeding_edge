@@ -8,6 +8,7 @@
 ;   trange:          time frame for bss
 ;   datatype:        type of BSS data ['fast','burst','status','fom']. default includes 'fast' and 'burst'
 ;   include_labels:  set this flag to have the horizontal bars labeled
+;   probe:           probe # for SRoI bars (used as fast survey segments after 6Nov15; default: 1)
 ; 
 ; NOTES: 
 ;   "bss" stands for Burst Segment Status (a term used in the MMS-SDC2SITL-ICD document). 
@@ -38,15 +39,16 @@
 ;      for dates before 6Nov15)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-07-14 11:52:54 -0700 (Tue, 14 Jul 2020) $
-;$LastChangedRevision: 28888 $
+;$LastChangedDate: 2020-07-30 12:28:00 -0700 (Thu, 30 Jul 2020) $
+;$LastChangedRevision: 28956 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/spd_mms_load_bss.pro $
 ;-
 
-PRO spd_mms_load_bss, trange=trange, datatype=datatype, include_labels=include_labels
+PRO spd_mms_load_bss, trange=trange, datatype=datatype, include_labels=include_labels, probe=probe
   compile_opt idl2
 
   if undefined(trange) then trange = timerange() else trange = timerange(trange)
+  if undefined(probe) then probe = '1' else probe = strcompress(string(probe), /rem)
   if undefined(datatype) then datatype = ['fast','burst']
   datatype = strlowcase(datatype)
   
@@ -78,9 +80,9 @@ PRO spd_mms_load_bss, trange=trange, datatype=datatype, include_labels=include_l
            options,'mms_bss_fast',thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
             ticklen=0,panel_size=panel_size,colors=6, labels=[fast_label], labsize=1, charsize=1.
           endif else begin
-            ; use SRoI code (probe 1) for dates on and after 6Nov15
-            mms_load_sroi_segments, trange=trange
-            copy_data, 'mms1_bss_sroi', 'mms_bss_fast'
+            ; use SRoI code for dates on and after 6Nov15
+            mms_load_sroi_segments, trange=trange, probe=probe
+            copy_data, 'mms' + probe + '_bss_sroi', 'mms_bss_fast'
             options,'mms_bss_fast',thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
               ticklen=0,panel_size=panel_size,colors=6, labels=[fast_label], labsize=1, charsize=1.
           endelse
