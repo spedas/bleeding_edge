@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jul 30 18:15:52 2020.<P>
+<STRONG>Last modified: </STRONG>Fri Jul 31 18:15:53 2020.<P>
  
 <HR>
  
@@ -22,7 +22,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_CONFIG">MMS_CONFIG</A>
 <br>This procedure serves as the MMS configuration file.  It sets global (system)
 <LI><A HREF="#MMS_FIND_PERIGEE_TIMES">MMS_FIND_PERIGEE_TIMES</A>
-<br>Function that returns the times of perigee closest to the input time (using the MEC data)
+<br>Function that returns the times of perigee just before and after the input time (using the MEC data)
 <LI><A HREF="#MMS_FLIPBOOKIFY">MMS_FLIPBOOKIFY</A>
 <br>Turns the current tplot window into a &quot;flipbook&quot; containing:
 <LI><A HREF="#MMS_INIT">MMS_INIT</A>
@@ -95,7 +95,7 @@ HISTORY:
          mms_find_perigee_times
 
  PURPOSE:
-         Function that returns the times of perigee closest to the input time (using the MEC data)
+         Function that returns the times of perigee just before and after the input time (using the MEC data)
  
  INPUT: 
          time: time to find perigee
@@ -104,14 +104,14 @@ HISTORY:
          probe: spacecraft probe #
          
  EXAMPLE:
-         trange=mms_find_perigee_times('2017-03-21/00:00:00', probe='1')
+         trange=mms_find_perigee_times('2015-09-02/00:00:00', probe='1')
          
  NOTES:
          Created by Naritoshi Kitamura
 
  $LastChangedBy: egrimes $
- $LastChangedDate: 2020-07-30 12:21:34 -0700 (Thu, 30 Jul 2020) $
- $LastChangedRevision: 28955 $
+ $LastChangedDate: 2020-07-31 13:59:16 -0700 (Fri, 31 Jul 2020) $
+ $LastChangedRevision: 28961 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_find_perigee_times.pro $
 </PRE><P>
 <STRONG>(See <A href="common/mms_find_perigee_times.pro">projects/mms/common/mms_find_perigee_times.pro</A>)</STRONG><P>

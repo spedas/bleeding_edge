@@ -67,8 +67,8 @@
 ;     June 2016: minor updates by egrimes
 ;     
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-07-09 12:14:33 -0700 (Tue, 09 Jul 2019) $
-; $LastChangedRevision: 27416 $
+; $LastChangedDate: 2020-07-31 13:59:46 -0700 (Fri, 31 Jul 2020) $
+; $LastChangedRevision: 28962 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_fpi_make_errorflagbars.pro $
 ;-
 
@@ -110,7 +110,7 @@ PRO mms_fpi_make_errorflagbars, tname, level = level
         endelse
       endfor
     endfor
-    labels_full=['Contact FPI','Saturation','SCpot>20V','no SCpot','>25% Cold','>25% Hot','High Mach#','Low Dens','Onboard Mag','L2pre Mag','Photoelectrons','Compression', 'Spintones', 'Radiation']
+    labels_full=['Contact FPI team','Saturation','SCpot>20V','no SCpot','>10% Cold','>25% Hot','High Mach#','Low Density','Onboard Mag','L2pre Mag','Photoelectrons','Compression', 'Spintones', 'Radiation']
     if inst eq 'DES' then begin
       store_data,tname+'_flagbars_full',data={x:d.x,y:[[flagline[*,0]],[flagline[*,1]-0.1],[flagline[*,2]-0.2],[flagline[*,3]-0.3],[flagline[*,4]-0.4],[flagline[*,5]-0.5],[flagline[*,6]-0.6],[flagline[*,7]-0.7],[flagline[*,8]-0.8],[flagline[*,9]-0.9],[flagline[*,10]-1.0],[flagline[*,11]-1.1],[flagline[*,12]-1.2]]}
       ylim,tname+'_flagbars_full',-0.15,1.25,0

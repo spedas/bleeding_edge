@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jul 30 18:15:52 2020.<P>
+<STRONG>Last modified: </STRONG>Fri Jul 31 18:15:53 2020.<P>
  
 <HR>
  
@@ -3180,7 +3180,7 @@ PURPOSE:
   may not know about or does not want to use its functionality.
 
 USAGE:
-  putwin, wnum, [KEYWORD=value, ...]
+  putwin [, wnum] [,KEYWORD=value, ...]
 
 INPUTS:
        wnum:      Window number.  Can be an integer from 0 to 31.
@@ -3191,17 +3191,15 @@ KEYWORDS:
        Accepts all keywords for WINDOW.  In addition, the following
        are defined:
 
-       CONFIG:    Can take one of three forms: integer, integer array,
-                  or string, corresponding to different methods of 
-                  determining the monitor configuration.
+       CONFIG:    Can take one of two forms: integer or integer array.
 
-                  Integer (pre-defined configurations):
+                  Integer (automatic configuration):
 
-                    -1 = disabled: putwin acts like window (default)
-                     0 = 1440x878 only
-                     1 = 1440x878 (below), 5120x1440 (above)
-                     2 = 1440x878 (below), 2560x1440 (left, right)
-                     3 = 1440x878 (below), 2560x1440 (above)
+                     0 = disabled: putwin acts like window (default)
+                     1 = automatic
+                     2 = automatic with double-wide (5K) external
+                         merged into a single logical monitor
+                         (only guaranteed to work for the author)
 
                   Integer Array (user-defined configuration):
 
@@ -3212,14 +3210,16 @@ KEYWORDS:
 
                        cfg[0:3,i] = [x0, y0, xdim, ydim]
 
-                  String (automatically defined configuration):
+                  In either case, the configuration is defined and stored
+                  in a common block, but no window is created.
 
-                     If set to 'automatic' (minimum matching), get
-                     the configuration using IDLsysMonitorInfo.
-                     (Not thoroughly tested.)
+       TBAR:      Title bar width in pixels.  Default = 22.
 
-                  In any case, the configuration is defined and stored in
-                  a common block, but no window is created.
+                  Window positioning will not be precise unless this
+                  is set properly.  IDL does not have access to this
+                  piece of information, so you'll have to figure it
+                  out.  This value is persistent for subsequent calls 
+                  to putwin, so you only need to set it once.
 
        STAT:      Output the current monitor configuration.
 
@@ -3239,10 +3239,12 @@ KEYWORDS:
                   along the bottom of a monitor are clipped.  This
                   procedure fixes that issue.
 
-       TBAR:      Title bar width in pixels.  Default = 22.
+       CORNER:    DX and DY are measured from this corner:
 
-                  This value is persistent for subsequent calls to 
-                  putwin, so you only need to set it once.
+                    0 = top left (default)
+                    1 = top right
+                    2 = bottom left
+                    3 = bottom right
 
        NORM:      Measure DX and DY in normalized coordinates (0-1)
                   instead of pixels.
@@ -3252,13 +3254,6 @@ KEYWORDS:
        YCENTER:   Center the window in Y.
 
        CENTER:    Center the window in both X and Y.
-
-       CORNER:    DX and DY are measured from this corner:
-
-                    0 = top left (default)
-                    1 = top right
-                    2 = bottom left
-                    3 = bottom right
 
        SCALE:     Scale factor for setting the window size.  Only
                   applies when XSIZE and/or YSIZE are set explicitly 
@@ -3271,8 +3266,18 @@ KEYWORDS:
                   until the window does fit.  Set NOFIT to disable
                   this behavior and create the window as requested.
 
+       XFULL:     Make the window full-screen in X.
+                  (Ignore, XSIZE and DX.)
+
+       YFULL:     Make the window full-screen in Y.
+                  (Ignore, YSIZE and DY.)
+
        FULL:      If set, make a full-screen window in MONITOR.
-                  (Ignore XSIZE, YSIZE, DX, DY, and CORNER.)
+                  (Ignore XSIZE, YSIZE, DX, DY.)
+
+       ASPECT:    Aspect ratio: XSIZE/YSIZE.  If one dimension is
+                  set with XSIZE, YSIZE, XFULL, or YFULL, this
+                  keyword sets the other dimension.
 
        KEY:       A structure containing any of the above keywords
                   plus XSIZE and YSIZE:
@@ -3284,8 +3289,8 @@ KEYWORDS:
                   separately in the usual way.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-22 18:00:30 -0700 (Wed, 22 Jul 2020) $
- $LastChangedRevision: 28926 $
+ $LastChangedDate: 2020-07-31 15:49:26 -0700 (Fri, 31 Jul 2020) $
+ $LastChangedRevision: 28964 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 
 CREATED BY:	David L. Mitchell  2020-06-03
