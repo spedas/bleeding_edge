@@ -31,8 +31,8 @@
 ;       WORK2:         Equivalent to LAYOUT=1.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-07-18 15:17:05 -0700 (Sat, 18 Jul 2020) $
-; $LastChangedRevision: 28910 $
+; $LastChangedDate: 2020-08-03 16:50:17 -0700 (Mon, 03 Aug 2020) $
+; $LastChangedRevision: 28980 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_snap_layout.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -59,7 +59,7 @@ pro swe_snap_layout, layout, home=home, work=work, work2=work2
   case layout[0] of
 
     '1'  : begin  ; Macbook 1440x900 (below) with Dell 5120x1440 (above)
-             snap_index = 7
+             snap_index = 1
 
              Dopt = {xsize:800, ysize:600, dx:10, dy:10, monitor:0, corner:0}   ; 3D
              Sopt = {xsize:450, ysize:600, dx:820, dy:10, monitor:0, corner:0}  ; 3D SPEC
@@ -72,9 +72,9 @@ pro swe_snap_layout, layout, home=home, work=work, work2=work2
              Eopt = {xsize:400, ysize:600, dx:10, dy:10, monitor:0, corner:0}   ; SPEC
              Hopt = {xsize:200, ysize:600, dx:420, dy:10, monitor:0, corner:0}  ; HSK
 
-             Oopt  = {xsize:318,  ysize:856, dx:10, dy:0, monitor:0, corner:0}  ; Orbit 1x3
+             Oopt  = {yfull:1, aspect:0.351, dx:10, dy:0, monitor:0, corner:0}  ; Orbit 1x3
              Oopt1 = {xsize:500,  ysize:473, dx:10, dy:10, monitor:0, corner:0} ; Orbit 1x1
-             OCopt = {xsize:600,  ysize:350, dx:10, dy:10, monitor:0, corner:2} ; Orbit cylindrical
+             OCopt = {xsize:600,  ysize:350, dx:510, dy:10, monitor:0, corner:2} ; Orbit cylindrical
              Mopt  = {xsize:757,  ysize:409, dx:10, dy:10, monitor:0, corner:1} ; Mars Small
              MMopt = {xsize:1082, ysize:572, dx:10, dy:10, monitor:0, corner:1} ; Mars Large
              SSopt = {xsize:600,  ysize:280, dx:10, dy:10, monitor:0, corner:2} ; MSO Lat-Lon
@@ -85,7 +85,7 @@ pro swe_snap_layout, layout, home=home, work=work, work2=work2
            end
     
     '2'  : begin  ; Macbook 1440x900 (below) with twin Dell 2560x1440 (left, right)
-             snap_index = 6
+             snap_index = 2
 
              Dopt = {xsize:800, ysize:600, dx:10, dy:10, monitor:2, corner:0}   ; 3D
              Sopt = {xsize:450, ysize:600, dx:820, dy:10, monitor:2, corner:0}  ; 3D SPEC
@@ -98,11 +98,11 @@ pro swe_snap_layout, layout, home=home, work=work, work2=work2
              Eopt = {xsize:400, ysize:600, dx:10, dy:10, monitor:2, corner:0}   ; SPEC
              Hopt = {xsize:200, ysize:600, dx:420, dy:10, monitor:2, corner:0}  ; HSK
 
-             Oopt  = {xsize:322,  ysize:868, dx:10, dy:10, monitor:2, corner:0} ; Orbit 1x3
+             Oopt  = {yfull:1, aspect:0.351, dx:10, dy:0, monitor:2, corner:0}  ; Orbit 1x3
              Oopt1 = {xsize:500,  ysize:473, dx:10, dy:10, monitor:2, corner:0} ; Orbit 1x1
              OCopt = {xsize:600,  ysize:350, dx:10, dy:10, monitor:2, corner:2} ; Orbit cylindrical
-             Mopt  = {xsize:757,  ysize:409, dx:10, dy:10, monitor:2, corner:1} ; Mars Small
-             MMopt = {xsize:1082, ysize:572, dx:10, dy:10, monitor:2, corner:1} ; Mars Large
+             Mopt  = {xsize:757,  ysize:409, dx:550, dy:10, monitor:2, corner:0} ; Mars Small
+             MMopt = {xsize:1082, ysize:572, dx:550, dy:10, monitor:2, corner:0} ; Mars Large
              SSopt = {xsize:600,  ysize:280, dx:10, dy:10, monitor:2, corner:2} ; MSO Lat-Lon
 
              Ropt = {xsize:792, ysize:765, dx:10, dy:10, monitor:2, corner:0}   ; Orrery
@@ -111,7 +111,7 @@ pro swe_snap_layout, layout, home=home, work=work, work2=work2
            end
 
     '3'  : begin  ; Macbook 1440x900 (below) with Dell 2560x1440 (above)
-             snap_index = 4
+             snap_index = 3
 
              Dopt = {xsize:800, ysize:600, dx:10, dy:10, monitor:0, corner:0}   ; 3D
              Sopt = {xsize:450, ysize:600, dx:820, dy:10, monitor:0, corner:0}  ; 3D SPEC
@@ -124,7 +124,7 @@ pro swe_snap_layout, layout, home=home, work=work, work2=work2
              Eopt = {xsize:400, ysize:600, dx:10, dy:10, monitor:0, corner:0}   ; SPEC
              Hopt = {xsize:200, ysize:600, dx:420, dy:10, monitor:0, corner:0}  ; HSK
 
-             Oopt  = {xsize:318,  ysize:856, dx:10, dy:0, monitor:0, corner:0}  ; Orbit 1x3
+             Oopt  = {yfull:1, aspect:0.351, dx:10, dy:0, monitor:0, corner:0}  ; Orbit 1x3
              Oopt1 = {xsize:500,  ysize:473, dx:10, dy:10, monitor:0, corner:0} ; Orbit 1x1
              OCopt = {xsize:600,  ysize:350, dx:10, dy:10, monitor:0, corner:2} ; Orbit cylindrical
              Mopt  = {xsize:757,  ysize:409, dx:10, dy:10, monitor:0, corner:1} ; Mars Small

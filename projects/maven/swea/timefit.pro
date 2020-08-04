@@ -8,7 +8,10 @@
 ;  timefit, time, var=var
 ;
 ;INPUTS:
-;       time:      Time array in any format accepted by time_double().
+;       time:      If this is a scalar string or integer, it's interpreted as
+;                  a tplot variable name or number, from which the time is
+;                  extracted.  If this is an array, it's interpreted as an
+;                  array of times, in any format accepted by time_double().
 ;
 ;                  If all the times are identical and if keyword PAD
 ;                  is not set, then a one hour interval centered on
@@ -16,7 +19,9 @@
 ;
 ;KEYWORDS:
 ;
-;       VAR:       TPLOT variable name or index from which to get time array.
+;       VAR:       Tplot variable name/number.  OBSOLETE, but retained for 
+;                  backward compatibility.  If VAR is set, then time input
+;                  is ignored.
 ;
 ;       PAD:       Amount of time to pad on either end of the time
 ;                  span.  Default units are seconds.
@@ -28,25 +33,40 @@
 ;       DAY:       PAD units are days.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2014-10-31 14:15:03 -0700 (Fri, 31 Oct 2014) $
-; $LastChangedRevision: 16106 $
+; $LastChangedDate: 2020-08-03 16:49:25 -0700 (Mon, 03 Aug 2020) $
+; $LastChangedRevision: 28979 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/timefit.pro $
 ;
 ;CREATED BY:	David L. Mitchell  07-06-14
 ;-
 pro timefit, time, var=var, pad=pad, min=min, hour=hour, day=day
 
-  if (size(var,/type) ne 0) then begin
-    get_data,var,data=dat
-    if (size(dat,/type) ne 8) then begin
-      print,"Tplot variable ",var," not found."
-      print,"Can't get time."
+  if (size(var,/type) gt 0) then begin
+    get_data, var, data=dat, index=i
+    if (i eq 0) then begin
+      print, "Tplot variable ",var," not found."
       return
     endif
-    
     time = dat.x
+    if (n_elements(time) eq 1) then time = [time, time]
   endif
-  
+
+  case n_elements(time) of
+     0   : begin
+             print, "You must supply a time array or a tplot variable name/number."
+             return
+           end
+     1   : begin
+             get_data, time, data=dat, index=i
+             if (i eq 0) then begin
+               print, "Tplot variable ",time," not found."
+               return
+             endif
+             time = dat.x
+           end
+    else : ; do nothing
+  endcase
+
   if (size(time,/type) eq 0) then return
 
   tmin = min(time_double(time), max=tmax)

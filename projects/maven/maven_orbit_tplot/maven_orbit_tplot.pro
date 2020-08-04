@@ -149,8 +149,8 @@
 ;       RESTORE:  Restore tplot variables and the common block from a save file.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-07-22 19:19:26 -0700 (Wed, 22 Jul 2020) $
-; $LastChangedRevision: 28927 $
+; $LastChangedDate: 2020-08-03 16:47:52 -0700 (Mon, 03 Aug 2020) $
+; $LastChangedRevision: 28977 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -224,6 +224,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
     fname = path + restore + '.tplot'
     tplot_restore, file=fname
+    timefit, var='alt'
     return
   endif
 

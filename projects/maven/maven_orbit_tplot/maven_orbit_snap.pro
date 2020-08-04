@@ -107,13 +107,13 @@
 ;
 ;       MAGNIFY:  Change size of plot windows.
 ;
-;       LABEL:    Add text labels showing altitude and solar zenith angle.
+;       NOLABEL:  Omit text labels showing altitude and solar zenith angle.
 ;
 ;       PSNAME:   Name of a postscript plot.  Works only for orbit plots.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-07-01 12:20:16 -0700 (Wed, 01 Jul 2020) $
-; $LastChangedRevision: 28841 $
+; $LastChangedDate: 2020-08-03 16:48:55 -0700 (Mon, 03 Aug 2020) $
+; $LastChangedRevision: 28978 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -122,7 +122,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     npole=npole, noerase=noerase, keep=keep, color=color, reset=reset, cyl=cyl, times=times, $
     nodot=nodot, terminator=terminator, thick=thick, Bdir=Bdir, scale=scale, scsym=scsym, $
     magnify=magnify, Bclip=Bclip, Vdir=Vdir, Vclip=Vclip, Vscale=Vscale, Vrange=Vrange, $
-    alt=doalt, psname=psname, label=label, xy=xy, yz=yz
+    alt=doalt, psname=psname, nolabel=nolabel, xy=xy, yz=yz
 
   @maven_orbit_common
   @swe_snap_common
@@ -162,7 +162,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   if keyword_set(Vdir) then dov = 1 else dov = 0
 
   doalt = keyword_set(doalt)
-  dolab = keyword_set(label)
+  dolab = ~keyword_set(nolabel)
 
   if keyword_set(times) then begin
     times = time_double(times)
@@ -275,6 +275,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     endif else begin
       putwin, 26, key=Oopt, scale=mag   ; MSO projections 1x3
       Owin = !d.window
+      csize = float(!d.x_size)/175.
     endelse
   endelse
 
