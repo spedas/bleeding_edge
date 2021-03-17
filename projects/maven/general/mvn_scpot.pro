@@ -103,6 +103,8 @@
 ;
 ;   PANS:      Named varible to hold the tplot panels created.
 ;
+;   BIAS:      Bias to add to final potential estimates.
+;
 ;   SUCCESS:   Returns exit status.
 ;
 ;OUTPUTS:
@@ -112,15 +114,15 @@
 ;          the five unmerged methods in one panel.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-12-16 11:40:04 -0800 (Mon, 16 Dec 2019) $
-; $LastChangedRevision: 28117 $
+; $LastChangedDate: 2021-02-18 15:25:45 -0800 (Thu, 18 Feb 2021) $
+; $LastChangedRevision: 29681 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot.pro $
 ;
 ;-
 
 pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
                stapot=stapot, lpwpot=lpwpot, shapot=shapot, composite=composite, $
-               pans=pans, nocalc=nocalc, success=success
+               pans=pans, nocalc=nocalc, bias=bias, success=success
 
   compile_opt idl2
 
@@ -398,6 +400,13 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
 
     options,'pot_inshdw','constant',!values.f_nan
     options,'pot_inshdw','color',1
+  endif
+
+; Add a bias
+
+  if (size(bias,/type) gt 0) then begin
+    print,'Adding potential bias: ',bias
+    mvn_sc_pot.potential += float(bias[0])
   endif
 
 ; Finish up

@@ -74,14 +74,15 @@
 ;                     determining which LUT is in use at any time.
 ;
 ;       SETCAL:       Structure holding calibration factors to modify.  Structure can
-;                     have any combination of tags, but only the following are
-;                     recognized (with default values):
+;                     have any combination of tags, which are recognized with case-
+;                     folded minimum matching (leading "swe_" is optional):
 ;
-;                       {swe_Ka      : 6.17      , $   ; analyzer constant
-;                        swe_G       : 0.009/16. , $   ; nominal geometric factor
-;                        swe_Ke      : 2.8       , $   ; electron suppression constant
-;                        swe_dead    : 2.8e-6    , $   ; deadtime per preamp
-;                        swe_min_dtc : 0.25         }  ; max 4x deadtime correction
+;                       {swe_Ka       : 6.17      , $   ; analyzer constant
+;                        swe_G        : 0.009/16. , $   ; nominal geometric factor
+;                        swe_Ke       : 2.8       , $   ; electron suppression constant
+;                        swe_dead     : 2.8e-6    , $   ; deadtime per preamp
+;                        swe_min_dtc  : 0.25      , $   ; max 4x deadtime correction
+;                        swe_paralyze : 0            }  ; use non-paralyzable deadtime
 ;
 ;                     Any other tags are ignored.
 ;
@@ -90,8 +91,8 @@
 ;       LIST:         List the current calibration constants.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-11-25 14:09:26 -0800 (Mon, 25 Nov 2019) $
-; $LastChangedRevision: 28065 $
+; $LastChangedDate: 2021-02-18 15:19:26 -0800 (Thu, 18 Feb 2021) $
+; $LastChangedRevision: 29673 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_calib.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -111,39 +112,39 @@ pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default,
 
   if (keyword_set(default) or (size(swe_G,/type) eq 0)) then begin
     print, "Initializing SWEA constants"
-    swe_Ka      = 6.17       ; analyzer constant (1.4% variation around azim)
-    swe_G       = 0.009/16.  ; nominal geometric factor per anode (IRAP)
-    swe_Ke      = 2.80       ; nominal value, see mvn_swe_esuppress.pro
-    swe_dead    = 2.8e-6     ; deadtime for one MCP-Anode-Preamp chain (IRAP)
-    swe_min_dtc = 0.25       ; max 4x deadtime correction
+    swe_Ka       = 6.17       ; analyzer constant (1.4% variation around azim)
+    swe_G        = 0.009/16.  ; nominal geometric factor per anode (IRAP)
+    swe_Ke       = 2.80       ; nominal value, see mvn_swe_esuppress.pro
+    swe_dead     = 2.8e-6     ; deadtime for one MCP-Anode-Preamp chain (IRAP)
+    swe_min_dtc  = 0.25       ; max 4x deadtime correction
+    swe_paralyze = 0          ; use non-paralyzable deadtime model
   endif
 
+; Process SETCAL structure
+
   if (size(setcal,/type) eq 8) then begin
-    str_element, setcal, 'swe_Ka', value, success=ok
-    if (ok) then begin
-      swe_Ka = value
-      print, "Setting analyzer constant: ",value
-    endif
-    str_element, setcal, 'swe_G', value, success=ok
-    if (ok) then begin
-      swe_G = value
-      print, "Setting geometric factor: ",value
-    endif
-    str_element, setcal, 'swe_Ke', value, success=ok
-    if (ok) then begin
-      swe_Ke = value
-      print, "Setting electron suppression constant: ",value
-    endif
-    str_element, setcal, 'swe_dead', value, success=ok
-    if (ok) then begin
-      swe_dead = value
-      print, "Setting deadtime: ",value
-    endif
-    str_element, setcal, 'swe_min_dtc', value, success=ok
-    if (ok) then begin
-      swe_min_dtc = value
-      print, "Setting maximum deadtime correction: ",1./value
-    endif
+    ftag = tag_names(setcal)
+    stag = ftag
+    i = where(strcmp(ftag, 'swe_', 4, /fold), count)
+    if (count gt 0) then stag[i] = strmid(ftag[i],4)
+    tlist = ['Ka','G','Ke','dead','min_dtc','paralyze']
+    mlist = ['analyzer constant','geometric factor per anode','electron suppression constant', $
+             'deadtime','minimum deadtime correction','paralyzable deadtime']
+    mlist = 'Setting ' + mlist + ': '
+    for j=0,(n_elements(ftag)-1) do begin
+      ok = 0
+      i = strmatch(tlist, stag[j]+'*', /fold)
+      case (total(i)) of
+         0   : print, "Calibration parameter not recognized: ", ftag[j]
+         1   : begin
+                 k = (where(i eq 1))[0]
+                 ok = execute('swe_' + tlist[k] + ' = setcal.(j)',0,1)
+                 if (ok) then print, mlist[k], setcal.(j)
+               end
+        else : print, "Calibration parameter ambiguous: ", ftag[j]
+      endcase
+      if (not ok) then return
+    endfor
   endif
 
 ; Find the first valid LUT
@@ -332,6 +333,10 @@ pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default,
   for i=0,31 do swe_gf[(2*i):(2*i+1),1] = (swe_gf[(2*i),0] + swe_gf[(2*i+1),0])/2.
   for i=0,15 do swe_gf[(4*i):(4*i+3),2] = (swe_gf[(4*i),1] + swe_gf[(4*i+3),1])/2.
 
+; Initialize deadtime correction
+
+  dtc = swe_deadtime(1.,/init)
+
 ; Correction factor from cross calibration with SWIA in the solar wind.  This
 ; factor changes whenever an MCP bias adjustment is made, and it also drifts
 ; with time as the MCP gain changes.  The times of bias adjustments are recorded
@@ -485,18 +490,15 @@ pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default,
   c = 2.99792458D5               ; velocity of light [km/s]
   mass_e = (5.10998910D5)/(c*c)  ; electron rest mass [eV/(km/s)^2]
 
-;                       {swe_Ka      : 6.17      , $   ; analyzer constant
-;                        swe_G       : 0.009/16. , $   ; nominal geometric factor
-;                        swe_Ke      : 2.8       , $   ; electron suppression constant
-;                        swe_dead    : 2.8e-6    , $   ; deadtime per preamp
-;                        swe_min_dtc : 0.25         }  ; max 4x deadtime correction
-
   if keyword_set(list) then begin
     print, "analyzer constant  = ", swe_Ka, format='(a,f5.2)'
     print, "geometric factor   = ", swe_G*16., format='(a,e9.2)'
     print, "elec. suppression  = ", swe_Ke, format='(a,f5.2)'
     print, "deadtime per anode = ", swe_dead, format='(a,e9.2)'
     print, "max deadtime corr. = ", 1./swe_min_dtc, format='(a,f5.2)'
+    dmodel = 'paralyzable'
+    if (swe_paralyze eq 0) then dmodel = 'non-' + dmodel
+    print, "deadtime model     =  " + dmodel
   endif
 
   return

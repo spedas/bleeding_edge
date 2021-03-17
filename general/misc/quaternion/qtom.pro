@@ -2,6 +2,8 @@
 ;Function: qtom
 ;
 ;Purpose: transforms quaternions into rotation matrices
+;WARNING!!! It appears that this routine returns the transpose (inverse) of the rotation matrix!
+;It differs from the CSPICE library and Wikipedia
 ;
 ;Inputs: a 4 element array representing a quaternion or an Nx4 element
 ;array representing an array of quaternions
@@ -22,9 +24,9 @@
 ;Written by: Patrick Cruce(pcruce@igpp.ucla.edu)
 ;
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2016-10-14 11:01:12 -0700 (Fri, 14 Oct 2016) $
-; $LastChangedRevision: 22098 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2020-12-16 13:31:22 -0800 (Wed, 16 Dec 2020) $
+; $LastChangedRevision: 29515 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/quaternion/qtom.pro $
 ;-
 

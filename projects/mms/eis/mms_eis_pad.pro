@@ -9,7 +9,7 @@
 ; KEYWORDS:
 ;         trange:               time range of interest
 ;         probes:               value for MMS SC #
-;         species:              proton (default), alpha, oxygen, electron
+;         species:              proton (default), helium (formerly alpha), oxygen, electron
 ;         energy:               energy range to include in the calculation
 ;         size_pabin:           size of the pitch angle bins
 ;         data_units:           flux or cps
@@ -34,8 +34,8 @@
 ;     This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-06-23 19:27:06 -0700 (Tue, 23 Jun 2020) $
-;$LastChangedRevision: 28799 $
+;$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
+;$LastChangedRevision: 29648 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 ;-
 ; REVISION HISTORY:
@@ -67,6 +67,10 @@
 ;       + 2020-04-24, I. Cohen      : added mmsx_vars and range_pad_only keywords; changed so that MMS-X vars are only generated if requested by user
 ;       + 2020-04-27, I. Cohen      : updated to correctly calculate and name PAD variables based on actual energy range of each channel
 ;       + 2020-06-23, E. Grimes     : fixed minor issues with the suffix keyword, and removed probe keyword in call to mms_eis_pad_combine_sc
+;       + 2020-10-26, I. Cohen      : added ability to create energy range from energy limit variables without having to load support data; 
+;                                     changed "undefined" to "KEYWORD_SET" in initialization of some keywords
+;       + 2020-12-10, I. Cohen      : undid change of "undefined" to "KEYWORD_SET" in initialization of some keywords from 2020-10-26, set all back to "undefined"
+;       + 2021-02-09, I. Cohen      : added helium to species in header under KEYWORD section
 ;                             
 ;-
 
@@ -76,17 +80,17 @@ pro mms_eis_pad, probes = probes, trange = trange, species = species, data_rate 
                 range_pad_only = range_pad_only
   ;
   compile_opt idl2
-  if not KEYWORD_SET(probes) then probes = '1' else probes = strcompress(string(probes), /rem)
-  if not KEYWORD_SET(datatype) then datatype = 'extof'
-  if not KEYWORD_SET(species) then species = 'proton'
+  if undefined(probes) then probes = '1' else probes = strcompress(string(probes), /rem)
+  if undefined(datatype) then datatype = 'extof'
+  if undefined(species) then species = 'proton'
   if n_elements(datatype) eq 1 && (datatype eq 'electronenergy') then species = 'electron'
-  if not KEYWORD_SET(energy) then energy = [55,800]
-  if not KEYWORD_SET(size_pabin) then size_pabin = 15
-  if not KEYWORD_SET(data_units) then data_units = 'flux'
-  if not KEYWORD_SET(data_rate) then data_rate = 'srvy' else data_rate = strlowcase(data_rate)
-  if not KEYWORD_SET(scopes) then scopes = ['0','1','2','3','4','5']
-  if not KEYWORD_SET(level) then level = 'l2'
-  if not KEYWORD_SET(suffix) then suffix = ''
+  if undefined(energy) then energy = [55,800]
+  if undefined(size_pabin) then size_pabin = 15
+  if undefined(data_units) then data_units = 'flux'
+  if undefined(data_rate) then data_rate = 'srvy' else data_rate = strlowcase(data_rate)
+  if undefined(scopes) then scopes = ['0','1','2','3','4','5']
+  if undefined(level) then level = 'l2'
+  if undefined(suffix) then suffix = ''
   if undefined(mmsx_vars) then mmsx_vars = 0
   if undefined(range_pad_only) then range_pad_only = 0
   if undefined(combine_proton_data) then begin
@@ -153,8 +157,16 @@ pro mms_eis_pad, probes = probes, trange = trange, species = species, data_rate 
           get_data,prefix+datatype[dd]+'_'+species+'_'+data_units+'_omni'+suffix,data=omni_data
           get_data,prefix+datatype[dd]+'_'+species+'_energy_range'+suffix,data=erange
           if (is_struct(erange) eq 0) then begin
-            print, 'Energy range variable is missing from loaded EIS data'
-            return
+            get_data,prefix+datatype[dd]+'_'+species+'_t0_energy'+suffix, data=ecenter
+            IF (is_struct(ecenter) eq 1) THEN BEGIN
+              get_data,prefix+datatype[dd]+'_'+species+'_t0_energy_dminus'+suffix, data=eupper
+              get_data,prefix+datatype[dd]+'_'+species+'_t0_energy_dplus'+suffix, data=elower
+              erange = DBLARR(N_ELEMENTS(ecenter.y), 2)
+              FOR ee = 0,N_ELEMENTS(ecenter.y)-1 DO erange[ee, *] = [ecenter.y[ee]-elower.y[ee], ecenter.y[ee]+eupper.y[ee]]
+            ENDIF ELSE BEGIN
+              print, 'Energy range variable is missing from loaded EIS data'
+              return
+            ENDELSE
           endif
           inchan_check_low = dblarr(n_elements(omni_data.v))
           inchan_check_hi = dblarr(n_elements(omni_data.v))

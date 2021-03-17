@@ -23,8 +23,8 @@
 ;     Yuki Harada on 2014-07-02
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-05-18 00:03:47 -0700 (Fri, 18 May 2018) $
-; $LastChangedRevision: 25235 $
+; $LastChangedDate: 2021-01-14 23:35:04 -0800 (Thu, 14 Jan 2021) $
+; $LastChangedRevision: 29602 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/kgy_map_load.pro $
 ;-
 
@@ -107,7 +107,7 @@ if keyword_set(public) then begin
 
    ;;; LMAG + SPICE
    if ~keyword_set(nospice) then begin
-      kk = kgy_spice_kernels(/load,trange=trange)
+      kk = kgy_spice_kernels(/load,trange=trange, _extra=_extra)
       ;;; available frames: SELENE_M_SPACECRAFT, MOON_ME, SSE, GSE
 
       ;;; add Bsat, generate tplot, etc.

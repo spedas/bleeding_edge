@@ -41,11 +41,12 @@
 ;       Panel 6: EPS, line plot of protons measured by the dome detector by energy channel 
 ;       Panel 7: X-ray, short wavelength and long wavelength
 ;       
-;       
+;      (2020-10-02) Panel 1: Added thg_idx_uc_ae, Kyoto Real Time AE, computed at UCLA. 
+;                            This is shown only if Kyoto AE is not available. 
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2018-11-16 12:46:28 -0800 (Fri, 16 Nov 2018) $
-; $LastChangedRevision: 26139 $
+; $LastChangedDate: 2020-10-16 13:08:07 -0700 (Fri, 16 Oct 2020) $
+; $LastChangedRevision: 29261 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot.pro $
 ;-
 
@@ -72,6 +73,7 @@ pro goes_overview_plot, date = date, probe = probe_in, directory = directory, de
     
     ; delete any tplot variables sitting around
     ;store_data, '*', /delete
+    kyoto_ae_label = 'Kyoto AE'
     
     ; sample GOES overview plot
     if undefined(probe_in) then probe = '13' else probe=probe_in[0]
@@ -94,51 +96,7 @@ pro goes_overview_plot, date = date, probe = probe_in, directory = directory, de
 if undefined(skip_ae_idx) then begin
 ;;=============================================================================
 ;; Panel 1: Kyoto and THEMIS AE
-    kyoto_load_ae, datatype = 'ae'
-;    thm_make_AE
-    thm_load_pseudoAE,datatype='ae'
-    if tnames('thg_idx_ae') eq '' then begin
-       thm_make_AE;no sites check, since the bad sites test is not distributed, jmm, 2018-04-30
-    endif else copy_data, 'thg_idx_ae', 'thmAE'
-
-    get_data, 'thmAE', data=thm_ae_data, dlimits=thm_ae_dlimits
-    get_data, 'kyoto_ae', data=kyoto_ae_data, dlimits=kyoto_ae_dlimits
-    
-    if is_struct(kyoto_ae_data) && is_struct(thm_ae_data) then begin
-        combined_ae = fltarr(n_elements(kyoto_ae_data.X), 2)
-    
-        ; combine them into a single AE tplot variable
-        for i=0l, n_elements(kyoto_ae_data.X)-1 do begin
-            ae_nearest_neighbor = find_nearest_neighbor(thm_ae_data.X, kyoto_ae_data.X[i])
-            if ae_nearest_neighbor ne -1 then begin
-                combined_ae[i,0] = thm_ae_data.Y[where(thm_ae_data.X eq ae_nearest_neighbor)]
-                combined_ae[i,1] = kyoto_ae_data.Y[i]
-            endif else begin
-                combined_ae[i,0] = !values.f_nan
-                combined_ae[i,1] = !values.f_nan
-            endelse
-        endfor
-        str_element, thm_ae_dlimits, 'labels', ['THEMIS AE', 'Kyoto AE'], /add
-        str_element, thm_ae_dlimits, 'colors', [2,0], /add
-        str_element, thm_ae_dlimits, 'ytitle', 'AE index', /add
-        str_element, thm_ae_dlimits, 'ysubtitle', '[nT]', /add
-        str_element, thm_ae_dlimits, 'labflag', 1, /add
-        store_data, 'kyoto_thm_combined_ae'+suffix, data={x: kyoto_ae_data.X, y: combined_ae}, dlimits=thm_ae_dlimits
-    endif else if is_struct(thm_ae_data) then begin
-        ; only THEMIS AE available
-        copy_data, 'thmAE', 'kyoto_thm_combined_ae'+suffix
-        options, 'kyoto_thm_combined_ae'+suffix, 'ytitle', 'AE index'
-        options, 'kyoto_thm_combined_ae'+suffix, 'labels', 'THEMIS AE'
-        options, 'kyoto_thm_combined_ae'+suffix, 'labflag', 1
-        options, 'kyoto_thm_combined_ae'+suffix, 'ysubtitle', '[nT]'
-    endif else if is_struct(kyoto_ae_data) then begin
-        ; only Kyoto AE available
-        copy_data, 'kyoto_ae', 'kyoto_thm_combined_ae'+suffix
-        options, 'kyoto_thm_combined_ae'+suffix, 'ytitle', 'AE index'
-        options, 'kyoto_thm_combined_ae'+suffix, 'labels', 'Kyoto AE'
-        options, 'kyoto_thm_combined_ae'+suffix, 'labflag', 1
-        options, 'kyoto_thm_combined_ae'+suffix, 'ysubtitle', '[nT]'
-    endif
+spd_gen_overplot_ae_panel, suffix=suffix
 
 endif
 ;;=============================================================================

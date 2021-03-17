@@ -52,7 +52,7 @@
 ;     /energy: produce energy slices instead of velocity slices
 ;     
 ;     thickness: thickness of the vertical line drawn at each time step
-;     linestype: style of the vertical line drawn at each time step
+;     linestyle: style of the vertical line drawn at each time step
 ;     
 ;     note: box_* keywords require that you specify a trange
 ;     box_color: color of the box
@@ -102,8 +102,8 @@
 ;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-01-28 13:48:12 -0800 (Mon, 28 Jan 2019) $
-; $LastChangedRevision: 26504 $
+; $LastChangedDate: 2021-03-10 13:31:28 -0800 (Wed, 10 Mar 2021) $
+; $LastChangedRevision: 29754 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_flipbookify.pro $
 ;-
 

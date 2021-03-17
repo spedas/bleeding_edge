@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -249,6 +249,8 @@ This page was created by the IDL library routine
 <br>Plots PAD snapshots in a separate window for times selected with the cursor in
 <LI><A HREF="#SWE_CAL_SNAP">SWE_CAL_SNAP</A>
 <br>Plots snapshots of calibration data in a separate window for times selected
+<LI><A HREF="#SWE_DEADTIME">SWE_DEADTIME</A>
+<br>Calculates the deadtime correction given the measured count rate and the
 <LI><A HREF="#SWE_ENGY_SNAP">SWE_ENGY_SNAP</A>
 <br>Plots omnidirectional energy spectrum snapshots in a separate window for times
 <LI><A HREF="#SWE_ENGY_TIMING">SWE_ENGY_TIMING</A>
@@ -269,11 +271,15 @@ This page was created by the IDL library routine
 <br>Disassembles A2 packets and sorts data in time sequence.
 <LI><A HREF="#SWE_PLOT_FHSK">SWE_PLOT_FHSK</A>
 <br>Makes tplot variables for SWEA fast housekeeping data (A6).
+<LI><A HREF="#SWE_ROTATE">SWE_ROTATE</A>
+<br>Rotates SWEA 3D or PAD look directions into any valid SPICE frame.
 <LI><A HREF="#SWE_SHAPE_PAR_PAD_L2_3PA">SWE_SHAPE_PAR_PAD_L2_3PA</A>
 <LI><A HREF="#SWE_SNAP_COMMON">SWE_SNAP_COMMON</A>
 <br>Common block for swe_snap_layout.
 <LI><A HREF="#SWE_SNAP_LAYOUT">SWE_SNAP_LAYOUT</A>
 <br>Puts snapshot windows in convenient, non-overlapping locations,
+<LI><A HREF="#SWE_SNAP_OPTIONS">SWE_SNAP_OPTIONS</A>
+<br>Stores a structure of SWEA snapshot keyword options and provides
 <LI><A HREF="#SWE_TESTPULSER_MODEL">SWE_TESTPULSER_MODEL</A>
 <br>Creates SWEA Test Pulser Model and generates test pulser signatures
 <LI><A HREF="#TIMEFIT">TIMEFIT</A>
@@ -1247,8 +1253,8 @@ INPUTS:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-08-27 14:06:18 -0700 (Tue, 27 Aug 2019) $
- $LastChangedRevision: 27682 $
+ $LastChangedDate: 2021-02-28 12:41:25 -0800 (Sun, 28 Feb 2021) $
+ $LastChangedRevision: 29708 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_3dsum.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -1641,14 +1647,15 @@ KEYWORDS:
                      determining which LUT is in use at any time.
 
        SETCAL:       Structure holding calibration factors to modify.  Structure can
-                     have any combination of tags, but only the following are
-                     recognized (with default values):
+                     have any combination of tags, which are recognized with case-
+                     folded minimum matching (leading &quot;swe_&quot; is optional):
 
-                       {swe_Ka      : 6.17      , $   ; analyzer constant
-                        swe_G       : 0.009/16. , $   ; nominal geometric factor
-                        swe_Ke      : 2.8       , $   ; electron suppression constant
-                        swe_dead    : 2.8e-6    , $   ; deadtime per preamp
-                        swe_min_dtc : 0.25         }  ; max 4x deadtime correction
+                       {swe_Ka       : 6.17      , $   ; analyzer constant
+                        swe_G        : 0.009/16. , $   ; nominal geometric factor
+                        swe_Ke       : 2.8       , $   ; electron suppression constant
+                        swe_dead     : 2.8e-6    , $   ; deadtime per preamp
+                        swe_min_dtc  : 0.25      , $   ; max 4x deadtime correction
+                        swe_paralyze : 0            }  ; use non-paralyzable deadtime
 
                      Any other tags are ignored.
 
@@ -1657,8 +1664,8 @@ KEYWORDS:
        LIST:         List the current calibration constants.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-11-25 14:09:26 -0800 (Mon, 25 Nov 2019) $
- $LastChangedRevision: 28065 $
+ $LastChangedDate: 2021-02-18 15:19:26 -0800 (Thu, 18 Feb 2021) $
+ $LastChangedRevision: 29673 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_calib.pro $
 
 CREATED BY:    David L. Mitchell  03-29-13
@@ -1779,8 +1786,8 @@ PURPOSE:
      a6:       fast housekeeping
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-15 12:43:23 -0700 (Fri, 15 Mar 2019) $
- $LastChangedRevision: 26815 $
+ $LastChangedDate: 2020-12-15 13:04:20 -0800 (Tue, 15 Dec 2020) $
+ $LastChangedRevision: 29496 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_com.pro $
 
 CREATED BY:	David L. Mitchell  2013-03-18
@@ -1835,8 +1842,8 @@ KEYWORDS:
                    changes in a tplot window (assumed to exist).
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-03-17 11:20:42 -0700 (Tue, 17 Mar 2020) $
- $LastChangedRevision: 28421 $
+ $LastChangedDate: 2021-02-18 15:19:53 -0800 (Thu, 18 Feb 2021) $
+ $LastChangedRevision: 29674 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 
 CREATED BY:    David L. Mitchell  03-29-13
@@ -1939,8 +1946,8 @@ KEYWORDS:
        SILENT:       Don't print any warnings or messages.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-03-17 11:20:05 -0700 (Tue, 17 Mar 2020) $
- $LastChangedRevision: 28420 $
+ $LastChangedDate: 2021-02-18 15:20:37 -0800 (Thu, 18 Feb 2021) $
+ $LastChangedRevision: 29675 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_crosscal.pro $
 
 CREATED BY:    David L. Mitchell  05-04-16
@@ -2493,8 +2500,8 @@ KEYWORDS:
        SHIFTPOT:      Correct for spacecraft potential.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-15 12:45:14 -0700 (Fri, 15 Mar 2019) $
- $LastChangedRevision: 26818 $
+ $LastChangedDate: 2020-12-15 13:03:48 -0800 (Tue, 15 Dec 2020) $
+ $LastChangedRevision: 29495 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_get3d.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -2626,8 +2633,8 @@ KEYWORDS:
                       high resolution (0.03-sec) data.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-15 12:46:16 -0700 (Fri, 15 Mar 2019) $
- $LastChangedRevision: 26819 $
+ $LastChangedDate: 2020-12-15 13:03:48 -0800 (Tue, 15 Dec 2020) $
+ $LastChangedRevision: 29495 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getpad.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -2740,8 +2747,8 @@ INPUTS:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-10-02 16:45:21 -0700 (Mon, 02 Oct 2017) $
- $LastChangedRevision: 24087 $
+ $LastChangedDate: 2021-03-02 11:48:36 -0800 (Tue, 02 Mar 2021) $
+ $LastChangedRevision: 29728 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_init.pro $
 
 CREATED BY:    David L. Mitchell  02-01-15
@@ -2796,6 +2803,8 @@ KEYWORDS:
 
    L2ONLY:    Only process data using L2 MAG data.
 
+   ALLBAD:    Assume all data are affected by low-energy anomaly.
+
    OUTPUT_PATH: An output_path for testing, the save file will be put into 
                 OUTPUT_PATH/yyyy/mm/.  Directories are created as needed.
                 Default = root_data_dir() + 'maven/data/sci/swe/kp'.
@@ -2803,8 +2812,8 @@ KEYWORDS:
 OUTPUTS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-08-27 16:58:12 -0700 (Tue, 27 Aug 2019) $
- $LastChangedRevision: 27686 $
+ $LastChangedDate: 2021-02-18 16:18:25 -0800 (Thu, 18 Feb 2021) $
+ $LastChangedRevision: 29682 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_kp.pro $
 
 </PRE><P>
@@ -3107,11 +3116,13 @@ INPUTS:
 KEYWORDS:
          BADVAL:     Value to mask anomalous data with.  Default = NaN.
 
+         ALLBAD:     Mask all low energy channels as bad.
+
          STATUS:     Return the current coverage and return.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-03-17 11:25:17 -0700 (Tue, 17 Mar 2020) $
- $LastChangedRevision: 28425 $
+ $LastChangedDate: 2021-02-18 16:28:27 -0800 (Thu, 18 Feb 2021) $
+ $LastChangedRevision: 29683 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_lowe_mask.pro $
 
 CREATED BY:    David L. Mitchell
@@ -3507,8 +3518,8 @@ KEYWORDS:
        PAN:      Returns the name of the tplot variable.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-01 11:22:53 -0700 (Wed, 01 Jul 2020) $
- $LastChangedRevision: 28838 $
+ $LastChangedDate: 2020-12-15 13:03:48 -0800 (Tue, 15 Dec 2020) $
+ $LastChangedRevision: 29495 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makespec.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -3951,7 +3962,7 @@ KEYWORDS:
 
    SNAP:      Plot a snapshot.  Default = 0 (no).
 
-   TPLOT:     Make a tplot variable.  Default = 1 (yes).
+   TPLOT:     Make a tplot variable.  Default = 0 (no).
 
    MAP3D:     Take into account the pitch angle width even for 3D
               data. This keyword only works 3D data. The mapping
@@ -4007,8 +4018,8 @@ KEYWORDS:
 CREATED BY:      Takuya Hara on 2014-09-24.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-15 12:44:29 -0700 (Fri, 15 Mar 2019) $
- $LastChangedRevision: 26817 $
+ $LastChangedDate: 2020-08-20 11:56:32 -0700 (Thu, 20 Aug 2020) $
+ $LastChangedRevision: 29053 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_resample.pro $
 
 </PRE><P>
@@ -4181,8 +4192,8 @@ KEYWORDS:
        PAD_E:        Energy for plotting PAD's.  Default = 280 eV.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2014-10-31 14:15:03 -0700 (Fri, 31 Oct 2014) $
- $LastChangedRevision: 16106 $
+ $LastChangedDate: 2020-12-15 13:03:20 -0800 (Tue, 15 Dec 2020) $
+ $LastChangedRevision: 29494 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_ql.pro $
 
 CREATED BY:    David L. Mitchell  04-30-13
@@ -4215,8 +4226,8 @@ VERSION:   1.0
    Created by Matt Fillingim
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2019-03-20 13:57:40 -0700 (Wed, 20 Mar 2019) $
-   $LastChangedRevision: 26864 $
+   $LastChangedDate: 2021-02-18 15:21:40 -0800 (Thu, 18 Feb 2021) $
+   $LastChangedRevision: 29677 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_readcdf_3d.pro $
 
 </PRE><P>
@@ -4246,8 +4257,8 @@ VERSION:   1.0
    Created by Matt Fillingim
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2019-03-20 13:57:40 -0700 (Wed, 20 Mar 2019) $
-   $LastChangedRevision: 26864 $
+   $LastChangedDate: 2021-02-18 15:21:40 -0800 (Thu, 18 Feb 2021) $
+   $LastChangedRevision: 29677 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_readcdf_pad.pro $
 
 </PRE><P>
@@ -4277,8 +4288,8 @@ VERSION:   1.0
    Created by Matt Fillingim
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2019-03-20 13:57:40 -0700 (Wed, 20 Mar 2019) $
-   $LastChangedRevision: 26864 $
+   $LastChangedDate: 2021-02-18 15:21:40 -0800 (Thu, 18 Feb 2021) $
+   $LastChangedRevision: 29677 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_readcdf_spec.pro $
 
 </PRE><P>
@@ -4523,8 +4534,8 @@ KEYWORDS:
 OUTPUTS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-15 12:36:16 -0700 (Fri, 15 Mar 2019) $
- $LastChangedRevision: 26805 $
+ $LastChangedDate: 2020-08-28 10:31:01 -0700 (Fri, 28 Aug 2020) $
+ $LastChangedRevision: 29087 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sciplot.pro $
 
 </PRE><P>
@@ -5228,7 +5239,8 @@ INPUTS:
 
 KEYWORDS:
 
-    TRANGE:        Time range for MAVEN spacecraft spk and ck kernels.
+    TRANGE:        Time range for MAVEN spacecraft spk and ck kernels.  If not set,
+                   then the current timespan is used.
 
     LIST:          After loading, list the kernels in use.
 
@@ -5240,6 +5252,14 @@ KEYWORDS:
                    accurate relative timing between MAG and SWEA.  If set, then
                    FORCE is also set.
 
+    NOCK:          Do not load any CK kernels.  This allows ephemeris calculations
+                   where the spacecraft orientation does not matter.  Useful for
+                   calculations spanning long time intervals.
+
+    BASEONLY:      Do not load any SPK or CK kernels.  The standard and frames 
+                   kernels are loaded to allow geometry calculations spanning long
+                   time intervals.
+
     STATUS:        Don't load anything; just give status.
 
     INFO:          Returns an array of structures providing detailed information
@@ -5249,8 +5269,8 @@ KEYWORDS:
                    Default is current value of swe_verbose.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-04-18 05:43:01 -0700 (Thu, 18 Apr 2019) $
- $LastChangedRevision: 27042 $
+ $LastChangedDate: 2020-12-15 13:02:57 -0800 (Tue, 15 Dec 2020) $
+ $LastChangedRevision: 29493 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_spice_init.pro $
 
 CREATED BY:    David L. Mitchell  09/18/13
@@ -5391,8 +5411,8 @@ KEYWORDS:
        BURST:        Plot a color bar showing PAD burst coverage.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-03-17 11:23:59 -0700 (Tue, 17 Mar 2020) $
- $LastChangedRevision: 28423 $
+ $LastChangedDate: 2021-02-18 15:22:18 -0800 (Thu, 18 Feb 2021) $
+ $LastChangedRevision: 29678 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -5646,8 +5666,8 @@ KEYWORDS:
               masking.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-02-18 12:25:42 -0800 (Sun, 18 Feb 2018) $
- $LastChangedRevision: 24735 $
+ $LastChangedDate: 2021-02-18 15:22:45 -0800 (Thu, 18 Feb 2021) $
+ $LastChangedRevision: 29679 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_swi_cal.pro $
 
 CREATED BY:    David L. Mitchell
@@ -6034,6 +6054,10 @@ KEYWORDS:
 
        KEEPWINS:      If set, then don't close the snapshot window(s) on exit.
 
+       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
+                      from 0 to N-1, where N is the number of monitors recognized
+                      by the operating system.  See putwin.pro for details.
+
        ARCHIVE:       If set, show snapshots of archive data.
 
        BURST:         Synonym for ARCHIVE.
@@ -6051,8 +6075,8 @@ KEYWORDS:
                       interactive time range selection.)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-01 11:20:00 -0700 (Wed, 01 Jul 2020) $
- $LastChangedRevision: 28834 $
+ $LastChangedDate: 2021-03-02 11:48:03 -0800 (Tue, 02 Mar 2021) $
+ $LastChangedRevision: 29727 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6187,27 +6211,25 @@ USAGE:
 INPUTS:
 
 KEYWORDS:
-       LAYOUT:        A named variable to specify window layouts.
-
-                        0 --&gt; Default.  No fixed window positions.
-                        1 --&gt; Macbook Air with Dell 1920x1200 external screen.
-                        2 --&gt; HP Z220 with twin Dell 1920x1200 screens.
-                        3 --&gt; Dell 2009W 1680x1050 with Macbook Air
-
-                      This puts up snapshot windows in convenient, non-overlapping
-                      locations, depending on display hardware.
-
        MODEL:         Plot a model of the 3D data product with the test pulser on in a
                       separate window.  (An analytic approximation to the test pulser
                       signal is used.  See 'swe_testpulser_model.pro' for details.)
-
-       KEEPWINS:      If set, then don't close the snapshot window(s) on exit.
 
        ZRANGE:        Sets color scale range.  Default = [1,3000].
 
        ZLOG:          Sets log color scaling.  Default = 1.
 
+       WSCALE:        Scale factor for snapshot window sizes.
+
+       KEEPWINS:      If set, then don't close the snapshot window(s) on exit.
+
+       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
+                      from 0 to N-1, where N is the number of monitors recognized
+                      by the operating system.  See putwin.pro for details.
+
        ARCHIVE:       If set, show snapshots of archive data (A1).
+
+       BURST:         Synonym for ARCHIVE.
 
 CREATED BY:    David L. Mitchell  07-24-12
 FILE: swe_a0_snap.pro
@@ -6237,15 +6259,6 @@ USAGE:
 INPUTS:
 
 KEYWORDS:
-       LAYOUT:        A named variable to specify window layouts.
-
-                        0 --&gt; Default.  No fixed window positions.
-                        1 --&gt; Macbook Air with Dell 1920x1200 external screen.
-                        2 --&gt; HP Z220 with twin Dell 1920x1200 screens.
-
-                      This puts up snapshot windows in convenient, non-overlapping
-                      locations, depending on display hardware.
-
        MODEL:         Plot a model of the PAD data product with the test pulser on in
                       a separate window.  (An analytic approximation to the test pulser
                       signal is used.  See 'swe_testpulser_model.pro' for details.)
@@ -6262,12 +6275,18 @@ KEYWORDS:
 
        KEEPWINS:      If set, then don't close the snapshot window(s) on exit.
 
+       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
+                      from 0 to N-1, where N is the number of monitors recognized
+                      by the operating system.  See putwin.pro for details.
+
        ZRANGE:        Sets color scale range.  Default = [1,3000].
 
        ZLOG:          Sets log color scaling.  Default = 1.
 
        ARCHIVE:       If set, show shapshots of archive data (A3).  Pseudo-PAD data is 
                       calculated from 3D archive data (A1).
+
+       BURST:         Synonym for ARCHIVE.
 
 CREATED BY:    David L. Mitchell  07-24-12
 FILE: swe_a2_snap.pro
@@ -6280,7 +6299,7 @@ LAST MODIFICATION:   07/24/12
 <A NAME="SWE_CAL_SNAP">
 <H2>SWE_CAL_SNAP</H2></A>
 <A HREF="#SWE_A2_SNAP">[Previous Routine]</A>
-<A HREF="#SWE_ENGY_SNAP">[Next Routine]</A>
+<A HREF="#SWE_DEADTIME">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   swe_cal_snap
@@ -6307,11 +6326,17 @@ KEYWORDS:
 
        KEEPWINS:      If set, then don't close the snapshot window(s) on exit.
 
+       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
+                      from 0 to N-1, where N is the number of monitors recognized
+                      by the operating system.  See putwin.pro for details.
+
        ARCHIVE:       If set, show snapshots of archive data.
 
+       BURST:         Synonym for ARCHIVE.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-08-26 16:49:26 -0700 (Mon, 26 Aug 2019) $
- $LastChangedRevision: 27656 $
+ $LastChangedDate: 2021-03-02 11:48:03 -0800 (Tue, 02 Mar 2021) $
+ $LastChangedRevision: 29727 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_cal_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6319,9 +6344,64 @@ CREATED BY:    David L. Mitchell  07-24-12
 <STRONG>(See <A href="swea/swe_cal_snap.pro">projects/maven/swea/swe_cal_snap.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SWE_DEADTIME">
+<H2>SWE_DEADTIME</H2></A>
+<A HREF="#SWE_CAL_SNAP">[Previous Routine]</A>
+<A HREF="#SWE_ENGY_SNAP">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION:   swe_deadtime
+PURPOSE:
+  Calculates the deadtime correction given the measured count rate and the
+  deadtime.  The correction is the ratio of the measured count rate to the 
+  true count rate.  Works for both non-paralyzing and paralyzing
+  behavior.
+
+  For non-paralyzing deadtime: R' = R / (1 + R*tau), where R' is the
+  measured count rate, R is the true count rate, and tau is the deadtime.
+  The measured count rate asympotically approaches 1/tau.  This is the
+  default.
+
+  For paralyzing deadtime: R' = R * exp(-R*tau).  The measured count rate
+  peaks at 1/tau and drops rapidly at higher true count rates.  It is two
+  valued, so one must assume which side of the peak when estimating the 
+  true count rate from the measured count rate.  This routine assumes that
+  R' &lt;= 1/tau.  For a given deadtime, a paralyzing system is more aggressive
+  because more events are missed.
+
+USAGE:
+  dtc = swe_deadtime(rate)
+
+INPUT:
+       rate:         An array of measured raw count rates.
+
+OUTPUT:
+       dtc:          Deadtime correction factor, or the ratio of the 
+                     measured count rate to the true count rate.
+
+KEYWORDS:
+       DEADTIME:     Deadtime.  Default is obtained from mvn_swe_calib.
+                     Once set, this value is persistent.
+
+       PARALYZE:     If set, use paralyzing deadtime.  Once set, this
+                     value is persistent.
+
+       INIT:         If set, initialize the paralyzable deadtime function.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2020-12-15 13:01:44 -0800 (Tue, 15 Dec 2020) $
+ $LastChangedRevision: 29491 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_deadtime.pro $
+
+CREATED BY:    David L. Mitchell
+FILE: swe_deadtime.pro
+</PRE><P>
+<STRONG>(See <A href="swea/swe_deadtime.pro">projects/maven/swea/swe_deadtime.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SWE_ENGY_SNAP">
 <H2>SWE_ENGY_SNAP</H2></A>
-<A HREF="#SWE_CAL_SNAP">[Previous Routine]</A>
+<A HREF="#SWE_DEADTIME">[Previous Routine]</A>
 <A HREF="#SWE_ENGY_TIMING">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -6348,6 +6428,10 @@ KEYWORDS:
        FIXY:          Use a fixed y-axis range.  Default = 1 (yes).
 
        KEEPWINS:      If set, then don't close the snapshot window(s) on exit.
+
+       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
+                      from 0 to N-1, where N is the number of monitors recognized
+                      by the operating system.  See putwin.pro for details.
 
        ARCHIVE:       If set, show shapshots of archive data (A5).
 
@@ -6467,9 +6551,15 @@ KEYWORDS:
        TWOT:          Compare energy of peak energy flux and temperature of 
                       Maxwell-Boltzmann fit. (Nominally, E_peak = 2*T)
 
+       SHOWDEAD:      Show the scaled deadtime correction.  Does not work with
+                      summed spectra (keywords SUM and TSMO) because spectra
+                      are summed in units of corrected count rate (CRATE) so
+                      that the deadtime corrections for the individual spectra
+                      are lost.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-01 12:21:06 -0700 (Wed, 01 Jul 2020) $
- $LastChangedRevision: 28842 $
+ $LastChangedDate: 2021-03-02 11:48:03 -0800 (Tue, 02 Mar 2021) $
+ $LastChangedRevision: 29727 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6757,6 +6847,10 @@ KEYWORDS:
 
        KEEPWINS:      If set, then don't close the snapshot window(s) on exit.
 
+       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
+                      from 0 to N-1, where N is the number of monitors recognized
+                      by the operating system.  See putwin.pro for details.
+
        ARCHIVE:       If set, show snapshots of archive data.
 
        BURST:         Synonym for ARCHIVE.
@@ -6828,10 +6922,6 @@ KEYWORDS:
         FBDATA:       Tplot variable name that contains the 32-Hz MAG data.
                       Default = 'mvn_B_full'.
 
-        WINDOW:       Window number for the first snapshot window.  Additional 
-                      snapshot windows are in numerical sequence.  If not set,
-                      then all snapshot window numbers are generated automatically.
-
         ADIABATIC:    Calculate and display the adiabatic condition:
 
                         (1/B)*(dB/dx)*Rg &lt;&lt; 1
@@ -6865,8 +6955,8 @@ KEYWORDS:
         NOTE:         Insert a text label.  Keep it short.
         
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-01 12:21:06 -0700 (Wed, 01 Jul 2020) $
- $LastChangedRevision: 28842 $
+ $LastChangedDate: 2021-03-02 11:48:03 -0800 (Tue, 02 Mar 2021) $
+ $LastChangedRevision: 29727 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6907,7 +6997,7 @@ FILE: swe_pad_timing.pro
 <A NAME="SWE_PLOT_FHSK">
 <H2>SWE_PLOT_FHSK</H2></A>
 <A HREF="#SWE_PAD_TIMING">[Previous Routine]</A>
-<A HREF="#SWE_SHAPE_PAR_PAD_L2_3PA">[Next Routine]</A>
+<A HREF="#SWE_ROTATE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   swe_plot_fhsk
@@ -6962,9 +7052,48 @@ CREATED BY:    David L. Mitchell  2017-01-15
 <STRONG>(See <A href="swea/swe_plot_fhsk.pro">projects/maven/swea/swe_plot_fhsk.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SWE_ROTATE">
+<H2>SWE_ROTATE</H2></A>
+<A HREF="#SWE_PLOT_FHSK">[Previous Routine]</A>
+<A HREF="#SWE_SHAPE_PAR_PAD_L2_3PA">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   swe_rotate
+PURPOSE:
+  Rotates SWEA 3D or PAD look directions into any valid SPICE frame.
+
+USAGE:
+  swe_rotate, dat, frame=frame, result=result
+
+INPUTS:
+       dat:          A single or an array of SWEA 3D or PAD structures.
+                     See mvn_swe_get3d() and mvn_swe_getpad().
+
+KEYWORDS:
+       FRAME:        SPICE frame to rotate the look directions into.  Required.
+                     No default.  This must be a valid SPICE frame, although
+                     you can use minimum matching fragments (see mvn_frame_name).
+
+       RESULT:       A 3 x N x M array of vectors in the requested frame, where
+                     the first dimension is the 3 cartesian components (x,y,z),
+                     the second dimension is the number of times (N), and
+                     the third dimension is the number of look directions (M).
+                     Since this is a pure rotation, all vectors have unit length.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2020-10-21 13:08:06 -0700 (Wed, 21 Oct 2020) $
+ $LastChangedRevision: 29265 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_rotate.pro $
+
+CREATED BY:    David L. Mitchell
+FILE: swe_rotate.pro
+</PRE><P>
+<STRONG>(See <A href="swea/swe_rotate.pro">projects/maven/swea/swe_rotate.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SWE_SHAPE_PAR_PAD_L2_3PA">
 <H2>SWE_SHAPE_PAR_PAD_L2_3PA</H2></A>
-<A HREF="#SWE_PLOT_FHSK">[Previous Routine]</A>
+<A HREF="#SWE_ROTATE">[Previous Routine]</A>
 <A HREF="#SWE_SNAP_COMMON">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -7055,7 +7184,7 @@ CREATED BY:    David L. Mitchell
 <A NAME="SWE_SNAP_LAYOUT">
 <H2>SWE_SNAP_LAYOUT</H2></A>
 <A HREF="#SWE_SNAP_COMMON">[Previous Routine]</A>
-<A HREF="#SWE_TESTPULSER_MODEL">[Next Routine]</A>
+<A HREF="#SWE_SNAP_OPTIONS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   swe_snap_layout
@@ -7069,6 +7198,10 @@ PURPOSE:
 
   See putwin.pro for details on how the configuration structures are
   used to create and place windows.
+
+  UPDATE: This routine is now obsolete.  The snapshot routines have
+  been modified to use putwin to place snapshot windows in logically
+  convenient locations.
 
 USAGE:
   swe_snap_layout, layout
@@ -7090,8 +7223,8 @@ KEYWORDS:
        WORK2:         Equivalent to LAYOUT=1.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-08-03 16:50:17 -0700 (Mon, 03 Aug 2020) $
- $LastChangedRevision: 28980 $
+ $LastChangedDate: 2021-03-02 11:47:00 -0800 (Tue, 02 Mar 2021) $
+ $LastChangedRevision: 29726 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_snap_layout.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -7099,9 +7232,65 @@ CREATED BY:    David L. Mitchell  07-24-12
 <STRONG>(See <A href="swea/swe_snap_layout.pro">projects/maven/swea/swe_snap_layout.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SWE_SNAP_OPTIONS">
+<H2>SWE_SNAP_OPTIONS</H2></A>
+<A HREF="#SWE_SNAP_LAYOUT">[Previous Routine]</A>
+<A HREF="#SWE_TESTPULSER_MODEL">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   swe_snap_options
+PURPOSE:
+  Stores a structure of SWEA snapshot keyword options and provides
+  a mechanism for changing those options.  Keywords set by this
+  routine are persistent defaults in the SWEA snapshot routines.
+  They can be overridden by explicitly setting keywords in those
+  routines.
+
+  Call this routine from your idl_startup.pro to customize default
+  options for yourself.
+
+USAGE:
+  swe_snap_options, key
+
+INPUTS:
+       key:           Structure containing keyword(s) for any of the SWEA
+                      snapshot routines (engy, pad, 3d).  Unrecognized
+                      keywords can be added to the structure but will
+                      subsequently be ignored.
+
+                      {KEYWORD: value, KEYWORD: value, ...}
+
+KEYWORDS:
+       GET:           Set this to a named variable to return the current 
+                      default keyword structure (after changes, if any).
+
+       REPLACE:       If this keyword is set, then the input structure 
+                      replaces any existing structure.  Otherwise, the
+                      input structure is merged with any existing one.
+
+       DELETE:        An array of tag names to delete from the default
+                      keyword structure.
+
+       RESET:         Reset the default structure to something universally
+                      benign: {WSCALE: 1.}
+
+       LIST:          List the current keyword default structure.  This is
+                      the default when this routine is called without any
+                      inputs or keywords.
+
+       SILENT:        Suppresses output.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2021-03-02 10:38:37 -0800 (Tue, 02 Mar 2021) $
+ $LastChangedRevision: 29725 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_snap_options.pro $
+</PRE><P>
+<STRONG>(See <A href="swea/swe_snap_options.pro">projects/maven/swea/swe_snap_options.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SWE_TESTPULSER_MODEL">
 <H2>SWE_TESTPULSER_MODEL</H2></A>
-<A HREF="#SWE_SNAP_LAYOUT">[Previous Routine]</A>
+<A HREF="#SWE_SNAP_OPTIONS">[Previous Routine]</A>
 <A HREF="#TIMEFIT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -7185,8 +7374,8 @@ KEYWORDS:
        DAY:       PAD units are days.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-08-03 16:49:25 -0700 (Mon, 03 Aug 2020) $
- $LastChangedRevision: 28979 $
+ $LastChangedDate: 2020-12-15 12:58:34 -0800 (Tue, 15 Dec 2020) $
+ $LastChangedRevision: 29488 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/timefit.pro $
 
 CREATED BY:	David L. Mitchell  07-06-14

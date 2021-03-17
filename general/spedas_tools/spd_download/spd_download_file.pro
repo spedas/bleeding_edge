@@ -54,9 +54,9 @@
 ;  -checks contents of "http_proxy" environment variable for proxy server
 ;
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2019-04-25 15:32:56 -0700 (Thu, 25 Apr 2019) $
-;$LastChangedRevision: 27093 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2020-08-12 15:04:48 -0700 (Wed, 12 Aug 2020) $
+;$LastChangedRevision: 29020 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/spd_download/spd_download_file.pro $
 ;
 ;-
@@ -177,6 +177,11 @@ callback_error = ptr_new(0b)
 ;if the "url" keyword is passed to get() then all "url_*" properties are ignored,
 ;set them manually here to avoid that
 url_struct = parse_url(url)
+
+; the following check on url_struct.path is due to some servers (e.g., LASP) not supporting double-forward slashes
+; e.g., (lasp.colorado.edu//path/to/the/file); IDLnetURL always appends a forward slash between the host and path
+if strlen(url_struct.path) gt 0 && strmid(url_struct.path, 0, 1) eq '/' then url_struct.path = strmid(url_struct.path, 1, strlen(url_struct.path))
+
 net_object->setproperty, $
             
             headers=headers, $

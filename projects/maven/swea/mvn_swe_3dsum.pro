@@ -16,8 +16,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-08-27 14:06:18 -0700 (Tue, 27 Aug 2019) $
-; $LastChangedRevision: 27682 $
+; $LastChangedDate: 2021-02-28 12:41:25 -0800 (Sun, 28 Feb 2021) $
+; $LastChangedRevision: 29708 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_3dsum.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -26,8 +26,8 @@
 function mvn_swe_3dsum, ddd
 
   if (size(ddd,/type) ne 8) then return, 0
-  if (n_elements(ddd) eq 1) then return, ddd
   npts = n_elements(ddd)
+  if (npts eq 1) then return, ddd
 
   old_units = ddd[0].units_name  
   mvn_swe_convert_units, ddd, 'counts'     ; convert to raw counts

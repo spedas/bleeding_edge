@@ -1,17 +1,17 @@
 ;+
 ; TYPE:
 ;   function.
-; 
+;
 ; NAME:
 ;   rbsp_mgse2gse.
-;   
+;
 ; PURPOSE:
-;   Convert vector in mGSE coord to GSE.
+;   Convert vector in mGSE coord to GSE. ((Also see rbsp_gse2mgse.pro))
 ;
 ; PARAMETERS:
 ;   tname, in, type = string or int, required.
 ;       tplot variable name or number, data must be in [n,3].
-;   
+;
 ;   wgse, in/out, type = [3] or [n,3], optional.
 ;       The w-antenna direction in GSE.
 ;       If set, keywords probe, no_spice_load has no effect.
@@ -50,7 +50,7 @@
 ;
 ; NOTES:
 ;   * wgse and x_mgse are the same, x_mgse = {sint*cosp, sint*sinp, cost}.
-;   * v_gse = {vx_gse, vy_gse, vz_gse}, 
+;   * v_gse = {vx_gse, vy_gse, vz_gse},
 ;     v_mgse = {vx_mgse, vy_mgse, vz_mgse},
 ;     gse->mgse, M1 = | sint*cosp, sint*sinp, cost |
 ;                     | -sinp    , cosp     , 0    |
@@ -60,40 +60,43 @@
 ; HISTORY:
 ;   Sheng Tian, UMN 2013-09-18 (created)
 ;
-; VERSION: 
+; VERSION:
 ;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2013-12-02 13:09:33 -0800 (Mon, 02 Dec 2013) $
-;   $LastChangedRevision: 13609 $
+;   $LastChangedDate: 2020-09-21 18:19:11 -0700 (Mon, 21 Sep 2020) $
+;   $LastChangedRevision: 29176 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_mgse2gse.pro $
 ;-
 
 
 
 pro rbsp_mgse2gse, tname, wgse, newname = newname, inverse = inverse, $
-    probe = probe, no_spice_load = no_spice_load
-    
+    probe=probe,$
+    _extra=extra
+
     compile_opt idl2
     on_error, 0
-    
+
     get_data, tname, data = dat
     vec0 = dat.y            ; old vec.
     vec1 = double(vec0)     ; new vec.
     vx0 = vec0[*,0] & vy0 = vec0[*,1] & vz0 = vec0[*,2]
-    
+
     ; get x_mgse, which is also w_sc in gse.
     if n_elements(wgse) ne 0 then begin
         if n_elements(wgse) eq 3 then begin     ; wgse in [3].
             wx = wgse[0] & wy = wgse[1] & wz = wgse[2]
         endif else begin                        ; wgse in [n,3].
-            wx = wgse[*,0] & wy = wgse[*,1] & wz = wgse[*,2]    
+            wx = wgse[*,0] & wy = wgse[*,1] & wz = wgse[*,2]
         endelse
     endif else begin
         ; load spice kernel and get wgse.
         ; interpolation because spice runs slow and wgse varies slow.
         if n_elements(probe) eq 0 then prob = 'a' else prob = probe[0]
-        if ~keyword_set(no_spice_load) then $
-            rbsp_efw_init
-            rbsp_load_spice_kernels
+
+        rbsp_efw_init,_extra=extra
+        rbsp_load_spice_kernels,_extra=extra
+
+
         t0 = dat.x
         nrec = n_elements(t0)
         tt0 = [t0[0],t0[nrec-1]]
@@ -108,15 +111,15 @@ pro rbsp_mgse2gse, tname, wgse, newname = newname, inverse = inverse, $
         wy = interpol(wgse[*,1], tt0, t0)
         wz = interpol(wgse[*,2], tt0, t0)
         wgse = [[wx],[wy],[wz]]
-    endelse 
-    
+    endelse
+
     ; prepare angle.
     p = atan(double(wy),wx)     ; this way p (phi) in [0,2pi].
     cosp = cos(p)
     sint = wx/cosp
     sinp = wy/sint
     cost = double(wz)
-    
+
     ; rotation. break the matrix to do vectorized calc, fast.
     if ~keyword_set(inverse) then begin     ; M2, mgse->gse.
         vx1 = sint*vx0 - cost*vz0
@@ -133,32 +136,48 @@ pro rbsp_mgse2gse, tname, wgse, newname = newname, inverse = inverse, $
         vy2 =  vy1
         vz2 = -cost*vx1 + sint*vz1
     endelse
-    
+
     if keyword_set(newname) then name = newname else name = tname+'_gse'
     store_data, name, data = {x:dat.x, y:[[vx2],[vy2],[vz2]]}
 
 end
 
-rbsp_efw_init
-tr = time_double(['2013-03-14/07:00','2013-03-14/10:00'])
-timespan, tr[0], tr[1]-tr[0], /second
-rbsp_load_spice_kernels
-probe = 'b'
-rbsp_load_spice_state, probe = probe, coord = 'gse', /no_spice_load
-rbsp_mgse2gse, 'rbspb_state_pos_gse', wgse, newname = 'rbspb_state_pos_mgse', $
-    /inverse, /no_spice_load, probe = probe
-rbsp_gse2mgse, 'rbspb_state_pos_gse', wgse, newname = 'rbspb_state_pos_mgse2'
-rbsp_mgse2gse, 'rbspb_state_pos_mgse', wgse, newname = 'rbspb_state_pos_gse2', $
-    /no_spice_load, probe = probe
-vars = ['rbspb_state_pos_*']
-tplot, vars
 
-get_data, 'rbspb_state_pos_mgse', data = mgse1
-get_data, 'rbspb_state_pos_mgse2', data = mgse2
-print, max(mgse1.y-mgse2.y)
 
-get_data, 'rbspb_state_pos_gse', data = gse1
-get_data, 'rbspb_state_pos_gse2', data = gse2
-print, max(gse1.y-gse2.y)
-end
 
+;rbsp_efw_init,_extra=extra
+;
+;;tr = time_double(['2013-03-14/07:00','2013-03-14/10:00'])
+;tr = timerange()
+;timespan, tr[0], tr[1]-tr[0], /second
+;
+;
+;if ~tdexists('rbsp'+sc+'_q_uvw2gse',tr[0],tr[1]) then rbsp_load_spice_cdf_file,probe
+;
+;;rbsp_load_spice_kernels,_extra=extra
+;;rbsp_load_spice_state, probe = probe, coord = 'gse', _extra=extra;
+;
+;
+;rbsp_mgse2gse, 'rbsp'+sc+'_state_pos_gse', wgse, $
+;  newname = 'rbsp'+sc+'_state_pos_mgse', $
+;  /inverse,probe=probe,_extra=extra
+;
+;rbsp_gse2mgse, 'rbsp'+sc+'_state_pos_gse', wgse, $
+;  newname = 'rbsp'+sc+'_state_pos_mgse2'
+
+;rbsp_mgse2gse, 'rbsp'+sc+'_state_pos_mgse', wgse, $
+;  newname = 'rbsp'+sc+'_state_pos_gse2', $
+;  probe = probe,_extra=extra
+;
+;
+;vars = ['rbsp'+sc+'_state_pos_*']
+;tplot, vars
+;
+;get_data, 'rbsp'+sc+'_state_pos_mgse', data = mgse1
+;get_data, 'rbsp'+sc+'_state_pos_mgse2', data = mgse2
+;print, max(mgse1.y-mgse2.y)
+;
+;get_data, 'rbsp'+sc+'_state_pos_gse', data = gse1
+;get_data, 'rbsp'+sc+'_state_pos_gse2', data = gse2
+;print, max(gse1.y-gse2.y)
+;end

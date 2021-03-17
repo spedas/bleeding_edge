@@ -125,9 +125,9 @@
 ;  4. All calculations are done internally in double precision
 ;
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2015-07-18 14:10:46 -0700 (Sat, 18 Jul 2015) $
-; $LastChangedRevision: 18174 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2020-10-02 11:20:55 -0700 (Fri, 02 Oct 2020) $
+; $LastChangedRevision: 29203 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2equator.pro $
 ;-
 
@@ -142,7 +142,7 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
     ;constant arrays used for input validation
     valid_coords = ['gei', 'gse','geo', 'gsm', 'sm']
     valid_internals = ['dip', 'igrf']
-    valid_externals = ['none', 't89', 't96', 't01', 't04s']
+    valid_externals = ['none', 't89', 't96', 't01', 't04s', 'ts07']
     
     ; 6371.2 = the value used in the GEOPACK FORTRAN code for Re
     km_in_re = 6371.2D

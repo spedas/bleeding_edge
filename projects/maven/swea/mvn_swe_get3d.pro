@@ -29,8 +29,8 @@
 ;       SHIFTPOT:      Correct for spacecraft potential.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-03-15 12:45:14 -0700 (Fri, 15 Mar 2019) $
-; $LastChangedRevision: 26818 $
+; $LastChangedDate: 2020-12-15 13:03:48 -0800 (Tue, 15 Dec 2020) $
+; $LastChangedRevision: 29495 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_get3d.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -42,23 +42,21 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
   @mvn_swe_com
 
   if keyword_set(burst) then archive = 1
+  delta_t = 1.95D/2D  ; start time to center time
 
   if (size(time,/type) eq 0) then begin
     if not keyword_set(all) then begin
       print,"You must specify a time."
       return, 0
     endif else begin
-      ok = 0
       if keyword_set(archive) then begin
-        if (size(swe_3d,/type) eq 8) then begin
-          time = swe_3d.time
-          ok = 1
-        endif
+        str_element, swe_3d_arc, 'time', time, success=ok  ; L0
+        if (ok) then time += delta_t ; center times
+        if (not ok) then str_element, mvn_swe_3d_arc, 'time', time, success=ok  ; L2
       endif else begin
-        if (size(swe_3d_arc,/type) eq 8) then begin
-          time = swe_3d_arc.time
-          ok = 1
-        endif
+        str_element, swe_3d, 'time', time, success=ok  ; L0
+        if (ok) then time += delta_t ; center times
+        if (not ok) then str_element, mvn_swe_3d, 'time', time, success=ok  ; L2
       endelse
       if (not ok) then begin
         print,"Cannot get 3D times."
@@ -381,12 +379,7 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
 ; other units.
 
     rate = counts/(swe_integ_t*ddd[n].dt_arr)  ; raw count rate
-    dtc = 1. - rate*swe_dead
-
-    indx = where(dtc lt swe_min_dtc, count)    ; maximum deadtime correction
-    if (count gt 0L) then dtc[indx] = !values.f_nan
-
-    ddd[n].dtc = dtc                           ; corrected count rate = rate/dtc
+    ddd[n].dtc = swe_deadtime(rate)            ; corrected count rate = rate/dtc
     
 ; Insert MAG1 data, if available
 

@@ -29,17 +29,16 @@
 ;
 ;
 ;
-;$LastChangedBy: pcruce $
-;$LastChangedDate: 2016-05-12 18:31:01 -0700 (Thu, 12 May 2016) $
-;$LastChangedRevision: 21074 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2020-08-12 13:44:20 -0700 (Wed, 12 Aug 2020) $
+;$LastChangedRevision: 29018 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/combined/thm_cmb_clean_esa.pro $
 ;
 ;-
     
 pro thm_cmb_clean_esa, data, units=units, _extra=ex
 
-  compile_opt idl2,hidden
-
+  compile_opt idl2
   
   ;code to filter non-monotone modes
   max_times = dblarr(n_elements(data))
@@ -47,13 +46,36 @@ pro thm_cmb_clean_esa, data, units=units, _extra=ex
 
   ;ensure units is defined    
   if undefined(units) then units = (*data[0])[0].units_name
-  
-  ;loop over pointers
-  for i=0, n_elements(data)-1 do begin
 
-    max_times[i] = max((*data[i]).end_time,/nan)
-    min_times[i] = min((*data[i]).time,/nan)
+  ;loop over pointers, to check for overlaps
+  For i=0, n_elements(data)-1 Do Begin
+;    max_times[i] = max((*data[i]).end_time,/nan)
+;    min_times[i] = min((*data[i]).time,/nan)
+;times comparison should use center times, not start and end
+     datai = *data[i]
+     times = 0.5*(datai.end_time+datai.time)
+     max_times[i] = max(times, /nan)
+     min_times[i] = min(times, /nan)
+;If there is an overlap with the previous mode, delete the points that
+;overlap, not the full mode, jmm, 2020-08-12
+     If(i Gt 0 And min_times[i] Le max_times[i-1]) Then Begin
+        Oki = where(times Gt max_times[i-1], noki)
+        If(noki Eq 0) Then Begin ;only keep non-overlapping data
+           ptr_free, data[i]    ;kill the pointer
+        Endif Else Begin
+           datai = datai[Oki]
+           ptr_free, data[i]
+           data[i] = ptr_new(datai)
+        Endelse
+     Endif
+  Endfor
+  kept_data = where(ptr_valid(data), nkept)
+  If(nkept Gt 0) Then data = data[kept_data] $
+  Else Begin
+     dprint, 'No good pointers? Should never get here'
+  Endelse
 
+  For i=0, n_elements(data)-1 Do Begin
     ;loop over structures
     for j=0, n_elements(*data[i])-1 do begin
       
@@ -80,19 +102,20 @@ pro thm_cmb_clean_esa, data, units=units, _extra=ex
     data[i] = ptr_new(temp_arr, /no_copy)
   
   endfor
-    
-  ;check for strictly monotonic modes
-  ;TODO: Modes should always be monotone
-  ;This is a quick workaround for a bug that sometimes(rarely) occurs in ESA data somewhere earlier in processing
-  ;(not sure if it is on-board or in ground packet processing/CDF generation)
-  if n_elements(data) gt 1 then begin
-    idx = where(max_times[0:n_elements(data)-2] lt min_times[1:n_elements(data)-1],c)
+
+  ;check for strictly monotonic modes TODO: Modes should always be
+  ;monotone This is a quick workaround for a bug that
+  ;sometimes(rarely) occurs in ESA data somewhere earlier in
+  ;processing (not sure if it is on-board or in ground packet
+  ;processing/CDF generation)
+;  if n_elements(data) gt 1 then begin
+;    idx = where(max_times[0:n_elements(data)-2] lt min_times[1:n_elements(data)-1],c)
     ;keep only non-overlapping modes
-    if c gt 0 then begin
-      data = [data[idx],data[n_elements(data)-1]]
-    endif else begin
-      data = data[n_elements(data)-1]
-    endelse
-  endif 
-    
+;    if c gt 0 then begin
+;      data = [data[idx],data[n_elements(data)-1]]
+;    endif else begin
+;      data = data[n_elements(data)-1]
+;    endelse
+;  endif 
+
 end

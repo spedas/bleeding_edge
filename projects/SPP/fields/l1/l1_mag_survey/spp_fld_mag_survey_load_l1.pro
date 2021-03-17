@@ -23,8 +23,8 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2020-04-22 17:56:06 -0700 (Wed, 22 Apr 2020) $
-;  $LastChangedRevision: 28602 $
+;  $LastChangedDate: 2020-10-20 13:28:22 -0700 (Tue, 20 Oct 2020) $
+;  $LastChangedRevision: 29264 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
@@ -40,7 +40,11 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat, $
 
   ; Load the L1 CDF file into IDL.
 
-  cdf2tplot, /get_support_data, file, prefix = prefix, varformat = varformat
+  if n_elements(varformat) EQ 0 then begin
+    cdf2tplot, /get_support_data, file, prefix = prefix
+  endif else begin
+    cdf2tplot, file, prefix = prefix, varformat = varformat
+  endelse
 
   if not keyword_set(prefix) then prefix = ''
 
@@ -75,7 +79,8 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat, $
 
   ; If the data hasn't been loaded then quit.
 
-  if tnames(prefix + 'avg_period_raw') EQ '' then return
+  if tnames(prefix + 'avg_period_raw') EQ '' or $
+    tnames(prefix + 'range_bits') EQ '' then return
 
   ; Each packet has up to 512 mag vectors.  times_2d is the array of times
   ; that are in the CDF file (1 per packet)

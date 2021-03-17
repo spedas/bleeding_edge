@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -22,6 +22,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#THM_CMB_CLEAN_ESA">THM_CMB_CLEAN_ESA</A>
 <LI><A HREF="#THM_CMB_CLEAN_SST">THM_CMB_CLEAN_SST</A>
 <LI><A HREF="#THM_CONVERT_CMB_UNITS">THM_CONVERT_CMB_UNITS</A>
+<LI><A HREF="#THM_ESA_DETECT_OVERLAP">THM_ESA_DETECT_OVERLAP</A>
+<br>Detects mode overlap that occasionally occurs in ESA data, this
 <LI><A HREF="#THM_PART_COMBINE">THM_PART_COMBINE</A>
 <LI><A HREF="#THM_PART_ENERGY_INTERP">THM_PART_ENERGY_INTERP</A>
 <br>Interpolate particle data by energy between sst &amp; esa distributions using
@@ -68,9 +70,9 @@ Notes:
 
 
 
-$LastChangedBy: pcruce $
-$LastChangedDate: 2016-05-12 18:31:01 -0700 (Thu, 12 May 2016) $
-$LastChangedRevision: 21074 $
+$LastChangedBy: jimm $
+$LastChangedDate: 2020-08-12 13:44:20 -0700 (Wed, 12 Aug 2020) $
+$LastChangedRevision: 29018 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/combined/thm_cmb_clean_esa.pro $
 
 </PRE><P>
@@ -125,7 +127,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/th
 <A NAME="THM_CONVERT_CMB_UNITS">
 <H2>THM_CONVERT_CMB_UNITS</H2></A>
 <A HREF="#THM_CMB_CLEAN_SST">[Previous Routine]</A>
-<A HREF="#THM_PART_COMBINE">[Next Routine]</A>
+<A HREF="#THM_ESA_DETECT_OVERLAP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -163,9 +165,43 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/th
 <STRONG>(See <A href="combined/thm_convert_cmb_units.pro">projects/themis/spacecraft/particles/combined/thm_convert_cmb_units.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_ESA_DETECT_OVERLAP">
+<H2>THM_ESA_DETECT_OVERLAP</H2></A>
+<A HREF="#THM_CONVERT_CMB_UNITS">[Previous Routine]</A>
+<A HREF="#THM_PART_COMBINE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+thm_esa_detect_overlap
+PURPOSE:
+Detects mode overlap that occasionally occurs in ESA data, this
+function compares the times for different ESA modes, if there is
+overlap, as indicated by a mode end time greater than or equal to the
+start time of the following mode, then an overlap is flagged. This
+should be used for reprocessing gmom data files that had entire modes
+removed due to overlaps.
+CALLING SEQUENCE:
+overlap_flag = thm_esa_detect_overlap(date = date, probe = probe)
+INPUT:
+ via keyword
+OUTPUT:
+overlap_flag = 1, if overlap is detected, = 0 otherwise
+KEYWORDS:
+date = the date, the default is to let thm_load_esa_pkt prompt for
+one
+probe = the probe, the default is 'a'
+
+$LastChangedBy: jimm $
+$LastChangedDate: 2020-08-18 10:11:19 -0700 (Tue, 18 Aug 2020) $
+$LastChangedRevision: 29044 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/combined/thm_esa_detect_overlap.pro $
+</PRE><P>
+<STRONG>(See <A href="combined/thm_esa_detect_overlap.pro">projects/themis/spacecraft/particles/combined/thm_esa_detect_overlap.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_PART_COMBINE">
 <H2>THM_PART_COMBINE</H2></A>
-<A HREF="#THM_CONVERT_CMB_UNITS">[Previous Routine]</A>
+<A HREF="#THM_ESA_DETECT_OVERLAP">[Previous Routine]</A>
 <A HREF="#THM_PART_ENERGY_INTERP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

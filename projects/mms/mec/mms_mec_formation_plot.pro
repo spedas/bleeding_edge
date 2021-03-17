@@ -86,8 +86,8 @@
 ;       and Kim Kokkonen at LASP
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-04-13 17:10:08 -0700 (Mon, 13 Apr 2020) $
-; $LastChangedRevision: 28573 $
+; $LastChangedDate: 2021-01-12 10:07:57 -0800 (Tue, 12 Jan 2021) $
+; $LastChangedRevision: 29592 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_mec_formation_plot.pro $
 ;-
 
@@ -110,7 +110,7 @@ pro mms_mec_formation_plot, time, projection=projection, quality_factor=quality_
   
   ; load one minute of position data
   current_time = [time_double(time), time_double(time)+60.]
-  mms_load_mec, trange=current_time, probes=[1, 2, 3, 4], varformat='*_r_'+coord, /time_clip
+  mms_load_mec, datatype='epht89d', trange=current_time, probes=[1, 2, 3, 4], varformat='*_r_'+coord, /time_clip
   
   if keyword_set(quality_factor) then begin
       ; load the tetrahedron quality factor

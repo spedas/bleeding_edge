@@ -48,9 +48,9 @@
 ; 10-Feb-2009, jmm, Added hwin, sbar keywords
 ; 24-Apr-2015, af, updating plugins, reformatting code
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2016-03-07 10:51:31 -0800 (Mon, 07 Mar 2016) $
-;$LastChangedRevision: 20343 $
+;$LastChangedBy: jimmpc1 $
+;$LastChangedDate: 2020-09-28 14:33:06 -0700 (Mon, 28 Sep 2020) $
+;$LastChangedRevision: 29192 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/objects/spd_ui_loaded_data__dproc.pro $
 Function spd_ui_loaded_data::dproc, dp_task, dp_pars,callSequence=callSequence,replay=replay,in_vars=in_vars, names_out = names_out, $
                            no_setactive = no_setactive, hwin = hwin, sbar = sbar, gui_id = gui_id, $
@@ -363,14 +363,19 @@ For j = 0, n_elements(operation)-1 Do Begin
         nn = tnames(input+dp_pars.suffix)
     End
     
-    ;deflat / remove flags
+    ;deflag / remove flags
     ;------------------
     'deflag': Begin
-        tdeflag, input, (dp_pars.method[0] ? 'repeat':'linear'), $
-                 newname = input+dp_pars.suffix[0], display_object=display_object, $
-                 _extra = {flag: (dp_pars.opts[0] ? dp_pars.flag:0b), $
-                           maxgap: (dp_pars.opts[1] ? dp_pars.maxgap:0b)}
-        nn = tnames(input+dp_pars.suffix)
+;       tdeflag, input, (dp_pars.method[0] ? 'repeat':'linear'), $
+       If(dp_pars.method[1] Eq 1) Then dflag_method = 'linear' $
+       Else If(dp_pars.method[2] Eq 1) Then dflag_method = 'replace' $
+       Else dflag_method = 'repeat'
+       tdeflag, input, dflag_method, $
+                newname = input+dp_pars.suffix[0], display_object=display_object, $
+                _extra = {flag: (dp_pars.opts[0] ? dp_pars.flag:0b), $
+                          maxgap: (dp_pars.opts[1] ? dp_pars.maxgap:0b), $
+                          fillval:(dp_pars.opts[2] ? dp_pars.fillval:0b)}
+       nn = tnames(input+dp_pars.suffix)
     End
     
     ;degap / remove time gaps

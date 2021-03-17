@@ -1,4 +1,4 @@
-;+
+ ;+
 ;Procedure: THM_LOAD_GMOM
 ;
 ;Purpose:  Loads THEMIS Level 2 ground calculated combined ESA+SST moments.  
@@ -31,9 +31,9 @@
 ;   thm_load_gmom,probe=['a', 'b']
 ;Notes:
 ;  Temporary version, to avoid conflicts, but can read Level 2 data, jmm
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2020-04-06 14:49:09 -0700 (Mon, 06 Apr 2020) $
-; $LastChangedRevision: 28516 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2020-09-14 10:42:49 -0700 (Mon, 14 Sep 2020) $
+; $LastChangedRevision: 29151 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/moments/thm_load_gmom.pro $
 ;-
 pro thm_load_gmom, probe = probe, datatype = datatype, trange = trange, $
@@ -172,6 +172,20 @@ for s = 0, n_elements(probes)-1 do begin
           dprint, new_v[j]+' Out of range and not clipped'
         Endif
       Endif
+
+;ylims for data quality flag
+     isit_dq = total(strmatch(strsplit(new_v[j],'_',/extract), 'quality'))
+     If(isit_dq) Then Begin
+       ylim, new_v[j], -1, 16.0, 0
+       options, new_v[j], 'tplot_routine', 'bitplot'
+       options, new_v[j], 'labels', ['ESA_scpot_flag', 'ESA_sat_flag', $
+                                     'ESA_sw_flag', 'ESA_flow_flag', 'ESA_earth_shadow', $
+                                     'ESA_moon_shadow', 'ESA_maneuver', 'ESA_dens_mismatch', $
+                                     'SST_sat_flag', 'SST_att_err', 'SST_bad_spin_period', $
+                                     'SST_earth_shadow', 'SST_moon_shadow']
+     Endif
+
+
     Endfor
   Endif
 

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -33,6 +33,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#LIST_MYSTRUCT[8]">LIST_MYSTRUCT[8]</A>
 <LI><A HREF="#TNAXES">TNAXES</A>
 <br>Find nice time axis tics.
+<LI><A HREF="#AUDIOMASTER">AUDIOMASTER</A>
 <LI><A HREF="#AURORAL_IMAGE">AURORAL_IMAGE</A>
 <br>This function plots a 2-dimensional array Z mapped onto a polar
 <LI><A HREF="#AXLABEL">AXLABEL</A>
@@ -88,7 +89,9 @@ This page was created by the IDL library routine
 <LI><A HREF="#MOVIE_SKYMAP">MOVIE_SKYMAP</A>
 <LI><A HREF="#MOVIE_WIND_MAP">MOVIE_WIND_MAP</A>
 <LI><A HREF="#ORB_MGR">ORB_MGR</A>
-<LI><A HREF="#ORBIT_PLT">ORBIT_PLT</A>
+<LI><A HREF="#ORBIT_PLT[1]">ORBIT_PLT[1]</A>
+<LI><A HREF="#ORBIT_PLT[2]">ORBIT_PLT[2]</A>
+<LI><A HREF="#ORBIT_PLT[2]">ORBIT_PLT[2]</A>
 <LI><A HREF="#OVERLAY[1]">OVERLAY[1]</A>
 <LI><A HREF="#OVERLAY[2]">OVERLAY[2]</A>
 <LI><A HREF="#PLASMA_MOVIE">PLASMA_MOVIE</A>
@@ -119,9 +122,9 @@ This page was created by the IDL library routine
 <LI><A HREF="#READ_MYCDF[2]">READ_MYCDF[2]</A>
 <br>Return true(1) or false(0) depending on whether or not the
 <LI><A HREF="#READ_MYCDF[3]">READ_MYCDF[3]</A>
-<br>Parse and examine the input string.  It should be the value of the
+<br>Return a copy of val recast to the requested type.  If it is not
 <LI><A HREF="#READ_MYCDF[4]">READ_MYCDF[4]</A>
-<br>Search the metadata anonymous structure for ISTP 'DEPEND' attributes.
+<br>Return true(1) or false(0) depending on whether or not the
 <LI><A HREF="#READ_MYCDF[5]">READ_MYCDF[5]</A>
 <br>Append the 'new' data to the 'old' data using array concatenation.
 <LI><A HREF="#READ_MYCDF[6]">READ_MYCDF[6]</A>
@@ -135,18 +138,42 @@ This page was created by the IDL library routine
 <LI><A HREF="#READ_MYCDF[10]">READ_MYCDF[10]</A>
 <br>To read all of the attribute values for the requested variable, and
 <LI><A HREF="#READ_MYCDF[11]">READ_MYCDF[11]</A>
-<br>To return all of the attribute names for the requested variable, as
+<br>Check if a particular variable is a 'clone' of another variable.
 <LI><A HREF="#READ_MYCDF[12]">READ_MYCDF[12]</A>
-<br>To return the total number of variables in the cdf.
+<br>To return all of the attribute names for the requested variable, as
 <LI><A HREF="#READ_MYCDF[13]">READ_MYCDF[13]</A>
-<br>To return a string array containing the names of all of the
+<br>To return the total number of variables in the cdf.
 <LI><A HREF="#READ_MYCDF[14]">READ_MYCDF[14]</A>
+<br>To return a string array containing the names of all of the
+<LI><A HREF="#READ_MYCDF[15]">READ_MYCDF[15]</A>
 <br>Read all data and metadata for given variables, from given CDF
+<LI><A HREF="#READ_MYNETCDF[1]">READ_MYNETCDF[1]</A>
+<LI><A HREF="#READ_MYNETCDF[2]">READ_MYNETCDF[2]</A>
+<br>Return the data for the requested variable.
+<LI><A HREF="#READ_MYNETCDF[2]">READ_MYNETCDF[2]</A>
+<br>Return the value of the requested attribute for the requested variable.
+<LI><A HREF="#READ_MYNETCDF[3]">READ_MYNETCDF[3]</A>
+<br>To read all of the attribute values for the requested variable, and
+<LI><A HREF="#READ_MYNETCDF[4]">READ_MYNETCDF[4]</A>
+<br>To return all of the attribute names for the requested variable, as
+<LI><A HREF="#READ_MYNETCDF[5]">READ_MYNETCDF[5]</A>
+<br>To return the total number of variables in the ncdf.
+<LI><A HREF="#READ_MYNETCDF[6]">READ_MYNETCDF[6]</A>
+<br>To return a string array containing the names of all of the
+<LI><A HREF="#READ_MYNETCDF[7]">READ_MYNETCDF[7]</A>
+<br>Read all data and metadata for given variables, from given NCDF
+<LI><A HREF="#RECTIFY_DATA">RECTIFY_DATA</A>
 <LI><A HREF="#SEMIMINMAX">SEMIMINMAX</A>
+<LI><A HREF="#SPDF_READ_UTILITIES[1]">SPDF_READ_UTILITIES[1]</A>
+<br>Parse and examine the input string.  It should be the value of the
+<LI><A HREF="#SPDF_READ_UTILITIES[2]">SPDF_READ_UTILITIES[2]</A>
+<br>Search the metadata anonymous structure for ISTP 'DEPEND' attributes.
 <LI><A HREF="#SPECTROGRAM">SPECTROGRAM</A>
 <br>This function plots a color spectrogram of Z in contiguous or
 <LI><A HREF="#SSC_PLOT">SSC_PLOT</A>
 <LI><A HREF="#THREE_SIGMA">THREE_SIGMA</A>
+<LI><A HREF="#TIME_INTERVAL">TIME_INTERVAL</A>
+<br>Find nice time axis tics. (Based on the routine TNAXES)
 <LI><A HREF="#TIME_LABEL[1]">TIME_LABEL[1]</A>
 <br>Make a time label array
 <LI><A HREF="#TIMEAXIS_TEXT">TIMEAXIS_TEXT</A>
@@ -169,6 +196,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#VIRTUAL_FUNCS[11]">VIRTUAL_FUNCS[11]</A>
 <LI><A HREF="#VIRTUAL_FUNCS[12]">VIRTUAL_FUNCS[12]</A>
 <LI><A HREF="#VIRTUAL_FUNCS[13]">VIRTUAL_FUNCS[13]</A>
+<LI><A HREF="#VIRTUAL_FUNCS[14]">VIRTUAL_FUNCS[14]</A>
+<LI><A HREF="#VIRTUAL_FUNCS[15]">VIRTUAL_FUNCS[15]</A>
 <LI><A HREF="#XV_LOOKV_TO_GCI[2]">XV_LOOKV_TO_GCI[2]</A>
 <br>Converts the XVIS LOOK vector to GCI coordinates
 <LI><A HREF="#COMPUTE_CRDS[2]">COMPUTE_CRDS[2]</A>
@@ -218,8 +247,69 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="AUDIOMASTER">
+<H2>AUDIOMASTER</H2></A>
+<A HREF="#AURORAL_IMAGE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: AUDIOMASTER
+ PURPOSE: To plot the data given in 1 to 30 anonymous structure of the type
+          returned by the read_mycdf function.  This function creates an
+          audio file based data on each variable in each input structure.
+ CALLING SEQUENCE:
+       out = audiomaster (a,[more_structures])
+ INPUTS:
+       a = structure returned by the read_mycdf procedure.
+
+ KEYWORD PARAMETERS:
+   TSTART =  String of the form '1996/01/02 12:00:00' or a DOUBLE CDF_EPOCH
+   time that is the desired start time of the plots. Data is clipped or
+   padded to conform to this time. Default is the start time of the
+   earliest data.
+
+   TSTOP = String of the form '1996/01/02 12:00:00' or a DOUBLE
+   CDF_EPOCH time that is the desired stop time of the plots. Data is
+   clipped or padded to conform to this time. Default is the stop time of
+   the latest data.
+
+   PID
+   May be used to customize part of the name of a gif file. The value of
+   PID may be either a number or a string and will be inserted in the gif
+   file name as follows: Spacecraft_instrument_pid_#.gif. If GIF is not
+   set then the plot(s) will be put into an x-window and this keyword is
+   ignored.
+
+   OUTDIR
+   This keyword indiates the output directory where a gif file will be
+   placed. If GIF is set but OUTDIR is not, then the gif file will be put
+   in the user's current working directory.GIF
+
+   AUTO
+   Set this keyword to use autoscaling instead of the variables SCALEMIN
+   and SCALEMAX attribute values. The scales will be set to the min and
+   max values of the data, after fill values have been filtered from the
+   data (see also NONOISE keyword). If the user wishes to modify variable
+   scale values for plotting purposes, you may do so by changing the
+   appropriate data structure values, ie. struct.variable.scalemin = 0.0.
+   Please use great care in modifying the data structures values since
+   they will greatly influence what your plots or listings may look like.
+
+ OUTPUTS:
+       out = status flag, 0=0k, -1 = problem occurred.
+ AUTHOR:
+       Ron Yurow, NASA/GSFC/Code 672.0, Dec 13, 1996
+ MODIFICATION HISTORY:
+
+Copyright 1996-2013 United States Government as represented by the
+Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
+
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/audiomaster.pro">external/CDAWlib/audiomaster.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="AURORAL_IMAGE">
 <H2>AURORAL_IMAGE</H2></A>
+<A HREF="#AUDIOMASTER">[Previous Routine]</A>
 <A HREF="#AXLABEL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -335,7 +425,7 @@ This page was created by the IDL library routine
  	Written by:	Emily A. Greene, Hughes STX, emily@xfiles.gsfc.nasa.gov
 	and Bobby Candey, NASA GSFC Code 632; Robert.M.Candey.1@gsfc.nasa.gov
 
-  Id: auroral_image.pro,v 1.86 2013/01/11 20:02:50 kovalick Exp ryurow $
+  $Id: auroral_image.pro 29691 2021-02-22 02:49:50Z nikos $
 
 	1995 Sept 26	BC, original full copy
 	1995 Sept 29	BC, beta
@@ -519,6 +609,9 @@ All Rights Reserved.
        COLOR: if defined, assign a color to a graph.  If not defined
        the default color will be used.
 
+    FILVAL: The fillval to use to the remove invalid error estimates
+    from being plotted.  Optional.
+
  OUTPUTS:
 	None.
 
@@ -555,6 +648,7 @@ All Rights Reserved.
  Originally errplot.pro, idl internal routine
        RCJ, Feb, 2003     Cdaweb_errplot: Based on errplot (idl internal routine). We needed a
                           'long' loop:  for i=0L,n-1 do begin
+       REY, May 20, 2019  Added keyword fillval.
 </PRE><P>
 <STRONG>(See <A href="CDAWlib/cdaweb_errplot.pro">external/CDAWlib/cdaweb_errplot.pro</A>)</STRONG><P>
 <HR>
@@ -2159,29 +2253,6 @@ nd ; ffo_string
 <A HREF="#LIST_MYSTRUCT[3]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- NAME: delete.pro
-
- PURPOSE: Frees memory
-
- INPUT;  var   - any variable
-
-RO delete, var
-
-    ptr=PTR_NEW(var)
-   PTR_FREE, ptr
-ar = 0B
-
-nd
-</PRE><P>
-<STRONG>(See <A href="CDAWlib/LIST_mystruct.pro">external/CDAWlib/LIST_mystruct.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="LIST_MYSTRUCT[3]">
-<H2>LIST_MYSTRUCT[3]</H2></A>
-<A HREF="#LIST_MYSTRUCT[2]">[Previous Routine]</A>
-<A HREF="#LIST_MYSTRUCT[4]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
  NAME: reform_strc.pro
 
  PURPOSE: Reforms the data array from a (1,N) to a (N).
@@ -2232,9 +2303,9 @@ or k=0, ns_tags-1 do begin
 ndfor    ; end k
 
  Free Memory
-elete, tempa
-elete, tempb
-elete, temp2
+pdf_delete, tempa
+pdf_delete, tempb
+pdf_delete, temp2
 
 eturn, b
 nd
@@ -2247,10 +2318,10 @@ file (w/ same name so that it can be called by read_myCDF.pro
 <STRONG>(See <A href="CDAWlib/LIST_mystruct.pro">external/CDAWlib/LIST_mystruct.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="LIST_MYSTRUCT[4]">
-<H2>LIST_MYSTRUCT[4]</H2></A>
-<A HREF="#LIST_MYSTRUCT[3]">[Previous Routine]</A>
-<A HREF="#LIST_MYSTRUCT[5]">[Next Routine]</A>
+<A NAME="LIST_MYSTRUCT[3]">
+<H2>LIST_MYSTRUCT[3]</H2></A>
+<A HREF="#LIST_MYSTRUCT[2]">[Previous Routine]</A>
+<A HREF="#LIST_MYSTRUCT[4]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: reform_mystruc.pro
@@ -2344,9 +2415,9 @@ or k=0, ns_tags-1 do begin
 ndfor
 
  Free Memory
-elete, tempa
-elete, tempb
-elete, temp
+pdf_delete, tempa
+pdf_delete, tempb
+pdf_delete, temp
 
 eturn, b
 nd
@@ -2355,10 +2426,10 @@ nd
 <STRONG>(See <A href="CDAWlib/LIST_mystruct.pro">external/CDAWlib/LIST_mystruct.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="LIST_MYSTRUCT[5]">
-<H2>LIST_MYSTRUCT[5]</H2></A>
-<A HREF="#LIST_MYSTRUCT[4]">[Previous Routine]</A>
-<A HREF="#LIST_MYSTRUCT[6]">[Next Routine]</A>
+<A NAME="LIST_MYSTRUCT[4]">
+<H2>LIST_MYSTRUCT[4]</H2></A>
+<A HREF="#LIST_MYSTRUCT[3]">[Previous Routine]</A>
+<A HREF="#LIST_MYSTRUCT[5]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: ord_mystruc.pro
@@ -2443,7 +2514,7 @@ or k=is, vmax do begin
 ndfor   ; end k
 
  Free Memeory
-elete, temp
+pdf_delete, temp
 
 eturn, bnew
 nd
@@ -2452,28 +2523,29 @@ nd
 <STRONG>(See <A href="CDAWlib/LIST_mystruct.pro">external/CDAWlib/LIST_mystruct.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="LIST_MYSTRUCT[6]">
-<H2>LIST_MYSTRUCT[6]</H2></A>
-<A HREF="#LIST_MYSTRUCT[5]">[Previous Routine]</A>
-<A HREF="#LIST_MYSTRUCT[7]">[Next Routine]</A>
+<A NAME="LIST_MYSTRUCT[5]">
+<H2>LIST_MYSTRUCT[5]</H2></A>
+<A HREF="#LIST_MYSTRUCT[4]">[Previous Routine]</A>
+<A HREF="#LIST_MYSTRUCT[6]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: wrt_hybd_strct.pro
 
  PURPOSE: Prints ascii file of RV or NRV variables
 
-UNCTION wrt_hybd_strct, a, unit, convar, maxrecs, depend0, mega_num  
+UNCTION wrt_hybd_strct, a, unit, convar, maxrecs, depend0, mega_num, csv
 
  Establish error handler
 atch, error_status
 f(error_status ne 0) then begin
-  if(error_status eq -96) then $ 
-         print, 'STATUS= This amount of data cannot be listed, please request a shorter time range' 
-  if(error_status eq -133) then $ 
-         print, 'STATUS= Incompatible variable types. Select variables separately' 
-  if(error_status eq -124) then $ 
-         print, 'STATUS= Temporary memory error. Please try again.'
-  if(error_status eq -350) then $ ;  format has too many elements
+  ;if(error_status eq -96) then $ ; This is Keyword %s not allowed in call to: %s
+  ;       print, 'STATUS= This amount of data cannot be listed, please request a shorter time range' 
+  ;if(error_status eq -133) then $ ; This is Temporary variables are still checked out - cleaning up...
+  ;       print, 'STATUS= Incompatible variable types. Select variables separately' 
+  ;if(error_status eq -124) then $ ; This is Value of %s cannot be NaN
+  ;       print, 'STATUS= Temporary memory error. Please try again.'
+  ;if(error_status eq -350) then $ ;  This is Unable to obtain current Julian time
+  if(error_status eq -360) then $ ;  format has too many elements (idl8.7: -340)
          print, 'STATUS= Please select fewer variables.' $
          else print, 'STATUS= Data cannot be listed'
   print, 'ERROR=Error number: ',error_status,' in listing (wrt_hybd_strct).'
@@ -2506,7 +2578,7 @@ ase convar of
       printf, unit, format='(&quot;#&quot;,14x,&quot;************************************&quot;)'
       printf, unit, format='(&quot;#&quot;,14x,&quot;*****    GLOBAL ATTRIBUTES    ******&quot;)'
       printf, unit, format='(&quot;#&quot;,14x,&quot;************************************&quot;)'
-      printf, unit, format='(&quot;#&quot;,14x)'
+      printf, unit, format='(&quot;#&quot;,14x)'       
       for i=0L, ntags-1 do begin
          ;  RCJ 03/18/2014  Space below is arbitrarily defined so each global attr name will fit in that
   ;       space, and could be chopped if too long.
@@ -2530,9 +2602,31 @@ ase convar of
                printf, unit, format='(&quot;#&quot;,5x,a,2x,a)', var, var2
             endelse
          endif else begin
-
-            for k=0L, tstsz(1)-1 do begin
+           ;if names[i] eq 'CDAWEB_PARENTS' then begin
+           if (names[i] eq 'CDAWEB_PARENTS' or names[i] eq 'PARENTS') then begin
+     for k=0L, tstsz(1)-1 do begin
+        ;print,'k,tstsz(1) = ',k,' ',tstsz(1)
                var2=strtrim(a.(i)[k])
+        ;print,'var2 = ',var2
+                  if(k eq 0) then begin
+                     printf, unit, format='(&quot;#&quot;,5x,a,2x,a)', var, var2
+              ;print,'var, var2 = ',var,' ',var2
+                  endif else begin
+	      if k ne tstsz(1)-1 then begin
+	        var3=strtrim(a.(i)[k+1])
+                       printf, unit, format='(&quot;#&quot;,37x,a,2a,a)', var2,', ',var3
+	        k=k+1
+                ;print,'var, var2,k = ',var,' ',var2,' ',k
+	      endif else begin
+                       printf, unit, format='(&quot;#&quot;,37x,a)', var2
+	      endelse	
+                  endelse
+     endfor
+    endif else begin ; if not 'cdaweb_parents' 
+            for k=0L, tstsz(1)-1 do begin
+        ;print,'tstsz = ',tstsz
+               var2=strtrim(a.(i)[k])
+	;print,'k, var2 = ',k,' ** ',var2
                slen=strlen(var2)
                if(slen gt 80) then begin
                   status=ex_prt(unit,var,var2,slen,k) 
@@ -2546,6 +2640,7 @@ ase convar of
                   endelse
                endelse
             endfor   ; end k
+    endelse
          endelse
       endfor   ; end i
       ;
@@ -2590,7 +2685,9 @@ ase convar of
          status=1
          length=maxrecs
       endif
+            
       status=list_header(a,unit,ntags)
+      
       ;labels=strarr(ntags-3)
       ;units=strarr(ntags-3) 
       ; RCJ 05/12/2009   Append strings to 'labels' and 'units' instead of presetting the array sizes.
@@ -2601,10 +2698,12 @@ ase convar of
       inc=0
       for i=0L, ntags-5 do begin
          ;if (a.(i).var_type eq 'data') or (a.(i).var_type eq 'support_data') then begin
-         if (a.(i).var_type eq 'data') or ((a.(i).var_type eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
+         ;if (a.(i).var_type eq 'data') or ((a.(i).var_type eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
+         
+         if (strlowcase(a.(i).var_type) eq 'data') or ((strlowcase(a.(i).var_type) eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
             nvar=a.(i).fillval
             ;labels(i)=label_search(a,1,i,0)
-     labels=[labels,label_search(a,1,i,0)]
+     labels=[labels,label_search(a,1,i,0,debug=debug)]
             ;units(i)=a.(i).units
             ;units(i)=unit_search(a,1,i,0)
      units=[units,unit_search(a,1,i,0)]
@@ -2629,19 +2728,13 @@ ase convar of
       labels=labels[1:*]
       units=units[1:*]
       ; Free Memory
-      delete, temp
-      printf,unit,format=a.lform,labels
-      printf,unit,format=a.uform,units   ;  if too many vars are requested, a.uform could be too long for idl and an error is generated.
-      ;
+      spdf_delete, temp
       for j=0L, length-1 do begin
          inc=0
          for i=0L,ntags-5 do begin
-            ;if (a.(i).var_type eq 'data') or (a.(i).var_type eq 'support_data') then begin
-            if (a.(i).var_type eq 'data') or ((a.(i).var_type eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
+            if (strlowcase(a.(i).var_type) eq 'data') or ((strlowcase(a.(i).var_type) eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
                ; temporary patch until nvar included as a new variable attribute
                nvar=a.(i).fillval[0]
-               ;nvar=nvar(0)
-               ; if(names(i) eq 'EPOCH' or names(i) eq 'EPOCH92') then begin
                if(names[i] eq depend0) then begin
                   b.(inc)=a.(i).dateph[j]
 	   inc=inc+1
@@ -2655,7 +2748,131 @@ ase convar of
                endelse
             endif		
          endfor   ; end i
-         printf,unit,format=a.dform,b 
+                        
+         ;Handle JSON file creation for csv=3
+         COMMON SHARE, csv2
+         if (csv2 EQ 3) AND (j EQ 0) then begin
+           datsize = 0
+           jdata_array = []
+           for jindex1=0, (n_tags(a)-1) DO BEGIN
+             if (ISA(a.(jindex1), /STRING) NE 1) then if (a.(jindex1).var_type NE 'additional_data') then begin
+               if jdata_array EQ !NULL then jdata_array = [jindex1] else jdata_array = [jdata_array, jindex1] ;Variables to include in JSON listing
+             endif
+           endfor
+           COMMON SHARE3, cjsonstruct
+           COMMON SHARE4, nan_count
+           datsize = size(jdata_array, /n_elements) ;Number of variables we want to include in JSON listing
+           nan_count=0
+           for jindex2=0, (datsize-1) DO BEGIN
+             varattsreached = 'false'
+             jtags = tag_names(a.(jindex2))
+             counter = 0
+             
+             ;Check for NaN in data, then change values to ISTP Standard - CWG 07/09/2019
+             if ISA(a.(jindex2).dat, /STRING) NE 1 then begin
+               if (a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] NE !NULL) AND (nan_count EQ 0) then begin
+                 nan_count=1      ;this sared variable will force code to add a section in the listng that will inform user that NaNs were changed for JSON
+               endif
+
+               typeCDF = a.(jindex2).cdftype
+               CASE typeCDF OF
+                 'CDF_REAL4': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_REAL8': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_FLOAT' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_DOUBLE' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_BYTE': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+                 'CDF_INT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+                 'CDF_INT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -32768
+                 'CDF_INT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -2147483648
+                 'CDF_INT8' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+                 'CDF_UINT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 255
+                 'CDF_UINT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 65535
+                 'CDF_UINT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 4294967295
+                 'CDF_EPOCH' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_EPOCH16' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_TIME_TT2000' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+                 'CDF_CHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                 'CDF_UCHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                 ELSE : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+               ENDCASE
+             endif
+                           
+             for ii=0, (n_tags(a.(jindex2))-1) DO BEGIN
+               if jtags[ii] EQ 'FIELDNAM' then varattsreached = 'true'
+               if varattsreached EQ 'true' then begin 
+                 if ((a.(jindex2).cdftype EQ 'CDF_EPOCH16') || (a.(jindex2).cdftype EQ 'CDF_EPOCH') || (a.(jindex2).cdftype EQ 'CDF_TIME_TT2000')) then begin ;Convert epochs to iso-8601 for JSON files
+                   if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') || (jtags[ii] EQ 'FILLVAL') || (jtags[ii] EQ 'DAT')) then begin
+                     if (TYPENAME(a.(jindex2).(ii)) NE 'STRING') then begin
+                      epochIso=cdf_epoch_tojuldays(a.(jindex2).(ii), /string)+'Z'
+                     endif else epochIso=a.(jindex2).(ii)+'Z'
+                     jvar = create_struct(jtags[ii], epochIso)
+                   endif else jvar = create_struct(jtags[ii], a.(jindex2).(ii))
+                 endif else jvar = create_struct(jtags[ii], a.(jindex2).(ii))
+                 
+
+                 if (counter EQ 0) then begin
+                   varstruct = create_struct(jvar) 
+                  endif else if (jtags[ii] NE 'DATEPH') then begin
+                   varstruct = create_struct(varstruct, jvar)
+                  endif
+                 counter = counter + 1
+               endif
+             endfor
+                                    
+             jdummystruct = create_struct(a.(jindex2).varname+'_', varstruct) 
+             
+             if (jindex2 EQ 0) then cjsonstruct = create_struct(jdummystruct) else cjsonstruct = create_struct(cjsonstruct, jdummystruct)
+           endfor
+         endif
+         
+         ;Handle CSV file creation
+         if keyword_set(csv) AND (csv2 NE 3) then begin            
+            labsize=n_elements(labels)
+            for csvindex=0, (labsize-1) DO BEGIN
+               if (j EQ 0) then begin
+                  units[0] = 'yyyy-mm-ddThh:mm:ss.sssZ'
+                  labunits = labels+'_'+units
+                  tagname1 = 'tagg'+STRTRIM(csvindex,2)
+                  if (csvindex LE (labsize-2)) then tmpvar1 = STRTRIM(labunits[csvindex],2)+',' else tmpvar1 = STRTRIM(labunits[csvindex],2)
+                  tmpstruc1=create_struct(tagname1,tmpvar1)
+                  if (csvindex EQ 0) then newlabs=create_struct(tmpstruc1) else newlabs=create_struct(newlabs,tmpstruc1)
+               endif             
+               tagname2 = 'tag'+STRTRIM(csvindex,2)
+               if (csvindex LE (labsize-2)) then tmpvar2=STRTRIM(b.(csvindex),2)+',' else tmpvar2=STRTRIM(b.(csvindex),2)
+               tmpstruc2= create_struct(tagname2, tmpvar2)
+               if (csvindex EQ 0) then begin
+                  epoch_iso = a.(0).dat[j]
+                  epoch_iso=cdf_epoch_tojuldays(epoch_iso, /string)
+                  epoch_iso=epoch_iso+'Z,'
+                  tmpvar2=STRTRIM(epoch_iso,2)
+                  tmpstruc2= create_struct(tagname2, tmpvar2)
+                  newb = create_struct(tmpstruc2)
+               endif else begin
+                  newb = create_struct(newb, tmpstruc2)
+               endelse
+            endfor
+            if (j EQ 0) then begin
+               struclength= n_tags(newlabs)
+               newform = '('+strtrim(struclength,2)+'(A))'                
+               printf,unit,format=newform,newlabs
+               cc = strlen(epoch_iso)
+               ; Make sure that we don't write a format element 0 times, IDL
+               ; does not like that.
+               ; Ron Yurow (August 10, 2020)
+               ; newform = '(A'+strtrim(cc,2)+','+strtrim(struclength-1,2)+'(A))'
+               newform = struclength gt 1 ? '(A'+strtrim(cc,2)+','+strtrim(struclength-1,2)+'(A))' : '(A'+strtrim(cc,2)+')'
+               
+            endif 
+            printf, unit, format=newform,newb
+         endif else if (csv2 NE 3) then begin
+            ;Handle the .txt print statements
+            if (j EQ 0) then begin
+              printf,unit,format=a.lform,labels
+              printf,unit,format=a.uform,units 
+            endif             
+            printf,unit,format=a.dform,b
+         endif
+
       endfor   ; end j   
       if(num_data gt maxrecs) then begin
          dif_rec=num_data-maxrecs
@@ -2667,7 +2884,7 @@ ase convar of
          status=1                                  
       endif
       ; Free Memory
-      delete, b
+      spdf_delete, b
   end   ; end case 1
   ; 
   ; Non-Record Varying Variables 
@@ -2728,7 +2945,9 @@ Use the computed sizes stored in idlsizes above
          status=1                                  
          length=maxrecs
       endif
+      
       status=list_header(a,unit,ntags)
+      
       num=a.(0).fillval
       labels=strarr(num)
       units=strarr(num)
@@ -2737,7 +2956,7 @@ Use the computed sizes stored in idlsizes above
       inc=0L 
       for i=0L, ntags-5 do begin
          ;if(a.(i).var_type eq 'data') or (a.(i).var_type eq 'support_data') then begin
-         if (a.(i).var_type eq 'data') or ((a.(i).var_type eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
+         if (strlowcase(a.(i).var_type) eq 'data') or ((strlowcase(a.(i).var_type) eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
 TJK replace w/ computed size above to improve performance
              st_sz=size(a.(i).dat)
              st_sz=idlsizes[i,*]
@@ -2747,7 +2966,7 @@ TJK replace w/ computed size above to improve performance
                if(st_sz[0] eq 1 and st_sz[1] gt 1 and length eq 1) then begin
                   num_var=st_sz[1]
                   for k=0L, num_var-1 do begin
-                     labels(inc)=label_search(a,st_sz[0],i,k)
+                     labels(inc)=label_search(a,st_sz[0],i,k,debug=debug)
                      ;units(inc)=a.(i).units
 	      units(inc)=unit_search(a,st_sz[0],i,k)
                      ; temp=create_struct(labels(inc),a.(i).dat(k,0))
@@ -2763,7 +2982,7 @@ TJK replace w/ computed size above to improve performance
                   endfor   ; end k
                endif else begin
                   ;print,'2', inc, size(labels)
-                  labels(inc)=label_search(a,st_sz[0],i,0)
+                  labels(inc)=label_search(a,st_sz[0],i,0,debug=debug)
 	   ;print,'labels(inc) 1 = ',labels(inc)
                   ;units(inc)=a.(i).units
 	   units(inc)=unit_search(a,st_sz[0],i,0)
@@ -2786,7 +3005,7 @@ TJK replace w/ computed size above to improve performance
             if(st_sz[0] eq 2) then begin
                num_var=st_sz[1]
                   for k=0L, num_var-1 do begin
-                     labels(inc)=label_search(a,st_sz[0],i,k)
+                     labels(inc)=label_search(a,st_sz[0],i,k,debug=debug)
                      ;units(inc)=a.(i).units
 	      units(inc)=unit_search(a,st_sz[0],i,k)
                      ; temp=create_struct(labels(inc),a.(i).dat(k,0))
@@ -2817,9 +3036,8 @@ TJK replace w/ computed size above to improve performance
          endif   ; end a.(i).var_type
       endfor   ; end i
       ; Free Memory
-      delete, temp
+      spdf_delete, temp
       ;
-      printf,unit,format=a.lform,labels
       ; listing depend_1 values if they exist. RCJ 04/01
       ;if (n_elements(dep1_values) gt 1) then begin
          dep1_values=dep1_values[1:*]
@@ -2829,10 +3047,7 @@ TJK replace w/ computed size above to improve performance
       ;      s=execute(cmd)
       ;      dep1_values=[space,dep1_values]
       ;   endfor
-         q=where (dep1_values ne '') 
-         if q[0] ne -1  then printf,unit,format=a.dpform,dep1_values
       ;endif 
-      printf,unit,format=a.uform,units
       ;
 do this computation once, instead of for each record
 _ntags = ntags-5
@@ -2841,8 +3056,8 @@ _ntags = ntags-5
          inc=0L
          for i=0L,i_ntags do begin
             ;if(a.(i).var_type eq 'data') or (a.(i).var_type eq 'support_data') then begin
-            if ((a.(i).var_type eq 'data') or (a.(i).var_type eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY'))  then begin
-               ; 'EPOCH' or 'EPOCH92'
+            if ((strlowcase(a.(i).var_type) eq 'data') or (strlowcase(a.(i).var_type) eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY'))  then begin
+               ; 'EPOCH' or 'EPOCH92'               
                if(names(i) eq depend0) then begin
                   b.(inc)=a.(i).dateph[j]
                   inc=inc+1
@@ -2882,9 +3097,134 @@ the values here.
                endelse  ; end  (names(i) ne depend0)
             endif   ; end a.(i).var_type
          endfor   ; end i
-         printf,unit,format=a.dform,b 
+          
+          
+          COMMON SHARE, csv2
+          
+          if (csv2 EQ 3) AND (j EQ 0) then begin ;Handle JSON file creation for csv=3
+            datsize = 0
+            jdata_array = []
+            for jindex1=0, (n_tags(a)-1) DO BEGIN
+              if (ISA(a.(jindex1), /STRING) NE 1) then if (a.(jindex1).var_type NE 'additional_data') then begin
+                if jdata_array EQ !NULL then jdata_array = [jindex1] else jdata_array = [jdata_array, jindex1] ;Variables to include in JSON listing
+              endif
+            endfor
+            COMMON SHARE3, cjsonstruct
+            COMMON SHARE4, nan_count
+            datsize = size(jdata_array, /n_elements) ;Number of variables we want to include in JSON listing             
+            nan_count=0
+            
+            for jindex2=0, (datsize-1) DO BEGIN
+              varattsreached = 'false'
+              jtags = tag_names(a.(jindex2))
+              counter = 0
+              ;Check for NaN in data, then change values to ISTP Standard - CWG 07/09/2019
+              if ISA(a.(jindex2).dat, /STRING) NE 1 then begin
+                if (a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] NE !NULL) AND (nan_count EQ 0) then begin                     
+                  nan_count=1      ;this shared variable will force code to add a section in the listng that will inform user that NaNs were changed for JSON
+                endif
+                
+                typeCDF = a.(jindex2).cdftype
+                CASE typeCDF OF
+                 'CDF_REAL4': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_REAL8': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_FLOAT' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_DOUBLE' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_BYTE': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+                 'CDF_INT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+                 'CDF_INT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -32768
+                 'CDF_INT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -2147483648
+                 'CDF_INT8' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+                 'CDF_UINT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 255
+                 'CDF_UINT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 65535
+                 'CDF_UINT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 4294967295
+                 'CDF_EPOCH' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_EPOCH16' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_TIME_TT2000' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+                 'CDF_CHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                 'CDF_UCHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                 ELSE : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                ENDCASE
+                
+              endif
+              
+              for ii=0, (n_tags(a.(jindex2))-1) DO BEGIN
+                if jtags[ii] EQ 'FIELDNAM' then varattsreached = 'true'
+                if varattsreached EQ 'true' then begin
+                  if ((a.(jindex2).cdftype EQ 'CDF_EPOCH16') || (a.(jindex2).cdftype EQ 'CDF_EPOCH') || (a.(jindex2).cdftype EQ 'CDF_TIME_TT2000')) then begin ;Convert epochs to iso-8601 for JSON files
+                    if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') || (jtags[ii] EQ 'FILLVAL') || (jtags[ii] EQ 'DAT')) then begin
+                      if (TYPENAME(a.(jindex2).(ii)) NE 'STRING') then begin 
+                       epochIso=cdf_epoch_tojuldays(a.(jindex2).(ii), /string)+'Z'
+                      endif else epochIso=a.(jindex2).(ii)+'Z'
+                      jvar = create_struct(jtags[ii], epochIso)
+                    endif else jvar = create_struct(jtags[ii], a.(jindex2).(ii))
+                  endif else jvar = create_struct(jtags[ii], a.(jindex2).(ii))
+                  
+                  if (counter EQ 0) then begin
+                   varstruct = create_struct(jvar) 
+                  endif else if (jtags[ii] NE 'DATEPH') then begin
+                   varstruct = create_struct(varstruct, jvar)
+                  endif
+                  counter = counter + 1
+                endif
+              endfor
+              jdummystruct = create_struct(a.(jindex2).varname+'_', varstruct)
+              if (jindex2 EQ 0) then cjsonstruct = create_struct(jdummystruct) else cjsonstruct = create_struct(cjsonstruct, jdummystruct)
+            endfor
+          endif
+               
+          ;Handle CSV file creation                    
+          if keyword_set(csv) AND (csv2 NE 3) then begin
+            labsize=n_elements(labels)
+            for csvindex=0, (labsize-1) DO BEGIN
+               if (j EQ 0) then begin
+                  dep1_size = n_elements(dep1_values)
+                  units[0] = 'yyyy-mm-ddThh:mm:ss.sssZ'
+                  if dep1_size EQ labsize then labunits = labels+'_'+dep1_values+'_'+units else labunits = labels+'_'+units
+                  tagname1 = 'tagg'+STRTRIM(csvindex,2)
+                  if (csvindex LE (labsize-2)) then tmpvar1 = STRTRIM(labunits[csvindex],2)+',' else tmpvar1 = STRTRIM(labunits[csvindex],2)
+                  tmpstruc1=create_struct(tagname1,tmpvar1)
+                  if (csvindex EQ 0) then newlabs=create_struct(tmpstruc1) else newlabs=create_struct(newlabs,tmpstruc1)
+               endif
+               tagname2 = 'tag'+STRTRIM(csvindex,2)   
+               if (csvindex LE (labsize-2)) then tmpvar2=STRTRIM(b.(csvindex),2)+',' else tmpvar2=STRTRIM(b.(csvindex),2)
+               tmpstruc2= create_struct(tagname2, tmpvar2)
+               if (csvindex EQ 0) then begin
+                  epoch_iso = a.(0).dat[j]
+                  epoch_iso=cdf_epoch_tojuldays(epoch_iso, /string)
+                  epoch_iso = epoch_iso+'Z,'
+                  tmpvar2=STRTRIM(epoch_iso,2)
+                  tmpstruc2= create_struct(tagname2, tmpvar2)
+                  newb = create_struct(tmpstruc2)
+               endif else begin         
+                  newb = create_struct(newb, tmpstruc2)
+               endelse
+            endfor
+            if (j EQ 0) then begin
+               struclength= n_tags(newlabs)
+               newform = '('+strtrim(struclength,2)+'(A))'
+               printf, unit, format=newform,newlabs
+               cc = strlen(epoch_iso)
+               ; Make sure that we don't write a format element 0 times, IDL
+               ; does not like that.
+               ; Ron Yurow (August 10, 2020)
+               ; newform = '(A'+strtrim(cc,2)+','+strtrim(struclength-1,2)+'(A))'
+               newform = struclength gt 1 ? '(A'+strtrim(cc,2)+','+strtrim(struclength-1,2)+'(A))' : '(A'+strtrim(cc,2)+')'
+            endif 
+            printf, unit, format=newform,newb
+            
+          endif else if (csv2 NE 3) then begin ;Handle .txt files
+              if (j EQ 0) then begin
+                printf,unit,format=a.lform,labels
+                q=where (dep1_values ne '')
+                if q[0] ne -1  then printf,unit,format=a.dpform,dep1_values
+                printf,unit,format=a.uform,units
+              endif
+              printf,unit,format=a.dform,b
+          endif
+
       endfor   ; end j
-      ;
+      
       if(num_data gt maxrecs) then begin
          dif_rec=num_data-maxrecs
          text='# The maximum number of records allowed to be listed is '
@@ -2896,7 +3236,7 @@ the values here.
          length=maxrecs
       endif
       ; Free Memory
-      delete, b
+      spdf_delete, b
   end   ;   end case 3
   ;
   ; 3-D Record Varying Variables 
@@ -2987,9 +3327,7 @@ the values here.
       b=create_struct(b,temp)
       ;
       ; Free Memory
-      delete, temp 
-      printf,unit,format=a.lform,labels
-      printf,unit,format=a.uform,units
+      spdf_delete, temp 
       ;
       for j=0L, length-1 do begin
          m=0
@@ -3008,7 +3346,128 @@ the values here.
                m=m+1
             endfor
          endfor   ; end l
-         printf,unit,format=a.dform,b
+                   
+         ;Handle JSON file creation for csv=3
+         COMMON SHARE, csv2
+         if (csv2 EQ 3) AND (j EQ 0) then begin
+           datsize = 0
+           jdata_array = []
+           for jindex1=0, (n_tags(a)-1) DO BEGIN
+             if (ISA(a.(jindex1), /STRING) NE 1) then if (a.(jindex1).var_type NE 'additional_data') then begin
+               if jdata_array EQ !NULL then jdata_array = [jindex1] else jdata_array = [jdata_array, jindex1] ;Variables to include in JSON listing
+             endif
+           endfor
+           COMMON SHARE3, cjsonstruct
+           COMMON SHARE4, nan_count
+           datsize = size(jdata_array, /n_elements) ;Number of variables we want to include in JSON listing
+           nan_count=0
+           for jindex2=0, (datsize-1) DO BEGIN
+             varattsreached = 'false'
+             jtags = tag_names(a.(jindex2))
+             counter = 0
+             
+             ;Check for NaN in data, then change values to ISTP Standard - CWG 07/09/2019
+             if ISA(a.(jindex2).dat, /STRING) NE 1 then begin
+               if (a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] NE !NULL) AND (nan_count EQ 0) then begin
+                 nan_count=1      ;this sared variable will force code to add a section in the listng that will inform user that NaNs were changed for JSON
+               endif
+
+               typeCDF = a.(jindex2).cdftype
+               CASE typeCDF OF
+                 'CDF_REAL4': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_REAL8': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_FLOAT' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_DOUBLE' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_BYTE': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+                 'CDF_INT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+                 'CDF_INT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -32768
+                 'CDF_INT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -2147483648
+                 'CDF_INT8' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+                 'CDF_UINT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 255
+                 'CDF_UINT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 65535
+                 'CDF_UINT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 4294967295
+                 'CDF_EPOCH' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_EPOCH16' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_TIME_TT2000' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+                 'CDF_CHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                 'CDF_UCHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                 ELSE : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+               ENDCASE
+             endif             
+             
+             for ii=0, (n_tags(a.(jindex2))-1) DO BEGIN
+               if jtags[ii] EQ 'FIELDNAM' then varattsreached = 'true'
+               if varattsreached EQ 'true' then begin
+                 if ((a.(jindex2).cdftype EQ 'CDF_EPOCH16') || (a.(jindex2).cdftype EQ 'CDF_EPOCH') || (a.(jindex2).cdftype EQ 'CDF_TIME_TT2000')) then begin ;Convert epochs to iso-8601 for JSON files
+                   if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') || (jtags[ii] EQ 'FILLVAL') || (jtags[ii] EQ 'DAT')) then begin
+                     if (TYPENAME(a.(jindex2).(ii)) NE 'STRING') then begin
+                       epochIso=cdf_epoch_tojuldays(a.(jindex2).(ii), /string)+'Z'
+                     endif else epochIso=a.(jindex2).(ii)+'Z'
+                     jvar = create_struct(jtags[ii], epochIso)
+                   endif else jvar = create_struct(jtags[ii], a.(jindex2).(ii))
+                 endif else jvar = create_struct(jtags[ii], a.(jindex2).(ii))
+                 
+          
+                 if (counter EQ 0) then begin
+                   varstruct = create_struct(jvar) 
+                  endif else if (jtags[ii] NE 'DATEPH') then begin
+                   varstruct = create_struct(varstruct, jvar)
+                  endif
+                 counter = counter + 1
+               endif
+             endfor
+             jdummystruct = create_struct(a.(jindex2).varname+'_', varstruct)
+             if (jindex2 EQ 0) then cjsonstruct = create_struct(jdummystruct) else cjsonstruct = create_struct(cjsonstruct, jdummystruct)
+           endfor
+         endif
+
+          ;Handle CSV file creation 
+          if keyword_set(csv) AND (csv2 NE 3) then begin
+            labsize=n_elements(labels)
+            for csvindex=0, (labsize-1) DO BEGIN
+               if (j EQ 0) then begin
+                  units[0] = 'yyyy-mm-ddThh:mm:ss.sssZ'
+                  labunits = labels+'_'+units
+                  tagname1 = 'tagg'+STRTRIM(csvindex,2)
+                  if (csvindex LE (labsize-2)) then tmpvar1 = STRTRIM(labunits[csvindex],2)+',' else tmpvar1 = STRTRIM(labunits[csvindex],2)
+                  tmpstruc1=create_struct(tagname1,tmpvar1)
+                  if (csvindex EQ 0) then newlabs=create_struct(tmpstruc1) else newlabs=create_struct(newlabs,tmpstruc1)
+               endif
+               tagname2 = 'tag'+STRTRIM(csvindex,2)
+               if (csvindex LE (labsize-2)) then tmpvar2=STRTRIM(b.(csvindex),2)+',' else tmpvar2=STRTRIM(b.(csvindex),2)
+               tmpstruc2= create_struct(tagname2, tmpvar2)
+               if (csvindex EQ 0) then begin
+                  epoch_iso = a.(0).dat[j]
+                  epoch_iso=cdf_epoch_tojuldays(epoch_iso, /string)
+                  epoch_iso=epoch_iso+'Z,'
+                  tmpvar2=STRTRIM(epoch_iso,2)
+                  tmpstruc2= create_struct(tagname2, tmpvar2)
+                  newb = create_struct(tmpstruc2)
+               endif else begin
+                  newb = create_struct(newb, tmpstruc2)
+               endelse
+            endfor
+            if (j EQ 0) then begin
+               struclength= n_tags(newlabs)
+               newform = '('+strtrim(struclength,2)+'(A))'
+               printf, unit, format=newform,newlabs
+               cc = strlen(epoch_iso)
+               ; Make sure that we don't write a format element 0 times, IDL
+               ; does not like that.
+               ; Ron Yurow (August 10, 2020)
+               ; newform = '(A'+strtrim(cc+1,2)+','+strtrim(struclength-1,2)+'(A))'
+               newform = struclength gt 1 ? '(A'+strtrim(cc+1,2)+','+strtrim(struclength-1,2)+'(A))' : '(A'+strtrim(cc+1,2)+')'
+            endif 
+            printf, unit, format=newform,newb
+         endif else if (csv2 NE 3) then begin
+            ;Handle .txt files
+            if (j EQ 0) then begin
+             printf,unit,format=a.lform,labels
+             printf,unit,format=a.uform,units
+            endif
+            printf,unit,format=a.dform,b
+         endif
+
       endfor   ; end j
       ;
       if(num_data gt maxrecs) then begin
@@ -3022,7 +3481,7 @@ the values here.
          length=maxrecs
       endif
       ; Free Memory
-      delete, b
+      spdf_delete, b
   end   ;  end case 4
   ;
   ; Image Data and 3D data (only difference is 3D data will have depend_3)
@@ -3047,7 +3506,9 @@ the values here.
          status=1                                  
          length=maxrecs
       endif
+
       status=list_header(a,unit,ntags)
+      
       num=a.(0).fillval
       final_labels=''
       final_units=''
@@ -3057,7 +3518,7 @@ the values here.
       atags=tag_names(a)
       inc=0L
       for i=0L, ntags-5 do begin
-         if(a.(i).var_type eq 'data') or ((a.(i).var_type eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
+         if(strlowcase(a.(i).var_type) eq 'data') or ((strlowcase(a.(i).var_type) eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
             labels=''
             units=''
             dep1_values=''
@@ -3068,7 +3529,7 @@ the values here.
      ;print,'st_sz = ',st_sz
             if(st_sz[0] le 1) then begin
                ; get labels and units:
-               labels=[labels,label_search(a,st_sz[0],i,0)]
+               labels=[labels,label_search(a,st_sz[0],i,0,debug=debug)]
                ;units=[units,a.(i).units]
                units=[units,unit_search(a,st_sz[0],i,0)]
                if(names(i) eq depend0) then begin
@@ -3087,7 +3548,7 @@ the values here.
                ; get labels and units:
                num_var=st_sz[1]
                for k=0L, num_var-1 do begin
-                  labels=[labels,label_search(a,st_sz[0],i,k)]
+                  labels=[labels,label_search(a,st_sz[0],i,k,debug=debug)]
                   units=[units,unit_search(a,st_sz[0],i,k)]
 	   unique = strtrim(string(inc), 2)
                   temp=create_struct(atags(i)+unique,a.(i).dat[k,0])
@@ -3096,7 +3557,7 @@ the values here.
                endfor
             endif   ; end st_sz(0) eq 2
             ; Free Memory
-            delete, temp
+            spdf_delete, temp
             ;
             labels=labels[1:*]
             final_labels=[final_labels,labels]
@@ -3198,7 +3659,6 @@ the values here.
       endfor   ; end i
       ;
       final_labels=final_labels[1:*]
-      printf,unit,format=a.lform,final_labels            ; &lt;----------------------- print final labels
       final_units=final_units[1:*]  ;  but cannot printf the units right now
                                     ;  If there are depend_1/_2 they come first.
       ; If there are labels with no corresponding dep1 values,
@@ -3215,8 +3675,6 @@ the values here.
             final_dep1_values=[space,final_dep1_values]
          endfor
       ;printf,unit,format=a.dpform,final_dep1_values
-         q=where (final_dep1_values ne '') 
-         if q[0] ne -1 then printf,unit,format=a.dpform,final_dep1_values; &lt;----------------------- print final dep1
       endif   
       ; same for dep2 values:
       if n_elements(final_dep2_values) gt 1 then begin
@@ -3228,8 +3686,6 @@ the values here.
             final_dep2_values=[space,final_dep2_values]
          endfor
       ;printf,unit,format=a.dpform,final_dep2_values
-         q=where (final_dep2_values ne '') 
-         if q[0] ne -1 then printf,unit,format=a.dpform,final_dep2_values; &lt;----------------------- print final dep2
       endif  
       ; 
       ; same for dep3 values:
@@ -3241,11 +3697,8 @@ the values here.
             s=execute(cmd)
             final_dep3_values=[space,final_dep3_values]
          endfor
-         q=where (final_dep3_values ne '') 
-         if q[0] ne -1 then printf,unit,format=a.dpform,final_dep3_values; &lt;----------------------- print final dep3
       endif  
       ; 
-      printf,unit,format=a.uform,final_units      ; &lt;----------------------- print final units
       ;
      ;help,final_dep1_values,final_dep2_values,final_dep3_values,final_labels
      ;print,'** ',final_dep1_values
@@ -3255,7 +3708,7 @@ the values here.
       for j=0L, length-1 do begin
          inc=0L
          for i=0L,ntags-5 do begin
-            if (a.(i).var_type eq 'data') or ((a.(i).var_type eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
+            if (strlowcase(a.(i).var_type) eq 'data') or ((strlowcase(a.(i).var_type) eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
                ; if(names(i) eq 'EPOCH' or names(i) eq 'EPOCH92') then begin
                if(names(i) eq depend0) then begin
                   b.(inc)=a.(i).dateph[j]
@@ -3276,7 +3729,138 @@ the values here.
                endelse
             endif
          endfor   ; end i
-         printf,unit,format=a.dform,b
+                   
+         ;Handle JSON file creation for csv=3
+         COMMON SHARE, csv2
+         if (csv2 EQ 3) AND (j EQ 0) then begin
+           datsize = 0
+           jdata_array = []
+           for jindex1=0, (n_tags(a)-1) DO BEGIN
+             if (ISA(a.(jindex1), /STRING) NE 1) then if (a.(jindex1).var_type NE 'additional_data') then begin
+               if jdata_array EQ !NULL then jdata_array = [jindex1] else jdata_array = [jdata_array, jindex1] ;Variables to include in JSON listing
+             endif
+           endfor
+           COMMON SHARE3, cjsonstruct
+           COMMON SHARE4, nan_count
+           datsize = size(jdata_array, /n_elements) ;Number of variables we want to include in JSON listing
+           nan_count=0
+           for jindex2=0, (datsize-1) DO BEGIN
+             varattsreached = 'false'
+             jtags = tag_names(a.(jindex2))
+             counter = 0
+             
+             ;Check for NaN in data, then change values to ISTP Standard - CWG 07/09/2019
+             if ISA(a.(jindex2).dat, /STRING) NE 1 then begin
+               if (a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] NE !NULL) AND (nan_count EQ 0) then begin
+                 nan_count=1      ;this sared variable will force code to add a section in the listng that will inform user that NaNs were changed for JSON
+               endif
+
+               typeCDF = a.(jindex2).cdftype
+               CASE typeCDF OF
+                 'CDF_REAL4': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_REAL8': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_FLOAT' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_DOUBLE' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_BYTE': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+                 'CDF_INT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+                 'CDF_INT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -32768
+                 'CDF_INT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -2147483648
+                 'CDF_INT8' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+                 'CDF_UINT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 255
+                 'CDF_UINT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 65535
+                 'CDF_UINT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 4294967295
+                 'CDF_EPOCH' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_EPOCH16' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                 'CDF_TIME_TT2000' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+                 'CDF_CHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                 'CDF_UCHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                 ELSE : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+               ENDCASE
+             endif              
+             
+             for ii=0, (n_tags(a.(jindex2))-1) DO BEGIN
+               if jtags[ii] EQ 'FIELDNAM' then varattsreached = 'true'
+               if varattsreached EQ 'true' then begin
+                 if ((a.(jindex2).cdftype EQ 'CDF_EPOCH16') || (a.(jindex2).cdftype EQ 'CDF_EPOCH') || (a.(jindex2).cdftype EQ 'CDF_TIME_TT2000')) then begin ;Convert epochs to iso-8601 for JSON files
+                   if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') || (jtags[ii] EQ 'FILLVAL') || (jtags[ii] EQ 'DAT')) then begin
+                     if (TYPENAME(a.(jindex2).(ii)) NE 'STRING') then begin
+                       epochIso=cdf_epoch_tojuldays(a.(jindex2).(ii), /string)+'Z'
+                     endif else epochIso=a.(jindex2).(ii)+'Z'
+                     jvar = create_struct(jtags[ii], epochIso)
+                   endif else jvar = create_struct(jtags[ii], a.(jindex2).(ii))
+                 endif else jvar = create_struct(jtags[ii], a.(jindex2).(ii))
+                 
+
+                 if (counter EQ 0) then begin
+                   varstruct = create_struct(jvar) 
+                  endif else if (jtags[ii] NE 'DATEPH') then begin
+                   varstruct = create_struct(varstruct, jvar)
+                  endif
+                              
+                 counter = counter + 1
+               endif
+             endfor
+             jdummystruct = create_struct(a.(jindex2).varname+'_', varstruct)
+             if (jindex2 EQ 0) then cjsonstruct = create_struct(jdummystruct) else cjsonstruct = create_struct(cjsonstruct, jdummystruct)
+           endfor
+         endif
+                
+         ;Handle CSV file creation
+         if keyword_set(csv) AND (csv2 NE 3) then begin
+            labsize=n_elements(final_labels)
+            for csvindex=0, (labsize-1) DO BEGIN
+               if (j EQ 0) then begin
+                  final_units[0] = 'yyyy-mm-ddThh:mm:ss.sssZ'
+                  dep1_size = n_elements(final_dep1_values)
+                  dep2_size = n_elements(final_dep2_values)
+                  dep3_size = n_elements(final_dep3_values)
+                  if (dep1_size EQ dep2_size &amp;&amp; dep2_size EQ dep3_size &amp;&amp; dep3_size EQ labsize) then labunits = final_labels+'_'+final_dep1_values+'_'+final_dep2_values+'_'+final_dep3_values+'_'+final_units else labunits = final_labels+'_'+final_units
+                  tagname1 = 'tagg'+STRTRIM(csvindex,2)
+                  if (csvindex LE (labsize-2)) then tmpvar1 = STRTRIM(labunits[csvindex],2)+',' else tmpvar1 = STRTRIM(labunits[csvindex],2)
+                  tmpstruc1=create_struct(tagname1,tmpvar1)
+                  if (csvindex EQ 0) then newlabs=create_struct(tmpstruc1) else newlabs=create_struct(newlabs,tmpstruc1)         
+               endif              
+               tagname2 = 'tag'+STRTRIM(csvindex,2)
+               if (csvindex LE (labsize-2)) then tmpvar2=STRTRIM(b.(csvindex),2)+',' else tmpvar2=STRTRIM(b.(csvindex),2)
+               tmpstruc2= create_struct(tagname2, tmpvar2)
+               if (csvindex EQ 0) then begin    
+                  epoch_iso = a.(0).dat[j]
+                  epoch_iso=cdf_epoch_tojuldays(epoch_iso, /string)
+                  epoch_iso=epoch_iso+'Z,'
+                  tmpvar2=STRTRIM(epoch_iso,2)
+                  tmpstruc2= create_struct(tagname2, tmpvar2)
+                  newb = create_struct(tmpstruc2)
+               endif else begin
+                  newb = create_struct(newb, tmpstruc2)
+               endelse
+            endfor
+            if (j EQ 0) then begin
+               struclength= n_tags(newlabs)
+               newform = '('+STRTRIM(struclength,2)+'(A))'
+               printf, unit, format=newform,newlabs
+               cc = strlen(epoch_iso)
+               ; Make sure that we don't write a format element 0 times, IDL
+               ; does not like that.
+               ; Ron Yurow (August 10, 2020)
+               ; newform = '(A'+strtrim(cc,2)+','+strtrim(struclength-1,2)+'(A))'
+               newform = struclength gt 1 ? '(A'+strtrim(cc,2)+','+strtrim(struclength-1,2)+'(A))' : '(A'+strtrim(cc,2)+')'
+            endif 
+            printf, unit, format=newform,newb
+         endif else if (csv2 NE 3) then begin
+            ;Handle .txt files
+            if (j EQ 0) then begin
+              printf,unit,format=a.lform,final_labels
+              q=where (final_dep1_values ne '')
+              if q[0] ne -1 then printf,unit,format=a.dpform,final_dep1_values
+              q=where (final_dep2_values ne '')
+              if q[0] ne -1 then printf,unit,format=a.dpform,final_dep2_values
+              q=where (final_dep3_values ne '')
+              if q[0] ne -1 then printf,unit,format=a.dpform,final_dep3_values
+              printf,unit,format=a.uform,final_units
+            endif            
+            printf,unit,format=a.dform,b
+         endif
+
       endfor   ; end j
       ; 
       if(num_data gt maxrecs) then begin
@@ -3290,7 +3874,7 @@ the values here.
          length=maxrecs
       endif
       ; Free Memory
-      delete, b   
+      spdf_delete, b   
   end   ; end case 5
   ;
   ;
@@ -3310,10 +3894,10 @@ nd
 <STRONG>(See <A href="CDAWlib/LIST_mystruct.pro">external/CDAWlib/LIST_mystruct.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="LIST_MYSTRUCT[7]">
-<H2>LIST_MYSTRUCT[7]</H2></A>
-<A HREF="#LIST_MYSTRUCT[6]">[Previous Routine]</A>
-<A HREF="#LIST_MYSTRUCT[8]">[Next Routine]</A>
+<A NAME="LIST_MYSTRUCT[6]">
+<H2>LIST_MYSTRUCT[6]</H2></A>
+<A HREF="#LIST_MYSTRUCT[5]">[Previous Routine]</A>
+<A HREF="#LIST_MYSTRUCT[7]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:  form_bld.pro
@@ -3325,7 +3909,7 @@ nd
 UNCTION form_bld, col_sz, label, units, dat_len, dep_col_sz, depend1_labels, $
   dep2_col_sz, depend2_labels, dep3_col_sz, depend3_labels,form, shft
 
- Use column size and to build label, unit and data format statements
+ Use column size to build label, unit and data format statements
 
 axlength=max(strlen(depend1_labels)) &gt; max(strlen(depend2_labels))  &gt; max(strlen(depend3_labels)) &gt; strlen(label) 
 intab=fix(dep_col_sz-max(strlen(depend1_labels))) &lt; fix(dep2_col_sz-max(strlen(depend2_labels))) &lt; fix(dep3_col_sz-max(strlen(depend3_labels)))&lt;fix(col_sz-strlen(label))
@@ -3334,6 +3918,7 @@ intab=fix(dep_col_sz-max(strlen(depend1_labels))) &lt; fix(dep2_col_sz-max(strle
  depend1, depend2 and depend3 use the same format (depv) :
 tab=strtrim(mintab,2)
 fld=strtrim(maxlength,2)
+
 f(shft eq 0) then begin
   if(ltab ne '0') then depv='A'+lfld+','+ltab+'X,1X,' else depv='A'+lfld+',1X,'
 ndif else begin
@@ -3367,10 +3952,10 @@ nd
 <STRONG>(See <A href="CDAWlib/LIST_mystruct.pro">external/CDAWlib/LIST_mystruct.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="LIST_MYSTRUCT[8]">
-<H2>LIST_MYSTRUCT[8]</H2></A>
-<A HREF="#LIST_MYSTRUCT[7]">[Previous Routine]</A>
-<A HREF="#LOGLEVELS (FUNCTION)">[Next Routine]</A>
+<A NAME="LIST_MYSTRUCT[7]">
+<H2>LIST_MYSTRUCT[7]</H2></A>
+<A HREF="#LIST_MYSTRUCT[6]">[Previous Routine]</A>
+<A HREF="#LIST_MYSTRUCT[8]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:  data_len.pro
@@ -3379,7 +3964,7 @@ nd
 
 
 
-UNCTION data_len,format,fillval
+UNCTION data_len,format,fillval,debug=debug
                  
  Set input values if undefined 
 
@@ -3388,6 +3973,16 @@ if(n_elements(format) eq 0) then form='null' else form=strmid(format,0,1)
 if(strlen(format) eq 0) then form='null' else begin
  RCJ 11/23/05   It has to be G format or fillvals will be ****          
 f(strlen(format) eq 0) then format='G13.6' 
+
+ RCJ 18Nov2019 This logic will remove the exponent width part of the format, if present.
+               For example: G10.2E3 -&gt; G10.2     
+               According to IDL help, IDL ignores this portion of the format
+ormat1=strmid(format,0,strpos(format,'E',/reverse_search))
+f format1 ne '' then begin
+  if keyword_set(DEBUG) then print,'In LIST_mystruct. Changing data format from ',format,' to ',format1
+  format=format1
+ndif
+
 trip=0
 c=0
 ew_form='        '
@@ -3492,127 +4087,16 @@ eturn, frm_st
 
 nd
 
-unction ep_conv, b, depd0, HANDLE=handle, sec_of_year=sec_of_year
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/LIST_mystruct.pro">external/CDAWlib/LIST_mystruct.pro</A>)</STRONG><P>
+<HR>
  
-atch, error_status
-f(error_status ne 0) then begin
-  if(error_status eq -78) then $ 
-     print, 'STATUS=Available memory exceeded. Re-select time interval.'
-  print, 'ERROR=Error number: ',error_status,' in listing (ep_conv).'
-  print, 'ERROR=Error Message: ', !ERR_STRING
-  stop
-ndif
-
-agnames=tag_names(b)
-1=tagindex(depd0,tagnames)
-f(n_elements(handle) eq 0) then handle=0
-;  x1='b.'+strtrim(depd0,2)+'.units=&quot;dd-mm-yyyy hh:mm:ss.ms &quot;'
-b.(v1(0)).units=&quot;dd-mm-yyyy hh:mm:ss.ms &quot;
-;      if(not execute(x1)) then begin
-;        print, 'ERROR=Execute error setting x1'
-;        close,1
-;        return, -1
-;      endif
-;  b.epoch.units=&quot;dd-mm-yyyy hh:mm:ss.ms &quot;
-
-f(handle eq 0) then begin
-  dat=b.(v1[0]).dat
-  ; x2=execute('dat=b.'+strtrim(depd0,2)+'.dat')
-  ;     dat=b.epoch.dat
-  datsz=size(dat)
-  if(datsz[0] gt 0) then dat=reform(dat) 
-ndif else begin 
-  ;x3=execute('tmp=b.'+strtrim(depd0,2)+'.HANDLE')
-  tmp=b.(v1[0]).HANDLE
-  handle_value, tmp, dat
-  datsz=size(dat)
-  if(datsz[0] gt 0) then dat=reform(dat) 
-ndelse
-en=size(dat)
-TJK 10/1/2009 - put in code to check for Epoch 16 values (dcomplex)
-if found, then print the extra time fields (micro, nano and pico)
-
-poch_type = size(dat,/type)
-ase epoch_type of
-9: begin  ; complex
-  ep16=1
-  if keyword_set(sec_of_year) then b.(v1[0]).units=&quot;Year____Secs-of-year&quot; else $  ;  e.g. 2001 4585746.000  &lt;-  microsec precision
-     b.(v1[0]).units=&quot;dd-mm-yyyy hh:mm:ss.mil.mic.nan.pic&quot;
-end
-14: begin  ;  long64
-  ep16=0
-  if keyword_set(sec_of_year) then b.(v1[0]).units=&quot;Year____Secs-of-year&quot; else $  ;  e.g. 2001 4585746.000  &lt;-  microsec precision
-     b.(v1[0]).units=&quot;dd-mm-yyyy hh:mm:ss.mil.mic&quot; 
-end
-else: begin
-   ep16=0
-  if keyword_set(sec_of_year) then b.(v1[0]).units=&quot;Year____Secs-of-year&quot; else $  ;  e.g. 2001 4585746.000  &lt;-  microsec precision
-      b.(v1[0]).units=&quot;dd-mm-yyyy hh:mm:ss.ms&quot;
-end
-ndcase
-if (epoch_type eq 9) then begin ; if dcomplex
-    ep16 = 1 
-    b.(v1(0)).units=&quot;dd-mm-yyyy hh:mm:ss.mil.mic.nan.pic&quot;
-endif else begin
-     ep16 = 0
-endelse
-
-ength=long(len(len(0)+2))
-at_eph=strarr(length)
-
-or k=0L, length-1 do begin
-  if keyword_set(sec_of_year) then begin
-    CDF_EPOCH,dat[k], yr, mo, dy, hr, mn, sc, milli, micro, /break
-    yr=long(yr) &amp; mo=long(mo) &amp; dy=long(dy) &amp; hr=long(hr) &amp; mn=long(mn)
-    sc=long(sc) &amp; hr=long(hr) 
-    ical,yr,doy,mo,dy,/idoy
-    doy=float(doy-1)  ;  if day=1 have to start from beginning of day, ie, not a whole day has passed at 00:05 of day 1, don't you agree?
-    yrsec=double(sc)+double(mn)*60.+double(hr)*3600.+double(doy)*24.*3600.
-    yrsec=yrsec+double(milli)/1000.+double(micro)/10^6.
-    ;print,'date = ',yr, mo, dy, hr, mn,sc,milli, micro, yrmilli
-  endif else begin
-    if (ep16) then begin
-     CDF_EPOCH16,dat[k], yr, mo, dy, hr, mn, sc, milli, micro, nano, pico, /break 
-    endif else begin   
-     if (size(dat[k],/type) eq 14) then begin
-          CDF_EPOCH,dat[k], yr, mo, dy, hr, mn, sc, milli, micro, /break,/tointeger 
- endif else begin
-          CDF_EPOCH,dat[k], yr, mo, dy, hr, mn, sc, milli, /break
- endelse
-    endelse 
-  endelse 
-  if(dy lt 10) then dy= '0'+strtrim(dy,2) else dy=strtrim(dy,2)
-  if(mo lt 10) then mo= '0'+strtrim(mo,2) else mo=strtrim(mo,2)
-  if(hr lt 10) then hr= '0'+strtrim(hr,2) else hr=strtrim(hr,2)
-  if(mn lt 10) then mn= '0'+strtrim(mn,2) else mn=strtrim(mn,2)
-  if(sc lt 10) then sc= '0'+strtrim(sc,2) else sc=strtrim(sc,2)
-  milli=strmid(strtrim(float(milli)/1000.,2),2,3)
-  yr=strtrim(yr,2)
-  if keyword_set(sec_of_year) then begin
-    yrsec_str=string(yrsec,format='(f15.6)')
-    dat_eph[k]=yr+' '+yrsec_str
-  endif else begin
-    if (ep16) then begin
-      micro=strmid(strtrim(float(micro)/1000.,2),2,3)
-      nano=strmid(strtrim(float(nano)/1000.,2),2,3)
-      pico=strmid(strtrim(float(pico)/1000.,2),2,3)
-      dat_eph[k]=dy+'-'+mo+'-'+yr+' '+hr+':'+mn+':'+sc+'.'+milli+'.'+micro+'.'+nano+'.'+pico   
-    endif else begin
-     if (size(dat[k],/type) eq 14) then begin
-      micro=strmid(strtrim(float(micro)/1000.,2),2,3)
-      dat_eph[k]=dy+'-'+mo+'-'+yr+' '+hr+':'+mn+':'+sc+'.'+milli +'.'+micro
-     endif else begin   
-      dat_eph[k]=dy+'-'+mo+'-'+yr+' '+hr+':'+mn+':'+sc+'.'+milli
-     endelse   
-    endelse
-  endelse  
-ndfor
-ptmp=create_struct('DATEPH',dat_eph)
-eturn, eptmp
-
-nd 
-
-+ 
+<A NAME="LIST_MYSTRUCT[8]">
+<H2>LIST_MYSTRUCT[8]</H2></A>
+<A HREF="#LIST_MYSTRUCT[7]">[Previous Routine]</A>
+<A HREF="#LOGLEVELS (FUNCTION)">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
  NAME:  LIST_mystruct.pro
 
  PURPOSE:  Generates a list output for CDAWweb
@@ -3620,7 +4104,7 @@ nd
  CALLING SEQUENCE:
 
  FUNCTION LIST_mystruct, a,NOGATT=nogatt,NOVATT=novatt,NORV=norv,$
-                         NONRV=nonrv,NO2DRV=no2drv,FILENAME=filename,$
+                         NONRV=nonrv,NO2DRV=no2drv,FILENAME=filename,CSV=csv,$
                          TSTART=TSTART,TSTOP=TSTOP,MAXRECS=maxrecs
   
  VARIABLES:
@@ -3638,6 +4122,7 @@ nd
   no2drv   - 2D record varying output: =0 (print), =1 (no print)
   filename - Output filename 
   maxrecs  - Maximum record output
+  csv      - =0 (regular .txt file), =1 (.csv data+header output), =2 (.csv data and .json header output), =3 (.json data+header output)
 
  REQUIRED PROCEDURES:
 
@@ -4142,7 +4627,7 @@ All Rights Reserved.
 <A NAME="MOVIE_WIND_MAP">
 <H2>MOVIE_WIND_MAP</H2></A>
 <A HREF="#MOVIE_SKYMAP">[Previous Routine]</A>
-<A HREF="#ORBIT_PLT">[Next Routine]</A>
+<A HREF="#ORBIT_PLT[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: movie_wind_map
@@ -4180,10 +4665,10 @@ All Rights Reserved.
 <STRONG>(See <A href="CDAWlib/movie_wind_map.pro">external/CDAWlib/movie_wind_map.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="ORBIT_PLT">
-<H2>ORBIT_PLT</H2></A>
+<A NAME="ORBIT_PLT[1]">
+<H2>ORBIT_PLT[1]</H2></A>
 <A HREF="#MOVIE_WIND_MAP">[Previous Routine]</A>
-<A HREF="#ORB_MGR">[Next Routine]</A>
+<A HREF="#ORBIT_PLT[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 unction get_depend0, astrc
@@ -4205,35 +4690,16 @@ ndif
 eturn, epoch_index
 nd
 
-unction ellipse,r,ra 
- Computes an ellipse from major and minor axis
- fact=0.005
- del=abs(ra/fact)+2
- a=dblarr(2,del)
-i=0 
-f(ra gt 0) then begin
-for x=0.0,ra,fact do begin
- a[0,i]=x
- a[1,i]=sqrt((r^2*(1.0-(x^2/ra^2))))
- i=i+1
-endfor
-ndif else begin
-for x=ra,0.0,fact do begin
- a[0,i]=x
- a[1,i]=sqrt((r^2*(1.0-(x^2/ra^2))))
- i=i+1
-endfor
-ndelse
-b=a[1,*]
-wc=where(b ne 0,wcn)
-c=dblarr(2,wcn)
-c[0,*]=a[0,wc]
-c[1,*]=b[wc]
-eturn,c
-nd
-
-
-+
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/orbit_plt.pro">external/CDAWlib/orbit_plt.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ORBIT_PLT[2]">
+<H2>ORBIT_PLT[2]</H2></A>
+<A HREF="#ORBIT_PLT[1]">[Previous Routine]</A>
+<A HREF="#ORBIT_PLT[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
  NAME: orbax_scl.pro
 
  PURPOSE: Determines the min and max axis for each axis 
@@ -4254,12 +4720,34 @@ if(tmax gt 300 and xmin gt -100) then begin
 endif else begin
  RTB changed 1/27/2000
  RTB changed 3/06/2000
-  if(tmax gt 3000.) then begin
+
+   if(tmax gt 3000.) then begin
+  if(tmax gt 1000000.) then begin
    sval = valmax
    if(sval eq 0.) then begin
     print, &quot;STATUS=No VALIDMAX set for the maximum extent of orbit plots&quot;
    endif
   endif
+  
+  ; RCJ 01Nov2019  This is the max on more_cdf.c too.  
+  ;   If this one needs to be increased that one needs to be increased too.
+  if(tmax le 1000000.) then sval=1000000.0
+  if(tmax le 500000.) then sval=500000.0
+  if(tmax le 100000.) then sval=100000.0
+  if(tmax le 90000.) then sval=90000.0
+  if(tmax le 80000.) then sval=80000.0
+  if(tmax le 70000.) then sval=70000.0
+  if(tmax le 60000.) then sval=60000.0
+  if(tmax le 50000.) then sval=50000.0
+  if(tmax le 40000.) then sval=40000.0
+  if(tmax le 30000.) then sval=30000.0
+  if(tmax le 25000.) then sval=25000.0
+  if(tmax le 20000.) then sval=20000.0
+  if(tmax le 15000.) then sval=15000.0
+  if(tmax le 10000.) then sval=10000.0
+  if(tmax le 5000.) then sval=5000.0
+  if(tmax le 4000.) then sval=4000.0
+  ;  RCJ 01Nov2019  Previously:
   if(tmax le 3000.) then sval=3000.0
   if(tmax le 2000.) then sval=2000.0
   if(tmax le 1500.) then sval=1500.0
@@ -4283,7 +4771,16 @@ strc=create_struct('min',xmin,'max',xmax)
 eturn, rstrc
 nd
 
-+                                                                            
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/orbit_plt.pro">external/CDAWlib/orbit_plt.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ORBIT_PLT[2]">
+<H2>ORBIT_PLT[2]</H2></A>
+<A HREF="#ORBIT_PLT[2]">[Previous Routine]</A>
+<A HREF="#ORB_MGR">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
  NAME: autoscaler.pro
 
  PURPOSE: Determines the axis scales for orbit plots
@@ -4459,552 +4956,13 @@ strc=create_struct('xmin',xstr.min,'xmax',xstr.max,'ymin',ystr.min,'ymax',ystr.m
 eturn, rstrc
 nd
 
-ro time_range,epoch,sat
-=n_elements(epoch)
-print,sat,' ',pdate(epoch[0]),' ',pdate(epoch[n-1])
-nd
-
- New orbit_date
-ro orbit_date1,epoch,x,y,doymark,hrmark,hrtick $
-   ,color=color,noclip=noclip,charsize=cs,charthick=ct
-f(n_elements(noclip) eq 0) then noclip = 1
-f n_elements(color) eq 0 then color=!p.color
-f n_elements(doymark) eq 0 then doymark=1
-f n_elements(hrmark) eq 0 then hrmark = 6
-f n_elements(hrtick) eq 0 then hrtick = 6 
- = n_elements(epoch)
-f n_elements(cs) eq 0 then cs = 1.0
-f n_elements(ct) eq 0 then ct =1.0 
-added 
-ep = hrtick*3600d3
-ephrmark = hrmark*3600d3
-df_epoch,epoch[0],yr,month,dom,/break
-df_epoch,ep0,yr,month,dom,/comp
-p = fix( (epoch[n-1]-ep0)/dep) + 4
-pochs = ep0+indgen(np)*dep
-i = where( (epochs ge epoch[0]) and (epochs le epoch[n-1])  )
-print,'time range:',pdate(epoch[0]),' ',pdate(epoch[n-1])
-pochs = epochs[ii]
- = n_elements(epochs)
-
-or i=0L,n-1L do begin
-  cdf_epoch,epochs[i],yr,month,dom,hr,min,/break
-  cdf_epoch,ep0,yr,month,dom,/comp
-  ical,yr,doy,month,dom,/idoy
-  ;print,yr,doy,month,dom,min
-  epdiff =min(abs(epochs[i]-epoch))
-  if epdiff gt time_incr(epoch) then goto, skip
-  dt =epochs[i]-ep0
-  if (dt mod dep) eq 0 then begin
-     ii = where(epochs[i] ge epoch)
-     j = ii[0]
-     if j eq n-1 then begin
-        xp = x[i]
-        yp = y[i]
-     endif else begin
-TJK 10/25/2006 - change name of interp routine (in b_lib.pro) because
-of conflicts w/ SSL s/w routine.
-         xp = interp(epochs[i],epoch,x) 
-         yp = interp(epochs[i],epoch,y) 
-        xp = orbit_interp(epochs[i],epoch,x) 
-        yp = orbit_interp(epochs[i],epoch,y) 
-     endelse
-     symsize=1.2
-     oplot,[1,1]*xp,[1,1]*yp,noclip=noclip,psym=1,symsize=cs,color=color
-     if ( (dt ) mod dephrmark) eq 0 then begin 
-       if dt eq 0  then begin
-    text = string(hr,doy,format='(&quot; &quot;,i2.2,&quot;/&quot;,i3.3)') 
-	endif else begin
-    if min eq 0 then text=string(hr,format='(i2.2)') $
-    else text=string(hr,min,format='(&quot; &quot;,i2.2,&quot;:&quot;,i2.2)')
-endelse
-xyouts,xp,yp,noclip=noclip,text,charthick=ct,charsize=cs,color=color
-     endif
-     skip:
-  endif
-ndfor
-nd
-
-ro orbit_date,epoch,x,y,doymark,hrmark,hrtick,mntick,mnmark, $
-    color=color,noclip=noclip,charsize=cs,charthick=ct,date=date,$
-    symsiz=symsiz,map=map
-f(n_elements(noclip) eq 0) then noclip = 0
-f n_elements(color) eq 0 then color=!p.color
-f n_elements(doymark) eq 0 then doymark=1
-f n_elements(hrmark) eq 0 then hrmark = 6
-f n_elements(hrtick) eq 0 then hrtick = 6 
-f n_elements(mntick) eq 0 then mntick = 0 
-f n_elements(mnmark) eq 0 then mnmark = 0 
-n = n_elements(epoch)
-f n_elements(cs) eq 0 then cs = 1.   
-f n_elements(ct) eq 0 then ct =1. 
-f n_elements(date) eq 0 then date = 1L 
-f n_elements(symsiz) eq 0 then symsiz=1.0
-
-1=dblarr(2)
-2=dblarr(2)
-added 
-print, doymark,hrmark,hrtick,mnmark,mntick,date
-f(mnmark gt 60) then hrmark=0
-
-TJK this returns a negative number at least for cluster data
-hr2=fix(epoch[0]/3600000)
-r2=(epoch[0]/3600000)
-TJK find out whether this datset has minutes starting at 0 or not
-inmin = 60
-or i=0L,n-1L do begin
-  cdf_epoch,epoch[i],yr,month,dom,hr,min,/break
-    ;find the minimum minute value for this set of epoch values
-    if (min lt minmin) then minmin = min
-ndfor
-
-or i=0L,n-1L do begin
-  cdf_epoch,epochs[i],yr,month,dom,hr,min,/break
-  cdf_epoch,epoch[i],yr,month,dom,hr,min,/break
-  min=fix(min)
-  ical,yr,doy,month,dom,/idoy
- Build string for date
-if(date) then begin
-  doy_st=string(doy,format='(i3.3)') 
-  dfm='a3' 
-endif else begin
- doy_st=string(month,dom,format='(i2.2,&quot;/&quot;,i2.2)') 
- dfm='a5'
-endelse
- Include hour total option
-hr=fix(hr)
-TJK the following is returning a negative number - at least for Cluster data
-hr1=fix(epoch[i]/3600000)
-r1=(epoch[i]/3600000)
-rtot=hr1-hr2
-f(hrmark gt 24) then hr=fix(hrtot)
-
- force last mark at last point
- Hour and day ticks and marks
-        xp = x[i]
-        yp = y[i]
-        p1[0] = x[i]
-        p2[0] = y[i]
-        if(i ne (n-1)) then p1[1] = x(i+1) else p1[1] = x(i-1)
-        if(i ne (n-1)) then p2[1] = y(i+1) else p2[1] = y(i-1)
-TJK 1/9/2001 change to allow plotting of Cluster tick marks - they never have 
-minute values at &quot;zero&quot;.    if min eq 0 then begin
-TJK 1/11/2001 change this logic because now we're getting too many tick marks for datasets
-with high res...  Determine the minimum value of all of the epochs in the array, and look for
-that minimum value before doing the rest of the labeling logic.
-if (min eq minmin) then begin
- Test conditions for hour and day of year labels
- if(hr gt 100) then hrfm='i3.3' else hrfm='i2.2'
-   if((hrmark ne 0) and (doymark ne 0)) then begin
-    if ( (hr/float(hrmark)) mod 1 ) eq 0 then begin 
-if(((hr/(hrmark)) mod 1) eq 0) and (((doy/float(doymark)) mod 1) eq 0) then $
-     if (ihr eq 0) and ( ( (doy/float(doymark)) mod 1 ) eq 0 ) then $
-     xyouts,xp,yp, noclip=noclip $
-       ,string(hr,doy_st,format='(&quot; &quot;,'+hrfm+',&quot;:00 &quot;,'+dfm+')') $
-              ,charthick=ct,color=color,charsize=cs $
-     else xyouts,xp,yp,noclip=noclip,string(hr,format='(&quot; &quot;,'+hrfm+',&quot;:00&quot;)') $
-              ,charthick=ct,charsize=cs,color=color
-     	oplot,[1]*xp,[1]*yp,noclip=noclip,psym=1,symsize=cs,color=color
-       sb_make_tick, p2, p1,symsiz=symsiz,symcol=color,map=map
-    endif
-   endif
-    if((hrmark eq 0) and (doymark ne 0)) then begin
-if (((hr/(hrmark)) mod 1) eq 0) and (((doy/float(doymark)) mod 1) eq 0) then begin 
-       if (ihr eq 0) and ( ( (doy/float(doymark)) mod 1 ) eq 0) then begin 
-            xyouts,xp,yp, noclip=noclip $
-              ,string(doy_st,format='(&quot; &quot;,'+dfm+')') $
-              ,charthick=ct,color=color,charsize=cs 
-     	oplot,[1]*xp,[1]*yp,noclip=noclip,psym=1,symsize=cs,color=color
-       sb_make_tick, p2, p1,symsiz=symsiz,symcol=color,map=map
-      endif
-    endif
-    if((hrmark ne 0) and (doymark eq 0)) then begin
-     if ( (hr/float(hrmark)) mod 1 ) eq 0 then begin
-        xyouts,xp,yp,noclip=noclip,string(hr,format='(&quot; &quot;,'+hrfm+',&quot;:00&quot;)') $
-              ,charthick=ct,charsize=cs,color=color
-     	oplot,[1]*xp,[1]*yp,noclip=noclip,psym=1,symsize=cs,color=color
-       sb_make_tick, p2, p1,symsiz=symsiz,symcol=color,map=map
-     endif
-    endif
- Add tick marks
-    if(hrtick ne 0) then begin
-     if ( (hr/float(hrtick)) mod 1 ) eq 0 then  $
-    	oplot,[1,1]*xp,[1,1]*yp,noclip=noclip,psym=1,symsize=cs,color=color
-       sb_make_tick, p2, p1,symsiz=symsiz,symcol=color,map=map
-    endif
-endif
- Minute ticks and marks
-if(min ne 0) then begin
- if((mnmark ne 0) and (mnmark le 60)) then begin
-  if((min mod mnmark) eq 0) then $
-    xyouts,xp,yp,noclip=noclip,string(hr,min,format='(i2.2,&quot;:&quot;,i2.2)'),$
-                          charthick=ct,charsize=cs,color=color
- endif
-endif
-if(mnmark gt 60) then begin
-   hrmin=60*hr+min
-   if((hrmin mod mnmark) eq 0) then $
-    xyouts,xp,yp,noclip=noclip,string(hrmin,format='(i4.4)'),$ 
-                          charthick=ct,charsize=cs,color=color
-endif
-if(mntick gt 60) then begin
- hrmin=60*hr+min
- if((hrmin mod mntick) eq 0) then $
-    sb_make_tick, p2, p1,symsiz=symsiz,symcol=color,map=map
-endif
-if((mntick ne 0) and (mntick le 60)) then begin
- if((min mod mntick) eq 0) then $ 
-    sb_make_tick, p2, p1,symsiz=symsiz,symcol=color,map=map
-endif
-
-ndfor
-
-nd
-
-RCJ 06/22/2012  Commented out this pro.  IDL8 has its own 'legend', and so does
-   the Astronomy Library.  So, if in the future you need this pro, rename it.
-pro legend,i,labpos=labpos,sats=sats,colors=colors,overplot=overplot,$
-             charsize=cs
-; Not called any longer
-sc = 1.1   ; 0.7
-chsize,xch,ych,norm=0
-xch = abs(xch)
-ych = abs(ych) 
-ichy = n_elements(sats)
-ichx = max(strlen(sats))
-x=!x.crange &amp; dx = x[1]-x[0] &amp; sgnx = sgn(dx)
-y =!y.crange &amp; dy = y[1]-y[0] &amp; sgny = sgn(dy)
-;x0=x[1] - sgnx*1.1*ichx*xch  ; 1.1
-if(n_elements(labpos) eq 0) then begin
-  x0=x[1]/6 &amp; y0 = y[1]-(i+.5)*sgny*sc*ych
-endif else begin
-  x0=labpos[0] &amp; y0=labpos[1]-(i+.5)*sgny*sc*ych
-endelse
-
-; plot symbol conditions
-pltsym=i+1
-if((pltsym eq 3) or (pltsym gt 7)) then pltsym=7 
-; setup array for symbols to be plotted
-  xfc=dx/50.0 &amp; yfc=dy/50.0
-  x1=dblarr(1) &amp; y1=dblarr(1)
-  x1[0]=x0-xfc &amp; y1[0]=y0+yfc
- 
-    xyouts,x0,y0,sats,color=colors,charsize=cs
-    oplot,x1,y1,color=colors,psym=pltsym,symsize=symsiz
-
-end
-
-unction region_orbit,epoch,x,y,z,xmp,rhomp,xbs,rhobs
-region orbit into regions of geospace
- x,y,z MUST be in Re
-ho = sqrt(y^2+z^2) 
-pts=n_elements(x)
-pts=n_elements(rhomp)
-
- Test sign condition to resolve XY region error RTB 7/2000
- Comment until bugs in orbit get cleaned up
- rhompmax=max(rhomp)
- rhobsmax=max(rhobs)
-if(rpts gt 1) then begin ; RTB avoids error in call to mean 
-		  ; (must have at least 2 points)
- if((rhompmax eq 0) or (rhobsmax eq 0)) then begin
-  if(mean(rhomp) &lt; 0) then begin
-    rhompmax=abs(min(rhomp))
-  endif else begin
-    rhompmax=max(rhomp)
-  endelse
-  if(mean(rhobs) &lt; 0) then begin
-    rhobsmax=abs(min(rhobs))
-  endif else begin
-    rhobsmax=max(rhobs)
-  endelse 
- endif
-endif else begin
- rhobsmax=max(rhobs)
- rhompmax=max(rhomp)
-endelse
-Original code rtb
-rhompmax=max(rhomp)
-rhobsmax=max(rhobs)
- End RTB test
-egmp = indgen(npts)
-egbs = indgen(npts)
-
-or i=0L,npts-1 do begin
- causes error values in HEC Re corrdinates   RTB 5/2000
-   if(abs(x[i]) ge 6371.2) then x=x/6371.2
-   if(abs(y[i]) ge 6371.2) then y=y/6371.2
-   if(abs(z[i]) ge 6371.2) then z=z/6371.2
-   if rho[i] ge rhompmax then begin
-regmp[i]=-1 
-   endif else begin
-r = interpol(xmp,rhomp,rho[i])-x[i] ; &gt;0 inside magnetosphere
-regmp[i] = r/abs(r)
-   endelse
-
-   if rho[i] ge rhobsmax then begin
-regbs[i]=-1
-   endif else begin
-r = interpol(xbs,rhobs,rho[i])-x[i] ; &gt;0 inside magnetosphere
-regbs[i] = r/abs(r)
-   endelse
-ndfor
- -2 -&gt; SW, 0 -&gt; magnetosheath ,2 -&gt; magnetosphere
-egion = regbs+regmp
-
-eturn,region
-nd
-
-ro plot_orbit,x,y,ks,regions=region,color=color,lnthick=lnthick
- plot symbol conditions
-ks=ks
-TJK off by one in order to match the labels at bottom of plot
-if(kks ge 6) then kks=ks-6
- Fudge to allow more than 10 plots (will we ever need this?) Ron Yurow (12/14/15)
-ks = (kks - 1) MOD 10 + 1
-f(kks ge 5) then kks=ks-4
-ltsym=kks+1
-f(pltsym eq 3) then pltsym=7
-
-pts = n_elements(x)
-=indgen(npts-1)
-r=region(i+1)-region[i]
-i=where( dr ne 0 )
-f ii[0] eq -1 then begin
-  ii=[0,npts-1]
-ndif else begin
-  ii=[0,[ii],npts-1]
-ndelse
-seq = n_elements(ii)-1
-or i=0L,nseq-1 do begin
-   xs = x(ii[i]:ii(i+1))
-   ys = y(ii[i]:ii(i+1)) 
-   imid =(ii[i]+ii(i+1))/2
-   reg = long(region(imid))
-     print,ii[i],imid,ii(i+1),' region:',reg
-
-   case reg of
-      -2l: linestyle=0 
-0l: linestyle=2
-2l: linestyle=1
-   endcase
-    print,'ls',linestyle
- average every 5 points to reduce plot clutter
- causes 1st and last point when averaged to appear as a gap b/w regions
-  ; oplot,xs,ys,linestyle=linestyle ,color=color, nsum=5
-   oplot,xs,ys,linestyle=linestyle ,color=color,thick=lnthick
-ndfor
-   x1=dblarr(1) &amp; y1=dblarr(1)
-   ;x1[0]=x[0] &amp; y1[0]=y[0]
-   ;  RCJ 03/02/2011  Line above places the symbol at the beginning of the track.
-   ;                  Line below places it at the end. Seems to make more sense, right?
-   x1[0]=x(n_elements(x)-1) &amp; y1[0]=y(n_elements(y)-1)
-   oplot,x1,y1,psym=pltsym,color=color,thick=lnthick
-   ;  Attempt to place arrows in the direction the s/c is moving. Not worth persuing.
-   ;x1[0]=x((n_elements(x)-1)/2) &amp; y1[0]=y((n_elements(y)-1)/2)
-   ;arrow,x(((n_elements(x)-1)/2)-10),y(((n_elements(y)-1)/2)-10),x1,y1,color=color,hthick=3,/data
-nd
-
-The following routine doesn't seem to be used anymore.
-ro load_interval,eprange,orbit,x,y,z,epoch
-p0 = eprange[0]
-p1 = eprange[1]
-i = where( (orbit.epoch ge ep0) and (orbit.epoch le ep1) )
-f(ii[0] eq -1) then begin
-  x=0
-  y=0
-  z=0
-  return
-ndif
-
-poch = orbit(ii).epoch
-=orbit(ii).xgse
-=orbit(ii).ygse
-=orbit(ii).zgse
-nd
-
-unction rot_x, x,y,z,deg
- Rotates elements of x,y,z by the given angle about X
-dgrad=!pi/180.0
-rads=deg*dgrad
-cs=cos(rads) 
-ss=sin(rads)
-t=dblarr(3,3) 
-t=[[1.0,0.0,0.0],[0.0,cs,-ss],[0.0,ss,cs]]
-tt=[[cs,ss,0.0],[-ss,cs,0.0],[0.0,0.0,1.0]]
-
- num=n_elements(x)
- r=dblarr(num,3)
- old=dblarr(3)
- new=dblarr(3)
-
- for i=0L,num-1 do begin
-   old=[x[i],y[i],z[i]] 
-
-   for n=0,2 do begin
-    tmp=0.0
-    for m=0,2 do begin
-      tmp=tt(n,m)*old(m)+tmp
-    endfor 
-    new(n)=tmp
-   endfor
-   r[i,*]=new[*]
-endfor 
- return, r 
-end
-
-ro draw_orbit,epoch,x,y,z,ks,xmp,rhomp,xbs,rhobs,doymark,hrmark,hrtick, $
-        mntick,mnmark,color=color,noclip=noclip,proj=proj,$
-        charsize=cs,date=date,symsiz=symsiz,lnthick=lnthick
-
-f n_elements(x) gt 1 then begin
-
-egion = region_orbit(epoch,x,y,z,xmp,rhomp,xbs,rhobs)
-
-ase proj of
-'xz':begin
-egion = region_orbit(epoch,x,y,z,xmp,rhomp,xbs,rhobs)
-print, 'xz', region
-print, 'xz region'
-     plot_orbit,x,z,ks,region = region, color=color,lnthick=lnthick
-     orbit_date,epoch,x,z,doymark,hrmark,hrtick,mntick,mnmark,$
-       color=color,noclip=noclip,charsize=cs,date=date,symsiz=symsiz
-     end
-'xy':begin
-egion = region_orbit(epoch,x,y,z,xmp,rhomp,xbs,rhobs)
-print,'xy', region
-print, 'xy region'
-       plot_orbit,x,y,ks,region = region, color=color,lnthick=lnthick
-       orbit_date,epoch,x,y,doymark,hrmark,hrtick,mntick,mnmark,$
-         color=color,noclip=noclip,charsize=cs,date=date,symsiz=symsiz
-     end
-'yz':begin         
-egion = region_orbit(epoch,x,y,z,xmp,rhomp,xbs,rhobs)
-print, 'yz', region
-print, 'yz region'
-       plot_orbit,y,z,ks,region = region, color=color,lnthick=lnthick
-       orbit_date,epoch,y,z,doymark,hrmark,hrtick,mntick,mnmark,$
-         color=color,noclip=noclip,charsize=cs,date=date,symsiz=symsiz
-     end
-'xr':begin          
-print, 'xr region'
-egion = region_orbit(epoch,x,y,z,xmp,rhomp,xbs,rhobs)
-   deg=45.0 &amp;  r=rot_x(x,y,z,deg) &amp; xp=r(*,0) &amp; yp=r(*,1) &amp; zp=r(*,2)
-        plot_orbit,xp,yp,ks,region = region, color=color
-       orbit_date,epoch,xp,yp,doymark,hrmark,hrtick,color=color,noclip=noclip,$
-                 charsize=cs,date=date,symsiz=symsiz
-       numb=n_elements(y)
-       r=dblarr(numb)
-       for j=0L, numb-1 do begin
-        r[j]=sqrt(y[j]^2 +z[j]^2)
-         if(z[j] lt 0) then r[j]=-1.D0*r[j]
-       endfor 
-       plot_orbit,x,r,ks,region = region, color=color,lnthick=lnthick
-       orbit_date,epoch,x,r,doymark,hrmark,hrtick,mntick,mnmark,$
-         color=color,noclip=noclip,charsize=cs,date=date,symsiz=symsiz
-     end
-ndcase
-ndif
-nd
-
-unction secant,x,y
- Find 0 crossing
-wm=where((x lt 0), w1)                                                        
-n=wm[0]
-n1=wm[0]-1
-r=y(n)-x(n)*((y(n)-y(n1))/(x(n)-x(n1)))
-eturn, r
-nd
-
- Reorder the tags in a structure based on array of 'weights' for each tag that
- is passed as a parameter. The third parameter indicates whether the tags will
- be reordered in ascending (non-zero) or descending order (0).  The default is
- ascending.
- Added by Ron Yurow (Jan 9, 2017)
-RO rebuild_vstruct, s, weight, dir
-
-   ; Default direction for ordering is ascending if none is specified.
-   IF N_ELEMENTS (dir) eq 0 THEN dir = 1
-
-   ; Sort the weight array to get an initial order to sort the tags.
-   order = SORT (weight)
-
-   ; If we are doing a descending sort, then reverse this.
-   IF dir eq 0 THEN order = REVERSE (order)
-
-   ; Number of tags in the structure.
-   ntags = N_TAGS (s) 
-
-   ; And the tag names.
-   tags  = TAG_NAMES (s)
-
-   ; new will be re-ordered version of the original structure, s.
-   ; Start by creating it so that it contains the first tag.
-   new = CREATE_STRUCT (tags [order [0]], s.(order [0]))
-
-   ; Loop through all the remaining tags and each one in turn to new
-   ; structure.
-   FOR i = 1, ntags - 1 DO BEGIN
-
-       new = CREATE_STRUCT (new, tags (order [i]), s.(order [i]))
-
-   ENDFOR
-
-   ; Finished. Copy back new to s.
-   s = new
-
-ND
-
-
- Program orbit_plt
-
- Variables
-  astrc     - IDL structure of all  
- 
- Keywords
-  tstart    - start time of plot
-  tstop     - stop time of plot
-  xsize     - window size for x coordinate
-  ysize     - window size for y coordinate
-  orb_vw    - orbit view; up to a 4 element array (xy, xz, yz, xr)
-  press     - solar wind pressure
-  bz        - IMF bz 
-  xmar      - xmargin
-  ymar      - ymargin
-  doymark   - interval along the orbit on which the day of year is plotted
-  hrmark    - interval along the orbit on which the hour of day is plotted  
-  hrtick    - Tick interval along the orbit 
-  xmin      - minimum x axis value
-  xmax      - maximum x axis value
-  ymin      - minimum y axis value
-  ymax      - maximum y axis value
-  color     - color for orbits and labels
-  labpos    - starting point for labels
-  chtsize   - character size
-  lnthick   - line thickness
-  us        - orientation of bow shock/ magnetopause
-  bsmp      - bow shock/ magnetopause plot (ON/OFF:1/0)
-  autoscl   - automatic X/Y scaling
-  symsiz    - symbol size
-  autolabel - automatic labeling
-  datelabel - 0 = yy/mm/dy; 1 = yy/doy 
-  eqlscl    - Forces equal aspect on scale (T/F;1/0)
-  panel     - Normal Orbit plot panel layout (F:0) Stacked layout (T:1)
-
- Other variables
-  overplot  - controls plotting over the same axises 
-
-Copyright 1996-2013 United States Government as represented by the 
-Administrator of the National Aeronautics and Space Administration. 
-All Rights Reserved.
-
 </PRE><P>
 <STRONG>(See <A href="CDAWlib/orbit_plt.pro">external/CDAWlib/orbit_plt.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="ORB_MGR">
 <H2>ORB_MGR</H2></A>
-<A HREF="#ORBIT_PLT">[Previous Routine]</A>
+<A HREF="#ORBIT_PLT[2]">[Previous Routine]</A>
 <A HREF="#OVERLAY[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -5123,11 +5081,11 @@ nd
 <A HREF="#PACK">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-$Author: rchimiak $
-$Date: 2016/03/21 15:41:47 $
+$Author: nikos $
+$Date: 2021-02-21 18:49:50 -0800 (Sun, 21 Feb 2021) $
 $Header: /home/cdaweb/dev/control/RCS/overlay.pro,v 1.1 2016/03/21 15:41:47 rchimiak Exp rchimiak $
 $Locker: rchimiak $
-$Revision: 1.1 $
+$Revision: 29691 $
 +------------------------------------------------------------------------
  Description:
     graph an element of a set of time series plots on a single panel
@@ -5506,6 +5464,7 @@ All Rights Reserved.
        XSIZE     = x size of single frame
        YSIZE     = y size of single frame
        GIF       = name of gif file to send output to
+       PNG      = name of png file to send output to
        REPORT    = name of report file to send output to
        TSTART    = time of frame to begin imaging, default = first frame
        TSTOP     = time of frame to stop imaging, default = last frame
@@ -5738,6 +5697,7 @@ All Rights Reserved.
        XSIZE     = x size of single frame
        YSIZE     = y size of single frame
        GIF       = name of gif file to send output to
+       PNG      = name of png file to send output to
        REPORT    = name of report file to send output to
        TSTART    = time of frame to begin imaging, default = first
        frame
@@ -5783,11 +5743,11 @@ All Rights Reserved.
 <A HREF="#PLOT_PLASMAGRAM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-$Author: rchimiak $
-$Date: 2017/04/24 20:02:34 $
-$Header: /home/cdaweb/dev/control/RCS/plot_over.pro,v 1.41 2017/04/24 20:02:34 rchimiak Exp rchimiak $
-$Locker: rchimiak $
-$Revision: 1.41 $
+$Author: nikos $
+$Date: 2021-02-21 18:49:50 -0800 (Sun, 21 Feb 2021) $
+$Header: /home/cdaweb/dev/control/RCS/plot_over.pro,v 1.47 2017/10/05 14:44:19 rchimiak Exp johnson $
+$Locker: johnson $
+$Revision: 29691 $
 +------------------------------------------------------------------------
  Description:
     To generate a time series plot that overlay the components on one plot.
@@ -5831,6 +5791,9 @@ $Revision: 1.41 $
 
     GIF
        If set, the plot will be a .gif file instead of Xwindow
+
+    PNG
+       If set, the plot will be a .png file instead of Xwindow
 
     XSIZE
        if set, forces the plot window to this width
@@ -5903,6 +5866,7 @@ $Revision: 1.41 $
        XSIZE     = x size of single frame
        YSIZE     = y size of single frame
        GIF       = name of gif file to send output to
+       PNG      = name of png file to send output to
        REPORT    = name of report file to send output to
        TSTART    = time of frame to begin imaging, default = first frame
        TSTOP     = time of frame to stop imaging, default = last frame
@@ -5954,6 +5918,7 @@ All Rights Reserved.
        XSIZE     = x size of single frame
        YSIZE     = y size of single frame
        GIF       = name of gif file to send output to
+       PNG      = name of png file to send output to
        REPORT    = name of report file to send output to
        TSTART    = time of frame to begin imaging, default = first frame
        TSTOP     = time of frame to stop imaging, default = last frame
@@ -6015,11 +5980,12 @@ All Rights Reserved.
 	CDAWEB   = If set, the plot will have sufficient margin along the Z
                   axis to hold a colorbar.
        GIF      = If set, the plot will be a .gif file instead of Xwindow
+       PNG     = if set, the plot will be a .png file instead of Xwindow
 	XSIZE    = if set, forces the plot window to this width
        YSIZE    = if set, forces the plot window to this height
 	AUTO     = if set, turns auto-scaling on
        NOGAPS   = if set, eliminates data gap scanning
-       NOCLIP   = set when writing to GIF file
+       NOCLIP   = set when writing to GIF or PNG file
        IGNORE_DISPLAY_TYPE = if set, causes the attribute display_type to
 			      be ignored.
 	NOSUBTITLE = if set, will not print 'time range = ' subtitle even after
@@ -6248,6 +6214,7 @@ All Rights Reserved.
    	YSIZE	  = for thumbnails:  calculated based on the number of images to plot.
    	    	    for single frames: 512 is default
        GIF       = name of gif file to send output to
+       PNG      = name of png file to send output to
        REPORT    = name of report file to send output to
        TSTART    = time of frame to begin mapping, default = first frame
        TSTOP     = time of frame to stop mapping, default = last frame
@@ -6342,6 +6309,32 @@ All Rights Reserved.
 <A HREF="#READ_MYCDF[12]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
+ NAME: check_ifclone.
+ PURPOSE:
+        Check if a particular variable is a 'clone' of another variable.  
+ CALLING SEQUENCE:
+	result = check_ifclone (variable_name, id)
+ INPUTS:
+	variable_name = name of a CDF variable as a string
+   id = CDF id of an open CDF.
+ KEYWORD PARAMETERS:
+ OUTPUTS:
+       Either the empty string ('') if is not a cloned variable or the
+       the name of the source variable (defined in the COMPONENT_0 
+       attribute) if is a clone variable.
+ AUTHOR:
+       Ron Yurow, April 19, 2018
+ MODIFICATION HISTORY:
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/read_myCDF.pro">external/CDAWlib/read_myCDF.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="READ_MYCDF[12]">
+<H2>READ_MYCDF[12]</H2></A>
+<A HREF="#READ_MYCDF[11]">[Previous Routine]</A>
+<A HREF="#READ_MYCDF[13]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
  NAME: Getvar_attribute_names CDFid
  PURPOSE: 
 	To return all of the attribute names for the requested variable, as
@@ -6364,10 +6357,10 @@ All Rights Reserved.
 <STRONG>(See <A href="CDAWlib/read_myCDF.pro">external/CDAWlib/read_myCDF.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="READ_MYCDF[12]">
-<H2>READ_MYCDF[12]</H2></A>
-<A HREF="#READ_MYCDF[11]">[Previous Routine]</A>
-<A HREF="#READ_MYCDF[13]">[Next Routine]</A>
+<A NAME="READ_MYCDF[13]">
+<H2>READ_MYCDF[13]</H2></A>
+<A HREF="#READ_MYCDF[12]">[Previous Routine]</A>
+<A HREF="#READ_MYCDF[14]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: GET_NUMALLVARS
@@ -6390,10 +6383,10 @@ All Rights Reserved.
 <STRONG>(See <A href="CDAWlib/read_myCDF.pro">external/CDAWlib/read_myCDF.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="READ_MYCDF[13]">
-<H2>READ_MYCDF[13]</H2></A>
-<A HREF="#READ_MYCDF[12]">[Previous Routine]</A>
-<A HREF="#READ_MYCDF[14]">[Next Routine]</A>
+<A NAME="READ_MYCDF[14]">
+<H2>READ_MYCDF[14]</H2></A>
+<A HREF="#READ_MYCDF[13]">[Previous Routine]</A>
+<A HREF="#READ_MYCDF[15]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: GET_ALLVARNAMES
@@ -6419,13 +6412,15 @@ All Rights Reserved.
 	keyword isn't used.  The original code only included variables
 	that vary by record so some important &quot;support_data&quot; variables
 	were being thrown out.
+       5/1/2018 - TJK modified to check if no attributes and var_type
+       attribute don't exist, don't look for them as these error out.
 </PRE><P>
 <STRONG>(See <A href="CDAWlib/read_myCDF.pro">external/CDAWlib/read_myCDF.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="READ_MYCDF[14]">
-<H2>READ_MYCDF[14]</H2></A>
-<A HREF="#READ_MYCDF[13]">[Previous Routine]</A>
+<A NAME="READ_MYCDF[15]">
+<H2>READ_MYCDF[15]</H2></A>
+<A HREF="#READ_MYCDF[14]">[Previous Routine]</A>
 <A HREF="#READ_MYCDF[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -6516,7 +6511,7 @@ end
  
 <A NAME="READ_MYCDF[1]">
 <H2>READ_MYCDF[1]</H2></A>
-<A HREF="#READ_MYCDF[14]">[Previous Routine]</A>
+<A HREF="#READ_MYCDF[15]">[Previous Routine]</A>
 <A HREF="#READ_MYCDF[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -6591,6 +6586,10 @@ end
  sold and this copyright notice is reproduced on each copy made.  This
  routine is provided as is without any express or implied warranties
  whatsoever.
+
+ Added forward declaration so that we can use this in read_myVARIABLE.
+ Ron Yurow (July 13, 2018)
+ORWARD_FUNCTION get_allvarnames
 </PRE><P>
 <STRONG>(See <A href="CDAWlib/read_myCDF.pro">external/CDAWlib/read_myCDF.pro</A>)</STRONG><P>
 <HR>
@@ -6663,30 +6662,22 @@ end
 <A HREF="#READ_MYCDF[4]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- NAME: PARSE_DISPLAY_TYPE
- PURPOSE: 
-	Parse and examine the input string.  It should be the value of the
-	CDF attribute 'DISPLAY_TYPE'.  Return an array of variable names
-       that it 'points' to.
+ NAME: RECAST_CDF_TYPE
+ PURPOSE:
+       Return a copy of val recast to the requested type.  If it is not
+       possible to convert type, then val is returned un-altered.
  CALLING SEQUENCE:
-	out = parse_display_type(instring)
+	new = RECAST_CDF_TYPE (val, new_type) 
  INPUTS:
-       instring = string, value of a CDF attribute called 'DISPLAY_TYPE'
+	val = value to convert.
+   new_type = CDF type to convert value to.
  KEYWORD PARAMETERS:
  OUTPUTS:
-       out = string array, names of other variables required for display
- NOTES: This routine expects to find 'DISPLAY_TYPE' values looking like:
-        PLOT_TYPE&gt;x=vname,y=vname ...
-        PLOT_TYPE&gt;y=vname,z=vname(*,1),z=vname(*,2) ...
+       val converted to the requested type.
  AUTHOR:
-       Richard Burley, NASA/GSFC/Code 632.0, Feb 13, 1996
-       burley@nssdca.gsfc.nasa.gov    (301)286-2864
+       Ron Yurow,
  MODIFICATION HISTORY:
-TJK modified 01/27/98 to not parse orbit display type here - the items
-specified for the orbit plot type aren't additional variables.
-TJK modified 09/25/2001 to not parse the &quot;symsize&quot; keyword because its
-value isn't a variable.
-
+       Original version.  June 7, 2018
 </PRE><P>
 <STRONG>(See <A href="CDAWlib/read_myCDF.pro">external/CDAWlib/read_myCDF.pro</A>)</STRONG><P>
 <HR>
@@ -6697,27 +6688,19 @@ value isn't a variable.
 <A HREF="#READ_MYCDF[5]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- NAME: follow_myDEPENDS
- PURPOSE: 
-	Search the metadata anonymous structure for ISTP 'DEPEND' attributes.
-       If and when found, add the variable name that it points to to the
-       vnames array if it is not already present, and increase the size
-       of the dhids and mhids arrays.
+ NAME: AMI_ISTPVATTRIB
+ PURPOSE:
+       Return true(1) or false(0) depending on whether or not the
+       given attribute name qualifies as an ISTP variable atrribute.
  CALLING SEQUENCE:
-       follow_myDEPENDS, metadata, vnames, dhids, mhids
+	out = amI_ISTPVattrib(attribute_name)
  INPUTS:
-       metadata = anonymous structure holding attribute values
-       vnames   = string array of the names of variables already processed
-       vvarys   = string array of the record variance for each variable
-       dhids    = array of data handle id's
-       mhids    = array of metadata handle id's
+	attribute_name = name of a CDF attribute as a string
  KEYWORD PARAMETERS:
  OUTPUTS:
-       dhids    = array of data handle id's
-       mhids    = array of metadata handle id's
+       True(1) or False(0)
  AUTHOR:
-       Richard Burley, NASA/GSFC/Code 632.0, Feb 13, 1996
-       burley@nssdca.gsfc.nasa.gov    (301)286-2864
+       Ron Yurow, March 8, 2018
  MODIFICATION HISTORY:
 </PRE><P>
 <STRONG>(See <A href="CDAWlib/read_myCDF.pro">external/CDAWlib/read_myCDF.pro</A>)</STRONG><P>
@@ -6780,7 +6763,7 @@ value isn't a variable.
        vnames    = modified variable name that includes component variable
                    names
 
- NOTES - this is similar to follow_myDEPENDS, except it does less.
+ NOTES - this is similar to follow_mydepends, except it does less.
 
  AUTHOR:
  	Tami Kovalick, QSS,   11/29/2006
@@ -6836,6 +6819,12 @@ value isn't a variable.
  KEYWORD PARAMETERS:
 	START_REC = first record to read.
 	REC_COUNT = number of records to read.
+   MAKE_VARY= Requesting non-existent records may result in 
+       the pad value being returned.  Because conversion of a NRV variable to
+       record varing will likely result in a request for non-existent 
+       records, setting this flag will cause the initial record (which is 
+       guaranteed to be valid) to all subsequent records.
+
  OUTPUTS:
        out = all data from the CDF for the variable being read
        vary = True(1) or False(0) is variable record-varying
@@ -6850,6 +6839,7 @@ value isn't a variable.
  	96/12/20 ; T. Kovalick modified to take START_REC and REC_COUNT
 	keywords (see above).  If they aren't set you will get all of
  	the records in a cdf.
+       (Sep 30, 2019) : R. Yurow added new keyword MAKE_VARY.  See above. 
 </PRE><P>
 <STRONG>(See <A href="CDAWlib/read_myCDF.pro">external/CDAWlib/read_myCDF.pro</A>)</STRONG><P>
 <HR>
@@ -6857,7 +6847,7 @@ value isn't a variable.
 <A NAME="READ_MYCDF[9]">
 <H2>READ_MYCDF[9]</H2></A>
 <A HREF="#READ_MYCDF[8]">[Previous Routine]</A>
-<A HREF="#RUNLENGTH">[Next Routine]</A>
+<A HREF="#READ_MYNETCDF[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: READ_MYATTRIBUTE
@@ -6883,9 +6873,317 @@ value isn't a variable.
 <STRONG>(See <A href="CDAWlib/read_myCDF.pro">external/CDAWlib/read_myCDF.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="READ_MYNETCDF[1]">
+<H2>READ_MYNETCDF[1]</H2></A>
+<A HREF="#READ_MYCDF[9]">[Previous Routine]</A>
+<A HREF="#READ_MYNETCDF[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ This package of IDL functions facilitates reading data and metadata from
+ Net Common Data Format (NCDF) files.  
+ While NCDF provides all the benefits
+ of a portable, self-documenting scientific data format, reading them is
+ not always a simple matter.  To make it simple, I have created this IDL
+ package so that all of the data and metadata from multiple variables can 
+ be read from multiple NCDF files ... in one single, simple command.  The 
+ function is called 'READ_MYNETCDF' and it returns an anonymous structure of
+ the form:
+
+       structure_name.variable_name.attribute_name.attribute_value
+
+ From this structure, all data and metadata for the requested variables
+ is easily accessed.
+
+ AUTHOR:
+       Tami Kovalick, NASA/GSFC/Code 672.0, Spring 2017
+ 
+ NOTES:
+
+ For starters, this is a copy of read_myCDF with all cdf read
+ routines replaced by netcdf read routines.  Hopefully this will get 
+ us most of the way there to having a good reader that produces the desired
+ output structure.  Generic routines already in read_myCDF were
+ removed from read_myNETCDF such as break_mystring, ami_istpptr,
+ follow_mydepends, etc.
+
+ Three additional 'attributes' will be included in the sub-structure for 
+ each variable.  The first is the 'VARNAME' field.  Because IDL structure
+ tags are always uppercase, and because NCDF variable names are case sen-
+ sitive, a case sensitive copy of the variable name is created.  The second
+ 'attribute' to be added is the 'NCDFTYPE' field.  This field will hold a
+ string value holding the ncdf data type.  The last 'attribute' to be
+ artificially added will be either the 'DAT' field or, if the keyword
+ NODATASTRUCT is set, the 'HANDLE' field.  The 'DAT' field will contain
+ the actual data values read from the NCDF's for the variable.  The 'HANDLE'
+ field will hold a handle_id where the data will reside.
+
+ This package will look for and utilize certain special attributes required
+ by the International Solar Terrestrial Physics Key Parameters Generation
+ Software Standards and Guidelines.  The existance of these attributes is
+ not required for the operation of this software, but will enhance its
+ usefullness, primarily by reading variables that will be needed for proper
+ utilization of the data, even though you may not have asked for them 
+ explicitly.
+
+ This package was tested under IDL version 8.5.  This package was tested
+ on NCDF's up to version 4 and master cdfs of versionm 3.6.4.
+
+ NCDF variables defined as unsigned integers are, unfortunately, currently
+ returned by the IDL NCDF_VARGET procedure as signed integers.  This can
+ cause sign flips.  This software detects and corrects for this defect for
+ data values.  However, it cannot detect and correct for this defect for
+ attribute values because the IDL procedure NCDF_ATTINQ does not return the
+ NCDF data type of the attribute.  These problems have been reported to
+ RSI.
+
+
+ Modifications: 
+
+ 1996, NASA/Goddard Space Flight Center
+ This software may be used, copied, or redistributed as long as it is not
+ sold and this copyright notice is reproduced on each copy made.  This
+ routine is provided as is without any express or implied warranties
+ whatsoever.
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/read_mynetcdf.pro">external/CDAWlib/read_mynetcdf.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="READ_MYNETCDF[2]">
+<H2>READ_MYNETCDF[2]</H2></A>
+<A HREF="#READ_MYNETCDF[1]">[Previous Routine]</A>
+<A HREF="#READ_MYNETCDF[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: READ_MYVARIABLE_netcdf
+ PURPOSE: 
+	Return the data for the requested variable.
+ CALLING SEQUENCE:
+       out = read_myvariable_netcdf(vname, NCDFid, vary, dtype, recs)
+ INPUTS:
+       vname = string, name of variable to be read from the NCDF
+       NCDFid = integer, id or already opened NCDF file.
+ KEYWORD PARAMETERS:
+	START_REC = first record to read.
+	REC_COUNT = number of records to read.
+ OUTPUTS:
+       out = all data from the NCDF for the variable being read
+       vary = True(1) or False(0) is variable record-varying
+       dtype= string, NCDF data type
+       recs = integer, number of data records
+ AUTHOR:
+       Tami Kovalick, NASA/GSFC/Code 672
+
+ MODIFICATION HISTORY:
+
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/read_mynetcdf.pro">external/CDAWlib/read_mynetcdf.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="READ_MYNETCDF[2]">
+<H2>READ_MYNETCDF[2]</H2></A>
+<A HREF="#READ_MYNETCDF[2]">[Previous Routine]</A>
+<A HREF="#READ_MYNETCDF[3]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: READ_MYATTRIBUTE_netcdf
+ PURPOSE: 
+	Return the value of the requested attribute for the requested variable.
+ CALLING SEQUENCE:
+       out = read_myattribute_netcdf(vname,anum,NCDFid,isglobal=isglobal)
+ INPUTS:
+       vname = string, name of variable whose attribute is being read
+       anum = integer, number of attribute being read
+       NCDFid = integer, id of already opened NCDF file.
+ KEYWORD PARAMETERS:
+       isglobal = true (global attribute requested, otherwise variable)
+ OUTPUTS:
+       out = anonymous structure holding both the name of the attribute
+             and the value of the attribute
+ AUTHOR:
+       Tami Kovalick, NASA/GSFC/Code 672
+
+ MODIFICATION HISTORY:
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/read_mynetcdf.pro">external/CDAWlib/read_mynetcdf.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="READ_MYNETCDF[3]">
+<H2>READ_MYNETCDF[3]</H2></A>
+<A HREF="#READ_MYNETCDF[2]">[Previous Routine]</A>
+<A HREF="#READ_MYNETCDF[4]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: READ_MYMETADATA_netcdf
+ PURPOSE: 
+	To read all of the attribute values for the requested variable, and
+       to return this information as an anonymous structure.
+ CALLING SEQUENCE:
+       metadata = read_mymetadata_netcdf(vname,NCDFid)
+ INPUTS:
+       vname = string, name of variable whose metadata is being read
+       NCDFid = integer, id of already opened NCDF file
+ KEYWORD PARAMETERS:
+ OUTPUTS:
+       metadata = anonymous structure whose tags are the attribute names
+                  and whose fields are the corresponding attribute values.
+ AUTHOR:
+       Tami Kovalick, NASA/GSFC/Code 672
+
+ MODIFICATION HISTORY:
+
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/read_mynetcdf.pro">external/CDAWlib/read_mynetcdf.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="READ_MYNETCDF[4]">
+<H2>READ_MYNETCDF[4]</H2></A>
+<A HREF="#READ_MYNETCDF[3]">[Previous Routine]</A>
+<A HREF="#READ_MYNETCDF[5]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: ncdf_getvar_attribute_names NCDFid
+ PURPOSE: 
+	To return all of the attribute names for the requested variable, as
+	an array.
+ CALLING SEQUENCE:
+       att_array = ncdf_getvar_attribute_names(vname,NCDFid, ALL=ALL)
+ INPUTS:
+       NCDFid = integer, id of already opened NCDF file
+ KEYWORD PARAMETERS:
+	ALL - all attributes are returned
+	      default is that just variable scoped attributes are returned
+ OUTPUTS:
+       att_array = string array of attribute names
+ AUTHOR:
+       Tami Kovalick
+
+ MODIFICATION HISTORY:
+
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/read_mynetcdf.pro">external/CDAWlib/read_mynetcdf.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="READ_MYNETCDF[5]">
+<H2>READ_MYNETCDF[5]</H2></A>
+<A HREF="#READ_MYNETCDF[4]">[Previous Routine]</A>
+<A HREF="#READ_MYNETCDF[6]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: GET_NUMALLVARS_netcdf
+ PURPOSE: 
+ 	To return the total number of variables in the ncdf.
+
+ CALLING SEQUENCE:
+       num_vars = get_numallvars_netcdf(CNAME=CNAME)
+ INPUTS:
+ KEYWORD PARAMETERS:
+	CNAME = string, name of a NCDF file to be opened and read
+	NCDFid = integer, id of an already opened NCDF file
+ OUTPUTS:
+       num_vars = number of variables in the NCDF
+ AUTHOR:
+       Tami Kovalick
+
+ MODIFICATION HISTORY:
+
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/read_mynetcdf.pro">external/CDAWlib/read_mynetcdf.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="READ_MYNETCDF[6]">
+<H2>READ_MYNETCDF[6]</H2></A>
+<A HREF="#READ_MYNETCDF[5]">[Previous Routine]</A>
+<A HREF="#READ_MYNETCDF[7]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: GET_ALLVARNAMES_netcdf
+ PURPOSE: 
+ 	To return a string array containing the names of all of the
+	variables in the given NCDF file.
+ CALLING SEQUENCE:
+       vnames = get_allvarnames_netcdf()
+ INPUTS:
+ KEYWORD PARAMETERS:
+	CNAME = string, name of a NCDF file to be opened and read
+	NCDFid = integer, id of an already opened NCDF file
+       VAR_TYPE = string, only return the names for variables who have an
+                  attribute called 'VAR_TYPE' and whose value matches the
+                  value given by this keyword.  (ex. VAR_TYPE='data')
+ OUTPUTS:
+       vnames = string array of variable names
+ AUTHOR:
+       Tami Kovalick, NASA/GSFC/Code 672
+ MODIFICATION HISTORY:
+
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/read_mynetcdf.pro">external/CDAWlib/read_mynetcdf.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="READ_MYNETCDF[7]">
+<H2>READ_MYNETCDF[7]</H2></A>
+<A HREF="#READ_MYNETCDF[6]">[Previous Routine]</A>
+<A HREF="#RECTIFY_DATA">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: READ_MYNETCDF
+ PURPOSE: 
+	Read all data and metadata for given variables, from given NCDF
+       files, and return all information in a single anonymous structure
+       of the form: 
+          structure_name.variable_name.attribute_name.attribute_value
+
+ CALLING SEQUENCE:
+       out = read_mynetcdf(vnames,cnames)
+ INPUTS:
+       vnames = string, array of variable names or a single string of
+                names separated by a comma.  (ex. 'Epoch,Magfld,Bmax')
+       cnames = string, array of NCDF filenames or a single string of
+                names separated by a comma.
+ KEYWORD PARAMETERS:
+	ALL = 0: get data and metadata for requested variable(s) only.
+             1: get data and metadata for ALL variables in the NCDFs.
+             2: get data and metadata for all var_type='data' variables.
+       NODATASTRUCT = If set, instead of returning the data for each variable
+                   in the 'DAT' attribute field, create a 'HANDLE' field
+                   and set it to the handle id of a data handle which
+                   holds the data for each variable.
+       NOQUIET = If set, do NOT set the !QUIET system variable before
+                 reading the ncdf file(s).
+       DEBUG = If set, print out some progress information during reading.
+	TSTART = epoch starting value - YYYYMMDD etc. string.
+	TSTOP = epoch ending value - YYYYMMDD etc. string.
+ OUTPUTS:
+       out = anonymous structure holding all data and metadata for the
+             requested variables. If an error occurs, that we know how
+             to deal w/, an alternate structure is returned, its structure
+	      is as follows: ('DATASET',d_set,'ERROR',v_err,'STATUS',v_stat)
+	      
+ AUTHOR:
+       Tami Kovalick - ADNET - September 2016
+ MODIFICATION HISTORY:
+	Tami Kovalick - this is based on read_myCDF, but should read
+                       netcdfs.
+
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/read_mynetcdf.pro">external/CDAWlib/read_mynetcdf.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="RECTIFY_DATA">
+<H2>RECTIFY_DATA</H2></A>
+<A HREF="#READ_MYNETCDF[7]">[Previous Routine]</A>
+<A HREF="#RUNLENGTH">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ This package of IDL functions facilitates data processing by applying 
+ error checking and data normalization procedures to the structure that
+ is returned by read_myCDF.  
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/rectify_data.pro">external/CDAWlib/rectify_data.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RUNLENGTH">
 <H2>RUNLENGTH</H2></A>
-<A HREF="#READ_MYCDF[9]">[Previous Routine]</A>
+<A HREF="#RECTIFY_DATA">[Previous Routine]</A>
 <A HREF="#SEMIMINMAX">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -6921,7 +7219,7 @@ value isn't a variable.
 <A NAME="SEMIMINMAX">
 <H2>SEMIMINMAX</H2></A>
 <A HREF="#RUNLENGTH">[Previous Routine]</A>
-<A HREF="#SPECTROGRAM">[Next Routine]</A>
+<A HREF="#SPDF_READ_UTILITIES[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: semiMinMax
@@ -6950,9 +7248,83 @@ All Rights Reserved.
 <STRONG>(See <A href="CDAWlib/semiminmax.pro">external/CDAWlib/semiminmax.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPDF_READ_UTILITIES[1]">
+<H2>SPDF_READ_UTILITIES[1]</H2></A>
+<A HREF="#SEMIMINMAX">[Previous Routine]</A>
+<A HREF="#SPDF_READ_UTILITIES[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: PARSE_DISPLAY_TYPE
+ PURPOSE: 
+	Parse and examine the input string.  It should be the value of the
+	CDF attribute 'DISPLAY_TYPE'.  Return an array of variable names
+       that it 'points' to.
+ CALLING SEQUENCE:
+	out = parse_display_type(instring)
+ INPUTS:
+       instring = string, value of a CDF attribute called 'DISPLAY_TYPE'
+ KEYWORD PARAMETERS:
+ OUTPUTS:
+       out = string array, names of other variables required for display
+ NOTES: This routine expects to find 'DISPLAY_TYPE' values looking like:
+        PLOT_TYPE&gt;x=vname,y=vname ...
+        PLOT_TYPE&gt;y=vname,z=vname(*,1),z=vname(*,2) ...
+ AUTHOR:
+       Richard Burley, NASA/GSFC/Code 632.0, Feb 13, 1996
+       burley@nssdca.gsfc.nasa.gov    (301)286-2864
+ MODIFICATION HISTORY:
+TJK modified 01/27/98 to not parse orbit display type here - the items
+specified for the orbit plot type aren't additional variables.
+TJK modified 09/25/2001 to not parse the &quot;symsize&quot; keyword because its
+value isn't a variable.
+
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/spdf_read_utilities.pro">external/CDAWlib/spdf_read_utilities.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SPDF_READ_UTILITIES[2]">
+<H2>SPDF_READ_UTILITIES[2]</H2></A>
+<A HREF="#SPDF_READ_UTILITIES[1]">[Previous Routine]</A>
+<A HREF="#SPECTROGRAM">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: follow_mydepends
+ PURPOSE: 
+	Search the metadata anonymous structure for ISTP 'DEPEND' attributes.
+       If and when found, add the variable name that it points to to the
+       vnames array if it is not already present, and increase the size
+       of the dhids and mhids arrays.
+ CALLING SEQUENCE:
+       follow_mydepends, metadata, vnames, dhids, mhids
+ INPUTS:
+       metadata = anonymous structure holding attribute values
+       vnames   = string array of the names of variables already processed
+       vvarys   = string array of the record variance for each variable
+       dhids    = array of data handle id's
+       mhids    = array of metadata handle id's
+       dlstid   = array of handle id's. Each points to a list of dependent variables.
+ KEYWORD PARAMETERS:
+       DEPEND0  = array of flags do indicate if the variables is referenced by
+                  the DEPEND_0 attribute of another variable.
+ OUTPUTS:
+       dhids    = array of data handle id's
+       mhids    = array of metadata handle id's
+       dlstid   = array of handle id's. Each points to a list of dependent variables.
+ AUTHOR:
+       Richard Burley, NASA/GSFC/Code 632.0, Feb 13, 1996
+       burley@nssdca.gsfc.nasa.gov    (301)286-2864
+ MODIFICATION HISTORY:
+       Added parameter dlstid   (Ron Yurow 11/16/2018)
+       Moved the routine from the read_myCDF.pro file to 
+       the spdf_read_utilities.pro file (TJK 11/21/2018)
+       
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/spdf_read_utilities.pro">external/CDAWlib/spdf_read_utilities.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPECTROGRAM">
 <H2>SPECTROGRAM</H2></A>
-<A HREF="#SEMIMINMAX">[Previous Routine]</A>
+<A HREF="#SPDF_READ_UTILITIES[2]">[Previous Routine]</A>
 <A HREF="#SSC_PLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -7147,7 +7519,7 @@ All Rights Reserved.
 <A NAME="TIMEAXIS_TEXT">
 <H2>TIMEAXIS_TEXT</H2></A>
 <A HREF="#THREE_SIGMA">[Previous Routine]</A>
-<A HREF="#TIME_LABEL[1]">[Next Routine]</A>
+<A HREF="#TIME_INTERVAL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -7222,9 +7594,59 @@ All Rights Reserved.
 <STRONG>(See <A href="CDAWlib/timeaxis_text.pro">external/CDAWlib/timeaxis_text.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="TIME_INTERVAL">
+<H2>TIME_INTERVAL</H2></A>
+<A HREF="#TIMEAXIS_TEXT">[Previous Routine]</A>
+<A HREF="#TIME_LABEL[1]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+       TIME_INTERVAL
+ PURPOSE:
+       Find nice time axis tics. (Based on the routine TNAXES)
+ DETAILED DESCRIPTION:
+       This routine can be used to find consistent, sensible major (and minor)
+       tic positions for a time axis based on the time interval being 
+       displayed.  It based on the routine TNAXES, but extends it by
+       including specific code to handle time intervals of more than
+       one day.  I.E. one month, one year, two years, and five years.
+       This was specifically designed for the creation of inventory graphs
+       but should be generally useful.
+ CATEGORY:
+ CALLING SEQUENCE:
+       TIME_INTERVAL, xmn, xmx, nx, mjx1, mjx2, xinc, [mnx2, mnx2, xinc2]
+ INPUTS:
+       xmn, xmx = Axis min and max in sec.          in
+       nx = Desired number of axis tics.            in
+ KEYWORD PARAMETERS:
+       Keywords:
+         FORM=form  returns a suggested format, suitable
+           for use in formatting time axis labels.
+           Ex: h$:m$:s$, h$:m$, d$
+ OUTPUTS:
+       mjx1 = first major tic position in sec.      out
+       mjx2 = last major tic position in sec.       out
+       xinc = Suggested major tic spacing in sec.   out
+       mnx1 = first minor tic position in sec.      out
+       mnx2 = last minor tic position in sec.       out
+       xinc2 = suggested minor tic spacing in sec.  out
+ COMMON BLOCKS:
+ NOTES:
+ MODIFICATION HISTORY:
+       Ron Yurow (March 20, 2019) Original version based on TNAXES.
+
+ Copyright (C) 1988, Johns Hopkins University/Applied Physics Laboratory
+ This software may be used, copied, or redistributed as long as it is not
+ sold and this copyright notice is reproduced on each copy made.  This
+ routine is provided as is without any express or implied warranties
+ whatsoever.  Other limitations apply as described in the file disclaimer.txt.
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/time_interval.pro">external/CDAWlib/time_interval.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TIME_LABEL[1]">
 <H2>TIME_LABEL[1]</H2></A>
-<A HREF="#TIMEAXIS_TEXT">[Previous Routine]</A>
+<A HREF="#TIME_INTERVAL">[Previous Routine]</A>
 <A HREF="#TNAXES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -7951,6 +8373,76 @@ eturn, astruct
 ndif else return, -1 ;if there's no rtn data return -1
 
 nd
+
+The following code was written by Tami Kovalick (ADNET) at GSFC 
+Written on 10/21/2019 in order to flatten data stored as 1-d, but the
+the data is meant to be plotted as a time series plot (the associated
+time stamps for the expanded data are in the data cdfs, so
+they don't need to be computed).
+
+
+unction flatten_plain, sdata
+
+data_type = size(sdata, /type)
+data_dims = size(sdata, /dimensions)
+ew_sdata = make_array(sdata_dims[1]*sdata_dims[0], type=sdata_type, value=0)
+
+lay out the Sdata into one long time series
+compute the new epochs based on the base_epoch plus time_offsets for
+each base
+
+ = 0UL ; counter for the number of elements in the new arrays (needs to be big)
+or i=0,sdata_dims[1]-1 do begin
+  for j=0,sdata_dims[0]-1 do begin
+      new_sdata[k] = sdata[j,i]
+      k = k + 1
+  endfor 
+ndfor
+eturn, new_sdata
+nd ; flatten_plain
+
+unction flatten_data_gold, astruct, org_names, INDEX=index, DEBUG=DEBUG
+
+  PURPOSE:
+
+This routine computes TT2000 epochs from the base times and the
+timeoffsets.  NEED to define the computed epoch variable in the
+master to be of type tt2000.  Also restructures the data from 
+size N elements/record out to a single dimensioned array for 
+display as a timeseries (where the original/parent data is set 
+up for a spectrogram display)
+
+
+ CALLING SEQUENCE:
+
+          new_buf = flatten_data_gold(buf,org_names, INDEX=INDEX)
+
+ VARIABLES:
+
+ Input:
+
+  buf        - an IDL structure built w/in read_myCDF
+  org_names  - list of original variables input to read_myCDF. Any
+               variables in this list will remain tagged as 
+               VAR_TYPE= data otherwise VAR_TYPE = support_data.
+
+ Output:
+
+  new_buf    - an IDL structure containing the populated virtual 
+               variable 
+ Constants:
+
+  none
+  
+ Keyword Parameters: 
+	INDEX : this can be set the structure variable index # for which
+	you'd like this conversion.  If this isn't set we'll look for the
+	1st variable that's defined as &quot;virtual&quot;.
+
+ REQUIRED PROCEDURES:
+
+   none 
+ 
 </PRE><P>
 <STRONG>(See <A href="CDAWlib/virtual_funcs.pro">external/CDAWlib/virtual_funcs.pro</A>)</STRONG><P>
 <HR>
@@ -7959,6 +8451,51 @@ nd
 <H2>VIRTUAL_FUNCS[12]</H2></A>
 <A HREF="#VIRTUAL_FUNCS[11]">[Previous Routine]</A>
 <A HREF="#VIRTUAL_FUNCS[13]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: Function flatten_data
+
+ PURPOSE: Remove any dimensionality from data array. 
+
+ DETAILED DESCRIPTION:
+
+          The flatten_data function removes any dimensionality from the data, 
+          effectively turning every element into a record with a single value.
+
+ CALLING SEQUENCE:
+
+          new_buf = flatten_data (buf, org_names)
+
+ VARIABLES:
+
+ Input:
+
+  buf        - an IDL structure built w/in read_myCDF
+  org_names  - list of original variables input to read_myCDF. Any
+               variables in this list will remain tagged as 
+               VAR_TYPE= data otherwise VAR_TYPE = support_data.
+
+ Output:
+
+  new_buf    - an IDL structure containing the populated virtual 
+               variable 
+  
+ Keyword Parameters: 
+
+
+ REQUIRED PROCEDURES:
+
+   none
+
+ History: Written by Ron Yurow 3/3/20, based on alternate_view
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/virtual_funcs.pro">external/CDAWlib/virtual_funcs.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="VIRTUAL_FUNCS[13]">
+<H2>VIRTUAL_FUNCS[13]</H2></A>
+<A HREF="#VIRTUAL_FUNCS[12]">[Previous Routine]</A>
+<A HREF="#VIRTUAL_FUNCS[14]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: Function make_stack_array
@@ -7998,10 +8535,10 @@ nd
 <STRONG>(See <A href="CDAWlib/virtual_funcs.pro">external/CDAWlib/virtual_funcs.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="VIRTUAL_FUNCS[13]">
-<H2>VIRTUAL_FUNCS[13]</H2></A>
-<A HREF="#VIRTUAL_FUNCS[12]">[Previous Routine]</A>
-<A HREF="#VIRTUAL_FUNCS[1]">[Next Routine]</A>
+<A NAME="VIRTUAL_FUNCS[14]">
+<H2>VIRTUAL_FUNCS[14]</H2></A>
+<A HREF="#VIRTUAL_FUNCS[13]">[Previous Routine]</A>
+<A HREF="#VIRTUAL_FUNCS[15]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: Function fix_sparse
@@ -8041,9 +8578,50 @@ nd
 <STRONG>(See <A href="CDAWlib/virtual_funcs.pro">external/CDAWlib/virtual_funcs.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="VIRTUAL_FUNCS[15]">
+<H2>VIRTUAL_FUNCS[15]</H2></A>
+<A HREF="#VIRTUAL_FUNCS[14]">[Previous Routine]</A>
+<A HREF="#VIRTUAL_FUNCS[1]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: Function REORDER_DATA
+
+ PURPOSE: Reorder a variable in monotonic increasing order or based the
+          order of a dependent variable(s).
+
+ CALLING SEQUENCE:
+
+          new_buf = reorder (buf, org_names, index)
+
+ VARIABLES:
+
+ Input:
+
+  buf        - an IDL structure built w/in read_myCDF
+  org_names  - list of original variables input to read_myCDF. Any
+               variables in this list will remain tagged as 
+               VAR_TYPE= data otherwise VAR_TYPE = support_data.
+
+ Output:
+
+  new_buf    - an IDL structure containing the populated virtual 
+               variable 
+  
+ Keyword Parameters: 
+
+
+ REQUIRED PROCEDURES:
+
+   none
+
+ History: Written by Ron Yurow 08/15, based on alternate_view
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/virtual_funcs.pro">external/CDAWlib/virtual_funcs.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="VIRTUAL_FUNCS[1]">
 <H2>VIRTUAL_FUNCS[1]</H2></A>
-<A HREF="#VIRTUAL_FUNCS[13]">[Previous Routine]</A>
+<A HREF="#VIRTUAL_FUNCS[15]">[Previous Routine]</A>
 <A HREF="#VIRTUAL_FUNCS[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -8065,7 +8643,9 @@ unction vtype_names, buf, vtype, NAMES=vNAMES
   for i=0, tagnums-1 do begin
    tagnames1=tag_names(buf.(i))
    if(tagindex('VAR_TYPE', tagnames1) ge 0) then begin
-       if(buf.(i).VAR_TYPE eq vtype) then begin
+upcase both sides in case there's mixed case
+        if(buf.(i).VAR_TYPE eq vtype) then begin
+       if(strupcase(buf.(i).VAR_TYPE) eq strupcase(vtype)) then begin
        ;if(buf.(i).VAR_TYPE eq 'data') then begin
           vnames[ii]=tagnames[i]
           vindices(ii)=i
@@ -8424,6 +9004,29 @@ nd
  PURPOSE: Create a variable by extracting a subset (slice) of a multidimensional array.  
           Works on variables up to 7 dimensions. 
 
+ DETAILED DESCRIPTION:
+
+          The arr_slice virtual function extracts a subarray of a multidimensional 
+          variable, in the processes reducing the dimensionality of the resultant 
+          data array by 1.  The dimensionality of the original data variable must be
+          at least 2. 
+
+          The arr_slice function requires that COMPONENT_0 vAttribute be set to source
+          data variable.  In addition, the following vAttributes are also required:  
+
+          ARR_INDEX:    Index into the requested dimension to extract the subarray from.
+          ARR_DIM:      The dimension of the source data variable to reduce.
+
+          All values are referenced from 0.
+
+          As an example suppose the variable TEST is a 10 x 10 Array.  Specifying an
+          ARR_INDEX of 4 and an ARR_DIM of 0 would result in a vector consisting of the
+          5th column of the array.  Likewise, specifying and ARR_INDEX of 0 and an
+          ARR_DIM of 1 would result in a vector consisting of the 1st row of the array.
+
+          The master fa_esa_l2_ies_00000000_v01 has been updated so that the variables
+          &quot;pitch_angle_median&quot; and &quot;energy_median&quot; now use this function.
+
 
  CALLING SEQUENCE:
 
@@ -8602,12 +9205,12 @@ if not keyword_set(COORD) then COORD=&quot;SYN-GCI&quot;;
 if (keyword_set(TSTART) and keyword_set(TSTOP))then begin
        start_time = 0.0D0 ; initialize
        b = size(TSTART) &amp; c = n_elements(b)
-       if (b(c-2) eq 5) then start_time = TSTART $ ; double float already
-       else if (b(c-2) eq 7) then start_time = encode_cdfepoch(TSTART); string
+       if (b[c-2] eq 5) then start_time = TSTART $ ; double float already
+       else if (b[c-2] eq 7) then start_time = encode_cdfepoch(TSTART); string
        stop_time = 0.0D0 ; initialize
        b = size(TSTOP) &amp; c = n_elements(b)
-       if (b(c-2) eq 5) then stop_time = TSTOP $ ; double float already
-       else if (b(c-2) eq 7) then stop_time = encode_cdfepoch(TSTOP); string
+       if (b[c-2] eq 5) then stop_time = TSTOP $ ; double float already
+       else if (b[c-2] eq 7) then stop_time = encode_cdfepoch(TSTOP); string
 endif
 
 ;m3int=fix((stop_time - start_time)/(180.0*1000.0))
@@ -8618,7 +9221,7 @@ failed=0
 
 dep=parse_mydepend0(buf)  
 depends=tag_names(dep)
-depend0=depends(dep.num)
+depend0=depends[dep.num]
 epoch1='Epoch1'
 namest=strupcase(tag_names(buf))
 
@@ -8833,9 +9436,9 @@ print, mphi, mr, mtheta, ampl
      CP = COS(syn_phi[i]*deg2rd)
      SP = SIN(syn_phi[i]*deg2rd)
  Save syn-geo 
-      geo(0,i)=syn_r[i]
-      geo(1,i)=syn_theta[i]
-      geo(2,i)=syn_phi[i]
+      geo[0,i]=syn_r[i]
+      geo[1,i]=syn_theta[i]
+      geo[2,i]=syn_phi[i]
      Convert GEO spherical coordinates SGEO(1,2,3) [R,LAT,LON]
           to GEO cartesian coordinates in REs GEO(1,2,3) [X,Y,Z].
      RHO =    syn_r[i] * ST
@@ -8994,7 +9597,7 @@ ND
           longitude. Populate GEOD_LAT &amp; GEOD_LONG variables w/ the computed
           values. Return the modifiy idl structure. 
 
-  NEED TO REMOVE UVI DEPENDANCIES.......
+  NEED TO REMOVE UVI DEPENDENCIES.......
  
  CALLING SEQUENCE: 
 
@@ -9083,6 +9686,8 @@ ND
                variables in this list will remain tagged as 
                VAR_TYPE= data otherwise VAR_TYPE = support_data.
   index      - variable index, so we deal with one variable at a time.
+  direction  - IDL's 'rotate' input to determine which rotation and 'flip' to apply
+
 
  Output:
 
@@ -9090,6 +9695,8 @@ ND
                variable 
 
  History: Written by TJK 01/03 for use w/ IDL RPI data
+          RCJ 29May2020  Added keyword direction to be able to use 
+                         options from idl's 'rotate'
 </PRE><P>
 <STRONG>(See <A href="CDAWlib/virtual_funcs.pro">external/CDAWlib/virtual_funcs.pro</A>)</STRONG><P>
 <HR>

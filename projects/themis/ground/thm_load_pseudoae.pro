@@ -17,7 +17,7 @@
 ;  
 ;  
 ;keywords:
-;  datatype = The type of data to be loaded. Can be 'al','au','ae', or 'all'
+;  datatype = The type of data to be loaded. Can be 'al','au','ae','uc_ae','uc_al','uc_au','uc_avg',or 'all'
 ;  TRANGE= (Optional) Time range of interest  (2 element array), if
 ;          this is not set, the default is to prompt the user. Note
 ;          that if the input time range is not a full day, a full
@@ -45,9 +45,13 @@
 ;   thm_load_pseudoAE
 ;   thm_load_pseudoAE,datatype='AE',trange=['2007-01-22/00:00:00','2007-01-24/00:00:00']
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
-; $LastChangedRevision: 26397 $
+; Notes:
+;   2020-09-27: added 'uc_ae', 'uc_al', 'uc_au', 'uc_avg' real time AE 
+;                computed by UCLA from Kyoto plots.
+;
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2020-09-27 15:15:40 -0700 (Sun, 27 Sep 2020) $
+; $LastChangedRevision: 29185 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_pseudoae.pro $
 ;-
 
@@ -82,7 +86,7 @@ pro thm_load_pseudoAE, datatype = datatype, trange = trange, $
   
   if ~keyword_set(suffix) then suffix = ''
     
-  vdatatypes = ['AE','AL','AU']
+  vdatatypes = ['AE','AL','AU', 'uc_ae', 'uc_al', 'uc_au', 'uc_avg']
   vlevels = 'l1'
   
   

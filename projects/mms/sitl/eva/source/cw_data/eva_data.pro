@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2020-05-18 11:42:31 -0700 (Mon, 18 May 2020) $
-; $LastChangedRevision: 28707 $
+; $LastChangedDate: 2020-12-29 10:36:04 -0800 (Tue, 29 Dec 2020) $
+; $LastChangedRevision: 29563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data.pro $
 
 ;PRO eva_data_update_date, state, update=update
@@ -117,16 +117,17 @@ FUNCTION eva_data_load_and_plot, state, cod=cod, evtop=evtop
   ;----------------------
   ;idx=where(strpos(paramlist,'_gls') gt 0,ct)
   ;if(ct gt 0) and ~undefined(evtop) then begin
-  widget_control, widget_info(evtop,find='eva_sitl'), GET_VALUE=state_sitl
-  trange_sitl_window = time_double(state_sitl.trange_sitl_window)
-  trange_user_specified = time_double([state.START_TIME, state.END_TIME])
+  if ~undefined(evtop) then begin
+    widget_control, widget_info(evtop,find='eva_sitl'), GET_VALUE=state_sitl
+    trange_sitl_window = time_double(state_sitl.trange_sitl_window)
+    trange_user_specified = time_double([state.START_TIME, state.END_TIME])
   
-  if( ~undefined(evtop) and (trange_user_specified[1] gt trange_sitl_window[0]) )then begin
-    trange = trange_user_specified
-    algo = [state_sitl.PREF.EVA_GLS1_ALGO, state_sitl.PREF.EVA_GLS2_ALGO, state_sitl.PREF.EVA_GLS3_ALGO]
-    eva_sitl_load_gls, trange=trange, algo=algo
+    if( ~undefined(evtop) and (trange_user_specified[1] gt trange_sitl_window[0]) )then begin
+      trange = trange_user_specified
+      algo = [state_sitl.PREF.EVA_GLS1_ALGO, state_sitl.PREF.EVA_GLS2_ALGO, state_sitl.PREF.EVA_GLS3_ALGO]
+      eva_sitl_load_gls, trange=trange, algo=algo
+    endif
   endif
-  
 
   ;*************************
   ;------------------------------------------------------

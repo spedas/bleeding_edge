@@ -43,10 +43,14 @@
 ;       YZ:       Plot only the YZ projection (view from Sun)
 ;
 ;       MARS:     Plot the position of the spacecraft (PREC=1) or periapsis 
-;                 (PREC=0) on an image of Mars topography and magnetic field
-;                 based on MGS data (from Connerney).
-;                   1 : Use a small image
-;                   2 : Use a large image
+;                 (PREC=0) on an image of Mars topography (colors from MOLA)
+;                 and radial magnetic field (contours from Connerney et al. 
+;                 2001).  Alternatively, use an image of dBr/dt that better
+;                 filters out solar wind influences (Connerney et al. 2004),
+;                 on top of a greyscale topo map with elevation contours.
+;                   1 : Use a small MAG-MOLA image
+;                   2 : Use a large MAG-MOLA image
+;                   3 : Use a large dBr-topology image
 ;
 ;       NPOLE:    Plot the position of the spacecraft (PREC=1) or periapsis
 ;                 (PREC=0) on a north polar projection (lat > 55 deg).  The
@@ -71,6 +75,8 @@
 ;
 ;       NODOT:    Do not plot a filled circle at periapsis or spacecraft location.
 ;
+;       NOORB:    Do not plot the orbit.
+;
 ;       RESET:    Initialize all plots.
 ;
 ;       COLOR:    Symbol color index.
@@ -82,6 +88,8 @@
 ;                 produces a "spirograph" effect.  This overrides the interactive
 ;                 entry of times with the cursor.  Sets KEEP, NOERASE, and RESET.
 ;
+;       TCOLORS:  Color index for every element of TIMES.
+;
 ;       BDIR:     Set keyword to show magnetic field direction in three planes,
 ;                 In each plane, the same two components of B in MSO coordinates 
 ;                 are shown, i.e. in XY plane, plotting Bx-By. The color shows 
@@ -90,8 +98,8 @@
 ;
 ;       BCLIP:    Maximum amplitude for plotting B whisker.
 ;
-;       SCALE:    To change the scale/length of field lines, the default value is
-;                 set to 0.05
+;       MSCALE:   To change the scale/length of magnetic field lines, the default
+;                 value is set to 0.05
 ;
 ;       VDIR:     Set keyword to a tplot variable containing MSO vectors for a whisker
 ;                 plot (like BDIR).
@@ -105,36 +113,51 @@
 ;
 ;       THICK:    Line thickness.
 ;
-;       MAGNIFY:  Change size of plot windows.
+;       WSCALE:   Scale factor for sizing plot windows.  Default = 1.
+;                 Has no effect when plotting orbit projections over images, which
+;                 have fixed sizes.
+;
+;       MAGNIFY:  Synonym for WSCALE.  (WSCALE takes precedence.)
 ;
 ;       NOLABEL:  Omit text labels showing altitude and solar zenith angle.
 ;
 ;       PSNAME:   Name of a postscript plot.  Works only for orbit plots.
 ;
+;       LANDERS:  Plot the locations of landers.  Can also be an 2 x N array
+;                 of surface locations (lon, lat) in the IAU_Mars frame.
+;
+;       SLAB:     Text labels for each of the landers.  If LANDERS is a scalar,
+;                 then this provides a 1- or 2-character label for each lander.
+;                 If LANDERS is a 2 x N array, SLAB should be an N-element string
+;                 array.  Set SLAB to zero to disable text labels and just plot
+;                 symbols instead.  Text labels are centered in longitude with
+;                 the baseline at latitude.
+;
+;       SCOL:     Color(s) for the lander labels or symbols.  If there are more
+;                 landers than colors, then additional landers are all given the
+;                 last color.  Default is 6 (red) for all.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-08-03 16:48:55 -0700 (Mon, 03 Aug 2020) $
-; $LastChangedRevision: 28978 $
+; $LastChangedDate: 2021-03-02 11:50:19 -0800 (Tue, 02 Mar 2021) $
+; $LastChangedRevision: 29729 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
 ;-
 pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, mars=mars, $
     npole=npole, noerase=noerase, keep=keep, color=color, reset=reset, cyl=cyl, times=times, $
-    nodot=nodot, terminator=terminator, thick=thick, Bdir=Bdir, scale=scale, scsym=scsym, $
+    nodot=nodot, terminator=terminator, thick=thick, Bdir=Bdir, mscale=mscale, scsym=scsym, $
     magnify=magnify, Bclip=Bclip, Vdir=Vdir, Vclip=Vclip, Vscale=Vscale, Vrange=Vrange, $
-    alt=doalt, psname=psname, nolabel=nolabel, xy=xy, yz=yz
+    alt=doalt, psname=psname, nolabel=nolabel, xy=xy, yz=yz, landers=landers, slab=slab, $
+    scol=scol, tcolors=tcolors, noorb=noorb, monitor=monitor, wscale=wscale
 
   @maven_orbit_common
-  @swe_snap_common
-
-  if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
+  @putwin_common
 
   if (size(time,/type) ne 5) then begin
     print, "You must run maven_orbit_tplot first!"
     return
   endif
-  
-  if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
 
   a = 0.8
   phi = findgen(49)*(2.*!pi/49)
@@ -148,13 +171,25 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   if ((size(prec,/type) eq 0) and (delta_t lt (7D*86400D))) then prec = 1
 
   if keyword_set(prec) then pflg = 1 else pflg = 0
-  if (size(color,/type) gt 0) then cflg = 1 else cflg = 0  
+  if (size(color,/type) gt 0) then begin
+    color = color[0]
+    cflg = 1
+  endif else begin
+    color = 5
+    cflg = 0
+  endelse
   if keyword_set(noerase) then noerase = 1 else noerase = 0
   if keyword_set(reset) then reset = 1 else reset = 0
   if keyword_set(nodot) then dodot = 0 else dodot = 1
+  if keyword_set(noorb) then doorb = 0 else doorb = 1
   if (size(terminator,/type) gt 0) then doterm = fix(round(terminator)) < 3 else doterm = 0
-  if not keyword_set(magnify) then mag = 1. else mag = float(magnify)
-  csize = 2.0*mag
+  if keyword_set(wscale) then begin
+    wscale = float(wscale[0])
+  endif else begin
+    wscale = 1.
+    if keyword_set(magnify) then wscale = float(magnify[0])
+  endelse
+  csize = 2.0*wscale
   if (size(Bclip,/type) eq 0) then Bclip = 1.e9
   if (size(Vclip,/type) eq 0) then Vclip = 1.e3
 
@@ -164,15 +199,55 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   doalt = keyword_set(doalt)
   dolab = ~keyword_set(nolabel)
 
+  ok = 0
+  sites = 0
+  nsites = 0
+  sz = size(landers)
+  if (((sz[0] eq 1) or (sz[0] eq 2)) and (sz[1] eq 2)) then begin
+    sites = landers
+    nsites = n_elements(landers)/2
+    if (size(slab,/type) eq 7) then begin
+      nlab = n_elements(slab)
+      if (nlab ne nsites) then begin
+        slab2 = replicate('',nsites)
+        slab2[0:(nlab-1)<(nsites-1)] = slab[0:(nlab-1)<(nsites-1)]
+        slab = slab2
+      endif
+    endif else slab = 0
+    ok = 1
+  endif
+  if ((not ok) and keyword_set(landers)) then begin
+    nsites = 9
+    sites = fltarr(2,nsites)
+    sites[*,0] = [311.778,  22.697]  ; Viking 1 Lander (1976-1982)
+    sites[*,1] = [134.010,  48.269]  ; Viking 2 Lander (1976-1980)
+    sites[*,2] = [326.450,  19.330]  ; Pathfinder (Sojourner Rover Jul-Sep 1997)
+    sites[*,3] = [175.479, -14.572]  ; Spirit Rover (2004-2010)
+    sites[*,4] = [354.473,  -1.946]  ; Opportunity Rover (2004-2018)
+    sites[*,5] = [234.100,  68.150]  ; Phoenix Lander (May-Nov 2008)
+    sites[*,6] = [137.200,  -4.600]  ; Curiosity Rover (MSL 2012-)
+    sites[*,7] = [135.000,   4.500]  ; InSight Lander (2018-)
+    sites[*,8] = [ 77.500,  18.400]  ; Perserverence Rover (2021-)
+    if (size(slab,/type) gt 0) then dolab = keyword_set(slab) else dolab = 1
+    if (dolab) then slab = ['V1','V2','Pa','S','O','Ph','C','I','Pe'] else slab = 0
+  endif
+  scol2 = replicate(6,nsites>1)
+  ncol = n_elements(scol)
+  if (ncol gt 0) then scol2[0:(ncol-1)<(nsites-1)] = scol[0:(ncol-1)<(nsites-1)]
+  if (ncol lt nsites) then scol2[ncol:(nsites-1)] = scol[ncol-1]
+  scol = scol2
+
   if keyword_set(times) then begin
     times = time_double(times)
     ntimes = n_elements(times)
+    if (n_elements(tcolors) ne ntimes) then tcolors = replicate(color, ntimes)
     reset = 1
     noerase = 1
     keep = 1
     tflg = 1
   endif else begin
     ntimes = 1L
+    if (n_elements(tcolors) eq 0) then tcolors = color else tcolors = tcolors[0]
     tflg = 0
   endelse
 
@@ -208,43 +283,22 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     csize *= 0.75
   endif
 
-  if keyword_set(mhd) then begin
-    if (mhd gt 1) then begin
-      if (~noerase or reset) then mhd_orbit, [-10.], [-10.], /reset, /xz
-      nflg = 2
-    endif else begin
-      if (~noerase or reset) then mhd_orbit, [-10.], [-10.], /reset, /xy
-      nflg = 1
-    endelse
-  endif else nflg = 0
-
-  if keyword_set(hybrid) then begin
-    if (hybrid eq 1) then begin
-      if (~noerase or reset) then hybrid_orbit_new, [-10.], [-10.], /reset, /xz
-      bflg = 1
-    endif else begin
-      if (~noerase or reset) then hybrid_orbit_new, [-10.], [-10.], /reset, /xz, /flip
-      bflg = 2
-    endelse
-  endif else bflg = 0
-
-  if keyword_set(npole) then begin
-    if (~noerase or reset) then mag_npole_orbit, [0.], [0.], /reset
-    npflg = 1
-  endif else npflg = 0
-
   if keyword_set(latlon) then gflg = 1 else gflg = 0
   
-  if keyword_set(mars) then begin
+  dbr = 0
+  if (size(mars,/type) gt 0) then begin
     mflg = mars
-    if (mflg gt 1) then mbig = 1 else mbig = 0
+    case mflg of
+        1  : mbig = 0
+        2  : mbig = 1
+        3  : dbr = 1
+      else : mflg = 0
+    endcase
   endif else mflg = 0
   
   if keyword_set(orbit) then oflg = 1 else oflg = 0
   
   if keyword_set(cyl) then cyflg = 1 else cyflg = 0
-
-  Twin = !d.window
 
 ; Mars shock parameters
 
@@ -265,34 +319,69 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
 ; Create snapshot windows
 
+  Twin = !d.window
+
+  undefine, mnum
+  if (size(monitor,/type) gt 0) then begin
+    if (size(windex,/type) eq 0) then putwin, /config $
+                                 else if (windex eq -1) then putwin, /config
+    mnum = fix(monitor[0])
+  endif else begin
+    if (size(secondarymon,/type) gt 0) then mnum = secondarymon
+  endelse
+
   if (size(psname,/type) eq 7) then begin
     psflg = 1
   endif else begin
     psflg = 0
     if (npans eq 1) then begin
-      putwin, 26, key=Oopt1, scale=mag  ; MSO projections 1x1
+      putwin, /free, monitor=mnum, xsize=500, ysize=473, dx=10, dy=10, scale=wscale  ; MSO projections 1x1
       Owin = !d.window
     endif else begin
-      putwin, 26, key=Oopt, scale=mag   ; MSO projections 1x3
+      putwin, /free, monitor=mnum, /yfull, aspect=0.351, dx=10   ; MSO projections 1x3
       Owin = !d.window
       csize = float(!d.x_size)/175.
     endelse
   endelse
 
   if (gflg) then begin
-    SSopt = {xsize:600, ysize:280, dx:10, dy:10, monitor:0, corner:2}
-    putwin, /free, key=SSopt, scale=mag  ; MSO Lat-Lon
+    putwin, /free, monitor=mnum, xsize=600, ysize=280, dx=-10, dy=-10, scale=wscale  ; MSO Lat-Lon
     Gwin = !d.window
   endif
 
   if (cyflg) then begin
-    putwin, /free, key=OCopt, scale=mag  ; MSO cylindrical
+    putwin, /free, xsize=600, ysize=350, rel=Owin, dx=10, scale=wscale  ; MSO cylindrical
     Cwin = !d.window
   endif
 
-  if (mflg gt 0) then begin              ; GEO Lat-Lon
-    if (~noerase or reset) then mag_mola_orbit, -100., -100., big=mbig, /reset
+  if (mflg gt 0) then begin                                          ; GEO Lat-Lon on MAG-MOLA map
+    if (~noerase or reset) then mag_mola_orbit, -100., -100., big=mbig, dbr=dbr, rwin=Owin, /reset
   endif
+
+  if keyword_set(mhd) then begin                                     ; MHD simulation
+    if (mhd gt 1) then begin
+      if (~noerase or reset) then mhd_orbit, [-10.], [-10.], /reset, /xz, monitor=mnum
+      nflg = 2
+    endif else begin
+      if (~noerase or reset) then mhd_orbit, [-10.], [-10.], /reset, /xy, monitor=mnum
+      nflg = 1
+    endelse
+  endif else nflg = 0
+
+  if keyword_set(hybrid) then begin                                  ; Hybrid simulation
+    if (hybrid eq 1) then begin
+      if (~noerase or reset) then hybrid_orbit, [-10.], [-10.], /reset, /xz, monitor=mnum
+      bflg = 1
+    endif else begin
+      if (~noerase or reset) then hybrid_orbit, [-10.], [-10.], /reset, /xz, /flip, monitor=mnum
+      bflg = 2
+    endelse
+  endif else bflg = 0
+
+  if keyword_set(npole) then begin                                   ; North pole projection
+    if (~noerase or reset) then mag_npole_orbit, [0.], [0.], monitor=mnum, /reset
+    npflg = 1
+  endif else npflg = 0
 
 ; Get the orbit closest the selected time
 
@@ -313,6 +402,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     endif
     trange = times[k]
   endif else begin
+    k = 0L
     wset,Twin
     ctime2,trange,npoints=1,/silent,button=button
     if (size(trange,/type) eq 2) then begin
@@ -401,7 +491,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
         bb0=bmso.y
         bt=bmso.x
         bdt=60 ;smooth over seconds
-        for i=0,2 do bb0[*,i]=smooth(bb0[*,i],bdt)
+        for i=0,2 do bb0[*,i]=smooth(bb0[*,i],bdt,/nan)
 
         bmag = sqrt(total(bb0*bb0,2,/nan))
         indx = where(bmag gt Bclip, count)
@@ -411,7 +501,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
         bb[*,0]=interpol(bb0[*,0],bt,time[rndx])
         bb[*,1]=interpol(bb0[*,1],bt,time[rndx])
         bb[*,2]=interpol(bb0[*,2],bt,time[rndx])
-        if ~(keyword_set(scale)) then scale=0.05
+        if ~(keyword_set(mscale)) then mscale=0.05
         nskp=5
     endif
     
@@ -475,17 +565,17 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
            xtitle='X (Rp)',ytitle='Y (Rp)',charsize=csize,title=msg,thick=thick
       msg = ''
       oplot,xm,ym,color=6,thick=thick
-      oplot,x,y,thick=thick
+      if (doorb) then oplot,x,y,thick=thick
 
-      if (dodot) then oplot,[x[i]],[y[i]],psym=8,color=5
+      if (dodot) then oplot,[x[i]],[y[i]],psym=8,color=tcolors[k]
 
       if (dob) then begin
         cts = n_elements(rndx)
           for i=0,cts-1,nskp do begin
               x1=x[i]
               y1=y[i]
-              x2=scale*bb[i,0]+x1
-              y2=scale*bb[i,1]+y1
+              x2=mscale*bb[i,0]+x1
+              y2=mscale*bb[i,1]+y1
               if bb[i,2] le 0 then clr=64 $
               else clr=254
               oplot,[x1,x2],[y1,y2],color=clr
@@ -515,7 +605,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
         x[indx] = !values.f_nan
         y[indx] = !values.f_nan
       endif
-      oplot,x,y,color=rcols[0],thick=thick
+      if (doorb) then oplot,x,y,color=rcols[0],thick=thick
 
       x = xp
       y = yp
@@ -526,7 +616,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
         x[indx] = !values.f_nan
         y[indx] = !values.f_nan
       endif
-      oplot,x,y,color=rcols[1],thick=thick
+      if (doorb) then oplot,x,y,color=rcols[1],thick=thick
 
       x = xw
       y = yw
@@ -537,7 +627,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
         x[indx] = !values.f_nan
         y[indx] = !values.f_nan
       endif
-      oplot,x,y,color=rcols[2],thick=thick
+      if (doorb) then oplot,x,y,color=rcols[2],thick=thick
 
 ; Shock conic
 
@@ -618,18 +708,18 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
            xtitle='X (Rp)',ytitle='Z (Rp)',charsize=csize,title=msg,thick=thick
       msg = ''
       oplot,xm,ym,color=6,thick=thick
-      oplot,x,z,thick=thick
+      if (doorb) then oplot,x,z,thick=thick
 
       if (pflg) then i = imid else i = imin
-      if (dodot) then oplot,[x[i]],[z[i]],psym=8,color=5,thick=thick
+      if (dodot) then oplot,[x[i]],[z[i]],psym=8,color=tcolors[k],thick=thick
 
       if (dob) then begin
           cts = n_elements(rndx)
           for i=0,cts-1,nskp do begin
             x1=x[i]
             y1=z[i]
-            x2=scale*bb[i,0]+x1
-            y2=scale*bb[i,2]+y1
+            x2=mscale*bb[i,0]+x1
+            y2=mscale*bb[i,2]+y1
             if bb[i,1] le 0 then clr=64 else clr=254
             oplot,[x1,x2],[y1,y2],color=clr
           endfor
@@ -657,7 +747,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
         x[indx] = !values.f_nan
         z[indx] = !values.f_nan
       endif
-      oplot,x,z,color=rcols[0],thick=thick
+      if (doorb) then oplot,x,z,color=rcols[0],thick=thick
 
       x = xp
       y = yp
@@ -668,7 +758,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
         x[indx] = !values.f_nan
         y[indx] = !values.f_nan
       endif
-      oplot,x,z,color=rcols[1],thick=thick
+      if (doorb) then oplot,x,z,color=rcols[1],thick=thick
 
       x = xw
       y = yw
@@ -679,7 +769,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
         x[indx] = !values.f_nan
         z[indx] = !values.f_nan
       endif
-      oplot,x,z,color=rcols[2],thick=thick
+      if (doorb) then oplot,x,z,color=rcols[2],thick=thick
 
 ; Shock conic
 
@@ -753,18 +843,18 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
            xtitle='Y (Rp)',ytitle='Z (Rp)',title=msg,charsize=csize,thick=thick
       msg = ''
       oplot,xm,ym,color=6,thick=thick
-      oplot,y,z,thick=thick
+      if (doorb) then oplot,y,z,thick=thick
 
       if (pflg) then i = imid else i = imin
-      if (dodot) then oplot,[y[i]],[z[i]],psym=8,color=5,thick=thick
+      if (dodot) then oplot,[y[i]],[z[i]],psym=8,color=tcolors[k],thick=thick
 
       if (dob) then begin
           cts = n_elements(rndx)
           for i=0,cts-1,nskp do begin
               x1=y[i]
               y1=z[i]
-              x2=scale*bb[i,1]+x1
-              y2=scale*bb[i,2]+y1
+              x2=mscale*bb[i,1]+x1
+              y2=mscale*bb[i,2]+y1
               if bb[i,0] le 0 then clr=64 $
               else clr=254
               oplot,[x1,x2],[y1,y2],color=clr
@@ -793,7 +883,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
         y[indx] = !values.f_nan
         z[indx] = !values.f_nan
       endif
-      oplot,y,z,color=rcols[0],thick=thick
+      if (doorb) then oplot,y,z,color=rcols[0],thick=thick
 
       x = xp
       y = yp
@@ -804,7 +894,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
         x[indx] = !values.f_nan
         y[indx] = !values.f_nan
       endif
-      oplot,y,z,color=rcols[1],thick=thick
+      if (doorb) then oplot,y,z,color=rcols[1],thick=thick
 
       x = xw
       y = yw
@@ -815,7 +905,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
         y[indx] = !values.f_nan
         z[indx] = !values.f_nan
       endif
-      oplot,y,z,color=rcols[2],thick=thick
+      if (doorb) then oplot,y,z,color=rcols[2],thick=thick
 
       L0 = sqrt((L + psi*x0)^2. - x0*x0)
       oplot,L0*xm,L0*ym,color=3,line=1,thick=thick
@@ -845,16 +935,16 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
        s = sqrt(y*y + z*z)
 
        plot,xm,ym,xrange=xrange,yrange=[0,yrange[1]],/xsty,/ysty,/noerase, $
-            xtitle='X (Rp)',ytitle='S (Rp)',charsize=csize,title=title,thick=thick
+            xtitle='X (Rp)',ytitle='S (Rp)',charsize=csize/2.,title=title,thick=thick
        oplot,xm,ym,color=6,thick=thick
-       oplot,x,s,thick=thick
+       if (doorb) then oplot,x,s,thick=thick
 
       if (pflg) then i = imid else i = imin
-      if (dodot) then oplot,[x[i]],[s[i]],psym=8,color=5,thick=thick
+      if (dodot) then oplot,[x[i]],[s[i]],psym=8,color=tcolors[k],thick=thick
 
-      oplot,xs,sqrt(ys*ys + zs*zs),color=rcols[0],thick=thick
-      oplot,xp,sqrt(yp*yp + zp*zp),color=rcols[1],thick=thick
-      oplot,xw,sqrt(yw*yw + zw*zw),color=rcols[2],thick=thick
+      if (doorb) then oplot,xs,sqrt(ys*ys + zs*zs),color=rcols[0],thick=thick
+      if (doorb) then oplot,xp,sqrt(yp*yp + zp*zp),color=rcols[1],thick=thick
+      if (doorb) then oplot,xw,sqrt(yw*yw + zw*zw),color=rcols[2],thick=thick
 
 ; Shock conic
 
@@ -976,8 +1066,8 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       if (pflg) then i = imid else i = imin
       if (cflg) then j = color else j = 255
 
-      if (bflg eq 1) then hybrid_orbit_new, x, z, x[i], z[i], color=j, psym=0, /xz $
-                     else hybrid_orbit_new, x, z, x[i], z[i], color=j, psym=0, /xz, /flip
+      if (bflg eq 1) then hybrid_orbit, x, z, x[i], z[i], color=j, psym=0, /xz $
+                     else hybrid_orbit, x, z, x[i], z[i], color=j, psym=0, /xz, /flip
     endif
 
 ; Put up Mars orbit
@@ -986,10 +1076,12 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       if (pflg) then i = iref else i = rndx[imin]
       title = ''
       if (cflg) then j = color else j = 2
+      if (ntimes gt 0) then j = tcolors[k]
       if (doterm gt 0) then ttime = trange[0] else ttime = 0
       if (doalt) then sc_alt = hgt[i] else sc_alt = 0
       mag_mola_orbit, lon[i], lat[i], big=mbig, noerase=noerase, title=title, color=j, $
-                      terminator=ttime, psym=scsym, shadow=(doterm - 1), alt=sc_alt
+                      terminator=ttime, psym=scsym, shadow=(doterm - 1), alt=sc_alt, $
+                      sites=sites, slab=slab, scol=scol, dbr=dbr
     endif
 
 ; Put up Mars North polar plot
@@ -1027,6 +1119,8 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       zref = sza[iref]*!radeg
       href = hgt[iref]
       ndays = (tref - time[0])/86400D
+      dt = min(abs(torb - tref), jref, /nan)
+      dj = round(double(period[jref])*3600D/(time[1] - time[0]))
     endif
 
   endwhile

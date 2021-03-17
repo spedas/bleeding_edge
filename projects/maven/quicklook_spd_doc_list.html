@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -65,6 +65,8 @@ MVN_QL_PFP_TPLOT_YTICKNAME_PLUS_LOG</A>
 <br>Wrapper for MVN_MAG_GEOM that loads mag data, and Spice kernels
 <LI><A HREF="#MVN_QLOOK_VCHECK">MVN_QLOOK_VCHECK</A>
 <br>CHecks to see if data exists for a list of variables. Also will
+<LI><A HREF="#RUN_MVN_OVER_SHELL30">RUN_MVN_OVER_SHELL30</A>
+<br>Designed to run from a cronjob, sets up a lock file, and
 <LI><A HREF="#RUN_PFPL2PLOT">RUN_PFPL2PLOT</A>
 <br>Designed to run from a cronjob, sets up a lock file, and
 <br>
@@ -85,7 +87,8 @@ PURPOSE:
     orange = Sun point
     blue   = Earth point
     green  = Fly +/- Y
-    red    = Fly-Z
+    red    = Fly-Z (including up and down variants)
+    purple = Fly+Z (including up and down variants)
 
 USAGE:
   mvn_attitude_bar
@@ -97,8 +100,8 @@ KEYWORDS:
        none
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-13 12:44:17 -0700 (Wed, 13 Mar 2019) $
- $LastChangedRevision: 26787 $
+ $LastChangedDate: 2021-01-13 15:12:27 -0800 (Wed, 13 Jan 2021) $
+ $LastChangedRevision: 29597 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_attitude_bar.pro $
 
 CREATED BY:    David L. Mitchell
@@ -519,8 +522,8 @@ HISTORY:
  Hacked from thm_over_shell, 2013-05-12, jmm, jimm@ssl.berkeley.edu
  CHanged to use thara's mvn_pl_pfp_tplot.pro, 2015-04-14, jmm
  $LastChangedBy: jimm $
- $LastChangedDate: 2020-05-11 09:25:43 -0700 (Mon, 11 May 2020) $
- $LastChangedRevision: 28679 $
+ $LastChangedDate: 2021-01-14 10:35:48 -0800 (Thu, 14 Jan 2021) $
+ $LastChangedRevision: 29599 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_pfpl2_overplot.pro $
 </PRE><P>
 <STRONG>(See <A href="quicklook/mvn_pfpl2_overplot.pro">projects/maven/quicklook/mvn_pfpl2_overplot.pro</A>)</STRONG><P>
@@ -851,9 +854,9 @@ NOTE:            This routine is assumed to be used when there are
 CREATED BY:      Takuya Hara on 2015-04-09.
 
 LAST MODIFICATION:
- $LastChangedBy: jimm $
- $LastChangedDate: 2019-12-19 14:15:40 -0800 (Thu, 19 Dec 2019) $
- $LastChangedRevision: 28130 $
+ $LastChangedBy: hara $
+ $LastChangedDate: 2021-02-01 11:22:49 -0800 (Mon, 01 Feb 2021) $
+ $LastChangedRevision: 29638 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot.pro $
 
 </PRE><P>
@@ -1011,7 +1014,7 @@ LAST MODIFICATION:
 <A NAME="MVN_QL_PFP_TPLOT_YTICKNAME_PLUS_LOG">
 <H2>MVN_QL_PFP_TPLOT_YTICKNAME_PLUS_LOG</H2></A>
 <A HREF="#MVN_QL_PFP_TPLOT_YTICKNAME_MINUS_LOG">[Previous Routine]</A>
-<A HREF="#RUN_PFPL2PLOT">[Next Routine]</A>
+<A HREF="#RUN_MVN_OVER_SHELL30">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Helper function -- split out of mvn_ql_pfp_tplot. Generates ytickformat
@@ -1025,9 +1028,41 @@ LAST MODIFICATION:
 <STRONG>(See <A href="quicklook/mvn_ql_pfp_tplot_ytickname_plus_log.pro">projects/maven/quicklook/mvn_ql_pfp_tplot_ytickname_plus_log.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RUN_MVN_OVER_SHELL30">
+<H2>RUN_MVN_OVER_SHELL30</H2></A>
+<A HREF="#MVN_QL_PFP_TPLOT_YTICKNAME_PLUS_LOG">[Previous Routine]</A>
+<A HREF="#RUN_PFPL2PLOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ run_mvn_over_shell30
+PURPOSE:
+ Designed to run from a cronjob, sets up a lock file, and
+ processes the single-instrument plots from thirty days ago. If the
+ lock file exists, no processing. Added 7, 14 day reprocess, jmm,
+ 2020-12-30.
+CALLING SEQUENCE:
+ run_mvn_over_shell30, ndays_offset = ndays_offset
+INPUT:
+ none
+OUTPUT:
+ none
+KEYWORDS:
+ ndays_offset = days from now that is being processed, the default is
+                [7,14,30].
+HISTORY:
+ 8-dec-2020, jmm, jimm@ssl.berkeley.edu
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2021-01-13 10:20:16 -0800 (Wed, 13 Jan 2021) $
+ $LastChangedRevision: 29596 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/run_mvn_over_shell30.pro $
+</PRE><P>
+<STRONG>(See <A href="quicklook/run_mvn_over_shell30.pro">projects/maven/quicklook/run_mvn_over_shell30.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RUN_PFPL2PLOT">
 <H2>RUN_PFPL2PLOT</H2></A>
-<A HREF="#MVN_QL_PFP_TPLOT_YTICKNAME_PLUS_LOG">[Previous Routine]</A>
+<A HREF="#RUN_MVN_OVER_SHELL30">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:

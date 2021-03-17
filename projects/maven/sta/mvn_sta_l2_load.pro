@@ -29,26 +29,39 @@
 ; l2_version_in = if set, input this version, the default is to use
 ;                 the current version, but that may not exist yet if 
 ;                 you are reprocessing
+; iv_level = Loads data from intermediate (iv?) files with background
+;            estimates, fills the bkg tag in the data structure, and
+;            recalculates the eflux value, subtracting background.
+; bkg_only = if set, only load background data, iv_level, (or
+;            iv*_load) must be set
 ;OUTPUT:
 ; No variables, data are loaded into common blocks
 ;HISTORY:
 ; 16-may-2014, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2018-04-23 12:44:04 -0700 (Mon, 23 Apr 2018) $
-; $LastChangedRevision: 25096 $
+; $LastChangedDate: 2020-09-16 12:52:57 -0700 (Wed, 16 Sep 2020) $
+; $LastChangedRevision: 29161 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_l2_load.pro $
 ;-
 Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
                      user_pass = user_pass, no_time_clip = no_time_clip, $
                      tplot_vars_create = tplot_vars_create, $
                      tvar_names = tvar_names, l2_version_in = l2_version_in, $
-                     _extra = _extra
+                     iv_level = iv_level, bkg_only = bkg_only, _extra = _extra
 
 ;Keep track of software versioning here
   If(keyword_set(l2_version_in)) Then sw_vsn = l2_version_in $
   Else sw_vsn = mvn_sta_current_sw_version()
   sw_vsn_str = 'v'+string(sw_vsn, format='(i2.2)')
-
+;Deal with possibility of background files
+  If(keyword_set(iv_level)) Then Begin
+     iv_str = strcompress(string(iv_level), /remove_all)
+     iv_lvl = 'iv'+iv_str
+  Endif
+  If(keyword_set(bkg_only) && ~keyword_set(iv_level)) Then Begin
+     dprint, 'IV_LEVEL keyword is not set, defaulting to iv_level = 1'
+     iv_level = 1
+  Endif
 ;The first step is to set up filenames, if there are any
   If(keyword_set(files)) Then Begin
      filex = files 
@@ -68,7 +81,11 @@ Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
            app_id = strsplit(sta_apid, ' ', /extract)
         Endif Else app_id = sta_apid
         app_id = strlowcase(strcompress(app_id, /remove_all))
-     Endif Else app_id = ['2a', 'c?', 'd?']
+     Endif Else Begin
+        If(keyword_set(iv_level)) Then Begin
+           app_id = ['c0', 'c6', 'c8', 'ca', 'd0', 'd1']
+        Endif Else app_id = ['2a', 'c?', 'd?']
+     Endelse
 ;Globbing is not clear in mvn_pfp_file_retrieve
      app_id1 = ''
      For j = 0, n_elements(app_id)-1 Do Begin
@@ -89,26 +106,51 @@ Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
      napp_id = n_elements(app_id)
 ;FIles for all days and app_ids
      filex = ''
+     If(keyword_set(iv_level)) Then ivfilex = ''
      For j = 0, napp_id-1 Do For k = 0, ndays-1 Do Begin
-        yyyy = strmid(daystr[k], 0, 4) & mmmm = strmid(daystr[k], 4, 2)
 ;fixed daystr to daystr[k], 2015-01-13
-        filejk0 = 'maven/data/sci/sta/l2/'+yyyy+'/'+mmmm+'/mvn_sta_l2_'+app_id[j]+'*_'+daystr[k]+'_'+sw_vsn_str+'.cdf'
-        filejk = mvn_pfp_file_retrieve(filejk0, user_pass = user_pass)
+        yyyy = strmid(daystr[k], 0, 4) & mmmm = strmid(daystr[k], 4, 2)
+        filepath = 'maven/data/sci/sta/l2/'+yyyy+'/'+mmmm+'/'        
+        filejk0 = filepath+'mvn_sta_l2_'+app_id[j]+'*_'+daystr[k]+'_'+sw_vsn_str+'.cdf'
+;        filejk = mvn_pfp_file_retrieve(filejk0, user_pass = user_pass)
+        filejk = mvn_pfp_spd_download(filejk0, user_pass = user_pass)
 ;Files with ? or * left were not found
         question_mark = strpos(filejk, '?')
         If(is_string(filejk) && question_mark[0] Eq -1) Then filex = [filex, filejk]
+        If(keyword_set(iv_level)) Then Begin
+           ivfilepath = 'maven/data/sci/sta/'+iv_lvl+'/'+yyyy+'/'+mmmm+'/'
+           ivfilejk0 = ivfilepath+'mvn_sta_l2_'+app_id[j]+'*_'+daystr[k]+'_'+iv_lvl+'.cdf'
+           ivfilejk = mvn_pfp_spd_download(ivfilejk0, user_pass = user_pass)
+;Files with ? or * left were not found
+           iquestion_mark = strpos(ivfilejk, '?')
+           If(is_string(ivfilejk) && iquestion_mark[0] Eq -1) Then ivfilex = [ivfilex, ivfilejk]
+        Endif
      Endfor
      If(n_elements(filex) Gt 1) Then filex = filex[1:*] Else Begin
         dprint, 'No files found fitting input criteria'
         Return
      Endelse
+     If(keyword_set(iv_level)) Then Begin
+        If(n_elements(ivfilex) Gt 1) Then ivfilex = ivfilex[1:*] Else Begin
+           dprint, 'No BKG files found fitting input criteria'
+           Return
+        Endelse
+     Endif
   Endelse
-;ONly files that exist here
-  filex = file_search(filex)
-  If(~is_string(filex)) Then Begin
-     dprint, 'No files found for time range and app_ids:'+app_id
-     Return
-  Endif
+;If bkg_only is set, then swap out filex for ivfilex
+  If(keyword_set(bkg_only)) Then Begin
+     filex = ivfilex
+     bkg_sub = 0 ;Do not subtract background if you are only loading background
+  Endif Else Begin
+     bkg_sub = keyword_set(iv_level) ;will only load/subrtract background if iv_Level is set
+  Endelse
+;Only files that exist here, strange IDL issue is causing problem with
+;file search for iv1 filex names
+;  filex = file_search(filex)
+;  If(~is_string(filex)) Then Begin
+;     dprint, 'No files found for time range and app_ids:'+app_id
+;     Return
+;  Endif
 ;Only unique files here
   filex_u = filex[bsort(filex)]
   filex = filex_u[uniq(filex_u)]
@@ -141,7 +183,7 @@ Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
               f1 = strsplit(file_basename(filex[ssj[k]]), '_', /extract)
               ti0 = time_double(f1[n_elements(f1)-2])+[0.0, 86400.0d0]
               If(time_double(trange[0, i]) Le ti0[1] and time_double(trange[1, i]) Ge ti0[0]) Then Begin
-                 datk = mvn_sta_cmn_l2read(filex[ssj[k]], trange = trange[*, i])
+                 datk = mvn_sta_cmn_l2read(filex[ssj[k]], iv_level = iv_level, bkg_sub = bkg_sub, trange = trange[*, i])
                  If(is_struct(datk)) Then Begin
                     If(~is_struct(datj)) Then datj = temporary(datk) $
                     Else datj = mvn_sta_cmn_concat(temporary(datj), temporary(datk))
@@ -150,7 +192,7 @@ Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
            Endfor
         Endif Else Begin
            For k = 0, nssj-1 Do Begin
-              datk = mvn_sta_cmn_l2read(filex[ssj[k]], trange = trange)
+              datk = mvn_sta_cmn_l2read(filex[ssj[k]], trange = trange, iv_level = iv_level, bkg_sub = bkg_sub)
               If(is_struct(datk)) Then Begin
                  If(~is_struct(datj)) Then datj = temporary(datk) $
                  Else datj = mvn_sta_cmn_concat(temporary(datj), temporary(datk))

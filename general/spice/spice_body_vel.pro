@@ -7,19 +7,19 @@
 ;  check_objects: frame or body name that the routine will check for valid times to prevent crashing.
 ;
 ; Author: Davin Larson  
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
-; $LastChangedRevision: 27221 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2020-08-18 18:37:05 -0700 (Tue, 18 Aug 2020) $
+; $LastChangedRevision: 29046 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_body_vel.pro $
 ;-
 
-function spice_body_vel,body_name,obs_name,utc=utc,et=et,frame=frame,ltime=ltime,abcorr=abcorr,check_objects=check_objects,pos=pos,force_objects=force_objects
+function spice_body_vel,body_name,obs_name,utc=utc,et=et,frame=frame,ltime=ltime,abcorr=abcorr,check_objects=check_objects,force_objects=force_objects,pos=pos
 
 on_error,2
 if not keyword_set(frame) then frame = 'ECLIPJ2000'
 if not keyword_set(abcorr) then abcorr = 'NONE'
-ut = time_double(utc)
-et = time_ephemeris(ut,/ut2et)
+if n_elements(utc) gt 0 then ut = time_double(utc)
+if n_elements(et) eq 0 then et = time_ephemeris(ut,/ut2et)
 
 ns = n_elements(et)
 if keyword_set(check_objects) then begin

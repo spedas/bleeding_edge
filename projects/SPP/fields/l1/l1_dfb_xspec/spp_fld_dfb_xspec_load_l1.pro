@@ -1,3 +1,10 @@
+;+
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2021-02-11 16:11:25 -0800 (Thu, 11 Feb 2021) $
+; $LastChangedRevision: 29653 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_dfb_xspec/spp_fld_dfb_xspec_load_l1.pro $
+;-
+
 pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix, varformat = varformat
 
   ; TODO: More X-spectra testing and formatting
@@ -50,6 +57,8 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix, varformat = varformat
   options, prefix + ['enable','gain','bin'], 'yminor', 1
   options, prefix + ['enable','gain','bin'], 'ysubtitle', ''
   options, prefix + ['enable','gain','bin'], 'panel_size', 0.5
+
+  options, prefix + ['concat', 'src?', 'enable','gain','bin','navg'], 'datagap', 600d
 
   get_data, prefix + 'navg', data = dat_navg
 
@@ -181,10 +190,41 @@ pro spp_fld_dfb_xspec_load_l1, file, prefix = prefix, varformat = varformat
 
       endif else begin
 
+        ;
+        ; Due to a negative sign in the butterfly unpacking operation of
+        ; the FFT algorithm as implemented in the FPGA, the sign of the
+        ; imaginary part of the cross spectra is flipped for the lower
+        ; frequency bins.
+        ;
+        ; xsp_type  n_bins  flip sign  set to NaN   retain sign
+        ;    AC       56      0-47        48          49-55
+        ;    AC       96      0-79        80          81-95
+        ;    DC       56      0-47        48          49-55
+        ;    DC       96      0-79        80          81-95
+        ;
+
+        data_y = spp_fld_dfb_psuedo_log_decompress(xspec_dat_y, $
+          type = 'xspectra', /high_gain)
+
+        if xspec_type EQ 'ic' then begin
+
+          if n_bins EQ 56 then begin
+
+            data_y[*,0:47] *= -1
+            data_y[*,48] = !values.d_nan
+
+          endif else begin
+
+            data_y[*,0:79] *= -1
+            data_y[*,80] = !values.d_nan
+
+          endelse
+
+        endif
+
         store_data, prefix + 'xspec_' + xspec_type + '_converted', $
           data = {x:xspec_dat_x, $
-          y:(spp_fld_dfb_psuedo_log_decompress(xspec_dat_y, $
-          type = 'xspectra', /high_gain)), $
+          y:data_y, $
           v:data_v}
 
       endelse

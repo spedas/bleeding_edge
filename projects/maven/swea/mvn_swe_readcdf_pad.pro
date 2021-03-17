@@ -16,8 +16,8 @@
 ;   Created by Matt Fillingim
 ; VERSION:
 ;   $LastChangedBy: dmitchell $
-;   $LastChangedDate: 2019-03-20 13:57:40 -0700 (Wed, 20 Mar 2019) $
-;   $LastChangedRevision: 26864 $
+;   $LastChangedDate: 2021-02-18 15:21:40 -0800 (Thu, 18 Feb 2021) $
+;   $LastChangedRevision: 29677 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_readcdf_pad.pro $
 ;
 ;-
@@ -269,11 +269,7 @@ pro mvn_swe_readcdf_pad, infile, structure
 
   CDF_VARGET, id, 'counts', counts, /ZVAR, rec_count = nrec ; [64, 16, nrec]
   rate = counts/(integ_t*dt_arr) ; raw count rate ; [64, 16, nrec]
-  dtc = 1. - rate*swe_dead
-  indx = where(dtc lt swe_min_dtc, count) ; maximum deadtime correction
-  if (count gt 0l) then dtc[indx] = !values.f_nan
-
-  structure.dtc = dtc
+  structure.dtc = swe_deadtime(rate)
 
 ; *** mass
 ; mass -- electron rest mass [eV/(km/s)^2]  (from swe_com)
@@ -329,7 +325,7 @@ pro mvn_swe_readcdf_pad, infile, structure
 ;                   where dt = integ_t ; gf = gf*eff ; eff = 1
 ;scale = 1.D/(dtc*integ_t*dt_arr*gfe) ; gfe only [64, 16]
 
-  scale = 1.D/(dtc*integ_t*dt_arr*structure.gf) ; want [64, 16, nrec]
+  scale = 1.D/(structure.dtc*integ_t*dt_arr*structure.gf) ; want [64, 16, nrec]
   var = var*(scale*scale)
   structure.var = var
 

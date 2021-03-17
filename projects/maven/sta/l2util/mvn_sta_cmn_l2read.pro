@@ -65,20 +65,45 @@
 ;          record range to input.
 ; cdf_info = the full structure from CDF_LOAD_VARS2, not everything in
 ;            here ends up in the structure for the common blocks
+; bkg_sub = if set, then load a background file, for the same apid
+;            and date, put background level into structure, and
+;            recalculate eflux for that apid
+; iv_level = level of the background file, default is iv_level = 1
 ;HISTORY:
 ; 2014-05-12, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: muser $
-; $LastChangedDate: 2019-12-18 12:32:32 -0800 (Wed, 18 Dec 2019) $
-; $LastChangedRevision: 28122 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2020-11-23 10:08:50 -0800 (Mon, 23 Nov 2020) $
+; $LastChangedRevision: 29370 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2read.pro $
 ;-
-Function mvn_sta_cmn_l2read, filename, trange = trange, cdf_info = cdfi, _extra = _extra
+Function mvn_sta_cmn_l2read, filename, trange = trange, cdf_info = cdfi, $
+                             iv_level = iv_level, iv_cdf_info = ivcdfi, $
+                             bkg_sub = bkg_sub, _extra = _extra
 
   otp = -1
 ;Is there a file?
   If(~is_string(file_search(filename))) Then Begin
      dprint, 'No file: '+filename
      Return, otp
+  Endif
+;if bkg_sub is set, there should be an equivalent file in a different
+;directory with the iv_Level replacing the software version
+  If(keyword_set(iv_level)) Then iv_lvl0 = iv_level Else iv_lvl0 = 1
+  If(keyword_set(bkg_sub)) Then Begin
+     iv_str = strcompress(string(iv_lvl0), /remove_all)
+     iv_lvl = 'iv'+iv_str
+;so break down the input filename
+     fdir = file_dirname(filename)+'/'
+     ivdir = ssw_str_replace(fdir, 'l2', iv_lvl)
+     fb = file_basename(filename, '.cdf')
+     tmp = strsplit(fb, '_', /extract)
+     sw_vsn_str = tmp[n_elements(tmp)-1]
+     ivfile = ssw_str_replace(fb, sw_vsn_str, iv_lvl)+'.cdf'
+     ivfilename = ivdir+ivfile
+     If(~is_string(file_search(ivfilename))) Then Begin
+        dprint, 'No file: '+ivfilename
+        dprint, 'No Background loaded'
+     Endif
   Endif
 
 ;If trange is set, then use it
@@ -106,9 +131,16 @@ Function mvn_sta_cmn_l2read, filename, trange = trange, cdf_info = cdfi, _extra 
 ;Read in all of the variables now
      cdfi = cdf_load_vars2(filename, /all, record = record, $
                            number_records = number_records)
+     If(keyword_set(bkg_sub)) Then Begin
+        ivcdfi = cdf_load_vars2(ivfilename, /all, record = record, $
+                                number_records = number_records)
+     Endif Else ivcdfi = -1
   Endif Else Begin
 ;Just read everything
      cdfi = cdf_load_vars2(filename, /all)
+     If(keyword_set(bkg_sub)) Then Begin
+        ivcdfi = cdf_load_vars2(ivfilename, /all)
+     Endif Else ivcdfi = -1
   Endelse
 
 ;The vars array will be 2Xnvariables, the first column is the name in
@@ -144,9 +176,30 @@ Function mvn_sta_cmn_l2read, filename, trange = trange, cdf_info = cdfi, _extra 
         count = count+1
      Endelse
   Endfor
-
 ;Done, cmn_dat is only defined if count > 0
-  If(count Gt 0) Then Return, cmn_dat Else Return, otp
+  If(count Gt 0) Then Begin
+     If(keyword_set(bkg_sub) && is_struct(ivcdfi)) Then Begin
+        ;Only extract the bkg array
+        this_var = where(strlowcase(ivcdfi.vars.name) Eq 'bkg', nthis_var)
+        If(nthis_var Eq 0) Then Begin
+           dprint, 'No CDF variable: BKG'
+        Endif Else If(~ptr_valid(ivcdfi.vars[this_var[0]].dataptr)) Then Begin
+           dprint, 'No data in CDF variable: BKG'
+        Endif Else Begin ;no error check
+           cmn_dat.bkg = *ivcdfi.vars[this_var[0]].dataptr ;str_element shouldn't be needes
+;           str_element, cmn_dat, cmnvars[j], *icdfi.vars[this_var[0]].dataptr, /add_replace
+        Endelse
+;Recalculate eflux
+        mvn_sta_l2eflux, cmn_dat
+     Endif
+;quick test for iv1 data
+;     printf, 1, 'FILE: '+filename ;remember to change this
+;     If(tag_exist(cmn_dat, 'eflux')) Then printf, 1,
+;     minmax(cmn_dat.eflux)
+     If(tag_exist(cmn_dat, 'eflux') && size(cmn_dat.eflux, /type) Eq 5) Then $
+        str_element, cmn_dat, 'eflux', float(cmn_dat.eflux), /add_replace
+     Return, cmn_dat 
+  Endif Else Return, otp
 
 End
 

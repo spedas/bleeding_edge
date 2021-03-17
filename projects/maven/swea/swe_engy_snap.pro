@@ -87,6 +87,10 @@ end
 ;
 ;       KEEPWINS:      If set, then don't close the snapshot window(s) on exit.
 ;
+;       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
+;                      from 0 to N-1, where N is the number of monitors recognized
+;                      by the operating system.  See putwin.pro for details.
+;
 ;       ARCHIVE:       If set, show shapshots of archive data (A5).
 ;
 ;       BURST:         Synonym for ARCHIVE.
@@ -205,9 +209,15 @@ end
 ;       TWOT:          Compare energy of peak energy flux and temperature of 
 ;                      Maxwell-Boltzmann fit. (Nominally, E_peak = 2*T)
 ;
+;       SHOWDEAD:      Show the scaled deadtime correction.  Does not work with
+;                      summed spectra (keywords SUM and TSMO) because spectra
+;                      are summed in units of corrected count rate (CRATE) so
+;                      that the deadtime corrections for the individual spectra
+;                      are lost.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-07-01 12:21:06 -0700 (Wed, 01 Jul 2020) $
-; $LastChangedRevision: 28842 $
+; $LastChangedDate: 2021-03-02 11:48:03 -0800 (Tue, 02 Mar 2021) $
+; $LastChangedRevision: 29727 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -221,13 +231,12 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
                    xrange=xrange,yrange=frange,sscale=sscale, popen=popen, times=times, $
                    flev=flev, pylim=pylim, k_e=k_e, peref=peref, error_bars=error_bars, $
                    trange=tspan, tsmo=tsmo, wscale=wscale, cscale=cscale, voffset=voffset, $
-                   endx=endx, twot=twot, rcolors=rcolors, cuii=cuii, fmfit=fmfit
+                   endx=endx, twot=twot, rcolors=rcolors, cuii=cuii, fmfit=fmfit, nolab=nolab, $
+                   showdead=showdead, monitor=monitor
 
   @mvn_swe_com
   @mvn_scpot_com
-  @swe_snap_common
-
-  if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
+  @putwin_common
 
   mass = 5.6856297d-06             ; electron rest mass [eV/(km/s)^2]
   c1 = (mass/(2D*!dpi))^1.5
@@ -235,19 +244,50 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   c3 = 4D*!dpi*1d-5*sqrt(mass/2D)  ; assume isotropic electron distribution
   tiny = 1.e-31
 
+; Load any keyword defaults
+
+  swe_snap_options, get=key, /silent
+  ktag = tag_names(key)
+  klist = ['UNITS','KEEPWINS','ARCHIVE','DDD','ABINS','DBINS','OBINS2', $
+           'SUM','POT','PDIAG','PXLIM','MB','KAP','MOM','SCAT','ERANGE', $
+           'NOERASE','SCP','FIXY','PEPEAKS','BURST','RAINBOW','MASK_SC','SEC', $
+           'BKG','TPLOT','MAGDIR','BCK','SHIFTPOT','XRANGE','YRANGE','SSCALE', $
+           'POPEN','TIMES','FLEV','PYLIM','K_E','PEREF','ERROR_BARS','TRANGE', $
+           'TSMO','WSCALE','CSCALE','VOFFSET','ENDX','TWOT','RCOLORS','CUII', $
+           'FMFIT','NOLAB','SHOWDEAD','MONITOR']
+  for j=0,(n_elements(ktag)-1) do begin
+    i = strmatch(klist, ktag[j]+'*', /fold)
+    case (total(i)) of
+        0  : ; keyword not recognized -> do nothing
+        1  : begin
+               kname = (klist[where(i eq 1)])[0]
+               ok = execute('kset = size(' + kname + ',/type) gt 0',0,1)
+               if (not kset) then ok = execute(kname + ' = key.(j)',0,1)
+             end
+      else : print, "Keyword ambiguous: ", ktag[j]
+    endcase
+  endfor
+
+; Process keywords
+
   if (size(Espan,/type) eq 0) then mvn_scpot_defaults
 
   aflg = keyword_set(archive) or keyword_set(burst)
   if not keyword_set(units) then units = 'eflux'
-  if keyword_set(sum) then npts = 2 else npts = 1
+  if keyword_set(sum) then begin
+    npts = 2
+    showdead = 0  ; incompatible with summed spectra
+  endif else npts = 1
   if keyword_set(tsmo) then begin
     npts = 1
     dosmo = 1
-    delta_t = double(tsmo)/2D
+    dtsmo = double(tsmo)/2D
+    showdead = 0  ; incompatible with summed spectra
   endif else dosmo = 0
   if (size(error_bars,/type) eq 0) then ebar = 1 else ebar = keyword_set(error_bars)
   dflg = keyword_set(ddd)
   oflg = ~keyword_set(noerase)
+  dolab = ~keyword_set(nolab)
   if (size(scp,/type) eq 0) then scp = !values.f_nan else scp = float(scp[0])
   if (size(fixy,/type) eq 0) then fflg = 1 else fflg = keyword_set(fixy)
   rflg = keyword_set(rainbow)
@@ -257,7 +297,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   spflg = keyword_set(shiftpot)
   if (n_elements(xrange) ne 2) then xrange = [1.,1.e4]
   if not keyword_set(wscale) then wscale = 1.
-  if not keyword_set(cscale) then cscale = 1.
+  if not keyword_set(cscale) then cscale = wscale
   if not keyword_set(voffset) then voffset = 1.
   if not keyword_set(rcolors) then begin
     ncol = 6
@@ -295,6 +335,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     get_data,'lon',data=lon
     get_data,'lat',data=lat
   endif else doalt = 0
+
+  if (~dolab) then doalt = 0
 
   domag = 0
   if keyword_set(magdir) then begin
@@ -393,16 +435,25 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
 
   Twin = !d.window
 
-  putwin, /free, key=Eopt, scale=wscale
+  undefine, mnum
+  if (size(monitor,/type) gt 0) then begin
+    if (size(windex,/type) eq 0) then putwin, /config $
+                                 else if (windex eq -1) then putwin, /config
+    mnum = fix(monitor[0])
+  endif else begin
+    if (size(secondarymon,/type) gt 0) then mnum = secondarymon
+  endelse
+
+  putwin, /free, monitor=mnum, xsize=400, ysize=600, dx=10, dy=10, scale=wscale
   Ewin = !d.window
 
   if (hflg) then begin
-    putwin, /free, key=Hopt
+    putwin, /free, rel=!d.window, xsize=200, ysize=600, dx=10, /top
     Hwin = !d.window
   endif
   
   if (pflg) then begin
-    putwin, /free, key=Sopt
+    putwin, /free, rel=!d.window, xsize=450, ysize=600, dx=10, /top
     Pwin = !d.window
   endif
 
@@ -429,7 +480,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   
   if (dosmo) then begin
     tmin = min(trange, max=tmax)
-    trange = [(tmin - delta_t), (tmax + delta_t)]
+    trange = [(tmin - dtsmo), (tmax + dtsmo)]
   endif
 
   if (tflg) then begin
@@ -482,6 +533,10 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       mvn_swe_convert_units, spec, units
     endif else spec.energy -= pot
   endif
+
+  rate = spec
+  mvn_swe_convert_units, rate, 'rate'
+  rate = rate.data
   
   case strupcase(units) of
     'COUNTS' : ytitle = 'Raw Counts'
@@ -517,8 +572,15 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
 
     psym = 10
 
-    if ((nplot eq 0) or oflg) then plot_oo,x,y,yrange=yrange,/ysty,xrange=xrange, $
-            xtitle='Energy (eV)', ytitle=ytitle,charsize=csize2,psym=psym,title=time_string(spec.time), $
+    delta_t = spec.end_time - spec.time
+    if (delta_t gt 1D) then begin
+      tstart = time_string(spec.time - delta_t)
+      tend   = strmid(time_string(spec.end_time),11)
+      title = tstart + ' - ' + tend
+    endif else title = time_string(spec.time)
+
+    if ((nplot eq 0) or oflg) then plot_oo,x,y,yrange=yrange,/ysty,xrange=xrange,/xsty, $
+            xtitle='Energy (eV)', ytitle=ytitle,charsize=csize2,psym=psym,title=title, $
             xmargin=[10,3] $
                               else oplot,x,y,psym=psym
 
@@ -528,6 +590,18 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       col = rcol[nplot mod ncol]
       oplot,x,y,psym=psym,color=col
       if (ebar) then errplot,x,(y-dy)>tiny,y+dy,width=0,color=col
+    endif
+
+    if keyword_set(showdead) then begin
+      scale = max(yrange)/10.
+      if (swe_paralyze) then mindtc = 1./exp(1.) else mindtc = swe_min_dtc
+      oplot,x,scale/swe_deadtime(rate),psym=psym,color=6
+      oplot,xrange,[scale,scale],line=2,color=6
+      oplot,xrange,[scale,scale]/mindtc,line=2,color=6
+      msg = "!4s!1H = " + string(swe_dead, format='(e8.2)')
+      xyouts, max(xrange)*0.8, scale*0.75/mindtc, msg, charsize=csize2, align=1, color=6
+      msg = ["non-paralyzable","paralyzable"]
+      xyouts, max(xrange)*0.8, scale*0.55/mindtc, msg[swe_paralyze], charsize=csize2, align=1, color=6
     endif
 
     if (keyword_set(fmfit) and strupcase(units) eq 'DF') then begin
@@ -861,7 +935,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       ys -= dys
     endif
     
-    if (~mb and ~mom) then begin
+    if (~mb and ~mom and dolab) then begin
       xyouts,xs,ys,string(pot,format='("V = ",f6.2)'),color=col,charsize=csize1,/norm
       ys -= dys
     endif
@@ -1063,7 +1137,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   
         if (dosmo) then begin
           tmin = min(trange, max=tmax)
-          trange = [(tmin - delta_t), (tmax + delta_t)]
+          trange = [(tmin - dtsmo), (tmax + dtsmo)]
         endif
 
         if (tflg) then begin
@@ -1112,6 +1186,10 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
             mvn_swe_convert_units, spec, units
           endif else spec.energy -= pot
         endif
+
+        rate = spec
+        mvn_swe_convert_units, rate, 'rate'
+        rate = rate.data
 
         if (fflg) then yrange = drange
         if keyword_set(frange) then yrange = frange

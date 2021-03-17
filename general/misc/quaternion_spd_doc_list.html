@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -34,6 +34,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#QSLERP">QSLERP</A>
 <LI><A HREF="#QTOM">QTOM</A>
 <LI><A HREF="#QUATERNION_ROTATION">QUATERNION_ROTATION</A>
+<LI><A HREF="#QUATERNION_TO_EULER_ANGLES">QUATERNION_TO_EULER_ANGLES</A>
+<br>returns euler angles
 <LI><A HREF="#QVALIDATE">QVALIDATE</A>
 <br>
 </UL><P>
@@ -50,6 +52,8 @@ Function: mtoq
 Purpose: transforms a rotation matrix into a quaternion.  If the
 matrix does not perform a rotation, then its behavior may be ill-
 defined
+
+WARNING!!!! - this routine does not conform to the wikipedia definition.  see warning for qtom.pro
 
 Inputs: m: a 3x3 element array or an Nx3x3 element array
 
@@ -69,9 +73,9 @@ an eigenvalue of the rotation the quaterion performs
 Written by: Patrick Cruce(pcruce@igpp.ucla.edu)
 
 
- $LastChangedBy: pcruce $
- $LastChangedDate: 2016-10-14 11:01:12 -0700 (Fri, 14 Oct 2016) $
- $LastChangedRevision: 22098 $
+ $LastChangedBy: davin-mac $
+ $LastChangedDate: 2020-12-16 13:31:22 -0800 (Wed, 16 Dec 2020) $
+ $LastChangedRevision: 29515 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/quaternion/mtoq.pro $
 </PRE><P>
 <STRONG>(See <A href="quaternion/mtoq.pro">general/misc/quaternion/mtoq.pro</A>)</STRONG><P>
@@ -573,6 +577,8 @@ Written by: Patrick Cruce(pcruce@igpp.ucla.edu)
 Function: qtom
 
 Purpose: transforms quaternions into rotation matrices
+WARNING!!! It appears that this routine returns the transpose (inverse) of the rotation matrix!
+It differs from the CSPICE library and Wikipedia
 
 Inputs: a 4 element array representing a quaternion or an Nx4 element
 array representing an array of quaternions
@@ -593,9 +599,9 @@ an eigenvalue of the rotation the quaterion performs
 Written by: Patrick Cruce(pcruce@igpp.ucla.edu)
 
 
- $LastChangedBy: pcruce $
- $LastChangedDate: 2016-10-14 11:01:12 -0700 (Fri, 14 Oct 2016) $
- $LastChangedRevision: 22098 $
+ $LastChangedBy: davin-mac $
+ $LastChangedDate: 2020-12-16 13:31:22 -0800 (Wed, 16 Dec 2020) $
+ $LastChangedRevision: 29515 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/quaternion/qtom.pro $
 </PRE><P>
 <STRONG>(See <A href="quaternion/qtom.pro">general/misc/quaternion/qtom.pro</A>)</STRONG><P>
@@ -604,7 +610,7 @@ Written by: Patrick Cruce(pcruce@igpp.ucla.edu)
 <A NAME="QUATERNION_ROTATION">
 <H2>QUATERNION_ROTATION</H2></A>
 <A HREF="#QTOM">[Previous Routine]</A>
-<A HREF="#QVALIDATE">[Next Routine]</A>
+<A HREF="#QUATERNION_TO_EULER_ANGLES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Function quaternion_rotation,v,q
@@ -621,17 +627,42 @@ Alternatively- If last_index=1 then:
 
 Written by: Davin Larson
 
- $LastChangedBy: pcruce $
- $LastChangedDate: 2016-10-14 11:01:12 -0700 (Fri, 14 Oct 2016) $
- $LastChangedRevision: 22098 $
+ $LastChangedBy: davin-mac $
+ $LastChangedDate: 2020-12-16 13:29:21 -0800 (Wed, 16 Dec 2020) $
+ $LastChangedRevision: 29514 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/quaternion/quaternion_rotation.pro $
 </PRE><P>
 <STRONG>(See <A href="quaternion/quaternion_rotation.pro">general/misc/quaternion/quaternion_rotation.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="QUATERNION_TO_EULER_ANGLES">
+<H2>QUATERNION_TO_EULER_ANGLES</H2></A>
+<A HREF="#QUATERNION_ROTATION">[Previous Routine]</A>
+<A HREF="#QVALIDATE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION:  quaternion_to_euler_angles,quaternion  
+PURPOSE:
+  returns euler angles
+  (This function may be used with the &quot;fit&quot; curve fitting procedure.)
+
+KEYWORDS:
+  PARAMETERS: a structure that contain the parameters that define the gaussians
+     If this parameter is not a structure then it will be created.
+
+Written by: Davin Larson  2020-11-28
+
+ $LastChangedBy:  $
+ $LastChangedDate: 2020-11-29 17:03:26 -0800 (Wed, 10 Jan 2018) $
+ $LastChangedRevision:  $
+ $URL: svn+/general/m.pro $
+</PRE><P>
+<STRONG>(See <A href="quaternion/quaternion_to_euler_angles.pro">general/misc/quaternion/quaternion_to_euler_angles.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="QVALIDATE">
 <H2>QVALIDATE</H2></A>
-<A HREF="#QUATERNION_ROTATION">[Previous Routine]</A>
+<A HREF="#QUATERNION_TO_EULER_ANGLES">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Function: qvalidate,q,argname,fxname

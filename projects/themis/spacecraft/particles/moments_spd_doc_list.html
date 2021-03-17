@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -26,7 +26,6 @@ This page was created by the IDL library routine
 <LI><A HREF="#THM_ESA_DTC4MOM">THM_ESA_DTC4MOM</A>
 <br>calculates a dead-time correction value for ESA particle moments,
 <LI><A HREF="#THM_GMOM_QUALITY_FLAGS">THM_GMOM_QUALITY_FLAGS</A>
-<LI><A HREF="#THM_LOAD_GMOM">THM_LOAD_GMOM</A>
 <LI><A HREF="#THM_LOAD_MOM">THM_LOAD_MOM</A>
 <LI><A HREF="#THM_LOAD_MOM_L2">THM_LOAD_MOM_L2</A>
 <LI><A HREF="#THM_PART_MOMENTS">THM_PART_MOMENTS</A>
@@ -161,7 +160,7 @@ HISTORY:
 <A NAME="THM_GMOM_QUALITY_FLAGS">
 <H2>THM_GMOM_QUALITY_FLAGS</H2></A>
 <A HREF="#THM_ESA_DTC4MOM">[Previous Routine]</A>
-<A HREF="#THM_LOAD_GMOM">[Next Routine]</A>
+<A HREF="#THM_LOAD_MOM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:
@@ -203,55 +202,9 @@ Description:
 <STRONG>(See <A href="moments/thm_gmom_quality_flags.pro">projects/themis/spacecraft/particles/moments/thm_gmom_quality_flags.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="THM_LOAD_GMOM">
-<H2>THM_LOAD_GMOM</H2></A>
-<A HREF="#THM_GMOM_QUALITY_FLAGS">[Previous Routine]</A>
-<A HREF="#THM_LOAD_MOM">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-Procedure: THM_LOAD_GMOM
-
-Purpose:  Loads THEMIS Level 2 ground calculated combined ESA+SST moments.  
-VERY EXPERIMENTAL
-Naming conventions:
-ff = full ESA + full SST
-rf = reduced ESA + full SST
-bb = burst ESA + burst SST
-
-keywords:
-  probe = Probe name. The default is 'all', i.e., load all available probes.
-          This can be an array of strings, e.g., ['a', 'b'] or a
-          single string delimited by spaces, e.g., 'a b'
-  datatype = The type of data to be loaded, for this case, there is only
-          one option, the default value of 'fgm', so this is a
-          placeholder should there be more that one data type. 'all'
-          can be passed in also, to get all variables.
-  TRANGE= (Optional) Time range of interest  (2 element array), if
-          this is not set, the default is to prompt the user. Note
-          that if the input time range is not a full day, a full
-          day's data is loaded
-  /DOWNLOADONLY: download file but don't read it.
-  /valid_names, if set, then this routine will return the valid probe, datatype
-          and/or level options in named variables supplied as
-          arguments to the corresponding keywords.
-  files   named variable for output of pathnames of local files.
-  /VERBOSE  set to output some useful info
-  /NO_TIME_CLIP: Disables time clipping, which is the default
-Example:
-   thm_load_gmom,probe=['a', 'b']
-Notes:
-  Temporary version, to avoid conflicts, but can read Level 2 data, jmm
- $LastChangedBy: nikos $
- $LastChangedDate: 2020-04-06 14:49:09 -0700 (Mon, 06 Apr 2020) $
- $LastChangedRevision: 28516 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/moments/thm_load_gmom.pro $
-</PRE><P>
-<STRONG>(See <A href="moments/thm_load_gmom.pro">projects/themis/spacecraft/particles/moments/thm_load_gmom.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="THM_LOAD_MOM">
 <H2>THM_LOAD_MOM</H2></A>
-<A HREF="#THM_LOAD_GMOM">[Previous Routine]</A>
+<A HREF="#THM_GMOM_QUALITY_FLAGS">[Previous Routine]</A>
 <A HREF="#THM_LOAD_MOM_L2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

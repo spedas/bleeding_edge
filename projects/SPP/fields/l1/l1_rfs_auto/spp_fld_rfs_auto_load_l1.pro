@@ -147,7 +147,8 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color, varformat = 
   get_data, prefix + 'gain', data = rfs_gain_dat
   get_data, prefix + 'nsum', data = rfs_nsum
 
-  lo_gain = where(rfs_gain_dat.y EQ 0, n_lo_gain)
+  lo_gain = where(rfs_gain_dat.y EQ 0, n_lo_gain, $
+    complement = hi_gain, ncomplement = n_hi_gain)
 
   ; TODO: fix loading when peaks = 0
 
@@ -165,6 +166,47 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color, varformat = 
     if size(raw_spec_data, /type) EQ 8 then begin
 
       converted_spec_data = spp_fld_rfs_float(raw_spec_data.y)
+
+      ; Below section is experimental code for correcting RFS
+      ; data for low gain/high gain mismatch, by subtracting offset
+      ; due to noise from the ADC. Not useful for most users at this
+      ; point, will be added to a future version of processing.
+
+      if getenv('SPP_FLD_RFS_LO_GAIN_CORRECT') NE '' then begin 
+
+        local_data_dir = '~/Desktop/spp_fld_test/EM_ucb/2020/10/' + $
+          'rfs_hi_lo_test/'
+
+        rec = strlowcase(receiver_str)
+
+        lo_gain_file = local_data_dir + 'rfs_' + rec + '_lo_counts2perhz.sav'
+        hi_gain_file = local_data_dir + 'rfs_' + rec + '_hi_counts2perhz.sav'
+
+        if n_lo_gain GT 0 then begin
+
+          restore, lo_gain_file
+
+          background = transpose(rebin(ch0_pow_red,64,n_lo_gain))
+
+          converted_spec_data[lo_gain, *] -= background * 80d * 3d
+
+          ;if (where(finite(converted_spec_data)))[0] GE 0 then stop
+
+        endif
+
+        if n_hi_gain GT 0 then begin
+
+          restore, hi_gain_file
+
+          background = transpose(rebin(ch0_pow_red,64,n_hi_gain))
+
+          converted_spec_data[hi_gain, *] -= background * 80d * 3d
+
+          ;if (where(finite(converted_spec_data)))[0] GE 0 then stop
+
+        endif
+
+      endif
 
       ; Using definition of power spectral density
       ;  S = 2 * Nfft / fs |x|^2 / Wss where
@@ -373,7 +415,7 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color, varformat = 
             options, src_name, 'datagap', 60
             options, src_name, 'panel_size', 2.
             options, src_name, 'ytitle', ytitle2
-            options, src_name, 'color_table', 39
+            ;options, src_name, 'color_table', 39
 
             options, src_name,  'ysubtitle', 'Freq [Hz]'
 

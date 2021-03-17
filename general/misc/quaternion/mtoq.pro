@@ -5,6 +5,8 @@
 ;matrix does not perform a rotation, then its behavior may be ill-
 ;defined
 ;
+;WARNING!!!! - this routine does not conform to the wikipedia definition.  see warning for qtom.pro
+;
 ;Inputs: m: a 3x3 element array or an Nx3x3 element array
 ;
 ;Returns: q
@@ -23,9 +25,9 @@
 ;Written by: Patrick Cruce(pcruce@igpp.ucla.edu)
 ;
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2016-10-14 11:01:12 -0700 (Fri, 14 Oct 2016) $
-; $LastChangedRevision: 22098 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2020-12-16 13:31:22 -0800 (Wed, 16 Dec 2020) $
+; $LastChangedRevision: 29515 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/quaternion/mtoq.pro $
 ;-
 

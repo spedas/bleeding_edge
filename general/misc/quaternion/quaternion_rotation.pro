@@ -13,23 +13,23 @@
 ;
 ;Written by: Davin Larson
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2016-10-14 11:01:12 -0700 (Fri, 14 Oct 2016) $
-; $LastChangedRevision: 22098 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2020-12-16 13:29:21 -0800 (Wed, 16 Dec 2020) $
+; $LastChangedRevision: 29514 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/quaternion/quaternion_rotation.pro $
 ;-
 function quaternion_rotation,v,q,last_index=last_index
 
-dim_v = size(/dimen,v)
-dim_q = size(/dimen,q)
 
 if n_elements(last_index) eq 0 then begin
-    dprint,'Please supply last_index'
+    dim_v = size(/dimen,v)
+    dim_q = size(/dimen,q)
     wv = where(dim_v eq 3,nwv)
     wq = where(dim_q eq 4,nwq)
     if nwv eq 0 then message,'At least one of V dimensions must be 3'
     if nwq eq 0 then message,'At least one of Q dimensions must be 4'    
     last_index = (dim_v[0] eq 3) and (dim_q[0] eq 4)
+    dprint,'Please supply last_index!  should be: ',last_index
 endif
 
 if keyword_set(last_index) then begin

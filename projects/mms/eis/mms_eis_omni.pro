@@ -8,6 +8,21 @@
 ; NOTES:
 ;       Originally based on Brian Walsh's EIS code from 7/29/2015
 ;
+;; KEYWORDS:
+;         probe:        Probe # to calculate the spin average for
+;                       if no probe is specified the default is probe '1'
+;         species:      species (should be: proton, oxygen, helium (formerly alpha) or electron)
+;         datatype:     eis data types include ['electronenergy', 'extof', 'phxtof'].
+;                       If no value is given the default is 'extof'.
+;         tplotnames:   specific tplot variables to spin-average
+;         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
+;                       preserving original tplot variable.
+;         data_units:   desired units for data. for eis units are ['flux', 'cps', 'counts'].
+;                       The default is 'flux'.
+;         data_rate:    instrument data rates for eis include 'brst' 'srvy'. The
+;                       default is 'srvy'.
+;         spin:         set =1 to use spin-averaged variables
+;
 ;
 ; REVISION HISTORY:
 ;       + 2016-02-26, I. Cohen      : changed 'cps' units_label from 'Counts/s' to '1/s' for compliance with mission standards
@@ -16,11 +31,12 @@
 ;       + 2018-01-19, I. Cohen      : simplified how p_num is pulled out
 ;       + 2018-01-23, I. Cohen      : convert zeros in data to NANs to correctly handle averaging         
 ;       + 2020-04-27, I. Cohen      : added creation of single variable with energy limits of each channel    
-;       + 2020-06-23, E. Grimes     : added 'spin' keyword for properly handling suffixes on spin-averaged data                
+;       + 2020-06-23, E. Grimes     : added 'spin' keyword for properly handling suffixes on spin-averaged data
+;       + 2021-02-09, I. Cohen      : added KEYWORDS section to header
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-06-23 19:27:06 -0700 (Tue, 23 Jun 2020) $
-;$LastChangedRevision: 28799 $
+;$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
+;$LastChangedRevision: 29648 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_omni.pro $
 ;-
 

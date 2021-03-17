@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -19,11 +19,9 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/mms/eis</H1>
-<LI><A HREF="#EIS_ANG_ANG">EIS_ANG_ANG</A>
 <LI><A HREF="#EIS_PABIN_INFO">EIS_PABIN_INFO</A>
 <br>Prints EIS PA bin information - for debugging
-<LI><A HREF="#MMS_EIS_COMBINE_PROTON_PAD">MMS_EIS_COMBINE_PROTON_PAD</A>
-<br>Combine ExTOF and PHxTOF proton PADs into a single combined tplot variable
+<LI><A HREF="#MMS_EIS_ANG_ANG">MMS_EIS_ANG_ANG</A>
 <LI><A HREF="#MMS_EIS_COMBINE_PROTON_SPEC">MMS_EIS_COMBINE_PROTON_SPEC</A>
 <br>Combine ExTOF and PHxTOF proton energy spectra into a single combined tplot variable
 <LI><A HREF="#MMS_EIS_OMNI">MMS_EIS_OMNI</A>
@@ -46,31 +44,60 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
-<A NAME="EIS_ANG_ANG">
-<H2>EIS_ANG_ANG</H2></A>
-<A HREF="#EIS_PABIN_INFO">[Next Routine]</A>
+<A NAME="EIS_PABIN_INFO">
+<H2>EIS_PABIN_INFO</H2></A>
+<A HREF="#MMS_EIS_ANG_ANG">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- eis_ang_ang.pro
+ PROCEDURE:
+         eis_pabin_info
+
+ PURPOSE:
+         Prints EIS PA bin information - for debugging
+
+ KEYWORDS:
+
+ OUTPUT:
+
+
+
+$LastChangedBy: egrimes $
+$LastChangedDate: 2016-01-08 08:53:21 -0800 (Fri, 08 Jan 2016) $
+$LastChangedRevision: 19695 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/eis_pabin_info.pro $
+</PRE><P>
+<STRONG>(See <A href="eis/eis_pabin_info.pro">projects/mms/eis/eis_pabin_info.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MMS_EIS_ANG_ANG">
+<H2>MMS_EIS_ANG_ANG</H2></A>
+<A HREF="#EIS_PABIN_INFO">[Previous Routine]</A>
+<A HREF="#MMS_EIS_COMBINE_PROTON_SPEC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ mms_eis_ang_ang.pro
 
  PURPOSE: Generate angle-angle (polar versus azimuthal) plots for EIS data with overlaid pitch angle contours
 
  KEYWORDS:
-         probe: value for MMS SC #
-         trange: time range of interest (string, ex. ['yyyy-mm-dd','yyyy-mm-dd'])
-         datatype: 'extof', 'phxtof', or 'electronenergy'
-         species: depends on datatype: 
-             - ExTOF: 'proton', 'oxygen', 'alpha'
-             - PHxTOF: 'proton', 'oxygen'
-             - electronenergy: 'electron' (this will be set automatically if you specify 'electronenergy' as the datatype)
-         level: data level ['l1a','l1b','l2pre','l2' (default)]
-         data_units: 'flux' or 'cps'
-         data_rate: instrument data rates ['brst', 'srvy' (default)]
-         energy_chan: array of four energy channels (numeric, ex. [1,2,3,4])
-         avgdata: set to 1 to average values between the images when time range forces the resolution to greater than 1 (default = 0)
-         i_print: set to 1 to print to PS file (default = 0)
-         p_filename: string array defining filename for output .ps file
-         png: string defining filename for output of .png file
+         probe:              value for MMS SC #
+         trange:             time range of interest (string, ex. ['yyyy-mm-dd','yyyy-mm-dd'])
+         datatype:           'extof', 'phxtof', or 'electronenergy'
+         species:            depends on datatype: 
+                               - ExTOF: 'proton', 'oxygen', 'helium' (formerly 'alpha')
+                               - PHxTOF: 'proton'
+                               - electronenergy: 'electron' (this will be set automatically if you specify 'electronenergy' as the datatype)
+         level:               data level ['l1a','l1b','l2pre','l2' (default)]
+         data_units:         'flux' or 'cps'
+         data_rate:          instrument data rates ['brst', 'srvy' (default)]
+         energy_chan:        array of four energy channels (numeric, ex. [1,2,3,4])
+         avgdata:            set to 1 to average values between the images when time range forces the resolution to greater than 1 (default = 0)
+         i_print:            set to 1 to print to PS file (default = 0)
+         p_filename:         string array defining filename for output .ps file
+         png:                string defining filename for output of .png file
+         no_plot:            set =1 to not plot data (default = 0)
+         cdf_version:        (optional) desired CDF version of EIS data to load
+         n_azbins:           number of azimuthal bins (if not set, will be automatically defined by data_rate)
 
 
  CREATED BY: J. Westlake, 2015-09-18
@@ -105,81 +132,26 @@ This page was created by the IDL library routine
                                    : commented out !p.multi call in postscript output, so that all energy channels are included in the PS file
        + 2016-03-31, E. Grimes     : removed flat fielding 
        + 2016-09-19, E. Grimes     : updated to support v3 L1b files, as well as integer probes
-       + 2016-10-26  E. Grimes     : fixed bug for burst mode data; n_azi=32 (burst), n_azi=8 (srvy)
-       + 2016-11-08  E. Grimes     : now programmatically getting number of azimuths from the sector variable; setting species='electron' when datatype='electronenergy';
+       + 2016-10-26, E. Grimes     : fixed bug for burst mode data; n_azi=32 (burst), n_azi=8 (srvy)
+       + 2016-11-08, E. Grimes     : now programmatically getting number of azimuths from the sector variable; setting species='electron' when datatype='electronenergy';
                                    : also now checking that data exists before trying to access the data                            
-       + 2017-05-05  I. Cohen      : added ability to use &quot;helium&quot; as species; altered EIS varformat to include look direction and magnetic field;
+       + 2017-05-05, I. Cohen      : added ability to use &quot;helium&quot; as species; altered EIS varformat to include look direction and magnetic field;
                                    : added print command to inform if data is unavailable
+       + 2020-07-02, S. Bingham    : added no_plot, cdf_version, and n_azbins keywords; added output of ang-ang data to tplot variable; changed procedure name to 'mms_eis_ang_ang.pro'
+       + 2020-12-11, I. Cohen      : changed &quot;undefined&quot; to &quot;undefined&quot; in initialization of some keywords
+       + 2021-02-09, I. Cohen      : added helium to species in header under KEYWORD section and removed PHxTOF oxygen; added loadct call for species='helium'
                         
 $LastChangedBy: egrimes $
-$LastChangedDate: 2017-06-06 10:59:40 -0700 (Tue, 06 Jun 2017) $
-$LastChangedRevision: 23419 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/eis_ang_ang.pro $
+$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
+$LastChangedRevision: 29648 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_ang_ang.pro $
 </PRE><P>
-<STRONG>(See <A href="eis/eis_ang_ang.pro">projects/mms/eis/eis_ang_ang.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="EIS_PABIN_INFO">
-<H2>EIS_PABIN_INFO</H2></A>
-<A HREF="#EIS_ANG_ANG">[Previous Routine]</A>
-<A HREF="#MMS_EIS_COMBINE_PROTON_PAD">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- PROCEDURE:
-         eis_pabin_info
-
- PURPOSE:
-         Prints EIS PA bin information - for debugging
-
- KEYWORDS:
-
- OUTPUT:
-
-
-
-$LastChangedBy: egrimes $
-$LastChangedDate: 2016-01-08 08:53:21 -0800 (Fri, 08 Jan 2016) $
-$LastChangedRevision: 19695 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/eis_pabin_info.pro $
-</PRE><P>
-<STRONG>(See <A href="eis/eis_pabin_info.pro">projects/mms/eis/eis_pabin_info.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="MMS_EIS_COMBINE_PROTON_PAD">
-<H2>MMS_EIS_COMBINE_PROTON_PAD</H2></A>
-<A HREF="#EIS_PABIN_INFO">[Previous Routine]</A>
-<A HREF="#MMS_EIS_COMBINE_PROTON_SPEC">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- PROCEDURE:
-   mms_eis_combine_proton_pad.pro
-
- PURPOSE:
-   Combine ExTOF and PHxTOF proton PADs into a single combined tplot variable
-
- KEYWORDS:
-         probes:             string indicating value for MMS SC #
-         data_rate:          data rate ['srvy' (default), 'brst']
-         data_units:         data units ['flux' (default), 'cps', 'counts']
-         size_pabin:         size of the pitch angle bins
-         energy:             energy range to include in the calculation
-
- CREATED BY: I. Cohen, 2017-11-17
-
- REVISION HISTORY:
-       + 2017-11-17, I. Cohen      : changed probes keyword to probes
-       + 2018-02-19, I. Cohen      : fixed definitions of target_phxtof_energies and target_extof_energies to account for user-defined
-                                     energy ranges that do not include all energy channels; also fixed indexing on line 95 to accommodate
-       + 2018-06-12, I. Cohen      : removed 12 keV energy from combined pad range; imposed new min energy limit
-       + 2018-08-09, I. Cohen      : introduced energy_string to keep user-defined energy range from being overwritten
-
-</PRE><P>
-<STRONG>(See <A href="eis/mms_eis_combine_proton_pad.pro">projects/mms/eis/mms_eis_combine_proton_pad.pro</A>)</STRONG><P>
+<STRONG>(See <A href="eis/mms_eis_ang_ang.pro">projects/mms/eis/mms_eis_ang_ang.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="MMS_EIS_COMBINE_PROTON_SPEC">
 <H2>MMS_EIS_COMBINE_PROTON_SPEC</H2></A>
-<A HREF="#MMS_EIS_COMBINE_PROTON_PAD">[Previous Routine]</A>
+<A HREF="#MMS_EIS_ANG_ANG">[Previous Routine]</A>
 <A HREF="#MMS_EIS_OMNI">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -217,6 +189,10 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        + 2018-10-19, I. Cohen          : fixed issue in matching phxtof/extof timing when there are more extof events
        + 2020-04-07, S. Bingham        : fixed issue in mismatching phxtof/extof timing &amp; E channel stitching
        + 2020-06-23, E. Grimes         : updated call to mms_eis_omni to use the /spin keyword when calculating the spin-averages
+       + 2020-11-19, I. Cohen          : fixed issue with overlap energies - average between all shared energies
+       + 2020-12-11, I. Cohen          : changed &quot;not KEYWORD_SET&quot; to &quot;undefined&quot; in initialization of some keywords
+       + 2021-01-21, I. Cohen          : removed lowest ExTOF energy channel because of noise near detector threshold
+       + 2021-01-27, I. Cohen          ; fixed error from previous change that duplicated uppermost energy channel
                        
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_combine_proton_spec.pro">projects/mms/eis/mms_eis_combine_proton_spec.pro</A>)</STRONG><P>
@@ -237,6 +213,21 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
  NOTES:
        Originally based on Brian Walsh's EIS code from 7/29/2015
 
+; KEYWORDS:
+         probe:        Probe # to calculate the spin average for
+                       if no probe is specified the default is probe '1'
+         species:      species (should be: proton, oxygen, helium (formerly alpha) or electron)
+         datatype:     eis data types include ['electronenergy', 'extof', 'phxtof'].
+                       If no value is given the default is 'extof'.
+         tplotnames:   specific tplot variables to spin-average
+         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
+                       preserving original tplot variable.
+         data_units:   desired units for data. for eis units are ['flux', 'cps', 'counts'].
+                       The default is 'flux'.
+         data_rate:    instrument data rates for eis include 'brst' 'srvy'. The
+                       default is 'srvy'.
+         spin:         set =1 to use spin-averaged variables
+
 
  REVISION HISTORY:
        + 2016-02-26, I. Cohen      : changed 'cps' units_label from 'Counts/s' to '1/s' for compliance with mission standards
@@ -245,11 +236,12 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        + 2018-01-19, I. Cohen      : simplified how p_num is pulled out
        + 2018-01-23, I. Cohen      : convert zeros in data to NANs to correctly handle averaging         
        + 2020-04-27, I. Cohen      : added creation of single variable with energy limits of each channel    
-       + 2020-06-23, E. Grimes     : added 'spin' keyword for properly handling suffixes on spin-averaged data                
+       + 2020-06-23, E. Grimes     : added 'spin' keyword for properly handling suffixes on spin-averaged data
+       + 2021-02-09, I. Cohen      : added KEYWORDS section to header
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2020-06-23 19:27:06 -0700 (Tue, 23 Jun 2020) $
-$LastChangedRevision: 28799 $
+$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
+$LastChangedRevision: 29648 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_omni.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_omni.pro">projects/mms/eis/mms_eis_omni.pro</A>)</STRONG><P>
@@ -271,7 +263,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
  KEYWORDS:
          trange:               time range of interest
          probes:               value for MMS SC #
-         species:              proton (default), alpha, oxygen, electron
+         species:              proton (default), helium (formerly alpha), oxygen, electron
          energy:               energy range to include in the calculation
          size_pabin:           size of the pitch angle bins
          data_units:           flux or cps
@@ -296,8 +288,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2020-06-23 19:27:06 -0700 (Tue, 23 Jun 2020) $
-$LastChangedRevision: 28799 $
+$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
+$LastChangedRevision: 29648 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_pad.pro">projects/mms/eis/mms_eis_pad.pro</A>)</STRONG><P>
@@ -320,7 +312,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
  KEYWORDS:
          probes:               value for MMS SC #
          trange:               time range of interest
-         species:              proton (default), alpha, oxygen, electron
+         species:              proton (default), helium (formerly alpha), oxygen, electron
          level:                data level ['l1a','l1b','l2pre','l2' (default)] 
          data_rate:            instrument data rates ['brst', 'srvy' (default), 'fast', 'slow']
          energy:               energy range to include in the calculation
@@ -343,6 +335,12 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        + 2019-11-21, I. Cohen    : changed new variable prefix to 'mmsx' instead of 'mms#-#'
        + 2020-06-16, I. Cohen    : removed probes keyword, added ability to automatically define probes based on loaded EIS data like mms_eis_spec_combine_sc.pro;
                                    change format of energy ranges in thissc_pad_vars definition
+       + 2020-10-26, I. Cohen    : added/edited lines from mms_eis_spec_combine_sc.pro to create spin-averaged variables
+       + 2020-11-02, R. Nikoukar : changed 'mmsx' to 'mms#-#' for consistency with mms_eis_spec_combine_sc.pro; corrected time indexing for spin-averaged variables
+       + 2020-12-14, I. Cohen    : changed &quot;not KEYWORD_SET&quot; to &quot;undefined&quot; in initialization of some keywords; 
+                                   added &quot;datarate_str&quot; to handle issue with probes definition if both burst and survey data are loaded
+       + 2021-01-06, I. Cohen    : added wildcard into string in definition of eis_sc_check for phxtof data
+       + 2021-02-09, I. Cohen    : added helium to species in header under KEYWORD section and added default datatype if species=helium
 
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_pad_combine_sc.pro">projects/mms/eis/mms_eis_pad_combine_sc.pro</A>)</STRONG><P>
@@ -370,14 +368,14 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          data_units:   desired units for data. Options are ['flux' (default), 'cps', 'counts'].
          suffix:       appends a suffix to the end of the tplot variable name. this is useful for
                        preserving original tplot variable.
-         species:      species (should be: proton (default), oxygen, alpha, or electron)
+         species:      species (should be: proton (default), oxygen, helium (formerly alpha), or electron)
          scopes:       string array of telescopes to be included in PAD ('0'-'5')
 
  OUTPUT:
  
 $LastChangedBy: egrimes $
-$LastChangedDate: 2019-09-27 12:58:38 -0700 (Fri, 27 Sep 2019) $
-$LastChangedRevision: 27793 $
+$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
+$LastChangedRevision: 29648 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad_spinavg.pro $
 
  REVISION HISTORY:
@@ -392,6 +390,10 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        + 2017-12-04, I. Cohen      : updated to create spin-averaged variables for all PAD variables, to mirror new
                                      capabilities of mms_eis_pad.pro (changed pad_name variable to pad_vars); change 
                                      size_pabin keyword to size_pabin                   
+       + 2020-12-11, I. Cohen      : changed &quot;not KEYWORD_SET&quot; to &quot;undefined&quot; in initialization of some keywords
+       + 2021-02-09, I. Cohen      : added helium to species in header under KEYWORD section
+
+
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_pad_spinavg.pro">projects/mms/eis/mms_eis_pad_spinavg.pro</A>)</STRONG><P>
 <HR>
@@ -413,10 +415,11 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
  HISTORY:
      2020 Feb 24 -  Ian Cohen at APL: changed defualt yrange of electronenergy data to scale automatically to accommodate changes to electron energy
                      channels
+     2021 Feb 09 -  Ian Cohen at APL: added &quot;helium&quot; variables
 
  $LastChangedBy: egrimes $
- $LastChangedDate: 2020-02-25 10:57:51 -0800 (Tue, 25 Feb 2020) $
- $LastChangedRevision: 28340 $
+ $LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
+ $LastChangedRevision: 29648 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_set_metadata.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_set_metadata.pro">projects/mms/eis/mms_eis_set_metadata.pro</A>)</STRONG><P>
@@ -445,7 +448,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                        The default is 'flux'.
          suffix:       appends a suffix to the end of the tplot variable name. this is useful for
                        preserving original tplot variable.
-         species:      proton (default), oxygen, alpha or electron
+         species:      proton (default), oxygen, helium (formerly alpha) or electron
          
  CREATED BY: I. Cohen, 2017-11-17
 
@@ -456,6 +459,15 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          + 2019-11-21, I. Cohen        : added ability to handle different data_units; changed new variable prefix to 'mmsx' instead of 'mms#-#'
          + 2020-03-30, I. Cohen        : removed probes keyword, added ability to automatically define probes based on loaded EIS data
          + 2020-06-08, I. Cohen        : fixed issue with counting MMSX data (i.e. thinking there were 5 probes)
+         + 2020-09-14, I. Cohen        : fixed issue with proton being hardcoded in eis_sc_check
+         + 2020-09-28, I. Cohen        : fixed issue with proton being hardcoded in call for spin-averaging
+         + 2020-09-29, I. Cohen        : changed &quot;mmsx&quot; prefix to mms#-# for consistency with other EIS procedures and 
+                                         removed call to mms_eis_spin_avg.pro, instead create spin-averaged variables directly here
+         + 2020-09-30, I. Cohen        : removed duplicate &quot;datatype&quot; in name of tplot spin variable (line 105)
+         + 2020-10-26, I. Cohen        : added missing &quot;datatype&quot; in definition of prefix for survey data                   
+         + 2020-12-11, I. Cohen        : moved eis_sc_check definition into species loop to address issue handling multiple species from single call
+         + 2021-02-09, I. Cohen        : added helium to species in header under KEYWORD section 
+         + 2021-02-24, I. Cohen        : changed combined s/c variable names from mms#-# to mmsx
 
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_spec_combine_sc.pro">projects/mms/eis/mms_eis_spec_combine_sc.pro</A>)</STRONG><P>
@@ -484,7 +496,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                        The default is 'flux'.
          suffix:       appends a suffix to the end of the tplot variable name. this is useful for
                        preserving original tplot variable.
-         species:      species (should be: proton, oxygen, alpha or electron)
+         species:      species (should be: proton, oxygen, helium (formerly alpha) or electron)
          multisc:      set equal to 1 if trying to use data combined from multiple sc 
 
  OUTPUT:
@@ -495,13 +507,14 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        + 2018-02-19, I. Cohen          : added 'probe_string' variable to differentiate from probe(s) and avoid
                                          errors with overwriting in other procedures
        + 2018-06-14, I. Cohen          : changed 'datatype' to 'new_datatype' in definition of p_num to stop error
-                                         when handling 'combined' data                           
+                                         when handling 'combined' data   
+       + 2021-02-09, I. Cohen          : updated possible species under KEYWORDS header                        
        
        
        
 $LastChangedBy: egrimes $
-$LastChangedDate: 2018-06-14 19:25:13 -0700 (Thu, 14 Jun 2018) $
-$LastChangedRevision: 25357 $
+$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
+$LastChangedRevision: 29648 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_spin_avg.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_spin_avg.pro">projects/mms/eis/mms_eis_spin_avg.pro</A>)</STRONG><P>
@@ -596,14 +609,16 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      09/17/2015 - egrimes: large update, see svn log
      12/15/2015 - icohen: added data_rate keyword and conditional definition of prefix in mms_eis_spin_avg and 
                   mms_eis_omni to address burst variable name changes
-     4/20/2016  - egrimes added omni-directional spectra (without spin averaging)
-     4/28/2016  - egrimes changed no_interp options to include non-spin averaged omni-directional spectra
+     04/20/2016 - egrimes added omni-directional spectra (without spin averaging)
+     04/28/2016 - egrimes changed no_interp options to include non-spin averaged omni-directional spectra
                   changed default level to L2
-     6/23/2020  - egrimes changed calls to mms_eis_omni to use /spin keyword
+     06/23/2020 - egrimes changed calls to mms_eis_omni to use /spin keyword
+     02/09/2021 - icohen added 'helium' species calls 
+                  commented out processing of unverified 'oxygen' phxtof variables
      
 $LastChangedBy: egrimes $
-$LastChangedDate: 2020-06-23 19:27:06 -0700 (Tue, 23 Jun 2020) $
-$LastChangedRevision: 28799 $
+$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
+$LastChangedRevision: 29648 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_load_eis.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_load_eis.pro">projects/mms/eis/mms_load_eis.pro</A>)</STRONG><P>

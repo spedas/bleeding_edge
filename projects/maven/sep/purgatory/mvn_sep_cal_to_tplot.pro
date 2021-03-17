@@ -174,7 +174,7 @@ endif
   ;print,(eval0* reform(rr[0,*]))
   ;print,(eval0* reform(rr[1,*]))
   ;print,(eval0* reform(rr[2,*]))
-  print,eval0[where(rr[0,*])]
-  print,eval0[where(rr[1,*])]
-  print,eval0[where(rr[2,*])]
+  dprint,eval0[where(rr[0,*])]
+  dprint,eval0[where(rr[1,*])]
+  dprint,eval0[where(rr[2,*])]
 end

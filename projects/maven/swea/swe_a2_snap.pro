@@ -13,15 +13,6 @@
 ;INPUTS:
 ;
 ;KEYWORDS:
-;       LAYOUT:        A named variable to specify window layouts.
-;
-;                        0 --> Default.  No fixed window positions.
-;                        1 --> Macbook Air with Dell 1920x1200 external screen.
-;                        2 --> HP Z220 with twin Dell 1920x1200 screens.
-;
-;                      This puts up snapshot windows in convenient, non-overlapping
-;                      locations, depending on display hardware.
-;
 ;       MODEL:         Plot a model of the PAD data product with the test pulser on in
 ;                      a separate window.  (An analytic approximation to the test pulser
 ;                      signal is used.  See 'swe_testpulser_model.pro' for details.)
@@ -38,6 +29,10 @@
 ;
 ;       KEEPWINS:      If set, then don't close the snapshot window(s) on exit.
 ;
+;       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
+;                      from 0 to N-1, where N is the number of monitors recognized
+;                      by the operating system.  See putwin.pro for details.
+;
 ;       ZRANGE:        Sets color scale range.  Default = [1,3000].
 ;
 ;       ZLOG:          Sets log color scaling.  Default = 1.
@@ -45,19 +40,18 @@
 ;       ARCHIVE:       If set, show shapshots of archive data (A3).  Pseudo-PAD data is 
 ;                      calculated from 3D archive data (A1).
 ;
+;       BURST:         Synonym for ARCHIVE.
+;
 ;CREATED BY:    David L. Mitchell  07-24-12
 ;FILE: swe_a2_snap.pro
 ;VERSION:   1.0
 ;LAST MODIFICATION:   07/24/12
 ;-
 pro swe_a2_snap, layout=layout, model=model, ddd=ddd, keepwins=keepwins, zrange=zrange, zlog=zlog, $
-                 archive=archive, burst=burst, enorm=enorm
+                 archive=archive, burst=burst, enorm=enorm, monitor=monitor
 
   @mvn_swe_com
-  @swe_snap_common
-  if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
-
-  Twin = !d.window
+  @putwin_common
 
   if (keyword_set(archive) or keyword_set(burst)) then aflg = 1 else aflg = 0
   if keyword_set(enorm) then begin
@@ -117,21 +111,33 @@ pro swe_a2_snap, layout=layout, model=model, ddd=ddd, keepwins=keepwins, zrange=
 
 ; Put up windows to hold the snapshot plot(s)
 
-  window, /free, xsize=800, ysize=500, xpos=Popt.xpos, ypos=Popt.ypos
+  Twin = !d.window
+
+  undefine, mnum
+  if (size(monitor,/type) gt 0) then begin
+    if (size(windex,/type) eq 0) then putwin, /config $
+                                 else if (windex eq -1) then putwin, /config
+    mnum = fix(monitor[0])
+  endif else begin
+    if (size(secondarymon,/type) gt 0) then mnum = secondarymon
+  endelse
+
+  putwin, /free, monitor=mnum, xsize=800, ysize=500, dx=10, dy=10
   Swin = !d.window
   
   if (hflg) then begin
-    window, /free, xsize=225, ysize=545, xpos=Fopt.xpos, ypos=Fopt.ypos
+    putwin, /free, rel=Swin, xsize=225, ysize=545, dx=10, /top
     Hwin = !d.window
   endif
 
   if (mflg) then begin
-    window, /free, xsize=800, ysize=500
+    putwin, /free, rel=Swin, xsize=800, ysize=500, dy=-55
     Mwin = !d.window
   endif
 
   if (dflg) then begin
-    window, /free, xsize=800, ysize=500
+    if (mflg) then putwin, /free, rel=Mwin, xsize=800, ysize=500, dx=10, /top $
+              else putwin, /free, rel=Swin, xsize=800, ysize=500, dy=-55
     Dwin = !d.window
   endif
 

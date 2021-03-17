@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-02-26 12:51:18 -0800 (Wed, 26 Feb 2020) $
-; $LastChangedRevision: 28348 $
+; $LastChangedDate: 2021-02-15 23:10:00 -0800 (Mon, 15 Feb 2021) $
+; $LastChangedRevision: 29658 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/cdf/mvn_sep_makefile.pro $
 ; $ID: $
 
@@ -52,47 +52,41 @@ end
 pro mvn_sep_makefile,init=init,trange=trange0
 
   if keyword_set(init) then begin
-    ;  trange0 = [time_double('2014-9-20'), systime(1) ]
-    trange0 = [time_double('2014-3-18'), systime(1) ] ;now can handle Flight2 energy map (MAPID=8)
+    trange0 = [time_double('2013-12-03'), systime(1) ]
     if init lt 0 then trange0 = systime(1) + [init,0 ]*24L*3600
   endif else trange0 = timerange(trange0)
 
   ;if ~keyword_set(plotformat) then plotformat = 'maven/data/sci/sep/plots/YYYY/MM/$NDAY/$PLOT/mvn_sep_$PLOT_YYYYMMDD_$NDAY.png'
   L1_fileformat =  'maven/data/sci/sep/l1/sav/YYYY/MM/mvn_sep_l1_YYYYMMDD_$NDAY.sav'
-
-
   ndaysload =1
   L1fmt = str_sub(L1_fileformat, '$NDAY', strtrim(ndaysload,2)+'day')
-
   res = 86400L
   daynum = round( timerange(trange0) /res )
   nd = daynum[1]-daynum[0]
   trange = res* double( daynum  )         ; round to days
   ;nd = round( (trange[1]-trange[0]) /res)
 
-  ;if n_elements(load) eq 0 then load =1
-
-  for i=0L,nd-1 do begin
+  for i=0L,nd do begin
     tr = trange[0] + [i,i+1] * res
-
     sw_version = mvn_sep_sw_version()
     prereq_files = sw_version.sw_time_stamp_file
     sw_info = file_info(prereq_files)
-
     L0_files = mvn_pfp_file_retrieve(/l0,trange=tr)   ; should be scalar
 
-    if tr[0] gt time_double('2014-07-17') and tr[0] lt time_double('2014-9-21') then begin
+    if tr[0] gt time_double('2014-07-17') && tr[0] lt time_double('2014-9-21') then begin
       dprint,dlevel=3,'Cruise to Mars, Spacecraft hybernation, No L0 file: '+l0_files
+      continue
+    endif
+
+    if (tr[0] gt time_double('2014-11-20') && tr[0] lt time_double('2014-11-25'))$
+      || (tr[0] gt time_double('2015-04-04') && tr[0] lt time_double('2015-04-13'))$
+      || (tr[0] gt time_double('2019-09-05') && tr[0] lt time_double('2019-09-11')) then begin
+      dprint,dlevel=3,'Spacecraft safemode, No L0 file: '+l0_files
       continue
     endif
 
     if total(file_test(/regular,l0_files)) eq 0 then begin
       dprint,dlevel=2,'File not found: '+l0_files
-      continue
-    endif
-
-    if tr[0] eq time_double('2014-11-26') then begin
-      dprint,dlevel=2,'File contains no SEP data: '+l0_files
       continue
     endif
 
@@ -106,15 +100,13 @@ pro mvn_sep_makefile,init=init,trange=trange0
     endif
 
     L1_filename = mvn_pfp_file_retrieve(L1fmt,/daily,trange=tr[0],source=source,verbose=verbose,create_dir=1)
-
     L0_info = file_info(L0_files)
     prereq_timestamp = max([sw_info.mtime, L0_info.mtime, L0_info.ctime])
-
     target_info = file_info(l1_filename)
     target_timestamp = target_info.mtime
 
     if prereq_timestamp gt target_timestamp then begin    ; skip if L1 does not need to be regenerated
-      if tr[0] lt systime(1)-100l*24l*3600l then message,'L0 files changed more than 100 days in the past!!! Exiting...'
+      if tr[0] lt systime(1)-100l*24l*3600l then message,'L0 files changed more than 100 days in the past!!! Exiting... '+l0_files
       mvn_sep_load,/l0,files = l0_files
       dprint,dlevel=1,'Generating L1 file: '+L1_filename
       prereq_info = file_checksum(prereq_files,/add_mtime)
@@ -125,13 +117,18 @@ pro mvn_sep_makefile,init=init,trange=trange0
     ;    printdat,prereq_info
     ;  endelse
 
-    add_link = (mvn_pfp_file_retrieve('maven/pfp/.secure/.htaccess'))[0]
+    if tr[0] lt time_double('2014-3-18') then continue ;Flight2 and Flight3 energy maps (MAPID=8,9) are used after this date
 
+    if tr[0] eq time_double('2014-11-26') || tr[0] eq time_double('2021-01-12') then begin
+      dprint,dlevel=2,'File contains no SEP survey data: '+l0_files
+      continue
+    endif
+
+    add_link = (mvn_pfp_file_retrieve('maven/pfp/.secure/.htaccess'))[0]
     mvn_sep_make_cdf_wrap,/cal,sepnum=1,trange=tr,source_files=l0_files,prereq_files=prereq_files,add_link=add_link,sw_version=sw_version
     mvn_sep_make_cdf_wrap,/cal,sepnum=2,trange=tr,source_files=l0_files,prereq_files=prereq_files,add_link=add_link,sw_version=sw_version
     mvn_sep_make_cdf_wrap,/raw,sepnum=1,trange=tr,source_files=l0_files,prereq_files=prereq_files,add_link=add_link,sw_version=sw_version
     mvn_sep_make_cdf_wrap,/raw,sepnum=2,trange=tr,source_files=l0_files,prereq_files=prereq_files,add_link=add_link,sw_version=sw_version
-
 
     if keyword_set(plotformat) then begin
       pf = str_sub(plotformat,'$NDAY',strtrim(ndaysload,2)+'day')
@@ -150,7 +147,6 @@ pro mvn_sep_makefile,init=init,trange=trange0
       mvn_sep_tplot,'Ql',filename=fname
     endif
   endfor
-
 
 end
 

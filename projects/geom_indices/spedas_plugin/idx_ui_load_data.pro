@@ -6,15 +6,15 @@
 ;  Widget interface for loading Geomagnetic/Solar indices data into the GUI
 ;
 ;HISTORY:
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2015-04-16 16:09:24 -0700 (Thu, 16 Apr 2015) $
-;$LastChangedRevision: 17344 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2020-10-13 13:35:02 -0700 (Tue, 13 Oct 2020) $
+;$LastChangedRevision: 29242 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/geom_indices/spedas_plugin/idx_ui_load_data.pro $
 ;
 ;--------------------------------------------------------------------------------
 pro idx_ui_load_data_event,event
   compile_opt hidden,idl2
-  
+
   ;handle and report errors, reset variables
   err_xxx = 0
   Catch, err_xxx
@@ -250,7 +250,7 @@ end
 function spd_ui_index_source_data
   ; each element in the pointer array points to a list containing 2 strings
   ; that describe the data type and availability
-  dsourceLabels = ptrarr(11)
+  dsourceLabels = ptrarr(112)
   dsourceLabels[0] = ptr_new(['Ap data is provided by the NOAA National Geophysical Data Center',' '])
   dsourceLabels[1] = ptr_new(['Auroral Electrojet (AE) data is provided by the WDC for Geomagnetism,','Kyoto (Japan)'])
   dsourceLabels[2] = ptr_new(['Cp data is provided by the NOAA National Geophysical Data Center',' '])
@@ -262,12 +262,13 @@ function spd_ui_index_source_data
   dsourceLabels[8] = ptr_new(['Solar rotation data is provided by the NOAA National Geophysical','Data Center'])
   dsourceLabels[9] = ptr_new(['International sunspot number data is provided by the NOAA','National Geophysical Data Center'])
   dsourceLabels[10] = ptr_new(['SYM/ASY data are loaded from the OMNI dataset, provided','by NASA ISTP/SPDF'])
+  dsourceLabels[11] = ptr_new(['Themis AE, AL, AU is computed using Themis GMAG data.', 'Real Time Kyoto AE, AL, AU is computed using Kyoto RT plots.'])
   return, dsourceLabels
 end
 ; create an array of pointers to datatype lists
 ; each index has its own list of datatypes
 function spd_ui_index_data_types
-  paramArray = ptrarr(11)
+  paramArray = ptrarr(12)
   paramArray[0] = ptr_new(['*', 'ap', 'Ap (ap mean)'])
   paramArray[1] = ptr_new(['*','AE prov','AO prov','AU prov','AL prov','AX prov']) ; AE
   paramArray[2] = ptr_new(['Cp'])
@@ -279,11 +280,12 @@ function spd_ui_index_data_types
   paramArray[8] = ptr_new(['Solar rotation day'])
   paramArray[9] = ptr_new(['Sunspot #'])
   paramArray[10] = ptr_new(['*','Sym-H', 'Sym-D', 'Asy-H', 'Asy-D' ])
+  paramArray[11] = ptr_new(['*', 'Themis AE', 'Themis AL','Themis AU','RT Kyoto AE','RT Kyoto AL','RT Kyoto AU'])  
   return, paramArray
 end
 ; create an array of pointers to available resolutions
 function spd_ui_index_resolutions
-  resArray = ptrarr(11)
+  resArray = ptrarr(12)
   apRes = ptrarr(3)
   aeRes = ptrarr(6)
   cpRes = ptrarr(1)
@@ -295,6 +297,7 @@ function spd_ui_index_resolutions
   soldayRes = ptrarr(1)
   sunspotRes = ptrarr(1)
   symRes = ptrarr(5)
+  thmae = ptrarr(7)
   
   apRes[0] = ptr_new('*')
   apRes[1] = ptr_new('3-hour')
@@ -313,6 +316,8 @@ function spd_ui_index_resolutions
   sunspotRes[0] = ptr_new('daily')
   ;symRes[0] = ptr_new('*')
   for i=0,n_elements(symRes)-1 do symRes[i] = ptr_new(['*', '1-min','5-min'])
+  for i=0,6 do thmae[i] = ptr_new(['*'])
+  thmae[4] = ptr_new(['*', '1-min','5-min'])  ;real time AE has both 1-min and 5-min
 
   resArray[0] = ptr_new(apRes)
   resArray[1] = ptr_new(aeRes)
@@ -325,6 +330,7 @@ function spd_ui_index_resolutions
   resArray[8] = ptr_new(soldayRes)
   resArray[9] = ptr_new(sunspotRes)
   resArray[10] = ptr_new(symRes)
+  resArray[11] = ptr_new(thmae)  
   return, resArray
 end
 pro idx_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRangeObj,callSequence,loadTree=loadTree,timeWidget=timeWidget
@@ -380,7 +386,7 @@ pro idx_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRange
                                   uname='time_widget')
     
   ; populate the index listbox
-  indexArrayValues = ['Ap', 'AE', 'Cp', 'C9', 'Dst', 'F10.7', 'Kp', 'Solar rotation #', 'Solar rotation day', 'Sunspot #', 'SYM/ASY']
+  indexArrayValues = ['Ap', 'AE', 'Cp', 'C9', 'Dst', 'F10.7', 'Kp', 'Solar rotation #', 'Solar rotation day', 'Sunspot #', 'SYM/ASY', 'Themis AE']
   ; create array of pointers to datatype lists
   paramArray = spd_ui_index_data_types()
   ; create 'data is provided by' acknowledgements to display under data list boxes

@@ -1,13 +1,13 @@
 ; +
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-07-17 17:23:27 -0700 (Fri, 17 Jul 2020) $
-; $LastChangedRevision: 28907 $
+; $LastChangedDate: 2020-12-22 16:00:17 -0800 (Tue, 22 Dec 2020) $
+; $LastChangedRevision: 29551 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
 ; -
 
-function spp_apdat_info_restore,sav_file,verbose=verbose
+function spp_apdat_info_restore,sav_file,verbose=verbose,parent=parent
   restore,sav_file,verbose=verbose,/relax,/skip
   return, all_apdat
 end
@@ -36,7 +36,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   set_break=set_break, $
   ttags=ttags,$
   routine=routine,$
-  file_save=file_save,file_restore=file_restore,compress=compress, $
+  file_save=file_save,file_restore=file_restore,compress=compress,parent=parent, $
   apid_obj_name = apid_obj_name, $
   print=print, $
   rt_flag=rt_flag,noprod=noprod,trim=trim
@@ -94,7 +94,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
       return
     endif
     dprint,'Restoring file: '+file_restore+' Size: '+strtrim((file_info(file_restore)).size/1e3,2)+' KB'
-    aps = spp_apdat_info_restore(file_restore,verbose=verbose)
+    aps = spp_apdat_info_restore(file_restore,verbose=verbose,parent=parent)
     apids = where(aps,/null)
     for i=0 , n_elements(apids)-1 do begin
       apid = apids[i]
@@ -110,8 +110,8 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     spp_apdat_info,'sp[abi]_[as][ft]*',/noprod ;clearing multidimensional products
     spp_apdat_info,/trim ;trimming the size and clearing last_data_p and ccsds_last
     dprint,'Saving file: '+file_save
-    save,file=file_save,all_apdat,verbose=verbose,compress=compress
-    dprint,'Saved file:  '+file_save
+    save,file=file_save,all_apdat,parent,verbose=verbose,compress=compress
+    dprint,'Saved file: "'+file_save+'" Size: '+strtrim((file_info(file_save)).size/1e3,2)+' KB'
 ;    foreach memdump,memdumps do all_apdat[memdump] = obj_new('spp_swp_memdump_apdat',memdump,(spp_apdat(memdump)).name) ;repopulating memdump
   endif
 

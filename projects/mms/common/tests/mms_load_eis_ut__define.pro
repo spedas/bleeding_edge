@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_eis_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-06-24 10:57:42 -0700 (Wed, 24 Jun 2020) $
-; $LastChangedRevision: 28803 $
+; $LastChangedDate: 2021-02-09 17:23:50 -0800 (Tue, 09 Feb 2021) $
+; $LastChangedRevision: 29649 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_eis_ut__define.pro $
 ;-
 
@@ -83,55 +83,55 @@ function mms_load_eis_ut::test_num_smooth_pad
 end
 
 function mms_load_eis_ut::test_ang_ang_energychan
-  eis_ang_ang, energy_chan=[1, 2]
+  mms_eis_ang_ang, energy_chan=[1, 2]
   assert, spd_data_exists('mms1_epd_eis_extof_proton_flux_omni mms1_epd_eis_extof_oxygen_flux_omni', '2015-12-15', '2015-12-16'), 'Problem with EIS angle-angle energy_chan keyword'
   return, 1
 end
 
 function mms_load_eis_ut::test_ang_ang_datatype_electron
-  eis_ang_ang, datatype='electronenergy', probe=4
+  mms_eis_ang_ang, datatype='electronenergy', probe=4
   assert, spd_data_exists('mms4_epd_eis_electronenergy_electron_flux_omni', '2015-12-15', '2015-12-16'), 'Problem with EIS angle-angle with datatype electronenergy'
   return, 1
 end
 
 function mms_load_eis_ut::test_ang_ang_datatype_phxtof
-  eis_ang_ang, datatype='phxtof', probe=3
+  mms_eis_ang_ang, datatype='phxtof', probe=3
   assert, spd_data_exists('mms3_epd_eis_phxtof_proton_flux_omni', '2015-12-15', '2015-12-16'), 'Problem with EIS angle-angle datatype PHxTOF'
   return, 1
 end
 
 function mms_load_eis_ut::test_ang_ang_data_rate
-  eis_ang_ang, data_rate='brst', trange=['2015-10-16/13:00', '2015-10-16/13:10']
+  mms_eis_ang_ang, data_rate='brst', trange=['2015-10-16/13:00', '2015-10-16/13:10']
   assert, spd_data_exists('mms1_epd_eis_brst_extof_proton_flux_omni', '2015-10-16/13:00', '2015-10-16/13:10'), 'Problem with EIS angle-angle burst mode?'
   return, 1
 end
 
 function mms_load_eis_ut::test_ang_ang_data_units
-  eis_ang_ang, data_units='cps'
+  mms_eis_ang_ang, data_units='cps'
   assert, spd_data_exists('mms1_epd_eis_extof_proton_cps_omni', '2015-12-15', '2015-12-16'), 'Problem with EIS angle-angle data_units keyword'
   return, 1
 end
 
 function mms_load_eis_ut::test_ang_ang_extof_helium
-  eis_ang_ang, datatype='extof', species='helium'
+  mms_eis_ang_ang, datatype='extof', species='alpha'
   assert, spd_data_exists('mms1_epd_eis_extof_alpha_flux_omni', '2015-12-15', '2015-12-16'), 'Problem with EIS angle-angle with ExTOF oxygen'
   return, 1
 end
 
 function mms_load_eis_ut::test_ang_ang_extof_oxygen
-  eis_ang_ang, datatype='extof', species='oxygen'
+  mms_eis_ang_ang, datatype='extof', species='oxygen'
   assert, spd_data_exists('mms1_epd_eis_extof_oxygen_flux_omni', '2015-12-15', '2015-12-16'), 'Problem with EIS angle-angle with ExTOF oxygen'
   return, 1
 end
 
 function mms_load_eis_ut::test_ang_ang_diffprobe
-  eis_ang_ang, probe=3
+  mms_eis_ang_ang, probe=3
   assert, spd_data_exists('mms3_epd_eis_extof_proton_flux_omni', '2015-12-15', '2015-12-16'), 'Problem with EIS angle-angle when probe is set'
   return, 1
 end
 
 function mms_load_eis_ut::test_angle_angle_load_simple
-  eis_ang_ang, trange=['2015-12-15', '2015-12-16']
+  mms_eis_ang_ang, trange=['2015-12-15', '2015-12-16']
   assert, spd_data_exists('mms1_epd_eis_extof_proton_flux_omni mms1_epd_eis_extof_alpha_flux_omni mms1_epd_eis_extof_oxygen_flux_omni', '2015-12-15', '2015-12-16'), 'Problem with EIS angle-angle?'
   return, 1
 end
@@ -195,14 +195,14 @@ end
 
 function mms_load_eis_ut::test_load_with_suffix
   mms_load_eis, datatype='phxtof', level='l2', probe=4, suffix='_s'
-  assert, spd_data_exists('mms4_epd_eis_phxtof_proton_flux_omni_s_spin mms4_epd_eis_phxtof_oxygen_flux_omni_s_spin mms4_epd_eis_phxtof_proton_flux_omni_s mms4_epd_eis_phxtof_oxygen_flux_omni_s mms4_epd_eis_phxtof_proton_P3_flux_t5_s_spin mms4_epd_eis_phxtof_pitch_angle_t0_s', '2015-12-15', '2015-12-16'), $
+  assert, spd_data_exists('mms4_epd_eis_phxtof_proton_flux_omni_s_spin mms4_epd_eis_phxtof_proton_flux_omni_s mms4_epd_eis_phxtof_proton_P3_flux_t5_s_spin mms4_epd_eis_phxtof_pitch_angle_t0_s', '2015-12-15', '2015-12-16'), $
     'Problem loading EIS PHxTOF data with a suffix'
   return, 1
 end
 
 function mms_load_eis_ut::test_phxtof_omni_spec_load
   mms_load_eis, datatype='phxtof', level='l2', probe=1
-  assert, spd_data_exists('mms1_epd_eis_phxtof_proton_flux_omni mms1_epd_eis_phxtof_oxygen_flux_omni', '2015-12-15', '2015-12-16'), $
+  assert, spd_data_exists('mms1_epd_eis_phxtof_proton_flux_omni', '2015-12-15', '2015-12-16'), $
     'Problem loading non-spin averaged omni-directional spectra (phxtof)'
   return, 1
 end
@@ -337,7 +337,7 @@ function mms_load_eis_ut::init, _extra=e
   ; the following adds code coverage % to the output
   self->addTestingRoutine, ['mms_load_eis', 'mms_eis_omni', $
     'mms_eis_pad_spinavg', 'mms_eis_pad', 'mms_eis_set_metadata', $
-    'mms_eis_spin_avg', 'eis_ang_ang']
+    'mms_eis_spin_avg', 'mms_eis_ang_ang']
   return, 1
 end
 

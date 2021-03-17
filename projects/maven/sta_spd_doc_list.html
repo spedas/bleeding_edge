@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -58,8 +58,8 @@ CALLING SEQUENCE:
 HISTORY:
  2015-01-23
  $LastChangedBy: jimm $
- $LastChangedDate: 2018-04-23 10:48:14 -0700 (Mon, 23 Apr 2018) $
- $LastChangedRevision: 25094 $
+ $LastChangedDate: 2020-12-17 09:54:25 -0800 (Thu, 17 Dec 2020) $
+ $LastChangedRevision: 29541 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_current_sw_version.pro $
 </PRE><P>
 <STRONG>(See <A href="sta/mvn_sta_current_sw_version.pro">projects/maven/sta/mvn_sta_current_sw_version.pro</A>)</STRONG><P>
@@ -246,13 +246,18 @@ KEYWORDS:
  l2_version_in = if set, input this version, the default is to use
                  the current version, but that may not exist yet if 
                  you are reprocessing
+ iv_level = Loads data from intermediate (iv?) files with background
+            estimates, fills the bkg tag in the data structure, and
+            recalculates the eflux value, subtracting background.
+ bkg_only = if set, only load background data, iv_level, (or
+            iv*_load) must be set
 OUTPUT:
  No variables, data are loaded into common blocks
 HISTORY:
  16-may-2014, jmm, jimm@ssl.berkeley.edu
  $LastChangedBy: jimm $
- $LastChangedDate: 2018-04-23 12:44:04 -0700 (Mon, 23 Apr 2018) $
- $LastChangedRevision: 25096 $
+ $LastChangedDate: 2020-09-16 12:52:57 -0700 (Wed, 16 Sep 2020) $
+ $LastChangedRevision: 29161 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_l2_load.pro $
 </PRE><P>
 <STRONG>(See <A href="sta/mvn_sta_l2_load.pro">projects/maven/sta/mvn_sta_l2_load.pro</A>)</STRONG><P>

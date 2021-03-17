@@ -50,9 +50,9 @@
 ;
 ;See Also:  "XLIM", "YLIM", "ZLIM",  "OPTIONS",  "TPLOT", "DRAW_COLOR_SCALE"
 ;Author:  Davin Larson,  Space Sciences Lab
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2018-09-07 13:24:55 -0700 (Fri, 07 Sep 2018) $
-; $LastChangedRevision: 25744 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2020-12-16 13:45:16 -0800 (Wed, 16 Dec 2020) $
+; $LastChangedRevision: 29522 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/specplot.pro $
 ;-
 pro specplot,x,y,z,limits=lim,data=data,overplot=overplot,overlay=overlay,$
@@ -67,6 +67,7 @@ compile_opt idl2 ;forces array indexing with brackets.  integer constants withou
 opt = {xrange:[0.,0.],yrange:[0.,0.],zrange:[1.,1.]}
 
 if keyword_set(dx_gap_size) then dg=dx_gap_size else str_element,lim,'datagap',dg
+str_element,lim,'no_interp',no_interp
 
 if keyword_set(data) then begin
   x = struct_value(data,'x')
@@ -313,7 +314,7 @@ for j=0L,gapcnt do begin
    ;If this keyword isn't set, top and bottom bins are drawn half width
    str_element,lim,'extend_y_edges',value=extend_y_edges,success=success
    if success && extend_y_edges then begin
-   
+     dprint,dlevel=4,'extending_y_edge'
      extend_y_dim = dimen(y1)
      
      ;need 2 or more y-components for this to work
@@ -568,7 +569,7 @@ if n_elements(constant) ne 0 then begin
   if n_elements(const_color) ne 0 then ccols = get_colors(const_color) else ccols=!p.color
   ncc = n_elements(constant)
   for i=0,ncc-1 do $
-    oplot,opt.xrange,constant[i]*[1,1],color=ccols[i mod n_elements(ccols)],/linestyle
+    oplot,opt.xrange,constant[i]*[1,1],color=ccols[i mod n_elements(ccols)],linestyle=3
 endif
 
 zcharsize=!p.charsize

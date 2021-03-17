@@ -6,10 +6,18 @@
 ;     IDL> mgunit, 'mms_load_hpca_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-08-27 10:28:14 -0700 (Tue, 27 Aug 2019) $
-; $LastChangedRevision: 27667 $
+; $LastChangedDate: 2021-03-02 09:47:39 -0800 (Tue, 02 Mar 2021) $
+; $LastChangedRevision: 29724 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_hpca_ut__define.pro $
 ;-
+
+function mms_load_hpca_ut::test_hpca_spin_sum_suffix
+  mms_load_hpca, probes=2, trange=['2016-08-09/09:10', '2016-08-09/10:10:00'], datatype='ion', level='l2', data_rate='brst',suffix = '_brst'
+  mms_hpca_calc_anodes, fov=[0, 360], probe=2, suffix='_brst'
+  mms_hpca_spin_sum, probe=2, /avg, suffix='_brst'
+  assert, spd_data_exists('mms2_hpca_hplus_flux_brst_elev_0-360_spin mms2_hpca_heplus_flux_brst_elev_0-360_spin mms2_hpca_heplusplus_flux_brst_elev_0-360_spin mms2_hpca_oplus_flux_brst_elev_0-360_spin', '2016-08-09/09:10', '2016-08-09/10:10:00'), 'regression spin-summing with a suffix'
+  return, 1
+end
 
 function mms_load_hpca_ut::test_hpca_angle_angle_hplus
   mms_hpca_ang_ang, '2015-10-16/13:06:43', species='hplus', data_rate='brst'

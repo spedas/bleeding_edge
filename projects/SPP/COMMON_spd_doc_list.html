@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -47,9 +47,9 @@ This page was created by the IDL library routine
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Written by Davin Larson October 2018
- $LastChangedBy: davin-mac $
- $LastChangedDate: 2020-04-11 14:15:16 -0700 (Sat, 11 Apr 2020) $
- $LastChangedRevision: 28558 $
+ $LastChangedBy: ali $
+ $LastChangedDate: 2020-12-01 10:45:51 -0800 (Tue, 01 Dec 2020) $
+ $LastChangedRevision: 29404 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/cdf_tools_varinfo__define.pro $
 </PRE><P>
 <STRONG>(See <A href="COMMON/cdf_tools_varinfo__define.pro">projects/SPP/COMMON/cdf_tools_varinfo__define.pro</A>)</STRONG><P>
@@ -64,9 +64,9 @@ This page was created by the IDL library routine
  Written by Davin Larson October 2018
   cdf_tools
   This basic object is the entry point for reading and writing cdf files
- $LastChangedBy: davin-mac $
- $LastChangedDate: 2020-06-25 18:55:02 -0700 (Thu, 25 Jun 2020) $
- $LastChangedRevision: 28813 $
+ $LastChangedBy: ali $
+ $LastChangedDate: 2021-03-09 19:26:28 -0800 (Tue, 09 Mar 2021) $
+ $LastChangedRevision: 29750 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/cdf_tools__define.pro $
 
 </PRE><P>
@@ -84,9 +84,9 @@ Function:
 PURPOSE:
  Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 Author: Davin Larson  - January 2014
- $LastChangedBy: davin-mac $
- $LastChangedDate: 2020-06-25 18:55:02 -0700 (Thu, 25 Jun 2020) $
- $LastChangedRevision: 28813 $
+ $LastChangedBy: ali $
+ $LastChangedDate: 2021-03-09 19:26:28 -0800 (Tue, 09 Mar 2021) $
+ $LastChangedRevision: 29750 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/cdf_tools__define.pro $
 </PRE><P>
 <STRONG>(See <A href="COMMON/cdf_tools__define.pro">projects/SPP/COMMON/cdf_tools__define.pro</A>)</STRONG><P>
@@ -160,8 +160,8 @@ Author: Davin Larson  - January 2014
 <PRE>
 
  $LastChangedBy: pulupalap $
- $LastChangedDate: 2019-11-09 17:31:21 -0800 (Sat, 09 Nov 2019) $
- $LastChangedRevision: 28000 $
+ $LastChangedDate: 2021-01-25 22:28:17 -0800 (Mon, 25 Jan 2021) $
+ $LastChangedRevision: 29622 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/psp_fld_load.pro $
 
 </PRE><P>
@@ -193,8 +193,8 @@ Author: Davin Larson  - January 2014
   spp_data_product
   This basic object is the entry point for defining and obtaining all data for all data products
  $LastChangedBy: davin-mac $
- $LastChangedDate: 2020-04-15 17:18:26 -0700 (Wed, 15 Apr 2020) $
- $LastChangedRevision: 28586 $
+ $LastChangedDate: 2020-10-28 14:02:27 -0700 (Wed, 28 Oct 2020) $
+ $LastChangedRevision: 29305 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_data_product__define.pro $
 </PRE><P>
 <STRONG>(See <A href="COMMON/spp_data_product__define.pro">projects/SPP/COMMON/spp_data_product__define.pro</A>)</STRONG><P>
@@ -252,11 +252,100 @@ Keywords:  (All are optional - none are recommended)
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
-  Author: Davin Larson December 2018
+ PROCEDURE: SPP_FLD_LOAD
+
+ PURPOSE:   Load data from the PSP/FIELDS instrument suite.
+
+ KEYWORDS:
+
+  Commonly used input keywords:
+
+   LEVEL:          Specifies the level of FIELDS files to be loaded.
+                   Level = 2 is the default value.
+
+                   Level 2 and Level 3 data products from PSP/FIELDS are
+                   public. This routine is also used by FIELDS SOC to load
+                   the non-public Level 1 and Level 1b data files, which are
+                   used for production of the Level 2s.
+
+   NO_LOAD:        Don't load the CDF files (i.e., download only).
+
+   NO_SERVER:      Disable contact with remote server. Can be used to load
+                   files which are already downloaded on a local machine,
+                   avoiding check for more recent files on the server.
+
+   NO_STAGING:     Early in the PSP mission, some FIELDS CDF files were
+                   stored in a '/staging/' directory on the server at
+                   UCB/SSL. Setting this option points the load routine
+                   away from these directories, which were retired in
+                   mid-2020.
+
+                   The wrapper routine PSP_FLD_LOAD sets NO_STAGING=1 by
+                   default, and by the end of 2020 this will be the
+                   default option for SPP_FLD_LOAD as well.
+
+   TRANGE:         Two element vector indicating time range for loading data.
+                   The format for TRANGE is the same as for the TPLOT routine.
+                   If TIMESPAN procedure is used to set the desired time range
+                   before SPP_FLD_LOAD is called, that time range is used by
+                   default.
+
+   TYPE:           String identifying the type of data to be loaded.
+                   The default value is &quot;mag_SC_4_Sa_per_Cyc&quot;
+
+   VARFORMAT:      Can be used to manually specify variables which will be
+                   loaded from the CDF file. See CDF2TPLOT documentation
+                   for details.
+
+   VERSION:        Used to manually specify the version of FIELDS CDF that
+                   will be searched for. By default, the routine will find
+                   and load the most recent version.
+
+  Commonly used output keywords:
+
+   FILES:          Optional keyword output that will return the full file path
+                   of files that are downloaded and loaded into TPLOT
+                   variables by this routine.
+
+   Other keywords:
+
+   DOWNSAMPLE:     Used in FIELDS L1 -&gt; L2 data processing of downsampled
+                   MAG data. No effect on L2/L3 data, or other (non-MAG)
+                   L1 data.
+
+   FILEPREFIX:     Manually set the subdirectory where this routine
+                   will search for FIELDS data files.
+                   Typically users do not need to change this from the default
+                   value.
+
+   GET_SUPPORT:    Load support data from the CDF file. See CDF2TPLOT
+                   documentation for details.
+
+   LONGTERM_EPHEM: Flag that can be set to load longterm (mission length)
+                   ephemeris files. (These are Level 1 files, currently not
+                   publicly available.)
+
+   PATHFORMAT:     Can be used to manually set the format of the FIELDS
+                   CDF filenames.
+                   Typically users do not need to change this from the default
+                   value.
+
+   TNAME_PREFIX:   Can be set to add a string prefix in front of any TPLOT
+                   variables created by this routine.
+
+ EXAMPLE:
+
+   IDL&gt; timespan, '2019-04-03', 4
+   IDL&gt; spp_fld_load, type = 'mag_RTN_4_Sa_per_Cyc'
+
+   For more examples, see SPP_FLD_EXAMPLES.
+
+ CREATED BY:       Davin Larson December 2018
+                   maintained by Marc Pulupa, 2019-2020
 
  $LastChangedBy: pulupalap $
- $LastChangedDate: 2020-07-24 15:34:30 -0700 (Fri, 24 Jul 2020) $
- $LastChangedRevision: 28938 $
+ $LastChangedDate: 2021-03-04 23:08:15 -0800 (Thu, 04 Mar 2021) $
+ $LastChangedRevision: 29739 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 
 </PRE><P>
@@ -272,8 +361,8 @@ Keywords:  (All are optional - none are recommended)
   SPP_GEN_APDAT
   This basic object is the entry point for defining and obtaining all data for all apids
  $LastChangedBy: ali $
- $LastChangedDate: 2020-07-17 17:23:27 -0700 (Fri, 17 Jul 2020) $
- $LastChangedRevision: 28907 $
+ $LastChangedDate: 2020-12-22 16:00:17 -0800 (Tue, 22 Dec 2020) $
+ $LastChangedRevision: 29551 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 </PRE><P>
 <STRONG>(See <A href="COMMON/spp_gen_apdat__define.pro">projects/SPP/COMMON/spp_gen_apdat__define.pro</A>)</STRONG><P>
@@ -291,8 +380,8 @@ PURPOSE:
  Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 Author: Davin Larson  - January 2014
  $LastChangedBy: ali $
- $LastChangedDate: 2020-07-17 17:23:27 -0700 (Fri, 17 Jul 2020) $
- $LastChangedRevision: 28907 $
+ $LastChangedDate: 2020-12-22 16:00:17 -0800 (Tue, 22 Dec 2020) $
+ $LastChangedRevision: 29551 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 </PRE><P>
 <STRONG>(See <A href="COMMON/spp_gen_apdat__define.pro">projects/SPP/COMMON/spp_gen_apdat__define.pro</A>)</STRONG><P>
@@ -335,8 +424,8 @@ see also:  &quot;spp_spc_unixtime_to_met&quot; for the reverse conversion
  This routine is in the process of being modified to use SPICE Kernels to correct for clock drift as needed.
  Author: Davin Larson
  $LastChangedBy: ali $
- $LastChangedDate: 2020-07-01 08:47:47 -0700 (Wed, 01 Jul 2020) $
- $LastChangedRevision: 28827 $
+ $LastChangedDate: 2021-03-09 19:26:00 -0800 (Tue, 09 Mar 2021) $
+ $LastChangedRevision: 29749 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_spc_met_to_unixtime.pro $
 </PRE><P>
 <STRONG>(See <A href="COMMON/spp_spc_met_to_unixtime.pro">projects/SPP/COMMON/spp_spc_met_to_unixtime.pro</A>)</STRONG><P>

@@ -24,8 +24,8 @@
 ;       PAN:      Returns the name of the tplot variable.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-07-01 11:22:53 -0700 (Wed, 01 Jul 2020) $
-; $LastChangedRevision: 28838 $
+; $LastChangedDate: 2020-12-15 13:03:48 -0800 (Tue, 15 Dec 2020) $
+; $LastChangedRevision: 29495 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makespec.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -128,12 +128,7 @@ pro mvn_swe_makespec, sum=sum, units=units, tplot=tplot, sflg=sflg, pan=ename
 ; Correct for deadtime
 
     rate = mvn_swe_engy.data / (swe_integ_t * mvn_swe_engy.dt_arr)  ; raw count rate per anode
-    dtc = 1. - rate*swe_dead
-    
-    indx = where(dtc lt swe_min_dtc, count)   ; maximum deadtime correction
-    if (count gt 0L) then dtc[indx] = !values.f_nan
-    
-    mvn_swe_engy.dtc = dtc                    ; corrected count rate = rate/dtc
+    mvn_swe_engy.dtc = swe_deadtime(rate)     ; corrected count rate = rate/dtc
 
 ; Apply cross calibration factor.  A new factor is calculated after each 
 ; MCP bias adjustment. See mvn_swe_config for these times.  Polynomial
@@ -276,12 +271,7 @@ pro mvn_swe_makespec, sum=sum, units=units, tplot=tplot, sflg=sflg, pan=ename
 ; Correct for deadtime
 
     rate = mvn_swe_engy_arc.data / (swe_integ_t * mvn_swe_engy_arc.dt_arr)      ; raw count rate per anode
-    dtc = 1. - rate*swe_dead
-    
-    indx = where(dtc lt swe_min_dtc, count)   ; maximum deadtime correction
-    if (count gt 0L) then dtc[indx] = !values.f_nan
-    
-    mvn_swe_engy_arc.dtc = dtc                ; corrected count rate = rate/dtc
+    mvn_swe_engy_arc.dtc = swe_deadtime(rate)  ; corrected count rate = rate/dtc
 
 ; Apply cross calibration factor.  A new factor is calculated after each 
 ; MCP bias adjustment. See mvn_swe_config for these times.  See 

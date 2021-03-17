@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -283,8 +283,8 @@ SEE ALSO:	&quot;get_data&quot;,
 
 CREATED BY:	Davin Larson
 $LastChangedBy: ali $
-$LastChangedDate: 2020-02-20 12:13:34 -0800 (Thu, 20 Feb 2020) $
-$LastChangedRevision: 28324 $
+$LastChangedDate: 2020-11-05 22:46:13 -0800 (Thu, 05 Nov 2020) $
+$LastChangedRevision: 29332 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/copy_data.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/copy_data.pro">general/tplot/copy_data.pro</A>)</STRONG><P>
@@ -461,6 +461,7 @@ KEYWORDS:
                 Default value is 5, in units of the average time interval:
                 delta_t = (t(end)-t(start)/number of data points)
   MISSING:      Value to set the new y data to for data gaps.  Default is NAN.
+  LAST_VALUE:  Set this keyword to return the last value of y array:  y[index]    (no interpolation performed)
 
 CREATED BY:	 Davin Larson
 LAST MODIFICATION:     @(#)data_cut.pro	1.19 02/04/17
@@ -862,6 +863,8 @@ KEYWORDS:
     OVERPLOT: If non-zero then data is plotted over last plot.
     NOXLAB:   if non-zero then xlabel tick marks are supressed.
     COLORS:   array of colors used for each curve.
+    NEG_COLORS  array of colors (or string)  If defined then data is plotted twice - once with 
+      positive values and second time with negative values. This is useful on log plots
     NOCOLOR:  do not use color when creating plot.
 NOTES:
     The values of all the keywords can also be put in the limits structure or
@@ -871,8 +874,8 @@ NOTES:
 CREATED BY:	Davin Larson
 FILE:  mplot.pro
  $LastChangedBy: davin-mac $
- $LastChangedDate: 2020-02-21 16:42:35 -0800 (Fri, 21 Feb 2020) $
- $LastChangedRevision: 28332 $
+ $LastChangedDate: 2020-12-16 13:10:03 -0800 (Wed, 16 Dec 2020) $
+ $LastChangedRevision: 29506 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/mplot.pro $
 
 </PRE><P>
@@ -1126,8 +1129,8 @@ Modified by:   Davin Larson
          options to specify the layout of that panel. 
  
          If you set the xmargin or ymargin keyword the margin will be
-         relative to the overall size of that panel. When using the
-         not using the noisotropic keyword the procedure will make
+         relative to the overall size of that panel. When not using the
+         using the noisotropic keyword the procedure will make
          each axis vary over the same range AND make the
          largest possible square window given the size of the panel
          and the sizes of the margins you have provided, if possible.
@@ -2136,9 +2139,9 @@ Notes:
 
 See Also:  &quot;XLIM&quot;, &quot;YLIM&quot;, &quot;ZLIM&quot;,  &quot;OPTIONS&quot;,  &quot;TPLOT&quot;, &quot;DRAW_COLOR_SCALE&quot;
 Author:  Davin Larson,  Space Sciences Lab
- $LastChangedBy: jimm $
- $LastChangedDate: 2018-09-07 13:24:55 -0700 (Fri, 07 Sep 2018) $
- $LastChangedRevision: 25744 $
+ $LastChangedBy: davin-mac $
+ $LastChangedDate: 2020-12-16 13:45:16 -0800 (Wed, 16 Dec 2020) $
+ $LastChangedRevision: 29522 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/specplot.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/specplot.pro">general/tplot/specplot.pro</A>)</STRONG><P>
@@ -3537,9 +3540,9 @@ PURPOSE:
 
 Written by: Davin Larson
 
- $LastChangedBy: davin-win $
- $LastChangedDate: 2011-02-15 16:17:03 -0800 (Tue, 15 Feb 2011) $
- $LastChangedRevision: 8224 $
+ $LastChangedBy: davin-mac $
+ $LastChangedDate: 2020-12-16 13:28:30 -0800 (Wed, 16 Dec 2020) $
+ $LastChangedRevision: 29513 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_quaternion_rotate.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/tplot_quaternion_rotate.pro">general/tplot/tplot_quaternion_rotate.pro</A>)</STRONG><P>
@@ -3644,9 +3647,9 @@ LAST MODIFICATION:     Added restore_varnames, 19-jun-2007, jmm
                        Removed additional output text - Use dprint,debug=3  to restore text.   Nov 2008
                        Fixed bug on macOS when saving figures of restored data using makepng/makegif/makejpg, 24-jan-2019, egrimes
 
- $LastChangedBy: ali $
- $LastChangedDate: 2020-03-05 14:17:16 -0800 (Thu, 05 Mar 2020) $
- $LastChangedRevision: 28383 $
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2020-11-23 10:28:45 -0800 (Mon, 23 Nov 2020) $
+ $LastChangedRevision: 29372 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_restore.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/tplot_restore.pro">general/tplot/tplot_restore.pro</A>)</STRONG><P>

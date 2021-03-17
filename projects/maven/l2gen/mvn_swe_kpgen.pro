@@ -11,19 +11,22 @@
 ; date = If set, the input date. The default is today
 ; directory = If set, output into this directory, for testing
 ;             purposes, don't forget a slash '/'  at the end.
+; allbad = If set, mark all data as affected by low-energy anomaly.
 ;HISTORY:
 ; Hacked from mvn_swe_l2gen, 2015-01-25, jmm, jimm@ssl.berkeley.edu
 ; jimm@ssl.berkeley.edu
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2015-02-24 18:45:38 -0800 (Tue, 24 Feb 2015) $
-; $LastChangedRevision: 17037 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2021-02-18 13:40:21 -0800 (Thu, 18 Feb 2021) $
+; $LastChangedRevision: 29670 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_swe_kpgen.pro $
 ;- 
-Pro mvn_swe_kpgen, date = date, directory = directory, _extra = _extra
+Pro mvn_swe_kpgen, date = date, directory = directory, allbad = allbad, _extra = _extra
 ; crib for loading l0 data, creating L2 CDF files, and populating structures
 ; only works for one day at a time -- that's how we make L2 CDFs
 
 @ mvn_swe_com
+
+  allbad = keyword_set(allbad)
 
 ;Root data directory, sometimes isn't defined
   setenv, 'ROOT_DATA_DIR=/disks/data/'
@@ -46,7 +49,7 @@ Pro mvn_swe_kpgen, date = date, directory = directory, _extra = _extra
 ; Make kp save file:
   del_data, '*'                 ;delete all tplot variables so files 
                                 ;aren't made from the previous day's data
-  mvn_swe_kp, trange
+  mvn_swe_kp, trange, allbad=allbad
 
 Return
 End

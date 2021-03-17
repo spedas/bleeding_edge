@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-07-01 08:47:47 -0700 (Wed, 01 Jul 2020) $
-; $LastChangedRevision: 28827 $
+; $LastChangedDate: 2020-08-24 21:48:08 -0700 (Mon, 24 Aug 2020) $
+; $LastChangedRevision: 29072 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -358,8 +358,7 @@ function spp_swp_spe_prod_apdat::cdf_global_attributes
   global_att= self.spp_gen_apdat::cdf_global_attributes()
   global_att['InstrumentLead_name'] = 'P. Whittlesey'
   global_att['InstrumentLead_email'] = 'phyllisw@berkeley.edu'
-  global_att['InstrumentLead_affiliation'] = 'U.C. Berkeley Space Sciences Laboratory'
-  global_att = global_att + self.sw_version()
+  global_att['Sensor'] = 'spe'
   return,global_att
 end
 

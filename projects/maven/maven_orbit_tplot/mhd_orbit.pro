@@ -24,18 +24,22 @@
 ;       RESET:     Read in the MAG-MOLA image and calculate the
 ;                  plot size and position.
 ;
+;       MONITOR:   Place snapshot window in this monitor.  Only works if
+;                  monitor configuration is defined (see putwin.pro).
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-07-01 11:18:35 -0700 (Wed, 01 Jul 2020) $
-; $LastChangedRevision: 28832 $
+; $LastChangedDate: 2021-02-28 12:46:30 -0800 (Sun, 28 Feb 2021) $
+; $LastChangedRevision: 29710 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mhd_orbit.pro $
 ;
 ;CREATED BY:	David L. Mitchell  04-02-03
 ;-
 pro mhd_orbit, lon, lat, lon_sc, lat_sc, psym=psym, lstyle=lstyle, $
-                 color=color, reset=reset, xy=xy, xz=xz, sc=sc
+                 color=color, reset=reset, xy=xy, xz=xz, sc=sc, $
+                 monitor=monitor
 
   common mhd_orb_com, img, ppos
-  @swe_snap_common
+  @putwin_common
 
   twin = !d.window
   owin = 30
@@ -64,13 +68,19 @@ pro mhd_orbit, lon, lat, lon_sc, lat_sc, psym=psym, lstyle=lstyle, $
 
     xoff = round(34.*csize)
     yoff = round(30.*csize)
-    i = sz[2] + (2*xoff)
-    j = sz[3] + (2*yoff)
+    xsize = sz[2] + (2*xoff)
+    ysize = sz[3] + (2*yoff)
 
-    Mopt2 = Mopt
-    Mopt2.xsize = i
-    Mopt2.ysize = j
-    putwin, owin, key=Mopt2
+    undefine, mnum
+    if (size(monitor,/type) gt 0) then begin
+      if (size(windex,/type) eq 0) then putwin, /config $
+                                   else if (windex eq -1) then putwin, /config
+      mnum = fix(monitor[0])
+    endif else begin
+      if (size(secondarymon,/type) gt 0) then mnum = secondarymon
+    endelse
+
+    putwin, owin, mnum, xsize=xsize, ysize=ysize, dx=-541, dy=-10
 
     px = [0.0, 1.0] * !d.x_vsize + xoff + 16
     py = [0.0, 1.0] * !d.y_vsize + yoff + 10

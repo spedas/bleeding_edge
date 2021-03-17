@@ -23,25 +23,29 @@
 ;
 ;       KEEPWINS:      If set, then don't close the snapshot window(s) on exit.
 ;
+;       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
+;                      from 0 to N-1, where N is the number of monitors recognized
+;                      by the operating system.  See putwin.pro for details.
+;
 ;       ARCHIVE:       If set, show snapshots of archive data.
 ;
+;       BURST:         Synonym for ARCHIVE.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-08-26 16:49:26 -0700 (Mon, 26 Aug 2019) $
-; $LastChangedRevision: 27656 $
+; $LastChangedDate: 2021-03-02 11:48:03 -0800 (Tue, 02 Mar 2021) $
+; $LastChangedRevision: 29727 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_cal_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
 ;-
 pro swe_cal_snap, ddd=ddd, pad=pad, spec=spec, keepwins=keepwins, units=units, $
-                  archive=archive
+                  archive=archive, burst=burst, monitor=monitor
 
   @mvn_swe_com
-  @swe_snap_common
-
-  if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
+  @putwin_common
 
   if not keyword_set(units) then units = 'rate'
-  if keyword_set(archive) then aflg = 1 else aflg = 0
+  if (keyword_set(archive) or keyword_set(burst)) then aflg = 1 else aflg = 0
   if keyword_set(keepwins) then kflg = 0 else kflg = 1
   
   if keyword_set(ddd) then doddd = 1 else doddd = 0
@@ -60,9 +64,16 @@ pro swe_cal_snap, ddd=ddd, pad=pad, spec=spec, keepwins=keepwins, units=units, $
 
   Twin = !d.window
 
-  if (size(Dopt,/type) ne 8) then swe_snap_layout, 0
+  undefine, mnum
+  if (size(monitor,/type) gt 0) then begin
+    if (size(windex,/type) eq 0) then putwin, /config $
+                                 else if (windex eq -1) then putwin, /config
+    mnum = fix(monitor[0])
+  endif else begin
+    if (size(secondarymon,/type) gt 0) then mnum = secondarymon
+  endelse
 
-  window, /free, xsize=1440, ysize=850, xpos=240, ypos=-860
+  putwin, /free, monitor=mnum, xsize=1440, ysize=850, dx=10, dy=10
   Cwin = !d.window
 
   limits = {no_interp:1, xrange:[3,5000], xstyle:1, yrange:[0,95], ystyle:1, $
@@ -114,6 +125,7 @@ pro swe_cal_snap, ddd=ddd, pad=pad, spec=spec, keepwins=keepwins, units=units, $
         limits.zlog = 1
         limits.ztitle = strupcase(dat.units_name)
         specplot,x,y,z1,limits=limits
+
         limits.title = 'Geometric Factor (x10!u4!n)'
         limits.zlog = 0
         limits.ztitle = ''
@@ -123,12 +135,13 @@ pro swe_cal_snap, ddd=ddd, pad=pad, spec=spec, keepwins=keepwins, units=units, $
             ytitle='Geometric Factor (x10!u4!n)', $
             charsize=limits.charsize, title=limits.title
         endif else specplot,x,y,z2,limits=limits
+
         limits.title = 'MCP Efficiency'
         specplot,x,y,z3,limits=limits
+
         limits.title = 'Deadtime Correction'
-        str_element, 'limits', 'zrange', [swe_min_dtc,1.0], /add
-        specplot,x,y,z4,limits=limits
         str_element, 'limits', 'zrange', [0,0], /add
+        specplot,x,y,z4,limits=limits
         !p.multi = 0
       endif
     endif
@@ -155,6 +168,7 @@ pro swe_cal_snap, ddd=ddd, pad=pad, spec=spec, keepwins=keepwins, units=units, $
         limits.zlog = 1
         limits.ztitle = strupcase(dat.units_name)
         specplot,x,y,z1,limits=limits
+
         limits.title = 'Geometric Factor (x10!u4!n)'
         limits.zlog = 0
         limits.ztitle = ''
@@ -164,12 +178,13 @@ pro swe_cal_snap, ddd=ddd, pad=pad, spec=spec, keepwins=keepwins, units=units, $
             ytitle='Geometric Factor (x10!u4!n)', $
             charsize=limits.charsize, title=limits.title
         endif else specplot,x,y,z2,limits=limits
+
         limits.title = 'MCP Efficiency'
         specplot,x,y,z3,limits=limits
+
         limits.title = 'Deadtime Correction'
-        str_element, limits, 'zrange', [swe_min_dtc,1.0], /add
-        specplot,x,y,z4,limits=limits
         str_element, limits, 'zrange', [0,0], /add
+        specplot,x,y,z4,limits=limits
         !p.multi = 0
       endif
     endif
@@ -193,7 +208,7 @@ pro swe_cal_snap, ddd=ddd, pad=pad, spec=spec, keepwins=keepwins, units=units, $
                      charsize=limits.charsize
         plot_oi,x,y3,xtitle='Energy (eV)',ytitle='MCP Efficiency',psym=10,charsize=limits.charsize
         plot_oi,x,y4,xtitle='Energy (eV)',ytitle='Deadtime Correction',psym=10,$
-                     yrange=[swe_min_dtc,1.0],/ysty,charsize=limits.charsize
+                     yrange=[0,0],/ysty,charsize=limits.charsize
         !p.multi = 0
       endif
     endif

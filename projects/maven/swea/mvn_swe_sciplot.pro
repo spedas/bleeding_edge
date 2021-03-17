@@ -74,8 +74,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-03-15 12:36:16 -0700 (Fri, 15 Mar 2019) $
-; $LastChangedRevision: 26805 $
+; $LastChangedDate: 2020-08-28 10:31:01 -0700 (Fri, 28 Aug 2020) $
+; $LastChangedRevision: 29087 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sciplot.pro $
 ;
 ;-
@@ -119,15 +119,23 @@ pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lp
     return
   endif
 
+  str_element, a4, 'time', etime, success=ok
+  if (not ok) then str_element, mvn_swe_engy, 'time', etime, success=ok
+  if (not ok) then begin
+    print,"This should be impossible: mvn_swe_stat says that data are loaded,"
+    print,"but I can't find the L0 or L2 SPEC data."
+    return
+  endif
+
 ; Make sure ephemeris covers loaded data
 
   tplot_options, get=topt
-  if (max(topt.trange) lt 1D) then timespan, (minmax(a4.time) + [0D,34D])
+  if (max(topt.trange) lt 1D) then timespan, (minmax(etime) + [0D,34D])
 
   if (find_handle('alt2',v=-1) gt 0) then begin
     get_data,'alt',data=alt
     tsp = minmax(alt.x)
-    indx = where((a4.time lt tsp[0]) or (a4.time gt tsp[1]), count)
+    indx = where((etime lt tsp[0]) or (etime gt tsp[1]), count)
     if (count gt 0) then maven_orbit_tplot, /loadonly, /shadow, datum=datum
   endif else maven_orbit_tplot, /loadonly, /shadow, datum=datum
 

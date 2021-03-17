@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -20,7 +20,7 @@ This page was created by the IDL library routine
 <UL>
 <H1>general/spice</H1>
 <LI><A HREF="#ORRERY">ORRERY</A>
-<br>Plots the orbits of the planets to scale as viewed from the
+<br>Plots the orbits of the planets to scale as viewed from the north
 <LI><A HREF="#Q_ANGULAR_VELOCITY">Q_ANGULAR_VELOCITY</A>
 <LI><A HREF="#QDERIV">QDERIV</A>
 <LI><A HREF="#SPICE_BODY_ATT">SPICE_BODY_ATT</A>
@@ -54,24 +54,21 @@ This page was created by the IDL library routine
 <PRE>
 PROCEDURE:   orrery
 PURPOSE:
-  Plots the orbits of the planets to scale as viewed from the
-  north ecliptic pole, based on the DE435 ephemeris.  Planet
-  locations are shown by colored disks at the time(s) provided.
-  If time is an array, then colored arcs are drawn to show the
-  orbital positions spanned by the input time array.  In this
-  case, colored disks mark the beginning, middle and end of
-  each arc.  Time can also be input by clicking in a tplot
-  window (see keyword MOVIE).
+  Plots the orbits of the planets to scale as viewed from the north
+  ecliptic pole, based on the latest JPL planetary ephemeris.  Planet
+  locations are shown by colored disks at the time(s) provided.  If 
+  time is an array, then colored arcs are drawn to show the orbital 
+  positions spanned by the input time array.  In this case, colored 
+  disks mark the beginning, middle and end of each arc.  Time can 
+  also be input by clicking in a tplot window (see keyword MOVIE).
 
-  By default, this routine shows the inner planets (Mercury
-  to Mars).  Use keyword OUTER to show all the planets plus
-  Pluto.  In this case, the inner planets will be crowded
-  together in the center.
+  By default, this routine shows the inner planets (Mercury to Mars).
+  Use keyword OUTER to show all the planets plus Pluto.  In this case, 
+  the inner planets will be crowded together in the center.
 
-  The routine was originally designed (long ago) to show
-  only Earth and Mars.  Some useful Earth-Mars geometry is
-  calculated and can be shown using LABEL=2.  Information
-  includes:
+  This routine was originally designed (long ago in the Great Valley)
+  to show only Earth and Mars.  Some useful Earth-Mars geometry is 
+  calculated and can be shown using LABEL=2.  Information includes:
 
     Earth-Sun-Mars angle (amount of solar rotation E -&gt; M)
     Sun-Mars-Earth angle (elongation of Earth from Mars)
@@ -79,19 +76,25 @@ PURPOSE:
     One-way light time (Mars to Earth, min)
     Subsolar latitude on Mars (deg)
 
-  Use keyword PLANET to calculate the same geometry for any
-  other planet.
+  Use keyword PLANET to calculate the same geometry for any other 
+  planet.
 
-  Optionally returns (keyword EPH) the orbital positions of 
-  the planets plus Pluto for the entire ephemeris time period.
+  Optionally returns (keyword EPH) the orbital positions of the 
+  planets plus Pluto for the entire ephemeris time period.
+
+  Note: This routine uses long-range predict kernels for Solar Probe 
+  and Solar Orbiter.  These kernels use a format that cannot be read 
+  by earlier versions of ICY/SPICE.  You may need to update ICY/SPICE 
+  to see the positions of these two spacecraft.  Version 1.8.0 is 
+  known to work.
 
 USAGE:
   orrery [, time] [,KEYWORD=value, ...]
 
 INPUTS:
-       time:      Show planet positions at this time(s).  Valid
-                  times are from 1900-01-05 to 2100-01-01 in any
-                  format accepted by time_double().
+       time:      Show planet positions at this time(s).  Valid times
+                  are from 1900-01-05 to 2100-01-01 in any format
+                  accepted by time_double().
 
                   If not specified, use the current system time.
 
@@ -117,11 +120,23 @@ KEYWORDS:
                   The plot limits will be set to include this and
                   all interior planets.
 
+       FIXPLANET: Rotate the all planet and satellite positions 
+                  about the Z axis so that the specified planet is
+                  fixed at the same longitude.  Set this keyword
+                  to a scalar or two-element array:
+
+                    fix[0] : fixed longitude (0-360 deg)
+                    fix[1] : planet number (1-9); default = 3
+
+                  Applies only to plotting - does not affect the 
+                  returned EPH structure.
+
        SCALE:     Scale factor for adjusting the size of the
                   plot window.  Default = 1.
 
-       EPH:       Named variable to hold structure of planetary
-                  orbital ephemeris data (1900-2100).
+       EPH:       Named variable to hold structure of planet and
+                  satellite ephemeris data (1900-2100, or as 
+                  available).
 
        STEREO:    Plot the locations of the STEREO spacecraft,
                   when available.  (The Stereo-B ephemeris has
@@ -130,7 +145,9 @@ KEYWORDS:
                   &quot;behind&quot; orbit.  This routine deletes the bad
                   ephemeris values and interpolates across the 
                   gap.)
-                    Coverage: 2006-10-26 to 2020-10-26
+                    Coverage:
+                      Stereo A: 2006-10-26 to 2021-03-04
+                      Stereo B: 2006-10-26 to 2014-09-28
 
        SORB:      Plot the location of Solar Orbiter.  Includes a
                   predict ephemeris.
@@ -165,6 +182,18 @@ KEYWORDS:
 
        KEEPWIN:   Just keep the plot window (don't ask).
 
+       WINDOW:    Window number for the snapshot window.  This is a number
+                  from 0 to 31 (same range as WINDOW command).  Any value
+                  outside this range will invoke the FREE keyword.
+
+       MONITOR:   Put snapshot windows in this monitor.  Monitors are numbered
+                  from 0 to N-1, where N is the number of monitors recognized
+                  by the operating system.  See putwin.pro for details.
+
+       PNG:       Set this to the full filename (including path) of a png.
+                  No snapshot window is created.  All graphics output is
+                  written to the png file instead.  MOVIE = 0 is enforced.
+
        OUTER:     Plot the outer planets.  The inner planets will
                   be crowded together in the center.  Pluto's orbit
                   is incomplete over the 1900-2100 ephemeris range.
@@ -180,16 +209,18 @@ KEYWORDS:
        TPLOT:     Create Earth-PLANET geometry and spacecraft position
                   tplot variables.
 
+       VARNAMES:  Standard set of tplot variables to plot.
+
        VERBOSE:   Controls verbosity of file_retrieve.
                   Default = 0 (no output).  Try a value &gt; 2 to see
                   more messages; &gt; 4 for lots of messages.
 
-       FULL:      Show everything: planets and spacecraft, Parker
+       FULL:      Show everything: planets, all spacecraft, Parker
                   spiral, and all labels.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-31 15:50:18 -0700 (Fri, 31 Jul 2020) $
- $LastChangedRevision: 28965 $
+ $LastChangedDate: 2021-03-16 19:27:54 -0700 (Tue, 16 Mar 2021) $
+ $LastChangedRevision: 29764 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery.pro $
 
 CREATED BY:	David L. Mitchell
@@ -272,9 +303,9 @@ Keywords:
   check_objects: frame or body name that the routine will check for valid times to prevent crashing.
 
  Author: Davin Larson  
- $LastChangedBy: davin-mac $
- $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
- $LastChangedRevision: 27221 $
+ $LastChangedBy: ali $
+ $LastChangedDate: 2020-08-18 18:37:05 -0700 (Tue, 18 Aug 2020) $
+ $LastChangedRevision: 29046 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_body_pos.pro $
 </PRE><P>
 <STRONG>(See <A href="spice/spice_body_pos.pro">general/spice/spice_body_pos.pro</A>)</STRONG><P>
@@ -294,9 +325,9 @@ Keywords:
   check_objects: frame or body name that the routine will check for valid times to prevent crashing.
 
  Author: Davin Larson  
- $LastChangedBy: davin-mac $
- $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
- $LastChangedRevision: 27221 $
+ $LastChangedBy: ali $
+ $LastChangedDate: 2020-08-18 18:37:05 -0700 (Tue, 18 Aug 2020) $
+ $LastChangedRevision: 29046 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_body_vel.pro $
 </PRE><P>
 <STRONG>(See <A href="spice/spice_body_vel.pro">general/spice/spice_body_vel.pro</A>)</STRONG><P>
@@ -446,10 +477,10 @@ Usage:
   spice_postion_to_tplot,object,observer,frame=frame,
 
 Purpose: ;
- Author: Davin Larson  
+ Author: Davin Larson
  $LastChangedBy: davin-mac $
- $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
- $LastChangedRevision: 27221 $
+ $LastChangedDate: 2020-12-16 13:15:41 -0800 (Wed, 16 Dec 2020) $
+ $LastChangedRevision: 29509 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_position_to_tplot.pro $
 </PRE><P>
 <STRONG>(See <A href="spice/spice_position_to_tplot.pro">general/spice/spice_position_to_tplot.pro</A>)</STRONG><P>
@@ -485,30 +516,24 @@ USAGE:  files = spice_standard_kernels(/load)
 PURPOSE:
  Provides fully resolved standard spice kernel filenames. files are downloaded if needed.
  NOTE: this routine is in development still.
- 
+
  NAIF specifies a few &quot;standard&quot; files that must typically be loaded in before for any calculations can be performed. These are:
     Leap second kernel:   (naif????.tls)  Contains times of leap seconds.   ???? contains the version number and increments by 1 with every new leap second.
-    PCK kernel:           (pck?????.tpc)  Contains spin axis and size of most solar system bodies. 
+    PCK kernel:           (pck?????.tpc)  Contains spin axis and size of most solar system bodies.
     SPK kernel:           (de???.bsp)     Contains ephemeris data for the planets. Mars (499) is NOT included in most recent version!
-    
+
  The file names and locations (and even contents) of these kernels is not standard and will change with each new release.
- 
-KEYWORDS:
-  MARS:   
- 
+
 CALLING SEQUENCE:
-  files=spice_standard_kernels(/load) 
-TYPICAL USAGE:
-INPUT:
-  none 
+  files=spice_standard_kernels(/load)
 KEYWORDS:
  LOAD:   Set keyword to retrieve and load file
 OUTPUT:
  fully qualified kernel filename(s)
 
- $LastChangedBy: rlillis3 $
- $LastChangedDate: 2019-12-20 16:22:29 -0800 (Fri, 20 Dec 2019) $
- $LastChangedRevision: 28135 $
+ $LastChangedBy: ali $
+ $LastChangedDate: 2021-03-04 22:17:43 -0800 (Thu, 04 Mar 2021) $
+ $LastChangedRevision: 29738 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_standard_kernels.pro $
 </PRE><P>
 <STRONG>(See <A href="spice/spice_standard_kernels.pro">general/spice/spice_standard_kernels.pro</A>)</STRONG><P>
@@ -585,8 +610,8 @@ Output:    VECTOR_PRIME:  3xN array - vector as measured in the TO_FRAME
  
  Author: Davin Larson  
  $LastChangedBy: davin-mac $
- $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
- $LastChangedRevision: 27221 $
+ $LastChangedDate: 2020-12-16 13:35:32 -0800 (Wed, 16 Dec 2020) $
+ $LastChangedRevision: 29517 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_vector_rotate.pro $
 </PRE><P>
 <STRONG>(See <A href="spice/spice_vector_rotate.pro">general/spice/spice_vector_rotate.pro</A>)</STRONG><P>
@@ -608,8 +633,8 @@ Output:    VECTOR_PRIME:  3xN array - vector as measured in the TO_FRAME
  
  Author: Davin Larson  
  $LastChangedBy: davin-mac $
- $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
- $LastChangedRevision: 27221 $
+ $LastChangedDate: 2020-12-01 12:07:25 -0800 (Tue, 01 Dec 2020) $
+ $LastChangedRevision: 29408 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_vector_rotate_tplot.pro $
 </PRE><P>
 <STRONG>(See <A href="spice/spice_vector_rotate_tplot.pro">general/spice/spice_vector_rotate_tplot.pro</A>)</STRONG><P>
@@ -631,8 +656,8 @@ Output:    VECTOR_PRIME:  3xN array - vector as measured in the TO_FRAME
 Author: Davin Larson
 
  $LastChangedBy: ali $
- $LastChangedDate: 2020-07-07 14:08:46 -0700 (Tue, 07 Jul 2020) $
- $LastChangedRevision: 28858 $
+ $LastChangedDate: 2021-01-07 08:41:41 -0800 (Thu, 07 Jan 2021) $
+ $LastChangedRevision: 29577 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/time_ephemeris.pro $
 
 </PRE><P>

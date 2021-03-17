@@ -13,39 +13,40 @@
 ;INPUTS:
 ;
 ;KEYWORDS:
-;       LAYOUT:        A named variable to specify window layouts.
-;
-;                        0 --> Default.  No fixed window positions.
-;                        1 --> Macbook Air with Dell 1920x1200 external screen.
-;                        2 --> HP Z220 with twin Dell 1920x1200 screens.
-;                        3 --> Dell 2009W 1680x1050 with Macbook Air
-;
-;                      This puts up snapshot windows in convenient, non-overlapping
-;                      locations, depending on display hardware.
-;
 ;       MODEL:         Plot a model of the 3D data product with the test pulser on in a
 ;                      separate window.  (An analytic approximation to the test pulser
 ;                      signal is used.  See 'swe_testpulser_model.pro' for details.)
-;
-;       KEEPWINS:      If set, then don't close the snapshot window(s) on exit.
 ;
 ;       ZRANGE:        Sets color scale range.  Default = [1,3000].
 ;
 ;       ZLOG:          Sets log color scaling.  Default = 1.
 ;
+;       WSCALE:        Scale factor for snapshot window sizes.
+;
+;       KEEPWINS:      If set, then don't close the snapshot window(s) on exit.
+;
+;       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
+;                      from 0 to N-1, where N is the number of monitors recognized
+;                      by the operating system.  See putwin.pro for details.
+;
 ;       ARCHIVE:       If set, show snapshots of archive data (A1).
+;
+;       BURST:         Synonym for ARCHIVE.
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
 ;FILE: swe_a0_snap.pro
 ;VERSION:   1.0
 ;LAST MODIFICATION:   07/24/12
 ;-
-pro swe_a0_snap, layout=layout, model=model, keepwins=keepwins, zrange=zrange, zlog=zlog, $
-                 archive=archive
+pro swe_a0_snap, model=model, keepwins=keepwins, zrange=zrange, zlog=zlog, $
+                 archive=archive, burst=burst, monitor=monitor, wscale=wscale
 
   @mvn_swe_com
+  @putwin_common
 
-  if keyword_set(archive) then aflg = 1 else aflg = 0
+  if (keyword_set(archive) or keyword_set(burst)) then aflg = 1 else aflg = 0
+
+  if keyword_set(wscale) then scale = wscale[0] else scale = 1.
 
   if (aflg) then begin
     if (size(swe_3d_arc,/type) ne 8) then begin
@@ -77,81 +78,31 @@ pro swe_a0_snap, layout=layout, model=model, keepwins=keepwins, zrange=zrange, z
 
   Twin = !d.window
 
-  print,'Use button 1 to select time; button 3 to quit.'
+  undefine, mnum
+  if (size(monitor,/type) gt 0) then begin
+    if (size(windex,/type) eq 0) then putwin, /config $
+                                 else if (windex eq -1) then putwin, /config
+    mnum = fix(monitor[0])
+  endif else begin
+    if (size(secondarymon,/type) gt 0) then mnum = secondarymon
+  endelse
 
-  if not keyword_set(layout) then layout = 0
+  putwin, /free, monitor=mnum, xsize=800, ysize=500, dx=10, dy=10, scale=scale
+  Swin = !d.window
   
-  hsk_ysize = 545
+  if (hflg) then begin
+    putwin, /free, rel=Swin, xsize=225, ysize=545, dx=10, /top
+    Hwin = !d.window
+  endif
 
-  case layout of
-    0    : begin
-             window, /free, xsize=800, ysize=500
-             Swin = !d.window
-  
-             if (hflg) then begin
-               window, /free, xsize=225, ysize=hsk_ysize
-               Hwin = !d.window
-             endif
-
-             if (mflg) then begin
-               window, /free, xsize=800, ysize=500
-               Mwin = !d.window
-             endif
-           end
-    
-    1    : begin
-             window, /free, xpos=225, ypos=-600
-             Swin = !d.window
-  
-             if (hflg) then begin
-               window, /free, xsize=225, ysize=hsk_ysize, xpos=1400, ypos=-550
-               Hwin = !d.window
-             endif
-           end
-    
-    2    : begin
-             window, /free, xsize=800, ysize=500, xpos=1120, ypos=640
-             Swin = !d.window
-  
-             if (hflg) then begin
-               window, /free, xsize=200, ysize=hsk_ysize, xpos=880, ypos=500
-               Hwin = !d.window
-             endif
-
-             if (mflg) then begin
-               window, /free, xsize=800, ysize=500, xpos=1120, ypos=100
-               Mwin = !d.window
-             endif
-           end
-    
-    3    : begin
-             window, /free, xsize=800, ysize=500, xpos=1680, ypos=640
-             Swin = !d.window
-  
-             if (hflg) then begin
-               window, /free, xsize=200, ysize=hsk_ysize, xpos=2600, ypos=500
-               Hwin = !d.window
-             endif
-
-             if (mflg) then begin
-               window, /free, xsize=800, ysize=500, xpos=1680, ypos=100
-               Mwin = !d.window
-             endif
-           end
-    
-    else : begin
-             window, /free
-             Swin = !d.window
-  
-             if (hflg) then begin
-               window, /free, xsize=225, ysize=hsk_ysize
-               Hwin = !d.window
-             endif
-           end
-
-  endcase
+  if (mflg) then begin
+    putwin, /free, rel=Swin, xsize=800, ysize=500, dy=-55, scale=scale
+    Mwin = !d.window
+  endif
 
 ; Select the first time, then get the 3D spectrum closest that time
+
+  print,'Use button 1 to select time; button 3 to quit.'
 
   wset,Twin
   ctime2,trange,npoints=1,/silent,button=button

@@ -15,6 +15,9 @@
 ;             include the HPCA spectra variables you would like to spin-sum;
 ;             if not provided, uses tnames() by default. 
 ;         avg: average instead of sum
+;         suffix: suffix that was used when the data were loaded; if you provide a suffix
+;         to mms_load_hpca and mms_hpca_calc_anodes, you'll need to apply a suffix
+;         here as well
 ;         
 ; OUTPUT:
 ;         Creates tplot variables containing the spin summed fluxes and counts; 
@@ -28,24 +31,27 @@
 ;     
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-09-04 15:04:01 -0700 (Wed, 04 Sep 2019) $
-;$LastChangedRevision: 27722 $
+;$LastChangedDate: 2021-03-02 09:40:53 -0800 (Tue, 02 Mar 2021) $
+;$LastChangedRevision: 29721 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_hpca_spin_sum.pro $
 ;-
 
-pro mms_hpca_spin_sum, probe = probe, datatype=datatype, species=species, fov=fov, tplotnames=tplotnames, avg=avg, names_out=names_out
+pro mms_hpca_spin_sum, probe = probe, datatype=datatype, species=species, fov=fov, tplotnames=tplotnames, avg=avg, names_out=names_out, suffix=suffix
     if undefined(probe) then begin
         dprint, dlevel = 0, 'Error, must provide probe # to spin-sum the HPCA data'
         return
     endif else begin
         probe = strcompress(string(probe), /rem)
     endelse
+    
+    if undefined(suffix) then suffix = ''
+    
     if undefined(datatype) then datatype =['*_count_rate', '*_RF_corrected', '*_bkgd_corrected', '*_norm_counts', '*_flux'] else datatype = '*_'+datatype
     if undefined(species) then species = ['hplus', 'oplus', 'oplusplus', 'heplus', 'heplusplus']
     if undefined(fov) then fov = ['0', '360'] else fov = strcompress(string(fov),/rem)
     if undefined(tplotnames) then tplotnames = tnames()
     
-    get_data, 'mms'+probe+'_hpca_start_azimuth', data=start_az
+    get_data, 'mms'+probe+'_hpca_start_azimuth'+suffix, data=start_az
     
     if ~is_struct(start_az) then begin
         dprint, dlevel = 0, 'Error, couldn''t find the variable containing the start azimuth'
@@ -59,7 +65,7 @@ pro mms_hpca_spin_sum, probe = probe, datatype=datatype, species=species, fov=fo
     endif
 
     for sum_idx = 0, n_elements(datatype)-1 do begin
-        vars_to_sum = strmatch(tplotnames, datatype[sum_idx]+'_elev_'+fov[0]+'-'+fov[1])
+        vars_to_sum = strmatch(tplotnames, datatype[sum_idx]+suffix+'_elev_'+fov[0]+'-'+fov[1])
 
         for vars_idx = 0, n_elements(vars_to_sum)-1 do begin
             if vars_to_sum[vars_idx] eq 1 then begin

@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-01-31 14:37:52 -0800 (Fri, 31 Jan 2020) $
-; $LastChangedRevision: 28266 $
+; $LastChangedDate: 2021-02-15 23:03:32 -0800 (Mon, 15 Feb 2021) $
+; $LastChangedRevision: 29657 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_save_reduce_timeres.pro $
 
 ;20160623 Ali
@@ -51,13 +51,10 @@ end
 
 
 pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,timestamp=timestamp,verbose=verbose,$
-  resstr=resstr,resolution=res,description=description
+  resstr=resstr,resolution=res,description=description,hourly=hourly
 
-  if keyword_set(init) then begin
-    trange0=[time_double('2014-9-22'),systime(1)]
-    if init lt 0 then trange0=[time_double('2013-12-5'),systime(1)]
-  endif else trange0=timerange(trange0)
-
+  if keyword_set(init) then trange0=[time_double('2013-12-03'),systime(1)] else trange0=timerange(trange0)
+  if keyword_set(hourly) then resstr='01hr'
   if ~keyword_set(resstr) then resstr='5min'
   if ~keyword_set(res) then begin
     res=double(resstr)
@@ -80,7 +77,7 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
     prereq_files=''
 
     fullres_file=mvn_pfp_file_retrieve(fullres_fmt,trange=tn,/daily_names)
-    redures_file=mvn_pfp_file_retrieve(redures_fmt,trange=tn,/daily_names,/create_dir)
+    redures_file=mvn_pfp_file_retrieve(redures_fmt,trange=tn,/daily_names)
 
     dprint,dlevel=3,fullres_file
 
@@ -143,6 +140,7 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
     ;  if n_elements(ap24) gt 1 ;lower cadence than 5min
     ;  if n_elements(ap25) gt 1 ;apid not available
 
+    file_mkdir2,file_dirname(redures_file)
     save,filename=redures_file,verbose=verbose,s1_hkp,s1_svy,s1_arc,s1_nse,s2_hkp,s2_svy,s2_arc,s2_nse,m1_hkp,m2_hkp,$
       ap20,ap21,ap22,ap23,ap24,source_filename,sw_version,prereq_info,spice_info,description=description
 

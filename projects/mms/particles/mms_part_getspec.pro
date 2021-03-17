@@ -52,8 +52,8 @@
 ;         Spacecraft photoelectrons are corrected in moments_3d
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-02-26 11:27:36 -0800 (Tue, 26 Feb 2019) $
-;$LastChangedRevision: 26707 $
+;$LastChangedDate: 2021-02-24 12:49:10 -0800 (Wed, 24 Feb 2021) $
+;$LastChangedRevision: 29699 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -186,7 +186,7 @@ pro mms_part_getspec, probes=probes, $
     endfor
 
     ; load state data (needed for coordinate transforms and field aligned coordinates)
-    if defined(state_to_load) && undefined(pos_name_user) then mms_load_mec, probes=state_to_load, trange=support_trange, spdf=spdf, varformat='*_mec_v_gse* *_mec_r_gse*'
+    if defined(state_to_load) && undefined(pos_name_user) then mms_load_mec, probes=state_to_load, trange=support_trange, spdf=spdf, varformat='*_mec_v_gse* *_mec_r_gse*', /time_clip
 
     ; load magnetic field data
     if defined(fgm_to_load) && undefined(mag_name_user) then mms_load_fgm, probes=fgm_to_load, trange=support_trange, level='l2', suffix=mag_suffix, spdf=spdf, data_rate=mag_data_rate, /time_clip, varformat='*_fgm_b_gse_*'

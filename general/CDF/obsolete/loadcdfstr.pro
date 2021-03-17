@@ -54,7 +54,7 @@ for num = 0,n_elements(cdf_files)-1 do begin
       endif
       id = cdf_open(cdf_file)
    endif else id = cdf_file
-   if not keyword_set(silent) then dprint,'Loading ',cdf_file
+   if not keyword_set(silent) then dprint,'Loading '+cdf_file
 
    tinq = cdf_info(id)
    inq = tinq.inq

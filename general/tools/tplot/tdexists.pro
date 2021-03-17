@@ -36,16 +36,19 @@
 ;    Where d is the data struct of a tplot variable
 ;
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2008-05-21 16:19:20 -0700 (Wed, 21 May 2008) $
-; $LastChangedRevision: 3144 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-02-22 12:12:49 -0800 (Mon, 22 Feb 2021) $
+; $LastChangedRevision: 29693 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/tplot/tdexists.pro $
 ;-
 
-function tdexists,tvarname,start_time,end_time,dims=dims
+function tdexists,inp_tvarname,start_time,end_time,dims=dims
 
   compile_opt idl2
 
+  ; Avoid clobbering input variable
+  tvarname=inp_tvarname
+  
   if n_elements(tvarname) eq 1 then begin
      tvarname = strsplit(tvarname[0],/extract)
   endif else if n_elements(tvarname) eq 0 then begin

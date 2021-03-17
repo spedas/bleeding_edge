@@ -135,8 +135,8 @@
 ;   Data is returned in pointer variables. Calling routine is responsible for freeing up heap memory - otherwise a memory leak will occur.
 ;
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-03-05 13:22:41 -0800 (Thu, 05 Mar 2020) $
-; $LastChangedRevision: 28380 $
+; $LastChangedDate: 2020-12-16 23:15:52 -0800 (Wed, 16 Dec 2020) $
+; $LastChangedRevision: 29532 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_load_vars.pro $
 ; $ID: $
 ;-
@@ -150,7 +150,7 @@ function cdf_load_vars,files,varnames=vars,varformat=vars_fmt,info=info,verbose=
 vb = keyword_set(verbose) ? verbose : 0
 vars=''
 info = 0
-dprint,dlevel=4,verbose=verbose,'$Id: cdf_load_vars.pro 28380 2020-03-05 21:22:41Z ali $'
+dprint,dlevel=4,verbose=verbose,'$Id: cdf_load_vars.pro 29532 2020-12-17 07:15:52Z ali $'
 
 ;Get cdf version, hacked from read_myCDF, jmm, 2019-10-07
 CDF_LIB_INFO, VERSION=V, RELEASE=R, COPYRIGHT=C, INCREMENT=I
@@ -223,7 +223,9 @@ for fi=0,n_elements(files)-1 do begin
        endif
     endif
 
-    dprint,dlevel=2,verbose=verbose,'Loading file: "'+files[fi]+'"'
+    ;dprint,dlevel=2,verbose=verbose,'Loading file: "'+files[fi]+'"'
+    dprint,dlevel=2,verbose=verbose,'Loading file: "'+files[fi]+'" Size: '+strtrim(((file_info(files[fi])).size)/1000,2)+' KB'
+
     for j=0,n_elements(vars2)-1 do begin
         w = (where( strcmp(info.vars.name, vars2[j]) , nw))[0]
         if nw ne 0 && cdf_varnum(id,info.vars[w].name) ne -1 then begin ; cdf_varnum call avoids crash for cdfs with non-existent dependent variables

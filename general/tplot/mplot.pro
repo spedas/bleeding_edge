@@ -27,6 +27,8 @@
 ;    OVERPLOT: If non-zero then data is plotted over last plot.
 ;    NOXLAB:   if non-zero then xlabel tick marks are supressed.
 ;    COLORS:   array of colors used for each curve.
+;    NEG_COLORS  array of colors (or string)  If defined then data is plotted twice - once with 
+;      positive values and second time with negative values. This is useful on log plots
 ;    NOCOLOR:  do not use color when creating plot.
 ;NOTES:
 ;    The values of all the keywords can also be put in the limits structure or
@@ -36,8 +38,8 @@
 ;CREATED BY:	Davin Larson
 ;FILE:  mplot.pro
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-02-21 16:42:35 -0800 (Fri, 21 Feb 2020) $
-; $LastChangedRevision: 28332 $
+; $LastChangedDate: 2020-12-16 13:10:03 -0800 (Wed, 16 Dec 2020) $
+; $LastChangedRevision: 29506 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/mplot.pro $
 ;
 ;-
@@ -48,6 +50,7 @@ pro mplot,xt,yt,dy,      $
    LABPOS   = labpos,  $
    LABFLAG  = labflag, $
    COLORS   = colors,  $ ;(array of) color(s) for the curve(s)
+   neg_colors = neg_colors, $  
    BINS     = bins,    $
    DATA     = data,    $
    NOERRORBARS = noerrorbars,  $
@@ -78,6 +81,7 @@ overplot = 1
 str_element,limits,'overplot',value=oplot
 str_element,limits,'noerrorbars',noerrorbars
 str_element,limits,'errorthresh',errorthresh
+str_element,limits,'neg_colors',neg_colors
 
 xrange=[0.,0.]
 yrange=[0.,0.]
@@ -197,9 +201,9 @@ if count eq 0 then ind = lindgen(n_elements(x))  else ind = good[ind]
 if n_elements(yrange) lt 2 || yrange[0] eq yrange[1] then begin
 ;if yrange[0] eq yrange[1] then begin
     if ndx eq 1 then $
-      yrange = minmax(y[ind,*],posi=ytype,max=max_value,min=min_value) $
+      yrange = minmax(y[ind,*] ,posi=ytype,max=max_value,min=min_value,absolute=isa(neg_colors)) $
     else $
-      yrange = minmax(y[ind],posi=ytype,max=max_value,min=min_value)
+      yrange = minmax(y[ind],posi=ytype,max=max_value,min=min_value,absolute=isa(neg_colors))
 endif
 
 if keyword_set(noxlab) then $
@@ -299,7 +303,8 @@ c_off = size(/type,color_offset) gt 0 ? color_offset:0
 if keyword_set(indices) then ind = indices else ind=indgen(d2)
 if keyword_set(rev_order) then ind = reverse(ind)
 
-for n_=0,n_elements(ind)-1 do begin
+n_ind = n_elements(ind)
+for n_=0,n_ind-1 do begin
     n = ind[n_]
 ;    if keyword_set(rev_order) then n = d2 - n_ -1
 ;  if bins(n) ne 0 then begin
@@ -311,6 +316,11 @@ for n_=0,n_elements(ind)-1 do begin
     yt = y[*,n]
     if (keyword_set(nsmooth) && (nsmooth lt n_elements(yt))) then yt = smooth(yt,nsmooth,edge_truncate=0)
     oplot,xt,yt,color=c,nsum=nsum,linest=linestyle,_EXTRA = oplotstuff
+    if isa(neg_colors) then begin
+      dprint,dlevel=3,'Plotting negative values'
+      neg_colors = get_colors(neg_colors)
+      oplot,xt,-yt,color= neg_colors[n mod n_elements(neg_colors)],nsum=nsum, linestyle=linestyle,_extra=oplotstuff
+    endif
     if keyword_set(psym_hist) then  oplot,xt,yt,color=c,nsum=nsum,linestyle=linestyle,psym=10
     
     if keyword_set(axis) then $

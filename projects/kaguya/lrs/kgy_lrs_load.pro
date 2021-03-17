@@ -17,12 +17,12 @@
 ;       Yuki Harada on 2016-09-02
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-07-18 17:39:03 -0700 (Wed, 18 Jul 2018) $
-; $LastChangedRevision: 25492 $
+; $LastChangedDate: 2021-01-07 16:26:57 -0800 (Thu, 07 Jan 2021) $
+; $LastChangedRevision: 29581 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/lrs/kgy_lrs_load.pro $
 ;-
 
-pro kgy_lrs_load, files=files, version=version, trange=trange, append=append, types=types, wfcdatadir=wfcdatadir
+pro kgy_lrs_load, files=files, version=version, trange=trange, append=append, types=types, wfcdatadir=wfcdatadir, _extra=_extra
 
 
 if ~keyword_set(version) then version = '010' ;- incapable of automatic version search
@@ -41,7 +41,7 @@ if ~keyword_set(files) then begin
    if total(strmatch(types,'NPW')) then begin
       pf = 'sln-l-lrs-5-npw-spectrum-v'+version2+'/YYYYMMDD/data/LRS_NPW_V'+version+'_YYYYMMDD.cdf'
 ;      pf = 'LRS_NPW_V'+version+'_YYYYMMDD' ;- obsolete
-      f = kgy_file_retrieve(pf,trange=trange,/public,/valid)
+      f = kgy_file_retrieve(pf,trange=trange,/public,/valid, _extra=_extra)
       if total(strlen(f)) gt 0 then files = [files,f]
    endif
 
@@ -53,7 +53,7 @@ if ~keyword_set(files) then begin
       endif else begin
          pf = 'sln-l-lrs-4-wfc-spectrum-v'+version2+'/YYYYMMDD/data/LRS_WFC_V'+version+'_YYYYMMDDhhmmss.cdf'
 ;      pf = 'LRS_WFC_V'+version+'_YYYYMMDDhhmmss' ;- obsolete
-         f = kgy_file_retrieve(pf,trange=trange,/public,/hourly,/valid,/skipodd)
+         f = kgy_file_retrieve(pf,trange=trange,/public,/hourly,/valid,/skipodd, _extra=_extra)
       endelse
       if total(strlen(f)) gt 0 then files = [files,f]
    endif
@@ -241,9 +241,11 @@ for ifile=0,n_elements(files)-1 do begin
                wnan = where( data eq attr.fillval , nwnan )
                if nwnan gt 0 then data[wnan] = !values.f_nan
             endif
+            gain_corrected = 0
             if n_elements(gain) eq n_elements(times) then begin
                ;;; gain correction
                ex = data - rebin(gain,n_elements(times),n_elements(freq))
+               gain_corrected = 1
             endif
             store_data,'kgy_lrs_wfc_Ex_dB', $
                        data={x:times,y:ex,v:freq}, $
@@ -252,7 +254,14 @@ for ifile=0,n_elements(files)-1 do begin
                              yrange:minmax(freq)>1,ystyle:1, $
                              spec:1,zlog:0,ztitle:attr.units, $
                              zrange:[-60,20]}
-            ;;; FIXME: conversion to physical units
+            if gain_corrected then $ ;- conversion to physical units
+               store_data,'kgy_lrs_wfc_Ex_phys', $
+                          data={x:times,y:ex-15.5,v:freq}, $ ;- see wfch1_v2.c
+                          dlim={ytitle:'Ex!cFrequency!c['+frequnits+']', $
+                                ylog:1,yticklen:-.01, $
+                                yrange:minmax(freq)>1,ystyle:1, $
+                                spec:1,zlog:0,ztitle:'dB'+'!4l!X'+'V/m', $
+                                zrange:[-80,30]}
          endif
       endif
 
@@ -271,9 +280,11 @@ for ifile=0,n_elements(files)-1 do begin
                wnan = where( data eq attr.fillval , nwnan )
                if nwnan gt 0 then data[wnan] = !values.f_nan
             endif
+            gain_corrected = 0
             if n_elements(gain) eq n_elements(times) then begin
                ;;; gain correction
                ey = data - rebin(gain,n_elements(times),n_elements(freq))
+               gain_corrected = 1
             endif
             store_data,'kgy_lrs_wfc_Ey_dB', $
                        data={x:times,y:ey,v:freq}, $
@@ -282,7 +293,30 @@ for ifile=0,n_elements(files)-1 do begin
                              yrange:minmax(freq)>1,ystyle:1, $
                              spec:1,zlog:0,ztitle:attr.units, $
                              zrange:[-60,20]}
-            ;;; FIXME: conversion to physical units
+            if gain_corrected then begin
+               ey2 = ey-15.5
+               store_data,'kgy_lrs_wfc_Ey_phys', $
+                          data={x:times,y:ey2,v:freq}, $ ;- see WFCH1_calData_v1() and WFCH1_getdbgain in wfch1_v2.c
+                          dlim={ytitle:'Ey!cFrequency!c['+frequnits+']', $
+                                ylog:1,yticklen:-.01, $
+                                yrange:minmax(freq)>1,ystyle:1, $
+                                spec:1,zlog:0,ztitle:'dB'+'!4l!X'+'V/m', $
+                                zrange:[-80,30]}
+            endif
+            ;;; gain correction test, WFCH1_calData() in wfch1_v2.c
+            ;;; failed to reproduce muro-shuuron figures
+            ;;; -> WFCH1_calData_v1() is likely to be the correct one to use
+            ;; ey2 = ey - 15.5
+            ;; w = where( freq lt 10 , comp=cw )
+            ;; ey2[*,w] += 20.
+            ;; ey2[*,cw] += 10.
+            ;; store_data,'kgy_lrs_wfc_Ey_phys_test', $
+            ;;            data={x:times,y:ey2,v:freq}, $ ;- see wfch1_v2.c
+            ;;            dlim={ytitle:'Ey!cFrequency!c['+frequnits+']', $
+            ;;                  ylog:1,yticklen:-.01, $
+            ;;                  yrange:minmax(freq)>1,ystyle:1, $
+            ;;                  spec:1,zlog:0,ztitle:'dB'+'!4l!X'+'V/m', $
+            ;;                  zrange:[-80,30]}
          endif
       endif
 

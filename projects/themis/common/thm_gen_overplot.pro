@@ -43,10 +43,10 @@
 ;HISTORY:
 ;  This has replaced the older spd_ui_overplot.pro which was written specifically for GUI overview plots.
 ;
-;$LastChangedBy: $
-;$LastChangedDate: $
-;$LastChangedRevision: $
-;$URL: $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2020-11-24 11:07:28 -0800 (Tue, 24 Nov 2020) $
+;$LastChangedRevision: 29387 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_gen_overplot.pro $
 ;-----------------------------------------------------------------------------------
 
 pro thm_gen_overplot_print, date = date, str_message=str_message, gui_plot=gui_plot, probes = probes
@@ -701,11 +701,6 @@ SKIP_ESA_LOAD:
 
 load_position='gmag'
 
-thm_load_pseudoAE,datatype='ae'
-if tnames('thg_idx_ae') eq '' then begin
-  store_data,'thg_idx_ae',data={x:time_double(date_ext)+dindgen(2), y:replicate(!values.d_nan,2)}
-endif
-options,'thg_idx_ae',ytitle='THEMIS!CAE Index'
 
 SKIP_GMAG_LOAD:
 
@@ -724,7 +719,7 @@ filler[*, *] = float('NaN')
 ;2020-03-24, FSIM, FSMI, RANK, SNKQ checked in that order
 test_sites = tnames('thg_ask_'+['fsim', 'fsmi', 'rank', 'snkq'])
 other_sites = ssl_set_complement(test_sites, asi_sites)
-If(other_sites[0] Eq -1) Then other_sites = '' ;protect against low-probability
+If(~is_string(other_sites)) Then other_sites = '' ;protect against low-probability
 asi_sites = [test_sites, other_sites]
 ;check sites for good data in order
 have_keogram = 0b
@@ -918,7 +913,10 @@ If(ok_esai_moms[0] Eq 0) Then Begin
   Endif
 Endif
 
-vars_full = ['thg_idx_ae', roi_bar, 'Keogram', thx+'_fgs_gse', $
+;; Panel 1: Kyoto and THEMIS AE
+spd_gen_overplot_ae_panel
+
+vars_full = ['kyoto_thm_combined_ae', roi_bar, 'Keogram', thx+'_fgs_gse', $
              esaf_n_name, esaif_v_name, esaf_t_name, sample_rate_var, $
              ssti_name, esaif_flux_name, sste_name,  $
              esaef_flux_name, thx+'_fb_*', thx+'_pos_gse_z']
@@ -1002,11 +1000,11 @@ if keyword_set(makepng) then begin
       esar_n_name = thx+'_Nief'
     Endif
   Endif
-  vars06 = ['thg_idx_ae', roi_bar, 'Keogram', thx+'_fgs_gse', $
+  vars06 = ['kyoto_thm_combined_ae', roi_bar, 'Keogram', thx+'_fgs_gse', $
              esar_n_name, esair_v_name, esar_t_name, 'sample_rate_'+sc, $
              ssti_name, esair_flux_name, sste_name,  $
              esaer_flux_name, thx+'_fb_*', thx+'_pos_gse_z']
-  vars02 = ['thg_idx_ae', roi_bar, 'Keogram', thx+'_fgs_gse', $
+  vars02 = ['kyoto_thm_combined_ae', roi_bar, 'Keogram', thx+'_fgs_gse', $
              esar_n_name, esair_v_name, esar_t_name, 'sample_rate_'+sc, $
              ssti_name, esair_flux_name, sste_name,  $
              esaer_flux_name, thx+'_fb_*', thx+'_pos_gse_z']

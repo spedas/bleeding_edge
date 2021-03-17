@@ -7,9 +7,9 @@
 ; KEYWORDS:
 ; HISTORY: Created by Aaron W Breneman, Univ. Minnesota  4/10/2014
 ; VERSION:
-;   $LastChangedBy: nikos $
-;   $LastChangedDate: 2020-05-21 20:36:46 -0700 (Thu, 21 May 2020) $
-;   $LastChangedRevision: 28720 $
+;   $LastChangedBy: aaronbreneman $
+;   $LastChangedDate: 2020-09-11 13:35:30 -0700 (Fri, 11 Sep 2020) $
+;   $LastChangedRevision: 29139 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_burst_fa_rotate_crib.pro $
 ;-
 
@@ -19,7 +19,7 @@
 
 
 rbsp_efw_init
-
+tplot_options,'title','rbsp_efw_burst_fa_rotate_crib.pro'
 
 ;Make tplot plots looks pretty
 charsz_plot = 0.8               ;character size for plots
@@ -83,7 +83,11 @@ start_after_step = 0.
 ;fn = 'burst_crib_chorus_nov14_2012'
 ;fn = 'burst_crib_chorus_nov14_2012_farot_test'
 ;fn = 'RBSPB_B2_20130214_'
-fn = 'RBSPA_B2_20171121_'
+;fn = 'RBSPA_B2_20180626_'
+;fn = 'RBSPB_B1_20190125_'
+;fn = 'RBSPA_B2_20131105_'
+;fn = 'RBSPB_B1_20190511_'
+fn = 'RBSPA_B2_20181117_'
 ;Nov 21, 2012 B2 both on rbspb
 
 mag_ql = 0                      ;load quicklook mag data? Usually only set for very recent dates
@@ -93,13 +97,17 @@ mag_ql = 0                      ;load quicklook mag data? Usually only set for v
 nostop = 1                      ;if set, stop statements are ignored and program attempts to plow through to end.
 ;Useful for overnight runs, etc.
 
-rotate_to_fa = 1                ;rotate to FA coord? If so, this will be used when calling Chasten crib.
-
-pflux_spec = 0                  ;Calculate the Poynting flux spectrum?
+;****************************************
+rotate_to_fa = 0                ;rotate to FA coord? If so, this will be used when calling Chasten crib.
+pflux_spec = 0                  ;Calculate the Poynting flux spectrum? **NEED THE MAGNETIC FIELD DATA,
+                                ;WHICH WON'T BE LOADED UNLESS rotate_to_fa = 1
 ;WARNING...takes very long time to run for large chunks of burst data.
 ;and output save file can be many GB in size.
+;****************************************
 
-df = 50.                       ;Hz. The delta-freq size for Poynting flux spectrum program
+
+
+df = 10.                       ;Hz. The delta-freq size for Poynting flux spectrum program
 
 
 ;Set max chunk size to divide up B1
@@ -107,14 +115,14 @@ df = 50.                       ;Hz. The delta-freq size for Poynting flux spectr
 ;chunks). Value must be greater than 1 sec
 maxchunktime = 5.               ;min. N/A for B2
 bandpass_data = 'y'
-fmin = 100.                      ;Hz
-fmax = 3000.
+fmin = 5000.                      ;Hz
+fmax = 9000.
 
 ;Variables for the Chaston crib sheet twavpol
-;nopfft=16448    ;# points in the FFT
-;steplength=4096 ;# points to step forward for next FFT
-nopfft=1024    ;# points in the FFT
-steplength=512 ;# points to step forward for next FFT
+nopfft=256    ;# points in the FFT
+steplength=256/2. ;# points to step forward for next FFT
+;nopfft=512/4.    ;# points in the FFT
+;steplength=256/4. ;# points to step forward for next FFT
 
 minduration = 1.                ;minimum duration of each burst (sec). This is used to eliminate
 ;spuriously short bursts that occur when there are short data gaps.
@@ -142,15 +150,16 @@ if start_after_step eq 0 then begin
   ;   date = '2014-01-23'
   ;   date = '2012-11-01'
 
-  date = '2017-11-21'
+;  date = '2013-11-05'
+  date = '2018-11-17'
 
   timespan,date
   tr = timerange()
   ;Define timerange for loading of burst waveform
   ;(CURRENTLY NEED AT LEAST 1 SEC OF BURST FOR MGSE TRANSFORMATION TO WORK!!!)
 
-  t0 = date + '/00:00:00'
-  t1 = date + '/24:00:00'
+  t0 = date + '/15:20:00'
+  t1 = date + '/15:30:00'
 
 
   probe='a'
@@ -168,7 +177,7 @@ if start_after_step eq 0 then begin
 
   rbsp_efw_position_velocity_crib,/noplot
   store_data,'*both*',/delete
-  tinterpol_mxn,rbspx+'_spinaxis_direction_gse',rbspx+'_state_pos_gse',newname=rbspx+'_spinaxis_direction_gse'
+  tinterpol_mxn,rbspx+'_spinaxis_direction_gse',rbspx+'_state_pos_gse',newname=rbspx+'_spinaxis_direction_gse',/spline
   get_data,rbspx+'_spinaxis_direction_gse',ttmp,wgse
 
 
@@ -207,7 +216,7 @@ if start_after_step eq 0 then begin
     rbsp_load_emfisis,probe=probe,coord='gse',cadence='hires',level='l3'
     store_data,[rbspx+'_emfisis_l3_hires_gse_delta',rbspx+'_emfisis_l3_hires_gse_lambda',rbspx+'_emfisis_l3_hires_gse_coordinates'],/delete
 
-    tinterpol_mxn,rbspx+'_spinaxis_direction_gse',rbspx+'_emfisis_l3_hires_gse_Mag'
+    tinterpol_mxn,rbspx+'_spinaxis_direction_gse',rbspx+'_emfisis_l3_hires_gse_Mag',/spline
     get_data,rbspx+'_spinaxis_direction_gse_interp',data=wsc_GSE_tmp
     wsc_GSE_tmp = wsc_GSE_tmp.y
 
@@ -230,16 +239,35 @@ if start_after_step eq 0 then begin
   dt2 = time_double(t1) - time_double(t0)
   timespan,t0,dt2,/seconds
 
+;**************
+;rbsp_load_efw_waveform_partial
+;NOT WORKING NOW, FOR SOME REASON
+;**************
 
-  rbsp_load_efw_waveform_partial,probe=probe,type='calibrated',datatype=['mscb'+bt]
-  rbsp_load_efw_waveform_partial,probe=probe,type='calibrated',datatype=['eb'+bt]
-  ;load Vburst if there is no Eburst
-  if ~tdexists(rbspx+'_efw_eb'+bt,tr[0],tr[1]) then rbsp_load_efw_waveform_partial,probe=probe,$
-  type='calibrated',datatype=['vb'+bt]
+  if bt eq '1' then begin
+;    rbsp_load_efw_waveform_partial,probe=probe,type='calibrated',datatype=['mscb'+bt]
+;    rbsp_load_efw_waveform_partial,probe=probe,type='calibrated',datatype=['eb'+bt]
+;    ;load Vburst if there is no Eburst
+;    if ~tdexists(rbspx+'_efw_eb'+bt,tr[0],tr[1]) then rbsp_load_efw_waveform_partial,probe=probe,$
+;    type='calibrated',datatype=['vb'+bt]
+
+    rbsp_load_efw_waveform,probe=probe,type='calibrated',datatype=['mscb'+bt]
+    rbsp_load_efw_waveform,probe=probe,type='calibrated',datatype=['eb'+bt]
+    ;load Vburst if there is no Eburst
+    if ~tdexists(rbspx+'_efw_eb'+bt,tr[0],tr[1]) then rbsp_load_efw_waveform,probe=probe,$
+    type='calibrated',datatype=['vb'+bt]
 
 
-  ;rbsp_load_efw_waveform,probe=probe,$
-  ;      datatype=['vb'+bt]
+  endif
+
+  if bt eq '2' then begin
+    rbsp_load_efw_waveform,probe=probe,type='calibrated',datatype=['mscb'+bt]
+    rbsp_load_efw_waveform,probe=probe,type='calibrated',datatype=['eb'+bt]
+    ;load Vburst if there is no Eburst
+    if ~tdexists(rbspx+'_efw_eb'+bt,tr[0],tr[1]) then rbsp_load_efw_waveform,probe=probe,$
+    type='calibrated',datatype=['vb'+bt]
+  endif
+
 
 
   store_data,[rbspx+'_efw_eb'+bt+'_ccsds_data_BEB_config',rbspx+'_efw_eb'+bt+'_ccsds_data_DFB_config',$
@@ -305,14 +333,14 @@ if start_after_step eq 0 then begin
 
 
 
-  copy_data,rbspx+'_efw_eb'+bt+'_uvw_mgse',rbspx+'_efw_eb'+bt+'_mgse'
   copy_data,rbspx+'_efw_mscb'+bt+'_uvw_mgse',rbspx+'_efw_mscb'+bt+'_mgse'
+  copy_data,rbspx+'_efw_eb'+bt+'_uvw_mgse',rbspx+'_efw_eb'+bt+'_mgse'
 
 
   ;   tplot,[rbspx+'_efw_eb'+bt+'_mgse',rbspx+'_efw_mscb'+bt+'_mgse']
 
-  split_vec,rbspx+'_efw_eb'+bt+'_mgse'
   split_vec,rbspx+'_efw_mscb'+bt+'_mgse'
+  split_vec,rbspx+'_efw_eb'+bt+'_mgse'
 
   ;Check to see how things look (MGSEx is spin axis)
   ;   tplot,[rbspx+'_efw_eb'+bt+'_mgse_x',rbspx+'_efw_eb'+bt+'_mgse_y',rbspx+'_efw_eb'+bt+'_mgse_z']
@@ -577,7 +605,7 @@ if start_after_step lt 3 then begin
 
       store_data,varE_s2+'_tmp',data={x:te,y:ve}
       store_data,varM_s2+'_tmp',data={x:tb,y:vb}
-      tinterpol_mxn,varM_s2+'_tmp',varE_s2+'_tmp',newname=varM_s2+'_tmp'
+      tinterpol_mxn,varM_s2+'_tmp',varE_s2+'_tmp',newname=varM_s2+'_tmp',/spline
       store_data,rbspx+'_Mag_mgse_tmp',data={x:tm,y:vm}
 
 
@@ -710,88 +738,86 @@ if start_after_step lt 3 then begin
 
 
 
+    ;-------------------------------------------------------------------------------
+    ;Rotate burst data into RAF (radial, azimuthal, field-aligned coord)
+    ;-------------------------------------------------------------------------------
+
+
+    BurstE_raf = [[0.],[0.],[0.]]
+    BurstB_raf = [[0.],[0.],[0.]]
+    BursttimesE_raf = 0d
+    BursttimesB_raf = 0d
+
+    tinterpol_mxn,rbspx+'_radial_vector_mgse',rbspx+'_Mag_mgse',newname=rbspx+'_radial_vector_mgse',/spline
+
+
+    for i=0,nchunks-1 do begin
+
+      t0z = varr.x[chunkL[i]]
+      t1z = varr.x[chunkR[i]]
+
+
+      ve = tsample(varE_s2,[t0z,t1z],times=te)
+      vb = tsample(varM_s2,[t0z,t1z],times=tb)
+      vm = tsample(rbspx+'_Mag_mgse',[t0z,t1z],times=tm)
+      vr = tsample(rbspx+'_radial_vector_mgse',[t0z,t1z],times=tr)
+
+      store_data,varE_s2+'_tmp',data={x:te,y:ve}
+      store_data,varM_s2+'_tmp',data={x:tb,y:vb}
+      tinterpol_mxn,varM_s2+'_tmp',varE_s2+'_tmp',newname=varM_s2+'_tmp',/spline
+      store_data,rbspx+'_Mag_mgse_tmp',data={x:tm,y:vm}
+      store_data,rbspx+'_radial_vector_mgse_tmp',data={x:tr,y:vr}
+
+
+      tplot,[varE_s2+'_tmp',varM_s2+'_tmp',rbspx+'_Mag_mgse_tmp',rbspx+'_radial_vector_mgse_tmp'],trange=[t0z,t1z]
+
+      ;Efield: Rotate each chunk to RAF coord
+      fa = rbsp_rotate_field_2_vec(varE_s2+'_tmp',$
+      rbspx+'_Mag_mgse_tmp',$
+      vec2=rbspx+'_radial_vector_mgse_tmp')
+
+      copy_data,rbspx+'_efw_eb'+bt+'_mgse_bp_tmp_twovec',rbspx+'_efw_eb'+bt+'_raf_bp_tmp'
+      store_data,rbspx+'_efw_eb'+bt+'_mgse_bp_tmp_twovec',/delete
+
+      get_data,rbspx+'_efw_eb'+bt+'_raf_bp_tmp',data=dtmp
+      BurstE_raf = [BurstE_raf,dtmp.y]
+      BursttimesE_raf = [BursttimesE_raf,dtmp.x]
+      undefine,dtmp
+
+
+
+      ;Bfield: Rotate each chunk to RAF coord
+      fa = rbsp_rotate_field_2_vec(varM_s2+'_tmp',$
+      rbspx+'_Mag_mgse_tmp',$
+      vec2=rbspx+'_radial_vector_mgse_tmp')
+
+      copy_data,rbspx+'_efw_mscb'+bt+'_mgse_bp_tmp_twovec',rbspx+'_efw_mscb'+bt+'_raf_bp_tmp'
+      store_data,rbspx+'_efw_mscb'+bt+'_mgse_bp_tmp_twovec',/delete
+
+
+      get_data,rbspx+'_efw_mscb'+bt+'_raf_bp_tmp',data=dtmp
+      BurstB_raf = [BurstB_raf,dtmp.y]
+      BursttimesB_raf = [BursttimesB_raf,dtmp.x]
+      undefine,dtmp
+
+      tplot,[rbspx+'_efw_eb'+bt+'_raf_bp_tmp',rbspx+'_efw_mscb'+bt+'_raf_bp_tmp',rbspx+'_Mag_mgse_tmp']
+
+    endfor
+
+
+    ;Store the RAF burst data
+    nn = n_elements(BursttimesE_raf)-1
+    store_data,rbspx+'_efw_eb'+bt+'_raf_bp',data={x:BursttimesE_raf[1:nn],y:BurstE_raf[1:nn,*]}
+    nn = n_elements(BursttimesB_raf)-1
+    store_data,rbspx+'_efw_mscb'+bt+'_raf_bp',data={x:BursttimesB_raf[1:nn],y:BurstB_raf[1:nn,*]}
+
+    tplot,[rbspx+'_efw_eb'+bt+'_raf_bp',rbspx+'_efw_mscb'+bt+'_raf_bp']
+
+
   endif else begin
     varE_s4 = varE_s2
     varM_s4 = varM_s2
   endelse
-
-
-  ;-------------------------------------------------------------------------------
-  ;Rotate burst data into RAF (radial, azimuthal, field-aligned coord)
-  ;-------------------------------------------------------------------------------
-
-  BurstE_raf = [[0.],[0.],[0.]]
-  BurstB_raf = [[0.],[0.],[0.]]
-  BursttimesE_raf = 0d
-  BursttimesB_raf = 0d
-
-  tinterpol_mxn,rbspx+'_radial_vector_mgse',rbspx+'_Mag_mgse',newname=rbspx+'_radial_vector_mgse'
-
-
-  for i=0,nchunks-1 do begin
-
-    t0z = varr.x[chunkL[i]]
-    t1z = varr.x[chunkR[i]]
-
-
-    ve = tsample(varE_s2,[t0z,t1z],times=te)
-    vb = tsample(varM_s2,[t0z,t1z],times=tb)
-    vm = tsample(rbspx+'_Mag_mgse',[t0z,t1z],times=tm)
-    vr = tsample(rbspx+'_radial_vector_mgse',[t0z,t1z],times=tr)
-
-    store_data,varE_s2+'_tmp',data={x:te,y:ve}
-    store_data,varM_s2+'_tmp',data={x:tb,y:vb}
-    tinterpol_mxn,varM_s2+'_tmp',varE_s2+'_tmp',newname=varM_s2+'_tmp'
-    store_data,rbspx+'_Mag_mgse_tmp',data={x:tm,y:vm}
-    store_data,rbspx+'_radial_vector_mgse_tmp',data={x:tr,y:vr}
-
-
-    tplot,[varE_s2+'_tmp',varM_s2+'_tmp',rbspx+'_Mag_mgse_tmp',rbspx+'_radial_vector_mgse_tmp'],trange=[t0z,t1z]
-
-    ;Efield: Rotate each chunk to RAF coord
-    fa = rbsp_rotate_field_2_vec(varE_s2+'_tmp',$
-    rbspx+'_Mag_mgse_tmp',$
-    vec2=rbspx+'_radial_vector_mgse_tmp')
-
-    copy_data,rbspx+'_efw_eb'+bt+'_mgse_bp_tmp_twovec',rbspx+'_efw_eb'+bt+'_raf_bp_tmp'
-    store_data,rbspx+'_efw_eb'+bt+'_mgse_bp_tmp_twovec',/delete
-
-    get_data,rbspx+'_efw_eb'+bt+'_raf_bp_tmp',data=dtmp
-    BurstE_raf = [BurstE_raf,dtmp.y]
-    BursttimesE_raf = [BursttimesE_raf,dtmp.x]
-    undefine,dtmp
-
-
-
-    ;Bfield: Rotate each chunk to RAF coord
-    fa = rbsp_rotate_field_2_vec(varM_s2+'_tmp',$
-    rbspx+'_Mag_mgse_tmp',$
-    vec2=rbspx+'_radial_vector_mgse_tmp')
-
-    copy_data,rbspx+'_efw_mscb'+bt+'_mgse_bp_tmp_twovec',rbspx+'_efw_mscb'+bt+'_raf_bp_tmp'
-    store_data,rbspx+'_efw_mscb'+bt+'_mgse_bp_tmp_twovec',/delete
-
-
-    get_data,rbspx+'_efw_mscb'+bt+'_raf_bp_tmp',data=dtmp
-    BurstB_raf = [BurstB_raf,dtmp.y]
-    BursttimesB_raf = [BursttimesB_raf,dtmp.x]
-    undefine,dtmp
-
-    tplot,[rbspx+'_efw_eb'+bt+'_raf_bp_tmp',rbspx+'_efw_mscb'+bt+'_raf_bp_tmp',rbspx+'_Mag_mgse_tmp']
-
-  endfor
-
-
-  ;Store the RAF burst data
-  nn = n_elements(BursttimesE_raf)-1
-  store_data,rbspx+'_efw_eb'+bt+'_raf_bp',data={x:BursttimesE_raf[1:nn],y:BurstE_raf[1:nn,*]}
-  nn = n_elements(BursttimesB_raf)-1
-  store_data,rbspx+'_efw_mscb'+bt+'_raf_bp',data={x:BursttimesB_raf[1:nn],y:BurstB_raf[1:nn,*]}
-
-  tplot,[rbspx+'_efw_eb'+bt+'_raf_bp',rbspx+'_efw_mscb'+bt+'_raf_bp']
-
-
-
 
 
 
@@ -887,8 +913,8 @@ if start_after_step lt 4 then begin
 
       store_data,varE_s4+'_tmp',data={x:te,y:ve}
       store_data,varM_s4+'_tmp',data={x:tb,y:vb}
-      tinterpol_mxn,varM_s4+'_tmp',varE_s4+'_tmp',newname=varM_s4+'_tmp'
-      store_data,rbspx+'_Mag_mgse_tmp',data={x:tm,y:vm}
+      tinterpol_mxn,varM_s4+'_tmp',varE_s4+'_tmp',newname=varM_s4+'_tmp',/spline
+      if keyword_set(tm) then store_data,rbspx+'_Mag_mgse_tmp',data={x:tm,y:vm}
 
       get_data,varE_s4+'_tmp',data=dtmp
       BurstE = [BurstE,dtmp.y]
@@ -897,7 +923,6 @@ if start_after_step lt 4 then begin
       BurstB = [BurstB,dtmp.y]
       Bursttimes = [Bursttimes,dtmp.x]
       undefine,dtmp
-
 
       ;-------------------------------------------
       ;Make sure times are smoothly varying. If not, this can cause errors
@@ -1155,6 +1180,11 @@ if start_after_step lt 4 then begin
     varE_s4+'_helict_chaston',$
     varE_s4+'_pspec3_chaston'],'spec',1
 
+    ylim,[varE_s4+'_degpol_chaston',$
+    varE_s4+'_theta_kb_chaston',$
+    varE_s4+'_elliptict_chaston',$
+    varE_s4+'_helict_chaston',$
+    varE_s4+'_pspec3_chaston'],800,2000,0
 
     tplot,[varE_s4,$
     varE_s4+'_pspec3_chaston',$
@@ -1163,6 +1193,14 @@ if start_after_step lt 4 then begin
     varE_s4+'_elliptict_chaston',$
     varE_s4+'_helict_chaston']
 
+    ylim,[varM_s4+'_degpol_chaston',$
+    varM_s4+'_theta_kb_chaston',$
+    varM_s4+'_elliptict_chaston',$
+    varM_s4+'_helict_chaston',$
+    varM_s4+'_pspec3_chaston'],400,3000,1
+
+;    options,varM_s4,'ytitle','rbsp'+probe+'!Cefw!Cmscb'+bt+'!Cmgse!Cbp!CnT'
+    options,varM_s4,'ytitle',varM_s4
 
     tplot,[varM_s4,$
     varM_s4+'_pspec3_chaston',$
@@ -1233,7 +1271,7 @@ if start_after_step lt 5 then begin
 
   ;; if keyword_set(varE_s4) then get_data,varE_s4,data=varr else get_data,varE_s2,data=varr
   ;   get_data,varE_s2,data=varr
-  tinterpol_mxn,rbspx+'_state_mlat',varr.x
+  tinterpol_mxn,rbspx+'_state_mlat',varr.x,/spline
 
   Tlong = 1/float(fmin)
   Tshort = 1/float(fmax)
@@ -1267,8 +1305,8 @@ if start_after_step lt 5 then begin
 
     store_data,varE_s2 +'_tmp',data={x:te,y:ve}
     store_data,varM_s2 +'_tmp',data={x:tb,y:vb}
-    tinterpol_mxn,varM_s2+'_tmp',varE_s2+'_tmp',newname=varM_s2+'_tmp'
-    store_data,rbspx+'_Mag_mgse_tmp',data={x:tm,y:vm}
+    tinterpol_mxn,varM_s2+'_tmp',varE_s2+'_tmp',newname=varM_s2+'_tmp',/spline
+    if KEYWORD_SET(tm) then store_data,rbspx+'_Mag_mgse_tmp',data={x:tm,y:vm}
 
 
     tplot,[varE_s2+'_tmp',varM_s2+'_tmp',rbspx+'_Mag_mgse_tmp'],trange=[t0z,t1z]
@@ -1303,7 +1341,7 @@ if start_after_step lt 5 then begin
     endif
 
 
-    ;; Even if option to run rbsp_poynting_spec is set, we still want to run
+    ;; Even if option to run rbsp_poynting_spec is not set, we still want to run
     ;; rbsp_poynting_flux on the waveform. Otherwise many of the variables are essentially
     ;; empty b/c they are filled with the bandpassed version at the highest bandpass
     ;; channel from rbsp_poynting_spec.pro
@@ -1370,7 +1408,7 @@ if start_after_step lt 5 then begin
   tplot,[rbspx+'_efw_mscb'+bt+'_mgse_bp_FA_minvar_kvec',rbspx+'_pflux_mgse']
 
   ;First calculate the angle b/t Pflux and Bo at full cadence
-  tinterpol_mxn,rbspx+'_Mag_mgse',rbspx+'_pflux_mgse',newname=rbspx+'_Mag_mgse_interp2'
+  tinterpol_mxn,rbspx+'_Mag_mgse',rbspx+'_pflux_mgse',newname=rbspx+'_Mag_mgse_interp2',/spline
   get_data,rbspx+'_Mag_mgse_interp2',data=bint2
   get_data,rbspx+'_pflux_mgse',data=pf2
   pfmag2 = sqrt(pf2.y[*,0]^2 + pf2.y[*,1]^2 + pf2.y[*,2]^2)
@@ -1382,19 +1420,19 @@ if start_after_step lt 5 then begin
 
   get_data,rbspx+'_efw_mscb'+bt+'_mgse_bp_FA_minvar_kvec',data=tk
 
-  tinterpol_mxn,rbspx+'_pflux_mgse',rbspx+'_efw_mscb'+bt+'_mgse_bp_FA_minvar_kvec'
-  tinterpol_mxn,rbspx+'_Mag_mgse',rbspx+'_efw_mscb'+bt+'_mgse_bp_FA_minvar_kvec',newname=rbspx+'_Mag_mgse_interp'
+  tinterpol_mxn,rbspx+'_pflux_mgse',rbspx+'_efw_mscb'+bt+'_mgse_bp_FA_minvar_kvec',/spline
+  tinterpol_mxn,rbspx+'_Mag_mgse',rbspx+'_efw_mscb'+bt+'_mgse_bp_FA_minvar_kvec',newname=rbspx+'_Mag_mgse_interp',/spline
 
   get_data,rbspx+'_pflux_mgse_interp',data=pf
   get_data,rbspx+'_Mag_mgse_interp',data=bint
 
   ;Angle b/t K-vec and Poynting flux
-  pfmag = sqrt(pf.y[*,0]^2 + pf.y[*,1]^2 + pf.y[*,2]^2)
-  tkmag = sqrt(tk.y[*,0]^2 + tk.y[*,1]^2 + tk.y[*,2]^2)
-  bmagi = sqrt(bint.y[*,0]^2 + bint.y[*,1]^2 + bint.y[*,2]^2)
-  anglekP = acos((tk.y[*,0]*pf.y[*,0] + tk.y[*,1]*pf.y[*,1] + tk.y[*,2]*pf.y[*,2])/pfmag/tkmag)/!dtor
-  anglekB = acos((tk.y[*,0]*bint.y[*,0] + tk.y[*,1]*bint.y[*,1] + tk.y[*,2]*bint.y[*,2])/bmagi/tkmag)/!dtor
-  anglePB = acos((pf.y[*,0]*bint.y[*,0] + pf.y[*,1]*bint.y[*,1] + pf.y[*,2]*bint.y[*,2])/bmagi/pfmag)/!dtor
+  if is_struct(pf) then pfmag = sqrt(pf.y[*,0]^2 + pf.y[*,1]^2 + pf.y[*,2]^2)
+  if is_struct(tk) then tkmag = sqrt(tk.y[*,0]^2 + tk.y[*,1]^2 + tk.y[*,2]^2)
+  if is_struct(bint) then bmagi = sqrt(bint.y[*,0]^2 + bint.y[*,1]^2 + bint.y[*,2]^2)
+  if is_struct(tk) then anglekP = acos((tk.y[*,0]*pf.y[*,0] + tk.y[*,1]*pf.y[*,1] + tk.y[*,2]*pf.y[*,2])/pfmag/tkmag)/!dtor
+  if is_struct(tk) then anglekB = acos((tk.y[*,0]*bint.y[*,0] + tk.y[*,1]*bint.y[*,1] + tk.y[*,2]*bint.y[*,2])/bmagi/tkmag)/!dtor
+  if is_struct(bint) then anglePB = acos((pf.y[*,0]*bint.y[*,0] + pf.y[*,1]*bint.y[*,1] + pf.y[*,2]*bint.y[*,2])/bmagi/pfmag)/!dtor
 
 
 
@@ -1408,7 +1446,7 @@ if start_after_step lt 5 then begin
   store_data,rbspx+'_anglekP',data={x:tk.x,y:anglekP}
   store_data,rbspx+'_anglekB',data={x:tk.x,y:anglekB}
 
-  tinterpol_mxn,rbspx+'_anglePB2_smoothed',rbspx+'_anglekB'
+  tinterpol_mxn,rbspx+'_anglePB2_smoothed',rbspx+'_anglekB',/spline
 
 
 
@@ -1543,7 +1581,7 @@ for i=0,nchunks-1 do begin
 
   store_data,varE_s4+'_tmp',data={x:te,y:ve}
   store_data,varM_s4+'_tmp',data={x:tb,y:vb}
-  tinterpol_mxn,varM_s4+'_tmp',varE_s4+'_tmp',newname=varM_s4+'_tmp'
+  tinterpol_mxn,varM_s4+'_tmp',varE_s4+'_tmp',newname=varM_s4+'_tmp',/spline
   store_data,rbspx+'_Mag_mgse_tmp',data={x:tm,y:vm}
 
   ;; get_data,varE+'_tmp',data=dtmp

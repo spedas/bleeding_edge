@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -19,6 +19,7 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>spedas_gui/misc</H1>
+<LI><A HREF="#SPD_GEN_OVERPLOT_AE_PANEL">SPD_GEN_OVERPLOT_AE_PANEL</A>
 <LI><A HREF="#SPD_UI_SPEDAS_FILECONFIG">SPD_UI_SPEDAS_FILECONFIG</A>
 <br>A widget that allows the user to set some of the !spedas environmental variables. The user
 <LI><A HREF="#SPEDAS_CONFIG_FILEDIR">SPEDAS_CONFIG_FILEDIR</A>
@@ -32,8 +33,41 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="SPD_GEN_OVERPLOT_AE_PANEL">
+<H2>SPD_GEN_OVERPLOT_AE_PANEL</H2></A>
+<A HREF="#SPD_UI_SPEDAS_FILECONFIG">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Procedure:
+         spd_gen_overplot_ae_panel
+
+ Purpose:
+         Generates combined AE index for overview plots
+
+ Keywords:
+         date: start date for the plot
+         duration: int how many days, default is one
+         suffix: string for suffix
+         out_tname: (output) tplot name
+         error: (output) indicates an error
+
+ Notes:
+   This is used in THEMIS and GOES overview plots.
+   Combines THEMIS AE with Kyoto AE.
+   When the Kyoto AE is available, it shows [Themis AE (black, 0), Kyoto AE (blue, 2)]
+   When the Kyoto AE is not available, it shows [Themis AE (black, 0), Real Time Kyoto AE (green, 4)]
+
+ $LastChangedBy: nikos $
+ $LastChangedDate: 2020-10-22 14:22:21 -0700 (Thu, 22 Oct 2020) $
+ $LastChangedRevision: 29276 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/misc/spd_gen_overplot_ae_panel.pro $
+</PRE><P>
+<STRONG>(See <A href="misc/spd_gen_overplot_ae_panel.pro">spedas_gui/misc/spd_gen_overplot_ae_panel.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPD_UI_SPEDAS_FILECONFIG">
 <H2>SPD_UI_SPEDAS_FILECONFIG</H2></A>
+<A HREF="#SPD_GEN_OVERPLOT_AE_PANEL">[Previous Routine]</A>
 <A HREF="#SPEDAS_CONFIG_FILEDIR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

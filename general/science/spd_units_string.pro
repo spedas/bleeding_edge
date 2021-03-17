@@ -20,8 +20,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-04-03 11:16:33 -0700 (Tue, 03 Apr 2018) $
-;$LastChangedRevision: 24979 $
+;$LastChangedDate: 2020-08-04 13:04:13 -0700 (Tue, 04 Aug 2020) $
+;$LastChangedRevision: 28986 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_units_string.pro $
 ;-
 
@@ -70,7 +70,7 @@ endelse
 
 ;strip prefix/suffix if requested
 if keyword_set(units_only) then begin
-  ustr = ustr[1]
+  if n_elements(ustr) gt 1 then ustr = ustr[1] else ustr = 'Unknown'
 endif else begin
   ustr = strjoin(ustr)
 endelse

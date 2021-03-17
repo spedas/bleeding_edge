@@ -9,7 +9,7 @@
 ;Modifications
 ;	J.McFadden	05-2-7 changed first if to "if ndimen(a) eq 1 and ndimen(b) eq 1" 
 ;-
-function crossp2,a,b
+function crossp2,a,b,trans=trans
 
 c=0
 if n_params() ne 2 then begin
@@ -19,6 +19,17 @@ endif
 
 if ndimen(a) eq 1 and ndimen(b) eq 1 then begin
 	return,crossp(a,b)
+endif
+
+if keyword_set(trans) then begin
+  if ndimen(a) eq 2 and ndimen(b) eq 2 then begin
+    c=a
+    c[0,*]=a[1,*]*b[2,*]-a[2,*]*b[1,*]
+    c[1,*]=a[2,*]*b[0,*]-a[0,*]*b[2,*]
+    c[2,*]=a[0,*]*b[1,*]-a[1,*]*b[0,*]
+    return,c
+  endif 
+  message,'improper format
 endif
 
 if ndimen(a) eq 2 and ndimen(b) eq 2 then begin

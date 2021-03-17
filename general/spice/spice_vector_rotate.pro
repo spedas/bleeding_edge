@@ -11,19 +11,38 @@
 ; 
 ; Author: Davin Larson  
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
-; $LastChangedRevision: 27221 $
+; $LastChangedDate: 2020-12-16 13:35:32 -0800 (Wed, 16 Dec 2020) $
+; $LastChangedRevision: 29517 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_vector_rotate.pro $
 ;-
 
 function spice_vector_rotate,vector,utc,et=et,from_frame,to_frame,check_objects=check_objects,verbose=verbose,qrot=qrot,force_objects=force_objects
+
+test=0
+if keyword_set(test) then begin
+  dprint,'Running test rotate matrix routine'
+  ut = time_double(utc)
+  et = time_ephemeris(ut,/ut2et)
+  dprint,'Getting rotation matrices'
+  rotmat = spice_body_att(from_frame,to_frame,ut,check_object=check_objects,force_objects=force_objects,verbose=verbose) 
+  dprint,'Rotating vectors'
+  vector_prime = vector*!values.f_nan
+  for i=0,n_elements(ut)-1 do begin        ;  This might not  work for a single vector
+    vector_prime[*,i] = rotmat[*,*,i] ## vector[*,i]
+  endfor
+  dprint,'Done'
+  return,vector_prime
+endif
+
 
 if ~keyword_set(qrot) then begin    ;  shortcut if qrot is known  - Be careful when using this shortcut!!!
   ut = time_double(utc)
   et = time_ephemeris(ut,/ut2et)
   dprint,dlevel=3,verbose=verbose,'Obtaining rotation quaternion(s)'
   qrot =  spice_body_att(from_frame,to_frame,ut,/quaternion,check_object=check_objects,force_objects=force_objects,verbose=verbose) 
-endif
+endif else begin
+  dprint,'Warning: Using previous version of qrot'
+endelse
 dprint,dlevel=3,verbose=verbose,'Start Vector Rotations'
 vector_prime = quaternion_rotation(vector,qrot,/last_ind)     
 dprint,dlevel=3,verbose=verbose,'Done with Rotations'

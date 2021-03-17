@@ -8,23 +8,34 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-05-01 13:00:22 -0700 (Mon, 01 May 2017) $
-;$LastChangedRevision: 23255 $
+;$LastChangedDate: 2021-01-12 10:31:13 -0800 (Tue, 12 Jan 2021) $
+;$LastChangedRevision: 29593 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_mec_fix_metadata.pro $
 ;-
 
-pro mms_mec_fix_metadata, probe, suffix = suffix
+pro mms_mec_fix_metadata, tplotnames, probe, suffix = suffix
     if undefined(suffix) then suffix = ''
     probe = strcompress(string(probe), /rem)
+    
     position_vars = tnames('mms'+probe+'_mec_r_*')
-    velocity_vars = tnames('mms'+probe+'_mec_v_*')
+    if ~is_array(position_vars) then position_vars = [position_vars]
+    position_vars = ssl_set_intersection(position_vars, tplotnames)
 
-    for pos_idx = 0, n_elements(position_vars)-1 do begin
-        options, position_vars[pos_idx], colors=[2, 4, 6]
-    endfor
-    for vel_idx = 0, n_elements(velocity_vars)-1 do begin
-        options, velocity_vars[vel_idx], colors=[2, 4, 6]
-    endfor
+    if is_string(position_vars[0]) then begin
+      for pos_idx = 0, n_elements(position_vars)-1 do begin
+          options, position_vars[pos_idx], colors=[2, 4, 6]
+      endfor
+    endif
+    
+    velocity_vars = tnames('mms'+probe+'_mec_v_*')
+    if ~is_array(velocity_vars) then velocity_vars = [velocity_vars]
+    velocity_vars = ssl_set_intersection(velocity_vars, tplotnames)
+    
+    if is_string(velocity_vars[0]) then begin
+      for vel_idx = 0, n_elements(velocity_vars)-1 do begin
+          options, velocity_vars[vel_idx], colors=[2, 4, 6]
+      endfor
+    endif
     
     ; the coordinate system for the ECI variables in the MEC files
     ; is set to 'gei'; this represents J2000 GEI, not MOD GEI (which
@@ -40,14 +51,18 @@ pro mms_mec_fix_metadata, probe, suffix = suffix
                             '_mec_quat_eci_to_ssl', '_mec_quat_eci_to_gsm', $
                             '_mec_quat_eci_to_geo', '_mec_quat_eci_to_sm', $
                             '_mec_quat_eci_to_gse', '_mec_quat_eci_to_gse2000']+suffix
+                            
+    eci_vars = ssl_set_intersection(eci_vars, tplotnames)
     
-    ; split_vars adds the suffix before _0 and _1
-    append_array, eci_vars, 'mms'+probe+'_mec_L_vec'+suffix+['_0', '_1']
-    for eci_var=0, n_elements(eci_vars)-1 do begin
-        get_data, eci_vars[eci_var], data=d, dlimits=dl, limits=l
-        if is_struct(d) then begin
-          cotrans_set_coord, dl, 'j2000'
-          store_data, eci_vars[eci_var], data=d, dlimits=dl, limits=l
-        endif
-    endfor
+    if is_string(eci_vars[0]) then begin
+      ; split_vars adds the suffix before _0 and _1
+      append_array, eci_vars, 'mms'+probe+'_mec_L_vec'+suffix+['_0', '_1']
+      for eci_var=0, n_elements(eci_vars)-1 do begin
+          get_data, eci_vars[eci_var], data=d, dlimits=dl, limits=l
+          if is_struct(d) then begin
+            cotrans_set_coord, dl, 'j2000'
+            store_data, eci_vars[eci_var], data=d, dlimits=dl, limits=l
+          endif
+      endfor
+    endif
 end

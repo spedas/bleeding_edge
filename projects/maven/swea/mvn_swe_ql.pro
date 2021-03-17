@@ -16,8 +16,8 @@
 ;       PAD_E:        Energy for plotting PAD's.  Default = 280 eV.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2014-10-31 14:15:03 -0700 (Fri, 31 Oct 2014) $
-; $LastChangedRevision: 16106 $
+; $LastChangedDate: 2020-12-15 13:03:20 -0800 (Tue, 15 Dec 2020) $
+; $LastChangedRevision: 29494 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_ql.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-30-13
@@ -77,7 +77,7 @@ pro mvn_swe_ql, names=names, pad_e=pad_e
 
 ; Correct for deadtime.
 
-    yc = y/(1. - swe_dead*y)
+    yc = y/swe_deadtime(y)
 
 ; Create TPLOT variable
 

@@ -40,11 +40,12 @@
 ;                avoid mass reprocessing of data, if a bunch of file
 ;                ctime values are inadvertently changed. If more files
 ;                than this limit are tried, an error email will be sent.
+; allbad = if set, mark all data as affected by the low-energy anomaly.
 ;HISTORY:
 ;Hacked from mvn_call_sta_l2gen, 17-Apr-2014, jmm
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-01-24 09:13:41 -0800 (Fri, 24 Jan 2020) $
-; $LastChangedRevision: 28229 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2021-02-18 13:40:21 -0800 (Thu, 18 Feb 2021) $
+; $LastChangedRevision: 29670 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_call_swe_l2gen.pro $
 ;-
 Pro mvn_call_swe_l2gen, time_in = time_in, $
@@ -56,6 +57,7 @@ Pro mvn_call_swe_l2gen, time_in = time_in, $
                         l2only = l2only, $
                         max_l0_files = max_l0_files, $
                         no_reset_time = no_reset_time, $
+                        allbad = allbad, $
                         _extra = _extra
   
   common temp_call_swe_l2gen, load_position
@@ -67,6 +69,8 @@ Pro mvn_call_swe_l2gen, time_in = time_in, $
     'mitchell' : mailto = 'mitchell@ssl.berkeley.edu'
     else       : mailto = 'jimm@ssl.berkeley.edu'
   endcase
+
+  allbad = keyword_set(allbad)
   
   einit = 0
   catch, error_status
@@ -249,9 +253,9 @@ Pro mvn_call_swe_l2gen, time_in = time_in, $
            message, /info, 'PROCESSING: '+instrk+' FOR: '+timei
            Case instrk Of
               'swe': mvn_swe_l2gen, date = timei, directory = filei_dir, $
-                                    l2only = l2only, _extra=_extra
+                                    l2only = l2only, allbad = allbad, _extra=_extra
               Else: mvn_swe_l2gen, date = timei, directory = filei_dir, $
-                                    l2only = l2only, _extra=_extra
+                                    l2only = l2only, allbad = allbad, _extra=_extra
            Endcase
            SKIP_FILE: 
            del_data, '*'

@@ -12,8 +12,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-05-21 10:06:13 -0700 (Tue, 21 May 2019) $
-; $LastChangedRevision: 27269 $
+; $LastChangedDate: 2020-09-01 11:44:55 -0700 (Tue, 01 Sep 2020) $
+; $LastChangedRevision: 29102 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_feeps_sectspec_crib.pro $
 ;-
 
@@ -34,11 +34,11 @@ mms_feeps_sector_spec, probe = probe, data_rate = data_rate, level = level, data
 stop
 
 ; electrons, no sun contamination removed
-tplot, ['mms1_epd_feeps_brst_l2_'+datatype+'_bottom_count_rate_sensorid_3_sectspec', $
-        'mms1_epd_feeps_brst_l2_'+datatype+'_bottom_count_rate_sensorid_4_sectspec', $
-        'mms1_epd_feeps_brst_l2_'+datatype+'_bottom_count_rate_sensorid_5_sectspec', $
-        'mms1_epd_feeps_brst_l2_'+datatype+'_bottom_count_rate_sensorid_10_sectspec', $
-        'mms1_epd_feeps_brst_l2_'+datatype+'_bottom_count_rate_sensorid_11_sectspec']
+tplot, ['mms1_epd_feeps_'+data_rate+'_l2_'+datatype+'_bottom_count_rate_sensorid_3_sectspec', $
+        'mms1_epd_feeps_'+data_rate+'_l2_'+datatype+'_bottom_count_rate_sensorid_4_sectspec', $
+        'mms1_epd_feeps_'+data_rate+'_l2_'+datatype+'_bottom_count_rate_sensorid_5_sectspec', $
+        'mms1_epd_feeps_'+data_rate+'_l2_'+datatype+'_bottom_count_rate_sensorid_10_sectspec', $
+        'mms1_epd_feeps_'+data_rate+'_l2_'+datatype+'_bottom_count_rate_sensorid_11_sectspec']
 
 stop
 
@@ -46,10 +46,10 @@ stop
 mms_feeps_sector_spec, probe = probe, data_rate = data_rate, /remove_sun, datatype=datatype
 
 window, 1
-tplot, window=1, ['mms1_epd_feeps_brst_l2_'+datatype+'_bottom_count_rate_sensorid_3_sectspec_sun_removed', $
-  'mms1_epd_feeps_brst_l2_'+datatype+'_bottom_count_rate_sensorid_4_sectspec_sun_removed', $
-  'mms1_epd_feeps_brst_l2_'+datatype+'_bottom_count_rate_sensorid_5_sectspec_sun_removed', $
-  'mms1_epd_feeps_brst_l2_'+datatype+'_bottom_count_rate_sensorid_10_sectspec_sun_removed', $
-  'mms1_epd_feeps_brst_l2_'+datatype+'_bottom_count_rate_sensorid_11_sectspec_sun_removed']
+tplot, window=1, ['mms1_epd_feeps_'+data_rate+'_l2_'+datatype+'_bottom_count_rate_sensorid_3_sectspec_sun_removed', $
+  'mms1_epd_feeps_'+data_rate+'_l2_'+datatype+'_bottom_count_rate_sensorid_4_sectspec_sun_removed', $
+  'mms1_epd_feeps_'+data_rate+'_l2_'+datatype+'_bottom_count_rate_sensorid_5_sectspec_sun_removed', $
+  'mms1_epd_feeps_'+data_rate+'_l2_'+datatype+'_bottom_count_rate_sensorid_10_sectspec_sun_removed', $
+  'mms1_epd_feeps_'+data_rate+'_l2_'+datatype+'_bottom_count_rate_sensorid_11_sectspec_sun_removed']
 stop
 end

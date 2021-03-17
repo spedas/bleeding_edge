@@ -15,14 +15,14 @@
 ;         data_units:   desired units for data. Options are ['flux' (default), 'cps', 'counts'].
 ;         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
 ;                       preserving original tplot variable.
-;         species:      species (should be: proton (default), oxygen, alpha, or electron)
+;         species:      species (should be: proton (default), oxygen, helium (formerly alpha), or electron)
 ;         scopes:       string array of telescopes to be included in PAD ('0'-'5')
 ;
 ; OUTPUT:
 ; 
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-09-27 12:58:38 -0700 (Fri, 27 Sep 2019) $
-;$LastChangedRevision: 27793 $
+;$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
+;$LastChangedRevision: 29648 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad_spinavg.pro $
 ;
 ; REVISION HISTORY:
@@ -37,6 +37,10 @@
 ;       + 2017-12-04, I. Cohen      : updated to create spin-averaged variables for all PAD variables, to mirror new
 ;                                     capabilities of mms_eis_pad.pro (changed pad_name variable to pad_vars); change 
 ;                                     size_pabin keyword to size_pabin                   
+;       + 2020-12-11, I. Cohen      : changed "not KEYWORD_SET" to "undefined" in initialization of some keywords
+;       + 2021-02-09, I. Cohen      : added helium to species in header under KEYWORD section
+;
+;
 ;-
 
 pro mms_eis_pad_spinavg, probes=probes, species = species, data_units = data_units, $
@@ -44,15 +48,15 @@ pro mms_eis_pad_spinavg, probes=probes, species = species, data_units = data_uni
   suffix = suffix, scopes = scopes
   ;
   compile_opt idl2
-  if not KEYWORD_SET(probes) then probes='1' else probes = strcompress(string(probes), /rem)
-  if not KEYWORD_SET(datatype) then datatype = 'extof'
-  if not KEYWORD_SET(data_units) then data_units = 'flux'
-  if not KEYWORD_SET(species) then species = 'proton'
-  if not KEYWORD_SET(suffix) then suffix_in = '' else suffix_in = suffix
-  if not KEYWORD_SET(energy) then energy = [55, 800]
-  if not KEYWORD_SET(size_pabin) then size_pabin = 15
-  if not KEYWORD_SET(data_rate) then data_rate = 'srvy'
-  if not KEYWORD_SET(scopes) then scopes = ['0','1','2','3','4','5']
+  if undefined(probes) then probes='1' else probes = strcompress(string(probes), /rem)
+  if undefined(datatype) then datatype = 'extof'
+  if undefined(data_units) then data_units = 'flux'
+  if undefined(species) then species = 'proton'
+  if undefined(suffix) then suffix_in = '' else suffix_in = suffix
+  if undefined(energy) then energy = [55, 800]
+  if undefined(size_pabin) then size_pabin = 15
+  if undefined(data_rate) then data_rate = 'srvy'
+  if undefined(scopes) then scopes = ['0','1','2','3','4','5']
   ;
   en_range_string = strcompress(string(energy[0]), /rem) + '-' + strcompress(string(energy[1]), /rem) + 'keV'
   units_label = data_units eq 'cps' ? '1/s': '1/(cm!U2!N-sr-s-keV)'

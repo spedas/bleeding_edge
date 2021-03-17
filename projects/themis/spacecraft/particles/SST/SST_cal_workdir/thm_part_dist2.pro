@@ -1,7 +1,7 @@
 
 ;+
 ;NAME:
-; thm_part_dist
+; thm_part_dist2
 ;PURPOSE:
 ; wrapper function around the different routines called 'get_p???'
 ; used for ESA particle data and 'thm_sst_p???' routines that extract
@@ -99,9 +99,9 @@
 ;       thm_remove_sunpulse.pro or thm_crib_sst_contamination.pro
 ;
 ;
-;$LastChangedBy: pcruce $
-;$LastChangedDate: 2013-09-10 16:17:02 -0700 (Tue, 10 Sep 2013) $
-;$LastChangedRevision: 13014 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2021-03-09 10:33:22 -0800 (Tue, 09 Mar 2021) $
+;$LastChangedRevision: 29748 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_part_dist2.pro $
 ;-
 
@@ -287,13 +287,13 @@ if dtype eq 'f' || dtype eq 'b' then begin
   end
   ;removes sunpulse contamination if keywords set by end user
   dist = thm_sst_remove_sunpulse(badbins2mask=badbins2mask,dist,_extra=ex)
-endif else begin
+endif else if(tag_exist(dist, 'channel')) then begin
   if species eq 'i' then begin
     dist.channel = 'o'
   endif else begin
     dist.channel = 'f'
   endelse
-endelse
+endif
 
 return,dist
 

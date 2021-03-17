@@ -47,6 +47,7 @@ pro xyz_to_polar,data, $
     magnitude = magnitude, $
     theta = theta, $
     phi = phi,  $
+    quick_mag=quick_mag,  $
     tagname = tagname,  $
     max_value=max_value, $
     min_value=min_value, $
@@ -76,9 +77,12 @@ switch size(/type,data) of
         theta     = names[i]+ (keyword_set(clock) ? '_con' : '_th')
         phi       = names[i]+ (keyword_set(clock) ? '_clk' : '_phi')
         store_data,magnitude,data=mag_struct
-        store_data,theta    ,data=th_struct
-        store_data,phi      ,data=ph_struct,dlim={ynozero:1}
-        tn = [magnitude,theta,phi]
+        tn = [magnitude]
+        if ~keyword_set(quick_mag) then begin
+          store_data,theta    ,data=th_struct
+          store_data,phi      ,data=ph_struct,dlim={ynozero:1}
+          tn = [magnitude,theta,phi]
+        endif
         tplotnames = keyword_set(tplotnames) ? [tplotnames,tn] : tn
       endfor
       return

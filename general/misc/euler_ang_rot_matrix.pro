@@ -5,14 +5,14 @@
 ;  (This function may be used with the "fit" curve fitting procedure.)
 ;
 ;KEYWORDS:
-;  PARAMETERS: a structure that contain the parameters that define the gaussians
+;  PARAMETERS: a structure that contain the parameters that define the rotation
 ;     If this parameter is not a structure then it will be created.
 ;
 ;Written by: Davin Larson
 ;
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-; $LastChangedRevision: 24506 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2020-12-16 13:37:02 -0800 (Wed, 16 Dec 2020) $
+; $LastChangedRevision: 29518 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/euler_ang_rot_matrix.pro $
 ;-
 function euler_ang_rot_matrix,eulerang,parameters=par

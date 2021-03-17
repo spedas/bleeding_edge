@@ -33,8 +33,8 @@
 ;       DAY:       PAD units are days.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-08-03 16:49:25 -0700 (Mon, 03 Aug 2020) $
-; $LastChangedRevision: 28979 $
+; $LastChangedDate: 2020-12-15 12:58:34 -0800 (Tue, 15 Dec 2020) $
+; $LastChangedRevision: 29488 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/timefit.pro $
 ;
 ;CREATED BY:	David L. Mitchell  07-06-14
@@ -47,8 +47,15 @@ pro timefit, time, var=var, pad=pad, min=min, hour=hour, day=day
       print, "Tplot variable ",var," not found."
       return
     endif
-    time = dat.x
-    if (n_elements(time) eq 1) then time = [time, time]
+    if (size(dat,/type) eq 7) then begin
+      print, "Cannot process compound variable: ", var
+      return
+    endif
+    str_element, dat, 'x', x, success=ok
+    if (ok) then time = minmax(x) else begin
+      print, "Cannot process variable: ", var
+      return
+    endelse
   endif
 
   case n_elements(time) of
@@ -62,14 +69,20 @@ pro timefit, time, var=var, pad=pad, min=min, hour=hour, day=day
                print, "Tplot variable ",time," not found."
                return
              endif
-             time = dat.x
+             if (size(dat,/type) eq 7) then begin
+               print, "Cannot process compound variable: ", time
+               return
+             endif
+             str_element, dat, 'x', x, success=ok
+             if (ok) then time = minmax(x) else begin
+               print, "Cannot process variable: ", time
+               return
+             endelse
            end
     else : ; do nothing
   endcase
 
-  if (size(time,/type) eq 0) then return
-
-  tmin = min(time_double(time), max=tmax)
+  tmin = min(time, max=tmax)
 
   if keyword_set(pad) then begin
     pad = double(pad)

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -29,6 +29,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#MVN_L2FILE_COMPRESS">MVN_L2FILE_COMPRESS</A>
 <br>compresses an output L2 file and creates an md5 file
 <LI><A HREF="#MVN_L2GEN_MULTIPROCESS_A">MVN_L2GEN_MULTIPROCESS_A</A>
+<LI><A HREF="#MVN_L2GEN_OUTDIR">MVN_L2GEN_OUTDIR</A>
 <LI><A HREF="#MVN_L2GEN_REMOVE_0LOGS">MVN_L2GEN_REMOVE_0LOGS</A>
 <LI><A HREF="#MVN_SWE_KPGEN">MVN_SWE_KPGEN</A>
 <br>Loads L0 data, creates L2 files for 1 day
@@ -310,11 +311,12 @@ KEYWORDS:
                 avoid mass reprocessing of data, if a bunch of file
                 ctime values are inadvertently changed. If more files
                 than this limit are tried, an error email will be sent.
+ allbad = if set, mark all data as affected by the low-energy anomaly.
 HISTORY:
 Hacked from mvn_call_sta_l2gen, 17-Apr-2014, jmm
- $LastChangedBy: jimm $
- $LastChangedDate: 2020-01-24 09:13:41 -0800 (Fri, 24 Jan 2020) $
- $LastChangedRevision: 28229 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2021-02-18 13:40:21 -0800 (Thu, 18 Feb 2021) $
+ $LastChangedRevision: 29670 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_call_swe_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2gen/mvn_call_swe_l2gen.pro">projects/maven/l2gen/mvn_call_swe_l2gen.pro</A>)</STRONG><P>
@@ -404,7 +406,7 @@ HISTORY:
 <A NAME="MVN_L2GEN_MULTIPROCESS_A">
 <H2>MVN_L2GEN_MULTIPROCESS_A</H2></A>
 <A HREF="#MVN_L2FILE_COMPRESS">[Previous Routine]</A>
-<A HREF="#MVN_L2GEN_REMOVE_0LOGS">[Next Routine]</A>
+<A HREF="#MVN_L2GEN_OUTDIR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 ro mvn_l2gen_multiprocess_a, function_in, nproc, offset, time_range, $
@@ -431,9 +433,32 @@ ro mvn_l2gen_multiprocess_a, function_in, nproc, offset, time_range, $
 <STRONG>(See <A href="l2gen/mvn_l2gen_multiprocess_a.pro">projects/maven/l2gen/mvn_l2gen_multiprocess_a.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_L2GEN_OUTDIR">
+<H2>MVN_L2GEN_OUTDIR</H2></A>
+<A HREF="#MVN_L2GEN_MULTIPROCESS_A">[Previous Routine]</A>
+<A HREF="#MVN_L2GEN_REMOVE_0LOGS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME: mvn_l2gen_outdir 
+PURPOSE: helper function to create output directories,
+group-writeable, with group set to 'maven'. 
+CALLING SEQUENCE:
+mvn_l2gen_outdir, directory, year = year, month = month
+KEYWORDS:
+ year = 'yyyy' will create directory+year+'/'
+ month = 'mm' will create directory+year+'/'+month+'/'
+HISTORY:
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2020-08-18 09:56:24 -0700 (Tue, 18 Aug 2020) $
+ $LastChangedRevision: 29042 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_l2gen_outdir.pro $
+</PRE><P>
+<STRONG>(See <A href="l2gen/mvn_l2gen_outdir.pro">projects/maven/l2gen/mvn_l2gen_outdir.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_L2GEN_REMOVE_0LOGS">
 <H2>MVN_L2GEN_REMOVE_0LOGS</H2></A>
-<A HREF="#MVN_L2GEN_MULTIPROCESS_A">[Previous Routine]</A>
+<A HREF="#MVN_L2GEN_OUTDIR">[Previous Routine]</A>
 <A HREF="#MVN_SWE_KPGEN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -461,12 +486,13 @@ KEYWORDS:
  date = If set, the input date. The default is today
  directory = If set, output into this directory, for testing
              purposes, don't forget a slash '/'  at the end.
+ allbad = If set, mark all data as affected by low-energy anomaly.
 HISTORY:
  Hacked from mvn_swe_l2gen, 2015-01-25, jmm, jimm@ssl.berkeley.edu
  jimm@ssl.berkeley.edu
- $LastChangedBy: jimm $
- $LastChangedDate: 2015-02-24 18:45:38 -0800 (Tue, 24 Feb 2015) $
- $LastChangedRevision: 17037 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2021-02-18 13:40:21 -0800 (Thu, 18 Feb 2021) $
+ $LastChangedRevision: 29670 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_swe_kpgen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2gen/mvn_swe_kpgen.pro">projects/maven/l2gen/mvn_swe_kpgen.pro</A>)</STRONG><P>
@@ -512,12 +538,14 @@ KEYWORDS:
               Default = 1 (yes).  Set this to 0 to disable and use the
               above 3 keywords only (not recommended!).
 
+   ALLBAD:    Flag all data as affected by the sporadic low-energy anomaly.
+
 HISTORY:
  Hacked from Matt F's crib_l0_to_l2.txt, 2014-11-14: jmm
  Better memory management and added keywords to control processing: dlm
- $LastChangedBy: muser $
- $LastChangedDate: 2019-11-12 15:57:15 -0800 (Tue, 12 Nov 2019) $
- $LastChangedRevision: 28013 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2021-02-24 11:21:40 -0800 (Wed, 24 Feb 2021) $
+ $LastChangedRevision: 29698 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_swe_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2gen/mvn_swe_l2gen.pro">projects/maven/l2gen/mvn_swe_l2gen.pro</A>)</STRONG><P>

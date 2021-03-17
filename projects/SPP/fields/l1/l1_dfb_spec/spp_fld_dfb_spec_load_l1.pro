@@ -18,6 +18,15 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix, varformat = varformat
     4: colors = 1 ; magenta
   endcase
 
+  get_data, prefix + 'navg', data = dat_navg
+
+  if size(/type, dat_navg) NE 8 then begin
+
+    print, 'no DFB spectra loaded'
+    return
+
+  endif
+
   options, prefix + status_items, 'colors', colors
   ;options, prefix + status_items, 'psym', spec_number + 3
   options, prefix + status_items, 'psym_lim', 100
@@ -63,8 +72,6 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix, varformat = varformat
   options, prefix + 'gain', 'yminor', 1
   options, prefix + 'gain', 'ysubtitle', ''
   options, prefix + 'gain', 'panel_size', 0.35
-
-  get_data, prefix + 'navg', data = dat_navg
 
   if n_elements(uniq(dat_navg.y)) EQ 1 then begin
 
@@ -417,8 +424,8 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix, varformat = varformat
 
         options, prefix + dfb_spec_name_i, 'ysubtitle', 'Freq [Hz]'
 
-        if is_ac then options, prefix + dfb_spec_name_i, 'datagap', 3600d else $
-          options, prefix + dfb_spec_name_i, 'datagap', 3600d
+        if is_ac then options, prefix + dfb_spec_name_i, 'datagap', 600d else $
+          options, prefix + dfb_spec_name_i, 'datagap', 600d
 
         if tnames(prefix + 'src_sel_string') NE '' then begin
 
@@ -457,7 +464,7 @@ pro spp_fld_dfb_spec_load_l1, file, prefix = prefix, varformat = varformat
       ; Set ytitle of TPLOT variable
 
       options, prefix + dfb_spec_name_i, 'ytitle', $
-        ac_dc_string + ' SP' + $
+        ac_dc_string + '!CSP' + $
         string(spec_ind) + '!C' + strupcase(dfb_spec_name_ytitle)
 
     endfor

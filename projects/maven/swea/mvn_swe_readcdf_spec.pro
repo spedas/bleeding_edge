@@ -16,8 +16,8 @@
 ;   Created by Matt Fillingim
 ; VERSION:
 ;   $LastChangedBy: dmitchell $
-;   $LastChangedDate: 2019-03-20 13:57:40 -0700 (Wed, 20 Mar 2019) $
-;   $LastChangedRevision: 26864 $
+;   $LastChangedDate: 2021-02-18 15:21:40 -0800 (Thu, 18 Feb 2021) $
+;   $LastChangedRevision: 29677 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_readcdf_spec.pro $
 ;
 ;-
@@ -213,10 +213,7 @@ pro mvn_swe_readcdf_spec, infile, structure
 
   CDF_VARGET, id, 'counts', counts, /ZVAR, rec_count = nrec ; [64, nrec]
   rate = counts/(integ_t*dt_arr) ; raw count rate ; [64, nrec]
-  dtc = 1. - rate*swe_dead
-  ndx = where(dtc lt swe_min_dtc, count)
-  if (count gt 0L) then dtc[ndx] = !values.f_nan
-  structure.dtc = dtc
+  structure.dtc = swe_deadtime(rate)
 
 ; *** mass
 ; mass -- electron rest mass [eV/(km/s)^2]
@@ -265,7 +262,7 @@ pro mvn_swe_readcdf_spec, infile, structure
 ; output: 'EFLUX' : scale = scale * 1D/(dtc * dt * dt_arr * gf)
 ;                   where dt = integ_t ; gf = gf*eff ; eff = 1
 
-  scale = 1D/(dtc*integ_t*dt_arr*structure.gf)
+  scale = 1D/(structure.dtc*integ_t*dt_arr*structure.gf)
   var = var*(scale*scale)
   structure.var = var
 

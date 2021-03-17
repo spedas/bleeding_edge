@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -19,6 +19,14 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/maven/sta/mvn_sta_programs</H1>
+<LI><A HREF="#MVN_STA_BKG_CORRECT">MVN_STA_BKG_CORRECT</A>
+<br>Corrects coincident background in sw where time variations happen on &lt;4ms time scales, must first run mvn_sta_bkg_load
+<LI><A HREF="#MVN_STA_BKG_CORRECT_STRAGGLE">MVN_STA_BKG_CORRECT_STRAGGLE</A>
+<br>Corrects coincident background in sw where time variations happen on &lt;4ms time scales, and runs mvn_sta_bkg_straggle_all.pro
+<LI><A HREF="#MVN_STA_BKG_LOAD">MVN_STA_BKG_LOAD</A>
+<br>Loads background data into APID c6 common block
+<LI><A HREF="#MVN_STA_BKG_STRAGGLERS_ALL">MVN_STA_BKG_STRAGGLERS_ALL</A>
+<br>Adds straggler background from solar wind protons, alphas
 <LI><A HREF="#MVN_STA_DEAD_LOAD">MVN_STA_DEAD_LOAD</A>
 <br>Loads dead-time arrays into apid common blocks for science data products, modified 20170919 for high background SEP events
 <LI><A HREF="#MVN_STA_GF_CORR">MVN_STA_GF_CORR</A>
@@ -33,10 +41,18 @@ This page was created by the IDL library routine
 <br>Makes common block structure mvn_c6e (64E-64M) from c6 (32E-64M) and c0 (64E-2M) data products
 <LI><A HREF="#MVN_STA_MAKE_D1E">MVN_STA_MAKE_D1E</A>
 <br>Makes common block structure mvn_d1e (64E-64S-8M) from d1 (32E-64S-8M) and c0 (64E-1S-2M) data products
+<LI><A HREF="#MVN_STA_RESTORE_THE_DEAD">MVN_STA_RESTORE_THE_DEAD</A>
+<br>Loads dat_dead array into the &quot;mvn_sta_dead&quot; common block from maven_dir+'data\maven\data\sci\sta\iv1\dead'
 <LI><A HREF="#MVN_STA_SC_BINS_INSERT">MVN_STA_SC_BINS_INSERT</A>
 <LI><A HREF="#MVN_STA_SC_BINS_LOAD[1]">MVN_STA_SC_BINS_LOAD[1]</A>
 <LI><A HREF="#MVN_STA_SC_BINS_LOAD[2]">MVN_STA_SC_BINS_LOAD[2]</A>
 <LI><A HREF="#MVN_STA_SC_BINS_LOAD[2]">MVN_STA_SC_BINS_LOAD[2]</A>
+<LI><A HREF="#MVN_STA_SC_BINS_LOAD_OLD[1]">MVN_STA_SC_BINS_LOAD_OLD[1]</A>
+<LI><A HREF="#MVN_STA_SC_BINS_LOAD_OLD[2]">MVN_STA_SC_BINS_LOAD_OLD[2]</A>
+<LI><A HREF="#MVN_STA_SC_BINS_LOAD_OLD[2]">MVN_STA_SC_BINS_LOAD_OLD[2]</A>
+<LI><A HREF="#MVN_STA_SC_BINS_LOAD_TEST[1]">MVN_STA_SC_BINS_LOAD_TEST[1]</A>
+<LI><A HREF="#MVN_STA_SC_BINS_LOAD_TEST[2]">MVN_STA_SC_BINS_LOAD_TEST[2]</A>
+<LI><A HREF="#MVN_STA_SC_BINS_LOAD_TEST[2]">MVN_STA_SC_BINS_LOAD_TEST[2]</A>
 <LI><A HREF="#MVN_STA_SCPOT_LOAD">MVN_STA_SCPOT_LOAD</A>
 <br>Loads scpot into static apid common blocks for science data products - only works if scpot is negative
 <LI><A HREF="#MVN_STA_SCPOT_UPDATE">MVN_STA_SCPOT_UPDATE</A>
@@ -45,8 +61,234 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="MVN_STA_BKG_CORRECT">
+<H2>MVN_STA_BKG_CORRECT</H2></A>
+<A HREF="#MVN_STA_BKG_CORRECT_STRAGGLE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:	mvn_sta_bkg_correct
+PURPOSE:	
+	Corrects coincident background in sw where time variations happen on &lt;4ms time scales, must first run mvn_sta_bkg_load 
+INPUT:		
+
+KEYWORDS:
+	trange		dbl(2)	time range for background subtraction - used for testing
+					default is full time range
+					if not set, will load c6 data for 3 days and assumes bkg is loaded in c6 data structure 
+					this should not be set for batch processing, but should be set for testing
+	avg_interval	flt	number of c6 packets averaged for correction
+					default = 21
+	scale1		flt	default=0.00015, scale factor for variations in coincidence with mass - emperically determined on 20160401
+	scale2		flt	default=0.1, fraction of counts in massbin=40:55 that exceed cnts in massbin=56:63 to ignore correction
+					o2+,co2+ counts straggle into massbins 56:63 making correction inaccurate
+	value2		flt	minimum value of c6 bkg summed over massbin=56:63 at a energy bin to trigger correction algorithm
+					def=0.3  -- should this be lowered? see problem below
+	value3		flt	smoothing valued
+					def=value2
+	test		0/1	if set, will create tplot variables for testing
+	tplot		0/1	if set, will run &quot;mvn_sta_l2_tplot,/test,/all,/replace&quot; at completion of the program
+	save_bkg	0/1	if set, will save the current value of bkg in an intermediate array -- for testing
+	restore_bkg	0/1	if set, will restore value of bkg in an intermediate array created by save_bkg -- for testing
+	only_c6		0/1	if set, only c6 gets bkg updated
+
+
+CREATED BY:	J. McFadden 20/07/16
+VERSION:	1
+LAST MODIFICATION:  20/07/27		
+MOD HISTORY:
+
+NOTES:	  
+ 	bkg7 from mvn_sta_bkg_load (coincident events) are corrected for fast time variations 
+	bkg7 is proportional to rate squared, so any averaging of fluctuations during a 4ms accumulation will result in underestimates of bkg
+	The assumption is that high massbins=56:63 are entirely due to coincident ions unless significant o2+,co2+ is present
+	Differences between dat.bkg estimate from rate^2 and dat.cnts for massbins=56:63 is assumed to be due to rapid flux changes over the 4ms accumulation time
+	Correction factors to dat.bkg are based on (dat.cnts/dat.bkg) ratios and calculated for each energy using c6
+	- a secondary 10% level correction is also applied based coincident timing https://en.wikipedia.org/wiki/Exponential_distribution
+ 	- it corrects for the exponential decrease in coincident events with increasing mass
+	correction are based on c6, so the time base for corrections will be from c6
+	c6 data for the day before and day after are loaded for intermediate calculations, but c6 is returned to a single day being loaded.
+	some parameters were determined emperically defaults values see to work
+
+	Problem: there may be a problem with not correcting if calculated bkg is greater than the cnts high mass bins 56:63
+		Changed the &gt;1. to &gt;0.7 on line 238,  also may need to change value2. 
+		Saw this problem on 20160402  22:23-22:50 with a weak solar wind and modified code to &gt;0.7 
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_bkg_correct.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_bkg_correct.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_BKG_CORRECT_STRAGGLE">
+<H2>MVN_STA_BKG_CORRECT_STRAGGLE</H2></A>
+<A HREF="#MVN_STA_BKG_CORRECT">[Previous Routine]</A>
+<A HREF="#MVN_STA_BKG_LOAD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:	mvn_sta_bkg_correct_straggle
+PURPOSE:	
+	Corrects coincident background in sw where time variations happen on &lt;4ms time scales, and runs mvn_sta_bkg_straggle_all.pro
+INPUT:		
+
+KEYWORDS:
+	avg_interval	flt	number of c6 packets averaged for correction
+					default = 21
+	scale1		flt	default=0.00015, scale factor for variations in coincidence with mass - emperically determined on 20160401
+	scale2		flt	default=0.1, fraction of counts in massbin=40:55 that exceed cnts in massbin=56:63 to ignore correction
+					o2+,co2+ counts straggle into massbins 56:63 making correction inaccurate
+	value2		flt	minimum value of c6 bkg summed over massbin=56:63 at a energy bin to trigger correction algorithm
+					def=0.3  -- should this be lowered? see problem below
+	value3		flt	smoothing valued
+					def=value2
+	test		0/1	if set, will create tplot variables for testing
+	tplot		0/1	if set, will run &quot;mvn_sta_l2_tplot,/test,/all,/replace&quot; at completion of the program
+	save_bkg	0/1	if set, will save the current value of bkg in an intermediate array -- for testing
+	restore_bkg	0/1	if set, will restore value of bkg in an intermediate array created by save_bkg -- for testing
+	only_c6		0/1	if set, only c6 gets bkg updated
+	maven_dead_dir	string	maven_dead_dir is the directory root directory where dat_dead - default = 'c:\data\
+
+
+CREATED BY:	J. McFadden 20/07/16
+VERSION:	1
+LAST MODIFICATION:  20/07/27		
+MOD HISTORY:
+
+NOTES:	  
+ 	bkg7 from mvn_sta_bkg_load (coincident events) are corrected for fast time variations 
+	bkg7 is proportional to rate squared, so any averaging of fluctuations during a 4ms accumulation will result in underestimates of bkg
+	The assumption is that high massbins=56:63 are entirely due to coincident ions unless significant o2+,co2+ is present
+	Differences between dat.bkg estimate from rate^2 and dat.cnts for massbins=56:63 is assumed to be due to rapid flux changes over the 4ms accumulation time
+	Correction factors to dat.bkg are based on (dat.cnts/dat.bkg) ratios and calculated for each energy using c6
+	- a secondary 10% level correction is also applied based coincident timing https://en.wikipedia.org/wiki/Exponential_distribution
+ 	- it corrects for the exponential decrease in coincident events with increasing mass
+	correction are based on c6, so the time base for corrections will be from c6
+	c6 data for the day before and day after are loaded for intermediate calculations, but c6 is returned to a single day being loaded.
+	some parameters were determined emperically defaults values see to work
+
+	Problem: there may be a problem with not correcting if calculated bkg is greater than the cnts high mass bins 56:63
+		Changed the &gt;1. to &gt;0.7 on line 238,  also may need to change value2. 
+		Saw this problem on 20160402  22:23-22:50 with a weak solar wind and modified code to &gt;0.7 
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_bkg_correct_straggle.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_bkg_correct_straggle.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_BKG_LOAD">
+<H2>MVN_STA_BKG_LOAD</H2></A>
+<A HREF="#MVN_STA_BKG_CORRECT_STRAGGLE">[Previous Routine]</A>
+<A HREF="#MVN_STA_BKG_STRAGGLERS_ALL">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:	mvn_sta_bkg_load
+PURPOSE:	
+	Loads background data into APID c6 common block 
+INPUT:		
+
+KEYWORDS:
+	trange		dbl(2)	time range for background subtraction
+	AAA		flt	default=1., droop non-linear parameter - doesn't seem to matter that much
+
+  the following are primarily for testing purposes
+	no_update	0/1	when set, will not change background in any common block
+					this allows the routine to generate idlsave_d1_full_str without impacting bkg in common block
+	add		0/1	when set, this will not zero out background before adding the calculated background 
+					this allows backgrounds to be calculated on sequential runs as parameters are tuned
+	no_bkg3		0/1	when set, turns off bkg3 background removal - bkg3 not working yet
+	no_bkg4		0/1	when set, turns off bkg4 background removal
+	no_bkg5		0/1	when set, turns off bkg5 background removal
+	no_bkg6		0/1	when set, turns off bkg6 background removal
+	no_bkg7		0/1	when set, turns off bkg7 background removal
+	no_bkg8		0/1	when set, turns off bkg8 background removal
+	no_bkg9		0/1	when set, turns off bkg9 background removal
+	no_bkg10	0/1	when set, turns off bkg10 background removal
+	save_d1_full	0/1	when set, saves d1_full and bkg arrays in idlsave file - diagnostic for bkg3,bkg5 development - not recommended 
+
+
+CREATED BY:	J. McFadden
+VERSION:	1
+LAST MODIFICATION:  20/08/18		
+MOD HISTORY:
+
+NOTES:	  
+ bkg2 is TBD - sputtered ions from the spacecraft caused by keV solar wind protons
+	this background is very tenuous, appears at 1-40eV, and at 20&lt;mass&lt;30 - most likely sputtered CO2++ and CO+
+	probably will not bother trying to develop this background estimation
+ bkg3 is TBD - scattered ions off entrance posts and grids appearing at other energies and angles - proportional to rate
+	this is primarily observed for solar wind protons below the spectral peak - about 3% of the beam counts
+	the angle distribution appears to be complex so not clear whether this can be worked out
+ bkg4 are internally backscattered cold ions near periapsis when the mechanical attenuator is closed
+ 	removal assumes all heavy ions outside of anodes 5 to 9, and with energy &lt; Esh, are background
+	Esh is the highest energy where the counts in c6 exceed 1/50. of the peak counts and exceed 20 counts.
+	the numbers 50 and 20 were empirically determined and should be tuned to make the algorithm work optimally 
+	tf_bkg4 is use to prevent double counting in background removal
+ bkg5 is TBD (disabled) caused by event straggling (energy loss) in the carbon foils and from inelastic scattering from grids at the start foil
+	bkg5a are proton stragglers - proportional to event rate
+ 	bkg5b are alpha  stragglers - proportional to event rate
+	these background are anode dependent - probably dependent on details of the grids
+ bkg6 is TBD (disabled) background caused by start_no_stop followed closely by a valid event - proportional to rate squared
+	at high rate, the TOF circuit may not be completely reset before the next event producing a statistical high mass tail
+	bkg6 high mass tail is generally observed at masses just above the high flux mass peak (typically in solar wind)
+	however, valid events that contribute to bkg6 may also be due to other forms of background -- primarily coincidence events 
+ bkg7 is background from coincident events where different ions (or radiation) produce the start and stop signals - proportional to rate squared
+	bkg7 has errors due to variations in flux on &lt;4ms time scales which are corrected by mvn_sta_bkg_correct.pro
+	mvn_sta_bkg_correct.pro will also correct for the small variation in coincident background with mass
+ bkg8 is TBD (disabled) background caused by start_no_stop followed closely by a TOF=0 event - proportional to rate squared
+	bkg8 is similar to bkg6
+	TOF=0 event are caused by scattered electrons that produce simultaneous start and stop signals
+	because bkg8 depends on rate^2, it requires the correction calculated by mvn_sta_bkg_correct.pro
+ bkg9 is background created by delayed Start signal from scattered molecular ion fragment 
+	that failed to produce a start at the carbon foil but produced a Start electron when it hit another TOF analyzer surface
+ bkg10 is TBD (disabled) bkg10 is internally produced background from sputtered ions generated by backscattered start-foil secondary electrons  
+	the primary sputtered ion peak is C++, however O+, O++ and C+ are also observed but are much smaller
+	the size of this peak depends on the incident ion mass (secondary e- production) and amount of disolved CO2 on surfaces
+	therefore the size of these peaks will vary with time, anode, and composition
+
+ this algorithm currently generates bkg4, bkg7, bkg9
+ 	bkg2 will likely never calculated since it is such a weak signal and depends on a complex dynamic of FOV, s/c orientation and solar wind flux
+	bkg3 may never be developed due depends on a complex dynamic of FOV, s/c orientation and solar wind flux
+ 	bkg5,bkg6 will be treated in a separate program and use outputs from mvn_sta_bkg_correct.pro
+	bkg8 will be treated in a separate program using outputs from mvn_sta_bkg_correct.pro
+	bkg10 will be treated in a separate program using outputs from mvn_sta_bkg_correct.pro
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_bkg_load.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_bkg_load.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_BKG_STRAGGLERS_ALL">
+<H2>MVN_STA_BKG_STRAGGLERS_ALL</H2></A>
+<A HREF="#MVN_STA_BKG_LOAD">[Previous Routine]</A>
+<A HREF="#MVN_STA_DEAD_LOAD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:	mvn_sta_bkg_stragglers
+PURPOSE:	
+	Adds straggler background from solar wind protons, alphas
+		Should first run mvn_sta_bkg_load and mvn_sta_bkg_correct to load other backgrounds and fill the 
+		Or run mvn_sta_l2_load,/iv1 and mvn_sta_bkg_correct and restore,filename='C:\data\maven\data\sci\sta\iv1\dead\year\mo\mvn_sta_dead_yearmoda.sav' 
+		Or run mvn_sta_l2_load,/iv2 and restore,filename='C:\data\maven\data\sci\sta\iv1\dead\year\mo\mvn_sta_dead_yearmoda.sav' 
+INPUT:		
+
+KEYWORDS:
+	save_bkg	0/1	if set, will save    current bkg and exit
+	restore_bkg	0/1	if set, will restore current bkg and exit
+	trange		dbl(2)	tbd, not working  - time range for background subtraction - used for testing
+					default is full time range - 
+
+CREATED BY:	J. McFadden 20/09/05
+VERSION:	1
+LAST MODIFICATION:  20/09/05		
+MOD HISTORY:
+
+NOTES:	  
+	straggle0 is a proton ghost peak and linear in rate
+	straggle4 is an alpha ghost peak and linear in rate
+	straggle1,2 are actual protons stragglers and linear in rate 
+	straggle5,6 are actual alphas  stragglers and linear in rate 
+	straggle3,8 are non-linear events from protons and a slow TOF circuit reset
+	straggle7,9 are non-linear events from alphas  and a slow TOF circuit reset
+	straggle10 is a ghost peak from protons sputtering e- which produce a weak C++ signal - linear in rate 
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_bkg_stragglers_all.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_bkg_stragglers_all.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_DEAD_LOAD">
 <H2>MVN_STA_DEAD_LOAD</H2></A>
+<A HREF="#MVN_STA_BKG_STRAGGLERS_ALL">[Previous Routine]</A>
 <A HREF="#MVN_STA_GF_CORR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -113,8 +355,8 @@ CREATED BY:      Takuya Hara on 2018-08-09.
 
 LAST MODIFICATION:
  $LastChangedBy: hara $
- $LastChangedDate: 2018-08-20 12:17:17 -0700 (Mon, 20 Aug 2018) $
- $LastChangedRevision: 25665 $
+ $LastChangedDate: 2021-02-25 08:53:57 -0800 (Thu, 25 Feb 2021) $
+ $LastChangedRevision: 29701 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_programs/mvn_sta_gf_corr.pro $
 
 </PRE><P>
@@ -236,7 +478,7 @@ NOTES:
 <A NAME="MVN_STA_MAKE_D1E">
 <H2>MVN_STA_MAKE_D1E</H2></A>
 <A HREF="#MVN_STA_MAKE_C6E">[Previous Routine]</A>
-<A HREF="#MVN_STA_SCPOT_LOAD">[Next Routine]</A>
+<A HREF="#MVN_STA_RESTORE_THE_DEAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:	mvn_sta_make_d1e
@@ -256,9 +498,36 @@ NOTES:
 <STRONG>(See <A href="mvn_sta_programs/mvn_sta_make_d1e.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_make_d1e.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_RESTORE_THE_DEAD">
+<H2>MVN_STA_RESTORE_THE_DEAD</H2></A>
+<A HREF="#MVN_STA_MAKE_D1E">[Previous Routine]</A>
+<A HREF="#MVN_STA_SCPOT_LOAD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:	mvn_sta_restore_the_dead
+PURPOSE:	
+	Loads dat_dead array into the &quot;mvn_sta_dead&quot; common block from maven_dir+'data\maven\data\sci\sta\iv1\dead'
+INPUT:		
+
+KEYWORDS:
+	maven_dead_dir	string	default is &quot;C:\data\maven\data\sci\sta\iv1\dead\'
+	trange		dbl(2)	if not set, uses the current default time range - for testing purposes
+	expand		flt	if set, current default time range expanded by &quot;expand&quot; seconds
+
+CREATED BY:	J. McFadden 20/11/17
+VERSION:	1
+LAST MODIFICATION:  20/11/17		
+MOD HISTORY:
+
+NOTES:	  
+	dat_dead is used by mvn_sta_bkg_stragglers.pro
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_restore_the_dead.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_restore_the_dead.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_SCPOT_LOAD">
 <H2>MVN_STA_SCPOT_LOAD</H2></A>
-<A HREF="#MVN_STA_MAKE_D1E">[Previous Routine]</A>
+<A HREF="#MVN_STA_RESTORE_THE_DEAD">[Previous Routine]</A>
 <A HREF="#MVN_STA_SCPOT_UPDATE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -283,8 +552,34 @@ NOTES:
 
 	TBDs - scpot is not valid 20151127/1:00UT - why is it invalid?
 
-	TBD - cutoff keyword forces the use of c0 cutoff for potential - needed if winds impact potential
+	&quot;cutoff&quot; keyword forces the use of c0 cutoff when pot_cutoff_valid=1 which requires enough counts - needed if winds impact potential
 
+	Arrays
+	pot 	- potential determined from Vo2-Vram in c6 time base, assume no wind, valid for altitude &lt; alt_vo2 (default=300km)
+	pot1	- pot array interpolated to c0 time2 base, used in validity test to determine whether to use heavy ions in pot2 calculation
+	pot2	- potential determined from ion cutoff, 3 sweeeps used to increase sensitivity, valid for alt&gt;(200.&lt;(min_alt+35.)&gt;180.), p_only=1 means only protons used
+	pot3	- pot2 interpolated to c6 time base
+	pot22	- potential determined from total ion cutoff with no averaging - occassionally more accurate than pot2
+	pot33	- pot22 interpolated to c6 time base
+	p_only	- set to 1 if only protons were used in pot2 determination
+	po_only	- set to 1 if pot22 is used
+
+	pot_alg	0 if invalid
+		1 if Vo2-Vram used (ie. pot)
+		2 if proton only cutoff used (ie. pot2*p_only)
+		3 if all ion cutoff used (ie. pot2*(1-p_only)
+		4
+
+	the complexity of the algorith is due to:
+		background coincident events must be ignored  
+		scattered/trapped ions below s/c potential (especially at potentials &lt;-10V) must be ignored - these are primarily heavies
+		lack of protons at &lt;180km to estimate cutoff (assume Vo2=Vram to estimate potential)
+		lack of adequate CO2 counts at periapsis for O2-CO2 energy comparison
+		marginal statistical counts of protons near periapsis
+		transition from negative to positive potential at densities of about 8/cc
+		s/c potential is always negative in shadow or in high densities
+
+	apid c0 is used for cutoff because ti has
 
 </PRE><P>
 <STRONG>(See <A href="mvn_sta_programs/mvn_sta_scpot_load.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_scpot_load.pro</A>)</STRONG><P>
@@ -419,6 +714,7 @@ LAST MODIFICATION:
 <A NAME="MVN_STA_SC_BINS_LOAD[2]">
 <H2>MVN_STA_SC_BINS_LOAD[2]</H2></A>
 <A HREF="#MVN_STA_SC_BINS_LOAD[2]">[Previous Routine]</A>
+<A HREF="#MVN_STA_SC_BINS_LOAD_OLD[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 #################################################
@@ -426,5 +722,142 @@ LAST MODIFICATION:
 #################################################
 </PRE><P>
 <STRONG>(See <A href="mvn_sta_programs/mvn_sta_sc_bins_load.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_SC_BINS_LOAD_OLD[1]">
+<H2>MVN_STA_SC_BINS_LOAD_OLD[1]</H2></A>
+<A HREF="#MVN_STA_SC_BINS_LOAD[2]">[Previous Routine]</A>
+<A HREF="#MVN_STA_SC_BINS_LOAD_OLD[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ :Name:
+    Roberto Livi
+
+ :Program:
+    MVN_STA_SC_BINS_LOAD
+
+ :Syntax:
+    IDL&gt; mvn_sta_sc_bins_load, /test_plot1, /test_plot2
+
+ :Purpose:
+    Fill MAVEN STATIC common block data with FOV
+    obstruction by the spacecraft.
+
+ :Params:
+    perc_block: Set this number to the desired percentage
+                of covered area before marking a bin as
+                blocked.
+
+ :Returns:
+    None.
+
+ :Keywords:
+    test_plot1: Plots for debugging.
+    test_plot2: More plots for debugging.
+    ssave: Save file for intermediary debugging.
+    rrestore: Restore file for intermediary debugging.
+    verbose: Print out processing status.
+
+ :Version:
+
+   $LastChangedBy: jimm $
+   $LastChangedDate: 2020-12-17 09:53:34 -0800 (Thu, 17 Dec 2020) $
+   $LastChangedRevision: 29540 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load_old.pro $
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_sc_bins_load_old.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load_old.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_SC_BINS_LOAD_OLD[2]">
+<H2>MVN_STA_SC_BINS_LOAD_OLD[2]</H2></A>
+<A HREF="#MVN_STA_SC_BINS_LOAD_OLD[1]">[Previous Routine]</A>
+<A HREF="#MVN_STA_SC_BINS_LOAD_OLD[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Inside - Take the dot and cross product of point an nearby vertices
+          to determine whether the point is inside or outisde of box
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_sc_bins_load_old.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load_old.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_SC_BINS_LOAD_OLD[2]">
+<H2>MVN_STA_SC_BINS_LOAD_OLD[2]</H2></A>
+<A HREF="#MVN_STA_SC_BINS_LOAD_OLD[2]">[Previous Routine]</A>
+<A HREF="#MVN_STA_SC_BINS_LOAD_TEST[1]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+#################################################
+                Main Function
+#################################################
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_sc_bins_load_old.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load_old.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_SC_BINS_LOAD_TEST[1]">
+<H2>MVN_STA_SC_BINS_LOAD_TEST[1]</H2></A>
+<A HREF="#MVN_STA_SC_BINS_LOAD_OLD[2]">[Previous Routine]</A>
+<A HREF="#MVN_STA_SC_BINS_LOAD_TEST[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ :Name:
+    Roberto Livi
+
+ :Program:
+    MVN_STA_SC_BINS_LOAD
+
+ :Syntax:
+    IDL&gt; mvn_sta_sc_bins_load, /test_plot1, /test_plot2
+
+ :Purpose:
+    Fill MAVEN STATIC common block data with FOV
+    obstruction by the spacecraft.
+
+ :Params:
+    perc_block: Set this number to the desired percentage
+                of covered area before marking a bin as
+                blocked.
+
+ :Returns:
+    None.
+
+ :Keywords:
+    test_plot1: Plots for debugging.
+    test_plot2: More plots for debugging.
+    ssave: Save file for intermediary debugging.
+    rrestore: Restore file for intermediary debugging.
+    verbose: Print out processing status.
+
+ :Version:
+
+   $LastChangedBy: jimm $
+   $LastChangedDate: 2020-12-17 09:53:34 -0800 (Thu, 17 Dec 2020) $
+   $LastChangedRevision: 29540 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load_test.pro $
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_sc_bins_load_test.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load_test.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_SC_BINS_LOAD_TEST[2]">
+<H2>MVN_STA_SC_BINS_LOAD_TEST[2]</H2></A>
+<A HREF="#MVN_STA_SC_BINS_LOAD_TEST[1]">[Previous Routine]</A>
+<A HREF="#MVN_STA_SC_BINS_LOAD_TEST[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Inside - Take the dot and cross product of point an nearby vertices
+          to determine whether the point is inside or outisde of box
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_sc_bins_load_test.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load_test.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_SC_BINS_LOAD_TEST[2]">
+<H2>MVN_STA_SC_BINS_LOAD_TEST[2]</H2></A>
+<A HREF="#MVN_STA_SC_BINS_LOAD_TEST[2]">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+#################################################
+                Main Function
+#################################################
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_sc_bins_load_test.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_sc_bins_load_test.pro</A>)</STRONG><P>
 <HR>
  

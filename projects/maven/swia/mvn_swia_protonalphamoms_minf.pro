@@ -15,8 +15,8 @@
 ;	ARCHIVE: Use Archive data instead of Survey (default)
 ;
 ; $LastChangedBy: jhalekas $
-; $LastChangedDate: 2015-06-18 15:02:39 -0700 (Thu, 18 Jun 2015) $
-; $LastChangedRevision: 17916 $
+; $LastChangedDate: 2020-08-13 09:33:03 -0700 (Thu, 13 Aug 2020) $
+; $LastChangedRevision: 29021 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swia/mvn_swia_protonalphamoms_minf.pro $
 ;
 ;-
@@ -41,7 +41,7 @@ v0 = v_3d(dat)
 e0 = 0.5*1.67e-27*total(v0*v0)*1e6/1.6e-19
 ecut = e0*1.5
 
-w = where(een gt e0 and een lt e0*2, nw)
+w = where(een gt e0*1.15 and een lt e0*2, nw)
 
 if nw gt 2 then begin
 

@@ -14,6 +14,8 @@
 ;          set to "linear", then linear interpolation is used, but for
 ;          the edges, the closest value is used, there is no
 ;          extrapolation
+;          set to "replace", this will replace the gap values with an
+;          input variable, input via the keyword, "fillval"
 ;KEYWORDS:
 ; flag = all values greater than 0.98 times this value will be deflagged,
 ;        the default is 6.8792e28, Nan's, Inf's are also deflagged
@@ -26,13 +28,14 @@
 ; overwrite = if set, write the new data back to the old tplot
 ;             variables, do not set this with newname
 ; display_object = Object reference to be passed to dprint for output.
+; fillval = a fill value for the "replace" option. THe default is zero.
 ;
 ;HISTORY:
 ; 2-feb-2007, jmm, jimm.ssl.berkeley.edu
 ;
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-;$LastChangedRevision: 24506 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2020-09-23 15:50:05 -0700 (Wed, 23 Sep 2020) $
+;$LastChangedRevision: 29179 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tdeflag.pro $
 ;-
 
@@ -84,7 +87,7 @@ end
 
 
 Pro tdeflag, varnames, method, newname = newname, display_object = display_object, $
-  overwrite = overwrite, _extra = _extra
+             overwrite = overwrite, fillval = fillval, _extra = _extra
   
   ;First extract the data
   n = n_elements(varnames)
@@ -107,7 +110,7 @@ Pro tdeflag, varnames, method, newname = newname, display_object = display_objec
         tdeflag_remove_nan, dat=d, display_object = display_object
       endif else begin
         y = d.y
-        xdeflag, method, d.x, y, display_object = display_object, _extra = _extra
+        xdeflag, method, d.x, y, display_object = display_object, fillval = fillval, _extra = _extra
         d.y = temporary(y)
       endelse
       

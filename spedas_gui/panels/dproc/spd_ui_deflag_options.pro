@@ -17,26 +17,27 @@
 ;  return values: anonymous structure containing input parameters for dproc routine
 ;  {
 ;   method: Array of flags specifying deflagging method
-;           [repeat last value, interpolate(linear)]
+;           [repeat last value, interpolate(linear), replace with value]
 ;   opts: Array of flags determining extra options
 ;         [set flag (default is 6.8792e28), set max gap size]
 ;   flag: user-specified flag, will be removed in addition to NaNs & infinity
 ;   maxgap: maximum gap size, in # of points, to be removed
+;   fillval: fill value, for replace option
 ;   suffix: Suffix for new variable
 ;   ok: Flag indicating success 
 ;  }
 ;
 ;NOTES:
 ;
-;$LastChangedBy:  $
-;$LastChangedDate:  $
-;$LastChangedRevision:  $
-;$URL:  $
+;$LastChangedBy: $
+;$LastChangedDate: $
+;$LastChangedRevision: $
+;$URL: $
 ;-
 
 pro spd_ui_deflag_options_event, event
 
-    compile_opt idl2, hidden
+  compile_opt idl2, hidden
   
   widget_control, event.top, get_uval=state, /no_copy
   
@@ -110,11 +111,18 @@ pro spd_ui_deflag_options_event, event
           endelse
         endif
 
+        ;Get fillval if applicable
+        if widget_info(state.fillval,/sensitive) then begin
+          widget_control, state.fillval, get_value = fillval
+          (*state.pvals).fillval = fillval
+        endif
+
         ;Get Suffix
         widget_control, state.suffix, get_value=suffix
         if widget_info(state.includeMeth,/button_set) then begin
            if (*state.pvals).method[0] then suffix += '-repeat' $
-           else suffix += '-interp'
+           else if (*state.pvals).method[1] then suffix += '-interp' $
+           else suffix += '-replace'
         endif
         (*state.pvals).suffix = suffix
 
@@ -135,7 +143,7 @@ pro spd_ui_deflag_options_event, event
       'FLAGB': widget_control, state.flag, sens = event.select  ;sensitize spinner
 
       'FLAG': begin ;update status bar 
-        if event.valid then state.statusbar->update,m+'Deflaging with '+strtrim(event.value,2) $
+        if event.valid then state.statusbar->update,m+'Deflag with '+strtrim(event.value,2) $
           else state.statusbar->update,m+'Invalid flag, please re-enter.'
       end
 
@@ -145,6 +153,13 @@ pro spd_ui_deflag_options_event, event
         if event.valid && event.value ge 1 then begin
           state.statusbar->update,m+'Maximum gap set to '+strtrim(event.value,2)+' points'
         endif else state.statusbar->update,m+'Maxmimum gap must be a numeric value greater than or equal to 1.'
+      end
+
+      'FILLVALB': widget_control, state.fillval, sens = event.select  ;sensitize spinner
+
+      'FILLVAL': begin ;update status bar 
+        if event.valid then state.statusbar->update,m+'Deflag with '+strtrim(event.value,2) $
+          else state.statusbar->update,m+'Invalid flag, please re-enter.'
       end
 
       else: dprint,  'Unkown Uval' ;this should not happen
@@ -171,6 +186,7 @@ function spd_ui_deflag_options, gui_id, statusbar, historywin
 ;Constants
   maxg = 10000        ;initial maximum gap
   flg = 0d            ;initial flag
+  flvl = 0            ;initial fillval
   suffix = '-deflag'
 
   tlb = widget_base(title = 'Deflag Options', /col, /base_align_center, $ 
@@ -198,6 +214,8 @@ function spd_ui_deflag_options, gui_id, statusbar, historywin
   interpbutton = widget_button(methodbBase, value='Interpolate', $
                                tooltip='Uses linear interpolation. The closest'+ $
                                ' value is used near edges. No extrapolation.')
+  replacebutton = widget_button(methodbBase, value='Replace with FILLVAL', $
+                               tooltip='Replaces with the FILLVAL value')
 
   flagbutton = widget_button(obBase, value='Set Flag:', uval='FLAGB', $
                              tooltip='The finite value to remove (all values greater than 0.98 of this value will be removed). Default'+ $
@@ -206,37 +224,41 @@ function spd_ui_deflag_options, gui_id, statusbar, historywin
   maxgapbutton = widget_button(obBase, value='Set Maximum Gap:', uval='MAXGAPB', $
                                tooltip='Maximum number of elements'+ $
                                ' that can be filled.')
-    flag = spd_ui_spinner(spBase, value=flg, text_box_size=10, incr=1, sens=0, $
-                          uval='FLAG', tooltip='All values greater than 0.98 of this will be removed. Default'+ $
-                          ' is 6.8792e28 if not set.  NaNs and infinity are '+ $
-                          'always removed.')
-    maxgap = spd_ui_spinner(spBase, value=maxg, text_box_size=10, incr=1, sens=0, $
-                            uval='MAXGAP', tooltip='Maximum number of elements'+ $
-                            ' that can be filled.', min_value=1)
+  fillvalbutton = widget_button(obBase, value='Set FILLVAL:', uval='FILLVALB', $
+                                tooltip='Fill Value, default is zero')
+  flag = spd_ui_spinner(spBase, value=flg, text_box_size=10, incr=1, sens=0, $
+                        uval='FLAG', tooltip='All values greater than 0.98 of this will be removed. Default'+ $
+                        ' is 6.8792e28 if not set.  NaNs and infinity are '+ $
+                        'always removed.')
+  maxgap = spd_ui_spinner(spBase, value=maxg, text_box_size=10, incr=1, sens=0, $
+                          uval='MAXGAP', tooltip='Maximum number of elements'+ $
+                          ' that can be filled.', min_value=1)
+  fillval = spd_ui_spinner(spBase, value=flvl, test_box_size=10, incr=1, sens=0, $
+                           uval='FILLVAL', tooltip='Fill Value')
 
   suffixlabel = widget_label(suffixbase, value = 'Suffix: ')
   suffixtext = widget_text(suffixbase, /editable, xsize=15, value=suffix)
   includeBase = widget_base(suffixbase, /nonexclusive, ypad=0)
-    includeMeth = widget_button(includebase, value='Append method')
-
+  includeMeth = widget_button(includebase, value='Append method')
 
 ;Buttons
   ok = widget_button(buttonbase, value = 'OK', xsize=60, uval='OK')
   cancel = widget_button(buttonbase, valu = 'Cancel', xsize=60, uval='CANCEL')
 
-
 ;Initializations
   widget_control, repeatbutton, set_button = 1
   widget_control, includeMeth, set_button = 1
   
-  values = {method:[1b,0b], opts:[0b,0b], flag:flg, maxgap:maxg, suffix:suffix, ok:0b}
+  values = {method:[1b,0b,0b], opts:[0b,0b,0b], flag:flg, maxgap:maxg, fillval:flvl, $
+            suffix:suffix, ok:0b}
 
   pvals = ptr_new(values)
 
   state = {tlb:tlb, gui_id:gui_id, statusbar:statusbar, historywin:historywin, $
-           method:[repeatbutton, interpbutton], opts:[flagbutton, maxgapbutton], $
-           flag:flag, maxgap:maxgap, suffix:suffixtext, includeMeth:includeMeth, $
-           pvals:pvals}
+           method:[repeatbutton, interpbutton, replacebutton], $
+           opts:[flagbutton, maxgapbutton, fillvalbutton], $
+           flag:flag, maxgap:maxgap, fillval:fillval, suffix:suffixtext, $
+           includeMeth:includeMeth, pvals:pvals}
 
   centertlb, tlb
 

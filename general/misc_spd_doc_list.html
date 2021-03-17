@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -91,7 +91,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#INTERP">INTERP</A>
 <br>Linearly Interpolates vectors with an irregular grid.
 <LI><A HREF="#IS_NUMERIC">IS_NUMERIC</A>
-<LI><A HREF="#MAKEGIF">MAKEGIF</A>
+<LI><A HREF="#MAKEGIF[2]">MAKEGIF[2]</A>
 <br>Creates a GIF file from the currently displayed image.
 <LI><A HREF="#MAKEJPG">MAKEJPG</A>
 <br>Creates a jpg file from the currently displayed image.
@@ -136,7 +136,9 @@ This page was created by the IDL library routine
 <LI><A HREF="#PTR_EXTRACT">PTR_EXTRACT</A>
 <LI><A HREF="#PTRACE">PTRACE</A>
 <LI><A HREF="#PUTWIN">PUTWIN</A>
-<br>Creates a window and places it in a specified monitor, with
+<br>Creates a window and places it in a specified monitor, with offsets
+<LI><A HREF="#PUTWIN_COMMON">PUTWIN_COMMON</A>
+<br>Common block for putwin.
 <LI><A HREF="#PWRSPC">PWRSPC</A>
 <br>Called with times time and data quantity, PWRSPC returns a power
 <LI><A HREF="#READ_ASCII_CMDLINE">READ_ASCII_CMDLINE</A>
@@ -667,8 +669,8 @@ KEYWORDS:
        RESULT:  Named variable to hold the result.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-08-27 09:42:15 -0700 (Tue, 27 Aug 2019) $
- $LastChangedRevision: 27664 $
+ $LastChangedDate: 2020-09-07 12:20:50 -0700 (Mon, 07 Sep 2020) $
+ $LastChangedRevision: 29119 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/box_mean.pro $
 
 CREATED BY:    David L. Mitchell
@@ -1330,14 +1332,14 @@ PURPOSE:
   (This function may be used with the &quot;fit&quot; curve fitting procedure.)
 
 KEYWORDS:
-  PARAMETERS: a structure that contain the parameters that define the gaussians
+  PARAMETERS: a structure that contain the parameters that define the rotation
      If this parameter is not a structure then it will be created.
 
 Written by: Davin Larson
 
- $LastChangedBy: adrozdov $
- $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
- $LastChangedRevision: 24506 $
+ $LastChangedBy: davin-mac $
+ $LastChangedDate: 2020-12-16 13:37:02 -0800 (Wed, 16 Dec 2020) $
+ $LastChangedRevision: 29518 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/euler_ang_rot_matrix.pro $
 </PRE><P>
 <STRONG>(See <A href="misc/euler_ang_rot_matrix.pro">general/misc/euler_ang_rot_matrix.pro</A>)</STRONG><P>
@@ -2269,6 +2271,7 @@ KEYWORDS:
   INDEX:  Set to named variable to return the index of the closest x less than u.
       (same dimensons as u)
   NO_EXTRAPOLATE:  Set this keyword to prevent extrapolation.
+  LAST_VALUE:  Set this keyword to return the last value of y array:  y[index]    (no interpolation performed)
   INTERP_THRESHOLD:  Set to minimum allowed gap size.
 
 CREATED BY:	Davin Larson  4-30-96
@@ -2349,7 +2352,7 @@ Examples:
 <A NAME="LOPEZ_NS_MODEL">
 <H2>LOPEZ_NS_MODEL</H2></A>
 <A HREF="#IS_NUMERIC">[Previous Routine]</A>
-<A HREF="#MAKEGIF">[Next Routine]</A>
+<A HREF="#MAKEGIF[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:  
@@ -2388,8 +2391,8 @@ HISTORY:
 <STRONG>(See <A href="misc/neutral_sheet.pro">general/misc/neutral_sheet.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="MAKEGIF">
-<H2>MAKEGIF</H2></A>
+<A NAME="MAKEGIF[2]">
+<H2>MAKEGIF[2]</H2></A>
 <A HREF="#LOPEZ_NS_MODEL">[Previous Routine]</A>
 <A HREF="#MAKEJPG">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
@@ -2425,7 +2428,7 @@ LAST MODIFICATION:  02/11/06
  
 <A NAME="MAKEJPG">
 <H2>MAKEJPG</H2></A>
-<A HREF="#MAKEGIF">[Previous Routine]</A>
+<A HREF="#MAKEGIF[2]">[Previous Routine]</A>
 <A HREF="#MAKEPNG">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -2551,6 +2554,11 @@ KEYWORDS:
 
 CREATED BY:    Davin Larson
 LAST MODIFICATION:     @(#)minmax.pro	1.2 02/04/17
+ $LastChangedBy: davin-mac $
+ $LastChangedDate: 2020-12-16 13:00:06 -0800 (Wed, 16 Dec 2020) $
+ $LastChangedRevision: 29505 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/minmax.pro $
+
 </PRE><P>
 <STRONG>(See <A href="misc/minmax.pro">general/misc/minmax.pro</A>)</STRONG><P>
 <HR>
@@ -2832,9 +2840,11 @@ KEYWORDS:
 
    VINDEX:     Indicies of time2 with valid neighbors in time1.
 
+                   time1[i] &lt;--&gt; time2[VINDEX]
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-01 11:10:48 -0700 (Wed, 01 Jul 2020) $
- $LastChangedRevision: 28828 $
+ $LastChangedDate: 2020-09-07 12:21:29 -0700 (Mon, 07 Sep 2020) $
+ $LastChangedRevision: 29120 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/nn2.pro $
 
 CREATED BY:	David L. Mitchell  2018-08-23
@@ -3162,36 +3172,52 @@ Created by Davin Larson. May 2002.
 <A NAME="PUTWIN">
 <H2>PUTWIN</H2></A>
 <A HREF="#PTR_EXTRACT">[Previous Routine]</A>
-<A HREF="#PWRSPC">[Next Routine]</A>
+<A HREF="#PUTWIN_COMMON">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   putwin
 PURPOSE:
-  Creates a window and places it in a specified monitor, with
-  offsets relative to the screen edges. This is a user-friendly
-  version of WINDOW that is designed for a multiple monitor setup.
+  Creates a window and places it in a specified monitor, with offsets
+  relative to the screen edges or to another existing window.  This
+  is a user-friendly version of WINDOW designed for a multiple monitor
+  setup.
 
   This routine is hardware dependent and will not work properly until
   it is configured for your monitor(s) and their arrangement, which
-  determine how IDL positions graphics windows.  See keyword CONFIG.
+  determine how IDL positions graphics windows.  Automatic configuration
+  is provided that works well on Mac systems with attached monitor(s), 
+  but has not been thoroughly tested on other platforms.  See keyword
+  CONFIG for more information.
 
   If no configuration is defined, putwin behaves exactly like window.
   This allows the routine to be used in public code, where the user 
   may not know about or does not want to use its functionality.
 
 USAGE:
-  putwin [, wnum [, monitor]] [,KEYWORD=value, ...]
+  putwin [, wnum [, monitor]] [, KEYWORD=value, ...]  ; normal usage
+
+  putwin, CONFIG=value [, TBAR=value]  ; initialization
 
 INPUTS:
        wnum:      Window number.  Can be an integer from 0 to 31.
-                  Otherwise the next free widow number &gt;= 32 is
-                  used.
+                  Default: next free widow number &gt; 31.
+
+                  This can also be set to a variable name, which will
+                  return the window number chosen.
 
        monitor:   Monitor number.  Can also be set by keyword (see
                   below), but this method takes precedence.  Only the
                   second input will be interpreted as a monitor number.
                   If there's only one input, it's interpreted as the 
                   window number.
+
+                  If there is more than one monitor, IDL identifies a
+                  &quot;primary monitor&quot;, where graphics windows appear by
+                  default.  This routine also defaults to the primary
+                  monitor.  See keywords SECONDARY and SHOW.
+
+                  This can also be set to a variable name, which will
+                  return the monitor number chosen.
 
 KEYWORDS:
        Accepts all keywords for WINDOW.  In addition, the following
@@ -3202,7 +3228,8 @@ KEYWORDS:
                   Integer (automatic configuration):
 
                      0 = disabled: putwin acts like window (default)
-                     1 = automatic
+                     1 = automatic: get configuration by querying the
+                                    operating system
                      2 = automatic with double-wide (5K) external
                          merged into a single logical monitor
                          (only guaranteed to work for the author)
@@ -3216,10 +3243,18 @@ KEYWORDS:
 
                        cfg[0:3,i] = [x0, y0, xdim, ydim]
 
+                  This routine automatically detects the primary
+                  monitor for both forms of CONFIG.
+
                   In either case, the configuration is defined and stored
                   in a common block, but no window is created.
 
        TBAR:      Title bar width in pixels.  Default = 22.
+
+                  The standard WINDOW procedure does not account for
+                  the window title bar width, so that widows placed
+                  along the bottom of a monitor are clipped.  This
+                  procedure fixes that issue.
 
                   Window positioning will not be precise unless this
                   is set properly.  IDL does not have access to this
@@ -3227,25 +3262,71 @@ KEYWORDS:
                   out.  This value is persistent for subsequent calls 
                   to putwin, so you only need to set it once.
 
-       STAT:      Output the current monitor configuration.
+       STAT:      Output the current monitor configuration.  When 
+                  this keyword is set, CONFIG will return the current 
+                  monitor array and the primary and secondary monitor
+                  indices.
+
+       SHOW:      Same as STAT, except in addition a small window is
+                  placed in each monitor for 3 sec to identify
+                  the monitor numbers, and which are primary and
+                  secondary.
 
        MONITOR:   Put window in this monitor.
-                  
-                  See keyword CONFIG.  Default is 1 if there is at
-                  least one external monitor and 0 otherwise.
 
-       DX:        Horizontal offset from CORNER (pixels).
+                  Default is the primary monitor (see CONFIG).
+
+       SECONDARY: Put window in highest numbered non-primary monitor
+                  (usually the largest one).
+
+       DX:        Horizontal offset from left or right edge (pixels).
+                    If DX is positive, offset is from left.
+                    If DX is negative, offset is from right.
                   Replaces XPOS.  Default = 0.
 
-       DY:        Vertical offset from CORNER (pixels).
+       DY:        Vertical offset from top or bottom edge (pixels).
+                    If DY is positive, offset is from top.
+                    If DY is negative, offset is from bottom.
                   Replaces YPOS.  Default = 0.
 
-                  The standard WINDOW procedure does not account for
-                  the window title bar width, so that widows placed
-                  along the bottom of a monitor are clipped.  This
-                  procedure fixes that issue.
+                  Note: XPOS and YPOS only work if CONFIG = 0.  They
+                  refer to position on a rectangular &quot;super monitor&quot;
+                  that encompasses all physical monitors.  This super
+                  monitor will typically have regions that are out of
+                  the bounds of the physical monitors, so windows can
+                  be placed in regions that cannot be seen.
 
-       CORNER:    DX and DY are measured from this corner:
+       RELATIVE:  Set this keyword to an existing window number.  Then
+                  DX and DY specify offsets of the new window location
+                  from the perimeter of the existing window.
+                    If DX (DY) is positive, place window right (above).
+                    If DX (DY) is negative, place window left (below).
+                  Usually, DX and/or DY are non-zero, in which case the
+                  new window is placed around the perimeter of the 
+                  existing window.  However, when DX and DY are both 
+                  zero, the new window is placed on top of the existing 
+                  window, with the bottom left corners aligned.
+
+                  If RELATIVE is set, NORM=0 and NOFIT=1 are enforced.
+
+       TOP:       If RELATIVE is set and DY=0, align the top edges of 
+                  the new and existing windows.  Otherwise, the bottom
+                  edges are aligned.
+
+       RIGHT:     If RELATIVE is set and DX=0, align the right edges of
+                  the new and existing windows.  Otherwise, the left
+                  edges are aligned.
+
+       CLONE:     Create a new window with the same dimensions as the
+                  (existing) window specified by this keyword.  SCALE
+                  can then be used to shrink/expand the window while
+                  maintaining the aspect ratio.  Unless NOFIT is set,
+                  the clone is allowed to move around and shrink/expand
+                  so that it fits entirely on the monitor.
+
+       CORNER:    Alternate method for determining which corner to 
+                  place window.  If this keyword is set, then only the
+                  absolute values of DX and DY are used.
 
                     0 = top left (default)
                     1 = top right
@@ -3261,25 +3342,27 @@ KEYWORDS:
 
        CENTER:    Center the window in both X and Y.
 
-       SCALE:     Scale factor for setting the window size.  Only
-                  applies when XSIZE and/or YSIZE are set explicitly 
-                  (via keyword) or implictly (via swe_snap_layout).
+       SCALE:     Scale factor for setting the window size.  If no
+                  window size is specified, then SCALE is relative
+                  to the default size: 1/4 of the monitor size.
                   Default = 1.
 
        NOFIT:     If the combination of XSIZE, YSIZE, SCALE, DX and
                   DY cause the window to extend beyond the monitor,
                   first DX and DY, then XSIZE and YSIZE are reduced
-                  until the window does fit.  Set NOFIT to disable
+                  until the window does fit.  If ASPECT is set, then
+                  the window is further reduced, if necessary, to 
+                  maintain the aspect ratio.  Set NOFIT to disable
                   this behavior and create the window as requested.
 
        XFULL:     Make the window full-screen in X.
-                  (Ignore, XSIZE and DX.)
+                  (Ignore XSIZE, DX.)
 
        YFULL:     Make the window full-screen in Y.
-                  (Ignore, YSIZE and DY.)
+                  (Ignore YSIZE, DY.)
 
        FULL:      If set, make a full-screen window in MONITOR.
-                  (Ignore XSIZE, YSIZE, DX, DY.)
+                  (Ignore XSIZE, YSIZE, DX, DY, SCALE, ASPECT.)
 
        ASPECT:    Aspect ratio: XSIZE/YSIZE.  If one dimension is
                   set with XSIZE, YSIZE, XFULL, or YFULL, this
@@ -3290,13 +3373,22 @@ KEYWORDS:
 
                     {KEYWORD:value, KEYWORD:value, ...}
 
+                  Case folded minimum matching is used to match tag
+                  names in this structure to valid keywords.  For
+                  example:
+
+                    {f:1, m:2} is interpreted as FULL=1, MONITOR=2.
+
+                  Unrecognized or ambiguous tag names generate an
+                  error message, and no window is created.
+
                   Keywords set using this mechanism take precedence.
-                  All other keywords for WINDOW must be passed  
+                  All other keywords for WINDOW must be passed
                   separately in the usual way.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-08-03 15:47:02 -0700 (Mon, 03 Aug 2020) $
- $LastChangedRevision: 28976 $
+ $LastChangedDate: 2021-03-08 12:43:45 -0800 (Mon, 08 Mar 2021) $
+ $LastChangedRevision: 29744 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 
 CREATED BY:	David L. Mitchell  2020-06-03
@@ -3304,9 +3396,29 @@ CREATED BY:	David L. Mitchell  2020-06-03
 <STRONG>(See <A href="misc/putwin.pro">general/misc/putwin.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="PUTWIN_COMMON">
+<H2>PUTWIN_COMMON</H2></A>
+<A HREF="#PUTWIN">[Previous Routine]</A>
+<A HREF="#PWRSPC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   putwin_common
+PURPOSE:
+  Common block for putwin.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2021-03-08 12:43:45 -0800 (Mon, 08 Mar 2021) $
+ $LastChangedRevision: 29744 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin_common.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="misc/putwin_common.pro">general/misc/putwin_common.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="PWRSPC">
 <H2>PWRSPC</H2></A>
-<A HREF="#PUTWIN">[Previous Routine]</A>
+<A HREF="#PUTWIN_COMMON">[Previous Routine]</A>
 <A HREF="#READ_ASCII_CMDLINE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -4515,6 +4627,8 @@ INPUT:
           set to &quot;linear&quot;, then linear interpolation is used, but for
           the edges, the closest value is used, there is no
           extrapolation
+          set to &quot;replace&quot;, this will replace the gap values with an
+          input variable, input via the keyword, &quot;fillval&quot;
 KEYWORDS:
  flag = all values greater than 0.98 times this value will be deflagged,
         the default is 6.8792e28, Nan's, Inf's are also deflagged
@@ -4527,13 +4641,14 @@ KEYWORDS:
  overwrite = if set, write the new data back to the old tplot
              variables, do not set this with newname
  display_object = Object reference to be passed to dprint for output.
+ fillval = a fill value for the &quot;replace&quot; option. THe default is zero.
 
 HISTORY:
  2-feb-2007, jmm, jimm.ssl.berkeley.edu
 
-$LastChangedBy: adrozdov $
-$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-$LastChangedRevision: 24506 $
+$LastChangedBy: jimm $
+$LastChangedDate: 2020-09-23 15:50:05 -0700 (Wed, 23 Sep 2020) $
+$LastChangedRevision: 29179 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tdeflag.pro $
 </PRE><P>
 <STRONG>(See <A href="misc/tdeflag.pro">general/misc/tdeflag.pro</A>)</STRONG><P>
@@ -5555,7 +5670,9 @@ INPUT:
  method = set to &quot;repeat&quot;, this will repeat the last good value.
           set to &quot;linear&quot;, then linear interpolation is used, but for
           the edges, the closest value is used, there is no
-          extrapolation
+          extrapolation.
+          set to &quot;replace&quot;, this will replace the gap values with an
+          input variable, input via the keyword, &quot;fillval&quot;
  t = time array, in any useable tplot format
  y = the input array, n_elements(t) by n
 OUTPUT:
@@ -5567,13 +5684,13 @@ KEYWORDS:
  maxgap = the maximum number of rows that can be filled? the default
            is n_elements(t)
  display_object = Object reference to be passed to dprint for output.
-
+ fillval = a fill value for the &quot;replace&quot; option. The default is zero
 HISTORY:
  2-feb-2007, jmm, jimm.ssl.berkeley.edu from Vassilis' clip_deflag.pro
 
-$LastChangedBy: pcruce $
-$LastChangedDate: 2012-07-05 11:21:00 -0700 (Thu, 05 Jul 2012) $
-$LastChangedRevision: 10684 $
+$LastChangedBy: jimm $
+$LastChangedDate: 2020-09-23 15:50:05 -0700 (Wed, 23 Sep 2020) $
+$LastChangedRevision: 29179 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/xdeflag.pro $
 </PRE><P>
 <STRONG>(See <A href="misc/xdeflag.pro">general/misc/xdeflag.pro</A>)</STRONG><P>

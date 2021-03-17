@@ -102,9 +102,9 @@
 ;       3. Implement procedures
 ;       4. Implement control statements
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2016-06-27 14:12:31 -0700 (Mon, 27 Jun 2016) $
-; $LastChangedRevision: 21373 $
+; $LastChangedBy: crussell $
+; $LastChangedDate: 2020-12-04 12:40:48 -0800 (Fri, 04 Dec 2020) $
+; $LastChangedRevision: 29436 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mini/calc.pro $
 ;-
 
@@ -159,9 +159,19 @@ pro calc,s,error=error,function_list=function_list,operator_list=operator_list,v
   rt_info = routine_info('calc',/source)
   path = file_dirname(rt_info.path) + '/'
  
- ;read grammar and parse table information from file
-  restore,path+'grammar.sav'
-  restore,path+'parse_tables.sav'
+  ;read grammar and parse table information from file
+  ;once read cache data for next time
+  get_data, 'calc_grammar_cached', data=grammar
+  get_data, 'calc_parse_tables_cached', data=parse_tables
+  if ~is_struct(grammar) OR ~is_struct(parse_tables) then begin
+    restore,path+'grammar.sav'
+    restore,path+'parse_tables.sav'
+    store_data, 'calc_grammar_cached',data=grammar
+    store_data, 'calc_parse_tables_cached', data=parse_tables
+  endif
+ 
+ ; restore,path+'grammar.sav'
+ ; restore,path+'parse_tables.sav'
   
   if ~keyword_set(gui_data_obj) || ~obj_valid(gui_data_obj) then begin
     gui_data_obj = obj_new()

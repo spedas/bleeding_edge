@@ -22,9 +22,9 @@
 ;	email: awbrenem@gmail.com
 ;REQUIRED: Need to have the SPICE ICY software package installed
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2020-05-21 20:36:46 -0700 (Thu, 21 May 2020) $
-;$LastChangedRevision: 28720 $
+;$LastChangedBy: aaronbreneman $
+;$LastChangedDate: 2020-09-11 13:32:39 -0700 (Fri, 11 Sep 2020) $
+;$LastChangedRevision: 29136 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_position_velocity_crib.pro $
 ;-
 
@@ -62,6 +62,7 @@ pro rbsp_efw_position_velocity_crib,$
   ;Load state data
   if ~KEYWORD_SET(no_a) then rbsp_load_spice_state,probe='a',coord='gse',_extra=extra
   if ~KEYWORD_SET(no_b) then rbsp_load_spice_state,probe='b',coord='gse',_extra=extra
+
 
 
 
@@ -123,7 +124,12 @@ pro rbsp_efw_position_velocity_crib,$
     rad_a = sqrt(pos_gse_a.y[*,0]^2 + pos_gse_a.y[*,1]^2 + pos_gse_a.y[*,2]^2)/6370.
     store_data,'rbspa_state_radius',data={x:pos_gse_a.x,y:rad_a}
     cotrans,'rbspa_state_pos_gse','rbspa_state_pos_gsm',/GSE2GSM
-    cotrans,'rbspa_state_vel_gse','rbspa_state_vel_gsm',/GSE2GSM
+
+  	get_data,'rbspa_state_pos_gsm',data=d
+    vx = deriv(d.x,d.y[*,0]) & vy = deriv(d.x,d.y[*,1]) & vz = deriv(d.x,d.y[*,2])
+    store_data,'rbspa_state_vel_gsm',d.x,[[vx],[vy],[vz]],[1,2,3],dlimits=dl
+
+;    cotrans,'rbspa_state_vel_gse','rbspa_state_vel_gsm',/GSE2GSM
     ;For calculating Mlat only
     cotrans,'rbspa_state_pos_gsm','rbspa_state_pos_sm',/GSM2SM
   endif
@@ -134,7 +140,12 @@ pro rbsp_efw_position_velocity_crib,$
     rad_b = sqrt(pos_gse_b.y[*,0]^2 + pos_gse_b.y[*,1]^2 + pos_gse_b.y[*,2]^2)/6370.
     store_data,'rbspb_state_radius',data={x:pos_gse_b.x,y:rad_b}
     cotrans,'rbspb_state_pos_gse','rbspb_state_pos_gsm',/GSE2GSM
-    cotrans,'rbspb_state_vel_gse','rbspb_state_vel_gsm',/GSE2GSM
+
+    get_data,'rbspb_state_pos_gsm',data=d
+    vx = deriv(d.x,d.y[*,0]) & vy = deriv(d.x,d.y[*,1]) & vz = deriv(d.x,d.y[*,2])
+    store_data,'rbspb_state_vel_gsm',d.x,[[vx],[vy],[vz]],[1,2,3],dlimits=dl
+
+;    cotrans,'rbspb_state_vel_gse','rbspb_state_vel_gsm',/GSE2GSM
     ;For calculating Mlat only
     cotrans,'rbspb_state_pos_gsm','rbspb_state_pos_sm',/GSM2SM
   endif
@@ -199,6 +210,8 @@ pro rbsp_efw_position_velocity_crib,$
     dr2a = sqrt(pos_sm_a.y[*,0]^2 + pos_sm_a.y[*,1]^2)
     dz2a = pos_sm_a.y[*,2]
     mlat_a = atan(dz2a,dr2a)
+
+
   endif
   if ~keyword_set(no_b) then begin
     get_data,'rbspb_state_pos_sm',data=pos_sm_b

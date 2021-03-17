@@ -9,12 +9,12 @@
 ; 
 ; Author: Davin Larson  
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
-; $LastChangedRevision: 27221 $
+; $LastChangedDate: 2020-12-01 12:07:25 -0800 (Tue, 01 Dec 2020) $
+; $LastChangedRevision: 29408 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_vector_rotate_tplot.pro $
 ;-
 
-pro SPICE_VECTOR_ROTATE_TPLOT,tvarnames,to_frame,check_objects=check_objects,verbose=verbose,suffix=suffix,names=names,trange=trange
+pro SPICE_VECTOR_ROTATE_TPLOT,tvarnames,to_frame,from_frame=from_frame,check_objects=check_objects,force_objects=force_objects,verbose=verbose,suffix=suffix,names=names,trange=trange
 
 if ~keyword_set(suffix) then suffix='_'+to_frame
 tvn= tnames(tvarnames,n)
@@ -42,7 +42,7 @@ for i=0,n-1 do begin
        time=time[ind]
        vals = vals[ind,*]
    endif
-   vector_prime = spice_vector_rotate(transpose(vals),time,from_frame,to_frame,check_objects=co,verbose=verbose)
+   vector_prime = spice_vector_rotate(transpose(vals),time,from_frame,to_frame,check_objects=co,force_objects=force_objects,verbose=verbose)
 ;   vector_pr///ime = spice_vector_rotate(transpose(vals),time,to_frame,from_frame,check_objects=co,verbose=verbose)
    alim.spice_frame = to_frame
    store_data,newname,time,transpose(vector_prime),dlimit=alim

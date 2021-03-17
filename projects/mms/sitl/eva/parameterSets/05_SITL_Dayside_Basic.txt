@@ -17,7 +17,7 @@ mms*_edp_scpot_fast_sitl; SC-potential
 mms*_fpi_density; ... FPI
 mms*_fpi_ion_vel_dbcs;... FPI
 mms*_exb_fpi_vperp_z;....  Comparison between (ExB)z and FPI Vperp,z
-
+mms*_fpi_temp ; .... FPI
 
 ;--------------------
 ; Spectrograms

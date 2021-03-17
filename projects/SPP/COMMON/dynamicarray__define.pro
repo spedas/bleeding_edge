@@ -260,7 +260,7 @@ END
  
  
  
-PRO DynamicArray::SetProperty, array=array, name=name, xfactor=xfactor ;,dlevel=dlevel
+PRO DynamicArray::SetProperty, array=array, name=name, size=size, xfactor=xfactor ;,dlevel=dlevel
 COMPILE_OPT IDL2
 ; If user passed in a property, then set it.
 IF (ISA(array) || isa(array,/null)) THEN begin
@@ -280,6 +280,7 @@ if isa(name,/string) then begin
   self.name = name
 endif
 if isa(xfactor) then self.xfactor = xfactor
+if isa(size) then self.size = size
 ;if isa(dlevel) then self.dlevel = dlevel
 END
  

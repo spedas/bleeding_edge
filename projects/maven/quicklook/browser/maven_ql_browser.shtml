@@ -698,6 +698,7 @@ ddlevelsmenu.setup("ddtopmenubar", "topbar") //ddlevelsmenu.setup("mainmenuid", 
 								<option value="2019" />2019
 								<option value="2020" />2020
 								<option value="2021" />2021
+								<option value="2022" />2022
 							</select>
 							
 							<select name="set_month" id="set_month" onchange="syncBottomToTop()">
@@ -807,6 +808,7 @@ ddlevelsmenu.setup("ddtopmenubar", "topbar") //ddlevelsmenu.setup("mainmenuid", 
 								<option value="2019" />2019
 								<option value="2020" />2020
 								<option value="2021" />2021
+								<option value="2022" />2022
 							</select>
 							<select name="set_month_bottom" id="set_month_bottom" onchange="syncTopToBottom()">
 								<option value="01" />Jan

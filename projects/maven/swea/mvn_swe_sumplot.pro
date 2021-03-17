@@ -68,8 +68,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-03-17 11:23:59 -0700 (Tue, 17 Mar 2020) $
-; $LastChangedRevision: 28423 $
+; $LastChangedDate: 2021-02-18 15:22:18 -0800 (Thu, 18 Feb 2021) $
+; $LastChangedRevision: 29678 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -541,11 +541,11 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
 
 ; Correct for deadtime.
 
-    yc = y/(1. - swe_dead*y)
+    yc = y/swe_deadtime(y)
     
     pad_s = strtrim(string(round(pad_e)),2)
     pname = 'swe_a2_' + pad_s
- 
+
     store_data,pname,data={x:x, y:yc, v:findgen(16)}
     options,pname,'ytitle',('E PAD (' + pad_s + ')')
     if (sflg) then begin
@@ -748,7 +748,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
 
 ; Correct for deadtime.
 
-    yc = y/(1. - swe_dead*y)
+    yc = y/swe_deadtime(y)
     
     pad_s = strtrim(string(round(pad_e)),2)
     pname = 'swe_a3_' + pad_s
@@ -1146,13 +1146,13 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     mm = string(tstr.month,format='(i2.2)')
     dd = string(tstr.date,format='(i2.2)')
     itype = 'png'
-    path = getenv('ROOT_DATA_DIR') + 'maven/pfp/swe/ql/' + yyyy + '/' + mm + '/'
+    path = root_data_dir() + 'maven/pfp/swe/ql/' + yyyy + '/' + mm + '/'
     pngname = 'mvn_swe_ql_' + yyyy + mm + dd + '.' + itype
 
     current_dev = !d.name
 
     set_plot,'z'
-      print,"Writing png file: ",pngname," ... "
+      print,"Writing png file: ",pngname," ... ",format='(3a,$)'
       loadct2,34
       device,set_resolution=[1200,800]
       tplot,pans,trange=[tmin,tmax]

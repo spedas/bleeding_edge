@@ -10,9 +10,9 @@
 ;
 ;Warning: this crib uses some data from the THEMIS branch.  You'll require those routines to run this crib
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2020-03-05 11:35:38 -0800 (Thu, 05 Mar 2020) $
-; $LastChangedRevision: 28374 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2020-09-22 11:16:22 -0700 (Tue, 22 Sep 2020) $
+; $LastChangedRevision: 29178 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_dproc.pro $
 ;
 ;-
@@ -92,6 +92,14 @@ print, 'For verification, gaps should have lines across'
 ylim, var+'_deflag_rep', -20.0, 20.0, 0 ;to see clipping
 tplot_options, 'title', 'Deflag: Repeat'
 tplot, var+'_deflag_rep'
+stop
+
+print,  'c. Test Deflag: Replace with zeros'
+tdeflag, var+'_clip', 'replace', newname = var+'_deflag_replace', fillval = 0
+print, 'For verification, gaps should have lines across at zero value'
+ylim, var+'_deflag_rep', -20.0, 20.0, 0 ;to see clipping
+tplot_options, 'title', 'Deflag: Replace'
+tplot, var+'_deflag_replace'
 stop
 
 print,  'Test Degap:'

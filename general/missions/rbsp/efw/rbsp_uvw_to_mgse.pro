@@ -19,7 +19,7 @@
 ; INPUT:
 ;	probe	- either 'a' or 'b'
 ;	tvar	- TPLOT variable containing 3-component UVW data
-;			(either string or integer tplot variable id) 
+;			(either string or integer tplot variable id)
 ;
 ; OUTPUT: N/A
 ;	Rotated timeseries is saved in a new tplot var with _mgse suffix..
@@ -33,10 +33,10 @@
 ;	nointerp=2 - use SPICE to calculate spin axis pointing at each timestep
 ;				instead of interpolating from 5m cadence pointing
 ;				(this may be useful during maneuvers)
-;	/no_spice_load - skip loading/unloading of SPICE kernels
-;		NOTE: This assumes spice kernels have been manually loaded using:
-;			rbsp_load_spice_predict ; (optional)
-;			rbsp_load_spice_kernels ; (required)
+;	_extra --> useful keywords are:
+;						'no_spice_load'
+;						'no_rbsp_efw_init'
+;
 ;	/debug - prints debugging info
 ;
 ; NOTES:
@@ -44,7 +44,7 @@
 ;	direction at a 5 minute cadence, and the despinning matrix at a 1s cadence.
 ;	These quantities are interpolated (spin axis linearly, and despinning matrix
 ;	via quaternion interpolation) to the sample times of the input time series.
-;	
+;
 ;	If the input time series is sampled at <= 1S/s, the routine will calculate
 ;	the SPICE pointing and rotation directly at each time stamp rather than using
 ;	the interpolation described above.
@@ -68,8 +68,8 @@
 ;
 ; VERSION:
 ;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2015-07-10 07:54:25 -0700 (Fri, 10 Jul 2015) $
-;   $LastChangedRevision: 18072 $
+;   $LastChangedDate: 2020-09-21 18:15:56 -0700 (Mon, 21 Sep 2020) $
+;   $LastChangedRevision: 29173 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_uvw_to_mgse.pro $
 ;
 ;-
@@ -77,20 +77,22 @@
 
 pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 	no_spice_load=no_spice_load,no_offset=no_offset,$
-	force_offset=force_offset,nointerp=nointerp,debug=debug
-	
+	force_offset=force_offset,nointerp=nointerp,debug=debug,$
+	_extra=extra
+
+
 	ttstart=systime(1)
-	
-	rbsp_efw_init
-	
+
+	rbsp_efw_init,_extra=extra
+
 	probe=string(strlowcase(probe))
 	if probe ne 'a' and probe ne 'b' then begin
 		message,'Invalid probe: "'+probe+'". Returning...',/continue
 		return
 	endif
-	
+
 	nvar=size(tvar,/n_elements)
-	
+
 	if nvar eq 1 then begin
 
 		tn=tnames(tvar)
@@ -109,7 +111,7 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 				'in supplied tplot variable. Returning...',/continue
 			return
 		endif
-		
+
 		times=d.x
 		ntimes=size(times,/n_elements)
 		du=d.y[*,0]
@@ -117,13 +119,13 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 		dw=d.y[*,2]
 
 
-		
+
 	endif else begin
-	
+
 		message,'No valid 3-component UVW data found '+$
 			'in supplied tplot variable. Returning...',/continue
 		return
-		
+
 	endelse
 
 	; decide if we're going interpolate up to the timeseries times
@@ -134,19 +136,17 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 		return
 	endif
 
-	if ~keyword_set(no_spice_load) then begin
-		rbsp_load_spice_predict
-		rbsp_load_spice_kernels
-	endif
+	rbsp_load_spice_kernels,_extra=extra
+
 
 	; SPICE body string and integer IDs for RBSPA, RBSPB
 	str_id='RADIATION BELT STORM PROBE '+strupcase(probe)
 	sc_id='RBSP'+strupcase(probe)+'_SPACECRAFT'
 	sci_id='RBSP'+strupcase(probe)+'_SCIENCE'
-	
+
 	if keyword_set(sshb) then ssh='SSH_B' else ssh='SSH_A'
 	ssh_id='RBSP'+strupcase(probe)+'_'+ssh
-	
+
 	case probe of
 		'a':n_id=-362
 		'b':n_id=-363
@@ -156,7 +156,7 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 	nssh_id=nsc_id-150L ; integer SSHA id is -36?150
 	if keyword_set(sshb) then nssh_id-=10L ; and SSHB is -36?160
 
-	
+
 	; get SPICE ephemeris time
 	dts=times[1:ntimes-1]-times[0:ntimes-2]
 	median_dt=median(dts)
@@ -167,7 +167,7 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 		nointerp=1
 		message,'Detected sample rate at or below 1S/s, calculating rotation matrix directly from timeseries times (setting keyword nointerp=1).',/continue
 	endif
-	
+
 	; also turn off the default offset subtraction if data is sampled slowly (1s)
 	if median_dt ge 1. then begin
 		no_offset=1
@@ -178,9 +178,9 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 		no_offset=0
 		message,'Forcing spin plane offset removal.',/continue
 	endif
-	
+
 	case nointerp of
-	
+
 		; DEFAULT: use interpolation for both SA pointing and rotation matrix
 		0:begin
 			message,'Using default interpolation for rotation.',/continue
@@ -215,7 +215,7 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 			X_MGSE5m=dblarr(3,n5mtimes)
 			Y_MGSE5m=dblarr(3,n5mtimes)
 			Z_MGSE5m=dblarr(3,n5mtimes)
-	 
+
 			for i=0L,n5mtimes-1L do $
 				Y_MGSE5m[0:2,i]=-crossp(wsc_GSE5m[0:2,i],[0,0,1.])/norm(crossp(wsc_GSE5m[0:2,i],[0,0,1.]))
 			for i=0L,n5mtimes-1L do $
@@ -225,7 +225,7 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 			dmessage='Define MGSE: ' $
 				+string(systime(1)-tstart,format='(F0.1)')+' sec.'
 			if keyword_set(debug) then message,dmessage,/continue
-	
+
 
 			; interpolate to sample times
 			X_MGSE=dblarr(3,ntimes)
@@ -304,19 +304,19 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 				du=du-duoffset
 				dv=dv-dvoffset
 			endif
-	
+
 			dmessage='Running UVW -> MGSE...'
 			if keyword_set(debug) then message,dmessage,/continue
-			tstart=systime(1)	
+			tstart=systime(1)
 			dgse=dblarr(3,ntimes)
 			for i=0L,ntimes-1L do $
 				dgse[0:2,i]=uvw2gse[*,*,i] ## [[du[i]], [dv[i]], [dw[i]]]
-	
-	
+
+
 			dx_mgse=dblarr(ntimes)
 			dy_mgse=dblarr(ntimes)
 			dz_mgse=dblarr(ntimes)
-	
+
 			for i=0L,ntimes-1L do $
 				dx_mgse[i]=dgse[0,i]*X_MGSE[0,i]+dgse[1,i]*X_MGSE[1,i]+dgse[2,i]*X_MGSE[2,i]
 			for i=0L,ntimes-1L do $
@@ -329,7 +329,7 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 				+string(systime(1)-tstart,format='(F0.1)')+' sec.'
 			if keyword_set(debug) then message,dmessage,/continue
 		end
-		
+
 		; use interpolation for both SA pointing, calculate rotation matrix directly from timeseries times
 		1:begin
 			message,'Using interpolation for SA pointing, calculating SPICE rotation directly.',/continue
@@ -367,7 +367,7 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 			X_MGSE5m=dblarr(3,n5mtimes)
 			Y_MGSE5m=dblarr(3,n5mtimes)
 			Z_MGSE5m=dblarr(3,n5mtimes)
-	 
+
 			for i=0L,n5mtimes-1L do $
 				Y_MGSE5m[0:2,i]=-crossp(wsc_GSE5m[0:2,i],[0,0,1.])/norm(crossp(wsc_GSE5m[0:2,i],[0,0,1.]))
 			for i=0L,n5mtimes-1L do $
@@ -377,7 +377,7 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 			dmessage='Define MGSE: ' $
 				+string(systime(1)-tstart,format='(F0.1)')+' sec.'
 			if keyword_set(debug) then message,dmessage,/continue
-	
+
 
 			; interpolate to sample times
 			X_MGSE=dblarr(3,ntimes)
@@ -436,19 +436,19 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 				du=du-duoffset
 				dv=dv-dvoffset
 			endif
-	
+
 			dmessage='Running UVW -> MGSE...'
 			if keyword_set(debug) then message,dmessage,/continue
-			tstart=systime(1)	
+			tstart=systime(1)
 			dgse=dblarr(3,ntimes)
 			for i=0L,ntimes-1L do $
 				dgse[0:2,i]=uvw2gse[*,*,i] ## [[du[i]], [dv[i]], [dw[i]]]
-	
-	
+
+
 			dx_mgse=dblarr(ntimes)
 			dy_mgse=dblarr(ntimes)
 			dz_mgse=dblarr(ntimes)
-	
+
 			for i=0L,ntimes-1L do $
 				dx_mgse[i]=dgse[0,i]*X_MGSE[0,i]+dgse[1,i]*X_MGSE[1,i]+dgse[2,i]*X_MGSE[2,i]
 			for i=0L,ntimes-1L do $
@@ -462,7 +462,7 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 			if keyword_set(debug) then message,dmessage,/continue
 
 		end
-		
+
 		; calculate both SA pointing and rotation matrix directly from timeseries times
 		2:begin
 			message,'Calculating SA pointing and SPICE rotation directly. Please be patient.',/continue
@@ -494,7 +494,7 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 			X_MGSE=dblarr(3,ntimes)
 			Y_MGSE=dblarr(3,ntimes)
 			Z_MGSE=dblarr(3,ntimes)
-	 
+
 			for i=0L,ntimes-1L do $
 				Y_MGSE[0:2,i]=-crossp(wsc_GSE[0:2,i],[0,0,1.])/norm(crossp(wsc_GSE[0:2,i],[0,0,1.]))
 			for i=0L,ntimes-1L do $
@@ -545,19 +545,19 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 				du=du-duoffset
 				dv=dv-dvoffset
 			endif
-	
+
 			dmessage='Running UVW -> MGSE...'
 			if keyword_set(debug) then message,dmessage,/continue
-			tstart=systime(1)	
+			tstart=systime(1)
 			dgse=dblarr(3,ntimes)
 			for i=0L,ntimes-1L do $
 				dgse[0:2,i]=uvw2gse[*,*,i] ## [[du[i]], [dv[i]], [dw[i]]]
-	
-	
+
+
 			dx_mgse=dblarr(ntimes)
 			dy_mgse=dblarr(ntimes)
 			dz_mgse=dblarr(ntimes)
-	
+
 			for i=0L,ntimes-1L do $
 				dx_mgse[i]=dgse[0,i]*X_MGSE[0,i]+dgse[1,i]*X_MGSE[1,i]+dgse[2,i]*X_MGSE[2,i]
 			for i=0L,ntimes-1L do $
@@ -570,10 +570,10 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 				+string(systime(1)-tstart,format='(F0.1)')+' sec.'
 			if keyword_set(debug) then message,dmessage,/continue
 		end
-		
-	endcase	
-	
-	
+
+	endcase
+
+
 	mgse=[[dx_mgse],[dy_mgse],[dz_mgse]]
 	str_element,l,'labels',['X_MGSE','Y_MGSE','Z_MGSE'],/add_replace
 
@@ -586,11 +586,9 @@ pro rbsp_uvw_to_mgse,probe,tvar,suffix=suffix,$
 
 	if ~keyword_set(suffix) then suffix='mgse'
 	store_data,tn+'_'+suffix,data={x:times,y:mgse},limits=l,dlimits=dl
-	
-	if ~keyword_set(no_spice_load) then begin
-		rbsp_load_spice_predict,/unload
-		rbsp_load_spice_kernels,/unload
-	endif
+
+	rbsp_load_spice_kernels,/unload,_extra=extra
+
 
 	dmessage='Execution time: ' $
 		+string(systime(1)-ttstart,format='(F0.1)')+' sec.'

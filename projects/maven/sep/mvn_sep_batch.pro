@@ -20,15 +20,15 @@ mvn_save_reduce_timeres,init=1,/mag,resstr='1sec',verbose=1
 mvn_save_reduce_timeres,init=1,/mag,resstr='30sec',verbose=1
 
 ;mvn_sep_gen_plots,init=-10
-timespan,[time_double('2014-3-18'),systime(1)]
+;timespan,[time_double('2014-3-18'),systime(1)]
 mvn_sep_makefile,/init
-mvn_sep_save_reduce_timeres,init=-1
+mvn_sep_save_reduce_timeres,/init
 
 generate_checksums,root_data_dir()+'maven/data/sci/sep/',dir_pattern='*.{sav,cdf}',file_pattern='*.???',/include_dir
 
 ;mvn_sta_tplot_restore,trange=[time_double('2014-9-30'),systime(1)],/create    ;  Since MOI
 ;mvn_sta_tplot_restore,trange=systime(1) + [-130,0] * 86400L ,/create            ; Last 30 days only
-mvn_euv_l0_load,/gen
+mvn_euv_l0_load,/gen,/init
 
 t1=systime(1)
 dprint,'Finished SEP batch job at: '+time_string(systime(1),/local), ' in ',(t1-t0), ' seconds.'

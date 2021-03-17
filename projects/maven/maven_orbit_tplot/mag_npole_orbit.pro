@@ -34,19 +34,22 @@
 ;                      1 : Optical shadow boundary at s/c altitude.
 ;                      2 : EUV shadow boundary at s/c altitude.
 ;
+;       MONITOR:   Place snapshot window in this monitor.  Only works if
+;                  monitor configuration is defined (see putwin.pro).
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-07-01 11:18:35 -0700 (Wed, 01 Jul 2020) $
-; $LastChangedRevision: 28832 $
+; $LastChangedDate: 2021-02-28 12:46:30 -0800 (Sun, 28 Feb 2021) $
+; $LastChangedRevision: 29710 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mag_npole_orbit.pro $
 ;
 ;CREATED BY:	David L. Mitchell  04-02-03
 ;-
 pro mag_npole_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
                      reset=reset, noerase=noerase, title=title, $
-                     terminator=ttime, shadow=shadow, alt=alt
+                     terminator=ttime, shadow=shadow, alt=alt, monitor=monitor
 
   common magpole_orb_com, img, ppos
-  @swe_snap_common
+  @putwin_common
 
   twin = !d.window
   owin = 27
@@ -77,13 +80,19 @@ pro mag_npole_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
 
     xoff = 0
     yoff = 0
-    i = sz[2] + (2*xoff)
-    j = sz[3] + (2*yoff)
+    xsize = sz[2] + (2*xoff)
+    ysize = sz[3] + (2*yoff)
 
-    Mopt2 = Mopt
-    Mopt2.xsize = i
-    Mopt2.ysize = j
-    putwin, owin, key=Mopt2
+    undefine, mnum
+    if (size(monitor,/type) gt 0) then begin
+      if (size(windex,/type) eq 0) then putwin, /config $
+                                   else if (windex eq -1) then putwin, /config
+      mnum = fix(monitor[0])
+    endif else begin
+      if (size(secondarymon,/type) gt 0) then mnum = secondarymon
+    endelse
+
+    putwin, owin, mnum, xsize=xsize, ysize=ysize, dx=-10, dy=-10
 
     px = [0.0, 1.0] * !d.x_vsize + xoff
     py = [0.0, 1.0] * !d.y_vsize + yoff

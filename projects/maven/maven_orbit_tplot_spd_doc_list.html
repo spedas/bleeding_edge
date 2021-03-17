@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -20,7 +20,7 @@ This page was created by the IDL library routine
 <UL>
 <H1>projects/maven/maven_orbit_tplot</H1>
 <LI><A HREF="#HYBRID_ORBIT">HYBRID_ORBIT</A>
-<br>Plots
+<br>Plots the MAVEN orbit over a hybrid model of the Mars-solar wind interaction.
 <LI><A HREF="#MAG_MOLA_ORBIT">MAG_MOLA_ORBIT</A>
 <br>Plots a set of [longitude,latitude] positions over a MAG-MOLA
 <LI><A HREF="#MAG_NPOLE_ORBIT">MAG_NPOLE_ORBIT</A>
@@ -47,6 +47,8 @@ This page was created by the IDL library routine
 <br>Given a time, uses SPICE to determine the location of the
 <LI><A HREF="#MVN_SUN_BAR">MVN_SUN_BAR</A>
 <br>Creates a colored bar indicating sun/shadow.  Assumes that
+<LI><A HREF="#PARABOLA_VERTEX">PARABOLA_VERTEX</A>
+<br>Calculates the vertex of the parabola defined by three points.
 <LI><A HREF="#TIME_TO_PERIAPSIS">TIME_TO_PERIAPSIS</A>
 <br>Calculates the time needed for the spacecraft to go from periapsis
 <br>
@@ -61,7 +63,7 @@ This page was created by the IDL library routine
 <PRE>
 PROCEDURE:   hybrid_orbit
 PURPOSE:
-  Plots 
+  Plots the MAVEN orbit over a hybrid model of the Mars-solar wind interaction.
 
 USAGE:
   hybrid_orbit, lon, lat
@@ -84,9 +86,12 @@ KEYWORDS:
        RESET:     Read in the MAG-MOLA image and calculate the
                   plot size and position.
 
+       MONITOR:   Place snapshot window in this monitor.  Only works if
+                  monitor configuration is defined (see putwin.pro).
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-01 12:20:16 -0700 (Wed, 01 Jul 2020) $
- $LastChangedRevision: 28841 $
+ $LastChangedDate: 2021-03-02 11:51:00 -0800 (Tue, 02 Mar 2021) $
+ $LastChangedRevision: 29730 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/hybrid_orbit.pro $
 
 CREATED BY:	David L. Mitchell  04-02-03
@@ -130,6 +135,9 @@ KEYWORDS:
 
        BIG:        Use a 1000x500 MAG-MOLA image.
 
+       DBR:        Use a 1000x500 dBr/dt image.
+                   (Note: dBr/dt is approx. the same as dBr/dlat.)
+
        TERMINATOR: Overlay the terminator at the time specified by this
                    keyword.
 
@@ -140,9 +148,15 @@ KEYWORDS:
                       2 : EUV shadow boundary at s/c altitude.
                       3 : EUV shadow at electron absorption altitude.
 
+       SITES:      A 2 x N array of surface locations to plot.
+
+       SLAB:       Text labels for each of the sites.
+
+       SCOL:       Color for each of the sites.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-01 12:20:16 -0700 (Wed, 01 Jul 2020) $
- $LastChangedRevision: 28841 $
+ $LastChangedDate: 2021-02-28 12:46:30 -0800 (Sun, 28 Feb 2021) $
+ $LastChangedRevision: 29710 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mag_mola_orbit.pro $
 
 CREATED BY:	David L. Mitchell  04-02-03
@@ -191,9 +205,12 @@ KEYWORDS:
                       1 : Optical shadow boundary at s/c altitude.
                       2 : EUV shadow boundary at s/c altitude.
 
+       MONITOR:   Place snapshot window in this monitor.  Only works if
+                  monitor configuration is defined (see putwin.pro).
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-01 11:18:35 -0700 (Wed, 01 Jul 2020) $
- $LastChangedRevision: 28832 $
+ $LastChangedDate: 2021-02-28 12:46:30 -0800 (Sun, 28 Feb 2021) $
+ $LastChangedRevision: 29710 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mag_npole_orbit.pro $
 
 CREATED BY:	David L. Mitchell  04-02-03
@@ -428,10 +445,14 @@ KEYWORDS:
        YZ:       Plot only the YZ projection (view from Sun)
 
        MARS:     Plot the position of the spacecraft (PREC=1) or periapsis 
-                 (PREC=0) on an image of Mars topography and magnetic field
-                 based on MGS data (from Connerney).
-                   1 : Use a small image
-                   2 : Use a large image
+                 (PREC=0) on an image of Mars topography (colors from MOLA)
+                 and radial magnetic field (contours from Connerney et al. 
+                 2001).  Alternatively, use an image of dBr/dt that better
+                 filters out solar wind influences (Connerney et al. 2004),
+                 on top of a greyscale topo map with elevation contours.
+                   1 : Use a small MAG-MOLA image
+                   2 : Use a large MAG-MOLA image
+                   3 : Use a large dBr-topology image
 
        NPOLE:    Plot the position of the spacecraft (PREC=1) or periapsis
                  (PREC=0) on a north polar projection (lat &gt; 55 deg).  The
@@ -456,6 +477,8 @@ KEYWORDS:
 
        NODOT:    Do not plot a filled circle at periapsis or spacecraft location.
 
+       NOORB:    Do not plot the orbit.
+
        RESET:    Initialize all plots.
 
        COLOR:    Symbol color index.
@@ -467,6 +490,8 @@ KEYWORDS:
                  produces a &quot;spirograph&quot; effect.  This overrides the interactive
                  entry of times with the cursor.  Sets KEEP, NOERASE, and RESET.
 
+       TCOLORS:  Color index for every element of TIMES.
+
        BDIR:     Set keyword to show magnetic field direction in three planes,
                  In each plane, the same two components of B in MSO coordinates 
                  are shown, i.e. in XY plane, plotting Bx-By. The color shows 
@@ -475,8 +500,8 @@ KEYWORDS:
 
        BCLIP:    Maximum amplitude for plotting B whisker.
 
-       SCALE:    To change the scale/length of field lines, the default value is
-                 set to 0.05
+       MSCALE:   To change the scale/length of magnetic field lines, the default
+                 value is set to 0.05
 
        VDIR:     Set keyword to a tplot variable containing MSO vectors for a whisker
                  plot (like BDIR).
@@ -490,15 +515,33 @@ KEYWORDS:
 
        THICK:    Line thickness.
 
-       MAGNIFY:  Change size of plot windows.
+       WSCALE:   Scale factor for sizing plot windows.  Default = 1.
+                 Has no effect when plotting orbit projections over images, which
+                 have fixed sizes.
+
+       MAGNIFY:  Synonym for WSCALE.  (WSCALE takes precedence.)
 
        NOLABEL:  Omit text labels showing altitude and solar zenith angle.
 
        PSNAME:   Name of a postscript plot.  Works only for orbit plots.
 
+       LANDERS:  Plot the locations of landers.  Can also be an 2 x N array
+                 of surface locations (lon, lat) in the IAU_Mars frame.
+
+       SLAB:     Text labels for each of the landers.  If LANDERS is a scalar,
+                 then this provides a 1- or 2-character label for each lander.
+                 If LANDERS is a 2 x N array, SLAB should be an N-element string
+                 array.  Set SLAB to zero to disable text labels and just plot
+                 symbols instead.  Text labels are centered in longitude with
+                 the baseline at latitude.
+
+       SCOL:     Color(s) for the lander labels or symbols.  If there are more
+                 landers than colors, then additional landers are all given the
+                 last color.  Default is 6 (red) for all.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-08-03 16:48:55 -0700 (Mon, 03 Aug 2020) $
- $LastChangedRevision: 28978 $
+ $LastChangedDate: 2021-03-02 11:50:19 -0800 (Tue, 02 Mar 2021) $
+ $LastChangedRevision: 29729 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11
@@ -661,9 +704,13 @@ KEYWORDS:
 
        RESTORE:  Restore tplot variables and the common block from a save file.
 
+       MISSION:  Restore save files that span from Mars orbit insertion to the 
+                 present.  These files are updated periodically.  Together, the
+                 save files are 8.7 GB in size.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-08-03 16:47:52 -0700 (Mon, 03 Aug 2020) $
- $LastChangedRevision: 28977 $
+ $LastChangedDate: 2021-03-02 12:52:49 -0800 (Tue, 02 Mar 2021) $
+ $LastChangedRevision: 29732 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11
@@ -692,9 +739,11 @@ KEYWORDS:
        REBUILD:  Normally, months containing only reconstructed kernels are not
                  updated.  Set this keyword to rebuild the entire database.
 
+       TSTART:   Rebuild all files that contain data after this date.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-11-18 15:35:55 -0800 (Sun, 18 Nov 2018) $
- $LastChangedRevision: 26145 $
+ $LastChangedDate: 2020-10-21 15:38:28 -0700 (Wed, 21 Oct 2020) $
+ $LastChangedRevision: 29269 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_update.pro $
 
 CREATED BY:	David L. Mitchell  2014-10-13
@@ -733,9 +782,12 @@ KEYWORDS:
        RESET:     Read in the MAG-MOLA image and calculate the
                   plot size and position.
 
+       MONITOR:   Place snapshot window in this monitor.  Only works if
+                  monitor configuration is defined (see putwin.pro).
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-01 11:18:35 -0700 (Wed, 01 Jul 2020) $
- $LastChangedRevision: 28832 $
+ $LastChangedDate: 2021-02-28 12:46:30 -0800 (Sun, 28 Feb 2021) $
+ $LastChangedRevision: 29710 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mhd_orbit.pro $
 
 CREATED BY:	David L. Mitchell  04-02-03
@@ -772,13 +824,11 @@ KEYWORDS:
                     slon  : sub-solar point longitude (deg)
                     slat  : sub-solar point latitude (deg)
 
-       TPLOT:     Make tplot variables.
-
        PANS:      Returns the names of any tplot variables created.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-01 11:16:48 -0700 (Wed, 01 Jul 2020) $
- $LastChangedRevision: 28830 $
+ $LastChangedDate: 2020-10-23 14:18:06 -0700 (Fri, 23 Oct 2020) $
+ $LastChangedRevision: 29283 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_mars_localtime.pro $
 
 CREATED BY:	David L. Mitchell
@@ -836,7 +886,7 @@ CREATED BY:	David L. Mitchell
 <A NAME="MVN_SUN_BAR">
 <H2>MVN_SUN_BAR</H2></A>
 <A HREF="#MVN_MARS_TERMINATOR">[Previous Routine]</A>
-<A HREF="#TIME_TO_PERIAPSIS">[Next Routine]</A>
+<A HREF="#PARABOLA_VERTEX">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mvn_sun_bar
@@ -861,9 +911,58 @@ CREATED BY:    David L. Mitchell
 <STRONG>(See <A href="maven_orbit_tplot/mvn_sun_bar.pro">projects/maven/maven_orbit_tplot/mvn_sun_bar.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="PARABOLA_VERTEX">
+<H2>PARABOLA_VERTEX</H2></A>
+<A HREF="#MVN_SUN_BAR">[Previous Routine]</A>
+<A HREF="#TIME_TO_PERIAPSIS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   parabola_vertex
+PURPOSE:
+  Calculates the vertex of the parabola defined by three points.
+  The parabola is assumed to be of the form:
+
+    y = A*(x - xv)^2. + yv
+
+  where A is a constant and [xv, yv] are the coordinates of the 
+  vertex.  Works best when the input x values surround the vertex,
+  but works in other cases as well.
+
+  Uses the second-order Lagrange interpolation formula.  This is
+  not a fit -- it is an exact algebraic calculation.
+
+USAGE:
+  parabola_vertex, xi, yi, xv, yv
+
+INPUTS:
+     xi : independent variable (at least 3 values)
+     yi : dependent variable (at least 3 values)
+
+     If xi and yi contain more than 3 values, then the routine 
+     uses the three points surrounding the extremum in yi.  The
+     points do not have to be evenly spaced.
+
+     The xi must be different.
+
+OUTPUTS:
+     xv : location of the parabola vertex in x
+     yv : value of the dependent variable at the vertex
+
+KEYWORDS:
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2020-10-21 13:14:47 -0700 (Wed, 21 Oct 2020) $
+ $LastChangedRevision: 29266 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/parabola_vertex.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="maven_orbit_tplot/parabola_vertex.pro">projects/maven/maven_orbit_tplot/parabola_vertex.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TIME_TO_PERIAPSIS">
 <H2>TIME_TO_PERIAPSIS</H2></A>
-<A HREF="#MVN_SUN_BAR">[Previous Routine]</A>
+<A HREF="#PARABOLA_VERTEX">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   time_to_periapsis
@@ -898,9 +997,11 @@ KEYWORDS:
 
        RESULT:        Named variable to hold the result structure.
 
+       VERBOSE:       Verbosity level.  See dprint.pro.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-02-24 11:07:39 -0800 (Sun, 24 Feb 2019) $
- $LastChangedRevision: 26696 $
+ $LastChangedDate: 2020-10-26 15:28:30 -0700 (Mon, 26 Oct 2020) $
+ $LastChangedRevision: 29295 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/time_to_periapsis.pro $
 
 CREATED BY:    David L. Mitchell

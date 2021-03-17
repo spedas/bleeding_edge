@@ -9,9 +9,9 @@
 ;  
 ;REVISION HISTORY:
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2015-04-16 16:09:24 -0700 (Thu, 16 Apr 2015) $
-;$LastChangedRevision: 17344 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2020-10-13 13:35:02 -0700 (Tue, 13 Oct 2020) $
+;$LastChangedRevision: 29242 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/geom_indices/spedas_plugin/idx_ui_import_data.pro $
 ;-
 
@@ -216,6 +216,35 @@ pro idx_ui_import_data,$
               to_delete = strfilter(tnames(), tnames('*'+strjoin(strsplit(resolution, '-', /extract))+'_*'+strupcase(datatype)+'*'), /NEGATE)
               ; keep the data we're interested in
               new_vars = strfilter(tnames(), tnames('*'+strjoin(strsplit(resolution, '-', /extract))+'_*'+strupcase(datatype)+'*'))
+          end 
+          'Themis AE': begin
+            ; Themis AE and real-time Kyoto AE from Themis idx cdf files.
+            observatory = 'Themis AE'
+            instrument = 'AE'
+            indexmintime = '2008-01-01'
+            indexmaxtime = time_string(systime(/seconds))
+            if indextype[i] eq 'Themis AE' then begin
+              datatype = 'ae'
+            endif else if indextype[i] eq 'Themis AU' then begin
+              datatype = 'au'
+            endif else if indextype[i] eq 'Themis AL' then begin
+                datatype = 'al'  
+            endif else if indextype[i] eq 'RT Kyoto AE' then begin
+              datatype = ['uc_ae', 'uc_avg']
+              if resolution eq '1-min' then begin
+                datatype = 'uc_ae'
+              endif else if resolution eq '5-min' then begin
+                datatype = 'uc_avg'
+              endif
+            endif else if indextype[i] eq 'RT Kyoto AL' then begin
+              datatype = 'uc_al'
+            endif else if indextype[i] eq 'RT Kyoto AU' then begin
+              datatype = 'uc_au'
+            endif else begin ; *
+              datatype = ['*']
+            endelse            
+            thm_load_pseudoAE, datatype=datatype, trange=timeRange 
+            
           end
           else: begin
             statusBar->update,'No Geomagnetic Indices Data Loaded'

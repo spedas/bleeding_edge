@@ -40,16 +40,25 @@
 ; 	By/Bx = 3.732
 ; 	Bz/Bx = 3.732
 ;HISTORY: Written by Aaron W Breneman (UMN) - 2013-06-19
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2020-05-21 20:36:46 -0700 (Thu, 21 May 2020) $
-;$LastChangedRevision: 28720 $
+;$LastChangedBy: aaronbreneman $
+;$LastChangedDate: 2020-09-11 13:33:33 -0700 (Fri, 11 Sep 2020) $
+;$LastChangedRevision: 29137 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_edotb_to_zero_crib.pro $
 ;-
 
 
-pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,$
-  suffix=suffix,noplot=noplot,nospinfit=nospinfit,ql=ql,boom_pair=bp,$
-  rerun=rerun,noremove=noremove,anglemin=anglemin,bad_probe=bad_probe
+pro rbsp_efw_edotb_to_zero_crib,date,probe,$
+  suffix=suffix,$
+  noplot=noplot,$
+  nospinfit=nospinfit,$
+  ql=ql,$
+  boom_pair=bp,$
+  rerun=rerun,$
+  noremove=noremove,$
+  anglemin=anglemin,$
+  bad_probe=bad_probe,$   ;for the non-spinfit data
+  _extra=extra
+
 
 
   if ~KEYWORD_SET(anglemin) then anglemin = 15.
@@ -58,14 +67,16 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,$
 
   rbspx = 'rbsp' + probe
   timespan,date
+  tr = timerange()
 
 
+  if ~keyword_set(suffix) then suffix = 'edotb'
   if ~keyword_set(ql) then ql = 0
   if ~keyword_set(bp) then bp = '12'
   if ~keyword_set(rerun) then rerun = 0.
 
   ;Stuff to make plots pretty
-  rbsp_efw_init
+  rbsp_efw_init,_extra=extra
   !p.charsize = 1.2
   tplot_options,'xmargin',[20.,15.]
   tplot_options,'ymargin',[3,6]
@@ -75,43 +86,43 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,$
   tplot_options,'ythick',2
 
 
-  ;load eclipse times
-  rbsp_load_eclipse_predict,probe,date
-  get_data,'rbsp'+probe+'_umbra',data=eu
-  get_data,'rbsp'+probe+'_penumbra',data=ep
 
 
-
-  ;Load spinfit MGSE Efield and Bfield
+  ;Load spinfit or non-spinfit MGSE Efield and Bfield if not already loaded
   if ~keyword_set(nospinfit) then begin
-    rbsp_efw_spinfit_vxb_subtract_crib,probe,/noplot,ql=ql,boom_pair=bp
-    evar = 'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit'
+    if ~tdexists('rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit',tr[0],tr[1]) then $
+      rbsp_efw_spinfit_vxb_subtract_crib,probe,/noplot,ql=ql,boom_pair=bp,_extra=extra
+
+
+      evar = 'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit'
+      evar2 = 'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed_spinfit'
   endif else begin
-    rbsp_efw_vxb_subtract_crib,probe,/noplot,ql=ql,bad_probe=bad_probe
-    evar = 'rbsp'+probe+'_efw_esvy_mgse_vxb_removed'
+    if ~tdexists('rbsp'+probe+'_efw_esvy_mgse_vxb_removed',tr[0],tr[1]) then $
+      rbsp_efw_vxb_subtract_crib,probe,/noplot,ql=ql,bad_probe=bad_probe,_extra=extra
+
+      evar = 'rbsp'+probe+'_efw_esvy_mgse_vxb_removed'
+      evar2 = 'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed'
   endelse
 
 
-  if ~keyword_set(noplot) then tplot,'rbsp'+probe+'_' + ['vxb_mgse',evar]
 
-
-
-  ;Grab the spinfit Ew and Bw data
-  split_vec,'rbsp'+probe+'_mag_mgse'
   get_data,evar,data=edata
+  get_data,evar2,data=edata2
 
 
   ;interpolate to common timebase
   if is_struct(edata) then $
     tinterpol_mxn,'rbsp'+probe+'_mag_mgse',edata.x,$
-    newname='rbsp'+probe+'_mag_mgse'
+    newname='rbsp'+probe+'_mag_mgse_DS',/spline
+
+
 
 
   ;smooth the background magnetic field
   ;over 30 min for the E*B=0 calculation
-  rbsp_detrend,'rbsp'+probe+'_mag_mgse',60.*30.
-  get_data,'rbsp'+probe+'_mag_mgse',data=magmgse
-  get_data,'rbsp'+probe+'_mag_mgse_smoothed',data=magmgse_smoothed
+  rbsp_detrend,'rbsp'+probe+'_mag_mgse_DS',60.*30.
+  get_data,'rbsp'+probe+'_mag_mgse_DS',data=magmgse
+  get_data,'rbsp'+probe+'_mag_mgse_DS_smoothed',data=magmgse_smoothed
 
 
   if ~is_struct(magmgse) then begin
@@ -129,8 +140,15 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,$
   ;Replace axial measurement with E*B=0 version
   edata.y[*,0] = -1*(edata.y[*,1]*magmgse_smoothed.y[*,1] + $
     edata.y[*,2]*magmgse_smoothed.y[*,2])/magmgse_smoothed.y[*,0]
-  if ~keyword_set(suffix) then store_data,evar,data=edata
-  if keyword_set(suffix) then store_data,evar+'_'+suffix,data=edata
+  store_data,evar+'_'+suffix,data=edata
+
+
+  edata2.y[*,0] = -1*(edata2.y[*,1]*magmgse_smoothed.y[*,1] + $
+    edata2.y[*,2]*magmgse_smoothed.y[*,2])/magmgse_smoothed.y[*,0]
+  store_data,evar2+'_'+suffix,data=edata2
+
+
+
 
 
   ;Find bad E*B=0 data (where the angle b/t spinplane MGSE and Bo is
@@ -163,7 +181,7 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,$
   if n_elements(edata.x) le 86400. then begin
     for i=0L,n-1 do ang_ey[i] = acos(total([0,1,0]*magmgse_smoothed.y[i,*])/(bmag_smoothed[i]))/!dtor
     for i=0L,n-1 do ang_ez[i] = acos(total([0,0,1]*magmgse_smoothed.y[i,*])/(bmag_smoothed[i]))/!dtor
-    store_data,'angles',data={x:edata.x,y:[[ang_ey],[ang_ez]]}
+    store_data,'rbsp'+probe+'_angles',data={x:edata.x,y:[[ang_ey],[ang_ez]]}
   endif
 
 
@@ -176,75 +194,54 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,$
   options,'rat','constant',1
 
 
-  ;Check for Spinfit saturation
-  get_data,evar,data=tmpp
-  badsatx = where(abs(tmpp.y[*,0]) ge 195.)
-  badsaty = where(abs(tmpp.y[*,1]) ge 195.)
-  badsatz = where(abs(tmpp.y[*,2]) ge 195.)
+
 
 
 
   ;Remove bad Efield data
-  ;....saturated data from the rest of the tplot variables
-  ;....saturated data from Ex
   ;....Ex data when the E*B=0 calculation is unreliable
 
-  if ~keyword_set(suffix) then get_data,evar,data=tmpp
-  if keyword_set(suffix) then  get_data,evar+'_'+suffix,data=tmpp
+  get_data,evar+'_'+suffix,data=tmpp
+  get_data,evar2+'_'+suffix,data=tmpp2
+
 
   if ~keyword_set(noremove) then begin
-    if badyx[0] ne -1 then tmpp.y[badyx,0] = !values.f_nan
-    if badzx[0] ne -1 then tmpp.y[badzx,0] = !values.f_nan
-    if badsatx[0] ne -1 then tmpp.y[badsatx,0] = !values.f_nan
-    if badsaty[0] ne -1 then tmpp.y[badsaty,1] = !values.f_nan
-    if badsatz[0] ne -1 then tmpp.y[badsatz,2] = !values.f_nan
+    if badyx[0] ne -1 then tmpp.y[badyx,0] = !values.f_nan & tmpp2.y[badyx,0] = !values.f_nan
+    if badzx[0] ne -1 then tmpp.y[badzx,0] = !values.f_nan & tmpp2.y[badzx,0] = !values.f_nan
   endif
 
-  if ~keyword_set(suffix) then store_data,evar,data=tmpp
-  if keyword_set(suffix) then  store_data,evar+'_'+suffix,data=tmpp
+  store_data,evar+'_'+suffix,data=tmpp
+  store_data,evar2+'_'+suffix,data=tmpp2
+
+
 
   get_data,'rat',data=tmpp
   if badyx[0] ne -1 then tmpp.y[badyx] = !values.f_nan
   if badzx[0] ne -1 then tmpp.y[badzx] = !values.f_nan
-  if badsatx[0] ne -1 then tmpp.y[badsatx] = !values.f_nan
-  if badsaty[0] ne -1 then tmpp.y[badsaty] = !values.f_nan
-  if badsatz[0] ne -1 then tmpp.y[badsatz] = !values.f_nan
   store_data,'rat',data=tmpp
 
   get_data,'e_sa',data=tmpp
   if badyx[0] ne -1 then tmpp.y[badyx] = !values.f_nan
   if badzx[0] ne -1 then tmpp.y[badzx] = !values.f_nan
-  if badsatx[0] ne -1 then tmpp.y[badsatx] = !values.f_nan
-  if badsaty[0] ne -1 then tmpp.y[badsaty] = !values.f_nan
-  if badsatz[0] ne -1 then tmpp.y[badsatz] = !values.f_nan
   store_data,'e_sa',data=tmpp
 
   get_data,'e_sp',data=tmpp
   if badyx[0] ne -1 then tmpp.y[badyx] = !values.f_nan
   if badzx[0] ne -1 then tmpp.y[badzx] = !values.f_nan
-  if badsatx[0] ne -1 then tmpp.y[badsatx] = !values.f_nan
-  if badsaty[0] ne -1 then tmpp.y[badsaty] = !values.f_nan
-  if badsatz[0] ne -1 then tmpp.y[badsatz] = !values.f_nan
   store_data,'e_sp',data=tmpp
 
 
 
 
-  ;Remove corotation field
-  if ~keyword_set(nospinfit) then begin
-    dif_data,evar,'rbsp'+probe+'_E_coro_mgse',newname='rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed_spinfit'
-    if keyword_set(suffix) then dif_data,evar+'_'+suffix,'rbsp'+probe+'_E_coro_mgse',newname='rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed_spinfit_'+suffix
-  endif else begin
-    dif_data,evar,'rbsp'+probe+'_E_coro_mgse',newname='rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed'
-    if keyword_set(suffix) then dif_data,evar+'_'+suffix,'rbsp'+probe+'_E_coro_mgse',newname='rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed_'+suffix
-  endelse
 
 
   ;Plot results
   options,'rat','ytitle','|Espinaxis|/!C|Espinplane|'
   options,'e_sp','ytitle','|Espinplane|'
   options,'e_sa','ytitle','|Espinaxis|'
-  options,'angles','ytitle','angle b/t Ey & Bo!CEz & Bo (red)'
+  options,'rbsp'+probe+'_angles','ytitle','angle b/t Ey & Bo!CEz & Bo (red)'
+  options,evar,'colors',[0,50,250]
+  options,evar2,'colors',[0,50,250]
   ylim,evar,-10,10
   ylim,'rbsp'+probe+'_mag_mgse',-200,200
   ylim,['e_sa','e_sp','rat'],0,10
@@ -257,44 +254,36 @@ pro rbsp_efw_edotb_to_zero_crib,date,probe,no_spice_load=no_spice_load,$
   ;Create Emag variable. The Efield magnitude shouldn't change as a function
   ;of the spinaxis angle to Bo if the calculated Ex component is accurate (assuming
   ;a steady background Efield)
-  if ~KEYWORD_SET(nospinfit) then $
-    get_data,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit',etimes,edata else $
-    get_data,'rbsp'+probe+'_efw_esvy_mgse_vxb_removed',etimes,edata
-
+  get_data,evar+'_'+suffix,etimes,edata
   emag = sqrt(edata[*,0]^2 + edata[*,1]^2 + edata[*,2]^2)
   store_data,'emag',etimes,emag
 
 
-  tplot_options,'title','RBSP-'+probe + ' ' + date
-  if ~keyword_set(noplot) then begin
-    if ~keyword_set(nospinfit) then begin
-      tplot,['rbsp'+probe+'_mag_mgse',$
-      'rbsp'+probe+'_mag_mgse_smoothed',$
-;      'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_spinfit',$
-      'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed_spinfit',$
-;      'rbsp'+probe+'_E_coro_mgse',$
-      'emag',$
-      'angle_B2Bx',$
-      'rat',$
-      'e_sa',$
-      'e_sp']
-    endif else begin
-      tplot,['rbsp'+probe+'_mag_mgse',$
-      'rbsp'+probe+'_mag_mgse_smoothed',$
-      'rbsp'+probe+'_efw_esvy_mgse_vxb_removed',$
-      'rbsp'+probe+'_efw_esvy_mgse_vxb_removed_coro_removed',$
-;      'rbsp'+probe+'_E_coro_mgse',$
-      'angle_B2Bx',$
-      'emag',$
-      'rat',$
-      'e_sa',$
-      'e_sp']
-
-    endelse
-    if keyword_set(eu) then timebar,eu.x
-    if keyword_set(eu) then timebar,eu.x + eu.y
-  endif
-
+;  tplot_options,'title','RBSP-'+probe + ' ' + date
+;  if ~keyword_set(noplot) then begin
+;    if ~keyword_set(nospinfit) then begin
+;      tplot,['rbsp'+probe+'_mag_mgse',$
+;      'rbsp'+probe+'_mag_mgse_DS_smoothed',$
+;      evar+'_'+suffix,evar2+'_'+suffix,$
+;      'emag',$
+;      'angle_B2Bx',$
+;      'rat',$
+;      'e_sa',$
+;      'e_sp']
+;    endif else begin
+;      tplot,['rbsp'+probe+'_mag_mgse',$
+;      'rbsp'+probe+'_mag_mgse_DS_smoothed',$
+;      evar+'_'+suffix,evar2+'_'+suffix,$
+;      'angle_B2Bx',$
+;      'emag',$
+;      'rat',$
+;      'e_sa',$
+;      'e_sp']
+;
+;    endelse
+;    if keyword_set(eu) then timebar,eu.x
+;    if keyword_set(eu) then timebar,eu.x + eu.y
+;  endif
 
 
 end

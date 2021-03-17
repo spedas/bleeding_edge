@@ -23,7 +23,7 @@ function thm_compose_intervals, i1, i2
 
   r = i1
 
-  r(idx) = i2(idx)
+  r[idx] = i2[idx]
 
   return, r
 
@@ -40,16 +40,16 @@ function thm_collate_intervals, r, s1
 
   s = s1[idx]
 
-  d_arr = r(*, *, idx)
+  d_arr = r[*, *, idx]
 
   idx = where(s ne shift(s, 1L), cnt)
 
   ;output array
 
   if(cnt gt 0) then $
-    o_arr = d_arr(*, *, idx) $
+    o_arr = d_arr[*, *, idx] $
   else $
-    o_arr = d_arr(*, *, 0)
+    o_arr = d_arr[*, *, 0]
 
   o_arr_cnt = 0
 

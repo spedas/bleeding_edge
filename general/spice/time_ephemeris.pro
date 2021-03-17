@@ -10,15 +10,15 @@
 ;Author: Davin Larson
 ;
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-07-07 14:08:46 -0700 (Tue, 07 Jul 2020) $
-; $LastChangedRevision: 28858 $
+; $LastChangedDate: 2021-01-07 08:41:41 -0800 (Thu, 07 Jan 2021) $
+; $LastChangedRevision: 29577 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/time_ephemeris.pro $
 
 ;-
 
 
 function time_ephemeris,t,et2ut=et2ut,ut2et=ut2et
-common time_ephemeris_com, ls_num,  ls_utimes, ls_etimes, utc_et_diff, disable_time  ;, ls_etimes
+common time_ephemeris_com, ls_num,  ls_utimes, ls_etimes, utc_et_diff, disable_time   ;, ls_etimes
 ;ls_num=0
 if not keyword_set(ls_num) then begin
     ls_utimes = time_double(['0200-1-1','1972-1-1','1972-7-1','1973-1-1','1974-1-1','1975-1-1','1976-1-1','1977-1-1','1978-1-1','1979-1-1','1980-1-1',  $
@@ -28,12 +28,12 @@ if not keyword_set(ls_num) then begin
     utc_et_diff = time_double('2000-1-1/12:00:00') -32.184   ;  -32.18392728
     ls_etimes = ls_utimes + ls_num - utc_et_diff 
 ;  printdat,ls_num,ls_utimes,ls_etimes,utc_et_diff
-    disable_time = time_double('2021-7-1')
-    if systime(1) gt disable_time-30*86400L then message,'Warning: This procedure must be modified to account for potential leap seconds in the near future.',/cont
+    disable_time = time_double('2022-1-1')   ; time of next possible leap second
+    if systime(1) gt disable_time-30*86400L then message,'Warning: This procedure must be modified before '+time_string(disable_time)+' to account for potential leap second',/cont
 endif
 
-if systime(1) gt disable_time-7*86400L then message,'Warning: This procedure must be modified to account for potential leap seconds in the near future.',/cont
-if systime(1) gt disable_time  then message,'Sorry!  This procedure has been disabled!'
+if systime(1) gt disable_time  then message,'Sorry!  This procedure has been disabled because it was not modified to account for a possible leap second on '+time_string(disable_time)
+if systime(1) gt disable_time-7*86400L then message,'Warning: This procedure must be modified before '+time_string(disable_time)+' to account for potential leap second at that time.',/cont
 
 if keyword_set(et2ut) then begin
     return, t -  floor( interp(ls_num,ls_etimes,t) ) + utc_et_diff   ; Not verified...

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -53,12 +53,12 @@ Purpose:
   
 Calling Sequence:
   
-  files = mms_get_local_state_files( probe=probe, instrument=instrument, $
-            data_rate=data_rate, level=level, datatype=datatype, trange=trange)
+  files = mms_get_local_state_files(probe=probe, level=level, filetype=filetype, trange=trange)
 
 Input:
   probe:  (string) Full spacecraft designation, e.g. 'mms1'
-  filetype:  (string) Instrument designation, e.g. 'hpca' 
+  filetype:  (string) state file type, e.g. 'eph' or 'att' 
+  level: (string) state level; either 'def' (for definitive) or 'pred' (for predicted)
   trange:  (string/double) Two element time range, e.g. ['2015-06-22','2015-06-23']
 
 Output:
@@ -68,8 +68,8 @@ Notes:
 
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2016-05-25 14:40:54 -0700 (Wed, 25 May 2016) $
-$LastChangedRevision: 21203 $
+$LastChangedDate: 2020-09-08 13:45:22 -0700 (Tue, 08 Sep 2020) $
+$LastChangedRevision: 29123 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec_ascii/mms_get_local_state_files.pro $
 </PRE><P>
 <STRONG>(See <A href="mec_ascii/mms_get_local_state_files.pro">projects/mms/mec_ascii/mms_get_local_state_files.pro</A>)</STRONG><P>
@@ -261,8 +261,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2015-12-10 14:31:13 -0800 (Thu, 10 Dec 2015) $
-$LastChangedRevision: 19594 $
+$LastChangedDate: 2020-12-10 07:24:31 -0800 (Thu, 10 Dec 2020) $
+$LastChangedRevision: 29460 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec_ascii/mms_read_def_att_file.pro $
 </PRE><P>
 <STRONG>(See <A href="mec_ascii/mms_read_def_att_file.pro">projects/mms/mec_ascii/mms_read_def_att_file.pro</A>)</STRONG><P>
@@ -283,8 +283,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2015-12-10 14:31:13 -0800 (Thu, 10 Dec 2015) $
-$LastChangedRevision: 19594 $
+$LastChangedDate: 2020-12-10 07:24:31 -0800 (Thu, 10 Dec 2020) $
+$LastChangedRevision: 29460 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec_ascii/mms_read_eph_file.pro $
 </PRE><P>
 <STRONG>(See <A href="mec_ascii/mms_read_eph_file.pro">projects/mms/mec_ascii/mms_read_eph_file.pro</A>)</STRONG><P>

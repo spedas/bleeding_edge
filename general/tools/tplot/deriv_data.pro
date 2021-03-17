@@ -108,7 +108,7 @@ for i=0,n-1 do begin
     endif
   endif
 
-  y = float(d.y)
+  y = double(d.y)
   if ndimen(d.y) eq 1 then y = deriv(d.x,double(d.y))
   if ndimen(d.y) eq 2 then $
      for j=0,dimen2(d.y)-1 do y[*,j] = deriv(d.x,d.y[*,j])

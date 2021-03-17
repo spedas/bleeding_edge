@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -21,6 +21,10 @@ This page was created by the IDL library routine
 <H1>projects/maven/sta/l2util</H1>
 <LI><A HREF="#MVN_CALL_STA_L2GEN">MVN_CALL_STA_L2GEN</A>
 <LI><A HREF="#MVN_CALL_STA_L2L2">MVN_CALL_STA_L2L2</A>
+<LI><A HREF="#MVN_STA_BKG_L2FILE_SAVE">MVN_STA_BKG_L2FILE_SAVE</A>
+<br>saves an STA L2 background cdf, overwrites old versions, no revisions
+<LI><A HREF="#MVN_STA_CMN_L2GEN.PRO[1]">MVN_STA_CMN_L2GEN.PRO[1]</A>
+<br>turn a MAVEN STA common block into a L2 CDF, but only including the
 <LI><A HREF="#MVN_STA_CMN_2A_L2GEN.PRO">MVN_STA_CMN_2A_L2GEN.PRO</A>
 <br>turn a MAVEN STA RATES common block into a L2 CDF.
 <LI><A HREF="#MVN_STA_CMN_CONCAT">MVN_STA_CMN_CONCAT</A>
@@ -35,7 +39,7 @@ This page was created by the IDL library routine
 <br>turn a MAVEN STA RATES common block into a L2 CDF.
 <LI><A HREF="#MVN_STA_CMN_L2FILE_SAVE">MVN_STA_CMN_L2FILE_SAVE</A>
 <br>saves an STA L2 cdf, managing the revision number and md5 sum. The
-<LI><A HREF="#MVN_STA_CMN_L2GEN.PRO">MVN_STA_CMN_L2GEN.PRO</A>
+<LI><A HREF="#MVN_STA_CMN_L2GEN.PRO[2]">MVN_STA_CMN_L2GEN.PRO[2]</A>
 <br>turn a MAVEN STA common block into a L2 CDF.
 <LI><A HREF="#MVN_STA_CMN_L2READ">MVN_STA_CMN_L2READ</A>
 <br>Reads an L2 file and fills a common block structure.
@@ -43,8 +47,15 @@ This page was created by the IDL library routine
 <br>Returns an array with common block variable names for the input
 <LI><A HREF="#MVN_STA_CMN_TCLIP">MVN_STA_CMN_TCLIP</A>
 <br>applies a trange to a STATIC common block structure
+<LI><A HREF="#MVN_STA_IV1_1DAY">MVN_STA_IV1_1DAY</A>
+<br>reads in a start and end date, and reprocesses all of the days in
+<LI><A HREF="#MVN_STA_IV2_1DAY">MVN_STA_IV2_1DAY</A>
+<br>reads in a start and end date, and reprocesses all of the days in
+<LI><A HREF="#MVN_STA_IV3_1DAY">MVN_STA_IV3_1DAY</A>
+<br>reads in a start and end date, and reprocesses all of the days in
 <LI><A HREF="#MVN_STA_L2_FILEREVISION">MVN_STA_L2_FILEREVISION</A>
 <br>tracks the revision number for a STATIC L2 file
+<LI><A HREF="#MVN_STA_L2DAT_STRUCT">MVN_STA_L2DAT_STRUCT</A>
 <LI><A HREF="#MVN_STA_L2EFLUX">MVN_STA_L2EFLUX</A>
 <br>Helper function for eflux calculations
 <LI><A HREF="#MVN_STA_L2GEN">MVN_STA_L2GEN</A>
@@ -55,6 +66,9 @@ This page was created by the IDL library routine
 <br>reads in a start and end date, and reprocesses all of the days in
 <LI><A HREF="#MVN_STA_L2SCPOT">MVN_STA_L2SCPOT</A>
 <br>Wrapper for mvn_sta_scpot_load that insures that c0 and c6 data have
+<LI><A HREF="#MVN_STA_SETUP_IV1PROCESS">MVN_STA_SETUP_IV1PROCESS</A>
+<LI><A HREF="#MVN_STA_SETUP_IV2PROCESS">MVN_STA_SETUP_IV2PROCESS</A>
+<LI><A HREF="#MVN_STA_SETUP_IV3PROCESS">MVN_STA_SETUP_IV3PROCESS</A>
 <LI><A HREF="#MVN_STA_SETUP_REPROCESS">MVN_STA_SETUP_REPROCESS</A>
 <LI><A HREF="#RERUN_STA_L2GEN">RERUN_STA_L2GEN</A>
 <br>Designed to run from a cronjob, after the original L2 processing,
@@ -101,12 +115,13 @@ KEYWORDS:
                 processed, the deault is 30. This is a fail-safe to
                 avoid mass reprocessing of data, if a bunch of file
                 ctime values are inadvertently changed. If more files
-                than this limit are tried, an error email will be sent.
+                than this limit are tried, an error email will be
+                sent.
 HISTORY:
 Hacked from thm_all_l1l2_gen, 17-Apr-2014, jmm
  $LastChangedBy: jimm $
- $LastChangedDate: 2020-01-24 09:13:20 -0800 (Fri, 24 Jan 2020) $
- $LastChangedRevision: 28228 $
+ $LastChangedDate: 2020-08-18 09:53:10 -0700 (Tue, 18 Aug 2020) $
+ $LastChangedRevision: 29040 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_call_sta_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_call_sta_l2gen.pro">projects/maven/sta/l2util/mvn_call_sta_l2gen.pro</A>)</STRONG><P>
@@ -115,7 +130,7 @@ Hacked from thm_all_l1l2_gen, 17-Apr-2014, jmm
 <A NAME="MVN_CALL_STA_L2L2">
 <H2>MVN_CALL_STA_L2L2</H2></A>
 <A HREF="#MVN_CALL_STA_L2GEN">[Previous Routine]</A>
-<A HREF="#MVN_STA_CMN_2A_L2GEN.PRO">[Next Routine]</A>
+<A HREF="#MVN_STA_BKG_L2FILE_SAVE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -140,9 +155,45 @@ Hacked from mvn_call_sta_l2gen, 2016-10-18, jmm, jimm@ssl.berkeley.edu
 <STRONG>(See <A href="l2util/mvn_call_sta_l2l2.pro">projects/maven/sta/l2util/mvn_call_sta_l2l2.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_BKG_L2FILE_SAVE">
+<H2>MVN_STA_BKG_L2FILE_SAVE</H2></A>
+<A HREF="#MVN_CALL_STA_L2L2">[Previous Routine]</A>
+<A HREF="#MVN_STA_CMN_2A_L2GEN.PRO">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ mvn_sta_bkg_l2file_save
+PURPOSE:
+ saves an STA L2 background cdf, overwrites old versions, no revisions
+ or md5 sums or links, just the file
+CALLING SEQUENCE:
+ mvn_sta_bkg_l2file_save, otp_struct, fullfile0, no_compression =
+                          no_compression, iv_level=iv_level
+INPUT:
+ otp_struct = the structure to output in CDF_LOAD_VARS format.
+ fullfile0 = the full-path filename for the revisionless cdf file
+OUTPUT:
+ No explicit output, the revisioned file is written, an md5 sum file
+ is written in the same directory, and the revisionless file is
+ linked to the revsioned file 
+KEYWORDS:
+ no_compression = if set, skip the compression step
+ temp_dir = if set, output files into subdirectories of this dir,
+            then move to final destination. The default is
+            '/mydisks/home/maven/', don't forget the slash
+HISTORY:
+ 22-jul-2014, jmm, jimm@ssl.berkeley.edu
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2020-08-25 10:49:37 -0700 (Tue, 25 Aug 2020) $
+ $LastChangedRevision: 29076 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_bkg_l2file_save.pro $
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_bkg_l2file_save.pro">projects/maven/sta/l2util/mvn_sta_bkg_l2file_save.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_CMN_2A_L2GEN.PRO">
 <H2>MVN_STA_CMN_2A_L2GEN.PRO</H2></A>
-<A HREF="#MVN_CALL_STA_L2L2">[Previous Routine]</A>
+<A HREF="#MVN_STA_BKG_L2FILE_SAVE">[Previous Routine]</A>
 <A HREF="#MVN_STA_CMN_CONCAT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -481,7 +532,7 @@ HISTORY:
 <A NAME="MVN_STA_CMN_L2FILE_SAVE">
 <H2>MVN_STA_CMN_L2FILE_SAVE</H2></A>
 <A HREF="#MVN_STA_CMN_DB_L2GEN.PRO">[Previous Routine]</A>
-<A HREF="#MVN_STA_CMN_L2GEN.PRO">[Next Routine]</A>
+<A HREF="#MVN_STA_CMN_L2GEN.PRO[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -492,7 +543,8 @@ PURPOSE:
  link to the revisioned file with no revision number, andan md5 sum
  for the uncompressed file. Also deletes old versions.
 CALLING SEQUENCE:
- mvn_sta_cmn_l2file_save, otp_struct, fullfile0, no_compression = no_compression
+ mvn_sta_cmn_l2file_save, otp_struct, fullfile0, no_compression =
+                          no_compression, iv1_process=iv1_Process
 INPUT:
  otp_struct = the structure to output in CDF_LOAD_VARS format.
  fullfile0 = the full-path filename for the revisionless cdf file
@@ -507,17 +559,114 @@ KEYWORDS:
             '/mydisks/home/maven/', don't forget the slash
 HISTORY:
  22-jul-2014, jmm, jimm@ssl.berkeley.edu
- $LastChangedBy: muser $
- $LastChangedDate: 2019-11-02 17:17:47 -0700 (Sat, 02 Nov 2019) $
- $LastChangedRevision: 27969 $
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2020-08-18 09:53:10 -0700 (Tue, 18 Aug 2020) $
+ $LastChangedRevision: 29040 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2file_save.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_cmn_l2file_save.pro">projects/maven/sta/l2util/mvn_sta_cmn_l2file_save.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="MVN_STA_CMN_L2GEN.PRO">
-<H2>MVN_STA_CMN_L2GEN.PRO</H2></A>
+<A NAME="MVN_STA_CMN_L2GEN.PRO[1]">
+<H2>MVN_STA_CMN_L2GEN.PRO[1]</H2></A>
 <A HREF="#MVN_STA_CMN_L2FILE_SAVE">[Previous Routine]</A>
+<A HREF="#MVN_STA_CMN_L2GEN.PRO[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ mvn_sta_cmn_l2gen.pro
+PURPOSE:
+ turn a MAVEN STA common block into a L2 CDF, but only including the
+ background array.
+CALLING SEQUENCE:
+ mvn_sta_cmn_l2gen, cmn_dat
+INPUT:
+ cmn_dat = a structrue with the data:
+ tags are:   
+   PROJECT_NAME    STRING    'MAVEN'
+   SPACECRAFT      STRING    '0'
+   DATA_NAME       STRING    'C6 Energy-Mass'
+   APID            STRING    'C6'
+   UNITS_NAME      STRING    'counts'
+   UNITS_PROCEDURE STRING    'mvn_sta_convert_units'
+   VALID           INT       Array[21600]
+   QUALITY_FLAG    INT       Array[21600]
+   TIME            DOUBLE    Array[21600]
+   END_TIME        DOUBLE    Array[21600]
+   DELTA_T         DOUBLE    Array[21600]
+   INTEG_T         DOUBLE    Array[21600]
+   EPROM_VER       INT       Array[21600]
+   HEADER          LONG      Array[21600]
+   MODE            INT       Array[21600]
+   RATE            INT       Array[21600]
+   SWP_IND         INT       Array[21600]
+   MLUT_IND        INT       Array[21600]
+   EFF_IND         INT       Array[21600]
+   ATT_IND         INT       Array[21600]
+   NENERGY         INT             32
+   ENERGY          FLOAT     Array[9, 32, 64]
+   DENERGY         FLOAT     Array[9, 32, 64]
+   NBINS           INT              1
+   BINS            INT       Array[1]
+   NDEF            INT              1
+   NANODE          INT              1
+   THETA           FLOAT           0.00000
+   DTHETA          FLOAT           90.0000
+   PHI             FLOAT           0.00000
+   DPHI            FLOAT           360.000
+   DOMEGA          FLOAT           8.88577
+   GF              FLOAT     Array[9, 32, 4]
+   EFF             FLOAT     Array[128, 32, 64]
+   GEOM_FACTOR     FLOAT       0.000195673
+   DEAD1           FLOAT           420.000
+   DEAD2           FLOAT           660.000
+   DEAD3           FLOAT           460.000
+   NMASS           INT             64
+   MASS            FLOAT         0.0104389
+   MASS_ARR        FLOAT     Array[9, 32, 64]
+   TOF_ARR         FLOAT     Array[5, 32, 64]
+   TWT_ARR         FLOAT     Array[5, 32, 64]
+   CHARGE          FLOAT           1.00000
+   SC_POT          FLOAT     Array[21600]
+   MAGF            FLOAT     Array[21600, 3]
+   QUAT_SC         FLOAT     Array[21600, 4]
+   QUAT_MSO        FLOAT     Array[21600, 4]
+   BINS_SC         LONG      Array[21600]
+   POS_SC_MSO      FLOAT     Array[21600, 3]
+   BKG             FLOAT     Array[21600, 32, 64]
+   DEAD            FLOAT     Array[21600, 32, 64]
+   DATA            DOUBLE    Array[21600, 32, 64]
+ All of this (not DEAD or DATA or EFLUX) 
+ has to go into the CDF, also Epoch, tt200, MET time
+ variables; some of the names are changed to titles given in the SIS
+ Data is changed from double to float prior to output
+ IV_LEVEL for background is added
+KEYWORDS:
+ otp_struct = this is the structure that is passed into
+              cdf_save_vars to creat the file
+ directory = Set this keyword to direct the output into this
+             directory; the default is to populate the MAVEN STA
+             database. /disks/data/maven/pfp/sta/l2
+ no_compression = if set, do not compress the CDF file
+ iv_level = New for 2020-08-24, setting this keyword runs a
+            special L2 process that creates 'iv'+iv_level files, using a
+            new background calculation. There will be multiple iv
+            levels, and only the background values are saved in the
+            file. THIS KEYWORD IS REQUIRED
+HISTORY:
+ 24-aug-2020, jmm, jimm@ssl.berkeley.edu, hacked from
+ mvn_sta_cmn_l2gen.pro for cdf's with only the background calculation
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2020-12-17 09:26:42 -0800 (Thu, 17 Dec 2020) $
+ $LastChangedRevision: 29534 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_bkg_l2gen.pro $
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_bkg_l2gen.pro">projects/maven/sta/l2util/mvn_sta_bkg_l2gen.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_CMN_L2GEN.PRO[2]">
+<H2>MVN_STA_CMN_L2GEN.PRO[2]</H2></A>
+<A HREF="#MVN_STA_CMN_L2GEN.PRO[1]">[Previous Routine]</A>
 <A HREF="#MVN_STA_CMN_L2READ">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -593,6 +742,10 @@ KEYWORDS:
              directory; the default is to populate the MAVEN STA
              database. /disks/data/maven/pfp/sta/l2
  no_compression = if set, do not compress the CDF file
+ iv_level = New for 2020-08-24, setting this keyword runs a
+            special L2 process that creates 'iv'+iv_level files, using a
+            new background calculation. There will be multiple iv
+            levels, and only the background values are saved in the file
 HISTORY:
  28-apr-2014, jmm, jimm@ssl.berkeley.edu
  jun-2014, jmm added compression - no_compression
@@ -606,9 +759,10 @@ HISTORY:
  1-nov-2014, jmm, PDS compliance
  6-nov-2014, jmm, Corrects clock drift 
  22-dec-2014, jmm, added eprom_ver and header
- $LastChangedBy: muser $
- $LastChangedDate: 2019-11-02 17:17:47 -0700 (Sat, 02 Nov 2019) $
- $LastChangedRevision: 27969 $
+ 25-aug-2020, jmm, Added iv_level
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2020-12-17 09:26:42 -0800 (Thu, 17 Dec 2020) $
+ $LastChangedRevision: 29534 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_cmn_l2gen.pro">projects/maven/sta/l2util/mvn_sta_cmn_l2gen.pro</A>)</STRONG><P>
@@ -616,7 +770,7 @@ HISTORY:
  
 <A NAME="MVN_STA_CMN_L2READ">
 <H2>MVN_STA_CMN_L2READ</H2></A>
-<A HREF="#MVN_STA_CMN_L2GEN.PRO">[Previous Routine]</A>
+<A HREF="#MVN_STA_CMN_L2GEN.PRO[2]">[Previous Routine]</A>
 <A HREF="#MVN_STA_CMN_L2VARARR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -686,11 +840,15 @@ KEYWORDS:
           record range to input.
  cdf_info = the full structure from CDF_LOAD_VARS2, not everything in
             here ends up in the structure for the common blocks
+ bkg_sub = if set, then load a background file, for the same apid
+            and date, put background level into structure, and
+            recalculate eflux for that apid
+ iv_level = level of the background file, default is iv_level = 1
 HISTORY:
  2014-05-12, jmm, jimm@ssl.berkeley.edu
- $LastChangedBy: muser $
- $LastChangedDate: 2019-12-18 12:32:32 -0800 (Wed, 18 Dec 2019) $
- $LastChangedRevision: 28122 $
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2020-11-23 10:08:50 -0800 (Mon, 23 Nov 2020) $
+ $LastChangedRevision: 29370 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2read.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_cmn_l2read.pro">projects/maven/sta/l2util/mvn_sta_cmn_l2read.pro</A>)</STRONG><P>
@@ -730,7 +888,7 @@ HISTORY:
 <A NAME="MVN_STA_CMN_TCLIP">
 <H2>MVN_STA_CMN_TCLIP</H2></A>
 <A HREF="#MVN_STA_CMN_L2VARARR">[Previous Routine]</A>
-<A HREF="#MVN_STA_L2EFLUX">[Next Routine]</A>
+<A HREF="#MVN_STA_IV1_1DAY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -804,9 +962,98 @@ HISTORY:
 <STRONG>(See <A href="l2util/mvn_sta_cmn_tclip.pro">projects/maven/sta/l2util/mvn_sta_cmn_tclip.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_IV1_1DAY">
+<H2>MVN_STA_IV1_1DAY</H2></A>
+<A HREF="#MVN_STA_CMN_TCLIP">[Previous Routine]</A>
+<A HREF="#MVN_STA_IV2_1DAY">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+mvn_sta_iv1_1day
+PURPOSE:
+reads in a start and end date, and reprocesses all of the days in
+the interval. This is a main program, designed to be called from a
+shell script. Processes 1 day at a time
+CALLING SEQUENCE:
+ .run mvn_sta_iv1_1day
+INPUT:
+start_time, end_time are input from files
+mvn_sta_iv1_1day_start_time.txt and
+mvn_sta_iv1_1day_end_time.txt.
+OUTPUT:
+ Temporary Maven STA L2 files, round 1 of background creation
+HISTORY:
+ 2014-11-05, jmm, jimm@ssl.berkeley.edu
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_iv1_1day.pro">projects/maven/sta/l2util/mvn_sta_iv1_1day.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_IV2_1DAY">
+<H2>MVN_STA_IV2_1DAY</H2></A>
+<A HREF="#MVN_STA_IV1_1DAY">[Previous Routine]</A>
+<A HREF="#MVN_STA_IV3_1DAY">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+mvn_sta_iv2_1day
+PURPOSE:
+reads in a start and end date, and reprocesses all of the days in
+the interval. This is a main program, designed to be called from a
+shell script. Processes 1 day at a time
+CALLING SEQUENCE:
+ .run mvn_sta_iv2_1day
+INPUT:
+start_time, end_time are input from files
+mvn_sta_iv2_1day_start_time.txt and
+mvn_sta_iv2_1day_end_time.txt.
+OUTPUT:
+ Temporary Maven STA L2 files, round 1 of background creation
+HISTORY:
+ 2020-10-19, jmm, jimm@ssl.berkeley.edu
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_iv2_1day.pro">projects/maven/sta/l2util/mvn_sta_iv2_1day.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_IV3_1DAY">
+<H2>MVN_STA_IV3_1DAY</H2></A>
+<A HREF="#MVN_STA_IV2_1DAY">[Previous Routine]</A>
+<A HREF="#MVN_STA_L2DAT_STRUCT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+mvn_sta_iv3_1day
+PURPOSE:
+reads in a start and end date, and reprocesses all of the days in
+the interval. This is a main program, designed to be called from a
+shell script. Processes 1 day at a time
+CALLING SEQUENCE:
+ .run mvn_sta_iv3_1day
+INPUT:
+start_time, end_time are input from files
+mvn_sta_iv3_1day_start_time.txt and
+mvn_sta_iv3_1day_end_time.txt.
+OUTPUT:
+ Temporary Maven STA L2 files, round 1 of background creation
+HISTORY:
+ 2020-10-19, jmm, jimm@ssl.berkeley.edu
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_iv3_1day.pro">projects/maven/sta/l2util/mvn_sta_iv3_1day.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_L2DAT_STRUCT">
+<H2>MVN_STA_L2DAT_STRUCT</H2></A>
+<A HREF="#MVN_STA_IV3_1DAY">[Previous Routine]</A>
+<A HREF="#MVN_STA_L2EFLUX">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Returns a single static data structure from the common blocks
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_l2dat_struct.pro">projects/maven/sta/l2util/mvn_sta_l2dat_struct.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_L2EFLUX">
 <H2>MVN_STA_L2EFLUX</H2></A>
-<A HREF="#MVN_STA_CMN_TCLIP">[Previous Routine]</A>
+<A HREF="#MVN_STA_L2DAT_STRUCT">[Previous Routine]</A>
 <A HREF="#MVN_STA_L2GEN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -822,8 +1069,8 @@ HISTORY:
  hacked from mvn_sta_cmn_l2gen, 2016-02-26, jmm,
  jimm@ssl.berkeley.edu
  $LastChangedBy: jimm $
- $LastChangedDate: 2017-01-10 13:04:56 -0800 (Tue, 10 Jan 2017) $
- $LastChangedRevision: 22567 $
+ $LastChangedDate: 2020-12-17 09:32:27 -0800 (Thu, 17 Dec 2020) $
+ $LastChangedRevision: 29537 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2eflux.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_l2eflux.pro">projects/maven/sta/l2util/mvn_sta_l2eflux.pro</A>)</STRONG><P>
@@ -854,11 +1101,15 @@ KEYWORDS:
  skip_bins = for L2-L2 processing, skip_bins skips the
              mvn_sta_sc_bins_load program which takes hours
              for a full day's data
+ iv_level = New for 2020-08-04, setting this keyword runs a
+            special L2 process that creates 'iv'+iv_level files, using a
+            new background calculation. There will be multiple iv levels
+            and only the background values are saved in the file
 HISTORY:
  2014-05-14, jmm, jimm@ssl.berkeley.edu
  $LastChangedBy: jimm $
- $LastChangedDate: 2019-11-12 15:38:14 -0800 (Tue, 12 Nov 2019) $
- $LastChangedRevision: 28011 $
+ $LastChangedDate: 2020-12-17 09:28:01 -0800 (Thu, 17 Dec 2020) $
+ $LastChangedRevision: 29535 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_l2gen.pro">projects/maven/sta/l2util/mvn_sta_l2gen.pro</A>)</STRONG><P>
@@ -949,7 +1200,7 @@ HISTORY:
 <A NAME="MVN_STA_L2_FILEREVISION">
 <H2>MVN_STA_L2_FILEREVISION</H2></A>
 <A HREF="#MVN_STA_L2SCPOT">[Previous Routine]</A>
-<A HREF="#MVN_STA_SETUP_REPROCESS">[Next Routine]</A>
+<A HREF="#MVN_STA_SETUP_IV1PROCESS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -976,9 +1227,81 @@ HISTORY:
 <STRONG>(See <A href="l2util/mvn_sta_l2_filerevision.pro">projects/maven/sta/l2util/mvn_sta_l2_filerevision.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_SETUP_IV1PROCESS">
+<H2>MVN_STA_SETUP_IV1PROCESS</H2></A>
+<A HREF="#MVN_STA_L2_FILEREVISION">[Previous Routine]</A>
+<A HREF="#MVN_STA_SETUP_IV2PROCESS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+time range equally. Run as muser
+sample crontab command
+# STA L2 Reprocess, 2015-08-31
+# 4,8,14,18,24,28,34,38,44,48,54,58 * * * * /bin/csh
+/home/muser/export_socware/idl_socware/projects/maven/l2gen/mvn_l2gen_multiprocess_b.csh
+mvn_sta_l2gen_1day 2 0 /mydisks/home/maven sta_l2_reprocess
+&gt;/dev/null 2&gt;&amp;1
+# for l2l2
+# 4,8,14,18,24,28,34,38,44,48,54,58 * * * * /bin/csh /home/muser/export_socware/idl_socware/projects/maven/l2gen/mvn_l2gen_multiprocess_b.csh mvn_sta_l2l2_1day 2 0 /mydisks/home/maven sta_l2l2_reprocess &gt;/dev/null 2&gt;&amp;1
+#
+
+ro mvn_sta_setup_iv1process, start_date = start_date, $ ;default is 2014-10-06
+                             end_date = end_date, $     ;default is now
+                             nproc = nproc             ;default is 3
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_setup_iv1process.pro">projects/maven/sta/l2util/mvn_sta_setup_iv1process.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_SETUP_IV2PROCESS">
+<H2>MVN_STA_SETUP_IV2PROCESS</H2></A>
+<A HREF="#MVN_STA_SETUP_IV1PROCESS">[Previous Routine]</A>
+<A HREF="#MVN_STA_SETUP_IV3PROCESS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+time range equally. Run as muser
+sample crontab command
+# STA L2 Reprocess, 2015-08-31
+# 4,8,14,18,24,28,34,38,44,48,54,58 * * * * /bin/csh
+/home/muser/export_socware/idl_socware/projects/maven/l2gen/mvn_l2gen_multiprocess_b.csh
+mvn_sta_l2gen_1day 2 0 /mydisks/home/maven sta_l2_reprocess
+&gt;/dev/null 2&gt;&amp;1
+# for l2l2
+# 4,8,14,18,24,28,34,38,44,48,54,58 * * * * /bin/csh /home/muser/export_socware/idl_socware/projects/maven/l2gen/mvn_l2gen_multiprocess_b.csh mvn_sta_l2l2_1day 2 0 /mydisks/home/maven sta_l2l2_reprocess &gt;/dev/null 2&gt;&amp;1
+#
+
+ro mvn_sta_setup_iv2process, start_date = start_date, $ ;default is 2014-10-06
+                             end_date = end_date, $     ;default is now
+                             nproc = nproc             ;default is 3
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_setup_iv2process.pro">projects/maven/sta/l2util/mvn_sta_setup_iv2process.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_SETUP_IV3PROCESS">
+<H2>MVN_STA_SETUP_IV3PROCESS</H2></A>
+<A HREF="#MVN_STA_SETUP_IV2PROCESS">[Previous Routine]</A>
+<A HREF="#MVN_STA_SETUP_REPROCESS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+time range equally. Run as muser
+sample crontab command
+# STA L2 Reprocess, 2015-08-31
+# 4,8,14,18,24,28,34,38,44,48,54,58 * * * * /bin/csh
+/home/muser/export_socware/idl_socware/projects/maven/l2gen/mvn_l2gen_multiprocess_b.csh
+mvn_sta_l2gen_1day 2 0 /mydisks/home/maven sta_l2_reprocess
+&gt;/dev/null 2&gt;&amp;1
+# for l2l2
+# 4,8,14,18,24,28,34,38,44,48,54,58 * * * * /bin/csh /home/muser/export_socware/idl_socware/projects/maven/l2gen/mvn_l2gen_multiprocess_b.csh mvn_sta_l2l2_1day 2 0 /mydisks/home/maven sta_l2l2_reprocess &gt;/dev/null 2&gt;&amp;1
+#
+
+ro mvn_sta_setup_iv3process, start_date = start_date, $ ;default is 2014-10-06
+                             end_date = end_date, $     ;default is now
+                             nproc = nproc             ;default is 3
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_setup_iv3process.pro">projects/maven/sta/l2util/mvn_sta_setup_iv3process.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_SETUP_REPROCESS">
 <H2>MVN_STA_SETUP_REPROCESS</H2></A>
-<A HREF="#MVN_STA_L2_FILEREVISION">[Previous Routine]</A>
+<A HREF="#MVN_STA_SETUP_IV3PROCESS">[Previous Routine]</A>
 <A HREF="#RERUN_STA_L2GEN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

@@ -153,7 +153,7 @@ PRO timebar,t1,color=color,linestyle=linestyle,thick=thick,verbose=verbose,$
       tp = t[i] - tplot_vars.settings.time_offset
       tp = xp[0] + (tp-xr[0])/(xr[1]-xr[0]) * (xp[1]-xp[0])
       if tp ge xp[0] and tp le xp[1] then begin
-	plots,[tp,tp],yp,color=color[i],linestyle=linestyle[i],thick=thick[i],/normal
+	      plots,[tp,tp]  ,yp ,color=color[i],linestyle=linestyle[i],thick=thick[i],/normal
       endif else if keyword_set(verbose) then $
 	dprint, 'Time '+time_string(t[i])+' is out of trange.'
     endfor

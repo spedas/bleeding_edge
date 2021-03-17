@@ -29,7 +29,7 @@ FUNCTION sswhere_arr, arr1, arr2, notequal = notequal, _extra = _extra
 
    FOR j = 0l, n1-1 DO BEGIN
       ok = where(arr2 Eq arr1[j])
-      IF(ok(0) NE -1) THEN BEGIN
+      IF(ok[0] NE -1) THEN BEGIN
          in_arr2[j] = 1b
          not_in_arr2[j] = 0b
       ENDIF

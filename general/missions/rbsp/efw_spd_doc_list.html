@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -70,6 +70,8 @@ RBSP_EFW_GET_CAL_PARAMS (FUNCTION)</A>
 <LI><A HREF="#RBSP_EFW_INIT">RBSP_EFW_INIT</A>
 <LI><A HREF="#RBSP_EFW_READ_CONFIG">RBSP_EFW_READ_CONFIG</A>
 <br>Reads the rbsp_efw_config file
+<LI><A HREF="#RBSP_EMFISIS_REMOVE_PERIGEE_SPIKE[1]">
+RBSP_EMFISIS_REMOVE_PERIGEE_SPIKE[1]</A>
 <LI><A HREF="#RBSP_GET_EFW_DFB_CONFIG (FUNCTION)[1]">
 RBSP_GET_EFW_DFB_CONFIG (FUNCTION)[1]</A>
 <br>Decode the EFW DFB Config byte
@@ -90,7 +92,7 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <LI><A HREF="#RBSP_LOAD_EMFISIS_BURST_TIMES">RBSP_LOAD_EMFISIS_BURST_TIMES</A>
 <LI><A HREF="#RBSP_LOAD_MANEUVER_FILE">RBSP_LOAD_MANEUVER_FILE</A>
 <LI><A HREF="#RBSP_MGSE2GSE.">RBSP_MGSE2GSE.</A>
-<br>Convert vector in mGSE coord to GSE.
+<br>Convert vector in mGSE coord to GSE. ((Also see rbsp_gse2mgse.pro))
 <LI><A HREF="#RBSP_MSC_RESPONSE (FUNCTION)[1]">RBSP_MSC_RESPONSE (FUNCTION)[1]
 </A>
 <br>Calculate the transmittance of the search-coil magnetometer.
@@ -103,6 +105,7 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 <LI><A HREF="#RBSP_UVW_TO_GSE">RBSP_UVW_TO_GSE</A>
 <LI><A HREF="#RBSP_UVW_TO_MGSE">RBSP_UVW_TO_MGSE</A>
 <LI><A HREF="#RBSP_VECTOR_BANDPASS">RBSP_VECTOR_BANDPASS</A>
+<LI><A HREF="#SINTERPOL">SINTERPOL</A>
 <br>
 </UL><P>
 <HR>
@@ -1227,8 +1230,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 
  VERSION:
    $LastChangedBy: aaronbreneman $
-   $LastChangedDate: 2020-07-06 14:13:56 -0700 (Mon, 06 Jul 2020) $
-   $LastChangedRevision: 28855 $
+   $LastChangedDate: 2020-09-11 13:41:36 -0700 (Fri, 11 Sep 2020) $
+   $LastChangedRevision: 29145 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_efw_dsc_to_mgse.pro $
 
 </PRE><P>
@@ -1391,7 +1394,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="RBSP_EFW_READ_CONFIG">
 <H2>RBSP_EFW_READ_CONFIG</H2></A>
 <A HREF="#RBSP_EFW_INIT">[Previous Routine]</A>
-<A HREF="#RBSP_GET_EFW_DFB_CONFIG (FUNCTION)[1]">[Next Routine]</A>
+<A HREF="#RBSP_EMFISIS_REMOVE_PERIGEE_SPIKE[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -1417,9 +1420,20 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <STRONG>(See <A href="efw/rbsp_efw_read_config.pro">general/missions/rbsp/efw/rbsp_efw_read_config.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RBSP_EMFISIS_REMOVE_PERIGEE_SPIKE[1]">
+<H2>RBSP_EMFISIS_REMOVE_PERIGEE_SPIKE[1]</H2></A>
+<A HREF="#RBSP_EFW_READ_CONFIG">[Previous Routine]</A>
+<A HREF="#RBSP_GET_EFW_DFB_CONFIG (FUNCTION)[1]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Remove spikes around perigee due to mode switch.
+</PRE><P>
+<STRONG>(See <A href="efw/rbsp_emfisis_remove_perigee_spike.pro">general/missions/rbsp/efw/rbsp_emfisis_remove_perigee_spike.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RBSP_GET_EFW_DFB_CONFIG (FUNCTION)[1]">
 <H2>RBSP_GET_EFW_DFB_CONFIG (FUNCTION)[1]</H2></A>
-<A HREF="#RBSP_EFW_READ_CONFIG">[Previous Routine]</A>
+<A HREF="#RBSP_EMFISIS_REMOVE_PERIGEE_SPIKE[1]">[Previous Routine]</A>
 <A HREF="#RBSP_GSE2MGSE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1490,8 +1504,10 @@ Purpose:  Transforms from GSE to MGSE (modified GSE coord..defined below)
 Input : tname = the tplot variable with data in GSE coord [n,3]
 		 wgse = the w-antenna direction in GSE coord. This can either be a [3] element
 		   	    array or an [n,3] element array.
-		 Here's how to get wgse
-    rbsp_load_state,probe='a',datatype=['spinper','spinphase','mat_dsc','Lvec']
+		 Here's how to get wgse:
+    1) rbsp_efw_position_velocity_crib.pro
+		 2) rbsp_load_state,probe='a',datatype=['spinper','spinphase','mat_dsc','Lvec']
+		 Whichever way you choose, you'll get the direction from:
 	   get_data,rbspx+'_spinaxis_direction_gse',data=wsc_GSE
 	   wgse = wsc_gse.y
 
@@ -2132,17 +2148,17 @@ Notes:
 <PRE>
  TYPE:
    function.
- 
+
  NAME:
    rbsp_mgse2gse.
-   
+
  PURPOSE:
-   Convert vector in mGSE coord to GSE.
+   Convert vector in mGSE coord to GSE. ((Also see rbsp_gse2mgse.pro))
 
  PARAMETERS:
    tname, in, type = string or int, required.
        tplot variable name or number, data must be in [n,3].
-   
+
    wgse, in/out, type = [3] or [n,3], optional.
        The w-antenna direction in GSE.
        If set, keywords probe, no_spice_load has no effect.
@@ -2181,7 +2197,7 @@ Notes:
 
  NOTES:
    * wgse and x_mgse are the same, x_mgse = {sint*cosp, sint*sinp, cost}.
-   * v_gse = {vx_gse, vy_gse, vz_gse}, 
+   * v_gse = {vx_gse, vy_gse, vz_gse},
      v_mgse = {vx_mgse, vy_mgse, vz_mgse},
      gse-&gt;mgse, M1 = | sint*cosp, sint*sinp, cost |
                      | -sinp    , cosp     , 0    |
@@ -2191,10 +2207,10 @@ Notes:
  HISTORY:
    Sheng Tian, UMN 2013-09-18 (created)
 
- VERSION: 
+ VERSION:
    $LastChangedBy: aaronbreneman $
-   $LastChangedDate: 2013-12-02 13:09:33 -0800 (Mon, 02 Dec 2013) $
-   $LastChangedRevision: 13609 $
+   $LastChangedDate: 2020-09-21 18:19:11 -0700 (Mon, 21 Sep 2020) $
+   $LastChangedRevision: 29176 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_mgse2gse.pro $
 </PRE><P>
 <STRONG>(See <A href="efw/rbsp_mgse2gse.pro">general/missions/rbsp/efw/rbsp_mgse2gse.pro</A>)</STRONG><P>
@@ -2522,8 +2538,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 
  VERSION:
    $LastChangedBy: aaronbreneman $
-   $LastChangedDate: 2019-08-14 14:21:10 -0700 (Wed, 14 Aug 2019) $
-   $LastChangedRevision: 27603 $
+   $LastChangedDate: 2020-09-21 18:16:09 -0700 (Mon, 21 Sep 2020) $
+   $LastChangedRevision: 29174 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_uvw_to_dsc.pro $
 
 </PRE><P>
@@ -2599,7 +2615,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
  INPUT:
 	probe	- either 'a' or 'b'
 	tvar	- TPLOT variable containing 3-component UVW data
-			(either string or integer tplot variable id) 
+			(either string or integer tplot variable id)
 
  OUTPUT: N/A
 	Rotated timeseries is saved in a new tplot var with _mgse suffix..
@@ -2613,10 +2629,10 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 	nointerp=2 - use SPICE to calculate spin axis pointing at each timestep
 				instead of interpolating from 5m cadence pointing
 				(this may be useful during maneuvers)
-	/no_spice_load - skip loading/unloading of SPICE kernels
-		NOTE: This assumes spice kernels have been manually loaded using:
-			rbsp_load_spice_predict ; (optional)
-			rbsp_load_spice_kernels ; (required)
+	_extra --&gt; useful keywords are:
+						'no_spice_load'
+						'no_rbsp_efw_init'
+
 	/debug - prints debugging info
 
  NOTES:
@@ -2624,7 +2640,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 	direction at a 5 minute cadence, and the despinning matrix at a 1s cadence.
 	These quantities are interpolated (spin axis linearly, and despinning matrix
 	via quaternion interpolation) to the sample times of the input time series.
-	
+
 	If the input time series is sampled at &lt;= 1S/s, the routine will calculate
 	the SPICE pointing and rotation directly at each time stamp rather than using
 	the interpolation described above.
@@ -2648,8 +2664,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 
  VERSION:
    $LastChangedBy: aaronbreneman $
-   $LastChangedDate: 2015-07-10 07:54:25 -0700 (Fri, 10 Jul 2015) $
-   $LastChangedRevision: 18072 $
+   $LastChangedDate: 2020-09-21 18:15:56 -0700 (Mon, 21 Sep 2020) $
+   $LastChangedRevision: 29173 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_uvw_to_mgse.pro $
 
 </PRE><P>
@@ -2659,6 +2675,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="RBSP_VECTOR_BANDPASS">
 <H2>RBSP_VECTOR_BANDPASS</H2></A>
 <A HREF="#RBSP_UVW_TO_MGSE">[Previous Routine]</A>
+<A HREF="#SINTERPOL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 *****************************************************************************************
@@ -2723,5 +2740,33 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 *****************************************************************************************
 </PRE><P>
 <STRONG>(See <A href="efw/rbsp_vector_bandpass.pro">general/missions/rbsp/efw/rbsp_vector_bandpass.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SINTERPOL">
+<H2>SINTERPOL</H2></A>
+<A HREF="#RBSP_VECTOR_BANDPASS">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Type: function.
+ Purpose: Interpolate given data of at abscissa x to new x.
+ Parameters:
+   data, in, [*], req. For scalar array, dimension is [n0].
+     For m dimension vector array, dimension is [m, n0] or [n0, m].
+   oldabs, in, [n0], req. Old abscissa.
+   newabs, in, [n1], req. New abscissa.
+ Keywords:
+   _extra = extra, in, struct, opt. Keywords for interpol, see idl help.
+     /LSQuadratic, /NaN, /Quatradic, /Spline.
+ Return: [*]. If data is array of [n0], then return [n1];
+     if data is array of [m, n0], then return, [m, n1].
+     if data is array of [n0, m], then return, [n1, m].
+ Notes: Do not work if given data has more than 2 dimensions. Do NOT set /NaN 
+   automatically for interpol().
+ History:
+   2011-07-20, Sheng Tian, create.
+   2011-08-16, Sheng Tian, add throw exterpolate.
+   2012-09-17, Sheng Tian, auto deal with dims.
+</PRE><P>
+<STRONG>(See <A href="efw/sinterpol.pro">general/missions/rbsp/efw/sinterpol.pro</A>)</STRONG><P>
 <HR>
  

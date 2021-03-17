@@ -15,7 +15,7 @@
 ;-
 
 pro ace_epm_load,pathnames=pathnames,trange=trange,files=files,download_only=download_only, $
-        source=source,verbose=verbose,k0=k0,h1=h1,no_download=no_download, no_update=no_update
+        source=source,verbose=verbose,k0=k0,h1=h1,h2=h2,h3=h3,k1=k1,no_download=no_download, no_update=no_update
 
 istp_init
 if not keyword_set(source) then source = !istp
@@ -29,9 +29,21 @@ dprint,'Loading ACE EPAM files at ',time_string(/local,tstart)
   pathname = 'ace/epam/level_2_cdaweb/epm_k0/YYYY/ac_k0_epm_YYYYMMDD_v??.cdf'  
   prefix = 'ACE_EPM_K0_'
 ;endif
+if keyword_set(k1) then begin
+  pathname = 'ace/epam/level_2_cdaweb/epm_k1/YYYY/ac_k1_epm_YYYYMMDD_v??.cdf
+  prefix = 'ACE_EPM_K1_'
+endif
 if keyword_set(h1) then begin
   pathname = 'ace/epam/level_2_cdaweb/epm_h1/YYYY/ac_h1_epm_YYYYMMDD_v??.cdf
   prefix = 'ACE_EPM_H1_'
+endif
+if keyword_set(h2) then begin
+  pathname = 'ace/epam/level_2_cdaweb/epm_h2/YYYY/ac_h2_epm_YYYYMMDD_v??.cdf
+  prefix = 'ACE_EPM_H2_'
+endif
+if keyword_set(h3) then begin
+  pathname = 'ace/epam/level_2_cdaweb/epm_h3/YYYY/ac_h3_epm_YYYYMMDD_v??.cdf
+  prefix = 'ACE_EPM_H3_'
 endif
 
 tr = timerange(trange)

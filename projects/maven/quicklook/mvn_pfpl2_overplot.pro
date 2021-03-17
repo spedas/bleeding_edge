@@ -29,8 +29,8 @@
 ; Hacked from thm_over_shell, 2013-05-12, jmm, jimm@ssl.berkeley.edu
 ; CHanged to use thara's mvn_pl_pfp_tplot.pro, 2015-04-14, jmm
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-05-11 09:25:43 -0700 (Mon, 11 May 2020) $
-; $LastChangedRevision: 28679 $
+; $LastChangedDate: 2021-01-14 10:35:48 -0800 (Thu, 14 Jan 2021) $
+; $LastChangedRevision: 29599 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_pfpl2_overplot.pro $
 ;-
 Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
@@ -170,7 +170,7 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
 ;Change ztitle for mvn_sta_c6_m_twt
   options, 'mvn_sta_c6_m_twt', 'ztitle', 'EFLUX/TOFBIN'
   options, 'mvn_sta_c6_m_twt', 'zrange', [1.0e3, 1.0e8]
-  attitude_label = 'Attitude: orange = Sun point; blue = Earth point; green = Fly-Y; red = Fly-Z. '
+  attitude_label = 'Attitude: orange = Sun point; blue = Earth point; green = Fly-Y; red = Fly-Z; purple = Fly+Z.'
   options, 'mvn_att_bar', 'title', attitude_label
   options, 'mvn_att_bar', 'charsize', 0.5
 ;Set up varlist

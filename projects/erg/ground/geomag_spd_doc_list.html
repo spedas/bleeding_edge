@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -20,7 +20,7 @@ This page was created by the IDL library routine
 <UL>
 <H1>projects/erg/ground/geomag</H1>
 <LI><A HREF="#ERG_LOAD_GMAG_ISEE_FLUXGATE">ERG_LOAD_GMAG_ISEE_FLUXGATE</A>
-<br>To load the STEL fluxgate geomagnetic data from the STEL ERG-SC site
+<br>To load the STEL fluxgate geomagnetic data from the ISEE ERG-SC site
 <LI><A HREF="#ERG_LOAD_GMAG_ISEE_INDUCTION">ERG_LOAD_GMAG_ISEE_INDUCTION</A>
 <br>To load ISEE induction magnetometer data from the ERG-SC site
 <LI><A HREF="#ERG_LOAD_GMAG_MAGDAS_1SEC">ERG_LOAD_GMAG_MAGDAS_1SEC</A>
@@ -45,13 +45,13 @@ This page was created by the IDL library routine
 <A HREF="#ERG_LOAD_GMAG_ISEE_INDUCTION">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- PROCEDURE: erg_load_gmag_stel_fluxgate
+ PROCEDURE: erg_load_gmag_isee_fluxgate
 
  PURPOSE:
-   To load the STEL fluxgate geomagnetic data from the STEL ERG-SC site
+   To load the STEL fluxgate geomagnetic data from the ISEE ERG-SC site
 
  KEYWORDS:
-   site  = Observatory name, example, erg_load_gmag_stel_fluxgate, site='msr',
+   site  = Observatory name, example, erg_load_gmag_isee_fluxgate, site='msr',
            the default is 'all', i.e., load all available stations.
            This can be an array of strings, e.g., ['msr', 'kag']
            or a single string delimited by spaces, e.g., 'msr kag'.
@@ -59,7 +59,7 @@ This page was created by the IDL library routine
               msr rik kag ktb
            Sites for 1 min/h data:
               msr rik kag ktb mdm tew
-   datatype = Time resolution. '1sec' for 1 sec', '1min' for 1 min, and '1h' for 1 h.
+   datatype = Time resolution. '64hz' for 64 Hz', '1sec' for 1 sec', '1min' for 1 min, and '1h' for 1 h.
               The default is 'all'.  If you need two of them, set to 'all'.
    /downloadonly, if set, then only download the data, do not load it into variables.
    /no_server, use only files which are online locally.
@@ -68,7 +68,7 @@ This page was created by the IDL library routine
    /timeclip, if set, then data are clipped to the time range set by timespan
 
  EXAMPLE:
-   erg_load_gmag_stel_fluxgate, site='msr kag', datatype='1min', $
+   erg_load_gmag_isee_fluxgate, site='msr kag', datatype='1min', $
        trange=['2003-11-20/00:00:00','2003-11-21/00:00:00']
 
  NOTE: See the rules of the road.
@@ -83,9 +83,13 @@ This page was created by the IDL library routine
        2017-07-07: Satoshi Kurita, ISEE, Nagoya U.
                    1. Use spd_download instead of file_retrieve
                    2. renamed STEL to ISEE
+                   
+       2020-08-13: Atsuki Shinbori, ISEE, Nagoya U.
+                   1. Add the lcl station to the list of a site_code_all variable.
+                   2. Add '64hz' to the datatype for donwloading the lcl 64hz CDF data.
 
-   $LastChangedDate: 2019-03-17 21:51:57 -0700 (Sun, 17 Mar 2019) $
-   $LastChangedRevision: 26838 $
+   $LastChangedDate: 2020-12-08 06:04:52 -0800 (Tue, 08 Dec 2020) $
+   $LastChangedRevision: 29445 $
 </PRE><P>
 <STRONG>(See <A href="geomag/erg_load_gmag_isee_fluxgate.pro">projects/erg/ground/geomag/erg_load_gmag_isee_fluxgate.pro</A>)</STRONG><P>
 <HR>
@@ -132,8 +136,8 @@ This page was created by the IDL library routine
                    1. New stations (GAK, KAP, ZGN) are included
                    2. Use spd_download instead of file_retrieve
 
- $LastChangedDate: 2019-10-23 14:19:14 -0700 (Wed, 23 Oct 2019) $
- $LastChangedRevision: 27922 $
+ $LastChangedDate: 2020-12-08 06:04:52 -0800 (Tue, 08 Dec 2020) $
+ $LastChangedRevision: 29445 $
 
 </PRE><P>
 <STRONG>(See <A href="geomag/erg_load_gmag_isee_induction.pro">projects/erg/ground/geomag/erg_load_gmag_isee_induction.pro</A>)</STRONG><P>

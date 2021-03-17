@@ -15,8 +15,8 @@
 ; HISTORY:
 ; VERSION:
 ;  $LastChangedBy: ali $
-;  $LastChangedDate: 2019-03-01 19:04:44 -0800 (Fri, 01 Mar 2019) $
-;  $LastChangedRevision: 26742 $
+;  $LastChangedDate: 2021-02-17 14:55:39 -0800 (Wed, 17 Feb 2021) $
+;  $LastChangedRevision: 29664 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/euv/mvn_euv_l0_load.pro $
 ;CREATED BY:  ali 20160830
 ;FILE: mvn_euv_l0_load.pro
@@ -27,17 +27,21 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
   tplotpath='maven/data/sci/euv/l0/tplot/YYYY/MM/mvn_euv_l0_YYYYMMDD.tplot'
 
   if keyword_set(generate) then begin
-    if keyword_set(init) then tstart=time_double(init) else tstart=time_double('2014-11-27')
-    trange0=[tstart,systime(1)]
+    if keyword_set(init) then trange0=[time_double('2014-10-06'),systime(1)] else trange0=timerange(trange)
     res=86400L
     daynum=round(trange0/res)
     nd=daynum[1]-daynum[0]
     trange=res*double(daynum); round to days
 
-    for i=0L,nd-1 do begin
+    for i=0L,nd do begin
       tr=trange[0]+[i,i+1]*res
       L0_file=mvn_pfp_file_retrieve(/l0,trange=tr,/daily_names,/valid_only,verbose=verbose) ;should be scalar
-      tp_file=mvn_pfp_file_retrieve(tplotpath,trange=tr[0],/daily_names,/create_dir,verbose=verbose)
+      tp_file=mvn_pfp_file_retrieve(tplotpath,trange=tr[0],/daily_names,verbose=verbose)
+
+      if tr[0] eq time_double('2014-11-26') || tr[0] eq time_double('2021-01-12') then begin
+        dprint,dlevel=2,'File contains no EUV data: '+l0_file
+        continue
+      endif
 
       if l0_file eq '' then continue
       L0_info=file_info(L0_file)
@@ -46,6 +50,7 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
       tp_timestamp=tp_info.mtime
 
       if L0_timestamp gt tp_timestamp then begin ;skip if tplot file does not need to be regenerated
+        if tr[0] lt systime(1)-100l*24l*3600l then message,'L0 files changed more than 100 days in the past!!! Exiting... '+l0_file
         dprint,'Generating EUV tplot file: '+tp_file
         mvn_euv_l0_load,trange=tr,/l0,/save
       endif
@@ -57,7 +62,7 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
   if keyword_set(save) then sav=1 else sav=0
   if keyword_set(l0) then l0s=1 else l0s=0
   if (l0s and sav) then l0sav=1 else l0sav=0
-  if ~l0s or l0sav then tp_files=mvn_pfp_file_retrieve(tplotpath,trange=trange,/daily_names,create_dir=l0sav,valid_only=~l0s,verbose=verbose)
+  if ~l0s or l0sav then tp_files=mvn_pfp_file_retrieve(tplotpath,trange=trange,/daily_names,valid_only=~l0s,verbose=verbose)
   if l0s then l0_files=mvn_pfp_file_retrieve(/l0,trange=trange,/daily_names,/valid_only,verbose=verbose) ;daily l0 files
   if l0s then files=l0_files else files=tp_files
 

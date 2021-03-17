@@ -10,7 +10,8 @@
 ;
 ;KEYWORDS:
 ;
-;    TRANGE:        Time range for MAVEN spacecraft spk and ck kernels.
+;    TRANGE:        Time range for MAVEN spacecraft spk and ck kernels.  If not set,
+;                   then the current timespan is used.
 ;
 ;    LIST:          After loading, list the kernels in use.
 ;
@@ -22,6 +23,14 @@
 ;                   accurate relative timing between MAG and SWEA.  If set, then
 ;                   FORCE is also set.
 ;
+;    NOCK:          Do not load any CK kernels.  This allows ephemeris calculations
+;                   where the spacecraft orientation does not matter.  Useful for
+;                   calculations spanning long time intervals.
+;
+;    BASEONLY:      Do not load any SPK or CK kernels.  The standard and frames 
+;                   kernels are loaded to allow geometry calculations spanning long
+;                   time intervals.
+;
 ;    STATUS:        Don't load anything; just give status.
 ;
 ;    INFO:          Returns an array of structures providing detailed information
@@ -31,14 +40,15 @@
 ;                   Default is current value of swe_verbose.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-04-18 05:43:01 -0700 (Thu, 18 Apr 2019) $
-; $LastChangedRevision: 27042 $
+; $LastChangedDate: 2020-12-15 13:02:57 -0800 (Tue, 15 Dec 2020) $
+; $LastChangedRevision: 29493 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_spice_init.pro $
 ;
 ;CREATED BY:    David L. Mitchell  09/18/13
 ;-
 pro mvn_swe_spice_init, trange=trange, list=list, force=force, sclk_ver=sclk_ver, $
-                        status=status, info=info, verbose=verbose
+                        nock=nock, baseonly=baseonly, status=status, info=info, $
+                        verbose=verbose
 
   @mvn_swe_com
 
@@ -47,6 +57,8 @@ pro mvn_swe_spice_init, trange=trange, list=list, force=force, sclk_ver=sclk_ver
 
   noguff = keyword_set(force)
   list = keyword_set(list)
+  nock = keyword_set(nock)
+  baseonly = keyword_set(baseonly)
   if (size(verbose,/type) eq 0) then mvn_swe_verbose, get=verbose
 
   swap_sclk = 0
@@ -104,7 +116,15 @@ pro mvn_swe_spice_init, trange=trange, list=list, force=force, sclk_ver=sclk_ver
   if (verbose gt 0) then print,' '
 
   cspice_kclear ; remove any previously loaded kernels
-  swe_kernels = mvn_spice_kernels(/all,trange=srange,verbose=(verbose-1))
+  if (baseonly) then begin
+    names = ['STD','SCK','FRM','IK']
+    swe_kernels = mvn_spice_kernels(names,trange=srange,verbose=(verbose-1))
+  endif else begin
+    if (nock) then begin
+      names = ['STD','SCK','FRM','IK','SPK']
+      swe_kernels = mvn_spice_kernels(names,trange=srange,verbose=(verbose-1))
+    endif else swe_kernels = mvn_spice_kernels(/all,trange=srange,verbose=(verbose-1))
+  endelse
   if (swap_sclk) then begin
     i = where(strmatch(swe_kernels,'*SCLK*',/fold_case) eq 1)
     if (i ge 0) then swe_kernels[i] = fname else swap_sclk = 0

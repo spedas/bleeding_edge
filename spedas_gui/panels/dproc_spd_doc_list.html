@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -149,21 +149,22 @@ OUTPUT:
   return values: anonymous structure containing input parameters for dproc routine
   {
    method: Array of flags specifying deflagging method
-           [repeat last value, interpolate(linear)]
+           [repeat last value, interpolate(linear), replace with value]
    opts: Array of flags determining extra options
          [set flag (default is 6.8792e28), set max gap size]
    flag: user-specified flag, will be removed in addition to NaNs &amp; infinity
    maxgap: maximum gap size, in # of points, to be removed
+   fillval: fill value, for replace option
    suffix: Suffix for new variable
    ok: Flag indicating success 
   }
 
 NOTES:
 
-$LastChangedBy:  $
-$LastChangedDate:  $
-$LastChangedRevision:  $
-$URL:  $
+$LastChangedBy: $
+$LastChangedDate: $
+$LastChangedRevision: $
+$URL: $
 </PRE><P>
 <STRONG>(See <A href="dproc/spd_ui_deflag_options.pro">spedas_gui/panels/dproc/spd_ui_deflag_options.pro</A>)</STRONG><P>
 <HR>

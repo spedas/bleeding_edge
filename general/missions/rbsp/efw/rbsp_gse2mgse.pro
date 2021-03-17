@@ -26,8 +26,10 @@
 ;Input : tname = the tplot variable with data in GSE coord [n,3]
 ;		 wgse = the w-antenna direction in GSE coord. This can either be a [3] element
 ;		   	    array or an [n,3] element array.
-;		 Here's how to get wgse
-;    rbsp_load_state,probe='a',datatype=['spinper','spinphase','mat_dsc','Lvec']
+;		 Here's how to get wgse:
+;    1) rbsp_efw_position_velocity_crib.pro
+;		 2) rbsp_load_state,probe='a',datatype=['spinper','spinphase','mat_dsc','Lvec']
+;		 Whichever way you choose, you'll get the direction from:
 ;	   get_data,rbspx+'_spinaxis_direction_gse',data=wsc_GSE
 ;	   wgse = wsc_gse.y
 ;
@@ -47,9 +49,8 @@
 pro rbsp_gse2mgse,tname,wgse,newname=newname
 
 
-
 	get_data,tname,data=dat,dlimits=dlim,limits=lim
-	zgse = [0,0,1d]
+	zgse = [0.,0.,1d]
 	datx = dblarr(n_elements(dat.x))
 	daty = datx
 	datz = datx

@@ -7,7 +7,8 @@
 ; link to the revisioned file with no revision number, andan md5 sum
 ; for the uncompressed file. Also deletes old versions.
 ;CALLING SEQUENCE:
-; mvn_sta_cmn_l2file_save, otp_struct, fullfile0, no_compression = no_compression
+; mvn_sta_cmn_l2file_save, otp_struct, fullfile0, no_compression =
+;                          no_compression, iv1_process=iv1_Process
 ;INPUT:
 ; otp_struct = the structure to output in CDF_LOAD_VARS format.
 ; fullfile0 = the full-path filename for the revisionless cdf file
@@ -22,13 +23,14 @@
 ;            '/mydisks/home/maven/', don't forget the slash
 ;HISTORY:
 ; 22-jul-2014, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: muser $
-; $LastChangedDate: 2019-11-02 17:17:47 -0700 (Sat, 02 Nov 2019) $
-; $LastChangedRevision: 27969 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2020-08-18 09:53:10 -0700 (Tue, 18 Aug 2020) $
+; $LastChangedRevision: 29040 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2file_save.pro $
 ;-
 Pro mvn_sta_cmn_l2file_save, otp_struct, fullfile0, temp_dir = temp_dir, $
-                             no_compression = no_compression, _extra = _extra
+                             no_compression = no_compression, $
+                             _extra = _extra
 
   If(~is_struct(otp_struct)) Then Begin
      dprint, 'Bad structure input '
@@ -74,6 +76,9 @@ Pro mvn_sta_cmn_l2file_save, otp_struct, fullfile0, temp_dir = temp_dir, $
 
   dummy = cdf_save_vars2(otp_struct, fullfilex, /no_file_id_update)
   spawn, '/usr/local/pkg/cdf-3.6.3_CentOS-6.8/bin/cdfconvert '+fullfilex+' '+fullfilex+' -compression cdf:none -delete'
+;COnvert is done here to be sure md5 file has consistent results when
+;uncompressed elsewhere
+;  spawn, '/usr/local/pkg/cdf-3.7.1/bin/cdfconvert '+fullfilex+' '+fullfilex+' -compression cdf:none -delete'
 
   md5file = ssw_str_replace(fullfile, '.cdf', '.md5')
   md5filex = ssw_str_replace(fullfilex, '.cdf', '.md5')
@@ -124,6 +129,10 @@ Pro mvn_sta_cmn_l2file_save, otp_struct, fullfile0, temp_dir = temp_dir, $
   spawn, 'chmod g+w '+fullfile
   spawn, 'chmod g+w '+fullfile0
   spawn, 'chmod g+w '+md5file
+;And group maven
+  spawn, 'chgrp maven '+fullfile
+  spawn, 'chgrp maven '+fullfile0
+  spawn, 'chgrp maven '+md5file
 
   Return
 End

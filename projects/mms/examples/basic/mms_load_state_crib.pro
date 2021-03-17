@@ -6,15 +6,15 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-05-27 17:10:16 -0700 (Wed, 27 May 2020) $
-; $LastChangedRevision: 28742 $
+; $LastChangedDate: 2020-08-25 14:54:30 -0700 (Tue, 25 Aug 2020) $
+; $LastChangedRevision: 29084 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_state_crib.pro $
 ;-
 
 ;;    ============================
 ;; 1) Select date and time interval
 ;;    ============================
-; download data for 8/2/2015
+; download data for Oct 16 2015
 date = '2015-10-16/00:00:00'
 timespan,date,1,/day
 

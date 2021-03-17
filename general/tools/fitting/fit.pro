@@ -308,8 +308,8 @@ end
 ;           - Allowed vectors and recursively searched structures to be fit as well.
 ;           
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-04-20 12:01:32 -0700 (Mon, 20 Apr 2020) $
-; $LastChangedRevision: 28593 $
+; $LastChangedDate: 2020-12-04 14:50:05 -0800 (Fri, 04 Dec 2020) $
+; $LastChangedRevision: 29437 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/fitting/fit.pro $
 ;           
 ;           
@@ -506,7 +506,7 @@ pro fit, x, yt, $
             wpdernz = where(pdernz,npdernz)
             wpderaz = where(pdernz eq 0,nz)
             if npdernz ne nterms then begin
-              dprint,verbose=verbose,'Warning: Not fitting the following parameters: ',fullnames[wpderaz],dlevel=1
+              dprint,verbose=verbose,'Warning: Not fitting the following parameters: ',fullnames[wpderaz],dlevel=3
             endif
           endif else begin
              wpdernz=indgen(nterms)
@@ -534,6 +534,9 @@ pro fit, x, yt, $
 ;         Evaluate alpha and beta matricies.
           ds = ((y-yfit)*w)[*]
           wf = where(finite(ds),/null)
+          if keyword_set(wf) eq 0 then begin
+            break
+          endif
           ds = ds[wf]
           pder = pder[wf,*]
           if npdernz gt 1 then beta = ds # pder[*,wpdernz]   else  beta = [total(ds * pder[*,wpdernz],/nan)]
@@ -610,6 +613,9 @@ done:
        dprint,verbose=verbose,dlevel=1,strtrim(iter+1,2),sqrt(chi2),a[0:mp],flambda,format=gformat
        dprint,verbose=verbose,dlevel=2,'Unc:',sqrt(chi2),sigma[0:mp],flambda,format=gformat
        dprint,verbose=verbose,dlevel=4,'Chi2 =',chi2,'  flambda =',flambda
+       if npdernz ne nterms then begin
+         dprint,verbose=verbose,'Warning: Not fitting the following parameters: ',fullnames[wpderaz],dlevel=1
+       endif
        if logf then yfit = exp(yfit)
        fitvalues = yfit
        if arg_present(summary) then begin

@@ -10,10 +10,11 @@
 ; HISTORY:
 ;     2020 Feb 24 -  Ian Cohen at APL: changed defualt yrange of electronenergy data to scale automatically to accommodate changes to electron energy
 ;                     channels
+;     2021 Feb 09 -  Ian Cohen at APL: added "helium" variables
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-02-25 10:57:51 -0800 (Tue, 25 Feb 2020) $
-; $LastChangedRevision: 28340 $
+; $LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
+; $LastChangedRevision: 29648 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_set_metadata.pro $
 ;-
 ;
@@ -28,9 +29,11 @@ pro mms_eis_set_metadata, tplotnames, probe = probe, level=level, data_rate = da
         'extof': begin
             ylim,'*_extof_proton_flux_omni*', 55, 1000, 1
             ylim,'*_extof_alpha_flux_omni*', 80, 650, 1
+            ylim,'*_extof_helium_flux_omni*', 80, 650, 1
             ylim,'*_extof_oxygen_flux_omni*', 145, 950, 1
             zlim, '*_extof_proton_flux_omni*', 0, 0, 1
             zlim, '*_extof_alpha_flux_omni*', 0, 0, 1
+            zlim, '*_extof_helium_flux_omni*', 0, 0, 1
             zlim, '*_extof_oxygen_flux_omni*', 0, 0, 1
             options, '*_extof_*_flux_omni*', ystyle=1, yticks=2
             if undefined(no_interp) && data_rate eq 'srvy' then options, '*extof_*_flux_omni*', no_interp=0, y_no_interp=0

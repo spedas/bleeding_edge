@@ -6,9 +6,9 @@
 ;
 ; Written by Davin Larson
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-04-06 14:11:58 -0700 (Mon, 06 Apr 2020) $
-; $LastChangedRevision: 28515 $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2020-10-12 18:53:38 -0700 (Mon, 12 Oct 2020) $
+; $LastChangedRevision: 29241 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_info_to_tplot.pro $
 ;-
 pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
@@ -21,7 +21,7 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
   smex_epoch=smex_epoch ;if set, variables called "epoch" are seconds from 1968-05-24, not CDF epoch
   ;resolve labels implemented as keyword to preserve backwards compatibility
 
-  dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 28515 2020-04-06 21:11:58Z jimm $'
+  dprint,verbose=verbose,dlevel=4,'$Id: cdf_info_to_tplot.pro 29241 2020-10-13 01:53:38Z adrozdov $'
     tplotnames=''
   vbs = keyword_set(verbose) ? verbose : 0
 
@@ -154,6 +154,26 @@ pro cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames,  $
         if(keyword_set(var_2)) then var_1 = var_2 else var_1 = 0 ;bpif  v.name eq 'thb_sir_001'
         var_2 = 0
       endif
+      
+      ; Issue a warning if correponsded depend_n is emtpy      
+      for dpn=0,size(/n_dimens,*v.dataptr)-1 do begin
+      case dpn of
+        0: if depend_0 eq '' then  dprint,verbose=verbose,dlevel=6,'Warning: depend_0 is empty'        
+        1: if depend_1 eq '' then  dprint,verbose=verbose,dlevel=6,'Warning: depend_1 is empty'
+        2: if depend_2 eq '' then  dprint,verbose=verbose,dlevel=6,'Warning: depend_2 is empty'
+        3: if depend_3 eq '' then  dprint,verbose=verbose,dlevel=6,'Warning: depend_3 is empty'
+        4: if depend_4 eq '' then  dprint,verbose=verbose,dlevel=6,'Warning: depend_4 is empty'
+;;       adrozdov: The following method is icompatable with virtual machene and old version of IDL:
+;;       egrimes: the call to string() crashes for IDL 8.5.1; commented out 9 Oct 2020 
+;        depend_str = string(dpn, format="depend_%d")
+;        eres = execute("res = " + depend_str + " eq ''")
+;        if res then dprint,verbose=verbose,dlevel=6,'Warning: ' + depend_str + ' is empty'
+      endcase
+      endfor      
+       
+
+
+      
       cdfstuff={filename:cdfi.filename,gatt:cdfi.g_attributes,vname:v.name,vatt:keyword_set(attr)?attr:0}
       if keyword_set(var_1) && isa(*var_1.dataptr,/string) then var_1=0     ; check for weird string input
       if keyword_set(var_2) then data = {x:tvar.dataptr,y:v.dataptr,v1:var_1.dataptr, v2:var_2.dataptr} $

@@ -33,8 +33,8 @@
 ;                      high resolution (0.03-sec) data.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-03-15 12:46:16 -0700 (Fri, 15 Mar 2019) $
-; $LastChangedRevision: 26819 $
+; $LastChangedDate: 2020-12-15 13:03:48 -0800 (Tue, 15 Dec 2020) $
+; $LastChangedRevision: 29495 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getpad.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -400,12 +400,7 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
 ; other units.
 
     rate = counts/(swe_integ_t*pad[n].dt_arr)  ; raw count rate
-    dtc = 1. - rate*swe_dead
-
-    indx = where(dtc lt swe_min_dtc, count)    ; maximum deadtime correction
-    if (count gt 0L) then dtc[indx] = !values.f_nan
-    
-    pad[n].dtc = dtc                           ; corrected count rate = rate/dtc
+    pad[n].dtc = swe_deadtime(rate)            ; corrected count rate = rate/dtc
 
 ; Fill in the raw magnetic field direction, as determined onboard.
 ; This encodes the information needed to reconstruct the mapping between
@@ -458,7 +453,10 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
 
   pad.gf /= scale
 
-; Sum the data
+; Sum the data.  This is done by summing raw counts corrected by deadtime
+; and then setting dtc to unity.  Also, note that summed PAD's can be 
+; "blurred" by a changing magnetic field direction, so summing only makes 
+; sense for short intervals.
 
   if keyword_set(sum) then pad = mvn_swe_padsum(pad)
 

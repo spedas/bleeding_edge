@@ -28,13 +28,13 @@
 ;              masking.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-18 12:25:42 -0800 (Sun, 18 Feb 2018) $
-; $LastChangedRevision: 24735 $
+; $LastChangedDate: 2021-02-18 15:22:45 -0800 (Thu, 18 Feb 2021) $
+; $LastChangedRevision: 29679 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_swi_cal.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_swe_swi_cal, coarse=coarse, fine=fine, alpha=alpha, ddd=ddd, pans=pans
+pro mvn_swe_swi_cal, coarse=coarse, fine=fine, alpha=alpha, ddd=ddd, pans=pans, burst=burst
 
   @mvn_swe_com
 
@@ -45,6 +45,7 @@ pro mvn_swe_swi_cal, coarse=coarse, fine=fine, alpha=alpha, ddd=ddd, pans=pans
   if keyword_set(coarse) then fine = 0
   if (size(fine,/type) eq 0) then fine = 1
   if keyword_set(alpha) then fine = 1
+  burst = keyword_set(burst)
 
 ; Get electron density from SWEA - create a variable for overplotting
 ; with SWIA densities.
@@ -64,12 +65,12 @@ pro mvn_swe_swi_cal, coarse=coarse, fine=fine, alpha=alpha, ddd=ddd, pans=pans
 
 ; Load SWIA fine spectra
 
-  if keyword_set(fine) then begin
-    mvn_swia_load_l2_data, /loadall, /tplot
-    mvn_swia_part_moments, type=['cs','ca'] ; get coarse moments (mainly for sheath)
+  mvn_swia_load_l2_data, /loadall, /tplot
+  mvn_swia_part_moments, type=['cs','ca'] ; get coarse moments (mainly for sheath)
 
+  if keyword_set(fine) then begin
     if keyword_set(alpha) then begin
-      mvn_swia_protonalphamoms_minf
+      mvn_swia_protonalphamoms_minf,archive=burst  ; uses fine data to calculate moments
       get_data,'nproton',data=den
       dt = den.x - shift(den.x,1)
       indx = where(dt gt 600D, count)
@@ -117,7 +118,7 @@ pro mvn_swe_swi_cal, coarse=coarse, fine=fine, alpha=alpha, ddd=ddd, pans=pans
       options,'vth_proton','ynozero',1
       options,'vth_proton','constant',[0.]
     endif else begin
-      mvn_swia_part_moments, type=['fs','fa']
+      mvn_swia_part_moments, type=['fs','fa']  ; just calculate fine moments directly
       get_data,'mvn_swifs_density',data=den
     endelse
 
@@ -148,7 +149,7 @@ pro mvn_swe_swi_cal, coarse=coarse, fine=fine, alpha=alpha, ddd=ddd, pans=pans
     if (count gt 0L) then den.y[indx] = !values.f_nan
     store_data,'mvn_swics_density',data=den
 
-    store_data,'ie_density',data=['mvn_swics_density','mvn_swe_n1d_over']
+    store_data,'ie_density',data=['mvn_swics_density','nelectron']
     ylim,'ie_density',0.1,10,1
     options,'ie_density','ynozero',1
     options,'ie_density','ytitle','Ion-Electron!CDensity'

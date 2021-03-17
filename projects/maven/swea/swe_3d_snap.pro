@@ -71,6 +71,10 @@
 ;
 ;       KEEPWINS:      If set, then don't close the snapshot window(s) on exit.
 ;
+;       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
+;                      from 0 to N-1, where N is the number of monitors recognized
+;                      by the operating system.  See putwin.pro for details.
+;
 ;       ARCHIVE:       If set, show snapshots of archive data.
 ;
 ;       BURST:         Synonym for ARCHIVE.
@@ -88,8 +92,8 @@
 ;                      interactive time range selection.)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-07-01 11:20:00 -0700 (Wed, 01 Jul 2020) $
-; $LastChangedRevision: 28834 $
+; $LastChangedDate: 2021-03-02 11:48:03 -0800 (Tue, 02 Mar 2021) $
+; $LastChangedRevision: 29727 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -97,20 +101,42 @@
 pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
                  center=center, units=units, ddd=ddd, sum=sum, padmag=padmag, $
                  energy=energy, label=label, smo=smo, symdir=symdir, sundir=sundir, $
-                 symenergy=symenergy, symdiag=symdiag, power=pow, map=map, $
+                 symenergy=symenergy, symdiag=symdiag, power=power, map=map, $
                  abins=abins, dbins=dbins, obins=obins, mask_sc=mask_sc, burst=burst, $
                  plot_sc=plot_sc, padmap=padmap, pot=pot, plot_fov=plot_fov, $
-                 labsize=labsize, trange=tspan, tsmo=tsmo, wscale=wscale, zlog=zlog, $
-                 zrange=zrange
+                 labsize=labsize, trange=trange2, tsmo=tsmo, wscale=wscale, zlog=zlog, $
+                 zrange=zrange, monitor=monitor
 
   @mvn_swe_com
-  @swe_snap_common
+  @putwin_common
 
   a = 0.8
   phi = findgen(49)*(2.*!pi/49)
   usersym,a*cos(phi),a*sin(phi),/fill
-  
-  if (size(snap_index,/type) eq 0) then swe_snap_layout, 0
+
+; Load any keyword defaults
+
+  swe_snap_options, get=key, /silent
+  ktag = tag_names(key)
+  klist = ['SPEC','KEEPWINS','ARCHIVE','EBINS','CENTER','UNITS','SUM', $
+           'PADMAG','ENERGY','LABEL','SMO','SYMDIR','SUNDIR','SYMENERGY', $
+           'SYMDIAG','POWER','MAP','ABINS','DBINS','OBINS','MASK_SC','BURST', $
+           'PLOT_SC','PADMAP','POT','PLOT_FOV','LABSIZE','TRANGE2','TSMO', $
+           'WSCALE','ZLOG','ZRANGE','MONITOR']
+  for j=0,(n_elements(ktag)-1) do begin
+    i = strmatch(klist, ktag[j]+'*', /fold)
+    case (total(i)) of
+        0  : ; keyword not recognized -> do nothing
+        1  : begin
+               kname = (klist[where(i eq 1)])[0]
+               ok = execute('kset = size(' + kname + ',/type) gt 0',0,1)
+               if (not kset) then ok = execute(kname + ' = key.(j)',0,1)
+             end
+      else : print, "Keyword ambiguous: ", ktag[j]
+    endcase
+  endfor
+
+; Process keywords
 
   if keyword_set(archive) then aflg = 1 else aflg = 0
   if keyword_set(burst) then aflg = 1
@@ -169,19 +195,19 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
   if (keyword_set(padmag) and (size(a2,/type) eq 8)) then pflg = 1 else pflg = 0
   if (size(ebins,/type) eq 0) then ebins = reverse(4*indgen(16))
   if not keyword_set(symenergy) then symenergy = 130.
-  if not keyword_set(pow) then pow = 3.
+  if not keyword_set(power) then power = 3.
   if keyword_set(symdiag) then dflg = 1 else dflg = 0
   if keyword_set(padmap) then dopam = 1 else dopam = 0
 
-  case n_elements(tspan) of
+  case n_elements(trange2) of
        0 : tflg = 0
        1 : begin
-             tspan = time_double(tspan)
+             trange2 = time_double(trange2)
              tflg = 1
              kflg = 0
            end
     else : begin
-             tspan = minmax(time_double(tspan))
+             trange2 = minmax(time_double(trange2))
              tflg = 1
              kflg = 0
            end
@@ -205,7 +231,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
     npts = 1
     doall = 1
     dotsmo = 1
-    delta_t = double(tsmo)/2D
+    dtsmo = double(tsmo)/2D
   endif else dotsmo = 0
 
   if keyword_set(sundir) then begin
@@ -235,21 +261,30 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
   Twin = !d.window
 
-  putwin, /free, key=Dopt, scale=wscale
+  undefine, mnum
+  if (size(monitor,/type) gt 0) then begin
+    if (size(windex,/type) eq 0) then putwin, /config $
+                                 else if (windex eq -1) then putwin, /config
+    mnum = fix(monitor[0])
+  endif else begin
+    if (size(secondarymon,/type) gt 0) then mnum = secondarymon
+  endelse
+
+  putwin, /free, monitor=mnum, xsize=800, ysize=600, dx=10, dy=10, scale=wscale
   Dwin = !d.window
 
   if (sflg) then begin
-    putwin, /free, key=Sopt, scale=wscale
+    putwin, /free, xsize=450, ysize=600, rel=Dwin, dx=10, /top, scale=wscale
     Swin = !d.window
   endif
   
   if (dflg) then begin
-    putwin, /free, key=Sopt, scale=wscale
+    putwin, /free, xsize=450, ysize=600, rel=!d.window, dx=10, /top, scale=wscale
     Fwin = !d.window
   endif
   
   if (dopam) then begin
-    putwin, /free, key=Nopt, scale=wscale
+    putwin, /free, xsize=600, ysize=450, rel=Dwin, dy=-10, scale=wscale
     Pwin = !d.window
   endif
 
@@ -273,7 +308,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
     if (~tflg) then begin
       ctime,trange,npoints=npts,/silent
       if (npts gt 1) then cursor,cx,cy,/norm,/up  ; Make sure mouse button released
-    endif else trange = tspan
+    endif else trange = trange2
 
     if (size(trange,/type) eq 2) then begin  ; Abort before first time select.
       wdelete,Dwin                           ; Don't keep empty windows.
@@ -291,7 +326,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
     if (dotsmo) then begin
       tmin = min(trange, max=tmax)
-      trange = [(tmin - delta_t), (tmax + delta_t)]
+      trange = [(tmin - dtsmo), (tmax + dtsmo)]
     endif
 
 ; Put up a 3D spectrogram
@@ -393,7 +428,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
         fmax = max(f,k)
         k = k mod 16
 
-        faz = total((f/fmax)^pow,2)
+        faz = total((f/fmax)^power,2)
         faz = (faz - mean(faz)) > 0.
         k = (k + 9) mod 16
         az = shift(phi,-k)
@@ -404,7 +439,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
         el = reform(the,6)
         f = shift(f,-k,0)
-        fel = total((f[m,*]/fmax)^pow,1)
+        fel = total((f[m,*]/fmax)^power,1)
         fel = (fel - mean(fel)) > 0.
         el0 = total(el*fel)/total(fel)
 

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  3 18:15:53 2020.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 17 03:15:52 2021.<P>
  
 <HR>
  
@@ -29,6 +29,12 @@ This page was created by the IDL library routine
 <LI><A HREF="#RBSP_EFW_EDOTB_TO_ZERO_CRIB">RBSP_EFW_EDOTB_TO_ZERO_CRIB</A>
 <LI><A HREF="#RBSP_EFW_POSITION_VELOCITY_CRIB">RBSP_EFW_POSITION_VELOCITY_CRIB
 </A>
+<LI><A HREF="#RBSP_EFW_POYNTING_FLUX_BURST_CRIB">
+RBSP_EFW_POYNTING_FLUX_BURST_CRIB</A>
+<LI><A HREF="#RBSP_EFW_POYNTING_FLUX_CRIB_SCOTT">
+RBSP_EFW_POYNTING_FLUX_CRIB_SCOTT</A>
+<LI><A HREF="#RBSP_EFW_POYNTING_FLUX_SURVEY_CRIB">
+RBSP_EFW_POYNTING_FLUX_SURVEY_CRIB</A>
 <LI><A HREF="#RBSP_EFW_SPEC_CRIB">RBSP_EFW_SPEC_CRIB</A>
 <LI><A HREF="#RBSP_EFW_SPINFIT_CRIB">RBSP_EFW_SPINFIT_CRIB</A>
 <LI><A HREF="#RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB">
@@ -123,9 +129,9 @@ RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB</A>
  KEYWORDS:
  HISTORY: Created by Aaron W Breneman, Univ. Minnesota  4/10/2014
  VERSION:
-   $LastChangedBy: nikos $
-   $LastChangedDate: 2020-05-21 20:36:46 -0700 (Thu, 21 May 2020) $
-   $LastChangedRevision: 28720 $
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2020-09-11 13:35:30 -0700 (Fri, 11 Sep 2020) $
+   $LastChangedRevision: 29139 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_burst_fa_rotate_crib.pro $
 </PRE><P>
 <STRONG>(See <A href="examples/rbsp_efw_burst_fa_rotate_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_burst_fa_rotate_crib.pro</A>)</STRONG><P>
@@ -171,11 +177,14 @@ RBSP_EFW_SPINFIT_VXB_SUBTRACT_CRIB</A>
 
   INPUT:
 		probe   -&gt; 'a' or 'b'
-		model   -&gt; Any of the Tsyganenko models or IGRF. Defaults to 't96'
+		model   -&gt; Any of the Tsyganenko models or 'igrf'. Defaults to 't96'
 		ql -&gt; set to load quicklook EMFISIS data
                cadence -&gt; cadence of EMFISIS data. 'hires', '4sec', '1sec'
                nodelete -&gt; don't delete various tplot
                variables upon exit
+  _extra --&gt; useful keywords are:
+         no_spice_load
+         no_rbsp_efw_init
 
   EXAMPLES:
 
@@ -256,9 +265,9 @@ NOTES: Bad E*B=0 data are removed
  	By/Bx = 3.732
  	Bz/Bx = 3.732
 HISTORY: Written by Aaron W Breneman (UMN) - 2013-06-19
-$LastChangedBy: nikos $
-$LastChangedDate: 2020-05-21 20:36:46 -0700 (Thu, 21 May 2020) $
-$LastChangedRevision: 28720 $
+$LastChangedBy: aaronbreneman $
+$LastChangedDate: 2020-09-11 13:33:33 -0700 (Fri, 11 Sep 2020) $
+$LastChangedRevision: 29137 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_edotb_to_zero_crib.pro $
 </PRE><P>
 <STRONG>(See <A href="examples/rbsp_efw_edotb_to_zero_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_edotb_to_zero_crib.pro</A>)</STRONG><P>
@@ -267,7 +276,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="RBSP_EFW_POSITION_VELOCITY_CRIB">
 <H2>RBSP_EFW_POSITION_VELOCITY_CRIB</H2></A>
 <A HREF="#RBSP_EFW_EDOTB_TO_ZERO_CRIB">[Previous Routine]</A>
-<A HREF="#RBSP_EFW_SPEC_CRIB">[Next Routine]</A>
+<A HREF="#RBSP_EFW_POYNTING_FLUX_BURST_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME: rbsp_efw_position_velocity_crib.pro
@@ -293,17 +302,111 @@ HISTORY:
 	email: awbrenem@gmail.com
 REQUIRED: Need to have the SPICE ICY software package installed
 
-$LastChangedBy: nikos $
-$LastChangedDate: 2020-05-21 20:36:46 -0700 (Thu, 21 May 2020) $
-$LastChangedRevision: 28720 $
+$LastChangedBy: aaronbreneman $
+$LastChangedDate: 2020-09-11 13:32:39 -0700 (Fri, 11 Sep 2020) $
+$LastChangedRevision: 29136 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_position_velocity_crib.pro $
 </PRE><P>
 <STRONG>(See <A href="examples/rbsp_efw_position_velocity_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_position_velocity_crib.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RBSP_EFW_POYNTING_FLUX_BURST_CRIB">
+<H2>RBSP_EFW_POYNTING_FLUX_BURST_CRIB</H2></A>
+<A HREF="#RBSP_EFW_POSITION_VELOCITY_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_POYNTING_FLUX_CRIB_SCOTT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: rbsp_efw_poynting_flux_crib.pro
+ SYNTAX:
+ PURPOSE: Crib sheet for calling rbsp_poynting_flux.pro, which creates
+					 Poynting flux tplot variables (including spectra) from EFW
+					 and EMFISIS data in various coord systems. Plots results
+ INPUT:
+ OUTPUT:
+ KEYWORDS:
+	PROCEDURE: load EMFISIS data in GSE.
+			Transform EMFISIS GSE -&gt; MGSE
+			Load EFW despun waveform data in MGSE
+			Call Poynting flux program
+ HISTORY: Created by Aaron W Breneman, UMN awbrenem@gmail.com
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2020-09-11 13:39:04 -0700 (Fri, 11 Sep 2020) $
+   $LastChangedRevision: 29141 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_poynting_flux_burst_crib.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/rbsp_efw_poynting_flux_burst_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_poynting_flux_burst_crib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="RBSP_EFW_POYNTING_FLUX_CRIB_SCOTT">
+<H2>RBSP_EFW_POYNTING_FLUX_CRIB_SCOTT</H2></A>
+<A HREF="#RBSP_EFW_POYNTING_FLUX_BURST_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_POYNTING_FLUX_SURVEY_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: rbsp_efw_poynting_flux_survey_crib.pro
+ SYNTAX:
+ PURPOSE: Crib sheet for creating Poynting flux tplot variables from EFW and
+          EMFISIS survey data.
+          This is called by the program rbsp_efw_make_pflux.pro, but can
+          be used independently.
+ INPUT:  smoothing -&gt; period (sec) to smooth over
+         detrending -&gt; period (sec) to detrend over
+         cadence_mag -&gt; '1sec','4sec','hires'
+         spinfit -&gt; spinfit the Efield data? Otherwise uses the 32 S/s MGSE data
+ OUTPUT: tplot variables of Poynting flux in various coord systems
+ KEYWORDS:
+ NOTES:  The burst and tt0 and tt1 keywords were added (by Aaron) to test the
+         results of this crib sheet with rbsp_poynting_flux.pro. They compare
+         almost identically for a test chorus event. (see aaron_scott_pflux_comparison.pro)
+
+ HISTORY: Adapted from Scott Thaller's Poynting flux crib by Aaron Breneman
+
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2020-09-11 13:39:41 -0700 (Fri, 11 Sep 2020) $
+   $LastChangedRevision: 29143 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_poynting_flux_crib_scott.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/rbsp_efw_poynting_flux_crib_scott.pro">general/missions/rbsp/efw/examples/rbsp_efw_poynting_flux_crib_scott.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="RBSP_EFW_POYNTING_FLUX_SURVEY_CRIB">
+<H2>RBSP_EFW_POYNTING_FLUX_SURVEY_CRIB</H2></A>
+<A HREF="#RBSP_EFW_POYNTING_FLUX_CRIB_SCOTT">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_SPEC_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: rbsp_efw_poynting_flux_survey_crib.pro
+ SYNTAX:
+ PURPOSE: Crib sheet for creating Poynting flux tplot variables from EFW and
+          EMFISIS data.
+          This is called by the program rbsp_efw_make_pflux.pro, but can
+          be used independently.
+ INPUT:  smoothing -&gt; period (sec) to smooth over
+         detrending -&gt; period (sec) to detrend over
+         cadence_mag -&gt; '1sec','4sec','hires'
+         spinfit -&gt; spinfit the Efield data? Otherwise uses the 32 S/s MGSE data
+ OUTPUT: tplot variables of Poynting flux in various coord systems
+ KEYWORDS:
+ NOTES:  The burst and tt0 and tt1 keywords were added (by Aaron) to test the
+         results of this crib sheet with rbsp_poynting_flux.pro. They compare
+         almost identically for a test chorus event. (see aaron_scott_pflux_comparison.pro)
+
+ HISTORY: Adapted from Scott Thaller's Poynting flux crib by Aaron Breneman
+
+ VERSION:
+   $LastChangedBy: aaronbreneman $
+   $LastChangedDate: 2020-09-11 13:39:29 -0700 (Fri, 11 Sep 2020) $
+   $LastChangedRevision: 29142 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_poynting_flux_survey_crib.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/rbsp_efw_poynting_flux_survey_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_poynting_flux_survey_crib.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RBSP_EFW_SPEC_CRIB">
 <H2>RBSP_EFW_SPEC_CRIB</H2></A>
-<A HREF="#RBSP_EFW_POSITION_VELOCITY_CRIB">[Previous Routine]</A>
+<A HREF="#RBSP_EFW_POYNTING_FLUX_SURVEY_CRIB">[Previous Routine]</A>
 <A HREF="#RBSP_EFW_SPINFIT_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -379,6 +482,8 @@ KEYWORDS:
  boom_pair -&gt; select the boom pair for the spinfitting. Any pair is acceptable
  no_reload -&gt; use to not reload any of the base data. Useful if you want to run this
          crib sheet multiple times for different boom pairs.
+ _extra --&gt; possible useful keywords include:
+         no_spice_load
 
 OUTPUT: tplot variables of spinfit, vxb subtracted electric field
 
@@ -395,9 +500,9 @@ to zero to use this component.
 HISTORY: Written by Aaron W Breneman
          University of Minnesota
          2013-04-16
-$LastChangedBy: nikos $
-$LastChangedDate: 2020-05-21 20:36:46 -0700 (Thu, 21 May 2020) $
-$LastChangedRevision: 28720 $
+$LastChangedBy: aaronbreneman $
+$LastChangedDate: 2020-10-15 10:55:25 -0700 (Thu, 15 Oct 2020) $
+$LastChangedRevision: 29256 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/examples/rbsp_efw_spinfit_vxb_subtract_crib.pro $
 </PRE><P>
 <STRONG>(See <A href="examples/rbsp_efw_spinfit_vxb_subtract_crib.pro">general/missions/rbsp/efw/examples/rbsp_efw_spinfit_vxb_subtract_crib.pro</A>)</STRONG><P>

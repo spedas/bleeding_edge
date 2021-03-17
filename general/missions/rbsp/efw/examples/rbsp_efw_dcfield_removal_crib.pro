@@ -11,11 +11,14 @@
 ;
 ;  INPUT:
 ;		probe   -> 'a' or 'b'
-;		model   -> Any of the Tsyganenko models or IGRF. Defaults to 't96'
+;		model   -> Any of the Tsyganenko models or 'igrf'. Defaults to 't96'
 ;		ql -> set to load quicklook EMFISIS data
 ;               cadence -> cadence of EMFISIS data. 'hires', '4sec', '1sec'
 ;               nodelete -> don't delete various tplot
 ;               variables upon exit
+;  _extra --> useful keywords are:
+;         no_spice_load
+;         no_rbsp_efw_init
 ;
 ;  EXAMPLES:
 ;
@@ -48,77 +51,107 @@
 ;-
 
 
-pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
-  noplot=noplot,model=model,ql=ql,cadence=cadence,nodelete=nodelete,$
-  decimate_level=decimate_level,boom_pair=bp
+pro rbsp_efw_dcfield_removal_crib,probe,$
+  no_spice_load=no_spice_load,$
+  noplot=noplot,$
+  model=model,$
+  ql=ql,$
+  cadence=cadence,$
+  nodelete=nodelete,$
+  decimate_level=decimate_level,$
+  boom_pair=bp,$
+  _extra=extra
 
 
   ; initialize RBSP environment
-  rbsp_efw_init
-  !rbsp_efw.user_agent = ''
+  rbsp_efw_init,_extra=extra
 
+
+  tr = timerange()
 
   ; set desired probe
   rbspx = 'rbsp'+probe
   sc = probe
 
 
-  ;Get the time range if it hasn't already been set
-  x = timerange()
-  date = strmid(time_string(x[0]),0,10)
 
-
-  if ~keyword_set(model) then model = 't96'
+  if ~keyword_set(model) then model = 't89'
   if ~keyword_set(cadence) then cadence = '1sec'
 
 
   ;Extended timerange for t01 model
   if model eq 't01' then begin
-    x2 = x
-    x2[0] = x[0] - 3600.
+    tr2 = tr
+    tr2[0] = tr2[0] - 3600.
   endif
 
 
-  ;Load spice kernels
-  ;...predicted kernels needed to convert very recent UVW mag data to GSE
-  if ~keyword_set(no_spice_load) then rbsp_load_spice_kernels
+;  ;Load spice kernels
+;  ;...predicted kernels needed to convert very recent UVW mag data to GSE
+;  rbsp_load_spice_kernels,_extra=extra
+
+
+
   if ~keyword_set(bp) then bp = '12'
-  if bp eq '12' then plane_dim = 0 else plane_dim = 1
+;  if bp eq '12' then plane_dim = 0 else plane_dim = 1
 
 
   ;Load RBSP position data and transform to GSM which is needed for the model subtraction
-  if model eq 't01' then timespan,x2[0],(x2[1] - x2[0]),/seconds
+  if model eq 't01' then timespan,tr2[0],(tr2[1] - tr2[0]),/seconds
+
 
   ;Get antenna pointing direction and stuff
-  rbsp_load_state,probe=probe,/no_spice_load,datatype=['spinper','spinphase','mat_dsc','Lvec']
-  rbsp_efw_position_velocity_crib,/no_spice_load,/noplot
+;  if ~tdexists(rbspx+'_spinaxis_direction_gse',tr[0],tr[1]) then rbsp_efw_position_velocity_crib,/noplot,_extra=extra
+
+
+  if ~tdexists('rbsp'+probe+'_q_uvw2gse',tr[0],tr[1]) then $
+    rbsp_load_spice_cdf_file,sc
+
+
+  cotrans,rbspx+'_state_pos_gse',rbspx+'_state_pos_gsm',/gse2gsm
+  copy_data,rbspx+'_state_pos_gsm','pos_gsm'
+
+
+  ;Downsample ephemeris data to once/min
+  timestmp = 60.*dindgen(1440.) + tr[0]
+  tinterpol_mxn,'pos_gsm',timestmp,/overwrite
+  tinterpol_mxn,rbspx+'_spinaxis_direction_gse',timestmp,/overwrite
   get_data,rbspx+'_spinaxis_direction_gse',data=wsc_GSE
 
-  if model eq 't01' then timespan,x[0],(x[1]-x[0]),/seconds
+  posname = 'pos_gsm'
 
 
-  ;Load EMFISIS L3 data in GSE.
+  ;now put time back to requested range
+  if model eq 't01' then timespan,tr[0],(tr[1]-tr[0]),/seconds
+
+
+  ;Load EMFISIS L3 data in GSE for mag model subtract
   if ~keyword_set(ql) then begin
+    if ~tdexists(rbspx+'_emfisis_l3_4sec_gse_Mag',tr[0],tr[1]) then $
+      rbsp_load_emfisis,probe=probe,coord='gse',cadence=cadence,level='l3'
 
-    rbsp_load_emfisis,probe=probe,coord='gse',cadence=cadence,level='l3' ;load this for the mag model subtract
 
-
-    ;;decimate the data?
+    ;decimate the data? Either way, rename it to rbspx+'_emfisis_l3_'+cadence+'_gse_Mag_dec'
     if keyword_set(decimate_level) then $
+  ;    rbsp_decimate,rbspx+'_emfisis_l3_'+cadence+'_gse_Mag',$
+  ;    level=decimate_level,newname=rbspx+'_emfisis_l3_'+cadence+'_gse_Mag_dec' else $
+  ;    copy_data,rbspx+'_emfisis_l3_'+cadence+'_gse_Mag',rbspx+'_emfisis_l3_'+cadence+'_gse_Mag_DS'
       rbsp_decimate,rbspx+'_emfisis_l3_'+cadence+'_gse_Mag',$
-      level=decimate_level,newname=rbspx+'_emfisis_l3_'+cadence+'_gse_Mag'
+      level=decimate_level,newname=rbspx+'_emfisis_l3_'+cadence+'_gse_Mag_DS' else $
+      copy_data,rbspx+'_emfisis_l3_'+cadence+'_gse_Mag',rbspx+'_emfisis_l3_'+cadence+'_gse_Mag_DS'
 
 
-    get_data,rbspx+'_emfisis_l3_'+cadence+'_gse_Mag',data=dd
+
+    get_data,rbspx+'_emfisis_l3_'+cadence+'_gse_Mag_DS',data=dd
     if ~is_struct(dd) then begin
       print,'*****  NO EMFISIS L3 DATA TO LOAD *****'
       print,'exiting rbsp_efw_DCfield_removal_crib.pro'
       return
     endif
 
-    tinterpol_mxn,rbspx+'_spinaxis_direction_gse',rbspx+'_emfisis_l3_'+cadence+'_gse_Mag'
+    tinterpol_mxn,rbspx+'_spinaxis_direction_gse',rbspx+'_emfisis_l3_'+cadence+'_gse_Mag_DS',/spline
 
-    copy_data,rbspx+'_emfisis_l3_'+cadence+'_gse_Mag',rbspx+'_mag_gse'
+    copy_data,rbspx+'_emfisis_l3_'+cadence+'_gse_Mag_DS',rbspx+'_mag_gse'
 
     get_data,rbspx+'_spinaxis_direction_gse_interp',data=wsc_GSE_tmp
     rbsp_gse2mgse,rbspx+'_mag_gse',reform(wsc_GSE_tmp.y),newname=rbspx+'_mag_mgse'
@@ -126,28 +159,17 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
 
   endif
 
+
+
   if keyword_set(ql) then begin
-    rbsp_load_emfisis,probe=probe,/quicklook
-
-    ;;decimate the data?
-    if keyword_set(decimate_level) then $
-      rbsp_decimate,rbspx+'_emfisis_quicklook_Mag',$
-      level=decimate_level,newname=rbspx+'_emfisis_quicklook_Mag'
-
-
-    get_data,rbspx+'_emfisis_quicklook_Mag',data=dd
-    if ~is_struct(dd) then begin
-      print,'******NO QL MAG DATA TO LOAD.....rbsp_efw_DCfield_removal_crib.pro*******'
-      return
-    endif
-
+    if ~tdexists(rbspx+'_emfisis_quicklook_Mag',tr[0],tr[1]) then rbsp_load_emfisis,probe=probe,/quicklook
 
 
     ;Some of the EMFISIS quicklook data extend beyond the day loaded.
     ;This messes things up later. Remove these data points now.
 
-    t0 = time_double(date)
-    t1 = t0 + 86400.
+;    t0 = time_double(date)
+;    t1 = t0 + 86400.
 
     ttst = tnames(rbspx+'_emfisis_quicklook_Mag',cnt)
     if cnt eq 1 then time_clip,rbspx+'_emfisis_quicklook_Mag',t0,t1,$
@@ -157,22 +179,46 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
     replace=1,error=error,newname=rbspx+'_emfisis_quicklook_Magnitude'
 
 
+    get_data,rbspx+'_emfisis_quicklook_Mag',data=dd
+    if ~is_struct(dd) then begin
+      print,'******NO QL MAG DATA TO LOAD.....rbsp_efw_DCfield_removal_crib.pro*******'
+      return
+    endif
+
+
+    ;;decimate the data?
+    if keyword_set(decimate_level) then $
+      rbsp_decimate,rbspx+'_emfisis_quicklook_Mag',$
+      level=decimate_level,newname=rbspx+'_emfisis_quicklook_Mag_DS' else $
+      copy_data,rbspx+'_emfisis_quicklook_Mag',rbspx+'_emfisis_quicklook_Mag_DS'
+
+
+
     ;Create the dlimits structure for the EMFISIS quantity. Jianbao's spinfit
     ;program needs to see that the coords are 'uvw'
-    get_data,rbspx +'_emfisis_quicklook_Mag',data=datt
+    get_data,rbspx +'_emfisis_quicklook_Mag_DS',data=datt
     data_att = {coord_sys:'uvw'}
     dlim = {data_att:data_att}
-    store_data,rbspx +'_emfisis_quicklook_Mag',data=datt,dlimits=dlim
+    store_data,rbspx +'_emfisis_quicklook_Mag_DS',data=datt,dlimits=dlim
 
 
     ;spinfit the mag data and transform to MGSE
-    rbsp_decimate,rbspx +'_emfisis_quicklook_Mag', upper = 2
-    rbsp_spinfit,rbspx +'_emfisis_quicklook_Mag', plane_dim = plane_dim
-    rbsp_cotrans,rbspx +'_emfisis_quicklook_Mag_spinfit', rbspx + '_mag_mgse', /dsc2mgse
+    rbsp_decimate,rbspx +'_emfisis_quicklook_Mag_DS', upper = 2
+    rbsp_spinfit,rbspx +'_emfisis_quicklook_Mag_DS', plane_dim = 0
+;    rbsp_cotrans,rbspx +'_emfisis_quicklook_Mag_DS_spinfit', rbspx + '_mag_mgse', /dsc2mgse
+
+
+    ;Transform the spinfit data from DSC to MGSE (uses Aaron's fast code)
+    rbsp_efw_dsc_to_mgse,probe,rbspx +'_emfisis_quicklook_Mag_DS_spinfit',rbspx+'_spinaxis_direction_gse',_extra=extra
+
+
+
 
 
     ;Rotate the MGSE data to GSE
-    rbsp_mgse2gse,rbspx + '_mag_mgse',wsc_GSE_tmp.y,newname=rbspx+'_mag_gse',probe=probe,/no_spice_load
+    rbsp_mgse2gse,rbspx + '_mag_mgse',wsc_GSE_tmp.y,$
+      newname=rbspx+'_mag_gse',probe=probe,$
+      _extra=extra
 
   endif
 
@@ -184,12 +230,11 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
   copy_data,rbspx+'_mag_gsm',rbspx+'_mag_gsm_for_subtract'
   copy_data,rbspx+'_mag_gse',rbspx+'_mag_gse_for_subtract'
   copy_data,rbspx+'_mag_mgse',rbspx+'_mag_mgse_for_subtract'
-  copy_data,rbspx+'_state_pos_gsm','pos_gsm'
-  posname = 'pos_gsm'
 
 
 
-  if ~keyword_set(model) then model = 't89'
+
+;  if ~keyword_set(model) then model = 't89'
 
   ;;--------------------------------------------------
   ;;Call the specific model
@@ -197,9 +242,9 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
 
   ;;Call the models without any solar wind input. Later, we'll
   ;;also call them with model input from OMNI, Wind, ACE
-  if model eq 't89' then call_procedure,'t'+model,posname,kp=2.0,period=0.5
-  if model eq 't96' then call_procedure,'t'+model,posname,pdyn=2.0D,dsti=-30.0D,$
-  yimf=0.0D,zimf=-5.0D,period=0.5
+  if model eq 't89' then call_procedure,'tt89',posname,kp=2.0,period=0.5
+  if model eq 't96' then call_procedure,'tt96',posname,pdyn=2.0D,dsti=-30.0D,$
+                            yimf=0.0D,zimf=-5.0D,period=0.5
 
   ;;Vsw of 400 km/s and By=0, Bz=-5 nT (general default values from Tsyganenko02b)
 
@@ -207,23 +252,26 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
 
   ;;The t01 model requires a time history of solar wind values.
   if model eq 't01' then begin
-    timespan,x2[0],(x2[1] - x2[0]),/seconds
+    timespan,tr2[0],(tr2[1] - tr2[0]),/seconds
 
     g1 = 6. & g2 = 10.
-    if model eq 't01' then call_procedure,'t'+model,posname,pdyn=2.0D,dsti=-30.0D,$
-    yimf=0.0D,zimf=-5.0D,g1=g1,g2=g2,period=0.5
+    if model eq 't01' then call_procedure,'tt01',posname,pdyn=2.0D,dsti=-30.0D,$
+                              yimf=0.0D,zimf=-5.0D,g1=g1,g2=g2,period=0.5
 
     ;;return timespan to original
-    timespan,x[0],(x[1]-x[0]),/seconds
-    time_clip,'pos_gsm_bt01',x[0],x[1],/replace ;newname='POS_GSM_tclip'
+    timespan,tr[0],(tr[1]-tr[0]),/seconds
+    time_clip,'pos_gsm_bt01',tr[0],tr[1],/replace ;newname='POS_GSM_tclip'
 
   endif
 
   ;;--------------------------------------------------
 
 
-
-  copy_data,'pos_gsm_b'+model,rbspx+'_mag_gsm_'+model
+  if model eq 'igrf' then begin 
+    call_procedure,'tt89',/igrf_only,posname,period=0.5
+    copy_data,'pos_gsm_bt89',rbspx+'_mag_gsm_igrf'
+  endif else copy_data,'pos_gsm_b'+model,rbspx+'_mag_gsm_'+model
+    
 
   ;model output can be choppy (some problem within t89.pro). Smooth it here
   get_data,posname,data=dd
@@ -241,11 +289,12 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
   ;;         tplot,[rbspx+'_mag_gsm_t89_smoothed',rbspx+'_mag_gsm_t89_smoothed_smoothed']+'_detrend'
 
 
+
   ;Transform the GSM mag model to GSE
   cotrans,rbspx+'_mag_gsm_'+model,rbspx+'_mag_gse_'+model,/GSM2GSE
 
-  tinterpol_mxn,rbspx+'_mag_gse_'+model,rbspx+'_mag_gsm_for_subtract',newname=rbspx+'_mag_gse_'+model
-  tinterpol_mxn,rbspx+'_mag_gsm_'+model,rbspx+'_mag_gsm_for_subtract',newname=rbspx+'_mag_gsm_'+model
+  tinterpol_mxn,rbspx+'_mag_gse_'+model,rbspx+'_mag_gsm_for_subtract',newname=rbspx+'_mag_gse_'+model,/spline
+  tinterpol_mxn,rbspx+'_mag_gsm_'+model,rbspx+'_mag_gsm_for_subtract',newname=rbspx+'_mag_gsm_'+model,/spline
 
   rbsp_gse2mgse,rbspx+'_mag_gse_'+model,reform(wsc_GSE_tmp.y),newname=rbspx+'_mag_mgse_'+model
 
@@ -317,11 +366,11 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
     ;setenv,'ROOT_DATA_DIR=~/data' ;good for single user unix/linux system
     ;setenv,'ROOT_DATA_DIR=C:/Documents and Settings/YOURUSERNAME/My Documents' ;example  if you don't want to use the default windows location (C:/data/ or E:/data/)
 
-    if model eq 't01' then timespan,x2[0],(x2[1] - x2[0]),/seconds
+    if model eq 't01' then timespan,tr2[0],(tr2[1] - tr2[0]),/seconds
 
     ;load wind data
-    wi_mfi_load,tplotnames=tn
-    wi_3dp_load,tplotnames=tn2
+    if ~tdexists('wi_h0_mfi_B3GSE',tr[0],tr[1]) then wi_mfi_load,tplotnames=tn
+    if ~tdexists('wi_3dp_k0_ion_density',tr[0],tr[1]) then wi_3dp_load,tplotnames=tn2
 
     if KEYWORD_SET(tn) and KEYWORD_SET(tn2) then begin
       if (tn[0] ne '') and (tn2[0] ne '') then begin
@@ -339,17 +388,17 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
         ;;only the By and Bz IMF components used
         store_data,'wi_imf',data={x:goo.x,y:[[goo.y[*,0]],[goo.y[*,1]],[goo.y[*,2]]]}
 
-        get_tsy_params,'kyoto_dst','wi_imf','wi_3dp_k0_ion_density','wi_3dp_k0_ion_vel',strupcase(model)
+        if model ne 'igrf' then get_tsy_params,'kyoto_dst','wi_imf','wi_3dp_k0_ion_density','wi_3dp_k0_ion_vel',strupcase(model)
 
 
         ;Call the model with the Wind parameters
-        if model eq 'igrf' then call_procedure,'igrf',posname,parmod=model+'_par',period=0.5 $
+        if model eq 'igrf' then call_procedure,'tt89',/igrf_only,posname,period=0.5 $
         else call_procedure,'t'+model,posname,parmod=model+'_par',period=0.5
 
 
         if model eq 't01' then begin
-          time_clip,'pos_gsm_bt01',x[0],x[1],/replace
-          timespan,x[0],(x[1] - x[0]),/seconds
+          time_clip,'pos_gsm_bt01',tr[0],tr[1],/replace
+          timespan,tr[0],(tr[1] - tr[0]),/seconds
         endif
 
 
@@ -357,29 +406,25 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
 
 
         ;Interpolate the model to the number of data points of actual data
-        tinterpol_mxn,rbspx+'_mag_gsm_'+model+'_wind',$
-        rbspx+'_mag_mgse',$
-        newname=rbspx+'_mag_gsm_'+model+'_wind'
+        tinterpol_mxn,rbspx+'_mag_gsm_'+model+'_wind',rbspx+'_mag_mgse',$
+        newname=rbspx+'_mag_gsm_'+model+'_wind',/spline
 
 
-        dif_data,rbspx+'_mag_gsm',$
-        rbspx+'_mag_gsm_'+model+'_wind',$
+        dif_data,rbspx+'_mag_gsm',rbspx+'_mag_gsm_'+model+'_wind',$
         newname=rbspx + '_mag_gsm_' + model + '_wind_dif'
 
         ;Transform the GSE model to MGSE
         cotrans,rbspx+'_mag_gsm_'+model+'_wind',rbspx+'_mag_gse_'+model+'_wind',/GSM2GSE
 
 
-        dif_data,rbspx+'_mag_gse_for_subtract',$
-        rbspx+'_mag_gse_'+model+'_wind',$
+        dif_data,rbspx+'_mag_gse_for_subtract',rbspx+'_mag_gse_'+model+'_wind',$
         newname=rbspx + '_mag_gse_' + model + '_wind_dif'
 
 
         ;Create and plot MGSE mag
         rbsp_gse2mgse,rbspx+'_mag_gse_'+model+'_wind',wsc_GSE_tmp.y,newname=rbspx+'_mag_mgse_'+model+'_wind'
 
-        dif_data,rbspx+'_mag_mgse_for_subtract',$
-        rbspx+'_mag_mgse_'+model+'_wind',$
+        dif_data,rbspx+'_mag_mgse_for_subtract',rbspx+'_mag_mgse_'+model+'_wind',$
         newname=rbspx + '_mag_mgse_' + model + '_wind_dif'
 
 
@@ -391,10 +436,10 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
     ;ACE (only available from 2011 on)
     ;-----------------------------------
 
-    if model eq 't01' then timespan,x2[0],(x2[1] - x2[0]),/seconds
+    if model eq 't01' then timespan,tr2[0],(tr2[1] - tr2[0]),/seconds
 
-    ace_mfi_load,tplotnames=tn
-    ace_swe_load,tplotnames=tn2
+    if ~tdexists('ace_k0_mfi_BGSEc',tr[0],tr[1]) then ace_mfi_load,tplotnames=tn
+    if ~tdexists('ace_k0_swe_Np',tr[0],tr[1]) then ace_swe_load,tplotnames=tn2
 
     if KEYWORD_SET(tn) and KEYWORD_SET(tn2) then begin
       if (tn[0] ne '') and (tn2[0] ne '') then begin
@@ -412,14 +457,14 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
 
         ;;only the By and Bz IMF components used
         store_data,'ace_imf',data={x:goo.x,y:[[goo.y[*,0]],[goo.y[*,1]],[goo.y[*,2]]]}
-        get_tsy_params,'kyoto_dst','ace_imf','ace_k0_swe_Np','ace_k0_swe_Vp',strupcase(model),/speed
+        if model ne 'igrf' then get_tsy_params,'kyoto_dst','ace_imf','ace_k0_swe_Np','ace_k0_swe_Vp',strupcase(model),/speed
 
-        if model eq 'igrf' then call_procedure,'igrf',posname,parmod=model+'_par',period=0.5 $
+        if model eq 'igrf' then call_procedure,'tt89',/igrf_only,posname,period=0.5 $
         else call_procedure,'t'+model,posname,parmod=model+'_par',period=0.5
 
         if model eq 't01' then begin
-          time_clip,'pos_gsm_bt01',x[0],x[1],/replace
-          timespan,x[0],(x[1] - x[0]),/seconds
+          time_clip,'pos_gsm_bt01',tr[0],tr[1],/replace
+          timespan,tr[0],(tr[1] - tr[0]),/seconds
         endif
 
 
@@ -427,14 +472,12 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
 
 
         ;Interpolate the model to the number of data points of actual data
-        tinterpol_mxn,rbspx+'_mag_gsm_'+model+'_ace',$
-        rbspx+'_mag_mgse',$
-        newname=rbspx+'_mag_gsm_'+model+'_ace'
+        tinterpol_mxn,rbspx+'_mag_gsm_'+model+'_ace',rbspx+'_mag_mgse',$
+        newname=rbspx+'_mag_gsm_'+model+'_ace',/spline
 
 
         ;Create and plot GSM mag
-        dif_data,rbspx+'_mag_gsm',$
-        rbspx+'_mag_gsm_'+model+'_ace',$
+        dif_data,rbspx+'_mag_gsm',rbspx+'_mag_gsm_'+model+'_ace',$
         newname=rbspx + '_mag_gsm_' + model + '_ace_dif'
 
 
@@ -443,15 +486,13 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
 
 
         ;Create and plot GSE mag
-        dif_data,rbspx+'_mag_gse_for_subtract',$
-        rbspx+'_mag_gse_'+model+'_ace',$
+        dif_data,rbspx+'_mag_gse_for_subtract',rbspx+'_mag_gse_'+model+'_ace',$
         newname=rbspx + '_mag_gse_' + model + '_ace_dif'
 
 
         ;Create and plot MGSE mag
         rbsp_gse2mgse,rbspx+'_mag_gse_'+model+'_ace',wsc_GSE_tmp.y,newname=rbspx+'_mag_mgse_'+model+'_ace'
-        dif_data,rbspx+'_mag_mgse_for_subtract',$
-        rbspx+'_mag_mgse_'+model+'_ace',$
+        dif_data,rbspx+'_mag_mgse_for_subtract',rbspx+'_mag_mgse_'+model+'_ace',$
         newname=rbspx + '_mag_mgse_' + model + '_ace_dif'
 
 
@@ -468,10 +509,9 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
     ;to remove gaps and flags in the tsyganemo parameter data, especially
     ;if you find that there are large gaps in the result
 
-    if model eq 't01' then timespan,x2[0],(x2[1] - x2[0]),/seconds
+    if model eq 't01' then timespan,tr2[0],(tr2[1] - tr2[0]),/seconds
 
-
-    omni_hro_load,tplotnames=tn
+    if ~tdexists('OMNI_HRO_1min_BY_GSM',tr[0],tr[1]) then omni_hro_load,tplotnames=tn
 
     if KEYWORD_SET(tn) then begin
       if tn[0] ne '' then begin
@@ -487,30 +527,28 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
 
         store_data,'omni_imf',data=['OMNI_HRO_1min_BY_GSM','OMNI_HRO_1min_BZ_GSM']
 
-        get_tsy_params,'kyoto_dst','omni_imf','OMNI_HRO_1min_proton_density','OMNI_HRO_1min_flow_speed',strupcase(model),/speed,/imf_yz
+        if model ne 'igrf' then get_tsy_params,'kyoto_dst','omni_imf','OMNI_HRO_1min_proton_density','OMNI_HRO_1min_flow_speed',strupcase(model),/speed,/imf_yz
 
 
-        if model eq 'igrf' then call_procedure,'igrf',posname,parmod=model+'_par',period=0.5 $
+        if model eq 'igrf' then call_procedure,'tt89',/igrf_only,posname,period=0.5 $
         else call_procedure,'t'+model,posname,parmod=model+'_par',period=0.5
 
 
         if model eq 't01' then begin
-          time_clip,'pos_gsm_bt01',x[0],x[1],/replace
-          timespan,x[0],(x[1] - x[0]),/seconds
+          time_clip,'pos_gsm_bt01',tr[0],tr[1],/replace
+          timespan,tr[0],(tr[1] - tr[0]),/seconds
         endif
 
         copy_data,'pos_gsm_b'+model,rbspx+'_mag_gsm_'+model+'_omni'
 
 
         ;Interpolate the model to the number of data points of actual data
-        tinterpol_mxn,rbspx+'_mag_gsm_'+model+'_omni',$
-        rbspx+'_mag_mgse',$
-        newname=rbspx+'_mag_gsm_'+model+'_omni'
+        tinterpol_mxn,rbspx+'_mag_gsm_'+model+'_omni',rbspx+'_mag_mgse',$
+        newname=rbspx+'_mag_gsm_'+model+'_omni',/spline
 
 
         ;Create and plot GSM mag
-        dif_data,rbspx+'_mag_gsm',$
-        rbspx+'_mag_gsm_'+model+'_omni',$
+        dif_data,rbspx+'_mag_gsm',rbspx+'_mag_gsm_'+model+'_omni',$
         newname=rbspx + '_mag_gsm_' + model + '_omni_dif'
 
 
@@ -519,15 +557,13 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
 
 
         ;Create and plot GSE mag
-        dif_data,rbspx+'_mag_gse_for_subtract',$
-        rbspx+'_mag_gse_'+model+'_omni',$
+        dif_data,rbspx+'_mag_gse_for_subtract',rbspx+'_mag_gse_'+model+'_omni',$
         newname=rbspx + '_mag_gse_' + model + '_omni_dif'
 
 
         ;Create and plot MGSE mag
         rbsp_gse2mgse,rbspx+'_mag_gse_'+model+'_omni',wsc_GSE_tmp.y,newname=rbspx+'_mag_mgse_'+model+'_omni'
-        dif_data,rbspx+'_mag_mgse_for_subtract',$
-        rbspx+'_mag_mgse_'+model+'_omni',$
+        dif_data,rbspx+'_mag_mgse_for_subtract',rbspx+'_mag_mgse_'+model+'_omni',$
         newname=rbspx + '_mag_mgse_' + model + '_omni_dif'
 
 
@@ -695,7 +731,7 @@ pro rbsp_efw_dcfield_removal_crib,probe,no_spice_load=no_spice_load,$
 
   if model eq 't01' then begin
     tn = tnames()
-    for i=0,n_elements(tn)-1 do time_clip,tn[i],x[0],x[1],/replace
+    for i=0,n_elements(tn)-1 do time_clip,tn[i],tr[0],tr[1],/replace
   endif
 
 end

@@ -14,14 +14,16 @@
 ;       REBUILD:  Normally, months containing only reconstructed kernels are not
 ;                 updated.  Set this keyword to rebuild the entire database.
 ;
+;       TSTART:   Rebuild all files that contain data after this date.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-18 15:35:55 -0800 (Sun, 18 Nov 2018) $
-; $LastChangedRevision: 26145 $
+; $LastChangedDate: 2020-10-21 15:38:28 -0700 (Wed, 21 Oct 2020) $
+; $LastChangedRevision: 29269 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_update.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-10-13
 ;-
-pro maven_orbit_update, tstep=tstep, rebuild=rebuild
+pro maven_orbit_update, tstep=tstep, rebuild=rebuild, tstart=tstart
 
 ; First month is Sep 2014 -> moi on 2014-09-22/02:24:00
 
@@ -41,6 +43,7 @@ pro maven_orbit_update, tstep=tstep, rebuild=rebuild
   
   k = where(stat.name eq 'maven_orb_rec.bsp',nk)
   if (nk gt 0) then trec = stat[k[0]].trange[1] else trec = 0D
+  if keyword_set(tstart) then trec = time_double(tstart) < trec
   if keyword_set(rebuild) then trec = 0D
   
   dmonth = 0

@@ -75,7 +75,7 @@
 ;
 ;   SNAP:      Plot a snapshot.  Default = 0 (no).
 ;
-;   TPLOT:     Make a tplot variable.  Default = 1 (yes).
+;   TPLOT:     Make a tplot variable.  Default = 0 (no).
 ;
 ;   MAP3D:     Take into account the pitch angle width even for 3D
 ;              data. This keyword only works 3D data. The mapping
@@ -131,8 +131,8 @@
 ;CREATED BY:      Takuya Hara on 2014-09-24.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-03-15 12:44:29 -0700 (Fri, 15 Mar 2019) $
-; $LastChangedRevision: 26817 $
+; $LastChangedDate: 2020-08-20 11:56:32 -0700 (Thu, 20 Aug 2020) $
+; $LastChangedRevision: 29053 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_resample.pro $
 ;
 ;-
@@ -519,8 +519,6 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
        trange = minmax(dat_time)
        ndat = N_ELEMENTS(dat_time)
        idx = LINDGEN(ndat)
-
-       IF SIZE(tplot, /type) EQ 0 THEN tplot = 1
     ENDELSE
   endif
 
@@ -543,7 +541,6 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
   ENDIF
   pflg = BYTARR(4)
   FOR i=0, 3 DO pflg[i] = (pstyle AND 2L^i)/2L^i
-  pflg = [0B,1B,0B,0B]  ; the other flags don't work for me :(
 
 ; Field of view masking
 

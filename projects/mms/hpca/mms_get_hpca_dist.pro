@@ -35,8 +35,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-07-24 11:04:47 -0700 (Fri, 24 Jul 2020) $
-;$LastChangedRevision: 28935 $
+;$LastChangedDate: 2020-11-12 13:32:47 -0800 (Thu, 12 Nov 2020) $
+;$LastChangedRevision: 29351 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_get_hpca_dist.pro $
 ;-
 
@@ -159,13 +159,13 @@ endif
 ; Allow calling code to request a time range or specify index to specific sample.
 ;-----------------------------------------------------------------
 if ~undefined(single_time) then begin
-  nearest_time = find_nearest_neighbor(time_data, time_double(single_time))
+  nearest_time = find_nearest_neighbor((time_data)[full], time_double(single_time))
   if nearest_time eq -1 then begin
     dprint, 'Cannot find requested time in the data set: ' + time_string(single_time)
     return, 0
   endif
-  nearest_index = where(time_data eq nearest_time, n_full)
-  full = full[nearest_index]
+  nearest_index = where((time_data)[full] eq nearest_time, n_full)
+  full = full[nearest_index[0]]
 endif else begin
   if ~undefined(index) then begin
     full = full[index]
@@ -292,9 +292,11 @@ dphi = median( (*azimuth.y)[full,*,*,1:*] - (*azimuth.y)[full,*,*,0:*], dim=4 ) 
 dphi = rebin( dphi, [dimen(dphi),dim[1]] ) ;expand back to original dimensions
 dist.dphi = transpose( dphi, [1,3,2,0] ) ;shuffle dimensions
 
+
+data_times = *p.x
+
 ;copy particle data
 for i=0,  n_elements(dist)-1 do begin
-  data_times = *p.x
   ; need to extract the data from the center of the half-spin
   if data_idx[i]-n_times/2. lt 0 then start_idx = 0 else start_idx = data_idx[i]-n_times/2.
   if data_idx[i]+n_times/2.-1 ge n_elements(data_times) then end_idx = n_elements(data_times)-1 else end_idx = data_idx[i]+n_times/2.-1

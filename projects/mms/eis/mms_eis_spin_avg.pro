@@ -16,7 +16,7 @@
 ;                       The default is 'flux'.
 ;         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
 ;                       preserving original tplot variable.
-;         species:      species (should be: proton, oxygen, alpha or electron)
+;         species:      species (should be: proton, oxygen, helium (formerly alpha) or electron)
 ;         multisc:      set equal to 1 if trying to use data combined from multiple sc 
 ;
 ; OUTPUT:
@@ -27,13 +27,14 @@
 ;       + 2018-02-19, I. Cohen          : added 'probe_string' variable to differentiate from probe(s) and avoid
 ;                                         errors with overwriting in other procedures
 ;       + 2018-06-14, I. Cohen          : changed 'datatype' to 'new_datatype' in definition of p_num to stop error
-;                                         when handling 'combined' data                           
+;                                         when handling 'combined' data   
+;       + 2021-02-09, I. Cohen          : updated possible species under KEYWORDS header                        
 ;       
 ;       
 ;       
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-06-14 19:25:13 -0700 (Thu, 14 Jun 2018) $
-;$LastChangedRevision: 25357 $
+;$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
+;$LastChangedRevision: 29648 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_spin_avg.pro $
 ;-
 

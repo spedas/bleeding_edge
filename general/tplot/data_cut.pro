@@ -30,6 +30,7 @@
 ;                Default value is 5, in units of the average time interval:
 ;                delta_t = (t(end)-t(start)/number of data points)
 ;  MISSING:      Value to set the new y data to for data gaps.  Default is NAN.
+;  LAST_VALUE:  Set this keyword to return the last value of y array:  y[index]    (no interpolation performed)
 ;
 ;CREATED BY:	 Davin Larson
 ;LAST MODIFICATION:     @(#)data_cut.pro	1.19 02/04/17
@@ -38,7 +39,7 @@
 FUNCTION data_cut,name,t, $
    COUNT=count, $
    EXTRAPOLATE=EXTRAPOLATE,INTERP_GAP=INTERP_GAP,gap_thresh=gap_thresh,$
-   GAP_DIST=GAP_DIST,MISSING=MISSING
+   GAP_DIST=GAP_DIST,MISSING=MISSING,LAST_VALUE=LAST_VALUE
 
 if size(/type,name) eq 7 or size(/type,name) eq 2 or size(/type,name) eq 3 then begin
   get_data,name,data=dat,index=h
@@ -64,13 +65,18 @@ nt = dimen1(t)
 count = nt
 nd1 = dimen1(dat.y)
 nd2 = dimen2(dat.y)
-y = fltarr(nt,nd2)
 if n_elements(dat.x) le 1 then return,0
 
-;do the interpolation, including the gaps and ends
-for i=0,nd2-1 do begin
-  y[*,i] = interp(double(dat.y[*,i]),dat.x,t,interp_thr = gap_thresh)
-endfor
+if 1 then begin
+  y = interp( dat.y, dat.x, t, interp_thr=gap_thresh, last_value=last_value  )
+endif else begin      
+  dprint,'  This old method was very sloppy and lost precision by forcing floating point precision'
+  y = fltarr(nt,nd2)
+  ;do the interpolation, including the gaps and ends
+  for i=0,nd2-1 do begin
+    y[*,i] = interp(double(dat.y[*,i]),dat.x,t,interp_thr = gap_thresh,last_value=last_value)
+  endfor  
+endelse
 
 if not keyword_set(EXTRAPOLATE) then begin
   tlim = minmax(dat.x)

@@ -398,7 +398,7 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color, varformat =
           options, src_name, 'panel_size', 2.
           options, src_name_re, 'ytitle', ytitle_re
           options, src_name_im, 'ytitle', ytitle_im
-          options, src_name, 'color_table', 39
+          ;options, src_name, 'color_table', 39
 
           cross_items = prefix + ['CCSDS_MET_Seconds', $
             'CCSDS_MET_SubSeconds', $

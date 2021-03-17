@@ -39,6 +39,8 @@
 ;
 ;   L2ONLY:    Only process data using L2 MAG data.
 ;
+;   ALLBAD:    Assume all data are affected by low-energy anomaly.
+;
 ;   OUTPUT_PATH: An output_path for testing, the save file will be put into 
 ;                OUTPUT_PATH/yyyy/mm/.  Directories are created as needed.
 ;                Default = root_data_dir() + 'maven/data/sci/swe/kp'.
@@ -46,14 +48,15 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-08-27 16:58:12 -0700 (Tue, 27 Aug 2019) $
-; $LastChangedRevision: 27686 $
+; $LastChangedDate: 2021-02-18 16:18:25 -0800 (Thu, 18 Feb 2021) $
+; $LastChangedRevision: 29682 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_kp.pro $
 ;
 ;-
 
 pro mvn_swe_kp, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, $
-                mask_sc=mask_sc, mom=mom, l2only=l2only, output_path=output_path
+                mask_sc=mask_sc, mom=mom, l2only=l2only, output_path=output_path, $
+                allbad=allbad
 
   compile_opt idl2
 
@@ -63,6 +66,7 @@ pro mvn_swe_kp, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, $
 
   if (size(ddd,/type) eq 0) then ddd = 0
   if (size(mom,/type) eq 0) then mom = 1
+  allbad = keyword_set(allbad)
 
 ; Make sure all needed data are available
 
@@ -302,7 +306,7 @@ pro mvn_swe_kp, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, $
   mpans = 'mvn_swe_' + ['shape_par','spec_dens','spec_temp','efpos_5_100','efneg_5_100']
   for i=0,4 do begin
     get_data, mpans[i], data=dat
-    mvn_swe_lowe_mask, dat
+    mvn_swe_lowe_mask, dat, allbad=allbad
     store_data, mpans[i], data=dat
   endfor
 

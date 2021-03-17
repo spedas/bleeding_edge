@@ -13,12 +13,12 @@
 ;       Yuki Harada on 2016-03-04
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-06-06 16:26:16 -0700 (Wed, 06 Jun 2018) $
-; $LastChangedRevision: 25336 $
+; $LastChangedDate: 2021-01-14 23:35:04 -0800 (Thu, 14 Jan 2021) $
+; $LastChangedRevision: 29602 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/general/spice/kgy_spice_kernels.pro $
 ;-
 
-function kgy_spice_kernels, trange=trange, source=source, clear=clear, load=load, last_version=last_version, spk_gaps=spk_gaps
+function kgy_spice_kernels, trange=trange, source=source, clear=clear, load=load, last_version=last_version, spk_gaps=spk_gaps, _extra=_extra
 
 if spice_test() eq 0 then return,''
 syst0 = systime(/sec)
@@ -28,7 +28,7 @@ if size(last_version,/type) eq 0 then last_version=1
 tb = scope_traceback(/structure)
 this_dir = file_dirname(tb[n_elements(tb)-1].filename)+'/' ; the directory this file resides in (determined at run time)
 
-darts = spice_file_source(remote_data_dir='http://darts.jaxa.jp/pub/spice/',last_version=last_version)
+darts = spice_file_source(remote_data_dir='https://darts.jaxa.jp/pub/spice/', last_version=last_version, _extra=_extra)
 
 names = ['STD','CK','FK','IK','PCK','SCLK','SPK']
 

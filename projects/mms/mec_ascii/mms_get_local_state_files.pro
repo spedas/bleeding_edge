@@ -8,12 +8,12 @@
 ;  
 ;Calling Sequence:
 ;  
-;  files = mms_get_local_state_files( probe=probe, instrument=instrument, $
-;            data_rate=data_rate, level=level, datatype=datatype, trange=trange)
+;  files = mms_get_local_state_files(probe=probe, level=level, filetype=filetype, trange=trange)
 ;
 ;Input:
 ;  probe:  (string) Full spacecraft designation, e.g. 'mms1'
-;  filetype:  (string) Instrument designation, e.g. 'hpca' 
+;  filetype:  (string) state file type, e.g. 'eph' or 'att' 
+;  level: (string) state level; either 'def' (for definitive) or 'pred' (for predicted)
 ;  trange:  (string/double) Two element time range, e.g. ['2015-06-22','2015-06-23']
 ;
 ;Output:
@@ -23,8 +23,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-05-25 14:40:54 -0700 (Wed, 25 May 2016) $
-;$LastChangedRevision: 21203 $
+;$LastChangedDate: 2020-09-08 13:45:22 -0700 (Tue, 08 Sep 2020) $
+;$LastChangedRevision: 29123 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec_ascii/mms_get_local_state_files.pro $
 ;-
 
@@ -72,7 +72,7 @@ basic_inputs = [probe, instrument, level, filetype]
 ;     and FILETYPE is either DEFATT, PREDATT, DEFEPH, PREDEPH in uppercase
 ;     and start/endDate is YYYYDOY
 ;     and version is Vnn (.V00, .V01, etc..)
-dir_pattern = strjoin( basic_inputs, s)+s
+; dir_pattern = strjoin( basic_inputs, s)+s ; not actually used?
 file_pattern = strupcase(probe)+f+strupcase(level)+strupcase(filetype)+f+'[0-9]{7}'+f+'[0-9]{7}'
 
 ;escape backslash in case of Windows

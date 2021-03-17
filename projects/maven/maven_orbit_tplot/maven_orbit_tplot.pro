@@ -148,9 +148,13 @@
 ;
 ;       RESTORE:  Restore tplot variables and the common block from a save file.
 ;
+;       MISSION:  Restore save files that span from Mars orbit insertion to the 
+;                 present.  These files are updated periodically.  Together, the
+;                 save files are 8.7 GB in size.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-08-03 16:47:52 -0700 (Mon, 03 Aug 2020) $
-; $LastChangedRevision: 28977 $
+; $LastChangedDate: 2021-03-02 12:52:49 -0800 (Tue, 02 Mar 2021) $
+; $LastChangedRevision: 29732 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -161,9 +165,12 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
                        colors=colors, reset_trange=reset_trange, nocrop=nocrop, spk=spk, $
                        segments=segments, shadow=shadow, datum=dtm, noload=noload, $
                        pds=pds, verbose=verbose, clear=clear, success=success, $
-                       save=save, restore=restore
+                       save=save, restore=restore, mission=mission
 
   @maven_orbit_common
+
+  rootdir = 'maven/anc/spice/sav/'
+  ssrc = mvn_file_source(archive_ext='')  ; don't archive old files
 
 ; Clear the common block and return
 
@@ -205,7 +212,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 ; Create a save file
 
   if (size(save,/type) eq 7) then begin
-    path = root_data_dir() + 'maven/anc/spice/sav/'
+    path = root_data_dir() + rootdir
     fname = path + save + '.sav'
     save, time, state, ss, wind, sheath, pileup, wake, sza, torb, period, $
           lon, lat, hgt, datum, mex, rcols, orbnum, orbstat, file=fname
@@ -217,8 +224,15 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
 ; Restore from a save file
 
+  if keyword_set(mission) then begin
+    fname = 'maven_moi_present.*'
+    file = mvn_pfp_file_retrieve(rootdir+fname,last_version=0,source=ssrc,verbose=2)
+    nfiles = n_elements(file)
+    restore = 'maven_moi_present'
+  endif
+
   if (size(restore,/type) eq 7) then begin
-    path = root_data_dir() + 'maven/anc/spice/sav/'
+    path = root_data_dir() + rootdir
     fname = path + restore + '.sav'
     restore, file=fname
 
@@ -256,9 +270,6 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
              return
            end
   endcase
-
-  rootdir = 'maven/anc/spice/sav/'
-  ssrc = mvn_file_source(archive_ext='')  ; don't archive old files
 
   treset = 0  
   tplot_options, get=topt
@@ -792,7 +803,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
                            else options,'alt2','constant',-1
 
   if keyword_set(pds) then begin
-    nmon = 20
+    nmon = 100  ; extends to 2040-02-15
     pds_rel = replicate(time_struct('2015-05-15'),nmon)
     pds_rel.month += 3*indgen(nmon)
     pds_rel = time_double(pds_rel)
@@ -820,9 +831,18 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
     ptime = torb
     palt = torb
     plon = torb
+    plonx = torb
+    plony = torb
     plat = torb
     psza = torb
     sma = dblarr(norb-3L,3)
+
+    d2sza = spl_init(time, sza)
+    d2lat = spl_init(time, lat)
+    lonx = cos(lon*!dtor)
+    lony = sin(lon*!dtor)
+    d2lonx = spl_init(time, lonx)
+    d2lony = spl_init(time, lony)
 
     hwind = twind
     hsheath = tsheath
@@ -833,22 +853,27 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
       p1 = min(alt[gndx[gap[i]:(gap[i+1L]-1L)]],j)
       j1 = gndx[j+gap[i]]
+      jndx = [-1L, 0L, 1L] + j1
+      parabola_vertex, time[jndx], alt[jndx], t1, p1
 
       p2 = min(alt[gndx[gap[i+1L]:(gap[i+2L]-1L)]],j)
       j2 = gndx[j+gap[i+1L]]
+      jndx = [-1L, 0L, 1L] + j2
+      parabola_vertex, time[jndx], alt[jndx], t2, p2
     
       dj = double(j2 - j1 + 1L)
 
       k = i - 1L
-    
-      torb[k] = time[(j1+j2)/2L]
-      period[k] = (time[j2] - time[j1])/3600D
 
-      ptime[k] = time[j1]
+      torb[k] = (t1 + t2)/2D
+      period[k] = (t2 - t1)/3600D
+
+      ptime[k] = t1
       palt[k] = p1         ; minimum altitude, not geometric periapsis
-      plon[k] = lon[j1]
-      plat[k] = lat[j1]
-      psza[k] = sza[j1]
+      plonx[k] = spl_interp(time, lonx, d2lonx, t1)
+      plony[k] = spl_interp(time, lony, d2lony, t1)
+      plat[k] = spl_interp(time, lat, d2lat, t1)
+      psza[k] = spl_interp(time, sza, d2sza, t1)
 
       indx = where(finite(wind[j1:j2,0]), count)
       twind[k] = double(count)/dj
@@ -878,6 +903,10 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
       sma[k,0:2] = ss[indx[0]+j1,0:2]/ss[indx[0]+j1,3]
 
     endfor
+
+    plon = atan(plony, plonx)*!radeg
+    indx = where(plon lt 0., count)
+    if (count gt 0L) then plon[indx] += 360.
   endif
 
   if keyword_set(swia) then begin

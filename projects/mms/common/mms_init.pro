@@ -14,7 +14,7 @@
 ;                  to this root directory.;
 ;
 ;   !MMS.REMOTE_DATA_DIR   (warning: SPDF ONLY) - This is the URL of the server that can provide the data files.
-;                  (default is: "https://spdf.sci.gsfc.nasa.gov/pub/data/mms/")
+;                  (default is: "https://spdf.gsfc.nasa.gov/pub/data/mms/")
 ;                  if the software does not find a needed file in LOCAL_DATA_DIR,
 ;                  then it will attempt to download the data from the URL and REMOTE_DATA_DIR is defined,
 ;                  the software will attempt to download the file from REMOTE_DATA_DIR, place it in LOCAL_DATA_DIR
@@ -55,8 +55,8 @@
 ;                      this debugging fix is known to cause problems with widgets on some machines
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-08-30 10:24:21 -0700 (Fri, 30 Aug 2019) $
-; $LastChangedRevision: 27702 $
+; $LastChangedDate: 2020-08-06 11:36:42 -0700 (Thu, 06 Aug 2020) $
+; $LastChangedRevision: 29000 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_init.pro $
 ;-
 

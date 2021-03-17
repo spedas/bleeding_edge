@@ -30,12 +30,13 @@
 ;                processed, the deault is 30. This is a fail-safe to
 ;                avoid mass reprocessing of data, if a bunch of file
 ;                ctime values are inadvertently changed. If more files
-;                than this limit are tried, an error email will be sent.
+;                than this limit are tried, an error email will be
+;                sent.
 ;HISTORY:
 ;Hacked from thm_all_l1l2_gen, 17-Apr-2014, jmm
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-01-24 09:13:20 -0800 (Fri, 24 Jan 2020) $
-; $LastChangedRevision: 28228 $
+; $LastChangedDate: 2020-08-18 09:53:10 -0700 (Tue, 18 Aug 2020) $
+; $LastChangedRevision: 29040 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_call_sta_l2gen.pro $
 ;-
 Pro mvn_call_sta_l2gen, time_in = time_in, $
@@ -45,6 +46,7 @@ Pro mvn_call_sta_l2gen, time_in = time_in, $
                         search_time_range = search_time_range, $
                         days_in = days_in, $
                         max_l0_files = max_l0_files, $
+                        iv1_process = iv1_process, $
                         _extra = _extra
   
   common temp_call_sta_l2gen, load_position
@@ -67,7 +69,7 @@ Pro mvn_call_sta_l2gen, time_in = time_in, $
      help, /last_message, output = err_msg
      For ll = 0, n_elements(err_msg)-1 Do print, err_msg[ll]
 ;Open a file print out the error message, only once
-     If(einit Eq 0) Then Begin
+     If(einit Eq 0 && getenv('USER') Eq 'muser') Then Begin
         einit = 1
         efile = '/mydisks/home/maven/muser/sta_l2_err_msg.txt'+ff_ext
         openw, eunit, efile, /get_lun
@@ -80,7 +82,7 @@ Pro mvn_call_sta_l2gen, time_in = time_in, $
         cmd_rq = 'mailx -s "Problem with STA L2 process" jimm@ssl.berkeley.edu < '+efile
         spawn, cmd_rq
         file_delete, efile
-     Endif
+     Endif Else init = 1
 
      case load_position of
         'init':begin
@@ -225,12 +227,9 @@ Pro mvn_call_sta_l2gen, time_in = time_in, $
            yr = strmid(timei0, 0, 4)
            mo = strmid(timei0, 4, 2)
 ;filei_dir is the output directory, not necessarily the search
-;directory
+;directory, manage permissions here for the full path
            filei_dir = odir+instrk+'/l2/'+yr+'/'+mo+'/'
-           If(is_string(file_search(filei_dir)) Eq 0) Then Begin
-              message, /info, 'Creating: '+filei_dir
-              file_mkdir, filei_dir
-           Endif
+           mvn_l2gen_outdir, odir+instrk+'/l2/', year = yr, month = mo
            load_position = 'l2gen'
            message, /info, 'PROCESSING: '+instrk+' FOR: '+timei
            Case instrk Of

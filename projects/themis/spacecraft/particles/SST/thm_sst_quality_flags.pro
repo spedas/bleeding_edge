@@ -14,8 +14,8 @@
 ;  Set timespan by calling timespan outside of this routine.(e.g. time/duration is not an argument)
 ;  
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-10-02 11:19:09 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24078 $
+; $LastChangedDate: 2021-03-15 12:39:09 -0700 (Mon, 15 Mar 2021) $
+; $LastChangedRevision: 29760 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/SST/thm_sst_quality_flags.pro $
 ;-
 
@@ -39,11 +39,17 @@
     
     if is_struct(d) then begin
       bit1 = (d.y ne 5) and (d.y ne 10)
+;also flag all attenuator shifts, plus/minus 1, jmm, 2021-03-09
+      ss_tr = where(d.y[1:*] Ne d.y[0:n_elements(d.y)-1], ntr)
+;      ss_tr0 = ss_tr & bi10 = bit1 & bi10[ss_tr0] = 1
+      If(ntr Gt 0) Then Begin
+;flag the point before and the next point
+         ss_tr = ([ss_tr, ss_tr+1] > 0) < (n_elements(d.y)-1)
+         bit1[ss_tr] = 1
+      Endif
     endif else begin
       bit1 = 0
     endelse
-    
-    
     ;state time abcissas won't match sst time abcissas by default 
     tinterpol_mxn,'th'+probe+'_state_spinper','th'+probe+'_'+datatype+'_tot',/overwrite
     get_data,'th'+probe+'_state_spinper',data=d

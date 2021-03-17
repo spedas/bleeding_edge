@@ -67,8 +67,8 @@
 ;         options to specify the layout of that panel. 
 ; 
 ;         If you set the xmargin or ymargin keyword the margin will be
-;         relative to the overall size of that panel. When using the
-;         not using the noisotropic keyword the procedure will make
+;         relative to the overall size of that panel. When not using the
+;         using the noisotropic keyword the procedure will make
 ;         each axis vary over the same range AND make the
 ;         largest possible square window given the size of the panel
 ;         and the sizes of the margins you have provided, if possible.
@@ -481,11 +481,13 @@ pro p3p_parse_elements,string, element, vectors, custom, ele = ele, title = titl
 
 ;main function
 pro plotxy, vectors, versus=versus, symsize=symsize, custom = custom,title=title,overplot=overplot,$
- addpanel=addpanel,multi=multi,mmargin=mmargin,mtitle=mtitle,mpanel=mpanel,memsave=memsave,noisotropic=noisotropic,linestyle=linestyle, xrange = xrange,$
- yrange = yrange, pstart=pstart,pstop=pstop, startsymcolor=startsymcolor,stopsymcolor=stopsymcolor, window = window, xsize = xsize, ysize = ysize, xmargin = xmargin, ymargin = ymargin,$
- wtitle=wtitle,xtitle=xtitle,ytitle=ytitle,colors=colors,replot=replot,xlog=xlog,ylog=ylog,units=units,labels=labels, $
- grid=grid,markends=markends,marks=marks,xtick_get=xtick_get,ytick_get=ytick_get,xistime=xistime,$
- get_plot_pos=get_plot_pos,_extra = _extra
+            addpanel=addpanel,multi=multi,mmargin=mmargin,mtitle=mtitle,mpanel=mpanel,memsave=memsave,$
+            isotropic=isotropic, noisotropic=noisotropic, linestyle=linestyle, xrange = xrange,$
+            yrange = yrange, pstart=pstart,pstop=pstop, startsymcolor=startsymcolor,stopsymcolor=stopsymcolor, $
+            window = window, xsize = xsize, ysize = ysize, xmargin = xmargin, ymargin = ymargin,$
+            wtitle=wtitle,xtitle=xtitle,ytitle=ytitle,colors=colors,replot=replot,xlog=xlog,ylog=ylog,units=units,labels=labels, $
+            grid=grid,markends=markends,marks=marks,xtick_get=xtick_get,ytick_get=ytick_get,xistime=xistime,$
+            get_plot_pos=get_plot_pos,_extra = _extra
 
 compile_opt idl2
 
@@ -512,7 +514,7 @@ if keyword_set(overplot) && keyword_set(mpanel) then begin
     message, 'cannot set overplot and mpanel at the same time: overplot can only overlay a plot over the last panel used'
 endif
 
-if keyword_set(noisotropic) then begin
+if keyword_set(noisotropic) && ~keyword_set(isotropic) then begin
   isotropic = 0
 endif else begin
   isotropic = 1
@@ -660,7 +662,24 @@ endif
 ;create blank plot
 if ~keyword_set(overplot) then begin
 
-   pos = pxy_get_pos([min_x,max_x],[min_y,max_y],isotropic,xmargin,ymargin,mpanel)
+   xlimits = [min_x, max_x]
+   if keyword_set(xlog) then begin
+      xmin0 = alog10(min_x)
+      xmax0 = alog10(max_x)
+      if ~finite(xmin0) || ~finite(xmax0) then begin
+         dprint, 'Bad plot limit input for /xlog', dlevel=1
+      endif else xlimits = [xmin0, xmax0]
+   endif
+   ylimits = [min_y, max_y]
+   if keyword_set(ylog) then begin
+      ymin0 = alog10(min_y)
+      ymax0 = alog10(max_y)
+      if ~finite(ymin0) || ~finite(ymax0) then begin
+         dprint, 'Bad plot limit input for /ylog', dlevel=1
+      endif else ylimits = [ymin0, ymax0]
+   endif
+
+   pos = pxy_get_pos(xlimits,ylimits,isotropic,xmargin,ymargin,mpanel)
 
    if keyword_set(grid) then begin
       ticklen = 1.0
@@ -684,7 +703,7 @@ if ~keyword_set(overplot) then begin
       x_time_setup.xtickv+=x_time_offset
       extract_tags,_extra_plot,x_time_setup,/preserve ;merge time_settings into other settings
    endif
-      
+
    plot,[min_x,max_x],[min_y,max_y],yrange=[min_y,max_y],title=title,xtitle=xtitle,ytitle=ytitle, pos=pos,$
            _extra = _extra_plot,/nodata,noerase=noerase,xlog=xlog,ylog=ylog,isotropic=0,ticklen=ticklen,xstyle=1,ystyle=1,xtick_get=xtick_get,$
            ytick_get=ytick_get

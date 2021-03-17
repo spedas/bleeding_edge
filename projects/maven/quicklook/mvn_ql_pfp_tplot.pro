@@ -63,16 +63,17 @@
 ;CREATED BY:      Takuya Hara on 2015-04-09.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-12-19 14:15:40 -0800 (Thu, 19 Dec 2019) $
-; $LastChangedRevision: 28130 $
+; $LastChangedBy: hara $
+; $LastChangedDate: 2021-02-01 11:22:49 -0800 (Mon, 01 Feb 2021) $
+; $LastChangedRevision: 29638 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_ql_pfp_tplot.pro $
 ;
 ;-
 PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no_download=no_download, $
                       pad=pad, tplot=tplot, window=window, tname=ptname, phobos=phobos, $
                       bcrust=bcrust, burst_bar=bbar, bvec=bvec, sundir=sundir, tohban=tohban, tobhan=tobhan, $
-                      swia=swi, swea=swe, static=sta, sep=sep, mag=mag, lpw=lpw, euv=euv, spaceweather=spw, pos=pos, restore=restore, png=png, filename=filename
+                      swia=swi, swea=swe, static=sta, sep=sep, mag=mag, lpw=lpw, euv=euv, spaceweather=spw, pos=pos, $
+                      restore=restore, png=png, filename=filename, res5min=res5min
 
   oneday = 24.d0 * 3600.d0
   nan = !values.f_nan
@@ -360,6 +361,42 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
      undefine, w, v, nw, nv
      options, pname, bottom=7, top=254, no_color_scale=0
      undefine, pname, pcomp, ip
+     
+     IF KEYWORD_SET(res5min) THEN BEGIN
+        ptime1 = SYSTIME(/sec)
+        mvn_sep_var_restore, /lowres, /basic, units='rate'
+        pname = tnames('*', create_time=ptime2)
+        pname = pname[WHERE(ptime2 GT ptime1)]
+        
+        w = WHERE(STRMATCH(pname, '*_B-O_*') OR STRMATCH(pname, '*_A-O_*') OR STRMATCH(pname, '*_A-F_*') OR STRMATCH(pname, '*_B-F_*'), nw, complement=v, ncomplement=nv) 
+        IF nv GT 0 THEN store_data, pname[v], /delete
+        IF nw GT 0 THEN BEGIN
+           pname = pname[w]
+           FOR i=0, nw-1 DO BEGIN
+              pn = STRSPLIT(pname[i], '_', /extract)
+              CASE pn[3] OF
+                 'B-O': BEGIN
+                    pn[3] = 'f_ion'
+                    ptitle = 'F!CIon'
+                 END 
+                 'A-O': BEGIN
+                    pn[3] = 'r_ion'
+                    ptitle = 'R!CIon'
+                 END 
+                 'A-F': BEGIN
+                    pn[3] = 'f_elec'
+                    ptitle = 'F!Ce!E-!N'
+                 END 
+                 'B-F': BEGIN
+                    pn[3] = 'r_elec'
+                    ptitle = 'R!Ce!E-!N'
+                 END 
+              ENDCASE 
+              ptitle = 'SEP ' + STRMID(pn[2], 0, 1, /reverse) + ptitle
+              store_data, pname[i], newname=STRJOIN([pn[0], pn[2] + pn[3], pn[4], pn[1]], '_'), limit={ytitle: ptitle, ysubtitle: 'Energy [keV]', ztitle: 'CRATE'}
+           ENDFOR 
+        ENDIF 
+     ENDIF 
   ENDIF 
 
   ; LPW
@@ -518,10 +555,10 @@ PRO mvn_ql_pfp_tplot, var, orbit=orbit, verbose=verbose, no_delete=no_delete, no
      IF nidx GT 0 THEN bphi[idx] += 2. * !pi
      undefine, idx, nidx
 
-     aopt = {yaxis: 1, ystyle: 1, yrange: [-90., 90.], ytitle: 'Bthe [deg]', color: 2, yticks: 4, yminor: 3}
+     aopt = {yaxis: 1, ystyle: 1, yrange: [-90., 90.], ytitle: 'Bthe [deg]', color: 6, yticks: 4, yminor: 3}
      IF tag_exist(topt, 'charsize') THEN str_element, aopt, 'charsize', topt.charsize, /add
      store_data, 'mvn_mag_bang_1sec', data={x: b.x, y: [ [2.*bthe*!RADEG + 180.], [bphi*!RADEG]]}, $
-                 dlimits={psym: 3, colors: [2, 0], ytitle: 'MAG ' + '(' + frame + ')', ysubtitle: 'Bphi [deg]', $
+                 dlimits={psym: 3, colors: [6, 0], ytitle: 'MAG ' + '(' + frame + ')', ysubtitle: 'Bphi [deg]', $
                           yticks: 4, yminor: 3, constant: 180, axis: aopt}
      ylim, 'mvn_mag_bang_1sec', 0., 360., 0., /def
      options, 'mvn_mag_bang_1sec', ystyle=9
