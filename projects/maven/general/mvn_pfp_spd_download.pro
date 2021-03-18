@@ -32,9 +32,9 @@
 ;   Beware of file pathnames that include the character sequences:
 ;   YY,  MM, DD, hh, mm, ss, .f  since these can be retranslated to
 ;   the time
-; $LastChangedBy: muser $
-; $LastChangedDate: 2020-12-15 13:11:25 -0800 (Tue, 15 Dec 2020) $
-; $LastChangedRevision: 29499 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2021-03-17 12:57:32 -0700 (Wed, 17 Mar 2021) $
+; $LastChangedRevision: 29766 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_pfp_spd_download.pro $
 ;-
 function mvn_pfp_spd_download,pathname,trange=trange,verbose=verbose, source=src,files=files, $
@@ -120,8 +120,16 @@ if ~keyword_set(RT) then begin
     If(keyword_set(user_pass)) Then Begin
        tmp_up = strsplit(user_pass, ':', /extract)
     Endif Else If(is_string(getenv('MAVENPFP_USER_PASS'))) Then Begin
-       tmp_up = strsplit(getenv('MAVENPFP_USER_PASS'), ':', /extract)
-    Endif Else Begin
+;fix for case where the user used mvn_set_userpass.pro, which uses the
+;idl_base64(byte(user_pass)), jmm, 2021-03-17
+       tmp_up0 = getenv('MAVENPFP_USER_PASS')
+       tcol = strpos(tmp_up0, ':') ;idl_base64 does not use ':'
+       If(tcol[0] Eq -1) Then Begin ;Not 'name:name_pfp'
+          tmp_up = strsplit(string(idl_base64(tmp_up0)), ':',/extract)
+       Endif Else Begin ;'name:name_pfp' ?
+          tmp_up = strsplit(tmp_up0, ':', /extract)
+       Endelse
+    Endif Else Begin ;default user_pass is idl_base64(byte(user_pass))
        If(tag_exist(source, 'user_pass') && is_string(source.user_pass)) Then Begin
           tmp_up = strsplit(string(idl_base64(source.user_pass)), ':',/extract)
        Endif Else tmp_up = [0b, 0b]
