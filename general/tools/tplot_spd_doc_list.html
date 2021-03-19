@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Mar 17 18:15:53 2021.<P>
+<STRONG>Last modified: </STRONG>Thu Mar 18 18:15:52 2021.<P>
  
 <HR>
  
@@ -406,13 +406,12 @@ function: tdexists
     true, because it cannot predict how many variables you expect to
     exist if you do not explictly specify them.
 
-    This routine always returns 0 if the size(d.y,/n_dim) gt 3
-    Where d is the data struct of a tplot variable
-
+    For data types with the number of y dimensions &gt; 6, false positives may result
+    if the Y array has some finite values, but all of them are outside the time range of interest.
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-02-22 12:12:49 -0800 (Mon, 22 Feb 2021) $
- $LastChangedRevision: 29693 $
+ $LastChangedDate: 2021-03-18 16:49:04 -0700 (Thu, 18 Mar 2021) $
+ $LastChangedRevision: 29776 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/tplot/tdexists.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/tdexists.pro">general/tools/tplot/tdexists.pro</A>)</STRONG><P>

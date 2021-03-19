@@ -28,13 +28,14 @@
 ;              masking.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-02-18 15:22:45 -0800 (Thu, 18 Feb 2021) $
-; $LastChangedRevision: 29679 $
+; $LastChangedDate: 2021-03-18 15:25:24 -0700 (Thu, 18 Mar 2021) $
+; $LastChangedRevision: 29773 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_swi_cal.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_swe_swi_cal, coarse=coarse, fine=fine, alpha=alpha, ddd=ddd, pans=pans, burst=burst
+pro mvn_swe_swi_cal, coarse=coarse, fine=fine, alpha=alpha, ddd=ddd, pans=pans, burst=burst, $
+                     noswi=noswi
 
   @mvn_swe_com
 
@@ -46,6 +47,7 @@ pro mvn_swe_swi_cal, coarse=coarse, fine=fine, alpha=alpha, ddd=ddd, pans=pans, 
   if (size(fine,/type) eq 0) then fine = 1
   if keyword_set(alpha) then fine = 1
   burst = keyword_set(burst)
+  doswi = ~keyword_set(noswi)
 
 ; Get electron density from SWEA - create a variable for overplotting
 ; with SWIA densities.
@@ -65,67 +67,76 @@ pro mvn_swe_swi_cal, coarse=coarse, fine=fine, alpha=alpha, ddd=ddd, pans=pans, 
 
 ; Load SWIA fine spectra
 
-  mvn_swia_load_l2_data, /loadall, /tplot
-  mvn_swia_part_moments, type=['cs','ca'] ; get coarse moments (mainly for sheath)
+  if (doswi) then begin
+    mvn_swia_load_l2_data, /loadall, /tplot
+    mvn_swia_part_moments, type=['cs','ca'] ; get coarse moments (mainly for sheath)
 
-  if keyword_set(fine) then begin
-    if keyword_set(alpha) then begin
-      mvn_swia_protonalphamoms_minf,archive=burst  ; uses fine data to calculate moments
-      get_data,'nproton',data=den
+    if keyword_set(fine) then begin
+      if keyword_set(alpha) then begin
+        mvn_swia_protonalphamoms_minf,archive=burst  ; uses fine data to calculate moments
+        get_data,'nproton',data=den
+        dt = den.x - shift(den.x,1)
+        indx = where(dt gt 600D, count)
+        if (count gt 0L) then den.y[indx] = !values.f_nan
+        store_data,'nproton',data=den
+        get_data,'nalpha',data=den
+        dt = den.x - shift(den.x,1)
+        indx = where(dt gt 600D, count)
+        if (count gt 0L) then den.y[indx] = !values.f_nan
+        store_data,'nalpha',data=den
+        pans = ['nproton','nalpha']
+
+        add_data,'nproton','nalpha'
+        get_data,'nproton+nalpha',data=den
+
+        options,'vproton','colors',[2,4,6]
+        options,'vproton','labels',['Vx','Vy','Vz']
+        options,'vproton','labflag',1
+        get_data,'vproton',data=vp
+
+        vph = atan(vp.y[*,1],vp.y[*,0])*!radeg
+        indx = where(vph lt 0., count)
+        if (count gt 0L) then vph[indx] += 360.
+        vmag = sqrt(total(vp.y^2.,2,/nan))
+        vth = asin(vp.y[*,2]/vmag)*!radeg
+
+        store_data,'vmag_proton',data={x:vp.x, y:vmag}
+        options,'vmag_proton','ytitle','|V| (H+)'
+        options,'vmag_proton','psym',3
+        options,'vmag_proton','colors',4
+        options,'vmag_proton','constant',[300.,400.,500.]
+
+        store_data,'vph_proton',data={x:vp.x, y:vph}
+        options,'vph_proton','ytitle','Vph (H+)'
+        options,'vph_proton','colors',4
+        options,'vph_proton','psym',3
+        options,'vph_proton','ynozero',1
+        abb = 1.5  ; nominal SW aberration angle at Mars (deg)
+        options,'vph_proton','constant',[180. + abb]
+
+        store_data,'vth_proton',data={x:vp.x, y:vth}
+        options,'vth_proton','ytitle','Vth (H+)'
+        options,'vth_proton','colors',4
+        options,'vth_proton','psym',3
+        options,'vth_proton','ynozero',1
+        options,'vth_proton','constant',[0.]
+      endif else begin
+        mvn_swia_part_moments, type=['fs','fa']  ; just calculate fine moments directly
+        get_data,'mvn_swifs_density',data=den
+      endelse
+
       dt = den.x - shift(den.x,1)
       indx = where(dt gt 600D, count)
       if (count gt 0L) then den.y[indx] = !values.f_nan
-      store_data,'nproton',data=den
-      get_data,'nalpha',data=den
-      dt = den.x - shift(den.x,1)
-      indx = where(dt gt 600D, count)
-      if (count gt 0L) then den.y[indx] = !values.f_nan
-      store_data,'nalpha',data=den
-      pans = ['nproton','nalpha']
-
-      add_data,'nproton','nalpha'
-      get_data,'nproton+nalpha',data=den
-
-      options,'vproton','colors',[2,4,6]
-      options,'vproton','labels',['Vx','Vy','Vz']
-      options,'vproton','labflag',1
-      get_data,'vproton',data=vp
-
-      vph = atan(vp.y[*,1],vp.y[*,0])*!radeg
-      indx = where(vph lt 0., count)
-      if (count gt 0L) then vph[indx] += 360.
-      vmag = sqrt(total(vp.y^2.,2,/nan))
-      vth = asin(vp.y[*,2]/vmag)*!radeg
-
-      store_data,'vmag_proton',data={x:vp.x, y:vmag}
-      options,'vmag_proton','ytitle','|V| (H+)'
-      options,'vmag_proton','psym',3
-      options,'vmag_proton','colors',4
-      options,'vmag_proton','constant',[300.,400.,500.]
-
-      store_data,'vph_proton',data={x:vp.x, y:vph}
-      options,'vph_proton','ytitle','Vph (H+)'
-      options,'vph_proton','colors',4
-      options,'vph_proton','psym',3
-      options,'vph_proton','ynozero',1
-      abb = 1.5  ; nominal SW aberration angle at Mars (deg)
-      options,'vph_proton','constant',[180. + abb]
-
-      store_data,'vth_proton',data={x:vp.x, y:vth}
-      options,'vth_proton','ytitle','Vth (H+)'
-      options,'vth_proton','colors',4
-      options,'vth_proton','psym',3
-      options,'vth_proton','ynozero',1
-      options,'vth_proton','constant',[0.]
+      store_data,'nion',data=den
     endif else begin
-      mvn_swia_part_moments, type=['fs','fa']  ; just calculate fine moments directly
-      get_data,'mvn_swifs_density',data=den
-    endelse
+      get_data,'mvn_swics_density',data=den
 
-    dt = den.x - shift(den.x,1)
-    indx = where(dt gt 600D, count)
-    if (count gt 0L) then den.y[indx] = !values.f_nan
-    store_data,'nion',data=den
+      dt = den.x - shift(den.x,1)
+      indx = where(dt gt 600D, count)
+      if (count gt 0L) then den.y[indx] = !values.f_nan
+      store_data,'nion',data=den
+    endelse
 
     store_data,'ie_density',data=['nion','nelectron',pans]
     ylim,'ie_density',0.01,10,1
@@ -147,18 +158,18 @@ pro mvn_swe_swi_cal, coarse=coarse, fine=fine, alpha=alpha, ddd=ddd, pans=pans, 
     dt = den.x - shift(den.x,1)
     indx = where(dt gt 600D, count)
     if (count gt 0L) then den.y[indx] = !values.f_nan
-    store_data,'mvn_swics_density',data=den
+    store_data,'nion',data=den
 
-    store_data,'ie_density',data=['mvn_swics_density','nelectron']
+    store_data,'ie_density',data=['nion','nelectron']
     ylim,'ie_density',0.1,10,1
     options,'ie_density','ynozero',1
     options,'ie_density','ytitle','Ion-Electron!CDensity'
-    options,'ie_density','colors',[!p.color,6]
+    options,'ie_density','colors',[4,6]
     options,'ie_density','labels',['i+','e-']
     options,'ie_density','labflag',1
 
     divname = 'swe_swi_crosscal'
-    div_data,'mvn_swics_density',dname,newname=divname
+    div_data,'nion','nelectron',newname=divname
     options,divname,'ynozero',1
     options,divname,'ytitle','Ratio!CSWI/SWE'
     options,divname,'yticklen',1

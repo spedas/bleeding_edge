@@ -32,13 +32,12 @@
 ;    true, because it cannot predict how many variables you expect to
 ;    exist if you do not explictly specify them.
 ;
-;    This routine always returns 0 if the size(d.y,/n_dim) gt 3
-;    Where d is the data struct of a tplot variable
-;
+;    For data types with the number of y dimensions > 6, false positives may result
+;    if the Y array has some finite values, but all of them are outside the time range of interest.
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-02-22 12:12:49 -0800 (Mon, 22 Feb 2021) $
-; $LastChangedRevision: 29693 $
+; $LastChangedDate: 2021-03-18 16:49:04 -0700 (Thu, 18 Mar 2021) $
+; $LastChangedRevision: 29776 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/tplot/tdexists.pro $
 ;-
 
@@ -85,6 +84,13 @@ function tdexists,inp_tvarname,start_time,end_time,dims=dims
         
         x = d.x[idx]
         
+        ; The intention here is to filter out any values outside the time range of interest, before checking
+        ; for NaNs.   Unfortunately, this can't be done concisely for an arbitrary number of array dimensions.
+        ; I've added cases for 4-d arrays to accomodate certain MMS data types, and 5- and 6-d arrays in the 
+        ; interest of future-proofing.  For even higher dimensions, any finite values (even outside the time 
+        ; range of interest) will be accepted, so the possibility of a false positive exists when there are finite
+        ; values, but all of them are outside the time range of interest.  JWL 2021-03-18
+        
         if (size(d.y,/n_dim) eq 0) then begin
           y = d.y
         endif else if(size(d.y,/n_dim) eq 1) then begin
@@ -93,8 +99,15 @@ function tdexists,inp_tvarname,start_time,end_time,dims=dims
           y = d.y[idx,*]
         endif else if (size(d.y,/n_dim) eq 3) then begin
           y = d.y[idx,*,*]
+        endif else if (size(d.y,/n_dim) eq 4) then begin
+          y = d.y[idx,*,*,*]
+        endif else if (size(d.y,/n_dim) eq 5) then begin
+          y = d.y[idx,*,*,*,*]
+        endif else if (size(d.y,/n_dim) eq 6) then begin
+          y = d.y[idx,*,*,*,*,*]
         endif else begin
-          return,0
+          ; Just test the whole array, even values outside the time range of interest.  False positives are possible.
+          y = d.y
         endelse
    
         id = where(finite(y))

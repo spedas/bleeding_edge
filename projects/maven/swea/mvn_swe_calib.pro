@@ -91,8 +91,8 @@
 ;       LIST:         List the current calibration constants.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-02-18 15:19:26 -0800 (Thu, 18 Feb 2021) $
-; $LastChangedRevision: 29673 $
+; $LastChangedDate: 2021-03-18 15:27:03 -0700 (Thu, 18 Mar 2021) $
+; $LastChangedRevision: 29775 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_calib.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -496,9 +496,8 @@ pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default,
     print, "elec. suppression  = ", swe_Ke, format='(a,f5.2)'
     print, "deadtime per anode = ", swe_dead, format='(a,e9.2)'
     print, "max deadtime corr. = ", 1./swe_min_dtc, format='(a,f5.2)'
-    dmodel = 'paralyzable'
-    if (swe_paralyze eq 0) then dmodel = 'non-' + dmodel
-    print, "deadtime model     =  " + dmodel
+    dmodel = ['non-',''] + 'paralyzable'
+    print, "deadtime model     =  " + dmodel[swe_paralyze]
   endif
 
   return

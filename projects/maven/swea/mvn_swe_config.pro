@@ -39,8 +39,8 @@
 ;                   changes in a tplot window (assumed to exist).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-02-18 15:19:53 -0800 (Thu, 18 Feb 2021) $
-; $LastChangedRevision: 29674 $
+; $LastChangedDate: 2021-03-18 15:27:03 -0700 (Thu, 18 Mar 2021) $
+; $LastChangedRevision: 29775 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -139,7 +139,7 @@ pro mvn_swe_config, list=list, timebar=timebar
 
   t_mcp = [t_mcp, time_double('2018-11-13/11:18:13')]  ; bias adjustment (2800 -> 2875 V)
 
-  t_mcp = [t_mcp, time_double('2020-03-23/00:00:00')]  ; last SWE-SWI cross calibration
+  t_mcp = [t_mcp, time_double('2020-09-02/00:00:00')]  ; last SWE-SWI cross calibration
 
 ; 2019-10-01/00:00                                     ; beginning of EM-4
 

@@ -23,8 +23,8 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2020-10-20 13:28:22 -0700 (Tue, 20 Oct 2020) $
-;  $LastChangedRevision: 29264 $
+;  $LastChangedDate: 2021-03-17 22:16:16 -0700 (Wed, 17 Mar 2021) $
+;  $LastChangedRevision: 29770 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
 
@@ -105,6 +105,10 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat, $
   navg = 2l^(fix(ppp))
   rate = 512l / (2l^(ppp+1))
 
+  ; Compensate downsampled data for triangle filter (not implemented)
+  ;
+  ; tri_filt_delay = (2l^(ppp-1) - 0.5d > 0) * (2.^25/38.4e6)/256d
+
   ; The number of vectors in a packet is 512 at the highest cadences, and
   ; as low as 32 vectors at the lowest cadence.
 
@@ -139,13 +143,17 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat, $
 
   rate_arr = rebin(rate, n_times_2d, 512l)
 
+  ; Not implemented (see above)
+  ; 
+  ; tri_filt_delay_arr = rebin(tri_filt_delay, n_times_2d, 512l)
+
   indices = rebin(lindgen(1,512), n_times_2d, 512l)
 
   max_inds = rebin(nvec, n_times_2d, 512l)
 
   nys_since_start = double(indices) / rate_arr
 
-  times_1d += nys_since_start * (2.^25/38.4e6)
+  times_1d += nys_since_start * (2.^25/38.4e6) ; + tri_filt_delay_arr
 
   times_valid_ind = where(indices LT max_inds, n_times_valid, $
     complement = times_invalid_ind, ncomplement = n_times_invalid)
@@ -196,17 +204,6 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat, $
   nt_adu = [0.03125,0.1250,0.5,2.0]
   scale_factor = nt_adu[range_bits]
 
-  ; Store metadata in tplot variables.
-
-  store_data, prefix + 'packet_index', $
-    data = {x:times_1d, y:packet_index}
-
-  store_data, prefix + 'range', $
-    data = {x:times_1d, y:long(range_bits)}
-
-  store_data, prefix + 'rate', $
-    data = {x:times_1d, y:rate_1d}
-
   ; Store each component of the MAG data in a TPLOT variable.
 
   mag_comps = ['mag_bx', 'mag_by', 'mag_bz']
@@ -221,7 +218,10 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat, $
     if downsample NE 0 then begin
 
       spp_fld_mag_survey_4_sa_per_cyc, d_ppp.y, d_b_2d.y, d_b_2d.x, $
-        times_1d = times_1d, b_1d = b_1d
+        rate_arr, indices, d_range_bits.y, $
+        times_1d = times_1d, b_1d = b_1d, $
+        packet_index = packet_index, $
+        rate_1d = rate_1d
 
       ;      times_1d =
       ;      b_1d =
@@ -300,6 +300,17 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat, $
   get_data, prefix + 'mag_bx_nT', data = d_x
   get_data, prefix + 'mag_by_nT', data = d_y
   get_data, prefix + 'mag_bz_nT', data = d_z
+
+  ; Store metadata in tplot variables.
+
+  store_data, prefix + 'packet_index', $
+    data = {x:times_1d, y:packet_index}
+
+  store_data, prefix + 'range', $
+    data = {x:times_1d, y:long(range_bits)}
+
+  store_data, prefix + 'rate', $
+    data = {x:times_1d, y:rate_1d}
 
   ; Store the data as a vector and a magnitude:
 

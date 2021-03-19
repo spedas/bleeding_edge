@@ -27,12 +27,16 @@
 ;      9 : 2018-11-13 to 2019-03-25
 ;     10 : 2019-05-08 to 2019-08-14
 ;     11 : 2019-10-23 to 2019-12-23
-;     12 : 2020-03-03 to ...
+;     12 : 2020-03-03 to 2020-05-07
+;     13 : 2020-07-25 to 2020-10-14
+;     14 : 2021-01-10 to 2021-03-06
+;     15 : 2021-06-05 to 2021-07-16 (predicted, TBD)
 ;
 ;  Solar wind periods 1 and 3 yield calibrations that are very similar.
 ;  These are combined into a single FOV calibration.  Solar wind period
 ;  2 occurred when the SWEA MCP bias was not optimized.  The lower MCP
-;  gain results in a measurably different FOV sensitivity.
+;  gain results in a measurably different FOV sensitivity.  Periods 9
+;  and later all have the same MCP bias (2875 V).
 ;
 ;  Once set, a configuration is persistent within the current IDL session 
 ;  until changed with this routine.
@@ -58,8 +62,8 @@
 ;       TEST:         Returns calibration used.  For testing.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-03-21 14:50:59 -0700 (Sat, 21 Mar 2020) $
-; $LastChangedRevision: 28450 $
+; $LastChangedDate: 2021-03-18 15:25:44 -0700 (Thu, 18 Mar 2021) $
+; $LastChangedRevision: 29774 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_flatfield.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2016-09-28
