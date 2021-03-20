@@ -72,9 +72,9 @@
 ;      units by 6371.2 km to convert them.
 ;      6371.2 = the value used in the GEOPACK FORTRAN code for Re
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2015-03-20 12:48:33 -0700 (Fri, 20 Mar 2015) $
-; $LastChangedRevision: 17157 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-03-19 16:07:41 -0700 (Fri, 19 Mar 2021) $
+; $LastChangedRevision: 29780 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t89/t89.pro $
 ;-
 
@@ -135,7 +135,7 @@ function t89, tarray, rgsm_array, kp=kp, period=period, igrf_only=igrf_only,$
   else period2 = double(period)
 
   if period2 le 0. then begin
-    message, /contiune, 'period must be positive'
+    message, /continue, 'period must be positive'
     return, -1L
   endif
 

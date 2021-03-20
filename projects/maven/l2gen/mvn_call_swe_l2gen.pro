@@ -44,8 +44,8 @@
 ;HISTORY:
 ;Hacked from mvn_call_sta_l2gen, 17-Apr-2014, jmm
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-02-18 13:40:21 -0800 (Thu, 18 Feb 2021) $
-; $LastChangedRevision: 29670 $
+; $LastChangedDate: 2021-03-19 11:18:37 -0700 (Fri, 19 Mar 2021) $
+; $LastChangedRevision: 29778 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_call_swe_l2gen.pro $
 ;-
 Pro mvn_call_swe_l2gen, time_in = time_in, $
@@ -95,7 +95,8 @@ Pro mvn_call_swe_l2gen, time_in = time_in, $
         free_lun, eunit
         file_chmod, efile, '664'o
 ;mail it to jimm@ssl.berkeley.edu, and delete
-        cmd_rq = 'mailx -s "Problem with SWE L2 process" ' + mailto + ' < '+efile
+        subj = 'Problem with SWE L2 process on ' + uinfo.machine_name
+        cmd_rq = 'mailx -s "' + subj + '" ' + mailto + ' < '+efile
         spawn, cmd_rq
         file_delete, efile
      Endif
@@ -226,7 +227,8 @@ Pro mvn_call_swe_l2gen, time_in = time_in, $
         For i = 0, nproc-1 Do printf, tunit, timep_do[i]
         free_lun, tunit
         file_chmod, ofile0, '664'o
-        cmd0 = 'mailx -s "SWEA L2 process start" ' + mailto + ' < '+ofile0
+        subj = 'SWEA L2 process start on ' + uinfo.machine_name
+        cmd0 = 'mailx -s "' + subj + '" ' + mailto + ' < '+ofile0
         spawn, cmd0
         file_delete, ofile0
 ;extract the date from the filename
@@ -268,7 +270,8 @@ Pro mvn_call_swe_l2gen, time_in = time_in, $
         printf, tunit, 'Finished Processing: '+instrk
         free_lun, tunit
         file_chmod, ofile1, '664'o
-        cmd1 = 'mailx -s "SWEA L2 process end" ' + mailto + ' < '+ofile1
+        subj = 'SWEA L2 process end on ' + uinfo.machine_name
+        cmd1 = 'mailx -s "' + subj + '" ' + mailto + ' < '+ofile1
         spawn, cmd1
         file_delete, ofile1
      Endelse

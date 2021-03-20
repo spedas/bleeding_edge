@@ -78,9 +78,9 @@
 ;  http://modelweb.gsfc.nasa.gov/magnetos/data-based/Paper220.pdf
 ;  http://modelweb.gsfc.nasa.gov/magnetos/data-based/Paper219.pdf
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2015-03-20 12:48:33 -0700 (Fri, 20 Mar 2015) $
-; $LastChangedRevision: 17157 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-03-19 16:07:41 -0700 (Fri, 19 Mar 2021) $
+; $LastChangedRevision: 29780 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t01/t01.pro $
 ;-
 
@@ -135,7 +135,7 @@ function t01, tarray, rgsm_array,pdyn,dsti,yimf,zimf,g1,g2,period = period,$
   if not keyword_set(period) then period = 60
 
   if period le 0. then begin
-    message, /contiune, 'period must be positive'
+    message, /continue, 'period must be positive'
     return, -1L
   endif
 

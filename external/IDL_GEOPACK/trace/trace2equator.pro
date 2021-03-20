@@ -126,8 +126,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2020-10-02 11:20:55 -0700 (Fri, 02 Oct 2020) $
-; $LastChangedRevision: 29203 $
+; $LastChangedDate: 2021-03-19 16:07:41 -0700 (Fri, 19 Mar 2021) $
+; $LastChangedRevision: 29780 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2equator.pro $
 ;-
 
@@ -353,7 +353,7 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
     else period2 = double(period)
     
     if period2 le 0. then begin
-      message, /contiune, 'period must be positive'
+      message, /continue, 'period must be positive'
       return
     endif
     
