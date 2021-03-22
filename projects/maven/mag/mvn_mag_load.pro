@@ -11,8 +11,8 @@
 ;
 ; Author: Davin Larson and Roberto Livi
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-26 16:03:39 -0800 (Tue, 26 Feb 2019) $
-; $LastChangedRevision: 26714 $
+; $LastChangedDate: 2021-03-21 10:51:15 -0700 (Sun, 21 Mar 2021) $
+; $LastChangedRevision: 29782 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/mag/mvn_mag_load.pro $
 
 ;-
@@ -34,7 +34,9 @@ pro mvn_mag_load,format,$
                  spice_frame   = spice_frame,$
                  timecrop      = timecrop,$
                  mag_product   = mag_product,$
-                 sclk_ver      = sclk_ver
+                 sclk_ver      = sclk_ver, $
+                 mag_frame     = mag_frame, $
+                 l2only        = l2only
   
 
   dirr_l1='maven/data/sci/mag/l1/sav/'
@@ -42,10 +44,54 @@ pro mvn_mag_load,format,$
 
   ;;------------------------------------------------------
   ;; Check keywords
-  if n_elements(tplot_flag) eq 0 then tplot_flag  = 1                
-  if keyword_set(format_old)     then format      = format_old
-  if ~keyword_set(format)        then format      = 'L2_1SEC'
-  if ~keyword_set(mag_product)   then mag_product = 'MAG1'
+  if n_elements(tplot_flag) eq 0  then tplot_flag  = 1                
+  if keyword_set(format_old)      then format      = format_old
+  if size(format,/type) ne 7      then format      = 'L2_1SEC'
+  if size(mag_product,/type) ne 7 then mag_product = 'MAG1'
+  if size(mag_frame,/type) ne 7   then mag_frame   = 'pl'
+  l1_ok = ~keyword_set(l2only)
+
+  mag_frame = strlowcase(mag_frame[0])
+  case mag_frame of
+    'pl'  : frame = 'MAVEN_SPACECRAFT'
+    'pc'  : frame = 'IAU_MARS'
+    'ss'  : frame = 'MAVEN_SSO'
+    else  : begin
+              print, ' '
+              print, '*****************************************'
+              print, 'ERROR:'
+              print, 'Unrecognized MAG frame: ' + mag_frame
+              print, 'Must be one of: pl, pc, or ss.'
+              print, '*****************************************'
+              print, ' '
+              return
+            end
+  endcase
+
+  mag_product = strupcase(mag_product[0])
+  case mag_product of
+    'MAG1' : mprod = 'OB'
+    'MAG2' : mprod = 'IB'
+    'OB'   : ; accept as valid
+    'IB'   : ; accept as valid
+    else   : begin
+               print, ' '
+               print, '*****************************************'
+               print, 'ERROR:'
+               print, 'Unrecognized MAG product: ' + mag_product
+               print, 'Must be either MAG1 or MAG2.'
+               print, '*****************************************'
+               print, ' '
+               return
+             end
+  endcase
+
+; MAG structure tag names do not have a consistent format
+
+  if (mag_frame eq 'pl') then ff = 'PL' else ff = ''
+  xtag = mprod + '_B' + ff + '_X'
+  ytag = mprod + '_B' + ff + '_Y'
+  ztag = mprod + '_B' + ff + '_Z'
 
   sclk_ver = [-1]
 
@@ -63,7 +109,7 @@ pro mvn_mag_load,format,$
      ;;-------------------
      ;; Full Resolution
      'L2_FULL': begin
-        pathname = dirr_l2+'full/YYYY/MM/mvn_mag_l2_pl_full_YYYYMMDD.sav'
+        pathname = dirr_l2+'full/YYYY/MM/mvn_mag_l2_'+mag_frame+'_full_YYYYMMDD.sav'
         ;;Check if files exist
         file_exist = mvn_pfp_file_retrieve($
                      pathname,$
@@ -78,7 +124,7 @@ pro mvn_mag_load,format,$
            print, 'L2 files not available! Use L1 instead.'
            print, '*****************************************'
            print, ' '
-           goto, L1_FULL
+           if (l1_ok) then goto, L1_FULL else return
         endif
         files    = mvn_pfp_file_retrieve($
                    pathname,$
@@ -122,30 +168,25 @@ pro mvn_mag_load,format,$
         endif
 
         ;;-----------------------------------------
-        ;; Select data prodcut to plot
+        ;; Select data product to plot
         nn = n_elements(str_all.time)
         str_temp = replicate({time:0d, vec:[0.,0.,0.],range:0.},nn)        
         tags = tag_names(str_all)
-        pp = where(tag_names(str_all) eq 'OB_BPL_X',cc1)
+        tx = (where(tags eq xtag,cc1))[0]
+        ty = (where(tags eq ytag))[0]
+        tz = (where(tags eq ztag))[0]
         str_temp.time = str_all.time
-        if mag_product eq 'MAG1' and cc1 ne 0 then begin
-           str_temp.vec[0] = str_all.ob_bpl_x
-           str_temp.vec[1] = str_all.ob_bpl_y
-           str_temp.vec[2] = str_all.ob_bpl_z
-        endif 
-        pp = where(tag_names(str_all) eq 'IB_BPL_X',cc2)
-        if mag_product eq 'MAG2' and cc2 ne 0 then begin
-           str_temp.vec[0] = str_all.ib_bpl_x
-           str_temp.vec[1] = str_all.ib_bpl_y
-           str_temp.vec[2] = str_all.ib_bpl_z
-        endif 
-        if cc1 eq 0 and cc2 eq 0 then stop, mag_product+' is not available.'
+        if (cc1 ne 0) then begin
+           str_temp.vec[0] = str_all.(tx)
+           str_temp.vec[1] = str_all.(ty)
+           str_temp.vec[2] = str_all.(tz)
+        endif else stop, mag_product+' is not available.'
         str_all = 0
         str_all = str_temp
         str_temp = 0
         ;; frame = header.spice_frame                 
         ;; Not all files are consistent yet.
-        frame ='MAVEN_SPACECRAFT'
+        ;; frame ='MAVEN_SPACECRAFT' ; this is now defined above
 
 
         ;;-----------------------------------------
@@ -162,20 +203,23 @@ pro mvn_mag_load,format,$
 
 
 
-        if keyword_set(spice_frame) then begin
+        if (size(spice_frame,/type) eq 7) then begin
            from_frame = frame
-           to_frame   = spice_frame
-           utc        = time_string(str_all.time)
-           new_vec    = spice_vector_rotate($
-                        str_all.vec,$
-                        utc,$
-                        from_frame,$
-                        to_frame,$
-                        check_objects='MAVEN_SPACECRAFT')
-           store_data,'mvn_B_full_'+to_frame,$
-                      str_all.time,$
-                      transpose(new_vec),$
-                      dlimit={spice_frame:to_frame, sclk_ver:sclk_ver}          
+           to_frame   = mvn_frame_name(spice_frame[0], success=ok)
+           if (ok) then begin
+             utc        = time_string(str_all.time)
+             new_vec    = spice_vector_rotate($
+                          str_all.vec,$
+                          utc,$
+                          from_frame,$
+                          to_frame,$
+                          check_objects='MAVEN_SPACECRAFT')
+             store_data,'mvn_B_full_'+to_frame,$
+                        str_all.time,$
+                        transpose(new_vec),$
+                        dlimit={spice_frame:to_frame, sclk_ver:sclk_ver},$
+                        limit={level:'L2'}
+           endif
         endif
      end
 
@@ -183,7 +227,7 @@ pro mvn_mag_load,format,$
      ;;-------------------------------
      ;; Level 2: 30 Second Resolution     
      'L2_30SEC': begin
-        pathname = dirr_l2+'30sec/YYYY/MM/mvn_mag_l2_pl_30sec_YYYYMMDD.sav'
+        pathname = dirr_l2+'30sec/YYYY/MM/mvn_mag_l2_'+mag_frame+'_30sec_YYYYMMDD.sav'
         file_exist = mvn_pfp_file_retrieve($
                      pathname,$
                      trange = trange,$
@@ -197,7 +241,7 @@ pro mvn_mag_load,format,$
            print, 'L2 files not available! Use L1 instead.'
            print, '*****************************************'
            print, ' '
-           goto, L1_30SEC
+           if (l1_ok) then goto, L1_30SEC else return
         endif
         files    = mvn_pfp_file_retrieve($
                    pathname,$
@@ -241,50 +285,48 @@ pro mvn_mag_load,format,$
         endif
 
         ;;-----------------------------------------
-        ;; Select data prodcut to plot
+        ;; Select data product to plot
         nn = n_elements(str_all.time)
         str_temp = replicate({time:0d, vec:[0.,0.,0.],range:0.},nn)        
         tags = tag_names(str_all)
-        pp = where(tag_names(str_all) eq 'OB_BPL_X',cc1)
+        tx = (where(tags eq xtag,cc1))[0]
+        ty = (where(tags eq ytag))[0]
+        tz = (where(tags eq ztag))[0]
         str_temp.time = str_all.time
-        if mag_product eq 'MAG1' and cc1 ne 0 then begin
-           str_temp.vec[0] = str_all.ob_bpl_x
-           str_temp.vec[1] = str_all.ob_bpl_y
-           str_temp.vec[2] = str_all.ob_bpl_z
-        endif 
-        pp = where(tag_names(str_all) eq 'IB_BPL_X',cc2)
-        if mag_product eq 'MAG2' and cc2 ne 0 then begin
-           str_temp.vec[0] = str_all.ib_bpl_x
-           str_temp.vec[1] = str_all.ib_bpl_y
-           str_temp.vec[2] = str_all.ib_bpl_z
-        endif 
-        if cc1 eq 0 and cc2 eq 0 then stop, mag_product+' is not available.'
+        if (cc1 ne 0) then begin
+           str_temp.vec[0] = str_all.(tx)
+           str_temp.vec[1] = str_all.(ty)
+           str_temp.vec[2] = str_all.(tz)
+        endif else stop, mag_product+' is not available.'
         str_all = 0
         str_all = str_temp
         str_temp = 0
 
         ;frame = header.spice_frame
-        frame = 'MAVEN_SPACECRAFT'
+        ;frame = 'MAVEN_SPACECRAFT' ; this is now defined above
         store_data,'mvn_B_30sec',$
                    str_all.time,$
                    transpose(str_all.vec),$
                    dlimit={spice_frame:frame, sclk_ver:sclk_ver},$
                    limit={level:'L2'}
         options, 'mvn_B_30sec', ytitle='L2 [30sec] Mag [nT]',/def
-        if keyword_set(spice_frame) then begin
-           from_frame=frame
-           to_frame=spice_frame
-           utc=time_string(str_all.time)
-           new_vec=spice_vector_rotate($
-                   str_all.vec,$
-                   utc,$
-                   from_frame,$
-                   to_frame,$
-                   check_objects='MAVEN_SPACECRAFT')
-           store_data,'mvn_B_30sec_'+to_frame,$
-                      str_all.time,$
-                      transpose(new_vec),$
-                      dlimit={spice_frame:to_frame, sclk_ver:sclk_ver}
+        if (size(spice_frame,/type) eq 7) then begin
+           from_frame = frame
+           to_frame   = mvn_frame_name(spice_frame[0], success=ok)
+           if (ok) then begin
+             utc=time_string(str_all.time)
+             new_vec=spice_vector_rotate($
+                     str_all.vec,$
+                     utc,$
+                     from_frame,$
+                     to_frame,$
+                     check_objects='MAVEN_SPACECRAFT')
+             store_data,'mvn_B_30sec_'+to_frame,$
+                        str_all.time,$
+                        transpose(new_vec),$
+                        dlimit={spice_frame:to_frame, sclk_ver:sclk_ver},$
+                        limit={level:'L2'}
+           endif
         endif
      end
 
@@ -293,7 +335,7 @@ pro mvn_mag_load,format,$
      ;;-----------------------------
      ;; Level 2: 1 Second Resolution          
      'L2_1SEC': begin
-        pathname = dirr_l2+'1sec/YYYY/MM/mvn_mag_l2_pl_1sec_YYYYMMDD.sav'
+        pathname = dirr_l2+'1sec/YYYY/MM/mvn_mag_l2_'+mag_frame+'_1sec_YYYYMMDD.sav'
         file_exist = mvn_pfp_file_retrieve($
                      pathname,$
                      trange = trange,$
@@ -307,7 +349,7 @@ pro mvn_mag_load,format,$
            print, 'L2 files not available! Use L1 instead.'
            print, '*****************************************'
            print, ' '
-           goto, L1_1SEC
+           if (l1_ok) then goto, L1_1SEC else return
         endif
         files    = mvn_pfp_file_retrieve($
                    pathname,$
@@ -351,50 +393,48 @@ pro mvn_mag_load,format,$
         endif
 
         ;;-----------------------------------------
-        ;; Select data prodcut to plot
+        ;; Select data product to plot
         nn = n_elements(str_all.time)
         str_temp = replicate({time:0d, vec:[0.,0.,0.],range:0.},nn)        
         tags = tag_names(str_all)
-        pp = where(tag_names(str_all) eq 'OB_BPL_X',cc1)
+        tx = (where(tags eq xtag,cc1))[0]
+        ty = (where(tags eq ytag))[0]
+        tz = (where(tags eq ztag))[0]
         str_temp.time = str_all.time
-        if mag_product eq 'MAG1' and cc1 ne 0 then begin
-           str_temp.vec[0] = str_all.ob_bpl_x
-           str_temp.vec[1] = str_all.ob_bpl_y
-           str_temp.vec[2] = str_all.ob_bpl_z
-        endif 
-        pp = where(tag_names(str_all) eq 'IB_BPL_X',cc2)
-        if mag_product eq 'MAG2' and cc2 ne 0 then begin
-           str_temp.vec[0] = str_all.ib_bpl_x
-           str_temp.vec[1] = str_all.ib_bpl_y
-           str_temp.vec[2] = str_all.ib_bpl_z
-        endif 
-        if cc1 eq 0 and cc2 eq 0 then stop, mag_product+' is not available.'
+        if (cc1 ne 0) then begin
+           str_temp.vec[0] = str_all.(tx)
+           str_temp.vec[1] = str_all.(ty)
+           str_temp.vec[2] = str_all.(tz)
+        endif else stop, mag_product+' is not available.'
         str_all = 0
         str_all = str_temp
         str_temp = 0
 
         ;frame = header.spice_frame
-        frame = 'MAVEN_SPACECRAFT'
+        ;frame = 'MAVEN_SPACECRAFT' ; this is now defined above
         store_data,'mvn_B_1sec',$
                    str_all.time,$
                    transpose(str_all.vec),$
                    dlimit={spice_frame:frame, sclk_ver:sclk_ver},$
                    limit={level:'L2'}
         options, 'mvn_B_1sec', ytitle='L2 [1sec] Mag [nT]',/def
-        if keyword_set(spice_frame) then begin
-           from_frame=frame
-           to_frame=spice_frame
-           utc=time_string(str_all.time)
-           new_vec=spice_vector_rotate($
-                   str_all.vec,$
-                   utc,$
-                   from_frame,$
-                   to_frame,$
-                   check_objects='MAVEN_SPACECRAFT')
-           store_data,'mvn_B_1sec_'+to_frame,$
-                      str_all.time,$
-                      transpose(new_vec),$
-                      dlimit={spice_frame:to_frame, sclk_ver:sclk_ver}
+        if (size(spice_frame,/type) eq 7) then begin
+           from_frame = frame
+           to_frame   = mvn_frame_name(spice_frame[0], success=ok)
+           if (ok) then begin
+             utc=time_string(str_all.time)
+             new_vec=spice_vector_rotate($
+                     str_all.vec,$
+                     utc,$
+                     from_frame,$
+                     to_frame,$
+                     check_objects='MAVEN_SPACECRAFT')
+             store_data,'mvn_B_1sec_'+to_frame,$
+                        str_all.time,$
+                        transpose(new_vec),$
+                        dlimit={spice_frame:to_frame, sclk_ver:sclk_ver},$
+                        limit={level:'L2'}
+           endif
         endif
      end
      
@@ -432,7 +472,7 @@ pro mvn_mag_load,format,$
         print, 'This data may not be used for publication.'
         print, '**********************************'
         print, ' '
-        pathname = dirr_l1+'full/YYYY/MM/mvn_mag_l1_pl_full_YYYYMMDD.sav'
+        pathname = dirr_l1+'full/YYYY/MM/mvn_mag_l1_'+mag_frame+'_full_YYYYMMDD.sav'
         files    = mvn_pfp_file_retrieve($
                    pathname,$
                    trange=trange,$
@@ -478,14 +518,16 @@ pro mvn_mag_load,format,$
         ;; Check between new and old versions
         nn = n_elements(str_all.time)
         tags = tag_names(str_all)
-        pp1 = where(tag_names(str_all) eq 'OB_BPL_X',cc1)
+        tx = (where(tags eq xtag,cc1))[0]
+        ty = (where(tags eq ytag))[0]
+        tz = (where(tags eq ztag))[0]
         pp2 = where(tag_names(str_all) eq 'VEC',cc2)
-        if cc1 ne 0 then begin
+        if (cc1 ne 0) then begin
            str_temp = replicate({time:0d, vec:[0.,0.,0.],range:0.},nn)        
            str_temp.time = str_all.time
-           str_temp.vec[0] = str_all.ob_bpl_x
-           str_temp.vec[1] = str_all.ob_bpl_y
-           str_temp.vec[2] = str_all.ob_bpl_z
+           str_temp.vec[0] = str_all.(tx)
+           str_temp.vec[1] = str_all.(ty)
+           str_temp.vec[2] = str_all.(tz)
            str_all = 0
            str_all = str_temp
            str_temp = 0
@@ -497,7 +539,7 @@ pro mvn_mag_load,format,$
 
         ;; frame = header.spice_frame                 
         ;;Not all files are consistent yet.
-        frame ='MAVEN_SPACECRAFT'
+        ;; frame ='MAVEN_SPACECRAFT' ; this is now defined above
         if keyword_set(tplot_flag) then $
            store_data,'mvn_B_full',$
                       str_all.time,$
@@ -505,22 +547,24 @@ pro mvn_mag_load,format,$
                       dlimit = {spice_frame:frame, sclk_ver:sclk_ver},$
                       limit  = {level:'L1'}
         options, 'mvn_B_full', ytitle='L1 [Full] Mag [nT]',/def
-        if keyword_set(spice_frame) then begin
+        if (size(spice_frame,/type) eq 7) then begin
            from_frame = frame
-           to_frame   = spice_frame
-           utc        = time_string(str_all.time)
-           new_vec    = spice_vector_rotate($
-                        str_all.vec,$
-                        utc,$
-                        from_frame,$
-                        to_frame,$
-                        check_objects='MAVEN_SPACECRAFT')
-           store_data,'mvn_B_full_'+to_frame,$
-                      str_all.time,$
-                      transpose(new_vec),$
-                      dlimit = {spice_frame:to_frame, sclk_ver:sclk_ver},$
-                      limit  = {level:'L1'}
-           options, 'mvn_B_full', ytitle='L1 [Full] Mag [nT]',/def
+           to_frame   = mvn_frame_name(spice_frame[0], success=ok)
+           if (ok) then begin
+             utc        = time_string(str_all.time)
+             new_vec    = spice_vector_rotate($
+                          str_all.vec,$
+                          utc,$
+                          from_frame,$
+                          to_frame,$
+                          check_objects='MAVEN_SPACECRAFT')
+             store_data,'mvn_B_full_'+to_frame,$
+                        str_all.time,$
+                        transpose(new_vec),$
+                        dlimit = {spice_frame:to_frame, sclk_ver:sclk_ver},$
+                        limit  = {level:'L1'}
+             options, 'mvn_B_full', ytitle='L1 [Full] Mag [nT]',/def
+           endif
         endif
      end
      
@@ -534,7 +578,7 @@ pro mvn_mag_load,format,$
         print, 'This data may not be used for publication.'
         print, '**********************************'
         print, ' '
-        pathname = dirr_l1+'30sec/YYYY/MM/mvn_mag_l1_pl_30sec_YYYYMMDD.sav'
+        pathname = dirr_l1+'30sec/YYYY/MM/mvn_mag_l1_'+mag_frame+'_30sec_YYYYMMDD.sav'
         files    = mvn_pfp_file_retrieve($
                    pathname,$
                    /daily,$
@@ -580,14 +624,16 @@ pro mvn_mag_load,format,$
         ;; Check between new and old versions
         nn = n_elements(str_all.time)
         tags = tag_names(str_all)
-        pp1 = where(tag_names(str_all) eq 'OB_BPL_X',cc1)
-        pp2 = where(tag_names(str_all) eq 'VEC',cc2)
-        if cc1 ne 0 then begin
+        tx = (where(tags eq xtag,cc1))[0]
+        ty = (where(tags eq ytag))[0]
+        tz = (where(tags eq ztag))[0]
+        pp2 = where(tags eq 'VEC',cc2)
+        if (cc1 ne 0) then begin
            str_temp = replicate({time:0d, vec:[0.,0.,0.],range:0.},nn)        
            str_temp.time = str_all.time
-           str_temp.vec[0] = str_all.ob_bpl_x
-           str_temp.vec[1] = str_all.ob_bpl_y
-           str_temp.vec[2] = str_all.ob_bpl_z
+           str_temp.vec[0] = str_all.(tx)
+           str_temp.vec[1] = str_all.(ty)
+           str_temp.vec[2] = str_all.(tz)
            str_all = 0
            str_all = str_temp
            str_temp = 0
@@ -598,7 +644,7 @@ pro mvn_mag_load,format,$
         endif
 
         ;frame = header.spice_frame
-        frame ='MAVEN_SPACECRAFT'
+        ;frame ='MAVEN_SPACECRAFT' ; this is now defined above
         store_data,'mvn_B_30sec',$
                    str_all.time,$
                    transpose(str_all.vec),$
@@ -606,22 +652,24 @@ pro mvn_mag_load,format,$
                    limit  = {level:'L1'}
         options, 'mvn_B_full', ytitle='L1 [30sec] Mag [nT]',/def
         ;store_data,'mvn_Brms_30sec',rms_all.time,transpose(rms_all.vec)
-        if keyword_set(spice_frame) then begin
-           from_frame=frame
-           to_frame=spice_frame
-           utc=time_string(str_all.time)
-           new_vec=spice_vector_rotate($
-                   str_all.vec,$
-                   utc,$
-                   from_frame,$
-                   to_frame,$
-                   check_objects='MAVEN_SPACECRAFT')
-           store_data,'mvn_B_30sec_'+to_frame,$
-                      str_all.time,$
-                      transpose(new_vec),$
-                      dlimit = {spice_frame:to_frame, sclk_ver:sclk_ver},$
-                      limit  = {level:'L1'}
-           options, 'mvn_B_30sec', ytitle='L1 [30sec] Mag [nT]',/def
+        if (size(spice_frame,/type) eq 7) then begin
+           from_frame = frame
+           to_frame   = mvn_frame_name(spice_frame[0], success=ok)
+           if (ok) then begin
+             utc=time_string(str_all.time)
+             new_vec=spice_vector_rotate($
+                     str_all.vec,$
+                     utc,$
+                     from_frame,$
+                     to_frame,$
+                     check_objects='MAVEN_SPACECRAFT')
+             store_data,'mvn_B_30sec_'+to_frame,$
+                        str_all.time,$
+                        transpose(new_vec),$
+                        dlimit = {spice_frame:to_frame, sclk_ver:sclk_ver},$
+                        limit  = {level:'L1'}
+             options, 'mvn_B_30sec', ytitle='L1 [30sec] Mag [nT]',/def
+           endif
         endif
      end
 
@@ -635,7 +683,7 @@ pro mvn_mag_load,format,$
         print, 'This data may not be used for publication.'
         print, '**********************************'
         print, ' '
-        pathname = dirr_l1+'1sec/YYYY/MM/mvn_mag_l1_pl_1sec_YYYYMMDD.sav'
+        pathname = dirr_l1+'1sec/YYYY/MM/mvn_mag_l1_'+mag_frame+'_1sec_YYYYMMDD.sav'
         files    = mvn_pfp_file_retrieve($
                    pathname,$
                    /daily,$
@@ -681,14 +729,16 @@ pro mvn_mag_load,format,$
         ;; Check between new and old versions
         nn = n_elements(str_all.time)
         tags = tag_names(str_all)
-        pp1 = where(tag_names(str_all) eq 'OB_BPL_X',cc1)
+        tx = (where(tags eq xtag,cc1))[0]
+        ty = (where(tags eq ytag))[0]
+        tz = (where(tags eq ztag))[0]
         pp2 = where(tag_names(str_all) eq 'VEC',cc2)
-        if cc1 ne 0 then begin
+        if (cc1 ne 0) then begin
            str_temp = replicate({time:0d, vec:[0.,0.,0.],range:0.},nn)        
            str_temp.time = str_all.time
-           str_temp.vec[0] = str_all.ob_bpl_x
-           str_temp.vec[1] = str_all.ob_bpl_y
-           str_temp.vec[2] = str_all.ob_bpl_z
+           str_temp.vec[0] = str_all.(tx)
+           str_temp.vec[1] = str_all.(ty)
+           str_temp.vec[2] = str_all.(tz)
            str_all = 0
            str_all = str_temp
            str_temp = 0
@@ -699,29 +749,31 @@ pro mvn_mag_load,format,$
         endif
 
         ;frame = header.spice_frame
-        frame = 'MAVEN_SPACECRAFT'
+        ;frame = 'MAVEN_SPACECRAFT' ; this is now defined above
         store_data,'mvn_B_1sec',$
                    str_all.time,$
                    transpose(str_all.vec),$
                    dlimit = {spice_frame:frame, sclk_ver:sclk_ver},$
                    limit  = {level:'L1'}
         options, 'mvn_B_1sec', ytitle='L1 [1sec] Mag [nT]',/def
-        if keyword_set(spice_frame) then begin
-           from_frame=frame
-           to_frame=spice_frame
-           utc=time_string(str_all.time)
-           new_vec=spice_vector_rotate($
-                   str_all.vec,$
-                   utc,$
-                   from_frame,$
-                   to_frame,$
-                   check_objects='MAVEN_SPACECRAFT')
-           store_data,'mvn_B_1sec_'+to_frame,$
-                      str_all.time,$
-                      transpose(new_vec),$
-                      dlimit = {spice_frame:to_frame, sclk_ver:sclk_ver},$
-                      limit  = {level:'L1'}
-           options, 'mvn_B_1sec', ytitle='L1 [1sec] Mag [nT]',/def
+        if (size(spice_frame,/type) eq 7) then begin
+           from_frame = frame
+           to_frame   = mvn_frame_name(spice_frame[0], success=ok)
+           if (ok) then begin
+             utc=time_string(str_all.time)
+             new_vec=spice_vector_rotate($
+                     str_all.vec,$
+                     utc,$
+                     from_frame,$
+                     to_frame,$
+                     check_objects='MAVEN_SPACECRAFT')
+             store_data,'mvn_B_1sec_'+to_frame,$
+                        str_all.time,$
+                        transpose(new_vec),$
+                        dlimit = {spice_frame:to_frame, sclk_ver:sclk_ver},$
+                        limit  = {level:'L1'}
+             options, 'mvn_B_1sec', ytitle='L1 [1sec] Mag [nT]',/def
+           endif
         endif
      end
      

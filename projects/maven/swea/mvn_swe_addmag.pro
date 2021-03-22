@@ -5,6 +5,14 @@
 ;  the SWEA frame, and stores the result in the SWEA common block for quick
 ;  access by mvn_swe_getpad and mvn_swe_get3d.
 ;
+;  Note: If L2ONLY is set and L2 MAG PL data are unavailable, then this routine
+;  will attempt to load L2 MAG PC data and rotate to the PL frame using SPICE.
+;  This introduces a small error in the MAG vector direction that propagates 
+;  from uncertainties in the spacecraft ck kernel.  The error is typically 
+;  ~0.01 deg, except during spacecraft rotations when it can reach ~0.1 deg.
+;  These errors are negligible compared with the SWEA angular resolution of 
+;  ~20 degrees, so pitch angle mapping remains accurate.
+;
 ;USAGE:
 ;  mvn_swe_addmag
 ;
@@ -24,28 +32,43 @@
 ;                   caution!  Default = 0 (never use PAD angles).  If PAD angles
 ;                   are used, the MAG level is set to zero.
 ;
+;    L2ONLY:        Insist on loading L2 data.  (Useful for generating PDS data.)
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2016-05-06 10:24:30 -0700 (Fri, 06 May 2016) $
-; $LastChangedRevision: 21034 $
+; $LastChangedDate: 2021-03-21 12:23:12 -0700 (Sun, 21 Mar 2021) $
+; $LastChangedRevision: 29784 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_addmag.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03/18/14
 ;-
-pro mvn_swe_addmag, full=full, usepadmag=usepadmag
+pro mvn_swe_addmag, full=full, usepadmag=usepadmag, l2only=l2only
 
   @mvn_swe_com
   
   swe_mag1 = 0
   maglev = 'L0'
+  usepadmag = keyword_set(usepadmag)
+  l2only = keyword_set(l2only)
+  if (l2only) then usepadmag = 0
 
 ; Get the highest level MAG data available
 
-  mvn_mag_load, 'L2_1SEC'
+  store_data, 'mvn_B_1sec', /delete
+  mvn_mag_load, 'L2_1SEC', mag_frame='pl', l2only=l2only
   get_data, 'mvn_B_1sec', data=mag1, alim=lim, index=i
 
   if (i eq 0) then begin
-    print,"No MAG data found!"
-    if keyword_set(usepadmag) then begin
+    print,"No L2 MAG PL data found!"
+    if (l2only) then begin  ; try to load l2 pc data as a last resort
+      store_data, 'mvn_B_1sec_MAVEN_SPACECRAFT', /delete
+      mvn_mag_load, 'L2_1SEC', mag_frame='pc', spice_frame='spacecraft', l2only=l2only
+      get_data, 'mvn_B_1sec_MAVEN_SPACECRAFT', data=mag1, alim=lim, index=i
+      if (i eq 0) then print,"No L2 MAG PC data found!"
+    endif
+  endif
+
+  if (i eq 0) then begin
+    if (usepadmag) then begin
       print,"*****************************************"
       print,"WARNING: USING PAD MAG ANGLES"
       print,"For rough estimates only - not for publication"

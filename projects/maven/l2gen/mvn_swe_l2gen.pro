@@ -39,8 +39,8 @@
 ; Hacked from Matt F's crib_l0_to_l2.txt, 2014-11-14: jmm
 ; Better memory management and added keywords to control processing: dlm
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-02-24 11:21:40 -0800 (Wed, 24 Feb 2021) $
-; $LastChangedRevision: 29698 $
+; $LastChangedDate: 2021-03-21 12:35:56 -0700 (Sun, 21 Mar 2021) $
+; $LastChangedRevision: 29785 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_swe_l2gen.pro $
 ;- 
 pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
@@ -49,7 +49,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 
   @mvn_swe_com
   
-  if keyword_set(l2only) then l2only = 1 else l2only = 0
+  l2only = keyword_set(l2only)
   allbad = keyword_set(allbad)
 
 ; Construct FOV masking arrays
@@ -104,7 +104,8 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 
 ; get SPICE time and frames kernels
 
-  mvn_swe_spice_init, /baseonly, /force, /list
+  if (l2only) then mvn_swe_spice_init, /force, /list $
+              else mvn_swe_spice_init, /baseonly, /force, /list
 
 ; Load L0 SWEA data
 
@@ -115,7 +116,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 ;   L1 --> MAG data processed on ground with nominal gains and offsets
 ;   L2 --> MAG data processed on ground with all corrections
 
-  mvn_swe_addmag
+  mvn_swe_addmag, l2only=l2only
   if (size(swe_mag1,/type) eq 8) then maglev = swe_mag1[0].level else maglev = 0B
   if (l2only and (maglev lt 2B)) then dopad = 0 else dopad = 1
 
