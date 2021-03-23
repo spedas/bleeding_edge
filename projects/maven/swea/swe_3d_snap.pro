@@ -92,8 +92,8 @@
 ;                      interactive time range selection.)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-02 11:48:03 -0800 (Tue, 02 Mar 2021) $
-; $LastChangedRevision: 29727 $
+; $LastChangedDate: 2021-03-22 11:48:45 -0700 (Mon, 22 Mar 2021) $
+; $LastChangedRevision: 29790 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -118,17 +118,17 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
   swe_snap_options, get=key, /silent
   ktag = tag_names(key)
-  klist = ['SPEC','KEEPWINS','ARCHIVE','EBINS','CENTER','UNITS','SUM', $
+  tlist = ['SPEC','KEEPWINS','ARCHIVE','EBINS','CENTER','UNITS','SUM', $
            'PADMAG','ENERGY','LABEL','SMO','SYMDIR','SUNDIR','SYMENERGY', $
            'SYMDIAG','POWER','MAP','ABINS','DBINS','OBINS','MASK_SC','BURST', $
            'PLOT_SC','PADMAP','POT','PLOT_FOV','LABSIZE','TRANGE2','TSMO', $
            'WSCALE','ZLOG','ZRANGE','MONITOR']
   for j=0,(n_elements(ktag)-1) do begin
-    i = strmatch(klist, ktag[j]+'*', /fold)
+    i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
         0  : ; keyword not recognized -> do nothing
         1  : begin
-               kname = (klist[where(i eq 1)])[0]
+               kname = (tlist[where(i eq 1)])[0]
                ok = execute('kset = size(' + kname + ',/type) gt 0',0,1)
                if (not kset) then ok = execute(kname + ' = key.(j)',0,1)
              end

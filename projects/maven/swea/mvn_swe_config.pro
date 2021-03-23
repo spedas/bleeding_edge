@@ -39,8 +39,8 @@
 ;                   changes in a tplot window (assumed to exist).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-18 15:27:03 -0700 (Thu, 18 Mar 2021) $
-; $LastChangedRevision: 29775 $
+; $LastChangedDate: 2021-03-22 16:49:50 -0700 (Mon, 22 Mar 2021) $
+; $LastChangedRevision: 29799 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -139,9 +139,11 @@ pro mvn_swe_config, list=list, timebar=timebar
 
   t_mcp = [t_mcp, time_double('2018-11-13/11:18:13')]  ; bias adjustment (2800 -> 2875 V)
 
-  t_mcp = [t_mcp, time_double('2020-09-02/00:00:00')]  ; last SWE-SWI cross calibration
+  t_mcp = [t_mcp, time_double('2020-09-02/00:00:00')]  ; SWE-SWI cross calibration stabilizes
 
 ; 2019-10-01/00:00                                     ; beginning of EM-4
+
+  t_mcp = [t_mcp, time_double('2021-02-07/00:00:00')]  ; last SWE-SWI cross calibration
 
 ; Gather all the configuration change times into one variable (for timebar).
 
@@ -150,24 +152,25 @@ pro mvn_swe_config, list=list, timebar=timebar
 ; List configuration changes
 
   if keyword_set(list) then begin
-    print,time_string(t_swp[0]),' --> sweep tables 3 and 4 upload'
-    print,time_string(t_mtx[0]),' --> stowed boom matrix upload #1 (error in MICD)'
-    print,time_string(t_dsf[0]),' --> deflection scale factor update #1 (with error)'
-    print,time_string(t_dsf[1]),' --> deflection scale factor update #2 (correct)'
-    print,time_string(t_mtx[1]),' --> stowed boom matrix upload #2 (correct MICD)'
-    print,time_string(t_swp[1]),' --> sweep tables 5 and 6 upload'
-    print,time_string(t_dsf[2]),' --> first SWEA turn on in orbit'
-    print,time_string(t_mtx[2]),' --> boom deploy (with new MAG-to-SWE matrix)'
-    print,time_string(t_mcp[1]),' --> MCP bias adjustment (2500 -> 2600 V)'
-    print,time_string(t_mcp[3]),' --> MCP bias adjustment (2600 -> 2700 V)'
-    print,time_string(t_mcp[4]),' --> MCP bias revert to 2600 V (unintentional)'
-    print,time_string(t_mcp[5]),' --> MCP bias restore to 2700 V'
-    print,time_string(t_mcp[6]),' --> MCP bias adjustment (2700 -> 2750 V)'
-    print,time_string(t_mcp[7]),' --> MCP bias adjustment (2750 -> 2800 V)'
-    print,time_string(t_swp[2]),' --> sweep table 8 upload'
-    print,time_string(t_swp[3]),' --> sweep table 7 upload'
-    print,time_string(t_mcp[8]),' --> MCP bias adjustment (2800 -> 2875 V)'
-    print,time_string(t_mcp[9]),' --> last SWEA-SWIA cross calibration'
+    print,time_string(t_swp[0]), ' --> sweep tables 3 and 4 upload'
+    print,time_string(t_mtx[0]), ' --> stowed boom matrix upload #1 (error in MICD)'
+    print,time_string(t_dsf[0]), ' --> deflection scale factor update #1 (with error)'
+    print,time_string(t_dsf[1]), ' --> deflection scale factor update #2 (correct)'
+    print,time_string(t_mtx[1]), ' --> stowed boom matrix upload #2 (correct MICD)'
+    print,time_string(t_swp[1]), ' --> sweep tables 5 and 6 upload'
+    print,time_string(t_dsf[2]), ' --> first SWEA turn on in orbit'
+    print,time_string(t_mtx[2]), ' --> boom deploy (with new MAG-to-SWE matrix)'
+    print,time_string(t_mcp[1]), ' --> MCP bias adjustment (2500 -> 2600 V)'
+    print,time_string(t_mcp[3]), ' --> MCP bias adjustment (2600 -> 2700 V)'
+    print,time_string(t_mcp[4]), ' --> MCP bias revert to 2600 V (unintentional)'
+    print,time_string(t_mcp[5]), ' --> MCP bias restore to 2700 V'
+    print,time_string(t_mcp[6]), ' --> MCP bias adjustment (2700 -> 2750 V)'
+    print,time_string(t_mcp[7]), ' --> MCP bias adjustment (2750 -> 2800 V)'
+    print,time_string(t_swp[2]), ' --> sweep table 8 upload'
+    print,time_string(t_swp[3]), ' --> sweep table 7 upload'
+    print,time_string(t_mcp[8]), ' --> MCP bias adjustment (2800 -> 2875 V)'
+    print,time_string(t_mcp[9]), ' --> SWEA-SWIA cross calibration stabilizes'
+    print,time_string(t_mcp[10]),' --> last SWEA-SWIA cross calibration'
   endif
 
 ; Overplot dotted time bars on the current tplot window (assumed to exist)

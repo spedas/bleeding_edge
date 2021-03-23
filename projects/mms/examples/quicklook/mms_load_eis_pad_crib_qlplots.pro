@@ -5,13 +5,13 @@
 ;   please send them to egrimes@igpp.ucla.edu
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-10-04 12:52:22 -0700 (Thu, 04 Oct 2018) $
-; $LastChangedRevision: 25914 $
+; $LastChangedDate: 2021-03-22 11:19:09 -0700 (Mon, 22 Mar 2021) $
+; $LastChangedRevision: 29789 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/quicklook/mms_load_eis_pad_crib_qlplots.pro $
 ;-
 
 
-probe = '2'
+probe = '1'
 trange = ['2016-10-16', '2016-10-17']
 date = trange[0]
 ;timespan, date, 1
@@ -55,20 +55,20 @@ mms_eis_pad, combine=0, probe=probe, trange=trange, datatype='extof', level='l1b
 mms_eis_pad, combine=0, probe=probe, trange=trange, datatype='phxtof', level='l1b', energy=[14.34, 20.44], species='proton', data_units='cps'
 mms_eis_pad, combine=0, probe=probe, trange=trange, datatype='extof', level='l1b', energy=[111.65, 204.48], species='alpha', data_units='cps'
 mms_eis_pad, combine=0, probe=probe, trange=trange, datatype='extof', level='l1b', energy=[169.59, 220.86], species='oxygen', data_units='cps'
-mms_eis_pad, combine=0, probe=probe, trange=trange, datatype='electronenergy', level='l1b', energy=[54.24, 89.59], data_units='cps'
+;mms_eis_pad, combine=0, probe=probe, trange=trange, datatype='electronenergy', level='l1b', energy=[54.24, 89.59], data_units='cps'
 
 ; clip the DFG data to -150nT to 150nT
-tclip, 'mms'+probe+'_dfg_srvy_dmpa_bvec', -150., 150., /overwrite
-options, 'mms'+probe+'_dfg_srvy_dmpa_bvec', ytitle='MMS'+probe+'!CFGM QL'
-options, 'mms'+probe+'_dfg_srvy_dmpa_bvec', labflag=-1
-options, 'mms'+probe+'_dfg_srvy_dmpa_bvec', labels=['Bx DMPA', 'By DMPA', 'Bz DMPA']
+tclip, 'mms'+probe+'_dfg_srvy_dmpa', -150., 150., /overwrite
+options, 'mms'+probe+'_dfg_srvy_dmpa', ytitle='MMS'+probe+'!CFGM QL'
+options, 'mms'+probe+'_dfg_srvy_dmpa', labflag=-1
+options, 'mms'+probe+'_dfg_srvy_dmpa', labels=['Bx DMPA', 'By DMPA', 'Bz DMPA']
 
-panels = 'mms'+probe+'_'+['dfg_srvy_dmpa_bvec', $
-         'epd_eis_electronenergy_56-87keV_electron_cps_omni_pad_spin', $
-         'epd_eis_extof_80-80keV_proton_cps_omni_pad_spin', $
-         'epd_eis_phxtof_17-17keV_proton_cps_omni_pad_spin', $
-         'epd_eis_extof_140-140keV_alpha_cps_omni_pad_spin', $
-         'epd_eis_extof_191-191keV_oxygen_cps_omni_pad_spin']
+panels = 'mms'+probe+'_'+['dfg_srvy_dmpa', $
+       ;  'epd_eis_electronenergy_56-87keV_electron_cps_omni_pad_spin', $
+         'epd_eis_extof_68-97keV_proton_cps_omni_pad_spin', $
+         'epd_eis_phxtof_14-20keV_proton_cps_omni_pad_spin', $
+         'epd_eis_extof_111-181keV_alpha_cps_omni_pad_spin', $
+         'epd_eis_extof_169-220keV_oxygen_cps_omni_pad_spin']
 
 if ~postscript then window, iw, xsize=width, ysize=height
        

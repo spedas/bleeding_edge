@@ -5,8 +5,8 @@
 ;   please send them to egrimes@igpp.ucla.edu
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-11-01 14:14:10 -0700 (Tue, 01 Nov 2016) $
-; $LastChangedRevision: 22253 $
+; $LastChangedDate: 2021-03-22 11:14:19 -0700 (Mon, 22 Mar 2021) $
+; $LastChangedRevision: 29788 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/quicklook/mms_load_eis_crib_qlplots.pro $
 ;-
 
@@ -39,7 +39,7 @@ if errstats ne 0 then begin
 endif
 
 ; load ExTOF and electron data:
-mms_load_eis, probes=probe, trange=trange, datatype='extof', level='l1b'
+mms_load_eis, probes=probe, trange=trange, datatype=['extof', 'phxtof'], level='l1b'
 mms_load_eis, probes=probe, trange=trange, datatype='electronenergy', level='l1b'
 
 ; load DFG data
@@ -89,16 +89,17 @@ tplot_options, 'ymargin', [5, 5]
 tplot_options, 'xmargin', [15, 15]
 
 ; clip the DFG data to -150nT to 150nT
-tclip, 'mms'+probe+'_dfg_srvy_dmpa_bvec', -150., 150., /overwrite
-options, 'mms'+probe+'_dfg_srvy_dmpa_bvec', ytitle='MMS'+probe+'!CFGM QL'
-options, 'mms'+probe+'_dfg_srvy_dmpa_bvec', labflag=-1
-options, 'mms'+probe+'_dfg_srvy_dmpa_bvec', labels=['Bx DMPA', 'By DMPA', 'Bz DMPA']
+tclip, 'mms'+probe+'_dfg_srvy_dmpa', -150., 150., /overwrite
+options, 'mms'+probe+'_dfg_srvy_dmpa', ytitle='MMS'+probe+'!CFGM!CQL'
+options, 'mms'+probe+'_dfg_srvy_dmpa', labflag=-1
+options, 'mms'+probe+'_dfg_srvy_dmpa', labels=['Bx DMPA', 'By DMPA', 'Bz DMPA', 'Btot']
 
 spd_mms_load_bss, trange=trange, /include_labels 
 
-panels = ['mms'+probe+'_dfg_srvy_dmpa_bvec', $
-  prefix+'_electronenergy_electron_flux_omni_spin', $
+panels = ['mms'+probe+'_dfg_srvy_dmpa', $
+ ; prefix+'_electronenergy_electron_flux_omni_spin', $
   prefix+'_extof_proton_flux_omni_spin', $
+  prefix+'_phxtof_proton_flux_omni_spin', $
   prefix+'_extof_alpha_flux_omni_spin', $
   prefix+'_extof_oxygen_flux_omni_spin']
  
@@ -106,7 +107,7 @@ if ~postscript then window, iw, xsize=width, ysize=height
 ;tplot, panels, var_label=position_vars, window=iw
 mms_tplot_quicklook, panels, trange=trange, var_label=position_vars, title='EIS - Quicklook', $
   burst_bar='mms_bss_burst', fast_bar='mms_bss_fast', window=iw
-timebar, 0.0, /databar, varname='mms'+probe+'_dfg_srvy_dmpa_bvec', linestyle=2
+timebar, 0.0, /databar, varname='mms'+probe+'_dfg_srvy_dmpa', linestyle=2
 
 if postscript then tprint, plot_directory + prefix + "_quicklook_plots"
 

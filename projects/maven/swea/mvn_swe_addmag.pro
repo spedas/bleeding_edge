@@ -35,8 +35,8 @@
 ;    L2ONLY:        Insist on loading L2 data.  (Useful for generating PDS data.)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-21 12:23:12 -0700 (Sun, 21 Mar 2021) $
-; $LastChangedRevision: 29784 $
+; $LastChangedDate: 2021-03-22 16:52:00 -0700 (Mon, 22 Mar 2021) $
+; $LastChangedRevision: 29802 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_addmag.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03/18/14
@@ -63,7 +63,8 @@ pro mvn_swe_addmag, full=full, usepadmag=usepadmag, l2only=l2only
       store_data, 'mvn_B_1sec_MAVEN_SPACECRAFT', /delete
       mvn_mag_load, 'L2_1SEC', mag_frame='pc', spice_frame='spacecraft', l2only=l2only
       get_data, 'mvn_B_1sec_MAVEN_SPACECRAFT', data=mag1, alim=lim, index=i
-      if (i eq 0) then print,"No L2 MAG PC data found!"
+      if (i eq 0) then print,"No L2 MAG PC data found!" $
+                  else print,"Using L2 MAG PC data instead."
     endif
   endif
 

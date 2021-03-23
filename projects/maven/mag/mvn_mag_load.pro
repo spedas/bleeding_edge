@@ -11,8 +11,8 @@
 ;
 ; Author: Davin Larson and Roberto Livi
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-21 10:51:15 -0700 (Sun, 21 Mar 2021) $
-; $LastChangedRevision: 29782 $
+; $LastChangedDate: 2021-03-21 21:54:42 -0700 (Sun, 21 Mar 2021) $
+; $LastChangedRevision: 29786 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/mag/mvn_mag_load.pro $
 
 ;-
@@ -72,8 +72,8 @@ pro mvn_mag_load,format,$
   case mag_product of
     'MAG1' : mprod = 'OB'
     'MAG2' : mprod = 'IB'
-    'OB'   : ; accept as valid
-    'IB'   : ; accept as valid
+    'OB'   : mprod = 'OB'
+    'IB'   : mprod = 'IB'
     else   : begin
                print, ' '
                print, '*****************************************'

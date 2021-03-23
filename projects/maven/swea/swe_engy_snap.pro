@@ -216,8 +216,8 @@ end
 ;                      are lost.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-02 11:48:03 -0800 (Tue, 02 Mar 2021) $
-; $LastChangedRevision: 29727 $
+; $LastChangedDate: 2021-03-22 16:50:44 -0700 (Mon, 22 Mar 2021) $
+; $LastChangedRevision: 29800 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -248,7 +248,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
 
   swe_snap_options, get=key, /silent
   ktag = tag_names(key)
-  klist = ['UNITS','KEEPWINS','ARCHIVE','DDD','ABINS','DBINS','OBINS2', $
+  tlist = ['UNITS','KEEPWINS','ARCHIVE','DDD','ABINS','DBINS','OBINS2', $
            'SUM','POT','PDIAG','PXLIM','MB','KAP','MOM','SCAT','ERANGE', $
            'NOERASE','SCP','FIXY','PEPEAKS','BURST','RAINBOW','MASK_SC','SEC', $
            'BKG','TPLOT','MAGDIR','BCK','SHIFTPOT','XRANGE','YRANGE','SSCALE', $
@@ -256,11 +256,11 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
            'TSMO','WSCALE','CSCALE','VOFFSET','ENDX','TWOT','RCOLORS','CUII', $
            'FMFIT','NOLAB','SHOWDEAD','MONITOR']
   for j=0,(n_elements(ktag)-1) do begin
-    i = strmatch(klist, ktag[j]+'*', /fold)
+    i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
         0  : ; keyword not recognized -> do nothing
         1  : begin
-               kname = (klist[where(i eq 1)])[0]
+               kname = (tlist[where(i eq 1)])[0]
                ok = execute('kset = size(' + kname + ',/type) gt 0',0,1)
                if (not kset) then ok = execute(kname + ' = key.(j)',0,1)
              end
@@ -971,9 +971,10 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     if (pflg) then begin
       wset, Pwin
 
-      xs = 0.71
+      xs = 0.65
       ys = 0.90
       dys = 0.03
+      csize0 = csize1*0.8
 
       if not keyword_set(pxlim) then xlim = [3,20] else xlim = minmax(pxlim)
       if not keyword_set(pylim) then begin
@@ -1027,24 +1028,24 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         for j=0,(ncross-1) do oplot,[px[indx[j]],px[indx[j]]],ylim,color=2
 
         if (k gt 0) then begin
-          xyouts,xs,ys,string(px[k],format='("V = ",f6.2)'),color=col,charsize=csize1,/norm
+          xyouts,xs,ys,string(px[k],format='("V = ",f6.2)'),color=col,charsize=csize0,/norm
           ys -= dys
           oplot,[px[k],px[k]],ylim,color=6,line=2
         endif else begin
-          xyouts,xs,ys,"V = NaN",color=col,charsize=csize1,/norm
+          xyouts,xs,ys,"V = NaN",color=col,charsize=csize0,/norm
           ys -= dys
         endelse
 
         if (dE gt dEmax) then scol = 6 else scol = !p.color
-        xyouts,xs,ys,string(dE,format='("dE = ",f6.2)'),charsize=csize1,color=scol,/norm
+        xyouts,xs,ys,string(dE,format='("dE = ",f6.2)'),charsize=csize0,color=scol,/norm
         ys -= dys
 
       endif
 
-      xyouts,xs,ys,string(dEmax,format='("dEmax = ",f6.2)'),charsize=csize1,/norm
+      xyouts,xs,ys,string(dEmax,format='("dEmax = ",f6.2)'),charsize=csize0,/norm
       ys -= dys
 
-      xyouts,xs,ys,string(thresh,format='("thresh = ",f6.2)'),charsize=csize1,/norm
+      xyouts,xs,ys,string(thresh,format='("thresh = ",f6.2)'),charsize=csize0,/norm
       ys -= dys
 
     endif

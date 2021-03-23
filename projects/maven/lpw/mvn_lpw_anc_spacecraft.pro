@@ -26,9 +26,9 @@
 ;
 ;OUTPUTS:
 ;Tplot variables of the following:
-;mvn_lpw_anc_ck_flag: flag for s/c position for each timestep, 1 = no data, 0 = data present
+;mvn_lpw_anc_ck_flag: flag for s/c pointing for each timestep, 1 = no data, 0 = data present
 ;
-;mvn_lpw_anc_spk_flag: flag for s/c pointing for each timestep, as above.
+;mvn_lpw_anc_spk_flag: flag for s/c position for each timestep, as above.
 ;
 ;mvn_lpw_anc_mvn_att_mso: pointing vectors for MAVEN x,y,z axes in MSO frame. X,Y,Z vector for each MAVEN axis = 9 in total.
 ;
@@ -129,6 +129,7 @@
 ;2019-07-30: CMF: tried to modify dont_load keyword so that this routine won't check for the tplot variable 'mvn_lpw_load_kernel_files', 
 ;                 but there's a bunch of later code that depends on this. For now, this tplot variable needs to be loaded for the routine
 ;                 to work.
+;2021-03-22: CMF: changed how the code checks for the de????.bsp kernel, as NAIF changed the file name convention sometime around now.                 
 ;-
 ;=================
 
@@ -197,7 +198,8 @@ fk = 0  ;frame info
 lsk = 0  ;leapsecs
 sclk = 0 ;MAVEN clock
 for hh = 0, nele_kernels-1 do begin
-    if stregex(dl_kernels.Kernel_files[hh], sl+'de[^bsp]*bsp', /boolean) eq 1 then spk_p += 1  ;add one to counter
+    if strmatch(dl_kernels.Kernel_files[hh], '*/de*.bsp') eq 1 then spk_p += 1  ;add one to counter  ;2021-03: CMF: file name convention change by NAIF.
+    ;if stregex(dl_kernels.Kernel_files[hh], sl+'de[^bsp]*bsp', /boolean) eq 1 then spk_p += 1  ;add one to counter ;Original line before file name change by NAIF, CMF 2021-03
     if stregex(dl_kernels.Kernel_files[hh], sl+'ck', /boolean) eq 1 then ck += 1
     if stregex(dl_kernels.Kernel_files[hh], 'maven_v[^tf]*tf', /boolean) eq 1 then fk += 1
     if stregex(dl_kernels.Kernel_files[hh], sl+'lsk', /boolean) eq 1 then lsk += 1
@@ -205,7 +207,10 @@ for hh = 0, nele_kernels-1 do begin
 endfor
 
 if (spk_p eq 0) then begin
-    print, "#### WARNING ####: No planetary ephemeris kernel loaded: check for "+sl+"spk"+sl+"de???.bsp file."
+    print, "#### WARNING ####: No planetary ephemeris kernel loaded: check for "+sl+"spk"+sl+"de*.bsp file."
+    ;2021-03: CMF: this is the original version below. NAIF changed their file naming convention sometime recently, so that
+    ;this file is now de440s.bsp.
+    ;print, "#### WARNING ####: No planetary ephemeris kernel loaded: check for "+sl+"spk"+sl+"de???.bsp file."
     retall
 endif
 if (ck eq 0) then begin

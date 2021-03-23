@@ -49,8 +49,8 @@
 ;       SILENT:       Don't print any warnings or messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-18 15:27:03 -0700 (Thu, 18 Mar 2021) $
-; $LastChangedRevision: 29775 $
+; $LastChangedDate: 2021-03-22 16:51:17 -0700 (Mon, 22 Mar 2021) $
+; $LastChangedRevision: 29801 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_crosscal.pro $
 ;
 ;CREATED BY:    David L. Mitchell  05-04-16
@@ -157,16 +157,18 @@ function mvn_swe_crosscal, time, on=on, off=off, refresh=refresh, extrap=extrap,
   indx = where(t ge t_mcp[9], count)
   if (count gt 0L) then begin
     i = 5
-    if (eflg) then begin
-      day = (t[indx] - tc[i])/86400D
-      if (domsg) then print,"Warning: SWE-SWI cross calibration factor extrapolated after ", $
-                             time_string(t_mcp[9],prec=-3)
-    endif else begin
-      day = (t_mcp[9] - tc[i])/86400D
-      if (domsg) then print,"Warning: SWE-SWI cross calibration factor fixed after ", $
-                             time_string(t_mcp[9],prec=-3)
-    endelse
+    if (eflg) then tt = t[indx] else tt = t_mcp[9]
+    day = (tt - tc[i])/86400D
     cc[indx] = ac[0,i] + day*(ac[1,i] + day*(ac[2,i] + day*ac[3,i]))
+  endif
+
+  if (domsg) then begin
+    indx = where(t gt t_mcp[10], count)
+    if (count gt 0L) then begin
+      msg = "Warning: SWE-SWI cross calibration factor "
+      if (eflg) then print,msg,"extrapolated after ",time_string(t_mcp[10],prec=-3) $
+                else print,msg,"fixed after ",time_string(t_mcp[10],prec=-3)
+    endif
   endif
 
   return, cc

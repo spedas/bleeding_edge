@@ -159,8 +159,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;        
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-02 11:48:03 -0800 (Tue, 02 Mar 2021) $
-; $LastChangedRevision: 29727 $
+; $LastChangedDate: 2021-03-22 11:48:45 -0700 (Mon, 22 Mar 2021) $
+; $LastChangedRevision: 29790 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -193,7 +193,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
   swe_snap_options, get=key, /silent
   ktag = tag_names(key)
-  klist = ['KEEPWINS','ARCHIVE','ENERGY','UNITS','DDD','ZRANGE','SUM', $
+  tlist = ['KEEPWINS','ARCHIVE','ENERGY','UNITS','DDD','ZRANGE','SUM', $
            'LABEL','SMO','DIR','MASK_SC','ABINS','DBINS','OBINS','BURST', $
            'POT','SCP','SPEC','PLOTLIMS','NORM','CENTER','PEP','RESAMPLE', $
            'HIRES','FBDATA','MONITOR','ADIABATIC','NOMID','UNCERTAINTY', $
@@ -201,11 +201,11 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
            'ERROR_BARS','YRANGE','TRANGE2','NOTE','MINCOUNTS','MAXRERR', $
            'TSMO','SUNDIR','WSCALE','CSCALE','FSCALE','RESULT','VDIS']
   for j=0,(n_elements(ktag)-1) do begin
-    i = strmatch(klist, ktag[j]+'*', /fold)
+    i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
         0  : ; keyword not recognized -> do nothing
         1  : begin
-               kname = (klist[where(i eq 1)])[0]
+               kname = (tlist[where(i eq 1)])[0]
                ok = execute('kset = size(' + kname + ',/type) gt 0',0,1)
                if (not kset) then ok = execute(kname + ' = key.(j)',0,1)
              end

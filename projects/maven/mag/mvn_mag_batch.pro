@@ -4,7 +4,10 @@
 ;; Temporarily add level 1 process, 
 mvn_mag_gen_l1_sav,init=1
 ;; Create 32Hz IDL .sav files for level 1 and 2
-mvn_mag_gen_sav,init=1, coord='pl'
+;; Temporarily restrict dates to post 2014-10-10, do to format
+;; differences between pl data before and after 2014-10-10
+;mvn_mag_gen_sav,init=1, coord='pl'
+mvn_mag_gen_sav,coord='pl',trange=[time_double('2014-10-10'), systime(1)]
 ;mvn_mag_gen_sav,init=1, coord='ss'
 mvn_mag_gen_sav,init=1, coord='pc'
 
