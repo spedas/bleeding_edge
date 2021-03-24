@@ -153,8 +153,8 @@
 ;                 save files are 8.7 GB in size.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-02 12:52:49 -0800 (Tue, 02 Mar 2021) $
-; $LastChangedRevision: 29732 $
+; $LastChangedDate: 2021-03-22 19:19:52 -0700 (Mon, 22 Mar 2021) $
+; $LastChangedRevision: 29807 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -163,7 +163,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
                        extended=extended, eph=eph, current=current, loadonly=loadonly, $
                        vars=vars, ellip=ellip, hires=hires, timecrop=timecrop, now=now, $
                        colors=colors, reset_trange=reset_trange, nocrop=nocrop, spk=spk, $
-                       segments=segments, shadow=shadow, datum=dtm, noload=noload, $
+                       segments=segments, shadow=shadow, datum=datum2, noload=noload, $
                        pds=pds, verbose=verbose, clear=clear, success=success, $
                        save=save, restore=restore, mission=mission
 
@@ -254,14 +254,35 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
   R_m = R_vol       ; use the mean radius for converting to Mars radii
 
+; Load any keyword defaults
+
+  maven_orbit_options, get=key, /silent
+  ktag = tag_names(key)
+  tlist = ['STAT','DOMEX','SWIA','IALT','RESULT','EXTENDED','EPH','CURRENT', $
+           'LOADONLY','VARS','ELLIP','HIRES','TIMECROP','NOW','COLORS', $
+           'RESET_TRANGE','NOCROP','SPK','SEGMENTS','SHADOW','DATUM2','NOLOAD', $
+           'PDS','VERBOSE','CLEAR','SUCCESS','SAVE','RESTORE','MISSION']
+  for j=0,(n_elements(ktag)-1) do begin
+    i = strmatch(tlist, ktag[j]+'*', /fold)
+    case (total(i)) of
+        0  : ; keyword not recognized -> do nothing
+        1  : begin
+               kname = (tlist[where(i eq 1)])[0]
+               ok = execute('kset = size(' + kname + ',/type) gt 0',0,1)
+               if (not kset) then ok = execute(kname + ' = key.(j)',0,1)
+             end
+      else : print, "Keyword ambiguous: ", ktag[j]
+    endcase
+  endfor
+
 ; Determine the reference surface for calculating altitude
 
   dlist = ['sphere','ellipsoid','areoid','surface']
-  if (size(dtm,/type) ne 7) then dtm = dlist[1]
-  i = strmatch(dlist, dtm+'*', /fold)
+  if (size(datum2,/type) ne 7) then datum2 = dlist[1]
+  i = strmatch(dlist, datum2+'*', /fold)
   case (total(i)) of
      0   : begin
-             print, "Datum not recognized: ", dtm
+             print, "Datum not recognized: ", datum2
              return
            end
      1   : datum = (dlist[where(i eq 1)])[0]
@@ -278,7 +299,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   if (treset) then nocrop = 1
 
   domex = keyword_set(domex)
-  eflg = keyword_set(ellip)
+  eflg = keyword_set(ellip)  ; doesn't seem to do anything
   if (size(shadow,/type) eq 0) then shadow = 1
   sflg = keyword_set(shadow)
   if not keyword_set(ialt) then ialt = !values.f_nan

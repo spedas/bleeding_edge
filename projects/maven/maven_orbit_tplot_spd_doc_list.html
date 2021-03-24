@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Mar 22 18:15:53 2021.<P>
+<STRONG>Last modified: </STRONG>Tue Mar 23 18:15:55 2021.<P>
  
 <HR>
  
@@ -33,6 +33,8 @@ This page was created by the IDL library routine
 <br>Generates MAVEN spacecraft state vectors using the SPICE Icy toolkit.
 <LI><A HREF="#MAVEN_ORBIT_MOVIE">MAVEN_ORBIT_MOVIE</A>
 <br>3D visualization of MAVEN orbit using IDL 8 new graphics
+<LI><A HREF="#MAVEN_ORBIT_OPTIONS">MAVEN_ORBIT_OPTIONS</A>
+<br>Stores a structure of MAVEN_ORBIT keyword options and provides
 <LI><A HREF="#MAVEN_ORBIT_SNAP">MAVEN_ORBIT_SNAP</A>
 <br>After running maven_orbit_tplot, this routine plots the orbit as viewed
 <LI><A HREF="#MAVEN_ORBIT_TPLOT">MAVEN_ORBIT_TPLOT</A>
@@ -235,8 +237,8 @@ USAGE:
     @maven_orbit_common
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-02-22 08:33:51 -0800 (Fri, 22 Feb 2019) $
- $LastChangedRevision: 26669 $
+ $LastChangedDate: 2021-03-22 19:19:14 -0700 (Mon, 22 Mar 2021) $
+ $LastChangedRevision: 29806 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_common.pro $
 
 CREATED BY:	David L. Mitchell
@@ -358,7 +360,7 @@ CREATED BY:	David L. Mitchell  2014-10-13
 <A NAME="MAVEN_ORBIT_MOVIE">
 <H2>MAVEN_ORBIT_MOVIE</H2></A>
 <A HREF="#MAVEN_ORBIT_MAKEEPH">[Previous Routine]</A>
-<A HREF="#MAVEN_ORBIT_SNAP">[Next Routine]</A>
+<A HREF="#MAVEN_ORBIT_OPTIONS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -395,9 +397,64 @@ CREATED BY:	David L. Mitchell  2014-10-13
 <STRONG>(See <A href="maven_orbit_tplot/maven_orbit_movie.pro">projects/maven/maven_orbit_tplot/maven_orbit_movie.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MAVEN_ORBIT_OPTIONS">
+<H2>MAVEN_ORBIT_OPTIONS</H2></A>
+<A HREF="#MAVEN_ORBIT_MOVIE">[Previous Routine]</A>
+<A HREF="#MAVEN_ORBIT_SNAP">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   maven_orbit_options
+PURPOSE:
+  Stores a structure of MAVEN_ORBIT keyword options and provides
+  a mechanism for changing those options.  Keywords set by this
+  routine are persistent defaults in the MAVEN_ORBIT routines.
+  They can be overridden by explicitly setting keywords in those
+  routines.
+
+  Call this routine from your idl_startup.pro to customize default
+  options for yourself.
+
+USAGE:
+  maven_orbit_options, key
+
+INPUTS:
+       key:           Structure containing keyword(s) for MAVEN_ORBIT_TPLOT 
+                      and MAVEN_ORBIT_SNAP.  Unrecognized keywords can be 
+                      added to the structure but will subsequently be ignored.
+
+                      {KEYWORD: value, KEYWORD: value, ...}
+
+KEYWORDS:
+       GET:           Set this to a named variable to return the current 
+                      default keyword structure (after changes, if any).
+
+       REPLACE:       If this keyword is set, then the input structure 
+                      replaces any existing structure.  Otherwise, the
+                      input structure is merged with any existing one.
+
+       DELETE:        An array of tag names to delete from the default
+                      keyword structure.
+
+       RESET:         Reset the default structure to something universally
+                      benign: {WSCALE: 1.}
+
+       LIST:          List the current keyword default structure.  This is
+                      the default when this routine is called without any
+                      inputs or keywords.
+
+       SILENT:        Suppresses output.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2021-03-22 19:18:19 -0700 (Mon, 22 Mar 2021) $
+ $LastChangedRevision: 29805 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_options.pro $
+</PRE><P>
+<STRONG>(See <A href="maven_orbit_tplot/maven_orbit_options.pro">projects/maven/maven_orbit_tplot/maven_orbit_options.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MAVEN_ORBIT_SNAP">
 <H2>MAVEN_ORBIT_SNAP</H2></A>
-<A HREF="#MAVEN_ORBIT_MOVIE">[Previous Routine]</A>
+<A HREF="#MAVEN_ORBIT_OPTIONS">[Previous Routine]</A>
 <A HREF="#MAVEN_ORBIT_TPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -479,6 +536,8 @@ KEYWORDS:
 
        NOORB:    Do not plot the orbit.
 
+       SCSYM:    Symbol for the spacecraft.  Default = 1 (plus symbol).
+
        RESET:    Initialize all plots.
 
        COLOR:    Symbol color index.
@@ -540,8 +599,8 @@ KEYWORDS:
                  last color.  Default is 6 (red) for all.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-03-02 11:50:19 -0800 (Tue, 02 Mar 2021) $
- $LastChangedRevision: 29729 $
+ $LastChangedDate: 2021-03-22 19:20:08 -0700 (Mon, 22 Mar 2021) $
+ $LastChangedRevision: 29808 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11
@@ -709,8 +768,8 @@ KEYWORDS:
                  save files are 8.7 GB in size.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-03-02 12:52:49 -0800 (Tue, 02 Mar 2021) $
- $LastChangedRevision: 29732 $
+ $LastChangedDate: 2021-03-22 19:19:52 -0700 (Mon, 22 Mar 2021) $
+ $LastChangedRevision: 29807 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11

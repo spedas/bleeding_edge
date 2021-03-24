@@ -77,6 +77,8 @@
 ;
 ;       NOORB:    Do not plot the orbit.
 ;
+;       SCSYM:    Symbol for the spacecraft.  Default = 1 (plus symbol).
+;
 ;       RESET:    Initialize all plots.
 ;
 ;       COLOR:    Symbol color index.
@@ -138,8 +140,8 @@
 ;                 last color.  Default is 6 (red) for all.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-02 11:50:19 -0800 (Tue, 02 Mar 2021) $
-; $LastChangedRevision: 29729 $
+; $LastChangedDate: 2021-03-22 19:20:08 -0700 (Mon, 22 Mar 2021) $
+; $LastChangedRevision: 29808 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -148,7 +150,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     npole=npole, noerase=noerase, keep=keep, color=color, reset=reset, cyl=cyl, times=times, $
     nodot=nodot, terminator=terminator, thick=thick, Bdir=Bdir, mscale=mscale, scsym=scsym, $
     magnify=magnify, Bclip=Bclip, Vdir=Vdir, Vclip=Vclip, Vscale=Vscale, Vrange=Vrange, $
-    alt=doalt, psname=psname, nolabel=nolabel, xy=xy, yz=yz, landers=landers, slab=slab, $
+    alt=alt2, psname=psname, nolabel=nolabel, xy=xy, yz=yz, landers=landers, slab=slab, $
     scol=scol, tcolors=tcolors, noorb=noorb, monitor=monitor, wscale=wscale
 
   @maven_orbit_common
@@ -163,13 +165,36 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   phi = findgen(49)*(2.*!pi/49)
   usersym,a*cos(phi),a*sin(phi),/fill
   if (size(thick,/type) eq 0) then thick = 1
-  
-  if not keyword_set(scsym) then scsym = 1
 
   tplot_options, get_opt=topt
   delta_t = abs(topt.trange[1] - topt.trange[0])
   if ((size(prec,/type) eq 0) and (delta_t lt (7D*86400D))) then prec = 1
 
+; Load any keyword defaults
+
+  maven_orbit_options, get=key, /silent
+  ktag = tag_names(key)
+  tlist = ['PREC','MHD','HYBRID','LATLON','XZ','MARS','NPOLE','NOERASE','KEEP', $
+           'COLOR','RESET','CYL','TIMES','NODOT','TERMINATOR','THICK','BDIR', $
+           'MSCALE','SCSYM','MAGNIFY','BCLIP','VDIR','VCLIP','VSCALE','VRANGE', $
+           'ALT2','PSNAME','NOLABEL','XY','YZ','LANDERS','SLAB','SCOL','TCOLORS', $
+           'NOORB','MONITOR','WSCALE']
+  for j=0,(n_elements(ktag)-1) do begin
+    i = strmatch(tlist, ktag[j]+'*', /fold)
+    case (total(i)) of
+        0  : ; keyword not recognized -> do nothing
+        1  : begin
+               kname = (tlist[where(i eq 1)])[0]
+               ok = execute('kset = size(' + kname + ',/type) gt 0',0,1)
+               if (not kset) then ok = execute(kname + ' = key.(j)',0,1)
+             end
+      else : print, "Keyword ambiguous: ", ktag[j]
+    endcase
+  endfor
+
+; Process keywords
+
+  if not keyword_set(scsym) then scsym = 1
   if keyword_set(prec) then pflg = 1 else pflg = 0
   if (size(color,/type) gt 0) then begin
     color = color[0]
@@ -196,7 +221,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   if keyword_set(Bdir) then dob = 1 else dob = 0
   if keyword_set(Vdir) then dov = 1 else dov = 0
 
-  doalt = keyword_set(doalt)
+  doalt = keyword_set(alt2)
   dolab = ~keyword_set(nolabel)
 
   ok = 0
@@ -231,10 +256,10 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     if (size(slab,/type) gt 0) then dolab = keyword_set(slab) else dolab = 1
     if (dolab) then slab = ['V1','V2','Pa','S','O','Ph','C','I','Pe'] else slab = 0
   endif
-  scol2 = replicate(6,nsites>1)
   ncol = n_elements(scol)
-  if (ncol gt 0) then scol2[0:(ncol-1)<(nsites-1)] = scol[0:(ncol-1)<(nsites-1)]
-  if (ncol lt nsites) then scol2[ncol:(nsites-1)] = scol[ncol-1]
+  if (ncol eq 1) then defcol = scol else defcol = 6
+  scol2 = replicate(defcol,nsites>1)
+  if (ncol gt 1) then scol2[0:(ncol-1)<(nsites-1)] = scol[0:(ncol-1)<(nsites-1)]
   scol = scol2
 
   if keyword_set(times) then begin

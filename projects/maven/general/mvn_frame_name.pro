@@ -17,6 +17,7 @@
 ;
 ;INPUTS:
 ;       frame:    String scalar or array of MAVEN frame name fragments.
+;                 If no frame is provided, keyword LIST is set.
 ;
 ;KEYWORDS:
 ;     SUCCESS:    An array of integers with the same number of elements
@@ -30,8 +31,8 @@
 ;                 null string.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-03-17 11:18:25 -0700 (Tue, 17 Mar 2020) $
-; $LastChangedRevision: 28418 $
+; $LastChangedDate: 2021-03-23 14:07:56 -0700 (Tue, 23 Mar 2021) $
+; $LastChangedRevision: 29812 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_frame_name.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -48,12 +49,12 @@ function mvn_frame_name, frame, success=success, reset=reset, list=list
   flist = mvn_flist
   ffull = ['IAU_'+flist[0:3], 'MAVEN_'+flist[4:*]]
 
-  if keyword_set(list) then begin
+  nframe = n_elements(frame)
+  if (keyword_set(list) or (nframe eq 0)) then begin
     for i=0,(n_elements(ffull)-1) do print,"  ",ffull[i]
     return, ''
   endif
 
-  nframe = n_elements(frame)
   success = replicate(0, nframe)
   if (size(frame,/type) ne 7) then begin
     print, "Input must be of type string."

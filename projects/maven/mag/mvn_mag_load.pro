@@ -11,8 +11,8 @@
 ;
 ; Author: Davin Larson and Roberto Livi
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-21 21:54:42 -0700 (Sun, 21 Mar 2021) $
-; $LastChangedRevision: 29786 $
+; $LastChangedDate: 2021-03-23 14:06:47 -0700 (Tue, 23 Mar 2021) $
+; $LastChangedRevision: 29811 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/mag/mvn_mag_load.pro $
 
 ;-
@@ -59,8 +59,7 @@ pro mvn_mag_load,format,$
     else  : begin
               print, ' '
               print, '*****************************************'
-              print, 'ERROR:'
-              print, 'Unrecognized MAG frame: ' + mag_frame
+              print, 'ERROR: Unrecognized MAG frame: ' + mag_frame
               print, 'Must be one of: pl, pc, or ss.'
               print, '*****************************************'
               print, ' '
@@ -77,8 +76,7 @@ pro mvn_mag_load,format,$
     else   : begin
                print, ' '
                print, '*****************************************'
-               print, 'ERROR:'
-               print, 'Unrecognized MAG product: ' + mag_product
+               print, 'ERROR: Unrecognized MAG product: ' + mag_product
                print, 'Must be either MAG1 or MAG2.'
                print, '*****************************************'
                print, ' '
@@ -120,11 +118,18 @@ pro mvn_mag_load,format,$
         if nfiles eq 0 then begin
            print, ' '
            print, '*****************************************'
-           print, 'WARNING:'
-           print, 'L2 files not available! Use L1 instead.'
-           print, '*****************************************'
-           print, ' '
-           if (l1_ok) then goto, L1_FULL else return
+           print, 'L2_FULL files not available!'
+           if (l1_ok) then begin
+             print, 'Looking for L1_FULL files ...'
+             print, '*****************************************'
+             print, ' '
+             goto, L1_FULL
+           endif else begin
+             print, 'L2ONLY is set --> ABORT!'
+             print, '*****************************************'
+             print, ' '
+             return
+           endelse
         endif
         files    = mvn_pfp_file_retrieve($
                    pathname,$
@@ -237,11 +242,18 @@ pro mvn_mag_load,format,$
         if nfiles eq 0 then begin
            print, ' '
            print, '*****************************************'
-           print, 'WARNING:'
-           print, 'L2 files not available! Use L1 instead.'
-           print, '*****************************************'
-           print, ' '
-           if (l1_ok) then goto, L1_30SEC else return
+           print, 'L2_30SEC files not available!'
+           if (l1_ok) then begin
+             print, 'Looking for L1_30SEC files ...'
+             print, '*****************************************'
+             print, ' '
+             goto, L1_30SEC
+           endif else begin
+             print, 'L2ONLY is set --> ABORT!'
+             print, '*****************************************'
+             print, ' '
+             return
+           endelse
         endif
         files    = mvn_pfp_file_retrieve($
                    pathname,$
@@ -345,11 +357,18 @@ pro mvn_mag_load,format,$
         if nfiles eq 0 then begin
            print, ' '
            print, '*****************************************'
-           print, 'WARNING:'
-           print, 'L2 files not available! Use L1 instead.'
-           print, '*****************************************'
-           print, ' '
-           if (l1_ok) then goto, L1_1SEC else return
+           print, 'L2_1SEC files not available!'
+           if (l1_ok) then begin
+             print, 'Looking for L1_1SEC files ...'
+             print, '*****************************************'
+             print, ' '
+             goto, L1_1SEC
+           endif else begin
+             print, 'L2ONLY is set --> ABORT!'
+             print, '*****************************************'
+             print, ' '
+             return
+           endelse
         endif
         files    = mvn_pfp_file_retrieve($
                    pathname,$
@@ -467,10 +486,10 @@ pro mvn_mag_load,format,$
      'L1_FULL': begin
         L1_FULL:
         print, ' '
-        print, '**********************************'
+        print, '*******************************************'
         print, 'WARNING: LEVEL 1 FORMAT'
-        print, 'This data may not be used for publication.'
-        print, '**********************************'
+        print, 'These data may not be used for publication.'
+        print, '*******************************************'
         print, ' '
         pathname = dirr_l1+'full/YYYY/MM/mvn_mag_l1_'+mag_frame+'_full_YYYYMMDD.sav'
         files    = mvn_pfp_file_retrieve($
@@ -573,10 +592,10 @@ pro mvn_mag_load,format,$
      'L1_30SEC': begin
         L1_30SEC:
         print, ' '
-        print, '**********************************'
+        print, '*******************************************'
         print, 'WARNING: LEVEL 1 FORMAT'
-        print, 'This data may not be used for publication.'
-        print, '**********************************'
+        print, 'These data may not be used for publication.'
+        print, '*******************************************'
         print, ' '
         pathname = dirr_l1+'30sec/YYYY/MM/mvn_mag_l1_'+mag_frame+'_30sec_YYYYMMDD.sav'
         files    = mvn_pfp_file_retrieve($
@@ -678,10 +697,10 @@ pro mvn_mag_load,format,$
      'L1_1SEC': begin
         L1_1SEC:
         print, ' '
-        print, '**********************************'
+        print, '*******************************************'
         print, 'WARNING: LEVEL 1 FORMAT'
-        print, 'This data may not be used for publication.'
-        print, '**********************************'
+        print, 'These data may not be used for publication.'
+        print, '*******************************************'
         print, ' '
         pathname = dirr_l1+'1sec/YYYY/MM/mvn_mag_l1_'+mag_frame+'_1sec_YYYYMMDD.sav'
         files    = mvn_pfp_file_retrieve($
@@ -786,10 +805,10 @@ pro mvn_mag_load,format,$
      ;; Older style save files. Bigger and  Slower to read in 
      'L1_SAV': begin   
         print, ' '
-        print, '**********************************'
+        print, '*******************************************'
         print, 'WARNING: LEVEL 1 FORMAT'
-        print, 'This data may not be used for publication.'
-        print, '**********************************'
+        print, 'These data may not be used for publication.'
+        print, '*******************************************'
         print, ' '
         pathname = 'maven/data/sci/mag/'+$
                    'l1_sav/YYYY/MM/mvn_mag_ql_YYYY*DOYpl_YYYYMMDD_v??_r??.sav'
@@ -836,10 +855,10 @@ pro mvn_mag_load,format,$
      ;; Note: Can only read one file at a time.
      'L1_STS': begin
         print, ' '
-        print, '**********************************'
+        print, '*******************************************'
         print, 'WARNING: LEVEL 1 FORMAT'
-        print, 'This data may not be used for publication.'
-        print, '**********************************'
+        print, 'These data may not be used for publication.'
+        print, '*******************************************'
         print, ' '
         pathname = 'maven/data/sci/mag/'+$ ;jmm, 2016-02-08
                    'l1/YYYY/MM/mvn_mag_ql_YYYY*DOYpl_YYYYMMDD_v??_r??.sts'

@@ -41,7 +41,7 @@ aari|AARI|bbg|Barentsburg, Russia
 mcmac|McMAC|benn|Bennington, NE
 gima|GIMA|bett|Bettles, AK
 dtu|DTU|bfe|Brorfelde, Denmark
-tgo|TGO|bjn|Bjœóõ½rnœóõ½ya, Norway
+tgo|TGO|bjn|Bjï¿½ï¿½ï¿½ï¿½rnï¿½ï¿½ï¿½ï¿½ya, Norway
 nrcan|NRCan|blc|Baker Lake, NU
 epo|Themis EPO|bmls|Bay Mills, MI
 usgs|USGS|bou|Boulder, CO
@@ -72,7 +72,7 @@ dtu|DTU|dmh|Danmarkshavn, Greenland
 dtu|DTU|dnb|Daneborg, Greenland
 ae|Themis AE|dob|Dombas, Norway
 tgo|TGO|dob|Dombas, Norway
-tgo|TGO|don|Dœóõ½nna, Norway
+tgo|TGO|don|Dï¿½ï¿½ï¿½ï¿½nna, Norway
 epo|Themis EPO|drby|Derby, VT
 gima|GIMA|eagl|Eagle, AK
 aeold|Themis AE (pre 2015)|ekat|Ekati, NT
@@ -144,7 +144,7 @@ gima|GIMA|kako|Kaktovik, AK
 aeold|Themis AE (pre 2015)|kapu|Kapuskasing, ON
 gbo|Themis GBO|kapu|Kapuskasing, ON
 asi|ASI|kapu|Kapuskasing, ON
-tgo|TGO|kar|Karmœóõ½y, Norway
+tgo|TGO|kar|Karmï¿½ï¿½ï¿½ï¿½y, Norway
 gima|GIMA|kena|Kenai College, AK
 fmi|FMI|kev|Kevo, Finland
 ae|Themis AE|kian|Kiana, AK
@@ -182,8 +182,8 @@ fmi|FMI|mek|Mekrijarvi, Finland
 fmi|FMI|muo|Muono, Finland
 ae|Themis AE|nain|Nain, NL
 maccs|MACCS|nain|Nain, NL
-ae|Themis AE|nal|Ny œóõ½lesund, Norway
-tgo|TGO|nal|Ny œóõ½lesund, Norway
+ae|Themis AE|nal|Ny ï¿½ï¿½ï¿½ï¿½lesund, Norway
+tgo|TGO|nal|Ny ï¿½ï¿½ï¿½ï¿½lesund, Norway
 ae|Themis AE|naq|Narsarsuaq, Greenland
 asi|ASI|naq|Narsarsuaq, Greenland
 dtu|DTU|naq|Narsarsuaq, Greenland
@@ -234,10 +234,10 @@ maccs|MACCS|rbay|Repulse Bay, NU
 autu|AUTUMN|redr|Red Deer, AB
 mcmac|McMAC|rich|Richardson, TX
 epo|Themis EPO|rmus|Remus, MI
-ae|Themis AE|roe|Rœóõ½mœóõ½, Denmark
-dtu|DTU|roe|Rœóõ½mœóõ½, Denmark
+ae|Themis AE|roe|Rï¿½ï¿½ï¿½ï¿½mï¿½ï¿½ï¿½ï¿½, Denmark
+dtu|DTU|roe|Rï¿½ï¿½ï¿½ï¿½mï¿½ï¿½ï¿½ï¿½, Denmark
 autu|AUTUMN|roth|Priddis, AB
-tgo|TGO|rvk|Rœóõ½rvik, Norway
+tgo|TGO|rvk|Rï¿½ï¿½ï¿½ï¿½rvik, Norway
 ae|Themis AE|salu|Salluit, QC
 autx|AUTUMNX|salu|Salluit, QC
 mcmac|McMAC|satx|San Antonio, TX
@@ -261,7 +261,7 @@ kyoto|KYOTO|snkq|Sanikiluaq, NU
 carisma|CARISMA|snkq|Sanikiluaq, NU
 ae|Themis AE|sol|Solund, Norway
 tgo|TGO|sol|Solund, Norway
-tgo|TGO|sor|Sœóõ½rœóõ½ya, Norway
+tgo|TGO|sor|Sï¿½ï¿½ï¿½ï¿½rï¿½ï¿½ï¿½ï¿½ya, Norway
 ae|Themis AE|stf|Kangerlussuaq, Greenland
 dtu|DTU|stf|Kangerlussuaq, Greenland
 falcon|FALCON|stfd|Stanford, CA
@@ -286,7 +286,7 @@ gbo|Themis GBO|tpas|The Pas, MB
 asi|ASI|tpas|The Pas, MB
 ae|Themis AE|trap|Trapper Creek, AK
 gima|GIMA|trap|Trapper Creek, AK
-tgo|TGO|tro|Tromsœóõ½, Norway
+tgo|TGO|tro|Tromsï¿½ï¿½ï¿½ï¿½, Norway
 usgs|USGS|tuc|Tucson, AZ
 epo|Themis EPO|ukia|Ukiah, OR
 dtu|DTU|umq|Uummannaq, Greenland
@@ -309,3 +309,28 @@ nrcan|NRCan|ykc|Yellowknife, NT
 aeold|Themis AE (pre 2015)|yknf|Yellowknife, NT
 gbo|Themis GBO|yknf|Yellowknife, NT
 asi|ASI|yknf|Yellowknife, NT
+bas|BAS|M67_292|Antarctica
+bas|BASM70_039|Antarctica
+bas|BASM72_078|Antarctica
+bas|BASM77_077|Antarctica
+bas|BASM78_337|Antarctica
+bas|BASM79_336|Antarctica
+bas|BASM80_077|Antarctica 
+bas|BASM81_338|Antarctica
+bas|BASM83_348|Antarctica
+bas|BASM84_336|Antarctica
+bas|BASM85_002|Antarctica
+bas|BASM87_028|Antarctica
+bas|BASM87_068|Antarctica
+bas|BASM88_316|Antarctica
+bas|BASM73_159|Antarctica 
+bas|BASM74_043|Antarctica
+bas|BASM81_003|Antarctica
+bas|BASM83_347|Antarctica
+bas|BASM85_096|Antarctica
+bas|BASM66_294|Antarctica
+bas|BASM68_041|Antarctica
+bas|BASM69_041|Antarctica
+bas|BASM70_044|Antarctica 
+bas|BASM77_040|Antarctica
+bas|BASM65-297|Antarctica
