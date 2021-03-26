@@ -20,7 +20,8 @@
 ;Keywords:
 ;         period(optional): the amount of time between recalculations of
 ;             geodipole tilt in seconds(default: 60)  increase this
-;             value to decrease run time
+;             value to decrease run time.  The first period center time (not the start time) is now aligned
+;             with the first sample time.  JWL 2021-03-22
 ;             
 ;         add_tilt:  Increment the default dipole tilt used by the model with
 ;                    a user provided tilt in degrees.  Result will be produced with TSY_DEFAULT_TILT+ADD_TILT
@@ -74,9 +75,9 @@
 ;      -or-
 ;      http://ampere.jhuapl.edu/code/idl_geopack.html
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2015-03-20 12:48:33 -0700 (Fri, 20 Mar 2015) $
-; $LastChangedRevision: 17157 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-03-25 17:11:59 -0700 (Thu, 25 Mar 2021) $
+; $LastChangedRevision: 29824 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t96/t96.pro $
 ;-
 
@@ -224,8 +225,9 @@ function t96, tarray, rgsm_array,pdyn,dsti,yimf,zimf, period = period,$
 
   ts = time_struct(tarray)
 
-  ct = (tend-tstart)/period
-  nperiod = ceil(ct)+1
+  ; The first period now starts 1/2 period before the start time, so the center is aligned with the start time.
+  ct = 0.5D + (tend-tstart)/period
+  nperiod = ceil(ct)
 
   ;I don't think period should be an integer, doesn't allow subsecond periods
   ;period = long(period)
@@ -252,7 +254,7 @@ function t96, tarray, rgsm_array,pdyn,dsti,yimf,zimf, period = period,$
   
   ;return the times at the center of each period
   if arg_present(get_period_times) then begin
-    get_period_times = tstart + dindgen(nperiod)*period+period/2.
+    get_period_times = tstart + dindgen(nperiod)*period
   endif
   
   if n_elements(add_tilt) gt 0 then begin
@@ -262,7 +264,7 @@ function t96, tarray, rgsm_array,pdyn,dsti,yimf,zimf, period = period,$
       tilt_value = add_tilt
     endif else if n_elements(add_tilt) eq t_size[0] then begin
       ;resample tilt values to period intervals, using middle of sample
-      period_abcissas = tstart + dindgen(nperiod)*period+period/2
+      period_abcissas = tstart + dindgen(nperiod)*period
       tilt_value = interpol(add_tilt,tarray,period_abcissas)
     endif else begin
       dprint,'Error: add_tilt values do not match data values or period values'
@@ -277,7 +279,7 @@ function t96, tarray, rgsm_array,pdyn,dsti,yimf,zimf, period = period,$
       tilt_value = set_tilt
     endif else if n_elements(set_tilt) eq t_size[0] then begin
       ;resample tilt values to period intervals, using middle of sample
-      period_abcissas = tstart + dindgen(nperiod)*period+period/2
+      period_abcissas = tstart + dindgen(nperiod)*period
       tilt_value = interpol(set_tilt,tarray,period_abcissas)
     endif else begin
       dprint,'Error: set_tilt values do not match data values or period values'
@@ -288,8 +290,8 @@ function t96, tarray, rgsm_array,pdyn,dsti,yimf,zimf, period = period,$
   while i lt nperiod do begin
 
     ;find indices of points to be input this iteration
-    idx1 = where(tarray ge tstart + i*period)
-    idx2 = where(tarray le tstart + (i+1)*period)
+    idx1 = where(tarray ge tstart + i*period - period/2.0D)
+    idx2 = where(tarray le tstart + (i+1)*period - period/2.0D)
 
     idx = ssl_set_intersection(idx1, idx2)
 

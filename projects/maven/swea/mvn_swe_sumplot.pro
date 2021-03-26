@@ -68,8 +68,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-02-18 15:22:18 -0800 (Thu, 18 Feb 2021) $
-; $LastChangedRevision: 29678 $
+; $LastChangedDate: 2021-03-25 09:52:43 -0700 (Thu, 25 Mar 2021) $
+; $LastChangedRevision: 29819 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -1133,7 +1133,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     tplot_options,'var_label','orbnum'
   endif
 
-  tplot_options,'datagap',129D  ; 1 sec longer than PFP housekeeping interval
+  options,pans,'datagap',129D  ; 1 sec longer than PFP housekeeping interval
 
   if (doplot) then begin
     tplot,pans,trange=[tmin,tmax]
@@ -1153,7 +1153,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
 
     set_plot,'z'
       print,"Writing png file: ",pngname," ... ",format='(3a,$)'
-      loadct2,34
+      loadct2,43,previous=ptab
       device,set_resolution=[1200,800]
       tplot,pans,trange=[tmin,tmax]
       timebar,t_cfg,/line
@@ -1161,6 +1161,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       tvlct,red,green,blue,/get
       write_image,path+pngname,itype,img,red,green,blue
       print,"done"
+      loadct2,ptab
     set_plot,current_dev
   endif
   

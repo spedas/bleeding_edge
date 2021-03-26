@@ -19,7 +19,8 @@
 ;
 ;         period(optional): the amount of time between recalculations of
 ;             geodipole tilt and application of a new kp value 
-;             in seconds,increase this value to decrease run time(default: 600) 
+;             in seconds,increase this value to decrease run time(default: 600)
+;             The center (not the start) of the first period is now aligned with the start time. 
 ;         
 ;         igrf_only(optional): Set this keyword to turn off the t89 component of
 ;           the model and return only the igrf component
@@ -73,8 +74,8 @@
 ;      6371.2 = the value used in the GEOPACK FORTRAN code for Re
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-03-19 16:07:41 -0700 (Fri, 19 Mar 2021) $
-; $LastChangedRevision: 29780 $
+; $LastChangedDate: 2021-03-25 17:11:59 -0700 (Thu, 25 Mar 2021) $
+; $LastChangedRevision: 29824 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t89/t89.pro $
 ;-
 
@@ -181,9 +182,10 @@ function t89, tarray, rgsm_array, kp=kp, period=period, igrf_only=igrf_only,$
   ;generally only a subset will be accessed
   ts = time_struct(tarray2)
 
-  ;calculate the number of loo iterations
-  ct = (tend-tstart)/period2
-  nperiod = ceil(ct) + 1
+  ;calculate the number of loop iterations
+  ; The first period now starts 1/2 period before the start time, to align the first center time with the start time.
+  ct = 0.5D + (tend-tstart)/period2
+  nperiod = ceil(ct)
 
   if arg_present(get_nperiod) then begin
     get_nperiod = nperiod
@@ -195,7 +197,7 @@ function t89, tarray, rgsm_array, kp=kp, period=period, igrf_only=igrf_only,$
   
    ;return the times at the center of each period
   if arg_present(get_period_times) then begin
-    get_period_times = tstart + dindgen(nperiod)*period2+period2/2.
+    get_period_times = tstart + dindgen(nperiod)*period2
   endif
   
   if n_elements(add_tilt) gt 0 then begin
@@ -205,7 +207,7 @@ function t89, tarray, rgsm_array, kp=kp, period=period, igrf_only=igrf_only,$
       tilt_value = add_tilt
     endif else if n_elements(add_tilt) eq t_size[0] then begin
       ;resample tilt values to period intervals, using middle of sample
-      period_abcissas = tstart + dindgen(nperiod)*period2+period2/2
+      period_abcissas = tstart + dindgen(nperiod)*period2
       tilt_value = interpol(add_tilt,tarray,period_abcissas)
     endif else begin
       dprint,'Error: add_tilt values do not match data values or period values'
@@ -220,7 +222,7 @@ function t89, tarray, rgsm_array, kp=kp, period=period, igrf_only=igrf_only,$
       tilt_value = set_tilt
     endif else if n_elements(set_tilt) eq t_size[0] then begin
       ;resample tilt values to period intervals, using middle of sample
-      period_abcissas = tstart + dindgen(nperiod)*period2+period2/2
+      period_abcissas = tstart + dindgen(nperiod)*period2
       tilt_value = interpol(set_tilt,tarray,period_abcissas)
     endif else begin
       dprint,'Error: set_tilt values do not match data values or period values'
@@ -231,8 +233,8 @@ function t89, tarray, rgsm_array, kp=kp, period=period, igrf_only=igrf_only,$
   while i lt nperiod do begin
 
     ;find indices of points to be input this iteration
-    idx1 = where(tarray2 ge tstart + i*period2)
-    idx2 = where(tarray2 le tstart + (i+1)*period2)
+    idx1 = where(tarray2 ge tstart + i*period2 - period/2.0D)
+    idx2 = where(tarray2 le tstart + (i+1)*period2 - period/2.0D)
 
     idx = ssl_set_intersection(idx1, idx2)
 

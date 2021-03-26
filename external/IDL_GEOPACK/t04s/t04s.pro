@@ -105,17 +105,19 @@
 ;      N. A. Tsyganenko and M. I. Sitnov, Modeling the dynamics of the
 ;      inner magnetosphere during strong geomagnetic storms, J. Geophys. 
 ;      Res., v. 110 (A3), A03208, doi: 10.1029/2004JA010798, 2005
+;  7. The dipole tilt calculation periods are now set so that the center (not the start) of the first period is
+;      aligned with the first timestamp.  JWL 2021-03-22
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2015-06-04 16:15:16 -0700 (Thu, 04 Jun 2015) $
-; $LastChangedRevision: 17809 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-03-25 17:11:59 -0700 (Thu, 25 Mar 2021) $
+; $LastChangedRevision: 29824 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t04s/t04s.pro $
 ;-
 
 function t04s,tarray,rgsm_array,pdyn,dsti,yimf,zimf,w1,w2,w3,w4,w5,w6, $
     period=period,add_tilt=add_tilt,get_tilt=get_tilt,set_tilt=set_tilt, $
     get_nperiod=get_nperiod,get_period_times=get_period_times,geopack_2008=geopack_2008, $
-    iopgen=iopgen, iopt=iopt, iopb=iopb, iopr=iopr
+    iopgen=iopgen, iopt=iopt, iopb=iopb, iopr=iopr, exact_tilt_times=exact_tilt_times
 
   ;sanity tests, setting defaults
   if igp_test(geopack_2008=geopack_2008) eq 0 then return, -1L
@@ -126,7 +128,7 @@ function t04s,tarray,rgsm_array,pdyn,dsti,yimf,zimf,w1,w2,w3,w4,w5,w6, $
   if not keyword_set(iopr) then iopr = 0 ; both SRC and PRC
 
   if period le 0. then begin
-    message, /contiune, 'period must be positive'
+    message, /continue, 'period must be positive'
     return, -1L
   endif
 
@@ -300,8 +302,11 @@ function t04s,tarray,rgsm_array,pdyn,dsti,yimf,zimf,w1,w2,w3,w4,w5,w6, $
 
   ts = time_struct(tarray)
 
-  ct = (tend-tstart)/period
-  nperiod = ceil(ct)+1
+  if n_elements(exact_tilt_times) eq 0 then begin
+    ; The start time is now the center of the first period, rather than the start, so add an extra 1/2 period
+    ct = 0.5D + (tend-tstart)/period
+    nperiod = ceil(ct)
+  endif else nperiod = n_elements(tarray)
 
   period = double(period)
 
@@ -329,7 +334,9 @@ function t04s,tarray,rgsm_array,pdyn,dsti,yimf,zimf,w1,w2,w3,w4,w5,w6, $
   
   ;return the times at the center of each period
   if arg_present(get_period_times) then begin
-    get_period_times = tstart + dindgen(nperiod)*period+period/2.
+    if n_elements(exact_tilt_times) eq 0 then begin
+      get_period_times = tstart + dindgen(nperiod)*period
+    endif else get_period_times=tarray
   endif
   
   if n_elements(add_tilt) gt 0 then begin
@@ -339,7 +346,11 @@ function t04s,tarray,rgsm_array,pdyn,dsti,yimf,zimf,w1,w2,w3,w4,w5,w6, $
       tilt_value = add_tilt
     endif else if n_elements(add_tilt) eq t_size[0] then begin
       ;resample tilt values to period intervals, using middle of sample
-      period_abcissas = tstart + dindgen(nperiod)*period+period/2
+      if n_elements(exact_tilt_times) eq 0 then begin
+        period_abcissas = tstart + dindgen(nperiod)*period
+      endif else begin
+        period_abscissas = tarray
+      endelse
       tilt_value = interpol(add_tilt,tarray,period_abcissas)
     endif else begin
       dprint,'Error: add_tilt values do not match data values or period values'
@@ -354,7 +365,11 @@ function t04s,tarray,rgsm_array,pdyn,dsti,yimf,zimf,w1,w2,w3,w4,w5,w6, $
       tilt_value = set_tilt
     endif else if n_elements(set_tilt) eq t_size[0] then begin
       ;resample tilt values to period intervals, using middle of sample
-      period_abcissas = tstart + dindgen(nperiod)*period+period/2
+      if n_elements(exact_tilt_times) eq 0 then begin
+        period_abcissas = tstart + dindgen(nperiod)*period
+      endif else begin
+        period_abscissas = tarray
+      endelse
       tilt_value = interpol(set_tilt,tarray,period_abcissas)
     endif else begin
       dprint,'Error: set_tilt values do not match data values or period values'
@@ -364,12 +379,16 @@ function t04s,tarray,rgsm_array,pdyn,dsti,yimf,zimf,w1,w2,w3,w4,w5,w6, $
 
   while i lt nperiod do begin
 
-    ;find indices of points to be input this iteration
-    idx1 = where(tarray ge tstart + i*period)
-    idx2 = where(tarray le tstart + (i+1)*period)
+    if n_elements(exact_tilt_times) ne 0 then begin
+      idx = [i]
+    endif else begin
+      ;find indices of points to be input this iteration
+      idx1 = where(tarray ge tstart + i*period - period/2.0D)
+      idx2 = where(tarray le tstart + (i+1)*period - period/2.0D)
 
-    idx = ssl_set_intersection(idx1, idx2)
-
+      idx = ssl_set_intersection(idx1, idx2)
+    endelse
+    
     if idx[0] ne -1L then begin 
       id = idx[0]
 

@@ -168,9 +168,9 @@
 ;            inner magnetosphere during strong geomagnetic storms, J. Geophys. 
 ;            Res., v. 110 (A3), A03208, doi: 10.1029/2004JA010798, 2005
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2015-06-04 16:15:16 -0700 (Thu, 04 Jun 2015) $
-; $LastChangedRevision: 17809 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-03-25 17:15:28 -0700 (Thu, 25 Mar 2021) $
+; $LastChangedRevision: 29825 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t04s/tt04s.pro $
 ;-
 
@@ -178,7 +178,7 @@ pro tt04s, pos_gsm_tvar, pdyn=pdyn, dsti=dsti, yimf=yimf, zimf=zimf, $
     w1=w1, w2=w2, w3=w3, w4=w4, w5=w5, w6=w6, parmod=parmod, period=period, $
     get_nperiod=get_nperiod, newname=newname, error=error, get_tilt=get_tilt, $
     set_tilt=set_tilt, add_tilt=add_tilt, geopack_2008=geopack_2008, $
-    iopgen=iopgen, iopt=iopt, iopb=iopb, iopr=iopr
+    iopgen=iopgen, iopt=iopt, iopb=iopb, iopr=iopr, exact_tilt_times=exact_tilt_times
     
   error = 0
 
@@ -338,17 +338,17 @@ pro tt04s, pos_gsm_tvar, pdyn=pdyn, dsti=dsti, yimf=yimf, zimf=zimf, $
     mag_array = t04s(d.x, d.y/6371.2, pdyn_dat, dsti_dat, yimf_dat, zimf_dat, w1_dat, $
         w2_dat, w3_dat, w4_dat, w5_dat, w6_dat, period=period, get_nperiod=get_nperiod, $
         get_period_times=period_times_dat, get_tilt=tilt_dat, set_tilt=set_tilt_dat, $
-        iopgen=iopgen, geopack_2008=geopack_2008, iopt=iopt, iopb=iopb, iopr=iopr)
+        iopgen=iopgen, geopack_2008=geopack_2008, iopt=iopt, iopb=iopb, iopr=iopr, exact_tilt_times=exact_tilt_times)
   endif else if n_elements(add_tilt) gt 0 then begin
     mag_array = t04s(d.x, d.y/6371.2, pdyn_dat, dsti_dat, yimf_dat, zimf_dat, w1_dat, $
         w2_dat, w3_dat, w4_dat, w5_dat, w6_dat, period=period, get_nperiod=get_nperiod, $
         get_period_times=period_times_dat, get_tilt=tilt_dat, add_tilt=add_tilt_dat, $
-        iopgen=iopgen, geopack_2008=geopack_2008, iopt=iopt, iopb=iopb, iopr=iopr)
+        iopgen=iopgen, geopack_2008=geopack_2008, iopt=iopt, iopb=iopb, iopr=iopr,exact_tilt_times=exact_tilt_times)
   endif else begin
     mag_array = t04s(d.x, d.y/6371.2, pdyn_dat, dsti_dat, yimf_dat, zimf_dat, w1_dat, $
         w2_dat, w3_dat, w4_dat, w5_dat, w6_dat, period=period, get_nperiod=get_nperiod, $
         get_period_times=period_times_dat, get_tilt=tilt_dat, iopgen=iopgen, geopack_2008=geopack_2008, $
-        iopt=iopt, iopb=iopb, iopr=iopr)
+        iopt=iopt, iopb=iopb, iopr=iopr,exact_tilt_times=exact_tilt_times)
   endelse
  
   if size(mag_array, /n_dim) eq 0 && mag_array[0] eq -1L then begin
