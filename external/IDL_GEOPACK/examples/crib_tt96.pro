@@ -8,9 +8,9 @@
 ;        to work
 ;        Sometimes these routines can take a while to run.
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2019-04-29 10:07:32 -0700 (Mon, 29 Apr 2019) $
-; $LastChangedRevision: 27121 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-03-26 15:32:36 -0700 (Fri, 26 Mar 2021) $
+; $LastChangedRevision: 29828 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/examples/crib_tt96.pro $
 ;-
 
@@ -25,7 +25,8 @@ thm_load_state, probe = 'b', coord = 'gsm'
 
 ;example values were pulled from Tsyganenko's papers
 
-tt96, 'thb_state_pos',pdyn=2.0D,dsti=-30.0D,yimf=0.0D,zimf=-5.0D
+tt96, 'thb_state_pos',pdyn=2.0D,dsti=-30.0D,yimf=0.0D,zimf=-5.0D, get_tilt='thb_tilt',period=600,/exact_tilt_times
+stop
 
 ;load fgm data for comparison
 

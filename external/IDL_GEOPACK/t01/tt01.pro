@@ -83,6 +83,9 @@
 ;
 ;         add_tilt(optional): Set this to a tplot variable name or an array of values containing the values to be added to the dipole tilt
 ;             that should be used for each period. If a tplot input is used it will be interpolated to match the time inputs from the position
+;
+;         exact_tilt_times (optional):  Set this keyword to avoid grouping similar times (default 10 minutes) and instead
+;              recalculate the dipole tilt at each input time
 ;                            
 ;         storm(optional): Set this to use the storm-time version of the T01 model               
 ;
@@ -113,16 +116,16 @@
 ;            http://modelweb.gsfc.nasa.gov/magnetos/data-based/Paper220.pdf
 ;            http://modelweb.gsfc.nasa.gov/magnetos/data-based/Paper219.pdf
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2015-03-20 08:27:55 -0700 (Fri, 20 Mar 2015) $
-; $LastChangedRevision: 17153 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-03-26 15:32:36 -0700 (Fri, 26 Mar 2021) $
+; $LastChangedRevision: 29828 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t01/tt01.pro $
 ;-
 
 pro tt01, pos_gsm_tvar, pdyn=pdyn, dsti=dsti, yimf=yimf, zimf=zimf, $
     g1=g1, g2=g2, parmod=parmod, period=period, get_nperiod=get_nperiod, $
     newname=newname, error=error, get_tilt=get_tilt, set_tilt=set_tilt, $
-    add_tilt=add_tilt, storm=storm, geopack_2008=geopack_2008
+    add_tilt=add_tilt, storm=storm, geopack_2008=geopack_2008, exact_tilt_times=exact_tilt_times
 
   error = 0
 
@@ -244,15 +247,15 @@ pro tt01, pos_gsm_tvar, pdyn=pdyn, dsti=dsti, yimf=yimf, zimf=zimf, $
   if n_elements(set_tilt) gt 0 then begin
     mag_array = t01(d.x, d.y/6371.2, pdyn_dat, dsti_dat, yimf_dat, zimf_dat, g1_dat, g2_dat, $
         period = period,get_nperiod=get_nperiod,get_period_times=period_times_dat, $
-        get_tilt=tilt_dat,set_tilt=set_tilt_dat,storm=storm,geopack_2008=geopack_2008)
+        get_tilt=tilt_dat,set_tilt=set_tilt_dat,storm=storm,geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times)
   endif else if n_elements(add_tilt) gt 0 then begin
     mag_array = t01(d.x, d.y/6371.2, pdyn_dat, dsti_dat, yimf_dat, zimf_dat, g1_dat, g2_dat, $
         period = period,get_nperiod=get_nperiod,get_period_times=period_times_dat, $
-        get_tilt=tilt_dat,add_tilt=add_tilt_dat,storm=storm,geopack_2008=geopack_2008)
+        get_tilt=tilt_dat,add_tilt=add_tilt_dat,storm=storm,geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times)
   endif else begin
     mag_array = t01(d.x, d.y/6371.2, pdyn_dat, dsti_dat, yimf_dat, zimf_dat, g1_dat, g2_dat, $
         period = period,get_nperiod=get_nperiod,get_period_times=period_times_dat, $
-        get_tilt=tilt_dat,storm=storm,geopack_2008=geopack_2008)
+        get_tilt=tilt_dat,storm=storm,geopack_2008=geopack_2008,exact_tilt_times)
   endelse
  
   if size(mag_array, /n_dim) eq 0 && mag_array[0] eq -1L then begin

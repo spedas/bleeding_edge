@@ -49,6 +49,9 @@
 ;                       2) Due to this routine adding IGRF to the returned field, you cannot use set_tilt = 0 and give input 
 ;                           position values in SM coordinates; input position values are required to be in GSM coordinates due to the
 ;                           IGRF calculation
+;
+;         exact_tilt_times (optional):  Set this keyword to avoid grouping similar times (default 10 minutes) and instead
+;              recalculate the dipole tilt at each input time
 ;                   
 ;         get_nperiod: Returns the number of periods used for the time interval=  ceil((end_time-start_time)/period)
 ;
@@ -109,8 +112,8 @@
 ;      aligned with the first timestamp.  JWL 2021-03-22
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-03-25 17:11:59 -0700 (Thu, 25 Mar 2021) $
-; $LastChangedRevision: 29824 $
+; $LastChangedDate: 2021-03-26 15:24:34 -0700 (Fri, 26 Mar 2021) $
+; $LastChangedRevision: 29826 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t04s/t04s.pro $
 ;-
 
@@ -349,7 +352,7 @@ function t04s,tarray,rgsm_array,pdyn,dsti,yimf,zimf,w1,w2,w3,w4,w5,w6, $
       if n_elements(exact_tilt_times) eq 0 then begin
         period_abcissas = tstart + dindgen(nperiod)*period
       endif else begin
-        period_abscissas = tarray
+        period_abcissas = tarray
       endelse
       tilt_value = interpol(add_tilt,tarray,period_abcissas)
     endif else begin
@@ -368,7 +371,7 @@ function t04s,tarray,rgsm_array,pdyn,dsti,yimf,zimf,w1,w2,w3,w4,w5,w6, $
       if n_elements(exact_tilt_times) eq 0 then begin
         period_abcissas = tstart + dindgen(nperiod)*period
       endif else begin
-        period_abscissas = tarray
+        period_abcissas = tarray
       endelse
       tilt_value = interpol(set_tilt,tarray,period_abcissas)
     endif else begin

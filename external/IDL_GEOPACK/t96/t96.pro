@@ -45,6 +45,9 @@
 ;                       2) Due to this routine adding IGRF to the returned field, you cannot use set_tilt = 0 and give input 
 ;                           position values in SM coordinates; input position values are required to be in GSM coordinates due to the
 ;                           IGRF calculation
+;
+;         exact_tilt_times (optional):  Set this keyword to avoid grouping similar times (default 10 minutes) and instead
+;              recalculate the dipole tilt at each input time
 ;                   
 ;         get_nperiod: Returns the number of periods used for the time interval=  ceil((end_time-start_time)/period)
 ;                   
@@ -76,14 +79,14 @@
 ;      http://ampere.jhuapl.edu/code/idl_geopack.html
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-03-25 17:11:59 -0700 (Thu, 25 Mar 2021) $
-; $LastChangedRevision: 29824 $
+; $LastChangedDate: 2021-03-26 15:32:36 -0700 (Fri, 26 Mar 2021) $
+; $LastChangedRevision: 29828 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t96/t96.pro $
 ;-
 
 function t96, tarray, rgsm_array,pdyn,dsti,yimf,zimf, period = period,$
     add_tilt=add_tilt,get_tilt=get_tilt,set_tilt=set_tilt,get_nperiod=get_nperiod,$
-    get_period_times=get_period_times,geopack_2008=geopack_2008
+    get_period_times=get_period_times,geopack_2008=geopack_2008, exact_tilt_times=exact_tilt_times
 
   ;sanity tests, setting defaults
 
@@ -225,9 +228,11 @@ function t96, tarray, rgsm_array,pdyn,dsti,yimf,zimf, period = period,$
 
   ts = time_struct(tarray)
 
-  ; The first period now starts 1/2 period before the start time, so the center is aligned with the start time.
-  ct = 0.5D + (tend-tstart)/period
-  nperiod = ceil(ct)
+  if n_elements(exact_tilt_times) eq 0 then begin
+    ; The start time is now the center of the first period, rather than the start, so add an extra 1/2 period
+    ct = 0.5D + (tend-tstart)/period
+    nperiod = ceil(ct)
+  endif else nperiod = n_elements(tarray)
 
   ;I don't think period should be an integer, doesn't allow subsecond periods
   ;period = long(period)
@@ -254,7 +259,9 @@ function t96, tarray, rgsm_array,pdyn,dsti,yimf,zimf, period = period,$
   
   ;return the times at the center of each period
   if arg_present(get_period_times) then begin
-    get_period_times = tstart + dindgen(nperiod)*period
+    if n_elements(exact_tilt_times) eq 0 then begin
+      get_period_times = tstart + dindgen(nperiod)*period
+    endif else get_period_times=tarray
   endif
   
   if n_elements(add_tilt) gt 0 then begin
@@ -264,7 +271,11 @@ function t96, tarray, rgsm_array,pdyn,dsti,yimf,zimf, period = period,$
       tilt_value = add_tilt
     endif else if n_elements(add_tilt) eq t_size[0] then begin
       ;resample tilt values to period intervals, using middle of sample
-      period_abcissas = tstart + dindgen(nperiod)*period
+      if n_elements(exact_tilt_times) eq 0 then begin
+        period_abcissas = tstart + dindgen(nperiod)*period
+      endif else begin
+        period_abcissas = tarray
+      endelse
       tilt_value = interpol(add_tilt,tarray,period_abcissas)
     endif else begin
       dprint,'Error: add_tilt values do not match data values or period values'
@@ -279,7 +290,11 @@ function t96, tarray, rgsm_array,pdyn,dsti,yimf,zimf, period = period,$
       tilt_value = set_tilt
     endif else if n_elements(set_tilt) eq t_size[0] then begin
       ;resample tilt values to period intervals, using middle of sample
-      period_abcissas = tstart + dindgen(nperiod)*period
+      if n_elements(exact_tilt_times) eq 0 then begin
+        period_abcissas = tstart + dindgen(nperiod)*period
+      endif else begin
+        period_abcissas = tarray
+      endelse
       tilt_value = interpol(set_tilt,tarray,period_abcissas)
     endif else begin
       dprint,'Error: set_tilt values do not match data values or period values'
@@ -289,11 +304,15 @@ function t96, tarray, rgsm_array,pdyn,dsti,yimf,zimf, period = period,$
   
   while i lt nperiod do begin
 
-    ;find indices of points to be input this iteration
-    idx1 = where(tarray ge tstart + i*period - period/2.0D)
-    idx2 = where(tarray le tstart + (i+1)*period - period/2.0D)
+    if n_elements(exact_tilt_times) ne 0 then begin
+      idx = [i]
+    endif else begin
+      ;find indices of points to be input this iteration
+      idx1 = where(tarray ge tstart + i*period - period/2.0D)
+      idx2 = where(tarray le tstart + (i+1)*period - period/2.0D)
 
-    idx = ssl_set_intersection(idx1, idx2)
+      idx = ssl_set_intersection(idx1, idx2)
+    endelse
 
     if idx[0] ne -1L then begin 
 

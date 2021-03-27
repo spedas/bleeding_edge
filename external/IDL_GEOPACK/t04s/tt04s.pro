@@ -112,6 +112,9 @@
 ;                  2) Due to this routine adding IGRF to the returned field, you cannot use set_tilt = 0 and give input 
 ;                      position values in SM coordinates; input position values are required to be in GSM coordinates due to the
 ;                      IGRF calculation
+;         
+;         exact_tilt_times (optional):  Set this keyword to avoid grouping similar times (default 10 minutes) and instead
+;              recalculate the dipole tilt at each input time
 ;
 ;         add_tilt(optional): Set this to a tplot variable name or an array of values containing the values to be added to the dipole tilt
 ;              that should be used for each period. If a tplot input is used it will be interpolated to match the time inputs from the position
@@ -169,8 +172,8 @@
 ;            Res., v. 110 (A3), A03208, doi: 10.1029/2004JA010798, 2005
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-03-25 17:15:28 -0700 (Thu, 25 Mar 2021) $
-; $LastChangedRevision: 29825 $
+; $LastChangedDate: 2021-03-26 15:27:06 -0700 (Fri, 26 Mar 2021) $
+; $LastChangedRevision: 29827 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t04s/tt04s.pro $
 ;-
 

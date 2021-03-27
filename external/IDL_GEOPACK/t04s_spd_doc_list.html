@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Mar 25 18:15:55 2021.<P>
+<STRONG>Last modified: </STRONG>Fri Mar 26 18:15:54 2021.<P>
  
 <HR>
  
@@ -82,6 +82,9 @@ Keywords:
                        2) Due to this routine adding IGRF to the returned field, you cannot use set_tilt = 0 and give input 
                            position values in SM coordinates; input position values are required to be in GSM coordinates due to the
                            IGRF calculation
+
+         exact_tilt_times (optional):  Set this keyword to avoid grouping similar times (default 10 minutes) and instead
+              recalculate the dipole tilt at each input time
                    
          get_nperiod: Returns the number of periods used for the time interval=  ceil((end_time-start_time)/period)
 
@@ -142,8 +145,8 @@ Notes:
       aligned with the first timestamp.  JWL 2021-03-22
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-03-25 17:11:59 -0700 (Thu, 25 Mar 2021) $
- $LastChangedRevision: 29824 $
+ $LastChangedDate: 2021-03-26 15:24:34 -0700 (Fri, 26 Mar 2021) $
+ $LastChangedRevision: 29826 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t04s/t04s.pro $
 </PRE><P>
 <STRONG>(See <A href="t04s/t04s.pro">external/IDL_GEOPACK/t04s/t04s.pro</A>)</STRONG><P>
@@ -286,6 +289,9 @@ Keywords:
                   2) Due to this routine adding IGRF to the returned field, you cannot use set_tilt = 0 and give input 
                       position values in SM coordinates; input position values are required to be in GSM coordinates due to the
                       IGRF calculation
+         
+         exact_tilt_times (optional):  Set this keyword to avoid grouping similar times (default 10 minutes) and instead
+              recalculate the dipole tilt at each input time
 
          add_tilt(optional): Set this to a tplot variable name or an array of values containing the values to be added to the dipole tilt
               that should be used for each period. If a tplot input is used it will be interpolated to match the time inputs from the position
@@ -343,8 +349,8 @@ Keywords:
             Res., v. 110 (A3), A03208, doi: 10.1029/2004JA010798, 2005
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-03-25 17:15:28 -0700 (Thu, 25 Mar 2021) $
- $LastChangedRevision: 29825 $
+ $LastChangedDate: 2021-03-26 15:27:06 -0700 (Fri, 26 Mar 2021) $
+ $LastChangedRevision: 29827 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t04s/tt04s.pro $
 </PRE><P>
 <STRONG>(See <A href="t04s/tt04s.pro">external/IDL_GEOPACK/t04s/tt04s.pro</A>)</STRONG><P>

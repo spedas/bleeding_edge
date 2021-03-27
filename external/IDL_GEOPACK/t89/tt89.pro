@@ -46,6 +46,9 @@
 ;               that should be used for each period. If a tplot input is used it will be interpolated to match the time inputs from the position
 ;               var. Non-tplot array values must match the number of times in the tplot input for pos_gsm_tvar
 ;
+;         exact_tilt_times (optional):  Set this keyword to avoid grouping similar times (default 10 minutes) and instead
+;              recalculate the dipole tilt at each input time
+;
 ;          geopack_2008 (optional): Set this keyword to use the latest version (2008) of the Geopack
 ;              library. Version 9.2 of the IDL Geopack DLM is required for this keyword to work.
 ;              
@@ -59,15 +62,15 @@
 ;        3. Haje Korth's IDL/Geopack DLM must be installed for this
 ;        procedure to work
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2015-03-20 08:27:55 -0700 (Fri, 20 Mar 2015) $
-; $LastChangedRevision: 17153 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-03-26 15:32:36 -0700 (Fri, 26 Mar 2021) $
+; $LastChangedRevision: 29828 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t89/tt89.pro $
 ;-
 
 pro tt89, pos_gsm_tvar, kp=kp, period=period, get_nperiod=get_nperiod, newname=newname, $
     error=error, igrf_only=igrf_only, get_tilt=get_tilt, set_tilt=set_tilt,add_tilt=add_tilt,$
-    geopack_2008=geopack_2008
+    geopack_2008=geopack_2008, exact_tilt_times=exact_tilt_times
 
   error = 0
 
@@ -134,13 +137,16 @@ pro tt89, pos_gsm_tvar, kp=kp, period=period, get_nperiod=get_nperiod, newname=n
     ;various types for various tilt control options
     if n_elements(set_tilt) gt 0 then begin
       mag_array = t89(d.x, d.y/6371.2, kp=kp_dat, period=period, igrf_only=keyword_set(igrf_only), $
-        get_nperiod=get_nperiod, get_period_times=period_times_dat, get_tilt=tilt_dat, set_tilt=set_tilt_dat, geopack_2008=geopack_2008)
+        get_nperiod=get_nperiod, get_period_times=period_times_dat, get_tilt=tilt_dat, set_tilt=set_tilt_dat,$
+         geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times)
     endif else if n_elements(add_tilt) gt 0 then begin
       mag_array = t89(d.x, d.y/6371.2, kp=kp_dat, period=period, igrf_only=keyword_set(igrf_only), $
-        get_nperiod=get_nperiod, get_period_times=period_times_dat, get_tilt=tilt_dat, add_tilt=add_tilt_dat, geopack_2008=geopack_2008)
+        get_nperiod=get_nperiod, get_period_times=period_times_dat, get_tilt=tilt_dat, add_tilt=add_tilt_dat, $
+        geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times)
     endif else begin
       mag_array = t89(d.x, d.y/6371.2, kp=kp_dat, period=period, igrf_only=keyword_set(igrf_only), $
-        get_nperiod=get_nperiod, get_period_times=period_times_dat, get_tilt=tilt_dat, geopack_2008=geopack_2008)
+        get_nperiod=get_nperiod, get_period_times=period_times_dat, get_tilt=tilt_dat, $
+        geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times)
     endelse
 
     if size(mag_array, /n_dim) eq 0 && mag_array[0] eq -1L then begin
