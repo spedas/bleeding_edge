@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Mar 30 18:16:01 2021.<P>
+<STRONG>Last modified: </STRONG>Wed Mar 31 18:15:54 2021.<P>
  
 <HR>
  
@@ -53,6 +53,7 @@ This page was created by the IDL library routine
          Create quick plots of spectra at a certain time (i.e., energy vs. eflux, PA vs. eflux, etc)
          
  KEYWORDS:
+       REPLOT:    Recreate the figure with updated options (uses the previously selected time)
        [XY]LOG:   [XY] axis in log format
        [XY]RANGE: 2 element vector that sets [XY] axis range
        NOLEGEND:  Disable legend display
@@ -67,7 +68,10 @@ This page was created by the IDL library routine
        
        TIME_IN:     if the keyword is specified the time is determined from the variable, not from the cursor pick.
        TRANGE:      Two-element time range over which data will be averaged. 
-       SAMPLES:     Number of nearest samples to time to average. Override trange.      
+       SAMPLES:     Number of nearest samples to time to average. Override trange.     
+                    *** warning: using 'samples' with multiple variables containing data at different resolutions
+                        can lead to different time ranges of data being included for each variable ***
+                     
        WINDOW:      Length in seconds over which data will be averaged. Override trange.
        CENTER_TIME: Flag denoting that time should be midpoint for window instead of beginning.
                     If TRANGE is specify, the the time center point is computed.
@@ -78,6 +82,11 @@ This page was created by the IDL library routine
                      this keyword uses the units string in the ztitle
        XTITLE:      Manually set the title on the x-axis; if not set, the x-axis units are used
        YTITLE:      Manually set the title on the y-axis; if not set, the y-axis units are used
+       XCLIP:       2 element array specifying the range of data to include in the plot (only plots the data between [xmin, xmax])
+       YCLIP:       2 element array specifying the range of data to include in the plot (only plots the data between [ymin, ymax])
+       XEXPONENTIAL_FORMAT: force the x-axis ticks to show as 10^3  e.g. ’10!U3!N’
+       YEXPONENTIAL_FORMAT: force the y-axis ticks to show as 10^3  e.g. ’10!U3!N’
+       LEGEND_LEFT: move the legend to the left-hand side of the figure
 
  EXAMPLE:
      To create line plots of FPI electron energy spectra for all MMS spacecraft:
@@ -89,11 +98,15 @@ This page was created by the IDL library routine
        --&gt; then click the tplot window at the time you want to create the line plots at
 
  NOTES:
+     To change the legend names for variables, set the 'legend_name' option prior to creating the figure
+         e.g., 
+           options, 'mms3_des_energyspectr_omni_fast', 'legend_name', 'MMS3 FPI DES'
+ 
      work in progress; suggestions, comments, complaints, etc: egrimes@igpp.ucla.edu
      
 $LastChangedBy: egrimes $
-$LastChangedDate: 2021-03-22 13:31:29 -0700 (Mon, 22 Mar 2021) $
-$LastChangedRevision: 29793 $
+$LastChangedDate: 2021-03-31 13:07:42 -0700 (Wed, 31 Mar 2021) $
+$LastChangedRevision: 29841 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra.pro $
 </PRE><P>
 <STRONG>(See <A href="util/flatten_spectra.pro">projects/mms/common/util/flatten_spectra.pro</A>)</STRONG><P>
