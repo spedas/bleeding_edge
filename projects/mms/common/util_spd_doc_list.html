@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Mar 31 18:15:54 2021.<P>
+<STRONG>Last modified: </STRONG>Thu Apr  1 11:42:51 2021.<P>
  
 <HR>
  
@@ -60,8 +60,8 @@ This page was created by the IDL library routine
        COLORS:    n element vector that sets the colors of the line in order that they are in tplot_vars.options.varnames
                   n is number of tplot variables in tplot_vars.options.varnames
              
-       PNG:         save png from the displayed windows (cannot be used with /POSTRSCRIPT keyword)
-       POSTRSCRIPT: create postscript files instead of displaying the plot
+       PNG:         save png from the displayed windows (cannot be used with /POSTSCRIPT keyword)
+       POSTSCRIPT: create postscript files instead of displaying the plot
        PREFIX:      filename prefix
        FILENAME:    custorm filename, including folder. 
                     By default the folder is !mms.local_data_dir and filename includes tplot names and selected time (or center time)      
@@ -70,7 +70,7 @@ This page was created by the IDL library routine
        TRANGE:      Two-element time range over which data will be averaged. 
        SAMPLES:     Number of nearest samples to time to average. Override trange.     
                     *** warning: using 'samples' with multiple variables containing data at different resolutions
-                        can lead to different time ranges of data being included for each variable ***
+                        can lead to different time ranges of data being used for each variable ***
                      
        WINDOW:      Length in seconds over which data will be averaged. Override trange.
        CENTER_TIME: Flag denoting that time should be midpoint for window instead of beginning.
@@ -87,6 +87,7 @@ This page was created by the IDL library routine
        XEXPONENTIAL_FORMAT: force the x-axis ticks to show as 10^3  e.g. ’10!U3!N’
        YEXPONENTIAL_FORMAT: force the y-axis ticks to show as 10^3  e.g. ’10!U3!N’
        LEGEND_LEFT: move the legend to the left-hand side of the figure
+       LEGEND_BOTTOM: move the legend to the bottom of the figure
 
  EXAMPLE:
      To create line plots of FPI electron energy spectra for all MMS spacecraft:
@@ -105,8 +106,8 @@ This page was created by the IDL library routine
      work in progress; suggestions, comments, complaints, etc: egrimes@igpp.ucla.edu
      
 $LastChangedBy: egrimes $
-$LastChangedDate: 2021-03-31 13:07:42 -0700 (Wed, 31 Mar 2021) $
-$LastChangedRevision: 29841 $
+$LastChangedDate: 2021-04-01 11:41:09 -0700 (Thu, 01 Apr 2021) $
+$LastChangedRevision: 29844 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra.pro $
 </PRE><P>
 <STRONG>(See <A href="util/flatten_spectra.pro">projects/mms/common/util/flatten_spectra.pro</A>)</STRONG><P>
