@@ -113,8 +113,8 @@
 ; 04-Apr-2012, clrussell, Added units to the data_att structure
 ; 
 ; $LastChangedBy: crussell $
-; $LastChangedDate: 2021-03-22 13:53:57 -0700 (Mon, 22 Mar 2021) $
-; $LastChangedRevision: 29796 $
+; $LastChangedDate: 2021-04-02 10:59:10 -0700 (Fri, 02 Apr 2021) $
+; $LastChangedRevision: 29846 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_gmag.pro $
 ;-
 
@@ -423,7 +423,8 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
   Endif
 
   If(is_string(bas_sites)) Then Begin
-      thm_load_bas_gmag, site=bas_sites, trange=trange, no_download=no_download, suffix=suffix
+      thm_load_bas_gmag, site=bas_sites, trange=trange, no_download=no_download, suffix=suffix, $
+                         files=files
   Endif
 
   If(is_string(thm_sites)) Then Begin

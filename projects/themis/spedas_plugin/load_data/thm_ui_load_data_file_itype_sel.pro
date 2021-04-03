@@ -15,9 +15,9 @@
 ;OUTPUT:
 ; None
 ;
-;$LastChangedBy: jimmpc1 $
-;$LastChangedDate: 2017-09-06 15:00:33 -0700 (Wed, 06 Sep 2017) $
-;$LastChangedRevision: 23896 $
+;$LastChangedBy: crussell $
+;$LastChangedDate: 2021-04-02 10:57:42 -0700 (Fri, 02 Apr 2021) $
+;$LastChangedRevision: 29845 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spedas_plugin/load_data/thm_ui_load_data_file_itype_sel.pro $
 ;-
 pro thm_ui_load_data_file_itype_sel, state, from_coord_sel=from_coord_sel
@@ -218,13 +218,13 @@ pro thm_ui_load_data_file_itype_sel, state, from_coord_sel=from_coord_sel
       ; Ground magnetometer selected
       (state.instr eq 'gmag'): begin 
           state.observ_label = state.observ_labels[1]+':'
-          thm_load_gmag, /valid_names, site = gmag_stations
+          thm_load_gmag, /valid_names, site = gmag_stations          
           validobserv = ['* (All)', gmag_stations[sort(gmag_stations)]]
           
           level1Label = widget_info(state.tab_id,find_by_uname='level1Label')
           widget_control, level1Label, set_value="GMAG stations:"
           thm_load_gmag_networks, gmag_networks=gmag_networks, gmag_stations=gmag_stations, selected_network=selected_network
-          
+         
           validobserv = ['* (All)', gmag_networks]
           validobservlist = validobserv
           validobserv = strlowcase(strcompress(validobserv, /remove_all))
