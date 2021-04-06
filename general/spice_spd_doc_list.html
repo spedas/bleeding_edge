@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Apr  2 18:16:12 2021.<P>
+<STRONG>Last modified: </STRONG>Mon Apr  5 18:16:00 2021.<P>
  
 <HR>
  
@@ -21,6 +21,8 @@ This page was created by the IDL library routine
 <H1>general/spice</H1>
 <LI><A HREF="#ORRERY">ORRERY</A>
 <br>Plots the orbits of the planets to scale as viewed from the north
+<LI><A HREF="#ORRERY_OPTIONS">ORRERY_OPTIONS</A>
+<br>Stores a structure of ORRERY keyword options and provides a
 <LI><A HREF="#Q_ANGULAR_VELOCITY">Q_ANGULAR_VELOCITY</A>
 <LI><A HREF="#QDERIV">QDERIV</A>
 <LI><A HREF="#SPICE_BODY_ATT">SPICE_BODY_ATT</A>
@@ -49,7 +51,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="ORRERY">
 <H2>ORRERY</H2></A>
-<A HREF="#QDERIV">[Next Routine]</A>
+<A HREF="#ORRERY_OPTIONS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   orrery
@@ -108,6 +110,10 @@ KEYWORDS:
                     1 = a few labels (default)
                     2 = all labels (incl. E-M geometry)
 
+       PLABEL:    Print the name of each planet next to its symbol.
+
+       SLABEL:    Print the name of each spacecraft next to its symbol.
+
        PLANET:    Planet number or name for calculating geometry
                   with respect to Earth.  Numbering starts at 1.
                   For string input, case-folded minimum matching
@@ -146,7 +152,7 @@ KEYWORDS:
                   ephemeris values and interpolates across the 
                   gap.)
                     Coverage:
-                      Stereo A: 2006-10-26 to 2021-03-04
+                      Stereo A: 2006-10-26 to 2021-03-16
                       Stereo B: 2006-10-26 to 2014-09-28
 
        SORB:      Plot the location of Solar Orbiter.  Includes a
@@ -219,8 +225,8 @@ KEYWORDS:
                   spiral, and all labels.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-03-16 19:27:54 -0700 (Tue, 16 Mar 2021) $
- $LastChangedRevision: 29764 $
+ $LastChangedDate: 2021-04-05 16:25:06 -0700 (Mon, 05 Apr 2021) $
+ $LastChangedRevision: 29854 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery.pro $
 
 CREATED BY:	David L. Mitchell
@@ -228,9 +234,62 @@ CREATED BY:	David L. Mitchell
 <STRONG>(See <A href="spice/orrery.pro">general/spice/orrery.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ORRERY_OPTIONS">
+<H2>ORRERY_OPTIONS</H2></A>
+<A HREF="#ORRERY">[Previous Routine]</A>
+<A HREF="#QDERIV">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   orrery_options
+PURPOSE:
+  Stores a structure of ORRERY keyword options and provides a
+  mechanism for changing those options.  Keywords set by this
+  routine are persistent defaults.  They can be overridden by
+  explicitly setting keywords in ORRERY.
+
+  Call this routine from your idl_startup.pro to customize default
+  options for yourself.
+
+USAGE:
+  orrery_options, key
+
+INPUTS:
+       key:           Structure containing keyword(s) for ORRERY.
+                      Unrecognized keywords are simply ignored.
+
+                      {KEYWORD: value, KEYWORD: value, ...}
+
+KEYWORDS:
+       GET:           Set this to a named variable to return the current 
+                      default keyword structure (after changes, if any).
+
+       REPLACE:       If this keyword is set, then the input structure 
+                      replaces any existing structure.  Otherwise, the
+                      input structure is merged with any existing one.
+
+       DELETE:        An array of tag names to delete from the default
+                      keyword structure.
+
+       RESET:         Reset the default structure to something universally
+                      benign: {SCALE: 1.}
+
+       LIST:          List the current keyword default structure.  This is
+                      the default when this routine is called without any
+                      inputs or keywords.
+
+       SILENT:        Suppresses output.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2021-04-05 16:23:40 -0700 (Mon, 05 Apr 2021) $
+ $LastChangedRevision: 29853 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery_options.pro $
+</PRE><P>
+<STRONG>(See <A href="spice/orrery_options.pro">general/spice/orrery_options.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="QDERIV">
 <H2>QDERIV</H2></A>
-<A HREF="#ORRERY">[Previous Routine]</A>
+<A HREF="#ORRERY_OPTIONS">[Previous Routine]</A>
 <A HREF="#Q_ANGULAR_VELOCITY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

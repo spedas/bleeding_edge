@@ -12,26 +12,26 @@
 ;  mvn_mars_localtime, result=dat
 ;
 ;INPUTS:
-;       None:      All necessary data are obtained from the common block.
+;       none:      All information is obtained from common blocks.
 ;
 ;KEYWORDS:
 ;       RESULT:    Structure containing the result:
 ;
-;                    time  : unix time for used for calculation
-;                    lst   : local solar time (hrs)
+;                    time  : unix time
+;                    lst   : local solar time (hrs, 0 = midnight)
 ;                    slon  : sub-solar point longitude (deg)
 ;                    slat  : sub-solar point latitude (deg)
 ;
 ;       PANS:      Returns the names of any tplot variables created.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-10-23 14:18:06 -0700 (Fri, 23 Oct 2020) $
-; $LastChangedRevision: 29283 $
+; $LastChangedDate: 2021-04-05 16:22:43 -0700 (Mon, 05 Apr 2021) $
+; $LastChangedRevision: 29852 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_mars_localtime.pro $
 ;
 ;CREATED BY:	David L. Mitchell
 ;-
-pro mvn_mars_localtime, result=result
+pro mvn_mars_localtime, result=result, pans=pans
 
   @maven_orbit_common
 
@@ -48,7 +48,11 @@ pro mvn_mars_localtime, result=result
     return
   endif
 
-  if (size(state,/type) eq 0) then maven_orbit_tplot, /current, /loadonly
+  if (size(time,/type) eq 0) then begin
+    print,"You must run maven_orbit_tplot first."
+    result = 0
+    return
+  endif
 
 ; Sun is at MSO coordinates of [X, Y, Z] = [1, 0, 0]
 
