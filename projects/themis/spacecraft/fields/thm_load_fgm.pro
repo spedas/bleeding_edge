@@ -75,9 +75,9 @@
 ;Notes:
 ;  This routine is (should be) platform independent.
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2019-02-25 10:26:38 -0800 (Mon, 25 Feb 2019) $
-; $LastChangedRevision: 26700 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2021-04-06 15:13:54 -0700 (Tue, 06 Apr 2021) $
+; $LastChangedRevision: 29855 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_load_fgm.pro $
 ;-
 
@@ -135,12 +135,16 @@ pro thm_load_fgm_post, sname=probe, datatype=dt, level=lvl, $
            spd_new_units, tplot_var
            spd_new_coords, tplot_var
            get_data, tplot_var, dlimits = dl_str
-           unit = dl_str.data_att.units
-;the units tag has the coordinate system included; for ysubtitle and
-;for SPDF plots. Strip it from the units tag here, but not from the
-;'unit' variable, since that goes to ysubtitle
-           u1 = strsplit(unit, ' ', /extract)
-           dl_str.data_att.units = u1[0]
+           
+           str_element, dl_str.data_att, 'units', success=s
+           if s eq 1 then begin
+             unit = dl_str.data_att.units
+  ;the units tag has the coordinate system included; for ysubtitle and
+  ;for SPDF plots. Strip it from the units tag here, but not from the
+  ;'unit' variable, since that goes to ysubtitle
+             u1 = strsplit(unit, ' ', /extract)
+             dl_str.data_att.units = u1[0]
+           endif else unit = 'unknown'
            data_att = dl_str.data_att
            is_btotal = total(strmatch(strsplit(tplot_var, '_', /extract), 'btotal'))
            If(is_btotal Gt 0) Then Begin
