@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Apr  6 18:15:55 2021.<P>
+<STRONG>Last modified: </STRONG>Wed Apr  7 18:15:55 2021.<P>
  
 <HR>
  
@@ -44,7 +44,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#MHD_ORBIT">MHD_ORBIT</A>
 <br>Plots
 <LI><A HREF="#MVN_MARS_LOCALTIME">MVN_MARS_LOCALTIME</A>
-<br>Uses SPICE to determine the local solar time over the current tplot
+<br>Uses SPICE to determine the local solar time on Mars at a given longitude
 <LI><A HREF="#MVN_MARS_TERMINATOR">MVN_MARS_TERMINATOR</A>
 <br>Given a time, uses SPICE to determine the location of the
 <LI><A HREF="#MVN_SUN_BAR">MVN_SUN_BAR</A>
@@ -862,18 +862,34 @@ CREATED BY:	David L. Mitchell  04-02-03
 <PRE>
 PROCEDURE:   mvn_mars_localtime
 PURPOSE:
-  Uses SPICE to determine the local solar time over the current tplot
-  time range (full).  The result is stored as a tplot variable and 
-  optionally returned via keyword.
+  Uses SPICE to determine the local solar time on Mars at a given longitude
+  and UTC.  The result is stored as tplot variables and optionally returned
+  via keyword.  You can specify arrays of times and longitudes as inputs, or
+  this information can be obtained from the maven_orbit_tplot common block.
 
   It is assumed that you have already initialized SPICE.  (See 
   mvn_swe_spice_init for an example.)
 
 USAGE:
-  mvn_mars_localtime, result=dat
+  mvn_mars_localtime, time, lon, result=dat  ; user provides time and lon
+
+  mvn_mars_localtime, result=dat             ; time &amp; lon from common block
 
 INPUTS:
-       none:      All information is obtained from common blocks.
+       time:      An array of times, in any format accepted by time_double.
+                  Optional.  Required if lon is specified.
+
+       lon:       An array of IAU_MARS east longitudes (units = degrees).
+                  Optional.  Required if time is specified.
+
+                  Both time and lon must have the same number of elements.
+                  If only one is specified or they don't have the same
+                  number of elements, an error is generated, and the
+                  routine will exit without doing anything.
+
+                  If both are unspecified (zero elements), then this
+                  routine will attempt to get time and lon from the 
+                  maven_orbit_tplot common block.
 
 KEYWORDS:
        RESULT:    Structure containing the result:
@@ -886,8 +902,8 @@ KEYWORDS:
        PANS:      Returns the names of any tplot variables created.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-04-05 16:22:43 -0700 (Mon, 05 Apr 2021) $
- $LastChangedRevision: 29852 $
+ $LastChangedDate: 2021-04-07 16:18:41 -0700 (Wed, 07 Apr 2021) $
+ $LastChangedRevision: 29858 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_mars_localtime.pro $
 
 CREATED BY:	David L. Mitchell

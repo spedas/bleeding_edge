@@ -50,7 +50,7 @@
 ;                 is stored in tplot variables as well as in RESULT.
 ;
 ;       DATUM:    String for specifying the datum.  Can be one of "sphere", 
-;                 "ellipsoid", "areoid", or "surface".  Default = 'sphere'.
+;                 "ellipsoid", "areoid", or "surface".  Default = 'ellipsoid'.
 ;                 Minimum matching is used for this keyword.
 ;
 ;       LATLON:   Create tplot variables for latitude and longitude.  If
@@ -67,9 +67,9 @@
 ;                 parameter (alt, lon, lat) and <dat> is a three-letter code
 ;                 for the datum (sph, ell, are, sur).
 ;
-; $LastChangedBy: ali $
-; $LastChangedDate: 2019-03-01 18:58:47 -0800 (Fri, 01 Mar 2019) $
-; $LastChangedRevision: 26741 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2021-04-07 16:16:41 -0700 (Wed, 07 Apr 2021) $
+; $LastChangedRevision: 29857 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_altitude.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -99,7 +99,7 @@ pro mvn_altitude, trange, dt=dt, cart=cart, datum=dtm, latlon=latlon, pans=pans,
 ; Make sure the datum is valid
 
   dlist = ['sphere','ellipsoid','areoid','surface']
-  if (size(dtm,/type) ne 7) then dtm = dlist[0]
+  if (size(dtm,/type) ne 7) then dtm = dlist[1]
   i = strmatch(dlist, dtm+'*', /fold)
   case (total(i)) of
      0   : begin
