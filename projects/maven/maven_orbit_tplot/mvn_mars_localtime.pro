@@ -33,16 +33,18 @@
 ;KEYWORDS:
 ;       RESULT:    Structure containing the result:
 ;
-;                    time  : unix time
-;                    lst   : local solar time (hrs, 0 = midnight)
-;                    slon  : sub-solar point longitude (deg)
+;                    time  : unix time (seconds since 1970)
+;                    lon   : east longitude at time (deg)
+;                    lst   : local solar time (Mars hours, 0 = midnight)
+;                    slon  : sub-solar point east longitude (deg)
 ;                    slat  : sub-solar point latitude (deg)
+;                    frame : reference frame for longitudes and latitudes
 ;
 ;       PANS:      Returns the names of any tplot variables created.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-04-07 16:18:41 -0700 (Wed, 07 Apr 2021) $
-; $LastChangedRevision: 29858 $
+; $LastChangedDate: 2021-04-09 11:30:39 -0700 (Fri, 09 Apr 2021) $
+; $LastChangedRevision: 29860 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_mars_localtime.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -73,7 +75,7 @@ pro mvn_mars_localtime, t, l, result=result, pans=pans
     l = lon
   endif else tt = time_double(t)
 
-; Use SPICE to calculate local time
+; Get ready to use SPICE
 
   from_frame = 'MAVEN_MSO'
   to_frame = 'IAU_MARS'
@@ -115,7 +117,7 @@ pro mvn_mars_localtime, t, l, result=result, pans=pans
 
   pans = ['lst', 'Lss']
 
-  result = {time:tt, lst:lst, slon:s_lon, slat:s_lat}
+  result = {time:tt, lon:l, lst:lst, slon:s_lon, slat:s_lat, frame:'IAU_MARS'}
 
   return
 

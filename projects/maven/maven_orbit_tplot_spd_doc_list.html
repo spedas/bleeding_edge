@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Apr  7 18:15:55 2021.<P>
+<STRONG>Last modified: </STRONG>Fri Apr  9 18:16:02 2021.<P>
  
 <HR>
  
@@ -894,16 +894,18 @@ INPUTS:
 KEYWORDS:
        RESULT:    Structure containing the result:
 
-                    time  : unix time
-                    lst   : local solar time (hrs, 0 = midnight)
-                    slon  : sub-solar point longitude (deg)
+                    time  : unix time (seconds since 1970)
+                    lon   : east longitude at time (deg)
+                    lst   : local solar time (Mars hours, 0 = midnight)
+                    slon  : sub-solar point east longitude (deg)
                     slat  : sub-solar point latitude (deg)
+                    frame : reference frame for longitudes and latitudes
 
        PANS:      Returns the names of any tplot variables created.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-04-07 16:18:41 -0700 (Wed, 07 Apr 2021) $
- $LastChangedRevision: 29858 $
+ $LastChangedDate: 2021-04-09 11:30:39 -0700 (Fri, 09 Apr 2021) $
+ $LastChangedRevision: 29860 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_mars_localtime.pro $
 
 CREATED BY:	David L. Mitchell
