@@ -102,6 +102,9 @@
 ;             If an N length array is provided, the data will be re-sampled to an M length array. Consequently, if
 ;             the values change quickly, the period may need to be shortened. 
 ;             set_tilt will cause add_tilt to be ignored. 
+;
+;         exact_tilt_times (optional):  Set this keyword to avoid grouping similar times (default 10 minutes) and instead
+;              recalculate the dipole tilt at each input time
 ;                   
 ;         get_nperiod: Returns the number of periods used for the time interval=  ceil((end_time-start_time)/period)
 ;     
@@ -126,8 +129,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-03-19 16:07:41 -0700 (Fri, 19 Mar 2021) $
-; $LastChangedRevision: 29780 $
+; $LastChangedDate: 2021-04-13 17:36:51 -0700 (Tue, 13 Apr 2021) $
+; $LastChangedRevision: 29880 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2equator.pro $
 ;-
 
@@ -135,7 +138,7 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
     in_coord=in_coord, out_coord=out_coord, internal_model=internal_model, external_model=external_model, $
     south=south, km=km, par=par, period=period, error=error, r0=r0, rlim=rlim, add_tilt=add_tilt, $
     get_tilt=get_tilt, set_tilt=set_tilt, get_nperiod=get_nperiod, get_period_times=get_period_times, $
-    geopack_2008=geopack_2008, _extra=_extra
+    geopack_2008=geopack_2008, exact_tilt_times=exact_tilt_times, _extra=_extra
 
     error = 0
     
@@ -382,12 +385,13 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
        ;make the array that is ultimately output
        max_trace_size = 0
     endif else begin ;loop boundaries if traces are not requested
-       tstart = tarray2[0]
-    
-       tend = tarray2[t_size[0] - 1L]
-    
-       ;number of iterations is interval length divided by period length
-       ct = ceil((tend-tstart)/period2)
+       if n_elements(exact_tilt_times) eq 0 then begin
+        tend = tarray2[t_size[0] - 1L]
+        ;number of iterations is interval length divided by period length
+        ct = ceil((tend-tstart)/period2)
+       endif else begin
+        ct = t_size[0] - 1L
+       endelse           
     endelse
     
     nperiod = ct+1
@@ -401,7 +405,13 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
     endif
     
     if arg_present(get_period_times) then begin
-      get_period_times = tstart + dindgen(nperiod)*period2+period2/2.
+      if arg_present(out_trace_array) or (n_elements(exact_tilt_times) gt 0) then begin
+        ; If traces are requested, or if exact_tilt_times keyword specified, tilt times are identical to input times
+        get_period_times = tarray
+      endif else begin
+        ; Otherwise, divide interval up into periods and calculate the tilt at the start of each period.
+        get_period_times = tstart + dindgen(nperiod)*period2
+      endelse
     endif
     
     if n_elements(add_tilt) gt 0 then begin
@@ -410,8 +420,11 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
       endif else if n_elements(add_tilt) eq nperiod then begin
         tilt_value = add_tilt
       endif else if n_elements(add_tilt) eq t_size[0] then begin
-        ;resample tilt values to period intervals, using middle of sample
-        period_abcissas = tstart + dindgen(nperiod)*period+period/2
+      if n_elements(exact_tilt_times) eq 0 then begin
+        period_abcissas = tstart + dindgen(nperiod)*period
+      endif else begin
+        period_abcissas = tarray
+      endelse
         tilt_value = interpol(add_tilt,tarray,period_abcissas)
       endif else begin
         dprint,'Error: add_tilt values do not match data values or period values'
@@ -426,8 +439,12 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
         tilt_value = set_tilt
       endif else if n_elements(set_tilt) eq t_size[0] then begin
         ;resample tilt values to period intervals, using middle of sample
-        period_abcissas = tstart + dindgen(nperiod)*period+period/2
-        tilt_value = interpol(set_tilt,tarray,period_abcissas)
+      if n_elements(exact_tilt_times) eq 0 then begin
+        period_abcissas = tstart + dindgen(nperiod)*period
+      endif else begin
+        period_abcissas = tarray
+      endelse
+         tilt_value = interpol(set_tilt,tarray,period_abcissas)
       endif else begin
         dprint,'Error: set_tilt values do not match data values or period values'
         return
@@ -487,12 +504,16 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
           if tr_size[0] gt max_trace_size then max_trace_size = tr_size[0]
     
        endif else begin ;calculate over an interval if traces are not requested
-          ;find indices of points in the interval for this iteration
-          idx1 = where(tarray2 ge tstart + i*period2)
-          idx2 = where(tarray2 le tstart + (i+1)*period2)
+          if n_elements(exact_tilt_times) eq 0 then begin
+            ;find indices of points in the interval for this iteration
+            idx1 = where(tarray2 ge tstart + i*period2)
+            idx2 = where(tarray2 le tstart + (i+1)*period2)
        
-          idx = ssl_set_intersection(idx1, idx2)
-    
+            idx = ssl_set_intersection(idx1, idx2)
+          endif else begin
+            idx = i
+          endelse
+     
           if idx[0] ne -1L then begin 
           
              id = idx[0]

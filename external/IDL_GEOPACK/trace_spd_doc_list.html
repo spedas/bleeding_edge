@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Apr 12 18:16:15 2021.<P>
+<STRONG>Last modified: </STRONG>Tue Apr 13 18:15:55 2021.<P>
  
 <HR>
  
@@ -136,6 +136,9 @@ Keywords:
              If an N length array is provided, the data will be re-sampled to an M length array. Consequently, if
              the values change quickly, the period may need to be shortened. 
              set_tilt will cause add_tilt to be ignored. 
+
+         exact_tilt_times (optional):  Set this keyword to avoid grouping similar times (default 10 minutes) and instead
+              recalculate the dipole tilt at each input time
                    
          get_nperiod: Returns the number of periods used for the time interval=  ceil((end_time-start_time)/period)
      
@@ -160,8 +163,8 @@ Notes:
 
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-03-19 16:07:41 -0700 (Fri, 19 Mar 2021) $
- $LastChangedRevision: 29780 $
+ $LastChangedDate: 2021-04-13 17:36:51 -0700 (Tue, 13 Apr 2021) $
+ $LastChangedRevision: 29880 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2equator.pro $
 </PRE><P>
 <STRONG>(See <A href="trace/trace2equator.pro">external/IDL_GEOPACK/trace/trace2equator.pro</A>)</STRONG><P>
@@ -277,6 +280,9 @@ Keywords:
              If an N length array is provided, the data will be re-sampled to an M length array. Consequently, if
              the values change quickly, the period may need to be shortened. 
              set_tilt will cause add_tilt to be ignored. 
+
+         exact_tilt_times (optional):  Set this keyword to avoid grouping similar times (default 10 minutes) and instead
+              recalculate the dipole tilt at each input time
                    
          get_nperiod: Returns the number of periods used for the time interval=  ceil((end_time-start_time)/period)
 
@@ -301,8 +307,8 @@ Notes:
 
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-03-19 16:07:41 -0700 (Fri, 19 Mar 2021) $
- $LastChangedRevision: 29780 $
+ $LastChangedDate: 2021-04-13 17:36:51 -0700 (Tue, 13 Apr 2021) $
+ $LastChangedRevision: 29880 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2iono.pro $
 </PRE><P>
 <STRONG>(See <A href="trace/trace2iono.pro">external/IDL_GEOPACK/trace/trace2iono.pro</A>)</STRONG><P>
@@ -500,6 +506,9 @@ Keywords:
              that should be used for each period. If a tplot input is used it will be interpolated to match the time inputs from the position
              var. Non-tplot array values must match the number of times in the tplot input for pos_gsm_tvar
 
+         exact_tilt_times (optional):  Set this keyword to avoid grouping similar times (default 10 minutes) and instead
+              recalculate the dipole tilt at each input time
+
          get_nperiod(optional): Return the number of periods used in the time interval
      
          geopack_2008 (optional): Set this keyword to use the latest version (2008) of the Geopack
@@ -524,9 +533,9 @@ Notes:
   4. All calculations are done internally in double precision
 
 
- $LastChangedBy: egrimes $
- $LastChangedDate: 2017-09-05 12:34:37 -0700 (Tue, 05 Sep 2017) $
- $LastChangedRevision: 23889 $
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2021-04-13 17:30:19 -0700 (Tue, 13 Apr 2021) $
+ $LastChangedRevision: 29879 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/ttrace2equator.pro $
 </PRE><P>
 <STRONG>(See <A href="trace/ttrace2equator.pro">external/IDL_GEOPACK/trace/ttrace2equator.pro</A>)</STRONG><P>
@@ -726,6 +735,9 @@ Keywords:
              that should be used for each period. If a tplot input is used it will be interpolated to match the time inputs from the position
              var. Non-tplot array values must match the number of times in the tplot input for pos_gsm_tvar
 
+         exact_tilt_times (optional):  Set this keyword to avoid grouping similar times (default 10 minutes) and instead
+              recalculate the dipole tilt at each input time
+              
          get_nperiod(optional): Return the number of periods used in the time interval
      
          geopack_2008 (optional): Set this keyword to use the latest version (2008) of the Geopack
@@ -750,9 +762,9 @@ Notes:
   4. All calculations are done internally in double precision
 
 
- $LastChangedBy: egrimes $
- $LastChangedDate: 2017-09-05 12:27:32 -0700 (Tue, 05 Sep 2017) $
- $LastChangedRevision: 23888 $
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2021-04-13 17:30:19 -0700 (Tue, 13 Apr 2021) $
+ $LastChangedRevision: 29879 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/ttrace2iono.pro $
 </PRE><P>
 <STRONG>(See <A href="trace/ttrace2iono.pro">external/IDL_GEOPACK/trace/ttrace2iono.pro</A>)</STRONG><P>

@@ -188,6 +188,9 @@
 ;             that should be used for each period. If a tplot input is used it will be interpolated to match the time inputs from the position
 ;             var. Non-tplot array values must match the number of times in the tplot input for pos_gsm_tvar
 ;
+;         exact_tilt_times (optional):  Set this keyword to avoid grouping similar times (default 10 minutes) and instead
+;              recalculate the dipole tilt at each input time
+;              
 ;         get_nperiod(optional): Return the number of periods used in the time interval
 ;     
 ;         geopack_2008 (optional): Set this keyword to use the latest version (2008) of the Geopack
@@ -212,9 +215,9 @@
 ;  4. All calculations are done internally in double precision
 ;
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-09-05 12:27:32 -0700 (Tue, 05 Sep 2017) $
-; $LastChangedRevision: 23888 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-04-13 17:30:19 -0700 (Tue, 13 Apr 2021) $
+; $LastChangedRevision: 29879 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/ttrace2iono.pro $
 ;-
 
@@ -223,7 +226,7 @@ pro ttrace2iono, in_pos_tvar, newname = newname, trace_var_name = trace_tvar, in
     south = south, km = km, par=par, period=period, error = error, standard_mapping = standard_mapping, $
     r0=r0, rlim=rlim, noboundary=noboundary, storm=storm, pdyn=pdyn, dsti=dsti, yimf=yimf, zimf=zimf, $
     g1=g1, g2=g2, w1=w1, w2=w2, w3=w3, w4=w4, w5=w5, w6=w6, get_tilt=get_tilt, set_tilt=set_tilt, $
-    add_tilt=add_tilt, get_nperiod=get_nperiod, geopack_2008=geopack_2008, _extra=_extra
+    add_tilt=add_tilt, get_nperiod=get_nperiod, geopack_2008=geopack_2008, exact_tilt_times=exact_tilt_times, _extra=_extra
 
     error = 0
     
@@ -433,12 +436,13 @@ pro ttrace2iono, in_pos_tvar, newname = newname, trace_var_name = trace_tvar, in
             internal_model=internal_model,external_model=external_model,south=south,km=km, $
             par=par_in,period=period,standard_mapping=standard_mapping,error=e,r0=r0, $
             rlim=rlim,get_nperiod=get_nperiod,get_tilt=tilt_dat,set_tilt=set_tilt_dat, $
-            get_period_times=period_times_dat,geopack_2008=geopack_2008,_extra=_extra  
+            get_period_times=period_times_dat,geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times,_extra=_extra  
       endif else begin
         trace2iono,d.x,d.y,f,in_coord=in_coord,out_coord=out_coord,internal_model=internal_model, $
             external_model=external_model,south=south,km=km,par=par_in,period=period,error=e, $
             standard_mapping=standard_mapping,r0=r0,rlim=rlim,get_nperiod=get_nperiod, $
-            get_tilt=tilt_dat,set_tilt=set_tilt_dat,get_period_times=period_times_dat,geopack_2008=geopack_2008,_extra=_extra
+            get_tilt=tilt_dat,set_tilt=set_tilt_dat,get_period_times=period_times_dat,geopack_2008=geopack_2008,$
+            exact_tilt_times=exact_tilt_times,_extra=_extra
       endelse
       
     endif else if n_elements(add_tilt) gt 0 then begin
@@ -447,24 +451,26 @@ pro ttrace2iono, in_pos_tvar, newname = newname, trace_var_name = trace_tvar, in
             internal_model=internal_model,external_model=external_model,south=south,km=km, $
             par=par_in,period=period,standard_mapping=standard_mapping,error=e,r0=r0, $
             rlim=rlim,get_nperiod=get_nperiod,get_tilt=tilt_dat,add_tilt=add_tilt_dat, $
-            get_period_times=period_times_dat,geopack_2008=geopack_2008,_extra=_extra  
+            get_period_times=period_times_dat,geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times,_extra=_extra  
       endif else begin
         trace2iono,d.x,d.y,f,in_coord=in_coord,out_coord=out_coord,internal_model=internal_model,$
             external_model=external_model,south=south,km=km,par=par_in,period=period,error=e,$
             standard_mapping=standard_mapping,r0=r0,rlim=rlim,get_nperiod=get_nperiod,$
-            get_tilt=tilt_dat,add_tilt=add_tilt_dat,get_period_times=period_times_dat,geopack_2008=geopack_2008,_extra=_extra
+            get_tilt=tilt_dat,add_tilt=add_tilt_dat,get_period_times=period_times_dat,geopack_2008=geopack_2008,$
+            exact_tilt_times=exact_tilt_times,_extra=_extra
       endelse
     endif else begin
       if keyword_set(trace_tvar) then  begin
         trace2iono,d.x,d.y,f,out_trace_array=tr,in_coord=in_coord,out_coord=out_coord,$
             internal_model=internal_model,external_model=external_model,south=south,km=km,$
             par=par_in,period=period,standard_mapping=standard_mapping,error=e,r0=r0,$
-            rlim=rlim,get_nperiod=get_nperiod,get_tilt=tilt_dat,get_period_times=period_times_dat,geopack_2008=geopack_2008,_extra=_extra  
+            rlim=rlim,get_nperiod=get_nperiod,get_tilt=tilt_dat,get_period_times=period_times_dat,$
+            geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times,_extra=_extra  
       endif else begin
         trace2iono,d.x,d.y,f,in_coord=in_coord,out_coord=out_coord,internal_model=internal_model, $
             external_model=external_model,south=south,km=km,par=par_in,period=period,error=e,$
             standard_mapping=standard_mapping,r0=r0,rlim=rlim,get_nperiod=get_nperiod,get_tilt=tilt_dat,$
-            get_period_times=period_times_dat,geopack_2008=geopack_2008,_extra=_extra
+            get_period_times=period_times_dat,geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times,_extra=_extra
       endelse
     endelse
         
