@@ -28,12 +28,13 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2020-04-22 17:55:19 -0700 (Wed, 22 Apr 2020) $
-;  $LastChangedRevision: 28599 $
+;  $LastChangedDate: 2021-04-15 15:23:47 -0700 (Thu, 15 Apr 2021) $
+;  $LastChangedRevision: 29884 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_dfb_wf/spp_fld_dfb_wf_load_l1.pro $
 ;
 
-pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varformat = varformat
+pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varformat = varformat, $
+  record = record, number_records = number_records
 
   ; Some special cases for the varformat keyword, used in L1 -> L1b processing.
 
@@ -67,14 +68,22 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
   endif
 
   ; Load files into TPLOT variables with cdf2tplot
+  ;
+  ; We use the variant of cdf2tplot which allows the number_records keyword.
+  ; Not used in standard processing, but useful for examining only a small
+  ; portion of a very large CDF file.
 
   if n_elements(varformat) GT 0 then begin
 
-    cdf2tplot, file, prefix = prefix, varnames = varnames, varformat = varformat
+    spd_cdf2tplot, file, prefix = prefix, varnames = varnames, $
+      varformat = varformat, $
+      record = record, number_records = number_records
 
   endif else begin
 
-    cdf2tplot, /get_support, file, prefix = prefix, varnames = varnames, varformat = varformat
+    spd_cdf2tplot, /get_support, file, prefix = prefix, varnames = varnames, $
+      varformat = varformat, $
+      record = record, number_records = number_records
 
   endelse
 
@@ -190,7 +199,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
   get_data, prefix + 'wav_sel_string', data = d_sel_str
 
   ; The L1 files contain the waveform data as it is stored in the packets,
-  ; with up to 2106 samples per packet.  When the files are loaded into
+  ; with up to 2016 samples per packet.  When the files are loaded into
   ; tplot variables, they are loaded into a 2D array, (n packets * 2016).  For
   ; plotting as a time series, we have to reform the data into a 1D vector.
   ;
@@ -223,6 +232,15 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
     times_2d = d.x
 
     n_times_2d = n_elements(times_2d)
+
+    ;
+    ; When debugging, note that if number_records is enabled, 
+    ; then the 2D waveform packet data come back as transposed arrays so
+    ; we have to transpose them again here. Not needed in standard
+    ; usage.
+    ;
+
+    if n_elements(number_records) GT 0 then d = {x:transpose(d.x), y:transpose(d.y)}
 
     max_samples = (size(d.y))[2]
 

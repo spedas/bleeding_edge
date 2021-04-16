@@ -1,8 +1,8 @@
 ;+
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2021-01-25 22:28:52 -0800 (Mon, 25 Jan 2021) $
-; $LastChangedRevision: 29623 $
+; $LastChangedDate: 2021-04-15 15:19:07 -0700 (Thu, 15 Apr 2021) $
+; $LastChangedRevision: 29883 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_load_l1.pro $
 ;
 ;-
@@ -11,7 +11,9 @@ pro spp_fld_load_l1, filename, $
   load_procedure = load_procedure, $
   file_timerange = file_timerange, $
   varformat = varformat, $
-  downsample = downsample, add_prefix = add_prefix, add_suffix = add_suffix
+  downsample = downsample, add_prefix = add_prefix, $
+  add_suffix = add_suffix, $
+  _extra = extra
 
   defsysv, '!SPP_FLD_TMLIB', exists = exists
 
@@ -59,11 +61,12 @@ pro spp_fld_load_l1, filename, $
   if n_elements(downsample) GT 0 then begin
 
     call_procedure, load_procedure, filename, prefix = prefix, varformat = varformat, $
-      downsample = downsample
+      downsample = downsample, _extra = extra
 
   endif else begin
 
-    call_procedure, load_procedure, filename, prefix = prefix, varformat = varformat
+    call_procedure, load_procedure, filename, prefix = prefix, varformat = varformat, $
+      _extra = extra
 
   endelse
 
