@@ -62,8 +62,8 @@
 ; 
 ;
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-07-14 10:56:48 -0700 (Tue, 14 Jul 2020) $
-; $LastChangedRevision: 28887 $
+; $LastChangedDate: 2021-04-19 11:52:51 -0700 (Mon, 19 Apr 2021) $
+; $LastChangedRevision: 29890 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_load_sst2.pro $
 ;-
 
@@ -83,6 +83,7 @@ pro thm_load_sst2_count_rate,tplotname,suffix
    if ~is_struct(d) then return
   
    count_dat = dblarr(n_elements(d.x))
+   count_dat1 = dblarr(n_elements(d.x)) ;jmm, 2021-04-19
    ones = dblarr(n_elements(d.x))+1
    md = d.mdistdat
    
@@ -101,16 +102,20 @@ pro thm_load_sst2_count_rate,tplotname,suffix
      if n_elements(data_dim) eq 2 then begin ;only one angle
        counts = total(data[*,0:11],2)/integ_t[0]
        count_dat[idx] = counts
+       count_dat1[idx] = counts
      endif else begin ;3 dims, assumed
        integ_t = reform(integ_t[0,*]) 
        counts = total(data[*,0:11,*],2)/(ones[idx]#integ_t)
        count_dat[idx] = max(counts,dim=2)
+       count_dat1[idx] = total(counts, 2)
      endelse
    endfor
   
    out_name = stem+'_count_rate'+suffix
    store_data,out_name,data={x:d.x,y:count_dat}
-   options,out_name,yrange=[0,5e4] 
+   out_name = stem+'_count_rate_total'+suffix
+   store_data,out_name,data={x:d.x,y:count_dat1}
+   options, out_name, 'ylog', 1
   
 end
 
@@ -320,7 +325,7 @@ my_themis = source_options
 
 vb = keyword_set(verbose) ? verbose : 0
 vb = vb > my_themis.verbose
-dprint,dlevel=4,verbose=vb,'Start; $Id: thm_load_sst2.pro 28887 2020-07-14 17:56:48Z jimm $'
+dprint,dlevel=4,verbose=vb,'Start; $Id: thm_load_sst2.pro 29890 2021-04-19 18:52:51Z jimm $'
 
 vprobes = ['a','b','c','d','e'];,'f']
 vlevels = ['l1','l2']
