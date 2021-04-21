@@ -34,21 +34,24 @@
 ;            recalculates the eflux value, subtracting background.
 ; bkg_only = if set, only load background data, iv_level, (or
 ;            iv*_load) must be set
+; no_download = if set, do not download data, passed through to
+;               mvn_pfp_spd_download.pro
+; no_update = if set, do not check for files if a file exists
 ;OUTPUT:
 ; No variables, data are loaded into common blocks
 ;HISTORY:
 ; 16-may-2014, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-09-16 12:52:57 -0700 (Wed, 16 Sep 2020) $
-; $LastChangedRevision: 29161 $
+; $LastChangedDate: 2021-04-20 12:23:44 -0700 (Tue, 20 Apr 2021) $
+; $LastChangedRevision: 29894 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_l2_load.pro $
 ;-
 Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
                      user_pass = user_pass, no_time_clip = no_time_clip, $
                      tplot_vars_create = tplot_vars_create, $
                      tvar_names = tvar_names, l2_version_in = l2_version_in, $
-                     iv_level = iv_level, bkg_only = bkg_only, _extra = _extra
-
+                     iv_level = iv_level, bkg_only = bkg_only, $
+                     no_download = no_download, no_update = no_update
 ;Keep track of software versioning here
   If(keyword_set(l2_version_in)) Then sw_vsn = l2_version_in $
   Else sw_vsn = mvn_sta_current_sw_version()
@@ -112,15 +115,28 @@ Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
         yyyy = strmid(daystr[k], 0, 4) & mmmm = strmid(daystr[k], 4, 2)
         filepath = 'maven/data/sci/sta/l2/'+yyyy+'/'+mmmm+'/'        
         filejk0 = filepath+'mvn_sta_l2_'+app_id[j]+'*_'+daystr[k]+'_'+sw_vsn_str+'.cdf'
-;        filejk = mvn_pfp_file_retrieve(filejk0, user_pass = user_pass)
-        filejk = mvn_pfp_spd_download(filejk0, user_pass = user_pass)
+;        filejk = mvn_pfp_file_retrieve(filejk0, user_pass =
+;user_pass)
+;handle no_update here, so that spd_download does not connect, jmm, 2021-04-20
+        If(keyword_set(no_update)) Then Begin
+           ps = file_retrieve(/default_structure)
+           filejk = file_search(ps.local_data_dir+filejk0)
+           If(is_string(filejk)) Then Begin
+              filejk = filejk[n_elements(filejk)-1]
+              dprint, dlevel=2, 'File found Locally: '+filejk
+           Endif Else Goto, look_remote
+        Endif Else Begin
+           look_remote:
+           filejk = mvn_pfp_spd_download(filejk0, user_pass = user_pass, no_download = no_download)
+        Endelse
 ;Files with ? or * left were not found
         question_mark = strpos(filejk, '?')
         If(is_string(filejk) && question_mark[0] Eq -1) Then filex = [filex, filejk]
         If(keyword_set(iv_level)) Then Begin
            ivfilepath = 'maven/data/sci/sta/'+iv_lvl+'/'+yyyy+'/'+mmmm+'/'
            ivfilejk0 = ivfilepath+'mvn_sta_l2_'+app_id[j]+'*_'+daystr[k]+'_'+iv_lvl+'.cdf'
-           ivfilejk = mvn_pfp_spd_download(ivfilejk0, user_pass = user_pass)
+           ;stick with no_update in spd_download here, jmm, 2021-04-20
+           ivfilejk = mvn_pfp_spd_download(ivfilejk0, user_pass = user_pass, no_download = no_download, no_update = no_update)
 ;Files with ? or * left were not found
            iquestion_mark = strpos(ivfilejk, '?')
            If(is_string(ivfilejk) && iquestion_mark[0] Eq -1) Then ivfilex = [ivfilex, ivfilejk]

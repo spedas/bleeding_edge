@@ -140,8 +140,8 @@
 ;                 last color.  Default is 6 (red) for all.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-22 19:20:08 -0700 (Mon, 22 Mar 2021) $
-; $LastChangedRevision: 29808 $
+; $LastChangedDate: 2021-04-20 11:40:58 -0700 (Tue, 20 Apr 2021) $
+; $LastChangedRevision: 29893 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -352,7 +352,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
                                  else if (windex eq -1) then putwin, /config
     mnum = fix(monitor[0])
   endif else begin
-    if (size(secondarymon,/type) gt 0) then mnum = secondarymon
+    if (size(windex,/type) gt 0) then if (windex gt -1) then mnum = secondarymon
   endelse
 
   if (size(psname,/type) eq 7) then begin
@@ -362,8 +362,10 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     if (npans eq 1) then begin
       putwin, /free, monitor=mnum, xsize=500, ysize=473, dx=10, dy=10, scale=wscale  ; MSO projections 1x1
       Owin = !d.window
-    endif else begin
-      putwin, /free, monitor=mnum, /yfull, aspect=0.351, dx=10   ; MSO projections 1x3
+    endif else begin                                                                 ; MSO projections 1x3
+      if (windex eq -1) then begin
+        putwin, /free, monitor=mnum, xsize=281, ysize=800, scale=wscale, dx=10
+      endif else putwin, /free, monitor=mnum, /yfull, aspect=0.351, dx=10
       Owin = !d.window
       csize = float(!d.x_size)/175.
     endelse

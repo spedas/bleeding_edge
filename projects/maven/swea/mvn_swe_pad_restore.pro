@@ -35,9 +35,9 @@
 ;
 ;       L2ONLY:        Insist that MAG L2 data were used for resampling.
 ;
-; $LastChangedBy: rlillis3 $
-; $LastChangedDate: 2018-04-28 18:30:05 -0700 (Sat, 28 Apr 2018) $
-; $LastChangedRevision: 25142 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2021-04-20 11:00:34 -0700 (Tue, 20 Apr 2021) $
+; $LastChangedRevision: 29892 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_restore.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -82,6 +82,12 @@ pro mvn_swe_pad_restore, trange, orbit=orbit, loadonly=loadonly, unnorm=unnorm, 
   finfo = file_info(file)
   indx = where(finfo.exists, nfiles, comp=jndx, ncomp=n)
   for j=0,(n-1) do print,"File not found: ",file[jndx[j]]  
+  if (nfiles eq 0) then return
+  file = file[indx]
+  finfo = finfo[indx]
+
+  indx = where(finfo.size gt 1000000LL, nfiles, comp=jndx, ncomp=n)
+  for j=0,(n-1) do print,"Bad tplot save file: ",file[jndx[j]]
   if (nfiles eq 0) then return
   file = file[indx]
 

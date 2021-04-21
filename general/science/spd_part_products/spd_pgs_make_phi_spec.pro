@@ -27,9 +27,9 @@
 ;   below. It should produce identical spectrograms for regular phi grids.
 ;
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2016-09-30 17:20:25 -0700 (Fri, 30 Sep 2016) $
-;$LastChangedRevision: 21989 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2021-04-20 16:08:59 -0700 (Tue, 20 Apr 2021) $
+;$LastChangedRevision: 29895 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_part_products/spd_pgs_make_phi_spec.pro $
 ;-
 
@@ -43,9 +43,6 @@ pro spd_pgs_make_phi_spec, data, spec=spec, sigma=sigma, yaxis=yaxis, resolution
   
   dr = !dpi/180.
   rd = 1/dr
-  
-  enum = dimen1(data.energy)
-  anum = dimen2(data.energy)
 
   ;copy data and zero inactive bins to ensure
   ;areas with no data are represented as NaN
