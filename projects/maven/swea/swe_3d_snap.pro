@@ -87,13 +87,17 @@
 ;       PLOT_FOV:      Replace the data with a "chess board" pattern to show the
 ;                      field of view.  FOV masking, if any, will be shown.
 ;
+;       PADMAP:        Show the pitch angle map for the current spectrum.
+;                      Boundaries for the 3D solid angle bins are shown.  Bins 
+;                      blocked by the spacecraft are marked with a yellow 'X'.
+;
 ;       TRANGE:        Plot snapshot for this time range.  Can be in any
 ;                      format accepted by time_double.  (This disables the
 ;                      interactive time range selection.)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-22 11:48:45 -0700 (Mon, 22 Mar 2021) $
-; $LastChangedRevision: 29790 $
+; $LastChangedDate: 2021-04-21 14:55:46 -0700 (Wed, 21 Apr 2021) $
+; $LastChangedRevision: 29900 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -284,7 +288,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
   endif
   
   if (dopam) then begin
-    putwin, /free, xsize=600, ysize=450, rel=Dwin, dy=-10, scale=wscale
+    putwin, /free, monitor=mnum, xsize=600, ysize=450, dx=10, dy=-10, scale=wscale
     Pwin = !d.window
   endif
 
@@ -468,16 +472,53 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
       if (dopam) then begin
         wset, Pwin
-        mvn_swe_padmap_3d, ddd
-        pa = reform(ddd.pa[63,*],16,6)*!radeg
 
-        contour,pa,levels=10*indgen(19),c_labels=replicate(1,19),$
-              xtitle='Azimuth Bin',ytitle='Elevation Bin',charsize=1.4,$
-              title='Pitch Angle Map'
+        Bamp = sqrt(total(ddd.magf^2.))
+        Baz = atan(ddd.magf[1],ddd.magf[0])
+        Bel = asin(ddd.magf[2]/Bamp)
+        if (Baz lt 0.) then Baz += 2.*!pi
 
-;        plot,[0,15],[90,90],yrange=[0,180],/ysty,yticks=6,yminor=3,$
-;              xtitle='Azimuth Bin',ytitle='Pitch Angle (deg)',charsize=1.4
-;        for i=0,5 do oplot,pa[(i*16):(i*16+15)],color=i+1
+        Naz = 256
+        daz = 2.*!pi/float(Naz)
+        az = daz*findgen(Naz + 1)
+
+        Nel = 128
+        elmin = (swe_el[0,63,ddd.group] - 0.5*swe_del[0,63,ddd.group])*!dtor
+        elmax = (swe_el[5,63,ddd.group] + 0.5*swe_del[5,63,ddd.group])*!dtor
+        del = (elmax - elmin)/float(Nel)
+        el = elmin + del*findgen(Nel + 1)
+
+        azm = az # replicate(1.,Nel+1)
+        elm = replicate(1.,Naz+1) # el
+        pam = acos(cos(azm - Baz)*cos(elm)*cos(Bel) + sin(elm)*sin(Bel))
+
+        contour,pam*!radeg,az*!radeg,el*!radeg,levels=10*indgen(19),c_labels=replicate(1,19),$
+                xrange=[0,360],/xsty,xticks=4,xminor=3,yrange=[-90,90],/ysty,$
+                yticks=6,yminor=3,$
+                xtitle='SWEA Azimuth',ytitle='SWEA Elevation',charsize=1.4,$
+                title='Pitch Angle Map',c_charsize=1.2
+
+        az = 22.5*findgen(17)
+        for i=1,15 do oplot,[az[i],az[i]],[elmin,elmax]*!radeg,color=4,linestyle=1
+        el = [swe_el[*,63,ddd.group] - (swe_del[*,63,ddd.group]/2.), elmax*!radeg]
+        for i=0,6 do oplot,[0,360],[el[i],el[i]],color=4,linestyle=1
+
+        kb = where(swe_sc_mask[*,boom] eq 0, count)
+        ib = kb mod 16
+        jb = kb / 16
+        for k=0,(count-1) do begin
+          i = ib[k]
+          j = jb[k]
+          oplot,[mean(az[i:i+1])],[mean(el[j:j+1])],psym=7,color=5
+        endfor
+
+        az = Baz*!radeg
+        el = Bel*!radeg
+        help,az,el
+        oplot,[az],[el],psym=1,symsize=2
+        if (az gt 180.) then az -= 180. else az += 180.
+        el = -el
+        oplot,[az],[el],psym=4,symsize=2
       endif
 
       if (sflg) then begin

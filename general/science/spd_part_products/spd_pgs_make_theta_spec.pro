@@ -33,9 +33,9 @@
 ;  2016-09-23: Generalized to remove restrictions on data regularity
 ;
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2016-09-30 17:20:25 -0700 (Fri, 30 Sep 2016) $
-;$LastChangedRevision: 21989 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2021-04-21 11:59:09 -0700 (Wed, 21 Apr 2021) $
+;$LastChangedRevision: 29896 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_part_products/spd_pgs_make_theta_spec.pro $
 ;-
 
@@ -95,7 +95,7 @@ pro spd_pgs_make_theta_spec, data, spec=spec, sigma=sigma, yaxis=yaxis, resoluti
       weight[idx_min] = ( sin(dr * theta_grid[i+1]) - sin(dr * theta_min[idx_min]) ) * data.dphi[idx_min]
     endif
     
-    ;data bins contained withing the current spectrogram bin
+    ;data bins contained within the current spectrogram bin
     contained = ssl_set_intersection(idx_max,idx_min)
     if contained[0] ne -1 then begin
       weight[contained] = ( sin(dr * theta_max[contained]) - sin(dr * theta_min[contained]) ) * data.dphi[contained] 

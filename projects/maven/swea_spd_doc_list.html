@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Apr 20 18:15:54 2021.<P>
+<STRONG>Last modified: </STRONG>Wed Apr 21 18:15:54 2021.<P>
  
 <HR>
  
@@ -6084,13 +6084,17 @@ KEYWORDS:
        PLOT_FOV:      Replace the data with a &quot;chess board&quot; pattern to show the
                       field of view.  FOV masking, if any, will be shown.
 
+       PADMAP:        Show the pitch angle map for the current spectrum.
+                      Boundaries for the 3D solid angle bins are shown.  Bins 
+                      blocked by the spacecraft are marked with a yellow 'X'.
+
        TRANGE:        Plot snapshot for this time range.  Can be in any
                       format accepted by time_double.  (This disables the
                       interactive time range selection.)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-03-22 11:48:45 -0700 (Mon, 22 Mar 2021) $
- $LastChangedRevision: 29790 $
+ $LastChangedDate: 2021-04-21 14:55:46 -0700 (Wed, 21 Apr 2021) $
+ $LastChangedRevision: 29900 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6966,11 +6970,17 @@ KEYWORDS:
 
         CSCALE:       Scale all characters by this factor.  Default = 1.
 
+        PADMAP:       Show the pitch angle map for the current spectrum.
+                      Boundaries for the 3D solid angle bins are shown, and
+                      if TSMO=0, then boundaries for the PAD cut are also
+                      shown.  Bins blocked by the spacecraft are marked with
+                      a yellow 'X'.
+
         NOTE:         Insert a text label.  Keep it short.
         
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-03-22 11:48:45 -0700 (Mon, 22 Mar 2021) $
- $LastChangedRevision: 29790 $
+ $LastChangedDate: 2021-04-21 14:55:46 -0700 (Wed, 21 Apr 2021) $
+ $LastChangedRevision: 29900 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
