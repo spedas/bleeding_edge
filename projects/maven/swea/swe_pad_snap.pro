@@ -165,8 +165,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;        
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-04-21 14:55:46 -0700 (Wed, 21 Apr 2021) $
-; $LastChangedRevision: 29900 $
+; $LastChangedDate: 2021-04-22 13:45:24 -0700 (Thu, 22 Apr 2021) $
+; $LastChangedRevision: 29904 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -1378,17 +1378,25 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
       pam = acos(cos(azm - pad.Baz)*cos(elm)*cos(pad.Bel) + sin(elm)*sin(pad.Bel))
 
       contour,pam*!radeg,az*!radeg,el*!radeg,levels=10*indgen(19),c_labels=replicate(1,19),$
-              xrange=[0,360],/xsty,xticks=4,xminor=3,yrange=[-90,90],/ysty,$
-              yticks=6,yminor=3,$
-              xtitle='SWEA Azimuth',ytitle='SWEA Elevation',charsize=1.4,$
-              title='Pitch Angle Map',c_charsize=1.2
+              xrange=[0,360],xstyle=9,xticks=4,xminor=3,yrange=[-90,90],ystyle=9,$
+              yticks=6,yminor=3,xmargin=[10,10],ymargin=[6,6],$
+              xtitle='SWEA Azimuth',ytitle='SWEA Elevation',charsize=csize2,$
+              c_charsize=csize1
+
+      axis,/yaxis,yrange=[1,181],charsize=csize2,ystyle=1,ytitle='Elevation Bin',$
+               yticks=6,yminor=0,yticklen=-0.00001,ytickv=(swe_el[*,63,0] + 91.),$
+               ytickname=string(indgen(6),format='(" ",i1," ")'),color=4
+
+      axis,/xaxis,xrange=[1,361],charsize=csize2,xstyle=1,xtitle='Azimuth Bin',$
+               xticks=17,xminor=0,xticklen=-0.00001,xtickv=(swe_az + 1.),$
+               xtickname=string(indgen(16),format='(i2)'),color=4
 
       az = 22.5*findgen(17)
       for i=1,15 do oplot,[az[i],az[i]],[elmin,elmax]*!radeg,color=4,linestyle=1
       el = [swe_el[*,63,pad.group] - (swe_del[*,63,pad.group]/2.), elmax*!radeg]
       for i=0,6 do oplot,[0,360],[el[i],el[i]],color=4,linestyle=1
 
-      if (~dosmo) then for k=0,15 do begin
+      if (~dosmo and (npts eq 1)) then for k=0,15 do begin
         i = pad.iaz[k]
         j = pad.jel[k]
         azbox = [az[i], az[i+1], az[i+1], az[i]   ,az[i]]
