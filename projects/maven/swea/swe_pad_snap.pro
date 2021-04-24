@@ -165,8 +165,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;        
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-04-22 13:45:24 -0700 (Thu, 22 Apr 2021) $
-; $LastChangedRevision: 29904 $
+; $LastChangedDate: 2021-04-22 18:28:56 -0700 (Thu, 22 Apr 2021) $
+; $LastChangedRevision: 29905 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -1388,7 +1388,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                ytickname=string(indgen(6),format='(" ",i1," ")'),color=4
 
       axis,/xaxis,xrange=[1,361],charsize=csize2,xstyle=1,xtitle='Azimuth Bin',$
-               xticks=17,xminor=0,xticklen=-0.00001,xtickv=(swe_az + 1.),$
+               xticks=16,xminor=0,xticklen=-0.00001,xtickv=(swe_az + 1.),$
                xtickname=string(indgen(16),format='(i2)'),color=4
 
       az = 22.5*findgen(17)

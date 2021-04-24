@@ -96,8 +96,8 @@
 ;                      interactive time range selection.)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-04-21 14:55:46 -0700 (Wed, 21 Apr 2021) $
-; $LastChangedRevision: 29900 $
+; $LastChangedDate: 2021-04-23 09:05:22 -0700 (Fri, 23 Apr 2021) $
+; $LastChangedRevision: 29910 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -117,6 +117,9 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
   a = 0.8
   phi = findgen(49)*(2.*!pi/49)
   usersym,a*cos(phi),a*sin(phi),/fill
+
+  csize1 = 1.2
+  csize2 = 1.4
 
 ; Load any keyword defaults
 
@@ -493,10 +496,18 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
         pam = acos(cos(azm - Baz)*cos(elm)*cos(Bel) + sin(elm)*sin(Bel))
 
         contour,pam*!radeg,az*!radeg,el*!radeg,levels=10*indgen(19),c_labels=replicate(1,19),$
-                xrange=[0,360],/xsty,xticks=4,xminor=3,yrange=[-90,90],/ysty,$
-                yticks=6,yminor=3,$
-                xtitle='SWEA Azimuth',ytitle='SWEA Elevation',charsize=1.4,$
-                title='Pitch Angle Map',c_charsize=1.2
+                xrange=[0,360],xstyle=9,xticks=4,xminor=3,yrange=[-90,90],ystyle=9,$
+                yticks=6,yminor=3,xmargin=[10,10],ymargin=[6,6],$
+                xtitle='SWEA Azimuth',ytitle='SWEA Elevation',charsize=csize2,$
+                c_charsize=csize1
+
+        axis,/yaxis,yrange=[1,181],charsize=csize2,ystyle=1,ytitle='Elevation Bin',$
+                 yticks=6,yminor=0,yticklen=-0.00001,ytickv=(swe_el[*,63,0] + 91.),$
+                 ytickname=string(indgen(6),format='(" ",i1," ")'),color=4
+
+        axis,/xaxis,xrange=[1,361],charsize=csize2,xstyle=1,xtitle='Azimuth Bin',$
+                 xticks=16,xminor=0,xticklen=-0.00001,xtickv=(swe_az + 1.),$
+                 xtickname=string(indgen(16),format='(i2)'),color=4
 
         az = 22.5*findgen(17)
         for i=1,15 do oplot,[az[i],az[i]],[elmin,elmax]*!radeg,color=4,linestyle=1
@@ -514,7 +525,6 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
         az = Baz*!radeg
         el = Bel*!radeg
-        help,az,el
         oplot,[az],[el],psym=1,symsize=2
         if (az gt 180.) then az -= 180. else az += 180.
         el = -el
