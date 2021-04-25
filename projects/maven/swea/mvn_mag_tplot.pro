@@ -18,9 +18,9 @@
 ;                  panel will contain horizontal lines at the angles for
 ;                  toward and away sectors.
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-02-17 11:57:50 -0800 (Fri, 17 Feb 2017) $
-; $LastChangedRevision: 22820 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2021-04-24 13:54:38 -0700 (Sat, 24 Apr 2021) $
+; $LastChangedRevision: 29916 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_mag_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2015-04-02
@@ -31,6 +31,7 @@ pro mvn_mag_tplot, bvec, model=model, sang=sang
   nan = !values.f_nan
   blab = ['Bx','By','Bz']
   bcol = [2,4,6]
+  tplot_options, get=topt
   names = tnames()
 
   if not keyword_set(bvec) then bvec = 'mvn_B_1sec_maven_mso'
@@ -115,9 +116,21 @@ pro mvn_mag_tplot, bvec, model=model, sang=sang
   if (nidx gt 0) then bphi[idx] += 2.*!pi
   undefine, idx, nidx
 
-  store_data, 'mvn_mag_bang', data={x: b.x, y: [ [bthe*!RADEG + 180.], [bphi*!RADEG]]}, $
-              dlimits={psym: 3, colors: [2,6], ytitle: 'MAG ' + lvl + ' (' + frame + ')', ysubtitle: 'Angle [deg]', $
-                       yticks: 4, yminor: 3, labels: ['theta!C  +180', 'phi'], labflag: 1, constant: acon}
+  aopt = {yaxis:1, ystyle:1, yrange:[-90.,90.], ytitle:'Theta [deg]', color:2, yticks:2, yminor:3}
+  if tag_exist(topt,'charsize') then str_element, aopt, 'charsize', topt.charsize, /add_replace
+
+  vname = 'mvn_mag_bang'
+  store_data, vname, data={x: b.x, y: [[bthe*!RADEG*2.+180.], [bphi*!RADEG]]}
+  options, vname, 'psym', 3
+  options, vname, 'colors', [2,6]
+  options, vname, 'ytitle', 'MAG ' + lvl + ' (' + frame + ')'
+  options, vname, 'ysubtitle', 'Phi [deg]'
+  options, vname, 'yticks', 4
+  options, vname, 'yminor', 3
+  options, vname, 'ystyle', 9
+  options, vname, 'labflag', -1
+  options, vname, 'constant', acon
+  options, vname, 'axis', aopt
   ylim, 'mvn_mag_bang', 0., 360., 0., /def
   undefine, bphi, bthe, b
 

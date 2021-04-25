@@ -158,15 +158,15 @@
 ;
 ;        PADMAP:       Show the pitch angle map for the current spectrum.
 ;                      Boundaries for the 3D solid angle bins are shown, and
-;                      if TSMO=0, then boundaries for the PAD cut are also
-;                      shown.  Bins blocked by the spacecraft are marked with
-;                      a yellow 'X'.
+;                      if TSMO=0 and SUM=0, then boundaries for the PAD cut 
+;                      are also shown.  Bins blocked by the spacecraft are 
+;                      marked with a yellow 'X'.
 ;
 ;        NOTE:         Insert a text label.  Keep it short.
-;        
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-04-22 18:28:56 -0700 (Thu, 22 Apr 2021) $
-; $LastChangedRevision: 29905 $
+; $LastChangedDate: 2021-04-24 13:53:44 -0700 (Sat, 24 Apr 2021) $
+; $LastChangedRevision: 29915 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
