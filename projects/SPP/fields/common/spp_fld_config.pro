@@ -1,4 +1,4 @@
-pro spp_fld_config, colortable=colortable
+pro spp_fld_config, colortable=colortable, tbl_path = tbl_path
 
   if n_elements(colortable) EQ 0 then begin
 

@@ -72,8 +72,8 @@ pro spp_fld_rfs_cross_load_l1_metadata_options, prefix, receiver_str, color = co
   options, prefix + 'ch?_string', 'ytickformat', '(A1)'
   options, prefix + 'ch?_string', 'noclip', 0
   options, prefix + 'ch?_string', 'ysubtitle', ''
-  options, prefix + 'ch0_string', 'ytitle', receiver_str + '!CAUTO!CCH0 SRC'
-  options, prefix + 'ch1_string', 'ytitle', receiver_str + '!CAUTO!CCH1 SRC'
+  options, prefix + 'ch0_string', 'ytitle', receiver_str + '!CCROSS!CAUTO!CCH0 SRC'
+  options, prefix + 'ch1_string', 'ytitle', receiver_str + '!CCROSS!CAUTO!CCH1 SRC'
 
   options, prefix + 'xspec_re', 'ytitle', receiver_str + ' Cross!CReal Raw'
   options, prefix + 'xspec_im', 'ytitle', receiver_str + ' Cross!CImag Raw'
@@ -210,10 +210,10 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color, varformat =
       if size(/type, d_auto_match) EQ 8 then begin
 
         ;union_auto = array_union(d_auto_match.x, d_cross_match.x)
-        union_auto = cmset_op(ch0_src_dat.x[inds], 'AND', d_auto_match.x, /index)
+        union_auto = cmset_op(ch0_src_dat.x, 'AND', d_auto_match.x, /index)
 
-        ind_auto = where(union_auto GT 0, count_auto)
-        ind_cross = union_auto[where(union_auto GT 0, count_cross)]
+        ind_auto = where(union_auto GE 0, count_auto)
+        ind_cross = union_auto[where(union_auto GE 0, count_cross)]
 
         if count_cross GT 0 then begin
 
@@ -281,8 +281,8 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color, varformat =
 
             ;print, 'array_union', systime(/seconds) - t0
 
-            ind_auto = where(union_auto GT 0, count_auto)
-            ind_cross = union_auto[where(union_auto GT 0, count_cross)]
+            ind_auto = where(union_auto GE 0, count_auto)
+            ind_cross = union_auto[where(union_auto GE 0, count_cross)]
 
             t1 = systime(/seconds)
 

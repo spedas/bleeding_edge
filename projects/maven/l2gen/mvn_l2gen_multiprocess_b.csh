@@ -10,7 +10,7 @@ set comment=$5
 
 # Set up IDL path
 unsetenv IDL_PATH
-source /usr/local/setup/setup_idl8.3		# IDL
+source /usr/local/setup/setup_idl8.5.1		# IDL
 setenv BASE_DATA_DIR /disks/data/
 setenv ROOT_DATA_DIR /disks/data/
 #IDL SETUP for MAVEN

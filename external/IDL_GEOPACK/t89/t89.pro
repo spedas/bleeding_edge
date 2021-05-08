@@ -77,8 +77,8 @@
 ;      6371.2 = the value used in the GEOPACK FORTRAN code for Re
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-03-26 15:32:36 -0700 (Fri, 26 Mar 2021) $
-; $LastChangedRevision: 29828 $
+; $LastChangedDate: 2021-04-27 17:27:21 -0700 (Tue, 27 Apr 2021) $
+; $LastChangedRevision: 29923 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t89/t89.pro $
 ;-
 
@@ -188,7 +188,7 @@ function t89, tarray, rgsm_array, kp=kp, period=period, igrf_only=igrf_only,$
   ;calculate the number of loop iterations
   if n_elements(exact_tilt_times) eq 0 then begin
     ; The start time is now the center of the first period, rather than the start, so add an extra 1/2 period
-    ct = 0.5D + (tend-tstart)/period
+    ct = 0.5D + (tend-tstart)/period2
     nperiod = ceil(ct)
   endif else nperiod = n_elements(tarray)
 
@@ -203,7 +203,7 @@ function t89, tarray, rgsm_array, kp=kp, period=period, igrf_only=igrf_only,$
   ;return the times at the center of each period
   if arg_present(get_period_times) then begin
     if n_elements(exact_tilt_times) eq 0 then begin
-      get_period_times = tstart + dindgen(nperiod)*period
+      get_period_times = tstart + dindgen(nperiod)*period2
     endif else get_period_times=tarray
   endif
  
@@ -215,7 +215,7 @@ function t89, tarray, rgsm_array, kp=kp, period=period, igrf_only=igrf_only,$
     endif else if n_elements(add_tilt) eq t_size[0] then begin
       ;resample tilt values to period intervals, using middle of sample
       if n_elements(exact_tilt_times) eq 0 then begin
-        period_abcissas = tstart + dindgen(nperiod)*period
+        period_abcissas = tstart + dindgen(nperiod)*period2
       endif else begin
         period_abcissas = tarray
       endelse
@@ -251,8 +251,8 @@ function t89, tarray, rgsm_array, kp=kp, period=period, igrf_only=igrf_only,$
       idx = [i]
     endif else begin
       ;find indices of points to be input this iteration
-      idx1 = where(tarray ge tstart + i*period - period/2.0D)
-      idx2 = where(tarray le tstart + (i+1)*period - period/2.0D)
+      idx1 = where(tarray ge tstart + i*period2 - period2/2.0D)
+      idx2 = where(tarray le tstart + (i+1)*period2 - period2/2.0D)
 
       idx = ssl_set_intersection(idx1, idx2)
     endelse
