@@ -25,8 +25,8 @@
 ;HISTORY:
 ; 2014-05-14, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-12-17 09:28:01 -0800 (Thu, 17 Dec 2020) $
-; $LastChangedRevision: 29535 $
+; $LastChangedDate: 2021-05-12 10:31:31 -0700 (Wed, 12 May 2021) $
+; $LastChangedRevision: 29947 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2gen.pro $
 ;-
 Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
@@ -291,7 +291,11 @@ Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
 ;Dead time files are under iv1
         dir_dead1 = '/disks/data/maven/data/sci/sta/iv1/dead/'
         mvn_sta_bkg_correct_straggle, maven_dead_dir = dir_dead1
-     Endif
+     Endif Else If(iv_level Eq 4) Then Begin
+        mvn_sta_l2_load, /no_time_clip, iv_level = 3, $
+                         sta_apid = ['2a c0 c6 c8 ca d0 d1 d6 d8 d9 da db']
+        mvn_sta_bkg_cleanup
+     Endelse
 ;the common blocks at this point should only contain background, no data or eflux
   Endif Else If(keyword_set(use_l2_files)) Then Begin
 ;use no_time_clip to get all data, mvn_sta_l2_load will fill all of

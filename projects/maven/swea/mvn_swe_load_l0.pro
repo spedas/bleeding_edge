@@ -74,6 +74,9 @@
 ;       LOADONLY:      Download data but do not process.
 ;
 ;       SPICEINIT:     Force a re-initialization of SPICE.  Use with caution!
+;                         0 : ask what to do if there's a problem (default)
+;                         1 : reinitialize to the new time range
+;                         2 : extend coverage to include the new time range
 ;
 ;       NOSPICE:       Do not initialize SPICE.
 ;
@@ -89,8 +92,8 @@
 ;                      to a higher number to see more diagnostic messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-11-11 12:06:40 -0800 (Mon, 11 Nov 2019) $
-; $LastChangedRevision: 28001 $
+; $LastChangedDate: 2021-05-12 11:44:10 -0700 (Wed, 12 May 2021) $
+; $LastChangedRevision: 29952 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -152,6 +155,8 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
   if (size(cdrift, /type) eq 0) then dflg = 1 else dflg = keyword_set(cdrift)
   
   if keyword_set(realtime) then rflg = 1 else rflg = 0
+
+  if (size(spiceinit,/type) eq 0) then spiceinit = 0 else spiceinit = fix(spiceinit[0])
 
 ; Get file names associated with trange or from one or more named
 ; file(s).  If you specify a time range and are working off-site, 
@@ -230,18 +235,26 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
 
   if (not keyword_set(nospice)) then begin
     mvn_spice_stat, summary=sinfo, /silent
-    if (keyword_set(spiceinit) or (~sinfo.ck_sc_exists)) then begin
+    if ((spiceinit eq 1) or (~sinfo.ck_sc_exists)) then begin
       mvn_swe_spice_init, /force
     endif else begin
       tmin = min(sinfo.ck_sc_trange, max=tmax)
+      tsp = minmax([trange, tmin, tmax])
       if ((trange[0] lt tmin) or (trange[1] gt tmax)) then begin
-        print,"Requested time range extends beyond currently loaded SPICE kernels."
-        yn = 'y'
-        read, yn, prompt='Reinitialize SPICE (y|n) ? '
-        if (strupcase(yn) eq 'Y') then begin
-          tsp = minmax([trange, tmin, tmax])
-          mvn_swe_spice_init, trange=tsp, /force
-        endif
+        if (spiceinit ne 2) then begin
+          print,"Requested time range extends beyond currently loaded SPICE kernels."
+          print,"What do you want to do?"
+          print,"  r = reinitialize to the time range of the new data"
+          print,"  e = extend the time range to include the new data"
+          print,"  a = abort - do not load the new data (default)"
+          yn = 'a'
+          read, yn, prompt='Your choice (r|e|a): '
+          case strupcase(yn) of
+             'R' : mvn_swe_spice_init, trange=trange, /force
+             'E' : mvn_swe_spice_init, trange=tsp, /force
+            else : return
+          endcase
+        endif else mvn_swe_spice_init, trange=tsp, /force
       endif
     endelse
   endif

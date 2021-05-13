@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue May 11 03:16:00 2021.<P>
+<STRONG>Last modified: </STRONG>Wed May 12 18:16:15 2021.<P>
  
 <HR>
  
@@ -19,6 +19,8 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/maven/sta/mvn_sta_programs</H1>
+<LI><A HREF="#MVN_STA_BKG_CLEANUP">MVN_STA_BKG_CLEANUP</A>
+<br>For small number backgrounds, consolidates mvn_id_dat.bkg to match with mvn_id_dat.data
 <LI><A HREF="#MVN_STA_BKG_CORRECT">MVN_STA_BKG_CORRECT</A>
 <br>Corrects coincident background in sw where time variations happen on &lt;4ms time scales, must first run mvn_sta_bkg_load
 <LI><A HREF="#MVN_STA_BKG_CORRECT_STRAGGLE">MVN_STA_BKG_CORRECT_STRAGGLE</A>
@@ -61,8 +63,45 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="MVN_STA_BKG_CLEANUP">
+<H2>MVN_STA_BKG_CLEANUP</H2></A>
+<A HREF="#MVN_STA_BKG_CORRECT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:	mvn_sta_bkg_cleanup
+PURPOSE:	
+	For small number backgrounds, consolidates mvn_id_dat.bkg to match with mvn_id_dat.data 
+INPUT:		
+
+KEYWORDS:
+	save_bkg	0/1	if set, will save the current value of bkg in an intermediate array -- for testing
+	restore_bkg	0/1	if set, will restore value of bkg in an intermediate array created by save_bkg -- for testing
+	no_digitize	0/1	if set, mvn_id_dat.bkg is NOT digitized to a value equal to mvn_id_dat.data if they are statistically equivalent
+					no_digitize keyword is only used for testing
+
+CREATED BY:	J. McFadden 20/09/01
+VERSION:	1
+LAST MODIFICATION:  21/05/11		
+MOD HISTORY:
+		21/05/10	; modified so digitize will not act on C+ outside the solar wind so faint C+ signal is not removed 
+		21/05/11	; changed &quot;digitize&quot; keyword to &quot;no_digitize&quot; so that normal operations don't require this keyword to be set
+
+NOTES:	  
+ 	This routine should be run after all backgrounds are calculated and added to the mvn_id_dat.bkg arrays
+	For small number background in a 4 sec measurement - calculated background removal fails unless averaged over long periods
+	This routine consolidates the calculated fractional count background into nearby time and mass bins where actual counts are measured
+	The net effect doesn't change the overall time averaged background
+	The routine will further set mvn_id_dat.bkg=mvn_id_dat.data if mvn_id_dat.bkg is within 2 sigma of mvn_id_dat.data
+		this feature of setting mvn_id_dat.bkg=mvn_id_dat.data for statistically equivalent values is refered to as &quot;digitize&quot;
+	This results in small changes in background that are statistically insignificant on long time scales and accurate background removal on 4 sec time scales
+	This digitize feature can be turned off with the &quot;no_digitize&quot; keyword - primarily for testing
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_programs/mvn_sta_bkg_cleanup.pro">projects/maven/sta/mvn_sta_programs/mvn_sta_bkg_cleanup.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_BKG_CORRECT">
 <H2>MVN_STA_BKG_CORRECT</H2></A>
+<A HREF="#MVN_STA_BKG_CLEANUP">[Previous Routine]</A>
 <A HREF="#MVN_STA_BKG_CORRECT_STRAGGLE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

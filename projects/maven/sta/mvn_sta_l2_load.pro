@@ -42,8 +42,8 @@
 ;HISTORY:
 ; 16-may-2014, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2021-04-20 12:23:44 -0700 (Tue, 20 Apr 2021) $
-; $LastChangedRevision: 29894 $
+; $LastChangedDate: 2021-05-12 10:47:54 -0700 (Wed, 12 May 2021) $
+; $LastChangedRevision: 29950 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_l2_load.pro $
 ;-
 Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
@@ -158,7 +158,7 @@ Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
      filex = ivfilex
      bkg_sub = 0 ;Do not subtract background if you are only loading background
   Endif Else Begin
-     bkg_sub = keyword_set(iv_level) ;will only load/subrtract background if iv_Level is set
+     bkg_sub = keyword_set(iv_level) ;will only load/subtract background if iv_Level is set
   Endelse
 ;Only files that exist here, strange IDL issue is causing problem with
 ;file search for iv1 filex names
