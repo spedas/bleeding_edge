@@ -75,7 +75,7 @@
 ;
 ;   SNAP:      Plot a snapshot.  Default = 0 (no).
 ;
-;   TPLOT:     Make a tplot variable.  Default = 0 (no).
+;   TPLOT:     Make a tplot variable.  Default = 1 (yes).
 ;
 ;   MAP3D:     Take into account the pitch angle width even for 3D
 ;              data. This keyword only works 3D data. The mapping
@@ -131,8 +131,8 @@
 ;CREATED BY:      Takuya Hara on 2014-09-24.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-08-20 11:56:32 -0700 (Thu, 20 Aug 2020) $
-; $LastChangedRevision: 29053 $
+; $LastChangedDate: 2021-05-14 15:08:24 -0700 (Fri, 14 May 2021) $
+; $LastChangedRevision: 29962 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_resample.pro $
 ;
 ;-
@@ -524,6 +524,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
 
 ; Process keywords and set options
 
+  if (size(tplot,/type) eq 0) then tplot = 1
   IF keyword_set(swia) THEN mvn_swe_spice_init, trange=trange
   IF NOT keyword_set(units) THEN units = 'eflux'
   IF NOT keyword_set(nbins) THEN nbins = 128.
@@ -668,15 +669,15 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
           pad[j].data *= REBIN(TRANSPOSE(mobins[pad[j].k3d, boom[i]]), pad[j].nenergy, pad[j].nbins)
           block = WHERE(~FINITE(mobins[pad[j].k3d, boom[i]]), nblock)
           IF ((nblock GT 0) and prt) THEN BEGIN
-             tblk = 'Removed anode bin(s) data due to the FOV blockage: ['
+             tblk = 'Removed blocked bin(s): ['
              FOR iblk=0, nblock-1 DO BEGIN
                 tblk += STRING(block[iblk], '(I0)')
                 IF iblk NE nblock-1 THEN tblk += ', '
              ENDFOR 
              tblk += ']'
-             dprint, tblk, dlevel=2, verbose=3-silent
-             undefine, iblk, tblk
-          ENDIF 
+;            dprint, tblk, dlevel=2, verbose=3-silent
+;            undefine, iblk, tblk
+          ENDIF ELSE tblk = 'Removed blocked bin(s): none             '
           undefine, block, nblock
         endfor
      ENDELSE 
@@ -802,15 +803,15 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
         IF i EQ 0L THEN BEGIN
            dcet = ((SYSTIME(/sec)-start-dt)*DOUBLE(ndat-1L))/5.
            cet = +dcet
-           print, ptrace()
-           print, '  Resampling Start (Expected time needed to complete: ' + $
-                  STRING(5.*dcet, '(f0.1)') + ' sec).'
+;          print, ptrace()
+;          print, '  Resampling Start (Expected time needed to complete: ' + $
+;                 STRING(5.*dcet, '(f0.1)') + ' sec).'
         ENDIF ELSE BEGIN
            IF prt EQ 1 THEN $
-              print, format='(a, a, a, f6.2, a, f5.1, a, $)', $
-                     '      ', fifb, '  Resampling pitch angle distribution from ' + $
-                     dname + ' data is ', FLOAT(i)/FLOAT(ndat-1L)*100., ' % complete (Elapsed time: ', $
-                     SYSTIME(/sec)-start, ' sec).' 
+              print, format='(a, a, a, f6.2, a, f6.1, a, $)', $
+                     '      ', fifb, '  Resampling ' + $
+                     dname + ' data is ', FLOAT(i)/FLOAT(ndat-1L)*100., ' % complete (', $
+                     SYSTIME(/sec)-start, ' sec).' ; , tblk
         ENDELSE 
         IF keyword_set(silent) THEN prt = 0
      ENDIF  
@@ -871,15 +872,18 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
 
   ;; IF keyword_set(tplot) THEN BEGIN
   IF (pflg[1]) THEN BEGIN       ; Generate a tplot variable
+     emins = strtrim(string(round(min(energy[edx]))),2)
+     emaxs = strtrim(string(round(max(energy[edx]))),2)
+     tname = 'pad_' + emins + '_' + emaxs + '_resample'
+
      ytit = 'SWE PAD!C('
-     IF nene EQ 1 THEN ytit += STRING(energy[edx[0]], '(f0.1)') + ' eV)' $
-     ELSE ytit += STRING(MIN(energy[edx]), '(f0.1)') + ' - ' + STRING(MAX(energy[edx]), '(f0.1)') + ' eV)' 
+     IF nene EQ 1 THEN ytit += emins + ' eV)' $
+                  ELSE ytit += emins + ' - ' + emaxs + ' eV)' 
 
      data = TRANSPOSE(average(result.avg, 1, /nan))
      nfactor = average(data, 2, /nan)
      IF keyword_set(normal) THEN BEGIN
         data /= REBIN(nfactor, ndat*nchan, nbins)
-;        data /= REBIN(average(data, 2, /nan), ndat, nbins)
         index = TRANSPOSE(average(result.index, 1))
         index[WHERE(index EQ 0.)] = nan
         index[WHERE(FINITE(index))] = 1.
@@ -888,14 +892,12 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
         zlog = 0
      ENDIF ELSE BEGIN
         zlog = 1
-
         davg = MEAN(ALOG10(data[WHERE(data GT 0.)]))
         dstd = STDDEV(ALOG10(data[WHERE(data GT 0.)]))
-
         zrange = [10.^(davg - dstd*2.), 10.^(davg + dstd*2.)]
      ENDELSE 
 
-     IF NOT keyword_set(pans) THEN pans = 'mvn_swe_pad_resample'
+     IF (size(pans,/type) ne 7) THEN pans = tname
      store_data, pans, $
                  data={x: result.time, y: data, v: TRANSPOSE(result.xax)}, $
                  dlim={nfactor: nfactor, spec: 1, yrange: [0., 180.], ystyle: 1, $

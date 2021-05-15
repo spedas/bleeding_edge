@@ -25,8 +25,8 @@
 ;                      Default = 1
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2015-06-07 13:35:34 -0700 (Sun, 07 Jun 2015) $
-; $LastChangedRevision: 17820 $
+; $LastChangedDate: 2021-05-14 16:09:52 -0700 (Fri, 14 May 2021) $
+; $LastChangedRevision: 29963 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_save.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -62,7 +62,7 @@ pro mvn_swe_pad_save, start_day=start_day, interval=interval, ndays=ndays
       endif
     endif
 
-    mvn_swe_pad_resample,nbins=128,erange=[100.,150.],/norm,/mask,/silent
+    mvn_swe_pad_resample,nbins=128,erange=[100.,150.],/norm,/mask,/silent,pans=tname
     get_data,tname,data=pad,index=k,dl=dl
     if (k eq 0L) then begin
       print,"Could not resample pad data!"

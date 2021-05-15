@@ -30,6 +30,8 @@ pro spp_fld_config, colortable=colortable, tbl_path = tbl_path
 
   spd_graphics_config,colortable=colortable
 
+  device, decompose = 0
+
   tvlct, 000, 204, 204, 3 ; darker cyan for white backgrounds
   tvlct, 000, 150, 000, 4 ; darker green for white backgrounds
   tvlct, 255, 200, 000, 5 ; darker yellow (orangeish) for white backgrounds
