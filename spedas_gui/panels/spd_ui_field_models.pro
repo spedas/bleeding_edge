@@ -9,8 +9,8 @@
 ;
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-06-19 12:03:48 -0700 (Tue, 19 Jun 2018) $
-;$LastChangedRevision: 25372 $
+;$LastChangedDate: 2021-05-17 11:11:58 -0700 (Mon, 17 May 2021) $
+;$LastChangedRevision: 29964 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_field_models.pro $
 ;-
 
@@ -100,7 +100,7 @@ function spd_ui_field_models_check_params, state, field_model
 ;    endelse 
     
     ; check the user's input data
-    if strlowcase(field_model) eq 't89' || strlowcase(field_model) eq 'igrf' then begin
+    if strlowcase(field_model) eq 't89' || strlowcase(field_model) eq 'igrf' || strlowcase(field_model) eq 'ts07' then begin
         parameter_input = state.t89_iopt
     endif else begin
         ; check the variables selected by the user
@@ -218,12 +218,12 @@ pro spd_ui_field_models_model_params, tlb, field_model
           wid_wlabel = widget_info(tlb, find_by_uname='selectedwlabel')
           Widget_Control, wid_wlabel, set_value='W coefficients: '
           Widget_Control, coeffs_wid, set_value=(*state.usersWs07 eq '' ? '[calculate automatically]' : *state.usersWs07)
-          Widget_Control, wcoef_wid, sensitive = 1
-          Widget_Control, imfby_wid, sensitive = 1
-          Widget_Control, imfbz_wid, sensitive = 1
-          Widget_Control, swdensity_wid, sensitive = 1
-          Widget_Control, swvel_wid, sensitive = 1
-          Widget_Control, dst_wid, sensitive = 1
+          Widget_Control, wcoef_wid, sensitive = 0
+          Widget_Control, imfby_wid, sensitive = 0
+          Widget_Control, imfbz_wid, sensitive = 0
+          Widget_Control, swdensity_wid, sensitive = 0
+          Widget_Control, swvel_wid, sensitive = 0
+          Widget_Control, dst_wid, sensitive = 0
         end
         'igrf': begin
             Widget_Control, wcoef_wid, sensitive = 0
@@ -235,6 +235,18 @@ pro spd_ui_field_models_model_params, tlb, field_model
         end
     endcase
 end
+
+pro spd_ui_help_ts07
+  GETRESOURCEPATH, path ; start at the resources folder
+  ts07_info = path + PATH_SEP() + 'ts07_info.txt'
+  if file_test(ts07_info, /READ) then begin
+    xdisplayfile, ts07_info, done_button='CLOSE', height=50, /modal, title='TS07 model coefficient files'
+  endif else begin
+
+  endelse
+
+end
+
 ; Name:
 ;    spd_ui_field_models_event
 ;    
@@ -511,9 +523,13 @@ pro spd_ui_field_models_event, event
                         't04s': begin
                             tt04s, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors
                         end 
-                        'ts07': begin
-                            tts07, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors
-                        end
+                        'ts07': begin                          
+                            paramfile = widget_info(event.top, find_by_uname='paramdir')
+                            widget_control, paramfile, get_value = dirName
+                            paramfile = widget_info(event.top, find_by_uname='paramfile')
+                            widget_control, paramfile, get_value = fileName
+                            tts07, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors, param_dir=dirName, param_file=fileName
+                        end        
                         'igrf': begin
                             tt89, var_to_map, newname=model_var[0], /igrf_only, error=model_errors
                         end
@@ -598,6 +614,21 @@ pro spd_ui_field_models_event, event
             widget_control, settilt_wid, get_value = tilt_to_set
             state.userSetTilt = ptr_new(tilt_to_set)
             Widget_Control, event.top, set_uvalue = ptr_new(state), /no_copy
+        end
+        'pdLabel': begin
+          ; Select ts07 parameter directory
+          dirName = Dialog_Pickfile(Title='Select TS07 parameters directory:', /directory, Filter='*.*', Path=!spedas.geopack_param_dir)
+          paramdir = widget_info(event.top, find_by_uname='paramdir')
+          widget_control, paramdir, set_value = dirName
+        end
+        'pfLabel': begin
+          ; Select ts07 parameter file
+          fileName = Dialog_Pickfile(Title='Select TS07 coefficients file:', Filter='*.*', Path=!spedas.geopack_param_dir)
+          paramfile = widget_info(event.top, find_by_uname='paramfile')
+          widget_control, paramfile, set_value = fileName
+        end
+        'ts07info': begin
+            spd_ui_help_ts07
         end
         'CLOSE': begin
             if obj_valid(state.fieldModelSettings) then begin
@@ -721,18 +752,21 @@ pro spd_ui_field_models, info
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;;;;;;;;;;;;;;;;;;; Tsyganenko 07 tab ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     t07base = Widget_Base(tabBase, col=2, title='TS07', tab_mode = 1, event_pro='spd_ui_field_models_event')
-    swBase07 = Widget_Base(t07base, /col, xsize=180)
-    swLabel = Widget_Label(swBase07, value='Solar wind parameters:', /align_left)
-    imfByButton = Widget_Button(swBase07, value='IMF By (GSM)', uname='imfby', uval='IMFBY', tooltip = 'Select a variable containing IMF By data')
-    imfBzButton = Widget_Button(swBase07, value='IMF Bz (GSM)', uname='imfbz', uval='IMFBZ', tooltip = 'Select a variable containing IMF Bz data')
-    protonDensityButton = Widget_Button(swBase07, value='Proton density', uname='protondensity', uval='PROTONDENSITY', tooltip = 'Select a variable containing solar wind density data')
-    protonVelocityButton = Widget_Button(swBase07, value='Proton speed', uname='protonvelocity', uval='PROTONVELOCITY', tooltip = 'Select a variable containing solar wind speed data')
-    magBase07 = Widget_Base(t07base, /col, xsize=180)
-    magnetoPLabel = Widget_Label(magBase07, value='Magnetospheric parameters:', /align_left)
-    DstButton = Widget_Button(magBase07, value='Dst', uname='dst', uval='DST', tooltip = 'Select a variable containing Dst data')
-    WcoeffButton = Widget_Button(magBase07, value='W-coefficients (optional)', uname='wcoeff', uval='WCOEFF', tooltip = 'Select a variable containing the W-coefficients. If not set, the appropriate W coefficients will be calculated by Geopack')
-
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    swBase07 = Widget_Base(t07base, /col)
+    
+    pdLabel1 = Widget_Label(swBase07, value='Directory with TS07 parameter files:', /align_left)
+    t07pdbase = Widget_Base(swBase07, col=2)
+    paramdir = Widget_text(t07pdbase, uname='paramdir', uval='paramdir', value=!spedas.geopack_param_dir, /editable, /align_left, SCR_XSIZE=200, units=0)     
+    pdLabel = Widget_Button(t07pdbase, uname='pdLabel', uval='pdLabel', value='Select')  
+            
+    pfLabel1 = Widget_Label(swBase07, value='TS07 coefficients file:', /align_left)
+    t07pfbase = Widget_Base(swBase07, col=2)
+    paramfile = Widget_text(t07pfbase, uname='paramfile', uval='paramfile', value='', /editable, /align_left, SCR_XSIZE=200, units=0)
+    pfLabel = Widget_Button(t07pfbase, uname='pfLabel', uval='pfLabel', value='Select')    
+    
+    swLabel3 = Widget_Label(swBase07, value='', /align_left)
+    pfLabel4 = Widget_Button(swBase07, uname='ts07info', uval='ts07info', value=' Information', /align_left)    
+    
     ;;;;;;;;;;;;;;;;;;;;; Tsyganenko-Sitnov 04 tab ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     t04base = Widget_Base(tabBase, col=2, title='TS04', tab_mode = 1, event_pro='spd_ui_field_models_event')
     swBase04 = Widget_Base(t04base, /col, xsize=180)
@@ -879,5 +913,6 @@ pro spd_ui_field_models, info
     Widget_Control, tlb, set_uvalue = ptrState, /no_copy
     centertlb, tlb
     Widget_Control, tlb, /realize
+    spd_ui_field_models_model_params, tlb, 'ts07'
     XManager, 'spd_ui_field_models', tlb, /no_block
 end

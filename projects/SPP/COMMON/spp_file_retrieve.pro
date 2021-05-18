@@ -1,9 +1,9 @@
 ;+
 ; Written by Davin Larson
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-04-28 16:55:34 -0700 (Tue, 28 Apr 2020) $
-; $LastChangedRevision: 28618 $
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2021-05-17 14:48:58 -0700 (Mon, 17 May 2021) $
+; $LastChangedRevision: 29966 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_file_retrieve.pro $
 ;
 ; Function:  files = spp_file_retrieve(PATHNAME)
@@ -171,7 +171,8 @@ function spp_file_retrieve,pathname,trange=trange,ndays=ndays,nhours=nhours,verb
     if source_key EQ 'FIELDS' then begin
       for i = 0, n_elements(pathnames) - 1 do begin
         if strpos(pathnames[i], '/l1b/') EQ -1 and $
-          strpos(pathnames[i], '/l2/') EQ -1 then $
+          strpos(pathnames[i], '/l2/') EQ -1 and $
+          strpos(pathnames[i], '/l3/') EQ -1 then $
           pathnames[i] = str_sub(pathnames[i], 'dfb_wf_', 'dfb_wf')
       endfor
     endif
