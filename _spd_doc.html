@@ -2,17 +2,17 @@
 <html>
  
 <head>
-<TITLE>SPEDAS SW Help for spdsw_r29969_2021-05-19</TITLE>
+<TITLE>SPEDAS SW Help for spdsw_r29980_2021-05-20</TITLE>
 </head>
  
 <body>
-<H2>SPEDAS SW Help for spdsw_r29969_2021-05-19</H2>
+<H2>SPEDAS SW Help for spdsw_r29980_2021-05-20</H2>
 <P>
 This page was created by the IDL library routine 
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed May 19 18:15:56 2021.<P>
+<STRONG>Last modified: </STRONG>Thu May 20 18:16:18 2021.<P>
  
 <HR>
  
@@ -305,6 +305,8 @@ projects/cassini/examples</A>
 <LI><A HREF="projects/cluster/aspoc_spd_doc_list.html">projects/cluster/aspoc
 </A>
 <LI><A HREF="projects/cluster/cis_spd_doc_list.html">projects/cluster/cis</A>
+<LI><A HREF="projects/cluster/cluster_science_archive_spd_doc_list.html">
+projects/cluster/cluster_science_archive</A>
 <LI><A HREF="projects/cluster/common_spd_doc_list.html">projects/cluster/common
 </A>
 <LI><A HREF="projects/cluster/dwp_spd_doc_list.html">projects/cluster/dwp</A>
@@ -1073,6 +1075,18 @@ CHECKSUM_16BITS</A>
 CLEAR_ESA_COMMON_BLOCKS">CLEAR_ESA_COMMON_BLOCKS</A>
 <LI><A HREF="projects/cluster/common_spd_doc_list.html#CL_CONFIG">CL_CONFIG</A>
 <br>This procedure serves as the Cluster configuration file.  It sets global (system)
+<LI><A HREF="projects/cluster/cluster_science_archive_spd_doc_list.html#
+CL_CSA_CONFIG">CL_CSA_CONFIG</A>
+<br>This procedure serves as the Cluster configuration file.  It sets global (system)
+<LI><A HREF="projects/cluster/cluster_science_archive_spd_doc_list.html#
+CL_CSA_INIT">CL_CSA_INIT</A>
+<br>Initializes system variables for Cluster. Can be called from idl_startup to set
+<LI><A HREF="projects/cluster/cluster_science_archive_spd_doc_list.html#
+CL_CSA_READ_CONFIG">CL_CSA_READ_CONFIG</A>
+<br>Reads the plug-in configuration file (cl_config.txt) for Cluster
+<LI><A HREF="projects/cluster/cluster_science_archive_spd_doc_list.html#
+CL_CSA_SET_VERBOSE">CL_CSA_SET_VERBOSE</A>
+<br>Sets verbose level in !cluster_csa.verbose and in tplot_options
 <LI><A HREF="projects/cluster/common_spd_doc_list.html#CL_INIT">CL_INIT</A>
 <br>Initializes system variables for Cluster. Can be called from idl_startup to set
 <LI><A HREF="projects/cluster/aspoc_spd_doc_list.html#CL_LOAD_ASPOC">
@@ -1082,6 +1096,15 @@ CL_LOAD_ASPOC</A>
 <br>Load data from the Cluster Ion Spectroscopy experiment (CIS)
 <LI><A HREF="projects/cluster/examples_spd_doc_list.html#CL_LOAD_CRIB">
 CL_LOAD_CRIB</A>
+<LI><A HREF="projects/cluster/cluster_science_archive_spd_doc_list.html#
+CL_LOAD_CSA[1]">CL_LOAD_CSA[1]</A>
+<br>Unpacks .tar.gz or .tgz files downloaded from CSA web services, loads CDF data into tplot variables, and optionally deletes
+<LI><A HREF="projects/cluster/cluster_science_archive_spd_doc_list.html#
+CL_LOAD_CSA[2]">CL_LOAD_CSA[2]</A>
+<br>Load Cluster data via one of the Cluster Science Archive web services
+<LI><A HREF="projects/cluster/cluster_science_archive_spd_doc_list.html#
+CL_LOAD_CSA_CRIB">CL_LOAD_CSA_CRIB</A>
+<br>Demonstrate use of cl_load_csa routine by getting lists of valid probes and datatypes, then
 <LI><A HREF="projects/cluster/common_spd_doc_list.html#CL_LOAD_DATA">
 CL_LOAD_DATA</A>
 <br>Load Cluster data from NASA/SPDF
