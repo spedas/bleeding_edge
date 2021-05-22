@@ -113,8 +113,8 @@
 ; 04-Apr-2012, clrussell, Added units to the data_att structure
 ; 
 ; $LastChangedBy: crussell $
-; $LastChangedDate: 2021-04-02 10:59:10 -0700 (Fri, 02 Apr 2021) $
-; $LastChangedRevision: 29846 $
+; $LastChangedDate: 2021-05-21 09:29:27 -0700 (Fri, 21 May 2021) $
+; $LastChangedRevision: 29984 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_gmag.pro $
 ;-
 
@@ -247,14 +247,17 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
     vsnames_c = 'anna back cont daws eski fchp fchu gull isll lgrr mcmu mstk norm osak '+$
             'oxfo pols rabb sach talo thrf vulc weyb wgry'
     vsnames_c_arr = strsplit(vsnames_c, ' ', /extract)
-    vsnames_b = 'M65_279 M67_292 M70_039 M72_078 M77_077 M78_337 M79_336 M80_077 '+ $
-      'M81_338 M83_348 M84_336 M85_002 M87_028 M87_068 M88_316 M73_159 '+ $
-      'M74_043 M81_003 M83_347 M85_096 M66_294 M68_041 M69_041 M70_044 '+ $
-      'M77_040 M65-297'
+    vsnames_b = 'M65-297 M66-294 M67-292 M78-337 M79-336 M81-003 M81-338 ' + $
+      'M83-247 M83-348 M84-336 M85-002 M85-096 M87-028 M87-069 M88-316'
+;    'M65-279 M67_292 M70_039 M72_078 M77_077 M78_337 M79_336 M80_077 '+ $
+;      'M81_338 M83_348 M84_336 M85_002 M87_028 M87_068 M88_316 M73_159 '+ $
+;      'M74_043 M81_003 M83_347 M85_096 M66_294 M68_041 M69_041 M70_044 '+ $
+;      'M77_040 M65-297'
     vsnames_b_arr = strsplit(vsnames_b, ' ', /extract)
-    vsnames_all = [vsnames_arr, vsnames_g_arr, vsnames_c_arr, vsnames_b_arr]
+    vsnames_b_arr_low = strlowcase(vsnames_b_arr)
+    vsnames_all = [vsnames_arr, vsnames_g_arr, vsnames_c_arr, vsnames_b_arr_low]
   Endelse
-   
+  
   If(keyword_set(site)) Then site_in = site 
 
   if n_elements(site_in) eq 1 then begin
@@ -322,10 +325,12 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
     endif
     
     if keyword_set(bas_sites) then begin
-      site_in = array_concat(['M65_279','M67_292','M70_039','M72_078','M77_077','M78_337', $
-        'M79_336','M80_077','M81_338','M83_348','M84_336','M85_002','M87_028','M87_068', $
-        'M88_316','M73_159','M74_043','M81_003','M83_347','M85_096','M66_294','M68_041', $
-        'M69_041','M70_044','M77_040','M65-297'],site_in)
+      site_in = array_concat(['M65-297','M66-294','M67-292','M78-337','M79-336','M81-003','M81-338', $
+        'M83-247','M83-348','M84-336','M85-002','M85-096','M87-028','M87-069','M88-316'],site_in)
+;        'M65_279','M67_292','M70_039','M72_078','M77_077','M78_337', $
+;        'M79_336','M80_077','M81_338','M83_348','M84_336','M85_002','M87_028','M87_068', $
+;        'M88_316','M73_159','M74_043','M81_003','M83_347','M85_096','M66_294','M68_041', $
+;        'M69_041','M70_044','M77_040','M65-297'],site_in)
     endif
 
   ; if this list of valid names changes, please also update version in thm_load_gmag
@@ -346,7 +351,7 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
   crsm_sites = ssl_check_valid_name(site_in, vsnames_c_arr, /ignore_case, /include_all, /no_warning)
   bas_sites = ssl_check_valid_name(site_in, vsnames_b_arr, /ignore_case, /include_all, /no_warning)
   bas_sites=strupcase(bas_sites)
-  
+ 
   ; If no sites are valid issue a warning to the user
   ; Not using the default warning issued by ssl_check_valid_name above because that step needs to check green and thm sites separately
   ; We don't want to issue a warning unless site is neither thm nor green.
@@ -354,12 +359,13 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
   sites_found = is_string(crsm_sites) || is_string(green_sites) || is_string(thm_sites) || is_string(bas_sites)
   tempallsites = ssl_check_valid_name(site_in, vsnames_all[sort(vsnames_all)],/ignore_case, $
                            /include_all, invalid=msg_site, type='site name', no_warning=sites_found)
-  
+
   If(keyword_set(valid_names)) Then Begin ;need to handle valid_names here too, jmm, 4-may-2009
     thm_load_greenland_gmag, site = gsites, datatype = datatype, $
       level = level, suffix=suffix, /valid_names
     thm_load_carisma_gmag, site = csites, datatype = datatype, $
-      level = level, suffix=suffix, /valid_names
+      level = level, suffix=suffix, /valid_names 
+;    thm_load_bas_gmag, site = strupcase(bsites), /valid_names
     thm_load_bas_gmag, site = bsites, /valid_names
     thm_load_xxx, sname = tsites, datatype = datatype, $
       level = level, /valid_names, vsnames = vsnames, $
@@ -423,8 +429,9 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
   Endif
 
   If(is_string(bas_sites)) Then Begin
+stop
       thm_load_bas_gmag, site=bas_sites, trange=trange, no_download=no_download, suffix=suffix, $
-                         files=files
+                         files=files                    
   Endif
 
   If(is_string(thm_sites)) Then Begin

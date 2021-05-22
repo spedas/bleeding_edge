@@ -2,6 +2,7 @@ aari|AARI||
 asi|ASI||
 autu|AUTUMN||
 autx|AUTUMNX||
+bas|BAS||
 carisma|CARISMA||
 cgsm|CGSM||
 dtu|DTU||
@@ -308,29 +309,17 @@ kyoto|KYOTO|ykc|Yellowknife, NT
 nrcan|NRCan|ykc|Yellowknife, NT
 aeold|Themis AE (pre 2015)|yknf|Yellowknife, NT
 gbo|Themis GBO|yknf|Yellowknife, NT
-asi|ASI|yknf|Yellowknife, NT
+bas|BAS|M65_297|Antarctica
+bas|BAS|M66_294|Antarctica
 bas|BAS|M67_292|Antarctica
-bas|BAS|M70_039|Antarctica
-bas|BAS|M72_078|Antarctica
-bas|BAS|M77_077|Antarctica
-bas|BAS|M78_337|Antarctica
+bas|BAS|M78-337|Antarctica
 bas|BAS|M79_336|Antarctica
-bas|BAS|M80_077|Antarctica 
-bas|BAS|M81_338|Antarctica
+bas|BAS|M81_003|Antarctica
+bas|BAS|M83_247|Antarctica
 bas|BAS|M83_348|Antarctica
 bas|BAS|M84_336|Antarctica
 bas|BAS|M85_002|Antarctica
-bas|BAS|M87_028|Antarctica
-bas|BAS|M87_068|Antarctica
-bas|BAS|M88_316|Antarctica
-bas|BAS|M73_159|Antarctica 
-bas|BAS|M74_043|Antarctica
-bas|BAS|M81_003|Antarctica
-bas|BAS|M83_347|Antarctica
 bas|BAS|M85_096|Antarctica
-bas|BAS|M66_294|Antarctica
-bas|BAS|M68_041|Antarctica
-bas|BAS|M69_041|Antarctica
-bas|BAS|M70_044|Antarctica 
-bas|BAS|M77_040|Antarctica
-bas|BAS|M65-297|Antarctica
+bas|BAS|M87_028|Antarctica
+bas|BAS|M87_069|Antarctica
+bas|BAS|M88_316|Antarctica
