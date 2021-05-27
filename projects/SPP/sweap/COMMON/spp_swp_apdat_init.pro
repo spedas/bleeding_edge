@@ -1,7 +1,7 @@
 ;+
-; $LastChangedBy: ali $
-; $LastChangedDate: 2020-10-07 14:42:50 -0700 (Wed, 07 Oct 2020) $
-; $LastChangedRevision: 29220 $
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2021-05-26 17:06:40 -0700 (Wed, 26 May 2021) $
+; $LastChangedRevision: 29993 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_apdat_init.pro $
 ;-
 
@@ -212,7 +212,7 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
   spp_apdat_info,'7c1'x,name='usrlog_msg',apid_obj='spp_swp_log_msg_apdat'     ,tname='usrlog_',  save_flag=save_flag,ttags='SEQN MSG',   rt_flag=rt_flag
   ;   spp_apdat_info,'7c0'x,name='log_msg',routine='spp_log_msg_decom'     ,tname='log_',  save_flag=save_flag,ttags='MSG',   rt_flag=rt_flag
   ;   spp_apdat_info,'7c1'x,name='usrlog_msg',routine='spp_log_msg_decom'     ,tname='usrlog_',  save_flag=save_flag,ttags='SEQN MSG',   rt_flag=rt_flag
-  spp_apdat_info,'7c3'x,name='manip', routine='spp_swp_manip_decom'   ,tname='manip_', ttags='*POS',save_flag=save_flag,rt_flag=rt_flag
+  spp_apdat_info,'7c3'x,name='manip', routine='spp_swp_manip_decom'   ,tname='manip_', ttags='*',save_flag=save_flag,rt_flag=rt_flag
   spp_apdat_info,'7c4'x,name='swemulator', apid_obj='spp_swp_swemulator_apdat'   ,tname='swemul_tns_',ttags='*',save_flag=save_flag,rt_flag=rt_flag
 
 
