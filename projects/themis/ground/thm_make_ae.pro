@@ -62,9 +62,9 @@
 ;                   field prior to index calculation, 4-nov-2013, jmm
 ;                   Added new site list for 2015 and later 22-may-2015, clr
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2015-08-24 12:33:21 -0700 (Mon, 24 Aug 2015) $
-; $LastChangedRevision: 18592 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-05-30 22:45:03 -0700 (Sun, 30 May 2021) $
+; $LastChangedRevision: 30015 $
 ; $URL $
 ;-
 
@@ -166,17 +166,21 @@ If(keyword_set(max_deviation)) Then Begin
     Endif Else max_dev = max_deviation
 Endif Else max_dev = [-1500., 1500.]
 nstat = n_elements(stations)
+min_despike_datapoints=10
 For j = 0, nstat-1 Do Begin
     get_data, stations[j], data=dd
-    dd0 = dd
-    t = dd.x & dt = t[1:*]-t
-    yj = dd.y[*, 0]
-    median_dt = median(dt)
-    spike_test_width = (long(120.1/median_dt)+1) >3 ;typically 2 minutes
-    yj = simple_despike_1d(yj, spike_threshold = 3, width = spike_test_width)
-    xclip, max_dev[0], max_dev[1], yj, /clip_adjacent
-    dd.y[*, 0] = yj
-    store_data, stations[j], data = dd
+    if n_elements(dd.x) ge 10 then begin
+       t = dd.x & dt = t[1:*]-t
+       yj = dd.y[*, 0]
+       median_dt = median(dt)
+       spike_test_width = (long(120.1/median_dt)+1) >3 ;typically 2 minutes
+       yj = simple_despike_1d(yj, spike_threshold = 3, width = spike_test_width)
+       xclip, max_dev[0], max_dev[1], yj, /clip_adjacent
+       dd.y[*, 0] = yj
+       store_data, stations[j], data = dd
+    endif else begin
+      dprint, 'Station ' + stations[j] + ' has fewer than '+ string(min_despike_datapoints)+ ' samples, skipping despike.'
+    endelse
 Endfor
 
 ; calculate indices

@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-02-15 23:03:32 -0800 (Mon, 15 Feb 2021) $
-; $LastChangedRevision: 29657 $
+; $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
+; $LastChangedRevision: 30010 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_save_reduce_timeres.pro $
 
 ;20160623 Ali
@@ -87,7 +87,7 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
     endif
 
     if file_test(fullres_file,/regular) eq 0 then begin
-      dprint,verbose=verbose,dlevel=2,fullres_file+' Not found. Skipping
+      dprint,verbose=verbose,dlevel=2,fullres_file+' Not found. Skipping...
       continue
     endif
 
@@ -102,10 +102,11 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
     if keyword_set(timestamp) then target_timestamp = time_double(timestamp) < target_timestamp
 
     if prereq_timestamp lt target_timestamp then continue    ; skip if lowres L1 does not need to be regenerated
-    dprint,dlevel=1,'Generating new file: '+redures_file
+    dprint,verbose=verbose,dlevel=3,'Generating new file: '+redures_file
 
     f = fullres_file
     if file_test(/regular,f) eq 0 then continue
+    dprint,verbose=verbose,dlevel=2,'Loading '+file_info_string(f)
     restore,f
     source_filename=f
 
@@ -143,6 +144,7 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
     file_mkdir2,file_dirname(redures_file)
     save,filename=redures_file,verbose=verbose,s1_hkp,s1_svy,s1_arc,s1_nse,s2_hkp,s2_svy,s2_arc,s2_nse,m1_hkp,m2_hkp,$
       ap20,ap21,ap22,ap23,ap24,source_filename,sw_version,prereq_info,spice_info,description=description
+    dprint,verbose=verbose,dlevel=1,'Saved   '+file_info_string(redures_file)
 
   endfor
 

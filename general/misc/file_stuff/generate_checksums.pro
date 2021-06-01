@@ -27,11 +27,15 @@
 ; License:
 ;   All users are granted permission to use this unaltered code.
 ;   It may NOT be modified without the consent of the author. However the author welcomes input for bug fixes or upgrades.
+;
+; $LastChangedBy: ali $
+; $LastChangedDate: 2021-05-30 19:48:04 -0700 (Sun, 30 May 2021) $
+; $LastChangedRevision: 30012 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_stuff/generate_checksums.pro $
 ;-
 
 
 function file_search_pattern,pathname,recurse_pattern,pattern=pattern,count=count,_extra = ex
-
 
   message,'Not working yet'
   dprint,pathname,recurse_pattern,pattern,/phelp
@@ -73,11 +77,8 @@ function file_search_pattern,pathname,recurse_pattern,pattern=pattern,count=coun
 end
 
 
-
-
 pro generate_checksums,startpath,FILE_PATTERN=FILE_PATTERN,DIR_PATTERN=DIR_PATTERN,recurse_limit=recurse_limit,checksum_file=checksum_file, $
     verbose=verbose,tab=tab,force_regen=force_regen,full_path=full_path,include_directory=include_directory,delete_old_version_pattern=delete_old_version_pattern
-
 
 if keyword_set(delete_old_version_pattern) then begin   ; typical pattern is '_v??_r??.???'  or '_r??.???'
   if strpos(delete_old_version_pattern,'*') ge 0 then message,'"*" not allowed in pattern:  '+old_Version_pattern
@@ -89,7 +90,7 @@ if keyword_set(delete_old_version_pattern) then begin   ; typical pattern is '_v
   old_ind = where(ind,n_old)
   old_files= n_old eq 0 ? '' : files[old_ind]
   count = n_old
-  dprint,'files to be deleted:',old_files
+  dprint,'files to be deleted:',file_info_string(old_files)
 ; file_delete,old_files
 endif
 
@@ -143,7 +144,6 @@ endif else begin
 
 endelse
 
-
 if nfiles ne 0  then begin 
   if file_test(/directory,/write,startpath) then begin
     sum_info = file_info(startpath+checksum_file)
@@ -163,7 +163,6 @@ if nfiles ne 0  then begin
     dprint,dlevel=2,verbose=verbose,tab+startpath+' Found '+strtrim(nfiles,2)+' files, but can not write to directory. '
   endelse
 endif
-
 
 end
 

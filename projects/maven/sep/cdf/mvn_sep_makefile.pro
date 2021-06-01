@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-02-15 23:10:00 -0800 (Mon, 15 Feb 2021) $
-; $LastChangedRevision: 29658 $
+; $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
+; $LastChangedRevision: 30010 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/cdf/mvn_sep_makefile.pro $
 ; $ID: $
 
@@ -19,7 +19,7 @@ pro mvn_sep_make_cdf_wrap,cal=cal,raw=raw,sepnum=sepnum,source_files=source_file
   if lri.mtime lt max([source_fi.mtime,source_fi.ctime]) then begin
     mvn_sep_load,/use_cache,files=source_files,trange=trange,/L1
     nextrev_fname = mvn_pfp_file_next_revision(lastrev_fname)
-    dprint,dlevel=1,'Generating L2 file: '+nextrev_fname
+    dprint,dlevel=2,'Generating L2 file: '+nextrev_fname
     sepdata = sepnum eq 1 ? *sep1_svy.x : *sep2_svy.x
     if keyword_set(cal) then begin
       ;if keyword_set(bkgfile) and file_test(/regular,bkgfile) then restore,file=bkgfile,/verb
@@ -108,9 +108,10 @@ pro mvn_sep_makefile,init=init,trange=trange0
     if prereq_timestamp gt target_timestamp then begin    ; skip if L1 does not need to be regenerated
       if tr[0] lt systime(1)-100l*24l*3600l then message,'L0 files changed more than 100 days in the past!!! Exiting... '+l0_files
       mvn_sep_load,/l0,files = l0_files
-      dprint,dlevel=1,'Generating L1 file: '+L1_filename
+      dprint,dlevel=2,'Generating L1 file: '+L1_filename
       prereq_info = file_checksum(prereq_files,/add_mtime)
       mvn_sep_var_save,l1_filename,prereq_info=prereq_info,description=description
+      dprint,dlevel=1,'Saved '+file_info_string(l1_filename)
       ;    mvn_mag_var_save
     endif  ; else begin
     ;    mvn_sep_var_restore,trange=tr ,prereq=prereq_info  ;,filename=l1_filename

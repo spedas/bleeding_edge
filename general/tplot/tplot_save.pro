@@ -20,8 +20,8 @@
 ;LAST MODIFICATION:     tplot_save.pro   97/05/14
 ;
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-03-05 13:17:11 -0800 (Thu, 05 Mar 2020) $
-; $LastChangedRevision: 28378 $
+; $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
+; $LastChangedRevision: 30010 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_save.pro $
 ;-
 pro tplot_save,handlenames,filename=filename,limits=limits,compress=compress,no_add_extension=no_add_extension,verbose=verbose
@@ -60,5 +60,5 @@ if size(/type,filename) ne 7 then filename = 'saved'
 if n_elements(tplot_vars) gt 0 then tv = tplot_vars else tv = 0
 file_mkdir2,file_dirname(filename)
 save,dq,tv,file=filename+filesuf,compress=compress,verbose=verbose
-dprint,dlevel=1,'Saved tplot file: '+filename+filesuf
+dprint,dlevel=1,'Saved tplot file '+file_info_string(filename+filesuf)
 end

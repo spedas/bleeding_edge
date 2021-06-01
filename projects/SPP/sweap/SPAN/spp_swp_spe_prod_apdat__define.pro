@@ -1,8 +1,8 @@
 ;+
 ; spp_swp_spe_prod_apdat
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-08-24 21:48:08 -0700 (Mon, 24 Aug 2020) $
-; $LastChangedRevision: 29072 $
+; $LastChangedDate: 2021-05-30 19:41:21 -0700 (Sun, 30 May 2021) $
+; $LastChangedRevision: 30006 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spe_prod_apdat__define.pro $
 ;-
 
@@ -121,120 +121,11 @@ function spp_swp_spe_prod_apdat::decom,ccsds ,source_dict=source_dict  ;,ptp_hea
     return, !null
   endif
 
+  spp_swp_span_prod__define,str,ccsds
+
   if ccsds.aggregate ne 0 then begin
-    return, self.decom_aggregate(ccsds,source_dict=source_dict)
+    return, self.decom_aggregate(ccsds,str=str,source_dict=source_dict)
   endif
-
-
-  if 1 then begin    ; New merged method
-
-    spp_swp_span_prod__define,str,ccsds
-
-  endif else begin
-    message,'Obsolete'
-    archive = ccsds.apid and '8'x                ; archive packet determined from the apid  for spane
-    ccsds_data = spp_swp_ccsds_data(ccsds)
-
-    if pksize ne n_elements(ccsds_data) then begin
-      dprint,dlevel=1,'Product size mismatch'
-      return,!null
-    endif
-
-    header    = ccsds_data[0:19]
-    ns = pksize - 20
-
-    ; Format for log_flag is LCCSNNNN
-    ; L = 1 = Log Compress on ON
-    ; CC = Meaningless
-    ; S = 0 if Arch is Sampling
-    ; S = 1 if Arch is Summing
-    ; NNNN = the number of accumulation periods (1/4 NYS) for Archive.
-    log_flag  = header[12] ; this should be << = (ishft(header[13],-7) AND 1) >>
-    smp_flag = (ishft(header[12],-4) AND 1)
-    srvy_accum = (header[12] AND 15)
-
-    if archive then begin
-      mode1 = header[13]
-      arch_sum  = 0
-
-    endif else begin    ; survey packet
-      ; Format here is 000SNNNN
-      ; S = 0 if Arch is Sampling
-      ; S = 1 if Arch is Summing
-      ; NNNN = the number of accumulation periods (1/4 NYS) for Archive.
-      mode1 = 0
-      arch_sum  = header[13]
-      arch_smp_flag = ishft(header[13],-4) ; shift four bits to get 5th bit.
-      arch_accum = (header[13] AND 15) ; remove the lower 4 bits.
-      tot_accum_prd = 2 ^ (arch_accum + srvy_accum) ; in 1/4 NYS accumulation periods.
-    endelse
-
-    mode2 = (swap_endian(uint(ccsds_data,14) ,/swap_if_little_endian ))
-    tmode = mode2 and 'ff'x
-    emode = ishft(mode2 ,-8)
-    f0 = (swap_endian(uint(header,16), /swap_if_little_endian))
-    status_bits = header[18]
-    peak_bin = header[19]
-    num_accum = 2 ^(header[12] and 'f'x)
-
-    compression = (log_flag and 'a0'x) ne 0
-    bps =  ([4,1])[ compression ]
-
-    ndat = ns / bps
-
-    if ns gt 0 then begin
-      data      = ccsds_data[20:*]
-      ; data_size = n_elements(data)
-      if compression then    cnts = float( spp_swp_log_decomp(data,0) ) $
-      else    cnts = float(swap_endian(ulong(data,0,ndat) ,/swap_if_little_endian ))
-      tcnts = total(cnts)
-    endif else begin
-      tcnts = -1.
-      cnts = 0.
-    endelse
-
-    product_type = 0
-
-    str = { $
-      time:        ccsds.time, $
-      met:         0d, $
-      ;    epoch:      0LL,  $
-      f0:           f0,$
-      apid:        ccsds.apid, $
-      source:      0UL,   $
-      time_delta:  ccsds.time_delta, $
-      seqn:        ccsds.seqn,  $
-      seqn_delta:  ccsds.seqn_delta,  $
-      seq_group:   ccsds.seq_group,  $
-      pkt_size :   ccsds.pkt_size,  $
-      ndat:        ndat, $
-      datasize:    ns, $
-      log_flag:    log_flag, $
-      smp_flag:    smp_flag, $
-      srvy_accum:  srvy_accum, $
-      mode1:       mode1,  $
-      arch_sum:    arch_sum, $
-      arch_smp_flag:  arch_sum_flag, $
-      arch_accum:  arch_accum, $
-      tot_accum_prd:  tot_accum_prd, $
-      mode2:       mode2,  $
-      tmode:       tmode, $
-      emode:       emode, $
-      product_type: product_type,  $
-      status_bits: status_bits,$
-      peak_bin:    peak_bin, $
-      cnts:  tcnts,  $
-      ano_spec:  fltarr(16),  $
-      nrg_spec:    fltarr(32),  $
-      def_spec:    fltarr(8) ,  $
-      nrg_vals:    fltarr(32),  $
-      ;  full_spec:   fltarr(256), $
-      pdata:        ptr_new(cnts), $
-      gap:         ccsds.gap  }
-
-  endelse
-
-
 
   return,str
 end

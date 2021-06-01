@@ -2,8 +2,8 @@
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-12-22 16:00:17 -0800 (Tue, 22 Dec 2020) $
-; $LastChangedRevision: 29551 $
+; $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
+; $LastChangedRevision: 30010 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -132,7 +132,7 @@ pro spp_gen_apdat::increment_counters,ccsds
 end
 
 
-function spp_gen_apdat::decom_aggregate,ccsds0,source_dict=source_dict
+function spp_gen_apdat::decom_aggregate,str=str,ccsds0,source_dict=source_dict
 
   n = ccsds0.aggregate
 
@@ -145,7 +145,8 @@ function spp_gen_apdat::decom_aggregate,ccsds0,source_dict=source_dict
     new_header = buffer[0:17]
     data_size = (ccsds.pkt_size - 18) / n
     dprint,'aggregate:',n,data_size,ccsds0.apid,dlevel=self.dlevel+3
-    delt = .87 * 2               ; needs fixing
+    delt=str.time_total
+    ;delt = .87 * 2               ; needs fixing
     delseqn = 1                               ; needs fixing
     for i=0,n-1 do begin
       new_buffer= [new_header,buffer[18+i*data_size:18+i*data_size+data_size-1]]
@@ -237,8 +238,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-12-22 16:00:17 -0800 (Tue, 22 Dec 2020) $
-; $LastChangedRevision: 29551 $
+; $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
+; $LastChangedRevision: 30010 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 function spp_gen_apdat::sw_version
@@ -255,8 +256,8 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: ali $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2020-12-22 16:00:17 -0800 (Tue, 22 Dec 2020) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 29551 $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 30010 $'
 
     return,sw_hash
 end
@@ -298,8 +299,8 @@ function spp_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: ali $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2020-12-22 16:00:17 -0800 (Tue, 22 Dec 2020) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 29551 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 30010 $'
 
   return,global_att
 end
@@ -420,7 +421,6 @@ pro spp_gen_apdat::cdf_makefile,trange=trange,verbose=verbose,filename=filename,
     endif
     if keyword_set(self.cdf_linkname) then cdf.linkname=root_data_dir()+self.cdf_linkname
     if keyword_set(parents) then cdf.g_attributes['Parents'] = parents
-    ;    dprint,dlevel=self.dlevel,verbose=verbose,
     cdf.write,filename,verbose = verbose    ; isa(verbose) ? verbose : self.verbose
     obj_destroy,cdf
   endif
@@ -445,9 +445,9 @@ pro spp_gen_apdat::sav_makefile,sav_format=sav_format,parent=parent,verbose=verb
     filename=time_string(trange[0],tformat=sav_format)
     filename=root_data_dir()+str_sub(filename,'$NAME$',self.name)
     file_mkdir2,file_dirname(filename)
-    ;dprint,'Saving file: '+filename
+    dprint,dlevel=3,'Saving '+filename
     save,file=filename,self,parent,verbose=verbose,/compress
-    dprint,'Saved file: "'+filename+'" Size: '+strtrim((file_info(filename)).size/1e3,2)+' KB'
+    dprint,dlevel=1,'Saved '+file_info_string(filename)
   endfor
 end
 

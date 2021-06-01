@@ -1,8 +1,8 @@
 ; buffer should contain bytes for a single ccsds packet, header is
 ; contained in first 3 words (6 bytes)
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-03-04 13:30:54 -0800 (Mon, 04 Mar 2019) $
-; $LastChangedRevision: 26753 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2021-05-30 19:41:21 -0700 (Sun, 30 May 2021) $
+; $LastChangedRevision: 30006 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/common/spp_swp_ccsds_decom.pro $
 
 ;
@@ -157,6 +157,8 @@ function spp_swp_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsd
   if isa(wrap_ccsds) then begin
     ccsds.source = wrap_ccsds.apid
     ccsds.aggregate = wrap_ccsds.content_aggregate
+    ccsds.time_delta = wrap_ccsds.time_delta
+    ccsds.compr_ratio = wrap_ccsds.compr_ratio
   endif
   if isa(source_dict) then begin
     if source_dict.haskey('source_info') then ccsds.source_hash = source_dict.source_info.input_sourcehash

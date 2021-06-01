@@ -1,4 +1,9 @@
 ;+
+; $LastChangedBy: ali $
+; $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
+; $LastChangedRevision: 30010 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/DPU/mvn_pfp_l0_file_read.pro $
+;
 ; Procedure: MVN_PFP_L0_FILE_READ   Routine for reading MAVEN L0 files
 ; Inputs (all optional)
 ; PATHNAME =   i.e. 'maven/dpu/prelaunch/ATLO/201?????_??????_atlo_l0.dat'   ; default
@@ -33,7 +38,7 @@ if n_elements(pfdpu) ne 0 then mvn_pfdpu_handler,reset=pfdpu,set_realtime=0
 if n_elements(static) ne 0 then mvn_sta_handler,reset=static
 ;if n_elements(lpw) ne 0 then mvn_lpw_handler,reset=lpw,set_realtime=0
 
-dprint,dlevel=2,'Start Loading file '+file
+dprint,dlevel=2,'Loading '+file_info_string(file)
 mvn_spc_apid_file_read,file=file,trange=trange
 
 dprint,'Data loaded in ',systime(1)-starttime,' seconds',dlevel=2

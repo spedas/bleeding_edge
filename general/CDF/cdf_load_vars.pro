@@ -135,8 +135,8 @@
 ;   Data is returned in pointer variables. Calling routine is responsible for freeing up heap memory - otherwise a memory leak will occur.
 ;
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-12-16 23:15:52 -0800 (Wed, 16 Dec 2020) $
-; $LastChangedRevision: 29532 $
+; $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
+; $LastChangedRevision: 30010 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_load_vars.pro $
 ; $ID: $
 ;-
@@ -150,7 +150,7 @@ function cdf_load_vars,files,varnames=vars,varformat=vars_fmt,info=info,verbose=
 vb = keyword_set(verbose) ? verbose : 0
 vars=''
 info = 0
-dprint,dlevel=4,verbose=verbose,'$Id: cdf_load_vars.pro 29532 2020-12-17 07:15:52Z ali $'
+dprint,dlevel=4,verbose=verbose,'$Id: cdf_load_vars.pro 30010 2021-05-31 02:45:35Z ali $'
 
 ;Get cdf version, hacked from read_myCDF, jmm, 2019-10-07
 CDF_LIB_INFO, VERSION=V, RELEASE=R, COPYRIGHT=C, INCREMENT=I
@@ -161,11 +161,12 @@ if cdfversion Lt '3.7.0' then readonly = 1b else readonly = 0b
 on_ioerror, ferr
 for fi=0,n_elements(files)-1 do begin
     if file_test(files[fi]) eq 0 then begin
-        dprint,dlevel=1,verbose=verbose,'File not found: "'+files[fi]+'"'
+        dprint,dlevel=1,verbose=verbose,'File not found: '+files[fi]
         continue
     endif
+    dprint,dlevel=2,verbose=verbose,'Loading '+file_info_string(files[fi])
     if (file_info(files[fi])).size eq 0 then begin
-      dprint,dlevel=1,verbose=verbose,'Zero file-size: "'+files[fi]+'"'
+      dprint,dlevel=1,verbose=verbose,'Zero file-size: '+files[fi]
       continue
     endif
     id=cdf_open(files[fi], readonly = readonly)
@@ -222,9 +223,6 @@ for fi=0,n_elements(files)-1 do begin
 ;            if vb ge 4 then printdat,/pgmtrace,depnames,width=200
        endif
     endif
-
-    ;dprint,dlevel=2,verbose=verbose,'Loading file: "'+files[fi]+'"'
-    dprint,dlevel=2,verbose=verbose,'Loading file: "'+files[fi]+'" Size: '+strtrim(((file_info(files[fi])).size)/1000,2)+' KB'
 
     for j=0,n_elements(vars2)-1 do begin
         w = (where( strcmp(info.vars.name, vars2[j]) , nw))[0]

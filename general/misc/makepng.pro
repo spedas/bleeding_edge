@@ -24,9 +24,10 @@
 ;  Current device should have readable pixels (ie. 'x' or 'z')
 ;
 ;Created by:  Davin Larson
-;FILE:  makepng.pro
-;VERSION:  1.11
-;LAST MODIFICATION:  02/11/06
+; $LastChangedBy: ali $
+; $LastChangedDate: 2021-05-30 19:48:04 -0700 (Sun, 30 May 2021) $
+; $LastChangedRevision: 30012 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/makepng.pro $
 ;-
 pro makepng,filename,multiple=multiple,close=close,ct=ct,no_expose=no_expose,  $
     mkdir=mkdir,window=window,suffix=suffix,timetag=timetag,verbose=verbose
@@ -85,5 +86,5 @@ pro makepng,filename,multiple=multiple,close=close,ct=ct,no_expose=no_expose,  $
     ;if !version.release ne '5.4' then $
     ;  write_gif,filename+'.gif',im,r,g,b,multiple=multiple
     if size(window,/type) lt 1 then window = !d.window
-    dprint,verbose=verbose,dlevel=2,'Created PNG: '+pngfile+'  from window '+strtrim(window,2)
+    dprint,verbose=verbose,dlevel=2,'Created PNG: '+file_info_string(pngfile)+' from window '+strtrim(window,2)
 end

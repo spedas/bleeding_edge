@@ -27,9 +27,9 @@
 ;                       Removed additional output text - Use dprint,debug=3  to restore text.   Nov 2008
 ;                       Fixed bug on macOS when saving figures of restored data using makepng/makegif/makejpg, 24-jan-2019, egrimes
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-11-23 10:28:45 -0800 (Mon, 23 Nov 2020) $
-; $LastChangedRevision: 29372 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
+; $LastChangedRevision: 30010 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_restore.pro $
 ;-
 pro tplot_restore,filenames=filenames,all=all,append=append,sort=sort,$
@@ -74,7 +74,7 @@ pro tplot_restore,filenames=filenames,all=all,append=append,sort=sort,$
       dprint,dlevel=1,'File '+filenames[i]+' Does not exist! Skipping.'
       continue
     endif
-    dprint,dlevel=2,'Restoring tplot file: '+filenames[i]
+    dprint,dlevel=2,'Restoring tplot file '+file_info_string(filenames[i])
     restore,filenames[i],/relaxed
     if keyword_set(tv) then begin
       chkverb = where(tag_names(tv.options) eq 'VERBOSE',verbosethere)

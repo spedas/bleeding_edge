@@ -1,7 +1,7 @@
 ;+
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2021-05-26 17:06:40 -0700 (Wed, 26 May 2021) $
-; $LastChangedRevision: 29993 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2021-05-30 19:17:01 -0700 (Sun, 30 May 2021) $
+; $LastChangedRevision: 29998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_apdat_init.pro $
 ;-
 
@@ -23,6 +23,7 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
   ;;#################
   ttags = 'SEQN*'
   spp_apdat_info,'081'x,name='sc_hkp_0x081',apid_obj = 'spp_sc_hk_0x081_apdat', tname = 'spp_sc_hkp_0x081_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
+  spp_apdat_info,'1c4'x,name='sc_hkp_0x1c4',apid_obj = 'spp_sc_hk_0x1c4_apdat', tname = 'spp_sc_hkp_0x1c4_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
   spp_apdat_info,'1c5'x,name='sc_hkp_0x1c5',apid_obj = 'spp_sc_hk_0x1c5_apdat', tname = 'spp_sc_hkp_0x1c5_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
   spp_apdat_info,'1de'x,name='sc_hkp_0x1de',apid_obj = 'spp_sc_hk_0x1de_apdat', tname = 'spp_sc_hkp_0x1de_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
   spp_apdat_info,'1df'x,name='sc_hkp_0x1df',apid_obj = 'spp_sc_hk_0x1df_apdat', tname = 'spp_sc_hkp_0x1df_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
@@ -79,7 +80,7 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
   ;;decom_routine_i = 'spp_swp_spani_product_decom'
   ;;decom_routine_i = 'spp_swp_spani_product_decom2'
   decom_routine_obj = 'spp_swp_spi_prod_apdat'
-  ttags = '*SPEC CNTS DATASIZE MODE2 *BITS SOURCE'
+  ttags = '*SPEC CNTS DATASIZE MODE2 *BITS SOURCE COMPR_RATIO NUM_* TIME_*'
   if not keyword_set(no_products) then begin
 
     ;;----------------------------------------------------------- Moments -------------------------------------------------------------------
@@ -181,8 +182,8 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
   ;;----------------------------------------------------------------------------------------------------------------------------------------
   ;; Memory Dump
   ;;----------------------------------------------------------------------------------------------------------------------------------------
-  spp_apdat_info,'36d'x,name='spa_memdump',apid_obj='spp_swp_memdump_apdat',tname='spp_spa_memdump_',ttags='SEQN',save_flag=save_flag,rt_flag=rt_flag
-  spp_apdat_info,'37d'x,name='spb_memdump',apid_obj='spp_swp_memdump_apdat',tname='spp_spb_memdump_',ttags='SEQN',save_flag=save_flag,rt_flag=rt_flag
+  spp_apdat_info,'36d'x,name='spa_memdump',apid_obj='spp_swp_memdump_apdat',tname='spp_spa_memdump_',ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
+  spp_apdat_info,'37d'x,name='spb_memdump',apid_obj='spp_swp_memdump_apdat',tname='spp_spb_memdump_',ttags='SEQN*',save_flag=save_flag,rt_flag=rt_flag
 
   ;;----------------------------------------------------------------------------------------------------------------------------------------
   ;; Slow Housekeeping

@@ -15,8 +15,8 @@
 ; HISTORY:
 ; VERSION:
 ;  $LastChangedBy: ali $
-;  $LastChangedDate: 2021-02-17 14:55:39 -0800 (Wed, 17 Feb 2021) $
-;  $LastChangedRevision: 29664 $
+;  $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
+;  $LastChangedRevision: 30010 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/euv/mvn_euv_l0_load.pro $
 ;CREATED BY:  ali 20160830
 ;FILE: mvn_euv_l0_load.pro
@@ -39,7 +39,7 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
       tp_file=mvn_pfp_file_retrieve(tplotpath,trange=tr[0],/daily_names,verbose=verbose)
 
       if tr[0] eq time_double('2014-11-26') || tr[0] eq time_double('2021-01-12') then begin
-        dprint,dlevel=2,'File contains no EUV data: '+l0_file
+        dprint,dlevel=2,'File contains no EUV data: '+file_info_string(l0_file)
         continue
       endif
 
@@ -89,7 +89,7 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
       append_array,mvn_lpw_euv_y,mvn_lpw_euv_1day.y
       lim2=limits
       dlim2=dlimits
-    endif else dprint,'No EUV data in file: '+files[i]
+    endif else dprint,'No EUV data in file: '+file_info_string(files[i])
   endfor
   store_data,'mvn_lpw_euv',/delete,verbose=0
 
