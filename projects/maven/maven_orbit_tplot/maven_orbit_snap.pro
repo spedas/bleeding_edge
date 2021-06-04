@@ -140,8 +140,8 @@
 ;                 last color.  Default is 6 (red) for all.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-04-20 11:40:58 -0700 (Tue, 20 Apr 2021) $
-; $LastChangedRevision: 29893 $
+; $LastChangedDate: 2021-06-03 12:53:11 -0700 (Thu, 03 Jun 2021) $
+; $LastChangedRevision: 30017 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -485,6 +485,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     yo = ss[rndx,1]
     zo = ss[rndx,2]
     ro = ss[rndx,3]
+    ho = hgt[rndx]
 
     xs = sheath[rndx,0]
     ys = sheath[rndx,1]
@@ -585,8 +586,8 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       if (pflg) then i = imid else i = imin
       mlon = atan(yo[i],xo[i])
       mlat = asin(zo[i]/ro[i])
-      alt = (ro[i] - 1D)*R_m
-      szaref = acos(cos(mlon)*cos(mlat))
+      altref = ho[i]
+      szaref = acos(cos(mlon)*cos(mlat))*!radeg
 
       plot,xm,ym,xrange=xrange,yrange=yrange,/xsty,/ysty,/noerase, $
            xtitle='X (Rp)',ytitle='Y (Rp)',charsize=csize,title=msg,thick=thick
@@ -702,11 +703,11 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       if (dolab) then begin
         if (npans eq 1) then begin
           xyouts, 0.70, 0.87, "View from Pole", /norm, charsize=csize
-          xyouts, 0.70, 0.82, "ALT = " + string(round(href), format='(i4)'), /norm, charsize=csize
-          xyouts, 0.70, 0.77, "SZA = " + string(round(zref), format='(i4)'), /norm, charsize=csize
+          xyouts, 0.70, 0.82, "ALT = " + string(round(altref), format='(i4)'), /norm, charsize=csize
+          xyouts, 0.70, 0.77, "SZA = " + string(round(szaref), format='(i4)'), /norm, charsize=csize
         endif else begin
-          xyouts, 0.73, 0.95, "ALT = " + string(round(href), format='(i4)'), /norm, charsize=csize/2.
-          xyouts, 0.73, 0.93, "SZA = " + string(round(zref), format='(i4)'), /norm, charsize=csize/2.
+          xyouts, 0.73, 0.95, "ALT = " + string(round(altref), format='(i4)'), /norm, charsize=csize/2.
+          xyouts, 0.73, 0.93, "SZA = " + string(round(szaref), format='(i4)'), /norm, charsize=csize/2.
           xyouts, 0.67, 0.62, "View from Side", /norm, charsize=csize/2.
           xyouts, 0.67, 0.285, "View from Sun", /norm, charsize=csize/2.
         endelse
@@ -843,8 +844,8 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
       if (dolab and (npans eq 1)) then begin
         xyouts, 0.70, 0.87, "View from Side", /norm, charsize=csize
-        xyouts, 0.70, 0.82, "ALT = " + string(round(href), format='(i4)'), /norm, charsize=csize
-        xyouts, 0.70, 0.77, "SZA = " + string(round(zref), format='(i4)'), /norm, charsize=csize
+        xyouts, 0.70, 0.82, "ALT = " + string(round(altref), format='(i4)'), /norm, charsize=csize
+        xyouts, 0.70, 0.77, "SZA = " + string(round(szaref), format='(i4)'), /norm, charsize=csize
       endif
 
       pan--
@@ -942,8 +943,8 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
       if (dolab and (npans eq 1)) then begin
         xyouts, 0.70, 0.87, "View from Sun", /norm, charsize=csize
-        xyouts, 0.70, 0.82, "ALT = " + string(round(href), format='(i4)'), /norm, charsize=csize
-        xyouts, 0.70, 0.77, "SZA = " + string(round(zref), format='(i4)'), /norm, charsize=csize
+        xyouts, 0.70, 0.82, "ALT = " + string(round(altref), format='(i4)'), /norm, charsize=csize
+        xyouts, 0.70, 0.77, "SZA = " + string(round(szaref), format='(i4)'), /norm, charsize=csize
       endif
 
     endif
@@ -1024,9 +1025,8 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       if (first) then erase
       mlon = mlon*!radeg
       mlat = mlat*!radeg
-      szaref = szaref*!radeg
 
-      title = string(mlon,mlat,alt,szaref,$
+      title = string(mlon,mlat,altref,szaref,$
                 format='("Lon = ",f6.1,2x,"Lat = ",f5.1,2x,"Alt = ",f5.0,2x,"SZA = ",f5.1)')
 
       plot,[mlon],[mlat],xrange=[-180,180],/xsty,yrange=[-90,90],/ysty,$

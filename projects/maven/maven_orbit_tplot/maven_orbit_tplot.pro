@@ -18,6 +18,7 @@
 ;              Z -> 90 deg N latitude (= X x Y)
 ;              origin = center of Mars
 ;              units = kilometers
+;              full rotation once per Mars day
 ;
 ;   MSO = Mars-Sun-Orbit coordinates (approx. inertial)
 ;
@@ -26,6 +27,7 @@
 ;              Z = X x Y
 ;              origin = center of Mars
 ;              units = kilometers
+;              full rotation once per Mars year
 ;
 ;USAGE:
 ;  maven_orbit_tplot
@@ -123,7 +125,8 @@
 ;       PDS:      Plot vertical dashed lines separating the PDS release dates.
 ;
 ;       VERBOSE:  Verbosity level passed to mvn_pfp_file_retrieve.  Default = 0
-;                 (suppress most messages).
+;                 (suppress most messages).  Try a value > 2 to see more
+;                 messages; > 4 for lots of messages.
 ;
 ;       CLEAR:    Clear the common block and exit.
 ;
@@ -136,8 +139,8 @@
 ;                 save files are 8.7 GB in size.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-05-10 20:59:06 -0700 (Mon, 10 May 2021) $
-; $LastChangedRevision: 29945 $
+; $LastChangedDate: 2021-06-03 12:53:11 -0700 (Thu, 03 Jun 2021) $
+; $LastChangedRevision: 30017 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11

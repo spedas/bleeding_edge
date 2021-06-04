@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon May 31 18:15:56 2021.<P>
+<STRONG>Last modified: </STRONG>Thu Jun  3 18:16:03 2021.<P>
  
 <HR>
  
@@ -599,8 +599,8 @@ KEYWORDS:
                  last color.  Default is 6 (red) for all.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-04-20 11:40:58 -0700 (Tue, 20 Apr 2021) $
- $LastChangedRevision: 29893 $
+ $LastChangedDate: 2021-06-03 12:53:11 -0700 (Thu, 03 Jun 2021) $
+ $LastChangedRevision: 30017 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11
@@ -633,6 +633,7 @@ PURPOSE:
               Z -&gt; 90 deg N latitude (= X x Y)
               origin = center of Mars
               units = kilometers
+              full rotation once per Mars day
 
    MSO = Mars-Sun-Orbit coordinates (approx. inertial)
 
@@ -641,6 +642,7 @@ PURPOSE:
               Z = X x Y
               origin = center of Mars
               units = kilometers
+              full rotation once per Mars year
 
 USAGE:
   maven_orbit_tplot
@@ -738,7 +740,8 @@ KEYWORDS:
        PDS:      Plot vertical dashed lines separating the PDS release dates.
 
        VERBOSE:  Verbosity level passed to mvn_pfp_file_retrieve.  Default = 0
-                 (suppress most messages).
+                 (suppress most messages).  Try a value &gt; 2 to see more
+                 messages; &gt; 4 for lots of messages.
 
        CLEAR:    Clear the common block and exit.
 
@@ -751,8 +754,8 @@ KEYWORDS:
                  save files are 8.7 GB in size.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-05-10 20:59:06 -0700 (Mon, 10 May 2021) $
- $LastChangedRevision: 29945 $
+ $LastChangedDate: 2021-06-03 12:53:11 -0700 (Thu, 03 Jun 2021) $
+ $LastChangedRevision: 30017 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11
