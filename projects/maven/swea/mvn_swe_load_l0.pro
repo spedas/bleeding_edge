@@ -78,7 +78,9 @@
 ;                         1 : reinitialize to the new time range
 ;                         2 : extend coverage to include the new time range
 ;
-;       NOSPICE:       Do not initialize SPICE.
+;       NOSPICE:       Do not initialize SPICE.  This only applies if you at
+;                      least have the spacecraft clock and leap seconds kernels
+;                      already loaded.
 ;
 ;       NODUPE:        Filter out identical packets.  Default = 1 (yes).
 ;
@@ -92,8 +94,8 @@
 ;                      to a higher number to see more diagnostic messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-05-12 11:44:10 -0700 (Wed, 12 May 2021) $
-; $LastChangedRevision: 29952 $
+; $LastChangedDate: 2021-06-04 13:37:10 -0700 (Fri, 04 Jun 2021) $
+; $LastChangedRevision: 30025 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -231,10 +233,16 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
   if (~tspan_exists) then timespan, trange
 
 ; Initialize SPICE if not already done
-;   This is needed for MET -> UNIX time conversion.
+;   The spacecraft clock and leap seconds kernels are required and loaded
+;   even if NOSPICE is set.  The following also checks whether sufficient 
+;   information exists to determine spacecraft position and orientation.
 
+  mvn_spice_stat, summary=sinfo, /silent
+  if (~sinfo.time_exists) then begin
+    nospice = 0
+    spiceinit = 1
+  endif
   if (not keyword_set(nospice)) then begin
-    mvn_spice_stat, summary=sinfo, /silent
     if ((spiceinit eq 1) or (~sinfo.ck_sc_exists)) then begin
       mvn_swe_spice_init, /force
     endif else begin
@@ -247,11 +255,13 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
           print,"  r = reinitialize to the time range of the new data"
           print,"  e = extend the time range to include the new data"
           print,"  a = abort - do not load the new data (default)"
+          print,"  i = ignore - load the new data without reinitializing SPICE"
           yn = 'a'
-          read, yn, prompt='Your choice (r|e|a): '
+          read, yn, prompt='Your choice (r|e|a|i): '
           case strupcase(yn) of
              'R' : mvn_swe_spice_init, trange=trange, /force
              'E' : mvn_swe_spice_init, trange=tsp, /force
+             'I' : print,"Warning: SPICE coverage is incomplete or missing."
             else : return
           endcase
         endif else mvn_swe_spice_init, trange=tsp, /force

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jun  3 18:16:03 2021.<P>
+<STRONG>Last modified: </STRONG>Fri Jun  4 18:15:52 2021.<P>
  
 <HR>
  
@@ -2996,7 +2996,9 @@ KEYWORDS:
                          1 : reinitialize to the new time range
                          2 : extend coverage to include the new time range
 
-       NOSPICE:       Do not initialize SPICE.
+       NOSPICE:       Do not initialize SPICE.  This only applies if you at
+                      least have the spacecraft clock and leap seconds kernels
+                      already loaded.
 
        NODUPE:        Filter out identical packets.  Default = 1 (yes).
 
@@ -3010,8 +3012,8 @@ KEYWORDS:
                       to a higher number to see more diagnostic messages.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-05-12 11:44:10 -0700 (Wed, 12 May 2021) $
- $LastChangedRevision: 29952 $
+ $LastChangedDate: 2021-06-04 13:37:10 -0700 (Fri, 04 Jun 2021) $
+ $LastChangedRevision: 30025 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 
 CREATED BY:    David L. Mitchell  04-25-13
@@ -5286,8 +5288,8 @@ KEYWORDS:
                    Default is current value of swe_verbose.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-12-15 13:02:57 -0800 (Tue, 15 Dec 2020) $
- $LastChangedRevision: 29493 $
+ $LastChangedDate: 2021-06-04 13:35:27 -0700 (Fri, 04 Jun 2021) $
+ $LastChangedRevision: 30024 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_spice_init.pro $
 
 CREATED BY:    David L. Mitchell  09/18/13

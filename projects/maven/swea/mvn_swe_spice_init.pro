@@ -40,8 +40,8 @@
 ;                   Default is current value of swe_verbose.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-12-15 13:02:57 -0800 (Tue, 15 Dec 2020) $
-; $LastChangedRevision: 29493 $
+; $LastChangedDate: 2021-06-04 13:35:27 -0700 (Fri, 04 Jun 2021) $
+; $LastChangedRevision: 30024 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_spice_init.pro $
 ;
 ;CREATED BY:    David L. Mitchell  09/18/13
@@ -97,13 +97,13 @@ pro mvn_swe_spice_init, trange=trange, list=list, force=force, sclk_ver=sclk_ver
     tplot_options, get_opt=topt
     if (max(topt.trange_full) gt time_double('2013-11-18')) then trange = topt.trange_full
     
-    if (size(trange,/type) eq 0) then begin
+    if ((size(trange,/type) eq 0) and ~baseonly) then begin
       print,"You must supply a time range."
       return
     endif
   endif
   
-  srange = minmax(time_double(trange)) + [-oneday, oneday]
+  if (~baseonly) then srange = minmax(time_double(trange)) + [-oneday, oneday]
 
 ; Shush dprint
 
@@ -118,7 +118,7 @@ pro mvn_swe_spice_init, trange=trange, list=list, force=force, sclk_ver=sclk_ver
   cspice_kclear ; remove any previously loaded kernels
   if (baseonly) then begin
     names = ['STD','SCK','FRM','IK']
-    swe_kernels = mvn_spice_kernels(names,trange=srange,verbose=(verbose-1))
+    swe_kernels = mvn_spice_kernels(names,verbose=(verbose-1))
   endif else begin
     if (nock) then begin
       names = ['STD','SCK','FRM','IK','SPK']

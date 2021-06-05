@@ -16,8 +16,8 @@
 ;
 ;HISTORY:
 ; $LastChangedBy: crussell $
-; $LastChangedDate: 2021-05-21 09:28:43 -0700 (Fri, 21 May 2021) $
-; $LastChangedRevision: 29983 $
+; $LastChangedDate: 2021-06-04 11:32:19 -0700 (Fri, 04 Jun 2021) $
+; $LastChangedRevision: 30021 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_gmag_networks.pro $
 ;-
 
@@ -78,7 +78,7 @@ pro thm_load_gmag_networks, gmag_networks=gmag_networks, gmag_stations=gmag_stat
       'cigo','cmo','crvr','ded','dik','dmh','dnb','dob','don','drby','eagl','ekat','fcc','fhb','frd','frn','fsim','fsj','fsmi','ftn','fykn','fyts','gako','gbay', $
       'gdh','ghb','gill','gjoa','glyn','gua','han','hlms','homr','hon','hop','hots', 'hov', 'hris', 'hrp','iglo','inuk','inuv','iqa','iva','jan', 'jck','kako','kapu','kar','kena', 'kev','kian','kil','kjpk', 'kodk','kuuj','kuv', $
       'larg','lcl','leth','loys', 'loz','lrel', 'lres','lrg','lrv','lyfd','lyr','m65-297','m66-294','m67-292','m78-337','m79-336','m81-003','m81-338', $
-      'm83-247','m83-348','m84-336','m85-002','m85-096','m87-028','m87-069','m88-316', $
+      'm83-347','m83-348','m84-336','m85-002','m85-096','m87-028','m87-069','m88-316', $
       'mcgr','mas','mea','mek','muo','nain','nal','naq','new','nor','nrd','nrsq','nur','ott','ouj','pang','pbk', 'pblo','pcel','pel','pg0','pg1','pg2','pg3', $
       'pg4','pg5''pgeo','pina','pine','pks','pokr','ptrs','puvr','radi','ran','rank','rbay','redr','rich','rmus','roe','roth','rvk','salu','satx','schf','sco','sept','shu','sit', $
       'sjg','skt','snap','snkq','sol','sor','stf','stfd', 'stfl','stj','sum','svs','swno','tab','talo','tar','tdc','thl','tik','tool','tpas','trap','tro','tuc','ukia','umq','upn','vic', 'viz','vldr', 'whit', 'whs', 'wlps', 'wrth','ykc','yknf']
