@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jun  4 18:15:52 2021.<P>
+<STRONG>Last modified: </STRONG>Mon Jun  7 18:16:01 2021.<P>
  
 <HR>
  
@@ -3722,11 +3722,10 @@ LAST MODIFICATION:     %W% %E%
 PROCEDURE:   tplot_var_labels
 PURPOSE:
    Helper routine for tplot.  Formats var_labels  
-   
    The var_label code in the body of tplot.pro was occupying 25% of the file. It needed to be abstracted.  
-
 Inputs:
-  def_opts: all the options need for variables labels
+  def_opts: all the options need for variables labels, labels are
+            added to the xtickname values in the def_opts structure
   trg: time range for plotting
   var_label: var_label setting from user 
   local_time: local time keyword from user
@@ -3734,16 +3733,24 @@ Inputs:
   chsize: desired character size
   
 Outputs:
-  vtitle=vtitle: title for var labels
-  vlab=vlab: formatted var labels
+  vtitle=vtitle: title for var labels, for first variable
+  vlab=vlab: formatted var labels, for first variable
   time_offset=time_offset: Used by tplot, as the start time of the
                            plot in unix time
   time_scale=time_scale: Used by tplot to scale the time variable,
                          typically 1.0, but larger for longer time
                          ranges
- $LastChangedBy: crussell $
- $LastChangedDate: 2019-10-23 10:21:50 -0700 (Wed, 23 Oct 2019) $
- $LastChangedRevision: 27920 $
+ 2021-06-07, jmm, Added option option to allow two variables on a
+ line when labeling tplots. To be invoked, the var_label keyword must
+ be set up with a valid tplot variable name in parentheses after a
+ valid tplot variable.
+ e.g., 
+ tplot, 'tha_fag_dsl', var_label = ['tha_state_pos_gse_x(tha_state_pos_gei_x)']
+
+ Note that even single labels must be passed in as arrays.
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2021-06-07 12:27:07 -0700 (Mon, 07 Jun 2021) $
+ $LastChangedRevision: 30026 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_var_labels.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/tplot_var_labels.pro">general/tplot/tplot_var_labels.pro</A>)</STRONG><P>
