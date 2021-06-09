@@ -1,6 +1,6 @@
 ; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2021-05-26 17:05:37 -0700 (Wed, 26 May 2021) $
-; $LastChangedRevision: 29992 $
+; $LastChangedDate: 2021-06-08 14:37:19 -0700 (Tue, 08 Jun 2021) $
+; $LastChangedRevision: 30033 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/common/spp_swp_manip_decom.pro $
 
 function spp_swp_manip_decom,ccsds, source_dict=source_dict  ;ptp_header=ptp_header   ,apdat=apdat
@@ -103,7 +103,6 @@ function spp_swp_manip_decom,ccsds, source_dict=source_dict  ;ptp_header=ptp_hea
 ;            ;daqAI15:    spp_swp_float_decom(b,115)}     ;; ,,, 32
 ;   endif
    
- ;  if 1 then begin
     manip = {$;time:       ptp_header.ptp_time, $
             time:         ccsds.time + 7.* 3600., $
             met:          ccsds.met,  $
@@ -111,25 +110,26 @@ function spp_swp_manip_decom,ccsds, source_dict=source_dict  ;ptp_header=ptp_hea
             seqn:         ccsds.seqn, $
             ;             sync:       spp_swp_word_decom(b,10), $      
             ;             length:     spp_swp_word_decom(b,12), $      
-            lincnts:      swap_endian( fix( b,14 )), $                  
-            yawcnts:      swap_endian( fix( b,16 )), $                        
-            rotcnts:      swap_endian( fix( b,18 )), $, $                      
-            linlowlim:    total(b[20:21]), $
-            linhilim:     total(b[22:23]), $
-            yawlowlim:    total(b[24:25]), $
-            yawhilim:     total(b[26:27]), $
-            rotlowlim:    total(b[28:29]), $
-            rothilim:     total(b[30:31]), $
-            linpwm:       total(b[32:33]), $
-            linduty:      total(b[34:35]), $
-            yawpwm:       total(b[36:37]), $
-            yawduty:      total(b[38:39]), $
-            rotpwm:       total(b[40:41]), $
-            rotduty:      total(b[42:43]), $
-            gap:ccsds.gap}
-         
- ;   endif
-  ;print, manip
+            lincnts:      swap_endian(/swap_if_big_endian, ishft(long(b[14]), 24) +  ishft(long(b[15]),16) + $
+                                                           ishft(long(b[16]), 8) + long(b[17])) / 12598.432, $
+            yawcnts:      swap_endian(/swap_if_big_endian, ishft(long(b[18]), 24) +  ishft(long(b[19]),16) + $
+                                                           ishft(long(b[20]), 8) + long(b[21])) /111.11111, $                    
+            rotcnts:      swap_endian(/swap_if_big_endian, ishft(long(b[22]), 24) +  ishft(long(b[23]),16) +$
+                                                           ishft(long(b[24]), 8) + long(b[25])) / 55.60, $                     
+            linlowlim:    total(b[26:27]), $
+            linhilim:     total(b[28:29]), $
+            yawlowlim:    total(b[30:31]), $
+            yawhilim:     total(b[32:33]), $
+            rotlowlim:    total(b[34:35]), $
+            rothilim:     total(b[36:37]), $
+            linpwm:       total(b[38:39]), $
+            linduty:      total(b[40:41]), $
+            yawpwm:       total(b[42:43]), $
+            yawduty:      total(b[44:45]), $
+            rotpwm:       total(b[46:47]), $
+            rotduty:      total(b[48:49]), $
+            gap:ccsds.gap} 
+  
   return,manip
 
 end
