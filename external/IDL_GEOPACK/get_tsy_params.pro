@@ -55,9 +55,9 @@
 ;           
 ;          
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2018-06-19 12:03:48 -0700 (Tue, 19 Jun 2018) $
-; $LastChangedRevision: 25372 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-06-09 16:44:54 -0700 (Wed, 09 Jun 2021) $
+; $LastChangedRevision: 30037 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/get_tsy_params.pro $
 ;-
 pro get_tsy_params,dst_tvar,imf_tvar,Np_tvar,Vp_tvar,model,newname=newname,$
@@ -160,7 +160,19 @@ imf_z = interpol(imf_z,imf_times,ntimes)
 den = interpol(wind_den,wind_den_times,ntimes)
 spd = interpol(wind_spd,wind_spd_times,ntimes)
 
-pram = 1.667e-6*den*spd^2 
+; Solar wind dynamic pressure (Pdyn parameter for GEOPACK)
+; Previous version only accounted for contribution by protons, not alphas, and were not consistent (off by a factor of 1.2) with 
+; OMNI pressure data.  
+;
+; Derivation of Alpha particle pressure correction is here: https://omniweb.gsfc.nasa.gov/ftpbrowser/bow_derivation.html
+;
+; JWL 2021-06-09
+
+f_alpha = 0.04D     ;  Ratio of alphas to protons.  OMNI assumes 5%, which might be a bit high according to Vassilis.
+
+alpha_correction = 1 + 4.0D * f_alpha   ;  4.0 = mass of alpha particle in AMU.  Assumes V_alpha = V_proton.
+
+pram = alpha_correction * 1.667e-6*den*spd^2 ; 1.667e-6 = proton mass times unit conversions to give result in nPa
 
 if strlowcase(model) eq 't01' then begin 
    if ~keyword_set(g_coefficients) then begin

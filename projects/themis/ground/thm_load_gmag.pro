@@ -113,8 +113,8 @@
 ; 04-Apr-2012, clrussell, Added units to the data_att structure
 ; 
 ; $LastChangedBy: crussell $
-; $LastChangedDate: 2021-06-04 11:32:19 -0700 (Fri, 04 Jun 2021) $
-; $LastChangedRevision: 30021 $
+; $LastChangedDate: 2021-06-09 08:30:13 -0700 (Wed, 09 Jun 2021) $
+; $LastChangedRevision: 30035 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_gmag.pro $
 ;-
 
@@ -248,7 +248,7 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
             'oxfo pols rabb sach talo thrf vulc weyb wgry'
     vsnames_c_arr = strsplit(vsnames_c, ' ', /extract)
     vsnames_b = 'M65-297 M66-294 M67-292 M78-337 M79-336 M81-003 M81-338 ' + $
-      'M83-347 M83-348 M84-336 M85-002 M85-096 M87-028 M87-069 M88-316'
+      'M83-347 M83-348 M84-336 M85-002 M85-096 M87-028 M87-068 M88-316'
 ;    'M65-279 M67_292 M70_039 M72_078 M77_077 M78_337 M79_336 M80_077 '+ $
 ;      'M81_338 M83_348 M84_336 M85_002 M87_028 M87_068 M88_316 M73_159 '+ $
 ;      'M74_043 M81_003 M83_347 M85_096 M66_294 M68_041 M69_041 M70_044 '+ $
@@ -326,7 +326,7 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
     
     if keyword_set(bas_sites) then begin
       site_in = array_concat(['M65-297','M66-294','M67-292','M78-337','M79-336','M81-003','M81-338', $
-        'M83-347','M83-348','M84-336','M85-002','M85-096','M87-028','M87-069','M88-316'],site_in)
+        'M83-347','M83-348','M84-336','M85-002','M85-096','M87-028','M87-068','M88-316'],site_in)
 ;        'M65_279','M67_292','M70_039','M72_078','M77_077','M78_337', $
 ;        'M79_336','M80_077','M81_338','M83_348','M84_336','M85_002','M87_028','M87_068', $
 ;        'M88_316','M73_159','M74_043','M81_003','M83_347','M85_096','M66_294','M68_041', $
