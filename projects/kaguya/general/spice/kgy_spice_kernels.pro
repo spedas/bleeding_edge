@@ -13,12 +13,12 @@
 ;       Yuki Harada on 2016-03-04
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2021-01-14 23:35:04 -0800 (Thu, 14 Jan 2021) $
-; $LastChangedRevision: 29602 $
+; $LastChangedDate: 2021-06-09 22:50:49 -0700 (Wed, 09 Jun 2021) $
+; $LastChangedRevision: 30038 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/general/spice/kgy_spice_kernels.pro $
 ;-
 
-function kgy_spice_kernels, trange=trange, source=source, clear=clear, load=load, last_version=last_version, spk_gaps=spk_gaps, _extra=_extra
+function kgy_spice_kernels, trange=trange, clear=clear, load=load, last_version=last_version, spk_gaps=spk_gaps, names=names, _extra=_extra
 
 if spice_test() eq 0 then return,''
 syst0 = systime(/sec)
@@ -30,7 +30,7 @@ this_dir = file_dirname(tb[n_elements(tb)-1].filename)+'/' ; the directory this 
 
 darts = spice_file_source(remote_data_dir='https://darts.jaxa.jp/pub/spice/', last_version=last_version, _extra=_extra)
 
-names = ['STD','CK','FK','IK','PCK','SCLK','SPK']
+if ~keyword_set(names) then names = ['STD','CK','FK','IK','PCK','SCLK','SPK']
 
 kernels = ''
 for in=0,n_elements(names)-1 do begin
