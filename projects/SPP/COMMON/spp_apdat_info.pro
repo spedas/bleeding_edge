@@ -1,7 +1,7 @@
 ; +
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 30010 $
+; $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
+; $LastChangedRevision: 30043 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
@@ -39,7 +39,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   file_save=file_save,file_restore=file_restore,compress=compress,parent=parent, $
   apid_obj_name = apid_obj_name, $
   print=print, $
-  rt_flag=rt_flag,noprod=noprod,trim=trim
+  rt_flag=rt_flag,trim=trim
 
   common spp_apdat_info_com, all_apdat, alt_apdat, all_info,temp1,temp2
 
@@ -54,7 +54,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   endif
 
   if keyword_set(reset) then begin   ; not recommended!
-;    obj_destroy,all_apdat,alt_apdat,all_info    ; this might not be required in IDL8.x and above
+    ;    obj_destroy,all_apdat,alt_apdat,all_info    ; this might not be required in IDL8.x and above
     all_apdat=!null
     alt_apdat= !null
     all_info = !null
@@ -105,14 +105,10 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   endif
 
   if keyword_set(file_save) then begin
-    memdumps=['342'x,'3b8'x,'36d'x,'37d'x]
-    foreach memdump,memdumps do all_apdat[memdump].nomem ;clearing the memdump ram to get smaller file size
-    spp_apdat_info,'sp[abi]_[as][ft]*',/noprod ;clearing multidimensional products
-    spp_apdat_info,/trim ;trimming the size and clearing last_data_p and ccsds_last
-    dprint,'Saving '+file_save
+    file_mkdir2,file_dirname(file_save)
+    dprint,dlevel=2,'Saving '+file_save
     save,file=file_save,all_apdat,parent,verbose=verbose,compress=compress
-    dprint,'Saved '+file_info_string(file_save)
-;    foreach memdump,memdumps do all_apdat[memdump] = obj_new('spp_swp_memdump_apdat',memdump,(spp_apdat(memdump)).name) ;repopulating memdump
+    dprint,dlevel=1,'Saved '+file_info_string(file_save)
   endif
 
   valid_apdat = all_apdat[ where( obj_valid(all_apdat),nvalid ) ]
@@ -169,7 +165,6 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
     if keyword_set(make_cdf)  then apdat.cdf_create_file
     if keyword_set(clear)  then    apdat.clear
     if keyword_set(zero)   then    apdat.zero
-    if keyword_set(noprod) then    apdat.noprod
     if keyword_set(trim)   then    apdat.trim
     if keyword_set(print)  then    apdat.print, header = i eq 0
   endfor

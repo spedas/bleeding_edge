@@ -1,4 +1,8 @@
 ;+
+; $LastChangedBy: ali $
+; $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
+; $LastChangedRevision: 30043 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;
 ; SPP_SWP_SPI_PROD_APDAT
 ;
@@ -42,17 +46,7 @@
 ; 20 - ???
 ; --------
 ; Science Product Data
-;
-;
-;
-; spp_swp_spi_prod_apdat
-; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-30 19:41:21 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 30006 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/spp_swp_spi_prod_apdat__define.pro $
 ;-
-
-
 
 ;;-----------------------------------------------;;
 ;;                     08D                       ;;
@@ -472,8 +466,8 @@ FUNCTION spp_swp_spi_prod_apdat::Init,apid,name,_EXTRA=ex
 END
 
 
-PRO spp_swp_spi_prod_apdat::Clear
-  self->spp_gen_apdat::Clear
+PRO spp_swp_spi_prod_apdat::Clear,noprod=noprod
+  if ~keyword_set(noprod) then self->spp_gen_apdat::Clear
   self.prod_16A.array            = !null
   self.prod_32E.array            = !null
   self.prod_16Ax16M.array        = !null
@@ -487,25 +481,6 @@ PRO spp_swp_spi_prod_apdat::Clear
   self.prod_32Ex16Ax04M.array    = !null
   self.prod_08Dx32EX16Ax1M.array = !null
   self.prod_08Dx32EX16Ax2M.array = !null
-END
-
-
-PRO spp_swp_spi_prod_apdat::noprod
-
-  self.prod_16A.array            = !null
-  self.prod_32E.array            = !null
-  self.prod_16Ax16M.array        = !null
-  self.prod_256.array            = !null
-  self.prod_08Dx16A.array        = !null
-  self.prod_08Dx32E.array        = !null
-  self.prod_32Ex16A.array        = !null
-  self.prod_32Ex16M.array        = !null
-  self.prod_08Dx32Ex08A.array    = !null
-  self.prod_08Dx32Ex16A.array    = !null
-  self.prod_32Ex16Ax04M.array    = !null
-  self.prod_08Dx32EX16Ax1M.array = !null
-  self.prod_08Dx32EX16Ax2M.array = !null
-
 END
 
 

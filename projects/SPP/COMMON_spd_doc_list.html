@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jun 11 18:15:56 2021.<P>
+<STRONG>Last modified: </STRONG>Mon Jun 14 18:16:05 2021.<P>
  
 <HR>
  
@@ -30,9 +30,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#SPP_DATA_PRODUCT_HASH">SPP_DATA_PRODUCT_HASH</A>
 <LI><A HREF="#SPP_FILE_RETRIEVE">SPP_FILE_RETRIEVE</A>
 <LI><A HREF="#SPP_FLD_LOAD">SPP_FLD_LOAD</A>
-<LI><A HREF="#SPP_GEN_APDAT__DEFINE[1]">SPP_GEN_APDAT__DEFINE[1]</A>
-<LI><A HREF="#SPP_GEN_APDAT__DEFINE[2]">SPP_GEN_APDAT__DEFINE[2]</A>
-<br>Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
+<LI><A HREF="#SPP_GEN_APDAT__DEFINE">SPP_GEN_APDAT__DEFINE</A>
 <LI><A HREF="#SPP_PTP_RECORDER">SPP_PTP_RECORDER</A>
 <br>Widget tool that opens a socket and records streaming data from a server (host) and can save it to a file
 <LI><A HREF="#SPP_SPC_MET_TO_UNIXTIME">SPP_SPC_MET_TO_UNIXTIME</A>
@@ -48,8 +46,8 @@ This page was created by the IDL library routine
 <PRE>
  Written by Davin Larson October 2018
  $LastChangedBy: ali $
- $LastChangedDate: 2021-05-30 19:42:18 -0700 (Sun, 30 May 2021) $
- $LastChangedRevision: 30007 $
+ $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
+ $LastChangedRevision: 30043 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/cdf_tools_varinfo__define.pro $
 </PRE><P>
 <STRONG>(See <A href="COMMON/cdf_tools_varinfo__define.pro">projects/SPP/COMMON/cdf_tools_varinfo__define.pro</A>)</STRONG><P>
@@ -112,42 +110,46 @@ Author: Davin Larson  - January 2014
 <A HREF="#PSP_FLD_LOAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
+ Written by Davin Larson - August 2016
+ $LastChangedBy: ali $
+ $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
+ $LastChangedRevision: 30043 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/dynamicarray__define.pro $
+
  Purpose: Object that provides an efficient means of concatenating arrays
  da= DynamicArray([InitialArray][,name='name1')
- Purpose:  Returns a &quot;dynamic array&quot; object.  This dynamic array can have any number of elements and can be efficiently 
- appended to. 
- 
+ Purpose:  Returns a &quot;dynamic array&quot; object.  This dynamic array can have any number of elements and can be efficiently
+ appended to.
+
  This routine is particularly useful when appending to large arrays on numerous occassions.  This is especially useful
  when the final size of the array is not known when first initialized.
- 
+
  It is functionally equivalent to:
  a= findgen(10)
  b = 1.
  a = [a,b]
  but considerably more effiecient because the array size does not need to be increased at every append operation.
- 
+
  Because one can produce arrays of objects, it is a conveniant way of constructing arrays of arrays
  containing different things.
- 
+
  Works with multidimensional arrays too.
- 
+
  USAGE:
    da = dynamicarray(findgen(1000000), name='Test1')
-      Or 
+      Or
    da.array = findgen(1000000)    ; equivalent
       Or
    da = dynamicarray()     &amp;   da.append, findgen(1000000)
    da.append,  findgen(1000)  ;  append some data
    da.append, !values.f_nan      ; add a NAN at the end.
    da.name = 'NewName'   ; change name
-   
+
    a = da.array   ; retrieve a copy of the array
    print,da.size   ; print the number of elements in the array  (first dimension of multidimensional arrays)
    help,da.name   ; display the optional user name
-   
+
    object_destroy, da   ; cleanup when done.
-   
-   Written by Davin Larson - August 2016
 </PRE><P>
 <STRONG>(See <A href="COMMON/dynamicarray__define.pro">projects/SPP/COMMON/dynamicarray__define.pro</A>)</STRONG><P>
 <HR>
@@ -248,7 +250,7 @@ Keywords:  (All are optional - none are recommended)
 <A NAME="SPP_FLD_LOAD">
 <H2>SPP_FLD_LOAD</H2></A>
 <A HREF="#SPP_FILE_RETRIEVE">[Previous Routine]</A>
-<A HREF="#SPP_GEN_APDAT__DEFINE[1]">[Next Routine]</A>
+<A HREF="#SPP_GEN_APDAT__DEFINE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -352,36 +354,17 @@ Keywords:  (All are optional - none are recommended)
 <STRONG>(See <A href="COMMON/spp_fld_load.pro">projects/SPP/COMMON/spp_fld_load.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPP_GEN_APDAT__DEFINE[1]">
-<H2>SPP_GEN_APDAT__DEFINE[1]</H2></A>
+<A NAME="SPP_GEN_APDAT__DEFINE">
+<H2>SPP_GEN_APDAT__DEFINE</H2></A>
 <A HREF="#SPP_FLD_LOAD">[Previous Routine]</A>
-<A HREF="#SPP_GEN_APDAT__DEFINE[2]">[Next Routine]</A>
+<A HREF="#SPP_PTP_RECORDER">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
   SPP_GEN_APDAT
   This basic object is the entry point for defining and obtaining all data for all apids
  $LastChangedBy: ali $
- $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
- $LastChangedRevision: 30010 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
-</PRE><P>
-<STRONG>(See <A href="COMMON/spp_gen_apdat__define.pro">projects/SPP/COMMON/spp_gen_apdat__define.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="SPP_GEN_APDAT__DEFINE[2]">
-<H2>SPP_GEN_APDAT__DEFINE[2]</H2></A>
-<A HREF="#SPP_GEN_APDAT__DEFINE[1]">[Previous Routine]</A>
-<A HREF="#SPP_PTP_RECORDER">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-NAME: MVN_SEP_SW_VERSION
-Function: mvn_spice_kernels(name)
-PURPOSE:
- Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
-Author: Davin Larson  - January 2014
- $LastChangedBy: ali $
- $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
- $LastChangedRevision: 30010 $
+ $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
+ $LastChangedRevision: 30043 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 </PRE><P>
 <STRONG>(See <A href="COMMON/spp_gen_apdat__define.pro">projects/SPP/COMMON/spp_gen_apdat__define.pro</A>)</STRONG><P>
@@ -389,7 +372,7 @@ Author: Davin Larson  - January 2014
  
 <A NAME="SPP_PTP_RECORDER">
 <H2>SPP_PTP_RECORDER</H2></A>
-<A HREF="#SPP_GEN_APDAT__DEFINE[2]">[Previous Routine]</A>
+<A HREF="#SPP_GEN_APDAT__DEFINE">[Previous Routine]</A>
 <A HREF="#SPP_SPC_MET_TO_UNIXTIME">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

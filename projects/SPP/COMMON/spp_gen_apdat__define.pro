@@ -2,8 +2,8 @@
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 30010 $
+; $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
+; $LastChangedRevision: 30043 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -193,7 +193,7 @@ pro spp_gen_apdat::handler,ccsds,source_dict=source_dict ;,header,source_info=so
   if not self.ignore_flag then strct = self.decom(ccsds,source_dict=source_dict)
   if keyword_set(strct) then  *self.last_data_p= strct
 
-  ;if ccsds.seq_group ne 3 then self.help   ;dprint,dlevel=2,ccsds.seq_group,ccsds.apid
+  ;if ccsds.seqn_group ne 3 then self.help   ;dprint,dlevel=2,ccsds.seqn_group,ccsds.apid
 
   if self.save_flag && keyword_set(strct) then begin
     dprint,self.name,dlevel=self.dlevel+4,self.apid
@@ -231,17 +231,6 @@ pro spp_gen_apdat::finish,ttags=ttags
 end
 
 
-;+
-;NAME: MVN_SEP_SW_VERSION
-;Function: mvn_spice_kernels(name)
-;PURPOSE:
-; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
-;Author: Davin Larson  - January 2014
-; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 30010 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
-;-
 function spp_gen_apdat::sw_version
 
   tb = scope_traceback(/structure)
@@ -256,10 +245,10 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: ali $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 30010 $'
+  sw_hash['svn_changedate'] = '$LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $'
+  sw_hash['svn_revision '] = '$LastChangedRevision: 30043 $'
 
-    return,sw_hash
+  return,sw_hash
 end
 
 function spp_gen_apdat::cdf_global_attributes
@@ -299,8 +288,8 @@ function spp_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: ali $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 30010 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 30043 $'
 
   return,global_att
 end
@@ -369,7 +358,7 @@ function spp_gen_apdat::cdf_makeobj,  datavary, datanovary,  vnames=vnames, igno
           v = *ptrs[i]
           nv=n_elements(v)
           if nv gt 4096 then begin
-            nv=4097 ;prevents cdf files to be huge due to wrong size
+            nv=4097 ;prevents huge cdf files due to wrong size
             v=v[0:4096]
             val=v
           endif
@@ -440,7 +429,6 @@ pro spp_gen_apdat::sav_makefile,sav_format=sav_format,parent=parent,verbose=verb
     w=where((datarray.time ge trange[0]) and (datarray.time lt trange[1]),/null,nw)
     if nw eq 0 then continue
     self.data.array=datarray[w]
-    self.data.size=nw
     self.data.name=self.name ;in case spp_swp_apdat_init updated the object name (e.g., from wrp_P5 to wrp_P5P7)
     filename=time_string(trange[0],tformat=sav_format)
     filename=root_data_dir()+str_sub(filename,'$NAME$',self.name)
@@ -449,6 +437,7 @@ pro spp_gen_apdat::sav_makefile,sav_format=sav_format,parent=parent,verbose=verb
     save,file=filename,self,parent,verbose=verbose,/compress
     dprint,dlevel=1,'Saved '+file_info_string(filename)
   endfor
+  self.data.array=datarray ;returning self to its original
 end
 
 

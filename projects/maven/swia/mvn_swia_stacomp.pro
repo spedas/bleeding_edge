@@ -13,8 +13,8 @@
 ;	TRANGE: time range to use
 ;
 ; $LastChangedBy: jhalekas $
-; $LastChangedDate: 2019-07-01 06:24:45 -0700 (Mon, 01 Jul 2019) $
-; $LastChangedRevision: 27393 $
+; $LastChangedDate: 2021-06-14 12:50:13 -0700 (Mon, 14 Jun 2021) $
+; $LastChangedRevision: 30046 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swia/mvn_swia_stacomp.pro $
 ;
 ;-
@@ -72,6 +72,7 @@ ospec = sta.y
 o2spec = sta.y
 pspec = sta.y
 aspec = sta.y
+hespec = sta.y
 
 for i = 0,nts-1 do begin 
 	dat = mvn_sta_get_c6(ts[i])
@@ -81,6 +82,8 @@ for i = 0,nts-1 do begin
 		pspec[i,j] = total(dat.data[j,w])
 		w = where(dat.mass_arr[j,*] gt 1.8 and dat.mass_arr[j,*] le 2.5)
 		aspec[i,j] = total(dat.data[j,w])
+		w = where(dat.mass_arr[j,*] gt 3.3 and dat.mass_arr[j,*] le 4.7)
+		hespec[i,j] = total(dat.data[j,w])
 		w = where(dat.mass_arr[j,*] gt 8 and dat.mass_arr[j,*] lt 24)
 		ospec[i,j] = total(dat.data[j,w])
 		w = where(dat.mass_arr[j,*] gt 24 and dat.mass_arr[j,*] lt 40)
@@ -90,6 +93,7 @@ endfor
 
 store_data,'pspec',data = {x:ts,y:pspec,v:en,ylog:1,spec:1,zlog:1,no_interp:1,yrange:[1,1e4]}
 store_data,'aspec',data = {x:ts,y:aspec,v:en,ylog:1,spec:1,zlog:1,no_interp:1,yrange:[1,1e4]}
+store_data,'hespec',data = {x:ts,y:hespec,v:en,ylog:1,spec:1,zlog:1,no_interp:1,yrange:[1,1e4]}
 store_data,'ospec',data = {x:ts,y:ospec,v:en,ylog:1,spec:1,zlog:1,no_interp:1,yrange:[1,1e4]}
 store_data,'o2spec',data = {x:ts,y:o2spec,v:en,ylog:1,spec:1,zlog:1,no_interp:1,yrange:[1,1e4]}
 

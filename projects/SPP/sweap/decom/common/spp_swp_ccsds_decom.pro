@@ -1,8 +1,8 @@
 ; buffer should contain bytes for a single ccsds packet, header is
 ; contained in first 3 words (6 bytes)
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-30 19:41:21 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 30006 $
+; $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
+; $LastChangedRevision: 30043 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/common/spp_swp_ccsds_decom.pro $
 
 ;
@@ -14,12 +14,12 @@
 
 function spp_swp_ccsds_decom_mettime,header,spc=spc,span=span,subsec=subsec
   if size(header,/type) eq 1 then begin   ; convert to uints
-    n = n_elements(header) 
+    n = n_elements(header)
     header2 = swap_endian(uint(header,0,6 < n/2) ,/swap_if_little_endian )
     dprint,dlevel=1,'old code!'
     return, spp_swp_ccsds_decom_mettime(header2,subsec=subsec,spc=spc,span=span)
   endif
-    ; header assumed to be uints at this point
+  ; header assumed to be uints at this point
   n = n_elements(header)
   if n lt 5 then return, !values.d_nan
 
@@ -30,11 +30,8 @@ function spp_swp_ccsds_decom_mettime,header,spc=spc,span=span,subsec=subsec
   endif else begin
     MET = double( header[3]*2UL^16 + header[4] )   ; normal 1 sec resolution
   endelse
-return,met
+  return,met
 end
-
-
-
 
 
 function spp_swp_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,offset,buffer_length,remainder=remainder , error=error,verbose=verbose,dlevel=dlevel
@@ -44,33 +41,32 @@ function spp_swp_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsd
   if not keyword_set(buffer_length) then buffer_length = n_elements(buffer)
   remainder = !null
 
-
   d_nan = !values.d_nan
   f_nan = !values.f_nan
 
   ccsds = { ccsds_format, $
     apid:         0u , $
     version :     0b , $   ; this could be eliminated since it is useless
-    seq_group:    0b , $
+    seqn_group:    0b , $
     seqn:         0u , $
     pkt_size:     0ul,  $
     MET:          d_nan,  $
     pdata:        ptr_new(),  $         ; pointer to full packet data including header
-    time:         d_nan,  $             ; unixtime 
-;    counter:      0ul,    $             ; packet counter as received - future use
+    time:         d_nan,  $             ; unixtime
+    ;    counter:      0ul,    $             ; packet counter as received - future use
     ptp_time:     d_nan,  $             ; unixtime from ptp packet
-;    proc_time:    d_nan,  $             ; unixtime when it was processed
-    source:       0u   ,  $             ; an indicator of where this packet came from:  0: unknown, apid of wrapper_packet: 0x348 - 0x34f
-;    source_name:  ''   ,  $             ; file name of source
+    ;    proc_time:    d_nan,  $             ; unixtime when it was processed
+    source_apid:  0u   ,  $             ; an indicator of where this packet came from:  0: unknown, apid of wrapper_packet: 0x348 - 0x34f
+    ;    source_name:  ''   ,  $             ; file name of source
     source_hash:  0UL,  $               ; hashcode() of source_name
-;    content_id:   0u   ,  $             ; used by wrapper packets to define the apid of the inner packet
-;    content_nsamples:     0u   ,  $             ;  number of packets that were aggregated (composed)
+    ;    content_id:   0u   ,  $             ; used by wrapper packets to define the apid of the inner packet
+    ;    content_nsamples:     0u   ,  $             ;  number of packets that were aggregated (composed)
     aggregate:    0u,  $                ; number of data samples aggregated - determined from outer wrapper header
     time_delta :  f_nan, $
     seqn_delta :  0u, $
     error :       0b, $
-    compr_ratio: 0. , $
- ;   content_compressed:   0b, $
+    compr_ratio:  0. , $
+    ;   content_compressed:   0b, $
     gap :         1b  }
 
   if buffer_length-offset lt 12 then begin
@@ -83,15 +79,13 @@ function spp_swp_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsd
   endif
 
   header = swap_endian(uint(buffer[offset+0:offset+11],0,6) ,/swap_if_little_endian )  ; ??? error here  % Illegal subscript range: BUFFER.
-
   ccsds.version = byte(ishft(header[0],-11) )    ; Corrected - but includes 2 extra bits
-
   ccsds.apid = header[0] and '7FF'x
 
   if n_elements(subsec) eq 0 then subsec= ccsds.apid ge '350'x
 
   apid = ccsds.apid
-  
+
   MET = spp_swp_ccsds_decom_mettime(header)
 
   ;  if apid ge '360'x then begin
@@ -102,8 +96,8 @@ function spp_swp_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsd
   ;    MET = double( header[3]*2UL^16 + header[4] )
   ;  endelse
 
-; The following MET computation code belongs in the apdat object handler routines - this is a temporaty cluge that may disappear
-  
+  ; The following MET computation code belongs in the apdat object handler routines - this is a temporaty cluge that may disappear
+
   if apid ge '3c0'x then begin
     MET = spp_swp_ccsds_decom_mettime(header)              ; GSE data
   endif else if apid ge '360'x then begin
@@ -124,8 +118,8 @@ function spp_swp_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsd
     remainder = buffer[offset:*]
     if debug(dlevel,verbose) then begin
       dprint,'Not enough bytes: pkt_size, buffer_length= ',ccsds.pkt_size,buffer_length-offset,dlevel=dlevel,verbose=verbose
-      ;     hexprint,buffer
-;      pktbuffer = 0
+      ;hexprint,buffer
+      ;pktbuffer = 0
     endif
     return ,0
   endif else begin
@@ -140,10 +134,10 @@ function spp_swp_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsd
     ccsds.pdata = ptr_new(pktbuffer,/no_copy)
   endelse
 
-  ccsds.seq_group =  ishft(header[1] ,-14)
+  ccsds.seqn_group =  ishft(header[1] ,-14)
   ccsds.seqn  =    header[1] and '3FFF'x
 
-  if ccsds.MET lt 1e5 then begin
+  if (ccsds.MET lt 1e5) && (ccsds.apid ne '734'x) then begin ;0x734 is the ground SWEAP ApID (MET=0) tells us when we send command files to the MOC
     dprint,dlevel=dlevel,verbose=verbose,'Invalid MET: ',MET,' For packet type: ',ccsds.apid
     ccsds.time = d_nan
   endif
@@ -153,11 +147,9 @@ function spp_swp_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsd
     ccsds.time = d_nan
   endif
 
-  
   if isa(wrap_ccsds) then begin
-    ccsds.source = wrap_ccsds.apid
+    ccsds.source_apid = wrap_ccsds.apid
     ccsds.aggregate = wrap_ccsds.content_aggregate
-    ccsds.time_delta = wrap_ccsds.time_delta
     ccsds.compr_ratio = wrap_ccsds.compr_ratio
   endif
   if isa(source_dict) then begin
@@ -171,12 +163,9 @@ function spp_swp_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsd
     endif else begin
       source_dict.ptp_header2 ={ ptp_time:systime(1), ptp_scid: 0, ptp_source:0, ptp_spare:0, ptp_path:0, ptp_size: 17 + ccsds.pkt_size }
     endelse
-    
+
   endif
-  
-  
+
   return,ccsds
-  
+
 end
-
-

@@ -1,10 +1,14 @@
+; $LastChangedBy: ali $
+; $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
+; $LastChangedRevision: 30043 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/spani/spp_swp_spani_event_decom.pro $
+
 function spp_swp_spani_event_decom,ccsds, ptp_header=ptp_header, apdat=apdat, source_dict=source_dict 
 
   if n_params() eq 0 then begin
     dprint,'Not working yet.'
     return,!null
   endif
-
 
   ccsds_data = spp_swp_ccsds_data(ccsds)
 
@@ -63,5 +67,3 @@ function spp_swp_spani_event_decom,ccsds, ptp_header=ptp_header, apdat=apdat, so
 
   return, events
 end
-
-

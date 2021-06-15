@@ -1,7 +1,7 @@
 ;+
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-30 19:17:01 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 29998 $
+; $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
+; $LastChangedRevision: 30043 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_apdat_init.pro $
 ;-
 
@@ -201,6 +201,7 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
   ;;############################################
   ;; SETUP GSE APID
   ;;############################################
+  spp_apdat_info,'734'x,name='moc_queue',save_flag=save_flag,rt_flag=rt_flag
   spp_apdat_info,'751'x,name='aps1' ,routine='spp_power_supply_decom',tname='APS1_',   save_flag=save_flag,ttags='*P25?',   rt_flag=rt_flag
   spp_apdat_info,'752'x,name='aps2' ,routine='spp_power_supply_decom',tname='APS2_',   save_flag=save_flag,ttags='*P25?',   rt_flag=rt_flag
   spp_apdat_info,'753'x,name='aps3' ,routine='spp_power_supply_decom',tname='APS3_',   save_flag=save_flag,ttags='*P6? *N25V',   rt_flag=rt_flag
