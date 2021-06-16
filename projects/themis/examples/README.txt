@@ -5,4 +5,4 @@ Advanced:
 Deprecated:
   Cribs superceded by newer cribs or demonstrating operations that are no longer supported.
 Tplot Plotting:
-  Located in ssl_general/examples
+  Located in general/examples
