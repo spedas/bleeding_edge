@@ -1,8 +1,8 @@
 ; buffer should contain bytes for a single ccsds packet, header is
 ; contained in first 3 words (6 bytes)
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
-; $LastChangedRevision: 30043 $
+; $LastChangedDate: 2021-06-17 16:42:35 -0700 (Thu, 17 Jun 2021) $
+; $LastChangedRevision: 30052 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/common/spp_swp_ccsds_decom.pro $
 
 ;
@@ -45,28 +45,28 @@ function spp_swp_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsd
   f_nan = !values.f_nan
 
   ccsds = { ccsds_format, $
-    apid:         0u , $
-    version :     0b , $   ; this could be eliminated since it is useless
-    seqn_group:    0b , $
-    seqn:         0u , $
-    pkt_size:     0ul,  $
-    MET:          d_nan,  $
-    pdata:        ptr_new(),  $         ; pointer to full packet data including header
     time:         d_nan,  $             ; unixtime
-    ;    counter:      0ul,    $             ; packet counter as received - future use
-    ptp_time:     d_nan,  $             ; unixtime from ptp packet
-    ;    proc_time:    d_nan,  $             ; unixtime when it was processed
+    MET:          d_nan,  $
+    apid:         0u , $
+    seqn:         0u , $
+    seqn_delta :  0u, $
+    seqn_group:    0b , $
+    pkt_size:     0ul,  $
     source_apid:  0u   ,  $             ; an indicator of where this packet came from:  0: unknown, apid of wrapper_packet: 0x348 - 0x34f
-    ;    source_name:  ''   ,  $             ; file name of source
     source_hash:  0UL,  $               ; hashcode() of source_name
-    ;    content_id:   0u   ,  $             ; used by wrapper packets to define the apid of the inner packet
-    ;    content_nsamples:     0u   ,  $             ;  number of packets that were aggregated (composed)
+    compr_ratio:  0. , $
     aggregate:    0u,  $                ; number of data samples aggregated - determined from outer wrapper header
     time_delta :  f_nan, $
-    seqn_delta :  0u, $
+    ptp_time:     d_nan,  $             ; unixtime from ptp packet
     error :       0b, $
-    compr_ratio:  0. , $
-    ;   content_compressed:   0b, $
+    version :     0b , $   ; this could be eliminated since it is useless
+    pdata:        ptr_new(),  $         ; pointer to full packet data including header
+    ;ontent_compressed:   0b, $
+    ;counter:      0ul,    $             ; packet counter as received - future use
+    ;proc_time:    d_nan,  $             ; unixtime when it was processed
+    ;source_name:  ''   ,  $             ; file name of source
+    ;content_id:   0u   ,  $             ; used by wrapper packets to define the apid of the inner packet
+    ;content_nsamples:     0u   ,  $             ;  number of packets that were aggregated (composed)
     gap :         1b  }
 
   if buffer_length-offset lt 12 then begin

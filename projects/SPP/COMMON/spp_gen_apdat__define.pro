@@ -2,8 +2,8 @@
 ;  SPP_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
-; $LastChangedRevision: 30043 $
+; $LastChangedDate: 2021-06-17 16:42:35 -0700 (Thu, 17 Jun 2021) $
+; $LastChangedRevision: 30052 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -174,8 +174,8 @@ end
 function spp_gen_apdat::decom,ccsds,source_dict=source_dict   ;header
 
   strct = ccsds
-  strct.pdata = ptr_new()
-  ap = self.struct()
+  ;strct.pdata = ptr_new() ;not sure why this line was here. we want to keep the data pointer in case we need it later.
+  ;ap = self.struct()
   if self.routine then  strct = call_function(self.routine,ccsds,source_dict=source_dict)   ;, ptp_header=header ,apdat = ap)
   dprint,dlevel=self.dlevel+3,phelp=2,strct
 
@@ -245,8 +245,8 @@ function spp_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: ali $'
-  sw_hash['svn_changedate'] = '$LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $'
-  sw_hash['svn_revision '] = '$LastChangedRevision: 30043 $'
+  sw_hash['svn_changedate'] = '$LastChangedDate: 2021-06-17 16:42:35 -0700 (Thu, 17 Jun 2021) $'
+  sw_hash['svn_revision '] = '$LastChangedRevision: 30052 $'
 
   return,sw_hash
 end
@@ -288,8 +288,8 @@ function spp_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: ali $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 30043 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2021-06-17 16:42:35 -0700 (Thu, 17 Jun 2021) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 30052 $'
 
   return,global_att
 end
@@ -405,8 +405,8 @@ pro spp_gen_apdat::cdf_makefile,trange=trange,verbose=verbose,filename=filename,
     cdf = self.cdf_makeobj(datarray,global_att=g_att)  ;, datanovary,  varnames=varnames, ignore=ignore,_extra=ex
     if ~isa(filename) then begin
       cdf_format=self.cdf_pathname
-      filename=time_string(trange[0],tformat=cdf_format)
-      filename=root_data_dir()+str_sub(filename,'$NAME$',self.name)
+      fileformat=time_string(trange[0],tformat=cdf_format)
+      filename=root_data_dir()+str_sub(fileformat,'$NAME$',self.name)
     endif
     if keyword_set(self.cdf_linkname) then cdf.linkname=root_data_dir()+self.cdf_linkname
     if keyword_set(parents) then cdf.g_attributes['Parents'] = parents
@@ -416,7 +416,7 @@ pro spp_gen_apdat::cdf_makefile,trange=trange,verbose=verbose,filename=filename,
 end
 
 
-pro spp_gen_apdat::sav_makefile,sav_format=sav_format,parent=parent,verbose=verbose
+pro spp_gen_apdat::sav_makefile,sav_file=sav_file,parents=parents,verbose=verbose
 
   datarray=self.data.array
   if ~keyword_set(datarray) then return
@@ -424,17 +424,24 @@ pro spp_gen_apdat::sav_makefile,sav_format=sav_format,parent=parent,verbose=verb
   days=long(tr/(24*60*60l))
   ndays=days[1]-days[0]
   if total(self.apid eq ['342'x,'3b8'x,'36d'x,'37d'x]) ne 0 then self.nomem ;loading from sav files repopulates the memdump ram
+  day0=[time_double('2018-10-1'),systime(1)] ;valid date range
   for i=0,ndays do begin
     trange=24*60*60d*(days[0]+[0,1]+i)
+    sav_format=str_sub(self.cdf_pathname.substring(0,-8),'L1','L1A')
+    if ~keyword_set(sav_format) then message,'sav pathname not defined!'
+    fileformat=time_string(trange[0],tformat=sav_format)
+    filename=root_data_dir()+str_sub(fileformat,'$NAME$',self.name)+sav_file
+    if (trange[1] lt day0[0]) || (trange[0] gt day0[1]) then message,'Skipping: out of bound data for "'+filename
     w=where((datarray.time ge trange[0]) and (datarray.time lt trange[1]),/null,nw)
-    if nw eq 0 then continue
+    if nw eq 0 then begin
+      dprint,dlevel=2,'Skipping: No data found for "'+filename
+      continue
+    endif
     self.data.array=datarray[w]
     self.data.name=self.name ;in case spp_swp_apdat_init updated the object name (e.g., from wrp_P5 to wrp_P5P7)
-    filename=time_string(trange[0],tformat=sav_format)
-    filename=root_data_dir()+str_sub(filename,'$NAME$',self.name)
-    file_mkdir2,file_dirname(filename)
+    file_mkdir2,file_dirname(filename),add_link=root_data_dir()+self.cdf_linkname,/add_parent_link
     dprint,dlevel=3,'Saving '+filename
-    save,file=filename,self,parent,verbose=verbose,/compress
+    save,file=filename,self,parents,verbose=verbose,/compress
     dprint,dlevel=1,'Saved '+file_info_string(filename)
   endfor
   self.data.array=datarray ;returning self to its original

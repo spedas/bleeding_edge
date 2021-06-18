@@ -1,13 +1,13 @@
 ; +
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
-; $LastChangedRevision: 30043 $
+; $LastChangedDate: 2021-06-17 16:42:35 -0700 (Thu, 17 Jun 2021) $
+; $LastChangedRevision: 30052 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
 ; -
 
-function spp_apdat_info_restore,sav_file,verbose=verbose,parent=parent
+function spp_apdat_info_restore,sav_file,verbose=verbose,parents=parents
   restore,sav_file,verbose=verbose,/relax,/skip
   return, all_apdat
 end
@@ -36,7 +36,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   set_break=set_break, $
   ttags=ttags,$
   routine=routine,$
-  file_save=file_save,file_restore=file_restore,compress=compress,parent=parent, $
+  file_save=file_save,file_restore=file_restore,compress=compress,parents=parents, $
   apid_obj_name = apid_obj_name, $
   print=print, $
   rt_flag=rt_flag,trim=trim
@@ -94,7 +94,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
       return
     endif
     dprint,dlevel=3,'Restoring '+file_info_string(file_restore)
-    aps = spp_apdat_info_restore(file_restore,verbose=verbose,parent=parent)
+    aps = spp_apdat_info_restore(file_restore,verbose=verbose,parents=parents)
     apids = where(aps,/null)
     for i=0 , n_elements(apids)-1 do begin
       apid = apids[i]
@@ -107,7 +107,7 @@ pro spp_apdat_info,apid_description,name=name,verbose=verbose,$
   if keyword_set(file_save) then begin
     file_mkdir2,file_dirname(file_save)
     dprint,dlevel=2,'Saving '+file_save
-    save,file=file_save,all_apdat,parent,verbose=verbose,compress=compress
+    save,file=file_save,all_apdat,parents,verbose=verbose,compress=compress
     dprint,dlevel=1,'Saved '+file_info_string(file_save)
   endif
 
