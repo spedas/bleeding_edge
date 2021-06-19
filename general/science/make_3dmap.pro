@@ -46,12 +46,12 @@ t1 = round((theta-dtheta/2.+90.)*ny/180.)
 t2 = round((theta+dtheta/2.+90.)*ny/180.)-1
 for b1=0,nbins-1 do  begin
    if keyword_set(highest) then b=b1 else b=nbins-b1-1
-   if (bins[b] gt 0) and (p2(b) ne -1) and (p1(b) ne -1) then begin
-      p = indgen(p2(b)-p1(b)+1) + p1(b)
+   if (bins[b] gt 0) and (p2[b] ne -1) and (p1[b] ne -1) then begin
+      p = indgen(p2[b]-p1[b]+1) + p1[b]
       p = (p+nx) mod nx             ; array of p indices
-      t = indgen(t2(b)-t1(b)+1) + t1(b)
+      t = indgen(t2[b]-t1[b]+1) + t1[b]
       t = (t+ny) mod ny             ; array of t indices
-      for i=0,n_elements(t)-1 do map(p,t(i)) = b
+      for i=0,n_elements(t)-1 do map[p,t[i]] = b
    endif
 endfor
 return,map
