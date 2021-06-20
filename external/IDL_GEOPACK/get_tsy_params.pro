@@ -18,6 +18,7 @@
 ;                   ion density(rho) cm^-3
 ;           
 ;           Vp_tvar: tplot variable name storing the proton velocity
+;           
 ;
 ;           model: a string, should be 'T96','T01' or 'T04S' (upper or
 ;           lower case)
@@ -51,20 +52,36 @@
 ;               the W coefficients for the Tsyganenko-Sitnov (04) field model. If this 
 ;               keyword is not set, Geopack will calculate the W coefficients automatically.
 ;               This keyword is ignored for field models other than TS04
+;               
+;           xind (optional): Set this to specify a tplot variable containing either the B-index
+;               (for the TA15B model), or the N-index (for the TA15N model).  If not supplied, it will
+;               be calculated internally.
+;               
+;           pressure_tvar (optional): Set this to specify a tplot variable containing solar wind dynamic pressure data.
+;               If not supplied, it will be calculated internally from proton density and proton speed.
 ;           
 ;           
 ;          
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-06-09 16:44:54 -0700 (Wed, 09 Jun 2021) $
-; $LastChangedRevision: 30037 $
+; $LastChangedDate: 2021-06-18 22:38:35 -0700 (Fri, 18 Jun 2021) $
+; $LastChangedRevision: 30065 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/get_tsy_params.pro $
 ;-
 pro get_tsy_params,dst_tvar,imf_tvar,Np_tvar,Vp_tvar,model,newname=newname,$
                    trange=trange,speed=speed,imf_yz=imf_yz,g_coefficients=g_coefficients,$
-                   w_coefficients=w_coefficients
+                   w_coefficients=w_coefficients,xind=xind,pressure_tvar=pressure_tvar
 
 COMPILE_OPT idl2
+
+if strlowcase(model) eq 'ts07' then begin
+  get_ts07_params,Np_tvar=Np_tvar,Vp_tvar=Vp_tvar,pressure_tvar=pressure_tvar,newname=newname,trange=trange,speed=speed
+  return
+endif else if (strlowcase(model) eq 'ta15b') || (strlowcase(model) eq 'ta15n') then begin
+  get_ta15_params,imf_tvar=imf_tvar,Np_tvar=Np_tvar,Vp_tvar=Vp_tvar,imf_yz=imf_yz,newname=newname,trange=trange,speed=speed,model=model,xind=xind
+  return
+endif
+
 if not keyword_set(trange) then tlims = timerange(/current) else tlims=trange
 
 ;identify the number of 5 minute time intervals in the specified range
@@ -163,16 +180,27 @@ spd = interpol(wind_spd,wind_spd_times,ntimes)
 ; Solar wind dynamic pressure (Pdyn parameter for GEOPACK)
 ; Previous version only accounted for contribution by protons, not alphas, and were not consistent (off by a factor of 1.2) with 
 ; OMNI pressure data.  
-;
-; Derivation of Alpha particle pressure correction is here: https://omniweb.gsfc.nasa.gov/ftpbrowser/bow_derivation.html
-;
-; JWL 2021-06-09
 
-f_alpha = 0.04D     ;  Ratio of alphas to protons.  OMNI assumes 5%, which might be a bit high according to Vassilis.
+if (size(pressure_tvar,/type) eq 7) && (tnames(pressure_tvar) ne '') then begin
 
-alpha_correction = 1 + 4.0D * f_alpha   ;  4.0 = mass of alpha particle in AMU.  Assumes V_alpha = V_proton.
+  ; deflag solar wind pressure
+  tdeflag, pressure_tvar, 'linear', /overwrite
 
-pram = alpha_correction * 1.667e-6*den*spd^2 ; 1.667e-6 = proton mass times unit conversions to give result in nPa
+  get_data,pressure_tvar,data=d
+
+  pram_times = d.x
+  pram_vals = d.y
+  pram = interpol(pram_vals,pram_times,ntimes)
+
+endif else begin
+   ; Calculate solar wind dynamic pressure from proton speed and density, assuming the default fraction of alpha particles (f_alpha = 0.04)
+   ; JWL 2021-060-18
+   
+   dprint,'No pressure variable supplied, calculating from proton speed and density'
+   pram = calc_pdyn(V_p=spd,N_p=den)
+   
+   ; No need to interploate to ntimes, since spd and den are already interpolated
+endelse
 
 if strlowcase(model) eq 't01' then begin 
    if ~keyword_set(g_coefficients) then begin
@@ -204,7 +232,7 @@ if strlowcase(model) eq 't01' then begin
    
    if not keyword_set(newname) then newname = 't01_par'
 
-endif else if (strlowcase(model) eq 't04s') or (strlowcase(model) eq 'ts07') then begin
+endif else if (strlowcase(model) eq 't04s') then begin
 
    if ~keyword_set(w_coefficients) then begin
        ; the user didn't specify a tplot variable containing W coefficients, 

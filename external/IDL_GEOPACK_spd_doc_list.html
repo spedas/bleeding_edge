@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jun 18 18:15:54 2021.<P>
+<STRONG>Last modified: </STRONG>Sat Jun 19 03:15:56 2021.<P>
  
 <HR>
  
@@ -19,9 +19,11 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>external/IDL_GEOPACK</H1>
+<LI><A HREF="#CALC_PDYN">CALC_PDYN</A>
 <LI><A HREF="#CALCULATE_LSHELL">CALCULATE_LSHELL</A>
 <LI><A HREF="#GET_TSY_PARAMS">GET_TSY_PARAMS</A>
 <LI><A HREF="#IGP_TEST">IGP_TEST</A>
+<LI><A HREF="#TCALC_PDYN">TCALC_PDYN</A>
 <LI><A HREF="#TSY_VALID_COORDS">TSY_VALID_COORDS</A>
 <LI><A HREF="#TSY_VALID_PARAM">TSY_VALID_PARAM</A>
 <br>
@@ -31,7 +33,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="CALCULATE_LSHELL">
 <H2>CALCULATE_LSHELL</H2></A>
-<A HREF="#GET_TSY_PARAMS">[Next Routine]</A>
+<A HREF="#CALC_PDYN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -60,9 +62,46 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="IDL_GEOPACK/calculate_lshell.pro">external/IDL_GEOPACK/calculate_lshell.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="CALC_PDYN">
+<H2>CALC_PDYN</H2></A>
+<A HREF="#CALCULATE_LSHELL">[Previous Routine]</A>
+<A HREF="#GET_TSY_PARAMS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE: calc_pdyn
+
+ PURPOSE: This procedure calculates the solar wind dynamic pressure from proton speed and proton density, accounting for contributions from both
+          protons and alpha particles.  Previous SPEDAS code only accounted for protons.  OMNIweb provides a &quot;Pressure&quot; data set that assumes
+          f_alpha = N_a/N_p = 0.05, which according to Vassilis may be a little high.   This routine accepts an f_alpha parameter, whicb defaults to 0.04.
+
+ 
+
+ INPUTS:   
+           N_p: Solar wind ion density (rho) cm^-3
+           V_p: proton velocity (km/sec)
+;           
+ Returns:
+           Dynamic pressure in units of nPa, suitable for passing to GEOPACK field models
+
+ KEYWORDS:
+
+           speed(optional): set this if Vp_tvar is stored as a speed
+           
+ Notes:
+ Derivation of Alpha particle pressure correction is here: https://omniweb.gsfc.nasa.gov/ftpbrowser/bow_derivation.html
+
+
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2021-06-09 16:44:54 -0700 (Wed, 09 Jun 2021) $
+ $LastChangedRevision: 30037 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/get_tsy_params.pro $
+</PRE><P>
+<STRONG>(See <A href="IDL_GEOPACK/calc_pdyn.pro">external/IDL_GEOPACK/calc_pdyn.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="GET_TSY_PARAMS">
 <H2>GET_TSY_PARAMS</H2></A>
-<A HREF="#CALCULATE_LSHELL">[Previous Routine]</A>
+<A HREF="#CALC_PDYN">[Previous Routine]</A>
 <A HREF="#IGP_TEST">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -85,6 +124,7 @@ This page was created by the IDL library routine
                    ion density(rho) cm^-3
            
            Vp_tvar: tplot variable name storing the proton velocity
+           
 
            model: a string, should be 'T96','T01' or 'T04S' (upper or
            lower case)
@@ -118,13 +158,20 @@ This page was created by the IDL library routine
                the W coefficients for the Tsyganenko-Sitnov (04) field model. If this 
                keyword is not set, Geopack will calculate the W coefficients automatically.
                This keyword is ignored for field models other than TS04
+               
+           xind (optional): Set this to specify a tplot variable containing either the B-index
+               (for the TA15B model), or the N-index (for the TA15N model).  If not supplied, it will
+               be calculated internally.
+               
+           pressure_tvar (optional): Set this to specify a tplot variable containing solar wind dynamic pressure data.
+               If not supplied, it will be calculated internally from proton density and proton speed.
            
            
           
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-06-09 16:44:54 -0700 (Wed, 09 Jun 2021) $
- $LastChangedRevision: 30037 $
+ $LastChangedDate: 2021-06-18 22:38:35 -0700 (Fri, 18 Jun 2021) $
+ $LastChangedRevision: 30065 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/get_tsy_params.pro $
 </PRE><P>
 <STRONG>(See <A href="IDL_GEOPACK/get_tsy_params.pro">external/IDL_GEOPACK/get_tsy_params.pro</A>)</STRONG><P>
@@ -133,7 +180,7 @@ This page was created by the IDL library routine
 <A NAME="IGP_TEST">
 <H2>IGP_TEST</H2></A>
 <A HREF="#GET_TSY_PARAMS">[Previous Routine]</A>
-<A HREF="#TSY_VALID_COORDS">[Next Routine]</A>
+<A HREF="#TCALC_PDYN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Function: igp_test
@@ -163,9 +210,54 @@ Notes:
 <STRONG>(See <A href="IDL_GEOPACK/igp_test.pro">external/IDL_GEOPACK/igp_test.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="TCALC_PDYN">
+<H2>TCALC_PDYN</H2></A>
+<A HREF="#IGP_TEST">[Previous Routine]</A>
+<A HREF="#TSY_VALID_COORDS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE: tcalc_pdyn
+
+ PURPOSE: This procedure calculates the solar wind dynamic pressure from proton speed and proton density, accounting for contributions from both
+          protons and alpha particles.  Previous SPEDAS code only accounted for protons.  OMNIweb provides a &quot;Pressure&quot; data set that assumes
+          f_alpha = N_a/N_p = 0.05, which according to Vassilis may be a little high.   This routine accepts an f_alpha parameter, whicb defaults to 0.04.
+
+ 
+
+ INPUTS:   
+           N_p_tvar: tplot variable name storing the solar wind
+                   ion density(rho) cm^-3
+           
+           V_p_tvar: tplot variable name storing the proton velocity
+
+           model: a string, should be 'TA15N' or 'TA15B'
+           
+ Returns:
+           Dynamic pressure in units of nPa, suitable for passing to GEOPACK field models
+
+ KEYWORDS:
+
+           newname(optional): the name of the output tplot variable, defaults to 'Pdyn' if not provided.
+
+           times(optional): Timestamps at which the pressure shall be calculated.  If not provided, the times of the density input variable will be used.
+
+           speed(optional): set this if Vp_tvar is stored as a speed
+           
+ Notes:
+ Derivation of Alpha particle pressure correction is here: https://omniweb.gsfc.nasa.gov/ftpbrowser/bow_derivation.html
+
+
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2021-06-09 16:44:54 -0700 (Wed, 09 Jun 2021) $
+ $LastChangedRevision: 30037 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/get_tsy_params.pro $
+</PRE><P>
+<STRONG>(See <A href="IDL_GEOPACK/tcalc_pdyn.pro">external/IDL_GEOPACK/tcalc_pdyn.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TSY_VALID_COORDS">
 <H2>TSY_VALID_COORDS</H2></A>
-<A HREF="#IGP_TEST">[Previous Routine]</A>
+<A HREF="#TCALC_PDYN">[Previous Routine]</A>
 <A HREF="#TSY_VALID_PARAM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

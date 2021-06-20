@@ -129,8 +129,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-04-13 17:36:51 -0700 (Tue, 13 Apr 2021) $
-; $LastChangedRevision: 29880 $
+; $LastChangedDate: 2021-06-18 19:51:10 -0700 (Fri, 18 Jun 2021) $
+; $LastChangedRevision: 30058 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2equator.pro $
 ;-
 
@@ -138,14 +138,15 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
     in_coord=in_coord, out_coord=out_coord, internal_model=internal_model, external_model=external_model, $
     south=south, km=km, par=par, period=period, error=error, r0=r0, rlim=rlim, add_tilt=add_tilt, $
     get_tilt=get_tilt, set_tilt=set_tilt, get_nperiod=get_nperiod, get_period_times=get_period_times, $
-    geopack_2008=geopack_2008, exact_tilt_times=exact_tilt_times, _extra=_extra
+    geopack_2008=geopack_2008, exact_tilt_times=exact_tilt_times, $
+    ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, _extra=_extra
 
     error = 0
     
     ;constant arrays used for input validation
     valid_coords = ['gei', 'gse','geo', 'gsm', 'sm']
     valid_internals = ['dip', 'igrf']
-    valid_externals = ['none', 't89', 't96', 't01', 't04s', 'ts07']
+    valid_externals = ['none', 't89', 't96', 't01', 't04s', 'ts07','ta15b','ta15n']
     
     ; 6371.2 = the value used in the GEOPACK FORTRAN code for Re
     km_in_re = 6371.2D
@@ -244,6 +245,9 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
       T96 = 0
       T01 = 0
       TS04 = 0
+      TS07 = 0
+      TA15B = 0
+      TA15N = 0
        
       ;intialize and check par array
       if size(par,/n_dim) eq 0 then par_array = make_array(n_elements(tarray2),/DOUBLE,value=par)
@@ -282,6 +286,9 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
        if external_model2 eq 't96' then T96 = 1 else T96 = 0
        if external_model2 eq 't01' then T01 = 1 else T01 = 0
        if external_model2 eq 't04s' then TS04 = 1 else TS04 = 0
+       if external_model2 eq 'ts07' then TS07 = 1 else TS07 = 0
+       if external_model2 eq 'ta15n' then TA15N=1 else TA15N = 0
+       if external_model2 eq 'ta15b' then TA15B=1 else TA15B = 0
     
        ;check par array
        s = size(par,/dimensions)
@@ -296,6 +303,9 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
        T96 = 0
        T01 = 0
        TS04 = 0
+       TS07 = 0
+       TA15B = 0
+       TA15N = 0
     endelse
     
     ;check input array dimensions
@@ -450,7 +460,42 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
         return
       endelse
     endif
-    
+ 
+    if TS07 eq 1 then begin
+
+      ; find start, end years and download parameter files
+      time_start = strmid(time_string(tarray[0]), 0, 4)
+      time_end = strmid(time_string(tarray[n_elements(tarray)-1]), 0, 4)
+
+      if time_end gt time_start then begin
+        tdiff = 0 + time_end - time_start
+        years = [time_start]
+        for i=1, tdiff do begin
+          years = [years, time_start + i]
+        endfor
+      endif else ts07_years = [time_start]
+
+      ts07_download, years=ts07_years
+
+      ; Directory for model parameters.
+      if not keyword_set(ts07_param_dir) then begin
+        ts07_param_dir = !spedas.geopack_param_dir
+      endif else if ~file_test(ts07_param_dir, /READ, /directory) then begin
+        ts07_param_dir = !spedas.geopack_param_dir
+      endif
+      ; Directory that contains the coeficient files
+      GEOPACK_TS07_SETPATH, ts07_param_dir[0]
+      if keyword_set(ts07_param_file) then begin
+        ; Coeficcient filename only, without the full path
+        GEOPACK_TS07_LOADCOEF, file_basename(ts07_param_file[0])
+      endif else begin
+        dprint,'Error: ts07_param_file must be specified if using model ts07'
+        return
+      endelse
+
+    endif
+
+   
     i = 0L
     
     while i le ct do begin
@@ -466,7 +511,7 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
     
           ;calculate which par values should be used on this iteration
           if T89 eq 1 then par_iter = par_array[i] $
-          else if T96 eq 1 || T01 eq 1 || TS04 eq 1 then par_iter = par_array[i,*] $
+          else if T96 eq 1 || T01 eq 1 || TS04 eq 1 || TS07 eq 1 || TA15B eq 1 || TA15N eq 1 then par_iter = par_array[i,*] $
           else par_iter = ''
     
           ;account for user tilt.
@@ -482,11 +527,17 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
             get_tilt[i] = tilt
           endif
     
-      ;    geopack_trace,in_pos_array2[i,0],in_pos_array2[i,1],in_pos_array2[i,2],dir,par_iter,out_foot_array[i,0],out_foot_array[i,1],out_foot_array[i,2],R0=R02,RLIM=RLIM2,fline = trgsm_out,tilt=tilt,IGRF=IGRF,T89=T89,T96=T96,T01=T01,TS04=TS04,_extra=_extra,/REFINE,/EQUATOR
+      ;    geopack_trace,in_pos_array2[i,0],in_pos_array2[i,1],in_pos_array2[i,2],dir,par_iter,out_foot_array[i,0],$
+      ;    out_foot_array[i,1],out_foot_array[i,2],R0=R02,RLIM=RLIM2,fline = trgsm_out,tilt=tilt,IGRF=IGRF,T89=T89,$
+      ;    T96=T96,T01=T01,TS04=TS04,_extra=_extra,/REFINE,/EQUATOR
           if ~undefined(geopack_2008) then begin
-            geopack_trace_08,in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = T89, T96 = T96, T01 = T01, TS04 = TS04, /refine, /equator, _extra = _extra
+            geopack_trace_08,in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, $
+              out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, $
+              IGRF = IGRF, T89 = T89, T96 = T96, T01 = T01, TS04 = TS04, TS07 = TS07, TA15B = TA15B, TA15N = TA15N, /refine, /equator, _extra = _extra
           endif else begin
-            geopack_trace, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = T89, T96 = T96, T01 = T01, TS04 = TS04, /refine, /equator, _extra = _extra
+            geopack_trace, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, $
+              out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, $
+              IGRF = IGRF, T89 = T89, T96 = T96, T01 = T01, TS04 = TS04, TS07 = TS07,TA15B = TA15B, TA15N = TA15N, /refine, /equator, _extra = _extra
           endelse
           
           out_foot_array[i, 0] = out_foot_x
@@ -544,12 +595,12 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
     
              ;calculate which par values should be used on this iteration
              if T89 eq 1 then par_iter = par_array[id] $
-             else if T96 eq 1 || T01 eq 1 || TS04 eq 1 then par_iter = par_array[id,*] else par_iter = ''
+             else if T96 eq 1 || T01 eq 1 || TS04 eq 1 || TS07 eq 1 then par_iter = par_array[id,*] else par_iter = ''
              
              if ~undefined(geopack_2008) then begin
-                geopack_trace_08,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89=T89,T96=T96,T01=T01,TS04=TS04,_extra=_extra,/REFINE,/EQUATOR
+                geopack_trace_08,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89=T89,T96=T96,T01=T01,TS04=TS04,TS07=TS07,_extra=_extra,/REFINE,/EQUATOR
              endif else begin
-                geopack_trace,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89=T89,T96=T96,T01=T01,TS04=TS04,_extra=_extra,/REFINE,/EQUATOR
+                geopack_trace,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89=T89,T96=T96,T01=T01,TS04=TS04,TS07=TS07,_extra=_extra,/REFINE,/EQUATOR
              endelse 
              
              ;output foot

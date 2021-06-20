@@ -117,8 +117,8 @@
 ;            http://modelweb.gsfc.nasa.gov/magnetos/data-based/Paper219.pdf
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-03-26 15:32:36 -0700 (Fri, 26 Mar 2021) $
-; $LastChangedRevision: 29828 $
+; $LastChangedDate: 2021-06-18 21:52:28 -0700 (Fri, 18 Jun 2021) $
+; $LastChangedRevision: 30062 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t01/tt01.pro $
 ;-
 
@@ -255,7 +255,7 @@ pro tt01, pos_gsm_tvar, pdyn=pdyn, dsti=dsti, yimf=yimf, zimf=zimf, $
   endif else begin
     mag_array = t01(d.x, d.y/6371.2, pdyn_dat, dsti_dat, yimf_dat, zimf_dat, g1_dat, g2_dat, $
         period = period,get_nperiod=get_nperiod,get_period_times=period_times_dat, $
-        get_tilt=tilt_dat,storm=storm,geopack_2008=geopack_2008,exact_tilt_times)
+        get_tilt=tilt_dat,storm=storm,geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times)
   endelse
  
   if size(mag_array, /n_dim) eq 0 && mag_array[0] eq -1L then begin
