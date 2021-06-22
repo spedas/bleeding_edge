@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Jun 20 03:16:00 2021.<P>
+<STRONG>Last modified: </STRONG>Mon Jun 21 18:15:55 2021.<P>
  
 <HR>
  
@@ -22,7 +22,10 @@ This page was created by the IDL library routine
 <LI><A HREF="#THM_LOAD_SST2">THM_LOAD_SST2</A>
 <LI><A HREF="#THM_PART_DIST2">THM_PART_DIST2</A>
 <br>wrapper function around the different routines called 'get_p???'
+<LI><A HREF="#THM_SANITIZE_L2_SST">THM_SANITIZE_L2_SST</A>
 <LI><A HREF="#THM_SST_ADD_SPINDATA2">THM_SST_ADD_SPINDATA2</A>
+<LI><A HREF="#THM_SST_ATT_CORRECT">THM_SST_ATT_CORRECT</A>
+<br>tests for attenuator transition, calculates background level and
 <LI><A HREF="#THM_SST_BUILD_CAL_FILES">THM_SST_BUILD_CAL_FILES</A>
 <LI><A HREF="#THM_SST_CALIB_PARAMS2">THM_SST_CALIB_PARAMS2</A>
 <br>This populates the correct fields of the dist struct so that data can be correctly calibrated.
@@ -124,7 +127,7 @@ Major Revisions:
 <A NAME="THM_PART_DIST2">
 <H2>THM_PART_DIST2</H2></A>
 <A HREF="#THM_LOAD_SST2">[Previous Routine]</A>
-<A HREF="#THM_SST_ADD_SPINDATA2">[Next Routine]</A>
+<A HREF="#THM_SANITIZE_L2_SST">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -171,6 +174,10 @@ KEYWORDS:
  retreat (ESA only) = if set, get the data point before the one that
                       was gotten last
  times = if set, returns the time array for all the saved data points
+ skip_sst_att_correct = if set skip correction for effective
+                        attenuation, which is done by default if the
+                        variables 'th?_ps?f_ratio_var' exist for the
+                        given probe and species.
 OUTPUT:
  dat = the '3d data structure' for the given data type: In general
        this will be different for different data types, but there are
@@ -227,17 +234,46 @@ OUTPUT:
 
 
 $LastChangedBy: jimm $
-$LastChangedDate: 2021-03-09 10:33:22 -0800 (Tue, 09 Mar 2021) $
-$LastChangedRevision: 29748 $
+$LastChangedDate: 2021-06-21 11:42:40 -0700 (Mon, 21 Jun 2021) $
+$LastChangedRevision: 30074 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_part_dist2.pro $
 </PRE><P>
 <STRONG>(See <A href="SST_cal_workdir/thm_part_dist2.pro">projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_part_dist2.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_SANITIZE_L2_SST">
+<H2>THM_SANITIZE_L2_SST</H2></A>
+<A HREF="#THM_PART_DIST2">[Previous Routine]</A>
+<A HREF="#THM_SST_ADD_SPINDATA2">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Procedure: thm_santize_l2_sst
+
+Purpose:
+  Basic santization for L2 CDFs.
+  Right now, only removes attenuator spikes
+  Only tested for psif/psef.  Not sure how it would work on other data
+
+Arguments:
+  probe: the probe ('a','b,', etc...)
+  datatype: the sst data type( e.g. psif etc..)
+  tvarnames: the tvarnames to be sanitized
+  suffix=suffix:Set to add a suffix for comparison testing
+
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2021-06-21 13:40:03 -0700 (Mon, 21 Jun 2021) $
+ $LastChangedRevision: 30075 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_sanitize_l2_sst.pro $
+
+
+</PRE><P>
+<STRONG>(See <A href="SST_cal_workdir/thm_sanitize_l2_sst.pro">projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_sanitize_l2_sst.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_SST_ADD_SPINDATA2">
 <H2>THM_SST_ADD_SPINDATA2</H2></A>
-<A HREF="#THM_PART_DIST2">[Previous Routine]</A>
-<A HREF="#THM_SST_BUILD_CAL_FILES">[Next Routine]</A>
+<A HREF="#THM_SANITIZE_L2_SST">[Previous Routine]</A>
+<A HREF="#THM_SST_ATT_CORRECT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure: THM_SST_ADD_SPINDATA2.PRO
@@ -263,9 +299,50 @@ Notes:  To be called within thm_load_sst2.
 <STRONG>(See <A href="SST_cal_workdir/thm_sst_add_spindata2.pro">projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_sst_add_spindata2.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_SST_ATT_CORRECT">
+<H2>THM_SST_ATT_CORRECT</H2></A>
+<A HREF="#THM_SST_ADD_SPINDATA2">[Previous Routine]</A>
+<A HREF="#THM_SST_BUILD_CAL_FILES">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ thm_sst_att_correct
+PURPOSE:
+ tests for attenuator transition, calculates background level and
+ correction factor, and corrects the attenuation level in the saved
+ data structures. Ideally the correction is interpolated between two
+ attenuator transistions.
+CALLING SEQUENCE:
+ thm_sst_att_correct, probe, date, dur = dur
+INPUT:
+ probe = 'a', 'b', 'c', 'd', or 'e'
+ date = start date
+KEYWORDS:
+ dur = duration in days, note that some attenuator intervals are more
+       than a day, if there is no attenuator transition during the
+       date input, no correction will be calculated. If there is only
+       one transition in the data, then the correction will not be 
+       interpolated over the full interval.
+ auto_extend = If duration is 1 day, the auto_extend option will
+               extend the calculation to previous and later days if
+               the attenuators are in at the start and end of the
+               day. This will extend at least 7 days in either
+               direction.
+NOTES:
+Uses thm_part_dist2, and not thx_sst_psi?f
+HISTORY:
+ 2021-03-29, jimm@ssl.berkeley.edu
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2021-06-21 11:35:13 -0700 (Mon, 21 Jun 2021) $
+ $LastChangedRevision: 30073 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_sst_att_correct.pro $
+</PRE><P>
+<STRONG>(See <A href="SST_cal_workdir/thm_sst_att_correct.pro">projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_sst_att_correct.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_SST_BUILD_CAL_FILES">
 <H2>THM_SST_BUILD_CAL_FILES</H2></A>
-<A HREF="#THM_SST_ADD_SPINDATA2">[Previous Routine]</A>
+<A HREF="#THM_SST_ATT_CORRECT">[Previous Routine]</A>
 <A HREF="#THM_SST_CALIBRATION_TESTS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

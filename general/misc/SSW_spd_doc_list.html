@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Jun 20 03:16:00 2021.<P>
+<STRONG>Last modified: </STRONG>Mon Jun 21 18:15:55 2021.<P>
  
 <HR>
  
@@ -27,6 +27,10 @@ This page was created by the IDL library routine
 <br>take all of the files in a given directory and replace strings
 <LI><A HREF="#DPRINT">DPRINT</A>
 <br>Diagnostic PRINT (activated only when DEBUG reaches DLEVEL)
+<LI><A HREF="#F2PL">F2PL</A>
+<br>Calculates values the double power law
+<LI><A HREF="#F3PL">F3PL</A>
+<br>Calculates values for the triple power law
 <LI><A HREF="#FILE_STR_REPLACE">FILE_STR_REPLACE</A>
 <br>read a file, find a substring and replace it in an SVN working copy
 <LI><A HREF="#IN_SET">IN_SET</A>
@@ -161,7 +165,7 @@ HISTORY:
 <A NAME="DPRINT">
 <H2>DPRINT</H2></A>
 <A HREF="#DIR_STR_REPLACE">[Previous Routine]</A>
-<A HREF="#FILE_STR_REPLACE">[Next Routine]</A>
+<A HREF="#F2PL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROJECT:
@@ -259,9 +263,64 @@ HISTORY:
 <STRONG>(See <A href="SSW/dprint.pro">general/misc/SSW/dprint.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="F2PL">
+<H2>F2PL</H2></A>
+<A HREF="#DPRINT">[Previous Routine]</A>
+<A HREF="#F3PL">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+	f2pl
+ CALLING SEQUENCE:
+	f=f2pl(ax,x)
+ PURPOSE:
+	Calculates values the double power law
+ INPUT:
+	ax= fit parameters, [slope, intercept, slope, intercept]
+	x = value input
+ OUTPUT:
+	f=ax[0]+ax[1]*x, below xbr
+	f=ax[2]+ax[3]*x, above xbr, where
+       xbr = (ax[2]-ax[0])/(ax[1]-ax[3])
+ HISTORY:
+	Spring '92 JMcT
+
+</PRE><P>
+<STRONG>(See <A href="SSW/f2pl.pro">general/misc/SSW/f2pl.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="F3PL">
+<H2>F3PL</H2></A>
+<A HREF="#F2PL">[Previous Routine]</A>
+<A HREF="#FILE_STR_REPLACE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+	f3pl
+ CALLING SEQUENCE:
+	f=f3pl(ax,x)
+ PURPOSE:
+	Calculates values for the triple power law
+ INPUT:
+	ax= fit parameters, [slope, intercept, slope, intercept,
+	slope, intercept]
+	x = value input
+ OUTPUT:
+	f=ax[0]+ax[1]*x, below xbr1
+	f=ax[2]+ax[3]*x, above xbr1, where
+       xbr1 = (ax[2]-ax[0])/(ax[1]-ax[3])
+       f=ax[4]+ax[5]*x, above xbr2, where
+       xbr2 = (ax[4]-ax[2])/(ax[3]-ax[5])
+ HISTORY:
+	Spring '92 JMcT
+
+</PRE><P>
+<STRONG>(See <A href="SSW/f3pl.pro">general/misc/SSW/f3pl.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="FILE_STR_REPLACE">
 <H2>FILE_STR_REPLACE</H2></A>
-<A HREF="#DPRINT">[Previous Routine]</A>
+<A HREF="#F3PL">[Previous Routine]</A>
 <A HREF="#IN_SET">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

@@ -1,4 +1,3 @@
-
 ;+
 ;NAME:
 ; thm_part_dist2
@@ -44,6 +43,10 @@
 ; retreat (ESA only) = if set, get the data point before the one that
 ;                      was gotten last
 ; times = if set, returns the time array for all the saved data points
+; skip_sst_att_correct = if set skip correction for effective
+;                        attenuation, which is done by default if the
+;                        variables 'th?_ps?f_ratio_var' exist for the
+;                        given probe and species.
 ;OUTPUT:
 ; dat = the '3d data structure' for the given data type: In general
 ;       this will be different for different data types, but there are
@@ -100,14 +103,15 @@
 ;
 ;
 ;$LastChangedBy: jimm $
-;$LastChangedDate: 2021-03-09 10:33:22 -0800 (Tue, 09 Mar 2021) $
-;$LastChangedRevision: 29748 $
+;$LastChangedDate: 2021-06-21 11:42:40 -0700 (Mon, 21 Jun 2021) $
+;$LastChangedRevision: 30074 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/SST/SST_cal_workdir/thm_part_dist2.pro $
 ;-
 
 function thm_part_dist2,dformat,time,index=index,times=times,$
-                      badbins2mask=badbins2mask,cursor=cursor,$
-                      ft_ot=ft_ot,fto=fto,f_o=f_o,_extra=ex
+                        badbins2mask=badbins2mask,cursor=cursor,$
+                        ft_ot=ft_ot,fto=fto,f_o=f_o,_extra=ex,$
+                        skip_sst_att_correct=skip_sst_att_correct
 
 ; From this point on only a single SST 3d structure is returned
 
@@ -241,6 +245,19 @@ if keyword_set(badbins2mask) then begin
    endelse
 endif
 
+;Account for varying attenuator effectiveness, due to background
+;effects, this will only trigger if the appropriate 'ps?f_ratio_var'
+;exists, jmm, 2021-04-19
+if ~keyword_set(skip_sst_att_correct) then begin
+   if species eq 'i' then begin
+      get_data, 'th'+probe[0]+'_psif_ratio_var', data = r
+      If(is_struct(r)) Then correct_atten = 1b Else correct_atten = 0b
+   endif else begin
+      get_data, 'th'+probe[0]+'_psef_ratio_var', data = r
+      If(is_struct(r)) Then correct_atten = 1b Else correct_atten = 0b
+   endelse
+endif else correct_atten = 0b
+
 ;NOTE: this code is coupled with code in thm_pgs_clean_sst, if you change this, you'll probably have to change that
 if dtype eq 'f' || dtype eq 'b' then begin
 
@@ -285,7 +302,7 @@ if dtype eq 'f' || dtype eq 'b' then begin
     dist.eff[8:10,*] = dist.eff[12:14,*]
     dist.channel = 'f_ft'
   end
-  ;removes sunpulse contamination if keywords set by end user
+;removes sunpulse contamination if keywords set by end user
   dist = thm_sst_remove_sunpulse(badbins2mask=badbins2mask,dist,_extra=ex)
 endif else if(tag_exist(dist, 'channel')) then begin
   if species eq 'i' then begin
@@ -295,6 +312,31 @@ endif else if(tag_exist(dist, 'channel')) then begin
   endelse
 endif
 
+;Apply attenuator correction
+If(correct_atten And dist.atten Eq 5) Then Begin
+   e = dist.energy[*, 0]
+   xx = where(r.x Eq 0.5*(dist.time+dist.end_time), nxx)
+   If(nxx Gt 0) Then Begin      ;no time interpolation needed
+      rv = reform(r.v[xx[0], *])
+      ry = reform(r.y[xx[0], *])
+   Endif Else Begin
+      rv = reform(r.v[0, *]) & rv[*] = 0 & ry = rv
+      trv = 0.5*(dist.time+dist.end_time)
+      For j = 0, n_elements(rv)-1 Do Begin
+         rv[j] = interpol(r.v[*, j], r.x, trv, /nan)
+         ry[j] = interpol(r.y[*, j], r.x, trv, /nan)
+      Endfor
+   Endelse
+;does there need to be any energy interpolation?, probably not
+   If(total(rv) Gt 0) Then Begin
+      If(n_elements(e) Ne n_elements(rv) Or total(abs(e-rv)) Gt 0) Then Begin
+         ry = interpol(ry, rv, e)
+      Endif
+      For j = 0, n_elements(e)-1 Do dist.att[j, *] = ry[j]
+   Endif Else Begin
+      For j = 0, n_elements(e)-1 Do dist.att[j, *] = ry[j] ;this will be the nominal attenuation value
+   Endelse
+Endif
 return,dist
 
 end
