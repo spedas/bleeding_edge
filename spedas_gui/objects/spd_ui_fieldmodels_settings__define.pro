@@ -27,10 +27,11 @@
 ;   t89_set_tilt: user supplied tilt angle for the T89 model
 ;   t89_add_tilt: user supplied angle to add to the model tilt angle for T89
 ;   output_options: models to run - [model at position, equatorial footprint, ionospheric footprint]
+;   geopack_2008: flag to switch between original and Geopack 2008 library routines
 ;       
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2021-06-18 22:45:06 -0700 (Fri, 18 Jun 2021) $
-;$LastChangedRevision: 30068 $
+;$LastChangedDate: 2021-06-22 13:30:26 -0700 (Tue, 22 Jun 2021) $
+;$LastChangedRevision: 30078 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/objects/spd_ui_fieldmodels_settings__define.pro $
 ;-
 
@@ -50,7 +51,8 @@ function spd_ui_fieldmodels_settings::init, $
     pressure_tvar=pressure_tvar,             $
     bindex_tvar=bindex_tvar,                 $
     nindex_tvar=nindex_tvar,                 $
-    t89_add_tilt=t89_add_tilt
+    t89_add_tilt=t89_add_tilt,               $
+    geopack_2008=geopack_2008
     
     if undefined(pos_tvar) then pos_tvar = ''
     if undefined(imf_by_tvar) then imf_by_tvar = ''
@@ -68,6 +70,7 @@ function spd_ui_fieldmodels_settings::init, $
     if undefined(pressure_tvar) then pressure_tvar = ''
     if undefined(bindex_tvar) then bindex_tvar = ''
     if undefined(nindex_tvar) then nindex_tvar = ''
+    if undefined(geopack_2008) then geopack_2008=0
    
     
     self.pos_tvar = pos_tvar
@@ -86,6 +89,7 @@ function spd_ui_fieldmodels_settings::init, $
     self.bindex_tvar = bindex_tvar
     self.nindex_tvar = nindex_tvar
     self.output_options = output_options
+    self.geopack_2008 = geopack_2008
     return, 1
 end
 
@@ -108,6 +112,7 @@ pro spd_ui_fieldmodels_settings__define
              pressure_tvar: '',           $
              bindex_tvar: '',             $
              nindex_tvar: '',             $
+             geopack_2008: 0,              $
              inherits spd_ui_getset       $
              }
 end

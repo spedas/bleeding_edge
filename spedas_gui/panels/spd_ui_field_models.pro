@@ -9,8 +9,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2021-06-18 22:48:56 -0700 (Fri, 18 Jun 2021) $
-;$LastChangedRevision: 30069 $
+;$LastChangedDate: 2021-06-22 13:30:26 -0700 (Tue, 22 Jun 2021) $
+;$LastChangedRevision: 30078 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_field_models.pro $
 ;-
 
@@ -422,7 +422,7 @@ pro spd_ui_field_models_event, event
                 imf_by_tvar = *state.usersIMFBy, imf_bz_tvar = *state.usersIMFBz, sw_density_tvar = *state.usersDensity, sw_speed_tvar = *state.usersSpeed, $
                 dst_tvar = *state.usersDst, w_coeff_tvar = *state.usersWs, g_coeff_tvar = *state.usersGs, t89_kp = state.t89_iopt, $
                 t89_set_tilt = *state.userSetTilt, t89_add_tilt = *state.userAddTilt, t01_storm = state.t01_storm, $
-                pressure_tvar=*state.userspressure, bindex_tvar=*state.usersbindex, nindex_tvar=*state.usersnindex
+                pressure_tvar=*state.userspressure, bindex_tvar=*state.usersbindex, nindex_tvar=*state.usersnindex, geopack_2008=state.geopack_2008
         endif
         if ptr_valid(ptrState) then ptr_free, ptrState
         Widget_Control, event.top, /destroy
@@ -685,6 +685,7 @@ pro spd_ui_field_models_event, event
                 state.statusBar -> update, 'Generating the ' + field_model + ' model field for: ' + string(var_to_map)
                 state.historywin -> update, 'Generating the ' + field_model + ' model field for: ' + string(var_to_map)
 
+                geopack_2008 = state.geopack_2008
                 ; generate the magnetic field model at the position in the tplot variable
                 if run_at_pos then begin
                     model_var = var_to_map+'_b'+field_model
@@ -694,37 +695,37 @@ pro spd_ui_field_models_event, event
                             if *state.userSetTilt ne '' then begin
                                 ; the user manually set the tilt angle
                                 user_set_tilt = float(*state.userSetTilt)
-                                tt89, var_to_map, newname=model_var[0], kp=state.t89_iopt, error=model_errors, set_tilt=user_set_tilt
+                                tt89, var_to_map, newname=model_var[0], kp=state.t89_iopt, error=model_errors, set_tilt=user_set_tilt,geopack_2008=geopack_2008
                             endif else if *state.userAddTilt ne '' then begin
                                 ; the user has an angle to be added to the model tilt
                                 user_add_tilt = float(*state.userAddTilt)
-                                tt89, var_to_map, newname=model_var[0], kp=state.t89_iopt, error=model_errors, add_tilt=user_add_tilt
+                                tt89, var_to_map, newname=model_var[0], kp=state.t89_iopt, error=model_errors, add_tilt=user_add_tilt,geopack_2008=geopack_2008
                             endif else begin
                                 ; no changes to the tilt angle
-                                tt89, var_to_map, newname=model_var[0], kp=state.t89_iopt, error=model_errors
+                                tt89, var_to_map, newname=model_var[0], kp=state.t89_iopt, error=model_errors,geopack_2008=geopack_2008
                             endelse
                         end
                         't96': begin
-                            tt96, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors
+                            tt96, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors,geopack_2008=geopack_2008
                         end
                         't01': begin
-                            tt01, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors, storm = state.t01_storm
+                            tt01, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors, storm = state.t01_storm,geopack_2008=geopack_2008
                         end
                         't04s': begin
-                            tt04s, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors
+                            tt04s, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors,geopack_2008=geopack_2008
                         end 
                         'ts07': begin                          
-                           tts07, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors, ts07_param_dir=dirName, ts07_param_file=fileName
+                           tts07, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors, ts07_param_dir=dirName, ts07_param_file=fileName,geopack_2008=geopack_2008
                         end 
                         'ta15b': begin
-                          tta15b, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors
+                          tta15b, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors,geopack_2008=geopack_2008
                         end
                         'ta15n': begin
-                          tta15n, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors
+                          tta15n, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors,geopack_2008=geopack_2008
                         end
        
                         'igrf': begin
-                            tt89, var_to_map, newname=model_var[0], /igrf_only, error=model_errors
+                            tt89, var_to_map, newname=model_var[0], /igrf_only, error=model_errors,geopack_2008=geopack_2008
                         end
                     endcase
                     if model_errors eq 0 then spd_ui_field_models_error, state, 'Unknown error calculating the magnetic field model'
@@ -752,7 +753,7 @@ pro spd_ui_field_models_event, event
                     eq_footprint = var_to_map+'_efoot'
                     ttrace2equator,var_to_map,trace_var_name=var_to_map+'_'+field_model+'_etrace', newname=eq_footprint,external_model=(field_model eq 'IGRF' ? 'none' : field_model), $
                         par=the_model_params,/km, error=trace_to_eq_error, storm = (strlowcase(field_model) eq 't01' ? state.t01_storm : 0), $
-                        set_tilt = (~undefined(user_set_tilt) ? user_set_tilt : 0), add_tilt = (~undefined(user_add_tilt) ? user_add_tilt : 0), ts07_param_dir=dirName, ts07_param_file=fileName
+                        set_tilt = (~undefined(user_set_tilt) ? user_set_tilt : 0), add_tilt = (~undefined(user_add_tilt) ? user_add_tilt : 0), ts07_param_dir=dirName, ts07_param_file=fileName,geopack_2008=geopack_2008
 
                     ; add the newly created tplot variable (footprint) to the GUI variables
                     ; trace data is stored in tplot variables, but not loaded in the GUI
@@ -769,7 +770,7 @@ pro spd_ui_field_models_event, event
                     iono_footprint = var_to_map+'_ifoot'
                     ttrace2iono,var_to_map,trace_var_name = var_to_map+'_'+field_model+'_itrace', newname = iono_footprint,external_model=(field_model eq 'IGRF' ? 'none' : field_model), $
                         par=the_model_params,in_coord='gsm',out_coord='gsm',/km, storm = (strlowcase(field_model) eq 't01' ? state.t01_storm : 0), $
-                        set_tilt = (~undefined(user_set_tilt) ? user_set_tilt : 0), add_tilt = (~undefined(user_add_tilt) ? user_add_tilt : 0), ts07_param_dir=dirName, ts07_param_file=fileName
+                        set_tilt = (~undefined(user_set_tilt) ? user_set_tilt : 0), add_tilt = (~undefined(user_add_tilt) ? user_add_tilt : 0), ts07_param_dir=dirName, ts07_param_file=fileName,geopack_2008=geopack_2008
 
                     ; add the newly created tplot variable (footprint) to the GUI variables
                     ; trace data is stored in tplot variables, but not loaded in the GUI
@@ -794,6 +795,10 @@ pro spd_ui_field_models_event, event
             if state.t01_storm eq 0 then warn_about_using_this = dialog_message('The storm-time version of the T01 model is no longer maintained. Consider using the TS04 or TS07 model instead.', /info)
             state.t01_storm = state.t01_storm ? 0b : 1b
             Widget_Control, event.top, set_uvalue = ptr_new(state)
+        end
+        'USE_GEOPACK_2008': begin
+          state.geopack_2008 = state.geopack_2008 ? 0b : 1b
+          Widget_Control, event.top, set_uvalue = ptr_new(state)
         end
         'ADDTILTANGLE': begin
             addtilt_wid = widget_info(event.top, find_by_uname='addtiltangle')
@@ -829,7 +834,7 @@ pro spd_ui_field_models_event, event
                     imf_by_tvar = *state.usersIMFBy, imf_bz_tvar = *state.usersIMFBz, sw_density_tvar = *state.usersDensity, sw_speed_tvar = *state.usersSpeed, $
                     dst_tvar = *state.usersDst, w_coeff_tvar = *state.usersWs, g_coeff_tvar = *state.usersGs, t89_kp = state.t89_iopt, $
                     t89_set_tilt = *state.userSetTilt, t89_add_tilt = *state.userAddTilt, t01_storm = state.t01_storm, $
-                    pressure_tvar=*state.userspressure, bindex_tvar=*state.usersbindex, nindex_tvar=*state.usersnindex
+                    pressure_tvar=*state.userspressure, bindex_tvar=*state.usersbindex, nindex_tvar=*state.usersnindex, geopack_2008 = state.geopack_2008
             endif
             if ptr_valid(ptrState) then ptr_free, ptrState
             Widget_Control, event.top, /destroy
@@ -940,7 +945,7 @@ pro spd_ui_field_models, info
         info.fieldModelSettings->getProperty, pos_tvar=pos_tvar, imf_by_tvar=imf_by_tvar, imf_bz_tvar=imf_bz_tvar, $
             sw_density_tvar=sw_density_tvar, sw_speed_tvar=sw_speed_tvar, dst_tvar=dst_tvar, w_coeff_tvar=w_coeff_tvar, $
             g_coeff_tvar=g_coeff_tvar, t89_kp=t89_kp, t89_set_tilt=t89_set_tilt, t89_add_tilt=t89_add_tilt, output_options=output_options, $
-            t01_storm = t01_storm, pressure_tvar=pressure_tvar, bindex_tvar=bindex_tvar, nindex_tvar=nindex_tvar
+            t01_storm = t01_storm, pressure_tvar=pressure_tvar, bindex_tvar=bindex_tvar, nindex_tvar=nindex_tvar, geopack_2008=geopack_2008
     endif
     
     if pos_tvar eq '' then begin
@@ -1112,6 +1117,10 @@ pro spd_ui_field_models, info
     
     ; buttons for output options
     labelmodel = Widget_Label(bottomBase, value='Output:', /align_left)
+    geopack_2008Base = Widget_Base(bottomBase, row=1, /nonexclusive)
+    geopack_2008Button = Widget_Button(geopack_2008Base,value='Use GEOPACK_2008 routines', uname='use_geopack_2008', uval='USE_GEOPACK_2008',tooltip='Use GEOPACK 2008 routines for tilt calculations, modeling, and tracing',/align_center)
+    widget_control, geopack_2008Button, set_button = geopack_2008
+
     modelTypeBase = Widget_Base(bottomBase, row=1, /nonexclusive)
     modelatPosition = Widget_Button(modelTypeBase, value='Model at position', uname = 'model_at_pos', uval='MODEL_AT_POS', tooltip='Calculates the model field at the input position')
     trace_equator = Widget_Button(modelTypeBase, value = 'Trace to equator', uname = 'trace_equator', uval='TRACE_EQUATOR', tooltip='Traces the field line from the position to the equator')
@@ -1155,6 +1164,7 @@ pro spd_ui_field_models, info
              t01_storm: t01_storm, $ ; allow the user to specify the storm-time version of T01
              t89_iopt: t89_kp, $ ; default to Kp corresponding to 2-,2,2+
              model_types: output_options, $ ; output; [model at position, equatorial footprint, ionospheric footprint]
+             geopack_2008: geopack_2008, $ ; Use Geopack 2008 routines
              tvars_to_trace: ptr_new(var_to_trace)}
              
      
