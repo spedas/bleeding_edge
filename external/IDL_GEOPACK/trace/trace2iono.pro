@@ -130,8 +130,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-06-18 19:51:10 -0700 (Fri, 18 Jun 2021) $
-; $LastChangedRevision: 30058 $
+; $LastChangedDate: 2021-06-24 16:12:40 -0700 (Thu, 24 Jun 2021) $
+; $LastChangedRevision: 30083 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2iono.pro $
 ;-
 
@@ -141,6 +141,9 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
     rlim=rlim, add_tilt=add_tilt, get_tilt=get_tilt, set_tilt=set_tilt, get_nperiod=get_nperiod, $
     get_period_times=get_period_times, geopack_2008=geopack_2008, exact_tilt_times=exact_tilt_times, $
     ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, _extra=_extra
+
+    if undefined(geopack_2008) then geopack_2008=0
+    if undefined(exact_tilt_times) then exact_tilt_times=0
     
     error = 0
     
@@ -345,7 +348,7 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
     tstart = tarray2[0]
     
     ;all calculations will be done in GSM (or GSW, for Geopack 2008) internally
-    if ~undefined(geopack_2008) then begin
+    if geopack_2008 then begin
         if in_coord2 eq 'gei' then begin
            cotrans,in_pos_array2,in_pos_array2,tarray2,/gei2gse
         endif else if in_coord2 eq 'geo' then begin
@@ -402,7 +405,7 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
        ;make the array that is ultimately output
        max_trace_size = 0
     endif else begin ;loop boundaries if traces are not requested
-       if n_elements(exact_tilt_times) eq 0 then begin
+       if ~exact_tilt_times then begin
         tend = tarray2[t_size[0] - 1L]
         ;number of iterations is interval length divided by period length
         ct = ceil((tend-tstart)/period2)
@@ -422,7 +425,7 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
     endif
     
     if arg_present(get_period_times) then begin
-      if arg_present(out_trace_array) or (n_elements(exact_tilt_times) gt 0) then begin
+      if arg_present(out_trace_array) or (exact_tilt_times) then begin
         ; If traces are requested, or if exact_tilt_times keyword specified, tilt times are identical to input times
         get_period_times = tarray
       endif else begin
@@ -438,7 +441,7 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
         tilt_value = add_tilt
       endif else if n_elements(add_tilt) eq t_size[0] then begin
       ;resample tilt values to period intervals, using middle of sample
-      if n_elements(exact_tilt_times) eq 0 then begin
+      if ~exact_tilt_times then begin
         period_abcissas = tstart + dindgen(nperiod)*period
       endif else begin
         period_abcissas = tarray
@@ -457,7 +460,7 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
         tilt_value = set_tilt
       endif else if n_elements(set_tilt) eq t_size[0] then begin
       ;resample tilt values to period intervals, using middle of sample
-      if n_elements(exact_tilt_times) eq 0 then begin
+      if ~exact_tilt_times then begin
         period_abcissas = tstart + dindgen(nperiod)*period
       endif else begin
         period_abcissas = tarray
@@ -504,13 +507,20 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
        endelse
     
     endif
-    
+  
+    tilt = 0.0D   ; Ensure tilt is always defined  
     while i le ct do begin
+
+       ; Default to last calculated tilt value, in case no points lie in this interval      
+       if n_elements(get_tilt) gt 0 then begin
+         get_tilt[i] = tilt
+       endif
+      
        ;call for each point individually if field line traces are requrested
        if arg_present(out_trace_array) then begin
     
           ;recalculate magnetic dipole
-          if ~undefined(geopack_2008) then begin
+          if geopack_2008 then begin
             geopack_recalc_08, ts[i].year,ts[i].doy, ts[i].hour, ts[i].min, ts[i].sec, tilt = tilt
           endif else begin
             geopack_recalc, ts[i].year,ts[i].doy, ts[i].hour, ts[i].min, ts[i].sec, tilt = tilt
@@ -536,7 +546,7 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
               
     ;      geopack_trace,in_pos_array2[i,0],in_pos_array2[i,1],in_pos_array2[i,2],dir,par_iter,out_foot_array[i,0],out_foot_array[i,1],out_foot_array[i,2],R0=R02,RLIM=RLIM2,fline = trgsm_out,tilt=tilt,IGRF=IGRF,T89=T89,T96=T96,T01=T01,TS04=TS04,/refine,/ionosphere,_extra=_extra
           
-          if ~undefined(geopack_2008) then begin
+          if geopack_2008 then begin
               ; Use Geopack 2008
               if keyword_set(standard_mapping) then $
                  geopack_trace_08, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = T89, T96 = T96, T01 = T01, TS04 = TS04, TS07 = TS07,  _extra = _extra $
@@ -564,7 +574,7 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
           if tr_size[0] gt max_trace_size then max_trace_size = tr_size[0]
     
        endif else begin ;calculate over an interval if traces are not requested
-          if n_elements(exact_tilt_times) eq 0 then begin
+          if ~exact_tilt_times then begin
             ;find indices of points in the interval for this iteration
             idx1 = where(tarray2 ge tstart + i*period2)
             idx2 = where(tarray2 le tstart + (i+1)*period2)
@@ -579,7 +589,7 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
              id = idx[0]
     
              ;recalculate geomagnetic dipole
-             if ~undefined(geopack_2008) then begin
+             if geopack_2008 then begin
                 ; Geopack 2008
                 geopack_recalc_08, ts[id].year,ts[id].doy, ts[id].hour, ts[id].min, ts[id].sec, tilt = tilt
              endif else begin
@@ -608,7 +618,7 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
              if T89 eq 1 then par_iter = par_array[id] $
              else if T96 eq 1 || T01 eq 1 || TS04 eq 1 || TS07 eq 1 then par_iter = par_array[id,*] else par_iter = ''
              
-             if ~undefined(geopack_2008) then begin
+             if geopack_2008 then begin
                  ; Geopack 2008
                  if keyword_set(standard_mapping) then $
                      geopack_trace_08,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89=T89,T96=T96,T01=T01,TS04=TS04,TS07=TS07, TA15N=TA15N, TA15B=TA15B,_extra=_extra $
@@ -648,7 +658,7 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
           t_temp = replicate(tarray2[i],s_temp[0])
     
           ;convert trace into the output coordinate system
-          if ~undefined(geopack_2008) then begin
+          if geopack_2008 then begin
               ; if geopack 2008 is being used, need to convert back to GSM
               geopack_conv_coord_08, tr_temp[*,0], tr_temp[*,1], tr_temp[*,2], x_out_gse, y_out_gse, z_out_gse, /from_gsw, /to_gse
               tr_temp = [[x_out_gse], [y_out_gse], [z_out_gse]]
@@ -676,7 +686,7 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
     endif
     
     ; if geopack 2008 is being used, need to convert back to GSM
-    if ~undefined(geopack_2008) then begin
+    if geopack_2008 then begin
         geopack_conv_coord_08, out_foot_array[*,0], out_foot_array[*,1], out_foot_array[*,2], x_footout_gse, y_footout_gse, z_footout_gse, /from_gsw, /to_gse
         out_foot_array = [[x_footout_gse], [y_footout_gse], [z_footout_gse]]
         ; convert from GSE to GSM

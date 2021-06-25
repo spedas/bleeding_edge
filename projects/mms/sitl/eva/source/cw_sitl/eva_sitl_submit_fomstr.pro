@@ -16,11 +16,11 @@ PRO eva_sitl_submit_FOMStr, tlb, TESTING, vcase, user_flag=user_flag
   ;------------------
   ; UPLINK Check
   ;------------------
-  result = eva_sitluplink_log(tai_FOMstr_mod, title=title, /check)
-  if strmatch(result,'*abort*',/fold_case) then begin
-    print, result
-    return
-  endif
+;  result = eva_sitluplink_log(tai_FOMstr_mod, title=title, /check)
+;  if strmatch(result,'*abort*',/fold_case) then begin
+;    print, result
+;    return
+;  endif
   
   ;------------------
   ; Modification Check
