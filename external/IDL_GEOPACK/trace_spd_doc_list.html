@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jun 24 18:15:56 2021.<P>
+<STRONG>Last modified: </STRONG>Fri Jun 25 18:16:17 2021.<P>
  
 <HR>
  
@@ -144,6 +144,13 @@ Keywords:
      
          geopack_2008 (optional): Set this keyword to use the latest version (2008) of the Geopack
               library. Version 9.2 of the IDL Geopack DLM is required for this keyword to work.
+              
+          ts07_param_dir (optional): Location of TS07 parameter directory
+          
+          ts07_param_file (optional): Location of TS07 parameter file
+          
+          skip_ts07_load (optional): Do not reset TS07 parameter directory or reload parameter file
+          
 Example: 
         trace2equator,in_time,in_pos,out_foot
 
@@ -163,8 +170,8 @@ Notes:
 
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-06-24 16:12:40 -0700 (Thu, 24 Jun 2021) $
- $LastChangedRevision: 30083 $
+ $LastChangedDate: 2021-06-25 16:10:53 -0700 (Fri, 25 Jun 2021) $
+ $LastChangedRevision: 30086 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2equator.pro $
 </PRE><P>
 <STRONG>(See <A href="trace/trace2equator.pro">external/IDL_GEOPACK/trace/trace2equator.pro</A>)</STRONG><P>
@@ -307,8 +314,8 @@ Notes:
 
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-06-24 16:12:40 -0700 (Thu, 24 Jun 2021) $
- $LastChangedRevision: 30083 $
+ $LastChangedDate: 2021-06-25 16:10:53 -0700 (Fri, 25 Jun 2021) $
+ $LastChangedRevision: 30086 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2iono.pro $
 </PRE><P>
 <STRONG>(See <A href="trace/trace2iono.pro">external/IDL_GEOPACK/trace/trace2iono.pro</A>)</STRONG><P>
@@ -513,6 +520,12 @@ Keywords:
      
          geopack_2008 (optional): Set this keyword to use the latest version (2008) of the Geopack
               library. Version 9.2 of the IDL Geopack DLM is required for this keyword to work.
+              
+         ts07_param_dir (optional): Specify location of TS07 parameter directory
+         
+         ts07_param_file (optional): Specify TS07 parameter file to load
+         
+         skip_ts07_load (optional):  Do not reset the TS07 parameter directory or reload the parameter file
 
 Example: ttrace2equator,'tha_state_pos',newname='tha_out_foot'
 
@@ -534,8 +547,8 @@ Notes:
 
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-06-18 19:51:10 -0700 (Fri, 18 Jun 2021) $
- $LastChangedRevision: 30058 $
+ $LastChangedDate: 2021-06-25 16:10:53 -0700 (Fri, 25 Jun 2021) $
+ $LastChangedRevision: 30086 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/ttrace2equator.pro $
 </PRE><P>
 <STRONG>(See <A href="trace/ttrace2equator.pro">external/IDL_GEOPACK/trace/ttrace2equator.pro</A>)</STRONG><P>
@@ -742,6 +755,8 @@ Keywords:
      
          geopack_2008 (optional): Set this keyword to use the latest version (2008) of the Geopack
               library. Version 9.2 of the IDL Geopack DLM is required for this keyword to work.
+              
+         skip_ts07_load (optional): Do not reset the TS07 parameter directory or reload the parameter files
 
 Example: ttrace2iono,'tha_state_pos',newname='tha_out_foot'
 
@@ -763,8 +778,8 @@ Notes:
 
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-06-18 19:51:10 -0700 (Fri, 18 Jun 2021) $
- $LastChangedRevision: 30058 $
+ $LastChangedDate: 2021-06-25 16:10:53 -0700 (Fri, 25 Jun 2021) $
+ $LastChangedRevision: 30086 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/ttrace2iono.pro $
 </PRE><P>
 <STRONG>(See <A href="trace/ttrace2iono.pro">external/IDL_GEOPACK/trace/ttrace2iono.pro</A>)</STRONG><P>

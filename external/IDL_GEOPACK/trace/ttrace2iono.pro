@@ -195,6 +195,8 @@
 ;     
 ;         geopack_2008 (optional): Set this keyword to use the latest version (2008) of the Geopack
 ;              library. Version 9.2 of the IDL Geopack DLM is required for this keyword to work.
+;              
+;         skip_ts07_load (optional): Do not reset the TS07 parameter directory or reload the parameter files
 ;
 ;Example: ttrace2iono,'tha_state_pos',newname='tha_out_foot'
 ;
@@ -216,8 +218,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-06-18 19:51:10 -0700 (Fri, 18 Jun 2021) $
-; $LastChangedRevision: 30058 $
+; $LastChangedDate: 2021-06-25 16:10:53 -0700 (Fri, 25 Jun 2021) $
+; $LastChangedRevision: 30086 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/ttrace2iono.pro $
 ;-
 
@@ -228,7 +230,7 @@ pro ttrace2iono, in_pos_tvar, newname = newname, trace_var_name = trace_tvar, in
     g1=g1, g2=g2, w1=w1, w2=w2, w3=w3, w4=w4, w5=w5, w6=w6, get_tilt=get_tilt, set_tilt=set_tilt, $
     add_tilt=add_tilt, get_nperiod=get_nperiod, geopack_2008=geopack_2008, exact_tilt_times=exact_tilt_times, $
     ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, $
-    xind=xind, _extra=_extra
+    xind=xind, skip_ts07_load=skip_ts07_load, _extra=_extra
 
     error = 0
 
@@ -492,13 +494,13 @@ pro ttrace2iono, in_pos_tvar, newname = newname, trace_var_name = trace_tvar, in
             par=par_in,period=period,standard_mapping=standard_mapping,error=e,r0=r0, $
             rlim=rlim,get_nperiod=get_nperiod,get_tilt=tilt_dat,set_tilt=set_tilt_dat, $
             get_period_times=period_times_dat,geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times, $
-            ts07_param_dir=ts07_param_dir,ts07_param_file=ts07_param_file, _extra=_extra  
+            ts07_param_dir=ts07_param_dir,ts07_param_file=ts07_param_file, skip_ts07_load=skip_ts07_load, _extra=_extra  
       endif else begin
         trace2iono,d.x,d.y,f,in_coord=in_coord,out_coord=out_coord,internal_model=internal_model, $
             external_model=external_model,south=south,km=km,par=par_in,period=period,error=e, $
             standard_mapping=standard_mapping,r0=r0,rlim=rlim,get_nperiod=get_nperiod, $
             get_tilt=tilt_dat,set_tilt=set_tilt_dat,get_period_times=period_times_dat,geopack_2008=geopack_2008,$
-            exact_tilt_times=exact_tilt_times,ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, _extra=_extra
+            exact_tilt_times=exact_tilt_times,ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load, _extra=_extra
       endelse
       
     endif else if n_elements(add_tilt) gt 0 then begin
@@ -508,13 +510,13 @@ pro ttrace2iono, in_pos_tvar, newname = newname, trace_var_name = trace_tvar, in
             par=par_in,period=period,standard_mapping=standard_mapping,error=e,r0=r0, $
             rlim=rlim,get_nperiod=get_nperiod,get_tilt=tilt_dat,add_tilt=add_tilt_dat, $
             get_period_times=period_times_dat,geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times, $
-            ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, _extra=_extra  
+            ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load, _extra=_extra  
       endif else begin
         trace2iono,d.x,d.y,f,in_coord=in_coord,out_coord=out_coord,internal_model=internal_model,$
             external_model=external_model,south=south,km=km,par=par_in,period=period,error=e,$
             standard_mapping=standard_mapping,r0=r0,rlim=rlim,get_nperiod=get_nperiod,$
             get_tilt=tilt_dat,add_tilt=add_tilt_dat,get_period_times=period_times_dat,geopack_2008=geopack_2008,$
-            exact_tilt_times=exact_tilt_times, ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, _extra=_extra
+            exact_tilt_times=exact_tilt_times, ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load, _extra=_extra
       endelse
     endif else begin
       if keyword_set(trace_tvar) then  begin
@@ -522,13 +524,14 @@ pro ttrace2iono, in_pos_tvar, newname = newname, trace_var_name = trace_tvar, in
             internal_model=internal_model,external_model=external_model,south=south,km=km,$
             par=par_in,period=period,standard_mapping=standard_mapping,error=e,r0=r0,$
             rlim=rlim,get_nperiod=get_nperiod,get_tilt=tilt_dat,get_period_times=period_times_dat,$
-            geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times, ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file,_extra=_extra  
+            geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times, ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file,$
+            skip_ts07_load=skip_ts07_load, _extra=_extra  
       endif else begin
         trace2iono,d.x,d.y,f,in_coord=in_coord,out_coord=out_coord,internal_model=internal_model, $
             external_model=external_model,south=south,km=km,par=par_in,period=period,error=e,$
             standard_mapping=standard_mapping,r0=r0,rlim=rlim,get_nperiod=get_nperiod,get_tilt=tilt_dat,$
             get_period_times=period_times_dat,geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times, $
-            ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file,_extra=_extra
+            ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load,_extra=_extra
       endelse
     endelse
         

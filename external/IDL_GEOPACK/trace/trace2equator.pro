@@ -110,6 +110,13 @@
 ;     
 ;         geopack_2008 (optional): Set this keyword to use the latest version (2008) of the Geopack
 ;              library. Version 9.2 of the IDL Geopack DLM is required for this keyword to work.
+;              
+;          ts07_param_dir (optional): Location of TS07 parameter directory
+;          
+;          ts07_param_file (optional): Location of TS07 parameter file
+;          
+;          skip_ts07_load (optional): Do not reset TS07 parameter directory or reload parameter file
+;          
 ;Example: 
 ;        trace2equator,in_time,in_pos,out_foot
 ;
@@ -129,8 +136,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-06-24 16:12:40 -0700 (Thu, 24 Jun 2021) $
-; $LastChangedRevision: 30083 $
+; $LastChangedDate: 2021-06-25 16:10:53 -0700 (Fri, 25 Jun 2021) $
+; $LastChangedRevision: 30086 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2equator.pro $
 ;-
 
@@ -139,10 +146,11 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
     south=south, km=km, par=par, period=period, error=error, r0=r0, rlim=rlim, add_tilt=add_tilt, $
     get_tilt=get_tilt, set_tilt=set_tilt, get_nperiod=get_nperiod, get_period_times=get_period_times, $
     geopack_2008=geopack_2008, exact_tilt_times=exact_tilt_times, $
-    ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, _extra=_extra
+    ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, skip_ts07_load=skip_ts07_load, _extra=_extra
 
     if undefined(geopack_2008) then geopack_2008=0
     if undefined(exact_tilt_times) then exact_tilt_times=0
+    if undefined(skip_ts07_load) then skip_ts07_load=0
 
     error = 0
     
@@ -466,37 +474,41 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
  
     if TS07 eq 1 then begin
 
-      ; find start, end years and download parameter files
-      time_start = strmid(time_string(tarray[0]), 0, 4)
-      time_end = strmid(time_string(tarray[n_elements(tarray)-1]), 0, 4)
-
-      if time_end gt time_start then begin
-        tdiff = 0 + time_end - time_start
-        years = [time_start]
-        for i=1, tdiff do begin
-          years = [years, time_start + i]
-        endfor
-      endif else ts07_years = [time_start]
-
-      ts07_download, years=ts07_years
-
-      ; Directory for model parameters.
-      if not keyword_set(ts07_param_dir) then begin
+      if ~keyword_set(skip_ts07_load) then begin
+        
+         ; find start, end years and download parameter files
+         time_start = strmid(time_string(tarray[0]), 0, 4)
+         time_end = strmid(time_string(tarray[n_elements(tarray)-1]), 0, 4)
+   
+         if time_end gt time_start then begin
+           tdiff = 0 + time_end - time_start
+           years = [time_start]
+           for i=1, tdiff do begin
+             years = [years, time_start + i]
+           endfor
+         endif else ts07_years = [time_start]
+   
+         ts07_download, years=ts07_years
+   
+         ; Directory for model parameters.
+         if not keyword_set(ts07_param_dir) then begin
         ts07_param_dir = !spedas.geopack_param_dir
-      endif else if ~file_test(ts07_param_dir, /READ, /directory) then begin
-        ts07_param_dir = !spedas.geopack_param_dir
-      endif
-      ; Directory that contains the coeficient files
-      GEOPACK_TS07_SETPATH, ts07_param_dir[0]
-      if keyword_set(ts07_param_file) then begin
-        ; Coeficcient filename only, without the full path
-        GEOPACK_TS07_LOADCOEF, file_basename(ts07_param_file[0])
-      endif else begin
-        dprint,'Error: ts07_param_file must be specified if using model ts07'
-        return
-      endelse
-
-    endif
+         endif else if ~file_test(ts07_param_dir, /READ, /directory) then begin
+           ts07_param_dir = !spedas.geopack_param_dir
+         endif
+         ; Directory that contains the coeficient files
+         GEOPACK_TS07_SETPATH, ts07_param_dir[0]
+         if keyword_set(ts07_param_file) then begin
+           ; Coeficcient filename only, without the full path
+           GEOPACK_TS07_LOADCOEF, file_basename(ts07_param_file[0])
+         endif else begin
+           dprint,'Error: ts07_param_file must be specified if using model ts07'
+           return
+         endelse
+    endif else begin
+        dprint,'Skipping loading of TS07 parameters'
+    endelse
+  endif
 
    
     i = 0L

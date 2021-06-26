@@ -9,8 +9,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2021-06-22 13:30:26 -0700 (Tue, 22 Jun 2021) $
-;$LastChangedRevision: 30078 $
+;$LastChangedDate: 2021-06-25 16:16:38 -0700 (Fri, 25 Jun 2021) $
+;$LastChangedRevision: 30087 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_field_models.pro $
 ;-
 
@@ -185,7 +185,7 @@ function spd_ui_field_models_check_params, state, field_model
           spd_ui_field_models_error, state, 'Use the load data panel to load OMNI data for the time interval you''re trying to model'
           return, -1
         endif
-        get_t07_params, Np_tvar=*state.usersDensity,Vp_tvar=*state.usersSpeed,pressure_tvar=pressure_tvar,parameter_input,/speed,/imf_yz,$
+        get_ts07_params, Np_tvar=*state.usersDensity,Vp_tvar=*state.usersSpeed,pressure_tvar=*state.usersPressure,newname=parameter_input,/speed,$
           trange = (~undefined(trange) ? trange : 0)
 
       endif else begin
@@ -680,6 +680,12 @@ pro spd_ui_field_models_event, event
                    widget_control, paramfile, get_value = dirName
                    paramfile = widget_info(event.top, find_by_uname='paramfile')
                    widget_control, paramfile, get_value = fileName
+                   
+                   ; Call ts07_download here, to avoid repeated downloads if multiple modeling options are selected
+                   ts07_download, local_dir=dirName[0]
+                   GEOPACK_TS07_SETPATH, dirName[0]
+                   GEOPACK_TS07_LOADCOEF, file_basename(fileName[0])
+
                 endif
                
                 state.statusBar -> update, 'Generating the ' + field_model + ' model field for: ' + string(var_to_map)
@@ -715,7 +721,7 @@ pro spd_ui_field_models_event, event
                             tt04s, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors,geopack_2008=geopack_2008
                         end 
                         'ts07': begin                          
-                           tts07, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors, ts07_param_dir=dirName, ts07_param_file=fileName,geopack_2008=geopack_2008
+                           tts07, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors, ts07_param_dir=dirName, ts07_param_file=fileName,geopack_2008=geopack_2008, /skip_ts07_load
                         end 
                         'ta15b': begin
                           tta15b, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors,geopack_2008=geopack_2008
@@ -753,7 +759,7 @@ pro spd_ui_field_models_event, event
                     eq_footprint = var_to_map+'_efoot'
                     ttrace2equator,var_to_map,trace_var_name=var_to_map+'_'+field_model+'_etrace', newname=eq_footprint,external_model=(field_model eq 'IGRF' ? 'none' : field_model), $
                         par=the_model_params,/km, error=trace_to_eq_error, storm = (strlowcase(field_model) eq 't01' ? state.t01_storm : 0), $
-                        set_tilt = (~undefined(user_set_tilt) ? user_set_tilt : 0), add_tilt = (~undefined(user_add_tilt) ? user_add_tilt : 0), ts07_param_dir=dirName, ts07_param_file=fileName,geopack_2008=geopack_2008
+                        set_tilt = (~undefined(user_set_tilt) ? user_set_tilt : 0), add_tilt = (~undefined(user_add_tilt) ? user_add_tilt : 0), ts07_param_dir=dirName, ts07_param_file=fileName,geopack_2008=geopack_2008,/skip_ts07_load
 
                     ; add the newly created tplot variable (footprint) to the GUI variables
                     ; trace data is stored in tplot variables, but not loaded in the GUI
@@ -770,7 +776,7 @@ pro spd_ui_field_models_event, event
                     iono_footprint = var_to_map+'_ifoot'
                     ttrace2iono,var_to_map,trace_var_name = var_to_map+'_'+field_model+'_itrace', newname = iono_footprint,external_model=(field_model eq 'IGRF' ? 'none' : field_model), $
                         par=the_model_params,in_coord='gsm',out_coord='gsm',/km, storm = (strlowcase(field_model) eq 't01' ? state.t01_storm : 0), $
-                        set_tilt = (~undefined(user_set_tilt) ? user_set_tilt : 0), add_tilt = (~undefined(user_add_tilt) ? user_add_tilt : 0), ts07_param_dir=dirName, ts07_param_file=fileName,geopack_2008=geopack_2008
+                        set_tilt = (~undefined(user_set_tilt) ? user_set_tilt : 0), add_tilt = (~undefined(user_add_tilt) ? user_add_tilt : 0), ts07_param_dir=dirName, ts07_param_file=fileName,geopack_2008=geopack_2008, /skip_ts07_load
 
                     ; add the newly created tplot variable (footprint) to the GUI variables
                     ; trace data is stored in tplot variables, but not loaded in the GUI
@@ -1000,7 +1006,7 @@ pro spd_ui_field_models, info
             
     pfLabel1 = Widget_Label(swBase07, value='TS07 coefficients file:', /align_left)
     t07pfbase = Widget_Base(swBase07, col=2)
-    paramfile = Widget_text(t07pfbase, uname='paramfile', uval='paramfile', value='', /editable, /align_left, SCR_XSIZE=200, units=0)
+    paramfile = Widget_text(t07pfbase, uname='paramfile', uval='paramfile', value='ts07_sample_dyncoef.par', /editable, /align_left, SCR_XSIZE=200, units=0)
     pfLabel = Widget_Button(t07pfbase, uname='pfLabel', uval='pfLabel', value='Select')    
     
     swLabel3 = Widget_Label(swBase07, value='', /align_left)
