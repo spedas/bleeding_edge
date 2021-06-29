@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
-; $LastChangedRevision: 30043 $
+; $LastChangedDate: 2021-06-28 09:30:24 -0700 (Mon, 28 Jun 2021) $
+; $LastChangedRevision: 30090 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -130,6 +130,7 @@ pro DynamicArray::append, a1, error = error
   compile_opt IDL2
 
   error = ''
+  size_error=error
 
   if 1 then begin  ;  Don't use old routine append_array
     fillnan =1
@@ -176,6 +177,7 @@ pro DynamicArray::append, a1, error = error
 
     if n_elements(dim0) ne n_elements(dim1) || ((n_elements(dim0) ge 2) &&  array_equal(dim0[1,*],dim1[1,*] eq 0))  then begin
       error = 'Size Mismatch, Unable to concatenate'
+      size_error=error
     endif
 
     index = self.size
@@ -202,15 +204,15 @@ pro DynamicArray::append, a1, error = error
       suffix = typename(a1) + dimstr
       error = prefix +": "+ error +" " + suffix
       dprint,verbose=verbose,dlevel=self.dlevel,error
-      dprint,verbose=verbose,dlevel=self.dlevel,'Attempting to concatenate using "relaxed structure assignment" (STRUCT_ASSIGN)
-      a2=(*a0)[index:index+n1-1,*,*,*]
-      struct_assign,a1,a2,/nozero,/verbose
-      a1=a2
+      if ~keyword_set(size_error) then begin
+        dprint,verbose=verbose,dlevel=self.dlevel,'Attempting to concatenate using "relaxed structure assignment" (STRUCT_ASSIGN)
+        a2=(*a0)[index:index+n1-1,*,*,*]
+        struct_assign,a1,a2,/nozero,/verbose
+        a1=a2
+      endif else return
     endif
     (*a0)[index:index+n1-1,*,*,*] = a1 ; Insert new values
     self.size = index + n1
-
-    return
 
   endif else begin    ; Usee old version of append_array
     ind =self.size
