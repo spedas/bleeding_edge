@@ -22,7 +22,7 @@
 ;       suitable for passing to the other spinmodel manipulation routines.
 ;
 ;  KEYWORDS:
-;    None.
+;    /QUIET : Do not print message if a spin model has not yet been loaded (prevents confusing warning in thm_autoload_support)
 ;    
 ;  PROCEDURE:
 ;    Test probe argument for validity; return appropriate value from
@@ -36,7 +36,7 @@
 ;Change Date: 2007-10-08
 ;-
 
-function spinmodel_get_ptr,probe,use_eclipse_corrections=use_eclipse_corrections
+function spinmodel_get_ptr,probe,use_eclipse_corrections=use_eclipse_corrections, quiet=quiet
 common spinmodel_common, tha_std_obj, thb_std_obj, thc_std_obj,$
                         thd_std_obj, the_std_obj, thf_std_obj,$
                         tha_ecl_obj, thb_ecl_obj, thc_ecl_obj,$
@@ -55,7 +55,7 @@ if n_elements(init_flag) EQ 0 then begin
     ; a null object.  It is the caller's responsibility to check
     ; this condition before attempting to use it.
 
-    dprint,'No spinmodel data is available for probe '+probe+'. Use thm_load_state,/get_support to load a spinmodel.'
+    if ~keyword_set(quiet) then dprint,'No spinmodel data is available for probe '+probe+'. Use thm_load_state,/get_support to load a spinmodel.'
     return,obj_new()
 endif
 
@@ -94,7 +94,7 @@ dprint,'Using full eclipse corrections.'
    endcase
 endelse
 
-if ~obj_valid(ptr) then begin
+if ~obj_valid(ptr) && ~keyword_set(quiet) then begin
   dprint,'No spinmodel data is available for probe '+probe+'. Use thm_load_state,/get_support to load a spinmodel.'
 endif
 

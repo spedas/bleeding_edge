@@ -29,8 +29,8 @@
 ; NOTES:
 ; 
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2016-12-20 16:09:38 -0800 (Tue, 20 Dec 2016) $
-;$LastChangedRevision: 22466 $
+;$LastChangedDate: 2021-06-29 16:13:26 -0700 (Tue, 29 Jun 2021) $
+;$LastChangedRevision: 30093 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/state/thm_autoload_support.pro $
 ;
 ;-
@@ -75,7 +75,7 @@ endif
 ; Does loaded spin model data cover the time range?
 
   if (keyword_set(spinmodel)) then begin
-    smp=spinmodel_get_ptr(probe)
+    smp=spinmodel_get_ptr(probe,/quiet)
     if (~obj_valid(smp)) then loadstate=1b else begin
        smp->get_info,start_time=st, end_time=et
        st = st-slop
