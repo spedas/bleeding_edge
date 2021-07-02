@@ -1,7 +1,7 @@
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2020-04-21 16:24:51 -0700 (Tue, 21 Apr 2020) $
-;  $LastChangedRevision: 28596 $
+;  $LastChangedDate: 2021-06-30 21:31:41 -0700 (Wed, 30 Jun 2021) $
+;  $LastChangedRevision: 30095 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_aeb2_hk/spp_fld_aeb2_hk_load_l1.pro $
 ;
 
@@ -66,7 +66,6 @@ pro spp_fld_aeb2_hk_load_l1, file, prefix = prefix, varformat = varformat
       name_no_prefix = name.Remove(0, prefix.Strlen()-1)
 
       options, name, 'ynozero', 1
-      options, name, 'horizontal_ytitle', 1
 
       if strpos(name_no_prefix, 'AEB') NE -1 then begin
         colors = [0]

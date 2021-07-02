@@ -33,7 +33,6 @@ pro spp_fld_dcb_ssr_telemetry_load_l1, file, prefix = prefix, varformat = varfor
       name = dcb_ssr_telemetry_names[i]
 
       options, name, 'ynozero', 1
-      ;options, name, 'horizontal_ytitle', 1
       options, name, 'colors', [6]
       options, name, 'ytitle', 'DCB SSR!C' + name.Remove(0, prefix.Strlen()-1)
 
