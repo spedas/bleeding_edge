@@ -37,9 +37,9 @@
 ;
 ;CREATED BY:	Davin Larson
 ;FILE:  mplot.pro
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-12-16 13:10:03 -0800 (Wed, 16 Dec 2020) $
-; $LastChangedRevision: 29506 $
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2021-07-06 16:49:05 -0700 (Tue, 06 Jul 2021) $
+; $LastChangedRevision: 30102 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/mplot.pro $
 ;
 ;-
@@ -168,7 +168,7 @@ if keyword_set(turbo) and ndx eq 1 and xrange[0] ne xrange[1]  and nx gt 1000 th
 
    max_points = -1
    str_element, stuff, 'max_points', value = max_points
-   if max_points GT 0 then mplot_downsample_data, max_points, x, y, dy = dy 
+   if max_points GT 0 then mplot_downsample_data, max_points, x, y, dy = dy, dg = dg 
 
 endif
 
