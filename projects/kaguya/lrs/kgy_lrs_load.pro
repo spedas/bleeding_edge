@@ -17,8 +17,8 @@
 ;       Yuki Harada on 2016-09-02
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2021-01-07 16:26:57 -0800 (Thu, 07 Jan 2021) $
-; $LastChangedRevision: 29581 $
+; $LastChangedDate: 2021-07-12 00:51:24 -0700 (Mon, 12 Jul 2021) $
+; $LastChangedRevision: 30121 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/lrs/kgy_lrs_load.pro $
 ;-
 
@@ -241,27 +241,50 @@ for ifile=0,n_elements(files)-1 do begin
                wnan = where( data eq attr.fillval , nwnan )
                if nwnan gt 0 then data[wnan] = !values.f_nan
             endif
-            gain_corrected = 0
-            if n_elements(gain) eq n_elements(times) then begin
-               ;;; gain correction
-               ex = data - rebin(gain,n_elements(times),n_elements(freq))
-               gain_corrected = 1
-            endif
             store_data,'kgy_lrs_wfc_Ex_dB', $
-                       data={x:times,y:ex,v:freq}, $
+                       data={x:times,y:data,v:freq}, $
                        dlim={ytitle:'Ex!cFrequency!c['+frequnits+']', $
                              ylog:1,yticklen:-.01, $
                              yrange:minmax(freq)>1,ystyle:1, $
                              spec:1,zlog:0,ztitle:attr.units, $
-                             zrange:[-60,20]}
-            if gain_corrected then $ ;- conversion to physical units
+                             zrange:[-20,60]}
+            if n_elements(gain) eq n_elements(times) then begin
+               ;;; gain correction
+               ex = data - rebin(gain,n_elements(times),n_elements(freq))
+               ex2 = ex - 15.5  ;- correct for sensor to ADC gain
+               ex2[*,0:127] += 20. ;- WFCH-LOW
+               ex2[*,128:*] += 10. ;- WFCH-HIGH
                store_data,'kgy_lrs_wfc_Ex_phys', $
-                          data={x:times,y:ex-15.5,v:freq}, $ ;- see wfch1_v2.c
+                          data={x:times,y:ex2,v:freq}, $ ;- see WFCH1_calData() and WFCH1_getdbgain in wfch1_v2.c
                           dlim={ytitle:'Ex!cFrequency!c['+frequnits+']', $
                                 ylog:1,yticklen:-.01, $
                                 yrange:minmax(freq)>1,ystyle:1, $
                                 spec:1,zlog:0,ztitle:'dB'+'!4l!X'+'V/m', $
-                                zrange:[-80,30]}
+                                zrange:[-60,40]}
+
+               dfreq = freq * 0.
+               ;;; see muro-shuuron.pdf
+               ;;; 0-127: 0-9.77 kHz, WFC-H LOW
+               dfreq[0:127] = (freq[1] - freq[0])
+               ;;; 128-350: 9.77 kHz-1 MHz, WFC-H HIGH
+               w = where( freq gt 9.77 and freq le 78.13 , nw )
+               dfreq[w] = median( freq[w] - shift(freq[w],1) )
+               w = where( freq gt 78.13 and freq le 117.19 , nw )
+               dfreq[w] = median( freq[w] - shift(freq[w],1) )
+               w = where( freq gt 117.19 and freq le 156.25 , nw )
+               dfreq[w] = median( freq[w] - shift(freq[w],1) )
+               w = where( freq gt 156.27 , nw )
+               dfreq[w] = median( freq[w] - shift(freq[w],1) )
+               dfreq *= 1e3
+               pow = 10.^(ex2/10.-12.) $ ;- (V/m)^2/Hz
+                     / transpose(rebin(dfreq,n_elements(freq),n_elements(times)))
+               store_data,'kgy_lrs_wfc_Ex_phys2',data={x:times,y:pow,v:freq}, $
+                          dlim={ytitle:'Ex!cFrequency!c['+frequnits+']', $
+                                ylog:1,yticklen:-.01, $
+                                yrange:minmax(freq)>1,ystyle:1, $
+                                spec:1,zlog:1,ztitle:'(V/m)!u2!n/Hz', $
+                                zrange:[1e-20,1e-10],dfreq:dfreq}
+            endif
          endif
       endif
 
@@ -280,43 +303,59 @@ for ifile=0,n_elements(files)-1 do begin
                wnan = where( data eq attr.fillval , nwnan )
                if nwnan gt 0 then data[wnan] = !values.f_nan
             endif
-            gain_corrected = 0
-            if n_elements(gain) eq n_elements(times) then begin
-               ;;; gain correction
-               ey = data - rebin(gain,n_elements(times),n_elements(freq))
-               gain_corrected = 1
-            endif
             store_data,'kgy_lrs_wfc_Ey_dB', $
-                       data={x:times,y:ey,v:freq}, $
+                       data={x:times,y:data,v:freq}, $ ;- raw dB w/o gain correction
                        dlim={ytitle:'Ey!cFrequency!c['+frequnits+']', $
                              ylog:1,yticklen:-.01, $
                              yrange:minmax(freq)>1,ystyle:1, $
                              spec:1,zlog:0,ztitle:attr.units, $
-                             zrange:[-60,20]}
-            if gain_corrected then begin
-               ey2 = ey-15.5
+                             zrange:[-20,60]}
+            if n_elements(gain) eq n_elements(times) then begin
+               ;;; gain correction
+               ey = data - rebin(gain,n_elements(times),n_elements(freq))
+               ey2 = ey - 15.5  ;- correct for sensor to ADC gain
+               ey2[*,0:127] += 20. ;- WFCH-LOW
+               ey2[*,128:*] += 10. ;- WFCH-HIGH
                store_data,'kgy_lrs_wfc_Ey_phys', $
-                          data={x:times,y:ey2,v:freq}, $ ;- see WFCH1_calData_v1() and WFCH1_getdbgain in wfch1_v2.c
+                          data={x:times,y:ey2,v:freq}, $ ;- see WFCH1_calData() and WFCH1_getdbgain in wfch1_v2.c
                           dlim={ytitle:'Ey!cFrequency!c['+frequnits+']', $
                                 ylog:1,yticklen:-.01, $
                                 yrange:minmax(freq)>1,ystyle:1, $
                                 spec:1,zlog:0,ztitle:'dB'+'!4l!X'+'V/m', $
-                                zrange:[-80,30]}
+                                zrange:[-60,40]}
+
+               dfreq = freq * 0.
+               ;;; see muro-shuuron.pdf
+               ;;; 0-127: 0-9.77 kHz, WFC-H LOW
+               dfreq[0:127] = (freq[1] - freq[0])
+               ;;; 128-350: 9.77 kHz-1 MHz, WFC-H HIGH
+               w = where( freq gt 9.77 and freq le 78.13 , nw )
+               dfreq[w] = median( freq[w] - shift(freq[w],1) )
+               w = where( freq gt 78.13 and freq le 117.19 , nw )
+               dfreq[w] = median( freq[w] - shift(freq[w],1) )
+               w = where( freq gt 117.19 and freq le 156.25 , nw )
+               dfreq[w] = median( freq[w] - shift(freq[w],1) )
+               w = where( freq gt 156.27 , nw )
+               dfreq[w] = median( freq[w] - shift(freq[w],1) )
+               dfreq *= 1e3
+               pow = 10.^(ey2/10.-12.) $ ;- (V/m)^2/Hz
+                     / transpose(rebin(dfreq,n_elements(freq),n_elements(times)))
+               store_data,'kgy_lrs_wfc_Ey_phys2',data={x:times,y:pow,v:freq}, $
+                          dlim={ytitle:'Ey!cFrequency!c['+frequnits+']', $
+                                ylog:1,yticklen:-.01, $
+                                yrange:minmax(freq)>1,ystyle:1, $
+                                spec:1,zlog:1,ztitle:'(V/m)!u2!n/Hz', $
+                                zrange:[1e-20,1e-10],dfreq:dfreq}
+               ;;; obsolete:
+               ;; ey2 = ey-15.5
+               ;; store_data,'kgy_lrs_wfc_Ey_phys', $
+               ;;            data={x:times,y:ey2,v:freq}, $ ;- see WFCH1_calData_v1() and WFCH1_getdbgain in wfch1_v2.c
+               ;;            dlim={ytitle:'Ey!cFrequency!c['+frequnits+']', $
+               ;;                  ylog:1,yticklen:-.01, $
+               ;;                  yrange:minmax(freq)>1,ystyle:1, $
+               ;;                  spec:1,zlog:0,ztitle:'dB'+'!4l!X'+'V/m', $
+               ;;                  zrange:[-80,30]}
             endif
-            ;;; gain correction test, WFCH1_calData() in wfch1_v2.c
-            ;;; failed to reproduce muro-shuuron figures
-            ;;; -> WFCH1_calData_v1() is likely to be the correct one to use
-            ;; ey2 = ey - 15.5
-            ;; w = where( freq lt 10 , comp=cw )
-            ;; ey2[*,w] += 20.
-            ;; ey2[*,cw] += 10.
-            ;; store_data,'kgy_lrs_wfc_Ey_phys_test', $
-            ;;            data={x:times,y:ey2,v:freq}, $ ;- see wfch1_v2.c
-            ;;            dlim={ytitle:'Ey!cFrequency!c['+frequnits+']', $
-            ;;                  ylog:1,yticklen:-.01, $
-            ;;                  yrange:minmax(freq)>1,ystyle:1, $
-            ;;                  spec:1,zlog:0,ztitle:'dB'+'!4l!X'+'V/m', $
-            ;;                  zrange:[-80,30]}
          endif
       endif
 
