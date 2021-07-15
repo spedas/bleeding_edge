@@ -308,8 +308,8 @@ end
 ;           - Allowed vectors and recursively searched structures to be fit as well.
 ;           
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-12-04 14:50:05 -0800 (Fri, 04 Dec 2020) $
-; $LastChangedRevision: 29437 $
+; $LastChangedDate: 2021-07-14 16:07:22 -0700 (Wed, 14 Jul 2021) $
+; $LastChangedRevision: 30126 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/fitting/fit.pro $
 ;           
 ;           
@@ -602,7 +602,7 @@ pro fit, x, yt, $
 
 done2:
 done:
-       sigma = replicate(!values.d_nan,nterms)
+       sigma = replicate(!values.d_nan,nterms)   ; need a test for when nterms eq 0
        if npdernz ge 1 then begin
          sigma[wpdernz] = sqrt(array[diag]/alpha[diag] * sqrt(chisqr)) ; Return sigma's        
        endif
@@ -619,7 +619,8 @@ done:
        if logf then yfit = exp(yfit)
        fitvalues = yfit
        if arg_present(summary) then begin
-          summary ={ p_names:fullnames, p_values:a, p_sigma:sigma, chi:sqrt(chi2), nterms:nterms, nparamsnz:nparamsnz ,its:iter, qflag:qflag}
+          
+          summary ={ p_names:fullnames, p_values:a, p_sigma:sigma, chi:sqrt(chi2), nterms:nterms, npdernz:npdernz ,its:iter, qflag:qflag}
        endif
        if arg_present(result) then begin
           nul_params = fill_nan(params)
