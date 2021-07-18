@@ -1,7 +1,7 @@
 ; Created by Davin Larson
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2019-08-22 13:02:27 -0700 (Thu, 22 Aug 2019) $
-; $LastChangedRevision: 27633 $
+; $LastChangedDate: 2021-07-17 13:24:32 -0700 (Sat, 17 Jul 2021) $
+; $LastChangedRevision: 30130 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_load.pro $
 ; $ID: $
 
@@ -46,7 +46,7 @@ pro mvn_sep_load,pathnames=pathnames,trange=trange,files=files,RT=RT,download_on
     if keyword_set(use_cache) and keyword_set(source_filenames) then begin
       files = mvn_pfp_file_retrieve(/L0,/daily,trange=trange,source=source,verbose=verbose,RT=RT,files=files,pathnames)
       if array_equal(files,source_filenames) then begin
-        dprint,dlevel=2,'Using cached common block'
+        dprint,verbose=verbose,dlevel=2,'Using cached common block loaded from '+file_info_string(files)
         return
       endif
     endif
@@ -111,7 +111,7 @@ pro mvn_sep_load,pathnames=pathnames,trange=trange,files=files,RT=RT,download_on
 
   if keyword_set(use_cache) and keyword_set(source_filenames) then begin
     if array_equal(files,source_filenames) then begin
-      dprint,dlevel=2,'Using cached common block'
+      dprint,verbose=verbose,dlevel=2,'Using cached common block loaded from '+file_info_string(files)
       return
     endif
   endif

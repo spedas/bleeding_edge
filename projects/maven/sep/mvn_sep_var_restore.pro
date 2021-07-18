@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-01-31 14:37:52 -0800 (Fri, 31 Jan 2020) $
-; $LastChangedRevision: 28266 $
+; $LastChangedDate: 2021-07-17 13:24:32 -0700 (Sat, 17 Jul 2021) $
+; $LastChangedRevision: 30130 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_var_restore.pro $
 
 pro mvn_sep_var_restore,pathname,trange=trange,verbose=verbose,download_only=download_only,prereq_info=prereq_temp,filename=files,no_finish=no_finish, $
@@ -28,7 +28,7 @@ if ~keyword_set(files) then begin
 endif
 
 if ~keyword_set(files) then begin
-  dprint,'No SEP L1 files were found for the selected time range, returning...'
+  dprint,verbose=verbose,dlevel=2,'No SEP L1 files were found for the selected time range, returning...'
   return
 endif
 
@@ -44,6 +44,7 @@ for i=0,n_elements(files)-1 do begin
   undefine, s1_hkp,s1_svy,s1_arc,s1_nse
   undefine, s2_hkp,s2_svy,s2_arc,s2_nse
   undefine, prereq_info,source_filename
+  dprint,verbose=verbose,dlevel=2,'Restoring '+file_info_string(files[i])
   restore,verbose=verbose,filename=files[i]
   mav_gse_structure_append  ,sep1_hkp  , s1_hkp
   mav_gse_structure_append  ,sep1_svy  , s1_svy
