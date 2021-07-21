@@ -60,8 +60,8 @@
 ;HISTORY:
 ; Hacked from mvn_sta_cmn_l2gen.pro, 22-jul-2015
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2016-11-02 13:57:47 -0700 (Wed, 02 Nov 2016) $
-; $LastChangedRevision: 22261 $
+; $LastChangedDate: 2021-07-20 10:34:53 -0700 (Tue, 20 Jul 2021) $
+; $LastChangedRevision: 30137 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/fast/fa_esa/l2util/fa_esa_cmn_l2gen.pro $
 ;-
 Pro fa_esa_cmn_l2gen, cmn_dat, esa_type=esa_type, $
@@ -211,7 +211,11 @@ Pro fa_esa_cmn_l2gen, cmn_dat, esa_type=esa_type, $
            ['charge', 'FLOAT', 'Proton or Electron charge (1 or -1)'], $
            ['bkg_arr', 'FLOAT', 'Background counts array with dimension (96, 64)'], $
            ['orbit_start', 'LONG', 'Start Orbit of file'], $
-           ['orbit_end', 'LONG', 'End Orbit of file']]
+           ['orbit_end', 'LONG', 'End Orbit of file'], $
+;added channel and bin for depend variables, so that depend values are not
+;messed up, jmm, 2020-01-12
+           ['energy_channel', 'LONG', 'Energy Channel'], $
+           ['pitch_angle_bin', 'LONG', 'Pitch Angle Bin']]
 
 ;Create variables for epoch
   cdf_leap_second_init
@@ -447,9 +451,10 @@ Pro fa_esa_cmn_l2gen, cmn_dat, esa_type=esa_type, $
            vj Eq 'denergy_full' Or vj Eq 'domega') Then Begin
 ;For ISTP compliance, it looks as if the depend's are switched,
 ;probably because we transpose it all in the file
-;??? Check this ???
-           vatt.depend_2 = 'energy_median'
-           vatt.depend_1 = 'pitch_angle_median'
+;??? Check this ??? Cannot have depends for non-virtual data to be
+;virtual, 2020-01-11, jmm
+           vatt.depend_2 = 'energy_channel'
+           vatt.depend_1 = 'pitch_angle_bin'
         Endif
 ;Time variables are monotonically increasing:
         If(is_tvar) Then vatt.monoton = 'INCREASE' Else vatt.monoton = 'FALSE'
@@ -503,7 +508,13 @@ Pro fa_esa_cmn_l2gen, cmn_dat, esa_type=esa_type, $
         Case vj of
            'num_dists': Begin
               dvar = num_dists
-           End        
+           End
+           'energy_channel': Begin
+              dvar = lonarr(96)
+           End
+           'pitch_angle_bin': Begin
+              dvar = lonarr(64)
+           End
            Else: Begin
               message, /info, 'Variable '+vj+' Unaccounted for.'
            End
@@ -523,6 +534,9 @@ Pro fa_esa_cmn_l2gen, cmn_dat, esa_type=esa_type, $
         If(vj Eq 'theta' Or vj Eq 'dtheta') Then Begin
            str_element, vatt, 'validmin', 0.0, /add
            str_element, vatt, 'validmax', 360.0, /add
+        Endif Else If(vj Eq 'energy_channel' Or vj Eq 'pitch_angle_bin') Then Begin
+           str_element, vatt, 'validmin', min(dvar), /add
+           str_element, vatt, 'validmax', max(dvar), /add
         Endif Else Begin
            str_element, vatt, 'validmin', vmn, /add
            str_element, vatt, 'validmax', vmx, /add
