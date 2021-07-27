@@ -13,13 +13,13 @@
 ;	TRANGE: time range to use
 ;
 ; $LastChangedBy: jhalekas $
-; $LastChangedDate: 2021-07-09 13:58:27 -0700 (Fri, 09 Jul 2021) $
-; $LastChangedRevision: 30118 $
+; $LastChangedDate: 2021-07-26 05:30:31 -0700 (Mon, 26 Jul 2021) $
+; $LastChangedRevision: 30142 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swia/mvn_swia_stacomp.pro $
 ;
 ;-
 
-pro mvn_swia_stacomp, type = type, trange = trange, temperature = temperature, angspec = angspec, bg = bg
+pro mvn_swia_stacomp, type = type, trange = trange, temperature = temperature, angspec = angspec, usebg = usebg, tbg = tbg
 
 if not keyword_set(trange) then ctime,trange,npoints = 2
 if not keyword_set(type) then type = 'd0'
@@ -81,11 +81,17 @@ heen = sta.v
 
 for i = 0,nts-1 do begin 
 	dat = mvn_sta_get_c6(ts[i])
-	if keyword_set(bg) then begin
+	if keyword_set(usebg) then begin
 		bg = mvn_sta_c6_bkg(dat)
 		dat.bkg = bg
 		dat.data = dat.data-bg
 	endif
+	if keyword_set(tbg) then begin
+		bg = tweakbg(dat)
+		dat.bkg = bg
+		dat.data = dat.data-bg
+	endif
+
 	dat = conv_units(dat,'eflux')
 	for j = 0,31 do begin 
 		w = where(dat.mass_arr[j,*] ge 0.7 and dat.mass_arr[j,*] le 1.4,nw)
