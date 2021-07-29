@@ -14,9 +14,9 @@
 ; Returns -1L on failure
 ;  
 ;        
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2015-03-17 12:53:14 -0700 (Tue, 17 Mar 2015) $
-; $LastChangedRevision: 17145 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-07-28 17:57:37 -0700 (Wed, 28 Jul 2021) $
+; $LastChangedRevision: 30155 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/tsy_valid_param.pro $
 ;-
 
@@ -35,8 +35,9 @@ function tsy_valid_param, in_val, pos_name
         return, -1L
       endif
 
-      ; interpolate onto position data
-      tinterpol_mxn, in_val, pos_name, out=d_verify, error=e
+      ; interpolate onto position data, ignoring NaNs
+      ; /repeat_extrapolate would be good as well, but that keyword doesn't seem to work properly at the moment JWL 2021-07-28
+      tinterpol_mxn, in_val, pos_name, out=d_verify, /ignore_nans,  error=e
 
       if e ne 0 then begin
         return, d_verify.y

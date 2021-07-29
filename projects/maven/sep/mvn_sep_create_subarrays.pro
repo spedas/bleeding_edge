@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2020-01-31 14:37:52 -0800 (Fri, 31 Jan 2020) $
-; $LastChangedRevision: 28266 $
+; $LastChangedDate: 2021-07-27 21:41:52 -0700 (Tue, 27 Jul 2021) $
+; $LastChangedRevision: 30145 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_create_subarrays.pro $
 
 pro mvn_sep_create_subarrays,data_str,trange=trange,tname=tname,bmaps=bmaps,mapids=mapids $
@@ -42,10 +42,7 @@ pro mvn_sep_create_subarrays,data_str,trange=trange,tname=tname,bmaps=bmaps,mapi
      mapnum = mapids[i]
      if mapnum eq 0 then continue
      tname = 'mvn_sep'+strtrim(sepn,2)
-     if keyword_set(lowres) then begin
-      tname = 'mvn_5min_sep'+strtrim(sepn,2)
-      if lowres eq 2 then tname = 'mvn_01hr_sep'+strtrim(sepn,2)
-     endif
+     if keyword_set(lowres) then tname = 'mvn_'+lowres+'_sep'+strtrim(sepn,2)
      if keyword_set(arc) then tname = 'mvn_arc_sep'+strtrim(sepn,2)
  ;    tname=data_str+string(mapnum,format='(i03)')
 ;     mapname = mvn_sep_mapnum_to_mapname(mapnum)

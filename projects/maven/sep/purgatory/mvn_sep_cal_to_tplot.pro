@@ -1,49 +1,49 @@
+; $LastChangedBy: ali $
+; $LastChangedDate: 2021-07-27 21:41:52 -0700 (Tue, 27 Jul 2021) $
+; $LastChangedRevision: 30145 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/purgatory/mvn_sep_cal_to_tplot.pro $
+
 pro mvn_sep_cal_to_tplot,newdat,sepnum=sepnum,qfilter=qfilter,smoothcounts=smoothcounts,lowres=lowres,arc=arc
 
-@mvn_sep_handler_commonblock.pro
+  @mvn_sep_handler_commonblock.pro
 
-if ~keyword_set(newdat) and keyword_set(sep1_svy) then begin
-  rawdat = sepnum eq 1 ? *sep1_svy.x : *sep2_svy.x
-  if keyword_set(arc) and keyword_set(sep1_arc) then rawdat = sepnum eq 1 ? *sep1_arc.x : *sep2_arc.x
-  if keyword_set(smoothcounts) then begin
-    raw_data=transpose(rawdat.data)
-    raw_data=smooth_counts(raw_data)
-    rawdat.data=transpose(raw_data)    
+  if ~keyword_set(newdat) and keyword_set(sep1_svy) then begin
+    rawdat = sepnum eq 1 ? *sep1_svy.x : *sep2_svy.x
+    if keyword_set(arc) and keyword_set(sep1_arc) then rawdat = sepnum eq 1 ? *sep1_arc.x : *sep2_arc.x
+    if keyword_set(smoothcounts) then begin
+      raw_data=transpose(rawdat.data)
+      raw_data=smooth_counts(raw_data)
+      rawdat.data=transpose(raw_data)
+    endif
+    bkgfile= (mvn_pfp_file_retrieve('maven/data/sci/sep/l1/sav/sep2_bkg.sav'))[0]
+    if file_test(bkgfile[0]) then   restore,file=bkgfile,/verb
+    ; mvn_sep_spectra_plot,bkg2
+    newdat = mvn_sep_get_cal_units(rawdat,background = bkg2,lowres=lowres)
   endif
-  bkgfile= (mvn_pfp_file_retrieve('maven/data/sci/sep/l1/sav/sep2_bkg.sav'))[0]
-  if file_test(bkgfile[0]) then   restore,file=bkgfile,/verb
-  ; mvn_sep_spectra_plot,bkg2
-  newdat = mvn_sep_get_cal_units(rawdat,background = bkg2,lowres=lowres)
-endif
 
-if ~keyword_set(newdat) then return
+  if ~keyword_set(newdat) then return
 
-if keyword_set(qfilter) then  begin
-  w = where((newdat.quality_flag and qfilter) ne 0,nw)
-  fnan = fill_nan(newdat)
-  if nw ne 0 then begin
-    newdat[w] = fill_nan(newdat[0])
+  if keyword_set(qfilter) then  begin
+    w = where((newdat.quality_flag and qfilter) ne 0,nw)
+    fnan = fill_nan(newdat)
+    if nw ne 0 then begin
+      newdat[w] = fill_nan(newdat[0])
+    endif
   endif
-endif
 
+  if keyword_set(lowres) then begin
+    res=lowres
+    if lowres eq 1 then res='5min'
+    if lowres eq 2 then res='01hr'
+    if lowres eq 3 then res='32sec'
+  endif
+  if keyword_set(arc) then res='arc'
+  if ~keyword_set(res) then res='_' else res='_'+res+'_'
+  prefix='mvn'+res+'SEP'+strtrim(sepnum,2)
+  if keyword_set(smoothcounts) then prefix='<mvn>'+res+'SEP'+strtrim(sepnum,2)
 
-prefix='mvn_SEP'+strtrim(sepnum,2)
-if keyword_set(smoothcounts) then prefix='<mvn>_SEP'+strtrim(sepnum,2)
-if keyword_set(lowres) then begin
-  prefix='mvn_5min_SEP'+strtrim(sepnum,2)
-  if lowres eq 2 then prefix='mvn_01hr_SEP'+strtrim(sepnum,2)
-endif
-if keyword_set(arc) then prefix='mvn_arc_SEP'+strtrim(sepnum,2)
-if keyword_set(smoothcounts) and keyword_set(lowres) then begin
-  prefix='<mvn>_5min_SEP'+strtrim(sepnum,2)
-  if lowres eq 2 then prefix='<mvn>_01hr_SEP'+strtrim(sepnum,2)
-endif
-if keyword_set(smoothcounts) and keyword_set(arc) then prefix='<mvn>_arc_SEP'+strtrim(sepnum,2)
-
-  ;
   data = newdat.f_ion_flux
   ;ddata = newdat.f_ion_flux_unc
-  ;
 
   dim = size(/dimen,data)
   r = intarr( dim[0] )
@@ -130,13 +130,13 @@ if keyword_set(smoothcounts) and keyword_set(arc) then prefix='<mvn>_arc_SEP'+st
   ; if (count gt 0L) then data[w] = !values.f_nan
   store_data,prefix+'F_elec_flux',newdat.time,transpose(data),transpose(newdat.f_elec_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
 
-if 0 then begin
-  data= rr # data
-  ddata= sqrt(rr # (ddata ^2))
-  eval0 = newdat[0].f_elec_energy
-  eval = (rr # eval0) / total(rr,2)
-  store_data,prefix+'F_elec_flux_red',newdat.time,transpose(data),eval,dlim={spec:0,yrange:[.01,1e5],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
-endif
+  if 0 then begin
+    data= rr # data
+    ddata= sqrt(rr # (ddata ^2))
+    eval0 = newdat[0].f_elec_energy
+    eval = (rr # eval0) / total(rr,2)
+    store_data,prefix+'F_elec_flux_red',newdat.time,transpose(data),eval,dlim={spec:0,yrange:[.01,1e5],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
+  endif
 
   data = newdat.r_elec_flux
   ddata = newdat.r_elec_flux_unc
@@ -145,22 +145,20 @@ endif
   ; if (count gt 0L) then data[w] = !values.f_nan
   store_data,prefix+'R_elec_flux',newdat.time,transpose(data),transpose(newdat.f_elec_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
 
-if 0 then begin
-  data= rr # data
-  ddata= sqrt(rr # (ddata ^2))
-  eval0 = newdat[0].R_ion_energy
-  eval = (rr # eval0) / total(rr,2)
-  store_data,prefix+'R_elec_flux_red',newdat.time,transpose(data),eval,dlim={spec:0,yrange:[.01,1e5],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
-endif
-
-
+  if 0 then begin
+    data= rr # data
+    ddata= sqrt(rr # (ddata ^2))
+    eval0 = newdat[0].R_ion_energy
+    eval = (rr # eval0) / total(rr,2)
+    store_data,prefix+'R_elec_flux_red',newdat.time,transpose(data),eval,dlim={spec:0,yrange:[.01,1e5],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
+  endif
 
   store_data,prefix+'F_ion_eflux_tot',data={x:newdat.time,y:newdat.f_ion_eflux_tot},dlim={ylog:1,yrange:[1e3,1e8]}
   store_data,prefix+'R_ion_eflux_tot',data={x:newdat.time,y:newdat.r_ion_eflux_tot},dlim={ylog:1,yrange:[1e3,1e8]}
 
   store_data,prefix+'F_ion_flux_tot',data={x:newdat.time,y:newdat.f_ion_flux_tot},dlim={ylog:1,yrange:[1.,1e6]}
   store_data,prefix+'R_ion_flux_tot',data={x:newdat.time,y:newdat.r_ion_flux_tot},dlim={ylog:1,yrange:[1.,1e6]}
-  
+
 
   store_data,prefix+'F_elec_eflux_tot',data={x:newdat.time,y:newdat.f_elec_eflux_tot},dlim={ylog:1,yrange:[1e3,1e8]}
   store_data,prefix+'R_elec_eflux_tot',data={x:newdat.time,y:newdat.r_elec_eflux_tot},dlim={ylog:1,yrange:[1e3,1e8]}
@@ -169,7 +167,6 @@ endif
   store_data,prefix+'R_elec_flux_tot',data={x:newdat.time,y:newdat.r_elec_flux_tot},dlim={ylog:1,yrange:[1.,1e6]}
 
   store_data,prefix+'_QUAL_FLAG',data={x:newdat.time,y:newdat.quality_flag},dlim={tplot_routine:'bitplot',yrange:[-1,8]}
-
 
   ;print,(eval0* reform(rr[0,*]))
   ;print,(eval0* reform(rr[1,*]))

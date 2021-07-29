@@ -15,8 +15,8 @@
 ; HISTORY:
 ; VERSION:
 ;  $LastChangedBy: ali $
-;  $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
-;  $LastChangedRevision: 30010 $
+;  $LastChangedDate: 2021-07-27 21:41:52 -0700 (Tue, 27 Jul 2021) $
+;  $LastChangedRevision: 30145 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/euv/mvn_euv_l0_load.pro $
 ;CREATED BY:  ali 20160830
 ;FILE: mvn_euv_l0_load.pro
@@ -99,7 +99,7 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
     dlim2.ysubtitle+='+4.6e5'
     store_data,'mvn_euv_l0',mvn_lpw_euv_x,mvn_lpw_euv_y,limits=lim2,dlimits=dlim2
     ylim,'mvn_euv_l0',1e4,1.4e6,1
-    options,'mvn_euv_l0',labflag=-1,colors='gbrk',datagap=2.
+    options,'mvn_euv_l0',labflag=-1,colors='gbrk'
     if keyword_set(tplot) then tplot,'mvn_euv_l0'
   endif
 

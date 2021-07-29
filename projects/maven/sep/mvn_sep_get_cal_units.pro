@@ -1,7 +1,7 @@
 ; Created by Davin Larson
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2019-08-22 13:02:27 -0700 (Thu, 22 Aug 2019) $
-; $LastChangedRevision: 27633 $
+; $LastChangedDate: 2021-07-27 21:41:52 -0700 (Tue, 27 Jul 2021) $
+; $LastChangedRevision: 30145 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_get_cal_units.pro $
 ; $ID: $
 
@@ -68,6 +68,7 @@ function mvn_sep_rebin_matrix,mapid,sens
   return,mat
 end
 
+
 pro mvn_sep_conv_units,  rawdat, bkgdat,  exmat, bmap,  subflux=subflux, uncflux=uncflux, nrg=nrg_nt, dnrg=dnrg_nt, sub_eflux=sub_eflux,unc_eflux=unc_eflux, $
   tot_eflux_sub=tot_eflux_sub, tot_eflux_unc=tot_eflux_unc,lowres=lowres
   ; exmat                          ; n_s x 256
@@ -111,10 +112,12 @@ pro mvn_sep_conv_units,  rawdat, bkgdat,  exmat, bmap,  subflux=subflux, uncflux
 
 end
 
+
 pro mvn_sep_rebin,data,ddata,rebin
   data = rebin # data
   ddata = sqrt( rebin # ddata^2)
 end
+
 
 function mvn_sep_get_cal_units ,rawdat  ,units_names=units_name,background=bkgdat,lowres=lowres
 

@@ -104,8 +104,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-02-27 14:01:22 -0800 (Wed, 27 Feb 2019) $
-;$LastChangedRevision: 26718 $
+;$LastChangedDate: 2021-07-28 14:24:03 -0700 (Wed, 28 Jul 2021) $
+;$LastChangedRevision: 30150 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products.pro $
 ;-
 pro mms_part_products, $
@@ -447,7 +447,12 @@ pro mms_part_products, $
 
       ; now, the corrected distribution function is simply f_corrected = f-fphoto*nphoto
       ; note: transpose is to shuffle fphoto*nphoto to energy-azimuth-elevation, to match dist.data
-      dist.data = dist.data-transpose(reform(fphoto*nphoto), [2, 0, 1])
+      corrected_df = dist.data-transpose(reform(fphoto*nphoto), [2, 0, 1])
+      where_neg = where(corrected_df lt 0, neg_count)
+      if neg_count ne 0 then begin
+        corrected_df[where_neg] = 0d
+      endif
+      dist.data = corrected_df
     endif
 
     ;Sanitize Data.

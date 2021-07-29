@@ -52,8 +52,8 @@
 ;         Spacecraft photoelectrons are corrected in moments_3d
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-02-24 12:49:10 -0800 (Wed, 24 Feb 2021) $
-;$LastChangedRevision: 29699 $
+;$LastChangedDate: 2021-07-28 14:22:07 -0700 (Wed, 28 Jul 2021) $
+;$LastChangedRevision: 30149 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -221,7 +221,7 @@ pro mms_part_getspec, probes=probes, $
 
         ;;;;;;;;;;;;; kludge zone;;;;;;;;;;;
         if keyword_set(with_aspoc) then begin
-          mms_load_aspoc, trange=trange
+          mms_load_aspoc, trange=trange, probe=probes[probe_idx]
           tinterpol, 'mms'+probes[probe_idx]+'_edp_scpot_'+scpot_data_rate+'_l2', 'mms'+probes[probe_idx]+'_aspoc_ionc_l2'
           calc, '"scpot_adjusted"="mms'+probes[probe_idx]+'_edp_scpot_'+scpot_data_rate+'_l2_interp"+"mms'+probes[probe_idx]+'_aspoc_ionc_l2"'
           scpot_variable = 'scpot_adjusted'

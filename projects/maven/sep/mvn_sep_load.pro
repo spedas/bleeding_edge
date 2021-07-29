@@ -1,14 +1,13 @@
 ; Created by Davin Larson
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-07-17 13:24:32 -0700 (Sat, 17 Jul 2021) $
-; $LastChangedRevision: 30130 $
+; $LastChangedDate: 2021-07-27 21:41:52 -0700 (Tue, 27 Jul 2021) $
+; $LastChangedRevision: 30145 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_load.pro $
-; $ID: $
 
 pro mvn_sep_load,pathnames=pathnames,trange=trange,files=files,RT=RT,download_only=download_only, $
   mag=mag,pfdpu=pfdpu,sep=sep,lpw=lpw,sta=sta,format=format,use_cache=use_cache,  $
-  source=source,verbose=verbose,L1=L1,L0=L0,L2=L2,ancillary=ancillary, anc_structure = anc_structure,$
-  pad = pad, eflux = eflux, lowres=lowres,arc=arc,units_name=units_name,basic_tags=basic_tags,full_tags=full_tags
+  source=source,verbose=verbose,L1=L1,L0=L0,L2=L2,ancillary=ancillary,anc_structure=anc_structure,$
+  pad=pad,eflux=eflux,lowres=lowres,arc=arc,units_name=units_name,basic_tags=basic_tags,full_tags=full_tags
 
   @mvn_sep_handler_commonblock.pro
 

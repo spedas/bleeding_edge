@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 30010 $
+; $LastChangedDate: 2021-07-27 21:41:52 -0700 (Tue, 27 Jul 2021) $
+; $LastChangedRevision: 30145 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_save_reduce_timeres.pro $
 
 ;20160623 Ali
@@ -10,7 +10,9 @@
 
 function mvn_sep_att_correction,data,res,tr,fltatt=fltatt ;throws out att actuation times that result in bad/mixed counts
   datt=shift(data.att,-1) ne shift(data.att,1) ;att flips
-  w=where(datt,nw,/null)
+  datt2=datt or shift(datt,1) ;also get rid of one time step after att actuation
+  ;store_data,'mvn_sep_test_att',data.time,datt2
+  w=where(datt2,nw,/null)
   if keyword_set(fltatt) then begin ;use float for averaging
     dataflt=data
     str_element,dataflt,'att',0.,/add ;turning att from byte to float for averaging mixed state att's
@@ -51,7 +53,7 @@ end
 
 
 pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,timestamp=timestamp,verbose=verbose,$
-  resstr=resstr,resolution=res,description=description,hourly=hourly
+  resstr=resstr,resolution=res,description=description,hourly=hourly,force_make=force_make
 
   if keyword_set(init) then trange0=[time_double('2013-12-03'),systime(1)] else trange0=timerange(trange0)
   if keyword_set(hourly) then resstr='01hr'
@@ -101,7 +103,7 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
 
     if keyword_set(timestamp) then target_timestamp = time_double(timestamp) < target_timestamp
 
-    if prereq_timestamp lt target_timestamp then continue    ; skip if lowres L1 does not need to be regenerated
+    if ~keyword_set(force_make) && (prereq_timestamp lt target_timestamp) then continue    ; skip if lowres L1 does not need to be regenerated
     dprint,verbose=verbose,dlevel=3,'Generating new file: '+redures_file
 
     f = fullres_file
@@ -110,7 +112,7 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
     restore,f
     source_filename=f
 
-    if resstr eq '5min' then begin
+    if (resstr eq '5min') || (resstr eq '32sec') then begin
       if n_elements(s1_svy) gt 1 then s1_svy=mvn_sep_att_correction(s1_svy,res,tr,/fltatt) else s1_svy=0
       if n_elements(s2_svy) gt 1 then s2_svy=mvn_sep_att_correction(s2_svy,res,tr,/fltatt) else s2_svy=0
 
