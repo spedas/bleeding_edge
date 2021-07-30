@@ -8,9 +8,9 @@
 ; Note: The l-shell code requires the IDL geopack routines 
 ; 
 ; 
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2013-12-16 17:16:12 -0800 (Mon, 16 Dec 2013) $
-; $LastChangedRevision: 13685 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
+; $LastChangedRevision: 30156 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/examples/crib_calculate_lshell.pro $
 ;
 ;-

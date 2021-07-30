@@ -17,9 +17,9 @@
 ;
 ;  Notes: This routine requires IDL geopack routines, returns -1L if not installed
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2014-03-17 08:22:00 -0700 (Mon, 17 Mar 2014) $
-; $LastChangedRevision: 14543 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
+; $LastChangedRevision: 30156 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/calculate_lshell.pro $
 ;-
 

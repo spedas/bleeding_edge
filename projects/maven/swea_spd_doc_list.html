@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Jul 28 18:15:57 2021.<P>
+<STRONG>Last modified: </STRONG>Thu Jul 29 18:15:54 2021.<P>
  
 <HR>
  
@@ -19,6 +19,10 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/maven/swea</H1>
+<LI><A HREF="#BINDATA">BINDATA</A>
+<br>Bins a 2D data set and calculates moments for each bin.  The calculated
+<LI><A HREF="#BINDATA2D">BINDATA2D</A>
+<br>Bins a 3D data set and calculate moments for each bin.  The calculated
 <LI><A HREF="#CTIME2[1]">CTIME2[1]</A>
 <br>A version of ctime.  May become obsolete.
 <LI><A HREF="#CTIME_GET_EXACT_DATA2">CTIME_GET_EXACT_DATA2</A>
@@ -290,8 +294,119 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="BINDATA">
+<H2>BINDATA</H2></A>
+<A HREF="#BINDATA2D">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   bindata
+PURPOSE:
+  Bins a 2D data set and calculates moments for each bin.  The calculated
+  moments are: mean, standard deviation, skewness, kurtosis, mean absolute
+  deviation, and median.
+
+    skewness: = 0 -&gt; distribution is symmetric about the maximum
+              &lt; 0 -&gt; distribution is skewed to the left
+              &gt; 0 -&gt; distribution is skewed to the right
+
+    kurtosis: = 0 -&gt; distribution is peaked like a Gaussian
+              &lt; 0 -&gt; distribution is less peaked than a Gaussian
+              &gt; 0 -&gt; distribution is more peaked than a Gaussian
+
+USAGE:
+  bindata, x, y
+INPUTS:
+       x:         The independent variable.
+
+       y:         The dependent variable.
+
+KEYWORDS:
+       XBINS:     The number of bins to divide x into.  Takes precedence
+                  over the DX keyword.
+
+       DX:        The bin size.
+
+       XRANGE:    The range for creating bins.  Default is [min(x),max(x)].
+
+       RESULT:    A structure containing the moments, median, and the number
+                  of points per bin.
+
+       DST:       Stores the distribution for each bin.  Can take a lot of
+                  space but allows detailed inspection of statistics.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2021-07-29 14:10:44 -0700 (Thu, 29 Jul 2021) $
+ $LastChangedRevision: 30158 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/bindata.pro $
+
+CREATED BY:	David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="swea/bindata.pro">projects/maven/swea/bindata.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="BINDATA2D">
+<H2>BINDATA2D</H2></A>
+<A HREF="#BINDATA">[Previous Routine]</A>
+<A HREF="#CTIME2[1]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   bindata2d
+PURPOSE:
+  Bins a 3D data set and calculate moments for each bin.  The calculated
+  moments are: mean, standard deviation, skewness, kurtosis, mean absolute
+  deviation, and median.
+
+    skewness: = 0 -&gt; distribution is symmetric about the maximum
+              &lt; 0 -&gt; distribution is skewed to the left
+              &gt; 0 -&gt; distribution is skewed to the right
+
+    kurtosis: = 0 -&gt; distribution is peaked like a Gaussian
+              &lt; 0 -&gt; distribution is less peaked than a Gaussian
+              &gt; 0 -&gt; distribution is more peaked than a Gaussian
+
+USAGE:
+  bindata2d, x, y, z
+INPUTS:
+       x:         The first independent variable.
+
+       y:         The second independent variable.
+
+       z:         The dependent variable (2D array).
+
+KEYWORDS:
+       XBINS:     The number of bins to divide x into.  Takes precedence
+                  over the DX keyword.
+
+       DX:        The X bin size.
+
+       XRANGE:    The range for creating bins.  Default is [min(x),max(x)].
+
+       YBINS:     The number of bins to divide y into.  Takes precedence
+                  over the DY keyword.
+
+       DY:        The Y bin size.
+
+       YRANGE:    The range for creating bins.  Default is [min(y),max(y)].
+
+       RESULT:    A structure containing the moments, median, and the number
+                  of points per bin.
+
+       DST:       Stores the distribution for each bin.  Can take a lot of
+                  space.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2021-07-29 14:10:44 -0700 (Thu, 29 Jul 2021) $
+ $LastChangedRevision: 30158 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/bindata2d.pro $
+
+CREATED BY:	David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="swea/bindata2d.pro">projects/maven/swea/bindata2d.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="CTIME2[1]">
 <H2>CTIME2[1]</H2></A>
+<A HREF="#BINDATA2D">[Previous Routine]</A>
 <A HREF="#CTIME2[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
