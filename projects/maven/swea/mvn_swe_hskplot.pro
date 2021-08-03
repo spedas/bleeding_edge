@@ -21,22 +21,29 @@
 ;       HSK:          Restore housekeeping from this IDL save/restore file.
 ;                     (Full path and name required.)
 ;
+;       VNORM:        Subtract nominal values from all housekeeping voltages and 
+;                     divide by the nominal values (dV/V).  Combine all relative
+;                     voltage differences in a single panel.  Default = 1 (yes).
+;
 ;       RESET:        Sets common block HSK to zero.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-10-21 10:15:04 -0700 (Mon, 21 Oct 2019) $
-; $LastChangedRevision: 27902 $
+; $LastChangedDate: 2021-08-02 14:03:50 -0700 (Mon, 02 Aug 2021) $
+; $LastChangedRevision: 30164 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_hskplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2017-04-06
 ;-
-pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk, reset=reset, pans=pans
+pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk, vnorm=vnorm, reset=reset, pans=pans
 
   @mvn_swe_com
 
   oneday = 86400D
   if keyword_set(reset) then swe_hsk = 0
   rflg = 0
+
+  if (size(vnorm,/type) eq 0) then vnorm = 1
+  vflg = keyword_set(vnorm)
 
   if (size(hsk,/type) eq 7) then begin
     finfo = file_info(hsk)
@@ -122,8 +129,6 @@ pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk, reset=reset, pans=pans
   dTmax = 10.
   dCmax = 10.
 
-    vflg = 1
-
     if (vflg) then begin
       vnorm = [28., 12., 5., 3.3, 2.5]
       voff = vnorm
@@ -153,14 +158,6 @@ pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk, reset=reset, pans=pans
     store_data,'N5AV'  ,data={x:swe_hsk.time, y:((swe_hsk.N5AV+voff[2])/vnorm[2])}
     store_data,'P28V'  ,data={x:swe_hsk.time, y:((swe_hsk.P28V-voff[0])/vnorm[0])}
     if (vflg) then begin
-      options,'P28V',  'color',TCcol[0]   ; magenta
-      options,'P12V',  'color',TCcol[1]   ; blue
-      options,'N12V',  'color',TCcol[2]   ; cyan
-      options,'P5AV',  'color',TCcol[3]   ; green
-      options,'N5AV',  'color',TCcol[4]   ; yellow
-      options,'P5DV',  'color',TCcol[5]   ; orange
-      options,'P3P3DV','color',TCcol[6]   ; red
-
       store_data,'VoltsC',data=['TV_frame','P28V','P12V','N12V', $
                                 'P5AV','N5AV','P5DV','P3P3DV']  ; skipping P2P5DV
       
@@ -170,21 +167,9 @@ pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk, reset=reset, pans=pans
       options,'VoltsC','yminor',5
       options,'VoltsC','labflag',1
       options,'VoltsC','labels',['+28 V','+12 V','-12 V','+5 V','-5 V','5 DV','3.3 DV']
+      options,'VoltsC','colors',TCcol
       vpans = ['VoltsC']
     endif else begin
-      options,'P12V',  'color',TCcol[0]   ; magenta
-      options,'N12V',  'color',TCcol[1]   ; blue
-      options,'MCP28V','color',TCcol[2]   ; cyan
-      options,'NR28V', 'color',TCcol[3]   ; green
-      options,'P28V',  'color',TCcol[4]   ; yellow
-      options,'P2P2DV','color',TCcol[0]   ; magenta
-      
-      options,'P3P3DV','color',TCcol[1]   ; blue
-      options,'P5DV',  'color',TCcol[2]   ; cyan
-      options,'P5AV',  'color',TCcol[3]   ; green
-      options,'N5AV',  'color',TCcol[4]   ; yellow
-      options,'NRV',   'color',TCcol[5]   ; orange
-  
       store_data,'VoltsA',data=['TV_frame','P12V','N12V','MCP28V','NR28V','P28V']
       store_data,'VoltsB',data=['TV_frame','P2P5DV','P3P3DV','P5DV','P5AV','N5AV','NRV']
 
@@ -193,12 +178,14 @@ pro mvn_swe_hskplot, trange=trange, orbit=orbit, hsk=hsk, reset=reset, pans=pans
       options,'VoltsA','yminor',5
       options,'VoltsA','labflag',1
       options,'VoltsA','labels',['+12 V','-12 V','MCP 28V','NR 28V','+28 V','','']
+      options,'VoltsA','colors',TCcol
       ylim,'VoltsB',-6,6,0
       options,'VoltsB','ytitle','Volts'
       options,'VoltsB','yticks',2
       options,'VoltsB','yminor',6
       options,'VoltsB','labflag',1
       options,'VoltsB','labels',['+2.5 DV','+3.3 DV','+5 DV','+5 V','-5 V','NRV','']
+      options,'VoltsB','colors',TCcol
       vpans = ['VoltsA','VoltsB']
     endelse
 

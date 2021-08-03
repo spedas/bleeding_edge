@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jul 30 18:15:56 2021.<P>
+<STRONG>Last modified: </STRONG>Mon Aug  2 18:15:59 2021.<P>
  
 <HR>
  
@@ -1952,6 +1952,8 @@ PURPOSE:
     Ext Ops 4   2019-10-01/00:00  - 
                                    |-&gt; Extended Mission 4 (PDS R21 - R32)
     Ext Ops 5   2022-10-01/00:00  -
+                                   |-&gt; Extended Mission 5 (PDS R33 - R44)
+    Ext Ops 6   2025-10-01/00:00  -
     -----------------------------------------------------------------------
 
 USAGE:
@@ -1967,8 +1969,8 @@ KEYWORDS:
                    changes in a tplot window (assumed to exist).
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-03-22 16:49:50 -0700 (Mon, 22 Mar 2021) $
- $LastChangedRevision: 29799 $
+ $LastChangedDate: 2021-08-02 14:04:34 -0700 (Mon, 02 Aug 2021) $
+ $LastChangedRevision: 30166 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 
 CREATED BY:    David L. Mitchell  03-29-13
@@ -2071,8 +2073,8 @@ KEYWORDS:
        SILENT:       Don't print any warnings or messages.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-03-22 16:51:17 -0700 (Mon, 22 Mar 2021) $
- $LastChangedRevision: 29801 $
+ $LastChangedDate: 2021-08-02 14:04:07 -0700 (Mon, 02 Aug 2021) $
+ $LastChangedRevision: 30165 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_crosscal.pro $
 
 CREATED BY:    David L. Mitchell  05-04-16
@@ -2845,11 +2847,15 @@ KEYWORDS:
        HSK:          Restore housekeeping from this IDL save/restore file.
                      (Full path and name required.)
 
+       VNORM:        Subtract nominal values from all housekeeping voltages and 
+                     divide by the nominal values (dV/V).  Combine all relative
+                     voltage differences in a single panel.  Default = 1 (yes).
+
        RESET:        Sets common block HSK to zero.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-10-21 10:15:04 -0700 (Mon, 21 Oct 2019) $
- $LastChangedRevision: 27902 $
+ $LastChangedDate: 2021-08-02 14:03:50 -0700 (Mon, 02 Aug 2021) $
+ $LastChangedRevision: 30164 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_hskplot.pro $
 
 CREATED BY:    David L. Mitchell  2017-04-06
@@ -5545,8 +5551,8 @@ KEYWORDS:
        BURST:        Plot a color bar showing PAD burst coverage.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-03-25 09:52:43 -0700 (Thu, 25 Mar 2021) $
- $LastChangedRevision: 29819 $
+ $LastChangedDate: 2021-08-02 14:03:09 -0700 (Mon, 02 Aug 2021) $
+ $LastChangedRevision: 30163 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12

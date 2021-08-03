@@ -24,6 +24,8 @@
 ;    Ext Ops 4   2019-10-01/00:00  - 
 ;                                   |-> Extended Mission 4 (PDS R21 - R32)
 ;    Ext Ops 5   2022-10-01/00:00  -
+;                                   |-> Extended Mission 5 (PDS R33 - R44)
+;    Ext Ops 6   2025-10-01/00:00  -
 ;    -----------------------------------------------------------------------
 ;
 ;USAGE:
@@ -39,8 +41,8 @@
 ;                   changes in a tplot window (assumed to exist).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-22 16:49:50 -0700 (Mon, 22 Mar 2021) $
-; $LastChangedRevision: 29799 $
+; $LastChangedDate: 2021-08-02 14:04:34 -0700 (Mon, 02 Aug 2021) $
+; $LastChangedRevision: 30166 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -138,12 +140,11 @@ pro mvn_swe_config, list=list, timebar=timebar
   t_swp = [t_swp, time_double('2018-11-09/17:57:56')]  ; sweep table 7 upload (32-Hz, 200 eV)
 
   t_mcp = [t_mcp, time_double('2018-11-13/11:18:13')]  ; bias adjustment (2800 -> 2875 V)
-
-  t_mcp = [t_mcp, time_double('2020-09-02/00:00:00')]  ; SWE-SWI cross calibration stabilizes
+  t_mcp = [t_mcp, time_double('2020-10-15/00:00:00')]  ; beginning of second polynomial fit
 
 ; 2019-10-01/00:00                                     ; beginning of EM-4
 
-  t_mcp = [t_mcp, time_double('2021-02-07/00:00:00')]  ; last SWE-SWI cross calibration
+  t_mcp = [t_mcp, time_double('2021-06-17/00:00:00')]  ; last SWE-SWI cross calibration
 
 ; Gather all the configuration change times into one variable (for timebar).
 
@@ -169,7 +170,7 @@ pro mvn_swe_config, list=list, timebar=timebar
     print,time_string(t_swp[2]), ' --> sweep table 8 upload'
     print,time_string(t_swp[3]), ' --> sweep table 7 upload'
     print,time_string(t_mcp[8]), ' --> MCP bias adjustment (2800 -> 2875 V)'
-    print,time_string(t_mcp[9]), ' --> SWEA-SWIA cross calibration stabilizes'
+    print,time_string(t_mcp[9]), ' --> MCP bias 2875, second polynomial fit'
     print,time_string(t_mcp[10]),' --> last SWEA-SWIA cross calibration'
   endif
 

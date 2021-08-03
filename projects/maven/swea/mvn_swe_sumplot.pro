@@ -68,8 +68,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-25 09:52:43 -0700 (Thu, 25 Mar 2021) $
-; $LastChangedRevision: 29819 $
+; $LastChangedDate: 2021-08-02 14:03:09 -0700 (Mon, 02 Aug 2021) $
+; $LastChangedRevision: 30163 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -125,8 +125,8 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
   TCcol[0] = 1
   Vlab = TClab
   Tlab = TClab[0:2]
-  store_data,'TV_frame',data={x:[0D], y:replicate(-100.,1,7), v:findgen(7)}
-  options,'TV_frame','colors',TCcol
+;  store_data,'TV_frame',data={x:[0D], y:replicate(-100.,1,7), v:findgen(7)}
+;  options,'TV_frame','colors',TCcol
 
   dTmax = 10.
   dCmax = 10.
@@ -142,7 +142,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     store_data,'SWE28I' ,data={x:pfp_hsk.time, y:pfp_hsk.SWE28I}
     store_data,'PFP28V',data={x:pfp_hsk.time, y:pfp_hsk.P28V}
     store_data,'SC28V',data={x:pfp_hsk.time, y:pfp_hsk.PFP28V}
-    store_data,'PF28V',data=['TV_frame','PFP28V','SC28V']
+    store_data,'PF28V',data=['PFP28V','SC28V']
 
     options,'SWE28I','ytitle','Current (mA)'
     options,'SWE28I','ynozero',1
@@ -240,15 +240,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     store_data,'N5AV'  ,data={x:swe_hsk.time, y:((swe_hsk.N5AV+voff[2])/vnorm[2])}
     store_data,'P28V'  ,data={x:swe_hsk.time, y:((swe_hsk.P28V-voff[0])/vnorm[0])}
     if (vflg) then begin
-      options,'P28V',  'color',TCcol[0]   ; magenta
-      options,'P12V',  'color',TCcol[1]   ; blue
-      options,'N12V',  'color',TCcol[2]   ; cyan
-      options,'P5AV',  'color',TCcol[3]   ; green
-      options,'N5AV',  'color',TCcol[4]   ; yellow
-      options,'P5DV',  'color',TCcol[5]   ; orange
-      options,'P3P3DV','color',TCcol[6]   ; red
-
-      store_data,'VoltsC',data=['TV_frame','P28V','P12V','N12V', $
+      store_data,'VoltsC',data=['P28V','P12V','N12V', $
                                 'P5AV','N5AV','P5DV','P3P3DV']  ; skipping P2P5DV
       
       ylim,'VoltsC',-0.05,0.05,0
@@ -257,43 +249,30 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       options,'VoltsC','yminor',5
       options,'VoltsC','labflag',1
       options,'VoltsC','labels',['+28 V','+12 V','-12 V','+5 V','-5 V','5 DV','3.3 DV']
+      options,'VoltsC','colors',TCcol
       vpans = ['VoltsC']
-    endif else begin
-      options,'P12V',  'color',TCcol[0]   ; magenta
-      options,'N12V',  'color',TCcol[1]   ; blue
-      options,'MCP28V','color',TCcol[2]   ; cyan
-      options,'NR28V', 'color',TCcol[3]   ; green
-      options,'P28V',  'color',TCcol[4]   ; yellow
-      options,'P2P2DV','color',TCcol[0]   ; magenta
-      
-      options,'P3P3DV','color',TCcol[1]   ; blue
-      options,'P5DV',  'color',TCcol[2]   ; cyan
-      options,'P5AV',  'color',TCcol[3]   ; green
-      options,'N5AV',  'color',TCcol[4]   ; yellow
-      options,'NRV',   'color',TCcol[5]   ; orange
-  
-      store_data,'VoltsA',data=['TV_frame','P12V','N12V','MCP28V','NR28V','P28V']
-      store_data,'VoltsB',data=['TV_frame','P2P5DV','P3P3DV','P5DV','P5AV','N5AV','NRV']
+    endif else begin  
+      store_data,'VoltsA',data=['P12V','N12V','MCP28V','NR28V','P28V']
+      store_data,'VoltsB',data=['P2P5DV','P3P3DV','P5DV','P5AV','N5AV','NRV']
 
       ylim,'VoltsA',-15,35,0
       options,'VoltsA','ytitle','Volts'
       options,'VoltsA','yminor',5
       options,'VoltsA','labflag',1
       options,'VoltsA','labels',['+12 V','-12 V','MCP 28V','NR 28V','+28 V','','']
+      options,'VoltsA','colors',TCcol
       ylim,'VoltsB',-6,6,0
       options,'VoltsB','ytitle','Volts'
       options,'VoltsB','yticks',2
       options,'VoltsB','yminor',6
       options,'VoltsB','labflag',1
       options,'VoltsB','labels',['+2.5 DV','+3.3 DV','+5 DV','+5 V','-5 V','NRV','']
+      options,'VoltsB','colors',TCcol
       vpans = ['VoltsA','VoltsB']
     endelse
 
-    store_data,'Temps',data=['TV_frame','LVPST','ANALT','DIGT']
+    store_data,'Temps',data=['LVPST','ANALT','DIGT']
     options,'Temps','ytitle','Temp (C)'
-    options,'ANALT','color',TCcol[0]  ; magenta
-    options,'DIGT', 'color',TCcol[1]  ; blue
-    options,'LVPST','color',TCcol[2]  ; cyan
     tlow = 5*floor((min(swe_hsk.lvpst) < min(swe_hsk.digt) < min(swe_hsk.analt))/5.)
     thigh = 5*ceil((max(swe_hsk.lvpst) > max(swe_hsk.digt) > max(swe_hsk.analt))/5.)
     ylim,'Temps',tlow,thigh,0
@@ -301,7 +280,8 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     options,'Temps','yticks',(thigh - tlow)/5
     options,'Temps','yminor',5
     options,'Temps','labflag',1
-    options,'Temps','labels',['ANALT','DIGT','LVPST','','','','']
+    options,'Temps','labels',['LVPST','ANALT','DIGT']
+    options,'Temps','colors',TCcol[0:2]
   
     store_data,'HSKREG',data={x:swe_hsk.time, y:transpose(swe_hsk.HSKREG), v:indgen(16)}
     options,'HSKREG','spec',1
