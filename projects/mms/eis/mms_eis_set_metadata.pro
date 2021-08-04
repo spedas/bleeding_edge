@@ -11,10 +11,11 @@
 ;     2020 Feb 24 -  Ian Cohen at APL: changed defualt yrange of electronenergy data to scale automatically to accommodate changes to electron energy
 ;                     channels
 ;     2021 Feb 09 -  Ian Cohen at APL: added "helium" variables
+;     2021 May 21 -  Ian Cohen at APL: removed obsolete "alpha" variables
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
-; $LastChangedRevision: 29648 $
+; $LastChangedDate: 2021-08-03 09:08:16 -0700 (Tue, 03 Aug 2021) $
+; $LastChangedRevision: 30167 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_set_metadata.pro $
 ;-
 ;
@@ -28,11 +29,11 @@ pro mms_eis_set_metadata, tplotnames, probe = probe, level=level, data_rate = da
     case datatype of 
         'extof': begin
             ylim,'*_extof_proton_flux_omni*', 55, 1000, 1
-            ylim,'*_extof_alpha_flux_omni*', 80, 650, 1
+;            ylim,'*_extof_alpha_flux_omni*', 80, 650, 1
             ylim,'*_extof_helium_flux_omni*', 80, 650, 1
             ylim,'*_extof_oxygen_flux_omni*', 145, 950, 1
             zlim, '*_extof_proton_flux_omni*', 0, 0, 1
-            zlim, '*_extof_alpha_flux_omni*', 0, 0, 1
+;            zlim, '*_extof_alpha_flux_omni*', 0, 0, 1
             zlim, '*_extof_helium_flux_omni*', 0, 0, 1
             zlim, '*_extof_oxygen_flux_omni*', 0, 0, 1
             options, '*_extof_*_flux_omni*', ystyle=1, yticks=2

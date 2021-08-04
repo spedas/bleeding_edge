@@ -14,6 +14,7 @@
 ;                       default is 'srvy'.
 ;         data_units:   desired units for data. for eis units are ['flux', 'cps', 'counts'].
 ;                       The default is 'flux'.
+;         level:        data level ['l1a','l1b','l2pre','l2' (default)]
 ;         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
 ;                       preserving original tplot variable.
 ;         species:      species (should be: proton, oxygen, helium (formerly alpha) or electron)
@@ -28,23 +29,25 @@
 ;                                         errors with overwriting in other procedures
 ;       + 2018-06-14, I. Cohen          : changed 'datatype' to 'new_datatype' in definition of p_num to stop error
 ;                                         when handling 'combined' data   
-;       + 2021-02-09, I. Cohen          : updated possible species under KEYWORDS header                        
+;       + 2021-02-09, I. Cohen          : updated possible species under KEYWORDS header
+;       + 2021-04-08, I. Cohen          : added level keyword; updated prefix definition to handle new L2 variable names            
 ;       
 ;       
 ;       
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
-;$LastChangedRevision: 29648 $
+;$LastChangedDate: 2021-08-03 09:08:16 -0700 (Tue, 03 Aug 2021) $
+;$LastChangedRevision: 30167 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_spin_avg.pro $
 ;-
 
 pro mms_eis_spin_avg, probe=probe, species = species, data_units = data_units, $
-  datatype = datatype, data_rate = data_rate, suffix=suffix, multisc = multisc
+  datatype = datatype, data_rate = data_rate, level=level, suffix=suffix, multisc = multisc
   ;
   if undefined(probe) then probe='1' else probe = strcompress(string(probe), /rem)
   if undefined(datatype) then datatype = 'extof'
   if undefined(data_units) then data_units = 'flux'
   if undefined(species) then species = 'proton'
+  if undefined(level) then level = 'l2'
   if undefined(suffix) then suffix = ''
   if undefined(data_rate) then data_rate = 'srvy'
   if undefined(multisc) then multisc = 0
@@ -55,7 +58,7 @@ pro mms_eis_spin_avg, probe=probe, species = species, data_units = data_units, $
   endif else new_datatype = datatype
   ;
   if (multisc eq 1) then probe_string = probe[0]+'-'+probe[-1] else probe_string = probe
-  if (data_rate eq 'brst') then prefix = 'mms'+probe_string+'_epd_eis_brst_' else prefix = 'mms'+probe_string+'_epd_eis_'
+  prefix = 'mms'+probe_string+'_epd_eis_'+data_rate+'_'+level+'_'
   ; get the spin #s associated with each measurement
   get_data, prefix + datatype + '_' +  'spin'+suffix, data=spin_nums
   ;

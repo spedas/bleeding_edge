@@ -14,6 +14,7 @@
 ;         size_pabin:           size of the pitch angle bins
 ;         data_units:           flux or cps
 ;         datatype:             extof, phxtof, electronenergy
+;         level:                data level ['l1a','l1b','l2pre','l2' (default)]
 ;         scopes:               string array of telescopes to be included in PAD ('0'-'5')
 ;         suffix:               suffix used when loading the data
 ;         num_smooth:           should contain number of seconds to use when smoothing
@@ -34,8 +35,8 @@
 ;     This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
-;$LastChangedRevision: 29648 $
+;$LastChangedDate: 2021-08-03 09:08:16 -0700 (Tue, 03 Aug 2021) $
+;$LastChangedRevision: 30167 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 ;-
 ; REVISION HISTORY:
@@ -71,6 +72,8 @@
 ;                                     changed "undefined" to "KEYWORD_SET" in initialization of some keywords
 ;       + 2020-12-10, I. Cohen      : undid change of "undefined" to "KEYWORD_SET" in initialization of some keywords from 2020-10-26, set all back to "undefined"
 ;       + 2021-02-09, I. Cohen      : added helium to species in header under KEYWORD section
+;       + 2021-04-08, I. Cohen      : updated prefix definition to handle new L2 variable names; added level to mms_eis_pad_spinavg, mms_eis_combine_proton_pad, & mms_eis_pad_combine_sc calls
+;       + 2021-06-16, I. Cohen      : fixed definition of pvalue
 ;                             
 ;-
 
@@ -132,7 +135,7 @@ pro mms_eis_pad, probes = probes, trange = trange, species = species, data_rate 
   status = 1
   ;
   for pp=0,n_elements(probes)-1 do begin
-    if (data_rate eq 'brst') then prefix = 'mms'+probes[pp]+'_epd_eis_brst_' else prefix = 'mms'+probes[pp]+'_epd_eis_'
+    prefix = 'mms'+probes[pp]+'_epd_eis_'+data_rate+'_'+level+'_'
     ;
     for dd=0,n_elements(datatype)-1 do begin
       ;
@@ -190,9 +193,8 @@ pro mms_eis_pad, probes = probes, trange = trange, species = species, data_rate 
             ;
             if level eq 'l2' || level eq 'l1b' then begin
               ; get the P# value from the name of telescope 0:
-              pval_num_in_name = data_rate eq 'brst' ? 6 : 5
-              pvalue = (strsplit(this_variable, '_', /extract))[pval_num_in_name]
-              if pvalue ne data_units then pvalue = pvalue + '_' else pvalue = ''
+              pvalue = (strsplit(this_variable, '_', /extract))[7]
+              if (pvalue ne data_units) then pvalue = pvalue + '_' else pvalue = ''
             endif else begin
               pvalue = ''
             endelse
@@ -253,7 +255,8 @@ pro mms_eis_pad, probes = probes, trange = trange, species = species, data_rate 
             tdegap, new_name, /overwrite
             ;
             ; now do the spin average
-            mms_eis_pad_spinavg, probes=probes[pp], species=species[species_idx], datatype=datatype[dd], energy=energy, data_units=data_units, size_pabin=size_pabin, data_rate = data_rate, scopes=scopes, suffix = suffix
+            mms_eis_pad_spinavg, probes=probes[pp], species=species[species_idx], datatype=datatype[dd], energy=energy, data_units=data_units, size_pabin=size_pabin, $
+              data_rate = data_rate, level = level, scopes=scopes, suffix = suffix
             ;
             if ~undefined(num_smooth) then spd_smooth_time, new_name, newname=new_name+'_smth', num_smooth, /nan
           endif
@@ -262,12 +265,12 @@ pro mms_eis_pad, probes = probes, trange = trange, species = species, data_rate 
     endfor
     ;
     if (combine_proton_data eq 1) then begin
-      mms_eis_combine_proton_pad, probes=probes[pp], data_rate = data_rate, data_units = data_units, size_pabin = size_pabin, energy = energy, suffix = suffix
+      mms_eis_combine_proton_pad, probes=probes[pp], data_rate = data_rate, data_units = data_units, size_pabin = size_pabin, energy = energy, level = level, suffix = suffix
       ;
       combined_var_name = tnames(prefix+'combined*proton*pad')
       ;
       ; now do the spin average
-      mms_eis_pad_spinavg, probes=probes[pp], species='proton', datatype='combined', energy=energy, data_units=data_units, size_pabin=size_pabin, data_rate = data_rate, scopes=scopes, suffix = suffix
+      mms_eis_pad_spinavg, probes=probes[pp], species='proton', datatype='combined', energy=energy, data_units=data_units, size_pabin=size_pabin, data_rate = data_rate, level = level, scopes=scopes, suffix = suffix
       ;
       if KEYWORD_SET(num_smooth) then spd_smooth_time, combined_var_name[0], newname=combined_var_name[0]+'_smth', num_smooth, /nan
     endif
@@ -275,6 +278,7 @@ pro mms_eis_pad, probes = probes, trange = trange, species = species, data_rate 
   endfor
   ;
   ; NOTE: PLEASE SPECIFY IN ANY PRESENTATIONS OR PUBLICATIONS WHICH SPACECRAFT ARE INCLUDED IF YOU GENERATE AND USE MMS-X VARIABLES
-  if (n_elements(probes) gt 1) and (mmsx_vars eq 1) then mms_eis_pad_combine_sc, trange = trange, species = species, data_rate = data_rate, energy = energy, data_units = data_units, suffix = suffix, datatype = datatype
+  if (n_elements(probes) gt 1) and (mmsx_vars eq 1) then $
+    mms_eis_pad_combine_sc, trange = trange, species = species, data_rate = data_rate, energy = energy, data_units = data_units, level = level, suffix = suffix, datatype = datatype
   ;
 end

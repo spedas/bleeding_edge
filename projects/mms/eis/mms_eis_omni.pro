@@ -14,6 +14,7 @@
 ;         species:      species (should be: proton, oxygen, helium (formerly alpha) or electron)
 ;         datatype:     eis data types include ['electronenergy', 'extof', 'phxtof'].
 ;                       If no value is given the default is 'extof'.
+;         level:        data level ['l1a','l1b','l2pre','l2' (default)]
 ;         tplotnames:   specific tplot variables to spin-average
 ;         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
 ;                       preserving original tplot variable.
@@ -33,17 +34,19 @@
 ;       + 2020-04-27, I. Cohen      : added creation of single variable with energy limits of each channel    
 ;       + 2020-06-23, E. Grimes     : added 'spin' keyword for properly handling suffixes on spin-averaged data
 ;       + 2021-02-09, I. Cohen      : added KEYWORDS section to header
+;       + 2021-04-08, I. Cohen      : added level keyword; updated prefix definition to handle new L2 variable names
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
-;$LastChangedRevision: 29648 $
+;$LastChangedDate: 2021-08-03 09:08:16 -0700 (Tue, 03 Aug 2021) $
+;$LastChangedRevision: 30167 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_omni.pro $
 ;-
 
-pro mms_eis_omni, probe, species = species, datatype = datatype, tplotnames = tplotnames, suffix = suffix, data_units = data_units, data_rate = data_rate, spin=spin
+pro mms_eis_omni, probe, species = species, datatype = datatype, tplotnames = tplotnames, suffix = suffix, data_units = data_units, data_rate = data_rate, level = level, spin=spin
   ; default to electrons
   if undefined(species) then species = 'electron'
   if undefined(datatype) then datatype = 'electronenergy'
+  if undefined(level) then level = 'l2'
   if undefined(suffix) then suffix = ''
   if undefined(data_units) then data_units = 'flux'
   if undefined(data_rate) then data_rate = 'srvy'
@@ -54,7 +57,7 @@ pro mms_eis_omni, probe, species = species, datatype = datatype, tplotnames = tp
   endcase
   probe = strcompress(string(probe), /rem)
   species_str = datatype+'_'+species
-  if (data_rate) eq 'brst' then prefix = 'mms'+probe+'_epd_eis_brst_' else prefix = 'mms'+probe+'_epd_eis_'
+  prefix = 'mms'+probe+'_epd_eis_'+data_rate+'_'+level+'_'
   ;
   ; find the telescope names
   if keyword_set(spin) then begin

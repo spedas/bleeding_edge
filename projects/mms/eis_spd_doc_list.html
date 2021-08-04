@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  2 18:15:59 2021.<P>
+<STRONG>Last modified: </STRONG>Tue Aug  3 09:09:39 2021.<P>
  
 <HR>
  
@@ -140,10 +140,11 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        + 2020-07-02, S. Bingham    : added no_plot, cdf_version, and n_azbins keywords; added output of ang-ang data to tplot variable; changed procedure name to 'mms_eis_ang_ang.pro'
        + 2020-12-11, I. Cohen      : changed &quot;undefined&quot; to &quot;undefined&quot; in initialization of some keywords
        + 2021-02-09, I. Cohen      : added helium to species in header under KEYWORD section and removed PHxTOF oxygen; added loadct call for species='helium'
+       + 2021-04-08, I. Cohen      : updated prefix definition to handle new L2 variable names
                         
 $LastChangedBy: egrimes $
-$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
-$LastChangedRevision: 29648 $
+$LastChangedDate: 2021-08-03 09:08:16 -0700 (Tue, 03 Aug 2021) $
+$LastChangedRevision: 30167 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_ang_ang.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_ang_ang.pro">projects/mms/eis/mms_eis_ang_ang.pro</A>)</STRONG><P>
@@ -164,6 +165,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          probes:             string indicating value for MMS SC #
          data_rate:          data rate ['srvy' (default), 'brst']
          data_units:         data units ['flux' (default), 'cps', 'counts']
+         level:              data level ['l1a','l1b','l2pre','l2' (default)]
 
  CREATED BY: I. Cohen, 2017-05-24
 
@@ -193,6 +195,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        + 2020-12-11, I. Cohen          : changed &quot;not KEYWORD_SET&quot; to &quot;undefined&quot; in initialization of some keywords
        + 2021-01-21, I. Cohen          : removed lowest ExTOF energy channel because of noise near detector threshold
        + 2021-01-27, I. Cohen          ; fixed error from previous change that duplicated uppermost energy channel
+       + 2021-06-17, I. Cohen          : added level keyword; updated eis_prefix definition to handle new L2 variable names;
+                                         added level to mms_eis_spin_avg and mms_eis_omni calls
                        
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_combine_proton_spec.pro">projects/mms/eis/mms_eis_combine_proton_spec.pro</A>)</STRONG><P>
@@ -219,6 +223,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          species:      species (should be: proton, oxygen, helium (formerly alpha) or electron)
          datatype:     eis data types include ['electronenergy', 'extof', 'phxtof'].
                        If no value is given the default is 'extof'.
+         level:        data level ['l1a','l1b','l2pre','l2' (default)]
          tplotnames:   specific tplot variables to spin-average
          suffix:       appends a suffix to the end of the tplot variable name. this is useful for
                        preserving original tplot variable.
@@ -238,10 +243,11 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        + 2020-04-27, I. Cohen      : added creation of single variable with energy limits of each channel    
        + 2020-06-23, E. Grimes     : added 'spin' keyword for properly handling suffixes on spin-averaged data
        + 2021-02-09, I. Cohen      : added KEYWORDS section to header
+       + 2021-04-08, I. Cohen      : added level keyword; updated prefix definition to handle new L2 variable names
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
-$LastChangedRevision: 29648 $
+$LastChangedDate: 2021-08-03 09:08:16 -0700 (Tue, 03 Aug 2021) $
+$LastChangedRevision: 30167 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_omni.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_omni.pro">projects/mms/eis/mms_eis_omni.pro</A>)</STRONG><P>
@@ -268,6 +274,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          size_pabin:           size of the pitch angle bins
          data_units:           flux or cps
          datatype:             extof, phxtof, electronenergy
+         level:                data level ['l1a','l1b','l2pre','l2' (default)]
          scopes:               string array of telescopes to be included in PAD ('0'-'5')
          suffix:               suffix used when loading the data
          num_smooth:           should contain number of seconds to use when smoothing
@@ -288,8 +295,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      This was written by Brian Walsh; minor modifications by egrimes@igpp and Ian Cohen (APL)
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
-$LastChangedRevision: 29648 $
+$LastChangedDate: 2021-08-03 09:08:16 -0700 (Tue, 03 Aug 2021) $
+$LastChangedRevision: 30167 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_pad.pro">projects/mms/eis/mms_eis_pad.pro</A>)</STRONG><P>
@@ -341,7 +348,10 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                                    added &quot;datarate_str&quot; to handle issue with probes definition if both burst and survey data are loaded
        + 2021-01-06, I. Cohen    : added wildcard into string in definition of eis_sc_check for phxtof data
        + 2021-02-09, I. Cohen    : added helium to species in header under KEYWORD section and added default datatype if species=helium
-       + 2021-05-12, I. Cohen    : fixed eis_sc_check definition to handle any datatype
+       + 2021-04-08, I. Cohen    : updated allmms_prefix definition to handle new L2 variable names
+       + 2021-06-16, I. Cohen    : fixed error in definition of allmms_pad_vars and thissc_pad_vars 
+       + 2021-06-17, I. Cohen    : fixed error in definition of prefix
+       + 2021-07-09, I. Cohen    : fupdated definition of prefix to handle 'combined' datatype
 
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_pad_combine_sc.pro">projects/mms/eis/mms_eis_pad_combine_sc.pro</A>)</STRONG><P>
@@ -367,6 +377,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                        mms_eis_combine_proton_pad.pro
          data_rate:    instrument data rates for EIS are: ['brst','srvy' (default)].
          data_units:   desired units for data. Options are ['flux' (default), 'cps', 'counts'].
+         level:        data level ['l1a','l1b','l2pre','l2' (default)]
          suffix:       appends a suffix to the end of the tplot variable name. this is useful for
                        preserving original tplot variable.
          species:      species (should be: proton (default), oxygen, helium (formerly alpha), or electron)
@@ -375,8 +386,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
  OUTPUT:
  
 $LastChangedBy: egrimes $
-$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
-$LastChangedRevision: 29648 $
+$LastChangedDate: 2021-08-03 09:08:16 -0700 (Tue, 03 Aug 2021) $
+$LastChangedRevision: 30167 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad_spinavg.pro $
 
  REVISION HISTORY:
@@ -393,6 +404,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                                      size_pabin keyword to size_pabin                   
        + 2020-12-11, I. Cohen      : changed &quot;not KEYWORD_SET&quot; to &quot;undefined&quot; in initialization of some keywords
        + 2021-02-09, I. Cohen      : added helium to species in header under KEYWORD section
+       + 2021-04-08, I. Cohen      : added level keyword; updated prefix definition to handle new L2 variable names
 
 
 </PRE><P>
@@ -417,10 +429,11 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      2020 Feb 24 -  Ian Cohen at APL: changed defualt yrange of electronenergy data to scale automatically to accommodate changes to electron energy
                      channels
      2021 Feb 09 -  Ian Cohen at APL: added &quot;helium&quot; variables
+     2021 May 21 -  Ian Cohen at APL: removed obsolete &quot;alpha&quot; variables
 
  $LastChangedBy: egrimes $
- $LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
- $LastChangedRevision: 29648 $
+ $LastChangedDate: 2021-08-03 09:08:16 -0700 (Tue, 03 Aug 2021) $
+ $LastChangedRevision: 30167 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_set_metadata.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_set_metadata.pro">projects/mms/eis/mms_eis_set_metadata.pro</A>)</STRONG><P>
@@ -447,6 +460,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                        default is 'srvy'.
          data_units:   desired units for data. for eis units are ['flux', 'cps', 'counts'].
                        The default is 'flux'.
+         level:        data level ['l1a','l1b','l2pre','l2' (default)]
          suffix:       appends a suffix to the end of the tplot variable name. this is useful for
                        preserving original tplot variable.
          species:      proton (default), oxygen, helium (formerly alpha) or electron
@@ -472,7 +486,9 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          + 2021-02-24, I. Cohen        : changed combined s/c variable names from mms#-# to mmsx
          + 2021-03-11, I. Cohen        : updated to allow to work for electrons
          + 2021-03-16, R. Nikoukar     : use existing individual spacecraft spin parameters to make combined spacecraft spin parameters
+         + 2021-04-08, I. Cohen        : added level keyword; updated allmms_prefix, omni_vars, &amp; prefix definitions to handle new L2 variable names
          + 2021-05-12, I. Cohen        : fixed eis_sc_check definition to handle any datatype
+         + 2021-07-09, I. Cohen        : fixed default level defition to 'l2'
 
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_spec_combine_sc.pro">projects/mms/eis/mms_eis_spec_combine_sc.pro</A>)</STRONG><P>
@@ -499,6 +515,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                        default is 'srvy'.
          data_units:   desired units for data. for eis units are ['flux', 'cps', 'counts'].
                        The default is 'flux'.
+         level:        data level ['l1a','l1b','l2pre','l2' (default)]
          suffix:       appends a suffix to the end of the tplot variable name. this is useful for
                        preserving original tplot variable.
          species:      species (should be: proton, oxygen, helium (formerly alpha) or electron)
@@ -513,13 +530,14 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                                          errors with overwriting in other procedures
        + 2018-06-14, I. Cohen          : changed 'datatype' to 'new_datatype' in definition of p_num to stop error
                                          when handling 'combined' data   
-       + 2021-02-09, I. Cohen          : updated possible species under KEYWORDS header                        
+       + 2021-02-09, I. Cohen          : updated possible species under KEYWORDS header
+       + 2021-04-08, I. Cohen          : added level keyword; updated prefix definition to handle new L2 variable names            
        
        
        
 $LastChangedBy: egrimes $
-$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
-$LastChangedRevision: 29648 $
+$LastChangedDate: 2021-08-03 09:08:16 -0700 (Tue, 03 Aug 2021) $
+$LastChangedRevision: 30167 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_spin_avg.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_eis_spin_avg.pro">projects/mms/eis/mms_eis_spin_avg.pro</A>)</STRONG><P>
@@ -620,10 +638,11 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      06/23/2020 - egrimes changed calls to mms_eis_omni to use /spin keyword
      02/09/2021 - icohen added 'helium' species calls 
                   commented out processing of unverified 'oxygen' phxtof variables
+     04/08/2021 - icohen added level to mms_eis_spin_avg &amp; mms_eis_omni calls
      
 $LastChangedBy: egrimes $
-$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
-$LastChangedRevision: 29648 $
+$LastChangedDate: 2021-08-03 09:08:16 -0700 (Tue, 03 Aug 2021) $
+$LastChangedRevision: 30167 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_load_eis.pro $
 </PRE><P>
 <STRONG>(See <A href="eis/mms_load_eis.pro">projects/mms/eis/mms_load_eis.pro</A>)</STRONG><P>

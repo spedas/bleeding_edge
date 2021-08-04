@@ -13,6 +13,7 @@
 ;                       mms_eis_combine_proton_pad.pro
 ;         data_rate:    instrument data rates for EIS are: ['brst','srvy' (default)].
 ;         data_units:   desired units for data. Options are ['flux' (default), 'cps', 'counts'].
+;         level:        data level ['l1a','l1b','l2pre','l2' (default)]
 ;         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
 ;                       preserving original tplot variable.
 ;         species:      species (should be: proton (default), oxygen, helium (formerly alpha), or electron)
@@ -21,8 +22,8 @@
 ; OUTPUT:
 ; 
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-02-09 17:23:11 -0800 (Tue, 09 Feb 2021) $
-;$LastChangedRevision: 29648 $
+;$LastChangedDate: 2021-08-03 09:08:16 -0700 (Tue, 03 Aug 2021) $
+;$LastChangedRevision: 30167 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_pad_spinavg.pro $
 ;
 ; REVISION HISTORY:
@@ -39,19 +40,21 @@
 ;                                     size_pabin keyword to size_pabin                   
 ;       + 2020-12-11, I. Cohen      : changed "not KEYWORD_SET" to "undefined" in initialization of some keywords
 ;       + 2021-02-09, I. Cohen      : added helium to species in header under KEYWORD section
+;       + 2021-04-08, I. Cohen      : added level keyword; updated prefix definition to handle new L2 variable names
 ;
 ;
 ;-
 
 pro mms_eis_pad_spinavg, probes=probes, species = species, data_units = data_units, $
   datatype = datatype, energy = energy, size_pabin = size_pabin, data_rate = data_rate, $
-  suffix = suffix, scopes = scopes
+  level = level, suffix = suffix, scopes = scopes
   ;
   compile_opt idl2
   if undefined(probes) then probes='1' else probes = strcompress(string(probes), /rem)
   if undefined(datatype) then datatype = 'extof'
   if undefined(data_units) then data_units = 'flux'
   if undefined(species) then species = 'proton'
+  if undefined(level) then level = 'l2'
   if undefined(suffix) then suffix_in = '' else suffix_in = suffix
   if undefined(energy) then energy = [55, 800]
   if undefined(size_pabin) then size_pabin = 15
@@ -61,7 +64,7 @@ pro mms_eis_pad_spinavg, probes=probes, species = species, data_units = data_uni
   en_range_string = strcompress(string(energy[0]), /rem) + '-' + strcompress(string(energy[1]), /rem) + 'keV'
   units_label = data_units eq 'cps' ? '1/s': '1/(cm!U2!N-sr-s-keV)'
   ;
-  if (data_rate eq 'brst') then prefix = 'mms'+probes+'_epd_eis_brst_' else prefix = 'mms'+probes+'_epd_eis_'
+  prefix = 'mms'+probes+'_epd_eis_'+data_rate+'_'+level+'_'
   if (n_elements(scopes) eq 1) then scope_suffix = '_t'+scopes+suffix_in else if (n_elements(scopes) eq 6) then scope_suffix = '_omni'+suffix_in
   ;
   ; get the spin #s associated with each measurement
