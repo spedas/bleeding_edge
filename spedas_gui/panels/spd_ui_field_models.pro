@@ -9,8 +9,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2021-06-25 16:16:38 -0700 (Fri, 25 Jun 2021) $
-;$LastChangedRevision: 30087 $
+;$LastChangedDate: 2021-08-06 15:33:13 -0700 (Fri, 06 Aug 2021) $
+;$LastChangedRevision: 30181 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_field_models.pro $
 ;-
 
@@ -694,7 +694,7 @@ pro spd_ui_field_models_event, event
                 geopack_2008 = state.geopack_2008
                 ; generate the magnetic field model at the position in the tplot variable
                 if run_at_pos then begin
-                    model_var = var_to_map+'_b'+field_model
+                    model_var = var_to_map+'_'+field_model+'_b'
                     
                     case strlowcase(field_model) of 
                         't89': begin
@@ -756,7 +756,7 @@ pro spd_ui_field_models_event, event
                 if trace_to_eq then begin
                     state.statusBar -> update, 'Tracing from '+var_to_map+' to the equator (' + field_model + ')'
                     state.historyWin -> update, 'Tracing from '+var_to_map+' to the equator (' + field_model + ')'
-                    eq_footprint = var_to_map+'_efoot'
+                    eq_footprint = var_to_map+'_' + field_model + '_efoot'
                     ttrace2equator,var_to_map,trace_var_name=var_to_map+'_'+field_model+'_etrace', newname=eq_footprint,external_model=(field_model eq 'IGRF' ? 'none' : field_model), $
                         par=the_model_params,/km, error=trace_to_eq_error, storm = (strlowcase(field_model) eq 't01' ? state.t01_storm : 0), $
                         set_tilt = (~undefined(user_set_tilt) ? user_set_tilt : 0), add_tilt = (~undefined(user_add_tilt) ? user_add_tilt : 0), ts07_param_dir=dirName, ts07_param_file=fileName,geopack_2008=geopack_2008,/skip_ts07_load
@@ -773,7 +773,7 @@ pro spd_ui_field_models_event, event
                 if trace_to_ion then begin
                     state.statusBar -> update, 'Tracing from ' + var_to_map + ' to the ionosphere (' + field_model + ')'
                     state.historyWin -> update, 'Tracing from ' + var_to_map + ' to the ionosphere (' + field_model + ')'
-                    iono_footprint = var_to_map+'_ifoot'
+                    iono_footprint = var_to_map+'_' + field_model + '_ifoot'
                     ttrace2iono,var_to_map,trace_var_name = var_to_map+'_'+field_model+'_itrace', newname = iono_footprint,external_model=(field_model eq 'IGRF' ? 'none' : field_model), $
                         par=the_model_params,in_coord='gsm',out_coord='gsm',/km, storm = (strlowcase(field_model) eq 't01' ? state.t01_storm : 0), $
                         set_tilt = (~undefined(user_set_tilt) ? user_set_tilt : 0), add_tilt = (~undefined(user_add_tilt) ? user_add_tilt : 0), ts07_param_dir=dirName, ts07_param_file=fileName,geopack_2008=geopack_2008, /skip_ts07_load

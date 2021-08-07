@@ -55,7 +55,7 @@
 ;            /NAN_EXTRAPOLATE = set this keyword to extrapolate past
 ;            the endpoints using NaNs as a fill value
 ;            
-;            /REPEAT_EXTRAPOLATE = set this keyword to repeat nearest value past the endpoints
+;            /REPEAT_EXTRAPOLATE = set this keyword to repeat first and last finite data value past the endpoints
 ;            
 ;            /IGNORE_NANS = set this keyword to remove nans in the data before interpolation
 ;
@@ -92,9 +92,9 @@
 ; and we want three matrices then output is all 1s all 1.5s all 2s 
 ; 
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2016-10-31 11:32:53 -0700 (Mon, 31 Oct 2016) $
-; $LastChangedRevision: 22236 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2021-08-06 11:54:27 -0700 (Fri, 06 Aug 2021) $
+; $LastChangedRevision: 30180 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/special/tinterpol_mxn.pro $
 ;-
 
@@ -259,22 +259,50 @@ return,out
 
 end
 
+pro tinterpol_find_first_last, data, first_val, last_val
+  ; Find first and last values that are finite
+ 
+  
+  if ndimen(data) eq 1 then begin
+    first_val = [!VALUES.F_NAN]
+    last_val = [!VALUES.F_NAN]
+    idx = where(finite(data[*]), count)
+    if count gt 0 then begin
+      first_val = [data[min(idx)]]
+      last_val = [data[max(idx)]]      
+    endif
+  endif else begin
+    size_data = size(data)
+    first_val = transpose(make_array(size_data[2], /float, VALUE = !VALUES.F_NAN))
+    last_val = transpose(make_array(size_data[2], /float, VALUE = !VALUES.F_NAN))
+    for i=0, n_elements(first_val)-1 do begin
+      idx = where(finite(data[*, i]))
+      if idx[0] ne -1 then begin
+        first_val[i] = data[min(idx), i]
+        last_val[i] = data[max(idx), i]
+      endif
+    endfor 
+  endelse
+
+end
+
+
 ;Helper function to fill the rows of dat with repeated values.
 ;Just call twice to do it on both the high and low side
-pro ctv_repeat_fill_idx,dat,repeat_range_idx,repeat_value_idx
+pro ctv_repeat_fill_idx,dat,repeat_range_idx,repeat_value
   
   compile_opt hidden
-
-  if repeat_range_idx[0] ne -1 && repeat_value_idx[0] ne -1 then begin
+  
+  if repeat_range_idx[0] ne -1 && ndimen(dat) eq ndimen(repeat_value) then begin
     
     if ndimen(dat) eq 1 then begin
-      dat[repeat_range_idx] = dat[repeat_value_idx]
+      dat[repeat_range_idx] = repeat_value[0]
     endif else begin
-      dat[repeat_range_idx,*] = dat[repeat_value_idx,*] ## (make_array(n_elements(repeat_range_idx),type=size(dat,/type))+1)
+      dat[repeat_range_idx,*] = repeat_value[*] ## (make_array(n_elements(repeat_range_idx),type=size(dat,/type))+1)
     endelse
     
   endif
-
+  
 end
 
 ;This helper function fills rows of dat with nans.
@@ -425,8 +453,9 @@ for i = 0, n_elements(tn) -1L do begin
    
    endif else if keyword_set(repeat_extrapolate) then begin
 
-     ctv_repeat_fill_idx,out_d_y,repeat_low_idx,repeat_min_idx
-     ctv_repeat_fill_idx,out_d_y,repeat_high_idx,repeat_max_idx
+     tinterpol_find_first_last, in_d.y, first_val, last_val
+     ctv_repeat_fill_idx,out_d_y,repeat_low_idx,first_val
+     ctv_repeat_fill_idx,out_d_y,repeat_high_idx,last_val
     
    endif
 
@@ -457,8 +486,9 @@ for i = 0, n_elements(tn) -1L do begin
    
        endif else if keyword_set(repeat_extrapolate) then begin
         
-         ctv_repeat_fill_idx,out_d_v,repeat_low_idx,repeat_min_idx
-         ctv_repeat_fill_idx,out_d_v,repeat_high_idx,repeat_max_idx
+         tinterpol_find_first_last, in_d.y, first_val, last_val
+         ctv_repeat_fill_idx,out_d_y,repeat_low_idx,first_val
+         ctv_repeat_fill_idx,out_d_y,repeat_high_idx,last_val
          
        endif
       

@@ -92,8 +92,8 @@
 ;     04/08/2021 - icohen added level to mms_eis_spin_avg & mms_eis_omni calls
 ;     
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-08-03 09:08:16 -0700 (Tue, 03 Aug 2021) $
-;$LastChangedRevision: 30167 $
+;$LastChangedDate: 2021-08-06 09:26:52 -0700 (Fri, 06 Aug 2021) $
+;$LastChangedRevision: 30178 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_load_eis.pro $
 ;-
 
@@ -111,7 +111,7 @@ pro mms_load_eis, trange = trange, probes = probes, datatype = datatype, $
 
     if undefined(probes) then probes = ['1'] ; default to MMS 1
     if undefined(datatype) then datatype = 'extof'
-    if undefined(level) then level = 'l2' 
+    if undefined(level) then level = 'l2' else level = strlowcase(level)
     if undefined(data_rate) then data_rate = 'srvy'
     if undefined(data_units) then data_units = 'flux'
     if undefined(suffix) then suffix = ''
