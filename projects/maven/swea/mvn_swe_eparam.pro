@@ -10,6 +10,8 @@
 ;
 ;    (1/B)*(dB/dx)*Rg << 1    ; adiabatic condition
 ;
+;    Ld = (7.43 m)*sqrt(T/n)  ; Debye length, [T] = eV, [n] = cm-3
+;
 ;  Collision frequencies (s-1) for electrons with neutrals ([Te] = K, [n] = cm-3)
 ;  (from Ionospheres by Schunk & Nagy, Table 4.6 on pg. 99):
 ;    N2    (2.33e-11) * n(N2)  * (1 - 1.21e-4*Te)*Te
@@ -36,8 +38,8 @@
 ;
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2015-11-04 17:36:55 -0800 (Wed, 04 Nov 2015) $
-; $LastChangedRevision: 19246 $
+; $LastChangedDate: 2021-08-09 08:23:07 -0700 (Mon, 09 Aug 2021) $
+; $LastChangedRevision: 30186 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_eparam.pro $
 ;
 ;CREATED BY:    David L. Mitchell  09/18/15

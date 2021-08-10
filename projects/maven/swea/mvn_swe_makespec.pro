@@ -23,21 +23,24 @@
 ;
 ;       PAN:      Returns the name of the tplot variable.
 ;
+;       NOLUT:    Do not recalculate the LUT.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-12-15 13:03:48 -0800 (Tue, 15 Dec 2020) $
-; $LastChangedRevision: 29495 $
+; $LastChangedDate: 2021-08-09 08:20:47 -0700 (Mon, 09 Aug 2021) $
+; $LastChangedRevision: 30184 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makespec.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
 ;FILE: mvn_swe_makespec.pro
 ;-
-pro mvn_swe_makespec, sum=sum, units=units, tplot=tplot, sflg=sflg, pan=ename
+pro mvn_swe_makespec, sum=sum, units=units, tplot=tplot, sflg=sflg, pan=ename, nolut=nolut
 
   @mvn_swe_com
   
   if not keyword_set(sum) then smode = 0 else smode = 1
   if (size(units,/type) ne 7) then units = 'eflux'
   if (size(sflg,/type) eq 0) then sflg = 1 else sflg = keyword_set(sflg)
+  dolut = ~keyword_set(nolut)
   ename = ''
 
 ; Initialize the deflection scale factors, geometric factor, and MCP efficiency
@@ -55,7 +58,7 @@ pro mvn_swe_makespec, sum=sum, units=units, tplot=tplot, sflg=sflg, pan=ename
     npts = 16L*npkt               ; 16 spectra per packet
     ones = replicate(1.,16)
 
-    mvn_swe_getlut
+    if (dolut) then mvn_swe_getlut
 
     for i=0L,(npkt-1L) do begin
       delta_t = swe_dt[a4[i].period]*dindgen(16) + (1.95D/2D)  ; center time offset (sample mode)

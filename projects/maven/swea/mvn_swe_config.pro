@@ -41,8 +41,8 @@
 ;                   changes in a tplot window (assumed to exist).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-02 14:04:34 -0700 (Mon, 02 Aug 2021) $
-; $LastChangedRevision: 30166 $
+; $LastChangedDate: 2021-08-09 08:25:16 -0700 (Mon, 09 Aug 2021) $
+; $LastChangedRevision: 30187 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -145,6 +145,8 @@ pro mvn_swe_config, list=list, timebar=timebar
 ; 2019-10-01/00:00                                     ; beginning of EM-4
 
   t_mcp = [t_mcp, time_double('2021-06-17/00:00:00')]  ; last SWE-SWI cross calibration
+
+; 2021-10-01/00:00                                     ; beginning of EM-5
 
 ; Gather all the configuration change times into one variable (for timebar).
 

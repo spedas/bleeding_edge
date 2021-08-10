@@ -165,8 +165,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-04-24 13:53:44 -0700 (Sat, 24 Apr 2021) $
-; $LastChangedRevision: 29915 $
+; $LastChangedDate: 2021-08-09 08:19:12 -0700 (Mon, 09 Aug 2021) $
+; $LastChangedRevision: 30183 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -288,6 +288,12 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   if (size(pot,/type) eq 0) then dopot = 1 else dopot = keyword_set(pot)
   if (size(scp,/type) eq 0) then scp = !values.f_nan else scp = float(scp[0])
   if keyword_set(twopot) then shiftpot = 0
+  if keyword_set(shiftpot) then begin
+    if (size(swe_sc_pot,/type) ne 8) then begin
+      print,"No spacecraft potential.  Cannot shift spectra."
+      shiftpot = 0
+    endif
+  endif
   if keyword_set(shiftpot) then begin
     spflg = 1
     if (~xflg) then xrange = [1.,5000.]
@@ -819,18 +825,33 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
             mvn_swe_pad_resample, rtime, snap=0, tplot=0, result=rpad, silent=3, hires=hflg, $
                                   fbdata=fbdata, sc_pot=spflg, archive=aflg, mbins=fovmask[*,boom]
 
-            arpad = rpad.avg
-            if size(arpad, /n_dimension) eq 3 then arpad = average(arpad, 3,/nan)
+            if (size(rpad,/type) ne 8) then begin
+              rpad = {time  : 0.d0                           , $
+                      xax   : findgen(128)*(180./127.)       , $
+                      index : replicate(!values.f_nan,1,128) , $
+                      avg   : replicate(!values.f_nan,1,128) , $
+                      std   : replicate(!values.f_nan,1,128) , $
+                      nbins : replicate(!values.f_nan,1,128)    }
 
-            urpad = rpad.std
-            if size(urpad, /n_dimension) eq 3 then urpad = average(urpad, 3,/nan)
-            rerr = urpad/arpad
-            
-            bad = where(rerr gt maxrerr, count)
-            if (count gt 0L) then arpad[bad] = !values.f_nan
-            respad=arpad
+              arpad = rpad.avg
+              urpad = rpad.std
+              rerr = arpad
+              respad = arpad
+            endif else begin
+              arpad = rpad.avg
+              if size(arpad, /n_dimension) eq 3 then arpad = average(arpad, 3,/nan)
 
-            if (nflg) then arpad /= rebin(average(arpad, 2, /nan), n_elements(arpad[*, 0]), n_elements(arpad[0, *]), /sample)
+              urpad = rpad.std
+              if size(urpad, /n_dimension) eq 3 then urpad = average(urpad, 3,/nan)
+              rerr = urpad/arpad
+         
+              bad = where(rerr gt maxrerr, count)
+              if (count gt 0L) then arpad[bad] = !values.f_nan
+              respad=arpad
+
+              if (nflg) then arpad /= rebin(average(arpad, 2, /nan), n_elements(arpad[*, 0]), n_elements(arpad[0, *]), /sample)
+            endelse
+
             str_element, rlim, 'title', rtitle, success=aok
             if (not aok) then begin
               str_element, rlim, 'title', strtrim(time_string(mean(rpad.time)) + ' (Resampled)' + $

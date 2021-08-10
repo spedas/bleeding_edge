@@ -19,8 +19,8 @@
 ;                  toward and away sectors.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-04-24 13:54:38 -0700 (Sat, 24 Apr 2021) $
-; $LastChangedRevision: 29916 $
+; $LastChangedDate: 2021-08-09 08:26:16 -0700 (Mon, 09 Aug 2021) $
+; $LastChangedRevision: 30188 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_mag_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2015-04-02
@@ -131,8 +131,28 @@ pro mvn_mag_tplot, bvec, model=model, sang=sang
   options, vname, 'labflag', -1
   options, vname, 'constant', acon
   options, vname, 'axis', aopt
-  ylim, 'mvn_mag_bang', 0., 360., 0., /def
+  ylim, vname, 0., 360., 0., /def
   undefine, bphi, bthe, b
+
+  vname = 'mvn_mag_azel'
+  get_data, 'mvn_B_1sec_iau_mars', data=Bgeo
+  str_element, Bgeo, 'azim', success=ok
+  str_element, Bgeo, 'elev', success=ok
+  if (ok) then begin
+    aopt.ytitle = 'Elev [deg]'
+    store_data, vname, data={x:Bgeo.x, y:[[Bgeo.elev*2.+180.], [Bgeo.azim]]}
+    options, vname, 'psym', 3
+    options, vname, 'colors', [2,6]
+    options, vname, 'ytitle', 'MAG ' + lvl
+    options, vname, 'ysubtitle', 'Azim [deg]'
+    options, vname, 'yticks', 4
+    options, vname, 'yminor', 3
+    options, vname, 'ystyle', 9
+    options, vname, 'labflag', -1
+    options, vname, 'constant', 180.
+    options, vname, 'axis', aopt
+    ylim, vname, 0., 360., 0., /def
+  endif
 
   return
 
