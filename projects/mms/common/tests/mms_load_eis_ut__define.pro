@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_load_eis_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2021-08-09 15:42:33 -0700 (Mon, 09 Aug 2021) $
-; $LastChangedRevision: 30192 $
+; $LastChangedDate: 2021-08-10 11:43:38 -0700 (Tue, 10 Aug 2021) $
+; $LastChangedRevision: 30195 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_eis_ut__define.pro $
 ;-
 
@@ -90,8 +90,8 @@ function mms_load_eis_ut::test_ang_ang_energychan
 end
 
 function mms_load_eis_ut::test_ang_ang_datatype_electron
-  mms_eis_ang_ang, datatype='electronenergy', probe=4
-  assert, spd_data_exists('mms4_epd_eis_srvy_l2_electronenergy_electron_flux_omni', self.start_date, self.end_date), 'Problem with EIS angle-angle with datatype electronenergy'
+  mms_eis_ang_ang, datatype='electronenergy', probe=1
+  assert, spd_data_exists('mms1_epd_eis_srvy_l2_electronenergy_electron_flux_omni', self.start_date, self.end_date), 'Problem with EIS angle-angle with datatype electronenergy'
   return, 1
 end
 

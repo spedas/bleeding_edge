@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  9 18:16:12 2021.<P>
+<STRONG>Last modified: </STRONG>Tue Aug 10 18:15:59 2021.<P>
  
 <HR>
  
@@ -34,6 +34,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#BIN2D">BIN2D</A>
 <LI><A HREF="#BOX_MEAN">BOX_MEAN</A>
 <br>Calculates the mean, median, and standard deviation of a 1-D array
+<LI><A HREF="#BSHOCK_2">BSHOCK_2</A>
+<br>This subroutine calculates the bow shock (X,Y) locations based on
 <LI><A HREF="#BYTESCALE">BYTESCALE</A>
 <LI><A HREF="#CART_TO_SPHERE">CART_TO_SPHERE</A>
 <LI><A HREF="#CDF_FILE_NAMES">CDF_FILE_NAMES</A>
@@ -101,6 +103,10 @@ This page was created by the IDL library routine
 <LI><A HREF="#MINMAX">MINMAX</A>
 <LI><A HREF="#MK_HTML_HELP2">MK_HTML_HELP2</A>
 <br>Creates a html document from a list of IDL procedures.
+<LI><A HREF="#MPAUSE_2">MPAUSE_2</A>
+<br>This subroutine calculates the magnetopause (X,Y) locations based on
+<LI><A HREF="#MPAUSE_FLAG">MPAUSE_FLAG</A>
+<br>determine spacecraft is inside or outside the magnetopause, according to the Fairfield model (JGR, 1971)
 <LI><A HREF="#NDIMEN">NDIMEN</A>
 <br>Returns the number of dimensions in an array.
 <LI><A HREF="#NEAREST_NEIGHBOR">NEAREST_NEIGHBOR</A>
@@ -639,7 +645,7 @@ Uses histogram to bin data according to array binarr. The elements in binarr
 <A NAME="BOX_MEAN">
 <H2>BOX_MEAN</H2></A>
 <A HREF="#BIN2D">[Previous Routine]</A>
-<A HREF="#BYTESCALE">[Next Routine]</A>
+<A HREF="#BSHOCK_2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   box_mean
@@ -678,9 +684,44 @@ CREATED BY:    David L. Mitchell
 <STRONG>(See <A href="misc/box_mean.pro">general/misc/box_mean.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="BSHOCK_2">
+<H2>BSHOCK_2</H2></A>
+<A HREF="#BOX_MEAN">[Previous Routine]</A>
+<A HREF="#BYTESCALE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+     bowshock_2
+
+ PURPOSE:
+     This subroutine calculates the bow shock (X,Y) locations based on
+     the Fairfield model (JGR, 1971 Vol 76 Oct-Dec p.6700). 
+     Aberation of 4 degrees is assumed
+
+ INPUT:
+     xmp:   spacecraft position, x component
+     ymp:   spacecraft position, y component
+            gse or gsm does not matter because mpause assumed
+            rotationally symmetric
+
+ OUTPUT:
+     It outputs the location of the bow shock down to a very large distance (xmp_max=-300 Re)
+
+ AUTHOR:
+     S. Frey
+     
+ MODIFICATION: 
+     Calculates ysh for given xsh and returns only abs(ysh)
+
+ NOTE:
+     This provides flexibility with xsh_max
+</PRE><P>
+<STRONG>(See <A href="misc/bshock_2.pro">general/misc/bshock_2.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="BYTESCALE">
 <H2>BYTESCALE</H2></A>
-<A HREF="#BOX_MEAN">[Previous Routine]</A>
+<A HREF="#BSHOCK_2">[Previous Routine]</A>
 <A HREF="#CART_TO_SPHERE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -2567,7 +2608,7 @@ LAST MODIFICATION:     @(#)minmax.pro	1.2 02/04/17
 <A NAME="MK_HTML_HELP2">
 <H2>MK_HTML_HELP2</H2></A>
 <A HREF="#MINMAX">[Previous Routine]</A>
-<A HREF="#NDIMEN">[Next Routine]</A>
+<A HREF="#MPAUSE_2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -2695,9 +2736,69 @@ LAST MODIFICATION: 99/04/22
 <STRONG>(See <A href="misc/mk_html_help2.pro">general/misc/mk_html_help2.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MPAUSE_2">
+<H2>MPAUSE_2</H2></A>
+<A HREF="#MK_HTML_HELP2">[Previous Routine]</A>
+<A HREF="#MPAUSE_FLAG">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+     mpause_2
+     
+ PURPOSE:
+     This subroutine calculates the magnetopause (X,Y) locations based on
+     the Fairfield model (JGR, 1971). 
+     Aberation of 4 degrees is assumed
+     
+ INPUT:
+     xmp:   spacecraft position, x component
+     ymp:   spacecraft position, y component
+            gse or gsm does not matter because mpause assumed 
+            rotationally symmetric
+
+ OUTPUT: 
+    It outputs the location of the magnetopause down to a very large distance (xmp_max=-300 Re)
+
+sfrey copy mpause.pro but for given xmp
+03-19-09  corrected calculation of ymp_east[west](ilt15) using proper index for xmp~-15
+04-01-09  calculation of ymp_east[west](ilt15) to work for case in15 eq  n_ige15-1
+</PRE><P>
+<STRONG>(See <A href="misc/mpause_2.pro">general/misc/mpause_2.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MPAUSE_FLAG">
+<H2>MPAUSE_FLAG</H2></A>
+<A HREF="#MPAUSE_2">[Previous Routine]</A>
+<A HREF="#NDIMEN">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PURPOSE: 
+ determine spacecraft is inside or outside the magnetopause, according to the Fairfield model (JGR, 1971)
+ assume magnetopause is symmetrical around x axis, in other words, magnetopause is a circle in yz plane
+ 
+ INPUT:
+   SC x: spacecraft position (RE)
+   SC y: spacecraft position (RE)
+   SC z: spacecraft position (RE)
+   xmp: magnetopasue position (RE)
+   ymp: magnetopasue position (RE)
+   
+ OUTPUT:
+   mpauseflag: 1 spacecraft inside magnetopause
+               0 spacecraft outside magnetopause
+               
+ NOTES:
+   To be used with mpause_2
+   
+ AUTHOR:
+      Jiashu Wu, 2021-08-10
+</PRE><P>
+<STRONG>(See <A href="misc/mpause_flag.pro">general/misc/mpause_flag.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="NDIMEN">
 <H2>NDIMEN</H2></A>
-<A HREF="#MK_HTML_HELP2">[Previous Routine]</A>
+<A HREF="#MPAUSE_FLAG">[Previous Routine]</A>
 <A HREF="#NEAREST_NEIGHBOR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
