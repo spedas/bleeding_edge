@@ -78,8 +78,8 @@
 ;          keyword, and stored as a TPLOT variable.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-09-17 16:58:25 -0700 (Tue, 17 Sep 2019) $
-; $LastChangedRevision: 27777 $
+; $LastChangedDate: 2021-08-11 08:59:10 -0700 (Wed, 11 Aug 2021) $
+; $LastChangedRevision: 30200 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sc_pot.pro $
 ;
 ;-
@@ -292,7 +292,7 @@ pro mvn_swe_sc_pot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2,
   store_data,'swe_pos',data=phi
   options,'swe_pos','color',2
 
-  if (n_elements(ee) gt 0L) then begin
+  if ((n_elements(ee) gt 0L) and (size(dfs,/n_dim) gt 0)) then begin
     store_data,'df',data={x:pot.time, y:transpose(dfs), v:transpose(ee)}
     options,'df','spec',1
     ylim,'df',min(Espan),max(Espan),0
