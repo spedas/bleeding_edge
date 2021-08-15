@@ -78,40 +78,82 @@ pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix, varformat = varformat
     no_interp:1}
 
 
-  chs = [0,1]
+  xsp_comp = ch0_comp * conj(ch1_comp)
+
+  xsp_phase = atan(imaginary(xsp_comp)/real_part(xsp_comp)) * 180./!PI
+
+  xsp_coher = real_part(xsp_comp * conj(xsp_comp) / (ch0_comp * ch1_comp))
+
+  dat_xsp_re = {x:dat_ch1_re.x, y:real_part(xsp_comp), v:transpose(dat_v)}
+
+  store_data, 'spp_fld_rfs_rawspectra_xsp_re', $
+    data = dat_xsp_re, $
+    dlim = {spec:1, ystyle:1, ylog:1, zlog:0, yrange:[1.e3,1.e8], $
+    no_interp:1}
+
+  dat_xsp_im = {x:dat_ch1_re.x, y:imaginary(xsp_comp), v:transpose(dat_v)}
+
+  store_data, 'spp_fld_rfs_rawspectra_xsp_im', $
+    data = dat_xsp_im, $
+    dlim = {spec:1, ystyle:1, ylog:1, zlog:0, yrange:[1.e3,1.e8], $
+    no_interp:1}
+
+  chs = [0,1,2,3]
 
   algs = [0,1]
 
   srcs = [0,1,2,3,4,5,6,7]
+
+  srcs = indgen(64)
+
+  ;  srcsx = [-1,0,1,2,3,4,5,6,7]
 
   foreach ch, chs do begin
 
     if ch EQ 0 then begin
 
       src_data = dat_ch0.y
-      re_data = dat_ch0_re.y
-      im_data = dat_ch0_im.y
-      pow_data = ch0_pow
+      ;re_data = dat_ch0_re.y
+      ;im_data = dat_ch0_im.y
+      ;pow_data = ch0_pow
       gain_data = dat_ch0_gain.y
 
-    endif else begin
+    endif else if ch EQ 1 then begin
 
       src_data = dat_ch1.y
-      re_data = dat_ch1_re.y
-      im_data = dat_ch1_im.y
-      pow_data = ch1_pow
+      ;re_data = dat_ch1_re.y
+      ;im_data = dat_ch1_im.y
+      ;pow_data = ch1_pow
       gain_data = dat_ch1_gain.y
 
-    endelse
+    endif else if ch EQ 2 then begin
+
+      src_data = dat_ch0.y + dat_ch1.y * 8
+      gain_data = dat_ch0_gain.y
+
+    endif else if ch EQ 3 then begin
+
+      src_data = dat_ch0.y + dat_ch1.y * 8
+      gain_data = dat_ch0_gain.y
+
+    endif
 
     foreach alg, algs do begin
 
       foreach src, srcs do begin
 
+        ;foreach srcx, srcsx do begin
+
+        ;if ch LT 2 then type = 'auto' else type = 'cross'
+
         alg_match = where((dat_algorithm.y MOD 2) EQ alg, alg_count)
+
         src_match = where(src_data EQ src, src_count)
 
         match_t = where(dat_algorithm.y EQ alg and src_data EQ src, match_count)
+
+        ;if type EQ 'auto' then begin
+
 
         if match_count GT 0 then begin
 
@@ -125,11 +167,12 @@ pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix, varformat = varformat
 
           if ch EQ 0 then begin
 
-            dat_pow = dat_ch0_pow
+            dtype = 'auto'
+            dat = dat_ch0_pow
             case src of
-              0: source_txt = 'V1-V2'
-              1: source_txt = 'V1-V3'
-              2: source_txt = 'V2-V4'
+              0: source_txt = 'V1V2'
+              1: source_txt = 'V1V3'
+              2: source_txt = 'V2V4'
               3: source_txt = 'SCM'
               4: source_txt = 'V1'
               5: source_txt = 'V3'
@@ -137,14 +180,14 @@ pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix, varformat = varformat
               7: source_txt = 'GND'
             endcase
 
-          endif else begin
+          endif else if ch EQ 1 then begin
 
-            dat_pow = dat_ch1_pow
-
+            dtype = 'auto'
+            dat = dat_ch1_pow
             case src of
-              0: source_txt = 'V3-V4'
-              1: source_txt = 'V3-V2'
-              2: source_txt = 'V1-V4'
+              0: source_txt = 'V3V4'
+              1: source_txt = 'V3V2'
+              2: source_txt = 'V1V4'
               3: source_txt = 'SCM'
               4: source_txt = 'V2'
               5: source_txt = 'V4'
@@ -152,7 +195,46 @@ pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix, varformat = varformat
               7: source_txt = 'GND'
             endcase
 
+          endif else begin
+
+            if ch EQ 2 then dat = dat_xsp_re else dat = dat_xsp_im
+
+            if ch EQ 2 then dtype = 'xre' else dtype = 'xim'
+
+            src0 = src MOD 8
+            src1 = src / 8
+
+            case src0 of
+              0: source_txt0 = 'V1V2'
+              1: source_txt0 = 'V1V3'
+              2: source_txt0 = 'V2V4'
+              3: source_txt0 = 'SCM'
+              4: source_txt0 = 'V1'
+              5: source_txt0 = 'V3'
+              6: source_txt0 = 'GND'
+              7: source_txt0 = 'GND'
+            endcase
+
+            case src1 of
+              0: source_txt1 = 'V3V4'
+              1: source_txt1 = 'V3V2'
+              2: source_txt1 = 'V1V4'
+              3: source_txt1 = 'SCM'
+              4: source_txt1 = 'V2'
+              5: source_txt1 = 'V4'
+              6: source_txt1 = 'GND'
+              7: source_txt1 = 'GND'
+            endcase
+
+            source_txt = source_txt0 + '!C' + source_txt1
+
           endelse
+
+          ;endif else begin
+
+          ;  alg_match = where((dat_algorithm.y MOD 2) EQ alg, alg_count)
+
+          ;endelse
 
           ; Using definition of power spectral density
           ;  S = 2 * Nfft / fs |x|^2 / Wss where
@@ -180,14 +262,30 @@ pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix, varformat = varformat
           V2_factor = 2d * 4096d / 38.4d6 / ((gain*2048d)^2d * 0.782d * 65536d)
 
           if hfr_lfr_str EQ 'lfr' then V2_factor *= 8
-          dat_pow.y[match_t,*] *= transpose(rebin(V2_factor,n_elements(V2_factor),2048))
+          dat.y[match_t,*] *= transpose(rebin(V2_factor,n_elements(V2_factor),2048))
 
-          tplot_prefix = 'spp_fld_rfs_rawspectra_' + hfr_lfr_str + $
+          ;          tplot_prefix = 'spp_fld_rfs_rawspectra_' + hfr_lfr_str + $
+          ;            '_ch' + string(ch, format='(I1)') + $
+          ;            '_src' + string(src, format = '(I02)')
+
+          if dtype EQ 'auto' then $
+            tplot_prefix = 'spp_fld_rfs_rawspectra_' + hfr_lfr_str + $
             '_ch' + string(ch, format='(I1)') + $
-            '_src' + string(src, format = '(I1)')
+            '_' + dtype + '_' + source_txt $ ; '_src' + string(src, format = '(I02)') $
+          else $
+            tplot_prefix = 'spp_fld_rfs_rawspectra_' + hfr_lfr_str + $
+            '_' + dtype + '_' + source_txt
+          ;            '_ch' + string(ch, format='(I1)') + $
+          ;            '_src' + string(src, format = '(I02)') $
 
-          ytitle = 'RFS!C' + strupcase(hfr_lfr_str) + ' AUTO!C' + $
+          tplot_prefix = tplot_prefix.Replace('!C','_')
+
+          if dtype EQ 'auto' then $
+            ytitle = 'RFS!C' + strupcase(hfr_lfr_str) + ' AUTO!C' + $
             'CH' + string(ch, format='(I1)') + ' ' + $
+            source_txt else $
+            ytitle = 'RFS!C' + strupcase(hfr_lfr_str) + ' ' + $
+            strupcase(dtype) + '!C' + $
             source_txt
 
           print, ch, alg, src, match_count, ' ', tplot_prefix, $
@@ -208,20 +306,20 @@ pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix, varformat = varformat
             clean_pfb = where(freqs.full_pfb_db LT -89.5)
           endelse
 
-          dat_pow_str = {x:dat_pow.x[match_t], $
-            y:alog10(dat_pow.y[match_t,*]), $
-            v:dat_pow.v[match_t,*]/freq_div}
+          dat_str = {x:dat.x[match_t], $
+            y:dat.y[match_t,*], $
+            v:dat.v[match_t,*]/freq_div}
 
-          store_data, tplot_prefix + '_pow', $
-            data = dat_pow_str
-            
-          dat_pow_str_clean = {x:dat_pow_str.x, $
-            y:dat_pow_str.y[*,clean_pfb], $
-            v:dat_pow_str.v[*,clean_pfb]}
+          store_data, tplot_prefix ;+ '_' + dtype, $
+            data = dat_str
 
-          store_data, tplot_prefix + '_pow_clean', $
-            data = dat_pow_str_clean
-            
+          dat_str_clean = {x:dat_str.x, $
+            y:dat_str.y[*,clean_pfb], $
+            v:dat_str.v[*,clean_pfb]}
+
+          store_data, tplot_prefix + '_clean', $
+            data = dat_str_clean
+
           options, tplot_prefix + '_*', 'spec', 1
           options, tplot_prefix + '_*', 'ylog', 1
           options, tplot_prefix + '_*', 'zlog', 0
@@ -229,15 +327,20 @@ pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix, varformat = varformat
           options, tplot_prefix + '_*', 'yrange', yrange
           options, tplot_prefix + '_*', 'ystyle', 1
           options, tplot_prefix + '_*', 'panel_size', 2
-          options, tplot_prefix + '_pow', 'ytitle', ytitle
-          options, tplot_prefix + '_pow_clean', 'ytitle', ytitle + '!CCLEAN'
-          options, tplot_prefix + '_pow*', 'ysubtitle', freq_div_str
-          options, tplot_prefix + '_*', 'ztitle', 'Log V2/Hz'
+          options, tplot_prefix, 'ytitle', ytitle
+          options, tplot_prefix + '_*clean', 'ytitle', ytitle + '!CCLEAN'
+          ;options, tplot_prefix + '_pow*', 'ysubtitle', freq_div_str
+          options, tplot_prefix + '_*', 'ztitle', 'V2/Hz'
+          options, tplot_prefix + '*', 'datagap', 120d
 
         endif else begin
           print, ch, alg, src, match_count, $
             format = '(I2,I2,I2,I6)'
         end
+
+        ;endif
+
+        ;endforeach
 
       endforeach
 
