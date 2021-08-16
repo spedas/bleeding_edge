@@ -26,8 +26,8 @@
 ;   these cribs can help double as documentation for tplot.
 ;
 ; $LastChangedBy: crussell $
-; $LastChangedDate: 2019-06-18 13:18:02 -0700 (Tue, 18 Jun 2019) $
-; $LastChangedRevision: 27357 $
+; $LastChangedDate: 2021-08-15 12:22:38 -0700 (Sun, 15 Aug 2021) $
+; $LastChangedRevision: 30207 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_tplot_annotation.pro $
 ;-
 
@@ -475,6 +475,68 @@ tplot_options,'vtitle','hello!Cworld!'
 tplot
 
 stop
+
+;Plot FGM data, with GSE and GEI position as var_labels
+timespan, '2012-03-07'
+del_data, '*'
+thm_load_fgm, probe='a', level='l2', coord = 'gse'
+thm_load_state, probe='a', coord = 'gse',  suffix = '_gse'
+thm_load_state, probe='a', coord = 'gei',  suffix = '_gei'
+
+;Split up the vectors, and plot each separately
+split_vec, 'tha_state_pos_gse'
+split_vec, 'tha_state_pos_gei'
+;The ytitles show up on the left
+options, 'tha_state_pos_gse_x', 'ytitle', 'GSE_X'
+options, 'tha_state_pos_gse_y', 'ytitle', 'GSE_Y'
+options, 'tha_state_pos_gse_z', 'ytitle', 'GSE_Z'
+options, 'tha_state_pos_gei_x', 'ytitle', 'GEI_X'
+options, 'tha_state_pos_gei_y', 'ytitle', 'GEI_Y'
+options, 'tha_state_pos_gei_z', 'ytitle', 'GEI_Z'
+;different formats can be used for different variables,
+options, 'tha_state_pos_gse_?', 'format', '(1E7.0)'
+options, 'tha_state_pos_gei_?', 'format', '(1F8.1)'
+
+;first GSE only
+tplot, ['tha_fgs_gse', 'tha_fgs_btotal'], $
+  var_label = ['tha_state_pos_gse_x', $
+  'tha_state_pos_gse_y', $
+  'tha_state_pos_gse_z']
+stop
+
+;invoke the double variable option by adding a second variable in
+;parentheses after the first, both will show up, with the appropriate
+;formats.
+;In order to fit labels, the first values at 0000 hhmm are not printed.
+tplot, ['tha_fgs_gse', 'tha_fgs_btotal'], $
+  var_label = ['tha_state_pos_gse_x(tha_state_pos_gei_x)', $
+  'tha_state_pos_gse_y(tha_state_pos_gei_y)', $
+  'tha_state_pos_gse_z(tha_state_pos_gei_z)']
+
+stop
+
+;Vector variables can also be used, but the two variables must have
+;the same number of components. (Do not combine vector and scalar
+;variables, or pressure tensors with fields, etc...).
+;Note that array values for ytitle are used here, it is not
+;recommended to do this if the variables are
+;going to be plotted, but it will work here.
+options, 'tha_state_pos_gse', 'ytitle', 'GSE_'+['X','Y','Z']
+options, 'tha_state_pos_gei', 'ytitle', 'GEI_'+['X','Y','Z']
+
+;note also that the var_label must be passed in as an array of
+;strings, even if there is only one pair of variables.
+;no globbing
+tplot, ['tha_fgs_gse', 'tha_fgs_btotal'], $
+  var_label = ['tha_state_pos_gse(tha_state_pos_gei)']
+
+stop
+
+;All of the var_labels do not have to have two variables:
+options, 'tha_fgs_btotal', 'ytitle', 'FGS_BTOT'
+tplot, 'tha_fgs_gse', $
+  var_label = ['tha_fgs_btotal','tha_state_pos_gse(tha_state_pos_gei)']
+
 print,"We're done!"
 
 
