@@ -10,8 +10,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-01-25 08:52:22 -0800 (Thu, 25 Jan 2018) $
-; $LastChangedRevision: 24587 $
+; $LastChangedDate: 2021-08-19 13:57:56 -0700 (Thu, 19 Aug 2021) $
+; $LastChangedRevision: 30226 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_load_coverage_ut__define.pro $
 ;-
 
@@ -39,7 +39,7 @@ function mms_load_coverage_ut::test_load_eis
   for m=0, n_elements(self.months_to_test)-1 do begin
     del_data, '*'
     mms_load_eis, probe=4, trange=self.months_to_test[m]+self.days_to_test, level='l2'
-    assert, spd_data_exists('mms4_epd_eis_extof_proton_flux_omni', self.months_to_test[m]+self.days_to_test[0], self.months_to_test[m]+self.days_to_test[1]), $
+    assert, spd_data_exists('mms4_epd_eis_srvy_l2_extof_proton_flux_omni', self.months_to_test[m]+self.days_to_test[0], self.months_to_test[m]+self.days_to_test[1]), $
       'Problem loading EIS data ('+self.months_to_test[m]+')'
   endfor
   return, 1

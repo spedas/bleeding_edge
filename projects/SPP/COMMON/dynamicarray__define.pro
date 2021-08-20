@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
-; $LastChangedBy: ali $
-; $LastChangedDate: 2021-06-28 09:30:24 -0700 (Mon, 28 Jun 2021) $
-; $LastChangedRevision: 30090 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2021-08-18 20:41:54 -0700 (Wed, 18 Aug 2021) $
+; $LastChangedRevision: 30219 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -235,6 +235,12 @@ pro DynamicArray::trim    ; Truncate ptr_array to its proper value
     append_array,*self.ptr_array,index= ind
     self.size = ind
   endelse
+end
+
+function DynamicArray::slice,indices,last=last,tagname=tagname
+  compile_opt IDL2
+  if keyword_set(last) then indices = self.size-1
+  return,(*self.ptr_array)[indices,*,*,*]
 end
 
 

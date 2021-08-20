@@ -37,8 +37,8 @@
 ;
 ;CREATED BY:    Davin Larson
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-04-03 17:11:34 -0700 (Fri, 03 Apr 2020) $
-; $LastChangedRevision: 28492 $
+; $LastChangedDate: 2021-08-18 20:43:59 -0700 (Wed, 18 Aug 2021) $
+; $LastChangedRevision: 30221 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/store_data.pro $
 ;-
 pro store_data,name, time,ydata,values, $
@@ -78,14 +78,15 @@ endif else verbose = verbose_t
 
 if size(/type,tagnames) eq 7 then begin
   if size(/type,data) ne 8 then begin
-    dprint,dlevel=3,'Variable "'+name +'":  Data must be a structure'
+    dprint,dlevel=2,'Variable "'+name +'":  Data must be a structure'
     return
   endif
+  ;printdat,data,tagnames
   if size(/type,time_tag) ne 7 then time_tag = 'TIME'
 ;  if size(/type,gap_tag) ne 7 then gap_tag = 'GAP'
   tags = tag_names(data)
   str_element,data,time_tag,time    ;  time = data.time
-  ok   = strfilter(tags,tagnames,delimiter=' ',/byte)
+  ok   = strfilter(tags,strupcase(tagnames),delimiter=' ',/byte)
   if ~keyword_set(seperator) then seperator = ''
   nd = size(/n_elements,data)
   for i=0,n_elements(tags)-1 do begin
