@@ -22,12 +22,12 @@ mms*_edp_scpot_fast_sitl; SC-potential
 ;----------------------------------
 mms*_fpi_density; ... FPI
 mms*_fpi_ion_vel_dbcs;... FPI
-mms*_exb_dsl;... ExB velocity
+;mms*_exb_dsl;... ExB velocity
 
 ;----------------------------------
 ; Current
 ;----------------------------------
-mms_sitl_jtot_combB; .... CurlB and diffB combined
+;mms_sitl_jtot_combB; .... CurlB and diffB combined
 
 ;--------------------
 ; Spectrograms
