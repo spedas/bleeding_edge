@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-18 20:41:54 -0700 (Wed, 18 Aug 2021) $
-; $LastChangedRevision: 30219 $
+; $LastChangedDate: 2021-08-24 03:35:07 -0700 (Tue, 24 Aug 2021) $
+; $LastChangedRevision: 30237 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -126,9 +126,10 @@ END
 ;END
 
 
-pro DynamicArray::append, a1, error = error
+pro DynamicArray::append, a1, error = error,replace=replace
   compile_opt IDL2
 
+  if n_elements(replace) eq 0 then replace=1
   error = ''
   size_error=error
 
@@ -136,7 +137,7 @@ pro DynamicArray::append, a1, error = error
     fillnan =1
 
     if isa(a1,'Undefined')  then begin              ; n_elements(a1) eq 0;;  Warning- this could have unexpected results if a1 is a null pointer or null object
-      dprint,verbose=verbose,dlevel=self.dlevel+1,'Appending Null'
+      dprint,verbose=self.verbose,dlevel=self.dlevel+1,'Appending Null'
       return     ; Quietly do nothing
     endif
 
@@ -156,27 +157,44 @@ pro DynamicArray::append, a1, error = error
 
     type0 = size(/type,*a0)
     type1 = size(/type,a1)
+    prefix = 'Dynamic Array: "'+self.name+'" '
 
     if (type1 eq 8) || (type0 eq 8) then begin   ; structures
+      typenam0 =  typename((*a0)[0])
+      typenam1 =  typename( a1[0])
       if type1 ne type0 then begin
-        error = 'Type Mismatch, Unable to concatenate'
-      endif else   if n_tags(*a0) ne n_tags(a1) then begin
-        error = 'Type Mismatch, Unable to concatenate structures with different tags'
+        error =  Prefix+'Type Mismatch, Unable to concatenate'
+      endif else if typenam0 ne typenam1 then begin
+        error = Prefix+'Type Mismatch, Unable to cancatenate structure {'+typenam0+'} with structure {'+typenam1 +'}'
+      endif else   if ~array_equal( tag_names(*a0) , tag_names(a1)) then begin
+        error = Prefix+'Type Mismatch, Unable to concatenate structures with different tagnames'
       endif else   if n_tags(/length,*a0) ne n_tags(/length,a1)  then begin
-        error = 'Type Mismatch, Unable to concatenate structures with different size'
+        error = Prefix+'Type Mismatch, Unable to concatenate structures with different length'
+      endif else   if n_tags(/data_length,*a0) ne n_tags(/data_length,a1)  then begin
+        error = Prefix+'Type Mismatch, Unable to concatenate structures with different data_length'
       endif
     endif
 
+    if keyword_set(error) && (type1 eq type0) && keyword_set(replace)   then begin
+      dprint,verbose=self.verbose,dlevel=self.dlevel,error
+      dprint,verbose=self.verbose,dlevel=self.dlevel,Prefix+'Replacing ald structure {'+typenam0+'} with newly defined structure {'+typenam1+'}'
+      a0_new = replicate( fill_nan(a1[0]), size(/dimen,*a0))
+      struct_assign,*a0,a0_new,/nozero,/verbose
+      *a0 = a0_new
+      error=''
+    endif
+
+
     if (type0 eq 10 || type1 eq 10) && (type1 ne type0) then begin   ; pointers
-      error = 'Type Mismatch, Unable to concatenate'
+      error =Prefix+ 'Type Mismatch, Unable to concatenate'
     endif
 
     if (type0 eq 11 || type1 eq 11) && (type1 ne type0) then begin   ;  objects
-      error = 'Type Mismatch, Unable to concatenate'
+      error = Prefix+'Type Mismatch, Unable to concatenate'
     endif
 
     if n_elements(dim0) ne n_elements(dim1) || ((n_elements(dim0) ge 2) &&  array_equal(dim0[1,*],dim1[1,*] eq 0))  then begin
-      error = 'Size Mismatch, Unable to concatenate'
+      error = Prefix+'Size Mismatch, Unable to concatenate'
       size_error=error
     endif
 
@@ -186,14 +204,14 @@ pro DynamicArray::append, a1, error = error
       fill = (*a0)[0]
       if keyword_set(fillnan) then fill =   fill_nan(fill)
       if n_elements(dim1) ne n_elements(dim0) then begin
-        dprint,verbose=verbose,dlevel=self.dlevel,'Incompatible appending'
+        dprint,verbose=self.verbose,dlevel=self.dlevel,Prefix+'Incompatible appending'
       endif
       dim = dim0
       add = floor((n0+n1) * self.xfactor+ n1 )
       dim[0] = add
       fillx = replicate(fill,dim)
       *a0 = [*a0,fillx]                       ;  This is the operation that can take a long time to perform
-      dprint,verbose=verbose,dlevel=self.dlevel+2,'Enlarging '+self.name+' array by ',add,' elements. New size:', size(/dim,*a0)
+      dprint,verbose=self.verbose,dlevel=self.dlevel+2,'Enlarging '+self.name+' array by ',add,' elements. New size:', size(/dim,*a0)
       n0=n0+add
     endif
 
@@ -203,11 +221,11 @@ pro DynamicArray::append, a1, error = error
       dimstr = '['+string(dim1,format="(8(i0.0,:,','))")+']'
       suffix = typename(a1) + dimstr
       error = prefix +": "+ error +" " + suffix
-      dprint,verbose=verbose,dlevel=self.dlevel,error
+      dprint,verbose=self.verbose,dlevel=self.dlevel,error
       if ~keyword_set(size_error) then begin
-        dprint,verbose=verbose,dlevel=self.dlevel,'Attempting to concatenate using "relaxed structure assignment" (STRUCT_ASSIGN)
+        dprint,verbose=self.verbose,dlevel=self.dlevel,'Attempting to concatenate using "relaxed structure assignment" (STRUCT_ASSIGN)
         a2=(*a0)[index:index+n1-1,*,*,*]
-        struct_assign,a1,a2,/nozero,/verbose
+        struct_assign,a1,a2,/nozero ,verbose=self.verbose
         a1=a2
       endif else return
     endif
@@ -218,7 +236,7 @@ pro DynamicArray::append, a1, error = error
     ind =self.size
     append_array,*self.ptr_array,a1,index=ind,error=error
     if keyword_set(error) then begin
-      dprint,verbose=verbose,dlevel=self.dlevel,self.name,error
+      dprint,verbose=self.verbose,dlevel=self.dlevel,self.name,error
       ;self.typename
     endif
     self.size=ind
@@ -257,15 +275,15 @@ PRO DynamicArray::GetProperty, array=array, size=size, ptr=ptr, name=name  ,  ty
 END
 
 
-PRO DynamicArray::SetProperty, array=array, name=name, size=size, xfactor=xfactor ;,dlevel=dlevel
+PRO DynamicArray::SetProperty, array=array, name=name, size=size, xfactor=xfactor, verbose=verbose ,dlevel=dlevel
   COMPILE_OPT IDL2
   ; If user passed in a property, then set it.
   IF (ISA(array) || isa(array,/null)) THEN begin
-    dprint,verbose=verbose,dlevel=self.dlevel+2,'Changing array: "'+self.name+'"'
+    dprint,verbose=self.verbose,dlevel=self.dlevel+2,'Changing array: "'+self.name+'"'
     if 0 then begin   ; This section has been commented out because it was not needed and extraordinarily slow for large arrays
       ptrs = ptr_extract(*self.ptr_array)
       if isa(ptrs) then begin
-        dprint,verbose=verbose,'Warning! old pointers NOT freed in old dynamicarray: "'+self.name+'"',dlevel=self.dlevel+1
+        dprint,verbose=self.verbose,'Warning! old pointers NOT freed in old dynamicarray: "'+self.name+'"',dlevel=self.dlevel+1
         ;     ptr_free,ptrs
       endif
     endif
@@ -278,7 +296,8 @@ PRO DynamicArray::SetProperty, array=array, name=name, size=size, xfactor=xfacto
   endif
   if isa(xfactor) then self.xfactor = xfactor
   if isa(size) then self.size = size
-  ;if isa(dlevel) then self.dlevel = dlevel
+  if isa(dlevel) then self.dlevel = dlevel
+  if isa(verbose) then self.verbose = verbose
 END
 
 

@@ -37,8 +37,8 @@
 ;       SUCCESS:  Returns 1 on normal completion, 0 otherwise
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-09-24 15:48:26 -0700 (Tue, 24 Sep 2019) $
-; $LastChangedRevision: 27792 $
+; $LastChangedDate: 2021-08-24 15:20:48 -0700 (Tue, 24 Aug 2021) $
+; $LastChangedRevision: 30245 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_nadir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -49,6 +49,8 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, success=succe
 
   success = 0
 
+; Check the time range against the ephemeris coverage -- bail if there's a problem
+
   if (size(trange,/type) eq 0) then begin
     tplot_options, get_opt=topt
     if (max(topt.trange_full) gt time_double('2013-11-18')) then trange = topt.trange_full
@@ -58,26 +60,37 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, success=succe
     endif
   endif
   tmin = min(time_double(trange), max=tmax)
-  
+
+  bail = 0
   if (size(state,/type) eq 0) then begin
-    maven_orbit_tplot,/load
-    if (size(state,/type) eq 0) then begin
-      print,"Unable to get spacecraft state information."
-      return
+    print,"You must run maven_orbit_tplot first."
+    bail = 1
+  endif else begin
+    smin = min(state.time, max=smax)
+    if ((tmin lt smin) or (tmax gt smax)) then begin
+      print,"Insufficient state vector coverage for the requested time range."
+      print,"  -> Rerun maven_orbit_tplot to include your time range."
+      bail = 1
     endif
-  endif
+  endelse
 
   mk = spice_test('*', verbose=-1)
   indx = where(mk ne '', count)
   if (count eq 0) then begin
-    mvn_swe_spice_init, trange=[tmin,tmax]
-    mk = spice_test('*', verbose=-1)
-    indx = where(mk ne '', count)
-    if (count eq 0) then begin
-      print,"Insufficient SPICE coverage in requested time range."
-      return
+    print,"You must initialize SPICE first."
+    bail = 1
+  endif else begin
+    mvn_spice_stat, summary=sinfo, check=[tmin,tmax], /silent
+    if ~(sinfo.all_exist and sinfo.all_check) then begin
+      print,"Insufficient SPICE coverage for the requested time range."
+      print,"  -> Reinitialize SPICE to include your time range."
+      bail = 1
     endif
-  endif
+  endelse
+
+  if (bail) then return
+
+; Process keywords
 
   dopol = keyword_set(polar)
   

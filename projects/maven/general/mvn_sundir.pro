@@ -36,8 +36,8 @@
 ;       SUCCESS:  Returns 1 on normal completion, 0 otherwise.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-09-24 15:48:26 -0700 (Tue, 24 Sep 2019) $
-; $LastChangedRevision: 27792 $
+; $LastChangedDate: 2021-08-24 15:20:48 -0700 (Tue, 24 Aug 2021) $
+; $LastChangedRevision: 30245 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_sundir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -56,20 +56,23 @@ pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar, success=succ
   endif
   tmin = min(time_double(trange), max=tmax)
 
-; If SPICE is not initialized at all, then load kernels now.  Otherwise, use
-; the kernels already loaded.
+; Check the time range against the ephemeris coverage -- bail if there's a problem
 
   mk = spice_test('*', verbose=-1)
   indx = where(mk ne '', count)
   if (count eq 0) then begin
-    mvn_swe_spice_init, trange=[tmin,tmax]
-    mk = spice_test('*', verbose=-1)
-    indx = where(mk ne '', count)
-    if (count eq 0) then begin
-      print,"Insufficient SPICE coverage in requested time range."
+    print,"You must initialize SPICE first."
+    return
+  endif else begin
+    mvn_spice_stat, summary=sinfo, check=[tmin,tmax], /silent
+    if ~(sinfo.all_exist and sinfo.all_check) then begin
+      print,"Insufficient SPICE coverage for the requested time range."
+      print,"  -> Reinitialize SPICE to include your time range."
       return
     endif
-  endif
+  endelse
+
+; Process keywords
 
   if not keyword_set(dt) then dt = 1D else dt = double(dt[0])
   dopol = keyword_set(polar)

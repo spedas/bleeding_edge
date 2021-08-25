@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug 23 18:16:15 2021.<P>
+<STRONG>Last modified: </STRONG>Tue Aug 24 18:16:02 2021.<P>
  
 <HR>
  
@@ -269,11 +269,17 @@ KEYWORDS:
 
     SUMMARY:       Provides a concise summary.
 
+    CHECK:         Set this keyword to a time array to test whether the loaded
+                   kernels are sufficient to cover the entire time range.  The
+                   time array can be in any format accepted by time_double.
+                   If CHECK is set, then keyword SUMMARY will include success
+                   flags (1 = sufficient coverage, 0 = insufficient coverage).
+
     SILENT:        Shhh.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-05-17 11:20:50 -0700 (Mon, 17 May 2021) $
- $LastChangedRevision: 29965 $
+ $LastChangedDate: 2021-08-24 15:08:22 -0700 (Tue, 24 Aug 2021) $
+ $LastChangedRevision: 30243 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/spice/mvn_spice_stat.pro $
 
 CREATED BY:    David L. Mitchell  09/14/18

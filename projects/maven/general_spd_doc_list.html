@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug 23 18:16:15 2021.<P>
+<STRONG>Last modified: </STRONG>Tue Aug 24 18:16:02 2021.<P>
  
 <HR>
  
@@ -389,8 +389,8 @@ KEYWORDS:
        SUCCESS:  Returns 1 on normal completion, 0 otherwise
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-09-24 15:48:26 -0700 (Tue, 24 Sep 2019) $
- $LastChangedRevision: 27792 $
+ $LastChangedDate: 2021-08-24 15:20:48 -0700 (Tue, 24 Aug 2021) $
+ $LastChangedRevision: 30245 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_nadir.pro $
 
 CREATED BY:    David L. Mitchell
@@ -575,11 +575,14 @@ KEYWORDS:
                  by SPICE is allowed.  The default is 'MAVEN_SPACECRAFT'.
                  Other possibilities are: 'MAVEN_APP', 'MAVEN_STATIC', etc.
                  Type 'mvn_frame_name(/list)' to see a full list of frames.
+                 Minimum matching name fragments (e.g., 'sta', 'swe') are
+                 allowed -- see mvn_frame_name for details.
 
        POLAR:    If set, convert the direction to polar coordinates and
                  store as additional tplot variables.
-                    Phi = atan(y,x)*!radeg  ; [  0, 360]
-                    The = asin(z)*!radeg    ; [-90, +90]
+                    Mag = sqrt(x*x + y*y + z*z) ; units km/s
+                    Phi = atan(y,x)*!radeg      ; units deg [  0, 360]
+                    The = asin(z)*!radeg        ; units deg [-90, +90]
 
        MSO:      Calculate ram vector in the MSO frame instead of the
                  rotating IAU_MARS frame.  May be useful at high altitudes.
@@ -587,11 +590,13 @@ KEYWORDS:
        PANS:     Named variable to hold the tplot variables created.  For the
                  default frame, this would be 'V_sc_MAVEN_SPACECRAFT'.
 
+       RESULT:   Named variable to hold the result structure.
+
        SUCCESS:  Returns 1 on normal operation, 0 otherwise.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-09-24 15:47:43 -0700 (Tue, 24 Sep 2019) $
- $LastChangedRevision: 27791 $
+ $LastChangedDate: 2021-08-24 15:11:31 -0700 (Tue, 24 Aug 2021) $
+ $LastChangedRevision: 30244 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 
 CREATED BY:    David L. Mitchell
@@ -1062,8 +1067,8 @@ KEYWORDS:
        SUCCESS:  Returns 1 on normal completion, 0 otherwise.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-09-24 15:48:26 -0700 (Tue, 24 Sep 2019) $
- $LastChangedRevision: 27792 $
+ $LastChangedDate: 2021-08-24 15:20:48 -0700 (Tue, 24 Aug 2021) $
+ $LastChangedRevision: 30245 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_sundir.pro $
 
 CREATED BY:    David L. Mitchell
