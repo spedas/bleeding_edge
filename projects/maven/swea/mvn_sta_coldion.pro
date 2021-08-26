@@ -50,6 +50,9 @@
 ;                      cf -> 16E x 16M x 4D x 16A, burst time resolution
 ;                      ce -> 16E x 16M x 4D x 16A, survey time resolution
 ;
+;    BURST:         If set, try to use d1 if available, otherwise use d0.
+;                   If not set, use d0.
+;
 ;    FRAME:         Reference frame for velocities.  Default = 'mso'.  Try 'app'
 ;                   to get apparent flow direction in APP frame.
 ;
@@ -79,8 +82,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-09 11:42:36 -0800 (Fri, 09 Nov 2018) $
-; $LastChangedRevision: 26100 $
+; $LastChangedDate: 2021-08-25 09:07:29 -0700 (Wed, 25 Aug 2021) $
+; $LastChangedRevision: 30246 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -89,7 +92,8 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
                      density=density, velocity=velocity, tavg=tavg, pans=pans, $
                      result_h=result_h, result_o1=result_o1, result_o2=result_o2, $
                      noload=noload, temperature=temperature, reset=reset, $
-                     frame=frame, doplot=doplot, success=success
+                     frame=frame, doplot=doplot, burst=burst, success=success, $
+                     reload=reload
 
   common coldion, cio_h, cio_o1, cio_o2
   common mvn_sta_kk3_anode, kk3_anode
@@ -102,6 +106,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   cio_h = 0
   cio_o1 = 0
   cio_o2 = 0
+  v_apid = ''
 
 ; Process keywords
 
@@ -151,38 +156,64 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
     print,'Calculating apparent flow in APP frame - no s/c velocity correction.'
   endif else vsc = 1
 
-; Load STATIC data
+; Load STATIC data (if needed)
 
-  get_data, 'mvn_sta_c6_M', index=i
-  get_data, 'mvn_sta_d1_E', index=j
-  get_data, 'mvn_sta_d0_E', index=k
-  if ((i eq 0) or (j+k eq 0)) then noload = 0
+  trange = timerange()
+  replot = 0
 
-  if ~keyword_set(noload) then begin
-    mvn_sta_l2_load, sta_apid=['c0','c6','c8']
-    str_element, mvn_c6_dat, 'valid', valid, success=ok
-    if (ok) then indx = where(valid, count) else count = 0L
-    if (count eq 0L) then begin
+  eph = maven_orbit_eph()
+  if (size(eph,/type) ne 8) then return
+  if ((trange[0] lt min(eph.time)) or (trange[1] gt max(eph.time))) then begin
+    print,"Insufficient state vector coverage for the requested time range."
+    print,"  -> Rerun maven_orbit_tplot to include your time range."
+    return
+  endif
+
+  str_element, mvn_c6_dat, 'time', time, success=ok
+  if (ok) then indx = where((time gt trange[0]) and (time lt trange[1]), npts) else npts = 0
+  if keyword_set(reload) then npts = 0
+  if (npts lt 10) then begin
+    mvn_sta_l2_load, sta_apid=['c0','c6','c8'], iv_level=2
+    str_element, mvn_c6_dat, 'time', time, success=ok
+    if (ok) then indx = where((time gt trange[0]) and (time lt trange[1]), npts) else npts = 0
+    if (npts lt 10) then begin
       print,"No STATIC c6 data."
       return
-    endif
-
-    mvn_sta_l2_load, sta_apid=['d1']
-    str_element, mvn_d1_dat, 'valid', valid, success=ok
-    if (ok) then indx = where(valid, count) else count = 0L
-    if (count eq 0L) then begin
-      print,"No STATIC d1 data."
-      mvn_sta_l2_load, sta_apid=['d0']
-      str_element, mvn_d0_dat, 'valid', valid, success=ok
-      if (ok) then indx = where(valid, count) else count = 0L
-      if (count eq 0L) then begin
-        print,"No STATIC d0 data."
-        return
-      endif
-    endif
-
-    mvn_sta_l2_tplot, /replace
+    endif else replot = 1
   endif
+
+  if keyword_set(burst) then begin
+    str_element, mvn_d1_dat, 'time', time, success=ok
+    if (ok) then indx = where((time gt trange[0]) and (time lt trange[1]), npts) else npts = 0
+    if keyword_set(reload) then npts = 0
+    if (npts lt 10) then begin
+      mvn_sta_l2_load, sta_apid=['d1'], iv_level=2
+      str_element, mvn_d1_dat, 'time', time, success=ok
+      if (ok) then indx = where((time gt trange[0]) and (time lt trange[1]), npts) else npts = 0
+      if (npts lt 10) then print,"No STATIC d1 data." else replot = 1
+    endif
+  endif
+
+  if (v_apid eq '') then begin
+    v_apid = 'd0'
+    str_element, mvn_d0_dat, 'time', time, success=ok
+    if (ok) then indx = where((time gt trange[0]) and (time lt trange[1]), npts) else npts = 0
+    if keyword_set(reload) then npts = 0
+    if (npts lt 10) then begin
+      mvn_sta_l2_load, sta_apid=['d0'], iv_level=2
+      str_element, mvn_d0_dat, 'time', time, success=ok
+      if (ok) then indx = where((time gt trange[0]) and (time lt trange[1]), npts) else npts = 0
+      if (npts lt 10) then begin
+        print,"No STATIC d0 data."
+        v_apid = ''
+        return
+      endif else replot = 1
+    endif
+  endif
+
+  print,"Using APID ",v_apid," to calculate velocity moments."
+
+  if (replot) then mvn_sta_l2_tplot, /replace
 
   pans = ['']
   
@@ -203,17 +234,19 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
   if (~doden and ~dotmp and (max(dovel) eq 0)) then return
 
-  get_data, 'mvn_sta_d1_E', data=dat4d, index=i
+  var4d = 'mvn_sta_' + v_apid + '_E'
+  get_data, var4d, data=dat4d, index=i
   if (i eq 0) then begin
-    get_data, 'mvn_sta_d0_E', data=dat4d, index=i
+    mvn_sta_l2_tplot, /replace
+    get_data, var4d, data=dat4d, index=i
     if (i eq 0) then begin
-      print, "No STATIC d1 or d0 data loaded."
+      print,"Can't generate tplot variables for apid ", v_apid
       return
-    endif else v_apid = 'd0'
-  endif else v_apid = 'd1'
+    endif
+  endif
 
   if keyword_set(tavg) then dt = double(tavg) else dt = 16D
-  tmin = min(timerange(), max=tmax)
+  tmin = min(trange, max=tmax)
   npts = ceil((tmax-tmin)/dt)
   time = tmin + dt*dindgen(npts)
 
@@ -246,13 +279,13 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
     kk = 0.
     if (kk3_anode) then begin
-      kk = mvn_sta_get_kk3(mean(timerange()))
+      kk = mvn_sta_get_kk3(mean(trange))
       isuppress = 'nbc_4d'
       tsuppress = 'tb_4d'  ; don't have experimental version of this
       print,'Using attenuator-dependent ion suppression correction.'
       print,'kk3 = ',kk
     endif else begin
-      kk = mvn_sta_get_kk2(mean(timerange()))
+      kk = mvn_sta_get_kk2(mean(trange))
       isuppress = 'nb_4d'
       tsuppress = 'tb_4d'
       print,'Using basic ion suppression correction.'
@@ -295,8 +328,14 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 	  options, vname, ytitle='sta c6 O+!cDensity (1/cc)', colors=icols[1]
 	  ylim, vname, 10, 100000, 1
 
-      tsmooth_in_time, vname, dt
-      get_data, (vname + '_smoothed'), data=tmp
+      get_data, vname, data=tmp
+      dx = tmp.x - shift(tmp.x,1)
+      dx[0] = dx[1]
+      if (min(dx) lt (2D*dt)) then begin
+        tsmooth_in_time, vname, dt
+        get_data, (vname + '_smoothed'), data=tmp
+      endif
+
       result_o1.den_i = interp(tmp.y, tmp.x, time)
 
 ; Calculate the O2+ density with the beam approx.
@@ -314,8 +353,14 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
       options, vname, ytitle='sta c6 O2+!cDensity (1/cc)', colors=icols[2]
       ylim, vname, 10, 100000, 1
 
-      tsmooth_in_time, vname, dt
-      get_data, (vname + '_smoothed'), data=tmp
+      get_data, vname, data=tmp
+      dx = tmp.x - shift(tmp.x,1)
+      dx[0] = dx[1]
+      if (min(dx) lt (2D*dt)) then begin
+        tsmooth_in_time, vname, dt
+        get_data, (vname + '_smoothed'), data=tmp
+      endif
+
       result_o2.den_i = interp(tmp.y, tmp.x, time)
 
     endif else begin
@@ -333,8 +378,14 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
         get_4dt, 'n_4d', getap, mass=minmax(mass), m_int=mass[1], $
                  energy=erange, name=dnames[i]
 
-        tsmooth_in_time, dnames[i], dt
-        get_data, (dnames[i] + '_smoothed'), data=tmp
+        get_data, dnames[i], data=tmp
+        dx = tmp.x - shift(tmp.x,1)
+        dx[0] = dx[1]
+        if (min(dx) lt (2D*dt)) then begin
+          tsmooth_in_time, dnames[i], dt
+          get_data, (dnames[i] + '_smoothed'), data=tmp
+        endif
+
         case i of
           0 : result_h.den_i = interp(tmp.y, tmp.x, time)
           1 : result_o1.den_i = interp(tmp.y, tmp.x, time)
@@ -410,8 +461,13 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 	  if (nwrong gt 0L) then tmp.y[wrong_mode] = !values.f_nan
 	  store_data, vname, data=tmp
 
-      tsmooth_in_time, vname, dt
-      get_data, (vname + '_smoothed'), data=tmp
+      dx = tmp.x - shift(tmp.x,1)
+      dx[0] = dx[1]
+      if (min(dx) lt (2D*dt)) then begin
+        tsmooth_in_time, vname, dt
+        get_data, (vname + '_smoothed'), data=tmp
+      endif
+
       result_o1.temp = interp(tmp.y, tmp.x, time)
 
 ; Calculate the O2+ temperature with the beam approx.
@@ -429,8 +485,13 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
       if (nwrong gt 0L) then tmp.y[wrong_mode] = !values.f_nan 
       store_data, vname, data=tmp
 
-      tsmooth_in_time, vname, dt
-      get_data, (vname + '_smoothed'), data=tmp
+      dx = tmp.x - shift(tmp.x,1)
+      dx[0] = dx[1]
+      if (min(dx) lt (2D*dt)) then begin
+        tsmooth_in_time, vname, dt
+        get_data, (vname + '_smoothed'), data=tmp
+      endif
+
       result_o2.temp = interp(tmp.y, tmp.x, time)
 
     endif else begin
@@ -448,8 +509,14 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
         get_4dt, 't_4d', getap, mass=minmax(mass), m_int=mass[1], $
                  energy=erange, name=dname[i]
 
-        tsmooth_in_time, dname[i], dt
-        get_data, (dname[i] + '_smoothed'), data=tmp
+        get_data, dname[i], data=tmp
+        dx = tmp.x - shift(tmp.x,1)
+        dx[0] = dx[1]
+        if (min(dx) lt (2D*dt)) then begin
+          tsmooth_in_time, dname[i], dt
+          get_data, (dname[i] + '_smoothed'), data=tmp
+        endif
+
         case i of
           0 : result_h.temp = interp(tmp.y[*,3], tmp.x, time)
           1 : result_o1.temp = interp(tmp.y[*,3], tmp.x, time)
@@ -765,14 +832,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
 ; MSO, MSE and GEO ephemerides
 
-  get_data,'alt',data=alt,index=i
-  if (i eq 0) then begin
-    maven_orbit_tplot, /shadow, /load
-    get_data,'alt',data=alt,index=i
-  endif
-  maven_orbit_tplot, eph=eph, /noload
-
-  result_h.alt = spline(alt.x, alt.y, time)
+  result_h.alt = spline(eph.time, eph.alt, time)
   result_o1.alt = result_h.alt
   result_o2.alt = result_h.alt
 
@@ -802,10 +862,10 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   G = 6.673889d-8  ; Anderson, J.D., et al., EPL 110 (2015) 10002, doi:10.1209/0295-5075/110/10002
 
   Vesc = sqrt(2D*G*M/(1.d15*sqrt(total(eph.mso_x^2.,2))))
-  store_data,'Vesc',data={x:alt.x, y:Vesc}
+  store_data,'Vesc',data={x:eph.time, y:Vesc}
   options,'Vesc','linestyle',2
 
-  result_h.v_esc = spline(alt.x, Vesc, time)
+  result_h.v_esc = spline(eph.time, Vesc, time)
   result_o1.v_esc = result_h.v_esc
   result_o2.v_esc = result_h.v_esc
 

@@ -38,15 +38,13 @@
 ;
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-09 08:23:07 -0700 (Mon, 09 Aug 2021) $
-; $LastChangedRevision: 30186 $
+; $LastChangedDate: 2021-08-25 09:33:52 -0700 (Wed, 25 Aug 2021) $
+; $LastChangedRevision: 30250 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_eparam.pro $
 ;
 ;CREATED BY:    David L. Mitchell  09/18/15
 ;-
 pro mvn_swe_eparam, minalt=minalt, energy=energy
-
-  @maven_orbit_common
   
   if not keyword_set(minalt) then minalt = 200.
   if not keyword_set(energy) then energy = [1000.,100.,10.]
@@ -54,6 +52,22 @@ pro mvn_swe_eparam, minalt=minalt, energy=energy
   elabs = strtrim(string(round(energy)),2) + ' eV'
   
   NaN = !values.f_nan
+
+  get_data,'mvn_B_1sec',data=mag,index=i
+  if (i eq 0) then begin
+    print,"Load MAG data first."
+    return
+  endif
+
+  trange = minmax(mag.x)
+
+  eph = maven_orbit_eph()
+  if (size(eph,/type) ne 8) then return
+  if ((trange[0] lt min(eph.time)) or (trange[1] gt max(eph.time))) then begin
+    print,"Insufficient state vector coverage for the requested time range."
+    print,"  -> Rerun maven_orbit_tplot to include your time range."
+    return
+  endif
 
 ; Get the neutral atmosphere (maybe add this later)
 
@@ -67,11 +81,6 @@ pro mvn_swe_eparam, minalt=minalt, energy=energy
 
 ; Calculate (1/B)*(dB/dx)
 
-  get_data,'mvn_B_1sec',data=mag,index=i
-  if (i eq 0) then begin
-    print,"Load MAG data first."
-    return
-  endif
   t = mag.x
   npts = n_elements(t)
 
@@ -85,9 +94,8 @@ pro mvn_swe_eparam, minalt=minalt, energy=energy
 
   dBdt = dB/B                                ; dB/B per sec
 
-  if (size(state,/type) ne 8) then maven_orbit_tplot,/load
-  v = spline(time, sqrt(total(state.mso_v^2.,2)), t)  ; s/c velocity
-  h = spline(time, hgt, t)                            ; s/c altitude
+  v = spline(eph.time, eph.vmag_mso, t)      ; s/c velocity
+  h = spline(eph.time, eph.alt, t)           ; s/c altitude
   
   dBdx = (abs(dBdt)/v) # replicate(1.,n_e)   ; dB/B per km
 
