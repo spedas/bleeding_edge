@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Aug 25 18:16:13 2021.<P>
+<STRONG>Last modified: </STRONG>Thu Aug 26 18:15:55 2021.<P>
  
 <HR>
  
@@ -23,6 +23,7 @@ This page was created by the IDL library routine
 <br>Returns the average value of an array.
 <LI><A HREF="#AVERAGE_HIST">AVERAGE_HIST</A>
 <LI><A HREF="#DGEN">DGEN</A>
+<LI><A HREF="#DYNAMICARRAY__DEFINE">DYNAMICARRAY__DEFINE</A>
 <LI><A HREF="#ENCLOSED">ENCLOSED</A>
 <br>Returns the indices of a set of x,y points that are inside a contour.
 <LI><A HREF="#EXEC">EXEC</A>
@@ -100,7 +101,7 @@ NOTE:  d can be an array of structures:
 <A NAME="DGEN">
 <H2>DGEN</H2></A>
 <A HREF="#AVERAGE_HIST">[Previous Routine]</A>
-<A HREF="#ENCLOSED">[Next Routine]</A>
+<A HREF="#DYNAMICARRAY__DEFINE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 FUNCTION:   dgen(n)
@@ -118,9 +119,59 @@ EXAMPLES:
 <STRONG>(See <A href="misc/dgen.pro">general/tools/misc/dgen.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="DYNAMICARRAY__DEFINE">
+<H2>DYNAMICARRAY__DEFINE</H2></A>
+<A HREF="#DGEN">[Previous Routine]</A>
+<A HREF="#ENCLOSED">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Written by Davin Larson - August 2016
+ $LastChangedBy: davin-mac $
+ $LastChangedDate: 2021-08-26 12:37:19 -0700 (Thu, 26 Aug 2021) $
+ $LastChangedRevision: 30257 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/dynamicarray__define.pro $
+
+ Purpose: Object that provides an efficient means of concatenating arrays
+ da= DynamicArray([InitialArray][,name='name1')
+ Purpose:  Returns a &quot;dynamic array&quot; object.  This dynamic array can have any number of elements and can be efficiently
+ appended to.
+
+ This routine is particularly useful when appending to large arrays on numerous occassions.  This is especially useful
+ when the final size of the array is not known when first initialized.
+
+ It is functionally equivalent to:
+ a= findgen(10)
+ b = 1.
+ a = [a,b]
+ but considerably more effiecient because the array size does not need to be increased at every append operation.
+
+ Because one can produce arrays of objects, it is a conveniant way of constructing arrays of arrays
+ containing different things.
+
+ Works with multidimensional arrays too.
+
+ USAGE:
+   da = dynamicarray(findgen(1000000), name='Test1')
+      Or
+   da.array = findgen(1000000)    ; equivalent
+      Or
+   da = dynamicarray()     &amp;   da.append, findgen(1000000)
+   da.append,  findgen(1000)  ;  append some data
+   da.append, !values.f_nan      ; add a NAN at the end.
+   da.name = 'NewName'   ; change name
+
+   a = da.array   ; retrieve a copy of the array
+   print,da.size   ; print the number of elements in the array  (first dimension of multidimensional arrays)
+   help,da.name   ; display the optional user name
+
+   object_destroy, da   ; cleanup when done.
+</PRE><P>
+<STRONG>(See <A href="misc/dynamicarray__define.pro">general/tools/misc/dynamicarray__define.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ENCLOSED">
 <H2>ENCLOSED</H2></A>
-<A HREF="#DGEN">[Previous Routine]</A>
+<A HREF="#DYNAMICARRAY__DEFINE">[Previous Routine]</A>
 <A HREF="#EXEC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
