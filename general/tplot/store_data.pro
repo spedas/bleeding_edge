@@ -37,8 +37,8 @@
 ;
 ;CREATED BY:    Davin Larson
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-26 01:11:25 -0700 (Thu, 26 Aug 2021) $
-; $LastChangedRevision: 30251 $
+; $LastChangedDate: 2021-08-27 00:27:17 -0700 (Fri, 27 Aug 2021) $
+; $LastChangedRevision: 30259 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/store_data.pro $
 ;-
 pro store_data,name, time,ydata,values, $
@@ -47,6 +47,7 @@ pro store_data,name, time,ydata,values, $
   tagnames = tagnames, $
   seperator = seperator, $
   time_tag = time_tag, $
+  vardef = vardef, $
   gap_tag  = gap_tag,  $
   limits= limits, $
   dlimits = dlimits, $
@@ -66,19 +67,38 @@ pro store_data,name, time,ydata,values, $
 
   error = 0
 
-  ;if n_params() ge 3 then begin
-  ;   if keyword_set(data) then dprint,'Warning! Data keyword ignored!'
-  ;   data = {x:time, y:ydata}
-  ;   if keyword_set(values) then data = create_struct(data,'v',values)
-  ;endif
-
   if size(verbose_t,/type) eq 0 then begin
     str_element,tplot_vars,'options.verbose',verbose ; get default verbose value if it exists
   endif else verbose = verbose_t
 
   if size(/type,tagnames) eq 7 then begin
-    if size(/type,data) ne 8 then begin
-      dprint,dlevel=2,'Variable "'+name +'":  Data must be a structure'
+    if isa(data,'dynamicarray') then begin
+      if size(/type,time_tag) ne 7 then time_tag = 'TIME'
+      data_sample = data.slice(/last)
+      tags = tag_names( data_sample )
+      ok   = strfilter(tags,strupcase(tagnames),delimiter=' ',/byte)
+      if ~keyword_set(seperator) then seperator = '_'
+      ;nd = size(/n_elements,data)
+      for i=0,n_elements(tags)-1 do begin
+        if ok[i] eq 0 then continue
+        if tags[i] eq time_tag then continue
+        if keyword_set(gap_tag) && tags[i] eq gap_tag then continue
+        vardef = dictionary('x',time_tag,'y',tags[i])        
+        y = data_sample.(i)
+        if size(/type,y) eq 10 then continue   ; ignore pointers
+        ;if size(/type,y) eq 7 then continue    ; ignore strings
+        if size(/type,y) eq 8  then begin      ; ignore substructures for now
+          continue
+          ;str_element,/add,y,'time',time
+          ;store_data,name+seperator+tags[i],data=y,tagnames = '*',seperator='.'
+        endif
+        store_data,name+seperator+tags[i],data=data,vardef=vardef
+
+      endfor
+      return
+
+    endif else if size(/type,data) ne 8 then begin
+      dprint,dlevel=2,'Variable "'+name +'":  Data must be a structure or dynamicarray object'
       return
     endif
     ;printdat,data,tagnames
@@ -113,7 +133,6 @@ pro store_data,name, time,ydata,values, $
     endfor
     return
   endif
-
 
   dprint,dlevel=5,verbose,/phelp
 
@@ -267,7 +286,22 @@ pro store_data,name, time,ydata,values, $
 
   if n_elements(limits) ne 0 then *dq.lh = limits
   if n_elements(dlimits) ne 0 then *dq.dl = dlimits
-  if n_elements(data) ne 0 then begin
+  
+  if isa(data,'DYNAMICARRAY') then begin
+    if ~isa(time_tag,'STRING') then time_tag='time'
+    if ~isa(data_tag,'STRING') then data_tag='data'
+    if ~(keyword_set(silent)) then $
+      dprint,verbose=verbose,dlevel=1,verb+' tplot variable: '+strtrim(index,2)+' '+dq.name+' from DynamicArray: '+data.name
+    if ~isa(vardef,'dictionary') then vardef = dictionary('x',time_tag,'y',data_tag)
+    dh = {ddata:data,vardef:vardef}
+    *dq.dh = dh
+    dq.dtype = 4
+    sz = dh.ddata.size
+    dq.trange = (dh.ddata.slice([0,sz-1])).time
+    dq.create_time = systime(1)
+    data_quants[index] = dq
+    return
+  endif else if n_elements(data) ne 0 then begin
     undefine, save_ptrs          ;save_ptrs test later, jmm, 2017-09-25
     if not(keyword_set(silent)) then $
       dprint,verbose=verbose,dlevel=1,verb+' tplot variable: ',strtrim(index,2),' ',dq.name

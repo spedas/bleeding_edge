@@ -30,8 +30,8 @@
 ;MODIFICATION BY: 	Peter Schroeder
 ;LAST MODIFICATION:	@(#)get_data.pro	1.28 02/04/17
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-26 02:36:16 -0700 (Thu, 26 Aug 2021) $
-; $LastChangedRevision: 30252 $
+; $LastChangedDate: 2021-08-27 00:27:17 -0700 (Fri, 27 Aug 2021) $
+; $LastChangedRevision: 30259 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/get_data.pro $
 ;
 ;-
@@ -72,16 +72,36 @@ pro get_data,name, time, data, values, $
 
   index = find_handle(name)
 
-  ;if index eq 0 then begin
-  ;   auto_load,name,success=s
-  ;   if s ne 0 then index = find_handle(name,tagname)
-  ;endif
-
   if index ne 0 then begin
     dq = data_quants[index]
-    if arg_present(data) or arg_present(time) or arg_present(values) or $
-      arg_present(data_str) then begin
-      if size(/type,*dq.dh) eq 8 then begin
+    if arg_present(data) or arg_present(time) or arg_present(values) or arg_present(data_str) then begin
+      if dq.dtype eq 4 then begin
+        dh = (*dq.dh)
+        datastr_array = dh.ddata.sample()
+        tags = tag_names(datastr_array)
+        vardef = dh.vardef
+        labels = vardef.keys()
+        data_str = {}
+        for i = 0,n_elements(labels)-1 do begin
+          label = labels[i]
+          tag_num =  (where(/null,tags eq strupcase(vardef[label])))
+          dprint,dlevel=4,label +' : ' + vardef[label],tag_num
+          if isa(tag_num) then begin
+            val = datastr_array.(tag_num)   ; there is a bug here if size of datastr_array eq 1
+            if 1 && n_elements(datastr_array) gt 1 then begin   ; put time at the beginning
+              ndim = size(/n_dimension,val)
+              p = shift(indgen(ndim),1)
+              val = transpose(val,p)
+            endif
+            if arg_present(trange)  && label eq 'X' then trange = minmax(val)
+            if arg_present(data_str) then data_str = create_struct(data_str,label,val)
+            if arg_present(time)   && label eq 'X'  then time = temporary(val)
+            if arg_present(data)   && label eq 'Y'  then data = temporary(val)
+            if arg_present(values) && label eq 'V'  then values = temporary(val)
+          endif else dprint,dlevel=2, 'Label '+label+' not found in '+dh.ddata.name 
+        endfor
+        ptr_str = *dq.dh
+      endif else if size(/type,*dq.dh) eq 8 then begin
         ; 	  		mytags = tag_names_r(*dq.dh)             Too goofy to be useful!!!   see similar line in store_data
         mytags = tag_names(*dq.dh)
         for i=0,n_elements(mytags)-1 do begin
@@ -89,10 +109,28 @@ pro get_data,name, time, data, values, $
           if ptr_valid(foo) then $
             str_element,data_str,mytags[i],*foo,/add
         endfor
-      endif else data_str = *dq.dh
+        str_element,data_str,'x',value= time
+        str_element,data_str,'y',value= data
+        str_element,data_str,'v',value= values
+
+        ; New style: get time, data tag names:
+        str_element,data_str,'time',value= time
+        str_element,data_str,'data',value= data
+        
+      endif else data_str = *dq.dh     ; typically will be a string or array of strings
+      if arg_present(trange) then trange = dq.trange
+
+      ; Old style: get x,y and v tag names:
+      if size(/type,*dq.dh) eq 8 then ptr_str = *dq.dh
+
+      str_element,dq,'dtype',dtype
+
+
       if size(/type,data_str) ne 8 then $
         dprint, dlevel = 6, 'No Data Structure for: '+name
     endif
+
+
 
     if arg_present(lim_str) or arg_present(alim_str) then begin
       lim_str = *dq.lh
@@ -108,24 +146,7 @@ pro get_data,name, time, data, values, $
     extract_tags,alim_str,dlim_str,/replace
     extract_tags,alim_str,lim_str,/replace
 
-    if arg_present(trange) then trange = dq.trange
 
-    ;   if data_type(data_str) eq 7 and ndimen(data_str) eq 0 then $
-    ;      	get_data,data_str+'',data=data_str ; get links
-
-    ;   if data_type(data_str) eq 10 then data_str = *data_str
-
-    ; Old style: get x,y and v tag names:
-    str_element,data_str,'x',value= time
-    str_element,data_str,'y',value= data
-    str_element,data_str,'v',value= values
-
-    ; New style: get time, data tag names:
-    str_element,data_str,'time',value= time
-    str_element,data_str,'data',value= data
-    if size(/type,*dq.dh) eq 8 then ptr_str = *dq.dh
-
-    str_element,dq,'dtype',dtype
   endif else dprint, dlevel = 6, 'Variable '+string(name)+ ' Not Found'
   return
 end
