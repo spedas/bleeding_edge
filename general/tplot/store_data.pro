@@ -37,8 +37,8 @@
 ;
 ;CREATED BY:    Davin Larson
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-27 00:27:17 -0700 (Fri, 27 Aug 2021) $
-; $LastChangedRevision: 30259 $
+; $LastChangedDate: 2021-08-29 01:22:27 -0700 (Sun, 29 Aug 2021) $
+; $LastChangedRevision: 30267 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/store_data.pro $
 ;-
 pro store_data,name, time,ydata,values, $
@@ -291,7 +291,7 @@ pro store_data,name, time,ydata,values, $
     if ~isa(time_tag,'STRING') then time_tag='time'
     if ~isa(data_tag,'STRING') then data_tag='data'
     if ~(keyword_set(silent)) then $
-      dprint,verbose=verbose,dlevel=1,verb+' tplot variable: '+strtrim(index,2)+' '+dq.name+' from DynamicArray: '+data.name
+      dprint,verbose=verbose,dlevel=1,verb+' tplot variable: '+strtrim(index,2)+' '+dq.name+' from DynamicArray: "'+data.name+'"'
     if ~isa(vardef,'dictionary') then vardef = dictionary('x',time_tag,'y',data_tag)
     dh = {ddata:data,vardef:vardef}
     *dq.dh = dh
