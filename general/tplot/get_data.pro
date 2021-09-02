@@ -30,8 +30,8 @@
 ;MODIFICATION BY: 	Peter Schroeder
 ;LAST MODIFICATION:	@(#)get_data.pro	1.28 02/04/17
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-27 00:27:17 -0700 (Fri, 27 Aug 2021) $
-; $LastChangedRevision: 30259 $
+; $LastChangedDate: 2021-08-31 22:48:03 -0700 (Tue, 31 Aug 2021) $
+; $LastChangedRevision: 30271 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/get_data.pro $
 ;
 ;-
@@ -109,6 +109,7 @@ pro get_data,name, time, data, values, $
           if ptr_valid(foo) then $
             str_element,data_str,mytags[i],*foo,/add
         endfor
+        ; Old style: get x,y and v tag names:
         str_element,data_str,'x',value= time
         str_element,data_str,'y',value= data
         str_element,data_str,'v',value= values
@@ -116,14 +117,14 @@ pro get_data,name, time, data, values, $
         ; New style: get time, data tag names:
         str_element,data_str,'time',value= time
         str_element,data_str,'data',value= data
-        
+        ptr_str = *dq.dh
+
       endif else data_str = *dq.dh     ; typically will be a string or array of strings
       if arg_present(trange) then trange = dq.trange
 
-      ; Old style: get x,y and v tag names:
-      if size(/type,*dq.dh) eq 8 then ptr_str = *dq.dh
 
-      str_element,dq,'dtype',dtype
+      ;str_element,dq,'dtype',dtype
+      dtype = dq.dtype
 
 
       if size(/type,data_str) ne 8 then $
@@ -145,6 +146,11 @@ pro get_data,name, time, data, values, $
 
     extract_tags,alim_str,dlim_str,/replace
     extract_tags,alim_str,lim_str,/replace
+    dtype = dq.dtype
+    if arg_present(ptr_str) && ptr_valid(dq.dh) then begin
+      ptr_str = *dq.dh
+    endif
+    ;if size(/type,*dq.dh) eq 8 then ptr_str = *dq.dh
 
 
   endif else dprint, dlevel = 6, 'Variable '+string(name)+ ' Not Found'
