@@ -9,8 +9,8 @@
 ;     
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-04-03 17:44:21 -0700 (Fri, 03 Apr 2020) $
-; $LastChangedRevision: 28498 $
+; $LastChangedDate: 2021-09-03 10:47:50 -0700 (Fri, 03 Sep 2021) $
+; $LastChangedRevision: 30283 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_run_all_tests.pro $
 ;-
 
@@ -46,6 +46,7 @@ pro mms_run_all_tests
                    'mms_formation_plot_ut', $
                    'mms_event_search_ut', $
                    'mms_python_validation_ut', $
+                   'mms_pgs_validation_ut', $
                    'tplot_stuff_ut']
 
     file_out =   'mms_tests_output_'+time_string(systime(/sec), tformat='YYYYMMDD_hhmm')+'.txt'
