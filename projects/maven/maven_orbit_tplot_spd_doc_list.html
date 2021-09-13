@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Sep 10 18:16:19 2021.<P>
+<STRONG>Last modified: </STRONG>Sun Sep 12 18:15:56 2021.<P>
  
 <HR>
  
@@ -25,6 +25,8 @@ This page was created by the IDL library routine
 <br>Plots a set of [longitude,latitude] positions over a MAG-MOLA
 <LI><A HREF="#MAG_NPOLE_ORBIT">MAG_NPOLE_ORBIT</A>
 <br>Plots a set of [longitude,latitude] positions over a polar MAG map.
+<LI><A HREF="#MAVEN_ORBIT_BETA">MAVEN_ORBIT_BETA</A>
+<br>Calculates the MAVEN orbit beta angle, which is the angle between
 <LI><A HREF="#MAVEN_ORBIT_COMMON">MAVEN_ORBIT_COMMON</A>
 <br>Common block definition for maven_orbit_tplot and associated routines.
 <LI><A HREF="#MAVEN_ORBIT_EPH">MAVEN_ORBIT_EPH</A>
@@ -169,7 +171,7 @@ CREATED BY:	David L. Mitchell  04-02-03
 <A NAME="MAG_NPOLE_ORBIT">
 <H2>MAG_NPOLE_ORBIT</H2></A>
 <A HREF="#MAG_MOLA_ORBIT">[Previous Routine]</A>
-<A HREF="#MAVEN_ORBIT_COMMON">[Next Routine]</A>
+<A HREF="#MAVEN_ORBIT_BETA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mag_npole_orbit
@@ -220,9 +222,51 @@ CREATED BY:	David L. Mitchell  04-02-03
 <STRONG>(See <A href="maven_orbit_tplot/mag_npole_orbit.pro">projects/maven/maven_orbit_tplot/mag_npole_orbit.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MAVEN_ORBIT_BETA">
+<H2>MAVEN_ORBIT_BETA</H2></A>
+<A HREF="#MAG_NPOLE_ORBIT">[Previous Routine]</A>
+<A HREF="#MAVEN_ORBIT_COMMON">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   maven_orbit_beta
+PURPOSE:
+  Calculates the MAVEN orbit beta angle, which is the angle between
+  the Sun direction and the orbit plane [-90 to 90 degrees].
+
+  This routine requires SPICE.
+
+USAGE:
+  maven_orbit_beta
+
+INPUTS:
+       time:      [Optional] One or more UTC times, in any format accepted by
+                  time_double.  If not specified and MISSION is not set, then 
+                  try to get the periapsis times for all MAVEN orbits within 
+                  the tplot timespan (TRANGE_FULL).
+
+KEYWORDS:
+       RESULT:    Structure containing UTC (x) and beta angle (y).  Works as a
+                  tplot variable.
+
+       MISSION:   If set, ignore the time input, and calculate beta at
+                  periapsis for every orbit in the mission (including several
+                  weeks into the future).
+
+                  Warning: This will likely require SPICE to be reinitialized.
+
+       TPLOT:     Store the tplot variable and set some tplot options.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2021-09-12 16:30:23 -0700 (Sun, 12 Sep 2021) $
+ $LastChangedRevision: 30292 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_beta.pro $
+</PRE><P>
+<STRONG>(See <A href="maven_orbit_tplot/maven_orbit_beta.pro">projects/maven/maven_orbit_tplot/maven_orbit_beta.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MAVEN_ORBIT_COMMON">
 <H2>MAVEN_ORBIT_COMMON</H2></A>
-<A HREF="#MAG_NPOLE_ORBIT">[Previous Routine]</A>
+<A HREF="#MAVEN_ORBIT_BETA">[Previous Routine]</A>
 <A HREF="#MAVEN_ORBIT_EPH">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
