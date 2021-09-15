@@ -35,8 +35,8 @@
 ;HISTORY:
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-09-05 16:48:09 -0700 (Tue, 05 Sep 2017) $
-;$LastChangedRevision: 23891 $
+;$LastChangedDate: 2021-09-14 12:19:36 -0700 (Tue, 14 Sep 2021) $
+;$LastChangedRevision: 30294 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_thmsoc_dblog.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ pro thm_thmsoc_dblog, server_run=server_run, process_name=process_name, severity
   if keyword_set(testing) then str_message = 'Testing, please ignore!' + string(10B) + string(10B) + str_message
   if keyword_set(args) then str_message = str_message + string(10B) + string(10B) + 'Command line args: ' + args
   if server_run eq 1 then begin
-    spawn, '"/usr/local/bin/php" "/disks/socware/thmsoc_dp_current/src/php/thmsoc_dblog.php" ' + process_name + ' ' + strtrim(string(severity),2) + ' "' + str_message + '"'
+    spawn, '"/usr/bin/php" "/disks/socware/thmsoc_dp_current/src/php/thmsoc_dblog.php" ' + process_name + ' ' + strtrim(string(severity),2) + ' "' + str_message + '"'
   endif
 
 end

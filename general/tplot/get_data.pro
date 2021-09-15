@@ -29,9 +29,9 @@
 ;CREATED BY:	Davin Larson
 ;MODIFICATION BY: 	Peter Schroeder
 ;LAST MODIFICATION:	@(#)get_data.pro	1.28 02/04/17
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-31 22:48:03 -0700 (Tue, 31 Aug 2021) $
-; $LastChangedRevision: 30271 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-09-13 19:29:07 -0700 (Mon, 13 Sep 2021) $
+; $LastChangedRevision: 30293 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/get_data.pro $
 ;
 ;-
@@ -151,7 +151,7 @@ pro get_data,name, time, data, values, $
       ptr_str = *dq.dh
     endif
     ;if size(/type,*dq.dh) eq 8 then ptr_str = *dq.dh
-
+    if arg_present(trange) then trange = dq.trange
 
   endif else dprint, dlevel = 6, 'Variable '+string(name)+ ' Not Found'
   return
