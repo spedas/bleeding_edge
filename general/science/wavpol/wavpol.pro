@@ -101,8 +101,8 @@
 ;	 100%. Remembercomparing two straight lines yields 100% polarisation.
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-11-15 18:20:42 -0800 (Thu, 15 Nov 2018) $
-; $LastChangedRevision: 26129 $
+; $LastChangedDate: 2021-09-15 11:47:33 -0700 (Wed, 15 Sep 2021) $
+; $LastChangedRevision: 30295 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/wavpol/wavpol.pro $
 ;-
 pro wavpol,ct,Bx,By,Bz,timeline,freqline,powspec,degpol,waveangle,elliptict,helict,pspec3,$
@@ -467,8 +467,8 @@ samp_per=samp_per_input, nopfft=nopfft_input,steplength = steplength_input, bin_
     if zerocount ne 0 then begin
       timeline[wherezero] = !values.d_nan
       powspec[wherezero, *] = !values.d_nan
-      elliptict[wherezero, *] = !values.d_nan
-      helict[wherezero, *] = !values.d_nan
+      if size(elliptict,/type) eq 5 then elliptict[wherezero, *] = !values.d_nan else elliptict = make_array(n_elements(powspec[*,0]),n_elements(powspec[0,*]),value=!values.d_nan)
+      if size(helict,/type) eq 5 then helict[wherezero, *] = !values.d_nan else helict = make_array(n_elements(powspec[*,0]),n_elements(powspec[0,*]),value=!values.d_nan)
       pspecx[wherezero, *] = !values.d_nan
       pspecy[wherezero, *] = !values.d_nan
       pspecz[wherezero, *] = !values.d_nan

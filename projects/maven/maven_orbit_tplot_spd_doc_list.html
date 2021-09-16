@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Sep 14 18:15:57 2021.<P>
+<STRONG>Last modified: </STRONG>Wed Sep 15 18:16:03 2021.<P>
  
 <HR>
  
@@ -231,7 +231,9 @@ CREATED BY:	David L. Mitchell  04-02-03
 PROCEDURE:   maven_orbit_beta
 PURPOSE:
   Calculates the MAVEN orbit beta angle, which is the angle between
-  the Sun direction and the orbit plane [-90 to 90 degrees].
+  the Sun direction and the orbit plane [-90 to 90 degrees].  When beta
+  is positive, the orbit normal (P x V, where P is position and V is 
+  velocity) points toward the Sun-facing hemisphere.
 
   This routine requires SPICE.
 
@@ -248,17 +250,18 @@ KEYWORDS:
        RESULT:    Structure containing UTC (x) and beta angle (y).  Works as a
                   tplot variable.
 
-       MISSION:   If set, ignore the time input, and calculate beta at
-                  periapsis for every orbit in the mission (including several
-                  weeks into the future).
+       MISSION:   Ignore the time input, and calculate beta at periapsis for
+                  every orbit in the mission that has SPK coverage (including 
+                  up to several weeks into the future).
 
                   Warning: This will likely require SPICE to be reinitialized.
 
        TPLOT:     Store the tplot variable and set some tplot options.
+                  Default = 1.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-09-12 16:30:23 -0700 (Sun, 12 Sep 2021) $
- $LastChangedRevision: 30292 $
+ $LastChangedDate: 2021-09-15 11:55:02 -0700 (Wed, 15 Sep 2021) $
+ $LastChangedRevision: 30296 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_beta.pro $
 </PRE><P>
 <STRONG>(See <A href="maven_orbit_tplot/maven_orbit_beta.pro">projects/maven/maven_orbit_tplot/maven_orbit_beta.pro</A>)</STRONG><P>
