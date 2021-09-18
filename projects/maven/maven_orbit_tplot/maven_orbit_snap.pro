@@ -140,8 +140,8 @@
 ;                 last color.  Default is 6 (red) for all.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-06-03 12:53:11 -0700 (Thu, 03 Jun 2021) $
-; $LastChangedRevision: 30017 $
+; $LastChangedDate: 2021-09-17 08:00:51 -0700 (Fri, 17 Sep 2021) $
+; $LastChangedRevision: 30300 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -242,7 +242,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     ok = 1
   endif
   if ((not ok) and keyword_set(landers)) then begin
-    nsites = 9
+    nsites = 10
     sites = fltarr(2,nsites)
     sites[*,0] = [311.778,  22.697]  ; Viking 1 Lander (1976-1982)
     sites[*,1] = [134.010,  48.269]  ; Viking 2 Lander (1976-1980)
@@ -253,8 +253,9 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     sites[*,6] = [137.200,  -4.600]  ; Curiosity Rover (MSL 2012-)
     sites[*,7] = [135.000,   4.500]  ; InSight Lander (2018-)
     sites[*,8] = [ 77.500,  18.400]  ; Perserverence Rover (2021-)
+    sites[*,9] = [110.318,  24.748]  ; Zhurong Rover (Tianwen-1, Jun 2021)
     if (size(slab,/type) gt 0) then dolab = keyword_set(slab) else dolab = 1
-    if (dolab) then slab = ['V1','V2','Pa','S','O','Ph','C','I','Pe'] else slab = 0
+    if (dolab) then slab = ['V1','V2','Pa','S','O','Ph','C','I','Pe','Z'] else slab = 0
   endif
   ncol = n_elements(scol)
   if (ncol eq 1) then defcol = scol else defcol = 6
