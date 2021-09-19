@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-31 14:03:08 -0700 (Mon, 31 May 2021) $
-; $LastChangedRevision: 30016 $
+; $LastChangedDate: 2021-09-17 21:08:27 -0700 (Fri, 17 Sep 2021) $
+; $LastChangedRevision: 30302 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_batch.pro $
 ; mvn_sep_batch: to be run from a cron job typically
 !quiet=1
@@ -25,7 +25,9 @@ mvn_save_reduce_timeres,/mag,resstr='1sec'
 mvn_save_reduce_timeres,/mag,resstr='30sec'
 ;mvn_sep_gen_plots,init=-10
 mvn_sep_makefile;,/init
-mvn_sep_save_reduce_timeres;,/init
+mvn_sep_save_reduce_timeres,resstr='32sec'
+mvn_sep_save_reduce_timeres,resstr='5min'
+mvn_sep_save_reduce_timeres,resstr='01hr'
 generate_checksums,root_data_dir()+'maven/data/sci/sep/',dir_pattern='*.{sav,cdf}',file_pattern='*.???',/include_dir
 ;mvn_sta_tplot_restore,trange=[time_double('2014-9-30'),systime(1)],/create    ;  Since MOI
 ;mvn_sta_tplot_restore,trange=systime(1) + [-130,0] * 86400L ,/create            ; Last 30 days only

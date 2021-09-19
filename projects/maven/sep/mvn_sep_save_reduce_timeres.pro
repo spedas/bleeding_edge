@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-07-27 21:41:52 -0700 (Tue, 27 Jul 2021) $
-; $LastChangedRevision: 30145 $
+; $LastChangedDate: 2021-09-17 21:08:27 -0700 (Fri, 17 Sep 2021) $
+; $LastChangedRevision: 30302 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_save_reduce_timeres.pro $
 
 ;20160623 Ali
@@ -20,7 +20,8 @@ function mvn_sep_att_correction,data,res,tr,fltatt=fltatt ;throws out att actuat
     dataflt.att=data.att
     dataflt.duration=data.duration
     data=dataflt
-    data[where(data.att eq 0.,/null)].att=!values.f_nan ;turning att state 0b to fNaN
+    watt0=where(data.att eq 0.,/null)
+    if n_elements(watt0) gt 0 then data[watt0].att=!values.f_nan ;turning att state 0b to fNaN
     if nw ne 0 then data[w]=fill_nan(data[0])
   endif else begin ;gets rid of .5res on each side of an att flip to preserve single att state at each time bin
     if nw ne 0 then begin
@@ -37,11 +38,13 @@ function mvn_sep_att_correction,data,res,tr,fltatt=fltatt ;throws out att actuat
   data.att=dataatt
   data.rate=datarate
   data.time=centertime
+  wmapid0=where(data.mapid eq 0,/null)
+  if n_elements(wmapid0) gt 0 then data[wmapid0].mapid=max(data.mapid) ;getting rid of mapid=0 for the loader routines to work as expected
   ntimes=n_elements(centertime)
   data.trange=transpose(rebin(centertime,[ntimes,2]))+rebin(res/2.*[-1.,1.],[2,ntimes])
-
   return,data
 end
+
 
 function mvn_sep_att_arc,data ;keeps burst (archive) att states in the lowres files
   arc=replicate({time:data[0].time,att:data[0].att,duration:data[0].duration},n_elements(data))
@@ -53,11 +56,10 @@ end
 
 
 pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,timestamp=timestamp,verbose=verbose,$
-  resstr=resstr,resolution=res,description=description,hourly=hourly,force_make=force_make
+  resstr=resstr,resolution=res,description=description,force_make=force_make
 
   if keyword_set(init) then trange0=[time_double('2013-12-03'),systime(1)] else trange0=timerange(trange0)
-  if keyword_set(hourly) then resstr='01hr'
-  if ~keyword_set(resstr) then resstr='5min'
+  if ~keyword_set(resstr) then resstr='32sec'
   if ~keyword_set(res) then begin
     res=double(resstr)
     if strpos(resstr,'min') ge 0 then res *= 60
@@ -66,21 +68,21 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
   endif
 
   fullres_fmt='maven/data/sci/sep/l1/sav/YYYY/MM/mvn_sep_l1_YYYYMMDD_1day.sav'
+  if resstr eq '5min' then fullres_fmt='maven/data/sci/sep/l1/sav_32sec/YYYY/MM/mvn_sep_l1_YYYYMMDD_32sec.sav'
   if resstr eq '01hr' then fullres_fmt='maven/data/sci/sep/l1/sav_5min/YYYY/MM/mvn_sep_l1_YYYYMMDD_5min.sav'
   redures_fmt='maven/data/sci/sep/l1/sav_'+resstr+'/YYYY/MM/mvn_sep_l1_YYYYMMDD_'+resstr+'.sav'
 
-  day = 86400L
-  trange = day* double(round( (timerange((trange0+ [ 0,day-1]) /day)) ))         ; round to days
-  nd = round( (trange[1]-trange[0]) /day)
+  day=86400L
+  dayres=day/res
+  trange=day*double(round((timerange((trange0+[0,day-1])/day)))) ;round to days
+  nd=round((trange[1]-trange[0])/day)
 
   for i=0L,nd-1 do begin
-    tr = trange[0] + [i,i+1] * day
-    tn = tr[0]
+    tr=trange[0]+[i,i+1]*day
+    tn=tr[0]
     prereq_files=''
-
     fullres_file=mvn_pfp_file_retrieve(fullres_fmt,trange=tn,/daily_names)
     redures_file=mvn_pfp_file_retrieve(redures_fmt,trange=tn,/daily_names)
-
     dprint,dlevel=3,fullres_file
 
     if tr[0] gt time_double('2014-07-17') and tr[0] lt time_double('2014-9-21') then begin
@@ -94,54 +96,49 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
     endif
 
     append_array,prereq_files,fullres_file
-
-    prereq_info = file_info(prereq_files)
-    prereq_timestamp = max([prereq_info.mtime, prereq_info.ctime])
-
-    target_info = file_info(redures_file)
-    target_timestamp =  target_info.mtime
-
-    if keyword_set(timestamp) then target_timestamp = time_double(timestamp) < target_timestamp
-
-    if ~keyword_set(force_make) && (prereq_timestamp lt target_timestamp) then continue    ; skip if lowres L1 does not need to be regenerated
+    prereq_info=file_info(prereq_files)
+    target_info=file_info(redures_file)
+    prereq_timestamp=max([prereq_info.mtime,prereq_info.ctime])
+    target_timestamp=target_info.mtime
+    if keyword_set(timestamp) then target_timestamp=time_double(timestamp) < target_timestamp
+    if ~keyword_set(force_make) && (prereq_timestamp lt target_timestamp) then continue ;skip if lowres L1 does not need to be regenerated
     dprint,verbose=verbose,dlevel=3,'Generating new file: '+redures_file
 
-    f = fullres_file
+    f=fullres_file
     if file_test(/regular,f) eq 0 then continue
     dprint,verbose=verbose,dlevel=2,'Loading '+file_info_string(f)
     restore,f
     source_filename=f
 
-    if (resstr eq '5min') || (resstr eq '32sec') then begin
-      if n_elements(s1_svy) gt 1 then s1_svy=mvn_sep_att_correction(s1_svy,res,tr,/fltatt) else s1_svy=0
-      if n_elements(s2_svy) gt 1 then s2_svy=mvn_sep_att_correction(s2_svy,res,tr,/fltatt) else s2_svy=0
+    if resstr eq '32sec' then begin
+      if n_elements(s1_svy) gt 1 then s1_svy=mvn_sep_att_correction(s1_svy,res,tr,/fltatt)
+      if n_elements(s2_svy) gt 1 then s2_svy=mvn_sep_att_correction(s2_svy,res,tr,/fltatt)
 
       if keyword_set(s1_arc) then s1_arc=mvn_sep_att_arc(s1_arc)
       if keyword_set(s2_arc) then s2_arc=mvn_sep_att_arc(s2_arc)
     endif else begin
       if n_elements(s1_svy) gt 1 then s1_svy=average_hist(s1_svy,s1_svy.time,binsize=res,range=tr,/nan)
       if n_elements(s2_svy) gt 1 then s2_svy=average_hist(s2_svy,s2_svy.time,binsize=res,range=tr,/nan)
-      if n_elements(ap24) gt 24 then ap24=average_hist(ap24,ap24.time,binsize=res,range=tr,/nan) else ap24=0
     endelse
 
-    if n_elements(s1_arc) gt 1 then s1_arc=average_hist(s1_arc,s1_arc.time,binsize=res,range=tr,/nan) else s1_arc=0
-    if n_elements(s2_arc) gt 1 then s2_arc=average_hist(s2_arc,s2_arc.time,binsize=res,range=tr,/nan) else s2_arc=0
+    if n_elements(s1_arc) gt 1 then s1_arc=average_hist(s1_arc,s1_arc.time,binsize=res,range=tr,/nan)
+    if n_elements(s2_arc) gt 1 then s2_arc=average_hist(s2_arc,s2_arc.time,binsize=res,range=tr,/nan)
 
-    if n_elements(s1_hkp) gt 1 then s1_hkp=average_hist(s1_hkp,s1_hkp.time,binsize=res,range=tr,/nan) else s1_hkp=0
-    if n_elements(s2_hkp) gt 1 then s2_hkp=average_hist(s2_hkp,s2_hkp.time,binsize=res,range=tr,/nan) else s2_hkp=0
+    if n_elements(s1_hkp) gt dayres then s1_hkp=average_hist(s1_hkp,s1_hkp.time,binsize=res,range=tr,/nan)
+    if n_elements(s2_hkp) gt dayres then s2_hkp=average_hist(s2_hkp,s2_hkp.time,binsize=res,range=tr,/nan)
 
-    if n_elements(s1_nse) gt 1 then s1_nse=average_hist(s1_nse,s1_nse.time,binsize=res,range=tr,/nan) else s1_nse=0
-    if n_elements(s2_nse) gt 1 then s2_nse=average_hist(s2_nse,s2_nse.time,binsize=res,range=tr,/nan) else s2_nse=0
+    if n_elements(s1_nse) gt dayres then s1_nse=average_hist(s1_nse,s1_nse.time,binsize=res,range=tr,/nan)
+    if n_elements(s2_nse) gt dayres then s2_nse=average_hist(s2_nse,s2_nse.time,binsize=res,range=tr,/nan)
 
-    if n_elements(m1_hkp) gt 1 then m1_hkp=average_hist(m1_hkp,m1_hkp.time,binsize=res,range=tr,/nan) else m1_hkp=0
-    if n_elements(m2_hkp) gt 1 then m2_hkp=average_hist(m2_hkp,m2_hkp.time,binsize=res,range=tr,/nan) else m2_hkp=0
+    if n_elements(m1_hkp) gt dayres then m1_hkp=average_hist(m1_hkp,m1_hkp.time,binsize=res,range=tr,/nan)
+    if n_elements(m2_hkp) gt dayres then m2_hkp=average_hist(m2_hkp,m2_hkp.time,binsize=res,range=tr,/nan)
 
-    if n_elements(ap20) gt 1 then ap20=average_hist(ap20,ap20.time,binsize=res,range=tr,/nan) else ap20=0
-    if n_elements(ap21) gt 1 then ap21=average_hist(ap21,ap21.time,binsize=res,range=tr,/nan) else ap21=0
-    if n_elements(ap22) gt 1 then ap22=average_hist(ap22,ap22.time,binsize=res,range=tr,/nan) else ap22=0
-    if n_elements(ap23) gt 1 then ap23=average_hist(ap23,ap23.time,binsize=res,range=tr,/nan) else ap23=0
-    ;  if n_elements(ap24) gt 1 ;lower cadence than 5min
-    ;  if n_elements(ap25) gt 1 ;apid not available
+    if n_elements(ap20) gt dayres then ap20=average_hist(ap20,ap20.time,binsize=res,range=tr,/nan)
+    if n_elements(ap21) gt dayres then ap21=average_hist(ap21,ap21.time,binsize=res,range=tr,/nan)
+    if n_elements(ap22) gt dayres then ap22=average_hist(ap22,ap22.time,binsize=res,range=tr,/nan)
+    if n_elements(ap23) gt dayres then ap23=average_hist(ap23,ap23.time,binsize=res,range=tr,/nan)
+    if n_elements(ap24) gt dayres then ap24=average_hist(ap24,ap24.time,binsize=res,range=tr,/nan) ;lower cadence than 5min
+    ;if n_elements(ap25) gt 1 ;apid not available
 
     file_mkdir2,file_dirname(redures_file)
     save,filename=redures_file,verbose=verbose,s1_hkp,s1_svy,s1_arc,s1_nse,s2_hkp,s2_svy,s2_arc,s2_nse,m1_hkp,m2_hkp,$

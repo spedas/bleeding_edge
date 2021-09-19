@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-07-27 21:41:52 -0700 (Tue, 27 Jul 2021) $
-; $LastChangedRevision: 30145 $
+; $LastChangedDate: 2021-09-17 21:08:27 -0700 (Fri, 17 Sep 2021) $
+; $LastChangedRevision: 30302 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_var_restore.pro $
 
 pro mvn_sep_var_restore,pathname,trange=trange,verbose=verbose,download_only=download_only,prereq_info=prereq_temp,filename=files,no_finish=no_finish, $
@@ -24,7 +24,7 @@ pro mvn_sep_var_restore,pathname,trange=trange,verbose=verbose,download_only=dow
   if ~keyword_set(files) then files = mvn_pfp_file_retrieve(pn,/daily,trange=trange,source=source,verbose=verbose,/valid_only,no_update=0,last_version=0)
 
   if ~keyword_set(files) then begin
-    dprint,verbose=verbose,dlevel=2,'No SEP L1 files were found for the selected time range, returning...'
+    dprint,verbose=verbose,dlevel=2,pn,'No SEP L1 files were found for the selected time range, returning...'
     return
   endif
 
