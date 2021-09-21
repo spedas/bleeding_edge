@@ -130,8 +130,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-06-25 16:10:53 -0700 (Fri, 25 Jun 2021) $
-; $LastChangedRevision: 30086 $
+; $LastChangedDate: 2021-09-20 11:12:11 -0700 (Mon, 20 Sep 2021) $
+; $LastChangedRevision: 30308 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2iono.pro $
 ;-
 
@@ -283,16 +283,18 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
       par_idx_low = where(par_array lt 1)
     
       if par_idx_low[0] ne -1L then begin
-          message, /continue, 'par has value less than 1'
+          message, /continue, 'par (Kp) has value less than 1'
           return
       endif
     
       par_idx_high = where(par_array gt 7)
     
       if par_idx_high[0] ne -1L then begin
-          message, /continue, 'par has value greater than 7'
+          message, /continue, 'par (Kp) has value greater than 7'
           return
       endif
+      
+      par_array=kp2iopt(par_array)   ; Convert Kp values to iopt values for T89 model
     endif else if external_model2 ne 'none' then begin
        ;these switches used to tell the
        ;IDL/GEOPACK trace function which

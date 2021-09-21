@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Sep 18 03:15:52 2021.<P>
+<STRONG>Last modified: </STRONG>Mon Sep 20 18:15:58 2021.<P>
  
 <HR>
  
@@ -19,6 +19,7 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>external/IDL_GEOPACK/t89</H1>
+<LI><A HREF="#KP2IOPT">KP2IOPT</A>
 <LI><A HREF="#T89">T89</A>
 <LI><A HREF="#T89_TEST">T89_TEST</A>
 <LI><A HREF="#TT89">TT89</A>
@@ -27,8 +28,49 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="KP2IOPT">
+<H2>KP2IOPT</H2></A>
+<A HREF="#T89">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Function: kp2iopt
+
+Purpose: Convert a tplot or array Kp index variable to iopt values suitable for passing to the T89 field
+         modeling or tracing routines.
+         
+         Input Kp values will be in the range of 0 to 6, and may have a fractional part indicating an increasing or decreasing index. 
+         For example, 2.33333 represents 2+,  2.66666 represents 3-. iopt output values will be in the range 1 to 7.
+         
+
+Input: Kp values (e.g. from noaa_load_kp)
+
+Return value: IOPT values suitable for passing to the GEOPACK T89 tracing and modeling routines.  Represented as double precision floating
+        point for compatibility with GEOPACK library calling sequences, but may or may not be rounded to integer values depending
+        on whether the kp_plus1 keyword is specified.
+        
+
+Keywords:
+         kp:  (input) A scalar  or array of Kp values, or name of a tplot variable giving the Kp index values
+         
+         varname (Required if kp is a tplot variable): A string specifying a tplot position variable.  Output iopt values will be interpolated to the 'varname' times
+                  using nearest-neighbor interpolation.
+
+         plus1: (optional)  If specified, overrides the default behavior of rounding iopt to the nearest integer, and
+                 instead sets iopt to kp+1, preserving any fractional part.
+
+Example:
+
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
+ $LastChangedRevision: 30156 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/ta15/tomni2bindex.pro $
+</PRE><P>
+<STRONG>(See <A href="t89/kp2iopt.pro">external/IDL_GEOPACK/t89/kp2iopt.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="T89">
 <H2>T89</H2></A>
+<A HREF="#KP2IOPT">[Previous Routine]</A>
 <A HREF="#T89_TEST">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -110,8 +152,8 @@ Notes:
       6371.2 = the value used in the GEOPACK FORTRAN code for Re
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-06-24 16:12:40 -0700 (Thu, 24 Jun 2021) $
- $LastChangedRevision: 30083 $
+ $LastChangedDate: 2021-09-20 11:10:27 -0700 (Mon, 20 Sep 2021) $
+ $LastChangedRevision: 30307 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t89/t89.pro $
 </PRE><P>
 <STRONG>(See <A href="t89/t89.pro">external/IDL_GEOPACK/t89/t89.pro</A>)</STRONG><P>
@@ -205,8 +247,8 @@ Keywords:
         procedure to work
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-03-26 15:32:36 -0700 (Fri, 26 Mar 2021) $
- $LastChangedRevision: 29828 $
+ $LastChangedDate: 2021-09-20 11:10:27 -0700 (Mon, 20 Sep 2021) $
+ $LastChangedRevision: 30307 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t89/tt89.pro $
 </PRE><P>
 <STRONG>(See <A href="t89/tt89.pro">external/IDL_GEOPACK/t89/tt89.pro</A>)</STRONG><P>

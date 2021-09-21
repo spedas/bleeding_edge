@@ -77,8 +77,8 @@
 ;      6371.2 = the value used in the GEOPACK FORTRAN code for Re
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-06-24 16:12:40 -0700 (Thu, 24 Jun 2021) $
-; $LastChangedRevision: 30083 $
+; $LastChangedDate: 2021-09-20 11:10:27 -0700 (Mon, 20 Sep 2021) $
+; $LastChangedRevision: 30307 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t89/t89.pro $
 ;-
 
@@ -136,6 +136,8 @@ function t89, tarray, rgsm_array, kp=kp, period=period, igrf_only=igrf_only,$
       message, /continue, 'Kp has value greater than 6'
       return, -1L
   endif
+  
+  iopt=kp2iopt(kp_array)
 
   if not keyword_set(period) then period2 = 600.0D  $
   else period2 = double(period)
@@ -302,7 +304,7 @@ function t89, tarray, rgsm_array, kp=kp, period=period, igrf_only=igrf_only,$
 
       ;calculate external contribution
       ;iopt = kp+1
-      geopack_t89, kp_array[id]+1, rgsm_x, rgsm_y, rgsm_z, t89_bx, t89_by, t89_bz, tilt = tilt
+      geopack_t89, iopt[id], rgsm_x, rgsm_y, rgsm_z, t89_bx, t89_by, t89_bz, tilt = tilt
       
       ;total field   
       if keyword_set(igrf_only) then begin

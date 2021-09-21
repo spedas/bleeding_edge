@@ -218,15 +218,15 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-06-25 16:10:53 -0700 (Fri, 25 Jun 2021) $
-; $LastChangedRevision: 30086 $
+; $LastChangedDate: 2021-09-20 11:15:55 -0700 (Mon, 20 Sep 2021) $
+; $LastChangedRevision: 30309 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/ttrace2iono.pro $
 ;-
 
 pro ttrace2iono, in_pos_tvar, newname = newname, trace_var_name = trace_tvar, in_coord = in_coord, $
     out_coord = out_coord, internal_model = internal_model, external_model = external_model, $
     south = south, km = km, par=par, period=period, error = error, standard_mapping = standard_mapping, $
-    r0=r0, rlim=rlim, noboundary=noboundary, storm=storm, pdyn=pdyn, dsti=dsti, yimf=yimf, zimf=zimf, $
+    r0=r0, rlim=rlim, noboundary=noboundary, storm=storm, kp=kp, pdyn=pdyn, dsti=dsti, yimf=yimf, zimf=zimf, $
     g1=g1, g2=g2, w1=w1, w2=w2, w3=w3, w4=w4, w5=w5, w6=w6, get_tilt=get_tilt, set_tilt=set_tilt, $
     add_tilt=add_tilt, get_nperiod=get_nperiod, geopack_2008=geopack_2008, exact_tilt_times=exact_tilt_times, $
     ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, $
@@ -266,6 +266,17 @@ pro ttrace2iono, in_pos_tvar, newname = newname, trace_var_name = trace_tvar, in
        tinterpol_mxn,par_in,in_pos_tvar,newname='par_out'
        get_data,'par_out',data=dat
        par_in = dat.y
+    endif
+    
+    if n_elements(kp) gt 0 then begin
+      if n_elements(par) gt 0 then begin
+        message,/continue,'Both kp and par values supplied, using kp.'
+      endif
+      
+      kp_dat=tsy_valid_param(kp,in_pos_tvar,/nearest_neighbor)
+      if(size(kp_dat, /n_dim) eq 0 && kp_dat[0] eq -1L) then return
+
+      par_in = kp_dat
     endif
     
     if n_elements(pdyn) gt 0 then begin

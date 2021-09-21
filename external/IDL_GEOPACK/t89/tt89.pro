@@ -63,8 +63,8 @@
 ;        procedure to work
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-03-26 15:32:36 -0700 (Fri, 26 Mar 2021) $
-; $LastChangedRevision: 29828 $
+; $LastChangedDate: 2021-09-20 11:10:27 -0700 (Mon, 20 Sep 2021) $
+; $LastChangedRevision: 30307 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t89/tt89.pro $
 ;-
 
@@ -101,7 +101,7 @@ pro tt89, pos_gsm_tvar, kp=kp, period=period, get_nperiod=get_nperiod, newname=n
           endif
           
           ;make sure there are an appropriate number of kp values in the array
-          tinterpol_mxn,kp,var_names[0],newname='kp_int_temp',error=e
+          tinterpol_mxn,kp,var_names[0],newname='kp_int_temp',/nearest_neighbor,/ignore_nans,error=e
 
           if e ne 0 then begin
               get_data,'kp_int_temp',data=d_kp

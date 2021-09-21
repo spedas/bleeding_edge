@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Sep 18 03:15:52 2021.<P>
+<STRONG>Last modified: </STRONG>Mon Sep 20 18:15:58 2021.<P>
  
 <HR>
  
@@ -34,7 +34,7 @@ MVN_FILE_SOURCE( [DEFAULT_SOURCE] )</A>
 <LI><A HREF="#MVN_NADIR">MVN_NADIR</A>
 <br>Determines the direction of nadir at the position of the spacecraft in
 <LI><A HREF="#MVN_ORBIT_NUM">MVN_ORBIT_NUM</A>
-<br>returns database structure that contains orbit information about each MAVEN orbit.
+<br>Returns database structure that contains orbit information about each MAVEN orbit.
 <LI><A HREF="#MVN_PFP_FILE_NEXT_REVISION">MVN_PFP_FILE_NEXT_REVISION</A>
 <LI><A HREF="#MVN_PFP_FILE_RETRIEVE">MVN_PFP_FILE_RETRIEVE</A>
 <LI><A HREF="#MVN_PFP_SPD_DOWNLOAD">MVN_PFP_SPD_DOWNLOAD</A>
@@ -407,23 +407,34 @@ CREATED BY:    David L. Mitchell
 NAME: MVN_ORBIT_NUM
  function: mvn_orbit_num()
 PURPOSE:
- returns database structure that contains orbit information about each MAVEN orbit.
+ Returns database structure that contains orbit information about each MAVEN orbit.
  Alternatively - Returns the time if given the orbit number or returns the orbit number if given the time.
+
+ This routine uses the NAIF convention, where the orbit number increments at periapsis.  Two other
+ conventions are in use for MAVEN: (1) orbit number increments at the inbound periapsis segment
+ boundary (LM and IUVS), and (2) orbit number increments at apoapsis (NGIMS).  All three conventions
+ agree at periapsis.
   
 Typical CALLING SEQUENCE:
   orbdata = mvn_orbit_num()
   store_data,'orbnum',orbdata.peri_time,orbdata.num,dlimit={ytitle:'Orbit'}
   tplot,var_label='orbnum'
 
+KEYWORDS:
+  VERBOSE:        Message level for dprint.
+
+  RELOAD_TIME:    Interval at which to sync local files with remote server.  Default = 3600 sec.
+
+  REFRESH:        Ignore RELOAD_TIME and check the remote server anyway.
   
 TYPICAL USAGE:
   print, mvn_orbit_num(time=systime(1) )          ;  prints current MAVEN orbit number
   print ,  time_string( mvn_orbit_num(orbnum = 6.0)  ; prints the time of periapsis of orbit number 6
   timebar, mvn_orbit_num( orbnum = indgen(300) )   ; plots a vertical line at periapsis for the first 300 orbits
 Author: Davin Larson  - October, 2014
- $LastChangedBy: jimm $
- $LastChangedDate: 2017-02-02 15:24:16 -0800 (Thu, 02 Feb 2017) $
- $LastChangedRevision: 22720 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2021-09-20 09:12:57 -0700 (Mon, 20 Sep 2021) $
+ $LastChangedRevision: 30304 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_orbit_num.pro $
 </PRE><P>
 <STRONG>(See <A href="general/mvn_orbit_num.pro">projects/maven/general/mvn_orbit_num.pro</A>)</STRONG><P>

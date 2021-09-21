@@ -2,23 +2,34 @@
 ;NAME: MVN_ORBIT_NUM
 ; function: mvn_orbit_num()
 ;PURPOSE:
-; returns database structure that contains orbit information about each MAVEN orbit.
+; Returns database structure that contains orbit information about each MAVEN orbit.
 ; Alternatively - Returns the time if given the orbit number or returns the orbit number if given the time.
+;
+; This routine uses the NAIF convention, where the orbit number increments at periapsis.  Two other
+; conventions are in use for MAVEN: (1) orbit number increments at the inbound periapsis segment
+; boundary (LM and IUVS), and (2) orbit number increments at apoapsis (NGIMS).  All three conventions
+; agree at periapsis.
 ;  
 ;Typical CALLING SEQUENCE:
 ;  orbdata = mvn_orbit_num()
 ;  store_data,'orbnum',orbdata.peri_time,orbdata.num,dlimit={ytitle:'Orbit'}
 ;  tplot,var_label='orbnum'
-
+;
+;KEYWORDS:
+;  VERBOSE:        Message level for dprint.
+;
+;  RELOAD_TIME:    Interval at which to sync local files with remote server.  Default = 3600 sec.
+;
+;  REFRESH:        Ignore RELOAD_TIME and check the remote server anyway.
 ;  
 ;TYPICAL USAGE:
 ;  print, mvn_orbit_num(time=systime(1) )          ;  prints current MAVEN orbit number
 ;  print ,  time_string( mvn_orbit_num(orbnum = 6.0)  ; prints the time of periapsis of orbit number 6
 ;  timebar, mvn_orbit_num( orbnum = indgen(300) )   ; plots a vertical line at periapsis for the first 300 orbits
 ;Author: Davin Larson  - October, 2014
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-02-02 15:24:16 -0800 (Thu, 02 Feb 2017) $
-; $LastChangedRevision: 22720 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2021-09-20 09:12:57 -0700 (Mon, 20 Sep 2021) $
+; $LastChangedRevision: 30304 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_orbit_num.pro $
 ;-
 
@@ -61,26 +72,27 @@ end
 
 
 
-function mvn_orbit_num,orbnum=orbnum,time=time,verbose=verbose,reload_time=reload
+function mvn_orbit_num,orbnum=orbnum,time=time,verbose=verbose,reload_time=reload,refresh=refresh
 
 common mvn_orbit_num_com,alldat,time_cached,filenames
-if ~keyword_set(time_cached) then time_cached=1d
+if (~keyword_set(time_cached) or keyword_set(refresh)) then time_cached=1d
 if ~keyword_set(reload) then reload = 3600    ; default to one hour
-if (systime(1) - time_cached) gt reload then begin   ; generate no more than once per hour
+if ((systime(1) - time_cached) gt reload) then begin   ; generate no more than once per hour
   if ~keyword_set(source) then source = spice_file_source(preserve_mtime=1,verbose=verbose,ignore_filesize=1,valid_only=1,last_version=0)
-  dprint,dlevel=2,verbose=verbose,'Checking server: ' +source.remote_data_dir+' for new orbit files.'
+  if ~source.no_server then dprint,dlevel=2,verbose=verbose,'Checking server: ' +source.remote_data_dir+' for new orbit files.' $
+                       else dprint,dlevel=2,verbose=verbose,'No server: using local orbit files.'
   filenames = spd_download_plus(remote_file = source.remote_data_dir+'MAVEN/kernels/spk/maven_orb_rec_??????_??????_v?.orb',  $
                            local_path = source.local_data_dir+'MAVEN/kernels/spk/', $
-                           file_mode = '666'o, dir_mode = '777'o) ; this algorithm will fail if a version 2 file appears.
+                           file_mode = '666'o, dir_mode = '777'o, no_server = source.no_server) ; this algorithm will fail if a version 2 file appears.
   filenames = [filenames,spd_download_plus(remote_file = source.remote_data_dir+'MAVEN/kernels/spk/maven_orb_rec.orb', $
                                       local_path = source.local_data_dir+'MAVEN/kernels/spk/', $
-                                      file_mode = '666'o, dir_mode = '777'o)] ; Recent reconstructed orbits
+                                      file_mode = '666'o, dir_mode = '777'o, no_server = source.no_server)] ; Recent reconstructed orbits
   filenames = [filenames,spd_download_plus(remote_file = source.remote_data_dir+'MAVEN/kernels/spk/maven_orb.orb', $
                                       local_path = source.local_data_dir+'MAVEN/kernels/spk/', $
-                                      file_mode = '666'o, dir_mode = '777'o)]              ; predicted orbits
+                                      file_mode = '666'o, dir_mode = '777'o, no_server = source.no_server)]              ; predicted orbits
   filenames = [filenames,spd_download_plus(remote_file = source.remote_data_dir+'MAVEN/kernels/spk/maven_orb.orb.long', $
                                       local_path = source.local_data_dir+'MAVEN/kernels/spk/', $
-                                      file_mode = '666'o, dir_mode = '777'o)]         ; long term predicts
+                                      file_mode = '666'o, dir_mode = '777'o, no_server = source.no_server)]         ; long term predicts
 ;  dprint,dlevel=2, n_elements(filenames) gt 1 ? transpose(filenames) : filenames
   if debug(3,verbose) then dprint,dlevel=3,verbose=verbose, file_checksum(filenames,/add_mtime,verbose=0)
   
