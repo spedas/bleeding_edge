@@ -3,7 +3,7 @@
 ;  thm_crib_esa
 ;
 ;Purpose:
-;  Demonstrate basice examples of accessing ESA particle data.
+;  Demonstrate basic examples of accessing ESA particle data.
 ;  
 ;See also:
 ;  thm_crib_esa_bgnd_remove
@@ -11,9 +11,9 @@
 ;  thm_crib_part_slice2d
 ;
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2014-11-21 18:38:50 -0800 (Fri, 21 Nov 2014) $
-;$LastChangedRevision: 16268 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2021-09-24 15:13:35 -0700 (Fri, 24 Sep 2021) $
+;$LastChangedRevision: 30318 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/examples/basic/thm_crib_esa.pro $
 ;
 ;-

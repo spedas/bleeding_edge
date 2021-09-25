@@ -94,7 +94,7 @@ if keyword_set(t2) then tmpmax=min(abs(times-time_double(t2)),idxmax) else idxma
 
 
 ytitle = funct+"_"+routine
-last_time = (dat.time+dat.end_time)/2.
+if dat.valid eq 0 and idx eq idxmax then last_time=times[n] else last_time = (dat.time+dat.end_time)/2.
 
 default_gap_time = 500.
 if not keyword_set(gap_time) then gap_time = default_gap_time

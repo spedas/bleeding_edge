@@ -13,46 +13,43 @@
 ;   DLEVEL
 ;   MAX_ARCS = n  ; max number of archives to produce
 ; Author:
-;   Davin Larson  June 2013   
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-; $LastChangedRevision: 24506 $
+;   Davin Larson  June 2013
+; $LastChangedBy: ali $
+; $LastChangedDate: 2021-09-24 13:31:21 -0700 (Fri, 24 Sep 2021) $
+; $LastChangedRevision: 30317 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_archive.pro $
 ;-
- 
 
-pro file_archive,filename,archive_ext=archive_ext,archive_dir=archive_dir,verbose=verbose,dlevel=dlevel  ,max_arcs=max_arcs
+
+pro file_archive,filename,archive_ext=archive_ext,archive_dir=archive_dir,verbose=verbose,dlevel=dlevel,max_arcs=max_arcs,arc_name=arc_name
   if ~keyword_set(archive_ext) && ~keyword_set(archive_dir) then return
-;  if size(/type,archive_ext) ne 7 then archive_ext = ''
-;  if size(/type,archive_dir) ne 7 then archive_dir = ''
+  ;  if size(/type,archive_ext) ne 7 then archive_ext = ''
+  ;  if size(/type,archive_dir) ne 7 then archive_dir = ''
   dl = n_elements(dlevel) ne 0 ? dlevel : 3
   if n_elements(max_arcs) eq 0 then max_arcs = 99
-  
-for i = 0L,n_elements(filename)-1 do begin
-  fi = file_info(filename[i])
-  if fi.exists eq 0 then begin
-     dprint,verbose=verbose,dlevel=dl,fi.name+ ' does not exist.'
-     continue   ; no file to archive
-  endif
-  dir = file_dirname(fi.name)+'/'
-  bname = file_basename(fi.name)
-  if size(/type,archive_dir) eq 7 then dir = (strmid(archive_dir,0,1) eq '/') ? archive_dir : dir+archive_dir
-  if size(/type,archive_ext) eq 7 then  begin
-    arc_format = dir+bname+archive_ext
-    arc_names = file_search(arc_format+'*',count=n_arc)
-    if n_arc ne 0 then begin
-       arc_nums = fix( strmid(arc_names,strlen(arc_format) ) )
-       n_arc = max(arc_nums) + 1
-       dprint,verbose=verbose,dlevel=dl+1,'Consider deleting '+strtrim(n_arc,2)+" archived files: '"+arc_format+"*'"
+
+  for i = 0L,n_elements(filename)-1 do begin
+    fi = file_info(filename[i])
+    if fi.exists eq 0 then begin
+      dprint,verbose=verbose,dlevel=dl,fi.name+ ' does not exist.'
+      continue   ; no file to archive
     endif
-    arc_name = arc_format+strtrim(n_arc < max_arcs,2)
-  endif else arc_name = dir+bname
-  dprint,verbose=verbose,dlevel=dl,'Archiving old file: '+fi.name+' moved to '+arc_name
-  if keyword_set(archive_dir) then file_mkdir2,dir,mode='777'o
-  file_move,fi.name,arc_name               ;   rename old file
-endfor
+    dir = file_dirname(fi.name)+'/'
+    bname = file_basename(fi.name)
+    if size(/type,archive_dir) eq 7 then dir = (strmid(archive_dir,0,1) eq '/') ? archive_dir : dir+archive_dir
+    if size(/type,archive_ext) eq 7 then  begin
+      arc_format = dir+bname+archive_ext
+      arc_names = file_search(arc_format+'*',count=n_arc)
+      if n_arc ne 0 then begin
+        arc_nums = fix( strmid(arc_names,strlen(arc_format) ) )
+        n_arc = max(arc_nums) + 1
+        dprint,verbose=verbose,dlevel=dl+1,'Consider deleting '+strtrim(n_arc,2)+" archived files: '"+arc_format+"*'"
+      endif
+      arc_name = arc_format+strtrim(n_arc < max_arcs,2)
+    endif else arc_name = dir+bname
+    dprint,verbose=verbose,dlevel=dl,'Archiving old file: '+file_info_string(fi.name),'Moving to '+arc_name
+    if keyword_set(archive_dir) then file_mkdir2,dir,mode='777'o
+    file_move,fi.name,arc_name               ;   rename old file
+  endfor
 
 end
-
-
-
