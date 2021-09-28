@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Sep 24 18:16:01 2021.<P>
+<STRONG>Last modified: </STRONG>Mon Sep 27 18:16:06 2021.<P>
  
 <HR>
  
@@ -49,10 +49,15 @@ This page was created by the IDL library routine
          suffix:       suffix to append to the tplot variable of the burst segments bar
          start_times:  returns an array of unix times (double) containing the start for each burst interval
          end_times:    returns an array of unix times (double) containing the end of each burst interval
+         nodownload:   flag to load the file if it's stored locally, and not download it from the spedas.org server;
+                       this is useful if the remote file seems out of date; you can run mms_update_brst_intervals
+                       to manually update the file from the data at the SDC, and set this flag to load your local file
+         sdc:          flag to load the brst intervals directly from the SDC; this will take longer than the default 
+                       but may contain more recent data
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2020-05-19 12:45:03 -0700 (Tue, 19 May 2020) $
-$LastChangedRevision: 28714 $
+$LastChangedDate: 2021-09-27 15:00:42 -0700 (Mon, 27 Sep 2021) $
+$LastChangedRevision: 30322 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_brst_segments.pro $
 </PRE><P>
 <STRONG>(See <A href="data_status_bar/mms_load_brst_segments.pro">projects/mms/common/data_status_bar/mms_load_brst_segments.pro</A>)</STRONG><P>
@@ -75,6 +80,11 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          suffix:       suffix to append to the fast segments bar tplot variable
          start_times:  returns an array of unix times (double) containing the start for each fast interval
          end_times:    returns an array of unix times (double) containing the end of each fast interval
+         nodownload:   flag to load the file if it's stored locally, and not download it from the spedas.org server;
+                       this is useful if the remote file seems out of date; you can run mms_update_brst_intervals
+                       to manually update the file from the data at the SDC, and set this flag to load your local file
+         sdc:          flag to load the brst intervals directly from the SDC; this will take longer than the default
+                       but may contain more recent data
  
  NOTES:
          WARNING: this routine no longer loads the correct fast segments for later in the mission; 
@@ -83,8 +93,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                   before 6Nov15) and the new SRoI code (mms_load_sroi_segments) for dates on and after 6Nov15 
  
 $LastChangedBy: egrimes $
-$LastChangedDate: 2020-07-28 14:48:00 -0700 (Tue, 28 Jul 2020) $
-$LastChangedRevision: 28949 $
+$LastChangedDate: 2021-09-27 15:03:35 -0700 (Mon, 27 Sep 2021) $
+$LastChangedRevision: 30323 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_fast_segments.pro $
 </PRE><P>
 <STRONG>(See <A href="data_status_bar/mms_load_fast_segments.pro">projects/mms/common/data_status_bar/mms_load_fast_segments.pro</A>)</STRONG><P>

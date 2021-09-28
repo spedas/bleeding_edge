@@ -140,8 +140,8 @@
 ;                 last color.  Default is 6 (red) for all.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-09-17 08:00:51 -0700 (Fri, 17 Sep 2021) $
-; $LastChangedRevision: 30300 $
+; $LastChangedDate: 2021-09-27 13:05:14 -0700 (Mon, 27 Sep 2021) $
+; $LastChangedRevision: 30321 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -570,6 +570,12 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     pan = npans
     msg = title
 
+    if (pflg) then i = imid else i = imin
+    mlon = atan(yo[i],xo[i])
+    mlat = asin(zo[i]/ro[i])
+    altref = ho[i]
+    szaref = acos(cos(mlon)*cos(mlat))*!radeg
+
     if (xyflg) then begin
       !p.multi = [pan, 1, npans]
 
@@ -583,12 +589,6 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
         x[indx] = !values.f_nan
         y[indx] = !values.f_nan
       endif
-
-      if (pflg) then i = imid else i = imin
-      mlon = atan(yo[i],xo[i])
-      mlat = asin(zo[i]/ro[i])
-      altref = ho[i]
-      szaref = acos(cos(mlon)*cos(mlat))*!radeg
 
       plot,xm,ym,xrange=xrange,yrange=yrange,/xsty,/ysty,/noerase, $
            xtitle='X (Rp)',ytitle='Y (Rp)',charsize=csize,title=msg,thick=thick

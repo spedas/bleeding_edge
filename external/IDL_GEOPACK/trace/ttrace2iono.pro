@@ -93,7 +93,14 @@
 ; 
 ;         STORM(optional): Specify storm-time version of T01 external 
 ;             magnetic field model use together with /T01.
-;             
+;
+;         kp (optional): Kp index value for T89 model should either be a
+;              string naming a tplot variable or an array or a single
+;              value. If a tplot input is used it will be interpolated to
+;              match the time inputs from the position var. Non-tplot array values
+;              must match the number of times in the tplot input for pos_gsm_tvar.
+;
+;
 ;         pdyn(optional): Solar wind pressure(nanoPascals) should either be a
 ;              string naming a tplot variable or an array or a single
 ;              value. If a tplot input is used it will be interpolated to
@@ -218,8 +225,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-09-20 11:15:55 -0700 (Mon, 20 Sep 2021) $
-; $LastChangedRevision: 30309 $
+; $LastChangedDate: 2021-09-27 17:06:45 -0700 (Mon, 27 Sep 2021) $
+; $LastChangedRevision: 30325 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/ttrace2iono.pro $
 ;-
 

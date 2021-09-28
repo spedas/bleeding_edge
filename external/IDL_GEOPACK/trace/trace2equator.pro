@@ -136,8 +136,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-09-20 11:12:11 -0700 (Mon, 20 Sep 2021) $
-; $LastChangedRevision: 30308 $
+; $LastChangedDate: 2021-09-27 17:07:54 -0700 (Mon, 27 Sep 2021) $
+; $LastChangedRevision: 30326 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2equator.pro $
 ;-
 
@@ -275,17 +275,17 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
           return
       endif
     
-      par_idx_low = where(par_array lt 1)
+      par_idx_low = where(par_array lt 0)
     
       if par_idx_low[0] ne -1L then begin
-          message, /continue, 'par has value less than 1'
+          message, /continue, 'par (Kp) has value less than 0'
           return
       endif
     
-      par_idx_high = where(par_array gt 7)
+      par_idx_high = where(par_array gt 6)
     
       if par_idx_high[0] ne -1L then begin
-          message, /continue, 'par has value greater than 7'
+          message, /continue, 'par (Kp) has value greater than 6'
           return
       endif
       
