@@ -150,14 +150,14 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
   if no_download eq 0 then begin
     ; NOTE: directory is temporarily password protected. this will be
     ;       removed when data is made public.
-    if undefined(user) OR undefined(pw) then authorization = elf_get_authorization()
-    if is_struct(authorization) then begin
-      user=authorization.user_name 
-      pw=authorization.password
-    endif else begin
-      user=''
-      pw=''
-    endelse 
+;    if undefined(user) OR undefined(pw) then authorization = elf_get_authorization()
+;    if is_struct(authorization) then begin
+;      user=authorization.user_name 
+;      pw=authorization.password
+;    endif else begin
+;      user=''
+;      pw=''
+;    endelse 
     
     ; only query user if authorization file not found
     ;If user EQ '' OR pw EQ '' then begin
