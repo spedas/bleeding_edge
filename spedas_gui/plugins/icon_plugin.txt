@@ -1,0 +1,4 @@
+project: ICON
+load_data: icon_ui_load_data
+config: icon_fileconfig
+about: about_icon.txt

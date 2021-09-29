@@ -1,0 +1,13 @@
+psp_fld_l2_rfs_hfr_auto_averages_ch0_V1V2
+psp_fld_l2_rfs_lfr_auto_averages_ch0_V1V2
+psp_fld_l2_dfb_ac_spec_dV12hg
+psp_fld_l2_mag_RTN_4_Sa_per_Cyc
+psp_swp_spc_l3i_vp_moment_RTN
+
+;------------------
+; Tohban Selection
+;------------------
+spp_fld_fomstr
+spp_fld_fomstr_copy
+spp_swp_fomstr
+spp_swp_fomstr_copy

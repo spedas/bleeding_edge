@@ -1,0 +1,20 @@
+psp_swp_spa_sf0_EMODE
+psp_swp_spa_sf0_EFLUX
+psp_swp_spa_sf0_ENERGY
+psp_swp_spa_sf0_THETA
+psp_swp_spa_sf0_PHI
+psp_swp_spb_sf1_EMODE
+psp_swp_spb_sf1_EFLUX
+psp_swp_spb_sf0_EMODE
+psp_swp_spb_sf0_EFLUX
+psp_swp_spb_sf0_ENERGY
+psp_swp_spb_sf0_THETA
+psp_swp_spb_sf0_PHI
+
+;------------------
+; Tohban Selection
+;------------------
+spp_fld_fomstr
+spp_fld_fomstr_copy
+spp_swp_fomstr
+spp_swp_fomstr_copy

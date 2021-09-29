@@ -1,0 +1,6 @@
+This plugin retrieves data from GOES 16, 17 satellites 
+and also reprocessed data from GOES 8-15. 
+
+Documentation for GOES-R data can be found at:
+
+https://www.ngdc.noaa.gov/stp/satellite/goes-r.html

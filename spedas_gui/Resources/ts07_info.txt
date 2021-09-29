@@ -1,0 +1,8 @@
+Coefficient files for the TS07 model can be downloaded from:
+
+https://spdf.gsfc.nasa.gov/pub/data/aaa_special-purpose-datasets/empirical-magnetic-field-modeling-database-with-TS07D-coefficients/derived_products/ts07_coefficients/
+
+or from:
+
+https://rbspgway.jhuapl.edu/new_coeffs_mag_models_v02
+

@@ -1,0 +1,5 @@
+project: DSCOVR
+load_data: dsc_ui_load_data
+config: spd_ui_dsc_fileconfig
+menu: dsc_ui_gen_overplot, Overview Plots, DSCOVR Overview Plot...
+about: spedas_plugin/about_dscovr.txt

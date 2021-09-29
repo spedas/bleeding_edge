@@ -1,0 +1,11 @@
+Rules of the Road for working with DSCOVR data
+
+1. Data are free for scientific publications.
+
+2. We strongly recommend working directly or checking
+with the PI and instrument coIs regarding data
+interpretation, especially in the initial phase of
+the project, and well in advance to submitting
+a talk/publication, in order to be informed of the
+nuances (and accuracy) of the DSCOVR dataset.
+

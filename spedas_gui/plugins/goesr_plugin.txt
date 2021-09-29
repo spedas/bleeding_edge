@@ -1,0 +1,4 @@
+project: GOESR
+load_data: goesr_ui_load_data
+config: goesr_fileconfig
+about: spedas_plugin/about_goesr.txt

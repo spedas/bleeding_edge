@@ -1,0 +1,33 @@
+Brief note on imporant updates made for the bleeding edge distribution of the ERG-SC plug-in for SPEDAS
+
+7 Feb 2021:
+* ISEE_Wave version 1.0.1 was implemented.
+
+14 Dec 2020:
+* change folder and cdf file names of PWE/WFC products in erg_load_pwe_wfc.pro
+
+13 Dec 2020:
+* IMPORTANT FIX for erg_hep_part_products.pro:
+  * Invalid azimuthal channels are correctly excluded from calculation of flux spectra by erg_hep_part_products. Note that any old versions could mistakenly mix valid and invalid azimuthal channels. 
+  * implemented a new keyword "include_allazms" to include flux values from all azimuthal channels for calculation of flux spectra. By default, this keyword is off. 
+
+16-24 Apr 2020: 
+* data load routines were modified to show a simplified set of the data policy statement.
+
+9-12 Sep 2019:
+* A major update on scripts for LEP-e data including:
+  support of negative flux values in LEP-e flux data
+  new scripts implemented: erg_part_en_pa_spec_plot.pro, erg_part_maxwellian_fit.pro 
+  Some bug fixes for the ISEE3D library
+
+2 Sep 2019:
+* The keyword "noload" was implemented to the erg_cotrans library. 
+
+21 Feb 2019:
+* erg_load_mepi_tof.pro was implemented for loading MEP-i Lv.2 TOF data.
+
+
+8 Jan 2019:
+
+* Implemented no_ang_weighting option to erg_???_part_products which allows users to suppress the weighted-averaging of particle flux values in solid angle.
+

@@ -1,0 +1,15 @@
+spp_fld_f1_100bps_B_PEAK
+psp_swp_spc_l2i_diff_charge_flux_density
+psp_swp_spc_l3i_np_moment
+psp_swp_spc_l3i_wp_moment
+psp_swp_spc_l3i_vp_moment_SC
+psp_swp_spc_l3i_vp_moment_RTN
+
+;------------------
+; Tohban Selection
+;------------------
+spp_fld_fomstr
+spp_fld_fomstr_copy
+spp_swp_fomstr
+spp_swp_fomstr_copy
+

@@ -1,0 +1,15 @@
+spp_fld_f1_100bps_DCB_ARCWRPTR
+spp_fld_f1_100bps_B_PEAK
+spp_fld_f1_100bps_B_MNMX
+spp_fld_f1_100bps_DFB_V34AC_PEAK_converted
+spp_fld_f1_100bps_DFB_SCM_PEAK_converted
+spp_fld_dcb_events_DFB_BURST_TIME_COLLECT_TO_WRITE
+spp_fld_dcb_events_TDS_BURST_TIME_COLLECT_TO_WRITE
+
+;------------------
+; Tohban Selection
+;------------------
+spp_fld_fomstr
+spp_fld_fomstr_copy
+spp_swp_fomstr
+spp_swp_fomstr_copy

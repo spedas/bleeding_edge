@@ -1,0 +1,12 @@
+spp_fld_rfs_hfr_auto_averages_ch0_converted_V1V2
+spp_fld_rfs_hfr_auto_averages_ch1_converted_V3V4
+spp_fld_rfs_lfr_auto_averages_ch0_converted_V1V2
+spp_fld_rfs_lfr_auto_averages_ch1_converted_V3V4
+
+;------------------
+; Tohban Selection
+;------------------
+spp_fld_fomstr
+spp_fld_fomstr_copy
+spp_swp_fomstr
+spp_swp_fomstr_copy

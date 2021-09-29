@@ -1,0 +1,9 @@
+ICON plugin, beta version 0.4
+
+For information on ICON, see:
+
+https://www.nasa.gov/icon
+
+The Rules of the Road for working with ICON data, can be found here:
+
+http://spedas.org/wiki/index.php?title=ICON_Rules_of_the_Road

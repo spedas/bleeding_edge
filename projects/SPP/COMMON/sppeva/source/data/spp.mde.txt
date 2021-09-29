@@ -1,0 +1,705 @@
+SPP Trajectory: spp_nom_20180812_20250831_v036_RO3.bsp
+SPP Trajectory Release Date: 1-9-2020
+Solar and Planetary Ephemeris: de430.bsp
+Leap Seconds Kernel: naif0012.tls
+TCM Schedule: SPP20180812BET_TCM_v12.txt
+
+Orbit 1
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+08-12-2018 08:15:14        01-20-2019 01:04:04
+
+Event Time (UTC)           Event Name
+08-19-2018 10:00:00        TCM-1
+08-20-2018 10:00:00        TCM-1c
+08-31-2018 16:40:00        TCM-2
+09-01-2018 16:40:00        TCM-2c
+09-07-2018 22:42:19        Decreasing below 0.94 AU to Sun
+09-11-2018 15:30:00        TCM-3
+09-12-2018 15:30:00        TCM-3c
+09-27-2018 13:05:18        Decreasing below 0.79 AU to Sun
+09-28-2018 14:30:00        TCM-4
+09-29-2018 14:30:00        TCM-4c
+09-30-2018 10:01:43        Decreasing below 0.76 AU to Sun
+10-03-2018 08:44:28        Venus Flyby 1
+10-05-2018 17:13:45        Decreasing below 0.70 AU to Sun
+10-16-2018 19:00:00        TCM-5
+10-17-2018 16:51:33        Decreasing below 0.53 AU to Sun
+10-17-2018 19:00:00        TCM-5c
+10-22-2018 03:38:53        Decreasing below 0.45 AU to Sun
+10-31-2018 11:56:46        Solar Encounter Start
+11-06-2018 03:27:51        Perihelion
+11-10-2018 04:28:36        Solar Conjunction X-band Start
+11-11-2018 01:15:14        Solar Conjunction Ka-band Start
+11-11-2018 18:58:55        Solar Encounter Stop
+11-13-2018 09:09:13        Solar Conjunction Ka-band Stop
+11-14-2018 10:25:37        Solar Conjunction X-band Stop
+11-21-2018 03:16:49        Increasing past 0.45 AU to Sun
+11-25-2018 14:04:11        Increasing past 0.53 AU to Sun
+12-07-2018 13:42:33        Increasing past 0.70 AU to Sun
+12-09-2018 20:30:00        TCM-6
+12-10-2018 20:30:00        TCM-6c
+12-13-2018 02:37:03        Increasing past 0.76 AU to Sun
+12-16-2018 07:10:14        Increasing past 0.79 AU to Sun
+01-07-2019 11:04:24        DSS-54 Lunar Occultation Enter
+01-07-2019 12:40:51        DSS-54 Lunar Occultation Exit
+
+Orbit 2
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+01-20-2019 01:04:04        06-18-2019 20:15:33
+
+Event Time (UTC)           Event Name
+01-20-2019 01:04:04        Aphelion
+02-23-2019 18:57:48        Decreasing below 0.79 AU to Sun
+02-26-2019 23:30:58        Decreasing below 0.76 AU to Sun
+03-04-2019 12:25:25        Decreasing below 0.70 AU to Sun
+03-16-2019 12:03:38        Decreasing below 0.53 AU to Sun
+03-20-2019 22:50:58        Decreasing below 0.45 AU to Sun
+03-30-2019 07:08:55        Solar Encounter Start
+04-04-2019 22:39:56        Perihelion
+04-10-2019 14:10:57        Solar Encounter Stop
+04-19-2019 22:28:54        Increasing past 0.45 AU to Sun
+04-24-2019 09:16:14        Increasing past 0.53 AU to Sun
+05-06-2019 08:54:26        Increasing past 0.70 AU to Sun
+05-11-2019 21:48:51        Increasing past 0.76 AU to Sun
+05-13-2019 18:00:00        TCM-7
+05-15-2019 02:22:01        Increasing past 0.79 AU to Sun
+
+Orbit 3
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+06-18-2019 20:15:33        11-15-2019 15:25:08
+
+Event Time (UTC)           Event Name
+06-18-2019 20:15:33        Aphelion
+07-23-2019 14:08:53        Decreasing below 0.79 AU to Sun
+07-26-2019 18:42:01        Decreasing below 0.76 AU to Sun
+08-01-2019 07:36:22        Decreasing below 0.70 AU to Sun
+08-13-2019 07:14:22        Decreasing below 0.53 AU to Sun
+08-17-2019 18:01:36        Decreasing below 0.45 AU to Sun
+08-27-2019 02:19:11        Solar Encounter Start
+09-01-2019 05:15:38        Solar Conjunction X-band Start
+09-01-2019 17:50:18        Perihelion
+09-01-2019 18:00:14        Solar Conjunction Ka-band Start
+09-03-2019 01:22:53        Solar Conjunction Ka-band Stop
+09-03-2019 14:21:54        Solar Conjunction X-band Stop
+09-07-2019 09:21:24        Solar Encounter Stop
+09-16-2019 17:39:00        Increasing past 0.45 AU to Sun
+09-21-2019 04:26:13        Increasing past 0.53 AU to Sun
+10-03-2019 04:04:10        Increasing past 0.70 AU to Sun
+10-08-2019 16:58:28        Increasing past 0.76 AU to Sun
+10-10-2019 21:30:00        TCM-8
+10-11-2019 21:31:34        Increasing past 0.79 AU to Sun
+
+Orbit 4
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+11-15-2019 15:25:08        04-03-2020 09:00:47
+
+Event Time (UTC)           Event Name
+11-15-2019 15:25:08        Aphelion
+12-08-2019 22:00:00        TCM-9
+12-20-2019 09:17:39        Decreasing below 0.79 AU to Sun
+12-21-2019 21:30:00        TCM-10
+12-22-2019 21:30:00        TCM-10c
+12-23-2019 13:50:21        Decreasing below 0.76 AU to Sun
+12-26-2019 18:14:46        Venus Flyby 2
+12-29-2019 07:47:18        Decreasing below 0.70 AU to Sun
+01-10-2020 15:52:56        Decreasing below 0.53 AU to Sun
+01-10-2020 20:30:00        TCM-11
+01-12-2020 20:30:00        TCM-11c
+01-15-2020 00:10:37        Decreasing below 0.45 AU to Sun
+01-23-2020 14:00:52        Solar Encounter Start
+01-26-2020 22:25:12        Decreasing below 35 Rs to Sun
+01-28-2020 06:17:55        Solar Conjunction Ka-band Start
+01-28-2020 06:17:55        Solar Conjunction X-band Start
+01-28-2020 13:56:21        Solar Conjunction Ka-band Stop
+01-28-2020 13:56:21        Solar Conjunction X-band Stop
+01-29-2020 09:37:43        Perihelion
+01-31-2020 20:50:14        Increasing past 35 Rs to Sun
+02-04-2020 05:14:34        Solar Encounter Stop
+02-12-2020 19:04:49        Increasing past 0.45 AU to Sun
+02-17-2020 03:22:30        Increasing past 0.53 AU to Sun
+02-29-2020 11:27:52        Increasing past 0.70 AU to Sun
+03-06-2020 15:20:21        Increasing past 0.76 AU to Sun
+03-08-2020 18:00:00        TCM-12
+03-10-2020 10:18:02        Increasing past 0.79 AU to Sun
+
+Orbit 5
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+04-03-2020 09:00:47        08-02-2020 05:03:10
+
+Event Time (UTC)           Event Name
+04-03-2020 09:00:47        Aphelion
+04-27-2020 07:43:24        Decreasing below 0.79 AU to Sun
+05-01-2020 02:41:02        Decreasing below 0.76 AU to Sun
+05-07-2020 06:33:27        Decreasing below 0.70 AU to Sun
+05-19-2020 14:38:37        Decreasing below 0.53 AU to Sun
+05-23-2020 22:56:13        Decreasing below 0.45 AU to Sun
+06-01-2020 10:44:26        Solar Conjunction X-band Start
+06-01-2020 12:46:16        Solar Encounter Start
+06-02-2020 06:44:14        Solar Conjunction Ka-band Start
+06-04-2020 05:52:55        Solar Conjunction Ka-band Stop
+06-04-2020 21:10:23        Decreasing below 35 Rs to Sun
+06-04-2020 22:44:25        Solar Conjunction X-band Stop
+06-07-2020 08:23:05        Perihelion
+06-09-2020 19:35:46        Increasing past 35 Rs to Sun
+06-13-2020 03:59:53        Solar Encounter Stop
+06-14-2020 19:15:28        Solar Conjunction Ka-band Start
+06-14-2020 19:15:28        Solar Conjunction X-band Start
+06-15-2020 15:00:35        Solar Conjunction Ka-band Stop
+06-15-2020 15:00:35        Solar Conjunction X-band Stop
+06-20-2020 10:48:24        DSS-54 Lunar Occultation Enter
+06-20-2020 12:03:13        DSS-54 Lunar Occultation Exit
+06-21-2020 17:49:55        Increasing past 0.45 AU to Sun
+06-22-2020 18:00:00        TCM-13
+06-26-2020 02:07:29        Increasing past 0.53 AU to Sun
+07-05-2020 18:00:00        TCM-14
+07-06-2020 18:00:00        TCM-14c
+07-08-2020 10:12:00        Increasing past 0.70 AU to Sun
+07-11-2020 03:22:25        Solar Eclipse Enter
+07-11-2020 03:23:40        Venus Flyby 3
+07-11-2020 03:33:26        Solar Eclipse Exit
+07-15-2020 10:27:02        Increasing past 0.76 AU to Sun
+07-19-2020 12:00:00        TCM-15
+07-20-2020 12:00:00        TCM-15c
+07-20-2020 22:47:31        Increasing past 0.79 AU to Sun
+
+Orbit 6
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+08-02-2020 05:03:10        11-22-2020 13:26:39
+
+Event Time (UTC)           Event Name
+08-02-2020 05:03:10        Aphelion
+08-14-2020 11:18:57        Decreasing below 0.79 AU to Sun
+08-19-2020 23:39:40        Decreasing below 0.76 AU to Sun
+08-27-2020 10:24:23        Decreasing below 0.70 AU to Sun
+09-09-2020 10:51:41        Decreasing below 0.53 AU to Sun
+09-13-2020 17:50:27        Decreasing below 0.45 AU to Sun
+09-21-2020 18:41:54        Solar Encounter Start
+09-24-2020 12:00:38        Decreasing below 35 Rs to Sun
+09-27-2020 09:14:52        Perihelion
+09-27-2020 09:43:44        Solar Conjunction X-band Start
+09-27-2020 19:12:12        Solar Conjunction Ka-band Start
+09-28-2020 18:55:03        Solar Conjunction Ka-band Stop
+09-29-2020 04:46:41        Solar Conjunction X-band Stop
+09-30-2020 06:29:05        Increasing past 35 Rs to Sun
+10-02-2020 23:47:49        Solar Encounter Stop
+10-11-2020 00:39:16        Increasing past 0.45 AU to Sun
+10-15-2020 07:38:02        Increasing past 0.53 AU to Sun
+10-28-2020 08:05:14        Increasing past 0.70 AU to Sun
+11-04-2020 18:49:49        Increasing past 0.76 AU to Sun
+11-10-2020 07:10:21        Increasing past 0.79 AU to Sun
+11-18-2020 01:29:23        DSS-24 Lunar Occultation Enter
+11-18-2020 02:34:07        DSS-24 Lunar Occultation Exit
+
+Orbit 7
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+11-22-2020 13:26:39        03-09-2021 03:37:27
+
+Event Time (UTC)           Event Name
+11-22-2020 13:26:39        Aphelion
+12-04-2020 19:42:55        Decreasing below 0.79 AU to Sun
+12-10-2020 08:03:26        Decreasing below 0.76 AU to Sun
+12-17-2020 18:47:58        Decreasing below 0.70 AU to Sun
+12-28-2020 21:00:00        TCM-16
+12-30-2020 19:15:04        Decreasing below 0.53 AU to Sun
+01-04-2021 02:13:47        Decreasing below 0.45 AU to Sun
+01-12-2021 03:05:07        Solar Encounter Start
+01-14-2021 20:23:47        Decreasing below 35 Rs to Sun
+01-16-2021 21:06:45        Solar Conjunction X-band Start
+01-16-2021 21:06:45        Solar Conjunction Ka-band Start
+01-17-2021 04:45:25        Solar Conjunction X-band Stop
+01-17-2021 04:45:25        Solar Conjunction Ka-band Stop
+01-17-2021 17:38:00        Perihelion
+01-20-2021 14:52:14        Increasing past 35 Rs to Sun
+01-23-2021 08:10:54        Solar Encounter Stop
+01-31-2021 09:02:13        Increasing past 0.45 AU to Sun
+01-31-2021 19:00:00        TCM-17
+02-04-2021 16:00:54        Increasing past 0.53 AU to Sun
+02-15-2021 18:30:00        TCM-18
+02-16-2021 18:30:00        TCM-18c
+02-17-2021 16:27:21        Increasing past 0.70 AU to Sun
+02-20-2021 20:04:22        Solar Eclipse Enter
+02-20-2021 20:05:25        Venus Flyby 4
+02-20-2021 20:14:22        Solar Eclipse Exit
+02-26-2021 13:31:31        Increasing past 0.76 AU to Sun
+03-07-2021 18:00:00        TCM-19
+
+Orbit 8
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+03-09-2021 03:37:27        06-19-2021 13:59:47
+
+Event Time (UTC)           Event Name
+03-09-2021 03:37:27        Aphelion
+03-19-2021 17:43:34        Decreasing below 0.76 AU to Sun
+03-29-2021 03:53:19        Decreasing below 0.70 AU to Sun
+04-11-2021 22:13:59        Decreasing below 0.53 AU to Sun
+04-16-2021 05:11:09        Decreasing below 0.45 AU to Sun
+04-23-2021 23:03:29        Solar Conjunction X-band Start
+04-24-2021 00:10:43        Solar Encounter Start
+04-24-2021 23:02:03        Solar Conjunction Ka-band Start
+04-26-2021 11:56:16        Decreasing below 35 Rs to Sun
+04-27-2021 02:24:00        Solar Conjunction Ka-band Stop
+04-27-2021 21:06:51        Solar Conjunction X-band Stop
+04-29-2021 08:48:05        Perihelion
+04-30-2021 19:03:28        Solar Conjunction Ka-band Start
+04-30-2021 19:03:28        Solar Conjunction X-band Start
+05-01-2021 05:02:17        Solar Conjunction X-band Stop
+05-01-2021 05:02:17        Solar Conjunction Ka-band Stop
+05-02-2021 05:39:55        Increasing past 35 Rs to Sun
+05-04-2021 17:25:28        Solar Encounter Stop
+05-12-2021 12:25:02        Increasing past 0.45 AU to Sun
+05-15-2021 18:00:00        TCM-20
+05-16-2021 19:22:11        Increasing past 0.53 AU to Sun
+05-17-2021 18:00:00        TCM-20c
+05-30-2021 13:42:38        Increasing past 0.70 AU to Sun
+06-08-2021 23:51:43        Increasing past 0.76 AU to Sun
+
+Orbit 9
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+06-19-2021 13:59:47        09-30-2021 00:22:08
+
+Event Time (UTC)           Event Name
+06-19-2021 13:59:47        Aphelion
+06-30-2021 04:07:50        Decreasing below 0.76 AU to Sun
+07-09-2021 14:16:54        Decreasing below 0.70 AU to Sun
+07-23-2021 08:37:20        Decreasing below 0.53 AU to Sun
+07-27-2021 15:34:29        Decreasing below 0.45 AU to Sun
+08-04-2021 10:34:01        Solar Encounter Start
+08-06-2021 22:19:32        Decreasing below 35 Rs to Sun
+08-09-2021 00:06:02        Solar Conjunction X-band Start
+08-09-2021 07:46:53        Solar Conjunction Ka-band Start
+08-09-2021 19:11:22        Perihelion
+08-10-2021 02:23:53        Solar Conjunction Ka-band Stop
+08-10-2021 10:04:15        Solar Conjunction X-band Stop
+08-12-2021 16:03:11        Increasing past 35 Rs to Sun
+08-15-2021 03:48:42        Solar Encounter Stop
+08-22-2021 22:48:15        Increasing past 0.45 AU to Sun
+08-25-2021 19:30:00        TCM-21
+08-27-2021 05:45:24        Increasing past 0.53 AU to Sun
+09-10-2021 00:05:57        Increasing past 0.70 AU to Sun
+09-19-2021 10:15:26        Increasing past 0.76 AU to Sun
+09-28-2021 22:10:00        TCM-22
+
+Orbit 10
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+09-30-2021 00:22:08        01-08-2022 12:02:24
+
+Event Time (UTC)           Event Name
+09-30-2021 00:22:08        Aphelion
+10-10-2021 14:28:38        Decreasing below 0.76 AU to Sun
+10-11-2021 22:15:00        TCM-23
+10-12-2021 22:15:00        TCM-23c
+10-16-2021 09:30:31        Venus Flyby 5
+10-20-2021 16:35:18        Decreasing below 0.70 AU to Sun
+11-04-2021 04:55:21        Decreasing below 0.53 AU to Sun
+11-06-2021 21:44:35        DSS-24 Lunar Occultation Enter
+11-06-2021 22:57:20        DSS-24 Lunar Occultation Exit
+11-08-2021 12:18:03        Decreasing below 0.45 AU to Sun
+11-16-2021 04:18:41        Solar Encounter Start
+11-18-2021 13:17:55        Decreasing below 35 Rs to Sun
+11-19-2021 13:11:52        Solar Conjunction Ka-band Start
+11-19-2021 13:11:52        Solar Conjunction X-band Start
+11-20-2021 00:00:09        Solar Conjunction X-band Stop
+11-20-2021 00:00:09        Solar Conjunction Ka-band Stop
+11-21-2021 08:25:02        Perihelion
+11-21-2021 21:44:53        Solar Conjunction X-band Start
+11-22-2021 11:57:56        Solar Conjunction Ka-band Start
+11-23-2021 23:39:23        Solar Conjunction Ka-band Stop
+11-24-2021 03:32:09        Increasing past 35 Rs to Sun
+11-24-2021 15:20:02        Solar Conjunction X-band Stop
+11-26-2021 12:31:23        Solar Encounter Stop
+12-04-2021 04:32:01        Increasing past 0.45 AU to Sun
+12-08-2021 11:54:45        Increasing past 0.53 AU to Sun
+12-10-2021 20:20:00        TCM-24
+12-23-2021 00:15:20        Increasing past 0.70 AU to Sun
+01-06-2022 20:49:41        Increasing past 0.76 AU to Sun
+
+Orbit 11
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+01-08-2022 12:02:24        04-14-2022 19:16:24
+
+Event Time (UTC)           Event Name
+01-08-2022 12:02:24        Aphelion
+01-10-2022 03:15:06        Decreasing below 0.76 AU to Sun
+01-24-2022 23:49:29        Decreasing below 0.70 AU to Sun
+02-08-2022 12:10:07        Decreasing below 0.53 AU to Sun
+02-12-2022 19:32:52        Decreasing below 0.45 AU to Sun
+02-20-2022 11:33:31        Solar Encounter Start
+02-22-2022 20:32:45        Decreasing below 35 Rs to Sun
+02-25-2022 15:39:52        Perihelion
+02-25-2022 15:42:36        Solar Conjunction Ka-band Start
+02-25-2022 15:42:36        Solar Conjunction X-band Start
+02-25-2022 21:46:11        Solar Conjunction Ka-band Stop
+02-25-2022 21:46:11        Solar Conjunction X-band Stop
+02-28-2022 10:47:00        Increasing past 35 Rs to Sun
+03-02-2022 19:46:14        Solar Encounter Stop
+03-10-2022 11:46:54        Increasing past 0.45 AU to Sun
+03-11-2022 18:00:00        TCM-25
+03-14-2022 19:09:40        Increasing past 0.53 AU to Sun
+03-29-2022 07:30:40        Increasing past 0.70 AU to Sun
+04-13-2022 04:15:42        Increasing past 0.76 AU to Sun
+
+Orbit 12
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+04-14-2022 19:16:24        07-20-2022 02:29:32
+
+Event Time (UTC)           Event Name
+04-14-2022 19:16:24        Aphelion
+04-16-2022 10:17:06        Decreasing below 0.76 AU to Sun
+05-01-2022 07:02:10        Decreasing below 0.70 AU to Sun
+05-15-2022 19:23:15        Decreasing below 0.53 AU to Sun
+05-20-2022 02:46:03        Decreasing below 0.45 AU to Sun
+05-27-2022 18:46:47        Solar Encounter Start
+05-30-2022 03:46:03        Decreasing below 35 Rs to Sun
+05-30-2022 17:34:54        Solar Conjunction X-band Start
+05-31-2022 04:54:58        Solar Conjunction Ka-band Start
+06-01-2022 07:36:36        Solar Conjunction Ka-band Stop
+06-01-2022 19:05:43        Solar Conjunction X-band Stop
+06-01-2022 22:53:11        Perihelion
+06-04-2022 05:28:32        Solar Conjunction X-band Start
+06-04-2022 05:28:32        Solar Conjunction Ka-band Start
+06-04-2022 18:00:20        Increasing past 35 Rs to Sun
+06-04-2022 20:56:21        Solar Conjunction Ka-band Stop
+06-04-2022 20:56:21        Solar Conjunction X-band Stop
+06-07-2022 02:59:36        Solar Encounter Stop
+06-14-2022 19:00:20        Increasing past 0.45 AU to Sun
+06-19-2022 02:23:09        Increasing past 0.53 AU to Sun
+06-20-2022 18:00:00        TCM-26
+07-03-2022 14:44:25        Increasing past 0.70 AU to Sun
+07-18-2022 11:34:49        Increasing past 0.76 AU to Sun
+
+Orbit 13
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+07-20-2022 02:29:32        10-24-2022 09:41:42
+
+Event Time (UTC)           Event Name
+07-20-2022 02:29:32        Aphelion
+07-21-2022 17:24:14        Decreasing below 0.76 AU to Sun
+08-05-2022 14:14:40        Decreasing below 0.70 AU to Sun
+08-20-2022 02:36:00        Decreasing below 0.53 AU to Sun
+08-24-2022 09:58:50        Decreasing below 0.45 AU to Sun
+09-01-2022 01:59:35        Solar Encounter Start
+09-03-2022 10:58:50        Decreasing below 35 Rs to Sun
+09-05-2022 19:21:14        Solar Conjunction X-band Start
+09-06-2022 02:36:33        Solar Conjunction Ka-band Start
+09-06-2022 06:05:59        Perihelion
+09-06-2022 19:35:53        Solar Conjunction Ka-band Stop
+09-07-2022 02:44:22        Solar Conjunction X-band Stop
+09-09-2022 01:13:08        Increasing past 35 Rs to Sun
+09-11-2022 10:12:23        Solar Encounter Stop
+09-19-2022 02:13:09        Increasing past 0.45 AU to Sun
+09-20-2022 20:00:00        TCM-27
+09-23-2022 09:36:00        Increasing past 0.53 AU to Sun
+10-07-2022 21:57:38        Increasing past 0.70 AU to Sun
+10-22-2022 18:56:46        Increasing past 0.76 AU to Sun
+
+Orbit 14
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+10-24-2022 09:41:42        01-28-2023 16:54:48
+
+Event Time (UTC)           Event Name
+10-24-2022 09:41:42        Aphelion
+10-26-2022 00:26:37        Decreasing below 0.76 AU to Sun
+11-09-2022 21:25:47        Decreasing below 0.70 AU to Sun
+11-21-2022 21:30:00        TCM-28
+11-24-2022 09:47:30        Decreasing below 0.53 AU to Sun
+11-28-2022 17:10:24        Decreasing below 0.45 AU to Sun
+12-06-2022 09:11:16        Solar Encounter Start
+12-08-2022 18:10:35        Decreasing below 35 Rs to Sun
+12-10-2022 09:28:13        Solar Conjunction X-band Start
+12-10-2022 09:28:13        Solar Conjunction Ka-band Start
+12-10-2022 18:03:46        Solar Conjunction X-band Stop
+12-10-2022 18:03:46        Solar Conjunction Ka-band Stop
+12-11-2022 13:17:46        Perihelion
+12-12-2022 21:26:33        Solar Conjunction X-band Start
+12-13-2022 18:15:25        Solar Conjunction Ka-band Start
+12-14-2022 08:24:58        Increasing past 35 Rs to Sun
+12-16-2022 06:23:38        Solar Conjunction Ka-band Stop
+12-16-2022 17:24:17        Solar Encounter Stop
+12-17-2022 11:09:44        Solar Conjunction X-band Stop
+12-24-2022 09:25:09        Increasing past 0.45 AU to Sun
+12-28-2022 16:48:01        Increasing past 0.53 AU to Sun
+01-12-2023 05:09:25        Increasing past 0.70 AU to Sun
+01-27-2023 01:58:55        Increasing past 0.76 AU to Sun
+
+Orbit 15
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+01-28-2023 16:54:48        05-05-2023 00:09:57
+
+Event Time (UTC)           Event Name
+01-28-2023 16:54:48        Aphelion
+01-30-2023 07:50:41        Decreasing below 0.76 AU to Sun
+02-14-2023 04:40:15        Decreasing below 0.70 AU to Sun
+02-28-2023 17:01:45        Decreasing below 0.53 AU to Sun
+03-05-2023 00:24:41        Decreasing below 0.45 AU to Sun
+03-12-2023 16:25:41        Solar Encounter Start
+03-15-2023 01:25:05        Decreasing below 35 Rs to Sun
+03-17-2023 20:32:21        Perihelion
+03-18-2023 02:20:53        Solar Conjunction X-band Start
+03-18-2023 02:20:53        Solar Conjunction Ka-band Start
+03-18-2023 08:46:07        Solar Conjunction Ka-band Stop
+03-18-2023 08:46:07        Solar Conjunction X-band Stop
+03-20-2023 15:39:38        Increasing past 35 Rs to Sun
+03-23-2023 00:39:02        Solar Encounter Stop
+03-30-2023 16:40:03        Increasing past 0.45 AU to Sun
+04-04-2023 00:02:58        Increasing past 0.53 AU to Sun
+04-06-2023 18:00:00        TCM-29
+04-18-2023 12:24:34        Increasing past 0.70 AU to Sun
+05-03-2023 09:15:32        Increasing past 0.76 AU to Sun
+
+Orbit 16
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+05-05-2023 00:09:57        08-09-2023 07:24:35
+
+Event Time (UTC)           Event Name
+05-05-2023 00:09:57        Aphelion
+05-06-2023 15:04:21        Decreasing below 0.76 AU to Sun
+05-21-2023 11:55:21        Decreasing below 0.70 AU to Sun
+06-05-2023 00:17:01        Decreasing below 0.53 AU to Sun
+06-07-2023 18:00:00        TCM-30
+06-09-2023 07:39:59        Decreasing below 0.45 AU to Sun
+06-16-2023 23:41:04        Solar Encounter Start
+06-19-2023 08:40:31        Decreasing below 35 Rs to Sun
+06-20-2023 13:45:47        Solar Conjunction X-band Start
+06-20-2023 22:46:17        Solar Conjunction Ka-band Start
+06-21-2023 20:17:23        Solar Conjunction Ka-band Stop
+06-22-2023 03:47:49        Perihelion
+06-22-2023 05:38:33        Solar Conjunction X-band Stop
+06-24-2023 22:55:08        Increasing past 35 Rs to Sun
+06-26-2023 18:57:46        Solar Conjunction Ka-band Start
+06-26-2023 18:57:46        Solar Conjunction X-band Start
+06-27-2023 07:54:35        Solar Encounter Stop
+06-27-2023 16:58:44        Solar Conjunction X-band Stop
+06-27-2023 16:58:44        Solar Conjunction Ka-band Stop
+07-04-2023 23:55:42        Increasing past 0.45 AU to Sun
+07-09-2023 07:18:42        Increasing past 0.53 AU to Sun
+07-23-2023 19:40:50        Increasing past 0.70 AU to Sun
+08-03-2023 18:00:00        TCM-31
+08-07-2023 16:44:27        Increasing past 0.76 AU to Sun
+
+Orbit 17
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+08-09-2023 07:24:35        11-13-2023 00:13:08
+
+Event Time (UTC)           Event Name
+08-09-2023 07:24:35        Aphelion
+08-10-2023 22:04:42        Decreasing below 0.76 AU to Sun
+08-16-2023 18:00:00        TCM-32
+08-17-2023 18:00:00        TCM-32c
+08-21-2023 12:00:04        Venus Flyby 6
+08-26-2023 17:53:53        Decreasing below 0.70 AU to Sun
+09-11-2023 00:35:54        Decreasing below 0.53 AU to Sun
+09-15-2023 08:32:42        Decreasing below 0.45 AU to Sun
+09-22-2023 22:49:15        Solar Encounter Start
+09-25-2023 06:07:50        Decreasing below 35 Rs to Sun
+09-27-2023 15:55:37        Solar Conjunction X-band Start
+09-27-2023 23:30:27        Perihelion
+09-27-2023 23:39:54        Solar Conjunction Ka-band Start
+09-28-2023 16:29:52        Solar Conjunction Ka-band Stop
+09-28-2023 23:38:04        Solar Conjunction X-band Stop
+09-30-2023 16:53:05        Increasing past 35 Rs to Sun
+10-03-2023 00:11:40        Solar Encounter Stop
+10-10-2023 14:28:14        Increasing past 0.45 AU to Sun
+10-13-2023 20:30:00        TCM-33
+10-14-2023 22:25:03        Increasing past 0.53 AU to Sun
+10-30-2023 05:07:44        Increasing past 0.70 AU to Sun
+
+Orbit 18
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+11-13-2023 00:13:08        02-13-2024 01:38:28
+
+Event Time (UTC)           Event Name
+11-13-2023 00:13:08        Aphelion
+11-26-2023 19:18:31        Decreasing below 0.70 AU to Sun
+12-04-2023 21:30:00        TCM-34
+12-12-2023 02:01:13        Decreasing below 0.53 AU to Sun
+12-16-2023 09:58:03        Decreasing below 0.45 AU to Sun
+12-24-2023 00:14:37        Solar Encounter Start
+12-26-2023 07:33:12        Decreasing below 35 Rs to Sun
+12-28-2023 08:27:28        Solar Conjunction X-band Start
+12-28-2023 08:27:28        Solar Conjunction Ka-band Start
+12-28-2023 15:26:13        Solar Conjunction X-band Stop
+12-28-2023 15:26:13        Solar Conjunction Ka-band Stop
+12-29-2023 00:55:50        Perihelion
+12-30-2023 20:30:09        Solar Conjunction X-band Start
+12-31-2023 18:18:28        Increasing past 35 Rs to Sun
+01-01-2024 03:14:34        Solar Conjunction Ka-band Start
+01-03-2024 01:37:03        Solar Encounter Stop
+01-05-2024 08:03:03        Solar Conjunction Ka-band Stop
+01-07-2024 21:25:05        Solar Conjunction X-band Stop
+01-10-2024 15:53:38        Increasing past 0.45 AU to Sun
+01-14-2024 23:50:28        Increasing past 0.53 AU to Sun
+01-30-2024 06:33:14        Increasing past 0.70 AU to Sun
+02-09-2024 05:04:21        Solar Conjunction X-band Start
+
+Orbit 19
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+02-13-2024 01:38:28        05-15-2024 03:03:39
+
+Event Time (UTC)           Event Name
+02-13-2024 01:38:28        Aphelion
+02-18-2024 01:48:29        Solar Conjunction Ka-band Start
+02-26-2024 20:43:42        Decreasing below 0.70 AU to Sun
+03-01-2024 05:37:06        Solar Conjunction Ka-band Stop
+03-10-2024 07:07:09        DSS-34 Lunar Occultation Enter
+03-10-2024 07:22:10        DSS-34 Lunar Occultation Exit
+03-13-2024 03:26:27        Decreasing below 0.53 AU to Sun
+03-15-2024 10:23:27        Solar Conjunction Ka-band Start
+03-17-2024 11:23:18        Decreasing below 0.45 AU to Sun
+03-24-2024 12:24:48        Solar Conjunction Ka-band Stop
+03-25-2024 01:39:53        Solar Encounter Start
+03-26-2024 18:47:16        Solar Conjunction X-band Stop
+03-27-2024 08:58:28        Decreasing below 35 Rs to Sun
+03-30-2024 02:21:06        Perihelion
+03-30-2024 09:06:19        Solar Conjunction Ka-band Start
+03-30-2024 09:06:19        Solar Conjunction X-band Start
+03-30-2024 15:32:42        Solar Conjunction X-band Stop
+03-30-2024 15:32:42        Solar Conjunction Ka-band Stop
+04-01-2024 19:43:45        Increasing past 35 Rs to Sun
+04-04-2024 03:02:20        Solar Encounter Stop
+04-11-2024 17:18:55        Increasing past 0.45 AU to Sun
+04-15-2024 18:00:00        TCM-35
+04-16-2024 01:15:46        Increasing past 0.53 AU to Sun
+05-01-2024 07:58:36        Increasing past 0.70 AU to Sun
+
+Orbit 20
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+05-15-2024 03:03:39        08-15-2024 04:29:39
+
+Event Time (UTC)           Event Name
+05-15-2024 03:03:39        Aphelion
+05-28-2024 22:08:42        Decreasing below 0.70 AU to Sun
+06-13-2024 04:51:32        Decreasing below 0.53 AU to Sun
+06-14-2024 18:00:00        TCM-36
+06-17-2024 12:48:22        Decreasing below 0.45 AU to Sun
+06-25-2024 03:04:58        Solar Encounter Start
+06-27-2024 10:23:33        Decreasing below 35 Rs to Sun
+06-28-2024 21:59:24        Solar Conjunction X-band Start
+06-29-2024 05:54:18        Solar Conjunction Ka-band Start
+06-30-2024 00:41:07        Solar Conjunction Ka-band Stop
+06-30-2024 03:46:12        Perihelion
+06-30-2024 09:39:32        Solar Conjunction X-band Stop
+07-02-2024 21:08:50        Increasing past 35 Rs to Sun
+07-05-2024 00:42:59        Solar Conjunction Ka-band Start
+07-05-2024 00:42:59        Solar Conjunction X-band Start
+07-05-2024 04:27:26        Solar Encounter Stop
+07-05-2024 21:05:59        Solar Conjunction X-band Stop
+07-05-2024 21:05:59        Solar Conjunction Ka-band Stop
+07-12-2024 18:44:01        Increasing past 0.45 AU to Sun
+07-17-2024 02:40:51        Increasing past 0.53 AU to Sun
+08-01-2024 09:23:22        Increasing past 0.70 AU to Sun
+
+Orbit 21
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+08-15-2024 04:29:39        11-10-2024 06:09:54
+
+Event Time (UTC)           Event Name
+08-15-2024 04:29:39        Aphelion
+08-26-2024 18:00:00        TCM-37
+08-28-2024 23:35:58        Decreasing below 0.70 AU to Sun
+09-13-2024 06:18:28        Decreasing below 0.53 AU to Sun
+09-17-2024 14:15:17        Decreasing below 0.45 AU to Sun
+09-25-2024 04:31:49        Solar Encounter Start
+09-27-2024 11:50:23        Decreasing below 35 Rs to Sun
+09-29-2024 22:06:59        Solar Conjunction X-band Start
+09-30-2024 05:13:00        Perihelion
+09-30-2024 06:02:04        Solar Conjunction Ka-band Start
+09-30-2024 23:09:04        Solar Conjunction Ka-band Stop
+10-01-2024 06:24:15        Solar Conjunction X-band Stop
+10-02-2024 22:35:37        Increasing past 35 Rs to Sun
+10-05-2024 05:54:11        Solar Encounter Stop
+10-12-2024 20:10:43        Increasing past 0.45 AU to Sun
+10-17-2024 04:07:32        Increasing past 0.53 AU to Sun
+10-19-2024 21:00:00        TCM-38
+11-01-2024 10:49:54        Increasing past 0.70 AU to Sun
+11-01-2024 21:40:00        TCM-39
+11-02-2024 21:40:00        TCM-39c
+11-06-2024 18:40:54        Solar Eclipse Enter
+11-06-2024 18:44:08        Venus Flyby 7
+11-06-2024 18:49:16        Solar Eclipse Exit
+
+Orbit 22
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+11-10-2024 06:09:54        02-06-2025 16:50:11
+
+Event Time (UTC)           Event Name
+11-10-2024 06:09:54        Aphelion
+11-21-2024 11:17:04        Decreasing below 0.70 AU to Sun
+11-24-2024 21:30:00        TCM-40
+11-26-2024 21:30:00        TCM-40c
+12-07-2024 16:19:40        Decreasing below 0.53 AU to Sun
+12-12-2024 00:56:46        Decreasing below 0.45 AU to Sun
+12-19-2024 13:55:18        Solar Encounter Start
+12-21-2024 19:54:58        Decreasing below 35 Rs to Sun
+12-23-2024 21:36:32        Solar Conjunction X-band Start
+12-23-2024 21:36:32        Solar Conjunction Ka-band Start
+12-24-2024 04:11:39        Solar Conjunction Ka-band Stop
+12-24-2024 04:11:39        Solar Conjunction X-band Stop
+12-24-2024 11:29:37        Perihelion
+12-24-2024 17:58:55        Solar Conjunction X-band Start
+12-24-2024 19:11:36        Solar Conjunction X-band Stop
+12-25-2024 11:17:01        Solar Conjunction X-band Start
+12-26-2024 15:55:23        Solar Conjunction Ka-band Start
+12-27-2024 03:04:15        Increasing past 35 Rs to Sun
+12-29-2024 09:03:55        Solar Encounter Stop
+12-30-2024 03:13:07        Solar Conjunction Ka-band Stop
+01-01-2025 01:48:58        Solar Conjunction X-band Stop
+01-05-2025 22:02:27        Increasing past 0.45 AU to Sun
+01-10-2025 06:39:33        Increasing past 0.53 AU to Sun
+01-26-2025 11:41:57        Increasing past 0.70 AU to Sun
+02-01-2025 19:10:00        TCM-41
+
+Orbit 23
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+02-06-2025 16:50:11        05-06-2025 03:31:13
+
+Event Time (UTC)           Event Name
+02-06-2025 16:50:11        Aphelion
+02-08-2025 17:50:10        Solar Conjunction X-band Start
+02-17-2025 06:33:34        Solar Conjunction Ka-band Start
+02-17-2025 21:58:25        Decreasing below 0.70 AU to Sun
+02-27-2025 22:14:09        DSS-34 Lunar Occultation Enter
+02-27-2025 22:48:44        DSS-34 Lunar Occultation Exit
+03-06-2025 03:00:50        Decreasing below 0.53 AU to Sun
+03-10-2025 11:37:57        Decreasing below 0.45 AU to Sun
+03-17-2025 02:48:17        Solar Conjunction Ka-band Stop
+03-18-2025 00:36:29        Solar Encounter Start
+03-19-2025 19:40:06        Solar Conjunction X-band Stop
+03-20-2025 06:36:09        Decreasing below 35 Rs to Sun
+03-22-2025 22:10:47        Perihelion
+03-23-2025 02:11:30        Solar Conjunction X-band Start
+03-23-2025 02:11:30        Solar Conjunction Ka-band Start
+03-23-2025 08:05:32        Solar Conjunction X-band Stop
+03-23-2025 08:05:32        Solar Conjunction Ka-band Stop
+03-25-2025 13:45:26        Increasing past 35 Rs to Sun
+03-27-2025 19:45:06        Solar Encounter Stop
+04-04-2025 08:43:38        Increasing past 0.45 AU to Sun
+04-08-2025 17:20:45        Increasing past 0.53 AU to Sun
+04-21-2025 18:00:00        TCM-42
+04-24-2025 22:23:18        Increasing past 0.70 AU to Sun
+
+Orbit 24
+Ephem Start Time (UTC)     Ephem End Time (UTC)
+05-06-2025 03:31:13        08-02-2025 14:12:22
+
+Event Time (UTC)           Event Name
+05-06-2025 03:31:13        Aphelion
+05-17-2025 08:39:09        Decreasing below 0.70 AU to Sun
+06-02-2025 13:41:39        Decreasing below 0.53 AU to Sun
+06-06-2025 22:18:45        Decreasing below 0.45 AU to Sun
+06-14-2025 11:17:17        Solar Encounter Start
+06-16-2025 17:16:58        Decreasing below 35 Rs to Sun
+06-18-2025 03:42:49        Solar Conjunction X-band Start
+06-18-2025 11:35:46        Solar Conjunction Ka-band Start
+06-19-2025 06:09:45        Solar Conjunction Ka-band Stop
+06-19-2025 08:51:36        Perihelion
+06-19-2025 15:32:44        Solar Conjunction X-band Stop
+06-21-2025 22:40:06        Solar Conjunction X-band Start
+06-21-2025 22:40:06        Solar Conjunction Ka-band Start
+06-22-2025 00:26:14        Increasing past 35 Rs to Sun
+06-22-2025 18:49:13        Solar Conjunction Ka-band Stop
+06-22-2025 18:49:13        Solar Conjunction X-band Stop
+06-24-2025 06:25:54        Solar Encounter Stop
+07-01-2025 19:24:26        Increasing past 0.45 AU to Sun
+07-06-2025 04:01:31        Increasing past 0.53 AU to Sun
+07-22-2025 09:03:44        Increasing past 0.70 AU to Sun
+

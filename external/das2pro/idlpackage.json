@@ -1,0 +1,12 @@
+{
+  "Name":"das2pro",
+  "Version":"0.2.3",
+  "Author":"David Pisa, Larry Granroth, Chris Piker",
+  "Date":"July 2019",
+  "Dependencies":[
+    {
+      "Name":"IDL",
+      "Version":"^8.7"
+    }
+  ]
+}

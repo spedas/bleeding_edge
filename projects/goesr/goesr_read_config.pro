@@ -1,0 +1,83 @@
+;+
+; Function:
+;   goesr_read_config
+;
+; Purpose:
+;   Reads the goesr_config file
+;
+; Input:
+;   none, the filename is hardcoded, 'goesr_config.txt',and is s put in a
+;   folder given by the routine goesr_config_filedir, that uses the IDL
+;   routine app_user_dir() to create/obtain it
+;
+; Output:
+;   otp: a structure with the changeable fields of the !goesr structure
+;
+;
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2020-12-21 10:57:20 -0800 (Mon, 21 Dec 2020) $
+; $LastChangedRevision: 29545 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/goesr_read_config.pro $
+;-
+
+function goesr_config_template
+
+  compile_opt idl2
+
+  anan = fltarr(1) & anan[0] = 'NaN'
+  ppp = {VERSION:1.00000, $
+    DATASTART:3l, $
+    DELIMITER:61b, $
+    MISSINGVALUE:anan[0], $
+    COMMENTSYMBOL:';', $
+  FIELDCOUNT:2l, $
+    FIELDTYPES:[7l, 7l], $
+    FIELDNAMES:['FIELD1', 'FIELD2'], $
+    FIELDLOCATIONS:[0l, 15l], $
+    FIELDGROUPS:[0l, 1l]}
+
+  Return, ppp
+end
+
+function goesr_read_config, header = hhh
+
+  compile_opt idl2
+
+  otp = -1
+  ;First step is to get the filename
+  dir = goesr_config_filedir(/app_query)
+  If(dir[0] Ne '') Then Begin
+    ;Is there a trailing slash? Not for linux or windows, not sure about Mac
+    ll = strmid(dir, strlen(dir)-1, 1)
+    If(ll Eq '/' Or ll Eq '\') Then filex = dir+'goesr_config.txt' $
+    Else filex = dir+'/'+'goesr_config.txt'
+    ;Does the file exist?
+    If(file_search(filex) Ne '') Then Begin
+      template = goesr_config_template()
+      fff = file_search(filex)
+      strfx = read_ascii(filex, template = template, header = hhh)
+      If(size(strfx, /type) Eq 8) Then Begin
+        otp = create_struct(strtrim(strfx.field1[0], 2), $
+          strtrim(strfx.field2[0], 2), $
+          strtrim(strfx.field1[1], 2), $
+          strtrim(strfx.field2[1], 2))
+        For j = 2, n_elements(strfx.field1)-1 Do $
+          if is_numeric(strfx.field2[j]) then begin
+          str_element, otp, strtrim(strfx.field1[j], 2), $
+            fix(strfx.field2[j]), /add
+        endif else str_element, otp, strtrim(strfx.field1[j], 2), strtrim(strfx.field2[j], 2), /add
+      Endif
+    Endif
+  Endif; Else message, /info, 'NO APP_USER_DIR'
+  ;check for slashes, add if necessary
+  temp_string = strtrim(!goesr.local_data_dir, 2)
+  ll = strmid(temp_string, strlen(temp_string)-1, 1)
+  If(ll Ne '/' And ll Ne '\') Then temp_string = temp_string+'/'
+  !goesr.local_data_dir = temporary(temp_string)
+  temp_string = strtrim(!goesr.remote_data_dir, 2)
+  ll = strmid(temp_string, strlen(temp_string)-1, 1)
+  If(ll Ne '/' And ll Ne '\') Then temp_string = temp_string+'/'
+  !goesr.remote_data_dir = temporary(temp_string)
+
+  Return, otp
+end

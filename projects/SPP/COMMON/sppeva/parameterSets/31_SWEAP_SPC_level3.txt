@@ -1,0 +1,26 @@
+psp_swp_spc_l3i_np_fit
+
+psp_swp_spc_l3i_wp_fit
+psp_swp_spc_l3i_vp_fit_SC
+psp_swp_spc_l3i_vp_fit_RTN
+psp_swp_spc_l3i_np1_fit
+psp_swp_spc_l3i_wp1_fit
+psp_swp_spc_l3i_vp1_fit_SC
+psp_swp_spc_l3i_vp1_fit_RTN
+psp_swp_spc_l3i_np_moment
+psp_swp_spc_l3i_wp_moment
+psp_swp_spc_l3i_vp_moment_SC
+psp_swp_spc_l3i_vp_moment_RTN
+
+;psp_swp_spc_l3i_sc_pos_HCI
+;psp_swp_spc_l3i_sc_vel_HCI
+;psp_swp_spc_l3i_carr_latitude
+;psp_swp_spc_l3i_carr_longitude
+
+;------------------
+; Tohban Selection
+;------------------
+spp_fld_fomstr
+spp_fld_fomstr_copy
+spp_swp_fomstr
+spp_swp_fomstr_copy

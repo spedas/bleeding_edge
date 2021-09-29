@@ -1,0 +1,10 @@
+psp_swp_swem_dig_hkp_SW_SSRWRADDR
+spp_fld_f1_100bps_DCB_ARCWRPTR
+
+;------------------
+; Tohban Selection
+;------------------
+spp_fld_fomstr
+spp_fld_fomstr_copy
+spp_swp_fomstr
+spp_swp_fomstr_copy

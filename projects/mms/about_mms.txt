@@ -1,0 +1,26 @@
+The MMS plug-in in SPEDAS requires IDL 8.4 to access data at the LASP SDC
+
+1) See the following regarding rules for the use of MMS data:
+	https://lasp.colorado.edu/mms/sdc/public/about/
+
+2) CDF version 3.6.3+ is required to correctly handle leap seconds.  
+
+3) The local paths will mirror the SDC directory structure
+
+4) For data availability:
+	https://lasp.colorado.edu/mms/sdc/
+
+5) Logging into the SDC: 
+           - If you have an internet connection, you'll be prompted for a username and password the 
+           first time you use the MMS plugin. There's an option in the widget that allows you 
+           to save your password in a save file on the local machine; if you select this option, 
+           the login prompt will never come up again and your saved password will be used to 
+           login to the SDC. This is insecure and should not be used if you use a common 
+           password with other services. 
+           
+           - Use an empty username and password for public access to the data
+
+           - If you don't have an internet connection or you can't login remotely, the plugin will 
+           look for the files on the local machine using a directory structure that matches 
+           the directory structure at the SDC.
+      

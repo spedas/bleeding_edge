@@ -1,0 +1,14 @@
+psp_swp_spc_l2i_a_current
+psp_swp_spc_l2i_b_current
+psp_swp_spc_l2i_c_current
+psp_swp_spc_l2i_d_current
+psp_swp_spc_l2i_flow_angle
+psp_swp_spc_l2i_diff_charge_flux_density
+
+;------------------
+; Tohban Selection
+;------------------
+spp_fld_fomstr
+spp_fld_fomstr_copy
+spp_swp_fomstr
+spp_swp_fomstr_copy

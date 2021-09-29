@@ -1,0 +1,2 @@
+project: Lomonosov
+load_data: lomo_ui_load_data

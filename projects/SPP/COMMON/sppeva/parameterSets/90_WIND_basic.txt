@@ -1,0 +1,29 @@
+
+;--------------
+; Wind MFI
+;--------------
+;wi_h0_mfi_B3GSE
+;wi_h0_mfi_B3GSE_z
+
+;---------------
+; Wind 3DP PM
+;---------------
+
+wi_3dp_pm_P_DENS
+;wi_3dp_pm_P_VELS
+;wi_3dp_pm_P_VELS_x
+;wi_3dp_pm_P_TENS
+;wi_3dp_pm_P_TEMP
+
+;---------------
+; Wind 3DP ELPD
+;---------------
+wi_3dp_elpd_FLUX
+
+;------------------
+; Tohban Selection
+;------------------
+psp_fld_fomstr
+psp_fld_fomstr_copy
+psp_swp_fomstr
+psp_swp_fomstr_copy
