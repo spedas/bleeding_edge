@@ -18,21 +18,7 @@ pro elf_create_instrument_all, trange = trange, nodownload = nodownload, probe =
       ;figure out whether user wants stuff downloaded
       if !elf.NO_DOWNLOAD EQ 0 then udownload = 1 else udownload = 0
       if keyword_set(nodownload) then udownload = 0
-      
-      if udownload eq 1 then begin
-        ; NOTE: directory is temporarily password protected. this will be
-        ;       removed when data is made public.
-        if undefined(user) OR undefined(pw) then authorization = elf_get_authorization()
-        user=authorization.user_name
-        pw=authorization.password
-        ; only query user if authorization file not found
-        If user EQ '' OR pw EQ '' then begin
-          print, 'Please enter your ELFIN user name and password'
-          read,user,prompt='User Name: '
-          read,pw,prompt='Password: '
-        endif
-      endif
-      
+            
       file_prefix = 'el'+probe+'_'+instrument+'_'
       
       sz_directions = ['nasc', 'ndes', 'sasc', 'sdes', 'eq']
@@ -56,8 +42,7 @@ pro elf_create_instrument_all, trange = trange, nodownload = nodownload, probe =
        if udownload then begin
         this_file = file_prefix+element+'.csv'
          paths = spd_download(remote_file=this_file, remote_path=remote_path, $
-           local_file=this_file, local_path=local_path, $
-           url_username=user, url_password=pw, ssl_verify_peer=1, $
+           local_file=this_file, local_path=local_path, ssl_verify_peer=1, $
            ssl_verify_host=1)
          if undefined(paths) or paths EQ '' then $
            dprint, devel=1, 'Unable to download ' + remote_file

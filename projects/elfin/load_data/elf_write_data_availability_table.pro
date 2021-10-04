@@ -35,15 +35,15 @@ pro elf_write_data_availability_table, filename, data_available, instrument, pro
   endif
 
   ; get authorization information
-  if undefined(user) OR undefined(pw) then authorization = elf_get_authorization()
-  user=authorization.user_name
-  pw=authorization.password
-  ; only query user if authorization file not found
-  If user EQ '' OR pw EQ '' then begin
-    print, 'Please enter your ELFIN user name and password'
-    read,user,prompt='User Name: '
-    read,pw,prompt='Password: '
-  endif
+;  if undefined(user) OR undefined(pw) then authorization = elf_get_authorization()
+;  user=authorization.user_name
+;  pw=authorization.password
+;  ; only query user if authorization file not found
+;  If user EQ '' OR pw EQ '' then begin
+;    print, 'Please enter your ELFIN user name and password'
+;    read,user,prompt='User Name: '
+;    read,pw,prompt='Password: '
+;  endif
 
   ; define local and remote paths
   local_path=!elf.LOCAL_DATA_DIR+'el'+probe+ '/data_availability/'
@@ -78,9 +78,7 @@ pro elf_write_data_availability_table, filename, data_available, instrument, pro
         if file_test(local_path,/dir) eq 0 then file_mkdir2, local_path
         dprint, dlevel=1, 'Downloading ' + remote_path + this_file + ' to ' + local_path + this_file
         paths = spd_download(remote_file=this_file, remote_path=remote_path, $
-            local_file=this_file, local_path=local_path, $
-            url_username=user, url_password=pw, ssl_verify_peer=1, $
-            ssl_verify_host=1)
+            local_file=this_file, local_path=local_path, ssl_verify_peer=1, ssl_verify_host=1)
         if undefined(paths) or paths EQ '' then $
           dprint, devel=1, 'Unable to download ' + remote_file 
         

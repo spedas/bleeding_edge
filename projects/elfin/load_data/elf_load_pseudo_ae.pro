@@ -34,21 +34,19 @@ pro elf_load_pseudo_ae, no_download=no_download, trange=trange, smooth=smooth, n
   if nodownload eq 0 then begin
     ; NOTE: directory is temporarily password protected. this will be
     ;       removed when data is made public.
-    if undefined(user) OR undefined(pw) then authorization = elf_get_authorization()
-    user=authorization.user_name
-    pw=authorization.password
-    ; only query user if authorization file not found
-    If user EQ '' OR pw EQ '' then begin
-      print, 'Please enter your ELFIN user name and password'
-      read,user,prompt='User Name: '
-      read,pw,prompt='Password: '
-    endif
+;    if undefined(user) OR undefined(pw) then authorization = elf_get_authorization()
+;    user=authorization.user_name
+;    pw=authorization.password
+;    ; only query user if authorization file not found
+;    If user EQ '' OR pw EQ '' then begin
+;      print, 'Please enter your ELFIN user name and password'
+;      read,user,prompt='User Name: '
+;      read,pw,prompt='Password: '
+;    endif
     if file_test(local_ae_dir,/dir) eq 0 then file_mkdir2, local_ae_dir
     dprint, dlevel=1, 'Downloading ' + remote_filename + ' to ' + local_ae_dir
     paths = spd_download(remote_file=remote_filename, $   ;remote_path=remote_cal_dir, $
-      local_file=local_filename, $   ;local_path=local_cal_dir, $
-      url_username=user, url_password=pw, ssl_verify_peer=1, $
-      ssl_verify_host=1)
+      local_file=local_filename, ssl_verify_peer=1, ssl_verify_host=1)
     if undefined(paths) or paths[0] EQ '' then $
        dprint, devel=1, 'Unable to download ' + local_filename
   endif

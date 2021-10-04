@@ -86,9 +86,7 @@ pro elf_get_overview_plots, trange=trange, probe=probe, local_data_dir=local_dat
         local_filename=local_png_dir+'/'+sc+'_l2_overview_'+daily_names+hrs[j]+zones[i]+'.png'
         paths = ''
         paths = spd_download(remote_file=remote_filename, $   ;remote_path=remote_png_dir, $
-          local_file=local_filename, $   ;local_path=local_cal_dir, $
-          url_username=user, url_password=pw, ssl_verify_peer=1, $
-          ssl_verify_host=1)
+          local_file=local_filename, ssl_verify_peer=1, ssl_verify_host=1)
       endfor    ; end of science zone loop
     endif 
 
