@@ -77,8 +77,8 @@
 ;      6371.2 = the value used in the GEOPACK FORTRAN code for Re
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-09-20 11:10:27 -0700 (Mon, 20 Sep 2021) $
-; $LastChangedRevision: 30307 $
+; $LastChangedDate: 2021-10-04 11:39:07 -0700 (Mon, 04 Oct 2021) $
+; $LastChangedRevision: 30335 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t89/t89.pro $
 ;-
 
@@ -123,18 +123,21 @@ function t89, tarray, rgsm_array, kp=kp, period=period, igrf_only=igrf_only,$
       return,-1L
   endif
 
+  ; Range check for Kp values
+  ; Valid IOPT values are in the range [1.0,7.0]
+  ; kp2iopt will replace any out-of-range values with 1.0 or 7.0 as appropriate.
+  ; Therefore we only warn here, rather than throwing an error.
+  
   kp_idx_low = where(kp_array lt 0)
 
   if kp_idx_low[0] ne -1L then begin
-      message, /continue, 'Kp has value less than 0'
-      return, -1L
+      message, /continue, 'Kp has value less than 0, will be treated as 0'
   endif
 
   kp_idx_high = where(kp_array gt 6)
 
   if kp_idx_high[0] ne -1L then begin
-      message, /continue, 'Kp has value greater than 6'
-      return, -1L
+      message, /continue, 'Kp has value greater than 6, will be treated as 6'
   endif
   
   iopt=kp2iopt(kp_array)

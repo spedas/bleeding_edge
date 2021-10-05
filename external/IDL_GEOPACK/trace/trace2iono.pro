@@ -130,8 +130,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-09-27 17:07:54 -0700 (Mon, 27 Sep 2021) $
-; $LastChangedRevision: 30326 $
+; $LastChangedDate: 2021-10-04 11:39:07 -0700 (Mon, 04 Oct 2021) $
+; $LastChangedRevision: 30335 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2iono.pro $
 ;-
 
@@ -280,21 +280,25 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
           return
       endif
     
-      par_idx_low = where(par_array lt 0)
+      ; Range check for Kp
+      ; Valid IOPT values are in the range [1.0,7.0]
+      ; kp2iopt will replace any out-of-range iopt values with 1.0 or 7.0 as appropriate,
+      ; so we only warn here instead of throwing an error.
+      
+      par_idx_low = where(par_array lt 0.0)
     
       if par_idx_low[0] ne -1L then begin
-          message, /continue, 'par (Kp) has value less than 0'
-          return
+          message, /continue, 'par (Kp) has value less than 0 (will be treated as 0)'
       endif
     
-      par_idx_high = where(par_array gt 6)
+      par_idx_high = where(par_array gt 6.0)
     
       if par_idx_high[0] ne -1L then begin
-          message, /continue, 'par (Kp) has value greater than 6'
-          return
+          message, /continue, 'par (Kp) has value greater than 6 (will be treated as 6)'
       endif
       
       par_array=kp2iopt(par_array)   ; Convert Kp values to iopt values for T89 model
+      
     endif else if external_model2 ne 'none' then begin
        ;these switches used to tell the
        ;IDL/GEOPACK trace function which
