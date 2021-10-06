@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2020
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2021-05-17 14:49:46 -0700 (Mon, 17 May 2021) $
-; $LastChangedRevision: 29967 $
+; $LastChangedDate: 2021-10-05 15:33:23 -0700 (Tue, 05 Oct 2021) $
+; $LastChangedRevision: 30337 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -169,7 +169,7 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
   ;
   ; timespan, '2020-01-20'
   ;
-  ; spp_fld_load, type = 'dfb_ac_spec_dV34hg  ; Load dV34hg spectra only
+  ; spp_fld_load, type = 'dfb_ac_spec_dV34hg' ; Load dV34hg spectra only
   ; spp_fld_load, type = 'dfb_ac_spec'        ; Load all available AC spectra
   ;
 
@@ -188,8 +188,12 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
           'SCMdlflg','SCMelflg','SCMflflg', $
           'SCMmf', 'V5hg']
       endif else begin
-        spec_types = ['SCMdlfhg_SCMelfhg','SCMdlfhg_SCMflfhg','SCMelfhg_SCMflfhg', $
-          'SCMulfhg_SCMvlfhg','SCMulfhg_SCMwlfhg','SCMvlfhg_SCMwlfhg', $
+        spec_types = ['SCMdlfhg_SCMelfhg',$   ; cross spectral data types
+          'SCMdlfhg_SCMflfhg', $
+          'SCMelfhg_SCMflfhg', $
+          'SCMulfhg_SCMvlfhg', $
+          'SCMulfhg_SCMwlfhg', $
+          'SCMvlfhg_SCMwlfhg', $
           'dV12hg_dV34hg']
       endelse
 
@@ -234,8 +238,8 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
   ;
   ; timespan, '2020-01-20'
   ;
-  ; spp_fld_load, type = 'dfb_ac_bpf_dV34hg  ; Load dV34hg spectra only
-  ; spp_fld_load, type = 'dfb_ac_bpf'        ; Load all available AC spectra
+  ; spp_fld_load, type = 'dfb_ac_bpf_dV34hg'  ; Load dV34hg bandpass only
+  ; spp_fld_load, type = 'dfb_ac_bpf'         ; Load all available AC bandpass
   ;
 
   if type EQ 'dfb_dc_bpf' or type EQ 'dfb_ac_bpf' then begin
@@ -462,7 +466,7 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
 
   ;
   ; The routine can optionally download specific versions of the CDF files.
-  ; By default the latest version if loaded.
+  ; By default the latest version is loaded.
   ;
 
   if n_elements(version) EQ 1 then begin
@@ -618,8 +622,9 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
         options,'psp_fld_l3_merged_scam_wf_SC', 'ytitle', 'SCaM SC'
         options,'psp_fld_l3_merged_scam_wf_uvw', 'ytitle', 'SCaM uvw'
         options,'psp_fld_l3_merged_scam_wf_*', 'ysubtitle', '[nT]'
-        options,'psp_fld_l3_merged_scam_' + ['wf_*','scm_sample_rate','mag_offset_*'],colors='bgr' ,/default
-        options,'psp_fld_l3_merged_scam_rxn_whl',colors='bgrk' ,/default
+        options,'psp_fld_l3_merged_scam_' + $
+          ['wf_*','scm_sample_rate','mag_offset_*'], colors='bgr', /default
+        options,'psp_fld_l3_merged_scam_rxn_whl', colors='bgrk', /default
         options,'psp_fld_l3_merged_scam_wf_SC', 'max_points', 10000
         options,'psp_fld_l3_merged_scam_wf_SC', 'psym_lim', 300
 

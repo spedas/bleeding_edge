@@ -12,7 +12,11 @@
 ;         prefix, suffix: these are passed to cdf_info_to_tplot
 ;         gatt2istp: dictionary, mapping of HDF global attributes to ISTP global attributes
 ;         vatt2istp: dictionary, mapping of HDF variable attributes to ISTP variable attributes
-;         coord_list: coordinate list, if set we get the coordinate system from the variable name
+;         coord_list: coordinate list, if set we get the coordinate system from the variable name;         
+;         time_var: name of the time variable
+;                   default is 'time'
+;         time_offset: time offset in miliseconds
+;                   default is time_double('2000-01-01/12:00:00.000')
 ;
 ; Notes:
 ;     This format is used by GOES 16 and 17 and reprocessed files for GOES 8-15.
@@ -22,12 +26,13 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2021-09-10 11:53:02 -0700 (Fri, 10 Sep 2021) $
-; $LastChangedRevision: 30287 $
+; $LastChangedDate: 2021-10-05 12:01:41 -0700 (Tue, 05 Oct 2021) $
+; $LastChangedRevision: 30336 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/hdf/hdf2tplot.pro $
 ;-
 
-pro hdf2tplot, filenames, tplotnames=tplotnames, varnames=varnames, merge=merge, prefix=prefix, suffix=suffix, verbose=verbose, gatt2istp=gatt2istp, vatt2istp=vatt2istp, coord_list=coord_list, time_offset=time_offset, _extra=_extra
+pro hdf2tplot, filenames, tplotnames=tplotnames, varnames=varnames, merge=merge, prefix=prefix, suffix=suffix, verbose=verbose, $
+  gatt2istp=gatt2istp, vatt2istp=vatt2istp, coord_list=coord_list, time_offset=time_offset, time_var=time_var, _extra=_extra
 
   compile_opt idl2
   ; Set verbose.
@@ -54,7 +59,7 @@ pro hdf2tplot, filenames, tplotnames=tplotnames, varnames=varnames, merge=merge,
 
   foreach fname, filenames do begin
     ; load the HDF-5 file into an IDL structure
-    hdfi = hdf_load_vars(fname, varnames=varnames, verbose=verbose)
+    hdfi = hdf_load_vars(fname, varnames=varnames, verbose=verbose, _extra=_extra)
     if size(hdfi, /type) ne 7 then begin
       msg = 'hdf2tplot: Cannot load HDF-5 file into an IDL structure: hdfi was invalid.'
       dprint, dlevel=1, verbose=verbose, msg
@@ -62,7 +67,8 @@ pro hdf2tplot, filenames, tplotnames=tplotnames, varnames=varnames, merge=merge,
     endif
 
     ; Change the previously created struct into a struct readable by cdf_info_to_tplot.
-    cdf_struct = hdf_to_cdfstruct(hdfi, fname, varnames=varnames, verbose=verbose, gatt2istp=gatt2istp, vatt2istp=vatt2istp, coord_list=coord_list, time_offset=time_offset)
+    cdf_struct = hdf_to_cdfstruct(hdfi, fname, varnames=varnames, verbose=verbose, gatt2istp=gatt2istp, vatt2istp=vatt2istp, $
+      coord_list=coord_list, time_offset=time_offset, time_var=time_var, _extra=_extra)
     if size(cdf_struct, /type) ne 8 then begin
       msg = 'hdf2tplot: Cannot convert the HDF-5 IDL structure into a CDF structure: cdf_struct was invalid.'
       dprint, dlevel=1, verbose=verbose, msg

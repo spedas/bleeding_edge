@@ -22,8 +22,8 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2021-09-12 12:59:54 -0700 (Sun, 12 Sep 2021) $
-; $LastChangedRevision: 30290 $
+; $LastChangedDate: 2021-10-05 12:01:41 -0700 (Tue, 05 Oct 2021) $
+; $LastChangedRevision: 30336 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/hdf/hdf_to_cdfstruct.pro $
 ;-
 
@@ -125,7 +125,8 @@ pro hdfi_find_dims, hdfi, hdfi_names=hdfi_names, hdfi_types=hdfi_types, hdfi_dim
   endfor
 end
 
-function hdf_to_cdfstruct, hdfi, file, verbose=verbose, varnames=varnames, time_var=time_var, time_offset=time_offset, gatt2istp=gatt2istp, vatt2istp=vatt2istp, coord_list=coord_list, _extra=_extra
+function hdf_to_cdfstruct, hdfi, file, verbose=verbose, varnames=varnames, time_var=time_var, time_offset=time_offset, $
+  gatt2istp=gatt2istp, vatt2istp=vatt2istp, coord_list=coord_list, _extra=_extra
   ; Converts a Netcdf-4/HDF-5 structure to a CDF structure.
   compile_opt idl2
 
@@ -257,8 +258,8 @@ function hdf_to_cdfstruct, hdfi, file, verbose=verbose, varnames=varnames, time_
   for j=0, n_elements(hdfi[0,*])-1 do begin
     if hdfi[0, j] eq 'dataset' then begin
 
-      if (hdfi_names[j] ne '') && (hdfi_types[j] eq 'H5T_FLOAT') && (hdfi_points[j] gt 0) && (hdfi_dims[j] le 3) then begin ; skip empty vars
-
+      if (hdfi_names[j] ne '') && (hdfi_types[j] eq 'H5T_FLOAT') && (hdfi_points[j] gt 0) then begin ; skip empty vars
+        ; if hdfi_dims[j] gt 3 then it will be used to create as many variables in post processing
         varnew = replicate(vars, 1)
         varatt = replicate(attr, 1)
         variable_name = hdfi_names[j]
@@ -271,6 +272,7 @@ function hdf_to_cdfstruct, hdfi, file, verbose=verbose, varnames=varnames, time_
           varnew.dataptr = ptr_new()
         endif else begin
           if variable_name eq time_var then begin
+            varnew.name = 'time'
             varnew.dataptr = ptr_new(hdftime)
           endif else if variable_name eq time_orbit_var then begin
             varnew.dataptr = ptr_new(hdftime_orbit)

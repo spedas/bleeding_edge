@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Oct  4 18:16:11 2021.<P>
+<STRONG>Last modified: </STRONG>Tue Oct  5 18:16:09 2021.<P>
  
 <HR>
  
@@ -45,7 +45,11 @@ This page was created by the IDL library routine
          prefix, suffix: these are passed to cdf_info_to_tplot
          gatt2istp: dictionary, mapping of HDF global attributes to ISTP global attributes
          vatt2istp: dictionary, mapping of HDF variable attributes to ISTP variable attributes
-         coord_list: coordinate list, if set we get the coordinate system from the variable name
+         coord_list: coordinate list, if set we get the coordinate system from the variable name;         
+         time_var: name of the time variable
+                   default is 'time'
+         time_offset: time offset in miliseconds
+                   default is time_double('2000-01-01/12:00:00.000')
 
  Notes:
      This format is used by GOES 16 and 17 and reprocessed files for GOES 8-15.
@@ -55,8 +59,8 @@ This page was created by the IDL library routine
 
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2021-09-10 11:53:02 -0700 (Fri, 10 Sep 2021) $
- $LastChangedRevision: 30287 $
+ $LastChangedDate: 2021-10-05 12:01:41 -0700 (Tue, 05 Oct 2021) $
+ $LastChangedRevision: 30336 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/hdf/hdf2tplot.pro $
 </PRE><P>
 <STRONG>(See <A href="hdf/hdf2tplot.pro">general/hdf/hdf2tplot.pro</A>)</STRONG><P>
@@ -118,8 +122,8 @@ This page was created by the IDL library routine
 
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2021-09-12 12:59:54 -0700 (Sun, 12 Sep 2021) $
- $LastChangedRevision: 30290 $
+ $LastChangedDate: 2021-10-05 12:01:41 -0700 (Tue, 05 Oct 2021) $
+ $LastChangedRevision: 30336 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/hdf/hdf_to_cdfstruct.pro $
 </PRE><P>
 <STRONG>(See <A href="hdf/hdf_to_cdfstruct.pro">general/hdf/hdf_to_cdfstruct.pro</A>)</STRONG><P>
