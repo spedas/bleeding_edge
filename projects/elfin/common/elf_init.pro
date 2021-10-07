@@ -52,8 +52,9 @@ pro elf_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
 
   if !elf.init ne 0 then begin
     ;Assure that trailing slashes exist on data directories
-    !elf.remote_data_dir = 'ftp://data.elfin.ucla.edu/elfin/'    
+    !elf.remote_data_dir = 'https://data.elfin.ucla.edu/'    
     !elf.remote_data_dir = spd_addslash(!elf.remote_data_dir)
+    !elf.local_data_dir = spd_default_local_data_dir() + 'elfin/'
     !elf.local_data_dir = spd_addslash(!elf.local_data_dir)
     return
   endif
@@ -67,8 +68,9 @@ pro elf_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote
 
   elf_config,no_color_setup=no_color_setup; override the defaults by local config file
   ; temporarily override the private are and point to elfindata
-  !elf.remote_data_dir = 'ftp://data.elfin.ucla.edu/elfin/'    
+  !elf.remote_data_dir = 'https://data.elfin.ucla.edu/'    
   !elf.remote_data_dir = spd_addslash(!elf.remote_data_dir)
+  !elf.local_data_dir = spd_default_local_data_dir() + 'elfin/'
   !elf.local_data_dir = spd_addslash(!elf.local_data_dir)
 
   elf_set_verbose ;propagate verbose setting into tplot_vars
