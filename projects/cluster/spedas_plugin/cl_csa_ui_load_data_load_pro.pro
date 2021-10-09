@@ -73,7 +73,7 @@ pro cl_csa_ui_load_data_load_pro,$
   datatypes=loadStruc.datatypes
   timeRange=loadStruc.timerange
   get_support_data=loadStruc.get_support_data
-  use_tap=loadStruc.use_tap
+ 
 
   ; **** Specify the starting and ending time ranges for this mission *****
   ; **** this should be modified for each new mission *****
@@ -86,7 +86,7 @@ pro cl_csa_ui_load_data_load_pro,$
   ; ones will not get clobbered.
   tn_before = [tnames('*',create_time=cn_before)]
 
-  cl_load_csa,probes=probes,datatypes=datatypes,trange=timeRange,get_support_data=get_support_data,use_tap=use_tap
+  cl_load_csa,probes=probes,datatypes=datatypes,trange=timeRange,get_support_data=get_support_data
  
   ; determine which tplot variables to delete and which ones are the new temporary 
   ; variables

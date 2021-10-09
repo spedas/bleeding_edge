@@ -40,8 +40,6 @@ function cl_csa_ui_get_user_selections, state, event
   ; retrieve the probe[s] selected
   getsupp = widget_info(event.handler,find_by_uname='getsupportdata')
   get_support_data = widget_info(getsupp,/button_set)
-  usetap = widget_info(event.handler,find_by_uname='usetap')
-  use_tap = widget_info(usetap,/button_set)
   
   ;get the start and stop times
   timeRangeObj = state.timeRangeObj
@@ -61,8 +59,7 @@ function cl_csa_ui_get_user_selections, state, event
   selections = { datatypes:datatypes, $
     probes:probes, $
     timeRange:[startTimeString, endTimeString],$
-    get_support_data: get_support_data, $
-    use_tap: use_tap }
+    get_support_data: get_support_data}
     
   return, selections  
   
@@ -292,8 +289,6 @@ pro cl_csa_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRa
  
   getsuppBase = widget_base(selectionBase, /nonexclusive, /col, /align_left)
   getsuppButton = widget_button(getsuppBase,value='Get Support Data', uname='getsupportdata',uvalue='GETSUPPORTDATA')
-  usetapButton = widget_button(getsuppBase,value='Use TAP protocol', uname='usetap',uvalue='USETAP')
-  use_tap=0
   get_support_data=0
   
   ;create the dropdown menu that lists the various instrument types for this mission
@@ -342,8 +337,7 @@ pro cl_csa_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRa
            callSequence:callSequence, $
            probeArray:probeArray, $
            datatypeArray:datatypeArray, $
-           get_support_data:get_support_data,$
-           use_tap:use_tap}
+           get_support_data:get_support_data}
            
   widget_control,topBase,set_uvalue=state
                                   

@@ -23,15 +23,15 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2021-05-20 17:50:46 -0700 (Thu, 20 May 2021) $
-;$LastChangedRevision: 29980 $
+;$LastChangedDate: 2021-10-08 16:03:55 -0700 (Fri, 08 Oct 2021) $
+;$LastChangedRevision: 30344 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/cluster/cluster_science_archive/cl_load_csa_crib.pro $
 ;-
 
-pro cl_load_csa_crib,get_support_data=get_support_data,use_tap=use_tap
+pro cl_load_csa_crib,get_support_data=get_support_data
 ;  Get lists of valid probes and datatypes
 
-cl_load_csa,probes=valid_probes,datatypes=valid_datatypes,/valid_names,use_tap=use_tap
+cl_load_csa,probes=valid_probes,datatypes=valid_datatypes,/valid_names
 
 trange=['2001-02-01T00:00:00Z','2001-02-04T00:00:00Z']
 
@@ -46,7 +46,7 @@ tp_counts=intarr(n_elements(valid_datatypes))
 a=tnames('*',before_count)
 for i=0,n_elements(valid_datatypes)-1 do begin
   print,"Loading "+valid_datatypes[i]
-  cl_load_csa,trange=trange,probes='C1', datatypes=valid_datatypes[i], verbose=1,use_tap=use_tap, get_support_data=get_support_data
+  cl_load_csa,trange=trange,probes='C1', datatypes=valid_datatypes[i], verbose=1, get_support_data=get_support_data
   a=tnames('*',after_count)
   tp_counts[i]=after_count-before_count
   print,string(tp_counts[i])+' tplot variables created'

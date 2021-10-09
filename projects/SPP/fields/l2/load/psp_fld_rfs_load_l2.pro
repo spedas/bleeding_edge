@@ -1,4 +1,9 @@
-pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only,varformat=vars_fmt
+pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
+  varformat=vars_fmt, level = level
+
+  if n_elements(level) EQ 0 then level = 2
+
+  if strpos(files[0],'_l3_') GT -1 then level = 3
 
   if n_elements(files) EQ 0 and n_elements(hfr_only) EQ 0 and n_elements(lfr_only) EQ 0 then begin
 
@@ -52,10 +57,10 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only,varform
   cdf2tplot, files, varformat = vars_fmt, varnames = varnames, tplotnames=tn
 
   meta_end = ['averages', 'peaks', 'ch0', 'ch1', 'string', $
-    'nsum', 'gain', 'hl']
+    'nsum', 'gain', 'hl', 'J2000', 'RTN', 'bias']
 
   meta = ['averages', 'peaks', 'ch0', 'ch0_string', 'ch1', 'ch1_string', $
-    'nsum', 'gain', 'hl']
+    'nsum', 'gain', 'hl', 'J2000', 'SPP_RTN', 'bias']
 
   types = ['auto_averages', 'auto_peaks', 'cross_im', 'cross_re', 'coher', 'phase']
 
@@ -159,6 +164,41 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only,varform
 
         options, var, 'ytitle', ytitle
 
+        ; Special options for Level 3 metadata
+
+        if level EQ 3 and type EQ 'RTN' or type EQ 'J2000' or type EQ 'bias' then begin
+
+          type = split[-1]
+
+          src = split[6]
+
+          if type EQ 'RTN' or type EQ 'J2000' then begin
+
+            if type EQ 'RTN' then $
+              labels = ['R','T','N'] else $
+              labels = ['X','Y','Z']
+
+            options, var, 'ytitle', $
+              strupcase(rec) + '!C' + src + '!C' + type
+            options, var, 'labels', labels
+            options, var, 'colors', 'bgr'
+            options, var, 'yrange', [-1.0,1.0]
+            options, var, 'ystyle', 1
+            options, var, 'yticklen', 1
+            options, var, 'ygridstyle', 1
+            options, var, 'psym_lim', 100
+
+          endif else if type EQ 'bias' then begin
+
+            options, var, 'ytitle', $
+              strupcase(rec) + '!C' + src + '!C' + 'BIAS'
+            options, var, 'ysubtitle', $
+              '[uA]'
+
+          endif
+
+        endif
+
       endif else begin
 
         print, var
@@ -248,7 +288,6 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only,varform
             options, rm_var, 'ytitle', '!C' + src
           endelse
 
-
         endforeach
 
         ;      stop
@@ -258,8 +297,8 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only,varform
     endif
 
   endfor
-  
-  ; For quality flag filtering support 
+
+  ; For quality flag filtering support
   r = where(tn.Matches('quality_flag'))
   qf_root = tn[r[0]]
   options,tn,/def,qf_root=qf_root

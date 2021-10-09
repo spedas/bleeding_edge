@@ -31,8 +31,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2021-07-08 16:24:24 -0700 (Thu, 08 Jul 2021) $
-;$LastChangedRevision: 30112 $
+;$LastChangedDate: 2021-10-08 16:03:55 -0700 (Fri, 08 Oct 2021) $
+;$LastChangedRevision: 30344 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/cluster/cluster_science_archive/cl_load_csa.pro $
 ;-
 
@@ -169,13 +169,13 @@ end
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2021-07-08 16:24:24 -0700 (Thu, 08 Jul 2021) $
-;$LastChangedRevision: 30112 $
+;$LastChangedDate: 2021-10-08 16:03:55 -0700 (Fri, 08 Oct 2021) $
+;$LastChangedRevision: 30344 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/cluster/cluster_science_archive/cl_load_csa.pro $
 ;-
 
 pro cl_load_csa,trange=trange,probes=probes,datatypes=datatypes,valid_names=valid_names,get_support_data=get_support_data, $
-  verbose=verbose,use_tap=use_tap,nocleanup=nocleanup
+  verbose=verbose,nocleanup=nocleanup
   
 defsysv,'!spedas',exists=exists
 if not(keyword_set(exists)) then begin
@@ -258,15 +258,9 @@ delivery_interval='ALL'
 ; Make query string
 ; Base and query URLs
 
-if keyword_set(use_tap) then begin
-  ; newer TAP system
+; newer TAP system; CAIO method no longer supported JWL 2021-10-08
   base_url='https://csa.esac.esa.int/csa-sl-tap/data'
   query_string='retrieval_type=PRODUCT&START_DATE='+start_date+'&END_DATE='+end_date+'&DELIVERY_FORMAT='+delivery_format+'&DELIVERY_INTERVAL='+delivery_interval+'&NON_BROWSER'
-endif else begin
-  ;older CAIO system
-  base_url='http://csa.esac.esa.int/csa/aio/product-action'
-  query_string='START_DATE='+start_date+'&END_DATE='+end_date+'&DELIVERY_FORMAT='+delivery_format+'&DELIVERY_INTERVAL='+delivery_interval+'&NON_BROWSER'
-endelse
 
 for i=0,n_elements(my_probes)-1 do begin
    for j=0,n_elements(my_datatypes)-1 do begin

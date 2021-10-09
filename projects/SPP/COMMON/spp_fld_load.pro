@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2020
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2021-10-05 15:33:23 -0700 (Tue, 05 Oct 2021) $
-; $LastChangedRevision: 30337 $
+; $LastChangedDate: 2021-10-08 17:05:51 -0700 (Fri, 08 Oct 2021) $
+; $LastChangedRevision: 30346 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -319,9 +319,15 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
 
   if not keyword_set(pathformat) then begin
     if level EQ 3 then begin
-      pathformat =  'TYPE/YYYY/MM/psp_fld_l3_TYPE_YYYYMMDDhh_v??.cdf'
-      resolution = 3600l * 6l ; hours
-      daily_names = 0
+      if type EQ 'rfs_lfr' or type EQ 'rfs_hfr' then begin
+        pathformat =  'TYPE/YYYY/MM/psp_fld_l3_TYPE_YYYYMMDD_v??.cdf'
+        resolution = 3600l * 24l ; hours
+        daily_names = 1    
+      endif else begin
+        pathformat =  'TYPE/YYYY/MM/psp_fld_l3_TYPE_YYYYMMDDhh_v??.cdf'
+        resolution = 3600l * 6l ; hours
+        daily_names = 0
+      endelse
     endif else if level EQ 2 then begin
       pathformat =  'TYPE/YYYY/MM/psp_fld_l2_TYPE_YYYYMMDD_v??.cdf'
       if type EQ 'mag_SC' then begin
