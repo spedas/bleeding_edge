@@ -59,9 +59,10 @@
 ; fullfile_out = the output filename
 ;HISTORY:
 ; Hacked from mvn_sta_cmn_l2gen.pro, 22-jul-2015
+; SOme chages for version 2, jmm, 2021-09-28
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2021-07-20 10:34:53 -0700 (Tue, 20 Jul 2021) $
-; $LastChangedRevision: 30137 $
+; $LastChangedDate: 2021-10-11 13:27:22 -0700 (Mon, 11 Oct 2021) $
+; $LastChangedRevision: 30348 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/fast/fa_esa/l2util/fa_esa_cmn_l2gen.pro $
 ;-
 Pro fa_esa_cmn_l2gen, cmn_dat, esa_type=esa_type, $
@@ -88,6 +89,7 @@ Pro fa_esa_cmn_l2gen, cmn_dat, esa_type=esa_type, $
 ;  tt = fa_orbit_to_time(cmn_dat.orbit_start)
 ;  date = time_string(tt[1], format=6)
 ;First, global attributes
+  gen_date = time_string(systime(/sec), precision=-3)
   global_att = {Acknowledgment:'None', $
                 Data_type:'CAL>Calibrated', $
                 Data_version:'0', $
@@ -95,16 +97,17 @@ Pro fa_esa_cmn_l2gen, cmn_dat, esa_type=esa_type, $
                 Discipline:'Space Physics>Planetary Physics>Particles', $
                 File_naming_convention: 'descriptor_datatype_yyyyMMddHHmmss', $
                 Generated_by:'FAST SOC' , $
-                Generation_date:'2015-07-28' , $
+;                Generation_date:'2015-07-28' , $
+                Generation_date:gen_date , $
                 HTTP_LINK:'http://sprg.ssl.berkeley.edu/fast/', $
                 Instrument_type:'Particles (space)' , $
                 LINK_TEXT:'General Information about the FAST mission' , $
                 LINK_TITLE:'FAST home page' , $
-                Logical_file_id:'fa_esa_l2_XXX_00000000000000_v00.cdf' , $
+                Logical_file_id:'fa_esa_l2_XXX_00000000000000_00000_v00.cdf' , $
                 Logical_source:'fa_esa_l2_XXX' , $
                 Logical_source_description:'FAST Ion and Electron Particle Distributions', $
                 Mission_group:'FAST' , $
-                MODS:'Rev-1 2015-07-28' , $
+                MODS:'Rev-2 2021-09-28' , $
                 PI_name:'J. P. McFadden', $
                 PI_affiliation:'U.C. Berkeley Space Sciences Laboratory', $
                 Planet:'Earth', $
@@ -453,8 +456,8 @@ Pro fa_esa_cmn_l2gen, cmn_dat, esa_type=esa_type, $
 ;probably because we transpose it all in the file
 ;??? Check this ??? Cannot have depends for non-virtual data to be
 ;virtual, 2020-01-11, jmm
-           vatt.depend_2 = 'energy_channel'
-           vatt.depend_1 = 'pitch_angle_bin'
+           vatt.depend_1 = 'energy_channel'
+           vatt.depend_2 = 'pitch_angle_bin'
         Endif
 ;Time variables are monotonically increasing:
         If(is_tvar) Then vatt.monoton = 'INCREASE' Else vatt.monoton = 'FALSE'
@@ -510,10 +513,10 @@ Pro fa_esa_cmn_l2gen, cmn_dat, esa_type=esa_type, $
               dvar = num_dists
            End
            'energy_channel': Begin
-              dvar = lonarr(96)
+              dvar = lindgen(96)
            End
            'pitch_angle_bin': Begin
-              dvar = lonarr(64)
+              dvar = lindgen(64)
            End
            Else: Begin
               message, /info, 'Variable '+vj+' Unaccounted for.'

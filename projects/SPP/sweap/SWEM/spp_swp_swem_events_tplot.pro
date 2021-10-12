@@ -1,7 +1,7 @@
 ;Ali: Feb 2021
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-26 10:11:29 -0700 (Thu, 26 Aug 2021) $
-; $LastChangedRevision: 30256 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2021-10-11 14:41:07 -0700 (Mon, 11 Oct 2021) $
+; $LastChangedRevision: 30349 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SWEM/spp_swp_swem_events_tplot.pro $
 
 pro spp_swp_swem_events_tplot_labels,limits=lims,data=data
@@ -23,12 +23,12 @@ pro spp_swp_swem_events_tplot,prefix=prefix,event=event,ptp=ptp,reset=reset,bad_
     return
   endif
   id32=long(eventid)
-  id123=id32[*,3]+id32[*,2]*'100'x+id32[*,1]*'10000'x
+  id123=id32[*,3]+id32[*,2]*0x100+id32[*,1]*0x10000
   ;codeuniq=eventcode[UNIQ(eventcode, SORT(eventcode))]
   if keyword_set(reset) || n_elements(event_str) eq 0 then event_str=(strtrim(spp_swp_swem_events_strings(),2))
   nstring=n_elements(event_str)
   wstring=indgen(nstring)
-  event_str2=string(wstring,format='("0x",03Z3,"_")')+event_str.substring(0,-2)
+  event_str2=string(wstring,format='0x%03Z_')+event_str.substring(0,-2)
   if keyword_set(event) then wstring=where(event_str.contains(event,/fold_case),/null,nstring)
   eventcode2=intarr(nt)-1
   eventid123=lonarr(nt)-1
@@ -59,7 +59,7 @@ pro spp_swp_swem_events_tplot,prefix=prefix,event=event,ptp=ptp,reset=reset,bad_
   store_data,prefix+'ID0',eventt[wnem1],eventid0[wnem1],dlim={psym:1,ystyle:3}
 
   if keyword_set(bad_blocks) then begin
-    block=replicate(0b,['FFFFFF'x,nstring])
+    block=replicate(0b,[0xFFFFFF,nstring])
     for it=0,nt-1 do begin
       for is=0,nstring-1 do begin
         if eventcode[it] eq wstring[is] then block[id3[it],is]+=1

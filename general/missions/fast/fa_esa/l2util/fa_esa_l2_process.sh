@@ -2,8 +2,9 @@
 source /usr/local/setup/setup_idl8.5.1
 setenv BASE_DATA_DIR /disks/data/
 setenv ROOT_DATA_DIR /disks/data/
+setenv SPEDAS_DATA_DIR /disks/data/
 
-setenv IDL_STARTUP /home/jimm/temp_idl_startup.pro
+setenv IDL_STARTUP /home/jimm/temp_idl_startup_nossw.pro
 source /home/jimm/setup_themis
 
 # create a date to append to batch otput
