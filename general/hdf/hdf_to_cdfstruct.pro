@@ -22,8 +22,8 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2021-10-05 12:01:41 -0700 (Tue, 05 Oct 2021) $
-; $LastChangedRevision: 30336 $
+; $LastChangedDate: 2021-10-12 15:16:18 -0700 (Tue, 12 Oct 2021) $
+; $LastChangedRevision: 30351 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/hdf/hdf_to_cdfstruct.pro $
 ;-
 
@@ -258,8 +258,7 @@ function hdf_to_cdfstruct, hdfi, file, verbose=verbose, varnames=varnames, time_
   for j=0, n_elements(hdfi[0,*])-1 do begin
     if hdfi[0, j] eq 'dataset' then begin
 
-      if (hdfi_names[j] ne '') && (hdfi_types[j] eq 'H5T_FLOAT') && (hdfi_points[j] gt 0) then begin ; skip empty vars
-        ; if hdfi_dims[j] gt 3 then it will be used to create as many variables in post processing
+      if (hdfi_names[j] ne '') && (hdfi_types[j] eq 'H5T_FLOAT' || hdfi_types[j] eq 'H5T_INTEGER' ) && (hdfi_points[j] gt 0) then begin ; skip empty vars
         varnew = replicate(vars, 1)
         varatt = replicate(attr, 1)
         variable_name = hdfi_names[j]
