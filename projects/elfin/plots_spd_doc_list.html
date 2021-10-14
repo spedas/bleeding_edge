@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Oct 12 18:16:13 2021.<P>
+<STRONG>Last modified: </STRONG>Wed Oct 13 18:15:56 2021.<P>
  
 <HR>
  
@@ -570,25 +570,25 @@ $URL:$
 <A HREF="#ELF_PLOT_SCI_ZONE_LAT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
- NAME:		elf_plot_orbit_conjunctions
- PURPOSE:	create ELFIN, THEMIS, MMS, ERG orbit plots in GSM coordinates for web site
- INPUT:	tstart like '2009-12-01'
- OUTPUT:	gif files may be generated
- KEYWORDS:	gifout = gif images are generated
+ NAME:   elf_plot_orbit_conjunctions_test
+ PURPOSE:  create ELFIN, THEMIS, MMS, ERG orbit plots in GSM coordinates for web site
+ INPUT:  tstart like '2009-12-01'
+ OUTPUT: gif files may be generated
+ KEYWORDS: gifout = gif images are generated
            file = specify file if not reading THEMIS ephemeris
            insert = insert stop at end of program
            rbsp_too = if set, overlay RBSP orbits
            mms_too = if set, overlay MMS orbits
            erg_too = if set, overlay ERG orbigts
-           model = name of Tsyganenko model ('t89', 't96', 'ta15'). default is 't96'
- HISTORY:	original file in March 2007, hfrey
+           model = name of Tsyganenko model ('t89', 't96', 'ta15'). default is 't96' (Not yet implemented)
+ HISTORY:  original file in March 2007, hfrey
  MODIFICATIONS: 2010-01-14, hfrey, new definition of plot area
 
  REQUIREMENTS: compile two programs for instance in
 
  .r /home/sfrey/themis/MOC/pro/mpause_2
  .r /home/sfrey/themis/MOC/pro/bshock_2
- 
+
  VERSION:
    $LastChangedBy: jimm $
    $LastChangedDate: 2020-11-18 13:03:02 -0800 (Wed, 18 Nov 2020) $
