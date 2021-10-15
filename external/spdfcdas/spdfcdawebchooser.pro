@@ -258,7 +258,8 @@ pro spdfViewNotes, $
                     proxy_hostname = proxy_hostname, $
                     proxy_port = proxy_port, $
                     proxy_username = proxy_username, $
-                    proxy_password = proxy_password)
+                    proxy_password = proxy_password, $
+                    ssl_verify_host=0, ssl_verify_peer=0)
 
     localNotes = notes->get(filename=filename, url=notesUrl)
 

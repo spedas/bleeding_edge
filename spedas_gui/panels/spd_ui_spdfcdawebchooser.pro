@@ -34,9 +34,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-06-01 11:07:18 -0700 (Fri, 01 Jun 2018) $
-;$LastChangedRevision: 25311 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2021-10-14 16:56:11 -0700 (Thu, 14 Oct 2021) $
+;$LastChangedRevision: 30356 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_spdfcdawebchooser.pro $
 ;-
 
@@ -710,6 +710,7 @@ pro spd_ui_spdfcdawebchooser, historyWin=historyWin, GROUP_LEADER = groupLeaderW
   cdas = $
     obj_new('SpdfCdas', $
     ;endpoint='http://cdaweb.gsfc.nasa.gov/WS/cdasr/1', $
+    sslVerifyPeer=0,$
     userAgent='CdawebChooser/1.0')
     
   dataviews = spd_spdfGetDataviews(cdas)

@@ -22,10 +22,26 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2021-10-12 15:16:18 -0700 (Tue, 12 Oct 2021) $
-; $LastChangedRevision: 30351 $
+; $LastChangedDate: 2021-10-14 14:24:46 -0700 (Thu, 14 Oct 2021) $
+; $LastChangedRevision: 30354 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/hdf/hdf_to_cdfstruct.pro $
 ;-
+
+function hdfi_read_attribute, id
+  ; Read the attribute string.
+  ; Some files contain H5T_CSET_UTF8 strings and IDL cannot read them.
+  compile_opt idl2
+
+  CATCH, err
+  IF err NE 0 THEN BEGIN
+    CATCH, /CANCEL
+    PRINT, !ERROR_STATE.MSG
+    RETURN, ''
+  ENDIF
+
+  result = h5a_read(id)
+  return, result
+end
 
 function hdfi_get_number, s
   ; Returns an integer from a string which contains mixed chars and numbers.
@@ -199,17 +215,7 @@ function hdf_to_cdfstruct, hdfi, file, verbose=verbose, varnames=varnames, time_
   for i=0, natt-1 do begin
     aid = h5a_open_idx(fid, i)
     an = h5a_get_name(aid)
-    ar = h5a_read(aid)
-
-    CATCH, Error_status
-    IF Error_status NE 0 THEN BEGIN
-      PRINT, 'Error index: ', Error_status
-      PRINT, 'Error message: ', !ERROR_STATE.MSG
-      PRINT, 'Error attribute: ', an
-      !ERROR = 0
-      h5a_close, aid
-      continue
-    ENDIF
+    ar = hdfi_read_attribute(aid)
 
     if use_gatt2istp then begin
       idx = where(gatt2istp.values() eq ':' + an)
@@ -294,7 +300,7 @@ function hdf_to_cdfstruct, hdfi, file, verbose=verbose, varnames=varnames, time_
         for i=0, vatt-1 do begin
           vaid = h5a_open_idx(vai, i)
           van = h5a_get_name(vaid)
-          vart = h5a_read(vaid)
+          vart = hdfi_read_attribute(vaid)
 
           if use_vatt2istp then begin
             idx = where(vatt2istp.values() eq ':' + van)

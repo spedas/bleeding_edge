@@ -311,7 +311,8 @@ function SpdfFileDescription::getFile, $
                 proxy_port = self.proxy_port, $
                 proxy_username = self.proxy_username, $
                 proxy_password = self.proxy_password, $
-                ssl_verify_peer = sslVerifyPeer)
+                ;ssl_verify_peer = sslVerifyPeer, $
+                ssl_verify_host=0, ssl_verify_peer=0)
 
     if keyword_set(callback_function) then begin
 
