@@ -19,6 +19,7 @@
 ;                 date_mod='startdateNNN' produces plots from datestart to NNN days after that
 ;                 date_mod='enddateNNN' produces plots from dateend to NNN days before that
 ;                 date_mod='continue' continue from last date of processing (text file: base_dir + 'goeslastdate.txt')
+;         goesr: probes 16, 17
 ;
 ;OUTPUT:
 ;         png files in base_dir
@@ -33,16 +34,16 @@
 ;                             server_run = '1', themis_dir ='/disks/themisdata/', goes_dir = '/disks/data/goes/qa/'
 ;
 ;HISTORY:
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-08-19 12:01:42 -0700 (Mon, 19 Aug 2019) $
-;$LastChangedRevision: 27617 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2021-10-15 09:04:47 -0700 (Fri, 15 Oct 2021) $
+;$LastChangedRevision: 30368 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot_wrapper.pro $
 ;----------
 
 function goes_url_callback, status, progress, data
   ; print the info msgs from the url object
   PRINT, status
-  
+
   ; return 1 to continue, return 0 to cancel
   RETURN, 1
 end
@@ -52,23 +53,23 @@ function check_goes_noaa_dir, base_dir, remote_http_dir
   CATCH, errorStatus
   IF (errorStatus NE 0) THEN BEGIN
     CATCH, /CANCEL
-    
+
     ; Display the error msg in a dialog and in the IDL output log
     ;r = DIALOG_MESSAGE(!ERROR_STATE.msg, TITLE='URL Error',   /ERROR)
     PRINT, !ERROR_STATE.msg
-    
+
     ; Get the properties that will tell us more about the error.
     oUrl->GetProperty, RESPONSE_CODE=rspCode, $
       RESPONSE_HEADER=rspHdr, RESPONSE_FILENAME=rspFn
     PRINT, 'rspCode = ', rspCode
     PRINT, 'rspHdr= ', rspHdr
     PRINT, 'rspFn= ', rspFn
-    
+
     ; Destroy the url object
     OBJ_DESTROY, oUrl
     RETURN, 0
   ENDIF
-  
+
   oUrl = OBJ_NEW('IDLnetUrl')
   oUrl->SetProperty, VERBOSE = 1
   oUrl->SetProperty, url_scheme = 'https'
@@ -114,12 +115,12 @@ function goes_generate_datearray, date_start, date_end
 end
 
 pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
-  date_mod = date_mod, probes = probes, base_dir = base_dir, $
+  date_mod = date_mod, probes = probes, base_dir = base_dir, goesr=goesr, $
   server_run = server_run, themis_dir = themis_dir, goes_dir = goes_dir
   compile_opt idl2
-  
+
   dprint, 'START GOES overview plot. Date: ' + SYSTIME()
-  
+
   ; for server cron job set the directories to server directories
   ; so that files will not have to be downloaded every time
   device = 'z'
@@ -131,7 +132,11 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
   endif
   if ~keyword_set(base_dir) then base_dir='/disks/themisdata/overplots/'
   lastdate_file = base_dir + 'goeslastdate.txt' ;this file holds the last day processed
-  if ~keyword_set(probes) || probes eq '' || probes eq 'all' then probes=['10','11','12','13','14','15']
+  if ~keyword_set(probes) || probes eq '' || probes eq 'all' then begin
+    if ~keyword_set(goesr) || goesr eq 0 then begin
+      probes=['10','11','12','13','14','15']
+    endif else probes=['16','17']
+  endif
   if ~keyword_set(date_start) then date_start = ''
   if strlen(date_start) ne 10 then date_start = ''
   if ~keyword_set(date_end) then date_end = ''
@@ -140,7 +145,7 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
     CALDAT, systime(/julian), Month1, Day1, Year1
     date_end=STRTRIM(string(Year1),2)+'-'+STRTRIM(string(Month1, format='(I02)'),2)+'-'+STRTRIM(string(Day1, format='(I02)'),2)
   endif
-  
+
   if keyword_set(date_mod) then begin
     if  STRCMP(date_mod, 'continue', 8, /FOLD_CASE) then begin
       date_start = goes_read_lastdate(lastdate_file)
@@ -186,13 +191,13 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
   endif else begin
     date_array = goes_generate_datearray(date_start, date_end)
   endelse
-  
+
   if date_array[0] eq '0' then return
-  
+
   CALDAT, date_array, Month1, Day1, Year1
   daten=STRTRIM(string(Year1),2)+'-'+STRTRIM(string(Month1, format='(I02)'),2)+'-'+STRTRIM(string(Day1, format='(I02)'),2)
   count_errors = 0
-  
+
   for i=0, n_elements(daten)-1 do begin
     date = daten[i]
     year03 = STRMID(date, 0, 4)
@@ -200,31 +205,38 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
     day03 = STRMID(date, 8, 2)
     directory = base_dir + year03 + path_sep() + month03 + path_sep() + day03 + path_sep()
     remote_dir = 'satdat.ngdc.noaa.gov/sem/goes/data/avg/' + year03 + '/' + month03 + '/'
-    
+
     for j=0, n_elements(probes)-1 do begin
       probe = probes[j]
-      ; check if dir exists, eg: http://satdat.ngdc.noaa.gov/sem/goes/data/new_avg/2011/08/goes13/netcdf/
-      remote_http_dir = remote_dir + 'goes' + probe + '/netcdf/'
-      if check_goes_noaa_dir(base_dir, remote_http_dir) then begin
-        dprint, "====================================================="
-        msgstr = "GOES OVERVIEW PLOT: Probe= " + string(probe) + ", date= " + date
-        dprint, msgstr
-        store_data, delete=tnames()
-        heap_gc
-        goes_overview_plot, date = date, probe = probe, directory = directory, device = device, geopack_lshell = geopack_lshell, error=error
-        if ~keyword_set(error) then error=0
-        if error ne 1 then error=0
-        count_errors = count_errors + error
+      if ~keyword_set(goesr) || goesr eq 0 then begin
+        ; check if dir exists, eg: http://satdat.ngdc.noaa.gov/sem/goes/data/new_avg/2011/08/goes13/netcdf/
+        remote_http_dir = remote_dir + 'goes' + probe + '/netcdf/'
+        if check_goes_noaa_dir(base_dir, remote_http_dir) then begin
+          dprint, "====================================================="
+          msgstr = "GOES OVERVIEW PLOT: Probe= " + string(probe) + ", date= " + date
+          dprint, msgstr
+          store_data, delete=tnames()
+          heap_gc
+          goes_overview_plot, date=date, probe=probe, directory=directory, device=device, geopack_lshell=geopack_lshell, error=error
+          if ~keyword_set(error) then error=0
+          if error ne 1 then error=0
+          count_errors = count_errors + error
+          goes_write_lastdate, lastdate_file, date
+        endif
+        
+      endif else begin
+        goesr_overview_plot, date=date, probe=probe, directory=directory, device=device, geopack_lshell=geopack_lshell, error=error
         goes_write_lastdate, lastdate_file, date
-      endif
+      endelse
+
     endfor
   endfor
-  
+
   ; if there are too many errors, report it
-  if (count_errors gt 5) && (server_run eq 1) then begin   
+  if (count_errors gt 5) && (server_run eq 1) then begin
     str_message = "GOES summary plot wrapper encounterred too many errors. Date start: " + daten[0] + ", Date end: " + daten[n_elements(daten)-1]
     thm_thmsoc_dblog, server_run=1, process_name='goes_overview_plot_wrapper', severity=2, str_message=str_message
   endif
-  
+
   dprint, 'END GOES overview plot. Date: ' + SYSTIME()
 end

@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2021-01-11 11:08:16 -0800 (Mon, 11 Jan 2021) $
-; $LastChangedRevision: 29585 $
+; $LastChangedDate: 2021-10-14 19:51:25 -0700 (Thu, 14 Oct 2021) $
+; $LastChangedRevision: 30359 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/spedas_plugin/goesr_ui_import_data.pro $
 ;-
 
@@ -69,6 +69,13 @@ pro goesr_ui_import_data,     $
 
     ; loop over loaded data
     for i = 0,n_elements(new_vars)-1 do begin
+
+      ; Skip if tplot variable cannot be loaded as a gui variable
+      spd_check_tplot2gui, new_vars[i], tcheck=tcheck, error=error
+      if tcheck eq 0 then begin
+        dprint, "Can't load variable to gui: ", new_vars[i], ", Error: ", error
+        continue
+      endif
 
       ; check if data is already loaded, if so query the user on whether
       ; they want to overwrite data

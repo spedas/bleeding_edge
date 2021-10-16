@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Oct 14 18:16:01 2021.<P>
+<STRONG>Last modified: </STRONG>Fri Oct 15 18:15:55 2021.<P>
  
 <HR>
  
@@ -19,6 +19,7 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>spedas_gui/misc</H1>
+<LI><A HREF="#SPD_CHECK_TPLOT2GUI">SPD_CHECK_TPLOT2GUI</A>
 <LI><A HREF="#SPD_GEN_OVERPLOT_AE_PANEL">SPD_GEN_OVERPLOT_AE_PANEL</A>
 <LI><A HREF="#SPD_UI_SPEDAS_FILECONFIG">SPD_UI_SPEDAS_FILECONFIG</A>
 <br>A widget that allows the user to set some of the !spedas environmental variables. The user
@@ -33,8 +34,33 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="SPD_CHECK_TPLOT2GUI">
+<H2>SPD_CHECK_TPLOT2GUI</H2></A>
+<A HREF="#SPD_GEN_OVERPLOT_AE_PANEL">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Procedure:
+  spd_check_tplot2gui
+
+ Purpose:
+  Checks if a tplot variable can be loaded as a gui variable.
+
+ Keywords:
+         varname: a single tplot variable name
+         tcheck: returns 1 if the tplot variable can be loaded to gui, 0 otherwise
+         error: if the variable cannot be loaded to gui, this contains the type of error
+
+ $LastChangedBy: nikos $
+ $LastChangedDate: 2021-10-14 19:49:56 -0700 (Thu, 14 Oct 2021) $
+ $LastChangedRevision: 30358 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/misc/spd_check_tplot2gui.pro $
+</PRE><P>
+<STRONG>(See <A href="misc/spd_check_tplot2gui.pro">spedas_gui/misc/spd_check_tplot2gui.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPD_GEN_OVERPLOT_AE_PANEL">
 <H2>SPD_GEN_OVERPLOT_AE_PANEL</H2></A>
+<A HREF="#SPD_CHECK_TPLOT2GUI">[Previous Routine]</A>
 <A HREF="#SPD_UI_SPEDAS_FILECONFIG">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

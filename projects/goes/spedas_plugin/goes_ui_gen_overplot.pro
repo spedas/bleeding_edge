@@ -23,9 +23,9 @@
 ; OUTPUT:
 ;  none
 ;  
-;$LastChangedBy: pcruce $
-;$LastChangedDate: 2015-01-23 19:30:24 -0800 (Fri, 23 Jan 2015) $
-;$LastChangedRevision: 16723 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2021-10-14 19:55:53 -0700 (Thu, 14 Oct 2021) $
+;$LastChangedRevision: 30363 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/spedas_plugin/goes_ui_gen_overplot.pro $
 ;-
 
@@ -113,7 +113,11 @@ pro goes_ui_gen_overplot_event, event
       tplot_options, title='GOES-'+string(state.probe)+' Overview ('+time_string(st_double)+')'
 
       state.statusBar->Update,'Generating GOES overview plot. Please wait!...'
-      goes_overview_plot, date = st_double, probe = state.probe, duration = dur, /gui_overplot, oplot_calls = (*state.data).oplot_calls, error = error
+      if state.probe le 15 then begin
+        goes_overview_plot, date = st_double, probe = state.probe, duration = dur, /gui_overplot, oplot_calls = (*state.data).oplot_calls, error = error
+      endif else begin
+        goesr_overview_plot, date = st_double, probe = state.probe, duration = dur, /gui_overplot, oplot_calls = (*state.data).oplot_calls, error = error
+      endelse
       
       if ~error then begin
         
@@ -174,6 +178,8 @@ pro goes_ui_gen_overplot_event, event
     'PROBE:13': state.probe='13'
     'PROBE:14': state.probe='14'
     'PROBE:15': state.probe='15'
+    'PROBE:16': state.probe='16'
+    'PROBE:17': state.probe='17'
     'TIME': ; don't send 'Not yet implemented' to the console for time events
     ELSE: dprint,  'Not yet implemented'
   ENDCASE
@@ -243,9 +249,11 @@ pro goes_ui_gen_overplot, gui_id = gui_id, $
   Button13 = widget_button(probeButtonBase, value='13', uvalue='PROBE:13')
   Button14 = widget_button(probeButtonBase, value='14', uvalue='PROBE:14')
   Button15 = widget_button(probeButtonBase, value='15', uvalue='PROBE:15')
+  Button16 = widget_button(probeButtonBase, value='16', uvalue='PROBE:16')
+  Button17 = widget_button(probeButtonBase, value='17', uvalue='PROBE:17')
   
-  widget_control, Button15, /set_button
-  probe='15'
+  widget_control, Button17, /set_button
+  probe='17'
 
 ; Time range-related widgets
   getresourcepath,rpath

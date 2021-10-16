@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2021-01-11 11:08:16 -0800 (Mon, 11 Jan 2021) $
-; $LastChangedRevision: 29585 $
+; $LastChangedDate: 2021-10-14 19:51:44 -0700 (Thu, 14 Oct 2021) $
+; $LastChangedRevision: 30360 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/spedas_plugin/goesr_ui_load_data.pro $
 ;-
 
@@ -249,7 +249,7 @@ pro goesr_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRan
   probeArrayValues = ['8', '9', '10', '11', '12', '13', '14', '15', '16', '17']
   probeArrayDisplayed = ['GOES 8', 'GOES 9', 'GOES 10', 'GOES 11', 'GOES 12', 'GOES 13', 'GOES 14', 'GOES 15', 'GOES 16', 'GOES 17']
 
-  typeArray = ['xrs', 'mag']
+  typeArray = ['mag', 'mpsh', 'sgps', 'xrs']
   ;typeArray = ['*','b_gsm','b_gei','b_enp','b_total','pos_gsm','pos_gei','vel_gei','t1_counts','t2_counts','dataqual','longitude','mlt']
 
   resArray = ['full', 'avg']
@@ -300,16 +300,15 @@ pro goesr_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRan
 
   availableMsg = 'Available Data' +  string(10B) + string(10B) + $
     'GOES 8-15:' +  string(10B) + $
-    'MAG: full (0.1 sec), 1995-07-01 to 2017-12-09' +  string(10B) + $
+    'MAG: full (0.1s), 1995-07-01 to 2017-12-09' +  string(10B) + $
     'GOES 13, 14, 15:' +  string(10B) + $
-    'XRS: full (2-sec), 2013-06-01 to 2020-03-04' +  string(10B) + $
-    'XRS: avg (1-min), 2013-06-01 to 2020-03-04:' +  string(10B) + string(10B) + $
-    'GOES 16:' +  string(10B)  + $
-    'MAG: full (0.1 sec), 2018-09-01 to now' +  string(10B) + $
-    'MAG: avg (1-min), 2018-09-01 to now' +  string(10B) + $
+    'XRS: full (2s), avg (1m) 2013-06-01 to 2020-03-04' +  string(10B) + $
     'GOES 16, 17:' +  string(10B)  + $
-    'XRS: full (1-second), 2017-02-07 to now' +  string(10B) + $
-    'XRS: avg (1-min), 2017-02-07 to now'
+    'MAG: full (0.1s), avg (1m), 2018-09-01 to now' +  string(10B) + $
+    'XRS: full (1s), avg (1m), 2017-02-07 to now' +  string(10B) + $
+    'SGPS: full (1m), avg (5m), 2020-11-01 to now' +  string(10B) + $
+    'MPSH: full (1m), avg (5m), 2018-12-18 to now' +  string(10B) + $
+    '(data availability varies with probe and instrument)'  
 
   availableLabel = Widget_label(leftBase, value=availableMsg, /align_center, scr_xsize=400, scr_ysize=200, UNITS=0)
 

@@ -21,9 +21,9 @@
 ; Notes:
 ;     Requires the SSC web services IDL library
 ; 
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2014-02-28 14:10:44 -0800 (Fri, 28 Feb 2014) $
-; $LastChangedRevision: 14467 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2021-10-15 09:04:25 -0700 (Fri, 15 Oct 2021) $
+; $LastChangedRevision: 30367 $
 ; $URL $
 ;-
 function goes_load_pos, trange = trange, probe = probe, coord_sys = coord_sys
@@ -44,7 +44,7 @@ function goes_load_pos, trange = trange, probe = probe, coord_sys = coord_sys
         return, 0
     endif
     
-    ssc_goes_locations = spdfgetlocations(sc, trange, coordinateSystem=coord_sys)
+    ssc_goes_locations = spdfgetlocations(sc, trange, coordinateSystem=coord_sys, sslVerifyPeer=0)
 
     if (size(ssc_goes_locations, /type) ne 11 || obj_valid(ssc_goes_locations) eq 0) then begin
         dprint, dlevel = 0, 'Error loading GOES position data'

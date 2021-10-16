@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Oct 14 18:16:01 2021.<P>
+<STRONG>Last modified: </STRONG>Fri Oct 15 18:15:54 2021.<P>
  
 <HR>
  
@@ -22,6 +22,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#GOESR_CONFIG_FILEDIR">GOESR_CONFIG_FILEDIR</A>
 <LI><A HREF="#GOESR_INIT">GOESR_INIT</A>
 <LI><A HREF="#GOESR_LOAD_DATA">GOESR_LOAD_DATA</A>
+<LI><A HREF="#GOESR_OVERVIEW_PLOT">GOESR_OVERVIEW_PLOT</A>
 <LI><A HREF="#GOESR_READ_CONFIG">GOESR_READ_CONFIG</A>
 <LI><A HREF="#GOESR_WRITE_CONFIG">GOESR_WRITE_CONFIG</A>
 <br>Writes the goesr_config file
@@ -81,7 +82,7 @@ This page was created by the IDL library routine
 <A NAME="GOESR_LOAD_DATA">
 <H2>GOESR_LOAD_DATA</H2></A>
 <A HREF="#GOESR_INIT">[Previous Routine]</A>
-<A HREF="#GOESR_READ_CONFIG">[Next Routine]</A>
+<A HREF="#GOESR_OVERVIEW_PLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Procedure:
@@ -94,8 +95,12 @@ This page was created by the IDL library routine
  Keywords:
      trange:       Time range of interest
      datatype:     Type of GOES-R data to be loaded. Valid data types are:
-                     'mag': Magnetometer (default: 'avg1m', available: 'hires')
-                     'xrs': EXIS X-Ray Sensor (default: 'avg1m', available: 'hires' one-second);
+                     'mag': Magnetometer (default: 1 min, 'hires': 0.1 sec)
+                     'xrs': EXIS X-Ray Sensor (default: 1 min, 'hires': 1 sec);
+                     'mpsh': Magnetospheric Electrons and Protons, Medium and High Energy (MPSH)
+                             (default: 5 min, hires: 1 min)
+                     'sgps': Solar and Galactic Proton Sensors (SGPS)
+                             (default: 5 min, Hires: 1 min)
      prefix:        String to append to the beginning of the loaded tplot variables
      suffix:        String to append to the end of the loaded tplot variables
      prefix:        String to append to the beginning of the loaded tplot variables
@@ -103,30 +108,62 @@ This page was created by the IDL library routine
      varnames:      Array of names of variables to load. Defaults is all (*)
      downloadonly: Download files but don't load them into tplot.
      hires:        If set, download full data files (larger files, can be over 180MB).
-                   If not set, use averaged data files.
+                   If not set, use lowest available resolution (default).
      no_time_clip: Don't clip the tplot variables.
      get_support_data: Keep the support data.
 
  Notes:
      NOAA Site:  https://www.ngdc.noaa.gov/stp/satellite/goes-r.html
-
-   As of Dec 2020, the following data files can be downloaded:
-   - GOES 8-15 mag files, high resolution
-   - GOES 13, 14, 15 xrs files, high resolution (2 sec), 1 min averages
-   - GOES 16, 17 mag files, xrs files
-
+     data:   https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2021-09-10 11:53:02 -0700 (Fri, 10 Sep 2021) $
- $LastChangedRevision: 30287 $
+ $LastChangedDate: 2021-10-15 16:54:16 -0700 (Fri, 15 Oct 2021) $
+ $LastChangedRevision: 30371 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/goesr_load_data.pro $
 </PRE><P>
 <STRONG>(See <A href="goesr/goesr_load_data.pro">projects/goesr/goesr_load_data.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="GOESR_OVERVIEW_PLOT">
+<H2>GOESR_OVERVIEW_PLOT</H2></A>
+<A HREF="#GOESR_LOAD_DATA">[Previous Routine]</A>
+<A HREF="#GOESR_READ_CONFIG">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Procedure:
+         goesr_overview_plot
+
+ Purpose:
+         Generates daily overview plots for GOES-R data (goes16-17)
+
+ Keywords:
+         date: start date for the overview plot
+         duration: duration of the overview plot, in days; defaults to 1-day
+         directory: local directory to save the overview plots to (should end with '/' or '\')
+         device: change the plot device for cron plotting (for cron use device = 'z')
+         geopack_lshell: calculate L-shell by tracing field lines
+             to the equator instead of using the dipole assumption
+         skip_ae_idx: set this keyword to skip downloading/plotting AE data
+         error: 1 indicates an error, 0 for no error
+
+ Keywords specific to creating overview plots in the GUI:
+         gui_overplot: overview plot was created in the GUI
+         oplot_calls: pointer to an int for tracking calls to overview plots - for
+             avoiding overwriting tplot data already loaded during this session
+         import_only: Used to make this routine import the data into the gui, but not plot it.
+
+
+ $LastChangedBy: nikos $
+ $LastChangedDate: 2021-10-15 09:09:47 -0700 (Fri, 15 Oct 2021) $
+ $LastChangedRevision: 30369 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/goesr_overview_plot.pro $
+</PRE><P>
+<STRONG>(See <A href="goesr/goesr_overview_plot.pro">projects/goesr/goesr_overview_plot.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="GOESR_READ_CONFIG">
 <H2>GOESR_READ_CONFIG</H2></A>
-<A HREF="#GOESR_LOAD_DATA">[Previous Routine]</A>
+<A HREF="#GOESR_OVERVIEW_PLOT">[Previous Routine]</A>
 <A HREF="#GOESR_WRITE_CONFIG">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

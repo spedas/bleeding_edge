@@ -9,8 +9,12 @@
 ; Keywords:
 ;     trange:       Time range of interest
 ;     datatype:     Type of GOES-R data to be loaded. Valid data types are:
-;                     'mag': Magnetometer (default: 'avg1m', available: 'hires')
-;                     'xrs': EXIS X-Ray Sensor (default: 'avg1m', available: 'hires' one-second);
+;                     'mag': Magnetometer (default: 1 min, 'hires': 0.1 sec)
+;                     'xrs': EXIS X-Ray Sensor (default: 1 min, 'hires': 1 sec);
+;                     'mpsh': Magnetospheric Electrons and Protons, Medium and High Energy (MPSH)
+;                             (default: 5 min, hires: 1 min)
+;                     'sgps': Solar and Galactic Proton Sensors (SGPS)
+;                             (default: 5 min, Hires: 1 min)
 ;     prefix:        String to append to the beginning of the loaded tplot variables
 ;     suffix:        String to append to the end of the loaded tplot variables
 ;     prefix:        String to append to the beginning of the loaded tplot variables
@@ -18,24 +22,132 @@
 ;     varnames:      Array of names of variables to load. Defaults is all (*)
 ;     downloadonly: Download files but don't load them into tplot.
 ;     hires:        If set, download full data files (larger files, can be over 180MB).
-;                   If not set, use averaged data files.
+;                   If not set, use lowest available resolution (default).
 ;     no_time_clip: Don't clip the tplot variables.
 ;     get_support_data: Keep the support data.
 ;
 ; Notes:
 ;     NOAA Site:  https://www.ngdc.noaa.gov/stp/satellite/goes-r.html
-;
-;   As of Dec 2020, the following data files can be downloaded:
-;   - GOES 8-15 mag files, high resolution
-;   - GOES 13, 14, 15 xrs files, high resolution (2 sec), 1 min averages
-;   - GOES 16, 17 mag files, xrs files
-;
+;     data:   https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2021-09-10 11:53:02 -0700 (Fri, 10 Sep 2021) $
-; $LastChangedRevision: 30287 $
+; $LastChangedDate: 2021-10-15 16:54:16 -0700 (Fri, 15 Oct 2021) $
+; $LastChangedRevision: 30371 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/goesr_load_data.pro $
 ;-
+
+pro goesr_sgps_postprocessing, varnames, suffix=suffix
+  ; Create separate tplot variables for each of the two sensors
+  ; Total of 13 energy channels
+
+  if undefined(suffix) then suffix = ''
+  protons = tnames('*_AvgDiffProtonFlux' + suffix)
+  protons_energies = tnames('*_DiffProtonEffectiveEnergy' + suffix)
+  if protons[0] ne '' then begin
+    get_data, protons[0], data=dp, dl=dlp
+    get_data, protons_energies[0], data=dpen, dl=dlpen
+    dlp.ylog = 1
+    str_element, dlp, 'labels', ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13'], /add
+    str_element, dlp, 'labflag', -1, /add
+    for i=0,1 do begin
+      new_name = protons + '_' + strcompress(string(i), /remove_all)
+      store_data, new_name, data={x:dp.x, y:transpose([reform([dp.y[*,i,*]])])}, dl=dlp
+      options, /def, new_name, 'sensor', strcompress(string(i), /remove_all)
+      if size(dpen,/n_dimensions) gt 0 then begin
+        options, /def, new_name, 'EffectiveEnergies', reform(dpen.y[*,i]) ; Effective sensor energies
+      endif
+    endfor
+  endif
+
+end
+
+pro goesr_mpsh_postprocessing, varnames, suffix=suffix
+  ; Create separate tplot variables for each telescope
+
+  if undefined(suffix) then suffix = ''
+  ; Proton telescopes: T1, T4, T2, T5, T3
+  ; Total of 11 energy channels.
+  protons = tnames('*_AvgDiffProtonFlux' + suffix)
+  protons_energies = tnames('*_DiffProtonEffectiveEnergy' + suffix)
+  tprotons = ['T1', 'T4', 'T2', 'T5', 'T3']
+  if protons[0] ne '' then begin
+    get_data, protons[0], data=dp, dl=dlp
+    get_data, protons_energies[0], data=dpen, dl=dlpen
+    dlp.ylog = 1
+    str_element, dlp, 'labels', ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11'], /add
+    str_element, dlp, 'labflag', -1, /add
+    for i=0,4 do begin
+      new_name = protons + '_' + strcompress(string(i), /remove_all)
+      store_data, new_name, data={x:dp.x, y:transpose([reform([dp.y[*,i,*]])])}, dl=dlp
+      options, /def, new_name, 'telescope', tprotons[i]
+      if size(dpen,/n_dimensions) gt 0 then begin
+        options, /def, new_name, 'EffectiveEnergies', reform(dpen.y[*,i]) ; Effective telescope energies
+      endif
+    endfor
+  endif
+
+  ; Electron telescopes: T3, T1, T4, T2, T5
+  ; Total of 10 energy channels.
+  electrons = tnames('*_AvgDiffElectronFlux' + suffix)
+  electrons_energies = tnames('*_DiffElectronEffectiveEnergy' + suffix)
+  telectrons = ['T3', 'T1', 'T4', 'T2', 'T5']
+  if electrons ne '' then begin
+    get_data, electrons[0], data=de, dl=dle
+    get_data, electrons_energies[0], data=deen, dl=dleen
+    dle.ylog = 1
+    str_element, dle, 'labels', ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8', 'E9', 'E10'], /add
+    str_element, dle, 'labflag', -1, /add
+    for i=0,4 do begin
+      new_name = electrons + '_' + strcompress(string(i), /remove_all)
+      store_data, new_name, data={x:de.x, y:transpose([reform([de.y[*,i,*]])])}, dl=dle
+      options, /def, new_name, 'telescope', telectrons[i]
+      if size(deen,/n_dimensions) gt 0 then begin
+        options, /def, new_name, 'EffectiveEnergies', reform(deen.y[*,i]) ; Effective telescope energies
+      endif
+    endfor
+  endif
+
+end
+
+pro goesr_mag_postprocessing, varnames
+  ; Replace FillValues -9999.0f with NaNs.
+
+  bvars = tnames('*_b_*')
+  for i=0, n_elements(bvars)-1 do begin
+    vname = bvars[i]
+    idx = where(vname eq varnames, count)
+    if count gt 0 then begin
+      get_data, vname, data=d, dl=dl
+      if is_struct(d) && n_elements(d.x) gt 1 then begin
+        idx = where(d.y le -9000.0, count1)
+        if count1 gt 0 then begin
+          d.y[idx] = float('NaN')
+          store_data, vname, data=d, dl=dl
+        endif
+      endif
+    endif
+  endfor
+end
+
+pro goesr_xrs_postprocessing, varnames
+  ; Replace FillValues -9999.0f with NaNs.
+
+  xrsvars = tnames('*_flux_*')
+  for i=0, n_elements(xrsvars)-1 do begin
+    vname = xrsvars[i]
+    idx = where(vname eq varnames, count)
+    if count gt 0 then begin
+      get_data, vname, data=d, dl=dl
+      if is_struct(d) && n_elements(d.x) gt 1 then begin
+        idx = where(d.y le -9000.0, count1)
+        if count1 gt 0 then begin
+          d.y[idx] = float('NaN')
+          store_data, vname, data=d, dl=dl
+        endif
+      endif
+    endif
+  endfor
+end
 
 pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, prefix = prefix, suffix = suffix, hires=hires, level=level, $
   downloadonly = downloadonly, no_time_clip = no_time_clip, get_support_data = get_support_data, source=source
@@ -85,7 +197,7 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
   if not keyword_set(probes) then probes = ['16']
   if not keyword_set(source) then source = !goesr
   if not keyword_set(level) then level = 'l2'
-  if not keyword_set(hires) then resolution='avg1m' else resolution='hires'
+  if not keyword_set(hires) then resolution='lowres' else resolution='hires'
   if (keyword_set(trange) && n_elements(trange) eq 2) then begin
     if time_double(trange[0]) gt time_double(trange[1]) then begin
       msg = 'Starting time cannot be larger than ending time.'
@@ -97,7 +209,6 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
     tr = timerange()
   endelse
 
-
   for pidx=0, n_elements(probes)-1 do begin ; loop through the probes
     goesp = string(probes[pidx], format='(I02)')
     sc = 'goes' + goesp
@@ -105,12 +216,16 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
     prefix = sc + '_'
 
     case datatype of
-      ; Magnetometer
       'mag': begin
-        if goesp gt 15 then begin
+        ; Magnetometer
+        if goesp ge 16 then begin
           ; GOES 16, 17
-          ; Default is 1 min. Hires is large files (>180MB).
-          lr = level + '-' + resolution
+          ; Lowres is 1 min. Hires is 0.1 second, large files (>180MB).
+          res0='avg1m'
+          if resolution eq 'hires' then begin
+            res0='hires'
+          endif
+          lr = level + '-' + res0
           pathformat = sc + '/' + level + '/data/magn-' + lr + '/YYYY/MM/dn_magn-' + lr + '_' + sc0 +'_dYYYYMMDD_v?-?-?.nc'
         endif else begin
           ; GOES 8-15: only high resolution is available (Dec 2020)
@@ -126,19 +241,20 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
           endelse
         endelse
       end
-      ; High cadence measurements from the EXIS X-Ray Sensor (XRS)
       'xrs': begin
-        if goesp gt 15 then begin
+        ; High cadence measurements from the EXIS X-Ray Sensor (XRS)
+        if goesp ge 16 then begin
           ; GOES 16, 17
-          ; Hires is 1 second. Default is 1 min.
+          ; Hires is 1 second. Lowres is 1 min (default).
+          res0='avg1m'
           if resolution eq 'hires' then begin
             res0='flx1s'
-          endif else res0='avg1m'
+          endif
           lr = level + '-' + res0
           pathformat = sc + '/' + level + '/data/xrsf-' + lr + '_science/YYYY/MM/sci_xrsf-' + lr + '_' + sc0 +'_dYYYYMMDD_v?-?-?.nc
         endif else begin
           ; GOES 13, 14, 15
-          ; hires is 2-sec fluxes, the only other option is 1-min averages
+          ; Hires is 2-sec fluxes. Lowres is 1-min averages (default).
           if resolution eq 'hires' then begin
             res0='irrad'
             time_offset = time_double('1970-01-01/00:00:00.000')
@@ -152,6 +268,38 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
           endelse
         endelse
       end
+      'mpsh': begin
+        ; Magnetospheric Electrons and Protons, Medium and High Energy (MPSH)
+        ; Hires is 1 min. Lowres is 5 min (default).
+        ; Electrons: 5 telescopes, 10 channels
+        ; Protons: 5 telescopes, 11 channels
+        time_var = 'L2_SciData_TimeStamp'
+        multidim = 'mpsh' ; contains many multi-dimensional variables that require special treatment
+        res0='avg5m'
+        if resolution eq 'hires' then begin
+          res0='avg1m'
+        endif
+        lr = level + '-' + res0
+        pathformat = sc + '/' + level + '/data/mpsh-' + lr + '/YYYY/MM/sci_mpsh-' + lr + '_' + sc0 +'_dYYYYMMDD_v?-?-?.nc'
+      end
+      'sgps': begin
+        ; Solar and Galactic Proton Sensors (SGPS)
+        ; Two sensors, one looking eastward and one looking westward
+        ; Hires is 1 min. Low res is 5 min (default).
+        if goesp ge 16 then begin
+          ; GOES 16, 17
+          time_var = 'L2_SciData_TimeStamp'
+          res0='avg5m'
+          scidn = 'sci'
+          if (resolution eq 'hires') then begin
+            res0='avg1m'
+            scidn='dn'
+          endif
+          lr = level + '-' + res0
+          pathformat = sc + '/' + level + '/data/sgps-' + lr + '/YYYY/MM/' + scidn +'_sgps-' + lr + '_' + sc0 +'_dYYYYMMDD_v?-?-?.nc'
+        endif
+      end
+
       else: begin
         msg = 'Datatype cannot be downloaded at this time: ' + datatype
         dprint, dlevel=1, 'Error: ', msg
@@ -162,10 +310,35 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
     for j = 0, n_elements(pathformat)-1 do begin
       ; Download file.
       relpathnames = file_dailynames(file_format=pathformat[j],trange=tr,addmaster=addmaster, /unique)
-      files = spd_download(remote_file=relpathnames, remote_path=remote_path, local_path = !goesr.local_data_dir)
+      files = spd_download(remote_file=relpathnames, remote_path=remote_path, local_path = !goesr.local_data_dir, /last_version)
+
+      ; TODO: mpsh files with versions 1-0-0 contain H5T_CSET_UTF8 strings for the attributes and IDL cannot read these strings.
+
       if keyword_set(downloadonly) then continue
       ; Load file into tplot.
-      hdf2tplot, files, tplotnames=tplotnames, prefix = prefix, suffix = suffix, gatt2istp=gatt2istp, vatt2istp=vatt2istp, coord_list=coord_list, time_offset=time_offset
+      hdf2tplot, files, tplotnames=tplotnames, prefix = prefix, suffix = suffix, gatt2istp=gatt2istp, vatt2istp=vatt2istp, coord_list=coord_list, time_offset=time_offset, time_var=time_var, multidim=multidim
+
+      ; Post processing of tplot variables.
+      case datatype of
+        'mag':begin
+          ; Magnetometer data contains a lot of -9999.0f FillValues instead of NaNs.
+          goesr_mag_postprocessing, tplotnames
+        end
+        'xrs':begin
+          ; Replace -9999.0f FillValues with NaNs.
+          goesr_xrs_postprocessing, tplotnames
+        end
+        'mpsh': begin
+          ; Separate data from 5 telescopes.
+          goesr_mpsh_postprocessing, tplotnames, suffix=suffix
+        end
+        'sgps':begin
+          ; Separate data from 2 sensors.
+          goesr_sgps_postprocessing, tplotnames
+        end
+      endcase
+      ;
+      ; Time clip
       if ~undefined(tr) && ~undefined(tplotnames) then begin
         if (n_elements(tr) eq 2) and (tplotnames[0] ne '') then begin
           if ~keyword_set(no_time_clip) then time_clip, tplotnames, tr[0], tr[1], replace=1, error=error
