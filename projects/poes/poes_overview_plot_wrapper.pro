@@ -54,11 +54,12 @@
 ;  2013 15,16,17,18,19
 ;  2014 15,16,18,19
 ;  2015 15,16,18,19
+;  2021 15,18,19
 ;
 ;HISTORY:
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2019-12-02 14:13:30 -0800 (Mon, 02 Dec 2019) $
-;$LastChangedRevision: 28069 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2021-10-18 12:24:56 -0700 (Mon, 18 Oct 2021) $
+;$LastChangedRevision: 30376 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot_wrapper.pro $
 ;----------
 
@@ -92,9 +93,9 @@ function check_poes_noaa_dir, base_dir, remote_http_dir
     RETURN, 0
   ENDIF
   
-  oUrl = OBJ_NEW('IDLnetUrl')
+  oUrl = OBJ_NEW('IDLnetUrl', ssl_verify_host=0, ssl_verify_peer=0)
   oUrl->SetProperty, VERBOSE = 1
-  oUrl->SetProperty, url_scheme = 'http'
+  oUrl->SetProperty, url_scheme = 'https'
   ;cd, base_dir
   oUrl->SetProperty, CALLBACK_function ='poes_url_callback'
   oUrl->SetProperty, URL_HOST = remote_http_dir

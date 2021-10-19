@@ -26,8 +26,8 @@
 ;       Yuki Harada on 2015-11-04
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2015-12-08 15:45:18 -0800 (Tue, 08 Dec 2015) $
-; $LastChangedRevision: 19545 $
+; $LastChangedDate: 2021-10-17 22:40:06 -0700 (Sun, 17 Oct 2021) $
+; $LastChangedRevision: 30373 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_movie.pro $
 ;-
 
@@ -68,7 +68,7 @@ function maven_orbit_movie_altidx, rmso
 end
 
 
-pro maven_orbit_movie, trange=trange, dimensions=dimensions, moviename=moviename, boxsize=boxsize, fps=fps, rate=rate, font_size=font_size, zoomscale=zoomscale, bcmodel=bcmodel, verbose=verbose, snap=snap, tsnap=tsnap, figname=figname, closewin=closewin
+pro maven_orbit_movie, trange=trange, dimensions=dimensions, moviename=moviename, boxsize=boxsize, fps=fps, rate=rate, font_size=font_size, zoomscale=zoomscale, bcmodel=bcmodel, verbose=verbose, snap=snap, tsnap=tsnap, figname=figname, closewin=closewin, irregular=irregular
 
 ;- return if IDL version < 8
 if float(!version.release) lt 8 then begin
@@ -89,6 +89,7 @@ if ~keyword_set(zoomscale) then  zoomscale = 1.5
 if ~keyword_set(bcmodel) then bcmodel = 'morschhauser'
 if ~keyword_set(tsnap) then tsnap = tr[0] else tsnap = time_double(tsnap)
 if ~keyword_set(figname) then figname = 'maven_orbit.png'
+if size(irregular,/type) eq 0 then irregular = 0 ;- passed on to surface()
 
 
 ;- load spice if not loaded (trange is not checked)
@@ -174,7 +175,7 @@ for irot=0,nstep-1 do begin     ;- movie loop start
       zbr2 = 2*( (t7 -  t3)*xbr + (t2 +  t9)*ybr + (t5 + t8)*zbr ) + zbr
       brcol = bytescale(br,bottom=255,top=0,range=[-100,100])
       gr_br = surface(/overplot,/texture_interp, $
-                      zbr2,xbr2,ybr2,texture_image=brcol,rgb_table=70)
+                      zbr2,xbr2,ybr2,texture_image=brcol,rgb_table=70,irregular=irregular)
 
       for ilat=-60,60,30 do begin   ;- lat grids
          xlat = R_M*cos(findgen(101)/50.*!pi)*cos(ilat*!dtor)
@@ -194,7 +195,7 @@ for irot=0,nstep-1 do begin     ;- movie loop start
          zlon2 = 2*( (t7 -  t3)*xlon + (t2 +  t9)*ylon + (t5 + t8)*zlon ) +zlon
          gr_lon = plot3d(/overplot,linestyle=1,xlon2,ylon2,zlon2)
       endfor
-   endif else gr_br = surface(/overplot,zbr,xbr,ybr,color='red')
+   endif else gr_br = surface(/overplot,zbr,xbr,ybr,color='red',irregular=irregular)
 
 
 ;- plot MAVEN orbit
@@ -241,7 +242,7 @@ for irot=0,nstep-1 do begin     ;- movie loop start
    xec = rebin(-max(abs(boxsize)) * findgen(101)/100 ,101,101)
    yec = transpose(rebin(cos(phec),101,101)) * R_M
    zec = transpose(rebin(sin(phec),101,101)) * R_M
-   gr_ec = surface(/overplot,zec,xec,yec,transparency=50,color='blue')
+   gr_ec = surface(/overplot,zec,xec,yec,transparency=50,color='blue',irregular=irregular)
 
 
 ;- add MPB layer
@@ -276,7 +277,7 @@ for irot=0,nstep-1 do begin     ;- movie loop start
    for iph=0,75,25 do $
       gr_line = plot3d(/data,/overplot,xmpb1[*,iph],ympb1[*,iph],zmpb1[*,iph],color='yellow',transparency=50,thick=2)
 
-   gr_mpb = surface(/overplot,zmpb1,xmpb1,ympb1,color='yellow',transparency=70)
+   gr_mpb = surface(/overplot,zmpb1,xmpb1,ympb1,color='yellow',transparency=70,irregular=irregular)
 
 
 ;- add bow shock layer
@@ -293,7 +294,7 @@ for irot=0,nstep-1 do begin     ;- movie loop start
    for iph=0,75,25 do $
       gr_line = plot3d(/data,/overplot,xbs1[*,iph],ybs1[*,iph],zbs1[*,iph], $
                        color='green',transparency=50,thick=2)
-   gr_bs = surface(/overplot,zbs1,xbs1,ybs1,transparency=70,color='green')
+   gr_bs = surface(/overplot,zbs1,xbs1,ybs1,transparency=70,color='green',irregular=irregular)
 
 
 

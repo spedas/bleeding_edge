@@ -20,8 +20,8 @@
 ;	OLDCAL: Use old calibration factors appropriate for original table
 ;
 ; $LastChangedBy: jhalekas $
-; $LastChangedDate: 2019-06-03 06:57:07 -0700 (Mon, 03 Jun 2019) $
-; $LastChangedRevision: 27312 $
+; $LastChangedDate: 2021-10-18 05:18:47 -0700 (Mon, 18 Oct 2021) $
+; $LastChangedRevision: 30374 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swia/mvn_swia_make_l2_data.pro $
 ;
 ;-
@@ -168,6 +168,15 @@ for i = 0,days-1 do begin
 		if newm then begin
 			wind = where(swim.time_unix ge (time_double(date)-600) and swim.time_unix le (time_double(date)+24.*3600+600),nwind)
 			if nwind gt 0 then swim = swim[wind]
+
+			get_data,'mvn_swim_velocity_mso',data = swv
+			get_data,'mvn_swim_temperature_mso',data = swt
+			wind = where(swv.x ge (time_double(date)-600) and swv.x le (time_double(date)+24.*3600+600),nwind)
+			if nwind gt 0 then begin
+				store_data,'mvn_swim_velocity_mso',data = {x:swv.x[wind],y:swv.y[wind,*]}
+				store_data,'mvn_swim_temperature_mso',data = {x:swt.x[wind],y:swt.y[wind,*]}
+			endif
+		
 			mvn_swia_make_swim_cdf,data_version='v'+version+'r'+revision,file = opath+yyyy+'/'+mmmm+'/mvn_swi_l2_onboardsvymom_'+yyyy+mmmm+dddd+'_v'+version+'_r'+revision+'.cdf'
 		endif
 	endif
