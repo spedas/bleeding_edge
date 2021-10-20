@@ -130,8 +130,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-10-04 11:39:07 -0700 (Mon, 04 Oct 2021) $
-; $LastChangedRevision: 30335 $
+; $LastChangedDate: 2021-10-19 17:05:44 -0700 (Tue, 19 Oct 2021) $
+; $LastChangedRevision: 30381 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2iono.pro $
 ;-
 
@@ -250,7 +250,7 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
     
     if internal_model2 eq 'igrf' then IGRF = 1 else IGRF = 0
     
-    if external_model2 ne 'none' and not keyword_set(par) then begin
+    if external_model2 ne 'none' and (n_elements(par) eq 0) then begin
        message,/continue,'par must be set if external model is set'
        return
     endif

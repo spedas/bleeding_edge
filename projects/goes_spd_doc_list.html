@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Oct 18 18:15:55 2021.<P>
+<STRONG>Last modified: </STRONG>Tue Oct 19 18:15:55 2021.<P>
  
 <HR>
  
@@ -351,9 +351,10 @@ NAME:
 
 PURPOSE:
          Generates daily overview plots for GOES data - wrapper for goes_overview_plot
+         If probes=16,17 then it runs goesr_overview_plot
 
 KEYWORDS:
-         probes: array of goes probe numbers, if probe='' then probe=['10','11','12','13','14','15']
+         probes: array of goes probe numbers, if probe='' then probe=['10','11','12','13','14','15','16,'17']
          date_start: begin processing at this date (eg. '2013-12-19')
          date_end: end processing at this date (eg. '2013-12-29')
          base_dir: root dir for output plots (eg. /disks/themisdata/overplots/)
@@ -365,7 +366,6 @@ KEYWORDS:
                  date_mod='startdateNNN' produces plots from datestart to NNN days after that
                  date_mod='enddateNNN' produces plots from dateend to NNN days before that
                  date_mod='continue' continue from last date of processing (text file: base_dir + 'goeslastdate.txt')
-         goesr: probes 16, 17
 
 OUTPUT:
          png files in base_dir
@@ -381,8 +381,8 @@ EXAMPLE USAGE:
 
 HISTORY:
 $LastChangedBy: nikos $
-$LastChangedDate: 2021-10-15 09:04:47 -0700 (Fri, 15 Oct 2021) $
-$LastChangedRevision: 30368 $
+$LastChangedDate: 2021-10-19 12:13:51 -0700 (Tue, 19 Oct 2021) $
+$LastChangedRevision: 30379 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot_wrapper.pro $
 </PRE><P>
 <STRONG>(See <A href="goes/goes_overview_plot_wrapper.pro">projects/goes/goes_overview_plot_wrapper.pro</A>)</STRONG><P>

@@ -5,9 +5,10 @@
 ;
 ;PURPOSE:
 ;         Generates daily overview plots for GOES data - wrapper for goes_overview_plot
+;         If probes=16,17 then it runs goesr_overview_plot
 ;
 ;KEYWORDS:
-;         probes: array of goes probe numbers, if probe='' then probe=['10','11','12','13','14','15']
+;         probes: array of goes probe numbers, if probe='' then probe=['10','11','12','13','14','15','16,'17']
 ;         date_start: begin processing at this date (eg. '2013-12-19')
 ;         date_end: end processing at this date (eg. '2013-12-29')
 ;         base_dir: root dir for output plots (eg. /disks/themisdata/overplots/)
@@ -19,7 +20,6 @@
 ;                 date_mod='startdateNNN' produces plots from datestart to NNN days after that
 ;                 date_mod='enddateNNN' produces plots from dateend to NNN days before that
 ;                 date_mod='continue' continue from last date of processing (text file: base_dir + 'goeslastdate.txt')
-;         goesr: probes 16, 17
 ;
 ;OUTPUT:
 ;         png files in base_dir
@@ -35,8 +35,8 @@
 ;
 ;HISTORY:
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2021-10-15 09:04:47 -0700 (Fri, 15 Oct 2021) $
-;$LastChangedRevision: 30368 $
+;$LastChangedDate: 2021-10-19 12:13:51 -0700 (Tue, 19 Oct 2021) $
+;$LastChangedRevision: 30379 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot_wrapper.pro $
 ;----------
 
@@ -70,7 +70,7 @@ function check_goes_noaa_dir, base_dir, remote_http_dir
     RETURN, 0
   ENDIF
 
-  oUrl = OBJ_NEW('IDLnetUrl')
+  oUrl = OBJ_NEW('IDLnetUrl', ssl_verify_host=0, ssl_verify_peer=0)
   oUrl->SetProperty, VERBOSE = 1
   oUrl->SetProperty, url_scheme = 'https'
   ;cd, base_dir
@@ -115,7 +115,7 @@ function goes_generate_datearray, date_start, date_end
 end
 
 pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
-  date_mod = date_mod, probes = probes, base_dir = base_dir, goesr=goesr, $
+  date_mod = date_mod, probes = probes, base_dir = base_dir, $
   server_run = server_run, themis_dir = themis_dir, goes_dir = goes_dir
   compile_opt idl2
 
@@ -132,11 +132,7 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
   endif
   if ~keyword_set(base_dir) then base_dir='/disks/themisdata/overplots/'
   lastdate_file = base_dir + 'goeslastdate.txt' ;this file holds the last day processed
-  if ~keyword_set(probes) || probes eq '' || probes eq 'all' then begin
-    if ~keyword_set(goesr) || goesr eq 0 then begin
-      probes=['10','11','12','13','14','15']
-    endif else probes=['16','17']
-  endif
+  if ~keyword_set(probes) || probes[0] eq '' || probes[0] eq 'all' then probes=['10','11','12','13','14','15', '16', '17']
   if ~keyword_set(date_start) then date_start = ''
   if strlen(date_start) ne 10 then date_start = ''
   if ~keyword_set(date_end) then date_end = ''
@@ -208,7 +204,9 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
 
     for j=0, n_elements(probes)-1 do begin
       probe = probes[j]
-      if ~keyword_set(goesr) || goesr eq 0 then begin
+      if probe le 15 then begin
+        ; GOES15 is up to 2020
+        if year03 gt 2020 then continue
         ; check if dir exists, eg: http://satdat.ngdc.noaa.gov/sem/goes/data/new_avg/2011/08/goes13/netcdf/
         remote_http_dir = remote_dir + 'goes' + probe + '/netcdf/'
         if check_goes_noaa_dir(base_dir, remote_http_dir) then begin
@@ -223,9 +221,13 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
           count_errors = count_errors + error
           goes_write_lastdate, lastdate_file, date
         endif
-        
-      endif else begin
+      endif else begin ; Goes-R, probes 16,17
+        ; GOES16,17 start in 2018
+        if year03 lt 2018 then continue
+        store_data, '*', /delete
+        error = 0
         goesr_overview_plot, date=date, probe=probe, directory=directory, device=device, geopack_lshell=geopack_lshell, error=error
+        dprint, 'date: ', date, ', probe: ', probe, ', device: ', device, ', error: ', error
         goes_write_lastdate, lastdate_file, date
       endelse
 

@@ -14,9 +14,9 @@
 ;Example:
 ; thm_sst_overviews,'2007-03-23',dir='~/out',device='z'
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2014-01-24 16:34:47 -0800 (Fri, 24 Jan 2014) $
-; $LastChangedRevision: 14018 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2021-10-19 11:41:37 -0700 (Tue, 19 Oct 2021) $
+; $LastChangedRevision: 30377 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_sst_overviews.pro $
 ;-
 
@@ -116,7 +116,7 @@ for i = 0L,n_elements(probe_list)-1L do begin
     index_sst=where(strjoin('th'+sc+'_psef_en_eflux') eq tnames())
     if index_sst eq -1 then begin
         filler=fltarr(2,16)
-        filler(*,*)=float('NaN')
+        filler[*,*]=float('NaN')
         store_data,strjoin('th'+sc+'_psef_en_eflux'),data={x:time_double(date)+findgen(2),y:filler,v:findgen(16)}
         name=strjoin('th'+sc+'_psef_en_eflux')
         options,name,'spec',1
@@ -138,7 +138,7 @@ for i = 0L,n_elements(probe_list)-1L do begin
     index_sst=where(strjoin('th'+sc+'_psif_en_eflux') eq tnames())
     if index_sst eq -1 then begin
         filler=fltarr(2,16)
-        filler(*,*)=float('NaN')
+        filler[*,*]=float('NaN')
         store_data,strjoin('th'+sc+'_psif_en_eflux'),data={x:time_double(date)+findgen(2)*86400.,y:filler,v:findgen(16)}
         name=strjoin('th'+sc+'_psif_en_eflux')
         options,name,'spec',1
@@ -161,7 +161,7 @@ for i = 0L,n_elements(probe_list)-1L do begin
     index_sst=where(strjoin('th'+sc+'_psir_en_eflux') eq tnames())
     if index_sst eq -1 then begin
         filler=fltarr(2,16)
-        filler(*,*)=float('NaN')
+        filler[*,*]=float('NaN')
         store_data,strjoin('th'+sc+'_psir_en_eflux'),data={x:time_double(date)+findgen(2),y:filler,v:findgen(16)}
         name=strjoin('th'+sc+'_psir_en_eflux')
         options,name,'spec',1
@@ -186,7 +186,7 @@ for i = 0L,n_elements(probe_list)-1L do begin
     index_sst=where(strjoin('th'+sc+'_pser_en_eflux') eq tnames())
     if index_sst eq -1 then begin
         filler=fltarr(2,16)
-        filler(*,*)=float('NaN')
+        filler[*,*]=float('NaN')
         store_data,strjoin('th'+sc+'_pser_en_eflux'),data={x:time_double(date)+findgen(2),y:filler,v:findgen(16)}
         name=strjoin('th'+sc+'_pser_en_eflux')
         options,name,'spec',1
