@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-29 01:21:13 -0700 (Sun, 29 Aug 2021) $
-; $LastChangedRevision: 30266 $
+; $LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $
+; $LastChangedRevision: 30383 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_hkp_apdat__define.pro $
 
 
@@ -16,8 +16,9 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
 
   temp_par = swfo_therm_temp()
 
-  temp_par_10bit      = temp_par
-  temp_par_10bit.xmax = 1023
+  temp_par.r1 = 51100d
+  temp_par_16bit      = temp_par
+  temp_par_16bit.xmax = 2.d^15
   ; MON_TEMP =   func((spp_swp_word_decom(b,20) and '3ff'x) *1., param = temp_par_10bit)
 
 
@@ -70,12 +71,12 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
       last_cdata:  swfo_data_select(ccsds_data,(d+33*2)*8 , 16) , $
       adc_bias_v:     swfo_data_select(ccsds_data,(d+2*34 )*8, 16 ,/signed) *flt , $
       adc_bias_c:    swfo_data_select(ccsds_data,(d+2*35 )*8, 16 ,/signed ) *flt , $
-      adc_TEMP_DAP:    swfo_data_select(ccsds_data,(d+2*36 )*8, 16 ,/signed ) *flt , $
+      adc_TEMP_DAP:   swfo_therm_temp( swfo_data_select(ccsds_data,(d+2*36 )*8, 16 ,/signed ), param=temp_par_16bit ) , $
       adc_p5d:    swfo_data_select(ccsds_data,(d+2*37 )*8, 16 ,/signed ) *flt , $
       adc_p5a:    swfo_data_select(ccsds_data,(d+2*38 )*8, 16 ,/signed ) *flt , $
       adc_n5a:    swfo_data_select(ccsds_data,(d+2*39 )*8, 16  ,/signed) *flt , $
-      adc_temp_s1:    swfo_data_select(ccsds_data,(d+2*40 )*8, 16  ,/signed) *flt , $
-      adc_temp_s2:    swfo_data_select(ccsds_data,(d+2*41 )*8, 16  ,/signed) *flt , $
+      adc_temp_s1:   swfo_therm_temp(   swfo_data_select(ccsds_data,(d+2*40 )*8, 16  ,/signed) , param=temp_par_16bit) , $
+      adc_temp_s2:    swfo_therm_temp(  swfo_data_select(ccsds_data,(d+2*41 )*8, 16  ,/signed) , param=temp_par_16bit) , $
       adc_all:    swfo_data_select(ccsds_data,(d+2*[34:41] )*8, 16  ,/signed) *flt , $
       gap:0b }
     str.gap = ccsds.gap

@@ -7,7 +7,7 @@ function swfo_therm_temp,dval,parameter=p
      ;     thm:thermistor_temp()}
      p = {func:'swfo_therm_temp',$
           R1:10000d, $
-          xmax:1023d, $
+          xmax:2d^15, $
           Rv:1d9, $
           thm:'thermistor_resistance_ysi4908'}
   endif

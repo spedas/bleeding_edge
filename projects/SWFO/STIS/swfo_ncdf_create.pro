@@ -1,13 +1,18 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-29 01:20:38 -0700 (Sun, 29 Aug 2021) $
-; $LastChangedRevision: 30265 $
+; $LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $
+; $LastChangedRevision: 30383 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ncdf_create.pro $
 ; $ID: $
 
 
 
 
-pro swfo_ncdf_create,dat,filename=ncdf_filename
+pro swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose
+
+  if ~isa(dat,'structure') then begin
+    dprint,dlevel=1,verbose=verbose,'No data structure provided to save into file: '+ncdf_filename
+    return
+  endif
 
   file_mkdir2,file_dirname(ncdf_filename)
   id =  ncdf_create(ncdf_filename,/clobber,/netcdf4_format)  ;,/netcdf4_format
@@ -20,12 +25,18 @@ pro swfo_ncdf_create,dat,filename=ncdf_filename
   types[3] = 'long'
   types[4] = 'float'
   types[5] = 'double'
-  types[12] = 'ushort'
-  types[13] = 'ulong'
+  types[12] = 'ushort'  ; 16 bit
+  types[13] = 'ulong'   ; 32 bit
   types[15] = 'uint64'
   
- ; types[12] = 'short'  ;  Netcdf doesn't seem to accept ushort and ulong (despite documentation) - Therefore these types are redefined as signed values
- ; types[13] = 'long'
+  if !version.RELEASE lt '8.7' then begin
+    dprint,dlevel=0 ,'Warning this version of IDL does not seem to support unsigned integers'
+    dprint,dlevel=0 ,'   Converting to signed ints'
+    types[12] = 'short'  ;  Netcdf doesn't seem to accept ushort and ulong (despite documentation) - Therefore these types are redefined as signed values
+    types[13] = 'long'
+    types[15] = 'int64'
+  endif
+  
   
 
   tags = tag_names(dat0)
@@ -51,6 +62,8 @@ pro swfo_ncdf_create,dat,filename=ncdf_filename
     ncdf_varput,id,tags[i],dd
   endfor
   ncdf_close,id
+  
+  dprint,dlevel=2,verbose=verbose,'Created file: '+ncdf_filename
   
 end
 

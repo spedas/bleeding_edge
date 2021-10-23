@@ -1,9 +1,9 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-18 16:47:46 -0700 (Wed, 18 Aug 2021) $
-; $LastChangedRevision: 30215 $
+; $LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $
+; $LastChangedRevision: 30383 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_nse_level_0b.pro $
 
-function  swfo_stis_noise_find_peak,d,cbins,window = wnd,threshold=threshold
+function  swfo_stis_nse_find_peak,d,cbins,window = wnd,threshold=threshold
   nan = !values.d_nan
   peak = {a:nan, x0:nan, s:nan}
   if n_params() eq 0 then return,peak
@@ -14,7 +14,7 @@ function  swfo_stis_noise_find_peak,d,cbins,window = wnd,threshold=threshold
     i1 = (b-wnd) > 0
     i2 = (b+wnd) < (n_elements(d)-1)
     ;    dprint,wnd
-    pk = swfo_stis_noise_find_peak(d[i1:i2],cbins[i1:i2],threshold=threshold)
+    pk = swfo_stis_nse_find_peak(d[i1:i2],cbins[i1:i2],threshold=threshold)
     return,pk
   endif
   if keyword_set(threshold) then begin
@@ -32,7 +32,7 @@ end
 
 
 
-function swfo_stis_noise_level_1,strcts,format=format
+function swfo_stis_nse_level_1,strcts,format=format
 
   output = !null
   nd = n_elements(strcts)
@@ -41,14 +41,14 @@ function swfo_stis_noise_level_1,strcts,format=format
 
     ddata = str.nhist
     duration = 0u
-    p= replicate(swfo_stis_noise_find_peak(),6)
+    p= replicate(swfo_stis_nse_find_peak(),6)
 
     noise_res = 3  ; temporary fix - needs to be obtained from hkp packets
 
     x = (dindgen(10)-4.) * ( 2d ^ (noise_res-3))
     d = reform(ddata,10,6)
     for j=0,5 do begin
-      p[j] = swfo_stis_noise_find_peak(d[*,j],x)
+      p[j] = swfo_stis_nse_find_peak(d[*,j],x)
       ;  p[j] = swfo_stis_find_peak(d[0:8,j],x[0:8])   ; ignore end channel
     endfor
 

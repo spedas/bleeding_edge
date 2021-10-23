@@ -7,8 +7,8 @@
 ; 
 ; 
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-09-02 01:55:55 -0700 (Thu, 02 Sep 2021) $
-; $LastChangedRevision: 30278 $
+; $LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $
+; $LastChangedRevision: 30383 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -55,8 +55,9 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.init_realtime = 1                 ; Set to 1 to start realtime stream widget
   opts.init_stis =1                      ; set to 1 to initialize the STIS APID definitions
   opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-1.,.05]*600','swfo_stis_plot_example','timebar,systime(1)']                    ; commands to be run in exec widget
+  opts.file_trange = ['2021-10-10', '2021-10-19']   ; Temp margin test data
   opts.file_trange =  ['2021-08-23/4', '2021-08-24/02']   ; This time range includes some good sample data to test robustness of the code - includes a version change
-  opts.file_trange = 2  ; systime(1) + [-3,0]*3600d     ; set a time range for the last 3 hours
+  opts.file_trange = 2  ;   ; set a time range for the last N hours
   opts.stepbystep = 0               ; this flag allows a step by step progress through this crib sheet
   opts.refresh = 0                  ; set to zero to skip this section next time
   printdat,opts
@@ -124,8 +125,10 @@ endif
 
 !except =0
 dprint,dlevel=2,'Create a "Time Plot" (tplot) showing key parameters of the STIS instrument'
-swfo_stis_tplot
+swfo_stis_tplot,/setlim
 
+if 0 then $
+  tplot,'*hkp1_ADC_TEMP_S1 *hkp1_ADC_BIAS_* *hkp1_ADC_?5? swfo_stis_hkp1_RATES_CNTR swfo_stis_sci_COUNTS swfo_stis_nse_NHIST swfo_stis_hkp1_CMDS'
 
 
 dprint,'Statistics of all packets:'
@@ -150,11 +153,15 @@ if 0 then begin
 endif
 
 
-if 1 then begin
+if 0 then begin
   
   dprint,'Create Level 0B netcdf file for science packets:'
   
-  sci.ncdf_make_l0b_file , ret_filename=f   ; the filename is returned in the variable f   
+  sci.level_0b = dynamicarray()   ; Turn on storage of level_0b data by giving it a place to store data
+  
+  sci.file_resolution = 300
+  
+  sci.ncdf_make_file , ret_filename=f   ; the filename is returned in the variable f   
   printdat,f
   
   sci_l0b  =  sci.data.array   ; obtain level 0B data directly from sci object
@@ -162,8 +169,6 @@ if 1 then begin
   
     ; sci_l0b and sci_l0b_copy should be identical  
     ; Note that sci_l0b_copy might have more samples if it was produced after sci_l0b was generated
-    
-    
     
   sci_l1a =   swfo_stis_sci_level_1(sci_l0b)   ; create l1a data from l0b data
   swfo_ncdf_create,sci_l1a, file='test.nc'     ; write data to a file.  still awaiting meta data.

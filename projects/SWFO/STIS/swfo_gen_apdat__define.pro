@@ -2,8 +2,8 @@
 ;  swfo_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-09-02 01:14:29 -0700 (Thu, 02 Sep 2021) $
-; $LastChangedRevision: 30273 $
+; $LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $
+; $LastChangedRevision: 30383 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -196,9 +196,9 @@ end
 
 
 
-function swfo_gen_apdat::decom_time,ccsds,source_dict=source_dict  
+function swfo_gen_apdat::decom_time,ccsds,source_dict=source_dict
   if isa(source_dict,'dictionary') && source_dict.haskey('test') && source_dict.test then begin
-     ;  do nothing
+    ;  do nothing
   endif
   return, ccsds.ptp_time
 end
@@ -212,9 +212,9 @@ pro swfo_gen_apdat::handler,ccsds,source_dict=source_dict ;,header,source_info=s
     ;dprint,dlevel=self.dlevel,'hi',self.apid,self.dlevel
     hexprint,*ccsds.pdata
   endif
-  
+
   self.drate = ccsds.pkt_size/ccsds.time_delta
-  
+
   if not self.ignore_flag then strct = self.decom(ccsds,source_dict=source_dict)
   if keyword_set(strct) then  *self.last_data_p= strct
 
@@ -238,8 +238,8 @@ pro swfo_gen_apdat::handler,ccsds,source_dict=source_dict ;,header,source_info=s
 end
 
 
-pro swfo_gen_apdat::handler2,strct,source_dict=source_dict 
-;  This routine is a place holder for users. It should be overloaded
+pro swfo_gen_apdat::handler2,strct,source_dict=source_dict
+  ;  This routine is a place holder for users. It should be overloaded
 
 
 end
@@ -276,8 +276,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-09-02 01:14:29 -0700 (Thu, 02 Sep 2021) $
-; $LastChangedRevision: 30273 $
+; $LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $
+; $LastChangedRevision: 30383 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_gen_apdat__define.pro $
 ;-
 function swfo_gen_apdat::sw_version
@@ -294,8 +294,8 @@ function swfo_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2021-09-02 01:14:29 -0700 (Thu, 02 Sep 2021) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 30273 $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 30383 $'
 
     return,sw_hash
 end
@@ -337,8 +337,8 @@ function swfo_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2021-09-02 01:14:29 -0700 (Thu, 02 Sep 2021) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 30273 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 30383 $'
 
   return,global_att
 end
@@ -491,20 +491,27 @@ end
 
 
 
-pro swfo_gen_apdat::ncdf_make_l0b_file,pathname=pathname,testdir=testdir,ret_filename=ret_filename
+pro swfo_gen_apdat::ncdf_make_file,ddata=ddata,pathname=pathname,testdir=testdir,ret_filename=ret_filename,type=type,trange=trange
+  if ~isa(type) then type=''
   if keyword_set(pathname) then self.ncdf_pathname = pathname
   if ~keyword_set(self.ncdf_pathname) then begin
-    self.ncdf_pathname = self.name + '/YYYY/MM/swfo_' + self.name + '_l0b_YYYYMMDD_hh_v00.nc'
+    self.ncdf_pathname = self.name+type + '/YYYY/MM/swfo_' + self.name+type + '_YYYYMMDD_hhmm_v00.nc'
   endif
-  
+
   ; More work needs to be done here to separate into daily (or hourly) files...
-  ; For now just create one big file 
-  data_array = self.data.array
-  trange = minmax(data_array.time)
+  ; For now just create one big file
+  if ~isa(ddata) then ddata=self.data
+
+  if keyword_set(trange) then begin
+    data_array = ddata.sample(range=trange,tagname='time')
+  endif else begin
+    data_array = ddata.array
+    trange = minmax(data_array.time)
+  endelse
   pathname = time_string(trange[0],tformat= self.ncdf_pathname )
   filename = root_data_dir() + self.ncdf_testdir + pathname
   swfo_ncdf_create,data_array,filename = filename
-  dprint,'Created file: "'+filename+'" 
+  ;dprint,dlevel=1,'Created file: "'+filename+'"
   ret_filename = filename
 end
 
@@ -575,7 +582,7 @@ PRO swfo_gen_apdat__define
     routine:  '', $                 ; obsolete, do not use
     tname: '',  $
     ttags: '',  $
-    test: 0, $                 ; general purpose flag for use in testing     
+    test: 0, $                 ; general purpose flag for use in testing
     errors: 0, $               ; error counter
     last_ccsds_p: ptr_new(), $      ; pointer to the last ccsds packet
     last_data_p:  ptr_new(),  $     ; pointer to the loast decomutated packet

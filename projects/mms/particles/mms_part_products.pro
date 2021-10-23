@@ -104,8 +104,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-07-28 14:24:03 -0700 (Wed, 28 Jul 2021) $
-;$LastChangedRevision: 30150 $
+;$LastChangedDate: 2021-10-22 14:24:05 -0700 (Fri, 22 Oct 2021) $
+;$LastChangedRevision: 30384 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products.pro $
 ;-
 pro mms_part_products, $
@@ -649,7 +649,6 @@ pro mms_part_products, $
     ;phi range may be wrapped about phi=0, this keeps an invalid range from being passed to tplot
     phi_y_range = (undefined(start_angle) ? 0:start_angle) + [0,360]
     spd_pgs_make_tplot, tplot_prefix+'phi'+suffix, x=times, y=phi_y, z=phi_spec, yrange=phi_y_range,units=units_lc,datagap=datagap,tplotnames=tplotnames
-    spd_pgs_shift_phi_spec, names=tplot_prefix+'phi'+suffix, start_angle=start_angle
     options, tplot_prefix+'phi'+suffix, ysubtitle='[deg]'
   endif
   
@@ -668,7 +667,6 @@ pro mms_part_products, $
     ;gyro range may be wrapped about gyro=0, this keeps an invalid range from being passed to tplot
     gyro_y_range = (undefined(start_angle) ? 0:start_angle) + [0,360]
     spd_pgs_make_tplot, tplot_prefix+'gyro'+suffix, x=times, y=gyro_y, z=gyro_spec, yrange=gyro_y_range,units=units_lc,datagap=datagap,tplotnames=tplotnames
-    spd_pgs_shift_phi_spec, names=tplot_prefix+'gyro'+suffix, start_angle=start_angle
     options, tplot_prefix+'gyro'+suffix, ysubtitle='[deg]'
   endif
   
