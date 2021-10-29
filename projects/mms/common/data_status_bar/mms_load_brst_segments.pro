@@ -17,8 +17,8 @@
 ;                       but may contain more recent data
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-09-27 15:00:42 -0700 (Mon, 27 Sep 2021) $
-;$LastChangedRevision: 30322 $
+;$LastChangedDate: 2021-10-27 21:51:33 -0700 (Wed, 27 Oct 2021) $
+;$LastChangedRevision: 30386 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_brst_segments.pro $
 ;-
 
@@ -32,7 +32,10 @@ pro mms_load_brst_segments, trange=trange, suffix=suffix, start_times=start_time
   
   undefine, start_times
   undefine, end_times
-
+  
+  ; SDC option is the default as of 27 Oct 2021
+  if undefined(sdc) then sdc = 1
+  
   if undefined(nodownload) and undefined(sdc) then begin
     brst_file = spd_download(remote_file='http://www.spedas.org/mms/mms_brst_intervals.sav', $
       local_file=!mms.local_data_dir+'mms_brst_intervals.sav', $
