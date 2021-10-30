@@ -1,6 +1,6 @@
 ==================================================================
-; UDAS plug-in software package for spedas_3_20 (UDAS ver.s3.20.1)
-;                                                    Oct. 4, 2019
+; UDAS plug-in software package for spedas_4_1
+;                                                   Oct. 26, 2021
 ==================================================================
 
   UDAS is a plug-in software package for SPEDAS (Space Physics Environment 
@@ -44,9 +44,11 @@ Load procedures for IUGONET data:
 - iug_load_avon_vlfb    ; AVON(Asia VLF Observation Network)/VLF-B data
 - iug_load_aws_rish     ; Automatic weather station data from RISH, Kyoto Univ
 - iug_load_blr_rish     ; Boundary layer radar data from RISH
+- iug_load_camera_omti_asi ; Alias for "erg_load_camera_omti_asi"
 - iug_load_ear          ; Equatorial Atmospheric Radar (EAR) data from RISH
 - iug_load_eiscat       ; EISCAT radar data
 - iug_load_eiscat_vief  ; EISCAT ion velocity and electric field vetor data
+- iug_load_gmag_icswse_iaga ; Fluxgate magnetometer data from ICSWSE, Kyushu Univ
 - iug_load_gmag_magdas_1sec ; Alias for "erg_load_gmag_magdas_1sec"
 - iug_load_gmag_mm210   ; Alias for "erg_load_gmag_mm210"
 - iug_load_gmag_nipr    ; Fluxgate magnetometer data from NIPR
@@ -54,11 +56,15 @@ Load procedures for IUGONET data:
 - iug_load_gmag_wdc     ; WDC geomagnetic indices and the magnetometer data
 - iug_load_gmag_nipr_induction ; Induction magnetometer data from NIPR
 - iug_load_gmag_isee_induction ; Alias for "erg_load_gmag_isee_induction"
-- iug_load_gps_ro_rish  ; GPS radio occultation full spectral inversion data from RISH, Kyoto Univ
+- iug_load_gps_isee     ; GPS TEC (Total Electron Content) data from ISEE
+- iug_load_gps_ro_rish  ; GPS radio occultation full spectral inversion data from RISH
 - iug_load_hf_tohokuu   ; Jupiter's/solar wide band spectral data in HF-band
 - iug_load_ionosonde_rish ; Ionogram data taken by the ionosonde at Shigaraki
 - iug_load_iprt	        ; Iitate Planetary Ratio Telescope data from Tohoku Univ
+- iug_load_iprt_highres	; Iitate Planetary Ratio Telescope high-resolution data from Tohoku Univ
 - iug_load_irio_nipr    ; Imaging Riometer data from NIPR
+- iug_load_isee_brio    ; Alias for "erg_load_isee_brio"
+- iug_load_isee_vlf     ; Alias for "erg_load_isee_vlf"
 - iug_load_kyushugcm    ; Kyushu GCM simulation data
 - iug_load_lfrto        ; Low Frequency Radio Transmitter data from Tohoku Univ
 - iug_load_ltr_rish     ; Lower troposphere radar from RISH
@@ -97,16 +103,17 @@ CUI:
       iug_load_avon_vlfb, site='tnn'
   timespan,'1994-05-03' & iug_load_aws_rish, site='sgk'
   timespan,'2006-12-01' & iug_load_blr_rish, site='ktb'
-  timespan,'2006-12-01' & iug_load_gps_ro_rish
   timespan,'2003-03-25' & iug_load_ear
   timespan,'2011-02-03' & iug_load_eiscat
   timespan,'2011-02-04' & iug_load_eiscat_vief
   timespan,'2006-12-01' & iug_load_gmag_mm210, site='tik'
   timespan,'2006-12-01' & iug_load_gmag_nipr, site='syo'
-  timespan,'2008-03-20' & iug_load_gmag_serc, site='anc'
+  timespan,'2013-01-01' & iug_load_gmag_icswse_iaga, site='asb'
   timespan,'2006-12-01',31 & iug_load_gmag_wdc, site='sym'
   timespan,'2006-04-17' & iug_load_gmag_nipr_induction, site='syo'
   timespan,'2008-02-28',1,/hour & iug_load_gmag_isee_induction, site='ath'
+  timespan,'2006-12-01' & iug_load_gps_ro_rish
+  timespan,'2017-09-08' & iug_load_gps_isee, datatype = 'atec'
   timespan,'2004-01-09/22:00',1,/hour & iug_load_hf_tohokuu
   timespan,'2002-07-01',1,/hour & iug_load_ionosonde_rish
   timespan,'2010-11-01',5,/hour & iug_load_iprt
@@ -130,6 +137,7 @@ GUI:
 - AllSky_Imager_Keogram NIPR#           hus             *       2012-01-22
 - Auto._Weather_Station troposphere     sgk             *       1994-05-03
 - Boundary_Layer_Radar  troposphere     ktb             *       2006-12-01
+- Broadbeam_Riometer    ISEE#           ath             *       2017-03-29
 - EISCAT_radar          altitude_prof   esr_32m         *       2011-02-03
                         Vi_E_vectors    kst             *       2011-02-04
 - Eq._Atom._Radar       troposphere     *(all)          *       2003-03-25
@@ -137,7 +145,8 @@ GUI:
                         ef_region       efb1p16         *       2001-07-30
                         v_region        150p8c8b2a      *       2008-03-05
                         f_region        fb1p16a         *       2001-08-05
-- geomag._fluxgate      magdas#         onw             *       2010-01-24
+- geomag._fluxgate      icswse          asb             *       2013-01-01
+                        magdas#         onw             *       2010-01-24
                         210mm#          tik             *       2006-12-01
                         ISEE#           msr             *       2006-11-20
                         WDC_kyoto       kak             *       2006-12-01
@@ -148,7 +157,9 @@ GUI:
                         AE_index        WDC_kyoto       *       2006-12-01
                         ASY_index       WDC_kyoto       *       2006-12-01
                         Wp_index        WDC_kyoto       *       2006-12-01
-- GPS_radio_occultation troposphere 	champ		*	2006-05-01
+- GPS_radio_occultation troposphere 	champ			*		2006-05-01
+                        troposphere 	cosmic			*		2006-05-01
+- GPS_TEC				atec			*(all)			*		2017-09-08
 - HF_radio_spectrometer Sun_or_Jupiter  iit             *       2004-01-09
 - IPRT                  Sun             iit             *       2010-11-01
 - Imaging_Riometer      30MHz           syo             *       2004-04-07
@@ -178,7 +189,7 @@ center (ERG-SC) at Institute for Space-Earth Environmental Research
 (ISEE), Nagoya University, in collaboration with SuperDARN PI groups.
 For use of the SuperDARN data, it is highly recommended to install 
 the latest ERG-SC plug-in libraries which are available from
-https://ergsc.isee.nagoya-u.ac.jp/analysis/spedas/index.shtml.en 
+http://ergsc.isee.nagoya-u.ac.jp/erg_socware/erg_plugin/ 
 As for questions about the data and the plug-in package, please feel 
 freeto contact the ERG-SC office (E-mail: erg-sc-core at 
 isee.nagoya-u.ac.jp).
@@ -209,5 +220,5 @@ Team in allowing us to use SPEDAS for our analysis software.
 +            Contact           +
 ++++++++++++++++++++++++++++++++
   For questions, comments, and requests about UDAS, please contact 
-the UDAS development team (iugonet-contact at gmail.com).
+the UDAS development team (iugonet-contact[at]iugonet.org).
 

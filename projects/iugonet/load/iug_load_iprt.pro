@@ -45,6 +45,7 @@
 ;  25-NOV.-2010, renamed to 'iug_load_iprt.pro' by M. Kagitani
 ;  22-JAN.-2014, revised by M. Yagi
 ;  22-NOV.-2017, revised by F. Tsuchiya
+;  26-MAR.-2020, revised by F. Tsuchiya (swap definition of databufR for databufL)
 ;
 ;Acknowledgment:
 ;
@@ -184,8 +185,8 @@ for j=0,n_elements(local_files)-1 do begin
      ; pc3p=[pc3p,buf[5]]
     ;endwhile
 ;    free_lun,lun
-  append_array,databufL,data[*,*,0]
-  append_array,databufR,data[*,*,1]
+  append_array,databufR,data[*,*,0]
+  append_array,databufL,data[*,*,1]
   append_array,timebuf,timearr
   ;===================================
 ;stop

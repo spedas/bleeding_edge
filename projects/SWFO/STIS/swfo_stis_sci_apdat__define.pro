@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $
-; $LastChangedRevision: 30383 $
+; $LastChangedDate: 2021-10-29 13:25:06 -0700 (Fri, 29 Oct 2021) $
+; $LastChangedRevision: 30387 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -52,11 +52,6 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   return,str
 end
 
-
-pro swfo_stis_sci_apdat::handler2,strct,source_dict=source_dict
-
-  ;printdat,self
-  ;printdat,strct
 
 
 

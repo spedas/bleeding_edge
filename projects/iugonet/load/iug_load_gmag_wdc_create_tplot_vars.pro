@@ -18,7 +18,7 @@
 ;Updated by:  Daiki Yoshida,  Nov 12, 2010
 ;Updated by:  Daiki Yoshida,  Jan 11, 2011
 ;Updated by:  Yukinobu KOYAMA, Jan 21, 2012
-;
+;Updated by:  Shun Imajo, Aug 23,2021
 ;-
 
 pro iug_load_gmag_wdc_create_tplot_vars, $
@@ -33,11 +33,20 @@ pro iug_load_gmag_wdc_create_tplot_vars, $
   ; for acknowledgment
   acknowledg_str_dst = $
     'The DST data are provided by the World Data Center for Geomagnetism, Kyoto, and'+ $
-    ' are not for redistribution (http://wdc.kugi.kyoto-u.ac.jp/). Furthermore, we thank'+ $
-    ' the geomagnetic observatories (Kakioka [JMA], Honolulu and San Juan [USGS], Hermanus'+ $
+    ' are not for redistribution (http://wdc.kugi.kyoto-u.ac.jp/). Please cite the data DOI'+ $
+    ' (10.17593/14515-74000) when using the index in your paper. Furthermore, we thank the'+ $
+    ' geomagnetic observatories (Kakioka [JMA], Honolulu and San Juan [USGS], Hermanus'+ $
     ' [RSA], Alibag [IIG]), NiCT, INTERMAGNET, and many others for their cooperation to'+ $
     ' make the Dst index available.'$
    +'The distribution of DST data has been partly supported by the IUGONET (Inter-university Upper atmosphere Global Observation NETwork) project (http://www.iugonet.org/) funded by the Ministry of Education, Culture, Sports, Science and Technology (MEXT), Japan.'
+  acknowledg_str_ae = $
+    'The AE data are provided by the World Data Center for Geomagnetism, Kyoto, and'+ $
+    ' are not for redistribution (http://wdc.kugi.kyoto-u.ac.jp/). Please cite the data DOI'+ $
+    ' (10.17593/15031-54800) when using the index in your paper. Furthermore, we thank the'+ $
+    ' geomagnetic observatories (Abisko, Dixon Island, Cape Chelyuskin, Tixie Bay, Pebek,'+ $
+    ' Barrow, College, Yellowknife, Fort Churchill, Sanikiluaq, Narssarssuaq, and Leirvogur),'+ $
+    ' and many others for their cooperation to make the AE index available.'$
+   +'The distribution of AE data has been partly supported by the IUGONET (Inter-university Upper atmosphere Global Observation NETwork) project (http://www.iugonet.org/) funded by the Ministry of Education, Culture, Sports, Science and Technology (MEXT), Japan.'
   acknowledg_str = $
     'The rules for the data use and exchange are defined'+ $
     ' by the Guide on the World Data Center System '+ $
@@ -50,14 +59,16 @@ pro iug_load_gmag_wdc_create_tplot_vars, $
     ' Commercial use and re-distribution of WDC data are, in general, not allowed.'+$
     ' Please ask for the information of each observatory to the WDC.'$
    +'The distribution of the data has been partly supported by the IUGONET (Inter-university Upper atmosphere Global Observation NETwork) project (http://www.iugonet.org/) funded by the Ministry of Education, Culture, Sports, Science and Technology (MEXT), Japan.'
-    
-  if strlowcase(sname) eq 'dst' then begin
-    tplot_dlimit = create_struct('data_att', $
+  
+
+  case strlowcase(sname) of
+    'dst': tplot_dlimit = create_struct('data_att', $
       create_struct('acknowledgment', acknowledg_str_dst))
-  endif else begin
-    tplot_dlimit = create_struct('data_att', $
+    'ae': tplot_dlimit = create_struct('data_att', $
+      create_struct('acknowledgment', acknowledg_str_ae))
+    else: tplot_dlimit = create_struct('data_att', $
       create_struct('acknowledgment', acknowledg_str))
-  endelse
+  endcase
   
   
   ; create tplot variable options

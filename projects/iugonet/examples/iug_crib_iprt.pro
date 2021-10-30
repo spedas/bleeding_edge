@@ -34,8 +34,8 @@ timespan, '2010-11-01',10,/min
 
 ;Load the data to plot.
 iug_load_iprt
-zlim,'iprt_sun_L',20,100
-zlim,'iprt_sun_R',20,100
+
+;Plot IPRT data
 tplot,['iprt_sun_L','iprt_sun_R']
 
 ; Title

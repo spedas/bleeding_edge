@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Oct 28 03:15:56 2021.<P>
+<STRONG>Last modified: </STRONG>Fri Oct 29 18:15:58 2021.<P>
  
 <HR>
  
@@ -19,6 +19,10 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/iugonet/plot</H1>
+<LI><A HREF="#ATEC_GLOBAL_2DMAP">ATEC_GLOBAL_2DMAP</A>
+<br>Create a two-dimensional world map of the GPS-TEC data at a specified time.
+<LI><A HREF="#ATEC_KEOGRAM_GLAT_GLONG">ATEC_KEOGRAM_GLAT_GLONG</A>
+<br>Create a keogram of the subtracted TEC (Total Electron Content) data
 <LI><A HREF="#GET_DATA_ASI_NIPR">GET_DATA_ASI_NIPR</A>
 <LI><A HREF="#GET_DATA_THMASI">GET_DATA_THMASI</A>
 <LI><A HREF="#IUG_MOVIE_SMART">IUG_MOVIE_SMART</A>
@@ -43,8 +47,109 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="ATEC_GLOBAL_2DMAP">
+<H2>ATEC_GLOBAL_2DMAP</H2></A>
+<A HREF="#ATEC_KEOGRAM_GLAT_GLONG">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+NAME:
+atec_global_2dmap
+
+PURPOSE:
+  Create a two-dimensional world map of the GPS-TEC data at a specified time.
+
+SYNTAX:
+ atec_global_2dmap, vname1, st_time = st_time,
+                           contour_min = contour_min, contour_max = contour_max
+
+INPUT:
+  vname1 = tplot variable name
+
+KEYWOARDS:
+
+  P0lat = center latitude of a world map
+             The default is 0.
+
+  P0lon = center longitude of a world map
+             The default is 160.
+
+  plot_min_lat = minimum value of plot latitude range
+                        The default is -90.0.
+
+  plot_max_lat = maximum value of plot latitude range
+                        The default is 90.0.
+
+  plot_min_lon = minimum value of plot longitude range
+                        The default is -180.0.
+
+  plot_max_lon = maximum value of plot longitude range
+                        The default is 180.0.
+
+  st_time = start time to create a world map of GPS-TEC data
+
+  contour_min = plot the minimum range of GPS-TEC value.
+                     The default is the minimum range corresponding to the minimum GPS-TEC value.
+
+  contour_max = plot the maximum range of each GPS-TEC value.
+                     The default is the maximum range corresponding to the maximum GPS-TEC value.
+                     
+  /local_noon: plot the local noon line in the two-dimensional map. 
+
+CODE:
+ A. Shinbori, 06/10/2021.
+
+MODIFICATIONS:
+
+
+ACKNOWLEDGEMENT:
+ $LastChangedBy:  $
+ $LastChangedDate:  $
+ $LastChangedRevision:  $
+ $URL $
+</PRE><P>
+<STRONG>(See <A href="plot/atec_global_2dmap.pro">projects/iugonet/plot/atec_global_2dmap.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ATEC_KEOGRAM_GLAT_GLONG">
+<H2>ATEC_KEOGRAM_GLAT_GLONG</H2></A>
+<A HREF="#ATEC_GLOBAL_2DMAP">[Previous Routine]</A>
+<A HREF="#GET_DATA_ASI_NIPR">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+NAME:
+ atec_keogram_glat_glong
+
+PURPOSE:
+  Create a keogram of the subtracted TEC (Total Electron Content) data
+  provided by the DRAWING/PWING projects and and loads data into tplot format.
+
+SYNTAX:
+ atec_keogram_glat_glong,  glong = glong
+
+KEYWOARDS:
+  glong = specify the geographic longitude of a TEC keogram.
+              The default is 0.
+
+CODE:
+ A. Shinbori, 06/10/2021.
+
+MODIFICATIONS:
+
+
+ACKNOWLEDGEMENT:
+ $LastChangedBy:  $
+ $LastChangedDate:  $
+ $LastChangedRevision:  $
+ $URL $
+</PRE><P>
+<STRONG>(See <A href="plot/atec_keogram_glat_glong.pro">projects/iugonet/plot/atec_keogram_glat_glong.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="GET_DATA_ASI_NIPR">
 <H2>GET_DATA_ASI_NIPR</H2></A>
+<A HREF="#ATEC_KEOGRAM_GLAT_GLONG">[Previous Routine]</A>
 <A HREF="#GET_DATA_THMASI">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Oct 28 03:15:56 2021.<P>
+<STRONG>Last modified: </STRONG>Fri Oct 29 18:15:58 2021.<P>
  
 <HR>
  
@@ -93,10 +93,14 @@ IUG_LOAD_GMAG_WDC_RELPATH_TO_YEAR</A>
 <LI><A HREF="#IUG_LOAD_GMAG_WDC_WDCMIN">IUG_LOAD_GMAG_WDC_WDCMIN</A>
 <LI><A HREF="#IUG_LOAD_GMAG_WDC_WP_INDEX">IUG_LOAD_GMAG_WDC_WP_INDEX</A>
 <br>This procedure get Wp index and the number of available station.
+<LI><A HREF="#IUG_LOAD_GPS_ATEC">IUG_LOAD_GPS_ATEC</A>
+<br>Queries the ISEE servers for the absolute value of GPS TEC (Total Electron Content) data
 <LI><A HREF="#IUG_LOAD_GPS_CHAMP_FSI_NC">IUG_LOAD_GPS_CHAMP_FSI_NC</A>
 <br>Queries the Kyoto_RISH servers for the GPS-CHAMP radio occultation FSI data in the netCDF format
 <LI><A HREF="#IUG_LOAD_GPS_COSMIC_FSI_NC">IUG_LOAD_GPS_COSMIC_FSI_NC</A>
 <br>Queries the Kyoto_RISH servers for the GPS-COSMIC radio occultation FSI data in the netCDF format
+<LI><A HREF="#IUG_LOAD_GPS_ISEE">IUG_LOAD_GPS_ISEE</A>
+<br>Queries the ISEE servers for the GPS TEC (Total Electron Content) data
 <LI><A HREF="#IUG_LOAD_GPS_RO_RISH">IUG_LOAD_GPS_RO_RISH</A>
 <br>Queries the Kyoto_RISH servers for the GPS radio occultation FSI data in the netCDF format
 <LI><A HREF="#IUG_LOAD_HF_TOHOKUU">IUG_LOAD_HF_TOHOKUU</A>
@@ -104,6 +108,7 @@ IUG_LOAD_GMAG_WDC_RELPATH_TO_YEAR</A>
 <LI><A HREF="#IUG_LOAD_IONOSONDE_RISH">IUG_LOAD_IONOSONDE_RISH</A>
 <br>Queries the RISH server for the ionogram data taken by the ionosonde
 <LI><A HREF="#IUG_LOAD_IPRT">IUG_LOAD_IPRT</A>
+<LI><A HREF="#IUG_LOAD_IPRT_HIGHRES">IUG_LOAD_IPRT_HIGHRES</A>
 <LI><A HREF="#IUG_LOAD_IRIO_NIPR">IUG_LOAD_IRIO_NIPR</A>
 <br>Loads the imaging riometer data obtained by NIPR.
 <LI><A HREF="#IUG_LOAD_ISEE_BRIO">IUG_LOAD_ISEE_BRIO</A>
@@ -307,6 +312,7 @@ IUG_LOAD_GMAG_WDC_RELPATH_TO_YEAR</A>
                  trange=['2012-01-22/20:30','2012-01-22/21:00']
 
  Written by Y.-M. Tanaka, July, 2014 (ytanaka at nipr.ac.jp)
+ Modified by Y.-M. Tanaka, November, 2020 (ytanaka at nipr.ac.jp)
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_asi_nipr.pro">projects/iugonet/load/iug_load_asi_nipr.pro</A>)</STRONG><P>
 <HR>
@@ -348,6 +354,7 @@ IUG_LOAD_GMAG_WDC_RELPATH_TO_YEAR</A>
                  trange=['2012-01-22','2012-01-23']
 
  Written by Y.-M. Tanaka, August, 2014 (ytanaka at nipr.ac.jp)
+ Modified by Y.-M. Tanaka, September, 2020 (ytanaka at nipr.ac.jp)
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_ask_nipr.pro">projects/iugonet/load/iug_load_ask_nipr.pro</A>)</STRONG><P>
 <HR>
@@ -644,7 +651,7 @@ ACKNOWLEDGEMENT:
  PURPOSE:
    To load the OMTI ASI data from the STEL ERG-SC site 
 
- NOTE: This procedure is a simple alias to &quot;iug_load_camera_omti_asi&quot;
+ NOTE: This procedure is a simple alias to &quot;erg_load_camera_omti_asi&quot;
    and calls the original one by just providing the same
    arguments/keywords given.
    Some load procedures for the ground-based observational data
@@ -1948,7 +1955,7 @@ Updated by:  Daiki Yoshida,  Sep 14, 2010
 Updated by:  Daiki Yoshida,  Nov 12, 2010
 Updated by:  Daiki Yoshida,  Jan 11, 2011
 Updated by:  Yukinobu KOYAMA, Jan 21, 2012
-
+Updated by:  Shun Imajo, Aug 23,2021
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_gmag_wdc_create_tplot_vars.pro">projects/iugonet/load/iug_load_gmag_wdc_create_tplot_vars.pro</A>)</STRONG><P>
 <HR>
@@ -2159,7 +2166,7 @@ Last Updated by:  Shun Imajo, Apr 26, 2017
 <A NAME="IUG_LOAD_GMAG_WDC_WP_INDEX">
 <H2>IUG_LOAD_GMAG_WDC_WP_INDEX</H2></A>
 <A HREF="#IUG_LOAD_GMAG_WDC_WDCMIN">[Previous Routine]</A>
-<A HREF="#IUG_LOAD_GPS_CHAMP_FSI_NC">[Next Routine]</A>
+<A HREF="#IUG_LOAD_GPS_ATEC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE: iug_load_gmag_wdc_wp_index
@@ -2187,21 +2194,62 @@ CODE:
 
 CHANGELOG:
   21-March-2017, Imajo. first version.
+  20-Octber-2021, Imajo. first modify remote data location.
 
 ACKNOWLEDGMENT:
 
 
- $LastChangedBy: nikos $
- $LastChangedDate: 2018-08-01 11:03:38 -0700 (Wed, 01 Aug 2018) $
- $LastChangedRevision: 25538 $
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2021-10-29 15:15:32 -0700 (Fri, 29 Oct 2021) $
+ $LastChangedRevision: 30388 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/iugonet/load/iug_load_gmag_wdc_wp_index.pro $
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_gmag_wdc_wp_index.pro">projects/iugonet/load/iug_load_gmag_wdc_wp_index.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="IUG_LOAD_GPS_ATEC">
+<H2>IUG_LOAD_GPS_ATEC</H2></A>
+<A HREF="#IUG_LOAD_GMAG_WDC_WP_INDEX">[Previous Routine]</A>
+<A HREF="#IUG_LOAD_GPS_CHAMP_FSI_NC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+NAME:
+iug_load_gps_atec
+
+PURPOSE:
+  Queries the ISEE servers for the absolute value of GPS TEC (Total Electron Content) data
+  provided from ISEE and and loads data into tplot format.
+
+SYNTAX:
+iug_load_gps_atec_isee, downloadonly=downloadonly, trange=trange, verbose=verbose
+
+KEYWOARDS:
+  trange = (Optional) Time range of interest  (2 element array), if
+          this is not set, the default is to prompt the user. Note
+          that if the input time range is not a full day, a full
+          day's data is loaded.
+  /downloadonly, if set, then only download the data, do not load it
+                 into variables.
+
+CODE:
+ A. Shinbori, 01/10/2021.
+
+MODIFICATIONS:
+ A. Shinbori, 06/10/2021.
+
+ACKNOWLEDGEMENT:
+ $LastChangedBy:  $
+ $LastChangedDate:  $
+ $LastChangedRevision:  $
+ $URL $
+</PRE><P>
+<STRONG>(See <A href="load/iug_load_gps_atec.pro">projects/iugonet/load/iug_load_gps_atec.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="IUG_LOAD_GPS_CHAMP_FSI_NC">
 <H2>IUG_LOAD_GPS_CHAMP_FSI_NC</H2></A>
-<A HREF="#IUG_LOAD_GMAG_WDC_WP_INDEX">[Previous Routine]</A>
+<A HREF="#IUG_LOAD_GPS_ATEC">[Previous Routine]</A>
 <A HREF="#IUG_LOAD_GPS_COSMIC_FSI_NC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -2242,7 +2290,7 @@ ACKNOWLEDGEMENT:
 <A NAME="IUG_LOAD_GPS_COSMIC_FSI_NC">
 <H2>IUG_LOAD_GPS_COSMIC_FSI_NC</H2></A>
 <A HREF="#IUG_LOAD_GPS_CHAMP_FSI_NC">[Previous Routine]</A>
-<A HREF="#IUG_LOAD_GPS_RO_RISH">[Next Routine]</A>
+<A HREF="#IUG_LOAD_GPS_ISEE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -2279,9 +2327,53 @@ ACKNOWLEDGEMENT:
 <STRONG>(See <A href="load/iug_load_gps_cosmic_fsi_nc.pro">projects/iugonet/load/iug_load_gps_cosmic_fsi_nc.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="IUG_LOAD_GPS_ISEE">
+<H2>IUG_LOAD_GPS_ISEE</H2></A>
+<A HREF="#IUG_LOAD_GPS_COSMIC_FSI_NC">[Previous Routine]</A>
+<A HREF="#IUG_LOAD_GPS_RO_RISH">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+NAME:
+iug_load_gps_isee
+
+PURPOSE:
+  Queries the ISEE servers for the GPS TEC (Total Electron Content) data
+  provided from ISEE and and loads data into tplot format.
+
+SYNTAX:
+ iug_load_gps_isee, site=site, downloadonly=downloadonly, trange=trange, verbose=verbose
+
+KEYWOARDS:
+  DATATYPE = The type of data to be loaded. In this load program,
+             DATATYPEs are 'atec'. In future, 'dtec' and 'roti' will be added.
+
+  TRANGE = (Optional) Time range of interest  (2 element array), if
+          this is not set, the default is to prompt the user. Note
+          that if the input time range is not a full day, a full
+          day's data is loaded.
+  /downloadonly, if set, then only download the data, do not load it
+                 into variables.
+  VERBOSE : [1,...,5], Get more detailed (higher number) command line output.
+
+CODE:
+  A. Shinbori, 06/10/2021.
+
+MODIFICATIONS:
+  
+
+ACKNOWLEDGEMENT:
+ $LastChangedBy:  $
+ $LastChangedDate: $
+ $LastChangedRevision:  $
+ $URL $
+</PRE><P>
+<STRONG>(See <A href="load/iug_load_gps_isee.pro">projects/iugonet/load/iug_load_gps_isee.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="IUG_LOAD_GPS_RO_RISH">
 <H2>IUG_LOAD_GPS_RO_RISH</H2></A>
-<A HREF="#IUG_LOAD_GPS_COSMIC_FSI_NC">[Previous Routine]</A>
+<A HREF="#IUG_LOAD_GPS_ISEE">[Previous Routine]</A>
 <A HREF="#IUG_LOAD_HF_TOHOKUU">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -2350,8 +2442,8 @@ ACKNOWLEDGEMENT:
  Written by: M.Yagi, Oct 2, 2012
              PPARC, Tohoku Univ.
 
-   $LastChangedBy: nikos $
-   $LastChangedDate: 2019-11-13 11:33:21 -0800 (Wed, 13 Nov 2019) $
+   $LastChangedBy: jwl $
+   $LastChangedDate: 2021-10-29 15:15:32 -0700 (Fri, 29 Oct 2021) $
    $URL:
 </PRE><P>
 <STRONG>(See <A href="load/iug_load_hf_tohokuu.pro">projects/iugonet/load/iug_load_hf_tohokuu.pro</A>)</STRONG><P>
@@ -2412,7 +2504,7 @@ ACKNOWLEDGEMENT:
 <A NAME="IUG_LOAD_IPRT">
 <H2>IUG_LOAD_IPRT</H2></A>
 <A HREF="#IUG_LOAD_IONOSONDE_RISH">[Previous Routine]</A>
-<A HREF="#IUG_LOAD_IRIO_NIPR">[Next Routine]</A>
+<A HREF="#IUG_LOAD_IPRT_HIGHRES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure: iug_load_iprt,
@@ -2461,6 +2553,7 @@ ChangeLog:
   25-NOV.-2010, renamed to 'iug_load_iprt.pro' by M. Kagitani
   22-JAN.-2014, revised by M. Yagi
   22-NOV.-2017, revised by F. Tsuchiya
+  26-MAR.-2020, revised by F. Tsuchiya (swap definition of databufR for databufL)
 
 Acknowledgment:
 
@@ -2470,9 +2563,70 @@ Acknowledgment:
 <STRONG>(See <A href="load/iug_load_iprt.pro">projects/iugonet/load/iug_load_iprt.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="IUG_LOAD_IPRT_HIGHRES">
+<H2>IUG_LOAD_IPRT_HIGHRES</H2></A>
+<A HREF="#IUG_LOAD_IPRT">[Previous Routine]</A>
+<A HREF="#IUG_LOAD_IRIO_NIPR">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Procedure: iug_load_iprt_highres,
+  iug_load_iprt_highres, datatype = datatype, numbit=numbit, version=version, $
+           trange = trange, verbose = verbose, $
+           downloadonly = downloadonly
+Purpose:
+  This procedure allows you to download and plot TOHOKUU_RADIO OBSERVATION data on TDAS.
+  This is a sample code for IUGONET analysis software.
+
+Keywords:
+  datatype = The type of data to be loaded.  In this sample
+             procedure, there is only one option, the default value of 'Sun'.
+  trange = (Optional) Time range of interest  (2 element array), if
+          this is not set, the default is to prompt the user. Note
+          that if the input time range is not a full day, a full
+          day's data is loaded.
+  /verbose, if set, then output some useful info
+  /downloadonly, if set, then only download the data, do not load it
+                 into variables.
+
+ PROCEDURES USED:
+  fits_read, sxpar, fits_open, fits_close, gettok, sxdelpar, sxaddpar, valid_num
+  For the use of this procedure, get FITS I/O procedures from
+  the IDL Astronomy Library (http://idlastro.gsfc.nasa.gov/fitsio.html).
+  You can download these procedures by running get_fitslib.
+
+
+Example:
+ timespan,'2010-11-03',1,/hours
+  iug_load_iprt
+  tplot_names
+  zlim,'iprt_sun_L',20,120
+  zlim,'iprt_sun_R',20,120
+  tplot,['iprt_sun_L','iprt_sun_R']
+
+
+Code:
+  Shuji Abe, revised by M. Kagitani
+
+ChangeLog:
+  7-April-2010, abeshu, test release.
+  8-April-2010, abeshu, minor update.
+  27-JUL.-2010, revised for this procedure by M. Kagitani
+  12-NOV.-2010, revised by M. Kagitani
+  25-NOV.-2010, renamed to 'iug_load_iprt.pro' by M. Kagitani
+  22-JAN.-2014, revised by M. Yagi
+  22-NOV.-2017, revised by F. Tsuchiya
+
+Acknowledgment:
+
+
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/tags/spedas_2_00/projects/iugonet/load/iug_load_iprt.pro $
+</PRE><P>
+<STRONG>(See <A href="load/iug_load_iprt_highres.pro">projects/iugonet/load/iug_load_iprt_highres.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="IUG_LOAD_IRIO_NIPR">
 <H2>IUG_LOAD_IRIO_NIPR</H2></A>
-<A HREF="#IUG_LOAD_IPRT">[Previous Routine]</A>
+<A HREF="#IUG_LOAD_IPRT_HIGHRES">[Previous Routine]</A>
 <A HREF="#IUG_LOAD_ISEE_BRIO">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

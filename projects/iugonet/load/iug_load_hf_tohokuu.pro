@@ -22,8 +22,8 @@
 ; Written by: M.Yagi, Oct 2, 2012
 ;             PPARC, Tohoku Univ.
 ;
-;   $LastChangedBy: nikos $
-;   $LastChangedDate: 2019-11-13 11:33:21 -0800 (Wed, 13 Nov 2019) $
+;   $LastChangedBy: jwl $
+;   $LastChangedDate: 2021-10-29 15:15:32 -0700 (Fri, 29 Oct 2021) $
 ;   $URL:
 ;-
 
@@ -55,17 +55,15 @@ if(not keyword_set(downloadonly)) then downloadonly=0
 
 show_text=0
 for i=0,n_elements(site_code)-1 do begin
-  ;--- Set filedate(YYYYMMDD) and filehour(YYYYMMDDhh)
-  filehour = file_dailynames(file_format='YYYYMMDDhh',trange=trange,/hour_res)
-  filedate = strmid(filehour,0,8)
+  ;--- Set filedate(YYYYMMDD)
+  filedate = file_dailynames(file_format='YYYYMMDD',trange=trange)
 
   ;--- Set the file path
   source.local_data_dir = root_data_dir() + 'iugonet/tohokuu/radio_obs/iit/hfspec/'
-;  source.remote_data_dir = 'http://ariel.gp.tohoku.ac.jp/~jupiter/it_hf/cdf2/'
-  source.remote_data_dir = 'http://adrastea.gp.tohoku.ac.jp/~jupiter/it_hf/cdf2/'
+  source.remote_data_dir = 'http://adrastea.gp.tohoku.ac.jp/~jupiter/it_hf/cdf/'
 
   ;--- Download file
-  relfnames = filedate+'/'+'it_h1_hf_'+filehour+'_v0?.cdf'
+  relfnames = 'it_h1_hf_'+filedate+'_v0?.cdf'
   datfiles = spd_download(remote_file=relfnames, remote_path=source.remote_data_dir, local_path=source.local_data_dir, _extra=source, /last_version)
 
   ;--- Skip load where no data

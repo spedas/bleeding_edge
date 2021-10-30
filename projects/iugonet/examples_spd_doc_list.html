@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Oct 28 03:15:56 2021.<P>
+<STRONG>Last modified: </STRONG>Fri Oct 29 18:15:58 2021.<P>
  
 <HR>
  
@@ -32,6 +32,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#IUG_CRIB_GMAG_NIPR_INDUCTION">IUG_CRIB_GMAG_NIPR_INDUCTION</A>
 <LI><A HREF="#IUG_CRIB_GMAG_SERC">IUG_CRIB_GMAG_SERC</A>
 <LI><A HREF="#IUG_CRIB_GMAG_WDC">IUG_CRIB_GMAG_WDC</A>
+<LI><A HREF="#IUG_CRIB_GPS_ISEE">IUG_CRIB_GPS_ISEE</A>
 <LI><A HREF="#IUG_CRIB_GPS_RO_RISH">IUG_CRIB_GPS_RO_RISH</A>
 <LI><A HREF="#IUG_CRIB_HF_TOHOKUU">IUG_CRIB_HF_TOHOKUU</A>
 <LI><A HREF="#IUG_CRIB_IONOSONDE_RISH">IUG_CRIB_IONOSONDE_RISH</A>
@@ -328,7 +329,7 @@ Last Updated:  A. Shinbori,  Decq 02, 2011
 <A NAME="IUG_CRIB_GMAG_WDC">
 <H2>IUG_CRIB_GMAG_WDC</H2></A>
 <A HREF="#IUG_CRIB_GMAG_SERC">[Previous Routine]</A>
-<A HREF="#IUG_CRIB_GPS_RO_RISH">[Next Routine]</A>
+<A HREF="#IUG_CRIB_GPS_ISEE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE: IUG_CRIB_GMAG_WDC
@@ -345,9 +346,36 @@ Last Updated: M. NOSE, Apr 27, 2017
 <STRONG>(See <A href="examples/iug_crib_gmag_wdc.pro">projects/iugonet/examples/iug_crib_gmag_wdc.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="IUG_CRIB_GPS_ISEE">
+<H2>IUG_CRIB_GPS_ISEE</H2></A>
+<A HREF="#IUG_CRIB_GMAG_WDC">[Previous Routine]</A>
+<A HREF="#IUG_CRIB_GPS_RO_RISH">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROGRAM: iug_crib_gps_isee
+   This is an example crib sheet that will load GPS-TEC data.
+   Open this file in a text editor and then use copy and paste to copy
+   selected lines into an idl window.
+   Or alternatively compile and run using the command:
+     .run iug_crib_gps_isee
+
+ NOTE: See the rules of the road.
+       For more information, see https://stdb2.isee.nagoya-u.ac.jp/GPS/GPS-TEC/index.html
+
+ Written by: A. Shinbori, Oct 6, 2021
+             DIMR, ISEE, Nagoya Univ.
+
+   $LastChangedBy: $
+   $LastChangedDate:  $
+   $LastChangedRevision:  $
+   $URL:  $
+</PRE><P>
+<STRONG>(See <A href="examples/iug_crib_gps_isee.pro">projects/iugonet/examples/iug_crib_gps_isee.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="IUG_CRIB_GPS_RO_RISH">
 <H2>IUG_CRIB_GPS_RO_RISH</H2></A>
-<A HREF="#IUG_CRIB_GMAG_WDC">[Previous Routine]</A>
+<A HREF="#IUG_CRIB_GPS_ISEE">[Previous Routine]</A>
 <A HREF="#IUG_CRIB_HF_TOHOKUU">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

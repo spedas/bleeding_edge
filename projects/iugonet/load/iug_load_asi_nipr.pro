@@ -30,6 +30,7 @@
 ;                 trange=['2012-01-22/20:30','2012-01-22/21:00']
 ;
 ; Written by Y.-M. Tanaka, July, 2014 (ytanaka at nipr.ac.jp)
+; Modified by Y.-M. Tanaka, November, 2020 (ytanaka at nipr.ac.jp)
 ;-
 
 ;************************************************
@@ -47,7 +48,7 @@ if ~keyword_set(downloadonly) then downloadonly=0
 if ~keyword_set(no_download) then no_download=0
 
 ;----- site -----;
-site_code_all = strsplit('hus tjo tro lyr spa syo mcm', /extract)
+site_code_all = strsplit('hus kil krn lyr mcm skb sod spa syo tja tjo tro', /extract)
 if(not keyword_set(site)) then site='all'
 site_code = ssl_check_valid_name(site, site_code_all, /ignore_case, /include_all)
 if site_code[0] eq '' then return
@@ -58,7 +59,7 @@ print, site_code
 if(not keyword_set(wavelength)) then wavelength=[0000]
 wlenstr=string(wavelength, format='(i4.4)')
 
-wlenstr_all=strsplit('0000 4278 4300 5577 5580 6300', /extract)
+wlenstr_all=strsplit('0000 4278 5577 6300', /extract)
 wlenstr=ssl_check_valid_name(wlenstr,wlenstr_all, $
                              /ignore_case, /include_all)
 if wlenstr[0] eq '' then begin

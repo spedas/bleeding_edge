@@ -4,7 +4,7 @@
 ; PURPOSE:
 ;   To load the OMTI ASI data from the STEL ERG-SC site 
 ;
-; NOTE: This procedure is a simple alias to "iug_load_camera_omti_asi"
+; NOTE: This procedure is a simple alias to "erg_load_camera_omti_asi"
 ;   and calls the original one by just providing the same
 ;   arguments/keywords given.
 ;   Some load procedures for the ground-based observational data
