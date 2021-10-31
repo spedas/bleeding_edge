@@ -39,8 +39,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-03-17 11:24:31 -0700 (Tue, 17 Mar 2020) $
-; $LastChangedRevision: 28424 $
+; $LastChangedDate: 2021-10-30 17:16:36 -0700 (Sat, 30 Oct 2021) $
+; $LastChangedRevision: 30390 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_n1d.pro $
 ;
 ;-
@@ -90,15 +90,12 @@ pro mvn_swe_n1d, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, mask
 
     energy = fltarr(64, npts)
     eflux = energy
-    cnts = energy
     sig2 = energy
     sc_pot = fltarr(npts)
 
     for i=0L,(npts-1L) do begin
-      ddd = mvn_swe_get3d(t[i], units='counts')
-      counts = ddd.data
+      ddd = mvn_swe_get3d(t[i], units='eflux')
       var = ddd.var
-      ddd = conv_units(ddd,'eflux')
 
       if (ddd.time gt t_mtx[2]) then boom = 1 else boom = 0
       ondx = where(obins[*,boom] eq 1B, ocnt)
@@ -107,7 +104,6 @@ pro mvn_swe_n1d, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, mask
       
       energy[*,i] = ddd.energy[*,0]
       eflux[*,i] = total(ddd.data*obins_b,2)/onorm
-      cnts[*,i] = total(counts*obins_b,2)
       sig2[*,i] = total(var*obins_b,2)
       sc_pot[i] = ddd.sc_pot
     endfor
@@ -123,14 +119,11 @@ pro mvn_swe_n1d, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, mask
     dsig = dens
     tsig = dens
     bkg = dens
-  
-    mvn_swe_convert_units, mvn_swe_engy, 'counts'
-    cnts = mvn_swe_engy.data
-    sig2 = mvn_swe_engy.var   ; variance w/ dig. noise
 
     mvn_swe_convert_units, mvn_swe_engy, 'eflux'    
     energy = mvn_swe_engy.energy
     eflux = mvn_swe_engy.data
+    sig2 = mvn_swe_engy.var   ; variance w/ dig. noise
     if (size(background,/type) ne 0) then bkg[*] = float(background) $
                                      else bkg = mvn_swe_engy.bkg
     sc_pot = mvn_swe_engy.sc_pot
