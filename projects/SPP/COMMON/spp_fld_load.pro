@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2020
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2021-10-08 17:05:51 -0700 (Fri, 08 Oct 2021) $
-; $LastChangedRevision: 30346 $
+; $LastChangedDate: 2021-11-01 22:18:00 -0700 (Mon, 01 Nov 2021) $
+; $LastChangedRevision: 30393 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -676,14 +676,17 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
       if (tnames('psp_fld_l?_quality_flags'))[0] NE '' then begin
 
         options, 'psp_fld_l?_quality_flags', 'tplot_routine', 'bitplot'
-        options, 'psp_fld_l?_quality_flags', 'numbits', 8
-        options, 'psp_fld_l?_quality_flags', 'yticks', 9
-
         options, 'psp_fld_l?_quality_flags', 'psyms', [2]
 
         qf_labels = $
           ['BIAS_SWP','THRUSTER','SCM_CAL',$
-          'MAG_ROLL','MAG_CAL','SPC_EMODE','SLS_CAL','OFF_UMBRA']
+          'MAG_ROLL','MAG_CAL','SPC_EMODE','SLS_CAL','OFF_UMBRA', $
+          'HF_NOISE','ANT_RAILS']
+
+        options, 'psp_fld_l?_quality_flags', $
+          'numbits', n_elements(qf_labels)
+        options, 'psp_fld_l?_quality_flags', $
+          'yticks', n_elements(qf_labels) + 1
 
         options, 'psp_fld_l?_quality_flags', 'labels', $
           qf_labels
