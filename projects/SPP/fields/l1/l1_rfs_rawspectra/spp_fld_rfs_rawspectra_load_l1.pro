@@ -1,3 +1,12 @@
+;+
+;
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2021-11-03 12:58:22 -0700 (Wed, 03 Nov 2021) $
+; $LastChangedRevision: 30395 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_rfs_rawspectra/spp_fld_rfs_rawspectra_load_l1.pro $
+;
+;-
+
 pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix, varformat = varformat
 
   if not keyword_set(prefix) then prefix = 'spp_fld_rfs_rawspectra_'
@@ -289,7 +298,7 @@ pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix, varformat = varformat
             source_txt
 
           print, ch, alg, src, match_count, ' ', tplot_prefix, $
-            format = '(I2,I2,I2,I6,A,A)'
+            format = '(I6,I6,I6,I6,A,A)'
 
           if hfr_lfr_str EQ 'lfr' then begin
             freq_div = 1.e3
@@ -310,7 +319,7 @@ pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix, varformat = varformat
             y:dat.y[match_t,*], $
             v:dat.v[match_t,*]/freq_div}
 
-          store_data, tplot_prefix ;+ '_' + dtype, $
+          store_data, tplot_prefix + '_full', $
             data = dat_str
 
           dat_str_clean = {x:dat_str.x, $
@@ -322,7 +331,9 @@ pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix, varformat = varformat
 
           options, tplot_prefix + '_*', 'spec', 1
           options, tplot_prefix + '_*', 'ylog', 1
-          options, tplot_prefix + '_*', 'zlog', 0
+          if tplot_prefix.Contains('auto') then $
+            options, tplot_prefix + '_*', 'zlog', 1 else $
+            options, tplot_prefix + '_*', 'zlog', 0
           options, tplot_prefix + '_*', 'no_interp', 1
           options, tplot_prefix + '_*', 'yrange', yrange
           options, tplot_prefix + '_*', 'ystyle', 1
@@ -334,8 +345,8 @@ pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix, varformat = varformat
           options, tplot_prefix + '*', 'datagap', 120d
 
         endif else begin
-          print, ch, alg, src, match_count, $
-            format = '(I2,I2,I2,I6)'
+          ;print, ch, alg, src, match_count, $
+          ;  format = '(I6,I6,I6,I6)'
         end
 
         ;endif
