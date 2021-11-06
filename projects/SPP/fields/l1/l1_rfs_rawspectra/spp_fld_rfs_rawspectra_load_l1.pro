@@ -1,8 +1,8 @@
 ;+
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2021-11-03 12:58:22 -0700 (Wed, 03 Nov 2021) $
-; $LastChangedRevision: 30395 $
+; $LastChangedDate: 2021-11-04 22:11:10 -0700 (Thu, 04 Nov 2021) $
+; $LastChangedRevision: 30396 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_rfs_rawspectra/spp_fld_rfs_rawspectra_load_l1.pro $
 ;
 ;-
@@ -305,14 +305,14 @@ pro spp_fld_rfs_rawspectra_load_l1, file, prefix = prefix, varformat = varformat
             freq_div_str = '[kHz]'
             yrange = [1.,3.e3]
             freqs = spp_fld_rfs_freqs(/lfr)
-            clean_pfb = where(freqs.full_pfb_db LT -89.5)
+            clean_pfb = where(freqs.full_pfb_db[1:*] LT -89.5)
 
           endif else begin
             freq_div = 1.e6
             freq_div_str = '[MHz]'
             yrange = [5.e-3,30.]
             freqs = spp_fld_rfs_freqs()
-            clean_pfb = where(freqs.full_pfb_db LT -89.5)
+            clean_pfb = where(freqs.full_pfb_db[1:*] LT -89.5)
           endelse
 
           dat_str = {x:dat.x[match_t], $

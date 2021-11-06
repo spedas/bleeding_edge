@@ -154,15 +154,19 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
     tr=[tstart,tend]
     for sc=0,0 do begin
       print, 'Loading data for MMS'+probes[sc]
+;      batch_procedure_error_handler, 'mms_load_state', probe=probes[sc], datatypes='pos', trange=tr, $
+;        login_info='/disks/socware/thmsoc_dp_current/src/config/mms_auth_info.sav', $
+;        local_data_dir='/mydisks/home/thmsoc/mms/', /no_color_setup
       batch_procedure_error_handler, 'mms_load_state', probe=probes[sc], datatypes='pos', trange=tr, $
-        login_info='/disks/socware/thmsoc_dp_current/src/config/mms_auth_info.sav', $
-        local_data_dir='/mydisks/home/thmsoc/mms/', /no_color_setup
+        login_info=!mms.local_data_dir+'mms_auth_info.sav'
       get_data,'mms'+probes[sc]+'_defeph_pos',data=dat ; default position is GEI
       ; check that definitive data was successfully retrieved, if not then check for predicted data
       if size(dat, /type) Ne 8 then begin
-        batch_procedure_error_handler, 'mms_load_state', probe=probes[sc], datatypes='pos', trange=tr, level='pred',$
-          login_info='/disks/socware/thmsoc_dp_current/src/config/mms_auth_info.sav', $
-          local_data_dir='/mydisks/home/thmsoc/mms/', /no_color_setup
+;        batch_procedure_error_handler, 'mms_load_state', probe=probes[sc], datatypes='pos', trange=tr, level='pred',$
+;          login_info='/disks/socware/thmsoc_dp_current/src/config/mms_auth_info.sav', $
+;          local_data_dir='/mydisks/home/thmsoc/mms/', /no_color_setup
+      batch_procedure_error_handler, 'mms_load_state', probe=probes[sc], datatypes='pos', trange=tr, level='pred',$
+        login_info=!mms.local_data_dir+'mms_auth_info.sav'
         get_data,'mms'+probes[sc]+'_predeph_pos',data=dat ; default position is GEI
       endif
       ;interpolate to 1 minute resolution (this is to reduce the time required to trace to equator
@@ -227,13 +231,14 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
     get_data, 'mms1_state_pos_gsm_foot',data=mms1_state_pos_gsm_foot
     if size(mms1_state_pos_gsm, /type) Eq 8 then mms1 = 1
   endif
-stop
+
   ;---------------------------
   ; Get ERG state data
   ; --------------------------
   If(keyword_set(erg_too)) Then Begin
     tr=[tstart,tend]
-    erg_init, local_data_dir='/mydisks/home/thmsoc/ergsc/'
+    erg_init, local_data_dir=spd_default_local_data_dir()+'erg/'
+    ;erg_init
     print, 'Loading data for ERG'
     batch_procedure_error_handler, 'erg_load_orb', trange=tr
     get_data,'erg_orb_l2_pos_gsm',data=dat, dlimits=dl, limits=l
@@ -574,7 +579,7 @@ stop
       ; find the indices for points in the magnetopause
       m1idx=where(mms1_mpauseflag GT 0, m1cnt)
       ; NOTE: Temporarily not plotting MMS 1, 2, and 3 since all 4 probes are on top of each other
-stop
+
       if m1cnt GT 0 then begin
         mms1_foot_t=mms1_time[m1idx]
         mms1_foot_x=mms1_foot[m1idx,0]
@@ -922,7 +927,8 @@ stop
       dir_products = !elf.local_data_dir + 'gtrackplots/'+ strmid(date,0,4)+'/'+strmid(date,5,2)+'/'+strmid(date,8,2)+'/'
       file_mkdir, dir_products
       if not keyword_set(noview) then tv,image
-      name=dir_products+'orbit_'+rbext+date+file_lbl[j]+'.gif'
+      name=dir_products+'orbit_'+rbext+strmid(date,0,4) + strmid(date,5,2) + strmid(date,8,2)+file_lbl[j]+'.gif'
+      ;name=dir_products+'orbit_'+rbext+date+file_lbl[j]+'.gif'
       write_gif,name,image,r,g,b
       print,'Output in ',name
     endif

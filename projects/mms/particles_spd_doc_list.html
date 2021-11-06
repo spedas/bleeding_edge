@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Nov  3 18:16:19 2021.<P>
+<STRONG>Last modified: </STRONG>Fri Nov  5 18:15:54 2021.<P>
  
 <HR>
  
@@ -268,8 +268,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          Spacecraft photoelectrons are corrected in moments_3d
          
 $LastChangedBy: egrimes $
-$LastChangedDate: 2021-07-28 14:22:07 -0700 (Wed, 28 Jul 2021) $
-$LastChangedRevision: 30149 $
+$LastChangedDate: 2021-11-05 09:19:11 -0700 (Fri, 05 Nov 2021) $
+$LastChangedRevision: 30398 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_getspec.pro">projects/mms/particles/mms_part_getspec.pro</A>)</STRONG><P>
@@ -418,11 +418,14 @@ Notes:
   -Note that there may still be slight differences between the PGS moments and the official moments released by the team.
      The official moments released by the team are the scientific
      products you should use in your analysis.
+  
+  - Note: versions of this code between 28July2021 and 5Nov2021 automatically removed negative values 
+          after photoelectron corrections; this functionality is now available by setting the keyword: /zero_negative_values
 
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2021-10-22 14:24:05 -0700 (Fri, 22 Oct 2021) $
-$LastChangedRevision: 30384 $
+$LastChangedDate: 2021-11-05 09:19:11 -0700 (Fri, 05 Nov 2021) $
+$LastChangedRevision: 30398 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_products.pro">projects/mms/particles/mms_part_products.pro</A>)</STRONG><P>

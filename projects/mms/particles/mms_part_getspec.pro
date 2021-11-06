@@ -52,8 +52,8 @@
 ;         Spacecraft photoelectrons are corrected in moments_3d
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-07-28 14:22:07 -0700 (Wed, 28 Jul 2021) $
-;$LastChangedRevision: 30149 $
+;$LastChangedDate: 2021-11-05 09:19:11 -0700 (Fri, 05 Nov 2021) $
+;$LastChangedRevision: 30398 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -103,6 +103,7 @@ pro mms_part_getspec, probes=probes, $
                       photoelectron_corrections=photoelectron_corrections, $ ; Apply both internal photoelectron corrections (Dan Gershman's model) and correct for S/C potential (should not be used with either of the bottom two)
                       internal_photoelectron_corrections=internal_photoelectron_corrections, $ ; Only apply Dan Gershman's model (i.e., don't correct for the S/C potential in moments_3d)
                       correct_sc_potential=correct_sc_potential, $ ; only correect for the S/C potential (disables Dan Gershman's model)
+                      zero_negative_values=zero_negative_values, $ ; keyword that tells mms_part_products to turn negative values to 0 after doing the photoelectron corrections (DES)
                       with_aspoc=with_aspoc, $
                       
                       cdf_version=cdf_version, $
@@ -247,7 +248,7 @@ pro mms_part_getspec, probes=probes, $
             error_variable=error_variable, instrument=instrument, species=species, $
             sc_pot_name=scpot_variable, data_rate=data_rate, correct_photoelectrons=photoelectron_corrections, $
             internal_photoelectron_corrections=internal_photoelectron_corrections, $
-            correct_sc_potential=correct_sc_potential, _extra=ex
+            correct_sc_potential=correct_sc_potential, zero_negative_values=zero_negative_values, _extra=ex
 
         if undefined(tplotnames_thisprobe) then continue ; nothing created by mms_part_products
         append_array, tplotnames, tplotnames_thisprobe
