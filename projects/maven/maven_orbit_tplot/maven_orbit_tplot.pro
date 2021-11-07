@@ -139,8 +139,8 @@
 ;                 save files are 8.7 GB in size.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-06-03 12:53:11 -0700 (Thu, 03 Jun 2021) $
-; $LastChangedRevision: 30017 $
+; $LastChangedDate: 2021-11-06 12:21:04 -0700 (Sat, 06 Nov 2021) $
+; $LastChangedRevision: 30404 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -782,6 +782,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 ; Calculate statistics (orbit by orbit)
 
   alt = ss[*,4]
+  aalt = max(alt)
   palt = min(alt)
   gndx = where(alt lt 500.)
   di = gndx - shift(gndx,1)
@@ -795,6 +796,8 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
     tpileup = torb
     twake = torb
     period = torb
+    atime = torb
+    aalt = torb
     ptime = torb
     palt = torb
     plon = torb
@@ -827,7 +830,12 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
       j2 = gndx[j+gap[i+1L]]
       jndx = [-1L, 0L, 1L] + j2
       parabola_vertex, time[jndx], alt[jndx], t2, p2
-    
+
+      a1 = max(alt[j1:j2],j)
+      j3 = j1 + j
+      jndx = [-1L, 0L, 1L] + j3
+      parabola_vertex, time[jndx], alt[jndx], t3, a1
+
       dj = double(j2 - j1 + 1L)
 
       k = i - 1L
@@ -837,6 +845,8 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
       ptime[k] = t1
       palt[k] = p1         ; minimum altitude, not geometric periapsis
+      atime[k] = t3
+      aalt[k] = a1
       plonx[k] = spl_interp(time, lonx, d2lonx, t1)
       plony[k] = spl_interp(time, lony, d2lony, t1)
       plat[k] = spl_interp(time, lat, d2lat, t1)
@@ -925,21 +935,23 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 ;check for valid results, torb, etc... may not be defined, jmm,
 ;2018-12-17
   if n_elements(torb) Gt 0 then begin
-     stat = {time    : torb    , $ ; time (UTC)
-             twind   : twind   , $ ; fraction of time in solar wind
-             tsheath : tsheath , $ ; fraction of time in sheath
-             tpileup : tpileup , $ ; fraction of time in MPR
-             twake   : twake   , $ ; fraction of time in wake
-             hwind   : hwind   , $ ; hours in solar wind
-             hsheath : hsheath , $ ; hours in sheath
-             hpileup : hpileup , $ ; hours in MPR
-             hwake   : hwake   , $ ; hours in wake
-             period  : period  , $ ; orbit period
-             ptime   : ptime   , $ ; periapsis time
-             palt    : palt    , $ ; periapsis altitude
-             plon    : plon    , $ ; periapsis longitude
-             plat    : plat    , $ ; periapsis latitude
-             psza    : psza    , $ ; periapsis solar zenith angle
+     stat = {time    : torb    , $  ; time (UTC)
+             twind   : twind   , $  ; fraction of time in solar wind
+             tsheath : tsheath , $  ; fraction of time in sheath
+             tpileup : tpileup , $  ; fraction of time in MPR
+             twake   : twake   , $  ; fraction of time in wake
+             hwind   : hwind   , $  ; hours in solar wind
+             hsheath : hsheath , $  ; hours in sheath
+             hpileup : hpileup , $  ; hours in MPR
+             hwake   : hwake   , $  ; hours in wake
+             period  : period  , $  ; orbit period
+             atime   : atime   , $  ; apoapsis time
+             aalt    : aalt    , $  ; apoapsis altitude
+             ptime   : ptime   , $  ; periapsis time
+             palt    : palt    , $  ; periapsis altitude
+             plon    : plon    , $  ; periapsis longitude
+             plat    : plat    , $  ; periapsis latitude
+             psza    : psza    , $  ; periapsis solar zenith angle
              datum   : datum      } ; reference surface
 
      orbstat = stat             ; update the common block
@@ -970,6 +982,10 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
      options,'period','ytitle','Period'
      options,'period','panel_size',0.5
      options,'period','ynozero',1
+
+     store_data, 'aalt', data = {x:atime, y:aalt}
+     options,'aalt','ytitle','Apoapsis (km)!c' + strlowcase(datum)
+     options,'aalt','ynozero',1
 
      store_data, 'palt', data = {x:ptime, y:palt}
      options,'palt','ytitle','Periapsis (km)!c' + strlowcase(datum)

@@ -18,6 +18,8 @@
 ;KEYWORDS:
 ;       PSYM:       Symbol type (same as for plot).
 ;
+;       NOSYM:      Do not plot symbol at s/c position.
+;
 ;       LSTYLE:     Line style (same as for plot).
 ;
 ;       COLOR:      Line/symbol color (same as for plot).
@@ -49,8 +51,8 @@
 ;       SCOL:       Color for each of the sites.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-02-28 12:46:30 -0800 (Sun, 28 Feb 2021) $
-; $LastChangedRevision: 29710 $
+; $LastChangedDate: 2021-11-06 12:22:51 -0700 (Sat, 06 Nov 2021) $
+; $LastChangedRevision: 30406 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mag_mola_orbit.pro $
 ;
 ;CREATED BY:	David L. Mitchell  04-02-03
@@ -58,7 +60,7 @@
 pro mag_mola_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
                     reset=reset, big=big, noerase=noerase, title=title, $
                     terminator=ttime, shadow=shadow, alt=alt, sites=sites, $
-                    slab=slab, scol=scol, dbr=dbr, rwin=rwin
+                    slab=slab, scol=scol, dbr=dbr, rwin=rwin, nosym=nosym
 
   common magmola_orb_com, img, ppos
   @putwin_common
@@ -69,6 +71,7 @@ pro mag_mola_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
 
   if not keyword_set(title) then title = ''
   if (~size(psym,/type)) then psym = 1 else psym = fix(psym)
+  dosym = ~keyword_set(nosym)
   if (~size(lstyle,/type)) then lstyle = 0 else lstyle = fix(lstyle)
   if (~size(color,/type)) then color = 2 else color = fix(color)
   if not keyword_set(noerase) then eflg = 1 else eflg = 0
@@ -149,7 +152,7 @@ pro mag_mola_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
     for i=0,(nsites-1) do oplot,[sites[0,i]],[sites[1,i]],psym=8,symsize=1.5,color=scol[i]
   endelse
 
-  oplot,[lon],[lat],psym=psym,color=color,linestyle=lstyle,thick=2,symsize=1.4
+  if (dosym) then oplot,[lon],[lat],psym=psym,color=color,linestyle=lstyle,thick=2,symsize=1.4
   if keyword_set(alt) then xyouts,[lon]+2,[lat]+2,string(round(alt),format='(i4)'),color=color,charsize=1.2
 
   wset,twin

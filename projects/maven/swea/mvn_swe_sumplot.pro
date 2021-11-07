@@ -68,8 +68,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-02 14:03:09 -0700 (Mon, 02 Aug 2021) $
-; $LastChangedRevision: 30163 $
+; $LastChangedDate: 2021-11-06 12:18:57 -0700 (Sat, 06 Nov 2021) $
+; $LastChangedRevision: 30401 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -159,6 +159,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
 ; SWEA Housekeeping (APID 28)
 ;
 ; Digital Housekeeping Register bit definitions
+;   Normal science operation is bits 2, 3, 6, 11 on, all others off.
 ;
 ;   Bit    Definition
 ; ------------------------------------------------------------
@@ -173,7 +174,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
 ;     8    LUT write error
 ;     9    DAC write error
 ;    10    Test Pulser Enable
-;    11    Actuator State (always zero)
+;    11    Actuator State (always 1 once cover is opened)
 ;    12    Spare (set to zero)
 ;    13    Spare (set to zero)
 ;    14    Spare (set to zero)
@@ -1092,7 +1093,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
 ; timefit,[tmin,tmax]
   
   if (doeph) then begin
-    get_data,'alt2',data=alt2,index=i
+    i = find_handle('alt2',verbose=-2)
     if (i eq 0) then maven_orbit_tplot, /loadonly, /shadow
     pans = ['alt2', pans]
   endif

@@ -24,23 +24,24 @@
 ;                   variable(s) created.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-01-19 14:47:21 -0800 (Fri, 19 Jan 2018) $
-; $LastChangedRevision: 24551 $
+; $LastChangedDate: 2021-11-06 12:20:03 -0700 (Sat, 06 Nov 2021) $
+; $LastChangedRevision: 30403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_addsta.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03/18/14
 ;-
-pro mvn_swe_addsta, apid=apid, potential=potential, pans=pans
+pro mvn_swe_addsta, apid=apid, potential=potential, pans=pans, iv_level=iv_level
 
   dopot = keyword_set(potential)
+  if (size(iv_level,/type) eq 0) then iv_level=3
 
 ; Load STATIC data
 
-  sta_apid = ['c0','c6','ca']
+  sta_apid = ['c0','c6','c8','ca']
   if (size(apid,/type) eq 7) then sta_apid = [sta_apid, apid]
   sta_apid = sta_apid[uniq(sta_apid, sort(sta_apid))]
 
-  mvn_sta_l2_load, sta_apid=sta_apid
+  mvn_sta_l2_load, sta_apid=sta_apid, iv_level=iv_level
   mvn_sta_l2_tplot,/replace
   
   pans = ['']
