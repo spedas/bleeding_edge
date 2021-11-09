@@ -23,8 +23,8 @@
 ;     Yuki Harada on 2014-07-02
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2021-01-14 23:35:04 -0800 (Thu, 14 Jan 2021) $
-; $LastChangedRevision: 29602 $
+; $LastChangedDate: 2021-11-08 05:03:15 -0800 (Mon, 08 Nov 2021) $
+; $LastChangedRevision: 30409 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/kgy_map_load.pro $
 ;-
 
@@ -48,6 +48,7 @@ if keyword_set(public) then begin
    if nw gt 0 then begin
       kgy_read_fov,/load, _extra=_extra ;- load fov files
       kgy_read_inf,/load, _extra=_extra ;- load inf files
+      kgy_read_tof,/load, _extra=_extra ;- load tof files
    endif
 
    ;;; ESA1

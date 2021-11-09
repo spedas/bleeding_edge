@@ -49,8 +49,8 @@ end
 ;   NHEADER:  set to number of header lines
 ;CREATED BY: Davin Larson
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-03-18 19:42:06 -0700 (Wed, 18 Mar 2020) $
-; $LastChangedRevision: 28440 $
+; $LastChangedDate: 2021-11-08 16:33:53 -0800 (Mon, 08 Nov 2021) $
+; $LastChangedRevision: 30411 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/read_asc.pro $
 
 ;-
@@ -78,7 +78,7 @@ linenumber=0
 if not keyword_set(filenames) then filenames=dialog_pickfile(filter=filter)
 
 
-on_ioerror,badfile
+;on_ioerror,badfile
 for fn=0,n_elements(filenames)-1 do begin
 filename = filenames[fn]
 if not keyword_set(filename) then return,data
@@ -143,7 +143,7 @@ while not eof(lun) do begin
        n = n_elements(ps)
        type = (strpos(ps,'.') ge 0)  or (strpos(ps,'e') ge 0) or strlowcase(ps) eq 'nan'
        time = (strpos(ps,'/') ge 0)
-       if keyword_set(filetags) then tags=strsplit(strcompress(strtrim(ls,2)),' ',/extract) $
+       if keyword_set(filetags) then tags=strsplit(strcompress(strtrim(ls,2)),seps,/extract) $
        else tags='v'+strtrim(indgen(n),2)
        n= n_elements(tags)
        wtime = where(time,ntime)
@@ -169,6 +169,25 @@ while not eof(lun) do begin
        else data = replicate(f0,add)
        max = max+add
     endif
+    if 0 then begin
+      if n_elements(nt) eq 0 then begin
+        nt = n_tags(f0)
+        tagnames = tag_names(f0)
+        time = strpos(tagnames,'TIME') ge 0
+      endif
+      ps = strsplit(strcompress(strtrim(s,2)),seps,/extract)
+      n = n_elements(ps)
+      for i=0,nt-1 do begin
+        if time[i] then f0.(i) = time_double(ps[i],tformat=tformat) else begin
+          x = f0.(i)
+          reads,ps[i],x
+          f0.(i) =x
+        endelse
+      endfor
+
+      
+    endif else begin
+    
     if keyword_set(ntime) then begin
 ;       ps = str_sep(strcompress(strtrim(s,2)),' ')
        s = strcompress(strtrim(s,2))
@@ -186,6 +205,9 @@ while not eof(lun) do begin
           endelse
        endfor
     endif else  reads,s,f0
+    
+    endelse
+    
     data[rec]=f0
     rec = rec+1
   endif else begin
