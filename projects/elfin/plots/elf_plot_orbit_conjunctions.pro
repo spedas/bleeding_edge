@@ -154,17 +154,11 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
     tr=[tstart,tend]
     for sc=0,0 do begin
       print, 'Loading data for MMS'+probes[sc]
-;      batch_procedure_error_handler, 'mms_load_state', probe=probes[sc], datatypes='pos', trange=tr, $
-;        login_info='/disks/socware/thmsoc_dp_current/src/config/mms_auth_info.sav', $
-;        local_data_dir='/mydisks/home/thmsoc/mms/', /no_color_setup
       batch_procedure_error_handler, 'mms_load_state', probe=probes[sc], datatypes='pos', trange=tr, $
         login_info=!mms.local_data_dir+'mms_auth_info.sav'
       get_data,'mms'+probes[sc]+'_defeph_pos',data=dat ; default position is GEI
       ; check that definitive data was successfully retrieved, if not then check for predicted data
       if size(dat, /type) Ne 8 then begin
-;        batch_procedure_error_handler, 'mms_load_state', probe=probes[sc], datatypes='pos', trange=tr, level='pred',$
-;          login_info='/disks/socware/thmsoc_dp_current/src/config/mms_auth_info.sav', $
-;          local_data_dir='/mydisks/home/thmsoc/mms/', /no_color_setup
       batch_procedure_error_handler, 'mms_load_state', probe=probes[sc], datatypes='pos', trange=tr, level='pred',$
         login_info=!mms.local_data_dir+'mms_auth_info.sav'
         get_data,'mms'+probes[sc]+'_predeph_pos',data=dat ; default position is GEI
@@ -345,7 +339,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
   ;*******************************************
 
   for j = 0, nplots-1 do begin
-
+  ;for j=1,1 do begin
     set_plot,'z'
     loadct,0
     tvlct,r,g,b,/get
@@ -746,7 +740,9 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
               index=indgen(n_elements(dotprod)-1)
               iBrsign=where(dotprod[index]*dotprod[index+1] lt 0,jBrsign)
               get_data,'el'+elf_probes[sc]+'_pos_gsm_north_trace1',data=north_trace1_gsm
-              if jBrsign ne 1 then stop else begin
+              if jBrsign ne 1 then begin
+                 ;stop 
+              endif else begin
                 ;efoot_t=north_trace1_gsm.x[iBRsign]
                 efoot_x=(dotprod[iBrsign+1]*north_trace1_gsm.y[iBrsign,0]-dotprod[iBrsign]*north_trace1_gsm.y[iBrsign+1,0])/(dotprod[iBrsign+1]-dotprod[iBrsign])
                 efoot_y=(dotprod[iBrsign+1]*north_trace1_gsm.y[iBrsign,1]-dotprod[iBrsign]*north_trace1_gsm.y[iBrsign+1,1])/(dotprod[iBrsign+1]-dotprod[iBrsign])
@@ -767,6 +763,12 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
             plots,efoot_north[iefoot_north,0]/re, efoot_north[iefoot_north,1]/re,color=elf_colors[sc] ; eqautor footprint
             plots,efoot_north[iefoot_north[0],0]/re, efoot_north[iefoot_north[0],1]/re,color=elf_colors[sc],psym=5 ; start point
             plots,efoot_north[iefoot_north[-1],0]/re, efoot_north[iefoot_north[-1],1]/re,color=elf_colors[sc],psym=2  ; end point
+            midpt=fix(n_elements(iefoot_north)/2.)
+            plots,efoot_north[midpt,0]/re, efoot_north[midpt,1]/re,color=elf_colors[sc],psym=4 ; center point
+            efoot_time=strmid(time_string(north_trace1_gsm.x[iefoot_north[midpt]]),11,5)
+            if sc eq 0 then xadd=-.5 else xadd=-.5
+            if sc eq 0 then yadd=-.5 else yadd=0
+            ;xyouts, efoot_north[iefoot_north[midpt],0]/re+xadd, efoot_north[iefoot_north[midpt],1]/re+yadd, efoot_time, charsize=.65, color=elf_colors[sc]
             ; Determine the indices for the tick marks
             if keyword_set(tstep) then begin
               tstep=60.    ; 1 min
@@ -854,6 +856,13 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
             plots,efoot_south[iefoot_south,0]/re, efoot_south[iefoot_south,1]/re,color=elf_colors[sc] ; eqautor footprint
             plots,efoot_south[iefoot_south[0],0]/re, efoot_south[iefoot_south[0],1]/re,color=elf_colors[sc],psym=5 ; start point
             plots,efoot_south[iefoot_south[-1],0]/re, efoot_south[iefoot_south[-1],1]/re,color=elf_colors[sc],psym=2 ; end point
+            midpt=fix(n_elements(iefoot_south)/2.)
+            plots,efoot_south[iefoot_south[midpt],0]/re, efoot_south[iefoot_south[midpt],1]/re,color=elf_colors[sc],psym=4 ; center point
+            efoot_time=strmid(time_string(south_trace1_gsm.x[iefoot_south[midpt]]),11,5)
+;            if sc eq 0 then yadd=.1 else yadd=-.1
+            if sc eq 1 then xadd=-.5 else xadd=-.5
+            if sc eq 1 then yadd=-.5 else yadd=0
+            ;xyouts, efoot_south[midpt,0]/re+1.5, efoot_south[midpt,1]/re+yadd, efoot_time, charsize=.65, color=elf_colors[sc]
             ; Determine the indices for the tick marks
             if keyword_set(tstep) then begin
               tstep=60.    ; 1 min
@@ -932,7 +941,6 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
       write_gif,name,image,r,g,b
       print,'Output in ',name
     endif
-
+    if keyword_set(insert) then stop
   endfor
-  if keyword_set(insert) then stop
 end
