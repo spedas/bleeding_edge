@@ -139,8 +139,8 @@
 ;                 save files are 8.7 GB in size.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-11-06 12:21:04 -0700 (Sat, 06 Nov 2021) $
-; $LastChangedRevision: 30404 $
+; $LastChangedDate: 2021-11-11 13:23:04 -0800 (Thu, 11 Nov 2021) $
+; $LastChangedRevision: 30414 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -320,10 +320,10 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   str_element, topt, 'title', ttitle, success=ok
   if (not ok) then ttitle = ''
 
-  if keyword_set(extended) then begin
+  if (size(extended,/type) gt 0) then begin
     case extended of
        0   : ; do nothing (don't use extended predict ephemeris)
-      else : begin
+       1   : begin
                mname = 'maven_spacecraft_mso_2021-2030_dsf2.5_210330.sav'
                gname = 'maven_spacecraft_geo_2021-2030_dsf2.5_210330.sav'
                timespan, ['2021-03-26','2030-12-30']
@@ -334,6 +334,39 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
                print,"  SPK = trj_orb_210326-260101_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
                print,"  SPK = trj_orb_260101-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
                ttitle = "trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
+             end
+       2   : begin
+               mname = 'maven_spacecraft_mso_2022-2032_dsf2.5_arm_prm_13.5ms_210908.sav'
+               gname = 'maven_spacecraft_geo_2022-2032_dsf2.5_arm_prm_13.5ms_210908.sav'
+               timespan, ['2022-01-01','2032-01-01']
+               treset = 1
+               nocrop = 1
+               timecrop = 0
+               print,"Using extended predict ephemeris."
+               print,"  SPK = trj_orb_220101-270101_dsf2.5_arm_prm_13.5ms_210908.bsp"
+               print,"  SPK = trj_orb_270101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp"
+               ttitle = "trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp"
+             end
+        3  : begin
+               mname = 'maven_spacecraft_mso_2022-2032_dsf2.5_arms_18ms_210930.sav'
+               gname = 'maven_spacecraft_geo_2022-2032_dsf2.5_arms_18ms_210930.sav'
+               timespan, ['2022-01-01','2032-01-01']
+               treset = 1
+               nocrop = 1
+               timecrop = 0
+               print,"Using extended predict ephemeris."
+               print,"  SPK = trj_orb_220101-270101_dsf2.5_arms_18ms_210930.bsp"
+               print,"  SPK = trj_orb_270101-320101_dsf2.5_arms_18ms_210930.bsp"
+               ttitle = "trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp"
+             end
+      else : begin
+               print,"Extended predict ephemeris options are: "
+               print,"  0 : Do not use an extended predict ephemeris (default)."
+               print,"  1 : trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
+               print,"  2 : trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp"
+               print,"  3 : trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp"
+               print,""
+               return
              end
     endcase
   endif else extended = 0
