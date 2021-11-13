@@ -8,13 +8,13 @@
 ;
 pro elf_multixaxis_crib
 ;
-  aacgmidl
   elf_init
   tplot_options, 'xmargin', [20,9]
   cwdirname=!elf.local_data_dir ; your directory here, if other than default IDL dir
   cwd,cwdirname
-  pival=!PI
+  pival=!dpi
   Re=6378.1 ; Earth equatorial radius in km
+  Rem=6371.0 ; Earth mean radius in km
 ;
 ; pick an event; here from 2019-09-27 storm on EL-A
 ; 
@@ -78,34 +78,61 @@ print,'*************************************************************************
 print,'This replots the same as before, but has MLAT, MLT, L as supplementary Xaxes
 print,'*****************************************************************************'
 stop
-;;trace to equator to get L, MLAT in IGRF
-ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
-get_data,'el'+sclet+'_pos_gsm_foot',data=elx_pos_eq
-L1=sqrt(total(elx_pos_eq.y^2.0,2,/nan))/Re
-store_data,'el'+sclet+'_L_igrf',data={x:elx_pos_eq.x,y:L1}
-get_data,'elx_pos_sm',data=elx_pos_sm
-req=sqrt(total(elx_pos_eq.y^2.0,2,/nan))
-rloc=sqrt(total(elx_pos_sm.y^2.0,2,/nan))
-rratio=rloc/req
-ibad=where(rratio gt 1.)
-if ibad[0] ne -1. then rratio[ibad]=1.00
-lat2=acos(sqrt(rratio))/!dtor
+r_ift_dip = (1.+100./Rem) ;;100km altitude
+;;trace to equator to get L, MLAT in IGRF, following Vassilis' algorithm on 08/22/2021
+ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Rem
+cotrans,'el'+sclet+'_pos_gsm_foot','elx_pos_sm_foot',/GSM2SM ; now in SM
+get_data,'elx_pos_sm_foot',data=elx_pos_sm_foot
+xyz_to_polar,'elx_pos_sm_foot',/co_latitude ; get position in rthphi (polar) coords
+calc," 'Ligrf'=('elx_pos_sm_foot_mag'/Rem)/(sin('elx_pos_sm_foot_th'*pival/180.))^2 " ; uses 1Rem (mean E-radius, the units of L) NOT 1Rem+100km!
 tdotp,'elx_bt89_gsm','el'+sclet+'_pos_gsm',newname='elx_br_tmp'
 get_data,'elx_br_tmp',data=Br_tmp
-ineg=where(Br_tmp.y gt 0.)
-if ineg[0] ne -1. then lat2[ineg]=-1.*abs(lat2[ineg])
-store_data,'el'+sclet+'_MLAT_igrf',data={x:elx_pos_eq.x,y:lat2}
-;;trace to ionosphere (100km) and calculate MLT using AACGM
-ttrace2iono,'el'+sclet+'_pos_gsm',newname='el'+sclet+'_ifootn_gsm',external_model='none' $
-  ,internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re,/geopack_2008,dsmax=0.01,/standard_mapping
-thm_cotrans, 'el'+sclet+'_ifootn_gsm', 'el'+sclet+'_ifootn_mag', out_coord='mag',in_coord='gsm'
-get_data,'el'+sclet+'_ifootn_mag',data=elx_nf_mag
-cart_to_sphere,elx_nf_mag.y[*,0],elx_nf_mag.y[*,1],elx_nf_mag.y[*,2],r_mag,theta_mag,phi_mag
-mlt_igrf = aacgmmlt(time_string(elx_nf_mag.x,precision=-5), elx_nf_mag.x, phi_mag)
-store_data,'el'+sclet+'_MLT_igrf',data={x:elx_nf_mag.x,y:mlt_igrf};;projected to 100km and use aacgm
+hemisphere=sign(-Br_tmp.y)
+calc," 'MLATigrf' = (180./pival)*arccos(sqrt(Rem*r_ift_dip/'elx_pos_sm_foot_mag')*sin('elx_pos_sm_foot_th'*pival/180.))*hemisphere " ; at footpoint
+calc," 'MLTigrf' = ('elx_pos_sm_foot_phi' + 180. mod 360. ) / 15. " ; done with MLT
+copy_data, 'MLTigrf','el'+sclet+'_MLT_igrf'
+copy_data, 'MLATigrf','el'+sclet+'_MLAT_igrf'
+copy_data, 'Ligrf','el'+sclet+'_L_igrf'
+options,'el'+sclet+'_L_igrf',ytitle='L (IGRF)'
+options,'el'+sclet+'_MLT_igrf',ytitle='MLT (IGRF)'
+options,'el'+sclet+'_MLAT_igrf',ytitle='MLAT (IGRF)'
+tplot,'el'+sclet+'_'+['pos_gei','att_gei','spin_orbnorm_angle','spin_sun_angle'], $
+  title='el'+sclet,var_label=['MLA','MLT','L','el'+sclet+['_MLAT_igrf','_MLT_igrf','_L_igrf']]
 ;
 print,'*****************************************************************************'
 print,'This shows how to estimate MLAT, MLT, L in IGRF field, instead of a dipole
+print,'*****************************************************************************'
+stop
+; find satellite's and its ionospheric projection's AACGM (Altitude Adjusted Corrected Geomagnetic) coordinates Laacgm, MLTaacgm, MLATaacgm
+; Note that Laacgm is assumed here to be same as Ligrf, the true magnetic equatorial distance in Rem, not the dipole equator distance in Rem
+; Note that AACGM defines mlt and mlat as the dipole coord's of the point where the upwards mapped field line meets the DIPOLE equator.
+; AACGM coord's are not same as IGRF MLT and MLAT which take the true equator to determine mlt/mlat. Using AACGM-V2 here
+; Note that AACGM_v2 here is done as the result of a GEO-CGM mapping using spherical harmonic expansion, but confirmed to be close by tracing
+aacgmidl_v2 ; initializes AACGM routines
+cotrans,'el'+sclet+'_pos_gei','elx_pos_geo',/GEI2GEO
+get_data,'elx_pos_geo',data=elx_pos_geo ; local
+cart_to_sphere,elx_pos_geo.y[*,0],elx_pos_geo.y[*,1],elx_pos_geo.y[*,2],rgeo,theta_geo,phi_geo; by default phi is -180 to 180.; theta is -90 to 90.
+height=rgeo-Rem ; geocentric but NEEDS TO BE CHANGED TO GEODETIC (OR KEYWORD? TO SWICH cnvcoord_v2 BEHAVIOR? to expect GEOCENTRIC NEEDS TO BE PROVIDED)
+aacgm_year=long(time_string(elx_pos_geo.x[0],precision=-5))
+aacgm_month=long(strmid(time_string(elx_pos_geo.x[0]),5,2))
+aacgm_day=long(strmid(time_string(elx_pos_geo.x[0]),8,2))
+ret = AACGM_v2_SetDateTime(aacgm_year,aacgm_month,aacgm_day)
+aacgm_geo = transpose([[theta_geo],[phi_geo],[height]])
+aacgm_fix = cnvcoord_v2(aacgm_geo) ; lat/lon/geocentric_radii (latter needs to be changed to geodetic, but for now close enough)
+MLATaacgm = reform(aacgm_fix[0,*]) ; 1D array now
+MLONaacgm = reform(aacgm_fix[1,*]) ; 1D array now, containing fixed Earth magnetic longitude of point
+MLTaacgm = MLTConvertYrsec_v2(long(time_string(elx_pos_geo.x,precision=-5)), $ ; this is year
+  elx_pos_geo.x-time_double(time_string(elx_pos_geo.x[0],precision=-5)), $ ; this is seconds of year
+  MLONaacgm) ;
+store_data,'el'+sclet+'_MLAT_aacgm',data={x:elx_pos_geo.x,y:MLATaacgm}
+store_data,'el'+sclet+'_MLT_aacgm',data={x:elx_pos_geo.x,y:MLTaacgm}
+copy_data, 'Ligrf','el'+sclet+'_L_aacgm'
+options,'el'+sclet+'_MLAT_aacgm',ytitle='MLAT (aacgm)'
+options,'el'+sclet+'_MLT_aacgm',ytitle='MLT (aacgm)'
+tplot,'el'+sclet+'_'+['pos_gei','att_gei','spin_orbnorm_angle','spin_sun_angle'], $
+  title='el'+sclet,var_label=['MLA','MLT','L','el'+sclet+['_MLAT_igrf','_MLT_igrf','_L_igrf'],'el'+sclet+['_MLAT_aacgm','_MLT_aacgm']]
+print,'*****************************************************************************'
+print,'This shows how to estimate MLAT, MLT, L in AACGM (Altitude Adjusted Corrected Geomagnetic) coordinates, instead of a dipole
 print,'*****************************************************************************'
 stop
 ;

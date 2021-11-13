@@ -836,7 +836,9 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
               index=indgen(n_elements(dotprod)-1)
               iBrsign=where(dotprod[index]*dotprod[index+1] lt 0,jBrsign)
               get_data,'el'+elf_probes[sc]+'_pos_gsm_south_trace1',data=south_trace1_gsm
-              if jBrsign ne 1 then stop else begin
+              if jBrsign ne 1 then begin
+                 ;stop 
+              endif else begin
                 efoot_x=(dotprod[iBrsign+1]*south_trace1_gsm.y[iBrsign,0]-dotprod[iBrsign]*south_trace1_gsm.y[iBrsign+1,0])/(dotprod[iBrsign+1]-dotprod[iBrsign])
                 efoot_y=(dotprod[iBrsign+1]*south_trace1_gsm.y[iBrsign,1]-dotprod[iBrsign]*south_trace1_gsm.y[iBrsign+1,1])/(dotprod[iBrsign+1]-dotprod[iBrsign])
                 efoot_z=(dotprod[iBrsign+1]*south_trace1_gsm.y[iBrsign,2]-dotprod[iBrsign]*south_trace1_gsm.y[iBrsign+1,2])/(dotprod[iBrsign+1]-dotprod[iBrsign])
@@ -858,7 +860,10 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
             plots,efoot_south[iefoot_south[-1],0]/re, efoot_south[iefoot_south[-1],1]/re,color=elf_colors[sc],psym=2 ; end point
             midpt=fix(n_elements(iefoot_south)/2.)
             plots,efoot_south[iefoot_south[midpt],0]/re, efoot_south[iefoot_south[midpt],1]/re,color=elf_colors[sc],psym=4 ; center point
-            efoot_time=strmid(time_string(south_trace1_gsm.x[iefoot_south[midpt]]),11,5)
+            midpt=fix(n_elements(south_trace1_gsm.x)/2.)
+            efoot_time=strmid(time_string(south_trace1_gsm.x[midpt]),11,5)
+;            midpt=fix(n_elements(south_trace1_gsm.x)/2.)
+;            efoot_time=strmid(time_string(south_trace1_gsm.x[iefoot_south[midpt]]),11,5)
 ;            if sc eq 0 then yadd=.1 else yadd=-.1
             if sc eq 1 then xadd=-.5 else xadd=-.5
             if sc eq 1 then yadd=-.5 else yadd=0
