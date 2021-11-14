@@ -345,13 +345,13 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
     error = 0
     if (n_elements(tr) eq 2) and (tplotnames[0] ne '') and ~keyword_set(no_time_clip) then begin
       tc0 = systime(/sec)
-      if instrument EQ 'state' && pred then begin
-        idx=where(strpos(tplotnames, 'att') GE 0 OR strpos(tplotnames, 'spin') GE 0, ncnt)
-        if ncnt GT 0 then del_data, tplotnames[idx]
-        idx=where(strpos(tplotnames, 'vel') GE 0 OR strpos(tplotnames, 'pos') GE 0, ncnt)
-        if ncnt GT 0 then tplotnames=tplotnames[idx]
-        dprint, dlevel=1,'Attitude or spin tplot variables are not valid for predicted state data.'
-      endif 
+      ;if instrument EQ 'state' && pred then begin
+      ;  idx=where(strpos(tplotnames, 'att') GE 0 OR strpos(tplotnames, 'spin') GE 0, ncnt)
+      ;  if ncnt GT 0 then del_data, tplotnames[idx]
+      ;  idx=where(strpos(tplotnames, 'vel') GE 0 OR strpos(tplotnames, 'pos') GE 0, ncnt)
+      ;  if ncnt GT 0 then tplotnames=tplotnames[idx]
+      ;  dprint, dlevel=1,'Attitude or spin tplot variables are not valid for predicted state data.'
+      ;endif 
       for tc=0,n_elements(tplotnames)-1 do begin
         time_clip, tplotnames[tc], tr[0], tr[1], replace=1, error=error
         if error EQ 1 then begin
