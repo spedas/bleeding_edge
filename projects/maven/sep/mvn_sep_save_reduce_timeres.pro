@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-10-16 13:12:04 -0700 (Sat, 16 Oct 2021) $
-; $LastChangedRevision: 30372 $
+; $LastChangedDate: 2021-11-15 16:53:21 -0800 (Mon, 15 Nov 2021) $
+; $LastChangedRevision: 30421 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_save_reduce_timeres.pro $
 
 ;20160623 Ali
@@ -117,8 +117,14 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
       if keyword_set(s1_arc) then s1_arc=mvn_sep_att_arc(s1_arc)
       if keyword_set(s2_arc) then s2_arc=mvn_sep_att_arc(s2_arc)
     endif else begin
-      if n_elements(s1_svy) gt 1 then s1_svy=average_hist(s1_svy,s1_svy.time,binsize=res,range=tr,/nan)
-      if n_elements(s2_svy) gt 1 then s2_svy=average_hist(s2_svy,s2_svy.time,binsize=res,range=tr,/nan)
+      if n_elements(s1_svy) gt 1 then begin
+        s1_svy=average_hist(s1_svy,s1_svy.time,binsize=res,range=tr,/nan,xbins=centertime)
+        s1_svy.time=centertime
+      endif
+      if n_elements(s2_svy) gt 1 then begin
+        s2_svy=average_hist(s2_svy,s2_svy.time,binsize=res,range=tr,/nan,xbins=centertime)
+        s2_svy.time=centertime
+      endif
     endelse
 
     if n_elements(s1_arc) gt 1 then s1_arc=average_hist(s1_arc,s1_arc.time,binsize=res,range=tr,/nan)

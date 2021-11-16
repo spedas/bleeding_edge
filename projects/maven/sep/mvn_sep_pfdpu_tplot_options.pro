@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-07-27 21:41:52 -0700 (Tue, 27 Jul 2021) $
-; $LastChangedRevision: 30145 $
+; $LastChangedDate: 2021-11-15 16:53:21 -0800 (Mon, 15 Nov 2021) $
+; $LastChangedRevision: 30421 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_pfdpu_tplot_options.pro $
 
 pro mvn_sep_pfdpu_tplot_options,tplot=tplot,lowres=lowres
@@ -16,9 +16,6 @@ pro mvn_sep_pfdpu_tplot_options,tplot=tplot,lowres=lowres
   zlim,prefix+'sep?_arc_DATA',.9,100,1
   ylim,prefix+'sep?_arc_DATA',0,260,0
   options,prefix+'sep?_arc_DATA',panel_size=2
-  ;   ylim,prefix+'sep?_hkp_RATE_CNTR',0,0,0
-  options,prefix+'sep?_hkp_RATE_CNTR',/default,psym=-3,colors='kgrbcm'
-  options,prefix+'sep?_hkp_RATE_CNTR',labels=['A-O','A-T','A-F','B-O','B-T','B-F'],labflag=-1
   ylim,prefix+'sep?_hkp_RATE_CNTR',.5,1e5,1
   ylim,prefix+'sep?_svy_COUNTS_TOTAL',1,1,1  ;,0,0,0
   ylim,prefix+'sep?_noise_SIGMA',1,2
@@ -28,26 +25,22 @@ pro mvn_sep_pfdpu_tplot_options,tplot=tplot,lowres=lowres
   store_data,prefix+'sep1_COUNTS',data=prefix+'sep1_svy_RATE '+prefix+'sep1_hkp_RATE_CNTR '+prefix+'sep1_hkp_EVENT_CNTR'
   store_data,prefix+'sep2_COUNTS',data=prefix+'sep2_svy_RATE '+prefix+'sep2_hkp_RATE_CNTR '+prefix+'sep2_hkp_EVENT_CNTR'
   store_data,'APIDS',data='MAV_APIDS MAV_APID_SKIPPED',dlim={panel_size:3.}
-
-
   options,prefix+'pfdpu_shkp_ACT_PWRCNTRL_FLAG',colors='BGR',labels=strsplit('Mag1 Mag2 SWEA SWIA LPW STA SEP',/extract)
   options,prefix+'pfdpu_oper_ACT_REQUEST_FLAG',colors = 'GR',labels=strsplit('S1o S1s S2o S2s SWIA SWIA STATIC STATIC . . EUVEo EUVEs',/extract)
   options,prefix+'pfdpu_oper_ACT_STATUS_FLAG',colors = 'GR',labels=strsplit('S1o S1s S2o S2s SWIAo SWIAs STATICo STATICs . . EUVEo EUVEs',/extract)
   options,prefix+'pfdpu_*FLAG',panel_size=.4
-  options,prefix+'sep?_hkp_MODE_FLAGS',colors='BGRBGRYYBGRBGRMD',labels=strsplit(/extract,'D1 D2 D3 D4 D5 D6 BLR1 BLR2 TP_AO TP_AT TP_AF TP_BO TP_BT TP_BF TP_ENA Spare')
-  options,prefix+'sep?_hkp_NOISE_FLAGS',labels=strsplit(/extract,'. . . . . . . . R R R Ena D1 D2 D3 D4'),colors='GGGGGGGGRRRBGRGR'
   store_data,prefix+'DPU_TEMP',data=prefix+'sep1_hkp_AMON_TEMP_DAP '+prefix+'sep2_hkp_AMON_TEMP_DAP '+prefix+'pfdpu*_TEMP'
   store_data,prefix+'SEPS_TEMP',data=prefix+'sep?_hkp_AMON_TEMP_S?'
   store_data,prefix+'pfp_TEMPS',data = prefix+'sep?_hkp_AMON_TEMP_* '+prefix+'pfdpu*_TEMP',dlim={yrange:[-45.,50],ystyle:1,panel_size:2.}
-  options,prefix+'sep1_hkp_* '+prefix+'sep1_???_ATT '+prefix+'sep1_???_COUNTS_TOTAL '+prefix+'sep1_???_DURATION',colors='b',ystyle=2,labels='SEP1'
-  options,prefix+'sep2_hkp_* '+prefix+'sep2_???_ATT '+prefix+'sep2_???_COUNTS_TOTAL '+prefix+'sep2_???_DURATION',colors='r',ystyle=2,labels='SEP2'
+  options,/default,prefix+'sep1_hkp_* '+prefix+'sep1_???_ATT '+prefix+'sep1_???_COUNTS_TOTAL '+prefix+'sep1_???_DURATION',colors='b',ystyle=2,labels='SEP1'
+  options,/default,prefix+'sep2_hkp_* '+prefix+'sep2_???_ATT '+prefix+'sep2_???_COUNTS_TOTAL '+prefix+'sep2_???_DURATION',colors='r',ystyle=2,labels='SEP2'
+  options,/default,prefix+'sep?_hkp_RATE_CNTR',psym=-3,colors='kgrbcm',labels=['A-O','A-T','A-F','B-O','B-T','B-F'],labflag=-1
+  options,prefix+'sep?_hkp_MODE_FLAGS',colors='BGRBGRYYBGRBGRMD',labels=strsplit(/extract,'D1 D2 D3 D4 D5 D6 BLR1 BLR2 TP_AO TP_AT TP_AF TP_BO TP_BT TP_BF TP_ENA Spare')
+  options,prefix+'sep?_hkp_NOISE_FLAGS',labels=strsplit(/extract,'. . . . . . . . R R R Ena D1 D2 D3 D4'),colors='GGGGGGGGRRRBGRGR'
   options,prefix+'sep?_???_DURATION',ylog=1,panel_size=.5
   options,prefix+'sep?_???_ATT',yrange=[0,3],panel_size=.3
   ; options,prefix+'sep?_???_ATT',yrange=[0,1],zrange=[0,2],/ystyle,spec=1,panel_size=.2
-
-  options,prefix+'sep?_*DACS '+prefix+'sep?_hkp_*RATE_CNTR','colors'
   options,prefix+'sep?_*DACS',colors='bgrdbgrdbgrd'
-  ;   tnames = 'sep1_hkp_AMON_*'
   store_data,prefix+'SEPS_hkp_VCMD_CNTR',data=prefix+'sep?_hkp_VCMD_CNTR'
   store_data,prefix+'SEPS_hkp_MEM_CHECKSUM',data=prefix+'sep?_hkp_MEM_CHECKSUM'
   store_data,prefix+'SEPS_svy_ATT',data=prefix+'sep?_svy_ATT',dlim={panel_size:.4,yrange:[0,3],labflag:-1}
@@ -57,7 +50,6 @@ pro mvn_sep_pfdpu_tplot_options,tplot=tplot,lowres=lowres
   store_data,prefix+'SEPS_svy_COUNTS_TOTAL',data=prefix+'sep?_svy_COUNTS_TOTAL',dlim={yrange:[.8,1e5],ylog:1,panel_size:1.5}
   store_data,prefix+'SEPS_svy_ALLTID',data=prefix+'sep?_?'
   store_data,prefix+'SEPS_QL' , data=prefix+'sep?_?_????_tot '+prefix+'sep?_svy_ATT',dlim={yrange:[.8,1e5],ylog:1,panel_size:2.}
-
 
   temps = tnames('SEPS_TEMP DPU_TEMP HTR_TEMP HTR_DC')
 

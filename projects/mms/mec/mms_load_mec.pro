@@ -12,7 +12,8 @@
 ;         probes:       list of probes, valid values for MMS probes are ['1','2','3','4'].
 ;                       if no probe is specified the default is probe '1'
 ;         datatype:     valid datatypes include ['ephts04d', 'epht89q', 'epht89d']
-;                       default is 'ephts04d'
+;                       default is 'epht89q'; note: the default was updated to 'epht89q' on 15Nov2021
+;                       at the request of the MMS team
 ;         data_rate:    instrument data rates include ['srvy', 'brst']. The default is 'srvy'.
 ; 
 ;         local_data_dir: local directory to store the CDF files; should be set if
@@ -56,6 +57,9 @@
 ;         MMS> tplot, 'mms3_mec_r_gsm'
 ;
 ; NOTES:
+;    UPDATETD DETAULT: due to the issue below ("MISSING DATA"), the default datatype was changed 
+;                      to 'epht89q' on 15Nov2021
+;                       
 ;    MISSING DATA: if the MEC data are missing for a date you suspect should contain data (>30 days ago), 
 ;                  try loading the datatype 'epht89d' instead of the default of 'epht04d'.
 ;                  There are sometimes issues with creating the Tsyganenko 04 data products,
@@ -71,8 +75,8 @@
 ;          
 ;          
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-11-04 22:40:52 -0800 (Wed, 04 Nov 2020) $
-;$LastChangedRevision: 29323 $
+;$LastChangedDate: 2021-11-15 12:00:06 -0800 (Mon, 15 Nov 2021) $
+;$LastChangedRevision: 30420 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/mec/mms_load_mec.pro $
 ;-
 
@@ -90,7 +94,7 @@ pro mms_load_mec, trange = trange, probes = probes, datatype = datatype, $
     download_only=download_only
 
     if undefined(probes) then probes = ['1'] ; default to MMS 1
-    if undefined(datatype) then datatype = 'ephts04d'
+    if undefined(datatype) then datatype = 'epht89q'
     if undefined(level) then level = 'l2'
     if undefined(suffix) then suffix = ''
     if undefined(data_rate) then data_rate = 'srvy'
