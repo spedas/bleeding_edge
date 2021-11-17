@@ -7,6 +7,13 @@
 ;   h  number of events within bin
 ;   xval, yval,  center locations of the bins.
 ;
+;   Written by Davin larson
+;
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2021-11-16 14:13:26 -0800 (Tue, 16 Nov 2021) $
+; $LastChangedRevision: 30425 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/histbins2d.pro $
+; $ID: $
 ;-
 
 function histbins2d,x,y,xval,yval,xrange=xrange,yrange=yrange,xnbins=xnbins,ynbins=ynbins, $
@@ -15,39 +22,39 @@ function histbins2d,x,y,xval,yval,xrange=xrange,yrange=yrange,xnbins=xnbins,ynbi
   flux=flux,stdev=flux_stdev,average=flux_average, $
   retbins=retbins,shift=shift,normalize=normal
 
-xbins = histbins(x,xval,/retbins,range=xrange,nbins=xnbins,binsize=xbinsize,log=xlog,shift=shift)
-ybins = histbins(y,yval,/retbins,range=yrange,nbins=ynbins,binsize=ybinsize,log=ylog,shift=shift)
+  xbins = histbins(x,xval,/retbins,range=xrange,nbins=xnbins,binsize=xbinsize,log=xlog,shift=shift)
+  ybins = histbins(y,yval,/retbins,range=yrange,nbins=ynbins,binsize=ybinsize,log=ylog,shift=shift)
 
-wx = where(xbins ge xnbins or xbins lt 0,cx)
-wy = where(ybins ge ynbins or ybins lt 0,cy)
+  wx = where(xbins ge xnbins or xbins lt 0,cx)
+  wy = where(ybins ge ynbins or ybins lt 0,cy)
 
-bins = ybins*xnbins+xbins
-if cx ne 0 then bins[wx]=-1
-if cy ne 0 then bins[wy]=-1
+  bins = ybins*xnbins+xbins
+  if cx ne 0 then bins[wx]=-1
+  if cy ne 0 then bins[wy]=-1
 
-nbins = long(xnbins) * ynbins
+  nbins = long(xnbins) * ynbins
 
-if keyword_set(retbins) then return,bins
+  if keyword_set(retbins) then return,bins
 
-h = histogram(bins,min=0,max=nbins-1,reverse=ri)
+  h = histogram(bins,min=0,max=nbins-1,reverse=ri)
 
-h = reform(h,xnbins,ynbins,/over)
+  h = reform(h,xnbins,ynbins,/over)
 
-if keyword_set(flux) then begin
-  flux_average= replicate(fill_nan(flux[0]) ,size(/dimen,h) ) ; !values.f_nan * h
-  flux_stdev = flux_average
-  whne0 = where(h ne 0,nbins0)
-  for b=0L,nbins0-1 do begin   ; loop over non zero bins
-     i = whne0[b]
-     ind = ri[ ri[i]: ri[i+1]-1 ]
-     flux_average[i] = average(flux[ind],stdev=stdev)
-     flux_stdev[i]  = stdev
-  endfor
-endif
+  if keyword_set(flux) then begin
+    flux_average= replicate(fill_nan(flux[0]) ,size(/dimen,h) ) ; !values.f_nan * h
+    flux_stdev = flux_average
+    whne0 = where(h ne 0,nbins0)
+    for b=0L,nbins0-1 do begin   ; loop over non zero bins
+      i = whne0[b]
+      ind = ri[ ri[i]: ri[i+1]-1 ]
+      flux_average[i] = average(flux[ind],stdev=stdev)
+      flux_stdev[i]  = stdev
+    endfor
+  endif
 
-if keyword_set(normal) then h=h/total(h)/xbinsize/ybinsize
+  if keyword_set(normal) then h=h/total(h)/xbinsize/ybinsize
 
-return,h
+  return,h
 end
 
 

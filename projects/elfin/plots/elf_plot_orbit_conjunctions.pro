@@ -339,7 +339,6 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
   ;*******************************************
 
   for j = 0, nplots-1 do begin
-  ;for j=1,1 do begin
     set_plot,'z'
     loadct,0
     tvlct,r,g,b,/get
@@ -768,7 +767,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
             efoot_time=strmid(time_string(north_trace1_gsm.x[iefoot_north[midpt]]),11,5)
             if sc eq 0 then xadd=-.5 else xadd=-.5
             if sc eq 0 then yadd=-.5 else yadd=0
-            ;xyouts, efoot_north[iefoot_north[midpt],0]/re+xadd, efoot_north[iefoot_north[midpt],1]/re+yadd, efoot_time, charsize=.65, color=elf_colors[sc]
+;            xyouts, efoot_north[iefoot_north[midpt],0]/re+xadd, efoot_north[iefoot_north[midpt],1]/re+yadd, efoot_time, charsize=.65, color=elf_colors[sc],orientation=90
             ; Determine the indices for the tick marks
             if keyword_set(tstep) then begin
               tstep=60.    ; 1 min
@@ -860,14 +859,12 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
             plots,efoot_south[iefoot_south[-1],0]/re, efoot_south[iefoot_south[-1],1]/re,color=elf_colors[sc],psym=2 ; end point
             midpt=fix(n_elements(iefoot_south)/2.)
             plots,efoot_south[iefoot_south[midpt],0]/re, efoot_south[iefoot_south[midpt],1]/re,color=elf_colors[sc],psym=4 ; center point
-            midpt=fix(n_elements(south_trace1_gsm.x)/2.)
-            efoot_time=strmid(time_string(south_trace1_gsm.x[midpt]),11,5)
 ;            midpt=fix(n_elements(south_trace1_gsm.x)/2.)
-;            efoot_time=strmid(time_string(south_trace1_gsm.x[iefoot_south[midpt]]),11,5)
-;            if sc eq 0 then yadd=.1 else yadd=-.1
+;            midpt=fix(n_elements(iefoot_north)/2.)
+            efoot_time=strmid(time_string(south_trace1_gsm.x[midpt]),11,5)
             if sc eq 1 then xadd=-.5 else xadd=-.5
             if sc eq 1 then yadd=-.5 else yadd=0
-            ;xyouts, efoot_south[midpt,0]/re+1.5, efoot_south[midpt,1]/re+yadd, efoot_time, charsize=.65, color=elf_colors[sc]
+;            xyouts, efoot_south[iefoot_south[midpt],0]/re+xadd, efoot_south[iefoot_south[midpt],1]/re+yadd, efoot_time, charsize=.65, color=elf_colors[sc]
             ; Determine the indices for the tick marks
             if keyword_set(tstep) then begin
               tstep=60.    ; 1 min
@@ -899,36 +896,37 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
     ;-----------------------------
     xy1=96
     ; annotate (create legend)
-    xyouts,xy1,260,'Orbits:',/device,charsize=1.15,color=255
-    xyouts,xy1,230,'THEMIS-P3 (D)',/device,charsize=1.15,color=252
-    xyouts,xy1,205,'THEMIS-P4 (E)',/device,charsize=1.15,color=253
-    xyouts,xy1,180,'THEMIS-P5 (A)',/device,charsize=1.15,color=254
+    chsz=.78
+    xyouts,xy1,170,'Orbits:',/device,charsize=chsz,color=255
+    xyouts,xy1,155,'THEMIS-P3 (D)',/device,charsize=chsz,color=252
+    xyouts,xy1,140,'THEMIS-P4 (E)',/device,charsize=chsz,color=253
+    xyouts,xy1,125,'THEMIS-P5 (A)',/device,charsize=chsz,color=254
 
     If(keyword_set(mms_too)) Then Begin
-      xyouts,xy1,150,'MMS-1',/device,charsize=1.15;,color=244
+      xyouts,xy1,115,'MMS-1',/device,charsize=chsz;,color=244
     Endif
 
     If(keyword_set(erg_too)) Then Begin
-      xyouts,xy1,120,'Arase (ERG)',/device,charsize=1.15,color=243
+      xyouts,xy1,95,'Arase (ERG)',/device,charsize=chsz,color=243
     Endif
 
     If(keyword_set(elf_too)) Then Begin
-      xyouts,xy1,90,'ELF (A)',/device,charsize=1.15,color=242
-      xyouts,xy1,65,'ELF (B)',/device,charsize=1.15,color=241
+      xyouts,xy1,75,'ELF (A)',/device,charsize=chsz,color=242
+      xyouts,xy1,60,'ELF (B)',/device,charsize=chsz,color=241
     Endif
 
-;    xy1=552
     xy1=520
-    xyouts, xy1, 225, 'Legend:',/device,charsize=1.15,color=255
-    xyouts, xy1, 195, 'Trace2Equator(t96): Solid',/device,charsize=1.15,color=255
-    xyouts, xy1, 170, 'Orbit Start: Triangle',/device,charsize=1.15,color=255
-    xyouts, xy1, 145, 'Orbit End: Asterisk',/device,charsize=1.15,color=255
-    xyouts, xy1, 120, 'Hr or Min Tick Mark: Plus Sign',/device,charsize=1.15,color=255
-    xyouts, xy1, 95, 'BowShock: Dotted Line',/device,charsize=1.15,color=255
-    xyouts, xy1, 70, 'Magnetopause: Dashed Line',/device,charsize=1.15,color=255
+    xy1=605
+    xyouts, xy1, 155, 'Legend:',/device,charsize=chsz,color=255
+    xyouts, xy1, 135, 'Trace2Equator(t96): Solid',/device,charsize=chsz,color=255
+    xyouts, xy1, 120, 'Orbit Start: Triangle',/device,charsize=chsz,color=255
+    xyouts, xy1, 105, 'Orbit End: Asterisk',/device,charsize=chsz,color=255
+    xyouts, xy1, 90, 'Hr or Min Tick Mark: Plus Sign',/device,charsize=chsz,color=255
+    xyouts, xy1, 75, 'BowShock: Dotted Line',/device,charsize=chsz,color=255
+    xyouts, xy1, 60, 'Magnetopause: Dashed Line',/device,charsize=chsz,color=255
 
     ; note the time of creation and model used
-    xyouts,xy1,10, 'Created: '+systime(),/device,color=255
+    xyouts,xy1-10,10, 'Created: '+systime(),/device,charsize=chsz,color=255
 
     ; gif or other output
     date=strmid(tstart,0,10)
