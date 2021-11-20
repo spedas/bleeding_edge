@@ -27,9 +27,9 @@
 ;                       Removed additional output text - Use dprint,debug=3  to restore text.   Nov 2008
 ;                       Fixed bug on macOS when saving figures of restored data using makepng/makegif/makejpg, 24-jan-2019, egrimes
 ;
-; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 30010 $
+; $LastChangedBy: jimmpc1 $
+; $LastChangedDate: 2021-11-19 11:02:24 -0800 (Fri, 19 Nov 2021) $
+; $LastChangedRevision: 30432 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_restore.pro $
 ;-
 pro tplot_restore,filenames=filenames,all=all,append=append,sort=sort,$
@@ -105,7 +105,7 @@ pro tplot_restore,filenames=filenames,all=all,append=append,sort=sort,$
             continue
           endif
         endif
-        if keyword_set(append) and keyword_set(olddata) then begin
+        if keyword_set(append) and is_struct(olddata) then begin ;olddata needs to be a structure, jmm, 2021-10-19
           if keyword_set(*thisdq.dh) then begin
             if thisdq.dtype eq 1 then begin
               if ptr_valid((*thisdq.dh).y) then begin
@@ -184,9 +184,9 @@ pro tplot_restore,filenames=filenames,all=all,append=append,sort=sort,$
               newdata = olddata
               dattags = tag_names(olddata)
               for k = 0,n_elements(dattags)-1 do begin
-                str_element,*thisdq.dh,dattags[k],foo
-                foo = *foo
-                str_element,newdata,dattags[k],[*olddata[k],foo],/add
+                 str_element,*thisdq.dh,dattags[k],foo
+                 foo = *foo
+                 str_element,newdata,dattags[k],[*olddata[k],foo],/add
               endfor
             endelse
             store_data,verbose=verbose,thisdq.name,data=newdata
