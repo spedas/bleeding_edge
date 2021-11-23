@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Nov 19 18:15:55 2021.<P>
+<STRONG>Last modified: </STRONG>Mon Nov 22 18:16:20 2021.<P>
  
 <HR>
  
@@ -52,12 +52,11 @@ This page was created by the IDL library routine
          nodownload:   flag to load the file if it's stored locally, and not download it from the spedas.org server;
                        this is useful if the remote file seems out of date; you can run mms_update_brst_intervals
                        to manually update the file from the data at the SDC, and set this flag to load your local file
-         sdc:          flag to load the brst intervals directly from the SDC; this will take longer than the default 
-                       but may contain more recent data
+         sdc:          flag to load the brst intervals directly from the SDC; set this flag to 0 to load the data from spedas.org (may be out of date)
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2021-10-27 21:51:33 -0700 (Wed, 27 Oct 2021) $
-$LastChangedRevision: 30386 $
+$LastChangedDate: 2021-11-22 12:26:03 -0800 (Mon, 22 Nov 2021) $
+$LastChangedRevision: 30433 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_brst_segments.pro $
 </PRE><P>
 <STRONG>(See <A href="data_status_bar/mms_load_brst_segments.pro">projects/mms/common/data_status_bar/mms_load_brst_segments.pro</A>)</STRONG><P>
@@ -83,8 +82,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          nodownload:   flag to load the file if it's stored locally, and not download it from the spedas.org server;
                        this is useful if the remote file seems out of date; you can run mms_update_brst_intervals
                        to manually update the file from the data at the SDC, and set this flag to load your local file
-         sdc:          flag to load the brst intervals directly from the SDC; this will take longer than the default
-                       but may contain more recent data
+         sdc:          flag to load the fast survey intervals directly from the SDC; set this flag to 0 to load the data 
+                       from spedas.org (may be out of date)
  
  NOTES:
          WARNING: this routine no longer loads the correct fast segments for later in the mission; 
@@ -93,8 +92,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                   before 6Nov15) and the new SRoI code (mms_load_sroi_segments) for dates on and after 6Nov15 
  
 $LastChangedBy: egrimes $
-$LastChangedDate: 2021-10-27 21:51:33 -0700 (Wed, 27 Oct 2021) $
-$LastChangedRevision: 30386 $
+$LastChangedDate: 2021-11-22 12:28:34 -0800 (Mon, 22 Nov 2021) $
+$LastChangedRevision: 30434 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_fast_segments.pro $
 </PRE><P>
 <STRONG>(See <A href="data_status_bar/mms_load_fast_segments.pro">projects/mms/common/data_status_bar/mms_load_fast_segments.pro</A>)</STRONG><P>
@@ -235,8 +234,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
       for dates before 6Nov15)
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2020-07-30 12:28:00 -0700 (Thu, 30 Jul 2020) $
-$LastChangedRevision: 28956 $
+$LastChangedDate: 2021-11-22 12:26:03 -0800 (Mon, 22 Nov 2021) $
+$LastChangedRevision: 30433 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/spd_mms_load_bss.pro $
 </PRE><P>
 <STRONG>(See <A href="data_status_bar/spd_mms_load_bss.pro">projects/mms/common/data_status_bar/spd_mms_load_bss.pro</A>)</STRONG><P>

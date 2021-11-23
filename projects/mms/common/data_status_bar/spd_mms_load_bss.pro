@@ -39,12 +39,12 @@
 ;      for dates before 6Nov15)
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-07-30 12:28:00 -0700 (Thu, 30 Jul 2020) $
-;$LastChangedRevision: 28956 $
+;$LastChangedDate: 2021-11-22 12:26:03 -0800 (Mon, 22 Nov 2021) $
+;$LastChangedRevision: 30433 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/spd_mms_load_bss.pro $
 ;-
 
-PRO spd_mms_load_bss, trange=trange, datatype=datatype, include_labels=include_labels, probe=probe
+PRO spd_mms_load_bss, trange=trange, datatype=datatype, include_labels=include_labels, probe=probe, nodownload=nodownload
   compile_opt idl2
 
   if undefined(trange) then trange = timerange() else trange = timerange(trange)
@@ -76,7 +76,7 @@ PRO spd_mms_load_bss, trange=trange, datatype=datatype, include_labels=include_l
       'fast': begin
          ; use the old fast segments code for dates before 6Nov15
          if time_double(trange[0]) le time_double('2015-11-06') then begin
-           mms_load_fast_segments, trange=trange
+           mms_load_fast_segments, trange=trange, nodownload=nodownload
            options,'mms_bss_fast',thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
             ticklen=0,panel_size=panel_size,colors=6, labels=[fast_label], labsize=1, charsize=1.
           endif else begin
@@ -88,7 +88,7 @@ PRO spd_mms_load_bss, trange=trange, datatype=datatype, include_labels=include_l
           endelse
        end
       'burst': begin
-         mms_load_brst_segments, trange=trange
+         mms_load_brst_segments, trange=trange, nodownload=nodownload
          options,'mms_bss_burst',thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
           ticklen=0,panel_size=panel_size,colors=2, labels=[burst_label], labsize=1, charsize=1.
        end

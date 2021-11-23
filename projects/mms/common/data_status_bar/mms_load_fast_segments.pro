@@ -13,8 +13,8 @@
 ;         nodownload:   flag to load the file if it's stored locally, and not download it from the spedas.org server;
 ;                       this is useful if the remote file seems out of date; you can run mms_update_brst_intervals
 ;                       to manually update the file from the data at the SDC, and set this flag to load your local file
-;         sdc:          flag to load the brst intervals directly from the SDC; this will take longer than the default
-;                       but may contain more recent data
+;         sdc:          flag to load the fast survey intervals directly from the SDC; set this flag to 0 to load the data 
+;                       from spedas.org (may be out of date)
 ; 
 ; NOTES:
 ;         WARNING: this routine no longer loads the correct fast segments for later in the mission; 
@@ -23,8 +23,8 @@
 ;                  before 6Nov15) and the new SRoI code (mms_load_sroi_segments) for dates on and after 6Nov15 
 ; 
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-10-27 21:51:33 -0700 (Wed, 27 Oct 2021) $
-;$LastChangedRevision: 30386 $
+;$LastChangedDate: 2021-11-22 12:28:34 -0800 (Mon, 22 Nov 2021) $
+;$LastChangedRevision: 30434 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_fast_segments.pro $
 ;-
 
@@ -39,13 +39,13 @@ pro mms_load_fast_segments, trange=trange, suffix=suffix, start_times=start_time
   ; SDC option is the default as of 27 Oct 2021
   if undefined(sdc) then sdc = 1
   
-  if undefined(nodownload) and undefined(sdc) then begin
+  if undefined(nodownload) and sdc eq 0 then begin
     fast_file = spd_download(remote_file='http://www.spedas.org/mms/mms_fast_intervals.sav', $
       local_file=!mms.local_data_dir+'mms_fast_intervals.sav', $
       SSL_VERIFY_HOST=0, SSL_VERIFY_PEER=0) ; these keywords ignore certificate warnings
-  endif else fast_file = !mms.local_data_dir+'mms_fast_intervals.sav'
+  endif else fast_file = spd_addslash(!mms.local_data_dir) + 'abs/' + 'mms_fast_intervals.sav'
 
-  if keyword_set(sdc) then mms_update_fast_intervals
+  if undefined(nodownload) and sdc eq 1  then mms_update_fast_intervals
   
   restore, fast_file
   
