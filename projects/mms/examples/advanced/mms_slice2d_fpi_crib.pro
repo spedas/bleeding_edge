@@ -26,8 +26,8 @@
 ;   and less for electrons.
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-11-08 15:07:06 -0800 (Thu, 08 Nov 2018) $
-;$LastChangedRevision: 26075 $
+;$LastChangedDate: 2021-11-30 09:42:24 -0800 (Tue, 30 Nov 2021) $
+;$LastChangedRevision: 30441 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_slice2d_fpi_crib.pro $
 ;-
 
@@ -41,14 +41,14 @@
 ;  -2d interpolates projection of a subset of data near the slice plane 
 ;  -geometric interpolation is slow but shows bin boundaries
 ;---------------------------------------------
-; 3D interpolation (default)
-mms_part_slice2d, time='2015-10-16/13:06:00', rotation='yz', probe=1, species='i', data_rate='brst'
+; geometric interpolation (default)
+mms_part_slice2d, /geo, time='2015-10-16/13:06:00', rotation='yz', probe=1, species='i', data_rate='brst'
+stop
+; 3D interpolation 
+mms_part_slice2d, /three, time='2015-10-16/13:06:00', rotation='yz', probe=1, species='i', data_rate='brst'
 stop
 ; 2D interpolation
 mms_part_slice2d, /two, time='2015-10-16/13:06:00', rotation='yz', probe=1, species='i', data_rate='brst'
-stop
-; geometric interpolation
-mms_part_slice2d, /geo, time='2015-10-16/13:06:00', rotation='yz', probe=1, species='i', data_rate='brst'
 stop
 
 ;average all data in specified time window

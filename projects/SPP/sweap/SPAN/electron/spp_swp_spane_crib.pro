@@ -6,9 +6,9 @@
 ; 
 ; In the future this will include instructions for looking at flight data:  IN PROG
 ; 
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2019-02-14 14:22:13 -0800 (Thu, 14 Feb 2019) $
-; $LastChangedRevision: 26631 $
+; $LastChangedBy: phyllisw3 $
+; $LastChangedDate: 2021-11-30 11:43:27 -0800 (Tue, 30 Nov 2021) $
+; $LastChangedRevision: 30442 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/electron/spp_swp_spane_crib.pro $
 ;--------------------------------------------------------------------
 
@@ -76,6 +76,18 @@
 
 
 pro nothing
+;;------- PSP Encounter Timestamps -------;;
+;;----- (SPAN-E Encounter Mode Only) -----;;
+trange = '2018 ' + ['10 31/00:13:17', '11 12/03:29:35']   ;;-- ENCOUNTER 1 --;;
+trange = '2019 ' + ['03 29/23:45:23', '04 10/15:18:55']   ;;-- ENCOUNTER 2 --;;
+trange = '2019 ' + ['08 22/02:11:30', '09 09/21:14:39']   ;;-- ENCOUNTER 3 --;;
+trange = '2020 ' + ['01 23/14:00:18', '02 04/05:09:45']   ;;-- ENCOUNTER 4 --;;
+trange = '2020 ' + ['05 20/04:42:52', '06 15/14:00:47']   ;;-- ENCOUNTER 5 --;;
+trange = '2020 ' + ['09 12/01:11:53', '10 03/13:03:54']   ;;-- ENCOUNTER 6 --;;
+trange = '2021 ' + ['01 09/14:48:06', '01 28/02:13:59']   ;;-- ENCOUNTER 7 --;;
+trange = '2021 ' + ['04 20/05:48:37', '05 05/05:05:06']   ;;-- ENCOUNTER 8 --;;
+trange = '2021 ' + ['08 02/00:21:18', '08 15/14:19:09']   ;;-- ENCOUNTER 9 --;;
+
 ;;----SPAN-E Flight Commissioning Data----;;
 trange = '2018 09 ' + ['05/20','06/18'] ; first light / first HV ramp up, table 10-10 or 5-5
 trange = '2018 09 ' + ['08/04','08/06'] ; transient slew in commissioning
@@ -560,3 +572,568 @@ pro kludge_3d, fullspec
   store_data, 'psp_swp_spa_L2_sf0_PDATA_3D', data = full3d
 end
 
+
+pro spe_limit_hist, datavar, trange = trange
+  if ~keyword_set(trange) then trange = ['2018 10 01/00', 'now']
+  if ~keyword_set(datavar) then begin
+    ;;----Define limits for use later----;;
+    ;;---p8i---;;
+    spa_p8i_rul = 37.21
+    spa_p8i_yul = 32.7
+    spa_p8i_yll = 8.4
+    spa_p8i_rll = 0.
+    spb_p8i_rul = 60.
+    spb_p8i_yul = 43.
+    spb_p8i_yll = 8.4
+    spb_p8i_rll = 0.
+    ;;---p8va---;;
+    spa_p8va_rul = 12.29
+    spa_p8va_yul = 10.81
+    spa_p8va_yll = 7.75
+    spa_p8va_rll = 7.5
+    spb_p8va_rul = 10.5
+    spb_p8va_yul = 10.
+    spb_p8va_yll = 7.75
+    spb_p8va_rll = 7.5
+    ;;---n8i---;;
+    spa_n8i_rul = 26.58
+    spa_n8i_yul = 23.4
+    spa_n8i_yll = 4.2
+    spa_n8i_rll = 0.0
+    spb_n8i_rul = 68.1
+    spb_n8i_yul = 43.0
+    spb_n8i_yll = 4.2
+    spb_n8i_rll = 0.0
+    ;;---n8va---;;
+    spa_n8va_rul = 12.33
+    spa_n8va_yul = 10.85
+    spa_n8va_yll = 8.5
+    spa_n8va_rll = 8.2
+    spb_n8va_rul = 10.5
+    spb_n8va_yul = 10.0
+    spb_n8va_yll = 7.75
+    spb_n8va_rll = 7.5
+    ;;---rawi---;;
+    spa_rawi_rul = 45.01
+    spa_rawi_yul = 39.61
+    spa_rawi_yll = !values.f_nan ; so the plotting structure continues to work, use f_nan
+    spa_rawi_rll = !values.f_nan
+    spb_rawi_rul = 30.00
+    spb_rawi_yul = 25.00
+    spb_rawi_yll = !values.f_nan
+    spb_rawi_rll = !values.f_nan
+    ;;---p5i---;;
+    spa_p5i_rul = 30.43
+    spa_p5i_yul = 26.77
+    spa_p5i_yll = 10.0
+    spa_p5i_rll = 8.0
+    spb_p5i_rul = 33.0
+    spb_p5i_yul = 28.0
+    spb_p5i_yll = 10.0
+    spb_p5i_rll = 8.0
+    ;;---p5va---;;
+    spa_p5va_rul = 6.89
+    spa_p5va_yul = 6.06
+    spa_p5va_yll = 5.0
+    spa_p5va_rll = 4.75
+    spb_p5va_rul = 5.6
+    spb_p5va_yul = 5.4
+    spb_p5va_yll = 5.0
+    spb_p5va_rll = 4.75
+    ;;---n5i---;;
+    spa_n5i_rul = 36.51
+    spa_n5i_yul = 32.13
+    spa_n5i_yll = 15.0
+    spa_n5i_rll = 13.0
+    spb_n5i_rul = 35.0
+    spb_n5i_yul = 31.0
+    spb_n5i_yll = 15.0
+    spb_n5i_rll = 13.0
+    ;;---n5va---;;
+    spa_n5va_rul = 6.79
+    spa_n5va_yul = 5.98
+    spa_n5va_yll = 5.0
+    spa_n5va_rll = 4.75
+    spb_n5va_rul = 5.6
+    spb_n5va_yul = 5.4
+    spb_n5va_yll = 5.0
+    spb_n5va_rll = 4.75
+    ;;---mcpi---;;
+    spa_mcpi_rul = 21.31
+    spa_mcpi_yul = 18.75
+    spa_mcpi_yll = !values.f_nan
+    spa_mcpi_rll = !values.f_nan
+    spb_mcpi_rul = 50.0
+    spb_mcpi_yul = 40.0
+    spb_mcpi_yll = !values.f_nan
+    spb_mcpi_rll = !values.f_nan
+    ;;---22i---;;
+    spa_22i_rul = 32.85
+    spa_22i_yul = 28.90
+    spa_22i_yll = 22.0
+    spa_22i_rll = 20.0
+    spb_22i_rul = 28.0
+    spb_22i_yul = 26.5
+    spb_22i_yll = 22.0
+    spb_22i_rll = 20.0
+    ;;---1p5i---;;
+    spa_1p5i_rul = 16.93
+    spa_1p5i_yul = 14.9
+    spa_1p5i_yll = 9.0
+    spa_1p5i_rll = 7.0
+    spb_1p5i_rul = 24.0
+    spb_1p5i_yul = 20.0
+    spb_1p5i_yll = 9.0
+    spb_1p5i_rll = 7.0
+    ;;---3p3i---;;
+    spa_3p3i_rul = 61.49
+    spa_3p3i_yul = 54.11
+    spa_3p3i_yll = 35.0
+    spa_3p3i_rll = 30.0
+    spb_3p3i_rul = 57.6
+    spb_3p3i_yul = 48.0
+    spb_3p3i_yll = 35.0
+    spb_3p3i_rll = 30.0
+    ;;---3p3vd---;;
+    spa_3p3vd_rul = 4.16
+    spa_3p3vd_yul = 3.66
+    spa_3p3vd_yll = 3.18
+    spa_3p3vd_rll = 3.10
+    spb_3p3vd_rul = 3.5
+    spb_3p3vd_yul = 3.4
+    spb_3p3vd_yll = 3.18
+    spb_3p3vd_rll = 3.1
+    ;;---3p3va---;;
+    spa_3p3va_rul = 4.16
+    spa_3p3va_yul = 3.66
+    spa_3p3va_yll = 3.18
+    spa_3p3va_rll = 3.10
+    spb_3p3va_rul = 3.5
+    spb_3p3va_yul = 3.4
+    spb_3p3va_yll = 3.18
+    spb_3p3va_rll = 3.1
+    ;;----Get all variables to plot----;;
+    get_data, "psp_swp_spa_hkp_L1_RIO_P8I", data = spa_p8i, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_RIO_P8I", data = spb_p8i, trange = trange
+    get_data, "psp_swp_spa_hkp_L1_RIO_P8VA", data = spa_p8va, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_RIO_P8VA", data = spb_p8va, trange = trange
+    get_data, "psp_swp_spa_hkp_L1_RIO_N8I", data = spa_n8i, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_RIO_N8I", data = spb_n8i, trange = trange
+    get_data, "psp_swp_spa_hkp_L1_RIO_M8VA", data = spa_n8va, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_RIO_M8VA", data = spb_n8va, trange = trange
+    get_data, "psp_swp_spa_hkp_L1_ADC_IMON_RAW", data = spa_rawi, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_ADC_IMON_RAW", data = spb_rawi, trange = trange
+    ;;----New Plot Row----;;
+    get_data, "psp_swp_spa_hkp_L1_RIO_P5IA", data = spa_p5i, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_RIO_P5IA", data = spb_p5i, trange = trange
+    get_data, "psp_swp_spa_hkp_L1_RIO_P5VA", data = spa_p5va, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_RIO_P5VA", data = spb_p5va, trange = trange
+    get_data, "psp_swp_spa_hkp_L1_RIO_M5IA", data = spa_n5i, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_RIO_M5IA", data = spb_n5i, trange = trange
+    get_data, "psp_swp_spa_hkp_L1_RIO_M5VA", data = spa_n5va, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_RIO_M5VA", data = spb_n5va, trange = trange
+    get_data, "psp_swp_spa_hkp_L1_ADC_IMON_MCP", data = spa_mcpi, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_ADC_IMON_MCP", data = spb_mcpi, trange = trange
+    ;;----New Plot Row----;;
+    get_data, "psp_swp_spa_hkp_L1_RIO_22VA", data = spa_22i, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_RIO_22VA", data = spb_22i, trange = trange
+    get_data, "psp_swp_spa_hkp_L1_RIO_1P5I", data = spa_1p5i, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_RIO_1P5I", data = spb_1p5i, trange = trange
+    get_data, "psp_swp_spa_hkp_L1_RIO_3P3I", data = spa_3p3i, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_RIO_3P3I", data = spb_3p3i, trange = trange
+    get_data, "psp_swp_spa_hkp_L1_RIO_3P3VD", data = spa_3p3vd, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_RIO_3P3VD", data = spb_3p3vd, trange = trange
+    get_data, "psp_swp_spa_hkp_L1_RIO_3P3VDA", data = spa_3p3va, trange = trange
+    get_data, "psp_swp_spb_hkp_L1_RIO_3P3VDA", data = spb_3p3va, trange = trange
+    ;;----Generate histograms----;;
+    daty_spa_p8i = histogram(spa_p8i.y, loc = datx_spa_p8i)
+    daty_spb_p8i = histogram(spb_p8i.y, loc = datx_spb_p8i)
+    daty_spa_p8va = histogram(spa_p8va.y, loc = datx_spa_p8va)
+    daty_spb_p8va = histogram(spb_p8va.y, loc = datx_spb_p8va)
+    daty_spa_n8i = histogram(spa_n8i.y, loc = datx_spa_n8i)
+    daty_spb_n8i = histogram(spb_n8i.y, loc = datx_spb_n8i)
+    daty_spa_n8va = histogram(spa_n8va.y, loc = datx_spa_n8va)
+    daty_spb_n8va = histogram(spb_n8va.y, loc = datx_spb_n8va)
+    daty_spa_rawi = histogram(spa_rawi.y, loc = datx_spa_rawi)
+    daty_spb_rawi = histogram(spb_rawi.y, loc = datx_spb_rawi)
+    ;;----New Plot Row----;;
+    daty_spa_p5i = histogram(spa_p5i.y, loc = datx_spa_p5i)
+    daty_spb_p5i = histogram(spb_p5i.y, loc = datx_spb_p5i)
+    daty_spa_p5va = histogram(spa_p5va.y, loc = datx_spa_p5va)
+    daty_spb_p5va = histogram(spb_p5va.y, loc = datx_spb_p5va)
+    daty_spa_n5i = histogram(spa_n5i.y, loc = datx_spa_n5i)
+    daty_spb_n5i = histogram(spb_n5i.y, loc = datx_spb_n5i)
+    daty_spa_n5va = histogram(spa_n5va.y, loc = datx_spa_n5va)
+    daty_spb_n5va = histogram(spb_n5va.y, loc = datx_spb_n5va)
+    daty_spa_mcpi = histogram(spa_mcpi.y, loc = datx_spa_mcpi)
+    daty_spb_mcpi = histogram(spb_mcpi.y, loc = datx_spb_mcpi)
+    ;;----New Plot Row----;;
+    daty_spa_22i = histogram(spa_22i.y, loc = datx_spa_22i)
+    daty_spb_22i = histogram(spb_22i.y, loc = datx_spb_22i)
+    daty_spa_1p5i = histogram(spa_1p5i.y, loc = datx_spa_1p5i)
+    daty_spb_1p5i = histogram(spb_1p5i.y, loc = datx_spb_1p5i)
+    daty_spa_3p3i = histogram(spa_3p3i.y, loc = datx_spa_3p3i)
+    daty_spb_3p3i = histogram(spb_3p3i.y, loc = datx_spb_3p3i)
+    daty_spa_3p3vd = histogram(spa_3p3vd.y, loc = datx_spa_3p3vd)
+    daty_spb_3p3vd = histogram(spb_3p3vd.y, loc = datx_spb_3p3vd)
+    daty_spa_3p3va = histogram(spa_3p3va.y, loc = datx_spa_3p3va)
+    daty_spb_3p3va = histogram(spb_3p3va.y, loc = datx_spb_3p3va)
+    ;;----Plot Plots!----;;
+    wi, 1
+    popen, 'spanae_limit_monitors_20210217', /landscape
+    !p.multi = [0, 5, 3]
+    plot, datx_spa_p8i, daty_spa_p8i, psym = 10, title = 'Ae: +8 Current'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spa_p8i_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_p8i_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_p8i_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_p8i_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spa_p8va, daty_spa_p8va, psym = 10, title = 'Ae: +8 Voltage'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spa_p8va_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_p8va_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_p8va_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_p8va_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spa_n8i, daty_spa_n8i, psym = 10, title = 'Ae: -8 Current'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spa_n8i_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_n8i_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_n8i_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_n8i_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spa_n8va, daty_spa_n8va, psym = -6, title = 'Ae: -8 Voltage'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spa_n8va_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_n8va_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_n8va_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_n8va_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spa_rawi, daty_spa_rawi, psym = 10, title = 'Ae: Raw Current'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spa_rawi_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_rawi_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_rawi_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_rawi_rll
+    oplot, rllx, limy, color = 6
+    ;;----New Plot Row----;;
+    plot, datx_spa_p5i, daty_spa_p5i, psym = 10, title = 'Ae: +5 Current'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spa_p5i_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_p5i_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_p5i_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_p5i_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spa_p5va, daty_spa_p5va, psym = -6, title = 'Ae: +5 Voltage'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spa_p5va_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_p5va_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_p5va_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_p5va_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spa_n5i, daty_spa_n5i, psym = 10, title = 'Ae: -5 Current'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spa_n5i_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_n5i_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_n5i_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_n5i_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spa_n5va, daty_spa_n5va, psym = -6, title = 'Ae: -5 Voltage'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spa_n5va_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_n5va_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_n5va_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_n5va_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spa_mcpi, daty_spa_mcpi, psym = 10, title = 'Ae: MCP Current'
+    rulx = fltarr(2) + spa_mcpi_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_mcpi_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_mcpi_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_mcpi_rll
+    oplot, rllx, limy, color = 6
+    ;;----New Plot Row----;;
+    plot, datx_spa_22i, daty_spa_22i, psym = 10, title = 'Ae: 22 Voltage'
+    rulx = fltarr(2) + spa_22i_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_22i_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_22i_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_22i_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spa_1p5i, daty_spa_1p5i, psym = 10, title = 'Ae: 1.5 Current'
+    rulx = fltarr(2) + spa_1p5i_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_1p5i_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_1p5i_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_1p5i_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spa_3p3i, daty_spa_3p3i, psym = 10, title = 'Ae: 3.3 Current'
+    rulx = fltarr(2) + spa_3p3i_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_3p3i_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_3p3i_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_3p3i_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spa_3p3vd, daty_spa_3p3vd, psym = -6, title = 'Ae: 3.3V Digital'
+    rulx = fltarr(2) + spa_3p3vd_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_3p3vd_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_3p3vd_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_3p3vd_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spa_3p3va, daty_spa_3p3va, psym = -6, title = 'Ae: 3.3V Analog'
+    rulx = fltarr(2) + spa_3p3va_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spa_3p3va_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spa_3p3va_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spa_3p3va_rll
+    oplot, rllx, limy, color = 6
+    pclose
+    ;;----------SPAN-B----------;;
+    wi, 2
+    popen, 'spanb_limit_monitors_20210217', /landscape
+    !p.multi = [0, 5, 3]
+    plot, datx_spb_p8i, daty_spb_p8i, psym = 10, title = 'B: +8 Current'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spb_p8i_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_p8i_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_p8i_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_p8i_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spb_p8va, daty_spb_p8va, psym = 10, title = 'B: +8 Voltage'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spb_p8va_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_p8va_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_p8va_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_p8va_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spb_n8i, daty_spb_n8i, psym = 10, title = 'B: -8 Current'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spb_n8i_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_n8i_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_n8i_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_n8i_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spb_n8va, daty_spb_n8va, psym = 10, title = 'B: -8 Voltage'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spb_n8va_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_n8va_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_n8va_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_n8va_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spb_rawi, daty_spb_rawi, psym = 10, title = 'B: Raw Current'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spb_rawi_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_rawi_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_rawi_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_rawi_rll
+    oplot, rllx, limy, color = 6
+    ;;----New Plot Row----;;
+    plot, datx_spb_p5i, daty_spb_p5i, psym = 10, title = 'B: +5 Current'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spb_p5i_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_p5i_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_p5i_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_p5i_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spb_p5va, daty_spb_p5va, psym = -6, title = 'B: +5 Voltage'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spb_p5va_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_p5va_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_p5va_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_p5va_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spb_n5i, daty_spb_n5i, psym = 10, title = 'B: -5 Current'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spb_n5i_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_n5i_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_n5i_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_n5i_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spb_n5va, daty_spb_n5va, psym = -6, title = 'B: -5 Voltage'
+    limy = [0.,100000000.]
+    rulx = fltarr(2) + spb_n5va_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_n5va_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_n5va_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_n5va_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spb_mcpi, daty_spb_mcpi, psym = 10, title = 'B: MCP Current'
+    rulx = fltarr(2) + spb_mcpi_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_mcpi_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_mcpi_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_mcpi_rll
+    oplot, rllx, limy, color = 6
+    ;;----New Plot Row----;;
+    plot, datx_spb_22i, daty_spb_22i, psym = 10, title = 'B: 22 Voltage'
+    rulx = fltarr(2) + spb_22i_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_22i_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_22i_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_22i_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spb_1p5i, daty_spb_1p5i, psym = 10, title = 'B: 1.5 Current'
+    rulx = fltarr(2) + spb_1p5i_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_1p5i_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_1p5i_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_1p5i_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spb_3p3i, daty_spb_3p3i, psym = 10, title = 'B: 3.3 Current'
+    rulx = fltarr(2) + spb_3p3i_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_3p3i_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_3p3i_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_3p3i_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spb_3p3vd, daty_spb_3p3vd, psym = -6, title = 'B: 3.3V Digital'
+    rulx = fltarr(2) + spb_3p3vd_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_3p3vd_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_3p3vd_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_3p3vd_rll
+    oplot, rllx, limy, color = 6
+    plot, datx_spb_3p3va, daty_spb_3p3va, psym = -6, title = '3.3V Analog B'
+    rulx = fltarr(2) + spb_3p3va_rul
+    oplot, rulx, limy, color = 6
+    yulx = fltarr(2) + spb_3p3va_yul
+    oplot, yulx, limy, color = 4
+    yllx = fltarr(2) + spb_3p3va_yll
+    oplot, yllx, limy, color = 4
+    rllx = fltarr(2) + spb_3p3va_rll
+    oplot, rllx, limy, color = 6
+    pclose
+  endif else begin
+    wi, 1
+    get_data, datavar, data = gotdata
+    daty = histogram(gotdata.y, loc = datx)
+    plot, datx, daty, psym = 10
+  endelse
+end
+  
+  
+pro spplot_plw,trange,cursor=cursor,zero=zero,lim=lim ; borrowed from Davin crib 'spp_swp_span_crib'
+
+  if ~isa(lim) then begin
+    ylim,lim,10,1e6,1
+  endif
+
+  d3d1 = spp_swp_3dstruct('spa_eflux',trange=trange, cursor = cursor)
+  wi,1
+  wshow,1
+  spec3d,d3d1,lim=lim,/phi
+
+  wi,2
+  wshow,2
+  plot3d_new,d3d1,zero=zero
+
+  d3d2 = spp_swp_3dstruct('psp_swp_spb_sf0_L2_EFLUX',trange=trange, cursor = cursor)
+  wi,3,/wshow
+  spec3d,d3d2,lim=lim,/phi
+  wi,4,/wshow
+  plot3d_new,d3d2,zero=zero
+  timebar,trange
+
+  wshow,2
+  wshow,4
+  wshow,1
+  wshow,3
+  ;wshow,4
+
+
+end
+
+pro spp_swp_spe_plot_all, trange = trange, ql = ql
+  if ~keyword_set(trange) then trange = ['2018 10 01/00', 'now']
+  spp_swp_spice, trange = trange, /pos, /load, /venus
+  spp_swp_spe_load, trange = trange, /allvars, level = 'L2', types = ['af1', 'sf1', 'sf0']
+  spp_swp_spe_load, trange = trange, /allvars, level = 'L1', types = ['hkp']
+  spp_swp_spe_load, trange = trange, level = 'L3'
+  spp_fld_load, trange = trange, type = 'f1_100bps'
+  ;spp_swp_spe_load, trange = trange, /allvars, level = 'L3', spxs = ['spa', 'spb']
+  if keyword_set(ql) then begin
+    tplot, '*ql'
+    tplot, /a, 'psp_swp_spe_sf0_L3_EFLUX_VS_PA_E8'
+    tplot, /a, '*SPP*POS*_mag'
+    options, '*SPP*POS*_mag', panel_size = 0.5
+    tplot, /a, 'spp_fld_f1_100bps_B_PEAK'
+  endif
+  ;spp_swp_spice, trange = trange, /pos, /load
+end
