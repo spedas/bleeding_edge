@@ -1,11 +1,58 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2021-09-03 10:35:17 -0700 (Fri, 03 Sep 2021) $
-; $LastChangedRevision: 30282 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2021-12-01 15:22:09 -0800 (Wed, 01 Dec 2021) $
+; $LastChangedRevision: 30445 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_load.pro $
 ; Created by Davin Larson 2018
+;
+;-
+pro diagonalize_tensor,tensor,eigen_val,eigen_vec
+  
+  dim = size(/dimen,tensor)
+  np = dim[0]
+  tmap = [[0,3,4],[3,1,5],[4,5,2]]
+  if dim[1] ne 6 then message,'error'
+  eig_val= fltarr(3)
+  eig_vec= fltarr(3,3)
+  for i=0L,np-1 do begin
+    t6 = tensor[i,*]     
+    t3x3  = t6[tmap]
+    ;p = [[p(0),p(3),p(4)],[p(3),p(1),p(5)],[p(4),p(5),p(2)]]
 
-pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname_prefix=tname_prefix,save=save,magname=magname,$
-  verbose=verbose,varformat=varformat,fileprefix=fileprefix,overlay=overlay,spcname=spcname,sc_frame=sc_frame,sc2_frame=sc2_frame,rtn_frame=rtn_frame
+    trired,t3x3,val,vec
+    triql,val,vec,t3x3
+    
+    s = sort(val)
+    p = t3x3
+    p= p[*,s]
+    val= val[s]
+
+    if (val[2]-val[1] gt val[1]-val[0]) then begin
+      eig_val[0]= val[2]
+      eig_val[1]= val[0]
+      eig_val[2]= val[1]
+      eig_vec[*,0]= vec[*,2]
+      eig_vec[*,1]= vec[*,0]
+      eig_vec[*,2]= vec[*,1]
+    endif else begin
+      eig_val= val
+      eig_vec= vec
+    endelse
+    
+    
+    stop
+  endfor
+
+
+
+
+end
+
+
+
+
+pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname_prefix=tname_prefix,save=save,$
+  verbose=verbose,varformat=varformat,fileprefix=fileprefix,overlay=overlay,spcname=spcname, $
+  diag=diag,sc_frame=sc_frame,sc2_frame=sc2_frame,rtn_frame=rtn_frame,magname=magname
 
   if ~keyword_set(level) then level='L3'
   level=strupcase(level)
@@ -98,6 +145,32 @@ pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname
       store_data,prefix+'EFLUX_VS_ENERGY_OVL',data = vname_nrg,dlimit={yrange:[50.,20000.],ylog:1,zlog:1,ystyle:3}
       store_data,prefix+'EFLUX_VS_THETA_OVL',data =vname_th ,dlimit={yrange:[-60,60],ylog:0,zlog:1,ystyle:3}
       store_data,prefix+'EFLUX_VS_PHI_OVL',data = vname_phi,dlimit={yrange:[90.,190.],ylog:0,zlog:1,ystyle:3}
+    endif
+
+    if keyword_set(0) then begin
+;      diag_t,'psp_swp_spi_sf00_L2B_T_TENSOR'
+;      options,'T_diag',colors='bgr',yrange=[0.,150]
+      get_data,'psp_swp_spi_sf00_L2B_MAGF_INST',data=mag
+;      get_data,'Saxis',data=sym
+;      ang = acos(abs(total(mag.y * sym.y,2))/sqrt(total(mag.y ^2,2) )  )  * 180/3.1416
+;      store_data,'angle',mag.x,ang;,dlim={
+       get_data,'psp_swp_spi_sf00_L2B_T_TENSOR',data=ttens
+       diagonalize_tensor, ttens,rotmat,t3
+       sym = rotmat
+     ;  store_data,
+ stop
+
+    endif
+
+    if keyword_set(diag) then begin
+      diag_t,'psp_swp_spi_sf00_L2B_T_TENSOR'
+      options,'T_diag',colors='bgr',yrange=[0.,150]
+      get_data,'psp_swp_spi_sf00_L2B_MAGF_INST',data=mag
+      get_data,'Saxis',data=sym
+      ang = acos(abs(total(mag.y * sym.y,2))/sqrt(total(mag.y ^2,2) )  )  * 180/3.1416
+      store_data,'angle',mag.x,ang;,dlim={
+   ;   get_data,'psp_swp_spi_sf00_L2B_T_TENSOR',data=ttens
+ 
     endif
 
     if keyword_set(SC_frame) || keyword_set(rtn_frame) then begin

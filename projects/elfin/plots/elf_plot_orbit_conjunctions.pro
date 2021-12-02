@@ -23,7 +23,7 @@
 ;   $LastChangedDate: 2020-11-18 13:03:02 -0800 (Wed, 18 Nov 2020) $
 ;   $LastChangedRevision: 29359 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/thmsoc/trunk/idl/thmsoc/asi/themis_orbits.pro $
-;-  ;elf_plot_orbit_conjunctions_test,'2021-01-01/00:00:00',rbsp_too=0,mms_too=0,erg_too=0,gifout=0
+;-  ;elf_plot_orbit_conjunctions,'2021-07-11/00:00:00',rbsp_too=0,mms_too=0,erg_too=0,gifout=0
 
 pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too, tstep=tstep, $
   rbsp_too=rbsp_too, mms_too=mms_too, erg_too=erg_too, move=move,insert=insert, model=model
@@ -159,8 +159,8 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
       get_data,'mms'+probes[sc]+'_defeph_pos',data=dat ; default position is GEI
       ; check that definitive data was successfully retrieved, if not then check for predicted data
       if size(dat, /type) Ne 8 then begin
-      batch_procedure_error_handler, 'mms_load_state', probe=probes[sc], datatypes='pos', trange=tr, level='pred',$
-        login_info=!mms.local_data_dir+'mms_auth_info.sav'
+        batch_procedure_error_handler, 'mms_load_state', probe=probes[sc], datatypes='pos', trange=tr, level='pred',$
+          login_info=!mms.local_data_dir+'mms_auth_info.sav'
         get_data,'mms'+probes[sc]+'_predeph_pos',data=dat ; default position is GEI
       endif
       ;interpolate to 1 minute resolution (this is to reduce the time required to trace to equator
@@ -384,10 +384,10 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
 
     ; elf A - blue
     ; elf B - orange (red)
-;    r[242]=135   & g[242]=206   & b[242]=235
-;    r[242]=90   & g[242]=162   & b[242]=255
+    ;    r[242]=135   & g[242]=206   & b[242]=235
+    ;    r[242]=90   & g[242]=162   & b[242]=255
     r[242]=65  & g[242]=140   & b[242]=255
-   r[241]=255   & g[241]=0   & b[241]=0
+    r[241]=255   & g[241]=0   & b[241]=0
 
     ; more plot set-up
     tvlct,r,g,b
@@ -398,12 +398,14 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
     if keyword_set(gifout) then begin
       set_plot,'z'
       device,set_resolution=[800,800]
-      charsize=0.75
+      charsize=1
       noview=1
     endif else begin
       set_plot,'x'
       window,0,xsize=800,ysize=800
-      charsize=1.5
+      charsize=1
+      !P.Color = '000000'xL
+      !P.Background = 'FFFFFF'xL
     endelse
 
     ;----------------------------------------------
@@ -411,7 +413,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
     ;----------------------------------------------
     plot,findgen(10),xrange=xrange,yrange=yrange,/xstyle,/ystyle,/nodata, $
       title='Multi-mission orbits: T96 magnetic equator projections, '+strmid(tstart,0,10)+plot_lbl[j],$
-      xtitle='Xeq-GSM',ytitle='Yeq-GSM',charsize=charsize+.2,/isotropic
+      xtitle='Xeq-GSM',ytitle='Yeq-GSM',charsize=charsize,/isotropic
 
     ; plot earth
     oplot, ex[night_idx], ey[night_idx]
@@ -740,7 +742,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
               iBrsign=where(dotprod[index]*dotprod[index+1] lt 0,jBrsign)
               get_data,'el'+elf_probes[sc]+'_pos_gsm_north_trace1',data=north_trace1_gsm
               if jBrsign ne 1 then begin
-                 ;stop 
+                ;stop
               endif else begin
                 ;efoot_t=north_trace1_gsm.x[iBRsign]
                 efoot_x=(dotprod[iBrsign+1]*north_trace1_gsm.y[iBrsign,0]-dotprod[iBrsign]*north_trace1_gsm.y[iBrsign+1,0])/(dotprod[iBrsign+1]-dotprod[iBrsign])
@@ -751,24 +753,33 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
                 ;oplot,xmgnp,ymgnp,linestyle=2, thick=1.2 ; plot new magnetopause boundary
                 mindis=min(distan,imindis) ; min distance of trace field line to mp
                 iid=where(id lt 0,cid) ; whether field line is inside or outside mp
-                if cid eq 0 and mindis gt 0.1 then begin ; if field line has points outside mo or min distance is too small, discard this field line
+                if cid eq 0 and mindis gt 0.1 then begin ; if field line has points outside mp or min distance is too small, discard this field line
                   efoot_north[itime,0]=efoot_x
                   efoot_north[itime,1]=efoot_y
                   efoot_north[itime,2]=efoot_z
                 endif
               endelse
             endfor
-            iefoot_north=where(finite(efoot_north[*,0]) and abs(efoot_north[*,0]/re) lt 15 and abs(efoot_north[*,1]/re) lt 15)
+            iefoot_north=where(finite(efoot_north[*,0]) and abs(efoot_north[*,0]/re) lt 14 and abs(efoot_north[*,1]/re) lt 14)
             plots,efoot_north[iefoot_north,0]/re, efoot_north[iefoot_north,1]/re,color=elf_colors[sc] ; eqautor footprint
             plots,efoot_north[iefoot_north[0],0]/re, efoot_north[iefoot_north[0],1]/re,color=elf_colors[sc],psym=5 ; start point
             plots,efoot_north[iefoot_north[-1],0]/re, efoot_north[iefoot_north[-1],1]/re,color=elf_colors[sc],psym=2  ; end point
-            midpt=fix(n_elements(iefoot_north)/2.)
-            plots,efoot_north[midpt,0]/re, efoot_north[midpt,1]/re,color=elf_colors[sc],psym=4 ; center point
-            efoot_time=strmid(time_string(north_trace1_gsm.x[iefoot_north[midpt]]),11,5)
-            if sc eq 0 then xadd=-.5 else xadd=-.5
-            if sc eq 0 then yadd=-.5 else yadd=0
-;            xyouts, efoot_north[iefoot_north[midpt],0]/re+xadd, efoot_north[iefoot_north[midpt],1]/re+yadd, efoot_time, charsize=.65, color=elf_colors[sc],orientation=90
-            ; Determine the indices for the tick marks
+            if (efoot_north[iefoot_north[0],0]/re)^2+(efoot_north[iefoot_north[0],1]/re)^2 gt $  ; if elf goes from far to close to earth
+              (efoot_north[iefoot_north[-1],0]/re)^2+(efoot_north[iefoot_north[-1],1]/re)^2 then begin
+              midpt=0
+              efoot_time=strmid(time_string(north_trace.x[iefoot_north[midpt]]),11,2)+strmid(time_string(north_trace.x[iefoot_north[midpt]]),14,2)
+              dxy0=atan(efoot_north[iefoot_north[midpt],1]-efoot_north[iefoot_north[midpt]+1,1],efoot_north[iefoot_north[midpt],0]-efoot_north[iefoot_north[midpt]+1,0])
+              xyouts, efoot_north[iefoot_north[midpt],0]/re+0.9*cos(dxy0),  efoot_north[iefoot_north[midpt],1]/re+0.9*sin(dxy0), $
+                efoot_time, charsize=0.8, color=elf_colors[sc], ALIGNMENT=0.5, ORIENTATION=dxy0*180/!dpi+270  
+            endif else begin ; if elf goes from close to earth to far
+              midpt=-1
+              dxy0=atan(efoot_north[iefoot_north[midpt],1]-efoot_north[iefoot_north[midpt]-1,1],efoot_north[iefoot_north[midpt],0]-efoot_north[iefoot_north[midpt]-1,0])
+              efoot_time=strmid(time_string(north_trace.x[iefoot_north[midpt]]),11,2)+strmid(time_string(north_trace.x[iefoot_north[midpt]]),14,2)
+              xyouts, efoot_north[iefoot_north[midpt],0]/re+0.9*cos(dxy0*0.9), efoot_north[iefoot_north[midpt],1]/re+0.9*sin(dxy0*0.9), $
+                efoot_time, charsize=0.8, color=elf_colors[sc], ALIGNMENT=0.5, ORIENTATION=dxy0*180/!dpi+270 
+            endelse
+
+           ; Determine the indices for the tick marks
             if keyword_set(tstep) then begin
               tstep=60.    ; 1 min
               ttime=ntime
@@ -814,7 +825,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
             get_data,'el'+elf_probes[sc]+'_pos_gsm_south_ifoot',data=south_ifoot
             siclsB=where(sqrt(south_ifoot.y[*,0]^2+south_ifoot.y[*,1]^2+south_ifoot.y[*,2]^2) lt 7000.,sjclsB)
             get_data,'el'+elf_probes[sc]+'_pos_gsm_south_trace',data=south_trace
-            south_trace_size=size(south_trace.y,/dim)
+            south_trace_size=size(south_trace.y,/dim) ; time * points of each field line * 3
 
             ; loop of each closed field line
             faketime=make_array(south_trace_size[1],value=south_trace.x[0])
@@ -836,36 +847,41 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
               iBrsign=where(dotprod[index]*dotprod[index+1] lt 0,jBrsign)
               get_data,'el'+elf_probes[sc]+'_pos_gsm_south_trace1',data=south_trace1_gsm
               if jBrsign ne 1 then begin
-                 ;stop 
+                ;stop
               endif else begin
                 efoot_x=(dotprod[iBrsign+1]*south_trace1_gsm.y[iBrsign,0]-dotprod[iBrsign]*south_trace1_gsm.y[iBrsign+1,0])/(dotprod[iBrsign+1]-dotprod[iBrsign])
                 efoot_y=(dotprod[iBrsign+1]*south_trace1_gsm.y[iBrsign,1]-dotprod[iBrsign]*south_trace1_gsm.y[iBrsign+1,1])/(dotprod[iBrsign+1]-dotprod[iBrsign])
                 efoot_z=(dotprod[iBrsign+1]*south_trace1_gsm.y[iBrsign,2]-dotprod[iBrsign]*south_trace1_gsm.y[iBrsign+1,2])/(dotprod[iBrsign+1]-dotprod[iBrsign])
                 ; determine when the field line is inside magnetopause
                 mpause_t96,dynp,xmgnp=xmgnp,ymgnp=ymgnp,xgsm=south_trace1_gsm.y[*,0]/re,ygsm=south_trace1_gsm.y[*,1]/re,zgsm=south_trace1_gsm.y[*,2]/re,id=id,distan=distan
-                ;oplot,xmgnp,ymgnp,linestyle=2 ; plot new magnetopause boundary
                 mindis=min(distan,imindis) ; min distance of trace field line to mp
                 iid=where(id lt 0,cid) ; whether field line is inside or outside mp
-                if cid eq 0 and mindis gt 0.1 then begin ; if field line has points outside mo or min distance is too small, discard this field line
+                if cid eq 0 and mindis gt 0.1 then begin ; if field line has points outside mp or min distance is too small, discard this field line
                   efoot_south[itime,0]=efoot_x
                   efoot_south[itime,1]=efoot_y
                   efoot_south[itime,2]=efoot_z
                 endif
               endelse
             endfor
-            iefoot_south=where(finite(efoot_south[*,0]) and abs(efoot_south[*,0]/re) lt 15 and abs(efoot_south[*,1]/re) lt 15)
+            iefoot_south=where(finite(efoot_south[*,0]) and abs(efoot_south[*,0]/re) lt 14 and abs(efoot_south[*,1]/re) lt 14)
             plots,efoot_south[iefoot_south,0]/re, efoot_south[iefoot_south,1]/re,color=elf_colors[sc] ; eqautor footprint
             plots,efoot_south[iefoot_south[0],0]/re, efoot_south[iefoot_south[0],1]/re,color=elf_colors[sc],psym=5 ; start point
             plots,efoot_south[iefoot_south[-1],0]/re, efoot_south[iefoot_south[-1],1]/re,color=elf_colors[sc],psym=2 ; end point
-            midpt=fix(n_elements(iefoot_south)/2.)
-            plots,efoot_south[iefoot_south[midpt],0]/re, efoot_south[iefoot_south[midpt],1]/re,color=elf_colors[sc],psym=4 ; center point
-;            midpt=fix(n_elements(south_trace1_gsm.x)/2.)
-;            midpt=fix(n_elements(iefoot_north)/2.)
-            efoot_time=strmid(time_string(south_trace1_gsm.x[midpt]),11,5)
-            if sc eq 1 then xadd=-.5 else xadd=-.5
-            if sc eq 1 then yadd=-.5 else yadd=0
-;            xyouts, efoot_south[iefoot_south[midpt],0]/re+xadd, efoot_south[iefoot_south[midpt],1]/re+yadd, efoot_time, charsize=.65, color=elf_colors[sc]
-            ; Determine the indices for the tick marks
+            if (efoot_south[iefoot_south[0],0]/re)^2+(efoot_south[iefoot_south[0],1]/re)^2 gt $  ; if elf goes from far to close to earth
+              (efoot_south[iefoot_south[-1],0]/re)^2+(efoot_south[iefoot_south[-1],1]/re)^2 then begin
+              midpt=0
+              dxy0=atan(efoot_south[iefoot_south[midpt],1]-efoot_south[iefoot_south[midpt]+1,1], efoot_south[iefoot_south[midpt],0]-efoot_south[iefoot_south[midpt]+1,0])
+              efoot_time=strmid(time_string(south_trace.x[iefoot_south[midpt]]),11,2)+strmid(time_string(south_trace.x[iefoot_south[midpt]]),14,2)
+              xyouts, efoot_south[iefoot_south[midpt],0]/re+0.9*cos(dxy0), efoot_south[iefoot_south[midpt],1]/re+0.9*sin(dxy0), $
+                efoot_time, charsize=0.8, color=elf_colors[sc], ALIGNMENT=0.5, ORIENTATION=dxy0*180/!dpi+270 ;ORIENTATION=dxy0*180/!dpi+180
+            endif else begin  ; if elf goes from close to earth to far
+              midpt=-1
+              dxy0=atan(efoot_south[iefoot_south[midpt],1]-efoot_south[iefoot_south[midpt]-1,1], efoot_south[iefoot_south[midpt],0]-efoot_south[iefoot_south[midpt]-1,0])
+              efoot_time=strmid(time_string(south_trace.x[iefoot_south[midpt]]),11,2)+strmid(time_string(south_trace.x[iefoot_south[midpt]]),14,2)
+              xyouts, efoot_south[iefoot_south[midpt],0]/re+0.9*cos(dxy0), efoot_south[iefoot_south[midpt],1]/re+0.9*sin(dxy0), $
+                efoot_time, charsize=0.8, color=elf_colors[sc], ALIGNMENT=0.5, ORIENTATION=dxy0*180/!dpi+270
+            endelse
+            
             if keyword_set(tstep) then begin
               tstep=60.    ; 1 min
               ttime=stime
@@ -887,43 +903,41 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
             endif
           endif   ; end of SOUTH hemisphere
         endfor  ; end of science zone loop
-        ;          oplot,xmgnp,ymgnp,linestyle=2, thick=1 ; plot new magnetopause boundary
       endif    ; end of data exists
     endfor ; end of spacecraft loop
 
     ;-----------------------------
     ; DISPLAY ANNOTATIONS/LEGEND
     ;-----------------------------
-    xy1=96
-    ; annotate (create legend)
+    xy1=97
+    ; create legend
     chsz=.78
-    xyouts,xy1,170,'Orbits:',/device,charsize=chsz,color=255
-    xyouts,xy1,155,'THEMIS-P3 (D)',/device,charsize=chsz,color=252
-    xyouts,xy1,140,'THEMIS-P4 (E)',/device,charsize=chsz,color=253
-    xyouts,xy1,125,'THEMIS-P5 (A)',/device,charsize=chsz,color=254
+    xyouts,xy1,190,'Orbits:',/device,charsize=chsz,color=255
+    xyouts,xy1,170,'THEMIS-P3 (D)',/device,charsize=chsz,color=252
+    xyouts,xy1,155,'THEMIS-P4 (E)',/device,charsize=chsz,color=253
+    xyouts,xy1,140,'THEMIS-P5 (A)',/device,charsize=chsz,color=254
 
     If(keyword_set(mms_too)) Then Begin
-      xyouts,xy1,115,'MMS-1',/device,charsize=chsz;,color=244
+      xyouts,xy1,120,'MMS-1',/device,charsize=chsz;,color=244
     Endif
 
     If(keyword_set(erg_too)) Then Begin
-      xyouts,xy1,95,'Arase (ERG)',/device,charsize=chsz,color=243
+      xyouts,xy1,100,'Arase (ERG)',/device,charsize=chsz,color=243
     Endif
 
     If(keyword_set(elf_too)) Then Begin
-      xyouts,xy1,75,'ELF (A)',/device,charsize=chsz,color=242
-      xyouts,xy1,60,'ELF (B)',/device,charsize=chsz,color=241
+      xyouts,xy1,80,'ELF (A)',/device,charsize=chsz,color=242
+      xyouts,xy1,65,'ELF (B)',/device,charsize=chsz,color=241
     Endif
 
-    xy1=520
-    xy1=605
-    xyouts, xy1, 155, 'Legend:',/device,charsize=chsz,color=255
-    xyouts, xy1, 135, 'Trace2Equator(t96): Solid',/device,charsize=chsz,color=255
-    xyouts, xy1, 120, 'Orbit Start: Triangle',/device,charsize=chsz,color=255
-    xyouts, xy1, 105, 'Orbit End: Asterisk',/device,charsize=chsz,color=255
-    xyouts, xy1, 90, 'Hr or Min Tick Mark: Plus Sign',/device,charsize=chsz,color=255
-    xyouts, xy1, 75, 'BowShock: Dotted Line',/device,charsize=chsz,color=255
-    xyouts, xy1, 60, 'Magnetopause: Dashed Line',/device,charsize=chsz,color=255
+    xyouts, xy1, 720, 'Legend:',/device,charsize=chsz,color=255
+    xyouts, xy1, 700, 'Trace2Equator(t96): Solid',/device,charsize=chsz,color=255
+    xyouts, xy1, 685, 'Orbit Start: Triangle',/device,charsize=chsz,color=255
+    xyouts, xy1, 670, 'Orbit End: Asterisk',/device,charsize=chsz,color=255
+    xyouts, xy1, 655, 'Science Zone is FULL Minutes',/device,charsize=chsz,color=255
+    xyouts, xy1, 640, 'Hr or Min Tick Mark: Plus Sign',/device,charsize=chsz,color=255
+    xyouts, xy1, 625, 'BowShock: Dotted Line',/device,charsize=chsz,color=255
+    xyouts, xy1, 610, 'Magnetopause: Dashed Line',/device,charsize=chsz,color=255
 
     ; note the time of creation and model used
     xyouts,xy1-10,10, 'Created: '+systime(),/device,charsize=chsz,color=255
