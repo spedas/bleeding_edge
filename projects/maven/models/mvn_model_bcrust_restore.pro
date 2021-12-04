@@ -35,14 +35,32 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2020-06-30 13:36:11 -0700 (Tue, 30 Jun 2020) $
-; $LastChangedRevision: 28825 $
+; $LastChangedDate: 2021-12-03 16:40:11 -0800 (Fri, 03 Dec 2021) $
+; $LastChangedRevision: 30448 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust_restore.pro $
 ;
 ;-
 PRO mvn_model_bcrust_restore, var, orbit=orbit, silent=sl, verbose=vb, status=status,  $
                               cain_2003=cain_2003, cain_2011=cain_2011, arkani=arkani, $
-                              purucker=purucker, morschhauser=morschhauser, path=path, langlais=langlais
+                              purucker=purucker, morschhauser=morschhauser, path=path, langlais=langlais, mag=mag
+
+  nmod =  ( KEYWORD_SET(cain_2003) + KEYWORD_SET(cain_2011) + KEYWORD_SET(purucker) + $
+            KEYWORD_SET(arkani) + KEYWORD_SET(morschhauser) + KEYWORD_SET(langlais) )
+  IF nmod EQ 0 THEN BEGIN
+     morschhauser = 1
+     nmod = 1
+  ENDIF 
+
+  IF KEYWORD_SET(mag) THEN BEGIN
+     IF KEYWORD_SET(morschhauser) THEN index = 'm14'
+     IF KEYWORD_SET(langlais) THEN index = 'l19'
+     path = 'maven/data/mod/bcrust/' + index + '/YYYY/MM/'
+
+     mvn_model_bcrust_restore, var, orbit=orbit, silent=sl, verbose=vb, status=status, $
+                               path=path, morschhauser=morschhauser, langlais=langlais
+
+     RETURN
+  ENDIF 
 
   IF SIZE(var, /type) NE 0 THEN BEGIN
      trange = time_double(var)
@@ -74,7 +92,7 @@ PRO mvn_model_bcrust_restore, var, orbit=orbit, silent=sl, verbose=vb, status=st
 
   IF ~keyword_set(path) THEN $
      path = 'maven/data/mod/bcrust/YYYY/MM/'
-  fname = 'mvn_mod_bcrust_YYYYMMDD.tplot'
+  fname = 'mvn_mod_bcrust_*YYYYMMDD.tplot'
   
   file = mvn_pfp_file_retrieve(path+fname, trange=trange, /daily_names, /valid)
   
@@ -86,11 +104,9 @@ PRO mvn_model_bcrust_restore, var, orbit=orbit, silent=sl, verbose=vb, status=st
   ENDIF ELSE status = 1
   undefine, idx
 
-  IF SIZE(morschhauser, /type) EQ 0 THEN morschhauser = 1 $
-  ELSE IF morschhauser NE 0 THEN morschhauser = 1
+;  IF SIZE(morschhauser, /type) EQ 0 THEN morschhauser = 1 $
+;  ELSE IF morschhauser NE 0 THEN morschhauser = 1
 
-  nmod =  ( KEYWORD_SET(cain_2003) + KEYWORD_SET(cain_2011) + KEYWORD_SET(purucker) + $
-            KEYWORD_SET(arkani) + KEYWORD_SET(morschhauser) + KEYWORD_SET(langlais) )
   IF nmod EQ 1 THEN suffix = ''
 
   dotplot = INTARR(6)
@@ -104,7 +120,7 @@ PRO mvn_model_bcrust_restore, var, orbit=orbit, silent=sl, verbose=vb, status=st
 
   tplot_restore, filename=file, /append
 
-  get_data, 'mvn_model_bcrust_mso_spice_kernels', index=index, data=mk
+  get_data, tnames('mvn_model_bcrust_*_spice_kernels'), index=index, data=mk
   IF (index NE 0) THEN BEGIN
      kernels = mk.y
      IF N_ELEMENTS(kernels) GT 1 THEN kernels = STRJOIN(kernels, ' ')
@@ -129,23 +145,37 @@ PRO mvn_model_bcrust_restore, var, orbit=orbit, silent=sl, verbose=vb, status=st
         get_data, 'mvn_model_bcrust_mso_' + modelers[i], time, bmso, dlim=dlim, index=index
 
         IF index EQ 0 THEN BEGIN
-           dprint, modeler[i] + ' crustal B field model is not available yet.', dlevel=0, verbose=verbose
-           CONTINUE
-        ENDIF 
+           get_data, 'mvn_model_bcrust_geo_' + modelers[i], time, bmso, dlim=dlim, index=index
+           IF index EQ 0 THEN BEGIN
+              dprint, modeler[i] + ' crustal B field model is not available yet.', dlevel=0, verbose=verbose
+              CONTINUE
+           ENDIF 
+           gflg = 1
+        ENDIF ELSE gflg = 0
 
         bmso = bmso[UNIQ(time, SORT(time)), *]
         time = time[UNIQ(time, SORT(time))]
-        
+
         idx = WHERE(time GE trange[0] AND time LE trange[1], cnt)
         IF cnt GT 0 THEN BEGIN
+           IF SIZE(suffix, /type) NE 0 THEN suf = suffix ELSE suf = suffixes[i]
            bmso = bmso[idx, *]
            time = time[idx]
-           IF SIZE(suffix, /type) NE 0 THEN suf = suffix ELSE suf = suffixes[i]
-           store_data, tname + '_mso' + suf, data={x: time, y: bmso}, dlimits=dlim, lim={ytitle: 'Model'}
-           store_data, tname + '_amp' + suf, data={x: time, y: SQRT(TOTAL(bmso*bmso, 2))}, $
-                       dlimits={ytitle: modeler[i], ysubtitle: '|B| [nT]'}, limits={ytitle: 'Model'}
            
-           IF SIZE(kernels, /type) NE 0 THEN options, tname + '_mso' + suf, 'spice_file', kernels
+           IF (gflg) THEN BEGIN
+              store_data, tname + '_geo' + suf, data={x: time, y: bmso[*, 0:2]}, dlimits=dlim, lim={ytitle: 'Model'}
+              options, tname + '_geo' + suf, labels=dlim.labels[0:2], colors='bgr', /def
+              store_data, tname + '_amp' + suf, data={x: time, y: REFORM(bmso[*, 3])}, $
+                          dlimits={ytitle: modeler[i], ysubtitle: '|B| [nT]'}, limits={ytitle: 'Model'}
+
+              IF SIZE(kernels, /type) NE 0 THEN options, tname + '_geo' + suf, 'spice_file', kernels
+           ENDIF ELSE BEGIN
+              store_data, tname + '_mso' + suf, data={x: time, y: bmso}, dlimits=dlim, lim={ytitle: 'Model'}
+              store_data, tname + '_amp' + suf, data={x: time, y: SQRT(TOTAL(bmso*bmso, 2))}, $
+                          dlimits={ytitle: modeler[i], ysubtitle: '|B| [nT]'}, limits={ytitle: 'Model'}
+           
+              IF SIZE(kernels, /type) NE 0 THEN options, tname + '_mso' + suf, 'spice_file', kernels
+           ENDELSE 
            IF SIZE(suffix, /type) NE 0 THEN BREAK 
         ENDIF 
         undefine, idx, cnt
@@ -153,6 +183,6 @@ PRO mvn_model_bcrust_restore, var, orbit=orbit, silent=sl, verbose=vb, status=st
      ENDIF 
   ENDFOR 
 
-  store_data, tnames('mvn_model_bcrust_mso_*'), /delete, verbose=verbose
+  store_data, tnames('mvn_model_bcrust' + ((gflg) ? '_geo_*' : '_mso_*')), /delete, verbose=verbose
   RETURN
 END

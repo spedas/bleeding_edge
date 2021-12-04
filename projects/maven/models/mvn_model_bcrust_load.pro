@@ -52,8 +52,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2020-06-26 19:17:41 -0700 (Fri, 26 Jun 2020) $
-; $LastChangedRevision: 28818 $
+; $LastChangedDate: 2021-12-03 16:40:11 -0800 (Fri, 03 Dec 2021) $
+; $LastChangedRevision: 30448 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust_load.pro $
 ;
 ;-
@@ -61,7 +61,7 @@ PRO mvn_model_bcrust_load, var, orbit=orbit, silent=sl, verbose=vb, calc=calc, s
                            cain_2003=cain_2003, cain_2011=cain_2011, arkani=arkani, $
                            purucker=purucker, morschhauser=morschhauser, path=path, $
                            resolution=resolution, data=modelmag, nmax=nmax, version=version, $
-                           nocalc=nocalc, _extra=ext, langlais=langlais
+                           nocalc=nocalc, _extra=ext, langlais=langlais, mag=mag
 
   IF SIZE(var, /type) NE 0 THEN BEGIN
      trange = time_double(var)
@@ -95,7 +95,7 @@ PRO mvn_model_bcrust_load, var, orbit=orbit, silent=sl, verbose=vb, calc=calc, s
 
   mvn_model_bcrust_restore, trange, silent=silent, verbose=verbose, status=status,  $
                             cain_2003=cain_2003, cain_2011=cain_2011, arkani=arkani, $
-                            purucker=purucker, morschhauser=morschhauser, langlais=langlais
+                            purucker=purucker, morschhauser=morschhauser, langlais=langlais, mag=mag
   
   IF status EQ 0 THEN BEGIN
      CASE (cflg) OF
