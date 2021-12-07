@@ -6,12 +6,114 @@
 ;PURPOSE:
 ; Load data from a HAPI server
 ;
+;NOTES:
+; 2021-12-05: Added ESA server for SOSMAG data.
+;   Currently, this server does not behave as a standard HAPI server in some aspects
+;   (needs passowrd, catalog contains non-available datasets, error 500 responses from server).
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-08-27 11:53:41 -0700 (Tue, 27 Aug 2019) $
-;$LastChangedRevision: 27673 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2021-12-06 09:58:23 -0800 (Mon, 06 Dec 2021) $
+;$LastChangedRevision: 30450 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_load_hapi.pro $
 ;-
+
+function hapi_include_sosmag
+  ; SOSMAG HAPI server is: 'https://swe.ssa.esa.int/hapi/'
+  ; As of 2021/12/05 the server has non-standard behavior that requires special treatment:
+  ; 1. It requires username and password for each user.
+  ; 2. The catalog contains 134 datasets, but only 2 are actually available.
+  ; 3. By design, it returns Error 500 responses for some queries (those cannot be parsed by json).
+  ; The sosmag plugin is required for this server.
+
+  ; Check if the sosmag directory exists.
+  GETRESOURCEPATH, path ; start at the resources folder
+  sosmag_dir = path + PATH_SEP(/PARENT_DIRECTORY)+ PATH_SEP() + PATH_SEP(/PARENT_DIRECTORY) + PATH_SEP() +  'projects'+ PATH_SEP() + 'sosmag' +PATH_SEP()
+
+  if ~file_test(sosmag_dir, /read) then begin
+    return, 0
+  endif else begin
+    return, 1
+  endelse
+
+end
+
+function hapi_server_is_sosmag, server
+  ; Check if the server selected is sosmag server (ESA)
+  if hapi_include_sosmag() ne 1 then return, 0
+
+  if server eq 'https://swe.ssa.esa.int/hapi/' then return, 1
+
+  return, 0
+end
+
+function hapi_sosmag_capabilities
+  ; Return HAPI capabilities for SOSMAG
+  hquery = 'capabilities'
+  server_capabilities = ''
+
+  sosmag_hapi_query, hquery=hquery, query_response=query_response
+  if query_response eq '-1' || query_response eq '' then begin
+    server_capabilities = ''
+  endif else begin
+    server_capabilities = json_parse(query_response)
+  endelse
+
+  return, server_capabilities
+end
+
+function hapi_sosmag_datasets
+  ; Return HAPI catalog datasets, only for SOSMAG datasets
+  sosmag_datasets = []
+  hquery = 'catalog'
+  sosmag_hapi_query, hquery=hquery, query_response=query_response
+
+  if query_response eq '-1' || query_response eq '' then begin
+    sosmag_datasets = []
+  endif else begin
+    catalog = json_parse(query_response)
+    available_datasets = catalog['catalog']
+    for i=0, n_elements(available_datasets)-1 do begin
+      d = available_datasets[i]
+      if n_elements(d) eq 2 && d.haskey('id') then begin
+        d0 = strlowcase(d['id'])
+        if d0[0].contains('sosmag') then begin
+          sosmag_datasets = [sosmag_datasets, d]
+        endif
+      endif
+    endfor
+  endelse
+
+  return, sosmag_datasets
+end
+
+function hapi_sosmag_info, dataset
+  ; Return HAPI info for SOSMAG
+
+  info_str = ''
+  ;There is a problem for some ESA datasets
+  catch, Error_status
+  IF Error_status NE 0 THEN BEGIN
+    dprint, 'ERROR_STATE: ', !ERROR_STATE.MSG
+    dinfo = 'Error: No info available.'
+    catch, /cancel
+    return, dinfo
+  ENDIF
+
+  hquery = 'info?id='+dataset  
+  sosmag_hapi_query, hquery=hquery, query_response=query_response
+  if query_response eq '-1' || query_response eq '' then begin
+    info_str = ''
+  endif else begin
+    info_str = json_parse(query_response)
+  endelse  
+
+  return, info_str
+end
+
+pro hapi_sosmag_load_data, trange=trange, dataset=dataset, server=server, tplotnames=tplotvars, prefix=prefix
+  ; Load HAPI data for SOSMAG
+  sosmag_hapi_load_data, trange=trange, dataset=dataset, tplotnames=tplotvars, prefix=prefix
+end
 
 pro spd_ui_hapi_set_server, server, neturl=neturl
 
@@ -33,14 +135,27 @@ end
 pro spd_ui_hapi_get_capabilities, server, capabilities=capabilities
 
   if (!D.NAME eq 'WIN') then newline = string([13B, 10B]) else newline = string(10B)
+  capabilities = ''
 
   spd_ui_hapi_set_server, server, neturl=neturl
 
   neturl->GetProperty, URL_PATH=url_path
   neturl->SetProperty, URL_PATH=url_path+'/capabilities'
-  server_capabilities = json_parse(string(neturl->get(/buffer)))
-  capabilities = 'HAPI v' + server_capabilities['HAPI'] + newline + $
-    'Output formats: ' + strjoin(server_capabilities['outputFormats'].toArray(), ', ')
+
+  if hapi_server_is_sosmag(server) then begin
+    server_capabilities = hapi_sosmag_capabilities()
+    if size(server_capabilities, /type) eq 11 then begin
+      hversion = server_capabilities['version']
+      outputFormats = strjoin(server_capabilities['outputFormats'].toArray(), ', ')
+      capabilities = 'HAPI v' + hversion + newline + 'Output formats: ' + outputFormats
+    endif else capabilities = 'Error communicating with server.' + newline + 'Check username and password.'
+  endif else begin
+    capabilities_str = string(neturl->get(/buffer))
+    server_capabilities = json_parse(capabilities_str)
+    hversion = server_capabilities['HAPI']
+    outputFormats = strjoin(server_capabilities['outputFormats'].toArray(), ', ')
+    capabilities = 'HAPI v' + hversion + newline + 'Output formats: ' + outputFormats
+  endelse
 
 end
 
@@ -48,13 +163,17 @@ pro spd_ui_hapi_get_datasets, server, datasets=datasets
 
   if (!D.NAME eq 'WIN') then newline = string([13B, 10B]) else newline = string(10B)
 
-  spd_ui_hapi_set_server, server, neturl=neturl
+  if hapi_server_is_sosmag(server) then begin
+    available_datasets = hapi_sosmag_datasets()
+  endif else begin
+    spd_ui_hapi_set_server, server, neturl=neturl
+    neturl->GetProperty, URL_PATH=url_path
+    neturl->SetProperty, URL_PATH=url_path+'/catalog'
+    catalog_str = string(neturl->get(/buffer))
+    catalog = json_parse(catalog_str)
+    available_datasets = catalog['catalog']
+  endelse
 
-  neturl->GetProperty, URL_PATH=url_path
-  neturl->SetProperty, URL_PATH=url_path+'/catalog'
-
-  catalog = json_parse(string(neturl->get(/buffer)))
-  available_datasets = catalog['catalog']
   datasets = []
   for dataset_idx = 0, n_elements(available_datasets)-1 do begin
     datasets = [datasets, (available_datasets[dataset_idx])['id']]
@@ -65,12 +184,27 @@ pro spd_ui_hapi_get_dataset_info, server, dataset, dinfo=dinfo
 
   if (!D.NAME eq 'WIN') then newline = string([13B, 10B]) else newline = string(10B)
 
-  spd_ui_hapi_set_server, server, neturl=neturl
+  ; If dataset is empty return an error message
+  if dataset eq '' then begin
+    dinfo = 'Error: please select a dataset from the list.'
+    return
+  endif
 
-  neturl->GetProperty, URL_PATH=url_path
+  if hapi_server_is_sosmag(server) then begin
+    info = hapi_sosmag_info(dataset)
+  endif else begin
+    spd_ui_hapi_set_server, server, neturl=neturl
+    neturl->GetProperty, URL_PATH=url_path
+    neturl->SetProperty, URL_PATH=url_path+'/info?id='+dataset
+    info_str = string(neturl->get(/buffer))
+    info = json_parse(info_str)
+  endelse
 
-  neturl->SetProperty, URL_PATH=url_path+'/info?id='+dataset
-  info = json_parse(string(neturl->get(/buffer)))
+  if info eq '' then begin
+    dinfo = 'Error: please refresh the dataset list.'
+    return
+  endif
+  
 
   param_names = []
   for param_idx = 0, n_elements(info['parameters'])-1 do begin
@@ -96,10 +230,21 @@ Pro spd_ui_load_hapi_event, ev
 
   case uval of
     'SERVERLIST' : begin
+      widget_control, state.selectedServer, get_value=oldserver
       index = ev.index
       server=state.hapi_servers[index]
       server = STRTRIM(server, 2)
+
       widget_control, state.selectedServer, set_value=server
+
+      ; If the server changed, clear all textboxes
+      if oldserver ne server then begin
+        widget_control, state.capabilitiesLabel, set_value=''
+        widget_control, state.datasetList, set_value=''
+        widget_control, state.selectedDataset, set_value=''
+        widget_control, state.dataInfoShowLabel, set_value=''
+      endif
+
     end
     'SERVERINFO' : begin
       widget_control, state.selectedServer, get_value=server
@@ -124,12 +269,17 @@ Pro spd_ui_load_hapi_event, ev
       Widget_Control, state.mainBase, Set_UValue=state
     end
     'DATASETLIST' : begin
+      widget_control, state.selectedDataset, get_value=old_selected_dataset
       index = ev.index
       x = state.datasets
       sd = *x
       selected_dataset = sd[index]
       selected_dataset = STRTRIM(selected_dataset, 2)
       widget_control, state.selectedDataset, set_value=selected_dataset
+
+      if old_selected_dataset ne selected_dataset then begin
+        widget_control, state.dataInfoShowLabel, set_value=''
+      endif
 
     end
     'DATAINFO' : begin
@@ -152,7 +302,16 @@ Pro spd_ui_load_hapi_event, ev
       starttime = timerange.GetStartTime()
       endtime = timerange.getendtime()
 
-      hapi_load_data, trange=[starttime, endtime], dataset=dataset, server=server, tplotnames=tplotvars, prefix=prefix
+      if hapi_server_is_sosmag(server) then begin
+        if dataset[0] eq '' then begin
+          msgshow = DIALOG_MESSAGE('Please select a dataset.', /information)
+          break
+        endif
+        hapi_sosmag_load_data, trange=[starttime, endtime], dataset=dataset, server=server, tplotnames=tplotvars, prefix=prefix
+      endif else begin
+        hapi_load_data, trange=[starttime, endtime], dataset=dataset, server=server, tplotnames=tplotvars, prefix=prefix
+      endelse
+
       if undefined(tplotvars) || n_elements(tplotvars) lt 1 then begin
         msgshow = DIALOG_MESSAGE('No variables could be loaded.', /information)
         break
@@ -195,6 +354,9 @@ Pro spd_ui_load_hapi, gui_id, historywin, statusbar,timeRangeObj=timeRangeObj
   hapi_servers=['https://cdaweb.gsfc.nasa.gov/hapi','https://pds-ppi.igpp.ucla.edu/hapi', $
     'http://planet.physics.uiowa.edu/das/das2Server/hapi','https://iswa.gsfc.nasa.gov/IswaSystemWebApp/hapi', $
     'http://lasp.colorado.edu/lisird/hapi']
+  ; If there is a SOSMAG plugin, also include the ESA HAPI server which requires special treatment due to irregularities.
+  if hapi_include_sosmag() eq 1 then hapi_servers=[hapi_servers, 'https://swe.ssa.esa.int/hapi/']
+
   serverList = widget_list(upLeftBase, value=hapi_servers, /align_top, scr_xsize = 250, scr_ysize = 100, uvalue='SERVERLIST', uname='SERVERLIST')
   selectServerLabelEmpty11 = widget_label(upLeftBase, value=' ', /align_top, scr_xsize = 250)
   selectServerLabel = widget_label(upLeftBase, value='Selected HAPI server:', /align_top, scr_xsize = 250)
