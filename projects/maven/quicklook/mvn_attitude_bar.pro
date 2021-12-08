@@ -19,9 +19,9 @@
 ;KEYWORDS:
 ;       none
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-01-13 15:12:27 -0800 (Wed, 13 Jan 2021) $
-; $LastChangedRevision: 29597 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2021-12-07 12:48:47 -0800 (Tue, 07 Dec 2021) $
+; $LastChangedRevision: 30451 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_attitude_bar.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -32,6 +32,10 @@ pro mvn_attitude_bar
 
   mvn_sundir, frame='spacecraft', /pol
   get_data,'Sun_PL_The',data=sth
+  If(~is_struct(sth)) Then Begin
+     dprint, 'Missing Pointing Data, Returning'
+     Return
+  Endif
   npts = n_elements(sth.x)
   sun_th = sth.y
 
