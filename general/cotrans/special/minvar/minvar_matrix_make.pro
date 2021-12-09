@@ -73,9 +73,9 @@
 ;     tvector_rotate.pro
 ;     thm_crib_mva.pro (THEMIS project) 
 ;
-; $LastChangedBy: aaflores $
-; $LastChangedDate: 2014-06-06 17:26:00 -0700 (Fri, 06 Jun 2014) $
-; $LastChangedRevision: 15328 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-12-08 15:46:04 -0800 (Wed, 08 Dec 2021) $
+; $LastChangedRevision: 30454 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/special/minvar/minvar_matrix_make.pro $
 ;-
 
@@ -207,11 +207,15 @@ else $
 
 if keyword_set(dl) then begin
 o_dl = dl
+e_dl = dl
+e_dl.data_att.coord_sys = 'minvar'
 endif else begin
 
 datt = {coord_sys:'unknown'}
 o_dl = {data_att:datt}
-
+; Prevent crash setting evname variable coordinate system, if input dl is empty  JWL 2021-12-08
+e_datt={coord_sys:'minvar'}
+e_dl = {data_att:e_datt}
 endelse
 
 str_element,o_dl,'data_att.coord_sys',success=s
@@ -258,9 +262,7 @@ if keyword_set(evname) then begin
     else $
       e_d = {x:o_times[0:i-1L], y:o_lams[0:i-1L, *]}
 
-  e_dl = dl
 
-  e_dl.data_att.coord_sys = 'minvar'
 
   store_data, evname, data = e_d, limits = l, dlimits = e_dl
 
