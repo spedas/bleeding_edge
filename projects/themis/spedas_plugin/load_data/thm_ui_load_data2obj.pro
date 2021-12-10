@@ -39,9 +39,9 @@
 ;HISTORY:
 ;  07-sep-2008, bck  begin modification for use in spd_gui from spd_ui_load_data_fn
 ; 
-;$LastChangedBy: crussell $
-;$LastChangedDate: 2017-07-11 11:26:35 -0700 (Tue, 11 Jul 2017) $
-;$LastChangedRevision: 23576 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2021-12-09 14:46:31 -0800 (Thu, 09 Dec 2021) $
+;$LastChangedRevision: 30458 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spedas_plugin/load_data/thm_ui_load_data2obj.pro $
 ;
 ;-
@@ -634,9 +634,9 @@ pro thm_ui_load_data2obj,$
       state_rq_tn = 'th' + observ[i] + '_state_' + iname
 
       ; account for load spitting out temp vars if coord is set with spin type(s) requested
-      spintypes = ['spin_spinper', 'spin_tend', 'spin_c', 'spin_phaserr', $
-                   'spin_nspins', 'spin_npts', 'spin_maxgap']
-      for j=0,n_elements(spintypes)-1 do begin
+      thm_load_state,probe=vp,datatype=vd,version=vv,/valid_names
+      spintypes = strfilter(vd,'spin_*')
+     for j=0,n_elements(spintypes)-1 do begin
         dum_ind = where(spintypes[j] eq iname, nSpin, complement=nonSpinInd, $
                         ncomplement=nNonSpin)
         if nspin gt 0 then begin

@@ -66,9 +66,9 @@
 ; If you modify the d_names constant make sure to make the
 ; corresponding changes to the c_names constant
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-10-07 12:12:46 -0700 (Fri, 07 Oct 2016) $
-; $LastChangedRevision: 22069 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2021-12-09 14:42:37 -0800 (Thu, 09 Dec 2021) $
+; $LastChangedRevision: 30456 $
 ; $URL $
 ;-
 
@@ -321,35 +321,35 @@ pro thm_load_state,probe=probe, datatype=datatype, trange=trange, $
   d_names = 'pos pos_gse pos_gsm pos_sse pos_sel vel vel_gse ' + $
             'vel_gsm vel_sse vel_sel man roi spinras spindec ' + $
             'spinalpha spinbeta spinper spinphase ' + $
-            'spin_spinper spin_time spin_tend spin_c spin_phaserr spin_nspins ' + $
+            'spin_spinper spin_tend spin_c spin_phaserr spin_nspins ' + $
             'spin_npts spin_maxgap spin_correction spin_initial_delta_phi spin_idpu_spinper ' + $
-            'spin_segflags spin_fgm_corr_time spin_fgm_corr_tend spin_fgm_corr_offset ' + $
+            'spin_segflags spin_fgm_corr_tend spin_fgm_corr_offset ' + $
             'spinras_correction spindec_correction ' + $
-            'spin_ecl_spinper spin_ecl_time spin_ecl_tend spin_ecl_c spin_ecl_phaserr spin_ecl_nspins spin_ecl_npts ' + $
-            'spin_ecl_maxgap spin_ecl_initial_delta_phi spin_ecl_idpu_spinper spin_ecl_segflags spin_ecl_fgm_corr_time spin_ecl_fgm_corr_tend spin_ecl_fgm_corr_offset'
+            'spin_ecl_spinper spin_ecl_tend spin_ecl_c spin_ecl_phaserr spin_ecl_nspins spin_ecl_npts ' + $
+            'spin_ecl_maxgap spin_ecl_initial_delta_phi spin_ecl_idpu_spinper spin_ecl_segflags spin_ecl_fgm_corr_tend spin_ecl_fgm_corr_offset'
 
 ;coordinate names(should have same number of elements as d_names
 ;because they are in a 1-1 correspondence)
   c_names = 'gei gse gsm sse sel gei gse ' + $
             'gsm sse sel unknown unknown gei gei ' + $
             'spg spg unknown unknown ' + $
-            'unknown unknown unknown unknown unknown unknown ' + $
             'unknown unknown unknown unknown unknown ' + $
-            'unknown unknown unknown unknown ' + $
+            'unknown unknown unknown unknown unknown ' + $
+            'unknown unknown unknown ' + $
             'gei gei ' + $
-            'unknown unknown unknown unknown unknown unknown unknown ' + $
-            'unknown unknown unknown unknown unknown unknown unknown' 
+            'unknown unknown unknown unknown unknown unknown ' + $
+            'unknown unknown unknown unknown unknown unknown ' 
   
 ;units for each d_name
   u_names = 'km km km km km km/s km/s ' + $
             'km/s km/s km/s unknown unknown deg deg ' + $
             'deg deg sec deg ' + $
-            'sec sec sec deg/sec^2 sec spins ' + $
+            'sec sec deg/sec^2 sec spins ' + $
             'points sec deg deg sec ' + $
-            'unknown sec sec deg ' + $
+            'unknown sec deg ' + $
             'deg deg ' + $
-            'sec sec sec deg/sec^2 sec spins points ' + $
-            'sec deg sec unknown sec sec deg'
+            'sec sec deg/sec^2 sec spins points ' + $
+            'sec deg sec unknown sec deg'
 
 
 ; Support variables.  We need an explicit list of support variables here,
@@ -462,10 +462,7 @@ pro thm_load_state,probe=probe, datatype=datatype, trange=trange, $
 
   if keyword_set(valid_names) then  begin
      version = vversions
-     dprint,  $
-                string(strjoin(strsplit(vversions, ' ', /extract), ','), $
-                       format = '( "Valid versions:",X,A,".")')
-  endif
+   endif
 
   ;print accumulated error messages now that loading is complete
   if keyword_set(msg_out) then begin

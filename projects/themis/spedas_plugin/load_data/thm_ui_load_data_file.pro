@@ -26,9 +26,9 @@
 ;NOTES:
 ;  
 ;
-;$LastChangedBy: crussell $
-;$LastChangedDate: 2017-07-11 11:26:35 -0700 (Tue, 11 Jul 2017) $
-;$LastChangedRevision: 23576 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2021-12-08 20:16:43 -0800 (Wed, 08 Dec 2021) $
+;$LastChangedRevision: 30455 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spedas_plugin/load_data/thm_ui_load_data_file.pro $
 ;
 ;-
@@ -321,11 +321,13 @@ pro thm_ui_load_data_file, tab_id, loadedData, historyWin, statusText, $
   level2List = Widget_List(level2Base, Value=*dlist2, /Multiple, scr_xsize=120, scr_ysize=185, $
                            Uvalue='LEVEL2')
                            
-  ;validCoords = [ ' DSL ', ' GSM ', ' SPG  ', ' SSL ',' GSE ', ' GEI ']
+  validCoords = [ 'GSM','GSE', 'GEI', 'GEO', 'SM', 'DSL', 'SPG', 'SSL']
   ; make a list of valid coordinate systems 
-  coord_sys_obj = obj_new('thm_ui_coordinate_systems')
-  validCoords = coord_sys_obj->makeCoordSysList(/uppercase)
-  obj_destroy, coord_sys_obj
+;  coord_sys_obj = obj_new('thm_ui_coordinate_systems')
+; validCoords = coord_sys_obj->makeCoordSysList(/uppercase)
+;  obj_destroy, coord_sys_obj
+
+
 
   coordDroplistLabel = Widget_Label(coordBase, Value=' Output Coordinates:  ')
   coordDroplist = Widget_ComboBox(coordBase, Value=validCoords, $ ;XSize=165, $

@@ -29,9 +29,9 @@
 ; started on 31-Jan-2008, jmm, jimm@ssl.berkeley.edu, this is under
 ; development for the next 6 months or so.
 ; 9-apr-2008, jmm, added all instruments, for Version 4_00
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2018-04-16 10:47:48 -0700 (Mon, 16 Apr 2018) $
-;$LastChangedRevision: 25050 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2021-12-09 14:44:32 -0800 (Thu, 09 Dec 2021) $
+;$LastChangedRevision: 30457 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_data2load.pro $
 ;-
 function thm_valid_variables, instrument, level
@@ -211,13 +211,12 @@ function thm_valid_variables, instrument, level
     end
     'state' : begin ; Spacecraft state data
         if(level eq 'l1' or level eq 'l10') then begin
-            instr_data = ['pos', 'vel', 'man', 'roi', 'spinras', 'spindec', $
-                          'spinalpha', 'spinbeta', 'spinper', 'spinphase', $
-                          'spin_spinper',  'spin_tend', 'spin_c', $
-                          'spin_phaserr', 'spin_nspins', 'spin_npts', 'spin_maxgap',$
-                          'spinras_correction', 'spindec_correction', $
-                          'spinras_corrected', 'spindec_corrected']
-        endif else begin
+            ; Get valid names from thm_load_state (rather than having a hard coded list in both places) JWL 2021-12-09
+            thm_load_state,probe=vp,datatype=vd,version=vv,/valid_names
+            ; Eliminate pos and vel variables for other coordinate systems (for backward compatibility with GUI)
+            nopos=strfilter(vd,'pos_*',/negate)
+            instr_data = strfilter(nopos,'vel_*',/negate)
+         endif else begin
             instr_data = ''
         endelse
     end
