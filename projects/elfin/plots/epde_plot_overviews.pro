@@ -47,7 +47,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   tr=timerange()
 
   elf_init
-  aacgmidl
+;  aacgmidl
 
   ; set up plot options
   loadct,39
@@ -181,62 +181,75 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ;;;;;;;;;;;;;;;;;;;;;;
   ;;trace to equator to get L, MLAT in IGRF
   re=6378.
-  ttrace2equator,'el'+probe+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
-  get_data,'el'+probe+'_pos_gsm_foot',data=elx_pos_eq
-  L1=sqrt(total(elx_pos_eq.y^2.0,2,/nan))/Re
-  store_data,'el'+probe+'_L_igrf',data={x:elx_pos_eq.x,y:L1}
-  get_data,'el'+probe+'_pos_sm',data=elx_pos_sm
-  req=sqrt(total(elx_pos_eq.y^2.0,2,/nan))
-  rloc=sqrt(total(elx_pos_sm.y^2.0,2,/nan))
-  rratio=rloc/req
-  ibad=where(rratio gt 1.)
-  if ibad[0] ne -1. then rratio[ibad]=1.00
-  lat2=acos(sqrt(rratio))/!dtor
-  tdotp,'el'+probe+'_bt89_gsm','el'+probe+'_pos_gsm',newname='elx_br_tmp' ; ;—> assign the sign based on Br direction
-  get_data,'elx_br_tmp',data=Br_tmp
-  ineg=where(Br_tmp.y gt 0.)
-  if ineg[0] ne -1. then lat2[ineg]=-1.*abs(lat2[ineg])
-  store_data,'el'+probe+'_MLAT_igrf',data={x:elx_pos_eq.x,y:lat2}
-  options,'el'+probe+'_L_igrf',ytitle='L-igrf'
-  options,'el'+probe+'_L_igrf',charsize=.7
-  options,'el'+probe+'_MLAT_igrf',ytitle='MLAT-igrf'
-  options,'el'+probe+'_MLAT_igrf',charsize=.7  
+  ;ttrace2equator,'el'+probe+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
+  ;get_data,'el'+probe+'_pos_gsm_foot',data=elx_pos_eq
+  ;L1=sqrt(total(elx_pos_eq.y^2.0,2,/nan))/Re
+  ;store_data,'el'+probe+'_L_igrf',data={x:elx_pos_eq.x,y:L1}
+  ;get_data,'el'+probe+'_pos_sm',data=elx_pos_sm
+  ;req=sqrt(total(elx_pos_eq.y^2.0,2,/nan))
+  ;rloc=sqrt(total(elx_pos_sm.y^2.0,2,/nan))
+  ;rratio=rloc/req
+  ;ibad=where(rratio gt 1.)
+  ;if ibad[0] ne -1. then rratio[ibad]=1.00
+  ;lat2=acos(sqrt(rratio))/!dtor
+  ;tdotp,'el'+probe+'_bt89_gsm','el'+probe+'_pos_gsm',newname='elx_br_tmp' ; ;—> assign the sign based on Br direction
+  ;get_data,'elx_br_tmp',data=Br_tmp
+  ;ineg=where(Br_tmp.y gt 0.)
+  ;if ineg[0] ne -1. then lat2[ineg]=-1.*abs(lat2[ineg])
+  ;store_data,'el'+probe+'_MLAT_igrf',data={x:elx_pos_eq.x,y:lat2}
 
   ;;;;;;;;;;;;;;;;;;;;
   ; MLT IGRF 
   ;;;;;;;;;;;;;;;;;;;;
   sclet = probe
-  get_data, 'el'+sclet+'_pos_gsm', data=dgsm, dlimits=dlgsm, limits=lgsm
-  MLT_igrf=MLT0
-  MLON=lat0
-  nidx=where(lat0 GE 0, ncnt)
-  if ncnt gt 0 then begin
-    store_data, 'el'+sclet+'_pos_gsm_north', data={x:dgsm.x[nidx],y:dgsm.y[nidx,*]}, dlimits=dlgsm, limits=lgsm
-    ttrace2iono,'el'+sclet+'_pos_gsm_north',newname='el'+sclet+'_ifootn_gsm_north',external_model='none' $
-      ,internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re,/geopack_2008,dsmax=0.01,/standard_mapping
-    thm_cotrans, 'el'+sclet+'_ifootn_gsm_north', 'el'+sclet+'_ifootn_mag_north', out_coord='mag',in_coord='gsm'
-    get_data,'el'+sclet+'_ifootn_mag_north',data=elx_nf_mag
-    cart_to_sphere,elx_nf_mag.y[*,0],elx_nf_mag.y[*,1],elx_nf_mag.y[*,2],r_mag,theta_mag,phi_mag
-    mlt_igrf_north = aacgmmlt(time_string(elx_nf_mag.x,precision=-5), elx_nf_mag.x, phi_mag)
-    MLT_igrf[nidx]=mlt_igrf_north
-    MLON[nidx]=phi_mag
-  endif
-  sidx=where(lat0 LT 0, scnt)
-  if scnt gt 0 then begin
-    store_data, 'el'+sclet+'_pos_gsm_south', data={x:dgsm.x[sidx],y:dgsm.y[sidx,*]}, dlimits=dlgsm, limits=lgsm
-    ttrace2iono,'el'+sclet+'_pos_gsm_south',newname='el'+sclet+'_ifootn_gsm_south',external_model='none',/south $
-      ,internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re,/geopack_2008,dsmax=0.01,/standard_mapping
-    thm_cotrans, 'el'+sclet+'_ifootn_gsm_south', 'el'+sclet+'_ifootn_mag_south', out_coord='mag',in_coord='gsm'
-    get_data,'el'+sclet+'_ifootn_mag_south',data=elx_nf_mag
-    cart_to_sphere,elx_nf_mag.y[*,0],elx_nf_mag.y[*,1],elx_nf_mag.y[*,2],r_mag,theta_mag,phi_mag
-    mlt_igrf_south = aacgmmlt(time_string(elx_nf_mag.x,precision=-5), elx_nf_mag.x, phi_mag)
-    MLT_igrf[sidx]=mlt_igrf_south
-    MLON[sidx]=phi_mag
-  endif
-  store_data,'el'+sclet+'_MLT_igrf',data={x:dgsm.x,y:mlt_igrf};;projected to 100km and use aacgm
+;  get_data, 'el'+sclet+'_pos_gsm', data=dgsm, dlimits=dlgsm, limits=lgsm
+;  MLT_igrf=MLT0
+;  MLON=lat0
+;  nidx=where(lat0 GE 0, ncnt)
+;  if ncnt gt 0 then begin
+;    store_data, 'el'+sclet+'_pos_gsm_north', data={x:dgsm.x[nidx],y:dgsm.y[nidx,*]}, dlimits=dlgsm, limits=lgsm
+;    ttrace2iono,'el'+sclet+'_pos_gsm_north',newname='el'+sclet+'_ifootn_gsm_north',external_model='none' $
+;      ,internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re,/geopack_2008,dsmax=0.01,/standard_mapping
+;    thm_cotrans, 'el'+sclet+'_ifootn_gsm_north', 'el'+sclet+'_ifootn_mag_north', out_coord='mag',in_coord='gsm'
+;    get_data,'el'+sclet+'_ifootn_mag_north',data=elx_nf_mag
+;    cart_to_sphere,elx_nf_mag.y[*,0],elx_nf_mag.y[*,1],elx_nf_mag.y[*,2],r_mag,theta_mag,phi_mag
+;    mlt_igrf_north = aacgmmlt(time_string(elx_nf_mag.x,precision=-5), elx_nf_mag.x, phi_mag)
+;    MLT_igrf[nidx]=mlt_igrf_north
+;    MLON[nidx]=phi_mag
+;  endif
+;  sidx=where(lat0 LT 0, scnt)
+;  if scnt gt 0 then begin
+;    store_data, 'el'+sclet+'_pos_gsm_south', data={x:dgsm.x[sidx],y:dgsm.y[sidx,*]}, dlimits=dlgsm, limits=lgsm
+;    ttrace2iono,'el'+sclet+'_pos_gsm_south',newname='el'+sclet+'_ifootn_gsm_south',external_model='none',/south $
+;      ,internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re,/geopack_2008,dsmax=0.01,/standard_mapping
+;    thm_cotrans, 'el'+sclet+'_ifootn_gsm_south', 'el'+sclet+'_ifootn_mag_south', out_coord='mag',in_coord='gsm'
+;    get_data,'el'+sclet+'_ifootn_mag_south',data=elx_nf_mag
+;    cart_to_sphere,elx_nf_mag.y[*,0],elx_nf_mag.y[*,1],elx_nf_mag.y[*,2],r_mag,theta_mag,phi_mag
+;    mlt_igrf_south = aacgmmlt(time_string(elx_nf_mag.x,precision=-5), elx_nf_mag.x, phi_mag)
+;    MLT_igrf[sidx]=mlt_igrf_south
+;    MLON[sidx]=phi_mag
+;  endif
+;  store_data,'el'+sclet+'_MLT_igrf',data={x:dgsm.x,y:mlt_igrf};;projected to 100km and use aacgm
+  ;;trace to equator to get L, MLAT, and MLT in IGRF
+  ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
+  cotrans,'el'+sclet+'_pos_gsm_foot','el'+sclet+'_pos_sm_foot',/GSM2SM
+  get_data,'el'+sclet+'_pos_gsm_foot',data=elx_pos_eq
+  L1=sqrt(total(elx_pos_eq.y^2.0,2,/nan))/Re
+  store_data,'el'+sclet+'_L_igrf',data={x:elx_pos_eq.x,y:L1}
+  get_data,'el'+sclet+'_pos_gsm',data=elx_pos
+  rnew=sqrt(elx_pos.y[*,0]^2.0+elx_pos.y[*,1]^2.0+(elx_pos.y[*,2]-elx_pos_eq.y[*,2])^2.0)
+  lat3=asin((elx_pos.y[*,2]-elx_pos_eq.y[*,2])/rnew)/!dtor
+  store_data,'el'+sclet+'_MLAT_igrf',data={x:elx_pos_eq.x,y:lat3};;did not pass the validation
+  elf_mlt_l_lat,'el'+sclet+'_pos_sm_foot',MLT0=MLT0,L0=L0,lat0=lat0
+  store_data,'el'+sclet+'_MLT_igrf',data={x:elx_pos_eq.x,y:MLT0}
+
+  options,'el'+probe+'_L_igrf',ytitle='L-igrf'
+  options,'el'+probe+'_L_igrf',charsize=.7
+  options,'el'+probe+'_MLAT_igrf',ytitle='MLAT-igrf'
+  options,'el'+probe+'_MLAT_igrf',charsize=.7
   options,'el'+probe+'_MLT_igrf',ytitle='MLT-igrf'
   options,'el'+probe+'_MLT_igrf',charsize=.7
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; Get proxy_ae data
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

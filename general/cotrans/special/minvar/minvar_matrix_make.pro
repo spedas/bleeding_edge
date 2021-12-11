@@ -74,8 +74,8 @@
 ;     thm_crib_mva.pro (THEMIS project) 
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-12-08 15:46:04 -0800 (Wed, 08 Dec 2021) $
-; $LastChangedRevision: 30454 $
+; $LastChangedDate: 2021-12-10 11:18:45 -0800 (Fri, 10 Dec 2021) $
+; $LastChangedRevision: 30461 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/special/minvar/minvar_matrix_make.pro $
 ;-
 
@@ -208,7 +208,7 @@ else $
 if keyword_set(dl) then begin
 o_dl = dl
 e_dl = dl
-e_dl.data_att.coord_sys = 'minvar'
+str_element,e_dl,'data_att.coord_sys','minvar', /add
 endif else begin
 
 datt = {coord_sys:'unknown'}
