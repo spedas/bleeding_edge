@@ -52,8 +52,8 @@
 ;         Spacecraft photoelectrons are corrected in moments_3d
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-11-05 09:19:11 -0700 (Fri, 05 Nov 2021) $
-;$LastChangedRevision: 30398 $
+;$LastChangedDate: 2021-12-15 09:32:26 -0800 (Wed, 15 Dec 2021) $
+;$LastChangedRevision: 30469 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -146,8 +146,16 @@ pro mms_part_getspec, probes=probes, $
         if instrument eq 'fpi' then data_rate = 'fast' else data_rate = 'srvy'
     endif else data_rate = strlowcase(data_rate)
     
-    if data_rate eq 'brst' && undefined(mag_data_rate) then mag_data_rate = 'brst' else mag_data_rate = 'srvy'
-    if data_rate eq 'brst' && undefined(scpot_data_rate) then scpot_data_rate = 'brst' else scpot_data_rate = 'fast'
+    if data_rate eq 'brst' && undefined(mag_data_rate) then begin
+      mag_data_rate = 'brst'
+    endif else begin
+      if undefined(mag_data_rate) then mag_data_rate = 'srvy'
+    endelse
+    if data_rate eq 'brst' && undefined(scpot_data_rate) then begin
+      scpot_data_rate = 'brst'
+    endif else begin 
+      if undefined(scpot_data_rate) then scpot_data_rate = 'fast'
+    endelse
     
     if ~keyword_set(species) then begin
         if instrument eq 'fpi' then species = 'e' else species = 'hplus'
