@@ -1,32 +1,25 @@
 ; buffer should contain bytes for a single ccsds packet, header is
 ; contained in first 3 words (6 bytes)
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-16 02:06:51 -0700 (Mon, 16 Aug 2021) $
-; $LastChangedRevision: 30209 $
+; $LastChangedDate: 2021-12-17 09:47:01 -0800 (Fri, 17 Dec 2021) $
+; $LastChangedRevision: 30471 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ccsds_decom.pro $
 
 ;
 ;  This routine still needs to be modified to conform to the SWFO standard.
 
-function swfo_ccsds_decom_mettime,header,spc=spc,span=span,subsec=subsec
-  if size(header,/type) eq 1 then begin   ; convert to uints
-    n = n_elements(header)
-    header2 = swap_endian(uint(header,0,6 < n/2) ,/swap_if_little_endian )
-    dprint,dlevel=1,'old code!'
-    return, swfo_ccsds_decom_mettime(header2,subsec=subsec,spc=spc,span=span)
-  endif
-  ; header assumed to be uints at this point
+function swfo_ccsds_decom_mettime,header    ;,spc=spc,span=span,subsec=subsec
+  ; header assumed to be bytes at this point
   n = n_elements(header)
   if n lt 5 then return, !values.d_nan
 
-  if keyword_set(span) then begin
-    MET = (header[3]*2UL^16 + header[4] + (header[5] and 'fffc'x)  / 2d^16) +   ( (header[5] ) mod 4) * 2d^15/150000              ; SPANS
-  endif else if keyword_set(spc) then begin
-    MET = (header[3]*2UL^16 + header[4] + (header[5] and 'ffff'x)  / 2d^16)             ; SPC
-  endif else begin
-    MET = double( header[3]*2UL^16 + header[4] )   ; normal 1 sec resolution
-  endelse
+  day = ((header[6]*256UL+header[7])*256)+header[8]
+  millisec = ((header[9]*256UL+header[10])*256+header[11])*256+header[12]
+  microsec = header[13] *256u + header[14]
+  MET = day*24d*3600d + millisec/1000d + microsec/1d6
+  ;MET = (header[3]*2UL^16 + header[4] + (header[5] and 'fffc'x)  / 2d^16) +   ( (header[5] ) mod 4) * 2d^15/150000              ; SPANS
   return,met
+
 end
 
 
@@ -40,7 +33,7 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
   d_nan = !values.d_nan
   f_nan = !values.f_nan
 
-  ccsds = { ccsds_format, $
+  ccsds = { swfo_ccsds_format, $
     time:         d_nan,  $             ; unixtime
     MET:          d_nan,  $
     apid:         0u , $
@@ -48,6 +41,9 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
     seqn_delta :  0u, $
     seqn_group:    0b , $
     pkt_size:     0ul,  $
+    day:          0UL,  $
+    millisec:     0ul,  $
+    microsec:     0u,   $
     source_apid:  0u   ,  $             ; an indicator of where this packet came from:  0: unknown, apid of wrapper_packet: 0x348 - 0x34f
     source_hash:  0UL,  $               ; hashcode() of source_name
     compr_ratio:  0. , $
@@ -74,7 +70,7 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
     return, !null
   endif
 
-  header = swap_endian(uint(buffer[offset+0:offset+11],0,6) ,/swap_if_little_endian )  ; ??? error here  % Illegal subscript range: BUFFER.
+  header = swap_endian(uint(buffer[offset+0:offset+5],0,3) ,/swap_if_little_endian )  ; ??? error here  % Illegal subscript range: BUFFER.
   ccsds.version = byte(ishft(header[0],-11) )    ; Corrected - but includes 2 extra bits
   ccsds.apid = header[0] and '7FF'x
 
@@ -82,7 +78,7 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
 
   apid = ccsds.apid
 
-  MET = swfo_ccsds_decom_mettime(header,/span)
+  MET = swfo_ccsds_decom_mettime(buffer[offset+0:offset+15])
 
   ccsds.met = met
   ccsds.time = swfo_spc_met_to_unixtime(ccsds.MET)
@@ -113,15 +109,15 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
   ccsds.seqn_group =  ishft(header[1] ,-14)
   ccsds.seqn  =    header[1] and '3FFF'x
 
-  if (ccsds.MET lt 1e5) && (ccsds.apid ne '734'x) then begin ;0x734 is the ground SWEAP ApID (MET=0) tells us when we send command files to the MOC
-    dprint,dlevel=dlevel,verbose=verbose,'Invalid MET: ',MET,' For packet type: ',ccsds.apid
-    ccsds.time = d_nan
-  endif
-
-  if ccsds.MET gt  'FFFFFFF0'x then begin
-    dprint,dlevel=dlevel,verbose=verbose,'MAX MET: ',MET,' For packet type: ',ccsds.apid
-    ccsds.time = d_nan
-  endif
+  ;  if (ccsds.MET lt 1e5) && (ccsds.apid ne '734'x) then begin ;0x734 is the ground SWEAP ApID (MET=0) tells us when we send command files to the MOC
+  ;    dprint,dlevel=dlevel,verbose=verbose,'Invalid MET: ',MET,' For packet type: ',ccsds.apid
+  ;    ccsds.time = d_nan
+  ;  endif
+  ;
+  ;  if ccsds.MET gt  'FFFFFFF0'x then begin
+  ;    dprint,dlevel=dlevel,verbose=verbose,'MAX MET: ',MET,' For packet type: ',ccsds.apid
+  ;    ccsds.time = d_nan
+  ;  endif
 
   if isa(wrap_ccsds) then begin
     ccsds.source_apid = wrap_ccsds.apid

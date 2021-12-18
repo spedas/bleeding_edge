@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-10-29 13:25:06 -0700 (Fri, 29 Oct 2021) $
-; $LastChangedRevision: 30387 $
+; $LastChangedDate: 2021-12-17 09:47:01 -0800 (Fri, 17 Dec 2021) $
+; $LastChangedRevision: 30471 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -43,9 +43,10 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
     gap:  0b }
   str.gap = ccsds.gap
 
-  if debug(3) then begin
+  if debug(4) then begin
+    
     printdat,str
-    printdat,time_string(str.time,/local)
+    dprint,time_string(str.time,/local)
   endif
 
   last_str =str

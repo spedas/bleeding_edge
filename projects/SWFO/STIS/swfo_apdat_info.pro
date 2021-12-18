@@ -1,7 +1,7 @@
 ; +
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-17 02:32:37 -0700 (Tue, 17 Aug 2021) $
-; $LastChangedRevision: 30212 $
+; $LastChangedDate: 2021-12-17 09:47:01 -0800 (Fri, 17 Dec 2021) $
+; $LastChangedRevision: 30471 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
@@ -50,7 +50,7 @@ pro swfo_apdat_info,apid_description,name=name,verbose=verbose,$
   endif
 
   if keyword_set(quick) then begin
-    dprint,'Unexpected APID:',apid_description,dlevel=3
+    dprint,'Unexpected APID:',apid_description,dlevel=4
   endif
 
   if keyword_set(reset) then begin   ; not recommended!

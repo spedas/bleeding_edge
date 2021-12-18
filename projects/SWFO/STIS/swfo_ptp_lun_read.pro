@@ -45,6 +45,7 @@ pro swfo_ptp_lun_read,in_lun,out_lun,info=info,source_dict = source_dict
     fst = fstat(in_lun)
     swfo_apdat_info,current_filename= fst.name
     source_dict.source_info = info    
+    ccsds_buf = !null
     while file_poll_input(in_lun,timeout=0) && ~eof(in_lun) do begin
       readu,in_lun,buf,transfer_count=nb
       nbytes += nb
@@ -112,8 +113,12 @@ pro swfo_ptp_lun_read,in_lun,out_lun,info=info,source_dict = source_dict
     endif
 
     
-    if nbytes ne 0 then msg += string(/print,nbytes,([ptp_buf,ccsds_buf])[0:(nbytes < 32)-1],format='(i6 ," bytes: ", 128(" ",Z02))')  $
-    else msg+= ' No data available'
+    if nbytes ne 0 then begin
+      ;msg += string(/print,nbytes,([ptp_buf,ccsds_buf])[0:(nbytes < 32)-1],format='(i6 ," bytes: ", 128(" ",Z02))')  $
+      ddata = [ptp_buf,ccsds_buf]
+      nb = n_elements(ddata)
+      msg += string(/print,nb,(ddata)[0:(nb < 32)-1],format='(i6 ," bytes: ", 128(" ",Z02))')  
+    endif  else msg+= ' No data available'
 
     dprint,dlevel=5,msg
     info.msg = msg

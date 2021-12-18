@@ -1,10 +1,10 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-18 16:47:46 -0700 (Wed, 18 Aug 2021) $
-; $LastChangedRevision: 30215 $
+; $LastChangedDate: 2021-12-17 09:47:01 -0800 (Fri, 17 Dec 2021) $
+; $LastChangedRevision: 30471 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ptp_file_read.pro $
 ; adding code
 
-pro swfo_ptp_file_read,files,dwait=dwait,no_products=no_products,no_clear=no_clear
+pro swfo_ptp_file_read,files,dwait=dwait,no_products=no_products,no_clear=no_clear,file_type=file_type
 
 
   if not keyword_set(dwait) then   dwait = 10
@@ -16,6 +16,7 @@ pro swfo_ptp_file_read,files,dwait=dwait,no_products=no_products,no_clear=no_cle
   info = {  socket_recorder   }
   info.run_proc = 1
   on_ioerror, nextfile
+  if ~isa(file_type) then file_type = 'ptp_file'
 
   for i=0,n_elements(files)-1 do begin
     info.input_sourcename = files[i]
@@ -27,7 +28,10 @@ pro swfo_ptp_file_read,files,dwait=dwait,no_products=no_products,no_clear=no_cle
     fi = file_info(info.input_sourcename)
     dprint,dlevel=1,'Reading '+file_info_string(info.input_sourcename)+' LUN:'+strtrim(lun,2)
     if lun eq 0 then continue
-    swfo_ptp_lun_read,lun,info=info
+    case file_type of
+      'ptp_file':      swfo_ptp_lun_read,lun,info=info
+      'gse_file':      swfo_gsemsg_lun_read,lun,info=info
+    endcase
     fst = fstat(lun)
     dprint,dlevel=2,'Compression: ',float(fst.cur_ptr)/fst.size
     free_lun,lun

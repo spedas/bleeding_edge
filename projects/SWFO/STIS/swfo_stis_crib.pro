@@ -7,12 +7,11 @@
 ; 
 ; 
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $
-; $LastChangedRevision: 30383 $
+; $LastChangedDate: 2021-12-17 09:47:01 -0800 (Fri, 17 Dec 2021) $
+; $LastChangedRevision: 30471 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
-
 
 
 ; sample plotting procedure
@@ -38,6 +37,10 @@ end
 
 
 
+file_type ='ptp_file'
+file_type ='gse_file'
+
+
 
 ;  Define the "options" dictionary -   Opts
 if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default options
@@ -58,8 +61,10 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = ['2021-10-10', '2021-10-19']   ; Temp margin test data
   opts.file_trange =  ['2021-08-23/4', '2021-08-24/02']   ; This time range includes some good sample data to test robustness of the code - includes a version change
   opts.file_trange = 2  ;   ; set a time range for the last N hours
+  opts.file_trange = ['2021-10-18/14', '2021-10-18/16']   ; Temp margin test data
   opts.stepbystep = 0               ; this flag allows a step by step progress through this crib sheet
   opts.refresh = 0                  ; set to zero to skip this section next time
+  opts.file_type = 'gse_file'
   printdat,opts
   dprint,'The variable "OPTS" is a dictionary of options.  These can be changed by the user as desired.'
   if opts.stepbystep then stop
@@ -95,14 +100,20 @@ if keyword_set(opts.file_trange) then begin
 
   dprint,dlevel=2, "Print the raw data files..."
   dprint,dlevel=2,filenames
-
-  dprint,dlevel=2, "Reading in the data files...."
-  swfo_ptp_file_read,filenames
-  dprint,dlevel=2,'A list of packet types and their statistics should be displayed after all the files have been read.'
-  if opts.stepbystep then stop
+  opts.filenames = filenames
 endif
 
 
+; delete following line after testing
+opts.filenames=['/Users/davin/analysis/socket_128.32.98.57.2028_20211214_181537.dat', '/Users/davin/analysis/socket_128.32.98.57.2028_20211214_182909.dat']
+
+if keyword_set(opts.filenames) then begin
+  dprint,dlevel=2, "Reading in the data files...."
+  
+  swfo_ptp_file_read,opts.filenames,file_type=file_type
+  dprint,dlevel=2,'A list of packet types and their statistics should be displayed after all the files have been read.'
+  if opts.stepbystep then stop
+endif
 
 
 if keyword_set(opts.init_realtime) then begin

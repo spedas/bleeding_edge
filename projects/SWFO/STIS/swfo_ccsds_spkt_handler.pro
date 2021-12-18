@@ -1,10 +1,10 @@
 ;+
-; Purpose: Handle buffer that should contain a single bytes from a ccsds packet
+; Purpose: Handle buffer that should contain a single ccsds packet
 ; Written by Davin Larson
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-24 03:37:21 -0700 (Tue, 24 Aug 2021) $
-; $LastChangedRevision: 30238 $
+; $LastChangedDate: 2021-12-17 09:47:01 -0800 (Fri, 17 Dec 2021) $
+; $LastChangedRevision: 30471 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ccsds_spkt_handler.pro $
 ;-
 

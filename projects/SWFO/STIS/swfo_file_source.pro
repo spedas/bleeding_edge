@@ -34,8 +34,8 @@
   ;  see "FILE_RETRIEVE" for a description of each structure element.
   ;
   ; $LastChangedBy: davin-mac $
-  ; $LastChangedDate: 2021-08-16 02:06:51 -0700 (Mon, 16 Aug 2021) $
-  ; $LastChangedRevision: 30209 $
+  ; $LastChangedDate: 2021-12-17 09:47:01 -0800 (Fri, 17 Dec 2021) $
+  ; $LastChangedRevision: 30471 $
   ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_file_source.pro $
   ;-
 
@@ -58,25 +58,11 @@ function swfo_file_source,default_source,source_key=source_key,set=set,reset=res
   if not keyword_set(psource) then begin    ; Create the default
     dprint,'Define source for: ',source_key
     psource = file_retrieve(/struct)  ; get typical default values.
-    if file_test(psource.local_data_dir+'psp/data/sci/sweap/.master',/regular) then psource.no_server =1  $  ; local directory IS the server directory
+    if file_test(psource.local_data_dir+'swfo/data/sci/stis/.master',/regular) then psource.no_server =1  $  ; local directory IS the server directory
     else begin   ; Files will be downloaded from the web
       psource.remote_data_dir = 'http://sprg.ssl.berkeley.edu/data/'
-      user_pass = ''
+      user_pass = 'stis-test'
       str_element,ex,'USER_PASS',user_pass                 ;  Get user_pass if it was passed in as a keyword
-      if ~keyword_set(user_pass) then begin
-        case strupcase(source_key) of
-          'SWEAP' : user_pass = ssl_password(getenv('SPP_USER_PASS'))
-          'FIELDS': begin
-            if getenv('PSP_STAGING_ID') && getenv('PSP_STAGING_PW') then begin
-              setenv,'FIELDS_USER_PASS='+getenv('PSP_STAGING_ID')+':'+getenv('PSP_STAGING_PW')
-            endif else if getenv('USER') && getenv('PSP_STAGING_PW') then begin
-              setenv,'FIELDS_USER_PASS='+getenv('USER')+':'+getenv('PSP_STAGING_PW')
-            endif
-            user_pass = ssl_password(getenv('FIELDS_USER_PASS'))
-            end
-          else    : user_pass = ssl_password(getenv('SPP_USER_PASS'))
-        endcase        
-      endif
       str_element,/add,psource,'USER_PASS',user_pass
       psource.preserve_mtime = 1
       ;       psource.no_update=1   ; this can be set to 1 only because all files use revision numbers and will not be updated.
