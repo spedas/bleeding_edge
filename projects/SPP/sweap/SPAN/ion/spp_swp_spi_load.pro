@@ -1,12 +1,11 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-12-01 15:22:09 -0800 (Wed, 01 Dec 2021) $
-; $LastChangedRevision: 30445 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2021-12-27 01:31:41 -0800 (Mon, 27 Dec 2021) $
+; $LastChangedRevision: 30477 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_load.pro $
 ; Created by Davin Larson 2018
-;
-;-
+
 pro diagonalize_tensor,tensor,eigen_val,eigen_vec
-  
+
   dim = size(/dimen,tensor)
   np = dim[0]
   tmap = [[0,3,4],[3,1,5],[4,5,2]]
@@ -14,18 +13,15 @@ pro diagonalize_tensor,tensor,eigen_val,eigen_vec
   eig_val= fltarr(3)
   eig_vec= fltarr(3,3)
   for i=0L,np-1 do begin
-    t6 = tensor[i,*]     
+    t6 = tensor[i,*]
     t3x3  = t6[tmap]
     ;p = [[p(0),p(3),p(4)],[p(3),p(1),p(5)],[p(4),p(5),p(2)]]
-
     trired,t3x3,val,vec
     triql,val,vec,t3x3
-    
     s = sort(val)
     p = t3x3
     p= p[*,s]
     val= val[s]
-
     if (val[2]-val[1] gt val[1]-val[0]) then begin
       eig_val[0]= val[2]
       eig_val[1]= val[0]
@@ -37,22 +33,15 @@ pro diagonalize_tensor,tensor,eigen_val,eigen_vec
       eig_val= val
       eig_vec= vec
     endelse
-    
-    
     stop
   endfor
-
-
-
 
 end
 
 
-
-
 pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname_prefix=tname_prefix,save=save,$
-  verbose=verbose,varformat=varformat,fileprefix=fileprefix,overlay=overlay,spcname=spcname, $
-  diag=diag,sc_frame=sc_frame,sc2_frame=sc2_frame,rtn_frame=rtn_frame,magname=magname
+  verbose=verbose,varformat=varformat,fileprefix=fileprefix,overlay=overlay,spcname=spcname,$
+  diag=diag,rtn_frame=rtn_frame,magname=magname,f2_100bps=f2_100bps
 
   if ~keyword_set(level) then level='L3'
   level=strupcase(level)
@@ -106,18 +95,23 @@ pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname
     ;; Convert to TPLOT
     cdf2tplot,files,prefix=prefix,varformat=varformat2,verbose=verbose
     spp_swp_qf,prefix=prefix
-    options,/def,prefix+'VEL'   ,colors='bgr',labels=['Vx','Vy','Vz'],labflag=-1
-    options,/def,prefix+'MAGF_'+['SC','INST'],colors='bgr',labels=['Bx','By','Bz'],labflag=-1
+    options,/def,prefix+'DENS',constant=10.^(indgen(10)-3)
+    options,/def,prefix+'VEL_' +['SC','INST'],colors='bgr',labels=['Vx','Vy','Vz'],labflag=-1,constant=0.
+    options,/def,prefix+'MAGF_'+['SC','INST'],colors='bgr',labels=['Bx','By','Bz'],labflag=-1,constant=0.
+    options,/def,prefix+['','SC_']+'VEL_RTN_SUN',colors='bgr',labels=['V_R','V_T','V_N'],labflag=-1,constant=0.
+    options,/def,prefix+'QUAT_SC_TO_RTN',colors='dbgr',labels=['Q_W','Q_X','Q_Y','Q_Z'],labflag=-1,constant=0.
+    get_data,prefix+'SUN_DIST',time,sun_dist
+    if keyword_set(time) then store_data,prefix+'SUN_DIST_(RSUN)',time,sun_dist/695700d
 
     if keyword_set(overlay) then begin   ; && strmatch(type,'[sa]f??')
-      xyz_to_polar,prefix+'VEL'
-      get_data,prefix+'VEL_mag',time,vel_mag
+      xyz_to_polar,prefix+'VEL_INST'
+      get_data,prefix+'VEL_INST_mag',time,vel_mag
       mass = 1836*511000. / (299792.^2)  ; mass/q of proton
       if strmatch(type,'??0[1a]') then mass= mass*2
       store_data,prefix+'NRG0',time,velocity(vel_mag,mass,/inverse)
       vname_nrg = prefix+['EFLUX_VS_ENERGY','NRG0']
-      vname_th  = prefix+['EFLUX_VS_THETA','VEL_th']
-      vname_phi = prefix+['EFLUX_VS_PHI','VEL_phi']
+      vname_th  = prefix+['EFLUX_VS_THETA','VEL_INST_th']
+      vname_phi = prefix+['EFLUX_VS_PHI','VEL_INST_phi']
 
       if keyword_set(spcname) then begin   ; add SPC data
         if ~isa(spcname,/string) then spcname = 'psp_swp_spc_l3i_vp_moment_SC'
@@ -141,87 +135,63 @@ pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname
           vname_phi = [vname_phi,newname+'_phi']
         endif
       endif
-
-      store_data,prefix+'EFLUX_VS_ENERGY_OVL',data = vname_nrg,dlimit={yrange:[50.,20000.],ylog:1,zlog:1,ystyle:3}
+      store_data,prefix+'EFLUX_VS_ENERGY_OVL',data = vname_nrg,dlimit={yrange:[10.,20000.],ylog:1,zlog:1,ystyle:3}
       store_data,prefix+'EFLUX_VS_THETA_OVL',data =vname_th ,dlimit={yrange:[-60,60],ylog:0,zlog:1,ystyle:3}
       store_data,prefix+'EFLUX_VS_PHI_OVL',data = vname_phi,dlimit={yrange:[90.,190.],ylog:0,zlog:1,ystyle:3}
     endif
 
-    if keyword_set(0) then begin
-;      diag_t,'psp_swp_spi_sf00_L2B_T_TENSOR'
-;      options,'T_diag',colors='bgr',yrange=[0.,150]
-      get_data,'psp_swp_spi_sf00_L2B_MAGF_INST',data=mag
-;      get_data,'Saxis',data=sym
-;      ang = acos(abs(total(mag.y * sym.y,2))/sqrt(total(mag.y ^2,2) )  )  * 180/3.1416
-;      store_data,'angle',mag.x,ang;,dlim={
-       get_data,'psp_swp_spi_sf00_L2B_T_TENSOR',data=ttens
-       diagonalize_tensor, ttens,rotmat,t3
-       sym = rotmat
-     ;  store_data,
- stop
-
-    endif
-
     if keyword_set(diag) then begin
-      diag_t,'psp_swp_spi_sf00_L2B_T_TENSOR'
+      diag_t,'psp_swp_spi_sf00_L2B_T_TENSOR_INST'
       options,'T_diag',colors='bgr',yrange=[0.,150]
       get_data,'psp_swp_spi_sf00_L2B_MAGF_INST',data=mag
       get_data,'Saxis',data=sym
-      ang = acos(abs(total(mag.y * sym.y,2))/sqrt(total(mag.y ^2,2) )  )  * 180/3.1416
+      ang=acos(abs(total(mag.y*sym.y,2))/sqrt(total(mag.y^2,2)))*180/3.1416
       store_data,'angle',mag.x,ang;,dlim={
-   ;   get_data,'psp_swp_spi_sf00_L2B_T_TENSOR',data=ttens
- 
+      get_data,'psp_swp_spi_sf00_L2B_T_TENSOR_INST',data=ttens
+      diagonalize_tensor,ttens,rotmat,t3
     endif
 
-    if keyword_set(SC_frame) || keyword_set(rtn_frame) then begin
-      rot_th = 20. ; rotation angle
-      rotr = [[1,0,0.],[0,cosd(rot_th),sind(rot_th)],[0,-sind(rot_th),cosd(rot_th)]]
-      rel = [[0,-1,0],[0,0,-1],[1,0,0]]    ; effective relabelling of axes
-      RotMat_inst_sc = rel ## rotr ; transformation matrix from ion instrument coordinates TO spacecraft
-      get_data,prefix+'VEL',data = spi_VEL
-      spi_vel.y = rotmat_inst_sc ## spi_vel.y
-      store_data,prefix+'VEL_SC',data = spi_VEL,dlimit={colors:'bgr',labels:['Vx','Vy','Vz'],labflag:-1}
-      if keyword_set(sc_frame) && sc_frame eq 2 then xyz_to_polar,prefix+'VEL_SC'
-    endif
-
-    if keyword_set(SC2_frame) then begin
-      quat_SC2_to_SC = [.5d,.5d,.5d,-.5d]
-      quat_SC_to_SC2 = [.5d,-.5d,-.5d,.5d]
-      if 0 then begin
-        rot_th = 20. ; rotation angle
-        rotr = [[1,0,0.],[0,cosd(rot_th),sind(rot_th)],[0,-sind(rot_th),cosd(rot_th)]]
-        rel = [[0,-1,0],[0,0,-1],[1,0,0]]    ; effective relabelling of axes
-        RotMat_inst_sc = rel ## rotr ; transformation matrix from ion instrument coordinates TO SC Frame
-        print,spice_m2q(rotmat_inst_sc)
-      endif
-      quat_inst_to_sc = [ 0.57922797d  ,   0.40557979d  ,    -0.57922797d ,    0.40557979d]
-      quat_inst_to_sc2 =  qmult(quat_sc_to_sc2,quat_inst_to_sc)
-      get_data,prefix+'VEL',data = spi_VEL
-      spi_vel.y = quaternion_rotation(  spi_vel.y ,quat_inst_to_sc2 , last_index=0)
-      store_data,prefix+'VEL_SC2',data = spi_VEL,dlimit={colors:'bgr',labels:['Vx2','Vy2','Vz2'],labflag:-1}
-      if sc2_frame eq 2 then xyz_to_polar,prefix+'VEL_SC2'
-    endif
-
-    if keyword_set(RTN_frame) then begin
+    if keyword_set(rtn_frame) then begin
+      rot_th=20. ;rotation angle
+      rotr=[[1,0,0.],[0,cosd(rot_th),sind(rot_th)],[0,-sind(rot_th),cosd(rot_th)]]
+      rel=[[0,-1,0],[0,0,-1],[1,0,0]] ;effective relabelling of axes
+      RotMat_inst_sc=rel##rotr ; transformation matrix from ion instrument coordinates TO spacecraft
+      get_data,prefix+'VEL_INST',time,vel_inst
+      vel_sc=rotmat_inst_sc##vel_inst
+      store_data,prefix+'VEL_SC',time,vel_sc,dlimit={colors:'bgr',labels:['Vx','Vy','Vz'],labflag:-1,constant:0.}
+      quat_SC2_to_SC=[.5d,.5d,.5d,-.5d]
+      quat_SC_to_SC2=[.5d,-.5d,-.5d,.5d]
+      ;print,spice_m2q(rotmat_inst_sc)
+      quat_inst_to_sc=[0.57922797d,0.40557979d,-0.57922797d,0.40557979d]
+      quat_inst_to_sc2=qmult(quat_sc_to_sc2,quat_inst_to_sc)
+      vel_sc2=quaternion_rotation(vel_inst,quat_inst_to_sc2,last_index=0)
+      store_data,prefix+'VEL_SC2',time,vel_sc2,dlimit={colors:'bgr',labels:['Vx2','Vy2','Vz2'],labflag:-1,constant:0.}
+      get_data,prefix+'QUAT_SC_TO_RTN',time,quat_SC_to_RTN
+      quat_SC2_to_RTN=qmult(quat_SC_to_RTN,replicate(1,n_elements(time))#quat_SC2_to_SC)
+      store_data,prefix+'QUAT_SC2_TO_RTN',time,quat_SC2_to_RTN,dlim={SPICE_FRAME:'SPP_SC2',colors:'dbgr',constant:0.,labels:['Q_W','Q_X','Q_Y','Q_Z'],labflag:-1}
+      store_data,prefix+'QUAT_SC2_TO_RTN_Euler_angles',time,180/!pi*quaternion_to_euler_angles(quat_SC2_to_RTN),dlimit={colors:'bgr',constant:0.,labels:['Roll','Pitch','Yaw'],labflag:-1,spice_frame:'SPP_SPACECRAFT'}
+      store_data,prefix+'QUAT_RTN_TO_SC2_Euler_angles',time,180/!pi*quaternion_to_euler_angles(qconj(quat_SC2_to_RTN)),dlimit={colors:'bgr',constant:0.,labels:['Roll','Pitch','Yaw'],labflag:-1,spice_frame:'SPP_SPACECRAFT'}
       tplot_quaternion_rotate,prefix+'VEL_SC','SPP_SPACECRAFT_QROT_SPP_RTN',newname=prefix+'VEL_RTN'
-      options,/def,prefix+'VEL_RTN',labels=['V_R','V_T','V_N'],labflag=-1,constant=0
-      add_data,prefix+'VEL_RTN','SPP_VEL_RTN',newname=prefix+'VEL_RTN-SUN',/copy_dlimits
-      if RTN_frame eq 2 then begin
+      options,/def,prefix+'VEL_RTN',labels=['V_R','V_T','V_N'],labflag=-1,constant=0.
+      add_data,prefix+'VEL_RTN','SPP_VEL_RTN_SUN',newname=prefix+'VEL_RTN_SUN',/copy_dlimits
+      if rtn_frame eq 2 then begin
         if ~keyword_set(magname) then magname=prefix+'MAGF_SC'
-        ;magname='PSP_FLD_L2_F2_100bps_MAGi_Average_B_SC_nT'
-        xyz_to_polar,prefix+'VEL_RTN-SUN'
+        if keyword_set(f2_100bps) then magname='PSP_FLD_L2_F2_100bps_MAGi_Average_B_SC_nT'
+        xyz_to_polar,prefix+'VEL_SC'
+        xyz_to_polar,prefix+'VEL_SC2'
+        xyz_to_polar,prefix+'VEL_RTN_SUN'
         xyz_to_polar,magname
         get_data,magname+'_mag',dat=magf
         get_data,prefix+'DENS',dat=dens
         fudge=1. ;tuning the density
         dens2=fudge*interp(dens.y,dens.x,magf.x)
         valfven=21.812*magf.y/sqrt(dens2)
-        store_data,prefix+'VEL_Alfven',magf.x,valfven,dlimits={colors:'b',labels:'V_Alfven',ystyle:3}
-        vspi_valfven=prefix+'VEL_'+['RTN-SUN_mag','Alfven']
-        store_data,prefix+'VEL_OVL',data=vspi_valfven,dlimits={labflag:-1,yrange:[20,2000],ylog:1,ystyle:3}
-        options,/def,prefix+'VEL_RTN-SUN_mag',labels='V_spi',colors='r'
+        store_data,prefix+'VEL_Alfven',magf.x,valfven,dlimits={colors:'b',labels:'V_Alfven',ystyle:3,constant:200.*indgen(10)}
+        vspi_valfven=prefix+'VEL_'+['RTN_SUN_mag','Alfven']
+        store_data,prefix+'VEL_OVL',data=vspi_valfven,dlimits={labflag:-1,yrange:[20,2000],ylog:1,ystyle:3,constant:[100,1000]}
+        options,/def,prefix+'VEL_RTN_SUN_mag',labels='V_spi',colors='r',constant=200.*indgen(10)
         div_data,vspi_valfven[0],vspi_valfven[1]
-        options,vspi_valfven[0]+'/'+vspi_valfven[1],constant=1,yrange=[.1,10],ytitle='Alfven!CMach!CNumber',ylog=1
+        options,/def,vspi_valfven[0]+'/'+vspi_valfven[1],constant=1.,yrange=[.1,10],ytitle='Alfven!CMach!CNumber',ylog=1
       endif
     endif
 

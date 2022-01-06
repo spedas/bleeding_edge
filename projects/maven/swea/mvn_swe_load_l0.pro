@@ -94,8 +94,8 @@
 ;                      to a higher number to see more diagnostic messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-06-04 13:37:10 -0700 (Fri, 04 Jun 2021) $
-; $LastChangedRevision: 30025 $
+; $LastChangedDate: 2022-01-03 09:58:07 -0800 (Mon, 03 Jan 2022) $
+; $LastChangedRevision: 30482 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -233,12 +233,15 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
   if (~tspan_exists) then timespan, trange
 
 ; Initialize SPICE if not already done
-;   The spacecraft clock and leap seconds kernels are required and loaded
-;   even if NOSPICE is set.  The following also checks whether sufficient 
-;   information exists to determine spacecraft position and orientation.
+;   To convert MET to UTC, the spacecraft clock and leap seconds kernels 
+;   are required and loaded even if NOSPICE is set.  If CDRIFT = 0, then
+;   a nominal conversion is performed that ignores spacecraft clock drift,
+;   which can be significantly in error.  The following also checks whether
+;   sufficient information exists to determine spacecraft position and 
+;   orientation.
 
   mvn_spice_stat, summary=sinfo, /silent
-  if (~sinfo.time_exists) then begin
+  if (~sinfo.time_exists and dflg) then begin
     nospice = 0
     spiceinit = 1
   endif

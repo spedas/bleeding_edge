@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson October 2018
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-07-06 20:33:39 -0700 (Tue, 06 Jul 2021) $
-; $LastChangedRevision: 30103 $
+; $LastChangedDate: 2021-12-18 02:19:05 -0800 (Sat, 18 Dec 2021) $
+; $LastChangedRevision: 30472 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/cdf_tools_varinfo__define.pro $
 ;-
 
@@ -92,7 +92,7 @@ function cdf_tools_varinfo::variable_attributes, vname,value
       att['VALIDMAX']    = 90.
     end
     'PHI': begin
-      att['CATDESC']     = 'Azimuth Angle in instrument coordinates''
+      att['CATDESC']     = 'Azimuth Angle in instrument coordinates'
       att['FIELDNAM']    = 'Instrument Phi'
       att['LABLAXIS']    = 'Azimuth Angle'
       att['UNITS']       = 'Degrees'
@@ -100,7 +100,7 @@ function cdf_tools_varinfo::variable_attributes, vname,value
       att['VALIDMAX']    = 360.
     end
     'PHI_VALS': begin
-      att['CATDESC']     = 'Azimuth Angle in instrument coordinates''
+      att['CATDESC']     = 'Azimuth Angle in instrument coordinates'
       att['FIELDNAM']    = 'Instrument Phi'
       att['LABLAXIS']    = 'Azimuth Angle'
       att['UNITS']       = 'Degrees'
@@ -195,9 +195,9 @@ function cdf_tools_varinfo::variable_attributes, vname,value
       att['VALIDMAX']    = 1e5
       att['SCALETYP']    = 'log'
     end
-    'VEL': begin
+    'VEL_INST': begin
       att['CATDESC']     = 'Partial Moment Velocity in Instrument Coordinates'
-      att['FIELDNAM']    = 'Velocity'
+      att['FIELDNAM']    = 'Velocity (Instrument)'
       att['LABLAXIS']    = 'Vx;Vy;Vz'
       att['UNITS']       = 'km/s'
       att['VAR_TYPE']    = 'data'
@@ -205,9 +205,65 @@ function cdf_tools_varinfo::variable_attributes, vname,value
       att['VALIDMAX']    = 10000.
       att['VAR_NOTES']   = 'In instrument frame'
     end
+    'VEL_SC': begin
+      att['CATDESC']     = 'Partial Moment Velocity in Spacecraft Coordinates'
+      att['FIELDNAM']    = 'Velocity (Spacecraft)'
+      att['LABLAXIS']    = 'Vx;Vy;Vz'
+      att['UNITS']       = 'km/s'
+      att['VAR_TYPE']    = 'data'
+      att['VALIDMIN']    = -10000.
+      att['VALIDMAX']    = 10000.
+      att['VAR_NOTES']   = 'In spacecraft frame, spacecraft velocity NOT removed'
+    end
+    'VEL_RTN_SUN': begin
+      att['CATDESC']     = 'Partial Moment Velocity in RTN Coordinates and Sun reference frame'
+      att['FIELDNAM']    = 'Velocity (RTN_SUN)'
+      att['LABLAXIS']    = 'Vx;Vy;Vz'
+      att['UNITS']       = 'km/s'
+      att['VAR_TYPE']    = 'data'
+      att['VALIDMIN']    = -10000.
+      att['VALIDMAX']    = 10000.
+      att['VAR_NOTES']   = 'In Sun frame, spacecraft velocity removed'
+    end
+    'SC_VEL_RTN_SUN': begin
+      att['CATDESC']     = 'Spacecraft Velocity in RTN Coordinates and Sun reference frame'
+      att['FIELDNAM']    = 'Spacecraft Velocity (RTN_SUN)'
+      att['LABLAXIS']    = 'Vx;Vy;Vz'
+      att['UNITS']       = 'km/s'
+      att['VAR_TYPE']    = 'data'
+      att['VALIDMIN']    = -10000.
+      att['VALIDMAX']    = 10000.
+      att['VAR_NOTES']   = 'In Sun frame'
+    end
+    'QUAT_SC_TO_RTN': begin
+      att['CATDESC']     = 'Quaternion for Rotating from Spacecraft to RTN Coordinates'
+      att['FIELDNAM']    = 'Quaternion'
+      att['LABLAXIS']    = 'Q1;Q2;Q3;Q4'
+      att['VAR_TYPE']    = 'data'
+      att['VALIDMIN']    = -1.
+      att['VALIDMAX']    = 1.
+    end
+    'SUN_DIST': begin
+      att['CATDESC']     = 'Spacecraft Distance to the Sun'
+      att['FIELDNAM']    = 'Sun Distance'
+      att['LABLAXIS']    = 'Sun Distance'
+      att['UNITS']       = 'km'
+      att['VAR_TYPE']    = 'data'
+      att['VALIDMIN']    = 0.
+      att['VALIDMAX']    = 1e9
+    end
+    'VENUS_DIST': begin
+      att['CATDESC']     = 'Spacecraft Distance to Venus'
+      att['FIELDNAM']    = 'Venus Distance'
+      att['LABLAXIS']    = 'Venus Distance'
+      att['UNITS']       = 'km'
+      att['VAR_TYPE']    = 'data'
+      att['VALIDMIN']    = 0.
+      att['VALIDMAX']    = 1e9
+    end
     'MAGF_SC': begin
       att['CATDESC']     = 'Magnetic Field in Spacecraft Coordinates'
-      att['FIELDNAM']    = 'Magnetic Field'
+      att['FIELDNAM']    = 'Magnetic Field (Spacecraft)'
       att['LABLAXIS']    = 'Bx;By;Bz'
       att['UNITS']       = 'nT'
       att['VAR_TYPE']    = 'data'
@@ -217,7 +273,7 @@ function cdf_tools_varinfo::variable_attributes, vname,value
     end
     'MAGF_INST': begin
       att['CATDESC']     = 'Magnetic Field in Instrument Coordinates'
-      att['FIELDNAM']    = 'Magnetic Field'
+      att['FIELDNAM']    = 'Magnetic Field (Instrument)'
       att['LABLAXIS']    = 'Bx;By;Bz'
       att['UNITS']       = 'nT'
       att['VAR_TYPE']    = 'data'
@@ -225,9 +281,9 @@ function cdf_tools_varinfo::variable_attributes, vname,value
       att['VALIDMAX']    = 10000.
       att['VAR_NOTES']   = 'In instrument frame'
     end
-    'T_TENSOR': begin
+    'T_TENSOR_INST': begin
       att['CATDESC']     = 'Partial Moment Temperature Tensor in instrument frame'
-      att['FIELDNAM']    = 'Temperature Tensor'
+      att['FIELDNAM']    = 'Temperature Tensor (Instrument)'
       att['LABLAXIS']    = 'Txx;Tyy;Tzz;Txy;Txz;Tyz'
       att['UNITS']       = 'eV'
       att['VAR_TYPE']    = 'data'
@@ -264,10 +320,6 @@ function cdf_tools_varinfo::variable_attributes, vname,value
       att['FILLVAL']     = -1u
       att['VALIDMIN']    = 0u
       att['VALIDMAX']    = -2u
-      att['VAR_NOTES']   = 'The quality flag is a two-byte unsigned integer (UINT2) with its least significant bit (Bit 1) indicating: Counter Overflow, '+$
-        'Bit 2: Snapshot ON, Bit 3: Alternate Energy Table, Bit 4: Spoiler Test, Bit 5: Attenuator Engaged, Bit 6: Highest Archive Rate, '+$
-        'Bit 7: No Targeted Sweep, Bit 8: SPAN-Ion New Mass Table (not applicable to electrons), Bit 9: Over-deflection, Bit 10: Archive Snapshot ON '+$
-        'Bits 11-16: Reserved.'
     end
     'ROTMAT_SC_INST': begin
       att['CATDESC']     = 'Rotation Matrix from Spacecraft to Instrument Coordinates'

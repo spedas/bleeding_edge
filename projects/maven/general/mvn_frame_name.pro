@@ -5,7 +5,9 @@
 ;  recognized by SPICE.  You can omit the leading 'MAVEN_' or
 ;  'IAU_' from the fragment.  Case folded minimum matching is 
 ;  performed.  For example, all of the following are expanded
-;  to 'MAVEN_STATIC': 'maVEn_st', 'sta', 'St'.
+;  to 'MAVEN_STATIC': 'maVEn_st', 'sta', 'St'.  The fragment
+;  can appear anywhere in the full name.  For example, 'LiMb'
+;  is expanded to 'MAVEN_IUVS_LIMB'.
 ;
 ;  'GEO' is accepted as a synonym for 'MARS'.
 ;
@@ -31,8 +33,8 @@
 ;                 null string.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-23 14:07:56 -0700 (Tue, 23 Mar 2021) $
-; $LastChangedRevision: 29812 $
+; $LastChangedDate: 2021-12-22 08:32:33 -0800 (Wed, 22 Dec 2021) $
+; $LastChangedRevision: 30474 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_frame_name.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -73,14 +75,14 @@ function mvn_frame_name, frame, success=success, reset=reset, list=list
 ; Case folded minimum matching for the remainder of the fragment
 
   for j=0,(nframe-1) do begin
-    i = strmatch(flist, ftest[j]+'*', /fold)
+    i = strmatch(flist, '*'+ftest[j]+'*', /fold)
     case (total(i)) of
-       0   : print, "Frame not recognized: ", frame[j]
+       0   : print, "Frame '",frame[j],"' not recognized"
        1   : begin
                frame[j] = (ffull[where(i eq 1)])[0]
                success[j] = 1
              end
-      else : print, "Frame ambiguous: ", frame[j]
+      else : print, "Frame '",frame[j],"' ambiguous: ", ffull[where(i eq 1)]
     endcase
   endfor
 

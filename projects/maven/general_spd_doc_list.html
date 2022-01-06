@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Dec 17 18:16:05 2021.<P>
+<STRONG>Last modified: </STRONG>Wed Jan  5 18:15:54 2022.<P>
  
 <HR>
  
@@ -22,6 +22,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#FILE_EXTRACT_TIME_FROM_NAME">FILE_EXTRACT_TIME_FROM_NAME</A>
 <LI><A HREF="#MVN_ALTITUDE">MVN_ALTITUDE</A>
 <br>Determines the altitude of MAVEN.  Altitude is defined as the distance
+<LI><A HREF="#MVN_EARTHDIR">MVN_EARTHDIR</A>
+<br>Determines the direction of Earth as viewed from Mars in the IAU_MARS
 <LI><A HREF="#MVN_FILE_SOURCE( [DEFAULT_SOURCE] )">
 MVN_FILE_SOURCE( [DEFAULT_SOURCE] )</A>
 <br>Returns a structure that contains all the information (or options) needed to download and return MAVEN data file names.
@@ -82,7 +84,7 @@ MVN_SET_USERPASS,USERNAME,PASSWORD</A>
 <A NAME="MVN_ALTITUDE">
 <H2>MVN_ALTITUDE</H2></A>
 <A HREF="#FILE_EXTRACT_TIME_FROM_NAME">[Previous Routine]</A>
-<A HREF="#MVN_FILE_SOURCE( [DEFAULT_SOURCE] )">[Next Routine]</A>
+<A HREF="#MVN_EARTHDIR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mvn_altitude
@@ -163,9 +165,86 @@ CREATED BY:    David L. Mitchell
 <STRONG>(See <A href="general/mvn_altitude.pro">projects/maven/general/mvn_altitude.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_EARTHDIR">
+<H2>MVN_EARTHDIR</H2></A>
+<A HREF="#MVN_ALTITUDE">[Previous Routine]</A>
+<A HREF="#MVN_FILE_SOURCE( [DEFAULT_SOURCE] )">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_earthdir
+PURPOSE:
+  Determines the direction of Earth as viewed from Mars in the IAU_MARS
+  frame.  This is the same as the sub-Earth point.
+
+  This vector is then rotated into any coordinate frame recognized by
+  SPICE.  See mvn_frame_name for a list.  The default is MAVEN_SPACECRAFT.
+
+  You must have SPICE installed for this routine to work.  This routine will
+  check to make sure SPICE has been initialized and that the loaded kernels
+  cover the specified time range.
+
+USAGE:
+  mvn_earthdir, time
+
+INPUTS:
+       trange:   Time range for calculating the sub-Earth point.
+
+KEYWORDS:
+       DT:       Time resolution (sec).  Default = 1.
+
+       FRAME:    String or string array for specifying one or more frames
+                 to transform the Earth direction into.  Any frame recognized
+                 by SPICE is allowed.  The default is 'MAVEN_SPACECRAFT'.
+                 Other possibilities are: 'MAVEN_APP', 'MAVEN_STATIC', etc.
+                 Type 'mvn_frame_name(/list)' to see a full list of frames.
+                 Minimum matching name fragments (e.g., 'sta', 'swe') are
+                 allowed -- see mvn_frame_name for details.
+
+       ABCORR:   Aberration correction.  Options are:
+
+                     'NONE'  : No correction (default)
+
+                   Receive (photons leave Mars at ET-LT and reach Earth at ET)
+                     'LT'    : One-way light time
+                     'LT+S'  : One-way light time + stellar aberration
+                     'CN'    : Same as 'LT' but with better accuracy
+                     'CN+S'  : Same as 'LT+S' but with better accuracy
+
+                   Transmit (photons leave Earth at ET and reach Mars at ET+LT)
+                     'XLT'   : One-way light time
+                     'XLT+S' : One-way light time + stellar aberration
+                     'XCN'   : Same as 'LT' but with better accuracy
+                     'XCN+S' : Same as 'LT+S' but with better accuracy
+
+                 This only matters in the rotating IAU_Mars frame, where the
+                 correction is ~5 degrees.  For any of the MAVEN frames, setting
+                 ABCORR to 'NONE' provides an accuracy of ~0.01 degree.
+
+       POLAR:    If set, convert the direction to polar coordinates and
+                 store as additional tplot variables.
+                    Phi = atan(y,x)*!radeg  ; [  0, 360]
+                    The = asin(z)*!radeg    ; [-90, +90]
+
+       PANS:     Named variable to hold the tplot variables created.  For the
+                 default frame, this would be 'Earth_IAU_MARS'.
+
+       FORCE:    Ignore the SPICE check and forge ahead anyway.
+
+       SUCCESS:  Returns 1 on normal completion, 0 otherwise.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2022-01-04 18:15:55 -0800 (Tue, 04 Jan 2022) $
+ $LastChangedRevision: 30493 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_earthdir.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="general/mvn_earthdir.pro">projects/maven/general/mvn_earthdir.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_FILE_SOURCE( [DEFAULT_SOURCE] )">
 <H2>MVN_FILE_SOURCE( [DEFAULT_SOURCE] )</H2></A>
-<A HREF="#MVN_ALTITUDE">[Previous Routine]</A>
+<A HREF="#MVN_EARTHDIR">[Previous Routine]</A>
 <A HREF="#MVN_FRAME_NAME">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -223,7 +302,9 @@ PURPOSE:
   recognized by SPICE.  You can omit the leading 'MAVEN_' or
   'IAU_' from the fragment.  Case folded minimum matching is 
   performed.  For example, all of the following are expanded
-  to 'MAVEN_STATIC': 'maVEn_st', 'sta', 'St'.
+  to 'MAVEN_STATIC': 'maVEn_st', 'sta', 'St'.  The fragment
+  can appear anywhere in the full name.  For example, 'LiMb'
+  is expanded to 'MAVEN_IUVS_LIMB'.
 
   'GEO' is accepted as a synonym for 'MARS'.
 
@@ -249,8 +330,8 @@ KEYWORDS:
                  null string.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-03-23 14:07:56 -0700 (Tue, 23 Mar 2021) $
- $LastChangedRevision: 29812 $
+ $LastChangedDate: 2021-12-22 08:32:33 -0800 (Wed, 22 Dec 2021) $
+ $LastChangedRevision: 30474 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_frame_name.pro $
 
 CREATED BY:    David L. Mitchell
@@ -356,10 +437,12 @@ PURPOSE:
   Determines the direction of nadir at the position of the spacecraft in
   one or more coordinate frames.  The results are stored in TPLOT variables.
 
-  You must have SPICE installed for this routine to work.  If SPICE is 
-  already initialized (e.g., mvn_swe_spice_init), this routine will use the 
-  current loadlist.  Otherwise, this routine will try to initialize SPICE
-  based on the current timespan.
+  This vector can be rotated into any coordinate frame recognized by
+  SPICE.  See mvn_frame_name for a list.  The default is MAVEN_SPACECRAFT.
+
+  You must have SPICE installed for this routine to work.  This routine will
+  check to make sure SPICE has been initialized and that the loaded kernels
+  cover the specified time range.
 
 USAGE:
   mvn_nadir, trange
@@ -377,6 +460,8 @@ KEYWORDS:
                  by SPICE is allowed.  The default is 'MAVEN_SPACECRAFT'.
                  Other possibilities are: 'MAVEN_APP', 'MAVEN_STATIC', etc.
                  Type 'mvn_frame_name(/list)' to see a full list of frames.
+                 Minimum matching name fragments (e.g., 'sta', 'swe') are
+                 allowed -- see mvn_frame_name for details.
 
        POLAR:    If set, convert the direction to polar coordinates and
                  store as additional tplot variables.
@@ -386,11 +471,13 @@ KEYWORDS:
        PANS:     Named variable to hold the tplot variables created.  For the
                  default frame, this would be 'Nadir_MAVEN_SPACECRAFT'.
 
+       FORCE:    Ignore the SPICE check and forge ahead anyway.
+
        SUCCESS:  Returns 1 on normal completion, 0 otherwise
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-08-24 15:20:48 -0700 (Tue, 24 Aug 2021) $
- $LastChangedRevision: 30245 $
+ $LastChangedDate: 2022-01-04 18:14:47 -0800 (Tue, 04 Jan 2022) $
+ $LastChangedRevision: 30492 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_nadir.pro $
 
 CREATED BY:    David L. Mitchell
@@ -552,7 +639,7 @@ PURPOSE:
   in this direction, the flow will be in your face.
 
   This vector can be rotated into any coordinate frame recognized by
-  SPICE.  The default is MAVEN_SPACECRAFT.
+  SPICE.  See mvn_frame_name for a list.  The default is MAVEN_SPACECRAFT.
 
   The co-rotation velocity in the IAU_MARS frame as a function of altitude
   (h) and latitude (lat) is:
@@ -565,10 +652,9 @@ PURPOSE:
   altitude range, so winds could result in up to a ~4-deg angular offset of 
   the actual flow from the nominal ram direction.
 
-  You must have SPICE installed for this routine to work.  If SPICE is 
-  already initialized (e.g., mvn_swe_spice_init), this routine will use the 
-  current loadlist.  Otherwise, this routine will try to initialize SPICE
-  based on the current timespan.
+  You must have SPICE installed for this routine to work.  This routine will
+  check to make sure SPICE has been initialized and that the loaded kernels
+  cover the specified time range.
 
 USAGE:
   mvn_ramdir, trange
@@ -603,11 +689,13 @@ KEYWORDS:
 
        RESULT:   Named variable to hold the result structure.
 
+       FORCE:    Ignore the SPICE check and forge ahead anyway.
+
        SUCCESS:  Returns 1 on normal operation, 0 otherwise.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-08-24 15:11:31 -0700 (Tue, 24 Aug 2021) $
- $LastChangedRevision: 30244 $
+ $LastChangedDate: 2022-01-04 18:14:47 -0800 (Tue, 04 Jan 2022) $
+ $LastChangedRevision: 30492 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 
 CREATED BY:    David L. Mitchell
@@ -1046,10 +1134,12 @@ PURPOSE:
   Determines the direction of the Sun at the position of the spacecraft in
   one or more coordinate frames.  The results are stored in TPLOT variables.
 
-  You must have SPICE installed for this routine to work.  If SPICE is 
-  already initialized (e.g., mvn_swe_spice_init), this routine will use the 
-  current loadlist.  Otherwise, this routine will try to initialize SPICE
-  based on the current timespan.
+  This vector can be rotated into any coordinate frame recognized by
+  SPICE.  See mvn_frame_name for a list.  The default is MAVEN_SPACECRAFT.
+
+  You must have SPICE installed for this routine to work.  This routine will
+  check to make sure SPICE has been initialized and that the loaded kernels
+  cover the specified time range.
 
 USAGE:
   mvn_sundir, trange
@@ -1066,6 +1156,8 @@ KEYWORDS:
                  by SPICE is allowed.  The default is 'MAVEN_SPACECRAFT'.
                  Other possibilities are: 'MAVEN_APP', 'MAVEN_STATIC', etc.
                  Type 'mvn_frame_name(/list)' to see a full list of frames.
+                 Minimum matching name fragments (e.g., 'sta', 'swe') are
+                 allowed -- see mvn_frame_name for details.
 
        POLAR:    If set, convert the direction to polar coordinates and
                  store as additional tplot variables.
@@ -1075,11 +1167,13 @@ KEYWORDS:
        PANS:     Named variable to hold the tplot variables created.  For the
                  default frame, this would be 'Sun_MAVEN_SPACECRAFT'.
 
+       FORCE:    Ignore the SPICE check and forge ahead anyway.
+
        SUCCESS:  Returns 1 on normal completion, 0 otherwise.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-08-24 15:20:48 -0700 (Tue, 24 Aug 2021) $
- $LastChangedRevision: 30245 $
+ $LastChangedDate: 2022-01-04 18:14:47 -0800 (Tue, 04 Jan 2022) $
+ $LastChangedRevision: 30492 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_sundir.pro $
 
 CREATED BY:    David L. Mitchell

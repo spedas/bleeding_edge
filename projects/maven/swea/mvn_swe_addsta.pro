@@ -24,8 +24,8 @@
 ;                   variable(s) created.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-11-06 12:20:03 -0700 (Sat, 06 Nov 2021) $
-; $LastChangedRevision: 30403 $
+; $LastChangedDate: 2022-01-03 10:05:18 -0800 (Mon, 03 Jan 2022) $
+; $LastChangedRevision: 30486 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_addsta.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03/18/14
@@ -33,7 +33,7 @@
 pro mvn_swe_addsta, apid=apid, potential=potential, pans=pans, iv_level=iv_level
 
   dopot = keyword_set(potential)
-  if (size(iv_level,/type) eq 0) then iv_level=3
+  if (size(iv_level,/type) eq 0) then iv_level=0
 
 ; Load STATIC data
 

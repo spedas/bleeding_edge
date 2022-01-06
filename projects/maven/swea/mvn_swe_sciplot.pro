@@ -46,6 +46,10 @@
 ;   STATIC:    Include two panels for STATIC data: one mass spectrum, one energy
 ;              spectrum.
 ;
+;   IV_LEVEL:  IV level for STATIC, from 0 to 4.  Values greater than zero fill
+;              in background estimates from up to four different sources.
+;              Currently in development.  Default = 0.
+;
 ;   APID:      Additional STATIC APID's to load.  (Hint: D0, D1 might be useful.)
 ;
 ;   LPW:       Include panel for electron density from LPW data.
@@ -74,8 +78,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-11-06 12:19:31 -0700 (Sat, 06 Nov 2021) $
-; $LastChangedRevision: 30402 $
+; $LastChangedDate: 2022-01-03 10:03:48 -0800 (Mon, 03 Jan 2022) $
+; $LastChangedRevision: 30484 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sciplot.pro $
 ;
 ;-
@@ -83,7 +87,7 @@
 pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lpw, euv=euv, $
                      sc_pot=sc_pot, eph=eph, min_pad_eflux=min_pad_eflux, loadonly=loadonly, $
                      pans=pans, padsmo=padsmo, apid=apid, shape=shape, nadir=nadir, datum=dtm, $
-                     magfull=magfull
+                     magfull=magfull, iv_level=iv_level
 
   compile_opt idl2
 
@@ -93,6 +97,7 @@ pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lp
   if not keyword_set(APID) then apid = 0
   
   if (size(min_pad_eflux,/type) eq 0) then min_pad_eflux = 6.e4
+  if (size(iv_level,/type) eq 0) then iv_level = 0
 
 ; Make sure the datum is valid
 
@@ -233,7 +238,7 @@ pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lp
 ; STATIC data
 
   sta_pan = ''
-  if keyword_set(static) then mvn_swe_addsta, pans=sta_pan, apid=apid
+  if keyword_set(static) then mvn_swe_addsta, pans=sta_pan, apid=apid, iv=iv_level
 
 ; LPW data
 

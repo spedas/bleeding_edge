@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Dec 17 18:16:05 2021.<P>
+<STRONG>Last modified: </STRONG>Wed Jan  5 18:15:54 2022.<P>
  
 <HR>
  
@@ -54,6 +54,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#MVN_STA_IV3_1DAY">MVN_STA_IV3_1DAY</A>
 <br>reads in a start and end date, and reprocesses all of the days in
 <LI><A HREF="#MVN_STA_IV4_1DAY">MVN_STA_IV4_1DAY</A>
+<br>reads in a start and end date, and reprocesses all of the days in
+<LI><A HREF="#MVN_STA_IVALL_1DAY">MVN_STA_IVALL_1DAY</A>
 <br>reads in a start and end date, and reprocesses all of the days in
 <LI><A HREF="#MVN_STA_L2_FILEREVISION">MVN_STA_L2_FILEREVISION</A>
 <br>tracks the revision number for a STATIC L2 file
@@ -1046,7 +1048,7 @@ HISTORY:
 <A NAME="MVN_STA_IV4_1DAY">
 <H2>MVN_STA_IV4_1DAY</H2></A>
 <A HREF="#MVN_STA_IV3_1DAY">[Previous Routine]</A>
-<A HREF="#MVN_STA_L2DAT_STRUCT">[Next Routine]</A>
+<A HREF="#MVN_STA_IVALL_1DAY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -1069,9 +1071,38 @@ HISTORY:
 <STRONG>(See <A href="l2util/mvn_sta_iv4_1day.pro">projects/maven/sta/l2util/mvn_sta_iv4_1day.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_IVALL_1DAY">
+<H2>MVN_STA_IVALL_1DAY</H2></A>
+<A HREF="#MVN_STA_IV4_1DAY">[Previous Routine]</A>
+<A HREF="#MVN_STA_L2DAT_STRUCT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+mvn_sta_ivall_1day
+PURPOSE:
+reads in a start and end date, and reprocesses all of the days in
+the interval. This is a main program, designed to be called from a
+shell script. Processes 1 day at a time, for iv1, then the previous
+day for iv2, then the previous day for iv3, then the previous day for
+iv4. This is done so that for each process both days on either side
+of the given day are processed.
+CALLING SEQUENCE:
+ .run mvn_sta_iv4all1day
+INPUT:
+start_time, end_time are input from files
+mvn_sta_ivall_1day_start_time.txt and
+mvn_sta_ivall_1day_end_time.txt.
+OUTPUT:
+ Temporary Maven STA L2 files, round 1 of background creation
+HISTORY:
+ 2020-10-19, jmm, jimm@ssl.berkeley.edu
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_ivall_1day.pro">projects/maven/sta/l2util/mvn_sta_ivall_1day.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_L2DAT_STRUCT">
 <H2>MVN_STA_L2DAT_STRUCT</H2></A>
-<A HREF="#MVN_STA_IV4_1DAY">[Previous Routine]</A>
+<A HREF="#MVN_STA_IVALL_1DAY">[Previous Routine]</A>
 <A HREF="#MVN_STA_L2EFLUX">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

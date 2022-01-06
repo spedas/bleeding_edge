@@ -6,8 +6,8 @@
 ;
 ;  Author:  Davin Larson
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-07-17 13:24:48 -0700 (Sat, 17 Jul 2021) $
-; $LastChangedRevision: 30131 $
+; $LastChangedDate: 2021-12-18 02:19:05 -0800 (Sat, 18 Dec 2021) $
+; $LastChangedRevision: 30472 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spice/spp_swp_spice.pro $
 ;-
 
@@ -22,7 +22,7 @@ pro spp_swp_spice,trange=trange,res=res,utc=utc,kernels=kernels,download_only=do
   if ~keyword_set(att_frame) then att_frame ='SPP_RTN'
 
   if ~keyword_set(res) then res=60d ;1min resolution
-  if ~keyword_set(angle_error) then angle_error=2. ;error in degrees
+  if ~keyword_set(angle_error) then angle_error=1. ;error in degrees
   trange=timerange(trange) ;get default trange
 
   current_time=systime(1)
@@ -91,9 +91,9 @@ pro spp_swp_spice,trange=trange,res=res,utc=utc,kernels=kernels,download_only=do
     spice_position_to_tplot,body,observer,frame=ref_frame,res=res,scale=rscale,name=nams,trange=trange,/force_objects ;million km
     xyz_to_polar,nams[0],/ph_0_360
     options,/def,nams[0]+'_mag',ysubtitle=ysub,ystyle=3
-    spice_qrot_to_tplot,ref_frame,att_frame,res=res*60.,check_obj=[body,'SUN'],/force_objects,error=angle_error*!pi/180.
-    tplot_quaternion_rotate,'SPP_VEL_(Sun-ECLIPJ2000)','ECLIPJ2000_QROT_SPP_RTN',newname='SPP_VEL_RTN'
-    options,/def,'SPP_VEL_RTN',labels=['V_R','V_T','V_N'],ysubtitle='(km/s)',labflag=-1,constant=0,ystyle=3
+    spice_qrot_to_tplot,ref_frame,att_frame,trange=trange,res=res*60.,check_obj=[body,'SUN'],/force_objects,error=angle_error*!pi/180.
+    tplot_quaternion_rotate,'SPP_VEL_(Sun-ECLIPJ2000)','ECLIPJ2000_QROT_SPP_RTN',newname='SPP_VEL_RTN_SUN'
+    options,/def,'SPP_VEL_RTN_SUN',labels=['V_R','V_T','V_N'],ysubtitle='(km/s)',labflag=-1,constant=0,ystyle=3
 
     if position ge 2 then begin    ; get "constants" of motion for sun
       get_data,nams[0]     ,data=pos
@@ -318,17 +318,16 @@ pro spp_swp_spice,trange=trange,res=res,utc=utc,kernels=kernels,download_only=do
 
   if keyword_set(quaternion) then begin
     spice_qrot_to_tplot,'SPP_SPACECRAFT',att_frame,get_omega=3,res=res,names=tn,trange=trange,check_obj=['SPP_SPACECRAFT','SPP','SUN'],/force_objects,error=angle_error*!pi/180.
-    ;tplot_quaternion_rotate,'SPP_VEL_RTN','SPP_SPACECRAFT_QROT_SPP_RTN'
     get_data,'SPP_SPACECRAFT_QROT_SPP_RTN',dat=dat
-    qtime = dat.x
-    quat_SC_to_RTN = dat.y
-    quat_SC2_to_SC = [.5d,.5d,.5d,-.5d]
-    quat_SC_to_SC2 = [.5d,-.5d,-.5d,.5d]
+    qtime=dat.x
+    quat_SC_to_RTN=dat.y
+    quat_SC2_to_SC=[.5d,.5d,.5d,-.5d]
+    quat_SC_to_SC2=[.5d,-.5d,-.5d,.5d]
 
-    quat_SC2_to_RTN = qmult(quat_SC_to_RTN, replicate(1,n_elements(qtime)) # quat_SC2_to_SC)
+    quat_SC2_to_RTN=qmult(quat_SC_to_RTN, replicate(1,n_elements(qtime)) # quat_SC2_to_SC)
     store_data,'SPP_QROT_SC2>RTN',qtime,quat_SC2_to_RTN,dlim={SPICE_FRAME:'SPP_SC2',colors:'dbgr',constant:0.,labels:['Q_W','Q_X','Q_Y','Q_Z'],labflag:-1}
-    store_data,'SPP_QROT_SC2>RTN_Euler_angles',qtime, 180/!pi*quaternion_to_euler_angles(quat_SC2_to_RTN),dlimit={colors:'bgr',constant:0.,labels:['Roll','Pitch','Yaw'],labflag:-1,spice_frame:'SPP_SPACECRAFT'}
-    store_data,'SPP_QROT_RTN>SC2_Euler_angles',qtime, 180/!pi*quaternion_to_euler_angles(qconj(quat_SC2_to_RTN)),dlimit={colors:'bgr',constant:0.,labels:['Roll','Pitch','Yaw'],labflag:-1,spice_frame:'SPP_SPACECRAFT'}
+    store_data,'SPP_QROT_SC2>RTN_Euler_angles',qtime,180/!pi*quaternion_to_euler_angles(quat_SC2_to_RTN),dlimit={colors:'bgr',constant:0.,labels:['Roll','Pitch','Yaw'],labflag:-1,spice_frame:'SPP_SPACECRAFT'}
+    store_data,'SPP_QROT_RTN>SC2_Euler_angles',qtime,180/!pi*quaternion_to_euler_angles(qconj(quat_SC2_to_RTN)),dlimit={colors:'bgr',constant:0.,labels:['Roll','Pitch','Yaw'],labflag:-1,spice_frame:'SPP_SPACECRAFT'}
     ;tplot
 
     if keyword_set(test) then begin   ; test routines

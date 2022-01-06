@@ -41,7 +41,7 @@
 ;
 ;
 ; $LastChangedBy: hfrey $
-; $LastChangedDate: 2016-02-29 12:10:52 -0800 (Mon, 29 Feb 2016) $
+; $LastChangedDate: 2021-12-29 13:22:57 -0800 (Wed, 29 Dec 2021) $
 ; $LastChangedRevision: Added valid_names output option$
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_ask.pro $
 ;-
@@ -90,7 +90,7 @@ pro thm_load_ask,site = site, datatype = datatype, trange = trange, $
                get_support_data=get_support_data, $
                varnames=varnames, valid_names = valid_names, files=files, $
                varformat=varformat, $
-               vsnames = 'atha fsmi fsim gill kakt luck lyrn rank resu talo', $
+               vsnames = 'atha fsmi fsim gill kakt luck lyrn rank resu sach talo', $
                type_sname = 'site', /all_sites_in_one, $
                vdatatypes = 'ask', $
                vlevels = 'l1', $

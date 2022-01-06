@@ -58,8 +58,8 @@
 ;       VERBOSE:       If set, then print diagnostic information to stdout.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-04-08 16:57:57 -0700 (Mon, 08 Apr 2019) $
-; $LastChangedRevision: 26964 $
+; $LastChangedDate: 2022-01-03 10:01:38 -0800 (Mon, 03 Jan 2022) $
+; $LastChangedRevision: 30483 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_read_l0.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -1066,17 +1066,16 @@ pro mvn_swe_read_l0, filename, trange=trange, cdrift=cdrift, maxbytes=maxbytes, 
         n = pfp_hsk[indx[i]].addr
         print,"Zero MET in PFP HSK: ",n,format='(a,Z)'
       endfor
-      if (n_23 eq 0L) then begin
-        print,"No valid PFP HSK packets!"
-        pfp_hsk = 0
-      endif else pfp_hsk = temporary(pfp_hsk[jndx])
+      if (n_23 gt 0L) then pfp_hsk = temporary(pfp_hsk[jndx]) else pfp_hsk = 0
     endif
     if (tflg) then begin
-      indx = where((pfp_hsk.time ge tstart) and (pfp_hsk.time le tstop), n_23)
       if (n_23 eq 0L) then begin
         print,"No PFP HSK packets within TRANGE."
         pfp_hsk = 0
-      endif else pfp_hsk = temporary(pfp_hsk[indx])
+      endif else begin
+        indx = where((pfp_hsk.time ge tstart) and (pfp_hsk.time le tstop), n_23)
+        pfp_hsk = temporary(pfp_hsk[indx])
+      endelse
     endif
   endif
 
@@ -1087,17 +1086,16 @@ pro mvn_swe_read_l0, filename, trange=trange, cdrift=cdrift, maxbytes=maxbytes, 
         n = swe_hsk[indx[i]].addr
         print,"Zero MET in HSK: ",n,format='(a,Z)'
       endfor
-      if (n_28 eq 0L) then begin
-        print,"No valid HSK packets!"
-        swe_hsk = 0
-      endif else swe_hsk = temporary(swe_hsk[jndx])
+      if (n_28 gt 0L) then swe_hsk = temporary(swe_hsk[jndx]) else swe_hsk = 0
     endif
     if (tflg) then begin
-      indx = where((swe_hsk.time ge tstart) and (swe_hsk.time le tstop), n_28)
       if (n_28 eq 0L) then begin
         print,"No HSK packets within TRANGE."
         swe_hsk = 0
-      endif else swe_hsk = temporary(swe_hsk[indx])
+      endif else begin
+        indx = where((swe_hsk.time ge tstart) and (swe_hsk.time le tstop), n_28)
+        swe_hsk = temporary(swe_hsk[indx])
+      endelse
     endif
   endif
 
@@ -1108,17 +1106,16 @@ pro mvn_swe_read_l0, filename, trange=trange, cdrift=cdrift, maxbytes=maxbytes, 
         n = a0[indx[i]].addr
         print,"Zero MET in A0: ",n,format='(a,Z)'
       endfor
-      if (n_A0 eq 0L) then begin
-        print,"No valid A0 packets!"
-        a0 = 0
-      endif else a0 = temporary(a0[jndx])
+      if (n_A0 gt 0L) then a0 = temporary(a0[jndx]) else a0 = 0
     endif
     if (tflg) then begin
-      indx = where((a0.time ge tstart) and (a0.time le tstop), n_A0)
       if (n_A0 eq 0L) then begin
         print,"No A0 packets within TRANGE."
         a0 = 0
-      endif else a0 = temporary(a0[indx])
+      endif else begin
+        indx = where((a0.time ge tstart) and (a0.time le tstop), n_A0)
+        a0 = temporary(a0[indx])
+      endelse
     endif
   endif
 
@@ -1129,10 +1126,7 @@ pro mvn_swe_read_l0, filename, trange=trange, cdrift=cdrift, maxbytes=maxbytes, 
         n = a1[indx[i]].addr
         print,"Zero MET in A1: ",n,format='(a,Z)'
       endfor
-      if (n_A1 eq 0L) then begin
-        print,"No valid A1 packets!"
-        a1 = 0
-      endif else a1 = temporary(a1[jndx])
+      if (n_A1 gt 0L) then a1 = temporary(a1[jndx]) else a1 = 0
     endif
     if (tflg) then begin
       indx = where((a1.time ge tstart) and (a1.time le tstop), n_A1)
@@ -1150,17 +1144,16 @@ pro mvn_swe_read_l0, filename, trange=trange, cdrift=cdrift, maxbytes=maxbytes, 
         n = a2[indx[i]].addr
         print,"Zero MET in A2: ",n,format='(a,Z)'
       endfor
-      if (n_A2 eq 0L) then begin
-        print,"No valid A2 packets!"
-        a2 = 0
-      endif else a2 = temporary(a2[jndx])
+      if (n_A2 gt 0L) then a2 = temporary(a2[jndx]) else a2 = 0
     endif
     if (tflg) then begin
-      indx = where((a2.time ge tstart) and (a2.time le tstop), n_A2)
       if (n_A2 eq 0L) then begin
         print,"No A2 packets within TRANGE."
         a2 = 0
-      endif else a2 = temporary(a2[indx])
+      endif else begin
+        indx = where((a2.time ge tstart) and (a2.time le tstop), n_A2)
+        a2 = temporary(a2[indx])
+      endelse
     endif
   endif
 
@@ -1171,17 +1164,16 @@ pro mvn_swe_read_l0, filename, trange=trange, cdrift=cdrift, maxbytes=maxbytes, 
         n = a3[indx[i]].addr
         print,"Zero MET in A3: ",n,format='(a,Z)'
       endfor
-      if (n_A3 eq 0L) then begin
-        print,"No valid A3 packets!"
-        a3 = 0
-      endif else a3 = temporary(a3[jndx])
+      if (n_A3 gt 0L) then a3 = temporary(a3[jndx]) else a3 = 0
     endif
     if (tflg) then begin
-      indx = where((a3.time ge tstart) and (a3.time le tstop), n_A3)
       if (n_A3 eq 0L) then begin
         print,"No A3 packets within TRANGE."
         a3 = 0
-      endif else a3 = temporary(a3[indx])
+      endif else begin
+        indx = where((a3.time ge tstart) and (a3.time le tstop), n_A3)
+        a3 = temporary(a3[indx])
+      endelse
     endif
   endif
 
@@ -1192,17 +1184,16 @@ pro mvn_swe_read_l0, filename, trange=trange, cdrift=cdrift, maxbytes=maxbytes, 
         n = a4[indx[i]].addr
         print,"Zero MET in A4: ",n,format='(a,Z)'
       endfor
-      if (n_A4 eq 0L) then begin
-        print,"No valid A4 packets!"
-        a4 = 0
-      endif else a4 = temporary(a4[jndx])
+      if (n_A4 gt 0L) then a4 = temporary(a4[jndx]) else a4 = 0
     endif
     if (tflg) then begin
-      indx = where((a4.time ge tstart) and (a4.time le tstop), n_A4)
       if (n_A4 eq 0L) then begin
         print,"No A4 packets within TRANGE."
         a4 = 0
-      endif else a4 = temporary(a4[indx])
+      endif else begin
+        indx = where((a4.time ge tstart) and (a4.time le tstop), n_A4)
+        a4 = temporary(a4[indx])
+      endelse
     endif
   endif
 
@@ -1213,17 +1204,16 @@ pro mvn_swe_read_l0, filename, trange=trange, cdrift=cdrift, maxbytes=maxbytes, 
         n = a5[indx[i]].addr
         print,"Zero MET in A5: ",n,format='(a,Z)'
       endfor
-      if (n_A5 eq 0L) then begin
-        print,"No valid A5 packets!"
-        a5 = 0
-      endif else a5 = temporary(a5[jndx])
+      if (n_A5 gt 0L) then a5 = temporary(a5[jndx]) else a5 = 0
     endif
     if (tflg) then begin
-      indx = where((a5.time ge tstart) and (a5.time le tstop), n_A5)
       if (n_A5 eq 0L) then begin
         print,"No A5 packets within TRANGE."
         a5 = 0
-      endif else a5 = temporary(a5[indx])
+      endif else begin
+        indx = where((a5.time ge tstart) and (a5.time le tstop), n_A5)
+        a5 = temporary(a5[indx])
+      endelse
     endif
   endif
 
@@ -1234,17 +1224,16 @@ pro mvn_swe_read_l0, filename, trange=trange, cdrift=cdrift, maxbytes=maxbytes, 
         n = a6[indx[i]].addr
         print,"Zero MET in A6: ",n,format='(a,Z)'
       endfor
-      if (n_A6 eq 0L) then begin
-        print,"No valid A6 packets!"
-        a6 = 0
-      endif else a6 = temporary(a6[jndx])
+      if (n_A6 gt 0L) then a6 = temporary(a6[jndx]) else a6 = 0
     endif
     if (tflg) then begin
-      indx = where((a6.time ge tstart) and (a6.time le tstop), n_A6)
       if (n_A6 eq 0L) then begin
         print,"No A6 packets within TRANGE."
         a6 = 0
-      endif else a6 = temporary(a6[indx])
+      endif else begin
+        indx = where((a6.time ge tstart) and (a6.time le tstop), n_A6)
+        a6 = temporary(a6[indx])
+      endelse
     endif
   endif
 

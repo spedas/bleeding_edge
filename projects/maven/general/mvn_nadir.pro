@@ -4,10 +4,12 @@
 ;  Determines the direction of nadir at the position of the spacecraft in
 ;  one or more coordinate frames.  The results are stored in TPLOT variables.
 ;
-;  You must have SPICE installed for this routine to work.  If SPICE is 
-;  already initialized (e.g., mvn_swe_spice_init), this routine will use the 
-;  current loadlist.  Otherwise, this routine will try to initialize SPICE
-;  based on the current timespan.
+;  This vector can be rotated into any coordinate frame recognized by
+;  SPICE.  See mvn_frame_name for a list.  The default is MAVEN_SPACECRAFT.
+;
+;  You must have SPICE installed for this routine to work.  This routine will
+;  check to make sure SPICE has been initialized and that the loaded kernels
+;  cover the specified time range.
 ;
 ;USAGE:
 ;  mvn_nadir, trange
@@ -25,6 +27,8 @@
 ;                 by SPICE is allowed.  The default is 'MAVEN_SPACECRAFT'.
 ;                 Other possibilities are: 'MAVEN_APP', 'MAVEN_STATIC', etc.
 ;                 Type 'mvn_frame_name(/list)' to see a full list of frames.
+;                 Minimum matching name fragments (e.g., 'sta', 'swe') are
+;                 allowed -- see mvn_frame_name for details.
 ;
 ;       POLAR:    If set, convert the direction to polar coordinates and
 ;                 store as additional tplot variables.
@@ -34,22 +38,42 @@
 ;       PANS:     Named variable to hold the tplot variables created.  For the
 ;                 default frame, this would be 'Nadir_MAVEN_SPACECRAFT'.
 ;
+;       FORCE:    Ignore the SPICE check and forge ahead anyway.
+;
 ;       SUCCESS:  Returns 1 on normal completion, 0 otherwise
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-24 15:20:48 -0700 (Tue, 24 Aug 2021) $
-; $LastChangedRevision: 30245 $
+; $LastChangedDate: 2022-01-04 18:14:47 -0800 (Tue, 04 Jan 2022) $
+; $LastChangedRevision: 30492 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_nadir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, success=success
+pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, success=success
 
   @maven_orbit_common
 
   success = 0
+  dopol = keyword_set(polar)
+  noguff = keyword_set(force)
 
-; Check the time range against the ephemeris coverage -- bail if there's a problem
+  if (size(frame,/type) ne 7) then frame = 'MAVEN_SPACECRAFT'
+  frame = mvn_frame_name(frame, success=i)
+  gndx = where(i, count)
+  if (count eq 0) then begin
+    print,"No valid frames."
+    return
+  endif
+  frame = frame[i[gndx]]
+
+; The spacecraft CK is always needed.  Check to see if the APP CK is also needed.
+
+  need_app_ck = max(strmatch(frame,'*STATIC*',/fold)) or $
+                max(strmatch(frame,'*NGIMS*',/fold)) or $
+                max(strmatch(frame,'*IUVS*',/fold)) or $
+                max(strmatch(frame,'*APP*',/fold))
+
+; Get the time range
 
   if (size(trange,/type) eq 0) then begin
     tplot_options, get_opt=topt
@@ -60,6 +84,8 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, success=succe
     endif
   endif
   tmin = min(time_double(trange), max=tmax)
+
+; Check the time range against the ephemeris coverage -- bail if there's a problem
 
   bail = 0
   if (size(state,/type) eq 0) then begin
@@ -81,27 +107,21 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, success=succe
     bail = 1
   endif else begin
     mvn_spice_stat, summary=sinfo, check=[tmin,tmax], /silent
-    if ~(sinfo.all_exist and sinfo.all_check) then begin
+    ok = sinfo.spk_check and sinfo.ck_sc_check
+    if (need_app_ck) then ok = ok and sinfo.ck_app_check
+    if (not ok) then begin
       print,"Insufficient SPICE coverage for the requested time range."
       print,"  -> Reinitialize SPICE to include your time range."
       bail = 1
     endif
   endelse
 
-  if (bail) then return
-
-; Process keywords
-
-  dopol = keyword_set(polar)
-  
-  if (size(frame,/type) ne 7) then frame = 'MAVEN_SPACECRAFT'
-  frame = mvn_frame_name(frame, success=i)
-  gndx = where(i, count)
-  if (count eq 0) then begin
-    print,"No valid frames."
-    return
+  if (noguff) then begin
+    bail = 0
+    print,"  -> Keyword FORCE is set, so trying anyway."
   endif
-  frame = frame[i[gndx]]
+
+  if (bail) then return
 
 ; First store the nadir direction in the IAU_MARS frame
 

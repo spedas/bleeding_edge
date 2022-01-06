@@ -165,8 +165,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-09 08:19:12 -0700 (Mon, 09 Aug 2021) $
-; $LastChangedRevision: 30183 $
+; $LastChangedDate: 2022-01-03 10:06:02 -0800 (Mon, 03 Jan 2022) $
+; $LastChangedRevision: 30487 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -721,6 +721,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
           else : begin
                    erange = minmax(energy)
                    i = where((x ge erange[0]) and (x le erange[1]), count)
+                   penergy = x[i]
                  end
         endcase
       endif
@@ -792,7 +793,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
           oplot,[3,5000],[ylo1[(n_e-1),1],ylo1[(n_e-1),1]],line=2
           oplot,[3,5000],[yhi1[(n_e-1),8],yhi1[(n_e-1),8]],line=2
         endif
-        if (sflg) then oplot,[penergy,penergy],[0,180],line=2
+        if (sflg) then for k=0,(n_elements(penergy)-1) do oplot,[penergy[k],penergy[k]],[0,180],line=2
 
         limits.title = ''
         specplot,x,y2,z2,limits=limits
@@ -805,7 +806,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
           oplot,[3,5000],[ylo2[(n_e-1),1],ylo2[(n_e-1),1]],line=2
           oplot,[3,5000],[yhi2[(n_e-1),8],yhi2[(n_e-1),8]],line=2
         endif
-        if (sflg) then oplot,[penergy,penergy],[0,180],line=2
+        if (sflg) then for k=0,(n_elements(penergy)-1) do oplot,[penergy[k],penergy[k]],[0,180],line=2
         !p.multi = 0
       endif
 
@@ -869,7 +870,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
               oplot,[3,5000],[ylo2[63,1],ylo2[63,1]],line=2
               oplot,[3,5000],[yhi2[63,8],yhi2[63,8]],line=2
             endif
-            if (sflg) then oplot,[penergy,penergy],[0,180],line=2
+            if (sflg) then for k=0,(n_elements(penergy)-1) do oplot,[penergy[k],penergy[k]],[0,180],line=2
 
             if (uflg) then begin
                str_element, rlim, 'ztitle', 'Relative Uncertainty', /add_replace

@@ -11,7 +11,7 @@
 ;    -----------------------------------------------------------------------
 ;    Launch      2013-11-18/18:28  - 
 ;                                   |-> Cruise
-;    MOI         2014-09-22/01:50  -
+;    MOI         2014-09-22/02:24  -
 ;                                   |-> Transition (Commissioning)
 ;    Sci Ops     2014-11-15/00:00  -
 ;                                   |-> Primary Mission    (PDS R1 - R4)
@@ -26,6 +26,8 @@
 ;    Ext Ops 5   2022-10-01/00:00  -
 ;                                   |-> Extended Mission 5 (PDS R33 - R44)
 ;    Ext Ops 6   2025-10-01/00:00  -
+;                                   |-> Extended Mission 6
+;    Ext Ops 7   2028-10-01/00:00  -
 ;    -----------------------------------------------------------------------
 ;
 ;USAGE:
@@ -41,8 +43,8 @@
 ;                   changes in a tplot window (assumed to exist).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-09 08:25:16 -0700 (Mon, 09 Aug 2021) $
-; $LastChangedRevision: 30187 $
+; $LastChangedDate: 2022-01-03 10:04:38 -0800 (Mon, 03 Jan 2022) $
+; $LastChangedRevision: 30485 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -88,7 +90,7 @@ pro mvn_swe_config, list=list, timebar=timebar
 
   t_mtx = [t_mtx, time_double('2014-06-30/17:09:19')]  ; stowed boom matrix upload #2
 
-; ----- MARS ORBIT INSERTION: 2014-09-22/01:50 -----
+; ----- MARS ORBIT INSERTION: 2014-09-22/02:24 (end of burn) -----
 
 ; EEPROM load executed on 2014-09-22.  For SWEA this included:
 ;   - sweep tables 5 and 6 (used for all data from transition onward)
@@ -103,8 +105,10 @@ pro mvn_swe_config, list=list, timebar=timebar
 
 ; SWEA Boom Deploy
 ;   Boom separation nut pyro was fired at 2014-10-10/15:08:14.684
+;     - Spacecraft begins counter rotation to conserve angular momentum (theta = 73.56 deg)
 ;   Boom shows evidence for motion a few seconds later
 ;   Boom fully deployed by about 2014-10-10/15:09:30
+;     - Spacecraft counter rotation stops at 2014-10-10/15:10:00 (theta = 82.64 deg)
 
   t_mtx = [t_mtx, time_double('2014-10-10/15:08:40')]  ; boom deploy, final matrix valid
 
@@ -146,7 +150,7 @@ pro mvn_swe_config, list=list, timebar=timebar
 
   t_mcp = [t_mcp, time_double('2021-06-17/00:00:00')]  ; last SWE-SWI cross calibration
 
-; 2021-10-01/00:00                                     ; beginning of EM-5
+; 2022-10-01/00:00                                     ; beginning of EM-5
 
 ; Gather all the configuration change times into one variable (for timebar).
 

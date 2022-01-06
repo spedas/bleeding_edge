@@ -6,7 +6,7 @@
 ;  in this direction, the flow will be in your face.
 ;
 ;  This vector can be rotated into any coordinate frame recognized by
-;  SPICE.  The default is MAVEN_SPACECRAFT.
+;  SPICE.  See mvn_frame_name for a list.  The default is MAVEN_SPACECRAFT.
 ;
 ;  The co-rotation velocity in the IAU_MARS frame as a function of altitude
 ;  (h) and latitude (lat) is:
@@ -19,10 +19,9 @@
 ;  altitude range, so winds could result in up to a ~4-deg angular offset of 
 ;  the actual flow from the nominal ram direction.
 ;
-;  You must have SPICE installed for this routine to work.  If SPICE is 
-;  already initialized (e.g., mvn_swe_spice_init), this routine will use the 
-;  current loadlist.  Otherwise, this routine will try to initialize SPICE
-;  based on the current timespan.
+;  You must have SPICE installed for this routine to work.  This routine will
+;  check to make sure SPICE has been initialized and that the loaded kernels
+;  cover the specified time range.
 ;
 ;USAGE:
 ;  mvn_ramdir, trange
@@ -57,23 +56,40 @@
 ;
 ;       RESULT:   Named variable to hold the result structure.
 ;
+;       FORCE:    Ignore the SPICE check and forge ahead anyway.
+;
 ;       SUCCESS:  Returns 1 on normal operation, 0 otherwise.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-24 15:11:31 -0700 (Tue, 24 Aug 2021) $
-; $LastChangedRevision: 30244 $
+; $LastChangedDate: 2022-01-04 18:14:47 -0800 (Tue, 04 Jan 2022) $
+; $LastChangedRevision: 30492 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, result=result, success=ok
+pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, result=result, $
+                force=force, success=success
 
   @maven_orbit_common
 
-  ok = 0
+  success = 0
   result = 0
+  dopol = keyword_set(polar)
+  noguff = keyword_set(force)
 
-; Check the time range against the ephemeris coverage -- bail if there's a problem
+  if (size(frame,/type) ne 7) then frame = 'MAVEN_SPACECRAFT'
+  frame = mvn_frame_name(frame, success=flag)
+  bndx = where(flag eq 0, count)
+  if (count gt 0) then frame[bndx] = ''
+
+; The spacecraft CK is always needed.  Check to see if the APP CK is also needed.
+
+  need_app_ck = max(strmatch(frame,'*STATIC*',/fold)) or $
+                max(strmatch(frame,'*NGIMS*',/fold)) or $
+                max(strmatch(frame,'*IUVS*',/fold)) or $
+                max(strmatch(frame,'*APP*',/fold))
+
+; Get the time range
 
   if (size(trange,/type) eq 0) then begin
     tplot_options, get_opt=topt
@@ -84,6 +100,8 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
     endif
   endif
   tmin = min(time_double(trange), max=tmax)
+
+; Check the time range against the ephemeris coverage -- bail if there's a problem
 
   bail = 0
   if (size(state,/type) eq 0) then begin
@@ -105,23 +123,21 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
     bail = 1
   endif else begin
     mvn_spice_stat, summary=sinfo, check=[tmin,tmax], /silent
-    if ~(sinfo.all_exist and sinfo.all_check) then begin
+    ok = sinfo.spk_check and sinfo.ck_sc_check
+    if (need_app_ck) then ok = ok and sinfo.ck_app_check
+    if (not ok) then begin
       print,"Insufficient SPICE coverage for the requested time range."
       print,"  -> Reinitialize SPICE to include your time range."
       bail = 1
     endif
   endelse
 
+  if (noguff) then begin
+    bail = 0
+    print,"  -> Keyword FORCE is set, so trying anyway."
+  endif
+
   if (bail) then return
-
-; Process keywords
-
-  if (size(frame,/type) ne 7) then frame = 'MAVEN_SPACECRAFT'
-  frame = mvn_frame_name(frame, success=flag)
-  bndx = where(flag eq 0, count)
-  if (count gt 0) then frame[bndx] = ''
-
-  dopol = keyword_set(polar)
 
 ; First store the spacecraft velocity in the IAU_MARS (or MSO) frame
 
@@ -241,7 +257,7 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
 
   pans = pans[1:*]
   store_data,'V_sc',/delete
-  ok = 1
+  success = 1
 
   return
 
