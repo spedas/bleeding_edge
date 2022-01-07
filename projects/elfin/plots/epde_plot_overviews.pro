@@ -353,7 +353,8 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   if (size(pef_nflux, /type)) EQ 8 then begin
     tdiff = pef_nflux.x[1:n_elements(pef_nflux.x)-1] - pef_nflux.x[0:n_elements(pef_nflux.x)-2]
     ;idx = where(tdiff GT 90., ncnt)   ; note: 90 seconds is an arbitary time
-    idx = where(tdiff GT 300., ncnt)   ; note: 90 seconds is an arbitary time
+    ;idx = where(tdiff GT 300., ncnt)   ; note: 300 seconds is an arbitary time
+    idx = where(tdiff GT 390., ncnt)
     append_array, idx, n_elements(pef_nflux.x)-1 ;add on last element (end time of last sci zone) to pick up last sci zone
     if ncnt EQ 0 then begin
       ; if ncnt is zero then there is only one science zone for this time frame
@@ -377,7 +378,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           eidx = idx[sz]
         endelse
         ;if (this_e-this_s) lt 60. then continue
-        if (this_e-this_s) lt 15. then continue
+        if (this_e-this_s) lt 5. then continue
         append_array, sz_starttimes, this_s
         append_array, sz_endtimes, this_e
         append_array, sz_min_st, sidx
@@ -437,9 +438,9 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         ; find spin period
         get_data, 'el'+probe+'_pef_spinper', data=spin
         spin_med=median(spin.y)
-        spin_var=variance(spin.y)*100
-        spin_str='Median Spin Period, s: '+strmid(strtrim(string(spin_med), 1),0,4) + ', ' +$
-          strmid(strtrim(string(spin_var), 1),0,4)+'% of Median'
+        spin_var=variance(spin.y)/spin_med*100.
+        spin_str='Median Spin Period T: '+strmid(strtrim(string(spin_med), 1),0,4) + 's, sig=' +$
+          strmid(strtrim(string(spin_var), 1),0,4)+'% T'
       endif
      
       ; handle scaling of y axis

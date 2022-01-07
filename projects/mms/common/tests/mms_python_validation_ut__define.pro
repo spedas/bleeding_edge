@@ -6,8 +6,8 @@
 ;     IDL> mgunit, 'mms_python_validation_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2021-09-15 17:31:02 -0700 (Wed, 15 Sep 2021) $
-; $LastChangedRevision: 30298 $
+; $LastChangedDate: 2022-01-06 10:15:09 -0800 (Thu, 06 Jan 2022) $
+; $LastChangedRevision: 30499 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_python_validation_ut__define.pro $
 ;-
 
@@ -105,7 +105,7 @@ function mms_python_validation_ut::test_fgm_curlometer
   mms_curl, trange=['2015-10-30/05:15:45', '2015-10-30/05:15:48'], fields=fields, positions=positions
   py_script = ["from pyspedas import mms_load_fgm", $
                "from pyspedas.mms import curlometer", $
-               "mms_load_fgm(time_clip=True, data_rate='brst', probe=[1, 2, 3, 4], trange=['2015-10-30/05:15:45', '2015-10-30/05:15:48'])", $
+               "mms_load_fgm(time_clip=True, data_rate='brst', probe=[1, 2, 3, 4], trange=['2015-10-30/05:15:45', '2015-10-30/05:15:48'], get_fgm_ephemeris=True)", $
                "positions = ['mms1_fgm_r_gse_brst_l2', 'mms2_fgm_r_gse_brst_l2', 'mms3_fgm_r_gse_brst_l2', 'mms4_fgm_r_gse_brst_l2']", $
                "fields = ['mms1_fgm_b_gse_brst_l2', 'mms2_fgm_b_gse_brst_l2', 'mms3_fgm_b_gse_brst_l2', 'mms4_fgm_b_gse_brst_l2']", $
                "curlometer(fields=fields, positions=positions)"]
