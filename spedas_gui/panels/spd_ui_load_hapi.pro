@@ -12,8 +12,8 @@
 ;   (needs passowrd, catalog contains non-available datasets, error 500 responses from server).
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2021-12-06 09:58:23 -0800 (Mon, 06 Dec 2021) $
-;$LastChangedRevision: 30450 $
+;$LastChangedDate: 2022-01-07 14:09:51 -0800 (Fri, 07 Jan 2022) $
+;$LastChangedRevision: 30506 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_load_hapi.pro $
 ;-
 
@@ -55,7 +55,7 @@ function hapi_sosmag_capabilities
   if query_response eq '-1' || query_response eq '' then begin
     server_capabilities = ''
   endif else begin
-    server_capabilities = json_parse(query_response)
+    server_capabilities = sosmag_json_parse(query_response)
   endelse
 
   return, server_capabilities
@@ -70,7 +70,7 @@ function hapi_sosmag_datasets
   if query_response eq '-1' || query_response eq '' then begin
     sosmag_datasets = []
   endif else begin
-    catalog = json_parse(query_response)
+    catalog = sosmag_json_parse(query_response)
     available_datasets = catalog['catalog']
     for i=0, n_elements(available_datasets)-1 do begin
       d = available_datasets[i]
@@ -104,7 +104,7 @@ function hapi_sosmag_info, dataset
   if query_response eq '-1' || query_response eq '' then begin
     info_str = ''
   endif else begin
-    info_str = json_parse(query_response)
+    info_str = sosmag_json_parse(query_response)
   endelse  
 
   return, info_str

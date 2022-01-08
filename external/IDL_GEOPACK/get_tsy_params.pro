@@ -20,7 +20,7 @@
 ;           Vp_tvar: tplot variable name storing the proton velocity
 ;           
 ;
-;           model: a string, should be 'T96','T01' or 'T04S' (upper or
+;           model: a string, should be 'T96','T01', 'T04S', 'TS07', 'TA15B' or 'TA15N' (upper or
 ;           lower case)
 ;
 ; KEYWORDS:
@@ -63,9 +63,9 @@
 ;           
 ;          
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-06-18 22:38:35 -0700 (Fri, 18 Jun 2021) $
-; $LastChangedRevision: 30065 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2022-01-07 13:26:45 -0800 (Fri, 07 Jan 2022) $
+; $LastChangedRevision: 30504 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/get_tsy_params.pro $
 ;-
 pro get_tsy_params,dst_tvar,imf_tvar,Np_tvar,Vp_tvar,model,newname=newname,$

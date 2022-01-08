@@ -80,7 +80,7 @@ function elf_get_data_availability, tdate, instrument=instrument, probe=probe, d
   if ~undefined(d) && size(d,/type) EQ 8 then begin
     npts=n_elements(d.x)
     tdiff=d.x[1:npts-1] - d.x[0:npts-2]
-    idx = where(tdiff GT 600., ncnt)   ; note: 600 seconds is an arbitary time
+    idx = where(tdiff GT 390., ncnt)   ; note: 600 seconds is an arbitary time
     append_array, idx, n_elements(d.x)-1 ;add on last element (end time of last sci zone) to pick up last sci zone
 
     if ncnt EQ 0 then begin

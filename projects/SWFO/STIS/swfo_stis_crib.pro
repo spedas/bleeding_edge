@@ -7,8 +7,8 @@
 ; 
 ; 
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-12-17 09:47:01 -0800 (Fri, 17 Dec 2021) $
-; $LastChangedRevision: 30471 $
+; $LastChangedDate: 2022-01-06 19:12:07 -0800 (Thu, 06 Jan 2022) $
+; $LastChangedRevision: 30500 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -62,6 +62,9 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange =  ['2021-08-23/4', '2021-08-24/02']   ; This time range includes some good sample data to test robustness of the code - includes a version change
   opts.file_trange = 2  ;   ; set a time range for the last N hours
   opts.file_trange = ['2021-10-18/14', '2021-10-18/16']   ; Temp margin test data
+  opts.file_trange = !null
+  ;opts.filenames=['socket_128.32.98.57.2028_20211216_004610.dat', 'socket_128.32.98.57.20484_20211216_005158.dat']
+  opts.filenames = ''
   opts.stepbystep = 0               ; this flag allows a step by step progress through this crib sheet
   opts.refresh = 0                  ; set to zero to skip this section next time
   opts.file_type = 'gse_file'
@@ -105,7 +108,10 @@ endif
 
 
 ; delete following line after testing
-opts.filenames=['/Users/davin/analysis/socket_128.32.98.57.2028_20211214_181537.dat', '/Users/davin/analysis/socket_128.32.98.57.2028_20211214_182909.dat']
+
+
+
+;'/Users/davin/analysis/socket_128.32.98.57.2028_20211214_181537.dat', '/Users/davin/analysis/socket_128.32.98.57.2028_20211214_182909.dat']
 
 if keyword_set(opts.filenames) then begin
   dprint,dlevel=2, "Reading in the data files...."

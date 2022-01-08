@@ -34,13 +34,13 @@ pro swfo_init_realtime,filenames=filenames,swfo=swfo, stis=stis , exec=exec0, op
     exec, exec_text = ['tplot,verbose=0,trange=systime(1)+[-1.,.05]*600','timebar,systime(1)'],title=title
   endif
 
-  return
+  ;return
 
   tplot_options,title='Real Time'
 
-  if keyword_set(stis) then swfo_stis_apdat_init,/rt_flag ,/save_flag
+  if keyword_set(stis) then swfo_apdat_info,/rt_flag ,/save_flag
 
-  spp_apdat_info,/rt_Flag,/save_flag,/all
+  ; spp_apdat_info,/rt_Flag,/save_flag,/all
 
   ;spp_swp_set_tplot_options
 

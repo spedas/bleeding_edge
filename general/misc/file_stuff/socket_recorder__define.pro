@@ -39,7 +39,7 @@ function socket_recorder::read_lun
     on_ioerror, stream_error
     eofile =0
     self.time_received = systime(1)
-;    widget_control,wids.base,set_uvalue=self
+    ;    widget_control,wids.base,set_uvalue=self
     buffer= bytarr(self.maxsize)
     b=buffer[0]
     for i=0L,n_elements(buffer)-1 do begin                       ; Read from stream one byte (or value) at a time
@@ -62,7 +62,7 @@ function socket_recorder::read_lun
       self.msg =time_string(self.time_received,tformat='hh:mm:ss - No data available',local=localtime)
       return,!null
     endelse
-    
+
   endif
   return,buffer
 end
@@ -75,9 +75,10 @@ end
 
 
 pro socket_recorder::process_data,buffer
-    exec_proc = self.exec_proc
-    if keyword_set(exec_proc) then call_procedure,exec_proc,buffer,info=self.struct()     $   ; Execute exec_proc here
-    else print,self.msg
+  exec_proc = self.exec_proc
+  exec_proc = self.proc_name()
+  if keyword_set(exec_proc) then call_procedure,exec_proc,buffer,info=self.struct()     $   ; Execute exec_proc here
+  else print,self.msg
 end
 
 
@@ -93,21 +94,22 @@ pro socket_recorder::help
   output_text_id = widget_info(self.base,find_by_uname='OUTPUT_TEXT')
   widget_control, output_text_id, set_value=msg
   printdat,self.struct()
-;  help,self,/obj,output=output
-;  for i=0,n_elements(output)-1 do print,output[i]
+  ;  help,self,/obj,output=output
+  ;  for i=0,n_elements(output)-1 do print,output[i]
 end
 
 
 function socket_recorder::struct
   strct = {socket_recorder}
   struct_assign , self, strct
+;  strct.fileformat = self.get_value('DEST_TEXT')
   return,strct
 END
 
 function socket_recorder::proc_name
   proc_name_id = widget_info(self.base,find_by_uname='PROC_NAME')
   if keyword_set(proc_name_id) then widget_control,proc_name_id,get_value=proc_name   else proc_name = self.exec_proc
-  return, proc_name
+  return, proc_name[0]
 end
 
 
@@ -126,7 +128,8 @@ pro socket_recorder::timed_event
       endif
       self.next_filechange = self.file_timeres * ceil(self.time_received / self.file_timeres)
     endif
-    
+
+    ; Read data from stream until EOF is encountered or no more data is available
     buffer = self.read_lun()
     while( isa(buffer) ) do begin
       if self.dfp then self.write,buffer
@@ -135,7 +138,7 @@ pro socket_recorder::timed_event
       buffer = self.read_lun()
     endwhile
 
-    dprint,dlevel=self.dlevel+3,self.title_num+self.msg,/no_check
+    dprint,dlevel=self.dlevel+1,self.title_num+self.msg,/no_check
 
     widget_control,wids.output_text,set_value=msg
     widget_control,wids.poll_int,get_value = poll_int
@@ -183,7 +186,7 @@ pro socket_recorder::host_button_event
       endif else begin
         dprint,dlevel=self.dlevel,self.title_num+'Connected to server: "'+server_n_port+'"  Unit: '+strtrim(hfp,2)
         self.hfp = hfp
-        WIDGET_CONTROL, self.base, TIMER=1    ; 
+        WIDGET_CONTROL, self.base, TIMER=1    ;
         WIDGET_CONTROL, host_button_id, set_value = 'Disconnect',sensitive=1
       endelse
     end
@@ -214,59 +217,59 @@ end
 
 pro socket_recorder::dest_button_event
 
-dest_button_id = widget_info(self.base,find_by_uname='DEST_BUTTON')
-dest_text_id = widget_info(self.base,find_by_uname='DEST_TEXT')
-host_text_id = widget_info(self.base,find_by_uname='HOST_TEXT')
-host_port_id = widget_info(self.base,find_by_uname='HOST_PORT')
-dest_flush_id = widget_info(self.base,find_by_uname='DEST_FLUSH')
+  dest_button_id = widget_info(self.base,find_by_uname='DEST_BUTTON')
+  dest_text_id = widget_info(self.base,find_by_uname='DEST_TEXT')
+  host_text_id = widget_info(self.base,find_by_uname='HOST_TEXT')
+  host_port_id = widget_info(self.base,find_by_uname='HOST_PORT')
+  dest_flush_id = widget_info(self.base,find_by_uname='DEST_FLUSH')
 
-widget_control,dest_button_id,get_value=status
+  widget_control,dest_button_id,get_value=status
 
-widget_control,dest_text_id, get_value=filename
-case status of
-  'Write to': begin
-    if keyword_set(self.dfp) then begin
-      free_lun,self.dfp
-      self.dfp = 0
-    endif
-    WIDGET_CONTROL, dest_button_id      , set_value = 'Opening' ,sensitive=0
-    widget_control, dest_text_id, get_value = fileformat,sensitive=0
-    self.fileformat = fileformat[0]
-    filename = time_string(systime(1),tformat = self.fileformat)                     ; Substitute time string
-    widget_control,host_text_id, get_value=hostname
-    self.hostname = hostname[0]
-    filename = str_sub(filename,'{HOST}',strtrim(self.hostname,2) )
-    widget_control,host_port_id, get_value=hostport
-    self.hostport = hostport
-    self.filename = str_sub(filename,'{PORT}',strtrim(self.hostport,2) )               ; Substitute port number
-    widget_control, dest_text_id, set_uvalue = fileformat,set_value=self.filename
-    if keyword_set(self.filename) then begin
-      file_open,'u',self.directory+self.filename, unit=dfp,dlevel=4,compress=-1,file_mode='666'o,dir_mode='777'o
-      dprint,dlevel=dlevel,self.title_num+' Opened output file: '+self.directory+self.filename+'   Unit:'+strtrim(dfp)
-      self.dfp = dfp
-      self.filename= self.directory+self.filename
-      widget_control, dest_flush_id, sensitive=1
-    endif
-    ;              wait,1
-    WIDGET_CONTROL, dest_button_id, set_value = 'Close   ',sensitive =1
-  end
-  'Close   ': begin
-    WIDGET_CONTROL, dest_button_id,          set_value = 'Closing',sensitive=0
-    widget_control, dest_flush_id, sensitive=0
-    widget_control, dest_text_id ,get_uvalue= fileformat,get_value=filename
-    if self.dfp gt 0 then begin
-      free_lun,self.dfp
-      self.dfp =0
-    endif
-    ;            wait,1
-    widget_control, dest_text_id ,set_value= self.fileformat,sensitive=1
-    WIDGET_CONTROL, dest_button_id, set_value = 'Write to',sensitive=1
-    dprint,dlevel=self.dlevel,self.title_num+'Closed output file: '+self.filename,no_check_events=1
-  end
-  else: begin
-    dprint,self.title_num+'Invalid State'
-  end
-endcase
+  widget_control,dest_text_id, get_value=filename
+  case status of
+    'Write to': begin
+      if keyword_set(self.dfp) then begin
+        free_lun,self.dfp
+        self.dfp = 0
+      endif
+      WIDGET_CONTROL, dest_button_id      , set_value = 'Opening' ,sensitive=0
+      widget_control, dest_text_id, get_value = fileformat,sensitive=0
+      self.fileformat = fileformat[0]
+      filename = time_string(systime(1),tformat = self.fileformat)                     ; Substitute time string
+      widget_control,host_text_id, get_value=hostname
+      self.hostname = hostname[0]
+      filename = str_sub(filename,'{HOST}',strtrim(self.hostname,2) )
+      widget_control,host_port_id, get_value=hostport
+      self.hostport = hostport
+      self.filename = str_sub(filename,'{PORT}',strtrim(self.hostport,2) )               ; Substitute port number
+      widget_control, dest_text_id, set_uvalue = fileformat,set_value=self.filename
+      if keyword_set(self.filename) then begin
+        file_open,'u',self.directory+self.filename, unit=dfp,dlevel=4,compress=-1,file_mode='666'o,dir_mode='777'o
+        dprint,dlevel=dlevel,self.title_num+' Opened output file: '+self.directory+self.filename+'   Unit:'+strtrim(dfp)
+        self.dfp = dfp
+        self.filename= self.directory+self.filename
+        widget_control, dest_flush_id, sensitive=1
+      endif
+      ;              wait,1
+      WIDGET_CONTROL, dest_button_id, set_value = 'Close   ',sensitive =1
+    end
+    'Close   ': begin
+      WIDGET_CONTROL, dest_button_id,          set_value = 'Closing',sensitive=0
+      widget_control, dest_flush_id, sensitive=0
+      widget_control, dest_text_id ,get_uvalue= fileformat,get_value=filename
+      if self.dfp gt 0 then begin
+        free_lun,self.dfp
+        self.dfp =0
+      endif
+      ;            wait,1
+      widget_control, dest_text_id ,set_value= self.fileformat,sensitive=1
+      WIDGET_CONTROL, dest_button_id, set_value = 'Write to',sensitive=1
+      dprint,dlevel=self.dlevel,self.title_num+'Closed output file: '+self.filename,no_check_events=1
+    end
+    else: begin
+      dprint,self.title_num+'Invalid State'
+    end
+  endcase
 end
 
 
@@ -274,7 +277,7 @@ pro socket_recorder::proc_button_event, on
   proc_name_id = widget_info(self.base,find_by_uname='PROC_NAME')
   proc_button_id = widget_info(self.base,find_by_uname='PROC_BUTTON')
 
-;  if n_elements(on) eq 0 then on =1
+  ;  if n_elements(on) eq 0 then on =1
   if keyword_set(proc_name_id) then widget_control,proc_name_id,get_value=proc_name  $
   else proc_name=''
   if keyword_set(prc_name_id) then  widget_control,proc_name_id,sensitive = (on eq 0)
@@ -284,43 +287,62 @@ end
 
 
 pro socket_recorder::destroy
-    if self.hfp gt 0 then begin
-      fs = fstat(self.hfp)
-      dprint,dlevel=self.dlevel-1,self.title_num+'Closing '+fs.name
-      free_lun,self.hfp
-    endif
-    if self.dfp gt 0 then begin
-      fs = fstat(self.dfp)
-      dprint,dlevel=self.dlevel-1,self.title_num+'Closing '+fs.name
-      free_lun,self.dfp
-    endif
-    WIDGET_CONTROL, self.base, /DESTROY
-    ptr_free,ptr_extract(self.struct())
-    dprint,dlevel=self.dlevel-1,self.title_num+'Widget Closed'
-    return
+  if self.hfp gt 0 then begin
+    fs = fstat(self.hfp)
+    dprint,dlevel=self.dlevel-1,self.title_num+'Closing '+fs.name
+    free_lun,self.hfp
+  endif
+  if self.dfp gt 0 then begin
+    fs = fstat(self.dfp)
+    dprint,dlevel=self.dlevel-1,self.title_num+'Closing '+fs.name
+    free_lun,self.dfp
+  endif
+  WIDGET_CONTROL, self.base, /DESTROY
+  ptr_free,ptr_extract(self.struct())
+  dprint,dlevel=self.dlevel-1,self.title_num+'Widget Closed'
+  return
 end
 
 
 
-PRO socket_recorder_event, ev   ; socket_recorder
- ;   on_error,1
-   uname = widget_info(ev.id,/uname)
-   dprint,uname,ev,/phelp,dlevel=5
-  
-    widget_control, ev.top, get_uvalue= self   ; get the object to make this "look" like a method
+PRO socket_recorder_proc,buffer,info=info
 
-    CASE uname OF                         ;  Timed events
+  n = n_elements(buffer)
+  if n ne 0 then  begin
+    if debug(2) then begin
+      dprint,time_string(info.time_received,prec=3) +''+ strtrim(n_elements(buffer))
+      n = n_elements(buffer) < 512
+      hexprint,buffer[0:n-1]    ;,swap_endian(uint(buffer,0,n_elements(buffer)/2))
+    endif
+  endif else print,format='(".",$)'
+
+  return
+end
+
+
+
+
+
+PRO socket_recorder_event, ev   ; socket_recorder
+  ;   on_error,1
+  uname = widget_info(ev.id,/uname)
+  dprint,uname,ev,/phelp,dlevel=5
+
+  widget_control, ev.top, get_uvalue= self   ; get the object to make this "look" like a method
+
+  ;printdat,ev,uname
+  CASE uname OF                         ;  Timed events
     'BASE':                 self.timed_event
     'HOST_BUTTON' :         self.host_button_event
     'DEST_BUTTON' :         self.dest_button_event
     'DEST_FLUSH': begin
-                            self.dest_button_event   ; close old file
-                            self.dest_button_event   ; open  new file   
-                  end
+      self.dest_button_event   ; close old file
+      self.dest_button_event   ; open  new file
+    end
     'PROC_BUTTON':         self.proc_button_event, ev.select
     'DONE':                self.destroy
     else:                  self.help
-    ENDCASE
+  ENDCASE
 END
 
 
@@ -411,11 +433,11 @@ END
 
 
 function socket_recorder::init,base,title=title,ids=ids,host=host,port=port,fileformat=fileformat,exec_proc=exec_proc, $
-          set_connect=set_connect, set_output=set_output, pollinterval=pollinterval, set_file_timeres=set_file_timeres ,$
-          get_procbutton = get_procbutton,set_procbutton=set_procbutton,directory=directory, $
-          get_filename=get_filename,info=info
-          
-if ~(keyword_set(base) && widget_info(base,/managed) ) then begin
+  set_connect=set_connect, set_output=set_output, pollinterval=pollinterval, set_file_timeres=set_file_timeres ,$
+  get_procbutton = get_procbutton,set_procbutton=set_procbutton,directory=directory, $
+  get_filename=get_filename,info=info
+
+  if ~(keyword_set(base) && widget_info(base,/managed) ) then begin
     if not keyword_set(host) then host = 'localhost'
     if not keyword_set(port) then port = '2022'
     if not keyword_set(title) then title = 'Socket Recorder'
@@ -428,8 +450,8 @@ if ~(keyword_set(base) && widget_info(base,/managed) ) then begin
     ids = create_struct(ids,'host_text',   widget_text(ids.host_base,  uname='HOST_TEXT' ,VALUE=host ,/EDITABLE ,/NO_NEWLINE ) )
     ids = create_struct(ids,'host_port',   widget_text(ids.host_base,  uname='HOST_PORT',xsize=6, value=port   , /editable, /no_newline))
     ids = create_struct(ids,'poll_int' ,   widget_text(ids.host_base,  uname='POLL_INT',xsize=6,value='1',/editable,/no_newline))
-;    if n_elements(directory) ne 0 then $
-;      ids = create_struct(ids,'destdir_text',   widget_text(ids.base,  uname='DEST_DIRECTORY',xsize=40 ,/EDITABLE ,/NO_NEWLINE  ,VALUE=directory))
+    ;    if n_elements(directory) ne 0 then $
+    ;      ids = create_struct(ids,'destdir_text',   widget_text(ids.base,  uname='DEST_DIRECTORY',xsize=40 ,/EDITABLE ,/NO_NEWLINE  ,VALUE=directory))
     ids = create_struct(ids,'dest_base',   widget_base(ids.base,/row, uname='DEST_BASE'))
     ids = create_struct(ids,'dest_button', widget_button(ids.dest_base, uname='DEST_BUTTON',value='Write to'))
     ids = create_struct(ids,'dest_text',   widget_text(ids.dest_base,  uname='DEST_TEXT',xsize=40 ,/EDITABLE ,/NO_NEWLINE  ,VALUE=fileformat))
@@ -438,10 +460,10 @@ if ~(keyword_set(base) && widget_info(base,/managed) ) then begin
     ids = create_struct(ids,'proc_base',   widget_base(ids.base,/row, uname='PROC_BASE'))
     ids = create_struct(ids,'proc_base2',  widget_base(ids.proc_base ,/nonexclusive))
     ids = create_struct(ids,'proc_button', widget_button(ids.proc_base2,uname='PROC_BUTTON',value='Procedure:'))
- ;   ids = create_struct(ids,'proc_name',   widget_text(ids.proc_base,xsize=35, uname='PROC_NAME', value = keyword_set(exec_proc) ? exec_proc :'exec_proc_template',/editable, /no_newline))
+    ids = create_struct(ids,'proc_name',   widget_text(ids.proc_base,xsize=35, uname='PROC_NAME', value = keyword_set(exec_proc) ? exec_proc :'socket_recorder_proc',/editable, /no_newline))
     ids = create_struct(ids,'done',        WIDGET_BUTTON(ids.proc_base, VALUE='Done', UNAME='DONE'))
     title_num = title+' ('+strtrim(ids.base,2)+'): '
-    
+
     self.wids = ptr_new(ids)
     self.hostname = HOST
     self.hostport = port
@@ -453,41 +475,41 @@ if ~(keyword_set(base) && widget_info(base,/managed) ) then begin
     self.dlevel = 2
     self.isasocket=1
     self.maxsize = 2UL^23
-        
-;    info.buffer_ptr = ptr_new( bytarr( info.buffersize ) )
+
+    ;    info.buffer_ptr = ptr_new( bytarr( info.buffersize ) )
     WIDGET_CONTROL, self.base, SET_UVALUE=self
     WIDGET_CONTROL, self.base, /REALIZE
     widget_control, self.base, base_set_title=self.title_num
     XMANAGER, 'socket_recorder', self.base,/no_block
     dprint,dlevel=dlevel,self.title_num+'Widget started'
     base = self.base
-endif else begin
+  endif else begin
     widget_control, base, get_uvalue= info   ; get all widget ID's
     ids = info.wids
-endelse
-;if size(/type,exec_proc) eq 7 then    widget_control,ids.proc_name,set_value=exec_proc
-if size(/type,exec_proc) eq 7 then self.exec_proc = exec_proc
-if size(/type,destination) eq 7 then  widget_control,ids.dest_text,set_value=destination
-if size(/type,host) eq 7 then  widget_control,ids.host_text,set_value=host
-if n_elements(port) eq 1 then  widget_control,ids.host_port,set_value=strtrim(port,2)
-if n_elements(pollinterval) ne 0 then widget_control,ids.poll_int,set_value=strtrim(pollinterval,2)
-if n_elements(set_output)  eq 1 && (keyword_set(info.dfp) ne keyword_set(set_output )) then socket_recorder_event, { id:ids.dest_button, top:ids.base }
-if n_elements(set_connect) eq 1 && (keyword_set(info.hfp) ne keyword_set(set_connect)) then socket_recorder_event, { id:ids.host_button, top:ids.base }
-if n_elements(set_procbutton) eq 1 then begin
-  widget_control,ids.proc_button,set_button=set_procbutton
-  socket_recorder_event, { top:ids.base, id:ids.proc_button, select: keyword_set(set_procbutton) }
-endif
-if n_elements(set_file_timeres) then begin
-  self.file_timeres = set_file_timeres
-endif
-if n_elements(directory) then begin
-  self.directory = directory
-endif
-get_procbutton = widget_info(ids.proc_button,/button_set)
-;widget_control,ids.dest_text,get_value=get_filename
-get_filename = keyword_set(self.dfp) ? self.filename : ''
-widget_control, base, set_uvalue= self
-return,1
+  endelse
+  ;if size(/type,exec_proc) eq 7 then    widget_control,ids.proc_name,set_value=exec_proc
+  if size(/type,exec_proc) eq 7 then self.exec_proc = exec_proc
+  if size(/type,destination) eq 7 then  widget_control,ids.dest_text,set_value=destination
+  if size(/type,host) eq 7 then  widget_control,ids.host_text,set_value=host
+  if n_elements(port) eq 1 then  widget_control,ids.host_port,set_value=strtrim(port,2)
+  if n_elements(pollinterval) ne 0 then widget_control,ids.poll_int,set_value=strtrim(pollinterval,2)
+  if n_elements(set_output)  eq 1 && (keyword_set(info.dfp) ne keyword_set(set_output )) then socket_recorder_event, { id:ids.dest_button, top:ids.base }
+  if n_elements(set_connect) eq 1 && (keyword_set(info.hfp) ne keyword_set(set_connect)) then socket_recorder_event, { id:ids.host_button, top:ids.base }
+  if n_elements(set_procbutton) eq 1 then begin
+    widget_control,ids.proc_button,set_button=set_procbutton
+    socket_recorder_event, { top:ids.base, id:ids.proc_button, select: keyword_set(set_procbutton) }
+  endif
+  if n_elements(set_file_timeres) then begin
+    self.file_timeres = set_file_timeres
+  endif
+  if n_elements(directory) then begin
+    self.directory = directory
+  endif
+  get_procbutton = widget_info(ids.proc_button,/button_set)
+  ;widget_control,ids.dest_text,get_value=get_filename
+  get_filename = keyword_set(self.dfp) ? self.filename : ''
+  widget_control, base, set_uvalue= self
+  return,1
 
 END
 
@@ -497,7 +519,10 @@ END
 
 pro socket_recorder__define
   dummy = {socket_recorder, $
-    inherits idl_object, $
+    inherits generic_object, $
+    ;inherits idl_object, $
+    ;verbose:0, $
+    ;dlevel: 0, $
     base:0L ,$
     wids:ptr_new(), $
     hostname:'',$
@@ -520,13 +545,12 @@ pro socket_recorder__define
     buffersize:0L, $
     buffer_ptr: ptr_new(),   $
     pollinterval:0., $
-    verbose:0, $
-    dlevel: 0, $
     exec_proc: '', $
     exec_proc_ptr: ptr_new(), $
     last_time: 0d, $
     total_bytes: 0UL, $
     process_rate: 0d, $
+    user_dict: obj_new(),  $
     run_proc:0 }
 
 end

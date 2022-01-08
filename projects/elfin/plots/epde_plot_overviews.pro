@@ -378,7 +378,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           eidx = idx[sz]
         endelse
         ;if (this_e-this_s) lt 60. then continue
-        if (this_e-this_s) lt 5. then continue
+        if (this_e-this_s) lt 15. then continue
         append_array, sz_starttimes, this_s
         append_array, sz_endtimes, this_e
         append_array, sz_min_st, sidx
@@ -424,7 +424,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         0: phase_msg = 'Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Good Fit'
         1: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Bad Fit'
         2: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', No Fit'
-        else: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', No Fit'
+        else: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Bad Fit'
       endcase 
    
       spin_str=''
