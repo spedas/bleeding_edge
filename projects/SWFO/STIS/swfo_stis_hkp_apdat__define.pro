@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-01-06 19:12:07 -0800 (Thu, 06 Jan 2022) $
-; $LastChangedRevision: 30500 $
+; $LastChangedDate: 2022-01-08 18:24:07 -0800 (Sat, 08 Jan 2022) $
+; $LastChangedRevision: 30508 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_hkp_apdat__define.pro $
 
 
@@ -200,7 +200,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
 
   if 0 then begin
     printdat,str,/hex
-    printdat,time_string(str.time,/local)
+    dprint,time_string(str.time,/local)
   endif
 
   return,str

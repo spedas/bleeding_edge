@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-12-17 09:47:01 -0800 (Fri, 17 Dec 2021) $
-; $LastChangedRevision: 30471 $
+; $LastChangedDate: 2022-01-08 18:24:07 -0800 (Sat, 08 Jan 2022) $
+; $LastChangedRevision: 30508 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -8,10 +8,10 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   common swfo_stis_sci_com4, lastdat, last_str
   ccsds_data = swfo_ccsds_data(ccsds)
 
-  if debug(5) then begin
-    dprint,dlevel=4,'SST',ccsds.pkt_size, n_elements(ccsds_data), ccsds.apid
-    hexprint,ccsds_data[0:31]
-    hexprint,swfo_data_select(ccsds_data,80,8)
+  if debug(3) then begin
+    dprint,dlevel=2,'SST',ccsds.pkt_size, n_elements(ccsds_data), ccsds.apid,'  ', time_string(ccsds.time)
+    hexprint,ccsds_data
+    ;hexprint,swfo_data_select(ccsds_data,80,8)
   endif
 
   if n_elements(ccsds_data) eq 20+256 then begin ;log-compressed science packets

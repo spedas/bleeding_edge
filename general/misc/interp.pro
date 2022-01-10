@@ -27,10 +27,10 @@
 ;CREATED BY:	Davin Larson  4-30-96
 ;FILE:  interp.pro
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-11-16 15:34:13 -0800 (Tue, 16 Nov 2021) $
-; $LastChangedRevision: 30426 $
+; $LastChangedDate: 2022-01-08 18:24:07 -0800 (Sat, 08 Jan 2022) $
+; $LastChangedRevision: 30508 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/interp.pro $
-; $ID: $
+; $Id: interp.pro 30508 2022-01-09 02:24:07Z davin-mac $
 ;-
 function interp,y,x,u,index=i,no_check_monotonic=ch_mon,no_extrapolate=no_extrap,interp_threshold=int_th, $
   ignore_nan=ignore_nan,last_value=last_value,missing = missing,xlog=xlog,ylog=ylog
@@ -94,7 +94,7 @@ function interp,y,x,u,index=i,no_check_monotonic=ch_mon,no_extrapolate=no_extrap
     dx = x-shift(x,1)
     dx[0] = 0
     bad = where(dx lt 0,c)
-    if c ne 0 then dprint,dlevel=2,'Warning: Data not monotonic!'
+    if c ne 0 then dprint,dlevel=3,'Warning: Data not monotonic!'
   endif
 
   if keyword_set(int_th) then begin

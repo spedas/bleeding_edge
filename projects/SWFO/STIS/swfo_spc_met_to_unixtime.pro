@@ -8,13 +8,13 @@
 ; This routine is in the process of being modified to use SPICE Kernels to correct for clock drift as needed.
 ; Author: Davin Larson
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-16 02:06:51 -0700 (Mon, 16 Aug 2021) $
-; $LastChangedRevision: 30209 $
+; $LastChangedDate: 2022-01-08 18:24:07 -0800 (Sat, 08 Jan 2022) $
+; $LastChangedRevision: 30508 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_spc_met_to_unixtime.pro $
 ;-
 function swfo_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=correct_clockdrift,reset=reset,ephemeris_time=et,kernels=kernels  ;,prelaunch = prelaunch
 
-  common swfo_spc_met_to_unixtime_com, cor_clkdrift, icy_installed, kernel_verified, time_verified, sclk, tls
+  common swfo_spc_met_to_unixtime_com2, cor_clkdrift, icy_installed, kernel_verified, time_verified, sclk, tls,epoch,last_met
 
   ;Do not Set clockdrift by default
   if n_elements(correct_clockdrift) eq 1 then begin
@@ -48,9 +48,19 @@ function swfo_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=corre
   endif    ;else cor_clkdrift = 0b ;need to set this to avoid crash at line 66, jmm, 22-sep-2014
 
 
-  if n_elements(input) eq 0 then message,'Must provide input'
-  epoch =  1262304000d
-  epoch =  1262304000d -3  ;  '2010-1-1'  add 3 leap seconds
+  if n_elements(epoch) eq 0 then begin
+    epoch =  1262304000d
+    epoch =  time_double('2010-1-1') -3  ;  '2010-1-1'  add 3 leap seconds
+    epoch =  time_double('1958-1-1')
+    ;epoch = 0
+  endif
+  
+  if n_elements(input) eq 0 then begin
+    dprint,'Must provide input';   ;reseting the epoch
+    epoch = systime(1) - last_met
+    dprint,'Epoch set to: '+time_string(epoch)
+    return,epoch
+  endif 
 
   if keyword_set(reverse) then begin
     if n_params() ge 1 then unixtime = input
@@ -75,6 +85,10 @@ function swfo_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=corre
   endif
 
   met = input
+  last_met = met
+  if epoch eq 0 then begin
+    epoch = systime(1) - met
+  endif
   if ~cor_clkdrift then begin
     unixtime =  met +  epoch
   endif else begin
