@@ -41,7 +41,7 @@ function get_elf_science_zone_start_end, trange=trange, probe=probe, instrument=
    ; find plots by science zone
    if (size(pef_nflux, /type)) EQ 8 then begin
       tdiff = pef_nflux.x[1:n_elements(pef_nflux.x)-1] - pef_nflux.x[0:n_elements(pef_nflux.x)-2]
-      idx = where(tdiff GT 390., ncnt)   ; note: 6.5 mintutes ;90 seconds is an arbitary time
+      idx = where(tdiff GT 270., ncnt)   ; note: 6.5 mintutes ;90 seconds is an arbitary time
       append_array, idx, n_elements(pef_nflux.x)-1 ;add on last element (end time of last sci zone) to pick up last sci zone
       if ncnt EQ 0 then begin
         sz_starttimes=[pef_nflux.x[0]]

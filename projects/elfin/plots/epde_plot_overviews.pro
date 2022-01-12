@@ -354,7 +354,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     tdiff = pef_nflux.x[1:n_elements(pef_nflux.x)-1] - pef_nflux.x[0:n_elements(pef_nflux.x)-2]
     ;idx = where(tdiff GT 90., ncnt)   ; note: 90 seconds is an arbitary time
     ;idx = where(tdiff GT 300., ncnt)   ; note: 300 seconds is an arbitary time
-    idx = where(tdiff GT 390., ncnt)
+    idx = where(tdiff GT 270., ncnt)
     append_array, idx, n_elements(pef_nflux.x)-1 ;add on last element (end time of last sci zone) to pick up last sci zone
     if ncnt EQ 0 then begin
       ; if ncnt is zero then there is only one science zone for this time frame
