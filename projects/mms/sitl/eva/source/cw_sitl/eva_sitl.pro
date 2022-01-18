@@ -748,7 +748,8 @@ END
 ;-----------------------------------------------------------------------------
 
 FUNCTION eva_sitl, parent, $
-  UVALUE = uval, UNAME = uname, TAB_MODE = tab_mode, TITLE=title,XSIZE = xsize, YSIZE = ysize
+  UVALUE = uval, UNAME = uname, TAB_MODE = tab_mode, TITLE=title,XSIZE = xsize, YSIZE = ysize, $
+  dash_ysize = dash_ysize
   compile_opt idl2
   ;@xtplot_com.pro
 
@@ -824,7 +825,7 @@ FUNCTION eva_sitl, parent, $
 
   bsAction = widget_base(subbase,/COLUMN,/frame)
   ;#####################################################################
-  str_element,/add,state,'drDash', widget_draw(bsAction,graphics_level=2,xsize=xsize-20,ysize=150,/expose_event)
+  str_element,/add,state,'drDash', widget_draw(bsAction,graphics_level=2,xsize=xsize-20,ysize=dash_ysize,/expose_event)
   ;#####################################################################
 
   bsAction0 = widget_base(bsAction,/COLUMN,space=0,ypad=0, SENSITIVE=0)

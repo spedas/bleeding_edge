@@ -9,8 +9,8 @@
 ;
 ;
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2020-05-17 16:06:55 -0700 (Sun, 17 May 2020) $
-; $LastChangedRevision: 28696 $
+; $LastChangedDate: 2022-01-17 11:38:52 -0800 (Mon, 17 Jan 2022) $
+; $LastChangedRevision: 30517 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/eva.pro $
 PRO eva_event, event
   @tplot_com
@@ -124,8 +124,14 @@ PRO eva
   ;----------------------
   ; GENERAL SETTING (FOR LAYOUT)
   ;----------------------
+  xsize_default = 350
+  dash_ysize    = 150
+  if(!version.os_family eq 'Windows')then begin
+    xsize_default = 600
+    dash_ysize    = 200
+  endif
   ;###############################################
-  str_element,/add,wid,'CPWIDTH_DEFAULT',350
+  str_element,/add,wid,'CPWIDTH_DEFAULT',xsize_default
   str_element,/add,wid,'BASEPOS_DEFAULT',0
   ;###############################################
   cfg = mms_config_read()
@@ -143,7 +149,7 @@ PRO eva
   ;---------------------------------
   ;  SITL
   ;---------------------------------
-  str_element,/add,wid,'sitl', eva_sitl(baseTab,xsize=cpwidth);330); SITL MODULE
+  str_element,/add,wid,'sitl', eva_sitl(baseTab,xsize=cpwidth,dash_ysize=dash_ysize); SITL MODULE
 
   ;---------------------------------
   ;  SITL (Uplink)

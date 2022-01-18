@@ -3,8 +3,8 @@
 ; activate = 2; sensitive (initialize)
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2020-05-19 21:49:21 -0700 (Tue, 19 May 2020) $
-; $LastChangedRevision: 28715 $
+; $LastChangedDate: 2022-01-17 13:09:19 -0800 (Mon, 17 Jan 2022) $
+; $LastChangedRevision: 30518 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_update_board.pro $
 ;
 PRO eva_sitl_update_board, state, activate
@@ -77,10 +77,16 @@ PRO eva_sitl_update_board, state, activate
 
     
     ;///// MAIN VIEW /////////////////////////////////
+    myfontL_default = 18
+    myfont_default = 12
+    if(!version.os_family eq 'Windows')then begin
+      myfontL_default = 14
+      myfont_default = 10
+    endif
     
     myview   = obj_new('IDLgrView',VIEWPLANE_RECT=[0,0,1,1], COLOR=cwindow)
-    myfont   = obj_new('IDLgrFont', 'Helvetica*bold')
-    myfontL  = obj_new('IDLgrFont', 'Helvetica*bold',SIZE=18)
+    myfont   = obj_new('IDLgrFont', 'Helvetica*bold',SIZE=myfont_default)
+    myfontL  = obj_new('IDLgrFont', 'Helvetica*bold',SIZE=myfontL_default)
     mymodel  = obj_new('IDLgrModel')
     mymodel2 = obj_new('IDLgrModel')
     

@@ -10,8 +10,8 @@
 ;       Yuki Harada on 2018-05-11
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-05-10 19:25:52 -0700 (Thu, 10 May 2018) $
-; $LastChangedRevision: 25196 $
+; $LastChangedDate: 2022-01-16 20:35:30 -0800 (Sun, 16 Jan 2022) $
+; $LastChangedRevision: 30515 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_mom_calc.pro $
 ;-
 
@@ -22,6 +22,7 @@ pro kgy_mom_calc, trange=trange, sensor=sensor, cntcorr=cntcorr, infoangle=infoa
 if size(sensor,/type) eq 0 then sensor=[0,1,2,3]
 if size(cntcorr,/type) eq 0 then cntcorr = 1 ;- count correction by default
 if size(infoangle,/type) eq 0 then infoangle = 1
+if size(conv16x64to4x16,/type) eq 0 then conv16x64to4x16 = 1
 tr = timerange(trange)
 
 for is=0,n_elements(sensor)-1 do begin ;- loop through sensors
@@ -123,5 +124,11 @@ if keyword_set(temperature) then $
 
 endfor                          ;- is
 
+print,''
+print,'=== Warning ==='
+print,'This routine is still experimental and the results may include significant errors.'
+print,'Please contact PI (Y. Saito) if you are to use PACE velocity moment data for publication.'
+print,'==============='
+print,''
 
 end
