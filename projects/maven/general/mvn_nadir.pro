@@ -43,8 +43,8 @@
 ;       SUCCESS:  Returns 1 on normal completion, 0 otherwise
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-01-04 18:14:47 -0800 (Tue, 04 Jan 2022) $
-; $LastChangedRevision: 30492 $
+; $LastChangedDate: 2022-01-17 20:38:46 -0800 (Mon, 17 Jan 2022) $
+; $LastChangedRevision: 30519 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_nadir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -117,8 +117,8 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, 
   endelse
 
   if (noguff) then begin
+    if (bail) then print,"  -> Keyword FORCE is set, so trying anyway."
     bail = 0
-    print,"  -> Keyword FORCE is set, so trying anyway."
   endif
 
   if (bail) then return
@@ -166,6 +166,7 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, 
     options,pname,'colors',[2,4,6]
     options,pname,'labels',labels
     options,pname,'labflag',1
+    options,pname,spice_frame=to_frame,spice_master_frame='MAVEN_SPACECRAFT'
     pans = [pans, pname]
 
     if (dopol) then begin
@@ -177,6 +178,7 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, 
       options,the_name,'ytitle','Nadir The!c'+fname
       options,the_name,'ynozero',1
       options,the_name,'psym',3
+      options,the_name,spice_frame=to_frame
 
       phi_name = 'Nadir_' + fname + '_Phi'
       store_data,phi_name,data=phi
@@ -186,6 +188,7 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, 
       options,phi_name,'yminor',3
       options,phi_name,'ynozero',1
       options,phi_name,'psym',3
+      options,phi_name,spice_frame=to_frame
 
       pans = [pans, the_name, phi_name]
     endif

@@ -61,8 +61,8 @@
 ;       SUCCESS:  Returns 1 on normal operation, 0 otherwise.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-01-04 18:14:47 -0800 (Tue, 04 Jan 2022) $
-; $LastChangedRevision: 30492 $
+; $LastChangedDate: 2022-01-17 20:38:46 -0800 (Mon, 17 Jan 2022) $
+; $LastChangedRevision: 30519 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -133,8 +133,8 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
   endelse
 
   if (noguff) then begin
+    if (bail) then print,"  -> Keyword FORCE is set, so trying anyway."
     bail = 0
-    print,"  -> Keyword FORCE is set, so trying anyway."
   endif
 
   if (bail) then return

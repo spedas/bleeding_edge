@@ -17,20 +17,23 @@
 ;       none
 ;
 ;KEYWORDS:
-;       none
+;       FORCE:    Ignore the SPICE checks and forge ahead anyway.
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2021-12-07 12:48:47 -0800 (Tue, 07 Dec 2021) $
-; $LastChangedRevision: 30451 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2022-01-17 20:43:53 -0800 (Mon, 17 Jan 2022) $
+; $LastChangedRevision: 30521 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_attitude_bar.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_attitude_bar
+pro mvn_attitude_bar, force=force
+
+  noguff = keyword_set(force)
 
 ; Determine when the HGA points to the Sun or Earth
 
-  mvn_sundir, frame='spacecraft', /pol
+  mvn_sundir, frame='spacecraft', /pol, force=noguff, success=ok
+  if (~ok and ~noguff) then return
   get_data,'Sun_PL_The',data=sth
   If(~is_struct(sth)) Then Begin
      dprint, 'Missing Pointing Data, Returning'
@@ -53,7 +56,8 @@ pro mvn_attitude_bar
 
 ; Identify Fly+-Y and Fly-Z
 
-  mvn_ramdir, minmax(sth.x) + [-10D, 10D], dt=1D, frame='spacecraft', pans=rampan
+  mvn_ramdir, minmax(sth.x) + [-10D, 10D], dt=1D, frame='spacecraft', pans=rampan, force=noguff, success=ok
+  if (~ok and ~noguff) then return
   get_data, rampan[0], data=ram, index=i
   if (i gt 0) then begin
     indx = where(ram.x ge min(sth.x) and ram.x le max(sth.x), count)
