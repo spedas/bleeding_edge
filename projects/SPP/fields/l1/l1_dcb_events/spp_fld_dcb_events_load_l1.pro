@@ -99,67 +99,102 @@ pro spp_fld_dcb_events_load_l1, file, prefix = prefix, varformat = varformat
 
   endforeach
 
-  rts_types = prefix + ['RTSLMTERR','RTSENAERR','RTSBSYERR','RTSSTARTED']
+  ;
+  ; The dcb_events catalog contains an entry for each time an RTS is called.
+  ;
+  ; RTS name/value identify the type of each individual RTS, with text 'name'
+  ;   and numerical 'value':
+  ;
+  ; RTS name: short name identifying the particular RTS, used as a suffix
+  ;   for the TPLOT item. Empty string matches all RTS, and is used to
+  ;   create a TPLOT item corresponding to all RTS.
+  ; RTS value: number (1-32) corresponding to the RTS. -1 matches all RTS, and
+  ;   is used to create a TPLOT item corresponding to all RTS.
+  ;
+  ; RTS type/code describe the status of each RTS, with text 'type' and
+  ;   numerical 'code'.
+  ;
+  ; RTS stat: Status of the RTS, which can indicate:
+  ;   'limit' error (called RTS is out of bounds of valid RTS range)
+  ;   'enable' error (called RTS is disabled)
+  ;   'busy' error (called RTS is already running)
+  ;   'started' (RTS successfully started at the given time with no error).
+  ; RTS code: Hexadecimal code from the DCB Events data,
+  ;   corresponding to the above statuses.
+  ;
 
+  rts_names = ['', '_BIAS_SWEEP','_MAG_CAL','_SCM_CAL']
+  rts_values = [-1,21,15,17]
+
+  rts_stats = prefix + ['RTSLMTERR','RTSENAERR','RTSBSYERR','RTSSTARTED']
   rts_codes = [0xC9,0xCA,0xCB,0xCC]
 
-  foreach rts_type, rts_types, i do begin
+  foreach rts_name, rts_names, i do begin
 
-    ind = where(d_code.y EQ rts_codes[i], count)
+    rts_value = rts_values[i]
 
-    if count GT 0 then begin
+    foreach rts_stat, rts_stats, j do begin
 
-      rts = d_dat1.y[ind]
+      rts_code = rts_codes[j]
 
-      store_data, rts_type, $
-        dat = {x:d_code.x[ind], y:rts}
+      if rts_value EQ -1 then begin
 
-      ;options, name, 'ynozero', 1
-      options, rts_type, 'colors', [6]
-      options, rts_type, 'ytitle', 'DCB RTS'
+        ind = where(d_code.y EQ rts_code, count)
 
-      options, rts_type, 'ysubtitle', ''
+      endif else begin
 
-      options, rts_type, 'psym', 4
-      options, rts_type, 'symsize', 0.5
-    endif
+        ind = where(d_code.y EQ rts_code and d_dat1.y EQ rts_value, count)
+
+      endelse
+
+      print, count, rts_stat + rts_name
+
+      if count GT 0 then begin
+
+        rts = d_dat1.y[ind]
+
+        store_data, rts_stat + rts_name, $
+          dat = {x:d_code.x[ind], y:rts}
+
+        if rts_stat.EndsWith('STARTED') then begin
+          options, rts_stat + rts_name, 'colors', [2]
+          options, rts_stat + rts_name, 'symsize', 0.5
+          options, rts_stat + rts_name, 'psym', 1
+        endif else begin
+          options, rts_stat + rts_name, 'colors', [6]
+          options, rts_stat + rts_name, 'symsize', 0.75
+          options, rts_stat + rts_name, 'psym', 2
+        endelse
+        options, rts_stat + rts_name, 'ytitle', 'DCB RTS' + $
+          rts_name.Replace('_','!C')
+        options, rts_stat + rts_name, 'ysubtitle', ''
+
+        if min(rts) EQ max(rts) then begin
+          options, rts_stat + rts_name, 'yrange', rts + [-1,1]
+          options, rts_stat + rts_name, 'ystyle', 1
+          options, rts_stat + rts_name, 'symsize', 1.0
+          options, rts_stat + rts_name, 'yminor', 1
+          options, rts_stat + rts_name, 'yticks', 2
+        endif
+
+      endif
+
+    endforeach
+
+    store_data, prefix + 'RTS' + rts_name, $
+      data = rts_stats + rts_name
+    options, prefix + 'RTS' + rts_name, 'ytitle', 'DCB RTS' + $
+      rts_name.Replace('_','!C')
+    options, prefix + 'RTS' + rts_name, 'ystyle', 1
+
+    if rts_name NE '' then begin
+      options, prefix + 'RTS' + rts_name, 'yrange', rts_value + [-1,1]
+      options, prefix + 'RTS' + rts_name, 'yminor', 1
+      options, prefix + 'RTS' + rts_name, 'yticks', 2
+    endif else begin
+      options, prefix + 'RTS' + rts_name, 'yrange', [0,32]
+    endelse
 
   endforeach
-
-  ;  t0_ur8 = time_double('1982-01-01')
-  ;
-  ;  foreach b, burst_types do begin
-  ;
-  ;    pre = prefix + b
-  ;
-  ;    get_data, pre + '_TIME_MET', dat = t_met
-  ;    get_data, pre + '_TIME_UR8', dat = t_ur8
-  ;
-  ;    if size(/type, t_ur8) EQ 8 and size(/type, t_met) EQ 8 then begin
-  ;
-  ;      finite_ind = where(finite(t_ur8.y), finite_count)
-  ;
-  ;      if finite_count GT 0 then begin
-  ;
-  ;        t_unix = t0_ur8 + t_ur8.y[finite_ind] * 24d * 60d * 60d
-  ;
-  ;        store_data, pre + '_TIME_COLLECT_TO_WRITE', $
-  ;          dat = {x:t_unix, y:(t_ur8.x[finite_ind] - t_unix)/60d}
-  ;
-  ;        options, pre + '_TIME_COLLECT_TO_WRITE', 'ytitle', b + '!CCOLLECT!CTO WRITE'
-  ;        options, pre + '_TIME_COLLECT_TO_WRITE', 'ysubtitle', '[Min]'
-  ;        options, pre + '_TIME_COLLECT_TO_WRITE', 'psym', 4
-  ;        options, pre + '_TIME_COLLECT_TO_WRITE', 'symsize', 0.5
-  ;        options, pre + '_TIME_COLLECT_TO_WRITE', 'colors', 6
-  ;        options, pre + '_TIME_COLLECT_TO_WRITE', 'ylog', 1
-  ;
-  ;      end
-  ;
-  ;    end
-  ;
-  ;  end
-
-  ;  tu2=tu + u*24*60*60.
-
 
 end

@@ -89,11 +89,11 @@
 ;   For more examples, see SPP_FLD_EXAMPLES.
 ;
 ; CREATED BY:       Davin Larson December 2018
-;                   maintained by Marc Pulupa, 2019-2020
+;                   maintained by Marc Pulupa, 2019-2022
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2021-11-01 22:18:00 -0700 (Mon, 01 Nov 2021) $
-; $LastChangedRevision: 30393 $
+; $LastChangedDate: 2022-01-19 16:27:18 -0800 (Wed, 19 Jan 2022) $
+; $LastChangedRevision: 30525 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -136,7 +136,7 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
     'dfb_dc_bpf1', 'dfb_dc_bpf2', $
     'aeb1_hk', 'aeb2_hk', $
     'mago_survey', 'magi_survey', $
-    'dcb_analog_hk', $
+    'dcb_analog_hk', 'dcb_memory', $
     'dcb_ssr_telemetry', 'dcb_events', 'f1_100bps', 'dfb_hk']
 
   dummy = where(l1_types EQ type, l1_type_flag)
