@@ -1,4 +1,3 @@
-
 ;+
 ; PROCEDURE:
 ;   elf_phase_delay
@@ -23,6 +22,14 @@
 ;                       for any NaNs in previous completed intervals, but no fits are done on the current time selection.
 ;                       To use this mode, the user must run the code on a time interval that falls in the 7-day interval
 ;                       that is next recorded after the interval to reprocess.
+;   Isolu:              specify a start of inital guess of dSectr2add
+;                       (default) Isolu=0, initial guess of dSectr2add is [-4,-2,0,2,4]
+;                       Isolu=1, initial guess of dSectr2add is [-2,0,2,4]
+;   onlypng:            (default) onlypng=0, pop-up window and save png
+;                       onlypng=1, only save png
+;   outputplot:        (default) outputplot=0 save summary plot for all fits (summary_IsoluX_ItersX)
+;                       outputplot=1 save summary plot for all fits (summary_IsoluX_ItersX) and plots for each iteration (IsoluX_ItersX_XXX)           
+;                       
 ;
 ; EXAMPLES:
 ;   elf_phase_delay, probe='b', Echannels=[3,6,9,12], /pick_times
@@ -65,31 +72,33 @@
 ;   Note that dPhAng2add more than +/- 11 does not work. Additional sectors are added at this point.
 ;
 
-      ;+
-      ; :Description:
-      ;    Describe the procedure.
-      ;
-      ;
-      ;
-      ; :Keywords:
-      ;    pick_times
-      ;    new_config
-      ;    probe
-      ;    Echannels
-      ;    overwrite_attitude
-      ;    check_nonmonotonic
-      ;    sstart
-      ;    send
-      ;    soldtimes
-      ;
-      ; :Author: lauraigs
-      ;-
-pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, probe=probe, Echannels=Echannels, overwrite_attitude=overwrite_attitude, badFlag = badFlag, check_nonmonotonic=check_nonmonotonic, sstart = sstart, send = send, soldtimes = soldtimes
+;+
+; :Description:
+;    Describe the procedure.
+;
+;
+;
+; :Keywords:
+;    pick_times
+;    new_config
+;    probe
+;    Echannels
+;    overwrite_attitude
+;    check_nonmonotonic
+;    sstart
+;    send
+;    soldtimes
+;
+; :Last edited: Jiashu Wu
+;-
+pro elf_phase_delay_auto, pick_times=pick_times, new_config=new_config, probe=probe, Echannels=Echannels, $
+  overwrite_attitude=overwrite_attitude, badFlag = badFlag, check_nonmonotonic=check_nonmonotonic, sstart = sstart, $
+  send = send, soldtimes = soldtimes, Isolu=Isolu, onlypng=onlypng, outputplot=outputplot
 
   ;elf_init
   ;
   tplot_options, 'xmargin', [15,9]
-  cwdirname='C:\Users\ELFIN\IDLWorkspace\spedas\idl\projects\elfin\idlphasedelays'
+  cwdirname='/Users/jiashu/Documents/IDL/spedas_learning/elfin phase delay auto'
   cwd,cwdirname
 
   if undefined(probe) then probe='a' else if probe ne 'a' and probe ne 'b' then begin
@@ -100,102 +109,64 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   ; HISTORY OF TIME INTERVALS USED
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  ; EL-A
-  ;unu
   tstart= sstart ; (result: -1 sector + 2.5 deg)
   tend= send
+
+
+  ; JWu:
+  ; create a new folder to save all plots for one sci zone, detele exisitng folder
+  ; folder name is sci zone date and time
+  ; also create a finalplot folder to save only the final results of each sci zone
+  finalfolder='Fitplots'
+  ; check whether folder exist
+  fileresult=FILE_SEARCH(finalfolder)
+  if size(fileresult,/dimen) eq 1 then FILE_DELETE,finalfolder,/RECURSIVE ; delete old folder
+  FILE_MKDIR,finalfolder ; make new folder
+  CD,finalfolder
+
+  if ~keyword_set(onlypng) then onlypng=0
+  if ~keyword_set(outputplot) then outputplot=0
   
-
-  ; EL-B
-  ;
-  ;tstart='2019-08-06/16:58:30' ; (result: +1 sector - 0.4 deg)
-  ;tend='2019-08-06/17:03:00'
-  ;oldtimes=['2019-08-06/16:58:56', '2019-08-06/16:59:42']
-
-  ;tstart='2020-05-06/17:06:00' ; (result: 0 sectors + 3.7 deg)
-  ;tend='2020-05-06/17:10:00'
-  ;oldtimes=['2020-05-06/17:08:27', '2020-05-06/17:09:07']
-
+  if onlypng eq 1 then begin
+    set_plot,'z'     ; z-buffer
+    device,set_resolution=[1000,650]
+    TVLCT, 255, 255, 255, 254 ; White color
+    TVLCT, 0, 0, 0, 253       ; Black color
+    !P.Color = 253
+    !P.Background = 254
+  endif else begin
+    set_plot,'x'
+    TVLCT, 255, 255, 255, 254 ; White color
+    TVLCT, 0, 0, 0, 253       ; Black color
+    !P.Color = 253
+    !P.Background = 254
+  endelse
 
   ;;; BEGIN CODE ;;;
   ; If phase delay file is not stored locally: copy over from server
 
-  ; If check_monotonic keyword is on: read special file and match start time with file entry
-  if keyword_set(check_nonmonotonic) then begin
-    pa_file='el'+probe+'_nonmonotonic_pas.txt'
-    OPENR, lun, pa_file, /get_lun
-    array=''
-    line=''
-    while not EOF(lun) do begin
-      READF, lun, line
-      array=[array,line]
-    endwhile
-    free_lun, lun
-    pa_cols=strsplit(array[1],',',/extract) ;header names
-    pa_data=make_array(4, n_elements(array)-2,/double)
-    for n=2,n_elements(array)-1 do begin ;data (excluding blank line + headers at beginning and new line at end)
-      data=strsplit(array[n],',',/extract)
-      tbegin=time_string(data[0])
-      tstop=time_string(data[1])
-      nonmono_percent=float(data[2])
-      nonmono_time=time_string(data[3])
-      pa_data[0,n-2]=time_double(tbegin)
-      pa_data[1,n-2]=time_double(tstop)
-      pa_data[2,n-2]=nonmono_percent
-      pa_data[3,n-2]=time_double(nonmono_time)
-    endfor
-    ; find row that matches with current tstart, tend interval (if any)
-    new_flag=0
-    tstart_diffs=abs(pa_data[0,*]-time_double(tstart))
-    nearest=where(tstart_diffs eq min(tstart_diffs))
-    if n_elements(nearest) gt 1 || tstart_diffs[nearest] gt 5*60 then matching_ind=!VALUES.F_NaN ;no matching row within 5 mins
-    if n_elements(nearest) eq 1 && tstart_diffs[nearest] le 5*60 then matching_ind=nearest
-    if ~finite(matching_ind) then begin
-      tstart_diffs_sign=pa_data[0,*]-time_double(tstart) ;find smallest positive diff
-      pos_diffs=tstart_diffs_sign(where(tstart_diffs_sign gt 0))
-      matching_ind=where(tstart_diffs_sign eq min(pos_diffs))
-      new_flag=1
-    endif
-  endif
-
   ; Read calibration (phase delay) file and store data
   file='el'+probe+'_epde_phase_delays.csv'
-  filedata = read_csv(file, header = cols, types = ['String', 'String', 'Float', 'Float','Float','Float','Float'])
+  filedata = read_csv(cwdirname+'/'+file, header = cols, types = ['String', 'String', 'Float', 'Float','Float','Float','Float'])
   dat = CREATE_STRUCT(cols[0], filedata.field1, cols[1], filedata.field2, cols[2], filedata.field3, cols[3],  filedata.field4, cols[4], filedata.field5, cols[5], filedata.field6, cols[6], filedata.field7)
 
-
-  ; Prepare to load data of interest
-  mytype='cps'
   timeduration=time_double(tend)-time_double(tstart)
   timespan,tstart,timeduration,/seconds
   pival=double(!PI)
+  err_trshod = 0.5  ; dq/q ratio
   eightones = [1.,1.,1.,1.,1.,1.,1.,1.]
 
+  ; Prepare to load data of interest
+  mytype='cps'
   ; Extract spin period for current data
   ;elf_load_epd, probes=probe, datatype='pef', level='l1', type=mytype, suffix='_current'
   elf_load_epd, probes=probe, datatype='pef', level='l1', type=mytype
   get_data, 'el'+probe+'_pef_spinper', data=spinper_current
   ;tspin_current=average(spinper_current.y)
-  
+
+
   ;check
   check1 = total(n_elements(dat.tstart))
-
-
-
-;print, latest_med_deg
-;interval_start = time_double(tstart)-3600.*24.*7.
-;interval_end = time_double(tstart)
-
-;cal_data[3,*] ;latest_med_deg
-;cal_data[4,*] ;tstart, doub
-;cal_data[5,*] ;tend, doub
-
-
-
-; prev_int_cal_data[3,*]=med_prev_new
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ; After computing results for current data, write to file: prev_reprocessed_cal_data + current_int_prev_cal_data + current results + later_cal_data
-  ;prev_reprocessed_cal_data=[[prior_cal_data],[prev_int_cal_data],[current_int_prev_cal_data]]
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;END OF FILE READING AND CONFIGURATION               ;
@@ -204,28 +175,54 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   ;START OF FITS                                       ;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  ;JWu
+  if undefined(Isolu) then Isolu=0
+  iniSec=[-4,-2,0,2,4]
+  PAdiff=make_array(n_elements(iniSec)+1,value=!VALUES.F_NAN)  ; 0-3 for different inital Sec 4-7 for skiptime
+  LastIter=make_array(n_elements(iniSec)+1,value=!VALUES.F_NAN)
+  PAdSectr=make_array(n_elements(iniSec)+1,value=!VALUES.F_NAN)
+  PAdPhAng=make_array(n_elements(iniSec)+1,value=!VALUES.F_NAN)
+  pafit_even_med=make_array(n_elements(iniSec)+1,value=!VALUES.F_NAN)
+  pafit_odd_med=make_array(n_elements(iniSec)+1,value=!VALUES.F_NAN)
+  PAfit_even_num=make_array(n_elements(iniSec)+1,value=!VALUES.F_NAN)
+  PAfit_odd_num=make_array(n_elements(iniSec)+1,value=!VALUES.F_NAN)
+  skiptime=[]
+  maxiter = 6
+  autobad = 0
+  badFlag = 0
+  ;stop
+
   BODY:
   ;dSectr2add=dat.LatestMedianSectr[-1]; initial guesses (doesn't usually matter, but pos/neg sector should be correct otherwise parabolas might open upward)
   ;dPhAng2add=dat.LatestMedianPhAng[-1]
 
   ;INITIAL GUESSES
-  dSectr2add = 2
+  dSectr2add = iniSec[Isolu]
   dPhAng2add = 4
   ;read, dSectr2add, PROMPT='IG, Sector: '
   ;read, dPhAng2add, PROMPT='IG Phase Angle: '
-  
+
   ; make sure you pick a time just prior to an ascending PA!!!! This will make "even" PAs ascending ones (red), and "odd" PAs descending one (blue)
-  ;elf_load_epd, probes=probe, datatype='pef', level='l1', type=mytype, suffix='_orig',/no_spec
-  elf_load_epd, probes=probe, datatype='pef', level='l1', type=mytype, /no_spec
+  elf_load_epd, probes=probe, datatype='pef', level='l1', type=mytype, suffix='_orig',/no_spec
+  elf_load_state, probes=[probe],/get_support_data
+  cotrans,'el'+probe+'_pos_gei','el'+probe+'_pos_gse',/GEI2GSE
+  cotrans,'el'+probe+'_pos_gse','el'+probe+'_pos_gsm',/GSE2GSM
+  tt89,'el'+probe+'_pos_gsm',/igrf_only,newname='el'+probe+'_bt89_gsm',period=1.
+  tdotp,'el'+probe+'_bt89_gsm','el'+probe+'_pos_gsm',newname='el'+probe+'_Br_sign'
+  get_data,'el'+probe+'_Br_sign',data=elf_Br_sign
+  if median(elf_Br_sign.y) lt 0 then hemisp='North' else hemisp='South'
+
+  ;elf_load_epd, probes=probe, datatype='pef', level='l1', type=mytype, /no_spec
   if keyword_set(pick_times) then begin
     tplot,'el'+probe+'_pef_'+mytype
     print, 'explore time interval'
     stop
 
     ctime,tstartendtimes4pa2plot ; here pick 2 times between which to determine from the symmetry of the PA distribution around 90deg the time delay to use
+    ;JWu
     print,time_string(tstartendtimes4pa2plot)
     oldtimes_current = [time_string(tstartendtimes4pa2plot[0]), time_string(tstartendtimes4pa2plot[1])]
-    
+
     print, 'continue? [y/n]'
     incommand = ' '
     read, incommand
@@ -236,73 +233,49 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
       bad_comment = 'Not enough data. No reasonable fit.'
       goto, endoffits
     endif
-    
   endif else begin
-    oldtimes= soldtimes
-    ; apply pre-determined times
-    tstartendtimes4pa2plot=time_double(oldtimes)
-    ;tstartendtimes4pa2plot=time_double([tstart,tend]) ; do fits on full interval
-    oldtimes_current = oldtimes
-    tplot,'el'+probe+'_pef_'+mytype+'_orig'
+    tstartendtimes4pa2plot=time_double([tstart,tend]) ; do fits on full interval
+    tplot,['el'+probe+'_pef_'+mytype+'_orig','el'+probe+'_pef_sectnum'],title=time_string(tstartendtimes4pa2plot[0])+' - '+strmid(time_string(tstartendtimes4pa2plot[1]),11,8)+' UT    '+hemisp
     timebar,time_string(tstartendtimes4pa2plot)
+    makepng,'pef_counts'
+    ;stop
   endelse
 
   iters=0
   FINDSHIFT:
   elf_load_state, probes=[probe],/get_support_data
+
+  ; JWu edit start: load error
+  elf_load_epd, probes=probe, datatype='pef', level='l1', type='raw'
+  get_data,'el'+probe+'_pef_raw',data=elf_pef_raw,dlim=raw_dlim,lim=raw_lim
+
+  ; load cps
   elf_load_epd, probes=probe, datatype='pef', level='l1', type=mytype ; DEFAULT UNITS ARE NFLUX THIS ONE IS CPS
   get_data,'el'+probe+'_att_gei',data=elf_att_gei,dlim=myattdata_dlim,lim=myattdata_lim
   get_data,'el'+probe+'_pos_gei',data=elf_pos_gei,dlim=mypostdata_dlim,lim=myposdata_lim
-  get_data,'el'+probe+'_att_uncertainty',data=elf_att_unc
-  elf_att_unc=median(elf_att_unc.y)
 
-  ; Overwrite attitude with updated solution if desired
-  if keyword_set(overwrite_attitude) then begin
-    ;correct_att=[0.62071564, 0.17670628, 0.76386320] ; 2019-08-30 ELA
-    ;elf_att_unc=1.41
-    ;correct_att=[0.62027727, 0.18392227, 0.76251473] ; 2019-08-31 ELA. ANGLE DIFF NOW 8.22 deg (slightly worse, and larger unc than correct result)
-    ;elf_att_unc=1.43
-    ;correct_att=[0.53815934, 0.31622239, 0.78127327] ; 2019-09-01 ELA. ANGLE DIFF NOW 10 deg (worse than before)
-    ;elf_att_unc=0.72
-    ;correct_att=[0.62953896, 0.17877359, 0.75612215] ; 2019-09-02 ELA. ANGLE DIFF NOW 6.1 deg (slightly worse)
-    ;elf_att_unc=1.21
-    ;correct_att=[0.62205501, -0.64666323, 0.44144563] ; 2019-09-28 ELA. ANGLE DIFF NOW 1.8 DEG FROM DATABASE (smaller diff but still not correct)
-    ;elf_att_unc=1.16
-    ;correct_att=[0.59123383, -0.66197856, 0.46068095] ; 2019-09-29 ELA. ANGLE DIFF NOW 30 DEG FROM DATABASE (Fri)
-    ;elf_att_unc=2.49 ; Mon 10/21: angle diff now 1.08 deg (smaller diff but still not correct)
-    ;correct_att=[-0.50158691, -0.86418323, -0.039973866] ; 2019-08-30 ELB. ANGLE DIFF NOW 11.68 deg (slightly smaller but still not correct)
-    ;elf_att_unc=0.96
-    ;correct_att=[-0.54878167, -0.83582606, -0.015279864] ; 2019-08-31 ELB. ANGLE DIFF NOW 15.18 deg (slightly smaller but still not correct)
-    ;elf_att_unc=0.66
-    ;correct_att=[-0.48442246, -0.87472884, 0.013576750] ; 2019-09-01 ELB, also use for 2019-09-02
-    ;elf_att_unc=1.40 ; ANGLE DIFF NOW 6.36 deg (slightly smaller but still not correct)
-    ;correct_att=[-0.97041919, 0.22787842, 0.079737210] ;2019-09-28 ELB. ANGLE DIFF 8.9 DEG FROM DATABASE (same as before)
-    ;elf_att_unc=0.93
-    ;correct_att=[-0.97329805, 0.20774275, 0.097641486] ;2019-09-29 ELB. ANGLE DIFF 7.6 DEG FROM DATABASE (same as before)
-    ;elf_att_unc=0.93
+  ;JWu edit: ibo spread
+  get_data, 'el'+probe+'_pef_nspinsinsum', data=my_nspinsinsum
+  my_nspinsinsum2use=my_nspinsinsum.y
+  get_data,'el'+probe+'_pef_'+mytype,data=elf_pef,dlim=mypxfdata_dlim,lim=mypxfdata_lim
+  get_data,'el'+probe+'_pef_sectnum',data=elf_pef_sectnum,dlim=mysectnumdata_dlim,lim=mysectnumdata_lim
+  get_data,'el'+probe+'_pef_spinper',data=elf_pef_spinper,dlim=myspinperdata,lim=myspinperdata_lim
+  nsectors=n_elements(elf_pef.x)
+  nspinsectors=long(max(elf_pef_sectnum.y)+1)
+  tcor=(my_nspinsinsum2use-1.)*(elf_pef_spinper.y/nspinsectors)*(float(elf_pef_sectnum.y)-float(nspinsectors)/2.+0.5) ; spread in time
+  elf_pef.x=elf_pef.x+tcor ; here correct (spread) sectors to full accumulation interval
+  elf_pef_sectnum.x=elf_pef_sectnum.x+tcor ; (spread) sectors to full accumulation interval
+  elf_pef_spinper.x=elf_pef_spinper.x+tcor ; (spread) sectors to full accumulation interval
+  mypxforigarray=reform(elf_pef.y,nsectors*nspinsectors)
+  ianynegpxfs=where(mypxforigarray lt 0.,janynegpxfs) ; eliminate negative values from raw data -- these should not be there!
+  if janynegpxfs gt 0 then mypxforigarray[ianynegpxfs]=0.
+  elf_pef.y=reform(mypxforigarray,nsectors,nspinsectors)
+  store_data,'el'+probe+'_pef',data=elf_pef,dlim=mypxfdata_dlim,lim=mypxfdata_lim
+  store_data,'el'+probe+'_pef_sectnum',data=elf_pef_sectnum,dlim=mysectnumdata_dlim,lim=mysectnumdata_lim
+  store_data,'el'+probe+'_pef_spinper',data=elf_pef_spinper,dlim=myspinperdata,lim=myspinperdata_lim
+  options,'el'+probe+'_pef',spec=0
+  ;JWu end
 
-    ;correct_att=[0.85437437499675539, 0.43914147942310860, 0.27784741927717677] ;new att: ELB 7/25
-    ;correct_att=[0.97242286644801978, -0.075536002981490338, 0.22065375832420575] ; new att: ELB 7/28
-    ;correct_att=[0.97348718690298297, -0.14885435643749237, 0.17368096471777406] ; new att: ELB 7/30
-    ;correct_att=[-0.36802567346539994, -0.92917121749136322, 0.034611446891981895] ; new att: ELB 8/31
-    ;correct_att=[-0.95588813833793562, 0.27974130981871748, 0.089569339428980405] ; new att: ELB 9/29
-    ;correct_att=[-0.63077110970924966, 0.77548806553761862, 0.027314233741476856] ;new att: ELB 10/10
-    ;correct_att=[-0.58318683747271693, 0.80906869817346450, 0.072807652307064194] ;new att: ELB 10/11
-    ;correct_att=[-0.60617103263845584, -0.76085946029559182, 0.23162374849900166] ;new att: ELB 12/27
-    correct_att=[0.77457979806743416, 0.59057065030610334, -0.22639002500737349] ;new att: ELB 3/04
-    ;correct_att=[0.84461619541580546, 0.48362599897219805, -0.22962877772499113] ;new att: ELB 3/05
-
-    angle_diff_db=acos(elf_att_gei.y[0,*]#correct_att) * !RADEG
-    print, 'Angle difference between correct_att and att now in db: ', angle_diff_db
-    ;stop
-    elf_att_gei.y[*,0]=correct_att[0]
-    elf_att_gei.y[*,1]=correct_att[1]
-    elf_att_gei.y[*,2]=correct_att[2]
-    store_data, 'el'+probe+'_att_gei', data={x:elf_att_gei.x, y:elf_att_gei.y}
-  endif
-
-  tinterpol_mxn,'el'+probe+'_att_gei','el'+probe+'_pos_gei',/over
-  copy_data,'el'+probe+'_pef_'+mytype,'el'+probe+'_pef'
   get_data,'el'+probe+'_pef',data=elf_pef,dlim=mypefdata_dlim,lim=mypefdata_lim
   elf_pef.v=[50.0000,      80.0000,      120.000,      160.000,      210.000, $
     270.000,      345.000,      430.000,      630.000,      900.000, $
@@ -314,6 +287,7 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   ; in the middle between sector nspinsectors-1 and sector 0, meaning there is no need for any other time-shift rel.to.FGM
   ;
   ; First redefine energies in structure to be middle of energy width. In the future this will be corrected in CDFs.
+
   Emins=elf_pef.v
   Max_numchannels = n_elements(elf_pef.v) ; this is 16
   Emaxs=(Emins[1:Max_numchannels-1])
@@ -330,69 +304,116 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
     MaxE_channels = MinE_channels+1
   nsectors=n_elements(elf_pef.x)
   nspinsectors=n_elements(reform(elf_pef.y[0,*]))
-  
+
   if dSectr2add ne 0 then begin
     xra=make_array(nsectors-abs(dSectr2add),/index,/long)
     if dSectr2add gt 0 then begin
       elf_pef.y[dSectr2add:nsectors-1,*]=elf_pef.y[xra,*]
       elf_pef.y[0:dSectr2add-1,*]=!VALUES.F_NaN
+      ; JWu
+      elf_pef_raw.y[dSectr2add:nsectors-1,*]=elf_pef_raw.y[xra,*]
+      elf_pef_raw.y[0:dSectr2add-1,*]=!VALUES.F_NaN
     endif else if dSectr2add lt 0 then begin
       elf_pef.y[xra,*]=elf_pef.y[abs(dSectr2add):nsectors-1,*]
       elf_pef.y[dSectr2add:nsectors-1,*]=!VALUES.F_NaN
+      ; JWu
+      elf_pef_raw.y[xra,*]=elf_pef_raw.y[abs(dSectr2add):nsectors-1,*]
+      elf_pef_raw.y[dSectr2add:nsectors-1,*]=!VALUES.F_NaN
     endif
     store_data,'el'+probe+'_pef',data={x:elf_pef.x,y:elf_pef.y,v:elf_pef.v},dlim=mypefdata_dlim,lim=mypefdata_lim ; you can save a NaN!
+    store_data,'el'+probe+'_pef_raw',data={x:elf_pef.x,y:elf_pef_raw.y,v:elf_pef.v},dlim=raw_dlim, lim=raw_lim
   endif
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; extrapolate on the left and right to [0,...nspinsectors-1], degap the data
   tres,'el'+probe+'_pef_sectnum',dt_sectnum
+  dt_sectnum_left=median(elf_pef_sectnum.x[1:nspinsectors-1]-elf_pef_sectnum.x[0:nspinsectors-2]) ; median dt of first spin's sectors
+  dt_sectnum_rite=median(elf_pef_sectnum.x[nsectors-nspinsectors+1:nsectors-1]-elf_pef_sectnum.x[nsectors-nspinsectors:nsectors-2]) ; median of last spin's sectors
   elf_pef_sectnum_new=elf_pef_sectnum.y
   elf_pef_sectnum_new_times = elf_pef_sectnum.x
   if elf_pef_sectnum.y[0] gt 0 then begin
-    elf_pef_sectnum_new = [0., elf_pef_sectnum.y]
-    elf_pef_sectnum_new_times = [elf_pef_sectnum.x[0] - elf_pef_sectnum.y[0]*dt_sectnum, elf_pef_sectnum_new_times]
+    ;JWu
+    npadsleft=elf_pef_sectnum.y[0]
+    rapadleft=make_array(npadsleft,/index,/int)
+    elf_pef_sectnum_new = [rapadleft, elf_pef_sectnum.y]
+    elf_pef_sectnum_new_times = [elf_pef_sectnum.x[0] - (elf_pef_sectnum.y[0]-rapadleft)*dt_sectnum_left, elf_pef_sectnum_new_times]
+    if (n_elements(my_nspinsinsum2use) gt 1) then my_nspinsinsum2use=[rapadleft*0+my_nspinsinsum2use[0],my_nspinsinsum2use]
   endif
   if elf_pef_sectnum.y[n_elements(elf_pef_sectnum.y)-1] lt (nspinsectors-1) then begin
-    elf_pef_sectnum_new = [elf_pef_sectnum_new, float(nspinsectors-1)]
+    ;JWu
+    npadsright=(nspinsectors-1)-elf_pef_sectnum.y[n_elements(elf_pef_sectnum.y)-1]
+    rapadright=make_array(npadsright,/index,/int)
+    elf_pef_sectnum_new = [elf_pef_sectnum_new, elf_pef_sectnum.y[n_elements(elf_pef_sectnum.y)-1]+rapadright+1]
     elf_pef_sectnum_new_times = $
-      [elf_pef_sectnum_new_times , elf_pef_sectnum_new_times[n_elements(elf_pef_sectnum_new_times)-1] + (float(nspinsectors-1)-elf_pef_sectnum.y[n_elements(elf_pef_sectnum.y)-1])*dt_sectnum]
+      [elf_pef_sectnum_new_times , elf_pef_sectnum_new_times[n_elements(elf_pef_sectnum.y)-1] + (rapadright+1)*dt_sectnum_rite]
+    if (n_elements(my_nspinsinsum2use) gt 1) then my_nspinsinsum2use=[my_nspinsinsum2use,rapadright*0+my_nspinsinsum2use[-1]]
   endif
-  ;stop
   store_data,'el'+probe+'_pef_sectnum',data={x:elf_pef_sectnum_new_times,y:elf_pef_sectnum_new},dlim=mysectnumdata_dlim,lim=mysectnumdata_lim
-  tdegap,'el'+probe+'_pef_sectnum',dt=dt_sectnum,/over
-  tdeflag,'el'+probe+'_pef_sectnum','linear',/over
-  ;
-  get_data,'el'+probe+'_pef_sectnum',data=elf_pef_sectnum ; now pad middle gaps!
-
-  ksectra=make_array(n_elements(elf_pef_sectnum.x)-1,/index,/long)
-  dts=(elf_pef_sectnum.x[ksectra+1]-elf_pef_sectnum.x[ksectra])
-  dsectordt=(elf_pef_sectnum.y[ksectra+1]-elf_pef_sectnum.y[ksectra])/dts
-  ianygaps=where((dsectordt lt 0.75*median(dsectordt) and (dsectordt gt -0.5*float(-1)/dt_sectnum)),janygaps) ; slope below 0.75*nspinsectors/(nspinsectors*dt_sectnum) when a spin gap exists (gives <0.5), force it to median
-  if janygaps gt 0 then dsectordt[ianygaps]=median(dsectordt)
-  dsectordt=[dsectordt[0],dsectordt]
-  dts=[0,dts]
-  tol=0.25*median(dts)
-  mysectornumpadded=long(total(dsectordt*dts,/cumulative) + elf_pef_sectnum.y[0]+tol) mod nspinsectors
-  mysectornewtimes=(total(dts,/cumulative) + elf_pef_sectnum.x[0])
-  store_data,'el'+probe+'_pef_sectnum',data={x:mysectornewtimes,y:float(mysectornumpadded)},dlim=mysectnumdata_dlim,lim=mysectnumdata_lim
+  ;;JWu--the following two line fails if big gap exist in data
+  ;tdegap,'el'+probe+'_pef_sectnum',dt=dt_sectnum,/over
+  ;tdeflag,'el'+probe+'_pef_sectnum','linear',/over
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; JWu check gaps in sectnum and detele sectors is not 0-15
+  get_data,'el'+probe+'_pef_sectnum',data=elf_pef_sectnum
+  elf_pef_sectnum_degap=[]
+  elf_pef_sectnum_tdegap=[]
+  sec_zero=where(elf_pef_sectnum.y eq 0)
+  seczero_start=sec_zero(where(sec_zero[1:-1]-sec_zero[0:-2] eq 16))
+  seczero_end=sec_zero(where(sec_zero[1:-1]-sec_zero[0:-2] eq 16)+1)-1
+  for isecgap=0,n_elements(seczero_start)-1 do begin
+    if total(elf_pef_sectnum.y[seczero_start[isecgap]:seczero_end[isecgap]] eq indgen(16)) eq 16 then begin ; check whether sectnum is exactly 0-15
+      ; one example of sectnum is not exactly 0-15
+      ; 2021-08-20/10:56:58 sectnum ...,14,0,15,1,2,3,4,5,6,7,8,9,10,11,12,13,14,0...
+      append_array,elf_pef_sectnum_degap, elf_pef_sectnum.y[seczero_start[isecgap]:seczero_end[isecgap]]
+      append_array,elf_pef_sectnum_tdegap, elf_pef_sectnum.x[seczero_start[isecgap]:seczero_end[isecgap]]
+    endif
+  endfor
+  store_data,'el'+probe+'_pef_sectnum_degap',data={x:elf_pef_sectnum_tdegap, y:elf_pef_sectnum_degap}
+  copy_data,'el'+probe+'_pef_sectnum_degap','el'+probe+'_pef_sectnum'
+  ; JWu this doesn't correct when sector number is not continous, so comment for now
+  ;  get_data,'el'+probe+'_pef_sectnum',data=elf_pef_sectnum ; now pad middle gaps!
+  ;  ksectra=make_array(n_elements(elf_pef_sectnum.x)-1,/index,/long)
+  ;  dts=(elf_pef_sectnum.x[ksectra+1]-elf_pef_sectnum.x[ksectra])
+  ;  dsectordt=(elf_pef_sectnum.y[ksectra+1]-elf_pef_sectnum.y[ksectra])/dts
+  ;  ianygaps=where((dsectordt lt 0.75*median(dsectordt) and (dsectordt gt -0.5*float(-1)/dt_sectnum)),janygaps) ; slope below 0.75*nspinsectors/(nspinsectors*dt_sectnum) when a spin gap exists (gives <0.5), force it to median
+  ;  if janygaps gt 0 then begin
+  ;    dsectordt[ianygaps]=median(dsectordt)
+  ;    stop
+  ;  endif else return
+  ;  stop
+  ;  dsectordt=[dsectordt[0],dsectordt]
+  ;  dts=[0,dts]
+  ;  tol=0.25*median(dts)
+  ;  mysectornumpadded=long(total(dsectordt*dts,/cumulative) + elf_pef_sectnum.y[0]+tol) mod nspinsectors
+  ;  mysectornewtimes=(total(dts,/cumulative) + elf_pef_sectnum.x[0])
+  ;  store_data,'el'+probe+'_pef_sectnum',data={x:mysectornewtimes,y:float(mysectornumpadded)},dlim=mysectnumdata_dlim,lim=mysectnumdata_lim
   ;
   ;AT THIS POINT (lines above): pef_sectnum tplot variable turns into step function at interpolated gaps
   ;
   ; now pad the rest of the quantities
   get_data,'el'+probe+'_pef_spinper',data=elf_pef_spinper,dlim=myspinperdata_dlim,lim=myspinperdata_lim ; this preserved the original times
   store_data,'el'+probe+'_pef_times',data={x:elf_pef_spinper.x,y:elf_pef_spinper.x-elf_pef_spinper.x[0]} ; this is to track gaps
-  tinterpol_mxn,'el'+probe+'_pef_times','el'+probe+'_pef_sectnum',/nearest_neighbor,/NAN_EXTRAPOLATE,/over ; middle gaps have constant values after interpolation, side pads are NaNs themselves
+  ;JWu start
+  ;tinterpol_mxn,'el'+probe+'_pef_times','el'+probe+'_pef_sectnum',/nearest_neighbor,/NAN_EXTRAPOLATE,/over ; middle gaps have constant values after interpolation, side pads are NaNs themselves
+  tinterpol_mxn,'el'+probe+'_pef_times','el'+probe+'_pef_sectnum',/NAN_EXTRAPOLATE,/over
+  ;JWu end
   get_data,'el'+probe+'_pef_times',data=elf_pef_times
   xra=make_array(n_elements(elf_pef_times.x)-1,/index,/long)
   iany=where(elf_pef_times.y[xra+1]-elf_pef_times.y[xra] lt 1.e-6, jany) ; takes care of middle gaps
   inans=where(FINITE(elf_pef_times.y,/NaN),jnans) ; identifies side pads
   ;
+  tinterpol_mxn,'el'+probe+'_pef_raw','el'+probe+'_pef_sectnum',/over
+  get_data,'el'+probe+'_pef_raw',data=elf_pef,dlim=mypefdata_dlim,lim=mypefdata_lim
+  if jnans gt 0 then elf_pef.y[inans,*]=!VALUES.F_NaN
+  if jany gt 0 then elf_pef.y[iany,*]=!VALUES.F_NaN
+  store_data,'el'+probe+'_pef_raw',data={x:elf_pef.x,y:elf_pef.y,v:elf_pef.v},dlim=mypefdata_dlim,lim=mypefdata_lim  ;
+
   tinterpol_mxn,'el'+probe+'_pef','el'+probe+'_pef_sectnum',/over
   get_data,'el'+probe+'_pef',data=elf_pef,dlim=mypefdata_dlim,lim=mypefdata_lim
   if jnans gt 0 then elf_pef.y[inans,*]=!VALUES.F_NaN
   if jany gt 0 then elf_pef.y[iany,*]=!VALUES.F_NaN
-  store_data,'el'+probe+'_pef',data={x:elf_pef.x,y:elf_pef.y,v:elf_pef.v},dlim=mypefdata_dlim,lim=mypefdata_lim
-  ;
+  store_data,'el'+probe+'_pef',data={x:elf_pef.x,y:elf_pef.y,v:elf_pef.v},dlim=mypefdata_dlim,lim=mypefdata_lim  ;
+
   tinterpol_mxn,'el'+probe+'_pef_spinper','el'+probe+'_pef_sectnum',/overwrite ; linearly interpolated, this you keep
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;
@@ -427,7 +448,7 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   ; TO DETERMINE IF THIS IS A CONSTANT TIME OR HOW TO rMODEL AS FUNCTION OF SPIN PERIOD. BY SHIFTING THE SPINPHASE OF THE
   ; SECTOR TO THE RIGHT YOU DECLARE THAT THE SECTOR CENTERS HAVE LARGER PHASES AND ARE ASYMMETRIC W/R/T THE ZERO CROSSING (AND 90DEG PA).
   ; OR EQUIVALENTLY THAT THE TIMES ARE INCORRECT BY THE SAME AMOUNT AND THE DATA WAS TAKEN LATER THAN DECLARED IN THEIR TIMES.
-  spinphase180=(dPhAng2add+float(elf_pef_sectnum.x-elf_pef_sectnum.x[lastzero]+0.5*elf_pef_spinper.y/float(nspinsectors))*360./elf_pef_spinper.y) mod 360.
+  spinphase180=((dPhAng2add+float(elf_pef_sectnum.x-elf_pef_sectnum.x[lastzero]+0.5*my_nspinsinsum2use*elf_pef_spinper.y/float(nspinsectors))*360./my_nspinsinsum2use/elf_pef_spinper.y)+360.) mod 360.
   spinphase=spinphase180*!PI/180. ; in radians corresponds to the center of the sector
   store_data,'spinphase',data={x:elf_pef_sectnum.x,y:spinphase} ; just to see...
   store_data,'spinphasedeg',data={x:elf_pef_sectnum.x,y:spinphase*180./!PI} ; just to see...
@@ -436,6 +457,7 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   options,'ddts','databar',{yval:[0.], color:[6], linestyle:2}
 
   threeones=[1,1,1]
+  tinterpol_mxn,'el'+probe+'_att_gei','el'+probe+'_pos_gei',/over
   cotrans,'el'+probe+'_pos_gei','el'+probe+'_pos_gse',/GEI2GSE
   cotrans,'el'+probe+'_pos_gse','el'+probe+'_pos_gsm',/GSE2GSM
   tt89,'el'+probe+'_pos_gsm',/igrf_only,newname='el'+probe+'_bt89_gsm',period=1.
@@ -475,7 +497,6 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
 
   ;; BELOW MATRIX is where attitude information is used
   rotDSL2SM = [[[DSLX.y[*,0]],[DSLX.y[*,1]],[DSLX.y[*,2]]],[[DSLY.y[*,0]],[DSLY.y[*,1]],[DSLY.y[*,2]]],[[DSLZ.y[*,0]],[DSLZ.y[*,1]],[DSLZ.y[*,2]]]]
-
   ; rotate unit vector [1,0,0] by spinphase about DSLZ, then into SM
   unitXvec2rot=[[1.+0.*spinphase],[0.*spinphase],[0.*spinphase]]
   store_data,'unitXvec2rot',data={x:elf_pef.x,y:unitXvec2rot},dlim=myattdlim,lim=myattlim ; pretend all coords are SM in dlim to force tvector_rotate to accept
@@ -487,12 +508,12 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   ;NOTE: above rotation to sectordir_sm changes if using different attitude (but dsl is the same)
   calc,' "el'+probe+'_pef_sm_interp_partdir"= - "sectordir_sm" '
   ;
+  ;sqrt(total("el'+probe+'_pef_sm_interp_partdir"^2,2)) supposed to be 1
   calc,' "el'+probe+'_pef_pa" = arccos(total("el'+probe+'_pef_sm_interp_partdir" * "el'+probe+'_bt89_sm_interp",2) / (sqrt(total("el'+probe+'_bt89_sm_interp"^2,2)) * sqrt(total("el'+probe+'_pef_sm_interp_partdir"^2,2)))) *180./pival '
   get_data,'el'+probe+'_pef_sm_interp_partdir',data=partdir
   get_data,'el'+probe+'_bt89_sm_interp',data=bt89
   get_data,'el'+probe+'_pef_pa',data=elf_pef_pa
 
-    
   ; now examine IGRF Bfield. transform elx_bt89_sm_interp from SM to GEI coords
   cotrans,'el'+probe+'_bt89_sm_interp','el'+probe+'_bt89_gsm_interp',/SM2GSM
   cotrans,'el'+probe+'_bt89_gsm_interp','el'+probe+'_bt89_gse_interp',/GSM2GSE
@@ -523,11 +544,12 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   ylim,"spinphasedeg",-5.,365.,0.
   options,'el'+probe+'_pef_pa','databar',90.
   options,'spinphasedeg','databar',180.
-  tplot,'el'+probe+'_pef_pa spinphasedeg el'+probe+'_pef_sectnum el'+probe+'_pef'
+  ;tplot,'el'+probe+'_pef_pa spinphasedeg el'+probe+'_pef_sectnum el'+probe+'_pef'
   tplot_apply_databar
 
-  tplot, 'el'+probe+'_pef el'+probe+'_pef_pa'
+  tplot, 'el'+probe+'_pef el'+probe+'_pef_pa',title=''
   timebar,time_string(tstartendtimes4pa2plot)
+  ;stop
   ;stop ;show selected region ;PAs were flat at peaks/troughs first time, then pointy second time
 
   ; Now plot PA spectrum for a given energy or range of energies
@@ -540,26 +562,45 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   ; Note that Bz ascending zero is when part PA is minimum (closest to 0).
   ; This is NOT sector 0, but between sectors 3 and 4.
   ;
+  ;stop
   nspins=nsectors/nspinsectors
   npitchangles=2*nspins
   elf_pef_val=make_array(nsectors,numchannels,/double)
+  ;Jwu
+  calc," 'el"+probe+"_pef_err' = 1/sqrt('el"+probe+"_pef_raw'+1)"
+  get_data,'el'+probe+'_pef_err',data=elf_pef_err, dlim=err_dlim, lim=err_lim
+  elf_pef_val_err=make_array(nsectors,numchannels,/double)
   if (mytype eq 'nflux' or mytype eq 'eflux' ) then $
     for jthchan=0,numchannels-1 do $
     elf_pef_val[*,jthchan]=(elf_pef.y[*,MinE_channels[jthchan]:MaxE_channels[jthchan]] # $
     (Emaxs[MinE_channels[jthchan]:MaxE_channels[jthchan]]-Emins[MinE_channels[jthchan]:MaxE_channels[jthchan]])) / $
     total(Emaxs[MinE_channels[jthchan]:MaxE_channels[jthchan]]-Emins[MinE_channels[jthchan]:MaxE_channels[jthchan]]) ; MULTIPLIED BY ENERGY WIDTH AND THEN DIVIDED BY BROAD CHANNEL ENERGY
   if (mytype eq 'raw' or mytype eq 'cps' ) then $
-    for jthchan=0,numchannels-1 do $
+    for jthchan=0,numchannels-1 do begin
     elf_pef_val[*,jthchan]=total(elf_pef.y[*,MinE_channels[jthchan]:MaxE_channels[jthchan]],2) ; JUST SUMMED
+    elf_pef_val_err[*,jthchan]=sqrt(total((elf_pef.y[*,MinE_channels[jthchan]:MaxE_channels[jthchan]]*elf_pef_err.y[*,MinE_channels[jthchan]:MaxE_channels[jthchan]])^2,/nan,2))/elf_pef_val[*,jthchan]
+  endfor
+  ;stop
   elf_pef_val_full = elf_pef.y ; this array contains all angles and energies (in that order, same as val), to be used to compute energy spectra
-  ;
+  store_data,'el'+probe+'_pef_val_err',data={x:elf_pef_err.x,y:elf_pef_val_err}
   get_data,'el'+probe+'_pef_pa',data=elf_pef_pa
   store_data,'el'+probe+'_pef_val',data={x:elf_pef.x,y:elf_pef_val}
   store_data,'el'+probe+'_pef_val_full',data={x:elf_pef.x,y:elf_pef_val_full,v:elf_pef.v},dlim=mypefdata_dlim,lim=mypefdata_lim ; contains all angles and energies
   ylim,'el'+probe+'_pef_val*',1,1,1
-
+  ;------------------------------------------------------------
+  ; JWu : if skip time
+  if skiptime ne [] then begin
+    for iskiptime=0,n_elements(skiptime)-1 do begin
+      iskip=where(elf_pef.x eq skiptime[iskiptime], jskip)
+      elf_pef_val[iskip,*]=!VALUES.F_NAN
+      elf_pef_val_full[iskip,*]=!VALUES.F_NAN
+      ;stop
+    endfor
+  endif
+  ;------------------------------------------------------------
   ; investigate logic -- feeds into selection of full PA ranges
-  Tspin=average(elf_pef_spinper.y)
+  ;JWu
+  Tspin=average(my_nspinsinsum2use*elf_pef_spinper.y)
   ipasorted=sort(elf_pef_pa.y[0:nspinsectors-1]) ;PAs for each sector? sorted from low to high
   istartAscnd=max(elf_pef_sectnum.y[ipasorted[0:1]]) ;sector nums associated with lowest + next lowest PAs. take highest one
   if abs(ipasorted[0]-ipasorted[1]) ge 2 then istartAscnd=min(elf_pef_sectnum.y[ipasorted[0:1]])
@@ -570,6 +611,19 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   tstartAscnds=elf_pef_sectnum.x[istartAscnds]
   tstartDscnds=elf_pef_sectnum.x[istartDscnds]
 
+  ;------------------------------------------------------------
+  ;  ; JWu test whether each spin is 16 sectors. if not delete
+  ;  sectnumAscnds=elf_pef_sectnum.y[istartAscnds]
+  ;  sectnumDscnds=elf_pef_sectnum.y[istartDscnds]
+  ;  if n_elements(istartAscnds) gt 1 or n_elements(istartDscnds) gt 1 then begin
+  ;    isectnumAscnds=where(ts_diff(sectnumAscnds,1) ne 0,jsectnumAscnds)
+  ;    isectnumDscnds=where(ts_diff(sectnumDscnds,1) ne 0,jsectnumDscnds)
+  ;    if jsectnumAscnds ne 0 or jsectnumDscnds ne 0 then stop
+  ;  endif else begin
+  ;    print,'no enough data, skip this sci zone'
+  ;    return
+  ;  endelse
+  ;------------------------------------------------------------
   ; BELOW FOR TESTING PURPOSES ONLY
   ;***istartAscnd=3 and istartDscnd=12 (for my test case)
   ;NOTE: in 2019-08-31/16:33:35 case, first [0,nspin_sectors-1] range of elf_pef_sectnum has sector=1 missing!
@@ -585,11 +639,16 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
       ; this is due to gaps in the epde data (sectnum is interpolated across, giving a step pattern)
     endforeach
   endforeach
+
   elements_missing_secs=elements_missing_secs(uniq(elements_missing_secs))
-  if n_elements(elements_missing_secs) gt 1 then elements_missing_secs=elements_missing_secs[1:n_elements(elements_missing_secs)-1]
+  if n_elements(elements_missing_secs) gt 1 then begin
+    elements_missing_secs=elements_missing_secs[1:n_elements(elements_missing_secs)-1]
+    stop
+  endif
   ;stop ;check alongside elf_pef_sectnum & elf_pef_pa
   ; END SECTION FOR TESTING PURPOSES ONLY
 
+  ;stop
   if tstartAscnds[0] lt tstartDscnds[0] then begin ; add a half period on the left as a precaution since there is a chance that hanging sectors exist (not been accounted for yet)
     tstartDscnds=[tstartDscnds[0]-Tspin,tstartDscnds]
   endif else begin
@@ -597,8 +656,8 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   endelse
   nstartAscnds=n_elements(tstartAscnds)
   nstartDscnds=n_elements(tstartDscnds)
-  nstartregAscnds=n_elements(tstartregAscnds)
-  nstartregDscnds=n_elements(tstartregDscnds)
+  ;nstartregAscnds=n_elements(tstartregAscnds) ; JWu not used
+  ;nstartregDscnds=n_elements(tstartregDscnds)
 
   if tstartDscnds[nstartDscnds-1] lt tstartAscnds[nstartAscnds-1] then begin ; add a half period on the right as a precautionsince chances are there are hanging ectors (not been accounted for yet)
     tstartDscnds=[tstartDscnds,tstartDscnds[nstartDscnds-1]+Tspin]
@@ -607,8 +666,8 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   endelse
   nstartAscnds=n_elements(tstartAscnds)
   nstartDscnds=n_elements(tstartDscnds)
-  nstartregAscnds=n_elements(tstartregAscnds)
-  nstartregDscnds=n_elements(tstartregDscnds)
+  ;nstartregAscnds=n_elements(tstartregAscnds)
+  ;nstartregDscnds=n_elements(tstartregDscnds)
 
   ; find the first starttime of a full PA range that contains any data (Ascnd or Descnd), add integer # of halfspins
   istart2reform=min(istartAscnd,istartDscnd)
@@ -617,11 +676,15 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   elf_pef_pa_spec=make_array(nhalfspinsavailable,(nspinsectors/2),numchannels,/double)
   elf_pef_pa_spec_full=make_array(nhalfspinsavailable,(nspinsectors/2),Max_numchannels,/double) ; has ALL ENERGIES = Max_numchannels
   for jthchan=0,numchannels-1 do elf_pef_pa_spec[*,*,jthchan]=transpose(reform(elf_pef_val[istart2reform:ifinis2reform,jthchan],(nspinsectors/2),nhalfspinsavailable))
-  for jthchan=0,Max_numchannels-1 do elf_pef_pa_spec_full[*,*,jthchan]=transpose(reform(elf_pef_val_full[istart2reform:ifinis2reform,jthchan],(nspinsectors/2),nhalfspinsavailable))
-  elf_pef_pa_spec_times=transpose(reform(elf_pef_pa.x[istart2reform:ifinis2reform],(nspinsectors/2),nhalfspinsavailable))
-  elf_pef_pa_spec_times=total(elf_pef_pa_spec_times,2)/(nspinsectors/2.) ; these are midpoints anyway, no need for the ones above
-  elf_pef_pa_spec_pas=transpose(reform(elf_pef_pa.y[istart2reform:ifinis2reform],(nspinsectors/2),nhalfspinsavailable))
+  ; Jwu
+  elf_pef_pa_spec_err=make_array(nhalfspinsavailable,(nspinsectors/2),numchannels,/double)
+  for jthchan=0,numchannels-1 do elf_pef_pa_spec_err[*,*,jthchan]=transpose(reform(elf_pef_val_err[istart2reform:ifinis2reform,jthchan],(nspinsectors/2),nhalfspinsavailable))
+  ;stop
 
+  for jthchan=0,Max_numchannels-1 do elf_pef_pa_spec_full[*,*,jthchan]=transpose(reform(elf_pef_val_full[istart2reform:ifinis2reform,jthchan],(nspinsectors/2),nhalfspinsavailable))
+  elf_pef_pa_spec_times_full=transpose(reform(elf_pef_pa.x[istart2reform:ifinis2reform],(nspinsectors/2),nhalfspinsavailable))
+  elf_pef_pa_spec_times=total(elf_pef_pa_spec_times_full,2)/(nspinsectors/2.) ; these are midpoints anyway, no need for the ones above
+  elf_pef_pa_spec_pas=transpose(reform(elf_pef_pa.y[istart2reform:ifinis2reform],(nspinsectors/2),nhalfspinsavailable))
   test=transpose(reform(elf_pef_pa.y[istart2reform+1:ifinis2reform+1],(nspinsectors/2),nhalfspinsavailable))
   ; fixes non-monotonic at beginning, but now problem exists at end (WT)
   ; likewise, some are fixed completely and some still have exact same problem (used to have 2 non-monotonics at start)
@@ -646,6 +709,9 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   ;
   elf_pef_pa_spec2plot=make_array(nhalfspinsavailable,(nspinsectors/2)+2,numchannels,/double)
   for jthchan=0,numchannels-1 do elf_pef_pa_spec2plot[*,*,jthchan]=transpose([transpose(elf_pef_pa_spec[*,0,jthchan]*!VALUES.F_NaN),transpose(elf_pef_pa_spec[*,*,jthchan]),transpose(elf_pef_pa_spec[*,(nspinsectors/2)-1,jthchan]*!VALUES.F_NaN)])
+  ; JWu
+  elf_pef_pa_spec2plot_err=make_array(nhalfspinsavailable,(nspinsectors/2)+2,numchannels,/double)
+  for jthchan=0,numchannels-1 do elf_pef_pa_spec2plot_err[*,*,jthchan]=transpose([transpose(elf_pef_pa_spec_err[*,0,jthchan]*!VALUES.F_NaN),transpose(elf_pef_pa_spec_err[*,*,jthchan]),transpose(elf_pef_pa_spec_err[*,(nspinsectors/2)-1,jthchan]*!VALUES.F_NaN)])
   deltapafirst=(elf_pef_pa_spec_pas[*,1]-elf_pef_pa_spec_pas[*,0])
   deltapalast=(elf_pef_pa_spec_pas[*,(nspinsectors/2)-1]-elf_pef_pa_spec_pas[*,(nspinsectors/2)-2])
 
@@ -653,89 +719,6 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   ;traces back to elf_pef_pa_spec_pas
   elf_pef_pa_spec_pas2plot=transpose([transpose(elf_pef_pa_spec_pas[*,0]-deltapafirst),transpose(elf_pef_pa_spec_pas),transpose(elf_pef_pa_spec_pas[*,(nspinsectors/2)-1]+deltapalast)])
   ;elf_pef_pa_spec_pas2plot=transpose([transpose(elf_pef_pa_spec_pas[*,0]),transpose(elf_pef_pa_spec_pas),transpose(elf_pef_pa_spec_pas[*,(nspinsectors/2)-1])]) ;WT test
-
-  nonmono_pas=0
-  ; pick indices of non-monotonic segments -- TEST (wt)
-  for i=0,n_elements(elf_pef_pa_spec_pas2plot[*,0])-1 do begin
-    if float(i)/2 eq round(float(i)/2) then begin ;even, should be strictly increasing
-      diffs=elf_pef_pa_spec_pas2plot[i,1:-1]-elf_pef_pa_spec_pas2plot[i,0:-2]
-      diffs_neg=where(diffs lt 0, count_neg)
-      if count_neg gt 0 then append_array, nonmono_pas, i ;non-monotonic!
-    endif else begin ;odd, should be strictly decreasing
-      diffs=elf_pef_pa_spec_pas2plot[i,1:-1]-elf_pef_pa_spec_pas2plot[i,0:-2]
-      diffs_pos=where(diffs gt 0, count_pos)
-      if count_pos gt 0 then append_array, nonmono_pas, i ;non-monotonic!
-    endelse
-  endfor
-
-  print, minmax(nonmono_pas) ;starts about halfway through, goes through the end
-  ; compare with elements in elf_pef_pa_spec_pas2plot[*,0]
-  ; for each nonmono_pas, can check elf_pef_pa_spec_times at same ind
-  mono_pa_times=0
-  mono_pas_inds=0
-  nonmono_pa_times=elf_pef_pa_spec_times[nonmono_pas]
-  for i=0,n_elements(elf_pef_pa_spec_times)-1 do begin
-    if total(where(nonmono_pas eq i)) eq -1 then begin
-      append_array, mono_pa_times, elf_pef_pa_spec_times[i]
-      append_array, mono_pas_inds, i
-    endif
-  endfor
-  print, 'minmax whole range:', time_string(minmax(elf_pef_pa_spec_times))
-  print, 'minmax times for non-monotonic PAs:', time_string(minmax(nonmono_pa_times))
-  print, 'minmax times for monotonic PAs:', time_string(minmax(mono_pa_times))
-  store_data,'pas_nonmonotonic',data={x:nonmono_pa_times,y:elf_pef_pa_spec_pas2plot[nonmono_pas,*]}
-  store_data,'pas_monotonic',data={x:mono_pa_times,y:elf_pef_pa_spec_pas2plot[mono_pas_inds,*]}
-  ; find when there's a large enough gap (skips over >1 time element) in non-monotonic and monotonic times
-  pa_tres=elf_pef_pa_spec_times[1:-1]-elf_pef_pa_spec_times[0:-2] ;= 1/2 spin period
-  if n_elements(nonmono_pa_times) gt 1 then time_diffs_nonmono=nonmono_pa_times[1:-1]-nonmono_pa_times[0:-2]
-  if n_elements(mono_pa_times) gt 1 then time_diffs_mono=mono_pa_times[1:-1]-mono_pa_times[0:-2]
-  if n_elements(nonmono_pa_times) gt 1 then gaps_nonmono=where(time_diffs_nonmono gt max(pa_tres))
-  if n_elements(mono_pa_times) gt 1 then gaps_mono=where(time_diffs_mono gt max(pa_tres))
-  ;apparently_nonmono_time=where(elf_pef_pa_spec_times ge time_double('2019-08-08/05:54:42') and elf_pef_pa_spec_times lt time_double('2019-08-08/05:54:46'))
-
-  if n_elements(nonmono_pa_times) gt 0 then nonmono_data_flag=1 else nonmono_data_flag=0
-  if nonmono_data_flag eq 0 then begin
-    nonmono_percent=0
-    avg_nonmono_time=946684800.00000000 ;translated from 0
-  endif
-  if nonmono_data_flag eq 1 then begin
-    print, 'Collection has non-monotonic PAs'
-    nonmono_percent=float(n_elements(nonmono_pa_times))/float(n_elements(nonmono_pa_times)+n_elements(mono_pa_times))
-    avg_nonmono_time=average(nonmono_pa_times)
-    print, 'Percent of times that have non-monotonic PAs = ', nonmono_percent*100
-    print, 'Average time with non-monotonic PAs:', time_string(avg_nonmono_time)
-  endif
-  if keyword_set(check_nonmonotonic) then begin ;record in array
-    if new_flag eq 0 then begin
-      pa_data[2,matching_ind]=nonmono_percent*100
-      pa_data[3,matching_ind]=avg_nonmono_time
-    endif else if new_flag eq 1 then begin
-      pa_data=[[pa_data[*,0:matching_ind-1]],[time_double(tstart),time_double(tend),nonmono_percent*100,avg_nonmono_time],[pa_data[*,matching_ind:-1]]]
-    endif
-    ; re-write file
-    print, 'Stop here if editing file is not desired!'
-    ;stop
-    FILE_COPY, pa_file, pa_file+'.backup',/overwrite
-    OPENW, 1, pa_file
-    printf, 1, FORMAT = '(%"%s")', strjoin(strtrim(string(pa_cols),1),', ') ;re-write header
-    for n=0,n_elements(pa_data[0,*])-1 do begin
-      line=[time_string(pa_data[0,n]),time_string(pa_data[1,n]),strtrim(STRING(pa_data[2,n], FORMAT='(F5.2)'),1),time_string(pa_data[3,n])]
-      line=strjoin(line, ', ')
-      printf,1,FORMAT = '(%"%s")', line
-    endfor
-    close,1
-    print, 'Finished editing PA file.'
-    return
-  endif
-  ;stop ;check nonmono_pas array and the times
-  ; NOTE: nonmonotonic_fraction only takes into account stuff in small selected time interval; the above checks everything between tstart and tend
-  ;
-  ; use below command to print PAs at a certain time
-  ; elf_pef_pa_spec_pas2plot[where(abs(elf_pef_pa_spec_times-time_double('2019-08-30/12:24:20')) eq min(abs(elf_pef_pa_spec_times-time_double('2019-08-30/12:24:20')))),*]
-
-  ; figure out which corresponds to elf_pef_pa.y[elements_missing_secs[12]:elements_missing_secs[12]+15] (non-monotonic segment)
-  ; tlimit,'2019-08-08/05:45:35','2019-08-08/05:45:50'
-  ; are there other non-monotonic areas WITHOUT problems with sectnum (gaps in data)?
 
   elf_pef_pa_spec2plot_full=make_array(nhalfspinsavailable,(nspinsectors/2)+2,Max_numchannels,/double)
   for jthchan=0,Max_numchannels-1 do elf_pef_pa_spec2plot_full[*,*,jthchan]=transpose([transpose(elf_pef_pa_spec_full[*,0,jthchan]*!VALUES.F_NaN),transpose(elf_pef_pa_spec_full[*,*,jthchan]),transpose(elf_pef_pa_spec_full[*,(nspinsectors/2)-1,jthchan]*!VALUES.F_NaN)])
@@ -749,12 +732,12 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   ispecodd=ispecodd[UNIQ(ispecodd,sort(ispecodd))]
 
   ; set up arrays
-  pef2plots_even=make_array(n_elements(ispeceven),10,/float)
+  pef2plots_even=make_array(n_elements(ispeceven),10,/float,value=!Values.F_NAN)
   pa2plots_even=pef2plots_even
-  pafitminus90_even=make_array(n_elements(ispeceven),/float)
-  pef2plots_odd=make_array(n_elements(ispecodd),10,/float)
+  pafitminus90_even=make_array(n_elements(ispeceven),/float,value=!Values.F_NAN)
+  pef2plots_odd=make_array(n_elements(ispecodd),10,/float,value=!Values.F_NAN)
   pa2plots_odd=pef2plots_odd
-  pafitminus90_odd=make_array(n_elements(ispecodd),/float)
+  pafitminus90_odd=make_array(n_elements(ispecodd),/float,value=!Values.F_NAN)
 
   ; check if a spin period is missing in ascending or descending; correct times if so
   uneven_flag=0
@@ -765,8 +748,8 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
     tstart_init=elf_pef_pa_spec_times(where(abs(elf_pef_pa_spec_times-t_i) eq min(abs(elf_pef_pa_spec_times-t_i))))
     tend_init=elf_pef_pa_spec_times(where(abs(elf_pef_pa_spec_times-t_f) eq min(abs(elf_pef_pa_spec_times-t_f))))
   endif
-
-  ; do fits
+  ;stop
+  ;------------------------------------------------------------------------------------
   xfit=[20:160:0.01]
   chisq_even=[]
   yfit_even=make_array(n_elements(xfit),/float,value=0.)
@@ -774,86 +757,113 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   num_decreasing_pa=0
   for jthspec=0,n_elements(ispeceven)-1 do begin ;EVEN FITS
     pa2plots_even[jthspec,*]=reform(elf_pef_pa_spec_pas2plot[ispeceven[jthspec],*],10)
-    pef2plots_even[jthspec,*]=reform(elf_pef_pa_spec2plot[ispeceven[jthspec],*])
+    pef2plots_even[jthspec,*]=reform(elf_pef_pa_spec2plot[ispeceven[jthspec],*,0]) ; JWu
     x2fit_full=reform(pa2plots_even[jthspec,*])
     y2fit_full=reform(pef2plots_even[jthspec,*])
+    ; JWu
+    y2fit_err_full=reform(elf_pef_pa_spec2plot_err[ispeceven[jthspec],*,0])
+    ierr=where(y2fit_err_full ge err_trshod, jerr)
+    if jerr gt 0 then begin
+      y2fit_full[ierr]=!Values.F_NAN
+      x2fit_full[ierr]=!Values.F_NAN
+    endif
+    ;
     broad = where(y2fit_full gt 0, count_secs)
     pa_diffs=ts_diff(x2fit_full,1)
     monotonic = where(pa_diffs gt 0, decreasing_pa)
     ; SKIP if it doesn't have at least 5 sectors
     if decreasing_pa gt 0 and count_secs ge 5 then num_decreasing_pa+=1 ;non-monotonic PAs in a spin period of use
-    if count_secs lt 5 then begin
+    if count_secs lt 3 then begin
       pef2plots_even[jthspec,*]=!Values.F_NAN
       pafitminus90_even[jthspec]=!Values.F_NAN
       chisq_even=[chisq_even,!Values.F_NAN]
       continue
     endif
-    y2fit_full(where(FINITE(y2fit_full) eq 0))=0 ; re-assign NaN values to 0
-    fit_errors=make_array(4) ; order 2,3,4 polyfits + quadratic interpolation
-    for n=2,4 do begin ; n=order of fit
-      ; find n+1 highest flux/count points
-      sorted_y2fit_inds=reverse(sort(y2fit_full))
-      y2fit=y2fit_full(sorted_y2fit_inds[0:n]) ; fit exactly n+1 points (highest flux)
-      x2fit=x2fit_full(sorted_y2fit_inds[0:n])
-      coeffs=poly_fit(x2fit,alog10(y2fit),n,measure_errors=measure_errors,sigma=sigma)
+    iy2fit=where(finite(y2fit_full) and y2fit_full ne 0)
+    y2fit=y2fit_full(iy2fit)
+    x2fit=x2fit_full(iy2fit)
+    y2fit_err=y2fit_err_full(iy2fit)
+    fit_errors=make_array(3,value=!Values.F_NAN) ; order 2,3,4 polyfits + quadratic interpolation
+    fit_maxorders=min([count_secs-1,4])
+    for n=2,fit_maxorders do begin ; n=order of fit
+      ;coeffs=poly_fit(x2fit,alog10(y2fit),n,measure_errors=alog10(y2fit_err*y2fit),sigma=sigma)
+      coeffs=poly_fit(x2fit,alog10(y2fit),n)
       model_poly=10^poly(x2fit_full,coeffs)
-      fit_diff=((model_poly-y2fit_full)^2)/y2fit_full
-      model_poly=model_poly(where(abs(x2fit_full-90) le 45)) ;only analyze points between 45-135deg
-      fit_diff=fit_diff(where(abs(x2fit_full-90) le 45))
+      ;stop
+      ;JWu
+      ;plotxy,[[reform(pa2plots_even[jthspec,1:-2])],[reform(pef2plots_even[jthspec,1:-2])]],xrange=[-15.,185.],yrange=[1,max(pef2plots_even[jthspec,1:-2])*1.5], xsize=800.,ysize=500.,colors=['o'],thick=5,/noisotropic,psym=1
+      ;plots,x2fit_full,model_poly, psym=0
+      ;fit_diff=((model_poly-y2fit_full)^2)/y2fit_full
+      ;model_poly=model_poly(where(abs(x2fit_full-90) le 45)) ;only analyze points between 45-135deg
+      ;fit_diff=fit_diff(where(abs(x2fit_full-90) le 45))
+      model_poly=10^poly(x2fit,coeffs)
+      fit_diff=(model_poly-y2fit)^2/(y2fit_err*y2fit)
       check_nans=where(finite(fit_diff), num_finite)
       fit_goodness=total(fit_diff,/NaN)/num_finite
       fit_errors[n-2]=fit_goodness
-
-      if n eq 2 then begin ; also do quad interp method
-        result = interpol(alog10(y2fit),x2fit,xfit,/quadratic)
-        if FINITE(average(result)) then begin
-          eqns=[[1, x2fit[0], x2fit[0]^2], $
-            [1, x2fit[1], x2fit[1]^2], $
-            [1, x2fit[2], x2fit[2]^2]]
-          coeffs_interp=LA_LINEAR_EQUATION(eqns,alog10(y2fit))
-          model_poly=10^poly(x2fit_full,coeffs)
-          fit_diff=((model_poly-y2fit_full)^2)/y2fit_full
-          model_poly=model_poly(where(abs(x2fit_full-90) le 45)) ;only analyze points between 45-135deg
-          fit_diff=fit_diff(where(abs(x2fit_full-90) le 45))
-          check_nans=where(finite(fit_diff), num_finite)
-          fit_goodness=total(fit_diff,/NaN)/num_finite
-          fit_errors[-1]=fit_goodness
-        endif else fit_errors[-1]=!Values.F_NAN
-      endif
     endfor
     ; determine ideal fit order
     fit_order=where(fit_errors eq min(fit_errors))+2
     if n_elements(fit_order) gt 1 then fit_order=fit_order[1]
     fit_order=long(fit_order[0])
-    quad_interp_flag=0
-    if fit_order eq n_elements(fit_errors)+1 then begin ; place-holder for quadratic interpolation method
-      quad_interp_flag=1
-      fit_order=2
-    endif
 
     ;if fit_order eq 4 then fit_order=2 ;1/31: PREVENT FROM DOING 4TH ORDER FITS
-    y2fit=y2fit_full(sorted_y2fit_inds[0:fit_order]) ; do the fit
-    x2fit=x2fit_full(sorted_y2fit_inds[0:fit_order])
-    if quad_interp_flag then begin
-      eqns=[[1, x2fit[0], x2fit[0]^2], $
-        [1, x2fit[1], x2fit[1]^2], $
-        [1, x2fit[2], x2fit[2]^2]]
-      coeffs=LA_LINEAR_EQUATION(eqns,alog10(y2fit))
-    endif else coeffs=poly_fit(x2fit,alog10(y2fit),fit_order)
+    ;coeffs=poly_fit(x2fit,alog10(y2fit),fit_order,measure_errors=alog10(y2fit_err*y2fit))
+    coeffs=poly_fit(x2fit,alog10(y2fit),fit_order)
     result=10^poly(xfit,coeffs)
-    ;stop ; investigate fit (diverged or not?)
+    ;
+    ;plotxy,[[reform(pa2plots_even[jthspec,1:-2])],[reform(pef2plots_even[jthspec,1:-2])]],xrange=[-15.,185.],yrange=[min(pef2plots_even[jthspec,1:-2])*0.8,max(pef2plots_even[jthspec,1:-2])*1.2], $
+    ;  xsize=800.,ysize=500.,colors=['o'],title=' ',thick=5,/noisotropic,psym=1
+    ;plots,xfit,result, psym=0
+    ;plots,x2fit,y2fit, psym=4, SymSize=2.0
+
     if FINITE(average(result)) then begin ; if result doesn't diverge
-      close2center=where(xfit gt 60 and xfit lt 130)
+      close2center=where(xfit gt 50 and xfit lt 130)
+      ;close2center=where(xfit gt 60 and xfit lt 130)
       result_close2center=result(close2center)
       x_close2center=xfit(close2center)
       dy=DERIV(xfit(close2center),result(close2center))
-      ypeak=result_close2center(where(abs(dy) eq min(abs(dy))))
+      ;ypeak=result_close2center(where(abs(dy) eq min(abs(dy)))) ; sometimes abs(dy) min is where y == 0
+      ;JWu start
+      ;stop
+      index=where(result_close2center lt median(result_close2center))
+      x_close2center[index]=!VALUES.F_NAN
+      result_close2center[index]=!VALUES.F_NAN
+      dy[index]=!VALUES.F_NAN
+      index=indgen(n_elements(dy)-1)
+      izero=where((dy[index] gt 0 and dy[index+1] le 0) or (dy[index] ge 0 and dy[index+1] lt 0),jzero)
+      if jzero eq 0 then begin  ; situations with no dy=0 point
+        if outputplot eq 1 then begin
+          plotxy,[[reform(pa2plots_even[jthspec,1:-2])],[reform(pef2plots_even[jthspec,1:-2])]],xrange=[-15.,185.],yrange=[1,max(pef2plots_even[jthspec,1:-2])*1.5], ylog=1, $
+            xsize=800.,ysize=500.,colors=['o'],title='dSectr2add='+string(dSectr2add,FORMAT='(I2)')+' dPhAng2add='+string(dPhAng2add,FORMAT='(f6.1)')+' even='+string(ispeceven[jthspec],FORMAT='(I3)'),thick=5,/noisotropic,psym=1
+          plots,xfit,result, psym=0
+          plots,x2fit,y2fit, psym=4, SymSize=2.0
+          makepng,'Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')+'_'+string(ispeceven[jthspec],FORMAT='(I03)')
+          ;stop
+        endif
+        pef2plots_even[jthspec,*]=!Values.F_NAN
+        pafitminus90_even[jthspec]=!Values.F_NAN
+        chisq_even=[chisq_even,!Values.F_NAN]
+        continue
+      endif
+
+      ypeak=result_close2center(izero)
+      ;ypeak=result_close2center(where(abs(dy) eq min(abs(dy))))
+      ;JWu end
+      izero_max=izero
       if total(where(dy eq 0)) eq -1 then print,'dy=0 not found! using min dy'
-      if n_elements(ypeak) gt 1 then ypeak=max(ypeak)
+      if n_elements(ypeak) gt 1 then begin
+        ypeak=max(ypeak,imax)
+        izero_max=izero[imax]
+      endif
       ypeak=ypeak[0]
       ; below 'fix' probably forces fits to be unrepresentative of real pef
-      if max(result)/ypeak gt 1.5 then ypeak=max(result_close2center) ; quick fix in case poly fit results in higher not representative peak (local max)
-      xpeak=x_close2center(where(abs(dy) eq min(abs(dy)))) ; could be larger than 1 element
+      ;JWu
+      ;      if max(result)/ypeak gt 1.5 then begin
+      ;        stop
+      ;        ypeak=max(result_close2center) ; quick fix in case poly fit results in higher not representative peak (local max)
+      ;      endif
+      xpeak=x_close2center[izero_max] ; could be larger than 1 element
       if n_elements(xpeak) eq 1 then xpeak=xpeak[0] else begin
         dist_to_90=abs(xpeak-90.)
         closest_to_90=xpeak(where(dist_to_90 eq min(dist_to_90)))
@@ -877,16 +887,29 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
       ;print,'even, jthspec:', jthspec
       ;print, 'count_secs:', count_secs
       ;plotxy,[[reform(pa2plots_even[jthspec,1:-2])],[reform(pef2plots_even[jthspec,1:-2]/max(pef2plots_even[jthspec,*]))]],xrange=[-15.,185.],yrange=[0.,1.], $
-      ;  xsize=800.,ysize=500.,colors=['o'],title=' ',linestyle=2,thick=5,/noisotropic
-
+      ;  xsize=800.,ysize=500.,colors=['o'],title=' ',linestyle=2,thick=5,/noisotropic,psym=2
+      if outputplot eq 1 then begin
+        plotxy,[[reform(pa2plots_even[jthspec,1:-2])],[reform(pef2plots_even[jthspec,1:-2])]],xrange=[-15.,185.],yrange=[1,max(pef2plots_even[jthspec,1:-2])*1.5], ylog=1,$
+          xsize=800.,ysize=500.,colors=['o'],title='dSectr2add='+string(dSectr2add,FORMAT='(I2)')+' dPhAng2add='+string(dPhAng2add,FORMAT='(f6.1)')+' even='+string(ispeceven[jthspec],FORMAT='(I3)'),thick=5,/noisotropic,psym=1
+        model_poly_full=10^poly(x2fit_full,coeffs)
+        plots,xfit,result, psym=0
+        plots,x2fit,y2fit, psym=4, SymSize=2.0
+        plots,[xpeak,xpeak],[1,max(pef2plots_even[jthspec,1:-2])*1.5]
+        makepng,'Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')+'_'+string(ispeceven[jthspec],FORMAT='(I03)')
+      endif
       pef2plots_even[jthspec,*]=pef2plots_even[jthspec,*]/ypeak
       pafitminus90_even[jthspec]=xpeak-90.
+      ;stop
+      ;print,xpeak
+      ;stop
       ;if fit_order eq 2 then pafitminus90_even[jthspec]=-coeffs[1]/coeffs[2]/2.-90. $  ;CHANGE
       ;  else pafitminus90_even[jthspec]=xfit(where(result eq ypeak))-90.
-      yfit_even=yfit_even+result
-      yfit_even/=ypeak
+      ;yfit_even=yfit_even+result
+      ;yfit_even/=ypeak
+      ;JWu try average result
+      ;
+      yfit_even=yfit_even*count_fits/(count_fits+1)+result/ypeak/(count_fits+1)
       count_fits+=1
-
     endif else if FINITE(average(result)) eq 0 then begin
       print, 'Not using result (not finite)'
       ;print,'x2fit, y2fit:', x2fit, y2fit
@@ -903,6 +926,7 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   if count_fits eq 0 then print, 'None were fitted! Try a larger or higher quality time interval.'
   nonmonotonic_frac_even=float(num_decreasing_pa)/float(n_elements(ispeceven))
 
+  ;----------------------------------------------------------------------------------------
   xfit=[20:160:0.01]
   yfit_odd=make_array(n_elements(xfit),/float,value=0.)
   count_fits=0
@@ -910,99 +934,114 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   chisq_odd=[]
   for jthspec=0,n_elements(ispecodd)-1 do begin ;ODD FITS
     pa2plots_odd[jthspec,*]=reform(elf_pef_pa_spec_pas2plot[ispecodd[jthspec],*],10)
-    pef2plots_odd[jthspec,*]=reform(elf_pef_pa_spec2plot[ispecodd[jthspec],*])
+    pef2plots_odd[jthspec,*]=reform(elf_pef_pa_spec2plot[ispecodd[jthspec],*,0])  ;JWu
     x2fit_full=reform(pa2plots_odd[jthspec,*])
     y2fit_full=reform(pef2plots_odd[jthspec,*])
+    ; JWu
+    y2fit_err_full=reform(elf_pef_pa_spec2plot_err[ispecodd[jthspec],*,0])
+    ierr=where(y2fit_err_full ge err_trshod, jerr)
+    if jerr gt 0 then begin
+      y2fit_full[ierr]=!Values.F_NAN
+      x2fit_full[ierr]=!Values.F_NAN
+    endif
+
     broad = where(y2fit_full gt 0, count_secs)
     pa_diffs=ts_diff(x2fit_full,1)
     monotonic = where(pa_diffs lt 0, increasing_pa)
     ;stop
     if increasing_pa gt 0 and count_secs ge 5 then num_increasing_pa+=1 ;non-monotonic PAs in a spin period of use
-    ;if count_secs ge 5 then begin
-    ;  plotxy,[[reform(pa2plots_odd[jthspec,1:-2])],[reform(pef2plots_odd[jthspec,1:-2]/max(pef2plots_odd[jthspec,*]))]],xrange=[-15.,185.],yrange=[0.,1.], $
-    ;    xsize=800.,ysize=500.,colors=['o'],title=' ',linestyle=2,thick=5,/noisotropic ;actual data
-    ;  stop ; find the non-monotonic spin period
-    ;endif
-
     ; SKIP if it doesn't have at least 5 sectors
-    if count_secs lt 5 then begin
+    if count_secs lt 3 then begin
       pef2plots_odd[jthspec,*]=!Values.F_NAN
       pafitminus90_odd[jthspec]=!Values.F_NAN
       chisq_odd=[chisq_odd,!Values.F_NAN]
       continue
     endif
-    y2fit_full(where(FINITE(y2fit_full) eq 0))=0 ; re-assign NaN values to 0
-    fit_errors=make_array(4)
-    for n=2,4 do begin ; n=order of fit
-      ; find n+1 highest flux/count points
-      sorted_y2fit_inds=reverse(sort(y2fit_full))
-      y2fit=y2fit_full(sorted_y2fit_inds[0:n]) ; fit exactly n points (highest flux)
-      x2fit=x2fit_full(sorted_y2fit_inds[0:n])
-      coeffs=poly_fit(x2fit,alog10(y2fit),n,measure_errors=measure_errors,sigma=sigma)
-
+    iy2fit=where(finite(y2fit_full) and y2fit_full ne 0)
+    y2fit=y2fit_full(iy2fit)
+    x2fit=x2fit_full(iy2fit)
+    y2fit_err=y2fit_err_full(iy2fit)
+    fit_errors=make_array(3,value=!Values.F_NAN)
+    fit_maxorders=min([count_secs-1,4])
+    for n=2,fit_maxorders do begin ; n=order of fit
+      ;coeffs=poly_fit(x2fit,alog10(y2fit),n,measure_errors=alog10(y2fit_err*y2fit),sigma=sigma)
+      coeffs=poly_fit(x2fit,alog10(y2fit),n)
       model_poly=10^poly(x2fit_full,coeffs)
-      fit_diff=((model_poly-y2fit_full)^2)/y2fit_full
-      model_poly=model_poly(where(abs(x2fit_full-90) le 45))
-      fit_diff=fit_diff(where(abs(x2fit_full-90) le 45))
+      ;JWu
+      ;plotxy,[[reform(pa2plots_odd[jthspec,1:-2])],[reform(pef2plots_odd[jthspec,1:-2])]],xrange=[-15.,185.],yrange=[0.,5000.], $
+      ;   xsize=800.,ysize=500.,colors=['o'],title=' ',thick=5,/noisotropic,psym=1
+      ;plots,x2fit_full,model_poly, psym=0
+      ;plots,x2fit,y2fit, psym=4, SymSize=2.0
+      ;stop
+      ;fit_diff=((model_poly-y2fit_full)^2)/y2fit_full
+      ;model_poly=model_poly(where(abs(x2fit_full-90) le 45))
+      ;fit_diff=fit_diff(where(abs(x2fit_full-90) le 45))
+      model_poly=10^poly(x2fit,coeffs)
+      fit_diff=(model_poly-y2fit)^2/(y2fit_err*y2fit)
       check_nans=where(finite(fit_diff), num_finite)
       fit_goodness=total(fit_diff,/NaN)/num_finite
       fit_errors[n-2]=fit_goodness
-
-      if n eq 2 then begin ; also do quad interp method
-        result = interpol(alog10(y2fit),x2fit,xfit,/quadratic)
-        if FINITE(average(result)) then begin
-          eqns=[[1, x2fit[0], x2fit[0]^2], $
-            [1, x2fit[1], x2fit[1]^2], $
-            [1, x2fit[2], x2fit[2]^2]]
-          coeffs_interp=LA_LINEAR_EQUATION(eqns,alog10(y2fit))
-          model_poly=10^poly(x2fit_full,coeffs)
-          fit_diff=((model_poly-y2fit_full)^2)/y2fit_full
-          model_poly=model_poly(where(abs(x2fit_full-90) le 45)) ;only analyze points between 60-120deg
-          fit_diff=fit_diff(where(abs(x2fit_full-90) le 45))
-          check_nans=where(finite(fit_diff), num_finite)
-          fit_goodness=total(fit_diff,/NaN)/num_finite
-          fit_errors[-1]=fit_goodness
-        endif else fit_errors[-1]=!Values.F_NAN
-      endif
     endfor
     ; determine ideal fit order
     fit_order=where(fit_errors eq min(fit_errors))+2
     if n_elements(fit_order) gt 1 then fit_order=fit_order[1]
     fit_order=long(fit_order[0])
-    quad_interp_flag=0
-    if fit_order eq n_elements(fit_errors)+1 then begin ; place-holder for quadratic interpolation method
-      quad_interp_flag=1
-      fit_order=2
-    endif
 
     ;if fit_order eq 4 then fit_order=2 ;1/31: PREVENT FROM DOING 4TH ORDER FITS
-    y2fit=y2fit_full(sorted_y2fit_inds[0:fit_order]) ; do the fit
-    x2fit=x2fit_full(sorted_y2fit_inds[0:fit_order])
-    if quad_interp_flag then begin
-      print,'using quad interp method'
-      eqns=[[1, x2fit[0], x2fit[0]^2], $
-        [1, x2fit[1], x2fit[1]^2], $
-        [1, x2fit[2], x2fit[2]^2]]
-      coeffs=LA_LINEAR_EQUATION(eqns,alog10(y2fit))
-    endif else coeffs=poly_fit(x2fit,alog10(y2fit),fit_order)
+    ;coeffs=poly_fit(x2fit,alog10(y2fit),fit_order,measure_errors=alog10(y2fit_err*y2fit))
+    coeffs=poly_fit(x2fit,alog10(y2fit),fit_order)
     result=10^poly(xfit,coeffs)
-    ;print, 'order of fit, count_secs, and error:', fit_order, count_secs, min(fit_errors)
-    ;print,'result on original scale:', 10^poly(x2fit,coeffs)
-    ;print,'y2fit:',y2fit
 
+    ;plotxy,[[reform(pa2plots_odd[jthspec,1:-2])],[reform(pef2plots_odd[jthspec,1:-2])]],xrange=[-15.,185.],yrange=[min(pef2plots_odd[jthspec,1:-2])*0.8,max(pef2plots_odd[jthspec,1:-2])*1.2], $
+    ;  xsize=800.,ysize=500.,colors=['o'],title=' ',thick=5,/noisotropic,psym=1
+    ;plots,xfit,result, psym=0
+    ;plots,x2fit,y2fit, psym=4, SymSize=2.0
+    ;stop
     if FINITE(average(result)) then begin
-      close2center=where(xfit gt 60 and xfit lt 130)
+      ;close2center=where(xfit gt 60 and xfit lt 130)
+      close2center=where(xfit gt 50 and xfit lt 130)
       result_close2center=result(close2center)
       x_close2center=xfit(close2center)
       dy=DERIV(xfit(close2center),result(close2center))
-      ypeak=result_close2center(where(abs(dy) eq min(abs(dy))))
+      ;ypeak=result_close2center(where(abs(dy) eq min(abs(dy))))
+      ;JWu start
+      index=where(result_close2center lt median(result_close2center))
+      x_close2center[index]=!VALUES.F_NAN
+      result_close2center[index]=!VALUES.F_NAN
+      dy[index]=!VALUES.F_NAN
+      index=indgen(n_elements(dy)-1)
+      izero=where((dy[index] gt 0 and dy[index+1] le 0) or (dy[index] ge 0 and dy[index+1] lt 0),jzero)
+      if jzero eq 0 then begin  ; situations with no dy=0 point
+        if outputplot eq 1 then begin
+          plotxy,[[reform(pa2plots_odd[jthspec,1:-2])],[reform(pef2plots_odd[jthspec,1:-2])]],xrange=[-15.,185.],yrange=[1,max(pef2plots_odd[jthspec,1:-2])*1.5], ylog=1,$
+            xsize=800.,ysize=500.,colors=['o'],title='dSectr2add='+string(dSectr2add,FORMAT='(I2)')+' dPhAng2add='+string(dPhAng2add,FORMAT='(f6.1)')+' odd='+string(ispecodd[jthspec],FORMAT='(I3)'),thick=5,/noisotropic,psym=1
+          plots,xfit,result, psym=0
+          plots,x2fit,y2fit, psym=4, SymSize=2.0
+          makepng,'Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')+'_'+string(ispecodd[jthspec],FORMAT='(I03)')
+        endif
+        pef2plots_odd[jthspec,*]=!Values.F_NAN
+        pafitminus90_odd[jthspec]=!Values.F_NAN
+        chisq_odd=[chisq_odd,!Values.F_NAN]
+        continue
+      endif
+      ypeak=result_close2center(izero)
+      ;ypeak=result_close2center(where(abs(dy) eq min(abs(dy))))
+      ;JWu end
       if total(where(dy eq 0)) eq -1 then print,'dy=0 not found! using min dy'
-      if n_elements(ypeak) gt 1 then ypeak=max(ypeak)
+      izero_max=izero
+      if n_elements(ypeak) gt 1 then begin
+        ypeak=max(ypeak,imax)
+        izero_max=izero[imax]
+      endif
       ypeak=ypeak[0]
 
-      if max(result)/ypeak gt 1.5 then ypeak=max(result_close2center) ; quick fix in case poly fit results in higher not representative peak
+      ;JWu
+      ;      if max(result)/ypeak gt 1.5 then begin
+      ;        stop
+      ;        ypeak=max(result_close2center) ; quick fix in case poly fit results in higher not representative peak
+      ;      endif
 
-      xpeak=x_close2center(where(abs(dy) eq min(abs(dy)))) ; could be larger than 1 element
+      xpeak=x_close2center[izero_max] ; could be larger than 1 element
       if n_elements(xpeak) eq 1 then xpeak=xpeak[0] else begin
         dist_to_90=abs(xpeak-90.)
         closest_to_90=xpeak(where(dist_to_90 eq min(dist_to_90)))
@@ -1024,15 +1063,28 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
       chisq_odd=[chisq_odd,fit_goodness]
       ;plotxy,[[x2fit_full],[y2fit_full]],/noisotropic
       ;oplot,x2fit_full,10^poly(x2fit_full,coeffs),color=2 ;model (blue)
-
+      if outputplot eq 1 then begin
+        plotxy,[[reform(pa2plots_odd[jthspec,1:-2])],[reform(pef2plots_odd[jthspec,1:-2])]],xrange=[-15.,185.],yrange=[1,max(pef2plots_odd[jthspec,1:-2])*1.5], ylog=1,$
+          xsize=800.,ysize=500.,colors=['o'],title='dSectr2add='+string(dSectr2add,FORMAT='(I2)')+' dPhAng2add='+string(dPhAng2add,FORMAT='(f6.1)')+' odd='+string(ispecodd[jthspec],FORMAT='(I3)'),thick=5,/noisotropic,psym=1
+        model_poly_full=10^poly(x2fit_full,coeffs)
+        plots,xfit,result, psym=0
+        plots,x2fit,y2fit, psym=4, SymSize=2.0
+        ;plots,make_array(max(pef2plots_odd[jthspec,1:-2])*1.5,value=xpeak),indgen(max(pef2plots_odd[jthspec,1:-2])*1.5)
+        plots,[xpeak,xpeak],[1,max(pef2plots_odd[jthspec,1:-2])*1.5]
+        makepng,'Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')+'_'+string(ispecodd[jthspec],FORMAT='(I03)')
+        ;stop
+      endif
       pef2plots_odd[jthspec,*]=pef2plots_odd[jthspec,*]/ypeak
       pafitminus90_odd[jthspec]=xpeak-90.
+
       ;if fit_order eq 2 then pafitminus90_odd[jthspec]=-coeffs[1]/coeffs[2]/2.-90. $
       ;  else pafitminus90_odd[jthspec]=xfit(where(result eq ypeak))-90.
-      yfit_odd=yfit_odd+result
-      yfit_odd/=ypeak
+      ;  JWu
+      ;yfit_odd=yfit_odd+result
+      ;yfit_odd/=ypeak
+      ;count_fits+=1
+      yfit_odd=yfit_odd*count_fits/(count_fits+1)+result/ypeak/(count_fits+1)
       count_fits+=1
-
     endif else if FINITE(average(result)) eq 0 then begin
       print, 'Not using result (not finite)'
       ;stop
@@ -1047,35 +1099,39 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   print,'average chi squared of all used odd fits:', chisq_odd_avg
   if count_fits eq 0 then print, 'None were fitted! Try a larger or higher quality time interval.'
   nonmonotonic_frac_odd=float(num_increasing_pa)/float(n_elements(ispecodd))
+  ;----------------------------------------------------------------------------------------
+  ;Check for matching spin periods that have results for even or odd but not the other (shouldn't happen)
+  if Isolu lt n_elements(iniSec) then begin
+    if n_elements(pafitminus90_odd) ge n_elements(pafitminus90_even) then $ ; edit later because they'll be the same length
+      pafitminus90_shorter=pafitminus90_even else if n_elements(pafitminus90_even) gt $
+      n_elements(pafitminus90_odd) then pafitminus90_shorter=pafitminus90_odd
+    for n=0,n_elements(pafitminus90_shorter)-1 do begin ;assuming length of pafitminus90_odd = length of pafitminus90_even
+      even_odd_pair=[pafitminus90_odd[n],pafitminus90_even[n]]
+      check_nan=where(FINITE(even_odd_pair) eq 0, num_nan)
+      if num_nan eq 1 then begin ;disregard spin period in analysis
+        pafitminus90_odd[n]=!Values.F_NAN
+        pafitminus90_even[n]=!Values.F_NAN
+        pef2plots_odd[n,*]=!Values.F_NAN
+        pef2plots_even[n,*]=!Values.F_NAN
+        chisq_odd[n]=!Values.F_NAN
+        chisq_even[n]=!Values.F_NAN
+        print,'inconsistency in spin period detected; spinper disregarded'
+      endif
+    endfor
+  endif
 
-  ; Check for matching spin periods that have results for even or odd but not the other (shouldn't happen)
-  if n_elements(pafitminus90_odd) ge n_elements(pafitminus90_even) then $ ; edit later because they'll be the same length
-    pafitminus90_shorter=pafitminus90_even else if n_elements(pafitminus90_even) gt $
-    n_elements(pafitminus90_odd) then pafitminus90_shorter=pafitminus90_odd
-  for n=0,n_elements(pafitminus90_shorter)-1 do begin ;assuming length of pafitminus90_odd = length of pafitminus90_even
-    even_odd_pair=[pafitminus90_odd[n],pafitminus90_even[n]]
-    check_nan=where(FINITE(even_odd_pair) eq 0, num_nan)
-    if num_nan eq 1 then begin ;disregard spin period in analysis
-      pafitminus90_odd[n]=!Values.F_NAN
-      pafitminus90_even[n]=!Values.F_NAN
-      pef2plots_odd[n,*]=!Values.F_NAN
-      pef2plots_even[n,*]=!Values.F_NAN
-      chisq_odd[n]=!Values.F_NAN
-      chisq_even[n]=!Values.F_NAN
-      print,'inconsistency in spin period detected; spinper disregarded'
-    endif
-  endfor
 
-;nflux = Normalized Flux, updated 2021-09-08
-  window,1
+  ;plot
+  ;window,1
   miny=3.e-3
   maxy=6.; 1.
+  ;stop
   deltaPA_est=(average(pafitminus90_even(where(FINITE(pafitminus90_even))))-average(pafitminus90_odd(where(FINITE(pafitminus90_odd)))))/2.
   plotxy,[[reform(pa2plots_even[0,*])],[reform(pef2plots_even[0,*])]], $
     xrange=[-5.,185.],yrange=[miny,maxy],/ylog,/noisotropic, $
     xsize=800.,ysize=500.,psym=-2,colors=['r'], $
     title=time_string(tstartendtimes4pa2plot[0])+' - '+strmid(time_string(tstartendtimes4pa2plot[1]),11,8)+ $
-    ' UT'+', dSectr2add = '+strtrim(string(dSectr2add,format="(I7)"),1)+', dPhAng2add = '+strtrim(string(dPhAng2add,format="(f5.1)"),1)+'deg, dPA290_est='+string(deltaPA_est,format="(f5.1)")+'deg',xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
+    ' UT'+', dSectr2add = '+strtrim(string(dSectr2add,format="(I7)"),1)+', dPhAng2add = '+strtrim(string(dPhAng2add,format="(f6.2)"),1)+'deg, dPA290_est='+string(deltaPA_est,format="(f6.1)")+'deg',xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
   plotxy,[[reform(pa2plots_odd[0,*])],[reform(pef2plots_odd[0,*])]],/over,psym=-1,colors=['b'],title=' ',xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
   for jthspec=0,n_elements(ispeceven)-1 do plotxy,[[reform(pa2plots_even[jthspec,*])],[reform(pef2plots_even[jthspec,*])]],/over,psym=-1,colors=['r'],title=' ',xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
   for jthspec=0,n_elements(ispeceven)-1 do plotxy,[[pafitminus90_even[jthspec]+90.,pafitminus90_even[jthspec]+90.],[0.2*maxy,maxy]],/over,colors=['r'],title=' ',xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
@@ -1083,8 +1139,9 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   for jthspec=0,n_elements(ispecodd)-1 do plotxy,[[pafitminus90_odd[jthspec]+90.,pafitminus90_odd[jthspec]+90.],[0.2*maxy,maxy]],/over,colors=['b'],title=' ',xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
   plotxy,[[xfit],[yfit_odd]],/over,colors=['o'],title=' ',linestyle=2,thick=5,yrange=[miny,maxy],xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
   plotxy,[[xfit],[yfit_even]],/over,colors=['g'],title=' ',linestyle=2,thick=5,yrange=[miny,maxy],xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
-  
-  ;
+  finalfile='summary_Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')
+  makepng,finalfile
+
   avg_nonmonotonic_frac=(nonmonotonic_frac_odd+nonmonotonic_frac_even)/2.
   print,'Times=',time_string(tstartendtimes4pa2plot[0])+' - '+strmid(time_string(tstartendtimes4pa2plot[1]),11,8)+'UT,', $
     '    dPhAng2add=',dPhAng2add,'deg,   Tspin=',Tspin,'sec'
@@ -1095,15 +1152,58 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   ; After checking if additional sector should be added, add the above estimate to dSectr2add and dPhAng2add,
   ; then re-run until deltaPA_est=0 or fit process reaches 10 iterations.
   ; NOTE: below code wouldn't work properly when multiple sectors should be added, or going from negative to positive phase (>= 11 deg diff)
-  deltaPA_est = round(deltaPA_est*4)/4.
-  
-  maxiter = 4
+  if finite(deltaPA_est) then begin   ; sometimes no fit results from this initial guess
+    deltaPA_est = round(deltaPA_est*4)/4.
+  endif else begin
+    deltaPA_est = 0 ; if no fit results from this intial guess
+  endelse
+
   if deltaPA_est eq 0 or iters gt maxiter then begin
-    if iters gt 7 then print, 'Max iterations reached; using latest result'
+    ;-------- end of iter ----------------
+    if iters le maxiter then print, 'Max iterations reached; using latest result'
     print,'Final dSectr2add, dPhAng2add after ', iters-1, ' iterations:', dSectr2add, ' sectors, ', dPhAng2add, ' deg'
-    ;stop
+    PAfit_even_num[Isolu]=n_elements(where(FINITE(pafitminus90_even)))
+    PAfit_odd_num[Isolu]=n_elements(where(FINITE(pafitminus90_odd)))
+    LastIter[Isolu]=iters
+    PAdiff[Isolu]=(average(pafitminus90_even(where(FINITE(pafitminus90_even))))-average(pafitminus90_odd(where(FINITE(pafitminus90_odd)))))/2.
+    PAdSectr[Isolu]=dSectr2add
+    PAdPhAng[Isolu]=dPhAng2add
+    pafit_even_med[Isolu]=average(pafitminus90_even(where(FINITE(pafitminus90_even))))+90
+    pafit_odd_med[Isolu]=average(pafitminus90_odd(where(FINITE(pafitminus90_odd))))+90
+
+    angle_3points=45
+    threepoints:
+    even_3points=transpose(interp(transpose(pef2plots_even),transpose(pa2plots_even),[pafit_even_med[Isolu]-angle_3points,pafit_even_med[Isolu],pafit_even_med[Isolu]+angle_3points],/NO_CHECK_MONOTONIC,/NO_EXTRAPOLATE))
+    odd_3points=transpose(interp(transpose(pef2plots_odd),transpose(pa2plots_odd),[pafit_odd_med[Isolu]-angle_3points,pafit_odd_med[Isolu],pafit_odd_med[Isolu]+angle_3points],/NO_CHECK_MONOTONIC,/NO_EXTRAPOLATE))
+    ieven45=where(finite(even_3points[*,0]), jeven45) ; check whether pa=45 has data or not
+    ieven135=where(finite(even_3points[*,2]), jeven135)
+    iodd45=where(finite(odd_3points[*,0]), jodd45)
+    iodd135=where(finite(odd_3points[*,2]), jodd135)
+    if jeven45 eq 0 or jeven135 eq 0 or jodd45 eq 0 or jodd135 eq 0 then begin
+      ; if one pa doesn't have data
+      angle_3points=angle_3points-5
+      if angle_3points ge 25 then goto,threepoints
+    endif
+
+    str2exec="store_data,'pef2plots_even_"+string(Isolu,format='(I1)')+"',data={x:elf_pef_pa_spec_times[ispeceven], y:pef2plots_even}"
+    dummy=execute(str2exec)
+    str2exec="store_data,'pa2plots_even_"+string(Isolu,format='(I1)')+"',data={x:elf_pef_pa_spec_times[ispeceven], y:pa2plots_even}"
+    dummy=execute(str2exec)
+    str2exec="store_data,'pef2plots_odd_"+string(Isolu,format='(I1)')+"',data={x:elf_pef_pa_spec_times[ispecodd], y:pef2plots_odd}"
+    dummy=execute(str2exec)
+    str2exec="store_data,'pa2plots_odd_"+string(Isolu,format='(I1)')+"',data={x:elf_pef_pa_spec_times[ispecodd], y:pa2plots_odd}"
+    dummy=execute(str2exec)
+    str2exec="store_data,'even_3points"+string(Isolu,format='(I1)')+"',data={x:elf_pef_pa_spec_times[ispeceven], y:even_3points}"
+    dummy=execute(str2exec)
+    str2exec="store_data,'odd_3points"+string(Isolu,format='(I1)')+"',data={x:elf_pef_pa_spec_times[ispecodd], y:odd_3points}"
+    dummy=execute(str2exec)
+    str2exec="store_data,'pafitminus90_even"+string(Isolu,format='(I1)')+"',data={x:elf_pef_pa_spec_times[ispeceven], y:pafitminus90_even}"
+    dummy=execute(str2exec)
+    str2exec="store_data,'pafitminus90_odd"+string(Isolu,format='(I1)')+"',data={x:elf_pef_pa_spec_times[ispecodd], y:pafitminus90_odd}"
+    dummy=execute(str2exec)
+
   endif else if abs(dPhAng2add-deltaPA_est) gt 11 then begin ; calculate estimate in terms of additional sectors if needed (rest of code doesn't work with angles above 11)
-    ;stop
+    ;-------- iter continue ----------------
     if dPhAng2add-deltaPA_est lt 0 then begin
       dSectr2add-=1
       phase_shift=abs(deltaPA_est)-22.5
@@ -1126,22 +1226,22 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
     ;endif
     print, 'New dSectr2add, dPhAng2add from iteration ', iters, ':', dSectr2add, ' sectors, ', dPhAng2add, ' deg'
     ;stop
-    if abs(dPhAng2add) gt 11 then begin
-       ; edge case
-       skipfit=' '
-       print, 'edge case detected. skip fit? [y]'
-       read, skipfit
-       if skipfit eq 'y' then begin 
-        badflag = 2
-        bad_comment = 'algorithm failed'
-        autobad = 1
-        ;iters = maxiter+1
-        goto, endoffits
-       endif
-       
-       ;return
-       print, 'edge'
-    endif
+    ;    if abs(dPhAng2add) gt 11 then begin
+    ;      ; edge case
+    ;      skipfit=' '
+    ;      print, 'edge case detected. skip fit? [y]'
+    ;      read, skipfit
+    ;      if skipfit eq 'y' then begin
+    ;        badflag = 2
+    ;        bad_comment = 'algorithm failed'
+    ;        autobad = 1
+    ;        ;iters = maxiter+1
+    ;        goto, endoffits
+    ;      endif
+    ;
+    ;      ;return
+    ;      print, 'edge'
+    ;    endif
     goto, FINDSHIFT
   endif else begin
     ;stop
@@ -1150,6 +1250,188 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
     ;stop
     goto, FINDSHIFT
   endelse
+
+  Isolu += 1
+  if Isolu lt n_elements(iniSec) then goto, BODY   ; continue the initial sector loop
+
+  ;
+  ; ---------------------------------------------------------
+  ;           end of inital guesss loop: isolu0-4
+  ;           start skiptime on isolu5
+  ; ---------------------------------------------------------
+
+  if Isolu eq n_elements(iniSec) then begin
+    ;-----------------select best solution-------------------
+    ; if the solution doesn't have enough fit then nan
+    index=where(PAfit_even_num le 2 or PAfit_odd_num le 2, count) 
+    if count gt 0 then begin
+      PAdSectr[index]=!VALUES.F_NAN
+      PAdPhAng[index]=!VALUES.F_NAN
+      PAdiff[index]=!VALUES.F_NAN
+    endif
+    
+
+    index=where((PAfit_even_num+PAfit_odd_num) le median(PAfit_even_num+PAfit_odd_num)*0.1, count)
+    if count gt 0 then begin
+      PAdSectr[index]=!VALUES.F_NAN
+      PAdPhAng[index]=!VALUES.F_NAN
+      PAdiff[index]=!VALUES.F_NAN
+    endif 
+     
+    ; if complementary solution exist choose the smaller angle
+    dTotAng2add= PAdSectr*22.5+PAdPhAng
+    
+    ; choose the min PAdiff solution
+    costFun=abs(PAdiff)
+    icostFun=sort(costFun)
+
+    for i=0,n_elements(iniSec)-1 do begin
+      imincostFun=icostFun[i]
+      if finite(dTotAng2add[imincostFun]) eq 1 then begin
+        icomplem=where(abs(dTotAng2add[imincostFun]-dTotAng2add) lt 185 and abs(dTotAng2add[imincostFun]-dTotAng2add) gt 175,jcomplem)
+        case 1 of
+          (jcomplem ge 1) and (abs(dTotAng2add[imincostFun]) le 90): begin ; has complementary solution, and this one is the smaller angle
+            dSectr2add= PAdSectr[imincostFun]
+            dPhAng2add= PAdPhAng[imincostFun]
+            goto,skiptime
+          end
+          (jcomplem eq 0): begin ; doesn't have complementary solution
+            dSectr2add= PAdSectr[imincostFun]
+            dPhAng2add= PAdPhAng[imincostFun]
+            goto,skiptime
+          end
+          else: ; has complementary solution, and this one is the larger angle
+        endcase
+      endif
+    endfor
+
+    ;-------------------skiptime------------------------
+    skiptime:
+    str2exec="get_data,'pa2plots_even_"+string(imincostFun,format='(I1)')+"',data=data"
+    dummy=execute(str2exec)
+    pa2plots_even=data.y
+    str2exec="get_data,'pef2plots_even_"+string(imincostFun,format='(I1)')+"',data=data"
+    dummy=execute(str2exec)
+    pef2plots_even=data.y
+    str2exec="get_data,'pa2plots_odd_"+string(imincostFun,format='(I1)')+"',data=data"
+    dummy=execute(str2exec)
+    pa2plots_odd=data.y
+    str2exec="get_data,'pef2plots_odd_"+string(imincostFun,format='(I1)')+"',data=data"
+    dummy=execute(str2exec)
+    pef2plots_odd=data.y
+    str2exec="get_data,'even_3points"+string(imincostFun,format='(I1)')+"',data=data"
+    dummy=execute(str2exec)
+    even_3points=data.y
+    str2exec="get_data,'odd_3points"+string(imincostFun,format='(I1)')+"',data=data"
+    dummy=execute(str2exec)
+    odd_3points=data.y
+    str2exec="get_data,'pafitminus90_even"+string(imincostFun,format='(I1)')+"',data=data"
+    dummy=execute(str2exec)
+    pafitminus90_even=data.y
+    str2exec="get_data,'pafitminus90_odd"+string(imincostFun,format='(I1)')+"',data=data"
+    dummy=execute(str2exec)
+    pafitminus90_odd=data.y
+
+    ;stop
+    if median(elf_Br_sign.y) lt 0 then begin ; northern hemisphere
+      evendiff_45_90=even_3points[*,1]-even_3points[*,0] ;90-45
+      evendiff_90_135=even_3points[*,1]-even_3points[*,2] ;90-135
+      ;even_ratio=evendiff_45_90/evendiff_90_135
+      odddiff_45_90=odd_3points[*,1]-odd_3points[*,0] ;90-45
+      odddiff_90_135=odd_3points[*,1]-odd_3points[*,2] ;90-135
+      ;odd_ratio=odddiff_45_90/odddiff_90_135  ; prec/back
+    endif else begin  ; southern hemisphere
+      evendiff_45_90=even_3points[*,1]-even_3points[*,0] ;90-45
+      evendiff_90_135=even_3points[*,1]-even_3points[*,2] ;90-135
+      ;even_ratio=evendiff_90_135/evendiff_45_90
+      odddiff_45_90=odd_3points[*,1]-odd_3points[*,0] ;90-45
+      odddiff_90_135=odd_3points[*,1]-odd_3points[*,2] ;90-135
+      ;odd_ratio=odddiff_90_135/odddiff_45_90 ; prec/back
+    endelse
+
+    plot,evendiff_45_90,evendiff_90_135,psym=2,yrange=[0,1.5],xrange=[0,1.5]
+    plots,evendiff_45_90,evendiff_90_135,psym=2,color=240
+    plots,odddiff_45_90,odddiff_90_135,psym=2,color=70
+    oplot,findgen(16,start=0.,incre=0.1),findgen(16,start=0.,incre=0.1)+sqrt(2)*0.05,linestyle=0
+    oplot,findgen(16,start=0.,incre=0.1),findgen(16,start=0.,incre=0.1)-sqrt(2)*0.05,linestyle=0
+    oplot,findgen(16,start=0.,incre=0.1),findgen(16,start=0.,incre=0.1)+sqrt(2)*0.1,linestyle=1
+    oplot,findgen(16,start=0.,incre=0.1),findgen(16,start=0.,incre=0.1)-sqrt(2)*0.1,linestyle=1
+    oplot,findgen(16,start=0.,incre=0.1),findgen(16,start=0.,incre=0.1)+sqrt(2)*0.2,linestyle=2
+    oplot,findgen(16,start=0.,incre=0.1),findgen(16,start=0.,incre=0.1)-sqrt(2)*0.2,linestyle=2
+    makepng,'gradient prec vs back'
+
+
+    even_dis=abs(evendiff_45_90-evendiff_90_135)/sqrt(2)
+    odd_dis=abs(odddiff_45_90-odddiff_90_135)/sqrt(2)
+    ieven_skip=where((even_dis gt 0.1) or (finite(even_dis) eq 0), ieven_skip_count, COMPLEMENT=ieven_keep)  ; skip
+    iodd_skip=where((odd_dis gt 0.1) or (finite(odd_dis) eq 0), iodd_skip_count, COMPLEMENT=iodd_keep)
+
+    if n_elements(where(finite(even_dis[ieven_keep]))) lt 5 or n_elements(where(finite(odd_dis[iodd_keep]))) lt 5 then begin
+      ieven_skip=where((even_dis gt 0.2) or (finite(even_dis) eq 0), ieven_skip_count, COMPLEMENT=ieven_keep)  ; skip
+      iodd_skip=where((odd_dis gt 0.2) or (finite(odd_dis) eq 0), iodd_skip_count, COMPLEMENT=iodd_keep)
+    endif
+
+    ; isolu5 iters0: same as the best result with fewer lines
+    if ieven_skip_count ne 0 then begin
+      foreach jthspec, ieven_skip do begin
+        pef2plots_even[jthspec,*]=!Values.F_NAN
+        pafitminus90_even[jthspec]=!Values.F_NAN
+      endforeach
+    endif
+    if iodd_skip_count ne 0 then begin
+      foreach jthspec, iodd_skip do begin
+        pef2plots_odd[jthspec,*]=!Values.F_NAN
+        pafitminus90_odd[jthspec]=!Values.F_NAN
+      endforeach
+    endif
+
+    deltaPA_est=(average(pafitminus90_even(where(FINITE(pafitminus90_even))))-average(pafitminus90_odd(where(FINITE(pafitminus90_odd)))))/2.
+    plotxy,[[reform(pa2plots_even[0,*])],[reform(pef2plots_even[0,*])]], $
+      xrange=[-5.,185.],yrange=[miny,maxy],/ylog,/noisotropic, $
+      xsize=800.,ysize=500.,psym=-2,colors=['r'], $
+      title=time_string(tstartendtimes4pa2plot[0])+' - '+strmid(time_string(tstartendtimes4pa2plot[1]),11,8)+ $
+      ' UT'+', dSectr2add = '+strtrim(string(dSectr2add,format="(I7)"),1)+', dPhAng2add = '+strtrim(string(dPhAng2add,format="(f6.2)"),1)+'deg, dPA290_est='+string(deltaPA_est,format="(f6.1)")+'deg',xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
+    plotxy,[[reform(pa2plots_odd[0,*])],[reform(pef2plots_odd[0,*])]],/over,psym=-1,colors=['b'],title=' ',xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
+    for jthspec=0,n_elements(ispeceven)-1 do plotxy,[[reform(pa2plots_even[jthspec,*])],[reform(pef2plots_even[jthspec,*])]],/over,psym=-1,colors=['r'],title=' ',xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
+    for jthspec=0,n_elements(ispeceven)-1 do plotxy,[[pafitminus90_even[jthspec]+90.,pafitminus90_even[jthspec]+90.],[0.2*maxy,maxy]],/over,colors=['r'],title=' ',xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
+    for jthspec=0,n_elements(ispecodd)-1 do plotxy,[[reform(pa2plots_odd[jthspec,*])],[reform(pef2plots_odd[jthspec,*])]],/over,psym=-1,colors=['b'],title=' ',xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
+    for jthspec=0,n_elements(ispecodd)-1 do plotxy,[[pafitminus90_odd[jthspec]+90.,pafitminus90_odd[jthspec]+90.],[0.2*maxy,maxy]],/over,colors=['b'],title=' ',xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
+    ;plotxy,[[xfit],[yfit_odd]],/over,colors=['o'],title=' ',linestyle=2,thick=5,yrange=[miny,maxy],xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
+    ;plotxy,[[xfit],[yfit_even]],/over,colors=['g'],title=' ',linestyle=2,thick=5,yrange=[miny,maxy],xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
+    makepng,'summary_Isolu5_Iters0_BestIsolu'+string(imincostFun,format='(I1)')
+    
+    
+    ;n_elements(where(FINITE(pafitminus90_even)))+n_elements(where(FINITE(pafitminus90_odd)))
+    if n_elements(where(finite(even_dis[ieven_keep])))+n_elements(where(finite(odd_dis[iodd_keep]))) gt 4 then begin  ;if after skip the remaining is enough
+      iters=0
+      skiptime=[]
+      if ieven_skip_count ne 0 then foreach jthspec, ieven_skip do append_array,skiptime,reform(elf_pef_pa_spec_times_full[ispeceven[jthspec],*])
+      if iodd_skip_count ne 0 then foreach jthspec, iodd_skip do append_array,skiptime,reform(elf_pef_pa_spec_times_full[ispecodd[jthspec],*])
+      goto,FINDSHIFT
+    endif else begin
+      ; if skip too much, then do not fit again, use the current best fit as isolu=5, badflag=-2
+;      finalfile='summary_Isolu'+string(imincostFun,format='(I1)')+'_Iters'+string(LastIter[imincostFun],format='(I1)')
+;      PAdiff[Isolu]=PAdiff[imincostFun]
+;      str2exec="get_data,'pafitminus90_even"+string(imincostFun,format='(I1)')+"',data=data"
+;      dummy=execute(str2exec)
+;      pafitminus90_even=data.y
+;      str2exec="get_data,'pafitminus90_odd"+string(imincostFun,format='(I1)')+"',data=data"
+;      dummy=execute(str2exec)
+;      pafitminus90_odd=data.y
+      iters=0
+      skiptime=[]
+      badflag=-2
+      goto,FINDSHIFT
+    endelse
+  endif
+
+  ;  move final plot to finalplot folder
+  ;file_copy,finalfile+'.png','bestfit.png',/OVERWRITE
+  ;cwd,cwdirname
+  ;return
+  ;-----------------------------------------------------------
+  ;       end of fitting
+  ;-----------------------------------------------------------
 
   ; Now get loss cone and check if PAD captures it (if so, flag as high quality)
   tinterpol_mxn,'el'+probe+'_pos_gsm',elf_pef_pa_spec_times
@@ -1184,36 +1466,34 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   loss_antiloss_arr=[min(loss_cone.y),max(anti_loss_cone.y)]
   trapped=loss_antiloss_arr(sort(loss_antiloss_arr))
   if max(min_pas) lt trapped[0] or min(max_pas) gt trapped[1] then hq_flag=1
- 
+
   print, 'PAD high quality flag:', hq_flag
   print, avg_nonmonotonic_frac
   ;if avg_nonmonotonic_frac gt 0 then stop
-  
+
   check2 = total(n_elements(dat.tstart))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;END OF FITS                                  ;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  autobad = 0
-  badFlag = 0
   endoffits: print, 'fits ended'
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;START OF MEDIAN CALCULATION                  ;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  
+
   ;;;MEDIANS WITH NANs, WILL BECOME OBSOLETE IN TIME {{{:
   starttimes = time_double(dat.tstart)
   angles = dat.dSectr2add*22.5+dat.dPhAng2add
   meds = dat.LatestMedianSectr*22.5+dat.LatestMedianPhAng
   badmeds= where(~finite(dat.LatestMedianPhAng))
-  
-  if badmeds[0] ne -1 then begin 
+
+  if badmeds[0] ne -1 then begin
     foreach nan, badmeds do begin
-      
+
       int_end = starttimes[nan]
       int_start = int_end-3600.*24.*7.
       valid_items = where(starttimes ge int_start and starttimes le int_end and dat.badflag eq 0)
       current_median = median(angles[valid_items])
-      
+
       if abs(current_median) gt 56.5 then begin
         dat.LatestMedianSectr[nan]=round(3*sign(current_median))
         dat.LatestMedianPhAng[nan]=current_median-3*22.5*sign(current_median)
@@ -1227,7 +1507,7 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
         dat.LatestMedianSectr[nan] = 0
         dat.LatestMedianPhAng[nan] = current_median
       endif
-      
+
       ;if abs(current_median) gt 11 and abs(abs(current_median)-22.5) le 11 then begin
       ;  dat.LatestMedianSectr[nan]=round(1*sign(current_median))
       ;  dat.LatestMedianPhAng[nan]=current_median-22.5*sign(current_median)
@@ -1242,38 +1522,38 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
       ;  dat.LatestMedianPhAng[nan] = current_median
       ;endif
     endforeach
-    
+
     if ~finite(dat.LatestMedianSectr[nan]) or ~finite(dat.LatestMedianPhAng[nan]) then begin
       print, 'Median failed'
       stop
     endif
   endif
   check3 = total(n_elements(dat.tstart))
-  
+
   ;;;CURRENT MEDIAN
   int_end = time_double(tstart)
-  median_range = 7. ;it will go back 7 days to find a new median 
+  median_range = 7. ;it will go back 7 days to find a new median
   int_start = int_end-3600.*24.*median_range
   valid_items = where(starttimes ge int_start and starttimes le int_end and dat.badflag eq 0)
   if valid_items[0] eq -1 then begin
-    print, 'The phase delay procedure has stopped because there is no entry within the median range. Please extend the range to continue. 
+    print, 'The phase delay procedure has stopped because there is no entry within the median range. Please extend the range to continue.
   endif
   current_median = median(angles[valid_items])
   placeholder_phase = current_median
-  
-    if abs(current_median) gt 56.5 then begin
-      LatestMedianSectr=round(3*sign(current_median))
-      LatestMedianPhAng=current_median-3*22.5*sign(current_median)
-    endif else if abs(current_median) gt 34 then begin
-      LatestMedianSectr=round(2*sign(current_median))
-      LatestMedianPhAng=current_median-2*22.5*sign(current_median)
-    endif else if abs(current_median) gt 11 then begin
+
+  if abs(current_median) gt 56.5 then begin
+    LatestMedianSectr=round(3*sign(current_median))
+    LatestMedianPhAng=current_median-3*22.5*sign(current_median)
+  endif else if abs(current_median) gt 34 then begin
+    LatestMedianSectr=round(2*sign(current_median))
+    LatestMedianPhAng=current_median-2*22.5*sign(current_median)
+  endif else if abs(current_median) gt 11 then begin
     ;and abs(abs(current_median)-22.5) le 11 then begin
-      LatestMedianSectr=round(1*sign(current_median))
-      LatestMedianPhAng=current_median-22.5*sign(current_median)
-    endif else if abs(current_median) le 11 then begin
-      LatestMedianSectr = 0
-      LatestMedianPhAng = current_median
+    LatestMedianSectr=round(1*sign(current_median))
+    LatestMedianPhAng=current_median-22.5*sign(current_median)
+  endif else if abs(current_median) le 11 then begin
+    LatestMedianSectr = 0
+    LatestMedianPhAng = current_median
     ;if abs(current_median) ge 11 or abs(abs(current_median)-22.5) le 11 then begin
     ;  LatestMedianSectr=round(1*sign(current_median))
     ;  LatestMedianPhAng=current_median-22.5*sign(current_median)
@@ -1286,21 +1566,21 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
     ;endif else if abs(current_median) le 11 then begin
     ;  LatestMedianSectr = 0
     ;  LatestMedianPhAng = current_median
-    endif else begin
-      print, 'no recognized median'
-    endelse
-    
-    print, current_median
-    ;print, latestmedianPhAng
-    print, latestmedianSectr
-    
-    ;stop
-    
+  endif else begin
+    print, 'no recognized median'
+  endelse
+
+  print, current_median
+  ;print, latestmedianPhAng
+  print, latestmedianSectr
+
+  ;stop
+
   if ~finite(LatestMedianSectr) or ~finite(LatestMedianPhAng) then begin
     print, 'Median failed'
     stop
   endif
-  
+
   check4 = total(n_elements(dat.tstart))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;END OF MEDIAN CALCULATION                    ;
@@ -1311,47 +1591,111 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
 
   ; Print average chi squared of final iteration's fits (and append to calibration file)
   ;chisq_avg=average([chisq_even(where(finite(chisq_even))),chisq_odd(where(finite(chisq_odd)))])
-  
+  ; ---------------------------------------------------------------------------------
+  ; determine flag
+  ; -- badflag=-1 sus: phase delay angle is far away from median, export to csv
+  ; -- badflag=-2 sus: no enough data for Isolu5, meaning no enough date are symmetric, export to csv
+  ; -- badflag=-3 sus: fit peak is far away from 90 degree, export to csv
+  ; -- badflag=-4 sus: variance of fit peak is too large, export to csv
+  ; -- badflag=1 bad: fitting is not converge
+  ; -- badflag=2 bad: no fit
+  ; -- badflag=3 bad: bad fgm state
+  ; ---------------------------------------------------------------------------------
+  ;stop
+  ; badflag=-1,-2,-3 sus, needs further check
+  ; badflag=-1, large difference between median and current solution (1.5 sector=35 deg)
+  if abs((dSectr2add*22.5+dPhAng2add)-(LatestMedianSectr*22.5+LatestMedianPhAng)) gt 35 then begin
+    badFlag = -1
+    ;dSectr2add=LatestMedianSectr
+    ;dPhAng2add=LatestMedianPhAng
+    ;stop
+  endif
 
-  
-  if abs(dSectr2add) gt 10 then begin
-    print, 'fit failed, using placeholder'
-    badFlag = 1
-    phase_result=placeholder_phase
-    if abs(phase_result) gt 11 and abs(phase_result-22.5) le 11 then begin
-      dSectr2add=1
-      dPhAng2add=phase_result-22.5
-    endif else if abs(phase_result) gt 34 then begin
-      dSectr2add=2
-      dPhAng2add=phase_result-2*22.5
-    endif else if abs(phase_result) gt 56.5 then begin
-      dSectr2add=3
-      dPhAng2add=phase_result-3*22.5
-    endif
-    badcomment = 'Fit failed, exceeded reasonable limit'
-    badFlag = 1
-    autobad = 1
+  ; badflag=-2, no enough data for Isolu=5, already defined in Line1406
+  ; meaning no enough symmetric solutions around pa=90
+;  if badflag eq -2 then begin
+;    dSectr2add=LatestMedianSectr
+;    dPhAng2add=LatestMedianPhAng
+;  endif
+
+  ; badflag=-3, fit peak is far away from 90 degree (12 deg)
+  pafitminus90_even_mean=mean(abs(pafitminus90_even),/nan)
+  pafitminus90_odd_mean=mean(abs(pafitminus90_odd),/nan)
+  if abs(pafitminus90_even_mean) gt 12 or abs(pafitminus90_odd_mean) gt 12 then begin
+    badFlag = -3
+    ;dSectr2add=LatestMedianSectr
+    ;dPhAng2add=LatestMedianPhAng
+    ;stop
   endif
   
-  ;print,'Average chi squared of fits from last iteration:', chisq_avg
+  ; badflag=-4, variance of fit peak is too large (15 deg)
+  pafitminus90_even_std=stddev(abs(pafitminus90_even),/nan)
+  pafitminus90_odd_std=stddev(abs(pafitminus90_odd),/nan)
+  if ((pafitminus90_even_std gt 15) and (pafitminus90_odd_std gt 15)) then begin
+    badFlag = -4
+  endif
+
+  ; badflag=1: not converge 
+  if abs(PAdiff[5]) gt 1 then begin
+    badFlag= 1
+    dSectr2add=LatestMedianSectr
+    dPhAng2add=LatestMedianPhAng
+    ;stop
+  endif
+
+  ; badflag=2, no fit
+  if n_elements(where(FINITE(pafitminus90_even))) lt 2 or n_elements(where(FINITE(pafitminus90_odd))) lt 2 then begin
+    badFlag = 2
+    dSectr2add=LatestMedianSectr
+    dPhAng2add=LatestMedianPhAng
+    ;stop
+  endif
   
+  ; badflag=3, bag fgm state
+  get_data,'el'+probe+'_pef_spinper',data=elf_pef_spinper
+  spin_med=median(elf_pef_spinper.y)
+  spin_var=variance(elf_pef_spinper.y)
+  if spin_med lt 2.3 or spin_var/spin_med gt 0.1 then begin
+    badFlag = 3
+    dSectr2add=LatestMedianSectr
+    dPhAng2add=LatestMedianPhAng
+    ;stop
+  endif
+  
+  xyouts,  .65, .015, 'Created: '+systime()+ '   flag =' + string(badflag,FORMAT='(I2)'), /normal
+  xyouts,  .84, 0.26, 'flag',/normal
+  xyouts,  .84, 0.24, ' 0 good fit',/normal
+  xyouts,  .84, 0.22, ' 1 bad: not converge',/normal
+  xyouts,  .84, 0.20, ' 2 bad: no fit',/normal
+  xyouts,  .84, 0.18, ' 3 bad: bad fgm state',/normal
+  xyouts,  .84, 0.16, '-1 sus: far off median',/normal
+  xyouts,  .84, 0.14, '-2 sus: not symmetric',/normal
+  xyouts,  .84, 0.12, '-3 sus: fit peak off 90',/normal
+  xyouts,  .84, 0.10, '-4 sus: peaks high var',/normal
+  
+  makepng,'bestfit'
+  cwd,cwdirname
+  ;stop
+  ;print,'Average chi squared of fits from last iteration:', chisq_avg
+
   ; Re-write to file
   if autobad then phase_result = placeholder_phase else phase_result=dSectr2add*22.5+dPhAng2add
-  
-  if autobad eq 0 then begin 
-    print,'Do you want to flag this result as bad (y)?'
-    incommand=' '
-    read,incommand
-    ;incommand = 'n'
-    bad_comment = ' '
-    if incommand eq 'y' then begin 
-       badFlag=1
-       read, bad_comment
-       phase_result = placeholder_phase
-    endif
-  endif
 
-  
+  ; JWu comment start
+  ;  if autobad eq 0 then begin
+  ;    print,'Do you want to flag this result as bad (y)?'
+  ;    incommand=' '
+  ;    read,incommand
+  ;    ;incommand = 'n'
+  ;    bad_comment = ' '
+  ;    if incommand eq 'y' then begin
+  ;      badFlag=1
+  ;      read, bad_comment
+  ;      phase_result = placeholder_phase
+  ;    endif
+  ;  endif
+  ; JWu comment end
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;END OF FIT ANALYSIS                          ;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1360,15 +1704,15 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   ;START OF FILE FORMATTING                     ;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  ;find index where starttime should be 
+  ;find index where starttime should be
   valid_items = where(starttimes le time_double(tstart)+5.*60.)
   newindex = valid_items[-1]
-  
+
   newentry = [string(time_string(tstart)), string(time_string(tend)), string(dSectr2add), string(dPhang2add), string(LatestMedianSectr), string(LatestMedianPhAng), string(badFlag)]
-  
+
   ;figure out if this science zone is new. if not, it has to be appended in a different way.
   n = where(time_double(tstart) lt starttimes-60.*5, old)
-  
+
   ;create new entry array
   ;newdat = CREATE_STRUCT(cols[0], tstarts, cols[1], tends, cols[2], dSectr2adds, cols[3], dPhAng2adds, cols[4], LatestMedianSectrs, cols[5], LatestMedianPhAngs, cols[6], badFlags)
 
@@ -1377,30 +1721,30 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
     ;stop
     replace = 1
     tbr = where(time_double(tstart) ge starttimes-60.*5. and time_double(tstart) le starttimes+60.*5.)
-    for i = 0, n_elements(cols)-1 do begin 
+    for i = 0, n_elements(cols)-1 do begin
       dat.(i)[tbr] = newentry[i]
     endfor
     newdat = CREATE_STRUCT(cols[0], dat.(0), cols[1], dat.(1), cols[2], dat.(2), cols[3], dat.(3), cols[4], dat.(4), cols[5], dat.(5), cols[6], dat.(6))
     print, 'classified as repeat'
-    
-  endif else begin
-      tstarts =  [dat.tstart, time_string(newentry[0])]
-      tends =  [dat.tend, time_string(newentry[1])]
-      dSectr2adds = [dat.dSectr2add, newentry[2]]
-      dPhang2adds = [dat.dPhang2add, newentry[3]]
-      LatestMedianSectrs = [dat.LatestMedianSectr, newentry[4]]
-      LatestMedianPhAngs = [dat.LatestMedianPhAng,newentry[5]]
-      badFlags = [dat.badFlag, newentry[6]]
-      newdat = CREATE_STRUCT(cols[0], tstarts, cols[1], tends, cols[2], dSectr2adds, cols[3], dPhAng2adds, cols[4], LatestMedianSectrs, cols[5], LatestMedianPhAngs, cols[6], badFlags)
-      
-      sorting = sort(tstarts)
 
-      for i = 0, n_elements(cols)-1 do begin
-        newdat.(i) = newdat.(i)[sorting]
-      endfor
-      print, 'didnt classify as repeat'
-  endelse 
-  
+  endif else begin
+    tstarts =  [dat.tstart, time_string(newentry[0])]
+    tends =  [dat.tend, time_string(newentry[1])]
+    dSectr2adds = [dat.dSectr2add, newentry[2]]
+    dPhang2adds = [dat.dPhang2add, newentry[3]]
+    LatestMedianSectrs = [dat.LatestMedianSectr, newentry[4]]
+    LatestMedianPhAngs = [dat.LatestMedianPhAng,newentry[5]]
+    badFlags = [dat.badFlag, newentry[6]]
+    newdat = CREATE_STRUCT(cols[0], tstarts, cols[1], tends, cols[2], dSectr2adds, cols[3], dPhAng2adds, cols[4], LatestMedianSectrs, cols[5], LatestMedianPhAngs, cols[6], badFlags)
+
+    sorting = sort(tstarts)
+
+    for i = 0, n_elements(cols)-1 do begin
+      newdat.(i) = newdat.(i)[sorting]
+    endfor
+    print, 'didnt classify as repeat'
+  endelse
+
   ;sorting = uniq(tstarts, sort(tstarts))
   ;print, time_string(double(tstarts[0]))
   ;stop
@@ -1411,12 +1755,12 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   ;    LatestMedianSectrs = [dat.LatestMedianSectr[0:newindex], LatestMedianSectr, dat.LatestMedianSectr[newindex+1:-1]]
   ;    LatestMedianPhAngs = [dat.LatestMedianPhAng[0:newindex], LatestMedianPhAng, dat.LatestMedianPhAng[newindex+1:-1]]
   ;    badFlags = [dat.badFlag[0:newindex], badFlag, dat.badFlag[newindex+1:-1]]
-  ;  endelse 
+  ;  endelse
   ;   newdat = CREATE_STRUCT(cols[0], tstarts, cols[1], tends, cols[2], dSectr2adds, cols[3], dPhAng2adds, cols[4], LatestMedianSectrs, cols[5], LatestMedianPhAngs, cols[6], badFlags)
   ;   write_csv, file, newdat, header = cols
-  ;endelse 
-   
-   
+  ;endelse
+
+
   ; if ~old then begin
   ;  tstarts =  [dat.tstart[0:newindex-replace], tstart]
   ;  tends =  [dat.tend[0:newindex-replace], tend]
@@ -1434,43 +1778,44 @@ pro elf_phase_delay_auto_new_a, pick_times=pick_times, new_config=new_config, pr
   ;  LatestMedianPhAngs = [dat.LatestMedianPhAng[0:newindex-replace], LatestMedianPhAng, dat.LatestMedianPhAng[newindex+1:-1]]
   ;  badFlags = [dat.badFlag[0:newindex-replace], badFlag, dat.badFlag[newindex+1:-1]]
   ;endelse
-   ;newdat = CREATE_STRUCT(cols[0], tstarts, cols[1], tends, cols[2], dSectr2adds, cols[3], dPhAng2adds, cols[4], LatestMedianSectrs, cols[5], LatestMedianPhAngs, cols[6], badFlags)
-   ;
+  ;newdat = CREATE_STRUCT(cols[0], tstarts, cols[1], tends, cols[2], dSectr2adds, cols[3], dPhAng2adds, cols[4], LatestMedianSectrs, cols[5], LatestMedianPhAngs, cols[6], badFlags)
+  ;
+
   write_csv, file, newdat, header = cols
   ;temporary check
-   temp_dub = time_double(newdat.tstart[-5:n_elements(newdat.tstart)-1])
-   ordered_dub = temp_dub[sort(temp_dub)]
-   a = temp_dub ne ordered_dub
-   if total(a) ge 1 then stop
-  ;end of temporary check 
-   
+  temp_dub = time_double(newdat.tstart[-5:n_elements(newdat.tstart)-1])
+  ordered_dub = temp_dub[sort(temp_dub)]
+  a = temp_dub ne ordered_dub
+  if total(a) ge 1 then stop
+  ;end of temporary check
+
   check5 = total(n_elements(tstarts))
-  
+
   ;if check1-check2+check3-check4+check5-1 ne check1 then stop
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;END OF FILE FORMATTING                       ;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  ;newdat = read_csv(file, N_TABLE_HEADER = 1) 
+  ;newdat = read_csv(file, N_TABLE_HEADER = 1)
   ;mask = uniq(time_double(newdat.field01), sort(time_double(newdat.field01)))
   ;close, /all
-
-  logentry = [string(tstart), string(tend), string(oldtimes_current[0]), string(oldtimes_current[1]), string(dSectr2add), string(dPhAng2add), strtrim(badFlag), strtrim(bad_comment)]
-  logentry = strjoin(logentry, ', ')
-  CD, 'epd_processing'
-  OPENW, 1, 'el'+probe+'_epd_processing_log.csv', /APPEND
-  PRINTF, 1, logentry
-  CD, '..'
-  ;entry = [oldtimes_current[0], oldtimes_current[1], chisq_avg, new_entry
-  ;oldtimes_start = [oldszs.field3, oldtimes_current[0]]
-  ;oldtimes_end = [oldszs.field4, oldtimes_current[1]]
-  CLOSE, 1
-  print, 'log entry: '
-  print, logentry
-  
+  ;JWu comment start
+  ;  logentry = [string(tstart), string(tend), string(oldtimes_current[0]), string(oldtimes_current[1]), string(dSectr2add), string(dPhAng2add), strtrim(badFlag), strtrim(bad_comment)]
+  ;  logentry = strjoin(logentry, ', ')
+  ;  CD, 'epd_processing'
+  ;  OPENW, 1, 'el'+probe+'_epd_processing_log.csv', /APPEND
+  ;  PRINTF, 1, logentry
+  ;  CD, '..'
+  ;  ;entry = [oldtimes_current[0], oldtimes_current[1], chisq_avg, new_entry
+  ;  ;oldtimes_start = [oldszs.field3, oldtimes_current[0]]
+  ;  ;oldtimes_end = [oldszs.field4, oldtimes_current[1]]
+  ;  CLOSE, 1
+  ;  print, 'log entry: '
+  ;  print, logentry
+  ;JWu comment end
   ;stop
 
   ; Manually copy updated calibration file to server, if desired
-  
- 
+
+
 end

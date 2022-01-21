@@ -155,6 +155,9 @@ pro spp_fld_dcb_events_load_l1, file, prefix = prefix, varformat = varformat
 
         store_data, rts_stat + rts_name, $
           dat = {x:d_code.x[ind], y:rts}
+          
+        store_data, rts_stat + rts_name + '_MET', $
+          dat = {x:d_code.x[ind], y:d_met.y[ind]}
 
         if rts_stat.EndsWith('STARTED') then begin
           options, rts_stat + rts_name, 'colors', [2]
