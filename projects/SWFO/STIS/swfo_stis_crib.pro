@@ -7,8 +7,8 @@
 ; 
 ; 
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-01-06 19:12:07 -0800 (Thu, 06 Jan 2022) $
-; $LastChangedRevision: 30500 $
+; $LastChangedDate: 2022-01-21 13:49:47 -0800 (Fri, 21 Jan 2022) $
+; $LastChangedRevision: 30530 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -57,7 +57,8 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.port = 2428
   opts.init_realtime = 1                 ; Set to 1 to start realtime stream widget
   opts.init_stis =1                      ; set to 1 to initialize the STIS APID definitions
-  opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-1.,.05]*600','swfo_stis_plot_example','timebar,systime(1)']                    ; commands to be run in exec widget
+  opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-1.,.05]*600','timebar,systime(1)']                    ; commands to be run in exec widget
+  ;opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-1.,.05]*600','swfo_stis_plot_example','timebar,systime(1)']                    ; commands to be run in exec widget
   opts.file_trange = ['2021-10-10', '2021-10-19']   ; Temp margin test data
   opts.file_trange =  ['2021-08-23/4', '2021-08-24/02']   ; This time range includes some good sample data to test robustness of the code - includes a version change
   opts.file_trange = 2  ;   ; set a time range for the last N hours
@@ -136,7 +137,7 @@ endif
 
 if keyword_set(opts.exec_text) then begin
   dprint,'Create a generic widget that can execute a list of IDL commands at regular intervals.  These are defined by the user.'
-  exec, exec_text = opts.exec_text,title=opts.title+' EXEC',interval=15
+  exec, exec_text = opts.exec_text,title=opts.title+' EXEC',interval=7
 endif
 
 

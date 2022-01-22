@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-01-08 18:24:07 -0800 (Sat, 08 Jan 2022) $
-; $LastChangedRevision: 30508 $
+; $LastChangedDate: 2022-01-21 17:04:35 -0800 (Fri, 21 Jan 2022) $
+; $LastChangedRevision: 30531 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_hkp_apdat__define.pro $
 
 
@@ -8,11 +8,26 @@
 function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,ptp_header=ptp_header,apdat=apdat
   ccsds_data = swfo_ccsds_data(ccsds)
   
+  if 1 then begin
+    last_time = systime(1)
+    last_time = (*(self.last_ccsds_p)).time
+    last_met  = (*(self.last_ccsds_p)).met
+    ;printdat,self.last_ccsds_p
+    if 1 && (ccsds.MET eq last_met) then begin
+        dprint,'MET not incrementing: '+time_string(last_time),dwait=10
+        ccsds.time = last_time + 0.99      
+      ;  ccsds.time = systime(1)
+      ;hexprint,ccsds_data
+    endif
+  endif
+  
+  
+  
   ;printdat,time_string(ccsds.time)
   ;printdat,ccsds
   if debug(3) && ccsds.apid eq 862 then begin
     dprint,ccsds.seqn,'   ',time_string(ccsds.time,prec=4),' ',ccsds.pkt_size
-    hexprint,ccsds_data
+    ;hexprint,ccsds_data
   endif
 
   if debug(5) then begin
@@ -58,8 +73,8 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
       noise_bits:  swfo_data_select(ccsds_data,(22)*8, 16  ) , $
       revnum0:     swfo_data_select(ccsds_data,(d+2*0  )*8, 8  ) , $   
       mapid:       swfo_data_select(ccsds_data,(d+2*0+1)*8, 8  ) , $
-      cmds:        swfo_data_select(ccsds_data,(d+2*1  )*8, 8  ) , $
-      icmnds:      swfo_data_select(ccsds_data,(d+2*1+1)*8, 8  ) , $
+      cmds_valid:        swfo_data_select(ccsds_data,(d+2*1  )*8, 8  ) , $
+      cmds_invalid:      swfo_data_select(ccsds_data,(d+2*1+1)*8, 8  ) , $
       user_0e:     swfo_data_select(ccsds_data,(d+2*2)*8, 16 ) , $
       user_09:     swfo_data_select(ccsds_data,(d+2*3)*8, 16 ) , $
       mem_addr:    swfo_data_select(ccsds_data,(d+2*4)*8, 16 ) , $
@@ -175,8 +190,8 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
       adc_temp_s2:    swfo_data_select(ccsds_data,(d+2*8 )*8, 16  ,/signed) *flt , $
       mapid:     swfo_data_select(ccsds_data,(d+2*9   )*8, 8  ) , $
       revnum:    swfo_data_select(ccsds_data,(d+2*9+1)*8, 8  ) , $
-      cmds:      swfo_data_select(ccsds_data,(d+2*10  )*8, 8  ) , $
-      icmnds:    swfo_data_select(ccsds_data,(d+2*10+1)*8, 8  ) , $
+      cmds_valid:      swfo_data_select(ccsds_data,(d+2*10  )*8, 8  ) , $
+      cmds_invalid:    swfo_data_select(ccsds_data,(d+2*10+1)*8, 8  ) , $
       status_bits:  swfo_data_select(ccsds_data,(d+2*11)*8, 16 ) , $
       noise_bits:  swfo_data_select(ccsds_data,(d+2*12)*8, 16 ) , $
       mem_addr:   swfo_data_select(ccsds_data,(d+2*13)*8, 16 ) , $
@@ -198,7 +213,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
     str = !null
   endelse
 
-  if 0 then begin
+  if 2 then begin
     printdat,str,/hex
     dprint,time_string(str.time,/local)
   endif

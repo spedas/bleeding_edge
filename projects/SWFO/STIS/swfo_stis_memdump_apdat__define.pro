@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-18 20:10:03 -0700 (Wed, 18 Aug 2021) $
-; $LastChangedRevision: 30218 $
+; $LastChangedDate: 2022-01-21 13:49:47 -0800 (Fri, 21 Jan 2022) $
+; $LastChangedRevision: 30530 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_memdump_apdat__define.pro $
 
 
@@ -13,8 +13,8 @@ function swfo_stis_memdump_apdat::decom,ccsds,source_dict=source_dict
 ;    bytecount = intarr(2ul ^17+1024)
 ;  endif
 
-  dd= 20  
-  ccsds_data = spp_swp_ccsds_data(ccsds)
+  dd= 24 ;  was 20
+  ccsds_data = swfo_ccsds_data(ccsds)
   
  ; memdata = ccsds_data[20:1024+20-1]
  ; memdata = swap_endian( uint(ccsds_data,20,256) ,/swap_if_little_endian)
@@ -69,6 +69,7 @@ function swfo_stis_memdump_apdat::decom,ccsds,source_dict=source_dict
     image2 = reform(byteimage,nrows,ncols)
     image2 = congrid(image2,nrows * rn,ncols *rn)
     tv,image2
+    dprint,'hello',dlevel=3
     
     
   endif

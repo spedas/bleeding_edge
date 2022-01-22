@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-01-08 18:24:07 -0800 (Sat, 08 Jan 2022) $
-; $LastChangedRevision: 30508 $
+; $LastChangedDate: 2022-01-21 13:49:47 -0800 (Fri, 21 Jan 2022) $
+; $LastChangedRevision: 30530 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -14,10 +14,24 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
     ;hexprint,swfo_data_select(ccsds_data,80,8)
   endif
 
-  if n_elements(ccsds_data) eq 20+256 then begin ;log-compressed science packets
-    scidata=uint(spp_swp_log_decomp(ccsds_data[20:*]))
-  endif else scidata = swap_endian( uint(ccsds_data,20,256) ,/swap_if_little_endian)
-  if n_elements(last_str) eq 0 || (abs(last_str.time-ccsds.time) gt 300) then lastdat = scidata
+  hs = 24
+  case n_elements(ccsds_data) of
+    hs+256:  scidata = uint(spp_swp_log_decomp(ccsds_data[hs:*]))
+    hs+512:  scidata = swap_endian( uint(ccsds_data,hs,256) ,/swap_if_little_endian)
+    hs+672:     scidata = uint(spp_swp_log_decomp(ccsds_data[hs:*]))
+    hs+1344:    scidata = swap_endian( uint(ccsds_data,hs,672) ,/swap_if_little_endian)
+    else :  begin
+       scidata = ccsds_data[hs:*]
+       print,n_elements(ccsds_data)
+    end
+  endcase
+  
+  ;if n_elements(ccsds_data) eq 20+256 then begin ;log-compressed science packets
+  ;  scidata=uint(spp_swp_log_decomp(ccsds_data[20:*]))
+  ;endif else scidata = swap_endian( uint(ccsds_data,20,256) ,/swap_if_little_endian)
+  
+  
+  if n_elements(last_str) eq 0 || (abs(last_str.time-ccsds.time) gt 65) then lastdat = scidata
   lastdat = scidata
 
   MET_raw  =  swfo_data_select(ccsds_data,(6)*8, 6*8  )
@@ -40,6 +54,7 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
     noise_period:  noise_bits and 255u,  $
     noise_res:    ishft(noise_bits,-8) and 7u , $
     counts:    scidata , $
+    total:    total(scidata),  $t
     gap:  0b }
   str.gap = ccsds.gap
 

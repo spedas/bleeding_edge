@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-29 01:21:13 -0700 (Sun, 29 Aug 2021) $
-; $LastChangedRevision: 30266 $
+; $LastChangedDate: 2022-01-21 13:49:47 -0800 (Fri, 21 Jan 2022) $
+; $LastChangedRevision: 30530 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_nse_apdat__define.pro $
 
 
@@ -17,9 +17,9 @@ function swfo_stis_nse_apdat::decom,ccsds,source_dict=source_dict      ;,header,
 
 
   flt=1.
-  d= 18
+  hs= 24
 
-  nsedata = swap_endian( uint(ccsds_data,20,60) ,/swap_if_little_endian)
+  nsedata = swap_endian( uint(ccsds_data,hs,60) ,/swap_if_little_endian)
   
 
   ; if ptr_valid(self.last_data_p) && keyword_set(*self.last_data_p) then nse_diff2 = nsedata - *self.last_data_p else nse_diff2 = 0*nsedata
@@ -32,7 +32,7 @@ function swfo_stis_nse_apdat::decom,ccsds,source_dict=source_dict      ;,header,
 
   ;dprint,reform(nse_diff,10,6)
   
-  noise_bits = swfo_data_select(ccsds_data,(18)*8, 16  ) 
+  noise_bits = swfo_data_select(ccsds_data,(22)*8, 16  ) 
 
   str = {  $
     time:ccsds.time,  $
