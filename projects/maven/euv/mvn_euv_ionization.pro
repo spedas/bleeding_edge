@@ -126,8 +126,7 @@ function mvn_euv_ionization,fismdata, photo = photo, no_tplot = no_tplot
   O2_O_Oplus_index = where(photo.O2.process eq 'O2 O+O')
   O2_O_O_index = where(photo.O2.process eq 'O2 O/O')
   O2_O_O1D_index = where(photo.O2.process eq 'O2 O/O1D')
-  O2_O_Oplus_index = where(photo.O2.process eq 'O2 O1S/O1S')
-  
+  O2_O1S_O1S_index = where(photo.O2.process eq 'O2 O1S/O1S')
   O2_ionization_xsection = $
      reform (interpol(photo.O2.xsection[O2_O2plus_index,*]+$
                       photo.O2.xsection[O2_O_Oplus_index,*],$
@@ -237,12 +236,13 @@ function mvn_euv_ionization,fismdata, photo = photo, no_tplot = no_tplot
   
   ionization_frequency_N2 = fltarr(ntimes)
   N2_N2plus_frequency = fltarr(ntimes)
+  N2_N_Nplus_frequency = fltarr(ntimes)
   N2_N_N_frequency = fltarr(ntimes)
   
   ionization_frequency_Ar = fltarr(ntimes)
 
   plank_constant = 6.6d-34      ; standard units
-  speed_light = 2.99D8          ; standard units
+  speed_light = 2.99792D8          ; standard units
   
   
   print, 'Calculating ionization frequencies...'
@@ -286,6 +286,8 @@ function mvn_euv_ionization,fismdata, photo = photo, no_tplot = no_tplot
      ionization_frequency_CO2[k] = $
         int_Simple (wavelength, $
                     diff_ionization_frequency_CO2)
+     plot, wavelength,diff_ionization_frequency_CO2,thick=1
+
      CO2_CO2plus_frequency[k] = int_Simple (wavelength, diff_CO2_CO2plus_frequency)
      CO2_O_COplus_frequency[k] = int_Simple (wavelength, diff_CO2_O_COplus_frequency)
      CO2_CO_Oplus_frequency[k] = int_Simple (wavelength, diff_CO2_CO_Oplus_frequency)
@@ -320,7 +322,50 @@ function mvn_euv_ionization,fismdata, photo = photo, no_tplot = no_tplot
      ionization_frequency_O[k] = int_Simple (wavelength,diff_ionization_frequency_O)
      
      ionization_frequency_Ar[k] = int_Simple (wavelength, diff_ionization_frequency_Ar)
+    
   endfor 
+  
+; error trap check.  When the L3 EUV data is bad, we get CO2
+; ionization values that are too low or too high
+; frequencies should be set to NaN
+  bad = where (ionization_frequency_CO2 lt 5e-8 or $
+               ionization_frequency_CO2 gt 3e-6)
+  nope = sqrt (-7.2)
+  if bad [0] ne -1 then begin
+     ionization_frequency_CO2[bad] = nope 
+     CO2_CO2plus_frequency[bad] = nope 
+     CO2_O_COplus_frequency[bad] = nope 
+     CO2_CO_Oplus_frequency[bad] = nope 
+     CO2_O2_Cplus_frequency[bad] = nope 
+     CO2_sCO_O1D_frequency[bad] = nope 
+     CO2_sCO_O_frequency[bad] = nope 
+     CO2_tCO_O_frequency[bad] = nope 
+
+     CO_C3P_O3P_frequency[bad] = nope 
+     CO_C1D_O1D_frequency[bad] = nope 
+
+     ionization_frequency_CO[bad] = nope 
+     CO_COplus_frequency[bad] = nope 
+     CO_C_Oplus_frequency[bad] = nope 
+     CO_O_Cplus_frequency[bad] = nope 
+     
+     ionization_frequency_O[bad] = nope 
+     
+     ionization_frequency_O2[bad] = nope 
+     O2_O2plus_frequency[bad] = nope 
+     O2_O_Oplus_frequency[bad] = nope 
+     O2_O_O_frequency[bad] = nope 
+     O2_O_O1D_frequency[bad] = nope 
+     O2_O1S_O1S_frequency[bad] = nope 
+     
+     ionization_frequency_N2[bad] = nope 
+     N2_N2plus_frequency[bad] = nope 
+     N2_N_Nplus_frequency[bad] = nope 
+     N2_N_N_frequency[bad] = nope 
+     
+     ionization_frequency_Ar[bad] = nope 
+  endif
+
   print, 'Done'
   if not keyword_set(no_tplot) then begin
      store_data, 'ionization_frequency_CO2', $
