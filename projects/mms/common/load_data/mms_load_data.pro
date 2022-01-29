@@ -95,8 +95,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-05-15 09:31:22 -0700 (Fri, 15 May 2020) $
-;$LastChangedRevision: 28694 $
+;$LastChangedDate: 2022-01-28 12:22:17 -0800 (Fri, 28 Jan 2022) $
+;$LastChangedRevision: 30544 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 
@@ -201,7 +201,7 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
           download_only=download_only
         return
     endif
-        
+
     total_size = 0d ; for counting total download size when requesting /available
 
     ;loop over probe, rate, level, and datatype
@@ -219,9 +219,21 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
         ;ensure no descriptor is used if instrument doesn't use datatypes
         if datatype eq '' then undefine, descriptor else descriptor = datatype
 
-        day_string = time_string(tr[0], tformat='YYYY-MM-DD') 
+        day_string = time_string(tr[0], tformat='YYYY-MM-DD')
         ; note, -1 second so we don't download the data for the next day accidently
         end_string = time_string(tr[1]-1., tformat='YYYY-MM-DD-hh-mm-ss')
+        
+        ; kludge to fix issue for burst mode data in files from the previous day
+        if data_rate eq 'brst' then begin
+          sec_from_start_of_day = time_double(tr[0])-time_double(day_string)
+
+          ; check if we're within 10 minutes of the start of the day
+          ; and if so, grab 10 minutes of data from the end of the
+          ; previous day
+          if sec_from_start_of_day le 600.0 then begin
+            day_string = time_string(time_double(day_string)-600.0, tformat='YYYY-MM-DD-hh-mm-ss')
+          endif
+        endif
         
         ;get file info from remote server
         ;if the server is contacted then a string array or empty string will be returned

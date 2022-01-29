@@ -42,8 +42,8 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   t0=systime(/sec)
   if ~keyword_set(one_zone_only) then one_zone_only=0 else one_zone_only=1
 
-  timeduration=time_double(trange[1])-time_double(trange[0])
-  timespan,tr[0],timeduration,/seconds
+  timeduration=(time_double(trange[1])-time_double(trange[0]))
+  timespan,tr[0]-360.,timeduration+1800.,/seconds
   tr=timerange()
 
   elf_init
@@ -72,6 +72,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ; remove any existing pef tplot vars
   del_data, '*_pef_nflux'
   del_data, '*_all'
+  load_tr=[tr[0]-360.,tr[1]]
   elf_load_epd, probes=probe, datatype='pef', level='l1', type='nflux', no_download=no_download
   get_data, 'el'+probe+'_pef_nflux', data=pef_nflux
 
@@ -409,7 +410,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       ; get EPD data
       del_data, 'el'+probe+'_pef_nflux'
       elf_load_epd, probes=probe, datatype='pef', level='l1', type='nflux',no_download=no_download
-     
+    
       ; get sector and phase delay for this zone
       phase_delay = elf_find_phase_delay(trange=sz_tr, probe=probe, instrument='epde', no_download=no_download)
       if finite(phase_delay.dsect2add[0]) then dsect2add=fix(phase_delay.dsect2add[0]) $
