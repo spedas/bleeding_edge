@@ -8,14 +8,18 @@ timespan,'2007-03-23',1,/day
 
 thm_load_state,probe='a',datatype='pos',coord='GSM'
 get_data,'tha_state_pos',data=d
-times=d.x
 
 ; Load OMNI data
+
+; The B-index parameter values need to be 'seeded' with at least 30 minutes of data preceding the first time of interest,
+; so we pad the solar wind data start time by 30 minutes.
+
+timespan,'2007-03-22/23:30',24.5,/hour
 
 omni_load_data,varformat='*BY_GSM *BZ_GSM *flow_speed *proton_density *Pressure',/res5min
 
 tomni2bindex,yimf_tvar='OMNI_HRO_5min_BY_GSM',zimf_tvar='OMNI_HRO_5min_BZ_GSM',V_p_tvar='OMNI_HRO_5min_flow_speed', $
-  N_p_tvar='OMNI_HRO_5min_proton_density',newname='b_index', times=times
+  N_p_tvar='OMNI_HRO_5min_proton_density',newname='b_index'
 
 tplot,'OMNI_HRO_5min_BY_GSM OMNI_HRO_5min_BZ_GSM OMNI_HRO_5min_flow_speed OMNI_HRO_5min_proton_density b_index OMNI_HRO_5min_Pressure'
 

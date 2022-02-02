@@ -12,10 +12,12 @@ times=d.x
 
 ; Load OMNI data
 
+; The N-index parameter must be seeded with 30 minutes of solar wind data prior to the first time of interest.
+timespan,'2007-03-22/23:30',24.5,/hours
 omni_load_data,varformat='*BY_GSM *BZ_GSM *flow_speed *proton_density *Pressure',/res5min
 
 tomni2nindex,yimf_tvar='OMNI_HRO_5min_BY_GSM',zimf_tvar='OMNI_HRO_5min_BZ_GSM',V_p_tvar='OMNI_HRO_5min_flow_speed', $
-  newname='n_index', times=times
+  newname='n_index'
 
 tplot,'OMNI_HRO_5min_BY_GSM OMNI_HRO_5min_BZ_GSM OMNI_HRO_5min_flow_speed n_index OMNI_HRO_5min_Pressure'
 

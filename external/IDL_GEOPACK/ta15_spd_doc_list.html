@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jan 29 03:16:01 2022.<P>
+<STRONG>Last modified: </STRONG>Tue Feb  1 18:15:53 2022.<P>
  
 <HR>
  
@@ -98,6 +98,9 @@ Purpose: Generate and return the B-index parameter for the TA15B field model.  I
          B = (N_p/5.0)^(1/2) * (V_p/400.0)^(5.0/2.0) * (b_t/5.0) * sin(theta_c/2.0)^6
     
          where b_t is the tangential component of the IMF, and theta_c is the IMF clock angle (0 deg = due north, 90 deg = dawnward)
+         
+         Input values should have a cadence of 5 minutes/sample.   Output values will be averaged from the current sample and six
+         previous samples, therefore the solar wind data should be loaded for at least 30 minutes preceding the times being modeled.
 
 Input:
 
@@ -123,8 +126,8 @@ Notes:
 
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
- $LastChangedRevision: 30156 $
+ $LastChangedDate: 2022-01-31 22:30:46 -0800 (Mon, 31 Jan 2022) $
+ $LastChangedRevision: 30550 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/ta15/omni2bindex.pro $
 </PRE><P>
 <STRONG>(See <A href="ta15/omni2bindex.pro">external/IDL_GEOPACK/ta15/omni2bindex.pro</A>)</STRONG><P>
@@ -144,6 +147,10 @@ Purpose: Generate and return the N-index parameter for the TA15N field model.  I
          N = 0.86 * (V_p/400.0)^(4.0/3.0) * (b_t/5.0)^(2.0/3.0) * sin(theta_c/2.0)^(8.0/3.0)
 
          where b_t is the magnitude of the tangential component of the IMF, and theta_c is the IMF clock angle (0 deg = due north, 90 deg = dawnward)
+
+
+         Input values should have a cadence of 5 minutes/sample.   Output values will be averaged from the current sample and six
+         previous samples, therefore the solar wind data should be loaded for at least 30 minutes preceding the times being modeled.
 
 Input:
 
@@ -167,8 +174,8 @@ Notes:
 
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
- $LastChangedRevision: 30156 $
+ $LastChangedDate: 2022-01-31 22:30:46 -0800 (Mon, 31 Jan 2022) $
+ $LastChangedRevision: 30550 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/ta15/omni2nindex.pro $
 </PRE><P>
 <STRONG>(See <A href="ta15/omni2nindex.pro">external/IDL_GEOPACK/ta15/omni2nindex.pro</A>)</STRONG><P>
@@ -463,8 +470,8 @@ Notes:
   The B-index calculation is implemented in omni2bindex.pro
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
- $LastChangedRevision: 30156 $
+ $LastChangedDate: 2022-01-31 22:37:47 -0800 (Mon, 31 Jan 2022) $
+ $LastChangedRevision: 30552 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/ta15/tomni2bindex.pro $
 </PRE><P>
 <STRONG>(See <A href="ta15/tomni2bindex.pro">external/IDL_GEOPACK/ta15/tomni2bindex.pro</A>)</STRONG><P>
@@ -507,8 +514,8 @@ Notes:
   The N-index calculation is implemented in omni2nindex.pro
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
- $LastChangedRevision: 30156 $
+ $LastChangedDate: 2022-01-31 22:37:47 -0800 (Mon, 31 Jan 2022) $
+ $LastChangedRevision: 30552 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/ta15/tomni2nindex.pro $
 </PRE><P>
 <STRONG>(See <A href="ta15/tomni2nindex.pro">external/IDL_GEOPACK/ta15/tomni2nindex.pro</A>)</STRONG><P>

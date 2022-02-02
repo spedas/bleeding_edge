@@ -30,12 +30,12 @@
 ;  The N-index calculation is implemented in omni2nindex.pro
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
-; $LastChangedRevision: 30156 $
+; $LastChangedDate: 2022-01-31 22:37:47 -0800 (Mon, 31 Jan 2022) $
+; $LastChangedRevision: 30552 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/ta15/tomni2nindex.pro $
 ;-
 
-pro tomni2nindex, yimf_tvar=yimf_tvar,zimf_tvar=zimf_tvar, V_p_tvar=V_p_tvar,times=times,newname=newname
+pro tomni2nindex, yimf_tvar=yimf_tvar,zimf_tvar=zimf_tvar, V_p_tvar=V_p_tvar,trange=trange,newname=newname
 
    if ~keyword_set(yimf_tvar) || (size(yimf_tvar,/type) ne 7) then begin
       dprint,'Required yimf_tvar parameter missing or invalid'
@@ -71,24 +71,25 @@ pro tomni2nindex, yimf_tvar=yimf_tvar,zimf_tvar=zimf_tvar, V_p_tvar=V_p_tvar,tim
      dprint,V_p_tvar+' not a valid tplot variable'
      return
    endif
+   
+   if not keyword_set(trange) then tlims = timerange(/current) else tlims=trange
 
-   tsmooth_in_time,yimf_tvar,1800.0,/smooth_nans,/backward,newname='BY_smooth'
-   tsmooth_in_time,zimf_tvar,1800.0,/smooth_nans,/backward,newname='BZ_smooth'
-   tsmooth_in_time,V_p_tvar,1800.0,/smooth_nans,/backward,newname='VP_smooth'
+   ;identify the number of 5 minute time intervals in the specified range
+   n = fix(tlims[1]-tlims[0],type=3)/300 +1
+   ;the geopack parameter generating functions only work on 5 minute intervals
 
-   get_data,'BY_smooth',data=yimf_d
-   get_data,'BZ_smooth',data=zimf_d
-   get_data,'VP_smooth',data=vp_d
+   ;construct a time array
+   ntimes=dindgen(n)*300+tlims[0]
 
-   ; Interpolate onto common time base, using YIMF variable if none provided
-   ; The smoothing operations above should have removed any NaNs -- if that changes, the interpolation should probably
-   ; be changed to use tinterpol_mxn, /ignore_nans to avoid propagating NaNs into the modeling routines.
-
-   if n_elements(times) eq 0 then times=yimf_d.x
-   yimf = interp(yimf_d.y,yimf_d.x,times)
-   zimf = interp(zimf_d.y,zimf_d.x,times)
-   vp = interp(vp_d.y,vp_d.x,times)
-
+   ; Interpolate input variables to 5-minute grid, ensuring no NaNs in output
+   tinterpol_mxn,yimf_tvar,ntimes,/ignore_nans,out=yimf_interp
+   tinterpol_mxn,zimf_tvar,ntimes,/ignore_nans,out=zimf_interp
+   tinterpol_mxn,V_p_tvar,ntimes,/ignore_nans,out=V_p_interp
+ 
+   yimf=yimf_interp.y
+   zimf=zimf_interp.y
+   vp=V_p_interp.y
+   
    n_index = omni2nindex(yimf=yimf, zimf=zimf, V_p=vp)
    
    if n_elements(newname) eq 0 then newname='n_index'   

@@ -8,6 +8,10 @@
 ;
 ;         where b_t is the magnitude of the tangential component of the IMF, and theta_c is the IMF clock angle (0 deg = due north, 90 deg = dawnward)
 ;
+;
+;         Input values should have a cadence of 5 minutes/sample.   Output values will be averaged from the current sample and six
+;         previous samples, therefore the solar wind data should be loaded for at least 30 minutes preceding the times being modeled.
+;
 ;Input:
 ;
 ;Keywords:
@@ -30,8 +34,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
-; $LastChangedRevision: 30156 $
+; $LastChangedDate: 2022-01-31 22:30:46 -0800 (Mon, 31 Jan 2022) $
+; $LastChangedRevision: 30550 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/ta15/omni2nindex.pro $
 ;-
 
@@ -55,6 +59,17 @@ function omni2nindex,yimf=yimf,zimf=zimf, V_p=V_p
    
    
    n_index = 0.86D * (V_p/400.0D)^(4.0D/3.0D) * (bt5_sqr)^(1.0/3.0D) * stc8^(1.0D/3.0D)
-   
-   return, n_index
+ 
+   ; Do the 30 minute running average using the IDL convol function
+
+   ; Kernel
+   k=replicate(1.0D, 7)
+
+   ; Scale factor
+   s=7.0
+
+   ; Perform convolution using 6 preceding plus current sample
+   n_index_avg = convol(n_index,k,s,center=0)
+
+   return, n_index_avg  
 end

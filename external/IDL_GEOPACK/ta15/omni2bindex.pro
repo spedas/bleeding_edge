@@ -7,6 +7,9 @@
 ;         B = (N_p/5.0)^(1/2) * (V_p/400.0)^(5.0/2.0) * (b_t/5.0) * sin(theta_c/2.0)^6
 ;    
 ;         where b_t is the tangential component of the IMF, and theta_c is the IMF clock angle (0 deg = due north, 90 deg = dawnward)
+;         
+;         Input values should have a cadence of 5 minutes/sample.   Output values will be averaged from the current sample and six
+;         previous samples, therefore the solar wind data should be loaded for at least 30 minutes preceding the times being modeled.
 ;
 ;Input:
 ;
@@ -32,8 +35,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
-; $LastChangedRevision: 30156 $
+; $LastChangedDate: 2022-01-31 22:30:46 -0800 (Mon, 31 Jan 2022) $
+; $LastChangedRevision: 30550 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/ta15/omni2bindex.pro $
 ;-
 
@@ -55,5 +58,16 @@ function omni2bindex,yimf=yimf,zimf=zimf, N_p=N_p, V_p=V_p
    
    b_index = sqrt(N_p/5.0D)*(V_p/400.0D)^(5.0D/2.0D) * bt5 * stc6
    
-   return, b_index
+   ; Do the 30 minute running average using the IDL convol function
+   
+   ; Kernel  
+   k=replicate(1.0D, 7)
+   
+   ; Scale factor   
+   s=7.0
+   
+   ; Perform convolution using 6 preceding plus current sample
+   b_index_avg = convol(b_index,k,s,center=0)
+   
+   return, b_index_avg
 end
