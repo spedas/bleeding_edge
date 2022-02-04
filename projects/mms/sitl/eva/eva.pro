@@ -9,8 +9,8 @@
 ;
 ;
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2022-01-17 11:38:52 -0800 (Mon, 17 Jan 2022) $
-; $LastChangedRevision: 30517 $
+; $LastChangedDate: 2022-02-03 11:55:52 -0800 (Thu, 03 Feb 2022) $
+; $LastChangedRevision: 30556 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/eva.pro $
 PRO eva_event, event
   @tplot_com
@@ -143,7 +143,7 @@ PRO eva
   ;---------------------------------
   ;  DATA
   ;---------------------------------
-  str_element,/add,wid,'data',eva_data(base,xsize=cpwdith); DATA MODULE
+  str_element,/add,wid,'data',eva_data(base,xsize=cpwidth); DATA MODULE
   baseTab = widget_tab(base)
   
   ;---------------------------------

@@ -6,22 +6,27 @@
 ;          variable that can be passed directly to the model 
 ;          procedure
 ;
-;          relevant variables can be loaded from
 ; 
 ;
-; INPUTS:   
+; KEYWORDS: 
+;           imf_tvar: tplot variable name with IMF data.  Can be just the Y and Z components as a composite tplot variable,
+;                     or 3-vectors. 
+;                     
+;           /imf_yz:  Set this keyword if using just the T abd Z components, otherwise 3-vectors assumed
+;           
 ;           Np_tvar: tplot variable name storing the solar wind
 ;                   ion density(rho) cm^-3
 ;           
-;           Vp_tvar: tplot variable name storing the proton velocity
+;           Vp_tvar: tplot variable name storing the proton velocity.  Can be a scalar (speed only), or 3-vectors
+;           
+;           /speed: Set this keyword if Vp_tvar contains scalar speeds
 ;
-;           model: a string, should be 'T96','T01' or 'T04S' (upper or
-;           lower case)
+;           model: a string, should be 'ta15n' or 'ta15b'
+;           
 ;
-; KEYWORDS:
 ;
 ;           newname(optional): the name of the output tplot variable
-;               (default: t96_par','t01_par' or 't04s_par' depending on 
+;               (default: ta15n_par or ta15b_par depending on 
 ;               selected model)
 ;
 ;           trange(optional): the time range over which the parameters
@@ -35,11 +40,11 @@
 ;          
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
-; $LastChangedRevision: 30156 $
+; $LastChangedDate: 2022-02-03 13:03:01 -0800 (Thu, 03 Feb 2022) $
+; $LastChangedRevision: 30557 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/ta15/get_ta15_params.pro $
 ;-
-pro get_ta15_params,imf_tvar=imf_tvar,Np_tvar=Np_tvar,Vp_tvar=Vp_tvar,xind_tvar=xind_tvar,pressure_tvar=pressure_tvar, imf_yz=imf_yz, newname=newname,trange=trange,speed=speed,pressure=pressure,model=model
+pro get_ta15_params,imf_tvar=imf_tvar,Np_tvar=Np_tvar,Vp_tvar=Vp_tvar,xind_tvar=xind_tvar,pressure_tvar=pressure_tvar, imf_yz=imf_yz, newname=newname,trange=trange,speed=speed,model=model
 
 COMPILE_OPT idl2
 if not keyword_set(trange) then tlims = timerange(/current) else tlims=trange
@@ -184,7 +189,7 @@ endelse
 
 par = {x:ntimes,y:[[pram],[imf_y],[imf_z],[xind],[dblarr(n)],[dblarr(n)],[dblarr(n)],[dblarr(n)],[dblarr(n)],[dblarr(n)]]}
 if not keyword_set(newname) then begin 
- newname = 'ta15_par'
+ newname = model + '_par'
 endif
 
 store_data,newname,data=par

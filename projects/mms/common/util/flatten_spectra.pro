@@ -59,8 +59,8 @@
 ;     work in progress; suggestions, comments, complaints, etc: egrimes@igpp.ucla.edu
 ;     
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-04-01 11:41:09 -0700 (Thu, 01 Apr 2021) $
-;$LastChangedRevision: 29844 $
+;$LastChangedDate: 2022-02-03 11:41:03 -0800 (Thu, 03 Feb 2022) $
+;$LastChangedRevision: 30555 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra.pro $
 ;-
 
@@ -187,6 +187,24 @@ pro flatten_spectra, xlog=xlog, ylog=ylog, xrange=xrange, yrange=yrange, nolegen
   for v_idx=0, n_elements(vars_to_plot)-1 do begin  
     get_data, vars_to_plot[v_idx], data=vardata, alimits=metadata
     m = spd_extract_tvar_metadata(vars_to_plot[v_idx])
+    
+    if ~is_struct(vardata) then begin
+      ; this is a pseudo-variable, so we need to find the spectra
+      if is_string(vardata) then vardata = [vardata]
+      ; just use the first spectra we find
+      for var_idx=0, n_elements(vardata)-1 do begin
+        get_data, vardata[var_idx], data=pseudo_vardata, alimits=metadata
+        
+        str_element, metadata, 'spec', success=s
+        
+        if s then begin
+          vars_to_plot[v_idx] = vardata[var_idx]
+          vardata = pseudo_vardata
+          break
+        endif
+      endfor
+    endif
+
     if ~is_struct(vardata) or ~is_struct(metadata) then begin
       dprint, dlevel=0, 'Could not plot: ' + vars_to_plot[v_idx]
       continue
