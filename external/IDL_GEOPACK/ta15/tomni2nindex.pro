@@ -30,8 +30,8 @@
 ;  The N-index calculation is implemented in omni2nindex.pro
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2022-01-31 22:37:47 -0800 (Mon, 31 Jan 2022) $
-; $LastChangedRevision: 30552 $
+; $LastChangedDate: 2022-02-03 22:14:10 -0800 (Thu, 03 Feb 2022) $
+; $LastChangedRevision: 30558 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/ta15/tomni2nindex.pro $
 ;-
 
@@ -94,5 +94,5 @@ pro tomni2nindex, yimf_tvar=yimf_tvar,zimf_tvar=zimf_tvar, V_p_tvar=V_p_tvar,tra
    
    if n_elements(newname) eq 0 then newname='n_index'   
 
-   store_data,newname,data={x:times, y:n_index}
+   store_data,newname,data={x:ntimes, y:n_index}
 end

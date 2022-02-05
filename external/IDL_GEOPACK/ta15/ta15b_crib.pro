@@ -8,24 +8,27 @@ timespan,'2007-03-23',1,/day
 
 thm_load_state,probe='a',datatype='pos',coord='GSM'
 get_data,'tha_state_pos',data=d
+times=d.x
 
 ; Load OMNI data
 
-; The B-index parameter values need to be 'seeded' with at least 30 minutes of data preceding the first time of interest,
-; so we pad the solar wind data start time by 30 minutes.
-
-timespan,'2007-03-22/23:30',24.5,/hour
-
+; The B-index parameter must be seeded with 30 minutes of solar wind data prior to the first time of interest.
+timespan,'2007-03-22/23:30',24.5,/hours
 omni_load_data,varformat='*BY_GSM *BZ_GSM *flow_speed *proton_density *Pressure',/res5min
+
+;  If no trange parameter is passed, tomni2nindex uses the timerange() command to get start/stop times for the 
+;  grid of 5-minute timestamps used internally and for the n_index output.  It doesn't look at the timestamps of
+;  the solar wind variables, so beware of any intervening timespan calls between loading the OMNI data and
+;  calling tomni2nindex.
 
 tomni2bindex,yimf_tvar='OMNI_HRO_5min_BY_GSM',zimf_tvar='OMNI_HRO_5min_BZ_GSM',V_p_tvar='OMNI_HRO_5min_flow_speed', $
   N_p_tvar='OMNI_HRO_5min_proton_density',newname='b_index'
 
-tplot,'OMNI_HRO_5min_BY_GSM OMNI_HRO_5min_BZ_GSM OMNI_HRO_5min_flow_speed OMNI_HRO_5min_proton_density b_index OMNI_HRO_5min_Pressure'
+tplot,'OMNI_HRO_5min_BY_GSM OMNI_HRO_5min_BZ_GSM OMNI_HRO_5min_flow_speed b_index OMNI_HRO_5min_Pressure'
 
 stop
 
-; Now calculate the field at the S/C positions
+; Now calculate the field at the S/C positions, using the OMNI pressure data.
 
 tta15b,'tha_state_pos',pdyn='OMNI_HRO_5min_Pressure',yimf='OMNI_HRO_5min_BY_GSM',zimf='OMNI_HRO_5min_BZ_GSM',xind='b_index'
 
@@ -46,17 +49,36 @@ tplot,'pdyn_comparison'
 
 stop
 
-; Trace to equator using the calculated Pdyn with f_alpha=0.04
+; The get_ta15_parans routine can also be used to generate the TS04 model parameters with the required cadence, interpolation, and
+; smoothing.  Interface is similar to get_tsy_params, except all input arguments are keywords.
 
-ttrace2equator,'tha_state_pos',trace_var_name='tha_state_pos_ta15b_etrace', newname='tha_state_pos_ta15b_trace_efoot',external_model='ta15b', $
-                        pdyn='Pdyn_4pct',yimf='OMNI_HRO_5min_BY_GSM',zimf='OMNI_HRO_5min_BZ_GSM', $
-                        xind='b_index',/km, error=trace_to_eq_error
+; Set the model
+model='ta15b'
+
+; Combine the IMF Y and Z components into a single tplot variable.
+store_data,'omni_imf',data=['OMNI_HRO_5min_BY_GSM','OMNI_HRO_5min_BZ_GSM']
+
+; Calculate parameters, output tplot variable defaults to 'ta15b_par'
+; If b_index and pressure are supplied as tplot variables via xind_tvar and pressure_tvar keywords, 
+; the density and solar wind speed parameters are not needed.  Here, we let get_ta15_params recalculate the b_index and pressure.
+; Internal pressure calculation uses the default f_alpha of 0.04.
+; get_tsy_params calls this routine internally if the 'ta15n' or 'ta15b' models are specified.
+
+get_ta15_params,imf_tvar='omni_imf',/imf_yz,Np_tvar= 'OMNI_HRO_5min_proton_density',Vp_tvar='OMNI_HRO_5min_flow_speed',/speed, $
+   model=model
+
+
+; Trace to equator 
+
+ttrace2equator,'tha_state_pos',trace_var_name='tha_state_pos_ta15b_etrace', newname='tha_state_pos_ta15b_trace_efoot',external_model='ta15n', $
+                        par='ta15b_par',/km, error=trace_to_eq_error
 
 tplot,'tha_state_pos_ta15b_trace_efoot'
 
 stop
 
 ; Trace to ionosphere using the calculated Pdyn with f_alpha=0.04, using the GEOPACK_2008 set of routines
+; Here we pass the previously calculated model parameters by keyword.
 
 ttrace2iono,'tha_state_pos',trace_var_name='tha_state_pos_ta15b_itrace', newname='tha_state_pos_ta15b_trace_ifoot',external_model='ta15b', $
   pdyn='Pdyn_4pct',yimf='OMNI_HRO_5min_BY_GSM',zimf='OMNI_HRO_5min_BZ_GSM', $
