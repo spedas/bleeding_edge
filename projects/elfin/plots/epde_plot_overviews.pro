@@ -43,11 +43,11 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   if ~keyword_set(one_zone_only) then one_zone_only=0 else one_zone_only=1
 
   timeduration=(time_double(trange[1])-time_double(trange[0]))
-  timespan,tr[0]-360.,timeduration+1800.,/seconds
+  timespan,tr[0],timeduration,/seconds
   tr=timerange()
-
+  rundate=tr[0]
+  
   elf_init
-;  aacgmidl
 
   ; set up plot options
   loadct,39
@@ -72,7 +72,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ; remove any existing pef tplot vars
   del_data, '*_pef_nflux'
   del_data, '*_all'
-  load_tr=[tr[0]-360.,tr[1]]
   elf_load_epd, probes=probe, datatype='pef', level='l1', type='nflux', no_download=no_download
   get_data, 'el'+probe+'_pef_nflux', data=pef_nflux
 
@@ -177,60 +176,12 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   options,'el'+probe+'_GLON',ytitle='GLON (east)'
   options,'el'+probe+'_GLON', charsize=.7 
 
-  ;;;;;;;;;;;;;;;;;;;;;;
-  ; L and MLAT IGRF
-  ;;;;;;;;;;;;;;;;;;;;;;
-  ;;trace to equator to get L, MLAT in IGRF
   re=6378.
-  ;ttrace2equator,'el'+probe+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
-  ;get_data,'el'+probe+'_pos_gsm_foot',data=elx_pos_eq
-  ;L1=sqrt(total(elx_pos_eq.y^2.0,2,/nan))/Re
-  ;store_data,'el'+probe+'_L_igrf',data={x:elx_pos_eq.x,y:L1}
-  ;get_data,'el'+probe+'_pos_sm',data=elx_pos_sm
-  ;req=sqrt(total(elx_pos_eq.y^2.0,2,/nan))
-  ;rloc=sqrt(total(elx_pos_sm.y^2.0,2,/nan))
-  ;rratio=rloc/req
-  ;ibad=where(rratio gt 1.)
-  ;if ibad[0] ne -1. then rratio[ibad]=1.00
-  ;lat2=acos(sqrt(rratio))/!dtor
-  ;tdotp,'el'+probe+'_bt89_gsm','el'+probe+'_pos_gsm',newname='elx_br_tmp' ; ;—> assign the sign based on Br direction
-  ;get_data,'elx_br_tmp',data=Br_tmp
-  ;ineg=where(Br_tmp.y gt 0.)
-  ;if ineg[0] ne -1. then lat2[ineg]=-1.*abs(lat2[ineg])
-  ;store_data,'el'+probe+'_MLAT_igrf',data={x:elx_pos_eq.x,y:lat2}
 
   ;;;;;;;;;;;;;;;;;;;;
   ; MLT IGRF 
   ;;;;;;;;;;;;;;;;;;;;
   sclet = probe
-;  get_data, 'el'+sclet+'_pos_gsm', data=dgsm, dlimits=dlgsm, limits=lgsm
-;  MLT_igrf=MLT0
-;  MLON=lat0
-;  nidx=where(lat0 GE 0, ncnt)
-;  if ncnt gt 0 then begin
-;    store_data, 'el'+sclet+'_pos_gsm_north', data={x:dgsm.x[nidx],y:dgsm.y[nidx,*]}, dlimits=dlgsm, limits=lgsm
-;    ttrace2iono,'el'+sclet+'_pos_gsm_north',newname='el'+sclet+'_ifootn_gsm_north',external_model='none' $
-;      ,internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re,/geopack_2008,dsmax=0.01,/standard_mapping
-;    thm_cotrans, 'el'+sclet+'_ifootn_gsm_north', 'el'+sclet+'_ifootn_mag_north', out_coord='mag',in_coord='gsm'
-;    get_data,'el'+sclet+'_ifootn_mag_north',data=elx_nf_mag
-;    cart_to_sphere,elx_nf_mag.y[*,0],elx_nf_mag.y[*,1],elx_nf_mag.y[*,2],r_mag,theta_mag,phi_mag
-;    mlt_igrf_north = aacgmmlt(time_string(elx_nf_mag.x,precision=-5), elx_nf_mag.x, phi_mag)
-;    MLT_igrf[nidx]=mlt_igrf_north
-;    MLON[nidx]=phi_mag
-;  endif
-;  sidx=where(lat0 LT 0, scnt)
-;  if scnt gt 0 then begin
-;    store_data, 'el'+sclet+'_pos_gsm_south', data={x:dgsm.x[sidx],y:dgsm.y[sidx,*]}, dlimits=dlgsm, limits=lgsm
-;    ttrace2iono,'el'+sclet+'_pos_gsm_south',newname='el'+sclet+'_ifootn_gsm_south',external_model='none',/south $
-;      ,internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re,/geopack_2008,dsmax=0.01,/standard_mapping
-;    thm_cotrans, 'el'+sclet+'_ifootn_gsm_south', 'el'+sclet+'_ifootn_mag_south', out_coord='mag',in_coord='gsm'
-;    get_data,'el'+sclet+'_ifootn_mag_south',data=elx_nf_mag
-;    cart_to_sphere,elx_nf_mag.y[*,0],elx_nf_mag.y[*,1],elx_nf_mag.y[*,2],r_mag,theta_mag,phi_mag
-;    mlt_igrf_south = aacgmmlt(time_string(elx_nf_mag.x,precision=-5), elx_nf_mag.x, phi_mag)
-;    MLT_igrf[sidx]=mlt_igrf_south
-;    MLON[sidx]=phi_mag
-;  endif
-;  store_data,'el'+sclet+'_MLT_igrf',data={x:dgsm.x,y:mlt_igrf};;projected to 100km and use aacgm
   ;;trace to equator to get L, MLAT, and MLT in IGRF
   ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
   cotrans,'el'+sclet+'_pos_gsm_foot','el'+sclet+'_pos_sm_foot',/GSM2SM
@@ -256,7 +207,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   del_data, 'proxy_ae'
   tr=timerange()
-  ;elf_load_proxy_ae, trange=[tr[0],tr[1]+5400.], no_download=no_download
   elf_load_proxy_ae, trange=[tr[0],tr[1]+5400.], /smooth, no_download=no_download
   get_data, 'proxy_ae', data=proxy_ae, dlimits=dl, limits=l
   if size(proxy_ae,/type) NE 8 then begin
@@ -324,10 +274,12 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; setup for orbits by the hour
   ; 1 plot at start of each hour (for 1.5 hours) and 1 24 hour plot
+
   hr_arr = indgen(25)   ;[0, 6*indgen(4), 2*indgen(12)]
   hr_ststr = string(hr_arr, format='(i2.2)')
   ; Strings for labels, filenames
   ; Use smaller array if they are not the same
+
   for m=0,23 do begin
     this_s = tr[0] + m*3600.
     this_e = this_s + 90.*60. + 1
@@ -342,6 +294,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       append_array, file_lbl, this_file
     endif
   endfor
+
   ; append info for 24 hour plot
   append_array, min_st, 0
   append_array, min_en, n_elements(dat_gei.x)-1
@@ -353,8 +306,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ; set up for plots by science zone
   if (size(pef_nflux, /type)) EQ 8 then begin
     tdiff = pef_nflux.x[1:n_elements(pef_nflux.x)-1] - pef_nflux.x[0:n_elements(pef_nflux.x)-2]
-    ;idx = where(tdiff GT 90., ncnt)   ; note: 90 seconds is an arbitary time
-    ;idx = where(tdiff GT 300., ncnt)   ; note: 300 seconds is an arbitary time
     idx = where(tdiff GT 270., ncnt)
     append_array, idx, n_elements(pef_nflux.x)-1 ;add on last element (end time of last sci zone) to pick up last sci zone
     if ncnt EQ 0 then begin
@@ -378,7 +329,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           this_e = pef_nflux.x[idx[sz]]
           eidx = idx[sz]
         endelse
-        ;if (this_e-this_s) lt 60. then continue
         if (this_e-this_s) lt 15. then continue
         append_array, sz_starttimes, this_s
         append_array, sz_endtimes, this_e
@@ -401,8 +351,13 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ; MAIN LOOP for PLOTs
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   for i=0,num_szs-1 do begin ;changed from 0,nplots-1
+  
+      if i EQ 0 && (sz_starttimes[i]-rundate) LT 4.0 then begin
+        sz_tr=[sz_starttimes[i]-300.,sz_endtimes[i]]       
+      endif else begin  
+        sz_tr=[sz_starttimes[i],sz_endtimes[i]]
+      endelse
 
-      sz_tr=[sz_starttimes[i],sz_endtimes[i]]
       tdur=sz_tr[1]-sz_tr[0]
       timespan, sz_tr[0], tdur, /sec
       if total(where(sz_tr[0] eq completed_szs)) ne -1 then continue ; if science zone is found in completed_szs, skip
@@ -443,6 +398,11 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         spin_str='Median Spin Period T: '+strmid(strtrim(string(spin_med), 1),0,4) + 's, sig=' +$
           strmid(strtrim(string(spin_var), 1),0,4)+'% T'
       endif
+
+      sz_tr=[sz_starttimes[i],sz_endtimes[i]]
+      tdur=sz_tr[1]-sz_tr[0]
+      timespan, sz_tr[0], tdur, /sec
+      tr=timerange()
      
       ; handle scaling of y axis
       if size(proxy_ae, /type) EQ 8 then begin
@@ -484,8 +444,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       if tdur Lt 194. then version=6 else version=7
       tplot_options, version=version   ;6
       tplot_options, 'ygap',0
-      ;tplot_options, 'charsize',.8
-      tr=timerange()
       elf_set_overview_options, probe=probe, trange=tr,/no_switch            
       options, 'el'+probe+'_MLAT_igrf', 'format', '(1F5.1)'
       options, 'el'+probe+'_MLT_igrf', 'format', '(1F4.1)'
@@ -510,10 +468,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           'el'+probe+'_pef_pa_spec2plot_ch[0,1]LC', $
           'el'+probe+'_pef_pa_spec2plot_ch[2,3]LC', $
           'el'+probe+'_bt89_sm_NEDT'], $
-          ;var_label=varstring
-          ;var_label='el'+probe+'_'+['GLON','MLAT_igrf','MLT_igrf','L_igrf','MLAT_dip','MLT_dip','L_dip']
-          ;var_label=['el'+probe+'_GLON','el'+probe+'_MLAT_igrf'('el'+probe+'_MLAT_dip')','MLT_igrf(MLT_dip)','L_igrf(L_dip)']
-          var_label='el'+probe+'_'+['LAT','MLT','L_dip','MLT_igrf','L_igrf']
+           var_label='el'+probe+'_'+['LAT','MLT','L_dip','MLT_igrf','L_igrf']
       endif else begin
         tplot,['proxy_ae', $
           'fgs_bar', $
@@ -526,10 +481,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           'el'+probe+'_pef_pa_reg_spec2plot_ch[0,1]LC', $
           'el'+probe+'_pef_pa_reg_spec2plot_ch[2,3]LC', $
           'el'+probe+'_bt89_sm_NEDT'], $
-;          var_label='el'+probe+'_'+['GLON','MLAT_igrf','MLT_igrf','L_igrf','MLAT_dip','MLT_dip','L_dip']
-;        var_label='el'+probe+'_'+['GLON','MLAT_igrf(MLAT_dip)','MLT_igrf(MLT_dip)','L_igrf(L_dip)']
-;          var_label='el'+probe+'_'+['LAT','MLT','L_dip','MLT_igrf','L_igrf']
-          var_label=varstring
+           var_label=varstring
 
       endelse
       tr=timerange()
@@ -711,6 +663,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     this_tr=[dat_gei.x[min_st[i]], dat_gei.x[min_en[i]]]
     tdur=this_tr[1]-this_tr[0]
     timespan, this_tr[0], tdur, /sec
+
     elf_load_state, probes=probe, /no_download
     
     if size(proxy_ae,/type) eq 8 then begin
@@ -723,8 +676,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     if tdur GT 10802. or i EQ 24 then begin   ; at least need to orbits for 24 hour plots
       tr=timerange()
       tr[1]=tr[1]+5400.
-;      elf_load_kp, trange=[tr],/day
-;      elf_load_dst,trange=tr
     endif
   
     ; Below chunk of code to fix y-labels might be messing up 24hr loss cone? If not, likely caused by interpolation in elf_getspec_v2
@@ -782,7 +733,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     if tdur Lt 194. then version=6 else version=7
     tplot_options, version=version   ;6
     tplot_options, 'ygap',0
-    ;tplot_options, 'charsize',.9 
     elf_set_overview_options, probe=probe, trange=tr,/no_switch
     get_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0', data=reg
     if size(reg, /type) EQ 8 then reg_exists=1 else reg_exists=0
@@ -801,10 +751,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           'el'+probe+'_pef_pa_spec2plot_ch[0,1]LC', $
           'el'+probe+'_pef_pa_spec2plot_ch[2,3]LC', $
           'el'+probe+'_bt89_sm_NEDT'], $
-;          var_label='el'+probe+'_'+['GLON','MLAT_igrf','MLT_igrf','L_igrf','MLAT_dip','MLT_dip','L_dip']
-;        var_label='el'+probe+'_'+['GLON','MLAT_igrf(MLAT_dip)','MLT_igrf(MLT_dip)','L_igrf(L_dip)']
-;          var_label='el'+probe+'_'+['LAT','MLT','L_dip','MLT_igrf','L_igrf']
-         var_label=varstring
+           var_label=varstring
 
       endif else begin        
          tplot,['proxy_ae', $
@@ -818,9 +765,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           'el'+probe+'_pef_pa_reg_spec2plot_ch[0,1]LC', $
           'el'+probe+'_pef_pa_reg_spec2plot_ch[2,3]LC', $
           'el'+probe+'_bt89_sm_NEDT'], $
-;          var_label='el'+probe+'_'+['GLON','MLAT_igrf','MLT_igrf','L_igrf','MLAT_dip','MLT_dip','L_dip']
-;        var_label='el'+probe+'_'+['GLON','MLAT_igrf(MLAT_dip)','MLT_igrf(MLT_dip)','L_igrf(L_dip)']
-;          var_label='el'+probe+'_'+['LAT','MLT','L_dip','MLT_igrf','L_igrf']
           var_label=varstring
 
       endelse
@@ -839,11 +783,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           'el'+probe+'_pef_pa_spec2plot_ch[0,1]LC', $
           'el'+probe+'_pef_pa_spec2plot_ch[2,3]LC', $
           'el'+probe+'_bt89_sm_NEDT'], $
-;          var_label='el'+probe+'_'+['GLON','MLAT_igrf','MLT_igrf','L_igrf','MLAT_dip','MLT_dip','L_dip']
-;        var_label='el'+probe+'_'+['GLON','MLAT_igrf(MLAT_dip)','MLT_igrf(MLT_dip)','L_igrf(L_dip)']
-;          var_label='el'+probe+'_'+['LAT','MLT','L_dip','MLT_igrf','L_igrf']
-
-         var_label=varstring
+           var_label=varstring
       endif else begin
         tplot,['proxy_ae', $
           'elf_kp', $
@@ -858,10 +798,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           'el'+probe+'_pef_pa_reg_spec2plot_ch[0,1]LC', $
           'el'+probe+'_pef_pa_reg_spec2plot_ch[2,3]LC', $
           'el'+probe+'_bt89_sm_NEDT'], $
-;          var_label='el'+probe+'_'+['GLON','MLAT_igrf','MLT_igrf','L_igrf','MLAT_dip','MLT_dip','L_dip']
-;        var_label='el'+probe+'_'+['GLON','MLAT_igrf(MLAT_dip)','MLT_igrf(MLT_dip)','L_igrf(L_dip)']
-;          var_label='el'+probe+'_'+['LAT','MLT','L_dip','MLT_igrf','L_igrf']
-         var_label=varstring
+           var_label=varstring
 
       endelse
     endelse

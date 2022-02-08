@@ -99,9 +99,9 @@
 ;Still have questions:
 ;   Send e-mail to:  tplot@ssl.berkeley.edu    someone might answer!
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-11-04 16:23:54 -0800 (Mon, 04 Nov 2019) $
-; $LastChangedRevision: 27973 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2022-02-07 15:14:39 -0800 (Mon, 07 Feb 2022) $
+; $LastChangedRevision: 30565 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot.pro $
 ;-
 
@@ -493,7 +493,8 @@ if keyword_set(vtitle) then begin                 ; finish var_labels
   yspace = chsize * !d.y_ch_size / !d.y_size
   xpos = pos[0,nd-1] - (def_opts.xmargin[0]-1) * xspace
   ; bugfix on 11/7/2018 by egrimes; increased the yposition slightly for time ranges < 5 seconds to prevent overlaps
-  if trg[1]-trg[0] lt 5. then ypos = pos[1,nd-1] - 2.5 * yspace else ypos = pos[1,nd-1] - 1.5 * yspace
+  ; updated on 2/7/2022 to 10 minutes (the issue occurs for small time ranges, including many above 5 seconds)
+  if trg[1]-trg[0] le 60.*10 then ypos = pos[1,nd-1] - 2.5 * yspace else ypos = pos[1,nd-1] - 1.5 * yspace
   xyouts,xpos,ypos,vtitle,/norm,charsize=chsize,charthick=charthick
 endif
 
