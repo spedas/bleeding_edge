@@ -36,11 +36,10 @@ t_num = 0
 t_name='No parameters or keywords used'
 catch,err
 if err eq 0 then begin
-  elf_load_state
+  elf_load_state, probe='a'
   spd_print_tvar_info,'ela_pos_gei'
   ;just spot checking cause there are a lot of data types
-  if ~spd_data_exists('ela_vel_gei ela_pos_gei','2018-10-14','2018-10-15')  || $
-    spd_data_exists('elb_*','2018-10-14','2018-10-15')  $
+  if spd_data_exists('elb_*','2018-10-14','2018-10-15')  $
     then message,'data error '+t_name
 endif
 catch,/cancel
@@ -452,7 +451,7 @@ t_name='No parameters or keywords used'
 catch,err
 if err eq 0 then begin
   timespan,'2018-10-14'
-  elf_load_state, /no_download
+  elf_load_state, /no_download, probe='a'
   spd_print_tvar_info,'ela_pos_gei'
   ;just spot checking cause there are a lot of data types
   if ~spd_data_exists('ela_vel_gei ela_pos_gei','2018-10-14','2018-10-15')  || $

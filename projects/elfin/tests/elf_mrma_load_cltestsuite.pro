@@ -279,7 +279,7 @@ stop
 t_name='Invalid date'
 catch,err
 if err eq 0 then begin
-  elf_load_mrma,probe='a',trange=['2021-10-10','2021-10-11'], datatype=['mrma']
+  elf_load_mrma,probe='a',trange=['2023-10-10','2023-10-11'], datatype=['mrma']
   spd_print_tvar_info,'ela_mrma'
   ;just spot checking cause there are a lot of data types
   if spd_data_exists('ela_mrma','2021-10-10','2021-10-11')  || $
