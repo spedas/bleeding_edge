@@ -40,6 +40,16 @@ pro thm_load_bas_gmag, site=site, trange=trange, suffix=suffix, prefix=prefix, $
     return
   endif
 
+  ; maintain a list of valid site names
+  site_names = ['M65-297','M66-294','M67-292','M78-337','M79-336','M81-003','M81-338', $
+    'M83-347','M83-348','M84-336','M85-002','M85-096','M87-028','M87-068','M88-316']
+
+  ; if user just requested the list of valid sites then return the site array
+  if keyword_set(valid_names) then begin
+    site = site_names
+    return
+  endif
+  
   ; initialize variables and parameters
   defsysv, '!bas', exists=exists
   if not(exists) then bas_init
@@ -50,15 +60,7 @@ pro thm_load_bas_gmag, site=site, trange=trange, suffix=suffix, prefix=prefix, $
     then tr = timerange(trange) $
   else tr = timerange()
   if keyword_set(no_download) then no_download=1 else no_download=0
-  ; maintain a list of valid site names
-  site_names = ['M65-297','M66-294','M67-292','M78-337','M79-336','M81-003','M81-338', $
-    'M83-347','M83-348','M84-336','M85-002','M85-096','M87-028','M87-068','M88-316']
 
-  ; if user just requested the list of valid sites then return the site array
-  if keyword_set(valid_names) then begin
-    site = site_names
-    return
-  endif
 
   site=strupcase(site) 
 

@@ -51,9 +51,12 @@ pro bas_load_data, site=site, trange = trange, suffix = suffix, prefix = prefix,
   if undefined(suffix) then suffix = ''
   if undefined(prefix) then prefix = ''
   if not keyword_set(source) then source = !bas
-  if (keyword_set(trange) && n_elements(trange) eq 2) $
-    then tr = timerange(trange) $
-  else tr = timerange()
+  if (keyword_set(trange) && n_elements(trange) eq 2) then begin
+     tr = timerange(trange) 
+  endif else begin
+    dprint, 'The user must specify a time range. For example: trange=[2021-01-03,2021-01-04]'
+    return 
+  endelse
   if keyword_set(valid_names) then valid_names=1 else valid_names=0
   if keyword_set(no_download) then no_download=1 else no_download=0
   

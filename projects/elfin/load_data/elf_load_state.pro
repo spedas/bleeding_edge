@@ -139,6 +139,18 @@ pro elf_load_state, trange = trange, probes = probes, datatype = datatype, $
       public_data=public_data
   endelse
 
+  if undefined(tplotnames) || tplotnames[0] EQ '' then begin
+    dprint, dlevel = 1, 'Downloading predicted state data. '
+    elf_load_data, trange = trange, probes = probes, level = level, instrument = 'state', $
+      data_rate = data_rate, local_data_dir = local_data_dir, source = source, $
+      datatype = datatype, get_support_data = get_support_data, pred = 1, $
+      tplotnames = tplotnames, no_color_setup = no_color_setup, no_time_clip = no_time_clip, $
+      no_update = no_update, suffix = suffix, varformat = varformat, cdf_filenames = cdf_filenames, $
+      cdf_version = cdf_version, cdf_records = cdf_records, spdf = spdf, available = available, $
+      versions = versions, tt2000=tt2000, no_time_sort=no_time_sort, no_download=no_download, $
+      public_data=public_data
+  endif
+
   ; no reason to continue if no data were loaded
   if undefined(tplotnames) || tplotnames[0] EQ '' then begin
     if ~keyword_set(pred) then dprint, dlevel = 1, 'No definitive data was loaded.' 

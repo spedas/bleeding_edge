@@ -6,8 +6,8 @@
 ; A widget to display the file 'spd_gui.txt' help
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2016-10-20 14:45:33 -0700 (Thu, 20 Oct 2016) $
-;$LastChangedRevision: 22170 $
+;$LastChangedDate: 2022-02-09 13:15:19 -0800 (Wed, 09 Feb 2022) $
+;$LastChangedRevision: 30572 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_help_window.pro $
 ;
 ;-
@@ -42,7 +42,7 @@ Pro spd_ui_help_window_event, event
       spd_ui_open_url, 'http://spedas.org/wiki/'
     end
     'showhelp' : begin
-      spd_ui_open_url, 'ftp://apollo.ssl.berkeley.edu/pub/THEMIS/3%20Ground%20Systems/3.2%20Science%20Operations/Science%20Operations%20Documents/Software%20Users%20Guides/'
+      spd_ui_open_url, 'http://themis.ssl.berkeley.edu/socware/latest.html'
     end
   Endcase
   Return
