@@ -113,9 +113,8 @@
 ;                   regime       index       color (table 43)
 ;                   -----------------------------------------
 ;                   sheath         4         green
-;                   pileup         5         yellow
-;                   opt wake       2         blue
-;                   euv wake       1         violet
+;                   pileup       199         orange
+;                   wake           2         blue
 ;                   -----------------------------------------
 ;
 ;       VARS:     Array of TPLOT variables created.
@@ -139,8 +138,8 @@
 ;                 save files are 8.7 GB in size.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-11-11 13:23:04 -0800 (Thu, 11 Nov 2021) $
-; $LastChangedRevision: 30414 $
+; $LastChangedDate: 2022-02-10 11:27:56 -0800 (Thu, 10 Feb 2022) $
+; $LastChangedRevision: 30576 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -228,11 +227,11 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
     return
   endif
 
-; Geodetic parameters for Mars (from the 2009 IAU Report)
-;   Archinal et al., Celest Mech Dyn Astr 109, Issue 2, 101-135, 2011
-;     DOI 10.1007/s10569-010-9320-4
-;   These are the values used by SPICE (pck00010.tpc).
-;   Last update: 2017-05-29.
+; Geodetic parameters for Mars from the IAU Report:
+;   Archinal et al., Celest Mech Dyn Astr 130, Article 22, 2018
+;     DOI 10.1007/s10569-017-9805-5
+;  These values are based on the MGS-MOLA Gridded Data Record, 
+;  which was published in 2003.
 
   R_equ = 3396.19D  ; +/- 0.1
   R_pol = 3376.20D  ; N pole = 3373.19 +/- 0.1 ; S pole = 3379.21 +/- 0.1
@@ -390,8 +389,8 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
   if (sflg) then wake_col = 1 else wake_col = 2
   case n_elements(colors) of
-    0 : rcols = [4, 5, wake_col]
-    1 : rcols = [round(colors), 5, wake_col]
+    0 : rcols = [4, 199, 2]
+    1 : rcols = [round(colors), 199, wake_col]
     2 : rcols = [round(colors), wake_col]
     3 : rcols = round(colors)
     else : rcols = round(colors[0:2])
