@@ -12,5 +12,5 @@ function defined,var
 ;  Originally written 9-July-1996 by Bill Peria
 ;-
 s = size(var)
-return,(s(s(0)+1) ne 0)
+return,(s[s[0]+1] ne 0)
 end

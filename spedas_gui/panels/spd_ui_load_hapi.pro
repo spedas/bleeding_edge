@@ -12,8 +12,8 @@
 ;   (needs passowrd, catalog contains non-available datasets, error 500 responses from server).
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2022-01-07 14:09:51 -0800 (Fri, 07 Jan 2022) $
-;$LastChangedRevision: 30506 $
+;$LastChangedDate: 2022-02-11 14:38:21 -0800 (Fri, 11 Feb 2022) $
+;$LastChangedRevision: 30580 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_load_hapi.pro $
 ;-
 
@@ -25,15 +25,22 @@ function hapi_include_sosmag
   ; 3. By design, it returns Error 500 responses for some queries (those cannot be parsed by json).
   ; The sosmag plugin is required for this server.
 
+  addsosmag = 1
+
   ; Check if the sosmag directory exists.
   GETRESOURCEPATH, path ; start at the resources folder
   sosmag_dir = path + PATH_SEP(/PARENT_DIRECTORY)+ PATH_SEP() + PATH_SEP(/PARENT_DIRECTORY) + PATH_SEP() +  'projects'+ PATH_SEP() + 'sosmag' +PATH_SEP()
 
   if ~file_test(sosmag_dir, /read) then begin
-    return, 0
-  endif else begin
-    return, 1
-  endelse
+    ; If that failed, try to find password file in current dir
+    dir = FILE_DIRNAME(ROUTINE_FILEPATH(), /MARK_DIRECTORY)
+    passfile = dir + 'sosmag_password.txt'
+    if ~file_test(passfile, /read) then begin
+      addsosmag = 0
+    endif
+  endif
+
+  return, addsosmag
 
 end
 
@@ -99,13 +106,13 @@ function hapi_sosmag_info, dataset
     return, dinfo
   ENDIF
 
-  hquery = 'info?id='+dataset  
+  hquery = 'info?id='+dataset
   sosmag_hapi_query, hquery=hquery, query_response=query_response
   if query_response eq '-1' || query_response eq '' then begin
     info_str = ''
   endif else begin
     info_str = sosmag_json_parse(query_response)
-  endelse  
+  endelse
 
   return, info_str
 end
@@ -129,6 +136,9 @@ pro spd_ui_hapi_set_server, server, neturl=neturl
   neturl->SetProperty, URL_PORT = url_port
   neturl->SetProperty, URL_SCHEME = url_scheme
   neturl->SetProperty, URL_PATH=url_path
+  neturl->SetProperty, ssl_verify_peer=0
+  neturl->SetProperty, ssl_verify_host=0
+
 
 end
 
@@ -204,7 +214,7 @@ pro spd_ui_hapi_get_dataset_info, server, dataset, dinfo=dinfo
     dinfo = 'Error: please refresh the dataset list.'
     return
   endif
-  
+
 
   param_names = []
   for param_idx = 0, n_elements(info['parameters'])-1 do begin

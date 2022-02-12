@@ -52,9 +52,9 @@
 ;         - Requires IDL 8.3 or later due to json_parse + orderedhash usage
 ;         
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-04-02 13:20:42 -0700 (Thu, 02 Apr 2020) $
-;$LastChangedRevision: 28481 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2022-02-11 14:35:22 -0800 (Fri, 11 Feb 2022) $
+;$LastChangedRevision: 30578 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
@@ -138,6 +138,8 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
   neturl->SetProperty, URL_SCHEME = scheme
   neturl->SetProperty, CONNECT_TIMEOUT = connect_timeout
   neturl->SetProperty, TIMEOUT = timeout
+  neturl->SetProperty, ssl_verify_peer=0
+  neturl->SetProperty, ssl_verify_host=0
   
   if keyword_set(capabilities) then begin
     neturl->SetProperty, URL_PATH=path+'/capabilities'

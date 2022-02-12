@@ -9,8 +9,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2021-08-06 15:33:13 -0700 (Fri, 06 Aug 2021) $
-;$LastChangedRevision: 30181 $
+;$LastChangedDate: 2022-02-11 12:59:00 -0800 (Fri, 11 Feb 2022) $
+;$LastChangedRevision: 30577 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_field_models.pro $
 ;-
 
@@ -137,9 +137,12 @@ function spd_ui_field_models_check_params, state, field_model
       endif
       ; combine the selected IMF By and IMF Bz variables
       store_data, 'temp_imf_data', data=[*state.usersIMFBy, *state.usersIMFBz]
+      
+      ; Get trange from the IMFBy variable -- not the position variable, which may be too short to adequately seed the B-index calculation
+      get_data,*state.usersIMFBy,trange=trange
 
      get_ta15_params,imf_tvar='temp_imf_data',Np_tvar=*state.usersDensity,Vp_tvar=*state.usersSpeed,xind_tvar=*state.usersbindex,pressure_tvar=*state.userspressure,model=field_model,newname=parameter_input,/speed,/imf_yz,$
-        trange = (~undefined(trange) ? trange : 0)
+        trange = trange
     endif else if strlowcase(field_model) eq 'ta15n' then begin
       if (tnames(*state.usersPressure) eq '') and (tnames(*state.usersDensity) eq '') then begin
         spd_ui_field_models_error, state, 'No solar wind (proton) density data selected. Solar wind density data is required for the '+field_model+' model if pressure variable not supplied.'
@@ -169,9 +172,13 @@ function spd_ui_field_models_check_params, state, field_model
       endif
       ; combine the selected IMF By and IMF Bz variables
       store_data, 'temp_imf_data', data=[*state.usersIMFBy, *state.usersIMFBz]
+      
+      ; Get trange from the IMFBy variable -- not the position variable, which may be too short to adequately seed the N-index calculation
+      get_data,*state.usersIMFBy,trange=trange
+
 
       get_ta15_params,imf_tvar='temp_imf_data',Np_tvar=*state.usersDensity,Vp_tvar=*state.usersSpeed,xind_tvar=*state.usersnindex,pressure_tvar=*state.userspressure,model=field_model,newname=parameter_input,/speed,/imf_yz,$
-        trange = (~undefined(trange) ? trange : 0)
+        trange = trange
     
     endif else if strlowcase(field_model) eq 'ts07' then begin
       ; check the variables selected by the user
@@ -225,15 +232,16 @@ function spd_ui_field_models_check_params, state, field_model
         if strlowcase(field_model) eq 'ts04' && *state.UsersWs07 ne '' then begin
           w_coeff_tvar = *state.UsersWs07
         endif
-        ; get the time range from the position variable
-        get_data, *state.tvars_to_trace[0], trange = trange
+        ; get the time range from the IMF_By variable (not the position variable, which may be too short to adequately seed 
+        ; the model parameters
+        get_data, *state.usersIMFBy, trange = trange
 
         ; combine the selected IMF By and IMF Bz variables
         store_data, 'temp_imf_data', data=[*state.usersIMFBy, *state.usersIMFBz]
 
         get_tsy_params, *state.usersDst,'temp_imf_data',*state.usersDensity,*state.usersSpeed,field_model,newname=parameter_input,/speed,/imf_yz,$
             g_coefficients=(~undefined(g_coeff_tvar) ? g_coeff_tvar : 0), w_coefficients=(~undefined(w_coeff_tvar) ? w_coeff_tvar : 0), $
-            pressure_tvar=(*state.userspressure), trange = (~undefined(trange) ? trange : 0)
+            pressure_tvar=(*state.userspressure), trange = trange
     endelse
     
     return, parameter_input
