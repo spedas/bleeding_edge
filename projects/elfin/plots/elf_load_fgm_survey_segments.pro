@@ -17,20 +17,20 @@
 pro elf_load_fgm_survey_segments, tplotname=tplotname, no_download=no_download
 
   ; Get epd fast mode data and create an array of times for the bar display
-  get_data, tplotname, data=fgs
-  if size(fgs, /type) NE 8 then begin
+  get_data, tplotname, data=fgm
+  if size(fgm, /type) NE 8 then begin
     dprint, 'No data loaded for '+tplotname
   endif else begin
-    for i=0, n_elements(fgs.x)-2 do begin
-      append_array, fgs_bar_x, [fgs.x[i],fgs.x[i],fgs.x[i]+1.,fgs.x[i]+1.]
-      append_array, fgs_bar_y, [!values.f_nan, 0.,0., !values.f_nan]
+    for i=0, n_elements(fgm.x)-2 do begin
+      append_array, fgm_survey_bar_x, [fgm.x[i],fgm.x[i],fgm.x[i]+1.,fgm.x[i]+1.]
+      append_array, fgm_survey_bar_y, [!values.f_nan, 0.,0., !values.f_nan]
     endfor
   endelse
 
   ; no fast mode data found so nothing to load into tplot
-  if undefined(fgs_bar_x) then return
-  store_data, 'fgs_bar', data={x:fgs_bar_x, y:fgs_bar_y}
-  options, 'fgs_bar',thick=5.5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
+  if undefined(fgm_survey_bar_x) then return
+  store_data, 'fgm_survey_bar', data={x:fgm_survey_bar_x, y:fgm_survey_bar_y}
+  options, 'fgm_survey_bar',thick=5.5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
     ticklen=0,panel_size=0.1, charsize=2.
 
 end

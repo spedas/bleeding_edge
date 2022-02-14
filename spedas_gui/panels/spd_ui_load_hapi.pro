@@ -12,8 +12,8 @@
 ;   (needs passowrd, catalog contains non-available datasets, error 500 responses from server).
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2022-02-11 14:38:21 -0800 (Fri, 11 Feb 2022) $
-;$LastChangedRevision: 30580 $
+;$LastChangedDate: 2022-02-13 13:20:48 -0800 (Sun, 13 Feb 2022) $
+;$LastChangedRevision: 30588 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_load_hapi.pro $
 ;-
 
@@ -158,7 +158,7 @@ pro spd_ui_hapi_get_capabilities, server, capabilities=capabilities
       hversion = server_capabilities['version']
       outputFormats = strjoin(server_capabilities['outputFormats'].toArray(), ', ')
       capabilities = 'HAPI v' + hversion + newline + 'Output formats: ' + outputFormats
-    endif else capabilities = 'Error communicating with server.' + newline + 'Check username and password.'
+    endif else capabilities = 'Error communicating with server.' + newline + 'Check username and password.' + newline + 'File: sosmag_password.txt'
   endif else begin
     capabilities_str = string(neturl->get(/buffer))
     server_capabilities = json_parse(capabilities_str)

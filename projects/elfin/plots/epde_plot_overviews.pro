@@ -241,7 +241,9 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   options, 'sunlight_bar', 'ztitle',''
   options, 'sunlight_bar', yrange=[-0.1,0.1]
 
-  ; ... EPD fast bar
+  ;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; EOD status bar
+  ;;;;;;;;;;;;;;;;;;;;;;;;;
   del_data, 'epd_fast_bar'
   elf_load_epd_fast_segments, tplotname='el'+probe+'_pef_nflux', no_download=no_download
   get_data, 'epd_fast_bar', data=epdef_fast_bar_x
@@ -253,21 +255,29 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   options, 'epd_fast_bar', 'color',254
   options, 'epd_fast_bar', 'ztitle',''
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ; ... fgm status bar
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;elf_load_fgm_fast_segments, probe=probe
-  ;get_data, 'fgf_bar', data=fgf_bar_x
-  ; ... fgf status bar
-  del_data, 'fgs_bar'
-  get_data, 'fgs_bar', data=fgs_bar_x
+  ;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; FGM status bar
+  ;;;;;;;;;;;;;;;;;;;;;;;;;
+  del_data, 'fgm_survey_bar'
+  elf_load_fgm_survey_segments, tplotname='el'+probe+'_fgs', no_download=no_download
+  get_data, 'fgm_survey_bar', data=fgm_survey_bar_x
 
-  options, 'fgs_bar', panel_size=0.1
-  options, 'fgs_bar',ticklen=0
-  options, 'fgs_bar', 'ystyle',4
-  options, 'fgs_bar', 'xstyle',4
-  options, 'fgs_bar', 'color',80
-  options, 'fgs_bar', 'ztitle',''
+  options, 'fgm_survey_bar', panel_size=0.1
+  options, 'fgm_survey_bar',ticklen=0
+  options, 'fgm_survey_bar', 'ystyle',4
+  options, 'fgm_survey_bar', 'xstyle',4
+  options, 'fgm_survey_bar', 'color',80
+  options, 'fgm_survey_bar', 'ztitle',''
+
+;  del_data, 'fgs_bar'
+;  get_data, 'fgs_bar', data=fgs_bar_x
+
+;  options, 'fgs_bar', panel_size=0.1
+;  options, 'fgs_bar',ticklen=0
+;  options, 'fgs_bar', 'ystyle',4
+;  options, 'fgs_bar', 'xstyle',4
+;  options, 'fgs_bar', 'color',80
+;  options, 'fgs_bar', 'ztitle',''
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; Prep FOR ORBITS
@@ -458,7 +468,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
 
       if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin       
         tplot,['proxy_ae', $
-          'fgs_bar', $
+          'fgm_survey_bar', $
           'epd_fast_bar', $
           'sunlight_bar', $
           'el'+probe+'_pef_en_spec2plot_omni', $
@@ -471,7 +481,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
            var_label='el'+probe+'_'+['LAT','MLT','L_dip','MLT_igrf','L_igrf']
       endif else begin
         tplot,['proxy_ae', $
-          'fgs_bar', $
+          'fgm_survey_bar', $
           'epd_fast_bar', $
           'sunlight_bar', $
           'el'+probe+'_pef_en_reg_spec2plot_omni', $
@@ -741,7 +751,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     if tdur LT 10802. then begin
       if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',this_tr[0],this_tr[1]) then begin
         tplot,['proxy_ae', $
-          'fgs_bar', $
+          'fgm_survey_bar', $
           'epd_fast_bar', $
           'sunlight_bar', $
           'el'+probe+'_pef_en_spec2plot_omni', $
@@ -755,7 +765,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
 
       endif else begin        
          tplot,['proxy_ae', $
-          'fgs_bar', $
+          'fgm_survey_bar', $
           'epd_fast_bar', $
           'sunlight_bar', $
           'el'+probe+'_pef_en_reg_spec2plot_omni', $
@@ -773,7 +783,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         tplot,['proxy_ae', $
           'elf_kp', $
           'dst',$
-          'fgs_bar', $
+          'fgm_survey_bar', $
           'epd_fast_bar', $
           'sunlight_bar', $
           'el'+probe+'_pef_en_spec2plot_omni', $
@@ -788,7 +798,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         tplot,['proxy_ae', $
           'elf_kp', $
           'dst',$
-          'fgs_bar', $
+          'fgm_survey_bar', $
           'epd_fast_bar', $
           'sunlight_bar', $
           'el'+probe+'_pef_en_reg_spec2plot_omni', $
