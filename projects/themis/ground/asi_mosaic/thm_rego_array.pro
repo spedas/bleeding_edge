@@ -172,7 +172,7 @@ if w(0) ne -1 then begin
            station_index=where((strpos(cal_files.vars[0].name,station_string)) ne -1)
            cal=cal_files[station_index]
            endif else $
-           thm_load_asi_cal,station_string,cal,/rego
+           thm_load_asi_cal,station_string,cal,/rego,verbose=verbose,trange=time_double(time)
 
          	; get longitude/latitude arrays
           case 1 of
