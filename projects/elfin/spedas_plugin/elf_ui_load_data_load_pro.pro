@@ -18,7 +18,6 @@
 ;              instrument - character string (or array) containing the name of
 ;                           the instrument such as 'fgm', 'epd', 'mrma', 'mrmi,
 ;                           or 'state'
-;              datalevel - L1 or L2 
 ;              datatype - dependent on instrument and level
 ;              time range - an array of 2 character strings containing the 
 ;                           start and stop times of the data to be loaded.
@@ -72,9 +71,9 @@ pro elf_ui_load_data_load_pro,$
 
   ; extract the variables from the load structure
   probes=loadStruc.probes
-  coordinate=loadStruc.coordinate
+;  coordinate=loadStruc.coordinate
   instrument=loadStruc.instrument
-  level=loadStruc.level
+;  level=loadStruc.level
   types=loadStruc.types
   timeRange=loadStruc.timerange
 
@@ -95,12 +94,19 @@ pro elf_ui_load_data_load_pro,$
   varformat = '*'+types
   
   Case instrument of
-     'epd':   elf_load_epd, probes=probes, datatype=types, level=level, trange=timeRange
-     'state': elf_load_state, probes=probes, datatype=types, level=level, trange=timeRange
-     'fgm':   elf_load_fgm, probes=probes, datatype=types, level=level, trange=timeRange
-     'eng':   elf_load_eng, probes=probes, datatype=types, level=level, trange=timeRange
-     else:    elf_load_data, probes=probes, instrument=instrument, datatype=types, level=level, $
-                  trange=timeRange, varformat=varformat
+     'epd':  begin
+       ptype=strmid(types,0,3)
+       dtype=strmid(types,4)
+       elf_load_epd, probes=probes, datatype=ptype, type=dtype, trange=timeRange
+     end
+     'state': elf_load_state, probes=probes, datatype=types, trange=timeRange
+     'fgm':   elf_load_fgm, probes=probes, datatype=types, trange=timeRange
+     'mrma':   elf_load_mrma, probes=probes, trange=timeRange
+     'mrmi':   elf_load_mrmi, probes=probes, trange=timeRange
+
+;     'eng':   elf_load_eng, probes=probes, datatype=types, level=level, trange=timeRange
+;     else:    elf_load_data, probes=probes, instrument=instrument, datatype=types, level=level, $
+;                  trange=timeRange, varformat=varformat
   endcase
   
   ; determine which tplot variables to delete and which ones are the new temporary 
