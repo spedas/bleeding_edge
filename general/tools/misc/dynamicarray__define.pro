@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-09-02 01:16:24 -0700 (Thu, 02 Sep 2021) $
-; $LastChangedRevision: 30275 $
+; $LastChangedDate: 2022-02-16 18:54:30 -0800 (Wed, 16 Feb 2022) $
+; $LastChangedRevision: 30593 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -257,12 +257,14 @@ pro DynamicArray::trim    ; Truncate ptr_array to its proper value
   endelse
 end
 
-function DynamicArray::slice,indices,last=last,tagname=tagname
+function DynamicArray::slice,indices,last=last   ;,tagname=tagname
   compile_opt IDL2
   if keyword_set(last) then indices = self.size-1
   return,(*self.ptr_array)[indices,*,*,*]
 end
 
+; ::sample will extract a sample of data from a set of data based on a range of indices
+; It is most useful if the stored data is an array of structures
 function DynamicArray::sample,nearest=nearest,range=range,tagname=tagname
   compile_opt IDL2
   vals = !null

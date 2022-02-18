@@ -1,7 +1,7 @@
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2021-06-30 21:31:41 -0700 (Wed, 30 Jun 2021) $
-;  $LastChangedRevision: 30095 $
+;  $LastChangedDate: 2022-02-16 22:00:46 -0800 (Wed, 16 Feb 2022) $
+;  $LastChangedRevision: 30594 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_aeb1_hk/spp_fld_aeb1_hk_load_l1.pro $
 ;
 
@@ -19,11 +19,15 @@ pro spp_fld_aeb1_hk_load_l1, file, prefix = prefix, varformat = varformat
 
     imped = prefix + 'v' + sens + '_imped'
     biasv = prefix + 'BIAS' + sens + 'V'
+    biasd = prefix + 'BIAS' + sens + '_DAC'
 
     get_data, imped, data = dat_imped
     get_data, biasv, data = dat_biasv
+    get_data, biasd, data = dat_biasd
 
-    if size(dat_imped, /type) EQ 8 and size(dat_biasv, /type) EQ 8 then begin
+    if (size(dat_imped, /type) EQ 8) and $
+      (size(dat_biasv, /type) EQ 8) and $
+      (size(dat_biasd, /type) EQ 8) then begin
 
       rb = dblarr(n_elements(dat_imped.y))
 
@@ -50,14 +54,20 @@ pro spp_fld_aeb1_hk_load_l1, file, prefix = prefix, varformat = varformat
     endelse
 
     biasi_y = dat_biasv.y / rb * 1e6
+    biasdi_y = dat_biasd.y / rb * 1e6
 
     biasi = prefix + 'BIAS' + sens + 'I'
+    biasdi = prefix + 'BIAS' + sens + '_DAC_I'
 
     store_data, biasi, data = {x:dat_biasv.x, y:biasi_y}
+    store_data, biasdi, data = {x:dat_biasd.x, y:biasdi_y}
 
     options, biasi, 'ytitle', 'BIAS' + sens + 'I'
     options, biasi, 'ysubtitle', '[uA]'
     ;options, biasi, 'yrange', [-5,0]
+
+    options, biasdi, 'ytitle', 'BIAS' + sens + 'I DAC'
+    options, biasdi, 'ysubtitle', '[uA]'
 
   endforeach
 
