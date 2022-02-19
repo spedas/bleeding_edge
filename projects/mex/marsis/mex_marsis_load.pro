@@ -12,8 +12,8 @@
 ;       Yuki Harada on 2017-05-03
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2021-11-23 19:07:01 -0800 (Tue, 23 Nov 2021) $
-; $LastChangedRevision: 30438 $
+; $LastChangedDate: 2022-02-17 22:59:31 -0800 (Thu, 17 Feb 2022) $
+; $LastChangedRevision: 30598 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/marsis/mex_marsis_load.pro $
 ;-
 
@@ -183,8 +183,8 @@ for orbnum=orbnumr[0],orbnumr[1] do begin
    ;; endif                        ;- public
    if keyword_set(public) then begin ;- uiowa pub
       if exmission eq 0 then $       ;- prime mission
-         pf = 'MEX-M-MARSIS-5-DDR-ELEDENS-BMAG-'+VVVV+'/DATA/MARSIS_ELEDENS_BMAG/DDR'+orbnumx+'/ELEDENS_BMAG_DDR_'+string(orbnum,f='(i5.5)')+'.CSV' $
-      else pf = 'MEX-M-MARSIS-5-DDR-ELEDENS-BMAG-EXT'+string(exmission,f='(i0)')+VVVV+'/DATA/MARSIS_ELEDENS_BMAG/DDR'+orbnumx+'/ELEDENS_BMAG_DDR_'+string(orbnum,f='(i5.5)')+'.CSV'
+         pf = 'MEX-M-MARSIS-5-DDR-ELEDENS_BMAG-'+VVVV+'/DATA/MARSIS_ELEDENS_BMAG/DDR'+orbnumx+'/ELEDENS_BMAG_DDR_'+string(orbnum,f='(i5.5)')+'.CSV' $
+      else pf = 'MEX-M-MARSIS-5-DDR-ELEDENS_BMAG-EXT'+string(exmission,f='(i0)')+'-'+VVVV+'/DATA/MARSIS_ELEDENS_BMAG/DDR'+orbnumx+'/ELEDENS_BMAG_DDR_'+string(orbnum,f='(i5.5)')+'.CSV'
       ftmp = file_retrieve(pf,_extra=s,no_server=1)
       if total(strlen(ftmp)) eq 0 then $ ;- if no local files
          fff = spd_download(remote_file=pf,_extra=s)
@@ -199,17 +199,17 @@ for orbnum=orbnumr[0],orbnumr[1] do begin
    s.no_server = no_server0
    if total(strlen(f)) eq 0 then continue
    ;;; error message html?
-   openr,unit,f,/get_lun
-   flag_html = 0 & line = ''
-   for iline=0,2 do begin
-      readf,unit,line
-      if strmatch(line,'*<html>*') then flag_html = 1
-   endfor
-   free_lun,unit
-   if flag_html then begin
-      file_delete,f             ;- clean up
-      continue
-   endif
+   ;; openr,unit,f,/get_lun
+   ;; flag_html = 0 & line = ''
+   ;; for iline=0,2 do begin
+   ;;    readf,unit,line
+   ;;    if strmatch(line,'*<html>*') then flag_html = 1
+   ;; endfor
+   ;; free_lun,unit
+   ;; if flag_html then begin
+   ;;    file_delete,f             ;- clean up
+   ;;    continue
+   ;; endif
    ;;; error message html?
    files = [ files, f ]
 

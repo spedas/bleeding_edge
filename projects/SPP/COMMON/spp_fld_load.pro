@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2022
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2022-01-28 22:51:21 -0800 (Fri, 28 Jan 2022) $
-; $LastChangedRevision: 30549 $
+; $LastChangedDate: 2022-02-17 22:38:25 -0800 (Thu, 17 Feb 2022) $
+; $LastChangedRevision: 30597 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -322,12 +322,12 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
       if type EQ 'rfs_lfr' or type EQ 'rfs_hfr' then begin
         pathformat =  'TYPE/YYYY/MM/psp_fld_l3_TYPE_YYYYMMDD_v??.cdf'
         resolution = 3600l * 24l ; hours
-        daily_names = 1    
+        daily_names = 1
       endif else if type EQ 'sqtn_rfs_V1V2' then begin
         pathformat =  'TYPE/YYYY/MM/psp_fld_l3_TYPE_YYYYMMDD_v?.?.cdf'
         resolution = 3600l * 24l ; hours
         daily_names = 1
-        tname_prefix = 'psp_fld_l3_sqtn_rfs_V1V2_'      
+        tname_prefix = 'psp_fld_l3_sqtn_rfs_V1V2_'
       endif else begin
         pathformat =  'TYPE/YYYY/MM/psp_fld_l3_TYPE_YYYYMMDDhh_v??.cdf'
         resolution = 3600l * 6l ; hours
@@ -650,6 +650,30 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
         options,'psp_fld_l3_merged_scam_mag_offset_SC', 'ytitle', 'SCaM!CMAG Off'
 
       end
+
+      if strmatch(type, 'aeb') then begin
+
+        aeb_tnames = tnames('psp_fld_l2_aeb*', n_aeb_tnames)
+
+        for i = 0, n_aeb_tnames - 1 do begin
+
+          ytitle = strupcase(((aeb_tnames[i]).SubString(11)))
+
+          options, aeb_tnames[i], 'ytitle', ytitle.Replace('_','!C')
+
+        endfor
+
+        options, 'psp_fld_l2_aeb?_PA1_TEMP', 'colors', ['b']
+        options, 'psp_fld_l2_aeb?_PA2_TEMP', 'colors', ['g']
+        options, 'psp_fld_l2_aeb?_PA3_TEMP', 'colors', ['r']
+        options, 'psp_fld_l2_aeb?_PA4_TEMP', 'colors', ['m']
+
+        options, 'psp_fld_l2_aeb?_V1_*', 'colors', ['b']
+        options, 'psp_fld_l2_aeb?_V2_*', 'colors', ['g']
+        options, 'psp_fld_l2_aeb?_V3_*', 'colors', ['r']
+        options, 'psp_fld_l2_aeb?_V4_*', 'colors', ['m']
+
+      endif
 
       ;
       ; Quality flags
