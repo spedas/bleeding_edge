@@ -20,8 +20,8 @@
 ;       FORCE:    Ignore the SPICE checks and forge ahead anyway.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-01-17 20:43:53 -0800 (Mon, 17 Jan 2022) $
-; $LastChangedRevision: 30521 $
+; $LastChangedDate: 2022-02-22 10:28:44 -0800 (Tue, 22 Feb 2022) $
+; $LastChangedRevision: 30602 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_attitude_bar.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -34,11 +34,12 @@ pro mvn_attitude_bar, force=force
 
   mvn_sundir, frame='spacecraft', /pol, force=noguff, success=ok
   if (~ok and ~noguff) then return
-  get_data,'Sun_PL_The',data=sth
-  If(~is_struct(sth)) Then Begin
-     dprint, 'Missing Pointing Data, Returning'
-     Return
-  Endif
+
+  get_data, 'Sun_PL_The', data=sth, index=i
+  if (i eq 0) then begin
+    print, 'Missing tplot variable (Sun_PL_The): mvn_sundir not successful.'
+    return
+  endif
   npts = n_elements(sth.x)
   sun_th = sth.y
 
@@ -54,7 +55,7 @@ pro mvn_attitude_bar, force=force
   indx = where(abs(sun_th - earth_th) lt 0.5, count) ; HGA pointing at Earth
   if (count gt 0L) then y[indx,*] = 3.
 
-; Identify Fly+-Y and Fly-Z
+; Identify Fly+-Y and Fly+-Z
 
   mvn_ramdir, minmax(sth.x) + [-10D, 10D], dt=1D, frame='spacecraft', pans=rampan, force=noguff, success=ok
   if (~ok and ~noguff) then return

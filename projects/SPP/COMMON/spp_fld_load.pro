@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2022
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2022-02-17 22:38:25 -0800 (Thu, 17 Feb 2022) $
-; $LastChangedRevision: 30597 $
+; $LastChangedDate: 2022-02-22 10:27:03 -0800 (Tue, 22 Feb 2022) $
+; $LastChangedRevision: 30600 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -661,17 +661,25 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
 
           options, aeb_tnames[i], 'ytitle', ytitle.Replace('_','!C')
 
+          options, aeb_tnames[i], 'tplot_routine', 'psp_fld_aeb_mplot'
+
+          options, aeb_tnames[i], 'data_gap', 7200d
+
         endfor
 
-        options, 'psp_fld_l2_aeb?_PA1_TEMP', 'colors', ['b']
-        options, 'psp_fld_l2_aeb?_PA2_TEMP', 'colors', ['g']
-        options, 'psp_fld_l2_aeb?_PA3_TEMP', 'colors', ['r']
-        options, 'psp_fld_l2_aeb?_PA4_TEMP', 'colors', ['m']
+        if tnames('psp_fld_l2_aeb1_PA1_TEMP') NE '' then begin
+          options, 'psp_fld_l2_aeb1_PA1_TEMP', 'colors', ['b']
+          options, 'psp_fld_l2_aeb1_PA2_TEMP', 'colors', ['g']
+          options, 'psp_fld_l2_aeb1_V1_*', 'colors', ['b']
+          options, 'psp_fld_l2_aeb1_V2_*', 'colors', ['g']
+        endif
 
-        options, 'psp_fld_l2_aeb?_V1_*', 'colors', ['b']
-        options, 'psp_fld_l2_aeb?_V2_*', 'colors', ['g']
-        options, 'psp_fld_l2_aeb?_V3_*', 'colors', ['r']
-        options, 'psp_fld_l2_aeb?_V4_*', 'colors', ['m']
+        if tnames('psp_fld_l2_aeb2_PA3_TEMP') NE '' then begin
+          options, 'psp_fld_l2_aeb2_PA3_TEMP', 'colors', ['r']
+          options, 'psp_fld_l2_aeb2_PA4_TEMP', 'colors', ['m']
+          options, 'psp_fld_l2_aeb2_V3_*', 'colors', ['r']
+          options, 'psp_fld_l2_aeb2_V4_*', 'colors', ['m']
+        endif
 
       endif
 
