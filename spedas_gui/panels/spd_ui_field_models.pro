@@ -9,8 +9,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-02-11 12:59:00 -0800 (Fri, 11 Feb 2022) $
-;$LastChangedRevision: 30577 $
+;$LastChangedDate: 2022-02-23 15:30:42 -0800 (Wed, 23 Feb 2022) $
+;$LastChangedRevision: 30607 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_field_models.pro $
 ;-
 
@@ -941,7 +941,7 @@ pro spd_ui_field_models, info
 
     ; create the base widget for the field models panel
     tlb = Widget_Base(/Col, Title='Magnetic Field Models', Group_Leader=info.master, $
-        /Floating, /tlb_kill_request_events, tab_mode = 1, /modal)
+        /Floating, /tlb_kill_request_events, tab_mode = 1,/scroll,x_scroll_size=400,y_scroll_size=700)
     mainBase = Widget_Base(tlb, /col)
     tabBase = Widget_Tab(tlb, location=0, multiline=10, uname='currenttab')
     bottomBase = Widget_Base(tlb, /col)
