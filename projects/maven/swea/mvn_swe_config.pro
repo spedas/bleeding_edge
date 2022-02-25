@@ -37,20 +37,31 @@
 ;
 ;KEYWORDS:
 ;
-;    LIST:          List all configuration changes.
+;    LIST:          List configuration changes.  Set this keyword to one of
+;                   the following to list changes of a particular type:
 ;
-;    TIMEBAR:       Overplot vertical dotted lines at the times of configuration
-;                   changes in a tplot window (assumed to exist).
+;                     'swp' : sweep table
+;                     'mtx' : MAG-to_SWE rotation matrix
+;                     'dsf' : deflection scale factors
+;                     'mcp' : MCP bias voltage (or SWE-SWI cross calibration)
+;                     'sup' : electron suppression
+;
+;                   Otherwise, all changes are listed.
+;
+;    TIMEBAR:       Returns a structure with two tags:
+;
+;                     time : array of times for configuration changes
+;                     text : brief descriptions of configuration changes
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-02-22 10:30:20 -0800 (Tue, 22 Feb 2022) $
-; $LastChangedRevision: 30604 $
+; $LastChangedDate: 2022-02-24 09:53:04 -0800 (Thu, 24 Feb 2022) $
+; $LastChangedRevision: 30609 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
 ;FILE: mvn_swe_config.pro
 ;-
-pro mvn_swe_config, list=list, timebar=timebar
+pro mvn_swe_config, list=list, timebar=tbar
 
   @mvn_swe_com
 
@@ -62,8 +73,11 @@ pro mvn_swe_config, list=list, timebar=timebar
 ; Tables 3 and 4 are used for all cruise data from March 19 to the MOI moratorium.
 ; See mvn_swe_sweep for definitions of all sweep tables.
 
-  t_swp = time_double('2014-03-19/14:00:00')           ; sweep tables 3 and 4 upload
-  t_mcp = time_double('2014-03-22/00:00:00')           ; first SWE-SWI cross calibration
+  t_swp = time_double('2014-03-19/14:00:00')
+  m_swp = 'sweep tables 3 and 4 upload'
+
+  t_mcp = time_double('2014-03-22/00:00:00')
+  m_mcp = 'MCP bias = 2500 V ; first SWE-SWI cross calibration'
 
 ; Stowed MAG1-to-SWE rotation matrix.  SWEA was launched with a MAG1-to-SWEA rotation
 ; matrix for a deployed boom.  This matrix is used by FSW to create optimal cuts 
@@ -73,22 +87,27 @@ pro mvn_swe_config, list=list, timebar=timebar
 ; Because of an undetected error in the MICD, this matrix and the previous one are 
 ; incorrect by a 90-degree rotation in SWEA azimuth.
 
-  t_mtx = time_double('2014-04-02/14:26:02')           ; stowed boom matrix upload #1
+  t_mtx = time_double('2014-04-02/14:26:02')
+  m_mtx = 'stowed boom matrix upload #1 (error in MICD)'
 
 ; Deflection scale factor update.  This introduced an error (DSF's too small), but 
 ; at least deflection bins 0 and 1 were set to zero.
 
-  t_dsf = time_double('2014-04-23/17:21:30')           ; deflection scale factor update #1
+  t_dsf = time_double('2014-04-23/17:21:30')
+  m_dsf = 'deflection scale factor update #1 (with error)'
 
 ; Deflection scale factor update.  This corrected the mistake from the previous
 ; update.  Now DSF's are 0, 0, 1, 1, 1, 1 -- as desired.
 
-  t_dsf = [t_dsf, time_double('2014-04-30/18:06:21')]  ; deflection scale factor update #2
+  t_dsf = [t_dsf, time_double('2014-04-30/18:06:21')]
+  m_dsf = [m_dsf, 'deflection scale factor update #2 (correct)']
 
 ; Stowed MAG1-to-SWE rotation matrix update.  This compensates for error in the MICD.
+; The error was confirmed by examining photos of the instrument before encapsulation.
 ; From this time until the MOI moratorium, the MAG1-to-SWE rotation matrix is correct.
 
-  t_mtx = [t_mtx, time_double('2014-06-30/17:09:19')]  ; stowed boom matrix upload #2
+  t_mtx = [t_mtx, time_double('2014-06-30/17:09:19')]
+  m_mtx = [m_mtx, 'stowed boom matrix upload #2 (correct MICD)']
 
 ; ----- MARS ORBIT INSERTION: 2014-09-22/02:24 (end of burn) -----
 
@@ -97,11 +116,13 @@ pro mvn_swe_config, list=list, timebar=timebar
 ;   - deployed boom rotation matrix (with correct MICD)
 ;   - science deflection scale factors: cos(swe_el) = [0.63, 0.86, 0.99, 0.98, 0.85, 0.60]
 
-  t_swp = [t_swp, time_double('2014-09-22')]           ; sweep tables 5 and 6 upload
+  t_swp = [t_swp, time_double('2014-09-22')]
+  m_swp = [m_swp, 'sweep tables 5 and 6 upload']
 
 ; ----- First SWEA turn-on in orbit (2014-10-06/22:58:28) -----
 
-  t_dsf = [t_dsf, time_double('2014-10-06/22:58:28')]  ; deflection scale factor update #3
+  t_dsf = [t_dsf, time_double('2014-10-06/22:58:28')]
+  m_dsf = [m_dsf, 'deflection scale factor update #3 (cosine elevation)']
 
 ; SWEA Boom Deploy
 ;   Boom separation nut pyro was fired at 2014-10-10/15:08:14.684
@@ -110,18 +131,29 @@ pro mvn_swe_config, list=list, timebar=timebar
 ;   Boom fully deployed by about 2014-10-10/15:09:30
 ;     - Spacecraft counter rotation stops at 2014-10-10/15:10:00 (theta = 82.64 deg)
 
-  t_mtx = [t_mtx, time_double('2014-10-10/15:08:40')]  ; boom deploy, final matrix valid
+  t_mtx = [t_mtx, time_double('2014-10-10/15:08:40')]
+  m_mtx = [m_mtx, 'boom deploy (with new MAG-to-SWE matrix)']
 
-  t_sup = time_double('2014-10-14/00:00:00')           ; first suppression calibration
-  t_mcp = [t_mcp, time_double('2014-10-17/02:26:41')]  ; bias adjustment (2500 -> 2600 V)
-  t_mcp = [t_mcp, time_double('2014-11-12/00:00:00')]  ; bias = 2600 V (beginning of poly fit)
+  t_sup = time_double('2014-10-14/00:00:00')
+  m_sup = 'first suppression calibration'
+
+  t_mcp = [t_mcp, time_double('2014-10-17/02:26:41')]
+  m_mcp = [m_mcp, 'MCP bias adjustment (2500 -> 2600 V)']
+
+  t_mcp = [t_mcp, time_double('2014-11-12/00:00:00')]
+  m_mcp = [m_mcp, 'MCP bias = 2600 V (beginning of poly fit)']
 
 ; ----- SCIENCE PHASE BEGINS (2014-11-15) -----
 
 ; 2015-11-15/00:00                                     ; beginning of EM-1
-  t_mcp = [t_mcp, time_double('2015-12-18/23:39:09')]  ; bias adjustment (2600 -> 2700 V)
-  t_mcp = [t_mcp, time_double('2015-12-22/20:01:45')]  ; revert to 2600 V after HV reset
-  t_mcp = [t_mcp, time_double('2015-12-30/02:28:57')]  ; back to correct bias (2700 V)
+  t_mcp = [t_mcp, time_double('2015-12-18/23:39:09')]
+  m_mcp = [m_mcp, 'MCP bias adjustment (2600 -> 2700 V)']
+
+  t_mcp = [t_mcp, time_double('2015-12-22/20:01:45')]
+  m_mcp = [m_mcp, 'MCP bias reverts to 2600 V after HV reset']
+
+  t_mcp = [t_mcp, time_double('2015-12-30/02:28:57')]
+  m_mcp = [m_mcp, 'MCP bias back to correct value (2700 V)']
 
 ; SWEA data dropouts resulting from PFDPU processing error
 ;
@@ -131,58 +163,69 @@ pro mvn_swe_config, list=list, timebar=timebar
                                                        ; (patch reapplied on data restart)
 
 ; 2016-10-01/00:00                                     ; beginning of EM-2
-  t_mcp = [t_mcp, time_double('2016-10-25/21:52:45')]  ; bias adjustment (2700 -> 2750 V)
-  t_sup = [t_sup, time_double('2017-04-02/00:00:00')]  ; last suppression calibration
-  t_mcp = [t_mcp, time_double('2017-08-12/07:24:27')]  ; bias adjustment (2750 -> 2800 V)
+  t_mcp = [t_mcp, time_double('2016-10-25/21:52:45')]
+  m_mcp = [m_mcp, 'MCP bias adjustment (2700 -> 2750 V)']
+
+  t_sup = [t_sup, time_double('2017-04-02/00:00:00')]
+  m_sup = [m_sup, 'last suppression calibration']
+
+  t_mcp = [t_mcp, time_double('2017-08-12/07:24:27')]
+  m_mcp = [m_mcp, 'MCP bias adjustment (2750 -> 2800 V)']
 
 ; EEPROM load on 2018-08-28 (apo 7621)
 
-  t_swp = [t_swp, time_double('2018-08-28/14:02:38')]  ; sweep table 8 upload (32-Hz,  50 eV)
+  t_swp = [t_swp, time_double('2018-08-28/14:02:38')]
+  m_swp = [m_swp, 'sweep table 8 upload (32-Hz,  50 eV)']
 
 ; 2018-10-01/00:00                                     ; beginning of EM-3
 
-  t_swp = [t_swp, time_double('2018-11-09/17:57:56')]  ; sweep table 7 upload (32-Hz, 200 eV)
+  t_swp = [t_swp, time_double('2018-11-09/17:57:56')]
+  m_swp = [m_swp, 'sweep table 7 upload (32-Hz, 200 eV)']
 
-  t_mcp = [t_mcp, time_double('2018-11-13/11:18:13')]  ; bias adjustment (2800 -> 2875 V)
-  t_mcp = [t_mcp, time_double('2020-10-15/00:00:00')]  ; beginning of second polynomial fit
+  t_mcp = [t_mcp, time_double('2018-11-13/11:18:13')]
+  m_mcp = [m_mcp, 'MCP bias adjustment (2800 -> 2875 V)']
+
+  t_mcp = [t_mcp, time_double('2020-10-15/00:00:00')]
+  m_mcp = [m_mcp, 'beginning of second polynomial fit']
 
 ; 2019-10-01/00:00                                     ; beginning of EM-4
 
-  t_mcp = [t_mcp, time_double('2021-11-05/00:00:00')]  ; last SWE-SWI cross calibration
+  t_mcp = [t_mcp, time_double('2021-11-05/00:00:00')]
+  m_mcp = [m_mcp, 'last SWE-SWI cross calibration']
 
 ; 2022-10-01/00:00                                     ; beginning of EM-5
 
-; Gather all the configuration change times into one variable (for timebar).
+; Gather configuration changes into one variable.
 
   t_cfg = [t_swp, t_mtx, t_dsf, t_mcp, t_sup]
+  m_cfg = [m_swp, m_mtx, m_dsf, m_mcp, m_sup]
+  type = [replicate('swp',n_elements(t_swp)) , $
+          replicate('mtx',n_elements(t_mtx)) , $
+          replicate('dsf',n_elements(t_dsf)) , $
+          replicate('mcp',n_elements(t_mcp)) , $
+          replicate('sup',n_elements(t_sup))    ]
+
+  i = sort(t_cfg)
+  n = n_elements(i)
+  tbar = replicate({time: 0D, text: '', type: ''}, n)
+  tbar.time = t_cfg[i]
+  tbar.text = m_cfg[i]
+  tbar.type = type[i]
 
 ; List configuration changes
 
   if keyword_set(list) then begin
-    print,time_string(t_swp[0]), ' --> sweep tables 3 and 4 upload'
-    print,time_string(t_mtx[0]), ' --> stowed boom matrix upload #1 (error in MICD)'
-    print,time_string(t_dsf[0]), ' --> deflection scale factor update #1 (with error)'
-    print,time_string(t_dsf[1]), ' --> deflection scale factor update #2 (correct)'
-    print,time_string(t_mtx[1]), ' --> stowed boom matrix upload #2 (correct MICD)'
-    print,time_string(t_swp[1]), ' --> sweep tables 5 and 6 upload'
-    print,time_string(t_dsf[2]), ' --> first SWEA turn on in orbit'
-    print,time_string(t_mtx[2]), ' --> boom deploy (with new MAG-to-SWE matrix)'
-    print,time_string(t_mcp[1]), ' --> MCP bias adjustment (2500 -> 2600 V)'
-    print,time_string(t_mcp[3]), ' --> MCP bias adjustment (2600 -> 2700 V)'
-    print,time_string(t_mcp[4]), ' --> MCP bias revert to 2600 V (unintentional)'
-    print,time_string(t_mcp[5]), ' --> MCP bias restore to 2700 V'
-    print,time_string(t_mcp[6]), ' --> MCP bias adjustment (2700 -> 2750 V)'
-    print,time_string(t_mcp[7]), ' --> MCP bias adjustment (2750 -> 2800 V)'
-    print,time_string(t_swp[2]), ' --> sweep table 8 upload'
-    print,time_string(t_swp[3]), ' --> sweep table 7 upload'
-    print,time_string(t_mcp[8]), ' --> MCP bias adjustment (2800 -> 2875 V)'
-    print,time_string(t_mcp[9]), ' --> MCP bias 2875, second polynomial fit'
-    print,time_string(t_mcp[10]),' --> last SWEA-SWIA cross calibration'
+    i = indgen(n)
+    if (size(list,/type) eq 7) then begin
+      list = strlowcase(list[0])
+      i = where(tbar.type eq list, n)
+      if (n eq 0) then begin
+        print,'  unrecognized configuration type: ',list
+        print,'  valid types: swp, mtx, dsf, mcp, sup'
+      endif
+    endif
+    for j=0,(n-1) do print, time_string(tbar[i[j]].time),' --> ',tbar[i[j]].text
   endif
-
-; Overplot dotted time bars on the current tplot window (assumed to exist)
-
-  if keyword_set(timebar) then timebar, t_cfg, line=1
 
   return
 

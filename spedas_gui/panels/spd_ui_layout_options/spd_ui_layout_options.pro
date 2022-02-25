@@ -16,9 +16,9 @@
 ;spinner (as they change) so that the user can't click down below valid values.
 ;
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2014-07-28 13:47:52 -0700 (Mon, 28 Jul 2014) $
-;$LastChangedRevision: 15619 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-24 15:50:34 -0800 (Thu, 24 Feb 2022) $
+;$LastChangedRevision: 30613 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_layout_options/spd_ui_layout_options.pro $
 ;--------------------------------------------------------------------------------
 
@@ -2551,7 +2551,7 @@ PRO spd_ui_layout_options, info
   ENDIF
     
   tlb = Widget_Base(/Col, Title='Plot/Layout Options', Group_Leader=info.master, $
-                    /Modal, /Floating, /tlb_kill_request_events, tab_mode=1) 
+                    /scroll,x_scroll_size=900,y_scroll_size=700, /Floating, /tlb_kill_request_events, tab_mode=1) 
 
   toprowBase = Widget_Base(tlb, /Row, /Align_Left, space=200)
     traceBase = Widget_Base(toprowBase, /Row, /NonExclusive, /Align_Left)

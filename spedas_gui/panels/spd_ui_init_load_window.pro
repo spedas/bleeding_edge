@@ -25,9 +25,9 @@
 ;  none
 ; 
 ;HISTORY:
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2015-05-22 10:59:17 -0700 (Fri, 22 May 2015) $
-;$LastChangedRevision: 17673 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-24 15:50:34 -0800 (Thu, 24 Feb 2022) $
+;$LastChangedRevision: 30613 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_init_load_window.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -257,7 +257,7 @@ pro spd_ui_init_load_window, gui_id, windowStorage, loadedData, historyWin, $
   compile_opt idl2, hidden
   
   tlb = widget_base(/Col, Title = "Load Data", Group_Leader = gui_id, $
-                    /Modal, /Floating, /TLB_KILL_REQUEST_EVENTS)
+                    x_scroll_size=900, y_scroll_size=700,/scroll, /Floating, /TLB_KILL_REQUEST_EVENTS)
   tabBase = widget_tab(tlb, location=0, multiline=10)
 
   tabNum = n_elements(loadDataTabs)

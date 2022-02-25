@@ -1754,9 +1754,9 @@ end ;----------------------------------------------------
 ;    thm_crib_part_slice2d.pro
 ;
 ;
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2017-11-22 19:47:42 -0800 (Wed, 22 Nov 2017) $
-;$LastChangedRevision: 24337 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-24 15:51:22 -0800 (Thu, 24 Feb 2022) $
+;$LastChangedRevision: 30614 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/slices/thm_ui_slice2d.pro $
 ;
 ;-
@@ -1771,7 +1771,7 @@ pro thm_ui_slice2d, gui_ID=gui_id, $
 
 if keyword_set(gui_ID) then begin
   tlb = widget_base(title = tlb_title, /col, /base_align_center, $ 
-                    group_leader=gui_id, /modal, /tlb_kill_request_events, tab_mode=1)
+                    group_leader=gui_id, /scroll,x_scroll_size=500,y_scroll_size=700,/tlb_kill_request_events, tab_mode=1)
 endif else begin
   tlb = widget_base(title = tlb_title, /col, /base_align_center, $ 
                     /tlb_kill_request_events, tab_mode=1)

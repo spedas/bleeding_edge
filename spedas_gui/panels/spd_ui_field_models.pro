@@ -9,8 +9,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-02-23 15:30:42 -0800 (Wed, 23 Feb 2022) $
-;$LastChangedRevision: 30607 $
+;$LastChangedDate: 2022-02-24 15:24:46 -0800 (Thu, 24 Feb 2022) $
+;$LastChangedRevision: 30612 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_field_models.pro $
 ;-
 
@@ -969,52 +969,52 @@ pro spd_ui_field_models, info
     
     positionBase = Widget_Base(mainBase, row=2)
     inputLabel = Widget_Label(positionBase, value='Input: ')
-    posSelectButton = Widget_Button(positionBase, value=pos_tvar, xsize=200, uname='selectposition', uval='SELECTPOSITION', tooltip='Select a variable containing the input position') 
+    posSelectButton = Widget_Button(positionBase, value=pos_tvar, /dynamic_resize, uname='selectposition', uval='SELECTPOSITION', tooltip='Select a variable containing the input position') 
     label_width = 55
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;;;;;;;;;;;;;;;;;;; TA15Btab ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ta15bbase = Widget_Base(tabBase, col=2, title='TA15B', tab_mode = 1, event_pro='spd_ui_field_models_event')
-    swBase15b = Widget_Base(ta15bbase, /col, xsize=180)
-    swLabel = Widget_Label(swBase15b, value='Solar wind parameters:', /align_left)
+    swBase15b = Widget_Base(ta15bbase, /col)
+    swLabel = Widget_Label(swBase15b, value='Solar wind parameters:', /align_center)
     pressureButton = Widget_Button(swBase15b, value='Dynamic pressure (optional)', uname='pressure', uval='PRESSURE', tooltip = 'Select a variable containing solar wind pressure data. If not set, pressure will be calculated by SPEDAS.')
     imfByButton = Widget_Button(swBase15b, value='IMF By (GSM)', uname='imfby', uval='IMFBY', tooltip = 'Select a variable containing IMF By data')
     imfBzButton = Widget_Button(swBase15b, value='IMF Bz (GSM)', uname='imfbz', uval='IMFBZ', tooltip = 'Select a variable containing IMF Bz data')
     protonDensityButton = Widget_Button(swBase15b, value='Proton density', uname='protondensity', uval='PROTONDENSITY', tooltip = 'Select a variable containing solar wind density data')
     protonVelocityButton = Widget_Button(swBase15b, value='Proton speed', uname='protonvelocity', uval='PROTONVELOCITY', tooltip = 'Select a variable containing solar wind speed data')
-    magBase15b = Widget_Base(ta15bbase, /col, xsize=180)
-    magnetoPLabel = Widget_Label(magBase15b, value='Magnetospheric parameters:', /align_left)
+    magBase15b = Widget_Base(ta15bbase, /col)
+    magnetoPLabel = Widget_Label(magBase15b, value='Magnetospheric parameters:', /align_center)
     b_indexButton = Widget_Button(magBase15b, value='B-index (optional)', uname='b_index', uval='B_INDEX', tooltip = 'Select a variable containing the B-index. If not set, the appropriate B-index will be calculated by SPEDAS.')
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;;;;;;;;;;;;;;;;;;; TA15N tab ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ta15nbase = Widget_Base(tabBase, col=2, title='TA15N', tab_mode = 1, event_pro='spd_ui_field_models_event')
-    swBase15n = Widget_Base(ta15nbase, /col, xsize=180)
-    swLabel = Widget_Label(swBase15n, value='Solar wind parameters:', /align_left)
+    swBase15n = Widget_Base(ta15nbase, /col)
+    swLabel = Widget_Label(swBase15n, value='Solar wind parameters:', /align_center)
     pressureButton = Widget_Button(swBase15n, value='Dynamic pressure (optional)', uname='pressure', uval='PRESSURE', tooltip = 'Select a variable containing solar wind pressure data. If not set, pressure will be calculated by SPEDAS.')
     imfByButton = Widget_Button(swBase15n, value='IMF By (GSM)', uname='imfby', uval='IMFBY', tooltip = 'Select a variable containing IMF By data')
     imfBzButton = Widget_Button(swBase15n, value='IMF Bz (GSM)', uname='imfbz', uval='IMFBZ', tooltip = 'Select a variable containing IMF Bz data')
     protonDensityButton = Widget_Button(swBase15n, value='Proton density', uname='protondensity', uval='PROTONDENSITY', tooltip = 'Select a variable containing solar wind density data')
     protonVelocityButton = Widget_Button(swBase15n, value='Proton speed', uname='protonvelocity', uval='PROTONVELOCITY', tooltip = 'Select a variable containing solar wind speed data')
-    magBase15n = Widget_Base(ta15nbase, /col, xsize=180)
-    magnetoPLabel = Widget_Label(magBase15n, value='Magnetospheric parameters:', /align_left)
+    magBase15n = Widget_Base(ta15nbase, /col)
+    magnetoPLabel = Widget_Label(magBase15n, value='Magnetospheric parameters:', /align_center)
     n_indexButton = Widget_Button(magBase15n, value='N-index (optional)', uname='n_index', uval='N_INDEX', tooltip = 'Select a variable containing the N-index. If not set, the appropriate N-index will be calculated by SPEDAS.')
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;;;;;;;;;;;;;;;;;;; Tsyganenko 07 tab ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     t07base = Widget_Base(tabBase, col=2, title='TS07', tab_mode = 1, event_pro='spd_ui_field_models_event')
     swBase07 = Widget_Base(t07base, /col)
-    swLabel = Widget_Label(swBase07, value='Solar wind parameters:', /align_left)
+    swLabel = Widget_Label(swBase07, value='Solar wind parameters:', /align_center)
     pressureButton = Widget_Button(swBase07, value='Dynamic presure (optional)',uname='pressure',uval='PRESSURE',tooltip = 'Select a variable containing solar wind dynamic pressure data (optional)')
     protonDensityButton = Widget_Button(swBase07, value='Proton density', uname='protondensity', uval='PROTONDENSITY', tooltip = 'Select a variable containing solar wind density data (optional if pressure variable selected)')
     protonVelocityButton = Widget_Button(swBase07, value='Proton speed', uname='protonvelocity', uval='PROTONVELOCITY', tooltip = 'Select a variable containing solar wind speed data (optional if pressure variable selected)')
 
     pdLabel1 = Widget_Label(swBase07, value='Directory with TS07 parameter files:', /align_left)
     t07pdbase = Widget_Base(swBase07, col=2)
-    paramdir = Widget_text(t07pdbase, uname='paramdir', uval='paramdir', value=!spedas.geopack_param_dir, /editable, /align_left, SCR_XSIZE=200, units=0)     
+    paramdir = Widget_text(t07pdbase, uname='paramdir', uval='paramdir', value=!spedas.geopack_param_dir, /editable, /align_left,scr_xsize=300, units=0)     
     pdLabel = Widget_Button(t07pdbase, uname='pdLabel', uval='pdLabel', value='Select')  
             
     pfLabel1 = Widget_Label(swBase07, value='TS07 coefficients file:', /align_left)
     t07pfbase = Widget_Base(swBase07, col=2)
-    paramfile = Widget_text(t07pfbase, uname='paramfile', uval='paramfile', value='ts07_sample_dyncoef.par', /editable, /align_left, SCR_XSIZE=200, units=0)
+    paramfile = Widget_text(t07pfbase, uname='paramfile', uval='paramfile', value='ts07_sample_dyncoef.par', /editable, /align_left, SCR_XSIZE=300, units=0)
     pfLabel = Widget_Button(t07pfbase, uname='pfLabel', uval='pfLabel', value='Select')    
     
     swLabel3 = Widget_Label(swBase07, value='', /align_left)
@@ -1022,30 +1022,30 @@ pro spd_ui_field_models, info
     
     ;;;;;;;;;;;;;;;;;;;;; Tsyganenko-Sitnov 04 tab ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     t04base = Widget_Base(tabBase, col=2, title='TS04', tab_mode = 1, event_pro='spd_ui_field_models_event')
-    swBase04 = Widget_Base(t04base, /col, xsize=180)
-    swLabel = Widget_Label(swBase04, value='Solar wind parameters:', /align_left)
+    swBase04 = Widget_Base(t04base, /col)
+    swLabel = Widget_Label(swBase04, value='Solar wind parameters:', /align_center)
     pressureButton = Widget_Button(swBase04, value='Dynamic pressure (optional)', uname='pressure', uval='PRESSURE', tooltip = 'Select a variable containing solar wind pressure data. If not set, pressure will be calculated by SPEDAS.')
     imfByButton = Widget_Button(swBase04, value='IMF By (GSM)', uname='imfby', uval='IMFBY', tooltip = 'Select a variable containing IMF By data')
     imfBzButton = Widget_Button(swBase04, value='IMF Bz (GSM)', uname='imfbz', uval='IMFBZ', tooltip = 'Select a variable containing IMF Bz data')
     protonDensityButton = Widget_Button(swBase04, value='Proton density', uname='protondensity', uval='PROTONDENSITY', tooltip = 'Select a variable containing solar wind density data')
     protonVelocityButton = Widget_Button(swBase04, value='Proton speed', uname='protonvelocity', uval='PROTONVELOCITY', tooltip = 'Select a variable containing solar wind speed data')
-    magBase04 = Widget_Base(t04base, /col, xsize=180)
-    magnetoPLabel = Widget_Label(magBase04, value='Magnetospheric parameters:', /align_left)
+    magBase04 = Widget_Base(t04base, /col)
+    magnetoPLabel = Widget_Label(magBase04, value='Magnetospheric parameters:', /align_center)
     DstButton = Widget_Button(magBase04, value='Dst', uname='dst', uval='DST', tooltip = 'Select a variable containing Dst data')
     WcoeffButton = Widget_Button(magBase04, value='W-coefficients (optional)', uname='wcoeff', uval='WCOEFF', tooltip = 'Select a variable containing the W-coefficients. If not set, the appropriate W coefficients will be calculated by Geopack')
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;;;;;;;;;;;;;;;;;;; Tsyganenko 01 tab ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     t01base = Widget_Base(tabBase, col=2, title='T01', tab_mode = 1, event_pro='spd_ui_field_models_event')
-    swBase01 = Widget_Base(t01base, /col, xsize=180)
-    swLabel = Widget_Label(swBase01, value='Solar wind parameters:', /align_left)
+    swBase01 = Widget_Base(t01base, /col)
+    swLabel = Widget_Label(swBase01, value='Solar wind parameters:', /align_center)
     pressureButton = Widget_Button(swBase01, value='Dynamic pressure (optional)', uname='pressure', uval='PRESSURE', tooltip = 'Select a variable containing solar wind pressure data. If not set, pressure will be calculated by SPEDAS.')
     imfByButton = Widget_Button(swBase01, value='IMF By (GSM)', uname='imfby', uval='IMFBY', tooltip = 'Select a variable containing IMF By data')
     imfBzButton = Widget_Button(swBase01, value='IMF Bz (GSM)', uname='imfbz', uval='IMFBZ', tooltip = 'Select a variable containing IMF Bz data')
     protonDensityButton = Widget_Button(swBase01, value='Proton density', uname='protondensity', uval='PROTONDENSITY', tooltip = 'Select a variable containing solar wind density data')
     protonVelocityButton = Widget_Button(swBase01, value='Proton speed', uname='protonvelocity', uval='PROTONVELOCITY', tooltip = 'Select a variable containing solar wind speed data')
-    magBase01 = Widget_Base(t01base, /col, xsize=180)
-    magnetoPLabel = Widget_Label(magBase01, value='Magnetospheric parameters:', /align_left)
+    magBase01 = Widget_Base(t01base, /col)
+    magnetoPLabel = Widget_Label(magBase01, value='Magnetospheric parameters:', /align_center)
     DstButton = Widget_Button(magBase01, value='Dst', uname='dst', uval='DST', tooltip = 'Select a variable containing Dst data')
     GcoeffButton = Widget_Button(magBase01, value='G-coefficients (optional)', uname='gcoeff', uval='GCOEFF', tooltip = 'Select a variable containing the G-coefficients. If not set, the appropriate G coefficients will be calculated by Geopack')
     storm01base = Widget_Base(magBase01, /nonexclusive)
@@ -1055,15 +1055,15 @@ pro spd_ui_field_models, info
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;;;;;;;;;;;;;;;;;;; Tsyganenko 96 tab ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     t96base = Widget_Base(tabBase, col=2, title='T96', tab_mode = 1, event_pro='spd_ui_field_models_event')
-    swBase96 = Widget_Base(t96base, /col, xsize=180)
-    swLabel = Widget_Label(swBase96, value='Solar wind parameters:', /align_left)
+    swBase96 = Widget_Base(t96base, /col)
+    swLabel = Widget_Label(swBase96, value='Solar wind parameters:', /align_center)
     pressureButton = Widget_Button(swBase96, value='Dynamic pressure (optional)', uname='pressure', uval='PRESSURE', tooltip = 'Select a variable containing solar wind pressure data. If not set, pressure will be calculated by SPEDAS.')
     imfByButton = Widget_Button(swBase96, value='IMF By (GSM)', uname='imfby', uval='IMFBY', tooltip = 'Select a variable containing IMF By data')
     imfBzButton = Widget_Button(swBase96, value='IMF Bz (GSM)', uname='imfbz', uval='IMFBZ', tooltip = 'Select a variable containing IMF Bz data')
     protonDensityButton = Widget_Button(swBase96, value='Proton density', uname='protondensity', uval='PROTONDENSITY', tooltip = 'Select a variable containing solar wind density data')
     protonVelocityButton = Widget_Button(swBase96, value='Proton speed', uname='protonvelocity', uval='PROTONVELOCITY', tooltip = 'Select a variable containing solar wind speed data')
-    magBase96 = Widget_Base(t96base, /col, xsize=180)
-    magnetoPLabel = Widget_Label(magBase96, value='Magnetospheric parameters:', /align_left)
+    magBase96 = Widget_Base(t96base, /col)
+    magnetoPLabel = Widget_Label(magBase96, value='Magnetospheric parameters:', /align_center)
     DstButton = Widget_Button(magBase96, value='Dst', uname='dst', uval='DST', tooltip = 'Select a variable containing Dst data')
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1078,11 +1078,11 @@ pro spd_ui_field_models, info
     tiltLabel = Widget_Label(newt89base, value='Tilt angle (optional): ', /align_left)
 
     tiltBase = Widget_Base(newt89base, row=2, /align_left)
-    setTiltLabel = Widget_Label(tiltBase, value='Set: ', xsize=45)
+    setTiltLabel = Widget_Label(tiltBase, value='Set: ', xsize=100)
     setTiltText = Widget_Text(tiltBase, uname='settiltangle', uval='SETTILTANGLE', value=t89_set_tilt, /editable, /all_events)
     setTiltLabel = Widget_Label(tiltBase, value='deg')
     helpsettilt = Widget_Button(tiltBase, value=helpbmp, /bitmap, uname='helpsettilt', uval='HELPSETTILT')
-    addTiltLabel = Widget_Label(tiltBase, value='Add: ', xsize=45)
+    addTiltLabel = Widget_Label(tiltBase, value='Add: ', xsize=100)
     addTiltText = Widget_Text(tiltBase, uname='addtiltangle', uval='ADDTILTANGLE', value=t89_add_tilt, /editable, /all_events)
     setTiltLabel = Widget_Label(tiltBase, value='deg')
     helpaddtilt = Widget_Button(tiltBase, value=helpbmp, /bitmap, uname='helpaddtilt', uval='HELPADDTILT')
@@ -1095,39 +1095,38 @@ pro spd_ui_field_models, info
     ; show the user their current selections
     modelinfoLabel = Widget_Label(bottomBase, value='Current model parameters:', /align_left)
     modelparamBase = Widget_Base(bottomBase, col=1)
-    modelinfoBase = Widget_Base(modelparamBase, row=10, scr_xsize=350, /align_left)
+    modelinfoBase = Widget_Base(modelparamBase, row=10, /align_left)
     colBaseModel = Widget_Base(modelinfoBase, col=2)
     modelLabel = Widget_Label(colBaseModel, value='Model: ', /align_left)
-    selectedModelLabel = Widget_Label(colBaseModel, value='TA15B', /align_left, uname='selectedmodel')
-    ; the extra 30-35 whitespace characters in the selected IMF strings are needed because Motif doesn't
-    ; resize these widgets when their values are updated on linux machines
-    colBasepressure = Widget_Base(modelinfoBase,  uname='pressurebase', row=1, scr_xsize=340)
-    pressureLabel = Widget_Label(colBasepressure, value='Dynamic pressure: ', /align_left,scr_xsize=100)
-    selectedpressureLabel = Widget_Label(colBasepressure, value=(pressure_tvar eq '' ? '[calculate automatically]                                      ' : pressure_tvar), /align_left, uname='selectedpressure')
-    colBaseimfy = Widget_Base(modelinfoBase,  uname='imfbybase', row=1, scr_xsize=340)
-    imfyLabel = Widget_Label(colBaseimfy, value='IMF By: ', /align_left, scr_xsize=50)
-    selectedByIMFLabel = Widget_Label(colBaseimfy, value=(imf_by_tvar eq '' ? '[none]                                      ' : imf_by_tvar), /align_left, uname='selectedByimf')
-    colBaseimfz = Widget_Base(modelinfoBase, row=1, uname='imfbzbase', scr_xsize=340)
+    selectedModelLabel = Widget_Label(colBaseModel, value='TA15B', /align_left, /dynamic_resize, uname='selectedmodel')
+    colBasepressure = Widget_Base(modelinfoBase,  uname='pressurebase', row=1)
+    pressureLabel = Widget_Label(colBasepressure, value='Dynamic pressure: ', /align_left)
+    selectedpressureLabel = Widget_Label(colBasepressure, value=(pressure_tvar eq '' ? '[calculate automatically]' : pressure_tvar), /align_left, /dynamic_resize, uname='selectedpressure')
+    colBaseimfy = Widget_Base(modelinfoBase,  uname='imfbybase', row=1)
+    
+    imfyLabel = Widget_Label(colBaseimfy, value='IMF By: ', /align_left)
+    selectedByIMFLabel = Widget_Label(colBaseimfy, value=(imf_by_tvar eq '' ? '[none]' : imf_by_tvar), /align_left, /dynamic_resize,uname='selectedByimf')
+    colBaseimfz = Widget_Base(modelinfoBase, row=1, uname='imfbzbase')
     imfzLabel = Widget_Label(colBaseimfz, value='IMF Bz: ', /align_left)
-    selectedBzIMFLabel = Widget_Label(colBaseimfz, value=(imf_bz_tvar eq '' ? '[none]                                          ' : imf_bz_tvar), /align_left, uname='selectedBzimf', xsize=250)
-    colBaseDensity = Widget_Base(modelinfoBase, row=1, uname='swdensitybase', scr_xsize=340)
+    selectedBzIMFLabel = Widget_Label(colBaseimfz, value=(imf_bz_tvar eq '' ? '[none]' : imf_bz_tvar), /align_left,/dynamic_resize, uname='selectedBzimf')
+    colBaseDensity = Widget_Base(modelinfoBase, row=1, uname='swdensitybase')
     swdensLabel = Widget_Label(colBaseDensity, value='SW density: ', /align_left)
-    selecteddensLabel = Widget_Label(colBaseDensity, value=(sw_density_tvar eq '' ? '[none]                                        ' : sw_density_tvar), /align_left, uname='selectedswdens', xsize=250)
-    colBaseVelocity = Widget_Base(modelinfoBase, row=1, uname='swvelbase', scr_xsize=340)
+    selecteddensLabel = Widget_Label(colBaseDensity, value=(sw_density_tvar eq '' ? '[none]' : sw_density_tvar), /align_left,/dynamic_resize, uname='selectedswdens')
+    colBaseVelocity = Widget_Base(modelinfoBase, row=1, uname='swvelbase')
     swvelLabel = Widget_Label(colBaseVelocity, value='SW flow speed: ', /align_left)
-    selswvelLabel = Widget_Label(colBaseVelocity, value=(sw_speed_tvar eq '' ? '[none]                                      ' : sw_speed_tvar), uname='selectedswvel', /align_left, xsize=250)
-    colBaseDst= Widget_Base(modelinfoBase, row=1, uname='dstbase', scr_xsize=340)
+    selswvelLabel = Widget_Label(colBaseVelocity, value=(sw_speed_tvar eq '' ? '[none]' : sw_speed_tvar), uname='selectedswvel', /align_left, /dynamic_resize)
+    colBaseDst= Widget_Base(modelinfoBase, row=1, uname='dstbase')
     dstLabel = Widget_Label(colBaseDst, value='Dst: ', /align_left)
-    seldstLabel = Widget_Label(colBaseDst, value=(dst_tvar eq '' ? '[none]                                                 ' : dst_tvar), uname='selecteddst', /align_left, xsize=250)
-    colBaseWs= Widget_Base(modelinfoBase, row=1, uname='Wsbase', scr_xsize=340)
+    seldstLabel = Widget_Label(colBaseDst, value=(dst_tvar eq '' ? '[none]' : dst_tvar), uname='selecteddst', /align_left,/dynamic_resize)
+    colBaseWs= Widget_Base(modelinfoBase, row=1, uname='Wsbase')
     WcoeffLabel = Widget_Label(colBaseWs, value='W coefficients: ', /align_left, uname='selectedwlabel')
-    selWLabel = Widget_Label(colBaseWs, value=(w_coeff_tvar eq '' ? '[calculate automatically]                                         ' : w_coeff_tvar), uname='selectedw', /align_left, xsize=250)
-    colBasebindex= Widget_Base(modelinfoBase, row=1, uname='bindexbase', scr_xsize=340)
+    selWLabel = Widget_Label(colBaseWs, value=(w_coeff_tvar eq '' ? '[calculate automatically]' : w_coeff_tvar), uname='selectedw', /align_left, /dynamic_resize)
+    colBasebindex= Widget_Base(modelinfoBase, row=1, uname='bindexbase')
     bindexLabel = Widget_Label(colBasebindex, value='B-index: ', /align_left, uname='selectedblabel')
-    selbindexLabel = Widget_Label(colBasebindex, value=(bindex_tvar eq '' ? '[calculate automatically]                                         ' : bindex_tvar), uname='selectedbindex', /align_left, xsize=250)
-    colBasenindex= Widget_Base(modelinfoBase, row=1, uname='nindexbase', scr_xsize=340)
+    selbindexLabel = Widget_Label(colBasebindex, value=(bindex_tvar eq '' ? '[calculate automatically]' : bindex_tvar), uname='selectedbindex', /align_left, /dynamic_resize)
+    colBasenindex= Widget_Base(modelinfoBase, row=1, uname='nindexbase')
     nindexLabel = Widget_Label(colBasenindex, value='N-index: ', /align_left, uname='selectednlabel')
-    selnindexLabel = Widget_Label(colBasenindex, value=(nindex_tvar eq '' ? '[calculate automatically]                                         ' : nindex_tvar), uname='selectednindex', /align_left, xsize=250)
+    selnindexLabel = Widget_Label(colBasenindex, value=(nindex_tvar eq '' ? '[calculate automatically]' : nindex_tvar), uname='selectednindex', /align_left, /dynamic_resize)
     
     ; buttons for output options
     labelmodel = Widget_Label(bottomBase, value='Output:', /align_left)
@@ -1146,9 +1145,9 @@ pro spd_ui_field_models, info
     widget_control, trace_ionosphere, set_button=output_options[2]
     
     buttonBase = Widget_Base(bottomBase, /row, /align_center)
-    generateButton = Widget_Button(buttonBase, value='Generate', uval='GENMAGFIELD', xsize=80, tooltip='Generate the magnetic field model')
-    clearButton = Widget_Button(buttonBase, value='Clear', uval='CLEAR', xsize=80, tooltip='Clear the current options')
-    closeButton = Widget_Button(buttonBase, value='Close', uval='CLOSE', xsize=80, tooltip='Close this window')
+    generateButton = Widget_Button(buttonBase, value='Generate', uval='GENMAGFIELD', tooltip='Generate the magnetic field model')
+    clearButton = Widget_Button(buttonBase, value='Clear', uval='CLEAR', tooltip='Clear the current options')
+    closeButton = Widget_Button(buttonBase, value='Close', uval='CLOSE', tooltip='Close this window')
    
     statusBase = Widget_Base(tlb, /Row, /align_center)
     statusBar = Obj_New('SPD_UI_MESSAGE_BAR', statusBase, XSize=55, YSize=1) 

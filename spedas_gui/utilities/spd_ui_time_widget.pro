@@ -33,9 +33,9 @@
 ;
 ;HISTORY:
 ;
-; $LastChangedBy: jimmpc1 $
-; $LastChangedDate: 2019-03-21 14:07:02 -0700 (Thu, 21 Mar 2019) $
-; $LastChangedRevision: 26875 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2022-02-24 16:22:15 -0800 (Thu, 24 Feb 2022) $
+; $LastChangedRevision: 30616 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/utilities/spd_ui_time_widget.pro $
 ;-
 
@@ -320,8 +320,8 @@ function spd_ui_time_widget,$
   cal = read_bmp(rpath + 'cal.bmp', /rgb)
   spd_ui_match_background, parent, cal  
   
-  starttime = '2007-03-23/00:00:00'
-  stoptime = '2007-03-24/00:00:00'
+  starttime = '2007-03-23/00:00:00.000'
+  stoptime = '2007-03-24/00:00:00.000'
   ; Start/Stop Time objects
   if obj_valid(timeRangeObj) && (obj_class(timeRangeObj) eq 'SPD_UI_TIME_RANGE') then begin
     timeRangeObj->getproperty, startTime=startt, endTime=stopt
@@ -349,7 +349,6 @@ function spd_ui_time_widget,$
     return,0
   endif 
   
-  label_width = 75
   
   stash = widget_base(base)
   
@@ -357,13 +356,13 @@ function spd_ui_time_widget,$
   startBase = Widget_Base(ttextBase, /Row)
   stopBase = Widget_Base(ttextBase, /Row, uname='stopbase')
   formatBase = Widget_Base(ttextBase, /Row, space=0)
-  startLabel = Widget_Label(startBase, Value='Start Time: ', xsize=label_width)
+  startLabel = Widget_Label(startBase, Value='Start Time: ')
   startText = Widget_Text(startBase, /Editable, /All_events, Value=starttime, $
                         UValue='START_TIME', uname='start_time')
   startcal = widget_button(startbase, val = cal, /bitmap, tab_mode=0, $
                          uval='START_CAL', $
                          tooltip='Choose date/time from calendar.', sensitive=1)
-  stopLabel = Widget_Label(stopBase, Value='Stop Time: ', xsize=label_width)
+  stopLabel = Widget_Label(stopBase, Value='Stop Time:  ')
   stopText = Widget_Text(stopBase, /Editable, /All_events, Value=stoptime, $
                        UValue='STOP_TIME')
   stopcal = widget_button(stopbase, val = cal, /bitmap, tab_mode=0, $
@@ -377,9 +376,9 @@ function spd_ui_time_widget,$
       oneday = (t1-t0) eq 86400 ? 1b:0b
     endif
     
-    spLabel = Widget_Label(formatBase, Value='', xsize=label_width-1);dummy label for spacing
+    spLabel = Widget_Label(formatBase, Value='  ', /dynamic_resize);dummy label for spacing
     onedaybbase = widget_base(formatbase, /row, space=0, ypad=0, /nonexclusive)
-    onedayb = widget_button(onedaybbase, value='Use Single Day', uval='ONEDAY', uname='oneday')
+    onedayb = widget_button(onedaybbase, value='Use Single Day', uval='ONEDAY', uname='oneday',/dynamic_resize)
     widget_control, onedayb, set_button=oneday
     if oneday then  widget_control, stopbase, sensitive=0
   endif else begin

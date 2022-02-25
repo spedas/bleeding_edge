@@ -34,9 +34,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-10-14 16:56:11 -0700 (Thu, 14 Oct 2021) $
-;$LastChangedRevision: 30356 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-24 15:50:34 -0800 (Thu, 24 Feb 2022) $
+;$LastChangedRevision: 30613 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_spdfcdawebchooser.pro $
 ;-
 
@@ -698,7 +698,7 @@ pro spd_ui_spdfcdawebchooser, historyWin=historyWin, GROUP_LEADER = groupLeaderW
   if keyword_set(groupLeaderWidgetId) then begin
   
     tlb = widget_base(title='CDAWeb Data Chooser', /column, $
-      GROUP_LEADER=groupLeaderWidgetId, /Modal,  /TLB_KILL_REQUEST_EVENTS, tab_mode=1, TLB_Size_Events=1)
+      GROUP_LEADER=groupLeaderWidgetId, /scroll,x_scroll_size=700,y_scroll_size=700,  /TLB_KILL_REQUEST_EVENTS, tab_mode=1, TLB_Size_Events=1)
     ;defaultSaveCdfOption = 1
   endif else begin
   

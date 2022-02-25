@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2021-12-27 01:31:41 -0800 (Mon, 27 Dec 2021) $
-; $LastChangedRevision: 30477 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2022-02-24 08:11:12 -0800 (Thu, 24 Feb 2022) $
+; $LastChangedRevision: 30608 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_load.pro $
 ; Created by Davin Larson 2018
 
@@ -26,17 +26,45 @@ pro diagonalize_tensor,tensor,eigen_val,eigen_vec
       eig_val[0]= val[2]
       eig_val[1]= val[0]
       eig_val[2]= val[1]
-      eig_vec[*,0]= vec[*,2]
-      eig_vec[*,1]= vec[*,0]
-      eig_vec[*,2]= vec[*,1]
+      eig_vec[*,0]= vec[2]
+      eig_vec[*,1]= vec[0]
+      eig_vec[*,2]= vec[1]
     endif else begin
       eig_val= val
       eig_vec= vec
     endelse
-    stop
+    ;stop
   endfor
 
 end
+
+
+pro rotate_t_tensor,tens,mag
+  get_data,'psp_swp_spi_sf00_L2B_T_TENSOR_INST',data=ttens_inst
+  get_data,'psp_swp_spi_sf00_L2B_MAGF_INST',data=mag_inst
+
+  tmap = [[0,3,4],[3,1,5],[4,5,2]]
+  r_tmap = [0,4,8,1,2,5]
+
+  dim1 = size(/dimen,ttens_inst.y)
+  dim2 = size(/dimen,mag_inst.y)
+  ttens_mag = ttens_inst
+  v2 = [0.,1.,0.]
+  if dim1[0] eq dim2[0] then begin
+    for i=0,dim1[0]-1 do begin
+      t = reform(ttens_inst.y[i,*])
+      t3x3 = t[tmap]
+      b = reform(mag_inst.y[i,*])
+      rmat = rot_mat(b,v2)
+      T_mag = rotate_tensor(t3x3,rmat)
+      ttens_mag.y[i,*] = t_mag[r_tmap]
+    endfor
+  endif else message,'error'
+  store_data,'TEMP_TENSOR_MAGF',data=ttens_mag,dlimit={colors:'rgbymc'}
+
+
+end
+
 
 
 pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname_prefix=tname_prefix,save=save,$
@@ -147,8 +175,17 @@ pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname
       get_data,'Saxis',data=sym
       ang=acos(abs(total(mag.y*sym.y,2))/sqrt(total(mag.y^2,2)))*180/3.1416
       store_data,'angle',mag.x,ang;,dlim={
-      get_data,'psp_swp_spi_sf00_L2B_T_TENSOR_INST',data=ttens
-      diagonalize_tensor,ttens,rotmat,t3
+      get_data,'psp_swp_spi_sf00_L2B_T_TENSOR_INST',data=ttens_inst
+      dim1 = size(/dimen,ttens.y)
+      dim2 = size(/dimen,mag.y)
+      if dim1[0] eq dim2[0] then begin
+        for i=0,dim1[0]-1 do begin
+          b = reform(mag.y[i,*])
+          rmat = rot_mat(b)
+          Tens_mag = rotate_tensor(t,rmat)
+        endfor
+      endif else message,'error'
+;      diagonalize_tensor,ttens.y,rotmat,t3
     endif
 
     if keyword_set(rtn_frame) then begin
