@@ -26,8 +26,8 @@
 ; 
 ;HISTORY:
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-02-24 15:50:34 -0800 (Thu, 24 Feb 2022) $
-;$LastChangedRevision: 30613 $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_init_load_window.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -291,7 +291,7 @@ pro spd_ui_init_load_window, gui_id, windowStorage, loadedData, historyWin, $
   widget_control, tabBase, set_tab_current=(*userSelectPtr).panelID
     
   ; Create Status Bar Object
-  okButton = Widget_Button(bottomBase, Value='Done', XSize=75, uValue='DISMISS', $
+  okButton = Widget_Button(bottomBase, Value='Done', uValue='DISMISS', $
     ToolTip='Dismiss Load Panel', /align_center)
   statusText = Obj_New('SPD_UI_MESSAGE_BAR', $
                        Value='Status information is displayed here.', $

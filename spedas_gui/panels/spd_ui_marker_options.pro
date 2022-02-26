@@ -15,9 +15,9 @@
 ;
 ;HISTORY:
 ;
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2014-02-11 10:54:32 -0800 (Tue, 11 Feb 2014) $
-;$LastChangedRevision: 14326 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_marker_options.pro $
 ;--------------------------------------------------------------------------------
 
@@ -106,8 +106,8 @@ PRO spd_ui_marker_options, gui_id, historywin
   panelLabel = Widget_Label(panelLabelBase, Value='Panel: ')
   panelValue=['Panel 1: ', '   tha_fge', '       tha_fge_x', '       tha_fge_y', $
     '       tha_fge_z', 'Panel 2: ', '    thb_fge', 'Panel 3: ', '    thc_fge']
-  panelDroplist = Widget_combobox(panelLabelBase, Value=panelValue, XSize=220)
-  panelText = Widget_Text(panelTextBase, /Editable, Value=' ', XSize=40, YSize=9)  
+  panelDroplist = Widget_combobox(panelLabelBase, Value=panelValue)
+  panelText = Widget_Text(panelTextBase, /Editable, Value=' ', XSize=40)  
   shiftupbmp = filepath('shift_up.bmp', Subdir=['resource', 'bitmaps'])
   shiftdownbmp = filepath('shift_down.bmp', Subdir=['resource', 'bitmaps'])
   shiftupButton = Widget_Button(panelArrowBase, Value=shiftupbmp, /Bitmap, UValue='UP', $
@@ -133,10 +133,10 @@ PRO spd_ui_marker_options, gui_id, historywin
   placeFrameBase = Widget_Base(placementBase, Frame=3, /Col, XPad=4, YPad=4)
   startBase = Widget_Base(placeFrameBase, /Row)
   startLabel = Widget_Label(startBase, Value='Start at: ')
-  startText = Widget_Text(startBase, Value='  ', XSize=15, YSize=1, /Editable)
+  startText = Widget_Text(startBase, Value='  ', XSize=15, /Editable)
   endBase = Widget_Base(placeFrameBase, /Row)
   endLabel = Widget_Label(endBase, Value='End at:  ')
-  endText = Widget_Text(endBase, Value='  ', XSize=15, YSize=1, /Editable)
+  endText = Widget_Text(endBase, Value='  ', XSize=15, /Editable)
   verticalValues = ['Top', 'Near Top', 'Above Middle', 'Middle', 'Below Middle', $
     'Near Bottom','Bottom']
   vdBase = widget_base(placeFrameBase, /row)
@@ -160,9 +160,9 @@ PRO spd_ui_marker_options, gui_id, historywin
   opaqueBase = Widget_Base(appearBase, /NonExclusive)
   opaqueButton = Widget_Button(opaqueBase, Value = 'Draw Opaque')
  
-  okButton = Widget_Button(buttonBase, Value=' OK ', UValue='OK', XSize=80, $
+  okButton = Widget_Button(buttonBase, Value=' OK ', UValue='OK', $
     Tooltip='Applies the changes to the layout and closes the window')
-  cancelButton = Widget_Button(buttonBase, Value=' Cancel ', UValue='CANC', XSize=80, $
+  cancelButton = Widget_Button(buttonBase, Value=' Cancel ', UValue='CANC', $
     Tooltip='Cancels the operation and closes the window')
    
   state = {tlb:tlb, gui_id:gui_id, historywin:historywin}

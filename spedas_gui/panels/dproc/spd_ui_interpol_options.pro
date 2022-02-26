@@ -28,9 +28,9 @@
 ;
 ;NOTES:
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2015-04-24 18:45:02 -0700 (Fri, 24 Apr 2015) $
-;$LastChangedRevision: 17429 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 13:27:50 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30620 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/dproc/spd_ui_interpol_options.pro $
 ;-
 
@@ -120,8 +120,8 @@ function spd_ui_interp_match, state
 
 ;Buttons
   mButtonBase = widget_base(mtlb, /row, /align_center)
-  mOk = widget_button(mbuttonbase, value='OK', uval='OK', xsize=45)
-  mCancel = widget_button(mbuttonbase, value='Cancel', uval='CANCEL', xsize=45)
+  mOk = widget_button(mbuttonbase, value='OK', uval='OK')
+  mCancel = widget_button(mbuttonbase, value='Cancel', uval='CANCEL')
 
 ;Initialize
   pname=ptr_new('')
@@ -395,7 +395,7 @@ function spd_ui_interpol_options, gui_ID, historywin, statusbar, datap, ptree = 
   matchto = widget_button(matchtobase, value='Match', uval='MATCHTO', $
                           tooltip='Click to select quantity from data tree')
   separator = widget_label(matchtobase, value=' : ')
-  matched = widget_label(matchtobase, value='none', xsize=100)
+  matched = widget_label(matchtobase, value='none', /dynamic_resize)
   
   noextra = widget_button(matchoptbase, value="Don't extrapolate")
   extra = widget_button(matchoptbase, value='Extrapolate')
@@ -403,8 +403,8 @@ function spd_ui_interpol_options, gui_ID, historywin, statusbar, datap, ptree = 
   
 
 ;Buttons
-  ok = widget_button(buttonbase, value = 'OK', xsize=60, uval='OK')
-  cancel = widget_button(buttonbase, valu = 'Cancel', xsize=60, uval='CANCEL')
+  ok = widget_button(buttonbase, value = 'OK', uval='OK')
+  cancel = widget_button(buttonbase, valu = 'Cancel', uval='CANCEL')
 
 
 

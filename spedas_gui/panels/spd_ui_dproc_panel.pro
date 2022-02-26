@@ -19,9 +19,9 @@
 ; 21-nov-2008, jmm, jimm@ssl.berkeley.edu
 ; 24-apr-2015, af, event handler uses uname instead of uvalue
 ; 
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2015-04-24 18:45:02 -0700 (Fri, 24 Apr 2015) $
-;$LastChangedRevision: 17429 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_dproc_panel.pro $
 ;-
 
@@ -338,7 +338,7 @@ state.activelist = widget_list(activebase, value = *state.act_data_t, $
                                XSize = 55, YSize = 22, scr_ysize=ytree_size, /multiple)
 
 ;buttons along the bottom
-clear_button = Widget_Button(buttonBase, Value = ' Clear Active ', XSize = 85, $
+clear_button = Widget_Button(buttonBase, Value = ' Clear Active ', $
                              uname = 'CLEAR')
 ; Analysis Pull Down Menu, hacked from spd_gui.pro
 ;analysisMenu = Widget_Button(buttonbase, Value='Analysis ',/menu
@@ -398,7 +398,7 @@ spd_ui_plugin_menu, pluginsMenu, valid_plugins, uname='PROC:PLUGIN'
 ;    plugin_menus[i] = Widget_Button(pluginsMenu, value=valid_plugins[i].item, uname='PROC:PLUGIN;'+valid_plugins[i].procedure)    
 
 ;Dude...
-cancel_button = Widget_Button(buttonBase, Value = '  Done   ', XSize = 85, $
+cancel_button = Widget_Button(buttonBase, Value = '  Done   ', $
                               uname = 'CANC')
 CenterTlb, master
 Widget_Control, master, Set_UValue = state, /No_Copy

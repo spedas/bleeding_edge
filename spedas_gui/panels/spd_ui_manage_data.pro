@@ -14,9 +14,9 @@
 ;OUTPUT:
 ; 
 ;HISTORY:
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-10-11 13:55:48 -0700 (Thu, 11 Oct 2018) $
-;$LastChangedRevision: 25960 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_manage_data.pro $
 ;
 ;--------------------------------------------------------------------------------
@@ -526,7 +526,7 @@ pro spd_ui_manage_data, gui_id, loadedData, windowStorage, historywin,treeCopyPt
               SCR_YSIZE=350, uvalue='TPLOT', /multiple)
 
   tplotLabelNote = Widget_Label(tplotDataBase, value='Tplot variables can only be used with the command line.', /align_left)
-  ok_button = widget_button(buttonBase,value='OK',uvalue='OK', xsize=75)
+  ok_button = widget_button(buttonBase,value='OK',uvalue='OK')
   
   statusBar = Obj_New("SPD_UI_MESSAGE_BAR", statusBase, Xsize=98, YSize=1)
  

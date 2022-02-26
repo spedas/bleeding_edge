@@ -1209,22 +1209,19 @@ pro spd_ui_mdd_std, gui_ID=gui_id, $
   mmsdataCombo = widget_combobox(mmsdataBase,$
     value=mmsMagdataArray,$
     uvalue='MMS_DATA',$
-    uname='mms_data',$
-    xsize=70)
+    uname='mms_data')
 
   thmdataBase = widget_base(dataBase, /row, ypad=6)
   thmdataCombo = widget_combobox(thmdataBase,$
     value=thmMagdataArray,$
     uvalue='THM_DATA',$
-    uname='thm_data',$
-    xsize=70)
+    uname='thm_data')
 
   clusterdataBase = widget_base(dataBase, /row, ypad=6)
   clusterdataCombo = widget_combobox(clusterdataBase,$
     value=clusterdataArray,$
     uvalue='CLUSTER_DATA',$
-    uname='cluster_data',$
-    xsize=70)
+    uname='cluster_data')
 
   thmCoordinateArray = ['gsm', 'gse', 'dsl']
   mmsMagCoordArray = ['gsm', 'gse', 'dbcs']
@@ -1235,21 +1232,18 @@ pro spd_ui_mdd_std, gui_ID=gui_id, $
   mmscoordinateBase=widget_base(coordinateBase, /row, ypad=6)
   mmscoordinateCombo = widget_combobox(mmscoordinateBase,$
     value=mmsMagCoordArray,$
-    xsize=70,$
     uvalue='MMS_COORDINATE',$
     uname='mms_coordinate')
 
   thmcoordinateBase=widget_base(coordinateBase, /row, ypad=6)
   thmcoordinateCombo = widget_combobox(thmcoordinateBase,$
     value=thmcoordinateArray,$
-    xsize=70,$
     uvalue='THM_COORDINATE',$
     uname='thm_coordinate')
 
   clustercoordinateBase=widget_base(coordinateBase, /row, ypad=6)
   clustercoordinateCombo = widget_combobox(clustercoordinateBase,$
     value=clustercoordinateArray,$
-    xsize=70,$
     uvalue='CLUSTER_COORDINATE',$
     uname='cluster_coordinate')
 
@@ -1281,7 +1275,7 @@ pro spd_ui_mdd_std, gui_ID=gui_id, $
 
   ; plot data button
   plotDataBase = widget_base(timePlotBase, /col,/align_center, xpad=50)
-  plotDataButton = widget_button(plotDataBase, value='Plot', uval='PLOT_DATA', xsize =100)
+  plotDataButton = widget_button(plotDataBase, value='Plot', uval='PLOT_DATA')
 
   ;
   ; LOWER LEFT HAND SECTION
@@ -1315,9 +1309,9 @@ pro spd_ui_mdd_std, gui_ID=gui_id, $
   f3Label = widget_label(f3Base, value='f3 (Min): ', /align_left)
   f3buttons = CW_BGROUP(f3Base, xyzStrings, /row, /exclusive, set_value=2, UNAME='F3')
 
-  mddOptionsCalcButton = widget_button(mddOptionsButtonBase, value='Calculate', uval='CALC_MDD', xsize =100, $
+  mddOptionsCalcButton = widget_button(mddOptionsButtonBase, value='Calculate', uval='CALC_MDD', $
     tooltip='This button will perform the MDD calculations')
-  mddoptionsplotButton = widget_button(mddOptionsButtonBase, value='Plot', uval='PLOT_MDD', xsize =100, $
+  mddoptionsplotButton = widget_button(mddOptionsButtonBase, value='Plot', uval='PLOT_MDD', $
     tooltip='This button will plot the results of the MDD analysis')
 
   deltaLabel = widget_label(deltaBase, value='Delta t (sec):   ')
@@ -1330,7 +1324,7 @@ pro spd_ui_mdd_std, gui_ID=gui_id, $
   dimenStrings = ['1-D', '2-D', '3-D (Default)']
   dimenButtons = CW_BGROUP(dimensionButtonBase, dimenStrings, /col, /exclusive, set_value=2, UNAME='dimensionality')
   dimenPlotButtons = widget_button(dimensionPlotBase, value='Plot', uvalue='PLOT_STD', uname='plot_std', $
-    xsize=100,tooltip='This button will plot the results of the STD analysis')
+    tooltip='This button will plot the results of the STD analysis')
 
   varComboBase = widget_base(yrangeBase, /row, ypad=3)
   varLabel = widget_label(varComboBase, value='Select Variable: ', /align_left)
@@ -1344,19 +1338,19 @@ pro spd_ui_mdd_std, gui_ID=gui_id, $
   yRangeMinBase = widget_base(varComboBase, /row, xpad=6)
   yRangeMinLabel = widget_label(yRangeMinBase, value='Min: ')
   yRangeMinText = widget_text(yRangeMinBase, value='0.0', /editable, uvalue='YRANGE_MIN', uname='yrange_min', $
-    sensitive=0, xsize=15)
+    sensitive=0, xsize=30)
   yRangeMaxBase = widget_base(varComboBase, /row, xpad=4)
   yRangeMaxLabel = widget_label(yRangeMaxBase, value='Max: ')
   yRangeMaxText = widget_text(yRangeMaxBase, value='0.0', /editable, uvalue='YRANGE_MAX', uname='yrange_max', $
-     sensitive=0, xsize=15)
+     sensitive=0, xsize=30)
   yrangeStructure = { varNames: ['lamba', 'Eigenvector_max', 'Eigenvector_mid', 'Eigenvector_min'], $
                       ymin: 0., $
                       ymax: 0. }
 
   replotBase = widget_base(yrangeBase, /row, ypad=3, xpad=75)
-  replotMDD = widget_button(replotBase, value='Replot MDD Results', uvalue='REPLOT_MDD', uname='replot_mdd', xsize=120, $
+  replotMDD = widget_button(replotBase, value='Replot MDD Results', uvalue='REPLOT_MDD', uname='replot_mdd', $
     tooltip = 'This button will replot the MDD results with the Yaxis range specified in the min/max text boxes')
-  replotMDD = widget_button(replotBase, value='Replot STD Results', uvalue='REPLOT_STD', uname='replot_std', xsize=120, $
+  replotMDD = widget_button(replotBase, value='Replot STD Results', uvalue='REPLOT_STD', uname='replot_std', $
     tooltip = 'This button will replot the STD results with the Yaxis range specified in the min/max text boxes')
   
   st_text = '2015-11-24/19:40:00'
@@ -1396,8 +1390,8 @@ pro spd_ui_mdd_std, gui_ID=gui_id, $
   plotResBase = widget_base(rightBase, /col, /align_center, ypad=5)
   plotResButton = widget_button(plotResBase, value='Plot Data in New Coordinate System', uval='NEW_PLOT', uname='new_plot')
   
-  doneButton = widget_button(buttonBase, value='Close', uval='CLOSE', xsize=75)
-  helpButton = widget_button(buttonBase, value='Help', uval='HELP', xsize=75)
+  doneButton = widget_button(buttonBase, value='Close', uval='CLOSE')
+  helpButton = widget_button(buttonBase, value='Help', uval='HELP')
 
   ; create a structure for each mission with default selections
   thmStructure = { sats:thmSelections, instr:'Magnetic Field', dtype:'fgh', coord:'gsm', satFields:thmFieldSelections}

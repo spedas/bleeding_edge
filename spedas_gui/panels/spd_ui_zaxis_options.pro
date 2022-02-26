@@ -14,9 +14,9 @@
 ;
 ;
 ;HISTORY:
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-08-29 10:57:18 -0700 (Thu, 29 Aug 2019) $
-;$LastChangedRevision: 27698 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_zaxis_options.pro $
 ;
 ;---------------------------------------------------------------------------------
@@ -1469,7 +1469,7 @@ PRO spd_ui_zaxis_options, gui_id, windowStorage, zaxisSettings, drawObject, load
   ;widgets for Settings Tab
   
   plabel = Widget_Label(panelsBase, value='Panel: ')
-  sxaxisDroplist = Widget_combobox(panelsBase, XSize=350, $
+  sxaxisDroplist = Widget_combobox(panelsBase, $
     Value=panelNames, UValue='PANEL', uname = 'sPanels')
     
   ;swap the default, if necessary
@@ -1549,7 +1549,7 @@ PRO spd_ui_zaxis_options, gui_id, windowStorage, zaxisSettings, drawObject, load
   ; Text Tab Widgets
   
   tplabel = WIDGET_LABEL(tpanelsBase, value = 'Panel: ')
-  txaxisDroplist = Widget_combobox(tpanelsBase,XSize=350, $
+  txaxisDroplist = Widget_combobox(tpanelsBase, $
     Value=panelNames, UValue='PANEL', uname = 'tPanels')
   widget_control,txaxisDroplist,set_combobox_select=selected_zpanel
   textLabel = Widget_Label(labelBase, value = 'Text:', /align_left)
@@ -1565,7 +1565,7 @@ PRO spd_ui_zaxis_options, gui_id, windowStorage, zaxisSettings, drawObject, load
   titleeditBase = widget_base(titlecolbase,/row, ypad=1,/base_align_center)
   titleeditbasecol1 = widget_base(titleeditBase, /col, /base_align_left);, space=20, ypad=6)
   titleeditbasecol2 = widget_base(titleeditbase, /col, /base_align_left);, space=12)
-  titletextlabel = widget_label(titleeditbasecol1, value='Title:', xsize=60, /align_left)
+  titletextlabel = widget_label(titleeditbasecol1, value='Title:', /align_left)
   zAxisSettings->GetProperty, LabelTextObject=labeltextobject
   IF Obj_Valid(labeltextobject) THEN labeltextobject->GetProperty, Value=labelValue ELSE labelValue=''
   titletextfield = widget_text(titleeditBasecol2, value = labelvalue, /editable, /all_events, xsize=55, ysize=1, $
@@ -1577,7 +1577,7 @@ PRO spd_ui_zaxis_options, gui_id, windowStorage, zaxisSettings, drawObject, load
   titlelabel2base = widget_base(titlerow1base,/col,/base_align_left, space=20, ypad=6)
   titlefield2base = widget_base(titlerow1base,/col,/base_align_left, space=6)
   tlabel = Widget_Label(titlelabel1Base, value = 'Font:')
-  fontDroplist = Widget_combobox(titlefield1Base, XSize=125, Value=fontnames, uval='FONT', uname='tfont')
+  fontDroplist = Widget_combobox(titlefield1Base, Value=fontnames, uval='FONT', uname='tfont')
   
   IF ~Obj_Valid(labelTextObject) THEN BEGIN
     font = 0
@@ -1590,7 +1590,7 @@ PRO spd_ui_zaxis_options, gui_id, windowStorage, zaxisSettings, drawObject, load
   Widget_Control, fontDroplist, Set_combobox_Select=font
   
   tlabel = Widget_Label(titlelabel1Base, value = 'Format:')
-  formatDroplist = Widget_combobox(titlefield1Base, XSize=125, Value=formatnames, uval='FORMAT', uname='tformat')
+  formatDroplist = Widget_combobox(titlefield1Base, Value=formatnames, uval='FORMAT', uname='tformat')
   IF format eq -1 then format=n_elements(formatnames)-1   ; correct for no formating
   Widget_Control, formatDroplist, Set_combobox_Select=format
   tlabel= Widget_Label(titlelabel2Base, value='Size (points): ', /align_left)
@@ -1610,7 +1610,7 @@ PRO spd_ui_zaxis_options, gui_id, windowStorage, zaxisSettings, drawObject, load
   subtitleeditBase = widget_base(titlecolbase,/row, ypad=1,/base_align_center)
   subtitleeditbasecol1 = widget_base(subtitleeditBase, /col, /base_align_left);, space=20, ypad=6)
   subtitleeditbasecol2 = widget_base(subtitleeditbase, /col, /base_align_left);, space=12)
-  subtitletextlabel = widget_label(subtitleeditbasecol1, value='Subtitle:',xsize=60,/align_left)
+  subtitletextlabel = widget_label(subtitleeditbasecol1, value='Subtitle:',/align_left)
   subtitletextfield = widget_text(subtitleeditbasecol2, value='',/editable, /all_events, xsize=55, ysize=1,$
     uval='SUBTITLETEXT',uname='subtitletext')
   ;
@@ -1620,9 +1620,9 @@ PRO spd_ui_zaxis_options, gui_id, windowStorage, zaxisSettings, drawObject, load
   subtitlelabel2base = widget_base(subtitlerow1base,/col,/base_align_left, space=20, ypad=6)
   subtitlefield2base = widget_base(subtitlerow1base,/col,/base_align_left, space=6)
   subtlabel = Widget_Label(subtitlelabel1Base, value = 'Font:')
-  sublpofontDroplist = Widget_combobox(subtitlefield1Base, XSize=125, Value=fontnames, uval='SUBTITLEFONT', uname='subtitlefont')
+  sublpofontDroplist = Widget_combobox(subtitlefield1Base, Value=fontnames, uval='SUBTITLEFONT', uname='subtitlefont')
   subtlabel = Widget_Label(subtitlelabel1Base, value = 'Format:')
-  subtitleFormatDroplist = Widget_combobox(subtitlefield1Base, XSize=125, Value=formatnames, uval='SUBTITLEFORMAT', uname='subtitleformat')
+  subtitleFormatDroplist = Widget_combobox(subtitlefield1Base, Value=formatnames, uval='SUBTITLEFORMAT', uname='subtitleformat')
   
   subtlabel= Widget_Label(subtitlelabel2Base, value='Size (points): ', /align_left)
   subfontIncrement = spd_ui_spinner(subtitlefield2Base, Increment=1,  Value=12, uval='SUBTITLESIZE', uname='subtitlesize', min_value=1)
@@ -1663,7 +1663,7 @@ PRO spd_ui_zaxis_options, gui_id, windowStorage, zaxisSettings, drawObject, load
   ; Annotations tab
     
   aplabel = WIDGET_LABEL(apanelsBase, value = 'Panel: ')
-  aaxisDroplist = Widget_combobox(apanelsBase,XSize=350, $
+  aaxisDroplist = Widget_combobox(apanelsBase, $
     Value=panelNames, UValue='PANEL', uname = 'aPanels')
   widget_control,aaxisDroplist,set_combobox_select=selected_zpanel
   
@@ -1721,12 +1721,12 @@ PRO spd_ui_zaxis_options, gui_id, windowStorage, zaxisSettings, drawObject, load
   
   ; colorBar = Obj_New("COLORBAR", Title='Colorbar Values', Vertical=1, Position=[0,0,1,1])
   
-  okButton = Widget_Button(buttonBase, Value='OK', XSize=75, UValue='OK')
-  applyButton = Widget_Button(buttonBase, Value='Apply', XSize=75, UValue='APPLY')
+  okButton = Widget_Button(buttonBase, Value='OK', UValue='OK')
+  applyButton = Widget_Button(buttonBase, Value='Apply', UValue='APPLY')
   applyToAllButton = Widget_Button(buttonBase, Value='Apply to All Panels', $
-    Uvalue='APPLYTOALL', XSize=125, tooltip='Apply settings from the current tab to all panels')
-  cancelButton = Widget_Button(buttonBase, Value='Cancel', UValue='CANC', XSize=75)
-  templateButton = Widget_Button(buttonBase, Value='Store for a Template', UValue='TEMP',xsize=125,tooltip='Use these settings when saving a Graph Options Template')
+    Uvalue='APPLYTOALL', tooltip='Apply settings from the current tab to all panels')
+  cancelButton = Widget_Button(buttonBase, Value='Cancel', UValue='CANC')
+  templateButton = Widget_Button(buttonBase, Value='Store for a Template', UValue='TEMP',tooltip='Use these settings when saving a Graph Options Template')
   
   IF N_Elements(zAxes) GE 1 && ~in_set(obj_valid(zaxes),'0') THEN BEGIN
     FOR i=0, N_Elements(zAxes)-1 DO BEGIN

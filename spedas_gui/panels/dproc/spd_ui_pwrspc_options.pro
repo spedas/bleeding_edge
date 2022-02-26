@@ -25,9 +25,9 @@
 ;  opt_struct: The anonymous structure contain options and keyword settings for
 ;              SPD_UI_PWRSPC.
 ;            
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2014-05-02 14:17:19 -0700 (Fri, 02 May 2014) $
-;$LastChangedRevision: 15029 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 13:27:50 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30620 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/dproc/spd_ui_pwrspc_options.pro $
 ;-
 
@@ -383,7 +383,7 @@ function spd_ui_pwrspc_options, gui_id, trObj, historyWin, statusBar
   widget_control, dynamicButton, set_button=dynamic
   
   suffixLabel = widget_label(suffixBase, value = 'Suffix: ')
-  suffixId = widget_text(suffixBase, value = suffix, xsize = 22, ysize = 1, $
+  suffixId = widget_text(suffixBase, value = suffix, xsize = 22, $
                          uvalue = 'SUFFIX', /editable, /all_events,uname='suffix')
   
   nboxptsLabel = widget_label(nboxptsBase, value='Window Size: ')

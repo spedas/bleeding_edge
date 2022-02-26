@@ -15,9 +15,9 @@
 ; none
 ;
 ;HISTORY:
-;$LastChangedBy: pcruce $
-;$LastChangedDate: 2015-01-05 17:01:57 -0800 (Mon, 05 Jan 2015) $
-;$LastChangedRevision: 16596 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_calculate.pro $
 ;
 ;---------------------------------------------------------------------------------
@@ -636,7 +636,7 @@ Pro spd_ui_calculate, gui_id,loadedData,settings,historywin,treeCopyPtr,call_seq
        
 
   programLabel = Widget_Label(col1row1, Value='Program: ')
-  programLabel = Widget_Text(col1row1, Value = programName,xsize=40)
+  programLabel = Widget_Text(col1row1, Value = programName)
   ; this will be changed to a string array of tplot_names
 ;  ;tplot_names, name=insertValue
   ;insertValue=tnames()        ;Does not have limit on length of name like TPLOT_NAMES.
@@ -698,7 +698,7 @@ Pro spd_ui_calculate, gui_id,loadedData,settings,historywin,treeCopyPtr,call_seq
   functionList = Widget_List(col3row2, Value=functionNames, xsize=27, ysize=13, uval='FUNCTION', uname='function')
 
   operatorLabel= Widget_Label(col3row3, Value='Insert Operator: ')
-  operatorList = Widget_List(col3row4, Value=operatorNames, xsize=27, ysize=12, uval='OPERATOR', uname='operator')
+  operatorList = Widget_List(col3row4, Value=operatorNames,xsize=27,ysize=12, uval='OPERATOR', uname='operator')
 
   constlabel = widget_label(col3row5, value = 'Insert Constant: ')
   pibutton = widget_button(col3row6, value = 'pi', uvalue='PI', tooltip='Insert pi')
@@ -710,12 +710,12 @@ Pro spd_ui_calculate, gui_id,loadedData,settings,historywin,treeCopyPtr,call_seq
     
   statusBar = obj_new('spd_ui_message_bar',statusBase,xsize=143,ysize=1)
   
-  newButton = Widget_Button(col1row3, Value=' Open ', UValue = 'OPEN', xsize=70)
-  saveButton = Widget_Button(col1row3, Value='  Save  ', UValue = 'SAVE', xsize=70)
-  runButton = Widget_Button(col1row3, Value=' Run ', UValue = 'RUN', xsize=70)             
-  clearButton = Widget_Button(col1row3, Value=' Clear ', UValue = 'CLEAR', xsize=70)                                                                   
-  okButton = Widget_Button(buttonBase, Value=' Done ', UValue='OK', xsize=70)
-  helpButton = Widget_Button(buttonBase, Value='Help', XSize=85, UValue='HELP', $
+  newButton = Widget_Button(col1row3, Value=' Open ', UValue = 'OPEN')
+  saveButton = Widget_Button(col1row3, Value='  Save  ', UValue = 'SAVE')
+  runButton = Widget_Button(col1row3, Value=' Run ', UValue = 'RUN')             
+  clearButton = Widget_Button(col1row3, Value=' Clear ', UValue = 'CLEAR')                                                                   
+  okButton = Widget_Button(buttonBase, Value=' Done ', UValue='OK')
+  helpButton = Widget_Button(buttonBase, Value='Help', UValue='HELP', $
                             tooltip='Open Help Window.')
         
 

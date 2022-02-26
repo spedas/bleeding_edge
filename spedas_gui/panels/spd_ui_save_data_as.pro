@@ -14,9 +14,9 @@
 ;OUTPUT:
 ; 
 ;HISTORY:
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2014-02-11 10:54:32 -0800 (Tue, 11 Feb 2014) $
-;$LastChangedRevision: 14326 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_save_data_as.pro $
 ;
 ;---------------------------------------------------------------------------------
@@ -571,7 +571,7 @@ PRO spd_ui_save_data_as, gui_id, loadedData, historywin,treeCopyPtr, saveDataDir
   timeChooseBase = widget_base(timebase, /row, xpad=0)
     timeLabel = Widget_Label(timeChooseBase, Value='Time Format: ', xsize=labelXSize)
     formatNames = GetTimeAnnotationFormats()
-    timefmtDroplist = Widget_combobox(timeChooseBase, XSize=235, UValue='TIMEFMTDROPLIST', Value=formatNames) 
+    timefmtDroplist = Widget_combobox(timeChooseBase, UValue='TIMEFMTDROPLIST', Value=formatNames) 
     widget_control, timefmtDroplist, set_combobox_select=3
   timeSpecBase = widget_base(timebase, /col, xpad=0)
     specLabelBase = widget_base(timeSpecBase, /row, xpad=0)
@@ -579,7 +579,7 @@ PRO spd_ui_save_data_as, gui_id, loadedData, historywin,treeCopyPtr, saveDataDir
         specFormatButton = widget_button(specButtBase, value='Specify: ', uval='TIMEFMTBUTTON', $
                                          tooltip='Specify custom format for time output')
       specFormatBox = widget_text(specLabelBase, /edit, value='YYYY-MM-DD/hh:mm:ss', $
-                                  /all_events, xsize=30, uval='TIMEFMT', sens=0)
+                                  /all_events, xsize=100, uval='TIMEFMT', sens=0)
       specHelpButton = widget_button(specLabelBase, value='?', uval='SPECTIMEHELP')
     specExampleBase = widget_base(timeSpecBase, /row, xpad=0)
       specSampleLabel = widget_label(specExampleBase, value='  ', xsize=labelXSize)
@@ -589,13 +589,13 @@ PRO spd_ui_save_data_as, gui_id, loadedData, historywin,treeCopyPtr, saveDataDir
   
 ;  datafmtLabel = Widget_Label(datafmtBase, Value='Floating Point Format: ')
   datafmtNames = ExampleFpFormats()
-  datafmtDroplist = Widget_combobox(datafmtBase, XSize=235, UValue='DATAFMT', Value=datafmtNames) 
+  datafmtDroplist = Widget_combobox(datafmtBase, UValue='DATAFMT', Value=datafmtNames) 
   hdrfmtLabel = Widget_Label(hdrfmtBase, Value='Header Style: ',xsize=labelXSize)
   hdrfmtNames = ['None','Field Names Only','Tecplot']
-  hdrfmtDroplist = Widget_combobox(hdrfmtBase, XSize=235, UValue='HDRFMT', Value=hdrfmtNames) 
+  hdrfmtDroplist = Widget_combobox(hdrfmtBase, UValue='HDRFMT', Value=hdrfmtNames) 
   sepcharLabel = Widget_Label(sepcharBase, Value='Item Separator: ',xsize=labelXSize)
   sepcharNames = ['Comma','Tab','Space']
-  sepcharDroplist = Widget_combobox(sepcharBase, XSize=235, UValue='SEPCHAR', Value=sepcharNames) 
+  sepcharDroplist = Widget_combobox(sepcharBase, UValue='SEPCHAR', Value=sepcharNames) 
   flagLabel = Widget_Label(flagBase, Value='Indicate flags with: ',xsize=labelXSize)
   flagText = Widget_Text(flagBase, Value='NaN', XSize=33, /Editable, UValue='IFLAG') 
   yaxisButton = Widget_Button(yaxisBase, Value='Ignore yaxis components',UValue='YAXIS')
@@ -604,8 +604,8 @@ PRO spd_ui_save_data_as, gui_id, loadedData, historywin,treeCopyPtr, saveDataDir
   Widget_Control,  yaxisButton, Set_Button=1
   ;updateButton = Widget_Button(updateBase, Value='Update document with location of data', $
   ;  UValue='UPDATE') 
-  saveButton = Widget_Button(buttonBase, Value='  Save    ', UValue='SAVE', XSize=80)
-  cancelButton = Widget_Button(buttonBase, Value='  Cancel  ', UValue='CANC', XSize=80)
+  saveButton = Widget_Button(buttonBase, Value='  Save    ', UValue='SAVE')
+  cancelButton = Widget_Button(buttonBase, Value='  Cancel  ', UValue='CANC')
 
   ;this is unnecessary 
   ; create button arrays for various file type selections

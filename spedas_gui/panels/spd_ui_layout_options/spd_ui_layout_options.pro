@@ -17,8 +17,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-02-24 15:50:34 -0800 (Thu, 24 Feb 2022) $
-;$LastChangedRevision: 30613 $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_layout_options/spd_ui_layout_options.pro $
 ;--------------------------------------------------------------------------------
 
@@ -2803,11 +2803,11 @@ PRO spd_ui_layout_options, info
 
 
 ; MAIN BUTTON WIDGETS ----------------------------------------------------------
-  okButton = Widget_Button(buttonBase, Value=' OK ', UValue='OK', XSize=80, $
+  okButton = Widget_Button(buttonBase, Value=' OK ', UValue='OK', $
     Tooltip='Applies the changes to the layout and closes the window')
   applyButton = Widget_Button(buttonBase, Value=' Apply ', UValue='APPLY', $
-    Tooltip='Applies the changes to the layout', XSize=80)
-  cancelButton = Widget_Button(buttonBase, Value=' Cancel ', UValue='CANC', XSize=80, $
+    Tooltip='Applies the changes to the layout')
+  cancelButton = Widget_Button(buttonBase, Value=' Cancel ', UValue='CANC', $
     Tooltip='Cancels the operation and closes the window')
 
   

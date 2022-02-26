@@ -5,9 +5,9 @@
 ;PURPOSE:
 ; A widget to display the file 'spd_gui.txt' help
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2022-02-09 13:15:19 -0800 (Wed, 09 Feb 2022) $
-;$LastChangedRevision: 30572 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_help_window.pro $
 ;
 ;-
@@ -82,15 +82,14 @@ Pro spd_ui_help_window, historyWin, gui_id
   helpid = widget_base(/col, title = 'Help Window',Group_Leader = gui_id, $
     /Modal, /Floating)
   helpdisplay = widget_text(helpid, uval = 'HELP_DISPLAY', val = help_arr, $
-    ;xsize = 80, ysize = 40, /scroll, frame = 5)
-    xsize = 140, ysize = 5, /scroll, frame = 5)
+    /scroll, frame = 5)
   ;a widget for buttons
   buttons = widget_base(helpid, /row, /align_center)
   exit_button = widget_base(buttons, /row, /align_center)
   
-  onButton = widget_button(exit_button, value = ' Open SPEDAS Wiki ', uvalue= 'showwiki', /align_center, scr_xsize = 200)
-  onlineButton = widget_button(exit_button, value = ' Open Online Documentation ', uvalue= 'showhelp', /align_center, scr_xsize = 200)
-  exitbut = widget_button(exit_button, val = ' Close ', uval = 'EXIT', /align_center, scr_xsize = 200)
+  onButton = widget_button(exit_button, value = ' Open SPEDAS Wiki ', uvalue= 'showwiki', /align_center)
+  onlineButton = widget_button(exit_button, value = ' Open Online Documentation ', uvalue= 'showhelp', /align_center)
+  exitbut = widget_button(exit_button, val = ' Close ', uval = 'EXIT', /align_center)
   state = {help:help_arr, historyWin:historyWin, gui_id:gui_id}
   
   CenterTLB, helpid

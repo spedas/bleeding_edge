@@ -14,9 +14,9 @@
 ;OUTPUT:
 ;
 ;HISTORY:
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-10-03 14:12:59 -0700 (Tue, 03 Oct 2017) $
-;$LastChangedRevision: 24103 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_page_options.pro $
 ;
 ;---------------------------------------------------------------------------------
@@ -1563,7 +1563,7 @@ pro spd_ui_page_options, info
   labelXSize = geo_struct.scr_xsize
   
   ;footerLabel = Widget_Label(footerBase, Value='Page Footer:  ',xsize=labelXSize,/align_left)
-  titleLabel = Widget_Label(titleBase, Value='Page Title:  ',xsize=labelXSize,/align_left)
+  titleLabel = Widget_Label(titleBase, Value='Page Title:  ',/align_left)
   
   titleText = Widget_Text(titleBase,/all_events, /Editable, Value=pagetitle, XSize=35, ysize=1, uval='PAGETITLE', uname='titletext')
   showTitleBase = Widget_Base(titleBase, /Row, /Nonexclusive)
@@ -1636,19 +1636,19 @@ pro spd_ui_page_options, info
   label_xsize = geo_struct.scr_xsize
   label_ysize = geo_struct.scr_ysize
   
-  fontTitleLabel = widget_label(titleFontBase,value='Title: ',xsize=label_xsize)
+  fontTitleLabel = widget_label(titleFontBase,value='Title: ')
   ;  fontLabelLabel = widget_label(labelFontBase,value='Label: ',xsize=label_xsize)
   
   ;  fontMarkerLabel = widget_label(markerFontBase,value='Markers: ',xsize=label_xsize)
   
-  fontFooterLabel = widget_label(footerFontBase,value='Footer: ',xsize=label_xsize)
+  fontFooterLabel = widget_label(footerFontBase,value='Footer: ')
   
   fontname_xsize = 150
   
   ;this base allows the droplist to be undersized, if necessary
   combobase = widget_base(titleFontBase,/row,ypad=0,xpad=0)
   
-  fontTitleDroplist = Widget_Combobox(combobase,xsize=fontname_xsize, Value=fontValues, uval='TITLE',uname='titlecombo')
+  fontTitleDroplist = Widget_Combobox(combobase, Value=fontValues, uval='TITLE',uname='titlecombo')
   widget_control,fontTitleDroplist,set_combobox_select=titlefont ;make sure the setting for the current window is the default when opened
   
   
@@ -1676,7 +1676,7 @@ pro spd_ui_page_options, info
   ;this base allows the droplist to be undersized, if necessary
   combobase = widget_base(footerFontBase,/row,ypad=0,xpad=0)
   
-  fontFooterdroplist = Widget_Combobox(comboBase,  XSize=fontname_xsize, Value=fontValues, uval='FOOTER',uname='footercombo')
+  fontFooterdroplist = Widget_Combobox(comboBase, Value=fontValues, uval='FOOTER',uname='footercombo')
   widget_control,fontFooterDroplist,set_combobox_select=footerfont ;make sure the setting for the current window is the default when opened
   
   ;  ;this base allows the droplist to be undersized, if necessary
@@ -1731,8 +1731,8 @@ pro spd_ui_page_options, info
   ;  palettebmp = rpath + 'color.bmp'
     
   ;labels get created later so we know how large to make them
-  spaceLabel = widget_label(fontsLabelsBase,value=' ',/align_center,xsize=label_xsize)
-  fontNamelabel = Widget_Label(fontsLabelsBase, value='Font Name', /align_center,xsize=fontname_xsize)
+  spaceLabel = widget_label(fontsLabelsBase,value=' ',/align_center,/dynamic_resize)
+  fontNamelabel = Widget_Label(fontsLabelsBase, value='Font Name', /align_center,/dynamic_resize)
   sizeLabel = Widget_Label(fontsLabelsBase, value='Size (points)', /align_center)
   spaceLabel = Widget_Label(fontsLabelsBase, value=' ', /align_center)
   ;  colorLabel = Widget_Label(fontsLabelsBase, value='Color', /align_center)
@@ -1851,11 +1851,11 @@ pro spd_ui_page_options, info
   ;  skipButton = Widget_Button(skipBase, Value='Skip blank pages',uval='SKIPBLANKS', sensitive=0)
   ;  if skipBlanks then Widget_Control, skipButton, /Set_Button
   
-  okButton = Widget_Button(buttonBase, Value='OK', XSize = 75, uval='OK')
-  applyButton = Widget_Button(buttonBase, Value='Apply', XSize = 75, uval='APPLY')
-  applytoallButton = Widget_Button(buttonBase, Value='Apply to All Pages', XSize = 115, uval='APPLYTOALLPAGES')
-  cancelButton = Widget_Button(buttonBase, Value='Cancel', UValue='CANC', XSize = 75)
-  templateButton = Widget_Button(buttonBase, Value='Store for a Template', UValue='TEMP',xsize=125,tooltip='Use these settings when saving a Graph Options Template')
+  okButton = Widget_Button(buttonBase, Value='OK', uval='OK')
+  applyButton = Widget_Button(buttonBase, Value='Apply', uval='APPLY')
+  applytoallButton = Widget_Button(buttonBase, Value='Apply to All Pages', uval='APPLYTOALLPAGES')
+  cancelButton = Widget_Button(buttonBase, Value='Cancel', UValue='CANC')
+  templateButton = Widget_Button(buttonBase, Value='Store for a Template', UValue='TEMP',tooltip='Use these settings when saving a Graph Options Template')
   ;  helpButton = Widget_Button(buttonBase, Value='Help', XSize = 75)
   
   ; Create Status Bar Object

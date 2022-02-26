@@ -117,7 +117,7 @@ pro spd_ui_mdd_help, parent_tlb
 
   ;;;;;;;;;;;;;;;;;;;;; Model Name selection ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   buttonBase = Widget_Base(bottomBase, /row)
-  closeButton = Widget_Button(buttonBase, value='Close', uval='CLOSE', xsize=90, tooltip='Close this window', /align_center)
+  closeButton = Widget_Button(buttonBase, value='Close', uval='CLOSE', tooltip='Close this window', /align_center)
 
   helpstate = {tlb: tlb}
 

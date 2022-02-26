@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2022
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2022-02-22 10:27:03 -0800 (Tue, 22 Feb 2022) $
-; $LastChangedRevision: 30600 $
+; $LastChangedDate: 2022-02-25 16:06:20 -0800 (Fri, 25 Feb 2022) $
+; $LastChangedRevision: 30622 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -663,7 +663,7 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
 
           options, aeb_tnames[i], 'tplot_routine', 'psp_fld_aeb_mplot'
 
-          options, aeb_tnames[i], 'data_gap', 7200d
+          options, aeb_tnames[i], 'datagap', 7200d
 
         endfor
 

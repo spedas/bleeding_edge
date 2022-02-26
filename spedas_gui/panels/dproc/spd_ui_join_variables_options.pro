@@ -22,9 +22,9 @@
 ;
 ;NOTES:
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2015-04-24 18:45:02 -0700 (Fri, 24 Apr 2015) $
-;$LastChangedRevision: 17429 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 13:27:50 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30620 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/dproc/spd_ui_join_variables_options.pro $
 ;-
 
@@ -140,8 +140,8 @@ function spd_ui_join_variables_options, gui_id, statusbar, historywin
   nametext = widget_text(nameBase, value=new_name , /editable, xsize=15)
 
 ;Buttons
-  ok = widget_button(buttonbase, value = 'OK', xsize=60, uval='OK')
-  cancel = widget_button(buttonbase, valu = 'Cancel', xsize=60, uval='CANCEL')
+  ok = widget_button(buttonbase, value = 'OK', uval='OK')
+  cancel = widget_button(buttonbase, valu = 'Cancel', uval='CANCEL')
 
 
 ;Initializations

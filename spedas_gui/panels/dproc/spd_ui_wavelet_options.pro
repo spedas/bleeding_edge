@@ -29,9 +29,9 @@
 ;  opt_struct: The anonymous structure contain options and keyword settings for
 ;              SPD_UI_WAVELET.
 ;            
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2016-03-07 10:51:31 -0800 (Mon, 07 Mar 2016) $
-;$LastChangedRevision: 20343 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 13:27:50 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30620 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/dproc/spd_ui_wavelet_options.pro $
 ;-
 
@@ -180,17 +180,17 @@ function spd_ui_wavelet_options, gui_id, dataobj, tr_obj, historyWin, statusBar,
 ; Widgets
   infoLabel = widget_label(mainBase, value = 'Variable Memory Test: ')
   infoId = widget_text(mainBase, value = info_txt, uname = 'info', $
-                       xsize = 60, ysize = 16, /scroll, /wrap)
+                        /scroll, /wrap)
 
   suffixLabel = widget_label(suffixBase, value = 'Suffix: ')
-  suffixId = widget_text(suffixBase, value = suffix, xsize = 22, ysize = 1, $
+  suffixId = widget_text(suffixBase, value = suffix, xsize = 22, $
                          uvalue = 'SUFFIX', /editable, /all_events, uname='suffix')
 
   prange0Label = widget_label(prange0Base, value = 'Min. Period (sec): ')
-  prange0Id = widget_text(prange0Base, value = strcompress(/remove_all,prange[0]), xsize = 22, ysize = 1, $
+  prange0Id = widget_text(prange0Base, value = strcompress(/remove_all,prange[0]), xsize = 22, $
                           uvalue = 'PRANGE0', /editable, /all_events, uname='prange0')
   prange1Label = widget_label(prange1Base, value = 'Max. Period (sec): ')
-  prange1Id = widget_text(prange1Base, value = strcompress(/remove_all,prange[1]), xsize = 22, ysize = 1, $
+  prange1Id = widget_text(prange1Base, value = strcompress(/remove_all,prange[1]), xsize = 22, $
                           uvalue = 'PRANGE1', /editable, /all_events, uname='prange1')
 
   trWidget = spd_ui_time_widget(timebase,statusBar,historyWin,timeRangeObj=tr_obj, $

@@ -197,8 +197,8 @@ function spd_ui_high_pass_options, gui_id, statusbar, historywin
     includeAve = widget_button(includebase, value='Append Average')
 
 ;Buttons
-  ok = widget_button(buttonbase, value = 'OK', xsize=60, uval='OK')
-  cancel = widget_button(buttonbase, valu = 'Cancel', xsize=60, uval='CANCEL')
+  ok = widget_button(buttonbase, value = 'OK', uval='OK')
+  cancel = widget_button(buttonbase, valu = 'Cancel', uval='CANCEL')
 
 ;Initializations
   widget_control, includeAve, set_button=1

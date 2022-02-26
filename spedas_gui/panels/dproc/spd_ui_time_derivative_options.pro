@@ -158,8 +158,8 @@ function spd_ui_time_derivative_options, gui_id, statusbar, historywin
   suffixtext = widget_text(nameBase, value=suffix , /editable, xsize=15)
 
 ;Buttons
-  ok = widget_button(buttonbase, value = 'OK', xsize=60, uval='OK')
-  cancel = widget_button(buttonbase, valu = 'Cancel', xsize=60, uval='CANCEL')
+  ok = widget_button(buttonbase, value = 'OK', uval='OK')
+  cancel = widget_button(buttonbase, valu = 'Cancel', uval='CANCEL')
 
 
 ;Initializations

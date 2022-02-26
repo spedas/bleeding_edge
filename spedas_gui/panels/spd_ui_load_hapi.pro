@@ -11,9 +11,9 @@
 ;   Currently, this server does not behave as a standard HAPI server in some aspects
 ;   (needs passowrd, catalog contains non-available datasets, error 500 responses from server).
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2022-02-13 13:20:48 -0800 (Sun, 13 Feb 2022) $
-;$LastChangedRevision: 30588 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_load_hapi.pro $
 ;-
 
@@ -347,15 +347,15 @@ end
 
 Pro spd_ui_load_hapi, gui_id, historywin, statusbar,timeRangeObj=timeRangeObj
 
-  mainBase = widget_base(/column, title = 'Load Data using HAPI', /modal, Group_Leader=gui_id, scr_xsize = 700)
+  mainBase = widget_base(/column, title = 'Load Data using HAPI', /modal, Group_Leader=gui_id)
 
   topBase = widget_base(mainbase, col=2, /align_top)
   bottomBase = widget_base(mainbase, col=2, /align_top)
 
-  upLeftBase = widget_base(topBase, /col, /align_top, scr_xsize = 300, scr_ysize = 300)
-  upRightBase = widget_base(topBase, /col, /align_top, scr_xsize = 300, scr_ysize = 300)
+  upLeftBase = widget_base(topBase, /col, /align_top)
+  upRightBase = widget_base(topBase, /col, /align_top)
 
-  botLeftBase = widget_base(bottomBase, /col, /align_top, scr_xsize = 300)
+  botLeftBase = widget_base(bottomBase, /col, /align_top)
   botRightBase = widget_base(bottomBase, /col, /align_top)
 
   ;Select hapi server
@@ -367,12 +367,12 @@ Pro spd_ui_load_hapi, gui_id, historywin, statusbar,timeRangeObj=timeRangeObj
   ; If there is a SOSMAG plugin, also include the ESA HAPI server which requires special treatment due to irregularities.
   if hapi_include_sosmag() eq 1 then hapi_servers=[hapi_servers, 'https://swe.ssa.esa.int/hapi/']
 
-  serverList = widget_list(upLeftBase, value=hapi_servers, /align_top, scr_xsize = 250, scr_ysize = 100, uvalue='SERVERLIST', uname='SERVERLIST')
-  selectServerLabelEmpty11 = widget_label(upLeftBase, value=' ', /align_top, scr_xsize = 250)
-  selectServerLabel = widget_label(upLeftBase, value='Selected HAPI server:', /align_top, scr_xsize = 250)
+  serverList = widget_list(upLeftBase, value=hapi_servers, /align_top, ysize=n_elements(hapi_servers),uvalue='SERVERLIST', uname='SERVERLIST')
+  selectServerLabelEmpty11 = widget_label(upLeftBase, value=' ', /align_top, /dynamic_resize)
+  selectServerLabel = widget_label(upLeftBase, value='Selected HAPI server:', /align_top, /dynamic_resize)
   selectedServer = widget_text(upLeftBase, value=' ', /editable, /align_top, scr_xsize = 250 )
   selectServerLabelEmpty12 = widget_label(upLeftBase, value=' ', /align_top, scr_xsize = 250)
-  getServerInfoButton = widget_button(upLeftBase, value = 'Get HAPI server info ', uvalue= 'SERVERINFO', /align_top, scr_xsize = 150)
+  getServerInfoButton = widget_button(upLeftBase, value = 'Get HAPI server info ', uvalue= 'SERVERINFO', /align_top)
   capabilitiesLabel = widget_label(upLeftBase, value=' ', /align_top, scr_xsize = 250, scr_ysize = 40, /dynamic_resize )
 
   ;Datasets
@@ -387,7 +387,7 @@ Pro spd_ui_load_hapi, gui_id, historywin, statusbar,timeRangeObj=timeRangeObj
   selectedDataset = widget_text(botLeftBase, value=' ', /align_top, scr_xsize = 250 )
   selectServerLabelEmpty31 = widget_label(botLeftBase, value=' ', /align_top, scr_xsize = 250)
   selectServerLabelEmpty32 = widget_label(upLeftBase, value=' ', /align_top, scr_xsize = 250)
-  dataInfoButton = widget_button(botLeftBase, value = ' Get dataset information ', uvalue= 'DATAINFO', /align_top, scr_xsize = 150)
+  dataInfoButton = widget_button(botLeftBase, value = ' Get dataset information ', uvalue= 'DATAINFO', /align_top)
   dataInfoShowLabel = widget_text(botLeftBase, value=' ', /align_top, scr_xsize = 250, scr_ysize = 100, /SCROLL)
 
 
@@ -408,8 +408,8 @@ Pro spd_ui_load_hapi, gui_id, historywin, statusbar,timeRangeObj=timeRangeObj
 
   ; Close buttons
   buttonBase = Widget_Base(mainbase, /row, /align_center, /GRID_LAYOUT)
-  loadButton = widget_button(buttonBase, value = ' Load Data ', uvalue= 'LOADDATA', /align_center, scr_xsize = 150 )
-  exitButton = widget_button(buttonBase, value = ' Close ', uvalue= 'QUIT', /align_center, scr_xsize = 150 )
+  loadButton = widget_button(buttonBase, value = ' Load Data ', uvalue= 'LOADDATA', /align_center )
+  exitButton = widget_button(buttonBase, value = ' Close ', uvalue= 'QUIT', /align_center )
 
   state = {mainBase:mainBase, serverList:serverList, hapi_servers:hapi_servers, selectedServer:selectedServer, capabilitiesLabel:capabilitiesLabel, $
     selectedDataset:selectedDataset, datasetList:datasetList, dataInfoShowLabel:dataInfoShowLabel, timeWidget:timeWidget, prefixText:prefixText, datasets:ptr_new() }

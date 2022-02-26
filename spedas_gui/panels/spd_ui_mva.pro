@@ -746,15 +746,13 @@ pro spd_ui_mva, gui_ID=gui_id, $
   dataCombo = widget_combobox(dataBase,$
     value=thmMagdataArray,$
     uvalue='data',$
-    uname='data',$
-    xsize=50)
+    uname='data')
 
   coordinateLabel = widget_label(coordinateBase, value='Coordinate:', /align_left)
   thmCoordinateArray = ['gsm', 'gse', 'dsl']
   mmsCoordinateArray = [ 'dmpa', 'gsm', 'gse']
   coordinateCombo = widget_combobox(coordinateBase,$
     value=thmcoordinateArray,$
-    xsize=50,$
     uvalue='COORDINATE',$
     uname='coordinate')
     
@@ -784,7 +782,7 @@ pro spd_ui_mva, gui_ID=gui_id, $
  
   ; plot data button
   plotDataBase = widget_base(timePlotBase, /col,/align_center)
-  plotDataButton = widget_button(plotDataBase, value='Plot', uval='PLOT_DATA', xsize =188, $
+  plotDataButton = widget_button(plotDataBase, value='Plot', uval='PLOT_DATA', $
     tooltip='This button will plot the selected data. Data will automatically loaded (if not already loaded).')
  
   ;
@@ -845,9 +843,9 @@ pro spd_ui_mva, gui_ID=gui_id, $
   
   ; plot analysis button
   plotmvaBase = widget_base(mvaBase, /col,/align_center)
-  zoomButton = widget_button(plotmvaBase, value='Zoom In', uval='ZOOM', xsize =100, $
+  zoomButton = widget_button(plotmvaBase, value='Zoom In', uval='ZOOM', $
      tooltip = 'Click this button to zoom in, then on plot left click for start, left click again for stop')
-  analysismvaButton = widget_button(plotmvaBase, value='Analyze', uval='ANALYZE', xsize =100, $
+  analysismvaButton = widget_button(plotmvaBase, value='Analyze', uval='ANALYZE', $
      tooltip = 'This button will perform a minimum variance analysis of the data. Results will be displayed in the right hand text box')
   plotmvaButton = widget_button(plotmvaBase, value='Plot Data in New Coordinate System', uval='PLOT_MVA', /dynamic_resize, $ 
      tooltip = 'This button will display 2 plots of the data one in the coordinate system selected above and one in the LMN coordinate system')
@@ -857,11 +855,11 @@ pro spd_ui_mva, gui_ID=gui_id, $
   ;
   resultLabel =  widget_label(rightBase, value='Results:', /align_left, /align_top)
   resultBase = widget_base(rightBase, /col, /frame)
-  resultText = widget_text(resultBase, xsize=42, ysize=33, /scroll, uname='resulttext')
+  resultText = widget_text(resultBase, ysize=33, /scroll, uname='resulttext')
 
-  doneButton = widget_button(buttonBase, value='Close', uval='CLOSE', xsize=75, $
+  doneButton = widget_button(buttonBase, value='Close', uval='CLOSE', $
     tooltip = 'Click this button when you are done with your analysis. Tplot variables created during this session will be preserved.')
-  helpButton = widget_button(buttonBase, value='Help', uval='HELP', xsize=75)
+  helpButton = widget_button(buttonBase, value='Help', uval='HELP')
        
   state = {tlb:tlb,$
     timeRangeObjPlot:tr_obj_plot, $

@@ -124,7 +124,7 @@ pro spd_ui_neutral_sheet_help, state
 
   ;;;;;;;;;;;;;;;;;;;;; Model Name selection ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   buttonBase = Widget_Base(bottomBase, /row, /align_right)
-  closeButton = Widget_Button(buttonBase, value='Close', uval='CLOSE', xsize=80, tooltip='Close this window')
+  closeButton = Widget_Button(buttonBase, value='Close', uval='CLOSE', tooltip='Close this window')
 
   helpstate = {tlb: tlb}
 

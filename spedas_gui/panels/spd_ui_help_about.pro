@@ -7,9 +7,9 @@
 ; A widget to display About information (SPEDAS Version)
 ;
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-10-29 09:47:11 -0700 (Mon, 29 Oct 2018) $
-;$LastChangedRevision: 26022 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_help_about.pro $
 ;-
 
@@ -98,9 +98,9 @@ Pro spd_ui_help_about, gui_id, historywin
   geoLabel = widget_text(cdfBase, value=geopack_about, /align_center, SCR_XSIZE=300, SCR_YSIZE=130, UNITS=0, /SCROLL, /WRAP)
   ;aboutLabel0 = widget_label(aboutBase, value=' ', /align_center, SCR_XSIZE=500, SCR_YSIZE=5, UNITS=0)
     
-  dlmButton = widget_button(aboutBase, value = ' How to update CDF and GEOPACK ', uvalue= 'UPDATEDLM', /align_center, scr_xsize = 300)    
-  aboutPluginButtons = widget_button(aboutBase, value='About SPEDAS Plugins...', uvalue='ABOUTPLUGINS', /align_center, scr_xsize=300, /menu)
-  spedasButton = widget_button(aboutBase, value = ' Go to http://spedas.org/ ', uvalue= 'SPEDASWEB', /align_center, scr_xsize = 300)
+  dlmButton = widget_button(aboutBase, value = ' How to update CDF and GEOPACK ', uvalue= 'UPDATEDLM', /align_center)    
+  aboutPluginButtons = widget_button(aboutBase, value='About SPEDAS Plugins...', uvalue='ABOUTPLUGINS', /align_center, /menu)
+  spedasButton = widget_button(aboutBase, value = ' Go to http://spedas.org/ ', uvalue= 'SPEDASWEB', /align_center)
   
   widget_control, gui_id, get_uvalue=info
   about_plugins = info.pluginManager->getAboutPlugins()

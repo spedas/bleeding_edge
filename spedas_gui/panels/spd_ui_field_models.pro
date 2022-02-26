@@ -9,8 +9,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-02-24 15:24:46 -0800 (Thu, 24 Feb 2022) $
-;$LastChangedRevision: 30612 $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_field_models.pro $
 ;-
 
@@ -1078,11 +1078,11 @@ pro spd_ui_field_models, info
     tiltLabel = Widget_Label(newt89base, value='Tilt angle (optional): ', /align_left)
 
     tiltBase = Widget_Base(newt89base, row=2, /align_left)
-    setTiltLabel = Widget_Label(tiltBase, value='Set: ', xsize=100)
+    setTiltLabel = Widget_Label(tiltBase, value='Set: ')
     setTiltText = Widget_Text(tiltBase, uname='settiltangle', uval='SETTILTANGLE', value=t89_set_tilt, /editable, /all_events)
     setTiltLabel = Widget_Label(tiltBase, value='deg')
     helpsettilt = Widget_Button(tiltBase, value=helpbmp, /bitmap, uname='helpsettilt', uval='HELPSETTILT')
-    addTiltLabel = Widget_Label(tiltBase, value='Add: ', xsize=100)
+    addTiltLabel = Widget_Label(tiltBase, value='Add: ')
     addTiltText = Widget_Text(tiltBase, uname='addtiltangle', uval='ADDTILTANGLE', value=t89_add_tilt, /editable, /all_events)
     setTiltLabel = Widget_Label(tiltBase, value='deg')
     helpaddtilt = Widget_Button(tiltBase, value=helpbmp, /bitmap, uname='helpaddtilt', uval='HELPADDTILT')

@@ -22,9 +22,9 @@
 ;OUTPUT:
 ; 
 ;HISTORY:
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2015-04-24 18:45:02 -0700 (Fri, 24 Apr 2015) $
-;$LastChangedRevision: 17429 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_verify_data.pro $
 ;
 ;--------------------------------------------------------------------------------
@@ -436,8 +436,8 @@ PRO spd_ui_verify_data, gui_id, names, loadedData, windowstorage, historywin, ed
   rightButton = Widget_Button(arrowBase, Value=downArrow, /Bitmap, $
                 Uvalue='DOWN', $
                 ToolTip='Tab down through variable names')
-  ok_button = widget_button(button_row,value='OK',uvalue='OK', xsize=75)
-  canc_button = widget_button(button_row,value='Cancel',uvalue='CANC', xsize=75)  
+  ok_button = widget_button(button_row,value='OK',uvalue='OK')
+  canc_button = widget_button(button_row,value='Cancel',uvalue='CANC')  
   
   statusBar = Obj_New("SPD_UI_MESSAGE_BAR", status_row, Xsize=82, YSize=1)
   

@@ -15,9 +15,9 @@
 ;OUTPUT:
 ;
 ;HISTORY:
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2014-02-11 10:54:32 -0800 (Tue, 11 Feb 2014) $
-;$LastChangedRevision: 14326 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_nudge_options.pro $
 ;
 ;---------------------------------------------------------------------------------
@@ -366,9 +366,9 @@ PRO spd_ui_nudge_options, gui_id, info,call_sequence
 ;widgets
   nudge_text = WIDGET_Label(textBase, Value = 'Nudging will shift a trace in the selected panel by a specific amount')
   plabel = widget_label(panelbase, value = '    Panel: ')
-  panel_combobox = Widget_Combobox(panelBase, Value = panel_values, scr_XSize = 260, UValue = 'PANEL')
+  panel_combobox = Widget_Combobox(panelBase, Value = panel_values, UValue = 'PANEL')
   tlabel = widget_label(tracebase, value = 'Select Trace: ')
-  trace_combobox = Widget_Combobox(traceBase, scr_XSize = 260, Value = trace_values_trunc, uvalue = 'TRACE', uname='trace', sensitive=tracesensitive)
+  trace_combobox = Widget_Combobox(traceBase, Value = trace_values_trunc, uvalue = 'TRACE', uname='trace', sensitive=tracesensitive)
   tracetextlabel = widget_label(tracetextbase, value='     Trace: ')
   trace_text = widget_text(tracetextbase, scr_XSize=260,value = trace_to_nudge, uname='tracetext', sensitive=tracesensitive)
   cmajor_increment = spd_ui_spinner(incBase, Label = '      Amount: ', $
@@ -380,9 +380,9 @@ PRO spd_ui_nudge_options, gui_id, info,call_sequence
   days_button = Widget_Button(unitsframeBase, Value = 'Days', UValue = 'DAYS')
   records_button = Widget_Button(unitsframeBase, Value = 'Records', UValue = 'RECORDS')
   Widget_Control, seconds_button, /set_button
-  apply_button = Widget_Button(buttonBase, Value = '    Apply    ', XSize = 85, $
+  apply_button = Widget_Button(buttonBase, Value = '    Apply    ', $
                                UValue = 'APPLY', sensitive=tracesensitive, uname = 'apply')
-  ok_button = Widget_Button(buttonBase, Value = '  Done   ', XSize = 85, UValue = 'OK')
+  ok_button = Widget_Button(buttonBase, Value = '  Done   ', UValue = 'OK')
 
  ; Create Status Bar Object
   statusbar = obj_new('spd_ui_message_bar', Value = 'Status information is displayed here.', $

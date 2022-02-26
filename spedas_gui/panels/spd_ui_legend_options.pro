@@ -14,9 +14,9 @@
 ; KEYWORDS:
 ;  panel_select:     pointer to current panel
 ; 
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-10-03 14:12:59 -0700 (Tue, 03 Oct 2017) $
-;$LastChangedRevision: 24103 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_legend_options.pro $
 ;-
 
@@ -792,7 +792,7 @@ pro spd_ui_legend_options, info, panel_select=panel_select, tlb_statusbar=tlb_st
      
    ; Create the panel list
    plistlabel = Widget_Label(panellist, value=' Panel: ', /Align_Left)
-   plistcombo = Widget_Combobox(panellist, value=panelNames, SCR_XSIZE=250, uvalue='PANELSELECTED', uname='panelselected', /Align_Center)
+   plistcombo = Widget_Combobox(panellist, value=panelNames, uvalue='PANELSELECTED', uname='panelselected', /Align_Center)
    plistenabled = Widget_Base(panellist, /NonExclusive)
    plistButton = Widget_Button(plistenabled, value='Legend Enabled?', uvalue='LEGENDENABLED', uname='legendenabled', sensitive=validpanel)
    widget_control, plistButton, set_button=1 ; legend enabled by default
@@ -801,28 +801,28 @@ pro spd_ui_legend_options, info, panel_select=panel_select, tlb_statusbar=tlb_st
    lblrowbase = Widget_Base(mainBase, Row=1)
    mainButtonBase = Widget_Base(tlb, /Row, /Align_Center)
    layoutBase = Widget_Base(mainBase, /Row)
-   fontBase = Widget_Base(layoutBase, Row=4, Frame=3, xsize=230)
-   bBase = Widget_Base(layoutBase, Row=5, SCR_XSIZE=260, frame=3)
+   fontBase = Widget_Base(layoutBase, Row=4, Frame=3)
+   bBase = Widget_Base(layoutBase, Row=5, frame=3)
    bgBase = Widget_Base(bBase, Row=2)
     
-   legendlabel = Widget_Label(lblrowbase, value=' Font options:', SCR_XSIZE=238, /Align_Left)
-   bkgdlabel = Widget_Label(lblrowbase, value=' Frame options:', SCR_XSIZE=85, /Align_Left)
+   legendlabel = Widget_Label(lblrowbase, value=' Font options:', /Align_Left)
+   bkgdlabel = Widget_Label(lblrowbase, value=' Frame options:', /Align_Left)
    
    ; Legend font type widgets
-   fnamelabel = Widget_Label(fontBase, value=' Name:', SCR_XSIZE=60, /Align_Left, sensitive=validpanel)
-   fontTitleDroplist = Widget_Combobox(fontbase,SCR_XSIZE=combobox_xsize, Value=fontValues, $
+   fnamelabel = Widget_Label(fontBase, value=' Name:', /Align_Left, sensitive=validpanel)
+   fontTitleDroplist = Widget_Combobox(fontbase, Value=fontValues, $
         uval='LFONTNAMES',uname='lfontnames', sensitive=validpanel)
    Widget_Control, fontTitleDroplist, set_combobox_select=lfont ; select the correct font
    
    ; Legend font size widgets
-   fontsizelabel = Widget_Label(fontBase, value=' Size:', SCR_XSIZE=60, /Align_Left, sensitive=validpanel)
+   fontsizelabel = Widget_Label(fontBase, value=' Size:', /Align_Left, sensitive=validpanel)
    FontIncBase = Widget_Base(fontBase, /col)
    FontIncrement = spd_ui_spinner(FontIncBase, incr=1, uval='LFSIZE', uname='lfontsize', $
         min_value=1, value=lfontsize, sensitive=validpanel)
    
    ; Legend font color widgets
    fcolorlabelBase = Widget_Base(fontbase, row=1)
-   fcolorlabel = Widget_Label(fcolorlabelBase, value=' Color:', XSIZE=60, /Align_Left, sensitive=validpanel)
+   fcolorlabel = Widget_Label(fcolorlabelBase, value=' Color:', /Align_Left, sensitive=validpanel)
    fontpaletteButton = Widget_Button(fcolorlabelBase, Value=palettebmp, /Bitmap, $
         UValue='LFONTPALETTE', uname='lfontpalette', Tooltip=' Choose font color from palette', sensitive=validpanel)
    geo_struct = Widget_Info(fontpaletteButton,/geometry)
@@ -832,13 +832,13 @@ pro spd_ui_legend_options, info, panel_select=panel_select, tlb_statusbar=tlb_st
   
    ; Legend font format widgets
    fformatBase = Widget_Base(fontbase, row=1)
-   fformatlabel = Widget_Label(fformatBase, value=' Format:', SCR_XSIZE=60, /Align_Left, sensitive=validpanel)
-   fontFormatDroplist = Widget_Combobox(fformatBase,SCR_XSIZE=combobox_xsize, Value=formatValues, $
+   fformatlabel = Widget_Label(fformatBase, value=' Format:', /Align_Left, sensitive=validpanel)
+   fontFormatDroplist = Widget_Combobox(fformatBase, Value=formatValues, $
         uval='FFORMAT',uname='lformatcombo', sensitive=validpanel)
    Widget_Control, fontFormatDroplist, set_combobox_select=lfontformat 
 
    ; Legend background color widgets
-   bckgndcolorlabel = Widget_Label(bgBase, Value=' Background Color:', SCR_XSIZE=120, /Align_Left, sensitive=validpanel)
+   bckgndcolorlabel = Widget_Label(bgBase, Value=' Background Color:', /Align_Left, sensitive=validpanel)
    bgpaletteButton = Widget_Button(bgBase, Value=palettebmp, /Bitmap, UValue='BGPALETTE', $
         uname='bgpalette', Tooltip=' Choose background color from palette', sensitive=validpanel)
    geo_struct = widget_info(bgpaletteButton,/geometry)
@@ -847,7 +847,7 @@ pro spd_ui_legend_options, info, panel_select=panel_select, tlb_statusbar=tlb_st
         graphics_level=2,renderer=1,retain=1,units=0,frame=1, /expose_events, sensitive=validpanel)
 
    ; Legend border color widgets
-   bordercolorlabel = Widget_Label(bgBase, Value=' Border Color:', SCR_XSIZE=120, /Align_Left, sensitive=validpanel)
+   bordercolorlabel = Widget_Label(bgBase, Value=' Border Color:', /Align_Left, sensitive=validpanel)
    borderpaletteButton = Widget_Button(bgBase, Value=palettebmp, /Bitmap, UValue='BORDERPALETTE', $
         uname='borderpalette', Tooltip=' Choose border color from palette', sensitive=validpanel)
    geo_struct = widget_info(borderpaletteButton,/geometry)
@@ -857,54 +857,54 @@ pro spd_ui_legend_options, info, panel_select=panel_select, tlb_statusbar=tlb_st
    
    ; Legend border thickness widgets
    spinnerBase = Widget_Base(bBase, Row=2)
-   framethicknesslabel = Widget_Label(spinnerBase, Value=' Frame Thickness:', SCR_XSIZE=120, /Align_Left, sensitive=validpanel)
+   framethicknesslabel = Widget_Label(spinnerBase, Value=' Frame Thickness:', /Align_Left, sensitive=validpanel)
    thicknessIncBase = Widget_Base(spinnerBase, /col)
    thicknessIncrement = spd_ui_spinner(thicknessIncBase, incr=1, uval='FRAMETHICKNESS', $
         uname='framethickness', min_value=1, value=framethickness, max_value=10, sensitive=validpanel)
    
    ; Widgets for vertical spacing of text on legends
-   vspacinglabel = Widget_Label(spinnerBase, Value=' Vertical Spacing:', SCR_XSIZE=120, /Align_Left, sensitive=validpanel)
+   vspacinglabel = Widget_Label(spinnerBase, Value=' Vertical Spacing:', /Align_Left, sensitive=validpanel)
    vspacingIncBase = Widget_Base(spinnerBase, /col)
    vspacingIncrement = spd_ui_spinner(vspacingIncBase, incr=1, uval='VSPACING', uname='vspacing', $
         min_value=1, value=vspacing, sensitive=validpanel)
 
    ; beginning of placement stuff
    lblPos = Widget_Base(mainBase, Row=1)
-   placementlabel = Widget_Label(lblPos, value=' Placement: ', SCR_XSIZE=238, /Align_Left)
-   varnamelabel = Widget_Label(lblPos, value=' Variable names: ', SCR_XSIZE=100, /Align_Left)
+   placementlabel = Widget_Label(lblPos, value=' Placement: ', /Align_Left)
+   varnamelabel = Widget_Label(lblPos, value=' Variable names: ', /Align_Left)
    
    ; Base widgets for placement of legend
    posBase = Widget_Base(mainBase, Row=1)
-   positionBase = Widget_Base(posBase, row=4, Frame=3, SCR_XSIZE=230)
-   sBase1 = Widget_Base(positionBase, /col, /nonexclusive, SCR_XSIZE=60)
+   positionBase = Widget_Base(posBase, row=4, Frame=3)
+   sBase1 = Widget_Base(positionBase, /col, /nonexclusive)
    spinnerBase1 = Widget_Base(positionBase, /col)
    unitsBase1 = Widget_Base(positionBase, /col)
-   sBase2 = Widget_Base(positionBase, /col, /nonexclusive, SCR_XSIZE=60)
+   sBase2 = Widget_Base(positionBase, /col, /nonexclusive)
    spinnerBase2 = Widget_Base(positionBase, /col)
    unitsBase2 = Widget_Base(positionBase, /col)
-   sBase3 = Widget_Base(positionBase, /col, /nonexclusive, SCR_XSIZE=60)
+   sBase3 = Widget_Base(positionBase, /col, /nonexclusive)
    spinnerBase3 = Widget_Base(positionBase, /col)
    unitsBase3 = Widget_Base(positionBase, /col)
-   sBase4 = Widget_Base(positionBase, /col, /nonexclusive, SCR_XSIZE=60)
+   sBase4 = Widget_Base(positionBase, /col, /nonexclusive)
    spinnerBase4 = Widget_Base(positionBase, /col)
    unitsBase4 = Widget_Base(positionBase, /col)
-   varNameBase = Widget_Base(posBase, Col=1, Frame=3, SCR_XSIZE=260)
+   varNameBase = Widget_Base(posBase, Col=1, Frame=3)
   
   placementcombosize = 55
   placementunitsize = 45
    ; create placement widgets
-   plBottom = Widget_Button(sBase1, Value=' Bottom: ', uval='BOTBUTTON', uname='botbutton', sensitive=validpanel, SCR_XSIZE=placementlabelsize)
+   plBottom = Widget_Button(sBase1, Value=' Bottom: ', uval='BOTBUTTON', uname='botbutton', sensitive=validpanel)
    bottomSpinner = spd_ui_spinner(spinnerBase1, increment=1, uval='BVALUE', uname='bvalue', min_value=0, sensitive=validpanel, value=bvalue)
-   botDropDown = Widget_Combobox(unitsBase1, uval='BUNIT', uname='bunit', xsize=placementcombosize, value=placementunits, sensitive=validpanel)
+   botDropDown = Widget_Combobox(unitsBase1, uval='BUNIT', uname='bunit', value=placementunits, sensitive=validpanel)
    plLeft = Widget_Button(sBase2, Value=' Left: ', uval='LEFTBUTTON', uname='leftbutton', sensitive=validpanel)
    leftSpinner = spd_ui_spinner(spinnerBase2, increment=1, uval='LVALUE', uname='lvalue', min_value=0, sensitive=validpanel, value=lvalue)
-   leftDropDown = Widget_Combobox(unitsBase2, uval='LUNIT', uname='lunit', xsize=placementcombosize, value=placementunits, sensitive=validpanel)
+   leftDropDown = Widget_Combobox(unitsBase2, uval='LUNIT', uname='lunit', value=placementunits, sensitive=validpanel)
    plWidth = Widget_Button(sBase3, Value=' Width: ', uval='WIDTHBUTTON', uname='widthbutton', sensitive=validpanel)
    widthSpinner = spd_ui_spinner(spinnerBase3, increment=1, uval='WVALUE', uname='wvalue', min_value=0, sensitive=validpanel, value=wvalue)
-   widthDropDown = Widget_Combobox(unitsBase3, uval='WUNIT', uname='wunit', xsize=placementcombosize, value=placementunits, sensitive=validpanel)
+   widthDropDown = Widget_Combobox(unitsBase3, uval='WUNIT', uname='wunit', value=placementunits, sensitive=validpanel)
    plHeight = Widget_Button(sBase4, Value=' Height: ', uval='HEIGHTBUTTON', uname='heightbutton', sensitive=validpanel)
    heightSpinner = spd_ui_spinner(spinnerBase4, increment=1, uval='HVALUE', uname='hvalue', min_value=0, sensitive=validpanel, value=hvalue)
-   heightDropDown = Widget_Combobox(unitsBase4, uval='HUNIT', uname='hunit', xsize=placementcombosize, value=placementunits, sensitive=validpanel)
+   heightDropDown = Widget_Combobox(unitsBase4, uval='HUNIT', uname='hunit', value=placementunits, sensitive=validpanel)
    
    ; create variable name widgets
    xnamelabel = Widget_Label(varNameBase, value=' X Axis Value:', /Align_Left, sensitive=validpanel)
@@ -923,22 +923,22 @@ pro spd_ui_legend_options, info, panel_select=panel_select, tlb_statusbar=tlb_st
    ; change trace/line names, e.g., thd_fgs_bz -> FGS Bz
    tracesBase = Widget_Base(varNameBase, /Row)
    ;additionalLabels = Widget_Combobox(tracesBase, value='None', sensitive=validpanel, SCR_XSIZE=105, uval='ADDTRACES', uname='addtraces')
-   additionalLabels = Widget_Droplist(tracesBase, value='None', sensitive=validpanel, SCR_XSIZE=105, uval='ADDTRACES', uname='addtraces')
+   additionalLabels = Widget_Droplist(tracesBase, value='None', sensitive=validpanel, uval='ADDTRACES', uname='addtraces')
    changetraces = Widget_Text(tracesBase, value=currentline, uval='CHANGETRACENAME', uname='changetracename', SCR_XSIZE=140, /editable)
       
    formatBase = Widget_Base(mainBase, Row=2)
    formatLabel = Widget_Label(formatBase, value=' Variable format:')   
-   fBase = Widget_Base(formatBase, Row=2, Frame=3, SCR_XSIZE=500, /base_align_center)
+   fBase = Widget_Base(formatBase, Row=2, Frame=3, /base_align_center)
    varformatBase = Widget_Base(fBase, Row=1)
    ;nullLabel = Widget_Label(varformatBase, value=' ', SCR_XSIZE=5)
-   varlistLabel = Widget_Label(varformatBase, value=' For all variables of type: ', sensitive=validpanel, SCR_XSIZE=170)
+   varlistLabel = Widget_Label(varformatBase, value=' For all variables of type: ', sensitive=validpanel)
    varlistCombo = Widget_Combobox(varformatBase, uval='VARLIST', uname='varlist', sensitive=validpanel, SCR_XSIZE=80)
-   nullLabel = Widget_Label(varformatBase, value=' ', SCR_XSIZE=5)
-   formatLabel = Widget_Label(varformatBase, value=' Set format: ', sensitive=validpanel, SCR_XSIZE=70)
-   formatCombo = Widget_Combobox(varformatBase, uval='FORMCOMBO', uname='formcombo', sensitive=validpanel, SCR_XSIZE=combobox_xsize)
+   nullLabel = Widget_Label(varformatBase, value=' ')
+   formatLabel = Widget_Label(varformatBase, value=' Set format: ', sensitive=validpanel)
+   formatCombo = Widget_Combobox(varformatBase, uval='FORMCOMBO', uname='formcombo', sensitive=validpanel)
    
    notationBase1 = Widget_Base(fBase, row=1)  
-   nullLabel1 = Widget_Label(notationBase1, value=' ', SCR_XSIZE=5)
+   nullLabel1 = Widget_Label(notationBase1, value=' ')
    notationBase = Widget_Base(notationBase1, /exclusive, row=1)  
    autoNotation = Widget_Button(notationBase, value=' Auto-Notation', sensitive=validpanel, uval='AUTONOTATION', uname='autonotation')
    decNotation = Widget_Button(notationBase, value=' Decimal ', sensitive=validpanel, uval='DECNOTATION', uname= 'decnotation')
@@ -948,11 +948,11 @@ pro spd_ui_legend_options, info, panel_select=panel_select, tlb_statusbar=tlb_st
    Widget_Control, autoNotation, /set_button
    
    ; Simple button widgets
-   okButton = Widget_Button(mainButtonBase, Value='OK', Uvalue='OK', SCR_XSIZE=75)
-   applyButton = Widget_Button(mainButtonBase, Value='Apply', Uvalue='APPLY', SCR_XSIZE=75)
-   applytoallButton = Widget_Button(mainButtonBase, Value='Apply to All Panels', Tooltip='Apply settings to the legends of all panels.', UValue='APPALL', SCR_XSIZE=125)
-   cancelButton = Widget_Button(mainButtonBase, Value='Cancel', UValue='CANC', SCR_XSIZE=75)
-   templateButton = Widget_Button(mainButtonBase, Value='Store for a Template', UValue='TEMP',scr_xsize=125,tooltip='Use these settings when saving a Graph Options Template')
+   okButton = Widget_Button(mainButtonBase, Value='OK', Uvalue='OK')
+   applyButton = Widget_Button(mainButtonBase, Value='Apply', Uvalue='APPLY')
+   applytoallButton = Widget_Button(mainButtonBase, Value='Apply to All Panels', Tooltip='Apply settings to the legends of all panels.', UValue='APPALL')
+   cancelButton = Widget_Button(mainButtonBase, Value='Cancel', UValue='CANC')
+   templateButton = Widget_Button(mainButtonBase, Value='Store for a Template', UValue='TEMP',tooltip='Use these settings when saving a Graph Options Template')
    
    statusBase = Widget_Base(tlb, /Row, /align_center)
    statusBar = Obj_New('SPD_UI_MESSAGE_BAR', statusBase, XSize=79, YSize=1) 

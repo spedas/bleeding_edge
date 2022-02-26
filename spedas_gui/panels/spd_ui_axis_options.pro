@@ -22,9 +22,9 @@
 ;NB: This problem doesn't seem to happen with the panel title on Panel Options window.
 ;If we could work out why the panel title combobox worked there it would be better to fix axis label title to match rather than truncating.
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-10-03 14:12:59 -0700 (Tue, 03 Oct 2017) $
-;$LastChangedRevision: 24103 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 10:44:41 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30619 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_axis_options.pro $
 ;
 ;---------------------------------------------------------------------------------
@@ -3832,7 +3832,7 @@ PRO spd_ui_axis_options, gui_id, windowStorage, loadedData, drawObject, historyW
     
   ;range widgets 
   rpdlabel = Widget_label(panelbase, value = 'Panel: ', /align_center)
-  rangepanelDroplist = Widget_combobox(panelBase, Value=panelNames, XSize=200, uval='PANELDROPLIST', uname='rangepaneldroplist')
+  rangepanelDroplist = Widget_combobox(panelBase, Value=panelNames, uval='PANELDROPLIST', uname='rangepaneldroplist')
 
   ; warn user if xaxis selected and panels are locked.
   IF axisselect EQ 0 && ~undefined(locked) && locked NE -1 THEN BEGIN
@@ -3888,7 +3888,7 @@ PRO spd_ui_axis_options, gui_id, windowStorage, loadedData, drawObject, historyW
   IF rangeIndex EQ 0 THEN sensitive=1 ELSE sensitive=0
   ;rmIncrement=spd_ui_spinner(rmBase, Increment=0.1, Label='Range Margin (%): ', Sensitive=sensitive, Value=100*rangeMargin, uval = 'RANGEMARGIN', $
   ;  uname='rmincrement')
-  rmLabel=Widget_Label(rmBase, value='Range Margin (%): ', xsize=120, /align_left, uname='rmlabel')
+  rmLabel=Widget_Label(rmBase, value='Range Margin (%): ', /align_left, uname='rmlabel')
   rmIncrement=spd_ui_spinner(rmBase,increment=1, Value=200*rangeMargin, uval = 'RANGEMARGIN', $
     uname='rmincrement', min_value = 0)
   autoBase = Widget_Base(aoptionsBase, /NonExclusive);, Sensitive=sensitive)
@@ -3901,11 +3901,11 @@ PRO spd_ui_axis_options, gui_id, windowStorage, loadedData, drawObject, historyW
   ;Widget_Control, rmLabel, sensitive=sensitive
   boundbase = widget_base(aoptionsBase,uname='boundbase',/col)
   minaBase = Widget_Base(boundbase, /Row)
-  minaLabel=Widget_Label(minaBase, value='Minimum: ', /align_left,  uname='minlabel', xsize=96)
+  minaLabel=Widget_Label(minaBase, value='Minimum: ', /align_left,  uname='minlabel')
   minaIncrement=spd_ui_spinner(minaBase, Increment=1, Value=minBoundRange, $
     text_box_size=12, uval = 'MINBOUNDRANGE', uname='minboundrange')
   maxaBase = Widget_Base(boundbase, /Row)
-  maxaLabel=Widget_Label(maxaBase, value='Maximum: ', /align_left, xsize=96, uname='maxlabel')
+  maxaLabel=Widget_Label(maxaBase, value='Maximum: ', /align_left, uname='maxlabel')
   mmaxaIncrement=spd_ui_spinner(maxaBase, Increment=1, Value=maxBoundRange, $
     text_box_size=12, uval = 'MAXBOUNDRANGE', uname='maxboundrange')
   minmaxLabel = Widget_Label(boundbase, Value='(Not applied if min/max are equal)')
@@ -3939,7 +3939,7 @@ PRO spd_ui_axis_options, gui_id, windowStorage, loadedData, drawObject, historyW
   ;------------
   
   tpanellabel = widget_label(tpanelbase, value = 'Panel: ', /align_left)
-  tpanelDroplist = Widget_combobox(tpanelBase, Value=panelNames, XSize=200, $
+  tpanelDroplist = Widget_combobox(tpanelBase, Value=panelNames, $
     uval='PANELDROPLIST', uname='tickpaneldroplist')
   ; warn user if xaxis selected and panels are locked.
   IF axisselect EQ 0 && ~undefined(locked) && locked NE -1 THEN BEGIN
@@ -4075,7 +4075,7 @@ lminorLabel = Widget_Label(lminorBase, Value=' pts')
 
 gppanelbase = widget_base(gpbase, /row)
 gplabel = widget_label(gppanelbase, value='Panel: ')
-gpDroplist = Widget_combobox(gppanelBase, Value=panelNames, XSize=200, uval='PANELDROPLIST', uname='gridpaneldroplist')
+gpDroplist = Widget_combobox(gppanelBase, Value=panelNames, uval='PANELDROPLIST', uname='gridpaneldroplist')
 ; warn user if xaxis selected and panels are locked.
 IF axisselect EQ 0 && ~undefined(locked) && locked NE -1 THEN BEGIN
   anolab = widget_label(gppanelBase, value ='  *Panels locked. Use apply all to change other panels.')
@@ -4088,7 +4088,7 @@ gmajorbuttonbase = Widget_Base(mglabelBase, /NonExclusive)
 gmajorbutton = Widget_Button(gmajorbuttonbase, value=' ', uval='MAJORGRIDS', uname='majorgrids')
 currentBase =  Widget_Base(dirPullBase, /Row, XPad=1)
 paletteBase = Widget_Base(dirPullBase, /Row, XPad=1)
-colorLabel = Widget_Label(paletteBase, Value='Color: ', /align_left, xsize=100, uname='majorcolorlabel')
+colorLabel = Widget_Label(paletteBase, Value='Color: ', /align_left, uname='majorcolorlabel')
 
 getresourcepath,rpath
 palettebmp = read_bmp(rpath + 'color.bmp', /rgb)
@@ -4102,15 +4102,15 @@ spaceLabel = Widget_Label(paletteBase, Value=' ')
 majorgridcolorWindow = WIDGET_DRAW(paletteBase,graphics_level=2,renderer=1, $
   retain=1, XSize=50, YSize=20, units=0, frame=1, /expose_events, uname='majorgridcolorwin')
 cmajorBase = Widget_Base(dirpullBase, /Row)
-cmajorlabel=widget_label(cmajorBase, value='Thickness: ', /align_left, uname='majorgridlabel', xsize=100)
+cmajorlabel=widget_label(cmajorBase, value='Thickness: ', /align_left, uname='majorgridlabel')
 cmajorIncrement = spd_ui_spinner(cmajorBase, Increment=1, Value=1,xsize=120, $
   uval='MAJORGRIDTHICK', uname='majorgridthick', min_value=1, max_value=10)
 smajorbase = widget_base(dirpullbase, /row)
-smajorlabel = widget_label(smajorbase, value='Style: ', xsize=100, /align_left, uname='majorstylelabel')
+smajorlabel = widget_label(smajorbase, value='Style: ', /align_left, uname='majorstylelabel')
 lineObj=Obj_New("SPD_UI_LINE_STYLE")
 lineStyles=lineObj->GetLineStyles()
 Obj_Destroy, lineObj
-smajorDroplist = Widget_combobox(smajorbase, XSize=157, $
+smajorDroplist = Widget_combobox(smajorbase, $
   uval='MAJORGRIDSTYLE', uname='majorgridstyle', $
   Value=lineStyles)
 gimajorLabel = Widget_Label(mgilabelBase, Value = 'Minor Grids: ', /Align_Left, uname='minorgridbtnlabel')
@@ -4119,7 +4119,7 @@ gminorbutton = Widget_Button(gminorbuttonbase, value=' ', uval='MINORGRIDS', una
 cminorBase =  Widget_Base(diripullBase, /Row, XPad=1)
 ;cminorLabel = Widget_Label(cminorBase, Value='                                  Current Color:')
 paletteiBase = Widget_Base(diripullBase, /Row, XPad=1)
-coloriLabel = Widget_Label(paletteiBase, Value='Color: ' ,/align_left, uname='minorclabolorel', xsize=100)
+coloriLabel = Widget_Label(paletteiBase, Value='Color: ' ,/align_left, uname='minorclabolorel')
 minorgridpaletteButton = Widget_Button(paletteiBase, Value=palettebmp, /Bitmap, $
   UValue='MINORGRIDPALETTE', uname='minorgridpalette', $
   Tooltip='Choose color from Palette')
@@ -4128,12 +4128,12 @@ spaceLabel = Widget_Label(paletteiBase, Value=' ')
 minorgridcolorWindow = WIDGET_DRAW(paletteiBase,graphics_level=2,renderer=1, $
   retain=1, XSize=50, YSize=20, units=0, frame=1, /expose_events, uname='minorgridcolorwin')
 cminorBase = Widget_Base(diripullBase, /Row)
-cmajorlabel=widget_label(cminorBase, value='Thickness: ', /align_left, uname='minorgridlabel', xsize=100)
+cmajorlabel=widget_label(cminorBase, value='Thickness: ', /align_left, uname='minorgridlabel')
 cminorIncrement = spd_ui_spinner(cminorBase,Increment=1, Value=1, $
   uval='MINORGRIDTHICK', uname='minorgridthick',min_value=1, max_value=10)
 sminorbase = widget_base(diripullbase, /row)
-sminorlabel=widget_label(sminorBase, value='Style: ', /align_left, uname='minorstylelabel', xsize=100)
-sminorDroplist = Widget_combobox(sminorbase, XSize=160, $
+sminorlabel=widget_label(sminorBase, value='Style: ', /align_left, uname='minorstylelabel')
+sminorDroplist = Widget_combobox(sminorbase, $
   uval='MINORGRIDSTYLE', uname='minorgridstyle', $
   Value=lineStyles)
 ;spaceLabel = Widget_Label(gaBase, Value='            ')  ;annoying IDL problem
@@ -4145,7 +4145,7 @@ sminorDroplist = Widget_combobox(sminorbase, XSize=160, $
   
 ;annotation widgets   
 anoPlabel = widget_label(anopanelbase, value = 'Panel: ')
-anoPanelDroplist = Widget_combobox(anopanelBase, Value=panelNames, XSize=200, uval='PANELDROPLIST', uname='annopaneldroplist')
+anoPanelDroplist = Widget_combobox(anopanelBase, Value=panelNames, uval='PANELDROPLIST', uname='annopaneldroplist')
 ; if panels are locked default to the bottom panel
 ; warn user if xaxis selected and panels are locked.
 IF axisselect EQ 0 && ~undefined(locked) && locked NE -1 THEN BEGIN
@@ -4186,7 +4186,7 @@ anoDateFormat1 = Widget_Text(anoDateFormat1Base, /editable, uval='ANODATE1', una
 anoDateFormat2Label = Widget_Label(anoDateFormat2Base, Value='Line 2: ')
 anoDateFormat2 = Widget_Text(anoDateFormat2Base, /editable, uval='ANODATE2', uname='anodate2', /All_Events)
 
-anoDatePreviewText = Widget_Text(anoDatePreviewTextBase, ysize=2, xsize=32, /wrap, uname='anodatepreviewtext')
+anoDatePreviewText = Widget_Text(anoDatePreviewTextBase, ysize=2, /wrap, uname='anodatepreviewtext')
 anoDatePreviewButt = Widget_Button(anoDatePreviewTextBase, value='Preview of Date String', uval='ANODATEPREVIEW')
 
 ;anoDateButton = Widget_Button(anoTopCol2Base, Value='Date Format...', Sensitive=sensitive)
@@ -4208,18 +4208,18 @@ endcase
 anoMajorBase = Widget_Base(anofpBase, /Row, /NonExclusive)
 anoMajorButton = Widget_Button(anoMajorBase, Value='Annotate Major Ticks', uval='ANNOTATEMAJORTICKS', $
   uname='annotatemajorticks')
-anoplabel = widget_label(anofpbase, value='Place Annotation on: ', /align_left, xsize=125)
+anoplabel = widget_label(anofpbase, value='Place Annotation on: ', /align_left)
 anoPlaceDroplist = Widget_combobox(anofpBase, Value=annoplacement, uval='PLACEANNOTATION', uname='placeannotation')
 
 WIDGET_CONTROL, anoMajorButton, /Set_Button
 anomFrameBase = Widget_Base(anoFrameBase, /Col, XPad=4, uname='annomajorbase')
 anoEveryBase = Widget_Base(anomFrameBase, /Row)
-anoEveryLabel = Widget_Label(anoEveryBase, Value='Annotate Every: ', /align_left, xsize=101)
+anoEveryLabel = Widget_Label(anoEveryBase, Value='Annotate Every: ', /align_left)
 anoEveryText = spd_ui_spinner(anoEveryBase, Value=majortickevery, increment=1,$
   text_box_size=12, uval='ANNOTATEEVERY', uname='annotateevery',min_value=0)
 spaceLabel = Widget_Label(anoEveryBase, Value = '    ')
 IF isTimeAxis EQ 1 THEN Sensitive=1 ELSE Sensitive=0
-anoEveryDroplist = Widget_combobox(anoEveryBase, Value=tickUnitValues, xsize=120, uval='ANNOTATEUNITS', uname='annotateunits')
+anoEveryDroplist = Widget_combobox(anoEveryBase, Value=tickUnitValues, uval='ANNOTATEUNITS', uname='annotateunits')
 anoFirstBase = Widget_Base(anomFrameBase, /Row,uname='firstannotationbase')
 anoFirstLabel = Widget_Label(anoFirstBase, Value='Align Annotations At: ' ,/align_left)
 if istimeaxis then begin
@@ -4249,7 +4249,7 @@ widget_control, atype[annotateExponent], /set_button
 ;ano2Base = Widget_Base(anoFrameBase, /row)
 ;spaceLabel = Widget_Label(anoFrameBase, Value = '')
 orientBase = Widget_Base(anoFrameBase, /row)
-orientationLabel = Widget_Label(orientBase, Value=' Orientation: ', /Align_Left, xsize=125,sensitive=1)
+orientationLabel = Widget_Label(orientBase, Value=' Orientation: ', /Align_Left,sensitive=1)
 orientButtonBase = Widget_Base(orientBase, /Exclusive, /row)
 landscapeButton = Widget_Button(orientButtonBase, Value='Horizontal      ', UValue='ANNOHORIZONTAL', $
   uname='annohorizontal');, sensitive=1)
@@ -4294,7 +4294,7 @@ titlepdBase = widget_base(titlepanelbase, /row)
 titlePLabel=Widget_Label(titlepdBase, value='Panel: ')
 
 
-titlepanelDroplist = Widget_combobox(titlepdBase, Value=panelNames,  XSize=150, uval='PANELDROPLIST', uname='titlepaneldroplist')
+titlepanelDroplist = Widget_combobox(titlepdBase, Value=panelNames, uval='PANELDROPLIST', uname='titlepaneldroplist')
 ; warn user if xaxis selected and panels are locked.
 IF axisselect EQ 0 && ~undefined(locked) && locked NE -1 THEN BEGIN
   anolab = widget_label(titlepdBase, value ='  *Panels locked. Use apply all to change other panels.')
@@ -4308,8 +4308,8 @@ titlecolBase = widget_base(titletextframebase,/col)
 titleeditBase = widget_base(titlecolbase,/row, ypad=1,/base_align_center)
 titleeditbasecol1 = widget_base(titleeditBase, /col, /base_align_left);, space=20, ypad=6)
 titleeditbasecol2 = widget_base(titleeditbase, /col, /base_align_left);, space=12)
-titletextlabel = widget_label(titleeditbasecol1, value='Title:', xsize=60, /align_left)
-titletextfield = widget_text(titleeditBasecol2, value = '', /editable, /all_events, xsize=55, ysize=1, $
+titletextlabel = widget_label(titleeditbasecol1, value='Title:', /align_left)
+titletextfield = widget_text(titleeditBasecol2, value = '', /editable, /all_events, xsize=100, ysize=1, $
   uval='TITLETEXTEDIT', uname='titletextedit')
 
 titlerow1base = widget_base(titlecolbase,/row, xpad=40,/base_align_center);, ypad=10)
@@ -4318,10 +4318,10 @@ titlefield1base = widget_base(titlerow1base,/col,/base_align_left, space=12)
 titlelabel2base = widget_base(titlerow1base,/col,/base_align_left, space=20, ypad=6)
 titlefield2base = widget_base(titlerow1base,/col,/base_align_left, space=6)
 tlabel = Widget_Label(titlelabel1Base, value = 'Font:')
-lpofontDroplist = Widget_combobox(titlefield1Base, XSize=125, Value=fontnames, uval='TITLEFONT', uname='titlefont')
+lpofontDroplist = Widget_combobox(titlefield1Base, Value=fontnames, uval='TITLEFONT', uname='titlefont')
 tlabel = Widget_Label(titlelabel1Base, value = 'Format:')
 formattypes=textObj->getformats()
-titleFormatDroplist = Widget_combobox(titlefield1Base, XSize=125, Value=formattypes, uval='TITLEFORMAT', uname='titleformat')
+titleFormatDroplist = Widget_combobox(titlefield1Base, Value=formattypes, uval='TITLEFORMAT', uname='titleformat')
 
 tlabel= Widget_Label(titlelabel2Base, value='Size (points): ', /align_left)
 fontIncrement = spd_ui_spinner(titlefield2Base, Increment=1,  Value=12, uval='TITLESIZE', uname='titlesize', min_value=1)
@@ -4337,8 +4337,8 @@ titleColorWindow = WIDGET_DRAW(titlecolorBase, graphics_level=2, renderer=1, ret
 subtitleeditBase = widget_base(titlecolbase,/row, ypad=1,/base_align_center)
 subtitleeditbasecol1 = widget_base(subtitleeditBase, /col, /base_align_left);, space=20, ypad=6)
 subtitleeditbasecol2 = widget_base(subtitleeditbase, /col, /base_align_left);, space=12)
-subtitletextlabel = widget_label(subtitleeditbasecol1, value='Subtitle:',xsize=60,/align_left)
-subtitletextfield = widget_text(subtitleeditbasecol2, value='',/editable, /all_events, xsize=55, ysize=1,$
+subtitletextlabel = widget_label(subtitleeditbasecol1, value='Subtitle:',/align_left)
+subtitletextfield = widget_text(subtitleeditbasecol2, value='',/editable, /all_events, xsize=100, ysize=1,$
   uval='SUBTITLETEXTEDIT',uname='subtitletextedit')
   
 subtitlerow1base = widget_base(titlecolbase,/row, xpad=40,/base_align_center);, ypad=10)
@@ -4347,10 +4347,10 @@ subtitlefield1base = widget_base(subtitlerow1base,/col,/base_align_left, space=1
 subtitlelabel2base = widget_base(subtitlerow1base,/col,/base_align_left, space=20, ypad=6)
 subtitlefield2base = widget_base(subtitlerow1base,/col,/base_align_left, space=6)
 subtlabel = Widget_Label(subtitlelabel1Base, value = 'Font:')
-sublpofontDroplist = Widget_combobox(subtitlefield1Base, XSize=125, Value=fontnames, uval='SUBTITLEFONT', uname='subtitlefont')
+sublpofontDroplist = Widget_combobox(subtitlefield1Base, Value=fontnames, uval='SUBTITLEFONT', uname='subtitlefont')
 subtlabel = Widget_Label(subtitlelabel1Base, value = 'Format:')
 formattypes=textObj->getformats()
-subtitleFormatDroplist = Widget_combobox(subtitlefield1Base, XSize=125, Value=formattypes, uval='SUBTITLEFORMAT', uname='subtitleformat')
+subtitleFormatDroplist = Widget_combobox(subtitlefield1Base, Value=formattypes, uval='SUBTITLEFORMAT', uname='subtitleformat')
 
 subtlabel= Widget_Label(subtitlelabel2Base, value='Size (points): ', /align_left)
 subfontIncrement = spd_ui_spinner(subtitlefield2Base, Increment=1,  Value=12, uval='SUBTITLESIZE', uname='subtitlesize', min_value=1)
@@ -4402,7 +4402,7 @@ Widget_Control, titleVertButton, /Set_Button ;correct button will be set in spd_
 lpdBase = widget_base(lpanelbase, /row)
 panelLabel=Widget_Label(lpdBase, value='Panel: ')
 
-lpanelDroplist = Widget_combobox(lpdBase, Value=panelNames,  XSize=150, uval='PANELDROPLIST', uname='labelpaneldroplist')
+lpanelDroplist = Widget_combobox(lpdBase, Value=panelNames, uval='PANELDROPLIST', uname='labelpaneldroplist')
 ; warn user if xaxis selected and panels are locked.
 IF axisselect EQ 0 && ~undefined(locked) && locked NE -1 THEN BEGIN
   anolab = widget_label(lpdBase, value ='  *Panels locked. Use apply all to change other panels.')
@@ -4419,7 +4419,7 @@ lt1Text = Widget_Combobox(labelSelectBase,Value = ' ', XSize=260, uval='LABELDRO
 
 ltexteditBase = widget_base(col1base, /row, xpad=0, /align_left, space=3)
 ltexteditlabel = widget_label(ltexteditBase,value='Edit/Add Label:')
-ltextedit = widget_text(ltexteditBase, value = '', /editable, /all_events, xsize=40, ysize=1, $
+ltextedit = widget_text(ltexteditBase, value = '', /editable, /all_events, xsize=100, ysize=1, $
   uval='LABELTEXTEDIT', uname='labeltextedit')
 
 ;uptoarrow = read_bmp(rpath + 'up_to_arrow.bmp', /rgb)
@@ -4458,7 +4458,7 @@ case axisselect of
   0: labelplacement = ['Bottom','Top']
   1: labelplacement = ['Left','Right']
 endcase
-labelplabel = widget_label(stylepbase, value='Place Label on: ', /align_left, xsize=90)
+labelplabel = widget_label(stylepbase, value='Place Label on: ', /align_left)
 titlePlaceDroplist = Widget_combobox(stylepBase, Value=labelplacement, uval='PLACELABEL', uname='placelabel')
 
 showLabelButtonBase = widget_base(styleFrameBase,/row,/nonexclusive,/align_left)
@@ -4484,12 +4484,12 @@ lpoIncrIncrement=spd_ui_spinner(lpoIncrBase, label = 'Margin: ',Increment=1, uva
 lpoIncrLabel = Widget_Label(lpoIncrBase, Value=' pts ')
 
 tlabel = Widget_Label(lpcol1aBase, value = 'Font:', /align_left)
-lpofontDroplist = Widget_combobox(lpcol1bBase, XSize=125, Value=fontnames, uval='LABELFONT', uname='labelfont')
+lpofontDroplist = Widget_combobox(lpcol1bBase, Value=fontnames, uval='LABELFONT', uname='labelfont')
 tlabel = Widget_Label(lpcol1aBase, value = 'Format:', /align_left)
 formattypes=textObj->getformats()
 Obj_Destroy, textObj
 
-lpoFormatDroplist = Widget_combobox(lpcol1bBase, XSize=125, Value=formattypes, uval='LABELFORMAT', uname='labelformat')
+lpoFormatDroplist = Widget_combobox(lpcol1bBase, Value=formattypes, uval='LABELFORMAT', uname='labelformat')
 
 labelsync = widget_button(lpcol1bBase, value='Sync Panel Labels', uval='LABELSYNC', uname='labelsync', tooltip='Propagate text settings to the other labels on this panel')
 
@@ -4507,12 +4507,12 @@ labelColorWindow = WIDGET_DRAW(cb1Base, graphics_level=2, renderer=1, retain=1, 
 ;n;labelsSetButton = Widget_Button(labelButtonBase, Value='Set All Panels', /Align_Center, XSize = 125, uval='LABELTSETALL', uname='labeltsetall')
   
   
-okButton = Widget_Button(buttonBase, Value='OK', XSize=75, uval='OK')
-applyButton = Widget_Button(buttonBase, Value='Apply', UValue='APPLY',Tooltip='Apply all settings from all tabs to current panel.', XSize=75)
+okButton = Widget_Button(buttonBase, Value='OK', uval='OK')
+applyButton = Widget_Button(buttonBase, Value='Apply', UValue='APPLY',Tooltip='Apply all settings from all tabs to current panel.')
 applyToAllButton = Widget_Button(buttonBase, Value='Apply to All Panels', Uvalue='APPLYTOALL', sens=1, $
-   Tooltip='Apply settings from the current tab to all panels',XSize=125)
-cancelButton = Widget_Button(buttonBase, Value='Cancel', UValue='CANC', XSize=75)
-templateButton = Widget_Button(buttonBase,  Value='Store for a Template', UValue='TEMP',xsize=125,tooltip='Use these settings when saving a Graph Options Template')
+   Tooltip='Apply settings from the current tab to all panels')
+cancelButton = Widget_Button(buttonBase, Value='Cancel', UValue='CANC')
+templateButton = Widget_Button(buttonBase,  Value='Store for a Template', UValue='TEMP',tooltip='Use these settings when saving a Graph Options Template')
 ;helpButton = Widget_Button(buttonBase, Value='Help', XSize=75)
 
 

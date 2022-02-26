@@ -15,9 +15,9 @@
  ;
  ;
  ;HISTORY:
- ;$LastChangedBy: nikos $
- ;$LastChangedDate: 2017-10-03 14:12:59 -0700 (Tue, 03 Oct 2017) $
- ;$LastChangedRevision: 24103 $
+ ;$LastChangedBy: jwl $
+ ;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+ ;$LastChangedRevision: 30623 $
  ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_line_options.pro $
  ;
  ;---------------------------------------------------------------------------------
@@ -1134,7 +1134,7 @@
  
  paneldbase = widget_base(panelBase, /row)
  paneldlabel = widget_label(paneldBase, value = '   Panel: ')
- panelDroplist = Widget_combobox(paneldBase, XSize=400, $
+ panelDroplist = Widget_combobox(paneldBase, $
    Value=panelNames, UValue='PANELLIST')
  widget_control, panelDroplist, set_combobox_select=*cpanel_num
  
@@ -1160,14 +1160,14 @@
  
  tracedbase = widget_base(tracebase, /row)
  tracedlabel = widget_label(tracedBase, value = 'Select Trace: ')
- traceDroplist = Widget_combobox(tracedBase, XSize=450, Value=traceNames, UValue='TRACELIST')
+ traceDroplist = Widget_combobox(tracedBase, Value=traceNames, UValue='TRACELIST')
  widget_control, traceDroplist, set_combobox_select=*ctr_num
  
  IF Is_Num(dataNames) OR dataNames[0] EQ '' THEN dataNames=['No Loaded Data']
  
  tracetextbase = widget_base(tracebase, /row, xpad=17)
  tracetextlabel = widget_label(tracetextbase, value = '     Trace: ')
- tracetextedit = widget_text(tracetextbase, XSize=73, value = fulltrNames[*ctr_num], uname = 'tracename')
+ tracetextedit = widget_text(tracetextbase, value = fulltrNames[*ctr_num], uname = 'tracename')
  
  
  ;****** Line Options **********************************************************
@@ -1176,7 +1176,7 @@
  lineShowBase = Widget_Base(lineFrameBase, /NonExclusive, /row)
  lineShowButton = Widget_Button(lineShowBase, Value='Show Line', UValue='SHOWLINE', uname='showline')
  lpaletteBase = Widget_Base(lineFrameBase, /Row, XPad=1)
- lcolorLabel = Widget_Label(lpaletteBase, Value='Color:', xsize = 70, /align_left)
+ lcolorLabel = Widget_Label(lpaletteBase, Value='Color:', /align_left)
  
  getresourcepath,rpath
  palettebmp = read_bmp(rpath + 'color.bmp', /rgb)
@@ -1197,11 +1197,11 @@
  endelse
  styleNames=linestyleobj->GetLineStyles()
  lsdBase = widget_base(lineFrameBase, /row)
- lsdLabel = widget_label(lsdBase, value = 'Style:', xsize = 70, /align_left)
+ lsdLabel = widget_label(lsdBase, value = 'Style:', /align_left)
  linestyleDroplist = Widget_combobox(lsdBase, $
    Value=styleNames, UValue='LINESTYLE', UName='linestyle')
  lineThickBase = Widget_Base(lineFrameBase, /Row)
- lthicklabel = widget_label(lineThickBase, value = 'Thickness:', xsize = 70, /align_left)
+ lthicklabel = widget_label(lineThickBase, value = 'Thickness:', /align_left)
  lineThickIncrement = spd_ui_spinner(lineThickBase, $
    Increment=1, Value=1, UValue='THICKNESS', UName='thickness',min_value=1, max_value=10)
  prevThickness=1
@@ -1219,7 +1219,7 @@
  symbolFilledButton = Widget_Button(symbolShowBase, Value='Filled', $
    UValue='FILLSYMBOL', UName='fillsymbol')
  spaletteBase = Widget_Base(symbol1Base, /Row, XPad=1)
- scolorLabel = Widget_Label(spaletteBase, Value='Color:', xsize = 50, /align_left)
+ scolorLabel = Widget_Label(spaletteBase, Value='Color:', /align_left)
  ;  palettebmp = filepath('palette.bmp', Subdir=['resource', 'bitmaps'])
  spaletteButton = Widget_Button(spaletteBase, Value=palettebmp, /Bitmap, $
    UValue='PALETTE1', uname='palette1', Tooltip='Choose color from Palette')
@@ -1236,11 +1236,11 @@
  
  symbolnames = symbolobj->GetSymbols()
  ssdBase = widget_base(symbol1Base, /row)
- ssdLabel = widget_label(ssdBase, value = 'Style:', xsize = 50, /align_left)
+ ssdLabel = widget_label(ssdBase, value = 'Style:', /align_left)
  symbolStyleDroplist = Widget_combobox(ssdBase, $
    Value=symbolNames, UValue='SYMBOLSTYLE', UName='symbolstyle')
  symbolThickBase = Widget_Base(symbol1Base, /Row)
- sthicklabel = widget_label(symbolThickBase, value = 'Size:', xsize = 50, /align_left)
+ sthicklabel = widget_label(symbolThickBase, value = 'Size:', /align_left)
  symbolThickIncrement = spd_ui_spinner(symbolThickBase, $
    Increment=1, Value=2, UValue='SYMBOLSIZE', UName='symbolsize',min_value=1)
  prevSymbolSize=2
@@ -1295,11 +1295,11 @@
 ; drawSetButton = Widget_Button(drawBase, Value='Set All Lines',UValue='SETALL', XSize=95, /align_center)
  
  buttonsBase = Widget_Base(buttonStatusBase, /row, /align_center)
- okButton = Widget_Button(buttonsBase, Value='OK', UValue='OK', XSize=75)
- applyButton = Widget_Button(buttonsBase, Value='Apply', UValue='APPLY', XSize=75)
- applyButton = Widget_Button(buttonsBase, Value='Apply to All Lines', UValue='APPLYTOALL', tooltip="Apply changes to all lines of this panel (except color and style)", XSize=125)
+ okButton = Widget_Button(buttonsBase, Value='OK', UValue='OK')
+ applyButton = Widget_Button(buttonsBase, Value='Apply', UValue='APPLY')
+ applyButton = Widget_Button(buttonsBase, Value='Apply to All Lines', UValue='APPLYTOALL', tooltip="Apply changes to all lines of this panel (except color and style)")
  cancelButton = Widget_Button(buttonsBase, Value='Cancel', UValue='CANC', XSize=75)
- templateButton = Widget_Button(buttonsBase,  Value='Store for a Template', UValue='TEMP',xsize=125,tooltip='Use these settings when saving a Graph Options Template')
+ templateButton = Widget_Button(buttonsBase,  Value='Store for a Template', UValue='TEMP',tooltip='Use these settings when saving a Graph Options Template')
  
  statusBase = Widget_Base(buttonStatusBase, /row)
  statusBar = Obj_New('SPD_UI_MESSAGE_BAR', statusBase, XSize=75, YSize=1)

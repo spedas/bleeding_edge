@@ -164,8 +164,8 @@ function spd_ui_block_ave_options, gui_id, statusbar, historywin, datap
 
 
 ;Buttons
-  ok = widget_button(buttonbase, value = 'OK', xsize=60, uval='OK')
-  cancel = widget_button(buttonbase, valu = 'Cancel', xsize=60, uval='CANCEL')
+  ok = widget_button(buttonbase, value = 'OK', uval='OK')
+  cancel = widget_button(buttonbase, valu = 'Cancel', uval='CANCEL')
 
 
 ;Initializations

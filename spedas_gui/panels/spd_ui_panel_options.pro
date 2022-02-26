@@ -15,9 +15,9 @@
 ;(lphilpott 06/2011) Delayed the handling of spinner events until user clicks OK/APPLY/SET ALL or changes panel. Dialog messages
 ;are issued for invalid entries. This avoids the issue of the text overwriting in spinners as the user types if values aren't valid.
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-03-15 14:14:59 -0700 (Thu, 15 Mar 2018) $
-;$LastChangedRevision: 24892 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_panel_options.pro $
 ;
 ;--------------------------------------------------------------------------------
@@ -816,16 +816,16 @@ PRO spd_ui_panel_options, gui_id, windowStorage, loadedData, historyWin, $
   tcol2 = Widget_Base(col2, /Row, XPad=80)
   tcol3 = Widget_Base(col2, /Row, XPad=80)
   tcol4 = Widget_Base(col2, /Row, XPad=80)
-  tButBase = Widget_Base(tcol1, /Col, /NonExclusive, xsize=70)
+  tButBase = Widget_Base(tcol1, /Col, /NonExclusive)
   tSizeBase = Widget_Base(tcol1, /Col)
   tPullBase = Widget_Base(tcol1, /Col)
-  t2ButBase = Widget_Base(tcol2, /Col, /NonExclusive, xsize=70)
+  t2ButBase = Widget_Base(tcol2, /Col, /NonExclusive)
   t2SizeBase = Widget_Base(tcol2, /Col)
   t2PullBase = Widget_Base(tcol2, /Col)
-  t3ButBase = Widget_Base(tcol3, /Col, /NonExclusive, xsize=70)
+  t3ButBase = Widget_Base(tcol3, /Col, /NonExclusive)
   t3SizeBase = Widget_Base(tcol3, /Col)
   t3PullBase = Widget_Base(tcol3, /Col)
-  t4ButBase = Widget_Base(tcol4, /Col, /NonExclusive, xsize=70)
+  t4ButBase = Widget_Base(tcol4, /Col, /NonExclusive)
   t4SizeBase = Widget_Base(tcol4, /Col)
   t4PullBase = Widget_Base(tcol4, /Col)
   bottomBase = Widget_Base(placeBase, /Row)
@@ -880,10 +880,10 @@ PRO spd_ui_panel_options, gui_id, windowStorage, loadedData, historyWin, $
   ;layout panel widgets
   
   ;pldBase = widget_base(panellbase, /row)
-  pldLabel = widget_label(panellBase, value = 'Panel: ', xsize=50)
-  panellDroplist = Widget_combobox(panellBase, Value=panelNames, XSize=340, $
+  pldLabel = widget_label(panellBase, value = 'Panel: ')
+  panellDroplist = Widget_combobox(panellBase, Value=panelNames, $
     UValue='LAYOUTPANEL', uname='layoutpanel')
-  TitleLabel = Widget_Label(TitleBase, Value='Title: ', xsize=50)
+  TitleLabel = Widget_Label(TitleBase, Value='Title: ')
   TitleText = Widget_Text(TitleBase, /Editable, /all_events, XSize = 55, ysize=1, $
     uvalue='PANELTITLE', uname='paneltitle')
   marginBase = Widget_Base(TitleBase, /Row)
@@ -891,8 +891,8 @@ PRO spd_ui_panel_options, gui_id, windowStorage, loadedData, historyWin, $
     UValue='TITLEMARGIN', uname='titlemargin', min_value=1)
     
   ;Title font and options widgets
-  spacelabel = widget_label(titleFontBase, value='', xsize=50)
-  titleFontDroplist = Widget_Combobox(titleFontBase,xsize=150, Value=title->getfonts(), uval='TFONT', uname='titlecombo')
+  spacelabel = widget_label(titleFontBase, value='')
+  titleFontDroplist = Widget_Combobox(titleFontBase, Value=title->getfonts(), uval='TFONT', uname='titlecombo')
   titleFontIncBase = widget_base(titleFontBase, /row, xpad=8, ypad=0, space=0)
   titleFontIncrement = spd_ui_spinner(titleFontIncBase, incr=1, uval='TSIZE', uname='titlesize',min_value=1)
   
@@ -937,7 +937,7 @@ PRO spd_ui_panel_options, gui_id, windowStorage, loadedData, historyWin, $
   bgcolorWindow = WIDGET_DRAW(bgpaletteBase,graphics_level=2,renderer=1, $
     retain=1, XSize=50, YSize=20, units=0, frame=1, /expose_events)
   fpaletteBase = Widget_Base(thicknessBase, /Row)
-  fcolorLabel = Widget_Label(fpaletteBase, Value=' Panel Frame Color: ', xsize=labelXSize)
+  fcolorLabel = Widget_Label(fpaletteBase, Value=' Panel Frame Color: ')
   fpaletteButton = Widget_Button(fpaletteBase, Value=palettebmp, /Bitmap, $
     UValue='FPALETTE',uname='fpalette', Tooltip='Choose panel frame color from palette')
   fspaceLabel = Widget_Label(fpaletteBase, Value=' ')
@@ -947,11 +947,11 @@ PRO spd_ui_panel_options, gui_id, windowStorage, loadedData, historyWin, $
   linetIncrement = spd_ui_spinner(frametBase, label='Frame Thickness:    ', Increment=1, $
     uval='FRAMETHICK', uname='framethick', min_value=1, max_value=10) ;(IDLgrAxis/IDLgrPolyline restrict thickness to 1:10)
   linetLabel = Widget_Label(frametBase, Value=' (pts)')
-  okButton = Widget_Button(mainButtonBase, Value='OK', Uvalue='OK', XSize=75)
-  applyButton = Widget_Button(mainButtonBase, Value='Apply', Uvalue='APPLY', XSize=75)
-  applyToAllButton = Widget_Button(mainButtonBase, Value='Apply to All Panels', Uvalue='APPLYTOALL', XSize=125)
-  cancelButton = Widget_Button(mainButtonBase, Value='Cancel', UValue='CANC', XSize=75)
-  templateButton = Widget_Button(mainButtonBase,Value='Store for a Template', UValue='TEMP',xsize=125,tooltip='Use these settings when saving a Graph Options Template') 
+  okButton = Widget_Button(mainButtonBase, Value='OK', Uvalue='OK')
+  applyButton = Widget_Button(mainButtonBase, Value='Apply', Uvalue='APPLY')
+  applyToAllButton = Widget_Button(mainButtonBase, Value='Apply to All Panels', Uvalue='APPLYTOALL')
+  cancelButton = Widget_Button(mainButtonBase, Value='Cancel', UValue='CANC')
+  templateButton = Widget_Button(mainButtonBase,Value='Store for a Template', UValue='TEMP',tooltip='Use these settings when saving a Graph Options Template') 
   
   statusBar = obj_new('spd_ui_message_bar',tlb)
   

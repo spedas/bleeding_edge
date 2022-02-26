@@ -4,9 +4,9 @@
 ;PURPOSE:
 ; A widget to display, edit and save the file 'spd_gui_error.txt' error
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-08-27 12:32:12 -0700 (Tue, 27 Aug 2019) $
-;$LastChangedRevision: 27676 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_gui_error.pro $
 ;
 ;-
@@ -107,11 +107,11 @@ error_arr = [sentinel_string,error_arr]
 ; save button
   save_button = widget_base(buttons, /col, /align_center)
   savebut = widget_button(save_button, val = ' Save ', uval = 'SAVE', $
-                        /align_center, scr_xsize = 120)
+                        /align_center)
 ; exit button
   exit_button = widget_base(buttons, /col, /align_center)
   exitbut = widget_button(exit_button, val = ' Close ', uval = 'EXIT', $
-                        /align_center, scr_xsize = 120)
+                        /align_center)
   state = {error:ptr_new(error_arr), errordisplay:errordisplay}
   centerTLB, errorid
   widget_control, errorid, set_uval = state, /no_copy

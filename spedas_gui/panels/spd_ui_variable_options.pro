@@ -6,9 +6,9 @@
 ;Rewritten pcruce@igpp.ucla.edu 9/10/2009
 ;-
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-08-29 10:55:26 -0700 (Thu, 29 Aug 2019) $
-;$LastChangedRevision: 27697 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_variable_options.pro $
 ;-
 
@@ -205,9 +205,9 @@ end
 ;
 ;HISTORY:
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-08-29 10:55:26 -0700 (Thu, 29 Aug 2019) $
-;$LastChangedRevision: 27697 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
+;$LastChangedRevision: 30623 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_variable_options.pro $
 ;---------------------------------------------------------------------------------
 
@@ -902,7 +902,7 @@ Pro spd_ui_variable_options, gui_id, loadeddata, windowstorage, drawobject, hist
   cWindow->save
   
   pdLabel = widget_label(panelBase, value = 'Panel: ')
-  panelDroplist = Widget_combobox(panelBase, Value=panelNames, XSize=160, UValue='PANELS',uname='panellist')
+  panelDroplist = Widget_combobox(panelBase, Value=panelNames, UValue='PANELS',uname='panellist')
   if is_num(panel_select) then widget_control,panelDroplist, set_combobox_select=panel_select
   varListLabel = Widget_Label(dummybase, Value='Variables: ')
   varlistText=Widget_list(varTextBase, Value=ctextvalues, XSize=37, YSize=15, uname='varlisttext', uval='VARIABLES')
@@ -934,17 +934,17 @@ Pro spd_ui_variable_options, gui_id, loadeddata, windowstorage, drawobject, hist
   attLabel = Widget_Label(attLabelBase, Value='Attributes: ')
   
   fieldBase = Widget_Base(attListBase, /row)
-  fieldLabel = Widget_Label(fieldBase, Value='Field: ', XSize=70, /align_left)
+  fieldLabel = Widget_Label(fieldBase, Value='Field: ', /align_left)
   fieldText = Widget_Text(fieldBase, Value='<none selected>', XSize=20, YSize=1, uname='fieldwidget', sensitive=0)
   
   controlBase = Widget_Base(attListBase, /row)
-  controlLabel = Widget_Label(controlBase, Value='Control: ', Xsize=70, /align_left)
+  controlLabel = Widget_Label(controlBase, Value='Control: ', /align_left)
   controlText = Widget_Text(controlBase, Value='<none selected>', XSize=20, YSize=1, uname='controlwidget', sensitive=0, uval='PICKCONTROL')
   ;controltext= Widget_text(attListBase, xsize=200, Title='Control:  ', Value='<none selected>', uname = 'controlwidget', sensitive = 0, uval='PICKCONTROL')
   controlButton = Widget_Button(controlBase, Value="Choose...", ToolTip='Pick a control for the variable.', uval='PICKCONTROL',sensitive=0,uname='controlbutton')
   
   textBase = Widget_Base(attListBase, /Row)
-  textLabel = Widget_Label(textBase, Value='Text: ', XSize=70, /align_left)
+  textLabel = Widget_Label(textBase, Value='Text: ', /align_left)
   textText = Widget_Text(textBase, Value=' ', XSize=20, /Editable, /all_events, YSize=1, uname='textwidget', uval='TEXT', sensitive=0)
   
   ;**Commented out 2-15-12**
@@ -964,8 +964,8 @@ Pro spd_ui_variable_options, gui_id, loadeddata, windowstorage, drawobject, hist
   ;symbolDroplist = WIDGET_combobox(sdBase, uname='symbolwidget', uval='SYMBOL', sensitive=0, value=symbolValues)
   
   pdBase = widget_base(attListBase, /row)
-  pdLabel = widget_label(pdBase, value = 'Precision: ', XSize=70, /align_left, uname='precisionlabel')
-  precisionDroplist = WIDGET_combobox(pdBase, Value=precisionValues, XSize=130,uname='precisionwidget', uval='PRECISION', sensitive=0)
+  pdLabel = widget_label(pdBase, value = 'Precision: ', /align_left, uname='precisionlabel')
+  precisionDroplist = WIDGET_combobox(pdBase, Value=precisionValues,uname='precisionwidget', uval='PRECISION', sensitive=0)
   
   anoSOBase = widget_base(attListBase, /row, /exclusive, ypad=2, space=0,uname='annobase',sensitive=0)
   default = widget_button(anoSOBase, value = 'Auto-Notation', uvalue='AAUTO', uname='aauto')
@@ -974,7 +974,7 @@ Pro spd_ui_variable_options, gui_id, loadeddata, windowstorage, drawobject, hist
   atype = [default, dbl, expo]
   
   paletteBase = Widget_Base(attListBase, /Row)
-  colorLabel = Widget_Label(paletteBase, Value='Color: ', xsize=70, /align_left)
+  colorLabel = Widget_Label(paletteBase, Value='Color: ', /align_left)
   
   paletteButton = Widget_Button(paletteBase, Value=palettebmp, /Bitmap, UValue='PALETTE', ToolTip='Choose color from Palette', uname = 'palettewidget', $
     sensitive=0)
@@ -988,12 +988,12 @@ Pro spd_ui_variable_options, gui_id, loadeddata, windowstorage, drawobject, hist
   
   fontBase = widget_base(attListBase,/row)
   fontLabel = widget_label(fontBase,value='Font ')
-  fontDroplist = Widget_Combobox(fontBase,xsize=150, Value=fontValues,uname='fontwidget')
+  fontDroplist = Widget_Combobox(fontBase, Value=fontValues,uname='fontwidget')
   widget_control,fontDroplist,set_combobox_select=2
   
   textFormatBase = widget_base(attListBase,/row)
   textFormatLabel = widget_label(textFormatBase,value='Style: ')
-  textFormatDroplist = Widget_Combobox(textFormatBase,xsize=150, Value=textFormatValues,uname='textformatwidget')
+  textFormatDroplist = Widget_Combobox(textFormatBase, Value=textFormatValues,uname='textformatwidget')
   widget_control,textFormatDroplist,set_combobox_select=3
   
   fontSizeBase = Widget_Base(attListBase, /Row)
@@ -1017,13 +1017,13 @@ Pro spd_ui_variable_options, gui_id, loadeddata, windowstorage, drawobject, hist
     Value=labelmargin, uname='labelmarginwidget', /all_events,sensitive=0, $
     tooltip="Horizonal spacing between the plot's edge and the variable labels on the left.")
     
-  okButton = Widget_Button(buttonBase, Value=' OK ', UValue='OK', XSize=80, $
+  okButton = Widget_Button(buttonBase, Value=' OK ', UValue='OK', $
     ToolTip='Applies the changes to the layout and closes the window')
-  applyButton = Widget_Button(buttonBase, Value=' Apply ', UValue='APPLY', XSize=80, $
+  applyButton = Widget_Button(buttonBase, Value=' Apply ', UValue='APPLY', $
     ToolTip='Applies the changes to the layout, leaves window open')
-  cancelButton = Widget_Button(buttonBase, Value=' Cancel ', UValue='CANC', XSize=80, $
+  cancelButton = Widget_Button(buttonBase, Value=' Cancel ', UValue='CANC', $
     ToolTip='Cancels the operation and closes the window')
-  templateButton = Widget_Button(buttonBase,Value='Store for a Template', UValue='TEMP',xsize=125,tooltip='Use these settings when saving a Graph Options Template')
+  templateButton = Widget_Button(buttonBase,Value='Store for a Template', UValue='TEMP',tooltip='Use these settings when saving a Graph Options Template')
   
   ; Create Status Bar Object
   statusBar = Obj_New('SPD_UI_MESSAGE_BAR', $

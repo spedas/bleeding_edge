@@ -331,7 +331,7 @@ pro spd_ui_neutral_sheet_models, info
 
   positionBase = Widget_Base(mainBase, row=2)
   inputLabel = Widget_Label(positionBase, value='Input: ')
-  posSelectButton = Widget_Button(positionBase, value=pos_tvar, xsize=200, uname='selectposition', uval='SELECTPOSITION', tooltip='Select a variable containing the input position')
+  posSelectButton = Widget_Button(positionBase, value=pos_tvar,/dynamic_resize, uname='selectposition', uval='SELECTPOSITION', tooltip='Select a variable containing the input position')
   label_width = 55
 
   ;;;;;;;;;;;;;;;;;;;;; Model Name selection ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -339,7 +339,7 @@ pro spd_ui_neutral_sheet_models, info
   model_select = 0
   modelBase = Widget_Base(mainBase, /row, title='Model Name', ypad=4)
   modelLabel = Widget_Label(modelBase, value='Model Name: ', /align_left)
-  modelCombo = Widget_Combobox(modelBase, value=modelNames, xsize=100, uvalue='MODELNAME', uname='modelName')
+  modelCombo = Widget_Combobox(modelBase, value=modelNames, uvalue='MODELNAME', uname='modelName')
 ;  widget_control, modelCombo, set_combobox_select=model_select
   
   if model_select NE 3 then sensitive=0 else sensitive =1
@@ -371,10 +371,10 @@ pro spd_ui_neutral_sheet_models, info
   widget_control, znsButton, set_button=outputzns
      
   buttonBase = Widget_Base(bottomBase, /row, /align_center)
-  generateButton = Widget_Button(buttonBase, value='Generate', uval='GENNEUTRALSHEET', xsize=80, tooltip='Generate the neutral sheet model')
-  clearButton = Widget_Button(buttonBase, value='Clear', uval='CLEAR', xsize=80, tooltip='Clear the current options')
-  closeButton = Widget_Button(buttonBase, value='Close', uval='CLOSE', xsize=80, tooltip='Close this window')
-  help_button = Widget_Button(buttonBase, value='Help', uval='HELP', xsize=80, tooltip='Descriptions of neutral sheet models')
+  generateButton = Widget_Button(buttonBase, value='Generate', uval='GENNEUTRALSHEET', tooltip='Generate the neutral sheet model')
+  clearButton = Widget_Button(buttonBase, value='Clear', uval='CLEAR', tooltip='Clear the current options')
+  closeButton = Widget_Button(buttonBase, value='Close', uval='CLOSE', tooltip='Close this window')
+  help_button = Widget_Button(buttonBase, value='Help', uval='HELP', tooltip='Descriptions of neutral sheet models')
   
   statusBase = Widget_Base(tlb, /Row, /align_center)
   statusBar = Obj_New('SPD_UI_MESSAGE_BAR', statusBase, XSize=55, YSize=1)
