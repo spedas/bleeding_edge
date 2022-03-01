@@ -1061,9 +1061,10 @@ pro spd_ui_mdd_std, gui_ID=gui_id, $
   ;load bitmap resources
   getresourcepath,rpath
 
+  scroll_sizes=spd_get_scroll_sizes()
   if keyword_set(gui_ID) then begin
     tlb = Widget_Base(/col, /Align_Top, /Align_Left, title='Minimum Directional Derivative (MDD) and Spatio-Temporal Difference (STD)', group_leader= gui_id, /floating, $
-      /scroll,x_scroll_size=900,y_scroll_size=700, YPad=1, /tlb_kill_request_events, event_pro='spd_ui_mdd_event')
+      /scroll,x_scroll_size=scroll_sizes[0],y_scroll_size=scroll_sizes[1], YPad=1, /tlb_kill_request_events, event_pro='spd_ui_mdd_event')
   endif else begin
     tlb = Widget_Base(/col, /Align_Top, /Align_Left, title='Minimum Directional Derivative (MDD) and Spatio-Temporal Difference (STD)', YPad=1,event_pro='spd_ui_mdd_event')
     gui_ID=tlb

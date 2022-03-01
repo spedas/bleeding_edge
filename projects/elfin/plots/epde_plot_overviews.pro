@@ -478,7 +478,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           'el'+probe+'_pef_pa_spec2plot_ch[0,1]LC', $
           'el'+probe+'_pef_pa_spec2plot_ch[2,3]LC', $
           'el'+probe+'_bt89_sm_NEDT'], $
-           var_label='el'+probe+'_'+['LAT','MLT','L_dip','MLT_igrf','L_igrf']
+           var_label=varstring     ;'el'+probe+'_'+['LAT','MLT','L_dip','MLT_igrf','L_igrf']
       endif else begin
         tplot,['proxy_ae', $
           'fgm_survey_bar', $
@@ -739,7 +739,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     options,'el?_p?f_en*spec2plot_para','ztitle',''
     options,'el?_p?f_en*spec2plot_para','ztitle','nflux'
     options, 'antilossconedeg', 'linestyle', 2
-    
+
     if tdur Lt 194. then version=6 else version=7
     tplot_options, version=version   ;6
     tplot_options, 'ygap',0
