@@ -1061,12 +1061,26 @@ pro spd_ui_mdd_std, gui_ID=gui_id, $
   ;load bitmap resources
   getresourcepath,rpath
 
-  scroll_sizes=spd_get_scroll_sizes()
+  spd_get_scroll_sizes,xfrac=0.65, yfrac=0.8, scroll_needed = scroll_needed, x_scroll_size=x_scroll_size, y_scroll_size=y_scroll_size
+  ; This is a large panel, force scrolling on
+  scroll_needed=1
   if keyword_set(gui_ID) then begin
-    tlb = Widget_Base(/col, /Align_Top, /Align_Left, title='Minimum Directional Derivative (MDD) and Spatio-Temporal Difference (STD)', group_leader= gui_id, /floating, $
-      /scroll,x_scroll_size=scroll_sizes[0],y_scroll_size=scroll_sizes[1], YPad=1, /tlb_kill_request_events, event_pro='spd_ui_mdd_event')
+      if (scroll_needed) then begin
+        tlb = Widget_Base(/col, /Align_Top, /Align_Left, title='Minimum Directional Derivative (MDD) and Spatio-Temporal Difference (STD)', group_leader= gui_id, /floating, $
+          /scroll,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size, YPad=1, /tlb_kill_request_events, event_pro='spd_ui_mdd_event')
+      endif else begin
+        tlb = Widget_Base(/col, /Align_Top, /Align_Left, title='Minimum Directional Derivative (MDD) and Spatio-Temporal Difference (STD)', group_leader= gui_id, /floating, $
+           YPad=1, /tlb_kill_request_events, event_pro='spd_ui_mdd_event')
+      endelse
   endif else begin
-    tlb = Widget_Base(/col, /Align_Top, /Align_Left, title='Minimum Directional Derivative (MDD) and Spatio-Temporal Difference (STD)', YPad=1,event_pro='spd_ui_mdd_event')
+    if (scroll_needed) then begin
+      tlb = Widget_Base(/col, /Align_Top, /Align_Left, title='Minimum Directional Derivative (MDD) and Spatio-Temporal Difference (STD)', /floating, $
+        /scroll,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size, YPad=1, /tlb_kill_request_events, event_pro='spd_ui_mdd_event')
+    endif else begin
+      tlb = Widget_Base(/col, /Align_Top, /Align_Left, title='Minimum Directional Derivative (MDD) and Spatio-Temporal Difference (STD)', /floating, $
+        YPad=1, /tlb_kill_request_events, event_pro='spd_ui_mdd_event')
+    endelse
+
     gui_ID=tlb
   endelse
 

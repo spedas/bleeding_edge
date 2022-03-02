@@ -27,8 +27,8 @@
 ;  
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2021-12-08 20:16:43 -0800 (Wed, 08 Dec 2021) $
-;$LastChangedRevision: 30455 $
+;$LastChangedDate: 2022-03-01 16:32:46 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30638 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spedas_plugin/load_data/thm_ui_load_data_file.pro $
 ;
 ;-
@@ -311,14 +311,14 @@ pro thm_ui_load_data_file, tab_id, loadedData, historyWin, statusText, $
   
   observLabel = Widget_Label(o1ListBase, Value=observ_label, /align_left)
   observList = Widget_List(o1ListBase, Value=*validobserv, uval='OBSERV_LIST', $
-                         /Multiple, scr_xsize=100, scr_ysize=185)
+                         /Multiple, xsize=25, ysize=16,/align_left)
   
   level1Label = Widget_Label(level1Base, Value='Level 1:', /align_left, uname="level1Label")
-  level1List = Widget_List(level1Base, Value=*dlist1, scr_xsize=120, /Multiple, scr_ysize=185, $
+  level1List = Widget_List(level1Base, Value=*dlist1, /Multiple, xsize=27,ysize=16, $
                            Uvalue='LEVEL1')
   
   level2Label = Widget_Label(level2Base, Value='Level 2:', /align_left)
-  level2List = Widget_List(level2Base, Value=*dlist2, /Multiple, scr_xsize=120, scr_ysize=185, $
+  level2List = Widget_List(level2Base, Value=*dlist2, /Multiple, xsize=24,ysize=16, $
                            Uvalue='LEVEL2')
                            
   validCoords = [ 'GSM','GSE', 'GEI', 'GEO', 'SM', 'DSL', 'SPG', 'SSL']

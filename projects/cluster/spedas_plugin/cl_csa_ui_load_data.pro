@@ -310,7 +310,7 @@ pro cl_csa_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRa
     /multiple,$
     uname='probelist',$
     uvalue='PROBELIST',$
-    xsize=16,$
+    xsize=4,$
     ysize=15)
   widget_control, probeList, set_list_select=0
  
@@ -321,7 +321,7 @@ pro cl_csa_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRa
     /multiple,$
     uname='datatypelist',$
     uvalue='DATATYPELIST',$
-    xsize=40,$
+    xsize=45,$
     ysize=15)
   widget_control, datatypeList, set_list_select=0
 

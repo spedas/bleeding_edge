@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2022
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2022-02-25 16:06:20 -0800 (Fri, 25 Feb 2022) $
-; $LastChangedRevision: 30622 $
+; $LastChangedDate: 2022-03-01 14:41:22 -0800 (Tue, 01 Mar 2022) $
+; $LastChangedRevision: 30637 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -661,9 +661,13 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
 
           options, aeb_tnames[i], 'ytitle', ytitle.Replace('_','!C')
 
-          options, aeb_tnames[i], 'tplot_routine', 'psp_fld_aeb_mplot'
-
           options, aeb_tnames[i], 'datagap', 7200d
+
+          if strmatch(aeb_tnames[i], '*TEMP') EQ 0 then begin
+
+            options, aeb_tnames[i], 'tplot_routine', 'psp_fld_aeb_mplot'
+
+          endif
 
         endfor
 

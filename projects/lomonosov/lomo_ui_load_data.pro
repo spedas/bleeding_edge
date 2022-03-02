@@ -346,7 +346,7 @@ pro lomo_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRang
     /multiple,$
     uname='typelist',$
     uvalue='TYPELIST',$
-    xsize=16,$
+    xsize=25,$
     ysize=15)
 
   clearBase = widget_base(selectionBase,/row, /align_center)

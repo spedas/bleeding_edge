@@ -8,9 +8,9 @@
 ; displayed.
 ;HISTORY:
 ; Hacked from api_examples version, jmm, 2014-12-01, jimm@ssl.berkeley.edu 
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2016-01-11 11:54:21 -0800 (Mon, 11 Jan 2016) $
-;$LastChangedRevision: 19709 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-03-01 13:51:02 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30635 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/spedas_plugin/mvn_spd_fileconfig.pro $
 ;--------------------------------------------------------------------------------
 
@@ -192,9 +192,9 @@ PRO mvn_spd_fileconfig, tab_id, historyWin, statusBar
 ;Next radio buttions
   nd_base = widget_base(configbase, /row, /align_left)
   nd_labelbase = widget_base(nd_base,/col,/align_center)
-  nd_label = widget_label(nd_labelbase, value='Download Data:',/align_left, xsize=95)
+  nd_label = widget_label(nd_labelbase, value='Download Data:',/align_left)
   nd_buttonbase = widget_base(nd_base, /exclusive, column=2, uval="ND",/align_center)
-  nd_on_button = widget_button(nd_buttonbase, value='Automatically    ', uval='NDON',/align_left,xsize=120)
+  nd_on_button = widget_button(nd_buttonbase, value='Automatically    ', uval='NDON',/align_left)
   nd_off_button = widget_button(nd_buttonbase, value='Use Local Data Only', uval='NDOFF',/align_left)
 
   v_base = widget_base(configbase, /row, ypad=7)

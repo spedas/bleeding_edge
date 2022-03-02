@@ -8,9 +8,9 @@
 ; 
 ;HISTORY:
 
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2015-06-19 18:59:28 -0700 (Fri, 19 Jun 2015) $
-;$LastChangedRevision: 17927 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-03-01 13:51:02 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30635 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/barrel/spedas_plugin/barrel_fileconfig.pro $
 ;--------------------------------------------------------------------------------
 
@@ -228,25 +228,25 @@ PRO barrel_fileconfig, tab_id, historyWin, statusBar
 ;Next radio buttions
   nd_base = widget_base(configbase, /row, /align_left)
   nd_labelbase = widget_base(nd_base,/col,/align_center)
-  nd_label = widget_label(nd_labelbase, value='Download Data:',/align_left, xsize=95)
+  nd_label = widget_label(nd_labelbase, value='Download Data:',/align_left)
   nd_buttonbase = widget_base(nd_base, /exclusive, column=2, uval="ND",/align_center)
-  nd_on_button = widget_button(nd_buttonbase, value='Automatically    ', uval='NDON',/align_left,xsize=120)
+  nd_on_button = widget_button(nd_buttonbase, value='Automatically    ', uval='NDON',/align_left)
   nd_off_button = widget_button(nd_buttonbase, value='Use Local Data Only', uval='NDOFF',/align_left)
 
   nubase = widget_base(configbase, /row, /align_left)
   nu_labelbase = widget_base(nubase,/col,/align_center)
-  nu_label = widget_label(nu_labelbase, value='Update Files:',/align_left, xsize=95)
+  nu_label = widget_label(nu_labelbase, value='Update Files:',/align_left)
   nu_buttonbase = widget_base(nubase, /exclusive, column=2, uval="NU",/align_center)
-  nu_on_button = widget_button(nu_buttonbase, value='Update if Newer  ', uval='NUON',/align_left,xsize=120)
+  nu_on_button = widget_button(nu_buttonbase, value='Update if Newer  ', uval='NUON',/align_left)
   nu_off_button = widget_button(nu_buttonbase, value='Use Local Data Only', uval='NUOFF',/align_left)
 
   ;downloadonly option
   do_base = widget_base(configbase, /row, /align_left)
   do_labelbase = widget_base(do_base, /col, /align_center)
-  do_label = widget_label(do_labelbase, value='Load into GUI:', /align_left, xsize=95)
+  do_label = widget_label(do_labelbase, value='Load into GUI:', /align_left)
   do_buttonbase = widget_base(do_base, /exclusive, column=2, uval='DO',/align_center)
-  do_off_button = widget_button(do_buttonbase, value='Load data', uval='DOOFF', /align_left, xsize=120)
-  do_on_button = widget_button(do_buttonbase, value='Download Files Only', uval='DOON', /align_left, xsize=120)
+  do_off_button = widget_button(do_buttonbase, value='Load data', uval='DOOFF', /align_left)
+  do_on_button = widget_button(do_buttonbase, value='Download Files Only', uval='DOON', /align_left)
 
 ;Verbosity
   v_base = widget_base(configbase, /row, ypad=7)

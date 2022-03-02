@@ -35,8 +35,8 @@
 ; MODIFICATION HISTORY:
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-02-28 10:58:34 -0800 (Mon, 28 Feb 2022) $
-;$LastChangedRevision: 30628 $
+;$LastChangedDate: 2022-03-01 11:44:06 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30633 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_spdfcdawebchooser.pro $
 ;-
 
@@ -694,18 +694,26 @@ pro spd_ui_spdfcdawebchooser, historyWin=historyWin, GROUP_LEADER = groupLeaderW
   
   if ~keyword_set(!spedas) then spedas_init
   localdir = !spedas.TEMP_CDF_DIR
-    
-  if keyword_set(groupLeaderWidgetId) then begin
-  
-  scroll_sizes=spd_get_scroll_sizes()
-    tlb = widget_base(title='CDAWeb Data Chooser', /column, $
-      GROUP_LEADER=groupLeaderWidgetId, /scroll,x_scroll_size=scroll_sizes[0]*0.8,y_scroll_size=scroll_sizes[1],  /TLB_KILL_REQUEST_EVENTS, tab_mode=1, TLB_Size_Events=1)
-    ;defaultSaveCdfOption = 1
+  spd_get_scroll_sizes,xfrac=0.6, yfrac=0.75,scroll_needed=scroll_needed,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size
+   
+  if keyword_set(groupLeaderWidgetId) then begin 
+    if (scroll_needed) then begin
+       tlb = widget_base(title='CDAWeb Data Chooser', /column, $
+         GROUP_LEADER=groupLeaderWidgetId, /scroll,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size,  /TLB_KILL_REQUEST_EVENTS, tab_mode=1, TLB_Size_Events=1)
+    endif else begin
+       tlb = widget_base(title='CDAWeb Data Chooser', /column, $
+          GROUP_LEADER=groupLeaderWidgetId,/TLB_KILL_REQUEST_EVENTS, tab_mode=1, TLB_Size_Events=1)
+    endelse
   endif else begin
-  
-    tlb = widget_base(title='CDAWeb Data Chooser', /column, TLB_Size_Events=1)
-    ;defaultSaveCdfOption = 0
-  endelse
+    if (scroll_needed) then begin
+      tlb = widget_base(title='CDAWeb Data Chooser', /column, $
+        /scroll,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size,  /TLB_KILL_REQUEST_EVENTS, tab_mode=1, TLB_Size_Events=1)
+    endif else begin
+      tlb = widget_base(title='CDAWeb Data Chooser', /column, $
+        /TLB_KILL_REQUEST_EVENTS, tab_mode=1, TLB_Size_Events=1)
+     endelse
+ 
+   endelse
   
   defaultSaveCdfOption = 0
   cdas = $

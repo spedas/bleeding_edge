@@ -9,9 +9,9 @@
 ; 
 ;HISTORY:
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-11-28 10:09:57 -0800 (Tue, 28 Nov 2017) $
-;$LastChangedRevision: 24353 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-03-01 13:51:02 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30635 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/gui/mms_ui_fileconfig.pro $
 ;--------------------------------------------------------------------------------
 
@@ -211,22 +211,22 @@ PRO mms_ui_fileconfig, tab_id, historyWin, statusBar
     mms_data_dir_sen = 1
   endelse
   mdir_base = widget_base(configbase, /row, /align_left, ypad=5)
-  mdir_label = widget_label(mdir_base, value='MMS_DATA_DIR:', /align_left, xsize=95, SENSITIVE=mms_data_dir_sen)
+  mdir_label = widget_label(mdir_base, value='MMS_DATA_DIR:', /align_left, SENSITIVE=mms_data_dir_sen)
   mdir_value_label = widget_label(mdir_base, value=mms_data_dir_lbl, /align_left, SENSITIVE=mms_data_dir_sen)
 
 ;Next radio buttions
   nd_base = widget_base(configbase, /row, /align_left)
   nd_labelbase = widget_base(nd_base,/col,/align_center)
-  nd_label = widget_label(nd_labelbase, value='Download Data:',/align_left, xsize=95)
+  nd_label = widget_label(nd_labelbase, value='Download Data:',/align_left)
   nd_buttonbase = widget_base(nd_base, /exclusive, column=2, uval="ND",/align_center)
-  nd_on_button = widget_button(nd_buttonbase, value='Automatically    ', uval='NDON',/align_left,xsize=120)
+  nd_on_button = widget_button(nd_buttonbase, value='Automatically    ', uval='NDON',/align_left)
   nd_off_button = widget_button(nd_buttonbase, value='Use Local Data Only', uval='NDOFF',/align_left)
 
   nubase = widget_base(configbase, /row, /align_left)
   nu_labelbase = widget_base(nubase,/col,/align_center)
-  nu_label = widget_label(nu_labelbase, value='Update Files:',/align_left, xsize=95)
+  nu_label = widget_label(nu_labelbase, value='Update Files:',/align_left)
   nu_buttonbase = widget_base(nubase, /exclusive, column=2, uval="NU",/align_center)
-  nu_on_button = widget_button(nu_buttonbase, value='Update if Newer  ', uval='NUON',/align_left,xsize=120)
+  nu_on_button = widget_button(nu_buttonbase, value='Update if Newer  ', uval='NUON',/align_left)
   nu_off_button = widget_button(nu_buttonbase, value='Use Local Data Only', uval='NUOFF',/align_left)
 
   v_base = widget_base(configbase, /row, ypad=7)

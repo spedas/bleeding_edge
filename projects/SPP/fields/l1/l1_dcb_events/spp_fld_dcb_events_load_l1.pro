@@ -125,6 +125,17 @@ pro spp_fld_dcb_events_load_l1, file, prefix = prefix, varformat = varformat
 
   rts_names = ['', '_BIAS_SWEEP','_MAG_CAL','_SCM_CAL']
   rts_values = [-1,21,15,17]
+  
+  ;
+  ; Pre-Encounter 3, the bias sweep RTS was 19, not 21.
+  ; 
+  ; Note: if this routine is used to load DCB events for a time span covering
+  ; both pre-Encounter 3 and post-Encounter 3 bias sweep times, the
+  ; TPLOT items created will *not* include the pre-Encounter 3 sweeps.
+  ;
+  
+  if max(d_met.y) LT 303673800 then rts_values = [-1,19,15,17]
+
 
   rts_stats = prefix + ['RTSLMTERR','RTSENAERR','RTSBSYERR','RTSSTARTED']
   rts_codes = [0xC9,0xCA,0xCB,0xCC]

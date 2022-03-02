@@ -24,8 +24,8 @@
 ;HISTORY:
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2019-09-18 16:34:21 -0700 (Wed, 18 Sep 2019) $
-;$LastChangedRevision: 27784 $
+;$LastChangedDate: 2022-03-01 10:52:48 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30631 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/spd_gui.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -1411,8 +1411,16 @@ PRO spd_gui,reset=reset,template_filename=template_filename
 
   ; top level and main bases
   gui_title = 'Space Physics Environment Data Analysis Software (SPEDAS)'
-  master = Widget_Base(Title=gui_title, MBar=bar, /TLB_Kill_Request_Events, $
-                     /Col, XPad=10, /Kbrd_Focus_Events,tlb_size_events=1, _extra=_extra, TAB_MODE=1)
+  spd_get_scroll_sizes,xfrac=0.8, yfrac=0.8, scroll_needed = scroll_needed, x_scroll_size=x_scroll_size, y_scroll_size=y_scroll_size
+  
+  if scroll_needed then begin
+    master = Widget_Base(Title=gui_title, MBar=bar, /TLB_Kill_Request_Events, $
+                     /scroll,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size,/Col, XPad=10, /Kbrd_Focus_Events,tlb_size_events=1, _extra=_extra, TAB_MODE=1)
+  endif else begin
+    master = Widget_Base(Title=gui_title, MBar=bar, /TLB_Kill_Request_Events, $
+      /Col, XPad=10, /Kbrd_Focus_Events,tlb_size_events=1, _extra=_extra, TAB_MODE=1)
+    
+  endelse
   toolBarBase = Widget_Base(master, /Row)
   scrollbase = widget_base(master, /row, xpad=0, ypad=0, space=0)
   pathBase = Widget_Base(master, /Col, /Align_Left)
@@ -1837,7 +1845,7 @@ PRO spd_gui,reset=reset,template_filename=template_filename
 
   ; Create Status Bar Object
 
-  statusBar = Obj_New('SPD_UI_MESSAGE_BAR', statusBase, XSize=charSize, YSize=1)
+  statusBar = Obj_New('SPD_UI_MESSAGE_BAR', statusBase, XSize=100, YSize=1)
 
   ; And FINALLY Create the Position Area
 

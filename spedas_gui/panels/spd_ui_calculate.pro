@@ -16,8 +16,8 @@
 ;
 ;HISTORY:
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
-;$LastChangedRevision: 30623 $
+;$LastChangedDate: 2022-03-01 11:44:06 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30633 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_calculate.pro $
 ;
 ;---------------------------------------------------------------------------------
@@ -599,10 +599,16 @@ Pro spd_ui_calculate, gui_id,loadedData,settings,historywin,treeCopyPtr,call_seq
     spd_gui_error, gui_id, historywin
     RETURN
   ENDIF
-  tlb_statusBar->update,'Calculate Widget opened'   
-  tlb = Widget_Base(/col, Title='Calculate', Group_Leader=gui_id, $
-    /Modal, /Floating,/tlb_kill_request_events, xpad=3)
-
+  tlb_statusBar->update,'Calculate Widget opened' 
+  spd_get_scroll_sizes,xfrac=0.85,yfrac=0.8,scroll_needed=scroll_needed,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size
+  if (scroll_needed) then begin
+    tlb = Widget_Base(/col, Title='Calculate', Group_Leader=gui_id, $
+      /scroll,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size, /Floating,/tlb_kill_request_events, xpad=3)   
+  endif else begin
+    tlb = Widget_Base(/col, Title='Calculate', Group_Leader=gui_id, $
+      /Floating,/tlb_kill_request_events, xpad=3)  
+  endelse
+    
   mainBase =  widget_base(tlb,/row,/base_align_left, frame=3)
   buttonBase = widget_base(tlb,/row,/align_center)
   statusBase = widget_base(tlb,/row,/align_center)

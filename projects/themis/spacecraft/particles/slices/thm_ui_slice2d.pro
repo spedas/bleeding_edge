@@ -1755,8 +1755,8 @@ end ;----------------------------------------------------
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-02-24 15:51:22 -0800 (Thu, 24 Feb 2022) $
-;$LastChangedRevision: 30614 $
+;$LastChangedDate: 2022-03-01 11:44:06 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30633 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/slices/thm_ui_slice2d.pro $
 ;
 ;-
@@ -1768,13 +1768,23 @@ pro thm_ui_slice2d, gui_ID=gui_id, $
     compile_opt idl2
 
   tlb_title = 'Particle Distribution Slices v4.5'
-
+spd_get_scroll_sizes,xfrac=0.4,yfrac=0.75,scroll_needed=scroll_needed,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size
 if keyword_set(gui_ID) then begin
-  tlb = widget_base(title = tlb_title, /col, /base_align_center, $ 
-                    group_leader=gui_id, /scroll,x_scroll_size=500,y_scroll_size=700,/tlb_kill_request_events, tab_mode=1)
+  if (scroll_needed) then begin
+    tlb = widget_base(title = tlb_title, /col, /base_align_center, $
+      group_leader=gui_id, /scroll,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size,/tlb_kill_request_events, tab_mode=1)   
+  endif else begin
+    tlb = widget_base(title = tlb_title, /col, /base_align_center, $
+      group_leader=gui_id,/tlb_kill_request_events, tab_mode=1)  
+  endelse
 endif else begin
-  tlb = widget_base(title = tlb_title, /col, /base_align_center, $ 
-                    /tlb_kill_request_events, tab_mode=1)
+  if (scroll_needed) then begin
+    tlb = widget_base(title = tlb_title, /col, /base_align_center, $
+      /scroll,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size,/tlb_kill_request_events, tab_mode=1)
+  endif else begin
+    tlb = widget_base(title = tlb_title, /col, /base_align_center, $
+      /tlb_kill_request_events, tab_mode=1)
+  endelse
   gui_ID=tlb
 endelse
 

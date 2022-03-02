@@ -423,7 +423,7 @@ pro elf_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRange
     /multiple,$
     uname='probelist',$
     uvalue='PROBELIST',$
-    xsize=16,$
+    xsize=4,$
     ysize=15)
   widget_control, probeList, set_list_select=0
  
@@ -488,7 +488,7 @@ pro elf_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRange
      /multiple,$
      uname='typelist',$
      uvalue='TYPELIST',$
-     xsize=16,$
+     xsize=20,$
      ysize=15)
   widget_control, typeList, set_list_select = 0
   

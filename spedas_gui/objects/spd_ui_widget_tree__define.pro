@@ -91,9 +91,9 @@
 ;
 ;
 ;HISTORY:
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2015-08-18 12:18:04 -0700 (Tue, 18 Aug 2015) $
-;$LastChangedRevision: 18516 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-03-01 17:19:50 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30639 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/objects/spd_ui_widget_tree__define.pro $
 ;
 ;--------------------------------------------------------------------------------
@@ -1475,13 +1475,21 @@ function spd_ui_widget_tree::init,$
     showdatetime = 0
   endif
 
+  ; Calculate a scale factor to accomodate high-DPI displays
+  dim=get_screen_size(res=res)
+  dpi=2.54/res[0]
+  if (dpi gt 120) then begin
+    dpi_scale=dpi/96.0
+  endif else begin
+    dpi_scale=1.0
+  endelse
   self.context_width = 40
   self.parent = parentid
   self.uvalue = uvalue
   self.ld = loadedData
   self.uname = uname
-  self.xsize = xsize
-  self.ysize = ysize
+  self.xsize = xsize*dpi_scale
+  self.ysize = ysize*dpi_scale
   self.mode = mode
   self.multi = multi
   self.leafonly = leafonly

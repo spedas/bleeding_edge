@@ -7,9 +7,9 @@
 ;
 ;
 ;HISTORY:
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2016-01-22 10:16:32 -0800 (Fri, 22 Jan 2016) $
-;$LastChangedRevision: 19789 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-03-01 16:32:46 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30638 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/spedas_plugin/mvn_spd_load_data.pro $
 ;
 ;--------------------------------------------------------------------------------
@@ -251,7 +251,7 @@ pro mvn_spd_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRang
                           value=*(*paramarray[0])[0],$
                           /multiple,$
                           uname='paramlist',$
-                          xsize=24,$
+                          xsize=35,$
                           ysize=15)
                          
   clearTypeButton = widget_button(paramBase,value='Clear Parameter',uvalue='CLEARPARAM',$

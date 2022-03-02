@@ -17,8 +17,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-02-28 10:58:34 -0800 (Mon, 28 Feb 2022) $
-;$LastChangedRevision: 30628 $
+;$LastChangedDate: 2022-03-01 11:44:06 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30633 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_layout_options/spd_ui_layout_options.pro $
 ;--------------------------------------------------------------------------------
 
@@ -2550,10 +2550,14 @@ PRO spd_ui_layout_options, info
     RETURN
   ENDIF
    
-  scroll_sizes=spd_get_scroll_sizes() 
-  tlb = Widget_Base(/Col, Title='Plot/Layout Options', Group_Leader=info.master, $
-                    /scroll,x_scroll_size=scroll_sizes[0],y_scroll_size=scroll_sizes[1], /Floating, /tlb_kill_request_events, tab_mode=1) 
-
+  spd_get_scroll_sizes,xfrac=0.80,yfrac=0.80,scroll_needed=scroll_needed,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size
+  if (scroll_needed) then begin
+     tlb = Widget_Base(/Col, Title='Plot/Layout Options', Group_Leader=info.master, $
+                    /scroll,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size, /Floating, /tlb_kill_request_events, tab_mode=1) 
+  endif else begin
+    tlb = Widget_Base(/Col, Title='Plot/Layout Options', Group_Leader=info.master, $
+       /Floating, /tlb_kill_request_events, tab_mode=1)   
+  endelse
   toprowBase = Widget_Base(tlb, /Row, /Align_Left, space=200)
     traceBase = Widget_Base(toprowBase, /Row, /NonExclusive, /Align_Left)
     titleBase = Widget_Base(toprowBase, /Row, /Align_Center)

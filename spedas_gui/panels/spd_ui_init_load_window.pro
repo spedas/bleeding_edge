@@ -26,8 +26,8 @@
 ; 
 ;HISTORY:
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-02-28 10:58:34 -0800 (Mon, 28 Feb 2022) $
-;$LastChangedRevision: 30628 $
+;$LastChangedDate: 2022-03-01 11:44:06 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30633 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_init_load_window.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -256,10 +256,17 @@ pro spd_ui_init_load_window, gui_id, windowStorage, loadedData, historyWin, $
 
   compile_opt idl2, hidden
   
-  scroll_sizes=spd_get_scroll_sizes()
-  
+  spd_get_scroll_sizes,xfrac=0.8, yfrac=0.8, scroll_needed = scroll_needed, x_scroll_size=x_scroll_size, y_scroll_size=y_scroll_size
+ 
+  if (scroll_needed) then begin
+    tlb = widget_base(/Col, Title = "Load Data", Group_Leader = gui_id, $
+      x_scroll_size=x_scroll_size, y_scroll_size=y_scroll_size,/scroll, /Floating, /TLB_KILL_REQUEST_EVENTS)
+   
+  endif else begin
   tlb = widget_base(/Col, Title = "Load Data", Group_Leader = gui_id, $
-                    x_scroll_size=scroll_sizes[0], y_scroll_size=scroll_sizes[1],/scroll, /Floating, /TLB_KILL_REQUEST_EVENTS)
+                /Floating, /TLB_KILL_REQUEST_EVENTS)
+  endelse
+  
   tabBase = widget_tab(tlb, location=0, multiline=10)
 
   tabNum = n_elements(loadDataTabs)

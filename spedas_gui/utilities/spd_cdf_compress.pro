@@ -29,9 +29,9 @@
 ;  spd_cdf_compress, 'c:\temp\in.cdf', file_out='c:\temp\out.cdf', cdfconvert='C:\CDF_Distribution\cdf36_3-dist\bin\cdfconvert.exe', replace=1, $
 ;         cdf_tmp_dir='c:\temp\', cdf_compress_error=cdf_compress_error
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2017-07-13 10:45:04 -0700 (Thu, 13 Jul 2017) $
-;$LastChangedRevision: 23605 $
+;$LastChangedBy: jimm $
+;$LastChangedDate: 2022-03-01 12:52:56 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30634 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/utilities/spd_cdf_compress.pro $
 ;
 ;-
@@ -99,7 +99,7 @@ pro spd_cdf_compress, file_in, file_out=file_out, replace=replace, cdfconvert=cd
     return
   endif
 
-  if ~keyword_set(cdfconvert) then cdfconvert='/usr/local/pkg/cdf-3.6.3_CentOS-6.8/bin/cdfconvert*'
+  if ~keyword_set(cdfconvert) then cdfconvert='/disks/socware/thmsoc_dp_current/cdf_linux_latest/cdfconvert*'
   if ~keyword_set(cdfparams) then cdfparams='-delete -blockingfactor optimal -compressnonepoch -compression "cdf:none"'
 
   if ~file_test(cdfconvert, /regular) then begin

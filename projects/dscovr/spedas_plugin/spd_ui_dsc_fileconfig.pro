@@ -9,9 +9,9 @@
 ; 
 ;CREATED BY: Ayris Narock (ADNET/GSFC) 2017
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2018-03-12 09:55:28 -0700 (Mon, 12 Mar 2018) $
-; $LastChangedRevision: 24869 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2022-03-01 13:51:02 -0800 (Tue, 01 Mar 2022) $
+; $LastChangedRevision: 30635 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/dscovr/spedas_plugin/spd_ui_dsc_fileconfig.pro $
 ;--------------------------------------------------------------------------------
 
@@ -273,16 +273,16 @@ PRO spd_ui_dsc_fileconfig, tab_id, historyWin, statusBar
 ;Next radio buttions
 	nd_base = widget_base(configbase, /row, /align_left)
 	nd_labelbase = widget_base(nd_base,/col,/align_center)
-	nd_label = widget_label(nd_labelbase, value='Download Data:',/align_left, xsize=95)
+	nd_label = widget_label(nd_labelbase, value='Download Data:',/align_left)
 	nd_buttonbase = widget_base(nd_base, /exclusive, column=2, uval="ND",/align_center)
-	nd_on_button = widget_button(nd_buttonbase, value='Automatically    ', uval='NDON',/align_left,xsize=120)
+	nd_on_button = widget_button(nd_buttonbase, value='Automatically    ', uval='NDON',/align_left)
 	nd_off_button = widget_button(nd_buttonbase, value='Use Local Data Only', uval='NDOFF',/align_left)
 
 	nubase = widget_base(configbase, /row, /align_left)
 	nu_labelbase = widget_base(nubase,/col,/align_center)
-	nu_label = widget_label(nu_labelbase, value='Update Files:',/align_left, xsize=95)
+	nu_label = widget_label(nu_labelbase, value='Update Files:',/align_left)
 	nu_buttonbase = widget_base(nubase, /exclusive, column=2, uval="NU",/align_center)
-	nu_on_button = widget_button(nu_buttonbase, value='Update if Newer  ', uval='NUON',/align_left,xsize=120)
+	nu_on_button = widget_button(nu_buttonbase, value='Update if Newer  ', uval='NUON',/align_left)
 	nu_off_button = widget_button(nu_buttonbase, value='Use Local Data Only', uval='NUOFF',/align_left)
 
 	v_base = widget_base(configbase, /row, ypad=7)
@@ -292,7 +292,7 @@ PRO spd_ui_dsc_fileconfig, tab_id, historyWin, statusBar
 								+'     1 = Errors and Warnings'+String(13B) $
 								+'     2 = Informative'+String(13B) $
 								+'     4 = Debug'
-	v_label = widget_label(v_base, value=v_label_text,ysize=100,xsize=200)
+	v_label = widget_label(v_base, value=v_label_text,ysize=100)
 	v_droplist = widget_Combobox(v_base, value=v_values, uval='VERBOSE', /align_top)
 
 	; buttons to save or reset the widget values

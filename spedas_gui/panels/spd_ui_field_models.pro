@@ -9,8 +9,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-02-28 10:58:34 -0800 (Mon, 28 Feb 2022) $
-;$LastChangedRevision: 30628 $
+;$LastChangedDate: 2022-03-01 11:44:06 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30633 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_field_models.pro $
 ;-
 
@@ -940,9 +940,14 @@ pro spd_ui_field_models, info
     endif
 
     ; create the base widget for the field models panel
-    scroll_sizes=spd_get_scroll_sizes()
-    tlb = Widget_Base(/Col, Title='Magnetic Field Models', Group_Leader=info.master, $
-        /Floating, /tlb_kill_request_events, tab_mode = 1,/scroll,x_scroll_size=scroll_sizes[0]*0.4,y_scroll_size=scroll_sizes[1])
+    spd_get_scroll_sizes,xfrac=0.35, yfrac=0.8,scroll_needed=scroll_needed,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size
+    if (scroll_needed) then begin
+       tlb = Widget_Base(/Col, Title='Magnetic Field Models', Group_Leader=info.master, $
+           /Floating, /tlb_kill_request_events, tab_mode = 1,/scroll,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size)
+    endif else begin
+       tlb = Widget_Base(/Col, Title='Magnetic Field Models', Group_Leader=info.master, $
+           /Floating, /tlb_kill_request_events, tab_mode = 1)
+    endelse
     mainBase = Widget_Base(tlb, /col)
     tabBase = Widget_Tab(tlb, location=0, multiline=10, uname='currenttab')
     bottomBase = Widget_Base(tlb, /col)

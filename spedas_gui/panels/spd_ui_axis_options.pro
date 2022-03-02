@@ -23,8 +23,8 @@
 ;If we could work out why the panel title combobox worked there it would be better to fix axis label title to match rather than truncating.
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-02-25 10:44:41 -0800 (Fri, 25 Feb 2022) $
-;$LastChangedRevision: 30619 $
+;$LastChangedDate: 2022-03-01 11:44:06 -0800 (Tue, 01 Mar 2022) $
+;$LastChangedRevision: 30633 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_axis_options.pro $
 ;
 ;---------------------------------------------------------------------------------
@@ -4309,7 +4309,7 @@ titleeditBase = widget_base(titlecolbase,/row, ypad=1,/base_align_center)
 titleeditbasecol1 = widget_base(titleeditBase, /col, /base_align_left);, space=20, ypad=6)
 titleeditbasecol2 = widget_base(titleeditbase, /col, /base_align_left);, space=12)
 titletextlabel = widget_label(titleeditbasecol1, value='Title:', /align_left)
-titletextfield = widget_text(titleeditBasecol2, value = '', /editable, /all_events, xsize=100, ysize=1, $
+titletextfield = widget_text(titleeditBasecol2, value = '', /editable, /all_events, xsize=50, ysize=1, $
   uval='TITLETEXTEDIT', uname='titletextedit')
 
 titlerow1base = widget_base(titlecolbase,/row, xpad=40,/base_align_center);, ypad=10)
@@ -4338,7 +4338,7 @@ subtitleeditBase = widget_base(titlecolbase,/row, ypad=1,/base_align_center)
 subtitleeditbasecol1 = widget_base(subtitleeditBase, /col, /base_align_left);, space=20, ypad=6)
 subtitleeditbasecol2 = widget_base(subtitleeditbase, /col, /base_align_left);, space=12)
 subtitletextlabel = widget_label(subtitleeditbasecol1, value='Subtitle:',/align_left)
-subtitletextfield = widget_text(subtitleeditbasecol2, value='',/editable, /all_events, xsize=100, ysize=1,$
+subtitletextfield = widget_text(subtitleeditbasecol2, value='',/editable, /all_events, xsize=50, ysize=1,$
   uval='SUBTITLETEXTEDIT',uname='subtitletextedit')
   
 subtitlerow1base = widget_base(titlecolbase,/row, xpad=40,/base_align_center);, ypad=10)
@@ -4419,7 +4419,7 @@ lt1Text = Widget_Combobox(labelSelectBase,Value = ' ', XSize=260, uval='LABELDRO
 
 ltexteditBase = widget_base(col1base, /row, xpad=0, /align_left, space=3)
 ltexteditlabel = widget_label(ltexteditBase,value='Edit/Add Label:')
-ltextedit = widget_text(ltexteditBase, value = '', /editable, /all_events, xsize=100, ysize=1, $
+ltextedit = widget_text(ltexteditBase, value = '', /editable, /all_events, xsize=40, ysize=1, $
   uval='LABELTEXTEDIT', uname='labeltextedit')
 
 ;uptoarrow = read_bmp(rpath + 'up_to_arrow.bmp', /rgb)
