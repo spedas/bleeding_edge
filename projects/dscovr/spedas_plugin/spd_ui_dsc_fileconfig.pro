@@ -10,8 +10,8 @@
 ;CREATED BY: Ayris Narock (ADNET/GSFC) 2017
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2022-03-01 13:51:02 -0800 (Tue, 01 Mar 2022) $
-; $LastChangedRevision: 30635 $
+; $LastChangedDate: 2022-03-01 19:31:19 -0800 (Tue, 01 Mar 2022) $
+; $LastChangedRevision: 30640 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/dscovr/spedas_plugin/spd_ui_dsc_fileconfig.pro $
 ;--------------------------------------------------------------------------------
 
@@ -287,13 +287,9 @@ PRO spd_ui_dsc_fileconfig, tab_id, historyWin, statusBar
 
 	v_base = widget_base(configbase, /row, ypad=7)
 	v_values = ['0','1','2','4']
-	v_label_text = '     Verbosity level:        '+String(13B) $
-								+'     0 = Serious Errors'+String(13B) $
-								+'     1 = Errors and Warnings'+String(13B) $
-								+'     2 = Informative'+String(13B) $
-								+'     4 = Debug'
-	v_label = widget_label(v_base, value=v_label_text,ysize=100)
-	v_droplist = widget_Combobox(v_base, value=v_values, uval='VERBOSE', /align_top)
+	v_label_text = 'Verbosity level (higher number = more output):        '
+	v_label = widget_label(v_base, value=v_label_text)
+	v_droplist = widget_Combobox(v_base, value=v_values, uval='VERBOSE')
 
 	; buttons to save or reset the widget values
 	savebut = widget_button(bmaster, value = '    Save to File     ', uvalue = 'SAVE')

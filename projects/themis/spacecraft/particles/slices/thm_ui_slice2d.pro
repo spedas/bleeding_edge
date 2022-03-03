@@ -1755,8 +1755,8 @@ end ;----------------------------------------------------
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-03-01 11:44:06 -0800 (Tue, 01 Mar 2022) $
-;$LastChangedRevision: 30633 $
+;$LastChangedDate: 2022-03-02 12:37:51 -0800 (Wed, 02 Mar 2022) $
+;$LastChangedRevision: 30641 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/slices/thm_ui_slice2d.pro $
 ;
 ;-
@@ -1772,18 +1772,18 @@ spd_get_scroll_sizes,xfrac=0.4,yfrac=0.75,scroll_needed=scroll_needed,x_scroll_s
 if keyword_set(gui_ID) then begin
   if (scroll_needed) then begin
     tlb = widget_base(title = tlb_title, /col, /base_align_center, $
-      group_leader=gui_id, /scroll,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size,/tlb_kill_request_events, tab_mode=1)   
+      /Floating,group_leader=gui_id, /scroll,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size,/tlb_kill_request_events, tab_mode=1)   
   endif else begin
     tlb = widget_base(title = tlb_title, /col, /base_align_center, $
-      group_leader=gui_id,/tlb_kill_request_events, tab_mode=1)  
+      /Floating, group_leader=gui_id,/tlb_kill_request_events, tab_mode=1)  
   endelse
 endif else begin
   if (scroll_needed) then begin
     tlb = widget_base(title = tlb_title, /col, /base_align_center, $
-      /scroll,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size,/tlb_kill_request_events, tab_mode=1)
+      /Floating, /scroll,x_scroll_size=x_scroll_size,y_scroll_size=y_scroll_size,/tlb_kill_request_events, tab_mode=1)
   endif else begin
     tlb = widget_base(title = tlb_title, /col, /base_align_center, $
-      /tlb_kill_request_events, tab_mode=1)
+      /Floating,/tlb_kill_request_events, tab_mode=1)
   endelse
   gui_ID=tlb
 endelse

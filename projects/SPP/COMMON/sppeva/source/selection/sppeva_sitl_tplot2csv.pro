@@ -84,5 +84,5 @@ PRO sppeva_sitl_tplot2csv, var, filename=filename, msg=msg, error=error, auto=au
   ; WRITE
   ;------------------------------------------
   write_csv, filename, time_string(s.START), time_string(s.STOP), strFOM, s.SOURCEID, $
-    strBLstart, strBLlen, s.DISCUSSION, header=header, table_header = table_header 
+    strBLstart, strBLlen, s.DISCUSSION + ' (' + string(strBLstart) + '-' + strcompress(/rem,string(long(strBLstart) + long(strBLlen))) +  ' ' + string(long(strBLlen) / 475d, format = '(F05.2)') + ' Gbit ' + string(long(strBLlen) * 1d9 / 475d / (3600d * 30d3), format = '(F6.2)') + ' hrs slow xfer)', header=header, table_header = table_header 
 END
