@@ -1,8 +1,7 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-01-21 13:49:47 -0800 (Fri, 21 Jan 2022) $
-; $LastChangedRevision: 30530 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2022-03-03 12:58:24 -0800 (Thu, 03 Mar 2022) $
+; $LastChangedRevision: 30647 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_nse_apdat__define.pro $
-
 
 
 function swfo_stis_nse_apdat::decom,ccsds,source_dict=source_dict      ;,header,ptp_header=ptp_header,apdat=apdat
@@ -15,12 +14,10 @@ function swfo_stis_nse_apdat::decom,ccsds,source_dict=source_dict      ;,header,
     hexprint,swfo_data_select(ccsds_data,80,8)
   endif
 
-
   flt=1.
   hs= 24
 
   nsedata = swap_endian( uint(ccsds_data,hs,60) ,/swap_if_little_endian)
-  
 
   ; if ptr_valid(self.last_data_p) && keyword_set(*self.last_data_p) then nse_diff2 = nsedata - *self.last_data_p else nse_diff2 = 0*nsedata
 
@@ -31,20 +28,14 @@ function swfo_stis_nse_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   lastdat = nsedata
 
   ;dprint,reform(nse_diff,10,6)
-  
-  noise_bits = swfo_data_select(ccsds_data,(22)*8, 16  ) 
 
-  str = {  $
-    time:ccsds.time,  $
-    met: ccsds.met,   $
-    seqn:    ccsds.seqn,$
-    pkt_size:    ccsds.pkt_size, $
-    noise_bits:  noise_bits, $
-    noise_period:  noise_bits and 255u,  $
-    noise_res:    ishft(noise_bits,-8) and 7u , $
+  str1=swfo_stis_ccsds_header_decom(ccsds)
+
+  str2 = {$
     nhist:   float(nse_diff) , $
-    gap:0b }
-  str.gap = ccsds.gap
+    gap:ccsds.gap}
+
+  str=create_struct(str1,str2)
 
   if debug(3) then begin
     printdat,str
@@ -72,7 +63,6 @@ pro swfo_stis_nse_apdat::handler2,strct,source_dict=source_dict
 end
 
 
-
 PRO swfo_stis_nse_apdat__define
 
   void = {swfo_stis_nse_apdat, $
@@ -83,5 +73,3 @@ PRO swfo_stis_nse_apdat__define
     flag: 0 $
   }
 END
-
-

@@ -1,28 +1,28 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-01-21 17:04:35 -0800 (Fri, 21 Jan 2022) $
-; $LastChangedRevision: 30531 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2022-03-03 12:58:24 -0800 (Thu, 03 Mar 2022) $
+; $LastChangedRevision: 30647 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_hkp_apdat__define.pro $
 
 
 
 function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,ptp_header=ptp_header,apdat=apdat
   ccsds_data = swfo_ccsds_data(ccsds)
-  
-  if 1 then begin
+  str1=swfo_stis_ccsds_header_decom(ccsds)
+
+  if 0 then begin
     last_time = systime(1)
     last_time = (*(self.last_ccsds_p)).time
     last_met  = (*(self.last_ccsds_p)).met
     ;printdat,self.last_ccsds_p
-    if 1 && (ccsds.MET eq last_met) then begin
-        dprint,'MET not incrementing: '+time_string(last_time),dwait=10
-        ccsds.time = last_time + 0.99      
-      ;  ccsds.time = systime(1)
+    if 0 && (ccsds.MET eq last_met) then begin
+      dprint,'MET not incrementing: '+time_string(last_time),dwait=10
+      ccsds.time = last_time + 0.99
+      ;ccsds.time = systime(1)
       ;hexprint,ccsds_data
     endif
   endif
-  
-  
-  
+
+
   ;printdat,time_string(ccsds.time)
   ;printdat,ccsds
   if debug(3) && ccsds.apid eq 862 then begin
@@ -44,82 +44,135 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   ; MON_TEMP =   func((spp_swp_word_decom(b,20) and '3ff'x) *1., param = temp_par_10bit)
 
 
-
   flt=2.5/ 2.^15
 
   if 0 then begin
     adcs =  swfo_data_select(ccsds_data,(d+2*[1:8] )*8, 16 ,/signed) *flt
     if ccsds.apid and 1 then  print,adcs
   endif
-  
-  
+
+
   if ccsds.pkt_size eq 136 then begin
     dprint,dlevel=4,'hello'
     d= 24
-    str = {time:ccsds.time,  $
-      time_delta: ccsds.time_delta, $
-      apid: ccsds.apid,  $
-      met: ccsds.met,   $
-      seqn:    ccsds.seqn,$
-      day:       swfo_data_select(ccsds_data,(6)*8, 24  ) , $
-      millisec:  swfo_data_select(ccsds_data,(9)*8, 32  ) , $
-      microsec:  swfo_data_select(ccsds_data,(13)*8, 16  ) , $
-      revnum:    swfo_data_select(ccsds_data,(15)*8, 8  ) , $    ;  using spare
-      lcss:      swfo_data_select(ccsds_data,(16)*8, 4  ) , $
-      tres:         swfo_data_select(ccsds_data,(16)*8+4, 12  ) , $
-      mode_id2:     swfo_data_select(ccsds_data,(18)*8, 16  ) , $
-      pulser_bits:  swfo_data_select(ccsds_data,(20)*8, 8  ) , $
-      status_bits:  swfo_data_select(ccsds_data,(21)*8, 8  ) , $
-      noise_bits:  swfo_data_select(ccsds_data,(22)*8, 16  ) , $
-      revnum0:     swfo_data_select(ccsds_data,(d+2*0  )*8, 8  ) , $   
-      mapid:       swfo_data_select(ccsds_data,(d+2*0+1)*8, 8  ) , $
-      cmds_valid:        swfo_data_select(ccsds_data,(d+2*1  )*8, 8  ) , $
-      cmds_invalid:      swfo_data_select(ccsds_data,(d+2*1+1)*8, 8  ) , $
-      user_0e:     swfo_data_select(ccsds_data,(d+2*2)*8, 16 ) , $
-      user_09:     swfo_data_select(ccsds_data,(d+2*3)*8, 16 ) , $
-      mem_addr:    swfo_data_select(ccsds_data,(d+2*4)*8, 16 ) , $
-      sect_cnt:    swfo_data_select(ccsds_data,(d+2*5)*8, 16) , $
-      event_cntr:  swfo_data_select(ccsds_data,(d+2*6)*8, 16) , $
-      rates_cntr:  swfo_data_select(ccsds_data,(d+[7:12]*2)*8, 16) , $
-      bus_timeout_cntr: swfo_data_select(ccsds_data,(d+13*2)*8+4*[0:3], 4) , $
-      det_timeout_cntr: swfo_data_select(ccsds_data,(d+14*2  )*8        , 8) , $
-      noPeak_cntr:      swfo_data_select(ccsds_data,(d+14*2+1)*8 , 8) , $
-      cmds_ignored:  swfo_data_select(ccsds_data,(d+15*2)*8 , 8) , $
-      cmds_unknown:  swfo_data_select(ccsds_data,(d+15*2+1)*8 , 8) , $
-      spare_00:     swfo_data_select(ccsds_data,(d+16*2)*8 , 2) , $
-      board_id:     swfo_data_select(ccsds_data,(d+16*2)*8+2 , 2) , $
-      pulses_remaining:     swfo_data_select(ccsds_data,(d+16*2)*8+4 , 12) , $
-      errors_double_A:     swfo_data_select(ccsds_data,(d+17*2)*8 , 8) , $
-      errors_single_A:     swfo_data_select(ccsds_data,(d+17*2+1)*8 , 8) , $
-      errors_double_b:     swfo_data_select(ccsds_data,(d+18*2)*8 , 8) , $
-      errors_single_b:     swfo_data_select(ccsds_data,(d+18*2+1)*8 , 8) , $
-      errors_double_noise:     swfo_data_select(ccsds_data,(d+19*2)*8 , 8) , $
-      errors_single_noise:     swfo_data_select(ccsds_data,(d+19*2+1)*8 , 8) , $
-      errors_all    :     swfo_data_select(ccsds_data,(d+17*2+[0:5])*8, 8),  $    ; all error counters
-      dac_vals:  swfo_data_select(ccsds_data,(d+(20+[0:11])*2)*8 , 16) , $                ; all 12 dac channels
-      time_cmds:  swfo_data_select(ccsds_data,(d+32*2)*8 , 8) , $
-      last_cmd:  swfo_data_select(ccsds_data,(d+32*2+1)*8 , 8) , $
-      last_cdata:  swfo_data_select(ccsds_data,(d+33*2)*8 , 16) , $
-      csum_dat1:  swfo_data_select(ccsds_data,(d+34*2)*8 , 16) , $
-      csum_dat0:  swfo_data_select(ccsds_data,(d+35*2)*8 , 16) , $
-      csum_err1:  swfo_data_select(ccsds_data,(d+36*2)*8 , 8) , $
-      csum_err2:  swfo_data_select(ccsds_data,(d+36*2+1)*8 , 8) , $
-      sm_err_cnt:  swfo_data_select(ccsds_data,(d+37*2)*8 , 8) , $
-      met_spare:  swfo_data_select(ccsds_data,(d+37*2+1)*8 , 8) , $
-      spare1:  swfo_data_select(ccsds_data,(d+38*2)*8 , 16) , $
-      spare2:  swfo_data_select(ccsds_data,(d+39*2)*8 , 16) , $ 
-      adc_bias_v:     swfo_data_select(ccsds_data,(d+2*40 )*8, 16 ,/signed) *flt , $
-      adc_bias_c:    swfo_data_select(ccsds_data,(d+2*41 )*8, 16 ,/signed ) *flt , $
-      adc_TEMP_DAP:   swfo_therm_temp( swfo_data_select(ccsds_data,(d+2*42 )*8, 16 ,/signed ), param=temp_par_16bit ) , $
-      adc_p5d:    swfo_data_select(ccsds_data,(d+2*43 )*8, 16 ,/signed ) *flt , $
-      adc_p5a:    swfo_data_select(ccsds_data,(d+2*44 )*8, 16 ,/signed ) *flt , $
-      adc_n5a:    swfo_data_select(ccsds_data,(d+2*45 )*8, 16  ,/signed) *flt , $
-      adc_temp_s1:   swfo_therm_temp(   swfo_data_select(ccsds_data,(d+2*46 )*8, 16  ,/signed) , param=temp_par_16bit) , $
-      adc_temp_s2:    swfo_therm_temp(  swfo_data_select(ccsds_data,(d+2*47 )*8, 16  ,/signed) , param=temp_par_16bit) , $
-      adc_all:    swfo_data_select(ccsds_data,(d+2*[40:55] )*8, 16  ,/signed) *flt , $
-      gap:0b }
-    str.gap = ccsds.gap
- ;   if str.apid eq 863 then printdat,str
+    if str1.fpga_rev ge 0x93 then begin
+      str2={$
+        fpga_rev0:              swfo_data_select(ccsds_data,(d+2*0  )*8, 8  ) , $
+        mapid:                  swfo_data_select(ccsds_data,(d+2*0+1)*8, 8  ) , $
+        cmds_received:          swfo_data_select(ccsds_data,(d+2*1  )*8, 16  ) , $
+        user_0e:                swfo_data_select(ccsds_data,(d+2*2)*8, 16 ) , $
+        cmds_invalid:           swfo_data_select(ccsds_data,(d+2*3)*8, 8  ) , $
+        cmd_pause_tcnt:         swfo_data_select(ccsds_data,(d+2*3+1)*8, 8  ) , $
+        mem_addr:               swfo_data_select(ccsds_data,(d+2*4)*8, 16 ) , $
+        sect_cnt:               swfo_data_select(ccsds_data,(d+2*5)*8, 16) , $
+        event_cntr:             swfo_data_select(ccsds_data,(d+2*6)*8, 16) , $
+        rates_cntr:             swfo_data_select(ccsds_data,(d+[7:12]*2)*8, 16) , $
+        bus_timeout_cntr:       swfo_data_select(ccsds_data,(d+13*2)*8+4*[0:3], 4) , $
+        det_timeout_cntr:       swfo_data_select(ccsds_data,(d+14*2  )*8        , 8) , $
+        noPeak_cntr:            swfo_data_select(ccsds_data,(d+14*2+1)*8 , 8) , $
+        cmds_ignored:           swfo_data_select(ccsds_data,(d+15*2)*8 , 8) , $
+        cmds_unknown:           swfo_data_select(ccsds_data,(d+15*2+1)*8 , 8) , $
+        spare_00:               swfo_data_select(ccsds_data,(d+16*2)*8 , 2) , $
+        board_id:               swfo_data_select(ccsds_data,(d+16*2)*8+2 , 2) , $
+        pulses_remaining:       swfo_data_select(ccsds_data,(d+16*2)*8+4 , 12) , $
+        errors_double_A:        swfo_data_select(ccsds_data,(d+17*2)*8 , 8) , $
+        errors_single_A:        swfo_data_select(ccsds_data,(d+17*2+1)*8 , 8) , $
+        errors_double_b:        swfo_data_select(ccsds_data,(d+18*2)*8 , 8) , $
+        errors_single_b:        swfo_data_select(ccsds_data,(d+18*2+1)*8 , 8) , $
+        errors_double_noise:    swfo_data_select(ccsds_data,(d+19*2)*8 , 8) , $
+        errors_single_noise:    swfo_data_select(ccsds_data,(d+19*2+1)*8 , 8) , $
+        errors_all:             swfo_data_select(ccsds_data,(d+17*2+[0:5])*8, 8),  $    ; all error counters
+        dac_vals:               swfo_data_select(ccsds_data,(d+(20+[0:11])*2)*8 , 16) , $   ;all 12 dac channels
+        time_cmds:              swfo_data_select(ccsds_data,(d+32*2)*8 , 8) , $
+        first_cmd:              swfo_data_select(ccsds_data,(d+32*2+1)*8 , 8) , $
+        first_cdata:            swfo_data_select(ccsds_data,(d+33*2)*8 , 16) , $
+        csum_dat1:              swfo_data_select(ccsds_data,(d+34*2)*8 , 16) , $
+        csum_dat0:              swfo_data_select(ccsds_data,(d+35*2)*8 , 16) , $
+        csum_err1:              swfo_data_select(ccsds_data,(d+36*2)*8 , 8) , $
+        csum_err2:              swfo_data_select(ccsds_data,(d+36*2+1)*8 , 8) , $
+        sm_err_cnt:             swfo_data_select(ccsds_data,(d+37*2)*8 , 8) , $
+        met_spare:              swfo_data_select(ccsds_data,(d+37*2+1)*8 , 8) , $
+        spare_0x00:             swfo_data_select(ccsds_data,(d+38*2)*8 , 8) , $
+        last_cmd:               swfo_data_select(ccsds_data,(d+38*2+1)*8 , 8) , $
+        last_cdata:             swfo_data_select(ccsds_data,(d+39*2)*8 , 16) , $
+        adc_bias_v:     swfo_data_select(ccsds_data,(d+2*40 )*8, 16 ,/signed) *flt , $
+        adc_bias_c:    swfo_data_select(ccsds_data,(d+2*41 )*8, 16 ,/signed ) *flt , $
+        adc_TEMP_DAP:   swfo_therm_temp( swfo_data_select(ccsds_data,(d+2*42 )*8, 16 ,/signed ), param=temp_par_16bit ) , $
+        adc_p5d:    swfo_data_select(ccsds_data,(d+2*43 )*8, 16 ,/signed ) *flt , $
+        adc_p5a:    swfo_data_select(ccsds_data,(d+2*44 )*8, 16 ,/signed ) *flt , $
+        adc_n5a:    swfo_data_select(ccsds_data,(d+2*45 )*8, 16  ,/signed) *flt , $
+        adc_temp_s1:   swfo_therm_temp(   swfo_data_select(ccsds_data,(d+2*46 )*8, 16  ,/signed) , param=temp_par_16bit) , $
+        adc_temp_s2:    swfo_therm_temp(  swfo_data_select(ccsds_data,(d+2*47 )*8, 16  ,/signed) , param=temp_par_16bit) , $
+        adc_all:    swfo_data_select(ccsds_data,(d+2*[40:55] )*8, 16  ,/signed) *flt , $
+        gap:ccsds.gap }
+        str=create_struct(str1,str2)
+    endif else begin
+      str = {time:ccsds.time,  $
+        time_delta: ccsds.time_delta, $
+        apid: ccsds.apid,  $
+        met: ccsds.met,   $
+        seqn:    ccsds.seqn,$
+        day:       swfo_data_select(ccsds_data,(6)*8, 24  ) , $
+        millisec:  swfo_data_select(ccsds_data,(9)*8, 32  ) , $
+        microsec:  swfo_data_select(ccsds_data,(13)*8, 16  ) , $
+        revnum:    swfo_data_select(ccsds_data,(15)*8, 8  ) , $    ;  using spare
+        lcss:      swfo_data_select(ccsds_data,(16)*8, 4  ) , $
+        tres:         swfo_data_select(ccsds_data,(16)*8+4, 12  ) , $
+        mode_id2:     swfo_data_select(ccsds_data,(18)*8, 16  ) , $
+        pulser_bits:  swfo_data_select(ccsds_data,(20)*8, 8  ) , $
+        status_bits:  swfo_data_select(ccsds_data,(21)*8, 8  ) , $
+        noise_bits:  swfo_data_select(ccsds_data,(22)*8, 16  ) , $
+        revnum0:     swfo_data_select(ccsds_data,(d+2*0  )*8, 8  ) , $
+        mapid:       swfo_data_select(ccsds_data,(d+2*0+1)*8, 8  ) , $
+        cmds_valid:        swfo_data_select(ccsds_data,(d+2*1  )*8, 8  ) , $
+        cmds_invalid:      swfo_data_select(ccsds_data,(d+2*1+1)*8, 8  ) , $
+        user_0e:     swfo_data_select(ccsds_data,(d+2*2)*8, 16 ) , $
+        user_09:     swfo_data_select(ccsds_data,(d+2*3)*8, 16 ) , $
+        mem_addr:    swfo_data_select(ccsds_data,(d+2*4)*8, 16 ) , $
+        sect_cnt:    swfo_data_select(ccsds_data,(d+2*5)*8, 16) , $
+        event_cntr:  swfo_data_select(ccsds_data,(d+2*6)*8, 16) , $
+        rates_cntr:  swfo_data_select(ccsds_data,(d+[7:12]*2)*8, 16) , $
+        bus_timeout_cntr: swfo_data_select(ccsds_data,(d+13*2)*8+4*[0:3], 4) , $
+        det_timeout_cntr: swfo_data_select(ccsds_data,(d+14*2  )*8        , 8) , $
+        noPeak_cntr:      swfo_data_select(ccsds_data,(d+14*2+1)*8 , 8) , $
+        cmds_ignored:  swfo_data_select(ccsds_data,(d+15*2)*8 , 8) , $
+        cmds_unknown:  swfo_data_select(ccsds_data,(d+15*2+1)*8 , 8) , $
+        spare_00:     swfo_data_select(ccsds_data,(d+16*2)*8 , 2) , $
+        board_id:     swfo_data_select(ccsds_data,(d+16*2)*8+2 , 2) , $
+        pulses_remaining:     swfo_data_select(ccsds_data,(d+16*2)*8+4 , 12) , $
+        errors_double_A:     swfo_data_select(ccsds_data,(d+17*2)*8 , 8) , $
+        errors_single_A:     swfo_data_select(ccsds_data,(d+17*2+1)*8 , 8) , $
+        errors_double_b:     swfo_data_select(ccsds_data,(d+18*2)*8 , 8) , $
+        errors_single_b:     swfo_data_select(ccsds_data,(d+18*2+1)*8 , 8) , $
+        errors_double_noise:     swfo_data_select(ccsds_data,(d+19*2)*8 , 8) , $
+        errors_single_noise:     swfo_data_select(ccsds_data,(d+19*2+1)*8 , 8) , $
+        errors_all    :     swfo_data_select(ccsds_data,(d+17*2+[0:5])*8, 8),  $    ; all error counters
+        dac_vals:  swfo_data_select(ccsds_data,(d+(20+[0:11])*2)*8 , 16) , $                ; all 12 dac channels
+        time_cmds:  swfo_data_select(ccsds_data,(d+32*2)*8 , 8) , $
+        last_cmd:  swfo_data_select(ccsds_data,(d+32*2+1)*8 , 8) , $
+        last_cdata:  swfo_data_select(ccsds_data,(d+33*2)*8 , 16) , $
+        csum_dat1:  swfo_data_select(ccsds_data,(d+34*2)*8 , 16) , $
+        csum_dat0:  swfo_data_select(ccsds_data,(d+35*2)*8 , 16) , $
+        csum_err1:  swfo_data_select(ccsds_data,(d+36*2)*8 , 8) , $
+        csum_err2:  swfo_data_select(ccsds_data,(d+36*2+1)*8 , 8) , $
+        sm_err_cnt:  swfo_data_select(ccsds_data,(d+37*2)*8 , 8) , $
+        met_spare:  swfo_data_select(ccsds_data,(d+37*2+1)*8 , 8) , $
+        spare1:  swfo_data_select(ccsds_data,(d+38*2)*8 , 16) , $
+        spare2:  swfo_data_select(ccsds_data,(d+39*2)*8 , 16) , $
+        adc_bias_v:     swfo_data_select(ccsds_data,(d+2*40 )*8, 16 ,/signed) *flt , $
+        adc_bias_c:    swfo_data_select(ccsds_data,(d+2*41 )*8, 16 ,/signed ) *flt , $
+        adc_TEMP_DAP:   swfo_therm_temp( swfo_data_select(ccsds_data,(d+2*42 )*8, 16 ,/signed ), param=temp_par_16bit ) , $
+        adc_p5d:    swfo_data_select(ccsds_data,(d+2*43 )*8, 16 ,/signed ) *flt , $
+        adc_p5a:    swfo_data_select(ccsds_data,(d+2*44 )*8, 16 ,/signed ) *flt , $
+        adc_n5a:    swfo_data_select(ccsds_data,(d+2*45 )*8, 16  ,/signed) *flt , $
+        adc_temp_s1:   swfo_therm_temp(   swfo_data_select(ccsds_data,(d+2*46 )*8, 16  ,/signed) , param=temp_par_16bit) , $
+        adc_temp_s2:    swfo_therm_temp(  swfo_data_select(ccsds_data,(d+2*47 )*8, 16  ,/signed) , param=temp_par_16bit) , $
+        adc_all:    swfo_data_select(ccsds_data,(d+2*[40:55] )*8, 16  ,/signed) *flt , $
+        gap:0b }
+      str.gap = ccsds.gap
+
+    endelse
+    ;   if str.apid eq 863 then printdat,str
 
   endif  else  if  ccsds.time  gt 1.6297680e+09 then begin
     dprint,dlevel=2,'Obsolete'
@@ -155,8 +208,8 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
       errors_double_b:     swfo_data_select(ccsds_data,(d+18*2)*8 , 8) , $
       errors_single_b:     swfo_data_select(ccsds_data,(d+18*2)*8+1 , 8) , $
       errors_double_noise:     swfo_data_select(ccsds_data,(d+19*2)*8 , 8) , $
-      errors_single_noise:     swfo_data_select(ccsds_data,(d+19*2)*8+1 , 8) , $      
-      dac_vals:  swfo_data_select(ccsds_data,(d+(20+[0:11])*2)*8 , 16) , $   
+      errors_single_noise:     swfo_data_select(ccsds_data,(d+19*2)*8+1 , 8) , $
+      dac_vals:  swfo_data_select(ccsds_data,(d+(20+[0:11])*2)*8 , 16) , $
       time_cmds:  swfo_data_select(ccsds_data,(d+32*2)*8 , 8) , $
       last_cmd:  swfo_data_select(ccsds_data,(d+32*2+1)*8 , 8) , $
       last_cdata:  swfo_data_select(ccsds_data,(d+33*2)*8 , 16) , $
@@ -221,9 +274,6 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   return,str
 
 end
-
-
-
 
 
 

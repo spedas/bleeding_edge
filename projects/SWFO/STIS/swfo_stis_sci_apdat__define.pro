@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-01-21 13:49:47 -0800 (Fri, 21 Jan 2022) $
-; $LastChangedRevision: 30530 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2022-03-03 12:58:24 -0800 (Thu, 03 Mar 2022) $
+; $LastChangedRevision: 30647 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -16,50 +16,33 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
 
   hs = 24
   case n_elements(ccsds_data) of
-    hs+256:  scidata = uint(spp_swp_log_decomp(ccsds_data[hs:*]))
+    hs+256:  scidata = uint(swfo_stis_log_decomp(ccsds_data[hs:*]))
+    hs+672:  scidata = uint(swfo_stis_log_decomp(ccsds_data[hs:*]))
     hs+512:  scidata = swap_endian( uint(ccsds_data,hs,256) ,/swap_if_little_endian)
-    hs+672:     scidata = uint(spp_swp_log_decomp(ccsds_data[hs:*]))
-    hs+1344:    scidata = swap_endian( uint(ccsds_data,hs,672) ,/swap_if_little_endian)
+    hs+1344: scidata = swap_endian( uint(ccsds_data,hs,672) ,/swap_if_little_endian)
     else :  begin
-       scidata = ccsds_data[hs:*]
-       print,n_elements(ccsds_data)
+      scidata = ccsds_data[hs:*]
+      print,n_elements(ccsds_data)
     end
   endcase
-  
-  ;if n_elements(ccsds_data) eq 20+256 then begin ;log-compressed science packets
-  ;  scidata=uint(spp_swp_log_decomp(ccsds_data[20:*]))
-  ;endif else scidata = swap_endian( uint(ccsds_data,20,256) ,/swap_if_little_endian)
-  
-  
+
+
   if n_elements(last_str) eq 0 || (abs(last_str.time-ccsds.time) gt 65) then lastdat = scidata
   lastdat = scidata
 
-  MET_raw  =  swfo_data_select(ccsds_data,(6)*8, 6*8  )
-  duration  =  swfo_data_select(ccsds_data,(12)*8, 16  )
-  mode2 =       swfo_data_select(ccsds_data,(14)*8, 16  )
-  status_bits = swfo_data_select(ccsds_data,(16)*8, 16  )
-  noise_bits = swfo_data_select(ccsds_data,(18)*8, 16  )
+;  if duration eq 0 then duration = 1u   ; cluge to fix lack of proper output in early version FPGA
 
-  if duration eq 0 then duration = 1u   ; cluge to fix lack of proper output in early version FPGA
+  str1=swfo_stis_ccsds_header_decom(ccsds)
 
-  str = {time:ccsds.time,  $
-    met: ccsds.met,   $
-    met_raw: met_raw, $
-    seqn:    ccsds.seqn,$
-    pkt_size:    ccsds.pkt_size, $
-    duration:       duration , $
-    mode2:       mode2 , $
-    status_bits:  status_bits, $
-    noise_bits:  noise_bits, $
-    noise_period:  noise_bits and 255u,  $
-    noise_res:    ishft(noise_bits,-8) and 7u , $
-    counts:    scidata , $
-    total:    total(scidata),  $t
-    gap:  0b }
-  str.gap = ccsds.gap
+  str2 = {$
+    counts:   scidata , $
+    total:    total(scidata),$
+    gap:ccsds.gap}
+
+  str=create_struct(str1,str2)
 
   if debug(4) then begin
-    
+
     printdat,str
     dprint,time_string(str.time,/local)
   endif
@@ -67,9 +50,6 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   last_str =str
   return,str
 end
-
-
-
 
 
 pro swfo_stis_sci_apdat::handler2,struct_stis_sci_level_0b  ,source_dict=source_dict
@@ -88,16 +68,16 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci_level_0b  ,source_dict=source_
   sci_last = sciobj.last_data    ; this should be identical to struct_stis_sci_level_0b
   nse_last = nseobj.last_data
   hkp_last = hkpobj.last_data
-  
+
   res = self.file_resolution
-  
+
   if res gt 0 and sci_last.time gt (self.lastfile_time + res) then begin
-    makefile =1 
+    makefile =1
     trange = self.lastfile_time + [0,res]
     self.lastfile_time = floor( sci_last.time /res) * res
     dprint,dlevel=2,'Make new file ',time_string(self.lastfile_time,prec=3)+'  '+time_string(sci_last.time,prec=3)
   endif else makefile = 0
-  
+
   if isa(self.level_0b,'dynamicarray') then begin
     self.level_0b.append, sci_last
     if makefile then   self.ncdf_make_file,ddata=self.level_0b, trange=trange,type='_L0b'
@@ -111,11 +91,11 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci_level_0b  ,source_dict=source_
     extract_tags, sci_all, nse_last, except=ignore_tags, /preserve
     extract_tags, sci_all, hkp_last, except=ignore_tags, /preserve
     sci_all.nse_reltime = sci_last.time - struct_value(nse_last,'time',default = !values.d_nan )
-    sci_all.nse_reltime = sci_last.time - struct_value(hkp_last,'time',default = !values.d_nan ) 
-    self.level_0b.append, sci_all   
+    sci_all.nse_reltime = sci_last.time - struct_value(hkp_last,'time',default = !values.d_nan )
+    self.level_0b.append, sci_all
   endif
-  
-  
+
+
   if isa(self.level_1a,'dynamicarray') then begin
     struct_stis_sci_level_1a = swfo_stis_sci_level_1(sci_last)
     self.level_1a.append, struct_stis_sci_level_1a

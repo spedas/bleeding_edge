@@ -1,14 +1,14 @@
 ; buffer should contain bytes for a single ccsds packet, header is
 ; contained in first 3 words (6 bytes)
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-01-21 13:49:47 -0800 (Fri, 21 Jan 2022) $
-; $LastChangedRevision: 30530 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2022-03-03 12:58:24 -0800 (Thu, 03 Mar 2022) $
+; $LastChangedRevision: 30647 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ccsds_decom.pro $
 
 ;
 ;  This routine still needs to be modified to conform to the SWFO standard.
 
-function swfo_ccsds_decom_mettime,header    ;,spc=spc,span=span,subsec=subsec
+function swfo_ccsds_decom_mettime,header,day=day,millisec=millisec,microsec=microsec
   ; header assumed to be bytes at this point
   n = n_elements(header)
   if n lt 5 then return, !values.d_nan
@@ -26,7 +26,7 @@ function swfo_ccsds_decom_mettime,header    ;,spc=spc,span=span,subsec=subsec
 end
 
 
-function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,offset,buffer_length,remainder=remainder , error=error,verbose=verbose,dlevel=dlevel
+function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,offset,buffer_length,remainder=remainder,error=error,verbose=verbose,dlevel=dlevel
 
   error = 0b
   if not keyword_set(offset) then offset = 0
@@ -41,8 +41,8 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
     MET:          d_nan,  $
     apid:         0u , $
     seqn:         0u , $
-    seqn_delta :  0u, $
-    seqn_group:    0b , $
+    seqn_delta:   0u,  $
+    seqn_group:   0b , $
     pkt_size:     0ul,  $
     day:          0UL,  $
     millisec:     0ul,  $
@@ -56,7 +56,7 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
     error :       0b, $
     version :     0b , $   ; this could be eliminated since it is useless
     pdata:        ptr_new(),  $         ; pointer to full packet data including header
-    ;ontent_compressed:   0b, $
+    content_compressed:   0b, $
     ;counter:      0ul,    $             ; packet counter as received - future use
     ;proc_time:    d_nan,  $             ; unixtime when it was processed
     ;source_name:  ''   ,  $             ; file name of source
@@ -81,9 +81,11 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
 
   apid = ccsds.apid
 
-  MET = swfo_ccsds_decom_mettime(buffer[offset+0:offset+15])
-
+  MET = swfo_ccsds_decom_mettime(buffer[offset+0:offset+15],day=day,millisec=millisec,microsec=microsec)
   ccsds.met = met
+  ccsds.day = day
+  ccsds.millisec = millisec
+  ccsds.microsec = microsec
   ccsds.time = swfo_spc_met_to_unixtime(ccsds.MET)
 
   ccsds.pkt_size = header[2] + 7
