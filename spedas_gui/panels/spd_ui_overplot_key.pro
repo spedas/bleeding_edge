@@ -21,9 +21,9 @@
 ;OUTPUT:
 ;  none
 ;  
-;$LastChangedBy: crussell $
-;$LastChangedDate: 2017-07-19 14:37:28 -0700 (Wed, 19 Jul 2017) $
-;$LastChangedRevision: 23669 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-03-04 11:48:01 -0800 (Fri, 04 Mar 2022) $
+;$LastChangedRevision: 30648 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_overplot_key.pro $
 ;-----------------------------------------------------------------------------------
 

@@ -21,9 +21,9 @@
 ;OUTPUT:
 ;  none
 ;  
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2015-05-01 18:01:59 -0700 (Fri, 01 May 2015) $
-;$LastChangedRevision: 17470 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-03-04 13:45:18 -0800 (Fri, 04 Mar 2022) $
+;$LastChangedRevision: 30651 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spedas_plugin/thm_ui_gen_overplot.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -591,14 +591,14 @@ pro thm_ui_gen_overplot, gui_id = gui_id, $
       probeButtonBase = widget_base(probeBase, /row, /exclusive)
     midBase = widget_base(mainBase, /Row)
       trvalsBase = Widget_Base(midBase, /Col, Frame=1, xpad=8)
-      keyButtonBase = widget_button(midBase, Value=' Plot Key ', UValue='KEY', XSize=80, $
+      keyButtonBase = widget_button(midBase, Value=' Plot Key ', UValue='KEY', $
                                     tooltip = 'Displays detailed descriptions of overview plot panels.')
     goWebBase = Widget_Base(mainBase, /Row, Frame=1, xpad=8)
     
     buttonBase = Widget_Base(mainBase, /row, /align_center)
     
     goWebLabel = widget_label(goWebBase, Value='  Alternatively, you can view the plot on the web (single day).  ', /align_left)
-    goWebButton = Widget_Button(goWebBase, Value='  Web Plot  ', UValue='GOWEB', XSize=80)
+    goWebButton = Widget_Button(goWebBase, Value='  Web Plot  ', UValue='GOWEB')
 
 ; Help text
   wj = widget_label(txtbase, value='Creating the overview plot might take a few minutes.', /align_left)
@@ -631,8 +631,8 @@ pro thm_ui_gen_overplot, gui_id = gui_id, $
   trControls=[timewidget]
 
 ; Main window buttons
-  applyButton = Widget_Button(buttonBase, Value='  Apply   ', UValue='APPLY', XSize=80)
-  cancelButton = Widget_Button(buttonBase, Value='  Cancel  ', UValue='CANC', XSize=80)
+  applyButton = Widget_Button(buttonBase, Value='  Apply   ', UValue='APPLY')
+  cancelButton = Widget_Button(buttonBase, Value='  Cancel  ', UValue='CANC')
 
   ;initialize structure to store variables for future calls
   if ~is_struct(data_structure) then begin

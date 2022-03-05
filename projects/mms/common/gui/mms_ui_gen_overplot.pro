@@ -23,9 +23,9 @@
 ; OUTPUT:
 ;  none
 ;  
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-09-28 09:06:52 -0700 (Thu, 28 Sep 2017) $
-;$LastChangedRevision: 24047 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-03-04 13:45:18 -0800 (Fri, 04 Mar 2022) $
+;$LastChangedRevision: 30651 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/gui/mms_ui_gen_overplot.pro $
 ;-
 
@@ -219,12 +219,12 @@ pro mms_ui_gen_overplot, gui_id = gui_id, $
       probeButtonBase = widget_base(probeBase, row=1, /exclusive)
     midBase = widget_base(mainBase, /Row)
       trvalsBase = Widget_Base(midBase, /Col, Frame=1, xpad=8)
-      keyButtonBase = widget_button(midBase, Value='Plot Key', UValue='KEY', XSize=80, $
+      keyButtonBase = widget_button(midBase, Value='Plot Key', UValue='KEY', $
                                     tooltip = 'Displays detailed descriptions of MMS overview plot panels.', sensitive=0)
     goWebBase = Widget_Base(mainBase, /Row, Frame=1, xpad=8, sensitive=0)
     buttonBase = Widget_Base(mainBase, /row, /align_center)
     goWebLabel = widget_label(goWebBase, Value='  Alternatively, you can view the plot on the web (single day).  ', /align_left)
-    goWebButton = Widget_Button(goWebBase, Value='  Web Plot  ', UValue='GOWEB', XSize=80)
+    goWebButton = Widget_Button(goWebBase, Value='  Web Plot  ', UValue='GOWEB')
     
 
 ; Help text
@@ -256,8 +256,8 @@ pro mms_ui_gen_overplot, gui_id = gui_id, $
   
 
 ; Main window buttons
-  applyButton = Widget_Button(buttonBase, Value='Apply', UValue='APPLY', XSize=80)
-  cancelButton = Widget_Button(buttonBase, Value='Cancel', UValue='CANC', XSize=80)
+  applyButton = Widget_Button(buttonBase, Value='Apply', UValue='APPLY')
+  cancelButton = Widget_Button(buttonBase, Value='Cancel', UValue='CANC')
 
   ;flag denoting successful run
   success = 0

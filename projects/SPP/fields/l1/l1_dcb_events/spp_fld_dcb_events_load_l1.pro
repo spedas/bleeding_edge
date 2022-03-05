@@ -154,7 +154,8 @@ pro spp_fld_dcb_events_load_l1, file, prefix = prefix, varformat = varformat
 
       endif else begin
 
-        ind = where(d_code.y EQ rts_code and d_dat1.y EQ rts_value, count)
+        ;ind = where(d_code.y EQ rts_code and d_dat1.y EQ rts_value, count)
+        ind = where(d_code.y EQ rts_code and d_dat0.y EQ rts_value, count)
 
       endelse
 
@@ -162,7 +163,8 @@ pro spp_fld_dcb_events_load_l1, file, prefix = prefix, varformat = varformat
 
       if count GT 0 then begin
 
-        rts = d_dat1.y[ind]
+        ;rts = d_dat1.y[ind]
+        rts = d_dat0.y[ind]
 
         store_data, rts_stat + rts_name, $
           dat = {x:d_code.x[ind], y:rts}

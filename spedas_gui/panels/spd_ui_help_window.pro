@@ -6,8 +6,8 @@
 ; A widget to display the file 'spd_gui.txt' help
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-02-25 16:06:54 -0800 (Fri, 25 Feb 2022) $
-;$LastChangedRevision: 30623 $
+;$LastChangedDate: 2022-03-04 11:48:01 -0800 (Fri, 04 Mar 2022) $
+;$LastChangedRevision: 30648 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_help_window.pro $
 ;
 ;-

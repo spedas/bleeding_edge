@@ -7,10 +7,10 @@
 ;
 ;
 ;HISTORY:
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2015-04-15 15:14:31 -0700 (Wed, 15 Apr 2015) $
-;$LastChangedRevision: 17332 $
-;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/ace/spedas_plugin/ace_ui_load_data.pro $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-03-04 13:43:24 -0800 (Fri, 04 Mar 2022) $
+;$LastChangedRevision: 30650 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_mdd_std.pro $
 ;
 ;--------------------------------------------------------------------------------
 pro mdd_ui_update_time_widget, tr_obj, dur, twidget, event
@@ -1062,8 +1062,7 @@ pro spd_ui_mdd_std, gui_ID=gui_id, $
   getresourcepath,rpath
 
   spd_get_scroll_sizes,xfrac=0.65, yfrac=0.8, scroll_needed = scroll_needed, x_scroll_size=x_scroll_size, y_scroll_size=y_scroll_size
-  ; This is a large panel, force scrolling on
-  scroll_needed=1
+ 
   if keyword_set(gui_ID) then begin
       if (scroll_needed) then begin
         tlb = Widget_Base(/col, /Align_Top, /Align_Left, title='Minimum Directional Derivative (MDD) and Spatio-Temporal Difference (STD)', group_leader= gui_id, /floating, $
@@ -1401,7 +1400,7 @@ pro spd_ui_mdd_std, gui_ID=gui_id, $
   ;
   resultLabel =  widget_label(rightBase, value='Results:', /align_left, /align_top)
   resultBase = widget_base(rightBase, /col, /frame)
-  resultText = widget_text(resultBase, xsize=50, ysize=54, /scroll, uname='resulttext')
+  resultText = widget_text(resultBase, xsize=50, ysize=40, /scroll, uname='resulttext')
   plotResBase = widget_base(rightBase, /col, /align_center, ypad=5)
   plotResButton = widget_button(plotResBase, value='Plot Data in New Coordinate System', uval='NEW_PLOT', uname='new_plot')
   

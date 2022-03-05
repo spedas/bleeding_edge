@@ -35,9 +35,9 @@
 ;  
 ; ADAPTED BY: Ayris Narock (ADNET/GSFC) 2017
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2018-03-12 09:55:28 -0700 (Mon, 12 Mar 2018) $
-; $LastChangedRevision: 24869 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2022-03-04 13:45:18 -0800 (Fri, 04 Mar 2022) $
+; $LastChangedRevision: 30651 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/dscovr/spedas_plugin/dsc_ui_gen_overplot.pro $
 ;-
 
@@ -235,8 +235,8 @@ ButtonFC  = widget_button(focusButtonBase, value='FC Focus', uvalue='FOCUS:FC')
                                   uvalue='TIME',uname='time', startyear = 2015);, oneday=1 
   
 ; Main window buttons
-  applyButton = Widget_Button(buttonBase, Value='Apply', UValue='APPLY', XSize=80)
-  cancelButton = Widget_Button(buttonBase, Value='Cancel', UValue='CANC', XSize=80)
+  applyButton = Widget_Button(buttonBase, Value='Apply', UValue='APPLY')
+  cancelButton = Widget_Button(buttonBase, Value='Cancel', UValue='CANC')
 
   ;flag denoting successful run
   success = 0

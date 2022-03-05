@@ -23,9 +23,9 @@
 ; OUTPUT:
 ;  none
 ;  
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2015-01-26 10:06:01 -0800 (Mon, 26 Jan 2015) $
-;$LastChangedRevision: 16736 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-03-04 13:45:18 -0800 (Fri, 04 Mar 2022) $
+;$LastChangedRevision: 30651 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/spedas_plugin/poes_ui_gen_overplot.pro $
 ;-
 
@@ -221,12 +221,12 @@ pro poes_ui_gen_overplot, gui_id = gui_id, $
       probeButtonBase = widget_base(probeBase, row=2, /align_left, /exclusive)
     midBase = widget_base(mainBase, /Row)
       trvalsBase = Widget_Base(midBase, /Col, Frame=1, xpad=8)
-      keyButtonBase = widget_button(midBase, Value='Plot Key', UValue='KEY', XSize=80, $
+      keyButtonBase = widget_button(midBase, Value='Plot Key', UValue='KEY', $
                                     tooltip = 'Displays detailed descriptions of POES overview plot panels.')
     goWebBase = Widget_Base(mainBase, /Row, Frame=1, xpad=8)
     buttonBase = Widget_Base(mainBase, /row, /align_center)
     goWebLabel = widget_label(goWebBase, Value='  Alternatively, you can view the plot on the web (single day).  ', /align_left)
-    goWebButton = Widget_Button(goWebBase, Value='  Web Plot  ', UValue='GOWEB', XSize=80)
+    goWebButton = Widget_Button(goWebBase, Value='  Web Plot  ', UValue='GOWEB')
     
 
 ; Help text
@@ -260,8 +260,8 @@ pro poes_ui_gen_overplot, gui_id = gui_id, $
   
 
 ; Main window buttons
-  applyButton = Widget_Button(buttonBase, Value='Apply', UValue='APPLY', XSize=80)
-  cancelButton = Widget_Button(buttonBase, Value='Cancel', UValue='CANC', XSize=80)
+  applyButton = Widget_Button(buttonBase, Value='Apply', UValue='APPLY')
+  cancelButton = Widget_Button(buttonBase, Value='Cancel', UValue='CANC')
 
   ;flag denoting successful run
   success = 0

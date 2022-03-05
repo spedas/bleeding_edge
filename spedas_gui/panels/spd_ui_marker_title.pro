@@ -14,9 +14,9 @@
 ;OUTPUT:
 ; 
 ;HISTORY:
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2014-02-11 10:54:32 -0800 (Tue, 11 Feb 2014) $
-;$LastChangedRevision: 14326 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-03-04 11:48:01 -0800 (Fri, 04 Mar 2022) $
+;$LastChangedRevision: 30648 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_marker_title.pro $
 ;
 ;--------------------------------------------------------------------------------

@@ -26,8 +26,8 @@
 ; 
 ;HISTORY:
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-03-01 11:44:06 -0800 (Tue, 01 Mar 2022) $
-;$LastChangedRevision: 30633 $
+;$LastChangedDate: 2022-03-04 11:48:01 -0800 (Fri, 04 Mar 2022) $
+;$LastChangedRevision: 30648 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_init_load_window.pro $
 ;-----------------------------------------------------------------------------------
 

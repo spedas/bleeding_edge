@@ -6,10 +6,10 @@
 ;  Generates the GUI for minimum variance analysis.
 ;
 ;HISTORY:
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2015-04-15 15:14:31 -0700 (Wed, 15 Apr 2015) $
-;$LastChangedRevision: 17332 $
-;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/ace/spedas_plugin/ace_ui_load_data.pro $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-03-04 11:48:01 -0800 (Fri, 04 Mar 2022) $
+;$LastChangedRevision: 30648 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_mva.pro $
 ;
 ;----------------------------------------------
 ; helper function takes time widget object and  

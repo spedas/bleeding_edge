@@ -22,8 +22,8 @@
 ;             /noephem:     Don't keep the ephemeris data
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-08-19 11:45:10 -0700 (Mon, 19 Aug 2019) $
-; $LastChangedRevision: 27615 $
+; $LastChangedDate: 2022-03-04 13:49:56 -0800 (Fri, 04 Mar 2022) $
+; $LastChangedRevision: 30652 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_load_data.pro $
 ;-
 pro goes_load_data, trange = trange, datatype = datatype, probes = probes, suffix = suffix, $
@@ -53,6 +53,13 @@ pro goes_load_data, trange = trange, datatype = datatype, probes = probes, suffi
     tn_list_before = tnames('*')
       
     for idx_probes=0,n_elements(probes)-1 do begin ; loop through the probes
+      
+        prb = strcompress(string(probes[idx_probes]), /rem)
+        if array_contains(['16', '17'], prb) then begin
+            dprint, dlevel=0, 'This routine is only valid for GOES-N data; GOES-R (probes 16, 17) data can be accessed with goesr_load_data'
+            continue
+        endif
+        
         sc = 'g'+string(probes[idx_probes], format='(I02)')
         prefix = sc + '_'
 
@@ -169,7 +176,7 @@ pro goes_load_data, trange = trange, datatype = datatype, probes = probes, suffi
         
         for j = 0, n_elements(pathformat)-1 do begin
             relpathnames = file_dailynames(file_format=pathformat[j],trange=tr,addmaster=addmaster, /unique)
-            
+
             files = spd_download(remote_file=relpathnames, remote_path=!goes.remote_data_dir, $
               local_path = !goes.local_data_dir)
 

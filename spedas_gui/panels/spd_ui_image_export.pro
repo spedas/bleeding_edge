@@ -15,9 +15,9 @@
 ;OUTPUT:
 ; 
 ;HISTORY:
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-10-11 14:29:36 -0700 (Thu, 11 Oct 2018) $
-;$LastChangedRevision: 25961 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-03-04 11:48:01 -0800 (Fri, 04 Mar 2022) $
+;$LastChangedRevision: 30648 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_image_export.pro $
 ;
 ;--------------------------------------------------------------------------------
