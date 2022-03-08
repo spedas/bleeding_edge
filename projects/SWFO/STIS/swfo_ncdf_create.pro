@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $
-; $LastChangedRevision: 30383 $
+; $LastChangedDate: 2022-03-07 08:30:03 -0800 (Mon, 07 Mar 2022) $
+; $LastChangedRevision: 30654 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ncdf_create.pro $
 ; $ID: $
 
@@ -9,7 +9,7 @@
 
 pro swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose
 
-  if ~isa(dat,'structure') then begin
+  if ~isa(dat,'struct') then begin
     dprint,dlevel=1,verbose=verbose,'No data structure provided to save into file: '+ncdf_filename
     return
   endif

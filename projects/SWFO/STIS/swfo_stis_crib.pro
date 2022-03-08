@@ -7,8 +7,8 @@
 ; 
 ; 
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-01-21 13:49:47 -0800 (Fri, 21 Jan 2022) $
-; $LastChangedRevision: 30530 $
+; $LastChangedDate: 2022-03-07 08:30:03 -0800 (Mon, 07 Mar 2022) $
+; $LastChangedRevision: 30654 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -64,6 +64,7 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = 2  ;   ; set a time range for the last N hours
   opts.file_trange = ['2021-10-18/14', '2021-10-18/16']   ; Temp margin test data
   opts.file_trange = !null
+  opts.file_trange = ['2022-03-01','2022-03-02/01']
   ;opts.filenames=['socket_128.32.98.57.2028_20211216_004610.dat', 'socket_128.32.98.57.20484_20211216_005158.dat']
   opts.filenames = ''
   opts.stepbystep = 0               ; this flag allows a step by step progress through this crib sheet
@@ -171,16 +172,23 @@ if 0 then begin
 endif
 
 
-if 0 then begin
+if 1 then begin
   
   dprint,'Create Level 0B netcdf file for science packets:'
   
   sci.level_0b = dynamicarray()   ; Turn on storage of level_0b data by giving it a place to store data
   
-  sci.file_resolution = 300
+  sci.file_resolution = 3600
   
   sci.ncdf_make_file , ret_filename=f   ; the filename is returned in the variable f   
   printdat,f
+  hkp1.ncdf_make_file , ret_filename=f   ; the filename is returned in the variable f
+  printdat,f
+  hkp2.ncdf_make_file , ret_filename=f   ; the filename is returned in the variable f
+  printdat,f
+  nse.ncdf_make_file , ret_filename=f   ; the filename is returned in the variable f
+  printdat,f
+
   
   sci_l0b  =  sci.data.array   ; obtain level 0B data directly from sci object
   sci_l0b_copy = swfo_ncdf_read(file=f)  ; read copy of data from file that was just created
@@ -189,7 +197,7 @@ if 0 then begin
     ; Note that sci_l0b_copy might have more samples if it was produced after sci_l0b was generated
     
   sci_l1a =   swfo_stis_sci_level_1(sci_l0b)   ; create l1a data from l0b data
-  swfo_ncdf_create,sci_l1a, file='test.nc'     ; write data to a file.  still awaiting meta data.
+  swfo_ncdf_create,sci_l1a, file='test_sci_l1a.nc'     ; write data to a file.  still awaiting meta data.
 
 endif
 

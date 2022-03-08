@@ -35,8 +35,8 @@
 ;
 ;HISTORY:
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2021-10-19 12:13:51 -0700 (Tue, 19 Oct 2021) $
-;$LastChangedRevision: 30379 $
+;$LastChangedDate: 2022-03-07 12:27:35 -0800 (Mon, 07 Mar 2022) $
+;$LastChangedRevision: 30655 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot_wrapper.pro $
 ;----------
 
@@ -131,6 +131,10 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
     if FILE_TEST(goes_dir, /DIRECTORY) then !goes.local_data_dir = goes_dir
   endif
   if ~keyword_set(base_dir) then base_dir='/disks/themisdata/overplots/'
+  ; If directory doesn't exist, create it. 
+  if ~file_test(base_dir, /directory) then begin
+    file_mkdir, base_dir
+  endif
   lastdate_file = base_dir + 'goeslastdate.txt' ;this file holds the last day processed
   if ~keyword_set(probes) || probes[0] eq '' || probes[0] eq 'all' then probes=['10','11','12','13','14','15', '16', '17']
   if ~keyword_set(date_start) then date_start = ''
