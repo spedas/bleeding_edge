@@ -26,9 +26,9 @@
 ;  time range of the slice. 
 ;
 ;
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2020-05-04 13:37:27 -0700 (Mon, 04 May 2020) $
-;$LastChangedRevision: 28663 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2022-03-08 13:25:16 -0800 (Tue, 08 Mar 2022) $
+;$LastChangedRevision: 30661 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/core/spd_slice2d_rotate.pro $
 ;
 ;-
@@ -41,8 +41,8 @@ pro spd_slice2d_rotate, rotation=rotation, $
 
 
   ; Check for presense of required support data
-  req_bfield = in_set( strlowcase(rotation), ['bv','be','perp','perp_xy','perp_xz','perp_yz'] )
-  req_vbulk = in_set( strlowcase(rotation), ['bv','be','xvel','perp'] )
+  req_bfield = in_set( strlowcase(rotation), ['bv','be','perp','perp2','perp_xy','perp_xz','perp_yz', 'b_exb', 'perp1-perp2'] )
+  req_vbulk = in_set( strlowcase(rotation), ['bv','be','xvel','perp','perp2', 'b_exb', 'perp1-perp2'] )
 
   if n_elements(bfield) ne 3 && req_bfield then begin
     fail = ~undefined(bfield) ? 'Invalid magnetic field data provided' : $
@@ -61,15 +61,18 @@ pro spd_slice2d_rotate, rotation=rotation, $
   ; Create/get rotation matrix
   case strlowcase(rotation) of
     'bv': matrix=spd_cal_rot(bfield,vbulk)
-    'be': matrix=spd_cal_rot(bfield,crossp(bfield,vbulk))
+    'be': matrix=spd_cal_rot(bfield,crossp(bfield,vbulk)) ; [B, BxV] (this is the parallel - perp 2 plane)
     'xy': matrix=spd_cal_rot([1,0,0],[0,1,0])
     'xz': matrix=spd_cal_rot([1,0,0],[0,0,1])
     'yz': matrix=spd_cal_rot([0,1,0],[0,0,1])
     'xvel': matrix=spd_cal_rot([1,0,0],vbulk)
-    'perp': matrix=spd_cal_rot(crossp(crossp(bfield,vbulk),bfield),crossp(bfield,vbulk))
+    'perp': matrix=spd_cal_rot(crossp(crossp(bfield,vbulk),bfield),crossp(bfield,vbulk)) ; perp 2 - perp 1 plane; should be: [(BxV)xB, BxV]
+    'perp1-perp2': matrix=spd_cal_rot(crossp(bfield,vbulk), crossp(crossp(bfield,vbulk),bfield)) ; perp 1 - perp 2 plane; should be: [BxV, (BxV)xB]
+    ;'perp2': matrix=spd_cal_rot(crossp(-crossp(vbulk, bfield),bfield),crossp(vbulk, bfield)) ; [(-VxB)xB, VxB] from some testing, keeping it here for now in case I need to get back to it
     'perp_yz': matrix=spd_cal_rot(crossp(crossp(bfield,[0,1,0]),bfield),crossp(crossp(bfield,[0,0,1]),bfield))
     'perp_xy': matrix=spd_cal_rot(crossp(crossp(bfield,[1,0,0]),bfield),crossp(crossp(bfield,[0,1,0]),bfield))
     'perp_xz': matrix=spd_cal_rot(crossp(crossp(bfield,[1,0,0]),bfield),crossp(crossp(bfield,[0,0,1]),bfield))
+    'b_exb': matrix=spd_cal_rot(bfield,crossp(crossp(bfield, vbulk), bfield)) ; [B, (BxV)xB] (this is the parallel - perp 2 plane)
     else: begin
       fail = 'Unrecognized rotation: "'+rotation+'".'
       dprint, dlevel=1, fail

@@ -235,9 +235,9 @@
 ;  Aaron Flores, based on work by Bryan Kerr, Arjun Raj, and Xuzhi Zhou
 ;
 ;
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2020-05-04 13:59:39 -0700 (Mon, 04 May 2020) $
-;$LastChangedRevision: 28665 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2022-03-08 13:25:16 -0800 (Tue, 08 Mar 2022) $
+;$LastChangedRevision: 30661 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/spd_slice2d.pro $
 ;-
 
@@ -314,7 +314,7 @@ if undefined(trange_in) then begin
 endif
 
 valid_rotations = ['bv', 'be', 'xy', 'xz', 'yz', 'xvel', $
-                   'perp', 'perp_xy', 'perp_xz', 'perp_yz']
+                   'perp', 'perp2', 'perp_xy', 'perp_xz', 'perp_yz', 'b_exb', 'perp1-perp2']
 if ~undefined(rotation) then begin
   if ~in_set(strlowcase(rotation),valid_rotations) then begin
     fail = 'Invalid rotation requested.  See spd_crib_slice2d for examples.'

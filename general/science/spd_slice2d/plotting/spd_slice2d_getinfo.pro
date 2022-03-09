@@ -22,9 +22,9 @@
 ;Notes:
 ;
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2015-12-11 17:20:48 -0800 (Fri, 11 Dec 2015) $
-;$LastChangedRevision: 19620 $
+;$LastChangedBy: egrimes $
+;$LastChangedDate: 2022-03-08 13:25:16 -0800 (Tue, 08 Mar 2022) $
+;$LastChangedRevision: 30661 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/spd_slice2d/plotting/spd_slice2d_getinfo.pro $
 ;
 ;-
@@ -107,6 +107,16 @@ pro spd_slice2d_getinfo, slice, title=title, short_title=short_title, $
         xt = 'y!Dperp!N' 
         yt = 'z!Dperp!N'
       end
+      'b_exb': begin
+        xt = '!DB!N'
+        yt = '!DV perp B!N'
+        xc = 0 & yc = 0
+      end
+      'perp1-perp2': begin
+        xt = '!DB x V!N'
+        yt = '!DV perp B!N'
+        xc = 0 & yc = 0
+       end
       else: begin
         xt = 'x!D?!N'  ;shouldn't be used
         yt = 'y!D?!N'

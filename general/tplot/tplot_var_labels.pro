@@ -28,9 +28,9 @@
 ; tplot, 'tha_fag_dsl', var_label = ['tha_state_pos_gse_x(tha_state_pos_gei_x)']
 ;
 ; Note that even single labels must be passed in as arrays.
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2021-07-16 13:32:33 -0700 (Fri, 16 Jul 2021) $
-; $LastChangedRevision: 30129 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2022-03-08 16:13:31 -0800 (Tue, 08 Mar 2022) $
+; $LastChangedRevision: 30663 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_var_labels.pro $
 ;-
 
@@ -241,9 +241,8 @@ pro tplot_var_labels,def_opts,trg,var_label,local_time,pos,chsize,vtitle=vtitle,
              vlab = vlab+'('+v2lab+')'
                                 ;supress the first label, so that the
                                 ;ytitles can be seen? If
-                                ;time_setup.xtickv = 0, removed
-                                ;2021-07-16, jmm
-;             If(time_setup.xtickv[0] Eq 0) Then vlab[0, *] = ''
+                                ;time_setup.xtickv = 0
+             If(time_setup.xtickv[0] Eq 0) Then vlab[0, *] = ''
           Endif Else Begin
              w = where(~finite(v),nw)
              if nw gt 0 then vlab[w] = ''

@@ -9,8 +9,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-03-04 11:48:01 -0800 (Fri, 04 Mar 2022) $
-;$LastChangedRevision: 30648 $
+;$LastChangedDate: 2022-03-08 13:43:52 -0800 (Tue, 08 Mar 2022) $
+;$LastChangedRevision: 30662 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_field_models.pro $
 ;-
 
@@ -1015,12 +1015,12 @@ pro spd_ui_field_models, info
 
     pdLabel1 = Widget_Label(swBase07, value='Directory with TS07 parameter files:', /align_left)
     t07pdbase = Widget_Base(swBase07, col=2)
-    paramdir = Widget_text(t07pdbase, uname='paramdir', uval='paramdir', value=!spedas.geopack_param_dir, /editable, /align_left,scr_xsize=300, units=0)     
+    paramdir = Widget_text(t07pdbase, uname='paramdir', uval='paramdir', value=!spedas.geopack_param_dir, /editable, /align_left,xsize=30, units=0)     
     pdLabel = Widget_Button(t07pdbase, uname='pdLabel', uval='pdLabel', value='Select')  
             
     pfLabel1 = Widget_Label(swBase07, value='TS07 coefficients file:', /align_left)
     t07pfbase = Widget_Base(swBase07, col=2)
-    paramfile = Widget_text(t07pfbase, uname='paramfile', uval='paramfile', value='ts07_sample_dyncoef.par', /editable, /align_left, SCR_XSIZE=300, units=0)
+    paramfile = Widget_text(t07pfbase, uname='paramfile', uval='paramfile', value='ts07_sample_dyncoef.par', /editable, /align_left, xsize=30, units=0)
     pfLabel = Widget_Button(t07pfbase, uname='pfLabel', uval='pfLabel', value='Select')    
     
     swLabel3 = Widget_Label(swBase07, value='', /align_left)
@@ -1192,5 +1192,11 @@ pro spd_ui_field_models, info
     centertlb, tlb
     Widget_Control, tlb, /realize
     spd_ui_field_models_model_params, tlb, 'ta15b'
+    ;keep windows in X11 from snaping back to
+    ;center during tree widget events
+    if !d.NAME eq 'X' then begin
+      widget_control, tlb, xoffset=0, yoffset=0
+    endif
+
     XManager, 'spd_ui_field_models', tlb, /no_block
 end

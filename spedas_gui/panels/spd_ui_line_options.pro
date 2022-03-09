@@ -16,8 +16,8 @@
  ;
  ;HISTORY:
  ;$LastChangedBy: jwl $
- ;$LastChangedDate: 2022-03-04 11:48:01 -0800 (Fri, 04 Mar 2022) $
- ;$LastChangedRevision: 30648 $
+ ;$LastChangedDate: 2022-03-08 13:43:52 -0800 (Tue, 08 Mar 2022) $
+ ;$LastChangedRevision: 30662 $
  ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_line_options.pro $
  ;
  ;---------------------------------------------------------------------------------
@@ -1167,7 +1167,7 @@
  
  tracetextbase = widget_base(tracebase, /row, xpad=17)
  tracetextlabel = widget_label(tracetextbase, value = '     Trace: ')
- tracetextedit = widget_text(tracetextbase, value = fulltrNames[*ctr_num], uname = 'tracename')
+ tracetextedit = widget_text(tracetextbase, value = fulltrNames[*ctr_num], uname = 'tracename',xsize=50)
  
  
  ;****** Line Options **********************************************************
@@ -1298,7 +1298,7 @@
  okButton = Widget_Button(buttonsBase, Value='OK', UValue='OK')
  applyButton = Widget_Button(buttonsBase, Value='Apply', UValue='APPLY')
  applyButton = Widget_Button(buttonsBase, Value='Apply to All Lines', UValue='APPLYTOALL', tooltip="Apply changes to all lines of this panel (except color and style)")
- cancelButton = Widget_Button(buttonsBase, Value='Cancel', UValue='CANC', XSize=75)
+ cancelButton = Widget_Button(buttonsBase, Value='Cancel', UValue='CANC')
  templateButton = Widget_Button(buttonsBase,  Value='Store for a Template', UValue='TEMP',tooltip='Use these settings when saving a Graph Options Template')
  
  statusBase = Widget_Base(buttonStatusBase, /row)

@@ -142,8 +142,8 @@
 ;                 last color.  Default is 6 (red) for all.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-11-06 12:22:20 -0700 (Sat, 06 Nov 2021) $
-; $LastChangedRevision: 30405 $
+; $LastChangedDate: 2022-03-08 11:11:46 -0800 (Tue, 08 Mar 2022) $
+; $LastChangedRevision: 30658 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -162,6 +162,8 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     print, "You must run maven_orbit_tplot first!"
     return
   endif
+
+  if (size(windex,/type) eq 0) then windex = -1  ; putwin acts like window
 
   a = 1.0
   phi = findgen(49)*(2.*!pi/49)
@@ -352,12 +354,9 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (size(windex,/type) eq 0) then putwin, /config $
-                                 else if (windex eq -1) then putwin, /config
+    if (windex eq -1) then putwin, /config
     mnum = fix(monitor[0])
-  endif else begin
-    if (size(windex,/type) gt 0) then if (windex gt -1) then mnum = secondarymon
-  endelse
+  endif else if (windex gt -1) then mnum = secondarymon
 
   if (size(psname,/type) eq 7) then begin
     psflg = 1
@@ -367,9 +366,8 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       putwin, /free, monitor=mnum, xsize=500, ysize=473, dx=10, dy=10, scale=wscale  ; MSO projections 1x1
       Owin = !d.window
     endif else begin                                                                 ; MSO projections 1x3
-      if (windex eq -1) then begin
-        putwin, /free, monitor=mnum, xsize=281, ysize=800, scale=wscale, dx=10
-      endif else putwin, /free, monitor=mnum, /yfull, aspect=0.351, dx=10
+      if (windex eq -1) then putwin, /free, xsize=281, ysize=800, scale=wscale, dx=10 $
+                        else putwin, /free, monitor=mnum, /yfull, aspect=0.351, dx=10
       Owin = !d.window
       csize = float(!d.x_size)/175.
     endelse

@@ -15,8 +15,8 @@
 ;  panel_select:     pointer to current panel
 ; 
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-03-04 11:48:01 -0800 (Fri, 04 Mar 2022) $
-;$LastChangedRevision: 30648 $
+;$LastChangedDate: 2022-03-08 13:43:52 -0800 (Tue, 08 Mar 2022) $
+;$LastChangedRevision: 30662 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_legend_options.pro $
 ;-
 
@@ -908,14 +908,14 @@ pro spd_ui_legend_options, info, panel_select=panel_select, tlb_statusbar=tlb_st
    
    ; create variable name widgets
    xnamelabel = Widget_Label(varNameBase, value=' X Axis Value:', /Align_Left, sensitive=validpanel)
-   xAxisBase = Widget_Base(varNameBase, /Row, SCR_YSIZE=30)
-   xnametext = Widget_Text(xAxisBase, value='X Axis Value', /editable, SCR_XSIZE=120, sensitive=validpanel, uval='NEWXAXISVALUE', uname='newxaxisvalue', /all_events)
+   xAxisBase = Widget_Base(varNameBase, /Row)
+   xnametext = Widget_Text(xAxisBase, value='X Axis Value', /editable, xsize=30, sensitive=validpanel, uval='NEWXAXISVALUE', uname='newxaxisvalue', /all_events)
    xAxisBaseNE = Widget_Base(xAxisBase, /NonExclusive)
    xAxisButton = Widget_Button(xAxisBaseNE, Value='Enabled?', sensitive=validpanel, uval='XAXISENABLED', uname='xaxisenabled')
    widget_control, xAxisButton, set_button=NEWXAXISVALUE
    ynamelabel = Widget_Label(varNameBase, value=' Y Axis Value:', /Align_Left, sensitive=validpanel)
-   yAxisBase = Widget_Base(varNameBase, /Row, SCR_YSIZE=30)
-   ynametext = Widget_Text(yAxisBase, value='Y Axis Value', /editable, SCR_XSIZE=120, sensitive=validpanel, uval='NEWYAXISVALUE', uname='newyaxisvalue', /all_events)
+   yAxisBase = Widget_Base(varNameBase, /Row)
+   ynametext = Widget_Text(yAxisBase, value='Y Axis Value', /editable, xsize=30, sensitive=validpanel, uval='NEWYAXISVALUE', uname='newyaxisvalue', /all_events)
    yAxisBaseNE = Widget_Base(yAxisBase, /NonExclusive)
    yAxisButton = Widget_Button(yAxisBaseNE, Value='Enabled?', sensitive=validpanel, uval='YAXISENABLED', uname='yaxisenabled')
    widget_control, yAxisButton, set_button=1
@@ -923,8 +923,8 @@ pro spd_ui_legend_options, info, panel_select=panel_select, tlb_statusbar=tlb_st
    ; change trace/line names, e.g., thd_fgs_bz -> FGS Bz
    tracesBase = Widget_Base(varNameBase, /Row)
    ;additionalLabels = Widget_Combobox(tracesBase, value='None', sensitive=validpanel, SCR_XSIZE=105, uval='ADDTRACES', uname='addtraces')
-   additionalLabels = Widget_Droplist(tracesBase, value='None', sensitive=validpanel, uval='ADDTRACES', uname='addtraces')
-   changetraces = Widget_Text(tracesBase, value=currentline, uval='CHANGETRACENAME', uname='changetracename', SCR_XSIZE=140, /editable)
+   additionalLabels = Widget_Droplist(tracesBase, value='None', sensitive=validpanel, uval='ADDTRACES', uname='addtraces',/dynamic_resize)
+   changetraces = Widget_Text(tracesBase, value=currentline, uval='CHANGETRACENAME', uname='changetracename',xsize=30, /editable)
       
    formatBase = Widget_Base(mainBase, Row=2)
    formatLabel = Widget_Label(formatBase, value=' Variable format:')   
@@ -932,7 +932,7 @@ pro spd_ui_legend_options, info, panel_select=panel_select, tlb_statusbar=tlb_st
    varformatBase = Widget_Base(fBase, Row=1)
    ;nullLabel = Widget_Label(varformatBase, value=' ', SCR_XSIZE=5)
    varlistLabel = Widget_Label(varformatBase, value=' For all variables of type: ', sensitive=validpanel)
-   varlistCombo = Widget_Combobox(varformatBase, uval='VARLIST', uname='varlist', sensitive=validpanel, SCR_XSIZE=80)
+   varlistCombo = Widget_Combobox(varformatBase, uval='VARLIST', uname='varlist', sensitive=validpanel)
    nullLabel = Widget_Label(varformatBase, value=' ')
    formatLabel = Widget_Label(varformatBase, value=' Set format: ', sensitive=validpanel)
    formatCombo = Widget_Combobox(varformatBase, uval='FORMCOMBO', uname='formcombo', sensitive=validpanel)
