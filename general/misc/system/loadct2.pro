@@ -30,7 +30,7 @@
 ;Last Modification: loadct2.pro
 ;-
 
-pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,graybkg=graybkg, line_clrs=line_clrs
+pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,graybkg=graybkg, line_clrs=line_clrs,line_color_names=line_color_names
   compile_opt idl2, hidden
   COMMON colors, r_orig, g_orig, b_orig, r_curr, g_curr, b_curr
   @colors_com
@@ -103,6 +103,18 @@ pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,gr
     endif
   endif
 
+  ; Line and background colors, by name
+  if keyword_set(line_color_names) then begin
+    if n_elements(line_color_names) ne 8 then begin
+      dprint,'line_color_names must be an 8-element array'
+      return
+    endif else begin
+      line_clrs=transpose(spd_get_color(line_color_names,/rgb))
+      ; then fall through to the line_clrs processing
+    endelse
+    
+  endif
+ 
   ; Line and background colors provided by user
   if keyword_set(line_clrs) then begin
     if n_elements(line_clrs) ne 24 then begin

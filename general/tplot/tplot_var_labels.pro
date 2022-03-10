@@ -22,15 +22,15 @@
 ;                         ranges
 ; 2021-06-07, jmm, Added option option to allow two variables on a
 ; line when labeling tplots. To be invoked, the var_label keyword must
-; be set up with a valid tplot variable name in parentheses after a
-; valid tplot variable.
+; be set up with a valid tplot variable name in square brackets [] after a
+; valid tplot variable. Note that even single labels must be passed in as arrays.
 ; e.g., 
-; tplot, 'tha_fag_dsl', var_label = ['tha_state_pos_gse_x(tha_state_pos_gei_x)']
-;
-; Note that even single labels must be passed in as arrays.
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2022-03-08 16:13:31 -0800 (Tue, 08 Mar 2022) $
-; $LastChangedRevision: 30663 $
+; tplot, 'tha_fag_dsl', var_label = ['tha_state_pos_gse_x[tha_state_pos_gei_x]']
+; 2022-03-09, jmm, Swapped square brackets for parentheses in
+;                  two-variable option declaration
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2022-03-09 12:10:35 -0800 (Wed, 09 Mar 2022) $
+; $LastChangedRevision: 30666 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_var_labels.pro $
 ;-
 
@@ -143,7 +143,7 @@ pro tplot_var_labels,def_opts,trg,var_label,local_time,pos,chsize,vtitle=vtitle,
                                 ;add option for var_label to contain 2
                                 ;variables, 2nd one in parentheses after
                                 ;the first one, jmm, 2021-05-25
-        double_var_label = strpos(var_label[i], '(')
+        double_var_label = strpos(var_label[i], '[') ;Brackets, 2022-03-09, jmm
         If(double_var_label[0] Ne -1) Then Begin ;assure that there are two valid variables
            var_labelx = var_label[i]
            var1 = strmid(var_labelx, 0, double_var_label)
@@ -241,8 +241,9 @@ pro tplot_var_labels,def_opts,trg,var_label,local_time,pos,chsize,vtitle=vtitle,
              vlab = vlab+'('+v2lab+')'
                                 ;supress the first label, so that the
                                 ;ytitles can be seen? If
-                                ;time_setup.xtickv = 0
-             If(time_setup.xtickv[0] Eq 0) Then vlab[0, *] = ''
+                                ;time_setup.xtickv = 0, removed
+                                ;2021-07-16, jmm
+;             If(time_setup.xtickv[0] Eq 0) Then vlab[0, *] = ''
           Endif Else Begin
              w = where(~finite(v),nw)
              if nw gt 0 then vlab[w] = ''

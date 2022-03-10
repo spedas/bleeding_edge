@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Mar  8 18:15:56 2022.<P>
+<STRONG>Last modified: </STRONG>Wed Mar  9 18:16:13 2022.<P>
  
 <HR>
  
@@ -3742,15 +3742,15 @@ Outputs:
                          ranges
  2021-06-07, jmm, Added option option to allow two variables on a
  line when labeling tplots. To be invoked, the var_label keyword must
- be set up with a valid tplot variable name in parentheses after a
- valid tplot variable.
+ be set up with a valid tplot variable name in square brackets [] after a
+ valid tplot variable. Note that even single labels must be passed in as arrays.
  e.g., 
- tplot, 'tha_fag_dsl', var_label = ['tha_state_pos_gse_x(tha_state_pos_gei_x)']
-
- Note that even single labels must be passed in as arrays.
- $LastChangedBy: jwl $
- $LastChangedDate: 2022-03-08 16:13:31 -0800 (Tue, 08 Mar 2022) $
- $LastChangedRevision: 30663 $
+ tplot, 'tha_fag_dsl', var_label = ['tha_state_pos_gse_x[tha_state_pos_gei_x]']
+ 2022-03-09, jmm, Swapped square brackets for parentheses in
+                  two-variable option declaration
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2022-03-09 12:10:35 -0800 (Wed, 09 Mar 2022) $
+ $LastChangedRevision: 30666 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_var_labels.pro $
 </PRE><P>
 <STRONG>(See <A href="tplot/tplot_var_labels.pro">general/tplot/tplot_var_labels.pro</A>)</STRONG><P>

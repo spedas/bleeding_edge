@@ -53,7 +53,7 @@ device, decomposed = 0
 del_data,'*'
 timespan,'2007-06-23'
 thm_load_state, probe='a'
-thm_load_sst, probe='a', level='2'
+thm_load_sst, probe='a', level='l1'
 
 ; Find how many color tables are supported in this IDL version
 loadct, get_names=cn_str
@@ -118,6 +118,17 @@ loadct2, 15, file='cbcolors2.tbl', line_clr=1
 ; for the line plot, use colors 1,2 and 6 of the palette
 options,'tha_state_vel',colors=[1,2,6]
 print, 'Example of spectrogram using file cbcolors2.tbl and line colors from loadct2 preset 1.'
+tplot,['tha_state_vel', 'tha_psif_en']
+stop
+
+; Specify line colors by name.  For list of color names supported, see spd_get_color.pro.
+; Name matching is case insensitive, but whitespace matters.  Unknown color names will show up
+; as black.
+
+init_crib_colors
+loadct2,15,file='cbcolors2.tbl',line_color_names=['black','orange','chartreuse','navy blue','dark gray','rosy brown','forest green','white']
+options,'tha_state_vel',colors=[1,2,6]
+print, 'Example of spectrogram using file cbcolors2.tbl and line colors specified by name'
 tplot,['tha_state_vel', 'tha_psif_en']
 stop
 
