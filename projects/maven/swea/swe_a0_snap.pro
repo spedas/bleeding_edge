@@ -44,6 +44,8 @@ pro swe_a0_snap, model=model, keepwins=keepwins, zrange=zrange, zlog=zlog, $
   @mvn_swe_com
   @putwin_common
 
+  if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
+
   if (keyword_set(archive) or keyword_set(burst)) then aflg = 1 else aflg = 0
 
   if keyword_set(wscale) then scale = wscale[0] else scale = 1.
@@ -80,8 +82,7 @@ pro swe_a0_snap, model=model, keepwins=keepwins, zrange=zrange, zlog=zlog, $
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (size(windex,/type) eq 0) then putwin, /config $
-                                 else if (windex eq -1) then putwin, /config
+    if (windex eq -1) then putwin, /config
     mnum = fix(monitor[0])
   endif else begin
     if (size(secondarymon,/type) gt 0) then mnum = secondarymon

@@ -170,8 +170,8 @@
 ;                  spiral, and all labels.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-10 08:52:00 -0700 (Tue, 10 Aug 2021) $
-; $LastChangedRevision: 30193 $
+; $LastChangedDate: 2022-03-10 17:47:36 -0800 (Thu, 10 Mar 2022) $
+; $LastChangedRevision: 30668 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -186,6 +186,8 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
 
   common planetorb, planet, sta, stb, sorb, psp, orrkey
   @putwin_common
+
+  if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
 
 ; Load any keyword defaults
 
@@ -950,8 +952,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
 
     undefine, mnum
     if (size(monitor,/type) gt 0) then begin
-      if (size(windex,/type) eq 0) then putwin, /config $
-                                   else if (windex eq -1) then putwin, /config
+      if (windex eq -1) then putwin, /config
       mnum = fix(monitor[0])
     endif else begin
       if (size(secondarymon,/type) gt 0) then mnum = secondarymon
@@ -962,7 +963,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
   endif
 
   if (mflg) then begin
-    putwin, wnum, mnum, xsize=xsize, ysize=ysize, dx=10, dy=10, scale=scale
+    putwin, /free, monitor=mnum, xsize=xsize, ysize=ysize, dx=10, dy=10, scale=scale
     Owin = !d.window
     zscl = 1.
     csize = 1.5*zscl*scale

@@ -142,8 +142,8 @@
 ;                 last color.  Default is 6 (red) for all.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-03-08 11:11:46 -0800 (Tue, 08 Mar 2022) $
-; $LastChangedRevision: 30658 $
+; $LastChangedDate: 2022-03-10 17:49:27 -0800 (Thu, 10 Mar 2022) $
+; $LastChangedRevision: 30670 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -163,7 +163,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     return
   endif
 
-  if (size(windex,/type) eq 0) then windex = -1  ; putwin acts like window
+  if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
 
   a = 1.0
   phi = findgen(49)*(2.*!pi/49)

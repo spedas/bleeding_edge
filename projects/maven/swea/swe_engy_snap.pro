@@ -216,8 +216,8 @@ end
 ;                      are lost.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-22 16:50:44 -0700 (Mon, 22 Mar 2021) $
-; $LastChangedRevision: 29800 $
+; $LastChangedDate: 2022-03-10 17:50:08 -0800 (Thu, 10 Mar 2022) $
+; $LastChangedRevision: 30671 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -243,6 +243,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   c2 = (2d5/(mass*mass))
   c3 = 4D*!dpi*1d-5*sqrt(mass/2D)  ; assume isotropic electron distribution
   tiny = 1.e-31
+
+  if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
 
 ; Load any keyword defaults
 
@@ -437,8 +439,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (size(windex,/type) eq 0) then putwin, /config $
-                                 else if (windex eq -1) then putwin, /config
+    if (windex eq -1) then putwin, /config
     mnum = fix(monitor[0])
   endif else begin
     if (size(secondarymon,/type) gt 0) then mnum = secondarymon
@@ -806,7 +807,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
                        else if (finite(phi)) then p.pot = phi else p.pot = 0.
       spec.sc_pot = pot
 
-      psep = 2.0
+      psep = 1.25
       indx = where(E1 gt psep*p.pot)
       Fpeak = max(F1[indx],k,/nan)
       Epeak = E1[indx[k]]

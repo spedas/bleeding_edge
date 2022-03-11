@@ -165,8 +165,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-01-03 10:06:02 -0800 (Mon, 03 Jan 2022) $
-; $LastChangedRevision: 30487 $
+; $LastChangedDate: 2022-03-10 17:50:08 -0800 (Thu, 10 Mar 2022) $
+; $LastChangedRevision: 30671 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -194,6 +194,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   cols = get_colors()
 
   tiny = 1.e-31
+
+  if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
 
 ; Load any keyword defaults
 
@@ -424,8 +426,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (size(windex,/type) eq 0) then putwin, /config $
-                                 else if (windex eq -1) then putwin, /config
+    if (windex eq -1) then putwin, /config
     mnum = fix(monitor[0])
   endif else begin
     if (size(secondarymon,/type) gt 0) then mnum = secondarymon
