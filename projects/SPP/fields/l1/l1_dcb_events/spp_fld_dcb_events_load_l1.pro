@@ -123,18 +123,41 @@ pro spp_fld_dcb_events_load_l1, file, prefix = prefix, varformat = varformat
   ;   corresponding to the above statuses.
   ;
 
-  rts_names = ['', '_BIAS_SWEEP','_MAG_CAL','_SCM_CAL']
-  rts_values = [-1,21,15,17]
-  
+  rts_names = ['', '_SCM_CAL', '_MAG_CAL', '_V5_SWEEP', $
+    '_SET_RBIAS2', '_SET_RBIAS1', '_BIAS_SWEEP', $
+    '_RFS_LO', '_STUB_TOGGLE', '_RFS_CAL']
+  rts_values = [-1, 15, 17, 18, $
+    19, 20, 21, $
+    28, 29, 30]
+
   ;
-  ; Pre-Encounter 3, the bias sweep RTS was 19, not 21.
-  ; 
-  ; Note: if this routine is used to load DCB events for a time span covering
-  ; both pre-Encounter 3 and post-Encounter 3 bias sweep times, the
-  ; TPLOT items created will *not* include the pre-Encounter 3 sweeps.
+  ; Prior to Encounter 3, BIAS_SWEEP was RTS = 20
+  ; Prior to Encounter 4, SET_RBIAS1 was not defined
+  ; Prior to Encounter 11, RFS and STUB_TOGGLE not defined
   ;
-  
-  if max(d_met.y) LT 303673800 then rts_values = [-1,19,15,17]
+
+  enc03_met = 303673800
+  pre_enc03 = where(d_met.y LT enc03_met, pre_enc03_count)
+  enc04_met = 316820280
+  pre_enc04 = where(d_met.y LT enc04_met, pre_enc04_count)
+  enc11_met = 379159774
+  pre_enc11 = where(d_met.y LT enc11_met, pre_enc11_count)
+
+  ;
+  ; Error conditions (LMTERR, ENAERR, BSYERR) correspond to different values
+  ; of the code variable.
+  ;
+  ; Error conditions occur infrequently, compared
+  ; to nominal start of the RTS (STARTED).
+  ;
+  ; On orbit, LMTERR has never occurred (as of 2022 March).
+  ;
+  ; ENAERR has occurred one time, in the file 0274861895_2_DF on 2018-09-17
+  ;
+  ; BSYERR has occurred a handful of times, typically appearing immediately
+  ; after a turn on.
+  ;
+
 
 
   rts_stats = prefix + ['RTSLMTERR','RTSENAERR','RTSBSYERR','RTSSTARTED']
@@ -148,14 +171,44 @@ pro spp_fld_dcb_events_load_l1, file, prefix = prefix, varformat = varformat
 
       rts_code = rts_codes[j]
 
+      if rts_code EQ 0xCC then rts_dat = d_dat0.y else rts_dat = d_dat1.y
+
       if rts_value EQ -1 then begin
 
         ind = where(d_code.y EQ rts_code, count)
 
       endif else begin
 
-        ;ind = where(d_code.y EQ rts_code and d_dat1.y EQ rts_value, count)
-        ind = where(d_code.y EQ rts_code and d_dat0.y EQ rts_value, count)
+        code_dat = d_code.y
+
+        if rts_name EQ '_BIAS_SWEEP' and pre_enc03_count GT 0 then begin
+
+          ind_pre = where(code_dat EQ rts_code and rts_dat EQ 20 and d_met.y LT enc03_met, pre_count)
+          ind = where(code_dat EQ rts_code and rts_dat EQ rts_value and d_met.y GE enc03_met, count)
+
+          if pre_count NE 0 then begin
+            if count EQ 0 then begin
+              ind = ind_pre
+              count = pre_count
+            endif else begin
+              ind = [ind_pre, ind]
+              count = pre_count + count
+            endelse
+          endif
+
+        endif else if rts_name EQ '_SET_RBIAS1' and pre_enc04_count GT 0 then begin
+
+          ind = where(code_dat EQ rts_code and rts_dat EQ rts_value and d_met.y GE enc04_met, count)
+
+        endif else if rts_name EQ '_RFS_LO' or rts_name EQ '_STUB_TOGGLE' or rts_name EQ '_RFS_CAL' then begin
+
+          ind = where(code_dat EQ rts_code and rts_dat EQ rts_value and d_met.y GE enc11_met, count)
+     
+        endif else begin
+
+          ind = where(code_dat EQ rts_code and rts_dat EQ rts_value, count)
+
+        endelse
 
       endelse
 
@@ -163,34 +216,35 @@ pro spp_fld_dcb_events_load_l1, file, prefix = prefix, varformat = varformat
 
       if count GT 0 then begin
 
-        ;rts = d_dat1.y[ind]
-        rts = d_dat0.y[ind]
+        rts = rts_dat[ind]
 
         store_data, rts_stat + rts_name, $
           dat = {x:d_code.x[ind], y:rts}
-          
+
         store_data, rts_stat + rts_name + '_MET', $
           dat = {x:d_code.x[ind], y:d_met.y[ind]}
+        options, rts_stat + rts_name + '_MET', 'ynozero', 1
 
         if rts_stat.EndsWith('STARTED') then begin
           options, rts_stat + rts_name, 'colors', [2]
-          options, rts_stat + rts_name, 'symsize', 0.5
+          options, rts_stat + rts_name, 'symsize', 1.0
           options, rts_stat + rts_name, 'psym', 1
         endif else begin
           options, rts_stat + rts_name, 'colors', [6]
-          options, rts_stat + rts_name, 'symsize', 0.75
+          options, rts_stat + rts_name, 'symsize', 2.5
           options, rts_stat + rts_name, 'psym', 2
+          options, rts_stat + rts_name, 'thick', 3
         endelse
         options, rts_stat + rts_name, 'ytitle', 'DCB RTS' + $
           rts_name.Replace('_','!C')
         options, rts_stat + rts_name, 'ysubtitle', ''
 
-        if min(rts) EQ max(rts) then begin
-          options, rts_stat + rts_name, 'yrange', rts + [-1,1]
+        if min(rts) EQ max(rts) or min(rts) + 1 EQ max(rts) then begin
+          options, rts_stat + rts_name, 'yrange', [min(rts)-1, max(rts) + 1]
           options, rts_stat + rts_name, 'ystyle', 1
           options, rts_stat + rts_name, 'symsize', 1.0
           options, rts_stat + rts_name, 'yminor', 1
-          options, rts_stat + rts_name, 'yticks', 2
+          options, rts_stat + rts_name, 'yticks', [max(rts) - min(rts)] + 2
         endif
 
       endif

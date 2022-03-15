@@ -7,9 +7,9 @@
 ;       PSP SWEAP SPAN-Ai Flight energy and telemetry mode configurations.
 ;    modeid : in, optional, type=integer
 ;       
-; $LastChangedBy: rlivi2 $
-; $LastChangedDate: 2020-06-19 10:05:14 -0700 (Fri, 19 Jun 2020) $
-; $LastChangedRevision: 28788 $
+; $LastChangedBy: rlivi04 $
+; $LastChangedDate: 2022-03-14 15:55:56 -0700 (Mon, 14 Mar 2022) $
+; $LastChangedRevision: 30677 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/tables/spp_swp_spi_tables.pro $
 ;-
 
@@ -119,6 +119,16 @@ PRO spp_swp_spi_tables, table, emode=emode, modeid=modeid, verbose=verbose, ccen
          IF keyword_set(verbose) THEN $
           print, 'Science Tables 0x08'
          emin  = 60.
+         emax  = 20000.
+         spfac_a = 0.25
+         spfac_b = 0.35
+         new_defl = 1
+      END
+      ;; Science Tables 0x09
+      '09'x: BEGIN
+         IF keyword_set(verbose) THEN $
+          print, 'Science Tables 0x09'
+         emin  = 5.
          emax  = 20000.
          spfac_a = 0.25
          spfac_b = 0.35

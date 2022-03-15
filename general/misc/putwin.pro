@@ -211,8 +211,8 @@
 ;                  separately in the usual way.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-03-10 17:49:03 -0800 (Thu, 10 Mar 2022) $
-; $LastChangedRevision: 30669 $
+; $LastChangedDate: 2022-03-14 11:59:41 -0700 (Mon, 14 Mar 2022) $
+; $LastChangedRevision: 30675 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2020-06-03
@@ -352,15 +352,15 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
 
     case maxmon of
        0   : windex = 0                        ; laptop only
-       1   : windex = 3                        ; laptop with single external
-       2   : if (cfg gt 1) then begin          ; laptop with double-wide external
+       1   : windex = 1                        ; laptop with 1 external
+       2   : if (cfg gt 1) then begin
                mgeom[0,1] = min(mgeom[0,1:2])
                mgeom[2,1] += mgeom[2,2]
                mgeom = mgeom[*,0:1]
                maxmon -= 1
                primarymon = 1
-               windex = 1
-             endif else windex = 2             ; laptop with two externals
+               windex = 3                      ; laptop with 1 double-wide external
+             endif else windex = 2             ; laptop with 2 externals
       else : windex = 5                        ; laptop with > 2 externals
     endcase
 
@@ -430,7 +430,7 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
 
   if (n_elements(xsize) eq 0) then begin
     xsize = xdim/2
-    if ((windex eq 1) and (monitor eq 1)) then xsize /= 2
+    if ((windex eq 3) and (monitor eq 1)) then xsize /= 2
   endif
   if (n_elements(ysize) eq 0) then ysize = ydim/2
   if (n_elements(scale) eq 0) then scale = 1.
@@ -560,6 +560,7 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
     wnum = fix(!d.window)
   endif else begin
     window, wnum, xpos=x0, ypos=y0, xsize=xsize, ysize=ysize, _extra=extra
+    wnum = fix(!d.window)
   endelse
 
   return

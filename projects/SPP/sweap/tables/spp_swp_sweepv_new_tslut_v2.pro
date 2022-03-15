@@ -4,14 +4,14 @@
 ;
 ; SPP_SWP_SWEEPV_NEW_TSLUT_V2
 ;
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2020-02-03 14:37:14 -0800 (Mon, 03 Feb 2020) $
-; $LastChangedRevision: 28269 $
+; $LastChangedBy: rlivi04 $
+; $LastChangedDate: 2022-03-14 16:12:49 -0700 (Mon, 14 Mar 2022) $
+; $LastChangedRevision: 30678 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/tables/spp_swp_sweepv_new_tslut_v2.pro $
 ;
 ;-
 
-PRO spp_swp_sweepv_new_tslut_v2,sweepv,defv1,defv2,spv,fsindex,tsindex,nen=nen,e0=e0,emax=emax,edpeak=edpeak,plot=plot,version=version,spfac=spfac,new_defl=new_defl
+PRO spp_swp_sweepv_new_tslut_v2,sweepv,defv1,defv2,spv,fsindex,tsindex,nen=nen,e0=e0,emax=emax,edpeak=edpeak,plot=plot,version=version,spfac=spfac,new_defl=new_defl,defl_lim=defl_lim
 
 
    ;; Number of energies in fine sweep table 
@@ -22,14 +22,51 @@ PRO spp_swp_sweepv_new_tslut_v2,sweepv,defv1,defv2,spv,fsindex,tsindex,nen=nen,e
 
    nen = 32
 
+   ;; Default version is 2
+   if ~keyword_set(version) then version = 2
+   
    ;; Get the full sweep table and index
    spp_swp_sweepv_new_fslut_v2,sweepv,defv1,defv2,spv,fsindex,nen=nen,e0=e0,emax=emax,plot=plot,version=version,spfac=spfac,new_defl=new_defl
 
-   ;; Default version is 2
-   if ~keyword_set(version) then version=2
+
+   ;; Version 3
+   ;;
+   ;; Select a single energy and 8 deflections from the full index table and
+   ;; repeat 2Ex8A 16 times within single "Targeted" sweep.
+   ;;
+   if  version eq 3 then begin
+
+      ;; Find all 32 energies from full sweep
+      enrgs = reform((reform((sweepv*16.7)[fsindex[indgen(256)*4+2]],8,32))[0,*])
+      
+      ;; The first energy bin should align with the proton core
+      e1 = 5218.
+
+      ;; The second energy bin should align with the proton beam core
+      ;;e2 = 5218.
+
+      ;; Find the sweep energy bins closest to both e1 and e2
+      tmp1 = min(ABS(enrgs - e1),loc1)
+      ;;tmp2 = min(ABS(enrgs - e2),loc2)
+
+      ;; Select these two energy bins from downsampled full sweep
+      fsindex1 = (reform(fsindex[indgen(256)*4+2],8,32))[*,loc1]
+      fsindex2 = reverse((reform(fsindex[indgen(256)*4+2],8,32))[*,loc1])
+      ;;fsindex2 = reverse((reform(fsindex[indgen(256)*4+2],8,32))[*,loc2])
+      
+      ;; Combine into single repetitive targeted sweep
+      tsindex = rebin(reform(rebin([[fsindex1],[fsindex2]],8,2,16),256),256,256)
+
+   ENDIF
+
+
+
 
    ;; Version 2
-   if  version ge 2 then begin
+   ;;
+   ;; Evenly Spaced Targeted LUT
+   ;; Targeted Table using evenly (as opposed to oddly) spaced full scans.
+   if  version eq 2 then begin
       ;; Get start index of each sub-stepping
       ;;edindex = fsindex[indgen(256)*4]   
       ;; Interval for each E-D step in full sweep
@@ -53,8 +90,14 @@ PRO spp_swp_sweepv_new_tslut_v2,sweepv,defv1,defv2,spv,fsindex,tsindex,nen=nen,e
          tsindex = [tsindex,ind]
       endfor
 
-   ;; Version 1      
-   endif else begin ;; old method (version 1)
+   ENDIF
+   
+   ;; Version 1
+   ;;
+   ;; Oddly Spaced Targeted LUT
+   ;; Original Targeted table that is used togetjer with oddly spaced full sweeps.
+   IF version EQ 1 THEN BEGIN 
+   ;;endif else begin ;; old method (version 1)
       
       ;; Get center index of each sub-stepping
       edindex = fsindex[indgen(256)*4+2]
@@ -78,7 +121,7 @@ PRO spp_swp_sweepv_new_tslut_v2,sweepv,defv1,defv2,spv,fsindex,tsindex,nen=nen,e
       eindex = floor(pindex/(nang*4)) 
       dindex = pindex mod (nang*4)
       
-      if keyword_set(plot) or 1 then print,eindex,dindex
+      ;;if keyword_set(plot) or 1 then print,eindex,dindex
       
       eindmin = eindex-nen/2
       
@@ -126,10 +169,13 @@ PRO spp_swp_sweepv_new_tslut_v2,sweepv,defv1,defv2,spv,fsindex,tsindex,nen=nen,e
          
          tsindex = [tsindex,(eindmin+i)*nang*4+di1+indgen(nang)]
       endfor
-   endelse    
+   ENDIF
+   
 
    ;; PLOT
+   ;;plot = 1
    IF keyword_set(plot) THEN BEGIN
+      ;;GOTO, skip
       wi,6
       !p.multi = [0,1,3]
       plot,sweepv[tsindex],psym=10,xtitle = 'Time Step',ytitle = 'Sweep Voltage',yrange = [0,4000],charsize = 2
@@ -146,9 +192,9 @@ PRO spp_swp_sweepv_new_tslut_v2,sweepv,defv1,defv2,spv,fsindex,tsindex,nen=nen,e
       !p.multi = 0
 
       skip:
-      
+
       wi,5
-      symsize=.6
+      symsize=0.6
       plot,sweepv,defv1-defv2,$
            psym = 7,$
            /xlog, $
@@ -159,9 +205,24 @@ PRO spp_swp_sweepv_new_tslut_v2,sweepv,defv1,defv2,spv,fsindex,tsindex,nen=nen,e
            /xstyle,$
            /ystyle, $
            yrange = [-12, 12]
-      plots,sweepv[tsindex],defv1[tsindex]-defv2[tsindex], psym=4,color = 150,symsize = symsize
+
+      ;;nn = n_elements(tsindex[*,0])
+      ;;FOR ii=0., nn-1 DO BEGIN
+      ;;   clr = (ii MOD 32) / 32. * 250.
+      ;;   plots,sweepv[tsindex[ii,0]],defv1[tsindex[ii,0]]-defv2[tsindex[ii,0]], psym = 1,color = clr,symsize = 2, thick=4
+      ;;   wait, 0.25
+      ;;ENDFOR
+      
+      plots,sweepv[tsindex],defv1[tsindex]-defv2[tsindex], psym = 1,color = 150,symsize = 2, thick=4
       oplot,sweepv[tsindex],defv1[tsindex]-defv2[tsindex], psym=-7,color=2,symsize = symsize
-      plots,sweepv[pindexs],defv1[pindexs]-defv2[pindexs],    psym = 7,color = 6,thick=2 ;,symsize = symsize
+      ;;plots,sweepv[pindexs],defv1[pindexs]-defv2[pindexs],    psym = 7,color = 6,thick=2 ;,symsize = symsize
+
+      
+      ;;findexs = fsindex[indgen(256)*4]
+      ;;plots,sweepv[fsindex],defv1[fsindex]-defv2[fsindex],    psym = -3,color = 6,thick=2 ;,symsize = symsize
+      ;;plots,sweepv[findexs],defv1[findexs]-defv2[findexs],    psym =7,color = 6,thick=2 ;,symsize = symsize
+      ;;stop
    endif
 
+   
 end

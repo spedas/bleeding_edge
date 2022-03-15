@@ -19,8 +19,8 @@
 ;                  toward and away sectors.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-09 08:26:16 -0700 (Mon, 09 Aug 2021) $
-; $LastChangedRevision: 30188 $
+; $LastChangedDate: 2022-03-14 10:39:18 -0700 (Mon, 14 Mar 2022) $
+; $LastChangedRevision: 30674 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_mag_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2015-04-02
@@ -116,19 +116,20 @@ pro mvn_mag_tplot, bvec, model=model, sang=sang
   if (nidx gt 0) then bphi[idx] += 2.*!pi
   undefine, idx, nidx
 
-  aopt = {yaxis:1, ystyle:1, yrange:[-90.,90.], ytitle:'Theta [deg]', color:2, yticks:2, yminor:3}
+  aopt = {yaxis:1, ystyle:1, yrange:[-90.,90.], ytitle:'', color:2, yticks:2, yminor:3}
   if tag_exist(topt,'charsize') then str_element, aopt, 'charsize', topt.charsize, /add_replace
 
   vname = 'mvn_mag_bang'
   store_data, vname, data={x: b.x, y: [[bthe*!RADEG*2.+180.], [bphi*!RADEG]]}
   options, vname, 'psym', 3
   options, vname, 'colors', [2,6]
-  options, vname, 'ytitle', 'MAG ' + lvl + ' (' + frame + ')'
-  options, vname, 'ysubtitle', 'Phi [deg]'
+  options, vname, 'ytitle', 'MAG ' + lvl
+  options, vname, 'ysubtitle', frame + ' Angles'
   options, vname, 'yticks', 4
   options, vname, 'yminor', 3
   options, vname, 'ystyle', 9
-  options, vname, 'labflag', -1
+  options, vname, 'labels', ['  theta','  phi']
+  options, vname, 'labflag', 1
   options, vname, 'constant', acon
   options, vname, 'axis', aopt
   ylim, vname, 0., 360., 0., /def
@@ -139,16 +140,17 @@ pro mvn_mag_tplot, bvec, model=model, sang=sang
   str_element, Bgeo, 'azim', success=ok
   str_element, Bgeo, 'elev', success=ok
   if (ok) then begin
-    aopt.ytitle = 'Elev [deg]'
+    aopt.ytitle = ''
     store_data, vname, data={x:Bgeo.x, y:[[Bgeo.elev*2.+180.], [Bgeo.azim]]}
     options, vname, 'psym', 3
     options, vname, 'colors', [2,6]
     options, vname, 'ytitle', 'MAG ' + lvl
-    options, vname, 'ysubtitle', 'Azim [deg]'
+    options, vname, 'ysubtitle', 'Local Angles'
     options, vname, 'yticks', 4
     options, vname, 'yminor', 3
     options, vname, 'ystyle', 9
-    options, vname, 'labflag', -1
+    options, vname, 'labels', ['  elev','  azim']
+    options, vname, 'labflag', 1
     options, vname, 'constant', 180.
     options, vname, 'axis', aopt
     ylim, vname, 0., 360., 0., /def

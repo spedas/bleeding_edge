@@ -4,14 +4,14 @@
 ;
 ; SPP_SWP_SWEEPV_NEW_FSLUT_V2
 ;
-; $LastChangedBy: phyllisw2 $
-; $LastChangedDate: 2020-04-08 09:51:32 -0700 (Wed, 08 Apr 2020) $
-; $LastChangedRevision: 28529 $
+; $LastChangedBy: rlivi04 $
+; $LastChangedDate: 2022-03-14 15:55:56 -0700 (Mon, 14 Mar 2022) $
+; $LastChangedRevision: 30677 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/tables/spp_swp_sweepv_new_fslut_v2.pro $
 ;
 ;-
 
-PRO spp_swp_sweepv_new_fslut_v2, sweepv,defv1,defv2,spv,index,nen=nen, e0=e0,emax=emax, version=version,plot=plot,spfac=spfac,new_defl=new_defl
+PRO spp_swp_sweepv_new_fslut_v2, sweepv,defv1,defv2,spv,index,nen=nen, e0=e0,emax=emax, version=version,plot=plot,spfac=spfac,new_defl=new_defl,defl_lim=defl_lim
   
   ;; NOTE: Need to add peak-detect bit to 
   ;; this when I make it into a table
@@ -21,7 +21,7 @@ PRO spp_swp_sweepv_new_fslut_v2, sweepv,defv1,defv2,spv,index,nen=nen, e0=e0,ema
   if not keyword_set(nen) then nen = 32 
 
   ;; Create new S-LUT
-  spp_swp_sweepv_new_v2,sweepv,defv1,defv2,spv, plot = plot, nen=nen * 4,e0=e0,emax=emax,spfac=spfac,version=version,new_defl=new_defl
+  spp_swp_sweepv_new_v2,sweepv,defv1,defv2,spv, plot = plot, nen=nen * 4,e0=e0,emax=emax,spfac=spfac,version=version,new_defl=new_defl,defl_lim=defl_lim
   
   ;; Number of angles in coarse sweep, 
   ;; taking into account sub-steps
@@ -29,7 +29,7 @@ PRO spp_swp_sweepv_new_fslut_v2, sweepv,defv1,defv2,spv,index,nen=nen, e0=e0,ema
   
   index = []
   if ~ keyword_set(version) then version = 2
-  
+
   ;; This makes sure we go one way w/ deflectors 
   ;; on even steps, and the other on odds
   

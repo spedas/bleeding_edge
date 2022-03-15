@@ -3,14 +3,15 @@
 ; SPP_SWP_SWEEPV_DACV_V2
 ;
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-04-13 00:22:29 -0700 (Mon, 13 Apr 2020) $
-; $LastChangedRevision: 28562 $
+; $LastChangedBy: rlivi04 $
+; $LastChangedDate: 2022-03-14 15:55:56 -0700 (Mon, 14 Mar 2022) $
+; $LastChangedRevision: 30677 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/tables/spp_swp_sweepv_dacv_v2.pro $
 ;
 ;-
 
-PRO spp_swp_sweepv_dacv_v2,sweepv_dac,defv1_dac,defv2_dac,spv_dac,k=k,rmax=rmax,vmax=vmax,nen=nen,e0=e0,emax=emax,spfac=spfac,maxspen=maxspen,plot=plot,hvgain=hvgain,spgain=spgain,version=version,fixgain=fixgain,new_defl=new_defl,spe=spe
+PRO spp_swp_sweepv_dacv_v2,sweepv_dac,defv1_dac,defv2_dac,spv_dac,k=k,rmax=rmax,vmax=vmax,nen=nen,e0=e0,emax=emax,spfac=spfac,maxspen=maxspen,plot=plot,$
+                           hvgain=hvgain,spgain=spgain,version=version,fixgain=fixgain,new_defl=new_defl,spe=spe,defl_lim=defl_lim
 
    max = 65536.
    
@@ -28,7 +29,7 @@ PRO spp_swp_sweepv_dacv_v2,sweepv_dac,defv1_dac,defv2_dac,spv_dac,k=k,rmax=rmax,
    IF NOT keyword_set(fixgain) THEN fixgain = 13.
 
    ;; Generate Sweep Voltages
-   spp_swp_sweepv_new_v2, sweepv,defv1,defv2,spv,k=k,rmax=rmax,vmax=vmax,nen=nen,e0=e0,emax=emax,spfac=spfac,maxspen=maxspen,plot=plot
+   spp_swp_sweepv_new_v2, sweepv,defv1,defv2,spv,k=k,rmax=rmax,vmax=vmax,nen=nen,e0=e0,emax=emax,spfac=spfac,maxspen=maxspen,plot=plot,vsweep=vsweep
 
    ;; Change Voltages to DAC
    sweepv_dac = max*sweepv/(4*hvgain)
@@ -68,6 +69,79 @@ PRO spp_swp_sweepv_dacv_v2,sweepv_dac,defv1_dac,defv2_dac,spv_dac,k=k,rmax=rmax,
       ENDFOR 
 
    ENDIF
+
+
+   ;; New Deflector DAC values based on flight calibration and
+   ;; with corrected maximum V limits for the deflections.
+   IF keyword_set(defl_lim) THEN BEGIN
+      
+      ;; From python code
+      defMax = 60.
+      defMin = -60.
+      defl_range=[defMin,defMax]
+      nang = 32
+      angleWidth = (defMax - defMin)/nang
+      angleCenter = angleWidth / 2
+      angles = (defMax-defMin)-findgen(32)*angleWidth-anglewidth/2-defMax
+      defv1_dac = lonarr(4096)
+      defv2_dac = lonarr(4096)
+      FOR i=0, 4095 DO BEGIN
+         angleIndex = i MOD 32
+         angleDac = spp_swp_sweepv_defl_func(spe=spe, angles[angleIndex])
+         IF angleDac GT 0 THEN BEGIN 
+            defv1_dac[i] = round(abs(angleDac))
+            defv2_dac[i] = 0
+         ENDIF 
+         IF angleDac LE 0 THEN BEGIN
+            defv1_dac[i] = 0        
+            defv2_dac[i] = round(abs(angleDac))
+         ENDIF
+      ENDFOR 
+
+      ;; Correction for overdeflections
+
+      ;; Cycle through all 128 energy steps
+      FOR i=0, 127 DO BEGIN
+
+         flip = 0
+         
+         ;; If deflector voltage at each energy exceeds 4000 then adjust accordingly
+         IF vmax/vsweep[i] LT rmax THEN BEGIN
+            
+            ;; Use maximum deflector multiplier value at this energy step
+            vdm = vmax/vsweep[i]
+            
+            ;; Deflector multiplier (including fixed gain)
+            stepnum = findgen(nang/2)
+            vd = vdm * (0.5+stepnum)/(nang/2-0.5)
+
+            ;; Two halves of deflector sweep
+            defv1 = [reverse(vd),replicate(0,nang/2)] 
+            defv2 = [replicate(0,nang/2),vd]
+            
+            ;; Sweep one way on evens, other way on odds
+            if (0 and flip) then begin           
+               defv1 = reverse(defv1) 
+               defv2 = reverse(defv2)
+            endif
+
+            ;; Insert inot original deflector dac array
+            defv1_dac[32*i:32*i+31]  = max*defv1/fixgain
+            defv2_dac[32*i:32*i+31]  = max*defv2/fixgain
+
+            ;; Print new
+            print, defv1_dac[32*i:32*i+31]
+            
+            ;; An unnecessarily complicated way to do the flipping
+            flip = (flip + 1) mod 2 
+            
+         ENDIF
+         
+         
+      ENDFOR
+      
+   ENDIF
+
    
    
    nang = 4096/nen
@@ -92,7 +166,7 @@ PRO spp_swp_sweepv_dacv_v2,sweepv_dac,defv1_dac,defv2_dac,spv_dac,k=k,rmax=rmax,
    
    ;; Fix spoiler at low end to match slut
    spv_dac[w] = round(spv[w]*sweepv_dac[w]*hvgain/spgain)    ; THIS LOOKS very sloppy  W = -1 here.
-   
+
    if keyword_set(plot) then begin
       wi,1
       !p.multi = [0,1,3]
@@ -104,7 +178,8 @@ PRO spp_swp_sweepv_dacv_v2,sweepv_dac,defv1_dac,defv2_dac,spv_dac,k=k,rmax=rmax,
            /ystyle
       oplot,defv1_dac,color = 50,psym = 10
       oplot,defv2_dac,color = 250,psym = 10
-      oplot,spv_dac,color = 150,psym = 10     
+      oplot,spv_dac,color = 150,psym = 10
+      stop
       plot,sweepv_dac,psym=10,$
            xtitle = 'Time Step',$
            ytitle = 'Sweep DAC (Log)',$

@@ -3,14 +3,15 @@
 ;
 ; SPP_SWP_SWEEPV_NEW_V2
 ;
-; $LastChangedBy: rlivi2 $
-; $LastChangedDate: 2019-09-30 22:43:11 -0700 (Mon, 30 Sep 2019) $
-; $LastChangedRevision: 27805 $
+; $LastChangedBy: rlivi04 $
+; $LastChangedDate: 2022-03-14 15:55:56 -0700 (Mon, 14 Mar 2022) $
+; $LastChangedRevision: 30677 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/tables/spp_swp_sweepv_new_v2.pro $
 ;
 ;-
 
-PRO spp_swp_sweepv_new_v2,sweepv,defv1,defv2,spv,k=k,rmax=rmax,vmax=vmax,nen=nen,e0=e0,emax=emax,spfac=spfac,version=version,maxspen=maxspen,plot=plot,new_defl=new_defl
+PRO spp_swp_sweepv_new_v2,sweepv,defv1,defv2,spv,k=k,rmax=rmax,vmax=vmax,nen=nen,e0=e0,emax=emax,spfac=spfac,version=version,$
+                          maxspen=maxspen,plot=plot,new_defl=new_defl,defl_lim=defl_lim,vsweep=vsweep
 
    ;; Keyword Check
    IF NOT keyword_set(k)       THEN k       = 16.7
@@ -21,7 +22,8 @@ PRO spp_swp_sweepv_new_v2,sweepv,defv1,defv2,spv,k=k,rmax=rmax,vmax=vmax,nen=nen
    IF NOT keyword_set(emax)    THEN emax    = 20000.
    IF NOT keyword_set(spfac)   THEN spfac   = 0.
    IF NOT keyword_set(maxspen) THEN maxspen = 5000.
-
+   IF NOT keyword_set(version) THEN version = 2
+   
    nang = 4096/nen
    
    exp = (emax/e0)^(1.0/(nen-1)) -1 
@@ -76,7 +78,7 @@ PRO spp_swp_sweepv_new_v2,sweepv,defv1,defv2,spv,k=k,rmax=rmax,vmax=vmax,nen=nen
    defv1  = defv1[1:4096]
    defv2  = defv2[1:4096]
    spv    = spv[1:4096]
-   
+
    if keyword_set(plot) then begin
                                 ;print,nen,nang
       wi,3

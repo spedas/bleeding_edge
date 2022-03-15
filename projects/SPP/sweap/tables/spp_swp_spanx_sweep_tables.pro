@@ -6,15 +6,16 @@
 ;
 ;     new_defl - Set to use calibrated deflector values.
 ;
-; $LastChangedBy: rlivi2 $
-; $LastChangedDate: 2020-05-17 19:41:55 -0700 (Sun, 17 May 2020) $
-; $LastChangedRevision: 28698 $
+; $LastChangedBy: rlivi04 $
+; $LastChangedDate: 2022-03-14 15:55:56 -0700 (Mon, 14 Mar 2022) $
+; $LastChangedRevision: 30677 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/tables/spp_swp_spanx_sweep_tables.pro $
 ;
 ;-
 
 function spp_swp_spanx_sweep_tables,erange,deflrange,plot=plot,emode=emode,sensor=sensor,k=k,rmax=rmax,vmax=vmax,nen=nen,spfac=spfac,$
-                                    maxspen=maxspen,hvgain=hvgain,spgain=spgain,fixgain=fixgain,new_defl=new_defl,spe=spe,version=version
+                                    maxspen=maxspen,hvgain=hvgain,spgain=spgain,fixgain=fixgain,new_defl=new_defl,spe=spe,version=version,$
+                                    defl_lim=defl_lim
     
    if n_elements(erange) eq 2 then valid=1b else begin
       valid = 0b
@@ -34,27 +35,29 @@ function spp_swp_spanx_sweep_tables,erange,deflrange,plot=plot,emode=emode,senso
    if ~ isa(hvgain)  then hvgain  = 1000.
    if ~ isa(spgain)  then spgain  = 20.12
    if ~ isa(fixgain) then fixgain = 13.
-
+   IF ~ isa(version) THEN version = 2
+   
    ;; Define energy minimum and maximum
    emin = erange[0]
    emax = erange[1]
 
    ;; Version Description
-   ;; 1:
-   ;; 2: 
+   ;; 1: Oddly spaced targeted sweeps.
+   ;; 2: Evenly spaced targeted sweeps.
+   ;; 3: Targeted table that repeates 8 deflections for a single energy
+   ;;
    ;; Default: Vesion 2
-   version = 2
 
    ;; DACS
    spp_swp_sweepv_dacv_v2,sweepv_dac,defv1_dac,defv2_dac,spv_dac,k=k,rmax=rmax,vmax=vmax,nen=nen,e0=emin,emax=emax,spfac=spfac,$
-                          maxspen=maxspen,version=version,plot=plot,hvgain=hvgain,spgain=spgain,fixgain=fixgain,new_defl=new_defl,spe=spe
+                          maxspen=maxspen,version=version,plot=plot,hvgain=hvgain,spgain=spgain,fixgain=fixgain,new_defl=new_defl,spe=spe,defl_lim=defl_lim
 
    ;; Full Index
-   spp_swp_sweepv_new_fslut_v2,sweepv,defv1,defv2,spv,fsindex,version=version,nen=nen/4,e0=emin,emax=emax,plot=plot,spfac=spfac,new_defl=new_defl
+   spp_swp_sweepv_new_fslut_v2,sweepv,defv1,defv2,spv,fsindex,version=version,nen=nen/4,e0=emin,emax=emax,plot=plot,spfac=spfac,new_defl=new_defl,defl_lim=defl_lim
 
    ;; Targeted Index
    FOR i=0, 255 DO BEGIN
-      spp_swp_sweepv_new_tslut_v2,version=version,sweepv,defv1,defv2,spv,fsindex_tmp,tsindex,plot=plot,nen=nen,e0=emin,emax=emax,edpeak=i,spfac=spfac,new_defl=new_defl
+      spp_swp_sweepv_new_tslut_v2,version=version,sweepv,defv1,defv2,spv,fsindex_tmp,tsindex,plot=plot,nen=nen,e0=emin,emax=emax,edpeak=i,spfac=spfac,new_defl=new_defl,defl_lim=defl_lim
       IF i EQ 0 THEN index = tsindex ELSE index = [index,tsindex]      
    ENDFOR
    tsindex = index
