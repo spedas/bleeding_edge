@@ -11,8 +11,8 @@
 ;	Info_str: An array of structures defining basic info for given time ranges
 ;
 ; $LastChangedBy: jhalekas $
-; $LastChangedDate: 2014-11-24 13:15:31 -0800 (Mon, 24 Nov 2014) $
-; $LastChangedRevision: 16288 $
+; $LastChangedDate: 2022-03-17 07:28:27 -0700 (Thu, 17 Mar 2022) $
+; $LastChangedRevision: 30688 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swia/mvn_swia_make_info_str.pro $
 ;
 ;-
@@ -27,7 +27,8 @@ k_ideal = 7.6			; ideal analyzer constant
 k_over_k_ideal = 7.8/7.6	; correction for calibrated analyzer constant
 maxdefv = 6.4			; deflector/inner hemisphere ratio for 45 degree deflection
 dt_int = 0.0017			; integration time
-geom = 0.0056			; geometric factor for 360 sensor w/ all efficiencies (cm^2 s sr eV/eV)
+geom = 0.0056 * 0.7		; geometric factor for 360 sensor w/ all efficiencies (cm^2 s sr eV/eV)
+				; modified per LPW calibration 3/17/22
 af = 15.0			; maximum attenuation factor (changed from 11.1)
 			      ; need to change in coarse moments coefficients as well
 

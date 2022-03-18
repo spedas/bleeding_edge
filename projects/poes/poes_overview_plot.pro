@@ -19,9 +19,9 @@
 ;       
 ;       
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-12-02 13:19:57 -0800 (Mon, 02 Dec 2019) $
-; $LastChangedRevision: 28068 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2022-03-16 21:15:39 -0700 (Wed, 16 Mar 2022) $
+; $LastChangedRevision: 30685 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot.pro $
 ;-
 
@@ -91,7 +91,10 @@ pro poes_overview_plot, date = date, probe = probe_in, duration = duration, erro
             tplot, var_label=[probe_in+'_mlt', probe_in+'_mag_lat_sat']
             thm_gen_multipngplot, probe_in, date, directory = dir, /mkdir
         endif else begin
-            tplot_gui, /no_verify, /add_panel, poes_plots, var_label=[probe_in+'_mlt', probe_in+'_mag_lat_sat'], import_only=import_only
+          
+            options, /add, probe_in+'_mlt', 'ytitle', 'MLT'
+            options, /add, probe_in+'_mag_lat_sat', 'ytitle', 'Lat'
+            tplot_gui, /no_verify, /add_panel, poes_plots, var_label=[probe_in+'_mag_lat_sat', probe_in+'_mlt'], import_only=import_only
         
         endelse
         error = 0

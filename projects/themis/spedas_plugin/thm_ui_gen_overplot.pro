@@ -21,9 +21,9 @@
 ;OUTPUT:
 ;  none
 ;  
-;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-03-04 13:45:18 -0800 (Fri, 04 Mar 2022) $
-;$LastChangedRevision: 30651 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2022-03-16 21:14:08 -0700 (Wed, 16 Mar 2022) $
+;$LastChangedRevision: 30684 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spedas_plugin/thm_ui_gen_overplot.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -392,18 +392,18 @@ pro thm_ui_fix_overview_panels, state=state
   
   ; Panel 13
   ; Fix the variables of the last panel (printed below the last panel)
-  panel[n_elements(panel)-1]->GetProperty, variables = variables
-  if obj_valid(variables) then begin
-    vars = variables->get(/all)
-    for i=0, n_elements(vars)-1 do begin
-      vars[i]->getProperty, text=textobj
-      textobj->getproperty, value=text
-      ;get component dynamically since order may change
-      textobj->setProperty, value = $
-        strupcase( (stregex(text,'.*_([xyz])_.*$',/sub,/extract))[1] ) + '-GSE'
-      vars[i]->setProperty, text=textobj
-    endfor
-  endif
+;  panel[n_elements(panel)-1]->GetProperty, variables = variables
+;  if obj_valid(variables) then begin
+;    vars = variables->get(/all)
+;    for i=0, n_elements(vars)-1 do begin
+;      vars[i]->getProperty, text=textobj
+;      textobj->getproperty, value=text
+;      ;get component dynamically since order may change
+;      textobj->setProperty, value = $
+;        strupcase( (stregex(text,'.*_([xyz])_.*$',/sub,/extract))[1] ) + '-GSE'
+;      vars[i]->setProperty, text=textobj
+;    endfor
+;  endif
 
 end
 

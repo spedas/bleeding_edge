@@ -7,7 +7,7 @@
 ;         
 ;         For DES/DIS moments
 ;          tname+'_flagbars_full': Detailed flag bars (all bars)
-;          tname+'_flagbars'     : Standard flag bars (4 bars)
+;          tname+'_flagbars_main': Standard flag bars (4 bars)
 ;          tname+'_flagbars_mini': Smallest flag bar (1 bars)
 ;
 ;         For DES/DIS distribution function
@@ -67,8 +67,8 @@
 ;     June 2016: minor updates by egrimes
 ;     
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-07-31 13:59:46 -0700 (Fri, 31 Jul 2020) $
-; $LastChangedRevision: 28962 $
+; $LastChangedDate: 2022-03-16 11:59:00 -0700 (Wed, 16 Mar 2022) $
+; $LastChangedRevision: 30682 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/fpi/mms_fpi_make_errorflagbars.pro $
 ;-
 
