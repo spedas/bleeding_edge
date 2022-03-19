@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Mar 17 18:16:30 2022.<P>
+<STRONG>Last modified: </STRONG>Fri Mar 18 18:16:25 2022.<P>
  
 <HR>
  
@@ -226,6 +226,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/po
          date: Start date for the overview plot
          duration: Duration of the overview plot
          error: error state, 0 for no error, 1 for an error
+         makepng: generate png files
          gui_overplot: flag, 0 if the overview plot isn't being made in the GUI, 1 if it is
          oplot_calls: pointer to an int for tracking calls to overview plots - for 
              avoiding overwriting tplot data already loaded during this session
@@ -235,8 +236,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/po
        
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2022-03-16 21:15:39 -0700 (Wed, 16 Mar 2022) $
- $LastChangedRevision: 30685 $
+ $LastChangedDate: 2022-03-18 12:52:44 -0700 (Fri, 18 Mar 2022) $
+ $LastChangedRevision: 30691 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot.pro $
 </PRE><P>
 <STRONG>(See <A href="poes/poes_overview_plot.pro">projects/poes/poes_overview_plot.pro</A>)</STRONG><P>
@@ -260,6 +261,7 @@ KEYWORDS:
          date_start: begin processing at this date (eg. '2013-12-19')
          date_end: end processing at this date (eg. '2013-12-29')
          base_dir: root dir for output plots (eg. /disks/themisdata/overplots/)
+         makepng: generate png files
          server_run: for a cron job this has to be set to '1' to avoid downloading files
          themis_dir: server directory for themis (eg. '/disks/themisdata/')
          poes_dir: server directory for poes (eg. '/disks/data/goes/poes/qa/')
@@ -307,8 +309,8 @@ NOTES:
 
 HISTORY:
 $LastChangedBy: nikos $
-$LastChangedDate: 2021-10-18 12:24:56 -0700 (Mon, 18 Oct 2021) $
-$LastChangedRevision: 30376 $
+$LastChangedDate: 2022-03-18 12:52:44 -0700 (Fri, 18 Mar 2022) $
+$LastChangedRevision: 30691 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot_wrapper.pro $
 </PRE><P>
 <STRONG>(See <A href="poes/poes_overview_plot_wrapper.pro">projects/poes/poes_overview_plot_wrapper.pro</A>)</STRONG><P>

@@ -12,6 +12,7 @@
 ;         date_start: begin processing at this date (eg. '2013-12-19')
 ;         date_end: end processing at this date (eg. '2013-12-29')
 ;         base_dir: root dir for output plots (eg. /disks/themisdata/overplots/)
+;         makepng: generate png files
 ;         server_run: for a cron job this has to be set to '1' to avoid downloading files
 ;         themis_dir: server directory for themis (eg. '/disks/themisdata/')
 ;         goes_dir: server directory for goes (eg. '/disks/data/goes/qa/')
@@ -35,8 +36,8 @@
 ;
 ;HISTORY:
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2022-03-07 12:27:35 -0800 (Mon, 07 Mar 2022) $
-;$LastChangedRevision: 30655 $
+;$LastChangedDate: 2022-03-18 12:52:44 -0700 (Fri, 18 Mar 2022) $
+;$LastChangedRevision: 30691 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot_wrapper.pro $
 ;----------
 
@@ -115,7 +116,7 @@ function goes_generate_datearray, date_start, date_end
 end
 
 pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
-  date_mod = date_mod, probes = probes, base_dir = base_dir, $
+  date_mod = date_mod, probes = probes, base_dir = base_dir, makepng=makepng, $
   server_run = server_run, themis_dir = themis_dir, goes_dir = goes_dir
   compile_opt idl2
 
@@ -219,7 +220,7 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
           dprint, msgstr
           store_data, delete=tnames()
           heap_gc
-          goes_overview_plot, date=date, probe=probe, directory=directory, device=device, geopack_lshell=geopack_lshell, error=error
+          goes_overview_plot, date=date, probe=probe, directory=directory, device=device, geopack_lshell=geopack_lshell, error=error, makepng=makepng
           if ~keyword_set(error) then error=0
           if error ne 1 then error=0
           count_errors = count_errors + error
@@ -230,7 +231,7 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
         if year03 lt 2018 then continue
         store_data, '*', /delete
         error = 0
-        goesr_overview_plot, date=date, probe=probe, directory=directory, device=device, geopack_lshell=geopack_lshell, error=error
+        goesr_overview_plot, date=date, probe=probe, directory=directory, device=device, geopack_lshell=geopack_lshell, error=error, makepng=makepng
         dprint, 'date: ', date, ', probe: ', probe, ', device: ', device, ', error: ', error
         goes_write_lastdate, lastdate_file, date
       endelse

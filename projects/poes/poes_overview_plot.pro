@@ -11,6 +11,7 @@
 ;         date: Start date for the overview plot
 ;         duration: Duration of the overview plot
 ;         error: error state, 0 for no error, 1 for an error
+;         makepng: generate png files
 ;         gui_overplot: flag, 0 if the overview plot isn't being made in the GUI, 1 if it is
 ;         oplot_calls: pointer to an int for tracking calls to overview plots - for 
 ;             avoiding overwriting tplot data already loaded during this session
@@ -20,12 +21,12 @@
 ;       
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2022-03-16 21:15:39 -0700 (Wed, 16 Mar 2022) $
-; $LastChangedRevision: 30685 $
+; $LastChangedDate: 2022-03-18 12:52:44 -0700 (Fri, 18 Mar 2022) $
+; $LastChangedRevision: 30691 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot.pro $
 ;-
 
-pro poes_overview_plot, date = date, probe = probe_in, duration = duration, error = error, $
+pro poes_overview_plot, date = date, probe = probe_in, duration = duration, error = error, makepng = makepng,$
                         gui_overplot = gui_overplot, oplot_calls = oplot_calls, directory = directory, $
                         device = device, import_only=import_only, _extra = _extra
     compile_opt idl2
@@ -89,7 +90,9 @@ pro poes_overview_plot, date = date, probe = probe_in, duration = duration, erro
             options, /def, probe_in+'_mag_lat_sat', 'ytitle', 'Lat'
             
             tplot, var_label=[probe_in+'_mlt', probe_in+'_mag_lat_sat']
-            thm_gen_multipngplot, probe_in, date, directory = dir, /mkdir
+            if keyword_set(makepng) then begin
+              thm_gen_multipngplot, probe_in, date, directory = dir, /mkdir
+            endif
         endif else begin
           
             options, /add, probe_in+'_mlt', 'ytitle', 'MLT'

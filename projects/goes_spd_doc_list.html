@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Mar 17 18:16:30 2022.<P>
+<STRONG>Last modified: </STRONG>Fri Mar 18 18:16:25 2022.<P>
  
 <HR>
  
@@ -296,6 +296,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/go
          date: start date for the overview plot
          duration: duration of the overview plot, in days; defaults to 1-day
          directory: local directory to save the overview plots to (should end with '/' or '\')
+         makepng: generate png files
          device: change the plot device for cron plotting (for cron use device = 'z')
          geopack_lshell: calculate L-shell by tracing field lines 
              to the equator instead of using the dipole assumption
@@ -332,8 +333,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/go
                             This is shown only if Kyoto AE is not available. 
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2020-10-16 13:08:07 -0700 (Fri, 16 Oct 2020) $
- $LastChangedRevision: 29261 $
+ $LastChangedDate: 2022-03-18 12:52:44 -0700 (Fri, 18 Mar 2022) $
+ $LastChangedRevision: 30691 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot.pro $
 </PRE><P>
 <STRONG>(See <A href="goes/goes_overview_plot.pro">projects/goes/goes_overview_plot.pro</A>)</STRONG><P>
@@ -358,6 +359,7 @@ KEYWORDS:
          date_start: begin processing at this date (eg. '2013-12-19')
          date_end: end processing at this date (eg. '2013-12-29')
          base_dir: root dir for output plots (eg. /disks/themisdata/overplots/)
+         makepng: generate png files
          server_run: for a cron job this has to be set to '1' to avoid downloading files
          themis_dir: server directory for themis (eg. '/disks/themisdata/')
          goes_dir: server directory for goes (eg. '/disks/data/goes/qa/')
@@ -381,8 +383,8 @@ EXAMPLE USAGE:
 
 HISTORY:
 $LastChangedBy: nikos $
-$LastChangedDate: 2022-03-07 12:27:35 -0800 (Mon, 07 Mar 2022) $
-$LastChangedRevision: 30655 $
+$LastChangedDate: 2022-03-18 12:52:44 -0700 (Fri, 18 Mar 2022) $
+$LastChangedRevision: 30691 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot_wrapper.pro $
 </PRE><P>
 <STRONG>(See <A href="goes/goes_overview_plot_wrapper.pro">projects/goes/goes_overview_plot_wrapper.pro</A>)</STRONG><P>

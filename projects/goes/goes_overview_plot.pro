@@ -9,6 +9,7 @@
 ;         date: start date for the overview plot
 ;         duration: duration of the overview plot, in days; defaults to 1-day
 ;         directory: local directory to save the overview plots to (should end with '/' or '\')
+;         makepng: generate png files
 ;         device: change the plot device for cron plotting (for cron use device = 'z')
 ;         geopack_lshell: calculate L-shell by tracing field lines 
 ;             to the equator instead of using the dipole assumption
@@ -45,12 +46,12 @@
 ;                            This is shown only if Kyoto AE is not available. 
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2020-10-16 13:08:07 -0700 (Fri, 16 Oct 2020) $
-; $LastChangedRevision: 29261 $
+; $LastChangedDate: 2022-03-18 12:52:44 -0700 (Fri, 18 Mar 2022) $
+; $LastChangedRevision: 30691 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot.pro $
 ;-
 
-pro goes_overview_plot, date = date, probe = probe_in, directory = directory, device = device, $
+pro goes_overview_plot, date = date, probe = probe_in, directory = directory, device = device, makepng=makepng,$
                     geopack_lshell = geopack_lshell, duration = duration, gui_overplot = gui_overplot, $
                     oplot_calls = oplot_calls, error = error, skip_ae_idx = skip_ae_idx, import_only=import_only, $
                     _extra=_extra
@@ -361,8 +362,10 @@ endif
             endelse
                
             ;thm_gen_multipngplot, 'g'+probe+'_overview', overviewdate, directory = dir, /mkdir
-            thm_gen_multipngplot, 'goes_goes'+probe, overviewdate, directory = dir, /mkdir
-
+            
+            if keyword_set(makepng) then begin
+              thm_gen_multipngplot, 'goes_goes'+probe, overviewdate, directory = dir, /mkdir
+            endif
     endif else begin
         tplot_gui, /no_verify, /add_panel, import_only=import_only, ['kyoto_thm_combined_ae'+suffix, $ ; AE plot
                     [full_goes_plot]], var_label=['g'+probe+'_pos_mlt', 'g'+probe+'_L_shell']+suffix
