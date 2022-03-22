@@ -165,6 +165,7 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
   get_data,'elx_pxf_spinper',data=elx_pxf_spinper,dlim=myspinperdata,lim=myspinperdata_lim
   nsectors=n_elements(elx_pxf.x)
   nspinsectors=long(max(elx_pxf_sectnum.y)+1)
+  Max_numchannels = n_elements(elx_pxf.v) ; this is 16 (nominally)
   tcor=(my_nspinsinsum-1.)*(elx_pxf_spinper.y/nspinsectors)*(float(elx_pxf_sectnum.y)-float(nspinsectors)/2.+0.5) ; spread in time
   elx_pxf.x=elx_pxf.x+tcor ; here correct (spread) sectors to full accumulation interval
   elx_pxf_sectnum.x=elx_pxf_sectnum.x+tcor ; (spread) sectors to full accumulation interval
@@ -173,17 +174,16 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
   store_data,'elx_pxf',data=elx_pxf,dlim=mypxfdata_dlim,lim=mypxfdata_lim
   store_data,'elx_pxf_sectnum',data=elx_pxf_sectnum,dlim=mysectnumdata_dlim,lim=mysectnumdata_lim
   store_data,'elx_pxf_spinper',data=elx_pxf_spinper,dlim=myspinperdata,lim=myspinperdata_lim
-  mypxforigarray=reform(elx_pxf.y,nsectors*nspinsectors)
+  mypxforigarray=reform(elx_pxf.y,nsectors*Max_numchannels)
   ianynegpxfs=where(mypxforigarray lt 0.,janynegpxfs) ; eliminate negative values from raw data -- these should not be there!
   if janynegpxfs gt 0 then mypxforigarray[ianynegpxfs]=0.
-  elx_pxf.y=reform(mypxforigarray,nsectors,nspinsectors)
+  elx_pxf.y=reform(mypxforigarray,nsectors,Max_numchannels)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; shift PEF times to the right by 1 sector, make 1st point a NaN, all times now represent mid-points!!!!
   ; The reason is that the actual FGS cross-correlation shows that the DBZDT zero crossing is exactly
   ; in the middle between sector nspinsectors-1 and sector 0, meaning there is no need for any other time-shift rel.to.FGM
   ; CORRECT UNITS IN PLOT, AND ENERGY BINS
   ;
-  Max_numchannels = n_elements(elx_pxf.v) ; this is 16 (nominally)
   ;
   if mytype ne 'raw' then begin; you can define energy bin mins and maxs if you need them (used further only when type is not 'raw')
     Emids=elx_pxf.v
