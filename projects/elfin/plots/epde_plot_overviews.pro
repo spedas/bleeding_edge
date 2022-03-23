@@ -81,7 +81,16 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   endif
 
   elf_load_fgm, probes=probe, datatype='fgs' 
-  
+  get_data, 'el'+probe+'_fgs', data=elx_fgs
+  if size(elx_fgs, /type) NE 8 then begin
+    elf_load_fgm, probe=probe, trange=['2022-01-15','2022-01-16'], datatype='fgs'
+    timeduration=(time_double(trange[1])-time_double(trange[0]))
+    timespan,tr[0],timeduration,/seconds
+    tr=timerange()
+  endif
+  ;del_data, 'fgm_survey_bar'
+
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; GET KP and DST values
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -244,7 +253,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ;;;;;;;;;;;;;;;;;;;;;;;;;
   ; EOD status bar
   ;;;;;;;;;;;;;;;;;;;;;;;;;
-  del_data, 'epd_fast_bar'
+  ;del_data, 'epd_fast_bar'
   elf_load_epd_fast_segments, tplotname='el'+probe+'_pef_nflux', no_download=no_download
   get_data, 'epd_fast_bar', data=epdef_fast_bar_x
 
@@ -258,7 +267,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ;;;;;;;;;;;;;;;;;;;;;;;;;
   ; FGM status bar
   ;;;;;;;;;;;;;;;;;;;;;;;;;
-  del_data, 'fgm_survey_bar'
   elf_load_fgm_survey_segments, tplotname='el'+probe+'_fgs', no_download=no_download
   get_data, 'fgm_survey_bar', data=fgm_survey_bar_x
 
@@ -312,7 +320,8 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   append_array, file_lbl, '_24hr'
   st_hr = dat_gei.x[min_st]
   en_hr = dat_gei.x[min_en]
-
+  nplots = n_elements(min_st) ;number of starting hours (NOT number of sci zones)
+  
   ; set up for plots by science zone
   if (size(pef_nflux, /type)) EQ 8 then begin
     tdiff = pef_nflux.x[1:n_elements(pef_nflux.x)-1] - pef_nflux.x[0:n_elements(pef_nflux.x)-2]
@@ -321,9 +330,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     if ncnt EQ 0 then begin
       ; if ncnt is zero then there is only one science zone for this time frame
       sz_starttimes=[pef_nflux.x[0]]
-      sz_min_st=[0]
       sz_endtimes=pef_nflux.x[n_elements(pef_nflux.x)-1]
-      sz_min_en=[n_elements(pef_nflux.x)-1]
       ts=time_struct(sz_starttimes[0])
       te=time_struct(sz_endtimes[0])
     endif else begin
@@ -342,17 +349,17 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         if (this_e-this_s) lt 15. then continue
         append_array, sz_starttimes, this_s
         append_array, sz_endtimes, this_e
-        append_array, sz_min_st, sidx
-        append_array, sz_min_en, eidx
         endfor
       endelse
     endif
 
-  nplots = n_elements(min_st) ;number of starting hours (NOT number of sci zones)
+;  epd_times=get_elf_science_zone_start_end(trange=trange, probe=probe, instrument='epd')
+;  if size(epd_times, /type) EQ 8 then begin
+;     sz_starttimes=epd_times.starts
+;     sz_endtimes=epd_times.ends
+;  endif
   
-  num_szs = n_elements(sz_starttimes)
-  completed_szs=make_array(1, /double) ;list of completed sci zones
-
+  num_szs=n_elements(sz_starttimes)
   ; set up science zone plot options
   tplot_options, 'xmargin', [16,11]
   tplot_options, 'ymargin', [4,3]
@@ -361,21 +368,16 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ; MAIN LOOP for PLOTs
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   for i=0,num_szs-1 do begin ;changed from 0,nplots-1
-  
-      if i EQ 0 && (sz_starttimes[i]-rundate) LT 4.0 then begin
-        sz_tr=[sz_starttimes[i]-300.,sz_endtimes[i]]       
-      endif else begin  
-        sz_tr=[sz_starttimes[i],sz_endtimes[i]]
-      endelse
 
+      sz_tr=[sz_starttimes[i],sz_endtimes[i]]   ; add 3 seconds to ensure that full spin periods are loaded
       tdur=sz_tr[1]-sz_tr[0]
       timespan, sz_tr[0], tdur, /sec
-      if total(where(sz_tr[0] eq completed_szs)) ne -1 then continue ; if science zone is found in completed_szs, skip
 
       ; get EPD data
-      del_data, 'el'+probe+'_pef_nflux'
       elf_load_epd, probes=probe, datatype='pef', level='l1', type='nflux',no_download=no_download
-    
+      sc='el'+probe
+      get_data, sc+'_pef_nflux', data=pef
+ 
       ; get sector and phase delay for this zone
       phase_delay = elf_find_phase_delay(trange=sz_tr, probe=probe, instrument='epde', no_download=no_download)
       if finite(phase_delay.dsect2add[0]) then dsect2add=fix(phase_delay.dsect2add[0]) $
@@ -396,7 +398,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       spin_str=''
       if spd_data_exists('el'+probe+'_pef_nflux',sz_tr[0],sz_tr[1]) then begin
         get_data, 'el'+probe+'_pef_nspinsinsum', data=my_nspinsinsum
-        completed_szs=[completed_szs,sz_tr[0]] ;append science zone start time to list
         batch_procedure_error_handler, 'elf_getspec', /regularize, probe=probe, dSect2add=dsect2add, dSpinPh2add=dphang2add, nspinsinsum=my_nspinsinsum.y, no_download=no_download
         if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin
           elf_getspec, probe=probe, nspinsinsum=my_nspinsinsum.y
@@ -409,11 +410,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           strmid(strtrim(string(spin_var), 1),0,4)+'% T'
       endif
 
-      sz_tr=[sz_starttimes[i],sz_endtimes[i]]
-      tdur=sz_tr[1]-sz_tr[0]
-      timespan, sz_tr[0], tdur, /sec
-      tr=timerange()
-     
       ; handle scaling of y axis
       if size(proxy_ae, /type) EQ 8 then begin
         ae_idx = where(proxy_ae.x GE sz_tr[0] and proxy_ae.x LT sz_tr[1], ncnt)
@@ -463,8 +459,8 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       options, 'el'+probe+'_L_dip', 'format', '(1F4.1)'
       
       if strlowcase(probe) eq 'a' then  $
-         varstring=['ela_GLON','ela_MLAT_igrf(ela_MLAT_dip)', 'ela_MLT_igrf(ela_MLT_dip)', 'ela_L_igrf(ela_L_dip)'] else $
-         varstring=['elb_GLON','elb_MLAT_igrf(elb_MLAT_dip)', 'elb_MLT_igrf(elb_MLT_dip)', 'elb_L_igrf(elb_L_dip)']
+         varstring=['ela_GLON','ela_MLAT_igrf[ela_MLAT_dip]', 'ela_MLT_igrf[ela_MLT_dip]', 'ela_L_igrf[ela_L_dip]'] else $
+         varstring=['elb_GLON','elb_MLAT_igrf[elb_MLAT_dip]', 'elb_MLT_igrf[elb_MLT_dip]', 'elb_L_igrf[elb_L_dip]']
 
       if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin       
         tplot,['proxy_ae', $
@@ -666,6 +662,10 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           else options, 'proxy_ae', yrange=[0,ae_max[1]+ae_max[1]*.1]
   endif
   
+  if strlowcase(probe) eq 'a' then  $
+    varstring=['ela_GLON','ela_MLAT_igrf[ela_MLAT_dip]', 'ela_MLT_igrf[ela_MLT_dip]', 'ela_L_igrf[ela_L_dip]'] else $
+    varstring=['elb_GLON','elb_MLAT_igrf[elb_MLAT_dip]', 'elb_MLT_igrf[elb_MLT_dip]', 'elb_L_igrf[elb_L_dip]']
+
   ; Do hourly plots and 24hr plot
   for i=0,nplots-1 do begin ; plots full day on hr=24
     ; Set hourly start and stop times

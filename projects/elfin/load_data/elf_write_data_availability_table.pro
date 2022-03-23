@@ -22,7 +22,7 @@
 ;LAST EDITED: lauraiglesias4@gmail.com 05/18/21
 ;
 ;-
-pro elf_write_data_availability_table, filename, data_available, instrument, probe
+pro elf_write_data_availability_table, tdate, dt, filename, data_available, instrument, probe
 
   ; initialize parameters
   if undefined(filename) then begin
@@ -33,17 +33,10 @@ pro elf_write_data_availability_table, filename, data_available, instrument, pro
     print, 'You must provide data availability for the csv file.'
     return
   endif
-
-  ; get authorization information
-;  if undefined(user) OR undefined(pw) then authorization = elf_get_authorization()
-;  user=authorization.user_name
-;  pw=authorization.password
-;  ; only query user if authorization file not found
-;  If user EQ '' OR pw EQ '' then begin
-;    print, 'Please enter your ELFIN user name and password'
-;    read,user,prompt='User Name: '
-;    read,pw,prompt='Password: '
-;  endif
+  
+  if undefined(dt) then dt=60. else dt=dt
+  timespan, time_double(tdate)-dt*86400., dt
+  trange=timerange()
 
   ; define local and remote paths
   local_path=!elf.LOCAL_DATA_DIR+'el'+probe+ '/data_availability/'
@@ -53,19 +46,14 @@ pro elf_write_data_availability_table, filename, data_available, instrument, pro
     for i=0,n_elements(zone_names)-1 do begin
       current = where(data_available.zones eq zone_names[i])
       if current[0] ne -1 then begin
-        
-        newdat = {name:'newdat', starttimes: data_available.starttimes[current], $
-          endtimes: data_available.endtimes[current], dL:data_available.dL[current], medMLT:data_available.medMLT[current]}
-                
+        newdat = {starttimes: data_available.starttimes[current], $
+          endtimes: data_available.endtimes[current], dL:data_available.dL[current], medMLT:data_available.medMLT[current]}                
         ;writing the header. the position is added to the header
         if i eq 0 then pos = ' South Ascending'
         if i eq 1 then pos = ' North Ascending'
         if i eq 2 then pos = ' South Descending'
         if i eq 3 then pos = ' North Descending'
         if i eq 4 then pos = ' Equatorial'
-
-        ;checking that equatorial collections are only found in mrm 
-        ;if strmid(filename, 4, 3) ne 'mrm' and i eq 4 then print, 'WARNING, EQUATORIAL CROSSINGS FOUND IN ', strmid(filename, 4, 3)
         
         ;creating header and file
         header = 'ELFIN ' + strupcase(probe) + ' - '+ strupcase(instrument) + pos 
@@ -85,39 +73,34 @@ pro elf_write_data_availability_table, filename, data_available, instrument, pro
         ;making sure the file exists. if not, it will just create one
         existing = FILE_TEST(local_path+this_file)
         
-        if existing eq 0 then begin
-          starttimes = newdat.starttimes
-          endtimes = newdat.endtimes
-          dL = newdat.dL
-          medMLT = newdat.medMLT
-          
-        endif else begin 
+        new_starttimes = newdat.starttimes
+        new_endtimes = newdat.endtimes
+        new_dL = newdat.dL
+        new_medMLT = newdat.medMLT
+
+        if existing GT 0 then begin
           olddat = READ_CSV(local_path+this_file, N_TABLE_HEADER = 2)
           ;finding the start/end index
-          olddat_doub = {name:'olddat_doub', starttimes: time_double(olddat.field1), $
-             endtimes: time_double(olddat.field2), dL:olddat.field3, medMLT:olddat.field4}
-          ;UNDEFINE, olddat
-          
-          if n_elements(time_double(olddat.field1)) ne n_elements(time_double(olddat.field3)) AND n_elements(time_double(olddat.field1)) ne n_elements(time_double(olddat.field4)) then stop
-          
+          idx=where(time_double(olddat.field1) LT trange[0], ncnt)
+          if ncnt GT 0 then begin
+            starttimes=time_double(olddat.field1[idx])
+            endtimes=time_double(olddat.field2[idx])
+            dL=olddat.field3[idx]
+            medMLT=olddat.field4[idx]
+          endif 
+        endif 
 
-          no_overlap = where(olddat_doub.starttimes lt floor(newdat.starttimes[0]) or olddat_doub.starttimes gt floor(newdat.starttimes[-1]))
+        append_array, starttimes, new_starttimes
+        append_array, endtimes, new_endtimes
+        append_array, dl, new_dl
+        append_array, medMLT, new_medMLT
 
-          starttimes = [olddat_doub.starttimes[no_overlap], newdat.starttimes]
-          endtimes = [olddat_doub.endtimes[no_overlap], newdat.endtimes]
-          dL = [olddat_doub.dL[no_overlap], newdat.dL]
-          medMLT = [olddat_doub.medMLT[no_overlap], newdat.medMLT]
-        
-         
-        endelse 
-  
         ;sorting
         sorting  = sort(starttimes)
         starttimes = starttimes[sorting]
         endtimes = endtimes[sorting]
         dL = dL[sorting]
         medMLT = medMLT[sorting]
-
         UNDEFINE, sorting
 
         ;there shouldn't be any repeating times, but sometimes there are very minute differences in the start times, so we need this

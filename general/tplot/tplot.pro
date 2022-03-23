@@ -37,7 +37,13 @@
 ;     5: supress time labels
 ;     6: time displayed directly below last panel
 ;     7: time displayed directly below last panel (1 line date text only)
-;     this option can also be set when calling tplot_options ( e.g. tplot, [variable], version=2 )
+;     this option can also be set when calling tplot_options (
+;     e.g. tplot, [variable], version=2 )
+;   NO_VTITLE_SHIFT: If the var_label keyword is set, then if the full
+;     time range is less than 10 minutes, then the titles for the
+;     var_labels are shifted downwards a small amount. (Added on
+;     2022-02-07). Set /no_vtitle_shift via keyword in the tplot
+;     call, or via "tplot_options,'no_vtitle_shift',1" to turn this off.
 ;   OVERPLOT: Will not erase the previous screen if set.
 ;   NAMES:    The names of the tplot variables that are plotted.
 ;   NOCOLOR:  Set this to produce plot without color.
@@ -99,9 +105,9 @@
 ;Still have questions:
 ;   Send e-mail to:  tplot@ssl.berkeley.edu    someone might answer!
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2022-02-07 15:14:39 -0800 (Mon, 07 Feb 2022) $
-; $LastChangedRevision: 30565 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2022-03-22 13:27:29 -0700 (Tue, 22 Mar 2022) $
+; $LastChangedRevision: 30705 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot.pro $
 ;-
 
@@ -128,7 +134,8 @@ pro tplot,datanames,      $
    new_tvars = new_tvars, $
    old_tvars = old_tvars, $
    datagap = datagap,     $  ;It looks like this keyword isn't actually used.  pcruce 10/4/2012
-   get_plot_position=pos,$
+   get_plot_position=pos, $
+   no_vtitle_shift = no_vtitle_shift, $       
    help = help
 
 compile_opt idl2
@@ -371,6 +378,7 @@ for i=0,nd-1 do begin
    label_placement = 0 ;array to determine label positions
    labidx = 0 ;offset for indexing position array
    str_element, limits,'labflag',labflag
+
    if nd2 gt 1 && keyword_set(labflag) && keyword_set(datastr) then begin
      ;check for labels set on the pseudo variable, use defaults if not set
      str_element, limits,'labels',all_labels
@@ -394,7 +402,6 @@ for i=0,nd-1 do begin
    colors_set = 0b
    color_offset = 0
    str_element, limits, 'colors', colors_set
-   
    for d=0,nd2-1 do begin
      newlim = def_opts
      newlim.ytitle = keyword_set(lazy_ytitle) ? strjoin(strsplit(name,'_',/extract),'!c')  : name
@@ -406,6 +413,7 @@ for i=0,nd-1 do begin
         if not keyword_set(data)  then  dprint,verbose=verbose,'Unknown variable: ',name $
         else dprint,verbose=verbose,dlevel=1,index,name,format='(i3,"   ",a)'
      endif else limits2 = 0
+
      if size(/type,data) eq 8 then begin
         tshift = 0.d
         str_element,data,'tshift',value = tshift
@@ -440,7 +448,7 @@ for i=0,nd-1 do begin
        str_element, newlim, 'label_index', label_index, /add
        str_element, newlim, 'all_labels', all_labels, /add
      endif 
-     
+
      ;set offset into color array, if plotting pseudo vars this should
      ;allow the next variable's trace to start at the proper color
      if keyword_set(colors_set) then begin
@@ -457,19 +465,18 @@ for i=0,nd-1 do begin
      if color_table ge 0 then loadct2,color_table,previous_ct=pct,reverse=rev_color_table
 ;if debug() then stop
      call_procedure,routine,data=data,limits=newlim
-
 ;Allow fill of time interval with different background color, or other
 ;polyfill options, given by fill_time_intv structure, jmm, 2019-11-04
      str_element, newlim, 'fill_time_intv', success = fill_intv
      if fill_intv eq 1 then tplot_fill_time_intv, routine, data, newlim, time_offset
            
      if color_table ne pct then loadct2,pct
-     
+
      ;get offset into color array (for pseudo vars)
      if keyword_set(colors_set) then begin
        str_element, newlim, 'color_offset', value=color_offset
      endif
-     
+
    endfor
    def_opts.noerase = 1
    def_opts.title  = ''
@@ -483,18 +490,21 @@ str_element,tplot_vars,'settings.p',!p,/add_replace
 str_element,tplot_vars,'settings.x',!x,/add_replace
 str_element,tplot_vars,'settings.trange_cur',(!x.range * time_scale) + time_offset
 
-
 ;option to control left-hand labels for x-axis
 str_element, def_opts, 'vtitle', vtitle
-
 if keyword_set(vtitle) then begin                 ; finish var_labels
-	str_element,def_opts,'charthick',value=charthick
+  str_element,def_opts,'charthick',value=charthick
   xspace = chsize * !d.x_ch_size / !d.x_size
   yspace = chsize * !d.y_ch_size / !d.y_size
   xpos = pos[0,nd-1] - (def_opts.xmargin[0]-1) * xspace
-  ; bugfix on 11/7/2018 by egrimes; increased the yposition slightly for time ranges < 5 seconds to prevent overlaps
-  ; updated on 2/7/2022 to 10 minutes (the issue occurs for small time ranges, including many above 5 seconds)
-  if trg[1]-trg[0] le 60.*10 then ypos = pos[1,nd-1] - 2.5 * yspace else ypos = pos[1,nd-1] - 1.5 * yspace
+; bugfix on 11/7/2018 by egrimes; increased the yposition slightly for
+; time ranges < 5 seconds to prevent overlaps
+; updated on 2/7/2022 to 10 minutes (the issue occurs for small time
+; ranges, including many above 5 seconds)
+  str_element,def_opts,'no_vtitle_shift',opt_no_vtitle_shift
+  if(~keyword_set(no_vtitle_shift) and ~keyword_set(opt_no_vtitle_shift)) then begin
+     if trg[1]-trg[0] le 60.*10 then ypos = pos[1,nd-1] - 2.5 * yspace else ypos = pos[1,nd-1] - 1.5 * yspace
+  endif else ypos = pos[1,nd-1] - 1.5 * yspace
   xyouts,xpos,ypos,vtitle,/norm,charsize=chsize,charthick=charthick
 endif
 

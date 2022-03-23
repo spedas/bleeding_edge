@@ -25,9 +25,9 @@
 ;  2.  If you see any useful commands missing from these cribs, please let us know.
 ;   these cribs can help double as documentation for tplot.
 ;
-; $LastChangedBy: crussell $
-; $LastChangedDate: 2021-08-15 12:22:38 -0700 (Sun, 15 Aug 2021) $
-; $LastChangedRevision: 30207 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2022-03-22 13:36:25 -0700 (Tue, 22 Mar 2022) $
+; $LastChangedRevision: 30710 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_tplot_annotation.pro $
 ;-
 
@@ -426,7 +426,7 @@ ssl_set_symbol, 5, /fill, size=2.5
 tplot
 
 print, ' Set the /fill keyword on "ssl_set_symbol" or "usersym" to fill the symbol'
-print, ' Set the SIZE opotion on "set_ssl_symbol" to change the size of the symbol (default=1.0) 
+print, ' Set the SIZE opotion on "set_ssl_symbol" to change the size of the symbol (default=1.0)'
 print, 'Type ".c" to continue' 
 stop
 
@@ -439,7 +439,7 @@ usersym, x, y, /fill
 
 tplot
 
-print, ' Any custom symbol may be made by passing a list of points to "usersym"
+print, ' Any custom symbol may be made by passing a list of points to "usersym"'
 print, 'Type ".c" to continue' 
 stop
 
@@ -471,9 +471,17 @@ print,'You can create custom annotations with the help from get_plot_pos'
 
 stop
 ;Change the x-axis left hand title using the vtitle option
+print, 'Change the x-axis left hand title using the vtitle option'
 tplot_options,'vtitle','hello!Cworld!'
 tplot
 
+stop
+
+;The vtitle option, inserted earlier using tplot_options has to be
+print, 'Remove the vtitle option, to reset to defaults'
+tplot_options, 'vtitle'
+
+tplot
 stop
 
 ;Plot FGM data, with GSE and GEI position as var_labels
@@ -505,13 +513,13 @@ tplot, ['tha_fgs_gse', 'tha_fgs_btotal'], $
 stop
 
 ;invoke the double variable option by adding a second variable in
-;parentheses after the first, both will show up, with the appropriate
+;Square Bracktes after the first, both will show up, with the appropriate
 ;formats.
 ;In order to fit labels, the first values at 0000 hhmm are not printed.
 tplot, ['tha_fgs_gse', 'tha_fgs_btotal'], $
-  var_label = ['tha_state_pos_gse_x(tha_state_pos_gei_x)', $
-  'tha_state_pos_gse_y(tha_state_pos_gei_y)', $
-  'tha_state_pos_gse_z(tha_state_pos_gei_z)']
+  var_label = ['tha_state_pos_gse_x[tha_state_pos_gei_x]', $
+  'tha_state_pos_gse_y[tha_state_pos_gei_y]', $
+  'tha_state_pos_gse_z[tha_state_pos_gei_z]']
 
 stop
 
@@ -528,14 +536,14 @@ options, 'tha_state_pos_gei', 'ytitle', 'GEI_'+['X','Y','Z']
 ;strings, even if there is only one pair of variables.
 ;no globbing
 tplot, ['tha_fgs_gse', 'tha_fgs_btotal'], $
-  var_label = ['tha_state_pos_gse(tha_state_pos_gei)']
+  var_label = ['tha_state_pos_gse[tha_state_pos_gei]']
 
 stop
 
 ;All of the var_labels do not have to have two variables:
 options, 'tha_fgs_btotal', 'ytitle', 'FGS_BTOT'
 tplot, 'tha_fgs_gse', $
-  var_label = ['tha_fgs_btotal','tha_state_pos_gse(tha_state_pos_gei)']
+  var_label = ['tha_fgs_btotal','tha_state_pos_gse[tha_state_pos_gei]']
 
 print,"We're done!"
 

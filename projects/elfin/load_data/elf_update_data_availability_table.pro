@@ -34,7 +34,7 @@ pro elf_update_data_availability_table, tdate, probe=probe, instrument=instrumen
         print, 'You must provide a date. Example: 2020-01-01'
         return
       endif
-      if undefined(days) then days = 60
+      if undefined(days) then days = 60.
       dt = DOUBLE(days)
       timespan, time_double(tdate)-dt*86400., dt
       trange=timerange()
@@ -62,14 +62,14 @@ pro elf_update_data_availability_table, tdate, probe=probe, instrument=instrumen
       if ~undefined(data_avail) && size(data_avail, /type) EQ 8 then begin
         print, 'Data available'
         filename='el'+probe+'_'+instrument    
-        elf_write_data_availability_table, filename, data_avail, instrument, probe
+        elf_write_data_availability_table, tdate, dt, filename, data_avail, instrument, probe
       endif else begin
         print, 'There is no data for probe '+probe+' , instrument '+instrument+' on '+time_string(tdate)     
       endelse
       
         ;VERY IMPORTANT! Update needs to be zero and nodownload needs to be 1, otherwise you'll go in an infinite loop.
         elf_create_instrument_all, probe = probe, instrument = instrument, nodownload = 1, update = 0 
-      
+        ; elf_create_epd_all
     endforeach 
   endforeach
   

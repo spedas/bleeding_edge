@@ -33,44 +33,40 @@ function get_elf_science_zone_start_end, trange=trange, probe=probe, instrument=
      then tr = timerange(trange) else tr = timerange()
    if not keyword_set(probe) then probe = 'a'
    if not keyword_set(instrument) then instrument='epd'
+   sci_zones=-1
+    
+  ; define local and remote paths
+  local_path=!elf.LOCAL_DATA_DIR+'el'+probe+ '/data_availability/'
+  remote_path=!elf.REMOTE_DATA_DIR+'el'+probe+ '/data_availability/'
 
-   ; retrieve data
-   elf_load_epd, probe=probe, trange=trange, datatype='pef', type='nflux'
-   get_data, 'el'+probe+'_pef_nflux', data=pef_nflux
- 
-   ; find plots by science zone
-   if (size(pef_nflux, /type)) EQ 8 then begin
-      tdiff = pef_nflux.x[1:n_elements(pef_nflux.x)-1] - pef_nflux.x[0:n_elements(pef_nflux.x)-2]
-      idx = where(tdiff GT 270., ncnt)   ; note: 6.5 mintutes ;90 seconds is an arbitary time
-      append_array, idx, n_elements(pef_nflux.x)-1 ;add on last element (end time of last sci zone) to pick up last sci zone
-      if ncnt EQ 0 then begin
-        sz_starttimes=[pef_nflux.x[0]]
-        sz_min_st=[0]
-        sz_endtimes=pef_nflux.x[n_elements(pef_nflux.x)-1]
-        sz_min_en=[n_elements(pef_nflux.x)-1]
-        ts=time_struct(sz_starttimes[0])
-        te=time_struct(sz_endtimes[0])
-      endif else begin
-      for sz=0,ncnt do begin ;changed from ncnt-1
-        if sz EQ 0 then begin
-          this_s = pef_nflux.x[0]
-          sidx = 0
-          this_e = pef_nflux.x[idx[sz]]
-          eidx = idx[sz]
-        endif else begin
-          this_s = pef_nflux.x[idx[sz-1]+1]
-          this_e = pef_nflux.x[idx[sz]]
-        endelse
-        if (this_e-this_s) lt 5. then continue
-        append_array, sz_starttimes, this_s
-        append_array, sz_endtimes, this_e
-      endfor
-    endelse
-  endif
+  ; read csv file
+  Case instrument of
+    'epd': filename='el'+probe+'_epd_data_availability.csv'
+    'fgm': filename='el'+probe+'_fgm_data_availability.csv'
+    'mrma':filename='el'+probe+'_mrma_data_availability.csv'
+    else: filename='el'+probe+'_epd_data_availability.csv'
+  Endcase 
   
-  if undefined(sz_starttimes) then sci_zones=-1 else $
-    sci_zones={starts:sz_starttimes, ends:sz_endtimes}
+  ; Download CSV file
+  paths = ''
+  ; download data as long as no flags are set
+  if file_test(local_path,/dir) eq 0 then file_mkdir2, local_path
+  dprint, dlevel=1, 'Downloading ' + remote_path + filename + ' to ' + local_path + filename
+  paths = spd_download(remote_file=filename, remote_path=remote_path, $
+    local_file=filename, local_path=local_path, ssl_verify_peer=1, ssl_verify_host=1)
+  if undefined(paths) or paths EQ '' then $
+    dprint, devel=1, 'Unable to download ' + remote_file
+  ;making sure the file exists. if not, it will just create one
+  existing = FILE_TEST(local_path+filename)
 
+  ; Read CSV file
+  if existing eq 1 then begin 
+    data=read_csv(local_path+filename, n_table_header=1)
+    ; select times in trange
+    idx=where(time_double(data.field1) GE time_double(tr[0]) AND time_double(data.field1) LE time_double(tr[1]),ncnt) 
+    if ncnt GT 0 then sci_zones={starts:time_double(data.field1[idx]), ends:time_double(data.field2[idx])}
+  endif 
+  
   return, sci_zones 
    
 end
