@@ -7,9 +7,9 @@
 ;
 ;Purpose: ;
 ; Author: Davin Larson
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-12-16 13:15:41 -0800 (Wed, 16 Dec 2020) $
-; $LastChangedRevision: 29509 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2022-03-23 14:00:06 -0700 (Wed, 23 Mar 2022) $
+; $LastChangedRevision: 30713 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_position_to_tplot.pro $
 ;-
 
@@ -43,7 +43,7 @@ pro spice_position_to_tplot,body,observer,utimes=ut,frame=frame,trange=tr,resolu
   vel_subtitle = '(km/s)'
   if ~keyword_set(pos_subtitle) then   pos_subtitle ='('+strtrim(scale,2)+' km)'
   
-  store_data,pname,ut,pos,dlimit=struct(ysubtitle=pos_subtitle,colors='bgr',labels=['X','Y','Z'],labflag=-1,ystyle=3,object=object,observer=observer,frame=frame,scale=scale)
-  store_data,vname,ut,vel,dlimit=struct(ysubtitle=vel_subtitle,colors='bgr',labels=['Vx','Vy','Vz'],labflag=-1,ystyle=3,object=object,observer=observer,frame=frame,units='km/s')
+  store_data,pname,ut,pos,dlimit={ysubtitle:pos_subtitle,colors:'bgr',labels:['X','Y','Z'],labflag:-1,ystyle:3,object:object,observer:observer,frame:frame,scale:scale}
+  store_data,vname,ut,vel,dlimit={ysubtitle:vel_subtitle,colors:'bgr',labels:['Vx','Vy','Vz'],labflag:-1,ystyle:3,object:object,observer:observer,frame:frame,units:'km/s'}
 end
 

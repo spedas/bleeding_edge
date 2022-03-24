@@ -4,9 +4,9 @@
 ;
 ;Purpose: ;
 ; Author: Davin Larson  
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
-; $LastChangedRevision: 27221 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2022-03-23 14:00:06 -0700 (Wed, 23 Mar 2022) $
+; $LastChangedRevision: 30713 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_qrot_to_tplot.pro $
 ;-
 pro spice_qrot_to_tplot,frame1,frame2,utimes=ut,trange=tr,resolution=res,names=name,basetime=basetime,basename=basename,check_objects=check_objects $
@@ -56,12 +56,12 @@ endrep  until 0b               ;keyword_set(error) && ~(keyword_set(fix_qsign) n
 printdat,nreps
 qatt = transpose(qatt)
 name =n0
-store_data,n0,ut,qatt,dlimit=struct(colors='dbgr',ystyle=2)
+store_data,n0,ut,qatt,dlimit={colors:'dbgr',ystyle:2}
 if keyword_set(get_omega) && (get_omega and 2) then begin
   angvel = q_angular_velocity(ut,qatt)
   n1 = str_sub(n0,'_QROT_','_Q-OMEGA2_')
   angvel = shift(angvel,0,-1)      ;  shift scaler component into last position (allows use of xyz_to_polar) 
-  store_data,n1,ut,angvel,dlimit=struct(colors='bgrd',ystyle=2,reverse_order=1)
+  store_data,n1,ut,angvel,dlimit={colors:'bgrd',ystyle:2,reverse_order:1}
   append_array,name,n1
 endif
 if keyword_set(get_omega) && (get_omega and 1) then begin
@@ -69,7 +69,7 @@ if keyword_set(get_omega) && (get_omega and 1) then begin
 ;  n2 = n0+'_OMEGA2'
   n2 = str_sub(n0,'_QROT_','_Q-OMEGA1_')
   angvel = shift(angvel,0,-1)      ;  shift scaler component into last position (allows use of xyz_to_polar) 
-  store_data,n2,ut,angvel,dlimit=struct(colors='bgrd',ystyle=2,reverse_order=1)
+  store_data,n2,ut,angvel,dlimit={colors:'bgrd',ystyle:2,reverse_order:1}
   append_array,name,n2
 endif
 dprint,dlevel=2,name

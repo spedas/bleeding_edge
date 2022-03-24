@@ -6,8 +6,8 @@
 ;
 ;  Author:  Davin Larson
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-12-18 02:19:05 -0800 (Sat, 18 Dec 2021) $
-; $LastChangedRevision: 30472 $
+; $LastChangedDate: 2022-03-23 14:00:06 -0700 (Wed, 23 Mar 2022) $
+; $LastChangedRevision: 30713 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spice/spp_swp_spice.pro $
 ;-
 
@@ -104,7 +104,7 @@ pro spp_swp_spice,trange=trange,res=res,utc=utc,kernels=kernels,download_only=do
       nam_rxv = str_sub(nams[0],'POS_','RxV_')
       rxv = crossp2(pos.y,vel.y)   ; angular mmomentum / m
       L2 = total(rxv ^2,2)         ;  L^2
-      store_data,nam_rxv,pos.x,rxv,dlimit=struct(colors='bgr')
+      store_data,nam_rxv,pos.x,rxv,dlimit={colors:'bgr'}
 
       ;look at energy as constant of the motion
       KE = 0.5d * total(vel.y^2,2) - gm/ (rscale*dist) ; - gm  / C^2 * L2 / dist^3 /rscale
@@ -121,7 +121,7 @@ pro spp_swp_spice,trange=trange,res=res,utc=utc,kernels=kernels,download_only=do
       store_data,nam_freefall,pos.x,f_m
       xyz_to_polar,/quick_mag,nam_freefall
       options,nam_freefall+'_mag',colors='g'
-      ;store_data,'|'+nam_freefall+'|' ,pos.x, sqrt(total(f_m^2,2)),dlimit=struct(colors='b')
+      ;store_data,'|'+nam_freefall+'|' ,pos.x, sqrt(total(f_m^2,2)),dlimit={colors:'b'}
       ;Estimate GR effects
       fgr_m = 3* gm / C^2  / rscale^2 * ( (L2 / dist^5) # [1,1,1]) * pos.y    ; general relativity correction
       ftot_m += Fgr_m
@@ -166,7 +166,7 @@ pro spp_swp_spice,trange=trange,res=res,utc=utc,kernels=kernels,download_only=do
         ftot_m += f_m
         store_data,nam_freefall,pos.x,f_m
         xyz_to_polar,/quick_mag,nam_freefall
-        ;store_data,'|'+nam_freefall+'|' ,pos.x, sqrt(total(f_m^2,2)),dlimit=struct(colors='b')
+        ;store_data,'|'+nam_freefall+'|' ,pos.x, sqrt(total(f_m^2,2)),dlimit={colors:'b'}
         nam_rxv = str_sub(nams[0],'_POS_','_RxV_')
         store_data,nam_rxv,pos.x,crossp2(pos.y,vel.y)
         options,nam_freefall+'_mag',colors='c'
@@ -191,7 +191,7 @@ pro spp_swp_spice,trange=trange,res=res,utc=utc,kernels=kernels,download_only=do
         ftot_m += f_m
         store_data,nam_freefall,pos.x,f_m
         xyz_to_polar,/quick_mag,nam_freefall
-        ;store_data,'|'+nam_freefall+'|' ,pos.x, sqrt(total(f_m^2,2)),dlimit=struct(colors='b')
+        ;store_data,'|'+nam_freefall+'|' ,pos.x, sqrt(total(f_m^2,2)),dlimit={colors:'b'}
         nam_rxv = str_sub(nams[0],'_POS_','_RxV_')
         store_data,nam_rxv,pos.x,crossp2(pos.y,vel.y)
         options,nam_freefall+'_mag',colors='m'
@@ -216,7 +216,7 @@ pro spp_swp_spice,trange=trange,res=res,utc=utc,kernels=kernels,download_only=do
         ftot_m += f_m
         store_data,nam_freefall,pos.x,f_m
         xyz_to_polar,/quick_mag,nam_freefall
-        ;store_data,'|'+nam_freefall+'|' ,pos.x, sqrt(total(f_m^2,2)),dlimit=struct(colors='b')
+        ;store_data,'|'+nam_freefall+'|' ,pos.x, sqrt(total(f_m^2,2)),dlimit={colors:'b'}
         nam_rxv = str_sub(nams[0],'_POS_','_RxV_')
         store_data,nam_rxv,pos.x,crossp2(pos.y,vel.y)
         options,nam_freefall+'_mag',colors='y'
@@ -241,7 +241,7 @@ pro spp_swp_spice,trange=trange,res=res,utc=utc,kernels=kernels,download_only=do
         ftot_m += f_m
         store_data,nam_freefall,pos.x,f_m
         xyz_to_polar,/quick_mag,nam_freefall
-        ;store_data,'|'+nam_freefall+'|' ,pos.x, sqrt(total(f_m^2,2)),dlimit=struct(colors='b')
+        ;store_data,'|'+nam_freefall+'|' ,pos.x, sqrt(total(f_m^2,2)),dlimit={colors:'b'}
         nam_rxv = str_sub(nams[0],'_POS_','_RxV_')
         store_data,nam_rxv,pos.x,crossp2(pos.y,vel.y)
         options,nam_freefall+'_mag',colors='b'
@@ -266,7 +266,7 @@ pro spp_swp_spice,trange=trange,res=res,utc=utc,kernels=kernels,download_only=do
         ftot_m += f_m
         store_data,nam_freefall,pos.x,f_m
         xyz_to_polar,/quick_mag,nam_freefall
-        ;store_data,'|'+nam_freefall+'|' ,pos.x, sqrt(total(f_m^2,2)),dlimit=struct(colors='b')
+        ;store_data,'|'+nam_freefall+'|' ,pos.x, sqrt(total(f_m^2,2)),dlimit={colors:'b'}
         nam_rxv = str_sub(nams[0],'_POS_','_RxV_')
         store_data,nam_rxv,pos.x,crossp2(pos.y,vel.y)
         options,nam_freefall+'_mag',colors='g'
@@ -291,7 +291,7 @@ pro spp_swp_spice,trange=trange,res=res,utc=utc,kernels=kernels,download_only=do
         ftot_m += f_m
         store_data,nam_freefall,pos.x,f_m
         xyz_to_polar,/quick_mag,nam_freefall
-        ;store_data,'|'+nam_freefall+'|' ,pos.x, sqrt(total(f_m^2,2)),dlimit=struct(colors='b')
+        ;store_data,'|'+nam_freefall+'|' ,pos.x, sqrt(total(f_m^2,2)),dlimit={colors:'b'}
         nam_rxv = str_sub(nams[0],'_POS_','_RxV_')
         store_data,nam_rxv,pos.x,crossp2(pos.y,vel.y)
         options,nam_freefall+'_mag',colors='g'
@@ -311,7 +311,7 @@ pro spp_swp_spice,trange=trange,res=res,utc=utc,kernels=kernels,download_only=do
       xyz_to_polar,/quick_mag,[nam_ftot,nam_diff]
       options,nam_ftot+'_mag',colors='b'
       options,nam_diff+'_mag',colors='r'
-      store_data,'|ACC|',data=nams_acc_all + '_mag',dlimit=struct(panel_size=3,yrange=[1e-14,1e-2],/ylog)
+      store_data,'|ACC|',data=nams_acc_all + '_mag',dlimit={panel_size:3,yrange:[1e-14,1e-2],ylog:1}
     endif
 
   endif
