@@ -21,8 +21,8 @@
 ;   17. DSP BPSD
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-07-13 16:46:14 -0700 (Fri, 13 Jul 2018) $
-; $LastChangedRevision: 25473 $
+; $LastChangedDate: 2022-03-24 10:01:14 -0700 (Thu, 24 Mar 2022) $
+; $LastChangedRevision: 30714 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_basic_tail.pro $
 ;-
 
@@ -123,7 +123,7 @@ tplot, [ae_type eq 'thm' ? 'thmAE' : 'kyoto_ae', $
         'mms'+probe+'_dis_bulkv_gse_fast', $
         'mms'+probe+'_exb_gse', $
         'jtotal', $
-        'mms'+probe+'_epd_eis_extof_proton_flux_omni', $
+        'mms'+probe+'_epd_eis_srvy_l2_extof_proton_flux_omni', $
         'mms'+probe+'_dis_energyspectr_omni_fast', $
         'mms'+probe+'_hpca_oplus_flux_elev_0-360', $
         'mms'+probe+'_epd_feeps_srvy_l2_electron_intensity_omni', $
