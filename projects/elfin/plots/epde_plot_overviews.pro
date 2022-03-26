@@ -377,7 +377,9 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       elf_load_epd, probes=probe, datatype='pef', level='l1', type='nflux',no_download=no_download
       sc='el'+probe
       get_data, sc+'_pef_nflux', data=pef
- 
+      get_data, sc+'_pef_nsectors', data= nsect
+      med_nsect=median(nsect.y)
+
       ; get sector and phase delay for this zone
       phase_delay = elf_find_phase_delay(trange=sz_tr, probe=probe, instrument='epde', no_download=no_download)
       if finite(phase_delay.dsect2add[0]) then dsect2add=fix(phase_delay.dsect2add[0]) $
@@ -394,11 +396,15 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         2: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', No Fit'
         else: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Bad Fit'
       endcase 
-   
+
       spin_str=''
       if spd_data_exists('el'+probe+'_pef_nflux',sz_tr[0],sz_tr[1]) then begin
         get_data, 'el'+probe+'_pef_nspinsinsum', data=my_nspinsinsum
-        batch_procedure_error_handler, 'elf_getspec', /regularize, probe=probe, dSect2add=dsect2add, dSpinPh2add=dphang2add, nspinsinsum=my_nspinsinsum.y, no_download=no_download
+        if med_nsect LT 30 then begin
+          batch_procedure_error_handler, 'elf_getspec', /regularize, probe=probe, dSect2add=dsect2add, dSpinPh2add=dphang2add, nspinsinsum=my_nspinsinsum.y, no_download=no_download
+        endif else begin
+          batch_procedure_error_handler, 'elf_getspec', probe=probe, dSect2add=dsect2add, dSpinPh2add=dphang2add, nspinsinsum=my_nspinsinsum.y, no_download=no_download
+        endelse 
         if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin
           elf_getspec, probe=probe, nspinsinsum=my_nspinsinsum.y
         endif
@@ -450,6 +456,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       if tdur Lt 194. then version=6 else version=7
       tplot_options, version=version   ;6
       tplot_options, 'ygap',0
+      tplot_options, 'no_vtitle_shift', 1
       elf_set_overview_options, probe=probe, trange=tr,/no_switch            
       options, 'el'+probe+'_MLAT_igrf', 'format', '(1F5.1)'
       options, 'el'+probe+'_MLT_igrf', 'format', '(1F4.1)'
@@ -462,7 +469,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
          varstring=['ela_GLON','ela_MLAT_igrf[ela_MLAT_dip]', 'ela_MLT_igrf[ela_MLT_dip]', 'ela_L_igrf[ela_L_dip]'] else $
          varstring=['elb_GLON','elb_MLAT_igrf[elb_MLAT_dip]', 'elb_MLT_igrf[elb_MLT_dip]', 'elb_L_igrf[elb_L_dip]']
 
-      if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin       
+      if (med_nsect GT 30) OR not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin       
         tplot,['proxy_ae', $
           'fgm_survey_bar', $
           'epd_fast_bar', $
@@ -488,7 +495,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           'el'+probe+'_pef_pa_reg_spec2plot_ch[2,3]LC', $
           'el'+probe+'_bt89_sm_NEDT'], $
            var_label=varstring
-
       endelse
       tr=timerange()
       fd=file_dailynames(trange=tr[0], /unique, times=times)
@@ -502,6 +508,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       xyouts, .76, .012, 'nflux: #/(cm^2 s sr MeV)',/normaL,color=1, charsize=.75
       xyouts,  .76, .001, 'Created: '+systime(),/normal,color=1, charsize=.75
       ; add phase delay message
+
       if spd_data_exists('el'+probe+'_pef_nflux',sz_tr[0],sz_tr[1]) then begin
         xyouts, .0085, .012, spin_str, /normal, charsize=.75
         xyouts, .0085, .001, phase_msg, /normal, charsize=.75
@@ -743,6 +750,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     if tdur Lt 194. then version=6 else version=7
     tplot_options, version=version   ;6
     tplot_options, 'ygap',0
+    tplot_options, 'no_vtitle_shift', 1
     elf_set_overview_options, probe=probe, trange=tr,/no_switch
     get_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0', data=reg
     if size(reg, /type) EQ 8 then reg_exists=1 else reg_exists=0
