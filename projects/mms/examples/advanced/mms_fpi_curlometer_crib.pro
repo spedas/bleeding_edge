@@ -3,7 +3,7 @@
 ;         mms_fpi_curlometer_crib
 ;
 ; PURPOSE:
-;         Crib sheet showing how to combine curlometer calculations with FPI data; the ouput figure includes:
+;         Crib sheet showing how to combine curlometer calculations with FPI data; the output figure includes:
 ;         
 ;         1) DIS energy spectra
 ;         2) DES energy spectra
@@ -17,8 +17,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-01-31 12:41:53 -0800 (Fri, 31 Jan 2020) $
-; $LastChangedRevision: 28262 $
+; $LastChangedDate: 2022-03-29 10:30:58 -0700 (Tue, 29 Mar 2022) $
+; $LastChangedRevision: 30731 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_fpi_curlometer_crib.pro $
 ;-
 

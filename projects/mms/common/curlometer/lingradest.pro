@@ -18,8 +18,8 @@
 ; Originally designed for Cluster by A. Runov (2003)
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-10-04 11:13:23 -0700 (Tue, 04 Oct 2016) $
-; $LastChangedRevision: 22016 $
+; $LastChangedDate: 2022-03-29 13:55:04 -0700 (Tue, 29 Mar 2022) $
+; $LastChangedRevision: 30732 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/curlometer/lingradest.pro $
 ;-
 pro lingradest, Bx1, Bx2, Bx3, Bx4,                            $
@@ -34,7 +34,7 @@ pro lingradest, Bx1, Bx2, Bx3, Bx4,                            $
                 
                 
                 
-              ; Inizialisation
+              ; Initialization
               Rb=replicate(0., datarrLength, 3) & dR1=Rb & dR2=Rb & dR3=Rb & dR4=Rb
               k1=Rb & k2=Rb & k3=Rb & k4=Rb
               mu1=replicate(0., datarrLength) & mu2=mu1 & mu3=mu1 & mu4=mu1
