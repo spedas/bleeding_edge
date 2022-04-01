@@ -22,6 +22,8 @@
 ; 6 are the output values). The 6 values are fullmin, halfmin, center, halfmax, fullmax, spinphase, where spinphase 
 ; is the sector spin phase from which you can obtain other useful things such as optimal pitch-angle (if B were on spin plane). 
 ; Version: v7_wIBO_collection_expanded3 (3/29/2021)
+; V: 2022-03-30 NOTE: regularize does not currently work with 32 sector epd data
+;
 ;
 pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbins,dSect2add=userdSectr2add,dSpinPh2add=userdPhAng2add, $
   type=usertype,LCpartol2use=userLCpartol,LCpertol2use=userLCpertol,get3Dspec=get3Dspec, no_download=no_download, $
@@ -313,7 +315,7 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
   options,'ddts','databar',{yval:[0.], color:[6], linestyle:2}
   ;
   ; Before you compute Pitch Angles, regularize spinphase distribution if requested
-  ;
+  ; Regularize doesn't work well with 32 sector data
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;
   threeones=[1,1,1]

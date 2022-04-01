@@ -6,10 +6,84 @@
 ;     IDL> mgunit, 'mms_python_validation_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2022-01-06 10:15:09 -0800 (Thu, 06 Jan 2022) $
-; $LastChangedRevision: 30499 $
+; $LastChangedDate: 2022-03-31 13:28:35 -0700 (Thu, 31 Mar 2022) $
+; $LastChangedRevision: 30738 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_python_validation_ut__define.pro $
 ;-
+
+function mms_python_validation_ut::test_fpi_errorflags_bars
+  mms_load_fpi, datatype=['des-moms', 'dis-moms'], probe=1, trange=['2015-10-16','2015-10-17']
+  py_script = ['import pyspedas', $
+    "pyspedas.mms.fpi(datatype=['des-moms', 'dis-moms'], probe=1, trange=['2015-10-16','2015-10-17'])", $
+    "from pyspedas.mms.fpi.mms_fpi_make_errorflagbars import mms_fpi_make_errorflagbars", $
+    "mms_fpi_make_errorflagbars('mms1_des_errorflags_fast_moms', level='l2')", $
+    "mms_fpi_make_errorflagbars('mms1_dis_errorflags_fast_moms', level='l2')"]
+  vars = ['mms1_dis_errorflags_fast_moms_flagbars_full', $
+    'mms1_dis_errorflags_fast_moms_flagbars_main', $
+    'mms1_dis_errorflags_fast_moms_flagbars_mini', $
+    'mms1_des_errorflags_fast_moms_flagbars_full', $
+    'mms1_des_errorflags_fast_moms_flagbars_main', $
+    'mms1_des_errorflags_fast_moms_flagbars_mini']
+  return, spd_run_py_validation(py_script, vars)
+end
+
+function mms_python_validation_ut::test_fpi_compressionloss_bars
+  mms_load_fpi, datatype=['des-moms', 'dis-moms'], trange=['2017-07-11/22:34', '2017-07-11/22:34:25'], data_rate='brst', probe=3
+  py_script = ['import pyspedas', $
+    "pyspedas.mms.fpi(datatype=['des-moms', 'dis-moms'], trange=['2017-07-11/22:34', '2017-07-11/22:34:25'], data_rate='brst', probe=3)", $
+    "from pyspedas.mms.fpi.mms_fpi_make_compressionlossbars import mms_fpi_make_compressionlossbars", $
+    "mms_fpi_make_compressionlossbars('mms3_dis_compressionloss_brst_moms')", $
+    "mms_fpi_make_compressionlossbars('mms3_des_compressionloss_brst_moms')"]
+  vars = ['mms3_dis_compressionloss_brst_moms_flagbars', $
+    'mms3_des_compressionloss_brst_moms_flagbars']
+  return, spd_run_py_validation(py_script, vars)
+end
+
+function mms_python_validation_ut::test_lingradest_curl
+  trange = ['2015-10-30/05:15:45', '2015-10-30/05:15:48']
+
+  mms_load_fgm, trange=trange, /get_fgm_ephemeris, probes=[1, 2, 3, 4], data_rate='brst', /time_clip
+
+  fields = 'mms'+['1', '2', '3', '4']+'_fgm_b_gse_brst_l2'
+  positions = 'mms'+['1', '2', '3', '4']+'_fgm_r_gse_brst_l2'
+  mms_lingradest, fields=fields, positions=positions, suffix='_lingradest'
+  
+  py_script = ["import pyspedas", $
+    "from pyspedas.mms import lingradest", $
+    "pyspedas.mms.fgm(trange=['2015-10-30/05:15:45', '2015-10-30/05:15:48'], get_fgm_ephemeris=True, probe=[1, 2, 3, 4], data_rate='brst', time_clip=True)", $
+    "lingradest(fields=['mms1_fgm_b_gse_brst_l2_bvec','mms2_fgm_b_gse_brst_l2_bvec','mms3_fgm_b_gse_brst_l2_bvec','mms4_fgm_b_gse_brst_l2_bvec'], positions=['mms1_fgm_r_gse_brst_l2','mms2_fgm_r_gse_brst_l2','mms3_fgm_r_gse_brst_l2','mms4_fgm_r_gse_brst_l2'], suffix='_lingradest')"]
+
+  vars = ['Bt_lingradest', $
+    'Bx_lingradest', $
+    'By_lingradest', $
+    'Bz_lingradest', $
+    'gradBx_lingradest', $
+    'gradBy_lingradest', $
+    'gradBz_lingradest', $
+    'absCB_lingradest', $
+    'CxB_lingradest', $
+    'CyB_lingradest', $
+    'CzB_lingradest', $
+    'jx_lingradest', $
+    'jy_lingradest', $
+    'jz_lingradest', $
+    'curvx_lingradest', $
+    'curvy_lingradest', $
+    'curvz_lingradest', $
+    'Rc_1000km_lingradest']
+  return, spd_run_py_validation(py_script, vars, tol=1e-1)
+end
+
+function mms_python_validation_ut::test_feeps_gyrophase_electron
+   mms_load_feeps, trange=['2017-07-11/22:34', '2017-07-11/22:34:25'], data_rate='brst', probe=3
+   mms_feeps_gpd, trange=['2017-07-11/22:34', '2017-07-11/22:34:25'], data_rate='brst', probe=3
+   py_script = ["from pyspedas.mms.feeps.mms_feeps_gpd import mms_feeps_gpd", $
+                "import pyspedas", $
+                "feeps_vars = pyspedas.mms.feeps(data_rate='brst', trange=['2017-07-11/22:34', '2017-07-11/22:34:25'], probe=3)", $
+                "mms_feeps_gpd(trange=['2017-07-11/22:34', '2017-07-11/22:34:25'], data_rate='brst', probe=3)"]
+   vars = ['mms3_epd_feeps_brst_l2_electron_intensity_50-500keV_gpd']
+   return, spd_run_py_validation(py_script, vars)
+end
 
 function mms_python_validation_ut::test_fac_matrix_make
   mms_load_fgm, trange=['2015-10-16', '2015-10-17']
@@ -143,7 +217,7 @@ function mms_python_validation_ut::test_scm_dpwrspc_brst
     "mms_load_scm(trange=['2015-10-16/13:06', '2015-10-16/13:07'], data_rate='brst', probe=1)", $
     "tdpwrspc('mms1_scm_acb_gse_scb_brst_l2', nboxpoints=8192, nshiftpoints=8192, binsize=1)"]
   vars = ['mms1_scm_acb_gse_scb_brst_l2_x_dpwrspc', 'mms1_scm_acb_gse_scb_brst_l2_y_dpwrspc', 'mms1_scm_acb_gse_scb_brst_l2_z_dpwrspc']
-  return, spd_run_py_validation(py_script, vars, tol=1e-4)
+  return, spd_run_py_validation(py_script, vars, tol=1e-2)
 end
 
 function mms_python_validation_ut::test_edp_default

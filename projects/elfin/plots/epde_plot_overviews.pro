@@ -412,8 +412,14 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         get_data, 'el'+probe+'_pef_spinper', data=spin
         spin_med=median(spin.y)
         spin_var=variance(spin.y)/spin_med*100.
+        get_data, 'el'+probe+'_pef_nsectors', data=nsectors
+        nsect_med=fix(median(nsectors.y))
+        nsect_str=', nsectors='+ strtrim(nsect_med, 1)
+        get_data, 'el'+probe+'_pef_nspinsinsum', data=spinsum
+        spinsum_med=fix(median(spinsum.y))
+        spinsum_str=', nspinsinsum='+ strtrim(spinsum_med, 1)
         spin_str='Median Spin Period T: '+strmid(strtrim(string(spin_med), 1),0,4) + 's, sig=' +$
-          strmid(strtrim(string(spin_var), 1),0,4)+'% T'
+          strmid(strtrim(string(spin_var), 1),0,4)+'% T'+nsect_str+spinsum_str
       endif
 
       ; handle scaling of y axis
