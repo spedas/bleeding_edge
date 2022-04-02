@@ -31,7 +31,7 @@
 ;Notes:
 ;  International Q-Days and D-Days are now derived by
 ;  GeoForschungsZentrum (GFZ) Potsdam from Kp index.
-;  reference: http://wdc.kugi.kyoto-u.ac.jp/qddays/index.html
+;  reference: https://wdc.kugi.kyoto-u.ac.jp/qddays/index.html
 ;
 ;Written by:  Daiki Yoshida,  Aug 2010
 ;Last Updated:  Daiki Yoshida,  Jan 11, 2010

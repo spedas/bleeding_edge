@@ -1,7 +1,7 @@
 ; Created by Davin Larson
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-03-31 13:27:12 -0700 (Thu, 31 Mar 2022) $
-; $LastChangedRevision: 30737 $
+; $LastChangedDate: 2022-04-01 10:51:37 -0700 (Fri, 01 Apr 2022) $
+; $LastChangedRevision: 30747 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_load.pro $
 
 pro mvn_sep_load,pathnames=pathnames,trange=trange,files=files,RT=RT,download_only=download_only, $
@@ -15,10 +15,11 @@ pro mvn_sep_load,pathnames=pathnames,trange=trange,files=files,RT=RT,download_on
   if keyword_set(ancillary) then mvn_sep_anc_load,trange=trange,download_only=download_only,anc_structure=anc_structure
 
   if keyword_set(pads) then begin
-    pad_format = 'maven/data/sci/sep/l3/pad/sav/YYYY/MM/mvn_sep_l2_pad_YYYYMMDD_v??_r??.sav'
+    pad_format = 'maven/data/sci/sep/l3/pad/sav/YYYY/MM/mvn_sep_l3_pad_YYYYMMDD_v??_r??.sav'
     pad_files = mvn_pfp_file_retrieve(pad_format,/daily_names,trange=trange,/valid_only,/last_version)
     pads=[]
     if pad_files[0] eq '' then begin
+      dprint,pad_format
       dprint, 'MAVEN/SEP PAD files do not exist for this time range. Returning...'
       return
     endif

@@ -87,14 +87,14 @@ if ~size(fns,/type) then begin
   source.local_data_dir = root_data_dir() + 'geom_indices/kyoto/dst/'
   case 1 of
     ~keyword_set(real_time): source.remote_data_dir = $
-      'http://wdc.kugi.kyoto-u.ac.jp/dst_provisional/'
+      'https://wdc.kugi.kyoto-u.ac.jp/dst_provisional/'
     else: source.remote_data_dir = $
-      'http://wdc.kugi.kyoto-u.ac.jp/dst_realtime/'
+      'https://wdc.kugi.kyoto-u.ac.jp/dst_realtime/'
   endcase
 
   ;Get files and local paths, and concatenate local paths:
   ;=======================================================
-  local_paths=file_retrieve(file_names,_extra=source)
+  local_paths=spd_download(remote_file=file_names,_extra=source)
 
 endif else file_names=fns
 

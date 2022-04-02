@@ -9,7 +9,7 @@
 ;  Note: Only provisional data is available. Kyoto does not make realtime AE indices available in this
 ;  form due to the possible problems with the data (plots of realtime AE can be found on their website).
 ;  Provisional data is usually available for up to few months before the present. Exact dates of availability
-;  can be checked at http://wdc.kugi.kyoto-u.ac.jp/ae_provisional/index.html.
+;  can be checked at https://wdc.kugi.kyoto-u.ac.jp/ae_provisional/index.html.
 ;  Note that there are no final AE indices produced.
 ;  See also thm_crib_make_ae.pro for information on generating THEMIS pseudo AE indices.
 ;
@@ -57,7 +57,7 @@
 ;
 ;Acknowledgment:
 ;  The provisional AE data are provided by the World Data Center for Geomagnetism, Kyoto,
-;  and are not for redistribution (http://wdc.kugi.kyoto-u.ac.jp/). Furthermore, we thank
+;  and are not for redistribution (https://wdc.kugi.kyoto-u.ac.jp/). Furthermore, we thank
 ;  AE stations (Abisko [SGU, Sweden], Cape Chelyuskin [AARI, Russia], Tixi [IKFIA and
 ;  AARI, Russia], Pebek [AARI, Russia], Barrow, College [USGS, USA], Yellowknife,
 ;  Fort Churchill, Sanikiluaq (Poste-de-la-Baleine) [CGS, Canada], Narsarsuaq [DMI,
@@ -95,7 +95,7 @@ pro kyoto_load_ae ,trange=trange, $
 ;**************************
 ;Load 'remote_data_dir' default:
 ;**************************
-if ~keyword_set(remote_data_dir) then remote_data_dir='http://wdc.kugi.kyoto-u.ac.jp/' 
+if ~keyword_set(remote_data_dir) then remote_data_dir='https://wdc.kugi.kyoto-u.ac.jp/' 
 if STRLEN(remote_data_dir) gt 0 then if STRMID(remote_data_dir, STRLEN(remote_data_dir)-1, 1) ne "/" then remote_data_dir = remote_data_dir + "/" 
 
 ;**************************
@@ -177,7 +177,7 @@ if ~size(fns,/type) then begin
     
     ;Get files and local paths, and concatenate local paths:
     ;=======================================================
-    local_paths=file_retrieve(file_names,_extra=source)
+    local_paths=spd_download(remote_file=file_names,_extra=source)
     local_paths_all = ~(~size(local_paths_all,/type)) ? $
       [local_paths_all, local_paths] : local_paths
 
@@ -276,7 +276,7 @@ endfor
 ;Store data in TPLOT variables:
 ;==============================
 acknowledgstring = 'The provisional AE data are provided by the World Data Center for Geomagnetism, Kyoto,'+ $
-  ' and are not for redistribution (http://wdc.kugi.kyoto-u.ac.jp/). Furthermore, we thank'+ $
+  ' and are not for redistribution (https://wdc.kugi.kyoto-u.ac.jp/). Furthermore, we thank'+ $
   ' AE stations (Abisko [SGU, Sweden], Cape Chelyuskin [AARI, Russia], Tixi [IKFIA and'+ $
   ' AARI, Russia], Pebek [AARI, Russia], Barrow, College [USGS, USA], Yellowknife,'+ $
   ' Fort Churchill, Sanikiluaq (Poste-de-la-Baleine) [CGS, Canada], Narsarsuaq [DMI,'+ $
@@ -337,7 +337,7 @@ endif
 
 print,'**********************************************************************************
 print,'The provisional AE data are provided by the World Data Center for Geomagnetism, Kyoto,
-print,'and are not for redistribution (http://wdc.kugi.kyoto-u.ac.jp/). Furthermore, we thank
+print,'and are not for redistribution (https://wdc.kugi.kyoto-u.ac.jp/). Furthermore, we thank
 print,'AE stations (Abisko [SGU, Sweden], Cape Chelyuskin [AARI, Russia], Tixi [IKFIA and
 print,'AARI, Russia], Pebek [AARI, Russia], Barrow, College [USGS, USA], Yellowknife,
 print,'Fort Churchill, Sanikiluaq (Poste-de-la-Baleine) [CGS, Canada], Narsarsuaq [DMI,

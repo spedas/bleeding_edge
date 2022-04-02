@@ -15,9 +15,9 @@
 ;Notes:
 ;  This procedure is called from 'iug_load_gmag_wdc' provided by WDC Kyoto.
 ;  References about WDC 1-min record, ASY/SYM index and AE index record format:
-;  http://wdc.kugi.kyoto-u.ac.jp/mdplt/format/wdcformat.html
-;  http://wdc.kugi.kyoto-u.ac.jp/aeasy/format/asyformat.html
-;  http://wdc.kugi.kyoto-u.ac.jp/aeasy/format/aeformat.html
+;  https://wdc.kugi.kyoto-u.ac.jp/mdplt/format/wdcformat.html
+;  https://wdc.kugi.kyoto-u.ac.jp/aeasy/format/asyformat.html
+;  https://wdc.kugi.kyoto-u.ac.jp/aeasy/format/aeformat.html
 ;
 ;Written by:  Daiki Yoshida,  Aug 2010
 ;Updated by:  Daiki Yoshida,  Sep 13, 2010

@@ -15,8 +15,8 @@
 ;Notes:
 ;  This procedure is called from 'iug_load_gmag_wdc' provided by WDC Kyoto.
 ;  References about Dst index and WDC hourly means record format:
-;  http://wdc.kugi.kyoto-u.ac.jp/hyplt/format/wdchrformat.html
-;  http://wdc.kugi.kyoto-u.ac.jp/dstae/format/dstformat.html
+;  https://wdc.kugi.kyoto-u.ac.jp/hyplt/format/wdchrformat.html
+;  https://wdc.kugi.kyoto-u.ac.jp/dstae/format/dstformat.html
 ;
 ;Written by:  Daiki Yoshida,  Aug 2010
 ;Updated by:  Daiki Yoshida,  Sep 14, 2010

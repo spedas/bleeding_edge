@@ -9,7 +9,7 @@
 ;  This procedure is called from load procedures for WDC format data,
 ;  'iug_load_gmag_wdc*' provided by WDC Kyoto.
 ;  WDC station list was provided at online data catalogue:
-;  http://wdc.kugi.kyoto-u.ac.jp/catmap/obs.html
+;  https://wdc.kugi.kyoto-u.ac.jp/catmap/obs.html
 ;
 ;Todo:
 ;  1) Modify to read station-list file.

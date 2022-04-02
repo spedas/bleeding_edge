@@ -44,14 +44,14 @@
 ;
 ;Acknowledgment:
 ;  The DST data are provided by the World Data Center for Geomagnetism, Kyoto,  and
-;  are not for redistribution (http://wdc.kugi.kyoto-u.ac.jp/). Furthermore, we thank
+;  are not for redistribution (https://wdc.kugi.kyoto-u.ac.jp/). Furthermore, we thank
 ;  the geomagnetic observatories (Kakioka [JMA], Honolulu and San Juan [USGS], Hermanus
 ;  [RSA], Alibag [IIG]), NiCT, INTERMAGNET, and many others for their cooperation to
 ;  make the Dst index available.
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-06-04 13:15:57 -0700 (Tue, 04 Jun 2019) $
-; $LastChangedRevision: 27317 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2022-03-31 22:19:40 -0700 (Thu, 31 Mar 2022) $
+; $LastChangedRevision: 30741 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/kyoto/kyoto_load_dst.pro $
 ;-
 
@@ -74,7 +74,7 @@ pro kyoto_load_dst ,trange=trange, $
 ;**************************
 ;Load 'remote_data_dir' default:
 ;**************************
-if ~keyword_set(remote_data_dir) then remote_data_dir='http://wdc.kugi.kyoto-u.ac.jp/'  
+if ~keyword_set(remote_data_dir) then remote_data_dir='https://wdc.kugi.kyoto-u.ac.jp/'  
 if STRLEN(remote_data_dir) gt 0 then if STRMID(remote_data_dir, STRLEN(remote_data_dir)-1, 1) ne "/" then remote_data_dir = remote_data_dir + "/"
 
 ;**************************
@@ -142,7 +142,7 @@ if ~size(fns,/type) then begin
 
   ;Get files and local paths, and concatenate local paths:
   ;=======================================================
-  local_paths0=file_retrieve(file_names,_extra=source)
+  local_paths0=spd_download(remote_file=file_names,_extra=source)
 
   ;Define FILE_RETRIEVE structure for Provisional data:
   ;====================================================
@@ -150,7 +150,7 @@ if ~size(fns,/type) then begin
 
   ;Get files and local paths, and concatenate local paths:
   ;=======================================================
-  local_paths1=file_retrieve(file_names,_extra=source)
+  local_paths1=spd_download(remote_file=file_names,_extra=source)
 
   ;Redefine FILE_RETRIEVE structure for Real Time data:
   ;====================================================
@@ -158,7 +158,7 @@ if ~size(fns,/type) then begin
 
   ;Get files and local paths, and concatenate local paths:
   ;=======================================================
-  local_paths2=file_retrieve(file_names,_extra=source)
+  local_paths2=spd_download(remote_file=file_names,_extra=source)
 
   ;Concatenate and unique possible file names from Final, Provisional and RT data:
   ;========================================================================
@@ -232,7 +232,7 @@ for file_i=0,n_elements(local_paths)-1 do begin
     openr,lun,file,/get_lun
 
     ;Loop on lines (format documented at
-    ;http://wdc.kugi.kyoto-u.ac.jp/dstae/format/dstformat.html):
+    ;https://wdc.kugi.kyoto-u.ac.jp/dstae/format/dstformat.html):
     ; 2019-04-26: this formatting is no longer valid, now we parse an HTML file
     ;===========================================================
     find_units = 0
@@ -289,7 +289,7 @@ for file_i=0,n_elements(local_paths)-1 do begin
 endfor 
 
 acknowledgestring = 'The DST data are provided by the World Data Center for Geomagnetism, Kyoto, and'+ $
-  ' are not for redistribution (http://wdc.kugi.kyoto-u.ac.jp/). Furthermore, we thank'+ $
+  ' are not for redistribution (https://wdc.kugi.kyoto-u.ac.jp/). Furthermore, we thank'+ $
   ' the geomagnetic observatories (Kakioka [JMA], Honolulu and San Juan [USGS], Hermanus'+ $
   ' [RSA], Alibag [IIG]), NiCT, INTERMAGNET, and many others for their cooperation to'+ $
   ' make the Dst index available.'
@@ -319,7 +319,7 @@ endif
 
 print,'**************************************************************************************
 print,  'The DST data are provided by the World Data Center for Geomagnetism, Kyoto, and'
-print,  ' are not for redistribution (http://wdc.kugi.kyoto-u.ac.jp/). Furthermore, we thank'
+print,  ' are not for redistribution (https://wdc.kugi.kyoto-u.ac.jp/). Furthermore, we thank'
 print,  ' the geomagnetic observatories (Kakioka [JMA], Honolulu and San Juan [USGS], Hermanus'
 print,  ' [RSA], Alibag [IIG]), NiCT, INTERMAGNET, and many others for their cooperation to'
 print,  ' make the Dst index available.'

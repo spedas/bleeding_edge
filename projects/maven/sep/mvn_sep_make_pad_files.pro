@@ -12,7 +12,7 @@ pro mvn_sep_make_pad_files, time_range, out_path = out_path, version = version,$
   if not keyword_set (revision) then message, 'must define a revision number'
   
   if not keyword_set (out_path) then out_path = $
-     '/disks/data/maven/data/sci/sep/l2_pad/'
+     '/disks/data/maven/data/sci/sep/l3/pad/'
 
 ; sometimes this doesn't load properly, so need to call leap second initializer
   cdf_leap_second_init
@@ -119,10 +119,7 @@ pro mvn_sep_make_pad_files, time_range, out_path = out_path, version = version,$
   
   pad_B1sec = mvn_sep_pad('mvn_B_1sec_MAVEN_MSO')
   ;if finite(max(pad_B1sec.time)
-  if not keyword_set (out_directory) then out_directory = $
-        '/disks/data/maven/data/sci/sep/l2_pad/'
   
-
 
   version_string = numbered_filestring(version, digits = 2)
   revision_string = numbered_filestring(revision, digits = 2)
@@ -138,7 +135,7 @@ pro mvn_sep_make_pad_files, time_range, out_path = out_path, version = version,$
      month_string = time_string(day,tformat = 'MM')
      date_string = time_string(day,tformat = 'DD')
      sav_file_name = out_path + 'sav/'+year_string+'/'+ month_string +'/'+$
-                     'mvn_sep_l2_pad_' + year_string+ month_string + date_string + $
+                     'mvn_sep_l3_pad_' + year_string+ month_string + date_string + $
                      '_v'+version_string +'_r'+revision_string +'.sav'
      indices = where(pad_B1sec.time ge day and pad_B1sec.time lt day+86400.0)
      pad = pad_B1sec[indices]
