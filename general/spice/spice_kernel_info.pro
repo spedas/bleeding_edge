@@ -37,9 +37,9 @@ end
 ;
 ;
 ; Author: Davin Larson
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-05-11 00:00:35 -0700 (Sat, 11 May 2019) $
-; $LastChangedRevision: 27221 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2022-04-08 12:34:49 -0700 (Fri, 08 Apr 2022) $
+; $LastChangedRevision: 30759 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_kernel_info.pro $
 ;-
 
@@ -72,7 +72,7 @@ for i2 = 0,n_elements(kernels)-1 do begin
       ;; From a given CK file, retrieve the list of objects listed
       ;; in the file then retrieve the time coverage for each object.
       ;; Local parameters...
-      MAXIV      = 1000
+      MAXIV      = 2000
       WINSIZ     = 2 * MAXIV
       MAXOBJ     = 1000
       cover = cspice_celld( WINSIZ )
