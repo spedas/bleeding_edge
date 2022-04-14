@@ -51,33 +51,43 @@ pro spp_fld_dcb_ssr_telemetry_load_l1, file, prefix = prefix, varformat = varfor
 
   endif
 
-  get_data, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR', data = d_wptr, al = al
+  arc_ptrs = ['ARCWRPTR','ARCRDPTR']
 
-  if size(/type, d_wptr) EQ 8 then begin
+  foreach arc_ptr, arc_ptrs do begin
 
-    ; FIELDS SSR storage:
-    ; 256 Gibit = 256 * 1024^3 bits
-    ; 
-    ; 512 blocks (value reported in ARCWRPTR) = 1 Gibit
-    ;
-    ; Max block number = 512 * 256 = 131072
-    ;
-    ; The item created below gives the value in Gbit = 1000^3 bits
-    ; Our allocation from the spacecraft is given in Gbits
-    ;
-    ; Conversion factor: 1 Gibit = 1.0737 Gbit
+    tname = 'spp_fld_dcb_ssr_telemetry_' + arc_ptr
 
-    store_data, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', lim = al, $
-      data = {x:d_wptr.x, y:d_wptr.y/(512d) * (1024d/1000d)^3}
+    tname_gbit = tname + '_Gbit'
 
-    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'ysubtitle', 'Gbit'
-    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'yrange', [0,275]
-    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'ystyle', 1
-    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'yticks', 11
-    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'panel_size', 2
-    options, 'spp_fld_dcb_ssr_telemetry_ARCWRPTR_Gbit', 'ytickv', indgen(12) * 275 / 11
+    get_data, tname, data = d_ptr, al = al
 
-  endif
+    if size(/type, d_ptr) EQ 8 then begin
+
+      ; FIELDS SSR storage:
+      ; 256 Gibit = 256 * 1024^3 bits
+      ;
+      ; 512 blocks (value reported in ARCWRPTR) = 1 Gibit
+      ;
+      ; Max block number = 512 * 256 = 131072
+      ;
+      ; The item created below gives the value in Gbit = 1000^3 bits
+      ; Our allocation from the spacecraft is given in Gbits
+      ;
+      ; Conversion factor: 1 Gibit = 1.0737 Gbit
+
+      store_data, tname_gbit, lim = al, $
+        data = {x:d_ptr.x, y:d_ptr.y/(512d) * (1024d/1000d)^3}
+
+      options, tname_gbit, 'ysubtitle', 'Gbit'
+      options, tname_gbit, 'yrange', [0,275]
+      options, tname_gbit, 'ystyle', 1
+      options, tname_gbit, 'yticks', 11
+      options, tname_gbit, 'panel_size', 2
+      options, tname_gbit, 'ytickv', indgen(12) * 275 / 11
+
+    endif
+
+  endforeach
 
   options, 'spp_fld_dcb_ssr_telemetry_*', 'xticklen', 1
   options, 'spp_fld_dcb_ssr_telemetry_*', 'yticklen', 1
