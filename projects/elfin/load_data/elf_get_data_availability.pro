@@ -63,7 +63,7 @@ function elf_get_data_availability, tdate, instrument=instrument, probe=probe, d
   ;------------------
   ; GET EPD DATA
   ;------------------
-  if instrument eq 'epd' then begin
+  if instrument ne 'mrma' then begin
 
      epd_times=get_elf_science_zone_start_end(trange=trange, probe=probe, instrument='epd')
      sz_starttimes=epd_times.starts
@@ -74,20 +74,10 @@ function elf_get_data_availability, tdate, instrument=instrument, probe=probe, d
   ;------------------
   endif else begin
 
-    ;Get data for FGM or MRM
-    Case instrument of
-      'fgm': begin
-        elf_load_fgm, probe=probe, trange=trange
-        get_data, sc+'_fgs', data=d
-      end
-      'mrm': begin
-        elf_load_mrma, probe=probe, trange=trange
-        get_data, sc+'_mrma', data=d
-      end
-      else:
-    Endcase
+     elf_load_mrma, probe=probe, trange=trange
+     get_data, sc+'_mrma', data=d
 
-    ; check for FGM MRM collections
+    ; check for MRM collections
     if ~undefined(d) && size(d,/type) EQ 8 then begin
       npts=n_elements(d.x)
       tdiff=d.x[1:npts-1] - d.x[0:npts-2]

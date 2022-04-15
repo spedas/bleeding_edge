@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Apr 13 18:16:25 2022.<P>
+<STRONG>Last modified: </STRONG>Thu Apr 14 18:16:23 2022.<P>
  
 <HR>
  
@@ -7220,21 +7220,27 @@ KEYWORDS:
 
        VNORM:         If set, normalize voltage housekeeping data to the
                       nominal value for each channel.  Temperatures and
-                      voltages that do not have a nominal value are left
-                      unchanged.
+                      sweep voltages that do not have a nominal value are
+                      left unchanged.
 
        AVG:           If set, average multiple sweeps for each channel.
                       Automatically sets TSHIFT.
 
        MODEL:         When any of the fast housekeeping channels are one
                       of the analyzer voltages (ANALV, DEF1V, DEF2V, V0V),
-                      overlay the expected voltages.
+                      overlay the expected voltage.
+
+       TABLE:         Use this sweep table instead of the one obtained from
+                      housekeeping.  This can help when the timing of fast
+                      housekeeping packets (when they are put into telemetry)
+                      does not line up with science packets.
+                      See mvn_swe_getlut for details.
 
        RESULT:        Named variable to hold structure of results.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-07-01 11:22:53 -0700 (Wed, 01 Jul 2020) $
- $LastChangedRevision: 28838 $
+ $LastChangedDate: 2022-04-14 08:11:55 -0700 (Thu, 14 Apr 2022) $
+ $LastChangedRevision: 30767 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_plot_fhsk.pro $
 
 CREATED BY:    David L. Mitchell  2017-01-15

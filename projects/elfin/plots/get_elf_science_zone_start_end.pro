@@ -64,7 +64,7 @@ function get_elf_science_zone_start_end, trange=trange, probe=probe, instrument=
     data=read_csv(local_path+filename, n_table_header=1)
     ; select times in trange
     idx=where(time_double(data.field1) GE time_double(tr[0]) AND time_double(data.field1) LE time_double(tr[1]),ncnt) 
-    if ncnt GT 0 then sci_zones={starts:time_double(data.field1[idx]), ends:time_double(data.field2[idx])}
+    if ncnt GT 0 then sci_zones={starts:time_double(data.field1[idx]), ends:time_double(data.field2[idx]), completeness:data.field3[idx]}
   endif 
   
   return, sci_zones 

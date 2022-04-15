@@ -33,8 +33,8 @@
 ;                 null string.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-12-22 08:32:33 -0800 (Wed, 22 Dec 2021) $
-; $LastChangedRevision: 30474 $
+; $LastChangedDate: 2022-04-14 11:56:39 -0700 (Thu, 14 Apr 2022) $
+; $LastChangedRevision: 30768 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_frame_name.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -53,7 +53,8 @@ function mvn_frame_name, frame, success=success, reset=reset, list=list
 
   nframe = n_elements(frame)
   if (keyword_set(list) or (nframe eq 0)) then begin
-    for i=0,(n_elements(ffull)-1) do print,"  ",ffull[i]
+    i = where(ffull ne 'IAU_GEO', n)
+    for j=0,(n-1) do print,"  ",ffull[i[j]]
     return, ''
   endif
 

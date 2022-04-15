@@ -379,6 +379,8 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       get_data, sc+'_pef_nflux', data=pef
       get_data, sc+'_pef_nsectors', data= nsect
       med_nsect=median(nsect.y)
+      epd_sci_zones=get_elf_science_zone_start_end(trange=[trange[0]-5,trange[1]+5], probe=probe, instrument='epd')
+      completeness_str=', completeness='+epd_sci_zones.completeness[0]
 
       ; get sector and phase delay for this zone
       phase_delay = elf_find_phase_delay(trange=sz_tr, probe=probe, instrument='epde', no_download=no_download)
@@ -391,10 +393,10 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       if undefined(badflag) then badflag=2
       if badflag NE 0 then badflag_str=', BadFlag set' else badflag_str=''
       case badflag of
-        0: phase_msg = 'Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Good Fit'
-        1: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Bad Fit'
-        2: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', No Fit'
-        else: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Bad Fit'
+        0: phase_msg = 'Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Good Fit' + completeness_str
+        1: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Bad Fit' + completeness_str
+        2: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', No Fit' + completeness_str
+        else: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Bad Fit' + completeness_str
       endcase 
 
       spin_str=''

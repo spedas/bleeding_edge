@@ -29,27 +29,33 @@
 ;
 ;       VNORM:         If set, normalize voltage housekeeping data to the
 ;                      nominal value for each channel.  Temperatures and
-;                      voltages that do not have a nominal value are left
-;                      unchanged.
+;                      sweep voltages that do not have a nominal value are
+;                      left unchanged.
 ;
 ;       AVG:           If set, average multiple sweeps for each channel.
 ;                      Automatically sets TSHIFT.
 ;
 ;       MODEL:         When any of the fast housekeeping channels are one
 ;                      of the analyzer voltages (ANALV, DEF1V, DEF2V, V0V),
-;                      overlay the expected voltages.
+;                      overlay the expected voltage.
+;
+;       TABLE:         Use this sweep table instead of the one obtained from
+;                      housekeeping.  This can help when the timing of fast
+;                      housekeeping packets (when they are put into telemetry)
+;                      does not line up with science packets.
+;                      See mvn_swe_getlut for details.
 ;
 ;       RESULT:        Named variable to hold structure of results.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-07-01 11:22:53 -0700 (Wed, 01 Jul 2020) $
-; $LastChangedRevision: 28838 $
+; $LastChangedDate: 2022-04-14 08:11:55 -0700 (Thu, 14 Apr 2022) $
+; $LastChangedRevision: 30767 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_plot_fhsk.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2017-01-15
 ;-
 pro swe_plot_fhsk, pans=pans, trange=trange, tshift=tshift, vnorm=vnorm, avg=avg, $
-                   model=model, toff=toff, tspan=tspan, result=result
+                   model=model, table=table, toff=toff, tspan=tspan, result=result
 
   @mvn_swe_com
   
@@ -98,6 +104,8 @@ pro swe_plot_fhsk, pans=pans, trange=trange, tshift=tshift, vnorm=vnorm, avg=avg
     tabnum[i] = mvn_swe_engy[j].lut
     chksum[i] = mvn_swe_tabnum(tabnum[i],/inverse)
   endfor
+
+  if keyword_set(table) then tabnum[*] = fix(table)
 
   str_element,a6,'chksum',chksum,/add
   str_element,a6,'tabnum',tabnum,/add
@@ -196,6 +204,8 @@ pro swe_plot_fhsk, pans=pans, trange=trange, tshift=tshift, vnorm=vnorm, avg=avg
         if (chan eq 2) then v_nrm[chan] = average((shift(y,40))[0:39],/nan)
         y /= v_nrm[chan]
       endif
+
+      if ((chan ge 3) and (chan le 5)) then y = abs(y)  ; flatsat hsk has wrong sign
 
       dat = {x:x, y:y, chan:chan, trange:(minmax(x) + [-0.05,0.05]), tabnum:tabnum[i]}
 
