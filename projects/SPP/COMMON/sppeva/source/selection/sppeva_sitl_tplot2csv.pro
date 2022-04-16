@@ -5,7 +5,7 @@ PRO sppeva_sitl_tplot2csv, var, filename=filename, msg=msg, error=error, auto=au
   if undefined(filename) then filename = var+'.csv'
   if undefined(msg) then msg = ''
   if undefined(error) then error = 0; No error by default
-  
+
   ;------------------------------------------
   ; Check the existence of the tplot variable
   ;------------------------------------------
@@ -17,7 +17,7 @@ PRO sppeva_sitl_tplot2csv, var, filename=filename, msg=msg, error=error, auto=au
     print, msg
     return
   endif
-  
+
   ;------------------------------------------
   ; Get Data
   ;------------------------------------------
@@ -29,7 +29,7 @@ PRO sppeva_sitl_tplot2csv, var, filename=filename, msg=msg, error=error, auto=au
     if not keyword_set(auto) then print, msg
     return
   endif
-  
+
   strBLstart = strarr(s.Nsegs)
   strBLlen   = strarr(s.Nsegs)
   strFOM     = strarr(s.Nsegs)
@@ -44,13 +44,13 @@ PRO sppeva_sitl_tplot2csv, var, filename=filename, msg=msg, error=error, auto=au
     endelse
     strFOM[n]     = string(s.FOM[n], format='(F4.1)')
   endfor
-  
-  
+
+
   ;------------------------------------------
   ; HEADER
   ;------------------------------------------
   header = [' Start UT            ',' End UT              ','FOM   ', 'Tohban','Start Block',$
-    'Length in Blocks','Comments']
+    'Length in Blocks','Comments', 'Block Range', 'Gbits', 'Hours at 30 kbps']
 
   tn=tag_names(s)
   idx = where(tn eq 'TABLE_HEADER',ct)
@@ -79,10 +79,28 @@ PRO sppeva_sitl_tplot2csv, var, filename=filename, msg=msg, error=error, auto=au
     l5 = 'Team:  '+!SPPEVA.USER.TEAM
     table_header = [l1,l2,l3,l4,l5,'']
   endelse
-  
+
   ;------------------------------------------
   ; WRITE
   ;------------------------------------------
-  write_csv, filename, time_string(s.START), time_string(s.STOP), strFOM, s.SOURCEID, $
-    strBLstart, strBLlen, s.DISCUSSION + ' (' + string(strBLstart) + '-' + strcompress(/rem,string(long(strBLstart) + long(strBLlen))) +  ' ' + string(long(strBLlen) / 475d, format = '(F05.2)') + ' Gbit ' + string(long(strBLlen) * 1d9 / 475d / (3600d * 30d3), format = '(F6.2)') + ' hrs slow xfer)', header=header, table_header = table_header 
+
+  strRange = string(strBLstart) + '-' + strcompress(/rem,string(long(strBLstart) + long(strBLlen)))
+
+  strGbit = string(long(strBLlen) / 475d, format = '(F05.2)')
+
+  strHrs = string(long(strBLlen) * 1d9 / 475d / (3600d * 30d3), format = '(F6.2)')
+
+  write_csv, filename, $
+    transpose([[time_string(s.START)], $
+    [time_string(s.STOP)], $
+    [strFOM], $
+    [s.SOURCEID], $
+    [strBLstart], $
+    [strBLlen], $
+    [s.DISCUSSION], $
+    [strRange], $
+    [strGbit], $
+    [strHrs]]), $
+    header=header, table_header = table_header
+
 END
