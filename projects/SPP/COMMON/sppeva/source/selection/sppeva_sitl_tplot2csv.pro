@@ -84,11 +84,13 @@ PRO sppeva_sitl_tplot2csv, var, filename=filename, msg=msg, error=error, auto=au
   ; WRITE
   ;------------------------------------------
 
-  strRange = string(strBLstart) + '-' + strcompress(/rem,string(long(strBLstart) + long(strBLlen)))
+  strRange = string(strBLstart) + '-' + $
+    strcompress(/rem,string(long(strBLstart) + long(strBLlen) - 1))
 
   strGbit = string(long(strBLlen) / 475d, format = '(F05.2)')
 
-  strHrs = string(long(strBLlen) * 1d9 / 475d / (3600d * 30d3), format = '(F6.2)')
+  strHrs = string(long(strBLlen) * 1d9 / 475d / (3600d * 30d3), $
+    format = '(F6.2)')
 
   write_csv, filename, $
     transpose([[time_string(s.START)], $

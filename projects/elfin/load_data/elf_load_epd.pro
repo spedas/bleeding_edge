@@ -216,8 +216,14 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
     get_data, tplotnames[i], data=d, dlimits=dl, limits=l
     if size(d, /type) EQ 8 then begin
       dl.ysubtitle=unit
-      if undefined(d.v) then d.v=findgen(16)
-      store_data, tplotnames[i], data={x:d.x, y:d.y, v:d.v}, dlimits=dl, limits=l
+;      if undefined(d.v) then v=findgen(16)
+      if n_elements(tag_names(d)) EQ 2 then begin
+        v=findgen(16)
+        store_data, tplotnames[i], data={x:d.x, y:d.y, v:v}, dlimits=dl, limits=l
+      endif else begin
+        store_data, tplotnames[i], data={x:d.x, y:d.y, v:d.v}, dlimits=dl, limits=l
+      endelse
+      
       options, tplotnames[i], ylog=1
       if keyword_set(no_spec) then options, tplotnames[i], spec=0 else options, tplotnames[i], spec=1 
       options, tplotnames[i], labflag=1

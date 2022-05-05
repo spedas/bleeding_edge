@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-11-15 16:53:21 -0800 (Mon, 15 Nov 2021) $
-; $LastChangedRevision: 30421 $
+; $LastChangedDate: 2022-04-24 12:30:51 -0700 (Sun, 24 Apr 2022) $
+; $LastChangedRevision: 30786 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_save_reduce_timeres.pro $
 
 ;20160623 Ali
@@ -85,8 +85,16 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
     redures_file=mvn_pfp_file_retrieve(redures_fmt,trange=tn,/daily_names)
     dprint,dlevel=3,fullres_file
 
-    if tr[0] gt time_double('2014-07-17') and tr[0] lt time_double('2014-9-21') then begin
-      dprint,verbose=verbose,dlevel=3,'Cruise to Mars, Spacecraft hybernation
+    if tr[0] gt time_double('2014-07-17') && tr[0] lt time_double('2014-9-21') then begin
+      dprint,dlevel=3,'Cruise to Mars, Spacecraft hybernation, No L0 file'
+      continue
+    endif
+
+    if (tr[0] gt time_double('2014-11-20') && tr[0] lt time_double('2014-11-25'))$
+      || (tr[0] gt time_double('2015-04-04') && tr[0] lt time_double('2015-04-13'))$
+      || (tr[0] gt time_double('2022-02-23') && tr[0] lt time_double('2022-04-21'))$
+      || (tr[0] gt time_double('2019-09-05') && tr[0] lt time_double('2019-09-11')) then begin
+      dprint,dlevel=3,'Spacecraft safemode, No L0 file'
       continue
     endif
 

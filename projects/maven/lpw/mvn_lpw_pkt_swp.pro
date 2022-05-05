@@ -87,7 +87,7 @@ IF (swpn EQ 1 AND output.p10 GT 0) OR $
              boom_corr              = lpw_const.boom1_corr  ; this should be the same number as for potential
             epsilon                 =lpw_const.const_epsilon2
             ;-------------------------------information from output-------------------------------------
-            boom_corr            = lpw_const.boom1_corr
+            boom_corr               = lpw_const.boom1_corr
             output_swp_i            = output.swp2_i
             output_swp_ii           = output.swp2_I2
             output_swp_V            = output.swp2_V1
@@ -151,8 +151,8 @@ IF (swpn EQ 1 AND output.p10 GT 0) OR $
                 for i=0L,nn_pktnum-1 do begin
   ;                    data.y[nn_steps*i:nn_steps*(i+1)-1]  = output_swp_V[i, *] * const_V_readback 
   ;                    data.dy[nn_steps*i:nn_steps*(i+1)-1] = 2.                 * const_V_readback   ; ERROR assume two bit wrong
-                       data.y[nn_steps*i:nn_steps*(i+1)-1] = ((output_swp_V[i,*] * const_V_readback)-boom_corr(0))/boom_corr(1)
-                       data.dy[nn_steps*i:nn_steps*(i+1)-1] =((               10 * const_V_readback)-boom_corr(0))/boom_corr(1)  ; 10 DN
+                       data.y[nn_steps*i:nn_steps*(i+1)-1] = ((output_swp_V[i,*] * const_V_readback)-boom_corr[0])/boom_corr[1]
+                       data.dy[nn_steps*i:nn_steps*(i+1)-1] =((               10 * const_V_readback)-boom_corr[0])/boom_corr[1]  ; 10 DN
                 endfor                      
                 ;-------------------------------------------
                 ;--------------- dlimit   ------------------
@@ -207,9 +207,9 @@ IF (swpn EQ 1 AND output.p10 GT 0) OR $
                 ;  remove DC DC signal to see fluctuation, base zero on the last half
                 ;---------------------------------------------
                 for i=0L,nn_pktnum-1 do begin
-                    aa= ((output_swp_V[i,*] * const_V_readback)-boom_corr(0))/boom_corr(1)
+                    aa= ((output_swp_V[i,*] * const_V_readback)-boom_corr[0])/boom_corr[1]
                   data.y[nn_steps*i:nn_steps*(i+1)-1] = aa - mean(aa[64:127])
-                  data.dy[nn_steps*i:nn_steps*(i+1)-1] =((               10 * const_V_readback)-boom_corr(0))/boom_corr(1)  ; 10 DN
+                  data.dy[nn_steps*i:nn_steps*(i+1)-1] =((               10 * const_V_readback)-boom_corr[0])/boom_corr[1]  ; 10 DN
                 endfor
                 limit.ytitle ='mvn_lpw_swp'+strtrim(swpn,2)+'_V'+strtrim(vnum,2)+'_filt'
                 limit.yrange =[min(data.y),max(data.y)] 
@@ -223,19 +223,19 @@ IF (swpn EQ 1 AND output.p10 GT 0) OR $
                 
                 for i=0L+3,nn_pktnum-1-3 do begin
                    
-                     aa1= ((output_swp_V[i-3,*] * const_V_readback)-boom_corr(0))/boom_corr(1)
-                     aa2= ((output_swp_V[i-2,*] * const_V_readback)-boom_corr(0))/boom_corr(1)
-                     aa3= ((output_swp_V[i-1,*] * const_V_readback)-boom_corr(0))/boom_corr(1)
-                     aa4= ((output_swp_V[i+0,*] * const_V_readback)-boom_corr(0))/boom_corr(1)
-                     aa5= ((output_swp_V[i+1,*] * const_V_readback)-boom_corr(0))/boom_corr(1)
-                     aa6= ((output_swp_V[i+2,*] * const_V_readback)-boom_corr(0))/boom_corr(1)
-                     aa7= ((output_swp_V[i+3,*] * const_V_readback)-boom_corr(0))/boom_corr(1)                 
+                     aa1= ((output_swp_V[i-3,*] * const_V_readback)-boom_corr[0])/boom_corr[1]
+                     aa2= ((output_swp_V[i-2,*] * const_V_readback)-boom_corr[0])/boom_corr[1]
+                     aa3= ((output_swp_V[i-1,*] * const_V_readback)-boom_corr[0])/boom_corr[1]
+                     aa4= ((output_swp_V[i+0,*] * const_V_readback)-boom_corr[0])/boom_corr[1]
+                     aa5= ((output_swp_V[i+1,*] * const_V_readback)-boom_corr[0])/boom_corr[1]
+                     aa6= ((output_swp_V[i+2,*] * const_V_readback)-boom_corr[0])/boom_corr[1]
+                     aa7= ((output_swp_V[i+3,*] * const_V_readback)-boom_corr[0])/boom_corr[1]                 
                    aaa=fltarr(128)   ;empty array
                    for ii=0,127 do aaa[ii] = median([aa1[ii],aa2[ii],aa3[ii],aa4[ii],aa5[ii],aa6[ii],aa7[ii]])
                
-                  aa= ((output_swp_V[i,*] * const_V_readback)-boom_corr(0))/boom_corr(1)
+                  aa= ((output_swp_V[i,*] * const_V_readback)-boom_corr[0])/boom_corr[1]
                   data.y[nn_steps*i:nn_steps*(i+1)-1] = aa - aaa
-                  data.dy[nn_steps*i:nn_steps*(i+1)-1] =((               10 * const_V_readback)-boom_corr(0))/boom_corr(1)  ; 10 DN
+                  data.dy[nn_steps*i:nn_steps*(i+1)-1] =((               10 * const_V_readback)-boom_corr[0])/boom_corr[1]  ; 10 DN
                 endfor
                 limit.ytitle ='mvn_lpw_swp'+strtrim(swpn,2)+'_V'+strtrim(vnum,2)+'_filt2'
                 limit.yrange =[min(data.y),max(data.y)]
@@ -415,7 +415,7 @@ IF (swpn EQ 1 AND output.p10 GT 0) OR $
                       data.y[i,0] = output_I_ZERO[i]*16                             ; this is the i_zero uncorrected from each packet,converted to the same resolution as all the other currents                               
                       data.dy[i,0]  = 1.*16
                       tmp2           = min( abs(data.x(i) -   pas_time),nq )   ;find the last measurement in the PAS paket which was taken at the same time as the i_zero measurement   
-                      if  pas_time(nq) GT data.x(i) then nq=nq-1       ;make sure that the order of the packets are correct
+                      if  pas_time[nq] GT data.x(i) then nq=nq-1       ;make sure that the order of the packets are correct
                       nq            = (nq > 1) <(n_elements(data2.x)-1)                                                      
                        if tmp2 LT 300 then begin   ; smaller than the longest master cycle
                              data.y[i,1]   =  mvn_lpw_cal_swp_izero(pas_volt[nq],output_I_ZERO[i]*16,0,swpn)  
@@ -435,7 +435,7 @@ IF (swpn EQ 1 AND output.p10 GT 0) OR $
                       data.y[i,0] = output_I_ZERO[i]*16                             ; this is the i_zero uncorrected from each packet,converted to the same resolution as all the other currents                               
                       data.dy[i,0]  = 1.*16
                       tmp2           = min( abs(data.x(i) -   pas_time),nq )   ;find the last measurement in the PAS paket which was taken at the same time as the i_zero measurement   
-                      if  pas_time(nq) GT data.x(i) then nq=nq-1       ;make sure that the order of the packets are correct
+                      if  pas_time[nq] GT data.x(i) then nq=nq-1       ;make sure that the order of the packets are correct
                       nq            = (nq > 1) <(n_elements(data2.x)-1)                                                      
                        if tmp2 LT 300 then begin   ; smaller than the longest master cycle
                              data.y[i,1]   =  mvn_lpw_cal_swp_izero(pas_volt[nq],output_I_ZERO[i]*16,0,swpn)  
@@ -600,11 +600,11 @@ IF (swpn EQ 1 AND output.p10 GT 0) OR $
                     
                      if total(data2.y[*,1] EQ 0) LT 0.4*n_elements(data2.y[*,1]) then begin
                        ;use LADFIT insted 
-                        x      = data2.x(1:*)-data2.x(0)           ; ignore first point in the file
-                        y      = data2.y(1:*,1)                    ;<---- this is i_zero corrected for potential.....
+                        x      = data2.x[1:*]-data2.x[0]           ; ignore first point in the file
+                        y      = data2.y[1:*,1]                    ;<---- this is i_zero corrected for potential.....
                         result = LADFIT(x,y)     
-                        value  = x*result(1)+result(0)             
-                        I_ZERO = [value(0),value]                 ; this is alows a linear fit over a file, later we might do this as function of orbit...
+                        value  = x*result[1]+result[0]             
+                        I_ZERO = [value[0],value]                 ; this is alows a linear fit over a file, later we might do this as function of orbit...
                         ;this needs to be verified if it works over the file or if we need to look over an orbit 
                      endif  else begin; if there are too many zeros then do not use izero
                      ; defalut value
@@ -673,7 +673,7 @@ IF (swpn EQ 1 AND output.p10 GT 0) OR $
                   'char_size' ,     lpw_const.tplot_char_size ,$    
                   'xtitle' ,        str_xtitle                   ,$   
                   'ytitle' ,         'mvn_lpw_swp'+strtrim(swpn,2)+'_I'+strtrim(swpn,2),$   
-                  'yrange' ,        [min(data.y(*,0:1)),max(data.y(*,0:1))] ,$   
+                  'yrange' ,        [min(data.y[*,0:1]),max(data.y[*,0:1])] ,$   
                   'ystyle'  ,       1.                       ,$  
                   'labels' ,        ['i!DNoCorr!N','i corr!Dizero!N','i!DUnCorr!Dizero!N [DN]','i!Dcorr!Dizero!N [DN]'],$  
                   'colors' ,        [0,4,2,6]                      ,$   
@@ -743,9 +743,9 @@ IF (swpn EQ 1 AND output.p10 GT 0) OR $
                   data.x = data2.x(ss) 
                   rt=0  ; which variable to use from  'mvn_lpw_swp'+strtrim(swpn,2)+'_I'+strtrim(swpn,2)+'_basic'  
                   for i=0L,nn_pktnum-1 do  begin
-                      data.y[i,*]=data2.y(ss[i]:ss[i]+nn_steps-1,rt)           ; this will be the fully corrected current
+                      data.y[i,*]=data2.y[ss[i]:ss[i]+nn_steps-1,rt]           ; this will be the fully corrected current
                       data.v[i,*]=indgen(nn_steps)                      ; the potential-sweep based on the atr, do not use output information!!!
-                      data.dy[i,*]=data2.dy(ss[i]:ss[i]+nn_steps-1,rt)         ; keep the error
+                      data.dy[i,*]=data2.dy[ss[i]:ss[i]+nn_steps-1,rt]         ; keep the error
                       data.dv[i,*]=0                               
                   endfor
                 ;-------------------------------------------
@@ -1026,20 +1026,20 @@ IF (swpn EQ 1 AND output.p10 GT 0) OR $
                       U[*] = data.v[ii,*]  ;data2.y(ss[ii]:ss[ii]+nn_steps-1) ; transpose(data2.y(ss[i]:ss[i]+nn_steps-1))
                       I[*] = data.y[ii,*]  ;data1.y(ss[ii]:ss[ii]+nn_steps-1) ; transpose(data1.y(ss[i]:ss[i]+nn_steps-1))
                       U_sort = sort(U)
-                      U      = U(U_sort)
-                      I      = I(U_sort)
-                    if U(1) eq U(2) then begin    ;????
+                      U      = U[U_sort]
+                      I      = I[U_sort]
+                    if U[1] eq U[2] then begin    ;????
                       pp = where(ts_diff(U,1) eq 0)
                    
                   
                       for jj=0,n_elements(pp)-2 do begin
-                         I(pp(jj))   = mean(I([pp(jj),pp(jj)+1]))
-                         I(pp(jj)+1) = !values.F_nan
-                         U(pp(jj)+1) = !values.F_nan
+                         I[pp[jj]]   = mean(I[[pp[jj],pp[jj]+1]])
+                         I[pp[jj]+1] = !values.F_nan
+                         U[pp[jj]+1] = !values.F_nan
                       endfor
                       U_sort = sort(U)
-                      U      = U(U_sort)
-                      I      = I(U_sort)
+                      U      = U[U_sort]
+                      I      = I[U_sort]
                    endif       
                   data.v[ii,*] = U
                  ; data.y[ii,*] = deriv(U,I)

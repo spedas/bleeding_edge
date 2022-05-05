@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-30 19:45:35 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 30010 $
+; $LastChangedDate: 2022-04-24 11:39:59 -0700 (Sun, 24 Apr 2022) $
+; $LastChangedRevision: 30785 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/cdf/mvn_sep_makefile.pro $
 ; $ID: $
 
@@ -80,6 +80,7 @@ pro mvn_sep_makefile,init=init,trange=trange0
 
     if (tr[0] gt time_double('2014-11-20') && tr[0] lt time_double('2014-11-25'))$
       || (tr[0] gt time_double('2015-04-04') && tr[0] lt time_double('2015-04-13'))$
+      || (tr[0] gt time_double('2022-02-23') && tr[0] lt time_double('2022-04-21'))$
       || (tr[0] gt time_double('2019-09-05') && tr[0] lt time_double('2019-09-11')) then begin
       dprint,dlevel=3,'Spacecraft safemode, No L0 file: '+l0_files
       continue

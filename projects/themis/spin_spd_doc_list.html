@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Apr 15 18:16:23 2022.<P>
+<STRONG>Last modified: </STRONG>Wed May  4 18:16:21 2022.<P>
  
 <HR>
  
@@ -37,6 +37,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#SPINMODEL_INTERP_T.PRO[1]">SPINMODEL_INTERP_T.PRO[1]</A>
 <br>Given a spin model and time (or array of times), calculate
 <LI><A HREF="#SPINMODEL_POST_PROCESS">SPINMODEL_POST_PROCESS</A>
+<LI><A HREF="#SPINMODEL_PYTHON_TEST.PRO">SPINMODEL_PYTHON_TEST.PRO</A>
+<br>Load several spin models and export them as CDFs for comparison with Python results
 <LI><A HREF="#SPINMODEL_RESET.PRO">SPINMODEL_RESET.PRO</A>
 <br>Free any data structures associated with the spin model for a
 <LI><A HREF="#SPINMODEL_TEST.PRO">SPINMODEL_TEST.PRO</A>
@@ -52,6 +54,14 @@ This page was created by the IDL library routine
 <br>Given a spin model and spin count  (or array of counts), calculate
 <LI><A HREF="#SPINMODEL_INTERP_T.PRO[2]">SPINMODEL_INTERP_T.PRO[2]</A>
 <br>Given a spin model and time (or array of times), calculate
+<LI><A HREF="#THM_SPINMODEL::MAKE_CDF.PRO">THM_SPINMODEL::MAKE_CDF.PRO</A>
+<br>Export the segments data for a spinmodel as tplot variables, then write to a CDF.
+<LI><A HREF="#THM_SPINMODEL::MAKE_TPLOT_VARS.PRO">
+THM_SPINMODEL::MAKE_TPLOT_VARS.PRO</A>
+<br>Export spin model segment attributes as a set of tplot variables
+<LI><A HREF="#THM_SPINMODEL::PRINT_SEGMENTS.PRO">
+THM_SPINMODEL::PRINT_SEGMENTS.PRO</A>
+<br>Print the segments contained in a spin model.
 <br>
 </UL><P>
 <HR>
@@ -714,7 +724,7 @@ Change Date: 2007-10-08
 <A NAME="SPINMODEL_POST_PROCESS">
 <H2>SPINMODEL_POST_PROCESS</H2></A>
 <A HREF="#SPINMODEL_INTERP_T.PRO[2]">[Previous Routine]</A>
-<A HREF="#SPINMODEL_RESET.PRO">[Next Routine]</A>
+<A HREF="#SPINMODEL_PYTHON_TEST.PRO">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Function: spinmodel_post_process
@@ -743,9 +753,47 @@ Change Date: 2007-10-08
 <STRONG>(See <A href="spin/spinmodel_post_process.pro">projects/themis/spin/spinmodel_post_process.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPINMODEL_PYTHON_TEST.PRO">
+<H2>SPINMODEL_PYTHON_TEST.PRO</H2></A>
+<A HREF="#SPINMODEL_POST_PROCESS">[Previous Routine]</A>
+<A HREF="#SPINMODEL_RESET.PRO">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+    SPINMODEL_PYTHON_TEST.PRO
+
+ PURPOSE:
+   Load several spin models and export them as CDFs for comparison with Python results
+
+ CATEGORY:
+   TDAS 
+
+ CALLING SEQUENCE:
+   spinmodel_python_test
+
+  INPUTS:
+    none
+
+  OUTPUTS:
+
+  KEYWORDS:
+    None.
+
+  PROCEDURE:
+    
+
+  EXAMPLE:
+     spinmodel_python_test
+
+Written by: Jim Lewis (jwl@ssl.berkeley.edu)
+Change Date: 2007-10-08
+</PRE><P>
+<STRONG>(See <A href="spin/spinmodel_python_test.pro">projects/themis/spin/spinmodel_python_test.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPINMODEL_RESET.PRO">
 <H2>SPINMODEL_RESET.PRO</H2></A>
-<A HREF="#SPINMODEL_POST_PROCESS">[Previous Routine]</A>
+<A HREF="#SPINMODEL_PYTHON_TEST.PRO">[Previous Routine]</A>
 <A HREF="#SPINMODEL_TEST.PRO">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -896,7 +944,7 @@ Change Date: 2007-10-08
 <A NAME="THM_SPINMODEL::GET_INFO.PRO">
 <H2>THM_SPINMODEL::GET_INFO.PRO</H2></A>
 <A HREF="#THM_LOAD_SPIN">[Previous Routine]</A>
-<A HREF="#THM_SPINMODEL__DEFINE">[Next Routine]</A>
+<A HREF="#THM_SPINMODEL::MAKE_CDF.PRO">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -951,9 +999,116 @@ Change Date: 2007-10-08
 <STRONG>(See <A href="spin/thm_spinmodel__get_info.pro">projects/themis/spin/thm_spinmodel__get_info.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_SPINMODEL::MAKE_CDF.PRO">
+<H2>THM_SPINMODEL::MAKE_CDF.PRO</H2></A>
+<A HREF="#THM_SPINMODEL::GET_INFO.PRO">[Previous Routine]</A>
+<A HREF="#THM_SPINMODEL::MAKE_TPLOT_VARS.PRO">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+    THM_SPINMODEL::MAKE_CDF.PRO
+
+ PURPOSE:
+     Export the segments data for a spinmodel as tplot variables, then write to a CDF.
+
+ CATEGORY:
+   TDAS
+
+ CALLING SEQUENCE:
+   smp = spinmodel_get_ptr('a',use_eclipse_corrections=2)
+
+  INPUTS:
+    prefix: A string to be prepended to segment attribute names to form tplot variables
+    cdf_filename: The filename of the CDF to be produced.
+    
+  OUTPUTS: (all optional)
+    None
+
+  
+  EXAMPLE:
+     timespan,'2007-03-23',1,/days
+     thm_load_state,probe='a',/get_support_data
+
+     smp = spinmodel_get_ptr('a',use_eclipse_corrections=2)
+     smp-&gt;make_cdf,prefix='tha_corr2_',cdf_filename='tha_corr2.cdf'
+</PRE><P>
+<STRONG>(See <A href="spin/thm_spinmodel__make_cdf.pro">projects/themis/spin/thm_spinmodel__make_cdf.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="THM_SPINMODEL::MAKE_TPLOT_VARS.PRO">
+<H2>THM_SPINMODEL::MAKE_TPLOT_VARS.PRO</H2></A>
+<A HREF="#THM_SPINMODEL::MAKE_CDF.PRO">[Previous Routine]</A>
+<A HREF="#THM_SPINMODEL::PRINT_SEGMENTS.PRO">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+    THM_SPINMODEL::MAKE_TPLOT_VARS.PRO
+
+ PURPOSE:
+    Export spin model segment attributes as a set of tplot variables
+
+ CATEGORY:
+   TDAS
+
+ CALLING SEQUENCE:
+   spinmodel-&gt;make_tplot_vars,prefix=prefix
+
+  INPUTS:
+    prefix:  A string to be prepended to each segment attribute to form tplot variable names.
+
+  OUTPUTS: 
+    None
+
+  
+  EXAMPLE:
+     timespan,'2007-03-23',1,/days
+     thm_load_state,probe='a',/get_support_data
+
+     smp = spinmodel_get_ptr('a',use_eclipse_corrections=2)
+     smp-&gt;make_tplot_vars,prefix='tha_corr2_'
+
+</PRE><P>
+<STRONG>(See <A href="spin/thm_spinmodel__make_tplot_vars.pro">projects/themis/spin/thm_spinmodel__make_tplot_vars.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="THM_SPINMODEL::PRINT_SEGMENTS.PRO">
+<H2>THM_SPINMODEL::PRINT_SEGMENTS.PRO</H2></A>
+<A HREF="#THM_SPINMODEL::MAKE_TPLOT_VARS.PRO">[Previous Routine]</A>
+<A HREF="#THM_SPINMODEL__DEFINE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+    THM_SPINMODEL::PRINT_SEGMENTS.PRO
+
+ PURPOSE:
+    Print the segments contained in a spin model.
+
+ CATEGORY:
+   TDAS
+
+ CALLING SEQUENCE:
+   spinmodel-&gt;print_segments
+
+  INPUTS:
+    None
+
+  OUTPUTS:
+    None
+
+  
+  EXAMPLE:
+     timespan,'2007-03-23',1,/days
+     thm_load_state,probe='a',/get_support_data
+
+     smp=spinmodel_get_ptr('a',use_eclipse_corrections=2)
+     smp-&gt;print_segments
+</PRE><P>
+<STRONG>(See <A href="spin/thm_spinmodel__print_segments.pro">projects/themis/spin/thm_spinmodel__print_segments.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_SPINMODEL__DEFINE">
 <H2>THM_SPINMODEL__DEFINE</H2></A>
-<A HREF="#THM_SPINMODEL::GET_INFO.PRO">[Previous Routine]</A>
+<A HREF="#THM_SPINMODEL::PRINT_SEGMENTS.PRO">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:

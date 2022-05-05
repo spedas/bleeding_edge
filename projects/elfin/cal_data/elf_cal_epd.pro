@@ -60,6 +60,7 @@ PRO elf_cal_epd, tplotname=tplotname, trange=trange, type=type, probe=probe, $
   endif
   get_data, sc+'_'+stype+'_spinper', data=dspinper ; handled, clr THIS NEEDS TO BE MODIFIED TO INLCUDE MATCHING VARIABLE (A OR B, E OR I)
   get_data, sc+'_'+stype+'_sectnum', data=dsectnum ; handled, clr THIS NEEDS TO BE MODIFIED TO INLCUDE MATCHING VARIABLE (A OR B, E OR I)
+  get_data, sc+'_'+stype+'_nsectors', data=dnsectors ; handled, clr THIS NEEDS TO BE MODIFIED TO INLCUDE MATCHING VARIABLE (A OR B, E OR I)
 
   ; check that time range variable is correctly set
   if (~undefined(trange) && n_elements(trange) eq 2) && (time_double(trange[1]) lt time_double(trange[0])) then begin
@@ -84,7 +85,8 @@ PRO elf_cal_epd, tplotname=tplotname, trange=trange, type=type, probe=probe, $
   cal_ch_factors = epd_cal.epd_cal_ch_factors
   overint_factors = epd_cal.epd_overaccumulation_factors
   ebins_logmean = epd_cal.epd_ebins_logmean
-  n_sectors=16. ; <--- this needs to be part of the CDF in the future, hardcoded for now!
+  ;n_sectors=16. ; <--- this needs to be part of the CDF in the future, hardcoded for now!
+  n_sectors=dnsectors.y
   ; useful quantities
   dE = 1.e-3*(ebins[1:15]-ebins[0:14]) ; in MeV
   dE = [dE,6.2] ; energy in units of MeV

@@ -1,7 +1,7 @@
 ;+
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-17 02:32:37 -0700 (Tue, 17 Aug 2021) $
-; $LastChangedRevision: 30212 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2022-05-01 12:57:34 -0700 (Sun, 01 May 2022) $
+; $LastChangedRevision: 30793 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_apdat_init.pro $
 ;-
 
@@ -21,16 +21,6 @@ pro swfo_stis_apdat_init,reset=reset, save_flag = save_flag, swem=swem, $
   ;;#################
   ;; SETUP SWEM APIDs
   ;;#################
-  ttags = 'SEQN*'
-;  swfo_apdat_info,'081'x,name='sc_hkp_0x081',apid_obj = 'spp_sc_hk_0x081_apdat', tname = 'spp_sc_hkp_0x081_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
-;  swfo_apdat_info,'1c5'x,name='sc_hkp_0x1c5',apid_obj = 'spp_sc_hk_0x1c5_apdat', tname = 'spp_sc_hkp_0x1c5_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
-;  swfo_apdat_info,'1de'x,name='sc_hkp_0x1de',apid_obj = 'spp_sc_hk_0x1de_apdat', tname = 'spp_sc_hkp_0x1de_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
-;  swfo_apdat_info,'1df'x,name='sc_hkp_0x1df',apid_obj = 'spp_sc_hk_0x1df_apdat', tname = 'spp_sc_hkp_0x1df_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
-;  swfo_apdat_info,'254'x,name='sc_hkp_0x254',apid_obj = 'spp_sc_hk_0x254_apdat', tname = 'spp_sc_hkp_0x254_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
-;  swfo_apdat_info,'255'x,name='sc_hkp_0x255',apid_obj = 'spp_sc_hk_0x255_apdat', tname = 'spp_sc_hkp_0x255_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
-;  swfo_apdat_info,'256'x,name='sc_hkp_0x256',apid_obj = 'spp_sc_hk_0x256_apdat', tname = 'spp_sc_hkp_0x256_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
-;  swfo_apdat_info,'257'x,name='sc_hkp_0x257',apid_obj = 'spp_sc_hk_0x257_apdat', tname = 'spp_sc_hkp_0x257_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
-;  swfo_apdat_info,'262'x,name='sc_hkp_0x262',apid_obj = 'spp_sc_hk_0x262_apdat', tname = 'spp_sc_hkp_0x262_', save_flag=save_flag,ttags='*',rt_flag=rt_flag
 
   ; These APIDs are used by the SWEM
   if keyword_set(swem) then begin
@@ -51,7 +41,7 @@ pro swfo_stis_apdat_init,reset=reset, save_flag = save_flag, swem=swem, $
     swfo_apdat_info,'34d'x,name='wrp_P4',  apid_obj='swfo_swp_wrapper_apdat',tname='swfo_wrp_34D_P4_',  ttags='*',save_flag=save_flag,rt_flag=rt_flag
     swfo_apdat_info,'34e'x,name='wrp_P5P7',apid_obj='swfo_swp_wrapper_apdat',tname='swfo_wrp_34E_P5P7_',ttags='*',save_flag=save_flag,rt_flag=rt_flag
     swfo_apdat_info,'34f'x,name='wrp_P8',  apid_obj='swfo_swp_wrapper_apdat',tname='swfo_wrp_34F_P8_',  ttags='*',save_flag=save_flag,rt_flag=rt_flag
-    
+
   endif
 
 
@@ -60,7 +50,7 @@ pro swfo_stis_apdat_init,reset=reset, save_flag = save_flag, swem=swem, $
   ;;################
   swfo_apdat_info,'350'x,name='stis_sci', apid_obj='swfo_stis_sci_apdat',         tname='swfo_stis_sci_',ttags='*',save_flag=save_flag,rt_flag=rt_flag
   swfo_apdat_info,'351'x,name='stis_nse', apid_obj='swfo_stis_nse_apdat',    tname='swfo_stis_nse_',ttags='*',save_flag=save_flag,rt_flag=rt_flag
-  swfo_apdat_info,'35d'x,name='stis_mem', apid_obj='swfo_stis_memdump_apdat', tname='swfo_stis_mem_',ttags='*',save_flag=save_flag,rt_flag=rt_flag
+  swfo_apdat_info,'35d'x,name='stis_mem', apid_obj='swfo_stis_memdump_apdat', tname='swfo_stis_memdump_',ttags='*',save_flag=save_flag,rt_flag=rt_flag
   swfo_apdat_info,'35E'x,name='stis_hkp1', apid_obj='swfo_stis_hkp_apdat', tname='swfo_stis_hkp1_',ttags='*',save_flag=save_flag,rt_flag=rt_flag
   swfo_apdat_info,'35F'x,name='stis_hkp2', apid_obj='swfo_stis_hkp_apdat', tname='swfo_stis_hkp2_',ttags='*',    save_flag=save_flag,rt_flag=rt_flag
 

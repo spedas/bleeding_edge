@@ -13,8 +13,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-02-07 09:04:36 -0800 (Wed, 07 Feb 2018) $
-; $LastChangedRevision: 24662 $
+; $LastChangedDate: 2022-04-26 11:08:40 -0700 (Tue, 26 Apr 2022) $
+; $LastChangedRevision: 30788 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_hpca_eis_combined_crib.pro $
 ;-
 
@@ -25,15 +25,15 @@ mms_hpca_spin_sum, probe='1'
 
 mms_load_eis, trange=['2015-10-16', '2015-10-17'], datatype='extof', probe=1
 
-get_data, 'mms1_epd_eis_extof_proton_flux_omni_spin', data=d, dlimits=dl
+get_data, 'mms1_epd_eis_srvy_l2_extof_proton_flux_omni_spin', data=d, dlimits=dl
 
 ; convert the EIS data to eV so the 2 data products are on the same scale
 d.V = d.V*1000d 
 
 ; resave the EIS proton flux in eV
-store_data, 'mms1_epd_eis_extof_proton_flux_omni_spin', data=d
+store_data, 'mms1_epd_eis_srvy_l2_extof_proton_flux_omni_spin', data=d
 
-store_data, 'combined_flux', data='mms1_epd_eis_extof_proton_flux_omni_spin mms1_hpca_hplus_flux_elev_0-360_spin'
+store_data, 'combined_flux', data='mms1_epd_eis_srvy_l2_extof_proton_flux_omni_spin mms1_hpca_hplus_flux_elev_0-360_spin'
 
 ; be sure to set the plot metadata on the combined spectra
 options, 'combined_flux', ylog=1, yrange=[1, 1e7], ystyle=1, yticks=7, zrange=[0.1, 1e7]

@@ -32,8 +32,8 @@
 ;  
 ;   
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-12-15 12:11:10 -0800 (Tue, 15 Dec 2020) $
-; $LastChangedRevision: 29486 $
+; $LastChangedDate: 2022-04-20 10:24:36 -0700 (Wed, 20 Apr 2022) $
+; $LastChangedRevision: 30773 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot2cdf.pro $
 ;-
 
@@ -99,7 +99,7 @@ pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attribu
     get_data,tname,data=d,alimit=s, dlimits=dl
     
     str_element,s,'CDF',SUCCESS=cdf_s
-    if cdf_s eq 0 || ~is_struct(dl) then begin
+    if cdf_s eq 0 || ~is_struct(s) then begin
       print, "ERROR: Missing CDF structure in tplot variable " + tname
       print, "Use tplot_add_cdf_structure procedure to define CDF structure or use /default_cdf_structure keyword"
       continue
@@ -275,7 +275,7 @@ pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attribu
     ; Now work with the data
     ;
     if ~undefined(VAR) then begin
-      attr = dl.cdf.vatt
+      attr = *VAR.ATTRPTR
       if STRCMP(attr.VAR_TYPE, 'undefined') then attr.VAR_TYPE = 'data' ;Change attributes for data variable variable
       if ~tag_exist(attr, 'DISPLAY_TYPE') then str_element, attr, 'DISPLAY_TYPE', 'time_series', /add
       

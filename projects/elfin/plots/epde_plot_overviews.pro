@@ -380,7 +380,9 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       get_data, sc+'_pef_nsectors', data= nsect
       med_nsect=median(nsect.y)
       epd_sci_zones=get_elf_science_zone_start_end(trange=[trange[0]-5,trange[1]+5], probe=probe, instrument='epd')
-      completeness_str=', completeness='+epd_sci_zones.completeness[0]
+      epd_completeness_str=', EPD completeness='+epd_sci_zones.completeness[0]
+      fgm_sci_zones=get_elf_science_zone_start_end(trange=[trange[0]-5,trange[1]+5], probe=probe, instrument='fgm')
+      fgm_completeness_str=', FGM completeness='+fgm_sci_zones.completeness[0]
 
       ; get sector and phase delay for this zone
       phase_delay = elf_find_phase_delay(trange=sz_tr, probe=probe, instrument='epde', no_download=no_download)
@@ -393,10 +395,10 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       if undefined(badflag) then badflag=2
       if badflag NE 0 then badflag_str=', BadFlag set' else badflag_str=''
       case badflag of
-        0: phase_msg = 'Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Good Fit' + completeness_str
-        1: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Bad Fit' + completeness_str
-        2: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', No Fit' + completeness_str
-        else: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Bad Fit' + completeness_str
+        0: phase_msg = 'Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Good Fit' + epd_completeness_str
+        1: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Bad Fit' + epd_completeness_str
+        2: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', No Fit' + epd_completeness_str
+        else: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Bad Fit' + epd_completeness_str
       endcase 
 
       spin_str=''
@@ -421,7 +423,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         spinsum_med=fix(median(spinsum.y))
         spinsum_str=', nspinsinsum='+ strtrim(spinsum_med, 1)
         spin_str='Median Spin Period T: '+strmid(strtrim(string(spin_med), 1),0,4) + 's, sig=' +$
-          strmid(strtrim(string(spin_var), 1),0,4)+'% T'+nsect_str+spinsum_str
+          strmid(strtrim(string(spin_var), 1),0,4)+'% T'+nsect_str+spinsum_str+fgm_completeness_str
       endif
 
       ; handle scaling of y axis
