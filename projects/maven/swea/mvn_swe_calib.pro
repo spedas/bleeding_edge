@@ -80,7 +80,7 @@
 ;                       {swe_Ka       : 6.17      , $   ; analyzer constant
 ;                        swe_G        : 0.009/16. , $   ; nominal geometric factor
 ;                        swe_Ke       : 2.8       , $   ; electron suppression constant
-;                        swe_dead     : 2.8e-6    , $   ; deadtime per preamp
+;                        swe_dead     : 1.0e-6    , $   ; deadtime per preamp
 ;                        swe_min_dtc  : 0.25      , $   ; max 4x deadtime correction
 ;                        swe_paralyze : 0            }  ; use non-paralyzable deadtime
 ;
@@ -91,8 +91,8 @@
 ;       LIST:         List the current calibration constants.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-18 15:27:03 -0700 (Thu, 18 Mar 2021) $
-; $LastChangedRevision: 29775 $
+; $LastChangedDate: 2022-05-05 13:02:07 -0700 (Thu, 05 May 2022) $
+; $LastChangedRevision: 30804 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_calib.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -115,7 +115,7 @@ pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default,
     swe_Ka       = 6.17       ; analyzer constant (1.4% variation around azim)
     swe_G        = 0.009/16.  ; nominal geometric factor per anode (IRAP)
     swe_Ke       = 2.80       ; nominal value, see mvn_swe_esuppress.pro
-    swe_dead     = 2.8e-6     ; deadtime for one MCP-Anode-Preamp chain (IRAP)
+    swe_dead     = 1.0e-6     ; deadtime for one MCP-Anode-Preamp chain (IRAP)
     swe_min_dtc  = 0.25       ; max 4x deadtime correction
     swe_paralyze = 0          ; use non-paralyzable deadtime model
   endif

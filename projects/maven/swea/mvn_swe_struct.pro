@@ -7,8 +7,8 @@
 ;  All times are for the center of the sample.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-03-15 12:43:46 -0700 (Fri, 15 Mar 2019) $
-; $LastChangedRevision: 26816 $
+; $LastChangedDate: 2022-05-05 12:59:06 -0700 (Thu, 05 May 2022) $
+; $LastChangedRevision: 30801 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_struct.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2013-07-26
@@ -190,7 +190,6 @@ pro mvn_swe_struct
                    units_procedure : 'mvn_swe_convert_units' , $
                    chksum          : 0B                      , $  ; LUT checksum
                    lut             : 0B                      , $  ; active LUT
-                   valid           : 0B                      , $
                    met             : 0D                      , $  ; mission elapsed time
                    time            : 0D                      , $  ; unix time
                    end_time        : 0D                      , $
@@ -215,8 +214,9 @@ pro mvn_swe_struct
                    magf            : fltarr(3)               , $  ; magnetic field
                    maglev          : 0B                      , $  ; MAG data level (0-2)
                    v_flow          : fltarr(3)               , $  ; bulk flow velocity
-                   bkg             : fltarr(n_e,n_a)         , $  ; background
+                   bkg             : fltarr(n_e,n_a)         , $  ; background/contamination
                    data            : fltarr(n_e,n_a)         , $  ; data
+                   valid           : replicate(1B,n_e,n_a)   , $  ; valid data
                    var             : fltarr(n_e,n_a)            } ; variance
 
 ; Stripped down 3D structure for common block storage
@@ -238,7 +238,6 @@ pro mvn_swe_struct
                     units_procedure : 'mvn_swe_convert_units' , $
                     chksum          : 0B                      , $  ; LUT checksum
                     lut             : 0B                      , $  ; active LUT
-                    valid           : 0B                      , $
                     met             : 0D                      , $  ; mission elapsed time
                     time            : 0D                      , $  ; unix time
                     end_time        : 0D                      , $
@@ -272,8 +271,9 @@ pro mvn_swe_struct
                     magf            : fltarr(3)               , $  ; magnetic field
                     maglev          : 0B                      , $  ; MAG data level (0-2)
                     v_flow          : fltarr(3)               , $  ; bulk flow velocity
-                    bkg             : fltarr(n_e,n_az)        , $  ; background
+                    bkg             : fltarr(n_e,n_az)        , $  ; background/contamination
                     data            : fltarr(n_e,n_az)        , $  ; data
+                    valid           : replicate(1B,n_e,n_az)  , $  ; valid data
                     var             : fltarr(n_e,n_az)           } ; variance
 
 ; Stripped down PAD structure for common block storage
@@ -294,7 +294,6 @@ pro mvn_swe_struct
                      units_procedure : 'mvn_swe_convert_units' , $
                      chksum          : 0B                      , $  ; LUT checksum
                      lut             : 0B                      , $  ; active LUT
-                     valid           : 0B                      , $
                      met             : 0D                      , $  ; mission elapsed time
                      time            : 0D                      , $  ; unix time
                      end_time        : 0D                      , $
@@ -311,8 +310,9 @@ pro mvn_swe_struct
                      sc_pot          : 0.                      , $  ; spacecract potential
                      magf            : fltarr(3)               , $  ; magnetic field
                      maglev          : 0B                      , $  ; MAG data level (0-2)
-                     bkg             : fltarr(n_e)             , $  ; background
+                     bkg             : fltarr(n_e)             , $  ; background/contamination
                      data            : fltarr(n_e)             , $  ; data
+                     valid           : replicate(1B,n_e)       , $  ; valid data
                      var             : fltarr(n_e)                } ; variance
 
 ; Stripped down SPEC structure for common block storage

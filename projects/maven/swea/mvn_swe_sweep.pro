@@ -3,25 +3,32 @@
 ;PURPOSE:
 ;  Generates a SWEA sweep table exactly as done in flight software (same digital 
 ;  commands, same checksum).  This table is combined with calibration data to 
-;  determine energy sweep and deflection angle.
+;  determine energy sweep and deflection angle.  This routine can be used to 
+;  generate new tables for upload to non-volatile memory in the PFDPU or to SWEA
+;  directly (via CDI).  It can also be used to create files for comparison with
+;  PFDPU EEPROM memory dumps.
 ;
-;  Eight pre-defined tables are provided via keyword TABNUM.  Tables 1-4 are 
-;  obsolete.  Tables 5 and 6 correspond to tables as loaded into flight software
-;  during commissioning in October 2014.  Table 8 will be loaded into flight 
-;  software as part of an EEPROM update in late August 2018.  Table 7 will be 
-;  loaded via CDI commands, since there is no contiguous block of PFDPU memory 
-;  large enough to hold the table.
+;  Nine pre-defined tables are provided via keyword TABNUM.  Tables 1-4 were only
+;  used in cruise and have been obsolete since orbit insertion.  Tables 5 and 6 
+;  were loaded into flight software during commissioning in October 2014.  Table 5
+;  is used nearly all of the time.  Table 6 was used once a month until July 2018
+;  to calibrate and monitor the low energy response.  Tables 7-9 are high cadence
+;  tables at a single energy used during special observing sequences.
 ;
 ;KEYWORDS:
 ;       RESULT:       Named variable to hold result structure: analyzer, deflector,
 ;                     and V0 sweeps, energy/angle sweeps, energy resolution (dE/E)
 ;                     and geometric factor vs. energy.
 ;
-;       TPLOT:        Create tplot variables.
+;       TPLOT:        Create tplot variables, but do not plot them.
 ;
 ;       DOPLOT:       Plot Va, Vd, V0, E, dE/E, X, TH, and GFW for one 2-sec sweep.
+;                     In a separate window, plot the deflection angle coverage as 
+;                     a function of energy.  WARNING: this can alter the time range
+;                     of your tplot window.  Use keyword TSTART to align the sweep
+;                     variables with any other tplot variables.
 ;
-;       TSTART:       Arbitrary start time for DOPLOT.
+;       TSTART:       Arbitrary start time for DOPLOT.  Default = 0 ('1970-01-01').
 ;
 ;       PROP:         Print the table properties: checksum, energy and angle ranges.
 ;
@@ -76,17 +83,26 @@
 ;                              Chksum = '00'X
 ;                              LUT = 3
 ;
+;                       9 : Xmax = 5.5, Erange = [125.,125.], V0scale = 0.
+;                           Hires 32-Hz at 125 eV
+;                             -59 < Elev < +61 ; E = 125
+;                              Chksum = '00'X
+;                              LUT = 1
+;
 ;                     Otherwise, use the following keywords to define the sweep.
 ;
-;       CHKSUM:       Use checksum to determine which table to use.  Only works
-;                     for table numbers >= 3.
+;       CHKSUM:       Use checksum to determine which table to use.  Currently,
+;                     this only uniquely identifies tables 5 and 6.  All high
+;                     cadence tables (7-9) have a checksum of zero.  The routine
+;                     mvn_swe_getlut can use one of three different methods for
+;                     determining the sweep table in use.
 ;
 ;       Xmax:         Maximum ratio of deflector voltage to analyzer voltage.
-;                     (Controls maximum deflection angle.)  Default = 6.
+;                     (Controls maximum deflection angle.)  Default = 5.5
 ;
 ;       V0scale:      Scale factor for V0 (a number from 0 to 1).
 ;                         |V0| = E/2 < (25*V0scale) Volts
-;                     Default = 1.
+;                     Default = 0.
 ;
 ;       Vrange:       Voltage range of sweep (commanded).  Default = [0.75, 750.].
 ;
@@ -94,17 +110,18 @@
 ;                     This keyword allows one to set the energy range, correcting for
 ;                     V0, if necessary.  No default.
 ;
-;       old_def:      Use the old method for sweeping the deflectors.  This is valid
+;       OLD_DEF:      Use the old method for sweeping the deflectors.  This is valid
 ;                     for ground tests, early cruise checkout (Dec 6-7, 2013), and
 ;                     outer cruise.
 ;
 ;       DUMPFILE:     Saves an ascii hex dump to this named file, for comparison with
 ;                     PFDPU EEPROM dump.
 ;
-;       CMDFILE:      Saves an ascii command file for upload to the PFDPU.
+;       CMDFILE:      Set this to the full path and filename for an ascii command file
+;                     for upload to the PFDPU.
 ;
 ;       MEMADDR:      PFDPU memory address to begin loading table.  Only used if
-;                     FORMAT < 2.
+;                     FORMAT = 0 or 1.
 ;
 ;       SWEBUF:       SWEA SLUT buffer to load table to (0-7).  Only used if FORMAT = 2.
 ;
@@ -114,8 +131,8 @@
 ;                        2 = SWEA native format (2-byte words)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-02-09 16:39:20 -0800 (Sat, 09 Feb 2019) $
-; $LastChangedRevision: 26583 $
+; $LastChangedDate: 2022-05-05 12:58:13 -0700 (Thu, 05 May 2022) $
+; $LastChangedRevision: 30800 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sweep.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-01-03
@@ -135,6 +152,7 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
   if not keyword_set(V0tweak) then V0tweak = {gain:1.00, offset:0.}
   if not keyword_set(tstart) then tstart = 0D else tstart = (time_double(tstart))[0]
   doplot = keyword_set(doplot)
+  if (doplot) then tplot = 1
   if not keyword_set(format) then format = 0
   if not keyword_set(swebuf) then swebuf = 0
   case format of
@@ -232,6 +250,16 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
           comment = 'Hires 32-Hz at 50 eV (V0 off)'
         end
 
+    9 : begin
+          Xmax = 5.5D
+          V0scale = 0D
+          e125 = 124.89275D  ; energy bin 31 of table 5
+          Erange = [e125,e125]
+          old_def = 0
+          old_cal = 0
+          comment = 'Hires 32-Hz at 125 eV (V0 off)'
+        end
+
     else : begin
              print,"Unrecognized table number: ",tabnum
              return
@@ -240,12 +268,12 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
 
 ; Maximum value of Vd/Va (controls maximum deflection angle)
 
-  if (size(Xmax,/type) eq 0) then maxdefx = 6D else maxdefx = double(Xmax)
+  if (size(Xmax,/type) eq 0) then maxdefx = 5.5D else maxdefx = double(Xmax)
 
 ; Control of V0 (affects energy resolution and geometric factor)
 ;   This keyword should be 0 or 1.  Intermediate values are not useful.
 
-  if (size(V0scale,/type) eq 0) then V0scale = 1D else V0scale = double(V0scale)
+  if (size(V0scale,/type) eq 0) then V0scale = 0D else V0scale = double(V0scale)
 
 ; Sweep constants
 
@@ -495,9 +523,11 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
     options,'GFW','psym',10
     ylim,'GFW',0,1.1,0
 
+    pans = ['Va','Vd1','Vd2','V0','X','theta','E','dE','GFW']
+    options,pans,'colors',4
+
     if (doplot) then begin
       timefit,tstart+[0D,2D]
-      pans = ['Va','Vd1','Vd2','V0','X','theta','E','dE','GFW']
       tplot,pans
     endif
   endif
@@ -532,10 +562,11 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
 
   if (doplot) then begin
     twin = !d.window
-    window,/free
+    putwin,/free,relative=twin,dx=10,/top
+    pwin = !d.window
 
-    plot_oi,dat.E,dat.theta[0,*],yrange=[-70,70],/ysty,psym=-4, $
-         xtitle='Energy (eV)', ytitle='Deflection Angle', charsize=1.2
+    plot_oi,dat.E,dat.theta[0,*],xrange=[1.,1.e4],yrange=[-70,70],/ysty,psym=-4, $
+         xtitle='Energy (eV)', ytitle='Deflection Angle', charsize=1.4
     oplot,dat.E,dat.th1[0,*]
     oplot,dat.E,dat.th2[0,*]
     for i=1,5 do begin
@@ -543,7 +574,7 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
       oplot,dat.E,dat.th1[i,*],color=i
       oplot,dat.E,dat.th2[i,*],color=i
     endfor
-    
+
     wset,twin
   endif
   

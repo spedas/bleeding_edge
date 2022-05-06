@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed May  4 18:16:21 2022.<P>
+<STRONG>Last modified: </STRONG>Thu May  5 18:16:19 2022.<P>
  
 <HR>
  
@@ -195,6 +195,8 @@ This page was created by the IDL library routine
 <br>Estimates the spacecraft potential from SWEA energy spectra.  The basic
 <LI><A HREF="#MVN_SWE_SCIPLOT">MVN_SWE_SCIPLOT</A>
 <br>Creates a science-oriented summary plot for SWEA and MAG and optionally other
+<LI><A HREF="#MVN_SWE_SECONDARY">MVN_SWE_SECONDARY</A>
+<br>Estimates contamination caused by secondary electrons emitted from interior
 <LI><A HREF="#MVN_SWE_SHAPE_DAILYSAVE">MVN_SWE_SHAPE_DAILYSAVE</A>
 <LI><A HREF="#MVN_SWE_SHAPE_PAR">MVN_SWE_SHAPE_PAR</A>
 <br>Calculates SWEA energy shape parameter and stores it as a TPLOT variable.
@@ -242,7 +244,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#SWE_3D_SNAP">SWE_3D_SNAP</A>
 <br>Plots 3D snapshots in a separate window for times selected with the cursor in
 <LI><A HREF="#SWE_3D_STITCH">SWE_3D_STITCH</A>
-<br>Constructs 3D spectrograms from A0 packets.  Depending on the group parameter,
+<br>Constructs 3D spectra from A0 and A1 packets.  Depending on the group parameter,
 <LI><A HREF="#SWE_3D_STRAHL_DIR">SWE_3D_STRAHL_DIR</A>
 <br>Determines the direction in SWEA coordinates of the strahl.
 <LI><A HREF="#SWE_3D_TIMING">SWE_3D_TIMING</A>
@@ -1791,7 +1793,7 @@ KEYWORDS:
                        {swe_Ka       : 6.17      , $   ; analyzer constant
                         swe_G        : 0.009/16. , $   ; nominal geometric factor
                         swe_Ke       : 2.8       , $   ; electron suppression constant
-                        swe_dead     : 2.8e-6    , $   ; deadtime per preamp
+                        swe_dead     : 1.0e-6    , $   ; deadtime per preamp
                         swe_min_dtc  : 0.25      , $   ; max 4x deadtime correction
                         swe_paralyze : 0            }  ; use non-paralyzable deadtime
 
@@ -1802,8 +1804,8 @@ KEYWORDS:
        LIST:         List the current calibration constants.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-03-18 15:27:03 -0700 (Thu, 18 Mar 2021) $
- $LastChangedRevision: 29775 $
+ $LastChangedDate: 2022-05-05 13:02:07 -0700 (Thu, 05 May 2022) $
+ $LastChangedRevision: 30804 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_calib.pro $
 
 CREATED BY:    David L. Mitchell  03-29-13
@@ -1995,8 +1997,8 @@ KEYWORDS:
                      text : brief descriptions of configuration changes
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-02-24 09:53:04 -0800 (Thu, 24 Feb 2022) $
- $LastChangedRevision: 30609 $
+ $LastChangedDate: 2022-05-05 13:02:21 -0700 (Thu, 05 May 2022) $
+ $LastChangedRevision: 30805 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 
 CREATED BY:    David L. Mitchell  03-29-13
@@ -2092,15 +2094,15 @@ KEYWORDS:
        REFRESH:      Refresh the polynomial coefficients.
 
        EXTRAP:       Extrapolate past the last measured cross calibration
-                     factor using a quadratic fit to all values since the 
+                     factor using a polynomial fit to measurements since the 
                      last MCPHV bump.  The default is to use the last 
                      known value.
 
        SILENT:       Don't print any warnings or messages.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-02-22 10:29:53 -0800 (Tue, 22 Feb 2022) $
- $LastChangedRevision: 30603 $
+ $LastChangedDate: 2022-05-05 13:04:05 -0700 (Thu, 05 May 2022) $
+ $LastChangedRevision: 30807 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_crosscal.pro $
 
 CREATED BY:    David L. Mitchell  05-04-16
@@ -3295,8 +3297,8 @@ KEYWORDS:
          STATUS:     Return the current coverage and return.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-02-18 16:28:27 -0800 (Thu, 18 Feb 2021) $
- $LastChangedRevision: 29683 $
+ $LastChangedDate: 2022-05-05 13:03:07 -0700 (Thu, 05 May 2022) $
+ $LastChangedRevision: 30806 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_lowe_mask.pro $
 
 CREATED BY:    David L. Mitchell
@@ -3694,8 +3696,8 @@ KEYWORDS:
        NOLUT:    Do not recalculate the LUT.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-08-09 08:20:47 -0700 (Mon, 09 Aug 2021) $
- $LastChangedRevision: 30184 $
+ $LastChangedDate: 2022-05-05 13:01:49 -0700 (Thu, 05 May 2022) $
+ $LastChangedRevision: 30803 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makespec.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -3778,14 +3780,14 @@ KEYWORDS:
 
    ERANGE:   Restrict calculation to this energy range.
 
-   BACKGROUND: Set the background to this value.  Units = EFLUX.  Default is
-               to use the value in the data structure.
+   SEC:      Estimate and remove secondary electrons.
+             See mvn_swe_secondary for details.
 
 OUTPUTS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-10-30 17:16:36 -0700 (Sat, 30 Oct 2021) $
- $LastChangedRevision: 30390 $
+ $LastChangedDate: 2022-05-05 13:01:03 -0700 (Thu, 05 May 2022) $
+ $LastChangedRevision: 30802 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_n1d.pro $
 
 </PRE><P>
@@ -4862,7 +4864,7 @@ OUTPUTS:
 <A NAME="MVN_SWE_SC_POT">
 <H2>MVN_SWE_SC_POT</H2></A>
 <A HREF="#MVN_SWE_SC_POSPOT">[Previous Routine]</A>
-<A HREF="#MVN_SWE_SHAPE_DAILYSAVE">[Next Routine]</A>
+<A HREF="#MVN_SWE_SECONDARY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE: 
@@ -4952,9 +4954,99 @@ OUTPUTS:
 <STRONG>(See <A href="swea/mvn_swe_sc_pot.pro">projects/maven/swea/mvn_swe_sc_pot.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SWE_SECONDARY">
+<H2>MVN_SWE_SECONDARY</H2></A>
+<A HREF="#MVN_SWE_SC_POT">[Previous Routine]</A>
+<A HREF="#MVN_SWE_SHAPE_DAILYSAVE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_swe_secondary
+PURPOSE:
+  Estimates contamination caused by secondary electrons emitted from interior
+  surfaces of the instrument.  Most secondaries that make it to the MCP are
+  likely emitted from surfaces near the entrance to the hemispheres, which are
+  coated with Cu2S.  Some fraction may come from the deflectors, which are 
+  coated with black nickel.
+
+  Method adapted from Andreone et al., JGR Space Phys. 127, e2121JA029404 (2022).
+
+  Primary electron weighting function (secondary yield per primary):
+    Emax = 300.
+    s = 1.6                       ; from experiment (Schultz et al. 1996)
+    s = 1.9 - 1.05*alog10(e)/3.   ; tuned to be close to Andreone et al. 2022
+
+    d(E) = exp(-(alog(E/Emax)^2.)/(2.*s*s))
+
+
+    &lt;Fp&gt; = total(Fp(E) * d(E) * dE)  ; summed above s/c potential
+
+  Secondary electron population has a Maxwell-Boltzmann distribution with a
+  temperature that is independent of primary energy:
+    E0 = 3.
+    Smax = 0.1225
+    S(E) = Smax * exp(1.) * (E/E0) * exp(-(E/E0))
+
+  Secondary electron differential flux:
+    Fs = eps * &lt;Fp&gt; * S(E)
+
+  The scale factor eps is of order unity.  It is used to tune the secondary
+  yield to match observations.  Andreone allowed eps to be tuned separately
+  for each spectrum; however, here I am taking eps to be a constant, which
+  is tuned by looking a many spectra in different plasma regions.  Also, I
+  am tuning E0 to match observations of the secondary electron peak.
+
+  Filters are used to avoid over- and under- correction.
+
+  Primaries impact interior surfaces to produce secondaries, so energy for
+  both populations is measured in the instrument frame.
+
+USAGE:
+  mvn_swe_secondary, data [, /tplot]   ; normal usage
+
+  mvn_swe_secondary, config=value      ; initialize with custom parameters
+
+INPUTS:
+       data:         Array of SPEC, PAD or 3D data structures.
+
+KEYWORDS:
+       CONFIG:       A structure containing parameters for the yield and
+                     secondary distribution functions.  This can have one
+                     or more of the following tags:
+
+                       e0 : temperature (eV) of the M-B secondary electron
+                            distribution (default = 3.5 eV)
+
+                       s0 : peak value of the M-B secondary electron
+                            distribution function (default = 0.1225)
+
+                       e1 : peak (eV) of the secondary yield function
+                            (default = 300 eV)
+
+                       s1 : scale factor for the secondary yield
+                            (default = 0.7)
+
+                     These values are persistent for subsequent calls.
+
+       PARAM:        Returns the CONFIG parameter structure.
+
+       DEFAULT:      Sets CONFIG to defaults.
+
+       TPLOT:        Create a tplot variable.  (Only works for SPEC data.)
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2022-05-05 13:10:05 -0700 (Thu, 05 May 2022) $
+ $LastChangedRevision: 30808 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_secondary.pro $
+
+CREATED BY:	David L. Mitchell
+FILE:  mvn_swe_secondary.pro
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_swe_secondary.pro">projects/maven/swea/mvn_swe_secondary.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SWE_SHAPE_DAILYSAVE">
 <H2>MVN_SWE_SHAPE_DAILYSAVE</H2></A>
-<A HREF="#MVN_SWE_SC_POT">[Previous Routine]</A>
+<A HREF="#MVN_SWE_SECONDARY">[Previous Routine]</A>
 <A HREF="#MVN_SWE_SHAPE_PAR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -5506,8 +5598,8 @@ PURPOSE:
   All times are for the center of the sample.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-15 12:43:46 -0700 (Fri, 15 Mar 2019) $
- $LastChangedRevision: 26816 $
+ $LastChangedDate: 2022-05-05 12:59:06 -0700 (Thu, 05 May 2022) $
+ $LastChangedRevision: 30801 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_struct.pro $
 
 CREATED BY:	David L. Mitchell  2013-07-26
@@ -5690,25 +5782,32 @@ PROCEDURE:   mvn_swe_sweep
 PURPOSE:
   Generates a SWEA sweep table exactly as done in flight software (same digital 
   commands, same checksum).  This table is combined with calibration data to 
-  determine energy sweep and deflection angle.
+  determine energy sweep and deflection angle.  This routine can be used to 
+  generate new tables for upload to non-volatile memory in the PFDPU or to SWEA
+  directly (via CDI).  It can also be used to create files for comparison with
+  PFDPU EEPROM memory dumps.
 
-  Eight pre-defined tables are provided via keyword TABNUM.  Tables 1-4 are 
-  obsolete.  Tables 5 and 6 correspond to tables as loaded into flight software
-  during commissioning in October 2014.  Table 8 will be loaded into flight 
-  software as part of an EEPROM update in late August 2018.  Table 7 will be 
-  loaded via CDI commands, since there is no contiguous block of PFDPU memory 
-  large enough to hold the table.
+  Nine pre-defined tables are provided via keyword TABNUM.  Tables 1-4 were only
+  used in cruise and have been obsolete since orbit insertion.  Tables 5 and 6 
+  were loaded into flight software during commissioning in October 2014.  Table 5
+  is used nearly all of the time.  Table 6 was used once a month until July 2018
+  to calibrate and monitor the low energy response.  Tables 7-9 are high cadence
+  tables at a single energy used during special observing sequences.
 
 KEYWORDS:
        RESULT:       Named variable to hold result structure: analyzer, deflector,
                      and V0 sweeps, energy/angle sweeps, energy resolution (dE/E)
                      and geometric factor vs. energy.
 
-       TPLOT:        Create tplot variables.
+       TPLOT:        Create tplot variables, but do not plot them.
 
        DOPLOT:       Plot Va, Vd, V0, E, dE/E, X, TH, and GFW for one 2-sec sweep.
+                     In a separate window, plot the deflection angle coverage as 
+                     a function of energy.  WARNING: this can alter the time range
+                     of your tplot window.  Use keyword TSTART to align the sweep
+                     variables with any other tplot variables.
 
-       TSTART:       Arbitrary start time for DOPLOT.
+       TSTART:       Arbitrary start time for DOPLOT.  Default = 0 ('1970-01-01').
 
        PROP:         Print the table properties: checksum, energy and angle ranges.
 
@@ -5763,17 +5862,26 @@ KEYWORDS:
                               Chksum = '00'X
                               LUT = 3
 
+                       9 : Xmax = 5.5, Erange = [125.,125.], V0scale = 0.
+                           Hires 32-Hz at 125 eV
+                             -59 &lt; Elev &lt; +61 ; E = 125
+                              Chksum = '00'X
+                              LUT = 1
+
                      Otherwise, use the following keywords to define the sweep.
 
-       CHKSUM:       Use checksum to determine which table to use.  Only works
-                     for table numbers &gt;= 3.
+       CHKSUM:       Use checksum to determine which table to use.  Currently,
+                     this only uniquely identifies tables 5 and 6.  All high
+                     cadence tables (7-9) have a checksum of zero.  The routine
+                     mvn_swe_getlut can use one of three different methods for
+                     determining the sweep table in use.
 
        Xmax:         Maximum ratio of deflector voltage to analyzer voltage.
-                     (Controls maximum deflection angle.)  Default = 6.
+                     (Controls maximum deflection angle.)  Default = 5.5
 
        V0scale:      Scale factor for V0 (a number from 0 to 1).
                          |V0| = E/2 &lt; (25*V0scale) Volts
-                     Default = 1.
+                     Default = 0.
 
        Vrange:       Voltage range of sweep (commanded).  Default = [0.75, 750.].
 
@@ -5781,17 +5889,18 @@ KEYWORDS:
                      This keyword allows one to set the energy range, correcting for
                      V0, if necessary.  No default.
 
-       old_def:      Use the old method for sweeping the deflectors.  This is valid
+       OLD_DEF:      Use the old method for sweeping the deflectors.  This is valid
                      for ground tests, early cruise checkout (Dec 6-7, 2013), and
                      outer cruise.
 
        DUMPFILE:     Saves an ascii hex dump to this named file, for comparison with
                      PFDPU EEPROM dump.
 
-       CMDFILE:      Saves an ascii command file for upload to the PFDPU.
+       CMDFILE:      Set this to the full path and filename for an ascii command file
+                     for upload to the PFDPU.
 
        MEMADDR:      PFDPU memory address to begin loading table.  Only used if
-                     FORMAT &lt; 2.
+                     FORMAT = 0 or 1.
 
        SWEBUF:       SWEA SLUT buffer to load table to (0-7).  Only used if FORMAT = 2.
 
@@ -5801,8 +5910,8 @@ KEYWORDS:
                         2 = SWEA native format (2-byte words)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-02-09 16:39:20 -0800 (Sat, 09 Feb 2019) $
- $LastChangedRevision: 26583 $
+ $LastChangedDate: 2022-05-05 12:58:13 -0700 (Thu, 05 May 2022) $
+ $LastChangedRevision: 30800 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sweep.pro $
 
 CREATED BY:	David L. Mitchell  2014-01-03
@@ -6276,8 +6385,15 @@ CREATED BY:    David L. Mitchell  07-24-12
 <PRE>
 PROCEDURE:   swe_3d_stitch
 PURPOSE:
-  Constructs 3D spectrograms from A0 packets.  Depending on the group parameter,
-  1, 2, or 4 A0 packets are needed to make one 3D.
+  Constructs 3D spectra from A0 and A1 packets.  Depending on the group parameter,
+  1, 2, or 4 packets are needed to make one 3D.  The packets comprising one 3D
+  should be generated very close in time; however, they are time tagged with
+  millisec resolution, so there's a possibility that frames will have slightly
+  different time tags.  This routine requires that they be created within 0.3 sec.
+
+  The packets comprising a 3D must all be present, but they need not come in
+  sequential order, as long as they are created within 0.3 seconds of each other.
+  The PFDPU is known to occasionally write packets out of sequential order.
 
 USAGE:
   swe_3d_stitch
@@ -6287,8 +6403,8 @@ INPUTS:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2016-04-25 20:07:01 -0700 (Mon, 25 Apr 2016) $
- $LastChangedRevision: 20924 $
+ $LastChangedDate: 2022-05-05 12:57:25 -0700 (Thu, 05 May 2022) $
+ $LastChangedRevision: 30799 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_stitch.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12

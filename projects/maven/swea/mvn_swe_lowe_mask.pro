@@ -32,8 +32,8 @@
 ;         STATUS:     Return the current coverage and return.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-02-18 16:28:27 -0800 (Thu, 18 Feb 2021) $
-; $LastChangedRevision: 29683 $
+; $LastChangedDate: 2022-05-05 13:03:07 -0700 (Thu, 05 May 2022) $
+; $LastChangedRevision: 30806 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_lowe_mask.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -82,8 +82,8 @@ pro mvn_swe_lowe_mask, data, badval=badval, allbad=allbad, status=status
 
   str_element, data, 'time', success=ok
   if (ok) then begin
-    if (allbad) then tndx = lindgen(n_elements(data.time)) $
-                else tndx = nn2(data.time, anom.x, maxdt=0.25D)
+    tndx = nn2(data.time, anom.x, maxdt=0.25D, /valid)
+    if (allbad) then tndx = [tndx, where(data.time gt max(anom.x))]
     indx = where(tndx ge 0L, count)
     if (count gt 0L) then begin
       tndx = tndx[indx]
@@ -99,8 +99,8 @@ pro mvn_swe_lowe_mask, data, badval=badval, allbad=allbad, status=status
 
   str_element, data, 'x', success=ok
   if (ok) then begin
-    if (allbad) then tndx = lindgen(n_elements(data.x)) $
-                else tndx = nn2(data.x, anom.x, maxdt=0.25D)
+    tndx = nn2(data.x, anom.x, maxdt=0.25D, /valid)
+    if (allbad) then tndx = [tndx, where(data.x gt max(anom.x))]
     indx = where(tndx ge 0L, count)
     if (count gt 0L) then begin
       tndx = tndx[indx]

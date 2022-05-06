@@ -42,15 +42,15 @@
 ;       REFRESH:      Refresh the polynomial coefficients.
 ;
 ;       EXTRAP:       Extrapolate past the last measured cross calibration
-;                     factor using a quadratic fit to all values since the 
+;                     factor using a polynomial fit to measurements since the 
 ;                     last MCPHV bump.  The default is to use the last 
 ;                     known value.
 ;
 ;       SILENT:       Don't print any warnings or messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-02-22 10:29:53 -0800 (Tue, 22 Feb 2022) $
-; $LastChangedRevision: 30603 $
+; $LastChangedDate: 2022-05-05 13:04:05 -0700 (Thu, 05 May 2022) $
+; $LastChangedRevision: 30807 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_crosscal.pro $
 ;
 ;CREATED BY:    David L. Mitchell  05-04-16
@@ -70,7 +70,7 @@ function mvn_swe_crosscal, time, on=on, off=off, refresh=refresh, extrap=extrap,
     ac[*,3] = [2.0027D,  7.2892d-3, -1.1918d-5,  0.0D     ]  ; MCPHV = 2750 V
     ac[*,4] = [2.2929D,  6.0841d-3, -2.0345d-5,  3.0202d-8]  ; MCPHV = 2800 V
     ac[*,5] = [1.9995D,  2.2127d-3, -1.8340d-6,  0.0D     ]  ; MCPHV = 2875 V (part 1)
-    ac[*,6] = [2.1698D,  1.1452d-3, -4.7906d-7,  0.0D     ]  ; MCPHV = 2875 V (part 2)
+    ac[*,6] = [2.2477D,  7.3263d-4, -3.9660d-8,  0.0D     ]  ; MCPHV = 2875 V (part 2)
     eflg = 0                                                 ; extrapolate using last known value
   endif
 

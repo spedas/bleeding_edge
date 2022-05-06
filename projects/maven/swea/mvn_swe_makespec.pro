@@ -26,8 +26,8 @@
 ;       NOLUT:    Do not recalculate the LUT.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-09 08:20:47 -0700 (Mon, 09 Aug 2021) $
-; $LastChangedRevision: 30184 $
+; $LastChangedDate: 2022-05-05 13:01:49 -0700 (Thu, 05 May 2022) $
+; $LastChangedRevision: 30803 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makespec.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -57,6 +57,9 @@ pro mvn_swe_makespec, sum=sum, units=units, tplot=tplot, sflg=sflg, pan=ename, n
     npkt = n_elements(a4)         ; number of packets
     npts = 16L*npkt               ; 16 spectra per packet
     ones = replicate(1.,16)
+
+    mvn_swe_engy = replicate(swe_engy_struct, npts)
+    mvn_swe_engy.apid = 'A4'XB
 
     if (dolut) then mvn_swe_getlut
 

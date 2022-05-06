@@ -33,19 +33,19 @@
 ;
 ;   ERANGE:   Restrict calculation to this energy range.
 ;
-;   BACKGROUND: Set the background to this value.  Units = EFLUX.  Default is
-;               to use the value in the data structure.
+;   SEC:      Estimate and remove secondary electrons.
+;             See mvn_swe_secondary for details.
 ;
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-10-30 17:16:36 -0700 (Sat, 30 Oct 2021) $
-; $LastChangedRevision: 30390 $
+; $LastChangedDate: 2022-05-05 13:01:03 -0700 (Thu, 05 May 2022) $
+; $LastChangedRevision: 30802 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_n1d.pro $
 ;
 ;-
 pro mvn_swe_n1d, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, mask_sc=mask_sc, $
-                 mom=mom, minden=minden, erange=erange, background=background
+                 mom=mom, minden=minden, erange=erange, sec=sec
 
   compile_opt idl2
 
@@ -55,9 +55,11 @@ pro mvn_swe_n1d, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, mask
   c1 = (mass/(2D*!dpi))^1.5D
   c2 = (2d5/(mass*mass))
   c3 = 4D*!dpi*1d-5*sqrt(mass/2D)  ; assume isotropic electron distribution
+  tiny = 1.d-31
   
   if (size(mom,/type) eq 0) then mom = 1
   if (size(minden,/type) eq 0) then minden = 0.08  ; minimum density
+  dosec = keyword_set(sec)
 
 ; Get energy spectra from SPEC or 3D distributions
 
@@ -95,16 +97,27 @@ pro mvn_swe_n1d, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, mask
 
     for i=0L,(npts-1L) do begin
       ddd = mvn_swe_get3d(t[i], units='eflux')
-      var = ddd.var
+      f = ddd.data
+      v = ddd.var
+      if (dosec) then begin
+        mvn_swe_secondary, ddd
+        fs = ddd.bkg
+        indx = where(~ddd.valid, count)
+        if (count gt 0L) then begin
+          f[indx] = tiny
+          v[indx] = tiny
+          fs[indx] = 0.
+        endif
+      endif else fs = 0.
 
       if (ddd.time gt t_mtx[2]) then boom = 1 else boom = 0
-      ondx = where(obins[*,boom] eq 1B, ocnt)
+      ondx = where(obins[*,boom], ocnt)
       onorm = float(ocnt)
       obins_b = replicate(1B, 64) # obins[*,boom]
-      
+
       energy[*,i] = ddd.energy[*,0]
-      eflux[*,i] = total(ddd.data*obins_b,2)/onorm
-      sig2[*,i] = total(var*obins_b,2)
+      eflux[*,i] = total((f - fs)*obins_b,2)/onorm
+      sig2[*,i] = total(v*obins_b,2)
       sc_pot[i] = ddd.sc_pot
     endfor
 
@@ -118,15 +131,25 @@ pro mvn_swe_n1d, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, mask
     temp = dens
     dsig = dens
     tsig = dens
-    bkg = dens
 
-    mvn_swe_convert_units, mvn_swe_engy, 'eflux'    
+    ounits = mvn_swe_engy[0].units_name
+    mvn_swe_convert_units, mvn_swe_engy, 'eflux'
     energy = mvn_swe_engy.energy
     eflux = mvn_swe_engy.data
-    sig2 = mvn_swe_engy.var   ; variance w/ dig. noise
-    if (size(background,/type) ne 0) then bkg[*] = float(background) $
-                                     else bkg = mvn_swe_engy.bkg
+    var = mvn_swe_engy.var
+    bkg = mvn_swe_engy.bkg
     sc_pot = mvn_swe_engy.sc_pot
+
+    if (dosec) then begin
+      mvn_swe_secondary, mvn_swe_engy
+      bkg = mvn_swe_engy.bkg
+      indx = where(~mvn_swe_engy.valid, count)
+      if (count gt 0L) then begin
+        eflux[indx] = tiny
+        var[indx] = tiny
+        bkg[indx] = 0.
+      endif
+    endif else bkg[*] = 0.
   endelse
 
   E = energy[*,0]
@@ -135,10 +158,10 @@ pro mvn_swe_n1d, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, mask
   for i=1,62 do dE[i] = abs(E[i+1] - E[i-1])/2.
   dE[63] = abs(E[63] - E[62])
 
-  sdev = sqrt(sig2)
+  sdev = sqrt(var)
 
 ; Trim data to desired energy range
-   
+
   if (n_elements(erange) gt 1) then begin
     Emin = min(erange, max=Emax)
     endx = where((E ge Emin) and (E le Emax), n_e)
@@ -155,7 +178,7 @@ pro mvn_swe_n1d, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, mask
 ; Calculate the moments
 
   for i=0L,(npts-1L) do begin
-    F = (eflux[*,i] - bkg[i]) > 0.
+    F = (eflux[*,i] - bkg[*,i]) > 0.
     S = sdev[*,i]
     pot = sc_pot[i]
 

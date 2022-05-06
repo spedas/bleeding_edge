@@ -54,8 +54,8 @@
 ;                     text : brief descriptions of configuration changes
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-02-24 09:53:04 -0800 (Thu, 24 Feb 2022) $
-; $LastChangedRevision: 30609 $
+; $LastChangedDate: 2022-05-05 13:02:21 -0700 (Thu, 05 May 2022) $
+; $LastChangedRevision: 30805 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -127,7 +127,7 @@ pro mvn_swe_config, list=list, timebar=tbar
 ; SWEA Boom Deploy
 ;   Boom separation nut pyro was fired at 2014-10-10/15:08:14.684
 ;     - Spacecraft begins counter rotation to conserve angular momentum (theta = 73.56 deg)
-;   Boom shows evidence for motion a few seconds later
+;   SWEA data show evidence for boom motion within a few seconds
 ;   Boom fully deployed by about 2014-10-10/15:09:30
 ;     - Spacecraft counter rotation stops at 2014-10-10/15:10:00 (theta = 82.64 deg)
 
@@ -185,13 +185,16 @@ pro mvn_swe_config, list=list, timebar=tbar
   t_mcp = [t_mcp, time_double('2018-11-13/11:18:13')]
   m_mcp = [m_mcp, 'MCP bias adjustment (2800 -> 2875 V)']
 
-  t_mcp = [t_mcp, time_double('2020-10-15/00:00:00')]
+  t_mcp = [t_mcp, time_double('2020-05-15/00:00:00')]
   m_mcp = [m_mcp, 'beginning of second polynomial fit']
 
 ; 2019-10-01/00:00                                     ; beginning of EM-4
 
-  t_mcp = [t_mcp, time_double('2021-11-05/00:00:00')]
+  t_mcp = [t_mcp, time_double('2022-01-03/00:00:00')]
   m_mcp = [m_mcp, 'last SWE-SWI cross calibration']
+
+  t_swp = [t_swp, time_double('2022-04-22/00:00:00')]
+  m_swp = [m_swp, 'sweep table 9 upload (32-Hz, 125 eV)']
 
 ; 2022-10-01/00:00                                     ; beginning of EM-5
 

@@ -1,8 +1,15 @@
 ;+
 ;PROCEDURE:   swe_3d_stitch
 ;PURPOSE:
-;  Constructs 3D spectrograms from A0 packets.  Depending on the group parameter,
-;  1, 2, or 4 A0 packets are needed to make one 3D.
+;  Constructs 3D spectra from A0 and A1 packets.  Depending on the group parameter,
+;  1, 2, or 4 packets are needed to make one 3D.  The packets comprising one 3D
+;  should be generated very close in time; however, they are time tagged with
+;  millisec resolution, so there's a possibility that frames will have slightly
+;  different time tags.  This routine requires that they be created within 0.3 sec.
+;
+;  The packets comprising a 3D must all be present, but they need not come in
+;  sequential order, as long as they are created within 0.3 seconds of each other.
+;  The PFDPU is known to occasionally write packets out of sequential order.
 ;
 ;USAGE:
 ;  swe_3d_stitch
@@ -12,8 +19,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2016-04-25 20:07:01 -0700 (Mon, 25 Apr 2016) $
-; $LastChangedRevision: 20924 $
+; $LastChangedDate: 2022-05-05 12:57:25 -0700 (Thu, 05 May 2022) $
+; $LastChangedRevision: 30799 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_stitch.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -22,6 +29,8 @@
 pro swe_3d_stitch
 
   @mvn_swe_com
+
+  dtmax = 0.3D
 
   ddd = {time   : 0D            , $
          met    : 0D            , $
@@ -52,25 +61,27 @@ pro swe_3d_stitch
     swe_3d.n_e = swe_ne[swe_3d.group]
 
     nframes = swe_3d.n_e/16        ; number of A0 packets per 3D spectrum
+    iend = istart + nframes - 1
     
     for i=0L,(n3d-1L) do begin
       if ((istart[i]+nframes[i]) le npkt) then begin
-        dt = where(tframe[istart[i]:(istart[i]+nframes[i]-1)] ne tstart[i],count)
-        tmsg = time_string(tstart[i])
+        dt = abs(tframe[istart[i]:iend[i]] - tstart[i])
+        indx = where(dt gt dtmax, count)   ; allow frames to be created within a brief period
         if (count eq 0L) then begin
-          for j=0,(nframes[i]-1) do begin
-            if (e0[istart[i]+j] eq j) then begin
-              k = j*16
-              swe_3d[i].data[*,k:(k+15)] = a0[istart[i]+j].data
-              swe_3d[i].var[*,k:(k+15)] = a0[istart[i]+j].var
-            endif else print,"A0 frame out of order: ",istart[i] + j,"  ",j,"  ",nframes[i],"  ",tmsg
-          endfor
-        endif else print,"A0 frames have different time tags: ",istart[i],"  ",tmsg
-      endif else print,"A0 not enough frames left: ",istart[i],"  ",tmsg
+          iframe = e0[istart[i]:iend[i]]  ; all frames must be present, but they can be out of order
+          if (n_elements(uniq(iframe,sort(iframe))) eq nframes[i]) then begin
+            for j=0,(nframes[i]-1) do begin
+              k = iframe[j]*16
+              swe_3d[i].data[*,k:(k+15)] = a0[istart[i]+iframe[j]].data
+              swe_3d[i].var[*,k:(k+15)] = a0[istart[i]+iframe[j]].var
+            endfor
+          endif else print,"A0 missing frame(s): ",istart[i],"  ",time_string(tstart[i])
+        endif else print,"A0 frames have different time tags: ",istart[i],"  ",time_string(tstart[i])
+      endif else print,"A0 not enough frames left: ",istart[i],"  ",time_string(tstart[i])
     endfor
 
   endif
-  
+
   if (size(a1,/type) eq 8) then begin
     npkt = n_elements(a1)
 
@@ -90,21 +101,23 @@ pro swe_3d_stitch
     swe_3d_arc.n_e = swe_ne[swe_3d_arc.group]
 
     nframes = swe_3d_arc.n_e/16    ; number of A1 packets per 3D spectrum
-    
+    iend = istart + nframes - 1
+
     for i=0L,(n3d-1L) do begin
       if ((istart[i]+nframes[i]) le npkt) then begin
-        dt = where(tframe[istart[i]:(istart[i]+nframes[i]-1)] ne tstart[i],count)
-        tmsg = time_string(tstart[i])
+        dt = abs(tframe[istart[i]:iend[i]] - tstart[i])
+        indx = where(dt gt dtmax, count)   ; allow frames to be created within a brief period
         if (count eq 0L) then begin
-          for j=0,(nframes[i]-1) do begin
-            if (e0[istart[i]+j] eq j) then begin
-              k = j*16
-              swe_3d_arc[i].data[*,k:(k+15)] = a1[istart[i]+j].data
-              swe_3d_arc[i].var[*,k:(k+15)] = a1[istart[i]+j].var
-            endif else print,"A1 frame out of order: ",istart[i] + j,"  ",j,"  ",nframes[i],"  ",tmsg
-          endfor
-        endif else print,"A1 frames have different time tags: ",istart[i],"  ",tmsg
-      endif else print,"A1 not enough frames left: ",istart[i],"  ",tmsg
+          iframe = e0[istart[i]:iend[i]]  ; all frames must be present, but they can be out of order
+          if (n_elements(uniq(iframe,sort(iframe))) eq nframes[i]) then begin
+            for j=0,(nframes[i]-1) do begin
+              k = iframe[j]*16
+              swe_3d_arc[i].data[*,k:(k+15)] = a1[istart[i]+iframe[j]].data
+              swe_3d_arc[i].var[*,k:(k+15)] = a1[istart[i]+iframe[j]].var
+            endfor
+          endif else print,"A1 missing frame(s): ",istart[i],"  ",time_string(tstart[i])
+        endif else print,"A1 frames have different time tags: ",istart[i],"  ",time_string(tstart[i])
+      endif else print,"A1 not enough frames left: ",istart[i],"  ",time_string(tstart[i])
     endfor
 
   endif
