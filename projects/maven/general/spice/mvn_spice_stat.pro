@@ -48,8 +48,8 @@
 ;    SILENT:        Shhh.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-09-12 16:29:36 -0700 (Sun, 12 Sep 2021) $
-; $LastChangedRevision: 30291 $
+; $LastChangedDate: 2022-05-07 13:17:58 -0700 (Sat, 07 May 2022) $
+; $LastChangedRevision: 30812 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/spice/mvn_spice_stat.pro $
 ;
 ;CREATED BY:    David L. Mitchell  09/14/18
@@ -151,12 +151,15 @@ pro mvn_spice_stat, list=list, info=info, tplot=tplot, summary=summary, check=ch
 
     jndx = indx[uniq(info[indx].filename,sort(info[indx].filename))]
     jndx = jndx[sort(jndx)]  ; back in the original order
+    fnames = info[jndx].filename
     nfiles = n_elements(jndx)
     fgaps = 0
     ftsp = ['']
     for i=1,(nfiles-1) do begin
-      t1 = time_double(info[jndx[i]].trange[0])
-      t0 = time_double(info[jndx[i-1]].trange[1])
+      j1 = where(info.filename eq fnames[i])
+      j2 = where(info.filename eq fnames[i-1])
+      t1 = min(time_double(info[j1].trange[0]))
+      t0 = max(time_double(info[j2].trange[1]))
       if (t1 gt t0) then begin
         fgaps++
         ftsp = [ftsp, time_string([t0,t1])]
@@ -207,12 +210,15 @@ pro mvn_spice_stat, list=list, info=info, tplot=tplot, summary=summary, check=ch
 
     jndx = indx[uniq(info[indx].filename,sort(info[indx].filename))]
     jndx = jndx[sort(jndx)]  ; back in the original order
+    fnames = info[jndx].filename
     nfiles = n_elements(jndx)
     fgaps = 0
     ftsp = ['']
     for i=1,(nfiles-1) do begin
-      t1 = time_double(info[jndx[i]].trange[0])
-      t0 = time_double(info[jndx[i-1]].trange[1])
+      j1 = where(info.filename eq fnames[i])
+      j2 = where(info.filename eq fnames[i-1])
+      t1 = min(time_double(info[j1].trange[0]))
+      t0 = max(time_double(info[j2].trange[1]))
       if (t1 gt t0) then begin
         fgaps++
         ftsp = [ftsp, time_string([t0,t1])]
@@ -264,12 +270,15 @@ pro mvn_spice_stat, list=list, info=info, tplot=tplot, summary=summary, check=ch
 
     jndx = indx[uniq(info[indx].filename,sort(info[indx].filename))]
     jndx = jndx[sort(jndx)]  ; back in the original order
+    fnames = info[jndx].filename
     nfiles = n_elements(jndx)
     fgaps = 0
     ftsp = ['']
     for i=1,(nfiles-1) do begin
-      t1 = time_double(info[jndx[i]].trange[0])
-      t0 = time_double(info[jndx[i-1]].trange[1])
+      j1 = where(info.filename eq fnames[i])
+      j2 = where(info.filename eq fnames[i-1])
+      t1 = min(time_double(info[j1].trange[0]))
+      t0 = max(time_double(info[j2].trange[1]))
       if (t1 gt t0) then begin
         fgaps++
         ftsp = [ftsp, time_string([t0,t1])]

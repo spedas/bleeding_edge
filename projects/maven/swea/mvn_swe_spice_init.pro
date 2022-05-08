@@ -40,8 +40,8 @@
 ;                   Default is current value of swe_verbose.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-06-04 13:35:27 -0700 (Fri, 04 Jun 2021) $
-; $LastChangedRevision: 30024 $
+; $LastChangedDate: 2022-05-07 13:16:51 -0700 (Sat, 07 May 2022) $
+; $LastChangedRevision: 30811 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_spice_init.pro $
 ;
 ;CREATED BY:    David L. Mitchell  09/18/13
@@ -129,6 +129,7 @@ pro mvn_swe_spice_init, trange=trange, list=list, force=force, sclk_ver=sclk_ver
     i = where(strmatch(swe_kernels,'*SCLK*',/fold_case) eq 1)
     if (i ge 0) then swe_kernels[i] = fname else swap_sclk = 0
   endif
+
   spice_kernel_load, swe_kernels ; load the kernels
   swe_kernels = spice_test('*')  ; only loaded kernels, no wildcards
   n_ker = n_elements(swe_kernels)
