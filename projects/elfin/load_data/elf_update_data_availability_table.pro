@@ -22,6 +22,8 @@
 ;-
 pro elf_update_data_availability_table, tdate, probe=probe, instrument=instrument, days = days
 
+  defsysv,'!elf',exists=exists
+  if not keyword_set(exists) then elf_init, remote_data_dir = remote_data_dir, local_data_dir = local_data_dir, no_color_setup = no_color_setup
 
   if keyword_set(probe) then probes = probe else probes = ['a', 'b']
 
