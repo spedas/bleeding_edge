@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun May 15 18:16:27 2022.<P>
+<STRONG>Last modified: </STRONG>Mon May 16 18:16:21 2022.<P>
  
 <HR>
  
@@ -36,6 +36,8 @@ This page was created by the IDL library routine
 <br>Reads data from an ascii file and puts data in an array of structures.
 <LI><A HREF="#RECORDER">RECORDER</A>
 <br>Widget tool that opens a socket and records streaming data from a server (host) and can save it to a file
+<LI><A HREF="#TMEAN">TMEAN</A>
+<br>Calculate the mean, median, and standard deviation of a 1-D tplot
 <LI><A HREF="#XY_EDIT">XY_EDIT</A>
 <br>Interactively select data points
 <LI><A HREF="#YYMMDD_TO_TIME">YYMMDD_TO_TIME</A>
@@ -286,7 +288,7 @@ CREATED BY: Davin Larson
 <A NAME="RECORDER">
 <H2>RECORDER</H2></A>
 <A HREF="#READ_ASC">[Previous Routine]</A>
-<A HREF="#XY_EDIT">[Next Routine]</A>
+<A HREF="#TMEAN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 WIDGET Procedure:
@@ -309,9 +311,94 @@ PURPOSE:
 <STRONG>(See <A href="misc/recorder.pro">general/tools/misc/recorder.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="TMEAN">
+<H2>TMEAN</H2></A>
+<A HREF="#RECORDER">[Previous Routine]</A>
+<A HREF="#XY_EDIT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   tmean
+PURPOSE:
+  Calculate the mean, median, and standard deviation of a 1-D tplot
+  variable over a specified time range.  The variable and time range
+  are selected with the cursor or via keyword.  Skew and kurtosis
+  are also calculated:
+
+    skewness: = 0 -&gt; distribution is symmetric about the maximum
+              &lt; 0 -&gt; distribution is skewed to the left
+              &gt; 0 -&gt; distribution is skewed to the right
+
+    kurtosis: = 0 -&gt; distribution is peaked like a Gaussian
+              &lt; 0 -&gt; distribution is less peaked than a Gaussian
+              &gt; 0 -&gt; distribution is more peaked than a Gaussian
+
+  This routine can optionally perform 1-D cluster analysis to divide
+  the data into two groups (Jenks natural breaks optimization).
+  Statistics are given for each group separately.
+
+USAGE:
+  tmean, var
+
+INPUTS:
+       var:     Tplot variable name or number.  If not specified, determine
+                based on which panel the mouse is in when clicked.  Currently,
+                this routine only works with 1-D data.
+
+KEYWORDS:
+       TRANGE:  Use this time range instead of getting it interactively
+                with the cursor.  In this case, you must specify var.
+
+       OFFSET:  Value to subtract from the data before calculating statistics.
+                Default = 0.
+
+       OUTLIER: Ignore values more than OUTLIER sigma from the mean.
+                Default = infinity.
+
+       MINPTS:  If OUTLIER is set, this specifies the minimum number of 
+                points remaining after discarding outliers.  Default = 3.
+
+       CORE:    Perform 1-D cluster analysis to separate the data into
+                two groups.  Disables OUTLIER.
+
+       MAXDZ:   Use largest break between clusters near minimum variance
+                to divide the clusters.  Default = 1.
+
+       RESULT:  Named variable to hold the result.
+
+       HIST:    Plot a histogram of the distribution in a separate window.
+
+       NBINS:   If HIST is set, number of bins in the histogram.
+
+       NPTS:    Number of points surrounding the selected point.
+
+       DST:     Retain the distribution.  Does not allow compiling multiple
+                results.
+
+       T0:      Times in cluster 0.
+
+       T1:      Times in cluster 1.
+
+       DIAG:    Return cluster analysis diagnostics:
+                  minvar : minimum total variance
+                  maxvar : maximum total variance
+                  maxsep : separation between clusters
+                  sepval : value of optimal separation
+
+       SILENT:  Shhh.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2022-05-16 09:18:55 -0700 (Mon, 16 May 2022) $
+ $LastChangedRevision: 30824 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/tmean.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="misc/tmean.pro">general/tools/misc/tmean.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="XY_EDIT">
 <H2>XY_EDIT</H2></A>
-<A HREF="#RECORDER">[Previous Routine]</A>
+<A HREF="#TMEAN">[Previous Routine]</A>
 <A HREF="#YYMMDD_TO_TIME">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
