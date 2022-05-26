@@ -11,8 +11,8 @@
 ;       Yuki Harada on 2018-07-12
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2021-11-08 05:03:15 -0800 (Mon, 08 Nov 2021) $
-; $LastChangedRevision: 30409 $
+; $LastChangedDate: 2022-05-25 04:12:38 -0700 (Wed, 25 May 2022) $
+; $LastChangedRevision: 30829 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_ima_emspec.pro $
 ;-
 
@@ -28,7 +28,8 @@ info = ima_info_str
 header = ima_header_arr
 times = time_double( string(header.yyyymmdd,format='(i8.8)') $
                      +string(header.hhmmss,format='(i6.6)'), $
-                     tformat='YYYYMMDDhhmmss' ) ;- start time
+                     tformat='YYYYMMDDhhmmss' ) $
+        + header.time_resolution / 2.d3 ;- center time
 wt = where( times gt tr[0] and times lt tr[1] $
             and header.mode eq 17 , nwt )
 if nwt eq 0 then begin
@@ -90,6 +91,9 @@ if mean(tr) lt time_double('2009-06-03') then Vlef = 12
 if mean(tr) lt time_double('2008-05-24') then Vlef = 10
 if mean(tr) lt time_double('2008-03-24') then Vlef = 8
 
+if ~keyword_set(Kloss) then Kloss = 2 ;- 0, 1, 2, 3, 4, 5
+
+
 
 ;;; plot
 if keyword_set(window) then wset,window
@@ -101,7 +105,6 @@ lim = {xtitle:'TOF [ns]',xrange:tofr,xstyle:1, $
 if size(slim,/type) eq 8 then extract_tags,lim,slim
 specplot,xp,yp,zp,lim=lim
 
-if ~keyword_set(Kloss) then Kloss = 2
 if size(ima_tof_str,/type) eq 8 and ~keyword_set(nosplabel) then begin
    ;;; neutral
    marr = [1,4,4,12,16,23,27,39,40,56]
