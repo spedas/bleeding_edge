@@ -48,8 +48,8 @@
 ;    SILENT:        Shhh.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-05-07 13:17:58 -0700 (Sat, 07 May 2022) $
-; $LastChangedRevision: 30812 $
+; $LastChangedDate: 2022-05-26 15:01:20 -0700 (Thu, 26 May 2022) $
+; $LastChangedRevision: 30835 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/spice/mvn_spice_stat.pro $
 ;
 ;CREATED BY:    David L. Mitchell  09/14/18
@@ -117,7 +117,7 @@ pro mvn_spice_stat, list=list, info=info, tplot=tplot, summary=summary, check=ch
 ; Check for SPK and CK kernels
 
   dobar = 0
-  cols = [3,4,6] ; [green, yellow, red]
+  cols = [3,4,6,!p.background] ; [green, yellow, red, blank]
   if keyword_set(tplot) then begin
     tplot_options, get=topt
     if (min(topt.trange_full) gt 1D) then begin
@@ -146,7 +146,7 @@ pro mvn_spice_stat, list=list, info=info, tplot=tplot, summary=summary, check=ch
     if (dobar) then begin
       tt = time_double(tsp)
       kndx = where((x lt tt[0]) or (x gt tt[1]), count)
-      if (count gt 0L) then y[kndx,*] = 0
+      if (count gt 0L) then y[kndx,*] = cols[3]
     endif
 
     jndx = indx[uniq(info[indx].filename,sort(info[indx].filename))]
@@ -177,7 +177,7 @@ pro mvn_spice_stat, list=list, info=info, tplot=tplot, summary=summary, check=ch
       if (dobar) then begin
         tt = time_double(ftsp[k:k+1])
         kndx = where((x ge tt[0]) and (x le tt[1]), count)
-        if (count gt 0L) then y[kndx,*] = 0
+        if (count gt 0L) then y[kndx,*] = cols[3]
       endif
     endfor
     for j=0,(ngaps-1) do begin
@@ -187,7 +187,7 @@ pro mvn_spice_stat, list=list, info=info, tplot=tplot, summary=summary, check=ch
       if (dobar) then begin
         tt = time_double(tsp)
         kndx = where((x ge tt[0]) and (x le tt[1]), count)
-        if (count gt 0L) then y[kndx,*] = 0
+        if (count gt 0L) then y[kndx,*] = cols[3]
       endif
     endfor
   endif else begin

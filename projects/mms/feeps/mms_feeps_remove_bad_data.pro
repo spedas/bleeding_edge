@@ -11,8 +11,8 @@
 ;     Updated to use time varying bad eye tables and changed bottom channels that we NaN out from Drew Turner, egrimes, 8Oct2018
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-05-23 16:53:07 -0700 (Thu, 23 May 2019) $
-; $LastChangedRevision: 27283 $
+; $LastChangedDate: 2022-05-26 12:23:20 -0700 (Thu, 26 May 2022) $
+; $LastChangedRevision: 30833 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_feeps_remove_bad_data.pro $
 ;-
 
@@ -49,7 +49,11 @@ pro mms_feeps_remove_bad_data, probe=probe, data_rate=data_rate, datatype=dataty
   
   ; note: add more dates here
   
-  closest_table_tm = find_nearest_neighbor(time_double((bad_data_table.Keys()).toArray()), time_double(trange[0]), /allow_outside)
+  ; note: sort required to ensure the date/times are monotonically increasing (required for find_nearest_neighbor below)
+  bad_data_tables = time_double((bad_data_table.Keys()).toArray())
+  bad_data_tables = bad_data_tables[sort(bad_data_tables)]
+  
+  closest_table_tm = find_nearest_neighbor(bad_data_tables, time_double(trange[0]), /allow_outside)
   closest_table = time_string(closest_table_tm, tformat='YYYY-MM-DD')
   bad_data = (bad_data_table[closest_table])['mms'+strcompress(string(probe), /rem)]
   
