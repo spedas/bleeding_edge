@@ -1,11 +1,11 @@
 ;+
-; ts07_supported
+; ta15_supported
 ;
-; Purpose: returns 1 if ts07 is supported (geopack version is 10.0 or higher)
+; Purpose: returns 1 if ta15 is supported (geopack version is 10.0 or higher)
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
-; $LastChangedRevision: 30156 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2022-05-29 14:11:42 -0700 (Sun, 29 May 2022) $
+; $LastChangedRevision: 30836 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/ta15/ta15_supported.pro $
 ;-
 
