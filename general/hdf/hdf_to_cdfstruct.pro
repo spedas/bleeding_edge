@@ -22,8 +22,8 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2021-10-14 14:24:46 -0700 (Thu, 14 Oct 2021) $
-; $LastChangedRevision: 30354 $
+; $LastChangedDate: 2022-06-02 22:09:45 -0700 (Thu, 02 Jun 2022) $
+; $LastChangedRevision: 30839 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/hdf/hdf_to_cdfstruct.pro $
 ;-
 
@@ -157,6 +157,10 @@ function hdf_to_cdfstruct, hdfi, file, verbose=verbose, varnames=varnames, time_
   endif
 
   time_id = where('/' + time_var eq  hdfi[1,*])
+  if time_id[0] eq -1 then begin ; try 'time' as time variable 
+    time_id = where('/' + 'time' eq  hdfi[1,*])
+     if time_id[0] ne -1 then time_var = 'time'
+  endif
   if time_id[0] eq -1 then begin
     msg = "hdf_to_cdfstruct: Did not find the time variable: " + time_var
     dprint, dlevel=1, verbose=verbose, msg
