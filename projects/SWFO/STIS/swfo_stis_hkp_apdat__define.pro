@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-05-01 12:57:34 -0700 (Sun, 01 May 2022) $
-; $LastChangedRevision: 30793 $
+; $LastChangedDate: 2022-06-06 14:34:31 -0700 (Mon, 06 Jun 2022) $
+; $LastChangedRevision: 30844 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_hkp_apdat__define.pro $
 
 
@@ -44,9 +44,9 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   ; MON_TEMP =   func((spp_swp_word_decom(b,20) and '3ff'x) *1., param = temp_par_10bit)
 
 
-  flt=2.5/ 2.^15
-  r=[1e9,15.4,6.65,6.65,6.65]
-  coeff=(10+r)/r
+  flt=2.5/(2.^15)
+  r=[1e9,15.4,6.65,6.65,-6.65]
+  coeff=(10+abs(r))/r
 
   if 0 then begin
     adcs =  swfo_data_select(ccsds_data,(d+2*[1:8] )*8, 16 ,/signed) *flt

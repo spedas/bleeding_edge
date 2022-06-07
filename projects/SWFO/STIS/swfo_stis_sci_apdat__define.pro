@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-05-01 12:57:34 -0700 (Sun, 01 May 2022) $
-; $LastChangedRevision: 30793 $
+; $LastChangedDate: 2022-06-06 14:34:31 -0700 (Mon, 06 Jun 2022) $
+; $LastChangedRevision: 30844 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -16,8 +16,8 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
 
   hs = 24
   case n_elements(ccsds_data) of
-    hs+256:  scidata = uint(swfo_stis_log_decomp(ccsds_data[hs:*]))
-    hs+672:  scidata = uint(swfo_stis_log_decomp(ccsds_data[hs:*]))
+    hs+256:  scidata = ulong(swfo_stis_log_decomp(ccsds_data[hs:*]))
+    hs+672:  scidata = ulong(swfo_stis_log_decomp(ccsds_data[hs:*]))
     hs+512:  scidata = swap_endian( uint(ccsds_data,hs,256) ,/swap_if_little_endian)
     hs+1344: scidata = swap_endian( uint(ccsds_data,hs,672) ,/swap_if_little_endian)
     else :  begin
@@ -37,14 +37,17 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   str1=swfo_stis_ccsds_header_decom(ccsds)
 
   ; Force all structures to have exactly 672 elements. If the LUT is being used then only the first 256 will be used
-  total6=replicate(0u,6)
-  ftotid=replicate(0u,14)
+  total6=replicate(0ul,6)
+  ftotid=replicate(0ul,14)
   str2 = {$
     nbins:    nbins,  $
-    counts:   uintarr(672) , $
-    total:    total(scidata),$
-    total6: total6,$
-    total14: ftotid,$
+    counts:   ulonarr(672) , $
+    total:    total(scidata,/preserve),$
+    total6:   total6,$
+    total14:  ftotid,$
+    rate:     0.,$
+    rate6:    replicate(0.,6),$
+    rate14:   replicate(0.,14),$
     gap:ccsds.gap}
 
   ; sometime in the future the counts array should be changed to a ulong since a uint can not handle the full dynamic range. (19 bit accums)
@@ -54,7 +57,7 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
     for fto=1,7 do begin
       for tid=0,1 do begin
         bin=(fto-1)*2+tid
-        ftotid[bin]=total(scidata[48*bin:48*bin+47])
+        ftotid[bin]=total(scidata[48*bin:48*bin+47],/preserve)
       endfor
     endfor
 
@@ -67,8 +70,11 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   endif
 
   str2.counts = scidata
-  str2.total14=ftotid
   str2.total6=total6
+  str2.total14=ftotid
+  str2.rate = float(str2.total)/str1.duration
+  str2.rate6=float(total6)/str1.duration
+  str2.rate14=float(ftotid)/str1.duration
 
   str=create_struct(str1,str2)
 
