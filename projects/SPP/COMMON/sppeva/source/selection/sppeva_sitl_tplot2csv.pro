@@ -92,8 +92,7 @@ PRO sppeva_sitl_tplot2csv, var, filename=filename, msg=msg, error=error, auto=au
   strHrs = string(long(strBLlen) * 1d9 / 475d / (3600d * 30d3), $
     format = '(F6.2)')
 
-  write_csv, filename, $
-    transpose([[time_string(s.START)], $
+  csv_data = transpose([[time_string(s.START)], $
     [time_string(s.STOP)], $
     [strFOM], $
     [s.SOURCEID], $
@@ -102,7 +101,12 @@ PRO sppeva_sitl_tplot2csv, var, filename=filename, msg=msg, error=error, auto=au
     [s.DISCUSSION], $
     [strRange], $
     [strGbit], $
-    [strHrs]]), $
+    [strHrs]])
+
+  if ndimen(csv_data) EQ 1 then $
+    csv_data = reform(csv_data, n_elements(csv_data), 1)
+
+  write_csv, filename, csv_data, $
     header=header, table_header = table_header
 
 END
