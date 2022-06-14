@@ -72,7 +72,8 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ; remove any existing pef tplot vars
   del_data, '*_pef_nflux'
   del_data, '*_all'
-  elf_load_epd, probes=probe, datatype='pef', level='l1', type='nflux', no_download=no_download
+  elf_load_epd, probes=probe,  datatype='pef', level='l1', type='nflux', no_download=no_downlaod
+  ;trange=['2022-06-03/03:00','2022-06-03/04:00'],
   get_data, 'el'+probe+'_pef_nflux', data=pef_nflux
 
   if size(pef_nflux, /type) NE 8 then begin
@@ -358,8 +359,9 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
 ;     sz_starttimes=epd_times.starts
 ;     sz_endtimes=epd_times.ends
 ;  endif
-  
+ 
   num_szs=n_elements(sz_starttimes)
+
   ; set up science zone plot options
   tplot_options, 'xmargin', [16,11]
   tplot_options, 'ymargin', [4,3]
@@ -375,14 +377,18 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
 
       ; get EPD data
       elf_load_epd, probes=probe, datatype='pef', level='l1', type='nflux',no_download=no_download
+      ;trange=['2022-06-02/02:00','2022-06-02/03:00']
       sc='el'+probe
       get_data, sc+'_pef_nflux', data=pef
       get_data, sc+'_pef_nsectors', data= nsect
+
       med_nsect=median(nsect.y)
       epd_sci_zones=get_elf_science_zone_start_end(trange=[trange[0]-5,trange[1]+5], probe=probe, instrument='epd')
       epd_completeness_str=', EPD completeness='+epd_sci_zones.completeness[0]
       fgm_sci_zones=get_elf_science_zone_start_end(trange=[trange[0]-5,trange[1]+5], probe=probe, instrument='fgm')
-      fgm_completeness_str=', FGM completeness='+fgm_sci_zones.completeness[0]
+      if size(fgm_sci_zones,/type) eq 8 then $
+        fgm_completeness_str=', FGM completeness='+fgm_sci_zones.completeness[0] else $
+        fgm_completeness_str='No FGM data'
 
       ; get sector and phase delay for this zone
       phase_delay = elf_find_phase_delay(trange=sz_tr, probe=probe, instrument='epde', no_download=no_download)
