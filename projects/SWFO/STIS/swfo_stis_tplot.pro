@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-06-06 14:34:31 -0700 (Mon, 06 Jun 2022) $
-; $LastChangedRevision: 30844 $
+; $LastChangedDate: 2022-06-14 15:34:18 -0700 (Tue, 14 Jun 2022) $
+; $LastChangedRevision: 30855 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -50,7 +50,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
   if ~keyword_set(name) then name = 'sum'
   plot_name = strupcase(strtrim(name,2))
   case plot_name of
-    'SUM': tplot,add=add,'*hkp?_DAC_* *hkp1_RATES_PULSFREQ *sci_COUNTS *NHIST *hkp1_*RECEIVED* *hkp1_*REMAIN* *hkp1*BITS *hkp1_BIAS_CLOCK_PERIOD *hkp1_ADC_*'; *hkp1_ADC_*'
+    'SUM': tplot,add=add,'*hkp?_DAC_* *hkp1_RATES_PULSFREQ *sci_COUNTS *NHIST *hkp1_CMDS_RECEIVED *hkp1_*REMAIN* *hkp1*BITS *hkp1_BIAS_CLOCK_PERIOD *hkp1_ADC_*'; *hkp1_ADC_*'
     else: dprint,'Unknown code: '+strtrim(name,2)
   endcase
 

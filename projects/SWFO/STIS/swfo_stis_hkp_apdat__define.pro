@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-06-06 14:34:31 -0700 (Mon, 06 Jun 2022) $
-; $LastChangedRevision: 30844 $
+; $LastChangedDate: 2022-06-14 15:34:18 -0700 (Tue, 14 Jun 2022) $
+; $LastChangedRevision: 30855 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_hkp_apdat__define.pro $
 
 
@@ -92,7 +92,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         errors_single_noise:    swfo_data_select(ccsds_data,(d+19*2+1)*8, 8),$
         errors_all:             swfo_data_select(ccsds_data,(d+17*2+[0:5])*8, 8),$    ;all error counters
         dac_values:             swfo_data_select(ccsds_data,(d+(20+[0:11])*2)*8,16),$ ;all 12 dac channels
-        time_cmds:              swfo_data_select(ccsds_data,(d+32*2  )*8, 8),$
+        time_cmds_received:     swfo_data_select(ccsds_data,(d+32*2  )*8, 8),$
         first_cmd_id:           swfo_data_select(ccsds_data,(d+32*2+1)*8, 8),$
         first_cmd_data:         swfo_data_select(ccsds_data,(d+33*2  )*8,16),$
         checksum1:              swfo_data_select(ccsds_data,(d+34*2  )*8,16),$

@@ -1,8 +1,8 @@
 ;+
 ; swfo_pulser_cal
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-09-08 19:12:56 -0700 (Wed, 08 Sep 2021) $
-; $LastChangedRevision: 30285 $
+; $LastChangedDate: 2022-06-14 15:34:18 -0700 (Tue, 14 Jun 2022) $
+; $LastChangedRevision: 30855 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_pulser_cal.pro $
 ; $ID: $
 ;-
@@ -38,7 +38,7 @@ pro swfo_pulser_cal, results=results  ;,dat=dat,trange=trange,param=p,bkg_trange
   endif
 
   if ~results.haskey('trange') then begin
-    ctime,trange,npoints=2
+    ctime,trange,npoints=2,/silent
     results.trange = trange
     if results.haskey('ddata') then results.remove,'ddata'
   endif
@@ -49,9 +49,9 @@ pro swfo_pulser_cal, results=results  ;,dat=dat,trange=trange,param=p,bkg_trange
     trange = results.trange
     timebar,trange
     hkp_sample = hkp1.data.sample(range=trange,tag='time')
-    w = where(hkp_sample.last_cmd eq 0x38,nw)
+    w = where(hkp_sample.last_cmd_id eq 0x38,nw)
     tb = hkp_sample[w].time
-    ;timebar,tb
+    timebar,tb
     t1=tb[0:-2]
     t2=tb[1:-1]
     ;print,t2-t1
@@ -73,8 +73,9 @@ pro swfo_pulser_cal, results=results  ;,dat=dat,trange=trange,param=p,bkg_trange
       sci_samples = sci.data.sample(range=tr,tag='time')
       sci_average = average(sci_samples)
       if n_elements(sci_samples) le 2 then continue
-      ser_num = median(sci_samples.mode2)
-      dac = median( hkp_samples.dac_vals[10] )
+      date_code = median(hkp_samples.user_0e)
+      serial_number = median(sci_samples.user_09)*100+median(sci_samples.user_0a)
+      dac = median( hkp_samples.dac_values[8] )
       h = average(sci_samples.counts,2) - bkg_dat
       ;plot,h
       pks = find_mpeaks(h)
@@ -90,15 +91,16 @@ pro swfo_pulser_cal, results=results  ;,dat=dat,trange=trange,param=p,bkg_trange
     endfor
     da.trim
     results.ddata = da
-    printdat,ser_num
-    results.ser_num = round(ser_num)
+    printdat,date_code,serial_number
+    results.date_code = round(date_code)
+    results.serial_number = round(serial_number)
   endif
 
   if ~results.haskey('param') then begin
     da = results.ddata
     dat = da.array
     p =  swfo_testpulse_response2()
-    title = 'A250F Serial Num: '+string(results.ser_num) + '    '+strjoin(time_string(results.trange),' to ')
+    title = 'A250F Date Code: '+strtrim(results.date_code,2)+' Serial Number: '+strtrim(results.serial_number,2)+' '+strjoin(time_string(results.trange),' to ')
 
     ok=1
     med_amp = median(dat.amp)
@@ -139,7 +141,7 @@ pro swfo_pulser_cal, results=results  ;,dat=dat,trange=trange,param=p,bkg_trange
     oplot,dat[w].dac, dat[w].x0, psym=4, color=6
 
     residual = dat.x0 - func(dat.dac,param=p)
-    plot,dat.dac, residual, psym=2, yrange =[-3,3],xstyle=3,xtitle='DAC number',ytitle='Residual ADC '  ;,color=4
+    plot,dat.dac, residual, psym=2, yrange =[-3,3],xstyle=3,xtitle='DAC number',ytitle='Residual ADC'  ;,color=4
     oplot,dgen(),dgen()*0,linestyle=1
     oplot,dat[w].dac,residual[w],color=6,psym=2
     !p.multi=0
