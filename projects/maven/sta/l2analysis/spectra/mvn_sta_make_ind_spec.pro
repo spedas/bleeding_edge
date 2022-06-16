@@ -66,7 +66,8 @@
 ;
 ;-
 
-pro mvn_sta_make_ind_spec_core, trange=trange, sta_apid=sta_apid, mrange=mrange, m_int=m_int, tpname=tpname, success=success, units=units, species=species
+pro mvn_sta_make_ind_spec_core, trange=trange, sta_apid=sta_apid, mrange=mrange, m_int=m_int, tpname=tpname, success=success, units=units, $
+                    species=species, erange=erange
 
 res1 = execute("common mvn_"+sta_apid+", get_ind_"+sta_apid+", all_dat_"+sta_apid)
 res2 = execute("dat0=all_dat_"+sta_apid)  ;get data structure for all times
@@ -114,8 +115,15 @@ if niFI gt 0 then begin
           nbins = datTMP3.nbins
           nmass = datTMP3.nmass
           npts=1l  ;number of timesteps in dat array - do in for loop for now, as sum4m only takes one timestep at a time
-          eflux = datTMP3.data  ;bkg is subtracted during convert units above
-
+          data = datTMP3.data  ;bkg is subtracted during convert units above
+          dat_energy = datTMP3.energy
+          
+          ;Zero out energies outside of requested range:
+          if keyword_set(erange) then begin
+              ekeep = where(dat_energy ge erange[0] and dat_energy le erange[1], nekeep, complement=ezero, ncomplement=nezero)
+              if nezero gt 0 then data[ezero] = 0.
+          endif
+          
           thetaTMP = total(reform(datTMP3.theta[nenergy-1,*],npts,ndef,nanode),3)/nanode  ;check all of this works properly
           phiTMP = total(reform(datTMP3.phi[nenergy-1,*],npts,ndef,nanode),2)/ndef
           
@@ -123,24 +131,25 @@ if niFI gt 0 then begin
           energy_arr[tt, *] = transpose(datTMP3.energy[*,0])  ;energy is same for all anode-defl values.
           theta_arr[tt,*] = thetaTMP
           phi_arr[tt,*] = phiTMP
-          if fourdim eq 0 then eflux_sum[tt, *] = (datTMP3.data)  ;just energy data to sum over
+          if fourdim eq 0 then eflux_sum[tt, *] = (data)  ;just energy data to sum over
           
           ;Products that are specific to ce, cf, d0 and d1:
           if fourdim eq 1 then begin
-              data1=total(total(total(reform(eflux,npts,nenergy,ndef,nanode,nmass),5),4),2)  ;check all of this works properly
-              data2=total(total(total(reform(eflux,npts,nenergy,ndef,nanode,nmass),5),3),2)
+              data1=total(total(total(reform(data,npts,nenergy,ndef,nanode,nmass),5),4),2)  ;check all of this works properly
+              data2=total(total(total(reform(data,npts,nenergy,ndef,nanode,nmass),5),3),2)
                           
               ;Store in arrays:
-              eflux_sum[tt, *] = total(datTMP3.data, 2)  ;sum over second dimension, anode-def dimension.
+              eflux_sum[tt, *] = total(data, 2)  ;sum over second dimension, anode-def dimension.
               eflux_theta[tt,*] = data1
               eflux_phi[tt,*] = data2
           endif
-                
+              
       endfor ;tt
       
       ;TPLOT VARIABLES:
       massSTR = strtrim(string(mrange[0], format='(f12.1)'),2)+','+strtrim(string(mrange[1], format='(f12.1)'),2)
-      if not keyword_set(tpname) then tpname = 'mvn_sta_'+sta_apid+'_mr('+massSTR+')_energy_spectrogram'
+      if keyword_set(erange) then energySTR = strtrim(string(erange[0], format='(f12.1)'),2)+','+strtrim(string(erange[1], format='(f12.1)'),2) else energySTR='full'
+      if not keyword_set(tpname) then tpname = 'mvn_sta_'+sta_apid+'_mr('+massSTR+')_er('+energySTR+')_energy_spectrogram'
 
       tname1 = tpname[0]+'_E'
       store_data, tname1, data={x: timearr, y: eflux_sum, v: energy_arr}
@@ -175,7 +184,7 @@ end
 ;===================
 
 pro mvn_sta_make_ind_spec, trange=trange, units=units, sta_apid=sta_apid, mrange=mrange, m_int=m_int, success=success, tpname=tpname, $
-          species=species
+          species=species, erange=erange
 
 if keyword_set(species) then begin
     species = strupcase(species)
@@ -306,7 +315,8 @@ mstr = '('+strtrim(string(mrange[0], format='(f12.1)'),2)+','+strtrim(string(mra
 ;    ylim, tpname, yrange
 ;    options, tpname, no_interp=1
 
-mvn_sta_make_ind_spec_core, trange=trange, sta_apid=sta_apid, mrange=mrange, m_int=m_int, tpname=tpname, success=core_success, units=units, species=species
+mvn_sta_make_ind_spec_core, trange=trange, sta_apid=sta_apid, mrange=mrange, m_int=m_int, tpname=tpname, success=core_success, units=units, $
+              erange=erange, species=species
 
 success=core_success
 

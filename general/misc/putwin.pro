@@ -1,26 +1,58 @@
 ;+
 ;PROCEDURE:   putwin
 ;PURPOSE:
-;  Creates a window and places it in a specified monitor, with offsets
-;  relative to the screen edges or to another existing window.  This
-;  is a user-friendly version of WINDOW designed for a multiple monitor
-;  setup.
+;  When there are multiple monitors, IDL defines a rectangular "super
+;  monitor" that encompasses all physical monitors.  One of the physical
+;  monitors is designated the "primary monitor" and the lower left corner
+;  of that monitor is the origin of the coordinate system for the super
+;  monitor.  XPOS and YPOS are used to position windows within the super
+;  monitor; however, the coordinate system may not be known in advance, 
+;  strange things happen when you exceed the bounds of the super monitor, 
+;  and parts of the super monitor are not covered by a physical monitor, 
+;  so it's not obvious how to set XPOS and YPOS to place a window where
+;  you want.
 ;
-;  This routine is hardware dependent and will not work properly until
-;  it is configured for your monitor(s) and their arrangement, which
-;  determine how IDL positions graphics windows.  Automatic configuration
-;  is provided that works well on Mac systems with attached monitor(s), 
-;  but has not been thoroughly tested on other platforms.  See keyword
-;  CONFIG for more information.
+;  This procedure divides the super monitor back into physical monitors
+;  and allows you to choose a monitor and place a window relative to the
+;  edges of that monitor (or in the center, or full screen).  You can 
+;  also place a new window next to and aligned with an existing window.
+;  It is also possible to clone an existing window and place it as above.
+;  In short, this is a user-friendly version of WINDOW designed for a 
+;  multiple monitor setup.  It allows you to create new windows within a
+;  routine and arrange them accurately in specified monitors or next to
+;  other windows without the need for resizing and moving them with the 
+;  mouse.
 ;
-;  If no configuration is defined, putwin behaves exactly like window.
-;  This allows the routine to be used in public code, where the user 
-;  may not know about or does not want to use its functionality.
+;  On first call, this routine queries the OS to get the number, sizes, 
+;  and arrangement of the physical monitors.  This works well on Mac 
+;  systems but has not been thoroughly tested on other platforms.  See
+;  keywords CONFIG and TBAR for more information.
+;
+;  If CONFIG=0 (default), putwin behaves exactly like window.  This allows
+;  the routine to be used in public code, where the user may not know about
+;  or does not want to use its functionality.
 ;
 ;USAGE:
 ;  putwin [, wnum [, monitor]] [, KEYWORD=value, ...]  ; normal usage
 ;
-;  putwin, CONFIG=value [, TBAR=value]  ; initialization
+;  putwin, CONFIG={0|1} [, TBAR=value]  ; 0=disable, 1=enable
+;
+;  putwin, SHOW=N  ; identify the monitor(s) and corners for N seconds.
+;
+;EXAMPLES:
+;  putwin, 0, /full
+;    --> put a full-screen window in the primary monitor
+;
+;  putwin, 1, xsize=800, aspect=4./3., /secondary, dx=10, dy=10
+;    --> put a 4:3 aspect window in the secondary monitor, offset by 10 pixels
+;        from the top left corner
+;
+;  putwin, 2, clone=1, relative=1, dx=10, /top
+;    --> put a clone of window 1 to the right of window 1 offset by 10 pixels
+;        with the top edges aligned
+;
+;  putwin, 3, 0, clone=1, scale=0.6, /center
+;    --> put a clone of window 1 scaled by 60% in the center of monitor 0
 ;
 ;INPUTS:
 ;       wnum:      Window number.  Can be an integer from 0 to 31.
@@ -35,43 +67,32 @@
 ;                  If there's only one input, it's interpreted as the 
 ;                  window number.
 ;
-;                  If there is more than one monitor, IDL identifies a
-;                  "primary monitor", where graphics windows appear by
-;                  default.  This routine also defaults to the primary
-;                  monitor.  See keywords SECONDARY and SHOW.
-;
-;                  This can also be set to a variable name, which will
-;                  return the monitor number chosen.
+;                  If there is more than one monitor, this routine 
+;                  defines a "primary monitor", where graphics windows
+;                  appear if no monitor is specified.  See keyword
+;                  SETPRIME for details.
 ;
 ;KEYWORDS:
 ;       Accepts all keywords for WINDOW.  In addition, the following
 ;       are defined:
 ;
-;       CONFIG:    Can take one of two forms: integer or integer array.
-;
-;                  Integer (automatic configuration):
+;       CONFIG:    An integer that controls the behavior of putwin.
+;                  The first time putwin is called, it queries the OS
+;                  to get the number, dimensions, and arrangement of
+;                  the monitors.  This information is stored in a
+;                  common block.
 ;
 ;                     0 = disabled: putwin acts like window (default)
-;                     1 = automatic: get configuration by querying the
-;                                    operating system
-;                     2 = automatic with double-wide (5K) external
-;                         merged into a single logical monitor
-;                         (only guaranteed to work for the author)
+;                     1 = enabled: putwin has full functionality
 ;
-;                  Integer Array (user-defined configuration):
+;       SETPRIME:  Set the primary (and secondary) monitors manually.
+;                  The first element is the primary monitor number, and
+;                  the second element, if present, is the secondary
+;                  monitor number.  These values are persistent.
 ;
-;                     4 x N integer array for N monitors.  For each 
-;                     monitor, specify the coordinates of the lower
-;                     left corner (x0, y0) and the screen dimensions
-;                     (xdim, ydim):
-;
-;                       cfg[0:3,i] = [x0, y0, xdim, ydim]
-;
-;                  This routine automatically detects the primary
-;                  monitor for both forms of CONFIG.
-;
-;                  In either case, the configuration is defined and stored
-;                  in a common block, but no window is created.
+;                  Default:
+;                    primary monitor = left-most external monitor
+;                    secondary monitor = highest numbered non-primary
 ;
 ;       TBAR:      Title bar width in pixels.  Default = 22.
 ;
@@ -80,28 +101,30 @@
 ;                  along the bottom of a monitor are clipped.  This
 ;                  procedure fixes that issue.
 ;
-;                  Window positioning will not be precise unless this
+;                  Window positioning will not be precise until this
 ;                  is set properly.  IDL does not have access to this
 ;                  piece of information, so you'll have to figure it
-;                  out.  This value is persistent for subsequent calls 
-;                  to putwin, so you only need to set it once.
+;                  out.  This value is persistent.
 ;
 ;       STAT:      Output the current monitor configuration.  When 
 ;                  this keyword is set, CONFIG will return the current 
 ;                  monitor array and the primary and secondary monitor
 ;                  indices.
 ;
-;       SHOW:      Same as STAT, except in addition a small window is
-;                  placed in each monitor for 3 sec to identify
-;                  the monitor numbers, and which are primary and
-;                  secondary.
+;       SHOW:      Place a small window in each monitor for 5 sec to 
+;                  identify the monitor numbers and which are primary and
+;                  secondary.  In addition, place four small windows in the
+;                  corners of the primary monitor to identify the corner 
+;                  numbers (keyword CORNER).
 ;
-;       MONITOR:   Put window in this monitor.
+;                  Set this keyword to a number N > 5 to display the small
+;                  windows for N seconds.
 ;
-;                  Default is the primary monitor (see CONFIG).
+;       MONITOR:   Put window in this monitor.  If no monitor is set by
+;                  input or keyword, then the new window is placed in
+;                  the primary monitor.
 ;
-;       SECONDARY: Put window in highest numbered non-primary monitor
-;                  (usually the largest one).
+;       SECONDARY: Put window in the secondary monitor.
 ;
 ;       DX:        Horizontal offset from left or right edge (pixels).
 ;                    If DX is positive, offset is from left.
@@ -115,10 +138,7 @@
 ;
 ;                  Note: XPOS and YPOS only work if CONFIG = 0.  They
 ;                  refer to position on a rectangular "super monitor"
-;                  that encompasses all physical monitors.  This super
-;                  monitor will typically have regions that are out of
-;                  the bounds of the physical monitors, so windows can
-;                  be placed in regions that cannot be seen.
+;                  that encompasses all physical monitors.
 ;
 ;       RELATIVE:  Set this keyword to an existing window number.  Then
 ;                  DX and DY specify offsets of the new window location
@@ -129,17 +149,24 @@
 ;                  new window is placed around the perimeter of the 
 ;                  existing window.  However, when DX and DY are both 
 ;                  zero, the new window is placed on top of the existing 
-;                  window, with the bottom left corners aligned.
+;                  window, with the top left corners aligned.
 ;
 ;                  If RELATIVE is set, NORM=0 and NOFIT=1 are enforced.
 ;
-;       TOP:       If RELATIVE is set and DY=0, align the top edges of 
-;                  the new and existing windows.  Otherwise, the bottom
-;                  edges are aligned.
+;       TOP:       If RELATIVE is set and DY=0, align the top edges of
+;                  the windows.  Default.
+;
+;       LEFT:      If RELATIVE is set and DX=0, align the left edges of
+;                  the windows.  Default.
+;
+;       BOTTOM:    If RELATIVE is set and DY=0, align the bottom edges of
+;                  the windows.
 ;
 ;       RIGHT:     If RELATIVE is set and DX=0, align the right edges of
-;                  the new and existing windows.  Otherwise, the left
-;                  edges are aligned.
+;                  the windows.
+;
+;       MIDDLE:    If RELATIVE is set and DX=0 (DY=0), center the two
+;                  windows vertically (horizontally).
 ;
 ;       CLONE:     Create a new window with the same dimensions as the
 ;                  (existing) window specified by this keyword.  SCALE
@@ -150,7 +177,9 @@
 ;
 ;       CORNER:    Alternate method for determining which corner to 
 ;                  place window.  If this keyword is set, then only the
-;                  absolute values of DX and DY are used.
+;                  absolute values of DX and DY are used and specify
+;                  offsets from the selected corner.  Corners are
+;                  numbered like reading a book:
 ;
 ;                    0 = top left (default)
 ;                    1 = top right
@@ -160,9 +189,9 @@
 ;       NORM:      Measure DX and DY in normalized coordinates (0-1)
 ;                  instead of pixels.
 ;
-;       XCENTER:   Center the window in X.
+;       XCENTER:   Center the window horizontally in the monitor.
 ;
-;       YCENTER:   Center the window in Y.
+;       YCENTER:   Center the window vertically in the monitor.
 ;
 ;       CENTER:    Center the window in both X and Y.
 ;
@@ -201,7 +230,7 @@
 ;                  names in this structure to valid keywords.  For
 ;                  example:
 ;
-;                    {f:1, m:2} is interpreted as FULL=1, MONITOR=2.
+;                    {f:1, mon:2} is interpreted as FULL=1, MONITOR=2.
 ;
 ;                  Unrecognized or ambiguous tag names generate an
 ;                  error message, and no window is created.
@@ -211,8 +240,8 @@
 ;                  separately in the usual way.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-03-14 11:59:41 -0700 (Mon, 14 Mar 2022) $
-; $LastChangedRevision: 30675 $
+; $LastChangedDate: 2022-06-15 11:56:55 -0700 (Wed, 15 Jun 2022) $
+; $LastChangedRevision: 30859 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2020-06-03
@@ -222,7 +251,8 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
                   key=key, stat=stat, nofit=nofit, norm=norm, center=center, $
                   xcenter=xcenter, ycenter=ycenter, tbar=tbar2, xfull=xfull, $
                   yfull=yfull, aspect=aspect, show=show, secondary=secondary, $
-                  relative=relative, top=top, right=right, clone=clone, _extra=extra
+                  relative=relative, top=top, bottom=bottom, right=right, left=left, $
+                  middle=middle, clone=clone, setprime=setprime, _extra=extra
 
   @putwin_common
 
@@ -236,18 +266,24 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
       primon = oInfo->GetPrimaryMonitorIndex()
     obj_destroy, oInfo
 
-    primarymon = primon
+    if (numMons gt 2) then primon = min(rects[0,1:*]) + 1L  ; left-most external
+
     mons = indgen(numMons)
-    i = where(mons ne primarymon, count)
-    if (count gt 0) then secondarymon = max(mons[i]) $
-                    else secondarymon = primarymon
+    i = where(mons ne primon, count)
+    if (count gt 0) then secmon = max(mons[i]) else secmon = primon
+
+    mgeom = rects
+    mgeom[1,*] = rects[3,primon] - rects[3,*] - rects[1,*]
+    maxmon = numMons - 1
+    primarymon = primon
+    secondarymon = secmon
 
     klist = ['CONFIG','STAT','SHOW','MONITOR','SECONDARY','DX','DY','NORM', $
              'CENTER','XCENTER','YCENTER','CORNER','SCALE','FULL','XFULL', $
              'YFULL','ASPECT','XSIZE','YSIZE','NOFIT','TBAR2','RELATIVE', $
-             'TOP','RIGHT','CLONE']
+             'TOP','BOTTOM','RIGHT','LEFT','MIDDLE','CLONE','SETPRIME']
 
-    windex = -1
+    windex = 0
   endif
 
 ; Alternate method of setting PUTWIN keywords.  Except for XSIZE and YSIZE,
@@ -270,45 +306,53 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
 ; Output the current monitor configuration.
 
   if (keyword_set(stat) or keyword_set(show)) then begin
-    if (windex eq -1) then begin
+    if (~windex) then begin
       print,"Putwin is disabled (acts like window).  Use 'putwin, /config' to enable."
       return
     endif
 
-    print,"Monitor configuration:"
-    j = sort(mgeom[1,0:maxmon])
-    for i=maxmon,0,-1 do begin
-      print, j[i], mgeom[2:3,j[i]], format='(2x,i2," : ",i4," x ",i4," ",$)'
-      case i of
-        primarymon   : msg = "(primary)"
-        secondarymon : msg = "(secondary)"
-        else         : msg = ""
-      endcase
-      print, msg
-    endfor
-    print,""
-
-    if (keyword_set(show) and (windex gt -1)) then begin
+    if keyword_set(show) then begin
       j = -1
       for i=0,maxmon do begin
-        xs = mgeom[2,i]/10.
-        ys = mgeom[3,i]/10.
-        putwin, /free, monitor=i, xsize=xs, ysize=ys, /center
-        xyouts,0.5,0.35,strtrim(string(i),2),/norm,align=0.5,charsize=4,charthick=3,color=6
         case i of
           primarymon   : msg = "(primary)"
           secondarymon : msg = "(secondary)"
           else         : msg = ""
         endcase
+        xs = mgeom[2,i]/10.
+        ys = mgeom[3,i]/10.
+        putwin, /free, monitor=i, xsize=xs, ysize=ys, /center, title=''
+        xyouts,0.5,0.35,strtrim(string(i),2),/norm,align=0.5,charsize=4,charthick=3,color=6
         xyouts,0.5,0.1,msg,/norm,align=0.5,charsize=1.5,charthick=1,color=6
         j = [j, !d.window]
       endfor
-      j = j[1:*]
-      wait, 3
-      for i=0,maxmon do wdelete, j[i]
-    endif
 
-    config = {config:mgeom, primarymon:primarymon, tbar:tbar}
+      for k=0,3 do begin
+        putwin, /free, corner=k, xsize=150, ysize=100, dx=5, dy=5, title=''
+        msg = 'Corner ' + strtrim(string(k),2)
+        xyouts,0.5,0.5,msg,/norm,align=0.5,charsize=2,charthick=1,color=4
+        j = [j, !d.window]
+      endfor
+
+      j = j[1:*]
+      wait, fix(show[0]) > 5
+      for i=0,(n_elements(j)-1) do wdelete, j[i]
+    endif else begin
+      print,"Monitor configuration:"
+      j = sort(mgeom[1,0:maxmon])
+      for i=maxmon,0,-1 do begin
+        print, j[i], mgeom[2:3,j[i]], format='(2x,i2," : ",i4," x ",i4," ",$)'
+        case i of
+          primarymon   : msg = "(primary)"
+          secondarymon : msg = "(secondary)"
+          else         : msg = ""
+        endcase
+        print, msg
+      endfor
+      print,""
+    endelse
+
+    config = {geom:mgeom, primon:primarymon, secmon:secondarymon, tbar:tbar}
 
     return
   endif
@@ -318,64 +362,45 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
   if (size(tbar2,/type) gt 0) then tbar = fix(tbar2[0])
   if (size(tbar,/type) eq 0) then tbar = 22
 
-; Monitor configuration
+; Monitor priority
 
-  sz = size(config)
-
-  if ((sz[0] eq 2) and (sz[1] eq 4)) then begin
-    mgeom = fix(config)
-    maxmon = sz[2] - 1
-
-    primarymon = primon
-    mons = indgen(sz[2])
-    i = where(mons ne primarymon, count)
-    if (count gt 0) then secondarymon = max(mons[i]) $
-                    else secondarymon = primarymon
-
-    windex = 4  ; user-defined
-    putwin, /stat
+  nset = n_elements(setprime)
+  if (nset gt 0) then begin
+    if (nset eq 1) then begin
+      primon = fix(setprime[0]) < maxmon
+      mons = indgen(numMons)
+      i = where(mons ne primon, count)
+      if (count gt 0) then secmon = max(mons[i]) else secmon = primon
+      primarymon = primon
+      secondarymon = secmon
+    endif else begin
+      primon = fix(setprime[0]) < maxmon
+      secmon = fix(setprime[1]) < maxmon
+      primarymon = primon
+      secondarymon = secmon
+    endelse
+    putwin,/stat
     return
   endif
 
-  if (max(sz) gt 0) then begin
-    cfg = fix(config[0])
+; Monitor configuration
 
-    if (cfg eq 0) then begin
-      windex = -1
-      return
-    endif
+  if (size(config,/type) gt 0) then begin
 
-    mgeom = rects
-    mgeom[1,*] = rects[3,primarymon] - rects[3,*] - rects[1,*]
-    maxmon = numMons - 1
-    primarymon = primon
+    if (fix(config[0]) eq 0) then begin
+      if (windex eq 1) then print,"Putwin is disabled (acts like window)."
+      windex = 0
+    endif else begin
+      windex = 1
+      putwin, /stat
+    endelse
 
-    case maxmon of
-       0   : windex = 0                        ; laptop only
-       1   : windex = 1                        ; laptop with 1 external
-       2   : if (cfg gt 1) then begin
-               mgeom[0,1] = min(mgeom[0,1:2])
-               mgeom[2,1] += mgeom[2,2]
-               mgeom = mgeom[*,0:1]
-               maxmon -= 1
-               primarymon = 1
-               windex = 3                      ; laptop with 1 double-wide external
-             endif else windex = 2             ; laptop with 2 externals
-      else : windex = 5                        ; laptop with > 2 externals
-    endcase
-
-    mons = indgen(maxmon + 1)
-    i = where(mons ne primarymon, count)
-    if (count gt 0) then secondarymon = max(mons[i]) $
-                    else secondarymon = primarymon
-
-    putwin, /stat
     return
   endif
 
 ; If no configuration is set, then just pass everything to WINDOW
 
-  if (windex eq -1) then begin
+  if (~windex) then begin
     if (size(scale,/type) gt 0) then begin
       if (size(xsize,/type) gt 0) then xsize *= scale
       if (size(ysize,/type) gt 0) then ysize *= scale
@@ -428,10 +453,7 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
     endif
   endif
 
-  if (n_elements(xsize) eq 0) then begin
-    xsize = xdim/2
-    if ((windex eq 3) and (monitor eq 1)) then xsize /= 2
-  endif
+  if (n_elements(xsize) eq 0) then xsize = (xdim < 2560)/2
   if (n_elements(ysize) eq 0) then ysize = ydim/2
   if (n_elements(scale) eq 0) then scale = 1.
   xsize = fix(float(xsize[0])*scale)
@@ -452,13 +474,18 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
       dx1 = wpos[0]
       if (dx lt 0) then dx1 -= (xsize - dx)
       if (dx gt 0) then dx1 += (!d.x_size + dx)
-      if ((dx eq 0) and keyword_set(right)) then dx1 -= (xsize - !d.x_size)
+      if ((dx eq 0) and keyword_set(right)) then dx1 += (!d.x_size - xsize)
+      if ((dx eq 0) and keyword_set(middle)) then dx1 += (!d.x_size - xsize)/2
       dx = dx1
+
+      if not keyword_set(bottom) then top = 1  ; default is to align top edges
+      if keyword_set(middle) then top = 0
 
       dy1 = wpos[1] - 1  ; not sure why there's a 1-pixel offset
       if (dy lt 0) then dy1 -= (ysize + tbar - dy)
       if (dy gt 0) then dy1 += (!d.y_size + tbar + dy)
-      if ((dy eq 0) and keyword_set(top)) then dy1 -= (ysize - !d.y_size)
+      if ((dy eq 0) and keyword_set(top)) then dy1 += (!d.y_size - ysize)
+      if ((dy eq 0) and keyword_set(middle)) then dy1 += (!d.y_size - ysize)/2
       dy = dy1
 
       monitor = primarymon
@@ -557,11 +584,10 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
 
   if ((wnum lt 0) or (wnum gt 31)) then begin
     window, /free, xpos=x0, ypos=y0, xsize=xsize, ysize=ysize, _extra=extra
-    wnum = fix(!d.window)
   endif else begin
     window, wnum, xpos=x0, ypos=y0, xsize=xsize, ysize=ysize, _extra=extra
-    wnum = fix(!d.window)
   endelse
+  wnum = fix(!d.window)
 
   return
 

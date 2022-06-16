@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jun 14 18:16:30 2022.<P>
+<STRONG>Last modified: </STRONG>Wed Jun 15 18:16:26 2022.<P>
  
 <HR>
  
@@ -142,13 +142,15 @@ This page was created by the IDL library routine
 <LI><A HREF="#PTR_EXTRACT">PTR_EXTRACT</A>
 <LI><A HREF="#PTRACE">PTRACE</A>
 <LI><A HREF="#PUTWIN">PUTWIN</A>
-<br>Creates a window and places it in a specified monitor, with offsets
+<br>When there are multiple monitors, IDL defines a rectangular &quot;super
 <LI><A HREF="#PUTWIN_COMMON">PUTWIN_COMMON</A>
 <br>Common block for putwin.
 <LI><A HREF="#PWRSPC">PWRSPC</A>
 <br>Called with times time and data quantity, PWRSPC returns a power
 <LI><A HREF="#READ_ASCII_CMDLINE">READ_ASCII_CMDLINE</A>
 <br>Read data from an ASCII file into IDL.
+<LI><A HREF="#REVVID">REVVID</A>
+<br>Reverses video for graphics windows by swapping !p.color and
 <LI><A HREF="#ROOT_DATA_DIR">ROOT_DATA_DIR</A>
 <LI><A HREF="#SCPOT_OVERLAY">SCPOT_OVERLAY</A>
 <br>Overlays a spacecraft potential (or similar line function) over a
@@ -3293,26 +3295,58 @@ Created by Davin Larson. May 2002.
 <PRE>
 PROCEDURE:   putwin
 PURPOSE:
-  Creates a window and places it in a specified monitor, with offsets
-  relative to the screen edges or to another existing window.  This
-  is a user-friendly version of WINDOW designed for a multiple monitor
-  setup.
+  When there are multiple monitors, IDL defines a rectangular &quot;super
+  monitor&quot; that encompasses all physical monitors.  One of the physical
+  monitors is designated the &quot;primary monitor&quot; and the lower left corner
+  of that monitor is the origin of the coordinate system for the super
+  monitor.  XPOS and YPOS are used to position windows within the super
+  monitor; however, the coordinate system may not be known in advance, 
+  strange things happen when you exceed the bounds of the super monitor, 
+  and parts of the super monitor are not covered by a physical monitor, 
+  so it's not obvious how to set XPOS and YPOS to place a window where
+  you want.
 
-  This routine is hardware dependent and will not work properly until
-  it is configured for your monitor(s) and their arrangement, which
-  determine how IDL positions graphics windows.  Automatic configuration
-  is provided that works well on Mac systems with attached monitor(s), 
-  but has not been thoroughly tested on other platforms.  See keyword
-  CONFIG for more information.
+  This procedure divides the super monitor back into physical monitors
+  and allows you to choose a monitor and place a window relative to the
+  edges of that monitor (or in the center, or full screen).  You can 
+  also place a new window next to and aligned with an existing window.
+  It is also possible to clone an existing window and place it as above.
+  In short, this is a user-friendly version of WINDOW designed for a 
+  multiple monitor setup.  It allows you to create new windows within a
+  routine and arrange them accurately in specified monitors or next to
+  other windows without the need for resizing and moving them with the 
+  mouse.
 
-  If no configuration is defined, putwin behaves exactly like window.
-  This allows the routine to be used in public code, where the user 
-  may not know about or does not want to use its functionality.
+  On first call, this routine queries the OS to get the number, sizes, 
+  and arrangement of the physical monitors.  This works well on Mac 
+  systems but has not been thoroughly tested on other platforms.  See
+  keywords CONFIG and TBAR for more information.
+
+  If CONFIG=0 (default), putwin behaves exactly like window.  This allows
+  the routine to be used in public code, where the user may not know about
+  or does not want to use its functionality.
 
 USAGE:
   putwin [, wnum [, monitor]] [, KEYWORD=value, ...]  ; normal usage
 
-  putwin, CONFIG=value [, TBAR=value]  ; initialization
+  putwin, CONFIG={0|1} [, TBAR=value]  ; 0=disable, 1=enable
+
+  putwin, SHOW=N  ; identify the monitor(s) and corners for N seconds.
+
+EXAMPLES:
+  putwin, 0, /full
+    --&gt; put a full-screen window in the primary monitor
+
+  putwin, 1, xsize=800, aspect=4./3., /secondary, dx=10, dy=10
+    --&gt; put a 4:3 aspect window in the secondary monitor, offset by 10 pixels
+        from the top left corner
+
+  putwin, 2, clone=1, relative=1, dx=10, /top
+    --&gt; put a clone of window 1 to the right of window 1 offset by 10 pixels
+        with the top edges aligned
+
+  putwin, 3, 0, clone=1, scale=0.6, /center
+    --&gt; put a clone of window 1 scaled by 60% in the center of monitor 0
 
 INPUTS:
        wnum:      Window number.  Can be an integer from 0 to 31.
@@ -3327,43 +3361,32 @@ INPUTS:
                   If there's only one input, it's interpreted as the 
                   window number.
 
-                  If there is more than one monitor, IDL identifies a
-                  &quot;primary monitor&quot;, where graphics windows appear by
-                  default.  This routine also defaults to the primary
-                  monitor.  See keywords SECONDARY and SHOW.
-
-                  This can also be set to a variable name, which will
-                  return the monitor number chosen.
+                  If there is more than one monitor, this routine 
+                  defines a &quot;primary monitor&quot;, where graphics windows
+                  appear if no monitor is specified.  See keyword
+                  SETPRIME for details.
 
 KEYWORDS:
        Accepts all keywords for WINDOW.  In addition, the following
        are defined:
 
-       CONFIG:    Can take one of two forms: integer or integer array.
-
-                  Integer (automatic configuration):
+       CONFIG:    An integer that controls the behavior of putwin.
+                  The first time putwin is called, it queries the OS
+                  to get the number, dimensions, and arrangement of
+                  the monitors.  This information is stored in a
+                  common block.
 
                      0 = disabled: putwin acts like window (default)
-                     1 = automatic: get configuration by querying the
-                                    operating system
-                     2 = automatic with double-wide (5K) external
-                         merged into a single logical monitor
-                         (only guaranteed to work for the author)
+                     1 = enabled: putwin has full functionality
 
-                  Integer Array (user-defined configuration):
+       SETPRIME:  Set the primary (and secondary) monitors manually.
+                  The first element is the primary monitor number, and
+                  the second element, if present, is the secondary
+                  monitor number.  These values are persistent.
 
-                     4 x N integer array for N monitors.  For each 
-                     monitor, specify the coordinates of the lower
-                     left corner (x0, y0) and the screen dimensions
-                     (xdim, ydim):
-
-                       cfg[0:3,i] = [x0, y0, xdim, ydim]
-
-                  This routine automatically detects the primary
-                  monitor for both forms of CONFIG.
-
-                  In either case, the configuration is defined and stored
-                  in a common block, but no window is created.
+                  Default:
+                    primary monitor = left-most external monitor
+                    secondary monitor = highest numbered non-primary
 
        TBAR:      Title bar width in pixels.  Default = 22.
 
@@ -3372,28 +3395,30 @@ KEYWORDS:
                   along the bottom of a monitor are clipped.  This
                   procedure fixes that issue.
 
-                  Window positioning will not be precise unless this
+                  Window positioning will not be precise until this
                   is set properly.  IDL does not have access to this
                   piece of information, so you'll have to figure it
-                  out.  This value is persistent for subsequent calls 
-                  to putwin, so you only need to set it once.
+                  out.  This value is persistent.
 
        STAT:      Output the current monitor configuration.  When 
                   this keyword is set, CONFIG will return the current 
                   monitor array and the primary and secondary monitor
                   indices.
 
-       SHOW:      Same as STAT, except in addition a small window is
-                  placed in each monitor for 3 sec to identify
-                  the monitor numbers, and which are primary and
-                  secondary.
+       SHOW:      Place a small window in each monitor for 5 sec to 
+                  identify the monitor numbers and which are primary and
+                  secondary.  In addition, place four small windows in the
+                  corners of the primary monitor to identify the corner 
+                  numbers (keyword CORNER).
 
-       MONITOR:   Put window in this monitor.
+                  Set this keyword to a number N &gt; 5 to display the small
+                  windows for N seconds.
 
-                  Default is the primary monitor (see CONFIG).
+       MONITOR:   Put window in this monitor.  If no monitor is set by
+                  input or keyword, then the new window is placed in
+                  the primary monitor.
 
-       SECONDARY: Put window in highest numbered non-primary monitor
-                  (usually the largest one).
+       SECONDARY: Put window in the secondary monitor.
 
        DX:        Horizontal offset from left or right edge (pixels).
                     If DX is positive, offset is from left.
@@ -3407,10 +3432,7 @@ KEYWORDS:
 
                   Note: XPOS and YPOS only work if CONFIG = 0.  They
                   refer to position on a rectangular &quot;super monitor&quot;
-                  that encompasses all physical monitors.  This super
-                  monitor will typically have regions that are out of
-                  the bounds of the physical monitors, so windows can
-                  be placed in regions that cannot be seen.
+                  that encompasses all physical monitors.
 
        RELATIVE:  Set this keyword to an existing window number.  Then
                   DX and DY specify offsets of the new window location
@@ -3421,17 +3443,24 @@ KEYWORDS:
                   new window is placed around the perimeter of the 
                   existing window.  However, when DX and DY are both 
                   zero, the new window is placed on top of the existing 
-                  window, with the bottom left corners aligned.
+                  window, with the top left corners aligned.
 
                   If RELATIVE is set, NORM=0 and NOFIT=1 are enforced.
 
-       TOP:       If RELATIVE is set and DY=0, align the top edges of 
-                  the new and existing windows.  Otherwise, the bottom
-                  edges are aligned.
+       TOP:       If RELATIVE is set and DY=0, align the top edges of
+                  the windows.  Default.
+
+       LEFT:      If RELATIVE is set and DX=0, align the left edges of
+                  the windows.  Default.
+
+       BOTTOM:    If RELATIVE is set and DY=0, align the bottom edges of
+                  the windows.
 
        RIGHT:     If RELATIVE is set and DX=0, align the right edges of
-                  the new and existing windows.  Otherwise, the left
-                  edges are aligned.
+                  the windows.
+
+       MIDDLE:    If RELATIVE is set and DX=0 (DY=0), center the two
+                  windows vertically (horizontally).
 
        CLONE:     Create a new window with the same dimensions as the
                   (existing) window specified by this keyword.  SCALE
@@ -3442,7 +3471,9 @@ KEYWORDS:
 
        CORNER:    Alternate method for determining which corner to 
                   place window.  If this keyword is set, then only the
-                  absolute values of DX and DY are used.
+                  absolute values of DX and DY are used and specify
+                  offsets from the selected corner.  Corners are
+                  numbered like reading a book:
 
                     0 = top left (default)
                     1 = top right
@@ -3452,9 +3483,9 @@ KEYWORDS:
        NORM:      Measure DX and DY in normalized coordinates (0-1)
                   instead of pixels.
 
-       XCENTER:   Center the window in X.
+       XCENTER:   Center the window horizontally in the monitor.
 
-       YCENTER:   Center the window in Y.
+       YCENTER:   Center the window vertically in the monitor.
 
        CENTER:    Center the window in both X and Y.
 
@@ -3493,7 +3524,7 @@ KEYWORDS:
                   names in this structure to valid keywords.  For
                   example:
 
-                    {f:1, m:2} is interpreted as FULL=1, MONITOR=2.
+                    {f:1, mon:2} is interpreted as FULL=1, MONITOR=2.
 
                   Unrecognized or ambiguous tag names generate an
                   error message, and no window is created.
@@ -3503,8 +3534,8 @@ KEYWORDS:
                   separately in the usual way.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-03-14 11:59:41 -0700 (Mon, 14 Mar 2022) $
- $LastChangedRevision: 30675 $
+ $LastChangedDate: 2022-06-15 11:56:55 -0700 (Wed, 15 Jun 2022) $
+ $LastChangedRevision: 30859 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 
 CREATED BY:	David L. Mitchell  2020-06-03
@@ -3523,8 +3554,8 @@ PURPOSE:
   Common block for putwin.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-03-08 12:43:45 -0800 (Mon, 08 Mar 2021) $
- $LastChangedRevision: 29744 $
+ $LastChangedDate: 2022-06-15 11:54:05 -0700 (Wed, 15 Jun 2022) $
+ $LastChangedRevision: 30858 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin_common.pro $
 
 CREATED BY:    David L. Mitchell
@@ -3583,7 +3614,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="READ_ASCII_CMDLINE">
 <H2>READ_ASCII_CMDLINE</H2></A>
 <A HREF="#PWRSPC">[Previous Routine]</A>
-<A HREF="#ROOT_DATA_DIR">[Next Routine]</A>
+<A HREF="#REVVID">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -3738,9 +3769,41 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <STRONG>(See <A href="misc/read_ascii_cmdline.pro">general/misc/read_ascii_cmdline.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="REVVID">
+<H2>REVVID</H2></A>
+<A HREF="#READ_ASCII_CMDLINE">[Previous Routine]</A>
+<A HREF="#ROOT_DATA_DIR">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   revvid
+PURPOSE:
+  Reverses video for graphics windows by swapping !p.color and
+  !p.background.
+
+USAGE:
+  revvid
+
+INPUTS:
+   none:    A simple toggle.
+
+KEYWORDS:
+   WHITE:   Make background white, pen color black.
+
+   BLACK:   Make background black, pen color white.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2022-06-15 11:17:23 -0700 (Wed, 15 Jun 2022) $
+ $LastChangedRevision: 30857 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/revvid.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="misc/revvid.pro">general/misc/revvid.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ROOT_DATA_DIR">
 <H2>ROOT_DATA_DIR</H2></A>
-<A HREF="#READ_ASCII_CMDLINE">[Previous Routine]</A>
+<A HREF="#REVVID">[Previous Routine]</A>
 <A HREF="#SCPOT_OVERLAY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
