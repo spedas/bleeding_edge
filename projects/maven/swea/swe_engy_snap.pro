@@ -3,17 +3,18 @@
 function specmom, eflux, erange=erange
   mass = 5.6856297d-06             ; electron rest mass [eV/(km/s)^2]
   c3 = 4D*!dpi*1d-5*sqrt(mass/2D)  ; assume isotropic electron distribution
+  tiny = 1.e-31
 
+  ounits = eflux.units_name
   mvn_swe_convert_units, eflux, 'eflux'
   E1 = eflux.energy
+  dE = eflux.denergy
   F1 = eflux.data - eflux.bkg
   S1 = sqrt(eflux.var)
   pot = eflux.sc_pot
 
-  dE = E1
-  dE[0] = abs(E1[1] - E1[0])
-  for i=1,62 do dE[i] = abs(E1[i+1] - E1[i-1])/2.
-  dE[63] = abs(E1[63] - E1[62])
+  indx = where(eflux.valid eq 0B, count)
+  if (count gt 0L) then F1[indx] = tiny
 
   if (n_elements(erange) gt 1) then begin
     Emin = min(erange, max=Emax)
@@ -41,6 +42,8 @@ function specmom, eflux, erange=erange
 
   temp = pres/N_tot  ; temperature corresponding to kinetic energy density
   tsig = temp*sqrt((N_sig/N_tot)^2. + (psig/pres)^2.)
+
+  mvn_swe_convert_units, eflux, ounits
 
   return, {N:N_tot, Nsig:N_sig, T:temp, Tsig:tsig, indx:j}
 end
@@ -160,14 +163,16 @@ end
 ;                      as the low-energy residual after subtracting the best-fit
 ;                      Maxwell-Boltzmann.
 ;
-;       SEC:           Calculate secondary electron spectrum using McFadden's
-;                      semi-empirical approach.
+;       SEC:           Calculate secondary electron spectrum using one of two methods:
+;                        SEC = 1 --> Andreone
+;                        SEC = 2 --> Evans
 ;
-;       SSCALE:        Scale factor for secondary electron spectrum.  Default = 5.
-;                      This scales the secondary electron production efficiency.
-;                      A better value might be ~0.5.  This can be estimated by comparing
-;                      with SWIA densities.  Look for consistent density ratio.  Also,
-;                      shape of energy spectrum.
+;       SCONFIG:       Structure of parameters for the secondary electron models.
+;
+;                        {e0:e0, s0:s0, e1:e1, s1:s1, scl:scl}
+;
+;                      The first four are for the Andreone method, the last is for the
+;                      Evans method.
 ;
 ;       DDD:           Create an energy spectrum from the nearest 3D spectrum and
 ;                      plot for comparison.
@@ -216,8 +221,8 @@ end
 ;                      are lost.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-03-10 17:50:08 -0800 (Thu, 10 Mar 2022) $
-; $LastChangedRevision: 30671 $
+; $LastChangedDate: 2022-06-16 16:00:39 -0700 (Thu, 16 Jun 2022) $
+; $LastChangedRevision: 30862 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -228,11 +233,11 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
                    noerase=noerase, scp=scp, fixy=fixy, pepeaks=pepeaks, $
                    burst=burst, rainbow=rainbow, mask_sc=mask_sc, sec=sec, $
                    bkg=bkg, tplot=tplot, magdir=magdir, bck=bck, shiftpot=shiftpot, $
-                   xrange=xrange,yrange=frange,sscale=sscale, popen=popen, times=times, $
+                   xrange=xrange,yrange=frange,sconfig=sconfig, popen=popen, times=times, $
                    flev=flev, pylim=pylim, k_e=k_e, peref=peref, error_bars=error_bars, $
                    trange=tspan, tsmo=tsmo, wscale=wscale, cscale=cscale, voffset=voffset, $
                    endx=endx, twot=twot, rcolors=rcolors, cuii=cuii, fmfit=fmfit, nolab=nolab, $
-                   showdead=showdead, monitor=monitor
+                   showdead=showdead, monitor=monitor, der=der
 
   @mvn_swe_com
   @mvn_scpot_com
@@ -243,6 +248,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   c2 = (2d5/(mass*mass))
   c3 = 4D*!dpi*1d-5*sqrt(mass/2D)  ; assume isotropic electron distribution
   tiny = 1.e-31
+  maxarg = 80.
 
   if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
 
@@ -253,7 +259,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   tlist = ['UNITS','KEEPWINS','ARCHIVE','DDD','ABINS','DBINS','OBINS2', $
            'SUM','POT','PDIAG','PXLIM','MB','KAP','MOM','SCAT','ERANGE', $
            'NOERASE','SCP','FIXY','PEPEAKS','BURST','RAINBOW','MASK_SC','SEC', $
-           'BKG','TPLOT','MAGDIR','BCK','SHIFTPOT','XRANGE','YRANGE','SSCALE', $
+           'BKG','TPLOT','MAGDIR','BCK','SHIFTPOT','XRANGE','YRANGE','SCONFIG', $
            'POPEN','TIMES','FLEV','PYLIM','K_E','PEREF','ERROR_BARS','TRANGE', $
            'TSMO','WSCALE','CSCALE','VOFFSET','ENDX','TWOT','RCOLORS','CUII', $
            'FMFIT','NOLAB','SHOWDEAD','MONITOR']
@@ -274,7 +280,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
 
   if (size(Espan,/type) eq 0) then mvn_scpot_defaults
 
-  aflg = keyword_set(archive) or keyword_set(burst)
+  aflg = 0  ; there are never any SPEC archive data (apid a5)
   if not keyword_set(units) then units = 'eflux'
   if keyword_set(sum) then begin
     npts = 2
@@ -295,7 +301,13 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   rflg = keyword_set(rainbow)
   dosec = keyword_set(sec)
   dobkg = keyword_set(bkg)
-  if not keyword_set(sscale) then sscale = 5D else sscale = double(sscale[0])
+
+  str_element, sconfig, 'scl', value, success=ok
+  if (ok) then sscale = double(value) else sscale = 5D
+  mvn_swe_secondary, config=sconfig, param=dconfig
+  sconfig = dconfig
+  str_element, sconfig, 'scl', sscale, /add
+  
   spflg = keyword_set(shiftpot)
   if (n_elements(xrange) ne 2) then xrange = [1.,1.e4]
   if not keyword_set(wscale) then wscale = 1.
@@ -417,7 +429,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     if (n_elements(swe_hsk) gt 2L) then hflg = 1 else hflg = 0
   endif else hflg = 0
   if keyword_set(keepwins) then kflg = 0 else kflg = 1
-  if keyword_set(archive) then aflg = 1 else aflg = 0
+  aflg = 0  ; there are never any SPEC arvhive data (apid a5)
 
   case n_elements(tspan) of
        0 : tsflg = 0
@@ -439,7 +451,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (windex eq -1) then putwin, /config
+    if (~windex) then putwin, /config
     mnum = fix(monitor[0])
   endif else begin
     if (size(secondarymon,/type) gt 0) then mnum = secondarymon
@@ -449,14 +461,20 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   Ewin = !d.window
 
   if (hflg) then begin
-    putwin, /free, rel=!d.window, xsize=200, ysize=600, dx=10, /top
+    putwin, /free, rel=!d.window, xsize=200, ysize=600, dx=10
     Hwin = !d.window
   endif
   
   if (pflg) then begin
-    putwin, /free, rel=!d.window, xsize=450, ysize=600, dx=10, /top
+    putwin, /free, rel=!d.window, xsize=450, ysize=600, dx=10
     Pwin = !d.window
   endif
+
+  if keyword_set(der) then begin
+    doder = 1
+    putwin, /free, rel=!d.window, clone=Ewin, dx=10
+    Dwin = !d.window
+  endif else doder = 0
 
 ; Get the spectrum closest to the selected time
   
@@ -635,49 +653,87 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     endif
 
 ; Secondary electrons produced by primary electron impact inside the instrument.
-; Method from McFadden, adapted from Dave Evans.
 
     if (dosec) then begin
-      odat = spec
-      mvn_swe_convert_units, odat, 'crate'
 
-      energy = odat.energy
-      nenergy = odat.nenergy
-      sec_spec = dblarr(nenergy)
+; Method 1: Adapted from Andreone
 
-      if (finite(scp)) then pot = scp $
-                       else if (finite(phi)) then pot = phi else pot = 0.
-      kndx = where(energy gt pot)
-      kmax = max(kndx)
+      if (sec eq 1) then begin
+        mvn_swe_secondary, spec, config=sconfig
+        x = spec.energy
+        y = spec.data
+        dy = sqrt(spec.var)
+        yb = spec.bkg
+        ya = spec.data - spec.bkg
+        indx = where(~spec.valid, count)
+        if (count gt 0L) then ya[indx] = !values.f_nan
 
-      alpha = 1.35
-      Tmax = 2.283
-      Emax = 325.
-      k = 2.2
-      scale = sscale
+        oplot, x, yb, color=2, psym=10
+        oplot, x, ya, color=4, psym=10
+        if (ebar) then errplot,x,(ya-dy)>tiny,ya+dy,width=0
 
-      Vbias = 0.                     ; primaries not passing through exit grid
-      Erat = (energy + Vbias)/Emax   ; effect of V0 cancels when using swe_swp
-      arg = Tmax*(Erat^alpha) < 80.  ; avoid underflow
+      endif
 
-      delta = (Erat^(1. - alpha))*(1. - exp(-arg))/(1. - exp(-Tmax))
-      eff = scale*(1. - exp(-k*delta))/(1. - exp(-k))
+; Method 2: McFadden, adapted from Dave Evans
 
-      for k=1,kmax-1 do sec_spec[k:kmax] += eff[k]*odat.data[k]/energy[k:kmax]^2.0
+      if (sec eq 2) then begin
+        mvn_swe_convert_units, spec, 'crate'
 
-      odat.data = sec_spec
-      sec_dat = odat
-      mvn_swe_convert_units, sec_dat, units
-      dif_dat = spec
-      dif_dat.data = (spec.data - sec_dat.data) > 1.
-      oplot,sec_dat.energy[kndx],sec_dat.data[kndx],color=5,line=2
-      oplot,dif_dat.energy,dif_dat.data,color=5,psym=10
+        e = spec.energy
+        n_e = n_elements(e)
+        Rs = dblarr(n_e)
 
-      xyouts,xs,ys,string(sscale, format='("SSCL = ",f5.2)'),charsize=csize1,/norm
-      ys -= dys
+        alpha = 1.35
+        Tmax = 2.283
+        Emax = 325.
+        k = 2.2
+        str_element, sconfig, 'scl', value, success=ok
+        if (ok) then sscale = double(value) else sscale = 5D
 
-      str_element, spec, 'sec_spec', sec_dat.data, /add  ; secondary spectrum
-      str_element, spec, 'dif_spec', dif_dat.data, /add  ; primary spectrum
+        Vbias = 0.                        ; primaries not passing through exit grid
+        Erat = (e + Vbias)/Emax           ; effect of V0 cancels when using swe_swp
+        arg = Tmax*(Erat^alpha) < maxarg  ; avoid underflow
+
+        delta = (Erat^(1. - alpha))*(1. - exp(-arg))/(1. - exp(-Tmax))
+        eff = sscale*(1. - exp(-k*delta))/(1. - exp(-k))
+
+        for k=1,n_e-1 do Rs[k:*] += eff[k]*spec.data[k]/e[k:*]^2.0
+        spec.bkg = Rs
+
+        spec.valid = 1B
+        mvn_swe_convert_units, spec, 'eflux'
+        y = spec.data
+        ya = y - spec.bkg
+        dy = sqrt(spec.var)
+
+        indx = where(e le spec.sc_pot, count)
+        if (count gt 0L) then spec.valid[indx] = 0B       ; s/c photoelectrons
+
+        kscp = max(where(e gt spec.sc_pot))
+        ymax = max(e[0:kscp]*ya[0:kscp], kmax)
+        ymin = min(e[kmax:kscp]*ya[kmax:kscp], kmin)
+        kmin += kmax
+        if ((ya[kmin] + 2.*dy[kmin]) lt max(ya[(kmin-1):kscp])) then begin
+          spec.valid[(kmin+1 < kscp):*] = 0B         ; under-correction
+        endif
+
+        indx = where((e lt 100.) and (y/ya gt 10.), count)
+        if (count gt 0L) then spec.valid[indx] = 0B  ; over-correction
+
+        mvn_swe_convert_units, spec, units
+        x = spec.energy
+        y = spec.data
+        dy = sqrt(spec.var)
+        yb = spec.bkg
+        ya = spec.data - spec.bkg
+        indx = where(~spec.valid, count)
+        if (count gt 0L) then ya[indx] = !values.f_nan
+
+        oplot, x, yb, color=2, psym=10
+        oplot, x, ya, color=4, psym=10
+        if (ebar) then errplot,x,(ya-dy)>tiny,ya+dy,width=0
+
+      endif
     endif
 
 ; Background counts resulting from the wings of the energy response function.
@@ -785,41 +841,27 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     endif
     
     if (mb) then begin
-      if (dosec) then begin
-        E1 = dif_dat.energy
-        F1 = dif_dat.data - dif_dat.bkg
-        counts = dif_dat
-        dcol = 5
-      endif else begin
-        E1 = spec.energy
-        F1 = spec.data - spec.bkg
-        counts = spec
-        dcol = 4
-      endelse
-      
-      mvn_swe_convert_units, counts, 'counts'
-      cnts = counts.data
-      sig2 = counts.var  ; variance w/ digitization noise
-      sdev = F1 * (sqrt(sig2)/(cnts > 1.))
+      mvn_swe_convert_units, spec, 'eflux'
+      E1 = spec.energy
+      dE = spec.denergy
+      F1 = spec.data - spec.bkg
+      sdev = sqrt(spec.var)
+      indx = where((spec.valid eq 0B) or (~finite(F1)), count)
+      if (count gt 0) then F1[indx] = tiny
+      dcol = 4
 
       p = swe_maxbol()
-      if (finite(scp)) then p.pot = scp $
-                       else if (finite(phi)) then p.pot = phi else p.pot = 0.
-      spec.sc_pot = pot
+      p.pot = spec.sc_pot
 
-      psep = 1.25
-      indx = where(E1 gt psep*p.pot)
+      indx = where(E1 gt p.pot, count)
+      indx = indx[0:(count-2)]
+
       Fpeak = max(F1[indx],k,/nan)
       Epeak = E1[indx[k]]
       p.t = Epeak/2.
       p.n = Fpeak/(4.*c1*c2*sqrt(p.t)*exp((p.pot/p.t) - 2.))
-      Elo = Epeak*0.7 < ((Epeak/2.) > (psep*phi))
-      imb = where((E1 gt Elo) and (E1 lt Epeak*2.))
-
-      if (n_elements(erange) gt 1) then begin
-        Emin = min(erange, max=Emax)
-        imb = where((E1 ge Emin) and (E1 le Emax))
-      endif
+      Elo = min(E1[indx])
+      imb = where((E1 gt Elo) and (F1 gt Fpeak/3.))
 
       fit,E1[imb],F1[imb],dy=sdev[imb],func='swe_maxbol',par=p,names='N T',/silent
       
@@ -844,27 +886,36 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         N_tot = p.n + p.k_n
         pk = p
         pk.n = 0.
-        oplot,E1[ikap],swe_maxbol(E1[ikap],par=pk),color=3
-      endif else begin
-        dE = E1
-        dE[0] = abs(E1[1] - E1[0])
-        for i=1,62 do dE[i] = abs(E1[i+1] - E1[i-1])/2.
-        dE[63] = abs(E1[63] - E1[62])
 
+        kappa = spec
+        kappa.data = !values.f_nan
+        kappa.data[ikap] = swe_maxbol(E1[ikap],par=pk)
+        mvn_swe_convert_units, kappa, units
+        oplot,E1,kappa.data,psym=10,color=3
+      endif else begin
         j = where(E1 gt Epeak*2., n_e)
         E_halo = E1[j]
         F_halo = (F1[j] - swe_maxbol(E_halo, par=p)) > 0.
-        oplot,E_halo,F_halo,color=1,psym=10
         prat = (p.pot/E_halo) < 1.
 
         N_halo = c3*total(dE[j]*sqrt(1. - prat)*(E_halo^(-1.5))*F_halo)
         N_tot = N_core + N_halo
+
+        halo = spec
+        halo.data = !values.f_nan
+        halo.data[j] = F_halo
+        mvn_swe_convert_units, halo, units
+        oplot,E1,halo.data,color=1,psym=10
       endelse
 
       if (spflg) then jndx = indgen(64) else jndx = where(E1 gt p.pot)
+      thermal = spec
+      thermal.data = !values.f_nan
+      thermal.data[jndx] = swe_maxbol(E1[jndx],par=p)
+      mvn_swe_convert_units, thermal, units
       col = 4
-      oplot,E1[jndx],swe_maxbol(E1[jndx],par=p),thick=2,color=col,line=1
-      oplot,E1[imb],swe_maxbol(E1[imb],par=p),color=col,thick=2
+      oplot,E1,thermal.data,thick=2,color=col,line=1
+      oplot,E1[imb],thermal.data[imb],color=col,thick=2
       if keyword_set(twot) then oplot,2.*[p.T,p.T],yrange,line=2,color=5
 
       xyouts,xs,ys,string(N_tot,format='("N = ",f6.2)'),color=dcol,charsize=csize1,/norm
@@ -885,8 +936,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         ys -= dys
       endelse
 
-       
-      smom = specmom(spec)
+      smom = specmom(spec, erange=erange)
       ys -= dys
       xyouts,xs,ys,"Moments:",charsize=csize1,/norm
       ys -= dys
@@ -911,36 +961,47 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     endif
 
     if (mom) then begin
-      if (dosec) then begin
-        eflux = dif_dat
-        dcol = 1
-      endif else begin
-        eflux = spec
-        dcol = 1
-      endelse
-      if (finite(scp)) then pot = scp $
-                       else if (finite(phi)) then pot = phi else pot = 0.
-      eflux.sc_pot = pot
+      dcol = 1
 
-      smom = specmom(eflux)
+      smom = specmom(spec, erange=erange)
 
-      oplot,eflux.energy[smom.indx],eflux.data[smom.indx],color=1,psym=10
-      print,"Density = ",smom.N," +/- ",smom.Nsig,format='(a,f6.2,a,f6.2)'
-      print,"Temperature = ",smom.T," +/- ",smom.Tsig,format='(a,f6.2,a,f6.2)'
+      x = spec.energy[smom.indx]
+      y = spec.data[smom.indx] - spec.bkg[smom.indx]
+      indx = where(spec.valid[smom.indx] eq 0B, count)
+      if (count gt 0L) then y[indx] = !values.f_nan
+
+      oplot,x,y,color=dcol,psym=10
+;     print,"Density = ",smom.N," +/- ",smom.Nsig,format='(a,f6.2,a,f6.2)'
+;     print,"Temperature = ",smom.T," +/- ",smom.Tsig,format='(a,f6.2,a,f6.2)'
 
       xyouts,xs,ys,string(smom.N,format='("N = ",f6.2)'),color=dcol,charsize=csize1,/norm
       ys -= dys
       xyouts,xs,ys,string(smom.T,format='("T = ",f6.2)'),color=dcol,charsize=csize1,/norm
       ys -= dys
-      xyouts,xs,ys,string(pot,format='("V = ",f6.2)'),color=col,charsize=csize1,/norm
+      xyouts,xs,ys,string(pot,format='("V = ",f6.2)'),color=6,charsize=csize1,/norm
       ys -= dys
     endif
     
     if (~mb and ~mom and dolab) then begin
-      xyouts,xs,ys,string(pot,format='("V = ",f6.2)'),color=col,charsize=csize1,/norm
+      xyouts,xs,ys,string(pot,format='("V = ",f6.2)'),color=6,charsize=csize1,/norm
       ys -= dys
     endif
-    
+
+    if (dosec) then begin
+      if (sec eq 1) then begin
+        mvn_swe_secondary, param=p
+        ys -= dys
+        xyouts,xs,ys,string(p.e0, format='("E0 = ",f5.2)'),charsize=csize1,color=2,/norm
+        ys -= dys
+        xyouts,xs,ys,string(p.s1, format='("S1 = ",f5.2)'),charsize=csize1,color=2,/norm
+        ys -= dys
+      endif else begin
+        ys -= dys
+        xyouts,xs,ys,string(sscale, format='("SCL = ",f5.2)'),charsize=csize1,color=2,/norm
+        ys -= dys
+      endelse
+    endif
+
     if keyword_set(flev) then begin
       logE0 = alog10((float(flev) > min(spec.energy)) < max(spec.energy))
       logE = alog10(spec.energy)
@@ -966,7 +1027,28 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       xyouts,xs,ys,string(swe_Ke[0],format='("Ke = ",f4.2)'),charsize=csize1,/norm
       ys -= dys
     endif
-    
+
+    if (doder) then begin
+      indx = where(spec.energy lt 1000.)
+      e = spec.energy[indx]
+      f = alog10(spec.data[indx] > 1.)
+      df = deriv(f)
+      dfs = smooth(df,3)
+
+      wset, Dwin
+      plot_oi,e,dfs,xrange=[1,1000],yrange=[-1,1],/xsty,xtitle='Energy (eV)',$
+              ytitle='df',charsize=csize1,psym=4
+      oplot,e,dfs,color=4
+      oplot,[1.,1000.],[0.,0.],line=2
+
+      if (0) then begin
+        g = dfs*shift(dfs,1)
+        g[0] = 0.
+        indx = where(g lt 0., count)
+        for k=0,(count-1) do oplot,[e[indx[k]],e[indx[k]]],[1e1,1e10],line=2,color=4
+      endif
+    endif
+
     if (psflg) then pclose
 
     if (pflg) then begin
@@ -1029,11 +1111,11 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         for j=0,(ncross-1) do oplot,[px[indx[j]],px[indx[j]]],ylim,color=2
 
         if (k gt 0) then begin
-          xyouts,xs,ys,string(px[k],format='("V = ",f6.2)'),color=col,charsize=csize0,/norm
+          xyouts,xs,ys,string(px[k],format='("V = ",f6.2)'),color=6,charsize=csize0,/norm
           ys -= dys
           oplot,[px[k],px[k]],ylim,color=6,line=2
         endif else begin
-          xyouts,xs,ys,"V = NaN",color=col,charsize=csize0,/norm
+          xyouts,xs,ys,"V = NaN",color=6,charsize=csize0,/norm
           ys -= dys
         endelse
 
@@ -1205,6 +1287,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     wdelete, Ewin
     if (hflg) then wdelete, Hwin
     if (pflg) then wdelete, Pwin
+    if (doder) then wdelete, Dwin
   endif
 
   wset, Twin

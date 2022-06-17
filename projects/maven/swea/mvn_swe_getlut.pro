@@ -15,6 +15,27 @@
 ;  them, depending on the circumstances, has been able to identify all
 ;  table changes correctly ... so far.
 ;
+;  Method 1: Use SSCTL values in housekeeping to identify the table.
+;    This requires high-cadence housekeeping.  The SSCTL values are
+;    not accurately synced with the data, and it is possible for the
+;    timing to be off by a second or more.  Thus, this method can 
+;    assign incorrect sweep tables.  Keyword DT_LUT can be used to 
+;    shift SSCTL times by a constant amount to align with the data.
+;
+;  Method 2: Use analyzer voltage readback in housekeeping to identify
+;    tables 7-9.  This works well much of the time, but can get
+;    confused when the sweep in normal operation is sampled near one
+;    of the high-cadence energies.
+;
+;  Method 3: Use a constant count rate at all energy steps to detect
+;    one of the high-cadence tables.  This assumes that the signal
+;    changes slowly during the 2-second measurement cycle.  This is 
+;    used in conjunction with Method 1 to correct SSCTL timing errors.
+;    This is the least effective method, because during interesting 
+;    times, the signal can change significantly within a measurement 
+;    cycle.  It also fails within superthermal electron voids, where 
+;    the flux at all energy channels is near background.
+;
 ;USAGE:
 ;  mvn_swe_getlut
 ;
@@ -22,24 +43,28 @@
 ;       None.
 ;
 ;KEYWORDS:
-;       TPLOT:    Make a tplot variable.
-;
 ;       DT_LUT:   Time offset between housekeeping SSCTL values and
 ;                 science data.  Units: sec.  Default = 0D.
 ;
-;       VOLT:     Use analyzer voltage to identify tables 7 and 8.
+;       VOLT:     Use analyzer voltage readback in housekeeping to 
+;                 identify tables 7-9.
 ;
 ;       DV_MAX:   Maximum absolute difference between measured analyzer
-;                 voltage and nominal voltage.  Two values: one for 50 eV
-;                 one for 200 eV.  Default: [0.7, 2.0].
+;                 voltage and nominal voltage.  Three values: one each
+;                 for 50, 200, and 125 eV.  Default: [0.7, 2.0, 1.0].
 ;
-;       DIAG:     Make diagnostic plots.
+;       FLUX:     Use constant flux at all energy steps to determine if
+;                 one of the high-cadence tables (7-9) is in use.  If so,
+;                 then the nearest housekeeping SSCTL value uniquely 
+;                 identifies which table is in use.
 ;
-;       FLUX:     Use constant flux to identify tables 7 and 8.
+;       TPLOT:    Make a tplot variable of LUT vs time.
+;
+;       DIAG:     Make diagnostic plots to evaluate and tune VOLT method.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-11 14:04:13 -0700 (Wed, 11 Aug 2021) $
-; $LastChangedRevision: 30201 $
+; $LastChangedDate: 2022-06-16 16:03:25 -0700 (Thu, 16 Jun 2022) $
+; $LastChangedRevision: 30865 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getlut.pro $
 ;-
 pro mvn_swe_getlut, tplot=tplot, dt_lut=dt_lut, volt=volt, dv_max=dv, diag=diag, flux=flux
@@ -56,10 +81,13 @@ pro mvn_swe_getlut, tplot=tplot, dt_lut=dt_lut, volt=volt, dv_max=dv, diag=diag,
   if (n_elements(dt_lut) gt 0) then dtl = double(dt_lut[0])
   if (n_elements(volt) gt 0) then vflg = keyword_set(volt)
   case n_elements(dv) of
-     1   : dv_max = [dv, 2.0]
-     2   : dv_max = dv
-    else : dv_max = [0.7, 2.0]
+     0   : dv_max = [0.7, 2.0, 1.0]
+     1   : dv_max = [dv, 2.0, 1.0]
+     2   : dv_max = [dv, 1.0]
+     3   : dv_max = dv
+    else : dv_max = dv[0:2]
   endcase
+  dv_max = abs(dv_max)
   if (n_elements(flux) gt 0) then fflg = keyword_set(flux)
 ;  if (vflg or fflg) then dtl = 0D
 
@@ -107,7 +135,7 @@ pro mvn_swe_getlut, tplot=tplot, dt_lut=dt_lut, volt=volt, dv_max=dv, diag=diag,
     if (count gt 0L) then tabnum[indx] = 6B  ; V0 enabled
   endif
 
-; Use analyzer voltage to identify tables 7 and 8.  This method works
+; Use analyzer voltage to identify tables 7-9.  This method works
 ; in superthermal electron voids, but it can get confused when the 
 ; nominal sweep is sampled close to one of the hires energies.  This
 ; situation is worse in high current mode (see bi-stable ISA), where
@@ -122,7 +150,14 @@ pro mvn_swe_getlut, tplot=tplot, dt_lut=dt_lut, volt=volt, dv_max=dv, diag=diag,
       indx = where(abs(swe_hsk.analv - 32.5) lt dv_max[1], count)
       if (count gt 0L) then tabnum[indx] = 7B  ; hires @ 200 eV
     endif
+    indx = where(lutnum eq 1 and swe_hsk.time gt t_swp[4], count)
+    if (count gt 0L) then begin
+      indx = where(abs(swe_hsk.analv - 20.2) lt dv_max[1], count)
+      if (count gt 0L) then tabnum[indx] = 9B  ; hires @ 125 eV
+    endif
   endif else begin
+    indx = where(lutnum eq 1 and swe_hsk.time gt t_swp[4], count)
+    if (count gt 0L) then tabnum[indx] = 9B  ; hires @ 125 eV
     indx = where(lutnum eq 2, count)
     if (count gt 0L) then tabnum[indx] = 7B  ; hires @ 200 eV
     indx = where(lutnum eq 3, count)
@@ -135,15 +170,20 @@ pro mvn_swe_getlut, tplot=tplot, dt_lut=dt_lut, volt=volt, dv_max=dv, diag=diag,
     options,'dv50','constant',dv_max[0]
     ylim,'dv50',0,2.*dv_max[0]
 
+    store_data,'dv125',data={x:swe_hsk.time, y:abs(swe_hsk.analv - 20.2)}
+    options,'dv125','psym',10
+    options,'dv125','constant',dv_max[2]
+    ylim,'dv125',0,2.*dv_max[2]
+
     store_data,'dv200',data={x:swe_hsk.time, y:abs(swe_hsk.analv - 32.5)}
     options,'dv200','psym',10
     options,'dv200','constant',dv_max[1]
     ylim,'dv200',0,2.*dv_max[1]
   endif
 
-; Use flat spectral shape to identify tables 7 and 8.  This doesn't work
-; in superthermal electron voids, where the signal is close to background
-; at all energies.  It also gets confused when there are real flux
+; Use flat spectral shape to identify tables 7-9.  This doesn't work in
+; superthermal electron voids, where the signal is close to background
+; at all energies.  It can also get confused when there are real flux
 ; variations within the 2-second measurement interval (as in the sheath).
 
   if (fflg) then begin
@@ -151,7 +191,7 @@ pro mvn_swe_getlut, tplot=tplot, dt_lut=dt_lut, volt=volt, dv_max=dv, diag=diag,
     cnts = reform(a4.data, 64L, 16L*n_elements(a4))
     loav = mean(cnts[45:60,*],dim=1,/nan)  ; low-energy average
     hiav = mean(cnts[ 5:20,*],dim=1,/nan)  ; high-energy average
-    i7_8 = where(((hiav/loav) gt 0.1) and (loav gt 10.), n7_8, comp=i1_5, ncomp=n1_5)
+    i7_9 = where(((hiav/loav) gt 0.1) and (loav gt 10.), n7_9, comp=i1_5, ncomp=n1_5)
   endif
 
 ; Get timing for a4 (see mvn_swe_makespec for more info)
@@ -194,16 +234,20 @@ pro mvn_swe_getlut, tplot=tplot, dt_lut=dt_lut, volt=volt, dv_max=dv, diag=diag,
 ; Insert LUT information into data structures
 
   if (fflg) then begin
-    jndx = where(tabnum le 6B, count)
+    lutcut = replicate(6B, nhsk)
+    jndx = where(swe_hsk.time gt t_swp[4], count)
+    if (count gt 0L) then lutcut[jndx] = 5B
+
+    jndx = where(tabnum le lutcut, count)
     if (count gt 0L) then begin
       indx = nn2(swe_hsk[jndx].time + dtl, mvn_swe_engy[i1_5].time)
       mvn_swe_engy[i1_5].lut = tabnum[jndx[indx]]
     endif
 
-    jndx = where(tabnum ge 7B, count)
+    jndx = where(tabnum gt lutcut, count)
     if (count gt 0L) then begin
-      indx = nn2(swe_hsk[jndx].time + dtl, mvn_swe_engy[i7_8].time)
-      mvn_swe_engy[i7_8].lut = tabnum[jndx[indx]]
+      indx = nn2(swe_hsk[jndx].time + dtl, mvn_swe_engy[i7_9].time)
+      mvn_swe_engy[i7_9].lut = tabnum[jndx[indx]]
     endif
   endif else begin
     indx = nn2(swe_hsk.time + dtl, mvn_swe_engy.time)
@@ -236,13 +280,13 @@ pro mvn_swe_getlut, tplot=tplot, dt_lut=dt_lut, volt=volt, dv_max=dv, diag=diag,
 
   if keyword_set(tplot) then begin
     store_data,'TABNUM',data={x:mvn_swe_engy.time, y:mvn_swe_engy.lut}
-    ylim,'TABNUM',4.5,8.5,0
+    ylim,'TABNUM',4.5,9.5,0
     options,'TABNUM','panel_size',0.5
     options,'TABNUM','ytitle','SWE LUT'
     options,'TABNUM','yminor',1
     options,'TABNUM','psym',10
     options,'TABNUM','colors',[4]
-    options,'TABNUM','constant',[5,7,8]
+    options,'TABNUM','constant',[5,7,8,9]
   endif
 
   return

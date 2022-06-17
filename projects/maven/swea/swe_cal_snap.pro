@@ -32,8 +32,8 @@
 ;       BURST:         Synonym for ARCHIVE.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-03-10 17:50:08 -0800 (Thu, 10 Mar 2022) $
-; $LastChangedRevision: 30671 $
+; $LastChangedDate: 2022-06-16 16:02:26 -0700 (Thu, 16 Jun 2022) $
+; $LastChangedRevision: 30864 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_cal_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -68,7 +68,7 @@ pro swe_cal_snap, ddd=ddd, pad=pad, spec=spec, keepwins=keepwins, units=units, $
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (windex eq -1) then putwin, /config
+    if (~windex) then putwin, /config
     mnum = fix(monitor[0])
   endif else begin
     if (size(secondarymon,/type) gt 0) then mnum = secondarymon

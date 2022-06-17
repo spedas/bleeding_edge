@@ -82,7 +82,7 @@ pro swe_a0_snap, model=model, keepwins=keepwins, zrange=zrange, zlog=zlog, $
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (windex eq -1) then putwin, /config
+    if (~windex) then putwin, /config
     mnum = fix(monitor[0])
   endif else begin
     if (size(secondarymon,/type) gt 0) then mnum = secondarymon
@@ -92,7 +92,7 @@ pro swe_a0_snap, model=model, keepwins=keepwins, zrange=zrange, zlog=zlog, $
   Swin = !d.window
   
   if (hflg) then begin
-    putwin, /free, rel=Swin, xsize=225, ysize=545, dx=10, /top
+    putwin, /free, rel=Swin, xsize=225, ysize=545, dx=10
     Hwin = !d.window
   endif
 

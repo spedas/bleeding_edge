@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Jun 15 18:16:26 2022.<P>
+<STRONG>Last modified: </STRONG>Thu Jun 16 18:16:26 2022.<P>
  
 <HR>
  
@@ -2730,6 +2730,27 @@ PURPOSE:
   them, depending on the circumstances, has been able to identify all
   table changes correctly ... so far.
 
+  Method 1: Use SSCTL values in housekeeping to identify the table.
+    This requires high-cadence housekeeping.  The SSCTL values are
+    not accurately synced with the data, and it is possible for the
+    timing to be off by a second or more.  Thus, this method can 
+    assign incorrect sweep tables.  Keyword DT_LUT can be used to 
+    shift SSCTL times by a constant amount to align with the data.
+
+  Method 2: Use analyzer voltage readback in housekeeping to identify
+    tables 7-9.  This works well much of the time, but can get
+    confused when the sweep in normal operation is sampled near one
+    of the high-cadence energies.
+
+  Method 3: Use a constant count rate at all energy steps to detect
+    one of the high-cadence tables.  This assumes that the signal
+    changes slowly during the 2-second measurement cycle.  This is 
+    used in conjunction with Method 1 to correct SSCTL timing errors.
+    This is the least effective method, because during interesting 
+    times, the signal can change significantly within a measurement 
+    cycle.  It also fails within superthermal electron voids, where 
+    the flux at all energy channels is near background.
+
 USAGE:
   mvn_swe_getlut
 
@@ -2737,24 +2758,28 @@ INPUTS:
        None.
 
 KEYWORDS:
-       TPLOT:    Make a tplot variable.
-
        DT_LUT:   Time offset between housekeeping SSCTL values and
                  science data.  Units: sec.  Default = 0D.
 
-       VOLT:     Use analyzer voltage to identify tables 7 and 8.
+       VOLT:     Use analyzer voltage readback in housekeeping to 
+                 identify tables 7-9.
 
        DV_MAX:   Maximum absolute difference between measured analyzer
-                 voltage and nominal voltage.  Two values: one for 50 eV
-                 one for 200 eV.  Default: [0.7, 2.0].
+                 voltage and nominal voltage.  Three values: one each
+                 for 50, 200, and 125 eV.  Default: [0.7, 2.0, 1.0].
 
-       DIAG:     Make diagnostic plots.
+       FLUX:     Use constant flux at all energy steps to determine if
+                 one of the high-cadence tables (7-9) is in use.  If so,
+                 then the nearest housekeeping SSCTL value uniquely 
+                 identifies which table is in use.
 
-       FLUX:     Use constant flux to identify tables 7 and 8.
+       TPLOT:    Make a tplot variable of LUT vs time.
+
+       DIAG:     Make diagnostic plots to evaluate and tune VOLT method.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-08-11 14:04:13 -0700 (Wed, 11 Aug 2021) $
- $LastChangedRevision: 30201 $
+ $LastChangedDate: 2022-06-16 16:03:25 -0700 (Thu, 16 Jun 2022) $
+ $LastChangedRevision: 30865 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getlut.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_getlut.pro">projects/maven/swea/mvn_swe_getlut.pro</A>)</STRONG><P>
@@ -6368,8 +6393,8 @@ KEYWORDS:
                       interactive time range selection.)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-03-10 17:50:08 -0800 (Thu, 10 Mar 2022) $
- $LastChangedRevision: 30671 $
+ $LastChangedDate: 2022-06-16 16:02:26 -0700 (Thu, 16 Jun 2022) $
+ $LastChangedRevision: 30864 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6635,8 +6660,8 @@ KEYWORDS:
        BURST:         Synonym for ARCHIVE.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-03-10 17:50:08 -0800 (Thu, 10 Mar 2022) $
- $LastChangedRevision: 30671 $
+ $LastChangedDate: 2022-06-16 16:02:26 -0700 (Thu, 16 Jun 2022) $
+ $LastChangedRevision: 30864 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_cal_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6802,14 +6827,16 @@ KEYWORDS:
                       as the low-energy residual after subtracting the best-fit
                       Maxwell-Boltzmann.
 
-       SEC:           Calculate secondary electron spectrum using McFadden's
-                      semi-empirical approach.
+       SEC:           Calculate secondary electron spectrum using one of two methods:
+                        SEC = 1 --&gt; Andreone
+                        SEC = 2 --&gt; Evans
 
-       SSCALE:        Scale factor for secondary electron spectrum.  Default = 5.
-                      This scales the secondary electron production efficiency.
-                      A better value might be ~0.5.  This can be estimated by comparing
-                      with SWIA densities.  Look for consistent density ratio.  Also,
-                      shape of energy spectrum.
+       SCONFIG:       Structure of parameters for the secondary electron models.
+
+                        {e0:e0, s0:s0, e1:e1, s1:s1, scl:scl}
+
+                      The first four are for the Andreone method, the last is for the
+                      Evans method.
 
        DDD:           Create an energy spectrum from the nearest 3D spectrum and
                       plot for comparison.
@@ -6858,8 +6885,8 @@ KEYWORDS:
                       are lost.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-03-10 17:50:08 -0800 (Thu, 10 Mar 2022) $
- $LastChangedRevision: 30671 $
+ $LastChangedDate: 2022-06-16 16:00:39 -0700 (Thu, 16 Jun 2022) $
+ $LastChangedRevision: 30862 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6967,8 +6994,8 @@ INPUTS:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2014-10-31 14:15:03 -0700 (Fri, 31 Oct 2014) $
- $LastChangedRevision: 16106 $
+ $LastChangedDate: 2022-06-16 16:02:26 -0700 (Thu, 16 Jun 2022) $
+ $LastChangedRevision: 30864 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_hsk_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-25-12
@@ -7113,7 +7140,7 @@ KEYWORDS:
 
        UNITS:         Plot PAD data in these units.
 
-       PAD:           Named variable to hold a PAD structure at the last time
+       LASTPAD:       Named variable to hold a PAD structure at the last time
                       selected.
 
        DDD:           If set, compare with the nearest 3D spectrum.
@@ -7141,6 +7168,8 @@ KEYWORDS:
                       signal level remains unchanged.  If the data are in physical
                       units (FLUX, EFLUX, DF), then the signal level is also
                       adjusted to ensure conservation of phase space density.
+
+       SEC:           Remove secondary electrons.
 
        LABEL:         Label the anode and deflection bin numbers (label=1) or the
                       solid angle bin numbers (label=2).
@@ -7238,6 +7267,10 @@ KEYWORDS:
                         -&gt; Assumes data are in EFLUX units.
                         -&gt; Assumes SHIFTPOT is not set.
 
+        VDIS:         Plot the velocity distribution function based on the PAD
+                      data.  This will be symmetric because each PAD is a 2D
+                      cut through the 3D distribution.
+
         XRANGE:       Override default horizontal axis range with this.
 
         YRANGE:       Override default vertical axis range with this.
@@ -7261,8 +7294,8 @@ KEYWORDS:
         NOTE:         Insert a text label.  Keep it short.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-03-10 17:50:08 -0800 (Thu, 10 Mar 2022) $
- $LastChangedRevision: 30671 $
+ $LastChangedDate: 2022-06-16 16:01:27 -0700 (Thu, 16 Jun 2022) $
+ $LastChangedRevision: 30863 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12

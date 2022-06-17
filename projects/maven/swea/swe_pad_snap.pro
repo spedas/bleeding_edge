@@ -17,7 +17,7 @@
 ;
 ;       UNITS:         Plot PAD data in these units.
 ;
-;       PAD:           Named variable to hold a PAD structure at the last time
+;       LASTPAD:       Named variable to hold a PAD structure at the last time
 ;                      selected.
 ;
 ;       DDD:           If set, compare with the nearest 3D spectrum.
@@ -45,6 +45,8 @@
 ;                      signal level remains unchanged.  If the data are in physical
 ;                      units (FLUX, EFLUX, DF), then the signal level is also
 ;                      adjusted to ensure conservation of phase space density.
+;
+;       SEC:           Remove secondary electrons.
 ;
 ;       LABEL:         Label the anode and deflection bin numbers (label=1) or the
 ;                      solid angle bin numbers (label=2).
@@ -142,6 +144,10 @@
 ;                        -> Assumes data are in EFLUX units.
 ;                        -> Assumes SHIFTPOT is not set.
 ;
+;        VDIS:         Plot the velocity distribution function based on the PAD
+;                      data.  This will be symmetric because each PAD is a 2D
+;                      cut through the 3D distribution.
+;
 ;        XRANGE:       Override default horizontal axis range with this.
 ;
 ;        YRANGE:       Override default vertical axis range with this.
@@ -165,14 +171,14 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-03-10 17:50:08 -0800 (Thu, 10 Mar 2022) $
-; $LastChangedRevision: 30671 $
+; $LastChangedDate: 2022-06-16 16:01:27 -0700 (Thu, 16 Jun 2022) $
+; $LastChangedRevision: 30863 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
 ;-
 pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
-                  units=units, pad=pad, ddd=ddd, zrange=zrange, sum=sum, $
+                  units=units, lastpad=pad, ddd=ddd, zrange=zrange, sum=sum, $
                   label=label, smo=smo, dir=dir, mask_sc=mask_sc, $
                   abins=abins, dbins=dbins, obins=obins, burst=burst, $
                   pot=pot, scp=scp, spec=spec, plotlims=plotlims, norm=norm, $
@@ -183,7 +189,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                   xrange=xrange, error_bars=error_bars, yrange=yrange, trange=trange2, $
                   note=note, mincounts=mincounts, maxrerr=maxrerr, tsmo=tsmo, $
                   sundir=sundir, wscale=wscale, cscale=cscale, fscale=fscale, $
-                  result=result, vdis=vdis, padmap=padmap
+                  result=result, vdis=vdis, padmap=padmap, sec=sec
 
   @mvn_swe_com
   @putwin_common
@@ -426,7 +432,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (windex eq -1) then putwin, /config
+    if (~windex) then putwin, /config
     mnum = fix(monitor[0])
   endif else begin
     if (size(secondarymon,/type) gt 0) then mnum = secondarymon
@@ -435,12 +441,12 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   if (rflg or hflg or uflg) then begin
     rflg = 1
     ysize = fix(300.*float(rflg+hflg+uflg))
-    putwin, /free, monitor=mnum, xsize=800, ysize=ysize, dx=10, dy=10, scale=wscale  ; PAD (resample)
+    putwin, /free, monitor=mnum, xsize=800, ysize=ysize, dx=10, dy=10, scale=wscale  ; PAD (resampled)
     Pwin = !d.window
   endif
 
   if (~rflg) then begin
-    putwin, /free, monitor=mnum, xsize=800, ysize=600, dx=10, dy=10, scale=wscale  ; PAD
+    putwin, /free, monitor=mnum, xsize=800, ysize=600, dx=10, dy=10, scale=wscale  ; PAD (as measured)
     Pwin = !d.window
   endif
 
@@ -453,7 +459,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   endif
 
   if (dospec) then begin
-    putwin, /free, xsize=400, ysize=600, rel=Pwin, dx=10, /top, scale=wscale  ; PAD spec
+    putwin, /free, xsize=400, ysize=600, rel=Pwin, dx=10, scale=wscale  ; PAD spec
     Ewin = !d.window
   endif
 
@@ -463,17 +469,17 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   endif
 
   if (doind) then begin
-    putwin, /free, monitor=mnum, xsize=800, ysize=600, dx=-10, dy=10, scale=wscale
+    putwin, /free, monitor=mnum, xsize=800, ysize=600, dx=-10, dy=10, scale=wscale  ; Espec for each pad bin
     Iwin = !d.window
   endif
 
   if (dov) then begin
-    putwin, /free, monitor=mnum, xsize=800, ysize=600, dx=-10, dy=-10, scale=wscale
+    putwin, /free, monitor=mnum, xsize=800, ysize=600, dx=-10, dy=-10, scale=wscale  ; velocity dist.
     Vwin = !d.window
   endif
 
   if (padmap) then begin
-    putwin, /free, monitor=mnum, xsize=600, ysize=450, dx=-10, dy=-10, scale=wscale
+    putwin, /free, monitor=mnum, xsize=600, ysize=450, dx=-10, dy=-10, scale=wscale  ; PA map
     Mwin = !d.window
   endif
 
@@ -705,11 +711,21 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
       indx = where(fovmask[pad.k3d,boom] eq 0B, count)
       if (count gt 0L) then pad.data[*,indx] = !values.f_nan
 
+; Remove secondaries
+
+      if ~keyword_set(sec) then begin
+        pad.bkg = 0.
+        pad.valid = 1B
+      endif else mvn_swe_secondary, pad, config=sconfig
+
       x = pad.energy[*,0]
       y = pad.pa*!radeg
       ylo = pad.pa_min*!radeg
       yhi = pad.pa_max*!radeg
-      z = smooth(pad.data*pmask,[smo,1],/nan)/fscale
+      z = (pad.data - pad.bkg)
+      indx = where(~pad.valid, count)
+      if (count gt 0L) then z[indx] = !values.f_nan
+      z = smooth(z*pmask,[smo,1],/nan)/fscale
       v = pad.var
 
       if (sflg) then begin
@@ -901,7 +917,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 m_conv = 2D5/(vmass*vmass)        ; mass conversion factor (flux to distribution function)
                 scale = (1.d/(ven^2 * m_conv)) # replicate(1.,128)
                 ;stop
-                vphase = alog10(respad[ine,*] * scale)
+                vphase = alog10(respad[ine,*] * scale) ; phase space density (df)
                 print,minmax(respad),minmax(vphase)
                 ;vphase = transpose(alog10(pad.data * scale))
                 indx=where(finite(vphase) eq 0,cts)
@@ -920,7 +936,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                     xtit='Vpara (km/s)',ytit='Vper (km/s)',cell_fill=1,$
                     levels=(mima[1]-mima[0])/(nlv-1)*findgen(nlv)+mima[0],$
                     c_colors=findgen(nlv)*(254.-8)/(nlv-1)+8,xrange=[-1e4,1e4],$
-                    yrange=[0,1e4],nlevels=nlv,isotropic=1;,c_spacing=0.5
+                    yrange=[0,1e4],nlevels=nlv,isotropic=1,charsize=csize2;,c_spacing=0.5
                 vcon=(sqrt(10*1.6e-19*2./emass) * 1.e-3)
                 oplot,vcon*cos(findgen(181)*!dtor),vcon*sin(findgen(181)*!dtor),linestyle=1
                 vcon=(sqrt(50*1.6e-19*2./emass) * 1.e-3)
@@ -935,7 +951,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 ;                ien=30+indgen(8)*4
                 nen=n_elements(ien)
                 plot,vpa,vphase[ien[0],*],xtit='PA',ytit='df',xrange=[0,180],xstyle=1,$
-                    yrange=minmax(vphase[ien,*])
+                    yrange=minmax(vphase[ien,*]),charsize=csize2
                 xyouts,182,vphase[ien[0],64],string(ven[ien[0]],'(I4)')+' eV',/data
                 ;for ie=1,nen-1 do begin
                 ie=0
@@ -957,7 +973,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
                 vnbin=10
                 plot,vpara[*,0],vphase[*,64],xtit='V (km/s)',ytit='df',$
-                ylog=0,xrange=[-1.e4,1.e4],/nodata,yrange=[mima[0],mima[1]]
+                ylog=0,xrange=[0.,1.e4],/nodata,yrange=[mima[0],mima[1]+1],charsize=csize2
                 oplot,average(vpara[*,0:vnbin-1],2),average(vphase[*,0:vnbin-1],2,/nan)
                 oplot,average(vper[*,63-vnbin/2-1:63],2),average(vphase[*,63-vnbin/2-1:63],2,/nan),linestyle=2
                 oplot,average(vpara[*,127-vnbin+1:127],2),average(vphase[*,127-vnbin+1:127],2,/nan),color=0
@@ -1022,7 +1038,9 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
       if (sflg) then begin
         x = pad.energy[*,0]
         y = pad.pa*!radeg
-        z = pad.data/fscale
+        z = (pad.data - pad.bkg)/fscale
+        indx = where(~pad.valid, count)
+        if (count gt 0L) then z[indx] = !values.f_nan
         dz = sqrt(pad.var)/fscale
         pcol = !p.color
 
@@ -1035,7 +1053,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
         zi = z[i,*]/zmean
         dzi = dz[i,*]/zmean
 
-        col = [replicate(cols.blue,8), replicate(cols.red,8)]
+;       col = [replicate(cols.blue,8), replicate(cols.red,8)]
+        col = replicate(!p.color,16)
 
         plot_io,[-1.],[0.1],psym=3,xtitle='Pitch Angle (deg)',ytitle='Normalized', $
                 yrange=[0.1,10.],ystyle=1,xrange=[0,180],xstyle=1,xticks=6,xminor=3, $
@@ -1043,26 +1062,30 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 charsize=1.4*cscale, pos=[0.140005, 0.124449 - (wdy/4000.), 0.958005, 0.937783 - (wdy/525.)]
 
         for j=0,15 do oplot,[ylo[j],yhi[j]],[zi[j],zi[j]],color=col[j]
-        oplot,y[i,0:7],zi[0:7],linestyle=1,color=cols.blue
-        if (ebar) then errplot,y[i,0:7],(zi[0:7]-dzi[0:7])>tiny,zi[0:7]+dzi[0:7],color=cols.blue,width=0
-        oplot,y[i,0:7],zi[0:7],psym=4
-        oplot,y[i,8:15],zi[8:15],linestyle=1,color=cols.red
-        if (ebar) then errplot,y[i,8:15],(zi[8:15]-dzi[8:15])>tiny,zi[8:15]+dzi[8:15],color=cols.red,width=0
-        oplot,y[i,8:15],zi[8:15],psym=4
-      
+        for j=0,7 do begin   ; anodes 0-7
+          oplot,[y[i,j]],[zi[j]],color=col[0]
+          if (ebar) then errplot,y[i,j],(zi[j]-dzi[j])>tiny,zi[j]+dzi[j],color=col[0],width=0
+          oplot,[y[i,j]],[zi[j]],psym=4
+        endfor
+        for j=8,15 do begin  ; anodes 8-15
+          oplot,[y[i,j]],[zi[j]],color=col[8]
+          if (ebar) then errplot,y[i,j],(zi[j]-dzi[j])>tiny,zi[j]+dzi[j],color=col[8],width=0
+          oplot,[y[i,j]],[zi[j]],psym=4
+        endfor
+
         if (dolab) then begin
           if (label gt 1) then begin
             olab = obin[pad.k3d]
-            for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,8.,olab[j],color=cols.blue,align=0.5
-            for j=8,15 do xyouts,(ylo[j]+yhi[j])/2.,0.13,olab[j],color=cols.red,align=0.5
+            for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,8.,olab[j],color=col[0],align=0.5
+            for j=8,15 do xyouts,(ylo[j]+yhi[j])/2.,0.13,olab[j],color=col[8],align=0.5
           endif else begin
             alab = abin[pad.iaz]
             dlab = dbin[pad.jel]
-            for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,8.,alab[j],color=cols.blue,align=0.5
-            for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,7.,dlab[j],color=cols.blue,align=0.5
+            for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,8.,alab[j],color=col[0],align=0.5
+            for j=0,7  do xyouts,(ylo[j]+yhi[j])/2.,7.,dlab[j],color=col[0],align=0.5
 
-            for j=8,15 do xyouts,(ylo[j]+yhi[j])/2.,0.15,alab[j],color=cols.red,align=0.5
-            for j=8,15 do xyouts,(ylo[j]+yhi[j])/2.,0.13,dlab[j],color=cols.red,align=0.5
+            for j=8,15 do xyouts,(ylo[j]+yhi[j])/2.,0.15,alab[j],color=col[8],align=0.5
+            for j=8,15 do xyouts,(ylo[j]+yhi[j])/2.,0.13,dlab[j],color=col[8],align=0.5
           endelse
         endif
 
@@ -1160,12 +1183,18 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                    Fp_err = Fp
                  end
              1 : begin
-                   Fp = pad.data[*,pndx]/fscale
+                   Fp = (pad.data[*,pndx] - pad.bkg[*,pndx])/fscale
+                   indx = where(~pad.valid[*,pndx], count)
+                   if (count gt 0L) then Fp[indx] = !values.f_nan
                    Fp_err = sqrt(pad.var[*,pndx])/fscale
                  end
           else : begin
-                   ngud = total(finite(pad.data[*,pndx]),2)
-                   Fp = average(pad.data[*,pndx],2,/nan)/fscale
+                   Fp = (pad.data[*,pndx] - pad.bkg[*,pndx])/fscale
+                   indx = where(~pad.valid[*,pndx], count)
+                   if (count gt 0L) then Fp[indx] = !values.f_nan
+
+                   ngud = total(finite(Fp),2)
+                   Fp = average(Fp,2,/nan)/fscale
                    Fp_err = sqrt(total(pad.var[*,pndx],2,/nan))/(ngud > 1.)/fscale
                  end
         endcase
@@ -1177,12 +1206,18 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                    Fm_err = Fm
                  end
              1 : begin
-                   Fm = pad.data[*,mndx]/fscale
+                   Fm = (pad.data[*,mndx] - pad.bkg[*,mndx])/fscale
+                   indx = where(~pad.valid[*,pndx], count)
+                   if (count gt 0L) then Fm[indx] = !values.f_nan
                    Fm_err = sqrt(pad.var[*,mndx])/fscale
                  end
           else : begin
-                   ngud = total(finite(pad.data[*,mndx]),2)
-                   Fm = average(pad.data[*,mndx],2,/nan)/fscale
+                   Fm = (pad.data[*,mndx] - pad.bkg[*,mndx])/fscale
+                   indx = where(~pad.valid[*,mndx], count)
+                   if (count gt 0L) then Fm[indx] = !values.f_nan
+
+                   ngud = total(finite(Fm),2)
+                   Fm = average(Fm,2,/nan)/fscale
                    Fm_err = sqrt(total(pad.var[*,mndx],2,/nan))/(ngud > 1.)/fscale
                  end
         endcase
@@ -1195,12 +1230,18 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                    Fz_err = Fz
                  end
              1 : begin
-                   Fz = pad.data[*,zndx]/fscale
+                   Fz = (pad.data[*,zndx] - pad.bkg[*,zndx])/fscale
+                   indx = where(~pad.valid[*,zndx], count)
+                   if (count gt 0L) then Fz[indx] = !values.f_nan
                    Fz_err = sqrt(pad.var[*,zndx])/fscale
                  end
           else : begin
-                   ngud = total(finite(pad.data[*,zndx]),2)
-                   Fz = average(pad.data[*,zndx],2,/nan)/fscale
+                   Fz = (pad.data[*,zndx] - pad.bkg[*,zndx])/fscale
+                   indx = where(~pad.valid[*,zndx], count)
+                   if (count gt 0L) then Fz[indx] = !values.f_nan
+
+                   ngud = total(finite(Fz),2)
+                   Fz = average(Fz,2,/nan)/fscale
                    Fz_err = sqrt(total(pad.var[*,zndx],2,/nan))/(ngud > 1.)/fscale
                  end
         endcase

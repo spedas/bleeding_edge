@@ -12,8 +12,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2014-10-31 14:15:03 -0700 (Fri, 31 Oct 2014) $
-; $LastChangedRevision: 16106 $
+; $LastChangedDate: 2022-06-16 16:02:26 -0700 (Thu, 16 Jun 2022) $
+; $LastChangedRevision: 30864 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_hsk_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-25-12
@@ -21,6 +21,7 @@
 pro swe_hsk_snap
 
   @mvn_swe_com
+  @putwin_common
 
   if (size(swe_hsk,/type) ne 8) then begin
     print,"No valid HSK structure in common block."
@@ -28,6 +29,8 @@ pro swe_hsk_snap
   endif
   
   hsk = swe_hsk
+
+  if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
     
   Twin = !d.window
   
@@ -49,7 +52,7 @@ pro swe_hsk_snap
 
   print,'Use button 1 to select time; button 3 to quit.'
 
-  window, 26, xsize=225, ysize=545
+  putwin, 26, /secondary, dx=10, xsize=225, ysize=545
   Hwin = !d.window
 
   wset,Twin

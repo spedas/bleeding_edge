@@ -141,9 +141,11 @@
 ;                 landers than colors, then additional landers are all given the
 ;                 last color.  Default is 6 (red) for all.
 ;
+;       IONO:     Plot a dashed circle at this altitude.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-03-10 17:49:27 -0800 (Thu, 10 Mar 2022) $
-; $LastChangedRevision: 30670 $
+; $LastChangedDate: 2022-06-16 16:06:06 -0700 (Thu, 16 Jun 2022) $
+; $LastChangedRevision: 30866 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -153,7 +155,8 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     nodot=nodot, terminator=terminator, thick=thick, Bdir=Bdir, mscale=mscale, scsym=scsym, $
     magnify=magnify, Bclip=Bclip, Vdir=Vdir, Vclip=Vclip, Vscale=Vscale, Vrange=Vrange, $
     alt=alt2, psname=psname, nolabel=nolabel, xy=xy, yz=yz, landers=landers, slab=slab, $
-    scol=scol, tcolors=tcolors, noorb=noorb, monitor=monitor, wscale=wscale, ssize=ssize
+    scol=scol, tcolors=tcolors, noorb=noorb, monitor=monitor, wscale=wscale, ssize=ssize, $
+    black=black, iono=iono
 
   @maven_orbit_common
   @putwin_common
@@ -183,7 +186,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
            'COLOR','RESET','CYL','TIMES','NODOT','TERMINATOR','THICK','BDIR', $
            'MSCALE','SCSYM','MAGNIFY','BCLIP','VDIR','VCLIP','VSCALE','VRANGE', $
            'ALT2','PSNAME','NOLABEL','XY','YZ','LANDERS','SLAB','SCOL','TCOLORS', $
-           'NOORB','MONITOR','WSCALE']
+           'NOORB','MONITOR','WSCALE','BLACK']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -228,6 +231,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
   doalt = keyword_set(alt2)
   dolab = ~keyword_set(nolabel)
+  black = keyword_set(black)
 
   ok = 0
   sites = 0
@@ -352,6 +356,10 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
   Twin = !d.window
 
+  if (black) then begin
+    if (!p.background ne 0L) then revvid, /black else black = 0
+  endif
+
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
     if (windex eq -1) then putwin, /config
@@ -426,6 +434,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       if (mflg gt 0)  then wdelete, 29
       if (nflg gt 0)  then wdelete, 30
       if (bflg gt 0)  then wdelete, 31
+      if (black) then revvid, /white
       wset,Twin
       return
     endif
@@ -442,6 +451,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       if (mflg gt 0)  then wdelete, 29
       if (nflg gt 0)  then wdelete, 30
       if (bflg gt 0)  then wdelete, 31
+      if (black) then revvid, /white
       wset,Twin
       return
     endif
@@ -511,6 +521,11 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       phi = findgen(361)*!dtor
       xm = cos(phi)
       ym = sin(phi)
+
+      if keyword_set(iono) then begin
+        xi = (1. + iono/R_m)*xm
+        yi = (1. + iono/R_m)*ym
+      endif
 
       xrange = [-rmax,rmax]
       yrange = xrange
@@ -598,6 +613,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
            xtitle='X (Rp)',ytitle='Y (Rp)',charsize=csize,title=msg,thick=thick
       msg = ''
       oplot,xm,ym,color=6,thick=thick
+      if keyword_set(iono) then oplot,xi,yi,line=2,thick=thick
       if (doorb) then oplot,x,y,thick=thick
 
       if (dob) then begin
@@ -743,6 +759,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
            xtitle='X (Rp)',ytitle='Z (Rp)',charsize=csize,title=msg,thick=thick
       msg = ''
       oplot,xm,ym,color=6,thick=thick
+      if keyword_set(iono) then oplot,xi,yi,line=2,thick=thick
       if (doorb) then oplot,x,z,thick=thick
 
       if (dob) then begin
@@ -880,6 +897,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
            xtitle='Y (Rp)',ytitle='Z (Rp)',title=msg,charsize=csize,thick=thick
       msg = ''
       oplot,xm,ym,color=6,thick=thick
+      if keyword_set(iono) then oplot,xi,yi,line=2,thick=thick
       if (doorb) then oplot,y,z,thick=thick
 
       if (dob) then begin
@@ -973,6 +991,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
        plot,xm,ym,xrange=xrange,yrange=[0,yrange[1]],/xsty,/ysty,/noerase, $
             xtitle='X (Rp)',ytitle='S (Rp)',charsize=csize/2.,title=title,thick=thick
        oplot,xm,ym,color=6,thick=thick
+       if keyword_set(iono) then oplot,xi,yi,line=2,thick=thick
 
       if (doorb) then begin
         oplot,x,s,thick=thick
@@ -1173,6 +1192,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   endif
 
   !p.multi = 0
+  if (black) then revvid, /white
 
   return
 
