@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jun 16 18:16:26 2022.<P>
+<STRONG>Last modified: </STRONG>Fri Jun 17 18:16:23 2022.<P>
  
 <HR>
  
@@ -35,6 +35,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#SPICE_KERNEL_INFO[1]">SPICE_KERNEL_INFO[1]</A>
 <LI><A HREF="#SPICE_KERNEL_INFO[2]">SPICE_KERNEL_INFO[2]</A>
 <LI><A HREF="#SPICE_M2Q">SPICE_M2Q</A>
+<LI><A HREF="#SPICE_MK_READ">SPICE_MK_READ</A>
 <LI><A HREF="#SPICE_POSITION_TO_TPLOT">SPICE_POSITION_TO_TPLOT</A>
 <LI><A HREF="#SPICE_QROT_TO_TPLOT">SPICE_QROT_TO_TPLOT</A>
 <LI><A HREF="#SPICE_STANDARD_KERNELS">SPICE_STANDARD_KERNELS</A>
@@ -506,7 +507,7 @@ Keywords:
 <A NAME="SPICE_M2Q">
 <H2>SPICE_M2Q</H2></A>
 <A HREF="#SPICE_KERNEL_INFO[2]">[Previous Routine]</A>
-<A HREF="#SPICE_POSITION_TO_TPLOT">[Next Routine]</A>
+<A HREF="#SPICE_MK_READ">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Function: spice_m2q
@@ -523,9 +524,53 @@ Purpose: Convert rotation matrix (matrices) to quaternion(s)
 <STRONG>(See <A href="spice/spice_m2q.pro">general/spice/spice_m2q.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPICE_MK_READ">
+<H2>SPICE_MK_READ</H2></A>
+<A HREF="#SPICE_M2Q">[Previous Routine]</A>
+<A HREF="#SPICE_POSITION_TO_TPLOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+FUNCTION:        SPICE_MK_READ
+
+PURPOSE:         Reads the meta-kernel file.
+
+INPUTS:          The file name of the SPICE meta-kernel (mk).
+
+OUTPUTS:         Returns the string array of file names of SPICE/kernels to be loaded.
+                 
+KEYWORDS:
+
+    REMOTE:      Specifies the remote server path.
+
+    TRANGE:      Returns the time range in which they likely cover, 
+                 inferred from the file name.
+
+   TFORMAT:      Default is 'YYYYMMDD'.
+
+      LAST:      Default is 1. Loads the latest version.
+
+    SOURCE:      Provides a structure that contains information
+                 pertinent to the location (and downloading) of SPICE data files.
+
+ NO_SERVER:      If set, not to download from the remote server.
+                 Synonym for &quot;no_download&quot;.
+
+CREATED BY:      Takuya Hara on 2022-06-16.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2022-06-17 10:14:04 -0700 (Fri, 17 Jun 2022) $
+ $LastChangedRevision: 30867 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_mk_read.pro $
+
+</PRE><P>
+<STRONG>(See <A href="spice/spice_mk_read.pro">general/spice/spice_mk_read.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPICE_POSITION_TO_TPLOT">
 <H2>SPICE_POSITION_TO_TPLOT</H2></A>
-<A HREF="#SPICE_M2Q">[Previous Routine]</A>
+<A HREF="#SPICE_MK_READ">[Previous Routine]</A>
 <A HREF="#SPICE_QROT_TO_TPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
