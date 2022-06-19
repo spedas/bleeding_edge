@@ -221,6 +221,8 @@
 ;                  set with XSIZE, YSIZE, XFULL, or YFULL, this
 ;                  keyword sets the other dimension.
 ;
+;       SILENT:    Shhh.
+;
 ;       KEY:       A structure containing any of the above keywords
 ;                  plus XSIZE and YSIZE:
 ;
@@ -240,8 +242,8 @@
 ;                  separately in the usual way.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-06-15 11:56:55 -0700 (Wed, 15 Jun 2022) $
-; $LastChangedRevision: 30859 $
+; $LastChangedDate: 2022-06-18 12:07:20 -0700 (Sat, 18 Jun 2022) $
+; $LastChangedRevision: 30869 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2020-06-03
@@ -252,7 +254,8 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
                   xcenter=xcenter, ycenter=ycenter, tbar=tbar2, xfull=xfull, $
                   yfull=yfull, aspect=aspect, show=show, secondary=secondary, $
                   relative=relative, top=top, bottom=bottom, right=right, left=left, $
-                  middle=middle, clone=clone, setprime=setprime, _extra=extra
+                  middle=middle, clone=clone, setprime=setprime, silent=silent, $
+                  _extra=extra
 
   @putwin_common
 
@@ -266,7 +269,11 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
       primon = oInfo->GetPrimaryMonitorIndex()
     obj_destroy, oInfo
 
-    if (numMons gt 2) then primon = min(rects[0,1:*]) + 1L  ; left-most external
+    if (numMons gt 2) then begin
+      j = sort(rects[0,1:*]) + 1
+      rects = rects[*,[0,j]]
+      primon = 1L  ; left-most external
+    endif
 
     mons = indgen(numMons)
     i = where(mons ne primon, count)
@@ -281,7 +288,7 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
     klist = ['CONFIG','STAT','SHOW','MONITOR','SECONDARY','DX','DY','NORM', $
              'CENTER','XCENTER','YCENTER','CORNER','SCALE','FULL','XFULL', $
              'YFULL','ASPECT','XSIZE','YSIZE','NOFIT','TBAR2','RELATIVE', $
-             'TOP','BOTTOM','RIGHT','LEFT','MIDDLE','CLONE','SETPRIME']
+             'TOP','BOTTOM','RIGHT','LEFT','MIDDLE','CLONE','SETPRIME','SILENT']
 
     windex = 0
   endif
@@ -304,6 +311,8 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
   endif
 
 ; Output the current monitor configuration.
+
+  blab = ~keyword_set(silent)
 
   if (keyword_set(stat) or keyword_set(show)) then begin
     if (~windex) then begin
@@ -379,7 +388,7 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
       primarymon = primon
       secondarymon = secmon
     endelse
-    putwin,/stat
+    if (blab) then putwin,/stat
     return
   endif
 
@@ -388,11 +397,11 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
   if (size(config,/type) gt 0) then begin
 
     if (fix(config[0]) eq 0) then begin
-      if (windex eq 1) then print,"Putwin is disabled (acts like window)."
+      if (blab and windex) then print,"Putwin is disabled (acts like window)."
       windex = 0
     endif else begin
       windex = 1
-      putwin, /stat
+      if (blab) then putwin, /stat
     endelse
 
     return
