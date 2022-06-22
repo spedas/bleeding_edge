@@ -6,11 +6,10 @@
 ;  monitors is designated the "primary monitor" and the lower left corner
 ;  of that monitor is the origin of the coordinate system for the super
 ;  monitor.  XPOS and YPOS are used to position windows within the super
-;  monitor; however, the coordinate system may not be known in advance, 
-;  strange things happen when you exceed the bounds of the super monitor, 
-;  and parts of the super monitor are not covered by a physical monitor, 
-;  so it's not obvious how to set XPOS and YPOS to place a window where
-;  you want.
+;  monitor; however, the coordinate system is not known in advance, and
+;  when you attempt to place a window entirely or partially out of bounds,
+;  IDL forces the window inbounds, so that it can appear in an unexpected
+;  location.
 ;
 ;  This procedure divides the super monitor back into physical monitors
 ;  and allows you to choose a monitor and place a window relative to the
@@ -26,7 +25,7 @@
 ;  On first call, this routine queries the OS to get the number, sizes, 
 ;  and arrangement of the physical monitors.  This works well on Mac 
 ;  systems but has not been thoroughly tested on other platforms.  See
-;  keywords CONFIG and TBAR for more information.
+;  keywords SETPRIME, TBAR, and TCALIB for more information.
 ;
 ;  If CONFIG=0 (default), putwin behaves exactly like window.  This allows
 ;  the routine to be used in public code, where the user may not know about
@@ -94,22 +93,35 @@
 ;                    primary monitor = left-most external monitor
 ;                    secondary monitor = highest numbered non-primary
 ;
-;       TBAR:      Title bar width in pixels.  Default = 22.
+;       TBAR:      Title bar width in pixels.
 ;
-;                  The standard WINDOW procedure does not account for
-;                  the window title bar width, so that widows placed
-;                  along the bottom of a monitor are clipped.  This
-;                  procedure fixes that issue.
+;                  The standard WINDOW procedure does not account for the
+;                  window title bar, but this procedure does, so windows 
+;                  can be positioned precisely.  IDL does not have access
+;                  to the title bar width, so this routine provides two
+;                  defaults, depending on the X server:
 ;
-;                  Window positioning will not be precise until this
-;                  is set properly.  IDL does not have access to this
-;                  piece of information, so you'll have to figure it
-;                  out.  This value is persistent.
+;                    XQuartz  : TBAR = 22  (MacOS default)
+;                    RedHat 8 : TBAR = 37  (Linux default)
 ;
-;       STAT:      Output the current monitor configuration.  When 
-;                  this keyword is set, CONFIG will return the current 
-;                  monitor array and the primary and secondary monitor
-;                  indices.
+;                  For Windows and other X servers, use the next keyword
+;                  to calibrate the title bar width, then set putwin's 
+;                  configuration in your IDL startup file:
+;
+;                    putwin, /config, tbar=N, /silent
+;
+;                  This value is persistent.
+;
+;       TCALIB:    Calibrate the title bar width by briefly creating two
+;                  windows with the same dimensions and location but
+;                  different (bogus) title bar widths.  The vertical offset
+;                  between these two windows is used to calculate the actual
+;                  title bar width.  This value is persistent.
+;
+;       STAT:      Output the current monitor configuration.  When this
+;                  keyword is set, CONFIG will return the current monitor
+;                  array, the primary and secondary monitor indices, and
+;                  the title bar width.
 ;
 ;       SHOW:      Place a small window in each monitor for 5 sec to 
 ;                  identify the monitor numbers and which are primary and
@@ -242,8 +254,8 @@
 ;                  separately in the usual way.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-06-18 12:07:20 -0700 (Sat, 18 Jun 2022) $
-; $LastChangedRevision: 30869 $
+; $LastChangedDate: 2022-06-20 21:20:27 -0700 (Mon, 20 Jun 2022) $
+; $LastChangedRevision: 30871 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2020-06-03
@@ -255,7 +267,7 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
                   yfull=yfull, aspect=aspect, show=show, secondary=secondary, $
                   relative=relative, top=top, bottom=bottom, right=right, left=left, $
                   middle=middle, clone=clone, setprime=setprime, silent=silent, $
-                  _extra=extra
+                  tcalib=tcalib, _extra=extra
 
   @putwin_common
 
@@ -264,6 +276,7 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
 
   if (size(windex,/type) eq 0) then begin
     oInfo = obj_new('IDLsysMonitorInfo')
+      mnames = oInfo->GetMonitorNames()
       numMons = oInfo->GetNumberOfMonitors()
       rects = oInfo->GetRectangles()
       primon = oInfo->GetPrimaryMonitorIndex()
@@ -285,9 +298,12 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
     primarymon = primon
     secondarymon = secmon
 
+    tbar = 22  ; works for MacBook
+    if (strmatch(mnames[0], ':?')) then tbar = 37  ; works for RedHat
+
     klist = ['CONFIG','STAT','SHOW','MONITOR','SECONDARY','DX','DY','NORM', $
              'CENTER','XCENTER','YCENTER','CORNER','SCALE','FULL','XFULL', $
-             'YFULL','ASPECT','XSIZE','YSIZE','NOFIT','TBAR2','RELATIVE', $
+             'YFULL','ASPECT','XSIZE','YSIZE','NOFIT','TBAR2','TCALIB','RELATIVE', $
              'TOP','BOTTOM','RIGHT','LEFT','MIDDLE','CLONE','SETPRIME','SILENT']
 
     windex = 0
@@ -358,6 +374,7 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
         endcase
         print, msg
       endfor
+      print,"Title bar width: ", strtrim(string(tbar),2)
       print,""
     endelse
 
@@ -366,48 +383,73 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
     return
   endif
 
+  exeunt = 0
+
 ; Title bar width
 
-  if (size(tbar2,/type) gt 0) then tbar = fix(tbar2[0])
-  if (size(tbar,/type) eq 0) then tbar = 22
+  if (size(tbar2,/type) gt 0) then begin
+    tbar = fix(tbar2[0])
+    tcalib = 0
+    exeunt = 1
+  endif
+
+; Title bar calibration
+
+  if keyword_set(tcalib) then begin
+    t1 = 10
+    t2 = 40
+    xs = 200
+    ys = 150
+    undefine, w1, w2
+    tbar = t1
+    putwin, w1, /free, xsize=xs, ysize=ys, /center
+    device, get_window_position=p1
+    tbar = t2
+    putwin, w2, /free, clone=w1, rel=w1
+    device, get_window_position=p2
+    wdelete, w1
+    wdelete, w2
+    tbar = t2 - (p2[1] - p1[1])
+    exeunt = 1
+  endif
 
 ; Monitor priority
 
-  nset = n_elements(setprime)
-  if (nset gt 0) then begin
-    if (nset eq 1) then begin
-      primon = fix(setprime[0]) < maxmon
-      mons = indgen(numMons)
-      i = where(mons ne primon, count)
-      if (count gt 0) then secmon = max(mons[i]) else secmon = primon
-      primarymon = primon
-      secondarymon = secmon
-    endif else begin
-      primon = fix(setprime[0]) < maxmon
-      secmon = fix(setprime[1]) < maxmon
-      primarymon = primon
-      secondarymon = secmon
-    endelse
-    if (blab) then putwin,/stat
-    return
-  endif
+  case n_elements(setprime) of
+     0  : ; do nothing
+     1  :  begin
+             primarymon = fix(setprime[0]) < maxmon
+             mons = indgen(numMons)
+             i = where(mons ne primarymon, count)
+             if (count gt 0) then secondarymon = max(mons[i]) else secondarymon = primarymon
+             exeunt = 1
+           end
+    else : begin
+             primarymon = fix(setprime[0]) < maxmon
+             secondarymon = fix(setprime[1]) < maxmon
+             exeunt = 1
+           end
+  endcase
 
 ; Monitor configuration
 
   if (size(config,/type) gt 0) then begin
-
     if (fix(config[0]) eq 0) then begin
       if (blab and windex) then print,"Putwin is disabled (acts like window)."
+      blab = 0
       windex = 0
-    endif else begin
-      windex = 1
-      if (blab) then putwin, /stat
-    endelse
+    endif else windex = 1
+    exeunt = 1
+  endif
 
+; If there are any configuration changes, then exit before creating a window
+
+  if (exeunt) then begin
+    if (blab) then putwin, /stat
     return
   endif
 
-; If no configuration is set, then just pass everything to WINDOW
+; If putwin is disabled, then just pass everything to WINDOW
 
   if (~windex) then begin
     if (size(scale,/type) gt 0) then begin
@@ -497,8 +539,12 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
       if ((dy eq 0) and keyword_set(middle)) then dy1 += (!d.y_size - ysize)/2
       dy = dy1
 
-      monitor = primarymon
-      corner = 2
+      monitor = primon  ; window placement is in OS coordinates
+      xoff = mgeom[0, monitor]
+      yoff = mgeom[1, monitor]
+      xdim = mgeom[2, monitor]
+      ydim = mgeom[3, monitor]
+      corner = 2        ; origin at lower left
       nofit = 1
     endif else begin
       print,"Window ",strmid(cmd,6)," does not exist."
