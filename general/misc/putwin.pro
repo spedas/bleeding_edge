@@ -99,14 +99,15 @@
 ;                  window title bar, but this procedure does, so windows 
 ;                  can be positioned precisely.  IDL does not have access
 ;                  to the title bar width, so this routine provides two
-;                  defaults, depending on the X server:
+;                  defaults, depending on the operating system:
 ;
-;                    XQuartz  : TBAR = 22  (MacOS default)
-;                    RedHat 8 : TBAR = 37  (Linux default)
+;                    MacOS    : TBAR = 22
+;                    RedHat 8 : TBAR = 37
 ;
-;                  For Windows and other X servers, use the next keyword
-;                  to calibrate the title bar width, then set putwin's 
-;                  configuration in your IDL startup file:
+;                  For other X servers and Windows, use TCALIB (below) to
+;                  calibrate the title bar width.  You can then set the 
+;                  configuration in your IDL startup file, so you won't
+;                  need to rerun the calibration:
 ;
 ;                    putwin, /config, tbar=N, /silent
 ;
@@ -254,8 +255,8 @@
 ;                  separately in the usual way.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-06-20 21:20:27 -0700 (Mon, 20 Jun 2022) $
-; $LastChangedRevision: 30871 $
+; $LastChangedDate: 2022-06-22 08:46:20 -0700 (Wed, 22 Jun 2022) $
+; $LastChangedRevision: 30872 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2020-06-03
@@ -298,8 +299,11 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
     primarymon = primon
     secondarymon = secmon
 
-    tbar = 22  ; works for MacBook
-    if (strmatch(mnames[0], ':?')) then tbar = 37  ; works for RedHat
+    tbar = 22           ; MacOS
+    if (strmatch(mnames[0], ':?')) then begin
+      tbar = 37         ; RedHat 8
+      mgeom[3,0] -= 29  ; make space for command bar
+    endif
 
     klist = ['CONFIG','STAT','SHOW','MONITOR','SECONDARY','DX','DY','NORM', $
              'CENTER','XCENTER','YCENTER','CORNER','SCALE','FULL','XFULL', $
@@ -416,8 +420,8 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
 ; Monitor priority
 
   case n_elements(setprime) of
-     0  : ; do nothing
-     1  :  begin
+     0   : ; do nothing
+     1   : begin
              primarymon = fix(setprime[0]) < maxmon
              mons = indgen(numMons)
              i = where(mons ne primarymon, count)

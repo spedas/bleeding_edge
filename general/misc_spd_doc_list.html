@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jun 21 03:16:24 2022.<P>
+<STRONG>Last modified: </STRONG>Wed Jun 22 18:16:24 2022.<P>
  
 <HR>
  
@@ -3393,14 +3393,15 @@ KEYWORDS:
                   window title bar, but this procedure does, so windows 
                   can be positioned precisely.  IDL does not have access
                   to the title bar width, so this routine provides two
-                  defaults, depending on the X server:
+                  defaults, depending on the operating system:
 
-                    XQuartz  : TBAR = 22  (MacOS default)
-                    RedHat 8 : TBAR = 37  (Linux default)
+                    MacOS    : TBAR = 22
+                    RedHat 8 : TBAR = 37
 
-                  For Windows and other X servers, use the next keyword
-                  to calibrate the title bar width, then set putwin's 
-                  configuration in your IDL startup file:
+                  For other X servers and Windows, use TCALIB (below) to
+                  calibrate the title bar width.  You can then set the 
+                  configuration in your IDL startup file, so you won't
+                  need to rerun the calibration:
 
                     putwin, /config, tbar=N, /silent
 
@@ -3548,8 +3549,8 @@ KEYWORDS:
                   separately in the usual way.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-06-20 21:20:27 -0700 (Mon, 20 Jun 2022) $
- $LastChangedRevision: 30871 $
+ $LastChangedDate: 2022-06-22 08:46:20 -0700 (Wed, 22 Jun 2022) $
+ $LastChangedRevision: 30872 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 
 CREATED BY:	David L. Mitchell  2020-06-03

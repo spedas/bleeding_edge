@@ -171,8 +171,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-06-16 16:01:27 -0700 (Thu, 16 Jun 2022) $
-; $LastChangedRevision: 30863 $
+; $LastChangedDate: 2022-06-22 15:24:41 -0700 (Wed, 22 Jun 2022) $
+; $LastChangedRevision: 30874 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -362,7 +362,10 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   endelse
   
   if keyword_set(indspec) then doind=1 else doind=0
-  if keyword_set(vdis) then dov=1 else dov=0
+  if keyword_set(vdis) then begin
+    dov = 1
+    rflg = 1
+  endif else dov = 0
 
   if (size(popen,/type) eq 7) then begin
       psflg = 1
