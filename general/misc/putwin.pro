@@ -53,6 +53,10 @@
 ;  putwin, 3, 0, clone=1, scale=0.6, /center
 ;    --> put a clone of window 1 scaled by 60% in the center of monitor 0
 ;
+;  putwin, wnum, /free, key={sec:1, yf:1, xs:500, dx:10}
+;    --> put a window with an index > 31 in the secondary monitor, full-screen in Y,
+;        500 pixels in X; the assigned window number is returned in wnum
+;
 ;INPUTS:
 ;       wnum:      Window number.  Can be an integer from 0 to 31.
 ;                  Default: next free widow number > 31.
@@ -149,9 +153,7 @@
 ;                    If DY is negative, offset is from bottom.
 ;                  Replaces YPOS.  Default = 0.
 ;
-;                  Note: XPOS and YPOS only work if CONFIG = 0.  They
-;                  refer to position on a rectangular "super monitor"
-;                  that encompasses all physical monitors.
+;                  XPOS and YPOS are ignored while putwin is enabled.
 ;
 ;       RELATIVE:  Set this keyword to an existing window number.  Then
 ;                  DX and DY specify offsets of the new window location
@@ -255,8 +257,8 @@
 ;                  separately in the usual way.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-06-22 08:46:20 -0700 (Wed, 22 Jun 2022) $
-; $LastChangedRevision: 30872 $
+; $LastChangedDate: 2022-06-23 15:29:13 -0700 (Thu, 23 Jun 2022) $
+; $LastChangedRevision: 30875 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2020-06-03
@@ -268,7 +270,7 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
                   yfull=yfull, aspect=aspect, show=show, secondary=secondary, $
                   relative=relative, top=top, bottom=bottom, right=right, left=left, $
                   middle=middle, clone=clone, setprime=setprime, silent=silent, $
-                  tcalib=tcalib, _extra=extra
+                  tcalib=tcalib, xpos=xpos, ypos=ypos, _extra=extra
 
   @putwin_common
 
@@ -308,7 +310,8 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
     klist = ['CONFIG','STAT','SHOW','MONITOR','SECONDARY','DX','DY','NORM', $
              'CENTER','XCENTER','YCENTER','CORNER','SCALE','FULL','XFULL', $
              'YFULL','ASPECT','XSIZE','YSIZE','NOFIT','TBAR2','TCALIB','RELATIVE', $
-             'TOP','BOTTOM','RIGHT','LEFT','MIDDLE','CLONE','SETPRIME','SILENT']
+             'TOP','BOTTOM','RIGHT','LEFT','MIDDLE','CLONE','SETPRIME','SILENT', $
+             'XPOS','YPOS']
 
     windex = 0
   endif
@@ -460,8 +463,8 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
       if (size(xsize,/type) gt 0) then xsize *= scale
       if (size(ysize,/type) gt 0) then ysize *= scale
     endif
-    if (size(wnum,/type) gt 0) then window, wnum, xsize=xsize, ysize=ysize, _extra=extra $
-                               else window, xsize=xsize, ysize=ysize, _extra=extra
+    if (size(wnum,/type) gt 0) then window, wnum, xsize=xsize, ysize=ysize, xpos=xpos, ypos=ypos, _extra=extra $
+                               else window, xsize=xsize, ysize=ysize, xpos=xpos, ypos=ypos, _extra=extra
     return
   endif
 
@@ -515,6 +518,8 @@ pro putwin, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full,
   ysize = fix(float(ysize[0])*scale)
 
 ; Window placement within monitor
+
+  undefine, xpos, ypos  ; disable XPOS and YPOS --> use DX, DY instead
 
   if (n_elements(dx) eq 0) then dx = 0
   if (n_elements(dy) eq 0) then dy = 0
