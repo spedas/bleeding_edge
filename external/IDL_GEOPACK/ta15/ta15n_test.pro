@@ -1,12 +1,12 @@
 ;+
-; ts07_test
+; ta15n_test
 ;
 ; Purpose: A few tests to verify that the model and the wrapper
 ; procedures work correctly
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
-; $LastChangedRevision: 30156 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2022-06-24 09:00:47 -0700 (Fri, 24 Jun 2022) $
+; $LastChangedRevision: 30878 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/ta15/ta15n_test.pro $
 ;-
 

@@ -37,13 +37,13 @@ end
 ;
 ;
 ; Author: Davin Larson
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-04-08 12:34:49 -0700 (Fri, 08 Apr 2022) $
-; $LastChangedRevision: 30759 $
+; $LastChangedBy: hara $
+; $LastChangedDate: 2022-06-24 14:32:11 -0700 (Fri, 24 Jun 2022) $
+; $LastChangedRevision: 30881 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_kernel_info.pro $
 ;-
 
-function spice_kernel_info,type=type,verbose=verbose,use_cache=use_cache
+function spice_kernel_info,type=type,verbose=verbose,use_cache=use_cache,maxiv=maxiv
 common spice_kernel_info_com, stats,kernels,c,d
 
 if spice_test() eq 0 then return,0
@@ -72,7 +72,7 @@ for i2 = 0,n_elements(kernels)-1 do begin
       ;; From a given CK file, retrieve the list of objects listed
       ;; in the file then retrieve the time coverage for each object.
       ;; Local parameters...
-      MAXIV      = 2000
+      if undefined(maxiv) then MAXIV = 2000
       WINSIZ     = 2 * MAXIV
       MAXOBJ     = 1000
       cover = cspice_celld( WINSIZ )

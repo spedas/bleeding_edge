@@ -1,9 +1,9 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-30 19:48:04 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 30012 $
+; $LastChangedBy: hara $
+; $LastChangedDate: 2022-06-24 14:34:59 -0700 (Fri, 24 Jun 2022) $
+; $LastChangedRevision: 30882 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_kernel_load.pro $
 ; Loads kernels only if they are not already loaded
-pro spice_kernel_load,kernels,unload=unload,verbose=verbose,info=info,clear=clear
+pro spice_kernel_load,kernels,unload=unload,verbose=verbose,info=info,clear=clear,maxiv=maxiv
   if spice_test() eq 0 then return
   if keyword_set(clear) then begin
     cspice_kclear
@@ -29,6 +29,6 @@ pro spice_kernel_load,kernels,unload=unload,verbose=verbose,info=info,clear=clea
       cspice_unload,k[i]
     endfor
   endelse
-  info = spice_kernel_info(verbose=1)   ; must be called to update cache of kernel info
+  info = spice_kernel_info(verbose=1,maxiv=maxiv)   ; must be called to update cache of kernel info
 end
 
