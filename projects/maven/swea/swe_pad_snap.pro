@@ -171,8 +171,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-06-22 15:24:41 -0700 (Wed, 22 Jun 2022) $
-; $LastChangedRevision: 30874 $
+; $LastChangedDate: 2022-06-25 11:14:43 -0700 (Sat, 25 Jun 2022) $
+; $LastChangedRevision: 30884 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -477,7 +477,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   endif
 
   if (dov) then begin
-    putwin, /free, monitor=mnum, xsize=800, ysize=600, dx=-10, dy=-10, scale=wscale  ; velocity dist.
+    putwin, /free, monitor=mnum, xsize=1200, ysize=300, dx=-10, dy=-10, scale=wscale  ; velocity dist.
     Vwin = !d.window
   endif
 
@@ -910,10 +910,10 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 ine = where(ven gt 0)
                 ven = ven[ine]
                 ;ven = pad.energy[*,0]
-                vexam = [30.,50.,100.]
+                eexam = [30.,50.,100.] ; eV
                 emass = 9.1e-31
                 vtot = (sqrt(ven*1.6e-19*2./emass) * 1.e-3) ; km/s
-                vexam = (sqrt(vexam*1.6e-19*2./emass) * 1.e-3) ; km/s
+                vexam = (sqrt(eexam*1.6e-19*2./emass) * 1.e-3) ; km/s
                 vpa = rpad[0].xax
                 vc = 2.99792458D5                ; velocity of light [km/s]
                 vmass = (5.10998910D5)/(vc*vc)     ; electron rest mass [eV/(km/s)^2]
@@ -928,18 +928,23 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 mima = minmax(vphase)
                 mima[1] = -10
                 mima[0]=mima[1]-5;6
-                !p.multi=[0,2,2,0,1]
+                !p.multi=[0,3,1,0,0]
                 vpara=vtot#cos(vpa*!dtor)
                 vper=vtot#sin(vpa*!dtor)
                 nlv = 15.
 
                 str_element, result, 'vdf', {vphase:vphase,vpara:vpara,vper:vper}, /add
+                
+                cs3 = csize2*2.
+                xmar = [10,3] + 3
+                ymar = [4,2] + 3
 
                 contour,vphase,vpara,vper,$;,/IRREGULAR
-                    xtit='Vpara (km/s)',ytit='Vper (km/s)',cell_fill=1,$
+                    xtit='V!d||!n (km/s)',ytit='V!d!9x!1H!n (km/s)',cell_fill=1,$
                     levels=(mima[1]-mima[0])/(nlv-1)*findgen(nlv)+mima[0],$
                     c_colors=findgen(nlv)*(254.-8)/(nlv-1)+8,xrange=[-1e4,1e4],$
-                    yrange=[0,1e4],nlevels=nlv,isotropic=1,charsize=csize2;,c_spacing=0.5
+                    yrange=[0,1e4],nlevels=nlv,isotropic=1,charsize=cs3,$
+                    xmargin=xmar,ymargin=ymar ;,c_spacing=0.5
                 vcon=(sqrt(10*1.6e-19*2./emass) * 1.e-3)
                 oplot,vcon*cos(findgen(181)*!dtor),vcon*sin(findgen(181)*!dtor),linestyle=1
                 vcon=(sqrt(50*1.6e-19*2./emass) * 1.e-3)
@@ -948,22 +953,24 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 oplot,vcon*cos(findgen(181)*!dtor),vcon*sin(findgen(181)*!dtor),linestyle=1
                 vcon=(sqrt(250*1.6e-19*2./emass) * 1.e-3)
                 oplot,vcon*cos(findgen(181)*!dtor),vcon*sin(findgen(181)*!dtor),linestyle=1
-                draw_color_scale,range=[mima[0],mima[1]],brange=[8,254]
+                draw_color_scale,range=[mima[0],mima[1]],brange=[8,254],charsize=cs3
                 
                 ien=15+indgen(10)*3
-;                ien=30+indgen(8)*4
                 nen=n_elements(ien)
-                plot,vpa,vphase[ien[0],*],xtit='PA',ytit='df',xrange=[0,180],xstyle=1,$
-                    yrange=minmax(vphase[ien,*]),charsize=csize2
-                xyouts,182,vphase[ien[0],64],string(ven[ien[0]],'(I4)')+' eV',/data
-                ;for ie=1,nen-1 do begin
+                yran = minmax(vphase[ien,*])
+                xmsg = 182.
+                ymsg = yran[0] + findgen(nen)*((yran[1] - yran[0])/float(nen))
+                cran = [32., 254.]
+                lcol = round(cran[0] + findgen(nen)*((cran[1] - cran[0])/float(nen)))
+                plot,vpa,vphase[ien[0],*],xtit='Pitch Angle (deg)',ytit='df',xrange=[0,180],xstyle=1,$
+                    yrange=yran,charsize=cs3,xmargin=xmar,ymargin=ymar
                 ie=0
                 while (ie le nen-1) and (ie le n_elements(ven)-1) do begin
-                    oplot,vpa,vphase[ien[ie],*]
-                    xyouts,182,vphase[ien[ie],64],string(ven[ien[ie]],'(I4)')+' eV',/data
+                    oplot,vpa,vphase[ien[ie],*],color=lcol[ie]
+                    xyouts,xmsg,ymsg[ie],string(ven[ien[ie]],'(I4)')+' eV',/data,charsize=csize2,$
+                           color=lcol[ie]
                     ie++
                 endwhile
-                ;endfor
                 
                 phi=0;75.
                 Enp=ven;*1.6e-19
@@ -976,7 +983,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
                 vnbin=10
                 plot,vpara[*,0],vphase[*,64],xtit='V (km/s)',ytit='df',$
-                ylog=0,xrange=[0.,1.e4],/nodata,yrange=[mima[0],mima[1]+1],charsize=csize2
+                ylog=0,xrange=[0.,1.e4],/nodata,yrange=[mima[0],mima[1]+1],charsize=cs3,$
+                xmargin=xmar,ymargin=ymar,title='V!d||!n (solid)      V!d!9x!1H!n (dashed)'
                 oplot,average(vpara[*,0:vnbin-1],2),average(vphase[*,0:vnbin-1],2,/nan)
                 oplot,average(vper[*,63-vnbin/2-1:63],2),average(vphase[*,63-vnbin/2-1:63],2,/nan),linestyle=2
                 oplot,average(vpara[*,127-vnbin+1:127],2),average(vphase[*,127-vnbin+1:127],2,/nan),color=0
@@ -985,9 +993,15 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 ;oplot,vmb,pmb,linestyle=2,color=6
                 ;oplot,-vmb,pmb,linestyle=2,color=6
                 print,minmax(vtot),minmax(pmb)
-                for i=0,n_elements(vexam)-1 do begin
+                nexam = n_elements(vexam) - 1
+                xmsg = vexam + 1.e2
+                ymsg = !y.crange[0] + 0.85*(!y.crange[1] - !y.crange[0])
+                msg = strtrim(string(round(eexam)),2)
+                msg[nexam] += ' eV'
+                
+                for i=0,nexam do begin
                    oplot,[vexam[i],vexam[i]],!y.crange,linestyle=1
-                   oplot,[-vexam[i],-vexam[i]],!y.crange,linestyle=1
+                   xyouts,xmsg[i],ymsg,msg[i],/data,charsize=csize2
                 endfor
                 !p.multi=0
                 ;stop
