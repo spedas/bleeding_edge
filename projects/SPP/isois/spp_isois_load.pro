@@ -1,6 +1,6 @@
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2020-08-21 13:33:07 -0700 (Fri, 21 Aug 2020) $
-; $LastChangedRevision: 29065 $
+; $LastChangedDate: 2022-06-26 16:28:28 -0700 (Sun, 26 Jun 2022) $
+; $LastChangedRevision: 30885 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/isois/spp_isois_load.pro $
 ; Created by Davin Larson 2020-April 27
 ;
@@ -68,7 +68,9 @@ pro spp_isois_load,types=types,level=level,trange=trange,no_load=no_load,tname_p
     if n_elements(key) EQ 0 then key = 'SWEAP'
     if key EQ 'FIELDS' then dir=fileprefix+'shared/rsync/l2/'
 
-    fileformat=dir+'psp_isois_l2-sum\mary_YYYYMMDD_v1.*.0.cdf'
+    ; note: this doesn't work for files ending like v3.10.0.cdf
+
+    fileformat=dir+'psp_isois_l2-sum\mary_YYYYMMDD_v*.*.*.cdf'
     files = spp_file_retrieve(key=key,fileformat,/valid_only,/last_version,/daily_names)
   endelse
   
