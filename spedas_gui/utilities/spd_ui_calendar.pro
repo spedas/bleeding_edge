@@ -211,21 +211,21 @@ PRO spd_ui_calendar, title, otime, gui_id, startyear=startyear
    endelse
 
 ;Create base widgets to hold labels for the selected month, day, and year. Set the initial values of the labels.
-   wBase = WIDGET_BASE(COLUMN = 1, SCR_XSIZE = 370, $ 
+   wBase = WIDGET_BASE(COLUMN = 1, $ 
       TITLE=title, /Align_Center, /modal, group_leader=gui_id) 
    wDateBase = WIDGET_BASE(wBase, /ROW)
    wYearBase = WIDGET_BASE(wDateBase, /COL, /align_center, xpad=5, ypad=2)
-   wTimeBase = WIDGET_BASE(wDateBase, /COL, /base_align_right, xsize=250)
+   wTimeBase = WIDGET_BASE(wDateBase, /COL, /base_align_right)
    wSubBase = WIDGET_BASE(wYearBase, /ROW) 
    wSubTimeBase = WIDGET_BASE(wTimeBase, /COL, xpad=1, tab_mode=1)
    wVoid = WIDGET_LABEL(wSubBase, VALUE = 'Year: ') 
-   wYear = WIDGET_LABEL(wSubBase, VALUE = '1999', xsize=40)
+   wYear = WIDGET_LABEL(wSubBase, VALUE = '1999')
    wSubBase = WIDGET_BASE(wYearBase, /ROW) 
    wVoid = WIDGET_LABEL(wSubBase, value = 'Month: ') 
-   wMonth = WIDGET_LABEL(wSubBase, value = '10', xsize=20) 
+   wMonth = WIDGET_LABEL(wSubBase, value = '10') 
    wSubBase = WIDGET_BASE(wYearBase, /ROW) 
    wVoid = WIDGET_LABEL(wSubBase, VALUE = 'Day: ') 
-   wDay = WIDGET_LABEL(wSubBase, VALUE = '22', xsize=20)    
+   wDay = WIDGET_LABEL(wSubBase, VALUE = '22')    
    
    ; Get size of largest spinner label and set for all if larger than standard 
    test = widget_label(wsubtimebase, value = 'Seconds: ')
@@ -268,20 +268,20 @@ PRO spd_ui_calendar, title, otime, gui_id, startyear=startyear
    
 ;Create labels for the caledar's days
   dayBase = widget_base(calBase, /row, /base_align_center, xpad=0, space=0)
-  for j=0, 6 do dID = widget_Label(daybase, value=days[j], xsize=40, /align_center)
+  for j=0, 6 do dID = widget_Label(daybase, value=days[j], /align_center)
   
 ;Create 5 rows of 7 buttons for calendar days 
   rows = lonarr(5)
   for j=0, n_elements(rows)-1 do rows[j] = widget_base(calBase, /row, xpad=0, ypad=0, space=0,frame=0)
   for j=0, n_elements(rows)-1 do begin
-    for i=0, 6 do bID = widget_button(rows[j], value='', /no_release, xsize=40, ysize=35, $
+    for i=0, 6 do bID = widget_button(rows[j], value='', /no_release, ysize=35, $
                                       uvalue='DAY', uname=strtrim((7*j)+(i),2), ToolTip = valid_dates_tooltip)
   endfor
  
 ;Create the ok and cancel buttons
    buttonBase = WIDGET_BASE(wBase, /row, /align_center)
-   okButton = WIDGET_BUTTON(buttonBase, value='OK', uValue='OK', xsize=75, ToolTip = valid_dates_tooltip)
-   cancelButton = WIDGET_BUTTON(buttonBase, value='Cancel', uValue='CANCEL', xsize=75)
+   okButton = WIDGET_BUTTON(buttonBase, value='OK', uValue='OK', ToolTip = valid_dates_tooltip)
+   cancelButton = WIDGET_BUTTON(buttonBase, value='Cancel', uValue='CANCEL')
    
    
 ;Realize the top-lvel base widget 

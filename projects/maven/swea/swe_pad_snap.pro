@@ -171,8 +171,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-06-25 11:14:43 -0700 (Sat, 25 Jun 2022) $
-; $LastChangedRevision: 30884 $
+; $LastChangedDate: 2022-06-27 08:42:58 -0700 (Mon, 27 Jun 2022) $
+; $LastChangedRevision: 30886 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -413,7 +413,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
     'EFLUX'  : ytitle = 'Energy Flux (eV/cm2-s-ster-eV)'
     'E2FLUX' : ytitle = 'Energy Flux (eV/cm2-s-ster)'
     'FLUX'   : ytitle = 'Flux (1/cm2-s-ster-eV)'
-    'DF'     : ytitle = 'Dist. Function (1/cm3-(km/s)3)'
+    'DF'     : ytitle = 'DF (cm!u-3!n (km/s)!u-3!n)'
     else     : ytitle = 'Unknown Units'
   endcase
 
@@ -910,18 +910,17 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 ine = where(ven gt 0)
                 ven = ven[ine]
                 ;ven = pad.energy[*,0]
-                eexam = [30.,50.,100.] ; eV
+                eexam = [pot,30.,50.,100.] ; eV
                 emass = 9.1e-31
                 vtot = (sqrt(ven*1.6e-19*2./emass) * 1.e-3) ; km/s
                 vexam = (sqrt(eexam*1.6e-19*2./emass) * 1.e-3) ; km/s
                 vpa = rpad[0].xax
-                vc = 2.99792458D5                ; velocity of light [km/s]
+                vc = 2.99792458D5                  ; velocity of light [km/s]
                 vmass = (5.10998910D5)/(vc*vc)     ; electron rest mass [eV/(km/s)^2]
-                m_conv = 2D5/(vmass*vmass)        ; mass conversion factor (flux to distribution function)
+                m_conv = 2D5/(vmass*vmass)         ; mass conversion factor (flux to distribution function)
                 scale = (1.d/(ven^2 * m_conv)) # replicate(1.,128)
-                ;stop
-                vphase = alog10(respad[ine,*] * scale) ; phase space density (df)
-                print,minmax(respad),minmax(vphase)
+                vphase = alog10(respad[ine,*] * scale) ; log phase space density [1/cm3-(km/s)3]
+                ;print,minmax(respad),minmax(vphase)
                 ;vphase = transpose(alog10(pad.data * scale))
                 indx=where(finite(vphase) eq 0,cts)
                 vphase[indx] = !values.d_nan
@@ -939,22 +938,23 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 xmar = [10,3] + 3
                 ymar = [4,2] + 3
 
+;               DF vs. Vpara and Vperp
+
                 contour,vphase,vpara,vper,$;,/IRREGULAR
                     xtit='V!d||!n (km/s)',ytit='V!d!9x!1H!n (km/s)',cell_fill=1,$
                     levels=(mima[1]-mima[0])/(nlv-1)*findgen(nlv)+mima[0],$
                     c_colors=findgen(nlv)*(254.-8)/(nlv-1)+8,xrange=[-1e4,1e4],$
                     yrange=[0,1e4],nlevels=nlv,isotropic=1,charsize=cs3,$
-                    xmargin=xmar,ymargin=ymar ;,c_spacing=0.5
-                vcon=(sqrt(10*1.6e-19*2./emass) * 1.e-3)
-                oplot,vcon*cos(findgen(181)*!dtor),vcon*sin(findgen(181)*!dtor),linestyle=1
-                vcon=(sqrt(50*1.6e-19*2./emass) * 1.e-3)
-                oplot,vcon*cos(findgen(181)*!dtor),vcon*sin(findgen(181)*!dtor),linestyle=1
-                vcon=(sqrt(100*1.6e-19*2./emass) * 1.e-3)
-                oplot,vcon*cos(findgen(181)*!dtor),vcon*sin(findgen(181)*!dtor),linestyle=1
-                vcon=(sqrt(250*1.6e-19*2./emass) * 1.e-3)
-                oplot,vcon*cos(findgen(181)*!dtor),vcon*sin(findgen(181)*!dtor),linestyle=1
+                    xmargin=xmar,ymargin=ymar,title=tstring ;,c_spacing=0.5
+
+                vcon=(sqrt([10.,50.,100.,250.]*1.6e-19*2./emass) * 1.e-3)
+                cost = cos(findgen(181)*!dtor)
+                sint = sin(findgen(181)*!dtor)
+                for i=0,3 do oplot,vcon[i]*cost,vcon[i]*sint,linestyle=1
                 draw_color_scale,range=[mima[0],mima[1]],brange=[8,254],charsize=cs3
-                
+
+;               DF vs. Pitch Angle
+
                 ien=15+indgen(10)*3
                 nen=n_elements(ien)
                 yran = minmax(vphase[ien,*])
@@ -962,49 +962,55 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 ymsg = yran[0] + findgen(nen)*((yran[1] - yran[0])/float(nen))
                 cran = [32., 254.]
                 lcol = round(cran[0] + findgen(nen)*((cran[1] - cran[0])/float(nen)))
-                plot,vpa,vphase[ien[0],*],xtit='Pitch Angle (deg)',ytit='df',xrange=[0,180],xstyle=1,$
-                    yrange=yran,charsize=cs3,xmargin=xmar,ymargin=ymar
+                plot,vpa,vphase[ien[0],*],xtit='Pitch Angle (deg)',ytit='DF',xrange=[0,180],xstyle=1,$
+                    yrange=yran,charsize=cs3,xmargin=xmar,ymargin=ymar,xticks=6,xminor=3
                 ie=0
                 while (ie le nen-1) and (ie le n_elements(ven)-1) do begin
                     oplot,vpa,vphase[ien[ie],*],color=lcol[ie]
-                    xyouts,xmsg,ymsg[ie],string(ven[ien[ie]],'(I4)')+' eV',/data,charsize=csize2,$
+                    xyouts,xmsg,ymsg[ie],string(sigfig(ven[ien[ie]],2),'(I4)')+' eV',/data,charsize=csize2,$
                            color=lcol[ie]
                     ie++
                 endwhile
-                
-                phi=0;75.
-                Enp=ven;*1.6e-19
-                nmb=8
-                kTmb=25.; * 1.38e-23/8.613e-5 ;J
-                vmb=sqrt((ven+80.)*1.6e-19*2/emass)*1.e-3 ;km/s
-                
-                fmb = 1.e-10*0.5*exp(-(Enp-phi)/kTmb)
-                pmb = alog10(fmb)
+                oplot,[90.,90.],!y.crange,line=1
+
+;               DF vs. Vpara and Vperp separately
 
                 vnbin=10
-                plot,vpara[*,0],vphase[*,64],xtit='V (km/s)',ytit='df',$
-                ylog=0,xrange=[0.,1.e4],/nodata,yrange=[mima[0],mima[1]+1],charsize=cs3,$
-                xmargin=xmar,ymargin=ymar,title='V!d||!n (solid)      V!d!9x!1H!n (dashed)'
+                plot,vpara[*,0],vphase[*,64],xtit='V (km/s)',ytit='DF',$
+                     ylog=0,xrange=[0.,1.e4],/nodata,yrange=[mima[0],mima[1]+1],charsize=cs3,$
+                     xmargin=xmar,ymargin=ymar,title='V!d||!n (solid)      V!d!9x!1H!n (dashed)'
                 oplot,average(vpara[*,0:vnbin-1],2),average(vphase[*,0:vnbin-1],2,/nan)
                 oplot,average(vper[*,63-vnbin/2-1:63],2),average(vphase[*,63-vnbin/2-1:63],2,/nan),linestyle=2
                 oplot,average(vpara[*,127-vnbin+1:127],2),average(vphase[*,127-vnbin+1:127],2,/nan),color=0
                 oplot,-average(vper[*,64:64+vnbin/2-1],2),average(vphase[*,64:64+vnbin/2-1],2,/nan),$
                       linestyle=2,color=0
-                ;oplot,vmb,pmb,linestyle=2,color=6
-                ;oplot,-vmb,pmb,linestyle=2,color=6
-                print,minmax(vtot),minmax(pmb)
-                nexam = n_elements(vexam) - 1
+
+                if (0) then begin
+                  phi=0;75.
+                  Enp=ven;*1.6e-19
+                  nmb=8
+                  kTmb=25.; * 1.38e-23/8.613e-5 ;J
+                  vmb=sqrt((ven+80.)*1.6e-19*2/emass)*1.e-3 ;km/s
+                  fmb = 1.e-10*0.5*exp(-(Enp-phi)/kTmb)
+                  pmb = alog10(fmb)
+
+                  oplot,vmb,pmb,linestyle=2,color=6
+                  oplot,-vmb,pmb,linestyle=2,color=6
+                  print,minmax(vtot),minmax(pmb)
+                endif
+
+                nexam = n_elements(vexam)
                 xmsg = vexam + 1.e2
                 ymsg = !y.crange[0] + 0.85*(!y.crange[1] - !y.crange[0])
                 msg = strtrim(string(round(eexam)),2)
-                msg[nexam] += ' eV'
+                msg[0] = strtrim(string(pot,format='(f6.1)'),2)
+                msg[nexam-1] += ' eV'
                 
-                for i=0,nexam do begin
-                   oplot,[vexam[i],vexam[i]],!y.crange,linestyle=1
-                   xyouts,xmsg[i],ymsg,msg[i],/data,charsize=csize2
+                for i=0,(nexam-1) do begin
+                   oplot,[vexam[i],vexam[i]],!y.crange,linestyle=1,color=6
+                   xyouts,xmsg[i],ymsg,msg[i],/data,charsize=csize2,color=6
                 endfor
                 !p.multi=0
-                ;stop
             endif
  
          endif 
@@ -1107,7 +1113,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
         endif
 
         IF keyword_set(dir) THEN BEGIN
-          print,B_mso[0],B_elev
+          ; print,B_mso[0],B_elev
         
           oplot,[90.,90.],[0.1,10],line=2
           dirname = replicate('',4)

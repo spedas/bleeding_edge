@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jun 25 18:16:35 2022.<P>
+<STRONG>Last modified: </STRONG>Mon Jun 27 18:16:29 2022.<P>
  
 <HR>
  
@@ -333,6 +333,9 @@ Set /anc to load ancillary data files that include more detailed information fro
 typically used for calibration and checks by the instrument team, and should not be needed for most users. It is recommended that you 
 contact the instrument team if you wish to use any parameters loaded using this keyword.
 
+Set /flag to load a second set of ancillary data files that contain additional flag information, that was used to create the final flag variable
+     mvn_sta_l3_density_quality_flag.
+
 Set coltab as a float/integer to the desired color table, so that tplot variable labels can be colored correctly. If not set, the default
      value of 43 is used, via loadct2, 43.
 
@@ -347,6 +350,9 @@ Set /qualc if you are using Mike Chaffins qualcolors colortable software. This s
 If you set /leavecolors, the routine will not set any colors and will ignore the coltab and qualc keywords. Use this if you do not 
      want this routine loading a new colortable. You can fix the tplot colors outside of this routine using 
          options, 'tplotname', colors=[1,2,3,4,5]
+
+Set filesloaded to a variable that will contain the filenames of the tplot files loaded. This output will be in string format. Files are appended in the order loaded,
+     so science, ancillary and flag filenames, if /anc and /flag are set. 
 
 
 OUTPUTS: 

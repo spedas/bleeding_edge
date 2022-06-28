@@ -26,7 +26,7 @@
 ;$LastChangedRevision: 25588 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elfin/elf_cal_fgm.pro $
 ;-
-pro elf_cal_fgm, tvars, level=level, error=error
+pro elf_cal_fgm, tvars, probe=probe, level=level, error=error
 
   ; check and initialize parameters
   error = 0
@@ -40,16 +40,26 @@ pro elf_cal_fgm, tvars, level=level, error=error
   ; calibration data 
   ; TO DO: this should be in a calibration file, for now it's hard coded
   ; elf_get_fgm_cal
-  ax1_off=-251.
-  ax1_scl=109.2
-  ax2_off=-35.
-  ax2_scl=111.4
-  ax3_off=470.
-  ax3_scl=103.4  
 
   ; get fgm data and calibrate it
   if level EQ 'l1' then begin
      for i=0,n_elements(tvars)-1 do begin
+         probe = strmid(tvars[i],2,1)
+         if probe eq 'a' then begin
+           ax1_off=-251.
+           ax1_scl=109.2
+           ax2_off=-35.
+           ax2_scl=111.4
+           ax3_off=470.
+           ax3_scl=103.4
+         endif else begin
+           ax1_off=-558.
+           ax1_scl=116.8
+           ax2_off=-277.
+           ax2_scl=118.1
+           ax3_off=-511.
+           ax3_scl=122.3
+         endelse
          get_data, tvars[i], data=d, dlimits=dl, limits=l
          if is_struct(d) then begin
             bx_nt = d.y[*,0]/ax1_scl - ax1_off
