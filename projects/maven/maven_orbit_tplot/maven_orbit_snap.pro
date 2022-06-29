@@ -144,8 +144,8 @@
 ;       IONO:     Plot a dashed circle at this altitude.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-06-16 16:06:06 -0700 (Thu, 16 Jun 2022) $
-; $LastChangedRevision: 30866 $
+; $LastChangedDate: 2022-06-28 16:51:42 -0700 (Tue, 28 Jun 2022) $
+; $LastChangedRevision: 30890 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -166,7 +166,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     return
   endif
 
-  if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
+  if (size(windex,/type) eq 0) then putwin, config=0, /silent  ; putwin acts like window
 
   a = 1.0
   phi = findgen(49)*(2.*!pi/49)
@@ -362,7 +362,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (windex eq -1) then putwin, /config
+    if (windex eq -1) then putwin, /config, /silent
     mnum = fix(monitor[0])
   endif else if (windex gt -1) then mnum = secondarymon
 
@@ -387,7 +387,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   endif
 
   if (cyflg) then begin
-    putwin, /free, xsize=600, ysize=350, rel=Owin, dx=10, scale=wscale  ; MSO cylindrical
+    putwin, /free, xsize=600, ysize=350, rel=Owin, dx=10, /bottom, scale=wscale  ; MSO cylindrical
     Cwin = !d.window
   endif
 
