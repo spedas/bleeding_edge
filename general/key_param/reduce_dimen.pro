@@ -38,6 +38,9 @@ endif else begin
    y = data.y(*,*,range(0):range(1))
 endelse
 
+;
+dim = dimen(y)
+
 if ndimen(vrange) eq 2 then vrange = total(vrange,1,/nan)/total(finite(vrange),1)
 
 vrange = vrange(range)
@@ -46,6 +49,7 @@ if ndimen(y) eq 3 then begin
   if keyword_set(nan) then y= total(y,d+1,/nan)/total(finite(y),d+1) $
   else  y = total(y,d+1)/dim(d)
 endif
+
 data = {x:data.x,y:y,v:v}
 extract_tags,data,options
 

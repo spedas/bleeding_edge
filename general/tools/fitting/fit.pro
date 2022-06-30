@@ -308,8 +308,8 @@ end
 ;           - Allowed vectors and recursively searched structures to be fit as well.
 ;           
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-07-14 16:07:22 -0700 (Wed, 14 Jul 2021) $
-; $LastChangedRevision: 30126 $
+; $LastChangedDate: 2022-06-29 16:35:37 -0700 (Wed, 29 Jun 2022) $
+; $LastChangedRevision: 30892 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/fitting/fit.pro $
 ;           
 ;           
@@ -484,6 +484,7 @@ pro fit, x, yt, $
               yfit1 = (call_function( Function_name_com, x, param=tparams))[*]
               if logf then yfit1 = alog(yfit1)
               pder[*,term] = (yfit1-yfit)/inc
+              ;pder[where(pder[*,term] eq 0),term] = !values.f_nan
             endfor
           endif else begin       ; The user's procedure will compute partial derivatives
             pder = dblarr(ndat,nterms)
@@ -535,7 +536,13 @@ pro fit, x, yt, $
           ds = ((y-yfit)*w)[*]
           wf = where(finite(ds),/null)
           if keyword_set(wf) eq 0 then begin
-            break
+            ; Return Nan filled result
+            nul_params = fill_nan(params)
+            dparams = nul_params
+            result = { par:nul_params,  dpar:dparams,  chi:sqrt(chi2),  nterms:nterms, npdernz:npdernz ,its:iter , qflag:qflag ,ndat:ndat}
+            if keyword_set(pre_result) then result = create_struct(pre_result,result)
+            if verbose eq 1 then print,'NO DATA - RETURNING'
+            return
           endif
           ds = ds[wf]
           pder = pder[wf,*]
