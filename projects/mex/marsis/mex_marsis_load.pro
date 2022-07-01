@@ -12,8 +12,8 @@
 ;       Yuki Harada on 2017-05-03
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2022-02-17 22:59:31 -0800 (Thu, 17 Feb 2022) $
-; $LastChangedRevision: 30598 $
+; $LastChangedDate: 2022-06-29 22:00:27 -0700 (Wed, 29 Jun 2022) $
+; $LastChangedRevision: 30893 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/marsis/mex_marsis_load.pro $
 ;-
 
@@ -356,7 +356,8 @@ for orbnum=orbnumr[0],orbnumr[1] do begin
    dat = replicate( {orbnum:long(orbnum), $
                      time:!values.d_nan, $
                      freq:make_array(value=!values.f_nan,160), $
-                     spec:make_array(value=!values.f_nan,160,80)} , ntime )
+                     spec:make_array(value=!values.f_nan,160,80), $
+                     header:bytarr(160,80)}, ntime )
 
    dprint,'reading in '+f
    openr,unit,f,/get_lun
@@ -382,6 +383,7 @@ for orbnum=orbnumr[0],orbnumr[1] do begin
       dat[itime].time = time_double(SCET_STRING,tf='YYYY-DOYThh:mm:ss.fff') ;- UTC_ASCII  - Spacecrafte event time in human readable ISO-8601 format
       dat[itime].freq[ifreq] = FREQUENCY
       dat[itime].spec[ifreq,*]= SPECTRAL_DENSITY
+      dat[itime].header[ifreq,*] = bytdum[0:79] ;- store header info.
    endfor
    free_lun,unit
 

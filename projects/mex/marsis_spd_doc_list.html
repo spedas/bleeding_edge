@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Jun 29 18:16:29 2022.<P>
+<STRONG>Last modified: </STRONG>Thu Jun 30 18:16:28 2022.<P>
  
 <HR>
  
@@ -23,6 +23,8 @@ This page was created by the IDL library routine
 <br>defines common blocks for MEX/MARSIS data
 <LI><A HREF="#MEX_MARSIS_EX_MISSION">MEX_MARSIS_EX_MISSION</A>
 <br>returns &quot;i&quot;th extended missions from orbit numbers
+<LI><A HREF="#MEX_MARSIS_HEADER_DECODE">MEX_MARSIS_HEADER_DECODE</A>
+<br>Decodes header info. of AIS RDR data
 <LI><A HREF="#MEX_MARSIS_LOAD">MEX_MARSIS_LOAD</A>
 <br>Loads MEX/MARSIS data
 <LI><A HREF="#MEX_MARSIS_RADARGRAM">MEX_MARSIS_RADARGRAM</A>
@@ -61,7 +63,7 @@ This page was created by the IDL library routine
 <A NAME="MEX_MARSIS_EX_MISSION">
 <H2>MEX_MARSIS_EX_MISSION</H2></A>
 <A HREF="#MEX_MARSIS_COM">[Previous Routine]</A>
-<A HREF="#MEX_MARSIS_LOAD">[Next Routine]</A>
+<A HREF="#MEX_MARSIS_HEADER_DECODE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  FUNCTION:
@@ -85,9 +87,37 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="marsis/mex_marsis_ex_mission.pro">projects/mex/marsis/mex_marsis_ex_mission.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MEX_MARSIS_HEADER_DECODE">
+<H2>MEX_MARSIS_HEADER_DECODE</H2></A>
+<A HREF="#MEX_MARSIS_EX_MISSION">[Previous Routine]</A>
+<A HREF="#MEX_MARSIS_LOAD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+       mex_marsis_header_decode
+ PURPOSE:
+       Decodes header info. of AIS RDR data
+       https://space.physics.uiowa.edu/pds/MEX-M-MARSIS-3-RDR-AIS-V1.0/LABEL/AIS_FORMAT.FMT
+ CALLING SEQUENCE:
+       h = mex_marsis_header_decode(byt80)
+ INPUTS:
+       bytarr(80) or bytarr(160,80) or bytarr(160,80,N)
+ KEYWORDS:
+       
+ CREATED BY:
+       Yuki Harada on 2022-06-30
+
+ $LastChangedBy: $
+ $LastChangedDate: $
+ $LastChangedRevision: $
+ $URL: $
+</PRE><P>
+<STRONG>(See <A href="marsis/mex_marsis_header_decode.pro">projects/mex/marsis/mex_marsis_header_decode.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MEX_MARSIS_LOAD">
 <H2>MEX_MARSIS_LOAD</H2></A>
-<A HREF="#MEX_MARSIS_EX_MISSION">[Previous Routine]</A>
+<A HREF="#MEX_MARSIS_HEADER_DECODE">[Previous Routine]</A>
 <A HREF="#MEX_MARSIS_RADARGRAM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -104,8 +134,8 @@ This page was created by the IDL library routine
        Yuki Harada on 2017-05-03
 
  $LastChangedBy: haraday $
- $LastChangedDate: 2022-02-17 22:59:31 -0800 (Thu, 17 Feb 2022) $
- $LastChangedRevision: 30598 $
+ $LastChangedDate: 2022-06-29 22:00:27 -0700 (Wed, 29 Jun 2022) $
+ $LastChangedRevision: 30893 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/marsis/mex_marsis_load.pro $
 </PRE><P>
 <STRONG>(See <A href="marsis/mex_marsis_load.pro">projects/mex/marsis/mex_marsis_load.pro</A>)</STRONG><P>

@@ -22,20 +22,20 @@ if not keyword_set(data) then return
 if not keyword_set(newname) then $
   newname = string(name,d,n1,n2,format='(a0,"-",i0,"-",i0,":",i0)')
 
-dim = dimen(data.y)
+;dim = dimen(data.y)
 
 range = [n1,n2]
 
 if d eq 1 then begin
    v = reform(data.v2)
    vrange= reform(data.v1)
-   if n_elements(range) eq 0 then range = [0,dim(1)-1] 
-   y = data.y(*,range(0):range(1),*)
+   if n_elements(range) eq 0 then range = [0,dim[1]-1] 
+   y = reform(data.y(*,range[0]:range[1],*))
 endif else begin
    v = reform(data.v1)
    vrange= reform(data.v2)
-   if n_elements(range) eq 0 then range = [0,dim(2)-1]
-   y = data.y(*,*,range(0):range(1))
+   if n_elements(range) eq 0 then range = [0,dim[2]-1]
+   y = reform(data.y(*,*,range[0]:range[1]))
 endelse
 
 ;
@@ -43,11 +43,11 @@ dim = dimen(y)
 
 if ndimen(vrange) eq 2 then vrange = total(vrange,1,/nan)/total(finite(vrange),1)
 
-vrange = vrange(range)
+vrange = vrange[range]
 
 if ndimen(y) eq 3 then begin
   if keyword_set(nan) then y= total(y,d+1,/nan)/total(finite(y),d+1) $
-  else  y = total(y,d+1)/dim(d)
+  else  y = total(y,d+1)/dim[d]
 endif
 
 data = {x:data.x,y:y,v:v}
