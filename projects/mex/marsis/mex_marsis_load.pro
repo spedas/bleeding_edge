@@ -12,8 +12,8 @@
 ;       Yuki Harada on 2017-05-03
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2022-06-29 22:00:27 -0700 (Wed, 29 Jun 2022) $
-; $LastChangedRevision: 30893 $
+; $LastChangedDate: 2022-06-30 22:36:55 -0700 (Thu, 30 Jun 2022) $
+; $LastChangedRevision: 30895 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/marsis/mex_marsis_load.pro $
 ;-
 
@@ -130,7 +130,7 @@ endif else begin ;- public, from spice
    res = 4d
    ndat = long((tr[1]-tr[0])/res) + 1
    times = tr[0] + res*dindgen(ndat)
-   geo = spice_body_pos('MEX', 'MARS', frame='IAU_MARS', utc=times)
+   geo = spice_body_pos('MEX', 'MARS', frame='IAU_MARS', utc=times,check='MEX')
    ;;; get areoid altitude
    alt = mvn_get_altitude(reform(geo[0,*]),reform(geo[1,*]),reform(geo[2,*]))
    dat = replicate( {orbnum:0l, $ ;- dummy, not used

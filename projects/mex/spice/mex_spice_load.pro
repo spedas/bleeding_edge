@@ -18,9 +18,9 @@
 ;CREATED BY:      Takuya Hara on 2015-04-04.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2021-02-22 11:18:55 -0800 (Mon, 22 Feb 2021) $
-; $LastChangedRevision: 29692 $
+; $LastChangedBy: haraday $
+; $LastChangedDate: 2022-06-30 22:38:06 -0700 (Thu, 30 Jun 2022) $
+; $LastChangedRevision: 30896 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/spice/mex_spice_load.pro $
 ;
 ;-
@@ -42,8 +42,8 @@ PRO mex_spice_load, trange=time, kernels=kernels, pos=pos, _extra=extra, $
   IF SIZE(time, /type) NE 0 THEN IF N_ELEMENTS(time) GT 2 THEN times = time
   IF SIZE(times, /type) EQ 7 THEN times = time_double(times)
 
-  mso = spice_body_pos('MEX', 'MARS', frame='MSO', utc=times)
-  geo = spice_body_pos('MEX', 'MARS', frame='IAU_MARS', utc=times)
+  mso = spice_body_pos('MEX', 'MARS', frame='MSO', utc=times, check_obj='MEX')
+  geo = spice_body_pos('MEX', 'MARS', frame='IAU_MARS', utc=times, check_obj='MEX')
   cspice_bodvrd, 'MARS', 'RADII', 3, radii
   re = TOTAL(radii[0:1])/2
   rp = radii[2]
