@@ -2,8 +2,8 @@
 ;  spp_data_product
 ;  This basic object is the entry point for defining and obtaining all data for all data products
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-08-15 19:22:29 -0700 (Sun, 15 Aug 2021) $
-; $LastChangedRevision: 30208 $
+; $LastChangedDate: 2022-07-06 12:59:34 -0700 (Wed, 06 Jul 2022) $
+; $LastChangedRevision: 30908 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_data_product__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -134,7 +134,7 @@ function spp_data_product::getdat,trange=trange,index=index,nsamples=nsamples,va
       dprint,n_elements(index)
       dats = average(dats)
     endif else begin
-      if isa(trange) then dprint,dlevel=2,verbose=verbose,'returning all values within range'
+      if isa(trange) then dprint,dlevel=3,verbose=verbose,'returning all values within range'
     endelse
     if keyword_set(dats) then dprint,dlevel=4,verbose=verbose,self.name+' '+string(index[0])+' '+time_string(dats[0].time)
     return,dats

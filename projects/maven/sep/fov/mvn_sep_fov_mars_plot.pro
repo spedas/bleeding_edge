@@ -10,7 +10,7 @@ pro mvn_sep_fov_mars_mapper,xyziau,phi,theta
 
 end
 
-pro mvn_sep_fov_mars_plot,sur,mvn_sep_fov,magnitude=magnitude,sun=sun,mvn=mvn,overplot=overplot,edge=edge
+pro mvn_sep_fov_mars_plot,sur,mvn_sep_fov,magnitude=magnitude,sun=sun,mvn=mvn,overplot=overplot,edge=edge,save=save,time=time
 
   pos=mvn_sep_fov.pos.mar
   rad=mvn_sep_fov.rad.mar
@@ -38,11 +38,13 @@ pro mvn_sep_fov_mars_plot,sur,mvn_sep_fov,magnitude=magnitude,sun=sun,mvn=mvn,ov
   mvn_sep_fov_mars_mapper,teriau,phiter,thetater
   mvn_sep_fov_mars_mapper,suniau,phisun,thetasun
   mvn_sep_fov_mars_mapper,mvniau,phimvn,thetamvn
-
-  p=getwindows('mvn_sep_fov_mars_plot')
-  if keyword_set(p) then p.setcurrent else p=window(name='mvn_sep_fov_mars_plot')
+  
+  name='mvn_sep_fov_mars_plot'
+  p=getwindows(name)
+  if keyword_set(p) then p.setcurrent else p=window(name=name)
   if ~keyword_set(overplot) then begin
     p.erase
+    p.refresh,/disable
     p=plot([0],/nodat,/aspect_ratio,xrange=[0,360],yrange=[-90,90],xtickinterval=30.,ytickinterval=15.,xminor=5.,yminor=2.,xtitle='East Longitude (degrees)',ytitle='Latitude (degrees)',/current)
   endif
   if keyword_set(sun) then p=plot([phisun,phisun],[thetasun,thetasun],/o,name='Sun',sym_color='orange',sym='o',/sym_filled,' ')
@@ -58,5 +60,9 @@ pro mvn_sep_fov_mars_plot,sur,mvn_sep_fov,magnitude=magnitude,sun=sun,mvn=mvn,ov
   if nwnan gt 0 then p=scatterplot(phifov[wnan],thetafov[wnan],magnitude=crscaled[wnan],sym='.',/o,rgb=rgb)
   p=plot(phisur,thetasur,'.',/o)
   p=plot(phiter,thetater,'r.',/o)
+  p=text(0,0,time_string(time)+'sep1time')
+  p.refresh
+  dir='Desktop/sep/fov/'+name+'/'
+  if keyword_set(save) then p.save,resolution=100,dir+name+'_'+time_string(time,format=6)+'.png'
 
 end

@@ -36,9 +36,9 @@
 ;SEE ALSO:    "GET_DATA", "TPLOT_NAMES",  "TPLOT", "OPTIONS"
 ;
 ;CREATED BY:    Davin Larson
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-29 01:22:27 -0700 (Sun, 29 Aug 2021) $
-; $LastChangedRevision: 30267 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2022-07-06 12:47:09 -0700 (Wed, 06 Jul 2022) $
+; $LastChangedRevision: 30907 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/store_data.pro $
 ;-
 pro store_data,name, time,ydata,values, $
@@ -201,7 +201,7 @@ pro store_data,name, time,ydata,values, $
     index = name
     name = data_quants[index].name
   endif else if not keyword_set(delete) then begin
-    dprint,verbose=verbose,'Invalid handle name or index'
+    dprint,dlevel=2,verbose=verbose,'Invalid handle name or index'
     error=1
     return
   endif

@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-06-14 15:34:18 -0700 (Tue, 14 Jun 2022) $
-; $LastChangedRevision: 30855 $
+; $LastChangedDate: 2022-07-06 12:14:59 -0700 (Wed, 06 Jul 2022) $
+; $LastChangedRevision: 30899 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_hkp_apdat__define.pro $
 
 
@@ -45,8 +45,9 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
 
 
   flt=2.5/(2.^15)
-  r=[1e9,15.4,6.65,6.65,-6.65]
-  coeff=(10+abs(r))/r
+  r=[1e9,15.4,6.65,6.65,6.65]
+  coeff=(10+r)/r
+  voltages=[1.5,3.3,5,6,-6]
 
   if 0 then begin
     adcs =  swfo_data_select(ccsds_data,(d+2*[1:8] )*8, 16 ,/signed) *flt
@@ -111,7 +112,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         ;adc_5vd:                swfo_data_select(ccsds_data,(d+44*2  )*8,16,/signed)*flt,$
         ;adc_p5va:               swfo_data_select(ccsds_data,(d+45*2  )*8,16,/signed)*flt,$
         ;adc_n5va:               swfo_data_select(ccsds_data,(d+46*2  )*8,16,/signed)*flt,$
-        adc_voltages:           swfo_data_select(ccsds_data,(d+[42:46]*2  )*8,16,/signed)*flt*coeff,$
+        adc_voltages:           swfo_data_select(ccsds_data,(d+[42:46]*2  )*8,16,/signed)*flt*coeff-voltages,$
         adc_bias_current:       swfo_data_select(ccsds_data,(d+47*2  )*8,16,/signed)*flt,$
         ;adc_temp_s1:            swfo_data_select(ccsds_data,(d+48*2  )*8,16,/signed)*flt,$
         ;adc_temp_s1:            swfo_therm_temp(swfo_data_select(ccsds_data,(d+48*2 )*8,16,/signed),param=temp_par_16bit),$

@@ -39,8 +39,8 @@ end
 ; This routine is in the process of being modified to use SPICE Kernels to correct for clock drift as needed.
 ; Author: Davin Larson
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-03-09 19:26:00 -0800 (Tue, 09 Mar 2021) $
-; $LastChangedRevision: 29749 $
+; $LastChangedDate: 2022-07-06 12:59:34 -0700 (Wed, 06 Jul 2022) $
+; $LastChangedRevision: 30908 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_spc_met_to_unixtime.pro $
 ;-
 function spp_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=correct_clockdrift,reset=reset,ephemeris_time=et,kernels=kernels  ;,prelaunch = prelaunch
@@ -81,6 +81,7 @@ function spp_spc_met_to_unixtime,input,reverse=reverse,correct_clockdrift=correc
   if n_elements(input) eq 0 then message,'Must provide input'
   epoch =  1262304000d
   epoch =  1262304000d -3  ;  '2010-1-1'  add 3 leap seconds
+  if systime(1) gt time_double('2023-7-1') then dprint,'check for possible new leap second or fix the line above to use the spice-loaded lsk kernel'
 
   if keyword_set(reverse) then begin
     if n_params() ge 1 then unixtime = input

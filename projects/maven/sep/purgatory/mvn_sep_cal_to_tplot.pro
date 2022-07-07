@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-07-27 21:41:52 -0700 (Tue, 27 Jul 2021) $
-; $LastChangedRevision: 30145 $
+; $LastChangedDate: 2022-07-06 12:39:57 -0700 (Wed, 06 Jul 2022) $
+; $LastChangedRevision: 30904 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/purgatory/mvn_sep_cal_to_tplot.pro $
 
 pro mvn_sep_cal_to_tplot,newdat,sepnum=sepnum,qfilter=qfilter,smoothcounts=smoothcounts,lowres=lowres,arc=arc
@@ -87,6 +87,7 @@ pro mvn_sep_cal_to_tplot,newdat,sepnum=sepnum,qfilter=qfilter,smoothcounts=smoot
   w = where(bad, count)
   ; if (count gt 0L) then data[w] = !values.f_nan
   store_data,prefix+'F_elec_eflux',newdat.time,transpose(data),transpose(newdat.f_elec_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1.,1e5],zlog:1,panel_size:panel_size}
+  store_data,prefix+'F_elec_eflux_unc',newdat.time,transpose(ddata),transpose(newdat.f_elec_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1.,1e5],zlog:1,panel_size:panel_size}
 
   data = newdat.r_elec_eflux
   ddata = newdat.r_elec_eflux_unc
@@ -94,6 +95,7 @@ pro mvn_sep_cal_to_tplot,newdat,sepnum=sepnum,qfilter=qfilter,smoothcounts=smoot
   w = where(bad, count)
   ; if (count gt 0L) then data[w] = !values.f_nan
   store_data,prefix+'R_elec_eflux',newdat.time,transpose(data),transpose(newdat.R_elec_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1.,1e5],zlog:1,panel_size:panel_size}
+  store_data,prefix+'R_elec_eflux_unc',newdat.time,transpose(ddata),transpose(newdat.R_elec_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1.,1e5],zlog:1,panel_size:panel_size}
 
   data = newdat.f_ion_flux
   ddata = newdat.f_ion_flux_unc
@@ -129,6 +131,7 @@ pro mvn_sep_cal_to_tplot,newdat,sepnum=sepnum,qfilter=qfilter,smoothcounts=smoot
   w = where(bad, count)
   ; if (count gt 0L) then data[w] = !values.f_nan
   store_data,prefix+'F_elec_flux',newdat.time,transpose(data),transpose(newdat.f_elec_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
+  store_data,prefix+'F_elec_flux_unc',newdat.time,transpose(ddata),transpose(newdat.f_elec_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
 
   if 0 then begin
     data= rr # data
@@ -143,7 +146,8 @@ pro mvn_sep_cal_to_tplot,newdat,sepnum=sepnum,qfilter=qfilter,smoothcounts=smoot
   bad = data lt .0* ddata
   w = where(bad, count)
   ; if (count gt 0L) then data[w] = !values.f_nan
-  store_data,prefix+'R_elec_flux',newdat.time,transpose(data),transpose(newdat.f_elec_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
+  store_data,prefix+'R_elec_flux',newdat.time,transpose(data),transpose(newdat.r_elec_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
+  store_data,prefix+'R_elec_flux_unc',newdat.time,transpose(ddata),transpose(newdat.r_elec_energy),dlim={spec:1,yrange:[10,6000.],ystyle:1,ylog:1,zrange:[1,1e4],zlog:1,panel_size:panel_size}
 
   if 0 then begin
     data= rr # data

@@ -1,23 +1,34 @@
 ;Ali: February 2020
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-30 19:39:00 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 30005 $
+; $LastChangedDate: 2022-07-06 12:59:34 -0700 (Wed, 06 Jul 2022) $
+; $LastChangedRevision: 30908 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_wav_data.pro $
 ; $ID: $
 
 ;no keyword set: loads daily 1min resolution files (default: fairly fast for use for up to a few days timerange)
-;/month loads monthly 1min resolution files (used for longer than a few days timerange)
-;/hires  loads daily  1sec resolution files (loads faster than /hourly below, since needs to load only 1 file per day)
-;/hourly loads hourly 1sec resolution files (24 files per day)
-;/hourly,/hires loads hourly full-resolution files (only recommended for short timespans, since file sizes can be huge!)
-;the below keywords are typically run by Ali:
-;/genhourly generates hourly full-resolution and 1sec files
-;/gendaily generates daily 1sec and 1min files from the hourly 1sec files
-;/genmonthly generates monthly 1min files from the daily 1min files
+;/month: loads monthly 1min resolution files (used for longer than a few days timerange)
+;/hires: loads daily  1sec resolution files (loads faster than /hourly below, since needs to load only 1 file per day)
+;/hourly: loads hourly 1sec resolution files (24 files per day)
+;/hourly,/hires: loads hourly full-resolution files (only recommended for short timespans, since file sizes can be huge!)
+;the below keywords are typically only run by Ali to generate the wavelet files:
+;/genhourly: generates hourly full-resolution and 1sec files.
+;/gendaily: generates daily 1sec and 1min files from the hourly 1sec files.
+;/genmonthly: generates monthly 1min files from the daily 1min files.
+;/generate: runs the code with the above 3 keywords set in succession.
 
-pro spp_wav_data,trange=trange,types=types,hires=hires,hourly=hourly,monthly=monthly,genhourly=genhourly,gendaily=gendaily,genmonthly=genmonthly
+pro spp_wav_data,trange=trange,types=types,hires=hires,hourly=hourly,monthly=monthly,$
+  genhourly=genhourly,gendaily=gendaily,genmonthly=genmonthly,generate=generate
 
   t1=systime(1)
+
+  if keyword_set(generate) then begin
+    spp_wav_data,/genhourly
+    spp_wav_data,/gendaily
+    spp_wav_data,/genmonthly
+    dprint,'Finished everything in '+strtrim(systime(1)-t1,2)+' seconds on '+systime()
+    return
+  endif
+
   dir='/disks/data/psp/data/sci/'
   path='psp/data/sci/sweap/.wav/$TYPE$/YYYY/MM/DD/psp_fld_l2_$TYPE$_YYYYMMDD'
   if keyword_set(monthly) then path='psp/data/sci/sweap/.wav/$TYPE$_1sec/YYYY/MM/psp_fld_l2_$TYPE$_YYYYMM'

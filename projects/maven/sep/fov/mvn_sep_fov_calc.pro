@@ -14,7 +14,7 @@ pro mvn_sep_fov_calc,times,nospice=nospice
   t1=systime(1)
   nt=n_elements(times)
   nobj=n_elements(objects)
-  fnan=!values.d_nan ;dnan really! Am I using double due to higher precision for dot products?
+  fnan=!values.d_nan ;dnan really! Using double to keep higher precision for dot products.
   pos=replicate({sun:fnan,ear:fnan,mar:fnan,pho:fnan,dem:fnan,cm1:fnan,sx1:fnan,ram:fnan},[3,nt])
   tal=pos ;tangent altitude (km) ['sphere','ellipsoid','areoid']
   pdm=reform(pos[0,*]) ;position dot mars (for occultation)
@@ -75,20 +75,16 @@ pro mvn_sep_fov_calc,times,nospice=nospice
       sep2=*(sep2_svy.x)
     endelse
     ndet=n_elements(mvn_sep_fov0.detlab)
-    for idet=0,ndet-1 do begin
-      ind=where(map1.name eq mvn_sep_fov0.detlab[idet])
-      mvn_sep_fov.crl[0,idet]=total(sep1.data[ind[0]+0:ind[0]+5],1)/sep1.delta_time ;low  energy count rate
-      mvn_sep_fov.crh[0,idet]=total(sep1.data[ind[0]+6:ind[0]+9],1)/sep1.delta_time ;high energy count rate (for hi background elimination)
-      sep2crl_before_interpol=total(sep2.data[ind[0]+0:ind[0]+5],1)/sep2.delta_time
-      sep2crh_before_interpol=total(sep2.data[ind[0]+6:ind[0]+9],1)/sep2.delta_time
-      ;    mvn_sep_fov.crl[1,idet]=exp(interpol(alog(sep2crl_before_interpol),sep2.time,times,/nan))
-      ;    mvn_sep_fov.crh[1,idet]=exp(interpol(alog(sep2crh_before_interpol),sep2.time,times,/nan))
-      mvn_sep_fov.crl[1,idet]=interpol(sep2crl_before_interpol,sep2.time,times,/nan)
-      mvn_sep_fov.crh[1,idet]=interpol(sep2crh_before_interpol,sep2.time,times,/nan)
-    endfor
-
+      for idet=0,ndet-1 do begin
+        ind=where(map1.name eq mvn_sep_fov0.detlab[idet])
+        mvn_sep_fov.crl[0,idet]=interpol(total(sep1.data[ind[0]+0:ind[0]+5],1)/sep2.delta_time,sep1.time,times,/nan) ;low  energy count rate
+        mvn_sep_fov.crh[0,idet]=interpol(total(sep1.data[ind[0]+6:ind[0]+9],1)/sep1.delta_time,sep1.time,times,/nan) ;high energy count rate (for hi background elimination)
+        mvn_sep_fov.crl[1,idet]=interpol(total(sep2.data[ind[0]+0:ind[0]+5],1)/sep2.delta_time,sep2.time,times,/nan)
+        mvn_sep_fov.crh[1,idet]=interpol(total(sep2.data[ind[0]+6:ind[0]+9],1)/sep2.delta_time,sep2.time,times,/nan)
+      endfor
+    sep1_att=exp(interpol(alog(sep1.att),sep1.time,times,/nan))
     sep2_att=exp(interpol(alog(sep2.att),sep2.time,times,/nan))
-    att=transpose([[sep1.att],[sep2_att]])
+    att=transpose([[sep1_att],[sep2_att]])
   endif else att=replicate(1.,[2,nt])
 
   occalt=mvn_sep_fov0.occalt ;crossing altitude (km) maximum altitude for along path integration

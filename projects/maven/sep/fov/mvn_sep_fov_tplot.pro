@@ -5,7 +5,7 @@
 ;fraction: carries out mars shine calculations (slow, only needed once)
 ;resdeg: angular resolution for fov fraction calculations
 
-pro mvn_sep_fov_tplot,tplot=tplot,store=store,fraction=fraction,resdeg=resdeg
+pro mvn_sep_fov_tplot,tplot=tplot,store=store,fraction=fraction,resdeg=resdeg,vector=vector
 
   @mvn_sep_fov_common.pro
 
@@ -26,7 +26,7 @@ pro mvn_sep_fov_tplot,tplot=tplot,store=store,fraction=fraction,resdeg=resdeg
 
   if keyword_set(fraction) then begin
     dprint,'calculating mars shine. this might take a while to complete...'
-    fraction=mvn_sep_fov_mars_shine(mvn_sep_fov0.rmars,(replicate(1.,3)#rad.mar)*pos.mar,pos.sun,resdeg=resdeg,/fov)
+    fraction=mvn_sep_fov_mars_shine(mvn_sep_fov0.rmars,(replicate(1.,3)#rad.mar)*pos.mar,pos.sun,resdeg=resdeg,/fov,vector=vector)
     fraction.time=times
     mvn_sep_fov1=fraction ;store in common block
     ;   fraction2=mvn_sep_anc_fov_mars_fraction(times,check_objects=['MAVEN_SC_BUS']) ;Rob's routine (slow)
@@ -45,6 +45,7 @@ pro mvn_sep_fov_tplot,tplot=tplot,store=store,fraction=fraction,resdeg=resdeg
     sunkeepout=[20.5,25.0] ;sun keepout [phi,theta]
     cos15=cos(!dtor*15.) ;sx1 sensitive fov
     height=[[.6,0,0,0,0,0],[0,.5,0,0,0,0],[0,0,.4,0,0,0],[0,0,0,.3,0,0],[0,0,0,0,.2,0],[0,0,0,0,0,.1]]
+    height=replicate(1.,6)#findgen(6,start=6,increment=-1)*identity(6)/10.
     store_data,'mvn_radial_distance_(km)',times,[[rad.sun],[rad.ear],[rad.mar],[rad.pho],[rad.dem]],dlim={ylog:1,colors:'kbrgm',labels:mvn_sep_fov0.objects,labflag:-1,ystyle:3}
     store_data,'mvn_speed_(km/s)',times,rad.ram,dlim={ylog:1,ystyle:2}
     store_data,'mvn_mars_dot_object',times,[[pdm.cm1],[pdm.sx1],[pdm.sun],[pdm.mar]],dlim={colors:'rbgk',labels:['Crab','Sco X1','Sun','Surface'],labflag:-1,ystyle:2,constant:0}
@@ -86,7 +87,7 @@ pro mvn_sep_fov_tplot,tplot=tplot,store=store,fraction=fraction,resdeg=resdeg
     if mvn_sep_fov0.lowres then lrs='5min_' else lrs=''
     if mvn_sep_fov0.arc then arc='arc' else arc='svy'
     case tplot of
-      1: tplot,'mvn_sep??_fov_fraction mvn_alt_(km) mvn_speed_(km/s) mvn_sep_dot_ram mvn_sep_dot_sun mvn_sep_dot_mar mvn_sep_dot_sx1 mvn_radial_distance_(km) mvn_mars_tanalt(km) mvn_sep_occultation mvn_sep?_lowe_crate mvn_sep?_high_crate mvn_sep_att mvn_'+lrs+'SEPS_'+arc+'_ATT mvn_'+lrs+'SEPS_'+arc+'_DURATION'
+      1: tplot,'mvn_sep??_fov_fraction mvn_alt_(km) mvn_speed_(km/s) mvn_sep_dot_ram mvn_sep_dot_sun mvn_sep_dot_mar mvn_sep_dot_sx1 mvn_radial_distance_(km) mvn_mars_tanalt(km) mvn_sep_occultation mvn_sep_???_infov mvn_sep?_lowe_crate mvn_sep?_high_crate mvn_sep_att mvn_'+lrs+'SEPS_'+arc+'_ATT mvn_'+lrs+'SEPS_'+arc+'_DURATION'
       2: tplot,'mvn_'+lrs+'sep?_?-?_Rate_Energy',/add
     endcase
   endif

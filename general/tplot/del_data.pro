@@ -1,4 +1,4 @@
-PRO del_data,names,except_ptrs=except_ptrs
+PRO del_data,names,except_ptrs=except_ptrs,verbose=verbose
 ;+
 ;NAME:                  del_data
 ;PURPOSE:
@@ -14,6 +14,6 @@ PRO del_data,names,except_ptrs=except_ptrs
 ;CREATED BY:            Frank Marcoline
 ;-
 if not keyword_set(names) then dprint,'Input required!' $
-else  store_data,delete=tnames(names,cnt),except_ptrs=except_ptrs
+else  store_data,delete=tnames(names,cnt),except_ptrs=except_ptrs,verbose=verbose
 
 end

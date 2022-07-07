@@ -8,12 +8,12 @@
 ;group: sequence group: 0:middle of multipacket (very rare, huge packets? usually sign of error) 1:start of multi-packet 2:end of multi-packet 3:single packet
 ;+
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
-; $LastChangedRevision: 30043 $
+; $LastChangedDate: 2022-07-06 12:44:46 -0700 (Wed, 06 Jul 2022) $
+; $LastChangedRevision: 30906 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/spp_swp_wrp_stat.pro $
 ;-
 
-pro spp_swp_wrp_stat,load=load,cdf=cdf,apid,capid=capid0,noheader=noheader,stats=stats,all=all,comp=comp,group=group,trange=trange,tplot_comp_ratio=tplot_comp_ratio
+pro spp_swp_wrp_stat,load=load,cdf=cdf,apid,capid=capid0,noheader=noheader,stats=stats,all=all,comp=comp,group=group,trange=trange,tplot_comp_ratio=tplot_comp_ratio,original_time=original_time
 
   spp_swp_apdat_init
   apr=[0,'7ff'x] ;range of all apids: to check for possible bad packets
@@ -29,7 +29,7 @@ pro spp_swp_wrp_stat,load=load,cdf=cdf,apid,capid=capid0,noheader=noheader,stats
     stats2=replicate(stat,[apr[1]-apr[0]+1,wapr[1]-wapr[0]+1])
     names=replicate('',wapr[1]-wapr[0]+1)
     for wapid=wapr[0],wapr[1] do begin
-      spp_swp_wrp_stat,wapid,load=load,cdf=cdf,stats=stats,all=all,comp=comp,group=group,trange=trange,tplot_comp_ratio=tplot_comp_ratio
+      spp_swp_wrp_stat,wapid,load=load,cdf=cdf,stats=stats,all=all,comp=comp,group=group,trange=trange,tplot_comp_ratio=tplot_comp_ratio,original_time=original_time
       for istat=0,3 do stats2[*,wapid-wapr[0]].(istat)=stats.(istat)
       names[wapid-wapr[0]]=(spp_apdat(wapid)).name
     endfor
@@ -63,6 +63,10 @@ pro spp_swp_wrp_stat,load=load,cdf=cdf,apid,capid=capid0,noheader=noheader,stats
       ratio2=total(tottod)/total(tottot)
       if keyword_set(all) || (total(tottot) ne 0) then print,apr1,0,0,ratio,ratio2,format='(a-20,i4,7(" "),"0x",Z03,9f12.3)'
     endforeach
+    totcgbits=total(tottot)*8./1e9
+    totdgbits=total(tottod)*8./1e9
+    print,'Total Compressed Gbits: '+strtrim(totcgbits,2)
+    print,'Total Decompressed Gbits: '+strtrim(totdgbits,2)
     return
   endif
 
@@ -72,7 +76,7 @@ pro spp_swp_wrp_stat,load=load,cdf=cdf,apid,capid=capid0,noheader=noheader,stats
   type=apdat.name
   if (apid lt wapr[0]) || (apid gt wapr[1]) then begin ;apid is not a wrapper apid
     print,apdat.name,apid,apid,format='(a-20,i4,7(" "),"0x",Z03)'
-    for wapid=wapr[0],wapr[1] do spp_swp_wrp_stat,wapid,load=load,cdf=cdf,capid=apid,comp=comp,group=group,trange=trange,tplot_comp_ratio=tplot_comp_ratio,noheader=wapid ne wapr[0]
+    for wapid=wapr[0],wapr[1] do spp_swp_wrp_stat,wapid,load=load,cdf=cdf,capid=apid,comp=comp,group=group,trange=trange,tplot_comp_ratio=tplot_comp_ratio,original_time=original_time,noheader=wapid ne wapr[0]
     return
   endif
 
@@ -104,7 +108,9 @@ pro spp_swp_wrp_stat,load=load,cdf=cdf,apid,capid=capid0,noheader=noheader,stats
     endif else return
   endelse
 
+  if keyword_set(original_time) then tt-=td
   if keyword_set(trange) then begin
+    trange=timerange(trange)
     if n_elements(trange) ne 2 then message,'expected 2-element trange!'
     trange=time_double(trange)
     wt=where((tt gt trange[0]) and (tt lt trange[1]),/null)
@@ -166,7 +172,7 @@ pro spp_swp_wrp_stat,load=load,cdf=cdf,apid,capid=capid0,noheader=noheader,stats
     print,(spp_apdat(ap2)).name,ap2,ap2,nca,tot,tot/dtt,(ad+12+20)/av,av,ad,stdev,stded,100.*stdev/av,100.*stded/(ad+12+20),format='(a-20,i4,7(" "),"0x",Z03,2i12,8f12.3)'
     if keyword_set(tplot_comp_ratio) then begin
       store_data,'psp_swp_'+(spp_apdat(ap2)).name+'_'+type+'_COMP_RATIO_wrap_time',tt[w],(12+20+ds[w])/ps[w]
-      store_data,'psp_swp_'+(spp_apdat(ap2)).name+'_'+type+'_COMP_RATIO_orig_time',tt[w]-td[w],(12+20+ds[w])/ps[w]
+      ;store_data,'psp_swp_'+(spp_apdat(ap2)).name+'_'+type+'_COMP_RATIO_orig_time',tt[w]-td[w],(12+20+ds[w])/ps[w]
     endif
   endfor
 

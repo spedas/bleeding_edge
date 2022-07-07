@@ -10,7 +10,7 @@
 ;
 function mvn_sep_fov_mars_shine,rmars,posmar,possun,fov=fov,resdeg=resdeg,response=response,vector=vector
 
-  if ~keyword_set(vector) then vector=0
+  if n_elements(vector) eq 0 then vector=0
   fnan=!values.f_nan
   srefa=15.5 ;ref (phi) angle
   scrsa=21.0 ;cross (theta) angle
@@ -57,6 +57,7 @@ function mvn_sep_fov_mars_shine,rmars,posmar,possun,fov=fov,resdeg=resdeg,respon
     spoint=replicate(fnan,[3,nphi,nthe,nt])
     radmar=sqrt(total(posmar^2,1)) ;radial distance of MAVEN from Mars (km)
     for ithe=0,nthe-1 do begin
+      if nt gt 1 && ~(ithe mod 10) then dprint,ithe,'   out of',nthe,'  theta steps done.'
       for iphi=0,nphi-1 do begin
         dvec=[x[iphi,ithe],z[iphi,ithe],y[iphi,ithe]]
         pdmmar=total(posmar*rebin(dvec,[3,nt]),1)/radmar
@@ -80,7 +81,7 @@ function mvn_sep_fov_mars_shine,rmars,posmar,possun,fov=fov,resdeg=resdeg,respon
   endif
   if vector eq 0 then begin ;loop over time
     for it=0,nt-1 do begin
-      if ~(it mod 1e4) then dprint,it,'   out of',nt,'  time steps done.'
+      if  nt gt 1 && ~(it mod 1e4) then dprint,it,'   out of',nt,'  time steps done.'
       spoint=mvn_sep_fov_mars_incidence(rmars,posmar[*,it],dvec)
       cossza=reform(total((spoint-rebin(posmar[*,it],[3,nphi*nthe]))*rebin(possun[*,it],[3,nphi*nthe]),1),[nphi,nthe])/rmars
       atmosh=cossza ;need to fix this
@@ -101,7 +102,7 @@ function mvn_sep_fov_mars_shine,rmars,posmar,possun,fov=fov,resdeg=resdeg,respon
     endfor
   endif
 
-  if vector eq 1 or vector eq 2 then begin
+  if vector eq 1 || vector eq 2 then begin
     for isep=0,3 do begin
       wph2=where(abs(phid-spc[isep]) le srefa,/null,nph2)
       fphi=(cos(!dtor*(phid[wph2]-spc[isep]))-cos(!dtor*srefa))/(1.-cos(!dtor*srefa)) ;weighting based on detector angular response

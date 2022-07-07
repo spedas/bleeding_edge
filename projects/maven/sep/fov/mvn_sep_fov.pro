@@ -1,13 +1,14 @@
 ;20180405 Ali
 ;calculates a range of sep fov parameters for different celestial objects and stores them in common block and tplot variables
 ;fov calculations are done in maven_sep1 coordinates
-;lowres: load sep lowres (5min average) data (use with /load keyword)
-;tplot: tplot results
-;load: load sep data
-;spice: load spice data
-;trange: specify trange
+;lowres: loads sep lowres (5min average) data (use with /load keyword)
+;store: stores the results in tplot variables
+;tplot: tplots the data
+;load: loads sep data
+;spice: loads spice data
+;trange: specifies time range
 ;arc: loads sep archive (burst) data
-;restore: restore the 5min averaged (lowres) results in the common block
+;restore: restores the 5min averaged (lowres) results in the common block
 ;occalt: lower and upper bound of tangent altitude within which occultation happens
 ;times: manually input times. e.g., useful for future predict calculations where no sep data is available
 ;calc: calls mvn_sep_fov_calc to calculate a bunch of parameters
@@ -15,7 +16,7 @@
 ;nospice: skips slow spice calculations
 ;
 pro mvn_sep_fov,lowres=lowres,tplot=tplot,load=load,spice=spice,trange=trange,arc=arc,restore=restore,occalt=occalt,$
-  times=times,calc=calc,snap=snap,objects=objects,nospice=nospice,model=model
+  times=times,calc=calc,snap=snap,objects=objects,nospice=nospice,model=model,fraction=fraction,store=store
 
   @mvn_sep_fov_common.pro
   @mvn_sep_handler_commonblock.pro
@@ -26,26 +27,25 @@ pro mvn_sep_fov,lowres=lowres,tplot=tplot,load=load,spice=spice,trange=trange,ar
     return
   endif
 
-  if n_elements(lowres) eq 0 and keyword_set(mvn_sep_fov0) then lowres=mvn_sep_fov0.lowres
-  if keyword_set(trange) then timespan,trange
-  if keyword_set(times) then timespan,minmax(times)
-  if keyword_set(spice) then mvn_spice_load
-  if keyword_set(load) then mvn_sep_var_restore,lowres=lowres,/basic,units='Rate'
+  if (n_elements(lowres) eq 0) && keyword_set(mvn_sep_fov0) then lowres=mvn_sep_fov0.lowres
+  if keyword_set(times) then trange=minmax(times)
+  if keyword_set(load) then mvn_sep_var_restore,lowres=lowres,/basic,units='Rate',trange=trange
+  if keyword_set(spice) then mvn_spice_load,trange=trange
 
   if ~keyword_set(times) then begin
     if ~keyword_set(sep1_svy) then begin
       dprint,'sep data not loaded. Please run with the /load keyword. returning...'
       return
     endif
-
     if keyword_set(arc) then sep1=*(sep1_arc.x) else sep1=*(sep1_svy.x)
     if ~keyword_set(sep1) then begin
       dprint,'no sep data available for selected time range. returning...'
       return
     endif
     times=sep1.time
-    toframe='maven_sep1'
-  endif else toframe='MSO' ;useful for predictions of future times where sep frame spice data is not available
+  endif
+  toframe='maven_sep1'
+  ;toframe='MSO' ;useful for predictions of future times where sep frame spice data is not available
 
   if ~keyword_set(occalt) then occalt=[50.,110.]
   if ~keyword_set(objects) then objects=['sun','earth','mars','phobos','deimos']
@@ -61,7 +61,7 @@ pro mvn_sep_fov,lowres=lowres,tplot=tplot,load=load,spice=spice,trange=trange,ar
 
   if keyword_set(calc) then mvn_sep_fov_calc,times,nospice=nospice
   if keyword_set(snap) then mvn_sep_fov_snap,/sep,/mars,vector=2
-  if keyword_set(tplot) then mvn_sep_fov_tplot,/store
   if keyword_set(model) then mvn_sep_fov_xray_model
+  mvn_sep_fov_tplot,store=store,tplot=tplot,fraction=fraction,vector=2
 
 end

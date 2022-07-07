@@ -1,7 +1,7 @@
 ; Created by Davin Larson
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-04-01 10:51:37 -0700 (Fri, 01 Apr 2022) $
-; $LastChangedRevision: 30747 $
+; $LastChangedDate: 2022-07-06 12:21:07 -0700 (Wed, 06 Jul 2022) $
+; $LastChangedRevision: 30902 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_load.pro $
 
 pro mvn_sep_load,pathnames=pathnames,trange=trange,files=files,RT=RT,download_only=download_only, $
@@ -49,8 +49,8 @@ pro mvn_sep_load,pathnames=pathnames,trange=trange,files=files,RT=RT,download_on
     endif
 
     mvn_sep_var_restore,trange=trange,download_only=download_only,verbose=verbose,lowres=lowres,arc=arc,$
-      units_name=units_name,basic_tags=basic_tags,full_tags=full_tags
-    if ~keyword_set(download_only) then begin
+      units_name=units_name,basic_tags=basic_tags,full_tags=full_tags,filename=files
+    if ~keyword_set(download_only) && keyword_set(files) then begin
       mvn_sep_cal_to_tplot,sepn=1,lowres=lowres,arc=arc
       mvn_sep_cal_to_tplot,sepn=2,lowres=lowres,arc=arc
     endif

@@ -8,7 +8,7 @@
 ;mars: plots in IAU_MARS coordinates
 ;atmo: plots atmosphere shine
 
-pro mvn_sep_fov_snap,resdeg=resdeg,vector=vector,time=time,fov=fov,sep=sep,mars=mars,atmo=atmo
+pro mvn_sep_fov_snap,resdeg=resdeg,vector=vector,time=time,fov=fov,sep=sep,mars=mars,atmo=atmo,save=save
 
   @mvn_sep_fov_common.pro
 
@@ -51,8 +51,8 @@ pro mvn_sep_fov_snap,resdeg=resdeg,vector=vector,time=time,fov=fov,sep=sep,mars=
 
     fraction=mvn_sep_fov_mars_shine(mvn_sep_fov0.rmars,posmar,s1,resdeg=resdeg,vector=vector,fov=fov)
     ;fraction2=mvn_sep_anc_fov_mars_fraction(times[tminsub],check_objects=['MAVEN_SC_BUS']) ;Rob's routine (slow)
-    if keyword_set(mars) && n_elements(spoint) gt 1 then mvn_sep_fov_mars_plot,fraction.surfce,mvn_sep_fov[tminsub],magnitude=mvn_sep_fov[tminsub].crl[0,0],edge={sur:spoint,sur2:suredge,sun:s4},/sun,/mvn
-    if keyword_set(sep) then mvn_sep_fov_plot,tminsub,edge={suredge:suredge,occedge:occedge,sunedge:s4,maredge:v4},fraction=fraction,atmo=atmo
+    if keyword_set(mars) && n_elements(spoint) gt 1 then mvn_sep_fov_mars_plot,fraction.surfce,mvn_sep_fov[tminsub],magnitude=mvn_sep_fov[tminsub].crl[0,0],edge={sur:spoint,sur2:suredge,sun:s4},/sun,/mvn,time=t,save=save
+    if keyword_set(sep) then mvn_sep_fov_plot,tminsub,edge={suredge:suredge,occedge:occedge,sunedge:s4,maredge:v4},fraction=fraction,atmo=atmo,save=save
     if keyword_set(time) then return
   endwhile
 

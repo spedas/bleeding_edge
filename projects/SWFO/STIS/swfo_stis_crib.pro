@@ -7,8 +7,8 @@
 ; 
 ; 
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-05-01 12:57:34 -0700 (Sun, 01 May 2022) $
-; $LastChangedRevision: 30793 $
+; $LastChangedDate: 2022-07-06 12:14:59 -0700 (Wed, 06 Jul 2022) $
+; $LastChangedRevision: 30899 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -57,7 +57,7 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.port = 2428
   opts.init_realtime = 1                 ; Set to 1 to start realtime stream widget
   opts.init_stis =1                      ; set to 1 to initialize the STIS APID definitions
-  opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-5.,.5]*60','timebar,systime(1)']                    ; commands to be run in exec widget
+  opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-10,1]*60','timebar,systime(1)']                    ; commands to be run in exec widget
   ;opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-1.,.05]*600','swfo_stis_plot_example','timebar,systime(1)']                    ; commands to be run in exec widget
   opts.file_trange = ['2021-10-10', '2021-10-19']   ; Temp margin test data
   opts.file_trange =  ['2021-08-23/4', '2021-08-24/02']   ; This time range includes some good sample data to test robustness of the code - includes a version change

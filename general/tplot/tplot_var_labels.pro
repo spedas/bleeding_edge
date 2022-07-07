@@ -28,9 +28,9 @@
 ; tplot, 'tha_fag_dsl', var_label = ['tha_state_pos_gse_x[tha_state_pos_gei_x]']
 ; 2022-03-09, jmm, Swapped square brackets for parentheses in
 ;                  two-variable option declaration
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2022-03-09 12:10:35 -0800 (Wed, 09 Mar 2022) $
-; $LastChangedRevision: 30666 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2022-07-06 12:47:09 -0700 (Wed, 06 Jul 2022) $
+; $LastChangedRevision: 30907 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_var_labels.pro $
 ;-
 
@@ -137,7 +137,7 @@ pro tplot_var_labels,def_opts,trg,var_label,local_time,pos,chsize,vtitle=vtitle,
     time_setup = time_ticks(trg,time_offset,num_lab_min=num_lab_min, $
       side=vtitle,xtitle=xtitle,tickinterval=tickinterval,local_time=local_time)
     time_scale = 1.
-    if keyword_set(var_label) then begin
+    if keyword_set(var_label) && keyword_set(time_setup) then begin
       time = time_setup.xtickv+time_offset
       for i=0,n_elements(var_label)-1 do begin
                                 ;add option for var_label to contain 2

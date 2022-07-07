@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-06-14 15:34:18 -0700 (Tue, 14 Jun 2022) $
-; $LastChangedRevision: 30855 $
+; $LastChangedDate: 2022-07-06 12:14:59 -0700 (Wed, 06 Jul 2022) $
+; $LastChangedRevision: 30899 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -31,7 +31,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     options,'*hkp?_RATES_COUNTER',panel_size=2,/ylog,yrange=[.5,1e5],colors='bgrmcd',psym=-1,symsize=.5,labels=channels,labflag=-1
     options,'*sci_TOTAL6 *sci_RATE6',/ylog,colors='bgrmcd',psym=-6,symsize=.5,labels=channels,labflag=-1
     options,'*hkp?_ADC_BASELINES',panel_size=2,colors='bgrmcd',labels=channels,labflag=-1
-    options,'*hkp?_ADC_VOLTAGES',panel_size=1.5,colors='bgrmc',labels=['1.5VD','3.3VD','5VD','+6VA','-6VA'],labflag=-1,constant=[1.5,3.3,5,-5]
+    options,'*hkp?_ADC_VOLTAGES',panel_size=1.5,colors='bgrmc',labels=['1.5VD','3.3VD','5VD','+6VA','-6VA'],labflag=-1,constant=[0,1.5,3.3,5,-5]
     options,'*hkp?_ADC_TEMPS',colors='bgr',labels=['DAP','S1','S2'],labflag=-1
     dacs=['CH1 thresh','CH2 thresh','CH3 thresh','Baseline','CH4 thresh','CH5 thresh','CH6 thresh','AUX2','CH1-4 pulse height','CH2-5 pulse height','CH3-6 pulse height','Bias Voltage Control']
     options,'*hkp1_DAC_VALUES',panel_size=2,yrange=[0,0xffff],colors='bgrmmcdcbgrk',labels=dacs,labflag=-1
