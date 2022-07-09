@@ -91,9 +91,9 @@
 ; CREATED BY:       Davin Larson December 2018
 ;                   maintained by Marc Pulupa, 2019-2022
 ;
-; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2022-03-18 16:58:52 -0700 (Fri, 18 Mar 2022) $
-; $LastChangedRevision: 30694 $
+; $LastChangedBy: pulupa $
+; $LastChangedDate: 2022-07-08 16:59:26 -0700 (Fri, 08 Jul 2022) $
+; $LastChangedRevision: 30910 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -714,35 +714,30 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
       ; based on these quality flags.
       ;
 
-      if (tnames('psp_fld_l?_quality_flags'))[0] NE '' then begin
+      qf_name = 'psp_fld_l?_quality_flags'
 
-        options, 'psp_fld_l?_quality_flags', 'tplot_routine', 'bitplot'
-        options, 'psp_fld_l?_quality_flags', 'psyms', [2]
+      if n_elements(tname_prefix) EQ 1 then qf_name = tname_prefix + qf_name
+      if n_elements(tname_suffix) EQ 1 then qf_name = qf_name + tname_suffix
+
+      if (tnames(qf_name))[0] NE '' then begin
+
+        options, qf_name, 'tplot_routine', 'bitplot'
+        options, qf_name, 'psyms', [2]
 
         qf_labels = $
           ['BIAS_SWP','THRUSTER','SCM_CAL',$
           'MAG_ROLL','MAG_CAL','SPC_EMODE','SLS_CAL','OFF_UMBRA', $
           'HF_NOISE','ANT_RAILS']
 
-        options, 'psp_fld_l?_quality_flags', $
-          'numbits', n_elements(qf_labels)
-        options, 'psp_fld_l?_quality_flags', $
-          'yticks', n_elements(qf_labels) + 1
-
-        options, 'psp_fld_l?_quality_flags', 'labels', $
-          qf_labels
-
-        options, 'psp_fld_l?_quality_flags', 'ytitle', $
-          'Quality Flags'
-
-        options, 'psp_fld_l?_quality_flags', 'ysubtitle', ' '
-
-        options, 'psp_fld_l?_quality_flags', 'colors', $
-          [0,1,2,6]
-
-        options, 'psp_fld_l?_quality_flags', 'yticklen', 1
-        options, 'psp_fld_l?_quality_flags', 'ygridstyle', 1
-        options, 'psp_fld_l?_quality_flags', 'yminor', 1
+        options, qf_name, 'numbits', n_elements(qf_labels)
+        options, qf_name, 'yticks', n_elements(qf_labels) + 1
+        options, qf_name, 'labels', qf_labels
+        options, qf_name, 'ytitle', 'Quality Flags'
+        options, qf_name, 'ysubtitle', ' '
+        options, qf_name, 'colors', [0,1,2,6]
+        options, qf_name, 'yticklen', 1
+        options, qf_name, 'ygridstyle', 1
+        options, qf_name, 'yminor', 1
 
       endif
 
