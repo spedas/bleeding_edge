@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2022-07-06 12:14:59 -0700 (Wed, 06 Jul 2022) $
-; $LastChangedRevision: 30899 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2022-07-10 13:07:04 -0700 (Sun, 10 Jul 2022) $
+; $LastChangedRevision: 30913 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_hkp_apdat__define.pro $
 
 
@@ -59,7 +59,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
     dprint,dlevel=4,'hello'
     d= 24
     fifo_size=8190
-    if str1.fpga_rev ge 0x99 then begin
+    if str1.fpga_rev ge '99'x then begin
       cmd_fifo_write_ptr=       swfo_data_select(ccsds_data,(d+0*2)*8+3, 13 )
       cmd_fifo_read_ptr=        swfo_data_select(ccsds_data,(d+1*2)*8+3, 13 )
       cmds_remaining=(fix(cmd_fifo_write_ptr)-fix(cmd_fifo_read_ptr))/3.
@@ -122,7 +122,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         gap:ccsds.gap }
       str=create_struct(str1,str2)
     endif else begin
-      if str1.fpga_rev ge 0x97 then begin
+      if str1.fpga_rev ge '97'x then begin
         biasclk_period765=        swfo_data_select(ccsds_data,(d+ 0*2 )*8, 3  )
         biasclk_period432=        swfo_data_select(ccsds_data,(d+ 1*2 )*8, 3  )
         biasclk_period10 =        swfo_data_select(ccsds_data,(d+16*2 )*8, 2  )
@@ -183,7 +183,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
           gap:ccsds.gap }
         str=create_struct(str1,str2)
       endif else begin
-        if str1.fpga_rev ge 0x93 then begin
+        if str1.fpga_rev ge '93'x then begin
           str2={$
             fpga_rev0:              swfo_data_select(ccsds_data,(d+2*0  )*8, 8  ) , $
             user_2d:                  swfo_data_select(ccsds_data,(d+2*0+1)*8, 8  ) , $

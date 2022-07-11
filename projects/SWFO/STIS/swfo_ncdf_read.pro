@@ -1,15 +1,31 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-29 01:20:38 -0700 (Sun, 29 Aug 2021) $
-; $LastChangedRevision: 30265 $
+; $LastChangedDate: 2022-07-10 12:48:47 -0700 (Sun, 10 Jul 2022) $
+; $LastChangedRevision: 30911 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ncdf_read.pro $
 ; $ID: $
 
 
 
 
-function swfo_ncdf_read,filename=filename,def_values=def_values
-  id =  ncdf_open(filename)  ;,/netcdf4_format
+function swfo_ncdf_read,filenames=filenames,def_values=def_values,verbose=verbose
+
   dat = !null
+
+  nfiles = n_elements(filenames)
+  if nfiles gt 1 then begin
+    dat_all = dynamicarray()
+    for i=0,nfiles-1 do begin
+      filename = filenames[i]
+      dprint,dlevel=2,verbose=verbose,'Reading: '+filename
+      dat_i = swfo_ncdf_read(filename=filename,def_values=def_values)
+      dat_all.append,dat_i
+      ;      dat = [dat,dat_i]      
+    endfor
+    return,dat_all.data
+  endif
+  
+  filename = filenames[0]
+  id =  ncdf_open(filename)  ;,/netcdf4_format
 
   inq= ncdf_inquire(id)
  ; printdat,inq
@@ -33,6 +49,7 @@ function swfo_ncdf_read,filename=filename,def_values=def_values
     def_values['ULONG'] = 0uL
     def_values['ULONG64'] = 0uLL
     def_values['BYTE'] = 0B
+    def_values['UBYTE'] = 0B
   endif
   
   if inq.recdim ne -1 then begin

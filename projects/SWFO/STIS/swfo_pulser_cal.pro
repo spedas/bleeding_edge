@@ -1,8 +1,8 @@
 ;+
 ; swfo_pulser_cal
-; $LastChangedBy: ali $
-; $LastChangedDate: 2022-06-14 15:34:18 -0700 (Tue, 14 Jun 2022) $
-; $LastChangedRevision: 30855 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2022-07-10 13:08:09 -0700 (Sun, 10 Jul 2022) $
+; $LastChangedRevision: 30914 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_pulser_cal.pro $
 ; $ID: $
 ;-
@@ -29,6 +29,26 @@ function swfo_testpulse_response2,x,parameter=p
   adc = abs(adc mod p.modv)
   return,adc
 end
+ 
+pro swfo_testpulse_plot,dat,w,param=p,title=title
+  !p.multi = [0,1,2]
+  wi,1
+  plot,dat.dac,dat.x0,psym=4,xstyle=3,xtitle='DAC number',ytitle='ADC Bin of pulse',yrange=[-10,265],/ystyle,title=title
+  oplot,dgen(),dgen()*0,linestyle=1
+  oplot,dat.dac, dat.amp/10,color=4,psym=-4
+  oplot,dat.dac, dat.sigma*100, psym=-4,color=2
+  ;oplot,dat.dac, dat.x0 ,psym=4
+  pf,p
+  oplot,dat[w].dac, dat[w].x0, psym=4, color=6
+
+  residual = dat.x0 - func(dat.dac,param=p)
+  plot,dat.dac, residual, psym=2, yrange =[-3,3],xstyle=3,xtitle='DAC number',ytitle='Residual ADC'  ;,color=4
+  oplot,dgen(),dgen()*0,linestyle=1
+  oplot,dat[w].dac,residual[w],color=6,psym=2
+  !p.multi=0
+
+end
+
 
 
 pro swfo_pulser_cal, results=results  ;,dat=dat,trange=trange,param=p,bkg_trange=bkg_trange
@@ -116,38 +136,66 @@ pro swfo_pulser_cal, results=results  ;,dat=dat,trange=trange,param=p,bkg_trange
 
     ; ok = ok and dat.dac lt 1.7e4
     ; ok = ok and dat.dac gt 3e3
+    test = 1
+    names='DAC0 ADC0 gain gain2'
 
-    w=where(ok and dat.dac lt 1.7e4)
-    fit,dat[w].dac,dat[w].x0,dy = dat[w].sigma,param=p,result=fit_result
+    w=where(ok and dat.dac lt 20000.)
+    fit,dat[w].dac,dat[w].x0,dy = dat[w].sigma,param=p,result=fit_result,iter=30,names=names
+    if test then swfo_testpulse_plot,dat,w,param=p,title=title
 
-    w=where(ok and dat.dac lt 3.4e4)
-    fit,dat[w].dac,dat[w].x0,dy = dat[w].sigma,param=p,result=fit_result
+;    w=where(ok and dat.dac lt 1.6e4)
+;    fit,dat[w].dac,dat[w].x0,dy = dat[w].sigma,param=p,result=fit_result
+;    if test then swfo_testpulse_plot,dat,w,param=p,title=title
+;
+;    w=where(ok and dat.dac lt 1.7e4)
+;    fit,dat[w].dac,dat[w].x0,dy = dat[w].sigma,param=p,result=fit_result
+;    if test then swfo_testpulse_plot,dat,w,param=p,title=title
+    
+    names='DAC0 ADC0 gain gain2 gain3'
+    w=where(ok and dat.dac lt 3.7e4)
+    fit,dat[w].dac,dat[w].x0,dy = dat[w].sigma,param=p,result=fit_result,names=names
+    if test then swfo_testpulse_plot,dat,w,param=p,title=title
 
-    w=where(ok and dat.dac lt 5.2e4)
-    fit,dat[w].dac,dat[w].x0,dy = dat[w].sigma,param=p,result=fit_result
+    names='DAC0 ADC0 gain gain2 gain3 gain4'
+    w=where(ok and dat.dac lt 5.4e4)
+    fit,dat[w].dac,dat[w].x0,dy = dat[w].sigma,param=p,result=fit_result,names=names
+    if test then swfo_testpulse_plot,dat,w,param=p,title=title
 
-    w=where(ok and dat.dac lt 6.6e4)
-    fit,dat[w].dac,dat[w].x0,dy = dat[w].sigma,param=p,result=fit_result
-    fit,dat[w].dac,dat[w].x0,dy = dat[w].sigma,param=p,result=fit_result
-
-    !p.multi = [0,1,2]
-    wi,1
-    plot,dat.dac,dat.x0,psym=4,xstyle=3,xtitle='DAC number',ytitle='ADC Bin of pulse',yrange=[-10,265],/ystyle,title=title
-    oplot,dgen(),dgen()*0,linestyle=1
-    oplot,dat.dac, dat.amp/10,color=4,psym=-4
-    oplot,dat.dac, dat.sigma*100, psym=-4,color=2
-    ;oplot,dat.dac, dat.x0 ,psym=4
-    pf,p
-    oplot,dat[w].dac, dat[w].x0, psym=4, color=6
-
-    residual = dat.x0 - func(dat.dac,param=p)
-    plot,dat.dac, residual, psym=2, yrange =[-3,3],xstyle=3,xtitle='DAC number',ytitle='Residual ADC'  ;,color=4
-    oplot,dgen(),dgen()*0,linestyle=1
-    oplot,dat[w].dac,residual[w],color=6,psym=2
-    !p.multi=0
+;    w=where(ok and dat.dac lt 6.6e4)
+;    fit,dat[w].dac,dat[w].x0,dy = dat[w].sigma,param=p,result=fit_result
+;    if test then swfo_testpulse_plot,dat,w,param=p,title=title
+;
+;    plot,dat.dac,dat.x0,psym=4,xstyle=3,xtitle='DAC number',ytitle='ADC Bin of pulse',yrange=[-10,265],/ystyle,title=title
+;    oplot,dgen(),dgen()*0,linestyle=1
+;    oplot,dat.dac, dat.amp/10,color=4,psym=-4
+;    oplot,dat.dac, dat.sigma*100, psym=-4,color=2
+;    ;oplot,dat.dac, dat.x0 ,psym=4
+;    pf,p
+;    oplot,dat[w].dac, dat[w].x0, psym=4, color=6
+;
+;    residual = dat.x0 - func(dat.dac,param=p)
+;    plot,dat.dac, residual, psym=2, yrange =[-3,3],xstyle=3,xtitle='DAC number',ytitle='Residual ADC'  ;,color=4
+;    oplot,dgen(),dgen()*0,linestyle=1
+;    oplot,dat[w].dac,residual[w],color=6,psym=2
     results.fit_res = fit_result
   endif
 
 end
+
+pro swfo_pulser_cal_multi
+
+tt = [ $
+  ['2022-06-14/01:44:32', '2022-06-14/01:52:16'],$
+  ['2022-06-14/01:55:20','2022-06-14/02:03:06'],$
+  ['2022-06-14/02:04:46', '2022-06-14/02:12:44'],$
+  ['2022-06-14/02:14:10', '2022-06-14/02:22:20'],$
+  ['2022-06-14/02:27:20', '2022-06-14/02:35:46'],$
+  ['2022-06-14/02:36:54', '2022-06-14/02:45:32'],$
+  ['2022-06-14/02:49:04', '2022-06-14/02:57:10']]
+
+
+end
+
+
 
 

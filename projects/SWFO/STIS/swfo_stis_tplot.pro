@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2022-07-06 12:14:59 -0700 (Wed, 06 Jul 2022) $
-; $LastChangedRevision: 30899 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2022-07-10 13:07:04 -0700 (Sun, 10 Jul 2022) $
+; $LastChangedRevision: 30913 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -34,8 +34,8 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     options,'*hkp?_ADC_VOLTAGES',panel_size=1.5,colors='bgrmc',labels=['1.5VD','3.3VD','5VD','+6VA','-6VA'],labflag=-1,constant=[0,1.5,3.3,5,-5]
     options,'*hkp?_ADC_TEMPS',colors='bgr',labels=['DAP','S1','S2'],labflag=-1
     dacs=['CH1 thresh','CH2 thresh','CH3 thresh','Baseline','CH4 thresh','CH5 thresh','CH6 thresh','AUX2','CH1-4 pulse height','CH2-5 pulse height','CH3-6 pulse height','Bias Voltage Control']
-    options,'*hkp1_DAC_VALUES',panel_size=2,yrange=[0,0xffff],colors='bgrmmcdcbgrk',labels=dacs,labflag=-1
-    options,'*hkp2_DAC_VALUES',panel_size=2,yrange=[0,0xff  ],colors='bgrmmcdcbgrk',labels=dacs,labflag=-1
+    options,'*hkp1_DAC_VALUES',panel_size=2,yrange=[0,'ffff'x],colors='bgrmmcdcbgrk',labels=dacs,labflag=-1
+    options,'*hkp2_DAC_VALUES',panel_size=2,yrange=[0,'ff'x  ],colors='bgrmmcdcbgrk',labels=dacs,labflag=-1
     options,'*LCCS_BITS',numbits=4,panel_size=.5,labels=reverse(['L=Log compressed','C=Compression Type','C=Compression Type','S=Use LUT']),psyms=1,colors=[0,1,2,6]
     options,'*AAEE_BITS',numbits=4,panel_size=.5,labels=reverse(['Attenuator IN','Attenuator OUT','Checksum Error 1','Checksum Error 0']),psyms=1,colors=[0,1,2,6]
     options,'*PULSER_BITS',labels=reverse(['LUT 0:Lower 1:Upper','Pulser Enable',reverse(channels)]),psyms=1,colors='bgrbgrkm'

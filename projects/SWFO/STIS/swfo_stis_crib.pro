@@ -6,9 +6,9 @@
 ; These tools are not intended as a final product but can be used to create high level ouput.
 ; 
 ; 
-; $LastChangedBy: ali $
-; $LastChangedDate: 2022-07-06 12:14:59 -0700 (Wed, 06 Jul 2022) $
-; $LastChangedRevision: 30899 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2022-07-10 13:04:19 -0700 (Sun, 10 Jul 2022) $
+; $LastChangedRevision: 30912 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -66,8 +66,12 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = ['2022-4-17', '2022-4-21']   ; recent data
   opts.file_trange = ['2022-4-17/23:00', '2022-4-18/01']   ; Example with 2 LPT's from ETU rev A   (channel 5 not working)
   opts.file_trange = ['2022-4 21 2','2022 4 21 3']
-;  opts.file_trange = 2     ; download last 2 hours of data files and then open real time system
-  opts.file_trange = !null
+  opts.file_trange = 2     ; download last 2 hours of data files and then open real time system
+  opts.file_trange = ['2022-6 14 1','2022 6 14 3']  ;  Amptek 250 test. - test of 6 potential flight preamps.
+  opts.file_trange = ['2022-7-7 22','2022 7 8 /03']  ;4 LPTs with non-LUT mode  ; Doesn't seem to have housekeeping data
+  opts.file_trange = ['2022-7-8 02','2022 7 8 /03']  ;Final LPT with non-LUT mode  ; Doesn't seem to have housekeeping data 
+  opts.file_trange = ['2022-7-8 20','2022 7 8 22']  ; LPT with non-LUT mode  ; (possibly incomplete)
+;  opts.file_trange = !null
   ;opts.file_trange = ['2022-03-01','2022-03-02/01']
   ;opts.filenames=['socket_128.32.98.57.2028_20211216_004610.dat', 'socket_128.32.98.57.20484_20211216_005158.dat']
   opts.filenames = ''
