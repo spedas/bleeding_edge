@@ -7,8 +7,8 @@
 ; 
 ; 
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-07-10 13:04:19 -0700 (Sun, 10 Jul 2022) $
-; $LastChangedRevision: 30912 $
+; $LastChangedDate: 2022-07-11 09:03:54 -0700 (Mon, 11 Jul 2022) $
+; $LastChangedRevision: 30917 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -55,7 +55,7 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.host = '128.32.98.57'
   opts.title = 'SWFO STIS'
   opts.port = 2428
-  opts.init_realtime = 1                 ; Set to 1 to start realtime stream widget
+  opts.init_realtime = 0                 ; Set to 1 to start realtime stream widget
   opts.init_stis =1                      ; set to 1 to initialize the STIS APID definitions
   opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-10,1]*60','timebar,systime(1)']                    ; commands to be run in exec widget
   ;opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-1.,.05]*600','swfo_stis_plot_example','timebar,systime(1)']                    ; commands to be run in exec widget
@@ -69,8 +69,8 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = 2     ; download last 2 hours of data files and then open real time system
   opts.file_trange = ['2022-6 14 1','2022 6 14 3']  ;  Amptek 250 test. - test of 6 potential flight preamps.
   opts.file_trange = ['2022-7-7 22','2022 7 8 /03']  ;4 LPTs with non-LUT mode  ; Doesn't seem to have housekeeping data
-  opts.file_trange = ['2022-7-8 02','2022 7 8 /03']  ;Final LPT with non-LUT mode  ; Doesn't seem to have housekeeping data 
   opts.file_trange = ['2022-7-8 20','2022 7 8 22']  ; LPT with non-LUT mode  ; (possibly incomplete)
+  opts.file_trange = ['2022-7-8 02','2022 7 8 /03']  ;Final LPT with non-LUT mode  ; Doesn't seem to have housekeeping data
 ;  opts.file_trange = !null
   ;opts.file_trange = ['2022-03-01','2022-03-02/01']
   ;opts.filenames=['socket_128.32.98.57.2028_20211216_004610.dat', 'socket_128.32.98.57.20484_20211216_005158.dat']
@@ -141,13 +141,13 @@ if keyword_set(opts.init_realtime) then begin
   dprint,'Click on "Write to:" to record the stream to a local file.  (not required)'
   dprint,'Click on the "Procedure" checkbox to start decummutating data.'
   if opts.stepbystep then stop
+  if keyword_set(opts.exec_text) then begin
+    dprint,'Create a generic widget that can execute a list of IDL commands at regular intervals.  These are defined by the user.'
+    exec, exec_text = opts.exec_text,title=opts.title+' EXEC',interval=3
+  endif
 endif
 
 
-if keyword_set(opts.exec_text) then begin
-  dprint,'Create a generic widget that can execute a list of IDL commands at regular intervals.  These are defined by the user.'
-  exec, exec_text = opts.exec_text,title=opts.title+' EXEC',interval=3
-endif
 
 
 !except =0
@@ -180,7 +180,7 @@ if 0 then begin
 endif
 
 
-if 0 then begin
+if 1 then begin
   
   dprint,'Create Level 0B netcdf file for science packets:'
   
@@ -188,25 +188,29 @@ if 0 then begin
   
   sci.file_resolution = 3600
   
-  sci.ncdf_make_file , ret_filename=f   ; the filename is returned in the variable f   
+  sci.ncdf_make_file , ret_filename=sci_filename   ; the filename is returned in the variable f   
   printdat,f
-  hkp1.ncdf_make_file , ret_filename=f   ; the filename is returned in the variable f
+  hkp1.ncdf_make_file , ret_filename=hkp1_filename   ; the filename is returned in the variable f
   printdat,f
-  hkp2.ncdf_make_file , ret_filename=f   ; the filename is returned in the variable f
+  hkp2.ncdf_make_file , ret_filename=hkp2_filename   ; the filename is returned in the variable f
   printdat,f
-  nse.ncdf_make_file , ret_filename=f   ; the filename is returned in the variable f
+  nse.ncdf_make_file , ret_filename=nse_filename   ; the filename is returned in the variable f
   printdat,f
 
   
   sci_l0b  =  sci.data.array   ; obtain level 0B data directly from sci object
-  sci_l0b_copy = swfo_ncdf_read(file=f)  ; read copy of data from file that was just created
+  sci_l0b_copy = swfo_ncdf_read(file=sci_filename)  ; read copy of data from file that was just created
   
     ; sci_l0b and sci_l0b_copy should be identical  
     ; Note that sci_l0b_copy might have more samples if it was produced after sci_l0b was generated
     
-  if 0 then begin
-    sci_l1a =   swfo_stis_sci_level_1(sci_l0b)   ; create l1a data from l0b data
-    swfo_ncdf_create,sci_l1a, file='test_sci_l1a.nc'     ; write data to a file.  still awaiting meta data.
+  if 1 then begin
+    sci_l1b =   swfo_stis_sci_level_1b(sci_l0b,cal=cal,/reset)   ; create L1a data from l0b data
+    swfo_ncdf_create,sci_l1b, file='test_sci_l1b.nc'     ; write data to a file.  still awaiting meta data.
+    if 1 then begin
+      sci_l2 =   swfo_stis_sci_level_2(sci_l1b)   ; create l1a data from L1b data
+      swfo_ncdf_create,sci_l2, file='test_sci_l2.nc'     ; write data to a file.  still awaiting meta data.
+    endif
   endif
 
 endif

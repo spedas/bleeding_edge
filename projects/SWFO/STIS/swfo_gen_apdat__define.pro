@@ -2,8 +2,8 @@
 ;  swfo_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $
-; $LastChangedRevision: 30383 $
+; $LastChangedDate: 2022-07-11 00:24:47 -0700 (Mon, 11 Jul 2022) $
+; $LastChangedRevision: 30915 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -276,8 +276,8 @@ end
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $
-; $LastChangedRevision: 30383 $
+; $LastChangedDate: 2022-07-11 00:24:47 -0700 (Mon, 11 Jul 2022) $
+; $LastChangedRevision: 30915 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_gen_apdat__define.pro $
 ;-
 function swfo_gen_apdat::sw_version
@@ -294,8 +294,8 @@ function swfo_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 30383 $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2022-07-11 00:24:47 -0700 (Mon, 11 Jul 2022) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 30915 $'
 
     return,sw_hash
 end
@@ -337,8 +337,8 @@ function swfo_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2021-10-22 13:39:39 -0700 (Fri, 22 Oct 2021) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 30383 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2022-07-11 00:24:47 -0700 (Mon, 11 Jul 2022) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 30915 $'
 
   return,global_att
 end
@@ -507,6 +507,7 @@ pro swfo_gen_apdat::ncdf_make_file,ddata=ddata,pathname=pathname,testdir=testdir
   endif else begin
     data_array = ddata.array
     trange = minmax(data_array.time)
+    trange[0] = median(data_array.time)  ;  cluge to fix problem in which the time is out of bounds
   endelse
   pathname = time_string(trange[0],tformat= self.ncdf_pathname )
   filename = root_data_dir() + self.ncdf_testdir + pathname
