@@ -25,11 +25,11 @@
 ;                  plot size and position.
 ;
 ;       MONITOR:   Place snapshot window in this monitor.  Only works if
-;                  monitor configuration is defined (see putwin.pro).
+;                  monitor configuration is defined (see win.pro).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-02-28 12:46:30 -0800 (Sun, 28 Feb 2021) $
-; $LastChangedRevision: 29710 $
+; $LastChangedDate: 2022-07-14 11:39:13 -0700 (Thu, 14 Jul 2022) $
+; $LastChangedRevision: 30931 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mhd_orbit.pro $
 ;
 ;CREATED BY:	David L. Mitchell  04-02-03
@@ -73,14 +73,14 @@ pro mhd_orbit, lon, lat, lon_sc, lat_sc, psym=psym, lstyle=lstyle, $
 
     undefine, mnum
     if (size(monitor,/type) gt 0) then begin
-      if (size(windex,/type) eq 0) then putwin, /config $
-                                   else if (windex eq -1) then putwin, /config
+      if (size(windex,/type) eq 0) then win, /config $
+                                   else if (windex eq -1) then win, /config
       mnum = fix(monitor[0])
     endif else begin
       if (size(secondarymon,/type) gt 0) then mnum = secondarymon
     endelse
 
-    putwin, owin, mnum, xsize=xsize, ysize=ysize, dx=-541, dy=-10
+    win, owin, mnum, xsize=xsize, ysize=ysize, dx=-541, dy=-10
 
     px = [0.0, 1.0] * !d.x_vsize + xoff + 16
     py = [0.0, 1.0] * !d.y_vsize + yoff + 10

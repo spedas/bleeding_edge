@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Jul 13 18:16:33 2022.<P>
+<STRONG>Last modified: </STRONG>Thu Jul 14 18:16:29 2022.<P>
  
 <HR>
  
@@ -142,7 +142,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#PTR_EXTRACT">PTR_EXTRACT</A>
 <LI><A HREF="#PTRACE">PTRACE</A>
 <LI><A HREF="#PUTWIN">PUTWIN</A>
-<br>When there are multiple monitors, IDL defines a rectangular &quot;super
+<br>'Putwin' has been renamed to 'win'.  Putwin is now a simple pass-through
 <LI><A HREF="#PUTWIN_COMMON">PUTWIN_COMMON</A>
 <br>Common block for putwin.
 <LI><A HREF="#PWRSPC">PWRSPC</A>
@@ -225,6 +225,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#UNDEFINED">UNDEFINED</A>
 <br>Tests whether a variable is undefined
 <LI><A HREF="#WI">WI</A>
+<LI><A HREF="#WIN">WIN</A>
+<br>When there are multiple monitors, IDL defines a rectangular &quot;super
 <LI><A HREF="#XCLIP">XCLIP</A>
 <br>Replaces with FLAGs the values of the array that are BEYOND
 <LI><A HREF="#XDEFLAG">XDEFLAG</A>
@@ -3295,264 +3297,21 @@ Created by Davin Larson. May 2002.
 <PRE>
 PROCEDURE:   putwin
 PURPOSE:
-  When there are multiple monitors, IDL defines a rectangular &quot;super
-  monitor&quot; that encompasses all physical monitors.  One of the physical
-  monitors is designated the &quot;primary monitor&quot; and the lower left corner
-  of that monitor is the origin of the coordinate system for the super
-  monitor.  XPOS and YPOS are used to position windows within the super
-  monitor; however, the coordinate system is not known in advance, and
-  when you attempt to place a window entirely or partially out of bounds,
-  IDL forces the window inbounds, so that it can appear in an unexpected
-  location.
-
-  This procedure divides the super monitor back into physical monitors
-  and allows you to choose a monitor and place a window relative to the
-  edges of that monitor (or in the center, or full screen).  You can 
-  also place a new window next to and aligned with an existing window.
-  It is also possible to clone an existing window and place it as above.
-  In short, this is a user-friendly version of WINDOW designed for a 
-  multiple monitor setup.  It allows you to create new windows within a
-  routine and arrange them accurately in specified monitors or next to
-  other windows without the need for resizing and moving them with the 
-  mouse.
-
-  On first call, this routine queries the OS to get the number, sizes, 
-  and arrangement of the physical monitors.  This works well on Mac 
-  systems but has not been thoroughly tested on other platforms.  See
-  keywords SETPRIME, TBAR, and TCALIB for more information.
-
-  If CONFIG=0 (default), putwin behaves exactly like window.  This allows
-  the routine to be used in public code, where the user may not know about
-  or does not want to use its functionality.
+  'Putwin' has been renamed to 'win'.  Putwin is now a simple pass-through
+  to win.  The functionality is identical.  Please use the new name.
 
 USAGE:
-  putwin [, wnum [, monitor]] [, KEYWORD=value, ...]  ; normal usage
-
-  putwin, CONFIG={0|1} [, TBAR=value]  ; 0=disable, 1=enable
-
-  putwin, SHOW=N  ; identify the monitor(s) and corners for N seconds.
-
-EXAMPLES:
-  putwin, 0, /full
-    --&gt; put a full-screen window in the primary monitor
-
-  putwin, 1, xsize=800, aspect=4./3., /secondary, dx=10, dy=10
-    --&gt; put a 4:3 aspect window in the secondary monitor, offset by 10 pixels
-        from the top left corner
-
-  putwin, 2, clone=1, relative=1, dx=10, /top
-    --&gt; put a clone of window 1 to the right of window 1 offset by 10 pixels
-        with the top edges aligned
-
-  putwin, 3, 0, clone=1, scale=0.6, /center
-    --&gt; put a clone of window 1 scaled by 60% in the center of monitor 0
-
-  putwin, wnum, /free, key={sec:1, yf:1, xs:500, dx:10}
-    --&gt; put a window with an index &gt; 31 in the secondary monitor, full-screen in Y,
-        500 pixels in X; the assigned window number is returned in wnum
+  win, num, [mon, ] options=options
 
 INPUTS:
-       wnum:      Window number.  Can be an integer from 0 to 31.
-                  Default: next free widow number &gt; 31.
-
-                  This can also be set to a variable name, which will
-                  return the window number chosen.
-
-       monitor:   Monitor number.  Can also be set by keyword (see
-                  below), but this method takes precedence.  Only the
-                  second input will be interpreted as a monitor number.
-                  If there's only one input, it's interpreted as the 
-                  window number.
-
-                  If there is more than one monitor, this routine 
-                  defines a &quot;primary monitor&quot;, where graphics windows
-                  appear if no monitor is specified.  See keyword
-                  SETPRIME for details.
+       See win.pro
 
 KEYWORDS:
-       Accepts all keywords for WINDOW.  In addition, the following
-       are defined:
-
-       CONFIG:    An integer that controls the behavior of putwin.
-                  The first time putwin is called, it queries the OS
-                  to get the number, dimensions, and arrangement of
-                  the monitors.  This information is stored in a
-                  common block.
-
-                     0 = disabled: putwin acts like window (default)
-                     1 = enabled: putwin has full functionality
-
-       SETPRIME:  Set the primary (and secondary) monitors manually.
-                  The first element is the primary monitor number, and
-                  the second element, if present, is the secondary
-                  monitor number.  These values are persistent.
-
-                  Default:
-                    primary monitor = left-most external monitor
-                    secondary monitor = highest numbered non-primary
-
-       TBAR:      Title bar width in pixels.
-
-                  The standard WINDOW procedure does not account for the
-                  window title bar, but this procedure does, so windows 
-                  can be positioned precisely.  IDL does not have access
-                  to the title bar width, so this routine provides two
-                  defaults, depending on the operating system:
-
-                    MacOS    : TBAR = 22
-                    RedHat 8 : TBAR = 37
-
-                  For other X servers and Windows, use TCALIB (below) to
-                  calibrate the title bar width.  You can then set the 
-                  configuration in your IDL startup file, so you won't
-                  need to rerun the calibration:
-
-                    putwin, /config, tbar=N, /silent
-
-                  This value is persistent.
-
-       TCALIB:    Calibrate the title bar width by briefly creating two
-                  windows with the same dimensions and location but
-                  different (bogus) title bar widths.  The vertical offset
-                  between these two windows is used to calculate the actual
-                  title bar width.  This value is persistent.
-
-       STAT:      Output the current monitor configuration.  When this
-                  keyword is set, CONFIG will return the current monitor
-                  array, the primary and secondary monitor indices, and
-                  the title bar width.
-
-       SHOW:      Place a small window in each monitor for 5 sec to 
-                  identify the monitor numbers and which are primary and
-                  secondary.  In addition, place four small windows in the
-                  corners of the primary monitor to identify the corner 
-                  numbers (keyword CORNER).
-
-                  Set this keyword to a number N &gt; 5 to display the small
-                  windows for N seconds.
-
-       MONITOR:   Put window in this monitor.  If no monitor is set by
-                  input or keyword, then the new window is placed in
-                  the primary monitor.
-
-       SECONDARY: Put window in the secondary monitor.
-
-       DX:        Horizontal offset from left or right edge (pixels).
-                    If DX is positive, offset is from left.
-                    If DX is negative, offset is from right.
-                  Replaces XPOS.  Default = 0.
-
-       DY:        Vertical offset from top or bottom edge (pixels).
-                    If DY is positive, offset is from top.
-                    If DY is negative, offset is from bottom.
-                  Replaces YPOS.  Default = 0.
-
-                  XPOS and YPOS are ignored while putwin is enabled.
-
-       RELATIVE:  Set this keyword to an existing window number.  Then
-                  DX and DY specify offsets of the new window location
-                  from the perimeter of the existing window.
-                    If DX (DY) is positive, place window right (above).
-                    If DX (DY) is negative, place window left (below).
-                  Usually, DX and/or DY are non-zero, in which case the
-                  new window is placed around the perimeter of the 
-                  existing window.  However, when DX and DY are both 
-                  zero, the new window is placed on top of the existing 
-                  window, with the top left corners aligned.
-
-                  If RELATIVE is set, NORM=0 and NOFIT=1 are enforced.
-
-       TOP:       If RELATIVE is set and DY=0, align the top edges of
-                  the windows.  Default.
-
-       LEFT:      If RELATIVE is set and DX=0, align the left edges of
-                  the windows.  Default.
-
-       BOTTOM:    If RELATIVE is set and DY=0, align the bottom edges of
-                  the windows.
-
-       RIGHT:     If RELATIVE is set and DX=0, align the right edges of
-                  the windows.
-
-       MIDDLE:    If RELATIVE is set and DX=0 (DY=0), center the two
-                  windows vertically (horizontally).
-
-       CLONE:     Create a new window with the same dimensions as the
-                  (existing) window specified by this keyword.  SCALE
-                  can then be used to shrink/expand the window while
-                  maintaining the aspect ratio.  Unless NOFIT is set,
-                  the clone is allowed to move around and shrink/expand
-                  so that it fits entirely on the monitor.
-
-       CORNER:    Alternate method for determining which corner to 
-                  place window.  If this keyword is set, then only the
-                  absolute values of DX and DY are used and specify
-                  offsets from the selected corner.  Corners are
-                  numbered like reading a book:
-
-                    0 = top left (default)
-                    1 = top right
-                    2 = bottom left
-                    3 = bottom right
-
-       NORM:      Measure DX and DY in normalized coordinates (0-1)
-                  instead of pixels.
-
-       XCENTER:   Center the window horizontally in the monitor.
-
-       YCENTER:   Center the window vertically in the monitor.
-
-       CENTER:    Center the window in both X and Y.
-
-       SCALE:     Scale factor for setting the window size.  If no
-                  window size is specified, then SCALE is relative
-                  to the default size: 1/4 of the monitor size.
-                  Default = 1.
-
-       NOFIT:     If the combination of XSIZE, YSIZE, SCALE, DX and
-                  DY cause the window to extend beyond the monitor,
-                  first DX and DY, then XSIZE and YSIZE are reduced
-                  until the window does fit.  If ASPECT is set, then
-                  the window is further reduced, if necessary, to 
-                  maintain the aspect ratio.  Set NOFIT to disable
-                  this behavior and create the window as requested.
-
-       XFULL:     Make the window full-screen in X.
-                  (Ignore XSIZE, DX.)
-
-       YFULL:     Make the window full-screen in Y.
-                  (Ignore YSIZE, DY.)
-
-       FULL:      If set, make a full-screen window in MONITOR.
-                  (Ignore XSIZE, YSIZE, DX, DY, SCALE, ASPECT.)
-
-       ASPECT:    Aspect ratio: XSIZE/YSIZE.  If one dimension is
-                  set with XSIZE, YSIZE, XFULL, or YFULL, this
-                  keyword sets the other dimension.
-
-       SILENT:    Shhh.
-
-       KEY:       A structure containing any of the above keywords
-                  plus XSIZE and YSIZE:
-
-                    {KEYWORD:value, KEYWORD:value, ...}
-
-                  Case folded minimum matching is used to match tag
-                  names in this structure to valid keywords.  For
-                  example:
-
-                    {f:1, mon:2} is interpreted as FULL=1, MONITOR=2.
-
-                  Unrecognized or ambiguous tag names generate an
-                  error message, and no window is created.
-
-                  Keywords set using this mechanism take precedence.
-                  All other keywords for WINDOW must be passed
-                  separately in the usual way.
+       See win.pro
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-06-23 15:29:13 -0700 (Thu, 23 Jun 2022) $
- $LastChangedRevision: 30875 $
+ $LastChangedDate: 2022-07-14 11:38:23 -0700 (Thu, 14 Jul 2022) $
+ $LastChangedRevision: 30930 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 
 CREATED BY:	David L. Mitchell  2020-06-03
@@ -5791,7 +5550,7 @@ OUTPUT:
 <A NAME="WI">
 <H2>WI</H2></A>
 <A HREF="#UNDEFINED">[Previous Routine]</A>
-<A HREF="#XCLIP">[Next Routine]</A>
+<A HREF="#WIN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:     wi, wnum
@@ -5810,9 +5569,282 @@ LAST MODIFICATION: 97/06/03
 <STRONG>(See <A href="misc/wi.pro">general/misc/wi.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="WIN">
+<H2>WIN</H2></A>
+<A HREF="#WI">[Previous Routine]</A>
+<A HREF="#XCLIP">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   win
+PURPOSE:
+  When there are multiple monitors, IDL defines a rectangular &quot;super
+  monitor&quot; that encompasses all physical monitors.  One of the physical
+  monitors is designated the &quot;primary monitor&quot; and the lower left corner
+  of that monitor is the origin of the coordinate system for the super
+  monitor.  XPOS and YPOS are used to position windows within the super
+  monitor; however, the coordinate system is not known in advance, and
+  when you attempt to place a window entirely or partially out of bounds,
+  IDL forces the window inbounds, so that it can appear in an unexpected
+  location.
+
+  This procedure divides the super monitor back into physical monitors
+  and allows you to choose a monitor and place a window relative to the
+  edges of that monitor (or in the center, or full screen).  You can 
+  also place a new window next to and aligned with an existing window.
+  It is also possible to clone an existing window and place it as above.
+  In short, this is a user-friendly version of WINDOW designed for a 
+  multiple monitor setup.  It allows you to create new windows within a
+  routine and arrange them accurately in specified monitors or next to
+  other windows without the need for resizing and moving them with the 
+  mouse.
+
+  On first call, this routine queries the OS to get the number, sizes, 
+  and arrangement of the physical monitors.  This works well on Mac 
+  systems but has not been thoroughly tested on other platforms.  See
+  keywords SETPRIME, TBAR, and TCALIB for more information.
+
+  If CONFIG=0 (default), win behaves exactly like window.  This allows
+  the routine to be used in public code, where the user may not know about
+  or does not want to use its functionality.
+
+USAGE:
+  win [, wnum [, monitor]] [, KEYWORD=value, ...]  ; normal usage
+
+  win, CONFIG={0|1} [, TBAR=value]  ; 0=disable, 1=enable
+
+  win, SHOW=N  ; identify the monitor(s) and corners for N seconds.
+
+EXAMPLES:
+  win, 0, /full
+    --&gt; put a full-screen window in the primary monitor
+
+  win, 1, xsize=800, aspect=4./3., /secondary, dx=10, dy=10
+    --&gt; put a 4:3 aspect window in the secondary monitor, offset by 10 pixels
+        from the top left corner
+
+  win, 2, clone=1, relative=1, dx=10, /top
+    --&gt; put a clone of window 1 to the right of window 1 offset by 10 pixels
+        with the top edges aligned
+
+  win, 3, 0, clone=1, scale=0.6, /center
+    --&gt; put a clone of window 1 scaled by 60% in the center of monitor 0
+
+  win, wnum, /free, key={sec:1, yf:1, xs:500, dx:10}
+    --&gt; put a window with an index &gt; 31 in the secondary monitor, full-screen in Y,
+        500 pixels in X; the assigned window number is returned in wnum
+
+INPUTS:
+       wnum:      Window number.  Can be an integer from 0 to 31.
+                  Default: next free widow number &gt; 31.
+
+                  This can also be set to a variable name, which will
+                  return the window number chosen.
+
+       monitor:   Monitor number.  Can also be set by keyword (see
+                  below), but this method takes precedence.  Only the
+                  second input will be interpreted as a monitor number.
+                  If there's only one input, it's interpreted as the 
+                  window number.
+
+                  If there is more than one monitor, this routine 
+                  defines a &quot;primary monitor&quot;, where graphics windows
+                  appear if no monitor is specified.  See keyword
+                  SETPRIME for details.
+
+KEYWORDS:
+       Accepts all keywords for WINDOW.  In addition, the following
+       are defined:
+
+       CONFIG:    An integer that controls the behavior of win.
+                  The first time win is called, it queries the OS
+                  to get the number, dimensions, and arrangement of
+                  the monitors.  This information is stored in a
+                  common block.
+
+                     0 = disabled: win acts like window (default)
+                     1 = enabled: win has full functionality
+
+       SETPRIME:  Set the primary (and secondary) monitors manually.
+                  The first element is the primary monitor number, and
+                  the second element, if present, is the secondary
+                  monitor number.  These values are persistent.
+
+                  Default:
+                    primary monitor = left-most external monitor
+                    secondary monitor = highest numbered non-primary
+
+       TBAR:      Title bar width in pixels.
+
+                  The standard WINDOW procedure does not account for the
+                  window title bar, but this procedure does, so windows 
+                  can be positioned precisely.  IDL does not have access
+                  to the title bar width, so this routine provides two
+                  defaults, depending on the operating system:
+
+                    MacOS    : TBAR = 22
+                    RedHat 8 : TBAR = 37
+
+                  For other X servers and Windows, use TCALIB (below) to
+                  calibrate the title bar width.  You can then set the 
+                  configuration in your IDL startup file, so you won't
+                  need to rerun the calibration:
+
+                    win, /config, tbar=N, /silent
+
+                  This value is persistent.
+
+       TCALIB:    Calibrate the title bar width by briefly creating two
+                  windows with the same dimensions and location but
+                  different (bogus) title bar widths.  The vertical offset
+                  between these two windows is used to calculate the actual
+                  title bar width.  This value is persistent.
+
+       STAT:      Output the current monitor configuration.  When this
+                  keyword is set, CONFIG will return the current monitor
+                  array, the primary and secondary monitor indices, and
+                  the title bar width.
+
+       SHOW:      Place a small window in each monitor for 5 sec to 
+                  identify the monitor numbers and which are primary and
+                  secondary.  In addition, place four small windows in the
+                  corners of the primary monitor to identify the corner 
+                  numbers (keyword CORNER).
+
+                  Set this keyword to a number N &gt; 5 to display the small
+                  windows for N seconds.
+
+       MONITOR:   Put window in this monitor.  If no monitor is set by
+                  input or keyword, then the new window is placed in
+                  the primary monitor.
+
+       SECONDARY: Put window in the secondary monitor.
+
+       DX:        Horizontal offset from left or right edge (pixels).
+                    If DX is positive, offset is from left.
+                    If DX is negative, offset is from right.
+                  Replaces XPOS.  Default = 0.
+
+       DY:        Vertical offset from top or bottom edge (pixels).
+                    If DY is positive, offset is from top.
+                    If DY is negative, offset is from bottom.
+                  Replaces YPOS.  Default = 0.
+
+                  XPOS and YPOS are ignored while win is enabled.
+
+       RELATIVE:  Set this keyword to an existing window number.  Then
+                  DX and DY specify offsets of the new window location
+                  from the perimeter of the existing window.
+                    If DX (DY) is positive, place window right (above).
+                    If DX (DY) is negative, place window left (below).
+                  Usually, DX and/or DY are non-zero, in which case the
+                  new window is placed around the perimeter of the 
+                  existing window.  However, when DX and DY are both 
+                  zero, the new window is placed on top of the existing 
+                  window, with the top left corners aligned.
+
+                  If RELATIVE is set, NORM=0 and NOFIT=1 are enforced.
+
+       TOP:       If RELATIVE is set and DY=0, align the top edges of
+                  the windows.  Default.
+
+       LEFT:      If RELATIVE is set and DX=0, align the left edges of
+                  the windows.  Default.
+
+       BOTTOM:    If RELATIVE is set and DY=0, align the bottom edges of
+                  the windows.
+
+       RIGHT:     If RELATIVE is set and DX=0, align the right edges of
+                  the windows.
+
+       MIDDLE:    If RELATIVE is set and DX=0 (DY=0), center the two
+                  windows vertically (horizontally).
+
+       CLONE:     Create a new window with the same dimensions as the
+                  (existing) window specified by this keyword.  SCALE
+                  can then be used to shrink/expand the window while
+                  maintaining the aspect ratio.  Unless NOFIT is set,
+                  the clone is allowed to move around and shrink/expand
+                  so that it fits entirely on the monitor.
+
+       CORNER:    Alternate method for determining which corner to 
+                  place window.  If this keyword is set, then only the
+                  absolute values of DX and DY are used and specify
+                  offsets from the selected corner.  Corners are
+                  numbered like reading a book:
+
+                    0 = top left (default)
+                    1 = top right
+                    2 = bottom left
+                    3 = bottom right
+
+       NORM:      Measure DX and DY in normalized coordinates (0-1)
+                  instead of pixels.
+
+       XCENTER:   Center the window horizontally in the monitor.
+
+       YCENTER:   Center the window vertically in the monitor.
+
+       CENTER:    Center the window in both X and Y.
+
+       SCALE:     Scale factor for setting the window size.  If no
+                  window size is specified, then SCALE is relative
+                  to the default size: 1/4 of the monitor size.
+                  Default = 1.
+
+       NOFIT:     If the combination of XSIZE, YSIZE, SCALE, DX and
+                  DY cause the window to extend beyond the monitor,
+                  first DX and DY, then XSIZE and YSIZE are reduced
+                  until the window does fit.  If ASPECT is set, then
+                  the window is further reduced, if necessary, to 
+                  maintain the aspect ratio.  Set NOFIT to disable
+                  this behavior and create the window as requested.
+
+       XFULL:     Make the window full-screen in X.
+                  (Ignore XSIZE, DX.)
+
+       YFULL:     Make the window full-screen in Y.
+                  (Ignore YSIZE, DY.)
+
+       FULL:      If set, make a full-screen window in MONITOR.
+                  (Ignore XSIZE, YSIZE, DX, DY, SCALE, ASPECT.)
+
+       ASPECT:    Aspect ratio: XSIZE/YSIZE.  If one dimension is
+                  set with XSIZE, YSIZE, XFULL, or YFULL, this
+                  keyword sets the other dimension.
+
+       SILENT:    Shhh.
+
+       KEY:       A structure containing any of the above keywords
+                  plus XSIZE and YSIZE:
+
+                    {KEYWORD:value, KEYWORD:value, ...}
+
+                  Case folded minimum matching is used to match tag
+                  names in this structure to valid keywords.  For
+                  example:
+
+                    {f:1, mon:2} is interpreted as FULL=1, MONITOR=2.
+
+                  Unrecognized or ambiguous tag names generate an
+                  error message, and no window is created.
+
+                  Keywords set using this mechanism take precedence.
+                  All other keywords for WINDOW must be passed
+                  separately in the usual way.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2022-07-14 11:37:58 -0700 (Thu, 14 Jul 2022) $
+ $LastChangedRevision: 30929 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/win.pro $
+
+CREATED BY:	David L. Mitchell  2020-06-03
+</PRE><P>
+<STRONG>(See <A href="misc/win.pro">general/misc/win.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="XCLIP">
 <H2>XCLIP</H2></A>
-<A HREF="#WI">[Previous Routine]</A>
+<A HREF="#WIN">[Previous Routine]</A>
 <A HREF="#XDEFLAG">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

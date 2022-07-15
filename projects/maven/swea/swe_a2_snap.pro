@@ -31,7 +31,7 @@
 ;
 ;       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
 ;                      from 0 to N-1, where N is the number of monitors recognized
-;                      by the operating system.  See putwin.pro for details.
+;                      by the operating system.  See win.pro for details.
 ;
 ;       ZRANGE:        Sets color scale range.  Default = [1,3000].
 ;
@@ -53,7 +53,7 @@ pro swe_a2_snap, layout=layout, model=model, ddd=ddd, keepwins=keepwins, zrange=
   @mvn_swe_com
   @putwin_common
 
-  if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
+  if (size(windex,/type) eq 0) then win, config=0  ; win acts like window
 
   if (keyword_set(archive) or keyword_set(burst)) then aflg = 1 else aflg = 0
   if keyword_set(enorm) then begin
@@ -117,28 +117,28 @@ pro swe_a2_snap, layout=layout, model=model, ddd=ddd, keepwins=keepwins, zrange=
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (~windex) then putwin, /config
+    if (~windex) then win, /config
     mnum = fix(monitor[0])
   endif else begin
     if (size(secondarymon,/type) gt 0) then mnum = secondarymon
   endelse
 
-  putwin, /free, monitor=mnum, xsize=800, ysize=500, dx=10, dy=10
+  win, /free, monitor=mnum, xsize=800, ysize=500, dx=10, dy=10
   Swin = !d.window
   
   if (hflg) then begin
-    putwin, /free, rel=Swin, xsize=225, ysize=545, dx=10
+    win, /free, rel=Swin, xsize=225, ysize=545, dx=10
     Hwin = !d.window
   endif
 
   if (mflg) then begin
-    putwin, /free, rel=Swin, xsize=800, ysize=500, dy=-55
+    win, /free, rel=Swin, xsize=800, ysize=500, dy=-55
     Mwin = !d.window
   endif
 
   if (dflg) then begin
-    if (mflg) then putwin, /free, rel=Mwin, xsize=800, ysize=500, dx=10 $
-              else putwin, /free, rel=Swin, xsize=800, ysize=500, dy=-55
+    if (mflg) then win, /free, rel=Mwin, xsize=800, ysize=500, dx=10 $
+              else win, /free, rel=Swin, xsize=800, ysize=500, dy=-55
     Dwin = !d.window
   endif
 

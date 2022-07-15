@@ -73,7 +73,7 @@
 ;
 ;       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
 ;                      from 0 to N-1, where N is the number of monitors recognized
-;                      by the operating system.  See putwin.pro for details.
+;                      by the operating system.  See win.pro for details.
 ;
 ;       ARCHIVE:       If set, show snapshots of archive data.
 ;
@@ -96,8 +96,8 @@
 ;                      interactive time range selection.)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-06-16 16:02:26 -0700 (Thu, 16 Jun 2022) $
-; $LastChangedRevision: 30864 $
+; $LastChangedDate: 2022-07-14 11:40:53 -0700 (Thu, 14 Jul 2022) $
+; $LastChangedRevision: 30933 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -121,7 +121,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
   csize1 = 1.2
   csize2 = 1.4
 
-  if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
+  if (size(windex,/type) eq 0) then win, config=0  ; win acts like window
 
 ; Load any keyword defaults
 
@@ -272,27 +272,27 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (~windex) then putwin, /config
+    if (~windex) then win, /config
     mnum = fix(monitor[0])
   endif else begin
     if (size(secondarymon,/type) gt 0) then mnum = secondarymon
   endelse
 
-  putwin, /free, monitor=mnum, xsize=800, ysize=600, dx=10, dy=10, scale=wscale
+  win, /free, monitor=mnum, xsize=800, ysize=600, dx=10, dy=10, scale=wscale
   Dwin = !d.window
 
   if (sflg) then begin
-    putwin, /free, xsize=450, ysize=600, rel=Dwin, dx=10, scale=wscale
+    win, /free, xsize=450, ysize=600, rel=Dwin, dx=10, scale=wscale
     Swin = !d.window
   endif
   
   if (dflg) then begin
-    putwin, /free, xsize=450, ysize=600, rel=!d.window, dx=10, scale=wscale
+    win, /free, xsize=450, ysize=600, rel=!d.window, dx=10, scale=wscale
     Fwin = !d.window
   endif
   
   if (dopam) then begin
-    putwin, /free, monitor=mnum, xsize=600, ysize=450, dx=10, dy=-10, scale=wscale
+    win, /free, monitor=mnum, xsize=600, ysize=450, dx=10, dy=-10, scale=wscale
     Pwin = !d.window
   endif
 

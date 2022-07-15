@@ -144,8 +144,8 @@
 ;       IONO:     Plot a dashed circle at this altitude.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-06-28 16:51:42 -0700 (Tue, 28 Jun 2022) $
-; $LastChangedRevision: 30890 $
+; $LastChangedDate: 2022-07-14 11:39:13 -0700 (Thu, 14 Jul 2022) $
+; $LastChangedRevision: 30931 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -166,7 +166,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     return
   endif
 
-  if (size(windex,/type) eq 0) then putwin, config=0, /silent  ; putwin acts like window
+  if (size(windex,/type) eq 0) then win, config=0, /silent  ; win acts like window
 
   a = 1.0
   phi = findgen(49)*(2.*!pi/49)
@@ -362,7 +362,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (windex eq -1) then putwin, /config, /silent
+    if (windex eq -1) then win, /config, /silent
     mnum = fix(monitor[0])
   endif else if (windex gt -1) then mnum = secondarymon
 
@@ -371,23 +371,23 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   endif else begin
     psflg = 0
     if (npans eq 1) then begin
-      putwin, /free, monitor=mnum, xsize=500, ysize=473, dx=10, dy=10, scale=wscale  ; MSO projections 1x1
+      win, /free, monitor=mnum, xsize=500, ysize=473, dx=10, dy=10, scale=wscale  ; MSO projections 1x1
       Owin = !d.window
     endif else begin                                                                 ; MSO projections 1x3
-      if (windex eq -1) then putwin, /free, xsize=281, ysize=800, scale=wscale, dx=10 $
-                        else putwin, /free, monitor=mnum, /yfull, aspect=0.351, dx=10
+      if (windex eq -1) then win, /free, xsize=281, ysize=800, scale=wscale, dx=10 $
+                        else win, /free, monitor=mnum, /yfull, aspect=0.351, dx=10
       Owin = !d.window
       csize = float(!d.x_size)/175.
     endelse
   endelse
 
   if (gflg) then begin
-    putwin, /free, monitor=mnum, xsize=600, ysize=280, dx=-10, dy=-10, scale=wscale  ; MSO Lat-Lon
+    win, /free, monitor=mnum, xsize=600, ysize=280, dx=-10, dy=-10, scale=wscale  ; MSO Lat-Lon
     Gwin = !d.window
   endif
 
   if (cyflg) then begin
-    putwin, /free, xsize=600, ysize=350, rel=Owin, dx=10, /bottom, scale=wscale  ; MSO cylindrical
+    win, /free, xsize=600, ysize=350, rel=Owin, dx=10, /bottom, scale=wscale  ; MSO cylindrical
     Cwin = !d.window
   endif
 
@@ -1131,7 +1131,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     if (mflg gt 0) then begin
       if (pflg) then i = iref else i = rndx[imin]
       title = ''
-      if (0) then j = color else j = 2
+      if (cflg) then j = color else j = 2
 ;     if (ntimes gt 0) then j = tcolors[k]
       if (doterm gt 0) then ttime = trange[0] else ttime = 0
       if (doalt) then sc_alt = hgt[i] else sc_alt = 0
@@ -1193,6 +1193,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
   !p.multi = 0
   if (black) then revvid, /white
+  wset, Twin
 
   return
 

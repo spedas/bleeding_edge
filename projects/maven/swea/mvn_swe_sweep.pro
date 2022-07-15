@@ -131,8 +131,8 @@
 ;                        2 = SWEA native format (2-byte words)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-05-05 12:58:13 -0700 (Thu, 05 May 2022) $
-; $LastChangedRevision: 30800 $
+; $LastChangedDate: 2022-07-14 11:40:53 -0700 (Thu, 14 Jul 2022) $
+; $LastChangedRevision: 30933 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sweep.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-01-03
@@ -562,7 +562,7 @@ pro mvn_swe_sweep, result=dat, prop=prop, doplot=doplot, tabnum=tabnum, Xmax=Xma
 
   if (doplot) then begin
     twin = !d.window
-    putwin,/free,relative=twin,dx=10,/top
+    win,/free,relative=twin,dx=10,/top
     pwin = !d.window
 
     plot_oi,dat.E,dat.theta[0,*],xrange=[1.,1.e4],yrange=[-70,70],/ysty,psym=-4, $

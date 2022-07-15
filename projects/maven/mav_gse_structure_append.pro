@@ -1,7 +1,7 @@
 ;  Warning DON'T USE THE REALTIME KEYWORD - IT RUNS VERY SLOW!
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-04-01 10:51:37 -0700 (Fri, 01 Apr 2022) $
-; $LastChangedRevision: 30747 $
+; $LastChangedDate: 2022-07-13 18:30:25 -0700 (Wed, 13 Jul 2022) $
+; $LastChangedRevision: 30926 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/mav_gse_structure_append.pro $
 
 pro mav_gse_structure_append,ptrs,str,tname=tname,tags=tagsformat,realtime=realtime,reset=reset,clear=clear,insert_gap=gap
@@ -37,7 +37,7 @@ pro mav_gse_structure_append,ptrs,str,tname=tname,tags=tagsformat,realtime=realt
             vvalue=findgen(dim[0])
             dprint,/phelp,tname+'_'+tags[i],time,yvalue,time_dim,dim,dlevel=4
           endif
-          if strpos(tags[i],'FLAG') ge 0 then dlim ={dlim,tplot_routine:'bitplot',colors:'bmgr',panel_size:.4}
+          if strpos(tags[i],'FLAG') ge 0 then dlim =struct(dlim,tplot_routine='bitplot',colors='bmgr',panel_size=.4)
           if keyword_set(gap) then $
             store_data,tname+'_'+tags[i], fill_nan(time),fill_nan( yvalue),fill_nan(vvalue), /append  ,dlim=dlim
           store_data,tname+'_'+tags[i], time, yvalue,vvalue, /append  ,dlim=dlim

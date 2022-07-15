@@ -12,8 +12,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-06-16 16:02:26 -0700 (Thu, 16 Jun 2022) $
-; $LastChangedRevision: 30864 $
+; $LastChangedDate: 2022-07-14 11:40:53 -0700 (Thu, 14 Jul 2022) $
+; $LastChangedRevision: 30933 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_hsk_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-25-12
@@ -30,7 +30,7 @@ pro swe_hsk_snap
   
   hsk = swe_hsk
 
-  if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
+  if (size(windex,/type) eq 0) then win, config=0  ; win acts like window
     
   Twin = !d.window
   
@@ -52,7 +52,7 @@ pro swe_hsk_snap
 
   print,'Use button 1 to select time; button 3 to quit.'
 
-  putwin, 26, /secondary, dx=10, xsize=225, ysize=545
+  win, 26, /secondary, dx=10, xsize=225, ysize=545
   Hwin = !d.window
 
   wset,Twin

@@ -92,7 +92,7 @@ end
 ;
 ;       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
 ;                      from 0 to N-1, where N is the number of monitors recognized
-;                      by the operating system.  See putwin.pro for details.
+;                      by the operating system.  See win.pro for details.
 ;
 ;       ARCHIVE:       If set, show shapshots of archive data (A5).
 ;
@@ -221,8 +221,8 @@ end
 ;                      are lost.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-06-16 16:00:39 -0700 (Thu, 16 Jun 2022) $
-; $LastChangedRevision: 30862 $
+; $LastChangedDate: 2022-07-14 11:40:53 -0700 (Thu, 14 Jul 2022) $
+; $LastChangedRevision: 30933 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -250,7 +250,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   tiny = 1.e-31
   maxarg = 80.
 
-  if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
+  if (size(windex,/type) eq 0) then win, config=0  ; win acts like window
 
 ; Load any keyword defaults
 
@@ -451,28 +451,28 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (~windex) then putwin, /config
+    if (~windex) then win, /config
     mnum = fix(monitor[0])
   endif else begin
     if (size(secondarymon,/type) gt 0) then mnum = secondarymon
   endelse
 
-  putwin, /free, monitor=mnum, xsize=400, ysize=600, dx=10, dy=10, scale=wscale
+  win, /free, monitor=mnum, xsize=400, ysize=600, dx=10, dy=10, scale=wscale
   Ewin = !d.window
 
   if (hflg) then begin
-    putwin, /free, rel=!d.window, xsize=200, ysize=600, dx=10
+    win, /free, rel=!d.window, xsize=200, ysize=600, dx=10
     Hwin = !d.window
   endif
   
   if (pflg) then begin
-    putwin, /free, rel=!d.window, xsize=450, ysize=600, dx=10
+    win, /free, rel=!d.window, xsize=450, ysize=600, dx=10
     Pwin = !d.window
   endif
 
   if keyword_set(der) then begin
     doder = 1
-    putwin, /free, rel=!d.window, clone=Ewin, dx=10
+    win, /free, rel=!d.window, clone=Ewin, dx=10
     Dwin = !d.window
   endif else doder = 0
 

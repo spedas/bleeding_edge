@@ -33,8 +33,8 @@
 ;       This routine also passes keywords to PLOT.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-27 10:36:47 -0700 (Fri, 27 Aug 2021) $
-; $LastChangedRevision: 30263 $
+; $LastChangedDate: 2022-07-14 11:40:29 -0700 (Thu, 14 Jul 2022) $
+; $LastChangedRevision: 30932 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -78,7 +78,7 @@ pro mvn_sta_cio_snap, data, keep=keep, result=result, range=range, nbins=nbins, 
 ; Make a new window to hold the snapshot
 
   if (not execute('wset,29',2,1)) then $
-    putwin, 29, 1, xsize=700, ysize=500, /ycenter, dx=810, corner=0
+    win, 29, 1, xsize=700, ysize=500, /ycenter, dx=810, corner=0
   swin = !d.window
 
 ; Get a point on the original plot

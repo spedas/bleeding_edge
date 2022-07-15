@@ -55,7 +55,7 @@
 ;
 ;       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
 ;                      from 0 to N-1, where N is the number of monitors recognized
-;                      by the operating system.  See putwin.pro for details.
+;                      by the operating system.  See win.pro for details.
 ;
 ;       ARCHIVE:       If set, show snapshots of archive data.
 ;
@@ -171,8 +171,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-06-27 08:42:58 -0700 (Mon, 27 Jun 2022) $
-; $LastChangedRevision: 30886 $
+; $LastChangedDate: 2022-07-14 11:40:53 -0700 (Thu, 14 Jul 2022) $
+; $LastChangedRevision: 30933 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -201,7 +201,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
   tiny = 1.e-31
 
-  if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
+  if (size(windex,/type) eq 0) then win, config=0  ; win acts like window
 
 ; Load any keyword defaults
 
@@ -435,7 +435,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (~windex) then putwin, /config
+    if (~windex) then win, /config
     mnum = fix(monitor[0])
   endif else begin
     if (size(secondarymon,/type) gt 0) then mnum = secondarymon
@@ -444,12 +444,12 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   if (rflg or hflg or uflg) then begin
     rflg = 1
     ysize = fix(300.*float(rflg+hflg+uflg))
-    putwin, /free, monitor=mnum, xsize=800, ysize=ysize, dx=10, dy=10, scale=wscale  ; PAD (resampled)
+    win, /free, monitor=mnum, xsize=800, ysize=ysize, dx=10, dy=10, scale=wscale  ; PAD (resampled)
     Pwin = !d.window
   endif
 
   if (~rflg) then begin
-    putwin, /free, monitor=mnum, xsize=800, ysize=600, dx=10, dy=10, scale=wscale  ; PAD (as measured)
+    win, /free, monitor=mnum, xsize=800, ysize=600, dx=10, dy=10, scale=wscale  ; PAD (as measured)
     Pwin = !d.window
   endif
 
@@ -457,32 +457,32 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   if keyword_set(dir) then if (dir gt 1) then wdy = fix(0.125*450.)
 
   if (sflg) then begin
-    putwin, /free, xsize=600, ysize=(450+wdy), rel=Pwin, dy=-10, scale=wscale ; PAD E-cut
+    win, /free, xsize=600, ysize=(450+wdy), rel=Pwin, dy=-10, scale=wscale ; PAD E-cut
     Nwin = !d.window
   endif
 
   if (dospec) then begin
-    putwin, /free, xsize=400, ysize=600, rel=Pwin, dx=10, scale=wscale  ; PAD spec
+    win, /free, xsize=400, ysize=600, rel=Pwin, dx=10, scale=wscale  ; PAD spec
     Ewin = !d.window
   endif
 
   if (dflg) then begin
-    putwin, /free, monitor=mnum, xsize=500, ysize=700, dx=10, dy=-10, scale=wscale  ; 3D view
+    win, /free, monitor=mnum, xsize=500, ysize=700, dx=10, dy=-10, scale=wscale  ; 3D view
     Cwin = !d.window
   endif
 
   if (doind) then begin
-    putwin, /free, monitor=mnum, xsize=800, ysize=600, dx=-10, dy=10, scale=wscale  ; Espec for each pad bin
+    win, /free, monitor=mnum, xsize=800, ysize=600, dx=-10, dy=10, scale=wscale  ; Espec for each pad bin
     Iwin = !d.window
   endif
 
   if (dov) then begin
-    putwin, /free, monitor=mnum, xsize=1200, ysize=300, dx=-10, dy=-10, scale=wscale  ; velocity dist.
+    win, /free, monitor=mnum, xsize=1200, ysize=300, dx=-10, dy=-10, scale=wscale  ; velocity dist.
     Vwin = !d.window
   endif
 
   if (padmap) then begin
-    putwin, /free, monitor=mnum, xsize=600, ysize=450, dx=-10, dy=-10, scale=wscale  ; PA map
+    win, /free, monitor=mnum, xsize=600, ysize=450, dx=-10, dy=-10, scale=wscale  ; PA map
     Mwin = !d.window
   endif
 

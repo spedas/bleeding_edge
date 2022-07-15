@@ -139,7 +139,7 @@
 ;
 ;       MONITOR:   Put snapshot windows in this monitor.  Monitors are numbered
 ;                  from 0 to N-1, where N is the number of monitors recognized
-;                  by the operating system.  See putwin.pro for details.
+;                  by the operating system.  See win.pro for details.
 ;
 ;       PNG:       Set this to the full filename (including path) of a png.
 ;                  No snapshot window is created.  All graphics output is
@@ -170,8 +170,8 @@
 ;                  spiral, and all labels.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-03-10 17:47:36 -0800 (Thu, 10 Mar 2022) $
-; $LastChangedRevision: 30668 $
+; $LastChangedDate: 2022-07-14 11:37:10 -0700 (Thu, 14 Jul 2022) $
+; $LastChangedRevision: 30928 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -187,7 +187,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
   common planetorb, planet, sta, stb, sorb, psp, orrkey
   @putwin_common
 
-  if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
+  if (size(windex,/type) eq 0) then win, config=0  ; win acts like window
 
 ; Load any keyword defaults
 
@@ -952,7 +952,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
 
     undefine, mnum
     if (size(monitor,/type) gt 0) then begin
-      if (windex eq -1) then putwin, /config
+      if (windex eq -1) then win, /config
       mnum = fix(monitor[0])
     endif else begin
       if (size(secondarymon,/type) gt 0) then mnum = secondarymon
@@ -963,7 +963,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
   endif
 
   if (mflg) then begin
-    putwin, /free, monitor=mnum, xsize=xsize, ysize=ysize, dx=10, dy=10, scale=scale
+    win, /free, monitor=mnum, xsize=xsize, ysize=ysize, dx=10, dy=10, scale=scale
     Owin = !d.window
     zscl = 1.
     csize = 1.5*zscl*scale
@@ -1378,7 +1378,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
     zscl = 0.8
   endif else begin
     if (Owin eq -1) then begin
-      putwin, wnum, mnum, xsize=xsize, ysize=ysize, dx=10, dy=10, scale=scale
+      win, wnum, mnum, xsize=xsize, ysize=ysize, dx=10, dy=10, scale=scale
       Owin = !d.window
     endif
     zscl = 1.

@@ -158,8 +158,8 @@
 ;                   for outputting a png plot.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-25 09:08:44 -0700 (Wed, 25 Aug 2021) $
-; $LastChangedRevision: 30248 $
+; $LastChangedDate: 2022-07-14 11:40:29 -0700 (Thu, 14 Jul 2022) $
+; $LastChangedRevision: 30932 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_plot.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -1229,7 +1229,7 @@ pro mvn_sta_cio_plot, ptr, data=data, dst=dst, options=options, filter=filter, $
   if keyword_set(doall) then begin
     if (not execute('wset, doall',2,1)) then begin
       scale = 2.*wscale
-      putwin, doall, 2, xsize=xsize, aspect=aspect2, scale=scale, /ycenter, dx=20, corner=1
+      win, doall, 2, xsize=xsize, aspect=aspect2, scale=scale, /ycenter, dx=20, corner=1
     endif
     !p.multi = [0,2,2,0,0]
     doall = 1
@@ -1246,7 +1246,7 @@ pro mvn_sta_cio_plot, ptr, data=data, dst=dst, options=options, filter=filter, $
     if (~doall) then begin
       if (not execute('wset, doplot',2,1)) then begin
         scale = wscale
-        putwin, doplot, 1, xsize=xsize, aspect=aspect1, scale=scale, /ycenter, dx=20, corner=0
+        win, doplot, 1, xsize=xsize, aspect=aspect1, scale=scale, /ycenter, dx=20, corner=0
       endif
     endif
 
@@ -1349,7 +1349,7 @@ pro mvn_sta_cio_plot, ptr, data=data, dst=dst, options=options, filter=filter, $
     if (~doall) then begin
       if (not execute('wset, dosamp',2,1)) then begin
         scale = wscale
-        putwin, dosamp, 2, xsize=xsize, aspect=aspect1, scale=scale, /ycenter, dx=10, corner=1
+        win, dosamp, 2, xsize=xsize, aspect=aspect1, scale=scale, /ycenter, dx=10, corner=1
       endif
     endif
 
@@ -1458,7 +1458,7 @@ pro mvn_sta_cio_plot, ptr, data=data, dst=dst, options=options, filter=filter, $
     if (~doall) then begin
       if (not execute('wset, domom',2,1)) then begin
         scale = wscale
-        putwin, domom, 1, xsize=xsize, aspect=aspect1, scale=scale, /ycenter, dx=20, corner=0
+        win, domom, 1, xsize=xsize, aspect=aspect1, scale=scale, /ycenter, dx=20, corner=0
       endif
     endif
 

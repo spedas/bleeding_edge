@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2022
 ;
 ; $LastChangedBy: pulupa $
-; $LastChangedDate: 2022-07-08 16:59:26 -0700 (Fri, 08 Jul 2022) $
-; $LastChangedRevision: 30910 $
+; $LastChangedDate: 2022-07-14 14:25:06 -0700 (Thu, 14 Jul 2022) $
+; $LastChangedRevision: 30934 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -727,10 +727,14 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
         qf_labels = $
           ['BIAS_SWP','THRUSTER','SCM_CAL',$
           'MAG_ROLL','MAG_CAL','SPC_EMODE','SLS_CAL','OFF_UMBRA', $
-          'HF_NOISE','ANT_RAILS']
+          'HF_NOISE','ANT_RAILS','ANOM_BIAS']
+          
+        nbits = n_elements(qf_labels)
 
-        options, qf_name, 'numbits', n_elements(qf_labels)
-        options, qf_name, 'yticks', n_elements(qf_labels) + 1
+        options, qf_name, 'numbits', nbits
+        options, qf_name, 'yticks', nbits + 1
+        options, qf_name, 'ytickname', $
+          [' ', string(indgen(nbits), format = '(I2)'), ' ']
         options, qf_name, 'labels', qf_labels
         options, qf_name, 'ytitle', 'Quality Flags'
         options, qf_name, 'ysubtitle', ' '

@@ -3,8 +3,8 @@
 ;  cdf_tools
 ;  This basic object is the entry point for reading and writing cdf files
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-03-29 22:14:07 -0700 (Tue, 29 Mar 2022) $
-; $LastChangedRevision: 30733 $
+; $LastChangedDate: 2022-07-13 18:30:25 -0700 (Wed, 13 Jul 2022) $
+; $LastChangedRevision: 30926 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/cdf_tools__define.pro $
 ;
 ;-
@@ -28,8 +28,8 @@
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-03-29 22:14:07 -0700 (Tue, 29 Mar 2022) $
-; $LastChangedRevision: 30733 $
+; $LastChangedDate: 2022-07-13 18:30:25 -0700 (Wed, 13 Jul 2022) $
+; $LastChangedRevision: 30926 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/cdf_tools__define.pro $
 ;-
 
@@ -51,8 +51,8 @@ function cdf_tools::sw_version
   sw_hash['sw_runby'] = login_info.user_name
   sw_hash['sw_machine'] = login_info.machine_name
   sw_hash['cdf_svn_changedby'] = '$LastChangedBy: ali $'
-  sw_hash['cdf_svn_changedate'] = '$LastChangedDate: 2022-03-29 22:14:07 -0700 (Tue, 29 Mar 2022) $'
-  sw_hash['cdf_svn_revision'] = '$LastChangedRevision: 30733 $'
+  sw_hash['cdf_svn_changedate'] = '$LastChangedDate: 2022-07-13 18:30:25 -0700 (Wed, 13 Jul 2022) $'
+  sw_hash['cdf_svn_revision'] = '$LastChangedRevision: 30926 $'
   sw_hash['cdf_svn_URL'] = '$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/cdf_tools__define.pro $'
 
   return,sw_hash
@@ -136,8 +136,8 @@ pro cdf_tools::write,pathname,cdftags=cdftags,verbose=verbose
   global_attributes = self.g_attributes
 
   global_attributes['cdf_svn_changedby'] = '$LastChangedBy: ali $'
-  global_attributes['cdf_svn_changedate'] = '$LastChangedDate: 2022-03-29 22:14:07 -0700 (Tue, 29 Mar 2022) $'
-  global_attributes['cdf_svn_revision'] = '$LastChangedRevision: 30733 $'
+  global_attributes['cdf_svn_changedate'] = '$LastChangedDate: 2022-07-13 18:30:25 -0700 (Wed, 13 Jul 2022) $'
+  global_attributes['cdf_svn_revision'] = '$LastChangedRevision: 30926 $'
   global_attributes['cdf_svn_URL'] = '$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/cdf_tools__define.pro $'
   login_info = get_login_info()
   global_attributes['sw_runby'] = login_info.user_name
@@ -285,8 +285,7 @@ pro cdf_tools::var_att_create,var
       return
     end
   endcase
-  opts = {cdf_type,ZVARIABLE:ZVARIABLE,rec_novary:rec_novary,numelem:numelem}
-
+  opts = struct(cdf_type,ZVARIABLE=ZVARIABLE,rec_novary=rec_novary,numelem=numelem)
 
   dprint,dlevel=self.dlevel+2,phelp=2,varname,dim,opts,data
   if ~keyword_set(rec_novary)  then  begin

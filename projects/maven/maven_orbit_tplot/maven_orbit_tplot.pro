@@ -106,9 +106,8 @@
 ;
 ;       NOCROP:   Load and display all available ephemeris data.  Overrides TIMECROP.
 ;
-;       COLORS:   Color indices the nominal plasma regimes: [sheath, pileup, wake].
-;                 The solar wind is always plotted in the default foreground color,
-;                 typically white or black.  For other regimes, the defaults are:
+;       COLORS:   An array with up to 3 elements to specify the color indices for 
+;                 the plasma regimes: [sheath, pileup, wake].  The defaults are:
 ;
 ;                   regime       index       color (table 43)
 ;                   -----------------------------------------
@@ -116,6 +115,9 @@
 ;                   pileup       199         orange
 ;                   wake           2         blue
 ;                   -----------------------------------------
+;
+;                 The colors you get depend on your color table.  The solar wind is
+;                 always displayed in the foreground color (usually white or black).
 ;
 ;       VARS:     Array of TPLOT variables created.
 ;
@@ -135,11 +137,12 @@
 ;
 ;       MISSION:  Restore save files that span from Mars orbit insertion to the 
 ;                 present.  These files are updated periodically.  Together, the
-;                 save files are 8.7 GB in size.
+;                 save files are 12.6 GB in size (as of July 2022), so this 
+;                 keyword is only useful for computers with sufficient memory.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-02-10 11:27:56 -0800 (Thu, 10 Feb 2022) $
-; $LastChangedRevision: 30576 $
+; $LastChangedDate: 2022-07-14 11:39:13 -0700 (Thu, 14 Jul 2022) $
+; $LastChangedRevision: 30931 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11

@@ -27,7 +27,7 @@
 ;
 ;       MONITOR:       Put snapshot windows in this monitor.  Monitors are numbered
 ;                      from 0 to N-1, where N is the number of monitors recognized
-;                      by the operating system.  See putwin.pro for details.
+;                      by the operating system.  See win.pro for details.
 ;
 ;       ARCHIVE:       If set, show snapshots of archive data (A1).
 ;
@@ -44,7 +44,7 @@ pro swe_a0_snap, model=model, keepwins=keepwins, zrange=zrange, zlog=zlog, $
   @mvn_swe_com
   @putwin_common
 
-  if (size(windex,/type) eq 0) then putwin, config=0  ; putwin acts like window
+  if (size(windex,/type) eq 0) then win, config=0  ; win acts like window
 
   if (keyword_set(archive) or keyword_set(burst)) then aflg = 1 else aflg = 0
 
@@ -82,22 +82,22 @@ pro swe_a0_snap, model=model, keepwins=keepwins, zrange=zrange, zlog=zlog, $
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (~windex) then putwin, /config
+    if (~windex) then win, /config
     mnum = fix(monitor[0])
   endif else begin
     if (size(secondarymon,/type) gt 0) then mnum = secondarymon
   endelse
 
-  putwin, /free, monitor=mnum, xsize=800, ysize=500, dx=10, dy=10, scale=scale
+  win, /free, monitor=mnum, xsize=800, ysize=500, dx=10, dy=10, scale=scale
   Swin = !d.window
   
   if (hflg) then begin
-    putwin, /free, rel=Swin, xsize=225, ysize=545, dx=10
+    win, /free, rel=Swin, xsize=225, ysize=545, dx=10
     Hwin = !d.window
   endif
 
   if (mflg) then begin
-    putwin, /free, rel=Swin, xsize=800, ysize=500, dy=-55, scale=scale
+    win, /free, rel=Swin, xsize=800, ysize=500, dy=-55, scale=scale
     Mwin = !d.window
   endif
 

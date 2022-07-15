@@ -51,8 +51,8 @@
 ;       SCOL:       Color for each of the sites.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-11-06 12:22:51 -0700 (Sat, 06 Nov 2021) $
-; $LastChangedRevision: 30406 $
+; $LastChangedDate: 2022-07-14 11:39:13 -0700 (Thu, 14 Jul 2022) $
+; $LastChangedRevision: 30931 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mag_mola_orbit.pro $
 ;
 ;CREATED BY:	David L. Mitchell  04-02-03
@@ -119,9 +119,9 @@ pro mag_mola_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
     endelse
 
 	if (keyword_set(big) or keyword_set(dbr)) then begin
-	  putwin, Owin, xsize=1082, ysize=572, key=key
+	  win, Owin, xsize=1082, ysize=572, key=key
 	endif else begin
-	  putwin, Owin, xsize=757, ysize=409, key=key
+	  win, Owin, xsize=757, ysize=409, key=key
 	endelse
 
     px = [0.0, 1.0] * !d.x_vsize + xoff + 16
