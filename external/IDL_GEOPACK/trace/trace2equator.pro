@@ -40,7 +40,8 @@
 ;
 ;         external_model(optional): set this keyword to a string
 ;             indicating the external model that should be used in tracing
-;             (can be 'none','t89','t96','t01', or 't04s' default: none)
+;             (can be 'none', 't89', 't96', 't01', 't04s','ts07', 'ta15b', 'ta15n', 'ta16'
+;              default: none)
 ;
 ;         SOUTH(optional): set this keyword to indicate that fields
 ;             should be traced towards the southern hemisphere. By default
@@ -135,9 +136,9 @@
 ;  4. All calculations are done internally in double precision
 ;
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-10-19 17:05:44 -0700 (Tue, 19 Oct 2021) $
-; $LastChangedRevision: 30381 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2022-07-15 01:33:34 -0700 (Fri, 15 Jul 2022) $
+; $LastChangedRevision: 30935 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2equator.pro $
 ;-
 
@@ -157,7 +158,7 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
     ;constant arrays used for input validation
     valid_coords = ['gei', 'gse','geo', 'gsm', 'sm']
     valid_internals = ['dip', 'igrf']
-    valid_externals = ['none', 't89', 't96', 't01', 't04s', 'ts07','ta15b','ta15n']
+    valid_externals = ['none', 't89', 't96', 't01', 't04s', 'ts07','ta15b','ta15n', 'ta16']
     
     ; 6371.2 = the value used in the GEOPACK FORTRAN code for Re
     km_in_re = 6371.2D
@@ -252,13 +253,14 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
       ;these switches used to tell the
       ;IDL/GEOPACK trace function which
       ;model to use
-      T89 = 1
-      T96 = 0
-      T01 = 0
-      TS04 = 0
-      TS07 = 0
-      TA15B = 0
-      TA15N = 0
+      vT89 = 1
+      vT96 = 0
+      vT01 = 0
+      vTS04 = 0
+      vTS07 = 0
+      vTA15B = 0
+      vTA15N = 0
+      vTA16 = 0
        
       ;intialize and check par array
       if size(par,/n_dim) eq 0 then par_array = make_array(n_elements(tarray2),/DOUBLE,value=par)
@@ -298,13 +300,14 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
        ;these switches used to tell the
        ;IDL/GEOPACK trace function which
        ;model to use
-       T89 = 0
-       if external_model2 eq 't96' then T96 = 1 else T96 = 0
-       if external_model2 eq 't01' then T01 = 1 else T01 = 0
-       if external_model2 eq 't04s' then TS04 = 1 else TS04 = 0
-       if external_model2 eq 'ts07' then TS07 = 1 else TS07 = 0
-       if external_model2 eq 'ta15n' then TA15N=1 else TA15N = 0
-       if external_model2 eq 'ta15b' then TA15B=1 else TA15B = 0
+       vT89 = 0
+       if external_model2 eq 't96' then vT96 = 1 else vT96 = 0
+       if external_model2 eq 't01' then vT01 = 1 else vT01 = 0
+       if external_model2 eq 't04s' then vTS04 = 1 else vTS04 = 0
+       if external_model2 eq 'ts07' then vTS07 = 1 else vTS07 = 0
+       if external_model2 eq 'ta15n' then vTA15N=1 else vTA15N = 0
+       if external_model2 eq 'ta15b' then vTA15B=1 else vTA15B = 0
+       if external_model2 eq 'ta16' then vTA16=1 else vTA16 = 0
     
        ;check par array
        s = size(par,/dimensions)
@@ -315,13 +318,14 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
           return
        endif else par_array = double(par)
     endif else begin
-       T89 = 0
-       T96 = 0
-       T01 = 0
-       TS04 = 0
-       TS07 = 0
-       TA15B = 0
-       TA15N = 0
+       vT89 = 0
+       vT96 = 0
+       vT01 = 0
+       vTS04 = 0
+       vTS07 = 0
+       vTA15B = 0
+       vTA15N = 0
+       vTA16 = 0
     endelse
     
     ;check input array dimensions
@@ -477,7 +481,7 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
       endelse
     endif
  
-    if TS07 eq 1 then begin
+    if vTS07 eq 1 then begin
 
       if ~keyword_set(skip_ts07_load) then begin
         
@@ -538,8 +542,8 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
           endelse
     
           ;calculate which par values should be used on this iteration
-          if T89 eq 1 then par_iter = par_array[i] $
-          else if T96 eq 1 || T01 eq 1 || TS04 eq 1 || TS07 eq 1 || TA15B eq 1 || TA15N eq 1 then par_iter = par_array[i,*] $
+          if vT89 eq 1 then par_iter = par_array[i] $
+          else if vT96 eq 1 || vT01 eq 1 || vTS04 eq 1 || vTS07 eq 1 || vTA15B eq 1 || vTA15N eq 1 || vTA16 eq 1 then par_iter = par_array[i,*] $
           else par_iter = ''
     
           ;account for user tilt.
@@ -561,11 +565,11 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
           if geopack_2008 then begin
             geopack_trace_08,in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, $
               out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, $
-              IGRF = IGRF, T89 = T89, T96 = T96, T01 = T01, TS04 = TS04, TS07 = TS07, TA15B = TA15B, TA15N = TA15N, /refine, /equator, _extra = _extra
+              IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, TA16 = vTA16, /refine, /equator, _extra = _extra
           endif else begin
             geopack_trace, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, $
               out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, $
-              IGRF = IGRF, T89 = T89, T96 = T96, T01 = T01, TS04 = TS04, TS07 = TS07,TA15B = TA15B, TA15N = TA15N, /refine, /equator, _extra = _extra
+              IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, TA16 = vTA16, /refine, /equator, _extra = _extra
           endelse
           
           out_foot_array[i, 0] = out_foot_x
@@ -622,13 +626,13 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
              rgsm_z = in_pos_array2[idx, 2]
     
              ;calculate which par values should be used on this iteration
-             if T89 eq 1 then par_iter = par_array[id] $
-             else if T96 eq 1 || T01 eq 1 || TS04 eq 1 || TS07 eq 1 then par_iter = par_array[id,*] else par_iter = ''
+             if vT89 eq 1 then par_iter = par_array[id] $
+             else if vT96 eq 1 || vT01 eq 1 || vTS04 eq 1 || vTS07 eq 1 then par_iter = par_array[id,*] else par_iter = ''
              
              if geopack_2008 then begin
-                geopack_trace_08,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89=T89,T96=T96,T01=T01,TS04=TS04,TS07=TS07,_extra=_extra,/REFINE,/EQUATOR
+                geopack_trace_08,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, TA16 = vTA16,_extra=_extra,/REFINE,/EQUATOR
              endif else begin
-                geopack_trace,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89=T89,T96=T96,T01=T01,TS04=TS04,TS07=TS07,_extra=_extra,/REFINE,/EQUATOR
+                geopack_trace,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, TA16 = vTA16,_extra=_extra,/REFINE,/EQUATOR
              endelse 
              
              ;output foot

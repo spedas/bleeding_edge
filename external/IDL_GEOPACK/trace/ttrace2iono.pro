@@ -224,9 +224,9 @@
 ;  4. All calculations are done internally in double precision
 ;
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-09-27 17:06:45 -0700 (Mon, 27 Sep 2021) $
-; $LastChangedRevision: 30325 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2022-07-15 01:33:34 -0700 (Fri, 15 Jul 2022) $
+; $LastChangedRevision: 30935 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/ttrace2iono.pro $
 ;-
 
@@ -243,7 +243,7 @@ pro ttrace2iono, in_pos_tvar, newname = newname, trace_var_name = trace_tvar, in
 
     
     ;constant arrays used for input validation
-    valid_externals = ['none', 't89', 't96', 't01', 't04s','ts07', 'ta15b', 'ta15n']
+    valid_externals = ['none', 't89', 't96', 't01', 't04s','ts07', 'ta15b', 'ta15n', 'ta16']
    
     if keyword_set(external_model) then begin
       external_model2 = strlowcase(external_model)
