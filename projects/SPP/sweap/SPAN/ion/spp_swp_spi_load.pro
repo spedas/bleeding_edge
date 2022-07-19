@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-02-24 08:11:12 -0800 (Thu, 24 Feb 2022) $
-; $LastChangedRevision: 30608 $
+; $LastChangedDate: 2022-07-18 02:26:18 -0700 (Mon, 18 Jul 2022) $
+; $LastChangedRevision: 30937 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_load.pro $
 ; Created by Davin Larson 2018
 
@@ -69,7 +69,7 @@ end
 
 pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname_prefix=tname_prefix,save=save,$
   verbose=verbose,varformat=varformat,fileprefix=fileprefix,overlay=overlay,spcname=spcname,$
-  diag=diag,rtn_frame=rtn_frame,magname=magname,f2_100bps=f2_100bps
+  diag=diag,rtn_frame=rtn_frame,magname=magname,f2_100bps=f2_100bps,dens_name=dens_name
 
   if ~keyword_set(level) then level='L3'
   level=strupcase(level)
@@ -83,7 +83,7 @@ pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname
   ;; Product File Names
   ;dir='spi/'+level+'/YYYY/MM/spi_TYP/' ;old directory structure
   dir='spi/'+level+'/spi_TYP/YYYY/MM/'
-  fileformat=dir+'psp_swp_spi_TYP_'+level+'*_YYYYMMDD_v??.cdf'
+  fileformat=dir+'psp_swp_spi_TYP_'+level+'_mom_YYYYMMDD_v??.cdf'
   if not keyword_set(fileprefix) then fileprefix='psp/data/sci/sweap/'
 
   ;; Product TPLOT Parameters
@@ -219,7 +219,8 @@ pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname
         xyz_to_polar,prefix+'VEL_RTN_SUN'
         xyz_to_polar,magname
         get_data,magname+'_mag',dat=magf
-        get_data,prefix+'DENS',dat=dens
+        if ~keyword_set(dens_name) then dens_name = prefix+'DENS'
+        get_data,dens_name,dat=dens
         fudge=1. ;tuning the density
         dens2=fudge*interp(dens.y,dens.x,magf.x)
         valfven=21.812*magf.y/sqrt(dens2)
@@ -264,5 +265,6 @@ pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname
     ;options,'psp_swp_spc_l3i_np_moment',colors='c'
     store_data,'psp_swp_density',data = 'psp_swp_spc_l3i_np_moment psp_swp_spc_l3i_np_fit psp_swp_spi_??0[01]_L3_DENS',dlimit={yrange:[10,1e4],ylog:1}
   endif
+  
 
 end

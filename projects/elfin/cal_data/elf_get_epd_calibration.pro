@@ -96,8 +96,8 @@ function elf_get_epd_calibration, probe=probe, instrument=instrument, trange=tra
       epdi_ebins_logmean = epdi_ebins
       for j=0,14 do epdi_ebins_logmean[j]=10.^((alog10(epdi_ebins[j])+alog10(epdi_ebins[j+1]))/2)
       epdi_ebins_logmean[15]=6500.
-      epdi_ebin_lbls = ['50-80', '80-120', '120-160', '160-210', '210-270', '270-345', '345-430', '430-630', $
-        '630-900', '900-1300', '1300-1800', '1800-2500', '2500-3350', '3350-4150', '4150-5800', '5800+']
+      epdi_ebin_lbls = ['50-90', '90-130', '130-170', '170-220', '220-280', '280-355', '355-440', '440-640', $
+        '640-910', '910-1310', '1310-1810', '1810-2510', '2510-3360', '3360-4160', '4160-5810', '5810+']
       epd_calibration_data = { epd_gf:epdi_gf, $
         epd_overaccumulation_factors:epdi_overaccumulation_factors, $
         epd_thresh_factors:epdi_thresh_factors, $
