@@ -105,9 +105,9 @@
 ;Still have questions:
 ;   Send e-mail to:  tplot@ssl.berkeley.edu    someone might answer!
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2022-03-22 13:27:29 -0700 (Tue, 22 Mar 2022) $
-; $LastChangedRevision: 30705 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2022-07-19 12:22:30 -0700 (Tue, 19 Jul 2022) $
+; $LastChangedRevision: 30947 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot.pro $
 ;-
 
@@ -462,15 +462,17 @@ for i=0,nd-1 do begin
      str_element,newlim,'tplot_routine',value=routine
      color_table= struct_value(newlim,'color_table',default=-1) & pct=-1
      rev_color_table= struct_value(newlim,'reverse_color_table',default=0)
-     if color_table ge 0 then loadct2,color_table,previous_ct=pct,reverse=rev_color_table
+;modified by mitchell include CSV color tables (indices >= 1000)
+     if (color_table ge 0 and color_table lt 1000) then loadct2,color_table,previous_ct=pct,reverse=rev_color_table
+     if (color_table ge 1000) then loadcsv,color_table,previous_ct=pct,reverse=rev_color_table,/silent
 ;if debug() then stop
      call_procedure,routine,data=data,limits=newlim
 ;Allow fill of time interval with different background color, or other
 ;polyfill options, given by fill_time_intv structure, jmm, 2019-11-04
      str_element, newlim, 'fill_time_intv', success = fill_intv
      if fill_intv eq 1 then tplot_fill_time_intv, routine, data, newlim, time_offset
-           
-     if color_table ne pct then loadct2,pct
+
+     if (color_table ne pct) then if (pct lt 1000) then loadct2,pct else loadcsv,pct,/silent
 
      ;get offset into color array (for pseudo vars)
      if keyword_set(colors_set) then begin
