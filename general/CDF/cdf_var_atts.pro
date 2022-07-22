@@ -17,9 +17,9 @@
 ;   var;        CDF variable name or number
 ;   attname:    CDF attribute name
 ;CREATED BY:    Davin Larson
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-10-07 12:15:58 -0700 (Mon, 07 Oct 2019) $
-; $LastChangedRevision: 27825 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2022-07-21 16:25:23 -0700 (Thu, 21 Jul 2022) $
+; $LastChangedRevision: 30953 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_var_atts.pro $
 ;-
 
@@ -87,7 +87,7 @@ endif else begin      ; Get variable attributes
                         dprint,dlevel=4,'Warning converting attribute from INT1 to INT2'
                         value = value - (value ge 128) * 256
                     endif
-                    if size(/type,value) eq 7 then if  strpos(value,'>$<') ge 1 then $
+                    if ((size(/type,value) eq 7) && (n_elements(value) eq 1)) then if  strpos(value,'>$<') ge 1 then $
                         value = strsplit(/extract,value,'>$<')  ; break strings into arrays if separater token is found
                     name = idl_validname(name,/convert_all)
                     if keyword_set(attstr) then   attstr = create_struct(attstr,name,value)  $
