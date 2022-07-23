@@ -220,9 +220,13 @@ end
 ;                      that the deadtime corrections for the individual spectra
 ;                      are lost.
 ;
+;       COLOR_TABLE:   Use this color table for all plots.
+;
+;       REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-14 11:40:53 -0700 (Thu, 14 Jul 2022) $
-; $LastChangedRevision: 30933 $
+; $LastChangedDate: 2022-07-22 13:01:04 -0700 (Fri, 22 Jul 2022) $
+; $LastChangedRevision: 30957 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -237,7 +241,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
                    flev=flev, pylim=pylim, k_e=k_e, peref=peref, error_bars=error_bars, $
                    trange=tspan, tsmo=tsmo, wscale=wscale, cscale=cscale, voffset=voffset, $
                    endx=endx, twot=twot, rcolors=rcolors, cuii=cuii, fmfit=fmfit, nolab=nolab, $
-                   showdead=showdead, monitor=monitor, der=der
+                   showdead=showdead, monitor=monitor, der=der, color_table=color_table, $
+                   reverse_color_table=reverse_color_table
 
   @mvn_swe_com
   @mvn_scpot_com
@@ -262,7 +267,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
            'BKG','TPLOT','MAGDIR','BCK','SHIFTPOT','XRANGE','YRANGE','SCONFIG', $
            'POPEN','TIMES','FLEV','PYLIM','K_E','PEREF','ERROR_BARS','TRANGE', $
            'TSMO','WSCALE','CSCALE','VOFFSET','ENDX','TWOT','RCOLORS','CUII', $
-           'FMFIT','NOLAB','SHOWDEAD','MONITOR']
+           'FMFIT','NOLAB','SHOWDEAD','MONITOR','COLOR_TABLE','REVERSE_COLOR_TABLE']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -445,6 +450,25 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
            end
   endcase
 
+  ctab = -1 & pct = -1
+  if (n_elements(color_table) gt 0) then begin
+    ctab = fix(color_table[0])
+    crev = keyword_set(reverse_color_table)
+    if (ctab ge 0 and ctab lt 1000) then loadct2,ctab,previous_ct=pct,reverse=crev
+    if (ctab ge 1000) then loadcsv,ctab,previous_ct=pct,reverse=crev,/silent
+  endif
+
+  cols = get_colors()
+  if (cols.color_table ge 1000) then cols = get_qualcolors()
+  cbot = (cols.bottom_c ge 0) ? cols.bottom_c : 7
+  ctop = (cols.top_c ge 0) ? cols.top_c : 254
+  str_element, cols, 'magenta', mcol, success=ok
+  if (not ok) then str_element, cols, 'purple', mcol, success=ok
+  if (not ok) then mcol = !p.color
+  str_element, cols, 'cyan', bcol, success=ok
+  if (not ok) then str_element, cols, 'blue', bcol, success=ok
+  if (not ok) then bcol = !p.color
+
 ; Put up snapshot window(s)
 
   Twin = !d.window
@@ -494,6 +518,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     if (hflg) then wdelete,Hwin
     if (pflg) then wdelete,Pwin
     wset,Twin
+    if (ctab ne pct) then if (pct lt 1000) then loadct2,pct else loadcsv,pct,/silent
     return
   endif
   
@@ -614,13 +639,13 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     if keyword_set(showdead) then begin
       scale = max(yrange)/10.
       if (swe_paralyze) then mindtc = 1./exp(1.) else mindtc = swe_min_dtc
-      oplot,x,scale/swe_deadtime(rate),psym=psym,color=6
-      oplot,xrange,[scale,scale],line=2,color=6
-      oplot,xrange,[scale,scale]/mindtc,line=2,color=6
+      oplot,x,scale/swe_deadtime(rate),psym=psym,color=cols.red
+      oplot,xrange,[scale,scale],line=2,color=cols.red
+      oplot,xrange,[scale,scale]/mindtc,line=2,color=cols.red
       msg = "!4s!1H = " + string(swe_dead, format='(e8.2)')
-      xyouts, max(xrange)*0.8, scale*0.75/mindtc, msg, charsize=csize2, align=1, color=6
+      xyouts, max(xrange)*0.8, scale*0.75/mindtc, msg, charsize=csize2, align=1, color=cols.red
       msg = ["non-paralyzable","paralyzable"]
-      xyouts, max(xrange)*0.8, scale*0.55/mindtc, msg[swe_paralyze], charsize=csize2, align=1, color=6
+      xyouts, max(xrange)*0.8, scale*0.55/mindtc, msg[swe_paralyze], charsize=csize2, align=1, color=cols.red
     endif
 
     if (keyword_set(fmfit) and strupcase(units) eq 'DF') then begin
@@ -634,7 +659,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
        if cte gt 0 then $
        fit,V,datf,chi2=ierr,fit=yfit,func='fm_spec_generalized',$
            names='V0 p C0 r',/logfit, par=par,/silent
-       if n_elements(yfit) gt 1 then oplot,x[ine],yfit,psym=psym,color=6
+       if n_elements(yfit) gt 1 then oplot,x[ine],yfit,psym=psym,color=cols.red
     endif
 
     if (dflg) then begin
@@ -649,7 +674,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       onorm = float(onorm)
 
       spec3d = total(ddd.data*omask,2,/nan)/onorm
-      oplot,ddd.energy[*,0],spec3d,psym=psym,color=4
+      oplot,ddd.energy[*,0],spec3d,psym=psym,color=cols.green
     endif
 
 ; Secondary electrons produced by primary electron impact inside the instrument.
@@ -668,8 +693,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         indx = where(~spec.valid, count)
         if (count gt 0L) then ya[indx] = !values.f_nan
 
-        oplot, x, yb, color=2, psym=10
-        oplot, x, ya, color=4, psym=10
+        oplot, x, yb, color=cols.blue, psym=10
+        oplot, x, ya, color=cols.green, psym=10
         if (ebar) then errplot,x,(ya-dy)>tiny,ya+dy,width=0
 
       endif
@@ -729,8 +754,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         indx = where(~spec.valid, count)
         if (count gt 0L) then ya[indx] = !values.f_nan
 
-        oplot, x, yb, color=2, psym=10
-        oplot, x, ya, color=4, psym=10
+        oplot, x, yb, color=cols.blue, psym=10
+        oplot, x, ya, color=cols.green, psym=10
         if (ebar) then errplot,x,(ya-dy)>tiny,ya+dy,width=0
 
       endif
@@ -768,8 +793,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         mvn_swe_convert_units, bkg_dat, units
         dif_dat = spec
         dif_dat.data = (spec.data - bkg_dat.data) > 1.
-        oplot,bkg_dat.energy,bkg_dat.data,color=5,line=2
-        oplot,dif_dat.energy,dif_dat.data,color=5,psym=10
+        oplot,bkg_dat.energy,bkg_dat.data,color=cols.yellow,line=2
+        oplot,dif_dat.energy,dif_dat.data,color=cols.yellow,psym=10
       endif
     endif
     
@@ -781,30 +806,30 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       bck.data[*] = brate  ; background crate per anode at periapsis
       bck.units_name = 'crate'
       mvn_swe_convert_units, bck, units
-      oplot, bck.energy, bck.data, line=2, color=4        ; periapsis
-      brate = ((2./3.)*(0.97/0.63) + (1./3.))             ; GCR's + Potassium-40
-      oplot, bck.energy, bck.data*brate, line=2, color=4  ; apoapsis
+      oplot, bck.energy, bck.data, line=2, color=cols.green        ; periapsis
+      brate = ((2./3.)*(0.97/0.63) + (1./3.))                      ; GCR's + Potassium-40
+      oplot, bck.energy, bck.data*brate, line=2, color=cols.green  ; apoapsis
       
-      bck.data[*] = (1./swe_min_dtc - 1.)/swe_dead        ; saturation CRATE
+      bck.data[*] = (1./swe_min_dtc - 1.)/swe_dead                 ; saturation CRATE
       bck.units_name = 'crate'
       mvn_swe_convert_units, bck, units
-      oplot, bck.energy, bck.data, line=2, color=4
+      oplot, bck.energy, bck.data, line=2, color=cols.green
     endif
 
     if (dopot) then begin
-      if (spflg) then oplot,[-pot,-pot],yrange,line=2,color=4 $
-                 else oplot,[pot,pot],yrange,line=2,color=6
+      if (spflg) then oplot,[-pot,-pot],yrange,line=2,color=cols.green $
+                 else oplot,[pot,pot],yrange,line=2,color=cols.red
     endif
     
     if (dopep) then begin
-      oplot,[23.,23.],yrange,line=2,color=1
-      oplot,[27.,27.],yrange,line=2,color=1
-      oplot,[60.,60.],yrange,line=2,color=1
-      oplot,[250.,250.],yrange,line=2,color=1
-      oplot,[360.,360.],yrange,line=2,color=1
+      oplot,[23.,23.],yrange,line=2,color=mcol
+      oplot,[27.,27.],yrange,line=2,color=mcol
+      oplot,[60.,60.],yrange,line=2,color=mcol
+      oplot,[250.,250.],yrange,line=2,color=mcol
+      oplot,[360.,360.],yrange,line=2,color=mcol
     endif
 
-    if (docu) then oplot,[7.73,7.73],yrange,line=2,color=1
+    if (docu) then oplot,[7.73,7.73],yrange,line=2,color=mcol
     
     if (doper) then begin
       oplot, peref.x, peref.y
@@ -848,7 +873,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       sdev = sqrt(spec.var)
       indx = where((spec.valid eq 0B) or (~finite(F1)), count)
       if (count gt 0) then F1[indx] = tiny
-      dcol = 4
+      dcol = cols.green
 
       p = swe_maxbol()
       p.pot = spec.sc_pot
@@ -891,7 +916,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         kappa.data = !values.f_nan
         kappa.data[ikap] = swe_maxbol(E1[ikap],par=pk)
         mvn_swe_convert_units, kappa, units
-        oplot,E1,kappa.data,psym=10,color=3
+        oplot,E1,kappa.data,psym=10,color=bcol
       endif else begin
         j = where(E1 gt Epeak*2., n_e)
         E_halo = E1[j]
@@ -905,7 +930,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         halo.data = !values.f_nan
         halo.data[j] = F_halo
         mvn_swe_convert_units, halo, units
-        oplot,E1,halo.data,color=1,psym=10
+        oplot,E1,halo.data,color=mcol,psym=10
       endelse
 
       if (spflg) then jndx = indgen(64) else jndx = where(E1 gt p.pot)
@@ -913,26 +938,25 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       thermal.data = !values.f_nan
       thermal.data[jndx] = swe_maxbol(E1[jndx],par=p)
       mvn_swe_convert_units, thermal, units
-      col = 4
-      oplot,E1,thermal.data,thick=2,color=col,line=1
-      oplot,E1[imb],thermal.data[imb],color=col,thick=2
-      if keyword_set(twot) then oplot,2.*[p.T,p.T],yrange,line=2,color=5
+      oplot,E1,thermal.data,thick=2,color=cols.green,line=1
+      oplot,E1[imb],thermal.data[imb],color=cols.green,thick=2
+      if keyword_set(twot) then oplot,2.*[p.T,p.T],yrange,line=2,color=cols.yellow
 
       xyouts,xs,ys,string(N_tot,format='("N = ",f6.2)'),color=dcol,charsize=csize1,/norm
       ys -= dys
       xyouts,xs,ys,string(p.T,format='("T = ",f5.2)'),color=dcol,charsize=csize1,/norm
       ys -= dys
-      xyouts,xs,ys,string(p.pot,format='("V = ",f5.2)'),color=6,charsize=csize1,/norm
+      xyouts,xs,ys,string(p.pot,format='("V = ",f5.2)'),color=cols.red,charsize=csize1,/norm
       ys -= dys
       if (kap) then begin
-        xyouts,xs,ys,string(p.k_n,format='("Nh = ",f5.2)'),color=3,charsize=csize1,/norm
+        xyouts,xs,ys,string(p.k_n,format='("Nh = ",f5.2)'),color=bcol,charsize=csize1,/norm
         ys -= dys
-        xyouts,xs,ys,string(p.k_vh,format='("Vh = ",f6.0)'),color=3,charsize=csize1,/norm
+        xyouts,xs,ys,string(p.k_vh,format='("Vh = ",f6.0)'),color=bcol,charsize=csize1,/norm
         ys -= dys
-        xyouts,xs,ys,string(p.k_k,format='("k = ",f5.2)'),color=3,charsize=csize1,/norm        
+        xyouts,xs,ys,string(p.k_k,format='("k = ",f5.2)'),color=bcol,charsize=csize1,/norm        
         ys -= dys
       endif else begin
-        xyouts,xs,ys,string(N_halo,format='("Nh = ",f5.2)'),color=1,charsize=csize1,/norm
+        xyouts,xs,ys,string(N_halo,format='("Nh = ",f5.2)'),color=mcol,charsize=csize1,/norm
         ys -= dys
       endelse
 
@@ -955,7 +979,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
             x_scat = [x_scat, E1[kndx]]
             y_scat = [y_scat, F1[kndx]]
           endif
-          oplot,x_scat,y_scat,color=3,psym=10
+          oplot,x_scat,y_scat,color=bcol,psym=10
         endif
       endif
     endif
@@ -978,12 +1002,12 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       ys -= dys
       xyouts,xs,ys,string(smom.T,format='("T = ",f6.2)'),color=dcol,charsize=csize1,/norm
       ys -= dys
-      xyouts,xs,ys,string(pot,format='("V = ",f6.2)'),color=6,charsize=csize1,/norm
+      xyouts,xs,ys,string(pot,format='("V = ",f6.2)'),color=cols.red,charsize=csize1,/norm
       ys -= dys
     endif
     
     if (~mb and ~mom and dolab) then begin
-      xyouts,xs,ys,string(pot,format='("V = ",f6.2)'),color=6,charsize=csize1,/norm
+      xyouts,xs,ys,string(pot,format='("V = ",f6.2)'),color=cols.red,charsize=csize1,/norm
       ys -= dys
     endif
 
@@ -991,13 +1015,13 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       if (sec eq 1) then begin
         mvn_swe_secondary, param=p
         ys -= dys
-        xyouts,xs,ys,string(p.e0, format='("E0 = ",f5.2)'),charsize=csize1,color=2,/norm
+        xyouts,xs,ys,string(p.e0, format='("E0 = ",f5.2)'),charsize=csize1,color=cols.blue,/norm
         ys -= dys
-        xyouts,xs,ys,string(p.s1, format='("S1 = ",f5.2)'),charsize=csize1,color=2,/norm
+        xyouts,xs,ys,string(p.s1, format='("S1 = ",f5.2)'),charsize=csize1,color=cols.blue,/norm
         ys -= dys
       endif else begin
         ys -= dys
-        xyouts,xs,ys,string(sscale, format='("SCL = ",f5.2)'),charsize=csize1,color=2,/norm
+        xyouts,xs,ys,string(sscale, format='("SCL = ",f5.2)'),charsize=csize1,color=cols.blue,/norm
         ys -= dys
       endelse
     endif
@@ -1009,9 +1033,9 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
 
       E0 = 10.^logE0
       F0 = 10.^interpol(logF, logE, logE0)
-      oplot,[E0],[F0],psym=4,color=6,symsize=1.5,thick=2
+      oplot,[E0],[F0],psym=4,color=cols.red,symsize=1.5,thick=2
       
-      xyouts,xs,ys,string(F0,format='("F = ",e8.2)'),color=6,charsize=csize1,/norm
+      xyouts,xs,ys,string(F0,format='("F = ",e8.2)'),color=cols.red,charsize=csize1,/norm
       ys -= dys
 
       Emsg = strtrim(string(E0,format='(f7.1)'),2)
@@ -1019,7 +1043,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     endif
 
     if (dflg) then begin
-      xyouts,xs,ys,'3D',charsize=csize1,/norm,color=4
+      xyouts,xs,ys,'3D',charsize=csize1,/norm,color=cols.green
       ys -= dys
     endif
     
@@ -1038,14 +1062,14 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       wset, Dwin
       plot_oi,e,dfs,xrange=[1,1000],yrange=[-1,1],/xsty,xtitle='Energy (eV)',$
               ytitle='df',charsize=csize1,psym=4
-      oplot,e,dfs,color=4
+      oplot,e,dfs,color=cols.green
       oplot,[1.,1000.],[0.,0.],line=2
 
       if (0) then begin
         g = dfs*shift(dfs,1)
         g[0] = 0.
         indx = where(g lt 0., count)
-        for k=0,(count-1) do oplot,[e[indx[k]],e[indx[k]]],[1e1,1e10],line=2,color=4
+        for k=0,(count-1) do oplot,[e[indx[k]],e[indx[k]]],[1e1,1e10],line=2,color=cols.green
       endif
     endif
 
@@ -1080,10 +1104,10 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       title = string(spec.sc_pot,format='("Potential = ",f5.1," V")')
       plot,px,py,xtitle='Potential (V)',ytitle='dF and d2F',$
                   xrange=xlim,/xsty,yrange=ylim,/ysty,title=title,charsize=csize2
-      oplot,[spec.sc_pot,spec.sc_pot],ylim,line=2,color=6
-      oplot,px,py2,color=4
+      oplot,[spec.sc_pot,spec.sc_pot],ylim,line=2,color=cols.red
+      oplot,px,py2,color=cols.green
       oplot,xlim,[0,0],line=2
-      oplot,xlim,[thresh,thresh],line=2,color=5
+      oplot,xlim,[thresh,thresh],line=2,color=cols.yellow
       oplot,replicate(min(Espan),2),ylim,line=1
       oplot,replicate(max(Espan),2),ylim,line=1
 
@@ -1101,25 +1125,25 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         kmin = k
       
         dE = px[kmin] - px[kmax]
-        oplot,[px[kmin],px[kmax]],[pymin,pymin],color=6
+        oplot,[px[kmin],px[kmax]],[pymin,pymin],color=cols.red
 ;       if ((kmax eq (n_e-1)) or (kmin eq 0)) then dE = 2.*dEmax
         if (kmin eq 0) then dE = 2.*dEmax
       
         if (dE lt dEmax) then k = max(indx) else k = -1  ; only accept narrow features
 ;       if (dE lt dEmax) then k = k0 else k = -1         ; only accept narrow features
 
-        for j=0,(ncross-1) do oplot,[px[indx[j]],px[indx[j]]],ylim,color=2
+        for j=0,(ncross-1) do oplot,[px[indx[j]],px[indx[j]]],ylim,color=cols.blue
 
         if (k gt 0) then begin
-          xyouts,xs,ys,string(px[k],format='("V = ",f6.2)'),color=6,charsize=csize0,/norm
+          xyouts,xs,ys,string(px[k],format='("V = ",f6.2)'),color=cols.red,charsize=csize0,/norm
           ys -= dys
-          oplot,[px[k],px[k]],ylim,color=6,line=2
+          oplot,[px[k],px[k]],ylim,color=cols.red,line=2
         endif else begin
-          xyouts,xs,ys,"V = NaN",color=6,charsize=csize0,/norm
+          xyouts,xs,ys,"V = NaN",color=cols.red,charsize=csize0,/norm
           ys -= dys
         endelse
 
-        if (dE gt dEmax) then scol = 6 else scol = !p.color
+        if (dE gt dEmax) then scol = cols.red else scol = !p.color
         xyouts,xs,ys,string(dE,format='("dE = ",f6.2)'),charsize=csize0,color=scol,/norm
         ys -= dys
 
@@ -1291,7 +1315,6 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   endif
 
   wset, Twin
-
-  return
+  if (ctab ne pct) then if (pct lt 1000) then loadct2,pct else loadcsv,pct,/silent
 
 end

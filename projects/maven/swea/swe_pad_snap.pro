@@ -168,11 +168,15 @@
 ;                      are also shown.  Bins blocked by the spacecraft are 
 ;                      marked with a yellow 'X'.
 ;
+;        COLOR_TABLE:  Use this color table for all plots.
+;
+;        REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
+;
 ;        NOTE:         Insert a text label.  Keep it short.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-14 11:40:53 -0700 (Thu, 14 Jul 2022) $
-; $LastChangedRevision: 30933 $
+; $LastChangedDate: 2022-07-22 13:00:41 -0700 (Fri, 22 Jul 2022) $
+; $LastChangedRevision: 30956 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -189,7 +193,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                   xrange=xrange, error_bars=error_bars, yrange=yrange, trange=trange2, $
                   note=note, mincounts=mincounts, maxrerr=maxrerr, tsmo=tsmo, $
                   sundir=sundir, wscale=wscale, cscale=cscale, fscale=fscale, $
-                  result=result, vdis=vdis, padmap=padmap, sec=sec
+                  result=result, vdis=vdis, padmap=padmap, sec=sec, color_table=color_table, $
+                  reverse_color_table=reverse_color_table
 
   @mvn_swe_com
   @putwin_common
@@ -197,7 +202,6 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   a = 0.8
   phi = findgen(49)*(2.*!pi/49)
   usersym,a*cos(phi),a*sin(phi),/fill
-  cols = get_colors()
 
   tiny = 1.e-31
 
@@ -214,7 +218,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
            'NOSPEC90','SHIFTPOT','POPEN','INDSPEC','TWOPOT','XRANGE',$
            'ERROR_BARS','YRANGE','TRANGE2','NOTE','MINCOUNTS','MAXRERR', $
            'TSMO','SUNDIR','WSCALE','CSCALE','FSCALE','RESULT','VDIS', $
-           'PADMAP']
+           'PADMAP','COLOR_TABLE','REVERSE_COLOR_TABLE']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -340,6 +344,19 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
       sun = {time:t[1L:*], the:the[1L:*], phi:phi[1L:*]}
     endif else sundir = 0
   endif
+
+  ctab = -1 & pct = -1
+  if (n_elements(color_table) gt 0) then begin
+    ctab = fix(color_table[0])
+    crev = keyword_set(reverse_color_table)
+    if (ctab ge 0 and ctab lt 1000) then loadct2,ctab,previous_ct=pct,reverse=crev
+    if (ctab ge 1000) then loadcsv,ctab,previous_ct=pct,reverse=crev,/silent
+  endif
+
+  cols = get_colors()
+  if (cols.color_table ge 1000) then cols = get_qualcolors()
+  cbot = (cols.bottom_c ge 0) ? cols.bottom_c : 7
+  ctop = (cols.top_c ge 0) ? cols.top_c : 254
 
 ; Field of view masking
 
@@ -565,6 +582,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
     if (rflg or hflg or uflg) then wdelete,Pwin
     if (padmap) then wdelete,Mwin
     wset,Twin
+    if (ctab ne pct) then if (pct lt 1000) then loadct2,pct else loadcsv,pct,/silent
     return
   endif
 
@@ -943,7 +961,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 contour,vphase,vpara,vper,$;,/IRREGULAR
                     xtit='V!d||!n (km/s)',ytit='V!d!9x!1H!n (km/s)',cell_fill=1,$
                     levels=(mima[1]-mima[0])/(nlv-1)*findgen(nlv)+mima[0],$
-                    c_colors=findgen(nlv)*(254.-8)/(nlv-1)+8,xrange=[-1e4,1e4],$
+                    c_colors=findgen(nlv)*(ctop-cbot)/(nlv-1)+cbot,xrange=[-1e4,1e4],$
                     yrange=[0,1e4],nlevels=nlv,isotropic=1,charsize=cs3,$
                     xmargin=xmar,ymargin=ymar,title=tstring ;,c_spacing=0.5
 
@@ -951,7 +969,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 cost = cos(findgen(181)*!dtor)
                 sint = sin(findgen(181)*!dtor)
                 for i=0,3 do oplot,vcon[i]*cost,vcon[i]*sint,linestyle=1
-                draw_color_scale,range=[mima[0],mima[1]],brange=[8,254],charsize=cs3
+                draw_color_scale,range=[mima[0],mima[1]],brange=[cbot,ctop],charsize=cs3
 
 ;               DF vs. Pitch Angle
 
@@ -960,7 +978,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                 yran = minmax(vphase[ien,*])
                 xmsg = 182.
                 ymsg = yran[0] + findgen(nen)*((yran[1] - yran[0])/float(nen))
-                cran = [32., 254.]
+                cran = [32., float(ctop)]
                 lcol = round(cran[0] + findgen(nen)*((cran[1] - cran[0])/float(nen)))
                 plot,vpa,vphase[ien[0],*],xtit='Pitch Angle (deg)',ytit='DF',xrange=[0,180],xstyle=1,$
                     yrange=yran,charsize=cs3,xmargin=xmar,ymargin=ymar,xticks=6,xminor=3
@@ -977,13 +995,14 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
                 vnbin=10
                 plot,vpara[*,0],vphase[*,64],xtit='V (km/s)',ytit='DF',$
-                     ylog=0,xrange=[0.,1.e4],/nodata,yrange=[mima[0],mima[1]+1],charsize=cs3,$
+                     ylog=0,xrange=[-1.e4,1.e4],/nodata,yrange=[mima[0],mima[1]+1],charsize=cs3,$
                      xmargin=xmar,ymargin=ymar,title='V!d||!n (solid)      V!d!9x!1H!n (dashed)'
                 oplot,average(vpara[*,0:vnbin-1],2),average(vphase[*,0:vnbin-1],2,/nan)
-                oplot,average(vper[*,63-vnbin/2-1:63],2),average(vphase[*,63-vnbin/2-1:63],2,/nan),linestyle=2
-                oplot,average(vpara[*,127-vnbin+1:127],2),average(vphase[*,127-vnbin+1:127],2,/nan),color=0
-                oplot,-average(vper[*,64:64+vnbin/2-1],2),average(vphase[*,64:64+vnbin/2-1],2,/nan),$
-                      linestyle=2,color=0
+                oplot,average(vper[*,63-vnbin/2-1:63],2),average(vphase[*,63-vnbin/2-1:63],2,/nan),$
+                      linestyle=2,color=cols.red
+                oplot,average(vpara[*,127-vnbin+1:127],2,/nan),average(vphase[*,127-vnbin+1:127],2,/nan)
+                oplot,-average(vper[*,64:64+vnbin/2-1],2,/nan),average(vphase[*,64:64+vnbin/2-1],2,/nan),$
+                      linestyle=2,color=cols.red
 
                 if (0) then begin
                   phi=0;75.
@@ -994,21 +1013,22 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                   fmb = 1.e-10*0.5*exp(-(Enp-phi)/kTmb)
                   pmb = alog10(fmb)
 
-                  oplot,vmb,pmb,linestyle=2,color=6
-                  oplot,-vmb,pmb,linestyle=2,color=6
+                  oplot,vmb,pmb,linestyle=2,color=cols.red
+                  oplot,-vmb,pmb,linestyle=2,color=cols.red
                   print,minmax(vtot),minmax(pmb)
                 endif
 
                 nexam = n_elements(vexam)
                 xmsg = vexam + 1.e2
-                ymsg = !y.crange[0] + 0.85*(!y.crange[1] - !y.crange[0])
+                ymsg = !y.crange[0] + 0.9*(!y.crange[1] - !y.crange[0])
                 msg = strtrim(string(round(eexam)),2)
                 msg[0] = strtrim(string(pot,format='(f6.1)'),2)
                 msg[nexam-1] += ' eV'
                 
                 for i=0,(nexam-1) do begin
-                   oplot,[vexam[i],vexam[i]],!y.crange,linestyle=1,color=6
-                   xyouts,xmsg[i],ymsg,msg[i],/data,charsize=csize2,color=6
+                   oplot,[vexam[i],vexam[i]],!y.crange,linestyle=1,color=cols.yellow
+                   oplot,[-vexam[i],-vexam[i]],!y.crange,linestyle=1,color=cols.yellow
+                   xyouts,xmsg[i],ymsg,msg[i],/data,charsize=csize2*0.8,color=cols.yellow
                 endfor
                 !p.multi=0
             endif
@@ -1043,10 +1063,10 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                      charsize: (0.7 * (rflg + uflg + hflg))*cscale > 1.4, xmargin: [15, 15] / ((rflg + uflg + hflg)/2. > 1.)}
                ;oplot, minmax(ftime), [180., 180.], lines=1
                oplot, minmax(ftime), replicate(pad.baz*!radeg, 2), lines=1
-               oplot, minmax(ftime), replicate(2.*pad.bel*!radeg + 180., 2), color=254, lines=1
+               oplot, minmax(ftime), replicate(2.*pad.bel*!radeg + 180., 2), color=cols.red, lines=1
                oplot, ftime, pad.fbaz*!radeg, psym=1
-               oplot, ftime, 2. * pad.fbel*!radeg + 180., psym=1, color=254
-               axis, /yaxis, yrange=[-90., 90.], color=254, ytitle='Bel (deg)', yticks=4, yminor=3, /ystyle, charsize=((0.7 * (rflg + uflg + hflg))*cscale > 1.4)
+               oplot, ftime, 2. * pad.fbel*!radeg + 180., psym=1, color=cols.red
+               axis, /yaxis, yrange=[-90., 90.], color=cols.red, ytitle='Bel (deg)', yticks=4, yminor=3, /ystyle, charsize=((0.7 * (rflg + uflg + hflg))*cscale > 1.4)
                ;axis, /xaxis, charsize=1.4, xrange=reverse(minmax(pad.energy)), xtitle='Energy [eV]', /xstyle, /xlog
                xyouts, mean(!x.window), mean([!y.window[1], !y.region[1]]), htit, align=.5, charsize=1.4*cscale, /normal
             endif 
@@ -1155,7 +1175,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
         if (dflg and ~dwell) then begin
           ddd = mvn_swe_get3d(trange,archive=aflg,all=doall,/sum,units=units)
           if (size(ddd,/type) eq 8) then begin
-            loadct2,34,previous=pct
+            loadct2,34,previous=pct2
             indx = where(fovmask[*,boom] eq 0B, count)
             if (count gt 0L) then ddd.data[*,indx] = !values.f_nan
 
@@ -1190,7 +1210,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 ;             Sel = -Sel
 ;             oplot,[Saz],[Sel],psym=7,color=col,thick=2,symsize=1.2
             endif
-            loadct2, pct
+            loadct2, pct2
           endif
         endif
       endif
@@ -1311,9 +1331,12 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                      else oplot,[pot,pot],drange,line=cols.blue
         endif
         if (pflg) then begin
-          oplot,[23.,23.],drange,line=2,color=cols.magenta
-          oplot,[27.,27.],drange,line=2,color=cols.magenta
-          oplot,[60.,60.],drange,line=2,color=cols.magenta
+          str_element, cols, 'magenta', mcol, success=ok
+          if (not ok) then str_element, cols, 'purple', mcol, success=ok
+          if (not ok) then mcol = !p.color
+          oplot,[23.,23.],drange,line=2,color=mcol
+          oplot,[27.,27.],drange,line=2,color=mcol
+          oplot,[60.,60.],drange,line=2,color=mcol
         endif
 
         xs = 0.68
@@ -1414,9 +1437,12 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                oplot,[pot,pot],drange,line=2
             endif
             if (pflg) then begin
-               oplot,[23.,23.],drange,line=2,color=cols.magenta
-               oplot,[27.,27.],drange,line=2,color=cols.magenta
-               oplot,[60.,60.],drange,line=2,color=cols.magenta
+               str_element, cols, 'magenta', mcol, success=ok
+               if (not ok) then str_element, cols, 'purple', mcol, success=ok
+               if (not ok) then mcol = !p.color
+               oplot,[23.,23.],drange,line=2,color=mcol
+               oplot,[27.,27.],drange,line=2,color=mcol
+               oplot,[60.,60.],drange,line=2,color=mcol
             endif
 
             if (doalt) then begin
@@ -1472,23 +1498,23 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
       axis,/yaxis,yrange=[1,181],charsize=csize2,ystyle=1,ytitle='Elevation Bin',$
                yticks=6,yminor=0,yticklen=-0.00001,ytickv=(swe_el[*,63,0] + 91.),$
-               ytickname=string(indgen(6),format='(" ",i1," ")'),color=4
+               ytickname=string(indgen(6),format='(" ",i1," ")'),color=cols.green
 
       axis,/xaxis,xrange=[1,361],charsize=csize2,xstyle=1,xtitle='Azimuth Bin',$
                xticks=16,xminor=0,xticklen=-0.00001,xtickv=(swe_az + 1.),$
-               xtickname=string(indgen(16),format='(i2)'),color=4
+               xtickname=string(indgen(16),format='(i2)'),color=cols.green
 
       az = 22.5*findgen(17)
-      for i=1,15 do oplot,[az[i],az[i]],[elmin,elmax]*!radeg,color=4,linestyle=1
+      for i=1,15 do oplot,[az[i],az[i]],[elmin,elmax]*!radeg,color=cols.green,linestyle=1
       el = [swe_el[*,63,pad.group] - (swe_del[*,63,pad.group]/2.), elmax*!radeg]
-      for i=0,6 do oplot,[0,360],[el[i],el[i]],color=4,linestyle=1
+      for i=0,6 do oplot,[0,360],[el[i],el[i]],color=cols.green,linestyle=1
 
       if (~dosmo and (npts eq 1)) then for k=0,15 do begin
         i = pad.iaz[k]
         j = pad.jel[k]
         azbox = [az[i], az[i+1], az[i+1], az[i]   ,az[i]]
         elbox = [el[j], el[j]  , el[j+1], el[j+1] ,el[j]]
-        oplot,azbox,elbox,color=6,linestyle=2
+        oplot,azbox,elbox,color=cols.red,linestyle=2
       endfor
 
       kb = where(swe_sc_mask[*,boom] eq 0, count)
@@ -1497,7 +1523,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
       for k=0,(count-1) do begin
         i = ib[k]
         j = jb[k]
-        oplot,[mean(az[i:i+1])],[mean(el[j:j+1])],psym=7,color=5
+        oplot,[mean(az[i:i+1])],[mean(el[j:j+1])],psym=7,color=cols.yellow
       endfor
 
       az = pad.Baz*!radeg
@@ -1536,7 +1562,6 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   endif
 
   wset, Twin
-  
-  return
+  if (ctab ne pct) then if (pct lt 1000) then loadct2,pct else loadcsv,pct,/silent
 
 end

@@ -24,9 +24,11 @@ end
 ;   NOCOLOR:  forces all colors to !d.table_size-1.
 ;
 ;Written by: Davin Larson    96-01-31
-;FILE: get_colors.pro
-;VERSION:  1.2
-;LAST MODIFICATION: 99/04/07
+;
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2022-07-22 08:52:51 -0700 (Fri, 22 Jul 2022) $
+; $LastChangedRevision: 30954 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/get_colors.pro $
 ;-
 function  get_colors,colors=cols,array=array,input
 @colors_com
@@ -47,8 +49,15 @@ black    = get_color_indx([0,0,0]*255)
 colors = [black,magenta,blue,cyan,green,yellow,red,white]
 cols = colors
 
+; Include color table info, if present (dmitchell, July 2022)
+
+ctab = n_elements(color_table) ? color_table : -1
+cbot = n_elements(bottom_c) ? bottom_c : -1
+ctop = n_elements(top_c) ? top_c : -1
+
 col = {black:black,magenta:magenta,blue:blue,cyan:cyan,green:green, $
-  yellow:yellow,red:red,white:white}
+  yellow:yellow,red:red,white:white,color_table:ctab,bottom_c:cbot, $
+  top_c:ctop}
 
 if dt eq 7 then begin
   map = bytarr(256)+!p.color
