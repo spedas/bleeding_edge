@@ -130,9 +130,9 @@
 ;  4. All calculations are done internally in double precision
 ;
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2022-07-15 01:33:34 -0700 (Fri, 15 Jul 2022) $
-; $LastChangedRevision: 30935 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2022-07-25 10:13:36 -0700 (Mon, 25 Jul 2022) $
+; $LastChangedRevision: 30958 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2iono.pro $
 ;-
 
@@ -632,8 +632,8 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
              rgsm_z = in_pos_array2[idx, 2]
     
              ;calculate which par values should be used on this iteration
-             if T89 eq 1 then par_iter = par_array[id] $
-             else if T96 eq 1 || T01 eq 1 || TS04 eq 1 || TS07 eq 1 then par_iter = par_array[id,*] else par_iter = ''
+             if vT89 eq 1 then par_iter = par_array[id] $
+             else if vT96 eq 1 || vT01 eq 1 || vTS04 eq 1 || vTS07 eq 1 then par_iter = par_array[id,*] else par_iter = ''
              
              if geopack_2008 then begin
                  ; Geopack 2008
