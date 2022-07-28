@@ -8,7 +8,13 @@
 ;   3) Place a new color table file in the same directory as LOADCT2 that matches
 ;         the name: 'colors*.tbl'.  (The last file found with file_search is used).
 ;
+;INPUTS:
+;   colortable: Color table number.  Required.
+;
 ;KEYWORDS:
+;   REVERSE: If set, then reverse the table order from bottom_c to top_c.
+;   PREVIOUS_CT: Needed by tplot to change color tables on the fly.
+;   PREVIOUS_REV: Needed by tplot to change color tables on the fly.
 ;   FILE:  (string) Color table file
 ;          If FILE is not provided then LOADCT2
 ;          Uses the environment variable IDL_CT_FILE to determine
@@ -24,16 +30,29 @@
 ;See also:
 ;   "get_colors","colors_com","bytescale"
 ;
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2022-07-27 12:15:01 -0700 (Wed, 27 Jul 2022) $
+; $LastChangedRevision: 30967 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/loadct2.pro $
+;
 ;Created by Davin Larson;  August 1996
-;Version:           1.4
-;File:              00/07/05
-;Last Modification: loadct2.pro
 ;-
 
-pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,graybkg=graybkg, line_clrs=line_clrs,line_color_names=line_color_names
+pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,previous_rev=previous_rev,$
+               graybkg=graybkg, line_clrs=line_clrs,line_color_names=line_color_names
   compile_opt idl2, hidden
   COMMON colors, r_orig, g_orig, b_orig, r_curr, g_curr, b_curr
   @colors_com
+
+  if n_elements(ct) eq 0 then begin
+    dprint,'You must specify a color table.'
+    return
+  endif
+
+  if !d.name eq 'NULL' or !d.name eq 'HP' then begin   ; NULL device and HP device do not support loadct
+    dprint,'Device ',!d.name,' does not support color tables. Command Ignored'
+    return
+  endif
 
   deffile = getenv('IDL_CT_FILE')
   
@@ -63,16 +82,16 @@ pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,gr
   red = 6
   bottom_c = 7
 
+  revrse = keyword_set(revrse)
   if n_elements(color_table) eq 0 then color_table=ct
-  previous_ct =  color_table
-  if !d.name eq 'NULL' or !d.name eq 'HP' then begin   ; NULL device and HP device do not support loadct
-    dprint,'Device ',!d.name,' does not support color tables. Command Ignored'
-    return
-  endif
+  previous_ct = color_table
+  if n_elements(color_reverse) eq 0 then color_reverse=revrse
+  previous_rev = color_reverse
   
   if (ct le 43 or env_ct_set) then loadct,ct,bottom=bottom_c,file=file $
   else loadct,ct,bottom=bottom_c ; this line is changed to be able to load color tables > 43
   color_table = ct
+  color_reverse = revrse
 
   top_c = !d.table_size-2
   white =top_c+1
@@ -82,7 +101,7 @@ pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,gr
 
   tvlct,r,g,b,/get
 
-  if keyword_set(revrse) then begin
+  if revrse then begin
     r[bottom_c:top_c] = reverse(r[bottom_c:top_c])
     g[bottom_c:top_c] = reverse(g[bottom_c:top_c])
     b[bottom_c:top_c] = reverse(b[bottom_c:top_c])

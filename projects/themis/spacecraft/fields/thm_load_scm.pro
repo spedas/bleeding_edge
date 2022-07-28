@@ -111,8 +111,8 @@
 ;                    an 'End of file encountered...' bug.
 ;
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-05-18 12:58:23 -0700 (Mon, 18 May 2020) $
-; $LastChangedRevision: 28711 $
+; $LastChangedDate: 2022-07-27 10:49:09 -0700 (Wed, 27 Jul 2022) $
+; $LastChangedRevision: 30962 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_load_scm.pro $
 ;-
 pro thm_load_scm_post, sname = probe, datatype = dt, level = lvl, $
@@ -182,9 +182,11 @@ pro thm_load_scm_post, sname = probe, datatype = dt, level = lvl, $
       If(is_struct(scm_cal) Eq 0) Then Begin ;not called from GUI
         If(keyword_set(suffix)) Then Begin ;set in_suffix = suffix, jmm, 2009-10-14
           thm_cal_scm, probe = probe, datatype = dt, trange = trange, in_suffix = suffix, $
-            out_suffix = suffix, coord = coord, use_eclipse_corrections=use_eclipse_corrections, _extra = _extra
+                       out_suffix = suffix, coord = coord, use_eclipse_corrections=use_eclipse_corrections, $
+                       no_download = no_download, _extra = _extra
         Endif Else Begin
-          thm_cal_scm, probe = probe, datatype = dt, trange = trange, coord = coord, use_eclipse_corrections=use_eclipse_corrections, _extra = _extra
+           thm_cal_scm, probe = probe, datatype = dt, trange = trange, coord = coord, no_download = no_download, $
+                        use_eclipse_corrections=use_eclipse_corrections, _extra = _extra
         Endelse
       Endif Else Begin
  ;get cal params

@@ -115,8 +115,8 @@
 ; in outputs to tplot section, mode has been replaced by strlowcase(mode)
 ; 18-may-2020, jmm, makes alt_scw the default, so scw data is degapped
 ;$LastChangedBy: jimm $
-;$LastChangedDate: 2020-05-18 12:57:52 -0700 (Mon, 18 May 2020) $
-;$LastChangedRevision: 28710 $
+;$LastChangedDate: 2022-07-27 10:50:37 -0700 (Wed, 27 Jul 2022) $
+;$LastChangedRevision: 30963 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_cal_scm.pro $
 ;-
 
@@ -486,9 +486,14 @@ Pro thm_cal_scm, probe = probe, datatype = datatype, $
 ; the cal files are per spacecraft
   IF size(/type, k_dircal) EQ 0 Then begin
      ;; read calibration files from data repository, rather than source
-    cal_relpathname = thx+'/l1/scm/0000/THEMIS_SCM'+str_probe_n+'.cal'
-    calfile = spd_download(remote_file=cal_relpathname, _extra = !themis, $
-                            no_download = no_download)
+     cal_relpathname = thx+'/l1/scm/0000/THEMIS_SCM'+str_probe_n+'.cal'
+     If(~keyword_set(no_download)) Then Begin
+        calfile = spd_download(remote_file=cal_relpathname, _extra = !themis)
+     Endif Else calfile = !themis.local_data_dir+cal_relpathname
+        If(~is_string(file_search(calfile))) Then Begin
+           dprint, 'Cailbration_file '+calfile+'Not found'
+           Return
+        Endif
   Endif else begin
     if size(/type, k_dircal) EQ 7 and keyword_set(k_dircal) then begin
       dircal = k_dircal

@@ -144,8 +144,8 @@
 ;       IONO:     Plot a dashed circle at this altitude.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-14 11:39:13 -0700 (Thu, 14 Jul 2022) $
-; $LastChangedRevision: 30931 $
+; $LastChangedDate: 2022-07-27 11:42:58 -0700 (Wed, 27 Jul 2022) $
+; $LastChangedRevision: 30964 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -362,9 +362,9 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
-    if (windex eq -1) then win, /config, /silent
+    if (~windex) then win, /config, /silent
     mnum = fix(monitor[0])
-  endif else if (windex gt -1) then mnum = secondarymon
+  endif else if (windex) then mnum = secondarymon
 
   if (size(psname,/type) eq 7) then begin
     psflg = 1
@@ -373,9 +373,9 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     if (npans eq 1) then begin
       win, /free, monitor=mnum, xsize=500, ysize=473, dx=10, dy=10, scale=wscale  ; MSO projections 1x1
       Owin = !d.window
-    endif else begin                                                                 ; MSO projections 1x3
-      if (windex eq -1) then win, /free, xsize=281, ysize=800, scale=wscale, dx=10 $
-                        else win, /free, monitor=mnum, /yfull, aspect=0.351, dx=10
+    endif else begin                                                              ; MSO projections 1x3
+      if (~windex) then win, /free, xsize=281, ysize=800, scale=wscale, dx=10 $
+                   else win, /free, monitor=mnum, /yfull, aspect=0.351, dx=10
       Owin = !d.window
       csize = float(!d.x_size)/175.
     endelse

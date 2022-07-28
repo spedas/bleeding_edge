@@ -26,8 +26,8 @@ end
 ;Written by: Davin Larson    96-01-31
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-22 08:52:51 -0700 (Fri, 22 Jul 2022) $
-; $LastChangedRevision: 30954 $
+; $LastChangedDate: 2022-07-27 12:13:19 -0700 (Wed, 27 Jul 2022) $
+; $LastChangedRevision: 30966 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/get_colors.pro $
 ;-
 function  get_colors,colors=cols,array=array,input
@@ -52,12 +52,13 @@ cols = colors
 ; Include color table info, if present (dmitchell, July 2022)
 
 ctab = n_elements(color_table) ? color_table : -1
+crev = n_elements(color_reverse) ? color_reverse : 0
 cbot = n_elements(bottom_c) ? bottom_c : -1
 ctop = n_elements(top_c) ? top_c : -1
 
 col = {black:black,magenta:magenta,blue:blue,cyan:cyan,green:green, $
   yellow:yellow,red:red,white:white,color_table:ctab,bottom_c:cbot, $
-  top_c:ctop}
+  top_c:ctop,color_reverse:crev}
 
 if dt eq 7 then begin
   map = bytarr(256)+!p.color

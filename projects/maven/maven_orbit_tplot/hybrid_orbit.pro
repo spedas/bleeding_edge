@@ -28,8 +28,8 @@
 ;                  monitor configuration is defined (see win.pro).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-14 11:39:13 -0700 (Thu, 14 Jul 2022) $
-; $LastChangedRevision: 30931 $
+; $LastChangedDate: 2022-07-27 11:42:58 -0700 (Wed, 27 Jul 2022) $
+; $LastChangedRevision: 30964 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/hybrid_orbit.pro $
 ;
 ;CREATED BY:	David L. Mitchell  04-02-03
@@ -39,6 +39,8 @@ pro hybrid_orbit, lon, lat, lon_sc, lat_sc, psym=psym, lstyle=lstyle, $
                  monitor=monitor
 
   common hybrid_orb_com, img, ppos
+
+  if (size(windex,/type) eq 0) then win, config=0, /silent  ; win acts like window
 
   twin = !d.window
   owin = 31
@@ -78,8 +80,7 @@ pro hybrid_orbit, lon, lat, lon_sc, lat_sc, psym=psym, lstyle=lstyle, $
 
     undefine, mnum
     if (size(monitor,/type) gt 0) then begin
-      if (size(windex,/type) eq 0) then win, /config $
-                                   else if (windex eq -1) then win, /config
+      if (~windex) then win, /config, /silent
       mnum = fix(monitor[0])
     endif else begin
       if (size(secondarymon,/type) gt 0) then mnum = secondarymon

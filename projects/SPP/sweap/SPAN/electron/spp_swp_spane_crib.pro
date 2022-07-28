@@ -4,11 +4,11 @@
 ; Currently this holds all the scrap pieces from calibration / instrument development, which will get moved
 ; Also includes a log of the calibration files and instructions for processing them
 ; 
-; In the future this will include instructions for looking at flight data:  IN PROG
+; In the future this will include instructions for looking at flight data:  IN PROG 
 ; 
-; $LastChangedBy: phyllisw3 $
-; $LastChangedDate: 2021-11-30 11:43:27 -0800 (Tue, 30 Nov 2021) $
-; $LastChangedRevision: 30442 $
+; $LastChangedBy: orlando $
+; $LastChangedDate: 2022-07-27 14:03:43 -0700 (Wed, 27 Jul 2022) $
+; $LastChangedRevision: 30972 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/electron/spp_swp_spane_crib.pro $
 ;--------------------------------------------------------------------
 

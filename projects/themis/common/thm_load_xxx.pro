@@ -64,9 +64,9 @@
 ;Notes:
 ;  This routine is (should be) platform independent.
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
-; $LastChangedRevision: 26397 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2022-07-27 10:47:49 -0700 (Wed, 27 Jul 2022) $
+; $LastChangedRevision: 30961 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_load_xxx.pro $
 ;-
 
@@ -328,13 +328,14 @@ pro thm_load_xxx, sname = sname, datatype = datatype, trange = trange, $
             scm_cal = scm_cal, get_support_data = get_support_data, $
             use_eclipse_corrections = use_eclipse_corrections, _extra = _extra
         endif else Begin
-          if ~array_equal(tn_for_cal, -1L,/no_type) then $
-          call_procedure, post_process_proc, sname = snamei, filetype = ftj, $
-            datatype = fdtj, suffix = suffix, coord = coord, $
-            level = lvlk, verbose = vb, tplotnames = tn_for_cal, $
-            progobj = progobj, files = files, proc_type = type, $
-            get_support_data = get_support_data, trange = trange, $
-            use_eclipse_corrections = use_eclipse_corrections, no_time_clip=no_time_clip, _extra = _extra
+           if ~array_equal(tn_for_cal, -1L,/no_type) then $
+              call_procedure, post_process_proc, sname = snamei, filetype = ftj, $
+                              datatype = fdtj, suffix = suffix, coord = coord, $
+                              level = lvlk, verbose = vb, tplotnames = tn_for_cal, $
+                              progobj = progobj, files = files, proc_type = type, $
+                              get_support_data = get_support_data, trange = trange, $
+                              use_eclipse_corrections = use_eclipse_corrections, $
+                              no_download = no_download, no_time_clip=no_time_clip, _extra = _extra
         endelse
       endif
     

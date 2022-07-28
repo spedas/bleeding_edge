@@ -24,9 +24,9 @@
 ;HISTORY:
 ;     egrimes, 3/20/2018: updated to use spd_download, and download the file from NOAA NGDC
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-01-29 11:49:55 -0800 (Wed, 29 Jan 2020) $
-;$LastChangedRevision: 28249 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2022-07-26 20:38:15 -0700 (Tue, 26 Jul 2022) $
+;$LastChangedRevision: 30960 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/noaa/noaa_load_kp.pro $
 ;-
 
@@ -87,7 +87,7 @@ pro noaa_load_kp, trange = trange, kp_mirror = kp_mirror, remote_kp_dir=remote_k
         if (!error_state.name eq 'IDL_M_CNTOPNFIL') then begin
            ; file = file_retrieve(remote_kp_dir+strcompress(string(years[i]),/rem), remote_data_dir=kp_mirror, local_data_dir=file_prefix, /ascii_mode)
             if keyword_set(gfz) then filename = 'kp'+strcompress(string(years[i]),/rem)+'.wdc' else filename = strcompress(string(years[i]),/rem)
-            file = spd_download(remote_file=kp_mirror+remote_kp_dir+filename, local_path=file_prefix)
+            file = spd_download(remote_file=kp_mirror+remote_kp_dir+filename,ftp_connection_mode=0, local_path=file_prefix)
             result = file_test(file, /read)
             if result[0] eq 1 then begin
               openr, lun, file

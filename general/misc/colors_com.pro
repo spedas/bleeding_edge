@@ -11,4 +11,5 @@
 ;-
 
 common colors_com, colors,red,green,blue,yellow,cyan,magenta,white,black, $
-  foreground_c,background_c,bottom_c,top_c,primary,ncolor,color_table,a_,b_
+  foreground_c,background_c,bottom_c,top_c,primary,ncolor,color_table,a_,b_,$
+  color_reverse
