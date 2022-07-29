@@ -1,7 +1,7 @@
 ;+
-; $LastChangedBy: ali $
-; $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
-; $LastChangedRevision: 30043 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2022-07-28 14:00:00 -0700 (Thu, 28 Jul 2022) $
+; $LastChangedRevision: 30974 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_rates_apdat__define.pro $
 ;
 ; SPP_SWP_SPI_RATES_APDAT
@@ -89,18 +89,23 @@ function spp_swp_spi_rates_apdat::decom,ccsds ,source_dict=source_dict ;, ptp_he
   b = ccsds_data
   psize = 105+7
   if n_elements(b) ne psize then begin
-    dprint,dlevel=1, 'Size error ',ccsds.pkt_size,ccsds.apid
-    return,0
+    if n_elements(b) eq 116 then begin
+      dprint,dlevel=1, 'Size error -  fixing the size',ccsds.pkt_size,ccsds.apid
+      ;b = b[0:111]
+    endif else begin
+      dprint,dlevel=1, 'Size error ',ccsds.pkt_size,ccsds.apid
+      return,0      
+    endelse
   endif
 
   ;dprint,time_string(ccsds.time)
-  sf0 = ccsds_data[11] and 3
+  ;sf0 = ccsds_data[11] and 3
   ;print,sf0
   time = ccsds.time
   ;hexprint,ccsds_data[0:29]
   ;rates = float( reform( float( ccsds_data[20:83] ) ,4,16))
   rates = float( reform( spp_swp_log_decomp( ccsds_data[20:83] , 0 ) ,4,16))
-  rates2 = float( reform( spp_swp_log_decomp( ccsds_data[20+16*4:*] , 0 ) ))
+  rates2 = float( reform( spp_swp_log_decomp( ccsds_data[20+16*4:111] , 0 ) ))
   startbins = [0,0,3,3,6,6, 9, 9,12,12,15,17,19,21,23,25]
   stopbins =  [1,2,4,5,7,8,10,11,13,14,16,18,20,22,24,26]
 

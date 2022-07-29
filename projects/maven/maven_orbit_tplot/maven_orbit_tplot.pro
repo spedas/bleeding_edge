@@ -141,8 +141,8 @@
 ;                 keyword is only useful for computers with sufficient memory.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-14 11:39:13 -0700 (Thu, 14 Jul 2022) $
-; $LastChangedRevision: 30931 $
+; $LastChangedDate: 2022-07-28 11:39:03 -0700 (Thu, 28 Jul 2022) $
+; $LastChangedRevision: 30973 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -390,11 +390,13 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
   if (docrop) then tspan += [-86400D, 86400D]
 
-  if (sflg) then wake_col = 1 else wake_col = 2
+  blue = get_color_indx([0,32,255])
+  green = get_color_indx([0,255,0])
+  orange = get_color_indx([255,127,0])
   case n_elements(colors) of
-    0 : rcols = [4, 199, 2]
-    1 : rcols = [round(colors), 199, wake_col]
-    2 : rcols = [round(colors), wake_col]
+    0 : rcols = [green, orange, blue]
+    1 : rcols = [round(colors), orange, blue]
+    2 : rcols = [round(colors), blue]
     3 : rcols = round(colors)
     else : rcols = round(colors[0:2])
   endcase

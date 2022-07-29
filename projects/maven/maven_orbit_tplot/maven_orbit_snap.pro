@@ -144,8 +144,8 @@
 ;       IONO:     Plot a dashed circle at this altitude.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-27 11:42:58 -0700 (Wed, 27 Jul 2022) $
-; $LastChangedRevision: 30964 $
+; $LastChangedDate: 2022-07-28 11:39:03 -0700 (Thu, 28 Jul 2022) $
+; $LastChangedRevision: 30973 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -356,9 +356,11 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
   Twin = !d.window
 
-  if (black) then begin
-    if (!p.background ne 0L) then revvid, /black else black = 0
-  endif
+  if (black) then if (!p.background ne 0L) then revvid, /black else black = 0
+  if (~black) then begin
+    thick = 2
+    bscol = !p.color
+  endif else bscol = get_color_indx([0,255,255])
 
   undefine, mnum
   if (size(monitor,/type) gt 0) then begin
@@ -684,7 +686,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
       xshock = x0 + rho*cos(phi)
       yshock = rho*sin(phi)
-      oplot,xshock,yshock,color=3,line=1,thick=thick
+      oplot,xshock,yshock,color=bscol,line=1
 
 ; MPB conic
 
@@ -718,7 +720,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       xpileup = [xpileup, x1[indx], x2[jndx]]
       ypileup = [ypileup, y1[indx], y2[jndx]]
 
-      oplot,xpileup,ypileup,color=3,line=1,thick=thick
+      oplot,xpileup,ypileup,color=bscol,line=1
 
       if (dolab) then begin
         if (npans eq 1) then begin
@@ -829,7 +831,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
       xshock = x0 + rho*cos(phi)
       zshock = rho*sin(phi)
-      oplot,xshock,zshock,color=3,line=1,thick=thick
+      oplot,xshock,zshock,color=bscol,line=1
 
 ; MPB conic
 
@@ -863,7 +865,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       xpileup = [xpileup, x1[indx], x2[jndx]]
       zpileup = [zpileup, z1[indx], z2[jndx]]
 
-      oplot,xpileup,zpileup,color=3,line=1,thick=thick
+      oplot,xpileup,zpileup,color=bscol,line=1
 
       if (dolab and (npans eq 1)) then begin
         xyouts, 0.70, 0.87, "View from Side", /norm, charsize=csize
@@ -962,10 +964,10 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       if (dodot) then oplot,[ysc],[zsc],psym=8,color=tcolors[k],thick=thick,symsize=ssize
 
       L0 = sqrt((L + psi*x0)^2. - x0*x0)
-      oplot,L0*xm,L0*ym,color=3,line=1,thick=thick
+      oplot,L0*xm,L0*ym,color=bscol,line=1
 
       L0 = sqrt((L_p1 + psi_p1*x0_p1)^2. - x0_p1*x0_p1)
-      oplot,L0*xm,L0*ym,color=3,line=1,thick=thick
+      oplot,L0*xm,L0*ym,color=bscol,line=1
 
       if (dolab and (npans eq 1)) then begin
         xyouts, 0.70, 0.87, "View from Sun", /norm, charsize=csize
@@ -1010,7 +1012,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
       xshock = x0 + rho*cos(phi)
       zshock = rho*sin(phi)
-      oplot,xshock,zshock,color=3,line=1,thick=thick
+      oplot,xshock,zshock,color=bscol,line=1
 
 ; MPB conic
 
@@ -1044,7 +1046,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       xpileup = [xpileup, x1[indx], x2[jndx]]
       zpileup = [zpileup, z1[indx], z2[jndx]]
 
-      oplot,xpileup,zpileup,color=3,line=1,thick=thick
+      oplot,xpileup,zpileup,color=bscol,line=1
     endif
 
 ; Put up the ground track
