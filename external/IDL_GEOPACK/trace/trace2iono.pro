@@ -130,9 +130,9 @@
 ;  4. All calculations are done internally in double precision
 ;
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2022-07-25 10:13:36 -0700 (Mon, 25 Jul 2022) $
-; $LastChangedRevision: 30958 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2022-07-29 10:37:36 -0700 (Fri, 29 Jul 2022) $
+; $LastChangedRevision: 30975 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2iono.pro $
 ;-
 
@@ -143,6 +143,9 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
     get_period_times=get_period_times, geopack_2008=geopack_2008, exact_tilt_times=exact_tilt_times, $
     ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load, _extra=_extra
 
+    COMPILE_OPT idl2
+    if ta16_supported() eq 1 then ta16supported=1 else ta16supported=0
+    
     if undefined(geopack_2008) then geopack_2008=0
     if undefined(exact_tilt_times) then exact_tilt_times=0
     if undefined(skip_ts07_load) then skip_ts07_load=0
@@ -565,16 +568,35 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
           
           if geopack_2008 then begin
               ; Use Geopack 2008
-              if keyword_set(standard_mapping) then $
-                 geopack_trace_08, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16,  _extra = _extra $
-              else $
-                 geopack_trace_08, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16,  /refine, /ionosphere, _extra = _extra
+              if keyword_set(standard_mapping) then begin
+                  if ta16supported eq 1 then begin              
+                      geopack_trace_08, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16, _extra = _extra 
+                  endif else begin
+                      geopack_trace_08, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, _extra = _extra
+                  endelse
+              endif else begin
+                  if ta16supported eq 1 then begin
+                      geopack_trace_08, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16, /refine, /ionosphere, _extra = _extra
+                  endif else begin
+                      geopack_trace_08, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, /refine, /ionosphere, _extra = _extra
+                  endelse              
+              endelse
           endif else begin
               ; Use Geopack 2005
-              if keyword_set(standard_mapping) then $
-                 geopack_trace, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16, _extra = _extra $
-              else $
-                 geopack_trace, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16, /refine, /ionosphere, _extra = _extra
+              if keyword_set(standard_mapping) then begin
+                  if ta16supported eq 1 then begin
+                      geopack_trace, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16, _extra = _extra 
+                  endif else begin
+                      geopack_trace, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, _extra = _extra 
+                  endelse             
+              endif else begin
+                if ta16supported eq 1 then begin
+                    geopack_trace, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16, /refine, /ionosphere, _extra = _extra
+                endif else begin
+                    geopack_trace, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, /refine, /ionosphere, _extra = _extra
+                endelse
+                 
+              endelse
           endelse
           
           out_foot_array[i, 0] = out_foot_x
@@ -637,16 +659,34 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
              
              if geopack_2008 then begin
                  ; Geopack 2008
-                 if keyword_set(standard_mapping) then $
-                     geopack_trace_08,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16,_extra=_extra $
-                 else $
-                    geopack_trace_08,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16, /refine,/ionosphere,_extra=_extra
+                 if keyword_set(standard_mapping) then begin
+                    if ta16supported eq 1 then begin
+                      geopack_trace_08,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16,_extra=_extra 
+                    endif else begin
+                      geopack_trace_08,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B,_extra=_extra                      
+                    endelse
+                 endif else begin
+                    if ta16supported eq 1 then begin                 
+                      geopack_trace_08,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16, /refine,/ionosphere,_extra=_extra
+                    endif else begin
+                      geopack_trace_08,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, /refine,/ionosphere,_extra=_extra
+                    endelse                  
+                 endelse
              endif else begin
                  ; Geopack 2005
-                 if keyword_set(standard_mapping) then $
-                     geopack_trace,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16,_extra=_extra $
-                 else $
-                    geopack_trace,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16,/refine,/ionosphere,_extra=_extra
+                 if keyword_set(standard_mapping) then begin
+                    if ta16supported eq 1 then begin
+                      geopack_trace,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16,_extra=_extra 
+                    endif else begin
+                      geopack_trace,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B,_extra=_extra                      
+                    endelse
+                 endif else begin
+                    if ta16supported eq 1 then begin                 
+                      geopack_trace,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, TA16 = vTA16, /refine,/ionosphere,_extra=_extra
+                    endif else begin
+                      geopack_trace,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15N = vTA15N, TA15B = vTA15B, /refine,/ionosphere,_extra=_extra
+                    endelse                  
+                 endelse
              endelse
     
              ;output foot

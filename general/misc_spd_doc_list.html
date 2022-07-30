@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jul 28 18:16:31 2022.<P>
+<STRONG>Last modified: </STRONG>Fri Jul 29 18:16:35 2022.<P>
  
 <HR>
  
@@ -77,6 +77,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#FNAME_TO_TIME">FNAME_TO_TIME</A>
 <br>To translate the name of a standard WIND data file into the starting
 <LI><A HREF="#GENERIC_OBJECT__DEFINE">GENERIC_OBJECT__DEFINE</A>
+<LI><A HREF="#GET_COLOR_INDX">GET_COLOR_INDX</A>
 <LI><A HREF="#GET_COLORS">GET_COLORS</A>
 <LI><A HREF="#GET_FILE_NAMES">GET_FILE_NAMES</A>
 <br>Gets an array of filenames within a time range
@@ -1935,7 +1936,7 @@ LAST MODIFICATION:	%W% %E%
 <A NAME="GET_COLORS">
 <H2>GET_COLORS</H2></A>
 <A HREF="#GENERIC_OBJECT__DEFINE">[Previous Routine]</A>
-<A HREF="#GET_FILE_NAMES">[Next Routine]</A>
+<A HREF="#GET_COLOR_INDX">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 FUNCTION:    get_colors
@@ -1947,16 +1948,41 @@ KEYWORDS:
 Written by: Davin Larson    96-01-31
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-07-27 12:13:19 -0700 (Wed, 27 Jul 2022) $
- $LastChangedRevision: 30966 $
+ $LastChangedDate: 2022-07-29 17:33:32 -0700 (Fri, 29 Jul 2022) $
+ $LastChangedRevision: 30978 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/get_colors.pro $
 </PRE><P>
 <STRONG>(See <A href="misc/get_colors.pro">general/misc/get_colors.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="GET_COLOR_INDX">
+<H2>GET_COLOR_INDX</H2></A>
+<A HREF="#GET_COLORS">[Previous Routine]</A>
+<A HREF="#GET_FILE_NAMES">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION:    get_color_indx
+PURPOSE:   returns the color index value closest to the input rgb value.
+INPUT:    color:  3 x N array of rgb values:
+             [[r,g,b],[r,g,b],...]
+KEYWORDS:
+
+ This stand-alone version split off from get_colors so that it can be
+ called by other routines before compiling get_colors.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2022-07-29 17:32:53 -0700 (Fri, 29 Jul 2022) $
+ $LastChangedRevision: 30977 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/get_color_indx.pro $
+
+Written by: Davin Larson    96-01-31
+</PRE><P>
+<STRONG>(See <A href="misc/get_color_indx.pro">general/misc/get_color_indx.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="GET_FILE_NAMES">
 <H2>GET_FILE_NAMES</H2></A>
-<A HREF="#GET_COLORS">[Previous Routine]</A>
+<A HREF="#GET_COLOR_INDX">[Previous Routine]</A>
 <A HREF="#GET_FILE_NAMES_IND">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

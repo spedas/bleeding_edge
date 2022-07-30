@@ -137,8 +137,8 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2022-07-15 01:33:34 -0700 (Fri, 15 Jul 2022) $
-; $LastChangedRevision: 30935 $
+; $LastChangedDate: 2022-07-29 10:37:36 -0700 (Fri, 29 Jul 2022) $
+; $LastChangedRevision: 30975 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2equator.pro $
 ;-
 
@@ -148,6 +148,9 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
     get_tilt=get_tilt, set_tilt=set_tilt, get_nperiod=get_nperiod, get_period_times=get_period_times, $
     geopack_2008=geopack_2008, exact_tilt_times=exact_tilt_times, $
     ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, skip_ts07_load=skip_ts07_load, _extra=_extra
+
+    COMPILE_OPT idl2
+    if ta16_supported() eq 1 then ta16supported=1 else ta16supported=0
 
     if undefined(geopack_2008) then geopack_2008=0
     if undefined(exact_tilt_times) then exact_tilt_times=0
@@ -562,14 +565,26 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
       ;    geopack_trace,in_pos_array2[i,0],in_pos_array2[i,1],in_pos_array2[i,2],dir,par_iter,out_foot_array[i,0],$
       ;    out_foot_array[i,1],out_foot_array[i,2],R0=R02,RLIM=RLIM2,fline = trgsm_out,tilt=tilt,IGRF=IGRF,T89=T89,$
       ;    T96=T96,T01=T01,TS04=TS04,_extra=_extra,/REFINE,/EQUATOR
-          if geopack_2008 then begin
-            geopack_trace_08,in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, $
-              out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, $
-              IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, TA16 = vTA16, /refine, /equator, _extra = _extra
-          endif else begin
-            geopack_trace, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, $
-              out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, $
-              IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, TA16 = vTA16, /refine, /equator, _extra = _extra
+          if geopack_2008 then begin            
+            if ta16supported eq 1 then begin
+              geopack_trace_08,in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, $
+                out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, $
+                IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, TA16 = vTA16, /refine, /equator, _extra = _extra
+            endif else begin
+              geopack_trace_08,in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, $
+                out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, $
+                IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, /refine, /equator, _extra = _extra            
+            endelse
+          endif else begin          
+            if ta16supported eq 1 then begin
+              geopack_trace, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, $
+                out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, $
+                IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, TA16 = vTA16, /refine, /equator, _extra = _extra
+            endif else begin
+               geopack_trace, in_pos_array2[i, 0], in_pos_array2[i, 1], in_pos_array2[i, 2], dir, par_iter, $
+                out_foot_x, out_foot_y, out_foot_z, R0 = R02, RLIM = RLIM2, fline = trgsm_out, tilt = tilt, $
+                IGRF = IGRF, T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, /refine, /equator, _extra = _extra
+            endelse              
           endelse
           
           out_foot_array[i, 0] = out_foot_x
@@ -630,9 +645,17 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
              else if vT96 eq 1 || vT01 eq 1 || vTS04 eq 1 || vTS07 eq 1 then par_iter = par_array[id,*] else par_iter = ''
              
              if geopack_2008 then begin
-                geopack_trace_08,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, TA16 = vTA16,_extra=_extra,/REFINE,/EQUATOR
+                if ta16supported eq 1 then begin
+                    geopack_trace_08,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, TA16 = vTA16,_extra=_extra,/REFINE,/EQUATOR
+                endif else begin
+                    geopack_trace_08,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, _extra=_extra,/REFINE,/EQUATOR
+                endelse
              endif else begin
-                geopack_trace,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, TA16 = vTA16,_extra=_extra,/REFINE,/EQUATOR
+                if ta16supported eq 1 then begin
+                    geopack_trace,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, TA16 = vTA16,_extra=_extra,/REFINE,/EQUATOR
+                endif else begin
+                    geopack_trace,rgsm_x,rgsm_y,rgsm_z,dir,par_iter,foot_x,foot_y,foot_z,R0=R02,RLIM=RLIM2,tilt=tilt,IGRF=IGRF,T89 = vT89, T96 = vT96, T01 = vT01, TS04 = vTS04, TS07 = vTS07, TA15B = vTA15B, TA15N = vTA15N, _extra=_extra,/REFINE,/EQUATOR
+                endelse
              endelse 
              
              ;output foot

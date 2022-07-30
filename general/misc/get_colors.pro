@@ -1,5 +1,5 @@
 
-function get_color_indx,color
+;function get_color_indx,color --> this is now a stand-alone function
 
 ;if data_type(color) eq 7 then begin
 ;  case strmid(color,1,0) of
@@ -7,13 +7,13 @@ function get_color_indx,color
 ;endif
 
 
-tvlct,r,g,b,/get
-vecs = replicate(1.,n_elements(r)) # reform(color)
-tbl = [[r],[g],[b]]
-d = sqrt( total((vecs-tbl)^2,2) )
-m = min(d,bin)
-return,byte(bin)
-end
+;tvlct,r,g,b,/get
+;vecs = replicate(1.,n_elements(r)) # reform(color)
+;tbl = [[r],[g],[b]]
+;d = sqrt( total((vecs-tbl)^2,2) )
+;m = min(d,bin)
+;return,byte(bin)
+;end
 
 
 ;+
@@ -26,8 +26,8 @@ end
 ;Written by: Davin Larson    96-01-31
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-27 12:13:19 -0700 (Wed, 27 Jul 2022) $
-; $LastChangedRevision: 30966 $
+; $LastChangedDate: 2022-07-29 17:33:32 -0700 (Fri, 29 Jul 2022) $
+; $LastChangedRevision: 30978 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/get_colors.pro $
 ;-
 function  get_colors,colors=cols,array=array,input
