@@ -144,8 +144,8 @@
 ;       IONO:     Plot a dashed circle at this altitude.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-28 11:39:03 -0700 (Thu, 28 Jul 2022) $
-; $LastChangedRevision: 30973 $
+; $LastChangedDate: 2022-07-31 15:57:01 -0700 (Sun, 31 Jul 2022) $
+; $LastChangedRevision: 30981 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -231,7 +231,6 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
   doalt = keyword_set(alt2)
   dolab = ~keyword_set(nolabel)
-  black = keyword_set(black)
 
   ok = 0
   sites = 0
@@ -356,9 +355,13 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
   Twin = !d.window
 
-  if (black) then if (!p.background ne 0L) then revvid, /black else black = 0
-  if (~black) then begin
-    thick = 2
+  if (keyword_set(black) and (!p.background ne 0L)) then begin
+    revvid
+    vswap = 1
+  endif else vswap = 0
+
+  if (!p.color eq 0L) then begin
+    thick = n_elements(thick) ? thick > 2 : 2
     bscol = !p.color
   endif else bscol = get_color_indx([0,255,255])
 
@@ -436,7 +439,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       if (mflg gt 0)  then wdelete, 29
       if (nflg gt 0)  then wdelete, 30
       if (bflg gt 0)  then wdelete, 31
-      if (black) then revvid, /white
+      if (vswap) then revvid
       wset,Twin
       return
     endif
@@ -453,7 +456,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       if (mflg gt 0)  then wdelete, 29
       if (nflg gt 0)  then wdelete, 30
       if (bflg gt 0)  then wdelete, 31
-      if (black) then revvid, /white
+      if (vswap) then revvid
       wset,Twin
       return
     endif
@@ -1194,7 +1197,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   endif
 
   !p.multi = 0
-  if (black) then revvid, /white
+  if (vswap) then revvid
   wset, Twin
 
   return

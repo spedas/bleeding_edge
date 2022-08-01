@@ -141,8 +141,8 @@
 ;                 keyword is only useful for computers with sufficient memory.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-28 11:39:03 -0700 (Thu, 28 Jul 2022) $
-; $LastChangedRevision: 30973 $
+; $LastChangedDate: 2022-07-31 15:37:39 -0700 (Sun, 31 Jul 2022) $
+; $LastChangedRevision: 30979 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -382,7 +382,10 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
     if (tspan_exists) then begin
       tspan = topt.trange_full
       docrop = 1
-    endif else docrop = 0
+    endif else begin
+      timespan
+      docrop = 0
+    endelse
   endelse  
   if keyword_set(nocrop) then docrop = 0
 
