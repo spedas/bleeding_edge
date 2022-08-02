@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Jul 31 18:16:43 2022.<P>
+<STRONG>Last modified: </STRONG>Mon Aug  1 18:16:26 2022.<P>
  
 <HR>
  
@@ -23,6 +23,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#INIT_DEVICES">INIT_DEVICES</A>
 <LI><A HREF="#LIBS">LIBS</A>
 <LI><A HREF="#LOADCT2">LOADCT2</A>
+<LI><A HREF="#SHOWCT">SHOWCT</A>
 <LI><A HREF="#THMCTPATH">THMCTPATH</A>
 <br>Gets the path of the color table used by themis
 <br>
@@ -101,7 +102,7 @@ Restrictions:
 <A NAME="LOADCT2">
 <H2>LOADCT2</H2></A>
 <A HREF="#LIBS">[Previous Routine]</A>
-<A HREF="#THMCTPATH">[Next Routine]</A>
+<A HREF="#SHOWCT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE loadct2, colortable
@@ -144,9 +145,39 @@ Created by Davin Larson;  August 1996
 <STRONG>(See <A href="system/loadct2.pro">general/misc/system/loadct2.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SHOWCT">
+<H2>SHOWCT</H2></A>
+<A HREF="#LOADCT2">[Previous Routine]</A>
+<A HREF="#THMCTPATH">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE showct, n
+   Show the specified color table in a new window.  Does not alter the current
+   color table.
+
+INPUTS:
+   n:         Color table number.  Standard tables have n &lt; 1000.  CSV tables
+              have n &gt;= 1000.  See 'loadcsv' for details.  If n is not provided,
+              show the current color table.
+
+KEYWORDS:
+   REVERSE:   If set, then reverse the table order from bottom_c to top_c.
+
+SEE ALSO:
+   xpalette:  Shows the current color table in an interactive widget.  Provides
+              much more functionality, but only for the current color table.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2022-07-31 19:10:09 -0700 (Sun, 31 Jul 2022) $
+ $LastChangedRevision: 30982 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/showct.pro $
+</PRE><P>
+<STRONG>(See <A href="system/showct.pro">general/misc/system/showct.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THMCTPATH">
 <H2>THMCTPATH</H2></A>
-<A HREF="#LOADCT2">[Previous Routine]</A>
+<A HREF="#SHOWCT">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 

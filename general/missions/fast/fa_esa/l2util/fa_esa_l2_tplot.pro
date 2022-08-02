@@ -20,14 +20,15 @@
 ;HISTORY:
 ;2015-09-14, jmm, jimm@ssl.berkeley.edu, hacked from fa_load_esa_l1
 ;and mvn_sta_l2_tplot.
-; $LastChangedBy: jimmpc1 $
-; $LastChangedDate: 2019-02-21 17:14:26 -0800 (Thu, 21 Feb 2019) $
-; $LastChangedRevision: 26668 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2022-08-01 13:04:46 -0700 (Mon, 01 Aug 2022) $
+; $LastChangedRevision: 30985 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/fast/fa_esa/l2util/fa_esa_l2_tplot.pro $
 ;-
 Pro fa_esa_l2_tplot, all = all, type = type, counts = counts, _extra = _extra
 
 ;Unless all is set, delete old data
+  fa_esa_init
   IF(~keyword_set(all)) Then Begin
      If(keyword_set(counts)) Then store_data, delete = 'fa_*_l2_ct_quick' $
      Else store_data, delete = 'fa_*_l2_en_quick'

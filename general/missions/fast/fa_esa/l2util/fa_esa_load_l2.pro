@@ -131,15 +131,15 @@ End
 ; 18-oct-2016, jmm, Checks to see if the time range is different than
 ;                   the saved time range before loading data
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-03-20 16:03:41 -0700 (Mon, 20 Mar 2017) $
-; $LastChangedRevision: 23003 $
+; $LastChangedDate: 2022-08-01 13:05:06 -0700 (Mon, 01 Aug 2022) $
+; $LastChangedRevision: 30986 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/fast/fa_esa/l2util/fa_esa_load_l2.pro $
 ;-
 Pro fa_esa_load_l2, datatype = datatype, type = type, $
    files = files, trange = trange, orbit = orbit, $
    no_time_clip = no_time_clip, tplot = tplot, _extra = _extra
 
-;fa_esa_init, initializes a system variable
+;fa_init, initializes a system variable
   fa_esa_init
 
 ;Don't clear the L2 common blocks
