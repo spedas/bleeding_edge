@@ -13,8 +13,8 @@
 ;   https://spdf.gsfc.nasa.gov/istp_guide/variables.html#Epoch
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-06-18 22:43:05 -0700 (Fri, 18 Jun 2021) $
-; $LastChangedRevision: 30067 $
+; $LastChangedDate: 2022-08-02 16:42:57 -0700 (Tue, 02 Aug 2022) $
+; $LastChangedRevision: 30987 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/spd_cdf_info_to_tplot.pro $
 ;-
 pro spd_cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames, non_record_varying=non_record_varying, tt2000=tt2000,$
@@ -31,7 +31,7 @@ pro spd_cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames, non_record_varying=
         load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
                                       ;resolve labels implemented as keyword to preserve backwards compatibility
 
-dprint,verbose=verbose,dlevel=4,'$Id: spd_cdf_info_to_tplot.pro 30067 2021-06-19 05:43:05Z jwl $'
+dprint,verbose=verbose,dlevel=4,'$Id: spd_cdf_info_to_tplot.pro 30987 2022-08-02 23:42:57Z jwl $'
 tplotnames=''
 vbs = keyword_set(verbose) ? verbose : 0
 
@@ -186,6 +186,38 @@ for i=0,nv-1 do begin
    j = (where(strcmp(cdfi.vars.name , depend_4,/fold_case),nj))[0]
    if nj gt 0 then var_4 = cdfi.vars[j]
 
+   ; Check for extra leading size-1 dimensions and remove them when processing depend_n attributes.  This can happen 
+   ; if a depend_n variable is marked as record-variant.  We avoid modifying the data array in place, on the off chance
+   ; that it's somehow referenced as both plottable data and metadata, so a single metadata variable may generate multiplt
+   ; warnings each time it's encountered.
+   
+   if keyword_set(var_1) then begin
+      vdim=size(*var_1.dataptr,/dimensions)
+      if (n_elements(vdim) gt 1) and (vdim[0] eq 1) then begin
+        nel=n_elements(*var_1.dataptr)
+        depend1_dataptr = ptr_new(reform(*var_1.dataptr,nel))
+        dprint,verbose=verbose,dlevel=2,'Removed size-1 leading dimension from DEPEND_1 attribute ',depend_1,' of data variable ',cdfi.vars[i].name
+        endif else depend1_dataptr=var_1.dataptr      
+   endif
+
+   if keyword_set(var_2) then begin
+     vdim=size(*var_2.dataptr,/dimensions)
+     if (n_elements(vdim) gt 1) and (vdim[0] eq 1) then begin
+       nel=n_elements(*var_2.dataptr)
+       depend2_dataptr = ptr_new(reform(*var_2.dataptr,nel))
+       dprint,verbose=verbose,dlevel=2,'Removed size-1 leading dimension from DEPEND_2 attribute ',depend_2,' of data variable ',cdfi.vars[i].name
+     endif else depend2_dataptr=var_2.dataptr
+   endif
+
+   if keyword_set(var_3) then begin
+     vdim=size(*var_3.dataptr,/dimensions)
+     if (n_elements(vdim) gt 1) and (vdim[0] eq 1) then begin
+       nel=n_elements(*var_3.dataptr)
+       depend3_dataptr = ptr_new(reform(*var_3.dataptr,nel))
+       dprint,verbose=verbose,dlevel=2,'Removed size-1 leading dimension from DEPEND_3 attribute ',depend_3,' of data variable ',cdfi.vars[i].name
+     endif else depend3_dataptr=var_3.dataptr
+   endif
+    
    spec = strcmp(display_type,'spectrogram',/fold_case)
    log  = strcmp(scaletyp,'log',3,/fold_case)
    
@@ -247,17 +279,21 @@ for i=0,nv-1 do begin
 
      cdfstuff={filename:cdfi.filename,gatt:cdfi.g_attributes,vname:v.name,vatt:attr}
      units = struct_value(attr,'units',default='')
+
+     ; Handle cases where DEPEND_N is defined, but DEPEND_M M<N is undefined.  This can sometimes happen in
+     ; complex-valued spectra, where one dimension is 'real' vs 'imaginary', but the data provider has omitted
+     ; the DEPEND_N attribute for that dimension.
      
      if keyword_set(var_3) and ~keyword_set(var_2) and ~keyword_set(var_1) then begin
-       data = {x:tvar.dataptr,y:v.dataptr, v3:var_3.dataptr}
+       data = {x:tvar.dataptr,y:v.dataptr, v3:depend3_dataptr}
      endif else begin
        ; kludge to support new FPI qd[ie]s-moms files, with depend_2 set but depend_1 not set
        if keyword_set(var_2) and ~keyword_set(var_1) then begin
-         data = {x:tvar.dataptr,y:v.dataptr, v2:var_2.dataptr}
+         data = {x:tvar.dataptr,y:v.dataptr, v2:depend2_dataptr}
        endif else begin
-         if keyword_set(var_3) then data = {x:tvar.dataptr,y:v.dataptr,v1:var_1.dataptr, v2:var_2.dataptr, v3:var_3.dataptr} $
-         else if keyword_set(var_2) then data = {x:tvar.dataptr,y:v.dataptr,v1:var_1.dataptr, v2:var_2.dataptr} $
-         else if keyword_set(var_1) then data = {x:tvar.dataptr,y:v.dataptr, v:var_1.dataptr}  $
+         if keyword_set(var_3) then data = {x:tvar.dataptr,y:v.dataptr,v1:depend1_dataptr, v2:depend2_dataptr, v3:depend3.dataptr} $
+         else if keyword_set(var_2) then data = {x:tvar.dataptr,y:v.dataptr,v1:depend1_dataptr, v2:depend2_dataptr} $
+         else if keyword_set(var_1) then data = {x:tvar.dataptr,y:v.dataptr, v:depend1_dataptr}  $
          else data = {x:tvar.dataptr,y:v.dataptr}
        endelse
      endelse
