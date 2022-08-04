@@ -50,7 +50,8 @@
 ; 
 ;NOTES:
 ;   Since there is no data server - yet - files must reside locally.
-;   Current file naming convention is el[a/b]_ll_instr_yyyymmdd_v01.cdf.
+;   Current file naming convention is el[a/b]_ll_instr_yyyymmdd_v0*.cdf.
+;   Temporary fix for state CDF - state CDFs are the only CDFs that have version v02
 ;     
 ;--------------------------------------------------------------------------------------
 PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in, $
@@ -202,7 +203,9 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
           ;if instrument EQ state then handle predicted vs definitive data directories
           subdir = ''
           if instrument EQ 'state' then begin
-            if pred then subdir='pred/' else subdir='defn/'           
+            if pred then subdir='pred/' else subdir='defn/'  
+            ; **** Temporary fix for new state CDF with v02         
+            if subdir EQ 'defn/' then for dn=0, n_elements(daily_names)-1 do fnames[dn] = probe + '_' + level + '_' + ftypes + '_' + daily_names[dn] + '_v02.cdf'
           endif
           if instrument EQ 'epd' then begin
              Case datatype of 

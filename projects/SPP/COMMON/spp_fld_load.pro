@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2022
 ;
 ; $LastChangedBy: pulupa $
-; $LastChangedDate: 2022-07-14 14:25:06 -0700 (Thu, 14 Jul 2022) $
-; $LastChangedRevision: 30934 $
+; $LastChangedDate: 2022-08-03 14:10:02 -0700 (Wed, 03 Aug 2022) $
+; $LastChangedRevision: 30990 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -328,6 +328,10 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
         resolution = 3600l * 24l ; hours
         daily_names = 1
         tname_prefix = 'psp_fld_l3_sqtn_rfs_V1V2_'
+      endif else if type EQ 'rfs_lfr_qtn' then begin
+        pathformat = 'TYPE/psp_fld_l3_TYPE_YYYY*_*_v??.cdf'
+        if n_elements(tname_prefix) EQ 0 then $
+          tname_prefix = 'psp_fld_l3_rfs_lfr_qtn_' 
       endif else begin
         pathformat =  'TYPE/YYYY/MM/psp_fld_l3_TYPE_YYYYMMDDhh_v??.cdf'
         resolution = 3600l * 6l ; hours

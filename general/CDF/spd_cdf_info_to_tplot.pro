@@ -13,8 +13,8 @@
 ;   https://spdf.gsfc.nasa.gov/istp_guide/variables.html#Epoch
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2022-08-02 16:42:57 -0700 (Tue, 02 Aug 2022) $
-; $LastChangedRevision: 30987 $
+; $LastChangedDate: 2022-08-03 11:07:45 -0700 (Wed, 03 Aug 2022) $
+; $LastChangedRevision: 30989 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/spd_cdf_info_to_tplot.pro $
 ;-
 pro spd_cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames, non_record_varying=non_record_varying, tt2000=tt2000,$
@@ -31,7 +31,7 @@ pro spd_cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames, non_record_varying=
         load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
                                       ;resolve labels implemented as keyword to preserve backwards compatibility
 
-dprint,verbose=verbose,dlevel=4,'$Id: spd_cdf_info_to_tplot.pro 30987 2022-08-02 23:42:57Z jwl $'
+dprint,verbose=verbose,dlevel=4,'$Id: spd_cdf_info_to_tplot.pro 30989 2022-08-03 18:07:45Z jwl $'
 tplotnames=''
 vbs = keyword_set(verbose) ? verbose : 0
 
@@ -291,7 +291,7 @@ for i=0,nv-1 do begin
        if keyword_set(var_2) and ~keyword_set(var_1) then begin
          data = {x:tvar.dataptr,y:v.dataptr, v2:depend2_dataptr}
        endif else begin
-         if keyword_set(var_3) then data = {x:tvar.dataptr,y:v.dataptr,v1:depend1_dataptr, v2:depend2_dataptr, v3:depend3.dataptr} $
+         if keyword_set(var_3) then data = {x:tvar.dataptr,y:v.dataptr,v1:depend1_dataptr, v2:depend2_dataptr, v3:depend3_dataptr} $
          else if keyword_set(var_2) then data = {x:tvar.dataptr,y:v.dataptr,v1:depend1_dataptr, v2:depend2_dataptr} $
          else if keyword_set(var_1) then data = {x:tvar.dataptr,y:v.dataptr, v:depend1_dataptr}  $
          else data = {x:tvar.dataptr,y:v.dataptr}
