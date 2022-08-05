@@ -24,7 +24,9 @@
 ;OUTPUTS:
 ;   i:          Indices of the nearest neighbors in time1 to the elements of
 ;               time2.  Note that i indexes time1 and has the same number of
-;               elements as time2.
+;               elements as time2:
+;
+;                   time1[i] <--> time2
 ;
 ;KEYWORDS:
 ;
@@ -42,15 +44,20 @@
 ;
 ;                   time1[i] <--> time2[VINDEX]
 ;
+;               Only works when VALID is set.
+;
+;   BADINDEX:   Indices of time2 with no valid neighbor in time1.  This is
+;               the complement of VINDEX.  Only works when VALID is set.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-09-07 12:21:29 -0700 (Mon, 07 Sep 2020) $
-; $LastChangedRevision: 29120 $
+; $LastChangedDate: 2022-08-04 11:55:23 -0700 (Thu, 04 Aug 2022) $
+; $LastChangedRevision: 30994 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/nn2.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2018-08-23
 ;FILE:  nn2.pro
 ;-
-function nn2, time1, time2, maxdt=maxdt, valid=valid, vindex=vindex
+function nn2, time1, time2, maxdt=maxdt, valid=valid, vindex=vindex, badindex=badindex
 
   t1 = time_double(time1)
   n = n_elements(t1)
@@ -58,14 +65,13 @@ function nn2, time1, time2, maxdt=maxdt, valid=valid, vindex=vindex
   i = round(interpol(dindgen(n), t1, t2)) > 0L < (n-1L) ;-)
 
   if (size(maxdt,/type) gt 0) then begin
-    j = where(abs(t2 - t1[i]) gt min(abs(double(maxdt))), count)
+    j = where(abs(t2 - t1[i]) gt min(abs(double(maxdt[0]))), count)
     if (count gt 0L) then i[j] = -1L
   endif
 
   if keyword_set(valid) then begin
-    j = where(i ge 0L, count)
-    if (count gt 0L) then i = i[j] else i = -1L
-    vindex = j
+    vindex = where(i ge 0L, count, complement=badindex)
+    i = (count gt 0L) ? i[vindex] : -1L
   endif
 
   return, i

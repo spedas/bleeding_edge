@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-07-11 15:25:41 -0700 (Mon, 11 Jul 2022) $
-; $LastChangedRevision: 30923 $
+; $LastChangedDate: 2022-08-04 15:42:57 -0700 (Thu, 04 Aug 2022) $
+; $LastChangedRevision: 30997 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -25,6 +25,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
 
     options,/def,'*_BITS',tplot_routine='bitplot'
     options,/def,'*nse_NHIST',spec=1,panel_size=2,/no_interp,/zlog,constant=findgen(6)*10+5;,zrange=[10,4000.]
+    options,/def,'*memdump_DATA',spec=1
     options,/def,'*sci_COUNTS',spec=1,panel_size=4,/no_interp,/zlog,zrange=[1,4000.],constant=findgen(15)*48
     options,/def,'*hkp?_ADC_*',constant=0.
     channels=['CH1','CH2','CH3','CH4','CH5','CH6']
@@ -35,10 +36,10 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     options,/def,'*hkp?_ADC_TEMPS',colors='bgr',labels=['DAP','S1','S2'],labflag=-1
     dacs=['CH1 thresh','CH2 thresh','CH3 thresh','Baseline','CH4 thresh','CH5 thresh','CH6 thresh','AUX2','CH1-4 pulse height','CH2-5 pulse height','CH3-6 pulse height','Bias Voltage Control']
     options,/def,'*hkp1_DAC_VALUES',panel_size=2,yrange=[0,'ffff'x],colors='bgrmmcdcbgrk',labels=dacs,labflag=-1
-    options,/def,'*hkp2_DAC_VALUES',panel_size=2,yrange=[0,'ff'x  ],colors='bgrmmcdcbgrk',labels=dacs,labflag=-1
-    options,/def,'*LCCS_BITS',numbits=4,panel_size=.5,labels=reverse(['L=Log compressed','C=Compression Type','C=Compression Type','S=Use LUT']),psyms=1,colors=[0,1,2,6]
+    options,/def,'*hkp2_DAC_VALUES',panel_size=2,yrange=[0,300]    ,colors='bgrmmcdcbgrk',labels=dacs,labflag=-1
+    options,/def,'*PTCU_BITS',numbits=4,panel_size=.5,labels=reverse(['P=PPS Missing','T=TOD Missing','C=Compression','U=Use LUT']),psyms=1,colors=[0,1,2,6]
     options,/def,'*AAEE_BITS',numbits=4,panel_size=.5,labels=reverse(['Attenuator IN','Attenuator OUT','Checksum Error 1','Checksum Error 0']),psyms=1,colors=[0,1,2,6]
-    options,/def,'*PPS_BITS',numbits=2,panel_size=.5,labels=reverse(['MISSING','SELF-ENABLE']),psyms=1,colors=[0,1]
+    ;options,/def,'*PPS_BITS',numbits=2,panel_size=.5,labels=reverse(['MISSING','SELF-ENABLE']),psyms=1,colors=[0,1]
     options,/def,'*PULSER_BITS',labels=reverse(['LUT 0:Lower 1:Upper','Pulser Enable',reverse(channels)]),psyms=1,colors='bgrbgrkm'
     options,/def,'*DETECTOR_BITS',labels=reverse(['BLR_MODE1','BLR_MODE0',reverse(channels)]),psyms=1,colors='bgrbgrcm'
     options,/def,'*NOISE_BITS',numbits=12,panel_size=1.5,labels=reverse(['ENABLE','RES2','RES1','RES0','PERIOD7','PERIOD6','PERIOD5','PERIOD4','PERIOD3','PERIOD2','PERIOD1','PERIOD0']),psyms=1,colors=[0,1,2,6]
@@ -55,7 +56,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
   if ~keyword_set(name) then name = 'sum'
   plot_name = strupcase(strtrim(name,2))
   case plot_name of
-    'SUM': tplot,add=add,'swfo_stis_DURATION *hkp1_PPS_PERIOD_* *hkp?_DAC_* *hkp1_RATES_PULSFREQ *sci_COUNTS *NHIST *hkp1_CMDS_RECEIVED *hkp1_CMDS_BAD *hkp1_*REMAIN* *hkp1_*BITS *hkp1_BIAS_CLOCK_PERIOD *hkp1_ADC_*'; *hkp1_ADC_*'
+    'SUM': tplot,add=add,'*hkp1_NOPEAK_COUNTER swfo_stis_DURATION *hkp1_PPS_* *hkp?_DAC_* *hkp1_RATES_PULSFREQ *sci_COUNTS *NHIST *hkp1_CMDS_RECEIVED *hkp1_CMDS_BAD *hkp1_*REMAIN* *hkp1_*BITS *hkp1_BIAS_CLOCK_PERIOD *hkp1_ADC_*'; *hkp1_ADC_*'
     else: dprint,'Unknown code: '+strtrim(name,2)
   endcase
 

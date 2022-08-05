@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-06-06 14:34:31 -0700 (Mon, 06 Jun 2022) $
-; $LastChangedRevision: 30844 $
+; $LastChangedDate: 2022-08-04 15:42:57 -0700 (Thu, 04 Aug 2022) $
+; $LastChangedRevision: 30997 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -14,12 +14,15 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
     ;hexprint,swfo_data_select(ccsds_data,80,8)
   endif
 
+  ; The counts array is a ulong since a uint can not handle the full dynamic range.
+  ; (19 bit accums for compressed science packets)
+
   hs = 24
   case n_elements(ccsds_data) of
     hs+256:  scidata = ulong(swfo_stis_log_decomp(ccsds_data[hs:*]))
     hs+672:  scidata = ulong(swfo_stis_log_decomp(ccsds_data[hs:*]))
-    hs+512:  scidata = swap_endian( uint(ccsds_data,hs,256) ,/swap_if_little_endian)
-    hs+1344: scidata = swap_endian( uint(ccsds_data,hs,672) ,/swap_if_little_endian)
+    hs+512:  scidata = ulong(swap_endian( uint(ccsds_data,hs,256) ,/swap_if_little_endian))
+    hs+1344: scidata = ulong(swap_endian( uint(ccsds_data,hs,672) ,/swap_if_little_endian))
     else :  begin
       scidata = ccsds_data[hs:*]
       print,n_elements(ccsds_data)
@@ -49,8 +52,6 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
     rate6:    replicate(0.,6),$
     rate14:   replicate(0.,14),$
     gap:ccsds.gap}
-
-  ; sometime in the future the counts array should be changed to a ulong since a uint can not handle the full dynamic range. (19 bit accums)
 
   if nbins eq 672 then begin
 

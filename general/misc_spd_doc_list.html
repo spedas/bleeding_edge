@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Aug  3 18:16:30 2022.<P>
+<STRONG>Last modified: </STRONG>Thu Aug  4 18:16:25 2022.<P>
  
 <HR>
  
@@ -145,7 +145,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#PUTWIN">PUTWIN</A>
 <br>'Putwin' has been renamed to 'win'.  Putwin is now a simple pass-through
 <LI><A HREF="#PUTWIN_COMMON">PUTWIN_COMMON</A>
-<br>Common block for putwin.
+<br>Common block for win.
 <LI><A HREF="#PWRSPC">PWRSPC</A>
 <br>Called with times time and data quantity, PWRSPC returns a power
 <LI><A HREF="#READ_ASCII_CMDLINE">READ_ASCII_CMDLINE</A>
@@ -2972,7 +2972,9 @@ INPUTS:
 OUTPUTS:
    i:          Indices of the nearest neighbors in time1 to the elements of
                time2.  Note that i indexes time1 and has the same number of
-               elements as time2.
+               elements as time2:
+
+                   time1[i] &lt;--&gt; time2
 
 KEYWORDS:
 
@@ -2990,9 +2992,14 @@ KEYWORDS:
 
                    time1[i] &lt;--&gt; time2[VINDEX]
 
+               Only works when VALID is set.
+
+   BADINDEX:   Indices of time2 with no valid neighbor in time1.  This is
+               the complement of VINDEX.  Only works when VALID is set.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-09-07 12:21:29 -0700 (Mon, 07 Sep 2020) $
- $LastChangedRevision: 29120 $
+ $LastChangedDate: 2022-08-04 11:55:23 -0700 (Thu, 04 Aug 2022) $
+ $LastChangedRevision: 30994 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/nn2.pro $
 
 CREATED BY:	David L. Mitchell  2018-08-23
@@ -3338,8 +3345,8 @@ KEYWORDS:
        See win.pro
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-07-14 11:38:23 -0700 (Thu, 14 Jul 2022) $
- $LastChangedRevision: 30930 $
+ $LastChangedDate: 2022-08-04 15:17:20 -0700 (Thu, 04 Aug 2022) $
+ $LastChangedRevision: 30996 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 
 CREATED BY:	David L. Mitchell  2020-06-03
@@ -3355,11 +3362,11 @@ CREATED BY:	David L. Mitchell  2020-06-03
 <PRE>
 PROCEDURE:   putwin_common
 PURPOSE:
-  Common block for putwin.
+  Common block for win.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-06-15 11:54:05 -0700 (Wed, 15 Jun 2022) $
- $LastChangedRevision: 30858 $
+ $LastChangedDate: 2022-08-04 11:55:06 -0700 (Thu, 04 Aug 2022) $
+ $LastChangedRevision: 30993 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin_common.pro $
 
 CREATED BY:    David L. Mitchell

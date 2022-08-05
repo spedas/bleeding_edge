@@ -2,13 +2,13 @@
 ; This crib sheet will help explain how to use the SWFO STIS Ground processing software
 ; Typically a crib sheet can be used to "copy" and "paste" commands into an IDL command window
 ; This crib sheet can be used as a program to be run from beginning to end.
-; 
+;
 ; These tools are not intended as a final product but can be used to create high level ouput.
-; 
-; 
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-07-11 09:03:54 -0700 (Mon, 11 Jul 2022) $
-; $LastChangedRevision: 30917 $
+;
+;
+; $LastChangedBy: ali $
+; $LastChangedDate: 2022-08-04 15:42:57 -0700 (Thu, 04 Aug 2022) $
+; $LastChangedRevision: 30997 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -35,13 +35,8 @@ pro  swfo_stis_plot_example,nsamples=nsamples    ; This is very simple sample ro
 end
 
 
-
-
 file_type ='ptp_file'
 file_type ='gse_file'
-
-
-
 ;  Define the "options" dictionary -   Opts
 if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default options
   !quiet = 1
@@ -70,9 +65,9 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = ['2022-6 14 1','2022 6 14 3']  ;  Amptek 250 test. - test of 6 potential flight preamps.
   opts.file_trange = ['2022-7-7 22','2022 7 8 /03']  ;4 LPTs with non-LUT mode  ; Doesn't seem to have housekeeping data
   opts.file_trange = ['2022-7-8 20','2022 7 8 22']  ; LPT with non-LUT mode  ; (possibly incomplete)
-  opts.file_trange = ['2022-7-8 02','2022 7 8 /03']  ;Final LPT with non-LUT mode  ; Doesn't seem to have housekeeping data
-;  opts.file_trange = !null
-  ;opts.file_trange = ['2022-03-01','2022-03-02/01']
+  opts.file_trange = ['2022-7-8 02','2022 7 8 /03']  ;LPT with non-LUT mode
+  opts.file_trange = ['2022-8-4 22','2022 8 4 /23']  ;Final LPT with non-LUT mode
+  ;opts.file_trange = !null
   ;opts.filenames=['socket_128.32.98.57.2028_20211216_004610.dat', 'socket_128.32.98.57.20484_20211216_005158.dat']
   opts.filenames = ''
   opts.stepbystep = 0               ; this flag allows a step by step progress through this crib sheet
@@ -82,10 +77,6 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   dprint,'The variable "OPTS" is a dictionary of options.  These can be changed by the user as desired.'
   if opts.stepbystep then stop
 endif
-
-
-
-
 
 if opts.init_stis then begin
   dprint,'Initialize the STIS apid objects.  This will define the decomumutators for each of the STIS APIDS'
@@ -97,7 +88,6 @@ endif
 dprint,'Displaying APID definitions and current status'
 swfo_apdat_info,/print,/all
 if opts.stepbystep then stop
-
 
 
 if keyword_set(opts.file_trange) then begin
@@ -116,16 +106,12 @@ if keyword_set(opts.file_trange) then begin
   opts.filenames = filenames
 endif
 
-
 ; delete following line after testing
-
-
-
 ;'/Users/davin/analysis/socket_128.32.98.57.2028_20211214_181537.dat', '/Users/davin/analysis/socket_128.32.98.57.2028_20211214_182909.dat']
 
 if keyword_set(opts.filenames) then begin
   dprint,dlevel=2, "Reading in the data files...."
-  
+
   swfo_ptp_file_read,opts.filenames,file_type=file_type
   dprint,dlevel=2,'A list of packet types and their statistics should be displayed after all the files have been read.'
   if opts.stepbystep then stop
@@ -146,9 +132,6 @@ if keyword_set(opts.init_realtime) then begin
     exec, exec_text = opts.exec_text,title=opts.title+' EXEC',interval=3
   endif
 endif
-
-
-
 
 !except =0
 dprint,dlevel=2,'Create a "Time Plot" (tplot) showing key parameters of the STIS instrument'
@@ -181,14 +164,11 @@ endif
 
 
 if 1 then begin
-  
+
   dprint,'Create Level 0B netcdf file for science packets:'
-  
   sci.level_0b = dynamicarray()   ; Turn on storage of level_0b data by giving it a place to store data
-  
   sci.file_resolution = 3600
-  
-  sci.ncdf_make_file , ret_filename=sci_filename   ; the filename is returned in the variable f   
+  sci.ncdf_make_file , ret_filename=sci_filename   ; the filename is returned in the variable f
   printdat,f
   hkp1.ncdf_make_file , ret_filename=hkp1_filename   ; the filename is returned in the variable f
   printdat,f
@@ -197,13 +177,12 @@ if 1 then begin
   nse.ncdf_make_file , ret_filename=nse_filename   ; the filename is returned in the variable f
   printdat,f
 
-  
   sci_l0b  =  sci.data.array   ; obtain level 0B data directly from sci object
   sci_l0b_copy = swfo_ncdf_read(file=sci_filename)  ; read copy of data from file that was just created
-  
-    ; sci_l0b and sci_l0b_copy should be identical  
-    ; Note that sci_l0b_copy might have more samples if it was produced after sci_l0b was generated
-    
+
+  ; sci_l0b and sci_l0b_copy should be identical
+  ; Note that sci_l0b_copy might have more samples if it was produced after sci_l0b was generated
+
   if 1 then begin
     sci_l1b =   swfo_stis_sci_level_1b(sci_l0b,cal=cal,/reset)   ; create L1a data from l0b data
     swfo_ncdf_create,sci_l1b, file='test_sci_l1b.nc'     ; write data to a file.  still awaiting meta data.

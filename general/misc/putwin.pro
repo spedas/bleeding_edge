@@ -14,8 +14,8 @@
 ;       See win.pro
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-14 11:38:23 -0700 (Thu, 14 Jul 2022) $
-; $LastChangedRevision: 30930 $
+; $LastChangedDate: 2022-08-04 15:17:20 -0700 (Thu, 04 Aug 2022) $
+; $LastChangedRevision: 30996 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/putwin.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2020-06-03
@@ -29,7 +29,16 @@ pro putwin, num, mon, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full, $
                   middle=middle, clone=clone, setprime=setprime, silent=silent, $
                   tcalib=tcalib, xpos=xpos, ypos=ypos, _extra=extra
 
-  print,"'Putwin' is now 'win'.  Please start using the new name."
+  now = systime(/utc,/sec)
+  t1 = time_double('2023-01-01')
+  t2 = time_double('2023-07-01')
+
+  if (now lt t1) then print,"'Putwin' is now 'win'.  Please start using the new name."
+  if (now ge t1 && now lt t2) then print, "'Putwin' will retire soon.  Please use the new name: 'win'."
+  if (now ge t2) then begin
+    print,"'Putwin' has retired.  It has been replaced by 'win'."
+    return
+  endif
 
   win, num, mon, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full, $
                   config=config, xsize=xsize, ysize=ysize, scale=scale, $

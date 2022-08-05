@@ -1,9 +1,9 @@
 ;+
 ;  swfo_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-07-11 00:24:47 -0700 (Mon, 11 Jul 2022) $
-; $LastChangedRevision: 30915 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2022-08-04 15:42:57 -0700 (Thu, 04 Aug 2022) $
+; $LastChangedRevision: 30997 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -181,7 +181,6 @@ function swfo_gen_apdat::decom_aggregate,str=str,ccsds0,source_dict=source_dict
 end
 
 
-
 function swfo_gen_apdat::decom,ccsds,source_dict=source_dict   ; general purpose - should be overloaded - does nothing special here
 
   strct = ccsds
@@ -194,16 +193,12 @@ function swfo_gen_apdat::decom,ccsds,source_dict=source_dict   ; general purpose
 end
 
 
-
-
 function swfo_gen_apdat::decom_time,ccsds,source_dict=source_dict
   if isa(source_dict,'dictionary') && source_dict.haskey('test') && source_dict.test then begin
     ;  do nothing
   endif
   return, ccsds.ptp_time
 end
-
-
 
 
 pro swfo_gen_apdat::handler,ccsds,source_dict=source_dict ;,header,source_info=source_info
@@ -240,10 +235,7 @@ end
 
 pro swfo_gen_apdat::handler2,strct,source_dict=source_dict
   ;  This routine is a place holder for users. It should be overloaded
-
-
 end
-
 
 
 pro swfo_gen_apdat::sort
@@ -275,9 +267,9 @@ end
 ;PURPOSE:
 ; Acts as a timestamp file to trigger the regeneration of SEP data products. Also provides Software Version info for the MAVEN SEP instrument.
 ;Author: Davin Larson  - January 2014
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-07-11 00:24:47 -0700 (Mon, 11 Jul 2022) $
-; $LastChangedRevision: 30915 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2022-08-04 15:42:57 -0700 (Thu, 04 Aug 2022) $
+; $LastChangedRevision: 30997 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_gen_apdat__define.pro $
 ;-
 function swfo_gen_apdat::sw_version
@@ -293,9 +285,9 @@ function swfo_gen_apdat::sw_version
   sw_hash['sw_time_stamp'] = time_string(this_file_date)
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
-  sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2022-07-11 00:24:47 -0700 (Mon, 11 Jul 2022) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 30915 $'
+  sw_hash['svn_changedby '] = '$LastChangedBy: ali $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2022-08-04 15:42:57 -0700 (Thu, 04 Aug 2022) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 30997 $'
 
     return,sw_hash
 end
@@ -305,40 +297,34 @@ function swfo_gen_apdat::cdf_global_attributes
 
   global_att['Acknowledgement'] = !NULL
   global_att['Project'] = 'LWS>Living With a Star
-  global_att['Source_name'] = 'PSP>Parker Solar Probe'
-  global_att['TITLE'] = 'PSP/SWEAP/SPAN Electron and Ion Data'
+  global_att['Source_name'] = 'SWFO-L1>Space Weather Follow On'
+  global_att['TITLE'] = 'STIS'
   global_att['Discipline'] = 'Heliospheric Physics>Particles'
-  global_att['Descriptor'] = 'PSP/SWEAP/SPAN>Parker Solar Probe/Solar Wind Electrons Alphas and Protons/Solar Probe ANalyzers'
+  global_att['Descriptor'] = 'STIS'
   global_att['Data_type'] = '>Solar Wind Particle Distributions'
   global_att['Data_version'] = 'v00'
-  global_att['TEXT'] = 'http://sprg.ssl.berkeley.edu/data/psp/pub/sci/sweap/description/'
+  global_att['TEXT'] = ''
   global_att['MODS'] = 'Revision 0'
   global_att['Logical_file_id'] =  self.name
   global_att['dirpath'] = './'
   global_att['Logical_source'] = self.name
-  global_att['Logical_source_description'] = 'DERIVED FROM: PSP SWEAP SPAN-Instruments'
+  global_att['Logical_source_description'] = 'DERIVED FROM: STIS'
   global_att['Sensor'] = ' '
-  global_att['PI_name'] = 'J. Kasper'
-  global_att['PI_affiliation'] = 'Univ. of Michigan'
-  global_att['IPI_name'] = 'D. Larson (davin@ssl.berkeley.edu)'
-  global_att['IPI_affiliation'] = 'U.C. Berkeley Space Sciences Laboratory'
-  global_att['IPI_email'] = 'davin@ssl.berkeley.edu'
-  global_att['InstrumentLead_name'] = ' '
-  global_att['InstrumentLead_email'] = ' @berkeley.edu'
-  global_att['InstrumentLead_affiliation'] = 'U.C. Berkeley Space Sciences Laboratory'
+  global_att['PI_name'] = 'Davin Larson (davin@berkeley.edu)'
+  global_att['PI_affiliation'] = 'U.C. Berkeley Space Sciences Laboratory'
   global_att['Instrument_type'] =['Plasma and Solar Wind','Particles (space)']
-  global_att['Mission_group'] = 'PSP'
+  global_att['Mission_group'] = 'SWFO'
   global_att['Parents'] = ' '
 
   global_att = global_att + self.sw_version()
   ;  global_att['SW_VERSION'] = 'v00'
-  ;  global_att['SW_TIME_STAMP_FILE'] = '/home/mavensep/socware/projects/maven/sep/mvn_sep_sw_version.pro
+  ;  global_att['SW_TIME_STAMP_FILE'] = ''
   ;  global_att['SW_TIME_STAMP'] =  time_string(systime(1))
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
-  ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2022-07-11 00:24:47 -0700 (Mon, 11 Jul 2022) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 30915 $'
+  ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: ali $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2022-08-04 15:42:57 -0700 (Thu, 04 Aug 2022) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 30997 $'
 
   return,global_att
 end
@@ -360,76 +346,76 @@ end
 ;end
 
 
-function swfo_gen_apdat::cdf_makeobj,  datavary, datanovary,  vnames=vnames, ignore=ignore,global_att=global_att,_extra=ex
-
-  cdf = cdf_tools(_extra=ex)
-  if ~keyword_set(global_att) then begin
-    global_att = orderedhash()
-    global_att['Project'] = 'PSP>Parker Solar Probe'
-  endif
-  cdf.g_attributes += global_att
-
-  fnan = !values.f_nan
-
-  ; Force Epoch as first variable. If datavary contains an EPOCH variable it will add or overwrite this value
-  epoch = time_ephemeris(datavary.time,/ut2et)                ;  may want to change this later to base it on met
-  epoch = long64(epoch * 1d9)
-  vho = cdf_tools_varinfo('Epoch',epoch[0],/recvary,all_values=epoch,datatype = 'CDF_TIME_TT2000',/set_default_atts)
-  ;  vh = vho.getattr()
-  ;  vh.data.array = epoch
-  ;  vatts =  self.cdf_variable_attributes('Epoch')
-  ;  vh.attributes  += vatts
-  ;  cdf.add_variable, vh
-  cdf.add_variable, vho
-
-  if keyword_set(datavary) then begin
-    ;    if ~keyword_set(vnames) then $
-    vnames = tag_names(datavary)   ; if vnames is passed in then there is a bug
-    datavary0 = datavary[0]   ; use first element as the template.
-
-    dlevel=5
-    for vn=0,n_elements(vnames)-1 do begin
-      vname = vnames[vn]
-      val = datavary0.(vn)
-      vals = datavary.(vn)
-      if isa(val,'pointer') then begin                ; special case for pointers
-        if vname eq 'PDATA' then vname='DATA'  ; typically counts
-        datasize = lonarr(n_elements(vals))
-        for i=0,n_elements(vals)-1 do   if ptr_valid(vals[i]) then datasize[i] = n_elements( *vals[i] )
-        maxsize = max(datasize,index)        ; determines maximum size of container
-        if maxsize eq 0 then continue
-        if maxsize gt 4096 then maxsize=4097 ;if this happens, then something is wrong with size
-        val = *vals[index]
-        ndv = n_elements(datavary)
-        ptrs = vals
-        vals = replicate(fill_nan(val[0]),[ndv,maxsize])
-        for i= 0,ndv-1 do  begin
-          v = *ptrs[i]
-          nv=n_elements(v)
-          if nv gt 4096 then begin
-            nv=4097 ;prevents cdf files to be huge due to wrong size
-            v=v[0:4096]
-            val=v
-          endif
-          vals[i,0:nv-1] = v
-        endfor
-      endif else begin
-        if n_elements(vals) gt 1 then         vals = reform(transpose(vals))
-      endelse
-      vho = cdf_tools_varinfo(vname, val, all_values=vals, /recvary,/set_default_atts)
-      ;      vh = vho.getattr()
-      ;      vh.data.array = vals
-      ;      vatt  = self.cdf_variable_attributes(vname)
-      ;      ;  dprint,dlevel=dlevel,'hello1'
-      ;      vh.attributes += vatt
-      ;      ;  dprint,dlevel=dlevel,'hello2'
-      cdf.add_variable, vho
-    endfor
-
-  endif
-
-  return,cdf
-end
+;function swfo_gen_apdat::cdf_makeobj,  datavary, datanovary,  vnames=vnames, ignore=ignore,global_att=global_att,_extra=ex
+;
+;  cdf = cdf_tools(_extra=ex)
+;  if ~keyword_set(global_att) then begin
+;    global_att = orderedhash()
+;    global_att['Project'] = 'PSP>Parker Solar Probe'
+;  endif
+;  cdf.g_attributes += global_att
+;
+;  fnan = !values.f_nan
+;
+;  ; Force Epoch as first variable. If datavary contains an EPOCH variable it will add or overwrite this value
+;  epoch = time_ephemeris(datavary.time,/ut2et)                ;  may want to change this later to base it on met
+;  epoch = long64(epoch * 1d9)
+;  vho = cdf_tools_varinfo('Epoch',epoch[0],/recvary,all_values=epoch,datatype = 'CDF_TIME_TT2000',/set_default_atts)
+;  ;  vh = vho.getattr()
+;  ;  vh.data.array = epoch
+;  ;  vatts =  self.cdf_variable_attributes('Epoch')
+;  ;  vh.attributes  += vatts
+;  ;  cdf.add_variable, vh
+;  cdf.add_variable, vho
+;
+;  if keyword_set(datavary) then begin
+;    ;    if ~keyword_set(vnames) then $
+;    vnames = tag_names(datavary)   ; if vnames is passed in then there is a bug
+;    datavary0 = datavary[0]   ; use first element as the template.
+;
+;    dlevel=5
+;    for vn=0,n_elements(vnames)-1 do begin
+;      vname = vnames[vn]
+;      val = datavary0.(vn)
+;      vals = datavary.(vn)
+;      if isa(val,'pointer') then begin                ; special case for pointers
+;        if vname eq 'PDATA' then vname='DATA'  ; typically counts
+;        datasize = lonarr(n_elements(vals))
+;        for i=0,n_elements(vals)-1 do   if ptr_valid(vals[i]) then datasize[i] = n_elements( *vals[i] )
+;        maxsize = max(datasize,index)        ; determines maximum size of container
+;        if maxsize eq 0 then continue
+;        if maxsize gt 4096 then maxsize=4097 ;if this happens, then something is wrong with size
+;        val = *vals[index]
+;        ndv = n_elements(datavary)
+;        ptrs = vals
+;        vals = replicate(fill_nan(val[0]),[ndv,maxsize])
+;        for i= 0,ndv-1 do  begin
+;          v = *ptrs[i]
+;          nv=n_elements(v)
+;          if nv gt 4096 then begin
+;            nv=4097 ;prevents cdf files to be huge due to wrong size
+;            v=v[0:4096]
+;            val=v
+;          endif
+;          vals[i,0:nv-1] = v
+;        endfor
+;      endif else begin
+;        if n_elements(vals) gt 1 then         vals = reform(transpose(vals))
+;      endelse
+;      vho = cdf_tools_varinfo(vname, val, all_values=vals, /recvary,/set_default_atts)
+;      ;      vh = vho.getattr()
+;      ;      vh.data.array = vals
+;      ;      vatt  = self.cdf_variable_attributes(vname)
+;      ;      ;  dprint,dlevel=dlevel,'hello1'
+;      ;      vh.attributes += vatt
+;      ;      ;  dprint,dlevel=dlevel,'hello2'
+;      cdf.add_variable, vho
+;    endfor
+;
+;  endif
+;
+;  return,cdf
+;end
 
 
 pro swfo_gen_apdat::cdf_makefile,trange=trange,verbose=verbose,filename=filename,parents=parents
@@ -490,7 +476,6 @@ pro swfo_gen_apdat::sav_makefile,sav_format=sav_format,parent=parent,verbose=ver
 end
 
 
-
 pro swfo_gen_apdat::ncdf_make_file,ddata=ddata,pathname=pathname,testdir=testdir,ret_filename=ret_filename,type=type,trange=trange
   if ~isa(type) then type=''
   if keyword_set(pathname) then self.ncdf_pathname = pathname
@@ -515,9 +500,6 @@ pro swfo_gen_apdat::ncdf_make_file,ddata=ddata,pathname=pathname,testdir=testdir
   ;dprint,dlevel=1,'Created file: "'+filename+'"
   ret_filename = filename
 end
-
-
-
 
 
 function swfo_gen_apdat::struct

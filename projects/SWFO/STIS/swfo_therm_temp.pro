@@ -15,7 +15,7 @@ function swfo_therm_temp,dval,parameter=p
   ;print,dval
   x = dval/p.xmax
   rt = p.r1*(x/(1-x*(1+p.R1/p.Rv)))
-  tc = thermistor_resistance_ysi4908(rt,/inverse)
+  tc = swfo_thermistor_resistance_ysi4908(rt,/inverse)
   ;print,dval,x,rt,tc
   return,float(tc)
 end
