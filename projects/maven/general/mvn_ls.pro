@@ -1,22 +1,29 @@
-;PROCEDURE: mvn_ls
+;+
+;FUNCTION: mvn_ls
 ;PURPOSE:
 ;  Calculates the Mars season (i.e. solar longitude)
 ;
 ;USAGE:
-;  mvn_ls, time
+;  ls = mvn_ls(time)
 ;
-;INPUTS:
-;       time: time in string ('YYYY-MM-DD', 'YYYY-MM-DD/hh:mm:ss' etc) or double format.
+;INPUT:
+;       time: time in any format accepted by time_double.
+;
 ;OUTPUT:                
 ;       Mars solar longitude
 ;
 ;KEYWORDS:
-;       TPLOT: makes a tplot variable of Ls
-
+;       TPLOT: make a tplot variable of Ls
+;
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2022-08-08 12:10:41 -0700 (Mon, 08 Aug 2022) $
+; $LastChangedRevision: 31002 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ls.pro $
+;
 ;CREATED BY:	Robert J. Lillis 2017-10-09
 ;FILE:  mvn_ls
 ;VERSION:  1.0
-
+;-
 
 function mvn_ls, time, tplot = tplot;, no_load_kernels
   

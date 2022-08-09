@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Aug  5 18:16:33 2022.<P>
+<STRONG>Last modified: </STRONG>Mon Aug  8 18:16:30 2022.<P>
  
 <HR>
  
@@ -33,6 +33,8 @@ MVN_FILE_SOURCE( [DEFAULT_SOURCE] )</A>
 <br>Calculates the altitude of the MAVEN spacecraft above the Martian
 <LI><A HREF="#MVN_GET_SCPOT">MVN_GET_SCPOT</A>
 <br>Given a time, returns the spacecraft potential.  Only works after
+<LI><A HREF="#MVN_LS">MVN_LS</A>
+<br>Calculates the Mars season (i.e. solar longitude)
 <LI><A HREF="#MVN_NADIR">MVN_NADIR</A>
 <br>Determines the direction of nadir at the position of the spacecraft in
 <LI><A HREF="#MVN_ORBIT_NUM">MVN_ORBIT_NUM</A>
@@ -401,7 +403,7 @@ CREATED BY:	Robert J. Lillis 2013-01-22
 <A NAME="MVN_GET_SCPOT">
 <H2>MVN_GET_SCPOT</H2></A>
 <A HREF="#MVN_GET_ALTITUDE">[Previous Routine]</A>
-<A HREF="#MVN_NADIR">[Next Routine]</A>
+<A HREF="#MVN_LS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 FUNCTION: 
@@ -434,9 +436,43 @@ OUTPUTS:
 <STRONG>(See <A href="general/mvn_get_scpot.pro">projects/maven/general/mvn_get_scpot.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_LS">
+<H2>MVN_LS</H2></A>
+<A HREF="#MVN_GET_SCPOT">[Previous Routine]</A>
+<A HREF="#MVN_NADIR">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION: mvn_ls
+PURPOSE:
+  Calculates the Mars season (i.e. solar longitude)
+
+USAGE:
+  ls = mvn_ls(time)
+
+INPUT:
+       time: time in any format accepted by time_double.
+
+OUTPUT:                
+       Mars solar longitude
+
+KEYWORDS:
+       TPLOT: make a tplot variable of Ls
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2022-08-08 12:10:41 -0700 (Mon, 08 Aug 2022) $
+ $LastChangedRevision: 31002 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ls.pro $
+
+CREATED BY:	Robert J. Lillis 2017-10-09
+FILE:  mvn_ls
+VERSION:  1.0
+</PRE><P>
+<STRONG>(See <A href="general/mvn_ls.pro">projects/maven/general/mvn_ls.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_NADIR">
 <H2>MVN_NADIR</H2></A>
-<A HREF="#MVN_GET_SCPOT">[Previous Routine]</A>
+<A HREF="#MVN_LS">[Previous Routine]</A>
 <A HREF="#MVN_ORBIT_NUM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
