@@ -65,9 +65,9 @@
 ;       success:     Returns 1 if topology information available (at whatever
 ;                    quality), 0 otherwise.
 ;
-; $LastChangedBy: tweber $
-; $LastChangedDate: 2019-01-10 15:47:13 -0800 (Thu, 10 Jan 2019) $
-; $LastChangedRevision: 26451 $
+; $LastChangedBy: xussui_lap $
+; $LastChangedDate: 2022-08-09 10:39:11 -0700 (Tue, 09 Aug 2022) $
+; $LastChangedRevision: 31004 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_topo.pro $
 ;
 ;CREATED BY:    Shaosui Xu, 11/03/2017
@@ -295,10 +295,13 @@ Pro mvn_swe_topo,trange = trange, result=result, storeTplot = storeTplot, $
     options,'topo1','ytitle','Topology'
     ylim, 'topo1', -0.5, 7.5, 0
 
+    topobar = replicate(!values.f_nan,npts,2)
+    clrs = [0.,200,170,140,110,20,40,100]/246. ;1+7 colors, first not used
     for i=1,7 do begin
       inj=where(topo eq i,count)
       if count gt 0L then begin
         alttopo[inj,i] = data[inj].alt
+        topobar[inj,*] = clrs[i]
       endif
       ename='alt_'+ft[i]
       store_data,ename,data={x:data.t,y:alttopo[*,i]}
@@ -307,6 +310,19 @@ Pro mvn_swe_topo,trange = trange, result=result, storeTplot = storeTplot, $
       options,ename,'symsize',sysz[i]
     endfor
     store_data,'topo_alt',data=['topo_lab','alt_'+ft[1:7]]
+    
+    store_data,'topo_lab2',data={x:minmax(data.t),y:replicate(!values.f_nan,2,8)}
+    options,'topo_lab2','labels',toponame;labs
+    options,'topo_lab2','colors',clrs*246.+8
+    options,'topo_lab2','labflag',1
+    dat={x:data.t,y:topobar,v:[0,1]}
+    makebar,'topbar',dat
+    zlim,'topbar',0,1,0
+    
+    options,['topbar','topo_lab2'],'color_table',12
+    store_data,'topobar',data=['topbar','topo_lab2']
+    options,'topobar','panel_size',0.25
+    
     
     if padScoreFlag eq 1 then begin
       store_data,'PAD_LC',data={x:padLC.time, y:[[padLC.zScoreUp], [padLC.zScoreDown]]}

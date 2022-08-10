@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug  8 18:16:30 2022.<P>
+<STRONG>Last modified: </STRONG>Tue Aug  9 18:16:37 2022.<P>
  
 <HR>
  
@@ -46,7 +46,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#ELF_LOAD_FGM">ELF_LOAD_FGM</A>
 <br>Load the ELFIN FGM
 <LI><A HREF="#ELF_LOAD_KP">ELF_LOAD_KP</A>
-<br>Wrapper for noaa_load_kp routine to download kp data
+<br>Load data from a csv file downloaded from a csv file stored on the
 <LI><A HREF="#ELF_LOAD_MRMA">ELF_LOAD_MRMA</A>
 <br>Load the ELFIN mrm data from the ACB board
 <LI><A HREF="#ELF_LOAD_MRMI">ELF_LOAD_MRMI</A>
@@ -705,7 +705,9 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/el
          elf_load_kp
 
  PURPOSE:
-         Wrapper for noaa_load_kp routine to download kp data
+         Load data from a csv file downloaded from a csv file stored on the
+         elfin server and return all values in the time range
+         The original data was downloaded from the ftp site:
             ftp://ftp.gfz-potsdam.de/pub/home/obs/kp-nowcast-archive/wdc/
 
 
@@ -713,6 +715,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/el
          trange:       time range of interest [starttime, endtime] with the format
                        ['YYYY-MM-DD','YYYY-MM-DD'] or to specify more or less than a day
                        ['YYYY-MM-DD/hh:mm:ss','YYYY-MM-DD/hh:mm:ss']
+         no_download:  set this flag to search for the file on your local disk
          extend_time:  set this flag to return the two adjacent values - this is useful for very
                        small time frames
 
