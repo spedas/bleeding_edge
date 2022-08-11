@@ -131,8 +131,8 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2022-07-29 10:37:36 -0700 (Fri, 29 Jul 2022) $
-; $LastChangedRevision: 30975 $
+; $LastChangedDate: 2022-08-10 12:12:09 -0700 (Wed, 10 Aug 2022) $
+; $LastChangedRevision: 31006 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2iono.pro $
 ;-
 
@@ -215,7 +215,12 @@ pro trace2iono, tarray, in_pos_array, out_foot_array, out_trace_array=out_trace_
         message, /continue, 'external_model not a valid external model name'
         return
       endif
-    endif else external_model2 = 'none'
+    endif else external_model2 = 'none'    
+    
+    if ta16supported eq 0 && external_model2 eq 'ta16' then begin
+      message, /continue, 'external_model ta16 is only supported with geopack DLM version 10.9 or newer'
+      return
+    endif
     
     if keyword_set(south) then dir = 1.0D $
     else dir = -1.0D

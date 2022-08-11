@@ -30,9 +30,9 @@
 ;See also:
 ;   "get_colors","colors_com","bytescale"
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-27 12:15:01 -0700 (Wed, 27 Jul 2022) $
-; $LastChangedRevision: 30967 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2022-08-10 09:09:40 -0700 (Wed, 10 Aug 2022) $
+; $LastChangedRevision: 31005 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/loadct2.pro $
 ;
 ;Created by Davin Larson;  August 1996
@@ -146,6 +146,12 @@ pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,pr
         4: line_clrs = [[0,0,0],[84,39,136],[153,142,195],[216,218,235],[241,163,64],[254,224,182],[179,88,6],[255,255,255]] 
         ; Preset 5:  Similar to standard colors, but substitutes orange for yellow for better contrast on white background
         5: line_clrs = [[0,0,0],[255,0,255],[0,0,255],[0,255,255],[0,255,0],[255,165,0],[255,0,0],[255,255,255]]
+        ; Preset 6:  Similar to standard colors, but substitutes gray for yellow for better contrast on white background
+        6: line_clrs = [[0,0,0],[255,0,255],[0,0,255],[0,255,255],[0,255,0],[141,141,141],[255,0,0],[255,255,255]]
+        ; Preset 7:  Color table suggested by https://www.nature.com/articles/nmeth.1618
+        7: line_clrs = [[0,0,0],[230,159,0],[86,180,233],[0,158,115],[240,228,66],[0,114,178],[213,94,0],[204,121,167]]
+        ; Preset 8:  Color table suggested by https://www.nature.com/articles/nmeth.1618, but substitutes white for black for black background
+        8: line_clrs = [[255,255,255],[230,159,0],[86,180,233],[0,158,115],[240,228,66],[0,114,178],[213,94,0],[204,121,167]]
         else: line_clrs = [[0,0,0],[67, 147, 195],[33, 102, 172],[103, 0, 31],[178,24,43],[254,219,199],[244,165,130],[255,255,255]]
       endcase      
     endif

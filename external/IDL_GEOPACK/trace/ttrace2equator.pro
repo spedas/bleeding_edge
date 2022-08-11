@@ -71,6 +71,7 @@
 ;             ignored and new model parameters are input on each
 ;             iteration
 ;
+;
 ;         error(optional): named variable in which to return the error
 ;             state of the procedure.  1 for success, 0 for failure
 ;
@@ -121,6 +122,10 @@
 ;             be interpolated to match the time inputs from the position
 ;             var. Non-tplot array values must match the number of times in the
 ;             tplot input for pos_gsm_tvar
+;             
+;         symc(optional, for TA16 only): sliding average of Sym-H over 30-min interval,
+;             centered on the current time moment.
+;             symc can be computed from symh using symh2symc
 ;
 ;         g1(optional):  index describes solar wind conditions in the
 ;             previous hour, should either be a string naming a tplot variable or an
@@ -128,6 +133,7 @@
 ;             be interpolated to match the time inputs from the position
 ;             var. Non-tplot array values must match the number of times in the
 ;             tplot input for pos_gsm_tvar
+;             
 ;
 ;         g2(optional): index describes solar wind conditions in the
 ;             previous hour should either be a string naming a tplot variable or an
@@ -224,8 +230,8 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2022-07-15 01:33:34 -0700 (Fri, 15 Jul 2022) $
-; $LastChangedRevision: 30935 $
+; $LastChangedDate: 2022-08-10 12:12:09 -0700 (Wed, 10 Aug 2022) $
+; $LastChangedRevision: 31006 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/ttrace2equator.pro $
 ;-
 
@@ -234,9 +240,12 @@ pro ttrace2equator,in_pos_tvar,newname = newname, trace_var_name=trace_tvar, in_
     km=km, par=par, period=period, error=error, r0=r0, rlim=rlim, noboundary=noboundary, storm=storm,$
     kp=kp, pdyn=pdyn, dsti=dsti, yimf=yimf, zimf=zimf, g1=g1, g2=g2, w1=w1, w2=w2, w3=w3, w4=w4, w5=w5, w6=w6,$
     get_tilt=get_tilt, set_tilt=set_tilt, add_tilt=add_tilt, get_nperiod=get_nperiod, exact_tilt_times=exact_tilt_times, $
-    ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, $
+    ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, symc=symc,$
     xind=xind, skip_ts07_load=skip_ts07_load, _extra=_extra
 
+    COMPILE_OPT idl2
+    
+    if ta16_supported() eq 1 then ta16supported=1 else ta16supported=0
     error = 0
     
     ;constant arrays used for input validation
@@ -248,7 +257,12 @@ pro ttrace2equator,in_pos_tvar,newname = newname, trace_var_name=trace_tvar, in_
         message, /continue, 'external_model not a valid external model name'
         return
       endif
-    endif else external_model2 = 'none'
+    endif else external_model2 = 'none'    
+    
+    if ta16supported eq 0 && external_model2 eq 'ta16' then begin
+      message, /continue, 'external_model ta16 is only supported with geopack DLM version 10.9 or newer'
+      return
+    endif
    
     if not keyword_set(in_pos_tvar) or tnames(in_pos_tvar) eq '' then begin
        message,/continue,'in_pos_tvar must be set'
@@ -263,11 +277,10 @@ pro ttrace2equator,in_pos_tvar,newname = newname, trace_var_name=trace_tvar, in_
     get_data,in_pos_tvar,data=d,dlimits=dl
     
     if not keyword_set(newname) then newname = in_pos_tvar + '_foot'
-    
     if not keyword_set(in_coord) then in_coord='gsm'
     
     if n_elements(par_in) gt 0 && size(par_in,/type) eq 7 then begin
-       if tnames(par_in) eq '' then message,'par variable not valid tplot variable'
+       if tnames(par_in) eq '' then message, 'par variable not valid tplot variable'
        tinterpol_mxn,par_in,in_pos_tvar,newname='par_out'
        get_data,'par_out',data=dat
        par_in = dat.y
@@ -308,7 +321,6 @@ pro ttrace2equator,in_pos_tvar,newname = newname, trace_var_name=trace_tvar, in_
     endif
  
     ;  YIMF goes to a different parmod element for TA15N and TA15B since Dst param not used for these models
-   
     if n_elements(yimf) gt 0 then begin
        yimf_dat = tsy_valid_param(yimf, in_pos_tvar)
        if(size(yimf_dat, /n_dim) eq 0 && yimf_dat[0] eq -1L) then return
@@ -324,13 +336,10 @@ pro ttrace2equator,in_pos_tvar,newname = newname, trace_var_name=trace_tvar, in_
           par_in[*,3] = yimf_dat
        endif else begin
           par_in[*,2] = yimf_dat
-       endelse
-       
+       endelse       
     endif
 
     ; ZIMF goes to a different parmod element for TA15N and TA15B since Dst param not used for these models
-
-    
     if n_elements(zimf) gt 0 then begin
        zimf_dat = tsy_valid_param(zimf, in_pos_tvar)
        if(size(zimf_dat, /n_dim) eq 0 && zimf_dat[0] eq -1L) then return
@@ -340,32 +349,15 @@ pro ttrace2equator,in_pos_tvar,newname = newname, trace_var_name=trace_tvar, in_
           message,/continue,'Possible error, not all parameters for model provided.'
        endif
        if (external_model2 eq 'ta15n') || (external_model2 eq 'ta15b') then begin
-         par_in[*,2] = zimf_dat
+         par_in[*,2] = zimf_dat         
+       endif else if external_model2 eq 'ta16' then begin
+         ; Imf Bz not used
        endif else begin
          par_in[*,3] = zimf_dat
-       endelse
-   
+       endelse   
     endif 
 
-    ;
-    ;   XIND is the N-index for TA15N, or the B-index for TA15B
-    ;
-    if n_elements(xind) gt 0 then begin
-      xind_dat = tsy_valid_param(xind, in_pos_tvar)
-      if(size(xind_dat, /n_dim) eq 0 && xind_dat[0] eq -1L) then return
-
-      if n_elements(par_in) eq 0 then begin
-        par_in = dblarr(n_elements(xind_dat),10)
-        message,/continue,'Possible error, not all parameters for model provided.'
-      endif
-
-      if external_model2 eq 'ta16' then begin
-        par_in[*,3] = xind_dat
-      endif else begin
-        par_in[*,4] = xind_dat
-      endelse
-    endif
-    
+   
     if n_elements(g1) gt 0 then begin
        g1_dat = tsy_valid_param(g1, in_pos_tvar)
        if(size(g1_dat, /n_dim) eq 0 && g1_dat[0] eq -1L) then return
@@ -470,6 +462,7 @@ pro ttrace2equator,in_pos_tvar,newname = newname, trace_var_name=trace_tvar, in_
        par_in[*,9] = w6_dat
     endif
 
+    ; XIND is the N-index for TA15N, or the B-index for TA15B
     if n_elements(xind) gt 0 then begin
       xind_dat = tsy_valid_param(xind, in_pos_tvar)
       if(size(xind_dat, /n_dim) eq 0 && xind_dat[0] eq -1L) then return
@@ -478,11 +471,26 @@ pro ttrace2equator,in_pos_tvar,newname = newname, trace_var_name=trace_tvar, in_
         par_in = dblarr(n_elements(xind_dat),10)
         message,/continue,'Possible error, not all parameters for model provided.'
       endif
-
-      par_in[*,3] = xind_dat
+      if (external_model2 eq 'ta15n') || (external_model2 eq 'ta15b') then begin
+         par_in[*,3] = xind_dat         
+      endif else if external_model2 eq 'ta16' then begin
+         par_in[*,2] = xind_dat
+      endif else begin
+         ; xind not used
+      endelse
     endif
+    
+    ; Only for the TA16 model, we need to provide SymHc
+    if external_model2 eq 'ta16' && ta16supported eq 1 && n_elements(symc) gt 0 then begin
+      symc_dat = tsy_valid_param(symc, in_pos_tvar)
+      if(size(symc_dat, /n_dim) eq 0 && symc_dat[0] eq -1L) then return
 
-
+      if n_elements(par_in) eq 0 then begin
+        par_in = dblarr(n_elements(xind_dat),10)
+        message,/continue,'Possible error, not all parameters for model provided.'
+      endif
+      par_in[*,1] = symc_dat
+    endif
     
     if keyword_set(dl) then begin
         str_element,dl,'data_att',success=s

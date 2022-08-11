@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Aug  9 18:16:37 2022.<P>
+<STRONG>Last modified: </STRONG>Wed Aug 10 18:16:32 2022.<P>
  
 <HR>
  
@@ -171,8 +171,8 @@ Notes:
 
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2022-07-29 10:37:36 -0700 (Fri, 29 Jul 2022) $
- $LastChangedRevision: 30975 $
+ $LastChangedDate: 2022-08-10 12:12:09 -0700 (Wed, 10 Aug 2022) $
+ $LastChangedRevision: 31006 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2equator.pro $
 </PRE><P>
 <STRONG>(See <A href="trace/trace2equator.pro">external/IDL_GEOPACK/trace/trace2equator.pro</A>)</STRONG><P>
@@ -316,8 +316,8 @@ Notes:
 
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2022-07-29 10:37:36 -0700 (Fri, 29 Jul 2022) $
- $LastChangedRevision: 30975 $
+ $LastChangedDate: 2022-08-10 12:12:09 -0700 (Wed, 10 Aug 2022) $
+ $LastChangedRevision: 31006 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2iono.pro $
 </PRE><P>
 <STRONG>(See <A href="trace/trace2iono.pro">external/IDL_GEOPACK/trace/trace2iono.pro</A>)</STRONG><P>
@@ -401,6 +401,7 @@ Keywords:
              ignored and new model parameters are input on each
              iteration
 
+
          error(optional): named variable in which to return the error
              state of the procedure.  1 for success, 0 for failure
 
@@ -451,6 +452,10 @@ Keywords:
              be interpolated to match the time inputs from the position
              var. Non-tplot array values must match the number of times in the
              tplot input for pos_gsm_tvar
+             
+         symc(optional, for TA16 only): sliding average of Sym-H over 30-min interval,
+             centered on the current time moment.
+             symc can be computed from symh using symh2symc
 
          g1(optional):  index describes solar wind conditions in the
              previous hour, should either be a string naming a tplot variable or an
@@ -458,6 +463,7 @@ Keywords:
              be interpolated to match the time inputs from the position
              var. Non-tplot array values must match the number of times in the
              tplot input for pos_gsm_tvar
+             
 
          g2(optional): index describes solar wind conditions in the
              previous hour should either be a string naming a tplot variable or an
@@ -554,8 +560,8 @@ Notes:
 
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2022-07-15 01:33:34 -0700 (Fri, 15 Jul 2022) $
- $LastChangedRevision: 30935 $
+ $LastChangedDate: 2022-08-10 12:12:09 -0700 (Wed, 10 Aug 2022) $
+ $LastChangedRevision: 31006 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/ttrace2equator.pro $
 </PRE><P>
 <STRONG>(See <A href="trace/ttrace2equator.pro">external/IDL_GEOPACK/trace/ttrace2equator.pro</A>)</STRONG><P>
@@ -577,6 +583,7 @@ Purpose: tplot wrapper for field line footprint and tracing routines
          is provided by name, it will overwrite an par value
          provided.  If a named parameter is provided, but is
          unneeded by the model, it will be ignored.
+
 
 Input:
          in_pos_tvar: name of the tplot variable storing the
@@ -645,7 +652,7 @@ Keywords:
              unmodified version instead of the Angelopoulos's 
              refined version
 
-        R0(optional):  radius of a sphere (in re), defining the inner boundary of the tracing region
+         R0(optional):  radius of a sphere (in re), defining the inner boundary of the tracing region
          (usually, earth's surface or the ionosphere, where r0~1.0)
          if the field line reaches that sphere from outside, its inbound tracing is
          terminated and the crossing point coordinates xf,yf,zf  are calculated.
@@ -693,6 +700,10 @@ Keywords:
              be interpolated to match the time inputs from the position
              var. Non-tplot array values must match the number of times in the
              tplot input for pos_gsm_tvar
+
+         symc(optional, for TA16 only): sliding average of Sym-H over 30-min interval,
+             centered on the current time moment.
+             symc can be computed from symh using symh2symc
 
          g1(optional):  index describes solar wind conditions in the
              previous hour, should either be a string naming a tplot variable or an
@@ -770,7 +781,11 @@ Keywords:
          geopack_2008 (optional): Set this keyword to use the latest version (2008) of the Geopack
               library. Version 9.2 of the IDL Geopack DLM is required for this keyword to work.
               
-         skip_ts07_load (optional): Do not reset the TS07 parameter directory or reload the parameter files
+         ts07_param_dir (optional): Specify location of TS07 parameter directory
+         
+         ts07_param_file (optional): Specify TS07 parameter file to load
+         
+         skip_ts07_load (optional):  Do not reset the TS07 parameter directory or reload the parameter file
 
 Example: ttrace2iono,'tha_state_pos',newname='tha_out_foot'
 
@@ -792,8 +807,8 @@ Notes:
 
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2022-07-15 01:33:34 -0700 (Fri, 15 Jul 2022) $
- $LastChangedRevision: 30935 $
+ $LastChangedDate: 2022-08-10 12:12:09 -0700 (Wed, 10 Aug 2022) $
+ $LastChangedRevision: 31006 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/ttrace2iono.pro $
 </PRE><P>
 <STRONG>(See <A href="trace/ttrace2iono.pro">external/IDL_GEOPACK/trace/ttrace2iono.pro</A>)</STRONG><P>

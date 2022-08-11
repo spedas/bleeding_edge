@@ -254,7 +254,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ;;;;;;;;;;;;;;;;;;;;;;;;;
   ; EOD status bar
   ;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;del_data, 'epd_fast_bar'
+  del_data, 'epd_fast_bar'
   elf_load_epd_fast_segments, tplotname='el'+probe+'_pef_nflux', no_download=no_download
   get_data, 'epd_fast_bar', data=epdef_fast_bar_x
 
@@ -268,6 +268,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ;;;;;;;;;;;;;;;;;;;;;;;;;
   ; FGM status bar
   ;;;;;;;;;;;;;;;;;;;;;;;;;
+  del_data, 'fgm_survey_bar'
   elf_load_fgm_survey_segments, tplotname='el'+probe+'_fgs', no_download=no_download
   get_data, 'fgm_survey_bar', data=fgm_survey_bar_x
 
@@ -906,6 +907,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
        
   endfor
 
+  del_data, 'epd_fast_bar
   dprint, dlevel=2, 'Total time: '+strtrim(systime(/sec)-t0,2)+' sec'
 
 end
