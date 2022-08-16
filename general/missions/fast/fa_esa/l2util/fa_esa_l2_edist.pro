@@ -27,8 +27,8 @@
 ;HISTORY:
 ; 2016-04-12, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2016-10-24 12:02:05 -0700 (Mon, 24 Oct 2016) $
-; $LastChangedRevision: 22189 $
+; $LastChangedDate: 2022-08-15 13:07:54 -0700 (Mon, 15 Aug 2022) $
+; $LastChangedRevision: 31017 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/fast/fa_esa/l2util/fa_esa_l2_edist.pro $
 ;-
 Function fa_esa_l2_edist, type, $
@@ -40,6 +40,7 @@ Function fa_esa_l2_edist, type, $
                           no_data=no_data, $
                           name = name, $
                           suffix = suffix, $
+                          wt_out = wt_out, $
                           _extra=_extra
 ;next define the common blocks
   common fa_information, info_struct
@@ -100,7 +101,7 @@ Function fa_esa_l2_edist, type, $
   nbins = n_elements(all_dat.energy_full[0, *, 0])
   nab = n_elements(all_dat.energy_full[0, 0, *])
   wt = 1.0+fltarr(nbins, nab)
-
+  wt_out = fltarr(ntimes,nbins,nab)
 ;change the pitch angle range so that range[1] is gt range[0]
   If(keyword_set(parange)) Then Begin
      If(n_elements(parange) Eq 1) Then par0 = [parange, parange] $
@@ -128,30 +129,28 @@ Function fa_esa_l2_edist, type, $
            pajk = pajk[ssjk]
 ;pakjk2 will help for wrapped cases
            pajk2 = [pajk, 360.0+pajk]
+;use a weight array that's twice as long for wrapping
+           wtf = fltarr(2*nabj)
 ;If one pitch angle - interpolate
            If(par0[1] Eq par0[0]) Then Begin
+              par00 = par0[0]
               interp_it:
-              s1 = value_locate(pajk, par0[0])
-;This handles the wrapping pretty explicitly, but it should be ok
-              If(s1 Eq -1 Or s1 Eq nabj-1) Then Begin
-                 i = nabj-1 & i1 = 0
-                 If(par0[0] Lt 0) Then Begin ;shouldn't happen
-                    a = (par0[0]-pajk[i])/(360.0+pajk[i1]-pajk[i])
-                 Endif Else Begin
-                    a = (360.0+par0[0]-pajk[i])/(360.0+pajk[i1]-pajk[i])
-                 Endelse
-              Endif Else Begin
-                 i = s1 & i1=i+1
-                 a = (par0[0]-pajk[i])/(pajk[i1]-pajk[i])
-              Endelse
-              wt[k, ssjk[i]] = (1.0-a)
-              wt[k, ssjk[i1]] = a
-           Endif Else Begin    ;use a weight array that's twice as long for wrapping
-              wtf = fltarr(2*nabj)
+              s1 = value_locate(pajk2, par00)
+              If(s1[0] Eq -1) Then Begin
+                 par00 = par00+360.0
+                 s1 = value_locate(pajk2, par00)
+              Endif Else If(s1[0] Eq (2*nabj-1)) Then Begin
+                 par00 = par00-360.0
+                 s1 = value_locate(pajk2, par00)
+              Endif
+              s1 = (s1 > 0) < (2*nabj-2) ;should never be needed with wrapping
+              a = (par00-pajk2[s1])/(pajk2[s1+1]-pajk2[s1])
+              wtf[s1] = (1.0-a)
+              wtf[s1+1] = a
+           Endif Else Begin
               s1 = value_locate(pajk2, par0)
               If(s1[1] Eq s1[0]) Then Begin ;interpolate to the midpoint
-                 par0[0] = ((par0[0]+par0[1])/2.0) Mod 360.0
-                 par0[1] = par0[0]
+                 par00 = ((par0[0]+par0[1])/2.0) Mod 720.0
                  goto, interp_it
               Endif
 ;Here we know that s1[1] > s1[0]
@@ -176,10 +175,10 @@ Function fa_esa_l2_edist, type, $
                  wts11 = (par0[1]-pajk2[i])/(pajk2[i1]-pajk2[i])
                  wtf[i1] = wts11
               Endif
-;contract wtf
-              wtf = wtf[0:nabj-1]+wtf[nabj:*]
-              wt[k, ssjk] = wtf
            Endelse
+;contract wtf
+           wtf = wtf[0:nabj-1]+wtf[nabj:*]
+           wt[k, ssjk] = wtf
         Endif
      Endfor
      oops = where(wt Gt 1.0, noops)
@@ -194,6 +193,7 @@ Function fa_esa_l2_edist, type, $
      eflux_out[j, 0:nbj-1] = total(eflux_otmp*domega_otmp*wttmp, 2)/ $
                              total(domega_otmp*wttmp, 2)
      energy_out[j, 0:nbj-1] = all_dat.energy_full[ss[j], 0:nbj-1, 0]
+     wt_out[j, 0:nbj-1, 0:nabj-1] = wttmp
   Endfor
 
 ;setup tplot variable

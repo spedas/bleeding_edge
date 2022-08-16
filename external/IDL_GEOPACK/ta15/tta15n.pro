@@ -101,9 +101,9 @@
 ;
 ;  The N-index calculation is implemented in omni2nindex.pro
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
-; $LastChangedRevision: 30156 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2022-08-15 09:50:54 -0700 (Mon, 15 Aug 2022) $
+; $LastChangedRevision: 31014 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/ta15/tta15n.pro $
 ;-
 
@@ -246,10 +246,18 @@ pro tta15n, pos_gsm_tvar, pdyn=pdyn, yimf=yimf, zimf=zimf, $
   else $
     d_out = {x:d.x, y:mag_array}
 
-  if keyword_set(newname) then $
-    store_data, newname, data = d_out, dlimits = dl, limits = l $
-  else $
-    store_data, var_name +'_bta15n', data = d_out, dlimits = dl, limits = l
+  if ~keyword_set(geopack_2008) then geopack_2008 = 0
+  pd = 'External magnetic field in nT'
+  desc = 'Geopack model: TA15n'
+  g_att = {input_var: pos_gsm_tvar, input_coord_sys: 'gsm', input_units: 'km', geopack_2008: geopack_2008}
+  data_att = {project:'GEOPACK_DLM', observatory:'B Field', instrument:'TA15n', units:'nT', coord_sys:'gsm', description:pd}
+  dlg = {geopack:g_att, data_att: data_att, spec:0, log:0, colors: [2,4,6], labels: ['b_x','b_y','b_z'], ysubtitle: '[nT]', description: desc}
+  
+  if keyword_set(newname) then begin
+    store_data, newname, data = d_out, dlimits = dlg
+  endif else begin
+    store_data, var_name +'_bta15n', data = d_out, dlimits = dlg
+  endelse
 
   ;signal success
   error = 1
