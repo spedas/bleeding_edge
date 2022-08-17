@@ -143,9 +143,9 @@
 ;
 ;       IONO:     Plot a dashed circle at this altitude.
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-31 15:57:01 -0700 (Sun, 31 Jul 2022) $
-; $LastChangedRevision: 30981 $
+; $LastChangedBy: rlillis3 $
+; $LastChangedDate: 2022-08-16 18:05:51 -0700 (Tue, 16 Aug 2022) $
+; $LastChangedRevision: 31019 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -354,7 +354,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 ; Create snapshot windows
 
   Twin = !d.window
-
+  
   if (keyword_set(black) and (!p.background ne 0L)) then begin
     revvid
     vswap = 1
@@ -537,7 +537,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     endif
     
     if (dob) then begin
-        get_data,'mvn_B_1sec_maven_mso',data=bmso
+        get_data,'mvn_B_1sec_MAVEN_MSO',data=bmso
         bb0=bmso.y
         bt=bmso.x
         bdt=60 ;smooth over seconds
