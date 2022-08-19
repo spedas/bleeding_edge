@@ -116,9 +116,9 @@
 ;            http://modelweb.gsfc.nasa.gov/magnetos/data-based/Paper220.pdf
 ;            http://modelweb.gsfc.nasa.gov/magnetos/data-based/Paper219.pdf
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-06-18 21:52:28 -0700 (Fri, 18 Jun 2021) $
-; $LastChangedRevision: 30062 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2022-08-18 09:29:42 -0700 (Thu, 18 Aug 2022) $
+; $LastChangedRevision: 31020 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t01/tt01.pro $
 ;-
 
@@ -275,11 +275,19 @@ pro tt01, pos_gsm_tvar, pdyn=pdyn, dsti=dsti, yimf=yimf, zimf=zimf, $
     d_out = {x:d.x, y:mag_array, v:d.v} $
   else $
     d_out = {x:d.x, y:mag_array}
-
-  if keyword_set(newname) then $
-    store_data, newname, data = d_out, dlimits = dl, limits = l $
-  else $
-    store_data, var_name +'_bt01', data = d_out, dlimits = dl, limits = l
+    
+  if ~keyword_set(geopack_2008) then geopack_2008 = 0
+  pd = 'External magnetic field in nT'
+  desc = 'B Field using Geopack T01 model'
+  g_att = {input_var: pos_gsm_tvar, input_coord_sys: 'gsm', input_units: 'km', geopack_2008: geopack_2008}
+  data_att = {project:'GEOPACK_DLM', observatory:'B Field', instrument:'T01', units:'nT', coord_sys:'gsm', description:pd}
+  dlg = {geopack:g_att, data_att: data_att, spec:0, log:0, colors: [2,4,6], labels: ['b_x','b_y','b_z'], ysubtitle: '[nT]', description: desc}
+  
+  if keyword_set(newname) then begin
+    store_data, newname, data = d_out, dlimits = dlg
+  endif else begin
+    store_data, var_name +'_bt01', data = d_out, dlimits = dlg
+  endelse
 
   ;signal success
   error = 1 

@@ -101,8 +101,8 @@
 ;	 100%. Remembercomparing two straight lines yields 100% polarisation.
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2021-09-15 11:47:33 -0700 (Wed, 15 Sep 2021) $
-; $LastChangedRevision: 30295 $
+; $LastChangedDate: 2022-08-18 14:05:08 -0700 (Thu, 18 Aug 2022) $
+; $LastChangedRevision: 31024 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/wavpol/wavpol.pro $
 ;-
 pro wavpol,ct,Bx,By,Bz,timeline,freqline,powspec,degpol,waveangle,elliptict,helict,pspec3,$
@@ -449,6 +449,8 @@ samp_per=samp_per_input, nopfft=nopfft_input,steplength = steplength_input, bin_
           ;print, 'Nbp = ', nbp_fft
           dprint, 'Ngood = ', ngood
           dprint, 'Required number of points for FFT = ', nopfft
+          
+          if KK ge n_elements(timeline) then continue
           
           timeline[KK]=ct[ind0]+ABS(nopfft/2)/samp_freq+steplength/samp_freq
           powspec[KK,1:nopfft/2-2]=!values.d_nan

@@ -8,14 +8,14 @@
 ;        to work
 ;        Sometimes these routines can take a while to run.
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-03-26 15:32:36 -0700 (Fri, 26 Mar 2021) $
-; $LastChangedRevision: 29828 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2022-08-18 09:37:28 -0700 (Thu, 18 Aug 2022) $
+; $LastChangedRevision: 31021 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/examples/crib_tt96.pro $
 ;-
 
 ;timespan, '2008-07-02'
-timespan, '2018-02-02';date chosen at random
+timespan, '2022-02-02';date chosen at random
 
 ;load state data
 

@@ -9,8 +9,8 @@
 ;       to work
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2019-04-29 10:07:32 -0700 (Mon, 29 Apr 2019) $
-; $LastChangedRevision: 27121 $
+; $LastChangedDate: 2022-08-18 09:37:28 -0700 (Thu, 18 Aug 2022) $
+; $LastChangedRevision: 31021 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/examples/crib_ttrace.pro $
 ;-
 
@@ -26,7 +26,7 @@ thm_init
 ;BASIC USAGE
 ;footprint trace in gsm
 
-mydate = '2018-03-23'
+mydate = '2022-03-23'
 timespan, mydate
 
 thm_load_state,probe='c',coord='gsm',suffix='_gsm'

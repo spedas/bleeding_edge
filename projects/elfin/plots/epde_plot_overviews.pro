@@ -63,7 +63,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   set_plot,'z'
   charsize=1
   tplot_options, 'xmargin', [16,11]
-  ;tplot_options, 'ymargin', [7,4]
 
   ; close and free any logical units opened by calc
   luns=lindgen(124)+5
@@ -81,16 +80,15 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     dprint, dlevel=0, 'No plots were producted.
   endif
 
-  elf_load_fgm, probes=probe, datatype='fgs' 
+  del_data, '*_fgs'
+  elf_load_fgm, probes=probe, datatype='fgs', no_download=no_download
   get_data, 'el'+probe+'_fgs', data=elx_fgs
   if size(elx_fgs, /type) NE 8 then begin
-    elf_load_fgm, probe=probe, trange=['2022-01-15','2022-01-16'], datatype='fgs'
+    elf_load_fgm, probe=probe, trange=['2022-01-15','2022-01-16'], datatype='fgs', no_download=no_download
     timeduration=(time_double(trange[1])-time_double(trange[0]))
     timespan,tr[0],timeduration,/seconds
     tr=timerange()
   endif
-  ;del_data, 'fgm_survey_bar'
-
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; GET KP and DST values
@@ -279,16 +277,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   options, 'fgm_survey_bar', 'color',80
   options, 'fgm_survey_bar', 'ztitle',''
 
-;  del_data, 'fgs_bar'
-;  get_data, 'fgs_bar', data=fgs_bar_x
-
-;  options, 'fgs_bar', panel_size=0.1
-;  options, 'fgs_bar',ticklen=0
-;  options, 'fgs_bar', 'ystyle',4
-;  options, 'fgs_bar', 'xstyle',4
-;  options, 'fgs_bar', 'color',80
-;  options, 'fgs_bar', 'ztitle',''
-
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; Prep FOR ORBITS
   ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -360,7 +348,10 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
 ;     sz_starttimes=epd_times.starts
 ;     sz_endtimes=epd_times.ends
 ;  endif
- 
+  ; also get the data availability time ranges - this is needed later for science zone percent completion
+  epd_sci_zones=get_elf_science_zone_start_end(trange=[trange[0]-5,trange[1]+5], probe=probe, instrument='epd')
+  fgm_sci_zones=get_elf_science_zone_start_end(trange=[trange[0]-5,trange[1]+5], probe=probe, instrument='fgm')
+
   num_szs=n_elements(sz_starttimes)
 
   ; set up science zone plot options
@@ -375,7 +366,8 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       sz_tr=[sz_starttimes[i],sz_endtimes[i]]   ; add 3 seconds to ensure that full spin periods are loaded
       tdur=sz_tr[1]-sz_tr[0]
       timespan, sz_tr[0], tdur, /sec
-
+      this_tr=timerange()
+      
       ; get EPD data
       elf_load_epd, probes=probe, datatype='pef', level='l1', type='nflux',no_download=no_download
       ;trange=['2022-06-02/02:00','2022-06-02/03:00']
@@ -384,12 +376,20 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       get_data, sc+'_pef_nsectors', data= nsect
 
       med_nsect=median(nsect.y)
-      epd_sci_zones=get_elf_science_zone_start_end(trange=[trange[0]-5,trange[1]+5], probe=probe, instrument='epd')
-      epd_completeness_str=', EPD completeness='+epd_sci_zones.completeness[0]
-      fgm_sci_zones=get_elf_science_zone_start_end(trange=[trange[0]-5,trange[1]+5], probe=probe, instrument='fgm')
-      if size(fgm_sci_zones,/type) eq 8 then $
-        fgm_completeness_str=', FGM completeness='+fgm_sci_zones.completeness[0] else $
-        fgm_completeness_str='No FGM data'
+      if size(epd_sci_zones,/type) eq 8 then begin
+        idx=where(epd_sci_zones.starts GT this_tr[0]-20, scnt)
+        if scnt GT 0 then epd_completeness_str=', EPD completeness='+epd_sci_zones.completeness[idx[0]] else $
+          epd_completeness_str=', EPD Completeness=not available'
+      endif else begin
+        epd_completeness_str=', EPD Completeness=not available'
+      endelse
+      if size(fgm_sci_zones,/type) eq 8 then begin
+        idx=where((fgm_sci_zones.starts GT this_tr[0]-60) AND (fgm_sci_zones.ends LT this_tr[1]+60.), scnt)
+        if scnt GT 0 then fgm_completeness_str=', FGM completeness='+fgm_sci_zones.completeness[idx[0]] else $
+          fgm_completeness_str=', FGM Completeness=not available'
+      endif else begin
+        fgm_completeness_str=', FGM Completeness=None'
+      endelse
 
       ; get sector and phase delay for this zone
       phase_delay = elf_find_phase_delay(trange=sz_tr, probe=probe, instrument='epde', no_download=no_download)
@@ -495,8 +495,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       if strlowcase(probe) eq 'a' then  $
          varstring=['ela_GLON','ela_MLAT_igrf[ela_MLAT_dip]', 'ela_MLT_igrf[ela_MLT_dip]', 'ela_L_igrf[ela_L_dip]'] else $
          varstring=['elb_GLON','elb_MLAT_igrf[elb_MLAT_dip]', 'elb_MLT_igrf[elb_MLT_dip]', 'elb_L_igrf[elb_L_dip]']
-
-;      if (med_nsect GT 30) OR not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin       
+      if spd_data_exists('el'+probe+'_fgs_fsp_res_obw',sz_tr[0],sz_tr[1]) then begin     
         tplot,['proxy_ae', $
           'fgm_survey_bar', $
           'epd_fast_bar', $
@@ -507,22 +506,22 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           'el'+probe+'_pef_en_spec2plot_para', $
           'el'+probe+'_pef_pa_spec2plot_ch[0,1]LC', $
           'el'+probe+'_pef_pa_spec2plot_ch[2,3]LC', $
-          'el'+probe+'_bt89_sm_NEDT'], $
+          'el'+probe+'_fgs_fsp_res_obw'], $
            var_label=varstring     ;'el'+probe+'_'+['LAT','MLT','L_dip','MLT_igrf','L_igrf']
-;      endif else begin
-;        tplot,['proxy_ae', $
-;          'fgm_survey_bar', $
-;          'epd_fast_bar', $
-;          'sunlight_bar', $
-;          'el'+probe+'_pef_en_reg_spec2plot_omni', $
-;          'el'+probe+'_pef_en_reg_spec2plot_anti', $
-;          'el'+probe+'_pef_en_reg_spec2plot_perp', $
-;          'el'+probe+'_pef_en_reg_spec2plot_para', $
-;          'el'+probe+'_pef_pa_reg_spec2plot_ch[0,1]LC', $
-;          'el'+probe+'_pef_pa_reg_spec2plot_ch[2,3]LC', $
-;          'el'+probe+'_bt89_sm_NEDT'], $
-;           var_label=varstring
-;      endelse
+      endif else begin
+        tplot,['proxy_ae', $
+          'fgm_survey_bar', $
+          'epd_fast_bar', $
+          'sunlight_bar', $
+          'el'+probe+'_pef_en_reg_spec2plot_omni', $
+          'el'+probe+'_pef_en_reg_spec2plot_anti', $
+          'el'+probe+'_pef_en_reg_spec2plot_perp', $
+          'el'+probe+'_pef_en_reg_spec2plot_para', $
+          'el'+probe+'_pef_pa_reg_spec2plot_ch[0,1]LC', $
+          'el'+probe+'_pef_pa_reg_spec2plot_ch[2,3]LC', $
+          'el'+probe+'_bt89_sm_NEDT'], $
+           var_label=varstring
+      endelse
       tr=timerange()
       fd=file_dailynames(trange=tr[0], /unique, times=times)
       tstring=strmid(fd,0,4)+'-'+strmid(fd,4,2)+'-'+strmid(fd,6,2)+sz_plot_lbl
@@ -676,8 +675,8 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   if nplots eq 25 then this_tr=[dat_gei.x[min_st[24]], dat_gei.x[min_en[24]]] $
      else this_tr=trange
   tdur=this_tr[1]-this_tr[0]
-  timespan, this_tr[0], tdur, /sec
-  elf_load_state, probes=probe, /no_download
+  ;timespan, this_tr[0], tdur, /sec
+  ;elf_load_state, probes=probe, /no_download
   elf_load_epd, probes=probe, datatype='pef', level='l1', type='nflux', no_download=1
   if spd_data_exists('el'+probe+'_pef_nflux',this_tr[0],this_tr[1]) then begin
     batch_procedure_error_handler, 'elf_getspec', probe=probe, /only_loss_cone
@@ -732,7 +731,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     tdur=this_tr[1]-this_tr[0]
     timespan, this_tr[0], tdur, /sec
 
-    elf_load_state, probes=probe, /no_download
+    ;elf_load_state, probes=probe, /no_download
     
     if size(proxy_ae,/type) eq 8 then begin
       proxy_ae_sub=proxy_ae.y(where(proxy_ae.x ge time_double(this_tr[0]) and proxy_ae.x le time_double(this_tr[1])))

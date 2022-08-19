@@ -62,9 +62,9 @@
 ;        3. Haje Korth's IDL/Geopack DLM must be installed for this
 ;        procedure to work
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-09-20 11:10:27 -0700 (Mon, 20 Sep 2021) $
-; $LastChangedRevision: 30307 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2022-08-18 09:29:42 -0700 (Thu, 18 Aug 2022) $
+; $LastChangedRevision: 31020 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t89/tt89.pro $
 ;-
 
@@ -166,12 +166,20 @@ pro tt89, pos_gsm_tvar, kp=kp, period=period, get_nperiod=get_nperiod, newname=n
       d_out = {x:d.x, y:mag_array, v:d.v} $
     else $
       d_out = {x:d.x, y:mag_array}
+      
+    if ~keyword_set(geopack_2008) then geopack_2008 = 0
+    pd = 'External magnetic field in nT'
+    desc = 'B Field using Geopack T89 model'
+    g_att = {input_var: pos_gsm_tvar, input_coord_sys: 'gsm', input_units: 'km', geopack_2008: geopack_2008}
+    data_att = {project:'GEOPACK_DLM', observatory:'B Field', instrument:'T89', units:'nT', coord_sys:'gsm', description:pd}
+    dlg = {geopack:g_att, data_att: data_att, spec:0, log:0, colors: [2,4,6], labels: ['b_x','b_y','b_z'], ysubtitle: '[nT]', description: desc}
 
-    if keyword_set(newname) && n_elements(var_names) eq 1 then $
-      store_data, newname, data = d_out, dlimits = dl, limits = l $
-    else $
-      store_data, var_names[i]+'_bt89', data = d_out, dlimits = dl, limits = l
-
+    if keyword_set(newname) && n_elements(var_names) eq 1 then begin
+      store_data, newname, data = d_out, dlimits = dlg
+    endif else begin
+      store_data, var_names[i]+'_bt89', data = d_out, dlimits = dlg
+    endelse
+    
   endfor
 
   ;signal success

@@ -10,13 +10,13 @@
 ;        Sometimes these routines can take a while to run.
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2019-04-29 10:07:32 -0700 (Mon, 29 Apr 2019) $
-; $LastChangedRevision: 27121 $
+; $LastChangedDate: 2022-08-18 09:37:28 -0700 (Thu, 18 Aug 2022) $
+; $LastChangedRevision: 31021 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/examples/crib_tt04s.pro $
 ;-
 
 ;timespan, '2008-07-02'
-timespan, '2018-02-02';date chosen at random
+timespan, '2022-02-02';date chosen at random
 
 ;load state data
 

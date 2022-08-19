@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2022
 ;
 ; $LastChangedBy: pulupa $
-; $LastChangedDate: 2022-08-03 14:10:02 -0700 (Wed, 03 Aug 2022) $
-; $LastChangedRevision: 30990 $
+; $LastChangedDate: 2022-08-18 16:37:43 -0700 (Thu, 18 Aug 2022) $
+; $LastChangedRevision: 31025 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -118,6 +118,8 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
     type = 'mag_SC_4_Sa_per_Cyc'
     dprint,'Default is: ', type
   endif
+
+  if n_elements(pathformat) EQ 1 then pf_in = pathformat
 
   ;
   ; By default, set level = 2. Level 2 data are lowest level public data
@@ -752,5 +754,7 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
     endelse
 
   endif
+
+  if n_elements(pf_in) EQ 1 then pathformat = pf_in
 
 end

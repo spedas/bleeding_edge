@@ -171,9 +171,9 @@
 ;            inner magnetosphere during strong geomagnetic storms, J. Geophys. 
 ;            Res., v. 110 (A3), A03208, doi: 10.1029/2004JA010798, 2005
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-03-26 15:27:06 -0700 (Fri, 26 Mar 2021) $
-; $LastChangedRevision: 29827 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2022-08-18 09:29:42 -0700 (Thu, 18 Aug 2022) $
+; $LastChangedRevision: 31020 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/t04s/tt04s.pro $
 ;-
 
@@ -372,11 +372,19 @@ pro tt04s, pos_gsm_tvar, pdyn=pdyn, dsti=dsti, yimf=yimf, zimf=zimf, $
   else $
     d_out = {x:d.x, y:mag_array}
 
-  if keyword_set(newname) then $
-    store_data, newname, data = d_out, dlimits = dl, limits = l $
-  else $
-    store_data, var_name +'_bt04s', data = d_out, dlimits = dl, limits = l
-
+  if ~keyword_set(geopack_2008) then geopack_2008 = 0
+  pd = 'External magnetic field in nT'
+  desc = 'B Field using Geopack T04s model'
+  g_att = {input_var: pos_gsm_tvar, input_coord_sys: 'gsm', input_units: 'km', geopack_2008: geopack_2008}
+  data_att = {project:'GEOPACK_DLM', observatory:'B Field', instrument:'T04', units:'nT', coord_sys:'gsm', description:pd}
+  dlg = {geopack:g_att, data_att: data_att, spec:0, log:0, colors: [2,4,6], labels: ['b_x','b_y','b_z'], ysubtitle: '[nT]', description: desc}
+  
+  if keyword_set(newname) then begin
+    store_data, newname, data = d_out, dlimits = dlg
+  endif else begin
+    store_data, var_name +'_bt04s', data = d_out, dlimits = dlg
+  endelse
+  
   ;signal success
   error = 1 
 
