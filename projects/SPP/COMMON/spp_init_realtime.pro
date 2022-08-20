@@ -1,7 +1,7 @@
 
 
 pro spp_init_realtime,filename=filename,base=base,hub=hub,itf=itf,RM133=RM133,rm320=rm320,rm333=rm333,tent=tent, $
-    spani= spani, spanea=spanea, spaneb=spaneb, hermes = hermes, spc=spc,SWEMGSE=SWEM, $
+    spani= spani, spanea=spanea, spaneb=spaneb, hermes = hermes, swxspe = swxspe, spc=spc,SWEMGSE=SWEM, $
     router=router, instr=instr, recent=recent, hires1=hires1, sslsoc=sslsoc, $
     exec=exec0,ion=ion,tv=tv,cal=cal,snout2=snout2,snout1=snout1,crypt=crypt,apl=apl,moc=moc,gsfc=gsfc
 
@@ -25,6 +25,7 @@ pro spp_init_realtime,filename=filename,base=base,hub=hub,itf=itf,RM133=RM133,rm
   if keyword_set(spc) then instr = 'spc'
   if keyword_set(swem) then instr = 'swem'
   if keyword_set(hermes) then instr = 'hermes'
+  if keyword_set(swxspe) then instr = 'swxspe'
 
   if keyword_set(cal) then   router = 'cal'
   if keyword_set(snout2) then router = 'snout2'
