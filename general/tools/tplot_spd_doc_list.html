@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Aug 19 18:16:39 2022.<P>
+<STRONG>Last modified: </STRONG>Mon Aug 22 18:16:37 2022.<P>
  
 <HR>
  
@@ -45,6 +45,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#STORE_DATA_COLBAR">STORE_DATA_COLBAR</A>
 <LI><A HREF="#TDEXISTS">TDEXISTS</A>
 <LI><A HREF="#TPLOT_ASCII">TPLOT_ASCII</A>
+<LI><A HREF="#TPRINT_MULTIAXIS">TPRINT_MULTIAXIS</A>
+<br>A PostScript wrapper for tplot_multiaxis, opens .ps file, calls
 <LI><A HREF="#TSAMPLE">TSAMPLE</A>
 <br>Returns a vector (or array) of tplot data values.
 <LI><A HREF="#TSAMPLE2">TSAMPLE2</A>
@@ -420,7 +422,7 @@ function: tdexists
 <A NAME="TPLOT_ASCII">
 <H2>TPLOT_ASCII</H2></A>
 <A HREF="#TDEXISTS">[Previous Routine]</A>
-<A HREF="#TSAMPLE">[Next Routine]</A>
+<A HREF="#TPRINT_MULTIAXIS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:  tplot_ascii
@@ -457,9 +459,62 @@ History:
 <STRONG>(See <A href="tplot/tplot_ascii.pro">general/tools/tplot/tplot_ascii.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="TPRINT_MULTIAXIS">
+<H2>TPRINT_MULTIAXIS</H2></A>
+<A HREF="#TPLOT_ASCII">[Previous Routine]</A>
+<A HREF="#TSAMPLE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ tprint_multiaxis
+PURPOSE:
+ A PostScript wrapper for tplot_multiaxis, opens .ps file, calls
+ tplot_multiaxis, closes file and prints or calls &quot;xv&quot;. The printer
+ or view options are only applied on Unix-based systems, but the file
+ will be created for any OS.
+CALLING SEQUENCE:
+ tprint_multiaxis, left_names, right_names [,positions], filename=filename, $
+                   printer=printer,times=times,ct=ct,landscape=landscape, $
+                   xsize=xsize,ysize=ysize,_extra=_extra
+INPUT:
+  left_names:  String array or space separated list of tplot variables.
+               Each variable will be plotted in a separate panel with a
+               left-aligned y axis.
+  right_names:  String array or space separate list of tplot variables.
+                Each variable will be added to the appropriate panel
+                with a right-aligned y axis.  If positions are not 
+                specified then this must be the same size as left_names.
+  positions:  Integer array specifying the vertical position [1,N] of 
+              the correspond entry in right_names.  This keyword must
+              be used if left_names has more entries than
+              right_names.
+KEYWORDS:
+  no_zoffset: If set, then the color scale is Not moved off the
+              screen. (See tplot_multiaxis_kludge.pro for details)
+  filename:  An output filename, the default is 'tplot_multiaxis'
+  printer: A printer name (example 'chp360'), If not set, then output
+           is displayed via &quot;xv&quot;, if it is a valid command.
+  times: if set, will apply timebars at certain times. Note that
+         tplot_apply_timebar and tplot_apply_databar are also called
+         by default, so if these timbars are aplied for all panels in
+         addition to any variable-specific timebars.
+  ct: Color table; the default is to use whatever is already
+      loaded. Note that the color table is not reset post-plot
+  landscape, xsize, ysize: passed through to popen
+  _extra:  Keywords to tplot can also be used here.
+HISTORY: Hacked from 'tprint.pro', 2022-08-22, jmm,
+         jimm@ssl.berkeley.edu
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2022-08-22 14:21:36 -0700 (Mon, 22 Aug 2022) $
+ $LastChangedRevision: 31031 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/tplot/tprint_multiaxis.pro $
+</PRE><P>
+<STRONG>(See <A href="tplot/tprint_multiaxis.pro">general/tools/tplot/tprint_multiaxis.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TSAMPLE">
 <H2>TSAMPLE</H2></A>
-<A HREF="#TPLOT_ASCII">[Previous Routine]</A>
+<A HREF="#TPRINT_MULTIAXIS">[Previous Routine]</A>
 <A HREF="#TSAMPLE2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
