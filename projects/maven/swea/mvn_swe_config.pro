@@ -54,8 +54,8 @@
 ;                     text : brief descriptions of configuration changes
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-05-05 13:02:21 -0700 (Thu, 05 May 2022) $
-; $LastChangedRevision: 30805 $
+; $LastChangedDate: 2022-08-23 12:21:42 -0700 (Tue, 23 Aug 2022) $
+; $LastChangedRevision: 31035 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -190,11 +190,11 @@ pro mvn_swe_config, list=list, timebar=tbar
 
 ; 2019-10-01/00:00                                     ; beginning of EM-4
 
-  t_mcp = [t_mcp, time_double('2022-01-03/00:00:00')]
-  m_mcp = [m_mcp, 'last SWE-SWI cross calibration']
-
   t_swp = [t_swp, time_double('2022-04-22/00:00:00')]
   m_swp = [m_swp, 'sweep table 9 upload (32-Hz, 125 eV)']
+
+  t_mcp = [t_mcp, time_double('2022-07-31/00:00:00')]
+  m_mcp = [m_mcp, 'last SWE-SWI cross calibration']
 
 ; 2022-10-01/00:00                                     ; beginning of EM-5
 

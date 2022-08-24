@@ -80,8 +80,9 @@ pro elf_load_fgm, trange = trange, probes = probes, datatype = datatype, $
   spdf = spdf, available = available, versions = versions, $
   always_prompt = always_prompt, major_version=major_version, tt2000=tt2000
 
-  if undefined(probes) then probes = ['a', 'b'] else probes=strlowcase(probes)
-  if probes EQ ['*'] then probes = ['a', 'b']
+  ; check and/or initialize parameters
+  if undefined(probes) then probes = ['a'] else probes=strlowcase(probes)
+  ;if probes EQ ['*'] then probes = ['a', 'b']
   if n_elements(probes) GT 2 then begin
     dprint, dlevel = 1, 'There are 2 ELFIN probes - a and b. Please select again.'
     return
@@ -101,19 +102,18 @@ pro elf_load_fgm, trange = trange, probes = probes, datatype = datatype, $
   undefine, cdf_filenames
 
   if undefined(level) then level = 'l1'
-  if undefined(datatype) then datatype = ['fgs', 'fgf'] else datatype=strlowcase(datatype)
-  if datatype EQ ['*'] then datatype = ['fgs', 'fgf']
+  if undefined(datatype) then datatype = ['fgs'] else datatype=strlowcase(datatype)
+  if datatype EQ ['*'] then datatype = ['fgs']
   if n_elements(datatype) EQ 1 then datatype=strsplit(datatype, ' ', /extract)
-  idx = where(datatype EQ 'fgf', fcnt)
   idx = where(datatype EQ 'fgs', scnt)
-  if fcnt EQ 0 && scnt EQ 0 then begin
-    dprint, dlevel = 1, 'Invalid data type. Valid types are [fgs, fgf]. Please select again.'
+  if scnt EQ 0 then begin
+    dprint, dlevel = 1, 'Invalid data type. Valid types are fgs. Please select again.'
     return
   endif
 
   if undefined(suffix) then suffix = ''
   if undefined(data_rate) then data_rate = 'srvy' else data_rate=strlowcase(data_rate)
-  if data_rate EQ '*' then data_rate=['srvy','fast']
+  if data_rate EQ '*' then data_rate=['srvy']
   if undefined(no_cal) then no_cal = 0
     
   elf_load_data, trange = trange, probes = probes, level = level, instrument = 'fgm', $
@@ -128,17 +128,70 @@ pro elf_load_fgm, trange = trange, probes = probes, datatype = datatype, $
   if undefined(tplotnames) then return
 
   ; Perform pseudo calibration for level 1 fgm
-  if no_cal NE 1 and tplotnames[0] ne '' then elf_cal_fgm, tplotnames, level=level, error=error
+  tname_fgs='el'+probes+'_fgs'
+  idx = where(tplotnames eq tname_fgs, ncnt)
+  if ncnt GT 0 and no_cal NE 1 then elf_cal_fgm, tplotnames[idx], level=level, error=error
 
-  ; Set colors to RGB
+  ;set colors
   if  ~undefined(tplotnames) && tplotnames[0] ne '' then begin
     for i=0,n_elements(tplotnames)-1 do begin
-        get_data, tplotnames[i], data=d, dlimits=dl, limits=l
-        options, /def, tplotnames[i], 'colors', [2,4,6]
+      get_data, tplotnames[i], data=d, dlimits=dl, limits=l
+      options, /def, tplotnames[i], 'colors', ['b','g','r']
     endfor
   endif
-
-  ; no reason to continue if the user only requested available data
-  if keyword_set(available) then return
   
+  nidx=where(tplotnames EQ 'el'+probes+'_fgs_fsp_res_dmxl', ncnt)
+  get_data, 'el'+probes+'_fgs_fsp_res_dmxl', data=fsp_res_dmxl, dlimits=fsp_res_dmxl_dl, limits=fsp_res_dmxl_l
+  if ncnt GT 0 && (size(fsp_res_dmxl, /type)) EQ 8 then begin
+    tdiff = fsp_res_dmxl.x[1:n_elements(fsp_res_dmxl.x)-1] - fsp_res_dmxl.x[0:n_elements(fsp_res_dmxl.x)-2]
+    idx = where(tdiff GT 270., ncnt)
+    append_array, idx, n_elements(fsp_res_dmxl.x)-1 ;add on last element (end time of last sci zone) to pick up last sci zone
+    if ncnt EQ 0 then begin
+      ; if ncnt is zero then there is only one science zone for this time frame
+      sz_starttimes=[fsp_res_dmxl.x[0]]
+      sz_endtimes=fsp_res_dmxl.x[n_elements(fsp_res_dmxl.x)-1]
+      ts=time_struct(sz_starttimes[0])
+      te=time_struct(sz_endtimes[0])
+    endif else begin
+      for sz=0,ncnt do begin ;changed from ncnt-1
+        if sz EQ 0 then begin
+          this_s = fsp_res_dmxl.x[0]
+          sidx = 0
+          this_e = fsp_res_dmxl.x[idx[sz]]
+          eidx = idx[sz]
+        endif else begin
+          this_s = fsp_res_dmxl.x[idx[sz-1]+1]
+          sidx = idx[sz-1]+1
+          this_e = fsp_res_dmxl.x[idx[sz]]
+          eidx = idx[sz]
+        endelse
+        if (this_e-this_s) lt 15. then continue
+        append_array, sz_starttimes, this_s
+        append_array, sz_endtimes, this_e
+      endfor
+    endelse
+  endif
+
+  ; perform coordinate conversions from gei to NDW and OBW
+  if  ~undefined(tplotnames) && tplotnames[0] ne '' then begin
+    trange=timerange()
+    ; Transform data to ndw coordinates
+    elf_fgm_fsp_gei2ndw, trange=trange, probe=probes, sz_starttimes=sz_starttimes, sz_endtimes=sz_endtimes   
+    ; Transform data to obw coordinates
+    elf_fgm_fsp_gei2obw, trange=trange, probe=probes, sz_starttimes=sz_starttimes, sz_endtimes=sz_endtimes
+  endif
+
+  ; check whether user wants support data tplot vars
+  if ~keyword_set(get_support_data) then begin
+    idx=where(strpos(tplotnames,'igrf') GT 0, ncnt)
+    if ncnt GT 0 then begin
+      del_data, '*fsp_igrf*
+    endif
+    idx=where(strpos(tplotnames, 'trend') GT 0, ncnt)
+    if ncnt GT 0 then begin
+      del_data, '*fsp_res_dmxl_trend'
+    endif
+  endif
+ 
+
 end

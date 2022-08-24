@@ -94,8 +94,8 @@
 ;                      to a higher number to see more diagnostic messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-01-03 09:58:07 -0800 (Mon, 03 Jan 2022) $
-; $LastChangedRevision: 30482 $
+; $LastChangedDate: 2022-08-23 12:22:04 -0700 (Tue, 23 Aug 2022) $
+; $LastChangedRevision: 31036 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -296,10 +296,6 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
     return
   endif
 
-; Stitch together 3D packets
-  
-  swe_3d_stitch
-
 ; Filter out duplicate packets
 
   if keyword_set(nodupe) then begin
@@ -354,6 +350,10 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
     endif
 
   endif
+
+; Stitch together A0 and A1 packets to make 3D spectra
+
+  swe_3d_stitch
 
 ; Initialize calibration factors
 ; (uses housekeeping to determine first sweep table)
