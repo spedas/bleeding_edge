@@ -11,6 +11,7 @@
 ; from the appropriate spacecraft (e.g., ela_pef_nflux and 'ela_att_gei', 'ela_pos_gei') have been loaded already!!!!!
 ; It also assumes the user has the ability to run T89 routine (.dlm, .dll have been included in their distribution)!!!
 ; 
+; V: 2022-08-23 fixed code bombing when channels with a single energy e.g., [0:0] instead of [0:2] were requested in raw counts
 ; V: 2021-03-27 added keyword inpacketonly to prevent use of out-of-packet sectors (best for when spins were summed)
 ; V: 2021-03-26 added capability for summed spins esp. for IBO [spreads the sectors over the spins that summation took place]
 ; V: 2021-02-13 added showsplitspins keyword
@@ -438,15 +439,22 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
   nspins=nsectors/nspinsectors
   npitchangles=2*nspins
   elx_pxf_val=make_array(nsectors,numchannels,/double)
-  ;stop
   if (mytype eq 'nflux' or mytype eq 'eflux' ) then $
     for jthchan=0,numchannels-1 do $
     elx_pxf_val[*,jthchan]=(elx_pxf.y[*,MinE_channels[jthchan]:MaxE_channels[jthchan]] # $
     (Emaxs[MinE_channels[jthchan]:MaxE_channels[jthchan]]-Emins[MinE_channels[jthchan]:MaxE_channels[jthchan]])) / $
     total(Emaxs[MinE_channels[jthchan]:MaxE_channels[jthchan]]-Emins[MinE_channels[jthchan]:MaxE_channels[jthchan]]) ; MULTIPLIED BY ENERGY WIDTH AND THEN DIVIDED BY BROAD CHANNEL ENERGY
-  if (mytype eq 'raw' or mytype eq 'cps' ) then $
-    for jthchan=0,numchannels-1 do $
-    elx_pxf_val[*,jthchan]=total(elx_pxf.y[*,MinE_channels[jthchan]:MaxE_channels[jthchan]],2) ; JUST SUMMED OVER ENERGY
+  if (mytype eq 'raw' or mytype eq 'cps' ) then begin
+    for jthchan=0,numchannels-1 do begin
+      arrsize=size(elx_pxf.y[*,MinE_channels[jthchan]:MaxE_channels[jthchan]])
+      if arrsize[0] eq 2 then begin ; a 2D array
+         elx_pxf_val[*,jthchan]=total(elx_pxf.y[*,MinE_channels[jthchan]:MaxE_channels[jthchan]],2) ; JUST SUMMED OVER ENERGY
+      endif else begin ; a 1D array
+        if arrsize[0] eq 1 then elx_pxf_val[*,jthchan]=elx_pxf.y[*,MinE_channels[jthchan]:MaxE_channels[jthchan]] ; JUST SUMMED OVER ENERGY
+      endelse
+    endfor
+  endif
+   
   elx_pxf_val_full = elx_pxf.y ; this array contains all angles and energies (in that order, same as val), to be used to compute energy spectra
   ;
   get_data,'elx_pxf_pa',data=elx_pxf_pa

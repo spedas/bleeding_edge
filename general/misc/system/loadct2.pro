@@ -31,8 +31,8 @@
 ;   "get_colors","colors_com","bytescale"
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2022-08-15 08:19:53 -0700 (Mon, 15 Aug 2022) $
-; $LastChangedRevision: 31012 $
+; $LastChangedDate: 2022-08-24 07:39:50 -0700 (Wed, 24 Aug 2022) $
+; $LastChangedRevision: 31045 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/loadct2.pro $
 ;
 ;Created by Davin Larson;  August 1996
@@ -135,7 +135,11 @@ pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,pr
   endif
  
   ; Line and background colors provided by user
-  if keyword_set(line_clrs) then begin
+  if keyword_set(line_clrs) || ~undefined(line_colors_common) then begin
+    ; we must cache line_clrs in the common block so that 
+    ; subsequent calls to tplot and loadct2 don't reset the 
+    ; colors provided by the user (egrimes, Aug 2022)
+    if ~undefined(line_colors_common) && ~keyword_set(line_clrs) then line_clrs = line_colors_common
     if n_elements(line_clrs) ne 24 then begin
       ; If the user did not provide 8 colors, then use a color scheme appropriate for colorblind vision
       n=fix(line_clrs[0])
@@ -164,7 +168,9 @@ pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,pr
     r[ncount-1] = line_clrs[21]*1b
     g[ncount-1] = line_clrs[22]*1b
     b[ncount-1] = line_clrs[23]*1b
-  endif
+    
+    line_colors_common = line_clrs
+  endif else if ~undefined(line_colors_common) then line_clrs = line_colors_common
 
 
   tvlct,r,g,b

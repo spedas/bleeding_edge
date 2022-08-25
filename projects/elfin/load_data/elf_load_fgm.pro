@@ -174,11 +174,13 @@ pro elf_load_fgm, trange = trange, probes = probes, datatype = datatype, $
 
   ; perform coordinate conversions from gei to NDW and OBW
   if  ~undefined(tplotnames) && tplotnames[0] ne '' then begin
-    trange=timerange()
-    ; Transform data to ndw coordinates
-    elf_fgm_fsp_gei2ndw, trange=trange, probe=probes, sz_starttimes=sz_starttimes, sz_endtimes=sz_endtimes   
-    ; Transform data to obw coordinates
-    elf_fgm_fsp_gei2obw, trange=trange, probe=probes, sz_starttimes=sz_starttimes, sz_endtimes=sz_endtimes
+    if size(fsp_res_dmxl, /type) EQ 8 then begin
+      trange=timerange()
+      ; Transform data to ndw coordinates
+      elf_fgm_fsp_gei2ndw, trange=trange, probe=probes, sz_starttimes=sz_starttimes, sz_endtimes=sz_endtimes   
+      ; Transform data to obw coordinates
+      elf_fgm_fsp_gei2obw, trange=trange, probe=probes, sz_starttimes=sz_starttimes, sz_endtimes=sz_endtimes
+    endif
   endif
 
   ; check whether user wants support data tplot vars
