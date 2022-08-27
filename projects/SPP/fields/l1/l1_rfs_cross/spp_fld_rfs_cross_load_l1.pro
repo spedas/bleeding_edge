@@ -1,3 +1,15 @@
+;+
+;
+; NAME:
+;   spp_fld_rfs_cross_load_l1
+;
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2022-08-26 13:32:56 -0700 (Fri, 26 Aug 2022) $
+; $LastChangedRevision: 31047 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_rfs_cross/spp_fld_rfs_cross_load_l1.pro $
+;
+;-
+
 pro spp_fld_rfs_cross_load_l1_metadata_options, prefix, receiver_str, color = color
 
   options, prefix + 'compression', 'yrange', [0, 1]
@@ -123,7 +135,10 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color, varformat =
 
   get_data, prefix + 'xspec_re', data = rfs_dat_xspec_re
 
-  converted_data_xspec_re = spp_fld_rfs_float(rfs_dat_xspec_re.y, /cross)
+  ; See spp_fld_rfs_float for notes on 'zero_fix'
+
+  converted_data_xspec_re = spp_fld_rfs_float(rfs_dat_xspec_re.y, $
+    /cross, /zero_fix)
 
   converted_data_xspec_re *= V2_factor
 
@@ -139,7 +154,10 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color, varformat =
 
   get_data, prefix + 'xspec_im', data = rfs_dat_xspec_im
 
-  converted_data_xspec_im = spp_fld_rfs_float(rfs_dat_xspec_im.y, /cross)
+  ; See spp_fld_rfs_float for notes on 'zero_fix'
+
+  converted_data_xspec_im = spp_fld_rfs_float(rfs_dat_xspec_im.y, $
+    /cross, /zero_fix)
 
   ; See "Notes on RFS Polarization" for source of the -1
 

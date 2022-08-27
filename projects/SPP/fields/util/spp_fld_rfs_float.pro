@@ -1,3 +1,4 @@
+;+
 ;
 ; NAME:
 ;
@@ -28,7 +29,7 @@
 ;
 ;   Output is an array of the same dimensions as the input,
 ;   containing the double precision uncompressed RFS quantities.
-;   
+;
 ;   Typical compression errors are less than 0.1%.
 ;
 ; KEYWORDS:
@@ -49,6 +50,9 @@
 ;     keyword will make the program run much more slowly.
 ;
 ;     This keyword also only currently works with scalar or vector inputs.
+;     
+;   ZERO_FIX: Correct an error in which can assign a value of zero to 
+;     telemetered compressed data. See details in comments below.
 ;
 ; EXAMPLES:
 ;
@@ -86,17 +90,24 @@
 ;   Initial version Spring 2016 by MPP
 ;   Commented and cleaned up August 2016 by MPP
 ;
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2022-08-26 13:32:56 -0700 (Fri, 26 Aug 2022) $
+; $LastChangedRevision: 31047 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/spp_fld_rfs_float.pro $
+;
+;-
 
 function spp_fld_rfs_float, rfs_input, $
   cross = cross, $
   verbose = verbose, $
-  bigints = bigints
+  bigints = bigints, $
+  zero_fix = zero_fix
 
   ; Convert all input types to IDL long integers
 
   n_in = size(rfs_input,/dim)
   if n_in[0] EQ 0 then n_in = n_elements(rfs_input) ; for scalar
-  
+
   rfs_in_long = size(rfs_input,/n_elem) ? 0ll : lonarr(n_in)
 
   if data_type(rfs_input) EQ 7 then begin
@@ -126,6 +137,47 @@ function spp_fld_rfs_float, rfs_input, $
     rfs_in_long = long(rfs_input)
 
   endelse
+
+  ; Correct erroneous zeroes in telemetered data (added 2022 August)
+  ;
+  ; Due to an error in the onboard floating point compression algorithm,
+  ; telemetered values which should have a zero of 1023 (for the auto spectra)
+  ; or 511/33279 (for the cross spectra) are assigned a value of 0.
+  ; 
+  ; This is simple to fix for the auto spectra-due to the fact that some 
+  ; measurable noise is always present in the measurements, a value of zero is
+  ; always invalid, and all telemetered data with a value of 0 should really
+  ; be 1023. Therefore, these data points can be corrected.
+  ;
+  ; For the cross spectra, the correction is not as simple. Valid data values
+  ; in the real and imaginary cross spectra can be positive, negative, or zero.
+  ; So the zero values in the cross data are a mix of 'real' zeroes and values
+  ; equal to 511 or 33279 which have been incorrectly assigned a value of zero.
+  ; There isn't a way to distinguish these cases, so we must assign a value
+  ; of -1. This will be recognized as invalid input and generate NaN values 
+  ; in the RFS Level 2 files.
+  ;
+  ; For the auto spectra, zeroes generally occur only when RFS is in low gain.
+  ; For the cross spectra, zeroes can occur in both high and low gain, but
+  ; are limited to less than 0.05% of data on a typical day.
+  
+  if keyword_set(zero_fix) then begin
+
+  if not keyword_set(cross) then begin
+
+      zero_ind = where(rfs_in_long EQ 0, zero_count)
+      
+      if zero_count GT 0 then rfs_in_long[zero_ind] = 1023l
+
+    endif else begin
+
+      zero_ind = where((rfs_in_long MOD 2ll^15) EQ 0, zero_count)
+
+      if zero_count GT 0 then rfs_in_long[zero_ind] = -1l
+      
+    endelse
+
+  endif
 
   ; The calculations for the auto and cross are nearly identical,
   ; the only differences are:

@@ -74,6 +74,9 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   elf_load_epd, probes=probe,  datatype='pef', level='l1', type='nflux', no_download=no_downlaod
   ;trange=['2022-06-03/03:00','2022-06-03/04:00'],
   get_data, 'el'+probe+'_pef_nflux', data=pef_nflux
+  elf_load_epd, probes=probe,  datatype='pif', level='l1', type='nflux', no_download=no_downlaod
+  ;trange=['2022-06-03/03:00','2022-06-03/04:00'],
+  get_data, 'el'+probe+'_pif_nflux', data=pif_nflux
 
   if size(pef_nflux, /type) NE 8 then begin
     dprint, dlevel=0, 'No data was downloaded for el' + probe + '_pef_nflux.'
@@ -250,18 +253,29 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   options, 'sunlight_bar', yrange=[-0.1,0.1]
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;
-  ; EOD status bar
+  ; EPD status bars
   ;;;;;;;;;;;;;;;;;;;;;;;;;
-  del_data, 'epd_fast_bar'
+  ;get eletron data first
+  del_data, 'epde_fast_bar'
   elf_load_epd_fast_segments, tplotname='el'+probe+'_pef_nflux', no_download=no_download
-  get_data, 'epd_fast_bar', data=epdef_fast_bar_x
-
-  options, 'epd_fast_bar', panel_size=0.1
-  options, 'epd_fast_bar',ticklen=0
-  options, 'epd_fast_bar', 'ystyle',4
-  options, 'epd_fast_bar', 'xstyle',4
-  options, 'epd_fast_bar', 'color',254
-  options, 'epd_fast_bar', 'ztitle',''
+  get_data, 'epde_fast_bar', data=epdef_fast_bar_x
+  options, 'epde_fast_bar', panel_size=0.1
+  options, 'epde_fast_bar',ticklen=0
+  options, 'epde_fast_bar', 'ystyle',4
+  options, 'epde_fast_bar', 'xstyle',4
+  options, 'epde_fast_bar', 'color',254
+  options, 'epde_fast_bar', 'ztitle',''
+ 
+  ;get ion data next
+  del_data, 'epdi_fast_bar'
+  elf_load_epd_fast_segments, tplotname='el'+probe+'_pif_nflux', no_download=no_download
+  get_data, 'epdi_fast_bar', data=epdif_fast_bar_x
+  options, 'epdi_fast_bar', panel_size=0.1
+  options, 'epdi_fast_bar',ticklen=0
+  options, 'epdi_fast_bar', 'ystyle',4
+  options, 'epdi_fast_bar', 'xstyle',4
+  options, 'epdi_fast_bar', 'color',140
+  options, 'epdi_fast_bar', 'ztitle',''
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;
   ; FGM status bar
@@ -498,7 +512,8 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       if spd_data_exists('el'+probe+'_fgs_fsp_res_obw',sz_tr[0],sz_tr[1]) then begin     
         tplot,['proxy_ae', $
           'fgm_survey_bar', $
-          'epd_fast_bar', $
+          'epdi_fast_bar', $
+          'epde_fast_bar', $
           'sunlight_bar', $
           'el'+probe+'_pef_en_spec2plot_omni', $
           'el'+probe+'_pef_en_spec2plot_anti', $
@@ -511,7 +526,9 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       endif else begin
         tplot,['proxy_ae', $
           'fgm_survey_bar', $
-          'epd_fast_bar', $
+;          'epd_fast_bar', $
+          'epdi_fast_bar', $
+          'epde_fast_bar', $
           'sunlight_bar', $
           'el'+probe+'_pef_en_reg_spec2plot_omni', $
           'el'+probe+'_pef_en_reg_spec2plot_anti', $
@@ -812,7 +829,9 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
 ;      if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',this_tr[0],this_tr[1]) then begin
         tplot,['proxy_ae', $
           'fgm_survey_bar', $
-          'epd_fast_bar', $
+          'epdi_fast_bar', $
+          'epde_fast_bar', $
+;          'epd_fast_bar', $
           'sunlight_bar', $
           'el'+probe+'_pef_en_spec2plot_omni', $
           'el'+probe+'_pef_en_spec2plot_anti', $
@@ -844,7 +863,9 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           'elf_kp', $
           'dst',$
           'fgm_survey_bar', $
-          'epd_fast_bar', $
+;          'epd_fast_bar', $
+          'epdi_fast_bar', $
+          'epde_fast_bar', $
           'sunlight_bar', $
           'el'+probe+'_pef_en_spec2plot_omni', $
           'el'+probe+'_pef_en_spec2plot_anti', $

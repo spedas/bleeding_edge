@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Aug 24 18:16:31 2022.<P>
+<STRONG>Last modified: </STRONG>Fri Aug 26 18:16:29 2022.<P>
  
 <HR>
  
@@ -21,6 +21,7 @@ This page was created by the IDL library routine
 <H1>projects/SPP/fields/util</H1>
 <LI><A HREF="#READ_XML8">READ_XML8</A>
 <br>READ an XML document file into IDL (Interactive Data Language, ITT).
+<LI><A HREF="#[1]">[1]</A>
 <LI><A HREF="#SPP_FLD_STATUSPLOT">SPP_FLD_STATUSPLOT</A>
 <br>Procedure used to display status bars on a TPLOT.
 <LI><A HREF="#STR_CLEAN">STR_CLEAN</A>
@@ -191,6 +192,7 @@ This page was created by the IDL library routine
 <A NAME="XML2IDL8">
 <H2>XML2IDL8</H2></A>
 <A HREF="#STR_CLEAN">[Previous Routine]</A>
+<A HREF="#[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -253,5 +255,110 @@ This page was created by the IDL library routine
 	Removed empty _text except for true empty elements ES [Dec 2013]
 </PRE><P>
 <STRONG>(See <A href="util/xml2idl8.pro">projects/SPP/fields/util/xml2idl8.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="[1]">
+<H2>[1]</H2></A>
+<A HREF="#XML2IDL8">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ NAME:
+
+   SPP_FLD_RFS_FLOAT
+
+ DESCRIPTION:
+
+   The 64 bit values of onboard RFS spectra are compressed to
+   16 bit floating point values for telemetry.  The specifications
+   of the bits for exponent, mantissa, and sign (cross spectra only)
+   as well as example calculations are in the documents
+
+   SPF_FSW_908_RFS_Calcs.xlsx
+   SPF_FSW_912_RFS_HFR_Verification.xlsx
+
+   This program is an IDL version of the calculation which decompresses
+   those values.
+
+   Input can be integers (long or long longs also OK), a string
+   with an integer value, a four character hex string (e.g. '2D73x'),
+   or a sixteen bit binary string (e.g. '0010110101110011b').
+
+   Input can be an array, but the input array has to all be the
+   same type (e.g., all integers or all hex strings).
+
+   Input must be within the range of 0 to 2^16 - 1.  Out of range
+   inputs will return a value of -1.0D30.
+
+   Output is an array of the same dimensions as the input,
+   containing the double precision uncompressed RFS quantities.
+
+   Typical compression errors are less than 0.1%.
+
+ KEYWORDS:
+
+   CROSS: Use the signed cross spectra calculation instead of the
+     unsigned auto spectra calculation.
+
+   VERBOSE: Show detailed output of the input in various formats,
+     the sign, exponent, and mantissa.
+
+   BIGINTS: If this keyword is set to a variable, then a list of
+     IDL BigInteger values is returned.  The calculated values for the
+     RFS floating point calculation can overflow a 64 bit integer, so if
+     the exact (non-double-precision) values are necessary, they can
+     be returned with this keyword.
+
+     BigIntegers don't work with array-based operations, so use of this
+     keyword will make the program run much more slowly.
+
+     This keyword also only currently works with scalar or vector inputs.
+     
+   ZERO_FIX: Correct an error in which can assign a value of zero to 
+     telemetered compressed data. See details in comments below.
+
+ EXAMPLES:
+
+   A single value:
+
+   IDL&gt; print, spp_fld_rfs_float(11635, /verbose)
+   IDL&gt; print, spp_fld_rfs_float('0x2D73')
+
+   Both should return an exponent of 11, a mantissa of 371, and
+   a return of 1428480.
+
+   Calculate all valid inputs for auto and cross product compressed values:
+
+   IDL&gt; rfs_comp = lindgen(2l^16)
+   IDL&gt; rfs_auto_decomp = spp_fld_rfs_float(rfs_comp, bigints = rfs_auto_big)
+   IDL&gt; rfs_cros_decomp = spp_fld_rfs_float(rfs_comp, bigints = rfs_cros_big, /cross)
+
+   IDL&gt; rfs_auto_decomp = spp_fld_rfs_float(rfs_comp)
+   IDL&gt; rfs_cros_decomp = spp_fld_rfs_float(rfs_comp, /cross)
+
+   The calculations should produce the same result, but the ones without
+   the bigints will be much faster.
+
+   Plot results:
+
+   IDL&gt; plot, rfs_comp, rfs_auto_decomp, /ylog, yrange = [1.,1.e25], psym = 3
+   IDL&gt; oplot, rfs_comp, rfs_cros_decomp, psym = 3, col = 2
+   IDL&gt; oplot, rfs_comp, -rfs_cros_decomp, psym = 3, col = 6
+
+   The plots should show the floating point variables which correspond
+   to all valid 16 bit inputs.
+
+ HISTORY:
+
+   Initial version Spring 2016 by MPP
+   Commented and cleaned up August 2016 by MPP
+
+ $LastChangedBy: pulupalap $
+ $LastChangedDate: 2022-08-26 13:32:56 -0700 (Fri, 26 Aug 2022) $
+ $LastChangedRevision: 31047 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/spp_fld_rfs_float.pro $
+
+</PRE><P>
+<STRONG>(See <A href="util/spp_fld_rfs_float.pro">projects/SPP/fields/util/spp_fld_rfs_float.pro</A>)</STRONG><P>
 <HR>
  

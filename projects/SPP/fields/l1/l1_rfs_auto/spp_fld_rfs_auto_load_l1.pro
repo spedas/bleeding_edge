@@ -1,3 +1,15 @@
+;+
+;
+; NAME:
+;   spp_fld_rfs_auto_load_l1
+;
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2022-08-26 13:32:56 -0700 (Fri, 26 Aug 2022) $
+; $LastChangedRevision: 31047 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_rfs_auto/spp_fld_rfs_auto_load_l1.pro $
+;
+;-
+
 pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color, varformat = varformat
 
   if n_elements(file) LT 1 or file[0] EQ '' then return
@@ -165,7 +177,9 @@ pro spp_fld_rfs_auto_load_l1, file, prefix = prefix, color = color, varformat = 
 
     if size(raw_spec_data, /type) EQ 8 then begin
 
-      converted_spec_data = spp_fld_rfs_float(raw_spec_data.y)
+      ; See spp_fld_rfs_float for notes on 'zero_fix'
+
+      converted_spec_data = spp_fld_rfs_float(raw_spec_data.y, /zero_fix)
 
       ; Below section is experimental code for correcting RFS
       ; data for low gain/high gain mismatch, by subtracting offset

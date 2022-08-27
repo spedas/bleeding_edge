@@ -1,3 +1,15 @@
+;+
+;
+; NAME:
+;   spp_fld_rfs_hires_load_l1
+;
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2022-08-26 13:32:56 -0700 (Fri, 26 Aug 2022) $
+; $LastChangedRevision: 31047 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_rfs_hires/spp_fld_rfs_hires_load_l1.pro $
+;
+;-
+
 pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color, varformat = varformat
 
   ; TODO improve this check for valid CDF file and add to other routines
@@ -150,59 +162,10 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color, varformat =
   options, prefix + 'spec0_ch0', 'ytitle', receiver_str + ' HiRes!CSpec0 Ch0 Raw'
   options, prefix + 'spec0_ch1', 'ytitle', receiver_str + ' HiRes!CSpec0 Ch1 Raw'
 
-
   get_data, prefix + 'nsum', data = rfs_nsum
   get_data, prefix + 'gain', data = rfs_gain_dat
-  ;
+
   lo_gain = where(rfs_gain_dat.y EQ 0, n_lo_gain)
-  ;
-  ;  get_data, prefix + 'spec0_ch0', data = rfs_dat_spec0_ch0
-  ;
-  ;  ; TODO: Replace x3 (now it's in there to compare with LFR which is summed
-  ;  ; across 3 bins / smoothed
-  ;
-  ;  converted_data_spec0_ch0 = spp_fld_rfs_float(rfs_dat_spec0_ch0.y) * 3
-  ;
-  ;  ; TODO replace hard coded gain value w/calibrated
-  ;
-  ;  if n_lo_gain GT 0 then converted_data_spec0_ch0[lo_gain, *] *= 2500.d
-  ;
-  ;  store_data, prefix + 'spec0_ch0_converted', $
-  ;    data = {x:rfs_dat_spec0_ch0.x, y:converted_data_spec0_ch0}
-  ;
-  ;  get_data, prefix + 'spec0_ch1', data = rfs_dat_spec0_ch1
-  ;
-  ;  ; TODO: Replace x3 (now it's in there to compare with LFR which is summed
-  ;  ; across 3 bins / smoothed
-  ;
-  ;  converted_data_spec0_ch1 = spp_fld_rfs_float(rfs_dat_spec0_ch1.y) * 3
-  ;
-  ;  if n_lo_gain GT 0 then converted_data_spec0_ch1[lo_gain, *] *= 2500.d
-  ;
-  ;  store_data, prefix + 'spec0_ch1_converted', $
-  ;    data = {x:rfs_dat_spec0_ch0.x, y:converted_data_spec0_ch0}
-  ;
-  ;  options, prefix + 'spec0_ch?_converted', 'spec', 1
-  ;  options, prefix + 'spec0_ch?_converted', 'no_interp', 1
-  ;  options, prefix + 'spec0_ch?_converted', 'ylog', 0
-  ;  options, prefix + 'spec0_ch?_converted', 'zlog', 0
-  ;  options, prefix + 'spec0_ch?_converted', 'yrange', [0,32]
-  ;  options, prefix + 'spec0_ch?_converted', 'ystyle', 1
-  ;  options, prefix + 'spec0_ch?_converted', 'datagap', 60
-  ;  options, prefix + 'spec0_ch?_converted', 'panel_size', 2.
-  ;
-  ;  options, prefix + 'spec0_ch0_converted', 'ytitle', receiver_str + ' HiRes!CSpec0 Ch0'
-  ;  options, prefix + 'spec0_ch1_converted', 'ytitle', receiver_str + ' HiRes!CSpec0 Ch1'
-  ;
-  ;  get_data, prefix + 'ch0', dat = ch0_src_dat
-  ;  if n_elements(uniq(ch0_src_dat.y) EQ 1) then $
-  ;    options, prefix + 'spec0_ch0_converted', 'ysubtitle', $
-  ;    'SRC:' + strcompress(string(ch0_src_dat.y[0]))
-  ;
-  ;  get_data, prefix + 'ch1', dat = ch1_src_dat
-  ;  if n_elements(uniq(ch1_src_dat.y) EQ 1) then $
-  ;    options, prefix + 'spec0_ch1_converted', 'ysubtitle', $
-  ;    'SRC:' + strcompress(string(ch1_src_dat.y[0]))
 
   raw_spectra = ['peaks_ch0', 'peaks_ch1', $
     'averages_ch0', 'averages_ch1']
@@ -280,7 +243,9 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color, varformat =
 
     if size(raw_spec_data, /type) EQ 8 then begin
 
-      converted_spec_data = spp_fld_rfs_float(raw_spec_data.y)
+      ; See spp_fld_rfs_float for notes on 'zero_fix'
+
+      converted_spec_data = spp_fld_rfs_float(raw_spec_data.y, /zero_fix)
 
       ; Using definition of power spectral density
       ;  S = 2 * Nfft / fs |x|^2 / Wss where
