@@ -11,6 +11,7 @@
 ; from the appropriate spacecraft (e.g., ela_pef_nflux and 'ela_att_gei', 'ela_pos_gei') have been loaded already!!!!!
 ; It also assumes the user has the ability to run T89 routine (.dlm, .dll have been included in their distribution)!!!
 ; 
+; V: 2022-08-26 IBO can be plotted interspersed with OBOs (multi-valued my_nspinsinsum) over long timespans (many sci. zones)
 ; V: 2022-08-23 fixed code bombing when channels with a single energy e.g., [0:0] instead of [0:2] were requested in raw counts
 ; V: 2021-03-27 added keyword inpacketonly to prevent use of out-of-packet sectors (best for when spins were summed)
 ; V: 2021-03-26 added capability for summed spins esp. for IBO [spreads the sectors over the spins that summation took place]
@@ -281,10 +282,13 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
   nsectors=n_elements(elx_pxf.x)
   xra=make_array(nsectors-1,/index,/long)
   dts=elx_pxf.x[xra+1]-elx_pxf.x[xra]
-  ddts=[0,dts-median(dts)]
+  store_data,'dts',data={x:elx_pxf.x,y:[0,dts]}
+  tsmooth2,'dts',11,newname='dts_sm'
+  get_data,'dts_sm',data=dts_sm
+  ddts=[0,dts-dts_sm.y[1:*]]
   store_data,'ddts',data={x:elx_pxf.x,y:ddts}
   ;
-  igapends=where(ddts gt 3*median(dts),jgaps) ; gap is more than 4x the median sector duration or 4/16 of a spin
+  igapends=where(ddts gt 3*median(dts),jgaps) ; gap is more than 4x the median sector duration or 4/16 of a spin, nominally
   igapbegins=igapends-1
   ;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -523,7 +527,7 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
   endif
   ;stop
   ;
-  Tspineff=average(my_nspinsinsum*elx_pxf_spinper.y)
+  Tspineff=my_nspinsinsum*elx_pxf_spinper.y
   ipasorted=sort(elx_pxf_pa.y[0:nspinsectors-1])
   istartAscnd=max(elx_pxf_sectnum.y[ipasorted[0:1]])
   if abs(ipasorted[0]-ipasorted[1]) ge 2 then istartAscnd=min(elx_pxf_sectnum.y[ipasorted[0:1]])
@@ -532,7 +536,9 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
   istartAscnds=where(abs(elx_pxf_sectnum.y-elx_pxf_sectnum.y[istartAscnd]) lt 0.1)
   istartDscnds=where(abs(elx_pxf_sectnum.y-elx_pxf_sectnum.y[istartDscnd]) lt 0.1)
   tstartAscnds=elx_pxf_sectnum.x[istartAscnds]
+  TspineffAscnds=Tspineff[istartAscnds]
   tstartDscnds=elx_pxf_sectnum.x[istartDscnds]
+  TspineffDscnds=Tspineff[istartDscnds]
   ;now get a map of sectors to make them fall within packet (this will make time run backwards but that's OK); Use it in assigning values and center times later
   imapinpckt=make_array(nsectors,/long,/index)
   usepcktidx=where(my_nspinsinsum GT 1,usepcktcnt)
@@ -553,11 +559,11 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
   endif
   ;
   if tstartAscnds[0] lt tstartDscnds[0] then begin ; add a half period on the left as a precaution since there is a chance that hanging sectors exist (not been accounted for yet)
-    tstartDscnds=[tstartDscnds[0]-Tspineff,tstartDscnds]
-    if keyword_set(regularize) then tstartregDscnds=[tstartregDscnds[0]-Tspineff,tstartregDscnds]
+    tstartDscnds=[tstartDscnds[0]-TspineffDscnds[0],tstartDscnds]
+    if keyword_set(regularize) then tstartregDscnds=[tstartregDscnds[0]-TspineffDscnds[0],tstartregDscnds]
   endif else begin
-    tstartAscnds=[tstartAscnds[0]-Tspineff,tstartAscnds]
-    if keyword_set(regularize) then tstartregAscnds=[tstartregAscnds[0]-Tspineff,tstartregAscnds]
+    tstartAscnds=[tstartAscnds[0]-TspineffAscnds[0],tstartAscnds]
+    if keyword_set(regularize) then tstartregAscnds=[tstartregAscnds[0]-TspineffAscnds[0],tstartregAscnds]
   endelse
   nstartAscnds=n_elements(tstartAscnds)
   nstartDscnds=n_elements(tstartDscnds)
@@ -565,11 +571,11 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
   nstartregDscnds=n_elements(tstartregDscnds)
   ;
   if tstartDscnds[nstartDscnds-1] lt tstartAscnds[nstartAscnds-1] then begin ; add a half period on the right as a precaution since chances are there are hanging sectors (not been accounted for yet)
-    tstartDscnds=[tstartDscnds,tstartDscnds[nstartDscnds-1]+Tspineff]
-    if keyword_set(regularize) then tstartregDscnds=[tstartregDscnds,tstartregDscnds[nstartregDscnds-1]+Tspineff]
+    tstartDscnds=[tstartDscnds,tstartDscnds[nstartDscnds-1]+TspineffDscnds[-1]]
+    if keyword_set(regularize) then tstartregDscnds=[tstartregDscnds,tstartregDscnds[nstartregDscnds-1]+TspineffDscnds[-1]]
   endif else begin
-    tstartAscnds=[tstartAscnds,tstartAscnds[nstartAscnds-1]+Tspineff]
-    if keyword_set(regularize) then tstartregAscnds=[tstartregAscnds,tstartregAscnds[nstartregAscnds-1]+Tspineff]
+    tstartAscnds=[tstartAscnds,tstartAscnds[nstartAscnds-1]+TspineffAscnds[-1]]
+    if keyword_set(regularize) then tstartregAscnds=[tstartregAscnds,tstartregAscnds[nstartregAscnds-1]+TspineffAscnds[-1]]
   endelse
   nstartAscnds=n_elements(tstartAscnds)
   nstartDscnds=n_elements(tstartDscnds)
@@ -1381,7 +1387,9 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
   ; ;
   ; ;degap interior gaps with two NaNs per gap
   if ~keyword_set(nonansingaps) then begin
-    if keyword_set(fullspin) then mydt=Tspineff else mydt=Tspineff/2.
+    if (average(float(my_nspinsinsum)) gt 1) then mydt=float(max(my_nspinsinsum))*median(elx_pxf_spinper.y) $
+      else mydt=median(elx_pxf_spinper.y)
+    if ~keyword_set(fullspin) then mydt=mydt/2.
     tdegap,vars2fixgaps,dt=mydt,margin=0.5*mydt/2.,/twonanpergap,/over
     tdeflag,mystring+'losscone','linear',/over ; no degap for this one!
     tdeflag,mystring+'antilosscone','linear',/over ; no degap for this one!
