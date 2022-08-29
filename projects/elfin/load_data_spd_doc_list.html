@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Aug 27 18:28:00 2022.<P>
+<STRONG>Last modified: </STRONG>Sun Aug 28 18:16:40 2022.<P>
  
 <HR>
  
@@ -107,8 +107,8 @@ ELF_WRITE_DATA_AVAILABILITY_TABLE</A>
                         
  NOTES:
        This routine expects elfin elx_fgs_fsp_res_gei and elx_pos_gei data to be loaded in tplot 
-       variables. If state data is not loaded the routine will load pos data. 
-       Position data is interpolated so sz_start/end times are needed so data is not interploated 
+       variables along with state data. 
+       Position data is interpolated To sz_start/end times are needed so data is not interploated 
        over gaps. 
        Sz_start/end times are passed in from elf_load_fgm rather than determined in this routine.
        This is because elf_fgm_fsp_gei2obw requires sz times also. This way the zone times are not
@@ -147,7 +147,7 @@ ELF_WRITE_DATA_AVAILABILITY_TABLE</A>
 
  NOTES:
        This routine expects elfin elx_fgs_fsp_res_gei and elx_pos_gei data to be loaded in tplot
-       variables. If state data is not loaded the routine will load pos data.
+       variables along with state data. 
        Position data is interpolated so sz_start/end times are needed so data is not interploated
        over gaps.
        Sz_start/end times are passed in from elf_load_fgm rather than determined in this routine.

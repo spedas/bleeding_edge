@@ -71,11 +71,10 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ; remove any existing pef tplot vars
   del_data, '*_pef_nflux'
   del_data, '*_all'
-  elf_load_epd, probes=probe,  datatype='pef', level='l1', type='nflux', no_download=no_downlaod
-  ;trange=['2022-06-03/03:00','2022-06-03/04:00'],
+  elf_load_epd, probes=probe, trange=tr, datatype='pef', level='l1', type='nflux', no_download=no_downlaod
+
   get_data, 'el'+probe+'_pef_nflux', data=pef_nflux
-  elf_load_epd, probes=probe,  datatype='pif', level='l1', type='nflux', no_download=no_downlaod
-  ;trange=['2022-06-03/03:00','2022-06-03/04:00'],
+  elf_load_epd, probes=probe, trange=tr, datatype='pif', level='l1', type='nflux', no_download=no_downlaod
   get_data, 'el'+probe+'_pif_nflux', data=pif_nflux
 
   if size(pef_nflux, /type) NE 8 then begin
@@ -84,14 +83,14 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   endif
 
   del_data, '*_fgs'
-  elf_load_fgm, probes=probe, datatype='fgs', no_download=no_download
+  elf_load_fgm, probes=probe, trange=tr, datatype='fgs', no_download=no_download
   get_data, 'el'+probe+'_fgs', data=elx_fgs
-  if size(elx_fgs, /type) NE 8 then begin
-    elf_load_fgm, probe=probe, trange=['2022-01-15','2022-01-16'], datatype='fgs', no_download=no_download
-    timeduration=(time_double(trange[1])-time_double(trange[0]))
-    timespan,tr[0],timeduration,/seconds
-    tr=timerange()
-  endif
+;  if size(elx_fgs, /type) NE 8 then begin
+;    elf_load_fgm, probe=probe, trange=['2022-01-15','2022-01-16'], datatype='fgs', no_download=no_download
+;    timeduration=(time_double(trange[1])-time_double(trange[0]))
+;    timespan,tr[0],timeduration,/seconds
+;    tr=timerange()
+;  endif
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; GET KP and DST values

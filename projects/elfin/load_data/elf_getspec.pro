@@ -5,8 +5,6 @@
 ; of dBzdt 0 crossing which corresponds to Pitch Angle = 90 deg and Spin Phase angle = 0 deg.).
 ; If the data has already been collected at regular sectors there is no need to perform this.
 ;
-; elb can be done similarly but the code has not been generalized to either a or b yet. But this is straightforward.
-;
 ; The routine assumes that the position, attitude and particle data type it needs
 ; from the appropriate spacecraft (e.g., ela_pef_nflux and 'ela_att_gei', 'ela_pos_gei') have been loaded already!!!!!
 ; It also assumes the user has the ability to run T89 routine (.dlm, .dll have been included in their distribution)!!!
@@ -116,14 +114,7 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
   ; note that dPhAng2add more than +/- 11 does not work. You have to add sectors rather than increase dPhAng2add
   ;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  if ~keyword_set(my_nspinsinsum) then my_nspinsinsum=1
-;  if ~keyword_set(usepacketonly) then if my_nspinsinsum eq 1 then usepacketonly=-1 else usepacketonly=+1 ; in the future to be time-dependent
-  if ~keyword_set(usepacketonly) then begin
-    ianysummed=where(my_nspinsinsum gt 1, janysummed)
-    if janysummed gt 0 then usepacketonly=+1 else usepacketonly=-1
-  endif
 
-;  if total(my_nspinsinsum) GT 1. then usepacketonly=+1 else usepacketonly=-1
   if keyword_set(no_download) then no_download=1 else no_download=0
   if ~keyword_set(probe) then probe='a' else probe=probe
   if ~keyword_set(myspecies) then begin
@@ -141,26 +132,9 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
     mytype='nflux'     ; Here specify default data type to act on
   FOVo2=11.          ; Field of View divided by 2 (deg)
   ;
-  ; THESE "ELA" and "PEF" STRINGS IN THE FEW LINES BELOW CAN BE CAST INTO USER-SPECIFIED SC (A/B) AND PRODUCT (PEF/PIF) IN THE FUTURE
-  ;
-  ; ensure attitude is at same resolution as position
-  ;
   mysc=probe
   mystring='el'+mysc+'_p'+eori+'f_'
-  case mytype of
-    'raw': one_count=1. ; approximate, independent of energy
-    'cps': one_count=5. ; approximate, independent of energy
-    'eflux': one_count=7.e3; by visual inspection of the data roughly const across energies
-    'nflux': one_count=1.e2 ; energy dependent, this corresponds to lowest energies
-  endcase
-  ;
-  pival=double(!PI)
-  ;
-  copy_data,'el'+mysc+'_att_gei','elx_att_gei'
-  copy_data,'el'+mysc+'_pos_gei','elx_pos_gei'
-  tinterpol_mxn,'elx_att_gei','elx_pos_gei'
-  tnormalize,'elx_att_gei_interp',newname='elx_att_gei'
-  ;
+  ; 
   copy_data,mystring+mytype,'elx_pxf'; DEFAULT UNITS ARE NFLUX; CODE ASSUMES TYPE EXISTS!; COPY INTO GENERIC VARIABLE TO AVOID CLASHES
   copy_data,mystring+'sectnum','elx_pxf_sectnum'; COPY INTO GENERIC VARIABLE TO AVOID CLASHES
   copy_data,mystring+'spinper','elx_pxf_spinper'; COPY INTO GENERIC VARIABLE TO AVOID CLASHES. NOTE THIS IS IN SECONDS NOT 80Hz TICKS
@@ -170,6 +144,36 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
   nsectors=n_elements(elx_pxf.x)
   nspinsectors=long(max(elx_pxf_sectnum.y)+1)
   Max_numchannels = n_elements(elx_pxf.v) ; this is 16 (nominally)
+  ;
+  case mytype of
+    'raw': one_count=1. ; approximate, independent of energy
+    'cps': one_count=5. ; approximate, independent of energy
+    'eflux': one_count=7.e3; by visual inspection of the data roughly const across energies
+    'nflux': one_count=1.e2 ; energy dependent, this corresponds to lowest energies
+  endcase
+  ;
+  if keyword_set(my_nspinsinsum) then begin ;  accounts for the case that user-specified value is array equal to # of points. New tplot variable to interpol over, later
+    if (n_elements(my_nspinsinsum) gt 1) then $ ; this assumes number of points equals that of data, else it will bomb
+      store_data,'elx_pxf_nspinsinsum',data={x:elx_pxf.x,y:my_nspinsinsum}
+  endif else begin
+    copy_data,mystring+'nspinsinsum','elx_pxf_nspinsinsum'
+    get_data,'elx_pxf_nspinsinsum',data=elx_pxf_nspinsinsum
+    my_nspinsinsum=elx_pxf_nspinsinsum.y
+  endelse
+  if ~keyword_set(usepacketonly) then begin
+    ianysummed=where(my_nspinsinsum gt 1, janysummed)
+    if janysummed gt 0 then usepacketonly=+1 else usepacketonly=-1 ; if any spins were summed then usepacketonly=+1 (Can be made time-dependent in future)
+  endif
+  ;
+  pival=double(!PI)
+  ;
+  ; ensure attitude is at same resolution as position
+  ;
+  copy_data,'el'+mysc+'_att_gei','elx_att_gei'
+  copy_data,'el'+mysc+'_pos_gei','elx_pos_gei'
+  tinterpol_mxn,'elx_att_gei','elx_pos_gei'
+  tnormalize,'elx_att_gei_interp',newname='elx_att_gei'
+  ;
   tcor=(my_nspinsinsum-1.)*(elx_pxf_spinper.y/nspinsectors)*(float(elx_pxf_sectnum.y)-float(nspinsectors)/2.+0.5) ; spread in time
   elx_pxf.x=elx_pxf.x+tcor ; here correct (spread) sectors to full accumulation interval
   elx_pxf_sectnum.x=elx_pxf_sectnum.x+tcor ; (spread) sectors to full accumulation interval
@@ -274,6 +278,11 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
   ;
   tinterpol_mxn,'elx_pxf','elx_pxf_sectnum',/REPEAT_EXTRAPOLATE,/over
   tinterpol_mxn,'elx_pxf_spinper','elx_pxf_sectnum',/REPEAT_EXTRAPOLATE,/overwrite ; linearly interpolated, this you keep
+  if n_elements(my_nspinsinsum) gt 1 then begin
+    tinterpol_mxn,'elx_pxf_nspinsinsum','elx_pxf_sectnum',/NEAREST_NEIGHBOR,/REPEAT_EXTRAPOLATE,/overwrite 
+    get_data,'elx_pxf_nspinsinsum',data=elx_pxf_nspinsinsum
+    my_nspinsinsum=elx_pxf_nspinsinsum.y
+  endif
   ;
   get_data,'elx_pxf',data=elx_pxf,dlim=mypxfdata_dlim,lim=mypxfdata_lim
   get_data,'elx_pxf_spinper',data=elx_pxf_spinper,dlim=myspinperdata_dlim,lim=myspinperdata_lim
@@ -1362,7 +1371,7 @@ pro elf_getspec,regularize=regularize,energies=userenergies,enerbins=userenerbin
   ; You can (by keyowrd delsplitspins=1) request removal of the rogue mid-gap points
   ; 
   ; these are the quantities to operate on:
-  tplot_names,'el?_p?f_en*spec2plot_???? el?_p?f_pa*spec*ch?',names=vars2fixgaps,/silent ; ONLY 2D QUANTITIES!!! NOT LOSSCONE ONES
+  tplot_names,mystring+'en*spec2plot_???? el?_p?f_pa*spec*ch?',names=vars2fixgaps,/silent ; ONLY 2D QUANTITIES!!! NOT LOSSCONE ONES
   if keyword_set(delsplitspins) and jgaps gt 0 then begin ; if there are indeed sector gaps then do this
       foreach element, vars2fixgaps do begin
         copy_data,element,'var2fix'
