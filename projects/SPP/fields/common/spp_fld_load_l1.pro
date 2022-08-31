@@ -1,8 +1,8 @@
 ;+
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2021-04-15 15:19:07 -0700 (Thu, 15 Apr 2021) $
-; $LastChangedRevision: 29883 $
+; $LastChangedDate: 2022-08-30 08:44:35 -0700 (Tue, 30 Aug 2022) $
+; $LastChangedRevision: 31057 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/common/spp_fld_load_l1.pro $
 ;
 ;-
@@ -13,6 +13,7 @@ pro spp_fld_load_l1, filename, $
   varformat = varformat, $
   downsample = downsample, add_prefix = add_prefix, $
   add_suffix = add_suffix, $
+  lusee = lusee, $
   _extra = extra
 
   defsysv, '!SPP_FLD_TMLIB', exists = exists
@@ -55,6 +56,12 @@ pro spp_fld_load_l1, filename, $
   if n_elements(add_suffix) GT 0 then begin
 
     print, 'add_suffix not yet implemented for Level 1s'
+
+  endif
+
+  if n_elements(lusee) GT 0 then begin
+
+    load_procedure = load_procedure.Replace('lusee_', 'spp_fld_')
 
   endif
 

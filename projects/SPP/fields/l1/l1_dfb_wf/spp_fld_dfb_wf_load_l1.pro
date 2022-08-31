@@ -28,13 +28,15 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2021-04-15 15:23:47 -0700 (Thu, 15 Apr 2021) $
-;  $LastChangedRevision: 29884 $
+;  $LastChangedDate: 2022-08-30 08:46:56 -0700 (Tue, 30 Aug 2022) $
+;  $LastChangedRevision: 31058 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_dfb_wf/spp_fld_dfb_wf_load_l1.pro $
 ;
 
 pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varformat = varformat, $
   record = record, number_records = number_records
+
+  if prefix.StartsWith('lusee') then prefix_len = 13 else prefix_len = 15
 
   ; Some special cases for the varformat keyword, used in L1 -> L1b processing.
 
@@ -112,7 +114,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
     options, prefix + 'wav_tap', 'colors', [6]
     options, prefix + 'wav_tap', 'psym_lim', 100
     options, prefix + 'wav_tap', 'ytitle', $
-      'DFB WF ' + strmid(prefix,15,2) + compressed_str + '!CTap'
+      'DFB WF ' + strmid(prefix,prefix_len,2) + compressed_str + '!CTap'
 
     options, prefix + 'wav_tap', 'yrange', [min(d_wav_tap.y) - 1, max(d_wav_tap.y) + 1]
     options, prefix + 'wav_tap', 'ystyle', 1
@@ -127,7 +129,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
     options, prefix + 'wav_sel', 'colors', [6]
     options, prefix + 'wav_sel', 'psym_lim', 100
     options, prefix + 'wav_sel', 'ytitle', $
-      'DFB WF ' + strmid(prefix,15,2) + compressed_str + '!CSelect'
+      'DFB WF ' + strmid(prefix,prefix_len,2) + compressed_str + '!CSelect'
 
     options, prefix + 'wav_sel', 'yrange', [min(d_wav_sel.y) - 1, max(d_wav_sel.y) + 1]
     options, prefix + 'wav_sel', 'ystyle', 1
@@ -142,7 +144,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
     options, prefix + 'compression', 'symsize', 0.5
     options, prefix + 'compression', 'panel_size', 0.5
     options, prefix + 'compression', 'ytitle', $
-      'DFB WF ' + strmid(prefix,15,2) + compressed_str + '!CCompression'
+      'DFB WF ' + strmid(prefix,prefix_len,2) + compressed_str + '!CCompression'
 
   endif
 
@@ -154,7 +156,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
     options, prefix + 'wav_enable', 'symsize', 0.5
     options, prefix + 'wav_enable', 'panel_size', 0.5
     options, prefix + 'wav_enable', 'ytitle', $
-      'DFB WF ' +  strmid(prefix,15,2) + compressed_str + '!CEnable'
+      'DFB WF ' +  strmid(prefix,prefix_len,2) + compressed_str + '!CEnable'
 
   endif
 
@@ -355,7 +357,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
 
       if n_elements(uniq(wav_sel_dat.y)) EQ 1 then $
         options, prefix + 'wav_data*', 'ytitle', $
-        'DFB WF '+ strmid(prefix,15,2) + compressed_str + $
+        'DFB WF '+ strmid(prefix,prefix_len,2) + compressed_str + $
         '!CSRC:' + strcompress(string(wav_sel_dat.y[0]))
 
     endif else begin
@@ -368,7 +370,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
       get_data, prefix + 'wav_sel_string', data = wav_sel_dat
       get_data, prefix + 'wav_tap_string', data = wav_tap_dat
 
-      ytitle = 'DFB WF '+ strmid(prefix,15,2) + compressed_str
+      ytitle = 'DFB WF '+ strmid(prefix,prefix_len,2) + compressed_str
 
       if n_elements(uniq(wav_sel_dat.y)) EQ 1 then $
         ytitle = ytitle + '!C' + strcompress(wav_sel_dat.y[0], /remove_all)
