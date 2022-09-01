@@ -31,8 +31,8 @@
 ;   "get_colors","colors_com","bytescale"
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2022-08-24 07:39:50 -0700 (Wed, 24 Aug 2022) $
-; $LastChangedRevision: 31045 $
+; $LastChangedDate: 2022-08-31 13:03:14 -0700 (Wed, 31 Aug 2022) $
+; $LastChangedRevision: 31062 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/loadct2.pro $
 ;
 ;Created by Davin Larson;  August 1996
@@ -135,15 +135,17 @@ pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,pr
   endif
  
   ; Line and background colors provided by user
-  if keyword_set(line_clrs) || ~undefined(line_colors_common) then begin
+  if ~undefined(line_clrs) || ~undefined(line_colors_common) then begin
     ; we must cache line_clrs in the common block so that 
     ; subsequent calls to tplot and loadct2 don't reset the 
     ; colors provided by the user (egrimes, Aug 2022)
-    if ~undefined(line_colors_common) && ~keyword_set(line_clrs) then line_clrs = line_colors_common
+    if ~undefined(line_colors_common) && undefined(line_clrs) then line_clrs = line_colors_common
     if n_elements(line_clrs) ne 24 then begin
       ; If the user did not provide 8 colors, then use a color scheme appropriate for colorblind vision
       n=fix(line_clrs[0])
       case n of
+        ; Preset 0:  The standard SPEDAS colors (useful for resetting this option without doing a .full_reset_session)
+        0: line_clrs = [[0,0,0],[255,0,255],[0,0,255],[0,255,255],[0,255,0],[255,255,0],[255,0,0],[255,255,255]]
         1: line_clrs = [[0,0,0],[67, 147, 195],[33, 102, 172],[103, 0, 31],[178,24,43],[254,219,199],[244,165,130],[255,255,255]]
         2: line_clrs = [[0,0,0],[253,224,239],[77,146,33],[161,215,106],[233,163,201],[230,245,208],[197,27,125],[255,255,255]]
         3: line_clrs = [[0,0,0],[216,179,101],[140,81,10],[246,232,195],[1,102,94],[199,234,229],[90,180,172],[255,255,255]]   

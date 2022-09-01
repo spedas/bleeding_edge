@@ -57,8 +57,8 @@
 ;       Major update on 2017-07-24 - incl. negative pot
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2019-11-25 19:45:00 -0800 (Mon, 25 Nov 2019) $
-; $LastChangedRevision: 28067 $
+; $LastChangedDate: 2022-08-30 21:12:52 -0700 (Tue, 30 Aug 2022) $
+; $LastChangedRevision: 31060 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_lpw_scpot.pro $
 ;-
 
@@ -515,7 +515,7 @@ for iorb=iorb0,iorb1 do begin
    a = [!values.d_nan,!values.d_nan]
    corr = !values.d_nan
    apol = [!values.d_nan,!values.d_nan,!values.d_nan]
-   pow = {func:'power_law',h:!values.d_nan,p:!values.d_nan,bkg:!values.d_nan}
+   pow = {func:'power_law',h:!values.d_nan,p:!values.d_nan,bkg:!values.d_nan,x0:1.d0}
    Nscat = 0l
 
    ;;; LPW IV Vinfl v Vswe
@@ -545,8 +545,8 @@ for iorb=iorb0,iorb1 do begin
             ww = where(x2 gt 0,nww) ;- power law fit, obsolete
             if nww gt minNdata then begin
                apow = ladfit(x2[ww]^.35,y2[ww]) ;- get initial guess
-               pow = {func:'power_law',h:apow[1],p:.35d,bkg:apow[0]}
-               fit,x2[ww],y2[ww],para=pow,itmax=50,verb=-1
+               pow = {func:'power_law',h:apow[1],p:.35d,bkg:apow[0],x0:1.d0}
+               fit,x2[ww],y2[ww],para=pow,itmax=50,verb=-1,names='h p bkg'
             endif
             if keyword_set(scatdir) then begin
                file_mkdir,scatdir
