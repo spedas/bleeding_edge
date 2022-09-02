@@ -4,8 +4,8 @@
 ;   spp_fld_rfs_hires_load_l1
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2022-08-26 13:32:56 -0700 (Fri, 26 Aug 2022) $
-; $LastChangedRevision: 31047 $
+; $LastChangedDate: 2022-09-01 15:03:26 -0700 (Thu, 01 Sep 2022) $
+; $LastChangedRevision: 31069 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_rfs_hires/spp_fld_rfs_hires_load_l1.pro $
 ;
 ;-
@@ -174,7 +174,7 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color, varformat =
 
   lfr_flag = 1
 
-  get_data, 'spp_fld_rfs_lfr_hires_peak_location', data = hires_loc
+  get_data, prefix + 'peak_location', data = hires_loc
 
   hr_ind = []
   hr_freq = []
@@ -215,24 +215,24 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color, varformat =
   ;
   ;  end
   ;
-  store_data, 'spp_fld_rfs_lfr_hires_freq', $
+  store_data, prefix + 'hires_freq', $
     data = {x:hires_loc.x, y:hr_freq}
 
-  store_data, 'spp_fld_rfs_lfr_hires_freq_max', $
+  store_data, prefix + 'hires_freq_max', $
     data = {x:hires_loc.x, y:hr_freq_max}
 
-  store_data, 'spp_fld_rfs_lfr_hires_freq_min', $
+  store_data, prefix + 'hires_freq_min', $
     data = {x:hires_loc.x, y:hr_freq_min}
 
-  options, 'spp_fld_rfs_lfr_hires_freq*', 'linestyle', 2
-  options, 'spp_fld_rfs_lfr_hires_freq*', 'thick', 1
-  options, 'spp_fld_rfs_lfr_hires_freq*', 'colors', 0
+  options, prefix + 'hires_freq*', 'linestyle', 2
+  options, prefix + 'hires_freq*', 'thick', 1
+  options, prefix + 'hires_freq*', 'colors', 0
 
-  options, 'spp_fld_rfs_lfr_hires_freq', 'ytitle', 'LFR HiRes!CFreq!CSel'
-  options, 'spp_fld_rfs_lfr_hires_freq_min', 'ytitle', 'LFR HiRes!CFreq!CMin'
-  options, 'spp_fld_rfs_lfr_hires_freq_max', 'ytitle', 'LFR HiRes!CFreq!CMax'
+  options, prefix + 'hires_freq', 'ytitle', 'LFR HiRes!CFreq!CSel'
+  options, prefix + 'hires_freq_min', 'ytitle', 'LFR HiRes!CFreq!CMin'
+  options, prefix + 'hires_freq_max', 'ytitle', 'LFR HiRes!CFreq!CMax'
 
-  options, 'spp_fld_rfs_lfr_hires_freq', 'ysubtitle', '[Hz]'
+  options, prefix + 'hires_freq', 'ysubtitle', '[Hz]'
 
 
   for i = 0, n_elements(raw_spectra) - 1 do begin

@@ -4,8 +4,8 @@
 ;   spp_fld_rfs_cross_load_l1
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2022-08-26 13:32:56 -0700 (Fri, 26 Aug 2022) $
-; $LastChangedRevision: 31047 $
+; $LastChangedDate: 2022-09-01 15:03:07 -0700 (Thu, 01 Sep 2022) $
+; $LastChangedRevision: 31068 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_rfs_cross/spp_fld_rfs_cross_load_l1.pro $
 ;
 ;-
@@ -208,22 +208,22 @@ pro spp_fld_rfs_cross_load_l1, file, prefix = prefix, color = color, varformat =
     case rec of
       '': begin
         auto_match = ''
-        prefix2 = 'spp_fld_rfs_cross_';prefix.Replace('hfr_', '')
+        prefix2 = prefix ;+ 'cross_';prefix.Replace('hfr_', '')
       end
       'lfr':begin
-        auto_match = 'spp_fld_rfs_lfr_auto_averages_ch0'
-        prefix2 = 'spp_fld_rfs_lfr_cross_';prefix.Replace('hfr_','lfr_')
+        auto_match = prefix.Replace('_cross', '') + 'lfr_auto_averages_ch0'
+        prefix2 = prefix.Replace('_cross','_lfr_cross')
       end
       'hfr':begin
-        auto_match = 'spp_fld_rfs_hfr_auto_averages_ch0'
-        prefix2 = 'spp_fld_rfs_hfr_cross_';;prefix
+        auto_match = prefix.Replace('_cross', '') + 'hfr_auto_averages_ch0'
+        prefix2 = prefix.Replace('_cross','_hfr_cross')
       end
     endcase
 
     if auto_match NE '' then begin
 
       get_data, auto_match, data = d_auto_match
-      get_data, 'spp_fld_rfs_cross_ch0', data = d_cross_match
+      get_data, prefix + 'ch0', data = d_cross_match
 
       if size(/type, d_auto_match) EQ 8 then begin
 
