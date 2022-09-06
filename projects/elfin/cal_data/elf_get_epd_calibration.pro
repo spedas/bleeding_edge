@@ -44,6 +44,7 @@ function elf_get_epd_calibration, probe=probe, instrument=instrument, trange=tra
     dprint, dlevel = 0, 'Error, endtime is before starttime; trange should be: [starttime, endtime]'
     return, -1
   endif
+
   if ~keyword_set(trange) then trange=timerange()
   if instrument EQ 'epde' then begin
       ; get calibration values from log file
@@ -70,8 +71,9 @@ function elf_get_epd_calibration, probe=probe, instrument=instrument, trange=tra
   endif
 
   ;************* NEED cal file for epdi *******************
+  ; Changed bt VA on 8/2/2022 sets EPDI geometric factor
   if instrument EQ 'epdi' then begin
-      epdi_gf = 0.01 ; 21deg x 21deg (in SA) by 1 cm^2
+      epdi_gf = 0.031256 ; 9deg x 9deg (FWHM Solid Angle) by 1/4" dia. round aperture area
       epdi_overaccumulation_factors = indgen(16)*0.+1.
 ;
 ; VA changed: 7/7/2022
