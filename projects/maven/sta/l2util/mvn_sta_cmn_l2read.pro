@@ -72,8 +72,8 @@
 ;HISTORY:
 ; 2014-05-12, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-11-23 10:08:50 -0800 (Mon, 23 Nov 2020) $
-; $LastChangedRevision: 29370 $
+; $LastChangedDate: 2022-09-20 13:24:28 -0700 (Tue, 20 Sep 2022) $
+; $LastChangedRevision: 31108 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2read.pro $
 ;-
 Function mvn_sta_cmn_l2read, filename, trange = trange, cdf_info = cdfi, $
@@ -186,7 +186,7 @@ Function mvn_sta_cmn_l2read, filename, trange = trange, cdf_info = cdfi, $
         Endif Else If(~ptr_valid(ivcdfi.vars[this_var[0]].dataptr)) Then Begin
            dprint, 'No data in CDF variable: BKG'
         Endif Else Begin ;no error check
-           cmn_dat.bkg = *ivcdfi.vars[this_var[0]].dataptr ;str_element shouldn't be needes
+           cmn_dat.bkg = *ivcdfi.vars[this_var[0]].dataptr ;str_element shouldn't be needed
 ;           str_element, cmn_dat, cmnvars[j], *icdfi.vars[this_var[0]].dataptr, /add_replace
         Endelse
 ;Recalculate eflux

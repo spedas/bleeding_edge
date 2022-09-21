@@ -66,7 +66,7 @@ pro elf_write_data_availability_table, tdate, dt, filename, data_available, inst
         if file_test(local_path,/dir) eq 0 then file_mkdir2, local_path
         dprint, dlevel=1, 'Downloading ' + remote_path + this_file + ' to ' + local_path + this_file
         paths = spd_download(remote_file=this_file, remote_path=remote_path, $
-            local_file=this_file, local_path=local_path, ssl_verify_peer=1, ssl_verify_host=1)
+            local_file=this_file, local_path=local_path, ssl_verify_peer=0, ssl_verify_host=0)
         if undefined(paths) or paths EQ '' then $
           dprint, devel=1, 'Unable to download ' + remote_file 
         

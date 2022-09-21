@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-03-03 12:58:24 -0800 (Thu, 03 Mar 2022) $
-; $LastChangedRevision: 30647 $
+; $LastChangedDate: 2022-09-16 13:04:38 -0700 (Fri, 16 Sep 2022) $
+; $LastChangedRevision: 31093 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_nse_apdat__define.pro $
 
 
@@ -32,10 +32,18 @@ function swfo_stis_nse_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   str1=swfo_stis_ccsds_header_decom(ccsds)
 
   str2 = {$
-    nhist:   float(nse_diff) , $
+    histogram:float(nse_diff),$
+    total:total(nse_diff),$
+    total6:total(reform(nse_diff,[10,6]),1),$
     gap:ccsds.gap}
 
-  str=create_struct(str1,str2)
+  str3=create_struct(str1,str2)
+  str4=swfo_stis_nse_level_1(str3)
+  rate=str2.total/str1.duration
+  rate6=str2.total6/str1.duration
+  str5={rate:rate,rate6:rate6,rate_div_three:rate/3.,rate6_times_two:rate6*2.,baseline:str4.baseline,sigma:str4.sigma}
+
+  str=create_struct(str3,str5)
 
   if debug(3) then begin
     printdat,str

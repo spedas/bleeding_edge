@@ -34,9 +34,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
-;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-03-04 11:48:01 -0800 (Fri, 04 Mar 2022) $
-;$LastChangedRevision: 30648 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2022-09-09 12:08:46 -0700 (Fri, 09 Sep 2022) $
+;$LastChangedRevision: 31075 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_spdfcdawebchooser.pro $
 ;-
 
@@ -161,8 +161,8 @@ pro spd_spdfGetCdawebDataExec, $
     dataview=*state.selectedDataview, $
     authenticator=state.authenticator, $
     httpErrorReporter=state.errorDialog)
-    
-  fileDescriptions = dataResults->getFileDescriptions()
+  
+  if obj_valid(dataResults) then fileDescriptions = dataResults->getFileDescriptions()
   
   if obj_valid(fileDescriptions) and $
     n_elements(fileDescriptions) gt 0 then begin
@@ -223,8 +223,8 @@ pro spd_spdfGetCdawebDataExec, $
     resultMsg = 'No data found with the specified parameters.'
   endelse
   
-  obj_destroy, fileDescriptions
-  obj_destroy, dataResults
+  if obj_valid(fileDescriptions) then obj_destroy, fileDescriptions
+  if obj_valid(dataResults) then obj_destroy, dataResults
   
   reply = dialog_message(resultMsg, $
     title='Get Data Operation', /center, /information)

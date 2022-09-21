@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Sep  8 18:16:29 2022.<P>
+<STRONG>Last modified: </STRONG>Tue Sep 20 18:16:28 2022.<P>
  
 <HR>
  
@@ -57,6 +57,8 @@ This page was created by the IDL library routine
 <br>reads in a start and end date, and reprocesses all of the days in
 <LI><A HREF="#MVN_STA_IVALL_1DAY">MVN_STA_IVALL_1DAY</A>
 <br>reads in a start and end date, and reprocesses all of the days in
+<LI><A HREF="#MVN_STA_IVALL_SAMEDAY">MVN_STA_IVALL_SAMEDAY</A>
+<br>reads in a start and end date, and reprocesses all of the days in
 <LI><A HREF="#MVN_STA_L2_FILEREVISION">MVN_STA_L2_FILEREVISION</A>
 <br>tracks the revision number for a STATIC L2 file
 <LI><A HREF="#MVN_STA_L2DAT_STRUCT">MVN_STA_L2DAT_STRUCT</A>
@@ -74,9 +76,12 @@ This page was created by the IDL library routine
 <LI><A HREF="#MVN_STA_SETUP_IV2PROCESS">MVN_STA_SETUP_IV2PROCESS</A>
 <LI><A HREF="#MVN_STA_SETUP_IV3PROCESS">MVN_STA_SETUP_IV3PROCESS</A>
 <LI><A HREF="#MVN_STA_SETUP_IV4PROCESS">MVN_STA_SETUP_IV4PROCESS</A>
+<LI><A HREF="#MVN_STA_SETUP_IVALLPROCESS">MVN_STA_SETUP_IVALLPROCESS</A>
 <LI><A HREF="#MVN_STA_SETUP_REPROCESS">MVN_STA_SETUP_REPROCESS</A>
 <LI><A HREF="#RERUN_STA_L2GEN">RERUN_STA_L2GEN</A>
 <br>Designed to run from a cronjob, after the original L2 processing,
+<LI><A HREF="#RUN_STA_IVALL">RUN_STA_IVALL</A>
+<br>Reads in a start date, and process a day, if that day is more than
 <LI><A HREF="#RUN_STA_L2GEN">RUN_STA_L2GEN</A>
 <br>Designed to run from a cronjob, sets up a lock file, and
 <br>
@@ -852,8 +857,8 @@ KEYWORDS:
 HISTORY:
  2014-05-12, jmm, jimm@ssl.berkeley.edu
  $LastChangedBy: jimm $
- $LastChangedDate: 2020-11-23 10:08:50 -0800 (Mon, 23 Nov 2020) $
- $LastChangedRevision: 29370 $
+ $LastChangedDate: 2022-09-20 13:24:28 -0700 (Tue, 20 Sep 2022) $
+ $LastChangedRevision: 31108 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2read.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_cmn_l2read.pro">projects/maven/sta/l2util/mvn_sta_cmn_l2read.pro</A>)</STRONG><P>
@@ -1074,7 +1079,7 @@ HISTORY:
 <A NAME="MVN_STA_IVALL_1DAY">
 <H2>MVN_STA_IVALL_1DAY</H2></A>
 <A HREF="#MVN_STA_IV4_1DAY">[Previous Routine]</A>
-<A HREF="#MVN_STA_L2DAT_STRUCT">[Next Routine]</A>
+<A HREF="#MVN_STA_IVALL_SAMEDAY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -1100,9 +1105,35 @@ HISTORY:
 <STRONG>(See <A href="l2util/mvn_sta_ivall_1day.pro">projects/maven/sta/l2util/mvn_sta_ivall_1day.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_IVALL_SAMEDAY">
+<H2>MVN_STA_IVALL_SAMEDAY</H2></A>
+<A HREF="#MVN_STA_IVALL_1DAY">[Previous Routine]</A>
+<A HREF="#MVN_STA_L2DAT_STRUCT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+mvn_sta_ivall_sameday
+PURPOSE:
+reads in a start and end date, and reprocesses all of the days in
+the interval. This is a main program, designed to be called from a
+shell script. Processes 1 day at a time, for iv1 to iv4
+CALLING SEQUENCE:
+ .run mvn_sta_iv4all_sameday
+INPUT:
+start_time, end_time are input from files
+mvn_sta_ivall_sameday_start_time.txt and
+mvn_sta_ivall_sameday_end_time.txt.
+OUTPUT:
+ Temporary Maven STA L2 files, round 1 of background creation
+HISTORY:
+ 2022-06-13, jmm, jimm@ssl.berkeley.edu
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_ivall_sameday.pro">projects/maven/sta/l2util/mvn_sta_ivall_sameday.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_L2DAT_STRUCT">
 <H2>MVN_STA_L2DAT_STRUCT</H2></A>
-<A HREF="#MVN_STA_IVALL_1DAY">[Previous Routine]</A>
+<A HREF="#MVN_STA_IVALL_SAMEDAY">[Previous Routine]</A>
 <A HREF="#MVN_STA_L2EFLUX">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1362,7 +1393,7 @@ ro mvn_sta_setup_iv3process, start_date = start_date, $ ;default is 2014-10-06
 <A NAME="MVN_STA_SETUP_IV4PROCESS">
 <H2>MVN_STA_SETUP_IV4PROCESS</H2></A>
 <A HREF="#MVN_STA_SETUP_IV3PROCESS">[Previous Routine]</A>
-<A HREF="#MVN_STA_SETUP_REPROCESS">[Next Routine]</A>
+<A HREF="#MVN_STA_SETUP_IVALLPROCESS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 time range equally. Run as muser
@@ -1383,9 +1414,34 @@ ro mvn_sta_setup_iv4process, start_date = start_date, $ ;default is 2014-10-06
 <STRONG>(See <A href="l2util/mvn_sta_setup_iv4process.pro">projects/maven/sta/l2util/mvn_sta_setup_iv4process.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_SETUP_IVALLPROCESS">
+<H2>MVN_STA_SETUP_IVALLPROCESS</H2></A>
+<A HREF="#MVN_STA_SETUP_IV4PROCESS">[Previous Routine]</A>
+<A HREF="#MVN_STA_SETUP_REPROCESS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+time range equally. Run as muser
+sample crontab command
+# STA L2 Reprocess, 2015-08-31
+# 4,8,14,18,24,28,34,38,44,48,54,58 * * * * /bin/csh
+/home/muser/export_socware/idl_socware/projects/maven/l2gen/mvn_l2gen_multiprocess_b.csh
+mvn_sta_l2gen_1day 2 0 /mydisks/home/maven sta_l2_reprocess
+&gt;/dev/null 2&gt;&amp;1
+# for l2l2
+# 4,8,14,18,24,28,34,38,44,48,54,58 * * * * /bin/csh /home/muser/export_socware/idl_socware/projects/maven/l2gen/mvn_l2gen_multiprocess_b.csh mvn_sta_l2l2_1day 2 0 /mydisks/home/maven sta_l2l2_reprocess &gt;/dev/null 2&gt;&amp;1
+#
+
+ro mvn_sta_setup_ivallprocess, start_date = start_date, $ ;default is 2014-10-06
+                               end_date = end_date, $     ;default is now
+                               nproc = nproc, $           ;default is 3
+                               same_day = same_day        ;if set reprocesses all levels for the same day
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_setup_ivallprocess.pro">projects/maven/sta/l2util/mvn_sta_setup_ivallprocess.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_SETUP_REPROCESS">
 <H2>MVN_STA_SETUP_REPROCESS</H2></A>
-<A HREF="#MVN_STA_SETUP_IV4PROCESS">[Previous Routine]</A>
+<A HREF="#MVN_STA_SETUP_IVALLPROCESS">[Previous Routine]</A>
 <A HREF="#RERUN_STA_L2GEN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1411,7 +1467,7 @@ ro mvn_sta_setup_reprocess, start_date = start_date, $ ;default is 2014-10-06
 <A NAME="RERUN_STA_L2GEN">
 <H2>RERUN_STA_L2GEN</H2></A>
 <A HREF="#MVN_STA_SETUP_REPROCESS">[Previous Routine]</A>
-<A HREF="#RUN_STA_L2GEN">[Next Routine]</A>
+<A HREF="#RUN_STA_IVALL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -1438,9 +1494,38 @@ HISTORY:
 <STRONG>(See <A href="l2util/rerun_sta_l2gen.pro">projects/maven/sta/l2util/rerun_sta_l2gen.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RUN_STA_IVALL">
+<H2>RUN_STA_IVALL</H2></A>
+<A HREF="#RERUN_STA_L2GEN">[Previous Routine]</A>
+<A HREF="#RUN_STA_L2GEN">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+run_sta_ivall
+PURPOSE:
+Reads in a start date, and process a day, if that day is more than 
+250 days ago
+This is a main program, designed to be called from a
+shell script. Processes 1 day at a time, for iv1, then the previous
+day for iv2, then the previous day for iv3, then the previous day for
+iv4. This is done so that for each process both days on either side
+of the given day are processed.
+CALLING SEQUENCE:
+run_sta_ivall
+INPUT:
+start_time, is input from file
+/disks/data/maven/data/sci/sta/iv1/mvn_sta_ivall_start_time.txt
+OUTPUT:
+ Temporary Maven STA L2 files, round 1 of background creation
+HISTORY:
+ 2022-09-20, jmm, jimm@ssl.berkeley.edu
+</PRE><P>
+<STRONG>(See <A href="l2util/run_sta_ivall.pro">projects/maven/sta/l2util/run_sta_ivall.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RUN_STA_L2GEN">
 <H2>RUN_STA_L2GEN</H2></A>
-<A HREF="#RERUN_STA_L2GEN">[Previous Routine]</A>
+<A HREF="#RUN_STA_IVALL">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:

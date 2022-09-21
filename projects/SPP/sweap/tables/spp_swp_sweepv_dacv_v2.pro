@@ -4,8 +4,8 @@
 ;
 ;
 ; $LastChangedBy: rlivi04 $
-; $LastChangedDate: 2022-03-14 15:55:56 -0700 (Mon, 14 Mar 2022) $
-; $LastChangedRevision: 30677 $
+; $LastChangedDate: 2022-09-16 17:09:39 -0700 (Fri, 16 Sep 2022) $
+; $LastChangedRevision: 31101 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/tables/spp_swp_sweepv_dacv_v2.pro $
 ;
 ;-
@@ -129,9 +129,6 @@ PRO spp_swp_sweepv_dacv_v2,sweepv_dac,defv1_dac,defv2_dac,spv_dac,k=k,rmax=rmax,
             defv1_dac[32*i:32*i+31]  = max*defv1/fixgain
             defv2_dac[32*i:32*i+31]  = max*defv2/fixgain
 
-            ;; Print new
-            print, defv1_dac[32*i:32*i+31]
-            
             ;; An unnecessarily complicated way to do the flipping
             flip = (flip + 1) mod 2 
             

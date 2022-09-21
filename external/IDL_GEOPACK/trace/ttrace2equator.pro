@@ -229,9 +229,9 @@
 ;  4. All calculations are done internally in double precision
 ;
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2022-08-10 12:12:09 -0700 (Wed, 10 Aug 2022) $
-; $LastChangedRevision: 31006 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2022-09-16 16:30:39 -0700 (Fri, 16 Sep 2022) $
+; $LastChangedRevision: 31098 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/ttrace2equator.pro $
 ;-
 
@@ -241,7 +241,7 @@ pro ttrace2equator,in_pos_tvar,newname = newname, trace_var_name=trace_tvar, in_
     kp=kp, pdyn=pdyn, dsti=dsti, yimf=yimf, zimf=zimf, g1=g1, g2=g2, w1=w1, w2=w2, w3=w3, w4=w4, w5=w5, w6=w6,$
     get_tilt=get_tilt, set_tilt=set_tilt, add_tilt=add_tilt, get_nperiod=get_nperiod, exact_tilt_times=exact_tilt_times, $
     ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, symc=symc,$
-    xind=xind, skip_ts07_load=skip_ts07_load, _extra=_extra
+    xind=xind, skip_ts07_load=skip_ts07_load, skip_ta16_load=skip_ta16_load, _extra=_extra
 
     COMPILE_OPT idl2
     
@@ -263,12 +263,14 @@ pro ttrace2equator,in_pos_tvar,newname = newname, trace_var_name=trace_tvar, in_
       message, /continue, 'external_model ta16 is only supported with geopack DLM version 10.9 or newer'
       return
     endif
-   
+    
     if not keyword_set(in_pos_tvar) or tnames(in_pos_tvar) eq '' then begin
        message,/continue,'in_pos_tvar must be set'
        return
     endif
     
+    if undefined(skip_ta16_load) then skip_ta16_load = 0
+       
     ;prevent inadvertent output mutation
     if n_elements(par) gt 0  then begin
       par_in = par
@@ -525,13 +527,15 @@ pro ttrace2equator,in_pos_tvar,newname = newname, trace_var_name=trace_tvar, in_
             internal_model=internal_model,external_model=external_model,south=south,km=km,$
             par=par_in,period=period,error=e,r0=r0,rlim=rlim,get_nperiod=get_nperiod,$
             get_tilt=tilt_dat,set_tilt=set_tilt_dat,get_period_times=period_times_dat,geopack_2008=geopack_2008,$
-            exact_tilt_times=exact_tilt_times,ts07_param_dir=ts07_param_dir,ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load,_extra=_extra 
+            exact_tilt_times=exact_tilt_times,ts07_param_dir=ts07_param_dir,ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load,$
+            skip_ta16_load=skip_ta16_load,_extra=_extra 
       endif else begin
         trace2equator,d.x,d.y,f,in_coord=in_coord,out_coord=out_coord,internal_model=internal_model,$
             external_model=external_model,south=south,km=km,par=par_in,period=period,error=e,r0=r0,$
             rlim=rlim,get_nperiod=get_nperiod,get_tilt=tilt_dat,set_tilt=set_tilt_dat,$
             get_period_times=period_times_dat,geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times,$
-            ts07_param_dir=ts07_param_dir,ts07_param_file=ts07_param_file, skip_ts07_load=skip_ts07_load,_extra=_extra
+            ts07_param_dir=ts07_param_dir,ts07_param_file=ts07_param_file, skip_ts07_load=skip_ts07_load,$
+            skip_ta16_load=skip_ta16_load,_extra=_extra
       endelse
       
     endif else if n_elements(add_tilt) gt 0 then begin
@@ -540,13 +544,15 @@ pro ttrace2equator,in_pos_tvar,newname = newname, trace_var_name=trace_tvar, in_
             internal_model=internal_model,external_model=external_model,south=south,km=km,$
             par=par_in,period=period,error=e,r0=r0,rlim=rlim,get_nperiod=get_nperiod,$
             get_tilt=tilt_dat,add_tilt=add_tilt_dat,get_period_times=period_times_dat,geopack_2008=geopack_2008,$
-            exact_tilt_times=exact_tilt_times,ts07_param_dir=ts07_param_dir,ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load,_extra=_extra 
+            exact_tilt_times=exact_tilt_times,ts07_param_dir=ts07_param_dir,ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load,$
+            skip_ta16_load=skip_ta16_load,_extra=_extra 
       endif else begin
         trace2equator,d.x,d.y,f,in_coord=in_coord,out_coord=out_coord,internal_model=internal_model,$
             external_model=external_model,south=south,km=km,par=par_in,period=period,error=e,r0=r0,$
             rlim=rlim,get_nperiod=get_nperiod,get_tilt=tilt_dat,add_tilt=add_tilt_dat,$
             get_period_times=period_times_dat,geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times,$
-            ts07_param_dir=ts07_param_dir,ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load,_extra=_extra
+            ts07_param_dir=ts07_param_dir,ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load,$
+            skip_ta16_load=skip_ta16_load,_extra=_extra
       endelse
     endif else begin
       if keyword_set(trace_tvar) then begin
@@ -554,13 +560,15 @@ pro ttrace2equator,in_pos_tvar,newname = newname, trace_var_name=trace_tvar, in_
             internal_model=internal_model,external_model=external_model,south=south,km=km,$
             par=par_in,period=period,error=e,r0=r0,rlim=rlim,get_nperiod=get_nperiod,$
             get_tilt=tilt_dat,get_period_times=period_times_dat,geopack_2008=geopack_2008,$
-            exact_tilt_times=exact_tilt_times,ts07_param_dir=ts07_param_dir,ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load,_extra=_extra 
+            exact_tilt_times=exact_tilt_times,ts07_param_dir=ts07_param_dir,ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load,$
+            skip_ta16_load=skip_ta16_load,_extra=_extra 
       endif else begin
         trace2equator,d.x,d.y,f,in_coord=in_coord,out_coord=out_coord,internal_model=internal_model,$
             external_model=external_model,south=south,km=km,par=par_in,period=period,error=e,r0=r0,$
             rlim=rlim,get_nperiod=get_nperiod,get_tilt=tilt_dat,get_period_times=period_times_dat,$
             geopack_2008=geopack_2008,exact_tilt_times=exact_tilt_times, $
-            ts07_param_dir=ts07_param_dir,ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load,_extra=_extra
+            ts07_param_dir=ts07_param_dir,ts07_param_file=ts07_param_file,skip_ts07_load=skip_ts07_load,$
+            skip_ta16_load=skip_ta16_load,_extra=_extra
       endelse
     endelse 
     

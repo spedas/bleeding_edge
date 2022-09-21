@@ -55,7 +55,7 @@ pro elf_create_epd_all, trange = trange, nodownload = nodownload, probe = probe
       this_file = file_prefix+element+'.csv'
        paths = spd_download(remote_file=this_file, remote_path=remote_path, $
          local_file=this_file, local_path=local_path, $
-         ssl_verify_peer=1, ssl_verify_host=1)
+         ssl_verify_peer=0, ssl_verify_host=0)
        if undefined(paths) or paths EQ '' then $
          dprint, devel=1, 'Unable to download ' + remote_file
      endif

@@ -88,7 +88,7 @@ function elf_read_epd_calfile, probe=probe, instrument=instrument, no_download=n
     if file_test(local_cal_dir,/dir) eq 0 then file_mkdir2, local_cal_dir
     dprint, dlevel=1, 'Downloading ' + remote_filename + ' to ' + local_cal_dir
     paths = spd_download(remote_file=remote_filename, $   ;remote_path=remote_cal_dir, $
-      local_file=local_filename,ssl_verify_peer=1, ssl_verify_host=1)
+      local_file=local_filename,ssl_verify_peer=0, ssl_verify_host=0)
     if undefined(paths) or paths EQ '' then $
       dprint, devel=1, 'Unable to download ' + local_filename 
   endif

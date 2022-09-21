@@ -258,7 +258,7 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
                 endif else begin
                   paths = spd_download(remote_file=fnames[file_idx], remote_path=this_remote_path, $
                                      local_file=fnames[file_idx], local_path=this_local_path, $
-                                     ssl_verify_peer=1, ssl_verify_host=1)
+                                     ssl_verify_peer=0, ssl_verify_host=0)
                                      ;url_username=user, url_password=pw, ssl_verify_peer=1, $
                                      ;ssl_verify_host=1)    
                 endelse

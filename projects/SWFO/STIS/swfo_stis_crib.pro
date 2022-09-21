@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-08-05 15:10:39 -0700 (Fri, 05 Aug 2022) $
-; $LastChangedRevision: 30999 $
+; $LastChangedDate: 2022-09-16 13:04:38 -0700 (Fri, 16 Sep 2022) $
+; $LastChangedRevision: 31093 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -49,7 +49,7 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.host = '128.32.98.57'
   opts.title = 'SWFO STIS'
   opts.port = 2428
-  opts.init_realtime = 0                 ; Set to 1 to start realtime stream widget
+  opts.init_realtime =0                  ; Set to 1 to start realtime stream widget
   opts.init_stis =1                      ; set to 1 to initialize the STIS APID definitions
   opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-10,1]*60.','timebar,systime(1)']   ; commands to be run in exec widget
   ;opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-1.,.05]*600','swfo_stis_plot_example','timebar,systime(1)']      ; commands to be run in exec widget
@@ -66,11 +66,12 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = ['2022-7-16 2','2022 7 16 3:30']  ;Amptek 250 test of 9 potential flight preamps. (5 turned out to be not suitable for flight)
   opts.file_trange = ['2022-8-4 22','2022 8 4 23']  ;LPT with non-LUT mode after instrument reset
   opts.file_trange = ['2022-8-5 17:30','2022 8 5 17:52']  ;LPT with non-LUT mode
+  opts.file_trange = ['2022-8-24 16','2022 8 24 19']  ;extreme counts: baseline and threshold tests
   ;opts.file_trange = !null
   ;opts.filenames=['socket_128.32.98.57.2028_20211216_004610.dat', 'socket_128.32.98.57.20484_20211216_005158.dat']
   opts.filenames = ''
   opts.stepbystep = 0               ; this flag allows a step by step progress through this crib sheet
-  opts.refresh = 0                  ; set to zero to skip this section next time
+  opts.refresh = 1                  ; set to zero to skip this section next time
   opts.file_type = 'gse_file'
   printdat,opts
   dprint,'The variable "OPTS" is a dictionary of options.  These can be changed by the user as desired.'
@@ -148,7 +149,7 @@ if 0 then begin
   printdat,sci.last_data   ; Display decommutated contents of most recent science packet
 endif
 
-if 1 then begin
+if 0 then begin
 
   dprint,'Create Level 0B netcdf file for science packets:'
   sci.level_0b = dynamicarray()   ; Turn on storage of level_0b data by giving it a place to store data

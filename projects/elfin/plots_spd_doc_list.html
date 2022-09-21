@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Sep  8 18:16:29 2022.<P>
+<STRONG>Last modified: </STRONG>Tue Sep 20 18:16:28 2022.<P>
  
 <HR>
  
@@ -62,6 +62,8 @@ ELF_MAP_STATE_T96_INTERVALS_WRAPPER</A>
 <LI><A HREF="#EPDE_PLOT_WIGRF_MULTISPEC_OVERVIEWS">
 EPDE_PLOT_WIGRF_MULTISPEC_OVERVIEWS</A>
 <br>Loads EPDE, performs pitch angle determination and plotting of energy and pitch angle spectra
+<LI><A HREF="#EPDI_PLOT_OVERVIEWS">EPDI_PLOT_OVERVIEWS</A>
+<br>Loads EPDE and EPDI performs pitch angle determination and plotting of energy and pitch angle spectra
 <LI><A HREF="#FIND_INTERVAL">FIND_INTERVAL</A>
 <br>This routine looks for intervals of consecutive indices in an index array
 <LI><A HREF="#FIND_ORBITS">FIND_ORBITS</A>
@@ -664,7 +666,7 @@ TO DO:
 <A NAME="EPDE_PLOT_WIGRF_MULTISPEC_OVERVIEWS">
 <H2>EPDE_PLOT_WIGRF_MULTISPEC_OVERVIEWS</H2></A>
 <A HREF="#EPDE_PLOT_OVERVIEWS">[Previous Routine]</A>
-<A HREF="#FIND_INTERVAL">[Next Routine]</A>
+<A HREF="#EPDI_PLOT_OVERVIEWS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -693,9 +695,41 @@ TO DO:
 <STRONG>(See <A href="plots/epde_plot_wigrf_multispec_overviews.pro">projects/elfin/plots/epde_plot_wigrf_multispec_overviews.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="EPDI_PLOT_OVERVIEWS">
+<H2>EPDI_PLOT_OVERVIEWS</H2></A>
+<A HREF="#EPDE_PLOT_WIGRF_MULTISPEC_OVERVIEWS">[Previous Routine]</A>
+<A HREF="#FIND_INTERVAL">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+PROCEDURE:
+  epdi_plot_overviews
+
+PURPOSE:
+ Loads EPDE and EPDI performs pitch angle determination and plotting of energy and pitch angle spectra
+ Including precipitating and trapped spectra separately. 
+ Regularize keyword performs rebinning of data on regular sector centers starting at zero (rel.to the time
+ of dBzdt 0 crossing which corresponds to Pitch Angle = 90 deg and Spin Phase angle = 0 deg.).
+ If the data has already been collected at regular sectors there is no need to perform this.
+
+KEYWORDS:
+ trange - time range of interest [starttime, endtime] with the format
+          ['YYYY-MM-DD','YYYY-MM-DD'] or to specify more or less than a day
+          ['YYYY-MM-DD/hh:mm:ss','YYYY-MM-DD/hh:mm:ss']
+ probe - 'a' or 'b'
+ no_download - set this flag to not download data from the server and use local files only
+ sci_zone - if set this flag will plot epd overview plots by science zone (rather than by day)
+
+TO DO:
+ elb can be done similarly but the code has not been generalized to either a or b yet. But this is straightforward.
+
+</PRE><P>
+<STRONG>(See <A href="plots/epdi_plot_overviews.pro">projects/elfin/plots/epdi_plot_overviews.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="FIND_INTERVAL">
 <H2>FIND_INTERVAL</H2></A>
-<A HREF="#EPDE_PLOT_WIGRF_MULTISPEC_OVERVIEWS">[Previous Routine]</A>
+<A HREF="#EPDI_PLOT_OVERVIEWS">[Previous Routine]</A>
 <A HREF="#FIND_ORBITS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

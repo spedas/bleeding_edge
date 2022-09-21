@@ -61,8 +61,8 @@ function elf_get_epd_calibration_log, trange=trange, probe=probe, instrument=ins
   if no_download eq 0 then begin
     if file_test(local_cal_dir,/dir) eq 0 then file_mkdir2, local_cal_dir
     dprint, dlevel=1, 'Downloading ' + remote_filename + ' to ' + local_cal_dir
-    paths = spd_download(remote_file=remote_filename, ssl_verify_peer=1, $
-      ssl_verify_host=1)
+    paths = spd_download(remote_file=remote_filename, ssl_verify_peer=0, $
+      ssl_verify_host=0)
     if undefined(paths) or paths EQ '' then $
       dprint, devel=1, 'Unable to download ' + local_filename
   endif

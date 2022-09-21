@@ -9,8 +9,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-03-08 13:43:52 -0800 (Tue, 08 Mar 2022) $
-;$LastChangedRevision: 30662 $
+;$LastChangedDate: 2022-09-16 17:07:17 -0700 (Fri, 16 Sep 2022) $
+;$LastChangedRevision: 31100 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_field_models.pro $
 ;-
 
@@ -44,12 +44,13 @@ function spd_ui_field_models_ret_modelname, cur_tab
     ; 0 - TS04, 1 - T01, 2 - T96, 3 - T89, 4 - IGRF
     if cur_tab eq 0 then field_model = 'TA15B'
     if cur_tab eq 1 then field_model = 'TA15N'
-    if cur_tab eq 2 then field_model = 'TS07'
-    if cur_tab eq 3 then field_model = 'T04S'
-    if cur_tab eq 4 then field_model = 'T01'
-    if cur_tab eq 5 then field_model = 'T96'
-    if cur_tab eq 6 then field_model = 'T89'
-    if cur_tab eq 7 then field_model = 'IGRF'
+    if cur_tab eq 2 then field_model = 'TA16'
+    if cur_tab eq 3 then field_model = 'TS07'
+    if cur_tab eq 4 then field_model = 'T04S'
+    if cur_tab eq 5 then field_model = 'T01'
+    if cur_tab eq 6 then field_model = 'T96'
+    if cur_tab eq 7 then field_model = 'T89'
+    if cur_tab eq 8 then field_model = 'IGRF'
     if undefined(field_model) then field_model = 'none'
     return, field_model
 end 
@@ -179,7 +180,48 @@ function spd_ui_field_models_check_params, state, field_model
 
       get_ta15_params,imf_tvar='temp_imf_data',Np_tvar=*state.usersDensity,Vp_tvar=*state.usersSpeed,xind_tvar=*state.usersnindex,pressure_tvar=*state.userspressure,model=field_model,newname=parameter_input,/speed,/imf_yz,$
         trange = trange
-    
+    endif else if strlowcase(field_model) eq 'ta16' then begin
+      if (tnames(*state.usersPressure) eq '') and (tnames(*state.usersDensity) eq '') then begin
+        spd_ui_field_models_error, state, 'No solar wind (proton) density data selected. Solar wind density data is required for the '+field_model+' model if pressure variable not supplied.'
+        spd_ui_field_models_error, state, 'Use the load data panel to load OMNI data for the time interval you''re trying to model'
+        return, -1
+      endif
+      if (tnames(*state.userspressure) eq '') and (tnames(*state.usersSpeed) eq '') then begin
+        spd_ui_field_models_error, state, 'No solar wind (proton) speed data selected. Solar wind speed data is required for the '+field_model+' model if pressure variable not supplied'
+        spd_ui_field_models_error, state, 'Use the load data panel to load OMNI data for the time interval you''re trying to model'
+        return, -1
+      endif
+      if (tnames(*state.usersnindex) eq '') and (tnames(*state.usersSpeed) eq '') then begin
+        spd_ui_field_models_error, state, 'No solar wind (proton) speed data selected. Solar wind speed data is required for the '+field_model+' model if N-index variable not supplied'
+        spd_ui_field_models_error, state, 'Use the load data panel to load OMNI data for the time interval you''re trying to model'
+        return, -1
+      endif
+      if (tnames(*state.usersSymHC) eq '') and (tnames(*state.usersSymH) eq '') then begin
+        spd_ui_field_models_error, state, 'No SYM-H variable selected.  Raw SYM-H data is required for the '+field_model+' model if corrected SYM-Hc variable not supplied'
+        spd_ui_field_models_error, state, 'Use the load data panel to load OMNI data for the time interval you''re trying to model'
+        return, -1
+      endif
+
+      if tnames(*state.usersIMFBy) eq '' then begin
+        spd_ui_field_models_error, state, 'No IMF By data selected. Interplanetary magnetic field data is required for the '+field_model+' model'
+        spd_ui_field_models_error, state, 'Use the load data panel to load OMNI data for the time interval you''re trying to model'
+        return, -1
+      endif
+      if tnames(*state.usersIMFBz) eq '' then begin
+        spd_ui_field_models_error, state, 'No IMF Bz data selected. Interplanetary magnetic field data is required for the '+field_model+' model'
+        spd_ui_field_models_error, state, 'Use the load data panel to load OMNI data for the time interval you''re trying to model'
+        return, -1
+      endif
+      ; combine the selected IMF By and IMF Bz variables
+      store_data, 'temp_imf_data', data=[*state.usersIMFBy, *state.usersIMFBz]
+
+      ; Get trange from the IMFBy variable -- not the position variable, which may be too short to adequately seed the N-index calculation
+      get_data,*state.usersIMFBy,trange=trange
+
+
+      get_ta16_params,imf_tvar='temp_imf_data',Np_tvar=*state.usersDensity,Vp_tvar=*state.usersSpeed,xind_tvar=*state.usersnindex,pressure_tvar=*state.userspressure,model=field_model,newname=parameter_input,/speed,/imf_yz,$
+        symh=*state.usersSymH, symc=*state.usersSymHC,trange = trange
+   
     endif else if strlowcase(field_model) eq 'ts07' then begin
       ; check the variables selected by the user
        if tnames(*state.usersPressure) eq '' and tnames(*state.usersDensity) eq '' then begin
@@ -260,6 +302,8 @@ pro spd_ui_field_models_model_params, tlb, field_model
     swdensity_wid = widget_info(tlb, find_by_uname='swdensitybase')
     swvel_wid = widget_info(tlb, find_by_uname='swvelbase')
     dst_wid = widget_info(tlb, find_by_uname='dstbase')
+    symh_wid = widget_info(tlb, find_by_uname='symhbase')
+    symhc_wid = widget_info(tlb, find_by_uname='symhcbase')
     coeffs_wid = widget_info(tlb, find_by_uname='selectedw')
     pressure_wid = widget_info(tlb, find_by_uname='pressurebase')
     nindex_wid = widget_info(tlb, find_by_uname='nindexbase')
@@ -275,6 +319,8 @@ pro spd_ui_field_models_model_params, tlb, field_model
             Widget_Control, swdensity_wid, sensitive = 0
             Widget_Control, swvel_wid, sensitive = 0
             Widget_Control, dst_wid, sensitive = 0
+            Widget_Control, symh_wid, sensitive = 0
+            Widget_Control, symhc_wid, sensitive = 0
             Widget_Control, pressure_wid, sensitive = 0
             Widget_Control, bindex_wid, sensitive = 0
             Widget_Control, nindex_wid, sensitive = 0
@@ -287,6 +333,8 @@ pro spd_ui_field_models_model_params, tlb, field_model
             Widget_Control, swdensity_wid, sensitive = 1
             Widget_Control, swvel_wid, sensitive = 1
             Widget_Control, dst_wid, sensitive = 1
+            Widget_Control, symh_wid, sensitive = 0
+            Widget_Control, symhc_wid, sensitive = 0
             Widget_Control, pressure_wid, sensitive = 1
             Widget_Control, bindex_wid, sensitive = 0
             Widget_Control, nindex_wid, sensitive = 0
@@ -304,6 +352,8 @@ pro spd_ui_field_models_model_params, tlb, field_model
             Widget_Control, swdensity_wid, sensitive = 1
             Widget_Control, swvel_wid, sensitive = 1
             Widget_Control, dst_wid, sensitive = 1
+            Widget_Control, symh_wid, sensitive = 0
+            Widget_Control, symhc_wid, sensitive = 0
             Widget_Control, pressure_wid, sensitive = 1
             Widget_Control, bindex_wid, sensitive = 0
             Widget_Control, nindex_wid, sensitive = 0
@@ -321,6 +371,8 @@ pro spd_ui_field_models_model_params, tlb, field_model
             Widget_Control, swdensity_wid, sensitive = 1
             Widget_Control, swvel_wid, sensitive = 1
             Widget_Control, dst_wid, sensitive = 1
+            Widget_Control, symh_wid, sensitive = 0
+            Widget_Control, symhc_wid, sensitive = 0
             Widget_Control, pressure_wid, sensitive = 1
             Widget_Control, bindex_wid, sensitive = 0
             Widget_Control, nindex_wid, sensitive = 0
@@ -335,6 +387,8 @@ pro spd_ui_field_models_model_params, tlb, field_model
           Widget_Control, swdensity_wid, sensitive = 1
           Widget_Control, swvel_wid, sensitive = 1
           Widget_Control, dst_wid, sensitive = 0
+          Widget_Control, symh_wid, sensitive = 0
+          Widget_Control, symhc_wid, sensitive = 0
           Widget_Control, pressure_wid, sensitive = 1
           Widget_Control, bindex_wid, sensitive = 0
           Widget_Control, nindex_wid, sensitive = 0
@@ -349,6 +403,8 @@ pro spd_ui_field_models_model_params, tlb, field_model
           Widget_Control, swdensity_wid, sensitive = 1
           Widget_Control, swvel_wid, sensitive = 1
           Widget_Control, dst_wid, sensitive = 0
+          Widget_Control, symh_wid, sensitive = 0
+          Widget_Control, symhc_wid, sensitive = 0
           Widget_Control, pressure_wid, sensitive = 1
           Widget_Control, bindex_wid, sensitive = 1
           Widget_Control, nindex_wid, sensitive = 0
@@ -364,6 +420,25 @@ pro spd_ui_field_models_model_params, tlb, field_model
           Widget_Control, swdensity_wid, sensitive = 1
           Widget_Control, swvel_wid, sensitive = 1
           Widget_Control, dst_wid, sensitive = 0
+          Widget_Control, symh_wid, sensitive = 0
+          Widget_Control, symhc_wid, sensitive = 0
+          Widget_Control, pressure_wid, sensitive = 1
+          Widget_Control, bindex_wid, sensitive = 0
+          Widget_Control, nindex_wid, sensitive = 1
+
+        end
+
+        'ta16': begin
+          Widget_Control, tlb, get_uvalue = ptrState
+          state = *ptrState
+          Widget_Control, wcoef_wid, sensitive = 0
+          Widget_Control, imfby_wid, sensitive = 1
+          Widget_Control, imfbz_wid, sensitive = 1
+          Widget_Control, swdensity_wid, sensitive = 1
+          Widget_Control, swvel_wid, sensitive = 1
+          Widget_Control, dst_wid, sensitive = 0
+          Widget_Control, symh_wid, sensitive = 1
+          Widget_Control, symhc_wid, sensitive = 1
           Widget_Control, pressure_wid, sensitive = 1
           Widget_Control, bindex_wid, sensitive = 0
           Widget_Control, nindex_wid, sensitive = 1
@@ -377,6 +452,8 @@ pro spd_ui_field_models_model_params, tlb, field_model
             Widget_Control, swdensity_wid, sensitive = 0
             Widget_Control, swvel_wid, sensitive = 0
             Widget_Control, dst_wid, sensitive = 0
+            Widget_Control, symh_wid, sensitive = 0
+            Widget_Control, symhc_wid, sensitive = 0
             Widget_Control, pressure_wid, sensitive = 0
             Widget_Control, bindex_wid, sensitive = 0
             Widget_Control, nindex_wid, sensitive = 0
@@ -428,7 +505,7 @@ pro spd_ui_field_models_event, event
         if obj_valid(state.fieldModelSettings) then begin
             state.fieldModelSettings->setProperty, pos_tvar = *state.tvars_to_trace, output_options = state.model_types, $
                 imf_by_tvar = *state.usersIMFBy, imf_bz_tvar = *state.usersIMFBz, sw_density_tvar = *state.usersDensity, sw_speed_tvar = *state.usersSpeed, $
-                dst_tvar = *state.usersDst, w_coeff_tvar = *state.usersWs, g_coeff_tvar = *state.usersGs, t89_kp = state.t89_iopt, $
+                dst_tvar = *state.usersDst, symh_tvar=*state.usersSymH, symhc_tvar=*state.usersSymHC, w_coeff_tvar = *state.usersWs, g_coeff_tvar = *state.usersGs, t89_kp = state.t89_iopt, $
                 t89_set_tilt = *state.userSetTilt, t89_add_tilt = *state.userAddTilt, t01_storm = state.t01_storm, $
                 pressure_tvar=*state.userspressure, bindex_tvar=*state.usersbindex, nindex_tvar=*state.usersnindex, geopack_2008=state.geopack_2008
         endif
@@ -541,6 +618,34 @@ pro spd_ui_field_models_event, event
                 return
             endelse
         end
+        'SYMH_INDEX': begin
+          ret_symh = spd_ui_field_models_add_option(ptrState, windowtitle = 'Select a variable containing raw SYM-H data')
+          if ~ptr_valid(ret_symh) then begin
+            return
+          endif else begin
+            pos_wid = widget_info(event.top, find_by_uname='selectedsymh')
+            Widget_Control, pos_wid, set_value = *ret_symh[0]
+            ptr_free, state.usersSymH
+            state.usersSymH = ret_symh
+            Widget_Control, event.top, set_uvalue = ptr_new(state), /no_copy
+            return
+          endelse
+        end
+
+        'SYMHC_INDEX': begin
+          ret_symh = spd_ui_field_models_add_option(ptrState, windowtitle = 'Select a variable containing corrected SYM-H data')
+          if ~ptr_valid(ret_symhc) then begin
+            return
+          endif else begin
+            pos_wid = widget_info(event.top, find_by_uname='selectedsymhc')
+            Widget_Control, pos_wid, set_value = *ret_symhc[0]
+            ptr_free, state.usersSymHC
+            state.usersSymHC = ret_symhc
+            Widget_Control, event.top, set_uvalue = ptr_new(state), /no_copy
+            return
+          endelse
+        end
+
         'WCOEFF': begin
             ret_wcoeffs = spd_ui_field_models_add_option(ptrState, windowtitle = 'Select a variable containing the 6 W-coefficients')
             if ~ptr_valid(ret_wcoeffs) then begin
@@ -737,7 +842,10 @@ pro spd_ui_field_models_event, event
                         'ta15n': begin
                           tta15n, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors,geopack_2008=geopack_2008
                         end
-       
+                        'ta16': begin
+                          tta16, var_to_map, newname=model_var[0], parmod=the_model_params, error=model_errors,geopack_2008=geopack_2008
+                        end
+      
                         'igrf': begin
                             tt89, var_to_map, newname=model_var[0], /igrf_only, error=model_errors,geopack_2008=geopack_2008
                         end
@@ -846,7 +954,7 @@ pro spd_ui_field_models_event, event
             if obj_valid(state.fieldModelSettings) then begin
                 state.fieldModelSettings->setProperty, pos_tvar = *state.tvars_to_trace, output_options = state.model_types, $
                     imf_by_tvar = *state.usersIMFBy, imf_bz_tvar = *state.usersIMFBz, sw_density_tvar = *state.usersDensity, sw_speed_tvar = *state.usersSpeed, $
-                    dst_tvar = *state.usersDst, w_coeff_tvar = *state.usersWs, g_coeff_tvar = *state.usersGs, t89_kp = state.t89_iopt, $
+                    dst_tvar = *state.usersDst, symh_tvar=*state.usersSymH, symhc_tvar=*state.usersSymHC,w_coeff_tvar = *state.usersWs, g_coeff_tvar = *state.usersGs, t89_kp = state.t89_iopt, $
                     t89_set_tilt = *state.userSetTilt, t89_add_tilt = *state.userAddTilt, t01_storm = state.t01_storm, $
                     pressure_tvar=*state.userspressure, bindex_tvar=*state.usersbindex, nindex_tvar=*state.usersnindex, geopack_2008 = state.geopack_2008
             endif
@@ -864,6 +972,8 @@ pro spd_ui_field_models_event, event
             state.usersDensity = ptr_new('')
             state.usersSpeed = ptr_new('')
             state.usersDst = ptr_new('')
+            state.usersSymH = ptr_new('')
+            state.usersSymHC = ptr_new('')
             state.usersGs = ptr_new('')
             state.usersWs = ptr_new('')
             state.userspressure = ptr_new('')
@@ -963,7 +1073,7 @@ pro spd_ui_field_models, info
     
     if obj_valid(info.fieldModelSettings) then begin
         info.fieldModelSettings->getProperty, pos_tvar=pos_tvar, imf_by_tvar=imf_by_tvar, imf_bz_tvar=imf_bz_tvar, $
-            sw_density_tvar=sw_density_tvar, sw_speed_tvar=sw_speed_tvar, dst_tvar=dst_tvar, w_coeff_tvar=w_coeff_tvar, $
+            sw_density_tvar=sw_density_tvar, sw_speed_tvar=sw_speed_tvar, dst_tvar=dst_tvar, symh_tvar=symh_tvar, symhc_tvar=symhc_tvar, w_coeff_tvar=w_coeff_tvar, $
             g_coeff_tvar=g_coeff_tvar, t89_kp=t89_kp, t89_set_tilt=t89_set_tilt, t89_add_tilt=t89_add_tilt, output_options=output_options, $
             t01_storm = t01_storm, pressure_tvar=pressure_tvar, bindex_tvar=bindex_tvar, nindex_tvar=nindex_tvar, geopack_2008=geopack_2008
     endif
@@ -1004,6 +1114,23 @@ pro spd_ui_field_models, info
     magnetoPLabel = Widget_Label(magBase15n, value='Magnetospheric parameters:', /align_center)
     n_indexButton = Widget_Button(magBase15n, value='N-index (optional)', uname='n_index', uval='N_INDEX', tooltip = 'Select a variable containing the N-index. If not set, the appropriate N-index will be calculated by SPEDAS.')
 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;; TA16 tab ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    enable_ta16 = ta16_supported() ? 1 : 0
+    ta16base = Widget_Base(tabBase, col=2, title='TA16', tab_mode = 1, event_pro='spd_ui_field_models_event', sensitive = enable_ta16)
+    swBase16 = Widget_Base(ta16base, /col)
+    swLabel = Widget_Label(swBase16, value='Solar wind parameters:', /align_center)
+    pressureButton = Widget_Button(swBase16, value='Dynamic pressure (optional)', uname='pressure', uval='PRESSURE', tooltip = 'Select a variable containing solar wind pressure data. If not set, pressure will be calculated by SPEDAS.')
+    imfByButton = Widget_Button(swBase16, value='IMF By (GSM)', uname='imfby', uval='IMFBY', tooltip = 'Select a variable containing IMF By data')
+    imfBzButton = Widget_Button(swBase16, value='IMF Bz (GSM)', uname='imfbz', uval='IMFBZ', tooltip = 'Select a variable containing IMF Bz data')
+    protonDensityButton = Widget_Button(swBase16, value='Proton density', uname='protondensity', uval='PROTONDENSITY', tooltip = 'Select a variable containing solar wind density data')
+    protonVelocityButton = Widget_Button(swBase16, value='Proton speed', uname='protonvelocity', uval='PROTONVELOCITY', tooltip = 'Select a variable containing solar wind speed data')
+    magBase16 = Widget_Base(ta16base, /col)
+    magnetoPLabel = Widget_Label(magBase16, value='Magnetospheric parameters:', /align_center)
+    n_indexButton = Widget_Button(magBase16, value='N-index (optional)', uname='n_index', uval='N_INDEX', tooltip = 'Select a variable containing the N-index. If not set, the appropriate N-index will be calculated by SPEDAS.')
+    symhcButton = Widget_Button(magBase16,value='Corrected SYM-H index (optional)',uname='symhc_index', uval='SYMHC_INDEX',tooltip = 'Select a variable containing the corrected SYM-H index.  If not set, the appropriate correction will be applied by SPEDAS to the given SYM-H data.') 
+    symhButton = Widget_Button(magBase16,value='(Raw) SYM-H index', uname='symh_index', uval='SYMH_INDEX',tooltip = 'Select a variable containing the SYM-H index.')
+    
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;;;;;;;;;;;;;;;;;;;;; Tsyganenko 07 tab ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     t07base = Widget_Base(tabBase, col=2, title='TS07', tab_mode = 1, event_pro='spd_ui_field_models_event')
@@ -1101,7 +1228,7 @@ pro spd_ui_field_models, info
     ; show the user their current selections
     modelinfoLabel = Widget_Label(bottomBase, value='Current model parameters:', /align_left)
     modelparamBase = Widget_Base(bottomBase, col=1)
-    modelinfoBase = Widget_Base(modelparamBase, row=10, /align_left)
+    modelinfoBase = Widget_Base(modelparamBase, row=12, /align_left)
     colBaseModel = Widget_Base(modelinfoBase, col=2)
     modelLabel = Widget_Label(colBaseModel, value='Model: ', /align_left)
     selectedModelLabel = Widget_Label(colBaseModel, value='TA15B', /align_left, /dynamic_resize, uname='selectedmodel')
@@ -1124,6 +1251,12 @@ pro spd_ui_field_models, info
     colBaseDst= Widget_Base(modelinfoBase, row=1, uname='dstbase')
     dstLabel = Widget_Label(colBaseDst, value='Dst: ', /align_left)
     seldstLabel = Widget_Label(colBaseDst, value=(dst_tvar eq '' ? '[none]' : dst_tvar), uname='selecteddst', /align_left,/dynamic_resize)
+    colBaseSymH= Widget_Base(modelinfoBase, row=1, uname='symhbase')
+    symhLabel = Widget_Label(colBaseSymH, value='SYM-H: ', /align_left)
+    selsymhLabel = Widget_Label(colBaseSymH, value=(symh_tvar eq '' ? '[none]' : symh_tvar), uname='selectedsymh', /align_left,/dynamic_resize)
+    colBaseSymHC= Widget_Base(modelinfoBase, row=1, uname='symhcbase')
+    symhcLabel = Widget_Label(colBaseSymHC, value='SYM-HC: ', /align_left)
+    selsymhcLabel = Widget_Label(colBaseSymHC, value=(symhc_tvar eq '' ? '[calculate automatically]' : symhc_tvar), uname='selectedsymhc', /align_left,/dynamic_resize)
     colBaseWs= Widget_Base(modelinfoBase, row=1, uname='Wsbase')
     WcoeffLabel = Widget_Label(colBaseWs, value='W coefficients: ', /align_left, uname='selectedwlabel')
     selWLabel = Widget_Label(colBaseWs, value=(w_coeff_tvar eq '' ? '[calculate automatically]' : w_coeff_tvar), uname='selectedw', /align_left, /dynamic_resize)
@@ -1174,9 +1307,11 @@ pro spd_ui_field_models, info
              usersDensity: ptr_new(sw_density_tvar), $ ; solar wind density variable
              usersSpeed: ptr_new(sw_speed_tvar), $ ; solar wind speed variable
              usersDst: ptr_new(dst_tvar), $ ; Dst variable
+             usersSymH: ptr_new(symh_tvar),$ ; Sym-H variable
+             usersSymHC: ptr_new(symhc_tvar),$ ; Sym-HC variable
              userspressure: ptr_new(pressure_tvar), $ ; Solar wind pressure
              usersbindex: ptr_new(bindex_tvar), $ ; B-index, for TA15B
-             usersnindex: ptr_new(nindex_tvar), $ ; N-index, for TA15n
+             usersnindex: ptr_new(nindex_tvar), $ ; N-index, for TA15n, TA16
              usersWs: ptr_new(w_coeff_tvar), $ ; W coefficients, for TS04
              usersGs: ptr_new(g_coeff_tvar), $ ; W coefficients, for TS04
              usersWs07: ptr_new(w_coeff_tvar07), $ ; W coefficients, for TS07

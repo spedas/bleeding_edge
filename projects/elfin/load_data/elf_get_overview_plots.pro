@@ -71,7 +71,7 @@ pro elf_get_overview_plots, trange=trange, probe=probe, local_data_dir=local_dat
     ; Test that directory exists and then download file
     if file_test(local_png_dir,/dir) eq 0 then file_mkdir2, local_png_dir
     paths = spd_download(remote_file=remote_filename, $   
-       local_file=local_filename, ssl_verify_peer=1, ssl_verify_host=1)
+       local_file=local_filename, ssl_verify_peer=0, ssl_verify_host=0)
 ;       url_username=user, url_password=pw, ssl_verify_peer=1, $
 ;       ssl_verify_host=1)
     if undefined(paths) or paths EQ '' then begin
@@ -86,7 +86,7 @@ pro elf_get_overview_plots, trange=trange, probe=probe, local_data_dir=local_dat
         local_filename=local_png_dir+'/'+sc+'_l2_overview_'+daily_names+hrs[j]+zones[i]+'.png'
         paths = ''
         paths = spd_download(remote_file=remote_filename, $   ;remote_path=remote_png_dir, $
-          local_file=local_filename, ssl_verify_peer=1, ssl_verify_host=1)
+          local_file=local_filename, ssl_verify_peer=0, ssl_verify_host=0)
       endfor    ; end of science zone loop
     endif 
 

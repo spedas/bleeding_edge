@@ -54,7 +54,7 @@ function elf_get_epd_calibration, probe=probe, instrument=instrument, trange=tra
       epde_thresh_factors=epd_cal_log.thresh_factors      
       epde_ch_efficiencies=epd_cal_log.ch_efficiencies
       epde_ebins=epd_cal_log.ebins
-      epde_cal_ch_factors = 1./epde_gf*(epde_thresh_factors^(-1.))*(epde_ch_efficiencies^(-1.))
+      epde_cal_ch_factors = 1./(epde_gf*epde_thresh_factors*epde_ch_efficiencies)
       epde_ebins_logmean = epde_ebins
       for j=0,14 do epde_ebins_logmean[j]=10.^((alog10(epde_ebins[j])+alog10(epde_ebins[j+1]))/2)
       epde_ebins_logmean[15]=6500.
@@ -85,21 +85,24 @@ function elf_get_epd_calibration, probe=probe, instrument=instrument, trange=tra
 ; VA changed: 7/7/2022
       epdi_overaccumulation_factors[15] = 1.0
       epdi_thresh_factors = indgen(16)*0.+1.
+; VA changed: 7/7/2022
+      epdi_thresh_factors [0] = 0.2
 ;
 ; VA changed: 7/7/2022
 ;      epdi_ch_efficiencies = [0.74, 0.8, 0.85, 0.86, 0.87, 0.87, 0.87, 0.87, 0.82, 0.8, 0.75, 0.6, 0.5, 0.45, 0.25, 0.05]
       epdi_ch_efficiencies = indgen(16)*0.+1.
 ;
-      epdi_cal_ch_factors = 1./epdi_gf*(epdi_thresh_factors^(-1.))*(epdi_ch_efficiencies^(-1.))
+      epdi_cal_ch_factors = 1./(epdi_gf*epdi_thresh_factors*epdi_ch_efficiencies)
       epdi_ebins = [50., 80., 120., 160., 210., 270., 345., 430., 630., 900., 1300., 1800., 2500., 3350., 4150., 5800.] ; in keV based on Jiang Liu's Geant4 code 2019-3-5
-; VA changed: 7/7/2022 (Added offset due to dead-layer and electronic noise)
-      epdi_ebins[1:*] = epdi_ebins[1:*] + 10. ; keV based on Colin discussions on 7/7/2022
+; VA changed: 9/20/2022 (Added offset on 7/7/2022 due to dead-layer and electronic noise) but removed it since daylight effect shows low dead layer)
+;      epdi_ebins[1:*] = epdi_ebins[1:*] + 10. ; negligible 0 keV; old was 10 keV based on Colin discussions on 7/7/2022
 ;
       epdi_ebins_logmean = epdi_ebins
       for j=0,14 do epdi_ebins_logmean[j]=10.^((alog10(epdi_ebins[j])+alog10(epdi_ebins[j+1]))/2)
       epdi_ebins_logmean[15]=6500.
-      epdi_ebin_lbls = ['50-90', '90-130', '130-170', '170-220', '220-280', '280-355', '355-440', '440-640', $
-        '640-910', '910-1310', '1310-1810', '1810-2510', '2510-3360', '3360-4160', '4160-5810', '5810+']
+; VA changed: 9/20/2022 used same bins as electrons (dead layer well below 50keV)   
+      epdi_ebin_lbls = ['50-80', '80-120', '120-160', '160-210', '210-270', '270-345', '345-430', '430-630', $
+        '630-900', '900-1300', '1300-1800', '1800-2500', '2500-3350', '3350-4150', '4150-5800', '5800+']
       epd_calibration_data = { epd_gf:epdi_gf, $
         epd_overaccumulation_factors:epdi_overaccumulation_factors, $
         epd_thresh_factors:epdi_thresh_factors, $

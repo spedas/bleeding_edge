@@ -64,7 +64,7 @@ pro elf_load_proxy_ae, trange=trange, smooth=smooth, nsmooth=nsmooth, no_downloa
     if file_test(local_ae_dir,/dir) eq 0 then file_mkdir2, local_ae_dir
     dprint, dlevel=1, 'Downloading ' + remote_filename + ' to ' + local_ae_dir
     paths = spd_download(remote_file=remote_filename, local_file=local_filename, $
-      ssl_verify_peer=1, ssl_verify_host=1)
+      ssl_verify_peer=0, ssl_verify_host=0)
     if undefined(paths) or paths[0] EQ '' then $
       dprint, devel=1, 'Unable to download ' + local_filename
   endif

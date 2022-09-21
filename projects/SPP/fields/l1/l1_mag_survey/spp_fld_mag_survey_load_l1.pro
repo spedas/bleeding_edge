@@ -1,4 +1,5 @@
 ;+
+;
 ; NAME:
 ;   SPP_FLD_MAG_SURVEY_LOAD_L1
 ;
@@ -23,10 +24,11 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2021-03-17 22:16:16 -0700 (Wed, 17 Mar 2021) $
-;  $LastChangedRevision: 29770 $
+;  $LastChangedDate: 2022-09-16 12:37:00 -0700 (Fri, 16 Sep 2022) $
+;  $LastChangedRevision: 31092 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_load_l1.pro $
 ;
+;-
 
 pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat, $
   downsample = downsample
@@ -221,13 +223,17 @@ pro spp_fld_mag_survey_load_l1, file, prefix = prefix, varformat = varformat, $
         rate_arr, indices, d_range_bits.y, $
         times_1d = times_1d, b_1d = b_1d, $
         packet_index = packet_index, $
-        rate_1d = rate_1d
+        rate_1d = rate_1d, range_1d = range_1d
 
       ;      times_1d =
       ;      b_1d =
       valid = where(finite(times_1d), n_valid)
 
-      scale_factor = nt_adu[0]
+      scale_factor = nt_adu[range_1d]
+      
+      range_bits = range_1d
+      
+;      stop
 
     endif else begin
 

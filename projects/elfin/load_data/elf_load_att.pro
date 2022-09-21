@@ -50,7 +50,7 @@ function elf_load_att, probe=probe, tdate=tdate, no_download=no_download
       if file_test(local_att_dir,/dir) eq 0 then file_mkdir2, local_att_dir
       dprint, dlevel=1, 'Downloading ' + remote_filename + ' to ' + local_att_dir
       paths = spd_download(remote_file=remote_filename, local_file=local_filename, $
-         ssl_verify_peer=1, ssl_verify_host=1)
+         ssl_verify_peer=0, ssl_verify_host=0)
       if undefined(paths) or paths EQ '' then $
         dprint, devel=1, 'Unable to download ' + local_filename
     endif

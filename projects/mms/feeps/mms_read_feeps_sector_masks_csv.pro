@@ -29,8 +29,8 @@
 ;     
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2022-05-24 13:36:46 -0700 (Tue, 24 May 2022) $
-; $LastChangedRevision: 30828 $
+; $LastChangedDate: 2022-09-09 11:59:07 -0700 (Fri, 09 Sep 2022) $
+; $LastChangedRevision: 31074 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_read_feeps_sector_masks_csv.pro $
 ;-
 
@@ -49,7 +49,8 @@ function mms_read_feeps_sector_masks_csv, trange=trange
              1506988800.0000000, $ ; 10/3/2017
              1538697600.0000000, $ ; 10/5/2018
              1642032000.0000000, $ ; 1/13/2022
-             1651795200.0000000] ; 5/6/2022
+             1651795200.0000000, $ ; 5/6/2022
+             1660521600.0000000] ; 8/15/2022
              
     nearest_date = find_nearest_neighbor(dates, time_double(trange[0]), /allow_outside)
     dprint, dlevel = 2, 'Removing sun contamination using the file: MMS#_FEEPS_ContaminatedSectors_'+time_string(nearest_date, tformat='YYYYMMDD')+'.csv

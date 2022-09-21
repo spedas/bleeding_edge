@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-07-18 02:26:18 -0700 (Mon, 18 Jul 2022) $
-; $LastChangedRevision: 30937 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2022-09-20 11:07:45 -0700 (Tue, 20 Sep 2022) $
+; $LastChangedRevision: 31106 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_load.pro $
 ; Created by Davin Larson 2018
 
@@ -83,7 +83,7 @@ pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname
   ;; Product File Names
   ;dir='spi/'+level+'/YYYY/MM/spi_TYP/' ;old directory structure
   dir='spi/'+level+'/spi_TYP/YYYY/MM/'
-  fileformat=dir+'psp_swp_spi_TYP_'+level+'_mom_YYYYMMDD_v??.cdf'
+  fileformat=dir+'psp_swp_spi_TYP_'+level+'*_YYYYMMDD_v??.cdf'
   if not keyword_set(fileprefix) then fileprefix='psp/data/sci/sweap/'
 
   ;; Product TPLOT Parameters

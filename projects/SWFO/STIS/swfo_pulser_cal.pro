@@ -1,8 +1,8 @@
 ;+
 ; swfo_pulser_cal
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-07-10 13:08:09 -0700 (Sun, 10 Jul 2022) $
-; $LastChangedRevision: 30914 $
+; $LastChangedDate: 2022-09-14 11:29:44 -0700 (Wed, 14 Sep 2022) $
+; $LastChangedRevision: 31082 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_pulser_cal.pro $
 ; $ID: $
 ;-
@@ -51,14 +51,15 @@ end
 
 
 
-pro swfo_pulser_cal, results=results  ;,dat=dat,trange=trange,param=p,bkg_trange=bkg_trange
+pro swfo_pulser_cal, results=results  ,trange=trange ;,dat=dat,param=p,bkg_trange=bkg_trange
 
   if ~isa(results,'dictionary') then begin
     results = dictionary()
   endif
 
+
   if ~results.haskey('trange') then begin
-    ctime,trange,npoints=2,/silent
+    if n_elements(trange) ne 2 then  ctime,trange,npoints=2,/silent
     results.trange = trange
     if results.haskey('ddata') then results.remove,'ddata'
   endif
@@ -139,7 +140,7 @@ pro swfo_pulser_cal, results=results  ;,dat=dat,trange=trange,param=p,bkg_trange
     test = 1
     names='DAC0 ADC0 gain gain2'
 
-    w=where(ok and dat.dac lt 20000.)
+    w=where(ok and dat.dac lt 16000.)
     fit,dat[w].dac,dat[w].x0,dy = dat[w].sigma,param=p,result=fit_result,iter=30,names=names
     if test then swfo_testpulse_plot,dat,w,param=p,title=title
 
@@ -152,12 +153,13 @@ pro swfo_pulser_cal, results=results  ;,dat=dat,trange=trange,param=p,bkg_trange
 ;    if test then swfo_testpulse_plot,dat,w,param=p,title=title
     
     names='DAC0 ADC0 gain gain2 gain3'
-    w=where(ok and dat.dac lt 3.7e4)
+    ;names='DAC0 ADC0 gain'
+    w=where(ok and dat.dac lt 3.3e4)
     fit,dat[w].dac,dat[w].x0,dy = dat[w].sigma,param=p,result=fit_result,names=names
     if test then swfo_testpulse_plot,dat,w,param=p,title=title
 
     names='DAC0 ADC0 gain gain2 gain3 gain4'
-    w=where(ok and dat.dac lt 5.4e4)
+    w=where(ok and dat.dac lt 5.e4)
     fit,dat[w].dac,dat[w].x0,dy = dat[w].sigma,param=p,result=fit_result,names=names
     if test then swfo_testpulse_plot,dat,w,param=p,title=title
 
@@ -182,16 +184,63 @@ pro swfo_pulser_cal, results=results  ;,dat=dat,trange=trange,param=p,bkg_trange
 
 end
 
-pro swfo_pulser_cal_multi
+pro swfo_pulser_cal_multi,tt,results=fits
 
-tt = [ $
-  ['2022-06-14/01:44:32', '2022-06-14/01:52:16'],$
-  ['2022-06-14/01:55:20','2022-06-14/02:03:06'],$
-  ['2022-06-14/02:04:46', '2022-06-14/02:12:44'],$
-  ['2022-06-14/02:14:10', '2022-06-14/02:22:20'],$
-  ['2022-06-14/02:27:20', '2022-06-14/02:35:46'],$
-  ['2022-06-14/02:36:54', '2022-06-14/02:45:32'],$
-  ['2022-06-14/02:49:04', '2022-06-14/02:57:10']]
+  if not keyword_set(tt) then begin
+    tt = [ $
+      ['2022-06-14/01:44:32', '2022-06-14/01:52:16'],$
+      ['2022-06-14/01:55:20','2022-06-14/02:03:06'],$
+      ['2022-06-14/02:04:46', '2022-06-14/02:12:44'],$
+      ['2022-06-14/02:14:10', '2022-06-14/02:22:20'],$
+      ['2022-06-14/02:27:20', '2022-06-14/02:35:46'],$
+      ['2022-06-14/02:36:54', '2022-06-14/02:45:32'],$
+      ['2022-06-14/02:49:04', '2022-06-14/02:57:10']]
+
+
+    tt = [ $
+      ['2022-08-24/02:04:31' ,  '2022-08-24/02:05:15'],$
+      ['2022-08-24/02:06:34' ,  '2022-08-24/02:07:18'],$
+      ['2022-08-24/02:08:19' ,  '2022-08-24/02:09:03'],$
+      ['2022-08-24/02:09:57' ,  '2022-08-24/02:10:41'],$
+      ['2022-08-24/02:11:29' ,  '2022-08-24/02:12:13'],$
+      ['2022-08-24/02:12:55' ,  '2022-08-24/02:13:39'],$
+      ['2022-08-24/02:15:07' ,  '2022-08-24/02:15:51'],$
+      ['2022-08-24/02:16:34' ,  '2022-08-24/02:17:18'],$
+      ['2022-08-24/02:18:02' ,  '2022-08-24/02:18:46'],$
+      ['2022-08-24/02:19:35' ,  '2022-08-24/02:20:19'],$
+      ['2022-08-24/02:21:03' ,  '2022-08-24/02:21:47'],$
+      ['2022-08-24/02:22:30' ,  '2022-08-24/02:23:14'],$
+      ['2022-08-24/02:23:59' ,  '2022-08-24/02:24:43'],$
+      ['2022-08-24/02:25:17' ,  '2022-08-24/02:26:01'],$
+      ['2022-08-24/02:26:42' ,  '2022-08-24/02:27:26'],$
+      ['2022-08-24/02:28:05' ,  '2022-08-24/02:28:49'],$
+      ['2022-08-24/02:29:32' ,  '2022-08-24/02:30:16'],$
+      ['2022-08-24/02:30:55' ,  '2022-08-24/02:31:39']]
+  endif
+
+  timebar,tt
+
+  dim = size(/dimen,tt)
+  n2 = dim[1]
+  fits=[]
+  results=[]
+  for i=0,n2-1 do begin
+    r=!null
+    swfo_pulser_cal,trange=time_double(tt[*,i]),results=r
+    results=[results,r]
+    f = r.fit_res
+    str_element,/add,f,'serial_number',r.serial_number
+    str_element,/add,f,'date_code',r.date_code
+    makepng,'SWFO_amptek_response_sn'+strtrim(f.serial_number,2),wi=1
+    fits=[fits,f]
+  endfor
+  
+  printdat,fits
+  
+  for i=0,n2-1 do begin
+    f = fits[i]
+    print,f.serial_number,f.par.gain,f.par.gain2,f.par.gain3,f.par.gain4,f.chi
+  endfor
 
 
 end

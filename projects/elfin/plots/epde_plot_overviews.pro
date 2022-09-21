@@ -82,7 +82,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     dprint, dlevel=0, 'No plots were producted.
   endif
 
-  del_data, '*_fgs'
+  del_data, '*_fgs*'
   elf_load_fgm, probes=probe, trange=tr, datatype='fgs', no_download=no_download
   get_data, 'el'+probe+'_fgs', data=elx_fgs
 ;  if size(elx_fgs, /type) NE 8 then begin
@@ -412,7 +412,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       badflag=fix(phase_delay.badflag)
       if dphang2add LT 0 then dphang_string=strmid(strtrim(string(dphang2add),1),0,5) else $
         dphang_string=strmid(strtrim(string(dphang2add),1),0,4)
-      if undefined(badflag) then badflag=2
+      if undefined(badflag) then badflag=2  
       if badflag NE 0 then badflag_str=', BadFlag set' else badflag_str=''
       case badflag of
         0: phase_msg = 'Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Good Fit' + epd_completeness_str
@@ -557,18 +557,10 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       endif
 
       ; save for later
-;      get_data, 'el'+probe+'_pef_en_reg_spec2plot_omni', data=omni_reg_d, dlimits=omni_dl, limits=omni_l   
-;      get_data, 'el'+probe+'_pef_en_reg_spec2plot_anti', data=anti_reg_d, dlimits=anti_dl, limits=anti_l
-;      get_data, 'el'+probe+'_pef_en_reg_spec2plot_perp', data=perp_reg_d, dlimits=perp_dl, limits=perp_l
-;      get_data, 'el'+probe+'_pef_en_reg_spec2plot_para', data=para_reg_d, dlimits=para_dl, limits=para_l
       get_data, 'el'+probe+'_pef_en_spec2plot_omni', data=omni_d, dlimits=omni_dl, limits=omni_l
       get_data, 'el'+probe+'_pef_en_spec2plot_anti', data=anti_d, dlimits=anti_dl, limits=anti_l
       get_data, 'el'+probe+'_pef_en_spec2plot_perp', data=perp_d, dlimits=perp_dl, limits=perp_l
       get_data, 'el'+probe+'_pef_en_spec2plot_para', data=para_d, dlimits=para_dl, limits=para_l
-;      get_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0LC', data=ch0_reg_d, dlimits=ch0_dl, limits=ch0_l
-;      get_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch1LC', data=ch1_reg_d, dlimits=ch1_dl, limits=ch1_l
-;      get_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch2LC', data=ch2_reg_d, dlimits=ch2_dl, limits=ch2_l
-;      get_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch3LC', data=ch3_reg_d, dlimits=ch3_dl, limits=ch3_l
       get_data, 'el'+probe+'_pef_pa_spec2plot_ch0LC', data=ch0_d, dlimits=ch0_dl, limits=ch0_l
       get_data, 'el'+probe+'_pef_pa_spec2plot_ch1LC', data=ch1_d, dlimits=ch1_dl, limits=ch1_l
       get_data, 'el'+probe+'_pef_pa_spec2plot_ch2LC', data=ch2_d, dlimits=ch2_dl, limits=ch2_l
@@ -612,14 +604,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       copy_data, 'el'+probe+'_pef_pa_spec2plot_ch1', 'el'+probe+'_pef_pa_spec2plot_ch1_sz'+strtrim(string(num),2)
       copy_data, 'el'+probe+'_pef_pa_spec2plot_ch2', 'el'+probe+'_pef_pa_spec2plot_ch2_sz'+strtrim(string(num),2)
       copy_data, 'el'+probe+'_pef_pa_spec2plot_ch3', 'el'+probe+'_pef_pa_spec2plot_ch3_sz'+strtrim(string(num),2)
-;      copy_data, 'el'+probe+'_pef_en_reg_spec2plot_omni', 'el'+probe+'_pef_en_reg_spec2plot_omni_sz'+strtrim(string(num),2)
-;      copy_data, 'el'+probe+'_pef_en_reg_spec2plot_anti', 'el'+probe+'_pef_en_reg_spec2plot_anti_sz'+strtrim(string(num),2)
-;      copy_data, 'el'+probe+'_pef_en_reg_spec2plot_perp', 'el'+probe+'_pef_en_reg_spec2plot_perp_sz'+strtrim(string(num),2)
-;      copy_data, 'el'+probe+'_pef_en_reg_spec2plot_para', 'el'+probe+'_pef_en_reg_spec2plot_para_sz'+strtrim(string(num),2)
-;      copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0', 'el'+probe+'_pef_pa_reg_spec2plot_ch0_sz'+strtrim(string(num),2)
-;      copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch1', 'el'+probe+'_pef_pa_reg_spec2plot_ch1_sz'+strtrim(string(num),2)
-;      copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch2', 'el'+probe+'_pef_pa_reg_spec2plot_ch2_sz'+strtrim(string(num),2)
-;      copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch3', 'el'+probe+'_pef_pa_reg_spec2plot_ch3_sz'+strtrim(string(num),2)
  
       if keyword_set(one_zone_only) then break
 
@@ -648,44 +632,20 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     anti_str+=' el'+probe+'_pef_en_spec2plot_anti_sz'+strtrim(string(n),2)
     perp_str+=' el'+probe+'_pef_en_spec2plot_perp_sz'+strtrim(string(n),2)
     para_str+=' el'+probe+'_pef_en_spec2plot_para_sz'+strtrim(string(n),2)
-;    omni_reg_str+=' el'+probe+'_pef_en_reg_spec2plot_omni_sz'+strtrim(string(n),2)
-;    anti_reg_str+=' el'+probe+'_pef_en_reg_spec2plot_anti_sz'+strtrim(string(n),2)
-;    perp_reg_str+=' el'+probe+'_pef_en_reg_spec2plot_perp_sz'+strtrim(string(n),2)
-;    para_reg_str+=' el'+probe+'_pef_en_reg_spec2plot_para_sz'+strtrim(string(n),2)
     pa_ch0_str+=' el'+probe+'_pef_pa_spec2plot_ch0_sz'+strtrim(string(n),2)
     pa_ch1_str+=' el'+probe+'_pef_pa_spec2plot_ch1_sz'+strtrim(string(n),2)
     pa_ch2_str+=' el'+probe+'_pef_pa_spec2plot_ch2_sz'+strtrim(string(n),2)
     pa_ch3_str+=' el'+probe+'_pef_pa_spec2plot_ch3_sz'+strtrim(string(n),2)
-;    pa_ch0_reg_str+=' el'+probe+'_pef_pa_reg_spec2plot_ch0_sz'+strtrim(string(n),2)
-;    pa_ch1_reg_str+=' el'+probe+'_pef_pa_reg_spec2plot_ch1_sz'+strtrim(string(n),2)
-;    pa_ch2_reg_str+=' el'+probe+'_pef_pa_reg_spec2plot_ch2_sz'+strtrim(string(n),2)
-;    pa_ch3_reg_str+=' el'+probe+'_pef_pa_reg_spec2plot_ch3_sz'+strtrim(string(n),2)
   endfor
-;  omni_str_all=[omni_str,omni_reg_str]
-;  anti_str_all=[anti_str,anti_reg_str]
-;  perp_str_all=[perp_str,perp_reg_str]
-;  para_str_all=[para_str,para_reg_str]
-;  ch0_all=[pa_ch0_str,pa_ch0_reg_str]
-;  ch1_all=[pa_ch1_str,pa_ch1_reg_str]
-;  ch2_all=[pa_ch2_str,pa_ch2_reg_str]
-; ch3_all=[pa_ch3_str,pa_ch3_reg_str]
   
   store_data, 'el'+probe+'_pef_en_spec2plot_omni_all', data=omni_str, dlimits=omni_dl, limits=omni_l
   store_data, 'el'+probe+'_pef_en_spec2plot_anti_all', data=anti_str, dlimits=anti_dl, limits=anti_l
   store_data, 'el'+probe+'_pef_en_spec2plot_perp_all', data=perp_str, dlimits=perp_dl, limits=perp_l
   store_data, 'el'+probe+'_pef_en_spec2plot_para_all', data=para_str, dlimits=para_dl, limits=para_l
-;  store_data, 'el'+probe+'_pef_en_reg_spec2plot_omni_all', data=omni_reg_str, dlimits=omni_dl, limits=omni_l
-;  store_data, 'el'+probe+'_pef_en_reg_spec2plot_anti_all', data=anti_reg_str, dlimits=anti_dl, limits=anti_l
-;  store_data, 'el'+probe+'_pef_en_reg_spec2plot_perp_all', data=perp_reg_str, dlimits=perp_dl, limits=perp_l
-;  store_data, 'el'+probe+'_pef_en_reg_spec2plot_para_all', data=para_reg_str, dlimits=para_dl, limits=para_l
   store_data, 'el'+probe+'_pef_pa_spec2plot_ch0_all', data=pa_ch0_str, dlimits=ch0_dl, limits=ch0_l
   store_data, 'el'+probe+'_pef_pa_spec2plot_ch1_all', data=pa_ch1_str, dlimits=ch1_dl, limits=ch1_l
   store_data, 'el'+probe+'_pef_pa_spec2plot_ch2_all', data=pa_ch2_str, dlimits=ch2_dl, limits=ch2_l
   store_data, 'el'+probe+'_pef_pa_spec2plot_ch3_all', data=pa_ch3_str, dlimits=ch3_dl, limits=ch3_l
-;  store_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0_all', data=pa_ch0_reg_str, dlimits=ch0_dl, limits=ch0_l
-;  store_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch1_all', data=pa_ch1_reg_str, dlimits=ch1_dl, limits=ch1_l
-;  store_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch2_all', data=pa_ch2_reg_str, dlimits=ch2_dl, limits=ch2_l
-;  store_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch3_all', data=pa_ch3_reg_str, dlimits=ch3_dl, limits=ch3_l
   
   ; Overwrite losscone/antilosscone tplot variable with full day from elf_getspec
   if nplots eq 25 then this_tr=[dat_gei.x[min_st[24]], dat_gei.x[min_en[24]]] $
@@ -698,15 +658,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     batch_procedure_error_handler, 'elf_getspec', probe=probe, /only_loss_cone
   endif
 
-;  for jthchan=0,3 do begin ;reg
-;    if jthchan eq 0 then mystr=pa_ch0_str
-;    if jthchan eq 1 then mystr=pa_ch1_str
-;    if jthchan eq 2 then mystr=pa_ch2_str
-;    if jthchan eq 3 then mystr=pa_ch3_str
-;    datastr=mystr+' lossconedeg antilossconedeg'
-;    str2exec="store_data,'el"+probe+"_pef_pa_spec2plot_ch"+strtrim(string(jthchan),2)+"LC_all',data=datastr"
-;    dummy=execute(str2exec)
-;  endfor
   for jthchan=0,3 do begin ;non-reg
     if jthchan eq 0 then mystr=pa_ch0_str
     if jthchan eq 1 then mystr=pa_ch1_str
@@ -768,19 +719,11 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     copy_data,'el'+probe+'_pef_en_spec2plot_anti_all','el'+probe+'_pef_en_spec2plot_anti'
     copy_data,'el'+probe+'_pef_en_spec2plot_perp_all','el'+probe+'_pef_en_spec2plot_perp'
     copy_data,'el'+probe+'_pef_en_spec2plot_para_all','el'+probe+'_pef_en_spec2plot_para'
-;    copy_data,'el'+probe+'_pef_en_reg_spec2plot_omni_all','el'+probe+'_pef_en_reg_spec2plot_omni'
-;    copy_data,'el'+probe+'_pef_en_reg_spec2plot_anti_all','el'+probe+'_pef_en_reg_spec2plot_anti'
-;    copy_data,'el'+probe+'_pef_en_reg_spec2plot_perp_all','el'+probe+'_pef_en_reg_spec2plot_perp'
-;    copy_data,'el'+probe+'_pef_en_reg_spec2plot_para_all','el'+probe+'_pef_en_reg_spec2plot_para'
-;    copy_data,'el'+probe+'_pef_pa_reg_spec2plot_ch0LC_all','el'+probe+'_pef_pa_reg_spec2plot_ch0LC'
-;    copy_data,'el'+probe+'_pef_pa_reg_spec2plot_ch1LC_all','el'+probe+'_pef_pa_reg_spec2plot_ch1LC'
     copy_data,'el'+probe+'_pef_pa_spec2plot_ch0LC_all','el'+probe+'_pef_pa_spec2plot_ch0LC'
     copy_data,'el'+probe+'_pef_pa_spec2plot_ch1LC_all','el'+probe+'_pef_pa_spec2plot_ch1LC'
     copy_data,'el'+probe+'_pef_pa_spec2plot_ch2LC_all','el'+probe+'_pef_pa_spec2plot_ch2LC'
     copy_data,'el'+probe+'_pef_pa_spec2plot_ch3LC_all','el'+probe+'_pef_pa_spec2plot_ch3LC'
-;    copy_data,'el'+probe+'_pef_pa_reg_spec2plot_ch2LC_all','el'+probe+'_pef_pa_reg_spec2plot_ch2LC'
-;    copy_data,'el'+probe+'_pef_pa_reg_spec2plot_ch3LC_all','el'+probe+'_pef_pa_reg_spec2plot_ch3LC'
-    
+        
     options, 'el'+probe+'_pef_en_spec2plot_omni', 'ysubtitle', '[keV]'
     options, 'el'+probe+'_pef_en_spec2plot_anti', 'ysubtitle', '[keV]'
     options, 'el'+probe+'_pef_en_spec2plot_perp', 'ysubtitle', '[keV]'
@@ -789,14 +732,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     options, 'el'+probe+'_pef_pa_spec2plot_ch1LC', 'ysubtitle', '[deg]'
     options, 'el'+probe+'_pef_pa_spec2plot_ch2LC', 'ysubtitle', '[deg]'
     options, 'el'+probe+'_pef_pa_spec2plot_ch3LC', 'ysubtitle', '[deg]'
-;    options, 'el'+probe+'_pef_en_reg_spec2plot_omni', 'ysubtitle', '[keV]'
-;    options, 'el'+probe+'_pef_en_reg_spec2plot_anti', 'ysubtitle', '[keV]'
-;    options, 'el'+probe+'_pef_en_reg_spec2plot_perp', 'ysubtitle', '[keV]'
-;    options, 'el'+probe+'_pef_en_reg_spec2plot_para', 'ysubtitle', '[keV]'
-;    options, 'el'+probe+'_pef_pa_reg_spec2plot_ch0LC', 'ysubtitle', '[deg]'
-;    options, 'el'+probe+'_pef_pa_reg_spec2plot_ch1LC', 'ysubtitle', '[deg]'
-;    options, 'el'+probe+'_pef_pa_reg_spec2plot_ch2LC', 'ysubtitle', '[deg]'
-;    options, 'el'+probe+'_pef_pa_reg_spec2plot_ch3LC', 'ysubtitle', '[deg]'
     
     ylim,'el?_p?f_pa*spec2plot* *losscone* el?_p?f_pa*spec2plot_ch?LC*',0,180.
     options,'el?_p?f_pa*spec2plot_ch0LC*','ztitle',''
@@ -820,12 +755,9 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     tplot_options, 'ygap',0
     tplot_options, 'no_vtitle_shift', 1
     elf_set_overview_options, probe=probe, trange=tr,/no_switch
- ;   get_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0', data=reg
- ;   if size(reg, /type) EQ 8 then reg_exists=1 else reg_exists=0
     options,'el?_p?f_pa*spec2plot_ch*LC*','databar',90.
 
     if tdur LT 10802. then begin
-;      if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',this_tr[0],this_tr[1]) then begin
         tplot,['proxy_ae', $
           'fgm_survey_bar', $
           'epdi_fast_bar', $
@@ -840,7 +772,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
           'el'+probe+'_pef_pa_spec2plot_ch[2,3]LC', $
           'el'+probe+'_bt89_sm_NEDT'], $
            var_label=varstring
-
  ;     endif else begin        
  ;        tplot,['proxy_ae', $
  ;         'fgm_survey_bar', $

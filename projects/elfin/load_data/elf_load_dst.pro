@@ -55,7 +55,7 @@ pro elf_load_dst, no_download=no_download, trange=trange
     if file_test(local_dst_dir,/dir) eq 0 then file_mkdir2, local_dst_dir
     dprint, dlevel=1, 'Downloading ' + remote_filename + ' to ' + local_dst_dir
     paths = spd_download(remote_file=remote_filename, local_file=local_filename, $
-      ssl_verify_peer=1, ssl_verify_host=1)
+      ssl_verify_peer=0, ssl_verify_host=0)
       ;url_username=user, url_password=pw, 
     if undefined(paths) or paths EQ '' then $
       dprint, devel=1, 'Unable to download ' + local_filename

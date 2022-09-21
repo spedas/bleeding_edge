@@ -2,8 +2,8 @@
 ;  spp_data_product
 ;  This basic object is the entry point for defining and obtaining all data for all data products
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-07-06 12:59:34 -0700 (Wed, 06 Jul 2022) $
-; $LastChangedRevision: 30908 $
+; $LastChangedDate: 2022-09-20 11:18:04 -0700 (Tue, 20 Sep 2022) $
+; $LastChangedRevision: 31107 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_data_product__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -89,7 +89,7 @@ pro spp_data_product::add_var,var,varname=varname
 end
 
 
-function spp_data_product::getdat,trange=trange,index=index,nsamples=nsamples,valname=valname,verbose=verbose,extrapolate=extrapolate,cursor=cursor,average=average
+function spp_data_product::getdat,trange=trange,index=index,nsamples=nsamples,valname=valname,verbose=verbose,extrapolate=extrapolate,cursor=cursor,average=average,sum=sum
   if ~ptr_valid(self.data_ptr) then begin
     dprint,verbose=verbose,'No data loaded for: ',self.name
     return,!null
@@ -97,18 +97,21 @@ function spp_data_product::getdat,trange=trange,index=index,nsamples=nsamples,va
   ; verbose = 3
   ns = n_elements(*self.data_ptr)
   if keyword_set(cursor) then begin
-    ctime,trange,npoints=1,/silent
+    ctime,tr,npoints=1,/silent
   endif
 
   if isa(trange) then begin
+    ; Convert trange to double
+    tr = time_double(trange)
     if 0 then begin
-      index = interp(lindgen(ns),(*self.data_ptr).time,trange)
+      index = interp(lindgen(ns),(*self.data_ptr).time,tr)
       index_range = minmax(round(index))
       index = [index_range[0]: index_range[1]]
     endif else begin
-      if n_elements(trange) eq 1 then index =round (interp(lindgen(ns),(*self.data_ptr).time,trange) )  $
-      else index = where( (*self.data_ptr).time ge trange[0] and (*self.data_ptr).time lt trange[1],/null)
+      if n_elements(tr) eq 1 then index =round (interp(lindgen(ns),(*self.data_ptr).time,tr) )  $
+      else index = where( (*self.data_ptr).time ge tr[0] and (*self.data_ptr).time lt tr[1],/null)
     endelse
+    if ~isa(index) then return, !null
   endif
 
 
@@ -125,17 +128,23 @@ function spp_data_product::getdat,trange=trange,index=index,nsamples=nsamples,va
       dats[wbad] = fill
       ;dats[wbad] = !null ;davin wants to use !nulls in a later revision
     endif
+    ; Take average of data
+    if n_elements(index) gt 1 && keyword_set(average) then begin
+      dprint,n_elements(index)
+      dats = average(dats)
+    endif else begin
+      if n_elements(index) gt 1 && keyword_set(sum) then begin
+        dprint,n_elements(index),verbose=verbose,dlevel=2
+        ;dats = sumdata(dats,trange=tr) ;bug! please fix before committing...
+      endif else begin
+        if isa(trange) then dprint,dlevel=3,verbose=verbose,'returning all values within range'
+      endelse
+    endelse
     if keyword_set(valname) then begin
       retval =!null
       str_element,dats,valname,retval
       return, retval
     endif
-    if n_elements(index) gt 1 && keyword_set(average) then begin
-      dprint,n_elements(index)
-      dats = average(dats)
-    endif else begin
-      if isa(trange) then dprint,dlevel=3,verbose=verbose,'returning all values within range'
-    endelse
     if keyword_set(dats) then dprint,dlevel=4,verbose=verbose,self.name+' '+string(index[0])+' '+time_string(dats[0].time)
     return,dats
   endif

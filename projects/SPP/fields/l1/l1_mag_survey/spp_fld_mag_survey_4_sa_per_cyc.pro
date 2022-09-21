@@ -9,9 +9,9 @@
 ; Level 1 data which is already at 2 Sa/cycle or 4 Sa/cycle is left
 ; unchanged.
 ;
-; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2021-03-17 21:40:50 -0700 (Wed, 17 Mar 2021) $
-; $LastChangedRevision: 29769 $
+; $LastChangedBy: pulupa $
+; $LastChangedDate: 2022-09-16 17:04:00 -0700 (Fri, 16 Sep 2022) $
+; $LastChangedRevision: 31099 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_mag_survey/spp_fld_mag_survey_4_sa_per_cyc.pro $
 ;-
 
@@ -19,7 +19,7 @@ pro spp_fld_mag_survey_4_sa_per_cyc, ppp, vectors, pkt_t, $
   rate_arr, indices, range_bits, $
   times_1d = times_1d, b_1d = b_1d, $
   packet_index = packet_index, $
-  rate_1d = rate_1d
+  rate_1d = rate_1d, range_1d = range_1d
 
   ;
   ; The parameter stored in metadata as 'ppp' defines the rate of MAG data
@@ -44,16 +44,16 @@ pro spp_fld_mag_survey_4_sa_per_cyc, ppp, vectors, pkt_t, $
   ; To get to 4 samples per NYS, most sampling rates must be downsampled.
   ; The number of downsampled vectors varies with different values of 'ppp'.
   ;
-  ; ppp       downsampled        full cadence vectors per    t0**      dt***
+  ; ppp       downsampled        full cadence vectors (rbits)   t0**      dt***
   ;           vectors in packet  per downsampled vector
-  ;  0          8                     64                     31.5      64
-  ;  1         16                     32                     15.5      64
-  ;  2         32                     16                      7.5      64
-  ;  3         64                      8                      3.5      64
-  ;  4         64                      4                      1.5      64
-  ;  5         64                      2                      0.5      64
-  ;  6*        64                      N/A                    N/A      64
-  ;  7*        32                      N/A                    N/A     128
+  ;  0          8                     64                        31.5      64
+  ;  1         16                     32                        15.5      64
+  ;  2         32                     16                         7.5      64
+  ;  3         64                      8                         3.5      64
+  ;  4         64                      4                         1.5      64
+  ;  5         64                      2                         0.5      64
+  ;  6*        64                      N/A                       N/A      64
+  ;  7*        32                      N/A                       N/A     128
   ;
   ;   *: no downsampling for ppp = 6 or 7, which are already at low cadence
   ;
@@ -78,6 +78,7 @@ pro spp_fld_mag_survey_4_sa_per_cyc, ppp, vectors, pkt_t, $
   n_tri_all =  [   64,     32,     16,      8,      4,      2,      0,       0]
   t0_all =     [31.5d,  15.5d,  07.5d,  03.5d,  01.5d,  00.5d,  00.0d,   00.0d]
   dt_all =     [   64,     64,     64,     64,     64,     64,     64,     128]
+  sec_all =    [    2,      4,      8,     16,     16,     16,     16,      16]
 
   ; List of times
 
@@ -95,6 +96,10 @@ pro spp_fld_mag_survey_4_sa_per_cyc, ppp, vectors, pkt_t, $
 
   rt_all = list()
 
+  ; List of ranges
+
+  rb_all = list()
+
   ; Apply triangle filter on a packet-by-packet basis
 
   for pkt = 0, n_elements(ppp) - 1 do begin
@@ -103,7 +108,9 @@ pro spp_fld_mag_survey_4_sa_per_cyc, ppp, vectors, pkt_t, $
 
     p = fix(ppp[pkt])
 
-    t0 = t0_all[p] * 0d ; zeroed out here because we apply correction later
+    sec = sec_all[p]
+
+    t0 = t0_all[p] ;* 0d ; zeroed out here because we apply correction later
 
     ; number of vectors in downsampled packet
 
@@ -135,7 +142,7 @@ pro spp_fld_mag_survey_4_sa_per_cyc, ppp, vectors, pkt_t, $
 
       ; apply the triangle filter ds_vec times to data in the packet
 
-      ds = findgen(ds_vec)
+      ds = fltarr(ds_vec)
 
       for i = 0, ds_vec - 1 do begin
 
@@ -143,7 +150,22 @@ pro spp_fld_mag_survey_4_sa_per_cyc, ppp, vectors, pkt_t, $
 
         vec_i = vectors[pkt,ind[0]:ind[1]]
 
-        ds[i] = total(vec_i * tri)
+        ; saturated data
+
+        if max(vec_i) GE 32767 then begin
+
+          ds[i] = !values.f_nan
+
+        endif else if (min(vec_i) LE -32767) then begin
+
+          ds[i] = !values.f_nan
+;          stop
+
+        endif else begin
+
+          ds[i] = total(vec_i * tri)
+
+        endelse
 
       endfor
 
@@ -160,13 +182,22 @@ pro spp_fld_mag_survey_4_sa_per_cyc, ppp, vectors, pkt_t, $
     ; if range_bits = 0, then the packet contains only data from range = 0
     ; (always the case for on orbit PSP data as of 2020 March)
     ;
-    ; If range is mixed, then don't include the data (code currently can't 
+    ; If range is mixed, then don't include the data (code currently can't
     ; average data from different ranges together).
     ;
 
     rb = range_bits[pkt]
 
-    if rb EQ 0 then begin
+    rb_sec = rb / reverse(2l^(lindgen(16)*2)) MOD 4
+
+    rb_sec = rb_sec[0:sec-1]
+
+    if n_tri GT 0 then rb_vec = rebin(rb_sec, n_elements(ds)) else rb_vec = [0]
+
+    ; special case, where we have a 2 second packet and ranges are all
+    ; ones or all zero
+
+    if (min(rb_vec) EQ max(rb_vec)) then begin
 
       ;
       ; Add triangle filtered data to lists
@@ -176,8 +207,23 @@ pro spp_fld_mag_survey_4_sa_per_cyc, ppp, vectors, pkt_t, $
       d_all.Add, ds, /extract
       pi_all.Add, lindgen(n_elements(ds)), /extract
       rt_all.Add, lonarr(n_elements(ds)) + min([4, 2^(8-p)]), /extract
+      rb_all.Add, lonarr(n_elements(ds)) + rb_sec[0], /extract
 
-    end
+    endif else begin
+
+      ;stop
+
+      t_all.Add, t, /extract
+      d_all.Add, ds, /extract
+      ;     d_all.Add, fltarr(n_elements(ds)) + 32768, /extract
+      pi_all.Add, lindgen(n_elements(ds)), /extract
+      rt_all.Add, lonarr(n_elements(ds)) + min([4, 2^(8-p)]), /extract
+      ;      rb_all.Add, lonarr(n_elements(ds)), /extract
+      rb_all.Add, rb_vec, /extract
+
+    endelse
+
+    ;    if n_elements(rb_all) NE n_elements(d_all) then stop
 
   end
 
@@ -189,5 +235,6 @@ pro spp_fld_mag_survey_4_sa_per_cyc, ppp, vectors, pkt_t, $
   b_1d = d_all.ToArray()
   packet_index = pi_all.ToArray()
   rate_1d = rt_all.ToArray()
+  range_1d = rb_all.ToArray()
 
 end

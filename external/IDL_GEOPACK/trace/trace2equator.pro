@@ -136,9 +136,9 @@
 ;  4. All calculations are done internally in double precision
 ;
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2022-08-10 12:12:09 -0700 (Wed, 10 Aug 2022) $
-; $LastChangedRevision: 31006 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2022-09-16 16:30:39 -0700 (Fri, 16 Sep 2022) $
+; $LastChangedRevision: 31098 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/trace/trace2equator.pro $
 ;-
 
@@ -147,7 +147,8 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
     south=south, km=km, par=par, period=period, error=error, r0=r0, rlim=rlim, add_tilt=add_tilt, $
     get_tilt=get_tilt, set_tilt=set_tilt, get_nperiod=get_nperiod, get_period_times=get_period_times, $
     geopack_2008=geopack_2008, exact_tilt_times=exact_tilt_times, $
-    ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, skip_ts07_load=skip_ts07_load, _extra=_extra
+    ts07_param_dir=ts07_param_dir, ts07_param_file=ts07_param_file, skip_ts07_load=skip_ts07_load, $
+    skip_ta16_load=skip_ta16_load, _extra=_extra
 
     COMPILE_OPT idl2
     if ta16_supported() eq 1 then ta16supported=1 else ta16supported=0
@@ -155,6 +156,7 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
     if undefined(geopack_2008) then geopack_2008=0
     if undefined(exact_tilt_times) then exact_tilt_times=0
     if undefined(skip_ts07_load) then skip_ts07_load=0
+    if undefined(skip_ta16_load) then skip_ta16_load=0
 
     error = 0
     
@@ -227,6 +229,8 @@ pro trace2equator, tarray, in_pos_array, out_foot_array, out_trace_array=out_tra
       message, /continue, 'external_model ta16 is only supported with geopack DLM version 10.9 or newer'
       return
     endif
+    
+    if (external_model2 eq 'ta16') && (skip_ta16_load eq 0) then ta16_setpath
     
     if keyword_set(south) then dir = 1.0D $
     else dir = -1.0D

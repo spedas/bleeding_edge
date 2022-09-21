@@ -19,6 +19,8 @@
 ;   sw_density_tvar: variable containing solar wind proton density, in #/cc
 ;   sw_speed_tvar: variable containing solar wind proton speed, in km/s
 ;   dst_tvar: variable containing Dst (or Sym-H) data, in nT
+;   symh_tvar: Variable containing Sym-H data, in nT
+;   symhc_tvar: Variable containing Sym-HC data, in nT
 ;   w_coeff_tvar: variable containing W coefficients for the TS04 model
 ;   g_coeff_tvar: variable containing G coefficients for the T01 model
 ;   nindex_tvar: variable containing N-Index for the TA15N model
@@ -30,8 +32,8 @@
 ;   geopack_2008: flag to switch between original and Geopack 2008 library routines
 ;       
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2021-06-22 13:30:26 -0700 (Tue, 22 Jun 2021) $
-;$LastChangedRevision: 30078 $
+;$LastChangedDate: 2022-09-15 18:53:25 -0700 (Thu, 15 Sep 2022) $
+;$LastChangedRevision: 31089 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/objects/spd_ui_fieldmodels_settings__define.pro $
 ;-
 
@@ -42,6 +44,8 @@ function spd_ui_fieldmodels_settings::init, $
     sw_density_tvar=sw_density_tvar,         $
     sw_speed_tvar=sw_speed_tvar,             $
     dst_tvar=dst_tvar,                       $
+    symh_tvar=symh_tvar,                     $
+    symhc_tvar=symhc_tvar,                   $
     w_coeff_tvar=w_coeff_tvar,               $
     g_coeff_tvar=g_coeff_tvar,               $
     output_options=output_options,           $
@@ -60,6 +64,8 @@ function spd_ui_fieldmodels_settings::init, $
     if undefined(sw_density_tvar) then sw_density_tvar = ''
     if undefined(sw_speed_tvar) then sw_speed_tvar = ''
     if undefined(dst_tvar) then dst_tvar = ''
+    if undefined(symh_tvar) then symh_tvar = ''
+    if undefined(symhc_tvar) then symhc_tvar = ''
     if undefined(w_coeff_tvar) then w_coeff_tvar = ''
     if undefined(g_coeff_tvar) then g_coeff_tvar = ''
     if undefined(output_options) then output_options = [1,0,0] ; initialize with only model at position
@@ -79,6 +85,8 @@ function spd_ui_fieldmodels_settings::init, $
     self.sw_density_tvar = sw_density_tvar
     self.sw_speed_tvar = sw_speed_tvar
     self.dst_tvar = dst_tvar
+    self.symh_tvar = symh_tvar
+    self.symhc_tvar = symhc_tvar
     self.w_coeff_tvar = w_coeff_tvar
     self.g_coeff_tvar = g_coeff_tvar
     self.t89_kp = t89_kp
@@ -102,6 +110,8 @@ pro spd_ui_fieldmodels_settings__define
              sw_density_tvar: '',         $
              sw_speed_tvar: '',           $
              dst_tvar: '',                $
+             symh_tvar: '',               $
+             symhc_tvar: '',              $
              w_coeff_tvar: '',            $
              g_coeff_tvar: '',            $
              output_options: [1,0,0],     $

@@ -79,7 +79,7 @@ function elf_get_phase_delays, no_download=no_download, trange=trange, probe=pro
     dprint, dlevel=1, 'Downloading ' + remote_filename + ' to ' + local_cal_dir
     paths = spd_download(remote_file=remote_filename, $   ;remote_path=remote_cal_dir, $
       local_file=local_filename, $   ;local_path=local_cal_dir, $
-      ssl_verify_peer=1, ssl_verify_host=1)
+      ssl_verify_peer=0, ssl_verify_host=0)
     if undefined(paths) or paths EQ '' then $
       dprint, devel=1, 'Unable to download ' + local_filename
   endif
