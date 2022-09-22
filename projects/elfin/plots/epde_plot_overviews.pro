@@ -193,7 +193,21 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ;;;;;;;;;;;;;;;;;;;;
   sclet = probe
   ;;trace to equator to get L, MLAT, and MLT in IGRF
-  ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
+  if keyword_set(quick_run) then begin
+    get_data, 'el'+probe+'_pos_gsm', data=datgsm, dlimits=dl, limits=l
+    store_data, 'el'+probe+'_pos_gsm_mins', data={x: datgsm.x[0:*:60], y: datgsm.y[0:*:60,*]}, dlimits=dl, limits=l
+    ttrace2equator,'el'+sclet+'_pos_gsm_mins',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
+    ; interpolate the minute-by-minute data back to the full array
+    get_data,'el'+probe+'_pos_gsm_mins_foot',data=gsm_mins, dlimits=dl, limits=l
+    store_data,'el'+probe+'_pos_gsm_foot',data={x: datgsm.x, y: interp(gsm_mins.y[*,*], gsm_mins.x, datgsm.x)},dlimits=dl, limits=l
+    ; clean up the temporary data
+    del_data, '*_mins'
+  endif else begin
+    ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
+;    tt89,'el'+probe+'_pos_gsm',/igrf_only,newname='el'+probe+'_bt89_gsm',period=1.
+  endelse
+
+;  ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
   cotrans,'el'+sclet+'_pos_gsm_foot','el'+sclet+'_pos_sm_foot',/GSM2SM
   get_data,'el'+sclet+'_pos_gsm_foot',data=elx_pos_eq
   L1=sqrt(total(elx_pos_eq.y^2.0,2,/nan))/Re
@@ -404,6 +418,8 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         fgm_completeness_str=', FGM Completeness=None'
       endelse
 
+      if undefined(epd_completeness_str) then epd_completeness_str=', EPD Completeness=not available' 
+      if undefined(fgm_completeness_str) then fgm_completeness_str=', FGM Completeness=not available'
       ; get sector and phase delay for this zone
       phase_delay = elf_find_phase_delay(trange=sz_tr, probe=probe, instrument='epde', no_download=no_download)
       if finite(phase_delay.dsect2add[0]) then dsect2add=fix(phase_delay.dsect2add[0]) $
@@ -421,6 +437,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         else: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Bad Fit' + epd_completeness_str
       endcase 
       
+
       spin_str=''
       if spd_data_exists('el'+probe+'_pef_nflux',sz_tr[0],sz_tr[1]) then begin
         get_data, 'el'+probe+'_pef_nspinsinsum', data=my_nspinsinsum

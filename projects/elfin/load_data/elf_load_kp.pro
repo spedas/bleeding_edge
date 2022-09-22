@@ -36,18 +36,18 @@ pro elf_load_kp, trange=trange, extend_time=extend_time, no_download=no_download
 
   ; create file name
   ;  ts=time_string(tr[0])
-  kp_filename='elfin_kp.csv'
-  remote_kp_dir=!elf.REMOTE_DATA_DIR+'/kp'
-  local_kp_dir=!elf.LOCAL_DATA_DIR+'/kp'
-  if strlowcase(!version.os_family) eq 'windows' then local_kp_dir = strjoin(strsplit(local_kp_dir, '/', /extract), path_sep())
+  ;  kp_filename='elfin_kp.csv'
+  ;  remote_kp_dir=!elf.REMOTE_DATA_DIR+'/kp'
+  ;  local_kp_dir=!elf.LOCAL_DATA_DIR+'/kp'
+  ;  if strlowcase(!version.os_family) eq 'windows' then local_kp_dir = strjoin(strsplit(local_kp_dir, '/', /extract), path_sep())
 
-  remote_filename=remote_kp_dir+'/'+kp_filename
-  local_filename=local_kp_dir+'/'+kp_filename
-  paths = ''
+  ;  remote_filename=remote_kp_dir+'/'+kp_filename
+  ;  local_filename=local_kp_dir+'/'+kp_filename
+  ;  paths = ''
 
-  if keyword_set(no_download) then no_download=1 else no_download=0
+  ;  if keyword_set(no_download) then no_download=1 else no_download=0
 
-  paths = ''
+  ;  paths = ''
   ;  if no_download eq 0 then begin
   ; NOTE: directory is temporarily password protected. this will be
   ;       removed when data is made public.
@@ -60,53 +60,57 @@ pro elf_load_kp, trange=trange, extend_time=extend_time, no_download=no_download
   ;      read,user,prompt='User Name: '
   ;      read,pw,prompt='Password: '
   ;    endif
-  if file_test(local_kp_dir,/dir) eq 0 then file_mkdir2, local_kp_dir
-  dprint, dlevel=1, 'Downloading ' + remote_filename + ' to ' + local_kp_dir
-  paths = spd_download(remote_file=remote_filename, local_file=local_filename, $
-    ssl_verify_peer=0, ssl_verify_host=0)
-  if undefined(paths) or paths EQ '' then $
-    dprint, devel=1, 'Unable to download ' + local_filename
+  ;  if file_test(local_kp_dir,/dir) eq 0 then file_mkdir2, local_kp_dir
+  ;  dprint, dlevel=1, 'Downloading ' + remote_filename + ' to ' + local_kp_dir
+  ;  paths = spd_download(remote_file=remote_filename, local_file=local_filename, $
+  ;    ssl_verify_peer=0, ssl_verify_host=0)
+  ;  if undefined(paths) or paths EQ '' then $
+  ;    dprint, devel=1, 'Unable to download ' + local_filename
   ;  endif
 
   ; if file not found on server then
-  if paths[0] EQ '' || no_download EQ 1 then begin
-    ; check that there is a local file
-    if file_test(local_filename) NE 1 then begin
-      dprint, dlevel=1, 'Unable to find local file ' + local_filename
-      return
-    endif
-  endif
-
+  ;  if paths[0] EQ '' || no_download EQ 1 then begin
+  ;    ; check that there is a local file
+  ;    if file_test(local_filename) NE 1 then begin
+  ;      dprint, dlevel=1, 'Unable to find local file ' + local_filename
+  ;      return
+  ;    endif
+  ;  endif
+  noaa_load_kp, trange=tr, /gfz, local_kp_dir=!elf.local_data_dir+'\kp'
   ; read the kp csv file
-  kp_struct = read_csv(local_filename)
+  ;  kp_struct = read_csv(local_filename)
   ;check that data exists
-  if size(kp_struct, /type) EQ 8 then begin
-    ; find all values that lie within the time frame
-    idx=where(time_double(kp_struct.field1) GE tr[0] AND time_double(kp_struct.field1) LE tr[1], ncnt)
-    if ncnt GT 0 then begin
-      ; temporarily store data
-      kp_time=time_double(kp_struct.field1[idx])
-      kp_value=round(kp_struct.field3[idx])
-    endif else begin
-      ; no data was found in this time frame
-      ; if extend time flag set then check for adjacent points
-      if keyword_set(extend_time) then begin
-        ; check for adjacent points
-        sidx=where(time_double(kp_struct.field1) LE tr[0], scnt)
-        eidx=where(time_double(kp_struct.field1) GE tr[1], ecnt)
-        if scnt GT 0 then begin
-          append_array, kp_time, time_double(kp_struct.field1[sidx[scnt-1]])
-          append_array, kp_value, round(kp_struct.field3[sidx[scnt-1]])
-        endif
-        if ecnt GT 0 then begin
-          append_array, kp_time, time_double(kp_struct.field1[eidx[0]])
-          append_array, kp_value, round(kp_struct.field3[eidx[0]])
-        endif
-      endif
-    endelse
-  endif
+  ;  if size(kp_struct, /type) EQ 8 then begin
+  ;    ; find all values that lie within the time frame
+  ;    idx=where(time_double(kp_struct.field1) GE tr[0] AND time_double(kp_struct.field1) LE tr[1], ncnt)
+  ;    if ncnt GT 0 then begin
+  ;      ; temporarily store data
+  ;      kp_time=time_double(kp_struct.field1[idx])
+  ;      kp_value=round(kp_struct.field3[idx])
+  ;    endif else begin
+  ;      ; no data was found in this time frame
+  ;      ; if extend time flag set then check for adjacent points
+  ;      if keyword_set(extend_time) then begin
+  ;        ; check for adjacent points
+  ;        sidx=where(time_double(kp_struct.field1) LE tr[0], scnt)
+  ;        eidx=where(time_double(kp_struct.field1) GE tr[1], ecnt)
+  ;        if scnt GT 0 then begin
+  ;          append_array, kp_time, time_double(kp_struct.field1[sidx[scnt-1]])
+  ;          append_array, kp_value, round(kp_struct.field3[sidx[scnt-1]])
+  ;        endif
+  ;        if ecnt GT 0 then begin
+  ;          append_array, kp_time, time_double(kp_struct.field1[eidx[0]])
+  ;          append_array, kp_value, round(kp_struct.field3[eidx[0]])
+  ;        endif
+  ;      endif
+  ;    endelse
+  ;  endif
 
-  if ~undefined(kp_time) && ~undefined(kp_value) then begin
+  ;  if ~undefined(kp_time) && ~undefined(kp_value) then begin
+  get_data, 'Kp', data=d
+  if size(d, /type) eq 8 then begin
+    kp_time=d.x
+    kp_value=d.y
     dt=5400.    ; kp values are every 3 hours dt/2 is 1.5 hrs
     kp={x:kp_time-dt, y:kp_value}
     store_data, 'elf_kp', data=kp
@@ -126,4 +130,4 @@ pro elf_load_kp, trange=trange, extend_time=extend_time, no_download=no_download
     options, 'kp', labels=['']
   endelse
 
-  end
+end
