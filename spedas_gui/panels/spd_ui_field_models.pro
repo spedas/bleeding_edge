@@ -9,8 +9,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-09-16 17:07:17 -0700 (Fri, 16 Sep 2022) $
-;$LastChangedRevision: 31100 $
+;$LastChangedDate: 2022-09-22 15:27:46 -0700 (Thu, 22 Sep 2022) $
+;$LastChangedRevision: 31123 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_field_models.pro $
 ;-
 
@@ -181,6 +181,10 @@ function spd_ui_field_models_check_params, state, field_model
       get_ta15_params,imf_tvar='temp_imf_data',Np_tvar=*state.usersDensity,Vp_tvar=*state.usersSpeed,xind_tvar=*state.usersnindex,pressure_tvar=*state.userspressure,model=field_model,newname=parameter_input,/speed,/imf_yz,$
         trange = trange
     endif else if strlowcase(field_model) eq 'ta16' then begin
+      if ~ta16_supported() then begin
+        spd_ui_field_models_error,state,'TA16 model requires version 10.9 or later of the GEOPACK DLM.'
+        return,-1
+      endif
       if (tnames(*state.usersPressure) eq '') and (tnames(*state.usersDensity) eq '') then begin
         spd_ui_field_models_error, state, 'No solar wind (proton) density data selected. Solar wind density data is required for the '+field_model+' model if pressure variable not supplied.'
         spd_ui_field_models_error, state, 'Use the load data panel to load OMNI data for the time interval you''re trying to model'
@@ -771,7 +775,7 @@ pro spd_ui_field_models_event, event
 
                 ; check for a problem in getting the model parameters
                 if size(the_model_params, /type) ne 7 && the_model_params eq -1 then begin
-                    spd_ui_field_models_error, state, 'Error generating the field model due to missing input parameters.'
+                    spd_ui_field_models_error, state, 'Unable to generate the field model.'
                     return
                 endif    
                 

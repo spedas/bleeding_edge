@@ -63,14 +63,15 @@
 ;           
 ;          
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2022-01-07 13:26:45 -0800 (Fri, 07 Jan 2022) $
-; $LastChangedRevision: 30504 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2022-09-22 15:32:22 -0700 (Thu, 22 Sep 2022) $
+; $LastChangedRevision: 31126 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/get_tsy_params.pro $
 ;-
 pro get_tsy_params,dst_tvar,imf_tvar,Np_tvar,Vp_tvar,model,newname=newname,$
                    trange=trange,speed=speed,imf_yz=imf_yz,g_coefficients=g_coefficients,$
-                   w_coefficients=w_coefficients,xind=xind,pressure_tvar=pressure_tvar
+                   w_coefficients=w_coefficients,xind=xind,pressure_tvar=pressure_tvar, $
+                   symh_tvar=symh_tvar, symc_tvar=symc_tvar
 
 COMPILE_OPT idl2
 
@@ -80,6 +81,8 @@ if strlowcase(model) eq 'ts07' then begin
 endif else if (strlowcase(model) eq 'ta15b') || (strlowcase(model) eq 'ta15n') then begin
   get_ta15_params,imf_tvar=imf_tvar,Np_tvar=Np_tvar,Vp_tvar=Vp_tvar,imf_yz=imf_yz,newname=newname,trange=trange,speed=speed,model=model,xind=xind
   return
+endif else if (strlowcase(model) eq 'ta16') then begin
+  get_ta16_params,imf_tvar=imf_tvar,Np_tvar=Np_tbar,Vp_tvar=Vp_tvar,imf_yz=imf_yz,symh_tvar=symh_tvar,symc_tvar=symc_tvar,newname=newname,trange=trange,speed=speed,xind=xind
 endif
 
 if not keyword_set(trange) then tlims = timerange(/current) else tlims=trange

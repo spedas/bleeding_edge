@@ -204,8 +204,36 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     del_data, '*_mins'
   endif else begin
     ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
-;    tt89,'el'+probe+'_pos_gsm',/igrf_only,newname='el'+probe+'_bt89_gsm',period=1.
+    ;    tt89,'el'+probe+'_pos_gsm',/igrf_only,newname='el'+probe+'_bt89_gsm',period=1.
   endelse
+
+
+;  sclet = probe
+;  ;;trace to equator to get L, MLAT, and MLT in IGRF
+;  if keyword_set(quick_run) then begin
+;    get_data, 'el'+probe+'_pos_gsm', data=datgsm, dlimits=dl, limits=l
+;    store_data, 'el'+probe+'_pos_gsm_mins', data={x: datgsm.x[0:*:60], y: datgsm.y[0:*:60,*]}, dlimits=dl, limits=l
+;    get_data,  'el'+probe+'_pos_gsm_mins', data=datgsmmins
+;    re=6378
+;    rgei=(sqrt(datgsmmins.y[*,0]^2 + datgsmmins.y[*,1]^2 + datgsmmins.y[*,2]^2))/re
+;    idx = where(rgei GT 1.005, ncnt)
+;    if ncnt EQ 0 then begin
+;      dprint, 'Position data is not valid (below 1.02re)'
+;      return
+;    endif else begin
+;      get_data, 'el'+probe+'_pos_gsm_mins', data=datgsmmins, dlimits=dl, limits=l
+;      store_data, 'el'+probe+'_pos_gsm_mins', data={x:datgsmmins.x[idx], y:datgsmmins.y[*,idx]}, dlimits=dl, limits=l
+;      ttrace2equator,'el'+probe+'_pos_gsm_mins',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
+;      ; interpolate the minute-by-minute data back to the full array
+;      get_data,'el'+probe+'_pos_gsm_mins_foot',data=foot_mins
+;      store_data,'el'+probe+'_pos_gsm_foot',data={x: datgsm.x, y: interp(foot_mins.y[*,*], foot_mins.x, datgsm.x)},dlimits=dl, limits=l
+;      ; clean up the temporary data
+;      del_data, '*_mins'
+;;    endelse
+;  endif else begin
+;    ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
+;;    tt89,'el'+probe+'_pos_gsm',/igrf_only,newname='el'+probe+'_bt89_gsm',period=1.
+;  endelse
 
 ;  ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
   cotrans,'el'+sclet+'_pos_gsm_foot','el'+sclet+'_pos_sm_foot',/GSM2SM
@@ -418,8 +446,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         fgm_completeness_str=', FGM Completeness=None'
       endelse
 
-      if undefined(epd_completeness_str) then epd_completeness_str=', EPD Completeness=not available' 
-      if undefined(fgm_completeness_str) then fgm_completeness_str=', FGM Completeness=not available'
       ; get sector and phase delay for this zone
       phase_delay = elf_find_phase_delay(trange=sz_tr, probe=probe, instrument='epde', no_download=no_download)
       if finite(phase_delay.dsect2add[0]) then dsect2add=fix(phase_delay.dsect2add[0]) $

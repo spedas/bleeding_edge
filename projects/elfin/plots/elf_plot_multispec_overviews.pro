@@ -39,6 +39,12 @@ pro elf_plot_multispec_overviews, date, dur=dur, probe=probe, no_download=no_dow
 
   start_time = time_double(date) 
   end_time = start_time + 86400.
+
+  if probe EQ 'a' AND start_time GT time_double('2022-09-18/23:00:00') then begin
+    dprint, 'There is no valid orbit or EPD data past 2022-09-18.'
+    return
+  endif
+   
   epde_plot_overviews, trange=[start_time, end_time], probe=probe, $
     no_download=no_download, sci_zone=sci_zone, quick_run=quick_run,/one_zone_only
 
