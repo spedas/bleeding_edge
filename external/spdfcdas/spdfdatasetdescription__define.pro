@@ -22,7 +22,7 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2010-2017 United States Government as represented by the 
+; Copyright (c) 2010-2020 United States Government as represented by the 
 ; National Aeronautics and Space Administration. No copyright is claimed 
 ; in the United States under Title 17, U.S.Code. All Other Rights Reserved.
 ;
@@ -36,7 +36,7 @@
 ; <a href="https://cdaweb.gsfc.nasa.gov/">Coordinated Data Analysis System</a>
 ; (CDAS) XML schema.
 ;
-; @copyright Copyright (c) 2010-2017 United States Government as represented
+; @copyright Copyright (c) 2010-2020 United States Government as represented
 ;     by the National Aeronautics and Space Administration. No
 ;     copyright is claimed in the United States under Title 17,
 ;     U.S.Code. All Other Rights Reserved.
@@ -70,15 +70,21 @@
 ;            notes about this dataset.
 ; @param datasetLinks {in} {type=objarr of SpdfDatasetLink}
 ;            links to information about this dataset.
+; @param doi {in} {type=string}
+;            digital object identifier.
+; @param resourceId {in} {type=string}
+;            SPASE ResourceID.
 ; @returns reference to an SpdfDatasetDescription object.
 ;-
 function SpdfDatasetDescription::init, $
     id, observatories, instruments, observatoryGroups, $
     instrumentTypes, label, timeInterval, piName, piAffiliation, $
-    notes, datasetLinks
+    notes, datasetLinks, doi, resourceId
     compile_opt idl2
 
     self.id = id
+    self.doi = doi
+    self.resourceId = resourceId
     self.observatories = ptr_new(observatories)
     self.instruments = ptr_new(instruments)
     self.observatoryGroups = ptr_new(observatoryGroups)
@@ -118,6 +124,30 @@ function SpdfDatasetDescription::getId
     compile_opt idl2
 
     return, self.id
+end
+
+
+;+
+; Gets the doi value.
+;
+; @returns doi value.
+;-
+function SpdfDatasetDescription::getDoi
+    compile_opt idl2
+
+    return, self.doi
+end
+
+
+;+
+; Gets the resourceId value.
+;
+; @returns resourceId value.
+;-
+function SpdfDatasetDescription::getResourceId
+    compile_opt idl2
+
+    return, self.resourceId
 end
 
 
@@ -247,7 +277,8 @@ end
 pro SpdfDatasetDescription::print
     compile_opt idl2
 
-    print, 'id: ', self.id, self.label
+    print, self.id, ': ', self.label
+;    print, 'id: ', self.id, self.doi, self.resourceId
 ;    print, 'observatoryGroups: ', *self.observatoryGroups
     self.timeInterval->print
 
@@ -258,6 +289,8 @@ end
 ; Defines the SpdfDatasetDescription class.
 ;
 ; @field id dataset identifier.
+; @field doi digital object identifer (DOI) for dataset.
+; @field resourceId SPASE ResourceID for dataset.
 ; @field observatories observatories that contributed data to this
 ;            dataset.
 ; @field instruments intruments that contributed data to this 
@@ -277,6 +310,8 @@ pro SpdfDatasetDescription__define
     compile_opt idl2
     struct = { SpdfDatasetDescription, $
         id:'', $
+        doi:'', $
+        resourceId:'', $
         observatories:ptr_new(), $
         instruments:ptr_new(), $
         observatoryGroups:ptr_new(), $

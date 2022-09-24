@@ -22,7 +22,7 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2010-2017 United States Government as represented by the
+; Copyright (c) 2010-2022 United States Government as represented by the
 ; National Aeronautics and Space Administration. No copyright is claimed
 ; in the United States under Title 17, U.S.Code. All Other Rights Reserved.
 ;
@@ -38,7 +38,7 @@
 ; <a href="https://spdf.gsfc.nasa.gov/CDAWlib.html">CDAWlib</a>
 ; library.
 ;
-; @copyright Copyright (c) 2010-2017 United States Government as 
+; @copyright Copyright (c) 2010-2022 United States Government as 
 ;     represented by the National Aeronautics and Space 
 ;     Administration. No copyright is claimed in the United States 
 ;     under Title 17, U.S.Code. All Other Rights Reserved.
@@ -82,6 +82,23 @@ end
 ; <a href="https://spdf.gsfc.nasa.gov/">Space Physics Data Facility</a>
 ; <a href="https://cdaweb.gsfc.nasa.gov/">Coordinated Data Analysis 
 ; System</a>.
+; <br>
+;  Notes: <ul>
+;    <li>If any one of the <code>binInterval, binInterpolateMissingValues,
+;    binSigmaMultiplier, or binOverrideDefaultBinning</code> keyword 
+;    parameters is set, 
+;    <a href="https://cdaweb.gsfc.nasa.gov/CDAWeb_Binning_readme.html">
+;    binning of the data</a>
+;    will be requested with the default values for any missing
+;    <code>bin*</code> keyword values.  If no <code>bin*</code> keyword 
+;    parameters are set, binning of the data will not be requested.</li>
+;    <li>A few datasets in CDAS contain variables with names that cannot
+;     be used as tag names an IDL structure.  In those cases, the
+;     tag name in this structure will be a modification of the
+;     actual CDF variable name.  For example, if you requested the
+;     'H+' variable from the 'FA_K0_TMS' dataset, the 'H+' values
+;     will be returned in a structure under the tag name 'H$'.</li>
+; </ul>
 ;
 ; @param dataset {in} {type=string}
 ;            name of dataset to get data from.
@@ -94,11 +111,25 @@ end
 ; @param timeSpans {in} {type=strarr(n, 2)}
 ;            ISO 8601 format strings of the start and stop times of the
 ;            data to get.
+; @keyword binInterval {in} {optional} {type=double} {default=60.0D}
+;            binning interval (seconds).
+; @keyword binInterpolateMissingValues {in} {optional} {type=byte} 
+;            {default=1}
+;            flag indicating whether to interpolate missing values.
+; @keyword binSigmaMultiplier {in} {optional} {type=int} {default=0}
+;            standard deviation multiplier used for rejecting data.
+; @keyword binOverrideDefaultBinning {in} {optional} {type=byte}
+;            {default=0}
+;            flag indicating whether to override the default selection
+;            of variables to bin.  0 = use default selection (only
+;            variables with the ALLOW_BIN attribute set).  1 = bin
+;            additional variables beyond just those with the ALLOW_BIN
+;            attribute set.
 ; @keyword dataview {in} {optional} {type=string} {default='sp_phys'}
 ;            name of dataview containing the dataset.
 ; @keyword endpoint {in} {optional} {type=string}
-;              {default='https://cdaweb.gsfc.nasa.gov/WS/cdasr/1'}
-;              URL of CDAS web service.
+;            {default='https://cdaweb.gsfc.nasa.gov/WS/cdasr/1'}
+;            URL of CDAS web service.
 ; @keyword keepfiles {in} {optional} {type=boolean} {default=false}
 ;            The KEEPFILES keyword causes SpdfGetData to retain the
 ;            downloaded data files.  Normally these files are deleted
@@ -126,18 +157,13 @@ end
 ;            as a parameter in the callback function. If this keyword
 ;            is not set, the corresponding callback parameter's value
 ;            is undefined.
-; @keyword sslVerifyPeer {in} {optional} {type=int} {default=1}
+; @keyword sslVerifyPeer {in} {optional} {type=int} 
+;            {default=spdfGetDefaultSslVerify()}
 ;            Specifies whether the authenticity of the peer's SSL
 ;            certificate should be verified.  When 0, the connection 
 ;            succeeds regardless of what the peer SSL certificate 
 ;            contains.
-; @returns structure containing requested data.  Note that a few 
-;     datasets in CDAS contain variables with names that cannot
-;     be used as tag names an IDL structure.  In those cases, the
-;     tag name in this structure will be a modification of the
-;     actual CDF variable name.  For example, if you requested the
-;     'H+' variable from the 'FA_K0_TMS' dataset, the 'H+' values
-;     will be returned in a structure under the tag name 'H$'.
+; @returns structure containing requested data.
 ; @examples
 ;   <pre>
 ;     d = spdfgetdata('AC_K2_MFI', ['Magnitude', 'BGSEc'], $
@@ -151,13 +177,17 @@ end
 ;    To see further info. about each variable type 
 ;        help, /struct, d."variablename"
 ;    To make a plot with the CDAWlib s/w type 
-;        s = plotmaster(d, /AUTO, /CDAWEB, /GIF, /SMOOTH, /SLOW)
+;        s = spd_cdawlib_plotmaster(d, /AUTO, /CDAWEB, /GIF, /SMOOTH, /SLOW)
 ;   </pre>
 ;-
 function SpdfGetData, $
     dataset, $
     variables, $
     timeSpans, $
+    binInterval = binInterval, $
+    binInterpolateMissingValues = binInterpolateMissingValues, $
+    binSigmaMultiplier = binSigmaMultiplier, $
+    binOverrideDefaultBinning = binOverrideDefaultBinning, $
     dataview = dataview, $
     endpoint = endpoint, $
     keepfiles = keepfiles, $
@@ -168,8 +198,11 @@ function SpdfGetData, $
     sslVerifyPeer = sslVerifyPeer
     compile_opt idl2
 
-    spd_cdawlib_virtual_funcs ; compile required functions
-    
+    if ~obj_valid(httpErrorReporter) then begin
+
+        httpErrorReporter = obj_new('SpdfHttpErrorReporter')
+    endif
+
     if ~keyword_set(dataview) then begin
 
         dataview = 'sp_phys'
@@ -184,7 +217,7 @@ function SpdfGetData, $
 
     sizeTimeSpans = size(timeSpans)
 
-    if sizeTimeSpans[0] eq 1 then begin
+    if sizeTimeSpans[0] eq 1 and sizeTimeSpans[1] eq 2 then begin
 
         timeIntervals = $
             [obj_new('SpdfTimeInterval', timeSpans[0], timeSpans[1])]
@@ -204,6 +237,7 @@ function SpdfGetData, $
 
             if ~keyword_set(quiet) then begin
 
+                print, 'Error: timeSpans parameter must be strarr(n, 2)'
                 print, 'Error: size(timeSpans) = ', sizeTimeSpans
             endif
             obj_destroy, cdas
@@ -212,11 +246,26 @@ function SpdfGetData, $
         endelse
     endelse
 
-    httpErrorReporter = obj_new('SpdfHttpErrorReporter')
+    if keyword_set(binInterval) or $
+       keyword_set(binInterpolateMissingValues) or $
+       keyword_set(binSigmaMultiplier) or $
+       keyword_set(binOverrideDefaultBinning) then begin
+
+        if ~keyword_set(binInterval) then binInterval = 60.0D
+        if ~keyword_set(binInterpolateMissingValues) then $
+            binInterpolateMissingValues = 1B
+        if ~keyword_set(binSigmaMultiplier) then binSigmaMultiplier = 0L
+        if ~keyword_set(binOverrideDefaultBinning) then binOverrideDefaultBinning = 0B
+
+        binData = obj_new('SpdfBinData', binInterval, $
+                      binInterpolateMissingValues, binSigmaMultiplier, $
+                      binOverrideDefaultBinning)
+    endif
 
     dataResults = $
         cdas->getCdfData( $
             timeIntervals, dataset, variables, $
+            binData = binData, $
             httpErrorReporter = httpErrorReporter)
 
     if ~obj_valid(dataResults) then begin
@@ -308,7 +357,7 @@ function SpdfGetData, $
                           /nodata) 
 
         ; reads data into .dat structure tags
-        ; data = read_mycdf(variables, localCdfNames) 
+        ; data = spd_cdawlib_read_mycdf(variables, localCdfNames) 
 
         if n_tags(data) eq 3 && $
            array_equal (tag_names(data), $
@@ -316,7 +365,7 @@ function SpdfGetData, $
  
             if keyword_set(verbose) then begin
 
-                print, 'Error in read_mycdf()'
+                print, 'Error in spd_cdawlib_read_mycdf()'
                 print, '  ERROR: ', data.error
                 print, '  STATUS: ', data.status
             endif
@@ -376,7 +425,7 @@ function SpdfGetData, $
         print, 'and the BGSEc values are in d.bgsec.dat'
         print, '   '
         print, 'To see further info. about each variable type help, /struct, d."variablename"'
-        print, 'To make a plot with the CDAWlib s/w type s = plotmaster(d, /AUTO, /CDAWEB, /GIF, /SMOOTH, /SLOW)
+        print, 'To make a plot with the CDAWlib s/w type s = spd_cdawlib_plotmaster(d, /AUTO, /CDAWEB, /GIF, /SMOOTH, /SLOW)
 
     endif
 

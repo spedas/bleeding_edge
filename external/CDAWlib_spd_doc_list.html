@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Sep 22 18:16:31 2022.<P>
+<STRONG>Last modified: </STRONG>Fri Sep 23 18:16:27 2022.<P>
  
 <HR>
  
@@ -174,8 +174,6 @@ This page was created by the IDL library routine
 <LI><A HREF="#THREE_SIGMA">THREE_SIGMA</A>
 <LI><A HREF="#TIME_INTERVAL">TIME_INTERVAL</A>
 <br>Find nice time axis tics. (Based on the routine TNAXES)
-<LI><A HREF="#TIME_LABEL[1]">TIME_LABEL[1]</A>
-<br>Make a time label array
 <LI><A HREF="#TIMEAXIS_TEXT">TIMEAXIS_TEXT</A>
 <br>Plot a time axis.
 <LI><A HREF="#VECTPLT">VECTPLT</A>
@@ -7597,7 +7595,7 @@ All Rights Reserved.
 <A NAME="TIME_INTERVAL">
 <H2>TIME_INTERVAL</H2></A>
 <A HREF="#TIMEAXIS_TEXT">[Previous Routine]</A>
-<A HREF="#TIME_LABEL[1]">[Next Routine]</A>
+<A HREF="#TNAXES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -7644,56 +7642,9 @@ All Rights Reserved.
 <STRONG>(See <A href="CDAWlib/time_interval.pro">external/CDAWlib/time_interval.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="TIME_LABEL[1]">
-<H2>TIME_LABEL[1]</H2></A>
-<A HREF="#TIME_INTERVAL">[Previous Routine]</A>
-<A HREF="#TNAXES">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- NAME:
-       TIME_LABEL
- PURPOSE:
-       Make a time label array
- CATEGORY:
- CALLING SEQUENCE:
-       lbl = time_label(v, form)
- INPUTS:
-       v = Array of values in seconds.   in
-       form = Time date format string.   in
- KEYWORD PARAMETERS:
-       Keywords:
-         JD=jd  Set Julian Day of reference date.
-           If not given the 1-Jan-2000 is used.
- OUTPUTS:
-       lbl = String array of labels.     out
- COMMON BLOCKS:
- NOTES:
-       Notes: The input time array is really an array
-         of seconds from 0:00 on the reference date given
-         by JD=jd.  If format string does not specify a
-         date output then JD=jd need not be given, it
-         defaults to 1-Jan-2000.  When d$ is given in the
-         format string this just counts from day 1 up (to 31).
-         For a description of the time format string
-         see the routine dt_tm_mak.
- MODIFICATION HISTORY:
-       R. Sterner. 18 Nov, 1988.
-       R. Sterner, 22 Feb, 1991 --- Converted to IDL V2.
-       R. Sterner, 26 Feb, 1991 --- Renamed from make_time_labels.pro
-       Johns Hopkins University Applied Physics Laboratory.
-
- Copyright (C) 1988, Johns Hopkins University/Applied Physics Laboratory
- This software may be used, copied, or redistributed as long as it is not
- sold and this copyright notice is reproduced on each copy made.  This
- routine is provided as is without any express or implied warranties
- whatsoever.  Other limitations apply as described in the file disclaimer.txt.
-</PRE><P>
-<STRONG>(See <A href="CDAWlib/time_label.pro">external/CDAWlib/time_label.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="TNAXES">
 <H2>TNAXES</H2></A>
-<A HREF="#TIME_LABEL[1]">[Previous Routine]</A>
+<A HREF="#TIME_INTERVAL">[Previous Routine]</A>
 <A HREF="#UNPACK">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

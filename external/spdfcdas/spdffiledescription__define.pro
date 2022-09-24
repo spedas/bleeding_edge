@@ -22,7 +22,7 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2010-2017 United States Government as represented by the
+; Copyright (c) 2010-2022 United States Government as represented by the
 ; National Aeronautics and Space Administration. No copyright is claimed
 ; in the United States under Title 17, U.S.Code. All Other Rights 
 ; Reserved.
@@ -37,7 +37,7 @@
 ; <a href="https://cdaweb.gsfc.nasa.gov/">Coordinated Data Analysis 
 ; System</a> (CDAS) XML schema.
 ;
-; @copyright Copyright (c) 2010-2017 United States Government as 
+; @copyright Copyright (c) 2010-2021 United States Government as 
 ;     represented by the National Aeronautics and Space 
 ;     Administration. No copyright is claimed in the United States 
 ;     under Title 17, U.S.Code. All Other Rights Reserved.
@@ -97,22 +97,11 @@ function SpdfFileDescription::init, $
         self.thumbnailId = thumbnailId
     end
 
-    http_proxy = getenv('HTTP_PROXY')
+    self.proxySettings = obj_new('SpdfHttpProxy')
 
-    if strlen(http_proxy) gt 0 then begin
-
-        proxyComponents = parse_url(http_proxy)
-
-        self.proxy_hostname = proxyComponents.host
-        self.proxy_password = proxyComponents.password
-        self.proxy_port = proxyComponents.port
-        self.proxy_username = proxyComponents.username
-
-        if strlen(self.proxy_username) gt 0 then begin
-
-            self.proxy_authentication = 3
-        endif
-    endif
+;    spdfGetHttpProxyValues, self.proxy_authentication, $
+;        self.proxy_hostname, self.proxy_port, self.proxy_username, $
+;        self.proxy_password
 
     return, self
 end
@@ -127,6 +116,7 @@ pro SpdfFileDescription::cleanup
     if obj_valid(self.timeInterval) then obj_destroy, self.timeInterval
     if obj_valid(self.thumbnailDescription) then $
         obj_destroy, self.thumbnailDescription
+    if obj_valid(self.proxySettings) then obj_destroy, self.proxySettings
 end
 
 
@@ -274,7 +264,8 @@ end
 ;            as a parameter in the callback function. If this keyword
 ;            is not set, the corresponding callback parameter's value
 ;            is undefined.
-; @keyword sslVerifyPeer {in} {optional} {type=int} {default=1}
+; @keyword sslVerifyPeer {in} {optional} {type=int} 
+;            {default=SpdfGetDefaultSslVerifyPeer()}
 ;            Specifies whether the authenticity of the peer's SSL
 ;            certificate should be verified.  When 0, the connection
 ;            succeeds regardless of what the peer SSL certificate
@@ -301,18 +292,18 @@ function SpdfFileDescription::getFile, $
 
     if n_elements(sslVerifyPeer) eq 0 then begin
 
-        sslVerifyPeer = 1
+        sslVerifyPeer = SpdfGetDefaultSslVerifyPeer()
     endif
 
     fileUrl = $
         obj_new('IDLnetUrl', $
-                proxy_authentication = self.proxy_authentication, $
-                proxy_hostname = self.proxy_hostname, $
-                proxy_port = self.proxy_port, $
-                proxy_username = self.proxy_username, $
-                proxy_password = self.proxy_password, $
-                ;ssl_verify_peer = sslVerifyPeer, $
-                ssl_verify_host=0, ssl_verify_peer=0)
+                proxy_authentication = $
+                    self.proxySettings.getAuthentication(), $
+                proxy_hostname = self.proxySettings.getHostname(), $
+                proxy_port = self.proxySettings.getPort(), $
+                proxy_username = self.proxySettings.getUsername(), $
+                proxy_password = self.proxySettings.getPassword(), $
+                ssl_verify_peer = sslVerifyPeer)
 
     if keyword_set(callback_function) then begin
 
@@ -345,12 +336,7 @@ end
 ;            this file contains thumbnail images.  Otherwise, NULL.
 ; @field thumbnailId thumbnail description identifier when this file
 ;            contains thumbnail images.  Otherwise, ''.
-; @field proxy_authentication IDLnetURL PROXY_AUTHENTICATION property
-;            value.
-; @field proxy_hostname IDLnetURL PROXY_HOSTNAME property value.
-; @field proxy_password IDLnetURL PROXY_PASSWORD property value.
-; @field proxy_port IDLnetURL PROXY_PORT property value.
-; @field proxy_username IDLnetURL PROXY_USERNAME property value.
+; @field proxySettings HTTP proxy settings to use.
 ;-
 pro SpdfFileDescription__define
     compile_opt idl2
@@ -362,10 +348,6 @@ pro SpdfFileDescription__define
         lastModified:0.0D, $
         thumbnailDescription:obj_new(), $
         thumbnailId:'', $
-        proxy_authentication:0, $
-        proxy_hostname:'', $
-        proxy_password:'', $
-        proxy_port:'', $
-        proxy_username:'' $
+        proxySettings:obj_new() $
     }
 end

@@ -22,7 +22,7 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2010-2017 United States Government as represented by the 
+; Copyright (c) 2010-2020 United States Government as represented by the 
 ; National Aeronautics and Space Administration. No copyright is claimed 
 ; in the United States under Title 17, U.S.Code. All Other Rights Reserved.
 ;
@@ -31,7 +31,7 @@
 ;+
 ; This class represents an object that is used to report HTTP errors.
 ;
-; @copyright Copyright (c) 2010-2017 United States Government as represented
+; @copyright Copyright (c) 2010-2020 United States Government as represented
 ;     by the National Aeronautics and Space Administration. No
 ;     copyright is claimed in the United States under Title 17,
 ;     U.S.Code. All Other Rights Reserved.
@@ -79,7 +79,16 @@ pro SpdfHttpErrorDialog::reportError, $
     compile_opt idl2
 
     case responseCode of
-        404:  ; ignore
+        404:  begin
+            ;
+            ; Note that IDL (as of 8.4) does not provide the entity body
+            ; of a 404 response to us so we cannot show the user a more
+            ; detailed message from the server.
+            ;
+            reply = dialog_message( $
+                        'No data found for the specified request.', $
+                        title='No data available', /center, /information)
+        end
         else: begin
             reply = dialog_message(!error_state.msg, $
                         title='HTTP Error', /center, /error)

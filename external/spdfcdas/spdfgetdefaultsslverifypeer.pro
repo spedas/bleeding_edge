@@ -31,9 +31,9 @@
 
 ;+
 ; Gets the default value for the IDLnetURL SSL_VERIFY_PEER property
-; based upon the current version of IDL.
+; based upon the runtime version of IDL.
 ;
-; @returns 0 if current version of IDL cannot verify new SSL certificates.
+; @returns 0 if runtime version of IDL cannot verify new SSL certificates.
 ;     Otherwise, 1.
 ;-
 function SpdfGetDefaultSslVerifyPeer
@@ -41,8 +41,8 @@ function SpdfGetDefaultSslVerifyPeer
 
     releaseComponents = strsplit(!version.release, '.', /extract)
 
-    if (releaseComponents[0] lt '8') or $
-       (releaseComponents[0] eq '8' and $
+    if (releaseComponents[0] lt '8') || $
+       (releaseComponents[0] eq '8' && $
         releaseComponents[1] lt '4') then begin
 
         ; Earlier versions of IDL cannot verify new SSL certificates.

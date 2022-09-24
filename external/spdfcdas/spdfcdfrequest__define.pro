@@ -22,7 +22,7 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2010-2017 United States Government as represented by the 
+; Copyright (c) 2010-2018 United States Government as represented by the 
 ; National Aeronautics and Space Administration. No copyright is claimed 
 ; in the United States under Title 17, U.S.Code. All Other Rights Reserved.
 ;
@@ -33,7 +33,7 @@
 ; <a href="https://cdaweb.gsfc.nasa.gov/">Coordinated Data Analysis System</a>
 ; (CDAS) XML schema.
 ;
-; @copyright Copyright (c) 2010-2017 United States Government as represented
+; @copyright Copyright (c) 2010-2018 United States Government as represented
 ;     by the National Aeronautics and Space Administration. No
 ;     copyright is claimed in the United States under Title 17,
 ;     U.S.Code. All Other Rights Reserved.
@@ -56,11 +56,14 @@
 ;            version of CDF file.
 ; @keyword cdfFormat {in} {type=string} {default=Binary}
 ;            format of CDF file.
+; @keyword binData {in} {optional} {type=SpdfBinData}
+;            data binning parameters to apply to result file.
 ; @returns reference to an SpdfCdfRequest object.
 ;-
 function SpdfCdfRequest::init, $
     timeIntervals, datasetRequest, $
-    cdfVersion = cdfVersion, cdfFormat = cdfFormat
+    cdfVersion = cdfVersion, cdfFormat = cdfFormat, $
+    binData = binData
     compile_opt idl2
 
     self.timeIntervals = ptr_new(timeIntervals)
@@ -76,6 +79,10 @@ function SpdfCdfRequest::init, $
         self.cdfFormat = cdfFormat
     end
 
+    if keyword_set(binData) && obj_valid(binData) then begin
+        self.binData = ptr_new(binData)
+    end
+
     return, self
 end
 
@@ -88,6 +95,7 @@ pro SpdfCdfRequest::cleanup
 
     if ptr_valid(self.timeIntervals) then ptr_free, self.timeIntervals
     if ptr_valid(self.datasetRequest) then ptr_free, self.datasetRequest
+    if ptr_valid(self.binData) then ptr_free, self.binData
 end
 
 
@@ -140,6 +148,18 @@ end
 
 
 ;+
+; Gets the binData parameters.
+;
+; @returns binData parameters.
+;-
+function SpdfCdfRequest::getBinData
+    compile_opt idl2
+
+    return, *self.binData
+end
+
+
+;+
 ; Creates a CdfRequest element using the given XML DOM document with the
 ; values of this object.
 ;
@@ -174,6 +194,12 @@ function SpdfCdfRequest::createDomElement, $
     cdfFormatText = doc->createTextNode(self.cdfFormat)
     cdfFormatText = cdfFormatElement->appendChild(cdfFormatText)
 
+    if ptr_valid(self.binData) then begin
+
+        binDataElement = (*self.binData)->createDomElement(doc)
+        ovoid = cdfRequestElement->appendChild(binDataElement)
+    end
+
     return, cdfRequestElement
 end
 
@@ -185,6 +211,7 @@ end
 ; @field datasetRequest identifies the dataset for this request.
 ; @field cdfFormat indicates the desired format of the CDF file.
 ; @field cdfVersion indicates the desired version of the CDF file.
+; @field binData data binning parameters.
 ;-
 pro SpdfCdfRequest__define
     compile_opt idl2
@@ -192,6 +219,7 @@ pro SpdfCdfRequest__define
         timeIntervals:ptr_new(), $
         datasetRequest:ptr_new(), $
         cdfVersion:3S, $
-        cdfFormat:'Binary' $
+        cdfFormat:'Binary', $
+        binData:ptr_new() $
     }
 end

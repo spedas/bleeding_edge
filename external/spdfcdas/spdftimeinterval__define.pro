@@ -66,10 +66,10 @@ function SpdfTimeInterval::init, $
         '(I4, "/", I02, "/", I02, " ", I02, ":", I02, ":", I02)'
 
     self.iso8601Format = $
-        '(I4, "-", I02, "-", I02, "T", I02, ":", I02, ":", I02, ".000Z")'
+        '(I4, "-", I02, "-", I02, "T", I02, ":", I02, ":", F06.3, "Z")'
 
     self.shortIso8601Format = $
-        '(I4, 1X, I2, 1X, I2, 1X, I2, 1X, I2, 1X, I2)'
+        '(I4, 1X, I2, 1X, I2, 1X, I2, 1X, I2, 1X, F06.3)'
 
     if (size(start, /type) eq 7) then begin
 

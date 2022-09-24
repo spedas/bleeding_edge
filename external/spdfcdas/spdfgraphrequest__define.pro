@@ -22,7 +22,7 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2010-2017 United States Government as represented by the 
+; Copyright (c) 2010-2018 United States Government as represented by the 
 ; National Aeronautics and Space Administration. No copyright is claimed 
 ; in the United States under Title 17, U.S.Code. All Other Rights Reserved.
 ;
@@ -36,7 +36,7 @@
 ; <a href="https://cdaweb.gsfc.nasa.gov/">Coordinated Data Analysis System</a>
 ; (CDAS) XML schema.
 ;
-; @copyright Copyright (c) 2010-2017 United States Government as represented
+; @copyright Copyright (c) 2010-2018 United States Government as represented
 ;     by the National Aeronautics and Space Administration. No
 ;     copyright is claimed in the United States under Title 17,
 ;     U.S.Code. All Other Rights Reserved.
@@ -57,11 +57,14 @@
 ;            graph option bit-mask value.
 ; @keyword imageFormats {in} {type=strarr} {default=PNG}
 ;            format of graph file.
+; @keyword binData {in} {optional} {type=SpdfBinData}
+;            data binning parameters to apply to result file.
 ; @returns reference to an SpdfGraphRequest object.
 ;-
 function SpdfGraphRequest::init, $
     timeInterval, datasetRequests, $
-    graphOptions = graphOptions, imageFormats = imageFormats
+    graphOptions = graphOptions, imageFormats = imageFormats, $
+    binData = binData
     compile_opt idl2
 
     self.timeInterval = ptr_new(timeInterval)
@@ -73,6 +76,10 @@ function SpdfGraphRequest::init, $
 
     if keyword_set(imageFormats) then begin
         self.imageFormats = ptr_new(imageFormats)
+    end
+
+    if keyword_set(binData) then begin
+        self.binData = ptr_new(binData)
     end
 
     return, self
@@ -89,6 +96,7 @@ pro SpdfGraphRequest::cleanup
     if ptr_valid(self.datasetRequests) then ptr_free, self.datasetRequests
     if ptr_valid(self.graphOptions) then ptr_free, self.graphOptions
     if ptr_valid(self.imageFormats) then ptr_free, self.imageFormats
+    if ptr_valid(self.binData) then ptr_free, self.binData
 end
 
 
@@ -141,6 +149,18 @@ end
 
 
 ;+
+; Gets the binData parameters.
+;
+; @returns binData parameters.
+;-
+function SpdfGraphRequest::getBinData
+    compile_opt idl2
+
+    return, *self.binData
+end
+
+
+;+
 ; Creates a GraphRequest element using the given XML DOM document with 
 ; the values of this object.
 ;
@@ -187,6 +207,12 @@ function SpdfGraphRequest::createDomElement, $
         endfor
     end
 
+    if ptr_valid(self.binData) then begin
+
+        binDataElement = (*self.binData)->createDomElement(doc)
+        ovoid = graphRequestElement->appendChild(binDataElement)
+    end
+
     return, graphRequestElement
 end
 
@@ -198,6 +224,7 @@ end
 ; @field datasetRequests identifies the datasets for this request.
 ; @field graphOptions graph options for this request.
 ; @field imageFormats format options for this request.
+; @field binData data binning parameters.
 ;-
 pro SpdfGraphRequest__define
     compile_opt idl2
@@ -205,6 +232,7 @@ pro SpdfGraphRequest__define
         timeInterval:ptr_new(), $
         datasetRequests:ptr_new(), $
         graphOptions:ptr_new(), $
-        imageFormats:ptr_new() $
+        imageFormats:ptr_new(), $
+        binData:ptr_new() $
     }
 end

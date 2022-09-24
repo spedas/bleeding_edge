@@ -22,7 +22,7 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2010-2018 United States Government as represented by the
+; Copyright (c) 2010-2021 United States Government as represented by the
 ; National Aeronautics and Space Administration. No copyright is claimed
 ; in the United States under Title 17, U.S.Code. All Other Rights 
 ; Reserved.
@@ -38,7 +38,7 @@
 ; <a href="https://cdaweb.gsfc.nasa.gov/">Coordinated Data Analysis 
 ; System</a> (CDAS).
 ;
-; @copyright Copyright (c) 2010-2018 United States Government as 
+; @copyright Copyright (c) 2010-2021 United States Government as 
 ;     represented by the National Aeronautics and Space Administration.
 ;     No copyright is claimed in the United States under Title 17, 
 ;     U.S.Code. All Other Rights Reserved.
@@ -65,7 +65,8 @@
 ;              {default=sp_phys}
 ;              default CDAS dataview value to use in subsequent calls
 ;              when no value is specified.
-; @keyword sslVerifyPeer {in} {optional} {type=int} {default=1}
+; @keyword sslVerifyPeer {in} {optional} {type=int} 
+;              {default=SpdfGetDefaultSslVerifyPeer()}
 ;              Specifies whether the authenticity of the peer's SSL
 ;              certificate should be verified.  When 0, the connection 
 ;              succeeds regardless of what the peer SSL certificate 
@@ -106,22 +107,9 @@ function SpdfCdas::init, $
         self.ssl_verify_peer = sslVerifyPeer
     endif
 
-    http_proxy = getenv('HTTP_PROXY')
+    self.proxySettings = obj_new('SpdfHttpProxy')
 
-    if strlen(http_proxy) gt 0 then begin
-
-        proxyComponents = parse_url(http_proxy)
-
-        self.proxy_hostname = proxyComponents.host
-        self.proxy_password = proxyComponents.password
-        self.proxy_port = proxyComponents.port
-        self.proxy_username = proxyComponents.username
-
-        if strlen(self.proxy_username) gt 0 then begin
-
-            self.proxy_authentication = 3
-        endif
-    endif
+    self.retryLimit = 100
 
     return, self
 end
@@ -133,6 +121,7 @@ end
 pro SpdfCdas::cleanup
     compile_opt idl2
 
+    if obj_valid(self.proxySettings) then obj_destroy, self.proxySettings
 end
 
 
@@ -202,14 +191,22 @@ function SpdfCdas::getCurrentVersion
     endif
 
     url = obj_new('IDLnetURL', $
-                  proxy_authentication = self.proxy_authentication, $
-                  proxy_hostname = self.proxy_hostname, $
-                  proxy_port = self.proxy_port, $
-                  proxy_username = self.proxy_username, $
-                  proxy_password = self.proxy_password, $
-                  ssl_verify_host=0, ssl_verify_peer=0)
+                  proxy_authentication = $
+                      self.proxySettings.getAuthentication(), $
+                  proxy_hostname = self.proxySettings.getHostname(), $
+                  proxy_port = self.proxySettings.getPort(), $
+                  proxy_username = self.proxy.getUsername(), $
+                  proxy_password = self.proxy.getPassword())
 
-    return, url->get(/string_array, url=self.currentVersionUrl)
+    version = url->get(/string_array, url=self.currentVersionUrl)
+
+    if (n_elements(version) ne 1) then begin
+        ; May have been redirected to pleasecontactus.html
+        return, ''
+    endif
+    ; May want to add a regex validation here.
+
+    return, version
 end
 
 
@@ -254,6 +251,36 @@ function SpdfCdas::isUpToDate
 
         return, 1
     endelse
+end
+
+
+;+
+; "Percent encodes" the given string to escape reserved charaters.  This
+; method is merely a wrapper around the IDLnetURL::URLEncode method which
+; does nothing on versions of IDL where the IDLnetURL::URLEncode method
+; does not exist.
+;
+; @param value {in} {required} {type=string}
+;     the string to be encoded.
+; @returns percent encoded representation of the given value or the
+;     orignal value if called on a version of IDL without the
+;     IDLnetURL::URLEncode method.
+;-
+function SpdfCdas::encode, $
+    value
+    compile_opt idl2
+;    compile_opt static (idl >= 8.3)
+
+    catch, errorStatus
+    if (errorStatus ne 0) then begin
+
+        ; idl version < 8.5.1
+        catch, /cancel
+
+        return, value
+    endif
+
+    return, IDLnetURL.URLEncode(value)
 end
 
 
@@ -666,6 +693,12 @@ function SpdfCdas::getDatasets, $
         id = $
             self->getNamedElementsFirstChildValue(dsElement, 'Id')
 
+        doi = $
+            self->getNamedElementsFirstChildValue(dsElement, 'Doi')
+
+        resourceId = $
+            self->getNamedElementsFirstChildValue(dsElement, 'SpaseResourceId')
+
         observatories = $
             self->getNamedElementsFirstChildValue(dsElement, $
                 'Observatory')
@@ -728,7 +761,7 @@ function SpdfCdas::getDatasets, $
             obj_new('SpdfDatasetDescription', id, observatories, $
                 instruments, observatoryGroups, instrumentTypes, $
                 label, timeInterval, piName, piAffiliation, notes, $
-                datasetLinks)
+                datasetLinks, doi, resourceId)
 
         obj_destroy, datasetLinks
     endfor
@@ -745,7 +778,8 @@ end
 ; @keyword dataview {in} {optional} {type=string}
 ;              name of dataview to access.
 ; @param dataset {in} {type=string}
-;              identifies the dataset.
+;              identifies the dataset.  A <a href="https://www.doi.org/">DOI</a>
+;              value requires IDL 8.5.1 higher.
 ; @keyword authenticator {in} {optional} {type=SpdfAuthenticator}
 ;              authenticator that is used when a dataview requiring
 ;              authentication is specified.
@@ -764,7 +798,7 @@ function SpdfCdas::getInventory, $
     if ~keyword_set(dataview) then dataview = self.defaultDataview
 
     url = self.endpoint + '/dataviews/' + dataview + '/datasets/' + $
-          dataset + '/inventory'
+          self->encode(dataset) + '/inventory'
 
     inventoryDom = self->makeGetRequest(dataview, url, $
                        authenticator = authenticator, $
@@ -814,7 +848,8 @@ end
 ; @keyword dataview {in} {optional} {type=string}
 ;              name of dataview to access.
 ; @param dataset {in} {type=string}
-;              identifies the dataset.
+;              identifies the dataset.  A <a href="https://www.doi.org/">DOI</a>
+;              value requires IDL 8.5.1 higher.
 ; @keyword authenticator {in} {optional} {type=SpdfAuthenticator}
 ;              authenticator that is used when a dataview requiring
 ;              authentication is specified.
@@ -834,7 +869,7 @@ function SpdfCdas::getVariables, $
     if ~keyword_set(dataview) then dataview = self.defaultDataview
 
     url = self.endpoint + '/dataviews/' + dataview + '/datasets/' + $
-          dataset + '/variables'
+          self->encode(dataset) + '/variables'
 
     varDom = self->makeGetRequest(dataview, url, $
                 authenticator = authenticator, $
@@ -888,6 +923,52 @@ end
     
 
 ;+
+; Gets the names of a dataset's variables.  This method is like the
+; getVariables method except that it only return the variable names and
+; not the other metadata in a SpdfVariableDescription object.
+;
+; @keyword dataview {in} {optional} {type=string}
+;              name of dataview to access.
+; @param dataset {in} {type=string}
+;              identifies the dataset.
+; @keyword authenticator {in} {optional} {type=SpdfAuthenticator}
+;              authenticator that is used when a dataview requiring
+;              authentication is specified.
+; @keyword httpErrorReporter {in} {optional} 
+;              {type=SpdfHttpErrorReporter}
+;              used to report an HTTP error.
+; @returns array of strings containing the dataset's variable names.  If 
+;              the dataset has no variables, !null is returned.
+;-
+function SpdfCdas::getVariableNames, $
+    dataview = dataview, dataset, $
+    authenticator = authenticator, $
+    httpErrorReporter = errorReporter
+    compile_opt idl2
+
+    descriptions = self->getVariables(dataview=dataview, dataset, $
+                                      authenticator=authenticator, $
+                                      httpErrorReporter=httpErrorReporter)
+
+    if ~obj_valid(descriptions[0]) then begin
+
+        return, !null
+    endif
+
+    names = strarr(n_elements(descriptions))
+
+    for i = 0, n_elements(descriptions) - 1 do begin
+
+        names[i] = descriptions[i]->getName()
+    endfor
+
+    obj_destroy, descriptions
+
+    return, names
+end
+    
+
+;+
 ; Gets <a href="https://cdf.gsfc.nasa.gov/">Common Data Format</a>
 ; data from the specified dataset.
 ;
@@ -908,6 +989,8 @@ end
 ; @keyword cdfFormat {in} {optional} {type=string}
 ;              CDF format of returned data.  Valid values are:
 ;              Binary, CDFML, GzipCDFML, ZipCDFML.
+; @keyword binData {in} {optional} {type=SpdfBinData}
+;              data binning parameters to apply to the result file.
 ; @keyword authenticator {in} {optional} {type=SpdfAuthenticator}
 ;              authenticator that is used when a dataview requiring
 ;              authentication is specified.
@@ -923,6 +1006,7 @@ function SpdfCdas::getCdfData, $
     variables, $
     cdfVersion = cdfVersion, $
     cdfFormat = cdfFormat, $
+    binData = binData, $
     authenticator = authenticator, $
     httpErrorReporter = errorReporter
     compile_opt idl2
@@ -941,7 +1025,8 @@ function SpdfCdas::getCdfData, $
 
     cdfRequest = $
         obj_new('SpdfCdfRequest', timeIntervals, datasetRequest, $
-            cdfVersion = cdfVersion, cdfFormat = cdfFormat)
+            cdfVersion = cdfVersion, cdfFormat = cdfFormat, $
+            binData = binData)
 
     dataRequest = $
         obj_new('SpdfCdasDataRequest', cdfRequest)
@@ -975,6 +1060,10 @@ end
 ; @keyword compression {in} {optional} {type=int}
 ;              the type of compression to use on the result file.
 ;              Valid values are: Uncompressed, Gzip, Bzip2, Zip.
+; @keyword format {in} {optional} {type=string} {default='Plain'}
+;              format of result file.  Valid values are: Plain, CSV.
+; @keyword binData {in} {optional} {type=SpdfBinData}
+;              data binning parameters to apply to the result file.
 ; @keyword authenticator {in} {optional} {type=SpdfAuthenticator}
 ;              authenticator that is used when a dataview requiring
 ;              authentication is specified.
@@ -986,6 +1075,8 @@ end
 function SpdfCdas::getTextData, $
     dataview = dataview, timeInterval, dataset, variables, $
     compression = compression, $
+    format = format, $
+    binData = binData, $
     authenticator = authenticator, $
     httpErrorReporter = errorReporter
     compile_opt idl2
@@ -997,7 +1088,7 @@ function SpdfCdas::getTextData, $
 
     textRequest = $
         obj_new('SpdfTextRequest', timeInterval, datasetRequest, $
-            compression = compression)
+            compression = compression, format = format, binData = binData)
 
     dataRequest = $
         obj_new('SpdfCdasDataRequest', textRequest)
@@ -1030,6 +1121,8 @@ end
 ; @keyword imageFormat {in} {optional} {type=strarr}
 ;              Format options for graph.  Valid values are:
 ;              GIF, PNG, PS, PDF.
+; @keyword binData {in} {optional} {type=SpdfBinData}
+;              data binning parameters to apply to the result file.
 ; @keyword authenticator {in} {optional} {type=SpdfAuthenticator}
 ;              authenticator that is used when a dataview requiring
 ;              authentication is specified.
@@ -1041,6 +1134,7 @@ end
 function SpdfCdas::getGraphData, $
     dataview = dataview, timeInterval, datasetRequests, $
     graphOptions = graphOptions, imageFormat = imageFormat, $
+    binData = binData, $
     authenticator = authenticator, $
     httpErrorReporter = errorReporter
     compile_opt idl2
@@ -1050,7 +1144,9 @@ function SpdfCdas::getGraphData, $
     graphRequest = $
         obj_new('SpdfGraphRequest', $
             timeInterval, datasetRequests, $
-            graphOptions = graphOptions, imageFormats = imageFormats)
+            graphOptions = graphOptions, $
+            imageFormats = imageFormats, $
+            binData = binData)
 
     dataRequest = $
         obj_new('SpdfCdasDataRequest', graphRequest)
@@ -1490,12 +1586,13 @@ function SpdfCdas::makeGetRequest, $
 
     username = ''
     password = ''
+    retries = 0
 
     catch, errorStatus
     if (errorStatus ne 0) then begin
 
         catch, /cancel
-
+    
         reply = $
             self->handleHttpError( $
                 requestUrl, dataview, username, password, $
@@ -1504,11 +1601,25 @@ function SpdfCdas::makeGetRequest, $
 
         obj_destroy, requestUrl
 
-        if reply eq 0 then return, obj_new()
+        if reply eq 0 || retries gt self.retryLimit then return, obj_new()
+
+        retries = retries + 1
 
     endif
 
     requestUrl = self->getRequestUrl(url, username, password)
+
+; The following stopped working so don't bother (for now).
+;    contentType = self->getResponseHeader(requestUrl, 'Content-Type')
+;
+;    if (strlowcase(contentType) ne 'application/xml') then begin
+;
+;        ; Probably an html error page
+;
+;        obj_destroy, requestUrl
+;
+;        return, obj_new()
+;    endif
 
     result = string(requestUrl->get(/buffer))
 
@@ -1548,6 +1659,7 @@ function SpdfCdas::makePostRequest, $
 
     username = ''
     password = ''
+    retries = 0
 
     catch, errorStatus
     if (errorStatus ne 0) then begin
@@ -1562,7 +1674,9 @@ function SpdfCdas::makePostRequest, $
 
         obj_destroy, requestUrl
 
-        if reply eq 0 then return, obj_new()
+        if reply eq 0 || retries gt self.retryLimit then return, obj_new()
+
+        retries = retries + 1
 
     endif
 
@@ -1571,7 +1685,7 @@ function SpdfCdas::makePostRequest, $
     requestUrl->setProperty, header='Content-Type: application/xml'
 
 ; print, 'POSTing ', xmlRequest
-; print, 'to ', url
+; print, 'POSTing to ', url
 ; requestUrl.GetProperty, ssl_verify_peer=sslVerifyPeer
 ; print, 'ssl_verify_peer =', sslVerifyPeer
 ; requestUrl.SetProperty, ssl_verify_host=0
@@ -1587,9 +1701,40 @@ end
 
 
 ;+
+; Function to get an HTTP response header.
+;
+; @private
+;
+; @param request {in} {type=IDLnetURL}
+;            HTTP request.
+; @param header {in} {type=string}
+;            name of response header to get.
+; @returns the requested response header value or '' if it does not 
+;     exist.
+;-
+function SpdfCdas::getResponseHeader, $
+    request, header
+    compile_opt idl2
+
+    request->getProperty, response_header=responseHeader
+
+    headers = strsplit(responseHeader, string(10B), /extract)
+
+    for i = 0, n_elements(headers) - 1 do begin
+        value = strsplit(headers[i], ':', /extract)
+        if (strlowcase(value[0]) eq strlowcase(header)) then return, value[1]
+    endfor
+
+    return, ''
+end
+
+
+;+
 ; Function to handle HTTP request errors.  If an authorization error
 ; (401) has occurred and an authenticator is provided, the given
 ; authenticator is called to obtain authentication credentials.
+; If 429 or 503 with a Retry-After header has occurred, execution is
+; suspended for the Retry-After value.
 ; For any other error, if an errorReporter has been provided, it is
 ; called.
 ;
@@ -1608,8 +1753,10 @@ end
 ;              authentication is specified.
 ; @keyword errorReporter {in} {optional} {type=string}
 ;              name of IDL procedure to call if an HTTP error occurs.
-; @returns a value of 1 if username and password has been set and a 
-;     value of 0 if not. 
+; @returns a value of 1 corrective action has occurred and a value of
+;     0 if not.  The corrective action for a 401 is setting the username 
+;     and password.  Corrective action for a 429/503 is waiting the
+;     specified time.
 ;-
 function SpdfCdas::handleHttpError, $
     request, dataview, username, password, $
@@ -1633,6 +1780,18 @@ function SpdfCdas::handleHttpError, $
 
             return, 0
         endif
+    endif else if responseCode eq 429 || responseCode eq 503 then begin
+
+        retryAfter = stregex(responseHeader, $
+                             'Retry-After: ([0-9]+)' + string(13b), $
+                             /extract, /subexpr)
+
+        if n_elements(retryAfter) eq 2 && $
+           strlen(retryAfter[1]) gt 0 then begin
+
+            wait, fix(retryAfter[1])
+        endif
+
     endif else begin
 
         if keyword_set(errorReporter) then begin
@@ -1669,11 +1828,12 @@ function SpdfCdas::getRequestUrl, $
 
     requestUrl = $
         obj_new('IDLnetURL', $
-                proxy_authentication = self.proxy_authentication, $
-                proxy_hostname = self.proxy_hostname, $
-                proxy_port = self.proxy_port, $
-                proxy_username = self.proxy_username, $
-                proxy_password = self.proxy_password, $
+                proxy_authentication = $
+                    self.proxySettings.getAuthentication(), $
+                proxy_hostname = self.proxySettings.getHostname(), $
+                proxy_port = self.proxySettings.getPort(), $
+                proxy_username = self.proxySettings.getUsername(), $
+                proxy_password = self.proxySettings.getPassword(), $
                 ssl_verify_peer = self.ssl_verify_peer)
 
     urlComponents = parse_url(url)
@@ -1710,13 +1870,10 @@ end
 ; @field version identifies the version of this class.
 ; @field currentVersionUrl URL to the file identifying the most up to 
 ;            date version of this class.
-; @field proxy_authentication IDLnetURL PROXY_AUTHENTICATION property
-;            value.
-; @field proxy_hostname IDLnetURL PROXY_HOSTNAME property value.
-; @field proxy_password IDLnetURL PROXY_PASSWORD property value.
-; @field proxy_port IDLnetURL PROXY_PORT property value.
-; @field proxy_username IDLnetURL PROXY_USERNAME property value.
+; @field proxySettings HTTP proxy settings to use.
 ; @field ssl_verify_peer IDLnetURL SSL_VERIFY_PEER property value.
+; @field retryLimit retry limit for requests that fail with an http
+;            status of 429 or 503 with a Retry-After header.
 ;-
 pro SpdfCdas__define
     compile_opt idl2
@@ -1726,11 +1883,8 @@ pro SpdfCdas__define
         defaultDataview:'', $
         version:'', $
         currentVersionUrl:'', $
-        proxy_authentication:0, $
-        proxy_hostname:'', $
-        proxy_password:'', $
-        proxy_port:'', $
-        proxy_username:'', $
-        ssl_verify_peer:1 $
+        proxySettings:obj_new(), $
+        ssl_verify_peer:1, $
+        retryLimit:100 $
     }
 end

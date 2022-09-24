@@ -22,7 +22,7 @@
 ;
 ; NOSA HEADER END
 ;
-; Copyright (c) 2010-2017 United States Government as represented by the
+; Copyright (c) 2010-2021 United States Government as represented by the
 ; National Aeronautics and Space Administration. No copyright is claimed
 ; in the United States under Title 17, U.S.Code. All Other Rights 
 ; Reserved.
@@ -34,7 +34,7 @@
 ; This program provides a GUI for choosing datasets from 
 ; <a href="https://cdaweb.gsfc.nasa.gov/">CDAWeb</a>.
 ; 
-; @copyright Copyright (c) 2010-2017 United States Government as 
+; @copyright Copyright (c) 2010-2020 United States Government as 
 ;     represented by the National Aeronautics and Space Administration.
 ;     No copyright is claimed in the United States under Title 17,
 ;     U.S.Code. All Other Rights Reserved.
@@ -42,7 +42,12 @@
 ; @author B. Harris
 ;-
 
+
 pro twinscolorbar
+end
+
+function IDLFFDICOMEXISLICENSED ; stub for idl 8.8
+    return, 0
 end
 
 
@@ -215,66 +220,93 @@ pro spdfViewNotes, $
 
     fullNotesUrl = selectedDataset->getNotes()
 
-    urlComponents = $
-        strsplit(fullNotesUrl, '#', count=componentCount, /extract)
+    spdfShowAsOnlineHelp, fullNotesUrl
+end
 
-    notesUrl = urlComponents[0]
+
+;+
+; Responds to a request to view a dataset's DOI/SPASE description.
+;
+; @param event {in} {type=widget event}
+;            event triggering the execution of this procedure
+;-
+pro spdfViewDoi, $
+    event
+    compile_opt idl2
+
+    widget_control, event.top, get_uvalue=state
+
+    selectedDataset = *state.selectedDataset
+
+    resourceId = selectedDataset->getResourceId()
+
+    if strlen(resourceId) gt 0 then begin
+
+        url = 'https://hpde.io' + strmid(resourceId, 7) + '.html'
+
+        spdfShowAsOnlineHelp, url
+    endif else begin
+
+        msg = 'There is no DOI/SPASE information available for ' + $
+              selectedDataset->getId()
+
+        reply = dialog_message(msg, title='No Information Available', $
+                    /center, /information)
+    endelse
+    
+end
+
+
+;+
+; Displays the given URL using the IDL ONLINE_HELP procedure.  Refer to
+; the ONLINE_HELP documentation for the types of files that are supported.
+;
+; @param url {in} {type=string}
+;     URL of file to download and display with ONLINE_HELP.  This url
+;     may contain an HTML fragment identifier.
+;-
+pro spdfShowAsOnlineHelp, $
+    url
+    compile_opt idl2
+
+    urlComponents = $
+        strsplit(url, '#', count=componentCount, /extract)
+
+    urlWithoutFrag = urlComponents[0]
 
     if componentCount eq 2 then begin
 
-        notesAnchor = urlComponents[1]
+        fragId = urlComponents[1]
     endif
 
     pathComponents = $
-        strsplit(notesUrl, '/', count=componentCount, /extract)
+        strsplit(urlWithoutFrag, '/', count=componentCount, /extract)
 
     filename = pathComponents[componentCount - 1]
 
-    proxy_authentication = 0
-    proxy_hostname = ''
-    proxy_password = ''
-    proxy_port = ''
-    proxy_username = ''
-
-    http_proxy = getenv('HTTP_PROXY')
-
-    if strlen(http_proxy) gt 0 then begin
-
-        proxyComponents = parse_url(http_proxy)
-
-        proxy_hostname = proxyComponents.hostname
-        proxy_password = proxyComponents.password
-        proxy_port = proxyComponents.port
-        proxy_username = proxyComponents.username
-
-        if strlen(proxy_username) gt 0 then begin
-
-            proxy_authentication = 3
-        endif
-    endif
+    proxySettings = obj_new('SpdfHttpProxy')
 
     notes = obj_new('IDLnetURL', $
-                    proxy_authentication = proxy_authentication, $
-                    proxy_hostname = proxy_hostname, $
-                    proxy_port = proxy_port, $
-                    proxy_username = proxy_username, $
-                    proxy_password = proxy_password, $
-                    ssl_verify_host=0, ssl_verify_peer=0)
+                    proxy_authentication = $
+                        proxySettings.getAuthentication(), $
+                    proxy_hostname = proxySettings.getHostname(), $
+                    proxy_port = proxySettings.getPort(), $
+                    proxy_username = proxySettings.getUsername(), $
+                    proxy_password = proxySettings.getPassword())
 
-    localNotes = notes->get(filename=filename, url=notesUrl)
+    localNotes = notes->get(filename=filename, url=urlWithoutFrag)
 
 ; save filename so it can be deleted when this program Exits
 
-    if n_elements(notesAnchor) ne 0 then begin
+    if n_elements(fragId) ne 0 then begin
 
-        online_help, notesAnchor, book=localNotes, /full_path
+        online_help, fragId, book=localNotes, /full_path
     endif else begin
 
         online_help, book=localNotes, /full_path
     endelse
 
 end
-
 
 
 ;+
@@ -526,6 +558,8 @@ pro spdfFindDatasets, $
     endfor
     sortedDatasetIndexes = sort(datasetIds)
 
+    widget_control, state.datasetTree, update=0
+
     for i = 0, n_elements(datasets) - 1 do begin
 
         datasetId = datasets[sortedDatasetIndexes[i]]->getId()
@@ -547,13 +581,11 @@ pro spdfFindDatasets, $
 
             ; Not merely a pointer dataset (we do not show pointer
             ; datasets in the tree).
-
             ;
             ; Putting a uvalue of datasets[i] in the tree widget
             ; makes destroying the widget more difficult
             ;
             datasetNode = widget_tree(rootNode, value=datasetTitle, $
-;                              /folder, /expanded, uvalue=datasetId, $
                               /folder, uvalue=datasetId, $
                               event_pro='spdfDatasetTreeEvent')
 
@@ -575,6 +607,8 @@ pro spdfFindDatasets, $
         endif
         obj_destroy, variables
     endfor
+
+    widget_control, state.datasetTree, update=1
 
 end
 
@@ -733,6 +767,294 @@ end
 
 
 ;+
+; Responds to a request to view the binning help.
+;
+; @param event {in} {type=widget event}
+;            event triggering the execution of this procedure
+;-
+pro spdfBinHelp, $
+    event
+    compile_opt idl2
+
+    catch, errorStatus
+    if (errorStatus ne 0) then begin
+
+        catch, /cancel
+
+        reply = dialog_message( $
+                    'Failed to get binning help.', $
+                    title='Help Error', /center, /error)
+        return
+    endif
+
+    widget_control, event.top, get_uvalue=state
+
+    proxySettings = obj_new('SpdfHttpProxy')
+
+    help = obj_new('IDLnetURL', $
+                    proxy_authentication = $
+                        proxySettings.getAuthentication(), $
+                    proxy_hostname = proxySettings.getHostname(), $
+                    proxy_port = proxySettings.getPort(), $
+                    proxy_username = proxySettings.getUsername(), $
+                    proxy_password = proxySettings.getPassword(), $
+                    ssl_verify_peer=state.sslVerifyPeer)
+
+    *state.localBinHelp = $
+        help->get(filename='BinReadme.html', $
+        url='https://cdaweb.gsfc.nasa.gov/CDAWeb_Binning_readme.html')
+
+    online_help, book=*state.localBinHelp, /full_path
+
+end
+
+
+;+
+; Responds to a request to view the spike removal help.
+;
+; @param event {in} {type=widget event}
+;            event triggering the execution of this procedure
+;-
+pro spdfSpikeRemovalHelp, $
+    event
+    compile_opt idl2
+
+    catch, errorStatus
+    if (errorStatus ne 0) then begin
+
+        catch, /cancel
+
+        reply = dialog_message( $
+                    'Failed to get spike removal help.', $
+                    title='Help Error', /center, /error)
+        return
+    endif
+
+    widget_control, event.top, get_uvalue=state
+
+    proxySettings = obj_new('SpdfHttpProxy')
+
+    help = obj_new('IDLnetURL', $
+                    proxy_authentication = $
+                        proxySettings.getAuthentication(), $
+                    proxy_hostname = proxySettings.getHostname(), $
+                    proxy_port = proxySettings.getPort(), $
+                    proxy_username = proxySettings.getUsername(), $
+                    proxy_password = proxySettings.getPassword(), $
+                    ssl_verify_peer=state.sslVerifyPeer)
+
+    *state.localSpikeRemovalHelp = $
+        help->get(filename='CleanAlgorithm.pdf', $
+        url='https://hpde.gsfc.nasa.gov/CleanAlgorithm.pdf')
+
+    online_help, book=*state.localSpikeRemovalHelp, /full_path
+
+end
+
+
+;+
+; Responds to a "bin data" button event.  The current selection value
+; is saved in state.
+;
+; @param event {in} {type=widget event}
+;            event triggering the execution of this function.
+; @returns 0
+;-
+function spdfBinDataButton, $
+    event
+    compile_opt idl2
+
+    widget_control, event.top, get_uvalue=state
+
+    *state.binData = event.select
+
+    return, 0
+end
+
+
+;+
+; Responds to a "bin missing values" button event.  The current selection
+; value is saved in state.
+;
+; @param event {in} {type=widget event}
+;            event triggering the execution of this function.
+; @returns 0
+;-
+function spdfBinMissingValues, $
+    event
+    compile_opt idl2
+
+    widget_control, event.top, get_uvalue=state
+
+    *state.binMissingValues = event.value
+
+    return, 0
+end
+
+
+;+
+; Responds to a "spike removal selected" event.  The current selection
+; value is saved in state.
+;
+; @param event {in} {type=widget event}
+;            widget_list event.
+;-
+pro spdfSpikeRemovalSelected, $
+    event
+    compile_opt idl2
+
+    widget_control, event.top, get_uvalue=state
+
+    *state.binSigmaMultiplier = event.index * 2
+end
+
+
+;+
+; Responds to a "bin override default binning" button event.  The 
+; current selection value is saved in state.
+;
+; @param event {in} {type=widget event}
+;            event triggering the execution of this function.
+; @returns 0
+;-
+function spdfBinOverrideDefaultBinning, $
+    event
+    compile_opt idl2
+
+    widget_control, event.top, get_uvalue=state
+
+    *state.binOverrideDefaultBinning = event.value
+
+    return, 0
+end
+
+
+;+
+; Gets the BinData value from the associated widgets.
+;
+; @param state {in} {type=struct}
+;            widget program's state.
+; @returns the current BinData value or a null object if binning
+;     is not currently selected.  If the interval values is invalid
+;     an error dialog is displayed and a null object is returned.
+;-
+function spdfGetBinData, $
+    state
+    compile_opt idl2
+
+    if *state.binData eq 1 then begin
+
+        return, obj_new('SpdfBinData', *state.binInterval, $
+                        *state.binMissingValues, $
+                        *state.binSigmaMultiplier, $
+                        *state.binOverrideDefaultBinning)
+    endif
+
+    return, obj_new()
+end
+
+
+;+
+; Responds to a close bin data window event.
+;
+; @param event {in} {type=widget_button}
+;            event triggering the execution of this procedure.
+;-
+pro spdfCloseBinWindow, $
+    event
+    compile_opt idl2
+
+    widget_control, event.top, get_uvalue=state
+
+    widget_control, *state.binIntervalId, get_value=*state.binInterval
+
+    widget_control, event.top, /destroy
+end
+
+
+;+
+; Responds to a request to set data binning parameters.
+;
+; @param event {in} {type=widget event}
+;            event triggering the execution of this procedure
+;-
+pro spdfBinDataWindow, $
+    event
+
+    widget_control, event.top, get_uvalue=state
+
+    title = 'Compute uniformly spaced binned data'
+
+    binWindow = $
+        widget_base(title=title, /column, group_leader=event.top)
+
+    binDataPanel = widget_base(binWindow, /row)
+    binDataButton = cw_bgroup(binDataPanel, $
+                    ['Compute uniformly spaced binned data'], $
+                    /nonexclusive, /frame, $
+                    event_funct='spdfBinDataButton', $
+                    set_value=*state.binData)
+    ; The following binHelpPanel exists to keep focus (black border)
+    ; from the binHelpButton.  All other attempt to change focus (for
+    ; example, widget_control, binDataButton, /input_focus) away from
+    ; the binHelpButton failed.
+    binHelpPanel = widget_base(binDataPanel, /row)
+    binHelpButton = widget_button(binHelpPanel, /align_right, $
+                      event_pro='spdfBinHelp', value='Help', $
+                      tooltip='View explanation of computation')
+
+    intervalLabel = widget_label(binWindow, /align_left, $
+                        value='Interval (seconds)');
+    *state.binIntervalId = cw_field(binWindow, $
+                    title='', $
+                    /float, value=*state.binInterval)
+; 8.3                    /double, value=*state.binInterval)
+
+    missingValues = cw_bgroup(binWindow, $
+                    ['Use Fill Value', 'Interpolate'], $
+                    /exclusive, /frame, $
+                    label_top='Handle Missing Values', $
+                    event_funct='spdfBinMissingValues', $
+                    set_value=*state.binMissingValues)
+
+    spikeRemovalLabel = widget_label(binWindow, /align_left, $
+        value='Spike Removal');
+    spikeRemovalPanel = widget_base(binWindow, /row)
+    spikeRemovalOptions = ['None', $
+        'Remove mild to moderate outliers', $
+        'Remove moderate to extreme outliers', $
+        'Remove extreme outliers only']
+    binSpikeRemoval = widget_combobox(spikeRemovalPanel, $
+                   event_pro='spdfSpikeRemovalSelected', $
+                   value=spikeRemovalOptions)
+    widget_control, binSpikeRemoval, $
+        set_combobox_select=*state.binSigmaMultiplier / 2
+    spikeHelpButton = widget_button(spikeRemovalPanel, /align_right, $
+                      event_pro='spdfSpikeRemovalHelp', value='Help', $
+                      tooltip='View explanation of algorithm')
+
+    overrideDefaultBinning = cw_bgroup(binWindow, $
+                    ['Use Default Selection', $
+                     'Override Default Selection'], $
+                    /exclusive, /frame, $
+                    label_top='Binning Variable Selection', $
+                    event_funct='spdfBinOverrideDefaultBinning', $
+                    set_value=*state.binOverrideDefaultBinning)
+
+    binButtonPanel = widget_base(binWindow, /row)
+
+    closeButton = widget_button(binButtonPanel, /align_left, $
+                      event_pro='spdfCloseBinWindow', $
+                      value='Close', tooltip='Close data binning window')
+
+    widget_control, binWindow, set_uvalue=state, /realize
+
+    xmanager, 'SpdfBinDataWindow', binWindow
+
+end
+
+
+;+
 ; Creates IDL statements to read the specified data into an IDL 
 ; environment.  
 ;
@@ -772,8 +1094,25 @@ pro spdfGetCdawebDataCmd, $
 
     endelse
 
+    binTxt = ''
+    binData = spdfGetBinData(state)
+
+    if obj_valid(binData) then begin
+
+        binTxt = ', binInterval=' + $
+                 string(binData->getInterval(), format='(F5.1)') + $
+                 ', binInterpolateMissingValues=' + $
+                 string(binData->getInterpolateMissingValues(), $
+                        format='(I1)') + $
+                 ', binSigmaMultiplier=' + $
+                 string(binData->getSigmaMultiplier(), format='(I1)') + $
+                 ', binOverrideDefaultBinning=' + $
+                 string(binData->getOverrideDefaultBinning(), $
+                        format='(I1)')
+    endif
+
     print, dataVarName, ' = spdfgetdata(', datasetCmdTxt, ', ', $
-           varCmdTxt, ', ', timeCmdTxt, ')'
+           varCmdTxt, ', ', timeCmdTxt, binTxt, ')'
 
     reply = dialog_message( $
         ['The specified data can be read into the IDL environment by', $
@@ -838,8 +1177,17 @@ pro spdfGetCdawebDataExec, $
         state.cdas->getCdfData($
             timeInterval, datasetId, varNames, $
             dataview=*state.selectedDataview, $
+            binData=spdfGetBinData(state), $
             authenticator=state.authenticator, $
             httpErrorReporter=state.errorDialog)
+
+    if ~obj_valid(dataResults) then begin
+
+        reply = dialog_message( $
+                    'Error requesting data from CDAS web services.', $
+                    title='CDAS Web Service Error', /center, /error)
+        return
+    endif
 
     fileDescriptions = dataResults->getFileDescriptions()
 
@@ -853,12 +1201,12 @@ pro spdfGetCdawebDataExec, $
             localCdfNames[i] = fileDescriptions[i]->getFile()
         endfor
 
-        ; make a copy of localCdfNames that read_mycdf can alter
+        ; make a copy of localCdfNames that spd_cdawlib_read_mycdf can alter
         localCdfNames2 = localCdfNames
-        cdfData = read_mycdf(varNames, localCdfNames2) 
+        cdfData = spd_cdawlib_read_mycdf(varNames, localCdfNames2) 
 
         (scope_varFetch(dataVarName, /enter, level=1)) = $
-            hsave_struct(cdfData, /nosave)
+            spd_cdawlib_hsave_struct(cdfData, /nosave)
 
         resultMsgLines = n_elements(varNames) + 1
 
@@ -994,10 +1342,10 @@ pro spdfReadLocalData, $
 
     if files ne '' then begin
 
-        cdfData = read_mycdf(varNames, files, all=1)
+        cdfData = spd_cdawlib_read_mycdf(varNames, files, all=1)
 
         (scope_varFetch(dataVarName, /enter, level=1)) = $
-            hsave_struct(cdfData, /nosave)
+            spd_cdawlib_hsave_struct(cdfData, /nosave)
 
         reply = dialog_message($
                 'Data from the selected file(s) is now available in ' $
@@ -1024,10 +1372,10 @@ pro spdfGetCdawebPlot, $
 
     if n_elements((scope_varFetch(dataVarName, /enter, level=1))) then begin
 
-        ; make a copy of the data for plotmaster to destroy
+        ; make a copy of the data for spd_cdawlib_plotmaster to destroy
         copyOfData = scope_varFetch(dataVarName, level=1)
 
-        s = plotmaster(copyOfData, xsize=600, /AUTO, /CDAWEB, /SMOOTH, /SLOW)
+        s = spd_cdawlib_plotmaster(copyOfData, xsize=600, /AUTO, /CDAWEB, /SMOOTH, /SLOW)
 
     endif else begin
 
@@ -1061,10 +1409,10 @@ pro spdfCreateCdawebListing, $
 
         if filename ne '' then begin
 
-            ; make a copy of the data for list_mystruct to destroy
+            ; make a copy of the data for spd_cdawlib_list_mystruct to destroy
             copyOfData = scope_varFetch(dataVarName, level=1)
 
-            listing = list_mystruct(copyOfData, filename=filename[0])
+            listing = spd_cdawlib_list_mystruct(copyOfData, filename=filename[0])
 
             xdisplayfile, filename[0], group=event.top
 
@@ -1102,8 +1450,25 @@ pro spdfExit, $
     ptr_free, state.datasets
     ptr_free, state.selectedDataset
     ptr_free, state.saveData
+    ptr_free, state.binData
+    ptr_free, state.binInterval
+    ptr_free, state.binMissingValues
+    ptr_free, state.binSigmaMultiplier
+    ptr_free, state.binOverrideDefaultBinning
 
 ; file_delete Notes?.html files
+
+    if strlen(*state.localBinHelp) gt 0 then begin
+
+        file_delete, *state.localBinHelp, /quiet
+    endif
+    ptr_free, state.localBinHelp
+
+    if strlen(*state.localSpikeRemovalHelp) gt 0 then begin
+
+        file_delete, *state.localSpikeRemovalHelp, /quiet
+    endif
+    ptr_free, state.localSpikeRemovalHelp
 
 heap_gc
 
@@ -1128,7 +1493,7 @@ pro spdfAbout, $
         'Space Physics Data Facility (SPDF)', $
         'https://spdf.gsfc.nasa.gov/', $
         '', $
-        'Current CDAWlib version: ' + version(), $
+        'Current CDAWlib version: ' + spd_cdawlib_version(), $
         'Current SpdfCdas version: ' + state.cdas->getVersion()], $
         title='About', /center, /information)
 end
@@ -1151,7 +1516,7 @@ function spdfGetDataviews, $
     if ~(cdas->isUpToDate()) then begin
 
         reply = dialog_message([ $
-            'Current CDAWlib version: ' + version(), $
+            'Current CDAWlib version: ' + spd_cdawlib_version(), $
             'Current SpdfCdas version: ' + cdas->getVersion(), $
             'Available SpdfCdas version: ' + cdas->getCurrentVersion(), $
             'There is a newer version of the SpdfCdas library available.'], $
@@ -1236,6 +1601,12 @@ end
 ; @keyword endpoint {in} {optional} {type=string}
 ;              {default=SpdfCdas->getDefaultEndpoint()}
 ;              URL of CDAS web service.
+; @keyword sslVerifyPeer {in} {optional} {type=int} 
+;              {default=spdfGetDefaultSslVerify()}
+;              Specifies whether the authenticity of the peer's SSL
+;              certificate should be verified.  When 0, the connection
+;              succeeds regardless of what the peer SSL certificate
+;              contains.
 ; @keyword GROUP_LEADER {in} {optional} {type=int}
 ;              The widget ID of the group leader for this window.  If
 ;              no value is provided, the resulting window will not
@@ -1243,9 +1614,12 @@ end
 ;-
 pro spdfCdawebChooser, $
     endpoint = endpoint, $
+    sslVerifyPeer = sslVerifyPeer, $
     GROUP_LEADER = groupLeaderWidgetId
     compile_opt idl2
 
+    RESOLVE_ROUTINE, 'spd_cdawlib_virtual_funcs', /COMPILE_FULL_FILE
+    
     cd, current=cwd
     if ~file_test(cwd, /write) then begin
 
@@ -1275,9 +1649,12 @@ pro spdfCdawebChooser, $
         defaultSaveCdfOption = 0
     endelse
 
+    if (n_elements(sslVerifyPeer) eq 0) then sslVerifyPeer = 1
+
     cdas = $
         obj_new('SpdfCdas', $
         endpoint=endpoint, $
+        sslVerifyPeer=sslVerifyPeer, $
         userAgent='CdawebChooser')
 
     dataviews = spdfGetDataviews(cdas)
@@ -1287,7 +1664,7 @@ pro spdfCdawebChooser, $
         reply = dialog_message( $
                     ['Could not connect to CDAWeb.', $
                      'Please check Internet connectivity to ', $
-                     'https://cdaweb.gsfc.nasa.gov/.'], $
+                     cdas->getEndpoint()], $
                     title='Network Error', /center, /error)
         return
     endif
@@ -1364,6 +1741,9 @@ pro spdfCdawebChooser, $
     viewNotesButton = widget_button(dsContextMenu, $
                           event_pro='spdfViewNotes', $
                           value="View Notes")
+    viewDoiButton = widget_button(dsContextMenu, $
+                          event_pro='spdfViewDoi', $
+                          value="View DOI/SPASE")
     viewInventoryButton = widget_button(dsContextMenu, $
                       event_pro='spdfViewInventory', $
                       value="View Inventory")
@@ -1398,6 +1778,10 @@ pro spdfCdawebChooser, $
                     label_left='File Option', $
                     event_funct='spdfSaveDataButton', $
                     set_value=[defaultSaveCdfOption])
+    binDataButton = widget_button(optionPanel, $
+                     event_pro='spdfBinDataWindow', $
+                     value='Bin Data Options...', $
+                     tooltip='Compute uniformly spaced binned data')
 
     actionPanel = widget_base(dataOperationPanel, /row)
     dataButton = widget_button(actionPanel, $
@@ -1458,7 +1842,16 @@ pro spdfCdawebChooser, $
         startTime:startTime, $
         stopTime:stopTime, $
         dataVarName:dataVarName, $
-        saveData:ptr_new(defaultSaveCdfOption) $
+        saveData:ptr_new(defaultSaveCdfOption), $
+        binData:ptr_new(0), $
+        binIntervalId:ptr_new(0), $
+        binInterval:ptr_new(60.0), $
+        binMissingValues:ptr_new(0), $
+        binSigmaMultiplier:ptr_new(0), $
+        binOverrideDefaultBinning:ptr_new(0), $
+        localBinHelp:ptr_new(''), $
+        localSpikeRemovalHelp:ptr_new(''), $
+        sslVerifyPeer:sslVerifyPeer $
     }
 
     widget_control, tlb, set_uvalue=state, /realize

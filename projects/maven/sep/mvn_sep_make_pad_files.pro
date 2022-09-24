@@ -144,4 +144,34 @@ pro mvn_sep_make_pad_files, time_range, out_path = out_path, version = version,$
   endfor
   
 end
+
+
+
+function numbered_filestring, i, digits = digits
+
+  ii = round (i)
+  if not keyword_set (digits) then digits = 4
+  ni = n_elements (i)
+  output = strarr (ni) 
+  
+  if digits eq 1 then begin
+     for k = 0, ni-1 do output [k] =  strcompress(string(ii[k] mod 10), /rem)
+  endif else if digits eq 2 then begin
+     for k = 0, ni-1 do output [k] = strcompress(string(ii[k]/10 mod 10), /rem)+$
+        strcompress(string(ii[k] mod 10), /rem)
+  endif else if digits eq 3 then begin
+     for k = 0, ni-1 do output [k] = $
+        strcompress(string((ii[k] - 1000*(ii[k]/1000))/100), /rem)+$
+        strcompress(string(ii[k]/10 mod 10), /rem)+$
+        strcompress(string(ii[k] mod 10), /rem)
+  endif else if digits eq 4 then begin
+     for k = 0, ni-1 do output [k] = strcompress(string(ii[k]/1000), /rem) +$
+        strcompress(string((ii[k] - 1000*(ii[k]/1000))/100), /rem)+$
+        strcompress(string(ii[k]/10 mod 10), /rem)+$
+        strcompress(string(ii[k] mod 10), /rem)
+  endif else begin 
+     message, 'digits keyword must be specified and must be between 1 and 4'
+  endelse
+  return, output
+end
   

@@ -1,7 +1,10 @@
+Most recent changes: Sept 2022, using spdfcdas version 1.7.41
+https://cdaweb.gsfc.nasa.gov/WebServices/REST/SpdfCdas-1.7.41.tar.gz
+
 *** 0. Description *** 
 
 This directory contains three types of files:
-- spdfcdas files (25 files)
+- spdfcdas files (27 files)
 - cdawlib files (9 files)
 - files created by the SPEDAS team (4 files total)
 
@@ -12,11 +15,11 @@ File spdfCdawebChooser.pro was created by SPDF (and it should work when it is ca
 In the following, we list the modifications we made to the original spdfcdas+cdawlib files. 
 
 
-*** 1. spdfcdas file - 25 Files *** 
+*** 1. spdfcdas file - 27 Files *** 
 
-Release 1.7.10.37 of the CDAS Web Services IDL Library
+Release 1.7.41 of the CDAS Web Services IDL Library
 <http://cdaweb.gsfc.nasa.gov/WebServices/REST/CdasIdlLibrary.html> 
-that was deployed on January 23, 2018.
+that was updated for SPEDAS on Sept 22, 2022.
 
 Local changes: 
 Add the following to spdfcdawebchooser.pro: 

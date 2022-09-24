@@ -3,6 +3,9 @@
 ;
 @compile_cdfx
 
+.compile spdfhttpproxy__define.pro
+.compile spdfgetdefaultsslverifypeer.pro
+.compile spdfbindata__define.pro
 .compile spdfauthenticator__define.pro
 .compile spdfcdas__define.pro
 .compile spdfcdawebchooser.pro
