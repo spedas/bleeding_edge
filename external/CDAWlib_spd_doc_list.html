@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Sep 23 18:16:27 2022.<P>
+<STRONG>Last modified: </STRONG>Sat Sep 24 18:16:33 2022.<P>
  
 <HR>
  
@@ -196,6 +196,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#VIRTUAL_FUNCS[13]">VIRTUAL_FUNCS[13]</A>
 <LI><A HREF="#VIRTUAL_FUNCS[14]">VIRTUAL_FUNCS[14]</A>
 <LI><A HREF="#VIRTUAL_FUNCS[15]">VIRTUAL_FUNCS[15]</A>
+<LI><A HREF="#VIRTUAL_FUNCS[16]">VIRTUAL_FUNCS[16]</A>
 <LI><A HREF="#XV_LOOKV_TO_GCI[2]">XV_LOOKV_TO_GCI[2]</A>
 <br>Converts the XVIS LOOK vector to GCI coordinates
 <LI><A HREF="#COMPUTE_CRDS[2]">COMPUTE_CRDS[2]</A>
@@ -423,7 +424,7 @@ Administrator of the National Aeronautics and Space Administration. All Rights R
  	Written by:	Emily A. Greene, Hughes STX, emily@xfiles.gsfc.nasa.gov
 	and Bobby Candey, NASA GSFC Code 632; Robert.M.Candey.1@gsfc.nasa.gov
 
-  $Id: auroral_image.pro 29691 2021-02-22 02:49:50Z nikos $
+  $Id: auroral_image.pro 31135 2022-09-24 01:16:23Z nikos $
 
 	1995 Sept 26	BC, original full copy
 	1995 Sept 29	BC, beta
@@ -1364,7 +1365,7 @@ All Rights Reserved.
  PURPOSE: Take a prepared string for both the title and pi line  of the subtitle 
  and properly place them on the plot.
  CALLING SEQUENCE:
-       project_subtitle, a, pi_list, title
+       project_subtitle, a, pi_list, title, ps=ps
  INPUTS:
        a = variable structure returned from read_mycdf which
 	will be used to determine the project and pi affiliation (only if
@@ -2221,7 +2222,7 @@ UNCTION ffo_string, format, value
  ; First, if format is defined, just use it against the value
  ; and return the result
  if strlen( format ) gt 0 then begin
-   ; print, 'ffo_string using given format: string( FORMAT = (' + format + '), value)'
+    ;print, 'ffo_string using given format: string( FORMAT = (' + format + '), value)'
    return, string( FORMAT = '(' + format + ')', value )
  endif
 
@@ -2343,8 +2344,8 @@ or k=0, ns_tags-1 do begin
   case sz[0] of
     3: begin
      tagname=namest[k]
-     newsz=sz(1)*sz(2)
-     newdata=reform(astrc.(k).dat,newsz,sz(3))
+     newsz=sz[1]*sz[2]
+     newdata=reform(astrc.(k).dat,newsz,sz[3])
      ;astrc.(k).var_notes='ListImage'
      ; RCJ 08/27/2015  Attach var_notes, don't just replace them.
      astrc.(k).var_notes='ListImage. ' + astrc.(k).var_notes
@@ -2372,8 +2373,8 @@ or k=0, ns_tags-1 do begin
     end
     4: begin
      tagname=namest[k]
-     newsz=sz(1)*sz(2)*sz(3)
-     newdata=reform(astrc.(k).dat,newsz,sz(4))
+     newsz=sz[1]*sz[2]*sz[3]
+     newdata=reform(astrc.(k).dat,newsz,sz[4])
      ;astrc.(k).var_notes='ListImage3D'
      ; RCJ 08/27/2015  Attach var_notes, don't just replace them.
      astrc.(k).var_notes='ListImage3D. ' + astrc.(k).var_notes
@@ -2493,9 +2494,9 @@ or i=1,n_elements(names)-1 do begin
 ndfor
 
    Need to reorder vorder:
-order=vorder(order)
+order=vorder[order]
  RCJ 07/10/2013  RBSP test revealed that 'names' should be ordered too:
-ames=names(order)
+ames=names[order]
 
 or k=is, vmax do begin
   for i=0, vlen-1  do begin
@@ -2531,7 +2532,7 @@ nd
 
  PURPOSE: Prints ascii file of RV or NRV variables
 
-UNCTION wrt_hybd_strct, a, unit, convar, maxrecs, depend0, mega_num, csv
+UNCTION wrt_hybd_strct, a, unit, convar, maxrecs, depend0, mega_num, csv, nvar
 
  Establish error handler
 atch, error_status
@@ -2555,6 +2556,10 @@ tatus=0
 ames=strupcase(tag_names(a))
 tags=n_tags(a)
 lnk='# '
+
+print, &quot;&quot;
+print, &quot;whats nvar: &quot;, nvar
+print, &quot;&quot;
 
 
 print,'convar = ',convar
@@ -2602,7 +2607,7 @@ ase convar of
          endif else begin
            ;if names[i] eq 'CDAWEB_PARENTS' then begin
            if (names[i] eq 'CDAWEB_PARENTS' or names[i] eq 'PARENTS') then begin
-     for k=0L, tstsz(1)-1 do begin
+     for k=0L, tstsz[1]-1 do begin
         ;print,'k,tstsz(1) = ',k,' ',tstsz(1)
                var2=strtrim(a.(i)[k])
         ;print,'var2 = ',var2
@@ -2610,7 +2615,7 @@ ase convar of
                      printf, unit, format='(&quot;#&quot;,5x,a,2x,a)', var, var2
               ;print,'var, var2 = ',var,' ',var2
                   endif else begin
-	      if k ne tstsz(1)-1 then begin
+	      if k ne tstsz[1]-1 then begin
 	        var3=strtrim(a.(i)[k+1])
                        printf, unit, format='(&quot;#&quot;,37x,a,2a,a)', var2,', ',var3
 	        k=k+1
@@ -2621,7 +2626,7 @@ ase convar of
                   endelse
      endfor
     endif else begin ; if not 'cdaweb_parents' 
-            for k=0L, tstsz(1)-1 do begin
+            for k=0L, tstsz[1]-1 do begin
         ;print,'tstsz = ',tstsz
                var2=strtrim(a.(i)[k])
 	;print,'k, var2 = ',k,' ** ',var2
@@ -2669,7 +2674,7 @@ ase convar of
       if(n_elements(num_data) eq 0) then num_data=0
       ; Put in appropriate record count
       len=size(a.(0).dat)
-      length=len(len[0]+2)
+      length=len[len[0]+2]
       num_data=length
       ; Check for maxrecs begin exceeded
       num_data=num_data+4
@@ -2699,7 +2704,7 @@ ase convar of
          ;if (a.(i).var_type eq 'data') or ((a.(i).var_type eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
          
          if (strlowcase(a.(i).var_type) eq 'data') or ((strlowcase(a.(i).var_type) eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
-            nvar=a.(i).fillval
+            ;;nvar=a.(i).fillval
             ;labels(i)=label_search(a,1,i,0)
      labels=[labels,label_search(a,1,i,0,debug=debug)]
             ;units(i)=a.(i).units
@@ -2732,7 +2737,7 @@ ase convar of
          for i=0L,ntags-5 do begin
             if (strlowcase(a.(i).var_type) eq 'data') or ((strlowcase(a.(i).var_type) eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
                ; temporary patch until nvar included as a new variable attribute
-               nvar=a.(i).fillval[0]
+               ;;nvar=a.(i).fillval[0]
                if(names[i] eq depend0) then begin
                   b.(inc)=a.(i).dateph[j]
 	   inc=inc+1
@@ -2772,39 +2777,102 @@ ase convar of
                  nan_count=1      ;this sared variable will force code to add a section in the listng that will inform user that NaNs were changed for JSON
                endif
 
+               ; Set a generic NAN replacer value using the case statement then use that replacer value for both
+               ; data replacement (currently done in the case) and fillvalue substitution.
+               ; Ron Yurow 
+               ;typeCDF = a.(jindex2).cdftype
+               ;CASE typeCDF OF
+               ;  'CDF_REAL4': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_REAL8': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_FLOAT' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_DOUBLE' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_BYTE': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+               ;  'CDF_INT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+               ;  'CDF_INT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -32768
+               ;  'CDF_INT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -2147483648
+               ;  'CDF_INT8' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+               ;  'CDF_UINT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 255
+               ;  'CDF_UINT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 65535
+               ;  'CDF_UINT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 4294967295
+               ;  'CDF_EPOCH' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_EPOCH16' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_TIME_TT2000' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+               ;  'CDF_CHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+               ; 'CDF_UCHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+               ;  ELSE : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+               ;ENDCASE
+
+               ; NaN replacer
+               nan_fillval_replace = 0
+
                typeCDF = a.(jindex2).cdftype
                CASE typeCDF OF
-                 'CDF_REAL4': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_REAL8': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_FLOAT' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_DOUBLE' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_BYTE': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
-                 'CDF_INT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
-                 'CDF_INT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -32768
-                 'CDF_INT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -2147483648
-                 'CDF_INT8' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
-                 'CDF_UINT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 255
-                 'CDF_UINT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 65535
-                 'CDF_UINT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 4294967295
-                 'CDF_EPOCH' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_EPOCH16' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_TIME_TT2000' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
-                 'CDF_CHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
-                 'CDF_UCHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
-                 ELSE : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                 'CDF_REAL4': nan_fillval_replace = -1.0E+31
+                 'CDF_REAL8': nan_fillval_replace = -1.0E+31
+                 'CDF_FLOAT' : nan_fillval_replace = -1.0E+31
+                 'CDF_DOUBLE' : nan_fillval_replace = -1.0E+31
+                 'CDF_BYTE': nan_fillval_replace = -128
+                 'CDF_INT1' : nan_fillval_replace = -128
+                 'CDF_INT2' : nan_fillval_replace = -32768
+                 'CDF_INT4' : nan_fillval_replace = -2147483648
+                 'CDF_INT8' : nan_fillval_replace = -9223372036854775808
+                 'CDF_UINT1' : nan_fillval_replace = 255
+                 'CDF_UINT2' : nan_fillval_replace = 65535
+                 'CDF_UINT4' : nan_fillval_replace = 4294967295
+                 'CDF_EPOCH' : nan_fillval_replace = -1.0E+31
+                 'CDF_EPOCH16' : nan_fillval_replace = -1.0E+31
+                 'CDF_TIME_TT2000' : nan_fillval_replace = -9223372036854775808
+                 'CDF_CHAR' : nan_fillval_replace = &quot; &quot;
+                 'CDF_UCHAR' : nan_fillval_replace = &quot; &quot;
+                 ELSE : nan_fillval_replace = &quot; &quot;
                ENDCASE
+
+               a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = nan_fillval_replace
+
              endif
-                           
+
+
              for ii=0, (n_tags(a.(jindex2))-1) DO BEGIN
+
                if jtags[ii] EQ 'FIELDNAM' then varattsreached = 'true'
+
                if varattsreached EQ 'true' then begin 
+	
+	  ;print, &quot;JEN -- &quot;
+	  ;print,a.(jindex2).varname,'  ',a.(jindex2).cdftype,'  ',a.(jindex2).fillval
+	  ;print, &quot;JEN -- &quot;
+
+                 ; Check to see if the FILLVAL attribute is not finite.  If it is not, then set it
+                 ; to the NaN replacement value.
+                 ; Ron Yurow
+                 IF  jtags[ii] EQ 'FILLVAL' THEN BEGIN
+                     IF  ~finite (a.(jindex2).(ii)) THEN a.(jindex2).(ii) = nan_fillval_replace
+                 ENDIF
+	
                  if ((a.(jindex2).cdftype EQ 'CDF_EPOCH16') || (a.(jindex2).cdftype EQ 'CDF_EPOCH') || (a.(jindex2).cdftype EQ 'CDF_TIME_TT2000')) then begin ;Convert epochs to iso-8601 for JSON files
-                   if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') || (jtags[ii] EQ 'FILLVAL') || (jtags[ii] EQ 'DAT')) then begin
+
+	    ;print,'jtags[ii] = ',jtags[ii]
+                   ;if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') || (jtags[ii] EQ 'FILLVAL') || (jtags[ii] EQ 'DAT')) then begin
+
+                   if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') || (jtags[ii] EQ 'DAT')) then begin
+                     ;print,TYPENAME(a.(jindex2).(ii)) 
+	       ;help,a.(jindex2),/str
+	       ;print,'JENSUN1 ***********'
+	       ;help,jtags[ii]
+	       ;help,a.(jindex2).(ii)
+	       ;print,a.(jindex2).(ii)
+	       ;print,'JENSUN1 ***************'
+	      
                      if (TYPENAME(a.(jindex2).(ii)) NE 'STRING') then begin
+	      
                       epochIso=cdf_epoch_tojuldays(a.(jindex2).(ii), /string)+'Z'
+	       
+	       ;print,'epochIso = ',epochIso
+	       
                      endif else epochIso=a.(jindex2).(ii)+'Z'
                      jvar = create_struct(jtags[ii], epochIso)
                    endif else jvar = create_struct(jtags[ii], a.(jindex2).(ii))
+
                  endif else jvar = create_struct(jtags[ii], a.(jindex2).(ii))
                  
 
@@ -2813,16 +2881,21 @@ ase convar of
                   endif else if (jtags[ii] NE 'DATEPH') then begin
                    varstruct = create_struct(varstruct, jvar)
                   endif
+
                  counter = counter + 1
-               endif
-             endfor
-                                    
+
+               endif ; varattsreached
+
+             endfor ; ii=0
+
              jdummystruct = create_struct(a.(jindex2).varname+'_', varstruct) 
              
              if (jindex2 EQ 0) then cjsonstruct = create_struct(jdummystruct) else cjsonstruct = create_struct(cjsonstruct, jdummystruct)
            endfor
          endif
-         
+	       ;print,'epochIso = ',epochIso
+
+
          ;Handle CSV file creation
          if keyword_set(csv) AND (csv2 NE 3) then begin            
             labsize=n_elements(labels)
@@ -2929,7 +3002,7 @@ trust what's set in a.*.idlsize (at least for virtual variables)
 Use the computed sizes stored in idlsizes above
        len=size(a.(0).dat)
       len=idlsizes[0,*]
-      length=len(len[0]+2)
+      length=len[len[0]+2]
       ; Check for maxrecs begin exceeded                 
       num_data=length
       num_data=num_data+4
@@ -2946,7 +3019,11 @@ Use the computed sizes stored in idlsizes above
       
       status=list_header(a,unit,ntags)
       
-      num=a.(0).fillval
+      ;;num=a.(0).fillval
+      num=nvar
+print, &quot;HELLO, I'm here!!!!!  what's num: &quot;, num
+print, &quot;&quot;
+      
       labels=strarr(num)
       units=strarr(num)
       dep1_values=''
@@ -2964,13 +3041,13 @@ TJK replace w/ computed size above to improve performance
                if(st_sz[0] eq 1 and st_sz[1] gt 1 and length eq 1) then begin
                   num_var=st_sz[1]
                   for k=0L, num_var-1 do begin
-                     labels(inc)=label_search(a,st_sz[0],i,k,debug=debug)
+                     labels[inc]=label_search(a,st_sz[0],i,k,debug=debug)
                      ;units(inc)=a.(i).units
-	      units(inc)=unit_search(a,st_sz[0],i,k)
+	      units[inc]=unit_search(a,st_sz[0],i,k)
                      ; temp=create_struct(labels(inc),a.(i).dat(k,0))
                      ; temp=create_struct(atags(i)+labels(inc),a.(i).dat(k,0))
 	      unique = strtrim(string(inc), 2)
-                     temp=create_struct(atags(i)+unique,a.(i).dat[k,0])
+                     temp=create_struct(atags[i]+unique,a.(i).dat[k,0])
                      if(inc eq 0) then begin
                         b=temp
                      endif else begin
@@ -2980,16 +3057,16 @@ TJK replace w/ computed size above to improve performance
                   endfor   ; end k
                endif else begin
                   ;print,'2', inc, size(labels)
-                  labels(inc)=label_search(a,st_sz[0],i,0,debug=debug)
+                  labels[inc]=label_search(a,st_sz[0],i,0,debug=debug)
 	   ;print,'labels(inc) 1 = ',labels(inc)
                   ;units(inc)=a.(i).units
-	   units(inc)=unit_search(a,st_sz[0],i,0)
+	   units[inc]=unit_search(a,st_sz[0],i,0)
 	   ;print,'units(inc) 1 = ',units(inc)
-                  ; names(i) eq 'EPOCH' or 'EPOCH92' etc.
-                  if(names(i) eq depend0) then begin
-                     temp=create_struct(names(i),a.(i).dateph[0])
+                  ; names[i] eq 'EPOCH' or 'EPOCH92' etc.
+                  if(names[i] eq depend0) then begin
+                     temp=create_struct(names[i],a.(i).dateph[0])
                   endif else begin
-                     temp=create_struct(names(i),a.(i).dat[0])
+                     temp=create_struct(names[i],a.(i).dat[0])
                   endelse
                   if(inc eq 0) then begin
                      b=temp
@@ -3003,13 +3080,13 @@ TJK replace w/ computed size above to improve performance
             if(st_sz[0] eq 2) then begin
                num_var=st_sz[1]
                   for k=0L, num_var-1 do begin
-                     labels(inc)=label_search(a,st_sz[0],i,k,debug=debug)
+                     labels[inc]=label_search(a,st_sz[0],i,k,debug=debug)
                      ;units(inc)=a.(i).units
-	      units(inc)=unit_search(a,st_sz[0],i,k)
+	      units[inc]=unit_search(a,st_sz[0],i,k)
                      ; temp=create_struct(labels(inc),a.(i).dat(k,0))
                      ;temp=create_struct(atags(i)+labels(inc),a.(i).dat(k,0))
 	      unique = strtrim(string(inc), 2)
-                     temp=create_struct(atags(i)+unique,a.(i).dat[k,0])
+                     temp=create_struct(atags[i]+unique,a.(i).dat[k,0])
                      if(inc eq 0) then begin
                         b=temp
                      endif else begin
@@ -3056,7 +3133,7 @@ _ntags = ntags-5
             ;if(a.(i).var_type eq 'data') or (a.(i).var_type eq 'support_data') then begin
             if ((strlowcase(a.(i).var_type) eq 'data') or (strlowcase(a.(i).var_type) eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY'))  then begin
                ; 'EPOCH' or 'EPOCH92'               
-               if(names(i) eq depend0) then begin
+               if(names[i] eq depend0) then begin
                   b.(inc)=a.(i).dateph[j]
                   inc=inc+1
                endif else begin
@@ -3080,17 +3157,10 @@ the values here.
                   endif   
                   if(st_sz[0] eq 2) then begin
                      num_var=st_sz[1]
-	      ; RCJ 12/02/2003  Commented out this 'if num_var lt 20...'
-	      ; It doesn't seem to make sense. Will test.
-                     ;if(num_var lt 20) then begin
                         for k=0L,num_var-1 do begin
                            b.(inc)=a.(i).dat[k,j]
                            inc=inc+1
                         endfor
-                     ;endif else begin
-                        ;b.(inc)=a.(i).dat(*,j)
-                        ;inc=inc+1  ; RTB added 1/21/99
-                     ;endelse
                   endif
                endelse  ; end  (names(i) ne depend0)
             endif   ; end a.(i).var_type
@@ -3122,37 +3192,92 @@ the values here.
                   nan_count=1      ;this shared variable will force code to add a section in the listng that will inform user that NaNs were changed for JSON
                 endif
                 
+                ; Set a generic NAN replacer value using the case statement then use that replacer value for both
+                ; data replacement (currently done in the case) and fillvalue substitution.
+                ; Ron Yurow (Dec 3, 2021)
+                ;typeCDF = a.(jindex2).cdftype
+                ;CASE typeCDF OF
+                ; 'CDF_REAL4': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                ; 'CDF_REAL8': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                ; 'CDF_FLOAT' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                ; 'CDF_DOUBLE' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                ; 'CDF_BYTE': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+                ; 'CDF_INT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+                ; 'CDF_INT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -32768
+                ; 'CDF_INT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -2147483648
+                ; 'CDF_INT8' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+                ; 'CDF_UINT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 255
+                ; 'CDF_UINT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 65535
+                ; 'CDF_UINT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 4294967295
+                ; 'CDF_EPOCH' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                ; 'CDF_EPOCH16' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+                ; 'CDF_TIME_TT2000' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+                ; 'CDF_CHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                ; 'CDF_UCHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                ; ELSE : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                ;ENDCASE
+                
+                ; NaN replacer
+                nan_fillval_replace = 0
+
                 typeCDF = a.(jindex2).cdftype
                 CASE typeCDF OF
-                 'CDF_REAL4': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_REAL8': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_FLOAT' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_DOUBLE' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_BYTE': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
-                 'CDF_INT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
-                 'CDF_INT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -32768
-                 'CDF_INT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -2147483648
-                 'CDF_INT8' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
-                 'CDF_UINT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 255
-                 'CDF_UINT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 65535
-                 'CDF_UINT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 4294967295
-                 'CDF_EPOCH' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_EPOCH16' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_TIME_TT2000' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
-                 'CDF_CHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
-                 'CDF_UCHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
-                 ELSE : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                  'CDF_REAL4': nan_fillval_replace = -1.0E+31
+                  'CDF_REAL8': nan_fillval_replace = -1.0E+31
+                  'CDF_FLOAT' : nan_fillval_replace = -1.0E+31
+                  'CDF_DOUBLE' : nan_fillval_replace = -1.0E+31
+                  'CDF_BYTE': nan_fillval_replace = -128
+                  'CDF_INT1' : nan_fillval_replace = -128
+                  'CDF_INT2' : nan_fillval_replace = -32768
+                  'CDF_INT4' : nan_fillval_replace = -2147483648
+                  'CDF_INT8' : nan_fillval_replace = -9223372036854775808
+                  'CDF_UINT1' : nan_fillval_replace = 255
+                  'CDF_UINT2' : nan_fillval_replace = 65535
+                  'CDF_UINT4' : nan_fillval_replace = 4294967295
+                  'CDF_EPOCH' : nan_fillval_replace = -1.0E+31
+                  'CDF_EPOCH16' : nan_fillval_replace = -1.0E+31
+                  'CDF_TIME_TT2000' : nan_fillval_replace = -9223372036854775808
+                  'CDF_CHAR' : nan_fillval_replace = &quot; &quot;
+                  'CDF_UCHAR' : nan_fillval_replace = &quot; &quot;
+                  ELSE : nan_fillval_replace = &quot; &quot;
                 ENDCASE
-                
+
+                a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = nan_fillval_replace
+
               endif
+
               
               for ii=0, (n_tags(a.(jindex2))-1) DO BEGIN
                 if jtags[ii] EQ 'FIELDNAM' then varattsreached = 'true'
                 if varattsreached EQ 'true' then begin
+
+                  ; Check to see if the FILLVAL attribute is not finite.  If it is not, then set it
+                  ; to the NaN replacement value.
+                  ; Ron Yurow (Dec 3, 2021)
+                  IF  jtags[ii] EQ 'FILLVAL' THEN BEGIN
+                      IF  ~finite (a.(jindex2).(ii)) THEN a.(jindex2).(ii) = nan_fillval_replace
+                  ENDIF
+
                   if ((a.(jindex2).cdftype EQ 'CDF_EPOCH16') || (a.(jindex2).cdftype EQ 'CDF_EPOCH') || (a.(jindex2).cdftype EQ 'CDF_TIME_TT2000')) then begin ;Convert epochs to iso-8601 for JSON files
                     if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') || (jtags[ii] EQ 'FILLVAL') || (jtags[ii] EQ 'DAT')) then begin
+                    ;if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') || (jtags[ii] EQ 'DAT')) then begin
+
                       if (TYPENAME(a.(jindex2).(ii)) NE 'STRING') then begin 
+	       ;help,a.(jindex2),/str
+	       ;print,'JENSUN2 ***********'
+	       ;help,jtags[ii]
+	       ;help,a.(jindex2).(ii)
+	       ;print,a.(jindex2).(ii)
+	       ;print,'JENSUN2 ***************'
+	      
                        epochIso=cdf_epoch_tojuldays(a.(jindex2).(ii), /string)+'Z'
+
+	       ;print,'JENSUN2 ***********'
+	       ;print,&quot;epochIso: &quot;, epochIso
+	       ;print,'JENSUN2 ***************'
+	      
+
+
                       endif else epochIso=a.(jindex2).(ii)+'Z'
                       jvar = create_struct(jtags[ii], epochIso)
                     endif else jvar = create_struct(jtags[ii], a.(jindex2).(ii))
@@ -3170,6 +3295,7 @@ the values here.
               if (jindex2 EQ 0) then cjsonstruct = create_struct(jdummystruct) else cjsonstruct = create_struct(cjsonstruct, jdummystruct)
             endfor
           endif
+
                
           ;Handle CSV file creation                    
           if keyword_set(csv) AND (csv2 NE 3) then begin
@@ -3244,7 +3370,7 @@ the values here.
       if(n_elements(num_data) eq 0) then num_data=0
       ; Put in appropriate record count
       len=size(a.(0).dat)
-      length=len(len[0]+2)
+      length=len[len[0]+2]
       ; Check for maxrecs begin exceeded                 
       num_data=length
       num_data=num_data+4
@@ -3278,46 +3404,46 @@ the values here.
       ; Epoch
       eplabel='                       ' 
       strput,eplabel,a.epoch.fieldnam,0
-      labels(inc)=eplabel
-      units(inc)=a.epoch.units
+      labels[inc]=eplabel
+      units[inc]=a.epoch.units
       temp=create_struct('EPOCH',a.epoch.dateph[0])
       b=temp
       inc=inc+1
       ; Index     
-      labels(inc)=&quot;Index&quot; 
-      units(inc)=''
+      labels[inc]=&quot;Index&quot; 
+      units[inc]=''
       inc=inc+1
       ; Qflag
-      labels(inc)=a.qflag.lablaxis
-      units(inc)=a.qflag.units
+      labels[inc]=a.qflag.lablaxis
+      units[inc]=a.qflag.units
       inc=inc+1
       ; Position     
       for k=0, 1 do begin
-         if(k eq 0) then labels(inc)=&quot; geo latitude&quot;
-         if(k eq 1) then labels(inc)=&quot;geo longitude&quot;
-         units(inc)=a.position.units
+         if(k eq 0) then labels[inc]=&quot; geo latitude&quot;
+         if(k eq 1) then labels[inc]=&quot;geo longitude&quot;
+         units[inc]=a.position.units
          inc=inc+1
       endfor
       for k=0, 1 do begin
-         if(k eq 0) then labels(inc)=&quot; geo east vel&quot;
-         if(k eq 1) then labels(inc)=&quot;geo north vel&quot;
-         units(inc)=a.vel.units
+         if(k eq 0) then labels[inc]=&quot; geo east vel&quot;
+         if(k eq 1) then labels[inc]=&quot;geo north vel&quot;
+         units[inc]=a.vel.units
          inc=inc+1
       endfor
       ;
       farr=fltarr(180)
       in=0
       for l=0,29 do begin
-         farr(in)=a.index.dat[0]
+         farr[in]=a.index.dat[0]
          in=in+1
-         farr(in)=a.qflag.dat[l,0]
+         farr[in]=a.qflag.dat[l,0]
          in=in+1
          for k=0, 1 do begin
-            farr(in)= a.position.dat[k,l,0]
+            farr[in]= a.position.dat[k,l,0]
             in=in+1
          endfor
          for k=0, 1 do begin
-            farr(in)= a.vel.dat[k,l,0]
+            farr[in]= a.vel.dat[k,l,0]
             in=in+1
          endfor
       endfor
@@ -3331,16 +3457,16 @@ the values here.
          m=0
          b.epoch=a.epoch.dateph[j]
          for l=0,29 do begin
-            b.datrec(m)=a.index.dat[l]
+            b.datrec[m]=a.index.dat[l]
             m=m+1
-            b.datrec(m)=a.qflag.dat[l,j]
+            b.datrec[m]=a.qflag.dat[l,j]
             m=m+1
             for k=0,1 do begin
-               b.datrec(m)=a.position.dat[k,l,j]
+               b.datrec[m]=a.position.dat[k,l,j]
                m=m+1
             endfor
             for k=0,1 do begin
-               b.datrec(m)=a.vel.dat[k,l,j]
+               b.datrec[m]=a.vel.dat[k,l,j]
                m=m+1
             endfor
          endfor   ; end l
@@ -3370,41 +3496,88 @@ the values here.
                  nan_count=1      ;this sared variable will force code to add a section in the listng that will inform user that NaNs were changed for JSON
                endif
 
+               ; Set a generic NAN replacer value using the case statement then use that replacer value for both
+               ; data replacement (currently done in the case) and fillvalue substitution.
+               ; Ron Yurow (Dec 3, 2021)
+               ;typeCDF = a.(jindex2).cdftype
+               ;CASE typeCDF OF
+               ;  'CDF_REAL4': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_REAL8': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_FLOAT' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_DOUBLE' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_BYTE': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+               ;  'CDF_INT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+               ;  'CDF_INT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -32768
+               ;  'CDF_INT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -2147483648
+               ;  'CDF_INT8' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+               ;  'CDF_UINT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 255
+               ;  'CDF_UINT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 65535
+               ;  'CDF_UINT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 4294967295
+               ;  'CDF_EPOCH' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_EPOCH16' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_TIME_TT2000' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+               ;  'CDF_CHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+               ; 'CDF_UCHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+               ;  ELSE : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+               ;ENDCASE
+
+               ; NaN replacer
+               nan_fillval_replace = 0
+
                typeCDF = a.(jindex2).cdftype
                CASE typeCDF OF
-                 'CDF_REAL4': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_REAL8': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_FLOAT' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_DOUBLE' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_BYTE': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
-                 'CDF_INT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
-                 'CDF_INT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -32768
-                 'CDF_INT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -2147483648
-                 'CDF_INT8' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
-                 'CDF_UINT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 255
-                 'CDF_UINT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 65535
-                 'CDF_UINT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 4294967295
-                 'CDF_EPOCH' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_EPOCH16' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_TIME_TT2000' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
-                 'CDF_CHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
-                 'CDF_UCHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
-                 ELSE : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                 'CDF_REAL4': nan_fillval_replace = -1.0E+31
+                 'CDF_REAL8': nan_fillval_replace = -1.0E+31
+                 'CDF_FLOAT' : nan_fillval_replace = -1.0E+31
+                 'CDF_DOUBLE' : nan_fillval_replace = -1.0E+31
+                 'CDF_BYTE': nan_fillval_replace = -128
+                 'CDF_INT1' : nan_fillval_replace = -128
+                 'CDF_INT2' : nan_fillval_replace = -32768
+                 'CDF_INT4' : nan_fillval_replace = -2147483648
+                 'CDF_INT8' : nan_fillval_replace = -9223372036854775808
+                 'CDF_UINT1' : nan_fillval_replace = 255
+                 'CDF_UINT2' : nan_fillval_replace = 65535
+                 'CDF_UINT4' : nan_fillval_replace = 4294967295
+                 'CDF_EPOCH' : nan_fillval_replace = -1.0E+31
+                 'CDF_EPOCH16' : nan_fillval_replace = -1.0E+31
+                 'CDF_TIME_TT2000' : nan_fillval_replace = -9223372036854775808
+                 'CDF_CHAR' : nan_fillval_replace = &quot; &quot;
+                 'CDF_UCHAR' : nan_fillval_replace = &quot; &quot;
+                 ELSE : nan_fillval_replace = &quot; &quot;
                ENDCASE
+
+               a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = nan_fillval_replace
+
              endif             
              
              for ii=0, (n_tags(a.(jindex2))-1) DO BEGIN
                if jtags[ii] EQ 'FIELDNAM' then varattsreached = 'true'
                if varattsreached EQ 'true' then begin
+                  ; Check to see if the FILLVAL attribute is not finite.  If it is not, then set it
+                  ; to the NaN replacement value.
+                  ; Ron Yurow (Dec 3, 2021)
+                  IF  jtags[ii] EQ 'FILLVAL' THEN BEGIN
+                      IF  ~finite (a.(jindex2).(ii)) THEN a.(jindex2).(ii) = nan_fillval_replace
+                  ENDIF
+
                  if ((a.(jindex2).cdftype EQ 'CDF_EPOCH16') || (a.(jindex2).cdftype EQ 'CDF_EPOCH') || (a.(jindex2).cdftype EQ 'CDF_TIME_TT2000')) then begin ;Convert epochs to iso-8601 for JSON files
-                   if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') || (jtags[ii] EQ 'FILLVAL') || (jtags[ii] EQ 'DAT')) then begin
+                   ;if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') || (jtags[ii] EQ 'FILLVAL') || (jtags[ii] EQ 'DAT')) then begin
+                   if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') ||  (jtags[ii] EQ 'DAT')) then begin
+
+	       ;help,a.(jindex2),/str
+	       ;print,'JENSUN3 ***********'
+	       ;help,jtags[ii]
+	       ;help,a.(jindex2).(ii)
+	       ;print,a.(jindex2).(ii)
+	       ;print,'JENSUN3 ***************'
+	      
                      if (TYPENAME(a.(jindex2).(ii)) NE 'STRING') then begin
                        epochIso=cdf_epoch_tojuldays(a.(jindex2).(ii), /string)+'Z'
                      endif else epochIso=a.(jindex2).(ii)+'Z'
                      jvar = create_struct(jtags[ii], epochIso)
                    endif else jvar = create_struct(jtags[ii], a.(jindex2).(ii))
                  endif else jvar = create_struct(jtags[ii], a.(jindex2).(ii))
-                 
+
           
                  if (counter EQ 0) then begin
                    varstruct = create_struct(jvar) 
@@ -3489,7 +3662,7 @@ the values here.
       if(n_elements(num_data) eq 0) then num_data=0
       ; Put in appropriate record count
       len=size(a.(0).dat)
-      length=len(len[0]+2)
+      length=len[len[0]+2]
       ; Check for maxrecs begin exceeded                 
       num_data=length
       num_data=num_data+4
@@ -3507,7 +3680,9 @@ the values here.
 
       status=list_header(a,unit,ntags)
       
-      num=a.(0).fillval
+      ;;num=a.(0).fillval
+      num=nvar
+      
       final_labels=''
       final_units=''
       final_dep1_values=''
@@ -3530,10 +3705,10 @@ the values here.
                labels=[labels,label_search(a,st_sz[0],i,0,debug=debug)]
                ;units=[units,a.(i).units]
                units=[units,unit_search(a,st_sz[0],i,0)]
-               if(names(i) eq depend0) then begin
-                  temp=create_struct(names(i),a.(i).dateph[0])
+               if(names[i] eq depend0) then begin
+                  temp=create_struct(names[i],a.(i).dateph[0])
                endif else begin
-                  temp=create_struct(names(i),a.(i).dat[0])
+                  temp=create_struct(names[i],a.(i).dat[0])
                endelse
                if(inc eq 0) then begin
                   b=temp
@@ -3549,7 +3724,7 @@ the values here.
                   labels=[labels,label_search(a,st_sz[0],i,k,debug=debug)]
                   units=[units,unit_search(a,st_sz[0],i,k)]
 	   unique = strtrim(string(inc), 2)
-                  temp=create_struct(atags(i)+unique,a.(i).dat[k,0])
+                  temp=create_struct(atags[i]+unique,a.(i).dat[k,0])
                   b=create_struct(b,temp)
                   inc=inc+1
                endfor
@@ -3668,7 +3843,7 @@ the values here.
          final_dep1_values=final_dep1_values[1:*]
          diff=n_elements(final_labels)-n_elements(final_dep1_values)
          for k=1L,diff do begin
-            cmd='space=string(&quot;&quot;,format=&quot;('+strtrim(strlen(final_labels[k])+1,2)+'x,a)&quot;)
+            cmd='space=string(&quot;&quot;,format=&quot;('+strtrim(strlen(final_labels[k])+1,2)+'x,a)&quot;)'
             s=execute(cmd)
             final_dep1_values=[space,final_dep1_values]
          endfor
@@ -3679,7 +3854,7 @@ the values here.
          final_dep2_values=final_dep2_values[1:*]
          diff=n_elements(final_labels)-n_elements(final_dep2_values)
          for k=1L,diff do begin
-            cmd='space=string(&quot;&quot;,format=&quot;('+strtrim(strlen(final_labels[k])+1,2)+'x,a)&quot;)
+            cmd='space=string(&quot;&quot;,format=&quot;('+strtrim(strlen(final_labels[k])+1,2)+'x,a)&quot;)'
             s=execute(cmd)
             final_dep2_values=[space,final_dep2_values]
          endfor
@@ -3691,24 +3866,24 @@ the values here.
          final_dep3_values=final_dep3_values[1:*]
          diff=n_elements(final_labels)-n_elements(final_dep3_values)
          for k=1L,diff do begin
-            cmd='space=string(&quot;&quot;,format=&quot;('+strtrim(strlen(final_labels[k])+1,2)+'x,a)&quot;)
+            cmd='space=string(&quot;&quot;,format=&quot;('+strtrim(strlen(final_labels[k])+1,2)+'x,a)&quot;)'
             s=execute(cmd)
             final_dep3_values=[space,final_dep3_values]
          endfor
       endif  
-      ; 
-      ;
+
      ;help,final_dep1_values,final_dep2_values,final_dep3_values,final_labels
      ;print,'** ',final_dep1_values
      ;print,'** ',final_dep2_values
      ;print,'** ',final_dep3_values
      ;print,'** ',final_labels
+
       for j=0L, length-1 do begin
          inc=0L
          for i=0L,ntags-5 do begin
             if (strlowcase(a.(i).var_type) eq 'data') or ((strlowcase(a.(i).var_type) eq 'support_data') and (a.(i).cdfrecvary ne 'NOVARY')) then begin
                ; if(names(i) eq 'EPOCH' or names(i) eq 'EPOCH92') then begin
-               if(names(i) eq depend0) then begin
+               if(names[i] eq depend0) then begin
                   b.(inc)=a.(i).dateph[j]
                   inc=inc+1L
                endif else begin
@@ -3753,34 +3928,81 @@ the values here.
                  nan_count=1      ;this sared variable will force code to add a section in the listng that will inform user that NaNs were changed for JSON
                endif
 
+               ; Set a generic NAN replacer value using the case statement then use that replacer value for both
+               ; data replacement (currently done in the case) and fillvalue substitution.
+               ; Ron Yurow (Dec 3, 2021)
+               ;typeCDF = a.(jindex2).cdftype
+               ;CASE typeCDF OF
+               ;  'CDF_REAL4': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_REAL8': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_FLOAT' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_DOUBLE' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_BYTE': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+               ;  'CDF_INT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
+               ;  'CDF_INT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -32768
+               ;  'CDF_INT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -2147483648
+               ;  'CDF_INT8' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+               ;  'CDF_UINT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 255
+               ;  'CDF_UINT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 65535
+               ;  'CDF_UINT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 4294967295
+               ;  'CDF_EPOCH' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_EPOCH16' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
+               ;  'CDF_TIME_TT2000' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
+               ;  'CDF_CHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+               ; 'CDF_UCHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+               ;  ELSE : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+               ;ENDCASE
+
+               ; NaN replacer
+               nan_fillval_replace = 0
+
                typeCDF = a.(jindex2).cdftype
                CASE typeCDF OF
-                 'CDF_REAL4': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_REAL8': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_FLOAT' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_DOUBLE' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_BYTE': a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
-                 'CDF_INT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -128
-                 'CDF_INT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -32768
-                 'CDF_INT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -2147483648
-                 'CDF_INT8' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
-                 'CDF_UINT1' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 255
-                 'CDF_UINT2' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 65535
-                 'CDF_UINT4' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = 4294967295
-                 'CDF_EPOCH' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_EPOCH16' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -1.0E+31
-                 'CDF_TIME_TT2000' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = -9223372036854775808
-                 'CDF_CHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
-                 'CDF_UCHAR' : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
-                 ELSE : a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = &quot; &quot;
+                 'CDF_REAL4': nan_fillval_replace = -1.0E+31
+                 'CDF_REAL8': nan_fillval_replace = -1.0E+31
+                 'CDF_FLOAT' : nan_fillval_replace = -1.0E+31
+                 'CDF_DOUBLE' : nan_fillval_replace = -1.0E+31
+                 'CDF_BYTE': nan_fillval_replace = -128
+                 'CDF_INT1' : nan_fillval_replace = -128
+                 'CDF_INT2' : nan_fillval_replace = -32768
+                 'CDF_INT4' : nan_fillval_replace = -2147483648
+                 'CDF_INT8' : nan_fillval_replace = -9223372036854775808
+                 'CDF_UINT1' : nan_fillval_replace = 255
+                 'CDF_UINT2' : nan_fillval_replace = 65535
+                 'CDF_UINT4' : nan_fillval_replace = 4294967295
+                 'CDF_EPOCH' : nan_fillval_replace = -1.0E+31
+                 'CDF_EPOCH16' : nan_fillval_replace = -1.0E+31
+                 'CDF_TIME_TT2000' : nan_fillval_replace = -9223372036854775808
+                 'CDF_CHAR' : nan_fillval_replace = &quot; &quot;
+                 'CDF_UCHAR' : nan_fillval_replace = &quot; &quot;
+                 ELSE : nan_fillval_replace = &quot; &quot;
                ENDCASE
+
+               a.(jindex2).dat[where(~finite(a.(jindex2).dat), /null)] = nan_fillval_replace
+
              endif              
              
              for ii=0, (n_tags(a.(jindex2))-1) DO BEGIN
                if jtags[ii] EQ 'FIELDNAM' then varattsreached = 'true'
                if varattsreached EQ 'true' then begin
+                  ; Check to see if the FILLVAL attribute is not finite.  If it is not, then set it
+                  ; to the NaN replacement value.
+                  ; Ron Yurow (Dec 3, 2021)
+                  IF  jtags[ii] EQ 'FILLVAL' THEN BEGIN
+                     IF  ~finite (a.(jindex2).(ii)) THEN a.(jindex2).(ii) = nan_fillval_replace
+                  ENDIF
+
                  if ((a.(jindex2).cdftype EQ 'CDF_EPOCH16') || (a.(jindex2).cdftype EQ 'CDF_EPOCH') || (a.(jindex2).cdftype EQ 'CDF_TIME_TT2000')) then begin ;Convert epochs to iso-8601 for JSON files
-                   if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') || (jtags[ii] EQ 'FILLVAL') || (jtags[ii] EQ 'DAT')) then begin
+                   ;if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') || (jtags[ii] EQ 'FILLVAL') || (jtags[ii] EQ 'DAT')) then begin
+                   if ((jtags[ii] EQ 'VALIDMIN') || (jtags[ii] EQ 'VALIDMAX') || (jtags[ii] EQ 'DAT')) then begin
+
+	       ;help,a.(jindex2),/str
+	       ;print,'JENSUN4 ***********'
+	       ;help,jtags[ii]
+	       ;help,a.(jindex2).(ii)
+	       ;print,a.(jindex2).(ii)
+	       ;print,'JENSUN4 ***************'
+	      
                      if (TYPENAME(a.(jindex2).(ii)) NE 'STRING') then begin
                        epochIso=cdf_epoch_tojuldays(a.(jindex2).(ii), /string)+'Z'
                      endif else epochIso=a.(jindex2).(ii)+'Z'
@@ -5080,10 +5302,10 @@ nd
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 $Author: nikos $
-$Date: 2021-02-21 18:49:50 -0800 (Sun, 21 Feb 2021) $
-$Header: /home/cdaweb/dev/control/RCS/overlay.pro,v 1.1 2016/03/21 15:41:47 rchimiak Exp rchimiak $
-$Locker: rchimiak $
-$Revision: 29691 $
+$Date: 2022-09-23 18:16:23 -0700 (Fri, 23 Sep 2022) $
+$Header: /home/cdaweb/dev/control/RCS/overlay.pro,v 1.4 2017/01/23 20:31:35 rchimiak Exp tkovalic $
+$Locker: tkovalic $
+$Revision: 31135 $
 +------------------------------------------------------------------------
  Description:
     graph an element of a set of time series plots on a single panel
@@ -5742,10 +5964,10 @@ All Rights Reserved.
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 $Author: nikos $
-$Date: 2021-02-21 18:49:50 -0800 (Sun, 21 Feb 2021) $
-$Header: /home/cdaweb/dev/control/RCS/plot_over.pro,v 1.47 2017/10/05 14:44:19 rchimiak Exp johnson $
-$Locker: johnson $
-$Revision: 29691 $
+$Date: 2022-09-23 18:16:23 -0700 (Fri, 23 Sep 2022) $
+$Header: /home/cdaweb/dev/control/RCS/plot_over.pro,v 1.48 2018/05/07 18:45:33 johnson Exp tkovalic $
+$Locker: tkovalic $
+$Revision: 31135 $
 +------------------------------------------------------------------------
  Description:
     To generate a time series plot that overlay the components on one plot.
@@ -8532,7 +8754,7 @@ up for a spectrogram display)
 <A NAME="VIRTUAL_FUNCS[15]">
 <H2>VIRTUAL_FUNCS[15]</H2></A>
 <A HREF="#VIRTUAL_FUNCS[14]">[Previous Routine]</A>
-<A HREF="#VIRTUAL_FUNCS[1]">[Next Routine]</A>
+<A HREF="#VIRTUAL_FUNCS[16]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: Function REORDER_DATA
@@ -8570,9 +8792,75 @@ up for a spectrogram display)
 <STRONG>(See <A href="CDAWlib/virtual_funcs.pro">external/CDAWlib/virtual_funcs.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="VIRTUAL_FUNCS[16]">
+<H2>VIRTUAL_FUNCS[16]</H2></A>
+<A HREF="#VIRTUAL_FUNCS[15]">[Previous Routine]</A>
+<A HREF="#VIRTUAL_FUNCS[1]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: Function SPDF_SUM_AVG_OVER_COL_ROW_Z
+
+ PURPOSE: Sum or average a 2d, 3d or 4d array, which is an element of the structure
+            returned by spdf_read_data, over the columns, rows, and/or the 3rd dimension
+            (here called z for short. Also known as layer, depth, etc)
+
+ PLEASE NOTE: These are consistent with IDL's column-major arrays.
+            So if you have a [80, 48, 132] array and you want to average over 
+            the 1st dimension you will &quot;avg_over_col&quot;.
+
+            In addition, for 3d or 4d arrays the last dim is always treated as 'time' in this function
+            because that's what's returned by spdf_read_data.
+
+            Finally, I'm adding logic to this function as needed.
+
+ CALLING SEQUENCE EXAMPLES:
+
+          new_buf = spdf_sum_avg_over_col_row_z(buf,org_names,index=vindex,/avg_over_col)
+          new_buf = spdf_sum_avg_over_col_row_z(buf,org_names,index=vindex,/sum_col_z)
+
+ VARIABLES:
+
+ Input:
+
+  buf        - an IDL structure built w/in read_myCDF
+  org_names  - list of original variables input to read_myCDF. Any
+               variables in this list will remain tagged as 
+               VAR_TYPE= data otherwise VAR_TYPE = support_data.
+  index      - listed as a keyword but is necessary. Indicates what variable
+               of the input structure we are populating.
+
+ Output:
+
+  new_buf    - an IDL structure containing the populated virtual 
+               variable 
+  
+ Keyword Parameters (one of these needs to be selected), all are 1/0 (set/not set): 
+
+   2D and 3D arrays can be:
+     avg_over_row -  
+     avg_over_col -
+     sum_over_row -
+     sum_over_col -
+
+   4D arrays can be:
+     avg_col_row -
+     avg_col_z - 
+     avg_row_z - 
+     sum_col_row - 
+     sum_col_z - 
+     sum_row_z -
+
+ REQUIRED PROCEDURES:
+
+   check_myvartype
+
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/virtual_funcs.pro">external/CDAWlib/virtual_funcs.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="VIRTUAL_FUNCS[1]">
 <H2>VIRTUAL_FUNCS[1]</H2></A>
-<A HREF="#VIRTUAL_FUNCS[15]">[Previous Routine]</A>
+<A HREF="#VIRTUAL_FUNCS[16]">[Previous Routine]</A>
 <A HREF="#VIRTUAL_FUNCS[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -8599,7 +8887,8 @@ upcase both sides in case there's mixed case
        if(strupcase(buf.(i).VAR_TYPE) eq strupcase(vtype)) then begin
        ;if(buf.(i).VAR_TYPE eq 'data') then begin
           vnames[ii]=tagnames[i]
-          vindices(ii)=i
+          ;vindices(ii)=i
+          vindices[ii]=i
           ii=ii+1
        endif
    endif
@@ -8636,7 +8925,7 @@ unction buf_trap, a
 
  ibad=0
  str_tst=size(a)
- if(str_tst(str_tst[0]+1) ne 8) then begin
+ if(str_tst[str_tst[0]+1] ne 8) then begin
    ibad=1
    v_data='DATASET=UNDEFINED'
    v_err='ERROR=a'+strtrim(string(i),2)+' not a structure.'
@@ -9289,7 +9578,8 @@ TJK 12/15/2006 these aren't right either - we'll use index
   ;if(wcnp gt 10) then wcnp=10 else wcnp=wcnp-1  
  Compute average of all points
   mphi= total(phi[wcp[0:(wcnp-1)]])/fix(wcnp)
-  mr= total(r(wcr[0:(wcnr-1)]))/fix(wcnr)
+  ;mr= total(r(wcr[0:(wcnr-1)]))/fix(wcnr)
+  mr= total(r[wcr[0:(wcnr-1)]])/fix(wcnr)
   mtheta= total(theta[wct[0:(wcnt-1)]])/fix(wcnt)
   ampl=double(max(theta[wct]))
 print, mphi, mr, mtheta, ampl
@@ -9427,16 +9717,20 @@ print, mphi, mr, mtheta, ampl
    nu_dat_handle=handle_create(value=gei)
    vin=where(vvtag_names eq 'SC_POS_SYNGCI',vinn)
    if(vinn) then begin
-     nbuf.(vvtag_indices(vin[0])).handle=nu_dat_handle
-     nbuf.(vvtag_indices(vin[0])).depend_0=epoch1
+     ;nbuf.(vvtag_indices(vin[0])).handle=nu_dat_handle
+     nbuf.(vvtag_indices[vin[0]]).handle=nu_dat_handle
+     ;nbuf.(vvtag_indices(vin[0])).depend_0=epoch1
+     nbuf.(vvtag_indices[vin[0]]).depend_0=epoch1
    endif
  endif
  if(COORD eq &quot;SYN-GEO&quot;) then begin
    nu_dat_handle=handle_create(value=geo)
    vin=where(vvtag_names eq 'SC_POS_SYNGEO',vinn)
    if(vinn) then begin
-     nbuf.(vvtag_indices(vin[0])).handle=nu_dat_handle
-     nbuf.(vvtag_indices(vin[0])).depend_0=epoch1
+     ;nbuf.(vvtag_indices(vin[0])).handle=nu_dat_handle
+     nbuf.(vvtag_indices[vin[0]]).handle=nu_dat_handle
+     ;nbuf.(vvtag_indices(vin[0])).depend_0=epoch1
+     nbuf.(vvtag_indices[vin[0]]).depend_0=epoch1
    endif
  endif
 
