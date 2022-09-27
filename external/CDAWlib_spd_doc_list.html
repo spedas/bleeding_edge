@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Sep 25 18:16:35 2022.<P>
+<STRONG>Last modified: </STRONG>Mon Sep 26 18:16:33 2022.<P>
  
 <HR>
  
@@ -47,6 +47,12 @@ This page was created by the IDL library routine
 <LI><A HREF="#CDAWEB_VELOVECT">CDAWEB_VELOVECT</A>
 <LI><A HREF="#XDISPLAYFILE">XDISPLAYFILE</A>
 <br>Display an ASCII text file using widgets and the widget manager.
+<LI><A HREF="#CDFJSON__DEFINE[1]">CDFJSON__DEFINE[1]</A>
+<LI><A HREF="#CDFJSON__DEFINE[2]">CDFJSON__DEFINE[2]</A>
+<LI><A HREF="#CDFJSON__DEFINE[2]">CDFJSON__DEFINE[2]</A>
+<LI><A HREF="#CDFJSON__DEFINE[3]">CDFJSON__DEFINE[3]</A>
+<LI><A HREF="#CDFJSON__DEFINE[4]">CDFJSON__DEFINE[4]</A>
+<LI><A HREF="#CDFJSON__DEFINE[5]">CDFJSON__DEFINE[5]</A>
 <LI><A HREF="#CNV_MDHMS_SEC[2]">CNV_MDHMS_SEC[2]</A>
 <br>convert time from the form year, month, day, hour, minute, sec
 <LI><A HREF="#CNV_SEC_MDHMS[2]">CNV_SEC_MDHMS[2]</A>
@@ -548,7 +554,7 @@ Administrator of the National Aeronautics and Space Administration.
 All Rights Reserved.
 
 </PRE><P>
-<STRONG>(See <A href="CDAWlib/break_mySTRING.pro">external/CDAWlib/break_mySTRING.pro</A>)</STRONG><P>
+<STRONG>(See <A href="CDAWlib/break_mystring.pro">external/CDAWlib/break_mystring.pro</A>)</STRONG><P>
 <HR>
  
 <A NAME="B_LIB">
@@ -1187,7 +1193,7 @@ end
 <A NAME="CDAWEB_VELOVECT">
 <H2>CDAWEB_VELOVECT</H2></A>
 <A HREF="#CDAWEB_SKYMAP">[Previous Routine]</A>
-<A HREF="#CNVCOORD">[Next Routine]</A>
+<A HREF="#CDFJSON__DEFINE[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: CDAWEB_VELOVECT
@@ -1225,9 +1231,135 @@ end
 <STRONG>(See <A href="CDAWlib/cdaweb_velovect.pro">external/CDAWlib/cdaweb_velovect.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="CDFJSON__DEFINE[1]">
+<H2>CDFJSON__DEFINE[1]</H2></A>
+<A HREF="#CDAWEB_VELOVECT">[Previous Routine]</A>
+<A HREF="#CDFJSON__DEFINE[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Creates a CDFJSON instance
+
+
+ :KEYWORDS:
+   None
+
+  Based on method from IDLffJSON
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/cdfjson__define.pro">external/CDAWlib/cdfjson__define.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="CDFJSON__DEFINE[2]">
+<H2>CDFJSON__DEFINE[2]</H2></A>
+<A HREF="#CDFJSON__DEFINE[1]">[Previous Routine]</A>
+<A HREF="#CDFJSON__DEFINE[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Generates a JSON-formatted atom value string from an IDL variable
+     An atomic JSON value is a string, number, or true/false/null
+
+
+ :PARAMS:
+   atomValue : in, required, type=&quot;NULL, BYTE, STRING, NUMERIC&quot;
+      an IDL variable representing the atomic JSON value
+
+ :RETURNS:
+   atomString : out, type=&quot;STRING&quot;
+      a JSON-formatted string representing an atomic JSON value
+
+  Based on method from IDLffJSON
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/cdfjson__define.pro">external/CDAWlib/cdfjson__define.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="CDFJSON__DEFINE[2]">
+<H2>CDFJSON__DEFINE[2]</H2></A>
+<A HREF="#CDFJSON__DEFINE[2]">[Previous Routine]</A>
+<A HREF="#CDFJSON__DEFINE[3]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Generates a JSON value from JSON-formatted string data
+
+
+ :PARAMS:
+   JSONValue : in, required, type=&quot;NULL, BYTE, STRING, NUMERIC, HASH, LIST&quot;
+      the JSON value to serialize
+
+ :RETURNS:
+   JSONString : out, type=&quot;STRING&quot;
+      a JSON-formatted string
+
+  Based on method from IDLffJSON
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/cdfjson__define.pro">external/CDAWlib/cdfjson__define.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="CDFJSON__DEFINE[3]">
+<H2>CDFJSON__DEFINE[3]</H2></A>
+<A HREF="#CDFJSON__DEFINE[2]">[Previous Routine]</A>
+<A HREF="#CDFJSON__DEFINE[4]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Escapes special characters in JSON formatting
+
+ :PARAMS:
+   atomString : in, required
+      the JSON string in which to escape special characters
+
+ :RETURNS:
+   The string with special characters converted to escape characters.
+
+ :AUTHOR:
+      Dawn Lenz, VIS
+
+ :HISTORY:
+      16Aug2010:  Dawn Lenz, VIS - Original version
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/cdfjson__define.pro">external/CDAWlib/cdfjson__define.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="CDFJSON__DEFINE[4]">
+<H2>CDFJSON__DEFINE[4]</H2></A>
+<A HREF="#CDFJSON__DEFINE[3]">[Previous Routine]</A>
+<A HREF="#CDFJSON__DEFINE[5]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Returns variable type
+
+
+ :PARAMS:
+   variable : in ,required
+      the variable whose type to return
+
+
+ :AUTHOR:
+   Dawn Lenz, VIS
+
+ :HISTORY:
+   22Jun2010:  Dawn Lenz, VIS - Original version
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/cdfjson__define.pro">external/CDAWlib/cdfjson__define.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="CDFJSON__DEFINE[5]">
+<H2>CDFJSON__DEFINE[5]</H2></A>
+<A HREF="#CDFJSON__DEFINE[4]">[Previous Routine]</A>
+<A HREF="#CNVCOORD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ CDFJSON class
+     Manages JSON formatting
+     Reference:  http://www.json.org
+
+  Only can be used for serialization
+
+  Based on IDLffJSON
+</PRE><P>
+<STRONG>(See <A href="CDAWlib/cdfjson__define.pro">external/CDAWlib/cdfjson__define.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="CNVCOORD">
 <H2>CNVCOORD</H2></A>
-<A HREF="#CDAWEB_VELOVECT">[Previous Routine]</A>
+<A HREF="#CDFJSON__DEFINE[5]">[Previous Routine]</A>
 <A HREF="#CNVTIME[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
