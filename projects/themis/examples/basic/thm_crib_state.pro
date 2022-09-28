@@ -13,10 +13,10 @@
 ;	Notes:
 ;	None.
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2015-01-05 17:01:57 -0800 (Mon, 05 Jan 2015) $
-; $LastChangedRevision: 16596 $
-; $URL $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2022-09-27 08:25:03 -0700 (Tue, 27 Sep 2022) $
+; $LastChangedRevision: 31142 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/examples/basic/thm_crib_state.pro $
 ;-
 
 ;start with a clean slate
