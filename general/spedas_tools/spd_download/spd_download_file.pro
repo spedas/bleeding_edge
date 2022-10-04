@@ -54,9 +54,9 @@
 ;  -checks contents of "http_proxy" environment variable for proxy server
 ;
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-08-12 15:04:48 -0700 (Wed, 12 Aug 2020) $
-;$LastChangedRevision: 29020 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2022-10-03 10:00:54 -0700 (Mon, 03 Oct 2022) $
+;$LastChangedRevision: 31147 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/spd_download/spd_download_file.pro $
 ;
 ;-
@@ -87,7 +87,9 @@ function spd_download_file, $
 
     compile_opt idl2, hidden
 
-
+if undefined(ssl_verify_peer) then ssl_verify_peer=0
+if undefined(ssl_verify_host) then ssl_verify_host=0
+    
 output = ''
 temp_filepath = ''
 

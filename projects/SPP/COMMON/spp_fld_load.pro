@@ -91,9 +91,9 @@
 ; CREATED BY:       Davin Larson December 2018
 ;                   maintained by Marc Pulupa, 2019-2022
 ;
-; $LastChangedBy: pulupa $
-; $LastChangedDate: 2022-08-18 16:37:43 -0700 (Thu, 18 Aug 2022) $
-; $LastChangedRevision: 31025 $
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2022-10-03 16:29:10 -0700 (Mon, 03 Oct 2022) $
+; $LastChangedRevision: 31148 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -159,6 +159,7 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
   if strpos(type, 'dfb_wf_edc') EQ 0 and type NE 'dfb_wf_edc' then level = 1.5
   if strpos(type, 'dfb_wf_b') EQ 0 then level = 1.5
   if strpos(type, 'dfb_dbm_b') EQ 0 then level = 1.5
+  if strpos(type, 'magi') EQ 0 then level = 1.5
 
   ; SCaM data is Level 3
 
@@ -396,6 +397,18 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
         resolution = 3600l * 6l ; hours
         daily_names = 0
       endif
+    endif else if level EQ 1.5 then begin
+      pathformat =  'TYPE/YYYY/MM/psp_fld_l1b_TYPE_YYYYMMDD_v??.cdf'
+      if type EQ 'magi_SC' then begin
+        pathformat = 'TYPE/YYYY/MM/psp_fld_l1b_TYPE_YYYYMMDDhh_v??.cdf'
+        resolution = 3600l * 6l ; hours
+        daily_names = 0
+      endif
+      if type EQ 'magi_RTN' then begin
+        pathformat = 'TYPE/YYYY/MM/psp_fld_l1b_TYPE_YYYYMMDDhh_v??.cdf'
+        resolution = 3600l * 6l ; hours
+        daily_names = 0
+      endif 
     endif else begin
       pathformat = 'TYPE/YYYY/MM/spp_fld_l1_TYPE_YYYYMMDD_v??.cdf'
     endelse
@@ -573,6 +586,28 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
           not tn.Matches('(_MET|_range|_mode|_rate|_packet_index)'),/NULL)
         options,tn[r],/def,ytitle='MAG VSO',psym_lim=300
         options,tn[r],/def,colors='bgr'
+        options,tn[r],max_points=10000 ; see above
+
+      endif
+
+      if strmatch(type,'magi_*') then begin
+        r = where(tn.Matches('quality_flag'))
+        qf_root = tn[r[0]]
+
+        r = where(tn.Matches('magi_RTN') and $
+          not tn.Matches('(_MET|_range|_mode|_rate|_packet_index)'),/NULL)
+        options,tn[r],/def,ytitle='MAGi RTN', $
+          psym_lim=300, $
+          colors='bgr', $
+          qf_root=qf_root ;To simplify dealing with pre/suffixes for qf filtering
+        options,tn[r],max_points=10000 ; not a default option, so users can turn it off
+
+        r = where(tn.Matches('magi_SC') and $
+          not tn.Matches('(_zero|_MET|_range|_mode|_rate|_packet_index)'),/NULL)
+        options,tn[r],/def,ytitle='MAGi SC', $
+          psym_lim=300, $
+          colors='bgr', $
+          qf_root=qf_root ; see above
         options,tn[r],max_points=10000 ; see above
 
       endif
