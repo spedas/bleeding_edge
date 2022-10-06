@@ -31,8 +31,8 @@
 ;   "get_colors","colors_com","bytescale"
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2022-08-31 13:03:14 -0700 (Wed, 31 Aug 2022) $
-; $LastChangedRevision: 31062 $
+; $LastChangedDate: 2022-10-05 12:55:57 -0700 (Wed, 05 Oct 2022) $
+; $LastChangedRevision: 31150 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/loadct2.pro $
 ;
 ;Created by Davin Larson;  August 1996
@@ -158,6 +158,9 @@ pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,pr
         7: line_clrs = [[0,0,0],[230,159,0],[86,180,233],[0,158,115],[240,228,66],[0,114,178],[213,94,0],[255,255,255]]
         ; Preset 8:  Color table suggested by https://www.nature.com/articles/nmeth.1618 except for yellow (Color 7 must be white for the background.)
         8: line_clrs = [[0,0,0],[230,159,0],[86,180,233],[0,158,115],[0,114,178],[213,94,0],[204,121,167],[255,255,255]]
+        ; Preset 9: Same as 8, except with the colors shifted around so that the default colors 
+        ; for vectors are: blue, orange, reddish purple
+        9: line_clrs = [[0,0,0],[86,180,233],[0,114,178],[0,158,115],[230,159,0],[213,94,0],[204,121,167],[255,255,255]]
         else: line_clrs = [[0,0,0],[67, 147, 195],[33, 102, 172],[103, 0, 31],[178,24,43],[254,219,199],[244,165,130],[255,255,255]]
       endcase      
     endif

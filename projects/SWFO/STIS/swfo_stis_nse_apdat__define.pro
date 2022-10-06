@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-09-16 13:04:38 -0700 (Fri, 16 Sep 2022) $
-; $LastChangedRevision: 31093 $
+; $LastChangedDate: 2022-10-05 12:24:02 -0700 (Wed, 05 Oct 2022) $
+; $LastChangedRevision: 31149 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_nse_apdat__define.pro $
 
 
@@ -41,7 +41,7 @@ function swfo_stis_nse_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   str4=swfo_stis_nse_level_1(str3)
   rate=str2.total/str1.duration
   rate6=str2.total6/str1.duration
-  str5={rate:rate,rate6:rate6,rate_div_three:rate/3.,rate6_times_two:rate6*2.,baseline:str4.baseline,sigma:str4.sigma}
+  str5={rate:rate,scaled_rate6:rate6/str1.pulser_frequency*2.,rate_div_three:rate/3.,baseline:str4.baseline,sigma:str4.sigma}
 
   str=create_struct(str3,str5)
 

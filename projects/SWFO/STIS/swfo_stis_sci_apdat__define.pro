@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-08-04 15:42:57 -0700 (Thu, 04 Aug 2022) $
-; $LastChangedRevision: 30997 $
+; $LastChangedDate: 2022-10-05 12:24:02 -0700 (Wed, 05 Oct 2022) $
+; $LastChangedRevision: 31149 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -40,42 +40,57 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   str1=swfo_stis_ccsds_header_decom(ccsds)
 
   ; Force all structures to have exactly 672 elements. If the LUT is being used then only the first 256 will be used
-  total6=replicate(0ul,6)
-  ftotid=replicate(0ul,14)
+  total6=fltarr(6)
+  total14=fltarr(14)
   str2 = {$
     nbins:    nbins,  $
     counts:   ulonarr(672) , $
-    total:    total(scidata,/preserve),$
+    total:    total(scidata),$
+    total2:   0.,$
     total6:   total6,$
-    total14:  ftotid,$
+    total14:  total14,$
     rate:     0.,$
-    rate6:    replicate(0.,6),$
-    rate14:   replicate(0.,14),$
+    rate2:    0.,$
+    rate6:    total6,$
+    rate14:   total14,$
+    sigma14:  total14,$
+    avgbin14: total14,$
     gap:ccsds.gap}
 
+  p=replicate(swfo_stis_nse_find_peak(),14)
   if nbins eq 672 then begin
 
-    for fto=1,7 do begin
-      for tid=0,1 do begin
-        bin=(fto-1)*2+tid
-        ftotid[bin]=total(scidata[48*bin:48*bin+47],/preserve)
-      endfor
-    endfor
+    ;    for fto=1,7 do begin
+    ;      for tid=0,1 do begin
+    ;        bin=(fto-1)*2+tid
+    ;        total14[bin]=total(scidata[48*bin:48*bin+47])
+    ;      endfor
+    ;    endfor
 
+    d=reform(scidata,[48,14])
+    total14=total(d,1)
     foreach tid,[0,1] do begin
-      total6[0+tid*3]=ftotid[0+tid]+ftotid[4+tid]+ftotid[ 8+tid]+ftotid[12+tid]
-      total6[1+tid*3]=ftotid[2+tid]+ftotid[4+tid]+ftotid[10+tid]+ftotid[12+tid]
-      total6[2+tid*3]=ftotid[6+tid]+ftotid[8+tid]+ftotid[10+tid]+ftotid[12+tid]
+      total6[0+tid*3]=total14[0+tid]+total14[4+tid]+total14[ 8+tid]+total14[12+tid]
+      total6[1+tid*3]=total14[2+tid]+total14[4+tid]+total14[10+tid]+total14[12+tid]
+      total6[2+tid*3]=total14[6+tid]+total14[8+tid]+total14[10+tid]+total14[12+tid]
     endforeach
+    str2.total2=total(total6)
+
+    for j=0,13 do begin
+      p[j]=swfo_stis_nse_find_peak(d[*,j])
+    endfor
 
   endif
 
-  str2.counts = scidata
+  str2.counts=scidata
   str2.total6=total6
-  str2.total14=ftotid
-  str2.rate = float(str2.total)/str1.duration
-  str2.rate6=float(total6)/str1.duration
-  str2.rate14=float(ftotid)/str1.duration
+  str2.total14=total14
+  str2.rate=str2.total/str1.duration
+  str2.rate2=str2.total2/str1.duration
+  str2.rate6=total6/str1.duration
+  str2.rate14=total14/str1.duration
+  str2.sigma14=p.s
+  str2.avgbin14=p.x0
 
   str=create_struct(str1,str2)
 

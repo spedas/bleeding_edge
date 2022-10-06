@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-09-16 13:04:38 -0700 (Fri, 16 Sep 2022) $
-; $LastChangedRevision: 31093 $
+; $LastChangedDate: 2022-10-05 12:24:02 -0700 (Wed, 05 Oct 2022) $
+; $LastChangedRevision: 31149 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -60,13 +60,19 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = ['2022-04-17'   ,'2022-04-21'   ]   ;recent data
   opts.file_trange = ['2022-04-17/23','2022-04-18/01'] ;Example with 2 LPT's from ETU rev A (channel 5 not working)
   opts.file_trange = ['2022-4-21 2','2022 4 21 3']
-  opts.file_trange = ['2022-6-14 1','2022 6 14 3']  ;Amptek 250 test of 6 potential flight preamps.
+  opts.file_trange = ['2022-6-14 1','2022 6 14 3']  ;Amptek A250F test of 6 potential flight preamps.
   opts.file_trange = ['2022-7-7 22','2022 7 8 /3']  ;4 LPTs with non-LUT mode
   opts.file_trange = ['2022-7-8 20','2022 7 8 22']  ;LPT with non-LUT mode  ; (possibly incomplete)
-  opts.file_trange = ['2022-7-16 2','2022 7 16 3:30']  ;Amptek 250 test of 9 potential flight preamps. (5 turned out to be not suitable for flight)
+  opts.file_trange = ['2022-7-16 2','2022 7 16 3:30']  ;Amptek A250F test of 9 potential flight preamps. (5 turned out to be not suitable for flight)
   opts.file_trange = ['2022-8-4 22','2022 8 4 23']  ;LPT with non-LUT mode after instrument reset
   opts.file_trange = ['2022-8-5 17:30','2022 8 5 17:52']  ;LPT with non-LUT mode
-  opts.file_trange = ['2022-8-24 16','2022 8 24 19']  ;extreme counts: baseline and threshold tests
+  opts.file_trange = ['2022-8-24 2','2022 8 24 3']  ;Amptek A250F test of 18 potential flight preamps
+  opts.file_trange = ['2022-8-24 16','2022 8 24 19']  ;extreme counts: baseline and threshold tests on EM with internal LVPS showing weird count rates behavior (sci higher than hkp)
+  opts.file_trange = ['2022-9-12 15','2022 9 12 17']  ;good LPT with non-LUT mode
+  opts.file_trange = ['2022-9-14 22','2022 9 15 1']  ;FM first light with two LPT runs showning intermittent DAC behavior
+  opts.file_trange = ['2022-9-15 21','2022 9 16 3']  ;FM test procedure releaving intermittent DAC behavior. Followed by an LPT and more testing
+  opts.file_trange = ['2022-9-23 22','2022 9 24']  ;FM DAC fixed: continued test procedure w/ CM. followed by an LPT run.
+  
   ;opts.file_trange = !null
   ;opts.filenames=['socket_128.32.98.57.2028_20211216_004610.dat', 'socket_128.32.98.57.20484_20211216_005158.dat']
   opts.filenames = ''
