@@ -97,7 +97,7 @@
 ;                  ephemeris values and interpolates across the 
 ;                  gap.)
 ;                    Coverage:
-;                      Stereo A: 2006-10-26 to 2021-09-28
+;                      Stereo A: 2006-10-26 to 2023-01-25
 ;                      Stereo B: 2006-10-26 to 2014-09-28
 ;
 ;       SORB:      Plot the location of Solar Orbiter.  Includes a
@@ -170,8 +170,8 @@
 ;                  spiral, and all labels.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-14 11:37:10 -0700 (Thu, 14 Jul 2022) $
-; $LastChangedRevision: 30928 $
+; $LastChangedDate: 2022-10-13 09:35:26 -0700 (Thu, 13 Oct 2022) $
+; $LastChangedRevision: 31170 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery.pro $
 ;
 ;CREATED BY:	David L. Mitchell

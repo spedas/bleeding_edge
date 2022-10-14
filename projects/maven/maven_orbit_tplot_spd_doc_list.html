@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Oct 12 18:16:45 2022.<P>
+<STRONG>Last modified: </STRONG>Thu Oct 13 18:16:36 2022.<P>
  
 <HR>
  
@@ -746,13 +746,19 @@ KEYWORDS:
                  Used for long range predict and special events kernels.  Replaces
                  keywords EXTENDED and HIRES.
 
-       EXTENDED: If set, load long-term predict ephemerides created 2021-03-30.  
-                 These include an apoapsis raise maneuver on 2022-06-01 and a 
-                 periapsis raise maneuver on 2026-12-16.  The MarsGRAM density 
-                 scale factor is assumed to be 2.5.  The SPK kernels are:
+       EXTENDED: If set, load one of four long-term predict ephemerides.  All have
+                 a density scale factor (DSF) of 2.5, which is a weighted average
+                 over several Mars years.  They differ in the number and timing of
+                 apoapsis and periapsis raise maneuvers (arm, prm) and total fuel
+                 usage (meters per second, or ms).  The date when the ephemeris was
+                 generated is given at the end of the filename (YYMMDD).  More 
+                 recent dates better reflect current mission goals.  When in doubt,
+                 use the most recent.
 
-                   trj_orb_210326-260101_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp
-                   trj_orb_260101-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp
+                   1 : trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp
+                   2 : trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp
+                   3 : trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp
+                   4 : trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp
 
        HIRES:    OBSOLETE - this keyword has no effect at all.
 
@@ -809,8 +815,8 @@ KEYWORDS:
                  keyword is only useful for computers with sufficient memory.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-07-31 15:37:39 -0700 (Sun, 31 Jul 2022) $
- $LastChangedRevision: 30979 $
+ $LastChangedDate: 2022-10-13 09:33:22 -0700 (Thu, 13 Oct 2022) $
+ $LastChangedRevision: 31168 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11

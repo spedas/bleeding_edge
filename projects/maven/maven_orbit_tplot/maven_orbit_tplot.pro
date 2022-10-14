@@ -78,13 +78,19 @@
 ;                 Used for long range predict and special events kernels.  Replaces
 ;                 keywords EXTENDED and HIRES.
 ;
-;       EXTENDED: If set, load long-term predict ephemerides created 2021-03-30.  
-;                 These include an apoapsis raise maneuver on 2022-06-01 and a 
-;                 periapsis raise maneuver on 2026-12-16.  The MarsGRAM density 
-;                 scale factor is assumed to be 2.5.  The SPK kernels are:
+;       EXTENDED: If set, load one of four long-term predict ephemerides.  All have
+;                 a density scale factor (DSF) of 2.5, which is a weighted average
+;                 over several Mars years.  They differ in the number and timing of
+;                 apoapsis and periapsis raise maneuvers (arm, prm) and total fuel
+;                 usage (meters per second, or ms).  The date when the ephemeris was
+;                 generated is given at the end of the filename (YYMMDD).  More 
+;                 recent dates better reflect current mission goals.  When in doubt,
+;                 use the most recent.
 ;
-;                   trj_orb_210326-260101_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp
-;                   trj_orb_260101-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp
+;                   1 : trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp
+;                   2 : trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp
+;                   3 : trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp
+;                   4 : trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp
 ;
 ;       HIRES:    OBSOLETE - this keyword has no effect at all.
 ;
@@ -141,8 +147,8 @@
 ;                 keyword is only useful for computers with sufficient memory.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-31 15:37:39 -0700 (Sun, 31 Jul 2022) $
-; $LastChangedRevision: 30979 $
+; $LastChangedDate: 2022-10-13 09:33:22 -0700 (Thu, 13 Oct 2022) $
+; $LastChangedRevision: 31168 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -326,30 +332,17 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
     case extended of
        0   : ; do nothing (don't use extended predict ephemeris)
        1   : begin
-               mname = 'maven_spacecraft_mso_2021-2030_dsf2.5_210330.sav'
-               gname = 'maven_spacecraft_geo_2021-2030_dsf2.5_210330.sav'
-               timespan, ['2021-03-26','2030-12-30']
+               mname = 'maven_spacecraft_mso_2022-2032_dsf2.5_arm_prm_19.2ms_220802.sav'
+               gname = 'maven_spacecraft_geo_2022-2032_dsf2.5_arm_prm_19.2ms_220802.sav'
+               timespan, ['2022-08-10','2032-01-01']
                treset = 1
                nocrop = 1
                timecrop = 0
                print,"Using extended predict ephemeris."
-               print,"  SPK = trj_orb_210326-260101_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
-               print,"  SPK = trj_orb_260101-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
-               ttitle = "trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
+               print,"  SPK = trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp"
+               ttitle = "trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp"
              end
        2   : begin
-               mname = 'maven_spacecraft_mso_2022-2032_dsf2.5_arm_prm_13.5ms_210908.sav'
-               gname = 'maven_spacecraft_geo_2022-2032_dsf2.5_arm_prm_13.5ms_210908.sav'
-               timespan, ['2022-01-01','2032-01-01']
-               treset = 1
-               nocrop = 1
-               timecrop = 0
-               print,"Using extended predict ephemeris."
-               print,"  SPK = trj_orb_220101-270101_dsf2.5_arm_prm_13.5ms_210908.bsp"
-               print,"  SPK = trj_orb_270101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp"
-               ttitle = "trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp"
-             end
-        3  : begin
                mname = 'maven_spacecraft_mso_2022-2032_dsf2.5_arms_18ms_210930.sav'
                gname = 'maven_spacecraft_geo_2022-2032_dsf2.5_arms_18ms_210930.sav'
                timespan, ['2022-01-01','2032-01-01']
@@ -361,12 +354,37 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
                print,"  SPK = trj_orb_270101-320101_dsf2.5_arms_18ms_210930.bsp"
                ttitle = "trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp"
              end
+        3  : begin
+               mname = 'maven_spacecraft_mso_2022-2032_dsf2.5_arm_prm_13.5ms_210908.sav'
+               gname = 'maven_spacecraft_geo_2022-2032_dsf2.5_arm_prm_13.5ms_210908.sav'
+               timespan, ['2022-01-01','2032-01-01']
+               treset = 1
+               nocrop = 1
+               timecrop = 0
+               print,"Using extended predict ephemeris."
+               print,"  SPK = trj_orb_220101-270101_dsf2.5_arm_prm_13.5ms_210908.bsp"
+               print,"  SPK = trj_orb_270101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp"
+               ttitle = "trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp"
+             end
+        4  : begin
+               mname = 'maven_spacecraft_mso_2021-2030_dsf2.5_210330.sav'
+               gname = 'maven_spacecraft_geo_2021-2030_dsf2.5_210330.sav'
+               timespan, ['2021-03-26','2030-12-30']
+               treset = 1
+               nocrop = 1
+               timecrop = 0
+               print,"Using extended predict ephemeris."
+               print,"  SPK = trj_orb_210326-260101_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
+               print,"  SPK = trj_orb_260101-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
+               ttitle = "trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
+             end
       else : begin
                print,"Extended predict ephemeris options are: "
                print,"  0 : Do not use an extended predict ephemeris (default)."
-               print,"  1 : trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
-               print,"  2 : trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp"
-               print,"  3 : trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp"
+               print,"  1 : trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp"
+               print,"  2 : trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp"
+               print,"  3 : trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp"
+               print,"  4 : trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
                print,""
                return
              end

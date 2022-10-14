@@ -48,8 +48,8 @@
 ;       RESULT:        Named variable to hold structure of results.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-04-14 08:11:55 -0700 (Thu, 14 Apr 2022) $
-; $LastChangedRevision: 30767 $
+; $LastChangedDate: 2022-10-13 09:34:06 -0700 (Thu, 13 Oct 2022) $
+; $LastChangedRevision: 31169 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_plot_fhsk.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2017-01-15
@@ -114,19 +114,25 @@ pro swe_plot_fhsk, pans=pans, trange=trange, tshift=tshift, vnorm=vnorm, avg=avg
 ;   SWEA housekeeping includes 3 temperatures (thermistors on the LVPS, 
 ;   digital board, and anode board), analyzer voltages, MCP bias, and
 ;   numerous voltages provided by the LVPS to the front-end electronics
-;   and digital board.  A total of 24 values are multiplexed into 224
-;   housekeeping messages.  Time resolutions are:
+;   and digital board.  There are 448 housekeeping messages every sweep,
+;   alternating every message between regular and fast housekeeping.
+;   Regular housekeeping multiplexes 24 channels into 224 messages
+;   (~9 messages per channel per sweep).  One channel is designated the
+;   "fast housekeeping" channel, and the other 224 messages are devoted
+;   to this one channel.  Time resolutions are:
 ;
 ;     anode counters   : 448 messages in 1.95 sec --> 0.00435 sec
 ;     hsk per channel  :   9 messages in 1.95 sec --> 0.21 sec
 ;     fast hsk (1 ch)  : 224 messages in 1.95 sec --> 0.00871 sec
 ;     dwell hsk (1 ch) : 448 messages in 1.95 sec --> 0.00435 sec
 ;
-;   Only one channel at a time can be the fast housekeeping channel, 
-;   with 224 messages per cycle.
-;
 ;   In dwell mode, all 448 housekeeping messages are devoted to one 
 ;   channel -- all other channels are ignored.
+;
+;   There are 1792 steps in the sweep table, with 28 deflector steps for
+;   each of 64 energy steps.  Normal housekeeping greatly undersamples
+;   the sweep.  Fast housekeeping and dwell mode resolve the energy 
+;   sweep but undersample the deflector sweep.
 ;
 ;   The 24 housekeeping channels are:
 ;

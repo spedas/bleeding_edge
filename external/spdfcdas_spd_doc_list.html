@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Oct 12 18:16:45 2022.<P>
+<STRONG>Last modified: </STRONG>Thu Oct 13 18:16:36 2022.<P>
  
 <HR>
  
@@ -3557,6 +3557,11 @@ SPDFVARIABLEDESCRIPTION__DEFINE[7]</A>
             Specifies whether the authenticity of the peer's SSL
             certificate should be verified.  When 0, the connection
             succeeds regardless of what the peer SSL certificate
+            contains.
+ @keyword sslVerifyHost {in} {optional} {type=int}
+            Specifies whether the authenticity of the host's SSL
+            certificate should be verified.  When 0, the connection
+            succeeds regardless of what the host SSL certificate
             contains.
  @returns one of the following: A string containing the full path 
             of the file retrieved from the remote HTTP or FTP server,

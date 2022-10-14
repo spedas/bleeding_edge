@@ -270,6 +270,11 @@ end
 ;            certificate should be verified.  When 0, the connection
 ;            succeeds regardless of what the peer SSL certificate
 ;            contains.
+; @keyword sslVerifyHost {in} {optional} {type=int}
+;            Specifies whether the authenticity of the host's SSL
+;            certificate should be verified.  When 0, the connection
+;            succeeds regardless of what the host SSL certificate
+;            contains.
 ; @returns one of the following: A string containing the full path 
 ;            of the file retrieved from the remote HTTP or FTP server,
 ;            A byte vector, if the BUFFER keyword is set, An array of 
@@ -281,9 +286,10 @@ function SpdfFileDescription::getFile, $
     string_array = string_array, $ 
     callback_function = callback_function, $
     callback_data = callback_data, $
-    sslVerifyPeer = sslVerifyPeer
+    sslVerifyPeer = sslVerifyPeer, $
+    ssl_verify_host = sslVerifyHost
     compile_opt idl2
-
+    
     if n_elements(filename) eq 0 then begin
 
         urlComponents = parse_url(self.name)
@@ -291,9 +297,11 @@ function SpdfFileDescription::getFile, $
     endif
 
     if n_elements(sslVerifyPeer) eq 0 then begin
-
         sslVerifyPeer = SpdfGetDefaultSslVerifyPeer()
-    endif
+    endif    
+    
+    if undefined(sslVerifyPeer) then sslVerifyPeer=0
+    if undefined(sslVerifyHost) then sslVerifyHost=0
 
     fileUrl = $
         obj_new('IDLnetUrl', $
@@ -303,7 +311,8 @@ function SpdfFileDescription::getFile, $
                 proxy_port = self.proxySettings.getPort(), $
                 proxy_username = self.proxySettings.getUsername(), $
                 proxy_password = self.proxySettings.getPassword(), $
-                ssl_verify_peer = sslVerifyPeer)
+                ssl_verify_peer = sslVerifyPeer, $
+                ssl_verify_host = sslVerifyHost)
 
     if keyword_set(callback_function) then begin
 
