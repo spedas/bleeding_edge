@@ -85,13 +85,14 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   del_data, '*_fgs*'
   elf_load_fgm, probes=probe, trange=tr, datatype='fgs', no_download=no_download
   get_data, 'el'+probe+'_fgs', data=elx_fgs
+  copy_data, 'el'+probe+'_fgs_fsp_res_obw', 'el'+probe+'_fgs_fsp_res_obw_orig'
 ;  if size(elx_fgs, /type) NE 8 then begin
 ;    elf_load_fgm, probe=probe, trange=['2022-01-15','2022-01-16'], datatype='fgs', no_download=no_download
 ;    timeduration=(time_double(trange[1])-time_double(trange[0]))
 ;    timespan,tr[0],timeduration,/seconds
 ;    tr=timerange()
 ;  endif
-
+;  
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; GET KP and DST values
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -406,7 +407,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ; also get the data availability time ranges - this is needed later for science zone percent completion
   epd_sci_zones=get_elf_science_zone_start_end(trange=[trange[0]-5,trange[1]+5], probe=probe, instrument='epd')
   fgm_sci_zones=get_elf_science_zone_start_end(trange=[trange[0]-5,trange[1]+5], probe=probe, instrument='fgm')
-
+;stop
   num_szs=n_elements(sz_starttimes)
 
   ; set up science zone plot options
@@ -422,7 +423,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       tdur=sz_tr[1]-sz_tr[0]
       timespan, sz_tr[0], tdur, /sec
       this_tr=timerange()
-      
+
       ; get EPD data
       elf_load_epd, probes=probe, datatype='pef', level='l1', type='nflux',no_download=no_download
       ;trange=['2022-06-02/02:00','2022-06-02/03:00']
@@ -461,18 +462,33 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         1: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Bad Fit' + epd_completeness_str
         2: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', No Fit' + epd_completeness_str
         else: phase_msg = 'Median Phase delay values dSect2add='+strtrim(string(dsect2add),1) + ' and dPhAng2add=' + dphang_string + ', Bad Fit' + epd_completeness_str
-      endcase 
-      
+      endcase      
 
       spin_str=''
       if spd_data_exists('el'+probe+'_pef_nflux',sz_tr[0],sz_tr[1]) then begin
         get_data, 'el'+probe+'_pef_nspinsinsum', data=my_nspinsinsum
         if med_nsect LT 30 then begin
           batch_procedure_error_handler, 'elf_getspec', /regularize, probe=probe, dSect2add=dsect2add, dSpinPh2add=dphang2add, nspinsinsum=my_nspinsinsum.y, no_download=no_download
+          copy_data, 'el'+probe+'_pef_en_reg_spec2plot_omni', 'el'+probe+'_pef_en_spec2plot_omni'
+          copy_data, 'el'+probe+'_pef_en_reg_spec2plot_anti', 'el'+probe+'_pef_en_spec2plot_anti'
+          copy_data, 'el'+probe+'_pef_en_reg_spec2plot_perp', 'el'+probe+'_pef_en_spec2plot_perp'
+          copy_data, 'el'+probe+'_pef_en_reg_spec2plot_para', 'el'+probe+'_pef_en_spec2plot_para'
+          copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0', 'el'+probe+'_pef_pa_spec2plot_ch0'
+          copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch1', 'el'+probe+'_pef_pa_spec2plot_ch1'
+          copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch2', 'el'+probe+'_pef_pa_spec2plot_ch2'
+          copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch3', 'el'+probe+'_pef_pa_spec2plot_ch3'
         endif else begin
           batch_procedure_error_handler, 'elf_getspec', probe=probe, dSect2add=dsect2add, dSpinPh2add=dphang2add, nspinsinsum=my_nspinsinsum.y, no_download=no_download
+          copy_data, 'el'+probe+'_pef_en_reg_spec2plot_omni', 'el'+probe+'_pef_en_spec2plot_omni'
+          copy_data, 'el'+probe+'_pef_en_reg_spec2plot_anti', 'el'+probe+'_pef_en_spec2plot_anti'
+          copy_data, 'el'+probe+'_pef_en_reg_spec2plot_perp', 'el'+probe+'_pef_en_spec2plot_perp'
+          copy_data, 'el'+probe+'_pef_en_reg_spec2plot_para', 'el'+probe+'_pef_en_spec2plot_para'
+          copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0', 'el'+probe+'_pef_pa_spec2plot_ch0'
+          copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch1', 'el'+probe+'_pef_pa_spec2plot_ch1'
+          copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch2', 'el'+probe+'_pef_pa_spec2plot_ch2'
+          copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch3', 'el'+probe+'_pef_pa_spec2plot_ch3'
         endelse 
-        if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin
+        if not spd_data_exists('el'+probe+'_pef_pa_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin
           elf_getspec, probe=probe, nspinsinsum=my_nspinsinsum.y
         endif ;else begin
         ; don't need to mark regularized data
@@ -547,12 +563,22 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       options, 'el'+probe+'_MLAT_dip', 'format', '(1F5.1)'
       options, 'el'+probe+'_MLT_dip', 'format', '(1F4.1)'
       options, 'el'+probe+'_L_dip', 'format', '(1F4.1)'
-      
+            
       if strlowcase(probe) eq 'a' then  $
          varstring=['ela_GLON','ela_MLAT_igrf[ela_MLAT_dip]', 'ela_MLT_igrf[ela_MLT_dip]', 'ela_L_igrf[ela_L_dip]'] else $
          varstring=['elb_GLON','elb_MLAT_igrf[elb_MLAT_dip]', 'elb_MLT_igrf[elb_MLT_dip]', 'elb_L_igrf[elb_L_dip]']
-      if spd_data_exists('el'+probe+'_fgs_fsp_res_obw',sz_tr[0],sz_tr[1]) then begin     
-        tplot,['proxy_ae', $
+      if spd_data_exists('el'+probe+'_fgs_fsp_res_obw_orig',sz_tr[0],sz_tr[1]) then begin     
+        copy_data, 'el'+probe+'_fgs_fsp_res_obw_orig', 'el'+probe+'_fgs_fsp_res_obw'
+        get_data, 'el'+probe+'_fgs_fsp_res_obw', data=fsp_obw
+        idx=where(fsp_obw.x GE sz_tr[0] and fsp_obw.x LE sz_tr[1], ncnt)
+        if ncnt GT 0 then begin
+          idx=where(abs(fsp_obw.y[idx,*]) GE 100, tcnt)
+          if tcnt GT 0 then begin
+            ylim, 'el'+probe+'_fgs_fsp_res_obw', -100,100.
+          endif 
+        endif
+        options,  'el'+probe+'_fgs_fsp_res_obw', ysubtitle='[nT]'
+         tplot,['proxy_ae', $
           'fgm_survey_bar', $
           'epdi_fast_bar', $
           'epde_fast_bar', $
@@ -568,7 +594,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       endif else begin
         tplot,['proxy_ae', $
           'fgm_survey_bar', $
-;          'epd_fast_bar', $
           'epdi_fast_bar', $
           'epde_fast_bar', $
           'sunlight_bar', $
