@@ -22,8 +22,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2022-06-24 14:39:41 -0700 (Fri, 24 Jun 2022) $
-; $LastChangedRevision: 30883 $
+; $LastChangedDate: 2022-10-24 17:17:19 -0700 (Mon, 24 Oct 2022) $
+; $LastChangedRevision: 31187 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/spice/mex_spice_kernels.pro $
 ;
 ;-
@@ -31,7 +31,7 @@ FUNCTION mex_spice_kernels, names, trange=trange, all=all, load=load,       $
                             reset=reset, verbose=verbose, source=source,    $
                             valid_only=valid_only, sck=sck, clear=clear,    $
                             no_update=no_update, last_version=last_version, $
-                            no_download=no_download, no_server=no_server
+                            no_download=no_download, no_server=no_server, predictive=predictive
 
   IF spice_test() EQ 0 THEN RETURN, ''
   
@@ -87,16 +87,26 @@ FUNCTION mex_spice_kernels, names, trange=trange, all=all, load=load,       $
      wsp = WHERE(mk.contains('/spk/') EQ 1, nsp)
      IF nsp GT 0 THEN BEGIN
         spk = mk[wsp]
-        w = WHERE(spk.contains('ORMF_T19_') EQ 0, nw)
-        IF nw GT 0 THEN spk = spk[w]
-        w = WHERE(spk.contains('ORMM_T19_') EQ 1, nw, comp=v, ncomp=nv)
+        
+        w = WHERE(spk.contains('spk/OR') EQ 1, nw, comp=v, ncomp=nv)
         IF nv GT 0 THEN append_array, kernels, spk[v]
         IF nw GT 0 THEN BEGIN
+           spk = spk[w]
+           IF tr[1] LT time_double('2003-12-22') THEN BEGIN
+              w = WHERE(spk.contains('spk/ORHM') EQ 1, nw)
+              IF nw GT 0 THEN append_array, kenels, spk[w]
+           ENDIF
+
            fname = 'ORMM_T19_' + time_intervals(tformat='yyMM', trange=tr, /monthly)
            FOR i=0, N_ELEMENTS(fname)-1 DO BEGIN
-              bsp = WHERE((spk[w]).contains(fname[i]) EQ 1, nbsp)
-              IF nbsp GT 0 THEN append_array, kernels, spk[w[bsp]]
+              bsp = WHERE(spk.contains(fname[i]) EQ 1, nbsp)
+              IF nbsp GT 0 THEN append_array, kernels, spk[bsp]
            ENDFOR
+
+           IF KEYWORD_SET(predictive) THEN BEGIN
+              pred = WHERE(spk.contains('spk/ORMF_T19_') EQ 1, npred)
+              IF npred GT 0 THEN append_array, kernels, spk[pred]
+           ENDIF 
         ENDIF 
      ENDIF
      kernels = spd_download_plus(remote_file=kernels, local_file=kernels.replace(source.remote_data_dir, source.local_data_dir), $
