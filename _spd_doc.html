@@ -2,17 +2,17 @@
 <html>
  
 <head>
-<TITLE>SPEDAS SW Help for spdsw_r31187_2022-10-24</TITLE>
+<TITLE>SPEDAS SW Help for spdsw_r31190_2022-10-25</TITLE>
 </head>
  
 <body>
-<H2>SPEDAS SW Help for spdsw_r31187_2022-10-24</H2>
+<H2>SPEDAS SW Help for spdsw_r31190_2022-10-25</H2>
 <P>
 This page was created by the IDL library routine 
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Oct 24 18:16:37 2022.<P>
+<STRONG>Last modified: </STRONG>Tue Oct 25 18:16:38 2022.<P>
  
 <HR>
  
@@ -110,6 +110,13 @@ external/IDL_GEOPACK/trace</A>
 external/IDL_GEOPACK/ts07</A>
 <LI><A HREF="external/IDL_ICY_spd_doc_list.html">external/IDL_ICY</A>
 <LI><A HREF="external/aacgm_v2_spd_doc_list.html">external/aacgm_v2</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html">external/astron/fits</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html">
+external/astron/fits_bintable</A>
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html">
+external/astron/fits_misc</A>
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html">
+external/astron/fits_table</A>
 <LI><A HREF="external/das2dlm_spd_doc_list.html">external/das2dlm</A>
 <LI><A HREF="external/das2dlm/examples_spd_doc_list.html">
 external/das2dlm/examples</A>
@@ -148,7 +155,6 @@ general/cotrans/special/sse</A>
 <LI><A HREF="general/mini_spd_doc_list.html">general/mini</A>
 <LI><A HREF="general/misc_spd_doc_list.html">general/misc</A>
 <LI><A HREF="general/misc/SSW_spd_doc_list.html">general/misc/SSW</A>
-<LI><A HREF="general/misc/SSW/fits_spd_doc_list.html">general/misc/SSW/fits</A>
 <LI><A HREF="general/misc/file_stuff_spd_doc_list.html">general/misc/file_stuff
 </A>
 <LI><A HREF="general/misc/quaternion_spd_doc_list.html">general/misc/quaternion
@@ -1003,6 +1009,8 @@ BETA_3D_NEW">BETA_3D_NEW</A>
 <br>saves and restores background data files.
 <LI><A HREF="projects/themis/deprecated_spd_doc_list.html#BLANK_PANEL">
 BLANK_PANEL</A>
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#BLKSHIFT">BLKSHIFT</A>
+<br>Shift a block of data to a new position in a file (possibly overlapping)
 <LI><A HREF="general/misc_spd_doc_list.html#BOX_MEAN">BOX_MEAN</A>
 <br>Calculates the mean, median, and standard deviation of a 1-D array
 <LI><A HREF="external/CDAWlib_spd_doc_list.html#BREAK_MYSTRING">BREAK_MYSTRING
@@ -1150,8 +1158,13 @@ CGPICKCOLORNAME[3]</A>
 <LI><A HREF="projects/wind/3dp/idl_spd_doc_list.html#CHANGE_PKQUALITY">
 CHANGE_PKQUALITY</A>
 <br>Change the level of packet quality used when filtering packets through
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#CHECKSUM32">CHECKSUM32
+</A>
+<br>To compute the 32bit checksum of an array (ones-complement arithmetic)
 <LI><A HREF="projects/maven/mag_spd_doc_list.html#CHECKSUM_16BITS">
 CHECKSUM_16BITS</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#CHECK_FITS">CHECK_FITS</A>
+<br>Check that keywords in a FITS header array match the associated data
 <LI><A HREF="general/missions/rbsp/efw/rbsp_phasef/phasef_labeling_spd_doc_list.html#
 CHECK_VSVY_11VAR">CHECK_VSVY_11VAR</A>
 <LI><A HREF="general/tplot_spd_doc_list.html#CLEAN_SPIKES">CLEAN_SPIKES</A>
@@ -2369,6 +2382,8 @@ FA_LOAD_MAG_HR_DCB">FA_LOAD_MAG_HR_DCB</A>
 FA_ORBIT_TIME</A>
 <LI><A HREF="general/missions/fast/fa_esa/cdf_load/struct_spd_doc_list.html#
 FA_SEB_STRUCT_L1">FA_SEB_STRUCT_L1</A>
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#FDECOMP">FDECOMP</A>
+<br>Routine to decompose file name(s) for any operating system.
 <LI><A HREF="projects/mms/feeps_spd_doc_list.html#FEEPS_BIN_INFO">FEEPS_BIN_INFO
 </A>
 <br>Prints FEEPS PA bin information - for debugging
@@ -2429,11 +2444,31 @@ FIND_NEAREST_NEIGHBOR2</A>
 </A>
 <LI><A HREF="general/tools/fitting_spd_doc_list.html#FIT">FIT</A>
 <br>Non-linear least squares fit to a user defined function.
-<LI><A HREF="general/misc/SSW/fits_spd_doc_list.html#FITS_CLOSE">FITS_CLOSE</A>
-<LI><A HREF="general/misc/SSW/fits_spd_doc_list.html#FITS_OPEN">FITS_OPEN</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#FITSDIR">FITSDIR</A>
+<br>Display selected FITS keywords from the headers of FITS files.
+<LI><A HREF="external/astron/fits_spd_doc_list.html#FITSRGB_TO_TIFF">
+FITSRGB_TO_TIFF</A>
+<br>Combine separate red, green, and blue FITS images into TIFF format
+<LI><A HREF="external/astron/fits_spd_doc_list.html#FITS_ADD_CHECKSUM">
+FITS_ADD_CHECKSUM</A>
+<br>Add or update the CHECKSUM and DATASUM keywords in a FITS header
+<LI><A HREF="external/astron/fits_spd_doc_list.html#FITS_ASCII_ENCODE()">
+FITS_ASCII_ENCODE()</A>
+<br>Encode an unsigned longword as an ASCII string to insert in a FITS header
+<LI><A HREF="external/astron/fits_spd_doc_list.html#FITS_CLOSE">FITS_CLOSE</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#FITS_HELP">FITS_HELP</A>
+<br>To print a summary of the primary data units and extensions in a
+<LI><A HREF="external/astron/fits_spd_doc_list.html#FITS_INFO">FITS_INFO</A>
+<br>Provide information about the contents of a FITS file
+<LI><A HREF="external/astron/fits_spd_doc_list.html#FITS_OPEN">FITS_OPEN</A>
 <br>Opens a FITS (Flexible Image Transport System) data file.
-<LI><A HREF="general/misc/SSW/fits_spd_doc_list.html#FITS_READ">FITS_READ</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#FITS_READ">FITS_READ</A>
 <br>To read a FITS file.
+<LI><A HREF="external/astron/fits_spd_doc_list.html#FITS_TEST_CHECKSUM()">
+FITS_TEST_CHECKSUM()</A>
+<br>Verify the values of the CHECKSUM and DATASUM keywords in a FITS header
+<LI><A HREF="external/astron/fits_spd_doc_list.html#FITS_WRITE">FITS_WRITE</A>
+<br>To write a FITS primary data unit or extension.
 <LI><A HREF="general/tools/fitting_spd_doc_list.html#FIT_CRIB">FIT_CRIB</A>
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#FIT_PAD_MAG">FIT_PAD_MAG</A>
 <br>Determines the time offset between MAG1 data and SWEA MAG angles.  For SWEA pitch
@@ -2458,6 +2493,44 @@ FORMATANNOTATION</A>
 <br>This is an emergency script to be used when EVA is not working but
 <LI><A HREF="spedas_gui/utilities_spd_doc_list.html#FSC_COLOR">FSC_COLOR</A>
 <LI><A HREF="spedas_gui/utilities_spd_doc_list.html#FSC_FIELD">FSC_FIELD</A>
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTAB_DELROW">
+FTAB_DELROW</A>
+<br>Delete rows of data from a FITS ASCII or binary table extension
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTAB_EXT">FTAB_EXT</A>
+<br>Routine to extract columns from a FITS (binary or ASCII) table.
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTAB_HELP">FTAB_HELP
+</A>
+<br>Describe the columns of a FITS binary or ASCII table extension(s).
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTAB_PRINT">FTAB_PRINT
+</A>
+<br>Print the contents of a FITS (binary or ASCII) table extension.
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTADDCOL">FTADDCOL</A>
+<br>Routine to add a field to a FITS ASCII table
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTCREATE">FTCREATE</A>
+<br>Create a new (blank) FITS ASCII table and header with specified size.
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTDELCOL">FTDELCOL</A>
+<br>Delete a column of data from a FITS table
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTDELROW">FTDELROW</A>
+<br>Delete a row of data from a FITS table
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTGET">FTGET</A>
+<br>Function to return value(s) from specified column in a FITS ASCII table
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTHELP">FTHELP</A>
+<br>Routine to print a description of a FITS ASCII table extension
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTHMOD">FTHMOD</A>
+<br>Procedure to modify header information for a specified field
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTINFO">FTINFO</A>
+<br>Return an informational structure from a FITS ASCII table header.
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTKEEPROW">FTKEEPROW
+</A>
+<br>Subscripts (and reorders) a FITS table.  A companion piece to FTDELROW.
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTPRINT">FTPRINT</A>
+<br>Procedure to print specified columns and rows of a FITS table
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTPUT">FTPUT</A>
+<br>Procedure to add or update a field in an FITS ASCII table
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTSIZE">FTSIZE</A>
+<br>Procedure to return the size of a FITS ASCII table.
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#FTSORT">FTSORT</A>
+<br>Sort a FITS ASCII table according to a specified field
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#
 FUNCT_FIT2D">FUNCT_FIT2D</A>
 <LI><A HREF="external/CDAWlib_spd_doc_list.html#FUV_MOVIE">FUV_MOVIE</A>
@@ -2471,6 +2544,82 @@ FUV_ROTATION_MATRIX</A>
 FU_FIT2D</A>
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#FU_SPEC2D
 ">FU_SPEC2D</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXADDPAR">FXADDPAR
+</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBADDCOL">
+FXBADDCOL</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBCLOSE">FXBCLOSE
+</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBCOLNUM()">
+FXBCOLNUM()</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBCREATE">
+FXBCREATE</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBDIMEN()">
+FXBDIMEN()</A>
+<br>Returns the dimensions for a column in a FITS binary table.
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBFIND">FXBFIND
+</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBFINDLUN()">
+FXBFINDLUN()</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBFINISH">
+FXBFINISH</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBGROW">FXBGROW
+</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBHEADER()">
+FXBHEADER()</A>
+<br>Returns the header of an open FITS binary table.
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBHELP">FXBHELP
+</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBHMAKE">FXBHMAKE
+</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBINTABLE">
+FXBINTABLE</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBISOPEN()">
+FXBISOPEN()</A>
+<br>Returns true if UNIT points to an open FITS binary table.
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBOPEN">FXBOPEN
+</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBPARSE">FXBPARSE
+</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBREAD">FXBREAD
+</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBREADM">FXBREADM
+</A>
+<br>Read multiple columns/rows from a disk FITS binary table file.
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBSTATE()">
+FXBSTATE()</A>
+<br>Returns the state of a FITS binary table.
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBTDIM()">
+FXBTDIM()</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBTFORM">FXBTFORM
+</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBWRITE">FXBWRITE
+</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBWRITM">FXBWRITM
+</A>
+<br>Write multiple columns/rows to a disk FITS binary table file.
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXFINDEND">
+FXFINDEND</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXHCLEAN">FXHCLEAN
+</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXHMAKE">FXHMAKE
+</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXHMODIFY">
+FXHMODIFY</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXHREAD">FXHREAD
+</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#FXMOVE">FXMOVE</A>
+<br>Skip to a specified extension number or name in a FITS file
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXPAR()">FXPAR()
+</A>
+<br>Obtain the value of a parameter in a FITS header.
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXPARPOS()">
+FXPARPOS()</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#FXPOSIT">FXPOSIT</A>
+<br>Return the unit number of a FITS file positioned at specified extension
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXREAD">FXREAD</A>
+<LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXWRITE">FXWRITE
+</A>
 <A NAME="LIST_G">
 <LI><A HREF="general/tools/fitting_spd_doc_list.html#GAUSS">GAUSS</A>
 <br>Evaluates a gaussian function with background.
@@ -2545,7 +2694,7 @@ GETPRIMARYSCREENSIZE</A>
 GETRESOURCEPATH</A>
 <br>gets the path of the resource directory in a cross platform way
 <LI><A HREF="general/tplot_spd_doc_list.html#GETTIME">GETTIME</A>
-<LI><A HREF="general/misc/SSW/fits_spd_doc_list.html#GETTOK">GETTOK</A>
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#GETTOK">GETTOK</A>
 <br>Retrieve the first part of a (vector) string up to a specified character
 <LI><A HREF="external/CDAWlib/jh_spd_doc_list.html#GETWRD">GETWRD</A>
 <br>Return the n'th word from a text string.
@@ -2999,6 +3148,8 @@ HAPI_LOAD_DATA_UT__DEFINE">HAPI_LOAD_DATA_UT__DEFINE</A>
 <LI><A HREF="general/hdf_spd_doc_list.html#HDF_TO_CDFSTRUCT">HDF_TO_CDFSTRUCT
 </A>
 <LI><A HREF="general/cotrans_spd_doc_list.html#HDZ2GEO">HDZ2GEO</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#HEADFITS">HEADFITS</A>
+<br>Read a FITS (primary or extension) header into a string array.
 <LI><A HREF="general/science_spd_doc_list.html#HEATFLUX">HEATFLUX</A>
 <LI><A HREF="projects/wind/3dp/idl_spd_doc_list.html#HELP_3DP">HELP_3DP</A>
 <LI><A HREF="general/misc_spd_doc_list.html#HEXPRINT">HEXPRINT</A>
@@ -3010,7 +3161,7 @@ HIGHLIGHT_TIME_INTERVAL</A>
 <br>subtracts running average from a data array
 <LI><A HREF="general/misc_spd_doc_list.html#HISTBINS">HISTBINS</A>
 <LI><A HREF="general/misc_spd_doc_list.html#HISTBINS2D">HISTBINS2D</A>
-<LI><A HREF="general/misc/SSW/fits_spd_doc_list.html#HPRINT">HPRINT</A>
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#HPRINT">HPRINT</A>
 <br>Display a FITS header (or other string array)
 <LI><A HREF="projects/maven/maven_orbit_tplot_spd_doc_list.html#HYBRID_ORBIT">
 HYBRID_ORBIT</A>
@@ -4148,6 +4299,8 @@ MINJMIN">MINJMIN</A>
 ">MINVAR_MATRIX_MAKE</A>
 <LI><A HREF="general/cotrans/special/minvar_spd_doc_list.html#MINVAR_TEST">
 MINVAR_TEST</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#MKHDR">MKHDR</A>
+<br>Make a minimal primary (or IMAGE extension) FITS header
 <LI><A HREF="general/misc_spd_doc_list.html#MK_HTML_HELP2">MK_HTML_HELP2</A>
 <br>Creates a html document from a list of IDL procedures.
 <LI><A HREF="external/CDAWlib_spd_doc_list.html#MLT">MLT</A>
@@ -4959,6 +5112,8 @@ MMS_UPDATE_FAST_INTERVALS">MMS_UPDATE_FAST_INTERVALS</A>
 MMS_VERSION_NUMBERS_CRIB">MMS_VERSION_NUMBERS_CRIB</A>
 <LI><A HREF="projects/mms/examples/advanced_spd_doc_list.html#MMS_WAVPOL_CRIB">
 MMS_WAVPOL_CRIB</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#MODFITS">MODFITS</A>
+<br>Modify a FITS file by updating the header and/or data array.
 <LI><A HREF="projects/mms/particles/moka_spd_doc_list.html#MOKA_MMS_CLEAN_DATA">
 MOKA_MMS_CLEAN_DATA</A>
 <LI><A HREF="projects/mms/particles/deprecated_spd_doc_list.html#MOKA_MMS_PAD">
@@ -5008,8 +5163,15 @@ MOVIE_MAP_IMAGES</A>
 <LI><A HREF="general/tplot_spd_doc_list.html#MPLOT_DOWNSAMPLE_DATA">
 MPLOT_DOWNSAMPLE_DATA</A>
 <LI><A HREF="general/tplot_spd_doc_list.html#MPLOT_SYMLOG">MPLOT_SYMLOG</A>
-<LI><A HREF="general/misc/SSW/fits_spd_doc_list.html#MRD_SKIP">MRD_SKIP</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#MRDFITS">MRDFITS</A>
+<br>Read all standard FITS data types into arrays or structures.
+<LI><A HREF="external/astron/fits_spd_doc_list.html#MRD_HREAD">MRD_HREAD</A>
+<br>Reads a FITS header from an opened disk file or Unix pipe
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#MRD_SKIP">MRD_SKIP</A>
 <br>Skip a number of bytes from the current location in a file or a pipe
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#MRD_STRUCT">MRD_STRUCT
+</A>
+<br>Return a structure as defined in the names and values data.
 <LI><A HREF="general/misc/quaternion_spd_doc_list.html#MTOQ">MTOQ</A>
 <LI><A HREF="general/tools/tplot_spd_doc_list.html#MULT_DATA">MULT_DATA</A>
 <br>Creates a tplot variable that is the product of two other tplot variables.
@@ -6392,6 +6554,8 @@ MVN_TOPOGRAPHY</A>
 <LI><A HREF="projects/maven/general_spd_doc_list.html#MVN_USR_DIR">MVN_USR_DIR
 </A>
 <br>returns a user directory that can be used to store user specific files. Use sparingly!
+<LI><A HREF="external/astron/fits_spd_doc_list.html#MWRFITS">MWRFITS</A>
+<br>Write all standard FITS data types from input arrays or structures.
 <LI><A HREF="projects/themis/spacecraft/particles/ESA/packet/functions_spd_doc_list.html#
 M_3D_NEW">M_3D_NEW</A>
 <br>Returns the momentum tensor, [Mxx,Myy,Mzz,Mxy,Mxz,Myz], eV/cm^3
@@ -6442,6 +6606,9 @@ N_3D_NEW">N_3D_NEW</A>
 <LI><A HREF="projects/maven/sta/mvn_sta_functions_spd_doc_list.html#N_4D">N_4D
 </A>
 <br>Returns the density array, n, 1/cm^3, corrects for spacecraft potential if dat.sc_pot exists
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#N_BYTES()">N_BYTES()
+</A>
+<br>To return the total number of bytes in data element
 <A NAME="LIST_O">
 <LI><A HREF="external/IDL_GEOPACK/ta15_spd_doc_list.html#OMNI2BINDEX">
 OMNI2BINDEX</A>
@@ -7440,7 +7607,10 @@ RBSP_UVW_TO_GSE</A>
 RBSP_UVW_TO_MGSE</A>
 <LI><A HREF="general/missions/rbsp/efw_spd_doc_list.html#RBSP_VECTOR_BANDPASS">
 RBSP_VECTOR_BANDPASS</A>
-<LI><A HREF="general/misc/SSW/fits_spd_doc_list.html#READFITS">READFITS</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#RDFITS_STRUCT">RDFITS_STRUCT
+</A>
+<br>Read an entire FITS file (all extensions) into a single IDL structure.
+<LI><A HREF="external/astron/fits_spd_doc_list.html#READFITS">READFITS</A>
 <br>Read a FITS file into IDL data and header variables.
 <LI><A HREF="general/tools/misc_spd_doc_list.html#READ_ASC">READ_ASC</A>
 <br>Reads data from an ascii file and puts data in an array of structures.
@@ -7523,13 +7693,16 @@ REE_SET_GSM">REE_SET_GSM</A>
 <LI><A HREF="general/science_spd_doc_list.html#REFORM_3D_STRUCT">
 REFORM_3D_STRUCT</A>
 <br>If a 3-d data structure has fromat (nenergy, nphi, ntheta) reform into (nenergy, nbins)
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#REMCHAR">REMCHAR</A>
+<br>Remove all appearances of character (char) from string (st)
 <LI><A HREF="external/developers/outliers_and_convolution_spd_doc_list.html#
 REMOVE_OUTLIERS">REMOVE_OUTLIERS</A>
 <br>Routine eliminates outliers. Quadratic trend is determined in a hollow
 <LI><A HREF="external/developers/outliers_and_convolution_spd_doc_list.html#
 REMOVE_OUTLIERS_REPAIR">REMOVE_OUTLIERS_REPAIR</A>
 <br>Routine repairs outliers. Quadratic trend is determined in a hollow
-<LI><A HREF="general/misc/SSW/fits_spd_doc_list.html#REPCHR[1]">REPCHR[1]</A>
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#REPCHR[1]">REPCHR[1]
+</A>
 <br>Replace all occurrences of one character with another in a text string.
 <LI><A HREF="external/CDAWlib/jh_spd_doc_list.html#REPCHR[2]">REPCHR[2]</A>
 <br>Replace all occurrences of one character with another in a text string.
@@ -9998,6 +10171,9 @@ SPECPLOT_GRAYNANS</A>
 <br>plot spectral data, any data set to NaN is plotted gray
 <LI><A HREF="external/CDAWlib_spd_doc_list.html#SPECTROGRAM">SPECTROGRAM</A>
 <br>This function plots a color spectrogram of Z in contiguous or
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#SPEC_DIR()">SPEC_DIR()
+</A>
+<br>Complete a file specification by appending the default disk or directory
 <LI><A HREF="spedas_gui/misc_spd_doc_list.html#SPEDAS_CONFIG_FILEDIR">
 SPEDAS_CONFIG_FILEDIR</A>
 <LI><A HREF="spedas_gui/misc_spd_doc_list.html#SPEDAS_INIT">SPEDAS_INIT</A>
@@ -10360,6 +10536,8 @@ STRING_GLOB_PREPROCESS</A>
 <LI><A HREF="general/mini_spd_doc_list.html#STRING_VAR_PREPROCESS">
 STRING_VAR_PREPROCESS</A>
 <LI><A HREF="general/misc_spd_doc_list.html#STRIPPATH">STRIPPATH</A>
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#STRN">STRN</A>
+<br>Convert a number to a string and remove padded blanks.
 <LI><A HREF="general/tplot_spd_doc_list.html#STRPLOT">STRPLOT</A>
 <br>Procedure used to print strings in a &quot;TPLOT&quot; style plot.
 <LI><A HREF="general/misc_spd_doc_list.html#STRUCT_VALUE">STRUCT_VALUE</A>
@@ -10453,11 +10631,13 @@ SWE_SNAP_OPTIONS</A>
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#SWE_TESTPULSER_MODEL">
 SWE_TESTPULSER_MODEL</A>
 <br>Creates SWEA Test Pulser Model and generates test pulser signatures
-<LI><A HREF="general/misc/SSW/fits_spd_doc_list.html#SXADDPAR">SXADDPAR</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#SXADDHIST">SXADDHIST</A>
+<br>Procedure to add HISTORY (or COMMENT) line(s) to a FITS header
+<LI><A HREF="external/astron/fits_spd_doc_list.html#SXADDPAR">SXADDPAR</A>
 <br>Add or modify a parameter in a FITS header array.
-<LI><A HREF="general/misc/SSW/fits_spd_doc_list.html#SXDELPAR">SXDELPAR</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#SXDELPAR">SXDELPAR</A>
 <br>Procedure to delete a keyword parameter(s) from a FITS header
-<LI><A HREF="general/misc/SSW/fits_spd_doc_list.html#SXPAR">SXPAR</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#SXPAR">SXPAR</A>
 <br>Obtain the value of a parameter in a FITS header
 <LI><A HREF="external/IDL_GEOPACK/ta16_spd_doc_list.html#SYMH2SYMC">SYMH2SYMC
 </A>
@@ -10523,6 +10703,20 @@ TA16_SUPPORTED</A>
 </A>
 <LI><A HREF="general/misc/SSW_spd_doc_list.html#TAG_EXIST">TAG_EXIST</A>
 <LI><A HREF="general/misc_spd_doc_list.html#TAG_NAMES_R">TAG_NAMES_R</A>
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#TBDELCOL">TBDELCOL</A>
+<br>Delete a column of data from a FITS binary table
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#TBDELROW">TBDELROW</A>
+<br>Delete specified row or rows of data from a FITS binary table
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#TBGET">TBGET</A>
+<br>Return value(s) from specified column in a FITS binary table
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#TBHELP">TBHELP</A>
+<br>Routine to print a description of a FITS binary table header
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#TBINFO">TBINFO</A>
+<br>Return an informational IDL structure from a FITS binary table header.
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#TBPRINT">TBPRINT</A>
+<br>Procedure to print specified columns &amp; rows of a FITS binary table
+<LI><A HREF="external/astron/fits_table_spd_doc_list.html#TBSIZE">TBSIZE</A>
+<br>Procedure to return the size of a FITS binary table.
 <LI><A HREF="projects/maven/sta/mvn_sta_functions_spd_doc_list.html#TB_4D">TB_4D
 </A>
 <br>Returns the temperature of a beam in units of eV, assumes no s/c charging
@@ -10556,6 +10750,11 @@ TEST_CROSS_SPEC">TEST_CROSS_SPEC</A>
 <br>Determines whether a given year is a leap year, and
 <LI><A HREF="general/missions/wind/waves_spd_doc_list.html#TEST_SPD_DATE_FORMAT
 ">TEST_SPD_DATE_FORMAT</A>
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#TEXTCLOSE">TEXTCLOSE
+</A>
+<br>Close a text outpu file previously opened with TEXTOPEN
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#TEXTOPEN">TEXTOPEN</A>
+<br>Open a device specified by TEXTOUT with unit !TEXTUNIT
 <LI><A HREF="general/cotrans_spd_doc_list.html#TGSM2MLT">TGSM2MLT</A>
 <br>Allows a user to convert position data in a tplot variable
 <LI><A HREF="projects/maven/sta/mvn_sta_functions_spd_doc_list.html#TH2_4D">
@@ -11787,6 +11986,8 @@ TOMNI2BINDEX</A>
 <LI><A HREF="external/IDL_GEOPACK/ta15_spd_doc_list.html#TOMNI2NINDEX">
 TOMNI2NINDEX</A>
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#TOPOMTRX">TOPOMTRX</A>
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#TO_HEX">TO_HEX</A>
+<br>Translate a non-negative decimal integer to a hexadecimal string
 <LI><A HREF="general/tplot_spd_doc_list.html#TPLOT">TPLOT</A>
 <br>Creates a time series plot of user defined quantities.
 <LI><A HREF="general/spedas_tools/tplot2ap_spd_doc_list.html#TPLOT2AP">TPLOT2AP
@@ -12002,8 +12203,8 @@ USTRANS_PWRSPC">USTRANS_PWRSPC</A>
 UTREND_TEST">UTREND_TEST</A>
 <br>Test whether there is a significant trend of time-serise data or not.
 <A NAME="LIST_V">
-<LI><A HREF="general/misc/SSW/fits_spd_doc_list.html#VALID_NUM()">VALID_NUM()
-</A>
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#VALID_NUM()">
+VALID_NUM()</A>
 <br>Check if a string is a valid number representation.
 <LI><A HREF="projects/maven/sta/mvn_sta_functions_spd_doc_list.html#VB_4D">VB_4D
 </A>
@@ -12172,6 +12373,8 @@ WI_TDS_DUSTIMPACT_LOAD">WI_TDS_DUSTIMPACT_LOAD</A>
 <LI><A HREF="general/spedas_tools/spd_download_spd_doc_list.html#
 WRAPPER FOR SPD_DOWNLOAD THAT RETURNS LOCAL VERSIONS OF FILES, IF">
 WRAPPER FOR SPD_DOWNLOAD THAT RETURNS LOCAL VERSIONS OF FILES, IF</A>
+<LI><A HREF="external/astron/fits_spd_doc_list.html#WRITEFITS">WRITEFITS</A>
+<br>Write IDL array and header variables to a disk FITS file.
 <LI><A HREF="external/CDAWlib_spd_doc_list.html#WRITE_MGIF">WRITE_MGIF</A>
 <br>Write an IDL image and color table vectors to a
 <LI><A HREF="general/missions/rbsp/efw/rbsp_phasef/misc_spd_doc_list.html#
@@ -12187,6 +12390,8 @@ WYGANT_GEN_YEARLY_FILES">WYGANT_GEN_YEARLY_FILES</A>
 <br>Locates gaps in data, and fills in with NaN
 <LI><A HREF="external/CDAWlib_spd_doc_list.html#XDISPLAYFILE">XDISPLAYFILE</A>
 <br>Display an ASCII text file using widgets and the widget manager.
+<LI><A HREF="external/astron/fits_misc_spd_doc_list.html#XDISPSTR">XDISPSTR</A>
+<br>Display a string array in a text widget with a simple search capability.
 <LI><A HREF="general/tplot_spd_doc_list.html#XLIM">XLIM</A>
 <br>To set plotting limits for plotting routines.
 <LI><A HREF="projects/SPP/fields/util_spd_doc_list.html#XML2IDL8">XML2IDL8</A>
