@@ -205,7 +205,7 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
    
     if ~keyword_set(my_nspinsinsum) then begin
       tn=tnames('*nspinsinsum*')
-      get_data, tn, data=nspin
+      get_data, tn[0], data=nspin
       if is_struct(nspin) then my_nspinsinsum=nspin.y else my_nspinsinsum=1
     endif 
 
