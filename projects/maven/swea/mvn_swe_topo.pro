@@ -66,8 +66,8 @@
 ;                    quality), 0 otherwise.
 ;
 ; $LastChangedBy: xussui_lap $
-; $LastChangedDate: 2022-08-09 10:39:11 -0700 (Tue, 09 Aug 2022) $
-; $LastChangedRevision: 31004 $
+; $LastChangedDate: 2022-10-27 15:39:18 -0700 (Thu, 27 Oct 2022) $
+; $LastChangedRevision: 31197 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_topo.pro $
 ;
 ;CREATED BY:    Shaosui Xu, 11/03/2017
@@ -316,7 +316,21 @@ Pro mvn_swe_topo,trange = trange, result=result, storeTplot = storeTplot, $
     options,'topo_lab2','colors',clrs*246.+8
     options,'topo_lab2','labflag',1
     dat={x:data.t,y:topobar,v:[0,1]}
-    makebar,'topbar',dat
+                                ;makebar,'topbar',dat
+    bname='topbar'
+    store_data,bname,data=dat
+    ylim,bname,0,1,0
+    zlim,bname,0,1,0
+    options,bname,'spec',1
+    options,bname,'panel_size',0.05
+    options,bname,'ytitle',''
+    options,bname,'yticks',1
+    options,bname,'yminor',1
+    options,bname,'no_interp',1
+    options,bname,'xstyle',4
+    options,bname,'ystyle',4
+    options,bname,'no_color_scale',1
+    options,bname,'EXTEND_Y_EDGES',1
     zlim,'topbar',0,1,0
     
     options,['topbar','topo_lab2'],'color_table',12

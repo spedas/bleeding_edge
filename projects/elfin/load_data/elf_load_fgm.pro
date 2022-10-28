@@ -14,6 +14,7 @@
 ;         datatype:     valid datatypes include level 1 - ['fgf', 'fgs'] and 
 ;                       level 2 -['fgf_dsl','fgf_gei','fgf_mag','fgs_dsl','fgs_gei','fgs_mag']
 ;         data_rate:    instrument data rates include ['srvy', 'fast']. The default is 'srvy'.
+;         units:        units include ['ACD', 'nT'], the default is 'nT'
 ;         level:        indicates level of data processing. levels include 'l1' and 'l2'
 ;                       The default if no level is specified is 'l1' (l1 default needs to be confirmed)
 ;         local_data_dir: local directory to store the CDF files; should be set if
@@ -71,7 +72,7 @@
 pro elf_load_fgm, trange = trange, probes = probes, datatype = datatype, $
   level = level, data_rate = data_rate, no_time_sort=no_time_sort, $
   local_data_dir = local_data_dir, source = source, no_download=no_download, $
-  get_support_data = get_support_data, no_cal=no_cal, $
+  get_support_data = get_support_data, no_cal=no_cal, units=units, $
   tplotnames = tplotnames, no_color_setup = no_color_setup, $
   no_time_clip = no_time_clip, no_update = no_update, suffix = suffix, $
   varformat = varformat, cdf_filenames = cdf_filenames, $
@@ -110,6 +111,13 @@ pro elf_load_fgm, trange = trange, probes = probes, datatype = datatype, $
     dprint, dlevel = 1, 'Invalid data type. Valid types are fgs. Please select again.'
     return
   endif
+  if undefined(units) then units='nT'
+  idx = where(units EQ 'nT', ncnt)
+  idx = where(units EQ 'ADC', adcnt)
+  if ncnt EQ 0 && adcnt EQ 0 then begin
+    dprint, dlevel = 1, 'Invalid unit. Valid units are nT or ACDC. Please select again.'
+    return
+  endif
 
   if undefined(suffix) then suffix = ''
   if undefined(data_rate) then data_rate = 'srvy' else data_rate=strlowcase(data_rate)
@@ -130,8 +138,8 @@ pro elf_load_fgm, trange = trange, probes = probes, datatype = datatype, $
   ; Perform pseudo calibration for level 1 fgm
   tname_fgs='el'+probes+'_fgs'
   idx = where(tplotnames eq tname_fgs, ncnt)
-  if ncnt GT 0 and no_cal NE 1 then elf_cal_fgm, tplotnames[idx], level=level, error=error
-
+  if ncnt GT 0 and no_cal NE 1 then elf_cal_fgm, tplotnames[idx], level=level, error=error, units=units
+  
   ;set colors
   if  ~undefined(tplotnames) && tplotnames[0] ne '' then begin
     for i=0,n_elements(tplotnames)-1 do begin
