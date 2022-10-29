@@ -2,7 +2,7 @@
 ;NAME:
 ; thm_part_dist2tplot
 ;PURPOSE:
-; Convert convert some of the 3d particle structures into a set of tplot variables
+; Convert some of the 3d particle structures into a set of tplot variables
 ;INPUT:
 ;  probe    = strinf denoted to the satellite
 ;            'a','b','c','d','e'
@@ -17,9 +17,9 @@
 ;   Alexander Drozdov
 ;
 ; SVN:  
-;  $LastChangedBy: sppswpsoc $
-;  $LastChangedDate: 2017-10-24 17:15:39 -0700 (Tue, 24 Oct 2017) $
-;  $LastChangedRevision: 24208 $
+;  $LastChangedBy: egrimes $
+;  $LastChangedDate: 2022-10-28 08:29:47 -0700 (Fri, 28 Oct 2022) $
+;  $LastChangedRevision: 31200 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/thm_part_dist2tplot.pro $
 
 pro thm_part_dist2tplot, probe=probe, datatype=datatype, trange=trange

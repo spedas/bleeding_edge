@@ -185,9 +185,9 @@ pro elf_load_fgm, trange = trange, probes = probes, datatype = datatype, $
     if size(fsp_res_dmxl, /type) EQ 8 then begin
       tr=timerange()
       ; will need position data for coordinate transforms
-      elf_load_state, probe=probes, trange=tr, no_download=no_download
+      elf_load_state, probe=probes, trange=tr, no_download=no_download, suffix='_fsp'
       ; verify that state data was loaded, if not print error and return
-      if ~spd_data_exists('el'+probes+'_pos_gei',tr[0],tr[1]) then begin
+      if ~spd_data_exists('el'+probes+'_pos_gei_fsp',tr[0],tr[1]) then begin
         dprint, 'There is no data for el'+probes+'_pos_gei for '+ $
           time_string(tr[0])+ ' to ' + time_string(tr[1])
         drpint, 'Unable to perform fgs_fsp_res_gei coordinate transforms to ndw and obw'
@@ -199,7 +199,7 @@ pro elf_load_fgm, trange = trange, probes = probes, datatype = datatype, $
       endelse
     endif
   endif
-
+  
   ; check whether user wants support data tplot vars
   if ~keyword_set(get_support_data) then begin
     idx=where(strpos(tplotnames,'igrf') GT 0, ncnt)
@@ -210,7 +210,20 @@ pro elf_load_fgm, trange = trange, probes = probes, datatype = datatype, $
     if ncnt GT 0 then begin
       del_data, '*fsp_res_dmxl_trend'
     endif
-  endif
- 
-
+    tn=tnames('*_fsp')
+    if tn[0] ne '' then begin
+      del_data, tn
+    endif
+  endif else begin
+    copy_data, 'el'+probes+'_pos_gei_fsp', 'el'+probes+'_fgs_fsp_pos_gei'
+    copy_data, 'el'+probes+'_vel_gei_fsp', 'el'+probes+'_fgs_fsp_vel_gei'
+    copy_data, 'el'+probes+'_att_gei_fsp', 'el'+probes+'_fgs_fsp_att_gei'
+    copy_data, 'el'+probes+'_att_solution_date_fsp', 'el'+probes+'_fgs_fsp_att_solution_date'
+    copy_data, 'el'+probes+'_att_flag_fsp', 'el'+probes+'_fgs_fsp_att_flag'
+    copy_data, 'el'+probes+'_att_spinper_fsp', 'el'+probes+'_fgs_fsp_att_spinper'
+    copy_data, 'el'+probes+'_spin_orbnorm_angle_fsp', 'el'+probes+'_fgs_fsp_spin_orbnorm_angle'
+    copy_data, 'el'+probes+'_spin_sun_angle_fsp', 'el'+probes+'_fgs_fsp_sun_angle'
+    del_data, '*_fsp'
+  endelse
+  tplot_names
 end
