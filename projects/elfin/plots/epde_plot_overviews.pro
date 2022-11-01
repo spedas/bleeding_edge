@@ -63,11 +63,18 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   set_plot,'z'
   charsize=1
   tplot_options, 'xmargin', [16,11]
+  ;tplot_options, 'ymargin', [7,4]
 
   ; close and free any logical units opened by calc
   luns=lindgen(124)+5
   for j=0,n_elements(luns)-1 do free_lun, luns[j]
 
+  ; remove any existing pef tplot vars
+  ;  del_data, '*_pef_nflux'
+  ;  del_data, '*_all'
+  ;  elf_load_epd, probes=probe,  datatype='pef', level='l1', type='nflux', no_download=no_downlaod
+  ;  ;trange=['2022-06-03/03:00','2022-06-03/04:00'],
+  ;  get_data, 'el'+probe+'_pef_nflux', data=pef_nflux
   ; remove any existing pef tplot vars
   del_data, '*_pef_nflux'
   del_data, '*_all'
@@ -86,13 +93,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   elf_load_fgm, probes=probe, trange=tr, datatype='fgs', no_download=no_download
   get_data, 'el'+probe+'_fgs', data=elx_fgs
   copy_data, 'el'+probe+'_fgs_fsp_res_obw', 'el'+probe+'_fgs_fsp_res_obw_orig'
-  ;  if size(elx_fgs, /type) NE 8 then begin
-  ;    elf_load_fgm, probe=probe, trange=['2022-01-15','2022-01-16'], datatype='fgs', no_download=no_download
-  ;    timeduration=(time_double(trange[1])-time_double(trange[0]))
-  ;    timespan,tr[0],timeduration,/seconds
-  ;    tr=timerange()
-  ;  endif
-  ;
+ 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; GET KP and DST values
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -194,49 +195,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ;;;;;;;;;;;;;;;;;;;;
   sclet = probe
   ;;trace to equator to get L, MLAT, and MLT in IGRF
-  if keyword_set(quick_run) then begin
-    get_data, 'el'+probe+'_pos_gsm', data=datgsm, dlimits=dl, limits=l
-    store_data, 'el'+probe+'_pos_gsm_mins', data={x: datgsm.x[0:*:60], y: datgsm.y[0:*:60,*]}, dlimits=dl, limits=l
-    ttrace2equator,'el'+sclet+'_pos_gsm_mins',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
-    ; interpolate the minute-by-minute data back to the full array
-    get_data,'el'+probe+'_pos_gsm_mins_foot',data=gsm_mins, dlimits=dl, limits=l
-    store_data,'el'+probe+'_pos_gsm_foot',data={x: datgsm.x, y: interp(gsm_mins.y[*,*], gsm_mins.x, datgsm.x)},dlimits=dl, limits=l
-    ; clean up the temporary data
-    del_data, '*_mins'
-  endif else begin
-    ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
-    ;    tt89,'el'+probe+'_pos_gsm',/igrf_only,newname='el'+probe+'_bt89_gsm',period=1.
-  endelse
-
-
-  ;  sclet = probe
-  ;  ;;trace to equator to get L, MLAT, and MLT in IGRF
-  ;  if keyword_set(quick_run) then begin
-  ;    get_data, 'el'+probe+'_pos_gsm', data=datgsm, dlimits=dl, limits=l
-  ;    store_data, 'el'+probe+'_pos_gsm_mins', data={x: datgsm.x[0:*:60], y: datgsm.y[0:*:60,*]}, dlimits=dl, limits=l
-  ;    get_data,  'el'+probe+'_pos_gsm_mins', data=datgsmmins
-  ;    re=6378
-  ;    rgei=(sqrt(datgsmmins.y[*,0]^2 + datgsmmins.y[*,1]^2 + datgsmmins.y[*,2]^2))/re
-  ;    idx = where(rgei GT 1.005, ncnt)
-  ;    if ncnt EQ 0 then begin
-  ;      dprint, 'Position data is not valid (below 1.02re)'
-  ;      return
-  ;    endif else begin
-  ;      get_data, 'el'+probe+'_pos_gsm_mins', data=datgsmmins, dlimits=dl, limits=l
-  ;      store_data, 'el'+probe+'_pos_gsm_mins', data={x:datgsmmins.x[idx], y:datgsmmins.y[*,idx]}, dlimits=dl, limits=l
-  ;      ttrace2equator,'el'+probe+'_pos_gsm_mins',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
-  ;      ; interpolate the minute-by-minute data back to the full array
-  ;      get_data,'el'+probe+'_pos_gsm_mins_foot',data=foot_mins
-  ;      store_data,'el'+probe+'_pos_gsm_foot',data={x: datgsm.x, y: interp(foot_mins.y[*,*], foot_mins.x, datgsm.x)},dlimits=dl, limits=l
-  ;      ; clean up the temporary data
-  ;      del_data, '*_mins'
-  ;;    endelse
-  ;  endif else begin
-  ;    ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
-  ;;    tt89,'el'+probe+'_pos_gsm',/igrf_only,newname='el'+probe+'_bt89_gsm',period=1.
-  ;  endelse
-
-  ;  ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
+  ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
   cotrans,'el'+sclet+'_pos_gsm_foot','el'+sclet+'_pos_sm_foot',/GSM2SM
   get_data,'el'+sclet+'_pos_gsm_foot',data=elx_pos_eq
   L1=sqrt(total(elx_pos_eq.y^2.0,2,/nan))/Re
@@ -404,10 +363,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ;     sz_starttimes=epd_times.starts
   ;     sz_endtimes=epd_times.ends
   ;  endif
-  ; also get the data availability time ranges - this is needed later for science zone percent completion
-  epd_sci_zones=get_elf_science_zone_start_end(trange=[trange[0]-5,trange[1]+5], probe=probe, instrument='epd')
-  fgm_sci_zones=get_elf_science_zone_start_end(trange=[trange[0]-5,trange[1]+5], probe=probe, instrument='fgm')
-  ;stop
+
   num_szs=n_elements(sz_starttimes)
 
   ; set up science zone plot options
@@ -417,17 +373,14 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; MAIN LOOP for PLOTs
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;  for i=0,num_szs-1 do begin ;changed from 0,nplots-1
   for i=0,num_szs-1 do begin ;changed from 0,nplots-1
 
     sz_tr=[sz_starttimes[i],sz_endtimes[i]]   ; add 3 seconds to ensure that full spin periods are loaded
     tdur=sz_tr[1]-sz_tr[0]
     timespan, sz_tr[0], tdur, /sec
-    this_tr=timerange()
 
     ; get EPD data
     elf_load_epd, probes=probe, datatype='pef', level='l1', type='nflux',no_download=no_download
-    ;trange=['2022-06-02/02:00','2022-06-02/03:00']
     sc='el'+probe
     get_data, sc+'_pef_nflux', data=pef
     get_data, sc+'_pef_nsectors', data= nsect
@@ -470,31 +423,12 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       get_data, 'el'+probe+'_pef_nspinsinsum', data=my_nspinsinsum
       if med_nsect LT 30 then begin
         batch_procedure_error_handler, 'elf_getspec', /regularize, probe=probe, dSect2add=dsect2add, dSpinPh2add=dphang2add, nspinsinsum=my_nspinsinsum.y, no_download=no_download
-        copy_data, 'el'+probe+'_pef_en_reg_spec2plot_omni', 'el'+probe+'_pef_en_spec2plot_omni'
-        copy_data, 'el'+probe+'_pef_en_reg_spec2plot_anti', 'el'+probe+'_pef_en_spec2plot_anti'
-        copy_data, 'el'+probe+'_pef_en_reg_spec2plot_perp', 'el'+probe+'_pef_en_spec2plot_perp'
-        copy_data, 'el'+probe+'_pef_en_reg_spec2plot_para', 'el'+probe+'_pef_en_spec2plot_para'
-        copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0', 'el'+probe+'_pef_pa_spec2plot_ch0'
-        copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch1', 'el'+probe+'_pef_pa_spec2plot_ch1'
-        copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch2', 'el'+probe+'_pef_pa_spec2plot_ch2'
-        copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch3', 'el'+probe+'_pef_pa_spec2plot_ch3'
       endif else begin
         batch_procedure_error_handler, 'elf_getspec', probe=probe, dSect2add=dsect2add, dSpinPh2add=dphang2add, nspinsinsum=my_nspinsinsum.y, no_download=no_download
-        copy_data, 'el'+probe+'_pef_en_reg_spec2plot_omni', 'el'+probe+'_pef_en_spec2plot_omni'
-        copy_data, 'el'+probe+'_pef_en_reg_spec2plot_anti', 'el'+probe+'_pef_en_spec2plot_anti'
-        copy_data, 'el'+probe+'_pef_en_reg_spec2plot_perp', 'el'+probe+'_pef_en_spec2plot_perp'
-        copy_data, 'el'+probe+'_pef_en_reg_spec2plot_para', 'el'+probe+'_pef_en_spec2plot_para'
-        copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0', 'el'+probe+'_pef_pa_spec2plot_ch0'
-        copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch1', 'el'+probe+'_pef_pa_spec2plot_ch1'
-        copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch2', 'el'+probe+'_pef_pa_spec2plot_ch2'
-        copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch3', 'el'+probe+'_pef_pa_spec2plot_ch3'
       endelse
-      if not spd_data_exists('el'+probe+'_pef_pa_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin
+      if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin
         elf_getspec, probe=probe, nspinsinsum=my_nspinsinsum.y
-      endif ;else begin
-
-      tn=tnames('el'+probe+'_pef_en_reg_*')
-      if tn[0] GE '' then begin
+      endif else begin
         copy_data, 'el'+probe+'_pef_en_reg_spec2plot_omni', 'el'+probe+'_pef_en_spec2plot_omni'
         copy_data, 'el'+probe+'_pef_en_reg_spec2plot_anti', 'el'+probe+'_pef_en_spec2plot_anti'
         copy_data, 'el'+probe+'_pef_en_reg_spec2plot_perp', 'el'+probe+'_pef_en_spec2plot_perp'
@@ -503,9 +437,8 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch1', 'el'+probe+'_pef_pa_spec2plot_ch1'
         copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch2', 'el'+probe+'_pef_pa_spec2plot_ch2'
         copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch3', 'el'+probe+'_pef_pa_spec2plot_ch3'
-        ;          del_data, 'el'+probe+'_pef_en_reg_*'
-      endif
-
+        del_data, '*_pef_en_reg_spec2plot_*'
+      endelse
       ; find spin period
       get_data, 'el'+probe+'_pef_spinper', data=spin
       spin_med=median(spin.y)
@@ -572,6 +505,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     if strlowcase(probe) eq 'a' then  $
       varstring=['ela_GLON','ela_MLAT_igrf[ela_MLAT_dip]', 'ela_MLT_igrf[ela_MLT_dip]', 'ela_L_igrf[ela_L_dip]'] else $
       varstring=['elb_GLON','elb_MLAT_igrf[elb_MLAT_dip]', 'elb_MLT_igrf[elb_MLT_dip]', 'elb_L_igrf[elb_L_dip]']
+
     if spd_data_exists('el'+probe+'_fgs_fsp_res_obw_orig',sz_tr[0],sz_tr[1]) then begin
       copy_data, 'el'+probe+'_fgs_fsp_res_obw_orig', 'el'+probe+'_fgs_fsp_res_obw'
       get_data, 'el'+probe+'_fgs_fsp_res_obw', data=fsp_obw
@@ -590,7 +524,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         'epdi_fast_bar', $
         'epde_fast_bar', $
         'sunlight_bar', $
-        'el'+probe+'_pef_en_reg_spec2plot_omni', $
+        'el'+probe+'_pef_en_spec2plot_omni', $
         'el'+probe+'_pef_en_spec2plot_anti', $
         'el'+probe+'_pef_en_spec2plot_perp', $
         'el'+probe+'_pef_en_spec2plot_para', $
@@ -600,16 +534,16 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         var_label=varstring     ;'el'+probe+'_'+['LAT','MLT','L_dip','MLT_igrf','L_igrf']
     endif else begin
       tplot,['proxy_ae', $
-        'fgm_survey_bar', $
+       'fgm_survey_bar', $
         'epdi_fast_bar', $
         'epde_fast_bar', $
         'sunlight_bar', $
-        'el'+probe+'_pef_en_reg_spec2plot_omni', $
-        'el'+probe+'_pef_en_reg_spec2plot_anti', $
-        'el'+probe+'_pef_en_reg_spec2plot_perp', $
-        'el'+probe+'_pef_en_reg_spec2plot_para', $
-        'el'+probe+'_pef_pa_reg_spec2plot_ch[0,1]LC', $
-        'el'+probe+'_pef_pa_reg_spec2plot_ch[2,3]LC', $
+        'el'+probe+'_pef_en_spec2plot_omni', $
+        'el'+probe+'_pef_en_spec2plot_anti', $
+        'el'+probe+'_pef_en_spec2plot_perp', $
+        'el'+probe+'_pef_en_spec2plot_para', $
+        'el'+probe+'_pef_pa_spec2plot_ch[0,1]LC', $
+        'el'+probe+'_pef_pa_spec2plot_ch[2,3]LC', $
         'el'+probe+'_bt89_sm_NEDT'], $
         var_label=varstring
     endelse
@@ -617,6 +551,40 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     fd=file_dailynames(trange=tr[0], /unique, times=times)
     tstring=strmid(fd,0,4)+'-'+strmid(fd,4,2)+'-'+strmid(fd,6,2)+sz_plot_lbl
     title='PRELIMINARY ELFIN-'+strupcase(probe)+' EPDE, alt='+strmid(strtrim(alt,1),0,3)+'km, '+tstring
+
+
+    ;      if (med_nsect GT 30) OR not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin
+;    tplot,['proxy_ae', $
+;      'fgm_survey_bar', $
+;      'epdi_fast_bar', $
+;      'epde_fast_bar', $
+;      'sunlight_bar', $
+;      'el'+probe+'_pef_en_spec2plot_omni', $
+;      'el'+probe+'_pef_en_spec2plot_anti', $
+;      'el'+probe+'_pef_en_spec2plot_perp', $
+;      'el'+probe+'_pef_en_spec2plot_para', $
+;      'el'+probe+'_pef_pa_spec2plot_ch[0,1]LC', $
+;      'el'+probe+'_pef_pa_spec2plot_ch[2,3]LC', $
+;      'el'+probe+'_bt89_sm_NEDT'], $
+;      var_label=varstring     ;'el'+probe+'_'+['LAT','MLT','L_dip','MLT_igrf','L_igrf']
+    ;      endif else begin
+    ;        tplot,['proxy_ae', $
+    ;          'fgm_survey_bar', $
+    ;          'epd_fast_bar', $
+    ;          'sunlight_bar', $
+    ;          'el'+probe+'_pef_en_reg_spec2plot_omni', $
+    ;          'el'+probe+'_pef_en_reg_spec2plot_anti', $
+    ;          'el'+probe+'_pef_en_reg_spec2plot_perp', $
+    ;          'el'+probe+'_pef_en_reg_spec2plot_para', $
+    ;          'el'+probe+'_pef_pa_reg_spec2plot_ch[0,1]LC', $
+    ;          'el'+probe+'_pef_pa_reg_spec2plot_ch[2,3]LC', $
+    ;          'el'+probe+'_bt89_sm_NEDT'], $
+    ;           var_label=varstring
+    ;      endelse
+;    tr=timerange()
+;    fd=file_dailynames(trange=tr[0], /unique, times=times)
+;    tstring=strmid(fd,0,4)+'-'+strmid(fd,4,2)+'-'+strmid(fd,6,2)+sz_plot_lbl
+;    title='PRELIMINARY ELFIN-'+strupcase(probe)+' EPDE, alt='+strmid(strtrim(alt,1),0,3)+'km, '+tstring
 
     xyouts, .175, .975, title, /normal, charsize=1.1
     tplot_apply_databar
@@ -630,6 +598,24 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       xyouts, .0085, .012, spin_str, /normal, charsize=.75
       xyouts, .0085, .001, phase_msg, /normal, charsize=.75
     endif
+
+    ; save for later
+    ;      get_data, 'el'+probe+'_pef_en_reg_spec2plot_omni', data=omni_reg_d, dlimits=omni_dl, limits=omni_l
+    ;      get_data, 'el'+probe+'_pef_en_reg_spec2plot_anti', data=anti_reg_d, dlimits=anti_dl, limits=anti_l
+    ;      get_data, 'el'+probe+'_pef_en_reg_spec2plot_perp', data=perp_reg_d, dlimits=perp_dl, limits=perp_l
+    ;      get_data, 'el'+probe+'_pef_en_reg_spec2plot_para', data=para_reg_d, dlimits=para_dl, limits=para_l
+    get_data, 'el'+probe+'_pef_en_spec2plot_omni', data=omni_d, dlimits=omni_dl, limits=omni_l
+    get_data, 'el'+probe+'_pef_en_spec2plot_anti', data=anti_d, dlimits=anti_dl, limits=anti_l
+    get_data, 'el'+probe+'_pef_en_spec2plot_perp', data=perp_d, dlimits=perp_dl, limits=perp_l
+    get_data, 'el'+probe+'_pef_en_spec2plot_para', data=para_d, dlimits=para_dl, limits=para_l
+    ;      get_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0LC', data=ch0_reg_d, dlimits=ch0_dl, limits=ch0_l
+    ;      get_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch1LC', data=ch1_reg_d, dlimits=ch1_dl, limits=ch1_l
+    ;      get_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch2LC', data=ch2_reg_d, dlimits=ch2_dl, limits=ch2_l
+    ;      get_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch3LC', data=ch3_reg_d, dlimits=ch3_dl, limits=ch3_l
+    get_data, 'el'+probe+'_pef_pa_spec2plot_ch0LC', data=ch0_d, dlimits=ch0_dl, limits=ch0_l
+    get_data, 'el'+probe+'_pef_pa_spec2plot_ch1LC', data=ch1_d, dlimits=ch1_dl, limits=ch1_l
+    get_data, 'el'+probe+'_pef_pa_spec2plot_ch2LC', data=ch2_d, dlimits=ch2_dl, limits=ch2_l
+    get_data, 'el'+probe+'_pef_pa_spec2plot_ch3LC', data=ch3_d, dlimits=ch3_dl, limits=ch3_l
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; Create GIF file
@@ -656,16 +642,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       print, 'Sci Zone plot time: '+strtrim(systime(/sec)-t0,2)+' sec'
     endfor
 
-    ; save for later
-    get_data, 'el'+probe+'_pef_en_spec2plot_omni', data=omni_d, dlimits=omni_dl, limits=omni_l
-    get_data, 'el'+probe+'_pef_en_spec2plot_anti', data=anti_d, dlimits=anti_dl, limits=anti_l
-    get_data, 'el'+probe+'_pef_en_spec2plot_perp', data=perp_d, dlimits=perp_dl, limits=perp_l
-    get_data, 'el'+probe+'_pef_en_spec2plot_para', data=para_d, dlimits=para_dl, limits=para_l
-    get_data, 'el'+probe+'_pef_pa_spec2plot_ch0LC', data=ch0_d, dlimits=ch0_dl, limits=ch0_l
-    get_data, 'el'+probe+'_pef_pa_spec2plot_ch1LC', data=ch1_d, dlimits=ch1_dl, limits=ch1_l
-    get_data, 'el'+probe+'_pef_pa_spec2plot_ch2LC', data=ch2_d, dlimits=ch2_dl, limits=ch2_l
-    get_data, 'el'+probe+'_pef_pa_spec2plot_ch3LC', data=ch3_d, dlimits=ch3_dl, limits=ch3_l
-
     ;*************************;
     ;  ADD TPLOT APPEND HERE
     ;*************************;
@@ -679,6 +655,14 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     copy_data, 'el'+probe+'_pef_pa_spec2plot_ch1', 'el'+probe+'_pef_pa_spec2plot_ch1_sz'+strtrim(string(num),2)
     copy_data, 'el'+probe+'_pef_pa_spec2plot_ch2', 'el'+probe+'_pef_pa_spec2plot_ch2_sz'+strtrim(string(num),2)
     copy_data, 'el'+probe+'_pef_pa_spec2plot_ch3', 'el'+probe+'_pef_pa_spec2plot_ch3_sz'+strtrim(string(num),2)
+    ;      copy_data, 'el'+probe+'_pef_en_reg_spec2plot_omni', 'el'+probe+'_pef_en_reg_spec2plot_omni_sz'+strtrim(string(num),2)
+    ;      copy_data, 'el'+probe+'_pef_en_reg_spec2plot_anti', 'el'+probe+'_pef_en_reg_spec2plot_anti_sz'+strtrim(string(num),2)
+    ;      copy_data, 'el'+probe+'_pef_en_reg_spec2plot_perp', 'el'+probe+'_pef_en_reg_spec2plot_perp_sz'+strtrim(string(num),2)
+    ;      copy_data, 'el'+probe+'_pef_en_reg_spec2plot_para', 'el'+probe+'_pef_en_reg_spec2plot_para_sz'+strtrim(string(num),2)
+    ;      copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0', 'el'+probe+'_pef_pa_reg_spec2plot_ch0_sz'+strtrim(string(num),2)
+    ;      copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch1', 'el'+probe+'_pef_pa_reg_spec2plot_ch1_sz'+strtrim(string(num),2)
+    ;      copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch2', 'el'+probe+'_pef_pa_reg_spec2plot_ch2_sz'+strtrim(string(num),2)
+    ;      copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch3', 'el'+probe+'_pef_pa_reg_spec2plot_ch3_sz'+strtrim(string(num),2)
 
     if keyword_set(one_zone_only) then break
 
@@ -707,27 +691,51 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     anti_str+=' el'+probe+'_pef_en_spec2plot_anti_sz'+strtrim(string(n),2)
     perp_str+=' el'+probe+'_pef_en_spec2plot_perp_sz'+strtrim(string(n),2)
     para_str+=' el'+probe+'_pef_en_spec2plot_para_sz'+strtrim(string(n),2)
+    ;    omni_reg_str+=' el'+probe+'_pef_en_reg_spec2plot_omni_sz'+strtrim(string(n),2)
+    ;    anti_reg_str+=' el'+probe+'_pef_en_reg_spec2plot_anti_sz'+strtrim(string(n),2)
+    ;    perp_reg_str+=' el'+probe+'_pef_en_reg_spec2plot_perp_sz'+strtrim(string(n),2)
+    ;    para_reg_str+=' el'+probe+'_pef_en_reg_spec2plot_para_sz'+strtrim(string(n),2)
     pa_ch0_str+=' el'+probe+'_pef_pa_spec2plot_ch0_sz'+strtrim(string(n),2)
     pa_ch1_str+=' el'+probe+'_pef_pa_spec2plot_ch1_sz'+strtrim(string(n),2)
     pa_ch2_str+=' el'+probe+'_pef_pa_spec2plot_ch2_sz'+strtrim(string(n),2)
     pa_ch3_str+=' el'+probe+'_pef_pa_spec2plot_ch3_sz'+strtrim(string(n),2)
+    ;    pa_ch0_reg_str+=' el'+probe+'_pef_pa_reg_spec2plot_ch0_sz'+strtrim(string(n),2)
+    ;    pa_ch1_reg_str+=' el'+probe+'_pef_pa_reg_spec2plot_ch1_sz'+strtrim(string(n),2)
+    ;    pa_ch2_reg_str+=' el'+probe+'_pef_pa_reg_spec2plot_ch2_sz'+strtrim(string(n),2)
+    ;    pa_ch3_reg_str+=' el'+probe+'_pef_pa_reg_spec2plot_ch3_sz'+strtrim(string(n),2)
   endfor
+  ;  omni_str_all=[omni_str,omni_reg_str]
+  ;  anti_str_all=[anti_str,anti_reg_str]
+  ;  perp_str_all=[perp_str,perp_reg_str]
+  ;  para_str_all=[para_str,para_reg_str]
+  ;  ch0_all=[pa_ch0_str,pa_ch0_reg_str]
+  ;  ch1_all=[pa_ch1_str,pa_ch1_reg_str]
+  ;  ch2_all=[pa_ch2_str,pa_ch2_reg_str]
+  ; ch3_all=[pa_ch3_str,pa_ch3_reg_str]
 
   store_data, 'el'+probe+'_pef_en_spec2plot_omni_all', data=omni_str, dlimits=omni_dl, limits=omni_l
   store_data, 'el'+probe+'_pef_en_spec2plot_anti_all', data=anti_str, dlimits=anti_dl, limits=anti_l
   store_data, 'el'+probe+'_pef_en_spec2plot_perp_all', data=perp_str, dlimits=perp_dl, limits=perp_l
   store_data, 'el'+probe+'_pef_en_spec2plot_para_all', data=para_str, dlimits=para_dl, limits=para_l
+  ;  store_data, 'el'+probe+'_pef_en_reg_spec2plot_omni_all', data=omni_reg_str, dlimits=omni_dl, limits=omni_l
+  ;  store_data, 'el'+probe+'_pef_en_reg_spec2plot_anti_all', data=anti_reg_str, dlimits=anti_dl, limits=anti_l
+  ;  store_data, 'el'+probe+'_pef_en_reg_spec2plot_perp_all', data=perp_reg_str, dlimits=perp_dl, limits=perp_l
+  ;  store_data, 'el'+probe+'_pef_en_reg_spec2plot_para_all', data=para_reg_str, dlimits=para_dl, limits=para_l
   store_data, 'el'+probe+'_pef_pa_spec2plot_ch0_all', data=pa_ch0_str, dlimits=ch0_dl, limits=ch0_l
   store_data, 'el'+probe+'_pef_pa_spec2plot_ch1_all', data=pa_ch1_str, dlimits=ch1_dl, limits=ch1_l
   store_data, 'el'+probe+'_pef_pa_spec2plot_ch2_all', data=pa_ch2_str, dlimits=ch2_dl, limits=ch2_l
   store_data, 'el'+probe+'_pef_pa_spec2plot_ch3_all', data=pa_ch3_str, dlimits=ch3_dl, limits=ch3_l
+  ;  store_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0_all', data=pa_ch0_reg_str, dlimits=ch0_dl, limits=ch0_l
+  ;  store_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch1_all', data=pa_ch1_reg_str, dlimits=ch1_dl, limits=ch1_l
+  ;  store_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch2_all', data=pa_ch2_reg_str, dlimits=ch2_dl, limits=ch2_l
+  ;  store_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch3_all', data=pa_ch3_reg_str, dlimits=ch3_dl, limits=ch3_l
 
   ; Overwrite losscone/antilosscone tplot variable with full day from elf_getspec
   if nplots eq 25 then this_tr=[dat_gei.x[min_st[24]], dat_gei.x[min_en[24]]] $
   else this_tr=trange
   tdur=this_tr[1]-this_tr[0]
-  ;timespan, this_tr[0], tdur, /sec
-  ;elf_load_state, probes=probe, /no_download
+  timespan, this_tr[0], tdur, /sec
+  elf_load_state, probes=probe, /no_download
   elf_load_epd, probes=probe, datatype='pef', level='l1', type='nflux', no_download=1
   if spd_data_exists('el'+probe+'_pef_nflux',this_tr[0],this_tr[1]) then begin
     batch_procedure_error_handler, 'elf_getspec', probe=probe, /only_loss_cone
@@ -773,7 +781,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     tdur=this_tr[1]-this_tr[0]
     timespan, this_tr[0], tdur, /sec
 
-    ;elf_load_state, probes=probe, /no_download
+    elf_load_state, probes=probe, /no_download
 
     if size(proxy_ae,/type) eq 8 then begin
       proxy_ae_sub=proxy_ae.y(where(proxy_ae.x ge time_double(this_tr[0]) and proxy_ae.x le time_double(this_tr[1])))
@@ -794,10 +802,18 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     copy_data,'el'+probe+'_pef_en_spec2plot_anti_all','el'+probe+'_pef_en_spec2plot_anti'
     copy_data,'el'+probe+'_pef_en_spec2plot_perp_all','el'+probe+'_pef_en_spec2plot_perp'
     copy_data,'el'+probe+'_pef_en_spec2plot_para_all','el'+probe+'_pef_en_spec2plot_para'
+    ;    copy_data,'el'+probe+'_pef_en_reg_spec2plot_omni_all','el'+probe+'_pef_en_reg_spec2plot_omni'
+    ;    copy_data,'el'+probe+'_pef_en_reg_spec2plot_anti_all','el'+probe+'_pef_en_reg_spec2plot_anti'
+    ;    copy_data,'el'+probe+'_pef_en_reg_spec2plot_perp_all','el'+probe+'_pef_en_reg_spec2plot_perp'
+    ;    copy_data,'el'+probe+'_pef_en_reg_spec2plot_para_all','el'+probe+'_pef_en_reg_spec2plot_para'
+    ;    copy_data,'el'+probe+'_pef_pa_reg_spec2plot_ch0LC_all','el'+probe+'_pef_pa_reg_spec2plot_ch0LC'
+    ;    copy_data,'el'+probe+'_pef_pa_reg_spec2plot_ch1LC_all','el'+probe+'_pef_pa_reg_spec2plot_ch1LC'
     copy_data,'el'+probe+'_pef_pa_spec2plot_ch0LC_all','el'+probe+'_pef_pa_spec2plot_ch0LC'
     copy_data,'el'+probe+'_pef_pa_spec2plot_ch1LC_all','el'+probe+'_pef_pa_spec2plot_ch1LC'
     copy_data,'el'+probe+'_pef_pa_spec2plot_ch2LC_all','el'+probe+'_pef_pa_spec2plot_ch2LC'
     copy_data,'el'+probe+'_pef_pa_spec2plot_ch3LC_all','el'+probe+'_pef_pa_spec2plot_ch3LC'
+    ;    copy_data,'el'+probe+'_pef_pa_reg_spec2plot_ch2LC_all','el'+probe+'_pef_pa_reg_spec2plot_ch2LC'
+    ;    copy_data,'el'+probe+'_pef_pa_reg_spec2plot_ch3LC_all','el'+probe+'_pef_pa_reg_spec2plot_ch3LC'
 
     options, 'el'+probe+'_pef_en_spec2plot_omni', 'ysubtitle', '[keV]'
     options, 'el'+probe+'_pef_en_spec2plot_anti', 'ysubtitle', '[keV]'
@@ -807,6 +823,14 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     options, 'el'+probe+'_pef_pa_spec2plot_ch1LC', 'ysubtitle', '[deg]'
     options, 'el'+probe+'_pef_pa_spec2plot_ch2LC', 'ysubtitle', '[deg]'
     options, 'el'+probe+'_pef_pa_spec2plot_ch3LC', 'ysubtitle', '[deg]'
+    ;    options, 'el'+probe+'_pef_en_reg_spec2plot_omni', 'ysubtitle', '[keV]'
+    ;    options, 'el'+probe+'_pef_en_reg_spec2plot_anti', 'ysubtitle', '[keV]'
+    ;    options, 'el'+probe+'_pef_en_reg_spec2plot_perp', 'ysubtitle', '[keV]'
+    ;    options, 'el'+probe+'_pef_en_reg_spec2plot_para', 'ysubtitle', '[keV]'
+    ;    options, 'el'+probe+'_pef_pa_reg_spec2plot_ch0LC', 'ysubtitle', '[deg]'
+    ;    options, 'el'+probe+'_pef_pa_reg_spec2plot_ch1LC', 'ysubtitle', '[deg]'
+    ;    options, 'el'+probe+'_pef_pa_reg_spec2plot_ch2LC', 'ysubtitle', '[deg]'
+    ;    options, 'el'+probe+'_pef_pa_reg_spec2plot_ch3LC', 'ysubtitle', '[deg]'
 
     ylim,'el?_p?f_pa*spec2plot* *losscone* el?_p?f_pa*spec2plot_ch?LC*',0,180.
     options,'el?_p?f_pa*spec2plot_ch0LC*','ztitle',''
@@ -830,10 +854,46 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     tplot_options, 'ygap',0
     tplot_options, 'no_vtitle_shift', 1
     elf_set_overview_options, probe=probe, trange=tr,/no_switch
+    ;   get_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0', data=reg
+    ;   if size(reg, /type) EQ 8 then reg_exists=1 else reg_exists=0
     options,'el?_p?f_pa*spec2plot_ch*LC*','databar',90.
 
     if tdur LT 10802. then begin
+      ;      if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',this_tr[0],this_tr[1]) then begin
       tplot,['proxy_ae', $
+        'fgm_survey_bar', $
+        'epdi_fast_bar', $
+        'epde_fast_bar', $
+        'sunlight_bar', $
+        'el'+probe+'_pef_en_spec2plot_omni', $
+        'el'+probe+'_pef_en_spec2plot_anti', $
+        'el'+probe+'_pef_en_spec2plot_perp', $
+        'el'+probe+'_pef_en_spec2plot_para', $
+        'el'+probe+'_pef_pa_spec2plot_ch[0,1]LC', $
+        'el'+probe+'_pef_pa_spec2plot_ch[2,3]LC', $
+        'el'+probe+'_bt89_sm_NEDT'], $
+        var_label=varstring
+
+      ;     endif else begin
+      ;        tplot,['proxy_ae', $
+      ;         'fgm_survey_bar', $
+      ;         'epd_fast_bar', $
+      ;         'sunlight_bar', $
+      ;         'el'+probe+'_pef_en_reg_spec2plot_omni', $
+      ;         'el'+probe+'_pef_en_reg_spec2plot_anti', $
+      ;         'el'+probe+'_pef_en_reg_spec2plot_perp', $
+      ;         'el'+probe+'_pef_en_reg_spec2plot_para', $
+      ;         'el'+probe+'_pef_pa_reg_spec2plot_ch[0,1]LC', $
+      ;         'el'+probe+'_pef_pa_reg_spec2plot_ch[2,3]LC', $
+      ;         'el'+probe+'_bt89_sm_NEDT'], $
+      ;         var_label=varstring
+
+      ;     endelse
+    endif else begin
+      ;      if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',this_tr[0],this_tr[1]) then begin
+      tplot,['proxy_ae', $
+        'elf_kp', $
+        'dst',$
         'fgm_survey_bar', $
         'epdi_fast_bar', $
         'epde_fast_bar', $
@@ -847,22 +907,23 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         'el'+probe+'_pef_pa_spec2plot_ch[2,3]LC', $
         'el'+probe+'_bt89_sm_NEDT'], $
         var_label=varstring
-    endif else begin
-      tplot,['proxy_ae', $
-        'elf_kp', $
-        'dst',$
-        'fgm_survey_bar', $
-        'epdi_fast_bar', $
-        'epde_fast_bar', $
-        'sunlight_bar', $
-        'el'+probe+'_pef_en_spec2plot_omni', $
-        'el'+probe+'_pef_en_spec2plot_anti', $
-        'el'+probe+'_pef_en_spec2plot_perp', $
-        'el'+probe+'_pef_en_spec2plot_para', $
-        'el'+probe+'_pef_pa_spec2plot_ch[0,1]LC', $
-        'el'+probe+'_pef_pa_spec2plot_ch[2,3]LC', $
-        'el'+probe+'_bt89_sm_NEDT'], $
-        var_label=varstring
+      ;     endif else begin
+      ;        tplot,['proxy_ae', $
+      ;          'elf_kp', $
+      ;          'dst',$
+      ;          'fgm_survey_bar', $
+      ;          'epd_fast_bar', $
+      ;          'sunlight_bar', $
+      ;          'el'+probe+'_pef_en_reg_spec2plot_omni', $
+      ;          'el'+probe+'_pef_en_reg_spec2plot_anti', $
+      ;          'el'+probe+'_pef_en_reg_spec2plot_perp', $
+      ;          'el'+probe+'_pef_en_reg_spec2plot_para', $
+      ;          'el'+probe+'_pef_pa_reg_spec2plot_ch[0,1]LC', $
+      ;          'el'+probe+'_pef_pa_reg_spec2plot_ch[2,3]LC', $
+      ;          'el'+probe+'_bt89_sm_NEDT'], $
+      ;           var_label=varstring
+
+      ;      endelse
     endelse
 
     ; Save plots
@@ -898,7 +959,8 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
 
   endfor
 
-  del_data, 'epd_fast_bar
+  del_data, 'epdi_fast_bar'
+  del_data, 'epde_fast_bar'
   dprint, dlevel=2, 'Total time: '+strtrim(systime(/sec)-t0,2)+' sec'
 
 end
