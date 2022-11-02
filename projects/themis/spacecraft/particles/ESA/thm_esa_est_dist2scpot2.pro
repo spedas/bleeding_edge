@@ -62,33 +62,41 @@ End
 ; probe = a probe, e.g., 'c'
 ;OUTPUT:
 ; a tplot variable 'th'+probe+'_est_scpot' is created
-; If /random_dp is set, then date and probe are output 
+; If /random_dp is set, then date and probe are output
 ;KEYWORDS:
 ; trange = a time range
 ; no_init = if set, do not read in a new set of data
 ; random_dp = if set, the input date and probe are randomized, note
 ;             that this keyword is unused if no_init is set.
-; plot = if set, plot a comparison of the estimated sc_pot wht the
+; plot = if set, plot a comparison of the estimated sc_pot with the
 ;        value obtained from the esa L2 cdf (originally from
 ;        thm_load_esa_pot)
 ; esa_datatype = 'peef', 'peer', or 'peeb'; the default is 'peer'
 ; yellow = the limit (0-255) where above this value, we assume that
 ;          there are photo electrons in the scaled eflux
-;          spectrogram. This will give the potential; the default is 170.
+;          spectrogram. This will give the potential; the default is
+;          170.
+; lo_scpot = lower limit for the potential, default is 3 V
+; hi_scpot = upper limit for the potential, default is 100 V
 ;HISTORY:
 ; 3-mar-2016, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-01-23 15:09:39 -0800 (Mon, 23 Jan 2017) $
-; $LastChangedRevision: 22649 $
+; $LastChangedDate: 2022-11-01 11:09:58 -0700 (Tue, 01 Nov 2022) $
+; $LastChangedRevision: 31206 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_esa_est_dist2scpot2.pro $
 ;-
 
 Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
                              no_init = no_init, random_dp = random_dp, $
                              plot = plot, esa_datatype = esa_datatype, $
-                             load_all_esa = load_all_esa, _extra=_extra
+                             lo_scpot = lo_scpot, hi_scpot = hi_scpot, $
+                             _extra=_extra
 
-;The default is to Use peer data for this
+;Low and high limits
+  If(keyword_set(lo_scpot)) Then scplo = lo_scpot Else scplo = 3.0
+  If(keyword_set(hi_scpot)) Then scphi = hi_scpot Else scphi = 100.0
+
+;The default is to use peer data for this, and a good idea in general
   If(is_string(esa_datatype)) Then Begin
      dtyp = strlowcase(strcompress(/remove_all, esa_datatype[0])) 
   Endif Else dtyp = 'peer'
@@ -145,7 +153,7 @@ Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
   vv = rotate(dr.v, 7)
   nchan = n_elements(vv[0,*])
   ntimes = n_elements(dr.x)
-  scpot = fltarr(ntimes)+3.0 ;low limit
+  scpot = fltarr(ntimes)+scplo ;low limit
   If(keyword_set(yellow)) Then ylw = yellow Else yellow = 200
   For j = 0, ntimes-1 Do Begin
      i = 0
@@ -168,7 +176,7 @@ Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
                    Or i1 Eq n_elements(yyy)-1
            Endrep Until cc
         Endif
-        scpot[j] = exp(vvv[i]) < 100.0
+        scpot[j] = exp(vvv[i]) < scphi  ;Apply upper limit here
      Endif
 ;     if(j eq 1340) then stop
   Endfor

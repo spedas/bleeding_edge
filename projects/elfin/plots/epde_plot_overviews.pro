@@ -423,12 +423,9 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
       get_data, 'el'+probe+'_pef_nspinsinsum', data=my_nspinsinsum
       if med_nsect LT 30 then begin
         batch_procedure_error_handler, 'elf_getspec', /regularize, probe=probe, dSect2add=dsect2add, dSpinPh2add=dphang2add, nspinsinsum=my_nspinsinsum.y, no_download=no_download
-      endif else begin
-        batch_procedure_error_handler, 'elf_getspec', probe=probe, dSect2add=dsect2add, dSpinPh2add=dphang2add, nspinsinsum=my_nspinsinsum.y, no_download=no_download
-      endelse
-      if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin
-        elf_getspec, probe=probe, nspinsinsum=my_nspinsinsum.y
-      endif else begin
+        if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin
+          elf_getspec, probe=probe, nspinsinsum=my_nspinsinsum.y
+        endif
         copy_data, 'el'+probe+'_pef_en_reg_spec2plot_omni', 'el'+probe+'_pef_en_spec2plot_omni'
         copy_data, 'el'+probe+'_pef_en_reg_spec2plot_anti', 'el'+probe+'_pef_en_spec2plot_anti'
         copy_data, 'el'+probe+'_pef_en_reg_spec2plot_perp', 'el'+probe+'_pef_en_spec2plot_perp'
@@ -438,7 +435,29 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
         copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch2', 'el'+probe+'_pef_pa_spec2plot_ch2'
         copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch3', 'el'+probe+'_pef_pa_spec2plot_ch3'
         del_data, '*_pef_en_reg_spec2plot_*'
+        del_data, '*_pef_pa_reg_spec2plot_*'
+      endif else begin
+        batch_procedure_error_handler, 'elf_getspec', probe=probe, dSect2add=dsect2add, dSpinPh2add=dphang2add, nspinsinsum=my_nspinsinsum.y, no_download=no_download
+        if not spd_data_exists('el'+probe+'_pef_pa_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin
+          elf_getspec, probe=probe, nspinsinsum=my_nspinsinsum.y
+        endif
       endelse
+;     
+;       else begin
+;      if spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin
+;        copy_data, 'el'+probe+'_pef_en_reg_spec2plot_omni', 'el'+probe+'_pef_en_spec2plot_omni'
+;        copy_data, 'el'+probe+'_pef_en_reg_spec2plot_anti', 'el'+probe+'_pef_en_spec2plot_anti'
+;        copy_data, 'el'+probe+'_pef_en_reg_spec2plot_perp', 'el'+probe+'_pef_en_spec2plot_perp'
+;        copy_data, 'el'+probe+'_pef_en_reg_spec2plot_para', 'el'+probe+'_pef_en_spec2plot_para'
+;        copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch0', 'el'+probe+'_pef_pa_spec2plot_ch0'
+;        copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch1', 'el'+probe+'_pef_pa_spec2plot_ch1'
+;        copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch2', 'el'+probe+'_pef_pa_spec2plot_ch2'
+;        copy_data, 'el'+probe+'_pef_pa_reg_spec2plot_ch3', 'el'+probe+'_pef_pa_spec2plot_ch3'
+;        del_data, '*_pef_en_reg_spec2plot_*'
+;        del_data, '*_pef_pa_reg_spec2plot_*'
+;      endif
+;      endelse
+
       ; find spin period
       get_data, 'el'+probe+'_pef_spinper', data=spin
       spin_med=median(spin.y)

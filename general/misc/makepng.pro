@@ -24,13 +24,13 @@
 ;  Current device should have readable pixels (ie. 'x' or 'z')
 ;
 ;Created by:  Davin Larson
-; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-30 19:48:04 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 30012 $
+; $LastChangedBy: orlando $
+; $LastChangedDate: 2022-11-01 13:30:39 -0700 (Tue, 01 Nov 2022) $
+; $LastChangedRevision: 31207 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/makepng.pro $
 ;-
 pro makepng,filename,multiple=multiple,close=close,ct=ct,no_expose=no_expose,  $
-    mkdir=mkdir,window=window,suffix=suffix,timetag=timetag,verbose=verbose
+    mkdir=mkdir,window=window,suffix=suffix,timetag=timetag,verbose=verbose,transparent=transparent
     ;if keyword_set(close) then begin
     ;   write_gif,/close
     ;   return
@@ -81,6 +81,16 @@ pro makepng,filename,multiple=multiple,close=close,ct=ct,no_expose=no_expose,  $
     if !version.release eq '5.3' then begin
         write_png,pngfile,rotate(im,7),r,g,b
     endif else if !version.release ge '5.4' then begin
+        if keyword_set(transparent) then begin
+          red = reform(im[0,*,*])
+          grn = reform(im[1,*,*])
+          blu = reform(im[2,*,*])
+          whiteIndices = Where((red eq 255) and (grn eq 255) and (blu eq 255), count)
+          s = Size(im, /DIMENSIONS)
+          alpha = BytArr(s[1],s[2]) + 255B
+          IF count GT 0 THEN alpha[whiteIndices] = 0 
+          im = transpose([[[transpose(red)]], [[transpose(grn)]], [[transpose(blu)]],[[transpose(alpha)]]])
+        endif  
         write_png,pngfile,im,r,g,b
     endif
     ;if !version.release ne '5.4' then $

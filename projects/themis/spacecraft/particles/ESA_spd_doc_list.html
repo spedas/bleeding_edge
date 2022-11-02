@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Oct 31 18:16:38 2022.<P>
+<STRONG>Last modified: </STRONG>Tue Nov  1 18:16:36 2022.<P>
  
 <HR>
  
@@ -297,24 +297,27 @@ INPUT:
  probe = a probe, e.g., 'c'
 OUTPUT:
  a tplot variable 'th'+probe+'_est_scpot' is created
- If /random_dp is set, then date and probe are output 
+ If /random_dp is set, then date and probe are output
 KEYWORDS:
  trange = a time range
  no_init = if set, do not read in a new set of data
  random_dp = if set, the input date and probe are randomized, note
              that this keyword is unused if no_init is set.
- plot = if set, plot a comparison of the estimated sc_pot wht the
+ plot = if set, plot a comparison of the estimated sc_pot with the
         value obtained from the esa L2 cdf (originally from
         thm_load_esa_pot)
  esa_datatype = 'peef', 'peer', or 'peeb'; the default is 'peer'
  yellow = the limit (0-255) where above this value, we assume that
           there are photo electrons in the scaled eflux
-          spectrogram. This will give the potential; the default is 170.
+          spectrogram. This will give the potential; the default is
+          170.
+ lo_scpot = lower limit for the potential, default is 3 V
+ hi_scpot = upper limit for the potential, default is 100 V
 HISTORY:
  3-mar-2016, jmm, jimm@ssl.berkeley.edu
  $LastChangedBy: jimm $
- $LastChangedDate: 2017-01-23 15:09:39 -0800 (Mon, 23 Jan 2017) $
- $LastChangedRevision: 22649 $
+ $LastChangedDate: 2022-11-01 11:09:58 -0700 (Tue, 01 Nov 2022) $
+ $LastChangedRevision: 31206 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_esa_est_dist2scpot2.pro $
 </PRE><P>
 <STRONG>(See <A href="ESA/thm_esa_est_dist2scpot2.pro">projects/themis/spacecraft/particles/ESA/thm_esa_est_dist2scpot2.pro</A>)</STRONG><P>
