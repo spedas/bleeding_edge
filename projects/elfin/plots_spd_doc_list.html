@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Nov  1 18:16:35 2022.<P>
+<STRONG>Last modified: </STRONG>Wed Nov  2 18:16:32 2022.<P>
  
 <HR>
  
@@ -655,9 +655,13 @@ KEYWORDS:
  probe - 'a' or 'b'
  no_download - set this flag to not download data from the server and use local files only
  sci_zone - if set this flag will plot epd overview plots by science zone (rather than by day)
+            not yet implemented
+ quick_run - set this flag to reduce the resolution of t89/ttrace2equator (from 1 sec to 1 min)
+ one_zone_only - set this keyword to only plot the first sci zone (this is a kluge for the pink plots)
+ regularize - set this keyword to use the regularize keyword when calling elf_getspec
 
 TO DO:
- elb can be done similarly but the code has not been generalized to either a or b yet. But this is straightforward.
+ implement plots by sci zone only
 
 </PRE><P>
 <STRONG>(See <A href="plots/epde_plot_overviews.pro">projects/elfin/plots/epde_plot_overviews.pro</A>)</STRONG><P>

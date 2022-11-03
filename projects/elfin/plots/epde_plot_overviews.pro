@@ -17,13 +17,17 @@
 ; probe - 'a' or 'b'
 ; no_download - set this flag to not download data from the server and use local files only
 ; sci_zone - if set this flag will plot epd overview plots by science zone (rather than by day)
+;            not yet implemented
+; quick_run - set this flag to reduce the resolution of t89/ttrace2equator (from 1 sec to 1 min)
+; one_zone_only - set this keyword to only plot the first sci zone (this is a kluge for the pink plots)
+; regularize - set this keyword to use the regularize keyword when calling elf_getspec
 ;
 ;TO DO:
-; elb can be done similarly but the code has not been generalized to either a or b yet. But this is straightforward.
+; implement plots by sci zone only
 ;
 ;-
 pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
-  sci_zone=sci_zone, quick_run=quick_run, one_zone_only=one_zone_only
+  sci_zone=sci_zone, quick_run=quick_run, one_zone_only=one_zone_only, regularize=regularize
 
   ; initialize parameters
   num=0 ; keeps track of number of science zones in entire time range (a whole day) for appending purposes
@@ -41,7 +45,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   if ~undefined(no_download) then no_download=1 else no_download=0
   t0=systime(/sec)
   if ~keyword_set(one_zone_only) then one_zone_only=0 else one_zone_only=1
-
+  
   timeduration=(time_double(trange[1])-time_double(trange[0]))
   timespan,tr[0],timeduration,/seconds
   tr=timerange()
@@ -421,7 +425,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     spin_str=''
     if spd_data_exists('el'+probe+'_pef_nflux',sz_tr[0],sz_tr[1]) then begin
       get_data, 'el'+probe+'_pef_nspinsinsum', data=my_nspinsinsum
-      if med_nsect LT 30 then begin
+      if keyword_set(regularize) then begin
         batch_procedure_error_handler, 'elf_getspec', /regularize, probe=probe, dSect2add=dsect2add, dSpinPh2add=dphang2add, nspinsinsum=my_nspinsinsum.y, no_download=no_download
         if not spd_data_exists('el'+probe+'_pef_pa_reg_spec2plot_ch0',sz_tr[0],sz_tr[1]) then begin
           elf_getspec, probe=probe, nspinsinsum=my_nspinsinsum.y

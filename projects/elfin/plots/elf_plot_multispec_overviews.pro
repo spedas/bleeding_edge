@@ -16,7 +16,7 @@
   ;  one_zone_only: set this flag to plot only the first zone (this is for debug purposes)
   ;-
 pro elf_plot_multispec_overviews, date, dur=dur, probe=probe, no_download=no_download, $
-    sci_zone=sci_zone,quick_run=quick_run, one_zone_only=one_zone_only
+    sci_zone=sci_zone,quick_run=quick_run, one_zone_only=one_zone_only, regularize=regularize
 
   compile_opt idl2
 
@@ -45,14 +45,14 @@ pro elf_plot_multispec_overviews, date, dur=dur, probe=probe, no_download=no_dow
     return
   endif
   
-  epde_plot_overviews, trange=[start_time, end_time], probe=probe, $
+  epde_plot_overviews, trange=[start_time, end_time], probe=probe, regularize=regularize, $
     no_download=no_download, sci_zone=sci_zone, quick_run=quick_run,/one_zone_only
 
   ; create plots for each day
   for j = 0,dur-1 do begin
     start_time = time_double(date) + j*60.*60.*24.
     end_time = start_time + 86400.
-    epde_plot_overviews, trange=[start_time, end_time], probe=probe, $
+    epde_plot_overviews, trange=[start_time, end_time], probe=probe, regularize=regularize,  $
       no_download=no_download, sci_zone=sci_zone, quick_run=quick_run
     ; remove temporary science zone tplot vars
     del_data, 'el'+probe+'_*sz*'
