@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2022
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2022-10-25 21:58:37 -0700 (Tue, 25 Oct 2022) $
-; $LastChangedRevision: 31191 $
+; $LastChangedDate: 2022-11-03 08:49:20 -0700 (Thu, 03 Nov 2022) $
+; $LastChangedRevision: 31210 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -398,7 +398,7 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
         daily_names = 0
       endif
     endif else if level EQ 1.5 then begin
-      pathformat =  'TYPE/YYYY/MM/psp_fld_l1b_TYPE_YYYYMMDD_v??.cdf'
+      pathformat =  'TYPE/YYYY/MM/spp_fld_l1b_TYPE_YYYYMMDD_v??.cdf'
       if type EQ 'magi_SC' then begin
         pathformat = 'TYPE/YYYY/MM/psp_fld_l1b_TYPE_YYYYMMDDhh_v??.cdf'
         resolution = 3600l * 6l ; hours
