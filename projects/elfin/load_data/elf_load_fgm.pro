@@ -21,7 +21,7 @@
 ;                       you're on *nix or OSX, the default currently assumes Windows (c:\data\elfin\)
 ;         source:       specifies a different system variable. By default the elf mission system
 ;                       variable is !elf
-;         get_support_data: load support data (defined by support_data attribute in the CDF)
+;         get_support_data: load support data, state and IGRF data (defined by support_data attribute in the CDF)
 ;         tplotnames:   names for tplot variables
 ;         no_color_setup: don't setup graphics configuration; use this keyword when you're
 ;                       using this load routine from a terminal without an X server running

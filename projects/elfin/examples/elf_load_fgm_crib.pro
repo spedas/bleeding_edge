@@ -16,7 +16,8 @@
 ;         W=west (spherical -phi)
 ;    ela_fgs_fsp_res_obw  ; OWV coordinates: B=along model field, O=normal to b but outwards from Earth,
 ;         W=normal to b but westward: w = (rxb)/|rxb|, where r is satellite position
-;
+; The /get_support_data keyword also loads state and IGRF data
+; 
 ; NOTE: **** Not all FGM CDFs contain the new spin resolved data. Testing and Reprocessing of all FGM CDFs is in progress
 ;
 ; $LastChangedBy: clrussell $
@@ -56,8 +57,10 @@ stop
 ;; 4) Use get_support_data keyword 
 ;;    ===================================
 probe = 'a'
-elf_load_fgm, probes=probe, /get_support_data, /no_download
+elf_load_fgm, probes=probe, /get_support_data
 tplot, ['ela_fgs_fsp_res_dmxl','ela_fgs_fsp_res_gei','ela_fgs_fsp_igrf_dmxl','ela_fgs_fsp_igrf_gei']
+stop
+tplot, ['ela_fgs_fsp_pos_gei','ela_fgs_fsp_vel_gei','ela_fgs_fsp_att_gei']
 ;  NOTE - Use tlimit to zoom into science zones
 stop
 
