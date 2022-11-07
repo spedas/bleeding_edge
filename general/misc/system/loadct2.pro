@@ -30,16 +30,18 @@
 ;See also:
 ;   "get_colors","colors_com","bytescale"
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2022-10-05 12:55:57 -0700 (Wed, 05 Oct 2022) $
-; $LastChangedRevision: 31150 $
+; $LastChangedBy: rlillis3 $
+; $LastChangedDate: 2022-11-06 18:09:29 -0800 (Sun, 06 Nov 2022) $
+; $LastChangedRevision: 31240 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/loadct2.pro $
 ;
 ;Created by Davin Larson;  August 1996
 ;-
 
-pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,previous_rev=previous_rev,$
-               graybkg=graybkg, line_clrs=line_clrs,line_color_names=line_color_names
+pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,$
+            previous_rev=previous_rev,$
+            graybkg=graybkg, line_clrs=line_clrs,line_color_names=line_color_names,$
+            rgb_table = rgb_table
   compile_opt idl2, hidden
   COMMON colors, r_orig, g_orig, b_orig, r_curr, g_curr, b_curr
   @colors_com
@@ -88,8 +90,11 @@ pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,pr
   if n_elements(color_reverse) eq 0 then color_reverse=revrse
   previous_rev = color_reverse
   
-  if (ct le 43 or env_ct_set) then loadct,ct,bottom=bottom_c,file=file $
-  else loadct,ct,bottom=bottom_c ; this line is changed to be able to load color tables > 43
+  
+  ;if (ct le 43 or env_ct_set) then loadct,ct,bottom=bottom_c,file=file $
+                                ;else loadct,ct ; this line is changed
+                                ;to be able to load color tables > 43
+  loadct, ct
   color_table = ct
   color_reverse = revrse
 
@@ -183,6 +188,8 @@ pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,pr
   r_curr = r  ;Important!  Update the colors common block.
   g_curr = g
   b_curr = b
+
+  rgb_table = [[r], [g], [b]]
 
   ;force end colors  0 is black max is white
   ;tvlct,r,g,b,/get
