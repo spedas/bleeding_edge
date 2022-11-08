@@ -30,9 +30,9 @@
 ;See also:
 ;   "get_colors","colors_com","bytescale"
 ;
-; $LastChangedBy: rlillis3 $
-; $LastChangedDate: 2022-11-06 18:09:29 -0800 (Sun, 06 Nov 2022) $
-; $LastChangedRevision: 31240 $
+; $LastChangedBy: pulupa $
+; $LastChangedDate: 2022-11-07 13:06:17 -0800 (Mon, 07 Nov 2022) $
+; $LastChangedRevision: 31245 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/loadct2.pro $
 ;
 ;Created by Davin Larson;  August 1996
@@ -91,10 +91,10 @@ pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,$
   previous_rev = color_reverse
   
   
-  ;if (ct le 43 or env_ct_set) then loadct,ct,bottom=bottom_c,file=file $
-                                ;else loadct,ct ; this line is changed
+  if (ct le 43 or env_ct_set) then loadct,ct,bottom=bottom_c,file=file $
+                                else loadct,ct ; this line is changed
                                 ;to be able to load color tables > 43
-  loadct, ct
+  ;loadct, ct
   color_table = ct
   color_reverse = revrse
 
