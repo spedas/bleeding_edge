@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Nov  7 18:16:36 2022.<P>
+<STRONG>Last modified: </STRONG>Tue Nov  8 18:18:39 2022.<P>
  
 <HR>
  
@@ -21,8 +21,12 @@ This page was created by the IDL library routine
 <H1>projects/themis/spacecraft/particles/ESA</H1>
 <LI><A HREF="#CLEAR_ESA_COMMON_BLOCKS">CLEAR_ESA_COMMON_BLOCKS</A>
 <LI><A HREF="#THM_CRIB_ESA_DIST2SCPOT">THM_CRIB_ESA_DIST2SCPOT</A>
+<LI><A HREF="#THM_ESA_CMN_L2CONCAT">THM_ESA_CMN_L2CONCAT</A>
+<br>concatenates two THEMIS ESA L2 data structures
 <LI><A HREF="#THM_ESA_CMN_L2READ.PRO">THM_ESA_CMN_L2READ.PRO</A>
 <br>Inputs a THEMIS ESA common block structure from an L2 CDF.
+<LI><A HREF="#THM_ESA_CMN_L2TCLIP">THM_ESA_CMN_L2TCLIP</A>
+<br>applies a trange to a THEMIS ESA L2 structure
 <LI><A HREF="#THM_ESA_CMN_L2VARARR">THM_ESA_CMN_L2VARARR</A>
 <br>Returns an array with common block variable names for the input
 <LI><A HREF="#THM_ESA_DIST2SCPOT">THM_ESA_DIST2SCPOT</A>
@@ -37,6 +41,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#THM_ESA_QUALITY_FLAGS[2]">THM_ESA_QUALITY_FLAGS[2]</A>
 <LI><A HREF="#THM_ESA_TEST_SPEC3D2">THM_ESA_TEST_SPEC3D2</A>
 <br>Wrapper for spec3d2, plots PEEF, PEER, PEEB data; the user clicks on
+<LI><A HREF="#THM_LOAD_L2_ESADIST">THM_LOAD_L2_ESADIST</A>
+<br>Loads FAST ESA L2 data for a given file(s), or time_range, or orbit range
 <LI><A HREF="#THM_LOAD_PXXM_POT4ESA">THM_LOAD_PXXM_POT4ESA</A>
 <br>loads the pxxm_pot variable for ESA processing, performs a time
 <br>
@@ -67,7 +73,7 @@ Purpose:	Clears common blocks used in esa_pkt routines, to
 <A NAME="THM_CRIB_ESA_DIST2SCPOT">
 <H2>THM_CRIB_ESA_DIST2SCPOT</H2></A>
 <A HREF="#CLEAR_ESA_COMMON_BLOCKS">[Previous Routine]</A>
-<A HREF="#THM_ESA_CMN_L2READ.PRO">[Next Routine]</A>
+<A HREF="#THM_ESA_CMN_L2CONCAT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -144,10 +150,83 @@ estimate is set to the lowest energy in the electron distribution.
 <STRONG>(See <A href="ESA/thm_crib_esa_dist2scpot.pro">projects/themis/spacecraft/particles/ESA/thm_crib_esa_dist2scpot.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_ESA_CMN_L2CONCAT">
+<H2>THM_ESA_CMN_L2CONCAT</H2></A>
+<A HREF="#THM_CRIB_ESA_DIST2SCPOT">[Previous Routine]</A>
+<A HREF="#THM_ESA_CMN_L2READ.PRO">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ thm_esa_cmn_l2concat
+PURPOSE:
+ concatenates two THEMIS ESA L2 data structures
+CALLING SEQUENCE:
+ dat = thm_esa_cmn_l2concat(dat1, dat2)
+INPUT:
+ cmn_dat = a structrue with the data:
+   PROJECT_NAME    STRING    'THEMIS'
+   SPACECRAFT      STRING    'c'
+   DATA_NAME       STRING    'IESA 3D Reduced'
+   APID            INT           1109 (Apids in filenames are hex values)
+   UNITS_NAME      STRING    'eflux'
+   UNITS_PROCEDURE STRING    'thm_convert_esa_units'
+   VALID           BYTE      Array[ntimes]
+   TIME            DOUBLE    Array[ntimes]
+   END_TIME        DOUBLE    Array[ntimes]
+   DELTA_T         DOUBLE    Array[ntimes]
+   INTEG_T         DOUBLE    Array[ntimes]
+   DT_ARR          FLOAT     Array[ntimes,88, 8]
+   CONFIG1         BYTE      Array[ntimes]
+   CONFIG2         BYTE      Array[ntimes]
+   AN_IND          INT       Array[ntimes]
+   EN_IND          INT       Array[ntimes]
+   MODE            INT       Array[ntimes]
+   NENERGY         INT       Array[8] ;there are 8 different possible
+                                      ;modes
+   ENERGY          FLOAT     Array[32, 8]
+   DENERGY         FLOAT     Array[32, 8]
+   NBINS           INT       Array[8]
+   THETA           FLOAT     Array[32, 88, 8]
+   DTHETA          FLOAT     Array[32, 88, 8]
+   PHI             FLOAT     Array[32, 88, 8]
+   DPHI            FLOAT     Array[32, 88, 8]     
+   DOMEGA          FLOAT     Array[32, 88, 8]
+   GF              FLOAT     Array[32, 88, 8]
+   ECLIPSE_DPHI    DOUBLE    Array[ntimes]
+   PHI_OFFSET      FLOAT    Array[ntimes]
+   GEOM_FACTOR     FLOAT        0.00153000
+   DEAD            FLOAT       1.70000e-07
+   MASS            FLOAT         0.0104389
+   CHARGE          FLOAT           1.00000
+   SC_POT          FLOAT     Array[ntimes]
+   MAGF            FLOAT     Array[ntimes, 3]
+   BKG_PSE         FLOAT     Array[ntimes]
+   BKG_PEI         FLOAT     Array[ntimes]
+   BKG             FLOAT     Array[ntimes]
+   BKG_ARR         FLOAT     Array[32, 88, 8]
+Added in this program
+   BINS            BYTE      Array[ntimes, 32, 88]
+   EFF             FLOAT     Array[ntimes, 32, 88]
+   EFLUX           FLOAT     Array[ntimes, 32, 88];
+   NENERGY_MODES   BYTE         8
+   NBIN_MODES      BYTE         8
+   DATA_QUALITY    INT       Array[ntimes]
+OUTPUT:
+ dat = a single structure concatenated
+HISTORY:
+ Hacked from FAST ESA version 24-Oct-2022, jmm, jimm@ssl.berkeley.edu
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2022-11-08 11:44:09 -0800 (Tue, 08 Nov 2022) $
+ $LastChangedRevision: 31250 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_esa_cmn_l2concat.pro $
+</PRE><P>
+<STRONG>(See <A href="ESA/thm_esa_cmn_l2concat.pro">projects/themis/spacecraft/particles/ESA/thm_esa_cmn_l2concat.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_ESA_CMN_L2READ.PRO">
 <H2>THM_ESA_CMN_L2READ.PRO</H2></A>
-<A HREF="#THM_CRIB_ESA_DIST2SCPOT">[Previous Routine]</A>
-<A HREF="#THM_ESA_CMN_L2VARARR">[Next Routine]</A>
+<A HREF="#THM_ESA_CMN_L2CONCAT">[Previous Routine]</A>
+<A HREF="#THM_ESA_CMN_L2TCLIP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -225,9 +304,37 @@ HISTORY:
 <STRONG>(See <A href="ESA/thm_esa_cmn_l2read.pro">projects/themis/spacecraft/particles/ESA/thm_esa_cmn_l2read.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_ESA_CMN_L2TCLIP">
+<H2>THM_ESA_CMN_L2TCLIP</H2></A>
+<A HREF="#THM_ESA_CMN_L2READ.PRO">[Previous Routine]</A>
+<A HREF="#THM_ESA_CMN_L2VARARR">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ thm_esa_cmn_l2tclip
+PURPOSE:
+ applies a trange to a THEMIS ESA L2 structure
+CALLING SEQUENCE:
+ dat = thm_esa_cmn_l2tclip(dat, trange)
+INPUT:
+ dat1 = a THEMIS ESA L2 3D data structure: e.g., 
+OUTPUT:
+ dat = structure with data only in the input time range
+NOTES:
+ Only will work if the record varying arrays are 5D or less 
+HISTORY:
+ 8-Nov-2022 jmm, jimm@ssl.berkeley.edu
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2022-11-08 11:43:51 -0800 (Tue, 08 Nov 2022) $
+ $LastChangedRevision: 31249 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_esa_cmn_l2tclip.pro $
+</PRE><P>
+<STRONG>(See <A href="ESA/thm_esa_cmn_l2tclip.pro">projects/themis/spacecraft/particles/ESA/thm_esa_cmn_l2tclip.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_ESA_CMN_L2VARARR">
 <H2>THM_ESA_CMN_L2VARARR</H2></A>
-<A HREF="#THM_ESA_CMN_L2READ.PRO">[Previous Routine]</A>
+<A HREF="#THM_ESA_CMN_L2TCLIP">[Previous Routine]</A>
 <A HREF="#THM_ESA_DIST2SCPOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -427,14 +534,15 @@ KEYWORDS:
  yellow = the limit (0-255) where above this value, we assume that
           there are photo electrons in the scaled eflux
           spectrogram. This will give the potential; the default is
-          170.
- lo_scpot = lower limit for the potential, default is 3 V
- hi_scpot = upper limit for the potential, default is 100 V
+          200.
+ lo_scpot = lower limit for the potential, default is to use the low
+            energy limit of the data
+ hi_scpot = upper limit for the potential, default is 50 V
 HISTORY:
  3-mar-2016, jmm, jimm@ssl.berkeley.edu
  $LastChangedBy: jimm $
- $LastChangedDate: 2022-11-01 11:09:58 -0700 (Tue, 01 Nov 2022) $
- $LastChangedRevision: 31206 $
+ $LastChangedDate: 2022-11-08 14:22:53 -0800 (Tue, 08 Nov 2022) $
+ $LastChangedRevision: 31252 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_esa_est_dist2scpot2.pro $
 </PRE><P>
 <STRONG>(See <A href="ESA/thm_esa_est_dist2scpot2.pro">projects/themis/spacecraft/particles/ESA/thm_esa_est_dist2scpot2.pro</A>)</STRONG><P>
@@ -492,7 +600,7 @@ HELPER FUNCTION (main function below)
 <A NAME="THM_ESA_TEST_SPEC3D2">
 <H2>THM_ESA_TEST_SPEC3D2</H2></A>
 <A HREF="#THM_ESA_QUALITY_FLAGS[2]">[Previous Routine]</A>
-<A HREF="#THM_LOAD_PXXM_POT4ESA">[Next Routine]</A>
+<A HREF="#THM_LOAD_L2_ESADIST">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -522,9 +630,45 @@ HISTORY:
 <STRONG>(See <A href="ESA/thm_esa_test_spec3d2.pro">projects/themis/spacecraft/particles/ESA/thm_esa_test_spec3d2.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_LOAD_L2_ESADIST">
+<H2>THM_LOAD_L2_ESADIST</H2></A>
+<A HREF="#THM_ESA_TEST_SPEC3D2">[Previous Routine]</A>
+<A HREF="#THM_LOAD_PXXM_POT4ESA">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ thm_load_l2_esadist
+PURPOSE:
+ Loads FAST ESA L2 data for a given file(s), or time_range, or orbit range
+CALLING SEQUENCE:
+ thm_load_l2_esadist, trange=trange, datatype=datatype, orbit=orbit
+INPUT:
+ All via keyword, if none are set, then the output of timerange() is
+ used for the time range, which may prompt for a time interval
+KEYWORDS:
+ probe = ['a', 'b', 'c', 'd', 'e'] is the default
+ datatype = ['peif', 'peir', 'peib', 'peef', 'peer', 'peeb'] is the default
+ trange = read in the data from this time range, note that if both
+          files and time range are set, files, and orbits take precedence in
+          finding files.
+ no_time_clip = if set do not clip the data to the time range. The
+                trange is only used for file selection. Note that
+                setting no_time_clip will always generate a reload of data
+OUTPUT:
+ No variables, data are loaded into common blocks
+HISTORY:
+ 7-nov-2022, jmm, jimm@ssl.berkeley.edu
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2022-11-08 12:13:14 -0800 (Tue, 08 Nov 2022) $
+ $LastChangedRevision: 31251 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_load_l2_esadist.pro $
+</PRE><P>
+<STRONG>(See <A href="ESA/thm_load_l2_esadist.pro">projects/themis/spacecraft/particles/ESA/thm_load_l2_esadist.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_LOAD_PXXM_POT4ESA">
 <H2>THM_LOAD_PXXM_POT4ESA</H2></A>
-<A HREF="#THM_ESA_TEST_SPEC3D2">[Previous Routine]</A>
+<A HREF="#THM_LOAD_L2_ESADIST">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:

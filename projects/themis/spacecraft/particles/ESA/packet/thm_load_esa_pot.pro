@@ -25,8 +25,9 @@
 ;       use_vaf_offset  0/1             if set, uses vaf data for potential when available, calculates an offset 
 ;                                       between the (mom) pxxm_pot value and vaf value and appplies the offset 
 ;                                       to the pxxm_pot value for the times for which no vaf data is available.
-;       use_dist2scpot 0/1              if set, estimate the spacecraft potential from the reduced electron 
-;                                       distribution using thm_esa_est_dist2scpot.
+;       use_dist2scpot 0/2              if set, estimate the spacecraft potential from the reduced electron 
+;                                       distribution using
+;                                       thm_esa_est_dist2scpot. If set to 2, then use thm_esa_dist2scpot2.pro
 ;       scpot_est_datatype              'peer','peeb','peef'. Use this data type to estimate the potential 
 ;                                       if use_dist2scpot is set, the default is 'peer', reduced mode data.
 ;CREATED BY:	J. McFadden	  07-07-23
@@ -53,7 +54,7 @@
 ;	
 ;-
 
-pro thm_load_esa_pot,sc=sc,probe=probe,themishome=themishome,datatype=datatype,efi_datatype=efi_datatype,pot_scale=pot_scale,offset=offset,min_pot=min_pot,make_plot=make_plot,trange=trange,tr4_min_pot=tr4_min_pot, use_vaf_offset=use_vaf_offset,use_dist2scpot=use_dist2scpot,est_scpot_datatype=est_scpot_datatype,default_v1234=default_v1234
+pro thm_load_esa_pot,sc=sc,probe=probe,themishome=themishome,datatype=datatype,efi_datatype=efi_datatype,pot_scale=pot_scale,offset=offset,min_pot=min_pot,make_plot=make_plot,trange=trange,tr4_min_pot=tr4_min_pot, use_vaf_offset=use_vaf_offset,use_dist2scpot=use_dist2scpot,est_scpot_datatype=est_scpot_datatype,est_scpot_no_init=est_scpot_no_init,default_v1234=default_v1234
 
 compile_opt idl2, hidden
 
@@ -386,7 +387,9 @@ compile_opt idl2, hidden
      for i=0,nsc-1 do begin
 
         if keyword_set(use_dist2scpot) And probes[i] ne 'f' then begin
-           thm_esa_est_dist2scpot, date_tmp, probes[i], esa_datatype=est_scpot_datatype
+           if use_dist2scpot eq 2 then begin
+              thm_esa_est_dist2scpot2, date_tmp, probes[i], esa_datatype=est_scpot_datatype, /est_scpot_no_init, /plot
+           endif else thm_esa_est_dist2scpot, date_tmp, probes[i], esa_datatype=est_scpot_datatype, /est_scpot_no_init
            copy_data, 'th'+probes[i]+'_est_scpot', 'th'+probes[i]+'_esa_pot'
            get_data, 'th'+probes[i]+'_esa_pot', data = tmp
            if size(/type, tmp) eq 8 then begin
@@ -629,7 +632,7 @@ compile_opt idl2, hidden
               scpot=(scale*(scpot+offset)) > min_pot
               store_data,'th'+probes[i]+'_esa_pot',data={x:time,y:scpot}
 ;End of default block
-           endif else if string(efi_datatype) eq 'mom' then begin
+           endif else if string(efi_datatype) eq 'mom' then begin ;this is the default for L2 product generation
               thm_load_mom,probe=probes[i], trange=trange
               get_data,'th'+probes[i]+'_pxxm_pot',data=tmp,index=index
               if index ne 0 then begin

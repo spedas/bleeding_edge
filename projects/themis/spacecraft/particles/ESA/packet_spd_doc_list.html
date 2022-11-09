@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Nov  7 18:16:36 2022.<P>
+<STRONG>Last modified: </STRONG>Tue Nov  8 18:18:39 2022.<P>
  
 <HR>
  
@@ -2038,8 +2038,9 @@ KEYWORDS:
        use_vaf_offset  0/1             if set, uses vaf data for potential when available, calculates an offset 
                                        between the (mom) pxxm_pot value and vaf value and appplies the offset 
                                        to the pxxm_pot value for the times for which no vaf data is available.
-       use_dist2scpot 0/1              if set, estimate the spacecraft potential from the reduced electron 
-                                       distribution using thm_esa_est_dist2scpot.
+       use_dist2scpot 0/2              if set, estimate the spacecraft potential from the reduced electron 
+                                       distribution using
+                                       thm_esa_est_dist2scpot. If set to 2, then use thm_esa_dist2scpot2.pro
        scpot_est_datatype              'peer','peeb','peef'. Use this data type to estimate the potential 
                                        if use_dist2scpot is set, the default is 'peer', reduced mode data.
 CREATED BY:	J. McFadden	  07-07-23

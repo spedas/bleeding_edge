@@ -75,14 +75,15 @@ End
 ; yellow = the limit (0-255) where above this value, we assume that
 ;          there are photo electrons in the scaled eflux
 ;          spectrogram. This will give the potential; the default is
-;          170.
-; lo_scpot = lower limit for the potential, default is 3 V
-; hi_scpot = upper limit for the potential, default is 100 V
+;          200.
+; lo_scpot = lower limit for the potential, default is to use the low
+;            energy limit of the data
+; hi_scpot = upper limit for the potential, default is 50 V
 ;HISTORY:
 ; 3-mar-2016, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2022-11-01 11:09:58 -0700 (Tue, 01 Nov 2022) $
-; $LastChangedRevision: 31206 $
+; $LastChangedDate: 2022-11-08 14:22:53 -0800 (Tue, 08 Nov 2022) $
+; $LastChangedRevision: 31252 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_esa_est_dist2scpot2.pro $
 ;-
 
@@ -91,10 +92,6 @@ Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
                              plot = plot, esa_datatype = esa_datatype, $
                              lo_scpot = lo_scpot, hi_scpot = hi_scpot, $
                              _extra=_extra
-
-;Low and high limits
-  If(keyword_set(lo_scpot)) Then scplo = lo_scpot Else scplo = 3.0
-  If(keyword_set(hi_scpot)) Then scphi = hi_scpot Else scphi = 100.0
 
 ;The default is to use peer data for this, and a good idea in general
   If(is_string(esa_datatype)) Then Begin
@@ -146,6 +143,14 @@ Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
      Return
   Endif
 
+;Low and high limits
+  If(keyword_set(lo_scpot)) Then scplo = lo_scpot Else Begin
+     drv = dr.v
+     scplo = min(drv[where(finite(drv) And drv gt 0)])
+  Endelse
+  If(keyword_set(hi_scpot)) Then scphi = hi_scpot Else scphi = 50.0
+
+  
 ;bytescale in log space
   ok = where(finite(dr.y) And dr.y Gt 0, nok)
   If(nok Gt 0) Then vrange = minmax(dr.y[ok]) Else vrange = 0b
@@ -154,36 +159,37 @@ Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
   nchan = n_elements(vv[0,*])
   ntimes = n_elements(dr.x)
   scpot = fltarr(ntimes)+scplo ;low limit
-  If(keyword_set(yellow)) Then ylw = yellow Else yellow = 200
+  If(keyword_set(yellow)) Then ylw = yellow Else ylw = 200
   For j = 0, ntimes-1 Do Begin
      i = 0
      maxv = max(yy[j,0:5], maxpt)
      do_this_j = 0b
      If(vv[j, 0] Lt 1.0) Then Begin ;fix for zero energy modes
-        If(yy[j, 1] Ge yellow) Then do_this_j = 1b
+        If(yy[j, 1] Ge ylw) Then do_this_j = 1b
      Endif Else Begin
-        If(yy[j, 0] Ge yellow) Then do_this_j = 1b
+        If(yy[j, 0] Ge ylw) Then do_this_j = 1b
      Endelse
      If(do_this_j) Then Begin
 ;interpolate to a higher resolution energy grid
-        yyy0 = temp_interp_hires(reform(yy[j,*]), alog(reform(vv[j,*])), vvv, _extra=_extra)
+        yyy0 = temp_interp_hires(reform(yy[j,*]), alog(reform(vv[j,*])), $
+                                 vvv, _extra=_extra)
         yyy = temp_multiscale_smooth(yyy0, [31, 21, 11])
         If(yyy[0] Ne -1) Then Begin
-           Repeat Begin
+           Repeat Begin ;either drop to yellow value or increase by 0.10
               i=i+1
               i1 = i+1
-              cc = yyy[i] lt yellow Or (yyy[i1] gt 1.1*yyy[i]) $
+              cc = yyy[i] lt ylw Or (yyy[i1] gt 1.1*yyy[i]) $
                    Or i1 Eq n_elements(yyy)-1
            Endrep Until cc
         Endif
-        scpot[j] = exp(vvv[i]) < scphi  ;Apply upper limit here
+        scpot[j] = exp(vvv[i]) < scphi ;Apply upper limit here
      Endif
 ;     if(j eq 1340) then stop
   Endfor
 
   dlim = {ysubtitle:'[Volts]', units:'volts'}
   store_data, thx+'_est_scpot', data = {x:dr.x, y:scpot}, dlimits = dlim
-  options, thx+'_est_scpot', 'yrange', [0.0, 100.0]
+  options, thx+'_est_scpot', 'yrange', [0.0, scphi]
 
   If(keyword_set(plot) Or keyword_set(random_dp)) Then Begin
      thm_spec_lim4overplot, thx+'_'+dtyp+'_en_eflux', zlog = 1, ylog = 1, /overwrite, ymin = 2.0
