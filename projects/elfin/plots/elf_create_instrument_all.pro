@@ -7,6 +7,8 @@ pro elf_create_instrument_all, trange = trange, nodownload = nodownload, probe =
   if keyword_set(probe) then probes = probe else probes = ['a', 'b']
   if keyword_set(instrument) then instruments = instrument else instruments = ['epd', 'fgm', 'mrm']
   if keyword_set(update) then update = update else update = 0
+;  instruments='epd'
+;  probes='b'
   
   foreach instrument, instruments do begin 
     foreach probe, probes do begin 
@@ -18,7 +20,7 @@ pro elf_create_instrument_all, trange = trange, nodownload = nodownload, probe =
       ;figure out whether user wants stuff downloaded
       if !elf.NO_DOWNLOAD EQ 0 then udownload = 1 else udownload = 0
       if keyword_set(nodownload) then udownload = 0
-            
+           
       file_prefix = 'el'+probe+'_'+instrument+'_'
       
       sz_directions = ['nasc', 'ndes', 'sasc', 'sdes', 'eq']
@@ -28,7 +30,7 @@ pro elf_create_instrument_all, trange = trange, nodownload = nodownload, probe =
       lshells = []
       mlt = []
       directions = []
-  
+ 
         ;obtain file
      if update then begin
        tdate = trange[1]
@@ -39,16 +41,17 @@ pro elf_create_instrument_all, trange = trange, nodownload = nodownload, probe =
         
      foreach element, sz_directions do begin
        
-       if udownload then begin
+      if udownload then begin
         this_file = file_prefix+element+'.csv'
          paths = spd_download(remote_file=this_file, remote_path=remote_path, $
-           local_file=this_file, local_path=local_path, ssl_verify_peer=1, $
-           ssl_verify_host=1)
+           local_file=this_file, local_path=local_path, ssl_verify_peer=0, $
+           ssl_verify_host=0)
          if undefined(paths) or paths EQ '' then $
            dprint, devel=1, 'Unable to download ' + remote_file
        endif
        
        this_file = local_path+file_prefix+element+'.csv'
+
        if file_test(this_file) then begin
           
           szs = READ_CSV(this_file, N_TABLE_HEADER = 2)
@@ -75,7 +78,7 @@ pro elf_create_instrument_all, trange = trange, nodownload = nodownload, probe =
       lshells = lshells[sorted]
       mlt = mlt[sorted]
       directions = directions[sorted]
-  
+
       write_csv, local_path+'el'+probe+'_'+instrument+'_all.csv', sz_start, sz_end, lshells, mlt, directions, TABLE_HEADER = 'EL-'+strupcase(probe)+' '+strupcase(instrument)+' Science Collections', HEADER = ['Time Start', 'Time End', 'L-Shell Range', 'MLT Median', 'Direction']
       print, 'Data written to: ', local_path + 'el'+probe+'_'+instrument+'_all.csv'
    endforeach

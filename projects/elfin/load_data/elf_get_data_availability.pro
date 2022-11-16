@@ -59,7 +59,6 @@ function elf_get_data_availability, tdate, instrument=instrument, probe=probe, d
   endif
   sc='el'+probe
 
-
   ;------------------
   ; GET EPD DATA
   ;------------------
@@ -68,6 +67,12 @@ function elf_get_data_availability, tdate, instrument=instrument, probe=probe, d
      epd_times=get_elf_science_zone_start_end(trange=trange, probe=probe, instrument='epd')
      sz_starttimes=epd_times.starts
      sz_endtimes=epd_times.ends
+     sz_dt=sz_endtimes-sz_starttimes
+     idx=where(sz_dt GT 5, ncnt)
+     if ncnt GT 0 then begin
+       sz_starttimes=sz_starttimes[idx]
+       sz_endtimes=sz_endtimes[idx]
+     endif
 
   ;------------------
   ; GET FGM and MRM DATA
@@ -136,7 +141,8 @@ function elf_get_data_availability, tdate, instrument=instrument, probe=probe, d
     idx=where(pos.x GE this_start AND pos.x LE this_end, ncnt)
     if ncnt lt 3 then begin
       print, 'There is no state data for start: '+time_string(this_start)+' to '+time_string(this_end)
-      return, -1
+      idxexclude=i
+      continue
     endif
     sz_lat=lat0[idx] 
     sz_L0 = L0[idx]
@@ -160,7 +166,7 @@ function elf_get_data_availability, tdate, instrument=instrument, probe=probe, d
     append_array, sz_dL0s, dL0
     append_array, sz_medMLTs, medMLT
   endfor     
-
+  
   data_availability={starttimes:sz_starttimes, endtimes:sz_endtimes, zones:sz_names, dL: sz_dL0s, medMLT: sz_medMLTs}
   return, data_availability
    

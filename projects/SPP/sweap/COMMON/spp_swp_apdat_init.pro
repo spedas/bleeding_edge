@@ -1,7 +1,7 @@
 ;+
-; $LastChangedBy: ali $
-; $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
-; $LastChangedRevision: 30043 $
+; $LastChangedBy: phyllisw2 $
+; $LastChangedDate: 2022-11-15 14:56:59 -0800 (Tue, 15 Nov 2022) $
+; $LastChangedRevision: 31268 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_apdat_init.pro $
 ;-
 
@@ -216,6 +216,7 @@ pro spp_swp_apdat_init,reset=reset, save_flag = save_flag, $
   ;   spp_apdat_info,'7c1'x,name='usrlog_msg',routine='spp_log_msg_decom'     ,tname='usrlog_',  save_flag=save_flag,ttags='SEQN MSG',   rt_flag=rt_flag
   spp_apdat_info,'7c3'x,name='manip', routine='spp_swp_manip_decom'   ,tname='manip_', ttags='*',save_flag=save_flag,rt_flag=rt_flag
   spp_apdat_info,'7c4'x,name='swemulator', apid_obj='spp_swp_swemulator_apdat'   ,tname='swemul_tns_',ttags='*',save_flag=save_flag,rt_flag=rt_flag
+  spp_apdat_info,'7c5'x,name='newmanip', routine = 'spp_swp_newmanip_decom', tname='newmanip_', ttags = '*', save_flag = save_flag, rt_flag=rt_flag
 
 
   if keyword_set(clear) then spp_apdat_info,/clear
