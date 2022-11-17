@@ -219,6 +219,8 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
   ; Get science collection times
   epda_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='a', instrument='epd') ;alternate pef_spinper/pef_nflux
   epdb_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='b', instrument='epd')
+  fgma_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='a', instrument='fgm') ;alternate pef_spinper/pef_nflux
+  fgmb_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='b', instrument='fgm')
 
   ; Get position and attitude
   get_data,'ela_pos_sm',data=ela_state_pos_sm
@@ -535,7 +537,14 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
         if epda_sci_zones.ends[azones-1] GT this_time[nptsa-1] then this_a_sz_en[azones-1]=this_time[nptsa-1]
       endif
     endif
-
+    if ~undefined(fgma_sci_zones) && size(fgma_sci_zones, /type) EQ 8 then begin
+      fidx=where(fgma_sci_zones.starts GE this_time[0] and fgma_sci_zones.starts LT this_time[nptsa-1], afzones)
+      if afzones GT 0 then begin
+        append_array, this_a_sz_st, fgma_sci_zones.starts[fidx]
+        append_array, this_a_sz_en, fgma_sci_zones.ends[fidx]
+        if fgma_sci_zones.ends[afzones-1] GT this_time[nptsa-1] then this_a_sz_en[afzones-1]=this_time[nptsa-1]
+      endif
+    endif
     ; repeat for ELFIN B
     this_time2=elb_state_pos_sm.x[min_st[k]:min_en[k]]
     nptsb=n_elements(this_time2)
@@ -575,6 +584,14 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
         this_b_sz_st=epdb_sci_zones.starts[idx]
         this_b_sz_en=epdb_sci_zones.ends[idx]
         if epdb_sci_zones.ends[bzones-1] GT this_time2[nptsb-1] then this_b_sz_en[bzones-1]=this_time2[nptsb-1]
+      endif
+    endif
+    if ~undefined(fgmb_sci_zones) && size(fgmb_sci_zones, /type) EQ 8 then begin
+      fidx=where(fgmb_sci_zones.starts GE this_time2[0] and fgmb_sci_zones.starts LT this_time2[nptsb-1], bfzones)
+      if bfzones GT 0 then begin
+        append_array, this_b_sz_st, fgmb_sci_zones.starts[fidx]
+        append_array, this_b_sz_en, fgmb_sci_zones.ends[fidx]
+        if fgmb_sci_zones.ends[bfzones-1] GT this_time[nptsb-1] then this_b_sz_en[bfzones-1]=this_time[nptsb-1]
       endif
     endif
 
@@ -625,7 +642,8 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
     ;-------------------------------
     if ~keyword_set(bfirst) then begin
       if ~undefined(this_b_sz_st) then begin
-        for sci=0, bzones-1 do begin
+;        for sci=0, bzones-1 do begin
+        for sci=0, n_elements(this_b_sz_st)-1 do begin
           tidxb=where(this_time2 GE this_b_sz_st[sci] and this_time2 LT this_b_sz_en[sci], bcnt)
           if bcnt GT 5 then begin
             plots, this_lon2[tidxb], this_lat2[tidxb], psym=2, symsize=.25, color=254, thick=3
@@ -633,7 +651,8 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
         endfor
       endif
       if ~undefined(this_a_sz_st) then begin
-        for sci=0, azones-1 do begin
+;        for sci=0, azones-1 do begin
+        for sci=0, n_elements(this_a_sz_st)-1 do begin
           tidxa=where(this_time GE this_a_sz_st[sci] and this_time LT this_a_sz_en[sci], acnt)
           if acnt GT 5 then begin
             plots, this_lon[tidxa], this_lat[tidxa], psym=2, symsize=.25, color=253, thick=3
@@ -642,7 +661,8 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
       endif
     endif else begin
       if ~undefined(this_a_sz_st) then begin
-        for sci=0, azones-1 do begin
+;        for sci=0, azones-1 do begin
+         for sci=0, n_elements(this_a_sz-st)-1 do begin
           tidxa=where(this_time GE this_a_sz_st[sci] and this_time LT this_a_sz_en[sci], acnt)
           if acnt GT 5 then begin
             plots, this_lon[tidxa], this_lat[tidxa], psym=2, symsize=.25, color=253, thick=3
@@ -650,7 +670,8 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
         endfor
       endif
       if ~undefined(this_b_sz_st) then begin
-        for sci=0, bzones-1 do begin
+;        for sci=0, bzones-1 do begin
+        for sci=0, n_elements(this-b_sz_st)-1 do begin
           tidxb=where(this_time2 GE this_b_sz_st[sci] and this_time2 LT this_b_sz_en[sci], bcnt)
           if bcnt GT 5 then begin
             plots, this_lon2[tidxb], this_lat2[tidxb], psym=2, symsize=.25, color=254, thick=3
