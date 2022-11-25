@@ -100,9 +100,9 @@
 ;
 ;CREATED BY:      Takuya Hara on  2015-02-11.
 ;
-; $LastChangedBy: hara $
-; $LastChangedDate: 2015-08-20 16:43:03 -0700 (Thu, 20 Aug 2015) $
-; $LastChangedRevision: 18552 $
+; $LastChangedBy: haraday $
+; $LastChangedDate: 2022-11-23 23:34:37 -0800 (Wed, 23 Nov 2022) $
+; $LastChangedRevision: 31295 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_3d_snap.pro $
 ;
 ;-
@@ -247,7 +247,7 @@ PRO mvn_sta_3d_snap, var1, var2, spec=spec, keepwins=keepwins, archive=archive, 
   func = 'mvn_sta_get'
   IF ~keyword_set(mmin) THEN mmin = 0
   IF ~keyword_set(mmax) THEN mmin = 100.
-  loadct2, ct, previous=oldct
+  loadct2, ct, previous_ct=oldct
   init_swi = 1
   WHILE (ok) DO BEGIN   
      ;; Put up a 3D spectrogram
@@ -280,7 +280,10 @@ PRO mvn_sta_3d_snap, var1, var2, spec=spec, keepwins=keepwins, archive=archive, 
      IF ddd.valid EQ 1 THEN BEGIN
         IF keyword_set(mass) THEN BEGIN
            idx = where(ddd.mass_arr LT mass[0] OR ddd.mass_arr GT mass[1], nidx)
-           IF nidx GT 0 THEN ddd.data[idx] = 0.
+           IF nidx GT 0 THEN BEGIN
+              ddd.cnts[idx] = 0.
+              ddd.data[idx] = 0.
+           ENDIF
            IF keyword_set(mq) THEN ddd.mass *= FLOAT(mq)
         ENDIF 
         ddd = conv_units(ddd, units)
