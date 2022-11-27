@@ -32,7 +32,11 @@ function get_elf_science_zone_start_end, trange=trange, probe=probe, instrument=
    if ~undefined(trange) && n_elements(trange) eq 2 $
      then tr = timerange(trange) else tr = timerange()
    if not keyword_set(probe) then probe = 'a'
-   if not keyword_set(instrument) then instrument='epd'
+   if not keyword_set(instrument) then begin
+    instrument='epde'
+   endif else begin
+    if instrument EQ 'epd' then instrument = 'epde'
+   endelse
    sci_zones=-1
     
   ; define local and remote paths
@@ -41,10 +45,11 @@ function get_elf_science_zone_start_end, trange=trange, probe=probe, instrument=
 
   ; read csv file
   Case instrument of
-    'epd': filename='el'+probe+'_epd_data_availability.csv'
+    'epde': filename='el'+probe+'_epde_data_availability.csv'
+    'epdi': filename='el'+probe+'_epdi_data_availability.csv'
     'fgm': filename='el'+probe+'_fgm_data_availability.csv'
     'mrma':filename='el'+probe+'_mrma_data_availability.csv'
-    else: filename='el'+probe+'_epd_data_availability.csv'
+    else: filename='el'+probe+'_epde_data_availability.csv'
   Endcase 
   
   ; Download CSV file

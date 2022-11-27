@@ -219,6 +219,8 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
   ; Get science collection times
   epda_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='a', instrument='epd') ;alternate pef_spinper/pef_nflux
   epdb_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='b', instrument='epd')
+  epdia_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='a', instrument='epdi') ;alternate pef_spinper/pef_nflux
+  epdib_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='b', instrument='epdi')
   fgma_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='a', instrument='fgm') ;alternate pef_spinper/pef_nflux
   fgmb_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='b', instrument='fgm')
 
@@ -537,6 +539,14 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
         if epda_sci_zones.ends[azones-1] GT this_time[nptsa-1] then this_a_sz_en[azones-1]=this_time[nptsa-1]
       endif
     endif
+    if ~undefined(epdia_sci_zones) && size(epdia_sci_zones, /type) EQ 8 then begin
+      iidx=where(epdia_sci_zones.starts GE this_time[0] and epdia_sci_zones.starts LT this_time[nptsa-1], aizones)
+      if aizones GT 0 then begin
+        append_array, this_a_sz_st, epdia_sci_zones.starts[iidx]
+        append_array, this_a_sz_en, epdia_sci_zones.ends[iidx]
+        if epdia_sci_zones.ends[aizones-1] GT this_time[nptsa-1] then this_a_sz_en[aizones-1]=this_time[nptsa-1]
+      endif
+    endif
     if ~undefined(fgma_sci_zones) && size(fgma_sci_zones, /type) EQ 8 then begin
       fidx=where(fgma_sci_zones.starts GE this_time[0] and fgma_sci_zones.starts LT this_time[nptsa-1], afzones)
       if afzones GT 0 then begin
@@ -584,6 +594,14 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
         this_b_sz_st=epdb_sci_zones.starts[idx]
         this_b_sz_en=epdb_sci_zones.ends[idx]
         if epdb_sci_zones.ends[bzones-1] GT this_time2[nptsb-1] then this_b_sz_en[bzones-1]=this_time2[nptsb-1]
+      endif
+    endif
+    if ~undefined(epdib_sci_zones) && size(epdib_sci_zones, /type) EQ 8 then begin
+      iidx=where(epdib_sci_zones.starts GE this_time[0] and epdib_sci_zones.starts LT this_time2[nptsb-1], bizones)
+      if bizones GT 0 then begin
+        append_array, this_b_sz_st, epdib_sci_zones.starts[iidx]
+        append_array, this_b_sz_en, epdib_sci_zones.ends[iidx]
+        if epdib_sci_zones.ends[bizones-1] GT this_time2[nptsb-1] then this_b_sz_en[bizones-1]=this_time2[nptsb-1]
       endif
     endif
     if ~undefined(fgmb_sci_zones) && size(fgmb_sci_zones, /type) EQ 8 then begin
@@ -662,7 +680,7 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
     endif else begin
       if ~undefined(this_a_sz_st) then begin
 ;        for sci=0, azones-1 do begin
-         for sci=0, n_elements(this_a_sz-st)-1 do begin
+         for sci=0, n_elements(this_a_sz_st)-1 do begin
           tidxa=where(this_time GE this_a_sz_st[sci] and this_time LT this_a_sz_en[sci], acnt)
           if acnt GT 5 then begin
             plots, this_lon[tidxa], this_lat[tidxa], psym=2, symsize=.25, color=253, thick=3
@@ -671,7 +689,7 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
       endif
       if ~undefined(this_b_sz_st) then begin
 ;        for sci=0, bzones-1 do begin
-        for sci=0, n_elements(this-b_sz_st)-1 do begin
+        for sci=0, n_elements(this_b_sz_st)-1 do begin
           tidxb=where(this_time2 GE this_b_sz_st[sci] and this_time2 LT this_b_sz_en[sci], bcnt)
           if bcnt GT 5 then begin
             plots, this_lon2[tidxb], this_lat2[tidxb], psym=2, symsize=.25, color=254, thick=3

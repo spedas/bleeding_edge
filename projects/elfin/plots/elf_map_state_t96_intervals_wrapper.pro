@@ -54,7 +54,7 @@ pro elf_map_state_t96_intervals_wrapper,date,dur=dur,south_only=south_only, $
   endif else begin
     elf_map_state_t96_intervals,time_string(in_date),/gif,/tstep,/noview,dir_move=dir_products,/quick_trace,/one_hour_only
   endelse
-  
+  do_all=1
   ; create plots for each day
   for j = 0,dur-1 do begin
     in_date = time_double(date)+j*60.*60.*24.
