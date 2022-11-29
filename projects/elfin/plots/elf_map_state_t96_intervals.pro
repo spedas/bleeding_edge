@@ -597,7 +597,7 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
       endif
     endif
     if ~undefined(epdib_sci_zones) && size(epdib_sci_zones, /type) EQ 8 then begin
-      iidx=where(epdib_sci_zones.starts GE this_time[0] and epdib_sci_zones.starts LT this_time2[nptsb-1], bizones)
+      iidx=where(epdib_sci_zones.starts GE this_time2[0] and epdib_sci_zones.starts LT this_time2[nptsb-1], bizones)
       if bizones GT 0 then begin
         append_array, this_b_sz_st, epdib_sci_zones.starts[iidx]
         append_array, this_b_sz_en, epdib_sci_zones.ends[iidx]
@@ -609,7 +609,7 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
       if bfzones GT 0 then begin
         append_array, this_b_sz_st, fgmb_sci_zones.starts[fidx]
         append_array, this_b_sz_en, fgmb_sci_zones.ends[fidx]
-        if fgmb_sci_zones.ends[bfzones-1] GT this_time[nptsb-1] then this_b_sz_en[bfzones-1]=this_time[nptsb-1]
+        if fgmb_sci_zones.ends[bfzones-1] GT this_time2[nptsb-1] then this_b_sz_en[bfzones-1]=this_time2[nptsb-1]
       endif
     endif
 
