@@ -130,9 +130,9 @@
 ;
 ;CREATED BY:      Takuya Hara on 2014-09-24.
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-05-14 15:08:24 -0700 (Fri, 14 May 2021) $
-; $LastChangedRevision: 29962 $
+; $LastChangedBy: xussui $
+; $LastChangedDate: 2022-11-29 17:27:10 -0800 (Tue, 29 Nov 2022) $
+; $LastChangedRevision: 31307 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_resample.pro $
 ;
 ;-
@@ -903,7 +903,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
                  dlim={nfactor: nfactor, spec: 1, yrange: [0., 180.], ystyle: 1, $
                        yticks: 6, yminor: 3, ytitle: ytit, ysubtitle: '[deg]', $
                        ztitle: ztit, zlog: zlog, zrange: zrange, erange:minmax(energy[edx])}
-
+     copy_data,tname,'mvn_swe_pad_resample'
   ENDIF 
   ;; plim = {noiso: 1, zlog: 1, charsize: chsz, xticks: 6, xminor: 3, xrange: [0., 180.], ylog: 1}  
 
