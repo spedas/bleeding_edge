@@ -43,6 +43,18 @@ pro thm_load_bau,probe=probe, datatype=datatype, trange=trange, $
 
   ;a bunch of fun code to construct the list of variable names using
   ;an economy of typing
+  
+  htr_list = ['prcshtrsrv2', 'pbsphtrcurr', 'pbsrhtrcurr', 'prcshtrsrv1', 'prcshtrsrv3', 'piphtrcurr', 'pirhtrcurr', 'pcbphtrcurr', 'pcbrhtrcurr']
+  therm_list = ['btmpirua', 'btmpiruac', 'btmpirub', 'btmpirubc', 'btmpmsss', 'btmptopdk', 'btmpsband', 'btmpsapnl1',$
+  'btmpsapnl3', 'btmpsatop', 'btmpsabot', 'btmpsapnl2', 'btmpsapnl4', 'btmpprtcal', 'btmpidpu', 'btmprcsln1',$
+  'btmprcsln2', 'btmptnk1liq', 'btmptnk1gas', 'btmptnk2liq', 'btmptnk2gas', 'btmpthra1', 'btmpthra2', 'btmpthrt1',$
+  'btmpthrt2', 'btmpbatta', 'btmpbattb', 'btmpiru', 'btmpsst', 'btmpaxbm', 'btmprcssvc', 'btmpesa', 'btmpefirad',$
+  'btmprcsprvlv', 'btmpxpdrbase', 'btmprcvr', 'btmpxmtr', 'btmpbaubase', 'btmprcsprtk', 'btmpdpmbd', 'btmpcimbd', 'btmppcmbd',$
+  'btmpcallvl', 'btmpprmbd', 'btmpacmbd']
+  htr_list_raw = 'bau302_' + htr_list
+  htr_list_cnv = 'bau302_cnv_'+htr_list
+  therm_list_raw = 'bau301_'+therm_list+'_raw'
+  therm_list_cnv = 'bau301_'+therm_list
   arr = strcompress('psa'+ string(indgen(4)+1), /REMOVE_ALL)
 
   arr = ['shunt', arr]+'curr'
@@ -60,6 +72,7 @@ pro thm_load_bau,probe=probe, datatype=datatype, trange=trange, $
   var_arr[0:9] = 'bau302_'+var_arr[0:9]
   var_arr[10:12] = 'bau305_'+var_arr[10:12]
   var_arr[13:14] = 'bau30c_'+var_arr[13:14]
+  var_arr=[var_arr,htr_list_raw,htr_list_cnv,therm_list_raw,therm_list_cnv]
 
   var_list = ''
 

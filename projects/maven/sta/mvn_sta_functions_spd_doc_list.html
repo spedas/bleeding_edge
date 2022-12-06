@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Dec  3 03:16:42 2022.<P>
+<STRONG>Last modified: </STRONG>Mon Dec  5 18:16:34 2022.<P>
  
 <HR>
  
@@ -24,6 +24,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#CB_4D">CB_4D</A>
 <br>Returns the density array, n, 1/cm^3, corrects for spacecraft potential if dat.sc_pot exists
 <LI><A HREF="#CONTOUR4D">CONTOUR4D</A>
+<br>Produces contour plots of energy-mass distributions from 4D data structures.
 <LI><A HREF="#DJ_4D">DJ_4D</A>
 <br>Returns the density array, n, 1/cm^3, corrects for spacecraft potential if dat.sc_pot exists
 <LI><A HREF="#DN_4D">DN_4D</A>
@@ -177,92 +178,49 @@ LAST MODIFICATION:
 <A HREF="#C_4D">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-
 PROCEDURE: contour4d,data
-
 PURPOSE:
-
 	Produces contour plots of energy-mass distributions from 4D data structures.
-
 INPUTS:
-
    data   - structure containing 4d data  (obtained from get_mvn_?() routine)
-
 		e.g. &quot;get_mvn_c6, get_mvn_ce, etc.&quot;
-
 KEYWORDS:
-
 	LIMITS - A structure containing limits and display options.
-
              see: &quot;options&quot;, &quot;xlim&quot; and &quot;ylim&quot;, to change limits
-
 	UNITS  - convert to given data units before plotting
-
 	TITLE - Title to be plotted, 
-
 		- set title=' ' for NO Title!
-
 		- set title='1' for just the time in the title
-
 	XTITLE - xtitle to be plotted, 
-
 		- set xtitle=' ' for NO xtitle!, default determined by VEL keyword
-
 	YTITLE - ytitle to be plotted, 
-
 		- set ytitle=' ' for NO ytitle!, default=data.units_name
-
 	ZTITLE - ztitle to be plotted, 
-
 		- set ztitle=' ' for NO ytitle!, default='Log!D10!N('+y_units+')'
-
 	RETRACE - set to number of retrace steps removed, 
-
 		- default set to 0
-
 	VEL - If set, x-axis is velocity km/s  -- Default is Energy (eV) 
 
-
-
 	NCONT - Number of contours to be plotted, default = 8
-
 	LEVELS - Explicit contour levels, default levels spaced down
-
 	         from max by 10^.5 
-
 	FILL - If set, contours are filled with solid color or gray scale
-
 	BW - If set, contours are white, no affect on fill plots
-
 	PURE - If set, 6 pure colors are cycled through for levels
-
 	ROTATE - Exchanges x and y axes for non-polar plots
-
 	LABEL - Labels the contour levels
-
        XMARGIN - Change xmargin from default
-
 	YMARGIN - Change ymargin from default
 	POINTS - adds data points to plot
 
-
-
 See &quot;conv_units&quot; to change units.
 
-
-
-
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2022-12-05 10:36:14 -0800 (Mon, 05 Dec 2022) $
+ $LastChangedRevision: 31329 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_functions/contour4d.pro $
 
 CREATED BY:	J. McFadden  14-02-07
-
-FILE:  contour4d.pro
-
-VERSION 1.
-
-MODIFICATIONS: 
-
-		
-
 </PRE><P>
 <STRONG>(See <A href="mvn_sta_functions/contour4d.pro">projects/maven/sta/mvn_sta_functions/contour4d.pro</A>)</STRONG><P>
 <HR>

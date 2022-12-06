@@ -82,8 +82,8 @@ End
 ;HISTORY:
 ; 3-mar-2016, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2022-11-08 14:22:53 -0800 (Tue, 08 Nov 2022) $
-; $LastChangedRevision: 31252 $
+; $LastChangedDate: 2022-12-05 11:25:42 -0800 (Mon, 05 Dec 2022) $
+; $LastChangedRevision: 31333 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_esa_est_dist2scpot2.pro $
 ;-
 
@@ -175,10 +175,10 @@ Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
                                  vvv, _extra=_extra)
         yyy = temp_multiscale_smooth(yyy0, [31, 21, 11])
         If(yyy[0] Ne -1) Then Begin
-           Repeat Begin ;either drop to yellow value or increase by 0.10
+           Repeat Begin ;either drop to yellow value or increase by 0.02
               i=i+1
               i1 = i+1
-              cc = yyy[i] lt ylw Or (yyy[i1] gt 1.1*yyy[i]) $
+              cc = yyy[i] lt ylw Or (yyy[i1] gt 1.02*yyy[i]) $
                    Or i1 Eq n_elements(yyy)-1
            Endrep Until cc
         Endif
