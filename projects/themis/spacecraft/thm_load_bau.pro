@@ -51,10 +51,10 @@ pro thm_load_bau,probe=probe, datatype=datatype, trange=trange, $
   'btmpthrt2', 'btmpbatta', 'btmpbattb', 'btmpiru', 'btmpsst', 'btmpaxbm', 'btmprcssvc', 'btmpesa', 'btmpefirad',$
   'btmprcsprvlv', 'btmpxpdrbase', 'btmprcvr', 'btmpxmtr', 'btmpbaubase', 'btmprcsprtk', 'btmpdpmbd', 'btmpcimbd', 'btmppcmbd',$
   'btmpcallvl', 'btmpprmbd', 'btmpacmbd']
-  htr_list_raw = 'bau302_' + htr_list
-  htr_list_cnv = 'bau302_cnv_'+htr_list
-  therm_list_raw = 'bau301_'+therm_list+'_raw'
-  therm_list_cnv = 'bau301_'+therm_list
+  htr_list_raw = 'bau302_' + htr_list + '_raw'
+  htr_list_cnv = 'bau302_'+htr_list
+  therm_list_raw = 'bau301_'+therm_list
+  therm_list_cnv = 'bau301_cnv_'+therm_list
   arr = strcompress('psa'+ string(indgen(4)+1), /REMOVE_ALL)
 
   arr = ['shunt', arr]+'curr'
