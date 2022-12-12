@@ -1,9 +1,9 @@
 ;+
 ; Written by Davin Larson
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-16 02:06:51 -0700 (Mon, 16 Aug 2021) $
-; $LastChangedRevision: 30209 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2022-12-10 23:01:16 -0800 (Sat, 10 Dec 2022) $
+; $LastChangedRevision: 31348 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_file_retrieve.pro $
 ;
 ; Function:  files = spp_file_retrieve(PATHNAME)
@@ -71,7 +71,7 @@ function swfo_file_retrieve,pathname,trange=trange,ndays=ndays,nhours=nhours,ver
 
 
   if ~keyword_set(pathname) then begin
-    pathname = realtime_dir + '/YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
+    pathname = realtime_dir + 'YYYY/MM/DD/spp_socket_YYYYMMDD_hh.dat.gz'
     hourly_names =1
     valid_only=1
   endif

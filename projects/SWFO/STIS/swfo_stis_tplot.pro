@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-10-05 12:24:02 -0700 (Wed, 05 Oct 2022) $
-; $LastChangedRevision: 31149 $
+; $LastChangedDate: 2022-12-10 23:01:16 -0800 (Sat, 10 Dec 2022) $
+; $LastChangedRevision: 31348 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -29,15 +29,16 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     options,/def,'*sci_COUNTS',spec=1,panel_size=3,/no_interp,/zlog,zrange=[1,4000.],constant=findgen(15)*48
     options,/def,'*hkp?_ADC_*',constant=0.
     channels=['CH1','CH2','CH3','CH4','CH5','CH6']
-    options,/def,'*hkp?_DETECTOR_RATES* *nse_BASELINE *nse_SIGMA',colors='bgrmcd',psym=-1,symsize=.5,labels=channels,labflag=-1
-    options,/def,'*sci_TOTAL *sci_RATE',colors='r',psym=-6,symsize=.5,labels='SCI'
+    options,/def,'*hkp?_*RATES* *UNKNOWN_PATTERN_COUNTERS *nse_BASELINE *nse_SIGMA',colors='bgrmcd',psym=-1,symsize=.5,labels=channels,labflag=-1
+    options,/def,'*sci_TOTAL *sci_RATE',colors='r',psym=6,symsize=.5,labels='SCI'
     options,/def,'*sci_TOTAL2 *sci_RATE2',colors='m',labels='SCI2'
     options,/def,'*sci_TOTAL14 *sci_RATE14',spec=1,zlog=1
     options,/def,'*sci_SIGMA14',ylog=1
     options,/def,'*sci_*14',psym=-1,labels=['CH1','CH4','CH2','CH5','CH12','CH45','CH3','CH6','CH13','CH46','CH23','CH56','CH123','CH456'],labflag=1
     options,/def,'*nse_TOTAL *nse_RATE*',colors='r',psym=-2,symsize=.5,labels='NOISE'
     options,/def,'*TOTAL6* *RATE6*',colors='bgrmcd',psym=-6,symsize=.5,labels=channels,labflag=-1
-    options,/def,'*hkp?_DETECTOR_RATES_TOTAL',colors='b',psym=-1,symsize=.5,labels='HKP'
+    options,/def,'*nse_SCALED_RATE6*',constant=1
+    options,/def,'*hkp?_VALID_RATES_TOTAL',colors='b',psym=-1,symsize=.1,labels='HKP'
     options,/def,'*hkp?_SCIENCE_EVENTS',labels='EVENTS'
     options,/def,'*hkp?_EDAC_ERRORS',colors='bcrmgk',labels=['Double_A','Single_A','Double_B','Single_B','Double_Noise','Single_Noise'],labflag=-1
     options,/def,'*hkp?_EDAC_SCI_ERRORS',colors='bcrm',labels=['Double_A','Single_A','Double_B','Single_B'],labflag=-1
@@ -51,12 +52,14 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     options,/def,'*hkp2_DAC_VALUES',yrange=[0,300]
     options,/def,'*PTCU_BITS',numbits=4,labels=reverse(['P=PPS Missing','T=TOD Missing','C=Compression','U=Use LUT']),psyms=1,colors=[0,1,2,6]
     options,/def,'*AAEE_BITS',numbits=4,labels=reverse(['Attenuator IN','Attenuator OUT','Checksum Error 1','Checksum Error 0']),psyms=1,colors=[0,1,2,6]
-    options,/def,'*PULSER_BITS',panel_size=2,labels=reverse(['LUT 0:Lower 1:Upper','Pulser Enable',reverse(channels)]),psyms=1,colors='bgrbgrkm'
-    options,/def,'*DETECTOR_BITS',panel_size=2,labels=reverse(['BLR_MODE1','BLR_MODE0',reverse(channels)]),psyms=1,colors='bgrbgrcm'
-    options,/def,'*NOISE_BITS',panel_size=2,numbits=12,labels=reverse(['ENABLE','RES2','RES1','RES0','PERIOD7','PERIOD6','PERIOD5','PERIOD4','PERIOD3','PERIOD2','PERIOD1','PERIOD0']),psyms=1,colors=[0,1,2,6]
-    options,/def,'*USER_0A',panel_size=2,labels=['BASELINE_OFFSET','NOISE_RES','NOISE_PERIOD','THRESHOLD_SWEEP','PULSER_SWEEP','BIAS_PERIOD','BIAS_VOLTAGE','RESERVED'],psyms=1,colors=[0,1,2,6]
-    store_data,'swfo_stis_RATES_PULSFREQ',data='swfo_stis_'+['sci_RATE6','nse_RATE_DIV_THREE','hkp1_'+['DETECTOR_RATES_PPS','PULSER_FREQUENCY']],dlim={panel_size:3,yrange:[.5,1e5],ylog:1}
-    store_data,'swfo_stis_RATES_TOTAL',data='swfo_stis_'+['hkp1_SCIENCE_EVENTS','hkp1_DETECTOR_RATES_TOTAL','sci_RATE','sci_RATE2'],dlim={labflag:-1}
+    options,/def,'*PULSER_BITS',labels=reverse(['LUT 0:Lower 1:Upper','Pulser Enable',reverse(channels)]),psyms=1,colors='bgrbgrkm'
+    options,/def,'*DETECTOR_BITS',labels=reverse(['BLR_MODE1','BLR_MODE0',reverse(channels)]),psyms=1,colors='bgrbgrcm'
+    options,/def,'*hkp?_VALID_EN_BITS',numbits=6,labels=channels,psyms=1,colors='bgrmcd'
+    options,/def,'*hkp?_DELAY_CLOCK_CYCLES',colors='br',labels=['Valid_Sig to Valid_En','Valid_En to Peak_En'],labflag=-1
+    options,/def,'*NOISE_BITS',numbits=12,labels=reverse(['ENABLE','RES2','RES1','RES0','PERIOD7','PERIOD6','PERIOD5','PERIOD4','PERIOD3','PERIOD2','PERIOD1','PERIOD0']),psyms=1,colors=[0,1,2,6]
+    options,/def,'*USER_0A',labels=['BASELINE_OFFSET','NOISE_RES','NOISE_PERIOD','THRESHOLD','PULSER_HEIGHT','BIAS_PERIOD','BIAS_VOLTAGE','DIGITAL_FILTER']+'_SWEEP',psyms=1,colors=[0,1,2,6]
+    store_data,'swfo_stis_RATES_PULSFREQ',data='swfo_stis_'+['sci_RATE6','nse_RATE_DIV_THREE','hkp1_'+['VALID_RATES_PPS','PULSER_FREQUENCY']],dlim={panel_size:3,yrange:[.5,7e5],ylog:1,constant:2.^19}
+    store_data,'swfo_stis_RATES_TOTAL',data='swfo_stis_'+['hkp1_SCIENCE_EVENTS','hkp1_VALID_RATES_TOTAL','sci_TOTAL','sci_RATE2'],dlim={labflag:-1}
     duration=tnames('swfo_stis_*_DURATION')
     cmds_bad='swfo_stis_hkp1_CMDS_'+['IGNORED','INVALID','UNKNOWN']
     store_data,'swfo_stis_DURATION',data=duration,dlim={labels:duration.substring(10,13),labflag:-1,colors:'rgbk',psym:-1}
@@ -66,10 +69,15 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     tplot_options,'wshow',0
   endif
 
-  if ~keyword_set(name) then name = 'sum'
+  if ~keyword_set(name) then name = 'sum1'
   plot_name = strupcase(strtrim(name,2))
   case plot_name of
-    'SUM': tplot,add=add,'*hkp1_USER_0A *hkp1_DETECTOR_TIMEOUT_COUNTER *hkp1_*STATE_MACHINE_ERRORS* swfo_stis_RATES_TOTAL *hkp1_NOPEAK_COUNTER swfo_stis_DURATION *hkp1_PPS_* *hkp?_DAC_* *_RATES_PULSFREQ *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14 *nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6 *hkp1_CMDS_RECEIVED *hkp1_CMDS_BAD *hkp1_*REMAIN* *hkp1_*BITS *hkp1_BIAS_CLOCK_PERIOD *hkp1_ADC_*'; *hkp1_ADC_*'
+    'SUM1': tplot,add=add,'*hkp1_USER_0A *hkp1_*STATE_MACHINE_ERRORS* swfo_stis_RATES_TOTAL swfo_stis_DURATION *hkp1_PPS_* *hkp?_DAC_* *_RATES_PULSFREQ *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14 *nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6 *hkp1_CMDS_RECEIVED *hkp1_CMDS_BAD *hkp1_*REMAIN* *sci_*BITS *hkp1_BIAS_CLOCK_PERIOD *hkp1_ADC_*'
+    'SUM2': tplot,add=add,'swfo_stis_RATES_TOTAL *hkp1_*RATES *hkp1_NEGATIVE* *hkp?_DAC_* *_RATES_PULSFREQ *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14 *nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6 *hkp1_CMDS_RECEIVED *sci_*BITS *hkp1_TEST_PULSE_WIDTH_1US *hkp1_BIAS_CLOCK_PERIOD *hkp1_VALID_EN_BITS *hkp1_DELAY_CLOCK_CYCLES *hkp1_TEST_PULSE_WIDTH_1US *hkp1_ADC_*'
+    'SUM3': tplot,add=add,'swfo_stis_RATES_TOTAL *hkp?_DAC_* *_RATES_PULSFREQ *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14 *nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6'
+    'NOISE': tplot,add=add,'*nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6'
+    'SCI': tplot,add=add,'*sci_COUNTS *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14'
+    'ADC': tplot,add=add,'*hkp1_ADC*
     else: dprint,'Unknown code: '+strtrim(name,2)
   endcase
 

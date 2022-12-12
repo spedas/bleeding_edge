@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-10-05 12:24:02 -0700 (Wed, 05 Oct 2022) $
-; $LastChangedRevision: 31149 $
+; $LastChangedDate: 2022-12-10 23:01:16 -0800 (Sat, 10 Dec 2022) $
+; $LastChangedRevision: 31348 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -49,7 +49,7 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.host = '128.32.98.57'
   opts.title = 'SWFO STIS'
   opts.port = 2428
-  opts.init_realtime =0                  ; Set to 1 to start realtime stream widget
+  opts.init_realtime =1                  ; Set to 1 to start realtime stream widget
   opts.init_stis =1                      ; set to 1 to initialize the STIS APID definitions
   opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-10,1]*60.','timebar,systime(1)']   ; commands to be run in exec widget
   ;opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-1.,.05]*600','swfo_stis_plot_example','timebar,systime(1)']      ; commands to be run in exec widget
@@ -69,11 +69,11 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = ['2022-8-24 2','2022 8 24 3']  ;Amptek A250F test of 18 potential flight preamps
   opts.file_trange = ['2022-8-24 16','2022 8 24 19']  ;extreme counts: baseline and threshold tests on EM with internal LVPS showing weird count rates behavior (sci higher than hkp)
   opts.file_trange = ['2022-9-12 15','2022 9 12 17']  ;good LPT with non-LUT mode
-  opts.file_trange = ['2022-9-14 22','2022 9 15 1']  ;FM first light with two LPT runs showning intermittent DAC behavior
+  opts.file_trange = ['2022-9-14 22','2022 9 15 1']  ;FM first light with two LPT runs showing intermittent DAC behavior
   opts.file_trange = ['2022-9-15 21','2022 9 16 3']  ;FM test procedure releaving intermittent DAC behavior. Followed by an LPT and more testing
   opts.file_trange = ['2022-9-23 22','2022 9 24']  ;FM DAC fixed: continued test procedure w/ CM. followed by an LPT run.
-  
-  ;opts.file_trange = !null
+  opts.file_trange = ['2022-10-14 23:48','2022 10 23:50']  ;Am241 x-ray source
+  opts.file_trange = !null
   ;opts.filenames=['socket_128.32.98.57.2028_20211216_004610.dat', 'socket_128.32.98.57.20484_20211216_005158.dat']
   opts.filenames = ''
   opts.stepbystep = 0               ; this flag allows a step by step progress through this crib sheet
