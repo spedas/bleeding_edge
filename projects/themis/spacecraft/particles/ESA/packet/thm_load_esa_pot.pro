@@ -388,7 +388,8 @@ compile_opt idl2, hidden
 
         if keyword_set(use_dist2scpot) And probes[i] ne 'f' then begin
            if use_dist2scpot eq 2 then begin
-              thm_esa_est_dist2scpot2, date_tmp, probes[i], esa_datatype=est_scpot_datatype, /est_scpot_no_init, /plot
+;assumes here that peer data has been loaded
+              thm_esa_est_dist2scpot2, date_tmp, probes[i], esa_datatype=est_scpot_datatype, /est_scpot_no_init
            endif else thm_esa_est_dist2scpot, date_tmp, probes[i], esa_datatype=est_scpot_datatype, /est_scpot_no_init
            copy_data, 'th'+probes[i]+'_est_scpot', 'th'+probes[i]+'_esa_pot'
            get_data, 'th'+probes[i]+'_esa_pot', data = tmp
