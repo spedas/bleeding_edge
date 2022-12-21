@@ -9,6 +9,8 @@
 ;           rbsp_too = if set, overlay RBSP orbits
 ;           mms_too = if set, overlay MMS orbits
 ;           erg_too = if set, overlay ERG orbigts
+;           goes_too = if set, GOES 15 and 16 orbits are overlaid
+;               (NOTE: need to modify to handle any goes orbits)
 ;           model = name of Tsyganenko model ('t89', 't96', 'ta15'). default is 't96' (Not yet implemented)
 ; HISTORY:  original file in March 2007, hfrey
 ; MODIFICATIONS: 2010-01-14, hfrey, new definition of plot area
@@ -26,7 +28,8 @@
 ;-  ;elf_plot_orbit_conjunctions,'2021-07-11/00:00:00',rbsp_too=0,mms_too=0,erg_too=0,gifout=0
 
 pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too, tstep=tstep, $
-  rbsp_too=rbsp_too, mms_too=mms_too, erg_too=erg_too, move=move,insert=insert, model=model
+  rbsp_too=rbsp_too, mms_too=mms_too, erg_too=erg_too, move=move,insert=insert, model=model, $
+  trange=trange, goes_too=goes_too
 
   ; some setup
   ;@thg_asi_setup.init
@@ -37,13 +40,21 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
   if undefined(elf_too) then elf_too=1
   if undefined(mms_too) then mms_too=1
   if undefined(erg_too) then erg_too=1
+  if undefined(goes_too) then goes_too=1
   if undefined(move) then move=1
 
   re=6378.
 
   ; Set the time
-  timespan,tstart,1,/day
-  tend=time_string(time_double(tstart)+86400.0d0)
+  if undefined(trange) then begin
+    timespan,tstart,1,/day
+    tend=time_string(time_double(tstart)+86400.0d0)
+  endif else begin
+    tstart=time_double(trange[0])
+    tend=time_double(trange[1])
+    dur=tend-tstart
+    timespan, tstart, dur, /sec  
+  endelse
   If (keyword_set(rbsp_too)) AND  (~keyword_set(mms_too)) Then lim = 16 Else lim = 21;pull in limits for +RBSP plots
   earth=findgen(361)
 
@@ -300,22 +311,103 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
 
   endif
 
+  ;---------------------------
+  ; Get GOES 15 and 16 state data
+  ; --------------------------
+;  If(keyword_set(goes_too)) Then Begin
+;    tr=[tstart,tend]
+;    goes=['16','17']
+;    goes_init, local_data_dir=spd_default_local_data_dir()+'goes/'
+;    for sc=0,1 do begin
+;      print, 'Loading data for GOES '+goes[sc]
+;      goes_trange=time_string(time_double(trange))
+;      dat=goes_load_pos(trange=goes_trange, probe=goes[sc], coord_sys='gsm')
+;      if size(dat, /type) Ne 8 then begin
+;        goes_too = 0
+;        print, 'no data downloaded'
+;      endif else begin
+;        goes_too = 1
+;        store_data, 'goes_pos_gsm', data={x:dat.time, y:dat.pos_values}
+;      endelse
+;      ; calculate lat (needed to determine N/S hemisphere)
+;      get_data, 'goes_pos_gsm', data=goes_pos;, dlimits=dlgsm, limits=lgsm
+;      cart2latlong, goes_pos.y[*,0], goes_pos.y[*,1], goes_pos.y[*,2], goes_r, goes_lat, goes_lon
+;      nidx=where(goes_lat GE 0, goes_ncnt)
+;      sidx=where(goes_lat LT 0, goes_scnt)
+;      goes_pos_foot=goes_pos
+;      ;trace to equator
+;      if goes_ncnt GT 0 then begin
+;        npos=make_array(goes_ncnt, 3, /double)
+;        npos[*,0]=goes_pos.y[nidx,0]
+;        npos[*,1]=goes_pos.y[nidx,1]
+;        npos[*,2]=goes_pos.y[nidx,2]
+;        store_data, 'goes_orb_l2_pos_gsm_north', data={x:goes_pos.x[nidx], y:npos}, dlimits=dlgsm, limits=lgsm
+;        tsyg_param_count=goes_ncnt ; prepare fewer replicated parameters below
+;        tsyg_parameter=[[replicate(dynp,tsyg_param_count)],[replicate(dst,tsyg_param_count)],$
+;          [replicate(bswy,tsyg_param_count)],[replicate(bswz,tsyg_param_count)],$
+;          [replicate(0.,tsyg_param_count)],[replicate(0.,tsyg_param_count)],[replicate(0.,tsyg_param_count)],$
+;          [replicate(0.,tsyg_param_count)],[replicate(0.,tsyg_param_count)],[replicate(0.,tsyg_param_count)]]
+;        ttrace2equator,'goes_orb_l2_pos_gsm_north',new_name='goes_orb_l2_pos_gsm_north_foot',external_model='T96',internal_model='igrf',/km, $
+;          in_coord='gsm',out_coord='gsm',par=tsyg_parameter;,R0= 1.0156,rlim=100.*Re
+;        get_data, 'goes_orb_l2_pos_gsm_north_foot', data=d
+;        goes_pos_foot.y[nidx,0]=d.y[*,0]
+;        goes_pos_foot.y[nidx,1]=d.y[*,1]
+;        goes_pos_foot.y[nidx,2]=d.y[*,2]
+;      endif
+;      if goes_scnt GT 0 then begin
+;        spos=make_array(goes_scnt, 3, /double)
+;        spos[*,0]=goes_pos.y[sidx,0]
+;        spos[*,1]=goes_pos.y[sidx,1]
+;        spos[*,2]=goes_pos.y[sidx,2]
+;        store_data, 'goes_orb_l2_pos_gsm_south', data={x:goes_pos.x[sidx], y:spos}, dlimits=dlgsm, limits=lgsm
+;        tsyg_param_count=goes_scnt ; prepare fewer replicated parameters below
+;        tsyg_parameter=[[replicate(dynp,tsyg_param_count)],[replicate(dst,tsyg_param_count)],$
+;          [replicate(bswy,tsyg_param_count)],[replicate(bswz,tsyg_param_count)],$
+;          [replicate(0.,tsyg_param_count)],[replicate(0.,tsyg_param_count)],[replicate(0.,tsyg_param_count)],$
+;          [replicate(0.,tsyg_param_count)],[replicate(0.,tsyg_param_count)],[replicate(0.,tsyg_param_count)]]
+;        ttrace2equator,'goes_orb_l2_pos_gsm_south',new_name='goes_orb_l2_pos_gsm_south_foot',external_model='T96',internal_model='igrf',/km, $
+;          in_coord='gsm',out_coord='gsm',par=tsyg_parameter,/south;,R0=1.;, 1.0156,rlim=100.*Re
+;        get_data, 'goes_orb_l2_pos_gsm_south_foot', data=d
+;        goes_pos_foot.y[sidx,0]=d.y[*,0]
+;        goes_pos_foot.y[sidx,1]=d.y[*,1]
+;        goes_pos_foot.y[sidx,2]=d.y[*,2]
+;      endif
+;      store_data, 'goes'+goes[sc]+'_orb_l2_pos_gsm_foot', data = {x:goes_pos_foot.x, y:goes_pos_foot.y}
+      ;this_goes_dat_name='goes'+goes[sc]+'_orb_l2_pos_gsm_foot
+;      if sc EQ 0 then get_data, 'goes'+goes[sc]+'_orb_l2_pos_gsm_foot', data=goes15_orb_l2_pos_gsm_foot
+;      if sc EQ 1 then get_data, 'goes'+goes[sc]+'_orb_l2_pos_gsm_foot', data=goes16_orb_l2_pos_gsm_foot      
+;    endfor
+;  endif
+
   ;-----------------------------------
   ; Setup for orbits - 12 hr plots
   ;-----------------------------------
-  hr_st = 12*indgen(2)
-  dhr = 12+intarr(2)
-  hr_en = hr_st+dhr
-  ; Stings for labels, filenames
-  hr_ststr = string(hr_st, format='(i2.2)')
-  hr_enstr = string(hr_en, format='(i2.2)')
-  plot_lbl = '/'+hr_ststr+'-'+hr_enstr
-  file_lbl = '_'+hr_ststr+hr_enstr
-  ;the data has 1 minute time resolution  ;(except for elfin)
-  min_st = hr_st*60
-  min_en = hr_en*60-1
-
-  nplots = n_elements(dhr)
+  if undefined(trange) then begin
+    hr_st = 12*indgen(2)
+    dhr = 12+intarr(2)
+    hr_en = hr_st+dhr
+    ; Stings for labels, filenames
+    hr_ststr = string(hr_st, format='(i2.2)')
+    hr_enstr = string(hr_en, format='(i2.2)')
+    plot_lbl = '/'+hr_ststr+'-'+hr_enstr
+    file_lbl = '_'+hr_ststr+hr_enstr
+    ;the data has 1 minute time resolution  ;(except for elfin)
+    min_st = hr_st*60
+    min_en = hr_en*60-1
+    nplots = n_elements(dhr)
+  endif else begin
+    tstring=time_string(timerange())
+    hr_st=[strmid(tstring[0],11,2)]
+    hr_en=[strmid(tstring[1],11,2)]
+    hr_ststr=[hr_st]
+    hr_enstr=[hr_en]
+    plot_lbl = '/'+hr_ststr+'-'+hr_enstr
+    file_lbl = '_'+hr_ststr+hr_enstr
+    min_st = hr_st*60
+    min_en = hr_en*60-1
+    nplots = 1
+  endelse
+;  nplots = n_elements(dhr)
 
   ;---------------------------------------
   ; set up for plotting the earth
@@ -382,10 +474,19 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
       r[243]=46   & g[243]=139   & b[243]=87
     Endif
 
+    If(keyword_set(goes_too)) Then Begin
+      ; GOES 15 - gold
+      ; GOES 16 - light green
+      ;    r[240]=135   & g[240]=206   & b[240]=235
+      ;    r[239]=90   & g[239]=162   & b[239]=255
+      r[240]=235   & g[240]=180   & b[240]=52
+      r[239]=146   & g[239]=235   & b[239]=52
+    Endif
+    
     ; elf A - blue
     ; elf B - orange (red)
     ;    r[242]=135   & g[242]=206   & b[242]=235
-    ;    r[242]=90   & g[242]=162   & b[242]=255
+    ;    r[241]=90   & g[241]=162   & b[241]=255
     r[242]=65  & g[242]=140   & b[242]=255
     r[241]=255   & g[241]=0   & b[241]=0
 
@@ -646,6 +747,54 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
       this_gsm_x=erg_orb_l2_pos_gsm_foot.y[min_st[j]:min_en[j],0]/6375.
       this_gsm_y=erg_orb_l2_pos_gsm_foot.y[min_st[j]:min_en[j],1]/6375.
       plots, this_gsm_x[isteps], this_gsm_y[isteps], psym=1, color=243
+    Endif
+
+    ;----------------------
+    ; PLOT GOES Orbits
+    ;----------------------
+    If(keyword_set(goes_too)) Then Begin
+      for sc=0,0 do begin
+stop        
+        if sc EQ 0 then goes_orb_l2_pos_gsm_foot = goes15_orb_l2_pos_gsm_foot
+        if sc EQ 1 then goes_orb_l2_pos_gsm_foot = goes16_orb_l2_pos_gsm_foot
+      ;***** NOTE: this section needs to be replaced with min_st and 
+      ; min_end. This also means data loaded will need to be for full
+      ; day and interpolated to 1 min resolution
+;      goes_foot_x=goes_orb_l2_pos_gsm_foot.y[min_st[j]:min_en[j],0]/6375.
+;      goes_foot_y=goes_orb_l2_pos_gsm_foot.y[min_st[j]:min_en[j],1]/6375.
+      goes_foot_x=goes_orb_l2_pos_gsm_foot.y[*,0]/6375.
+      goes_foot_y=goes_orb_l2_pos_gsm_foot.y[*,1]/6375.
+      goes_pts=n_elements(goes_foot_x)
+      oplot, goes_foot_x, goes_foot_y ,color=243, thick=1.5
+      plots, goes_foot_x[0], goes_foot_y[0],color=243,psym=5
+      plots, goes_foot_x[goes_pts-1], goes_foot_y[goes_pts-1],color=243,psym=2
+      ; Determine the indices for the tick marks
+      if keyword_set(tstep) then begin
+        tstep=3600.    ; 1 hr
+;        this_time=goes_orb_l2_pos_time[min_st[j]:min_en[j]]
+        goes_time=goes_orb_l2_pos_gsm_foot.x
+;        goes_orb_l2_pos_gsm_foot.x[0]:goes_orb_l2_pos_gsm_foot.x[goes_pts-1]]
+        res=goes_time[1]-goes_time[0]
+        istep=tstep/res
+        last = n_elements(goes_time)
+        steps=lindgen(last/istep+1)*istep
+        tmp=max(steps,nmax)
+        if tmp gt (last-1) then steps=steps[0:nmax-1]
+        tsteps0=goes_time[steps[0]]
+        dummy=min(abs(goes_time-tsteps0),istep0)
+        isteps=steps+istep0
+        isteps=isteps[1:n_elements(isteps)-1]    ; don't plot first tick mark
+      endif
+      ; plot tick marks for projection
+      ;***** NOTE: this section needs to be replaced with min_st and
+      ; min_end. This also means data loaded will need to be for full
+      ; day and interpolated to 1 min resolution
+;      this_gsm_x=goes_orb_l2_pos_gsm_foot.y[min_st[j]:min_en[j],0]/6375.
+;      this_gsm_y=goes_orb_l2_pos_gsm_foot.y[min_st[j]:min_en[j],1]/6375.
+      this_gsm_x=goes_orb_l2_pos_gsm_foot.y[*,0]/6375.
+      this_gsm_y=goes_orb_l2_pos_gsm_foot.y[*,1]/6375.
+      plots, this_gsm_x[isteps], this_gsm_y[isteps], psym=1, color=243
+      endfor
     Endif
 
     ;----------------------
@@ -925,6 +1074,10 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
       xyouts,xy1,100,'Arase (ERG)',/device,charsize=chsz,color=243
     Endif
 
+    If(keyword_set(erg_too)) Then Begin
+      xyouts,xy1,100,'Arase (ERG)',/device,charsize=chsz,color=243
+    Endif
+
     If(keyword_set(elf_too)) Then Begin
       xyouts,xy1,80,'ELF (A)',/device,charsize=chsz,color=242
       xyouts,xy1,65,'ELF (B)',/device,charsize=chsz,color=241
@@ -950,10 +1103,18 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
       device,/close
       image[where(image eq 255)]=1
       image[where(image eq 0)]=255
-      dir_products = !elf.local_data_dir + 'gtrackplots/'+ strmid(date,0,4)+'/'+strmid(date,5,2)+'/'+strmid(date,8,2)+'/'
+      if undefined(trange) then begin
+        dir_products = !elf.local_data_dir + 'gtrackplots/'+ strmid(date,0,4)+'/'+strmid(date,5,2)+'/'+strmid(date,8,2)+'/'
+      endif else begin
+        dir_products = !elf.local_data_dir + 'gtrackplots/'
+      endelse
       file_mkdir, dir_products
       if not keyword_set(noview) then tv,image
-      name=dir_products+'orbit_'+rbext+strmid(date,0,4) + strmid(date,5,2) + strmid(date,8,2)+file_lbl[j]+'.gif'
+      if undefine(trange) then begin
+        name=dir_products+'orbit_'+rbext+strmid(date,0,4) + strmid(date,5,2) + strmid(date,8,2)+file_lbl[j]+'.gif'
+      endif else begin
+        name=dir_products+'orbit_multi_mission_conjunctions.gif'        
+      endelse
       ;name=dir_products+'orbit_'+rbext+date+file_lbl[j]+'.gif'
       write_gif,name,image,r,g,b
       print,'Output in ',name
