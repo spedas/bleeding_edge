@@ -7,11 +7,12 @@ pro thm_spinmodel::adjust_delta_phi,trange=trange,delta_phi_offset=delta_phi_off
 sp = self.segs_ptr
 seg_t1 = (*sp)[*].t1
 seg_t2 = (*sp)[*].t2
+seg_midpoints = (seg_t1 + seg_t2)/2.0D
 n = n_elements(seg_t1)
 correction_count=0L
 
 for i=0L, n-1 do begin
-   if ( ((*sp)[i].t1 GE trange[0]) and ((*sp)[i].t2 LE trange[1])) then begin
+   if (seg_midpoints[i] GE trange[0]) and (seg_midpoints[i] LE trange[1]) then begin
       (*sp)[i].initial_delta_phi += delta_phi_offset
       ;  Turn on the bit that indicates delta_phi offsets have been
       ;  applied to this segment

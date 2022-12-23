@@ -5,8 +5,16 @@ if (self.lastseg EQ -1) then begin
   (*sp)[0] = newseg
   self.lastseg = 0L
 endif else begin
+   
+   ; Previously, this was an exact equality test. Future changes to the CDF library ot use of different data types for time
+   ; could break the original logic due to small roundoff errors.  For the purposes of spin model segments, if the times 
+   ; are within a microsecond, they might as well be equal.  So this comparison now allows for a tolerance rather an exact
+   ; match.
+   
    lseg=(*sp)[self.lastseg]
-   if (newseg.t1 EQ lseg.t2) then begin
+   tdiff = abs(newseg.t1 - lseg.t2)
+   tolerance = 1.0e-06  
+   if (tdiff LE tolerance) then begin
       ;
       ; Normal case: segments are contiguous
       ;
@@ -58,7 +66,7 @@ endif else begin
          ; We need to calculate gap_initial_delta_phi by extrapolating
          ; from lseg to lseg.t2 = gapseg.t1
          segment_interp_t,lseg,lseg.t2,dummy_spincount,dummy_tlast,dummy_spinphase,$
-            dummy_spinper,gap_initial_delta_phi
+            dummy_spinper,dummy_segflags,gap_initial_delta_phi
          fillseg = {spinmodel_segment,t1:lseg.t2, t2:newseg.t1, c1:lseg.c2,$
               c2:lseg.c2+gap_nspins,b:360.0D/gap_spinper,c:0.0D,npts:0L,$
                maxgap:gap_time, phaserr:0.0D, $

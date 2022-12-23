@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Dec 21 18:16:34 2022.<P>
+<STRONG>Last modified: </STRONG>Thu Dec 22 18:16:33 2022.<P>
  
 <HR>
  
@@ -772,9 +772,14 @@ Change Date: 2007-10-08
    spinmodel_python_test
 
   INPUTS:
-    none
-
+    probe:             One value from 'a b c d e'
+    trange:            Time range specified as a 2-element string array
+    correction_level:  An integer, 0 1 or 2, denoting the level of eclipse corrections to use
+    cdf_filename:      The name of the output CDF.   This file can be passed to the themis.state.spinmodel.validate_model routine
+                       to perform the python side of the test.
   OUTPUTS:
+    A CDF file containing the probe, time range, and correction level used, a dump of the spinmodel attributes, and some interpolation 
+    test data to be reproduced in pyspedas.
 
   KEYWORDS:
     None.
@@ -783,10 +788,10 @@ Change Date: 2007-10-08
     
 
   EXAMPLE:
-     spinmodel_python_test
+     spinmodel_python_test, probe='a',trange=['2008-03-23','2008-04-23'],correction_level=2,cdf_filename='tha_30day_corr2.cdf'
 
 Written by: Jim Lewis (jwl@ssl.berkeley.edu)
-Change Date: 2007-10-08
+
 </PRE><P>
 <STRONG>(See <A href="spin/spinmodel_python_test.pro">projects/themis/spin/spinmodel_python_test.pro</A>)</STRONG><P>
 <HR>

@@ -59,7 +59,7 @@ endif else begin
          ; We need to calculate gap_initial_delta_phi by extrapolating
          ; from lseg to lseg.t2 = gapseg.t1
          segment_interp_t,lseg,lseg.t2,dummy_spincount,dummy_tlast,dummy_spinphase,$
-            dummy_spinper,gap_initial_delta_phi
+            dummy_spinper,dummy_segflags,gap_initial_delta_phi
          fillseg = {spinmodel_segment,t1:lseg.t2, t2:newseg.t1, c1:lseg.c2,$
               c2:lseg.c2+gap_nspins,b:360.0D/gap_spinper,c:0.0D,npts:0L,$
                maxgap:gap_time, phaserr:0.0D, $
@@ -89,7 +89,7 @@ endif else begin
             ; We need to calculate gap_initial_delta_phi by extrapolating
             ; from lseg to t_last = fillseg.t1
             segment_interp_t,lseg,t_last,dummy_spincount,dummy_tlast,dummy_spinphase,$
-               dummy_spinper,gap_initial_delta_phi
+               dummy_spinper,dummy_segflags,gap_initial_delta_phi
 
             lseg.c2 = c2_new
             lseg.t2 = t_last
@@ -127,11 +127,11 @@ endif else begin
             ; We need to calculate gap_initial_delta_phi by extrapolating
             ; from lseg to lseg.t2 = fillseg.t1
             segment_interp_t,lseg,lseg.t2,dummy_spincount,dummy_tlast,dummy_spinphase,$
-               dummy_spinper,gap_initial_delta_phi
+               dummy_spinper,dummy_segflags,gap_initial_delta_phi
             ; We also need to calculate new_initial_delta_phi for newseg,
             ; since we've removed its first spin. New start time is t_last.
             segment_interp_t,newseg,t_last,dummy_spincount,dummy_tlast,dummy_spinphase,$
-               dummy_spinper,newseg_initial_delta_phi
+               dummy_spinper,dummy_segflags,newseg_initial_delta_phi
 
             dt = t_last - newseg.t1
             bp = newseg.b + 2.0D*newseg.c*dt
