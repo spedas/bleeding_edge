@@ -37,8 +37,8 @@
 ;See "conv_units" to change units.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-12-05 10:36:14 -0800 (Mon, 05 Dec 2022) $
-; $LastChangedRevision: 31329 $
+; $LastChangedDate: 2022-12-26 12:23:43 -0800 (Mon, 26 Dec 2022) $
+; $LastChangedRevision: 31379 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_functions/contour4d.pro $
 ;
 ;CREATED BY:	J. McFadden  14-02-07
@@ -74,15 +74,18 @@ if size(/type,tempdat) ne 8 or tempdat.valid eq 0 then begin
     return
 endif
 
-!y.omargin =[2,3]               ; temporary fix
-!x.omargin =[0,5]               ; temporary fix
+; Custom plot margins (temporary fix?)
+
+xomar = !x.omargin
+yomar = !y.omargin
+!x.omargin = [2,3]
+!y.omargin = [0,5]
+
+; Get data
 
 mdat = omni4d(tempdat)
-
 mdat = conv_units(mdat,units)
-
 nenergy = mdat.nenergy
-
 nmass = mdat.nmass
 
 b_ns  = 5.844 					; TOF bins/ns for TOF timing (not sure if this is 5.844 or 5.855 for flight unit) 
@@ -198,6 +201,10 @@ if keyword_set(limits) then begin
 
     str_element,limits,'zlog',index=index
     if index ge 0 then zlog=limits.zlog
+    str_element,limits,'zticks',index=index
+    if index ge 0 then zticks=limits.zticks else zticks=4
+    str_element,limits,'charsize',index=index
+    if index ge 0 then csize=limits.charsize
 
 endif
 
@@ -234,12 +241,12 @@ endelse
         ydat=transpose(ydat)
         contour, zdat, ydat, xdat, title=title, xtitle=ytitle, ytitle=xtitle, $
           c_colors=c_colors, levels=levels, yrange=xrange, ystyle=xstyle, $
-          ylog=xlog, xrange=yrange, xstyle=ystyle, xlog=ylog, $
+          ylog=xlog, xrange=yrange, xstyle=ystyle, xlog=ylog, charsize=csize, $
 	  fill=fill, xmargin=xmargin, ymargin=ymargin, xticks=yticks, xtickv=ytickv
     endif else begin
         contour, zdat, xdat, ydat, title=title, xtitle=xtitle, ytitle=ytitle, $
           c_colors=c_colors, levels=levels, yrange=yrange, ystyle=ystyle, $
-          ylog=ylog, xrange=xrange, xstyle=xstyle, xlog=xlog, $
+          ylog=ylog, xrange=xrange, xstyle=xstyle, xlog=xlog, charsize=csize, $
           fill=fill, xmargin=xmargin, ymargin=ymargin, yticks=yticks, ytickv=ytickv
     endelse
 	if keyword_set(points) then begin
@@ -319,14 +326,16 @@ if keyword_set(label) then begin
   endelse
 
     axis, bar_pos2_norm(0),0,0, yaxis=1, $
-	yrange=[bar_min,bar_max], $
-	ystyle=1, yticks=4, ytitle=ztitle, $
+	yrange=[bar_min,bar_max], charsize=csize, $
+	ystyle=1, yticks=zticks, ytitle=ztitle, $
 	yticklen = 0.02, /norm, ytickformat='(F5.1)',ylog=0
 
 endif
 
-!x.omargin = [0,0]  ; undo temporary fix in x
-!y.omargin = [0,0]  ; undo temporary fix in y
+; Restore previous plot margins (temporary fix?)
+
+!x.omargin = xomar
+!y.omargin = yomar
 
 return
 

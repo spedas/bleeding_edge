@@ -47,6 +47,12 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
 
   ; Set the time
   if undefined(trange) then begin
+    if undefined(tstart) then begin
+      dprint, 'The user must specify either a start date or a time range'
+      dprint, 'elf_plot_orbit_conjunctions, "2022-01-01" or'
+      dprint, 'elf_plot_orbit_conjunctions, trange=["2022-01-01/00:05","2022-01-01/00:10"]'
+      return 
+    endif
     timespan,tstart,1,/day
     tend=time_string(time_double(tstart)+86400.0d0)
   endif else begin
@@ -191,7 +197,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
       sidx=where(mms_lat LT 0, mms_scnt)
       datgsm_foot=datgsm    ; use thx_pos_foot for inserting north and south traces
       ; TRACE TO EQUATOR
-      if mms_ncnt GT 0 then begin
+      if mms_ncnt GT 5 then begin
         npos=make_array(mms_ncnt, 3, /double)
         ntime=datgsm.x[nidx]
         npos[*,0]=datgsm.y[nidx,0]
@@ -210,7 +216,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
         datgsm_foot.y[nidx,1]=d.y[*,1]
         datgsm_foot.y[nidx,2]=d.y[*,2]
       endif
-      if mms_scnt GT 0 then begin
+      if mms_scnt GT 5 then begin
         spos=make_array(mms_scnt, 3, /double)
         stime=datgsm.x[sidx]
         spos[*,0]=datgsm.y[sidx,0]
@@ -222,6 +228,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
           [replicate(bswy,tsyg_param_count)],[replicate(bswz,tsyg_param_count)],$
           [replicate(0.,tsyg_param_count)],[replicate(0.,tsyg_param_count)],[replicate(0.,tsyg_param_count)],$
           [replicate(0.,tsyg_param_count)],[replicate(0.,tsyg_param_count)],[replicate(0.,tsyg_param_count)]]
+
         ttrace2equator,'mms'+probes[sc]+'_state_pos_gsm_south',new_name='mms'+probes[sc]+'_state_pos_gsm_south_foot', $
           external_model='t96',internal_model='igrf',/km, in_coord='gsm',out_coord='gsm',par=tsyg_parameter, /south;,R0= 1.0156,rlim=100.*Re
         get_data,'mms'+probes[sc]+'_state_pos_gsm_south_foot',data=d
@@ -513,7 +520,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
     ; Plot the frame and range for the orbit plots
     ;----------------------------------------------
     plot,findgen(10),xrange=xrange,yrange=yrange,/xstyle,/ystyle,/nodata, $
-      title='Multi-mission orbits: T96 magnetic equator projections, '+strmid(tstart,0,10)+plot_lbl[j],$
+      title='Multi-mission orbits: T96 magnetic equator projections, '+strmid(tstart[0],0,10)+plot_lbl[j],$
       xtitle='Xeq-GSM',ytitle='Yeq-GSM',charsize=charsize,/isotropic
 
     ; plot earth
@@ -662,7 +669,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
     ;-----------------
     ; PLOT MMS
     ;-----------------
-    If(keyword_set(mms_too)) Then Begin
+    If (keyword_set(mms_too)) && n_elements(mms1_state_pos_gsm.x) GT 5 Then Begin
       ;-------
       ; MMS 1
       ;-------
@@ -752,50 +759,50 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
     ;----------------------
     ; PLOT GOES Orbits
     ;----------------------
-    If(keyword_set(goes_too)) Then Begin
-      for sc=0,0 do begin
-stop        
-        if sc EQ 0 then goes_orb_l2_pos_gsm_foot = goes15_orb_l2_pos_gsm_foot
-        if sc EQ 1 then goes_orb_l2_pos_gsm_foot = goes16_orb_l2_pos_gsm_foot
+;    If(keyword_set(goes_too)) Then Begin
+;      for sc=0,0 do begin
+;        
+;        if sc EQ 0 then goes_orb_l2_pos_gsm_foot = goes15_orb_l2_pos_gsm_foot
+;        if sc EQ 1 then goes_orb_l2_pos_gsm_foot = goes16_orb_l2_pos_gsm_foot
       ;***** NOTE: this section needs to be replaced with min_st and 
       ; min_end. This also means data loaded will need to be for full
       ; day and interpolated to 1 min resolution
 ;      goes_foot_x=goes_orb_l2_pos_gsm_foot.y[min_st[j]:min_en[j],0]/6375.
 ;      goes_foot_y=goes_orb_l2_pos_gsm_foot.y[min_st[j]:min_en[j],1]/6375.
-      goes_foot_x=goes_orb_l2_pos_gsm_foot.y[*,0]/6375.
-      goes_foot_y=goes_orb_l2_pos_gsm_foot.y[*,1]/6375.
-      goes_pts=n_elements(goes_foot_x)
-      oplot, goes_foot_x, goes_foot_y ,color=243, thick=1.5
-      plots, goes_foot_x[0], goes_foot_y[0],color=243,psym=5
-      plots, goes_foot_x[goes_pts-1], goes_foot_y[goes_pts-1],color=243,psym=2
+;      goes_foot_x=goes_orb_l2_pos_gsm_foot.y[*,0]/6375.
+;      goes_foot_y=goes_orb_l2_pos_gsm_foot.y[*,1]/6375.
+;      goes_pts=n_elements(goes_foot_x)
+;      oplot, goes_foot_x, goes_foot_y ,color=243, thick=1.5
+;      plots, goes_foot_x[0], goes_foot_y[0],color=243,psym=5
+;      plots, goes_foot_x[goes_pts-1], goes_foot_y[goes_pts-1],color=243,psym=2
       ; Determine the indices for the tick marks
-      if keyword_set(tstep) then begin
-        tstep=3600.    ; 1 hr
+;;      if keyword_set(tstep) then begin
+;        tstep=3600.    ; 1 hr
 ;        this_time=goes_orb_l2_pos_time[min_st[j]:min_en[j]]
-        goes_time=goes_orb_l2_pos_gsm_foot.x
-;        goes_orb_l2_pos_gsm_foot.x[0]:goes_orb_l2_pos_gsm_foot.x[goes_pts-1]]
-        res=goes_time[1]-goes_time[0]
-        istep=tstep/res
-        last = n_elements(goes_time)
-        steps=lindgen(last/istep+1)*istep
-        tmp=max(steps,nmax)
-        if tmp gt (last-1) then steps=steps[0:nmax-1]
-        tsteps0=goes_time[steps[0]]
-        dummy=min(abs(goes_time-tsteps0),istep0)
-        isteps=steps+istep0
-        isteps=isteps[1:n_elements(isteps)-1]    ; don't plot first tick mark
-      endif
+;        goes_time=goes_orb_l2_pos_gsm_foot.x
+;;        goes_orb_l2_pos_gsm_foot.x[0]:goes_orb_l2_pos_gsm_foot.x[goes_pts-1]]
+;        res=goes_time[1]-goes_time[0]
+;        istep=tstep/res
+;        last = n_elements(goes_time)
+;        steps=lindgen(last/istep+1)*istep
+;        tmp=max(steps,nmax)
+;        if tmp gt (last-1) then steps=steps[0:nmax-1]
+;        tsteps0=goes_time[steps[0]]
+;        dummy=min(abs(goes_time-tsteps0),istep0)
+;        isteps=steps+istep0
+;        isteps=isteps[1:n_elements(isteps)-1]    ; don't plot first tick mark
+;      endif
       ; plot tick marks for projection
-      ;***** NOTE: this section needs to be replaced with min_st and
+;      ;***** NOTE: this section needs to be replaced with min_st and
       ; min_end. This also means data loaded will need to be for full
       ; day and interpolated to 1 min resolution
 ;      this_gsm_x=goes_orb_l2_pos_gsm_foot.y[min_st[j]:min_en[j],0]/6375.
 ;      this_gsm_y=goes_orb_l2_pos_gsm_foot.y[min_st[j]:min_en[j],1]/6375.
-      this_gsm_x=goes_orb_l2_pos_gsm_foot.y[*,0]/6375.
-      this_gsm_y=goes_orb_l2_pos_gsm_foot.y[*,1]/6375.
-      plots, this_gsm_x[isteps], this_gsm_y[isteps], psym=1, color=243
-      endfor
-    Endif
+;      this_gsm_x=goes_orb_l2_pos_gsm_foot.y[*,0]/6375.
+;      this_gsm_y=goes_orb_l2_pos_gsm_foot.y[*,1]/6375.
+;      plots, this_gsm_x[isteps], this_gsm_y[isteps], psym=1, color=243
+;      endfor
+;    Endif
 
     ;----------------------
     ; PLOT ELFIN Orbits
@@ -1110,7 +1117,7 @@ stop
       endelse
       file_mkdir, dir_products
       if not keyword_set(noview) then tv,image
-      if undefine(trange) then begin
+      if undefined(trange) then begin
         name=dir_products+'orbit_'+rbext+strmid(date,0,4) + strmid(date,5,2) + strmid(date,8,2)+file_lbl[j]+'.gif'
       endif else begin
         name=dir_products+'orbit_multi_mission_conjunctions.gif'        
