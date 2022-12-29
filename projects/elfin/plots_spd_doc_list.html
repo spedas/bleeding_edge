@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Dec 26 18:16:37 2022.<P>
+<STRONG>Last modified: </STRONG>Wed Dec 28 18:16:35 2022.<P>
  
 <HR>
  
@@ -26,6 +26,10 @@ This page was created by the IDL library routine
 <br>Calculates the science attitude vector and determines which auroral crossing
 <LI><A HREF="#ELF_CONVERT_STATE_GEI2SM">ELF_CONVERT_STATE_GEI2SM</A>
 <br>Convert previously loaded state data from gei coordinates to SM. This is a
+<LI><A HREF="#ELF_GET_EISCAT_POSITIONS">ELF_GET_EISCAT_POSITIONS</A>
+<br>This routine will return the position (latitude and longitude) of
+<LI><A HREF="#ELF_GET_VLF_POSITIONS">ELF_GET_VLF_POSITIONS</A>
+<br>This routine will return the position (geo latitude/longitude and mag latitude/longitude)
 <LI><A HREF="#ELF_LOAD_EPD_FAST_SEGMENTS">ELF_LOAD_EPD_FAST_SEGMENTS</A>
 <br>Loads the EPD fast segment intervals into a bar that can be plotted
 <LI><A HREF="#ELF_LOAD_EPD_SURVEY_SEGMENTS">ELF_LOAD_EPD_SURVEY_SEGMENTS</A>
@@ -54,6 +58,8 @@ ELF_MAP_STATE_T96_INTERVALS_WRAPPER</A>
 <LI><A HREF="#ELF_MLT_L_LAT">ELF_MLT_L_LAT</A>
 <LI><A HREF="#ELF_PLOT_ATTITUDE">ELF_PLOT_ATTITUDE</A>
 <br>Create attitude plots (3 panels - att_gei vector, theta, phi) with timebars for maneuvers
+<LI><A HREF="#ELF_PLOT_MULTISPEC_OVERVIEWS">ELF_PLOT_MULTISPEC_OVERVIEWS</A>
+<br>Routine just wraps epde_plot_wigrf_multispec_overviews. Mainly used for processing.
 <LI><A HREF="#ELF_PLOT_ORBIT_CONJUNCTIONS">ELF_PLOT_ORBIT_CONJUNCTIONS</A>
 <LI><A HREF="#ELF_PLOT_SCI_ZONE_LAT">ELF_PLOT_SCI_ZONE_LAT</A>
 <br>This routine will plot the latitude values at the start and end times of science zones
@@ -176,7 +182,7 @@ Example:
 <A NAME="ELF_CONVERT_STATE_GEI2SM">
 <H2>ELF_CONVERT_STATE_GEI2SM</H2></A>
 <A HREF="#ELF_CALC_SCI_ZONE_ATT">[Previous Routine]</A>
-<A HREF="#ELF_LOAD_EPD_FAST_SEGMENTS">[Next Routine]</A>
+<A HREF="#ELF_GET_EISCAT_POSITIONS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -192,9 +198,71 @@ Example:
 <STRONG>(See <A href="plots/elf_convert_state_gei2sm.pro">projects/elfin/plots/elf_convert_state_gei2sm.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ELF_GET_EISCAT_POSITIONS">
+<H2>ELF_GET_EISCAT_POSITIONS</H2></A>
+<A HREF="#ELF_CONVERT_STATE_GEI2SM">[Previous Routine]</A>
+<A HREF="#ELF_GET_VLF_POSITIONS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ FUNCTION: elf_get_eiscat_positions
+
+ PURPOSE:
+     This routine will return the position (latitude and longitude) of 
+     three EISCAT stations (incoherent radar scattering)
+     Stations include: Tromso_UHF, Tromso_VHF, Svalbard
+
+ KEYWORDS:
+     None
+     
+ OUTPUT:
+    eiscat_pos - a structure containing the station names, latitudes, and longitudes.
+                 ** Structure &lt;28f7a620&gt;, 3 tags, length=72, data length=72, refs=1:
+                 NAME            STRING    Array[3]
+                 LAT             FLOAT     Array[3]
+                 LON             FLOAT     Array[3]
+                 
+ EXAMPLE:
+    eiscat_pos = elf_get_eiscat_positions()
+
+</PRE><P>
+<STRONG>(See <A href="plots/elf_get_eiscat_positions.pro">projects/elfin/plots/elf_get_eiscat_positions.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ELF_GET_VLF_POSITIONS">
+<H2>ELF_GET_VLF_POSITIONS</H2></A>
+<A HREF="#ELF_GET_EISCAT_POSITIONS">[Previous Routine]</A>
+<A HREF="#ELF_LOAD_EPD_FAST_SEGMENTS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ FUNCTION: elf_get_vlf_positions
+
+ PURPOSE:
+     This routine will return the position (geo latitude/longitude and mag latitude/longitude)
+     of seven VLF stations (incoherent radar scattering)
+     stations include: 'IST', 'OUJ', 'MAM', 'GAK', 'ATH', 'KAP', 'KAN'
+
+ KEYWORDS:
+     None
+
+ OUTPUT:
+    vlf_pos - a structure containing the station names, geo and magh lat/lon.
+              ** Structure &lt;3d936c30&gt;, 5 tags, length=224, data length=224, refs=1:
+              NAME            STRING    Array[7]
+              GLAT            FLOAT     Array[7]
+              GLON            FLOAT     Array[7]
+              MLAT            FLOAT     Array[7]
+              MLON            FLOAT     Array[7]
+
+ EXAMPLE:
+    vlf_pos = elf_get_vlf_positions()
+
+</PRE><P>
+<STRONG>(See <A href="plots/elf_get_vlf_positions.pro">projects/elfin/plots/elf_get_vlf_positions.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ELF_LOAD_EPD_FAST_SEGMENTS">
 <H2>ELF_LOAD_EPD_FAST_SEGMENTS</H2></A>
-<A HREF="#ELF_CONVERT_STATE_GEI2SM">[Previous Routine]</A>
+<A HREF="#ELF_GET_VLF_POSITIONS">[Previous Routine]</A>
 <A HREF="#ELF_LOAD_EPD_SURVEY_SEGMENTS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -545,7 +613,7 @@ $URL:$
 <A NAME="ELF_PLOT_ATTITUDE">
 <H2>ELF_PLOT_ATTITUDE</H2></A>
 <A HREF="#ELF_MLT_L_LAT">[Previous Routine]</A>
-<A HREF="#ELF_PLOT_ORBIT_CONJUNCTIONS">[Next Routine]</A>
+<A HREF="#ELF_PLOT_MULTISPEC_OVERVIEWS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -568,9 +636,34 @@ $URL:$
 <STRONG>(See <A href="plots/elf_plot_attitude.pro">projects/elfin/plots/elf_plot_attitude.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ELF_PLOT_MULTISPEC_OVERVIEWS">
+<H2>ELF_PLOT_MULTISPEC_OVERVIEWS</H2></A>
+<A HREF="#ELF_PLOT_ATTITUDE">[Previous Routine]</A>
+<A HREF="#ELF_PLOT_ORBIT_CONJUNCTIONS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Procedure: elf_plot_multispec_overviews
+
+PURPOSE:
+  Routine just wraps epde_plot_wigrf_multispec_overviews. Mainly used for processing.
+
+INPUT
+  Date: date for plot creation, if not set, assumes current date and duration counts backwards(ie last N days from today)
+
+KEYWORDS
+  Dur: If set, number of days to process, default is 1
+  probe: 'a' or 'b'
+  no_download: If set no files will be downloaded
+  sci_zone: If set this flag will create overplots by science zone rather than by hour
+  quick_run: set this flag to reduce the resolution of the data for a quicker run
+  one_zone_only: set this flag to plot only the first zone (this is for debug purposes)
+</PRE><P>
+<STRONG>(See <A href="plots/elf_plot_multispec_overviews.pro">projects/elfin/plots/elf_plot_multispec_overviews.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ELF_PLOT_ORBIT_CONJUNCTIONS">
 <H2>ELF_PLOT_ORBIT_CONJUNCTIONS</H2></A>
-<A HREF="#ELF_PLOT_ATTITUDE">[Previous Routine]</A>
+<A HREF="#ELF_PLOT_MULTISPEC_OVERVIEWS">[Previous Routine]</A>
 <A HREF="#ELF_PLOT_SCI_ZONE_LAT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
