@@ -19,8 +19,8 @@
 ;   See helper routine make_fgm_wave_survey_testdates
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2022-12-21 11:52:16 -0800 (Wed, 21 Dec 2022) $
-; $LastChangedRevision: 31367 $
+; $LastChangedDate: 2023-01-03 15:17:50 -0800 (Tue, 03 Jan 2023) $
+; $LastChangedRevision: 31384 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/fgm_wave_survey/make_fgm_wave_survey_dynspec.pro $
 ;-
 
@@ -32,8 +32,8 @@ pro survey_dynspec_psd, x, p, freq=f, dt=dt
 
   cosinewindow	= replicate(1.D,n_x)
   n_percent		= round(double(n_x) / 100.D * percent)
-  cosinewindow(0:n_percent - 1L)			= 0.5D * (1.0D - cos(!DPI * dindgen(n_percent) / double(n_percent)))
-  cosinewindow(n_x - n_percent:n_x - 1L)	= 0.5D * (1.0D - cos(!DPI * dindgen(n_percent) / double(n_percent)))
+  cosinewindow[0:n_percent - 1L] = 0.5D * (1.0D - cos(!DPI * dindgen(n_percent) / double(n_percent)))
+  cosinewindow[n_x - n_percent:n_x - 1L]	= 0.5D * (1.0D - cos(!DPI * dindgen(n_percent) / double(n_percent)))
 
   taperfactor	= total(cosinewindow^2) / double(n_x)
 
@@ -47,7 +47,7 @@ pro survey_dynspec_psd, x, p, freq=f, dt=dt
   fftx = fft(xnew, /double)
 
   px	= abs(fftx)^2 * n_x * dt * 2.D / taperfactor
-  p	= px(0:n_f - 1)
+  p	= px[0:n_f - 1]
 
   return
 end
@@ -60,14 +60,14 @@ pro survey_dynspec_helper, time_in, data_in, n_points, freq_out, dynspec_out, ti
   initial		= 1
 
   for i = 0L, n_rounds - 1L do begin
-    time_r	= time_in(i * n_points:(i + 1L) * n_points - 1L)
-    data_r	= data_in(i * n_points:(i + 1L) * n_points - 1L)
+    time_r	= time_in[i * n_points:(i + 1L) * n_points - 1L]
+    data_r	= data_in[i * n_points:(i + 1L) * n_points - 1L]
     idx = where(~finite(data_r),n_finite_count)
-    dt		= time_r(1)-time_r(0)
+    dt		= time_r[1]-time_r[0]
 
     if (n_finite_count gt 0) then begin
       survey_dynspec_psd, dindgen(n_points), psd_r, freq=freq, dt=dt ;process with fake data to get right dimensions on output
-      freq_out  = freq(1:*)
+      freq_out  = freq[1:*]
       if (initial eq 1) then begin
         dynspec_out  = replicate(!VALUES.D_NAN,n_elements(psd_r(1:*)))
         time_out = mean(time_r)
@@ -78,13 +78,13 @@ pro survey_dynspec_helper, time_in, data_in, n_points, freq_out, dynspec_out, ti
       endelse
     endif else begin
       survey_dynspec_psd, data_r, psd_r, freq=freq, dt=dt
-      freq_out	= freq(1:*)
+      freq_out	= freq[1:*]
       if (initial eq 1) then begin
-        dynspec_out	= psd_r(1:*)
+        dynspec_out	= psd_r[1:*]
         time_out	= mean(time_r)
         initial		= 0
       endif else begin
-        dynspec_out	= [[dynspec_out],[psd_r(1:*)]]
+        dynspec_out	= [[dynspec_out],[psd_r[1:*]]]
         time_out	= [time_out, mean(time_r)]
       endelse
     endelse
@@ -545,6 +545,3 @@ pro make_fgm_wave_survey_testdates
   make_fgm_wave_survey_dynspec,'2010-06-25'
 
 end
-
-
-
