@@ -110,7 +110,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
     sidx=where(thm_lat LT 0, thm_scnt)
     datgsm_foot=datgsm    ; use thx_pos_foot for inserting north and south traces
     ; TRACE TO EQUATOR
-    if thm_ncnt GT 0 then begin
+    if thm_ncnt GT 2 then begin
       npos=make_array(thm_ncnt, 3, /double)
       ntime=datgsm.x[nidx]
       npos[*,0]=datgsm.y[nidx,0]
@@ -129,7 +129,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
       datgsm_foot.y[nidx,1]=d.y[*,1]
       datgsm_foot.y[nidx,2]=d.y[*,2]
     endif
-    if thm_scnt GT 0 then begin
+    if thm_scnt GT 2 then begin
       spos=make_array(thm_scnt, 3, /double)
       stime=datgsm.x[sidx]
       spos[*,0]=datgsm.y[sidx,0]
@@ -197,7 +197,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
       sidx=where(mms_lat LT 0, mms_scnt)
       datgsm_foot=datgsm    ; use thx_pos_foot for inserting north and south traces
       ; TRACE TO EQUATOR
-      if mms_ncnt GT 5 then begin
+      if mms_ncnt GT 2 then begin
         npos=make_array(mms_ncnt, 3, /double)
         ntime=datgsm.x[nidx]
         npos[*,0]=datgsm.y[nidx,0]
@@ -216,7 +216,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
         datgsm_foot.y[nidx,1]=d.y[*,1]
         datgsm_foot.y[nidx,2]=d.y[*,2]
       endif
-      if mms_scnt GT 5 then begin
+      if mms_scnt GT 2 then begin
         spos=make_array(mms_scnt, 3, /double)
         stime=datgsm.x[sidx]
         spos[*,0]=datgsm.y[sidx,0]
@@ -277,7 +277,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
     sidx=where(erg_lat LT 0, erg_scnt)
     erg_pos_foot=erg_pos
     ;trace to equator
-    if erg_ncnt GT 0 then begin
+    if erg_ncnt GT 2 then begin
       npos=make_array(erg_ncnt, 3, /double)
       npos[*,0]=erg_pos.y[nidx,0]
       npos[*,1]=erg_pos.y[nidx,1]
@@ -295,7 +295,7 @@ pro elf_plot_orbit_conjunctions,tstart,gifout=gifout,file=file, elf_too=elf_too,
       erg_pos_foot.y[nidx,1]=d.y[*,1]
       erg_pos_foot.y[nidx,2]=d.y[*,2]
     endif
-    if erg_scnt GT 0 then begin
+    if erg_scnt GT 2 then begin
       spos=make_array(erg_scnt, 3, /double)
       spos[*,0]=erg_pos.y[sidx,0]
       spos[*,1]=erg_pos.y[sidx,1]
