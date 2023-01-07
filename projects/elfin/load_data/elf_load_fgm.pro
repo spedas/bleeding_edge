@@ -183,7 +183,9 @@ pro elf_load_fgm, trange = trange, probes = probes, datatype = datatype, $
   ; perform coordinate conversions from gei to NDW and OBW
   if  ~undefined(tplotnames) && tplotnames[0] ne '' then begin
     if size(fsp_res_dmxl, /type) EQ 8 then begin
-      tr=timerange()
+;      tr=timerange()
+;      stop
+      tr=time_double(trange)     
       ; will need position data for coordinate transforms
       elf_load_state, probe=probes, trange=tr, no_download=no_download, suffix='_fsp'
       ; verify that state data was loaded, if not print error and return
@@ -193,6 +195,7 @@ pro elf_load_fgm, trange = trange, probes = probes, datatype = datatype, $
         drpint, 'Unable to perform fgs_fsp_res_gei coordinate transforms to ndw and obw'
       endif else begin
         ; Transform data to ndw coordinates
+        tr=time_double(trange)
         elf_fgm_fsp_gei2ndw, trange=tr, probe=probes, sz_starttimes=sz_starttimes, sz_endtimes=sz_endtimes   
         ; Transform data to obw coordinates
         elf_fgm_fsp_gei2obw, trange=tr, probe=probes, sz_starttimes=sz_starttimes, sz_endtimes=sz_endtimes
