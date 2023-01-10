@@ -104,12 +104,11 @@ function get_elf_science_zone_start_end, trange=trange, probe=probe, instrument=
 ;  endelse
 ;endif
 
-if ~undefined(sz_zones) then begin
+;if ~undefined(sz_zones) then begin
   ;completeness=make_array(n_elements(sz_starttimes), /string)
   ;completeness=completeness+'None'
-  sci_zones={starts:time_double(sz_starttimes), ends:time_double(sz_endtimes), completeness:completeness}
-endif
-
-return, sci_zones 
+;  sci_zones={starts:time_double(sz_starttimes), ends:time_double(sz_endtimes), completeness:completeness}
+;endif
+if ~undefined(sci_zones) then return, sci_zones else return, -1
    
 end

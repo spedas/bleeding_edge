@@ -362,12 +362,13 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     endelse
   endif
 
-  ;  epd_times=get_elf_science_zone_start_end(trange=trange, probe=probe, instrument='epd')
+    epd_sci_zones=get_elf_science_zone_start_end(trange=trange, probe=probe, instrument='epd')
+    fgm_sci_zones=get_elf_science_zone_start_end(trange=trange, probe=probe, instrument='fgm')
   ;  if size(epd_times, /type) EQ 8 then begin
   ;     sz_starttimes=epd_times.starts
   ;     sz_endtimes=epd_times.ends
   ;  endif
-
+  
   num_szs=n_elements(sz_starttimes)
 
   ; set up science zone plot options
@@ -391,14 +392,14 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
 
     med_nsect=median(nsect.y)
     if size(epd_sci_zones,/type) eq 8 then begin
-      idx=where(epd_sci_zones.starts GT this_tr[0]-20, scnt)
-      if scnt GT 0 then epd_completeness_str=', EPD completeness='+epd_sci_zones.completeness[idx[0]] else $
-        epd_completeness_str=', EPD Completeness=not available'
+      idx=where(epd_sci_zones.starts GT sz_tr[0]-20, scnt)
+      if scnt GT 0 then epd_completeness_str=', EPDE completeness='+epd_sci_zones.completeness[idx[0]] else $
+        epd_completeness_str=', EPDE Completeness=not available'
     endif else begin
-      epd_completeness_str=', EPD Completeness=not available'
+      epd_completeness_str=', EPDE Completeness=not available'
     endelse
     if size(fgm_sci_zones,/type) eq 8 then begin
-      idx=where((fgm_sci_zones.starts GT this_tr[0]-60) AND (fgm_sci_zones.ends LT this_tr[1]+60.), scnt)
+      idx=where((fgm_sci_zones.starts GT sz_tr[0]-60), scnt)
       if scnt GT 0 then fgm_completeness_str=', FGM completeness='+fgm_sci_zones.completeness[idx[0]] else $
         fgm_completeness_str=', FGM Completeness=not available'
     endif else begin
