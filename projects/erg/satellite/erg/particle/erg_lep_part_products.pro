@@ -74,8 +74,8 @@
 ;History:
 ;  ver.0.0: The 1st experimental release 
 ;  
-;$LastChangedDate: 2020-12-08 06:04:52 -0800 (Tue, 08 Dec 2020) $
-;$LastChangedRevision: 29445 $
+;$LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
+;$LastChangedRevision: 31399 $
 ;-
 pro erg_lep_part_products, $
    in_tvarname, $
@@ -457,9 +457,9 @@ pro erg_lep_part_products, $
     ;; in moments_3d(). 
     if in_set(outputs_lc, 'fac_moments') then begin
       clean_data.theta = 90-clean_data.theta ;convert back to latitude for moments calc
-      clean_data =  create_struct('charge', dist.charge, 'magf', [0, 0, 0.], $
-                                  'species', dist.species, 'sc_pot', 0., $
-                                 'units_name', units_lc, clean_data )
+      ;;clean_data =  create_struct('charge', dist.charge, 'magf', [0, 0, 0.], $
+      ;;                            'species', dist.species, 'sc_pot', 0., $
+      ;;                           'units_name', units_lc, clean_data )
       erg_convert_flux_units, clean_data, units='eflux', output=clean_data_eflux
       ;;magfarr = magf ;;& help,  magf
       if n_elements(magf) eq 1 and magf[0] eq 0 then undefine, magfarr

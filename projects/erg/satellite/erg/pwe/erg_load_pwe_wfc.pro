@@ -32,8 +32,8 @@
 ;   Masafumi Shoji, ERG Science Center (E-mail: masafumi.shoji at
 ;   nagoya-u.jp)
 ;
-; $LastChangedDate: 2021-03-25 13:26:37 -0700 (Thu, 25 Mar 2021) $
-; $LastChangedRevision: 29823 $
+; $LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
+; $LastChangedRevision: 31399 $
 ; https://ergsc-local.isee.nagoya-u.ac.jp/svn/ergsc/trunk/erg/satellite/erg/pwe/erg_load_pwe_wfc.pro $
 ;-
 
@@ -145,7 +145,8 @@ pro erg_load_pwe_wfc, $
      if ~keyword_set(downloadonly) then begin
                
         if ~strcmp(datatype, 'spec') then begin
-          spd_cdf2tplot, datfiles, prefix = prefix[i], get_support_data = get_support_data, verbose = verbose, /tt2000
+          cdf2tplot, datfiles, prefix = prefix[i], get_support_data = get_support_data, verbose = verbose
+          spd_cdf2tplot, datfiles, VARFORMAT='*_waveform', prefix = prefix[i], verbose = verbose, /tt2000
         endif else begin
           cdf2tplot, datfiles, prefix = prefix[i], get_support_data = get_support_data, verbose = verbose
         endelse
@@ -188,7 +189,7 @@ pro erg_load_pwe_wfc, $
      dt=data.v ;time_offsets
 
      delta=d_time1[1] - d_time1[0]
-     nt=n_elements(time1)
+     nt=n_elements(l64_time1)
 
      if keyword_set(trange) then begin
         

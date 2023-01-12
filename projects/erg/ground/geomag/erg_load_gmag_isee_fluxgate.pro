@@ -41,12 +41,12 @@
 ;       2020-08-13: Atsuki Shinbori, ISEE, Nagoya U.
 ;                   1. Add the lcl station to the list of a site_code_all variable.
 ;                   2. Add '64hz' to the datatype for donwloading the lcl 64hz CDF data.
-;
-;       2021-01-14: Atsuki Shinbori, ISEE, Nagoya U.
-;                   1. Add '1s' to the datatype for the mdm and tew stations.
 ;                   
-;   $LastChangedDate: 2021-03-25 13:25:21 -0700 (Thu, 25 Mar 2021) $
-;   $LastChangedRevision: 29822 $
+;       2021-10-12: Atsuki Shinbori, ISEE, Nagoya U.
+;                   1. Modify rename of tplot variables.
+;
+;   $LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
+;   $LastChangedRevision: 31399 $
 ;-
 
 pro erg_load_gmag_isee_fluxgate, site=site, datatype=datatype, $
@@ -135,7 +135,6 @@ for i=0, n_elements(site_code)-1 do begin
     
     if fres eq '1h' then fres = '1min'
     if fres eq '1sec' or fres eq '1min' then begin
-      
           file_format = 'ground/geomag/isee/fluxgate/'+fres+'/'+site_code[i]+'/YYYY' $
                         + '/isee_fluxgate_'+fres+'_'+site_code[i]+'_YYYYMMDD_v??.cdf'
           relpathnames=file_dailynames(file_format=file_format,trange=trange)
@@ -155,14 +154,13 @@ for i=0, n_elements(site_code)-1 do begin
         
         for k=0, n_elements(datatype_index_app)-1 do begin
            tres = datatype[k]
-        
            cdf2tplot, file=files, verbose=source.verbose, $
                    prefix='isee_fluxgate_', suffix='_'+site_code[i], varformat='*hdz_'+tres+'*'
-
             ;--- Rename
-            if(tnames('isee_fluxgate_mag_'+site_code[i]+'_'+tres+'_hdz') eq 'isee_fluxgate_mag_'+site_code[i]+'_'+tres+'_hdz') then $
-              store_data, 'isee_fluxgate_hdz_'+tres+'_'+site_code[i], newname='isee_fluxgate_mag_'+site_code[i]+'_'+tres+'_hdz'
-              del_data, 'isee_fluxgate_mag_'+site_code[i]+'_'+tres+'_hdz'
+            if(tnames('isee_fluxgate_hdz_'+tres+'_'+site_code[i]) eq 'isee_fluxgate_hdz_'+tres+'_'+site_code[i]) then $
+               store_data, 'isee_fluxgate_hdz_'+tres+'_'+site_code[i], newname='isee_fluxgate_mag_'+site_code[i]+'_'+tres+'_hdz'
+               del_data, 'isee_fluxgate_hdz_'+tres+'_'+site_code[i]
+
             ;--- time clip
             if(keyword_set(timeclip)) then begin
               get_timespan, tr & tmspan=time_string(tr)

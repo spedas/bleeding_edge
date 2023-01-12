@@ -35,8 +35,8 @@
 ; :Authors:
 ;   Masafumi Shoji, ERG Science Center (E-mail: masafumi.shoji at nagoya-u.jp)
 ;
-; $LastChangedDate: 2021-03-25 13:25:21 -0700 (Thu, 25 Mar 2021) $
-; $LastChangedRevision: 29822 $
+; $LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
+; $LastChangedRevision: 31399 $
 ; https://ergsc-local.isee.nagoya-u.ac.jp/svn/ergsc/trunk/erg/satellite/erg/pwe/erg_load_pwe_ofa.pro $
 ;-
 
@@ -79,6 +79,10 @@ if ~strcmp(datatype, 'spec') and ~strcmp(datatype, 'matrix') and ~strcmp(datatyp
    return
 endif
 
+if strcmp(datatype, 'property') then begin
+   level='l3'
+endif
+
 if strcmp(level,'l3') then begin
    datatype = 'property'
    coord = 'dsi'
@@ -92,7 +96,7 @@ endif
 relfpathfmt = 'YYYY/MM/erg_pwe_ofa_' + level+'_'+datatype+'_'+ coord_fix + 'YYYYMMDD_v??_??.cdf' ;;real
 remotedir=!erg.remote_data_dir+'satellite/erg/pwe/ofa/'+level+'/'+datatype+'/'
 localdir = !erg.local_data_dir + 'satellite/erg/pwe/ofa/'+level+'/'+datatype+'/'
-prefix = 'erg_pwe_ofa_'+datatype+'_'+level+'_'
+prefix = 'erg_pwe_ofa_'+level+'_'+datatype+'_'
 
 relfpaths = file_dailynames(file_format=relfpathfmt, trange=trange, times=times)
 files=spd_download(remote_file=relfpaths,remote_path = remotedir,local_path=localdir,no_download=no_download,$

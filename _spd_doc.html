@@ -2,17 +2,17 @@
 <html>
  
 <head>
-<TITLE>SPEDAS SW Help for spdsw_r31398_2023-01-10</TITLE>
+<TITLE>SPEDAS SW Help for spdsw_r31400_2023-01-11</TITLE>
 </head>
  
 <body>
-<H2>SPEDAS SW Help for spdsw_r31398_2023-01-10</H2>
+<H2>SPEDAS SW Help for spdsw_r31400_2023-01-11</H2>
 <P>
 This page was created by the IDL library routine 
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jan 10 18:16:37 2023.<P>
+<STRONG>Last modified: </STRONG>Wed Jan 11 18:16:30 2023.<P>
  
 <HR>
  
@@ -2229,6 +2229,8 @@ EPDI_PLOT_OVERVIEWS</A>
 <br>equation of time for a given longitude and year
 <LI><A HREF="projects/erg/examples_spd_doc_list.html#ERG_CRIB_CAMERA_OMTI_ASI">
 ERG_CRIB_CAMERA_OMTI_ASI</A>
+<LI><A HREF="projects/erg/examples_spd_doc_list.html#ERG_CRIB_CAMERA_OMTI_ASI2">
+ERG_CRIB_CAMERA_OMTI_ASI2</A>
 <LI><A HREF="projects/erg/examples_spd_doc_list.html#ERG_CRIB_GMAG_ISEE_FLUXGATE
 ">ERG_CRIB_GMAG_ISEE_FLUXGATE</A>
 <LI><A HREF="projects/erg/examples_spd_doc_list.html#
@@ -2247,7 +2249,7 @@ ERG_CRIB_ISEE_VLF</A>
 ERG_CRIB_SUPERDARN</A>
 <LI><A HREF="projects/erg/ground/camera_spd_doc_list.html#
 ERG_LOAD_CAMERA_OMTI_ASI">ERG_LOAD_CAMERA_OMTI_ASI</A>
-<br>To load the OMTI ASI data from the STEL ERG-SC site
+<br>To load the OMTI ASI data from the ISEE ERG-SC site
 <LI><A HREF="projects/erg/ground/geomag_spd_doc_list.html#
 ERG_LOAD_GMAG_ISEE_FLUXGATE">ERG_LOAD_GMAG_ISEE_FLUXGATE</A>
 <br>To load the STEL fluxgate geomagnetic data from the ISEE ERG-SC site
@@ -3775,6 +3777,9 @@ J_3D_NEW">J_3D_NEW</A>
 </A>
 <br>Returns the density array, n, 1/cm^3, corrects for spacecraft potential if dat.sc_pot exists
 <A NAME="LIST_K">
+<LI><A HREF="projects/erg/ground/camera_spd_doc_list.html#KEOGRAM_IMAGE">
+KEOGRAM_IMAGE</A>
+<br>Create the keogram of image data at a spesific location.
 <LI><A HREF="projects/kaguya/map/lmag_spd_doc_list.html#KGY_CALC_BCON">
 KGY_CALC_BCON</A>
 <br>Calculates B connection between s/c and the Moon
@@ -6692,6 +6697,9 @@ OMNI_UI_LOAD_DATA</A>
 <LI><A HREF="projects/omni_spd_doc_list.html#OMNI_WRITE_CONFIG">
 OMNI_WRITE_CONFIG</A>
 <br>Writes the omni_config file
+<LI><A HREF="projects/erg/ground/camera_spd_doc_list.html#OMTI_ATTITUDE_PARAMS">
+OMTI_ATTITUDE_PARAMS</A>
+<br>Output the OMTI Imager Attitude Parameters for Coordinate Transformation.
 <LI><A HREF="spedas_gui/utilities_spd_doc_list.html#OPEN_SPEDAS_DOCUMENT">
 OPEN_SPEDAS_DOCUMENT</A>
 <LI><A HREF="spedas_gui/utilities_spd_doc_list.html#OPEN_SPEDAS_TEMPLATE">
@@ -6878,6 +6886,12 @@ PLOT_MAP_IMAGES[2]</A>
 PLOT_MAP_IMAGES[3]</A>
 <LI><A HREF="external/CDAWlib_spd_doc_list.html#PLOT_MAP_IMAGES[4]">
 PLOT_MAP_IMAGES[4]</A>
+<LI><A HREF="projects/erg/ground/camera_spd_doc_list.html#PLOT_OMTI_GMAP[1]">
+PLOT_OMTI_GMAP[1]</A>
+<br>Create the two-dimensional map of image data in geographic coordinates.
+<LI><A HREF="projects/erg/ground/camera_spd_doc_list.html#PLOT_OMTI_GMAP[2]">
+PLOT_OMTI_GMAP[2]</A>
+<br>Create the two-dimensional map of image data.
 <LI><A HREF="projects/wind/3dp/idl_spd_doc_list.html#PLOT_ORBIT">PLOT_ORBIT</A>
 <LI><A HREF="external/CDAWlib_spd_doc_list.html#PLOT_OVER[1]">PLOT_OVER[1]</A>
 <LI><A HREF="external/CDAWlib_spd_doc_list.html#PLOT_OVER[2]">PLOT_OVER[2]</A>
@@ -7763,6 +7777,9 @@ RERUN_STA_L2GEN</A>
 <br>Designed to run from a cronjob, after the original L2 processing,
 <LI><A HREF="general/misc_spd_doc_list.html#REVVID">REVVID</A>
 <br>Reverses video for graphics windows by swapping !p.color and
+<LI><A HREF="projects/erg/ground/camera_spd_doc_list.html#RM_STAR_ABSINT">
+RM_STAR_ABSINT</A>
+<br>Remove star lights with a median filter.
 <LI><A HREF="general/misc_spd_doc_list.html#ROOT_DATA_DIR">ROOT_DATA_DIR</A>
 <LI><A HREF="general/science/wind_spd_doc_list.html#ROTATE_DATA">ROTATE_DATA</A>
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#ROTATE_MAG_TO_SWE">
@@ -7813,6 +7830,9 @@ SCAN_FOR_TIME_TAG_IRREGULARITY">SCAN_FOR_TIME_TAG_IRREGULARITY</A>
 ">SCM_CLEANUP_CCC</A>
 <LI><A HREF="general/misc_spd_doc_list.html#SCPOT_OVERLAY">SCPOT_OVERLAY</A>
 <br>Overlays a spacecraft potential (or similar line function) over a
+<LI><A HREF="projects/erg/ground/camera_spd_doc_list.html#
+SEARCH_OMTI_CALIBRATION_FILE">SEARCH_OMTI_CALIBRATION_FILE</A>
+<br>Select the OMTI calibration file for site and wavelength at the specified date.
 <LI><A HREF="projects/secs_spd_doc_list.html#SECA_OVERLAY_PLOTS">
 SECA_OVERLAY_PLOTS</A>
 <br>This routine will create a plot of SECA and THEMIS ASI data which is overlaid onto a map of
@@ -10753,8 +10773,16 @@ TA16_SETPATH</A>
 TA16_SUPPORTED</A>
 <LI><A HREF="external/IDL_GEOPACK/ta16_spd_doc_list.html#TA16_TEST">TA16_TEST
 </A>
+<LI><A HREF="projects/erg/ground/camera_spd_doc_list.html#TABSINT">TABSINT</A>
+<br>Calculates the absolute intensity [R] with raw, background, and calibration data,
+<LI><A HREF="projects/erg/ground/camera_spd_doc_list.html#TABSINT_NOBG">
+TABSINT_NOBG</A>
+<br>Calculates the absolute intensity [R] with raw and calibration data,
 <LI><A HREF="general/misc/SSW_spd_doc_list.html#TAG_EXIST">TAG_EXIST</A>
 <LI><A HREF="general/misc_spd_doc_list.html#TAG_NAMES_R">TAG_NAMES_R</A>
+<LI><A HREF="projects/erg/ground/camera_spd_doc_list.html#TASI2GMAP">TASI2GMAP
+</A>
+<br>Create the image data in geographic coordinates, and store tplot variable:
 <LI><A HREF="external/astron/fits_table_spd_doc_list.html#TBDELCOL">TBDELCOL</A>
 <br>Delete a column of data from a FITS binary table
 <LI><A HREF="external/astron/fits_table_spd_doc_list.html#TBDELROW">TBDELROW</A>
@@ -12038,6 +12066,12 @@ TIME_ZONE_OFFSET</A>
 TINTERPOL_MXN</A>
 <LI><A HREF="general/misc_spd_doc_list.html#TKM2RE">TKM2RE</A>
 <LI><A HREF="general/tplot_spd_doc_list.html#TLIMIT">TLIMIT</A>
+<LI><A HREF="projects/erg/ground/camera_spd_doc_list.html#TMAKE_IMAGE_DEV">
+TMAKE_IMAGE_DEV</A>
+<br>Calculates the deviation of image data from 1-hour verage data and store tplot variable:
+<LI><A HREF="projects/erg/ground/camera_spd_doc_list.html#TMAKE_MAP_TABLE">
+TMAKE_MAP_TABLE</A>
+<br>Create the mapping table in geographic coordinates, and store tplot variable:
 <LI><A HREF="general/tools/misc_spd_doc_list.html#TMEAN">TMEAN</A>
 <br>Calculate the mean, median, and standard deviation of a 1-D tplot
 <LI><A HREF="general/tplot_spd_doc_list.html#TNAMES">TNAMES</A>

@@ -17,8 +17,8 @@
 ;  ver.0.0: The 1st experimental release
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-12-08 06:04:52 -0800 (Tue, 08 Dec 2020) $
-;$LastChangedRevision: 29445 $
+;$LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
+;$LastChangedRevision: 31399 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/satellite/erg/particle/erg_lepe_get_dist.pro $
 ;-
 function erg_lepe_get_dist $
@@ -266,7 +266,7 @@ function erg_lepe_get_dist $
   cart_to_sphere, -x, -y, -z, r, elev, phi, /ph_0_360
   angarr = [ transpose(elev), transpose(phi) ]  ;; [ elev/phi, (anode) ]
 
-  phissi = reform( angarr[1, *] ) - (90.+21.6) ;; [(anode)] 
+  phissi = reform( angarr[1, *] ) - (90.+21.6) ;; [(anode)] (21.6 = degree between sun senser and satellite coordinate)
   spinph_ofst = *p.v3 * 22.5
   phi0 = rebin( reform(phissi, [1, 1, dim[2], 1]), [dim, n_times] ) $
          + rebin( reform(spinph_ofst, [1, dim[1], 1, 1]), [dim, n_times] )
@@ -278,19 +278,25 @@ function erg_lepe_get_dist $
   dist.phi = ( phi0 + phi_ofst_for_sv + 360. ) mod 360 
   dist.dphi = replicate( 22.5, [dim, n_times] ) ;; 22.5 deg as a constant
   undefine, phi0, phi_ofst_for_sv  ;; Clean huge arrays
-
+  
   ;; elevation angle
   elev = reform( angarr[0, *] ) ;; [(anode)]
   dist.theta = rebin( reform(elev, [1, 1, dim[2], 1]), [dim, n_times] )
-
-  dist.dtheta = replicate( 22.5, [dim, n_times] ) ;; Fill all with 22.5 first
-  ;; give half weight for ch1,2,3,4, 19,20,21,22
-  dist.dtheta[*, *, 0:3, *] = 11.25
-  dist.dtheta[*, *, (dim[2]-4):(dim[2]-1), *] = 11.25
-  if dim[2] eq 22 then begin ;; with full fine channels
-    dist.dtheta[*, *, 5:16, *] = 22.5/6
-  endif
   
+  ;; elevation angle for fine channel  
+  vn_info = strsplit(/ext, tname, '_')
+  fine_ch = ssl_check_valid_name(vn_info, 'finech',/no_warning)
+  if (fine_ch eq 'finech') then begin
+    dist.dtheta = replicate( 22.5/6, [dim, n_times] ) ;; Fill all with 22.5 first
+  endif else begin
+    dist.dtheta = replicate( 22.5, [dim, n_times] ) ;; Fill all with 22.5 first
+    ;; give half weight for ch1,2,3,4, 19,20,21,22
+    dist.dtheta[*, *, 0:3, *] = 11.25
+    dist.dtheta[*, *, (dim[2]-4):(dim[2]-1), *] = 11.25
+    if dim[2] eq 22 then begin ;; with full fine channels
+      dist.dtheta[*, *, 5:16, *] = 22.5/6
+    endif
+  endelse
   
   return, dist
 end

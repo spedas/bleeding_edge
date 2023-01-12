@@ -36,8 +36,8 @@
 ;   Masafumi Shoji, ERG Science Center (E-mail: masafumi.shoji at
 ;   nagoya-u.jp)
 ;
-; $LastChangedDate: 2020-12-08 06:04:52 -0800 (Tue, 08 Dec 2020) $
-; $LastChangedRevision: 29445 $
+; $LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
+; $LastChangedRevision: 31399 $
 ; https://ergsc-local.isee.nagoya-u.ac.jp/svn/ergsc/trunk/erg/satellite/erg/pwe/erg_load_pwe_efd.pro $
 ;-
 
@@ -105,14 +105,17 @@ pro erg_load_pwe_efd, $
         md='E_spin'
         component=['Eu','Ev','Eu1','Ev1','Eu2','Ev2']
         labels=['Ex', 'Ey']
+        coord=''
      end
      'spin': begin
         md='E_spin'
         component=['Eu','Ev','Eu1','Ev1','Eu2','Ev2']
         labels=['Ex', 'Ey']
+        coord=''
      end
      'spec': begin
         md='spec'
+        coord=''
      end
      '64': begin
         mode='64Hz'
@@ -144,6 +147,20 @@ pro erg_load_pwe_efd, $
         component=component+'_waveform_8Hz'
      end
 
+     'pot_burst': begin
+        md='pot_burst'
+        coord=''
+        component=['Vu1','Vu2','Vv1','Vv2','Vave']
+     end
+
+     'E_burst': begin
+        md='E_burst'
+        IF ~KEYWORD_SET(coord) THEN coord='dsi'
+        component= ['Ex', 'Ey']
+        IF coord EQ 'wpt' then component=['Eu', 'Ev']
+        component = component +'_waveform'
+        IF coord EQ 'dsi' then component = [component,'Eu_offset', 'Ev_offset']
+     end
      else: begin
         dprint, 'Incorrect keyword setting: datatype'
         return
@@ -170,6 +187,9 @@ pro erg_load_pwe_efd, $
 
 
   filestest=file_test(files)  
+
+  PRINT, relfpaths
+  STOP
 
   if(total(filestest) ge 1) then begin
      datfiles=files[where(filestest eq 1)]
@@ -201,12 +221,12 @@ pro erg_load_pwe_efd, $
      band_width=*cdfi.vars[idx_bw].dataptr
      
      
-     zlim, 'erg_pwe_efd_l2_spectra*', 1e-6, 1e-2, 1
-     ylim, 'erg_pwe_efd_l2_spectra', 0,220.5,0
-     ylim, 'erg_pwe_efd_l2_spectra_*',0,100,0
+     zlim, 'erg_pwe_efd_l2_spec*', 1e-6, 1e-2, 1
+     ylim, 'erg_pwe_efd_l2_spec_spectra', 0,220.5,0
+     ylim, 'erg_pwe_efd_l2_spec_*',0,100,0
      
-     options, 'erg_pwe_efd_l2_spectra*', 'ysubtitle', '[Hz]'
-     options, 'erg_pwe_efd_l2_spectra*', 'ztitle','[mV^2/m^2/Hz]'
+     options, 'erg_pwe_efd_l2_spec*', 'ysubtitle', '[Hz]'
+     options, 'erg_pwe_efd_l2_spec*', 'ztitle','[mV^2/m^2/Hz]'
      
      goto, gt0
 

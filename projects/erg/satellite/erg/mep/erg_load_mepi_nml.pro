@@ -39,9 +39,9 @@
 ; :Authors:
 ;   Tomo Hori, ERG Science Center (E-mail: tomo.hori at nagoya-u.jp)
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2021-03-25 13:25:21 -0700 (Thu, 25 Mar 2021) $
-; $LastChangedRevision: 29822 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
+; $LastChangedRevision: 31399 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/satellite/erg/mep/erg_load_mepi_nml.pro $
 ;-
 pro erg_load_mepi_nml, $
@@ -58,6 +58,8 @@ pro erg_load_mepi_nml, $
    remotedir=remotedir, $
    datafpath=datafpath, $
    split_anode=split_anode, $
+   split_energy=split_energy, $
+   split_pa=split_pa, $
    get_filever=get_filever, $
    _extra=_extra 
 
@@ -72,7 +74,7 @@ pro erg_load_mepi_nml, $
   if ~keyword_set(downloadonly) then downloadonly = 0
   if ~keyword_set(no_download) then no_download = 0
   level = strlowcase(level)
-  if level eq 'l3' then datatype = '3dflux'
+  if level eq 'l3' and undefined(datatype) then datatype = '3dflux'
 
   
   ;; ; ; ; USER NAME ; ; ; ; 
@@ -167,11 +169,15 @@ pro erg_load_mepi_nml, $
   vns_fidu = [ 'FPDU', 'FHE2DU', 'FHEDU', 'FOPPDU', 'FODU', 'FO2PDU' ] 
   vns_fiedu = [ 'FPEDU', 'FHE2EDU', 'FHEEDU', 'FOPPEDU', 'FOEDU', 'FO2PEDU' ]
   vns_cnt = 'count_raw_' + strsplit(/ext, 'P HE2 HE OPP O O2P' )
-   
-  vns = prefix + [ vns_fidu, vns_fiedu, vns_cnt ]  ;;common to flux/count arrays
+
+  if datatype eq '3dflux' then begin
+    vns = prefix + [ vns_fidu, vns_fiedu, vns_cnt ]  ;;common to flux/count arrays
+  endif else begin
+    vns = prefix + [ vns_fidu, vns_cnt ] ;; only for L3 PA flux data
+  endelse
   vns = tnames(vns) & if vns[0] eq '' then return
   
-  options, vns, spec=1, ysubtitle='[keV/q]', ztickformat='pwr10tick', extend_y_edges=1, $
+  options, vns, spec=1, ysubtitle='[keV/q]', ztickunits='scientific', extend_y_edges=1, $
            datagap=33., zticklen=-0.4
   for i=0, n_elements(vns)-1 do begin
     if tnames(vns[i]) eq '' then continue
@@ -181,8 +187,14 @@ pro erg_load_mepi_nml, $
     id = where( ~finite(data.y) or data.y lt -0.1, nid )
     if nid gt 0 then data.y[id] = !values.f_nan
 
-    store_data, vns[i], data={x:data.x, y:data.y, v1:data.v1, v2:data.v2, $
-                        v3:indgen(16) }, dl=dl, lim=lim
+    if datatype eq '3dflux' then begin
+      store_data, vns[i], data={x:data.x, y:data.y, v1:data.v1, v2:data.v2, $
+                                v3:indgen(16) }, dl=dl, lim=lim
+    endif else begin
+      store_data, vns[i], data={x:data.x, y:data.y, v1:data.v1, v2:data.v2 } $
+                  , dl=dl, lim=lim
+    endelse
+    
     options, vns[i], ztitle='['+dl.cdf.vatt.units+']', $
              ytitle='ERG!CMEP-i/NML!C'+dl.cdf.vatt.fieldnam+'!CEnergy'
     ylim, vns[i], 4., 190., 1
@@ -195,40 +207,82 @@ pro erg_load_mepi_nml, $
   vns = tnames(prefix+vns_fiedu)
   if vns[0] ne '' then options, vns, ztitle='[keV/s-cm!I2!N-sr-keV]'
   
-  ;;Generate the omni-directional flux (F?DO) 
-  for i=0, n_elements(vns_fidu)-1 do begin
-    vn = prefix + vns_fidu[i] 
-    vn_fido = vn & strput, vn_fido, 'O', strlen(vn_fido)-1
-    if tnames(vn) eq '' then continue 
+  ;;Generate the omni-directional flux (F?DO)
+  if datatype eq '3dflux' then begin ;; for L2/3 3dflux data
     
-    get_data, vn, data=d, dl=dl, lim=lim
-    nsmpl = total(total( finite(d.y), 2), 3)
-    store_data, vn_fido, data={x:d.x, y:total(total( d.y, 2, /nan), 3, /nan)/(nsmpl), v:d.v2}, lim=lim
-    spcs_str = vns_fidu[i] & strput, spcs_str, 'O', strlen(spcs_str)-1 
-    options, vn_fido, ytitle='ERG!CMEP-i/NML!C'+spcs_str+'!CEnergy'
-   endfor
-   
-  ;;Generate separate tplot variables for the anodes
-  if keyword_set(split_anode) then begin
-    for j=0, n_elements(vns_fidu)-1 do begin
-      if tnames(prefix+vns_fidu[j]) eq '' then continue
+    for i=0, n_elements(vns_fidu)-1 do begin
+      vn = prefix + vns_fidu[i] 
+      vn_fido = vn & strput, vn_fido, 'O', strlen(vn_fido)-1
+      if tnames(vn) eq '' then continue 
       
-      get_data, prefix+vns_fidu[j], data=d, dl=dl, lim=lim
-      for i=0, n_elements(d.y[0, 0, 0, *])-1 do begin
-        vn = prefix+vns_fidu[j]+'_anode'+string(i, '(i02)')
-        store_data, vn, data={x:d.x, y:reform(d.y[*, *, *, i]), v1:d.v1, v2:d.v2}, dl=dl, lim=lim
-        options, vn, ytitle='ERG!CMEP-i/NML!C'+vns_fidu[j]+'!Canode'+string(i, '(i02)')+'!CEnergy'
-      endfor
+      get_data, vn, data=d, dl=dl, lim=lim
+      nsmpl = total(total( finite(d.y), 2), 3)
+      store_data, vn_fido, data={x:d.x, y:total(total( d.y, 2, /nan), 3, /nan)/(nsmpl), v:d.v2}, lim=lim
+      spcs_str = vns_fidu[i] & strput, spcs_str, 'O', strlen(spcs_str)-1 
+      options, vn_fido, ytitle='ERG!CMEP-i/NML!C'+spcs_str+'!CEnergy'
     endfor
+    
+    ;;Generate separate tplot variables for the anodes
+    if keyword_set(split_anode) then begin
+      for j=0, n_elements(vns_fidu)-1 do begin
+        if tnames(prefix+vns_fidu[j]) eq '' then continue
+        
+        get_data, prefix+vns_fidu[j], data=d, dl=dl, lim=lim
+        for i=0, n_elements(d.y[0, 0, 0, *])-1 do begin
+          vn = prefix+vns_fidu[j]+'_anode'+string(i, '(i02)')
+          store_data, vn, data={x:d.x, y:reform(d.y[*, *, *, i]), v1:d.v1, v2:d.v2}, dl=dl, lim=lim
+          options, vn, ytitle='ERG!CMEP-i/NML!C'+vns_fidu[j]+'!Canode'+string(i, '(i02)')+'!CEnergy'
+        endfor
+      endfor
+      
+    endif
+
+  endif
+
+  if level eq 'l3' and datatype eq 'pa' then begin ;; for L3 PA flux data
+    
+    ;;Generate separate tplot variables for energy channels
+    if keyword_set(split_energy) then begin
+      foreach fidunm, vns_fidu do begin
+        vn_fidu = prefix+fidunm
+        if tnames(vn_fidu) eq '' then continue
+
+        get_data, vn_fidu, data=d, dl=dl, lim=lim
+        for i=0, n_elements(d.y[0, *, 0])-1 do begin
+          vn = vn_fidu +'_ene'+string(i, '(i02)')
+          store_data, vn, data={x:d.x, y:reform(d.y[*, i, *]), v:d.v2}, dl=dl, lim=lim
+          options, vn, ytitle='ERG!CMEP-i/NML!C'+fidunm+'!CEne'+string(i, '(i02)')+'!C'
+          options, vn, ysubtitle='PA [deg]', ytickinterval=45., yminor=3, constant=[90.]
+          ylim, vn, 0, 180, 0
+        endfor
+        
+      endforeach
+    endif
+
+    ;;Generate separate tplot variables for PA bins
+    if keyword_set(split_pa) then begin
+      foreach fidunm, vns_fidu do begin
+        vn_fidu = prefix+fidunm
+        if tnames(vn_fidu) eq '' then continue
+
+        get_data, vn_fidu, data=d, dl=dl, lim=lim
+        for i=0, n_elements(d.y[0, 0, *])-1 do begin
+          paval = d.v2[i]
+          vn = vn_fidu +'_pa'+string(i, '(i02)')
+          store_data, vn, data={x:d.x, y:reform(d.y[*, *, i]), v:d.v1}, dl=dl, lim=lim
+          options, vn, ytitle='ERG!CMEP-i/NML!C'+fidunm+'!CPA: '+strtrim(string(paval, '(i3)'), 2)+'!C'
+        endfor
+        
+      endforeach
+    endif
     
   endif
 
-
+  
   to_show_ror: 
   ;;--- print PI info and rules of the road
-  if strcmp(datatype, '3dflux') then vn = prefix+'F*DU' $
+  if strcmp(datatype, '3dflux') or strcmp(datatype, 'pa') then vn = prefix+'F*DU' $
   else vn = prefix+'F*DO'
-  dprint, ' '+vn
   vn = (tnames(vn))[0]
   if vn ne '' then begin
     get_data, vn, dl=dl

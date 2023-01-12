@@ -29,6 +29,10 @@
 ;              program loads data from the designated CDF file(s), ignoring any
 ;              other options specifying local/remote data paths. 
 ;   split_apd: Set to generate a FEDU tplot variable for each APD
+;   split_energy: Set to generate a FEDU tplot variable for each energy
+;             channel (only for Lv.3 PA data)
+;   split_pa: Set to generate a FEDU tplot variable for each pitch
+;             angle bin (only for Lv.3 PA data)
 ;   get_filever: Set to create a tplot variable "erg_load_datalist"
 ;                containing the version information of data files
 ;
@@ -40,8 +44,8 @@
 ; :Authors:
 ;   Tomo Hori, ERG Science Center (E-mail: tomo.hori at nagoya-u.jp)
 ;
-; $LastChangedDate: 2021-03-25 13:25:21 -0700 (Thu, 25 Mar 2021) $
-; $LastChangedRevision: 29822 $
+; $LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
+; $LastChangedRevision: 31399 $
 ;-
 pro erg_load_mepe, $
    debug=debug, $
@@ -57,6 +61,8 @@ pro erg_load_mepe, $
    remotedir=remotedir, $
    datafpath=datafpath, $
    split_apd=split_apd, $
+   split_energy=split_energy, $
+   split_pa=split_pa, $
    get_filever=get_filever, $
    _extra=_extra 
 
@@ -71,7 +77,9 @@ pro erg_load_mepe, $
   if ~keyword_set(downloadonly) then downloadonly = 0
   if ~keyword_set(no_download) then no_download = 0
   level = strlowcase(level)
-  if level eq 'l3' then datatype = '3dflux'
+  if level eq 'l3' then begin
+    if undefined(datatype) then  datatype = 'pa'
+  endif
 
   ;;Local and remote data file paths
   if ~keyword_set(localdir) then begin
@@ -126,45 +134,83 @@ pro erg_load_mepe, $
      append_array, vns, prefix+['FEDU', 'FEDU_n', 'FEEDU', 'count_raw']  ;;common to flux/count arrays
   if total(strcmp( datatype, 'omniflux')) then $
      append_array, vns, prefix+'FEDO'
-  options, vns, spec=1, ysubtitle='[keV]', ztickformat='pwr10tick', extend_y_edges=1, $
+  if level eq 'l3' and total(strcmp( datatype, 'pa' )) then $
+     append_array, vns, prefix+['FEDU', 'count_raw']
+  options, vns, spec=1, ysubtitle='[keV]', ztickunits='scientific', extend_y_edges=1, $
            datagap=17., zticklen=-0.4
+  
   for i=0, n_elements(vns)-1 do begin
     if tnames(vns[i]) eq '' then continue
     get_data, vns[i], data=data, dl=dl, lim=lim
-    if vns[i] eq prefix+'FEDO' then begin
+    if vns[i] eq prefix+'FEDO' then begin  ;; L2 omniflux
       store_data, vns[i], data={x:data.x, y:data.y, v:data.v }, dl=dl, lim=lim
       options, vns[i], ztitle='[/s-cm!U2!N-sr-keV]'
-    endif else begin
+    endif else if vns[i] eq prefix+'FEDU' then begin  ;; L2 3dflux or L3 3dflux
       store_data, vns[i], data={x:data.x, y:data.y, v1:data.v1, v2:data.v2, $
                                 v3:indgen(16) }, dl=dl, lim=lim
       options, vns[i], ztitle='['+dl.cdf.vatt.units+']'
-    endelse
+    endif else if level eq 'l3' and datatype eq 'pa' and vns[i] eq prefix+'FEDU' then begin  ;; L3 PA flux
+      store_data, vns[i], data={x:data.x, y:data.y, v1:data.v1, v2:data.v2} $
+                               , dl=dl, lim=lim
+      options, vns[i], ztitle='['+dl.cdf.vatt.units+']'      
+    endif
     options, vns[i], ytitle='ERG!CMEP-e!C'+dl.cdf.vatt.fieldnam+'!CEnergy'
     ylim, vns[i], 6., 100., 1
     zlim, vns[i], 0, 0, 1
   endfor
 
-  ;; Exit here unless the 3dflux variables are loaded.
+  ;; Skip just below unless the 3dflux or PA flux variables are loaded.
   if total(strcmp( vns, prefix+'FEDU' )) gt 0 then begin
     
-    
-    ;;The unit of differential flux is explicitly set for ztitle currently.
-    options, prefix+['FEDU', 'FEDU_n'], ztitle='[/s-cm!U2!N-sr-keV]'
-    
-    ;;Generate the omni-directional flux (FEDO)
-    get_data, prefix+'FEDU', data=d, dl=dl, lim=lim
-    store_data, prefix+'FEDO', data={x:d.x, y:total(total( d.y, 2, /nan), 3, /nan)/(32*16), v:d.v2}, lim=lim
-    options, prefix+'FEDO', ytitle='ERG!CMEP-e!CFEDO!CEnergy'
-    
-    ;;Generate separate tplot variables for APDs
-    if keyword_set(split_apd) then begin
+    if datatype eq '3dflux' then begin  ;; L2 3dflux or L3 3dflux data
+
+      ;;The unit of differential flux is explicitly set for ztitle currently.
+      options, prefix+['FEDU', 'FEDU_n'], ztitle='[/s-cm!U2!N-sr-keV]'
       
+      ;;Generate the omni-directional flux (FEDO)
       get_data, prefix+'FEDU', data=d, dl=dl, lim=lim
-      for i=0, n_elements(d.y[0, 0, 0, *])-1 do begin
-        vn = prefix+'FEDU_apd'+string(i, '(i02)')
-        store_data, vn, data={x:d.x, y:reform(d.y[*, *, *, i]), v1:d.v1, v2:d.v2}, dl=dl, lim=lim
-        options, vn, ytitle='ERG!CMEP-e!CFEDU!CAPD'+string(i, '(i02)')+'!CEnergy'
-      endfor
+      store_data, prefix+'FEDO', data={x:d.x, y:total(total( d.y, 2, /nan), 3, /nan)/(32*16), v:d.v2}, lim=lim
+      options, prefix+'FEDO', ytitle='ERG!CMEP-e!CFEDO!CEnergy'
+      
+      ;;Generate separate tplot variables for APDs
+      if keyword_set(split_apd) then begin
+        
+        get_data, prefix+'FEDU', data=d, dl=dl, lim=lim
+        for i=0, n_elements(d.y[0, 0, 0, *])-1 do begin
+          vn = prefix+'FEDU_apd'+string(i, '(i02)')
+          store_data, vn, data={x:d.x, y:reform(d.y[*, *, *, i]), v1:d.v1, v2:d.v2}, dl=dl, lim=lim
+          options, vn, ytitle='ERG!CMEP-e!CFEDU!CAPD'+string(i, '(i02)')+'!CEnergy'
+        endfor
+      
+      endif
+
+    endif else if datatype eq 'pa' then begin ;; L3 PA flux data
+      
+      ;;The unit of differential flux is explicitly set for ztitle currently.
+      options, prefix+['FEDU'], ztitle='[/s-cm!U2!N-sr-keV]'
+
+      ;;Generate separate tplot variables for energy channels
+      if keyword_set(split_energy) then begin
+        get_data, prefix+'FEDU', data=d, dl=dl, lim=lim
+        for i=0, n_elements(d.y[0, *, 0])-1 do begin
+          vn = prefix+'FEDU_ene' + string(i, '(i02)' )
+          store_data, vn, data={x:d.x, y:reform(d.y[*, i, *]), v:d.v2}, dl=dl, lim=lim
+          options, vn, ytitle='ERG!CMEP-e!CFEDU!CEne'+string(i, '(i02)')+'!C', ysubtitle='PA [deg]'
+          options, vn, ytickinterval=45, yminor=3, constant=[90]
+          ylim, vn, 0, 180, 0
+        endfor
+      endif
+      
+      ;;Generate separate tplot variables for PA bins
+      if keyword_set(split_pa) then begin
+        get_data, prefix+'FEDU', data=d, dl=dl, lim=lim
+        for i=0, n_elements(d.y[0, 0, *])-1 do begin
+          paval = d.v2[i]  ;; pitch angle
+          vn = prefix+'FEDU_pa' + string(i, '(i02)' )
+          store_data, vn, data={x:d.x, y:reform(d.y[*, *, i]), v:d.v1}, dl=dl, lim=lim
+          options, vn, ytitle='ERG!CMEP-e!CFEDU!CPA: '+strtrim(string(paval, '(i3)'), 2)+'!C', ysubtitle='[keV]'
+        endfor
+      endif
       
     endif
     
@@ -172,7 +218,7 @@ pro erg_load_mepe, $
 
 
   ;;--- print PI info and rules of the road
-  if strcmp(datatype, '3dflux') then vn = prefix+'FEDU' $
+  if strcmp(datatype, '3dflux') or strcmp(datatype, 'pa') then vn = prefix+'FEDU' $
   else vn = prefix+'FEDO'
   vn = (tnames(vn))[0]
   if vn ne '' then begin

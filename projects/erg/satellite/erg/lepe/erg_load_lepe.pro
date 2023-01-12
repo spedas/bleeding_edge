@@ -16,7 +16,7 @@
 ;
 ; :Keywords:
 ;   level: level of data products. 'l2' is used to load Level-2 LEP-e data. 'l3' is used to load Level-3 LEP-e data.
-;   datatype: types of data products. For Level-2, '3dflux' and 'omniflux' is allowed and default is 'omniflux'. For Level-3, currently only 'pa' is allowed.
+;   datatype: types of data products. For Level-2, '3dflux', '3dflux_finech' and 'omniflux' is allowed and default is 'omniflux'. For Level-3, currently only 'pa' is allowed.
 ;   varformat: If set a string with wildcards, only variables with
 ;              matching names are extrancted as tplot variables.
 ;   get_support_data: Set to load support data in CDF data files.
@@ -50,6 +50,7 @@
 ;  IDL> timespan,'2017-03-24'
 ;  IDL> erg_load_lepe  ;;omniflux data
 ;  IDL> erg_load_lepe,datatype='3dflux'   ;;3D flux data
+;  IDL> erg_load_lepe,datatype='3dflux_finech'   ;;3D flux data
 ;  IDL> erg_load_lepe,datatype='3dflux',/split_ch   ;;3D flux data for each Channel
 ;  IDL> erg_load_lepe,datatype='3dflux',/sorting_ene_chn   ;;sorting energy channel and apply to 3Dflux data
 ;  IDL> erg_load_lepe,level='l3'   ;;Level 3 pitch angle distribution (PAD) data. Default is PA-T diagram
@@ -61,9 +62,9 @@
 ;   Tzu-Fang Chang, ERG Science Center (E-mail: jocelyn at isee.nagoya-u.ac.jp)
 ;   Chae-Woo Jun, ERG Science Center (E-mail: chae-woo at isee.nagoya-u.ac.jp)
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2021-03-25 13:25:21 -0700 (Thu, 25 Mar 2021) $
-; $LastChangedRevision: 29822 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
+; $LastChangedRevision: 31399 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/satellite/erg/lepe/erg_load_lepe.pro $
 ;-
 pro erg_load_lepe, $
@@ -84,6 +85,7 @@ pro erg_load_lepe, $
   et_diagram=et_diagram, $
   get_filever=get_filever,$
   only_fedu=only_fedu,$
+  fine=fine,$
   _extra=_extra
 
   ;;Initialize the user environmental variables for ERG
@@ -98,7 +100,8 @@ pro erg_load_lepe, $
     if ~keyword_set(datatype) then datatype = 'omniflux'
     if ~keyword_set(downloadonly) then downloadonly = 0
     if ~keyword_set(no_download) then no_download = 0
-      
+    if keyword_set(fine) then datatype = '3dflux_finech'
+    
     ;;Local and remote data file paths
     if ~keyword_set(localdir) then begin
       localdir = !erg.local_data_dir + 'satellite/erg/lepe/' $
@@ -147,6 +150,8 @@ pro erg_load_lepe, $
     vns = ''
     if total(strcmp( datatype, '3dflux' )) then $
       append_array, vns, prefix+['FEDU','Count_rate','BG_count']  ;;common to flux/count arrays
+    if total(strcmp( datatype, '3dflux_finech' )) then $
+      append_array, vns, prefix+['FEDU','Count_rate','BG_count']  ;;common to flux/count arrays
     if total(strcmp( datatype, 'omniflux')) then $
       append_array, vns, prefix+'FEDO'  ;;Omni flux array
     options, vns, spec=1, ysubtitle='[eV]', ztickformat='pwr10tick', extend_y_edges=1, $
@@ -159,7 +164,7 @@ pro erg_load_lepe, $
       
       ; get time interval
       get_timespan,tr
-      cor_ad = where(ori_data.x gt tr[0]-600d and ori_data.x lt tr[1]+600d,ndata)
+      cor_ad = where(ori_data.x gt tr[0] and ori_data.x lt tr[1],ndata)
       
       ;;sorted flux and count arrays for plotting the spectrum
       if vns[i] eq prefix+'FEDO' then begin
@@ -182,9 +187,9 @@ pro erg_load_lepe, $
         ylim, vns[i], 19, 21*1e+3, 1
       endif else begin
         ; FEDU
-         time = ori_data.x[cor_ad]
+        time = ori_data.x[cor_ad]
         flux = ori_data.y[cor_ad,*,*,*]
-        ene_ch = ori_data.v[cor_ad,*,*]
+        ene_ch = ori_data.v1[cor_ad,*,*]
         ene = total(ene_ch,2)/2
         if (keyword_set(sorting_ene_chn)) then begin
           for n = 0, n_elements(data.x)-1 do begin
@@ -193,7 +198,7 @@ pro erg_load_lepe, $
             ene[n,*]=ene[n,sort_idx]
           endfor
         endif
-        
+
         store_data, vns[i], data={x:time, y:flux, v:ene, v2:ori_data.v2, $
           v3:indgen(16) }, dl=dl, lim=lim
         options, vns[i], ztitle='['+dl.cdf.vatt.units+']'
@@ -232,6 +237,8 @@ pro erg_load_lepe, $
     if ~keyword_set(datatype) then datatype = 'pa'
     if ~keyword_set(downloadonly) then downloadonly = 0
     if ~keyword_set(no_download) then no_download = 0
+    
+    if keyword_set(fine) then datatype = 'pa_fine'
 
     ;;Local and remote data file paths
     if ~keyword_set(localdir) then begin
@@ -245,7 +252,7 @@ pro erg_load_lepe, $
 
     if debug then print, 'localdir = '+localdir
     if debug then print, 'remotedir = '+localdir
-
+    
     ;;Relative file path
     ;cdffn_prefix = 'erg_lepe_'+level+'_'+datatype+'_' ;
     cdffn_prefix = 'erg_lepe_l3_'+datatype+'_' ; for l3 PAD
@@ -300,7 +307,7 @@ pro erg_load_lepe, $
       flux = ori_data.y[cor_ad,*,*]
       energy_channel = ori_data.v1[cor_ad,*,*]
       energy_arr = total(energy_channel,2,/nan)/2
-      pa_arr = [5.625,16.875,28.125,39.375,50.625,61.875,73.125,84.375,95.625,106.875,118.125,129.375,140.625,151.875,163.125,174.375]
+      pa_arr = ori_data.v2;[5.625,16.875,28.125,39.375,50.625,61.875,73.125,84.375,95.625,106.875,118.125,129.375,140.625,151.875,163.125,174.375]
 
       ;    ; skip the lose cone mode (number of energy channel less than 5) for L3 data
       ;    LC_ad = where(corrected_n_eng gt 31, count_LC)
@@ -325,6 +332,7 @@ pro erg_load_lepe, $
             store_data, vn, data={x:time, y:reform(flux[*,j,*]), v:pa_arr}, dl=dl, lim=lim
             options, vn, ztitle='['+dl.cdf.vatt.units+']'
             options, vn, ytitle='ERG LEP-e!C'+string(energy_arr[0,j],'(f9.2)')+' eV!CPitch angle', YSUBTITLE = '[deg]', yrange=[0,180],ytickinterval=30
+            ylim, vn, 0, 180, 0
             zlim, vn, 1, 1e6, 1
 
           endfor

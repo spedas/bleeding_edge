@@ -39,9 +39,9 @@
 ;   Kuni Keika, Department of Earth and Planetary Science,
 ;     Graduate School of Science,The University of Tokyo (keika at eps.u-tokyo.ac.jp)
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2021-03-25 13:25:21 -0700 (Thu, 25 Mar 2021) $
-; $LastChangedRevision: 29822 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
+; $LastChangedRevision: 31399 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/satellite/erg/orb/erg_load_orb_l3.pro $
 ;-
 
@@ -124,6 +124,7 @@ pro erg_load_orb_l3, $
         no_download=no_download, no_update=no_download, _extra=_extra )
 
       idx = where( file_test(datfiles), nfile )
+      dat_files= datfiles[idx]
       if nfile eq 0 then begin
         print, 'Cannot find any data file. Exit!'
         return
@@ -131,11 +132,10 @@ pro erg_load_orb_l3, $
       ;
       ;Read CDF files and generate tplot variables
       prefix = 'erg_orb_'+level+'_';+model+'_'
-
       if ~downloadonly then $
-        cdf2tplot, file = datfiles, prefix = prefix, get_support_data = get_support_data, $
+        cdf2tplot, file = dat_files, prefix = prefix, get_support_data = get_support_data, $
         verbose = verbose
-
+        
       if  total(strlen(tnames('erg_orb_l3_*_'+model)) gt 1) eq 8 then begin
         remove_duplicated_tframe, tnames('erg_orb_l3_*_'+model)
 
@@ -186,11 +186,17 @@ pro erg_load_orb_l3, $
         remote_path = remotedir, local_path = localdir, /last_version, $
         no_download=no_download, no_update=no_download, _extra=_extra )
       ;
+      idx = where( file_test(datfiles), nfile )
+      dat_files= datfiles[idx]
+      if nfile eq 0 then begin
+        print, 'Cannot find any data file. Exit!'
+        return
+      endif
       ;Read CDF files and generate tplot variables
       prefix = 'erg_orb_'+level+'_'
 
       if ~downloadonly then $
-        cdf2tplot, file = datfiles, prefix = prefix, get_support_data = get_support_data, $
+        cdf2tplot, file = dat_files, prefix = prefix, get_support_data = get_support_data, $
         verbose = verbose
 
       if  total(strlen(tnames('erg_orb_l3_*_op')) gt 1) eq 8 then begin
@@ -237,12 +243,19 @@ pro erg_load_orb_l3, $
       datfiles = spd_download( remote_file = relfpaths, $
         remote_path = remotedir, local_path = localdir, /last_version, $
         no_download=no_download, no_update=no_download, _extra=_extra )
+      
+      idx = where( file_test(datfiles), nfile )
+      dat_files= datfiles[idx]
+      if nfile eq 0 then begin
+        print, 'Cannot find any data file. Exit!'
+        return
+      endif
       ;
       ;Read CDF files and generate tplot variables
       prefix = 'erg_orb_'+level+'_'
 
       if ~downloadonly then $
-        cdf2tplot, file = datfiles, prefix = prefix, get_support_data = get_support_data, $
+        cdf2tplot, file = dat_files, prefix = prefix, get_support_data = get_support_data, $
         verbose = verbose
 
       if  total(strlen(tnames('erg_orb_l3_*_t89')) gt 1) eq 8 then begin
@@ -272,9 +285,9 @@ pro erg_load_orb_l3, $
   endelse
     
   ;--- print PI info and rules of the road
-  gatt=cdf_var_atts(datfiles[0])
+  gatt=cdf_var_atts(dat_files[0])
   ; storing data information
-  if (keyword_set(get_filever)) then erg_export_filever, datfiles
+  if (keyword_set(get_filever)) then erg_export_filever, dat_files
 
   print_str_maxlet, ' '
   print, '**************************************************************************'

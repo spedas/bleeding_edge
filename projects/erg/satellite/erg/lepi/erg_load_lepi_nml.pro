@@ -1,12 +1,15 @@
 ;+
 ; PRO erg_load_lepi_nml
 ;
-; The read program for Level-2 LEP-i Normal mode data
+; The read program for Level-2 and Level-3 LEP-i Normal mode data
 ;
 ; :Keywords:
-;   level: level of data products. Currently,'l2'is acceptable.
-;   datatype: types of data products. Currently only 'omniflux','3dflux' 
-;             are acceptable.
+;   level: level of data products. 'l2' is used to load Level-2 LEP-i data. 
+;   'l3' is used to load Level-3 LEP-i data.
+;   datatype: types of data products. For Level-2, 'omniflux','3dflux' 
+;             are acceptable. For Level-3, currently only 'pa' is allowed.
+;   varformat: If set a string with wildcards, only variables with
+;              matching names are extrancted as tplot variables.
 ;   varformat: If set a string with wildcards, only variables with
 ;              matching names are extracted as tplot variables.
 ;   get_suuport_data: Set to load support data in CDF data files.
@@ -33,14 +36,21 @@
 ;
 ; :Examples:
 ;   IDL> timespan, '2017-04-02'
-;   IDL> erg_load_lepi_nml, uname='?????', pass='?????'
+;   IDL> erg_load_lepi_nml ;; omniflux data
+;   IDL> erg_load_lepi_nml,datatype='3dflux' ;; 3D flux data
+;   IDL> erg_load_lepi_nml,level='l3',;;Level 3 pitch angle 
+;   distribution (PAD) data. Default is PA-T diagram
+;
 ;
 ; :Authors:
 ;   Yoshi Miyoshi, ERG Science Center (E-mail: miyoshi at isee.nagoya-u.ac.jp)
 ;
-; $LastChangedDate: 2020-12-08 06:04:52 -0800 (Tue, 08 Dec 2020) $
-; $LastChangedRevision: 29445 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
+; $LastChangedRevision: 31399 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/satellite/erg/lepi/erg_load_lepi_nml.pro $
 ;-
+
 pro erg_load_lepi_nml, $
    debug=debug, $
    level=level, $
@@ -61,10 +71,10 @@ pro erg_load_lepi_nml, $
   ;;Initialize the user environmental variables for ERG
   erg_init
 
+
   ;;Arguments and keywords
   if ~keyword_set(debug) then debug = 0  ;; Turn off the debug mode unless keyword debug is set
   if ~keyword_set(level) then level = 'l2'
-  if ~keyword_set(datatype) then datatype = 'omniflux'
   if ~keyword_set(downloadonly) then downloadonly = 0
   if ~keyword_set(no_download) then no_download = 0
 
@@ -73,16 +83,11 @@ pro erg_load_lepi_nml, $
   if keyword_set(datafpath) or keyword_set(no_download) then begin
      uname = ' ' & passwd = ' '  ;;padding with a blank
   endif 
-;  if ~keyword_set(uname) then begin
-;     uname=''
-;     read, uname, prompt='Enter username: '
-;  endif
-;  ;; ; ; ; PASSWD ; ; ; ;
-;  if ~keyword_set(passwd) then begin
-;     passwd=''
-;     read, passwd, prompt='Enter passwd: '
-;  endif
 
+
+if (level eq 'l2') then begin
+
+  if ~keyword_set(datatype) then datatype = 'omniflux'
   ;;Local and remote data file paths
   if ~keyword_set(localdir) then begin
      localdir = !erg.local_data_dir + 'satellite/erg/lepi/' $
@@ -154,24 +159,22 @@ pro erg_load_lepi_nml, $
      
      
      gatt=cdf_var_atts(datfiles[0])
+     goto, ROR
      
-     print_str_maxlet, ' '
-     print, '**********************************************************************'
-     print_str_maxlet, gatt.LOGICAL_SOURCE_DESCRIPTION, 70
-     print, ''
-     print, 'Information about ERG LEPi'
-     print, ''
-     print, 'PI: ', gatt.PI_NAME
-     print, ''
-     print, ''
-     print, 'RoR of ERG project common: https://ergsc.isee.nagoya-u.ac.jp/data_info/rules_of_the_road.shtml.en'
-     print, 'RoR of ERG/LEPi: https://ergsc.isee.nagoya-u.ac.jp/mw/index.php/ErgSat/Lepi#Rules_of_the_Road'
-;  for igatt=0, n_elements(gatt.RULES_OF_USE)-1 do print_str_maxlet, gatt.RULES_OF_USE[igatt], 70
-     print, ''
-     print, 'Contact: erg_lepi_info at isee.nagoya-u.ac.jp'
-;  print, ''
-;  print, gatt.LINK_TEXT, ' ', gatt.HTTP_LINK
-     print, '**********************************************************************'
+;     print_str_maxlet, ' '
+;     print, '**********************************************************************'
+;     print_str_maxlet, gatt.LOGICAL_SOURCE_DESCRIPTION, 70
+;     print, ''
+;     print, 'Information about ERG LEPi'
+;     print, ''
+;     print, 'PI: ', gatt.PI_NAME
+;     print_str_maxlet, 'Affiliation: '+gatt.PI_AFFILIATION, 70
+;     print, ''
+;     print, ''
+;     for igatt=0, n_elements(gatt.RULES_OF_USE)-1 do print_str_maxlet, gatt.RULES_OF_USE[igatt], 70
+;     print, ''
+;     print, gatt.LINK_TEXT, ' ', gatt.HTTP_LINK
+;     print, '**********************************************************************'
      
      return ;; finishes here if omniflux is set. 
   endif
@@ -239,30 +242,135 @@ pro erg_load_lepi_nml, $
   endif
   
   gatt=cdf_var_atts(datfiles[0])
+  goto, ROR
   
-; storing data information
-  erg_export_filever, datfiles
-
-  print_str_maxlet, ' '
-  print, '**********************************************************************'
-  print_str_maxlet, gatt.LOGICAL_SOURCE_DESCRIPTION, 70
-  print, ''
-  print, 'Information about ERG LEPi'
-  print, ''
-  print, 'PI: ', gatt.PI_NAME
-  print_str_maxlet, 'Affiliation: '+gatt.PI_AFFILIATION, 70
-  print, ''
-  print, ''
-  print, 'RoR of ERG project common: https://ergsc.isee.nagoya-u.ac.jp/data_info/rules_of_the_road.shtml.en'
-  print, 'RoR of ERG/LEPi: https://ergsc.isee.nagoya-u.ac.jp/mw/index.php/ErgSat/Lepi#Rules_of_the_Road'
+;  print_str_maxlet, ' '
+;  print, '**********************************************************************'
+;  print_str_maxlet, gatt.LOGICAL_SOURCE_DESCRIPTION, 70
+;  print, ''
+;  print, 'Information about ERG LEPi'
+;  print, ''
+;  print, 'PI: ', gatt.PI_NAME
+;  print_str_maxlet, 'Affiliation: '+gatt.PI_AFFILIATION, 70
+;  print, ''
+;  print, ''
 ;  for igatt=0, n_elements(gatt.RULES_OF_USE)-1 do print_str_maxlet, gatt.RULES_OF_USE[igatt], 70
-  print, ''
-  print, 'Contact: erg_lepi_info at isee.nagoya-u.ac.jp'
 ;  print, ''
 ;  print, gatt.LINK_TEXT, ' ', gatt.HTTP_LINK
-  print, '**********************************************************************'
+;  print, '**********************************************************************'
+ endif
   
+
+if (level eq 'l3') then begin
+    ;;Arguments and keywords
+    if ~keyword_set(debug) then debug = 0  ;; Turn off the debug mode unless keyword debug is set
+    if ~keyword_set(datatype) then datatype = 'pa'
+    if ~keyword_set(downloadonly) then downloadonly = 0
+    if ~keyword_set(no_download) then no_download = 0
+
+  datatype = 'pa'
+  ;;Local and remote data file paths
+  if ~keyword_set(localdir) then begin
+     localdir = !erg.local_data_dir + 'satellite/erg/lepi/' $
+                + level + '/' + datatype + '/'
+  endif
+  if ~keyword_set(remotedir) then begin
+     remotedir = !erg.remote_data_dir + 'satellite/erg/lepi/' $
+                 + level + '/' + datatype + '/'
+  endif
   
+  if debug then print, 'localdir = '+localdir
+  if debug then print, 'remotedir = '+localdir
   
+  ;;Relative file path
+  cdffn_prefix = 'erg_lepi_'+level+'_'+datatype+'_'
+  relfpathfmt = 'YYYY/MM/' + cdffn_prefix+'YYYYMMDD_v??_??.cdf'
+  
+  ;;Expand the wildcards for the designated time range
+  relfpaths = file_dailynames(file_format=relfpathfmt, trange=trange, times=times)
+  if debug then print, 'RELFPATHS: ', relfpaths
+  
+  ;;Download data files
+  if keyword_set(datafpath) then datfiles = datafpath else begin
+    datfiles = $
+       spd_download( local_path=localdir $
+                     , remote_path=remotedir, remote_file=relfpaths $
+                     , no_download=no_download, /last_version $
+                     , url_username=uname, url_password=passwd $
+                   )
+ endelse
+  idx = where( file_test(datfiles), nfile )
+  if nfile eq 0 then begin
+     print, 'Cannot find any data file. Exit!'
+     return
+  endif
+  datfiles = datfiles[idx]                 ;;Clip empty strings and non-existing files
+  if keyword_set(downloadonly) then return ;;Stop here if downloadonly is set
+  
+  ;;Species to be loaded
+  spcs = strsplit(/ext, 'P HE O' )
+  
+  ;;Read CDF files and generate tplot variables
+  prefix = 'erg_lepi_' + level + '_' + datatype + '_'
+; cdf2tplot, file=datfiles, prefix=prefix, get_support_data=get_support_data, $ ;            varformat=varformat, verbose=verbose
+  cdf2tplot, file=datfiles, prefix=prefix,get_support_data=get_support_data,$
+  varformat=varformat, verbose=verbose
+
+  for imass=0,2 do begin 
+  ;;Options for tplot variables
+  vns = ''
+  append_array, vns, prefix+['F'+spcs[imass]+'DU']  ;;common to flux arrays
+
+  get_data, vns, data=ori_data, dl=dl, lim=lim ; get data from tplot variable
+  flux = ori_data.y
+  energy_arr = ori_data.v1
+  pa_arr = ori_data.v2
+
+  n_chn = n_elements(energy_arr)
+  for jene = 0, n_chn -1 do begin
+    vn = prefix+'pabin_'+string(jene, '(i02)')+'_'+'F'+spcs[imass]+'DU'
+    store_data, vn, data={x:ori_data.x, y:reform(flux[*,jene,*]), v:pa_arr}
+    options,vn,spec=1
+    options, vn, ztitle='['+dl.cdf.vatt.units+']'
+    options,vn,datagap=120.
+    options,vn,zlog=1
+    zlim, vn, 0, 0
+    ylim,vn,0.0,180.0
+    options, vn, $
+    ytitle='ERG LEP-i '+ spcs[imass] + '!C'+string(energy_arr[jene],'(f9.2)')+' keV!CPitch angle' 
+    options,vn,ysubtitle='[deg]',ytickinterval=30
+  endfor
+ endfor
+ 
+ gatt=cdf_var_atts(datfiles[0])
+ goto, RoR
+
+
+endif
+
+ROR:
+;--- print PI info and rules of the road
+gatt=cdf_var_atts(datfiles[0])
+; storing data information
+if (keyword_set(get_filever)) then erg_export_filever, datfiles
+
+print_str_maxlet, ' '
+print, '**************************************************************************'
+print_str_maxlet, gatt.LOGICAL_SOURCE_DESCRIPTION, 75
+print,'DATA TYPE= ',strmid(gatt.data_type,15)
+print, ''
+print, 'Information about ERG LEPi'
+print, ''
+print, 'PI: ', gatt.PI_NAME
+print_str_maxlet, 'Affiliation: '+gatt.PI_AFFILIATION, 75
+print, ''
+print, 'RoR of ERG project common: https://ergsc.isee.nagoya-u.ac.jp'
+if (level eq 'l3') then begin
+  print, 'RoR of LEPi L3: https://ergsc.isee.nagoya-u.ac.jp/mw/index.php/ErgSat/Lepi'
+  print, 'RoR of MGF L2: https://ergsc.isee.nagoya-u.ac.jp/mw/index.php/ErgSat/Mgf'
+endif else print, 'RoR of LEPi L2: https://ergsc.isee.nagoya-u.ac.jp/mw/index.php/ErgSat/Lepi'
+print, 'Contact: erg_lepi_info at isee.nagoya-u.ac.jp'
+print, '**************************************************************************'
+
   return
 end

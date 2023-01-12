@@ -9,6 +9,9 @@
 ;    45 : a color table similar to the one that was used in the JHU/APL SuperDARN website
 ;    46 : the "jet" colormap used by matplotlib of python
 ;    47 : the "viridis" colormap also used by matplotlib of python
+;    48 : the "Turbo" colormap
+;         (https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html)
+;
 ;
 ; Some original functions to modify a colarmap were also added as keywords: 
 ;  center_hatched: if set, colors arount the center of a colormap are hatched with white (default)
@@ -21,8 +24,10 @@
 ;   2017/09/27: jet and viridis implemented
 ;   2010/11/20: created
 ;
-; $LastChangedDate: 2019-03-17 21:51:57 -0700 (Sun, 17 Mar 2019) $
-; $LastChangedRevision: 26838 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
+; $LastChangedRevision: 31399 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/ground/radar/superdarn/loadct_sd.pro $
 ;-
 
 PRO set_col_tab_from_rgb_txt, rgb_txt, bottom_c
@@ -195,12 +200,12 @@ PRO loadct_sd,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,
   
   IF ~KEYWORD_SET(ct) THEN ct = 43 ;FAST-Special
   
-                                ;Error check for ct
-  if ct lt 0 or ct gt 47 then begin
-     print, 'The number of currently available color tables are 0-47.'
-     print, 'Please specify a table number of the above range.'
-     return
-  endif
+  ;;Error check for ct - already obsolete
+  ;;if ct lt 0 or ct gt 47 then begin
+  ;;   print, 'The number of currently available color tables are 0-47.'
+  ;;   print, 'Please specify a table number of the above range.'
+  ;;   return
+  ;;endif
   
   IF N_ELEMENTS(color_table) EQ 0 THEN color_table=ct
   previous_ct =  color_table
@@ -209,8 +214,9 @@ PRO loadct_sd,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,
      RETURN
   ENDIF
   
-  IF ct LT 43 THEN BEGIN
-     loadct,ct,bottom=bottom_c,file=file
+  IF ct LT 43 OR ct GT 48 THEN BEGIN
+     ;;loadct,ct,bottom=bottom_c,file=file
+     loadct,ct,bottom=bottom_c
   ENDIF ELSE IF ct EQ 43 THEN BEGIN
      loadct,ct,bottom=bottom_c,file=file,/silent
      PRINT, '% Loading table SD-Special'
@@ -226,6 +232,9 @@ PRO loadct_sd,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,
   endif else if ct eq 47 then begin
      set_col_tab_from_rgb_txt, file_source_dirname()+'/col_tbl/rgb_viridis.txt', bottom_c
      print, '% Loading the Viridis color table'
+  endif else if ct eq 48 then begin
+     set_col_tab_from_rgb_txt, file_source_dirname()+'/col_tbl/rgb_turbo.txt', bottom_c
+     print, '% Loading the Turbo color table'
   endif
   
   

@@ -34,9 +34,12 @@
 ;       2017-07-07: Satoshi Kurita, ISEE, Nagoya U.
 ;                   1. New stations (GAK, KAP, ZGN) are included
 ;                   2. Use spd_download instead of file_retrieve
+;                   
+;       2021-08-31: Atsuki Shinbori, ISEE, Nagoya U.
+;                   1. New station (IST) is added.
 ;
-; $LastChangedDate: 2020-12-08 06:04:52 -0800 (Tue, 08 Dec 2020) $
-; $LastChangedRevision: 29445 $
+; $LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
+; $LastChangedRevision: 31399 $
 ;
 ;-
 
@@ -54,7 +57,7 @@ endif
 
 ;--- all sites (default)
 site_code_all = strsplit( $
-  'ath gak hus kap lcl mgd msr nai ptk rik sta zgn', $
+  'ath gak hus ist kap lcl mgd msr nai ptk rik sta zgn', $
   ' ', /extract)
 
 ;--- check site codes
