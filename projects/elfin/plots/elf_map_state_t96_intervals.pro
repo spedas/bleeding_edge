@@ -94,7 +94,7 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
   ; set symbols
   symbols=[4, 2]
   probes=['a','b']
-  index=[254,253,252]  ;,252,253,254]  ;index=250 rgb=[255 0 0]
+  index=[254,253,252,249,248]  ;,252,253,254]  ;index=250 rgb=[255 0 0]
 
   ; set colors
   ;ELFIN A Blue
@@ -102,7 +102,19 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
   ;ELFIN B Orange
   r[index[0]]=255 & g[index[0]]=99 & b[index[0]]=71
   ;Grey (for RHS SM orbit plots)
-  r[index[2]]=170 & g[index[2]]=170 & b[index[2]]=170
+  r[index[2]]=170 & g[index[2]]=170 & b[index[2]]=170  
+  ; stations
+; **** blue purple ok
+; blue
+;  r[index[3]]=135 & g[index[3]]=206 & b[index[3]]=235
+; purple
+;  r[index[4]]=238 & g[index[4]]=130 & b[index[4]]=238
+; purple
+r[index[4]]=238 & g[index[4]]=130 & b[index[4]]=238
+; green
+;r[index[4]]=0 & g[index[4]]=160 & b[index[4]]=0
+r[index[3]]=90 & g[index[3]]=188 & b[index[3]]=102
+
   tvlct,r,g,b
 
   ; time input
@@ -224,6 +236,10 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
   fgma_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='a', instrument='fgm') ;alternate pef_spinper/pef_nflux
   fgmb_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='b', instrument='fgm')
 
+  ; get vlf and eiscat station positions
+  eiscat_pos=elf_get_eiscat_positions()
+  vlf_pos=elf_get_vlf_positions()
+  
   ; Get position and attitude
   get_data,'ela_pos_sm',data=ela_state_pos_sm
   get_data,'elb_pos_sm',data=elb_state_pos_sm
@@ -507,6 +523,43 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
         endfor
       endelse
     endelse
+    
+    ;-------------------------------
+    ; PLOT VLF and EISCAT Stations
+    ;-------------------------------
+    pts = (2*!pi/99.0)*findgen(100)
+    earth=findgen(361)
+    ex=[0]
+    ey=[0]
+    for i=0.,1.,0.025 do ex=[ex,i*cos(earth*!dtor)]
+    for i=0.,1.,0.025 do ey=[ey,i*sin(earth*!dtor)]
+    ; plot earth
+;    oplot, ex[night_idx], ey[night_idx]
+;    oplot, 1.0*cos(pts), 1.0*sin(pts)
+;    oplot,[-100,100],[0,0],line=1
+;    oplot,[0,0],[-100,100],line=1
+
+    if size(eiscat_pos, /type) EQ 8 then begin
+      ename=eiscat_pos.name
+      elat=eiscat_pos.lat
+      elon=eiscat_pos.lon
+      symsz=[0.95, 0.75, 0.5, 0.25]
+      for es=0,2 do begin
+        for ss=0,n_elements(symsz)-1 do plots, elon[es], elat[es], color=248, psym=5, symsize=symsz[ss]  ;253
+        plots, elon[es], elat[es], psym=5, symsize=1.0
+ ;       plots, elon[es], elat[es], psym=5, symsize=1.35
+      endfor
+    endif
+    if size(vlf_pos, /type) EQ 8 then begin
+      vname=vlf_pos.name
+      vlat=vlf_pos.glat
+      vlon=vlf_pos.glon
+      symsz=[0.65, 0.5, 0.25]
+      for vs=0,6 do begin
+        for ss=0,n_elements(symsz)-1 do plots, vlon[vs], vlat[vs], color=249, psym=6, symsize=symsz[ss]
+        plots, vlon[vs], vlat[vs], psym=6, symsize=.7
+      endfor
+    endif
 
     ; Set up data for ELFIN A for this time span
     this_time=ela_state_pos_sm.x[min_st[k]:min_en[k]]
@@ -660,7 +713,6 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
     ;-------------------------------
     if ~keyword_set(bfirst) then begin
       if ~undefined(this_b_sz_st) then begin
-;        for sci=0, bzones-1 do begin
         for sci=0, n_elements(this_b_sz_st)-1 do begin
           tidxb=where(this_time2 GE this_b_sz_st[sci] and this_time2 LT this_b_sz_en[sci], bcnt)
           if bcnt GT 5 then begin
@@ -669,7 +721,6 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
         endfor
       endif
       if ~undefined(this_a_sz_st) then begin
-;        for sci=0, azones-1 do begin
         for sci=0, n_elements(this_a_sz_st)-1 do begin
           tidxa=where(this_time GE this_a_sz_st[sci] and this_time LT this_a_sz_en[sci], acnt)
           if acnt GT 5 then begin
@@ -679,7 +730,6 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
       endif
     endif else begin
       if ~undefined(this_a_sz_st) then begin
-;        for sci=0, azones-1 do begin
          for sci=0, n_elements(this_a_sz_st)-1 do begin
           tidxa=where(this_time GE this_a_sz_st[sci] and this_time LT this_a_sz_en[sci], acnt)
           if acnt GT 5 then begin
@@ -688,7 +738,6 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
         endfor
       endif
       if ~undefined(this_b_sz_st) then begin
-;        for sci=0, bzones-1 do begin
         for sci=0, n_elements(this_b_sz_st)-1 do begin
           tidxb=where(this_time2 GE this_b_sz_st[sci] and this_time2 LT this_b_sz_en[sci], bcnt)
           if bcnt GT 5 then begin
@@ -1053,9 +1102,11 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
       xyouts, xann+18,yann+12.5*6,'Geo Lat/Lon - Black dotted lines',/device,color=255,charsize=charsize
       xyouts, xann+25,yann+12.5*5, latlon_text,/device,color=251,charsize=charsize
       xyouts, xann+55,yann+12.5*4, oval_text,/device,color=155,charsize=charsize
-      xyouts, xann+75,yann+12.5*3,'Tick Marks every 5min',/device,color=255,charsize=charsize
-      xyouts, xann+85,yann+12.5*2,'Start Time-Diamond',/device,color=255,charsize=charsize
-      xyouts, xann+95,yann+12.5*1,'End Time-Asterisk',/device,color=255,charsize=charsize
+      xyouts, xann+65,yann+12.5*3,'EISCAT-Purple Triangle',/device,color=248,charsize=charsize
+      xyouts, xann+75,yann+12.5*2,'Tick Marks every 5min',/device,color=255,charsize=charsize
+      xyouts, xann+85,yann+12.5*1,'Start Time-Diamond',/device,color=255,charsize=charsize
+      xyouts, xann+95,yann+12.5*0,'End Time-Asterisk',/device,color=255,charsize=charsize
+      xyouts, xann+100,yann-12.5,'VLF-Green Square',/device,color=249,charsize=charsize
     endif else begin
       yann=463
       xann=410
@@ -1064,9 +1115,11 @@ pro elf_map_state_t96_intervals, tstart, gifout=gifout, south=south, noview=novi
       xyouts, xann+15,yann+12.5*6,'Geo Lat/Lon - Black dotted lines',/device,color=255,charsize=charsize
       xyouts, xann+lxadd,yann+12.5*5, latlon_text,/device,color=251,charsize=charsize
       xyouts, xann+oxadd,yann+12.5*4, oval_text,/device,color=155,charsize=charsize
-      xyouts, xann+66,yann+12.5*3,'Tick Marks every 5min',/device,color=255,charsize=charsize
-      xyouts, xann+76,yann+12.5*2,'Start Time-Diamond',/device,color=255,charsize=charsize
-      xyouts, xann+85,yann+12.5*1,'End Time-Asterisk',/device,color=255,charsize=charsize
+      xyouts, xann+65,yann+12.5*3,'EISCAT-Purple Triangle',/device,color=248,charsize=charsize
+      xyouts, xann+66,yann+12.5*2,'Tick Marks every 5min',/device,color=255,charsize=charsize
+      xyouts, xann+76,yann+12.5*1,'Start Time-Diamond',/device,color=255,charsize=charsize
+      xyouts, xann+85,yann+12.5*0,'End Time-Asterisk',/device,color=255,charsize=charsize
+      xyouts, xann+90,yann-12.5,'VLF-Green Square',/device,color=249,charsize=charsize
     endelse
 
     yann=0.02

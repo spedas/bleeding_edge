@@ -54,7 +54,7 @@ pro elf_map_state_t96_intervals_mercator, tstart, gifout=gifout, noview=noview,$
   ; set symbols
   symbols=[4, 2]
   probes=['a','b']
-  index=[254,253,252,251]
+  index=[254,253,252,251,249,248]
 
   ; set colors
   r[0]=255 & g[0]=255 & b[0]=255
@@ -67,6 +67,17 @@ pro elf_map_state_t96_intervals_mercator, tstart, gifout=gifout, noview=noview,$
   r[index[2]]=170 & g[index[2]]=170 & b[index[2]]=170
   ;yellow
   r[index[3]]=250 & g[index[3]]=177 & b[index[3]]=17
+  ; stations
+  ; **** blue purple ok
+  ; blue
+;  r[index[4]]=135 & g[index[4]]=206 & b[index[4]]=235
+;  ; purple
+;  r[index[5]]=238 & g[index[5]]=130 & b[index[5]]=238
+  ; purple
+  r[index[5]]=238 & g[index[5]]=130 & b[index[5]]=238
+  ; green
+;  r[index[4]]=0 & g[index[4]]=160 & b[index[4]]=0
+  r[index[4]]=90 & g[index[4]]=188 & b[index[4]]=102
   tvlct,r,g,b
 
   ; time input
@@ -334,8 +345,16 @@ pro elf_map_state_t96_intervals_mercator, tstart, gifout=gifout, noview=noview,$
   ; COLLECT DATA FOR PLOTS
   ;--------------------------
   ; Get science collection times
-  epda_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='a', instrument='epd')
+  epda_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='a', instrument='epd') ;alternate pef_spinper/pef_nflux
   epdb_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='b', instrument='epd')
+  epdia_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='a', instrument='epdi') ;alternate pef_spinper/pef_nflux
+  epdib_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='b', instrument='epdi')
+  fgma_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='a', instrument='fgm') ;alternate pef_spinper/pef_nflux
+  fgmb_sci_zones=get_elf_science_zone_start_end(trange=trange, probe='b', instrument='fgm')
+ 
+  ; get vlf and eiscat station positions
+  eiscat_pos=elf_get_eiscat_positions()
+  vlf_pos=elf_get_vlf_positions()
 
   ; Get position and attitude
   get_data,'ela_pos_sm',data=ela_state_pos_sm
@@ -594,6 +613,32 @@ pro elf_map_state_t96_intervals_mercator, tstart, gifout=gifout, noview=noview,$
         oplot,u_lon[i,idx],u_lat[i,idx],color=248,thick=delinewidth*1.2,linestyle=1
       endfor
 
+      ;-------------------------------
+      ; PLOT VLF and EISCAT Stations
+      ;-------------------------------
+      if size(eiscat_pos, /type) EQ 8 then begin
+        ename=eiscat_pos.name
+        elat=eiscat_pos.lat
+        elon=eiscat_pos.lon
+        symsz=[1.2, 1.0, 0.75, 0.5, 0.25]
+        for es=0,2 do begin
+          for ss=0,n_elements(symsz)-1 do plots, elon[es], elat[es], color=248, psym=5, symsize=symsz[ss]  ;253
+          plots, elon[es], elat[es], psym=5, symsize=1.25
+;          plots, elon[es], elat[es], psym=5, symsize=1.85
+        endfor
+      endif
+      if size(vlf_pos, /type) EQ 8 then begin
+        vname=vlf_pos.name
+        vlat=vlf_pos.glat
+        vlon=vlf_pos.glon
+        symsz=[1.0, 0.75, 0.5, 0.25]
+        for vs=0,6 do begin
+          for ss=0,n_elements(symsz)-1 do plots, vlon[vs], vlat[vs], color=249, psym=6, symsize=symsz[ss]
+          plots, vlon[vs], vlat[vs], psym=6, symsize=1.05
+ ;         plots, vlon[vs], vlat[vs], psym=6, symsize=1.65          
+        endfor
+      endif
+
       ; Set up data for ELFIN A for this time span
       this_time=ela_state_pos_sm.x[min_st[k]:min_en[k]]
       nptsa=n_elements(this_time)
@@ -690,6 +735,30 @@ pro elf_map_state_t96_intervals_mercator, tstart, gifout=gifout, noview=noview,$
             ', % of Median: '+strmid(strtrim(string(spin_varb), 1),0,4)
         endif
       endif
+      if ~undefined(epdb_sci_zones) && size(epdb_sci_zones, /type) EQ 8 then begin
+        idx=where(epdb_sci_zones.starts GE this_time2[0] and epdb_sci_zones.starts LT this_time2[nptsb-1], bzones)
+        if bzones GT 0 then begin
+          this_b_sz_st=epdb_sci_zones.starts[idx]
+          this_b_sz_en=epdb_sci_zones.ends[idx]
+          if epdb_sci_zones.ends[bzones-1] GT this_time2[nptsb-1] then this_b_sz_en[bzones-1]=this_time2[nptsb-1]
+        endif
+      endif
+      if ~undefined(epdib_sci_zones) && size(epdib_sci_zones, /type) EQ 8 then begin
+        iidx=where(epdib_sci_zones.starts GE this_time2[0] and epdib_sci_zones.starts LT this_time2[nptsb-1], bizones)
+        if bizones GT 0 then begin
+          append_array, this_b_sz_st, epdib_sci_zones.starts[iidx]
+          append_array, this_b_sz_en, epdib_sci_zones.ends[iidx]
+          if epdib_sci_zones.ends[bizones-1] GT this_time2[nptsb-1] then this_b_sz_en[bizones-1]=this_time2[nptsb-1]
+        endif
+      endif
+      if ~undefined(fgmb_sci_zones) && size(fgmb_sci_zones, /type) EQ 8 then begin
+        fidx=where(fgmb_sci_zones.starts GE this_time2[0] and fgmb_sci_zones.starts LT this_time2[nptsb-1], bfzones)
+        if bfzones GT 0 then begin
+          append_array, this_b_sz_st, fgmb_sci_zones.starts[fidx]
+          append_array, this_b_sz_en, fgmb_sci_zones.ends[fidx]
+          if fgmb_sci_zones.ends[bfzones-1] GT this_time2[nptsb-1] then this_b_sz_en[bfzones-1]=this_time2[nptsb-1]
+        endif
+      endif
 
       ; Repeat for A
       spin_stra=''
@@ -703,13 +772,37 @@ pro elf_map_state_t96_intervals_mercator, tstart, gifout=gifout, noview=noview,$
             ', % of Median: '+strmid(strtrim(string(spin_vara), 1),0,4)
         endif
       endif
+      if ~undefined(epda_sci_zones) && size(epda_sci_zones, /type) EQ 8 then begin
+        idx=where(epda_sci_zones.starts GE this_time[0] and epda_sci_zones.starts LT this_time[nptsa-1], azones)
+        if azones GT 0 then begin
+          this_a_sz_st=epda_sci_zones.starts[idx]
+          this_a_sz_en=epda_sci_zones.ends[idx]
+          if epda_sci_zones.ends[azones-1] GT this_time[nptsa-1] then this_a_sz_en[azones-1]=this_time[nptsa-1]
+        endif
+      endif
+      if ~undefined(epdia_sci_zones) && size(epdia_sci_zones, /type) EQ 8 then begin
+        iidx=where(epdia_sci_zones.starts GE this_time[0] and epdia_sci_zones.starts LT this_time[nptsa-1], aizones)
+        if aizones GT 0 then begin
+          append_array, this_a_sz_st, epdia_sci_zones.starts[iidx]
+          append_array, this_a_sz_en, epdia_sci_zones.ends[iidx]
+          if epdia_sci_zones.ends[aizones-1] GT this_time[nptsa-1] then this_a_sz_en[aizones-1]=this_time[nptsa-1]
+        endif
+      endif
+      if ~undefined(fgma_sci_zones) && size(fgma_sci_zones, /type) EQ 8 then begin
+        fidx=where(fgma_sci_zones.starts GE this_time[0] and fgma_sci_zones.starts LT this_time[nptsa-1], afzones)
+        if afzones GT 0 then begin
+          append_array, this_a_sz_st, fgma_sci_zones.starts[fidx]
+          append_array, this_a_sz_en, fgma_sci_zones.ends[fidx]
+          if fgma_sci_zones.ends[afzones-1] GT this_time[nptsa-1] then this_a_sz_en[afzones-1]=this_time[nptsa-1]
+        endif
+      endif
 
       ; ------------------------------
       ; PLOT science collection
       ;-------------------------------
       if ~keyword_set(bfirst) then begin
         if ~undefined(this_b_sz_st) then begin
-          for sci=0, n_elements(bzones)-1 do begin
+          for sci=0, n_elements(this_b_sz_st)-1 do begin
             tidxb=where(this_time2 GE this_b_sz_st[sci] and this_time2 LT this_b_sz_en[sci], bcnt)
             if bcnt GT 5 then begin
               ;plots, this_b_lon_down[tidxb], this_b_lat_down[tidxb], psym=2, symsize=.25, color=254, thick=3
@@ -718,7 +811,7 @@ pro elf_map_state_t96_intervals_mercator, tstart, gifout=gifout, noview=noview,$
           endfor
         endif
         if ~undefined(this_a_sz_st) then begin
-          for sci=0, azones-1 do begin
+          for sci=0, n_elements(this_a_sz_st)-1 do begin
             tidxa=where(this_time GE this_a_sz_st[sci] and this_time LT this_a_sz_en[sci], acnt)
             if acnt GT 5 then begin
               ;plots, this_a_lon_down[tidxa], this_a_lat_down[tidxa], psym=2, symsize=.25, color=253, thick=3
@@ -728,7 +821,7 @@ pro elf_map_state_t96_intervals_mercator, tstart, gifout=gifout, noview=noview,$
         endif
       endif else begin
         if ~undefined(this_a_sz_st) then begin
-          for sci=0, azones-1 do begin
+          for sci=0, n_elements(this_a_sz_st)-1 do begin
             tidxa=where(this_time GE this_a_sz_st[sci] and this_time LT this_a_sz_en[sci], acnt)
             if acnt GT 5 then begin
               ;plots, this_a_lon_down[tidxa], this_a_lat_down[tidxa], psym=2, symsize=.25, color=253, thick=3
@@ -737,7 +830,7 @@ pro elf_map_state_t96_intervals_mercator, tstart, gifout=gifout, noview=noview,$
           endfor
         endif
         if ~undefined(this_b_sz_st) then begin
-          for sci=0, n_elements(bzones)-1 do begin
+          for sci=0, n_elements(this_b_sz_st)-1 do begin
             tidxb=where(this_time2 GE this_b_sz_st[sci] and this_time2 LT this_b_sz_en[sci], bcnt)
             if bcnt GT 5 then begin
               ;plots, this_b_lon_down[tidxb], this_b_lat_down[tidxb], psym=2, symsize=.25, color=254, thick=3
@@ -1159,6 +1252,32 @@ pro elf_map_state_t96_intervals_mercator, tstart, gifout=gifout, noview=noview,$
         oplot,u_lon[i,idx],u_lat[i,idx],color=248,thick=delinewidth*1.2,linestyle=1
       endfor
 
+      ;-------------------------------
+      ; PLOT VLF and EISCAT Stations
+      ;-------------------------------
+      if size(eiscat_pos, /type) EQ 8 then begin
+        ename=eiscat_pos.name
+        elat=eiscat_pos.lat
+        elon=eiscat_pos.lon
+        symsz=[1.2, 1.0, 0.75, 0.5, 0.25]
+        for es=0,2 do begin
+          for ss=0,n_elements(symsz)-1 do plots, elon[es], elat[es], color=248, psym=5, symsize=symsz[ss]  ;253
+          plots, elon[es], elat[es], psym=5, symsize=1.25
+;          plots, elon[es], elat[es], psym=5, symsize=1.85
+        endfor
+      endif
+      if size(vlf_pos, /type) EQ 8 then begin
+        vname=vlf_pos.name
+        vlat=vlf_pos.glat
+        vlon=vlf_pos.glon
+        symsz=[1.0, 0.75, 0.5, 0.25]
+        for vs=0,6 do begin
+          for ss=0,n_elements(symsz)-1 do plots, vlon[vs], vlat[vs], color=249, psym=6, symsize=symsz[ss]
+          plots, vlon[vs], vlat[vs], psym=6, symsize=1.05
+;          plots, vlon[vs], vlat[vs], psym=6, symsize=1.65
+        endfor
+      endif
+
       ; Plot foot points
       if ~keyword_set(bfirst) then begin
         oplot, this_b_lon_conj[0:*:5], this_b_lat_conj[0:*:5], color=254, linestyle=2, thick=delinewidth*1.5
@@ -1344,8 +1463,10 @@ pro elf_map_state_t96_intervals_mercator, tstart, gifout=gifout, noview=noview,$
       xyouts, xann,yann1-dyann*5,'Start Time-Diamond',/normal,color=255,charsize=decharsize, alignment=1,charthick=decharthick
       xyouts, xann,yann1-dyann*6,'End Time-Asterisk',/normal,color=255,charsize=decharsize, alignment=1,charthick=decharthick
       xyouts, xann,yann1-dyann*7,'Terminator: ground-thick solid',/normal,color=255,charsize=decharsize, alignment=1,charthick=decharthick
-      xyouts, xann,yann1-dyann*8,'100 km-thin solid',/normal,color=255,charsize=decharsize, alignment=1,charthick=decharthick
-      xyouts, xann,yann1-dyann*9,'400 km-dashed',/normal,color=255,charsize=decharsize, alignment=1,charthick=decharthick
+      xyouts, xann,yann1-dyann*8,'EISCAT-Purple Triangle',/normal,color=248,charsize=decharsize, alignment=1,charthick=decharthick
+      xyouts, xann,yann1-dyann*9,'VLF-Green Square',/normal,color=249,charsize=decharsize, alignment=1,charthick=decharthick
+      xyouts, xann,yann1-dyann*10,'100 km-thin solid',/normal,color=255,charsize=decharsize, alignment=1,charthick=decharthick
+      xyouts, xann,yann1-dyann*11,'400 km-dashed',/normal,color=255,charsize=decharsize, alignment=1,charthick=decharthick
       xyouts,  xann, yann2+dyann*0, 'Created: '+systime(),/normal,color=255, charsize=decharsize, alignment=1,charthick=decharthick       ; add time of creation
       case 1 of
         tsyg_mod eq 't89': xyouts,xann,yann2+dyann*1,'Tsyganenko-1989',/normal,charsize=decharsize,color=255, alignment=1,charthick=decharthick
@@ -1361,8 +1482,10 @@ pro elf_map_state_t96_intervals_mercator, tstart, gifout=gifout, noview=noview,$
       xyouts, xann,yann3-dyann*5,'Start Time-Diamond',/normal,color=255,charsize=decharsize, alignment=1,charthick=decharthick
       xyouts, xann,yann3-dyann*6,'End Time-Asterisk',/normal,color=255,charsize=decharsize, alignment=1,charthick=decharthick
       xyouts, xann,yann3-dyann*7,'Terminator: ground-thick solid',/normal,color=255,charsize=decharsize, alignment=1,charthick=decharthick
-      xyouts, xann,yann3-dyann*8,'100 km-thin solid',/normal,color=255,charsize=decharsize, alignment=1,charthick=decharthick
-      xyouts, xann,yann3-dyann*9,'400 km-dashed',/normal,color=255,charsize=decharsize, alignment=1,charthick=decharthick
+      xyouts, xann,yann3-dyann*8,'EISCAT-Purple Triangle',/normal,color=248,charsize=decharsize, alignment=1,charthick=decharthick
+      xyouts, xann,yann3-dyann*9,'VLF-Green Square',/normal,color=249,charsize=decharsize, alignment=1,charthick=decharthick
+      xyouts, xann,yann3-dyann*10,'100 km-thin solid',/normal,color=255,charsize=decharsize, alignment=1,charthick=decharthick
+      xyouts, xann,yann3-dyann*11,'400 km-dashed',/normal,color=255,charsize=decharsize, alignment=1,charthick=decharthick
       xyouts,  xann, yann4+dyann*0, 'Created: '+systime(),/normal,color=255, charsize=decharsize, alignment=1,charthick=decharthick       ; add time of creation
       case 1 of
         tsyg_mod eq 't89': xyouts,xann,yann4+dyann*1,'Tsyganenko-1989',/normal,charsize=decharsize,color=255, alignment=1,charthick=decharthick
