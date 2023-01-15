@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2022
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2022-11-03 08:49:20 -0700 (Thu, 03 Nov 2022) $
-; $LastChangedRevision: 31210 $
+; $LastChangedDate: 2023-01-13 23:29:50 -0800 (Fri, 13 Jan 2023) $
+; $LastChangedRevision: 31405 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -159,7 +159,8 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
   if strpos(type, 'dfb_wf_edc') EQ 0 and type NE 'dfb_wf_edc' then level = 1.5
   if strpos(type, 'dfb_wf_b') EQ 0 then level = 1.5
   if strpos(type, 'dfb_dbm_b') EQ 0 then level = 1.5
-  if strpos(type, 'magi') EQ 0 and type NE 'magi_survey' then level = 1.5
+  if strpos(type, 'magi') EQ 0 and $
+    type NE 'magi_survey' and type NE 'magi_hk' then level = 1.5
 
   ; SCaM data is Level 3
 
