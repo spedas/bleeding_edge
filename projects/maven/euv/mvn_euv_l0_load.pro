@@ -15,14 +15,14 @@
 ; HISTORY:
 ; VERSION:
 ;  $LastChangedBy: ali $
-;  $LastChangedDate: 2021-07-27 21:41:52 -0700 (Tue, 27 Jul 2021) $
-;  $LastChangedRevision: 30145 $
+;  $LastChangedDate: 2023-01-15 12:00:25 -0800 (Sun, 15 Jan 2023) $
+;  $LastChangedRevision: 31409 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/euv/mvn_euv_l0_load.pro $
 ;CREATED BY:  ali 20160830
 ;FILE: mvn_euv_l0_load.pro
 ;-
 
-pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,generate=generate,init=init
+pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,generate=generate,init=init,timestamp=timestamp
 
   tplotpath='maven/data/sci/euv/l0/tplot/YYYY/MM/mvn_euv_l0_YYYYMMDD.tplot'
 
@@ -44,11 +44,13 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
       endif
 
       if l0_file eq '' then continue
-      L0_info=file_info(L0_file)
-      tp_info=file_info(tp_file)
-      L0_timestamp=max([L0_info.mtime,L0_info.ctime])
-      tp_timestamp=tp_info.mtime
-
+      ;      L0_info=file_info(L0_file)
+      ;      tp_info=file_info(tp_file)
+      ;      L0_timestamp=max([L0_info.mtime,L0_info.ctime])
+      ;      tp_timestamp=tp_info.mtime
+      L0_timestamp=file_modtime(L0_file)
+      tp_timestamp=file_modtime(tp_file)
+      if n_elements(timestamp) ne 0 then tp_timestamp=time_double(timestamp) < tp_timestamp
       if L0_timestamp gt tp_timestamp then begin ;skip if tplot file does not need to be regenerated
         if tr[0] lt systime(1)-100l*24l*3600l then message,'L0 files changed more than 100 days in the past!!! Exiting... '+l0_file
         dprint,'Generating EUV tplot file: '+tp_file
@@ -61,8 +63,8 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
 
   if keyword_set(save) then sav=1 else sav=0
   if keyword_set(l0) then l0s=1 else l0s=0
-  if (l0s and sav) then l0sav=1 else l0sav=0
-  if ~l0s or l0sav then tp_files=mvn_pfp_file_retrieve(tplotpath,trange=trange,/daily_names,valid_only=~l0s,verbose=verbose)
+  if (l0s && sav) then l0sav=1 else l0sav=0
+  if ~l0s || l0sav then tp_files=mvn_pfp_file_retrieve(tplotpath,trange=trange,/daily_names,valid_only=~l0s,verbose=verbose)
   if l0s then l0_files=mvn_pfp_file_retrieve(/l0,trange=trange,/daily_names,/valid_only,verbose=verbose) ;daily l0 files
   if l0s then files=l0_files else files=tp_files
 
@@ -72,7 +74,7 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
   endif
 
   nfiles=n_elements(files)
-  if l0sav and (nfiles ne 1 or n_elements(tp_files) ne 1) then begin
+  if l0sav && (nfiles ne 1 || n_elements(tp_files) ne 1) then begin
     dprint,dlevel=2,'EUV tplot save functionality currently only works for 1 day at a time! returning...'
     return
   endif
@@ -84,7 +86,7 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
     endif else tplot_restore,filename=files[i],verbose=0
     get_data,'mvn_lpw_euv',data=mvn_lpw_euv_1day,limits=limits,dlimits=dlimits ;get tplot variables
     if keyword_set(mvn_lpw_euv_1day) then begin
-      if l0sav then tplot_save,'mvn_lpw_euv',filename=tp_files,/no_add_ext ;only works for 1 day
+      if l0sav then tplot_save,['mvn_lpw_euv','mvn_lpw_euv_temp_C'],filename=tp_files,/no_add_ext ;only works for 1 day
       append_array,mvn_lpw_euv_x,mvn_lpw_euv_1day.x ;append days
       append_array,mvn_lpw_euv_y,mvn_lpw_euv_1day.y
       lim2=limits

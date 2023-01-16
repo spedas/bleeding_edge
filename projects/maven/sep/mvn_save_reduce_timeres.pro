@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-30 19:48:04 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 30012 $
+; $LastChangedDate: 2023-01-15 12:00:25 -0800 (Sun, 15 Jan 2023) $
+; $LastChangedRevision: 31409 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_save_reduce_timeres.pro $
 
 pro mvn_save_reduce_timeres,pathformat,trange=trange0,init=init,timestamp=timestamp,verbose=verbose,mag_cluge=mag_cluge,resstr=resstr,resolution=res,description=description
@@ -36,7 +36,7 @@ pro mvn_save_reduce_timeres,pathformat,trange=trange0,init=init,timestamp=timest
     prereq_files=''
 
     fullres_files  = mvn_pfp_file_retrieve(fullres_fmt,trange=tn +[-.001,1.0001d]*day ,/daily_names)   ; use a little bit of files on either side. /This should always return 3 filenames
-    redures_file   = mvn_pfp_file_retrieve(redures_fmt,trange=tn,/daily_names,/create_dir)
+    redures_file   = mvn_pfp_file_retrieve(redures_fmt,trange=tn,/daily_names)
 
     dprint,dlevel=3,fullres_files[0]
 
@@ -47,15 +47,16 @@ pro mvn_save_reduce_timeres,pathformat,trange=trange0,init=init,timestamp=timest
 
     append_array,prereq_files,fullres_files
 
-    prereq_info = file_info(prereq_files)
-    prereq_timestamp = max([prereq_info.mtime, prereq_info.ctime])
-
-    target_info = file_info(redures_file)
-    target_timestamp =  target_info.mtime
+    ;    prereq_info = file_info(prereq_files)
+    ;    target_info = file_info(redures_file)
+    ;    prereq_timestamp = max([prereq_info.mtime, prereq_info.ctime])
+    ;    target_timestamp =  target_info.mtime
+    prereq_timestamp=max(file_modtime(prereq_files))
+    target_timestamp=file_modtime(redures_file)
 
     if keyword_set(timestamp) then target_timestamp = time_double(timestamp) < target_timestamp
 
-    if prereq_timestamp lt target_timestamp then continue    ; skip if L1 does not need to be regenerated
+    if prereq_timestamp le target_timestamp then continue    ; skip if L1 does not need to be regenerated
     dprint,verbose=verbose,dlevel=3,'Generating new file: '+redures_file
 
     alldata=0
@@ -79,6 +80,7 @@ pro mvn_save_reduce_timeres,pathformat,trange=trange0,init=init,timestamp=timest
 
     dependents = all_dependents
 
+    file_mkdir2,file_dirname(redures_file)
     save,file=redures_file ,data,sigma,dependents,info,description=description
     dprint,verbose=verbose,dlevel=1,'Saved '+file_info_string(redures_file)
 

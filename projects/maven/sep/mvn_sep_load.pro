@@ -1,7 +1,7 @@
 ; Created by Davin Larson
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-07-06 12:21:07 -0700 (Wed, 06 Jul 2022) $
-; $LastChangedRevision: 30902 $
+; $LastChangedDate: 2023-01-15 12:00:25 -0800 (Sun, 15 Jan 2023) $
+; $LastChangedRevision: 31409 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_load.pro $
 
 pro mvn_sep_load,pathnames=pathnames,trange=trange,files=files,RT=RT,download_only=download_only, $
@@ -45,7 +45,7 @@ pro mvn_sep_load,pathnames=pathnames,trange=trange,files=files,RT=RT,download_on
       if array_equal(files,source_filenames) then begin
         dprint,verbose=verbose,dlevel=2,'Using cached common block loaded from '+file_info_string(files)
         return
-      endif
+      endif else message,'Unable to use cached common block because of different files: '+file_info_string([files,source_filenames])
     endif
 
     mvn_sep_var_restore,trange=trange,download_only=download_only,verbose=verbose,lowres=lowres,arc=arc,$

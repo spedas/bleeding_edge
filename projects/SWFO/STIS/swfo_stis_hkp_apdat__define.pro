@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-12-24 22:36:14 -0800 (Sat, 24 Dec 2022) $
-; $LastChangedRevision: 31374 $
+; $LastChangedDate: 2023-01-15 09:45:47 -0800 (Sun, 15 Jan 2023) $
+; $LastChangedRevision: 31407 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_hkp_apdat__define.pro $
 
 
@@ -25,7 +25,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   ;printdat,ccsds
   if debug(3) && ccsds.apid eq 862 then begin
     dprint,ccsds.seqn,'   ',time_string(ccsds.time,prec=4),' ',ccsds.pkt_size
-    ;hexprint,ccsds_data
+    hexprint,ccsds_data
   endif
 
   if debug(5) then begin

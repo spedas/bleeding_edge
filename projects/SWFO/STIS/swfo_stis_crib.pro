@@ -6,9 +6,9 @@
 ; These tools are not intended as a final product but can be used to create high level ouput.
 ;
 ;
-; $LastChangedBy: ali $
-; $LastChangedDate: 2022-12-10 23:01:16 -0800 (Sat, 10 Dec 2022) $
-; $LastChangedRevision: 31348 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-01-15 09:28:13 -0800 (Sun, 15 Jan 2023) $
+; $LastChangedRevision: 31406 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -44,7 +44,7 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.root = root_data_dir()
   opts.remote_data_dir = 'sprg.ssl.berkeley.edu/data/'
   ;opts.local_data_dir = root_data_dir()
-  opts.reldir = 'swfo/data/sci/stis/prelaunch/realtime/
+  opts.reldir = 'swfo/data/sci/stis/prelaunch/realtime/' ;s0/s0/
   opts.fileformat = 'YYYY/MM/DD/swfo_stis_socket_YYYYMMDD_hh.dat.gz'
   opts.host = '128.32.98.57'
   opts.title = 'SWFO STIS'
@@ -72,19 +72,25 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = ['2022-9-14 22','2022 9 15 1']  ;FM first light with two LPT runs showing intermittent DAC behavior
   opts.file_trange = ['2022-9-15 21','2022 9 16 3']  ;FM test procedure releaving intermittent DAC behavior. Followed by an LPT and more testing
   opts.file_trange = ['2022-9-23 22','2022 9 24']  ;FM DAC fixed: continued test procedure w/ CM. followed by an LPT run.
-  opts.file_trange = ['2022-10-14 23:48','2022 10 23:50']  ;Am241 x-ray source
-  opts.file_trange = !null
+  opts.file_trange = ['2022-10-14 22','2022 10 14 25']  ;Am241 x-ray source - first light longer time ran
+  opts.file_trange = ['2022-10-14 23:48','2022 10 14 23:50']  ;Am241 x-ray source - first light
+  opts.file_trange = ['2022-12-27','2022 12 28']  ;Am241 x-ray source - flight like detectors
+  opts.file_trange = ['2023 1 5','2023 1 5 2']  ;Am241 x-ray source - flight like detectors
+  opts.file_trange = ['2023 1 3 17','2023 1 3 20']  ;Am241 x-ray source - flight like detectors with transition
+  opts.file_trange = ['2023 1 3 ','2023 1 5 ']  ;Am241 x-ray source - flight like detectors with transition - 2 days
+  ;opts.file_trange = !null
+  ;opts.file_trange = 3
   ;opts.filenames=['socket_128.32.98.57.2028_20211216_004610.dat', 'socket_128.32.98.57.20484_20211216_005158.dat']
   opts.filenames = ''
   opts.stepbystep = 0               ; this flag allows a step by step progress through this crib sheet
-  opts.refresh = 1                  ; set to zero to skip this section next time
+  opts.refresh = 0                  ; set to zero to skip this section next time
   opts.file_type = 'gse_file'
   printdat,opts
   dprint,'The variable "OPTS" is a dictionary of options.  These can be changed by the user as desired.'
   if opts.stepbystep then stop
 endif
 
-if opts.init_stis then begin
+if opts.init_stis && opts.refresh then begin
   dprint,'Initialize the STIS apid objects.  This will define the decomumutators for each of the STIS APIDS'
   swfo_stis_apdat_init,/save_flag
   if opts.stepbystep then stop
@@ -110,7 +116,7 @@ endif
 
 if keyword_set(opts.filenames) then begin
   dprint,dlevel=2, "Reading in the data files...."
-  swfo_ptp_file_read,opts.filenames,file_type=file_type
+  swfo_ptp_file_read,opts.filenames,file_type=file_type  ;,/no_clear
   dprint,dlevel=2,'A list of packet types and their statistics should be displayed after all the files have been read.'
   if opts.stepbystep then stop
 endif
@@ -131,8 +137,10 @@ if keyword_set(opts.init_realtime) then begin
 endif
 
 !except =0
-dprint,dlevel=2,'Create a "Time Plot" (tplot) showing key parameters of the STIS instrument'
-swfo_stis_tplot,/setlim
+if opts.refresh then begin
+  dprint,dlevel=2,'Create a "Time Plot" (tplot) showing key parameters of the STIS instrument'
+  swfo_stis_tplot,/setlim  
+endif else tplot
 
 if 0 then tplot,'*hkp1_ADC_TEMP_S1 *hkp1_ADC_BIAS_* *hkp1_ADC_?5? swfo_stis_hkp1_RATES_CNTR swfo_stis_sci_COUNTS swfo_stis_nse_NHIST swfo_stis_hkp1_CMDS'
 

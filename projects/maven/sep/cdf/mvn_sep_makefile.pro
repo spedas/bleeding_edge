@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-04-24 11:39:59 -0700 (Sun, 24 Apr 2022) $
-; $LastChangedRevision: 30785 $
+; $LastChangedDate: 2023-01-15 12:00:25 -0800 (Sun, 15 Jan 2023) $
+; $LastChangedRevision: 31409 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/cdf/mvn_sep_makefile.pro $
 ; $ID: $
 
@@ -14,9 +14,10 @@ pro mvn_sep_make_cdf_wrap,cal=cal,raw=raw,sepnum=sepnum,source_files=source_file
   ver = sw_version.sw_version
   L2_fileformat ='maven/data/sci/sep/l2/YYYY/MM/mvn_sep_l2_'+data_type+'_YYYYMMDD_'+ver+'_r??.cdf'
   lastrev_fname = mvn_pfp_file_retrieve(l2_fileformat,/daily_name,trange=trange[0],verbose=verbose,/last_version)
-  lri = file_info(lastrev_fname)
-  source_fi = file_info([source_files,prereq_files])
-  if lri.mtime lt max([source_fi.mtime,source_fi.ctime]) then begin
+  ;  lri = file_info(lastrev_fname)
+  ;  source_fi = file_info([source_files,prereq_files])
+  ;  if lri.mtime lt max([source_fi.mtime,source_fi.ctime]) then begin
+  if file_modtime(lastrev_fname) lt max(file_modtime([source_files,prereq_files])) then begin
     mvn_sep_load,/use_cache,files=source_files,trange=trange,/L1
     nextrev_fname = mvn_pfp_file_next_revision(lastrev_fname)
     dprint,dlevel=2,'Generating L2 file: '+nextrev_fname
@@ -101,10 +102,12 @@ pro mvn_sep_makefile,init=init,trange=trange0
     endif
 
     L1_filename = mvn_pfp_file_retrieve(L1fmt,/daily,trange=tr[0],source=source,verbose=verbose,create_dir=1)
-    L0_info = file_info(L0_files)
-    prereq_timestamp = max([sw_info.mtime, L0_info.mtime, L0_info.ctime])
-    target_info = file_info(l1_filename)
-    target_timestamp = target_info.mtime
+    ;    L0_info = file_info(L0_files)
+    ;    target_info = file_info(l1_filename)
+    ;    prereq_timestamp = max([sw_info.mtime, L0_info.mtime, L0_info.ctime])
+    ;    target_timestamp = target_info.mtime
+    prereq_timestamp=max(file_modtime(prereq_files))
+    target_timestamp=file_modtime(l1_filename)
 
     if prereq_timestamp gt target_timestamp then begin    ; skip if L1 does not need to be regenerated
       if tr[0] lt systime(1)-100l*24l*3600l then message,'L0 files changed more than 100 days in the past!!! Exiting... '+l0_files

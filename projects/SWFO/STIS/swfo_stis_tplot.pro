@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-12-24 22:36:14 -0800 (Sat, 24 Dec 2022) $
-; $LastChangedRevision: 31374 $
+; $LastChangedDate: 2023-01-15 09:45:47 -0800 (Sun, 15 Jan 2023) $
+; $LastChangedRevision: 31407 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -33,7 +33,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     options,/def,'*hkp?_NEGATIVE_PULSE_RATES',labels='total'
     options,/def,'*sci_TOTAL *sci_RATE',colors='r',psym=6,symsize=.5,labels='SCI'
     options,/def,'*sci_TOTAL2 *sci_RATE2',colors='m',labels='SCI2'
-    options,/def,'*sci_TOTAL14 *sci_RATE14',spec=1,zlog=1
+    options,/def,'*sci_TOTAL14 *sci_RATE14',spec=1,zlog=1,no_interp=1
     options,/def,'*sci_SIGMA14',ylog=1
     options,/def,'*sci_*14',psym=-1,labels=['CH1','CH4','CH2','CH5','CH12','CH45','CH3','CH6','CH13','CH46','CH23','CH56','CH123','CH456'],labflag=1
     options,/def,'*nse_TOTAL *nse_RATE*',colors='r',psym=-2,symsize=.5,labels='NOISE'
@@ -73,12 +73,14 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
   if ~keyword_set(name) then name = 'sum2'
   plot_name = strupcase(strtrim(name,2))
   case plot_name of
-    'SUM1': tplot,add=add,'*hkp2_USER_0A *hkp2_STATE_MACHINE_ERRORS swfo_stis_DURATION *hkp1_PPS_* *hkp?_DAC_* *_RATES_PULSFREQ *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14 *nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6 *hkp1_CMDS_RECEIVED *hkp1_CMDS_BAD *hkp1_*REMAIN* *hkp1_*BITS *hkp1_*_CLOCK_* *hkp1_TEST_PULSE_WIDTH_1US *hkp1_ADC_*'
+    'SUM1': tplot,add=add,'*hkp1_USER_0A *hkp1_STATE_MACHINE_ERRORS swfo_stis_DURATION *hkp1_PPS_* *hkp?_DAC_* *_RATES_PULSFREQ *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14 *nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6 *hkp1_CMDS_RECEIVED *hkp1_CMDS_BAD *hkp1_*REMAIN* *hkp1_*BITS *hkp1_*_CLOCK_* *hkp1_TEST_PULSE_WIDTH_1US *hkp1_ADC_*'
     'SUM2': tplot,add=add,'*hkp2_STATE_MACHINE_ERRORS swfo_stis_RATES_TOTAL *hkp2_*RATES *hkp?_DAC_* *_RATES_PULSFREQ *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14 *nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6 *hkp2_CMDS_RECEIVED *hkp2_*BITS *hkp2_*_CLOCK_* *hkp2_ADC_*'
     'SUM3': tplot,add=add,'swfo_stis_RATES_TOTAL *hkp?_DAC_* *_RATES_PULSFREQ *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14 *nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6'
     'NOISE': tplot,add=add,'*nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6'
     'SCI': tplot,add=add,'*sci_COUNTS *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14'
     'ADC': tplot,add=add,'*hkp1_ADC*
+    'ERRORS' : tplot,add=add,'*hkp2*ERRORS'
+    'DL1':  tplot,add=add,'*sci*COUNTS *nse_HISTOGRAM *nse_SIGMA swfo_stis_hkp1_CMDS_EXECUTED'
     else: dprint,'Unknown code: '+strtrim(name,2)
   endcase
 

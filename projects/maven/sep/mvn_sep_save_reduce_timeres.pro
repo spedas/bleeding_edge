@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-04-24 12:30:51 -0700 (Sun, 24 Apr 2022) $
-; $LastChangedRevision: 30786 $
+; $LastChangedDate: 2023-01-15 12:00:25 -0800 (Sun, 15 Jan 2023) $
+; $LastChangedRevision: 31409 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_save_reduce_timeres.pro $
 
 ;20160623 Ali
@@ -104,10 +104,12 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
     endif
 
     append_array,prereq_files,fullres_file
-    prereq_info=file_info(prereq_files)
-    target_info=file_info(redures_file)
-    prereq_timestamp=max([prereq_info.mtime,prereq_info.ctime])
-    target_timestamp=target_info.mtime
+    ;    prereq_info=file_info(prereq_files)
+    ;    target_info=file_info(redures_file)
+    ;    prereq_timestamp=max([prereq_info.mtime,prereq_info.ctime])
+    ;    target_timestamp=target_info.mtime
+    prereq_timestamp=file_modtime(prereq_files)
+    target_timestamp=file_modtime(redures_file)
     if keyword_set(timestamp) then target_timestamp=time_double(timestamp) < target_timestamp
     if ~keyword_set(force_make) && (prereq_timestamp le target_timestamp) then continue ;skip if lowres L1 does not need to be regenerated
     dprint,verbose=verbose,dlevel=3,'Generating new file: '+redures_file
