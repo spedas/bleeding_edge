@@ -1,7 +1,7 @@
 ; Created by Davin Larson
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2023-01-15 12:00:25 -0800 (Sun, 15 Jan 2023) $
-; $LastChangedRevision: 31409 $
+; $LastChangedDate: 2023-01-16 13:01:28 -0800 (Mon, 16 Jan 2023) $
+; $LastChangedRevision: 31412 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_load.pro $
 
 pro mvn_sep_load,pathnames=pathnames,trange=trange,files=files,RT=RT,download_only=download_only, $
@@ -45,12 +45,12 @@ pro mvn_sep_load,pathnames=pathnames,trange=trange,files=files,RT=RT,download_on
       if array_equal(files,source_filenames) then begin
         dprint,verbose=verbose,dlevel=2,'Using cached common block loaded from '+file_info_string(files)
         return
-      endif else message,'Unable to use cached common block because of different files: '+file_info_string([files,source_filenames])
+      endif else dprint,'Unable to use cached common block; different files: '+file_info_string([files,source_filenames])
     endif
 
     mvn_sep_var_restore,trange=trange,download_only=download_only,verbose=verbose,lowres=lowres,arc=arc,$
-      units_name=units_name,basic_tags=basic_tags,full_tags=full_tags,filename=files
-    if ~keyword_set(download_only) && keyword_set(files) then begin
+      units_name=units_name,basic_tags=basic_tags,full_tags=full_tags,filename=sav_files
+    if ~keyword_set(download_only) && keyword_set(sav_files) then begin
       mvn_sep_cal_to_tplot,sepn=1,lowres=lowres,arc=arc
       mvn_sep_cal_to_tplot,sepn=2,lowres=lowres,arc=arc
     endif

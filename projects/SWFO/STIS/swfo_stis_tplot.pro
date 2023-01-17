@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2023-01-15 09:45:47 -0800 (Sun, 15 Jan 2023) $
-; $LastChangedRevision: 31407 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-01-16 09:39:06 -0800 (Mon, 16 Jan 2023) $
+; $LastChangedRevision: 31410 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -29,7 +29,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     options,/def,'*sci_COUNTS',spec=1,panel_size=3,/no_interp,/zlog,zrange=[1,4000.],constant=findgen(15)*48
     options,/def,'*hkp?_ADC_*',constant=0.
     channels=['CH1','CH2','CH3','CH4','CH5','CH6']
-    options,/def,'*hkp?_*RATES* *nse_BASELINE *nse_SIGMA',colors='bgrmcd',psym=-1,symsize=.5,labels=channels,labflag=-1
+    options,/def,'*hkp?_*RATES* *nse_BASELINE *nse_SIGMA',colors='bgrmcd',psym=-1,symsize=.5,labels=channels,labflag=-1,/ylog,yrange=[.5,1e5]
     options,/def,'*hkp?_NEGATIVE_PULSE_RATES',labels='total'
     options,/def,'*sci_TOTAL *sci_RATE',colors='r',psym=6,symsize=.5,labels='SCI'
     options,/def,'*sci_TOTAL2 *sci_RATE2',colors='m',labels='SCI2'

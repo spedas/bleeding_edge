@@ -7,29 +7,118 @@
 ;
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-01-15 09:28:13 -0800 (Sun, 15 Jan 2023) $
-; $LastChangedRevision: 31406 $
+; $LastChangedDate: 2023-01-16 09:39:06 -0800 (Mon, 16 Jan 2023) $
+; $LastChangedRevision: 31410 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
 
 
 ; sample plotting procedure
-pro  swfo_stis_plot_example,nsamples=nsamples    ; This is very simple sample routine to demonstrate how to plot recently collecte spectra
+
+
+pro swfo_stis_nonlut_decomp_array, nrg=nrg, dnrg=dnrg
+  clog_17_6=[$
+    0,     1,     2,     3,$
+    4,     5,     6,     7,$
+    8,     10,    12,    14,$
+    16,    20,    24,    28,$
+    32,    40,    48,    56,$
+    64,    80,    96,    112,$
+    128,   160,   192,   224,$
+    256,   320,   384,   448,$
+    512,   640,   768,   896,$
+    1024,  1280,  1536,  1792,$
+    2048,  2560,  3072,  3584,$
+    4096,  5120,  6144,  7168,$
+   ; 8192,  10240, 12288, 14336,$
+   ; 16384, 20480, 24576, 28672,$
+   ; 32768, 40960, 49152, 57344,$
+   ; 65536, 81920, 98304, 114688, $
+   2L^13    ]
+    
+    adc0 =  float(clog_17_6)           ; low adc threshold
+    d_adc0 = shift(adc0 ,-1) - adc0 
+
+    nrg_per_adc = 1.  ;1.5   ; keV per adc unit
+    
+    nrg = nrg_per_adc * (adc0 + d_adc0/2.)   ; midpoint energy
+    dnrg = nrg_per_adc * d_adc0              ; energy width
+end
+
+
+
+
+
+
+pro  swfo_stis_plot_example,trange=trange,nsamples=nsamples    ; This is very simple sample routine to demonstrate how to plot recently collecte spectra
   sci = swfo_apdat('stis_sci')
   da = sci.data    ; the dynamic array that contains all the data collected  (it gets bigger with time)
   size= da.size    ;  Current size of the data  (it gets bigger with time)
 
-  if ~keyword_set(nsamples) then nsamples = 20
-  index = [size-nsamples:size-1]    ; get indices of last N samples
-  samples=da.slice(index)           ; extract the last N samples
+  if keyword_set(trange) then begin
+    samples=da.sample(range=trange,tagname='time')
+    nsamples = n_elements(samples)
+  endif else begin
+    if ~keyword_set(nsamples) then nsamples = 20
+    index = [size-nsamples:size-1]    ; get indices of last N samples
+    samples=da.slice(index)           ; extract the last N samples
+  endelse
+  
+    
+  counts = total(samples.counts,2)    ;  get the total over slice
+  integ_time = total(samples.duration)
 
-  spectra = total(samples.counts,2)    ;  get the total over slice
-  xval = findgen( n_elements( spectra)) * 1.
-  wi,2                                ; Open window
+  if 1 then begin
+    xval = findgen( n_elements( counts)) * 1.
+    wi,2                                ; Open window
+    plot,xval,counts,psym=10,xtitle='Bin Number',ytitle='Counts', /xstyle, $
+      title='Science Data (Integrated over '+strtrim(nsamples,2)+' samples)',/ylog,yrange=minmax(/pos,[counts,[8,10]]);[.5,max(counts)]
+  endif
+  datsize = 672
+  if  1 && datsize eq 672 then begin  ; Non LUT only
+    wi,3
+    bins = indgen(672)
+    bin14    = bins / 48
+    bin_nrg  = bins mod 48
+    bin_ptrn = bin14 / 2          ; C123 pattern minus 1
+    bin_tid  = bin14 mod 2
+    
+    g3=1.
+    g2=g3
+    g1=g3/100.
+    g0= g3
+    g4=g1
+    g5=g2
+    g6=g3
+    
+    col= [5,2,4,6,1,3,0,5,5,5,5,5,5,5]
+    gfs= [g0,g1,g2,g3,g4,g5,g6]
+    ;           1       2      12     3      13    23     123
+    channel= [[1,4],  [2,5],  [0,0],  [3,6],   [0,0],   [0,0],   [0,0] ] 
+    ;colors = [[2,6],  [4,0],  [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
+    colors = col[channel]
+    print,'colors'
+    print,colors
+    symb   = [[2,6],  [4,0],   [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
+    lstyle = [[2,6],  [4,0],   [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
+    gf     = [[g1,g4],[g2,g5], [g1,g4],[g3,g6], [g1,g4], [g3,g6], [g2,g4] ]
+    
+    xlim,lim,.1,10000,1
+    ylim,lim,1e-10,100,1
+    box,lim
+    
+    ;counts = counts > .01
+    
+    swfo_stis_nonlut_decomp_array, nrg=nrg, dnrg=dnrg
+    x = nrg[bin_nrg]
+    y = counts/integ_time  /dnrg[bin_nrg] / gf[bin14]
+    
+    plots,x,y,color = colors[bin14],psym=-1,noclip=0,thick=2
+    ;dprint,nrg
 
-  plot,xval,spectra,psym=10,xtitle='Bin Number',ytitle='Counts', $
-    title='Science Data (Integrated over '+strtrim(nsamples,2)+' samples)',/ylog,yrange=minmax(/pos,[spectra,[8,10]]);[.5,max(spectra)]
+  endif
+
 
   store_data,'mem',systime(1),memory(/cur)/(2.^6),/append
 end
@@ -76,7 +165,7 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = ['2022-10-14 23:48','2022 10 14 23:50']  ;Am241 x-ray source - first light
   opts.file_trange = ['2022-12-27','2022 12 28']  ;Am241 x-ray source - flight like detectors
   opts.file_trange = ['2023 1 5','2023 1 5 2']  ;Am241 x-ray source - flight like detectors
-  opts.file_trange = ['2023 1 3 17','2023 1 3 20']  ;Am241 x-ray source - flight like detectors with transition
+  opts.file_trange = ['2023 1 3 16','2023 1 3 21']  ;Am241 x-ray source - flight like detectors with transition
   opts.file_trange = ['2023 1 3 ','2023 1 5 ']  ;Am241 x-ray source - flight like detectors with transition - 2 days
   ;opts.file_trange = !null
   ;opts.file_trange = 3
