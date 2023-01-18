@@ -1,7 +1,7 @@
 ; Created by Davin Larson
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2023-01-16 13:01:28 -0800 (Mon, 16 Jan 2023) $
-; $LastChangedRevision: 31412 $
+; $LastChangedDate: 2023-01-17 06:55:19 -0800 (Tue, 17 Jan 2023) $
+; $LastChangedRevision: 31413 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_load.pro $
 
 pro mvn_sep_load,pathnames=pathnames,trange=trange,files=files,RT=RT,download_only=download_only, $
@@ -32,22 +32,21 @@ pro mvn_sep_load,pathnames=pathnames,trange=trange,files=files,RT=RT,download_on
     return
   endif
 
-  if keyword_set(L0) then   format = 'L0_RAW'
-  if keyword_set(L1) then   format = 'L1_SAV'
-  if keyword_set(L2) then   format = 'L2_CDF'
+  if keyword_set(L0) then format = 'L0_RAW'
+  if keyword_set(L1) then format = 'L1_SAV'
+  if keyword_set(L2) then format = 'L2_CDF'
 
   if ~keyword_set(format) then format='L1_SAV'
 
+  if keyword_set(use_cache) and keyword_set(source_filenames) then begin
+    files = mvn_pfp_file_retrieve(/L0,/daily,trange=trange,source=source,verbose=verbose,RT=RT,files=files,pathnames)
+    if array_equal(files,source_filenames) then begin
+      dprint,verbose=verbose,dlevel=2,'Using cached common block loaded from '+file_info_string(files)
+      return
+    endif else dprint,'Unable to use cached common block; different files: '+file_info_string([files,source_filenames])
+  endif
+
   if format eq 'L1_SAV' then begin
-
-    if keyword_set(use_cache) and keyword_set(source_filenames) then begin
-      files = mvn_pfp_file_retrieve(/L0,/daily,trange=trange,source=source,verbose=verbose,RT=RT,files=files,pathnames)
-      if array_equal(files,source_filenames) then begin
-        dprint,verbose=verbose,dlevel=2,'Using cached common block loaded from '+file_info_string(files)
-        return
-      endif else dprint,'Unable to use cached common block; different files: '+file_info_string([files,source_filenames])
-    endif
-
     mvn_sep_var_restore,trange=trange,download_only=download_only,verbose=verbose,lowres=lowres,arc=arc,$
       units_name=units_name,basic_tags=basic_tags,full_tags=full_tags,filename=sav_files
     if ~keyword_set(download_only) && keyword_set(sav_files) then begin
@@ -105,13 +104,6 @@ pro mvn_sep_load,pathnames=pathnames,trange=trange,files=files,RT=RT,download_on
   ;  Use L0 format if it reaches this point.
 
   files = mvn_pfp_file_retrieve(/L0,/daily,trange=trange,source=source,verbose=verbose,RT=RT,files=files,pathnames)
-
-  if keyword_set(use_cache) and keyword_set(source_filenames) then begin
-    if array_equal(files,source_filenames) then begin
-      dprint,verbose=verbose,dlevel=2,'Using cached common block loaded from '+file_info_string(files)
-      return
-    endif
-  endif
 
   tstart=systime(1)
   if n_elements(pfdpu) eq 0 then pfdpu=1

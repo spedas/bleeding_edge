@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2023-01-15 12:00:25 -0800 (Sun, 15 Jan 2023) $
-; $LastChangedRevision: 31409 $
+; $LastChangedDate: 2023-01-17 06:55:19 -0800 (Tue, 17 Jan 2023) $
+; $LastChangedRevision: 31413 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/cdf/mvn_sep_makefile.pro $
 ; $ID: $
 
@@ -58,7 +58,7 @@ pro mvn_sep_makefile,init=init,trange=trange0
   endif else trange0 = timerange(trange0)
 
   ;if ~keyword_set(plotformat) then plotformat = 'maven/data/sci/sep/plots/YYYY/MM/$NDAY/$PLOT/mvn_sep_$PLOT_YYYYMMDD_$NDAY.png'
-  L1_fileformat =  'maven/data/sci/sep/l1/sav/YYYY/MM/mvn_sep_l1_YYYYMMDD_$NDAY.sav'
+  L1_fileformat = 'maven/data/sci/sep/l1/sav/YYYY/MM/mvn_sep_l1_YYYYMMDD_$NDAY.sav'
   ndaysload =1
   L1fmt = str_sub(L1_fileformat, '$NDAY', strtrim(ndaysload,2)+'day')
   res = 86400L
@@ -101,7 +101,8 @@ pro mvn_sep_makefile,init=init,trange=trange0
       append_array, prereq_files, mk_files
     endif
 
-    L1_filename = mvn_pfp_file_retrieve(L1fmt,/daily,trange=tr[0],source=source,verbose=verbose,create_dir=1)
+    if tr[0] gt time_double('23') then L1fmt=L1fmt.substring(0,-10)+l0_files.substring(-9,-5)+'.sav'
+    L1_filename = mvn_pfp_file_retrieve(L1fmt,/daily,trange=tr[0],source=source,verbose=verbose,create_dir=0)
     ;    L0_info = file_info(L0_files)
     ;    target_info = file_info(l1_filename)
     ;    prereq_timestamp = max([sw_info.mtime, L0_info.mtime, L0_info.ctime])

@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-07-06 12:21:07 -0700 (Wed, 06 Jul 2022) $
-; $LastChangedRevision: 30902 $
+; $LastChangedDate: 2023-01-17 06:55:19 -0800 (Tue, 17 Jan 2023) $
+; $LastChangedRevision: 31413 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_var_restore.pro $
 
 pro mvn_sep_var_restore,pathname,trange=trange,verbose=verbose,download_only=download_only,prereq_info=prereq_temp,filename=files,no_finish=no_finish, $
@@ -11,7 +11,7 @@ pro mvn_sep_var_restore,pathname,trange=trange,verbose=verbose,download_only=dow
   @mvn_pfdpu_handler_commonblock.pro
 
   trange = timerange(trange)
-  if ~keyword_set(pathname) then pn='maven/data/sci/sep/l1/sav/YYYY/MM/mvn_sep_l1_YYYYMMDD_1day.sav'
+  if ~keyword_set(pathname) then pn='maven/data/sci/sep/l1/sav/YYYY/MM/mvn_sep_l1_YYYYMMDD_????.sav'
   if keyword_set(lowres) then begin
     pathname='maven/data/sci/sep/l1/sav_$RES/YYYY/MM/mvn_sep_l1_YYYYMMDD_$RES.sav'
     res=lowres
@@ -21,7 +21,7 @@ pro mvn_sep_var_restore,pathname,trange=trange,verbose=verbose,download_only=dow
     pn = str_sub(pathname,'$RES', res)
   endif
 
-  if ~keyword_set(files) then files = mvn_pfp_file_retrieve(pn,/daily,trange=trange,source=source,verbose=verbose,/valid_only,no_update=0,last_version=0)
+  if ~keyword_set(files) then files = mvn_pfp_file_retrieve(pn,/daily,trange=trange,source=source,verbose=verbose,/valid_only,no_update=0,last_version=1)
 
   if ~keyword_set(files) then begin
     dprint,verbose=verbose,dlevel=2,pn,'No SEP L1 files were found for the selected time range of '+time_string(trange[0])+' to '+time_string(trange[1])

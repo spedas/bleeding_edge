@@ -10,20 +10,20 @@ pro swfo_init_realtime,filenames=filenames,swfo=swfo, stis=stis , exec=exec0, op
     if ~isa(opts,'dictionary') then begin   ; set default values for
       opts=dictionary()
       opts.root = root_data_dir()
-      opts.reldir = 'swfo/data/sci/stis/prelaunch/realtime/'
+      opts.reldir = 'swfo/data/sci/stis/prelaunch/realtime/gse0/'
       opts.fileformat = 'YYYY/MM/DD/swfo_stis_socket_YYYYMMDD_hh.dat.gz'
       opts.host = '128.32.98.57'
-      opts.port = 2428
-      opts.title = 'SWFO PTP'
-      opts.file_type = 'ptp_file'
+      opts.port = 2028
+      opts.title = 'SWFO GSE'
+      opts.file_type = 'gse_file'
     endif
     ;extra  = opts.ToStruct()
     ;swfo_ptp_recorder,title='SWFO STIS PTP',_extra = extra
     d = opts
     directory = d.root + d.reldir
-    case opts.file_type of
+    case d.file_type of
       'ptp_file':   swfo_ptp_recorder,title=d.title,port=d.port, host=d.host, exec_proc='swfo_ptp_lun_read',destination=d.fileformat,directory=directory,set_file_timeres=3600d
-      'gse_file':   swfo_recorder,title=d.title,port=2028, host=d.host, exec_proc='swfo_gsemsg_lun_read',destination=d.fileformat,directory=directory,set_file_timeres=3600d
+      'gse_file':   swfo_recorder,title=d.title,port=d.port, host=d.host, exec_proc='swfo_gsemsg_lun_read',destination=d.fileformat,directory=directory,set_file_timeres=3600d
     endcase
   endif
 

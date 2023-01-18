@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2023-01-15 12:00:25 -0800 (Sun, 15 Jan 2023) $
-; $LastChangedRevision: 31409 $
+; $LastChangedDate: 2023-01-17 06:55:19 -0800 (Tue, 17 Jan 2023) $
+; $LastChangedRevision: 31413 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_save_reduce_timeres.pro $
 
 ;20160623 Ali
@@ -55,7 +55,7 @@ function mvn_sep_att_arc,data ;keeps burst (archive) att states in the lowres fi
 end
 
 
-pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,timestamp=timestamp,verbose=verbose,$
+pro mvn_sep_save_reduce_timeres,trange=trange0,init=init,timestamp=timestamp,verbose=verbose,$
   resstr=resstr,resolution=res,description=description,force_make=force_make
 
   if keyword_set(init) then trange0=[time_double('2013-12-03'),systime(1)] else trange0=timerange(trange0)
@@ -67,7 +67,7 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
     dprint,dlevel=3,'Time resolution not provided, Using: ',res,' seconds'
   endif
 
-  fullres_fmt='maven/data/sci/sep/l1/sav/YYYY/MM/mvn_sep_l1_YYYYMMDD_1day.sav'
+  fullres_fmt='maven/data/sci/sep/l1/sav/YYYY/MM/mvn_sep_l1_YYYYMMDD_????.sav'
   if resstr eq '5min' then fullres_fmt='maven/data/sci/sep/l1/sav_32sec/YYYY/MM/mvn_sep_l1_YYYYMMDD_32sec.sav'
   if resstr eq '01hr' then fullres_fmt='maven/data/sci/sep/l1/sav_5min/YYYY/MM/mvn_sep_l1_YYYYMMDD_5min.sav'
   redures_fmt='maven/data/sci/sep/l1/sav_'+resstr+'/YYYY/MM/mvn_sep_l1_YYYYMMDD_'+resstr+'.sav'
@@ -81,7 +81,7 @@ pro mvn_sep_save_reduce_timeres,pathformat=pathformat,trange=trange0,init=init,t
     tr=trange[0]+[i,i+1]*day
     tn=tr[0]
     prereq_files=''
-    fullres_file=mvn_pfp_file_retrieve(fullres_fmt,trange=tn,/daily_names)
+    fullres_file=mvn_pfp_file_retrieve(fullres_fmt,trange=tn,/daily_names,/last_version)
     redures_file=mvn_pfp_file_retrieve(redures_fmt,trange=tn,/daily_names)
     dprint,dlevel=3,fullres_file
 

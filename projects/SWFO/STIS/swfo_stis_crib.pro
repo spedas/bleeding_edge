@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-01-16 09:39:06 -0800 (Mon, 16 Jan 2023) $
-; $LastChangedRevision: 31410 $
+; $LastChangedDate: 2023-01-17 12:57:50 -0800 (Tue, 17 Jan 2023) $
+; $LastChangedRevision: 31415 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -51,7 +51,7 @@ end
 
 
 
-pro  swfo_stis_plot_example,trange=trange,nsamples=nsamples    ; This is very simple sample routine to demonstrate how to plot recently collecte spectra
+pro  swfo_stis_plot_example,trange=trange,nsamples=nsamples,lim=lim    ; This is very simple sample routine to demonstrate how to plot recently collecte spectra
   sci = swfo_apdat('stis_sci')
   da = sci.data    ; the dynamic array that contains all the data collected  (it gets bigger with time)
   size= da.size    ;  Current size of the data  (it gets bigger with time)
@@ -92,7 +92,8 @@ pro  swfo_stis_plot_example,trange=trange,nsamples=nsamples    ; This is very si
     g5=g2
     g6=g3
     
-    col= [5,2,4,6,1,3,0,5,5,5,5,5,5,5]
+    alt = 150
+    col= [180,2,4,6,1,3,0,5,5,5,alt,alt,5,5]
     gfs= [g0,g1,g2,g3,g4,g5,g6]
     ;           1       2      12     3      13    23     123
     channel= [[1,4],  [2,5],  [0,0],  [3,6],   [0,0],   [0,0],   [0,0] ] 
@@ -105,27 +106,28 @@ pro  swfo_stis_plot_example,trange=trange,nsamples=nsamples    ; This is very si
     gf     = [[g1,g4],[g2,g5], [g1,g4],[g3,g6], [g1,g4], [g3,g6], [g2,g4] ]
     
     xlim,lim,.1,10000,1
-    ylim,lim,1e-10,100,1
+    ylim,lim,1e-10,1000,1
     box,lim
     
     ;counts = counts > .01
     
     swfo_stis_nonlut_decomp_array, nrg=nrg, dnrg=dnrg
     x = nrg[bin_nrg]
-    y = counts/integ_time  /dnrg[bin_nrg] / gf[bin14]
+    y = counts/integ_time  /dnrg[bin_nrg]  / gf[bin14]
     
     plots,x,y,color = colors[bin14],psym=-1,noclip=0,thick=2
     ;dprint,nrg
 
   endif
 
-
-  store_data,'mem',systime(1),memory(/cur)/(2.^6),/append
+;  store_data,'mem',systime(1),memory(/cur)/(2.^6),/append
 end
 
-
-file_type ='ptp_file'
+;file_type ='ptp_file'
 file_type ='gse_file'
+station = 's1'
+
+
 ;  Define the "options" dictionary -   Opts
 if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default options
   !quiet = 1
@@ -133,14 +135,25 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.root = root_data_dir()
   opts.remote_data_dir = 'sprg.ssl.berkeley.edu/data/'
   ;opts.local_data_dir = root_data_dir()
-  opts.reldir = 'swfo/data/sci/stis/prelaunch/realtime/' ;s0/s0/
   opts.fileformat = 'YYYY/MM/DD/swfo_stis_socket_YYYYMMDD_hh.dat.gz'
-  opts.host = '128.32.98.57'
+  opts.reldir = 'swfo/data/sci/stis/prelaunch/realtime/' ;s0/s0/
   opts.title = 'SWFO STIS'
-  opts.port = 2428
+  opts.port = 2028
+  case strupcase(station) of
+    'S0' : begin
+      opts.reldir += 'S0/S0/'
+      opts.host = '128.32.98.57'
+      opts.port = 2028
+      end
+    'S1' : begin
+      ;opts.reldir += 'S1/'
+      opts.host = '128.32.98.57'
+      opts.port = 2128
+      end
+  endcase
   opts.init_realtime =1                  ; Set to 1 to start realtime stream widget
   opts.init_stis =1                      ; set to 1 to initialize the STIS APID definitions
-  opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-10,1]*60.','timebar,systime(1)']   ; commands to be run in exec widget
+  opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-1,.05]*60.*10','timebar,systime(1)']   ; commands to be run in exec widget
   ;opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-1.,.05]*600','swfo_stis_plot_example','timebar,systime(1)']      ; commands to be run in exec widget
   opts.file_trange = 2 ;set a time range for the last N hours: download last 2 hours of data files and then open real time system
   opts.file_trange = ['2021-10-10'   ,'2021-10-19'   ]   ;Temp margin test data
@@ -168,7 +181,7 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = ['2023 1 3 16','2023 1 3 21']  ;Am241 x-ray source - flight like detectors with transition
   opts.file_trange = ['2023 1 3 ','2023 1 5 ']  ;Am241 x-ray source - flight like detectors with transition - 2 days
   ;opts.file_trange = !null
-  ;opts.file_trange = 3
+  opts.file_trange = 4
   ;opts.filenames=['socket_128.32.98.57.2028_20211216_004610.dat', 'socket_128.32.98.57.20484_20211216_005158.dat']
   opts.filenames = ''
   opts.stepbystep = 0               ; this flag allows a step by step progress through this crib sheet
@@ -205,7 +218,7 @@ endif
 
 if keyword_set(opts.filenames) then begin
   dprint,dlevel=2, "Reading in the data files...."
-  swfo_ptp_file_read,opts.filenames,file_type=file_type  ;,/no_clear
+  swfo_ptp_file_read,opts.filenames,file_type=opts.file_type  ;,/no_clear
   dprint,dlevel=2,'A list of packet types and their statistics should be displayed after all the files have been read.'
   if opts.stepbystep then stop
 endif
@@ -226,7 +239,7 @@ if keyword_set(opts.init_realtime) then begin
 endif
 
 !except =0
-if opts.refresh then begin
+if 1 || opts.refresh then begin
   dprint,dlevel=2,'Create a "Time Plot" (tplot) showing key parameters of the STIS instrument'
   swfo_stis_tplot,/setlim  
 endif else tplot
