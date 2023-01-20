@@ -1,8 +1,9 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-09-17 21:08:27 -0700 (Fri, 17 Sep 2021) $
-; $LastChangedRevision: 30302 $
+; $LastChangedDate: 2023-01-19 12:36:42 -0800 (Thu, 19 Jan 2023) $
+; $LastChangedRevision: 31416 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_batch.pro $
 ; mvn_sep_batch: to be run from a cron job typically
+
 !quiet=1
 dprint,print_trace=4,print_dtime=1,setdebug=2,dlevel=3
 set_plot,'z'
@@ -20,7 +21,7 @@ dprint,'Finished mvn_common_l0_file_transfer at: '+time_string(t1,/local)+' in '
 t0=systime(1)
 dprint,'Starting mvn_sep_batch at: '+time_string(t0,/local)+' host:'+getenv('HOST')+' user:'+getenv('USER')+' group:'+getenv('GROUP')
 timespan,c=120
-;mvn_mag_gen_l1_sav,init=1 ;looks like muser@mojo has a cronjob that does this too, so commenting it out ;20190814 Ali
+mvn_mag_gen_l1_sav,init=1
 mvn_save_reduce_timeres,/mag,resstr='1sec'
 mvn_save_reduce_timeres,/mag,resstr='30sec'
 ;mvn_sep_gen_plots,init=-10
