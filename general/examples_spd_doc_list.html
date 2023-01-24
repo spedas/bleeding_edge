@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jan 20 18:16:39 2023.<P>
+<STRONG>Last modified: </STRONG>Mon Jan 23 18:16:37 2023.<P>
  
 <HR>
  
@@ -38,6 +38,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#CRIB_TPLOT_EXPORT_PRINT">CRIB_TPLOT_EXPORT_PRINT</A>
 <LI><A HREF="#CRIB_TPLOT_LAYOUT">CRIB_TPLOT_LAYOUT</A>
 <LI><A HREF="#CRIB_TPLOT_MULTIAXIS">CRIB_TPLOT_MULTIAXIS</A>
+<LI><A HREF="#CRIB_TPLOT_OPLOT_CONTOURS">CRIB_TPLOT_OPLOT_CONTOURS</A>
 <LI><A HREF="#CRIB_TPLOT_RANGE">CRIB_TPLOT_RANGE</A>
 <LI><A HREF="#CRIB_TPLOT_TICKS">CRIB_TPLOT_TICKS</A>
 <LI><A HREF="#CRIB_TPLOT_TIMEBAR_DATABAR">CRIB_TPLOT_TIMEBAR_DATABAR</A>
@@ -549,7 +550,7 @@ Warning: this crib uses some data from the THEMIS branch.  You'll require those 
 <A NAME="CRIB_TPLOT_MULTIAXIS">
 <H2>CRIB_TPLOT_MULTIAXIS</H2></A>
 <A HREF="#CRIB_TPLOT_LAYOUT">[Previous Routine]</A>
-<A HREF="#CRIB_TPLOT_RANGE">[Next Routine]</A>
+<A HREF="#CRIB_TPLOT_OPLOT_CONTOURS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: crib_tplot_multiaxis
@@ -586,9 +587,42 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/exa
 <STRONG>(See <A href="examples/crib_tplot_multiaxis.pro">general/examples/crib_tplot_multiaxis.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="CRIB_TPLOT_OPLOT_CONTOURS">
+<H2>CRIB_TPLOT_OPLOT_CONTOURS</H2></A>
+<A HREF="#CRIB_TPLOT_MULTIAXIS">[Previous Routine]</A>
+<A HREF="#CRIB_TPLOT_RANGE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: crib_oplot_contours
+ 
+ PURPOSE:  Crib to demonstrate overplotting contours on a tplot
+ spectrogram, using THEMIS ESA data
+           You can run this crib by typing:
+           IDL&gt;.run crib_oplot_contours
+           IDL&gt;.go
+           
+           When you reach a stop, press
+           IDL&gt;.c
+           to continue
+           
+           Or you can copy and paste commands directly onto the command line
+
+ SEE ALSO: crib_tplot  (basic tplot commands)
+ NOTES:
+   If you see any useful commands missing from these cribs, please let us know.
+   these cribs can help double as documentation for tplot.
+
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2023-01-23 14:38:52 -0800 (Mon, 23 Jan 2023) $
+ $LastChangedRevision: 31419 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_tplot_oplot_contours.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/crib_tplot_oplot_contours.pro">general/examples/crib_tplot_oplot_contours.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="CRIB_TPLOT_RANGE">
 <H2>CRIB_TPLOT_RANGE</H2></A>
-<A HREF="#CRIB_TPLOT_MULTIAXIS">[Previous Routine]</A>
+<A HREF="#CRIB_TPLOT_OPLOT_CONTOURS">[Previous Routine]</A>
 <A HREF="#CRIB_TPLOT_TICKS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

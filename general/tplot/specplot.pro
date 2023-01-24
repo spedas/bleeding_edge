@@ -50,9 +50,9 @@
 ;
 ;See Also:  "XLIM", "YLIM", "ZLIM",  "OPTIONS",  "TPLOT", "DRAW_COLOR_SCALE"
 ;Author:  Davin Larson,  Space Sciences Lab
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-12-16 13:45:16 -0800 (Wed, 16 Dec 2020) $
-; $LastChangedRevision: 29522 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2023-01-23 13:06:58 -0800 (Mon, 23 Jan 2023) $
+; $LastChangedRevision: 31418 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/specplot.pro $
 ;-
 pro specplot,x,y,z,limits=lim,data=data,overplot=overplot,overlay=overlay,$
@@ -217,6 +217,11 @@ if opt.zrange[0] eq opt.zrange[1] then begin
     zrange = [0.,0.]
   endelse
  
+; Check for contour overplot option, jmm, 2023-01-23
+  str_element, opt, 'overplot_contour', success = conplt
+  if keyword_set(conplt) then begin ;extract contour options
+     str_element, opt, 'contour_options', value = c_options
+  endif
  ;Multiple alternative implementations below
  ;The version above tries to accomplish the goals of both
  ;#1 Don't autoscale each gap segment independently, use a "global" scale that is consistent for all gaps
@@ -502,9 +507,17 @@ for j=0L,gapcnt do begin
 
       endelse
 
-
       if not keyword_set(gifplot) then begin
-        image = bytescale(image,bottom=bottom,top=top,range=zrange_new)
+         image = bytescale(image,bottom=bottom,top=top,range=zrange_new)
+         ;bytescale contour levels if passed in, jmm, 2023-01-23
+         if keyword_set(conplt) && keyword_set(c_options) then begin
+            str_element, c_options, 'levels', value = clevels
+            if keyword_set(clevels) then begin
+               if zlog then clevels = alog10(clevels)
+               clevels = bytescale(clevels,bottom=bottom,top=top,range=zrange_new)
+               str_element, c_options, 'levels', clevels, /add_replace
+            endif
+         endif
       endif
 
       ;fill color code provided by Tomo Hori (E-mail: horit@stelab.nagoya-u.ac.jp)
@@ -522,8 +535,11 @@ for j=0L,gapcnt do begin
         if fill_color lt 0 then begin
           ; On Macs using XQuartz, plotting to a pixmap and using DEVICE to
           ; write to the plot window is faster than using tv directly on the
-          ; plot window.
-          if !D.NAME EQ 'X' and !VERSION.OS_NAME EQ 'Mac OS X' then begin
+          ; plot window. Not sure about how to implement this if contours are
+          ; desired, jmm, 2021-01-23, so if coutours are desired, revert to tv
+          ; to the plot window
+          if !D.NAME EQ 'X' and !VERSION.OS_NAME EQ 'Mac OS X' and $
+              ~keyword_set(conplt) then begin
             plot_win = !D.WINDOW
             window, /free, xsize = npx, ysize = npy, /pixmap
             pix_win = !D.WINDOW
@@ -533,7 +549,17 @@ for j=0L,gapcnt do begin
             device, copy = [0,0,npx,npy,xposition,yposition,pix_win]
             wdelete, pix_win
           endif else begin
-            tv,image,xposition,yposition,xsize=npx,ysize=npy
+             tv,image,xposition,yposition,xsize=npx,ysize=npy
+             ;overlot contour if requested
+             if keyword_set(conplt) then begin
+                xx = !x & yy = !y ;to reset tickmarks 
+                !x.ticks = 1 & !x.tickname = replicate(' ', 30)
+                !y.ticks = 1 & !y.tickname = replicate(' ', 30)
+                contour, image, xstyle = 1, ystyle = 1, /noerase, /dev, $         
+                         position = [xposition, yposition, xposition+npx, yposition+npy], $
+                         _extra = c_options
+                !x = xx & !y = yy
+             endif
           endelse
         endif else begin
           idx = where( image eq fill_color )
