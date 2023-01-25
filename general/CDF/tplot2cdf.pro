@@ -31,9 +31,9 @@
 ;  Alexander Drozdov
 ;  
 ;   
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2022-08-30 08:37:42 -0700 (Tue, 30 Aug 2022) $
-; $LastChangedRevision: 31056 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2023-01-24 15:03:59 -0800 (Tue, 24 Jan 2023) $
+; $LastChangedRevision: 31423 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot2cdf.pro $
 ;-
 
@@ -60,12 +60,21 @@ pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attribu
   endif else begin
     get_data, tplot_vars[0], dlimits=dl
     
-    str_element, dl, 'cdf', success=cdf_exists_flag
-    
-    if ~is_struct(dl) || ~cdf_exists_flag || ~is_struct(dl.cdf) || ~is_struct(dl.cdf.gatt) then begin
-      dprint, dlevel=0, 'Error, no global attributes structure found; using the default..'
-      g_attributes_custom = g_attributes_structure
-    endif else g_attributes_custom = dl.cdf.gatt
+;    if ~is_struct(dl) || ~is_struct(dl.cdf) || ~is_struct(dl.cdf.gatt) then begin
+;      dprint, dlevel=0, 'Error, no global attributes structure found; using the default..'
+;      g_attributes_custom = g_attributes_structure
+;    endif else g_attributes_custom = dl.cdf.gatt
+; Previous code block does not work if dlimits are defined, but
+; without cdf. Instead only set the attributes if dl.cdf.gatt exists
+; and is a structure. jmm, 2022-06-14
+    g_attributes_custom = g_attributes_structure
+    if is_struct(dl) then begin
+       if tag_exist(dl, 'cdf') then begin
+          if is_struct(dl.cdf) && tag_exist(dl.cdf, 'gatt') then begin
+             if is_struct(dl.cdf.gatt) then g_attributes_custom = dl.cdf.gatt
+          endif
+       endif
+    endif
     
     g_tag = tag_names(g_attributes_custom)
     for i=0,N_ELEMENTS(g_tag)-1 do begin
@@ -96,6 +105,7 @@ pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attribu
     ; add default attributes. 
     ; this option will not overwrite existing fields
     tname = tplot_vars[i]
+
     if KEYWORD_SET(default_cdf_structure) then tplot_add_cdf_structure,tname,tt2000=tt2000
     
     get_data,tname,data=d,alimit=s, dlimits=dl
@@ -157,7 +167,8 @@ pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attribu
           return
         endif
         EpochVAR.DATAPTR = ptr_new(x, /NO_COPY)
-      endif else begin      
+        EpochVAR.DATATYPE = 'CDF_TIME_TT200' ;Set datatype to CDF_TIME_TT2000, jmm 2023-01-24
+     endif else begin      
         ; === CDF_EPOCH ===
         ; Time should be in SPEDAS format, which is UNIX time.
         ; Add variable and convert it into Epoch
@@ -309,7 +320,7 @@ pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attribu
   VARS = array_concat(VARS,SupportVARS2)
   VARS = array_concat(VARS,SupportVARS3)
   VARS = array_concat(VARS, EpochVARS)
-  
+stop  
   
   
   idl_structure.NV = N_ELEMENTS(VARS)

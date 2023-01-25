@@ -50,9 +50,9 @@
 ;
 ;See Also:  "XLIM", "YLIM", "ZLIM",  "OPTIONS",  "TPLOT", "DRAW_COLOR_SCALE"
 ;Author:  Davin Larson,  Space Sciences Lab
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2023-01-23 13:06:58 -0800 (Mon, 23 Jan 2023) $
-; $LastChangedRevision: 31418 $
+; $LastChangedBy: jimmpc1 $
+; $LastChangedDate: 2023-01-24 12:52:50 -0800 (Tue, 24 Jan 2023) $
+; $LastChangedRevision: 31422 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/specplot.pro $
 ;-
 pro specplot,x,y,z,limits=lim,data=data,overplot=overplot,overlay=overlay,$
@@ -186,6 +186,11 @@ str_element,opt,'min_value',value=mn
 str_element,opt,'bottom',value=bottom
 str_element,opt,'top',   value=top
 
+; Check for contour overplot option, jmm, 2023-01-23
+str_element, opt, 'overplot_contour', success = conplt
+if keyword_set(conplt) then begin ;extract contour options
+   str_element, opt, 'contour_options', value = c_options
+endif
 ;If autoscaling is on, make sure to autoscale outside the gap segment loop.
 ;Otherwise each gap segment will autoscale to a different range when datagap is set.
 ;(task# 4724)
@@ -217,11 +222,6 @@ if opt.zrange[0] eq opt.zrange[1] then begin
     zrange = [0.,0.]
   endelse
  
-; Check for contour overplot option, jmm, 2023-01-23
-  str_element, opt, 'overplot_contour', success = conplt
-  if keyword_set(conplt) then begin ;extract contour options
-     str_element, opt, 'contour_options', value = c_options
-  endif
  ;Multiple alternative implementations below
  ;The version above tries to accomplish the goals of both
  ;#1 Don't autoscale each gap segment independently, use a "global" scale that is consistent for all gaps
@@ -513,7 +513,7 @@ for j=0L,gapcnt do begin
          if keyword_set(conplt) && keyword_set(c_options) then begin
             str_element, c_options, 'levels', value = clevels
             if keyword_set(clevels) then begin
-               if zlog then clevels = alog10(clevels)
+               if keyword_set(zlog) then clevels = alog10(clevels)
                clevels = bytescale(clevels,bottom=bottom,top=top,range=zrange_new)
                str_element, c_options, 'levels', clevels, /add_replace
             endif

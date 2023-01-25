@@ -66,8 +66,8 @@
 ;                    quality), 0 otherwise.
 ;
 ; $LastChangedBy: xussui_lap $
-; $LastChangedDate: 2022-10-27 15:39:18 -0700 (Thu, 27 Oct 2022) $
-; $LastChangedRevision: 31197 $
+; $LastChangedDate: 2023-01-24 11:09:22 -0800 (Tue, 24 Jan 2023) $
+; $LastChangedRevision: 31420 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_topo.pro $
 ;
 ;CREATED BY:    Shaosui Xu, 11/03/2017
@@ -286,6 +286,8 @@ Pro mvn_swe_topo,trange = trange, result=result, storeTplot = storeTplot, $
     clr=[!p.background,tbl[1:7]]
     psym=[3,1,1,3,3,1,3,3]
     sysz=[1,0.5,0.5,1,1,0.5,1,1]
+    psym=[2,2,2,2,2,2,2,2]
+    sysz=[0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3]
     store_data,'topo_lab',data={x:minmax(data.t),y:replicate(!values.f_nan,2,8)}
     options,'topo_lab','labels',toponame;labs
     options,'topo_lab','colors',clr
