@@ -32,8 +32,8 @@
 ;  
 ;   
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2023-01-24 15:03:59 -0800 (Tue, 24 Jan 2023) $
-; $LastChangedRevision: 31423 $
+; $LastChangedDate: 2023-01-25 10:38:15 -0800 (Wed, 25 Jan 2023) $
+; $LastChangedRevision: 31425 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot2cdf.pro $
 ;-
 
@@ -320,8 +320,6 @@ pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attribu
   VARS = array_concat(VARS,SupportVARS2)
   VARS = array_concat(VARS,SupportVARS3)
   VARS = array_concat(VARS, EpochVARS)
-stop  
-  
   
   idl_structure.NV = N_ELEMENTS(VARS)
   str_element, idl_structure,'VARS',VARS,/add

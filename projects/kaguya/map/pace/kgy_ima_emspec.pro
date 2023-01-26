@@ -11,12 +11,12 @@
 ;       Yuki Harada on 2018-07-12
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2022-05-25 04:12:38 -0700 (Wed, 25 May 2022) $
-; $LastChangedRevision: 30829 $
+; $LastChangedDate: 2023-01-24 23:09:14 -0800 (Tue, 24 Jan 2023) $
+; $LastChangedRevision: 31424 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_ima_emspec.pro $
 ;-
 
-pro kgy_ima_emspec,trange=trange,window=window,erange=erange,tofrange=tofrange,speclimits=slim,sum=sum,linelimits=llim,Kloss=Kloss,nosplabel=nosplabel
+pro kgy_ima_emspec,trange=trange,window=window,erange=erange,tofrange=tofrange,speclimits=slim,sum=sum,linelimits=llim,Kloss=Kloss,nosplabel=nosplabel,polrange=polrange,emdata=emdata,splines=splines
 
 tr = timerange(trange)
 if size(sum,/type) eq 0 then sum = 4
@@ -38,12 +38,27 @@ if nwt eq 0 then begin
 endif
 ind = header[wt].index
 nind = nwt
+times = times[wt]
+ram = header[wt].svs_tbl
+title = trange_str(tr)
 
 datind = value_locate( dat.index, ind )
 cnt = dat[datind].cnt ;- pol, ene, tof, time
 w = where( cnt eq uint(-1) , nw )
 if nw gt 0 then cnt[w] = !values.f_nan
-;;; FIXME: theta range?
+if n_elements(polrange) eq 2 then begin ;- 0->90 range
+   ;;; Note: Type 40 pol. sorted
+   ;;; See momcal.c:
+   ;; // tmp_sum_cnt4 += ((double)s_ima_type40.cnt[inv_pol_map4[j]][inv_ene_map32[i]][l]); // bug
+   ;;    tmp_sum_cnt4 += ((double)s_ima_type40.cnt[j][inv_ene_map32[i]][l]);} // Type 40 pol. sorted
+   pol = -1.*median(info.pol_4x16[ram,*,*,*],dim=4)    ;- ram, ene, pol, az -> time, ene, pol
+   pol = transpose(rebin(pol,nwt,32,4,1024),[2,1,3,0]) ;- -> pol, ene, tof, time
+   spol = sort(pol[*,0,0,0])
+   pol = pol[spol,*,*,*]
+   w = where( pol gt min(polrange) and pol lt max(polrange) , comp=cw, ncomp=ncw )
+   if ncw gt 0 then cnt[cw] = 0.
+   title += ', pol: '+string(polrange[0],f='(f5.1)')+' -> '+string(polrange[1],f='(f5.1)')
+endif
 totalcnt = total( total( cnt,4,/nan ) , 1,/nan ) ;- ene, tof
 totalcnt[*,1022:1023] = 0.      ;- throw away mass bin 1022,1023
 
@@ -101,10 +116,12 @@ lim = {xtitle:'TOF [ns]',xrange:tofr,xstyle:1, $
        ytitle:'Energy [eV/q]',ylog:1,yrange:er,ystyle:1, $
        xticklen:-.01,yticklen:-.01, $
        ztitle:'Counts',zlog:1, $
-       no_interp:1,title:trange_str(tr),position:[.15,.55,.85,.95]}
+       no_interp:1,title:title,position:[.15,.55,.85,.95]}
 if size(slim,/type) eq 8 then extract_tags,lim,slim
 specplot,xp,yp,zp,lim=lim
+emdata = {tof:xp,energy:yp,counts:zp}
 
+undefine,splines
 if size(ima_tof_str,/type) eq 8 and ~keyword_set(nosplabel) then begin
    ;;; neutral
    marr = [1,4,4,12,16,23,27,39,40,56]
@@ -114,8 +131,15 @@ if size(ima_tof_str,/type) eq 8 and ~keyword_set(nosplabel) then begin
       w = where( ima_tof_str.m eq marr[im] and ima_tof_str.q eq qarr[im] $
                  and round(ima_tof_str.vlef) eq Vlef and round(ima_tof_str.kloss) eq kloss , nw )
       if nw eq 0 then continue
-      oplot,ima_tof_str[w].tofn,ima_tof_str[w].Kini,color=255
-      xyouts,/data,ima_tof_str[w[nw-1]].tofn,er[0]*(1.+(im mod 2)),sparr[im],align=.5,color=255
+      xx = ima_tof_str[w].tofn
+      yy = ima_tof_str[w].Kini
+      oplot,xx,yy,color=1;255
+      xyouts,/data,xx[-1],er[0]*(1.+(im mod 2)),sparr[im],align=.5,color=1;255
+      spline = {sp:'',tof:make_array(value=!values.f_nan,10),energy:make_array(value=!values.f_nan,10)}
+      spline.sp = sparr[im]
+      spline.tof[0:(nw-1)] = xx
+      spline.energy[0:(nw-1)] = yy
+      append_array,splines,spline
    endfor
    ;;; negative
    marr = [1,16]
@@ -125,8 +149,15 @@ if size(ima_tof_str,/type) eq 8 and ~keyword_set(nosplabel) then begin
       w = where( ima_tof_str.m eq marr[im] and ima_tof_str.q eq qarr[im] $
                  and round(ima_tof_str.vlef) eq Vlef and round(ima_tof_str.kloss) eq kloss , nw )
       if nw eq 0 then continue
-      oplot,ima_tof_str[w].tofneg,ima_tof_str[w].Kini,color=4
-      xyouts,/data,ima_tof_str[w[nw-1]].tofneg,er[0]*1.5,sparr[im],align=.5,color=4
+      xx = ima_tof_str[w].tofneg
+      yy = ima_tof_str[w].Kini
+      oplot,xx,yy,color=4
+      xyouts,/data,xx[-1],er[0]*1.5,sparr[im],align=.5,color=4
+      spline = {sp:'',tof:make_array(value=!values.f_nan,10),energy:make_array(value=!values.f_nan,10)}
+      spline.sp = sparr[im]
+      spline.tof[0:(nw-1)] = xx
+      spline.energy[0:(nw-1)] = yy
+      append_array,splines,spline
    endfor
    ;;; positive
    marr = [1,16]
@@ -136,8 +167,15 @@ if size(ima_tof_str,/type) eq 8 and ~keyword_set(nosplabel) then begin
       w = where( ima_tof_str.m eq marr[im] and ima_tof_str.q eq qarr[im] $
                  and round(ima_tof_str.vlef) eq Vlef and round(ima_tof_str.kloss) eq kloss , nw )
       if nw eq 0 then continue
-      oplot,ima_tof_str[w].tofL,ima_tof_str[w].Kini,color=6
-      xyouts,/data,ima_tof_str[w[nw-1]].tofL,er[0]/1.5,sparr[im],align=.5,color=6
+      xx = ima_tof_str[w].tofL
+      yy = ima_tof_str[w].Kini
+      oplot,xx,yy,color=6
+      xyouts,/data,xx[-1],er[0]/1.5,sparr[im],align=.5,color=6
+      spline = {sp:'',tof:make_array(value=!values.f_nan,10),energy:make_array(value=!values.f_nan,10)}
+      spline.sp = sparr[im]
+      spline.tof[0:(nw-1)] = xx
+      spline.energy[0:(nw-1)] = yy
+      append_array,splines,spline
    endfor
 endif
 
