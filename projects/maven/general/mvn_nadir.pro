@@ -12,11 +12,17 @@
 ;  cover the specified time range.
 ;
 ;USAGE:
-;  mvn_nadir, trange
+;  mvn_nadir, time
 ;
 ;INPUTS:
-;       trange:   Optional.  Time range for calculating the nadir direction.
-;                 If not specified, then use current range set by timespan.
+;       time:     If time has two elements, interpret it as a time range and
+;                 create an array of evenly spaced times with resolution DT.
+;
+;                 If time has more than two elements, then the ram direction
+;                 is calculated for each time in the array.
+;
+;                 Otherwise, attempt to get the time range from tplot and
+;                 create an array of evenly spaced times with resolution DT.
 ;
 ;KEYWORDS:
 ;       DT:       Time resolution (sec).  Default is to use the time resolution
@@ -32,8 +38,9 @@
 ;
 ;       POLAR:    If set, convert the direction to polar coordinates and
 ;                 store as additional tplot variables.
-;                    Phi = atan(y,x)*!radeg  ; [  0, 360]
-;                    The = asin(z)*!radeg    ; [-90, +90]
+;                    Mag = sqrt(x*x + y*y + z*z) ; units km/s
+;                    Phi = atan(y,x)*!radeg      ; units deg [  0, 360]
+;                    The = asin(z/Mag)*!radeg    ; units deg [-90, +90]
 ;
 ;       PANS:     Named variable to hold the tplot variables created.  For the
 ;                 default frame, this would be 'Nadir_MAVEN_SPACECRAFT'.
@@ -43,15 +50,13 @@
 ;       SUCCESS:  Returns 1 on normal completion, 0 otherwise
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-01-17 20:38:46 -0800 (Mon, 17 Jan 2022) $
-; $LastChangedRevision: 30519 $
+; $LastChangedDate: 2023-01-28 16:17:53 -0800 (Sat, 28 Jan 2023) $
+; $LastChangedRevision: 31430 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_nadir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
 pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, success=success
-
-  @maven_orbit_common
 
   success = 0
   dopol = keyword_set(polar)
@@ -64,7 +69,7 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, 
     print,"No valid frames."
     return
   endif
-  frame = frame[i[gndx]]
+  frame = frame[gndx]
 
 ; The spacecraft CK is always needed.  Check to see if the APP CK is also needed.
 
@@ -73,33 +78,28 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, 
                 max(strmatch(frame,'*IUVS*',/fold)) or $
                 max(strmatch(frame,'*APP*',/fold))
 
-; Get the time range
+; Create the UT array
 
-  if (size(trange,/type) eq 0) then begin
-    tplot_options, get_opt=topt
-    if (max(topt.trange_full) gt time_double('2013-11-18')) then trange = topt.trange_full
-    if (size(trange,/type) eq 0) then begin
-      print,"You must specify a time range."
+  npts = n_elements(trange)
+  if (npts lt 2) then begin
+    tplot_options, get=topt
+    trange = topt.trange_full
+    if (max(trange) lt time_double('2013-11-18')) then begin
+      print,"Invalid time range or time array."
       return
     endif
+    npts = 2L
   endif
-  tmin = min(time_double(trange), max=tmax)
+  if (npts lt 3) then begin
+    tmin = min(time_double(trange), max=tmax)
+    dt = keyword_set(dt) ? double(dt[0]) : 10D
+    npts = ceil((tmax - tmin)/dt) + 1L
+    ut = tmin + dt*dindgen(npts)
+  endif else ut = time_double(trange)
 
 ; Check the time range against the ephemeris coverage -- bail if there's a problem
 
   bail = 0
-  if (size(state,/type) eq 0) then begin
-    print,"You must run maven_orbit_tplot first."
-    bail = 1
-  endif else begin
-    smin = min(state.time, max=smax)
-    if ((tmin lt smin) or (tmax gt smax)) then begin
-      print,"Insufficient state vector coverage for the requested time range."
-      print,"  -> Rerun maven_orbit_tplot to include your time range."
-      bail = 1
-    endif
-  endelse
-
   mk = spice_test('*', verbose=-1)
   indx = where(mk ne '', count)
   if (count eq 0) then begin
@@ -123,28 +123,23 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, 
 
   if (bail) then return
 
-; First store the nadir direction in the IAU_MARS frame
+; Calculate the state vector
 
-  if keyword_set(dt) then begin
-    npts = ceil((tmax - tmin)/dt)
-    x = tmin + dt*dindgen(npts)
-    y = fltarr(npts,3)
-    y[*,0] = spline(state.time, -(state.geo_x[*,0]), x)
-    y[*,1] = spline(state.time, -(state.geo_x[*,1]), x)
-    y[*,2] = spline(state.time, -(state.geo_x[*,2]), x)
-  endif else begin
-    x = state.time
-    y = -(state.geo_x)
-  endelse
+  timestr = time_string(ut,prec=5)
+  cspice_str2et, timestr, et
+  cspice_spkezr, 'MAVEN', et, 'IAU_MARS', 'NONE', 'MARS', svec, ltime
 
+; Store the nadir direction in the IAU_MARS frame
+
+  y = -transpose(svec[0:2,*])
   ymag = sqrt(total(y*y,2)) # replicate(1.,3)
-  store_data,'Nadir',data={x:x, y:y/ymag, v:indgen(3)}
+  store_data,'Nadir',data={x:ut, y:y/ymag, v:[0,1,2]}
   options,'Nadir','ytitle','Nadir (Mars)'
   options,'Nadir','labels',['X','Y','Z']
   options,'Nadir','labflag',1
   options,'Nadir',spice_frame='IAU_MARS',spice_master_frame='MAVEN_SPACECRAFT'
 
-; Next calculate the nadir direction in frame(s) specified by keyword FRAME
+; Calculate the nadir direction in frame(s) specified by keyword FRAME
 
   pans = ['']
   

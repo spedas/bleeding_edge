@@ -42,8 +42,8 @@
 ;       SUCCESS:  Returns 1 on normal completion, 0 otherwise.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-01-17 20:38:46 -0800 (Mon, 17 Jan 2022) $
-; $LastChangedRevision: 30519 $
+; $LastChangedDate: 2023-01-28 16:18:09 -0800 (Sat, 28 Jan 2023) $
+; $LastChangedRevision: 31431 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_sundir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -62,7 +62,7 @@ pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force,
     print,"No valid frames."
     return
   endif
-  frame = frame[i[gndx]]
+  frame = frame[gndx]
 
 ; The spacecraft CK is always needed.  Check to see if the APP CK is also needed.
 

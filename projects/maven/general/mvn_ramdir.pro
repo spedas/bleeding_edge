@@ -21,18 +21,24 @@
 ;
 ;  You must have SPICE installed for this routine to work.  This routine will
 ;  check to make sure SPICE has been initialized and that the loaded kernels
-;  cover the specified time range.
+;  cover the specified time range.  With reconstructed kernels, this routine
+;  has an accuracy of ~0.1 deg.
 ;
 ;USAGE:
-;  mvn_ramdir, trange
+;  mvn_ramdir, time
 ;
 ;INPUTS:
-;       trange:   Optional.  Time range for calculating the RAM direction.
-;                 If not specified, then use current range set by timespan.
+;       time:     If time has two elements, interpret it as a time range and
+;                 create an array of evenly spaced times with resolution DT.
+;
+;                 If time has more than two elements, then the ram direction
+;                 is calculated for each time in the array.
+;
+;                 Otherwise, attempt to get the time range from tplot and
+;                 create an array of evenly spaced times with resolution DT.
 ;
 ;KEYWORDS:
-;       DT:       Time resolution (sec).  Default is to use the time resolution
-;                 of maven_orbit_tplot (usually 10 sec).
+;       DT:       Time resolution (sec).  Default is 10 sec.
 ;
 ;       FRAME:    String or string array for specifying one or more frames
 ;                 to transform the ram direction into.  Any frame recognized
@@ -46,10 +52,19 @@
 ;                 store as additional tplot variables.
 ;                    Mag = sqrt(x*x + y*y + z*z) ; units km/s
 ;                    Phi = atan(y,x)*!radeg      ; units deg [  0, 360]
-;                    The = asin(z)*!radeg        ; units deg [-90, +90]
+;                    The = asin(z/Mag)*!radeg    ; units deg [-90, +90]
 ;
 ;       MSO:      Calculate ram vector in the MSO frame instead of the
 ;                 rotating IAU_MARS frame.  May be useful at high altitudes.
+;
+;       ERROR:    Calculate the magnitude of the RAM pointing error (deg)
+;                 and store as a separate tplot variable.
+;
+;                 Using ephemeris predicts refreshed on a regular basis, the
+;                 spacecraft can usually point the APP into the RAM direction
+;                 with an accuracy of ~0.5 deg.  Occasionally, the error can
+;                 be up to ~2 deg.  The reconstructed RAM direction has an 
+;                 accuracy of ~0.1 deg.
 ;
 ;       PANS:     Named variable to hold the tplot variables created.  For the
 ;                 default frame, this would be 'V_sc_MAVEN_SPACECRAFT'.
@@ -61,26 +76,28 @@
 ;       SUCCESS:  Returns 1 on normal operation, 0 otherwise.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-01-17 20:38:46 -0800 (Mon, 17 Jan 2022) $
-; $LastChangedRevision: 30519 $
+; $LastChangedDate: 2023-01-28 16:17:06 -0800 (Sat, 28 Jan 2023) $
+; $LastChangedRevision: 31429 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
 pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, result=result, $
-                force=force, success=success
-
-  @maven_orbit_common
+                error=error, force=force, success=success
 
   success = 0
   result = 0
-  dopol = keyword_set(polar)
+  doerr = keyword_set(error)
+  dopol = keyword_set(polar) or doerr
   noguff = keyword_set(force)
 
   if (size(frame,/type) ne 7) then frame = 'MAVEN_SPACECRAFT'
-  frame = mvn_frame_name(frame, success=flag)
-  bndx = where(flag eq 0, count)
-  if (count gt 0) then frame[bndx] = ''
+  frame = mvn_frame_name(frame, success=i)
+  gndx = where(i, count)
+  if (count eq 0L) then begin
+    print,"No valid frames."
+    return
+  endif else frame = frame[gndx]
 
 ; The spacecraft CK is always needed.  Check to see if the APP CK is also needed.
 
@@ -89,33 +106,28 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
                 max(strmatch(frame,'*IUVS*',/fold)) or $
                 max(strmatch(frame,'*APP*',/fold))
 
-; Get the time range
+; Create the UT array
 
-  if (size(trange,/type) eq 0) then begin
-    tplot_options, get_opt=topt
-    if (max(topt.trange_full) gt time_double('2013-11-18')) then trange = topt.trange_full
-    if (size(trange,/type) eq 0) then begin
-      print,"You must specify a time range."
+  npts = n_elements(trange)
+  if (npts lt 2) then begin
+    tplot_options, get=topt
+    trange = topt.trange_full
+    if (max(trange) lt time_double('2013-11-18')) then begin
+      print,"Invalid time range or time array."
       return
     endif
+    npts = 2L
   endif
-  tmin = min(time_double(trange), max=tmax)
+  if (npts lt 3) then begin
+    tmin = min(time_double(trange), max=tmax)
+    dt = keyword_set(dt) ? double(dt[0]) : 10D
+    npts = ceil((tmax - tmin)/dt) + 1L
+    ut = tmin + dt*dindgen(npts)
+  endif else ut = time_double(trange)
 
 ; Check the time range against the ephemeris coverage -- bail if there's a problem
 
   bail = 0
-  if (size(state,/type) eq 0) then begin
-    print,"You must run maven_orbit_tplot first."
-    bail = 1
-  endif else begin
-    smin = min(state.time, max=smax)
-    if ((tmin lt smin) or (tmax gt smax)) then begin
-      print,"Insufficient state vector coverage for the requested time range."
-      print,"  -> Rerun maven_orbit_tplot to include your time range."
-      bail = 1
-    endif
-  endelse
-
   mk = spice_test('*', verbose=-1)
   indx = where(mk ne '', count)
   if (count eq 0) then begin
@@ -139,43 +151,27 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
 
   if (bail) then return
 
-; First store the spacecraft velocity in the IAU_MARS (or MSO) frame
+; Calculate the state vector
 
   if keyword_set(mso) then begin
-    vframe = 'MSO'
-    if keyword_set(dt) then begin
-      npts = ceil((tmax - tmin)/dt)
-      Tsc = tmin + dt*dindgen(npts)
-      Vsc = fltarr(npts,3)
-      Vsc[*,0] = spline(state.time, state.mso_v[*,0], Tsc)
-      Vsc[*,1] = spline(state.time, state.mso_v[*,1], Tsc)
-      Vsc[*,2] = spline(state.time, state.mso_v[*,2], Tsc)
-    endif else begin
-      Tsc = state.time
-      Vsc = state.mso_v
-    endelse
-    store_data,'V_sc',data={x:Tsc, y:Vsc, v:[0,1,2], vframe:vframe}
-    options,'V_sc',spice_frame='MAVEN_SSO',spice_master_frame='MAVEN_SPACECRAFT'
+    vframe = 'MAVEN_SSO'
+    vlabel = 'MSO'
   endif else begin
-    vframe = 'GEO'
-    if keyword_set(dt) then begin
-      npts = ceil((tmax - tmin)/dt)
-      Tsc = tmin + dt*dindgen(npts)
-      Vsc = fltarr(npts,3)
-      Vsc[*,0] = spline(state.time, state.geo_v[*,0], Tsc)
-      Vsc[*,1] = spline(state.time, state.geo_v[*,1], Tsc)
-      Vsc[*,2] = spline(state.time, state.geo_v[*,2], Tsc)
-    endif else begin
-      Tsc = state.time
-      Vsc = state.geo_v
-    endelse
-    store_data,'V_sc',data={x:Tsc, y:Vsc, v:[0,1,2], vframe:vframe}
-    options,'V_sc',spice_frame='IAU_MARS',spice_master_frame='MAVEN_SPACECRAFT'
+    vframe = 'IAU_MARS'
+    vlabel = 'GEO'
   endelse
+  timestr = time_string(ut,prec=5)
+  cspice_str2et, timestr, et
+  cspice_spkezr, 'MAVEN', et, vframe, 'NONE', 'MARS', svec, ltime
+
+; Store the spacecraft velocity in the IAU_MARS (or MSO) frame
+
+  store_data,'V_sc',data={x:ut, y:transpose(svec[3:5,*]), v:[0,1,2], vframe:vframe}
+  options,'V_sc',spice_frame=vframe,spice_master_frame='MAVEN_SPACECRAFT'
 
   result = {name : 'MAVEN RAM Velocity'}
 
-; Next calculate the ram direction in frame(s) specified by keyword FRAME
+; Calculate the ram direction in frame(s) specified by keyword FRAME
   
   pans = ['']
   
@@ -202,7 +198,7 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
       str_element, Vsc, 'vframe', vframe, /add
       str_element, Vsc, 'units', 'km/s', /add
       store_data, vname, data=Vsc
-      options,vname,'ytitle',vframe + ' RAM (' + fname + ')!ckm/s'
+      options,vname,'ytitle',vlabel + ' RAM (' + fname + ')!ckm/s'
       options,vname,'colors',[2,4,6]
       options,vname,'labels',labels
       options,vname,'labflag',1
@@ -221,29 +217,42 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
 
         mag_name = 'V_sc_' + fname + '_Mag'
         store_data,mag_name,data=vmag
-        options,mag_name,'ytitle',vframe + ' RAM Vel (' + fname + ')!ckm/s'
+        options,mag_name,'ytitle',vlabel + ' RAM Vel (' + fname + ')!ckm/s'
         options,mag_name,'ynozero',1
         options,mag_name,'psym',3
+        options,mag_name,'colors',6
 
         the_name = 'V_sc_' + fname + '_The'
         store_data,the_name,data=the
-        options,the_name,'ytitle',vframe + ' RAM The (' + fname + ')!cdeg'
+        options,the_name,'ytitle',vlabel + ' RAM The (' + fname + ')!cdeg'
         options,the_name,'ynozero',1
         options,the_name,'psym',3
+        options,the_name,'colors',6
 
         phi_name = 'V_sc_' + fname + '_Phi'
         store_data,phi_name,data=phi
         ylim,phi_name,0,360,0
-        options,phi_name,'ytitle',vframe + ' RAM Phi (' + fname + ')!cdeg'
+        options,phi_name,'ytitle',vlabel + ' RAM Phi (' + fname + ')!cdeg'
         options,phi_name,'yticks',4
         options,phi_name,'yminor',3
         options,phi_name,'ynozero',1
         options,phi_name,'psym',3
+        options,phi_name,'colors',6
 
         pans = [pans, the_name, phi_name]
         str_element, result, 'mag'+fnum, vmag, /add
         str_element, result, 'the'+fnum, the, /add
         str_element, result, 'phi'+fnum, phi, /add
+
+        if (doerr) then begin
+          dang = acos(cos(phi.y*!dtor)*cos(the.y*!dtor))*!radeg
+          store_data,'RAM_Error',data={x:phi.x, y:dang}
+          ylim,'RAM_Error',0,3,0
+          options,'RAM_Error','ytitle','RAM Error!cdeg'
+          options,'RAM_Error','psym',3
+          options,'RAM_Error','colors',6
+          options,'RAM_Error','constant',[0.5,2]
+        endif
       endif
     endif else begin
       print,"Could not rotate to frame: ",to_frame
