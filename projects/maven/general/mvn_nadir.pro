@@ -25,8 +25,7 @@
 ;                 create an array of evenly spaced times with resolution DT.
 ;
 ;KEYWORDS:
-;       DT:       Time resolution (sec).  Default is to use the time resolution
-;                 of maven_orbit_tplot (usually 10 sec).
+;       DT:       Time resolution (sec).  Default is 10 sec.
 ;
 ;       FRAME:    String or string array for specifying one or more frames
 ;                 to transform the nadir direction into.  Any frame recognized
@@ -38,9 +37,8 @@
 ;
 ;       POLAR:    If set, convert the direction to polar coordinates and
 ;                 store as additional tplot variables.
-;                    Mag = sqrt(x*x + y*y + z*z) ; units km/s
-;                    Phi = atan(y,x)*!radeg      ; units deg [  0, 360]
-;                    The = asin(z/Mag)*!radeg    ; units deg [-90, +90]
+;                    Phi = atan(y,x)*!radeg  ; units deg [  0, 360]
+;                    The = asin(z)*!radeg    ; units deg [-90, +90]
 ;
 ;       PANS:     Named variable to hold the tplot variables created.  For the
 ;                 default frame, this would be 'Nadir_MAVEN_SPACECRAFT'.
@@ -50,8 +48,8 @@
 ;       SUCCESS:  Returns 1 on normal completion, 0 otherwise
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-01-28 16:17:53 -0800 (Sat, 28 Jan 2023) $
-; $LastChangedRevision: 31430 $
+; $LastChangedDate: 2023-01-29 10:20:40 -0800 (Sun, 29 Jan 2023) $
+; $LastChangedRevision: 31434 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_nadir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -106,7 +104,7 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, 
     print,"You must initialize SPICE first."
     bail = 1
   endif else begin
-    mvn_spice_stat, summary=sinfo, check=[tmin,tmax], /silent
+    mvn_spice_stat, summary=sinfo, check=minmax(ut), /silent
     ok = sinfo.spk_check and sinfo.ck_sc_check
     if (need_app_ck) then ok = ok and sinfo.ck_app_check
     if (not ok) then begin
@@ -146,7 +144,7 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, 
   indx = where(frame ne '', nframes)
   for i=0,(nframes-1) do begin
     to_frame = strupcase(frame[indx[i]])
-    spice_vector_rotate_tplot,'Nadir',to_frame,trange=[tmin,tmax],check='MAVEN_SPACECRAFT'
+    spice_vector_rotate_tplot,'Nadir',to_frame,trange=minmax(ut),check='MAVEN_SPACECRAFT'
 
     labels = ['X','Y','Z']
     pname = 'Nadir_' + to_frame

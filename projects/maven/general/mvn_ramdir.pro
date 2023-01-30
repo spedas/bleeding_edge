@@ -54,6 +54,8 @@
 ;                    Phi = atan(y,x)*!radeg      ; units deg [  0, 360]
 ;                    The = asin(z/Mag)*!radeg    ; units deg [-90, +90]
 ;
+;       PH_180:   If set, the range for Phi is -180 to +180 degrees.
+;
 ;       MSO:      Calculate ram vector in the MSO frame instead of the
 ;                 rotating IAU_MARS frame.  May be useful at high altitudes.
 ;
@@ -76,20 +78,21 @@
 ;       SUCCESS:  Returns 1 on normal operation, 0 otherwise.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-01-28 16:17:06 -0800 (Sat, 28 Jan 2023) $
-; $LastChangedRevision: 31429 $
+; $LastChangedDate: 2023-01-29 10:36:41 -0800 (Sun, 29 Jan 2023) $
+; $LastChangedRevision: 31436 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
 pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, result=result, $
-                error=error, force=force, success=success
+                ph_180=ph_180, error=error, force=force, success=success
 
   success = 0
   result = 0
   doerr = keyword_set(error)
   dopol = keyword_set(polar) or doerr
   noguff = keyword_set(force)
+  ph_360 = ~keyword_set(ph_180)
 
   if (size(frame,/type) ne 7) then frame = 'MAVEN_SPACECRAFT'
   frame = mvn_frame_name(frame, success=i)
@@ -134,7 +137,7 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
     print,"You must initialize SPICE first."
     bail = 1
   endif else begin
-    mvn_spice_stat, summary=sinfo, check=[tmin,tmax], /silent
+    mvn_spice_stat, summary=sinfo, check=minmax(ut), /silent
     ok = sinfo.spk_check and sinfo.ck_sc_check
     if (need_app_ck) then ok = ok and sinfo.ck_app_check
     if (not ok) then begin
@@ -179,7 +182,7 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
   for i=0,(nframes-1) do begin
     fnum = strtrim(string(i,format='(i)'),2)
     to_frame = strupcase(frame[indx[i]])
-    spice_vector_rotate_tplot,'V_sc',to_frame,trange=[tmin,tmax]
+    spice_vector_rotate_tplot,'V_sc',to_frame,trange=minmax(ut)
 
     labels = ['X','Y','Z']
     fname = strmid(to_frame, strpos(to_frame,'_')+1)
@@ -207,7 +210,7 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
       str_element, result, 'vector'+fnum, Vsc, /add
 
       if (dopol) then begin
-        xyz_to_polar, Vsc, mag=vmag, theta=the, phi=phi, /ph_0_360
+        xyz_to_polar, Vsc, mag=vmag, theta=the, phi=phi, ph_0_360=ph_360
         str_element, vmag, 'vframe', vframe, /add
         str_element, vmag, 'units', 'km/s', /add
         str_element, the, 'vframe', vframe, /add
@@ -231,7 +234,7 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
 
         phi_name = 'V_sc_' + fname + '_Phi'
         store_data,phi_name,data=phi
-        ylim,phi_name,0,360,0
+        if (ph_360) then ylim,phi_name,0,360,0 else ylim,phi_name,-180,180,0
         options,phi_name,'ytitle',vlabel + ' RAM Phi (' + fname + ')!cdeg'
         options,phi_name,'yticks',4
         options,phi_name,'yminor',3

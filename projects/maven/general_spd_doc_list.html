@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jan 28 18:16:38 2023.<P>
+<STRONG>Last modified: </STRONG>Sun Jan 29 18:16:41 2023.<P>
  
 <HR>
  
@@ -502,8 +502,7 @@ INPUTS:
                  create an array of evenly spaced times with resolution DT.
 
 KEYWORDS:
-       DT:       Time resolution (sec).  Default is to use the time resolution
-                 of maven_orbit_tplot (usually 10 sec).
+       DT:       Time resolution (sec).  Default is 10 sec.
 
        FRAME:    String or string array for specifying one or more frames
                  to transform the nadir direction into.  Any frame recognized
@@ -515,9 +514,8 @@ KEYWORDS:
 
        POLAR:    If set, convert the direction to polar coordinates and
                  store as additional tplot variables.
-                    Mag = sqrt(x*x + y*y + z*z) ; units km/s
-                    Phi = atan(y,x)*!radeg      ; units deg [  0, 360]
-                    The = asin(z/Mag)*!radeg    ; units deg [-90, +90]
+                    Phi = atan(y,x)*!radeg  ; units deg [  0, 360]
+                    The = asin(z)*!radeg    ; units deg [-90, +90]
 
        PANS:     Named variable to hold the tplot variables created.  For the
                  default frame, this would be 'Nadir_MAVEN_SPACECRAFT'.
@@ -527,8 +525,8 @@ KEYWORDS:
        SUCCESS:  Returns 1 on normal completion, 0 otherwise
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-01-28 16:17:53 -0800 (Sat, 28 Jan 2023) $
- $LastChangedRevision: 31430 $
+ $LastChangedDate: 2023-01-29 10:20:40 -0800 (Sun, 29 Jan 2023) $
+ $LastChangedRevision: 31434 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_nadir.pro $
 
 CREATED BY:    David L. Mitchell
@@ -738,6 +736,8 @@ KEYWORDS:
                     Phi = atan(y,x)*!radeg      ; units deg [  0, 360]
                     The = asin(z/Mag)*!radeg    ; units deg [-90, +90]
 
+       PH_180:   If set, the range for Phi is -180 to +180 degrees.
+
        MSO:      Calculate ram vector in the MSO frame instead of the
                  rotating IAU_MARS frame.  May be useful at high altitudes.
 
@@ -760,8 +760,8 @@ KEYWORDS:
        SUCCESS:  Returns 1 on normal operation, 0 otherwise.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-01-28 16:17:06 -0800 (Sat, 28 Jan 2023) $
- $LastChangedRevision: 31429 $
+ $LastChangedDate: 2023-01-29 10:36:41 -0800 (Sun, 29 Jan 2023) $
+ $LastChangedRevision: 31436 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 
 CREATED BY:    David L. Mitchell
@@ -1208,14 +1208,20 @@ PURPOSE:
   cover the specified time range.
 
 USAGE:
-  mvn_sundir, trange
+  mvn_sundir, time
 
 INPUTS:
-       trange:   Optional.  Time range for calculating the Sun direction.
-                 If not specified, then use current range set by timespan.
+       time:     If time has two elements, interpret it as a time range and
+                 create an array of evenly spaced times with resolution DT.
+
+                 If time has more than two elements, then the ram direction
+                 is calculated for each time in the array.
+
+                 Otherwise, attempt to get the time range from tplot and
+                 create an array of evenly spaced times with resolution DT.
 
 KEYWORDS:
-       DT:       Time resolution (sec).  Default = 1.
+       DT:       Time resolution (sec).  Default = 10 sec.
 
        FRAME:    String or string array for specifying one or more frames
                  to transform the Sun direction into.  Any frame recognized
@@ -1238,8 +1244,8 @@ KEYWORDS:
        SUCCESS:  Returns 1 on normal completion, 0 otherwise.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-01-28 16:18:09 -0800 (Sat, 28 Jan 2023) $
- $LastChangedRevision: 31431 $
+ $LastChangedDate: 2023-01-29 10:21:16 -0800 (Sun, 29 Jan 2023) $
+ $LastChangedRevision: 31435 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_sundir.pro $
 
 CREATED BY:    David L. Mitchell

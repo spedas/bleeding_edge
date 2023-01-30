@@ -20,8 +20,8 @@
 ;       FORCE:    Ignore the SPICE checks and forge ahead anyway.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-02-22 10:28:44 -0800 (Tue, 22 Feb 2022) $
-; $LastChangedRevision: 30602 $
+; $LastChangedDate: 2023-01-29 10:19:55 -0800 (Sun, 29 Jan 2023) $
+; $LastChangedRevision: 31433 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_attitude_bar.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -32,7 +32,7 @@ pro mvn_attitude_bar, force=force
 
 ; Determine when the HGA points to the Sun or Earth
 
-  mvn_sundir, frame='spacecraft', /pol, force=noguff, success=ok
+  mvn_sundir, dt=1D, frame='spacecraft', /pol, force=noguff, success=ok
   if (~ok and ~noguff) then return
 
   get_data, 'Sun_PL_The', data=sth, index=i

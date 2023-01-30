@@ -12,14 +12,20 @@
 ;  cover the specified time range.
 ;
 ;USAGE:
-;  mvn_sundir, trange
+;  mvn_sundir, time
 ;
 ;INPUTS:
-;       trange:   Optional.  Time range for calculating the Sun direction.
-;                 If not specified, then use current range set by timespan.
+;       time:     If time has two elements, interpret it as a time range and
+;                 create an array of evenly spaced times with resolution DT.
+;
+;                 If time has more than two elements, then the ram direction
+;                 is calculated for each time in the array.
+;
+;                 Otherwise, attempt to get the time range from tplot and
+;                 create an array of evenly spaced times with resolution DT.
 ;
 ;KEYWORDS:
-;       DT:       Time resolution (sec).  Default = 1.
+;       DT:       Time resolution (sec).  Default = 10 sec.
 ;
 ;       FRAME:    String or string array for specifying one or more frames
 ;                 to transform the Sun direction into.  Any frame recognized
@@ -42,8 +48,8 @@
 ;       SUCCESS:  Returns 1 on normal completion, 0 otherwise.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-01-28 16:18:09 -0800 (Sat, 28 Jan 2023) $
-; $LastChangedRevision: 31431 $
+; $LastChangedDate: 2023-01-29 10:21:16 -0800 (Sun, 29 Jan 2023) $
+; $LastChangedRevision: 31435 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_sundir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -53,7 +59,6 @@ pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force,
   success = 0
   dopol = keyword_set(polar)
   noguff = keyword_set(force)
-  if not keyword_set(dt) then dt = 1D else dt = double(dt[0])
   
   if (size(frame,/type) ne 7) then frame = 'MAVEN_SPACECRAFT'
   frame = mvn_frame_name(frame, success=i)
@@ -71,17 +76,24 @@ pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force,
                 max(strmatch(frame,'*IUVS*',/fold)) or $
                 max(strmatch(frame,'*APP*',/fold))
 
-; Get the time range
+; Create the UT array
 
-  if (size(trange,/type) eq 0) then begin
-    tplot_options, get_opt=topt
-    if (max(topt.trange_full) gt time_double('2013-11-18')) then trange = topt.trange_full
-    if (size(trange,/type) eq 0) then begin
-      print,"You must specify a time range."
+  npts = n_elements(trange)
+  if (npts lt 2) then begin
+    tplot_options, get=topt
+    trange = topt.trange_full
+    if (max(trange) lt time_double('2013-11-18')) then begin
+      print,"Invalid time range or time array."
       return
     endif
+    npts = 2L
   endif
-  tmin = min(time_double(trange), max=tmax)
+  if (npts lt 3) then begin
+    tmin = min(time_double(trange), max=tmax)
+    dt = keyword_set(dt) ? double(dt[0]) : 10D
+    npts = ceil((tmax - tmin)/dt) + 1L
+    ut = tmin + dt*dindgen(npts)
+  endif else ut = time_double(trange)
 
 ; Check the time range against the ephemeris coverage -- bail if there's a problem
 
@@ -91,7 +103,7 @@ pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force,
     print,"You must initialize SPICE first."
     return
   endif else begin
-    mvn_spice_stat, summary=sinfo, check=[tmin,tmax], /silent
+    mvn_spice_stat, summary=sinfo, check=minmax(ut), /silent
     ok = sinfo.spk_check and sinfo.ck_sc_check
     if (need_app_ck) then ok = ok and sinfo.ck_app_check
     if (not ok) then begin
@@ -104,9 +116,8 @@ pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force,
 
 ; First store the Sun direction in MAVEN_SSO coordinates
 
-  npts = floor((tmax - tmin)/dt) + 1L
-  x = tmin + dt*dindgen(npts)
-  y = replicate(1.,npts) # [1.,0.,0.]
+  x = ut
+  y = replicate(1.,n_elements(ut)) # [1.,0.,0.]
   store_data,'Sun',data={x:x, y:y, v:indgen(3)}
   options,'Sun','ytitle','Sun (MSO)'
   options,'Sun','labels',['X','Y','Z']
@@ -120,7 +131,7 @@ pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force,
   indx = where(frame ne '', nframes)
   for i=0,(nframes-1) do begin
     to_frame = strupcase(frame[indx[i]])
-    spice_vector_rotate_tplot,'Sun',to_frame,trange=[tmin,tmax],check='MAVEN_SPACECRAFT'
+    spice_vector_rotate_tplot,'Sun',to_frame,trange=minmax(ut),check='MAVEN_SPACECRAFT'
 
     labels = ['X','Y','Z']
     pname = 'Sun_' + to_frame
