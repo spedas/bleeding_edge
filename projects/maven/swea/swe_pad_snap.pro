@@ -174,9 +174,9 @@
 ;
 ;        NOTE:         Insert a text label.  Keep it short.
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-22 13:00:41 -0700 (Fri, 22 Jul 2022) $
-; $LastChangedRevision: 30956 $
+; $LastChangedBy: xussui $
+; $LastChangedDate: 2023-01-30 15:30:00 -0800 (Mon, 30 Jan 2023) $
+; $LastChangedRevision: 31444 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -349,8 +349,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   if (n_elements(color_table) gt 0) then begin
     ctab = fix(color_table[0])
     crev = keyword_set(reverse_color_table)
-    if (ctab ge 0 and ctab lt 1000) then loadct2,ctab,previous_ct=pct,reverse=crev
-    if (ctab ge 1000) then loadcsv,ctab,previous_ct=pct,reverse=crev,/silent
+    if (ctab ge 0 and ctab lt 1000) then loadct2,ctab,reverse=crev,previous_ct=pct,previous_rev=prev
+    if (ctab ge 1000) then loadcsv,ctab,reverse=crev,previous_ct=pct,previous_rev=prev,/silent
   endif
 
   cols = get_colors()
@@ -582,7 +582,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
     if (rflg or hflg or uflg) then wdelete,Pwin
     if (padmap) then wdelete,Mwin
     wset,Twin
-    if (ctab ne pct) then if (pct lt 1000) then loadct2,pct else loadcsv,pct,/silent
+    if (ctab ne pct) then if (pct lt 1000) then loadct2,pct,reverse=prev else loadcsv,pct,reverse=prev,/silent
     return
   endif
 
@@ -613,7 +613,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
       trange = [(tmin - dtsmo), (tmax + dtsmo)]
     endif
 
-    if (psflg) then popen, psname + string(nplot,format='("_",i2.2)')
+    if (psflg) then popen, psname + string(nplot,format='("_",i2.2)'),/landscape
 
 ; Put up a PAD spectrogram
  
@@ -1175,7 +1175,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
         if (dflg and ~dwell) then begin
           ddd = mvn_swe_get3d(trange,archive=aflg,all=doall,/sum,units=units)
           if (size(ddd,/type) eq 8) then begin
-            loadct2,34,previous=pct2
+            loadct2,34,previous_ct=pct2,previous_rev=prv2
             indx = where(fovmask[*,boom] eq 0B, count)
             if (count gt 0L) then ddd.data[*,indx] = !values.f_nan
 
@@ -1210,7 +1210,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 ;             Sel = -Sel
 ;             oplot,[Saz],[Sel],psym=7,color=col,thick=2,symsize=1.2
             endif
-            loadct2, pct2
+            loadct2, pct2, reverse=prv2
           endif
         endif
       endif
@@ -1417,8 +1417,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 
             ;second half
             ipa=ip+npa/2+inm
-            ipa=npa-ip-1
-            if ipa ge npa then ipa=ipa-npa
+            ipa=npa-ip;-1
+            if ipa ge npa then ipa = (npa-ip) mod (npa-1);ipa=ipa-npa
             mip=pad.pa_min[63,ipa]*!radeg
             maap=pad.pa_max[63,ipa]*!radeg
             ;if pad.pa[63,ipa]*!radeg ge 90 then lst=2 else lst=0
@@ -1562,6 +1562,6 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   endif
 
   wset, Twin
-  if (ctab ne pct) then if (pct lt 1000) then loadct2,pct else loadcsv,pct,/silent
+  if (ctab ne pct) then if (pct lt 1000) then loadct2,pct,reverse=prev else loadcsv,pct,reverse=prev,/silent
 
 end

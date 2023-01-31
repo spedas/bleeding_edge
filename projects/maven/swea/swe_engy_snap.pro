@@ -174,6 +174,9 @@ end
 ;                      The first four are for the Andreone method, the last is for the
 ;                      Evans method.
 ;
+;       NORAW:         If SEC is set, do not plot the uncorrected or secondary spectra;
+;                      just plot the corrected spectrum.
+;
 ;       DDD:           Create an energy spectrum from the nearest 3D spectrum and
 ;                      plot for comparison.
 ;
@@ -225,8 +228,8 @@ end
 ;       REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-22 13:01:04 -0700 (Fri, 22 Jul 2022) $
-; $LastChangedRevision: 30957 $
+; $LastChangedDate: 2023-01-30 12:46:50 -0800 (Mon, 30 Jan 2023) $
+; $LastChangedRevision: 31443 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -242,7 +245,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
                    trange=tspan, tsmo=tsmo, wscale=wscale, cscale=cscale, voffset=voffset, $
                    endx=endx, twot=twot, rcolors=rcolors, cuii=cuii, fmfit=fmfit, nolab=nolab, $
                    showdead=showdead, monitor=monitor, der=der, color_table=color_table, $
-                   reverse_color_table=reverse_color_table
+                   reverse_color_table=reverse_color_table, noraw=noraw
 
   @mvn_swe_com
   @mvn_scpot_com
@@ -306,6 +309,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   rflg = keyword_set(rainbow)
   dosec = keyword_set(sec)
   dobkg = keyword_set(bkg)
+  doraw = ~keyword_set(noraw) or ~dosec
 
   str_element, sconfig, 'scl', value, success=ok
   if (ok) then sscale = double(value) else sscale = 5D
@@ -518,7 +522,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     if (hflg) then wdelete,Hwin
     if (pflg) then wdelete,Pwin
     wset,Twin
-    if (ctab ne pct) then if (pct lt 1000) then loadct2,pct else loadcsv,pct,/silent
+    if (ctab ne pct) then if (pct lt 1000) then loadct2,pct,reverse=prev else loadcsv,pct,reverse=prev,/silent
     return
   endif
   
@@ -693,7 +697,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         indx = where(~spec.valid, count)
         if (count gt 0L) then ya[indx] = !values.f_nan
 
-        oplot, x, yb, color=cols.blue, psym=10
+        if (doraw) then oplot, x, yb, color=cols.blue, psym=10
         oplot, x, ya, color=cols.green, psym=10
         if (ebar) then errplot,x,(ya-dy)>tiny,ya+dy,width=0
 
@@ -1315,6 +1319,6 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   endif
 
   wset, Twin
-  if (ctab ne pct) then if (pct lt 1000) then loadct2,pct else loadcsv,pct,/silent
+  if (ctab ne pct) then if (pct lt 1000) then loadct2,pct,reverse=prev else loadcsv,pct,reverse=prev,/silent
 
 end

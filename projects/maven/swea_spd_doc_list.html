@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Jan 29 18:16:41 2023.<P>
+<STRONG>Last modified: </STRONG>Mon Jan 30 18:16:37 2023.<P>
  
 <HR>
  
@@ -6327,6 +6327,9 @@ KEYWORDS:
 
        ENERGY:        One or more energies to plot.  Overrides EBINS.
 
+       ESUM:          Sum over the energies or channels specified by EBINS or
+                      ENERGY.
+
        PADMAG:        If set, use the MAG angles in the PAD data to show the 
                       magnetic field direction.
 
@@ -6392,9 +6395,13 @@ KEYWORDS:
                       format accepted by time_double.  (This disables the
                       interactive time range selection.)
 
+        COLOR_TABLE:  Use this color table for all plots.
+
+        REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-07-14 11:40:53 -0700 (Thu, 14 Jul 2022) $
- $LastChangedRevision: 30933 $
+ $LastChangedDate: 2023-01-30 12:46:50 -0800 (Mon, 30 Jan 2023) $
+ $LastChangedRevision: 31443 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6838,6 +6845,9 @@ KEYWORDS:
                       The first four are for the Andreone method, the last is for the
                       Evans method.
 
+       NORAW:         If SEC is set, do not plot the uncorrected or secondary spectra;
+                      just plot the corrected spectrum.
+
        DDD:           Create an energy spectrum from the nearest 3D spectrum and
                       plot for comparison.
 
@@ -6889,8 +6899,8 @@ KEYWORDS:
        REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-07-22 13:01:04 -0700 (Fri, 22 Jul 2022) $
- $LastChangedRevision: 30957 $
+ $LastChangedDate: 2023-01-30 12:46:50 -0800 (Mon, 30 Jan 2023) $
+ $LastChangedRevision: 31443 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -7301,9 +7311,9 @@ KEYWORDS:
 
         NOTE:         Insert a text label.  Keep it short.
 
- $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-07-22 13:00:41 -0700 (Fri, 22 Jul 2022) $
- $LastChangedRevision: 30956 $
+ $LastChangedBy: xussui $
+ $LastChangedDate: 2023-01-30 15:30:00 -0800 (Mon, 30 Jan 2023) $
+ $LastChangedRevision: 31444 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12

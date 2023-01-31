@@ -30,6 +30,9 @@
 ;
 ;       ENERGY:        One or more energies to plot.  Overrides EBINS.
 ;
+;       ESUM:          Sum over the energies or channels specified by EBINS or
+;                      ENERGY.
+;
 ;       PADMAG:        If set, use the MAG angles in the PAD data to show the 
 ;                      magnetic field direction.
 ;
@@ -95,9 +98,13 @@
 ;                      format accepted by time_double.  (This disables the
 ;                      interactive time range selection.)
 ;
+;        COLOR_TABLE:  Use this color table for all plots.
+;
+;        REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-14 11:40:53 -0700 (Thu, 14 Jul 2022) $
-; $LastChangedRevision: 30933 $
+; $LastChangedDate: 2023-01-30 12:46:50 -0800 (Mon, 30 Jan 2023) $
+; $LastChangedRevision: 31443 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -109,7 +116,8 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
                  abins=abins, dbins=dbins, obins=obins, mask_sc=mask_sc, burst=burst, $
                  plot_sc=plot_sc, padmap=padmap, pot=pot, plot_fov=plot_fov, $
                  labsize=labsize, trange=trange2, tsmo=tsmo, wscale=wscale, zlog=zlog, $
-                 zrange=zrange, monitor=monitor
+                 zrange=zrange, monitor=monitor, esum=esum, color_table=color_table, $
+                 reverse_color_table=reverse_color_table
 
   @mvn_swe_com
   @putwin_common
@@ -131,7 +139,8 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
            'PADMAG','ENERGY','LABEL','SMO','SYMDIR','SUNDIR','SYMENERGY', $
            'SYMDIAG','POWER','MAP','ABINS','DBINS','OBINS','MASK_SC','BURST', $
            'PLOT_SC','PADMAP','POT','PLOT_FOV','LABSIZE','TRANGE2','TSMO', $
-           'WSCALE','ZLOG','ZRANGE','MONITOR']
+           'WSCALE','ZLOG','ZRANGE','MONITOR','ESUM','COLOR_TABLE', $
+           'REVERSE_COLOR_TABLE']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -207,6 +216,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
   if not keyword_set(power) then power = 3.
   if keyword_set(symdiag) then dflg = 1 else dflg = 0
   if keyword_set(padmap) then dopam = 1 else dopam = 0
+  esum = keyword_set(esum)
 
   case n_elements(trange2) of
        0 : tflg = 0
@@ -298,7 +308,15 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
 ; Use a better color table for 3D plots
 
-  loadct2, 34, previous=ptab
+  ctab = keyword_set(color_table) ? fix(color_table[0]) : 34
+  crev = keyword_set(reverse_color_table)
+  if (ctab ge 0 and ctab lt 1000) then loadct2,ctab,reverse=crev,previous_ct=pct,previous_rev=prev
+  if (ctab ge 1000) then loadcsv,ctab,reverse=crev,previous_ct=pct,previous_rev=prev,/silent
+
+  cols = get_colors()
+  if (cols.color_table ge 1000) then cols = get_qualcolors()
+  cbot = (cols.bottom_c ge 0) ? cols.bottom_c : 7
+  ctop = (cols.top_c ge 0) ? cols.top_c : 254
 
   got3d = 0
   if (size(ddd,/type) eq 8) then begin
@@ -324,10 +342,11 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
       if (dflg) then wdelete,Fwin
       if (dopam) then wdelete,Pwin
       wset,Twin
+      if (ctab ne pct) then if (pct lt 1000) then loadct2,pct,reverse=prev else loadcsv,pct,reverse=prev,/silent
       return
     endif
   endif
-  
+
   ok = 1
 
   while (ok) do begin
@@ -355,8 +374,15 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
           ebins[k] = j
         endfor
       endif
+
+      if (esum) then begin
+        dsum = total(data[ebins,*,*],1)
+        ebins = max(ebins)
+        data[ebins,*,*] = dsum
+      endif
+
       nbins = float(n_elements(ebins))
-      
+
       if (dosmo) then begin
         ddat = reform(data*omask[*,*,boom],64,16,6)
         dat = fltarr(64,32,6)
@@ -553,7 +579,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
 ; Restore the previous color table
 
-  loadct2, ptab
+  if (ctab ne pct) then if (pct lt 1000) then loadct2,pct,reverse=prev else loadcsv,pct,reverse=prev,/silent
 
   if (kflg) then begin
     wdelete, Dwin
