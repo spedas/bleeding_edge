@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Jan 30 18:16:37 2023.<P>
+<STRONG>Last modified: </STRONG>Tue Jan 31 18:16:36 2023.<P>
  
 <HR>
  
@@ -19,6 +19,8 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>general/science/wavpol</H1>
+<LI><A HREF="#HAMMING_WINDOW">HAMMING_WINDOW</A>
+<LI><A HREF="#HANN_WINDOW">HANN_WINDOW</A>
 <LI><A HREF="#TWAVPOL">TWAVPOL</A>
 <LI><A HREF="#WAVPOL">WAVPOL</A>
 <br>
@@ -26,8 +28,76 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="HAMMING_WINDOW">
+<H2>HAMMING_WINDOW</H2></A>
+<A HREF="#HANN_WINDOW">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ NAME: hamming_window
+
+PURPOSE: Return a Hamming smoothing window of order M (usually odd).
+
+w(n) = w = 0.54 - 0.46*cos(2 pi n/(m-1))  for 0 &lt;= n &lt;= m-1
+
+EXAMPLE: hamming_window(7,/rescale)
+
+CALLING SEQUENCE: hamming_window(m, /rescale)
+
+INPUTS:
+       m: length of desired smoothing window
+;
+Keywords:
+  rescale (optional):  If set, divide by the sum of the w(n) values so the weights sum to 1.0
+
+OUTPUTS: M-element double precision array containing the smoothing weights
+
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2022-08-18 14:05:08 -0700 (Thu, 18 Aug 2022) $
+ $LastChangedRevision: 31024 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/wavpol/wavpol.pro $
+</PRE><P>
+<STRONG>(See <A href="wavpol/hamming_window.pro">general/science/wavpol/hamming_window.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="HANN_WINDOW">
+<H2>HANN_WINDOW</H2></A>
+<A HREF="#HAMMING_WINDOW">[Previous Routine]</A>
+<A HREF="#TWAVPOL">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ NAME: hann_window
+
+PURPOSE: Return a Hann smoothing window of order M (usually odd).
+
+w(n) = w = 0.5 - 0.5*cos(2 pi n/(m-1))  for 0 &lt;= n &lt;= m-1
+
+EXAMPLE: hann_window(7,/rescale)
+
+CALLING SEQUENCE: hann_window(m, /rescale)
+
+INPUTS:
+       m: length of desired smoothing window
+;
+Keywords:
+  rescale (optional):  If set, divide by the sum of the w(n) values so the weights sum to 1.0
+
+OUTPUTS: M-element double precision array containing the smoothing weights
+
+
+ $LastChangedBy: egrimes $
+ $LastChangedDate: 2022-08-18 14:05:08 -0700 (Thu, 18 Aug 2022) $
+ $LastChangedRevision: 31024 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/wavpol/wavpol.pro $
+</PRE><P>
+<STRONG>(See <A href="wavpol/hann_window.pro">general/science/wavpol/hann_window.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TWAVPOL">
 <H2>TWAVPOL</H2></A>
+<A HREF="#HANN_WINDOW">[Previous Routine]</A>
 <A HREF="#WAVPOL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
