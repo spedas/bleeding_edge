@@ -1,7 +1,7 @@
 ; +
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-12-17 09:47:01 -0800 (Fri, 17 Dec 2021) $
-; $LastChangedRevision: 30471 $
+; $LastChangedDate: 2023-02-01 11:08:01 -0800 (Wed, 01 Feb 2023) $
+; $LastChangedRevision: 31457 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
@@ -44,15 +44,6 @@ pro swfo_apdat_info,apid_description,name=name,verbose=verbose,$
   common swfo_apdat_info_com, all_apdat, alt_apdat, all_info,temp1,temp2
 
 
-  if keyword_set(quick) && isa(apid_description,/integer,/scalar) && isa(all_apdat[apid_description]) then begin
-    apdats= all_apdat[apid_description]
-    return
-  endif
-
-  if keyword_set(quick) then begin
-    dprint,'Unexpected APID:',apid_description,dlevel=4
-  endif
-
   if keyword_set(reset) then begin   ; not recommended!
     ;    obj_destroy,all_apdat,alt_apdat,all_info    ; this might not be required in IDL8.x and above
     all_apdat=!null
@@ -63,6 +54,18 @@ pro swfo_apdat_info,apid_description,name=name,verbose=verbose,$
   if ~keyword_set(all_apdat) then all_apdat = replicate( obj_new() , 2^11 )
 
   if ~keyword_set(alt_apdat) then alt_apdat = orderedhash()
+
+
+  if keyword_set(quick) && isa(apid_description,/integer,/scalar) && isa(all_apdat[apid_description]) then begin
+    apdats= all_apdat[apid_description]
+    return
+  endif
+
+  if keyword_set(quick) then begin
+    dprint,'Unexpected APID:',apid_description,dlevel=4
+  endif
+
+
   if ~keyword_set(all_info) then begin
     all_info = orderedhash()
     all_info['current_filename'] = 'Unknown'

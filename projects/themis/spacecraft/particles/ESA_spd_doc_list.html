@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jan 31 18:16:36 2023.<P>
+<STRONG>Last modified: </STRONG>Wed Feb  1 18:16:35 2023.<P>
  
 <HR>
  
@@ -29,10 +29,16 @@ This page was created by the IDL library routine
 <br>applies a trange to a THEMIS ESA L2 structure
 <LI><A HREF="#THM_ESA_CMN_L2VARARR">THM_ESA_CMN_L2VARARR</A>
 <br>Returns an array with common block variable names for the input
+<LI><A HREF="#RTBIS">RTBIS</A>
+<br>Simple bisection routine,
+<LI><A HREF="#THM_ESA_DENS2SCPOT">THM_ESA_DENS2SCPOT</A>
+<br>Estimates the SC potential from electrona and ions, by choosing the
 <LI><A HREF="#THM_ESA_DIST2SCPOT">THM_ESA_DIST2SCPOT</A>
 <br>Estimates the SC potential from an electron sepctrum, by comparing
 <LI><A HREF="#THM_ESA_DUMP">THM_ESA_DUMP</A>
 <LI><A HREF="#THM_ESA_ENERGY_EXTRAPOLATE">THM_ESA_ENERGY_EXTRAPOLATE</A>
+<LI><A HREF="#THM_ESA_EST_DENS2SCPOT">THM_ESA_EST_DENS2SCPOT</A>
+<br>For a given probe and date, estimates the SC potential from PEER and PEIR
 <LI><A HREF="#THM_ESA_EST_DIST2SCPOT">THM_ESA_EST_DIST2SCPOT</A>
 <br>For a given probe and date, estimates the SC potential from PEER
 <LI><A HREF="#THM_ESA_EST_DIST2SCPOT2">THM_ESA_EST_DIST2SCPOT2</A>
@@ -52,7 +58,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="CLEAR_ESA_COMMON_BLOCKS">
 <H2>CLEAR_ESA_COMMON_BLOCKS</H2></A>
-<A HREF="#THM_CRIB_ESA_DIST2SCPOT">[Next Routine]</A>
+<A HREF="#RTBIS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -70,9 +76,35 @@ Purpose:	Clears common blocks used in esa_pkt routines, to
 <STRONG>(See <A href="ESA/clear_esa_common_blocks.pro">projects/themis/spacecraft/particles/ESA/clear_esa_common_blocks.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="RTBIS">
+<H2>RTBIS</H2></A>
+<A HREF="#CLEAR_ESA_COMMON_BLOCKS">[Previous Routine]</A>
+<A HREF="#THM_CRIB_ESA_DIST2SCPOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ rtbis
+PURPOSE:
+ Simple bisection routine, 
+CALLING SEQUENCE:
+ x = rtbis(func_in, x1, x2, xacc=xacc, jmax=jmax)
+INPUT:
+ func_in = an input function -- the answer will give func_in(x) = 0.0
+ x1 = a lower limit
+ x2 = an upper limit
+KEYWORDS:
+ xacc = the accuracy, default is 1.0e-6
+ jmax = max. number of iterations, the default is 40
+HISTORY:
+ Copied from Numerical Recipies, 12-feb-2015, jmm,
+ jimm@ssl.berkeley.edu
+</PRE><P>
+<STRONG>(See <A href="ESA/thm_esa_dens2scpot.pro">projects/themis/spacecraft/particles/ESA/thm_esa_dens2scpot.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_CRIB_ESA_DIST2SCPOT">
 <H2>THM_CRIB_ESA_DIST2SCPOT</H2></A>
-<A HREF="#CLEAR_ESA_COMMON_BLOCKS">[Previous Routine]</A>
+<A HREF="#RTBIS">[Previous Routine]</A>
 <A HREF="#THM_ESA_CMN_L2CONCAT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -335,7 +367,7 @@ HISTORY:
 <A NAME="THM_ESA_CMN_L2VARARR">
 <H2>THM_ESA_CMN_L2VARARR</H2></A>
 <A HREF="#THM_ESA_CMN_L2TCLIP">[Previous Routine]</A>
-<A HREF="#THM_ESA_DIST2SCPOT">[Next Routine]</A>
+<A HREF="#THM_ESA_DENS2SCPOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -364,9 +396,37 @@ HISTORY:
 <STRONG>(See <A href="ESA/thm_esa_cmn_l2vararr.pro">projects/themis/spacecraft/particles/ESA/thm_esa_cmn_l2vararr.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_ESA_DENS2SCPOT">
+<H2>THM_ESA_DENS2SCPOT</H2></A>
+<A HREF="#THM_ESA_CMN_L2VARARR">[Previous Routine]</A>
+<A HREF="#THM_ESA_DIST2SCPOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ thm_esa_dens2scpot
+CALLING SEQUENCE:
+ scpot = thm_esa_dens2scpot(edat, idat)
+PURPOSE:
+ Estimates the SC potential from electrona and ions, by choosing the
+ potential that gives ion density = electron density
+INPUT:
+ edat = 3d data electron structure filled by themis routines get_th?_p???
+ idat = 3d data ion structure filled by themis routines get_th?_p???
+KEYWORDS:
+HISTORY:
+ 2023-02-01, jmm, jimm@ssl.berkeley.edu
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2023-02-01 14:01:31 -0800 (Wed, 01 Feb 2023) $
+ $LastChangedRevision: 31460 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_esa_dens2scpot.pro $
+
+</PRE><P>
+<STRONG>(See <A href="ESA/thm_esa_dens2scpot.pro">projects/themis/spacecraft/particles/ESA/thm_esa_dens2scpot.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_ESA_DIST2SCPOT">
 <H2>THM_ESA_DIST2SCPOT</H2></A>
-<A HREF="#THM_ESA_CMN_L2VARARR">[Previous Routine]</A>
+<A HREF="#THM_ESA_DENS2SCPOT">[Previous Routine]</A>
 <A HREF="#THM_ESA_DUMP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -421,7 +481,7 @@ Arguments:
 <A NAME="THM_ESA_ENERGY_EXTRAPOLATE">
 <H2>THM_ESA_ENERGY_EXTRAPOLATE</H2></A>
 <A HREF="#THM_ESA_DUMP">[Previous Routine]</A>
-<A HREF="#THM_ESA_EST_DIST2SCPOT">[Next Routine]</A>
+<A HREF="#THM_ESA_EST_DENS2SCPOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE: thm_esa_energy_extrapolate
@@ -460,9 +520,47 @@ NOTES:
 <STRONG>(See <A href="ESA/thm_esa_energy_extrapolate.pro">projects/themis/spacecraft/particles/ESA/thm_esa_energy_extrapolate.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_ESA_EST_DENS2SCPOT">
+<H2>THM_ESA_EST_DENS2SCPOT</H2></A>
+<A HREF="#THM_ESA_ENERGY_EXTRAPOLATE">[Previous Routine]</A>
+<A HREF="#THM_ESA_EST_DIST2SCPOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ thm_esa_est_dens2scpot
+PURPOSE:
+ For a given probe and date, estimates the SC potential from PEER and PEIR
+ data, and plots it.
+CALLING SEQUENCE:
+ thm_esa_est_dens2scpot, date, probe, no_init = no_init, $
+                          random_dp = random_dp, plot = plot
+INPUT:
+ date = a date, e.g., '2008-01-05'
+ probe = a probe, e.g., 'c'
+OUTPUT:
+ a tplot variable 'th'+probe+'_est_scpot' is created
+ If /random_dp is set, then date and probe are output 
+KEYWORDS:
+ trange = a time range
+ no_init = if set, do not read in a new set of data
+ random_dp = if set, the input date and probe are randomized, note
+             that this keyword is unused if no_init is set.
+ plot = if set, plot a comparison of the estimated sc_pot wht the
+        value obtained from the esa L2 cdf (originally from
+        thm_load_esa_pot)
+HISTORY:
+ 1-feb-2023, jmm, jimm@ssl.berkeley.edu
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2023-02-01 14:01:31 -0800 (Wed, 01 Feb 2023) $
+ $LastChangedRevision: 31460 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_esa_est_dens2scpot.pro $
+</PRE><P>
+<STRONG>(See <A href="ESA/thm_esa_est_dens2scpot.pro">projects/themis/spacecraft/particles/ESA/thm_esa_est_dens2scpot.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_ESA_EST_DIST2SCPOT">
 <H2>THM_ESA_EST_DIST2SCPOT</H2></A>
-<A HREF="#THM_ESA_ENERGY_EXTRAPOLATE">[Previous Routine]</A>
+<A HREF="#THM_ESA_EST_DENS2SCPOT">[Previous Routine]</A>
 <A HREF="#THM_ESA_EST_DIST2SCPOT2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jan 31 18:16:36 2023.<P>
+<STRONG>Last modified: </STRONG>Wed Feb  1 18:16:34 2023.<P>
  
 <HR>
  
@@ -42,13 +42,13 @@ w(n) = w = 0.54 - 0.46*cos(2 pi n/(m-1))  for 0 &lt;= n &lt;= m-1
 
 EXAMPLE: hamming_window(7,/rescale)
 
-CALLING SEQUENCE: hamming_window(m, /rescale)
+CALLING SEQUENCE: hamming_window(m, /normalize)
 
 INPUTS:
        m: length of desired smoothing window
 ;
 Keywords:
-  rescale (optional):  If set, divide by the sum of the w(n) values so the weights sum to 1.0
+  normalize (optional):  If set, divide by the sum of the w(n) values so the weights sum to 1.0
 
 OUTPUTS: M-element double precision array containing the smoothing weights
 
@@ -74,15 +74,15 @@ PURPOSE: Return a Hann smoothing window of order M (usually odd).
 
 w(n) = w = 0.5 - 0.5*cos(2 pi n/(m-1))  for 0 &lt;= n &lt;= m-1
 
-EXAMPLE: hann_window(7,/rescale)
+EXAMPLE: hann_window(7,/normalize)
 
-CALLING SEQUENCE: hann_window(m, /rescale)
+CALLING SEQUENCE: hann_window(m, /normalize)
 
 INPUTS:
        m: length of desired smoothing window
 ;
 Keywords:
-  rescale (optional):  If set, divide by the sum of the w(n) values so the weights sum to 1.0
+  normalize (optional):  If set, divide by the sum of the w(n) values so the weights sum to 1.0
 
 OUTPUTS: M-element double precision array containing the smoothing weights
 
@@ -236,6 +236,7 @@ output is currently in the form of arrays
              updated documentation with changes from Justin Lee - added to original 9/23/2014
          :Modified by egrimes, now checking for 0s in the output time series, setting those
              data values to NaNs
+         :Modified by jwl, generate smoothing array on the fly with the correct number of bins
              
               
 PURPOSE:To perform polarisation analysis of three orthogonal component time
@@ -316,11 +317,11 @@ RESTRICTIONS:-If one component is an order of magnitude or more  greater than
 	 Care should be taken in evaluating degree of polarisation results.
 	 For meaningful results there should be significant wave power at the
 	 frequency where the polarisation approaches
-	 100%. Remembercomparing two straight lines yields 100% polarisation.
+	 100%. Remember, comparing two straight lines yields 100% polarisation.
 
- $LastChangedBy: egrimes $
- $LastChangedDate: 2022-08-18 14:05:08 -0700 (Thu, 18 Aug 2022) $
- $LastChangedRevision: 31024 $
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2023-02-01 10:16:16 -0800 (Wed, 01 Feb 2023) $
+ $LastChangedRevision: 31456 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/wavpol/wavpol.pro $
 </PRE><P>
 <STRONG>(See <A href="wavpol/wavpol.pro">general/science/wavpol/wavpol.pro</A>)</STRONG><P>

@@ -18,6 +18,7 @@
 ;             updated documentation with changes from Justin Lee - added to original 9/23/2014
 ;         :Modified by egrimes, now checking for 0s in the output time series, setting those
 ;             data values to NaNs
+;         :Modified by jwl, generate smoothing array on the fly with the correct number of bins
 ;             
 ;              
 ;PURPOSE:To perform polarisation analysis of three orthogonal component time
@@ -98,11 +99,11 @@
 ;	 Care should be taken in evaluating degree of polarisation results.
 ;	 For meaningful results there should be significant wave power at the
 ;	 frequency where the polarisation approaches
-;	 100%. Remembercomparing two straight lines yields 100% polarisation.
+;	 100%. Remember, comparing two straight lines yields 100% polarisation.
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2022-08-18 14:05:08 -0700 (Thu, 18 Aug 2022) $
-; $LastChangedRevision: 31024 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2023-02-01 10:16:16 -0800 (Wed, 01 Feb 2023) $
+; $LastChangedRevision: 31456 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/wavpol/wavpol.pro $
 ;-
 pro wavpol,ct,Bx,By,Bz,timeline,freqline,powspec,degpol,waveangle,elliptict,helict,pspec3,$
@@ -173,7 +174,17 @@ samp_per=samp_per_input, nopfft=nopfft_input,steplength = steplength_input, bin_
     lam=dblarr(2)
     nosmbins=bin_freq                                      ;No. of bins in frequency domain
     ;!p.charsize=2                                    ;to include in smoothing (must be odd)
-    aa=[0.024,0.093,0.232,0.301,0.232,0.093,0.024]   ;smoothing profile based on Hanning
+    ;aa=[0.024,0.093,0.232,0.301,0.232,0.093,0.024]   ;smoothing profile based on Hanning
+    ; The above 7-element smoothing array was used no matter how many frequency bins were requested.
+    ; So for smaller values of bin_freq (e.g. the default 3), only the first few entries were used,
+    ; so the smoothing was asymmetric and the weights didn't sum to 1.  For bin_freq > 7, the code would
+    ; crash with an array index out of bounds.
+    ;
+    ; We now generate a Hamming (not Hann/hanning!) smoothing window on the fly, with the correct number of bins.  For bin_freq=7,
+    ; the generated values match the old hardwired values.
+    ; JWL 2023-02-01
+    
+    aa=hamming_window(nosmbins,/normalize)
     timeline = dblarr(nosteps)*0.
     ;
     ;ARRAY DEFINITIONS

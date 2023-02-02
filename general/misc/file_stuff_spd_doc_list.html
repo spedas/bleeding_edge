@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Jan 31 18:16:36 2023.<P>
+<STRONG>Last modified: </STRONG>Wed Feb  1 18:16:34 2023.<P>
  
 <HR>
  
@@ -21,6 +21,8 @@ This page was created by the IDL library routine
 <H1>general/misc/file_stuff</H1>
 <LI><A HREF="#FILE_CHECKSUM">FILE_CHECKSUM</A>
 <LI><A HREF="#GENERATE_CHECKSUMS">GENERATE_CHECKSUMS</A>
+<LI><A HREF="#SOCKET_READER__DEFINE">SOCKET_READER__DEFINE</A>
+<br>Widget tool that opens a socket and reads streaming data from a server (host) and can save it to a file
 <LI><A HREF="#SOCKET_RECORDER__DEFINE">SOCKET_RECORDER__DEFINE</A>
 <br>Widget tool that opens a socket and records streaming data from a server (host) and can save it to a file
 <br>
@@ -61,7 +63,7 @@ Typical usage:
 <A NAME="GENERATE_CHECKSUMS">
 <H2>GENERATE_CHECKSUMS</H2></A>
 <A HREF="#FILE_CHECKSUM">[Previous Routine]</A>
-<A HREF="#SOCKET_RECORDER__DEFINE">[Next Routine]</A>
+<A HREF="#SOCKET_READER__DEFINE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure generate_checksums
@@ -101,9 +103,36 @@ Typical usage:
 <STRONG>(See <A href="file_stuff/generate_checksums.pro">general/misc/file_stuff/generate_checksums.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SOCKET_READER__DEFINE">
+<H2>SOCKET_READER__DEFINE</H2></A>
+<A HREF="#GENERATE_CHECKSUMS">[Previous Routine]</A>
+<A HREF="#SOCKET_RECORDER__DEFINE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+WIDGET Procedure:
+  socket_reader
+PURPOSE:
+ Widget tool that opens a socket and reads streaming data from a server (host) and can save it to a file
+ or send to a user specified routine. This tool runs in the background.
+ Keywords:
+   SET_FILE_TIMERES : defines how often the current output file will be closed and a new one will be opened
+   DIRECTORY:  string prepended to fileformat when opening an output file.
+ Author:
+    Davin Larson - April 2023
+    proprietary - D. Larson UC Berkeley/SSL
+
+ $LastChangedBy: davin-mac $
+ $LastChangedDate: 2016-09-28 22:56:26 -0700 (Wed, 28 Sep 2016) $
+ $LastChangedRevision: 21979 $
+ $URL: $
+
+</PRE><P>
+<STRONG>(See <A href="file_stuff/socket_reader__define.pro">general/misc/file_stuff/socket_reader__define.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SOCKET_RECORDER__DEFINE">
 <H2>SOCKET_RECORDER__DEFINE</H2></A>
-<A HREF="#GENERATE_CHECKSUMS">[Previous Routine]</A>
+<A HREF="#SOCKET_READER__DEFINE">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 WIDGET Procedure:
