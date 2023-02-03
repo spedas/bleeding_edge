@@ -11,9 +11,9 @@
 ;            no_color_setup: skip setting up the graphics configuration
 ;            
 ;             
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-01-03 12:53:41 -0800 (Tue, 03 Jan 2017) $
-;$LastChangedRevision: 22478 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2023-02-02 07:46:23 -0800 (Thu, 02 Feb 2023) $
+;$LastChangedRevision: 31461 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_init.pro $
 ;-
 pro goes_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote_data_dir, no_color_setup = no_color_setup
@@ -44,7 +44,7 @@ Endif else begin; use defaults
       print,'No GOES config found...creating default configuration'
     endelse
     !goes.local_data_dir  = spd_default_local_data_dir() + 'goes' + path_sep()
-    !goes.remote_data_dir = 'https://satdat.ngdc.noaa.gov/sem/goes/data/'
+    !goes.remote_data_dir = 'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/'
 endelse
 !goes.min_age_limit = 900    ; Don't check for new files if local file is less than 900 seconds old.
 

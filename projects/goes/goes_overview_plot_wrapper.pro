@@ -36,8 +36,8 @@
 ;
 ;HISTORY:
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2022-03-18 12:52:44 -0700 (Fri, 18 Mar 2022) $
-;$LastChangedRevision: 30691 $
+;$LastChangedDate: 2023-02-02 07:46:23 -0800 (Thu, 02 Feb 2023) $
+;$LastChangedRevision: 31461 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot_wrapper.pro $
 ;----------
 
@@ -205,14 +205,14 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
     month03 = STRMID(date, 5, 2)
     day03 = STRMID(date, 8, 2)
     directory = base_dir + year03 + path_sep() + month03 + path_sep() + day03 + path_sep()
-    remote_dir = 'satdat.ngdc.noaa.gov/sem/goes/data/avg/' + year03 + '/' + month03 + '/'
+    remote_dir = 'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/avg/' + year03 + '/' + month03 + '/'
 
     for j=0, n_elements(probes)-1 do begin
       probe = probes[j]
       if probe le 15 then begin
         ; GOES15 is up to 2020
         if year03 gt 2020 then continue
-        ; check if dir exists, eg: http://satdat.ngdc.noaa.gov/sem/goes/data/new_avg/2011/08/goes13/netcdf/
+        ; check if dir exists, eg: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/avg/2011/08/goes13/netcdf/
         remote_http_dir = remote_dir + 'goes' + probe + '/netcdf/'
         if check_goes_noaa_dir(base_dir, remote_http_dir) then begin
           dprint, "====================================================="

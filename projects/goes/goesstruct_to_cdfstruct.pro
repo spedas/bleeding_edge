@@ -14,9 +14,9 @@
 ;         (at least enough so to be read by cdf_info_to_tplot)
 ;         
 ; 
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-09-13 12:25:51 -0700 (Thu, 13 Sep 2018) $
-; $LastChangedRevision: 25786 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2023-02-02 07:46:23 -0800 (Thu, 02 Feb 2023) $
+; $LastChangedRevision: 31461 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goesstruct_to_cdfstruct.pro $
 ;-
 function GOESstruct_to_cdfstruct, netCDFi
@@ -66,7 +66,7 @@ function GOESstruct_to_cdfstruct, netCDFi
         str_element, g_attributes, 'GENERATED_BY', 'THEMIS/IGPP', /add
         str_element, g_attributes, 'ACKNOWLEDGEMENT', 'NASA Contract NAS5-02099', /add
         str_element, g_attributes, 'LINK_TITLE', 'National Geophysical Data Center', /add
-        str_element, g_attributes, 'HTTP_LINK', 'https://satdat.ngdc.noaa.gov/sem/goes/data/', /add
+        str_element, g_attributes, 'HTTP_LINK', 'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/', /add
         str_element, g_attributes, 'FILE_NAMING_CONVENTION', 'source_descriptor_datatype', /add
         
         inq = create_struct('nzvars', netCDFi.nv)

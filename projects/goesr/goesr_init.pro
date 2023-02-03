@@ -14,8 +14,8 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2020-12-21 10:57:20 -0800 (Mon, 21 Dec 2020) $
-; $LastChangedRevision: 29545 $
+; $LastChangedDate: 2023-02-02 07:46:23 -0800 (Thu, 02 Feb 2023) $
+; $LastChangedRevision: 31461 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/goesr_init.pro $
 ;-
 
@@ -49,7 +49,6 @@ pro goesr_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remo
       print,'No GOES-R config found...creating default configuration'
     endelse
     !goesr.local_data_dir  = spd_default_local_data_dir() + 'goesr' + path_sep()
-    ;!goesr.remote_data_dir = 'https://satdat.ngdc.noaa.gov/sem/goes/data/'
     ;https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/magn-l2-hires/2020/
     !goesr.remote_data_dir = 'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/'
   endelse

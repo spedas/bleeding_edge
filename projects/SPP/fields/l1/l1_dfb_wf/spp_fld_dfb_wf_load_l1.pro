@@ -28,8 +28,8 @@
 ;   pulupa
 ;
 ;  $LastChangedBy: pulupalap $
-;  $LastChangedDate: 2022-08-30 08:46:56 -0700 (Tue, 30 Aug 2022) $
-;  $LastChangedRevision: 31058 $
+;  $LastChangedDate: 2023-02-02 15:06:08 -0800 (Thu, 02 Feb 2023) $
+;  $LastChangedRevision: 31464 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_dfb_wf/spp_fld_dfb_wf_load_l1.pro $
 ;
 
@@ -42,6 +42,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
 
   load_wf_v = 1
   load_meta_only = 0
+  load_for_scam = 0
 
   if n_elements(varformat) GT 0 then begin
 
@@ -56,6 +57,14 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
       'compression', 'wav_enable', 'wav_sel', $
       'wav_sel_string', 'wav_tap', 'wav_tap_string', 'wf_pkt_data'], varformat) then $
       load_wf_v = 0
+
+    ; load only what is needed for SCaM
+
+    if array_equal(['CCSDS_MET_Seconds', 'CCSDS_MET_SubSeconds', $
+      'wav_sel', 'wav_sel_string', 'wav_tap', 'wf_pkt_data'], varformat) then begin
+      load_wf_v = 0
+      load_for_scam = 1
+    endif
 
   endif
 
@@ -236,7 +245,7 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
     n_times_2d = n_elements(times_2d)
 
     ;
-    ; When debugging, note that if number_records is enabled, 
+    ; When debugging, note that if number_records is enabled,
     ; then the 2D waveform packet data come back as transposed arrays so
     ; we have to transpose them again here. Not needed in standard
     ; usage.
@@ -287,7 +296,8 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
     valid = where(wf_1d GT -2147483647l, n_valid)
 
     tap_arr_1d = reform(transpose(tap_arr), n_elements(times_1d))
-    sel_str_arr_1d = reform(transpose(sel_str_arr), n_elements(times_1d))
+    if load_for_scam EQ 0 then $
+      sel_str_arr_1d = reform(transpose(sel_str_arr), n_elements(times_1d))
 
     if n_valid GT 0 then begin
 
@@ -298,7 +308,8 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
       if load_wf_v EQ 1 then wf_v_1d = wf_v_1d[valid]
 
       tap_arr_1d = tap_arr_1d[valid]
-      sel_str_arr_1d = sel_str_arr_1d[valid]
+      if load_for_scam EQ 0 then $
+        sel_str_arr_1d = sel_str_arr_1d[valid]
 
     endif
 
@@ -317,13 +328,13 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
         dlim = {panel_size:2}
     end
 
-    store_data, prefix + 'wav_pkt_index', $
+    if load_for_scam EQ 0 then store_data, prefix + 'wav_pkt_index', $
       dat = {x:times_1d, y:indices_1d}
 
-    store_data, prefix + 'wav_sel_string_all', $
+    if load_for_scam EQ 0 then store_data, prefix + 'wav_sel_string_all', $
       dat = {x:times_1d, y:sel_str_arr_1d}
 
-    store_data, prefix + 'wav_tap_all', $
+    if load_for_scam EQ 0 then store_data, prefix + 'wav_tap_all', $
       dat = {x:times_1d, y:tap_arr_1d}
 
     ; Set plot options for the waveform data
@@ -345,44 +356,48 @@ pro spp_fld_dfb_wf_load_l1, file, prefix = prefix, compressed = compressed, varf
     ; TODO: Improve this by splitting non-unique waveform sources into
     ; separate tplot variables and labeling them accordingly.
 
-    if tnames(prefix + 'wav_sel_string') EQ '' then begin
+    if load_for_scam EQ 0 then begin
 
-      ; If the metadata doesn't contain 'string' quantities (as was the case
-      ; for early versions of the DFB L1 files) then use the wav_sel variable
-      ; to determine the source of the waveform.  If there was only a single
-      ; unique source, then add it to the ytitle of the waveform tplot
-      ; variable.
+      if tnames(prefix + 'wav_sel_string') EQ '' then begin
 
-      get_data, prefix + 'wav_sel', data = wav_sel_dat
+        ; If the metadata doesn't contain 'string' quantities (as was the case
+        ; for early versions of the DFB L1 files) then use the wav_sel variable
+        ; to determine the source of the waveform.  If there was only a single
+        ; unique source, then add it to the ytitle of the waveform tplot
+        ; variable.
 
-      if n_elements(uniq(wav_sel_dat.y)) EQ 1 then $
-        options, prefix + 'wav_data*', 'ytitle', $
-        'DFB WF '+ strmid(prefix,prefix_len,2) + compressed_str + $
-        '!CSRC:' + strcompress(string(wav_sel_dat.y[0]))
+        get_data, prefix + 'wav_sel', data = wav_sel_dat
 
-    endif else begin
+        if n_elements(uniq(wav_sel_dat.y)) EQ 1 then $
+          options, prefix + 'wav_data*', 'ytitle', $
+          'DFB WF '+ strmid(prefix,prefix_len,2) + compressed_str + $
+          '!CSRC:' + strcompress(string(wav_sel_dat.y[0]))
 
-      ; If the metadata contains 'string' quantities, get the string values
-      ; of the selected source and the cadence (tap).  If there is only one
-      ; unique source or cadence, then add that source and cadence information
-      ; to the ytitle of the waveform tplot variable.
+      endif else begin
 
-      get_data, prefix + 'wav_sel_string', data = wav_sel_dat
-      get_data, prefix + 'wav_tap_string', data = wav_tap_dat
+        ; If the metadata contains 'string' quantities, get the string values
+        ; of the selected source and the cadence (tap).  If there is only one
+        ; unique source or cadence, then add that source and cadence information
+        ; to the ytitle of the waveform tplot variable.
 
-      ytitle = 'DFB WF '+ strmid(prefix,prefix_len,2) + compressed_str
+        get_data, prefix + 'wav_sel_string', data = wav_sel_dat
+        get_data, prefix + 'wav_tap_string', data = wav_tap_dat
 
-      if n_elements(uniq(wav_sel_dat.y)) EQ 1 then $
-        ytitle = ytitle + '!C' + strcompress(wav_sel_dat.y[0], /remove_all)
+        ytitle = 'DFB WF '+ strmid(prefix,prefix_len,2) + compressed_str
 
-      if n_elements(uniq(wav_tap_dat.y)) EQ 1 then $
-        ytitle = ytitle + '!C' + $
-        strsplit(strcompress(wav_tap_dat.y[0], /remove_all), $
-        'samples/s', /ex) + ' Hz'
+        if n_elements(uniq(wav_sel_dat.y)) EQ 1 then $
+          ytitle = ytitle + '!C' + strcompress(wav_sel_dat.y[0], /remove_all)
 
-      options, prefix + 'wav_data*', 'ytitle', ytitle
+        if n_elements(uniq(wav_tap_dat.y)) EQ 1 then $
+          ytitle = ytitle + '!C' + $
+          strsplit(strcompress(wav_tap_dat.y[0], /remove_all), $
+          'samples/s', /ex) + ' Hz'
 
-    endelse
+        options, prefix + 'wav_data*', 'ytitle', ytitle
+
+      endelse
+
+    endif
 
   end
 

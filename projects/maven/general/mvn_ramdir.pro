@@ -78,8 +78,8 @@
 ;       SUCCESS:  Returns 1 on normal operation, 0 otherwise.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-01-29 10:36:41 -0800 (Sun, 29 Jan 2023) $
-; $LastChangedRevision: 31436 $
+; $LastChangedDate: 2023-02-02 09:48:50 -0800 (Thu, 02 Feb 2023) $
+; $LastChangedRevision: 31462 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -172,7 +172,7 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
   store_data,'V_sc',data={x:ut, y:transpose(svec[3:5,*]), v:[0,1,2], vframe:vframe}
   options,'V_sc',spice_frame=vframe,spice_master_frame='MAVEN_SPACECRAFT'
 
-  result = {name : 'MAVEN RAM Velocity'}
+  result = {name : 'MAVEN RAM Velocity', vframe : vframe}
 
 ; Calculate the ram direction in frame(s) specified by keyword FRAME
   

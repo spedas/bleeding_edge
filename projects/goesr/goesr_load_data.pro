@@ -31,8 +31,8 @@
 ;     data:   https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2021-10-15 16:54:16 -0700 (Fri, 15 Oct 2021) $
-; $LastChangedRevision: 30371 $
+; $LastChangedDate: 2023-02-02 07:46:23 -0800 (Thu, 02 Feb 2023) $
+; $LastChangedRevision: 31461 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/goesr_load_data.pro $
 ;-
 
@@ -230,7 +230,7 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
         endif else begin
           ; GOES 8-15: only high resolution is available (Dec 2020)
           if resolution eq 'hires' then begin
-            remote_path = 'https://satdat.ngdc.noaa.gov/sem/goes/data/science/'
+            remote_path = 'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/'
             res0 = 'hires'
             lr = level + '-' + res0
             pathformat = 'mag/' + sc + '/magn-'+ lr +'/YYYY/MM/dn_magn-' + lr + '_' + sc0 +'_dYYYYMMDD_v?_?_?.nc'
@@ -260,7 +260,7 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
             time_offset = time_double('1970-01-01/00:00:00.000')
           endif else res0='avg1m'
           lr = level + '-' + res0 + '_'
-          remote_path = 'https://satdat.ngdc.noaa.gov/sem/goes/data/science/'
+          remote_path = 'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/'
           if resolution eq 'hires' then begin
             pathformat = 'xrs/' + sc + '/gxrs-'+ lr +'science/YYYY/MM/sci_gxrs-' + lr + sc0 +'_dYYYYMMDD_v?-?-?.nc
           endif else begin
