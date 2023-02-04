@@ -98,8 +98,8 @@
 ;      http://ampere.jhuapl.edu/code/idl_geopack.html
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-07-28 18:16:15 -0700 (Wed, 28 Jul 2021) $
-; $LastChangedRevision: 30156 $
+; $LastChangedDate: 2023-02-03 10:40:05 -0800 (Fri, 03 Feb 2023) $
+; $LastChangedRevision: 31467 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/ts07/ts07.pro $
 ;-
 
@@ -249,22 +249,13 @@ function ts07,tarray,rgsm_array,pdyn, $
 
   if ~keyword_set(skip_ts07_load) then begin
     
-     if time_end gt time_start then begin
-       tdiff = 0 + time_end - time_start
-       years = [time_start]
-       for i=1, tdiff do begin
-         years = [years, time_start + i]
-       endfor
-     endif else ts07_years = [time_start]
-
-     ts07_download, years=ts07_years
-
      ; Directory for model parameters.
      if not keyword_set(ts07_param_dir) then begin
        ts07_param_dir = !spedas.geopack_param_dir
-     endif else if ~file_test(ts07_param_dir, /READ, /directory) then begin
-       ts07_param_dir = !spedas.geopack_param_dir
      endif
+     
+     ts07_download, local_dir=ts07_param_dir
+
      ; Directory that contains the coeficient files
      GEOPACK_TS07_SETPATH, ts07_param_dir[0]
      if keyword_set(ts07_param_file) then begin
