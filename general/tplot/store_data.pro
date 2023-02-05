@@ -36,9 +36,9 @@
 ;SEE ALSO:    "GET_DATA", "TPLOT_NAMES",  "TPLOT", "OPTIONS"
 ;
 ;CREATED BY:    Davin Larson
-; $LastChangedBy: ali $
-; $LastChangedDate: 2022-07-06 12:47:09 -0700 (Wed, 06 Jul 2022) $
-; $LastChangedRevision: 30907 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-02-04 15:18:14 -0800 (Sat, 04 Feb 2023) $
+; $LastChangedRevision: 31469 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/store_data.pro $
 ;-
 pro store_data,name, time,ydata,values, $
@@ -74,6 +74,10 @@ pro store_data,name, time,ydata,values, $
   if size(/type,tagnames) eq 7 then begin
     if isa(data,'dynamicarray') then begin
       if size(/type,time_tag) ne 7 then time_tag = 'TIME'
+      if data.size eq 0 then begin
+        dprint,dlevel=1,name,': Dynamic array has no data. Unable to create tplot variables for "',data.name,'"'
+        return
+      endif
       data_sample = data.slice(/last)
       tags = tag_names( data_sample )
       ok   = strfilter(tags,strupcase(tagnames),delimiter=' ',/byte)

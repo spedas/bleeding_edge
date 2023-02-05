@@ -10,7 +10,11 @@
 function struct_value,str,name,default=default,index=index
 index = -1
 if n_elements(default) ne 0 then value = default
-if n_elements(value)     eq 0 then value = 0
+if n_elements(value)     eq 0 then value = !null
+if isa(str,'dictionary') then begin
+  if str.haskey(name) then return, str[name] else return,value
+endif
+
 if size(/type,str) ne 8 then return, n_elements(str) ne 0 ? str : value 
 if size(/type,name) ne 7 then return,value
 if size(/n_dimen,name) gt 0 then begin
