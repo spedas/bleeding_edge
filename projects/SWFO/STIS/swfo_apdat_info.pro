@@ -1,7 +1,7 @@
 ; +
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-02-01 11:08:01 -0800 (Wed, 01 Feb 2023) $
-; $LastChangedRevision: 31457 $
+; $LastChangedDate: 2023-02-05 00:32:07 -0800 (Sun, 05 Feb 2023) $
+; $LastChangedRevision: 31471 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
@@ -39,6 +39,7 @@ pro swfo_apdat_info,apid_description,name=name,verbose=verbose,$
   file_save=file_save,file_restore=file_restore,compress=compress,parents=parents, $
   apid_obj_name = apid_obj_name, $
   print=print, $
+  create_tplot_vars=create_tplot_vars, $
   rt_flag=rt_flag,trim=trim
 
   common swfo_apdat_info_com, all_apdat, alt_apdat, all_info,temp1,temp2
@@ -152,7 +153,11 @@ pro swfo_apdat_info,apid_description,name=name,verbose=verbose,$
     apdat = all_apdat[apid]
     if n_elements(name)       ne 0 then apdat.name = name
     if n_elements(routine)    ne 0 then apdat.routine=routine    ; Obsolete
-    if n_elements(rt_flag)    ne 0 then apdat.rt_flag = rt_flag
+    if n_elements(rt_flag)    ne 0 then begin
+      dprint,'Using obsolete realtime flag'
+      apdat.rt_flag = rt_flag   ; obsolete
+    endif
+    if n_elements(create_tplot_vars) ne 0 then apdat.create_tplot_vars
     if n_elements(sort_flag)  ne 0 then apdat.sort_flag = sort_flag
     if n_elements(dlevel)     ne 0 then apdat.dlevel = dlevel
     if n_elements(tname)      ne 0 then apdat.tname = tname

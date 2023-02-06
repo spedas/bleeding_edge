@@ -1,7 +1,7 @@
 ;+
-; $LastChangedBy: ali $
-; $LastChangedDate: 2022-05-01 12:57:34 -0700 (Sun, 01 May 2022) $
-; $LastChangedRevision: 30793 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-02-05 00:32:07 -0800 (Sun, 05 Feb 2023) $
+; $LastChangedRevision: 31471 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_apdat_init.pro $
 ;-
 
@@ -16,7 +16,7 @@ pro swfo_stis_apdat_init,reset=reset, save_flag = save_flag, swem=swem, $
   ;   dprint,dlevel=3,/phelp ,rt_flag,save_flag
 
   ;; special case to accumulate statistics
-  swfo_apdat_info, 0 ,name='Stats',apid_obj='swfo_gen_apdat_stats',tname='APIDS_', ttags=ttags,save_flag=save_flag,rt_flag=rt_flag
+  swfo_apdat_info, 0 ,name='Stats',apid_obj='swfo_gen_apdat_stats',tname='APIDS', ttags=ttags,save_flag=save_flag,rt_flag=rt_flag
 
   ;;#################
   ;; SETUP SWEM APIDs
@@ -48,11 +48,11 @@ pro swfo_stis_apdat_init,reset=reset, save_flag = save_flag, swem=swem, $
   ;;################
   ;;#   STIS APIDs  #
   ;;################
-  swfo_apdat_info,'350'x,name='stis_sci', apid_obj='swfo_stis_sci_apdat',         tname='swfo_stis_sci_',ttags='*',save_flag=save_flag,rt_flag=rt_flag
-  swfo_apdat_info,'351'x,name='stis_nse', apid_obj='swfo_stis_nse_apdat',    tname='swfo_stis_nse_',ttags='*',save_flag=save_flag,rt_flag=rt_flag
-  swfo_apdat_info,'35d'x,name='stis_mem', apid_obj='swfo_stis_memdump_apdat', tname='swfo_stis_memdump_',ttags='*',save_flag=save_flag,rt_flag=rt_flag
-  swfo_apdat_info,'35E'x,name='stis_hkp1', apid_obj='swfo_stis_hkp_apdat', tname='swfo_stis_hkp1_',ttags='*',save_flag=save_flag,rt_flag=rt_flag
-  swfo_apdat_info,'35F'x,name='stis_hkp2', apid_obj='swfo_stis_hkp_apdat', tname='swfo_stis_hkp2_',ttags='*',    save_flag=save_flag,rt_flag=rt_flag
+  swfo_apdat_info,'350'x,name='stis_sci', apid_obj='swfo_stis_sci_apdat',         tname='swfo_stis_sci',ttags='*',save_flag=save_flag,rt_flag=rt_flag
+  swfo_apdat_info,'351'x,name='stis_nse', apid_obj='swfo_stis_nse_apdat',    tname='swfo_stis_nse',ttags='*',save_flag=save_flag,rt_flag=rt_flag
+  swfo_apdat_info,'35d'x,name='stis_mem', apid_obj='swfo_stis_memdump_apdat', tname='swfo_stis_memdump',ttags='*',save_flag=save_flag,rt_flag=rt_flag
+  swfo_apdat_info,'35E'x,name='stis_hkp1', apid_obj='swfo_stis_hkp_apdat', tname='swfo_stis_hkp1',ttags='*',save_flag=save_flag,rt_flag=rt_flag
+  swfo_apdat_info,'35F'x,name='stis_hkp2', apid_obj='swfo_stis_hkp_apdat', tname='swfo_stis_hkp2',ttags='*',    save_flag=save_flag,rt_flag=rt_flag
 
 
 
@@ -67,12 +67,12 @@ pro swfo_stis_apdat_init,reset=reset, save_flag = save_flag, swem=swem, $
   ;swfo_apdat_info,'756'x,name='aps6' ,routine='spp_power_supply_decom',tname='APS6_',   save_flag=save_flag,ttags='P25?',   rt_flag=rt_flag
   ;swfo_apdat_info,'761'x,name='bertan1' ,routine='spp_power_supply_decom',tname='Igun_',save_flag=save_flag,ttags='*VOLTS *CURRENT',   rt_flag=rt_flag
   ;swfo_apdat_info,'762'x,name='bertan2',routine='spp_power_supply_decom',tname='Egun_', save_flag=save_flag,ttags='*VOLTS *CURRENT',   rt_flag=rt_flag
-  swfo_apdat_info,'7c0'x,name='log_msg',apid_obj='swfo_stis_log_msg_apdat'     ,tname='log_',  save_flag=save_flag,ttags='MSG SEQN',   rt_flag=rt_flag
+  swfo_apdat_info,'7c0'x,name='log_msg',apid_obj='swfo_stis_log_msg_apdat'     ,tname='log',  save_flag=save_flag,ttags='MSG SEQN',   rt_flag=rt_flag
   ;swfo_apdat_info,'7c1'x,name='usrlog_msg',apid_obj='swfo_stis_log_msg_apdat'     ,tname='usrlog_',  save_flag=save_flag,ttags='SEQN MSG',   rt_flag=rt_flag
   ;   swfo_apdat_info,'7c0'x,name='log_msg',routine='spp_log_msg_decom'     ,tname='log_',  save_flag=save_flag,ttags='MSG',   rt_flag=rt_flag
   ;   swfo_apdat_info,'7c1'x,name='usrlog_msg',routine='spp_log_msg_decom'     ,tname='usrlog_',  save_flag=save_flag,ttags='SEQN MSG',   rt_flag=rt_flag
   ;swfo_apdat_info,'7c3'x,name='manip', routine='spp_swp_manip_decom'   ,tname='manip_', ttags='*POS',save_flag=save_flag,rt_flag=rt_flag
-  swfo_apdat_info,'7c4'x,name='swemulator', apid_obj='swfo_stis_swemulator_apdat'   ,tname='swemul_tns_',ttags='*',save_flag=save_flag,rt_flag=rt_flag
+  swfo_apdat_info,'7c4'x,name='swemulator', apid_obj='swfo_stis_swemulator_apdat'   ,tname='swemul_tns',ttags='*',save_flag=save_flag,rt_flag=rt_flag
 
 
   if keyword_set(clear) then swfo_apdat_info,/clear

@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2022-10-05 12:24:02 -0700 (Wed, 05 Oct 2022) $
-; $LastChangedRevision: 31149 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-02-05 00:32:07 -0800 (Sun, 05 Feb 2023) $
+; $LastChangedRevision: 31471 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_nse_apdat__define.pro $
 
 
@@ -61,7 +61,7 @@ pro swfo_stis_nse_apdat::handler2,strct,source_dict=source_dict
 
   ;printdat,self
   if ~obj_valid(self.level_1a) then begin
-    dprint,'help'
+    dprint,'Creating Level_1a'
     self.level_1a = dynamicarray(name='Noise_L1a')
   endif
   da =   self.level_1a
