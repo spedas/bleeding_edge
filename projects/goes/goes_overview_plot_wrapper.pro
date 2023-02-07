@@ -36,8 +36,8 @@
 ;
 ;HISTORY:
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2023-02-02 07:46:23 -0800 (Thu, 02 Feb 2023) $
-;$LastChangedRevision: 31461 $
+;$LastChangedDate: 2023-02-05 19:50:16 -0800 (Sun, 05 Feb 2023) $
+;$LastChangedRevision: 31476 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_overview_plot_wrapper.pro $
 ;----------
 
@@ -226,9 +226,9 @@ pro goes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
           count_errors = count_errors + error
           goes_write_lastdate, lastdate_file, date
         endif
-      endif else begin ; Goes-R, probes 16,17
-        ; GOES16,17 start in 2018
-        if year03 lt 2018 then continue
+      endif else begin ; Goes-R, probes 16,17,18       
+        if year03 lt 2018 then continue  ; GOES16,17 start in 2018
+        if probe ge 18 && ((year03 lt 2022) || (year03 eq 2022 && month03 lt 12)) then continue  ; GOES18 starts in December 2022
         store_data, '*', /delete
         error = 0
         goesr_overview_plot, date=date, probe=probe, directory=directory, device=device, geopack_lshell=geopack_lshell, error=error, makepng=makepng

@@ -79,11 +79,19 @@ End
 ; lo_scpot = lower limit for the potential, default is to use the low
 ;            energy limit of the data
 ; hi_scpot = upper limit for the potential, default is 50 V
+; time_smooth_dt = if set, smooth the data in time, using this value
+;                  as smoothing time, default is no smoothing
+; hsk_test = if the HSK data for hsk_ifgm_xy_raw and hsk_ifgm_zr_raw
+;            is below this value, set potential to low limit
+; densmatch = if the potential is set to the low limit, because the
+;             distribution is unsuitable (maybe not two maxima below
+;             100 eV) then use thm_esa_dens2scpot for the potential.
+;
 ;HISTORY:
 ; 3-mar-2016, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2023-01-31 15:55:15 -0800 (Tue, 31 Jan 2023) $
-; $LastChangedRevision: 31446 $
+; $LastChangedDate: 2023-02-06 15:11:10 -0800 (Mon, 06 Feb 2023) $
+; $LastChangedRevision: 31479 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_esa_est_dist2scpot2.pro $
 ;-
 
@@ -92,7 +100,8 @@ Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
                              plot = plot, esa_datatype = esa_datatype, $
                              lo_scpot = lo_scpot, hi_scpot = hi_scpot, $
                              time_smooth_dt = time_smooth_dt, $
-                             hsk_test = hsk_test, _extra=_extra
+                             hsk_test = hsk_test, densmatch = densmatch, $
+                             _extra=_extra
 
 ;The default is to use peer data for this, and a good idea in general
   If(is_string(esa_datatype)) Then Begin
@@ -105,6 +114,7 @@ Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
 ;random_dp options
   If(~keyword_set(no_init)) Then Begin
      If(keyword_set(random_dp)) Then Begin
+        del_data, '*' ;no need for old data
         probes = ['a', 'b', 'c', 'd', 'e']
         index = fix(5*randomu(seed))
         probe = probes[index]
@@ -134,6 +144,9 @@ Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
         thm_load_esa, level='l2', probe = sc, datatype = dtyp1
         thm_load_esa_pot, efi_datatype = 'mom', probe = sc
      Endelse
+     If(keyword_set(densmatch)) Then Begin
+        thm_load_esa_pkt, probe = sc, datatype = ['peer', 'peir'] ;Load packet data
+     Endif
   Endif Else sc = probe
 
   thx = 'th'+sc
@@ -152,6 +165,7 @@ Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
   If(keyword_set(hi_scpot)) Then scphi = hi_scpot Else scphi = 50.0
 ;If requested, use HSK data for FGM to determine where the sc_pot should be
 ;set to scplo automatically
+  ntimes = n_elements(dr.x)
   If(keyword_set(hsk_test)) Then Begin
      thm_load_hsk, probe = sc
      xy_test = data_cut(thx+'_hsk_ifgm_xy_raw', dr.x)
@@ -164,7 +178,6 @@ Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
   yy = rotate(temp_tscale(dr.y, vrange = vrange, _extra=_extra), 7)
   vv = rotate(dr.v, 7)
   nchan = n_elements(vv[0,*])
-  ntimes = n_elements(dr.x)
   scpot = fltarr(ntimes)+scplo ;low limit
   If(keyword_set(yellow)) Then ylw = yellow Else ylw = 200
   For j = 0, ntimes-1 Do Begin
@@ -192,13 +205,28 @@ Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
         Endif
         If(exp(vvv[i]) Gt scphi) Then Begin
            scpot[j] = scplo
+           If(keyword_set(densmatch)) Then Begin
+              efuncj = 'get_'+thx+'_peer'
+              edj = call_function(efuncj, dr.x[j])
+              ifuncj = 'get_'+thx+'_peir'
+              idj = call_function(ifuncj, dr.x[j])
+              scpot[j] = thm_esa_dens2scpot(edj, idj, _extra = _extra)
+           Endif
         Endif Else Begin ;Require that yyy goes back above ylw+5 below 1000 V
            ytmp = yyy[i:*] ;kind of a sanity check, for a double peak
            vtmp = exp(vvv[i:*])
            ss = where(vtmp Lt 1000.0)
            If(ss[0] Ne -1) Then Begin
               ok = where(ytmp Gt ylw+5)
-              If(ok[0] Ne -1) Then scpot[j] = exp(vvv[i])
+              If(ok[0] Ne -1) Then Begin
+                 scpot[j] = exp(vvv[i])
+              Endif Else If(keyword_set(densmatch)) Then Begin
+                 efuncj = 'get_'+thx+'_peer'
+                 edj = call_function(efuncj, dr.x[j])
+                 ifuncj = 'get_'+thx+'_peir'
+                 idj = call_function(ifuncj, dr.x[j])
+                 scpot[j] = thm_esa_dens2scpot(edj, idj, _extra = _extra)
+              Endif
            Endif
         Endelse
      Endif

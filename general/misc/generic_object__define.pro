@@ -2,9 +2,9 @@
 ;+
 ;  generic_object
 ;  This basic object can be inherited by other objects and defines some basic functions and operations
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-02-05 00:32:07 -0800 (Sun, 05 Feb 2023) $
-; $LastChangedRevision: 31471 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2023-02-06 11:21:49 -0800 (Mon, 06 Feb 2023) $
+; $LastChangedRevision: 31477 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/generic_object__define.pro $
 ;
 ; Written by Davin Larson October 2018
@@ -78,7 +78,7 @@ END
 PRO generic_object::Cleanup
   COMPILE_OPT IDL2
   ; Call our superclass Cleanup method
-  dprint,verbose =self.verbose ,dlevel=self.dlevel,'Cleanup of  '+typename(self)
+  dprint,verbose =self.verbose ,dlevel=self.dlevel+1,'Cleanup of  '+typename(self)
   self->IDL_Object::Cleanup
 END
 
@@ -90,7 +90,7 @@ function generic_object::init,verbose=verbose,dlevel=dlevel,_extra=ex
   if isa(verbose) then self.verbose = verbose else self.verbose = 2
   IF (ISA(ex)) THEN self->SetProperty, _EXTRA=ex
   ;  dprint,'Init',dlevel=self.dlevel
-  dprint,verbose=self.verbose,dlevel=self.dlevel,'Initialization of '+typename(self)
+  dprint,verbose=self.verbose,dlevel=self.dlevel+1,'Initialization of '+typename(self)
   return,1
 end
 
