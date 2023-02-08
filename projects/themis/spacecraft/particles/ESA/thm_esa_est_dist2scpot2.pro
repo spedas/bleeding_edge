@@ -90,8 +90,8 @@ End
 ;HISTORY:
 ; 3-mar-2016, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2023-02-06 15:11:10 -0800 (Mon, 06 Feb 2023) $
-; $LastChangedRevision: 31479 $
+; $LastChangedDate: 2023-02-07 12:43:23 -0800 (Tue, 07 Feb 2023) $
+; $LastChangedRevision: 31480 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_esa_est_dist2scpot2.pro $
 ;-
 
@@ -203,15 +203,17 @@ Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
                    Or i1 Eq n_elements(yyy)-1
            Endrep Until cc
         Endif
+;check density ratio
+        If(keyword_set(densmatch)) Then Begin
+           efuncj = 'get_'+thx+'_peer'
+           edj = call_function(efuncj, dr.x[j])
+           ifuncj = 'get_'+thx+'_peir'
+           idj = call_function(ifuncj, dr.x[j])
+           scpot_dens = thm_esa_dens2scpot(edj, idj, _extra = _extra)
+        Endif
         If(exp(vvv[i]) Gt scphi) Then Begin
-           scpot[j] = scplo
-           If(keyword_set(densmatch)) Then Begin
-              efuncj = 'get_'+thx+'_peer'
-              edj = call_function(efuncj, dr.x[j])
-              ifuncj = 'get_'+thx+'_peir'
-              idj = call_function(ifuncj, dr.x[j])
-              scpot[j] = thm_esa_dens2scpot(edj, idj, _extra = _extra)
-           Endif
+           If(keyword_set(densmatch)) Then scpot[j] = scpot_dens $
+           Else scpot[j] = scplo
         Endif Else Begin ;Require that yyy goes back above ylw+5 below 1000 V
            ytmp = yyy[i:*] ;kind of a sanity check, for a double peak
            vtmp = exp(vvv[i:*])
@@ -221,12 +223,26 @@ Pro thm_esa_est_dist2scpot2, date, probe, trange=trange, yellow=yellow, $
               If(ok[0] Ne -1) Then Begin
                  scpot[j] = exp(vvv[i])
               Endif Else If(keyword_set(densmatch)) Then Begin
-                 efuncj = 'get_'+thx+'_peer'
-                 edj = call_function(efuncj, dr.x[j])
-                 ifuncj = 'get_'+thx+'_peir'
-                 idj = call_function(ifuncj, dr.x[j])
-                 scpot[j] = thm_esa_dens2scpot(edj, idj, _extra = _extra)
+                 scpot[j] = scpot_dens
               Endif
+           Endif
+; One last sanity check, calculate the density, using momenst_3d.pro
+           If(keyword_set(densmatch) && (scpot[j] Ne scpot_dens)) Then Begin
+              If(edj.valid Ne 0) Then Begin
+                 em0 = moments_3d(edj,sc_pot=scpot[j],/dens_only)
+                 If(em0.density Gt 0) Then dem0 = em0.density $
+                 Else dem0 = 0.0
+              Endif Else dem0 = 0.0
+              If(idj.valid Ne 0) Then Begin
+                 im0 = moments_3d(idj,sc_pot=scpot[j],/dens_only)
+                 If(im0.density Gt 0) Then dim0 = im0.density $
+                 Else dim0 = 0.0
+              Endif Else dim0 = 0.0
+              If(dem0 Gt 0 And dim0 Gt 0) Then Begin
+                 fraction = dem0/dim0
+                 If(fraction Gt 2.0 Or fraction Lt 0.5) Then $
+                    scpot[j] = scpot_dens
+              Endif Else scpot[j] = scplo
            Endif
         Endelse
      Endif
