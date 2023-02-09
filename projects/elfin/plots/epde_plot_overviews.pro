@@ -40,7 +40,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   endif
   if ~undefined(trange) && n_elements(trange) eq 2 $
     then tr = timerange(trange) $
-  else tr = timerange()
+    else tr = timerange()
   if undefined(probe) then probe = 'a'
   if ~undefined(no_download) then no_download=1 else no_download=0
   t0=systime(/sec)
@@ -67,20 +67,14 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   set_plot,'z'
   charsize=1
   tplot_options, 'xmargin', [16,11]
-  ;tplot_options, 'ymargin', [7,4]
 
   ; close and free any logical units opened by calc
   luns=lindgen(124)+5
   for j=0,n_elements(luns)-1 do free_lun, luns[j]
 
   ; remove any existing pef tplot vars
-  ;  del_data, '*_pef_nflux'
-  ;  del_data, '*_all'
-  ;  elf_load_epd, probes=probe,  datatype='pef', level='l1', type='nflux', no_download=no_downlaod
-  ;  ;trange=['2022-06-03/03:00','2022-06-03/04:00'],
-  ;  get_data, 'el'+probe+'_pef_nflux', data=pef_nflux
-  ; remove any existing pef tplot vars
   del_data, '*_pef_nflux'
+  del_data, '*_pif_nflux'
   del_data, '*_all'
   elf_load_epd, probes=probe, trange=tr, datatype='pef', level='l1', type='nflux', no_download=no_downlaod
 
@@ -197,19 +191,44 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ;;;;;;;;;;;;;;;;;;;;
   ; MLT IGRF
   ;;;;;;;;;;;;;;;;;;;;
-  sclet = probe
+  sclet=probe
+  pival=!PI
+  Rem=6371.0 ; Earth mean radius in km
+  cotrans,'el'+sclet+'_pos_gei','elx_pos_gse',/GEI2GSE
+  cotrans,'elx_pos_gse','elx_pos_gsm',/GSE2GSM
+  get_data, 'elx_pos_gsm',data=datgsm, dlimits=datgsmdl, limits=datgsml
+  store_data, 'elx_pos_gsm_mins', data={x: datgsm.x[0:*:60], y: datgsm.y[0:*:60,*]}, dlimits=datgsmdl, limits=datgsml
+  tt89,'elx_pos_gsm_mins',/igrf_only,newname='elx_bigrf_gsm_mins',period=0.1; gets IGRF field at ELF location
+  ; find igrf coordinates for satellite, same as for footpoint: Ligrf, MLATigrf, MLTigrf
+  ttrace2equator,'elx_pos_gsm_mins',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Rem ; native is gsm
+  cotrans,'elx_pos_gsm_mins_foot','elx_pos_sm_mins_foot',/GSM2SM ; now in SM
+  get_data,'elx_pos_sm_mins_foot',data=elx_pos_sm_foot
+  xyz_to_polar,'elx_pos_sm_mins_foot',/co_latitude ; get position in rthphi (polar) coords
+  calc," 'Ligrf'=('elx_pos_sm_mins_foot_mag'/Rem)/(sin('elx_pos_sm_mins_foot_th'*pival/180.))^2 " ; uses 1Rem (mean E-radius, the units of L) NOT 1Rem+100km!
+  tdotp,'elx_bigrf_gsm_mins','elx_pos_gsm_mins',newname='elx_br_tmp'
+  get_data,'elx_br_tmp',data=Br_tmp
+  hemisphere=sign(-Br_tmp.y)
+  r_ift_dip = (1.+100./Rem)
+  calc," 'MLAT' = (180./pival)*arccos(sqrt(Rem*r_ift_dip/'elx_pos_sm_mins_foot_mag')*sin('elx_pos_sm_mins_foot_th'*pival/180.))*hemisphere " ; at footpoint
+  ; interpolate the minute-by-minute data back to the full array
+  get_data,'MLAT',data=MLAT_mins  
+  store_data,'el'+probe+'_MLAT_igrf',data={x: datgsm.x, y: interp(MLAT_mins.y, MLAT_mins.x, datgsm.x)}
+
   ;;trace to equator to get L, MLAT, and MLT in IGRF
-  ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
-  cotrans,'el'+sclet+'_pos_gsm_foot','el'+sclet+'_pos_sm_foot',/GSM2SM
-  get_data,'el'+sclet+'_pos_gsm_foot',data=elx_pos_eq
+;  ttrace2equator,'el'+sclet+'_pos_gsm',external_model='none',internal_model='igrf',/km,in_coord='gsm',out_coord='gsm',rlim=100.*Re
+;  cotrans,'el'+sclet+'_pos_gsm_foot','el'+sclet+'_pos_sm_foot',/GSM2SM
+  get_data,'elx_pos_gsm_mins_foot',data=elx_pos_eq
   L1=sqrt(total(elx_pos_eq.y^2.0,2,/nan))/Re
-  store_data,'el'+sclet+'_L_igrf',data={x:elx_pos_eq.x,y:L1}
-  get_data,'el'+sclet+'_pos_gsm',data=elx_pos
-  rnew=sqrt(elx_pos.y[*,0]^2.0+elx_pos.y[*,1]^2.0+(elx_pos.y[*,2]-elx_pos_eq.y[*,2])^2.0)
-  lat3=asin((elx_pos.y[*,2]-elx_pos_eq.y[*,2])/rnew)/!dtor
-  store_data,'el'+sclet+'_MLAT_igrf',data={x:elx_pos_eq.x,y:lat3};;did not pass the validation
-  elf_mlt_l_lat,'el'+sclet+'_pos_sm_foot',MLT0=MLT0,L0=L0,lat0=lat0
-  store_data,'el'+sclet+'_MLT_igrf',data={x:elx_pos_eq.x,y:MLT0}
+  store_data,'el'+probe+'_L_igrf',data={x: datgsm.x, y: interp(L1, elx_pos_eq.x, datgsm.x)}
+;  get_data,'el'+sclet+'_pos_gsm',data=elx_pos
+;  rnew=sqrt(elx_pos.y[*,0]^2.0+elx_pos.y[*,1]^2.0+(elx_pos.y[*,2]-elx_pos_eq.y[*,2])^2.0)
+;  lat3=asin((elx_pos.y[*,2]-elx_pos_eq.y[*,2])/rnew)/!dtor
+;  store_data,'el'+sclet+'_MLAT_igrf',data={x:elx_pos_eq.x,y:lat3};;did not pass the validation
+  
+  elf_mlt_l_lat,'elx_pos_sm_mins_foot',MLT0=MLT0,L0=L0,lat0=lat0
+  get_data, 'elx_pos_sm_mins_foot', data=sm_mins
+  store_data,'el'+probe+'_MLT_igrf',data={x: datgsm.x, y: interp(MLT0, sm_mins.x, datgsm.x)}
+  del_data, '*_mins'
 
   options,'el'+probe+'_L_igrf',ytitle='L-igrf'
   options,'el'+probe+'_L_igrf',charsize=.7
@@ -374,6 +393,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ; set up science zone plot options
   tplot_options, 'xmargin', [16,11]
   tplot_options, 'ymargin', [4,3]
+print,  time_string(sz_starttimes)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; MAIN LOOP for PLOTs
@@ -525,7 +545,6 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
     options, 'el'+probe+'_MLAT_dip', 'format', '(1F5.1)'
     options, 'el'+probe+'_MLT_dip', 'format', '(1F4.1)'
     options, 'el'+probe+'_L_dip', 'format', '(1F4.1)'
-
     if strlowcase(probe) eq 'a' then  $
       varstring=['ela_GLON','ela_MLAT_igrf[ela_MLAT_dip]', 'ela_MLT_igrf[ela_MLT_dip]', 'ela_L_igrf[ela_L_dip]'] else $
       varstring=['elb_GLON','elb_MLAT_igrf[elb_MLAT_dip]', 'elb_MLT_igrf[elb_MLT_dip]', 'elb_L_igrf[elb_L_dip]']

@@ -15,7 +15,7 @@
 ;; 1) Select date and time interval
 ;;    ============================
 ; download data for 8/2/2015
-date = '2018-10-16/00:00:00'
+date = '2021-10-16/00:00:00'
 timespan,date,1,/day
 elf_init
 
