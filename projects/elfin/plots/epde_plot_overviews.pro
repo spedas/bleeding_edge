@@ -383,6 +383,7 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
 
     epd_sci_zones=get_elf_science_zone_start_end(trange=trange, probe=probe, instrument='epd')
     fgm_sci_zones=get_elf_science_zone_start_end(trange=trange, probe=probe, instrument='fgm')
+
   ;  if size(epd_times, /type) EQ 8 then begin
   ;     sz_starttimes=epd_times.starts
   ;     sz_endtimes=epd_times.ends
@@ -393,8 +394,8 @@ pro epde_plot_overviews, trange=trange, probe=probe, no_download=no_download, $
   ; set up science zone plot options
   tplot_options, 'xmargin', [16,11]
   tplot_options, 'ymargin', [4,3]
-print,  time_string(sz_starttimes)
-
+;print,  time_string(sz_starttimes)
+;stop
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; MAIN LOOP for PLOTs
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

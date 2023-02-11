@@ -122,8 +122,12 @@ pro elf_load_fgm, trange = trange, probes = probes, datatype = datatype, $
   if undefined(suffix) then suffix = ''
   if undefined(data_rate) then data_rate = 'srvy' else data_rate=strlowcase(data_rate)
   if data_rate EQ '*' then data_rate=['srvy']
-  if undefined(no_cal) then no_cal = 0
-    
+  if undefined(no_cal) then no_cal = 0  
+  if ~undefined(trange) then begin
+    dur=time_double(trange[1])-time_double(trange[0])
+    timespan, trange[0],dur,/sec
+  endif
+
   elf_load_data, trange = trange, probes = probes, level = level, instrument = 'fgm', $
     data_rate = data_rate, local_data_dir = local_data_dir, source = source, $
     datatype = datatype, get_support_data = get_support_data, no_time_sort=no_time_sort, $
@@ -183,7 +187,7 @@ pro elf_load_fgm, trange = trange, probes = probes, datatype = datatype, $
   ; perform coordinate conversions from gei to NDW and OBW
   if  ~undefined(tplotnames) && tplotnames[0] ne '' then begin
     if size(fsp_res_dmxl, /type) EQ 8 then begin
-;      tr=timerange()
+      tr=timerange()
 ;      stop
       tr=time_double(trange)     
       ; will need position data for coordinate transforms
