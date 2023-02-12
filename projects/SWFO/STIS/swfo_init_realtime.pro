@@ -1,6 +1,6 @@
 
 
-pro swfo_init_realtime,host=host, port=port , trange=trange, opts=opts
+pro swfo_init_realtime,host=host, port=port , trange=trange, opts=opts, offline=offline
 
   stis = 1
 
@@ -20,8 +20,14 @@ pro swfo_init_realtime,host=host, port=port , trange=trange, opts=opts
         2432: begin
           opts.station    = 'S0'           ; defines which GSE computer is being used
           opts.file_type  = 'CMBLK'
-          opts.reldir     = 'swfo/data/sci/stis/prelaunch/realtime/S0/'
-          opts.fileformat = 'cmblk/YYYY/MM/DD/swfo_stis_cmblk_YYYYMMDD_hh.dat.gz'
+          opts.reldir     = 'swfo/data/sci/stis/prelaunch/realtime/S0/cmblk/'
+          opts.fileformat = 'YYYY/MM/DD/swfo_stis_cmblk_YYYYMMDD_hh.dat.gz'
+        end
+        2433: begin
+          opts.station    = 'S1'           ; defines which GSE computer is being used
+          opts.file_type  = 'CMBLK'
+          opts.reldir     = 'swfo/data/sci/stis/prelaunch/realtime/S1/cmblk/'
+          opts.fileformat = 'YYYY/MM/DD/swfo_stis_cmblk_YYYYMMDD_hh.dat.gz'
         end
         2028: begin
           opts.station    = 'S0'
@@ -37,6 +43,8 @@ pro swfo_init_realtime,host=host, port=port , trange=trange, opts=opts
         end
       endcase
 
+      if keyword_set(offline) then opts.url=''
+
       opts.exec_text =  ['tplot,verbose=0,trange=systime(1)+[-1.,.05]*600','timebar,systime(1)']
       opts.file_trange = 3
     endif
@@ -48,7 +56,11 @@ pro swfo_init_realtime,host=host, port=port , trange=trange, opts=opts
       ;filenames = file_retrieve(pathformat,trange=trange,/hourly_,remote_data_dir=opts.remote_data_dir,local_data_dir= opts.local_data_dir)
       if n_elements(trange eq 1)  then trange = systime(1) + [-trange[0],0]*3600.
       dprint,dlevel=2,'Download raw telemetry files...'
-      filenames = swfo_file_retrieve(pathformat,trange=trange,/hourly_names)
+      if 1 then begin
+        filenames = file_retrieve(pathformat,trange=trange,/hourly,remote=opts.url,local=opts.root_dir,resolution=3600L)
+      endif else begin
+        filenames = swfo_file_retrieve(pathformat,trange=trange)        
+      endelse
       dprint,dlevel=2, "Print the raw data files..."
       dprint,dlevel=2,file_info_string(filenames)
       opts.filenames = filenames
@@ -84,15 +96,15 @@ pro swfo_init_realtime,host=host, port=port , trange=trange, opts=opts
       end
       'CMBLK': begin
         cmb1  = cmblk_reader(port=d.port, host=d.host,directory=directory,fileformat=opts.fileformat)
-        cmb1.add_handler, 'raw_tlm',  swfo_raw_tlm('SWFO_raw_telem',/no_widget)
-        cmb1.add_handler, 'KEYSIGHTPS' ,  cmblk_keysight('Keysight',/no_widget)
+        ;cmb1.add_handler, 'raw_tlm',  swfo_raw_tlm('SWFO_raw_telem',/no_widget)
+        ;cmb1.add_handler, 'KEYSIGHTPS' ,  cmblk_keysight('Keysight',/no_widget)
         opts.cmb = cmb1
 
         if opts.haskey('filenames') then begin
           cmb1.file_read, opts.filenames        ; Load in the files          
         endif
 
-        swfo_apdat_info,/all,/create_tplot_vars,/print
+        swfo_apdat_info,/all,/create_tplot_vars
 
         tplot_options,title='Real Time (CMBLK)'
 

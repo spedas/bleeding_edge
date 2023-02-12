@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2023-02-10 17:30:39 -0800 (Fri, 10 Feb 2023) $
-; $LastChangedRevision: 31491 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-02-10 18:36:04 -0800 (Fri, 10 Feb 2023) $
+; $LastChangedRevision: 31492 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -84,7 +84,12 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     'ADC': tplot,add=add,'*hkp1_ADC*
     'ERRORS' : tplot,add=add,'*hkp2*ERRORS'
     'RATES' : tplot,add=add,'*hkp2_?????_RATES'
+    'CMD'   : tplot,add=add,'*hkp1_CMDS_*'
+    'WAIT'  : tplot,add=add,'*hkp1*REMAIN*'
     'DL1':  tplot,add=add,'*sci*COUNTS *nse_HISTOGRAM *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_EXECUTED'
+    'DL2':  tplot,add=add,'*sci*COUNTS *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_EXECUTED'
+    'LPT':  tplot,add=add,'*sci_RATE6 *sci_AVGBIN14 *hkp1_DAC_VALUES *sci*COUNTS *hkp3*REMAIN* *hkp1*REMAIN*'
+    
     else: dprint,'Unknown code: '+strtrim(name,2)
   endcase
 
