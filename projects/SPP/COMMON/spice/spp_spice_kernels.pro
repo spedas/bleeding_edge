@@ -19,8 +19,8 @@
 ;
 ; Author: Davin Larson
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-07-06 12:59:34 -0700 (Wed, 06 Jul 2022) $
-; $LastChangedRevision: 30908 $
+; $LastChangedDate: 2023-02-12 19:59:32 -0800 (Sun, 12 Feb 2023) $
+; $LastChangedRevision: 31493 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spice/spp_spice_kernels.pro $
 ;-
 function spp_spice_kernels,names,trange=trange,all=all,load=load,verbose=verbose,source=source,valid_only=valid_only,sck=sck,clear=clear,$
@@ -61,9 +61,9 @@ function spp_spice_kernels,names,trange=trange,all=all,load=load,verbose=verbose
       end
       ;Spacecraft Position (BSP)
       'SPK':begin
-        spk=spp_file_retrieve(pathname+'ephemeris_predict/????/spp_pred_*.bsp')
+        if reconstruct ne 1 then spk=spp_file_retrieve(pathname+'ephemeris_predict/????/spp_pred_*.bsp')
         if reconstruct eq 0 then append_array,kernels,spk
-        if reconstruct eq 2 then append_array,kernels,spk[-1]
+        if reconstruct eq 2 then append_array,kernels,spk[-2:-1]
         if keyword_set(merged) then begin
           append_array,kernels,spp_file_retrieve('psp/data/sci/sweap/sao/psp/data/teams/psp_soc/soc_ephem/ephem_current/spp_recon_20180812_????????_merge.bsp',/last,/valid_only)
         endif else append_array,kernels,spp_file_retrieve(pathname+'reconstructed_ephemeris/????/*.bsp') 

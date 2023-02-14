@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-06-21 09:41:51 -0700 (Mon, 21 Jun 2021) $
-; $LastChangedRevision: 30071 $
+; $LastChangedDate: 2023-02-12 20:00:28 -0800 (Sun, 12 Feb 2023) $
+; $LastChangedRevision: 31494 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_ssr_makefile.pro $
 ; $ID: $
 ;20180524 Ali
@@ -13,7 +13,7 @@
 ;force_make: bypasses file timestamp comparison for making files
 
 
-pro spp_swp_ssr_makefile,trange=trange_full,all=all,type=type,finish=finish,load_ssr=load_ssr,fields=fields, $
+pro spp_swp_ssr_makefile,trange=trange_full,all=all,type=type,finish=finish,load_ssr=load_ssr,fields=fields,e0=e0, $
   make_cdf=make_cdf,make_ql=make_ql,make_sav=make_sav,load_sav=load_sav,verbose=verbose,reset=reset,sc_files=sc_files, $
   ssr_format=ssr_format,mtime_range=mtime_range,make_tplotvar=make_tplotvar,ssr_prefix=ssr_prefix,force_make=force_make
 
@@ -27,8 +27,10 @@ pro spp_swp_ssr_makefile,trange=trange_full,all=all,type=type,finish=finish,load
   root=root_data_dir()
   output_prefix='psp/data/sci/sweap/'
   sav_ssr=output_prefix+'.sav/L1B/'
+  if keyword_set(e0) then sav_ssr=output_prefix+'.sav/e0/ssr/'
   apids=['sc_hkp','swem','wrp', 'spc', 'sp[ab]','spi']+'_*'
   paths=['sc_hkp','swem','swem','spc2','spe',   'spi']
+  if keyword_set(e0) then paths='.sav/e0/'+paths ;for processing the commissioning data
   cdf_suffix='/L1/$NAME$/YYYY/MM/psp_swp_$NAME$_L1_YYYYMMDD_v00.cdf'
   ql_dir=output_prefix+'swem/ql/'
   linkname=output_prefix+'.hidden/.htaccess'
@@ -108,7 +110,7 @@ pro spp_swp_ssr_makefile,trange=trange_full,all=all,type=type,finish=finish,load
 
   if keyword_set(make_cdf) then begin ;make cdf files
     ssr_prefix=output_prefix & ssr_format=cdf_suffix ;for the Finish dprint message at the end of the code
-    spp_apdat_info,/reset
+    if ~keyword_set(e0) then spp_apdat_info,/reset
     spp_swp_apdat_init,/reset
     if keyword_set(type) then aps=spp_apdat(type) else aps=spp_apdat(apids)
     foreach apid,apids,api do spp_apdat_info,apid,cdf_pathname=output_prefix+paths[api]+cdf_suffix,cdf_linkname=linkname

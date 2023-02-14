@@ -11,8 +11,8 @@
 ;       Yuki Harada on 2017-05-11
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-04-06 01:38:33 -0700 (Fri, 06 Apr 2018) $
-; $LastChangedRevision: 25009 $
+; $LastChangedDate: 2023-02-13 00:30:04 -0800 (Mon, 13 Feb 2023) $
+; $LastChangedRevision: 31495 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/marsis/mex_marsis_spectrogram.pro $
 ;-
 
@@ -74,6 +74,13 @@ store_data,'mex_marsis_freq_sdens_max'+suffix, $
            dlim={ytitle:drtitle+'Frequency!c[MHz]',yrange:[0,max(ff,/nan)], $
                  ystyle:1, $
                  ztitle:'Max.!cSpectral Density!c[(V/m)!u2!n/Hz]', $
+                 spec:1,zlog:1,zrange:[1e-18,1e-10],datagap:10}
+
+store_data,'mex_marsis_freq_sdens_tot'+suffix, $
+           data={x:t,y:total(sss,3,/nan),v:ff}, $
+           dlim={ytitle:drtitle+'Frequency!c[MHz]',yrange:[0,max(ff,/nan)], $
+                 ystyle:1, $
+                 ztitle:'Total!cSpectral Density!c[(V/m)!u2!n/Hz]', $
                  spec:1,zlog:1,zrange:[1e-18,1e-10],datagap:10}
 
 end
