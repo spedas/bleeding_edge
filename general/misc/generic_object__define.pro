@@ -2,9 +2,9 @@
 ;+
 ;  generic_object
 ;  This basic object can be inherited by other objects and defines some basic functions and operations
-; $LastChangedBy: ali $
-; $LastChangedDate: 2023-02-06 11:21:49 -0800 (Mon, 06 Feb 2023) $
-; $LastChangedRevision: 31477 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-02-14 09:50:55 -0800 (Tue, 14 Feb 2023) $
+; $LastChangedRevision: 31498 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/generic_object__define.pro $
 ;
 ; Written by Davin Larson October 2018
@@ -47,22 +47,23 @@ END
 
 
 
-PRO generic_object::GetProperty,value, _ref_extra = ex
-  COMPILE_OPT IDL2
-  ;strct = create_struct(name=typename(self))
-  ;struct_assign , self, strct
-
-  if 1 then begin
-    printdat,ex
-    printdat,self
-  endif
-    str_element,self,ex[0],value
-  if 1 then begin
-    printdat,value
-  endif
-;  self.help
-END
-
+;PRO generic_object::GetProperty,value, _ref_extra = ex
+;  COMPILE_OPT IDL2
+;  ;strct = create_struct(name=typename(self))
+;  ;struct_assign , self, strct
+;
+;  if 1 then begin
+;    dprint,'Hmmmm...   Not working'
+;    ;printdat,ex
+;    ;printdat,self
+;  endif
+;    str_element,self,ex[0],value
+;  if 1 then begin
+;    ;printdat,value
+;  endif
+;;  self.help
+;END
+;
 
 
 
@@ -90,7 +91,7 @@ function generic_object::init,verbose=verbose,dlevel=dlevel,_extra=ex
   if isa(verbose) then self.verbose = verbose else self.verbose = 2
   IF (ISA(ex)) THEN self->SetProperty, _EXTRA=ex
   ;  dprint,'Init',dlevel=self.dlevel
-  dprint,verbose=self.verbose,dlevel=self.dlevel+1,'Initialization of '+typename(self)
+  dprint,verbose=self.verbose,dlevel=3,'Initialization of '+typename(self)
   return,1
 end
 

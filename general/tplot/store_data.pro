@@ -37,8 +37,8 @@
 ;
 ;CREATED BY:    Davin Larson
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-02-04 15:18:14 -0800 (Sat, 04 Feb 2023) $
-; $LastChangedRevision: 31469 $
+; $LastChangedDate: 2023-02-14 09:14:43 -0800 (Tue, 14 Feb 2023) $
+; $LastChangedRevision: 31497 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/store_data.pro $
 ;-
 pro store_data,name, time,ydata,values, $
@@ -85,7 +85,7 @@ pro store_data,name, time,ydata,values, $
       ;nd = size(/n_elements,data)
       for i=0,n_elements(tags)-1 do begin
         if ok[i] eq 0 then continue
-        if tags[i] eq time_tag then continue
+        if tags[i] eq strupcase(time_tag) then continue
         if keyword_set(gap_tag) && tags[i] eq gap_tag then continue
         vardef = dictionary('x',time_tag,'y',tags[i])        
         y = data_sample.(i)

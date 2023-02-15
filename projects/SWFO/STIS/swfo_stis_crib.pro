@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-01-17 12:57:50 -0800 (Tue, 17 Jan 2023) $
-; $LastChangedRevision: 31415 $
+; $LastChangedDate: 2023-02-14 09:50:55 -0800 (Tue, 14 Feb 2023) $
+; $LastChangedRevision: 31498 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -49,6 +49,45 @@ end
 
 
 
+;
+;ws_4 = [4]*6 + [8]*6 + [16,32,64,128,256]
+;wd_4 = [2]*6 + [4]*6 + [8,16,32,64,128]
+;wt_4 = [1]*6 + [2]*6 + [4,8,16,32,64]
+;
+;map4={'id':4, 'channels':[                       
+;{'name':'O',  'tid':0,'fto':1,'widths':ws_4} ,
+;{'name':'T',  'tid':0,'fto':2,'widths':ws_4} ,
+;{'name':'F',  'tid':0,'fto':4,'widths':ws_4} ,
+;{'name':'OT', 'tid':0,'fto':3,'widths':wd_4} ,
+;{'name':'FT', 'tid':0,'fto':6,'widths':wd_4} ,
+;{'name':'FO', 'tid':0,'fto':5,'widths':wd_4} ,
+;{'name':'FTO','tid':0,'fto':7,'widths':wt_4} ,
+;{'name':'O',  'tid':1,'fto':1,'widths':ws_4} ,
+;{'name':'T',  'tid':1,'fto':2,'widths':ws_4} ,
+;{'name':'F',  'tid':1,'fto':4,'widths':ws_4} ,
+;{'name':'OT', 'tid':1,'fto':3,'widths':wd_4} ,
+;{'name':'FT', 'tid':1,'fto':6,'widths':wd_4} ,
+;{'name':'FO', 'tid':1,'fto':5,'widths':wd_4} ,
+;{'name':'FTO','tid':1,'fto':7,'widths':wt_4} ] }
+;
+
+;def memmap4(map= map4):
+;sstcmd(0x090000)
+;for tid in range(2):
+;startbin = tid * 128
+;for ch in map['channels']:
+;print(ch)
+;fto = ch['fto']
+;tid = ch['tid']
+;memfilladr(fto,tid,level=0)
+;print(startbin, ch['name'], tid, ch['fto'], ch['widths'])
+;startbin = memfill_list(startbin=startbin,widths=ch['widths'])
+;print(startbin)
+;sstcmd(0x090000 + map['id'])
+
+
+
+
 
 
 pro  swfo_stis_plot_example,trange=trange,nsamples=nsamples,lim=lim    ; This is very simple sample routine to demonstrate how to plot recently collecte spectra
@@ -60,63 +99,118 @@ pro  swfo_stis_plot_example,trange=trange,nsamples=nsamples,lim=lim    ; This is
     samples=da.sample(range=trange,tagname='time')
     nsamples = n_elements(samples)
   endif else begin
-    if ~keyword_set(nsamples) then nsamples = 20
+    if ~keyword_set(nsamples) then nsamples = 25
     index = [size-nsamples:size-1]    ; get indices of last N samples
     samples=da.slice(index)           ; extract the last N samples
   endelse
   
-    
-  counts = total(samples.counts,2)    ;  get the total over slice
-  integ_time = total(samples.duration)
+  
+  w1= where((samples.ptcu_bits and 1) eq 1,nw,/null)
+  if keyword_set(w1) then begin
 
-  if 1 then begin
+    counts = total(samples[w1].counts,2)    ;  get the total over slice
+    integ_time = total(samples[w1].duration)
+    
+    
+    datsize = 256
+    counts = counts[0:datsize-1]
+    ;printdat,counts
+
     xval = findgen( n_elements( counts)) * 1.
-    wi,2                                ; Open window
+    wi,2                              ; Open window
     plot,xval,counts,psym=10,xtitle='Bin Number',ytitle='Counts', /xstyle, $
-      title='Science Data (Integrated over '+strtrim(nsamples,2)+' samples)',/ylog,yrange=minmax(/pos,[counts,[8,10]]);[.5,max(counts)]
+      title='Science Data (Integrated over '+strtrim(nsamples,2)+' samples)',/ylog,yrange=minmax(/pos,[counts,[.8,10]]);[.5,max(counts)]
+
+    mapids = samples[w1].user_09
+    mapid = round(median(mapids))
+        
+    if 1 then begin
+      case mapid of
+        4: n=18
+        5: n=18
+        6: n=40        
+        else: dprint,'Unknown map'
+      endcase
+      if 1 then begin
+        wi,4
+        ;printdat,mapid,counts
+        nchan = datsize / n
+        nsize = n * nchan
+        rate = reform(counts[0:nsize-1],n,nchan) / integ_time
+        ;printdat ,cnts
+        x = findgen(n)
+        y = rate > .00001
+        ylim,lim,.0005,1000,1
+        options,lim,psym=-4
+        mplot,x,y,lim=lim
+        ;printdat,x,y
+      end
+
+      
+      
+      
+      
+    endif
+    
+    
   endif
-  datsize = 672
-  if  1 && datsize eq 672 then begin  ; Non LUT only
-    wi,3
-    bins = indgen(672)
-    bin14    = bins / 48
-    bin_nrg  = bins mod 48
-    bin_ptrn = bin14 / 2          ; C123 pattern minus 1
-    bin_tid  = bin14 mod 2
+  
+  
+  w1= where((samples.ptcu_bits and 1) eq 0,/null)         ; non lookup table
+
+  if keyword_set(w1) then begin
+    counts = total(samples[w1].counts,2)    ;  get the total over slice
+    integ_time = total(samples[w1].duration)
     
-    g3=1.
-    g2=g3
-    g1=g3/100.
-    g0= g3
-    g4=g1
-    g5=g2
-    g6=g3
-    
-    alt = 150
-    col= [180,2,4,6,1,3,0,5,5,5,alt,alt,5,5]
-    gfs= [g0,g1,g2,g3,g4,g5,g6]
-    ;           1       2      12     3      13    23     123
-    channel= [[1,4],  [2,5],  [0,0],  [3,6],   [0,0],   [0,0],   [0,0] ] 
-    ;colors = [[2,6],  [4,0],  [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
-    colors = col[channel]
-    print,'colors'
-    print,colors
-    symb   = [[2,6],  [4,0],   [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
-    lstyle = [[2,6],  [4,0],   [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
-    gf     = [[g1,g4],[g2,g5], [g1,g4],[g3,g6], [g1,g4], [g3,g6], [g2,g4] ]
-    
-    xlim,lim,.1,10000,1
-    ylim,lim,1e-10,1000,1
-    box,lim
-    
-    ;counts = counts > .01
-    
-    swfo_stis_nonlut_decomp_array, nrg=nrg, dnrg=dnrg
-    x = nrg[bin_nrg]
-    y = counts/integ_time  /dnrg[bin_nrg]  / gf[bin14]
-    
-    plots,x,y,color = colors[bin14],psym=-1,noclip=0,thick=2
-    ;dprint,nrg
+    xval = findgen( n_elements( counts)) * 1.
+    wi,2                              ; Open window
+    plot,xval,counts,psym=10,xtitle='Bin Number',ytitle='Counts', /xstyle, $
+      title='Science Data (Integrated over '+strtrim(nsamples,2)+' samples)',/ylog,yrange=minmax(/pos,[counts,[.8,10]]);[.5,max(counts)]
+
+    datsize = 672
+    if  1 && datsize eq 672 then begin  ; Non LUT only
+      wi,3
+      bins = indgen(672)
+      bin14    = bins / 48
+      bin_nrg  = bins mod 48
+      bin_ptrn = bin14 / 2          ; C123 pattern minus 1
+      bin_tid  = bin14 mod 2
+
+      g3=1.
+      g2=g3
+      g1=g3/100.
+      g0= g3
+      g4=g1
+      g5=g2
+      g6=g3
+
+      alt = 150
+      col= [180,2,4,6,1,3,0,5,5,5,alt,alt,5,5]
+      gfs= [g0,g1,g2,g3,g4,g5,g6]
+      ;           1       2      12     3      13    23     123
+      channel= [[1,4],  [2,5],  [0,0],  [3,6],   [0,0],   [0,0],   [0,0] ]
+      ;colors = [[2,6],  [4,0],  [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
+      colors = col[channel]
+      ;print,'colors'
+      ;print,colors
+      symb   = [[2,6],  [4,0],   [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
+      lstyle = [[2,6],  [4,0],   [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
+      gf     = [[g1,g4],[g2,g5], [g1,g4],[g3,g6], [g1,g4], [g3,g6], [g2,g4] ]
+
+      xlim,lim,.1,10000,1
+      ylim,lim,1e-10,1000,1
+      box,lim
+
+      ;counts = counts > .01
+
+      swfo_stis_nonlut_decomp_array, nrg=nrg, dnrg=dnrg
+      x = nrg[bin_nrg]
+      y = counts/integ_time  /dnrg[bin_nrg]  / gf[bin14]
+
+      plots,x,y,color = colors[bin14],psym=-1,noclip=0,thick=2
+      ;dprint,nrg
+
+    endif
 
   endif
 
@@ -125,7 +219,7 @@ end
 
 ;file_type ='ptp_file'
 file_type ='gse_file'
-station = 's1'
+station = 's0'
 
 
 ;  Define the "options" dictionary -   Opts
@@ -135,22 +229,24 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.root = root_data_dir()
   opts.remote_data_dir = 'sprg.ssl.berkeley.edu/data/'
   ;opts.local_data_dir = root_data_dir()
-  opts.fileformat = 'YYYY/MM/DD/swfo_stis_socket_YYYYMMDD_hh.dat.gz'
+  opts.fileformat = 'YYYY/MM/DD/CMBLK_YYYYMMDD_hh00.dat.gz'
   opts.reldir = 'swfo/data/sci/stis/prelaunch/realtime/' ;s0/s0/
   opts.title = 'SWFO STIS'
   opts.port = 2028
   case strupcase(station) of
     'S0' : begin
-      opts.reldir += 'S0/S0/'
-      opts.host = '128.32.98.57'
-      opts.port = 2028
+      opts.reldir += 'S0/CMBLK/'
+      opts.host = 'swifgse1'
+      opts.port = 2432
       end
     'S1' : begin
       ;opts.reldir += 'S1/'
-      opts.host = '128.32.98.57'
+      opts.host = 'swifgse1'
       opts.port = 2128
       end
   endcase
+  opts.file_type = 'cmblk_file'
+  opts.file_type = 'gse_file'
   opts.init_realtime =1                  ; Set to 1 to start realtime stream widget
   opts.init_stis =1                      ; set to 1 to initialize the STIS APID definitions
   opts.exec_text = ['tplot,verbose=0,trange=systime(1)+[-1,.05]*60.*10','timebar,systime(1)']   ; commands to be run in exec widget
@@ -181,12 +277,11 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = ['2023 1 3 16','2023 1 3 21']  ;Am241 x-ray source - flight like detectors with transition
   opts.file_trange = ['2023 1 3 ','2023 1 5 ']  ;Am241 x-ray source - flight like detectors with transition - 2 days
   ;opts.file_trange = !null
-  opts.file_trange = 4
+  opts.file_trange = 3
   ;opts.filenames=['socket_128.32.98.57.2028_20211216_004610.dat', 'socket_128.32.98.57.20484_20211216_005158.dat']
-  opts.filenames = ''
+  ;opts.filenames = ''
   opts.stepbystep = 0               ; this flag allows a step by step progress through this crib sheet
   opts.refresh = 0                  ; set to zero to skip this section next time
-  opts.file_type = 'gse_file'
   printdat,opts
   dprint,'The variable "OPTS" is a dictionary of options.  These can be changed by the user as desired.'
   if opts.stepbystep then stop
@@ -264,6 +359,71 @@ if 0 then begin
   printdat,nse.last_data
   printdat,sci.last_data   ; Display decommutated contents of most recent science packet
 endif
+
+
+if 0 then begin
+
+  swfo_stis_apdat_init,/save_flag    ; initialize apids
+  swfo_apdat_info,/rt_flag ,/save_flag
+  swfo_apdat_info,/print,/all
+  
+  
+  f2='cmblk_swifgse1.2432_20230130_085608.dat'
+  cmb1 = cmblk_reader(host='swifgse1',port=2432)
+  
+  cmb1.add_handler, 'raw_tlm',  swfo_raw_tlm('swfo_raw_telem',/no_widget)
+  cmb1.add_handler, 'KEYSIGHTPS' ,  cmblk_keysight('Keysight',/no_widget)
+  
+  handlers = cmb1.getattr('handlers')
+  raw = handlers['raw_tlm']
+   
+  ;handlers['raw_tlm'] = swfo_raw_tlm(/no_widget)
+  ;handlers['KEYSIGHTPS'] = cmblk_keysight(/no_widget)
+
+ ; cmb1.add_handlers = handlers
+ 
+ ; cmb1.file_read, f2
+  
+
+
+
+
+  opts = !null
+  swfo_init_realtime,opts=opts
+  cmb1 = opts.cmblk
+  
+;  cmb1 = commonblock_reader(host='swifgse1.ssl.berkeley.edu',port=2432)
+  ;click on "connect to"
+  handlers = cmb1.getattr('handlers')
+
+  tlm = handlers['raw_tlm']
+  ;tlm.procedure_name = 'swfo_raw_tlm_read'
+  tlm.run_proc=1
+  
+  ps = handlers['KEYSIGHTPS']
+  help,ps
+
+
+  ;ps2 = cmblk_keysight()
+  ;handlers['KEYSIGHTPS'] = ps2
+  ;printdat,ps2
+  
+  
+  swfo_stis_tplot,/set,'dl1'
+  
+  
+  
+  
+  swfo_stis_apdat_init,/save_flag    ; initialize apids
+
+  swfo_init_realtime,/stis ,/realtime   ; ,opts = opts
+  
+  handlers['KEYSIGHTPS'] = cmblk_keysight()
+  
+  
+  
+endif
+
 
 if 0 then begin
 
