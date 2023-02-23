@@ -61,8 +61,8 @@
 ;HISTORY:
 ; 19-may-2014, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2017-01-10 13:58:40 -0800 (Tue, 10 Jan 2017) $
-; $LastChangedRevision: 22570 $
+; $LastChangedDate: 2023-02-22 12:07:21 -0800 (Wed, 22 Feb 2023) $
+; $LastChangedRevision: 31504 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_concat.pro $
 ;-
 Function mvn_sta_cmn_concat, dat1, dat2
@@ -94,8 +94,18 @@ Function mvn_sta_cmn_concat, dat1, dat2
         If(rv_arr[2, j] Eq 'N') Then Begin
 ;Arrays must be equal
            If(Not array_equal(dat1.(x1), dat2.(x2))) Then Begin
+;If the two arrays have the same number of elements, then use the
+;first anyway
               dprint, dlev = [0], 'Array mismatch for: '+rv_arr[0, j]
-              Return, -1
+              If(n_elements(dat1.(x1)) Eq n_elements(dat2.(x2))) Then Begin
+                 dprint, dlev = [0], 'Using first value for conacatenation:'+rv_arr[0, j]
+                 If(count Eq 0) Then undefine, dat
+                 count = count+1
+                 str_element, dat, rv_arr[0, j], dat1.(x1), /add_replace
+              Endif Else Begin
+                 dprint, dlev = [0], 'Not concatenating and returning'
+                 Return, -1
+              Endelse
            Endif Else Begin
               If(count Eq 0) Then undefine, dat
               count = count+1

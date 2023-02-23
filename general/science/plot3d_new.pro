@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-12-08 03:32:45 -0800 (Sun, 08 Dec 2019) $
-; $LastChangedRevision: 28098 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2023-02-22 15:20:19 -0800 (Wed, 22 Feb 2023) $
+; $LastChangedRevision: 31506 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/plot3d_new.pro $
 ;+
 ;NAME:
@@ -65,7 +65,7 @@ pro plot3d_new,tbindata, latitude,longitude,rotation, $
 @plot3d_com.pro
 plot3d_options          ; Set Defaults
 
-if size(/type,tbindata) ne 8 || tbindata.valid eq 0 then begin
+if size(/type,tbindata) ne 8 || max(tbindata.valid) eq 0 then begin
   dprint,'Invalid data'
   return
 endif

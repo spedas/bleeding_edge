@@ -34,9 +34,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2022-09-09 12:08:46 -0700 (Fri, 09 Sep 2022) $
-;$LastChangedRevision: 31075 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2023-02-22 13:31:45 -0800 (Wed, 22 Feb 2023) $
+;$LastChangedRevision: 31505 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_spdfcdawebchooser.pro $
 ;-
 
@@ -174,7 +174,8 @@ pro spd_spdfGetCdawebDataExec, $
       urlComponents = parse_url(urlname)
       urlfilename = file_basename(urlComponents.path)
       filename = localdir + urlfilename
-      localCdfNames[i] = fileDescriptions[i]->getFile(filename=filename[0])
+      localCdfNames[i] = fileDescriptions[i]->getFile(filename=filename[0],sslVerifyPeer = 0, $
+        ssl_verify_host = 0)
     endfor
     
     ; make a copy of localCdfNames that read_mycdf can alter
