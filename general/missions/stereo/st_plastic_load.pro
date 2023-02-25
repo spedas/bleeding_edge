@@ -25,7 +25,7 @@ pro st_plastic_load,type,all=all,files=files,trange=trange, $
 if not keyword_set(source_options) then begin
     stereo_init
     source_options = !stereo
-    source_options.remote_data_dir = 'http://stereo-ssc.nascom.nasa.gov/data/ins_data/'
+    source_options.remote_data_dir = 'https://stereo-ssc.nascom.nasa.gov/data/ins_data/'
 endif
 mystereo = source_options
 
@@ -69,7 +69,7 @@ for i=0,n_elements(probes)-1 do begin
 
    relpathnames= time_string(dates,tformat= path)
 
-   files = file_retrieve(relpathnames,_extra = mystereo)
+   files = spd_download(remote_file=relpathnames,_extra = mystereo)
 
    cdf2tplot,file=files,varformat=vfm,all=all,verbose=!stereo.verbose ,prefix=pref , /convert_int1   ; load data into tplot variables
 

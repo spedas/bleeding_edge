@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Feb 22 18:16:36 2023.<P>
+<STRONG>Last modified: </STRONG>Fri Feb 24 18:16:40 2023.<P>
  
 <HR>
  
@@ -20,8 +20,12 @@ This page was created by the IDL library routine
 <UL>
 <H1>general/misc/system</H1>
 <LI><A HREF="#CWD">CWD</A>
+<LI><A HREF="#GET_LINE_COLORS">GET_LINE_COLORS</A>
 <LI><A HREF="#INIT_DEVICES">INIT_DEVICES</A>
+<LI><A HREF="#INITCT">INITCT</A>
+<br>Wrapper for loadct2 and loadcsv.  Calls the appropriate color table
 <LI><A HREF="#LIBS">LIBS</A>
+<LI><A HREF="#LINE_COLORS">LINE_COLORS</A>
 <LI><A HREF="#LOADCT2">LOADCT2</A>
 <LI><A HREF="#SHOWCT">SHOWCT</A>
 <LI><A HREF="#THMCTPATH">THMCTPATH</A>
@@ -33,7 +37,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="CWD">
 <H2>CWD</H2></A>
-<A HREF="#INIT_DEVICES">[Next Routine]</A>
+<A HREF="#GET_LINE_COLORS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:  CWD  [,newdir]
@@ -51,9 +55,194 @@ Other options:
 <STRONG>(See <A href="system/cwd.pro">general/misc/system/cwd.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="GET_LINE_COLORS">
+<H2>GET_LINE_COLORS</H2></A>
+<A HREF="#CWD">[Previous Routine]</A>
+<A HREF="#INITCT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION get_line_colors
+   Gets the current line colors and optionally makes modifications by keyword.
+   Returns the result as an array of 24 (3x8) RBG colors: [[R,G,B], [R,G,B], ...].
+   This DOES NOT alter the color table or assert any new line colors.  To do that
+   you would pass the result of this routine to line_colors.pro or as an option
+   for a tplot variable.
+
+   To set custom line colors for any tplot panel do one of the following:
+
+       lines = n  ; where 0 &lt;= n &lt;= 6
+       options, varname, 'line_colors', lines
+
+       lines = get_line_colors(line_clrs, KEYWORD=value, ...)
+       options, varname, 'line_colors', lines
+
+   To disable custom line colors for a tplot variable:
+
+       options, varname, 'line_colors', -1
+
+INPUTS:
+   line_clrs : This input is optional.  Can take one of two forms:
+
+   (1) Integer array of 24 (3x8) RGB colors: [[R,G,B], [R,G,B], ...] that defines
+       the RGB values of the first 7 colors (0-6) and the last (255).
+
+   (2) Integer that selects one of six different predefined color schemes:
+
+          0  : primary colors (black, magenta, blue, cyan, green, yellow, red, white)
+         1-4 : four different schemes suitable for colorblind vision
+          5  : primary colors, except orange replaces yellow
+          6  : Chaffin's CSV line colors, suitable for colorblind vision
+
+   If there is no input and no keywords are set, this routine returns the current
+   line colors.
+
+KEYWORDS:
+   COLOR_NAMES: String array of 8 line color names.  You must use line color names 
+       recognized by spd_get_color().  RGB values for unrecognized color names are 
+       set to zero.  Note that named colors are approximated by the nearest RGB 
+       neighbors in the currently loaded color table.  This can work OK for rainbow
+       color tables, but for tables that primarily encode intensity, the actual 
+       colors can be quite different from the requested ones.
+
+   MYCOLORS: A structure defining up to 8 custom colors.  This provides an alternate 
+       method of poking individual custom colors into color indices (0-6 and 255).
+
+              { ind    : up to 8 integers (0-6 or 255)              , $
+                rgb    : up to 8 RGB levels [[R,G,B], [R,G,B], ...]    }
+
+       The indicies (ind) specified in this structure will replace one or more of the
+       current line colors.  You are not allowed to change color indices 7-254, because
+       those are reserved for the color table.  Indices 0 and 255 allow you to define 
+       custom background and foreground colors.
+
+   GRAYBKG: Set color index 255 to gray [211,211,211] instead of white.  See keyword
+       MYCOLORS for a general method of setting any line color to any RGB value.
+       For example, GRAYBKG=1 is equivalent to MYCOLORS={ind:255, rgb:[211,211,211]}.
+
+       To actually use this color for the background, you must set !p.background=255
+       (normally combined with !p.color=0).
+
+common blocks:
+   colors:      IDL color common block.  Many IDL routines rely on this.
+   colors_com:
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-02-24 15:43:49 -0800 (Fri, 24 Feb 2023) $
+ $LastChangedRevision: 31515 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/get_line_colors.pro $
+
+Created by David Mitchell;  February 2023
+</PRE><P>
+<STRONG>(See <A href="system/get_line_colors.pro">general/misc/system/get_line_colors.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="INITCT">
+<H2>INITCT</H2></A>
+<A HREF="#GET_LINE_COLORS">[Previous Routine]</A>
+<A HREF="#INIT_DEVICES">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   initct
+PURPOSE:
+  Wrapper for loadct2 and loadcsv.  Calls the appropriate color table 
+  routine based on the requested table number:
+
+      table number &lt; 1000  : use loadct2
+      table number &gt;= 1000 : use loadcsv
+
+  Keywords are provided to define custom fixed colors that are used for
+  lines (1-6), and the background (0) and foreground (255) colors.
+  ** Once set, these fixed colors are persistent until explicitly changed.
+
+  Use line_colors.pro to change the fixed colors without affecting the rest
+  of the color table.
+
+  Use get_line_colors() to return a 3x8 array containing either the current
+  line colors or custom colors specified by input and keyword.  This can be
+  used to set custom line colors for a tplot variable.  See get_line_colors
+  for details.
+
+USAGE:
+  initct, colortbl
+
+INPUTS:
+       colortbl:     Color table number.  If less than 1000, call loadct2
+                     to load one of the standard color tables.  If greater
+                     than or equal to 1000, call loadcsv to load one of
+                     the CSV color tables.  Required.  No default.
+
+KEYWORDS:
+       REVERSE:      If set, reverse the color table (indices 7-254).
+
+       LINE_CLRS:    Defines custom line colors.  Can take one of two forms:
+
+                     (1) Array of 24 (3x8 RGB colors) that define 8 fixed colors 
+                         (the first 7 and the last) of the color table:
+                         LINE_CLRS = [[R,G,B], [R,G,B], ...].
+
+                     (2) Integer that selects a predefined color scheme:
+
+                        0  : primary colors (colortbl &lt; 1000)
+                             Chaffin's CSV colors (colortbl &gt;= 1000)
+                       1-4 : four schemes suitable for colorblind vision
+                        5  : primary colors, except orange replaces yellow
+                        6  : Chaffin's CSV colors, suitable for colorblind vision
+
+       COLOR_NAMES:  String array of 8 line color names.  You must use line color
+                     names recognized by spd_get_color().  RGB values for unrecognized
+                     color names are set to zero.  Not recommended, because named 
+                     colors are approximated by the nearest RGB neighbors in the 
+                     currently loaded color table.  This can work OK for rainbow color
+                     tables, but for tables that primarily encode intensity, the 
+                     actual colors can be quite different from the requested ones.
+                     Included for backward compatibility.
+
+       MYCOLORS:     A structure defining up to 8 custom colors.  These are 
+                     fixed colors used to draw colored lines (1-6) and to define
+                     the background (0) and foreground (255) colors.
+
+                     { ind : up to 8 integers (0-6 or 255)              , $
+                       rgb : up to 8 RGB levels [[R,G,B], [R,G,B], ...]    }
+
+                     The indicies (ind) specified in MYCOLORS will replace one or
+                     more of the default colors.  You are not allowed to change
+                     color indices 7-254, because those are reserved for the
+                     color table.  Indices 0 and 255 allow you to define custom
+                     background and foreground colors.
+
+       GRAYBKG:      Set color index 255 to gray [211,211,211] instead of white.
+                     See keyword MYCOLORS for a general method of setting any line 
+                     color to any RGB value.  For example, GRAYBKG=1 is equivalent 
+                     to MYCOLORS={ind:255, rgb:[211,211,211]}.
+
+                     To actually use this color for the background, you must set 
+                     !p.background=255 (normally combined with !p.color=0).
+
+       PREVIOUS_CT:  Named variable to hold the previous color table number.
+                     Use this to temporarily change the color table and then return
+                     to the previous one.
+
+       PREVIOUS_REV: Named variable to hold the previous color reverse.
+                     Use this to temporarily change the color table and then return
+                     to the previous one.
+
+       SHOW:         Show the color table in a separate window after loading.
+
+       SUPPRESS:     Suppress floating overflow error in first call to window.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-02-24 15:45:40 -0800 (Fri, 24 Feb 2023) $
+ $LastChangedRevision: 31518 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/initct.pro $
+
+Created by David L. Mitchell (February 2023)
+</PRE><P>
+<STRONG>(See <A href="system/initct.pro">general/misc/system/initct.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="INIT_DEVICES">
 <H2>INIT_DEVICES</H2></A>
-<A HREF="#CWD">[Previous Routine]</A>
+<A HREF="#INITCT">[Previous Routine]</A>
 <A HREF="#LIBS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -83,7 +272,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="LIBS">
 <H2>LIBS</H2></A>
 <A HREF="#INIT_DEVICES">[Previous Routine]</A>
-<A HREF="#LOADCT2">[Next Routine]</A>
+<A HREF="#LINE_COLORS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Name: libs
@@ -99,9 +288,101 @@ Restrictions:
 <STRONG>(See <A href="system/libs.pro">general/misc/system/libs.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="LINE_COLORS">
+<H2>LINE_COLORS</H2></A>
+<A HREF="#LIBS">[Previous Routine]</A>
+<A HREF="#LOADCT2">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE line_colors
+   Alters one or more of the fixed colors (indices 0-6 and 255) without changing
+   the color table.  This includes the line colors (1-6) and the background (0) 
+   and foreground (255) colors.
+
+INPUTS:
+   lines : Can take one of two forms:
+
+   (1) Integer array of 24 (3x8) RGB colors: [[R,G,B], [R,G,B], ...] that defines
+       the RGB values of the first 7 colors (0-6) and the last (255).
+
+   (2) Integer that selects a predefined color scheme:
+
+          0  : primary colors (black, magenta, blue, cyan, green, yellow, red, white)
+         1-4 : four different schemes suitable for colorblind vision
+          5  : primary colors, except orange replaces yellow
+          6  : Chaffin's CSV line colors, suitable for colorblind vision
+
+    To set custom line colors for any tplot panel:
+
+       options, varname, 'line_colors', lines
+
+    where the value of lines is one of the formats above.
+
+KEYWORDS:
+    COLOR_NAMES:  String array of 8 line color names.  You must use line color
+                  names recognized by spd_get_color().  RGB values for unrecognized
+                  color names are set to zero.  Not recommended, because named 
+                  colors are approximated by the nearest RGB neighbors in the 
+                  currently loaded color table.  This can work OK for rainbow color
+                  tables, but for tables that primarily encode intensity, the 
+                  actual colors can be quite different from the requested ones.
+                  Included for backward compatibility.
+
+    MYCOLORS:     A structure defining up to 8 custom colors.  These are fixed
+                  colors used to draw colored lines (1-6) and to define the
+                  background (0) and foreground (255) colors.
+
+                     { ind    : up to 8 integers (0-6 or 255)              , $
+                       rgb    : up to 8 RGB levels [[R,G,B], [R,G,B], ...]    }
+
+                  The indicies (ind) specified in MYCOLORS will replace one or
+                  more of the default colors.  You are not allowed to change
+                  color indices 7-254, because those are reserved for the
+                  color table.  Indices 0 and 255 allow you to define custom
+                  background and foreground colors.  For example, the following
+                  chooses color scheme 5, but sets the background color to light
+                  gray with a black foreground (pen) color:
+
+                     line_colors, 5, mycolors={ind:255, rgb:[211,211,211]}
+                     !p.color = 0
+                     !p.background = 255
+
+    GRAYBKG:      Set color index 255 to gray [211,211,211] instead of white.
+                  See keyword MYCOLORS for a general method of setting any line 
+                  color to any RGB value.  For example, GRAYBKG=1 is equivalent 
+                  to MYCOLORS={ind:255, rgb:[211,211,211]}.
+
+                  To actually use this color for the background, you must set 
+                  !p.background=255 (normally combined with !p.color=0).
+
+    PREVIOUS_LINES: Named variable to hold the previous line colors.
+                 Tplot needs this to swap line colors on the fly.
+
+SEE ALSO:
+    get_line_colors() : Works like this routine, but returns a 24 element array
+                  instead of asserting the new line colors.  Allows you to define
+                  a custom set of line colors in a format that you can use with
+                  tplot options.
+    initct :      Loads a color table without changing the line colors, except by
+                  keyword.
+
+common blocks:
+   colors:      IDL color common block.  Many IDL routines rely on this.
+   colors_com:
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-02-24 15:44:01 -0800 (Fri, 24 Feb 2023) $
+ $LastChangedRevision: 31516 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/line_colors.pro $
+
+Created by David Mitchell;  February 2023
+</PRE><P>
+<STRONG>(See <A href="system/line_colors.pro">general/misc/system/line_colors.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="LOADCT2">
 <H2>LOADCT2</H2></A>
-<A HREF="#LIBS">[Previous Routine]</A>
+<A HREF="#LINE_COLORS">[Previous Routine]</A>
 <A HREF="#SHOWCT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -163,13 +444,19 @@ INPUTS:
 KEYWORDS:
    REVERSE:   If set, then reverse the table order from bottom_c to top_c.
 
+   LINE_CLRS: Show an alternate fixed color scheme.  See line_colors.pro.
+
+   MYCOLORS:  Structure of custom line colors.  See line_colors.pro.
+
+   INTENSITY: Show intensity in a separate window.
+
 SEE ALSO:
    xpalette:  Shows the current color table in an interactive widget.  Provides
               more functionality, but only for the current color table.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-08-15 10:27:26 -0700 (Mon, 15 Aug 2022) $
- $LastChangedRevision: 31015 $
+ $LastChangedDate: 2023-02-24 15:45:27 -0800 (Fri, 24 Feb 2023) $
+ $LastChangedRevision: 31517 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/showct.pro $
 </PRE><P>
 <STRONG>(See <A href="system/showct.pro">general/misc/system/showct.pro</A>)</STRONG><P>

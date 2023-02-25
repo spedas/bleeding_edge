@@ -26,7 +26,7 @@ pro st_swaves_load,type,all=all,files=files,trange=trange, $
 if not keyword_set(source_options) then begin
     stereo_init
     source_options = !stereo
-    source_options.remote_data_dir = 'http://stereo-ssc.nascom.nasa.gov/data/ins_data/'
+    source_options.remote_data_dir = 'https://stereo-ssc.nascom.nasa.gov/data/ins_data/'
     source_options.min_age_limit = 3600
 endif
 mystereo = source_options
@@ -48,7 +48,7 @@ for i=0,n_elements(probes)-1 do begin
 
    relpathnames= time_string(dates,tformat= path)
 
-   files = file_retrieve(relpathnames,_extra = mystereo)
+   files = spd_download(remote_file=relpathnames,_extra = mystereo)
 
    spectrums = replicate(!values.f_nan,n*1440,367)
    times     = replicate(!values.f_nan,n*1440)

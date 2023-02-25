@@ -35,8 +35,8 @@
 ; MODIFICATION HISTORY:
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2023-02-22 13:31:45 -0800 (Wed, 22 Feb 2023) $
-;$LastChangedRevision: 31505 $
+;$LastChangedDate: 2023-02-24 13:31:07 -0800 (Fri, 24 Feb 2023) $
+;$LastChangedRevision: 31511 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_spdfcdawebchooser.pro $
 ;-
 
@@ -175,7 +175,7 @@ pro spd_spdfGetCdawebDataExec, $
       urlfilename = file_basename(urlComponents.path)
       filename = localdir + urlfilename
       localCdfNames[i] = fileDescriptions[i]->getFile(filename=filename[0],sslVerifyPeer = 0, $
-        ssl_verify_host = 0)
+        ssl_verify_host = 1)
     endfor
     
     ; make a copy of localCdfNames that read_mycdf can alter
@@ -728,7 +728,7 @@ pro spd_ui_spdfcdawebchooser, historyWin=historyWin, GROUP_LEADER = groupLeaderW
   initialDvSelection = 0
   
   if ~OBJ_VALID(dataviews[0]) then begin
-    errorstr = 'Could not connect to CDAWEB. Please check if there is an internet connection to http://cdaweb.gsfc.nasa.gov'
+    errorstr = 'Could not connect to CDAWEB. Please check if there is an internet connection to https://cdaweb.gsfc.nasa.gov'
     res = dialog_message(errorstr, /center )
     return
   endif

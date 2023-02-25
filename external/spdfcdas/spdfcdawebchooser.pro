@@ -1198,7 +1198,8 @@ pro spdfGetCdawebDataExec, $
 
         for i = 0, n_elements(fileDescriptions) - 1 do begin
 
-            localCdfNames[i] = fileDescriptions[i]->getFile()
+            localCdfNames[i] = $
+              fileDescriptions[i]->getFile(sslVerifyPeer=state.sslVerifyPeer)
         endfor
 
         ; make a copy of localCdfNames that spd_cdawlib_read_mycdf can alter
@@ -1664,7 +1665,13 @@ pro spdfCdawebChooser, $
         reply = dialog_message( $
                     ['Could not connect to CDAWeb.', $
                      'Please check Internet connectivity to ', $
-                     cdas->getEndpoint()], $
+                     cdas->getEndpoint(), $
+                     'On older versions of IDL, you may have ',$
+                     'to update ca-bundle.crt or start ', $
+                     'CdawebChooser with sslVerifyPeer=0. ', $
+                     'And if access to the Internet is through ', $
+                     'an HTTP proxy, ensure that the HTTP_PROXY ', $
+                     'environment variable is correctly set. '], $
                     title='Network Error', /center, /error)
         return
     endif

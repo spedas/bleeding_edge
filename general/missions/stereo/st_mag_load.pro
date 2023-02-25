@@ -13,9 +13,9 @@
 ;  This routine is (should be) platform independent.
 ;
 ;
-; $LastChangedBy: lphilpott $
-; $LastChangedDate: 2011-12-19 16:12:02 -0800 (Mon, 19 Dec 2011) $
-; $LastChangedRevision: 9453 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2023-02-24 10:40:30 -0800 (Fri, 24 Feb 2023) $
+; $LastChangedRevision: 31507 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/stereo/st_mag_load.pro $
 ;-
 pro st_mag_load,trange=trange,verbose=verbose,version = ver, $
@@ -68,7 +68,7 @@ if keyword_set(unvalid) then begin
      varformat = 'B_SC'
      if keyword_set( imaghkp ) then varformat = [varformat,'IMAGHKP']
      relpathnames= time_string(dates,tformat= path)
-     files = file_retrieve(relpathnames,_extra = mystereo)
+     files = spd_download(remote_file=relpathnames,_extra = mystereo)
      cdf2tplot,tplotnames=tn,file=files,varformat=varformat,verbose=vb,pref=pref  ;,/get_support   ; load data into tplot variables
      options,pref+'B_SC',constant=0.,/def
 ;     if keyword_set(burst) then $

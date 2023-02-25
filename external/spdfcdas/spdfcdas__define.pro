@@ -187,6 +187,10 @@ function SpdfCdas::getCurrentVersion
         catch, /cancel
 
         ; Failed to get current version
+        url->getProperty, response_code=responseCode
+        print, 'SpdfCdas::getCurrentVersion failed with responseCode ', $
+            responseCode, ' for ', self.currentVersionUrl
+        print, '    with HTTP_PROXY = ', getenv('HTTP_PROXY')
         return, ''
     endif
 
@@ -195,8 +199,8 @@ function SpdfCdas::getCurrentVersion
                       self.proxySettings.getAuthentication(), $
                   proxy_hostname = self.proxySettings.getHostname(), $
                   proxy_port = self.proxySettings.getPort(), $
-                  proxy_username = self.proxy.getUsername(), $
-                  proxy_password = self.proxy.getPassword())
+                  proxy_username = self.proxySettings.getUsername(), $
+                  proxy_password = self.proxySettings.getPassword())
 
     version = url->get(/string_array, url=self.currentVersionUrl)
 

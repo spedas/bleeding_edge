@@ -46,7 +46,7 @@ pro swfo_init_realtime,host=host, port=port , trange=trange, opts=opts, offline=
       if keyword_set(offline) then opts.url=''
 
       opts.exec_text =  ['tplot,verbose=0,trange=systime(1)+[-1.,.05]*600','timebar,systime(1)']
-      opts.file_trange = 3
+      ;    opts.file_trange = 3
     endif
 
     ;    trange = struct_value(opts,'file_trange',default=!null)
@@ -59,7 +59,7 @@ pro swfo_init_realtime,host=host, port=port , trange=trange, opts=opts, offline=
       if 1 then begin
         filenames = file_retrieve(pathformat,trange=trange,/hourly,remote=opts.url,local=opts.root_dir,resolution=3600L)
       endif else begin
-        filenames = swfo_file_retrieve(pathformat,trange=trange)        
+        filenames = swfo_file_retrieve(pathformat,trange=trange)
       endelse
       dprint,dlevel=2, "Print the raw data files..."
       dprint,dlevel=2,file_info_string(filenames)
@@ -87,12 +87,22 @@ pro swfo_init_realtime,host=host, port=port , trange=trange, opts=opts, offline=
         message,"Obsolete - Don't use this",/cont
         swfo_ptp_recorder,title=d.title,port=d.port, host=d.host, exec_proc='swfo_ptp_lun_read',destination=d.fileformat,directory=directory,set_file_timeres=3600d
       end
-      'gse_file': begin        
-        if opts.haskey('filenames') then begin
-          swfo_ptp_file_read,opts.filenames,file_type=opts.file_type  ;,/no_clear
-        endif
-        swfo_apdat_info,/all,/rt_flag
-        swfo_recorder,title=d.title,port=d.port, host=d.host, exec_proc='swfo_gsemsg_lun_read',destination=d.fileformat,directory=directory,set_file_timeres=3600d
+      'gse_file': begin
+        if 1 then begin
+          raw = swfo_raw_tlm(port=d.port,host=d.host)
+          opts.raw = raw
+          if opts.haskey('filenames') then begin
+            raw.file_read,opts.filenames
+          endif
+          swfo_apdat_info,/all,/print
+        endif else begin
+          if opts.haskey('filenames') then begin
+            swfo_ptp_file_read,opts.filenames,file_type=opts.file_type  ;,/no_clear
+          endif
+          swfo_apdat_info,/all,/rt_flag
+          swfo_apdat_info,/all,/print
+          swfo_recorder,title=d.title,port=d.port, host=d.host, exec_proc='swfo_gsemsg_lun_read',destination=d.fileformat,directory=directory,set_file_timeres=3600d
+        endelse
       end
       'CMBLK': begin
         cmb1  = cmblk_reader(port=d.port, host=d.host,directory=directory,fileformat=opts.fileformat)
@@ -101,7 +111,7 @@ pro swfo_init_realtime,host=host, port=port , trange=trange, opts=opts, offline=
         opts.cmb = cmb1
 
         if opts.haskey('filenames') then begin
-          cmb1.file_read, opts.filenames        ; Load in the files          
+          cmb1.file_read, opts.filenames        ; Load in the files
         endif
 
         swfo_apdat_info,/all,/create_tplot_vars

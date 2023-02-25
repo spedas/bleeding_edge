@@ -15,7 +15,7 @@ if not keyword_set(source_options) then begin
 
     source_options = !stereo ;file_retrieve(/struct)
     source_options.local_data_dir = !stereo.local_data_dir  ; root_data_dir()+'stereo/'
-    source_options.remote_data_dir = 'http://www.srl.caltech.edu/STEREO2/'  ;  'behind/position_behind_2006_GSE.txt
+    source_options.remote_data_dir = 'https://izw1.caltech.edu/STEREO2/'  ;  'behind/position_behind_2006_GSE.txt
     source_options.ignore_filedate =1 ; All files on remote system are updated daily (even if no differences).
     source_options.min_age_limit = 12*3600d  ; check no more often than once every 12 hours
 endif
@@ -63,7 +63,7 @@ for p=0,n_elements(probes)-1 do begin
 
    relpathnames= time_string(dates,tformat= path)
 ;   relpathnames = relpathnames[uniq(relpathnames)]
-   files = file_retrieve(relpathnames,_extra = mystereo)
+   files = spd_download(remote_file=relpathnames,_extra = mystereo)
 
    fformat = {year:0l, doy:0l,  sod:0l, flag:0,  pos:dblarr(nv)}
    data = 0

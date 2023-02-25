@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-02-14 09:50:55 -0800 (Tue, 14 Feb 2023) $
-; $LastChangedRevision: 31498 $
+; $LastChangedDate: 2023-02-24 16:27:51 -0800 (Fri, 24 Feb 2023) $
+; $LastChangedRevision: 31520 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -99,7 +99,7 @@ pro  swfo_stis_plot_example,trange=trange,nsamples=nsamples,lim=lim    ; This is
     samples=da.sample(range=trange,tagname='time')
     nsamples = n_elements(samples)
   endif else begin
-    if ~keyword_set(nsamples) then nsamples = 25
+    if ~keyword_set(nsamples) then nsamples = 10
     index = [size-nsamples:size-1]    ; get indices of last N samples
     samples=da.slice(index)           ; extract the last N samples
   endelse
@@ -198,7 +198,7 @@ pro  swfo_stis_plot_example,trange=trange,nsamples=nsamples,lim=lim    ; This is
       gf     = [[g1,g4],[g2,g5], [g1,g4],[g3,g6], [g1,g4], [g3,g6], [g2,g4] ]
 
       xlim,lim,.1,10000,1
-      ylim,lim,1e-10,1000,1
+      ylim,lim,1e-10,10000,1
       box,lim
 
       ;counts = counts > .01
@@ -276,6 +276,7 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = ['2023 1 5','2023 1 5 2']  ;Am241 x-ray source - flight like detectors
   opts.file_trange = ['2023 1 3 16','2023 1 3 21']  ;Am241 x-ray source - flight like detectors with transition
   opts.file_trange = ['2023 1 3 ','2023 1 5 ']  ;Am241 x-ray source - flight like detectors with transition - 2 days
+  ;opts.file_trange = ['2023 
   ;opts.file_trange = !null
   opts.file_trange = 3
   ;opts.filenames=['socket_128.32.98.57.2028_20211216_004610.dat', 'socket_128.32.98.57.20484_20211216_005158.dat']
