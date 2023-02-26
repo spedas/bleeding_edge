@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Feb 24 18:16:40 2023.<P>
+<STRONG>Last modified: </STRONG>Sat Feb 25 18:16:41 2023.<P>
  
 <HR>
  
@@ -88,10 +88,14 @@ INPUTS:
 
    (2) Integer that selects one of six different predefined color schemes:
 
-          0  : primary colors (black, magenta, blue, cyan, green, yellow, red, white)
-         1-4 : four different schemes suitable for colorblind vision
-          5  : primary colors, except orange replaces yellow
-          6  : Chaffin's CSV line colors, suitable for colorblind vision
+             0  : primary colors
+            1-4 : four different schemes suitable for colorblind vision
+             5  : primary colors, except orange replaces yellow for better contrast on white
+             6  : primary colors, except gray replaces yellow for better contrast on white
+             7  : see https://www.nature.com/articles/nmeth.1618 except no reddish purple
+             8  : see https://www.nature.com/articles/nmeth.1618 except no yellow
+             9  : same as 8 but purmuted so vector defaults are blue, orange, reddish purple
+            10  : Chaffin's CSV line colors, suitable for colorblind vision
 
    If there is no input and no keywords are set, this routine returns the current
    line colors.
@@ -127,8 +131,8 @@ common blocks:
    colors_com:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-02-24 15:43:49 -0800 (Fri, 24 Feb 2023) $
- $LastChangedRevision: 31515 $
+ $LastChangedDate: 2023-02-25 17:41:53 -0800 (Sat, 25 Feb 2023) $
+ $LastChangedRevision: 31521 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/get_line_colors.pro $
 
 Created by David Mitchell;  February 2023
@@ -182,11 +186,14 @@ KEYWORDS:
 
                      (2) Integer that selects a predefined color scheme:
 
-                        0  : primary colors (colortbl &lt; 1000)
-                             Chaffin's CSV colors (colortbl &gt;= 1000)
-                       1-4 : four schemes suitable for colorblind vision
-                        5  : primary colors, except orange replaces yellow
-                        6  : Chaffin's CSV colors, suitable for colorblind vision
+                         0  : primary colors
+                        1-4 : four different schemes suitable for colorblind vision
+                         5  : primary colors, except orange replaces yellow for better contrast on white
+                         6  : primary colors, except gray replaces yellow for better contrast on white
+                         7  : see https://www.nature.com/articles/nmeth.1618 except no reddish purple
+                         8  : see https://www.nature.com/articles/nmeth.1618 except no yellow
+                         9  : same as 8 but purmuted so vector defaults are blue, orange, reddish purple
+                        10  : Chaffin's CSV line colors, suitable for colorblind vision
 
        COLOR_NAMES:  String array of 8 line color names.  You must use line color
                      names recognized by spd_get_color().  RGB values for unrecognized
@@ -231,8 +238,8 @@ KEYWORDS:
        SUPPRESS:     Suppress floating overflow error in first call to window.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-02-24 15:45:40 -0800 (Fri, 24 Feb 2023) $
- $LastChangedRevision: 31518 $
+ $LastChangedDate: 2023-02-25 17:49:57 -0800 (Sat, 25 Feb 2023) $
+ $LastChangedRevision: 31524 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/initct.pro $
 
 Created by David L. Mitchell (February 2023)
@@ -307,10 +314,14 @@ INPUTS:
 
    (2) Integer that selects a predefined color scheme:
 
-          0  : primary colors (black, magenta, blue, cyan, green, yellow, red, white)
-         1-4 : four different schemes suitable for colorblind vision
-          5  : primary colors, except orange replaces yellow
-          6  : Chaffin's CSV line colors, suitable for colorblind vision
+           0  : primary colors
+          1-4 : four different schemes suitable for colorblind vision
+           5  : primary colors, except orange replaces yellow for better contrast on white
+           6  : primary colors, except gray replaces yellow for better contrast on white
+           7  : see https://www.nature.com/articles/nmeth.1618 except no reddish purple
+           8  : see https://www.nature.com/articles/nmeth.1618 except no yellow
+           9  : same as 8 but purmuted so vector defaults are blue, orange, reddish purple
+          10  : Chaffin's CSV line colors, suitable for colorblind vision
 
     To set custom line colors for any tplot panel:
 
@@ -371,8 +382,8 @@ common blocks:
    colors_com:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-02-24 15:44:01 -0800 (Fri, 24 Feb 2023) $
- $LastChangedRevision: 31516 $
+ $LastChangedDate: 2023-02-25 17:50:08 -0800 (Sat, 25 Feb 2023) $
+ $LastChangedRevision: 31525 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/line_colors.pro $
 
 Created by David Mitchell;  February 2023
@@ -405,10 +416,47 @@ KEYWORDS:
           If FILE is not provided then LOADCT2
           Uses the environment variable IDL_CT_FILE to determine
           the color table file if FILE is not set.
-   line_clrs: array of 24 (3x8 RGB colors)
-          To be used as 8 colors (the first 7 and the last) of the color table.
-          If this is set, but no array is provided, then a default set of 8 colors will be used
-          (four different color schemes are provided, appropriate for colorblind vision).
+   LINE_CLRS: Integer array of 24 (3x8) RGB colors: [[R,G,B], [R,G,B], ...]
+          If this input does not have exactly 24 elements, then a predefined set of 8 colors
+          will be used based on the value of the first element.  Pre-defined color schemes
+          are currently (see code below for any new undocumented schemes):
+             0  : primary colors
+            1-4 : four different schemes suitable for colorblind vision
+             5  : primary colors, except orange replaces yellow for better contrast on white
+             6  : primary colors, except gray replaces yellow for better contrast on white
+             7  : see https://www.nature.com/articles/nmeth.1618 except no reddish purple
+             8  : see https://www.nature.com/articles/nmeth.1618 except no yellow
+             9  : same as 8 but purmuted so vector defaults are blue, orange, reddish purple
+            10  : Chaffin's CSV line colors, suitable for colorblind vision
+   LINE_COLOR_NAMES:  String array of 8 line color names.  You must use line color names
+          recognized by spd_get_color().  RGB values for unrecognized color names are set
+          to zero.  Note that named colors are approximated by the nearest RGB neighbors in 
+          the currently loaded color table.  This can work OK for rainbow color tables, but 
+          for tables that primarily encode intensity, the actual colors can be quite different
+          from the requested ones.
+   COLOR_NAMES: Synonym for LINE_COLOR_NAMES.  Allows better keyword minimum matching, if the
+          previous keyword can be retired.
+   MYCOLORS:
+          A structure defining up to 8 custom colors.  This provides an alternate method of
+          poking individual custom colors into the fixed color indices (0-6 and 255).
+
+            { ind  : up to 8 integers (0-6 or 255)              , $
+              rgb  : up to 8 RGB levels [[R,G,B], [R,G,B], ...]    }
+
+          You can also specify LINE_CLRS and LINE_COLOR_NAMES, and this keyword can make further
+          adjustments.
+
+          The indicies (ind) specified in MYCOLORS will replace one or more of these
+          colors.  You are not allowed to change color indices 7-254, because those
+          are reserved for the color table.  Indices 0 and 255 allow you to define 
+          custom foreground and background colors.
+   GRAYBKG: Set color index 255 to gray [211,211,211] instead of white.
+          See keyword MYCOLORS for a general method of setting any line color to any RGB value.
+          For example, GRAYBKG=1 is equivalent to MYCOLORS={ind:255, rgb:[211,211,211]}.
+          To actually use this color for the background, you must set !p.background=255
+          (normally combined with !p.color=0).
+   RGB_TABLE: Named variable that returns the current 3x8 line color table.
+          get_line_colors() provides the same functionality.
 
 common blocks:
    colors:      IDL color common block.  Many IDL routines rely on this.
@@ -416,9 +464,9 @@ common blocks:
 See also:
    &quot;get_colors&quot;,&quot;colors_com&quot;,&quot;bytescale&quot;
 
- $LastChangedBy: pulupa $
- $LastChangedDate: 2022-11-07 13:06:17 -0800 (Mon, 07 Nov 2022) $
- $LastChangedRevision: 31245 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-02-25 17:51:45 -0800 (Sat, 25 Feb 2023) $
+ $LastChangedRevision: 31526 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/loadct2.pro $
 
 Created by Davin Larson;  August 1996

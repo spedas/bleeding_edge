@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Feb 24 18:16:40 2023.<P>
+<STRONG>Last modified: </STRONG>Sat Feb 25 18:16:41 2023.<P>
  
 <HR>
  
@@ -357,7 +357,7 @@ KEYWORDS:
        MINPTS:  If OUTLIER is set, this specifies the minimum number of 
                 points remaining after discarding outliers.  Default = 3.
 
-       CORE:    Perform 1-D cluster analysis to separate the data into
+       CLUSTER: Perform 1-D cluster analysis to separate the data into
                 two groups.  Disables OUTLIER.
 
        MAXDZ:   Use largest break between clusters near minimum variance
@@ -366,6 +366,8 @@ KEYWORDS:
        RESULT:  Named variable to hold the result.
 
        HIST:    Plot a histogram of the distribution in a separate window.
+
+       KEEP:    Keep the last histogram window open on exit.
 
        NBINS:   If HIST is set, number of bins in the histogram.
 
@@ -378,17 +380,28 @@ KEYWORDS:
 
        T1:      Times in cluster 1.
 
-       DIAG:    Return cluster analysis diagnostics:
-                  minvar : minimum total variance
-                  maxvar : maximum total variance
-                  maxsep : separation between clusters
-                  sepval : value of optimal separation
+       DIAG:    Return outlier and cluster analysis diagnostics:
+                  minvar : minimum total variance for both clusters
+                  maxvar : maximum total variance for both clusters
+                  maxsep : separation between the clusters
+                  sepval : value of optimal separation between the clusters
+                  ngud   : number of points in the main distribution
+                  nbad   : number of outliers
+                  delta  : separation* between the core and outliers in SDEV units -or-
+                           separation# between the clusters in SDEV units
+                  frac   : fraction of &quot;bad&quot; points (nbad/(nbad+ngud))
+
+                  * separation is the distance between the 2-sigma level of the core
+                    distribution and the closest outlier
+
+                  # separation is the closest distance between the 2-sigma levels of the
+                    clusters
 
        SILENT:  Shhh.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-08-23 10:52:19 -0700 (Tue, 23 Aug 2022) $
- $LastChangedRevision: 31034 $
+ $LastChangedDate: 2023-02-25 18:00:08 -0800 (Sat, 25 Feb 2023) $
+ $LastChangedRevision: 31527 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/tmean.pro $
 
 CREATED BY:    David L. Mitchell

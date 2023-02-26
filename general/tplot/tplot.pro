@@ -106,8 +106,8 @@
 ;   Send e-mail to:  tplot@ssl.berkeley.edu    someone might answer!
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-27 12:17:29 -0700 (Wed, 27 Jul 2022) $
-; $LastChangedRevision: 30969 $
+; $LastChangedDate: 2023-02-25 18:01:04 -0800 (Sat, 25 Feb 2023) $
+; $LastChangedRevision: 31528 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot.pro $
 ;-
 
@@ -462,11 +462,10 @@ for i=0,nd-1 do begin
      str_element,newlim,'tplot_routine',value=routine
      color_table= struct_value(newlim,'color_table',default=-1) & pct=-1
      rev_color_table= struct_value(newlim,'reverse_color_table',default=0) & prev=0
+     lcolors= struct_value(newlim,'line_colors',default=-1) & pline=-1
 ;modified by dmitchell include CSV color tables (indices >= 1000) and to remember reversed tables
-     if (color_table ge 0 and color_table lt 1000) then $
-        loadct2,color_table,previous_ct=pct,reverse=rev_color_table,previous_rev=prev
-     if (color_table ge 1000) then $
-        loadcsv,color_table,previous_ct=pct,reverse=rev_color_table,previous_rev=prev,/silent
+     if (color_table ge 0) then initct,color_table,previous_ct=pct,reverse=rev_color_table,previous_rev=prev
+     if (lcolors[0] ne -1) then line_colors,lcolors,previous_lines=pline
 ;if debug() then stop
      call_procedure,routine,data=data,limits=newlim
 ;Allow fill of time interval with different background color, or other
@@ -474,8 +473,8 @@ for i=0,nd-1 do begin
      str_element, newlim, 'fill_time_intv', success = fill_intv
      if fill_intv eq 1 then tplot_fill_time_intv, routine, data, newlim, time_offset
 
-     if (color_table ne pct || rev_color_table ne prev) then $
-        if (pct lt 1000) then loadct2,pct,rev=prev else loadcsv,pct,rev=prev,/silent
+     if (color_table ne pct || rev_color_table ne prev) then initct,pct,rev=prev
+     if (abs(max(lcolors - pline)) gt 0) then line_colors,pline
 
      ;get offset into color array (for pseudo vars)
      if keyword_set(colors_set) then begin
