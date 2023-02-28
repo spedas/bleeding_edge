@@ -61,7 +61,13 @@
 ;
 ;   PANS:      Named varible to hold the tplot panels created.
 ;
-;   WINDOW:    Set the window number to show the snapshot. Default = 0.
+;   WINDOW:    Set the window number to show the snapshot.  If there is
+;              more than one snapshot window, then the window number 
+;              increments by one for each additional window.  It is the 
+;              user's responsibility to make sure these window(s) are 
+;              not already in use.
+;
+;              Default is to use the FREE keyword in WINDOW.
 ;
 ;   RESULT:    Return the resampled pitch angle distribution data.
 ;
@@ -130,9 +136,9 @@
 ;
 ;CREATED BY:      Takuya Hara on 2014-09-24.
 ;
-; $LastChangedBy: xussui $
-; $LastChangedDate: 2022-11-29 17:27:10 -0800 (Tue, 29 Nov 2022) $
-; $LastChangedRevision: 31307 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2023-02-27 08:18:17 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31549 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_resample.pro $
 ;
 ;-
@@ -528,7 +534,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
   IF keyword_set(swia) THEN mvn_swe_spice_init, trange=trange
   IF NOT keyword_set(units) THEN units = 'eflux'
   IF NOT keyword_set(nbins) THEN nbins = 128.
-  IF NOT keyword_set(wi) THEN wnum = 0 ELSE wnum = wi
+  IF NOT keyword_set(wi) THEN wnum = -1 ELSE wnum = wi
   IF NOT keyword_set(erange) AND keyword_set(tplot) THEN erange = 280.
   IF (SIZE(mask, /type) EQ 0) AND (SIZE(no_mask, /type) EQ 0) THEN mask = 1
   IF keyword_set(no_mask) THEN mask = 0
@@ -808,9 +814,9 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
 ;                 STRING(5.*dcet, '(f0.1)') + ' sec).'
         ENDIF ELSE BEGIN
            IF prt EQ 1 THEN $
-              print, format='(a, a, a, f6.2, a, f6.1, a, $)', $
+              print, format='(a, a, a, i3, a, f6.1, a, $)', $
                      '      ', fifb, '  Resampling ' + $
-                     dname + ' data is ', FLOAT(i)/FLOAT(ndat-1L)*100., ' % complete (', $
+                     dname + ' data is ', round(FLOAT(i)/FLOAT(ndat-1L)*100.), ' % complete (', $
                      SYSTIME(/sec)-start, ' sec).' ; , tblk
         ENDELSE 
         IF keyword_set(silent) THEN prt = 0
@@ -863,10 +869,12 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
      ENDIF
   ENDIF 
 
-  IF (pflg[0]) THEN BEGIN       ; Plot snapshot section.
-     plotxyz, xax, energy[edx], zdata, wi=wnum, _extra=plim, $
+  IF (pflg[0]) THEN BEGIN       ; Plot snapshots
+     win, wnum, xsize=640, ysize=512, /secondary, dx=10, dy=10
+     plotxyz, xax, energy[edx], zdata, _extra=plim, $
               xtit='Pitch Angle [deg]', ytit='Energy [eV]', ztit=ztit, $
               yrange=minmax(energy), title=tit, xmargin=[0.15, 0.17], ymargin=[0.10, 0.09]
+     wnum0 = wnum
      wnum += 1
   ENDIF 
 
@@ -923,7 +931,9 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
      ;; lc = colorscale(ALOG10(energy), mincol=7, maxcol=254, mindat=MIN(ALOG10(energy)), maxdat=MAX(ALOG10(energy)))
      lc = mvn_swe_pad_resample_cscale(ALOG10(energy), mincol=7, maxcol=254, $
                                       mindat=MIN(ALOG10(energy)), maxdat=MAX(ALOG10(energy)))
-     wi, wnum, wsize=[640, 512]
+     ok = size(wnum0,/type) eq 2
+     if (ok) then win, wnum, xsize=640, ysize=512, relative=wnum0, dx=10, /top $
+             else win, wnum, xsize=640, ysize=512, /secondary, dx=10, dy=10
      PLOT_IO, /nodata, [0., 180.], yrange, charsize=chsz, xticks=6, xminor=3, $
               xrange=[0., 180.], /xstyle, yrange=yrange, /ystyle, xtitle='Pitch Angle [deg]', $
               ytitle=ztit, title=tit, pos=pos
@@ -932,6 +942,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
      
      draw_color_scale, range=minmax(energy), /log, charsize=chsz, pos=pbar, $
                        brange=[7, 254], ytitle='Energy [eV]'
+     wnum2 = wnum
      wnum += 1
   ENDIF 
 
@@ -940,7 +951,14 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
      angle = [15., 52.5, 90., 127.5, 165.]
      lc = mvn_swe_pad_resample_cscale(angle, mincol=7, maxcol=254, mindat=0., maxdat=180.)
 
-     wi, wnum, wsize=[640, 512]
+     ok = size(wnum0,/type) eq 2
+     if (ok) then win, wnum, xsize=640, ysize=512, relative=wnum0, dy=-10, /left
+     if (not ok) then begin
+       ok = size(wnum2,/type) eq 2
+       if (ok) then win, wnum, xsize=640, ysize=512, relative=wnum2, dx=10, /top $
+               else win, wnum, xsize=640, ysize=512, /secondary, dx=10, dy=10
+     endif
+     wnum3 = wnum
 
      spec = mvn_swe_getspec(trange, /sum, archive=archive, units=units, yrange=yrange) 
      PLOT_OO, /nodata, minmax(energy), yrange, charsize=chsz, $

@@ -147,8 +147,8 @@
 ;                 keyword is only useful for computers with sufficient memory.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-10-13 09:33:22 -0700 (Thu, 13 Oct 2022) $
-; $LastChangedRevision: 31168 $
+; $LastChangedDate: 2023-02-27 09:25:47 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31555 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -411,9 +411,9 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
   if (docrop) then tspan += [-86400D, 86400D]
 
-  blue = get_color_indx([0,32,255])
-  green = get_color_indx([0,255,0])
-  orange = get_color_indx([255,127,0])
+  blue = 2
+  green = 4
+  orange = 5
   case n_elements(colors) of
     0 : rcols = [green, orange, blue]
     1 : rcols = [round(colors), orange, blue]

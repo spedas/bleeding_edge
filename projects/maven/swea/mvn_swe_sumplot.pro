@@ -68,8 +68,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-11-06 12:18:57 -0700 (Sat, 06 Nov 2021) $
-; $LastChangedRevision: 30401 $
+; $LastChangedDate: 2023-02-27 08:16:50 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31548 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -152,6 +152,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     options,'PF28V' ,'labflag',-1
     options,'PF28V' ,'colors',[4,6]
     options,'PF28V' ,'labels',['S/C','PFP']
+    options,'PF28V' ,'color_table',43
 
     pans = [pans,'SWE28I']
   endif
@@ -223,6 +224,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     store_data,'LVPST' ,data={x:swe_hsk.time, y:swe_hsk.LVPST}
     store_data,'MCPHV' ,data={x:swe_hsk.time, y:swe_hsk.MCPHV}
        options,'MCPHV','ynozero',1
+       options,'MCPHV','datagap',129D  ; 1 sec longer than PFP housekeeping interval
     store_data,'NRV'   ,data={x:swe_hsk.time, y:swe_hsk.NRV}
     store_data,'ANALV' ,data={x:swe_hsk.time, y:swe_hsk.ANALV}
     store_data,'DEF1V' ,data={x:swe_hsk.time, y:swe_hsk.DEF1V}
@@ -251,6 +253,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       options,'VoltsC','labflag',1
       options,'VoltsC','labels',['+28 V','+12 V','-12 V','+5 V','-5 V','5 DV','3.3 DV']
       options,'VoltsC','colors',TCcol
+      options,'VoltsC','color_table',43
       vpans = ['VoltsC']
     endif else begin  
       store_data,'VoltsA',data=['P12V','N12V','MCP28V','NR28V','P28V']
@@ -262,6 +265,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       options,'VoltsA','labflag',1
       options,'VoltsA','labels',['+12 V','-12 V','MCP 28V','NR 28V','+28 V','','']
       options,'VoltsA','colors',TCcol
+      options,'VoltsA','color_table',43
       ylim,'VoltsB',-6,6,0
       options,'VoltsB','ytitle','Volts'
       options,'VoltsB','yticks',2
@@ -269,6 +273,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       options,'VoltsB','labflag',1
       options,'VoltsB','labels',['+2.5 DV','+3.3 DV','+5 DV','+5 V','-5 V','NRV','']
       options,'VoltsB','colors',TCcol
+      options,'VoltsB','color_table',43
       vpans = ['VoltsA','VoltsB']
     endelse
 
@@ -283,6 +288,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     options,'Temps','labflag',1
     options,'Temps','labels',['LVPST','ANALT','DIGT']
     options,'Temps','colors',TCcol[0:2]
+    options,'Temps','color_table',43
   
     store_data,'HSKREG',data={x:swe_hsk.time, y:transpose(swe_hsk.HSKREG), v:indgen(16)}
     options,'HSKREG','spec',1
@@ -295,6 +301,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     options,'HSKREG','y_no_interp',1
     options,'HSKREG','no_color_scale',1
     options,'HSKREG','panel_size',0.5
+    options,'HSKREG','color_table',43
 
     dchsk = swe_hsk.npkt - shift(swe_hsk.npkt,1)
     dthsk = swe_hsk.time - shift(swe_hsk.time,1)
@@ -307,6 +314,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     options,'dthsk','ynozero',1
     options,'dchsk','color',TCcol[0]
     options,'dthsk','color',TCcol[0]
+    options,'dthsk','color_table',43
 
     dCmax = dCmax > max(dchsk,/nan)
     dTmax = dTmax > max(dthsk,/nan)
@@ -338,6 +346,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       options,'dta0','ynozero',1
       options,'dca0','color',TCcol[1]
       options,'dta0','color',TCcol[1]
+      options,'dta0','color_table',43
       
       dCmax = dCmax > max(dca0,/nan)
       dTmax = dTmax > max(dta0,/nan)
@@ -369,7 +378,8 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       options,'dta1','ynozero',1
       options,'dca1','color',TCcol[2]
       options,'dta1','color',TCcol[2]
-      
+      options,'dta1','color_table',43
+
       dCmax = dCmax > max(dca1,/nan)
       dTmax = dTmax > max(dta1,/nan)
 
@@ -399,6 +409,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
         options,bname,'xstyle',4
         options,bname,'ystyle',4
         options,bname,'no_color_scale',1
+        options,bname,'color_table',43
 ;       pans = [pans, bname]
       endif
 
@@ -572,7 +583,8 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       options,'dta2','ynozero',1
       options,'dca2','color',TCcol[3]
       options,'dta2','color',TCcol[3]
-      
+      options,'dta2','color_table',43
+
       dCmax = dCmax > max(dca2,/nan)
       dTmax = dTmax > max(dta2,/nan)
 
@@ -682,6 +694,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       options,bname,'xstyle',4
       options,bname,'ystyle',4
       options,bname,'no_color_scale',1
+      options,bname,'color_table',43
       pans = [pans, bname]
     endif
 
@@ -788,6 +801,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       options,bname,'xstyle',4
       options,bname,'ystyle',4
       options,bname,'no_color_scale',1
+      options,bname,'color_table',43
       pans = [pans, bname]
     endif
 
@@ -803,7 +817,8 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       options,'dta3','ynozero',1
       options,'dca3','color',TCcol[4]
       options,'dta3','color',TCcol[4]
-      
+      options,'dta3','color_table',43
+
       dCmax = dCmax > max(dca3,/nan)
       dTmax = dTmax > max(dta3,/nan)
 
@@ -868,6 +883,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       options,'dta4','ynozero',1
       options,'dca4','color',TCcol[5]
       options,'dta4','color',TCcol[5]
+      options,'dta4','color_table',43
 
       dCmax = dCmax > max(dca4,/nan)
       dTmax = dTmax > max(dta4,/nan)
@@ -926,6 +942,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       options,'dta5','ynozero',1
       options,'dca5','color',TCcol[6]
       options,'dta5','color',TCcol[6]
+      options,'dta5','color_table',43
 
       dCmax = dCmax > max(dca5,/nan)
       dTmax = dTmax > max(dta5,/nan)
@@ -955,7 +972,8 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     options,'dta6','ynozero',1
     options,'dca6','color',TCcol[7]
     options,'dta6','color',TCcol[7]
-      
+    options,'dta6','color_table',43
+
     dCmax = dCmax > max(dca0,/nan)
     dTmax = dTmax > max(dta0,/nan)
 
@@ -1011,6 +1029,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     options,bname,'xstyle',4
     options,bname,'ystyle',4
     options,bname,'no_color_scale',1
+    options,bname,'color_table',43
 
     indx = where(y[*,0] eq 1, count)
     if (count gt 0L) then begin
@@ -1134,7 +1153,8 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
 
     set_plot,'z'
       print,"Writing png file: ",pngname," ... ",format='(3a,$)'
-      loadct2,43,previous=ptab
+      cols = get_colors()
+      initct, cols.color_table, reverse=cols.color_reverse
       device,set_resolution=[1200,800]
       tplot,pans,trange=[tmin,tmax]
       timebar,t_cfg,/line
@@ -1142,10 +1162,9 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       tvlct,red,green,blue,/get
       write_image,path+pngname,itype,img,red,green,blue
       print,"done"
-      loadct2,ptab
     set_plot,current_dev
   endif
-  
+
   return
 
 end

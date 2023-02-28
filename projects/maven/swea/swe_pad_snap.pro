@@ -172,11 +172,13 @@
 ;
 ;        REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
 ;
+;        LINE_COLORS:  Use this for the line colors.
+;
 ;        NOTE:         Insert a text label.  Keep it short.
 ;
-; $LastChangedBy: xussui $
-; $LastChangedDate: 2023-01-30 15:30:00 -0800 (Mon, 30 Jan 2023) $
-; $LastChangedRevision: 31444 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2023-02-27 08:15:39 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31545 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -194,7 +196,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                   note=note, mincounts=mincounts, maxrerr=maxrerr, tsmo=tsmo, $
                   sundir=sundir, wscale=wscale, cscale=cscale, fscale=fscale, $
                   result=result, vdis=vdis, padmap=padmap, sec=sec, color_table=color_table, $
-                  reverse_color_table=reverse_color_table
+                  reverse_color_table=reverse_color_table, line_colors=line_colors
 
   @mvn_swe_com
   @putwin_common
@@ -218,7 +220,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
            'NOSPEC90','SHIFTPOT','POPEN','INDSPEC','TWOPOT','XRANGE',$
            'ERROR_BARS','YRANGE','TRANGE2','NOTE','MINCOUNTS','MAXRERR', $
            'TSMO','SUNDIR','WSCALE','CSCALE','FSCALE','RESULT','VDIS', $
-           'PADMAP','COLOR_TABLE','REVERSE_COLOR_TABLE']
+           'PADMAP','COLOR_TABLE','REVERSE_COLOR_TABLE','LINE_COLORS']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -345,12 +347,15 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
     endif else sundir = 0
   endif
 
-  ctab = -1 & pct = -1
+  ctab = -1 & pct = -1 & crev = -1 & prev = -1 & lines = -1 & plines = -1
   if (n_elements(color_table) gt 0) then begin
     ctab = fix(color_table[0])
     crev = keyword_set(reverse_color_table)
-    if (ctab ge 0 and ctab lt 1000) then loadct2,ctab,reverse=crev,previous_ct=pct,previous_rev=prev
-    if (ctab ge 1000) then loadcsv,ctab,reverse=crev,previous_ct=pct,previous_rev=prev,/silent
+    initct, ctab, previous_ct=pct, reverse=crev, previous_rev=prev
+  endif
+  if (n_elements(line_colors) gt 0) then begin
+    lines = lines_colors
+    line_colors, lines, previous_lines=plines
   endif
 
   cols = get_colors()
@@ -582,7 +587,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
     if (rflg or hflg or uflg) then wdelete,Pwin
     if (padmap) then wdelete,Mwin
     wset,Twin
-    if (ctab ne pct) then if (pct lt 1000) then loadct2,pct,reverse=prev else loadcsv,pct,reverse=prev,/silent
+    if ((ctab ne pct) or (crev ne prev)) then initct, pct, reverse=prev
+    if (max(abs(lines - plines)) gt 0) then line_colors, plines
     return
   endif
 
@@ -1175,7 +1181,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
         if (dflg and ~dwell) then begin
           ddd = mvn_swe_get3d(trange,archive=aflg,all=doall,/sum,units=units)
           if (size(ddd,/type) eq 8) then begin
-            loadct2,34,previous_ct=pct2,previous_rev=prv2
+            initct, 34, previous_ct=pct2, previous_rev=prv2
             indx = where(fovmask[*,boom] eq 0B, count)
             if (count gt 0L) then ddd.data[*,indx] = !values.f_nan
 
@@ -1210,7 +1216,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
 ;             Sel = -Sel
 ;             oplot,[Saz],[Sel],psym=7,color=col,thick=2,symsize=1.2
             endif
-            loadct2, pct2, reverse=prv2
+            initct, pct2, reverse=prv2
           endif
         endif
       endif
@@ -1562,6 +1568,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   endif
 
   wset, Twin
-  if (ctab ne pct) then if (pct lt 1000) then loadct2,pct,reverse=prev else loadcsv,pct,reverse=prev,/silent
+  if ((ctab ne pct) or (crev ne prev)) then initct, pct, reverse=prev
+  if (max(abs(lines - plines)) gt 0) then line_colors, plines
 
 end

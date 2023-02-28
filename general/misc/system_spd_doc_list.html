@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Feb 26 18:16:37 2023.<P>
+<STRONG>Last modified: </STRONG>Mon Feb 27 18:16:35 2023.<P>
  
 <HR>
  
@@ -44,8 +44,11 @@ This page was created by the IDL library routine
 CRIB for managing color tables and line colors and taking control of colors in tplot
 
 ROUTINES:
-   initct : Replaces loadct2.  Works the same way as loadct2, but provides access to
-            over 100 new color tables.  Provides keywords for setting line colors.
+   initct : Wrapper for loadct2 and loadcsv.  Works the same way as loadct2 and loadcsv,
+            but provides access to both sets of color tables (more than 160 in all!).
+            Provides keywords for setting line colors.  The previous routines still exist
+            and can still be called as before, so there's no need to rewrite any code
+            unless you want to.
    showct : Display the current color table or any color table with any line color scheme.
    revvid : swaps the values of !p.background and !p.color
    line_colors : Choose one of ten predefined line color schemes, or define a completely
@@ -53,9 +56,18 @@ ROUTINES:
    get_line_colors : Returns a 3x8 array of the current line colors [[R,G,B],[R,G,B], ...].
                      Can also return the 3x8 array for any line color scheme.
 
+   See the headers of these routines for more details.
+
+   The CSV catalog has table numbers from 0 to 118.  This range overlaps the legacy color
+   table range, so we need some way to separate them.  I chose to add 1000 to the CSV table
+   numbers, so CSV table 78 becomes 1078, etc.
+
+   Tplot has been modified to use initct and line_colors, so you can set custom color tables
+   and line color schemes for individual tplot variables using options.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-02-26 15:24:09 -0800 (Sun, 26 Feb 2023) $
- $LastChangedRevision: 31535 $
+ $LastChangedDate: 2023-02-26 18:36:44 -0800 (Sun, 26 Feb 2023) $
+ $LastChangedRevision: 31536 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/color_table_crib.pro $
 
  Created by David Mitchell;  February 2023
@@ -528,9 +540,13 @@ INPUTS:
 KEYWORDS:
    REVERSE:   If set, then reverse the table order from bottom_c to top_c.
 
-   LINE_CLRS: Show an alternate fixed color scheme.  See line_colors.pro.
+   LINE_CLRS: Show an alternate fixed colors.  See line_colors.pro.
+
+   COLOR_NAMES: Names of custom line colors.  See line_colors.pro.
 
    MYCOLORS:  Structure of custom line colors.  See line_colors.pro.
+
+   GRAYBKG:   Set background color to gray.  See line_colors.pro.
 
    INTENSITY: Show intensity in a separate window.
 
@@ -539,8 +555,8 @@ SEE ALSO:
               more functionality, but only for the current color table.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-02-24 15:45:27 -0800 (Fri, 24 Feb 2023) $
- $LastChangedRevision: 31517 $
+ $LastChangedDate: 2023-02-26 21:36:31 -0800 (Sun, 26 Feb 2023) $
+ $LastChangedRevision: 31538 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/showct.pro $
 </PRE><P>
 <STRONG>(See <A href="system/showct.pro">general/misc/system/showct.pro</A>)</STRONG><P>

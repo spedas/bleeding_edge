@@ -227,9 +227,11 @@ end
 ;
 ;       REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
 ;
+;       LINE_COLORS:   Use this for the line colors.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-01-30 12:46:50 -0800 (Mon, 30 Jan 2023) $
-; $LastChangedRevision: 31443 $
+; $LastChangedDate: 2023-02-27 08:15:57 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31546 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -245,7 +247,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
                    trange=tspan, tsmo=tsmo, wscale=wscale, cscale=cscale, voffset=voffset, $
                    endx=endx, twot=twot, rcolors=rcolors, cuii=cuii, fmfit=fmfit, nolab=nolab, $
                    showdead=showdead, monitor=monitor, der=der, color_table=color_table, $
-                   reverse_color_table=reverse_color_table, noraw=noraw
+                   reverse_color_table=reverse_color_table, line_colors=line_colors, noraw=noraw
 
   @mvn_swe_com
   @mvn_scpot_com
@@ -270,7 +272,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
            'BKG','TPLOT','MAGDIR','BCK','SHIFTPOT','XRANGE','YRANGE','SCONFIG', $
            'POPEN','TIMES','FLEV','PYLIM','K_E','PEREF','ERROR_BARS','TRANGE', $
            'TSMO','WSCALE','CSCALE','VOFFSET','ENDX','TWOT','RCOLORS','CUII', $
-           'FMFIT','NOLAB','SHOWDEAD','MONITOR','COLOR_TABLE','REVERSE_COLOR_TABLE']
+           'FMFIT','NOLAB','SHOWDEAD','MONITOR','COLOR_TABLE','REVERSE_COLOR_TABLE', $
+           'LINE_COLORS']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -454,12 +457,15 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
            end
   endcase
 
-  ctab = -1 & pct = -1
+  ctab = -1 & pct = -1 & crev = -1 & prev = -1 & lines = -1 & plines = -1
   if (n_elements(color_table) gt 0) then begin
     ctab = fix(color_table[0])
     crev = keyword_set(reverse_color_table)
-    if (ctab ge 0 and ctab lt 1000) then loadct2,ctab,previous_ct=pct,reverse=crev
-    if (ctab ge 1000) then loadcsv,ctab,previous_ct=pct,reverse=crev,/silent
+    initct, ctab, previous_ct=pct, reverse=crev, previous_rev=prev
+  endif
+  if (n_elements(line_colors) gt 0) then begin
+    lines = line_colors
+    line_colors, lines, previous_lines=plines
   endif
 
   cols = get_colors()
@@ -517,15 +523,16 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     if (npts gt 1) then cursor,cx,cy,/norm,/up  ; Make sure mouse button released
   endif else trange = tspan
 
-  if (size(trange,/type) ne 5) then begin
+  if (size(trange,/type) eq 2) then begin       ; Abort before first time select.
     wdelete,Ewin
     if (hflg) then wdelete,Hwin
     if (pflg) then wdelete,Pwin
     wset,Twin
-    if (ctab ne pct) then if (pct lt 1000) then loadct2,pct,reverse=prev else loadcsv,pct,reverse=prev,/silent
+    if ((ctab ne pct) or (crev ne prev)) then initct, pct, reverse=prev
+    if (max(abs(lines - plines)) gt 0) then line_colors, plines
     return
   endif
-  
+
   if (dosmo) then begin
     tmin = min(trange, max=tmax)
     trange = [(tmin - dtsmo), (tmax + dtsmo)]
@@ -1319,6 +1326,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   endif
 
   wset, Twin
-  if (ctab ne pct) then if (pct lt 1000) then loadct2,pct,reverse=prev else loadcsv,pct,reverse=prev,/silent
+  if ((ctab ne pct) or (crev ne prev)) then initct, pct, reverse=prev
+  if (max(abs(lines - plines)) gt 0) then line_colors, plines
 
 end

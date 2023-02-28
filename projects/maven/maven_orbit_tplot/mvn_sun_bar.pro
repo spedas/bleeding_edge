@@ -12,8 +12,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-09-07 11:20:21 -0700 (Thu, 07 Sep 2017) $
-; $LastChangedRevision: 23904 $
+; $LastChangedDate: 2023-02-27 07:04:31 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31540 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_sun_bar.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -44,6 +44,7 @@ pro mvn_sun_bar, pans=bname
   options,bname,'xstyle',4
   options,bname,'ystyle',4
   options,bname,'no_color_scale',1
+  options,bname,'color_table',43
   
   return
 

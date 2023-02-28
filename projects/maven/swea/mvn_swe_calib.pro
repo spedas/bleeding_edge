@@ -91,8 +91,8 @@
 ;       LIST:         List the current calibration constants.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-05-05 13:02:07 -0700 (Thu, 05 May 2022) $
-; $LastChangedRevision: 30804 $
+; $LastChangedDate: 2023-02-27 08:20:14 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31553 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_calib.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -132,19 +132,19 @@ pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default,
              'deadtime','minimum deadtime correction','paralyzable deadtime']
     mlist = 'Setting ' + mlist + ': '
     for j=0,(n_elements(ftag)-1) do begin
-      ok = 0
       i = strmatch(tlist, stag[j]+'*', /fold)
       case (total(i)) of
          0   : print, "Calibration parameter not recognized: ", ftag[j]
          1   : begin
                  k = (where(i eq 1))[0]
                  ok = execute('swe_' + tlist[k] + ' = setcal.(j)',0,1)
-                 if (ok) then print, mlist[k], setcal.(j)
+                 if (ok) then print, mlist[k], setcal.(j) $
+                         else print, "Error setting calibration parameter: ", ftag[j]
                end
         else : print, "Calibration parameter ambiguous: ", ftag[j]
       endcase
-      if (not ok) then return
     endfor
+    return
   endif
 
 ; Find the first valid LUT
@@ -491,13 +491,18 @@ pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default,
   mass_e = (5.10998910D5)/(c*c)  ; electron rest mass [eV/(km/s)^2]
 
   if keyword_set(list) then begin
-    print, "analyzer constant  = ", swe_Ka, format='(a,f5.2)'
-    print, "geometric factor   = ", swe_G*16., format='(a,e9.2)'
-    print, "elec. suppression  = ", swe_Ke, format='(a,f5.2)'
-    print, "deadtime per anode = ", swe_dead, format='(a,e9.2)'
-    print, "max deadtime corr. = ", 1./swe_min_dtc, format='(a,f5.2)'
+    print, "  analyzer constant  = ", swe_Ka, format='(a,f5.2)'
+    print, "  geometric factor   = ", swe_G*16., format='(a,e9.2)'
+    print, "  elec. suppression  = ", swe_Ke, format='(a,f5.2)'
+    print, "  deadtime per anode = ", swe_dead, format='(a,e9.2)'
+    print, "  max deadtime corr. = ", 1./swe_min_dtc, format='(a,f5.2)'
+    print, ""
     dmodel = ['non-',''] + 'paralyzable'
-    print, "deadtime model     =  " + dmodel[swe_paralyze]
+    onoff = ['off','on']
+    print, "  deadtime model     =  " + dmodel[swe_paralyze]
+    print, "  swe-swi crosscal   =  " + onoff[swe_cc_switch]
+    print, "  e- suppr. corr.    =  " + onoff[swe_es_switch]
+    print, "  angular calib.     =  " + onoff[swe_ff_state]
   endif
 
   return

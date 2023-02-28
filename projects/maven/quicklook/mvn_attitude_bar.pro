@@ -20,8 +20,8 @@
 ;       FORCE:    Ignore the SPICE checks and forge ahead anyway.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-01-29 10:19:55 -0800 (Sun, 29 Jan 2023) $
-; $LastChangedRevision: 31433 $
+; $LastChangedDate: 2023-02-27 08:12:53 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31544 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_attitude_bar.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -95,6 +95,7 @@ pro mvn_attitude_bar, force=force
   options,bname,'xstyle',4
   options,bname,'ystyle',4
   options,bname,'no_color_scale',1
+  options,bname,'color_table',43
 
   return
 end

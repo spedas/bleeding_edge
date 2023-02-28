@@ -33,8 +33,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-10-21 13:14:47 -0700 (Wed, 21 Oct 2020) $
-; $LastChangedRevision: 29266 $
+; $LastChangedDate: 2023-02-27 07:04:12 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31539 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/parabola_vertex.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -52,6 +52,8 @@ pro parabola_vertex, xi, yi, xv, yv
   y = double(yi)
   a = dblarr(3)
 
+; Try to find three points that encompass a local max or min
+
   yoff = max(y,i)
   if ((i eq 0) or (i eq nx-1)) then yoff = min(y,i)
   xoff = x[i]
@@ -59,6 +61,8 @@ pro parabola_vertex, xi, yi, xv, yv
 
   x = x[j] - xoff
   y = y[j] - yoff
+
+; Calculate the coordinates of the vertex
 
   a[0] = y[0]/((x[0]-x[1])*(x[0]-x[2]))
   a[1] = y[1]/((x[1]-x[0])*(x[1]-x[2]))

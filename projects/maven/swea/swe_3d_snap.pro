@@ -103,8 +103,8 @@
 ;        REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-01-30 12:46:50 -0800 (Mon, 30 Jan 2023) $
-; $LastChangedRevision: 31443 $
+; $LastChangedDate: 2023-02-27 08:16:18 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31547 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -117,7 +117,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
                  plot_sc=plot_sc, padmap=padmap, pot=pot, plot_fov=plot_fov, $
                  labsize=labsize, trange=trange2, tsmo=tsmo, wscale=wscale, zlog=zlog, $
                  zrange=zrange, monitor=monitor, esum=esum, color_table=color_table, $
-                 reverse_color_table=reverse_color_table
+                 reverse_color_table=reverse_color_table, line_colors=line_colors
 
   @mvn_swe_com
   @putwin_common
@@ -310,8 +310,13 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
   ctab = keyword_set(color_table) ? fix(color_table[0]) : 34
   crev = keyword_set(reverse_color_table)
-  if (ctab ge 0 and ctab lt 1000) then loadct2,ctab,reverse=crev,previous_ct=pct,previous_rev=prev
-  if (ctab ge 1000) then loadcsv,ctab,reverse=crev,previous_ct=pct,previous_rev=prev,/silent
+  initct, ctab, reverse=crev, previous_ct=pct, previous_rev=prev
+
+  lines = -1 & plines = -1
+  if keyword_set(line_colors) then begin
+    lines = line_colors
+    line_colors, lines, previous_lines=plines
+  endif
 
   cols = get_colors()
   if (cols.color_table ge 1000) then cols = get_qualcolors()
@@ -342,7 +347,8 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
       if (dflg) then wdelete,Fwin
       if (dopam) then wdelete,Pwin
       wset,Twin
-      if (ctab ne pct) then if (pct lt 1000) then loadct2,pct,reverse=prev else loadcsv,pct,reverse=prev,/silent
+      if ((ctab ne pct) or (crev ne prev)) then initct, pct, reverse=prev
+      if (max(abs(lines - plines)) gt 0) then line_colors, plines
       return
     endif
   endif
@@ -415,7 +421,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
       delta_t = ddd.end_time - ddd.time
       str_element, ddd, 'trange', [(ddd.time - delta_t), ddd.end_time], /add
       plot3d_new, ddd, lat, lon, ebins=ebins, zrange=zrange, log=keyword_set(zlog)
-    
+
       if (pflg) then begin
         dt = min(abs(a2.time - mean(ddd.time)),j)
         mvn_swe_magdir, a2[j].time, a2[j].Baz, a2[j].Bel, Baz, Bel
@@ -579,7 +585,8 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
 ; Restore the previous color table
 
-  if (ctab ne pct) then if (pct lt 1000) then loadct2,pct,reverse=prev else loadcsv,pct,reverse=prev,/silent
+  if ((ctab ne pct) or (crev ne prev)) then initct, pct, reverse=prev
+  if (max(abs(lines - plines)) gt 0) then line_colors, plines
 
   if (kflg) then begin
     wdelete, Dwin

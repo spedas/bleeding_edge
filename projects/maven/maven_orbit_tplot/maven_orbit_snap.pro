@@ -143,9 +143,9 @@
 ;
 ;       IONO:     Plot a dashed circle at this altitude.
 ;
-; $LastChangedBy: rlillis3 $
-; $LastChangedDate: 2022-08-16 18:05:51 -0700 (Tue, 16 Aug 2022) $
-; $LastChangedRevision: 31019 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2023-02-27 08:09:44 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31541 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -275,7 +275,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     times = time_double(times)
     ntimes = n_elements(times)
     if (n_elements(tcolors) ne ntimes) then tcolors = replicate(color, ntimes)
-    reset = 1
+;   reset = 1
     noerase = 1
     keep = 1
     tflg = 1

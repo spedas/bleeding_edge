@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Feb 26 18:16:38 2023.<P>
+<STRONG>Last modified: </STRONG>Mon Feb 27 18:16:36 2023.<P>
  
 <HR>
  
@@ -1804,8 +1804,8 @@ KEYWORDS:
        LIST:         List the current calibration constants.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-05-05 13:02:07 -0700 (Thu, 05 May 2022) $
- $LastChangedRevision: 30804 $
+ $LastChangedDate: 2023-02-27 08:20:14 -0800 (Mon, 27 Feb 2023) $
+ $LastChangedRevision: 31553 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_calib.pro $
 
 CREATED BY:    David L. Mitchell  03-29-13
@@ -1991,14 +1991,15 @@ KEYWORDS:
 
                    Otherwise, all changes are listed.
 
-    TIMEBAR:       Returns a structure with two tags:
+    TIMEBAR:       Returns a structure with three tags:
 
                      time : array of times for configuration changes
                      text : brief descriptions of configuration changes
+                     type : types of configuration changes (see above)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-08-23 12:21:42 -0700 (Tue, 23 Aug 2022) $
- $LastChangedRevision: 31035 $
+ $LastChangedDate: 2023-02-27 08:19:41 -0800 (Mon, 27 Feb 2023) $
+ $LastChangedRevision: 31552 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 
 CREATED BY:    David L. Mitchell  03-29-13
@@ -2558,8 +2559,8 @@ KEYWORDS:
 CREATED BY:	David L. Mitchell  2016-08-03
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-08-26 16:50:29 -0700 (Mon, 26 Aug 2019) $
- $LastChangedRevision: 27657 $
+ $LastChangedDate: 2023-02-27 08:18:59 -0800 (Mon, 27 Feb 2023) $
+ $LastChangedRevision: 31551 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovcal.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_fovcal.pro">projects/maven/swea/mvn_swe_fovcal.pro</A>)</STRONG><P>
@@ -2618,8 +2619,8 @@ KEYWORDS:
 CREATED BY:	David L. Mitchell  2016-08-03
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-08-26 16:48:53 -0700 (Mon, 26 Aug 2019) $
- $LastChangedRevision: 27655 $
+ $LastChangedDate: 2023-02-27 08:18:46 -0800 (Mon, 27 Feb 2023) $
+ $LastChangedRevision: 31550 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovplot.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_fovplot.pro">projects/maven/swea/mvn_swe_fovplot.pro</A>)</STRONG><P>
@@ -4151,7 +4152,13 @@ KEYWORDS:
 
    PANS:      Named varible to hold the tplot panels created.
 
-   WINDOW:    Set the window number to show the snapshot. Default = 0.
+   WINDOW:    Set the window number to show the snapshot.  If there is
+              more than one snapshot window, then the window number 
+              increments by one for each additional window.  It is the 
+              user's responsibility to make sure these window(s) are 
+              not already in use.
+
+              Default is to use the FREE keyword in WINDOW.
 
    RESULT:    Return the resampled pitch angle distribution data.
 
@@ -4220,9 +4227,9 @@ KEYWORDS:
 
 CREATED BY:      Takuya Hara on 2014-09-24.
 
- $LastChangedBy: xussui $
- $LastChangedDate: 2022-11-29 17:27:10 -0800 (Tue, 29 Nov 2022) $
- $LastChangedRevision: 31307 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-02-27 08:18:17 -0800 (Mon, 27 Feb 2023) $
+ $LastChangedRevision: 31549 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_resample.pro $
 
 </PRE><P>
@@ -5708,8 +5715,8 @@ KEYWORDS:
        BURST:        Plot a color bar showing PAD burst coverage.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-11-06 12:18:57 -0700 (Sat, 06 Nov 2021) $
- $LastChangedRevision: 30401 $
+ $LastChangedDate: 2023-02-27 08:16:50 -0800 (Mon, 27 Feb 2023) $
+ $LastChangedRevision: 31548 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6400,8 +6407,8 @@ KEYWORDS:
         REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-01-30 12:46:50 -0800 (Mon, 30 Jan 2023) $
- $LastChangedRevision: 31443 $
+ $LastChangedDate: 2023-02-27 08:16:18 -0800 (Mon, 27 Feb 2023) $
+ $LastChangedRevision: 31547 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6898,9 +6905,11 @@ KEYWORDS:
 
        REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
 
+       LINE_COLORS:   Use this for the line colors.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-01-30 12:46:50 -0800 (Mon, 30 Jan 2023) $
- $LastChangedRevision: 31443 $
+ $LastChangedDate: 2023-02-27 08:15:57 -0800 (Mon, 27 Feb 2023) $
+ $LastChangedRevision: 31546 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -7309,11 +7318,13 @@ KEYWORDS:
 
         REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
 
+        LINE_COLORS:  Use this for the line colors.
+
         NOTE:         Insert a text label.  Keep it short.
 
- $LastChangedBy: xussui $
- $LastChangedDate: 2023-01-30 15:30:00 -0800 (Mon, 30 Jan 2023) $
- $LastChangedRevision: 31444 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-02-27 08:15:39 -0800 (Mon, 27 Feb 2023) $
+ $LastChangedRevision: 31545 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12

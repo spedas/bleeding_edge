@@ -37,8 +37,8 @@
 ;
 ;CREATED BY:    Davin Larson
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-02-14 09:14:43 -0800 (Tue, 14 Feb 2023) $
-; $LastChangedRevision: 31497 $
+; $LastChangedDate: 2023-02-27 18:02:20 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31564 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/store_data.pro $
 ;-
 pro store_data,name, time,ydata,values, $
@@ -49,6 +49,7 @@ pro store_data,name, time,ydata,values, $
   time_tag = time_tag, $
   vardef = vardef, $
   gap_tag  = gap_tag,  $
+  val_tag  = val_tag,  $
   limits= limits, $
   dlimits = dlimits, $
   newname = newname, $
@@ -87,7 +88,10 @@ pro store_data,name, time,ydata,values, $
         if ok[i] eq 0 then continue
         if tags[i] eq strupcase(time_tag) then continue
         if keyword_set(gap_tag) && tags[i] eq gap_tag then continue
-        vardef = dictionary('x',time_tag,'y',tags[i])        
+        vardef = dictionary('X',time_tag,'Y',tags[i])   
+        if isa(val_tag,/string) && total(tags[i]+strupcase(val_tag) eq tags,/pres) ne 0 then begin
+          vardef.v = tags[i]+strupcase(val_tag)
+        endif 
         y = data_sample.(i)
         if size(/type,y) eq 10 then continue   ; ignore pointers
         ;if size(/type,y) eq 7 then continue    ; ignore strings

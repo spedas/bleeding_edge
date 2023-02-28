@@ -46,14 +46,18 @@
 ;CREATED BY:	David L. Mitchell  2016-08-03
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-08-26 16:48:53 -0700 (Mon, 26 Aug 2019) $
-; $LastChangedRevision: 27655 $
+; $LastChangedDate: 2023-02-27 08:18:46 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31550 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovplot.pro $
 ;-
 pro mvn_swe_fovplot, dat1, dat2, bad=ondx, date=date, crange=crange, yrange=yrange, map=map, $
                      result=dat, lon=lon, lat=lat, psname=psname, cat=cat
 
   @mvn_swe_com
+  common colors_com
+
+  ctab = color_table
+  crev = color_reverse
 
   gud = where(swe_sc_mask[*,1] eq 1, ngud)
   bad = where(swe_sc_mask[*,1] eq 0, nbad)
@@ -187,7 +191,7 @@ pro mvn_swe_fovplot, dat1, dat2, bad=ondx, date=date, crange=crange, yrange=yran
 
   if (dops) then begin
     popen, psname
-    loadct2,34
+    initct, 34
   endif else window,5,xsize=825,ysize=1000
 
 ; 3D plot
@@ -220,7 +224,7 @@ pro mvn_swe_fovplot, dat1, dat2, bad=ondx, date=date, crange=crange, yrange=yran
 
   if (dops) then begin
     popen, psname + '_AzEl'
-    loadct2,34
+    initct, 34
   endif else window,6,xsize=600,ysize=600
 
   titlestring = fovcal.project_name + ' ' + fovcal.data_name
@@ -242,7 +246,7 @@ pro mvn_swe_fovplot, dat1, dat2, bad=ondx, date=date, crange=crange, yrange=yran
 
   if (dops) then pclose
 
-  loadct2,43
+  initct, ctab, reverse=crev
   wset, Twin
 
 ; Print results

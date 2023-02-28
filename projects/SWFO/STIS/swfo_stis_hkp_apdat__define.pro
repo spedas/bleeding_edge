@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2023-02-10 17:30:39 -0800 (Fri, 10 Feb 2023) $
-; $LastChangedRevision: 31491 $
+; $LastChangedDate: 2023-02-27 14:04:09 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_hkp_apdat__define.pro $
 
 
@@ -67,72 +67,142 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
     adc_temps:                swfo_therm_temp(swfo_data_select(ccsds_data,(d+dig_size+[1,8,9]*2)*8,16,/signed),param=temp_par_16bit),$
     mux_all:                  swfo_data_select(ccsds_data,(d+dig_size+[0:15]*2)*8,16,/signed)*flt}
 
-  if str1.fpga_rev ge 'B9'x then begin
-    cmd_fifo_write_ptr=         swfo_data_select(ccsds_data,(d+14*2)*8+6, 13)
-    cmd_fifo_read_ptr=          swfo_data_select(ccsds_data,(d+15*2)*8+3, 13)
-    cmds_remaining=(fix(cmd_fifo_write_ptr)-fix(cmd_fifo_read_ptr))/3.
-    if cmds_remaining lt 0 then cmds_remaining+=fifo_size/3.
-    str2={$
-      dac_values:               swfo_data_select(ccsds_data,(d+(0+[0:11])*2)*8,16),$
-      pps_counter:              swfo_data_select(ccsds_data,(d+12*2  )*8,16),$
-      pps_period_100us:         swfo_data_select(ccsds_data,(d+13*2  )*8,16),$
-      pps_timeout_100ms:        swfo_data_select(ccsds_data,(d+14*2  )*8, 6),$
-      cmd_fifo_write_ptr:       cmd_fifo_write_ptr,$
-      cmd_fifo_read_ptr:        cmd_fifo_read_ptr,$
-      cmds_remaining:           cmds_remaining,$
-      cmds_received:            cmd_fifo_write_ptr/3.,$
-      cmds_executed:            cmd_fifo_read_ptr/3.,$
-      cmds_executed2:           swfo_data_select(ccsds_data,(d+16*2  )*8,16),$
-      cmds_ignored:             swfo_data_select(ccsds_data,(d+17*2  )*8, 8),$
-      cmds_unknown:             swfo_data_select(ccsds_data,(d+17*2+1)*8, 8),$
-      cmds_invalid:             swfo_data_select(ccsds_data,(d+18*2  )*8, 8),$
-      time_cmds_received:       swfo_data_select(ccsds_data,(d+18*2+1)*8, 8),$
-      cmd_pause_remaining_100ms:swfo_data_select(ccsds_data,(d+19*2  )*8,16),$
-      valid_rates:              float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+20*2+[0:5])*8,8))),$
-      async_rates:              float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+23*2+[0:5])*8,8))),$
-      nopeak_rates:             float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+26*2+[0:5])*8,8))),$
-      event_timeout_rates:      float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+29*2+[0:5])*8,8))),$
-      unknown_pattern_rates:    float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+32*2+[0:5])*8,8))),$
-      valid_timeout_rates:      float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+35*2+[0:5])*8,8))),$
-      negative_pulse_rates:     float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+38*2  )*8,8))),$
-      science_events:           float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+38*2+1)*8,8))),$
-      met_spare:                swfo_data_select(ccsds_data,(d+39*2  )*8, 8),$
-      test_pulse_width_1us:     swfo_data_select(ccsds_data,(d+39*2+1)*8, 8),$
-      pulses_remaining:         swfo_data_select(ccsds_data,(d+40*2  )*8,12),$
-      board_id:                 swfo_data_select(ccsds_data,(d+40*2)*8+12,2),$
-      self_tod_enable:          swfo_data_select(ccsds_data,(d+40*2)*8+13,1),$
-      memory_page:              swfo_data_select(ccsds_data,(d+40*2)*8+14,1),$
-      memory_address:           swfo_data_select(ccsds_data,(d+41*2  )*8,16),$
-      expected_checksum1:       swfo_data_select(ccsds_data,(d+42*2  )*8,16),$
-      expected_checksum0:       swfo_data_select(ccsds_data,(d+43*2  )*8,16),$
-      checksum1:                swfo_data_select(ccsds_data,(d+44*2  )*8,16),$
-      checksum0:                swfo_data_select(ccsds_data,(d+45*2  )*8,16),$
-      bias_clock_period:        swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
-      edac_errors:              swfo_data_select(ccsds_data,(d+46*2+1)*8+[0:9]*4,4),$
-      bus_timeout_counters:     swfo_data_select(ccsds_data,(d+49*2  )*8+[0:3]*4,4),$
-      user_0e:                  swfo_data_select(ccsds_data,(d+50*2  )*8,16),$
-      user_2d:                  swfo_data_select(ccsds_data,(d+51*2  )*8, 8),$
-      reserved0:                swfo_data_select(ccsds_data,(d+51*2+1)*8, 4),$
-      state_machine_errors:     swfo_data_select(ccsds_data,(d+51*2+1)*8+[1:13]*4,4),$
-      first_cmd_id:             swfo_data_select(ccsds_data,(d+55*2  )*8, 8),$
-      last_cmd_id:              swfo_data_select(ccsds_data,(d+55*2+1)*8, 8),$
-      first_cmd_data:           swfo_data_select(ccsds_data,(d+56*2  )*8,16),$
-      last_cmd_data:            swfo_data_select(ccsds_data,(d+57*2  )*8,16),$
-      baseline_restore_ext1_us: swfo_data_select(ccsds_data,(d+58*2  )*8, 8),$
-      baseline_restore_ext2_us: swfo_data_select(ccsds_data,(d+58*2+1)*8, 6),$
-      baseline_restore_mode:    swfo_data_select(ccsds_data,(d+58*2)*8+14,2),$
-      digi_filter_clock_cycles: swfo_data_select(ccsds_data,(d+59*2+[0:1])*8,8),$
-      pulser_delay_clock_cycles:swfo_data_select(ccsds_data,(d+60*2  )*8+[0:2]*8,8),$
-      valid_enable_mask_bits:   swfo_data_select(ccsds_data,(d+61*2+1)*8, 6),$
-      sci_nonlut_mode:          swfo_data_select(ccsds_data,(d+61*2)*8+14,2),$
-      timeouts_2us:             swfo_data_select(ccsds_data,(d+62*2  )*8+[0:2]*4,4),$
-      sci_resolution:           swfo_data_select(ccsds_data,(d+62*2)*8+12,4),$
-      sci_translate:            swfo_data_select(ccsds_data,(d+63*2  )*8,16),$
-      gap:ccsds.gap }
-    valid_rates_pps=str2.valid_rates/float(str2.pps_period_100us)*1e4
-    str3={valid_rates_pps:valid_rates_pps,valid_rates_total:total(str2.valid_rates)}
-    str=create_struct(str1,str2,str3,ana_hkp)
-    return,str
+  if hkp_size eq 160 then begin
+    if str1.fpga_rev ge 'BA'x then begin
+      cmd_fifo_write_ptr=         swfo_data_select(ccsds_data,(d+14*2)*8+6, 13)
+      cmd_fifo_read_ptr=          swfo_data_select(ccsds_data,(d+15*2)*8+3, 13)
+      cmds_remaining=(fix(cmd_fifo_write_ptr)-fix(cmd_fifo_read_ptr))/3.
+      if cmds_remaining lt 0 then cmds_remaining+=fifo_size/3.
+      str2={$
+        dac_values:               swfo_data_select(ccsds_data,(d+(0+[0:11])*2)*8,16),$
+        pps_counter:              swfo_data_select(ccsds_data,(d+12*2  )*8,16),$
+        pps_period_100us:         swfo_data_select(ccsds_data,(d+13*2  )*8,16),$
+        pps_timeout_100ms:        swfo_data_select(ccsds_data,(d+14*2  )*8, 6),$
+        cmd_fifo_write_ptr:       cmd_fifo_write_ptr,$
+        cmd_fifo_read_ptr:        cmd_fifo_read_ptr,$
+        cmds_remaining:           cmds_remaining,$
+        cmds_received:            cmd_fifo_write_ptr/3.,$
+        cmds_executed:            cmd_fifo_read_ptr/3.,$
+        cmds_executed2:           swfo_data_select(ccsds_data,(d+16*2  )*8,16),$
+        cmds_ignored:             swfo_data_select(ccsds_data,(d+17*2  )*8, 8),$
+        cmds_unknown:             swfo_data_select(ccsds_data,(d+17*2+1)*8, 8),$
+        cmds_invalid:             swfo_data_select(ccsds_data,(d+18*2  )*8, 8),$
+        time_cmds_received:       swfo_data_select(ccsds_data,(d+18*2+1)*8, 8),$
+        cmd_pause_remaining_100ms:swfo_data_select(ccsds_data,(d+19*2  )*8,16),$
+        async_rates:              float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+20*2+[0:5])*8,8))),$
+        valid_rates:              float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+23*2+[0:5])*8,8))),$
+        event_timeout_rates:      float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+26*2+[0:5])*8,8))),$
+        valid_timeout_rates:      float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+29*2+[0:5])*8,8))),$
+        nopeak_rates:             float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+32*2+[0:5])*8,8))),$
+        unknown_pattern_rates:    float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+35*2+[0:5])*8,8))),$
+        negative_pulse_rates:     float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+38*2  )*8,8))),$
+        science_events:           float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+38*2+1)*8,8))),$
+        met_spare:                swfo_data_select(ccsds_data,(d+39*2  )*8, 8),$
+        test_pulse_width_1us:     swfo_data_select(ccsds_data,(d+39*2+1)*8, 8),$
+        pulses_remaining:         swfo_data_select(ccsds_data,(d+40*2  )*8,12),$
+        board_id:                 swfo_data_select(ccsds_data,(d+40*2)*8+12,2),$
+        self_tod_enable:          swfo_data_select(ccsds_data,(d+40*2)*8+13,1),$
+        memory_page:              swfo_data_select(ccsds_data,(d+40*2)*8+14,1),$
+        memory_address:           swfo_data_select(ccsds_data,(d+41*2  )*8,16),$
+        expected_checksum1:       swfo_data_select(ccsds_data,(d+42*2  )*8,16),$
+        expected_checksum0:       swfo_data_select(ccsds_data,(d+43*2  )*8,16),$
+        checksum1:                swfo_data_select(ccsds_data,(d+44*2  )*8,16),$
+        checksum0:                swfo_data_select(ccsds_data,(d+45*2  )*8,16),$
+        bias_clock_period:        swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
+        edac_errors:              swfo_data_select(ccsds_data,(d+46*2+1)*8+[0:9]*4,4),$
+        bus_timeout_counters:     swfo_data_select(ccsds_data,(d+49*2  )*8+[0:3]*4,4),$
+        user_0e:                  swfo_data_select(ccsds_data,(d+50*2  )*8,16),$
+        user_2d:                  swfo_data_select(ccsds_data,(d+51*2  )*8, 8),$
+        reserved0:                swfo_data_select(ccsds_data,(d+51*2+1)*8, 4),$
+        state_machine_errors:     swfo_data_select(ccsds_data,(d+51*2+1)*8+[1:13]*4,4),$
+        first_cmd_id:             swfo_data_select(ccsds_data,(d+55*2  )*8, 8),$
+        last_cmd_id:              swfo_data_select(ccsds_data,(d+55*2+1)*8, 8),$
+        first_cmd_data:           swfo_data_select(ccsds_data,(d+56*2  )*8,16),$
+        last_cmd_data:            swfo_data_select(ccsds_data,(d+57*2  )*8,16),$
+        baseline_restore_ext1_us: swfo_data_select(ccsds_data,(d+58*2  )*8, 8),$
+        baseline_restore_ext2_us: swfo_data_select(ccsds_data,(d+58*2+1)*8, 6),$
+        baseline_restore_mode:    swfo_data_select(ccsds_data,(d+58*2)*8+14,2),$
+        digi_filter_clock_cycles: swfo_data_select(ccsds_data,(d+59*2+[0:1])*8,8),$
+        pulser_delay_clock_cycles:swfo_data_select(ccsds_data,(d+60*2  )*8+[0:2]*8,8),$
+        valid_enable_mask_bits:   swfo_data_select(ccsds_data,(d+61*2+1)*8, 6),$
+        sci_nonlut_mode:          swfo_data_select(ccsds_data,(d+61*2)*8+14,2),$
+        timeouts_2us:             swfo_data_select(ccsds_data,(d+62*2  )*8+[0:2]*4,4),$
+        sci_resolution:           swfo_data_select(ccsds_data,(d+62*2)*8+12,4),$
+        sci_translate:            swfo_data_select(ccsds_data,(d+63*2  )*8,16),$
+        gap:ccsds.gap }
+      valid_rates_pps=str2.valid_rates/float(str2.pps_period_100us)*1e4
+      str3={valid_rates_pps:valid_rates_pps,valid_rates_total:total(str2.valid_rates)}
+      str=create_struct(str1,str2,str3,ana_hkp)
+      return,str
+    endif
+
+    if str1.fpga_rev ge 'B9'x then begin
+      cmd_fifo_write_ptr=         swfo_data_select(ccsds_data,(d+14*2)*8+6, 13)
+      cmd_fifo_read_ptr=          swfo_data_select(ccsds_data,(d+15*2)*8+3, 13)
+      cmds_remaining=(fix(cmd_fifo_write_ptr)-fix(cmd_fifo_read_ptr))/3.
+      if cmds_remaining lt 0 then cmds_remaining+=fifo_size/3.
+      str2={$
+        dac_values:               swfo_data_select(ccsds_data,(d+(0+[0:11])*2)*8,16),$
+        pps_counter:              swfo_data_select(ccsds_data,(d+12*2  )*8,16),$
+        pps_period_100us:         swfo_data_select(ccsds_data,(d+13*2  )*8,16),$
+        pps_timeout_100ms:        swfo_data_select(ccsds_data,(d+14*2  )*8, 6),$
+        cmd_fifo_write_ptr:       cmd_fifo_write_ptr,$
+        cmd_fifo_read_ptr:        cmd_fifo_read_ptr,$
+        cmds_remaining:           cmds_remaining,$
+        cmds_received:            cmd_fifo_write_ptr/3.,$
+        cmds_executed:            cmd_fifo_read_ptr/3.,$
+        cmds_executed2:           swfo_data_select(ccsds_data,(d+16*2  )*8,16),$
+        cmds_ignored:             swfo_data_select(ccsds_data,(d+17*2  )*8, 8),$
+        cmds_unknown:             swfo_data_select(ccsds_data,(d+17*2+1)*8, 8),$
+        cmds_invalid:             swfo_data_select(ccsds_data,(d+18*2  )*8, 8),$
+        time_cmds_received:       swfo_data_select(ccsds_data,(d+18*2+1)*8, 8),$
+        cmd_pause_remaining_100ms:swfo_data_select(ccsds_data,(d+19*2  )*8,16),$
+        valid_rates:              float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+20*2+[0:5])*8,8))),$
+        async_rates:              float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+23*2+[0:5])*8,8))),$
+        nopeak_rates:             float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+26*2+[0:5])*8,8))),$
+        event_timeout_rates:      float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+29*2+[0:5])*8,8))),$
+        unknown_pattern_rates:    float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+32*2+[0:5])*8,8))),$
+        valid_timeout_rates:      float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+35*2+[0:5])*8,8))),$
+        negative_pulse_rates:     float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+38*2  )*8,8))),$
+        science_events:           float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+38*2+1)*8,8))),$
+        met_spare:                swfo_data_select(ccsds_data,(d+39*2  )*8, 8),$
+        test_pulse_width_1us:     swfo_data_select(ccsds_data,(d+39*2+1)*8, 8),$
+        pulses_remaining:         swfo_data_select(ccsds_data,(d+40*2  )*8,12),$
+        board_id:                 swfo_data_select(ccsds_data,(d+40*2)*8+12,2),$
+        self_tod_enable:          swfo_data_select(ccsds_data,(d+40*2)*8+13,1),$
+        memory_page:              swfo_data_select(ccsds_data,(d+40*2)*8+14,1),$
+        memory_address:           swfo_data_select(ccsds_data,(d+41*2  )*8,16),$
+        expected_checksum1:       swfo_data_select(ccsds_data,(d+42*2  )*8,16),$
+        expected_checksum0:       swfo_data_select(ccsds_data,(d+43*2  )*8,16),$
+        checksum1:                swfo_data_select(ccsds_data,(d+44*2  )*8,16),$
+        checksum0:                swfo_data_select(ccsds_data,(d+45*2  )*8,16),$
+        bias_clock_period:        swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
+        edac_errors:              swfo_data_select(ccsds_data,(d+46*2+1)*8+[0:9]*4,4),$
+        bus_timeout_counters:     swfo_data_select(ccsds_data,(d+49*2  )*8+[0:3]*4,4),$
+        user_0e:                  swfo_data_select(ccsds_data,(d+50*2  )*8,16),$
+        user_2d:                  swfo_data_select(ccsds_data,(d+51*2  )*8, 8),$
+        reserved0:                swfo_data_select(ccsds_data,(d+51*2+1)*8, 4),$
+        state_machine_errors:     swfo_data_select(ccsds_data,(d+51*2+1)*8+[1:13]*4,4),$
+        first_cmd_id:             swfo_data_select(ccsds_data,(d+55*2  )*8, 8),$
+        last_cmd_id:              swfo_data_select(ccsds_data,(d+55*2+1)*8, 8),$
+        first_cmd_data:           swfo_data_select(ccsds_data,(d+56*2  )*8,16),$
+        last_cmd_data:            swfo_data_select(ccsds_data,(d+57*2  )*8,16),$
+        baseline_restore_ext1_us: swfo_data_select(ccsds_data,(d+58*2  )*8, 8),$
+        baseline_restore_ext2_us: swfo_data_select(ccsds_data,(d+58*2+1)*8, 6),$
+        baseline_restore_mode:    swfo_data_select(ccsds_data,(d+58*2)*8+14,2),$
+        digi_filter_clock_cycles: swfo_data_select(ccsds_data,(d+59*2+[0:1])*8,8),$
+        pulser_delay_clock_cycles:swfo_data_select(ccsds_data,(d+60*2  )*8+[0:2]*8,8),$
+        valid_enable_mask_bits:   swfo_data_select(ccsds_data,(d+61*2+1)*8, 6),$
+        sci_nonlut_mode:          swfo_data_select(ccsds_data,(d+61*2)*8+14,2),$
+        timeouts_2us:             swfo_data_select(ccsds_data,(d+62*2  )*8+[0:2]*4,4),$
+        sci_resolution:           swfo_data_select(ccsds_data,(d+62*2)*8+12,4),$
+        sci_translate:            swfo_data_select(ccsds_data,(d+63*2  )*8,16),$
+        gap:ccsds.gap }
+      valid_rates_pps=str2.valid_rates/float(str2.pps_period_100us)*1e4
+      str3={valid_rates_pps:valid_rates_pps,valid_rates_total:total(str2.valid_rates)}
+      str=create_struct(str1,str2,str3,ana_hkp)
+      return,str
+    endif
   endif
 
   if hkp_size eq 176 then begin
@@ -999,7 +1069,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
     return,str
   endif
 
-  if  ccsds.time lt (1.6297680e+09 -1800.) then  begin
+  if 0 && ccsds.time lt (1.6297680e+09 -1800.) then begin
     dprint,dlevel=2,'Obsolete'
     d= 18
     str = {time:ccsds.time,  $
@@ -1036,7 +1106,6 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
       gap:0b }
     str.gap = ccsds.gap
     return,str
-
   endif
   return,!null
 
