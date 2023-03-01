@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2023-02-27 14:04:09 -0800 (Mon, 27 Feb 2023) $
-; $LastChangedRevision: 31563 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-02-27 18:18:12 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31565 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_hkp_apdat__define.pro $
 
 
@@ -20,6 +20,12 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
       ;hexprint,ccsds_data
     endif
   endif
+  
+  if ccsds.time lt time_double('2021-1-1') then begin
+    dprint,'Invalid CCSDS time. Ignoring Packet'
+    return,!null
+  endif
+  
 
   ;printdat,time_string(ccsds.time)
   ;printdat,ccsds
@@ -1018,6 +1024,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
 
   if  ccsds.time  gt 1.6297680e+09 then begin
     dprint,dlevel=2,'Obsolete'
+    if ~keyword_set(use_obsolete) then return,!null
     d= 20
     str = {time:ccsds.time,  $
       time_delta: ccsds.time_delta, $

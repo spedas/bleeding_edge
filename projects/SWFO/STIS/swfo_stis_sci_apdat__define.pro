@@ -1,12 +1,15 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2022-10-05 12:24:02 -0700 (Wed, 05 Oct 2022) $
-; $LastChangedRevision: 31149 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-02-27 18:18:12 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31565 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
 function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,ptp_header=ptp_header,apdat=apdat
   common swfo_stis_sci_com4, lastdat, last_str
   ccsds_data = swfo_ccsds_data(ccsds)
+  
+  hkp = swfo_apdat('stis_hkp2')
+  hkp_sample = hkp.last_data       ; retrieve last hkp packet
 
   if debug(3) then begin
     dprint,dlevel=2,'SST',ccsds.pkt_size, n_elements(ccsds_data), ccsds.apid,'  ', time_string(ccsds.time)
@@ -38,6 +41,7 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   ;  if duration eq 0 then duration = 1u   ; cluge to fix lack of proper output in early version FPGA
 
   str1=swfo_stis_ccsds_header_decom(ccsds)
+  
 
   ; Force all structures to have exactly 672 elements. If the LUT is being used then only the first 256 will be used
   total6=fltarr(6)
@@ -91,8 +95,26 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   str2.rate14=total14/str1.duration
   str2.sigma14=p.s
   str2.avgbin14=p.x0
+  
+  
+  lut_map        = struct_value(hkp_sample,'USER_0A',default=6b)
+  ;use_lut        = struct_value(hkp_sample,'xxxx',default=0b)   ; needs fixing
+  sci_nonlut_mode   = struct_value(hkp_sample,'SCI_NONLUT_MODE',default=0b) 
+  sci_resolution     = struct_value(hkp_sample,'SCI_RESOLUTION',default=3b)
+  sci_translate      = struct_value(hkp_sample,'SCI_TRANSLATE',default=0u)
 
-  str=create_struct(str1,str2)
+  
+  str3={ $
+    ;use_lut: use_lut, $
+    lut_map: lut_map, $
+    sci_nonlut_mode: sci_resolution, $
+    sci_translate: sci_translate, $
+    sci_resolution: sci_resolution $  
+    }
+    
+  ;printdat,str3
+
+  str=create_struct(str1,str2,str3)
 
   if debug(4) then begin
 

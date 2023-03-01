@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-02-16 18:54:30 -0800 (Wed, 16 Feb 2022) $
-; $LastChangedRevision: 30593 $
+; $LastChangedDate: 2023-02-27 18:18:12 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31565 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -273,7 +273,7 @@ function DynamicArray::sample,nearest=nearest,range=range,tagname=tagname
     if isa(tag_num) then begin
       vals= ((*self.ptr_array).(tag_num))[0:self.size-1,*,*,*]
       if isa(nearest) then begin
-        w = interp(lindgen(self.size),vals,nearest,/last_value)
+        w = interp(dindgen(self.size),vals,nearest,/last_value)
         ;printdat,w,vals[w],vals[w]-nearest
         vals = (*self.ptr_array)[w,*,*,*]  
       endif else if isa(range) then begin

@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-02-24 16:27:51 -0800 (Fri, 24 Feb 2023) $
-; $LastChangedRevision: 31520 $
+; $LastChangedDate: 2023-02-27 18:18:12 -0800 (Mon, 27 Feb 2023) $
+; $LastChangedRevision: 31565 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -17,33 +17,50 @@
 ; sample plotting procedure
 
 
-pro swfo_stis_nonlut_decomp_array, nrg=nrg, dnrg=dnrg
-  clog_17_6=[$
-    0,     1,     2,     3,$
-    4,     5,     6,     7,$
-    8,     10,    12,    14,$
-    16,    20,    24,    28,$
-    32,    40,    48,    56,$
-    64,    80,    96,    112,$
-    128,   160,   192,   224,$
-    256,   320,   384,   448,$
-    512,   640,   768,   896,$
-    1024,  1280,  1536,  1792,$
-    2048,  2560,  3072,  3584,$
-    4096,  5120,  6144,  7168,$
-   ; 8192,  10240, 12288, 14336,$
-   ; 16384, 20480, 24576, 28672,$
-   ; 32768, 40960, 49152, 57344,$
-   ; 65536, 81920, 98304, 114688, $
-   2L^13    ]
-    
-    adc0 =  float(clog_17_6)           ; low adc threshold
-    d_adc0 = shift(adc0 ,-1) - adc0 
+pro swfo_stis_nonlut_decomp_array, nrg=nrg, dnrg=dnrg, hkp_sample=hkp_sample, cfg_unstable=cfg_unstable, lim=lim
 
-    nrg_per_adc = 1.  ;1.5   ; keV per adc unit
-    
-    nrg = nrg_per_adc * (adc0 + d_adc0/2.)   ; midpoint energy
-    dnrg = nrg_per_adc * d_adc0              ; energy width
+  linear    = struct_value(hkp_sample,'SCI_NONLUT_MODE',default=0) ne 0
+  resolution= fix(struct_value(hkp_sample,'SCI_RESOLUTION',default=3))
+  translate = long(struct_value(hkp_sample,'SCI_TRANSLATE',default=0))
+
+  if linear then begin
+    adc0 =[ 0,  ( (lindgen(47)+1) * 2L ^ resolution ) + translate  , 2L^15 ]
+    d_adc0 = shift(adc0 ,-1) - adc0
+    msg = 'NonLUT: Scale: 2^'+strtrim(resolution,2)+'  Shift:'+strtrim(translate,2)
+  endif else begin
+    clog_17_6=[$
+      0,     1,     2,     3,$
+      4,     5,     6,     7,$
+      8,     10,    12,    14,$
+      16,    20,    24,    28,$
+      32,    40,    48,    56,$
+      64,    80,    96,    112,$
+      128,   160,   192,   224,$
+      256,   320,   384,   448,$
+      512,   640,   768,   896,$
+      1024,  1280,  1536,  1792,$
+      2048,  2560,  3072,  3584,$
+      4096,  5120,  6144,  7168,$
+      2L^13    ]
+
+    adc0 =  float(clog_17_6)           ; low adc threshold
+    d_adc0 = shift(adc0 ,-1) - adc0
+    adc0 = adc0[0:47] * 8
+    d_adc0 = d_adc0[0:47] * 8
+    msg = string('NonLUT:  Logrithmic')
+  endelse
+
+
+  nrg_per_adc = 2.  ;1.5   ; keV per adc3 unit
+  nrg_per_adc /= 8
+
+  nrg = nrg_per_adc * (adc0 + d_adc0/2.)   ; midpoint energy
+  dnrg = nrg_per_adc * d_adc0              ; energy width
+
+  xlim,lim,minmax(nrg[1:46])* [.95,1.05],log= ~linear
+  if keyword_set(cfg_unstable) then msg = msg  + '  Configuration is not Stable!'
+  options,lim,title=msg
+
 end
 
 
@@ -54,7 +71,7 @@ end
 ;wd_4 = [2]*6 + [4]*6 + [8,16,32,64,128]
 ;wt_4 = [1]*6 + [2]*6 + [4,8,16,32,64]
 ;
-;map4={'id':4, 'channels':[                       
+;map4={'id':4, 'channels':[
 ;{'name':'O',  'tid':0,'fto':1,'widths':ws_4} ,
 ;{'name':'T',  'tid':0,'fto':2,'widths':ws_4} ,
 ;{'name':'F',  'tid':0,'fto':4,'widths':ws_4} ,
@@ -90,131 +107,151 @@ end
 
 
 
-pro  swfo_stis_plot_example,trange=trange,nsamples=nsamples,lim=lim    ; This is very simple sample routine to demonstrate how to plot recently collecte spectra
+pro  swfo_stis_plot_example,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim    ; This is very simple sample routine to demonstrate how to plot recently collecte spectra
+
+  range = struct_value(param,'range',default=[-.5,.5]*30)
+  lim   = struct_value(param,'lim',default=lim)
+  if isa(t) then begin
+    trange = t + range
+  endif
   sci = swfo_apdat('stis_sci')
   da = sci.data    ; the dynamic array that contains all the data collected  (it gets bigger with time)
   size= da.size    ;  Current size of the data  (it gets bigger with time)
 
+  hkp = swfo_apdat('stis_hkp2')
+  hkp_data   = hkp.data
+
+
   if keyword_set(trange) then begin
     samples=da.sample(range=trange,tagname='time')
     nsamples = n_elements(samples)
+    ;tmid = average(trange)
+    ;hkp_samples = hkp_data.sample(range=tmid,nearest=tmid,tagname='time')
   endif else begin
-    if ~keyword_set(nsamples) then nsamples = 10
+    if ~keyword_set(nsamples) then nsamples = 20
     index = [size-nsamples:size-1]    ; get indices of last N samples
     samples=da.slice(index)           ; extract the last N samples
+    ;hkp_samples= hkp.data.slice(/last)
   endelse
-  
-  
-  w1= where((samples.ptcu_bits and 1) eq 1,nw,/null)
-  if keyword_set(w1) then begin
 
-    counts = total(samples[w1].counts,2)    ;  get the total over slice
-    integ_time = total(samples[w1].duration)
-    
-    
-    datsize = 256
-    counts = counts[0:datsize-1]
-    ;printdat,counts
 
-    xval = findgen( n_elements( counts)) * 1.
-    wi,2                              ; Open window
-    plot,xval,counts,psym=10,xtitle='Bin Number',ytitle='Counts', /xstyle, $
-      title='Science Data (Integrated over '+strtrim(nsamples,2)+' samples)',/ylog,yrange=minmax(/pos,[counts,[.8,10]]);[.5,max(counts)]
 
-    mapids = samples[w1].user_09
-    mapid = round(median(mapids))
-        
-    if 1 then begin
-      case mapid of
-        4: n=18
-        5: n=18
-        6: n=40        
-        else: dprint,'Unknown map'
-      endcase
+  if isa(samples) then begin
+
+    w1= where((samples.ptcu_bits and 1) eq 1,nw,/null)        ; plot LUT data
+    if keyword_set(w1) then begin
+
+      counts = total(samples[w1].counts,2)    ;  get the total over slice
+      integ_time = total(samples[w1].duration)
+
+
+      datsize = 256
+      counts = counts[0:datsize-1]
+      ;printdat,counts
+
+      xval = findgen( n_elements( counts)) * 1.
+      wi,2                              ; Open window
+      plot,xval,counts,psym=10,xtitle='Bin Number',ytitle='Counts', /xstyle, $
+        title='Science Data (Integrated over '+strtrim(nsamples,2)+' samples)',/ylog,yrange=minmax(/pos,[counts,[.8,10]]);[.5,max(counts)]
+
+      mapids = samples[w1].user_09
+      mapid = round(median(mapids))
+
       if 1 then begin
-        wi,4
-        ;printdat,mapid,counts
-        nchan = datsize / n
-        nsize = n * nchan
-        rate = reform(counts[0:nsize-1],n,nchan) / integ_time
-        ;printdat ,cnts
-        x = findgen(n)
-        y = rate > .00001
-        ylim,lim,.0005,1000,1
-        options,lim,psym=-4
-        mplot,x,y,lim=lim
-        ;printdat,x,y
-      end
+        case mapid of
+          4: n=18
+          5: n=18
+          6: n=40
+          else: dprint,'Unknown map'
+        endcase
+        if 1 then begin
+          wi,4
+          ;printdat,mapid,counts
+          nchan = datsize / n
+          nsize = n * nchan
+          rate = reform(counts[0:nsize-1],n,nchan) / integ_time
+          ;printdat ,cnts
+          x = findgen(n)
+          y = rate > .00001
+          ylim,lim,.0005,1000,1
+          options,lim,psym=-4
+          mplot,x,y,lim=lim
+          ;printdat,x,y
+        end
 
-      
-      
-      
-      
-    endif
-    
-    
-  endif
-  
-  
-  w1= where((samples.ptcu_bits and 1) eq 0,/null)         ; non lookup table
+      endif
 
-  if keyword_set(w1) then begin
-    counts = total(samples[w1].counts,2)    ;  get the total over slice
-    integ_time = total(samples[w1].duration)
-    
-    xval = findgen( n_elements( counts)) * 1.
-    wi,2                              ; Open window
-    plot,xval,counts,psym=10,xtitle='Bin Number',ytitle='Counts', /xstyle, $
-      title='Science Data (Integrated over '+strtrim(nsamples,2)+' samples)',/ylog,yrange=minmax(/pos,[counts,[.8,10]]);[.5,max(counts)]
-
-    datsize = 672
-    if  1 && datsize eq 672 then begin  ; Non LUT only
-      wi,3
-      bins = indgen(672)
-      bin14    = bins / 48
-      bin_nrg  = bins mod 48
-      bin_ptrn = bin14 / 2          ; C123 pattern minus 1
-      bin_tid  = bin14 mod 2
-
-      g3=1.
-      g2=g3
-      g1=g3/100.
-      g0= g3
-      g4=g1
-      g5=g2
-      g6=g3
-
-      alt = 150
-      col= [180,2,4,6,1,3,0,5,5,5,alt,alt,5,5]
-      gfs= [g0,g1,g2,g3,g4,g5,g6]
-      ;           1       2      12     3      13    23     123
-      channel= [[1,4],  [2,5],  [0,0],  [3,6],   [0,0],   [0,0],   [0,0] ]
-      ;colors = [[2,6],  [4,0],  [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
-      colors = col[channel]
-      ;print,'colors'
-      ;print,colors
-      symb   = [[2,6],  [4,0],   [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
-      lstyle = [[2,6],  [4,0],   [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
-      gf     = [[g1,g4],[g2,g5], [g1,g4],[g3,g6], [g1,g4], [g3,g6], [g2,g4] ]
-
-      xlim,lim,.1,10000,1
-      ylim,lim,1e-10,10000,1
-      box,lim
-
-      ;counts = counts > .01
-
-      swfo_stis_nonlut_decomp_array, nrg=nrg, dnrg=dnrg
-      x = nrg[bin_nrg]
-      y = counts/integ_time  /dnrg[bin_nrg]  / gf[bin14]
-
-      plots,x,y,color = colors[bin14],psym=-1,noclip=0,thick=2
-      ;dprint,nrg
 
     endif
 
-  endif
 
-;  store_data,'mem',systime(1),memory(/cur)/(2.^6),/append
+    w2= where((samples.ptcu_bits and 1) eq 0,/null)         ; non lookup table
+    if keyword_set(w2) then begin       ; non lookup table
+      counts = total(samples[w2].counts,2)    ;  get the total over slice
+      integ_time = total(samples[w2].duration)
+      
+      times = samples[w2].time
+      hkp_samples = hkp_data.sample(nearest=times,tagname='time')
+      cfg_unstable = hkp_samples[0].CMDS_EXECUTED NE HKP_SAMPLES[-1].CMDS_EXECUTED
+      if cfg_unstable THEN begin   ; Status is changing
+        msg = 'Configuration is changing!'
+        dprint,dlevel=3,msg
+      endif
+      hkp_sample = hkp_samples[0]
+
+
+      xval = findgen( n_elements( counts)) * 1.
+      wi,2                              ; Open window
+      plot,xval,counts,psym=10,xtitle='Bin Number',ytitle='Counts', /xstyle, $
+        title='Science Data (Integrated over '+strtrim(nsamples,2)+' samples)',/ylog,yrange=minmax(/pos,[counts,[.8,10]]);[.5,max(counts)]
+
+      datsize = 672
+      if  1 && datsize eq 672 then begin  ; Non LUT only
+        wi,3
+        bins = indgen(672)
+        bin14    = bins / 48
+        bin_nrg  = bins mod 48
+        bin_ptrn = bin14 / 2          ; C123 pattern minus 1
+        bin_tid  = bin14 mod 2
+
+        g3=1.
+        g2=g3
+        g1=g3/100.
+        g0= g3
+        g4=g1
+        g5=g2
+        g6=g3
+
+        alt = 150
+        col= [180,2,4,6,1,3,0,5,5,5,alt,alt,5,5]
+        gfs= [g0,g1,g2,g3,g4,g5,g6]
+        ;           1       2      12     3      13    23     123
+        channel= [[1,4],  [2,5],  [0,0],  [3,6],   [0,0],   [0,0],   [0,0] ]
+        ;colors = [[2,6],  [4,0],  [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
+        colors = col[channel]
+        ;print,'colors'
+        ;print,colors
+        symb   = [[2,6],  [4,0],   [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
+        lstyle = [[2,6],  [4,0],   [1,3],  [2,6],   [4,0],   [4,0],   [4,0] ]
+        gf     = [[g1,g4],[g2,g5], [g1,g4],[g3,g6], [g1,g4], [g3,g6], [g2,g4] ]
+
+        ;counts = counts > .01
+
+        xlim,lim,.5,10000,1
+        ylim,lim,1e-5,100000,1
+        options,lim,xtitle='ADC'
+
+        swfo_stis_nonlut_decomp_array, nrg=nrg, dnrg=dnrg, hkp_sample=hkp_sample, lim=lim,cfg_unstable=cfg_unstable
+        xlim,lim,.5,10000,1
+        box,lim
+        x = nrg[bin_nrg]
+        y = counts/integ_time  /dnrg[bin_nrg] ; / gf[bin14]
+
+        plots,x,y,color = colors[bin14],psym=-1,noclip=0,thick=2
+      endif
+    endif
+  endif
+  ;  store_data,'mem',systime(1),memory(/cur)/(2.^6),/append
 end
 
 ;file_type ='ptp_file'
@@ -238,12 +275,12 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
       opts.reldir += 'S0/CMBLK/'
       opts.host = 'swifgse1'
       opts.port = 2432
-      end
+    end
     'S1' : begin
       ;opts.reldir += 'S1/'
       opts.host = 'swifgse1'
       opts.port = 2128
-      end
+    end
   endcase
   opts.file_type = 'cmblk_file'
   opts.file_type = 'gse_file'
@@ -276,7 +313,8 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = ['2023 1 5','2023 1 5 2']  ;Am241 x-ray source - flight like detectors
   opts.file_trange = ['2023 1 3 16','2023 1 3 21']  ;Am241 x-ray source - flight like detectors with transition
   opts.file_trange = ['2023 1 3 ','2023 1 5 ']  ;Am241 x-ray source - flight like detectors with transition - 2 days
-  ;opts.file_trange = ['2023 
+  opts.file_trange = ['2023-02-24/21','2023-02-25/04'] ; Using alpha source on the flight detectors with flight DAP  (S0)
+  ;opts.file_trange = ['2023
   ;opts.file_trange = !null
   opts.file_trange = 3
   ;opts.filenames=['socket_128.32.98.57.2028_20211216_004610.dat', 'socket_128.32.98.57.20484_20211216_005158.dat']
@@ -337,7 +375,7 @@ endif
 !except =0
 if 1 || opts.refresh then begin
   dprint,dlevel=2,'Create a "Time Plot" (tplot) showing key parameters of the STIS instrument'
-  swfo_stis_tplot,/setlim  
+  swfo_stis_tplot,/setlim
 endif else tplot
 
 if 0 then tplot,'*hkp1_ADC_TEMP_S1 *hkp1_ADC_BIAS_* *hkp1_ADC_?5? swfo_stis_hkp1_RATES_CNTR swfo_stis_sci_COUNTS swfo_stis_nse_NHIST swfo_stis_hkp1_CMDS'
@@ -367,24 +405,24 @@ if 0 then begin
   swfo_stis_apdat_init,/save_flag    ; initialize apids
   swfo_apdat_info,/rt_flag ,/save_flag
   swfo_apdat_info,/print,/all
-  
-  
+
+
   f2='cmblk_swifgse1.2432_20230130_085608.dat'
   cmb1 = cmblk_reader(host='swifgse1',port=2432)
-  
+
   cmb1.add_handler, 'raw_tlm',  swfo_raw_tlm('swfo_raw_telem',/no_widget)
   cmb1.add_handler, 'KEYSIGHTPS' ,  cmblk_keysight('Keysight',/no_widget)
-  
+
   handlers = cmb1.getattr('handlers')
   raw = handlers['raw_tlm']
-   
+
   ;handlers['raw_tlm'] = swfo_raw_tlm(/no_widget)
   ;handlers['KEYSIGHTPS'] = cmblk_keysight(/no_widget)
 
- ; cmb1.add_handlers = handlers
- 
- ; cmb1.file_read, f2
-  
+  ; cmb1.add_handlers = handlers
+
+  ; cmb1.file_read, f2
+
 
 
 
@@ -392,15 +430,15 @@ if 0 then begin
   opts = !null
   swfo_init_realtime,opts=opts
   cmb1 = opts.cmblk
-  
-;  cmb1 = commonblock_reader(host='swifgse1.ssl.berkeley.edu',port=2432)
+
+  ;  cmb1 = commonblock_reader(host='swifgse1.ssl.berkeley.edu',port=2432)
   ;click on "connect to"
   handlers = cmb1.getattr('handlers')
 
   tlm = handlers['raw_tlm']
   ;tlm.procedure_name = 'swfo_raw_tlm_read'
   tlm.run_proc=1
-  
+
   ps = handlers['KEYSIGHTPS']
   help,ps
 
@@ -408,21 +446,21 @@ if 0 then begin
   ;ps2 = cmblk_keysight()
   ;handlers['KEYSIGHTPS'] = ps2
   ;printdat,ps2
-  
-  
+
+
   swfo_stis_tplot,/set,'dl1'
-  
-  
-  
-  
+
+
+
+
   swfo_stis_apdat_init,/save_flag    ; initialize apids
 
   swfo_init_realtime,/stis ,/realtime   ; ,opts = opts
-  
+
   handlers['KEYSIGHTPS'] = cmblk_keysight()
-  
-  
-  
+
+
+
 endif
 
 
