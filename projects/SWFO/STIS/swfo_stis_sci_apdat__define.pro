@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-02-27 18:18:12 -0800 (Mon, 27 Feb 2023) $
-; $LastChangedRevision: 31565 $
+; $LastChangedDate: 2023-03-01 14:52:10 -0800 (Wed, 01 Mar 2023) $
+; $LastChangedRevision: 31566 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -107,7 +107,7 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   str3={ $
     ;use_lut: use_lut, $
     lut_map: lut_map, $
-    sci_nonlut_mode: sci_resolution, $
+    sci_nonlut_mode: sci_nonlut_mode, $
     sci_translate: sci_translate, $
     sci_resolution: sci_resolution $  
     }
@@ -131,9 +131,10 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci_level_0b  ,source_dict=source_
 
   ;printdat,struct_stis_sci_level_0b
   ;return;
-  if 0 && ~obj_valid(self.level_1a) then begin
+  if  ~obj_valid(self.level_1a) then begin
     dprint,'Creating Science level 1'
     self.level_1a = dynamicarray(name='Science_L1a')
+    first_level_1a = 1
   endif
 
   sciobj = swfo_apdat('stis_sci')
@@ -146,7 +147,7 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci_level_0b  ,source_dict=source_
 
   res = self.file_resolution
 
-  if res gt 0 and sci_last.time gt (self.lastfile_time + res) then begin
+  if res gt 0 && isa(sci_last) && sci_last.time gt (self.lastfile_time + res) then begin
     makefile =1
     trange = self.lastfile_time + [0,res]
     self.lastfile_time = floor( sci_last.time /res) * res
@@ -171,9 +172,13 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci_level_0b  ,source_dict=source_
   endif
 
 
-  if isa(self.level_1a,'dynamicarray') then begin
-    struct_stis_sci_level_1a = swfo_stis_sci_level_1(sci_last)
+  if isa(self.level_1a,'dynamicarray') then begin   
+    struct_stis_sci_level_1a = swfo_stis_sci_level_1a(sci_last)
     self.level_1a.append, struct_stis_sci_level_1a
+    if keyword_set(first_level_1a) then begin
+      store_data,'stis',data = da,tagnames = 'SPEC_??',val_tag='_NRG'
+      options,'stis_SPEC_??',spec=1
+    endif
     if makefile then   self.ncdf_make_file,ddata=self.level_1a, trange=trange,type='L1A_'
   endif
 
@@ -185,6 +190,26 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci_level_0b  ,source_dict=source_
   endif
 
 end
+
+
+
+pro swfo_stis_sci_apdat::create_tplot_vars,ttags=ttags
+  dprint,dlevel=2,verbose=self.verbose,'Creating tplot variables for: ',self.name
+  if ~keyword_set(ttags) then ttags = self.ttags
+  dyndata = self.data
+  if isa(dyndata,'dynamicarray') && keyword_set(self.tname) then begin
+    store_data,self.tname,data=dyndata, tagnames=ttags, gap_tag='GAP',verbose = self.verbose
+  endif
+  
+  if isa(self.level_1a,'dynamicarray') then begin
+    store_data,'stis_l1a',data=self.level_1a,tagnames='SPEC_??',val_tag='_NRG'
+    options,'stis_l1a_SPEC_??',spec=1,yrange=[5.,8000],/ylog,/zlog,/default
+  endif
+  
+  
+end
+
+
 
 
 PRO swfo_stis_sci_apdat__define

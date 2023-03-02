@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-02-27 18:18:12 -0800 (Mon, 27 Feb 2023) $
-; $LastChangedRevision: 31565 $
+; $LastChangedDate: 2023-03-01 14:52:10 -0800 (Wed, 01 Mar 2023) $
+; $LastChangedRevision: 31566 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -104,7 +104,20 @@ end
 
 
 
+pro swfo_make_l1a
+  sci = swfo_apdat('stis_sci')
+  ;da = sci.data    ; the dynamic array that contains all the data collected  (it gets bigger with time)
+  ;size= da.size    ;  Current size of the data  (it gets bigger with time)
+  printdat,sci.data.size
+  
+  samples = sci.data.sample()
+  
+  l1adat = swfo_stis_sci_level_1a(samples)
 
+  da = dynamicarray(l1adat,name='swfo_stis_spec')
+  store_data,'stis',data = da,tagnames = 'SPEC_??',val_tag='_NRG'
+
+end
 
 
 pro  swfo_stis_plot_example,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim    ; This is very simple sample routine to demonstrate how to plot recently collecte spectra
