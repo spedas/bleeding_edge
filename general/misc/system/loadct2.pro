@@ -23,7 +23,7 @@
 ;          If FILE is not provided then LOADCT2
 ;          Uses the environment variable IDL_CT_FILE to determine
 ;          the color table file if FILE is not set.
-;   LINE_CLRS: Integer array of 24 (3x8) RGB colors: [[R,G,B], [R,G,B], ...]
+;   LINE_CLRS: Integer array of 24 (3x8) RGB values: [[R,G,B], [R,G,B], ...]
 ;          If this input does not have exactly 24 elements, then a predefined set of 8 colors
 ;          will be used based on the value of the first element.  Pre-defined color schemes
 ;          are currently (see code below for any new undocumented schemes):
@@ -71,8 +71,8 @@
 ;   "get_colors","colors_com","bytescale","get_line_colors","line_colors","showct","initct"
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-02-26 12:46:10 -0800 (Sun, 26 Feb 2023) $
-; $LastChangedRevision: 31529 $
+; $LastChangedDate: 2023-03-02 11:06:58 -0800 (Thu, 02 Mar 2023) $
+; $LastChangedRevision: 31571 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/loadct2.pro $
 ;
 ;Created by Davin Larson;  August 1996

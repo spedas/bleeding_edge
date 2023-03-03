@@ -15,8 +15,8 @@
 ; HISTORY:
 ; VERSION:
 ;  $LastChangedBy: ali $
-;  $LastChangedDate: 2023-01-15 12:00:25 -0800 (Sun, 15 Jan 2023) $
-;  $LastChangedRevision: 31409 $
+;  $LastChangedDate: 2023-03-02 17:12:04 -0800 (Thu, 02 Mar 2023) $
+;  $LastChangedRevision: 31577 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/euv/mvn_euv_l0_load.pro $
 ;CREATED BY:  ali 20160830
 ;FILE: mvn_euv_l0_load.pro
@@ -85,23 +85,33 @@ pro mvn_euv_l0_load,trange=trange,tplot=tplot,verbose=verbose,save=save,l0=l0,ge
       mvn_lpw_load_file,files[i],tplot_var='SCI',filetype=filetype,packet='EUV',board=board,use_compression=use_compression,/nospice ;l0 loader
     endif else tplot_restore,filename=files[i],verbose=0
     get_data,'mvn_lpw_euv',data=mvn_lpw_euv_1day,limits=limits,dlimits=dlimits ;get tplot variables
+    get_data,'mvn_lpw_euv_temp_C',data=mvn_lpw_euv_temp_C_1day,limits=limits2,dlimits=dlimits2
     if keyword_set(mvn_lpw_euv_1day) then begin
       if l0sav then tplot_save,['mvn_lpw_euv','mvn_lpw_euv_temp_C'],filename=tp_files,/no_add_ext ;only works for 1 day
       append_array,mvn_lpw_euv_x,mvn_lpw_euv_1day.x ;append days
       append_array,mvn_lpw_euv_y,mvn_lpw_euv_1day.y
+      if keyword_set(mvn_lpw_euv_temp_C_1day) then begin
+        append_array,mvn_lpw_euv_temp_C_x,mvn_lpw_euv_temp_C_1day.x ;append days
+        append_array,mvn_lpw_euv_temp_C_y,mvn_lpw_euv_temp_C_1day.y
+      endif
       lim2=limits
+      limT=limits2
       dlim2=dlimits
+      dlimT=dlimits2
     endif else dprint,'No EUV data in file: '+file_info_string(files[i])
   endfor
-  store_data,'mvn_lpw_euv',/delete,verbose=0
+  store_data,'mvn_lpw_euv*',/delete,verbose=0
 
   if keyword_set(mvn_lpw_euv_y) then begin
     mvn_lpw_euv_y+=4.6e5 ;adding the offset (4.5e5) plus 1e4 (for better scaling) back to the signals
     lim2.xtitle=''
+    if keyword_set(mvn_lpw_euv_temp_C_1day) then limT.xtitle=''
     dlim2.ysubtitle+='+4.6e5'
     store_data,'mvn_euv_l0',mvn_lpw_euv_x,mvn_lpw_euv_y,limits=lim2,dlimits=dlim2
+    if keyword_set(mvn_lpw_euv_temp_C_1day) then store_data,'mvn_euv_temp_C_l0',mvn_lpw_euv_temp_C_x,mvn_lpw_euv_temp_C_y,limits=limT,dlimits=dlimT
     ylim,'mvn_euv_l0',1e4,1.4e6,1
     options,'mvn_euv_l0',labflag=-1,colors='gbrk'
+    options,'mvn_euv_temp_C_l0','yrange'
     if keyword_set(tplot) then tplot,'mvn_euv_l0'
   endif
 

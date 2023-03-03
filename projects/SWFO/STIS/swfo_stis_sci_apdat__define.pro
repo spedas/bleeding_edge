@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-03-01 14:52:10 -0800 (Wed, 01 Mar 2023) $
-; $LastChangedRevision: 31566 $
+; $LastChangedDate: 2023-03-02 10:46:25 -0800 (Thu, 02 Mar 2023) $
+; $LastChangedRevision: 31568 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -97,7 +97,7 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   str2.avgbin14=p.x0
   
   
-  lut_map        = struct_value(hkp_sample,'USER_0A',default=6b)
+  lut_map        = struct_value(hkp_sample,'USER_09',default=6b)
   ;use_lut        = struct_value(hkp_sample,'xxxx',default=0b)   ; needs fixing
   sci_nonlut_mode   = struct_value(hkp_sample,'SCI_NONLUT_MODE',default=0b) 
   sci_resolution     = struct_value(hkp_sample,'SCI_RESOLUTION',default=3b)

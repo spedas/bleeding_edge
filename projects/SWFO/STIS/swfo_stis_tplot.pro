@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-02-27 18:18:12 -0800 (Mon, 27 Feb 2023) $
-; $LastChangedRevision: 31565 $
+; $LastChangedDate: 2023-03-02 08:33:55 -0800 (Thu, 02 Mar 2023) $
+; $LastChangedRevision: 31567 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -35,6 +35,8 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     options,/def,'*sci_TOTAL2 *sci_RATE2',colors='m',labels='SCI2'
     options,/def,'*sci_TOTAL14 *sci_RATE14',spec=1,zlog=1,no_interp=1
     options,/def,'*sci_SIGMA14',ylog=1
+    ylim,/def,'*_RATE6',.1,5e6,1
+    options,/def,'*_RATE6',symsize=.2
     options,/def,'*sci_*14',psym=-1,labels=['CH1','CH4','CH2','CH5','CH12','CH45','CH3','CH6','CH13','CH46','CH23','CH56','CH123','CH456'],labflag=1
     options,/def,'*nse_TOTAL *nse_RATE*',colors='r',psym=-2,symsize=.5,labels='NOISE'
     options,/def,'*TOTAL6* *RATE6*',colors='bgrmcd',psym=-6,symsize=.5,labels=channels,labflag=-1
@@ -87,7 +89,8 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     'CMD'   : tplot,add=add,'*hkp1_CMDS_*'
     'WAIT'  : tplot,add=add,'*hkp1*REMAIN*'
     'DL1':  tplot,add=add,'*sci*COUNTS *nse_HISTOGRAM *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_REMAINING swfo_stis_hkp1_CMDS_EXECUTED'
-    'DL2':  tplot,add=add,'*sci*COUNTS *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_EXECUTED'
+    'DL2':  tplot,add=add,'*sci_RATE6 *sci*COUNTS *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_EXECUTED'
+    'DL3':  tplot,add=add,'*sci_RATE6 stis_l1a_SPEC_?? *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_EXECUTED'
     'LPT':  tplot,add=add,'*sci_RATE6 *sci_AVGBIN14 *hkp2_DAC_VALUES *sci*COUNTS *hkp3*REMAIN* *hkp1*REMAIN*'
     'SCIHKP': tplot,add=add,'*hkp2*SCI_*'
     

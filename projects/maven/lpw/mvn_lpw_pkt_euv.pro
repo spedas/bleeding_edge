@@ -71,7 +71,7 @@ pro mvn_lpw_pkt_euv, output,lpw_const,tplot_var=tplot_var, spice=spice
     time_sc = double(output.SC_CLK1[output.euv_i]+output.SC_CLK2[output.euv_i]/2l^16)+t_epoch  ;packet time in s/c time
     dt=dt*2.^(output.smp_avg[output.euv_i]+6) / 2.^10                                          ; time step corrected for smp_avg
     time_dt = dblarr(nn_pktnum*nn_steps)                                                                                  ;will hold times for subcycles within each packet
-    for i=0L,nn_pktnum-1 do time_dt[nn_steps*i:nn_steps*(i+1)-1]  =time_sc[i]+dt*indgen(nn_steps)
+    for i=0L,nn_pktnum-1 do time_dt[nn_steps*i:nn_steps*(i+1)-1]  =time_sc[i]+dt[indgen(nn_steps)]*indgen(nn_steps)
 
     IF keyword_set(spice)  THEN BEGIN                                                                                                ;if this computer has SPICE installed:
       aa=floor(time_sc-t_epoch)

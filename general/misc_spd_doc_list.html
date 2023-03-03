@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Mar  1 18:16:32 2023.<P>
+<STRONG>Last modified: </STRONG>Thu Mar  2 18:16:41 2023.<P>
  
 <HR>
  
@@ -152,7 +152,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#READ_ASCII_CMDLINE">READ_ASCII_CMDLINE</A>
 <br>Read data from an ASCII file into IDL.
 <LI><A HREF="#REVVID">REVVID</A>
-<br>Reverses video for graphics windows by swapping !p.color and
+<br>Swaps !p.color and !p.background to switch between a light and
 <LI><A HREF="#ROOT_DATA_DIR">ROOT_DATA_DIR</A>
 <LI><A HREF="#SCPOT_OVERLAY">SCPOT_OVERLAY</A>
 <br>Overlays a spacecraft potential (or similar line function) over a
@@ -3589,8 +3589,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <PRE>
 PROCEDURE:   revvid
 PURPOSE:
-  Reverses video for graphics windows by swapping !p.color and
-  !p.background.
+  Swaps !p.color and !p.background to switch between a light and
+  dark background.
 
 USAGE:
   revvid
@@ -3599,18 +3599,18 @@ INPUTS:
    none:    A simple toggle.
 
 KEYWORDS:
-   WHITE:   Make !p.background the lightest color (often white) and 
-            !p.color the darkest color (often black).
+   WHITE:   Make !p.background the lighter color (often white) and 
+            !p.color the darker color (often black).
 
-   BLACK:   Make !p.background the darkest color (often black) and 
-            !p.color the lightest color (often white).
+   BLACK:   Make !p.background the darker color (often black) and 
+            !p.color the lighter color (often white).
 
 SEE ALSO:
    line_colors.pro to set custom line, background and foreground colors.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-02-27 09:26:55 -0800 (Mon, 27 Feb 2023) $
- $LastChangedRevision: 31556 $
+ $LastChangedDate: 2023-03-02 10:48:15 -0800 (Thu, 02 Mar 2023) $
+ $LastChangedRevision: 31569 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/revvid.pro $
 
 CREATED BY:    David L. Mitchell
