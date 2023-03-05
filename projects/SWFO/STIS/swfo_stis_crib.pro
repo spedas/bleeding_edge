@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-03-01 14:52:10 -0800 (Wed, 01 Mar 2023) $
-; $LastChangedRevision: 31566 $
+; $LastChangedDate: 2023-03-03 19:41:05 -0800 (Fri, 03 Mar 2023) $
+; $LastChangedRevision: 31578 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -327,6 +327,8 @@ if ~isa(opts,'dictionary') || opts.refresh eq 1 then begin   ; set default optio
   opts.file_trange = ['2023 1 3 16','2023 1 3 21']  ;Am241 x-ray source - flight like detectors with transition
   opts.file_trange = ['2023 1 3 ','2023 1 5 ']  ;Am241 x-ray source - flight like detectors with transition - 2 days
   opts.file_trange = ['2023-02-24/21','2023-02-25/04'] ; Using alpha source on the flight detectors with flight DAP  (S0)
+  opts.file_trange =  ['2023-03-01/02:52:10', '2023-03-01/05:27:50']  ; hammering by alphas and x-rays - best data for dead time corrections
+  opts.file_trange =  ['2023-03-02/00', '2023-03-02/07']  ; Am241 source verses distance
   ;opts.file_trange = ['2023
   ;opts.file_trange = !null
   opts.file_trange = 3

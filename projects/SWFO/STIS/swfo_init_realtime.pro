@@ -95,6 +95,7 @@ pro swfo_init_realtime,host=host, port=port , trange=trange, opts=opts, offline=
             raw.file_read,opts.filenames
           endif
           swfo_apdat_info,/all,/print
+          swfo_apdat_info,/all,/create_tplot_vars
         endif else begin
           if opts.haskey('filenames') then begin
             swfo_ptp_file_read,opts.filenames,file_type=opts.file_type  ;,/no_clear

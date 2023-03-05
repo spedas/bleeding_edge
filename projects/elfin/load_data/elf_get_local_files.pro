@@ -107,6 +107,8 @@ function elf_get_local_files, probe = probe, instrument = instrument, data_rate 
 
   if instrument EQ 'epd' && level EQ 'l1' then file_inputs = [probe, level, instrument+strmid(datatype, 1, 2)] $
      else file_inputs = [probe, level, instrument]
+  if instrument EQ 'epd' && level EQ 'l2' then file_inputs = [probe, level, instrument+strmid(datatype, 1, 2)] $
+     else file_inputs = [probe, level, instrument]
   if instrument EQ 'fgm' && level EQ 'l1' then file_inputs = [probe, level, datatype]
 
   if instrument eq 'state' then begin
