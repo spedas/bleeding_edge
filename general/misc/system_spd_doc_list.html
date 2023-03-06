@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Mar  4 18:16:41 2023.<P>
+<STRONG>Last modified: </STRONG>Sun Mar  5 18:16:39 2023.<P>
  
 <HR>
  
@@ -50,13 +50,16 @@ ROUTINES:
             called as before, so there's no need to modify any code unless you want to.
    showct : Display the current color table or any color table with any line color scheme.
    revvid : Swaps the values of !p.background and !p.color.
-   line_colors : Choose one of ten predefined line color schemes, or define a custom scheme.
+   line_colors : Choose one of 11 predefined line color schemes, or define a custom scheme.
    get_line_colors : Returns a 3x8 array of the current line colors [[R,G,B],[R,G,B], ...].
                      Can also return the 3x8 array for any line color scheme.
 
    See the headers of these routines for more details.
 
-   Tplot assumes that there are 256 RGB colors, organized as follows:
+OVERVIEW:
+
+   Tplot and many associated routines assume that there are 256 RGB colors, organized as
+   follows:
 
        Color           Purpose                             Modify With
       --------------------------------------------------------------------------
@@ -98,15 +101,18 @@ ROUTINES:
         9  : same as 8 but permuted so vector defaults are blue, orange, reddish purple
        10  : Chaffin's CSV line colors, suitable for colorblind vision
 
-   More schemes can be added by including them in the case statement of get_line_colors().  It's
-   helpful if you can add a note about your scheme.
+   More schemes can be added by including them in the case statement of get_line_colors().  Always
+   add new schemes at the end of the list (immediately above the &quot;else&quot; statement), so you don't 
+   break anyone else's code.  It's helpful if you can add a note about your scheme.
+
+   Use showct to preview any color table with any line color scheme.
 
    Tplot has been modified to use initct and line_colors, so you can set custom color tables
    and line color schemes for individual tplot variables using options.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-03-02 11:09:31 -0800 (Thu, 02 Mar 2023) $
- $LastChangedRevision: 31574 $
+ $LastChangedDate: 2023-03-05 09:48:51 -0800 (Sun, 05 Mar 2023) $
+ $LastChangedRevision: 31583 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/color_table_crib.pro $
 
  Created by David Mitchell;  February 2023
@@ -145,8 +151,8 @@ FUNCTION get_line_colors
    Get the current line colors, or line colors specified by input and/or keyword.
    Returns the result as an array of 24 (3x8) RGB colors: [[R,G,B], [R,G,B], ...].
    This DOES NOT alter the color table or assert any new line colors.  To do that
-   you would pass the result of this routine to line_colors.pro or as an option
-   for a tplot variable.
+   you would pass the result of this routine to line_colors, initct, or as an
+   option for a tplot variable.
 
    To set custom line colors for any tplot panel do one of the following:
 
@@ -159,6 +165,9 @@ FUNCTION get_line_colors
    To disable custom line colors for a tplot variable:
 
        options, varname, 'line_colors', -1
+
+USAGE:
+   mycolors = get_line_colors([line_clrs] [, KEYWORD=value, ...])
 
 INPUTS:
    line_clrs : This input is optional.  Can take one of two forms:
@@ -201,7 +210,7 @@ KEYWORDS:
        colors can be quite different from the requested ones.
 
    MYCOLORS: A structure defining up to 8 custom colors.  This provides an alternate 
-       method of poking individual custom colors into color indices (0-6 and 255).
+       method of poking individual custom colors into color indices 0-6 and 255.
 
               { ind    : up to 8 integers (0-6 or 255)              , $
                 rgb    : up to 8 RGB levels [[R,G,B], [R,G,B], ...]    }
@@ -223,8 +232,8 @@ common blocks:
    colors_com:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-03-02 11:08:28 -0800 (Thu, 02 Mar 2023) $
- $LastChangedRevision: 31573 $
+ $LastChangedDate: 2023-03-05 09:48:09 -0800 (Sun, 05 Mar 2023) $
+ $LastChangedRevision: 31581 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/get_line_colors.pro $
 
 Created by David Mitchell;  February 2023
@@ -419,6 +428,9 @@ PROCEDURE line_colors
    the color table.  This includes the line colors (1-6) and the background (0) 
    and foreground (255) colors.
 
+USAGE:
+  line_colors [, line_clrs] [, KEYWORD=value, ...]
+
 INPUTS:
    line_clrs : Can take one of two forms:
 
@@ -436,11 +448,8 @@ INPUTS:
            9  : same as 8 but permuted so vector defaults are blue, orange, reddish purple
           10  : Chaffin's CSV line colors, suitable for colorblind vision
 
-    To set custom line colors for any tplot panel:
-
-       options, varname, 'line_colors', lines
-
-    where the value of lines is one of the formats above.
+    If not specified, use the current (or default) line color scheme and use keywords to
+    make modifications.
 
 KEYWORDS:
     COLOR_NAMES:  String array of 8 line color names.  You must use line color
@@ -485,8 +494,8 @@ KEYWORDS:
 SEE ALSO:
     get_line_colors() : Works like this routine, but returns a 24 element array
                   instead of asserting the new line colors.  Allows you to define
-                  a custom set of line colors in a format that you can use with
-                  tplot options.
+                  a custom set of line colors in a format that you can use as an
+                  option for a tplot variable.
     initct :      Loads a color table without changing the line colors, except by
                   keyword.
 
@@ -495,8 +504,8 @@ common blocks:
    colors_com:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-03-02 11:06:58 -0800 (Thu, 02 Mar 2023) $
- $LastChangedRevision: 31571 $
+ $LastChangedDate: 2023-03-05 09:48:33 -0800 (Sun, 05 Mar 2023) $
+ $LastChangedRevision: 31582 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/line_colors.pro $
 
 Created by David Mitchell;  February 2023
@@ -522,6 +531,9 @@ PROCEDURE loadct2, colortable
    drawing lines and setting the background and foreground colors.  All line color 
    keywords work as before but are now passed to that function.  Please place any
    new line color schemes in get_line_colors().
+
+USAGE:
+   loadct2, colortable [, KEYWORD=value, ...]
 
 INPUTS:
    colortable: Color table number.  Required.
@@ -582,8 +594,8 @@ See also:
    &quot;get_colors&quot;,&quot;colors_com&quot;,&quot;bytescale&quot;,&quot;get_line_colors&quot;,&quot;line_colors&quot;,&quot;showct&quot;,&quot;initct&quot;
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-03-02 11:06:58 -0800 (Thu, 02 Mar 2023) $
- $LastChangedRevision: 31571 $
+ $LastChangedDate: 2023-03-05 09:48:33 -0800 (Sun, 05 Mar 2023) $
+ $LastChangedRevision: 31582 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/loadct2.pro $
 
 Created by Davin Larson;  August 1996
@@ -601,9 +613,12 @@ PROCEDURE showct
    Show the specified color table in a new window.  Does not alter the current
    color table.
 
+USAGE:
+   showct [, n] [, KEYWORD=value, ...]
+
 INPUTS:
    n:         Color table number.  Standard tables have n &lt; 1000.  CSV tables
-              have n &gt;= 1000.  See 'loadcsv' for details.  If n is not provided,
+              have n &gt;= 1000.  See 'initct' for details.  If n is not provided,
               show the current color table.
 
 KEYWORDS:
@@ -628,8 +643,8 @@ SEE ALSO:
               more functionality, but only for the current color table.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-03-02 10:49:24 -0800 (Thu, 02 Mar 2023) $
- $LastChangedRevision: 31570 $
+ $LastChangedDate: 2023-03-05 10:10:48 -0800 (Sun, 05 Mar 2023) $
+ $LastChangedRevision: 31587 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/showct.pro $
 </PRE><P>
 <STRONG>(See <A href="system/showct.pro">general/misc/system/showct.pro</A>)</STRONG><P>

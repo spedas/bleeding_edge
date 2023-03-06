@@ -12,6 +12,9 @@
 ;   keywords work as before but are now passed to that function.  Please place any
 ;   new line color schemes in get_line_colors().
 ;
+;USAGE:
+;   loadct2, colortable [, KEYWORD=value, ...]
+;
 ;INPUTS:
 ;   colortable: Color table number.  Required.
 ;
@@ -71,8 +74,8 @@
 ;   "get_colors","colors_com","bytescale","get_line_colors","line_colors","showct","initct"
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-03-02 11:06:58 -0800 (Thu, 02 Mar 2023) $
-; $LastChangedRevision: 31571 $
+; $LastChangedDate: 2023-03-05 09:48:33 -0800 (Sun, 05 Mar 2023) $
+; $LastChangedRevision: 31582 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/loadct2.pro $
 ;
 ;Created by Davin Larson;  August 1996
