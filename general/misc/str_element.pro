@@ -49,8 +49,8 @@
 ;LAST MODIFICATION: 01/10/08
 ; CREATED BY: Davin Larson
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2019-05-16 13:25:00 -0700 (Thu, 16 May 2019) $
-; $LastChangedRevision: 27250 $
+; $LastChangedDate: 2023-03-06 23:40:49 -0800 (Mon, 06 Mar 2023) $
+; $LastChangedRevision: 31593 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/str_element.pro $
 ;-
 pro str_element,struct,tagname,value,  $
@@ -75,6 +75,7 @@ if size(/type,struct) eq 11 && ( tname eq 'DICTIONARY' || tname eq 'ORDEREDHASH'
     if struct.haskey(tag) then begin
       value = struct[tag]
       success = 1
+      value2 = value
     endif
   endelse
   return

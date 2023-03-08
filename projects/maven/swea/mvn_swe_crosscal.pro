@@ -49,8 +49,8 @@
 ;       SILENT:       Don't print any warnings or messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-08-23 12:21:42 -0700 (Tue, 23 Aug 2022) $
-; $LastChangedRevision: 31035 $
+; $LastChangedDate: 2023-03-07 11:41:34 -0800 (Tue, 07 Mar 2023) $
+; $LastChangedRevision: 31596 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_crosscal.pro $
 ;
 ;CREATED BY:    David L. Mitchell  05-04-16
@@ -62,15 +62,14 @@ function mvn_swe_crosscal, time, on=on, off=off, refresh=refresh, extrap=extrap,
   common swe_cc_com, tc, ac, eflg
 
   if ((size(tc,/type) eq 0) or keyword_set(refresh)) then begin
-    tc = time_double(['2014-03-22','2014-11-12','2015-12-20','2016-10-25','2017-08-12','2018-11-13','2019-05-15'])
+    tc = time_double(['2014-03-22','2014-11-12','2015-12-20','2016-10-25','2017-08-12','2018-11-13'])
     ac = dblarr(4, n_elements(tc))
     ac[*,0] = [2.6D   ,  0.0D     ,  0.0D     ,  0.0D     ]  ; MCPHV = 2500 V
     ac[*,1] = [2.3368D, -9.9426d-4,  2.6014d-5,  0.0D     ]  ; MCPHV = 2600 V
     ac[*,2] = [2.2143D,  7.9280d-4,  1.4300d-5,  0.0D     ]  ; MCPHV = 2700 V
     ac[*,3] = [2.0027D,  7.2892d-3, -1.1918d-5,  0.0D     ]  ; MCPHV = 2750 V
     ac[*,4] = [2.2929D,  6.0841d-3, -2.0345d-5,  3.0202d-8]  ; MCPHV = 2800 V
-    ac[*,5] = [1.9995D,  2.2127d-3, -1.8340d-6,  0.0D     ]  ; MCPHV = 2875 V (part 1)
-    ac[*,6] = [2.1535D,  1.1959d-3, -4.8045d-7,  0.0D     ]  ; MCPHV = 2875 V (part 2)
+    ac[*,5] = [2.1963D,  9.9250d-4, -2.9699d-7,  0.0D     ]  ; MCPHV = 2875 V
     eflg = 0                                                 ; extrapolate using last known value
   endif
 
@@ -157,25 +156,18 @@ function mvn_swe_crosscal, time, on=on, off=off, refresh=refresh, extrap=extrap,
 
   indx = where(t ge t_mcp[9], count)
   if (count gt 0L) then begin
-    i = 6
-    day = (t[indx] - tc[i])/86400D
-    cc[indx] = ac[0,i] + day*(ac[1,i] + day*(ac[2,i] + day*ac[3,i]))
-  endif
-
-  indx = where(t ge t_mcp[10], count)
-  if (count gt 0L) then begin
-    i = 6
-    if (eflg) then tt = t[indx] else tt = t_mcp[10]
+    i = 5
+    if (eflg) then tt = t[indx] else tt = t_mcp[9]
     day = (tt - tc[i])/86400D
     cc[indx] = ac[0,i] + day*(ac[1,i] + day*(ac[2,i] + day*ac[3,i]))
   endif
 
   if (domsg) then begin
-    indx = where(t gt t_mcp[10], count)
+    indx = where(t gt t_mcp[9], count)
     if (count gt 0L) then begin
       msg = "Warning: SWE-SWI cross calibration factor "
-      if (eflg) then print,msg,"extrapolated after ",time_string(t_mcp[10],prec=-3) $
-                else print,msg,"fixed after ",time_string(t_mcp[10],prec=-3)
+      if (eflg) then print,msg,"extrapolated after ",time_string(t_mcp[9],prec=-3) $
+                else print,msg,"fixed after ",time_string(t_mcp[9],prec=-3)
     endif
   endif
 

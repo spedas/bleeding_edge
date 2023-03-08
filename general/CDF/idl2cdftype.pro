@@ -71,8 +71,8 @@
 ;HISTORY:
 ; 26-nov-2013, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2014-10-14 11:39:46 -0700 (Tue, 14 Oct 2014) $
-; $LastChangedRevision: 15992 $
+; $LastChangedDate: 2023-03-07 15:07:03 -0800 (Tue, 07 Mar 2023) $
+; $LastChangedRevision: 31598 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/idl2cdftype.pro $
 ;-
 Function idl2cdftype, var, format_out=format_out, fillval_out=fillval_out, $
@@ -84,9 +84,9 @@ Case(size(var, /type)) Of        ;text code for type
     1: Begin
        otp = 'CDF_UINT1'
        format_out = 'I4'
-       fillval_out = 255
-       validmin_out = 0
-       validmax_out = 255
+       fillval_out = 255b
+       validmin_out = 0b
+       validmax_out = 255b
     End
     2: Begin
        otp = 'CDF_INT2'

@@ -55,8 +55,8 @@
 ;                     type : types of configuration changes (see above)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-02-27 08:19:41 -0800 (Mon, 27 Feb 2023) $
-; $LastChangedRevision: 31552 $
+; $LastChangedDate: 2023-03-07 11:41:53 -0800 (Tue, 07 Mar 2023) $
+; $LastChangedRevision: 31597 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -186,15 +186,12 @@ pro mvn_swe_config, list=list, timebar=tbar
   t_mcp = [t_mcp, time_double('2018-11-13/11:18:13')]
   m_mcp = [m_mcp, 'MCP bias adjustment (2800 -> 2875 V)']
 
-  t_mcp = [t_mcp, time_double('2020-05-15/00:00:00')]
-  m_mcp = [m_mcp, 'beginning of second polynomial fit']
-
 ; 2019-10-01/00:00                                     ; beginning of EM-4
 
   t_swp = [t_swp, time_double('2022-04-22/00:00:00')]
   m_swp = [m_swp, 'sweep table 9 upload (32-Hz, 125 eV)']
 
-  t_mcp = [t_mcp, time_double('2022-07-31/00:00:00')]
+  t_mcp = [t_mcp, time_double('2022-12-19/00:00:00')]
   m_mcp = [m_mcp, 'last SWE-SWI cross calibration']
 
 ; 2022-10-01/00:00                                     ; beginning of EM-5

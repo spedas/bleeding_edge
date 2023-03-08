@@ -30,9 +30,9 @@
 ;
 ;CREATED BY:	Jasper Halekas
 ;Modified by:   Davin Larson
-; $LastChangedBy: ali $
-; $LastChangedDate: 2019-05-14 14:18:26 -0700 (Tue, 14 May 2019) $
-; $LastChangedRevision: 27232 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-03-06 23:44:21 -0800 (Mon, 06 Mar 2023) $
+; $LastChangedRevision: 31594 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/options.pro $
 
 ;
@@ -65,7 +65,7 @@ pro options, struct, tag_name, value,default=default,_extra=ex,verbose=verbose ;
 
 if size(/type,value) eq 0 and not keyword_set(ex) then delete=1
 dt = size(/type,struct)
-if (dt eq 8) or not keyword_set(struct) then begin
+if (dt eq 8) || (dt eq 11) || ~keyword_set(struct) then begin
     if keyword_set(tag_name) then $
         str_element, struct, tag_name, value  ,delete=delete, /add  $
     else  extract_tags,struct,ex
