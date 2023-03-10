@@ -8,8 +8,8 @@
 ;    modeid : in, optional, type=integer
 ;       
 ; $LastChangedBy: rlivi04 $
-; $LastChangedDate: 2022-03-14 15:55:56 -0700 (Mon, 14 Mar 2022) $
-; $LastChangedRevision: 30677 $
+; $LastChangedDate: 2023-03-09 13:17:54 -0800 (Thu, 09 Mar 2023) $
+; $LastChangedRevision: 31608 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/tables/spp_swp_spi_tables.pro $
 ;-
 
@@ -134,6 +134,17 @@ PRO spp_swp_spi_tables, table, emode=emode, modeid=modeid, verbose=verbose, ccen
          spfac_b = 0.35
          new_defl = 1
       END
+      ;; Science Tables 0x0a
+      '0a'x: BEGIN
+         IF keyword_set(verbose) THEN $
+          print, 'Science Tables 0x0a'
+         emin  = 20.
+         emax  = 20000.
+         spfac_a = 0.25
+         spfac_b = 0.35
+         new_defl = 1
+         defl_lim = 1
+      END
       ;; Calibration provided by user
       ELSE: BEGIN
          IF ~keyword_set(ccenter) OR $
@@ -155,7 +166,8 @@ PRO spp_swp_spi_tables, table, emode=emode, modeid=modeid, verbose=verbose, ccen
            spfac    = spfac_a,$
            emode    = emode,$
            _extra   = spani_param,$
-           new_defl = new_defl)
+           new_defl = new_defl,$
+           defl_lim = defl_lim)
 
    ;; Generate Full Index Energies and Deflections
    

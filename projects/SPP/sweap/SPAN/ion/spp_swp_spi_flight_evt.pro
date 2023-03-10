@@ -6,16 +6,26 @@
 ;
 ; SVN Properties
 ; --------------
-; $LastChangedRevision: 28311 $
-; $LastChangedDate: 2020-02-18 15:48:22 -0800 (Tue, 18 Feb 2020) $
-; $LastChangedBy: rlivi2 $
+; $LastChangedRevision: 31605 $
+; $LastChangedDate: 2023-03-09 13:12:04 -0800 (Thu, 09 Mar 2023) $
+; $LastChangedBy: rlivi04 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_evt.pro $
 ;
 ;-
 
 PRO spp_swp_spi_flight_evt, table
 
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;;;  Pre-Vibe and Pre-Environmental SPAN-Ai Flight Calibration   ;;;
+   ;;;                       CAL Facility                           ;;;
+   ;;;                        2017-01-01                            ;;;
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+   ;; Threshold Scan
+   tt_threshscan_1 = ['2017-01-04/19:50:00', '2017-01-05/03:35:30']
+
+
+   
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;;;          SPAN-Ai Flight Calibration Experiments              ;;;
    ;;;                       CAL Facility                           ;;;
@@ -56,7 +66,7 @@ PRO spp_swp_spi_flight_evt, table
    ;;   - Resiudal Gas Gun
    ;;     + Gun V = 480 [V]
    ;;     + Filament I = 0.85 [A]
-   tt_thresh_scan1 = ['2017-03-12/05:47:00','2017-03-12/19:00:00']
+   tt_threshscan_2 = ['2017-03-12/05:47:00','2017-03-12/19:00:00']
    
    ;;------------------------------------------------------------------   
    ;; Rotation Scan
@@ -531,6 +541,8 @@ PRO spp_swp_spi_flight_evt, table
            tt_gunmap_12:tt_gunmap_12,$
            tt_rotscan_1:tt_rotscan_1,$
            tt_rotscan_2:tt_rotscan_2,$
+           tt_threshscan_1:tt_threshscan_1,$
+           tt_threshscan_2:tt_threshscan_2,$
            tt_eascan_1:tt_eascan_1,$
            tt_ksweep_1:tt_ksweep_1,$
            str_def_sweep:str_def_sweep,$

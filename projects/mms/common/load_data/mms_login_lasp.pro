@@ -23,13 +23,14 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-10-04 15:49:46 -0700 (Tue, 04 Oct 2016) $
-;$LastChangedRevision: 22025 $
+;$LastChangedDate: 2023-03-09 13:47:07 -0800 (Thu, 09 Mar 2023) $
+;$LastChangedRevision: 31613 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_login_lasp.pro $
 ;-
 
 function mms_login_lasp, login_info = login_info, save_login_info = save_login_info, $
-    username = username, widget_note = widget_note, always_prompt = always_prompt
+    username = username, widget_note = widget_note, always_prompt = always_prompt, $
+    password = password
     common mms_sitl_connection, netUrl, connection_time, login_source
     username = ''
     if undefined(widget_note) then widget_note = 'Note: blank username/password for public access'

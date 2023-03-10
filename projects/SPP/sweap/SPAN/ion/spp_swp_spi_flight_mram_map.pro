@@ -7,9 +7,9 @@
 ;       PSP SWEAP SPAN-Ai Flight MRAM Memory Map.
 ;    config : in, optional, type=structure
 ;       PSP SWEAP SPAN-Ai Flight Instrument Configuration       
-; $LastChangedBy: rlivi2 $
-; $LastChangedDate: 2019-03-17 20:19:01 -0700 (Sun, 17 Mar 2019) $
-; $LastChangedRevision: 26832 $
+; $LastChangedBy: rlivi04 $
+; $LastChangedDate: 2023-03-09 13:13:18 -0800 (Thu, 09 Mar 2023) $
+; $LastChangedRevision: 31607 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_mram_map.pro $
 ;-
 
@@ -157,6 +157,28 @@ PRO spp_swp_spi_flight_mram_map, tables, config
             mode7_edlut_mram_addr: '10E980'x,$
             mode7_pmbins_mram_addr:'10EA00'x,$
 
+            ;; Description: MODE 8
+            mode8_psum_mram_addr:  '10F000'x,$
+            mode8_mrlut_mram_addr: '10F080'x,$
+            mode8_allut_mram_addr: '10F100'x,$
+            mode8_edlut_mram_addr: '10F180'x,$
+            mode8_pmbins_mram_addr:'10F200'x,$
+
+            ;; Description: MODE 9
+            mode9_psum_mram_addr:  '123800'x,$
+            mode9_mrlut_mram_addr: '123880'x,$
+            mode9_allut_mram_addr: '123900'x,$
+            mode9_edlut_mram_addr: '123980'x,$
+            mode9_pmbins_mram_addr:'123a00'x,$
+
+            ;; Description: MODE 10
+            mode10_psum_mram_addr:  '124000'x,$
+            mode10_mrlut_mram_addr: '124080'x,$
+            mode10_allut_mram_addr: '124100'x,$
+            mode10_edlut_mram_addr: '124180'x,$
+            mode10_pmbins_mram_addr:'124200'x,$
+            
+            
             ;; Description: Evenly Space FSLUT
             es_fslut_mram_addr:'7C000'x,$
             
@@ -193,6 +215,14 @@ PRO spp_swp_spi_flight_mram_map, tables, config
             sci_6a_mram_addr:'FE800'x,$
             sci_6b_mram_addr:'106800'x,$
 
+            ;; Description: Science Table 7
+            sci_7a_mram_addr:'10F800'x,$
+            sci_7b_mram_addr:'117800'x,$
+  
+            ;; Moments Product
+            prod_08Dx32Ex08A_v2_mram_addr:'11F800'x,$
+            prod_08Dx32Ex08A_v3_mram_addr:'121800'x,$
+            
             ;; Product Sum Full MRAM Addresses
             ;;'sng_psum_mram_addr':
 

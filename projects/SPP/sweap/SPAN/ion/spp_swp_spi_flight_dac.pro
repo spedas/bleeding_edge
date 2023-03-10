@@ -6,9 +6,9 @@
 ;
 ; SVN Properties
 ; --------------
-; $LastChangedRevision: 26427 $
-; $LastChangedDate: 2019-01-06 22:05:44 -0800 (Sun, 06 Jan 2019) $
-; $LastChangedBy: rlivi2 $
+; $LastChangedRevision: 31605 $
+; $LastChangedDate: 2023-03-09 13:12:04 -0800 (Thu, 09 Mar 2023) $
+; $LastChangedBy: rlivi04 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_dac.pro $
 ;
 ;-
@@ -25,6 +25,7 @@ PRO spp_swp_spi_flight_dac, table
                 -39.04,-78.1,-125,-187.5,-250]
 
    ;; Deflector 1
+   ;; Hemisphere set to DAC -125V (0x800 DAC)
    def1_dacs = ['0000'x,'0080'x,'0100'x,'0180'x,'0300'x,$
                 '0700'x,'0D00'x,'1300'x,'1C80'x,'2600'x]
 
@@ -32,13 +33,15 @@ PRO spp_swp_spi_flight_dac, table
                 -82.3,-120.3,-180.5,-240.6]
 
    ;; Deflector 2
+   ;; Hemisphere set to DAC -125V (0x800 DAC)   
    def2_dacs = ['0000'x,'0080'x,'0100'x,'0180'x,'0300'x,$
                 '0700'x,'0D00'x,'1300'x,'1C80'x,'2600'x]
 
    def2_volt = [0.0016,-3.15,-6.31,-9.48,-18.98,-44.3,$
                 -82.3,-120.3,-180.5,-240.6]
 
-   ;; Spoiler 
+   ;; Spoiler
+   ;; Hemisphere set to DAC -125V (0x800 DAC)
    splr_dacs = ['0000'x,'0100'x,'0200'x,'0400'x,'1000'x,'4000'x]
    splr_volt = [0.0003,-0.31,-0.62,-1.243,-4.974,-19.9]
 

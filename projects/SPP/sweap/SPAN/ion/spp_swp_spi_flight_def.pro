@@ -6,9 +6,9 @@
 ;
 ; SVN Properties
 ; --------------
-; $LastChangedRevision: 28312 $
-; $LastChangedDate: 2020-02-18 15:48:49 -0800 (Tue, 18 Feb 2020) $
-; $LastChangedBy: rlivi2 $
+; $LastChangedRevision: 31605 $
+; $LastChangedDate: 2023-03-09 13:12:04 -0800 (Thu, 09 Mar 2023) $
+; $LastChangedBy: rlivi04 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_def.pro $
 ;
 ;-
@@ -32,7 +32,7 @@ PRO spp_swp_spi_flight_def, def
    ires = [ires0,ires1,ires2,ires3,ires4,ires5]
    eres = [eres0,eres1,eres2,eres3,eres4,eres5]
    
-   xx = dindgen(180.d)-90.d
+   xx = (dindgen(1800.d)-900.d)/10.
 
    yy=ires0 + $
       xx*ires1 + $
@@ -48,12 +48,14 @@ PRO spp_swp_spi_flight_def, def
        xx^4*eres4 + $
        xx^5*eres5
 
-   new_yy = 65535.0D - dindgen(2.d*65535.D)
+   new_yy = dindgen(2.d*65535.D) - 65535.D
    dac_to_def_ions = interp(xx, yy, new_yy)
    dac_to_def_electrons = interp(xx, eyy, new_yy)
 
    
-   def = {poly5_ions:ires,$
+   def = {xx:xx,$
+          yy:new_yy,$
+          poly5_ions:ires,$
           dac_to_def_ions:dac_to_def_ions,$
           poly5_electrons:eres,$
           dac_to_def_electrons:dac_to_def_electrons}

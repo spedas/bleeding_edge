@@ -16,8 +16,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-02-15 08:59:05 -0800 (Thu, 15 Feb 2018) $
-; $LastChangedRevision: 24717 $
+; $LastChangedDate: 2023-03-09 13:47:54 -0800 (Thu, 09 Mar 2023) $
+; $LastChangedRevision: 31614 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_update_brst_intervals.pro $
 ;-
 
@@ -29,11 +29,7 @@ pro mms_update_brst_intervals
   start_interval = '2015-03-01'
   end_interval = time_double(start_interval) + 6.*30*24*60*60
   
-  restore, 'mms_auth_info.sav'
-  if is_struct(auth_info) then begin
-    username = auth_info.user
-    password = auth_info.password
-  endif
+  status = mms_login_lasp(username=username, password=password)
 
   brst_seg_temp = { VERSION: 1.0000000, $
     DATASTART: 1, $

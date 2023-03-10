@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Mar  8 18:16:34 2023.<P>
+<STRONG>Last modified: </STRONG>Thu Mar  9 18:16:35 2023.<P>
  
 <HR>
  
@@ -29,6 +29,10 @@ SPP_SWP_SPI_CONFIG_FLIGHT_CALIBRATION</A>
 <LI><A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_CRUISE">SPP_SWP_SPI_CONFIG_FLIGHT_CRUISE
 </A>
 <LI><A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_HIGH">SPP_SWP_SPI_CONFIG_FLIGHT_HIGH</A>
+<LI><A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_HIGH_RATE_CRUISE_MOMENTS">
+SPP_SWP_SPI_CONFIG_FLIGHT_HIGH_RATE_CRUISE_MOMENTS</A>
+<LI><A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_HIGH_RATE_MOMENTS_V2">
+SPP_SWP_SPI_CONFIG_FLIGHT_HIGH_RATE_MOMENTS_V2</A>
 <LI><A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_LOW">SPP_SWP_SPI_CONFIG_FLIGHT_LOW</A>
 <LI><A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_MOMENTS">
 SPP_SWP_SPI_CONFIG_FLIGHT_MOMENTS</A>
@@ -37,6 +41,7 @@ SPP_SWP_SPI_CONFIG_FLIGHT_MOMENTS</A>
 <LI><A HREF="#SPP_SWP_SPI_FLIGHT_ANO">SPP_SWP_SPI_FLIGHT_ANO</A>
 <LI><A HREF="#SPP_SWP_SPI_FLIGHT_DAC">SPP_SWP_SPI_FLIGHT_DAC</A>
 <LI><A HREF="#SPP_SWP_SPI_FLIGHT_DEF">SPP_SWP_SPI_FLIGHT_DEF</A>
+<LI><A HREF="#SPP_SWP_SPI_FLIGHT_EFF">SPP_SWP_SPI_FLIGHT_EFF</A>
 <LI><A HREF="#SPP_SWP_SPI_FLIGHT_ELO">SPP_SWP_SPI_FLIGHT_ELO</A>
 <LI><A HREF="#SPP_SWP_SPI_FLIGHT_ESA">SPP_SWP_SPI_FLIGHT_ESA</A>
 <LI><A HREF="#SPP_SWP_SPI_FLIGHT_EVT">SPP_SWP_SPI_FLIGHT_EVT</A>
@@ -49,6 +54,7 @@ SPP_SWP_SPI_CONFIG_FLIGHT_MOMENTS</A>
 <LI><A HREF="#SPP_SWP_SPI_FLIGHT_MAS[4]">SPP_SWP_SPI_FLIGHT_MAS[4]</A>
 <LI><A HREF="#SPP_SWP_SPI_FLIGHT_MAS[5]">SPP_SWP_SPI_FLIGHT_MAS[5]</A>
 <LI><A HREF="#SPP_SWP_SPI_FLIGHT_MAS[6]">SPP_SWP_SPI_FLIGHT_MAS[6]</A>
+<LI><A HREF="#SPP_SWP_SPI_FLIGHT_MAS[7]">SPP_SWP_SPI_FLIGHT_MAS[7]</A>
 <LI><A HREF="#SPP_SWP_SPI_FLIGHT_MEM">SPP_SWP_SPI_FLIGHT_MEM</A>
 <LI><A HREF="#SPP_SWP_SPI_FLIGHT_MRAM_MAP">SPP_SWP_SPI_FLIGHT_MRAM_MAP</A>
 <LI><A HREF="#SPP_SWP_SPI_FLIGHT_NRG">SPP_SWP_SPI_FLIGHT_NRG</A>
@@ -287,7 +293,7 @@ SVN Berkeley Information:
 <A NAME="SPP_SWP_SPI_CONFIG_FLIGHT_HIGH">
 <H2>SPP_SWP_SPI_CONFIG_FLIGHT_HIGH</H2></A>
 <A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_CRUISE">[Previous Routine]</A>
-<A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_LOW">[Next Routine]</A>
+<A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_HIGH_RATE_CRUISE_MOMENTS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -336,9 +342,112 @@ SVN Berkeley Information:
 <STRONG>(See <A href="ion/spp_swp_spi_config_flight_high.pro">projects/SPP/sweap/SPAN/ion/spp_swp_spi_config_flight_high.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPP_SWP_SPI_CONFIG_FLIGHT_HIGH_RATE_CRUISE_MOMENTS">
+<H2>SPP_SWP_SPI_CONFIG_FLIGHT_HIGH_RATE_CRUISE_MOMENTS</H2></A>
+<A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_HIGH">[Previous Routine]</A>
+<A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_HIGH_RATE_MOMENTS_V2">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+              MODE 9
+
+
+ User must define the following tables
+ -------------------------------------
+ Product i | Full     | Mass j
+ Product i | Targeted | Mass j
+ 0 &lt;= i &lt;= 2
+ 0 &lt;= j &lt;= 3
+ Total: 24 Products
+
+ Table Options
+ -------------
+ 1D - '16A' , '32E' , '08D' 
+ 2D - '08Dx32E' , '08Dx16A'
+ 3D - '08Dx32Ex16A'
+ D - Deflector
+ E - Energy
+ A - Anode
+
+ Special Case: '1D'
+ ------------------
+ This simply sums over all steps
+ and anodes but leaves the mass
+ variable.
+
+ Summing Options
+ ---------------
+ Define exponent n of 2**n for
+ Archive and Survey Products.
+ ar - Archive
+ sr - Survey
+ Value range: 0 &lt;= n &lt;= 16
+
+ SVN Properties
+ --------------
+ $LastChangedRevision: 31610 $
+ $LastChangedDate: 2023-03-09 13:20:37 -0800 (Thu, 09 Mar 2023) $
+ $LastChangedBy: rlivi04 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_config_flight_high_rate_cruise_moments.pro $
+</PRE><P>
+<STRONG>(See <A href="ion/spp_swp_spi_config_flight_high_rate_cruise_moments.pro">projects/SPP/sweap/SPAN/ion/spp_swp_spi_config_flight_high_rate_cruise_moments.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SPP_SWP_SPI_CONFIG_FLIGHT_HIGH_RATE_MOMENTS_V2">
+<H2>SPP_SWP_SPI_CONFIG_FLIGHT_HIGH_RATE_MOMENTS_V2</H2></A>
+<A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_HIGH_RATE_CRUISE_MOMENTS
+">[Previous Routine]</A>
+<A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_LOW">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+              MODE 10
+
+
+ User must define the following tables
+ -------------------------------------
+ Product i | Full     | Mass j
+ Product i | Targeted | Mass j
+ 0 &lt;= i &lt;= 2
+ 0 &lt;= j &lt;= 3
+ Total: 24 Products
+
+ Table Options
+ -------------
+ 1D - '16A' , '32E' , '08D' 
+ 2D - '08Dx32E' , '08Dx16A'
+ 3D - '08Dx32Ex16A'
+ D - Deflector
+ E - Energy
+ A - Anode
+
+ Special Case: '1D'
+ ------------------
+ This simply sums over all steps
+ and anodes but leaves the mass
+ variable.
+
+ Summing Options
+ ---------------
+ Define exponent n of 2**n for
+ Archive and Survey Products.
+ ar - Archive
+ sr - Survey
+ Value range: 0 &lt;= n &lt;= 16
+
+ SVN Properties
+ --------------
+ $LastChangedRevision: 31611 $
+ $LastChangedDate: 2023-03-09 13:21:01 -0800 (Thu, 09 Mar 2023) $
+ $LastChangedBy: rlivi04 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_config_flight_high_rate_moments_v2.pro $
+</PRE><P>
+<STRONG>(See <A href="ion/spp_swp_spi_config_flight_high_rate_moments_v2.pro">projects/SPP/sweap/SPAN/ion/spp_swp_spi_config_flight_high_rate_moments_v2.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPP_SWP_SPI_CONFIG_FLIGHT_LOW">
 <H2>SPP_SWP_SPI_CONFIG_FLIGHT_LOW</H2></A>
-<A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_HIGH">[Previous Routine]</A>
+<A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_HIGH_RATE_MOMENTS_V2">[Previous Routine]</A>
 <A HREF="#SPP_SWP_SPI_CONFIG_FLIGHT_MOMENTS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -452,31 +561,43 @@ SVN Berkeley Information:
 
  TMode: The configuration to load
       Options:
-         Mode=0
+         Mode = 0
            - Name: RESERVED
            - Rate: NA
-         Mode=1
+         Mode = 1
            - Name: SWEM Startup State
            - Rate:   15 Bytes/s
-         Mode=2 - Flight Background
-           - Name: SWEM Startup State
+         Mode = 2 
+           - Name: Flight Background
            - Rate:   42 Bytes/s
-         Mode=3 - Flight Low Telemetry
-           - Name: SWEM Startup State
+         Mode = 3 
+           - Name: Flight Low Telemetry
            - Rate:  278 Bytes/s
-         Mode=4 - Flight High Telemetry
-           - Name: SWEM Startup State
+         Mode = 4 
+           - Name: Flight High Telemetry
            - Rate: 2326 Bytes/s
-         Mode=6 - Calibration
-           - Name: SWEM Startup State
+         Mode = 5
+           - Name: Moments
            - Rate: 5044 Bytes/s
-         Mode=7 - Cruise
-           - Name: SWEM Startup State
+         Mode = 6 
+           - Name: Calibration
+           - Rate: 5044 Bytes/s
+         Mode = 7
+           - Name: Cruise 
+           - Rate: XXXX Bytes/s
+         Mode = 8
+           - Name: High Rate Moments 
+           - Rate: XXXX Bytes/s
+         Mode = 9
+           - Name: High Rate Cruise Moments 
+           - Rate: XXXX Bytes/s
+         Mode = A
+           - Name: High Rate Moments v2 
            - Rate: XXXX Bytes/s
 
 
- $LastChangedDate: 2019-03-17 22:56:35 -0700 (Sun, 17 Mar 2019) $
- $LastChangedBy: rlivi2 $
+ $LastChangedDate: 2023-03-09 13:19:03 -0800 (Thu, 09 Mar 2023) $
+ $LastChangedBy: rlivi04 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_config_mode.pro $
 
 </PRE><P>
@@ -570,9 +691,9 @@ SVN Berkeley Information:
 
  SVN Properties
  --------------
- $LastChangedRevision: 26427 $
- $LastChangedDate: 2019-01-06 22:05:44 -0800 (Sun, 06 Jan 2019) $
- $LastChangedBy: rlivi2 $
+ $LastChangedRevision: 31605 $
+ $LastChangedDate: 2023-03-09 13:12:04 -0800 (Thu, 09 Mar 2023) $
+ $LastChangedBy: rlivi04 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_dac.pro $
 
 </PRE><P>
@@ -582,7 +703,7 @@ SVN Berkeley Information:
 <A NAME="SPP_SWP_SPI_FLIGHT_DEF">
 <H2>SPP_SWP_SPI_FLIGHT_DEF</H2></A>
 <A HREF="#SPP_SWP_SPI_FLIGHT_DAC">[Previous Routine]</A>
-<A HREF="#SPP_SWP_SPI_FLIGHT_ELO">[Next Routine]</A>
+<A HREF="#SPP_SWP_SPI_FLIGHT_EFF">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -592,18 +713,40 @@ SVN Berkeley Information:
 
  SVN Properties
  --------------
- $LastChangedRevision: 28312 $
- $LastChangedDate: 2020-02-18 15:48:49 -0800 (Tue, 18 Feb 2020) $
- $LastChangedBy: rlivi2 $
+ $LastChangedRevision: 31605 $
+ $LastChangedDate: 2023-03-09 13:12:04 -0800 (Thu, 09 Mar 2023) $
+ $LastChangedBy: rlivi04 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_def.pro $
 
 </PRE><P>
 <STRONG>(See <A href="ion/spp_swp_spi_flight_def.pro">projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_def.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPP_SWP_SPI_FLIGHT_EFF">
+<H2>SPP_SWP_SPI_FLIGHT_EFF</H2></A>
+<A HREF="#SPP_SWP_SPI_FLIGHT_DEF">[Previous Routine]</A>
+<A HREF="#SPP_SWP_SPI_FLIGHT_ELO">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ SPP_SWP_SPI_FLIGHT_EFF
+
+ Purpose:
+
+ SVN Properties
+ --------------
+ $LastChangedRevision: 31612 $
+ $LastChangedDate: 2023-03-09 13:22:18 -0800 (Thu, 09 Mar 2023) $
+ $LastChangedBy: rlivi04 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_eff.pro $
+
+</PRE><P>
+<STRONG>(See <A href="ion/spp_swp_spi_flight_eff.pro">projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_eff.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPP_SWP_SPI_FLIGHT_ELO">
 <H2>SPP_SWP_SPI_FLIGHT_ELO</H2></A>
-<A HREF="#SPP_SWP_SPI_FLIGHT_DEF">[Previous Routine]</A>
+<A HREF="#SPP_SWP_SPI_FLIGHT_EFF">[Previous Routine]</A>
 <A HREF="#SPP_SWP_SPI_FLIGHT_ESA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -658,9 +801,9 @@ SVN Berkeley Information:
 
  SVN Properties
  --------------
- $LastChangedRevision: 28311 $
- $LastChangedDate: 2020-02-18 15:48:22 -0800 (Tue, 18 Feb 2020) $
- $LastChangedBy: rlivi2 $
+ $LastChangedRevision: 31605 $
+ $LastChangedDate: 2023-03-09 13:12:04 -0800 (Thu, 09 Mar 2023) $
+ $LastChangedBy: rlivi04 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_evt.pro $
 
 </PRE><P>
@@ -704,9 +847,9 @@ SVN Berkeley Information:
 
  SVN Properties
  --------------
- $LastChangedRevision: 28614 $
- $LastChangedDate: 2020-04-28 10:04:27 -0700 (Tue, 28 Apr 2020) $
- $LastChangedBy: rlivi2 $
+ $LastChangedRevision: 31606 $
+ $LastChangedDate: 2023-03-09 13:12:39 -0800 (Thu, 09 Mar 2023) $
+ $LastChangedBy: rlivi04 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_loa.pro $
 
 </PRE><P>
@@ -726,9 +869,9 @@ SVN Berkeley Information:
 
  SVN Properties
  --------------
- $LastChangedRevision: 28317 $
- $LastChangedDate: 2020-02-18 15:50:42 -0800 (Tue, 18 Feb 2020) $
- $LastChangedBy: rlivi2 $
+ $LastChangedRevision: 31606 $
+ $LastChangedDate: 2023-03-09 13:12:39 -0800 (Thu, 09 Mar 2023) $
+ $LastChangedBy: rlivi04 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_mas.pro $
 
 </PRE><P>
@@ -780,7 +923,9 @@ SVN Berkeley Information:
 <A HREF="#SPP_SWP_SPI_FLIGHT_MAS[5]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-; Write to File
+;#####################################################
+;                  Mass Species
+;#####################################################
 </PRE><P>
 <STRONG>(See <A href="ion/spp_swp_spi_flight_mas.pro">projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_mas.pro</A>)</STRONG><P>
 <HR>
@@ -791,7 +936,7 @@ SVN Berkeley Information:
 <A HREF="#SPP_SWP_SPI_FLIGHT_MAS[6]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-; Mass Range LUT
+; Write to File
 </PRE><P>
 <STRONG>(See <A href="ion/spp_swp_spi_flight_mas.pro">projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_mas.pro</A>)</STRONG><P>
 <HR>
@@ -799,6 +944,17 @@ SVN Berkeley Information:
 <A NAME="SPP_SWP_SPI_FLIGHT_MAS[6]">
 <H2>SPP_SWP_SPI_FLIGHT_MAS[6]</H2></A>
 <A HREF="#SPP_SWP_SPI_FLIGHT_MAS[5]">[Previous Routine]</A>
+<A HREF="#SPP_SWP_SPI_FLIGHT_MAS[7]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+; Mass Range LUT
+</PRE><P>
+<STRONG>(See <A href="ion/spp_swp_spi_flight_mas.pro">projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_mas.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SPP_SWP_SPI_FLIGHT_MAS[7]">
+<H2>SPP_SWP_SPI_FLIGHT_MAS[7]</H2></A>
+<A HREF="#SPP_SWP_SPI_FLIGHT_MAS[6]">[Previous Routine]</A>
 <A HREF="#SPP_SWP_SPI_FLIGHT_MEM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -809,7 +965,7 @@ SVN Berkeley Information:
  
 <A NAME="SPP_SWP_SPI_FLIGHT_MEM">
 <H2>SPP_SWP_SPI_FLIGHT_MEM</H2></A>
-<A HREF="#SPP_SWP_SPI_FLIGHT_MAS[6]">[Previous Routine]</A>
+<A HREF="#SPP_SWP_SPI_FLIGHT_MAS[7]">[Previous Routine]</A>
 <A HREF="#SPP_SWP_SPI_FLIGHT_MRAM_MAP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -824,9 +980,9 @@ SVN Berkeley Information:
 
  SVN Properties
  --------------
- $LastChangedBy: rlivi2 $
- $LastChangedDate: 2020-02-18 15:49:13 -0800 (Tue, 18 Feb 2020) $
- $LastChangedRevision: 28313 $
+ $LastChangedBy: rlivi04 $
+ $LastChangedDate: 2023-03-09 13:12:39 -0800 (Thu, 09 Mar 2023) $
+ $LastChangedRevision: 31606 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_mem.pro $
 </PRE><P>
 <STRONG>(See <A href="ion/spp_swp_spi_flight_mem.pro">projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_mem.pro</A>)</STRONG><P>
@@ -846,9 +1002,9 @@ SVN Berkeley Information:
        PSP SWEAP SPAN-Ai Flight MRAM Memory Map.
     config : in, optional, type=structure
        PSP SWEAP SPAN-Ai Flight Instrument Configuration       
- $LastChangedBy: rlivi2 $
- $LastChangedDate: 2019-03-17 20:19:01 -0700 (Sun, 17 Mar 2019) $
- $LastChangedRevision: 26832 $
+ $LastChangedBy: rlivi04 $
+ $LastChangedDate: 2023-03-09 13:13:18 -0800 (Thu, 09 Mar 2023) $
+ $LastChangedRevision: 31607 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_mram_map.pro $
 </PRE><P>
 <STRONG>(See <A href="ion/spp_swp_spi_flight_mram_map.pro">projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_mram_map.pro</A>)</STRONG><P>
@@ -889,9 +1045,9 @@ SVN Berkeley Information:
 
  SVN Properties
  --------------
- $LastChangedRevision: 26914 $
- $LastChangedDate: 2019-03-26 22:09:16 -0700 (Tue, 26 Mar 2019) $
- $LastChangedBy: rlivi2 $
+ $LastChangedRevision: 31607 $
+ $LastChangedDate: 2023-03-09 13:13:18 -0800 (Thu, 09 Mar 2023) $
+ $LastChangedBy: rlivi04 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_par.pro $
 
 </PRE><P>
@@ -955,9 +1111,9 @@ SVN Berkeley Information:
 
  SVN Properties
  --------------
- $LastChangedRevision: 27801 $
- $LastChangedDate: 2019-09-30 22:35:14 -0700 (Mon, 30 Sep 2019) $
- $LastChangedBy: rlivi2 $
+ $LastChangedRevision: 31607 $
+ $LastChangedDate: 2023-03-09 13:13:18 -0800 (Thu, 09 Mar 2023) $
+ $LastChangedBy: rlivi04 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_tbl.pro $
 
 </PRE><P>

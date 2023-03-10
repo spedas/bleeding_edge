@@ -10,9 +10,9 @@
 ;
 ; SVN Properties
 ; --------------
-; $LastChangedBy: rlivi2 $
-; $LastChangedDate: 2020-02-18 15:49:13 -0800 (Tue, 18 Feb 2020) $
-; $LastChangedRevision: 28313 $
+; $LastChangedBy: rlivi04 $
+; $LastChangedDate: 2023-03-09 13:12:39 -0800 (Thu, 09 Mar 2023) $
+; $LastChangedRevision: 31606 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_flight_mem.pro $
 ;-
 
@@ -155,6 +155,29 @@ PRO spp_swp_spi_flight_mem, tbl
          mode10_edlut_mram_addr: '124180'x,$
          mode10_pmbins_mram_addr:'124200'x,$
 
+         ;; Description: MODE 11
+         mode11_psum_mram_addr:  '144800'x,$
+         mode11_mrlut_mram_addr: '144880'x,$
+         mode11_allut_mram_addr: '144900'x,$
+         mode11_edlut_mram_addr: '144980'x,$
+         mode11_pmbins_mram_addr:'144A00'x,$
+
+         ;; Description: MODE 12
+         mode12_psum_mram_addr:  '145000'x,$
+         mode12_mrlut_mram_addr: '145080'x,$
+         mode12_allut_mram_addr: '145100'x,$
+         mode12_edlut_mram_addr: '145180'x,$
+         mode12_pmbins_mram_addr:'145200'x,$
+
+         ;; Description: MODE 13
+         mode13_psum_mram_addr:  '145800'x,$
+         mode13_mrlut_mram_addr: '145880'x,$
+         mode13_allut_mram_addr: '145900'x,$
+         mode13_edlut_mram_addr: '145980'x,$
+         mode13_pmbins_mram_addr:'145A00'x,$
+         
+
+         
          ;; Description: MODE X (Flight Calibration)
          ;;modex_psum_mram_addr:  '324000'x,$
          ;;modex_mrlut_mram_addr: '324080'x,$
@@ -202,6 +225,23 @@ PRO spp_swp_spi_flight_mem, tbl
          sci_7a_mram_addr:'10F800'x,$
          sci_7b_mram_addr:'117800'x,$
 
+         ;; Description: Science Table 8
+         sci_8a_mram_addr:'124800'x,$
+         sci_8b_mram_addr:'12C800'x,$
+
+         ;; Description: Science Table 9
+         sci_9a_mram_addr:'134800'x,$
+         sci_9b_mram_addr:'13C800'x,$ 
+
+         ;; Description: Science Table 10
+         sci_10a_mram_addr:'178000'x,$
+                  
+         ;; Description: In-Flight Calibrated Mass Table
+         mlut_sci_2_mram_addr:'146000'x,$
+
+         ;; High Cadence Targeted
+         ;;hc_tslut_mram_addr:'156000'x,$
+         
          ;; Science Sweep Table 1 (Flight Clibration)
          ;;sci_1x_mram_addr:'39C800'x,$
 
@@ -241,6 +281,8 @@ PRO spp_swp_spi_flight_mem, tbl
          prod_08DX16A_dpp_size: 	'0080'x,$
          prod_08DX32EX16A_dpp_size: 	'1000'x,$
          prod_08DX32EX08A_dpp_size:     '0800'x,$
+         prod_08DX32EX08A_v2_dpp_size:  '0800'x,$
+         prod_08DX32EX08A_v3_dpp_size:  '0800'x,$
 
          prod_order_sram: [$
          'fs_p0_m0','fs_p0_m1','fs_p0_m2','fs_p0_m3',$

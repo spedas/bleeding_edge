@@ -5,31 +5,43 @@
 ;
 ; TMode: The configuration to load
 ;      Options:
-;         Mode=0
+;         Mode = 0
 ;           - Name: RESERVED
 ;           - Rate: NA
-;         Mode=1
+;         Mode = 1
 ;           - Name: SWEM Startup State
 ;           - Rate:   15 Bytes/s
-;         Mode=2 - Flight Background
-;           - Name: SWEM Startup State
+;         Mode = 2 
+;           - Name: Flight Background
 ;           - Rate:   42 Bytes/s
-;         Mode=3 - Flight Low Telemetry
-;           - Name: SWEM Startup State
+;         Mode = 3 
+;           - Name: Flight Low Telemetry
 ;           - Rate:  278 Bytes/s
-;         Mode=4 - Flight High Telemetry
-;           - Name: SWEM Startup State
+;         Mode = 4 
+;           - Name: Flight High Telemetry
 ;           - Rate: 2326 Bytes/s
-;         Mode=6 - Calibration
-;           - Name: SWEM Startup State
+;         Mode = 5
+;           - Name: Moments
 ;           - Rate: 5044 Bytes/s
-;         Mode=7 - Cruise
-;           - Name: SWEM Startup State
+;         Mode = 6 
+;           - Name: Calibration
+;           - Rate: 5044 Bytes/s
+;         Mode = 7
+;           - Name: Cruise 
+;           - Rate: XXXX Bytes/s
+;         Mode = 8
+;           - Name: High Rate Moments 
+;           - Rate: XXXX Bytes/s
+;         Mode = 9
+;           - Name: High Rate Cruise Moments 
+;           - Rate: XXXX Bytes/s
+;         Mode = A
+;           - Name: High Rate Moments v2 
 ;           - Rate: XXXX Bytes/s
 ;
 ;
-; $LastChangedDate: 2019-03-17 22:56:35 -0700 (Sun, 17 Mar 2019) $
-; $LastChangedBy: rlivi2 $
+; $LastChangedDate: 2023-03-09 13:19:03 -0800 (Thu, 09 Mar 2023) $
+; $LastChangedBy: rlivi04 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_config_mode.pro $
 ;
 ;-
@@ -90,7 +102,7 @@ PRO spp_swp_spi_config_mode, mode, mem, info
       ;;;;;;  Mode 5: Flight Moments Setup    ;;;;;;
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;      
       5: BEGIN
-         enrg_mode = '01'x
+         enrg_mode = '05'x
          tlm_mode  = '05'x
          tof_mode  = {targ:1,full:0,accu:8,anod:0}
          mode_id   = ishft(enrg_mode,4) AND tlm_mode
@@ -113,7 +125,7 @@ PRO spp_swp_spi_config_mode, mode, mem, info
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;      
       7: BEGIN
          ;; Set the Mode ID
-         enrg_mode = '01'x
+         enrg_mode = '05'x
          tlm_mode  = '07'x
          tof_mode  = {targ:1,full:0,accu:8,anod:0}         
          mode_id   = ishft(enrg_mode,4) AND tlm_mode
@@ -125,11 +137,35 @@ PRO spp_swp_spi_config_mode, mode, mem, info
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;      
       8: BEGIN
          ;; Set the Mode ID
-         enrg_mode = '01'x
+         enrg_mode = '05'x
          tlm_mode  = '08'x
          tof_mode  = {targ:1,full:0,accu:8,anod:0}         
          mode_id   = ishft(enrg_mode,4) AND tlm_mode
          spp_swp_spi_config_flight_cruise, mem, info
+      END
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      ;;;;   Mode 9: High Rate Cruise Moments    ;;;
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;      
+      9: BEGIN
+         ;; Set the Mode ID
+         enrg_mode = '07'x
+         tlm_mode  = '09'x
+         tof_mode  = {targ:1,full:0,accu:8,anod:0}         
+         mode_id   = ishft(enrg_mode,4) AND tlm_mode
+         spp_swp_spi_config_flight_high_rate_cruise_moments, mem, info
+      END
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      ;;;;    Mode A: High Rate Moments v2      ;;;
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;      
+      10: BEGIN
+         ;; Set the Mode ID
+         enrg_mode = '07'x
+         tlm_mode  = '0a'x
+         tof_mode  = {targ:1,full:0,accu:8,anod:0}         
+         mode_id   = ishft(enrg_mode,4) AND tlm_mode
+         spp_swp_spi_config_flight_high_rate_moments_v2, mem, info
       END
       
    ENDCASE

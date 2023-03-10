@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Mar  8 18:16:34 2023.<P>
+<STRONG>Last modified: </STRONG>Thu Mar  9 18:16:35 2023.<P>
  
 <HR>
  
@@ -37,7 +37,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#RECORDER">RECORDER</A>
 <br>Widget tool that opens a socket and records streaming data from a server (host) and can save it to a file
 <LI><A HREF="#TMEAN">TMEAN</A>
-<br>Calculate the mean, median, and standard deviation of a 1-D tplot
+<br>Calculate the mean, median, and standard deviation of a 1-D or 2-D
 <LI><A HREF="#XY_EDIT">XY_EDIT</A>
 <br>Interactively select data points
 <LI><A HREF="#YYMMDD_TO_TIME">YYMMDD_TO_TIME</A>
@@ -319,10 +319,10 @@ PURPOSE:
 <PRE>
 PROCEDURE:   tmean
 PURPOSE:
-  Calculate the mean, median, and standard deviation of a 1-D tplot
-  variable over a specified time range.  The variable and time range
-  are selected with the cursor or via keyword.  Skew and kurtosis
-  are also calculated:
+  Calculate the mean, median, and standard deviation of a 1-D or 2-D
+  tplot variable over a specified time range.  The variable and time range
+  are selected with the cursor or via keyword.  Skew and kurtosis are also
+  calculated:
 
     skewness: = 0 -&gt; distribution is symmetric about the maximum
               &lt; 0 -&gt; distribution is skewed to the left
@@ -332,21 +332,38 @@ PURPOSE:
               &lt; 0 -&gt; distribution is less peaked than a Gaussian
               &gt; 0 -&gt; distribution is more peaked than a Gaussian
 
-  This routine can optionally perform 1-D cluster analysis to divide
-  the data into two groups (Jenks natural breaks optimization).
-  Statistics are given for each group separately.
+  This routine can optionally perform cluster analysis to divide the data
+  into two groups (Jenks natural breaks optimization).  Statistics are given
+  for each group separately.
 
 USAGE:
   tmean, var
 
 INPUTS:
        var:     Tplot variable name or number.  If not specified, determine
-                based on which panel the mouse is in when clicked.  Currently,
-                this routine only works with 1-D data.
+                based on which panel the mouse is in when clicked.
+
+                If the variable has two dimensions in y (time and some other
+                parameter), then you must specify which indices of the second
+                dimension to calculate statistics for.  Data can be either 
+                summed or averaged over the second dimension.  See keywords
+                IND and AVG.
+
+                The variable cannot be compound (list of variables to plot
+                in the same panel).  You must specify which variable in the 
+                list you are interested in.
 
 KEYWORDS:
        TRANGE:  Use this time range instead of getting it interactively
                 with the cursor.  In this case, you must specify var.
+
+       IND:     If y has two dimensions (time and some other parameter), this
+                keyword specifies the indices of the second dimension to
+                calculate statistics for.  No default.
+
+       AVG:     If IND is set and this keyword is also set, then average over
+                the second dimension.  Otherwise, sum over the second dimension.
+                NaN's are treated as missing data (see MEAN and TOTAL).
 
        OFFSET:  Value to subtract from the data before calculating statistics.
                 Default = 0.
@@ -357,8 +374,10 @@ KEYWORDS:
        MINPTS:  If OUTLIER is set, this specifies the minimum number of 
                 points remaining after discarding outliers.  Default = 3.
 
-       CLUSTER: Perform 1-D cluster analysis to separate the data into
-                two groups.  Disables OUTLIER.
+       CLUSTER: Perform 1-D cluster analysis to separate the data into two
+                groups.  Statistics are calculated for each cluster separately.
+                Diagnostics of the quality of the cluster separation are also
+                provided (see keyword DIAG).  Disables OUTLIER.
 
        MAXDZ:   Use largest break between clusters near minimum variance
                 to divide the clusters.  Default = 1.
@@ -371,7 +390,9 @@ KEYWORDS:
 
        NBINS:   If HIST is set, number of bins in the histogram.
 
-       NPTS:    Number of points surrounding the selected point.
+       NPTS:    If this is set, then statistics are calculated for NPTS centered
+                on the time nearest the cursor when clicked (as opposed to 
+                selecting a time range with two clicks).
 
        DST:     Retain the distribution.  Does not allow compiling multiple
                 results.
@@ -387,7 +408,8 @@ KEYWORDS:
                   sepval : value of optimal separation between the clusters
                   ngud   : number of points in the main distribution
                   nbad   : number of outliers
-                  delta  : separation* between the core and outliers in SDEV units -or-
+                  delta  : separation* between the core and outliers in SDEV units
+                                             -or-
                            separation# between the clusters in SDEV units
                   frac   : fraction of &quot;bad&quot; points (nbad/(nbad+ngud))
 
@@ -400,8 +422,8 @@ KEYWORDS:
        SILENT:  Shhh.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-03-06 10:59:08 -0800 (Mon, 06 Mar 2023) $
- $LastChangedRevision: 31590 $
+ $LastChangedDate: 2023-03-09 14:39:45 -0800 (Thu, 09 Mar 2023) $
+ $LastChangedRevision: 31615 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/tmean.pro $
 
 CREATED BY:    David L. Mitchell

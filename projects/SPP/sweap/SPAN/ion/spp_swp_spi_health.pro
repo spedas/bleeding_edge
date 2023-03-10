@@ -18,9 +18,13 @@ PRO spp_swp_spi_health
    time_encounter3 = ['2019-06-10','2019-11-10'] 
    time_encounter4 = ['2019-11-10','2020-04-10']
    time_encounter5 = ['2020-04-10','2020-07-15']
-   time_encounter6 = ['2020-07-15','2020-10-02'] 
-   time_total =  ['2018-10-31','2020-10-03'] 
-
+   time_encounter6 = ['2020-07-15','2020-10-02']
+   time_encounter7 = ['2020-10-02','2021-03-07']
+   time_encounter8 = ['2021-03-07','2021-06-01'] 
+   ;;time_total =  ['2020-07-15','2021-06-01']
+   ;;time_total =  ['2020-04-10',,'2021-06-01'] 
+   time_total = ['2018-10-31','2021-06-01'] 
+   
    timespan, time_total
 
    ;;############################;;
@@ -46,6 +50,8 @@ PRO spp_swp_spi_health
 
    END
 
+   stop
+   
    ;; Find Encounter Instances
    ppenc1 = where(hkp.time GE time_double(time_encounter1[0]) AND hkp.time LE time_double(time_encounter1[1]))
    ppenc2 = where(hkp.time GE time_double(time_encounter2[0]) AND hkp.time LE time_double(time_encounter2[1]))
@@ -53,6 +59,10 @@ PRO spp_swp_spi_health
    ppenc4 = where(hkp.time GE time_double(time_encounter4[0]) AND hkp.time LE time_double(time_encounter4[1]))
    ppenc5 = where(hkp.time GE time_double(time_encounter5[0]) AND hkp.time LE time_double(time_encounter5[1]))
    ppenc6 = where(hkp.time GE time_double(time_encounter6[0]) AND hkp.time LE time_double(time_encounter6[1]))
+   ppenc7 = where(hkp.time GE time_double(time_encounter7[0]) AND hkp.time LE time_double(time_encounter7[1]))
+   ppenc8 = where(hkp.time GE time_double(time_encounter8[0]) AND hkp.time LE time_double(time_encounter8[1]))
+   ;;;ppenc9 = where(hkp.time GE time_double(time_encounter9[0]) AND hkp.time LE time_double(time_encounter9[1]))
+   
 
    ;; Setup plotting window
    ;;window, 1, xsize=1450,ysize=850
@@ -77,7 +87,7 @@ PRO spp_swp_spi_health
    FOR i=0, nx-1 DO FOR j=0, ny-1 DO $
     poss[i,j,*] = [px[0]+spx/2,py[0]+spy/2,px[0]+sx-spx/2,py[0]+sy-spy/2] + [i*sx,j*sy,i*sx,j*sy]
 
-   FOR ienc=0, 5 DO BEGIN 
+   FOR ienc=0, 7 DO BEGIN 
 
       CASE ienc OF
          0:   ppp = ppenc1
@@ -86,6 +96,8 @@ PRO spp_swp_spi_health
          3:   ppp = ppenc4
          4:   ppp = ppenc5
          5:   ppp = ppenc6
+         6:   ppp = ppenc7
+         7:   ppp = ppenc8
       ENDCASE
       
       ;; Title
@@ -136,7 +148,7 @@ PRO spp_swp_spi_health
       
       
       ;; RAW Current Monitor
-      lim = [0,1,40,45]
+      lim = [0,1,55,60]
       tmp = histogram(hkp[ppp].MON_RAW_C,loc=loc,binsize=1)
       plot, [min(loc),loc,max(loc)], [0,tmp,0], psym=10, pos=poss[4,0,*],$
             xtitle='mA (Analog)',/noerase,/ylog, ys=1, yr=yrr,$ 
@@ -225,7 +237,7 @@ PRO spp_swp_spi_health
       oplot, [lim[2],lim[2]], [yrr[0],yrr[1]], color=140, linestyle=2, thick=3
       oplot, [lim[3],lim[3]], [yrr[0],yrr[1]], color=250, linestyle=2, thick=3      
       
-      ;; -8A Current
+      ;; -8 Current
       tmp = histogram(hkp[ppp].MON_N8VA_I,loc=loc,binsize=5)
       plot, [min(loc),loc,max(loc)], [0,tmp,0], psym=10, pos=poss[2,2,*],$
             xtitle='mA (Analog)',/noerase,/ylog, ys=1, yr=yrr,$ 
