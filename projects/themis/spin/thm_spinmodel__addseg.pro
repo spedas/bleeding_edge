@@ -83,6 +83,9 @@ endif else begin
          ;print,newseg
       endif else if (gap_spin_count GT -0.5) then begin
          ; Case 2, 3, 4, or 5
+         ; Ever since rev 31373, which implemented a floating point time comparison with 
+         ; tolerance, rather than strict equality, none of these cases seem to occur any more.
+         ; As of 2023-03-12, there are no occurrences for the entire mission.   -- JWL
          if ((lseg.c2 - lseg.c1) GE 2) then begin
             ; Case 2: small gap, previous segment has at least 2 spins
             ;dprint,'<1 spin gap, stealing spin from last segment'
