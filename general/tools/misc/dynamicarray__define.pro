@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-02-27 18:18:12 -0800 (Mon, 27 Feb 2023) $
-; $LastChangedRevision: 31565 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2023-03-13 12:37:21 -0700 (Mon, 13 Mar 2023) $
+; $LastChangedRevision: 31623 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -178,7 +178,7 @@ pro DynamicArray::append, a1, error = error,replace=replace
 
     if keyword_set(error) && (type1 eq type0) && keyword_set(replace)   then begin
       dprint,verbose=self.verbose,dlevel=self.dlevel,error
-      dprint,verbose=self.verbose,dlevel=self.dlevel,Prefix+'Replacing ald structure {'+typenam0+'} with newly defined structure {'+typenam1+'}'
+      dprint,verbose=self.verbose,dlevel=self.dlevel,Prefix+'Replacing old structure {'+typenam0+'} with newly defined structure {'+typenam1+'}'
       a0_new = replicate( fill_nan(a1[0]), size(/dimen,*a0))
       struct_assign,*a0,a0_new,/nozero,/verbose
       *a0 = a0_new

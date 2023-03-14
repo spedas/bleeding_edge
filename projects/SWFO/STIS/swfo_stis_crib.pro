@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-03-03 19:41:05 -0800 (Fri, 03 Mar 2023) $
-; $LastChangedRevision: 31578 $
+; $LastChangedDate: 2023-03-13 02:11:23 -0700 (Mon, 13 Mar 2023) $
+; $LastChangedRevision: 31620 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
 ; $ID: $
 ;-
@@ -63,6 +63,76 @@ pro swfo_stis_nonlut_decomp_array, nrg=nrg, dnrg=dnrg, hkp_sample=hkp_sample, cf
 
 end
 
+
+function swfo_stis_model_response,config,param=par
+  
+  e = dgen(3000,range=[10,8000.],/log)
+  if ~keyword_set(par) then begin
+    par={name:'swfo_stis_model_response',  $
+      kev_per_adc:  59.5d/25,  $
+      flx0: 0d,  $
+      pow:  -2.2d,  $
+      xray_nrg: 59.5, $         ; energy in keV
+      xray_rate: 1000. , $         ; counts/sec
+      xray_res:  5.d,  $     ; rms width in keV
+      response: swfo_stis_adc_map(config), $
+      flag:0 }
+      
+  endif
+  
+  if ~isa(config) then return,par
+  
+  
+;  xray_
+
+
+
+end
+
+
+pro swfo_stis_epam_rebin
+
+epam = replicate({ecal,mid:0.,min:0.,max:0.,geom:0.,conv:0.},10)
+epam[0]= {ecal}
+epam[1]= {ecal, 56.,    47.,   68., 0.428, 111.26}
+epam[2]= {ecal, 88. ,   68.,  115.,  0.428, 49.71}
+epam[3]= {ecal, 150.,  115.,  195.,  0.428, 29.21}
+epam[4]= {ecal, 250.,  195.,  321.,  0.428, 18.54}
+epam[5]= {ecal, 424.,  310.,  580.,  0.428, 8.78}
+epam[6]= {ecal, 789.,  587.,  1060., 0.428, 4.94}
+epam[7]= {ecal, 1419., 1060., 1900., 0.428, 2.78}
+epam[8]= {ecal, 3020., 1900., 4800., 0.428, 0.81}
+
+epam_min = [ 47.,68.,115.,195.,310.,587.,1060,1900]
+epam_max = [ 68.,115,195,321,580,1060,1900,4800]
+epam_mid = (epam_min+epam_max)/2
+print,epam_min,epam_max,epam_mid
+epam_mid =  sqrt(epam_min*epam_max)
+print,epam_mid
+
+epam_wid = epam_max-epam_min
+print,epam_wid/epam_mid
+str= {sci_translate:64, sci_nonlut_mode:0, sci_resolution:3}
+adc_map = swfo_stis_adc_map(data =str )
+
+adc = adc_map.adc[*,0]
+dadc = adc_map.dadc[*,0]
+
+plot,dadc/adc,/ylog,psy=-1,ytitle='Delta Energy / Energy',xtitle='Bin number',title='STIS Energy Bins (NONLUT; LOG; TRANSLATE=16)
+plot,adc / 2.^15 * 8000.,/ylog,psy=-1,ytitle='Electronic Energy (keV)',xtitle='Bin number',title='STIS Energy Bins (NONLUT; LOG; TRANSLATE=16)
+
+rebin = intarr(48)
+nrg = adc / 2.^15 * 8000    ; aiming for 8MeV full scale
+for i=0,n_elements(epam)-1 do begin
+  w = where(nrg ge epam[i].min and nrg lt epam[i].max,/null)
+  rebin[w] = i
+endfor
+print,rebin
+print,nrg
+print,adc
+print,float(dadc)
+
+end
 
 
 
@@ -373,8 +443,9 @@ if keyword_set(opts.filenames) then begin
 endif
 
 if keyword_set(opts.init_realtime) then begin
+  
   ;if stepbystep then stop
-  swfo_init_realtime,/stis   ,opts = opts
+  swfo_init_realtime   ,opts = opts2, port = 2028 , trange=opts.file_trange  ; cludge to make it work
   dprint,'"swfo_init_realtime" will create a widget that can read a realtime data stream.'
   dprint,'Click on "Connect to:" to connect to the host:port'
   dprint,'(If a connection can not be made then there is nothing more to do here.)'

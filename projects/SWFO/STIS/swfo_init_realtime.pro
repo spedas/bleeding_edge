@@ -82,14 +82,15 @@ pro swfo_init_realtime,host=host, port=port , trange=trange, opts=opts, offline=
 
     d = opts
     directory = d.root_dir + d.reldir
-    case d.file_type of
+    file_type = d.file_type
+    case file_type of
       'ptp_file': begin   ; obsolete - Do not use
         message,"Obsolete - Don't use this",/cont
         swfo_ptp_recorder,title=d.title,port=d.port, host=d.host, exec_proc='swfo_ptp_lun_read',destination=d.fileformat,directory=directory,set_file_timeres=3600d
       end
       'gse_file': begin
         if 1 then begin
-          raw = swfo_raw_tlm(port=d.port,host=d.host)
+          raw = swfo_raw_tlm('gsemsg',port=d.port,host=d.host)
           opts.raw = raw
           if opts.haskey('filenames') then begin
             raw.file_read,opts.filenames

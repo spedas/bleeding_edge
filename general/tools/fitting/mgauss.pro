@@ -19,12 +19,12 @@
 ;Written by: Davin Larson
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-03-05 17:49:23 -0800 (Sun, 05 Mar 2023) $
-; $LastChangedRevision: 31588 $
+; $LastChangedDate: 2023-03-13 02:11:23 -0700 (Mon, 13 Mar 2023) $
+; $LastChangedRevision: 31620 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/fitting/mgauss.pro $
 ;-
 
-function mgauss, x,a, parameters=p,numg=numg,binsize=binsize,shift=shift,quantize=quantize
+function mgauss, x_input,a, parameters=p,numg=numg,binsize=binsize,shift=shift,quantize=quantize
 
   if not keyword_set(p) then begin
     if not keyword_set(numg) then numg=1
@@ -41,6 +41,16 @@ function mgauss, x,a, parameters=p,numg=numg,binsize=binsize,shift=shift,quantiz
       a1:1d, $
       g:g}
   endif
+  
+  if ~isa(x_input) then return,p
+  
+  if isa(x_input,/number) then begin
+    x = x_input
+    binwidth = p.binsize
+  endif else begin
+    x = x_input.center
+    binwidth = x_input.width
+  endelse
 
   if n_params() eq 0 then return,p
   if n_params() eq 2 then begin                    ;; kludge to make routine work with MPFIT
@@ -51,10 +61,10 @@ function mgauss, x,a, parameters=p,numg=numg,binsize=binsize,shift=shift,quantiz
   a0 = p.a0
   a1 = p.a1
   xx = a0 + a1*x
-  binsize = p.binsize * a1
+  binsize = binwidth * a1
 
-  dx = binsize
-  if dx eq 0 then begin
+  if ~isa(dx) then dx = binsize
+  if p.binsize eq 0 then begin
     if size(/type, p.bkg) eq 8 then f = func(xx,param=p.bkg) else  f= p.bkg
     for i=0,n-1 do begin
       pg = p.g[i]
@@ -85,13 +95,13 @@ end
 
 
 
-;
-;function random_mgauss,param=p,seed
-;
-;numg = n_elements(p.g)
-;for i=0,numg-1 do begin
-;  r = randomn(seed,p.g[i].a)*p.g[i].s +p.g[i].x0
-;  if i eq 0 then rr = r else rr= [rr,r]
-;endfor
-;return,rr
-;end
+
+function random_mgauss,param=p,seed
+
+numg = n_elements(p.g)
+for i=0,numg-1 do begin
+  r = randomn(seed,p.g[i].a)*p.g[i].s +p.g[i].x0
+  if i eq 0 then rr = r else rr= [rr,r]
+endfor
+return,rr
+end

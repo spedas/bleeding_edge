@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2022-09-16 13:04:38 -0700 (Fri, 16 Sep 2022) $
-; $LastChangedRevision: 31093 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-03-13 02:11:23 -0700 (Mon, 13 Mar 2023) $
+; $LastChangedRevision: 31620 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_nse_level_1.pro $
 
 function swfo_stis_nse_level_1,strcts,format=format
@@ -20,8 +20,8 @@ function swfo_stis_nse_level_1,strcts,format=format
     x = (findgen(10)-4.5) * noise_scale
     d = reform(ddata,10,6)
     for j=0,5 do begin
-      p[j] = swfo_stis_nse_find_peak(d[*,j],x)
-      ;  p[j] = swfo_stis_find_peak(d[0:8,j],x[0:8])   ; ignore end channel
+      ;p[j] = swfo_stis_nse_find_peak(d[*,j],x)
+        p[j] = swfo_stis_nse_find_peak(d[0:8,j],x[0:8])   ; ignore end channel
     endfor
 
     dprint,dlevel=4,p.s
