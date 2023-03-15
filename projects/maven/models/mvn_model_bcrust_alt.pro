@@ -33,8 +33,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2020-06-26 16:21:51 -0700 (Fri, 26 Jun 2020) $
-; $LastChangedRevision: 28817 $
+; $LastChangedDate: 2023-03-14 08:32:44 -0700 (Tue, 14 Mar 2023) $
+; $LastChangedRevision: 31626 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust_alt.pro $
 ;
 ;-
@@ -87,9 +87,9 @@ PRO mvn_model_bcrust_alt, alt, result=result, verbose=verbose, resolution=resolu
                     cain_2003=cain_2003, cain_2011=cain_2011, $
                     morschhauser=morschhauser, langlais=langlais, _extra=extra
 
-  br = TRANSPOSE(REFORM(REFORM(data.lg[0, *]), [180, 360]))
-  bt = TRANSPOSE(REFORM(REFORM(data.lg[1, *]), [180, 360]))
-  bp = TRANSPOSE(REFORM(REFORM(data.lg[2, *]), [180, 360]))
+  br = TRANSPOSE(REFORM(REFORM(data.lg[0, *]), [nlat, nlon]))
+  bt = TRANSPOSE(REFORM(REFORM(data.lg[1, *]), [nlat, nlon]))
+  bp = TRANSPOSE(REFORM(REFORM(data.lg[2, *]), [nlat, nlon]))
 
   IF keyword_set(arkani) THEN modeler = 'Arkani'
   IF keyword_set(cain_2003) THEN modeler = 'Cain_2003'
