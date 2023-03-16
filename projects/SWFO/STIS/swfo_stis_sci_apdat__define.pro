@@ -1,13 +1,13 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2023-03-13 12:33:02 -0700 (Mon, 13 Mar 2023) $
-; $LastChangedRevision: 31621 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-03-15 09:46:13 -0700 (Wed, 15 Mar 2023) $
+; $LastChangedRevision: 31636 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
 function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,ptp_header=ptp_header,apdat=apdat
   common swfo_stis_sci_com4, lastdat, last_str
   ccsds_data = swfo_ccsds_data(ccsds)
-  
+
   hkp = swfo_apdat('stis_hkp2')
   hkp_sample = hkp.last_data       ; retrieve last hkp packet
 
@@ -41,14 +41,14 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   ;  if duration eq 0 then duration = 1u   ; cluge to fix lack of proper output in early version FPGA
 
   str1=swfo_stis_ccsds_header_decom(ccsds)
-  
+
 
   ; Force all structures to have exactly 672 elements. If the LUT is being used then only the first 256 will be used
   total6=fltarr(6)
   total14=fltarr(14)
   str2 = {$
     nbins:    nbins,  $
-    counts:   ulonarr(672) , $
+    counts:   fltarr(672) , $
     total:    total(scidata),$
     total2:   0.,$
     total6:   total6,$
@@ -97,23 +97,23 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   str2.rate14=total14/str1.duration
   str2.sigma14=p.s
   str2.avgbin14=p.x0
-  
-  
+
+
   lut_map        = struct_value(hkp_sample,'USER_09',default=6b)
   ;use_lut        = struct_value(hkp_sample,'xxxx',default=0b)   ; needs fixing
-  sci_nonlut_mode   = struct_value(hkp_sample,'SCI_NONLUT_MODE',default=0b) 
+  sci_nonlut_mode   = struct_value(hkp_sample,'SCI_NONLUT_MODE',default=0b)
   sci_resolution     = struct_value(hkp_sample,'SCI_RESOLUTION',default=3b)
   sci_translate      = struct_value(hkp_sample,'SCI_TRANSLATE',default=0u)
 
-  
+
   str3={ $
     ;use_lut: use_lut, $
     lut_map: lut_map, $
     sci_nonlut_mode: sci_nonlut_mode, $
     sci_translate: sci_translate, $
-    sci_resolution: sci_resolution $  
-    }
-    
+    sci_resolution: sci_resolution $
+  }
+
   ;printdat,str3
 
   str=create_struct(str1,str2,str3)
@@ -133,8 +133,14 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci_level_0b  ,source_dict=source_
 
   ;printdat,struct_stis_sci_level_0b
   ;return;
+  if  ~obj_valid(self.level_0b) then begin
+    dprint,'Creating Science level 0B'
+    self.level_0b = dynamicarray(name='Science_L0b')
+    first_level_0b = 1
+  endif
+
   if  ~obj_valid(self.level_1a) then begin
-    dprint,'Creating Science level 1'
+    dprint,'Creating Science level 1a'
     self.level_1a = dynamicarray(name='Science_L1a')
     first_level_1a = 1
   endif
@@ -156,39 +162,54 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci_level_0b  ,source_dict=source_
     dprint,dlevel=2,'Make new file ',time_string(self.lastfile_time,prec=3)+'  '+time_string(sci_last.time,prec=3)
   endif else makefile = 0
 
+;  if isa(self.level_0b,'dynamicarray') then begin
+;    self.level_0b.append, sci_last
+;    if makefile then   self.ncdf_make_file,ddata=self.level_0b, trange=trange,type='L0b'
+;  endif
+
+  ;  if isa(self.level_0b_all,'dynamicarray') then begin
+  ;    if makefile then   self.ncdf_make_file,ddata=self.level_0b_all, trange=trange,type='_all_L0b'
+  ;    ignore_tags = ['pkt_size','MET_RAW']
+  ;    sci_all = {time:0d,nse_reltime:0d, hkp_reltime:0d}
+  ;    extract_tags, sci_all, sci_last, except=ignore_tags
+  ;    extract_tags, sci_all, nse_last, except=ignore_tags, /preserve
+  ;    extract_tags, sci_all, hkp_last, except=ignore_tags, /preserve
+  ;    sci_all.nse_reltime = sci_last.time - struct_value(nse_last,'time',default = !values.d_nan )
+  ;    sci_all.nse_reltime = sci_last.time - struct_value(hkp_last,'time',default = !values.d_nan )
+  ;    self.level_0b.append, sci_all
+  ;  endif
+
   if isa(self.level_0b,'dynamicarray') then begin
-    self.level_0b.append, sci_last
-    if makefile then   self.ncdf_make_file,ddata=self.level_0b, trange=trange,type='_L0b'
-  endif
-
-  if isa(self.level_0b_all,'dynamicarray') then begin
-    if makefile then   self.ncdf_make_file,ddata=self.level_0b_all, trange=trange,type='_all_L0b'
-    ignore_tags = ['pkt_size','MET_RAW']
-    sci_all = {time:0d,nse_reltime:0d, hkp_reltime:0d}
-    extract_tags, sci_all, sci_last, except=ignore_tags
-    extract_tags, sci_all, nse_last, except=ignore_tags, /preserve
-    extract_tags, sci_all, hkp_last, except=ignore_tags, /preserve
-    sci_all.nse_reltime = sci_last.time - struct_value(nse_last,'time',default = !values.d_nan )
-    sci_all.nse_reltime = sci_last.time - struct_value(hkp_last,'time',default = !values.d_nan )
-    self.level_0b.append, sci_all
+    ;struct_stis_sci_level_1a = swfo_stis_sci_level_1a(sci_last)
+    self.level_0b.append, struct_stis_sci_level_0b
+    if keyword_set(first_level_0b) then begin
+      store_data,'stis_L0B',data = self.level_0b,tagnames = '*'  ;,val_tag='_NRG'
+      options,'stis_L0B_COUNTS',spec=1
+    endif
+    if makefile then  begin
+      self.ncdf_make_file,ddata=self.level_0b, trange=trange,type='L0B'
+    endif
   endif
 
 
-  if isa(self.level_1a,'dynamicarray') then begin   
+
+  if isa(self.level_1a,'dynamicarray') then begin
     struct_stis_sci_level_1a = swfo_stis_sci_level_1a(sci_last)
     self.level_1a.append, struct_stis_sci_level_1a
     if keyword_set(first_level_1a) then begin
-      store_data,'stis',data = da,tagnames = 'SPEC_??',val_tag='_NRG'
-      options,'stis_SPEC_??',spec=1
+      store_data,'stis_L1A',data = self.level_1a,tagnames = 'SPEC_??',val_tag='_NRG'
+      options,'stis_L1B_SPEC_??',spec=1
     endif
-    if makefile then   self.ncdf_make_file,ddata=self.level_1a, trange=trange,type='L1A_'
+    if makefile then begin
+      self.ncdf_make_file,ddata=self.level_1a, trange=trange,type='L1A'
+    endif
   endif
 
 
   if isa(self.level_1b,'dynamicarray') then begin
     struct_stis_sci_level_1b = swfo_stis_sci_level_1b(sci_last)
     self.level_1b.append, struct_stis_sci_level_1b
-    if makefile then   self.ncdf_make_file,ddata=self.level_1b, trange=trange,type='L1B_'
+    if makefile then   self.ncdf_make_file,ddata=self.level_1b, trange=trange,type='L1B'
   endif
 
 end
@@ -202,13 +223,13 @@ pro swfo_stis_sci_apdat::create_tplot_vars,ttags=ttags
   if isa(dyndata,'dynamicarray') && keyword_set(self.tname) then begin
     store_data,self.tname,data=dyndata, tagnames=ttags, gap_tag='GAP',verbose = self.verbose
   endif
-  
+
   if isa(self.level_1a,'dynamicarray') then begin
     store_data,'stis_l1a',data=self.level_1a,tagnames='SPEC_??',val_tag='_NRG'
     options,'stis_l1a_SPEC_??',spec=1,yrange=[5.,8000],/ylog,/zlog,/default
   endif
-  
-  
+
+
 end
 
 
@@ -221,7 +242,7 @@ PRO swfo_stis_sci_apdat__define
     file_resolution: 0d,  $
     lastfile_time : 0d,  $
     level_0b: obj_new(),  $
-    level_0b_all: obj_new(),  $       ; This will hold a dynamic array of structures that include data from 3 STIS apids  (Science + Noise + hkp2)
+    ;level_0b_all: obj_new(),  $       ; This will hold a dynamic array of structures that include data from 3 STIS apids  (Science + Noise + hkp2)
     level_1a: obj_new(),  $
     level_1b: obj_new(),  $
     level_2b: obj_new(),  $

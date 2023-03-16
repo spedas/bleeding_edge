@@ -20,8 +20,8 @@
 ;          The returned info stucture can potentially have info.exists eq to 0 and info.write eq 1
 ;Example 4:
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2021-09-24 13:31:21 -0700 (Fri, 24 Sep 2021) $
-; $LastChangedRevision: 30317 $
+; $LastChangedDate: 2023-03-14 18:56:49 -0700 (Tue, 14 Mar 2023) $
+; $LastChangedRevision: 31635 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_open.pro $
 ;-
 
@@ -62,7 +62,7 @@ pro file_open,type,name,unit=unit,createable=createable,info=fi,test_only=test_o
       return
     endif
     if fi.regular && create then begin
-      dprint,dlevel=dlevel,verbose=verbose,'Opening existing file: '+name,/no_check_events
+      dprint,dlevel=dlevel,verbose=verbose,'Opening existing file: '+file_info_string(name),/no_check_events
       case tp of
         'w': if fi.write then  openw,unit,name,/get_lun,_extra=ex,compress=gcomp
         'u': if fi.write then  openu,unit,name,/get_lun,_extra=ex,compress=gcomp,/append

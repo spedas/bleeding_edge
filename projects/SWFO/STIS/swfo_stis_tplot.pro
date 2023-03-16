@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2023-03-13 12:33:02 -0700 (Mon, 13 Mar 2023) $
-; $LastChangedRevision: 31621 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-03-14 18:31:00 -0700 (Tue, 14 Mar 2023) $
+; $LastChangedRevision: 31632 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -23,6 +23,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
       tplot,'SWFO*L1*',/add
     endif
 
+    ylim,'stis_l1a_SPEC*',10,20000.,1
     options,/def,'*_BITS *USER_0A',tplot_routine='bitplot'
     options,/def,'*nse_HISTOGRAM',spec=1,panel_size=2,/no_interp,/zlog,constant=findgen(6)*10+5;,zrange=[10,4000.]
     options,/def,'*memdump_DATA',spec=1
@@ -91,6 +92,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     'DL1':  tplot,add=add,'*sci*COUNTS *nse_HISTOGRAM *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_REMAINING swfo_stis_hkp1_CMDS_EXECUTED'
     'DL2':  tplot,add=add,'*sci_RATE6 *sci*COUNTS *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_EXECUTED'
     'DL3':  tplot,add=add,'*sci_RATE6 *sci_SCI_* stis_l1a_SPEC_?? *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_EXECUTED'
+    'DL4':  tplot,add=add,'*sci_RATE6 *hkp2_*BIAS* stis_l1a_SPEC_?? *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_EXECUTED'
     'LPT':  tplot,add=add,'*sci_RATE6 *sci_AVGBIN14 *hkp2_DAC_VALUES *sci*COUNTS *hkp3*REMAIN* *hkp1*REMAIN*'
     'SCIHKP': tplot,add=add,'*hkp2*SCI_*'
     
