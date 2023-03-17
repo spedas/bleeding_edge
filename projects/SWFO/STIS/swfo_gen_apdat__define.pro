@@ -2,8 +2,8 @@
 ;  swfo_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-03-15 09:46:13 -0700 (Wed, 15 Mar 2023) $
-; $LastChangedRevision: 31636 $
+; $LastChangedDate: 2023-03-16 01:51:24 -0700 (Thu, 16 Mar 2023) $
+; $LastChangedRevision: 31637 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -25,7 +25,8 @@ FUNCTION swfo_gen_apdat::Init,apid,name,_EXTRA=ex
   endif
   self.last_ccsds_p = ptr_new(!null)
   self.data = dynamicarray(name=self.name)
-  self.ncdf_testdir = 'swfo/data/sci/test/ncdf/'
+  self.ncdf_directory = root_data_dir() + 'swfo/data/sci/stis/prelaunch/realtime/test/'
+  self.ncdf_fileformat = '$NAME$/$TYPE$/YYYY/MM/DD/swfo_$NAME$_$TYPE$_$RES$_YYYYMMDD_hhmm_v00.nc'
   if  keyword_set(ex) then dprint,ex,phelp=2,dlevel=self.dlevel
   IF (ISA(ex)) THEN self->SetProperty, _EXTRA=ex
   RETURN, 1
@@ -291,8 +292,8 @@ function swfo_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2023-03-15 09:46:13 -0700 (Wed, 15 Mar 2023) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 31636 $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2023-03-16 01:51:24 -0700 (Thu, 16 Mar 2023) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 31637 $'
 
     return,sw_hash
 end
@@ -329,8 +330,8 @@ function swfo_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2023-03-15 09:46:13 -0700 (Wed, 15 Mar 2023) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 31636 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2023-03-16 01:51:24 -0700 (Thu, 16 Mar 2023) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 31637 $'
 
   return,global_att
 end
@@ -447,7 +448,9 @@ pro swfo_gen_apdat::cdf_makefile,trange=trange,verbose=verbose,filename=filename
     if ~isa(filename) then begin
       cdf_format=self.cdf_pathname
       filename=time_string(trange[0],tformat=cdf_format)
-      filename=root_data_dir()+str_sub(filename,'$NAME$',self.name)
+      filename=str_sub(filename,'$NAME$',self.name)
+      filename=str_sub(filename,'$RES$', strtrim(fix(self.file_resolution),2)  )
+      filename=root_data_dir()+filename
     endif
     if keyword_set(self.cdf_linkname) then cdf.linkname=root_data_dir()+self.cdf_linkname
     if keyword_set(parents) then cdf.g_attributes['Parents'] = parents
@@ -483,10 +486,10 @@ end
 
 
 pro swfo_gen_apdat::ncdf_make_file,ddata=ddata,pathformat=pathformat,testdir=testdir,ret_filename=ret_filename,type=type,trange=trange
-  if ~isa(type) then type='test'
+  if ~isa(type) then type='LLL'
   ;if keyword_set(pathname) then self.ncdf_pathname = pathname
   ;if ~keyword_set(pathformat) then begin
-    pathformat = self.name+'/'+type + '/YYYY/MM/swfo_' + self.name+'_'+type + '_YYYYMMDD_hhmm_v00.nc'
+  ;if ~keyword_set(pathformat) then pathformat = self.fileformat   ; pathformat = self.name+'/'+type + '/YYYY/MM/swfo_' + self.name+'_'+type + '_YYYYMMDD_hhmm_v00.nc'
   ;endif
 
   ; More work needs to be done here to separate into daily (or hourly) files...
@@ -500,8 +503,18 @@ pro swfo_gen_apdat::ncdf_make_file,ddata=ddata,pathformat=pathformat,testdir=tes
     trange = minmax(data_array.time)
     trange[0] = median(data_array.time)  ;  cluge to fix problem in which the time is out of bounds
   endelse
-  pathname = time_string(trange[0],tformat= pathformat )
-  filename = root_data_dir() + self.ncdf_testdir + pathname
+  if ~isa(filename) then begin
+    ncdf_format=self.ncdf_fileformat
+    filename=time_string(trange[0],tformat=ncdf_format)
+    filename=str_sub(filename,'$NAME$',self.name)
+    filename=str_sub(filename,'$TYPE$',type)
+    filename=str_sub(filename,'$RES$', strtrim(fix(self.file_resolution),2)  )
+    filename=self.ncdf_directory + filename
+  endif
+
+  
+  ;pathname = time_string(trange[0],tformat= pathformat )
+  ;filename = root_data_dir() + self.ncdf_testdir + pathname
   swfo_ncdf_create,data_array,filename = filename
   ;dprint,dlevel=1,'Created file: "'+filename+'"
   ret_filename = filename
@@ -582,9 +595,11 @@ PRO swfo_gen_apdat__define
     cdf_pathname:'', $
     cdf_linkname:'', $
     cdf_tagnames:'', $
-    ncdf_pathname:'', $
+;    ncdf_pathname:'', $
+    ncdf_directory:'' , $
+    ncdf_fileformat: '', $
     ncdf_tagnames:'',  $
-    ncdf_testdir:'',  $      ; relative test directory name
+;    ncdf_testdir:'',  $      ; relative test directory name
     output_lun: 0 $
     ;    verbose: 0 , $
     ;    dlevel: 0  $

@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2022-08-05 15:10:39 -0700 (Fri, 05 Aug 2022) $
-; $LastChangedRevision: 30999 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-03-16 01:51:24 -0700 (Thu, 16 Mar 2023) $
+; $LastChangedRevision: 31637 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ncdf_read.pro $
 ; $ID: $
 
@@ -16,11 +16,15 @@ function swfo_ncdf_read,filenames=filenames,def_values=def_values,verbose=verbos
       dat_i = swfo_ncdf_read(filename=filename,def_values=def_values)
       dat_all.append,dat_i
     endfor
-    return,dat_all.data
+    return,dat_all.array
   endif
 
   filename = filenames[0]
   dprint,dlevel=2,verbose=verbose,'Reading: '+file_info_string(filename)
+  if ~file_test(filename) then begin
+    dprint,'Skipping ',filename,verbose=verbose,dlevel=1
+    return,!null
+  endif
   id =  ncdf_open(filename)  ;,/netcdf4_format
 
   inq= ncdf_inquire(id)

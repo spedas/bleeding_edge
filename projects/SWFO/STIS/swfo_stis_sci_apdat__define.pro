@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-03-15 09:46:13 -0700 (Wed, 15 Mar 2023) $
-; $LastChangedRevision: 31636 $
+; $LastChangedDate: 2023-03-16 01:51:24 -0700 (Thu, 16 Mar 2023) $
+; $LastChangedRevision: 31637 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -209,7 +209,9 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci_level_0b  ,source_dict=source_
   if isa(self.level_1b,'dynamicarray') then begin
     struct_stis_sci_level_1b = swfo_stis_sci_level_1b(sci_last)
     self.level_1b.append, struct_stis_sci_level_1b
-    if makefile then   self.ncdf_make_file,ddata=self.level_1b, trange=trange,type='L1B'
+    if makefile then begin
+      self.ncdf_make_file,ddata=self.level_1b, trange=trange,type='L1B'
+    endif
   endif
 
 end
