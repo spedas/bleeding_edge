@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-03-16 01:51:24 -0700 (Thu, 16 Mar 2023) $
-; $LastChangedRevision: 31637 $
+; $LastChangedDate: 2023-03-20 01:52:33 -0700 (Mon, 20 Mar 2023) $
+; $LastChangedRevision: 31640 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -129,10 +129,8 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
 end
 
 
-pro swfo_stis_sci_apdat::handler2,struct_stis_sci_level_0b  ,source_dict=source_dict
 
-  ;printdat,struct_stis_sci_level_0b
-  ;return;
+pro swfo_stis_sci_apdat::handler2,struct_stis_sci_level_0b  ,source_dict=source_dict
   if  ~obj_valid(self.level_0b) then begin
     dprint,'Creating Science level 0B'
     self.level_0b = dynamicarray(name='Science_L0b')
@@ -150,8 +148,8 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci_level_0b  ,source_dict=source_
   hkpobj = swfo_apdat('stis_hkp2')
 
   sci_last = sciobj.last_data    ; this should be identical to struct_stis_sci_level_0b
-  nse_last = nseobj.last_data
-  hkp_last = hkpobj.last_data
+;  nse_last = nseobj.last_data
+;  hkp_last = hkpobj.last_data
 
   res = self.file_resolution
 
@@ -183,8 +181,10 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci_level_0b  ,source_dict=source_
     ;struct_stis_sci_level_1a = swfo_stis_sci_level_1a(sci_last)
     self.level_0b.append, struct_stis_sci_level_0b
     if keyword_set(first_level_0b) then begin
-      store_data,'stis_L0B',data = self.level_0b,tagnames = '*'  ;,val_tag='_NRG'
-      options,'stis_L0B_COUNTS',spec=1
+      ;store_data,'stis_L0B',data = self.level_0b,tagnames = '*'  ;,val_tag='_NRG'
+      ;options,'stis_L0B_COUNTS',spec=1
+      store_data,'swfo_stis',data = self.level_0b,tagnames = '*'  ;,val_tag='_NRG'
+      options,'swfo_stis_COUNTS',spec=1
     endif
     if makefile then  begin
       self.ncdf_make_file,ddata=self.level_0b, trange=trange,type='L0B'
@@ -231,7 +231,6 @@ pro swfo_stis_sci_apdat::create_tplot_vars,ttags=ttags
     options,'stis_l1a_SPEC_??',spec=1,yrange=[5.,8000],/ylog,/zlog,/default
   endif
 
-
 end
 
 
@@ -243,7 +242,7 @@ PRO swfo_stis_sci_apdat__define
     inherits swfo_gen_apdat, $    ; superclass
     file_resolution: 0d,  $
     lastfile_time : 0d,  $
-    level_0b: obj_new(),  $
+    level_0b: obj_new(),  $       ; Level 0B data is stored in the "data" variable of swfo_gen_apdat
     ;level_0b_all: obj_new(),  $       ; This will hold a dynamic array of structures that include data from 3 STIS apids  (Science + Noise + hkp2)
     level_1a: obj_new(),  $
     level_1b: obj_new(),  $
